@@ -220,7 +220,7 @@ sub test_files {
     my $i = 1;
     for my $testfile (@$test_files) {
         $r .= "Test #$i: $testfile\n" . '-' x 60 . "\n";
-        my ( $need_to_delete, $msg_report, $rule_report ) =
+        my ($found_list, $need_to_delete, $msg_report, $rule_report ) =
           $self->parse_bounce( 
 			{ 
 				-message => $self->openfile($testfile), 
@@ -299,14 +299,17 @@ sub parse_all_bounces {
         $test = 0;
     }
 
-    my @all_lists_to_check = ();
+    my @all_lists_to_check   = ();
+	my $all_list_mode        = 0; 
+	my $per_list_check_limit = 0; 
+	
     if ( defined($list) ) {
         push( @all_lists_to_check, $list );
     }
     else {
-
         # Guess, we'll do 'em all!
         @all_lists_to_check = available_lists();
+		$all_list_mode   = 1; 
     }	
     LISTCHECK: 
 	for my $list_to_check (@all_lists_to_check) {
@@ -357,11 +360,29 @@ sub parse_all_bounces {
           );
         if ( $pop3status != 1 ) {
             $log .= "Status returned $pop3status\n\n$pop3log";
+	        if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
+	            DADA::App::POP3Tools::_unlock_pop3_check(
+	                {
+	                    name => 'bounce_handler.lock',
+	                    fh   => $lock_file_fh,
+	                },
+	            );
+	        }
+
             next LISTCHECK;
         }
 
         $log .= $pop3log;
         if ( $pop3status == 0 ) {
+	        if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
+	            DADA::App::POP3Tools::_unlock_pop3_check(
+	                {
+	                    name => 'bounce_handler.lock',
+	                    fh   => $lock_file_fh,
+	                },
+	            );
+	        }
+	
             next LISTCHECK;
         }
 
@@ -378,7 +399,7 @@ sub parse_all_bounces {
 		my $msg_num = 0; 
           MSGCHECK:
             for my $msg_info (@List) {
-				
+				my $found_list  = undef; 
 				$msg_num++; 
 				$log .= "\n# $msg_num:\n"; 
                 my $need_to_delete = undef;
@@ -407,7 +428,7 @@ sub parse_all_bounces {
                     my $rule_report = '';
                     eval {
 
-                        ( $need_to_delete, $msg_report, $rule_report ) =
+                        ($found_list, $need_to_delete, $msg_report, $rule_report ) =
                           $self->parse_bounce(
                             {
                                 -list    => $list_to_check,
@@ -456,6 +477,7 @@ sub parse_all_bounces {
                     push( @delete_list, $msgnum );
                 }
 
+
                 if ( ( $#delete_list + 1 ) >= $self->config->{MessagesAtOnce} )
                 {
 
@@ -464,13 +486,29 @@ sub parse_all_bounces {
                     last MSGCHECK;
 
                 }
+				
+				# This stops us from going through tons of messages for bounces, that
+				# don't belong to this list. 
+				if($all_list_mode) {
+					if($found_list ne $list_to_check) { 
+						$per_list_check_limit++; 
+						if($per_list_check_limit >= $self->config->{MessagesAtOnce}){ 
+							$log .= "Bounces are coming from a different mailing list altogether - moving on!\n"; 
+							$per_list_check_limit = 0;
+							last MSGCHECK; 
+						}
+					}
+					else { 
+						if($per_list_check_limit > 0){ 
+							$per_list_check_limit--;
+						}
+					}
+				}
             }
-
-        }
+        } # MSGCHECK
 
         if (!$test) {
             for (@delete_list) {
-
                 $log .= "deleting message #: $_\n";
                 $pop3_obj->Delete($_);
             }
@@ -480,7 +518,6 @@ sub parse_all_bounces {
         }
 
         $pop3_obj->Close;
-
         if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
             DADA::App::POP3Tools::_unlock_pop3_check(
                 {
@@ -522,10 +559,7 @@ sub parse_all_bounces {
 	    }
 	
 	   $log .= "Finished: " . $ls->param('list_name') . "\n\n";
-    
-		# &close_log;
-
-    }
+    } # LISTCHECK
 
 
 
@@ -545,7 +579,7 @@ sub parse_bounce {
 	}
 	else { 
 		$msg_report .= "You MUST pass the, '-list' paramater to, parse_bounce!\n"; 
-		return ( 0, $msg_report, '' );
+		return (undef, 0, $msg_report, '' );
 	}
 	
 	
@@ -572,7 +606,7 @@ sub parse_bounce {
         warn "No MIME entity found, this message could be garbage, skipping\n";
         $msg_report .=
           "No MIME entity found, this message could be garbage, skipping\n";
-        return ( 1, $msg_report, '' );
+        return (undef,  1, $msg_report, '' );
 
     }
 
@@ -585,7 +619,7 @@ sub parse_bounce {
     if ( !$found_list ) {
 		# $msg_report .= "No valid list found. Ignoring and deleting.\n\n" . $entity->as_string . "\n\n";
         $msg_report .= "No valid list found. Ignoring and deleting.\n";
-        return ( 1, $msg_report, '' );
+        return (undef, 1, $msg_report, '' );
     }
 
     # Test:  Hey, is this a bounce from me?!
@@ -593,14 +627,14 @@ sub parse_bounce {
         $msg_report .=
           "Bounced message was sent by myself. Ignoring and deleting\n";
         warn "Bounced message was sent by myself. Ignoring and deleting";
-        return ( 1, $msg_report, '' );
+        return (undef, 1, $msg_report, '' );
     }
 
-    # Is this from a mailing list I'm currently lookin gat?
+    # Is this from a mailing list I'm currently looking at?
     if ( $found_list ne $list ) {
 	  	$msg_report .= "Bounced message is from a different Mailing List. Skipping over.\n"; 
         # Save it for another go.
-        return ( 0, $msg_report, '' );
+        return ($found_list, 0, $msg_report, '' );
     }
 
     # /Tests!
@@ -619,14 +653,14 @@ sub parse_bounce {
     if ( DADA::App::Guts::check_if_list_exists( -List => $found_list ) == 0 ) {
         $msg_report .=
           'List, ' . $found_list . ' doesn\'t exist. Ignoring and deleting.';
-        return ( 1, $msg_report, '' );
+        return ($found_list, 1, $msg_report, '' );
     }
 
     my $lh = DADA::MailingList::Subscribers->new( { -list => $found_list } );
     if ( $lh->check_for_double_email( -Email => $email ) != 1 ) {
         $msg_report .=
 "Bounced Message is from an email address that isn't subscribed to: $found_list. Ignorning.\n";
-        return ( 1, $msg_report, '' );
+        return ($found_list, 1, $msg_report, '' );
     }
 
     if ( $args->{-test} != 1 ) {
@@ -635,7 +669,7 @@ sub parse_bounce {
           $self->carry_out_rule( $rule, $found_list, $email, $diagnostics,
             $message );
     }
-    return ( 1, $msg_report, $rule_report );
+    return ($found_list, 1, $msg_report, $rule_report );
 
 }
 
