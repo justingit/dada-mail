@@ -165,6 +165,10 @@ sub save_from_params {
 		%{$form_vals{headers}} = (%{$tmp_record->{headers}}, %{$form_vals{headers}}); 
 	}
 	
+	# See what I did, here?
+	$form_vals{'PlainText_ver'}->{text}                 = $q->param('PlainText_text'); 
+	$form_vals{'HTML_ver'}->{text}                      = $q->param('html_message_body'); 
+	
 	
 	for my $t('PlainText', 'HTML'){ 
 		$form_vals{$t.'_ver'}->{source}                    = $q->param($t.'_source'); 
@@ -192,15 +196,7 @@ sub save_from_params {
 			$form_vals{last_schedule_run} = time;
 		}
 	}
-	
-	# See what I did, here?
-	$form_vals{'PlainText_ver'}->{text}                 = $q->param('PlainText_text'); 
-	$form_vals{'HTML_ver'}->{text}                      = $q->param('html_message_body'); 
-	
-	
-	
-	
-	
+		
 	$form_vals{attachments} = []; 
 	
 	

@@ -1459,8 +1459,9 @@ sub from_text_widget {
 			{
 				-data => \$t, 
 				-vars => { 
-					#default_text => $form_vals{$type.'_ver'}->{text},
+					default_text                         => $form_vals{$type.'_ver'}->{text},
 					
+					# This is ridiculous. 
 					html_message_body_content            => $form_vals{$type.'_ver'}->{text},
 					html_message_body_content_js_escaped => js_enc($form_vals{$type.'_ver'}->{text}),
 					
