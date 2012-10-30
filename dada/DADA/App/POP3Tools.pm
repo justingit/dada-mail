@@ -194,6 +194,13 @@ sub _lock_pop3_check {
         croak "You need to supply a name! for _lock_pop3_check"; 
     }
     
+	if(-f _lockfile_name($args)){ 
+		# oh, boy - the lockfile exists. 
+		if(-M _lockfile_name($args) > 1){ 
+			# And it's really old. Let's remove! 
+			_unlock_pop3_check($args);
+		}
+	}
     
 	#sysopen(POP3_SAFETYLOCK, _lockfile_name($args),  O_RDWR|O_CREAT, $DADA::Config::FILE_CHMOD ) 
 	
