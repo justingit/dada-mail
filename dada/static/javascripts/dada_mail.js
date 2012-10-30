@@ -1,15 +1,17 @@
 $jq(document).ready(function() {
 
 	//Mail Sending >> Send a Message 
-	if ($jq("#send_email_screen").length || $jq("#send_url_email").length || $jq("#list_invite").length) {
-
+	if ($jq("#send_email_screen").length || $jq("#send_url_email").length || $jq("#list_invite").length) {		
 		$jq("#mass_mailing").on("submit", function(event) {
 			event.preventDefault();
 		});
 		$jq(".sendmassmailing").on("click", function(event) {
 			//var fid = $jq(event.target).closest('form').attr('id'); 
 			var fid = 'mass_mailing';
-
+			
+			// Strange you have to do this, but, you do: 
+			CKEDITOR.instances['html_message_body'].updateElement();
+			
 			var itsatest = $jq(this).hasClass("justatest");
 			var submit_it = sendMailingListMessage(fid, itsatest);
 			if (submit_it == true) {
@@ -31,37 +33,16 @@ $jq(document).ready(function() {
 			event.preventDefault();
 			preview_message_receivers();
 		});
-
-
-
-
-	}
-
-	if ($jq("#send_email_screen").length) {
-
-
+		
 		if ($jq("#using_ckeditor").length) {
-			$jq(".html_message_body").ckeditor(
-
+			$jq("#html_message_body").ckeditor(
 			function() {}, {
-				customConfig: '../ckeditor/dada_mail_config.js',
+				customConfig: $jq("#support_files_url").val() + '/ckeditor/dada_mail_config.js',
 				toolbar: 'DadaMail_Admin'
 			});
 		}
+		
 
-	}
-	// Mail Sending >> Send a Webpage
-	if ($jq("#send_url_email").length) {
-
-
-		if ($jq("#using_ckeditor").length) {
-			$jq(".html_message_body").ckeditor(
-
-			function() {}, {
-				customConfig: '../ckeditor/dada_mail_config.js',
-				toolbar: 'DadaMail_Admin'
-			});
-		}
 
 
 
@@ -358,23 +339,6 @@ $jq(document).ready(function() {
 	// Plugins >> Tracker
 	if ($jq("#plugins_tracker_message_report").length) {
 		update_plugins_tracker_message_report();
-		$jq("body").on("click", '.individual_country_geoip', function(event) {
-			event.preventDefault();
-			individual_country_geoip_map($jq(this).attr("data-type"), $jq(this).attr("data-country"), "country_geoip_" + $jq(this).attr("data-type") + "_map");
-		});
-
-		$jq("body").on("click", '.individual_country_cumulative_geoip_table', function(event) {
-			event.preventDefault();
-			individual_country_cumulative_geoip_table($jq(this).attr("data-type"), $jq(this).attr("data-country"), "country_geoip_" + $jq(this).attr("data-type") + "_map");
-		});
-
-		$jq("body").on("click", '.back_to_geoip_map', function(event) {
-			event.preventDefault();
-			country_geoip_map($jq(this).attr("data-type"), "country_geoip_" + $jq(this).attr("data-type") + "_map");
-		});
-
-
-
 	}
 
 	if ($jq("#plugins_tracker_default").length) {
@@ -1112,6 +1076,22 @@ function update_plugins_tracker_message_report() {
 		$tabs.tabs('select', 4);
 		return false;
 	});
+	
+	$jq("body").on("click", '.individual_country_geoip', function(event) {
+		event.preventDefault();
+		individual_country_geoip_map($jq(this).attr("data-type"), $jq(this).attr("data-country"), "country_geoip_" + $jq(this).attr("data-type") + "_map");
+	});
+
+	$jq("body").on("click", '.individual_country_cumulative_geoip_table', function(event) {
+		event.preventDefault();
+		individual_country_cumulative_geoip_table($jq(this).attr("data-type"), $jq(this).attr("data-country"), "country_geoip_" + $jq(this).attr("data-type") + "_map");
+	});
+
+	$jq("body").on("click", '.back_to_geoip_map', function(event) {
+		event.preventDefault();
+		country_geoip_map($jq(this).attr("data-type"), "country_geoip_" + $jq(this).attr("data-type") + "_map");
+	});
+	
 
 	if ($jq("#can_use_country_geoip_data").val() == 1) {
 

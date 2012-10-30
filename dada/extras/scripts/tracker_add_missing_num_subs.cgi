@@ -34,6 +34,11 @@ for my $list(available_lists()){
 	
 	print h1($list); 
 	my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
+	if(! $r->enabled){ 
+		print p('Clickthrough is not enabled for this list. Skipping');
+		next;  
+		
+	}
 	
 	my $query   = 'SELECT msg_id FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? GROUP BY msg_id ORDER BY msg_id DESC;';
 	my $msg_ids = $dbh->selectcol_arrayref($query, {}, ($list)); #($statement, \%attr, @bind_values);

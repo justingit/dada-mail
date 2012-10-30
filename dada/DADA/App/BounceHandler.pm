@@ -962,37 +962,38 @@ sub carry_out_rule {
                 $report .= "\nSaving bounced email report in tracker\n";
                 require DADA::Logging::Clickthrough;
                 my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
-
-                my $hard_bounce = 0;
-                if (   $action eq 'add_to_score'
-                    && $actions->{$action} eq 'hardbounce_score' )
-                {
-                    $hard_bounce = 1;
-                }
-                elsif ( $action ne 'add_to_score' ) {
-                    $hard_bounce = 1;
-                }
-                else {
-					# ... 
-                }
-                if ( $hard_bounce == 1 ) {
-                    $r->bounce_log(
-                        {
-                            -type  => 'hard',
-                            -mid   => $diagnostics->{'Simplified-Message-Id'},
-                            -email => $email,
-                        }
-                    );
-                }
-                else {
-                    $r->bounce_log(
-                        {
-                            -type  => 'soft',
-                            -mid   => $diagnostics->{'Simplified-Message-Id'},
-                            -email => $email
-                        }
-                    );
-                }
+				if($r->enabled) { 
+	                my $hard_bounce = 0;
+	                if (   $action eq 'add_to_score'
+	                    && $actions->{$action} eq 'hardbounce_score' )
+	                {
+	                    $hard_bounce = 1;
+	                }
+	                elsif ( $action ne 'add_to_score' ) {
+	                    $hard_bounce = 1;
+	                }
+	                else {
+						# ... 
+	                }
+	                if ( $hard_bounce == 1 ) {
+	                    $r->bounce_log(
+	                        {
+	                            -type  => 'hard',
+	                            -mid   => $diagnostics->{'Simplified-Message-Id'},
+	                            -email => $email,
+	                        }
+	                    );
+	                }
+	                else {
+	                    $r->bounce_log(
+	                        {
+	                            -type  => 'soft',
+	                            -mid   => $diagnostics->{'Simplified-Message-Id'},
+	                            -email => $email
+	                        }
+	                    );
+	                }
+				}
             }
             else {
                 warn

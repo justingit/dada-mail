@@ -116,6 +116,11 @@ sub run {
 
 sub default {
 	
+	if($DADA::Config::SUBSCRIBER_DB_TYPE !~ /SQL/i){ 
+		sql_backend_only_message(); 
+		return; 
+	}
+	
 	require DADA::MailingList::Subscribers; 
 	my $lh       = DADA::MailingList::Subscribers->new({-list => $list});
 	
@@ -158,6 +163,31 @@ sub default {
     );
     e_print($scrn);
 
+}
+
+
+
+sub sql_backend_only_message { 
+	
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+        {
+            -screen         => 'plugins/shared/sql_backend_only_message.tmpl',
+            -with           => 'admin',
+            -wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $ls->param('list'),
+            },, 
+            -vars => {
+            },
+
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+        }
+    );	
+	e_print($scrn);
 }
 
 

@@ -39,7 +39,9 @@
 
 <form name="mass_mailing" id="mass_mailing" enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
 
- <input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" />
+ <input type="hidden" name="s_program_url"     id="s_program_url"     value="<!-- tmpl_var S_PROGRAM_URL -->" />
+ <input type="hidden" name="support_files_url" id="support_files_url" value="<!-- tmpl_var SUPPORT_FILES_URL -->" />
+
 
  <input type="hidden" name="f" value="send_email" />
  <input type="hidden" name="advanced" value="yes" />

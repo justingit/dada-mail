@@ -90,7 +90,11 @@ the varible, C<$SUPPORT_FILES>. This variable is required to be correctly config
 This does create an additional thing that needs to be configured for Dada Mail to be successfully installed, but we 
 feel this extra step is worth it, for performance and for future features of the app. 
 
-=head1 List Control Panel Screen
+=head1 Clickthrough/Message Opens, etc tracking support dropped for Default Backend 
+
+The Tracker plugin and all of its functionality now requires the use of one of the SQL backends. 
+
+=head1 List Control Panel Screens
 
 =head2 Mass Mailing >> Send a Message
 

@@ -284,7 +284,7 @@ sub sql_backend_only_message {
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
-            -screen         => 'plugins/password_protect_directories/sql_backend_only_message.tmpl',
+            -screen         => 'plugins/shared/sql_backend_only_message.tmpl',
             -with           => 'admin',
             -wrapper_params => {
                 -Root_Login => $root_login,

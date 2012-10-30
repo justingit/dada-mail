@@ -1642,14 +1642,16 @@ sub mass_send {
 								#
 							}
 						); 
-				%fields = $ct->parse_email(
-				    {
-				        -fields => \%fields,
-						-mid    => $fields{'Message-ID'},
-				    }
-				);
-				undef $ct; 
-				# And, that's it.
+				if($ct->enabled) { 
+					%fields = $ct->parse_email(
+					    {
+					        -fields => \%fields,
+							-mid    => $fields{'Message-ID'},
+					    }
+					);
+					undef $ct; 
+					# And, that's it.
+				}
 			}
 			else { 
 			}
@@ -3039,6 +3041,8 @@ sub _log_sub_count {
 	        -ls   => $self->{ls},
 	    }
 	);
+	return if ! $r->enabled; 
+	
 	
 	my $msg_id = $args{-msg_id};
 	   $msg_id =~ s/\<|\>//g;

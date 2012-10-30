@@ -1593,6 +1593,11 @@ sub redirect_tag_check {
 				-ls   => $ls, 
 			}
 		); 
+		if(! $ct->enabled){ 
+			return 1; 
+#			report_mass_mail_errors('Clickthrough is not enabled for this backend.', $list, $root_login);
+#			return undef;  
+		}
 		eval { 
 			$ct->check_redirect_urls(
 				{ 

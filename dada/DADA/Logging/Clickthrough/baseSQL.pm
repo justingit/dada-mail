@@ -30,6 +30,10 @@ sub new {
     $self->_sql_init($args);
     return $self;
 }
+sub enabled { 
+	return 1; 
+}
+
 
 sub _sql_init {
 

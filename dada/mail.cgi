@@ -8089,12 +8089,13 @@ sub archive {
                 $c->show( 'archive/' . $list . '/' . $id . '.scrn' );				
 				require DADA::Logging::Clickthrough; 
 				my $r = DADA::Logging::Clickthrough->new({-list => $list});
-				$r->view_archive_log(
-					{ 
-						-mid => $id, 
-					}
-				);
-				
+				if($r->enabled) { 
+					$r->view_archive_log(
+						{ 
+							-mid => $id, 
+						}
+					);
+				}
                 return;
             }
         }
@@ -8277,12 +8278,13 @@ sub archive {
 
 		require DADA::Logging::Clickthrough; 
 		my $r = DADA::Logging::Clickthrough->new({-list => $list});
-		$r->view_archive_log(
-			{ 
-				-mid => $id, 
-			}
-		);
-
+		if($r->enabled) { 
+			$r->view_archive_log(
+				{ 
+					-mid => $id, 
+				}
+			);
+		}
         if (!$c->profile_on &&
 	   		$li->{archive_send_form} != 1
             && $li->{captcha_archive_send_form} != 1 )
@@ -8721,12 +8723,13 @@ sub send_archive {
 		
 			require DADA::Logging::Clickthrough; 
 			my $r = DADA::Logging::Clickthrough->new({-list => $list});
-			$r->forward_to_a_friend_log(
-				{ 
-					-mid => $entry, 
-				}
-			); 
-			
+			if($r->enabled) { 
+				$r->forward_to_a_friend_log(
+					{ 
+						-mid => $entry, 
+					}
+				); 
+			}
             print $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '?f=archive&l=' . $list . '&id=' . $entry . '&send_archive_success=1');
     }
 }
@@ -10051,35 +10054,39 @@ sub redirection {
 
     require DADA::Logging::Clickthrough;
     my $r = DADA::Logging::Clickthrough->new({-list => $q->param('list')});
-
-	if(defined($q->param('key'))){
-
-		my ($mid, $url, $atts) = $r->fetch($q->param('key'));
-
-		   if(defined($mid) && defined($url)){
-	       		$r->r_log(
-					{ 
-						-mid  => $mid, 
-						-url  => $url, 
-						-atts => $atts
-					}
-				);
-			}
-	    if($url){
-			if($url =~ m/mailto\:/){ 
-				print $q->header(
-					-location => $url, 
-					-status   => 200, 
-				);
-			}
-	        print $q->redirect(-uri => $url);
-	    	return;
-	    }else{
-	        print $q->redirect(-uri => $DADA::Config::PROGRAM_URL);
-	    }
-	}
-	else {
+	if(! $r->enabled) { 
 		print $q->redirect(-uri => $DADA::Config::PROGRAM_URL);
+	}
+	else { 
+		if(defined($q->param('key'))){
+
+			my ($mid, $url, $atts) = $r->fetch($q->param('key'));
+
+			   if(defined($mid) && defined($url)){
+		       		$r->r_log(
+						{ 
+							-mid  => $mid, 
+							-url  => $url, 
+							-atts => $atts
+						}
+					);
+				}
+		    if($url){
+				if($url =~ m/mailto\:/){ 
+					print $q->header(
+						-location => $url, 
+						-status   => 200, 
+					);
+				}
+		        print $q->redirect(-uri => $url);
+		    	return;
+		    }else{
+		        print $q->redirect(-uri => $DADA::Config::PROGRAM_URL);
+		    }
+		}
+		else {
+			print $q->redirect(-uri => $DADA::Config::PROGRAM_URL);
+		}
 	}
 }
 
@@ -10099,10 +10106,12 @@ sub m_o_c {
         require DADA::Logging::Clickthrough;
         my $r =
           DADA::Logging::Clickthrough->new( { -list => $q->param('list') } );
-        if ( defined( $q->param('mid') ) ) {
-            $r->o_log( { -mid => $q->param('mid'), } );
-        }
-    }
+		if($r->enabled) { 
+	        if ( defined( $q->param('mid') ) ) {
+	            $r->o_log( { -mid => $q->param('mid'), } );
+	        }
+  		}	
+	}
     require MIME::Base64;
     print $q->header('image/png');
 
