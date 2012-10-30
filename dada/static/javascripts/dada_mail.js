@@ -9,9 +9,10 @@ $jq(document).ready(function() {
 			//var fid = $jq(event.target).closest('form').attr('id'); 
 			var fid = 'mass_mailing';
 			
-			// Strange you have to do this, but, you do: 
-			CKEDITOR.instances['html_message_body'].updateElement();
-			
+			if ($jq("#using_ckeditor").length) {
+				// Strange you have to do this, but, you do: 
+				CKEDITOR.instances['html_message_body'].updateElement();
+			}
 			var itsatest = $jq(this).hasClass("justatest");
 			var submit_it = sendMailingListMessage(fid, itsatest);
 			if (submit_it == true) {
