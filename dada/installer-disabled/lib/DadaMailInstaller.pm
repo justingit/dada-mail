@@ -271,6 +271,8 @@ sub cl_run {
         \%h,
         'if_dada_files_already_exists=s',
         'program_url=s',
+		'support_files_dir_path=s',
+		'support_files_dir_url=s',
         'dada_root_pass=s',
         'dada_files_loc=s', 
 		'dada_files_dir_setup=s',
@@ -490,7 +492,7 @@ sub scrn_configure_dada_mail {
     	# No? Good - 
 	}
 	else { 
-		if(test_can_create_dada_files_dir(auto_dada_files_dir()) == 1 ){ 
+		if(test_can_create_dada_files_dir(auto_dada_files_dir()) == 0 ){ 
 			# HTML::FillInForm::Lite will pick up on this 
 			$q->param('dada_files_loc', auto_dada_files_dir()); 
 			$q->param('dada_files_dir_setup', 'manual');  
@@ -1277,7 +1279,7 @@ sub check_setup {
 		}
 		else { 
 			
-			if ( test_can_create_dada_files_dir($install_dada_files_dir_at) == 1 ) {
+			if ( test_can_create_dada_files_dir($install_dada_files_dir_at) == 0 ) {
 	            $errors->{create_dada_files_dir} = 1;
 	        }
 	        else {
@@ -1749,26 +1751,26 @@ sub hack_program_url {
 
 sub test_can_create_dada_files_dir {
 
-    my $dada_files_dir = shift;
+    my $dada_files_parent_dir = shift;
 	# blank?!
 	if($dada_files_dir eq ''){ 
-		return 1; 
+		return 0; 
 	}
     $dada_files_dir =
-      make_safer( $dada_files_dir . '/' . $Dada_Files_Dir_Name );
+      make_safer( $dada_files_parent_dir . '/' . $Dada_Files_Dir_Name );
 
-    if ( installer_mkdir( $dada_files_dir, $DADA::Config::DIR_CHMOD ) ) {
-        if ( -e $dada_files_dir ) {
-            installer_rmdir($dada_files_dir);
-            return 0;
+    if ( installer_mkdir( $dada_files_parent_dir, $DADA::Config::DIR_CHMOD ) ) {
+        if ( -e $dada_files_parent_dir ) {
+            installer_rmdir($dada_files_parent_dir);
+            return 1;
         }
         else {
-            return 1;
+            return 0;
 
         }
     }
     else {
-        return 1;
+        return 0;
     }
 
 }
