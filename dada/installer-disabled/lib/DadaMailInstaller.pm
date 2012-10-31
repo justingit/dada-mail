@@ -547,6 +547,8 @@ sub scrn_configure_dada_mail {
 											   => test_complete_dada_files_dir_structure_exists(install_dada_files_dir_at_from_params()), 
 				dada_files_dir_setup           => $q->param('dada_files_dir_setup') || '', 
                 dada_files_loc                 => $q->param('dada_files_loc') || '',
+				error_create_dada_mail_support_files_dir  
+											   => $q->param('error_create_dada_mail_support_files_dir') || 0,
                 error_root_pass_is_blank       => $q->param('error_root_pass_is_blank')|| 0,
                 error_pass_no_match            => $q->param('error_pass_no_match') || 0,
                 error_program_url_is_blank     => $q->param('error_program_url_is_blank') || 0,
@@ -837,17 +839,17 @@ sub install_dada_mail {
 	        }
 		}
     }
-
 	$log .= "* Setting up Support Files Directory...\n";
 	eval {setup_support_files_dir($args);}; 
 	if($@){ 
         $log .= "* WARNING: Couldn't set up support files directory! $@\n";
         $errors->{cant_set_up_support_files_directory} = 1;
+        $status = 0;
+
 	}
 	else { 
         $log .= "* Success!\n";		
 	} 
-
 	
 	$log .= "* Installing plugins/extensions...\n";
 	eval {edit_config_file_for_plugins($args);}; 
@@ -1286,6 +1288,15 @@ sub check_setup {
 	            $errors->{create_dada_files_dir} = 0;
 	        }			
 		}
+		
+		
+		if(test_can_create_dada_mail_support_files_dir($q->param('support_files_dir_path')) == 0){ 
+            $errors->{create_dada_mail_support_files_dir} = 1;
+        }
+        else {
+            $errors->{create_dada_mail_support_files_dir} = 0;	        
+		}
+		
     }
 
     my $status = 1;
@@ -1753,15 +1764,15 @@ sub test_can_create_dada_files_dir {
 
     my $dada_files_parent_dir = shift;
 	# blank?!
-	if($dada_files_dir eq ''){ 
+	if($dada_files_parent_dir eq ''){ 
 		return 0; 
 	}
-    $dada_files_dir =
+    my $dada_files_dir =
       make_safer( $dada_files_parent_dir . '/' . $Dada_Files_Dir_Name );
 
-    if ( installer_mkdir( $dada_files_parent_dir, $DADA::Config::DIR_CHMOD ) ) {
-        if ( -e $dada_files_parent_dir ) {
-            installer_rmdir($dada_files_parent_dir);
+    if ( installer_mkdir( $dada_files_dir, $DADA::Config::DIR_CHMOD ) ) {
+        if ( -e $dada_files_dir ) {
+            installer_rmdir($dada_files_dir);
             return 1;
         }
         else {
@@ -1774,6 +1785,71 @@ sub test_can_create_dada_files_dir {
     }
 
 }
+
+sub test_can_create_dada_mail_support_files_dir {
+
+    my $support_files_parent_dir = shift;
+	# blank?!
+	if($support_files_parent_dir eq ''){ 
+		return 0; 
+	}
+    my $support_files_dir =
+      make_safer( $support_files_parent_dir . '/' . $Support_Files_Dir_Name );
+	my $already_exists = 0; 
+	
+
+	# That's.. OK, it can exist. 
+	if(-e $support_files_dir && -d _) { 
+		# Guess, we'll just skip that one. 
+		$already_exists = 1; 
+	}
+	else { 
+	  # Let's try making it, 
+	  if ( installer_mkdir( $support_files_dir, $DADA::Config::DIR_CHMOD ) ) {
+			# And let's see if it's around, 
+	        if ( -e $support_files_dir && -d _) {
+				# And, let's see if we can't write into it. 
+
+				my $time = time;
+				require DADA::Security::Password; 
+				my $ran_str = DADA::Security::Password::generate_rand_string(); 
+				my $ran_file_name = make_safer($support_files_dir . "/test_file.$ran_str.$time.txt"); 
+				my $file_worked = 1; 
+				
+				open(TEST_FILE, ">$ran_file_name") or $file_worked = 0; 
+				print TEST_FILE "test" or $file_worked             = 0; 
+				close(TEST_FILE) or $file_worked                   = 0; 
+				
+				if($file_worked == 1){
+					
+					# DEV: And then, perhaps try to get it via HTTP
+					#
+					installer_rm($ran_file_name); 
+					if($already_exists != 1) { 
+		            	installer_rmdir($support_files_dir);
+		            }
+					
+					# Yes! Yes, it works. 
+					return 1;
+				}
+	        }
+	        else {
+	            return 0;
+
+	        }
+	    }
+	    else {
+	        return 0;
+	    }	
+	}
+
+
+  
+
+}
+
+
+
 
 
 

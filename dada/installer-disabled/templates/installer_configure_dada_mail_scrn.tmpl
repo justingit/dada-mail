@@ -54,11 +54,10 @@
 </div> 
 <!-- /tmpl_if --> 
 
-<!-- tmpl_if comment --> 
+ 
 	<!-- tmpl_loop errors --> 
 		<p>Error <!-- tmpl_var error --> 
 	<!-- /tmpl_loop --> 
-<!-- /tmpl_if -->
 
 
 	<!-- tmpl_if test_complete_dada_files_dir_structure_exists --> 
@@ -173,7 +172,7 @@
 				?</a>]
 		</legend>
 	
-		<div id="dada_files_help" class="clearskiesbox" style="display:none"> 
+		<div id="dada_files_help" class="clearskiesbox"> 
 		<p>	
 			<!-- tmpl_var PROGRAM_NAME --> will need to write various files and will need a directory for which to do this in. You'll 
 			have to tell <!-- tmpl_var PROGRAM_NAME --> where you'd like this directory to live. The directory will be called, <em><!-- tmpl_var Dada_Files_Dir_Name --></em>. 
@@ -246,7 +245,7 @@
 
 <p><label for="program_url"><!-- tmpl_var PROGRAM_NAME --> Program URL:</label>
 </p>
-<div id="program_url_help" style="display:none" class="clearskiesbox"> 
+<div id="program_url_help" class="clearskiesbox"> 
 	 <p>
 	 	The <!-- tmpl_var PROGRAM_NAME --> Program URL should be set to where you access the, <em>mail.cgi</em> script, currently. 
 	 </p> 
@@ -263,6 +262,8 @@
 <fieldset> 
 	<legend>Support Files Directory</legend>
 	
+
+	
 	<div class="clearskiesbox">
 		<p>
 			The Installer will use the Absolute Path and Corresponding URL you set below to 
@@ -276,6 +277,17 @@
 				You will want this directory to be publicly accessible - for example: this directory cannot be in your cgi-bin.
 			</p> 
 	</div> 
+	
+	<!-- tmpl_if error_create_dada_mail_support_files_dir  --> 
+		<div class="badweatherbox">
+			<ul> 
+			<li>
+			 Can not create or write into, the below Support Files Directory. 
+			</p>
+			</li>
+			</ul>
+		</div> 
+	<!-- /tmpl_if -->
 	
 	<p>
 		<label for="support_files_dir_path">Server Absolute Path to the <!-- tmpl_var PROGRAM_NAME --> Support Files Directory:</label><br />
@@ -323,7 +335,7 @@
 </div>
 <!-- /tmpl_if -->
 
-<div id="root_pass_help" style="display:none" class="clearskiesbox"> 
+<div id="root_pass_help" class="clearskiesbox"> 
 
 <p>This is the main password to <!-- tmpl_var PROGRAM_NAME -->, used to create new mailing lists and to 
 access <em>any</em> mailing list.</p> 
@@ -362,7 +374,7 @@ access <em>any</em> mailing list.</p>
 
 
 
-<div id="backend_help" style="display:none" class="clearskiesbox"> 
+<div id="backend_help" class="clearskiesbox"> 
  
 <p>	
 	<!-- tmpl_var PROGRAM_NAME --> supports a few different types of backends to save its mailing list settings, lists, archive, etc into. 
@@ -457,7 +469,7 @@ If using either the SQL backends, make sure to create a new database before conf
 	<a href="#" class="toggleDivs" data-target="plugins_extensions_help">
 	?</a>]</legend>
 
-<div id="plugins_extensions_help" class="clearskiesbox" style="display:none"> 
+<div id="plugins_extensions_help" class="clearskiesbox"
 
 <p>
 	<!-- tmpl_var PROGRAM_NAME --> comes with several plugins/extensions that add additional functionality to your <!-- tmpl_var PROGRAM_NAME --> install. 
@@ -486,30 +498,33 @@ for it to work correctly. For help on setting the cronjob, see the
 <p><input type="checkbox" name="install_bridge" id="install_bridge" value="1" /><label for="install_bridge">Discussion Lists</label> <span class="alert">Requires Additional Configuration (cronjob)</span>	
 </p> 
 
-<p><input type="checkbox" name="install_bounce_handler" id="install_bounce_handler" value="1" /><label for="install_bounce_handler">Bounce Handler</label> <span class="alert">Requires Additional Configuration (cronjob)</span></p> 
-<fieldset> 
-	<legend>Additional Bounce Handler Configuration [
-		<a href="#" class="toggleDivs" data-target="bounce_handler_configuration_help">
-	?</a>]</legend>
+<p><input type="checkbox" name="install_bounce_handler" id="install_bounce_handler" value="1" class="radio_toggleDivs" data-target="additional_bounce_handler_configuration" />
+	<label for="install_bounce_handler">Bounce Handler</label> <span class="alert">Requires Additional Configuration (cronjob)</span></p> 
+
+<div id="additional_bounce_handler_configuration">
+	<fieldset> 
+		<legend>Additional Bounce Handler Configuration [
+			<a href="#" class="toggleDivs" data-target="bounce_handler_configuration_help">
+		?</a>]</legend>
 	
-	<div id="bounce_handler_configuration_help" style="display:none" class="clearskiesbox">
-		<p>
-			The Bounce Handler requires a new POP3 email account to be created, in order to work correctly. Make sure the email address isn't used for 
-			any other purpose, except for the bounce handler. See the <a href="<!-- tmpl_var DOC_URL -->/bounce_handler.cgi.html"  target="_blank">documentation for this plugin</a> for additional information. 
-			</p> 
-	</div> 
+		<div id="bounce_handler_configuration_help" class="clearskiesbox">
+			<p>
+				The Bounce Handler requires a new POP3 email account to be created, in order to work correctly. Make sure the email address isn't used for 
+				any other purpose, except for the bounce handler. See the <a href="<!-- tmpl_var DOC_URL -->/bounce_handler.cgi.html"  target="_blank">documentation for this plugin</a> for additional information. 
+				</p> 
+		</div> 
 	
-	<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_address">Bounce Handler Email Address:</label> <input type="text" name="bounce_handler_address" id="bounce_handler_address" value="" /></p>
+		<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_address">Bounce Handler Email Address:</label> <input type="text" name="bounce_handler_address" id="bounce_handler_address" value="" /></p>
 
-	<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_server">Mail Server:</label> <input type="text" name="bounce_handler_server" id="bounce_handler_server" value="" /></p>
+		<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_server">Mail Server:</label> <input type="text" name="bounce_handler_server" id="bounce_handler_server" value="" /></p>
 
-	<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_username">Username:</label> <input type="text" name="bounce_handler_username" id="bounce_handler_username" value="" /></p>
+		<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_username">Username:</label> <input type="text" name="bounce_handler_username" id="bounce_handler_username" value="" /></p>
 
-	<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_password">Password:</label> <input type="text" name="bounce_handler_password" id="bounce_handler_password" value="" /></p>
+		<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_password">Password:</label> <input type="text" name="bounce_handler_password" id="bounce_handler_password" value="" /></p>
 	 
+	</fieldset> 
+</div> 
 
-
-</fieldset> 
 
 <p><input type="checkbox" name="install_scheduled_mailings" id="install_scheduled_mailings" value="1" /><label for="install_scheduled_mailings">Scheduled Mailings</label>	
  <span class="alert">Requires Additional Configuration (cronjob)</span></p> 
@@ -531,7 +546,7 @@ for it to work correctly. For help on setting the cronjob, see the
 <legend>WYSIWYG Editors (Optional) [
 	<a href="#" class="toggleDivs" data-target="wysiwyg_editor_help">
 ?</a>]</legend>
-<div id="wysiwyg_editor_help" style="display:none" class="clearskiesbox"> 
+<div id="wysiwyg_editor_help" class="clearskiesbox"> 
 <p>Dada Mail supports the use of third party WYSIWYG HTML editors to allow you to 
 compose and edit HTML mailing list messages. This allows you to send rich text messages, 
 right in Dada Mail's list control panel, without needing to know any HTML.</p>
@@ -552,8 +567,10 @@ editors also have the ability to make simple HTML tables for basic layouts.
 	
 </p>
 
-<div id="install_wysiwyg_editors_options">
 
+	
+<div id="install_wysiwyg_editors_options">
+<fieldset> 
 	<p>
 		<input type="checkbox" name="wysiwyg_editor_install_ckeditor" id="wysiwyg_editor_install_ckeditor" value="1" checked="checked" />			
 	<label for="wysiwyg_editor_install_ckeditor">Install CKeditor</label>
@@ -573,7 +590,7 @@ editors also have the ability to make simple HTML tables for basic layouts.
 
 	<input type="checkbox" name="file_browser_install_kcfinder" id="file_browser_install_kcfinder" value="1" checked="checked"/>			
 	<label for="file_browser_install_kcfinder">Install KCFinder</label>
-
+		</fieldset> 
 </div> 
 
 </fieldset> 

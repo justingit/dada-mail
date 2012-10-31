@@ -4,20 +4,17 @@
 
 =head1 Focus
 
-The focus of this major release of Dada Mail is to make room for future growth of the app, by creating a good foundation for future features. 
+The focus of this major release of Dada Mail is to make room for future growth of the app, by creating a better foundation for future features.
 
 =head2 JavaScript UI/UX Breathing/Growing Room
 
-Dada Mail's UI/UX has been migrated to jQuery, from Prototype, where development has all but ceased. 
-The vast majority of Dada Mail's extra functionality through JavaScript is done in an unobtrusive way. A great example
-of new features allowed with this JS library move is the rewritten and redesigned Tracker plugin. 
+Dada Mail's UI/UX has been migrated to jQuery, from Prototype, where development has all but ceased.
+
+The vast majority of Dada Mail's extra functionality through JavaScript is done in an unobtrusive way. A great example of new features allowed with this JS library move is the rewritten and redesigned Tracker plugin. 
 
 =head2 Towards a new web framework
 
-Dada Mail is written with the thinnest of veneer of a web framework, and the next major version of Dada Mail may be a migration 
-to a more robust web framework such as CGI::Application, Catalyst, or Mojolicious. v6 of Dada Mail moves the various components that 
-make up Dada Mail (Perl code, JavaScript code, templates, images, stylesheets) into consolidated bundles of files and directories that 
-are more sensible than previous versions. 
+Dada Mail is written with the thinnest of veneer of a web framework, and the next major version of Dada Mail may be a migration to a more robust web framework such as CGI::Application, Catalyst, or Mojolicious. v6 of Dada Mail moves the various components that make up Dada Mail (Perl code, JavaScript code, templates, images, stylesheets) into consolidated bundles of files and directories that are more sensible than previous versions. 
 
 =head1 Database Schema
 
@@ -25,8 +22,12 @@ There are B<no> changes in any of the database schemas between Dada Mail 5 and D
 
 Upgrading is fairly straightforward, with no need for any Dada Mail 5 to Dada Mail 6 SQL upgrade scripts. 
 
-When using the Dada Mail Installer (which you should use, when upgrading), you will definitely want to create a new C<.dada_config> 
-file, when asked, as there is one new config variable, C<$SUPPORT_FILES> that needs to be set up correctly. 
+When using the Dada Mail Installer (which you should use, when upgrading), you will definitely want to create a new C<.dada_config> file, when asked, as there is one new config variable, C<$SUPPORT_FILES> that needs to be set up correctly. 
+
+=head1 Perl Version Requirements
+
+This is currently B<no> change in the Perl Version requirement of v5.8.1. This may change, before a stable release of v6 is released, most likely to v5.10.x of Perl. We're still working on that. 
+
 
 =head1 Template Changes
 
@@ -152,8 +153,15 @@ Reports are now generated per country, breaking down then by city, and then by i
 
 =head3 Included City Geo IP Data
 
-Dada Mail now comes with both a country Geo IP database, as well as a city-level Geo IP database. The city-level database is fairly large - ~20 megs., but it's 
-utility is worth its size. Geo IP data is provided by L<http://maxmind.com>, who also provide more accurate country/city data, on a subscription. 
+Dada Mail now comes with both a country Geo IP database, as well as a city-level Geo IP database. The city-level database is fairly large - ~20 megs., but it's  utility is worth its size. Geo IP data is provided by L<http://maxmind.com>, who also provide more accurate country/city data, on a subscription.
+
+The distro of Dada Mail is much larger - around 20 megs. compressed, rather than ~7.5 megs for v5 of Dada Mail. This additional size is mostly from the bundled city-level Geo IP database. 
+
+Both the city, and country-level Geo IP databases can be found in the, 
+
+I<dada/data>
+
+directory 
 
 =head2 Bounce Handler 
 

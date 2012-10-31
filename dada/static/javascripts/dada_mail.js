@@ -283,6 +283,24 @@ $jq(document).ready(function() {
 		});
 
 		installer_toggleSQL_options();
+		installer_toggle_dada_files_dirOptions();
+		installer_togger_bounce_handler_config(); 
+		
+		// Probably hide the help stuff, 
+		$jq("#dada_files_help").hide("blind"); 
+		$jq("#program_url_help").hide("blind"); 
+		$jq("#root_pass_help").hide("blind"); 
+		$jq("#backend_help").hide("blind"); 
+		$jq("#plugins_extensions_help").hide("blind"); 
+		$jq("#bounce_handler_configuration_help").hide("blind"); 
+		$jq("#wysiwyg_editor_help").hide("blind"); 
+		
+		
+		
+		
+		
+		
+		
 	}
 	if ($jq("#installer_install_dada_mail").length) {
 		$jq('#move_installer_dir').live("click", function(event) {
@@ -912,14 +930,10 @@ function toggleManualBatchSettings() {
 }
 
 // Installer 
-
 function installer_toggleSQL_options() {
 
-	//var sql_picker = document.getElementById('backend');
-	//var selected  = sql_picker.options[sql_picker.selectedIndex].value;
 	var selected = $jq("#backend option:selected").val();
 	if (selected == 'mysql' || selected == 'Pg') {
-
 		if ($jq('#sql_info').is(':hidden')) {
 			$jq('#sql_info').show('blind');
 		}
@@ -927,6 +941,32 @@ function installer_toggleSQL_options() {
 		if ($jq('#sql_info').is(':visible')) {
 			$jq('#sql_info').hide('blind');
 		}
+	}
+}
+function installer_toggle_dada_files_dirOptions() { 
+	
+	if ($jq("#dada_files_dir_setup_auto").prop("checked") == true) {
+		if ($jq('#manual_dada_files_dir_setup').is(':visible')) {
+			$jq('#manual_dada_files_dir_setup').hide('blind');
+		}
+	}
+	if ($jq("#dada_files_dir_setup_manual").prop("checked") == true) {
+		if ($jq('#manual_dada_files_dir_setup').is(':hidden')) {
+			$jq('#manual_dada_files_dir_setup').show('blind');
+		}
+	}
+}
+
+function installer_togger_bounce_handler_config() { 
+	if ($jq("#install_bounce_handler").prop("checked") == true) {
+		if ($jq('#additional_bounce_handler_configuration').is(':hidden')) {
+			$jq('#additional_bounce_handler_configuration').show('blind');
+		}
+	}
+	else { 
+		if ($jq('#additional_bounce_handler_configuration').is(':visible')) {
+			$jq('#additional_bounce_handler_configuration').hide('blind');
+		}		
 	}
 }
 
