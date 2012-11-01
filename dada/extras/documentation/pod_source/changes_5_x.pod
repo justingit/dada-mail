@@ -2,6 +2,26 @@
 
 =head1 Dada Mail Changelog for version 5.x.x
 
+=head1 5.2.2 
+
+=head2 Summary 5.2.2
+
+This release contains primarily bugfixes found in the v5.2.1 release of Dada Mail. 
+
+=head2 Bugfixes 5.2.2 
+
+=head3 CAPTCHA on Profile Registration sometimes does not show
+
+L<https://github.com/justingit/dada-mail/issues/313>
+
+=head3 Plugin Scheduled Mailings: plain text message body deleted when saving schedule
+
+L<https://github.com/justingit/dada-mail/issues/317>
+
+=head3 List Invitations: HTML version text box does not show up!
+
+L<https://github.com/justingit/dada-mail/issues/319>
+
 =head1 5.2.1. 
 
 =head2 Summary 5.2.1
