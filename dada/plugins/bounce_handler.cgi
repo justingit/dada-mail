@@ -64,7 +64,6 @@ my $Plugin_Config = {
     Plugin_Name              => 'Bounce Handler',
 };
 
-
 $Plugin_Config->{Email_Unsubscribed_Because_Of_Bouncing_Subject} =
 "Unsubscribed from: <!-- tmpl_var list_settings.list_name --> because of excessive bouncing";
 $Plugin_Config->{Email_Unsubscribed_Because_Of_Bouncing_Message} = qq{
@@ -99,7 +98,6 @@ for more information.
 #---------------------------------------------------------------------#
 # Nothing else to be configured.                                      #
 
-
 use Getopt::Long;
 use MIME::Entity;
 
@@ -111,14 +109,14 @@ use Fcntl qw(
 );
 
 my $debug = 0;
-my $help = 0;
+my $help  = 0;
 my $test;
 my $server;
 my $username;
 my $password;
 my $verbose = 0;
 my $log;
-my $messages = 0;
+my $messages         = 0;
 my $erase_score_card = 0;
 my $version;
 my $list = undef;
@@ -136,7 +134,7 @@ GetOptions(
     "messages=i"       => \$messages,
     "erase_score_card" => \$erase_score_card,
     "version"          => \$version,
-	"list=s"            => \$list, 
+    "list=s"           => \$list,
 );
 
 &init_vars;
@@ -150,7 +148,8 @@ sub init_vars {
 
     while ( my $key = each %$Plugin_Config ) {
 
-        if ( exists( $DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{$key} ) ) {
+        if ( exists( $DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{$key} ) )
+        {
 
             if (
                 defined(
@@ -188,7 +187,7 @@ sub init {
 sub run {
     if ( !$ENV{GATEWAY_INTERFACE} ) {
         my $r = cl_main();
-        if ($verbose || $help || $test || $version) {
+        if ( $verbose || $help || $test || $version ) {
             print $r;
         }
         exit;
@@ -233,7 +232,7 @@ sub cgi_main {
             'cgi_show_plugin_config'     => \&cgi_show_plugin_config,
             'ajax_parse_bounces_results' => \&ajax_parse_bounces_results,
             'cgi_erase_scorecard'        => \&cgi_erase_scorecard,
-			'edit_prefs'                 => \&edit_prefs, 
+            'edit_prefs'                 => \&edit_prefs,
         );
 
         if ( exists( $Mode{$flavor} ) ) {
@@ -245,46 +244,42 @@ sub cgi_main {
     }
 }
 
-
-
-
 sub cgi_default {
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get();
-	
-	my $done = $q->param('done') || 0; 
-	
+
+    my $done = $q->param('done') || 0;
+
     my @amount = (
         1,   2,   3,   4,   5,   6,   7,   8,   9,   10,  25,  50,
         100, 150, 200, 250, 300, 350, 400, 450, 500, 550, 600, 650,
         700, 750, 800, 850, 900, 950, 1000
     );
 
-		my $bounce_handler_softbounce_score_popup_menu 
-			= $q->popup_menu( -name => 'bounce_handler_softbounce_score', 
-							  -values => [(0 .. 10)],
-							  -default => $ls->param('bounce_handler_softbounce_score'), 
-			); 
+    my $bounce_handler_softbounce_score_popup_menu = $q->popup_menu(
+        -name    => 'bounce_handler_softbounce_score',
+        -values  => [ ( 0 .. 10 ) ],
+        -default => $ls->param('bounce_handler_softbounce_score'),
+    );
 
-			my $bounce_handler_hardbounce_score_popup_menu 
-				= $q->popup_menu( -name => 'bounce_handler_hardbounce_score', 
-								  -values => [(0 .. 10)],
-								  -default => $ls->param('bounce_handler_hardbounce_score'), 
-				); 
+    my $bounce_handler_hardbounce_score_popup_menu = $q->popup_menu(
+        -name    => 'bounce_handler_hardbounce_score',
+        -values  => [ ( 0 .. 10 ) ],
+        -default => $ls->param('bounce_handler_hardbounce_score'),
+    );
 
-		my $bounce_handler_decay_score_popup_menu 
-			= $q->popup_menu( -name => 'bounce_handler_decay_score', 
-							  -values => [(0 .. 10)],
-							  -default => $ls->param('bounce_handler_decay_score'), 
-			);
+    my $bounce_handler_decay_score_popup_menu = $q->popup_menu(
+        -name    => 'bounce_handler_decay_score',
+        -values  => [ ( 0 .. 10 ) ],
+        -default => $ls->param('bounce_handler_decay_score'),
+    );
 
-		my $bounce_handler_threshold_score_popup_menu
-			= $q->popup_menu( -name => 'bounce_handler_threshold_score', 
-						  -values => [(0 .. 100)],
-						  -default => $ls->param('bounce_handler_threshold_score'), 
-		);
-
+    my $bounce_handler_threshold_score_popup_menu = $q->popup_menu(
+        -name    => 'bounce_handler_threshold_score',
+        -values  => [ ( 0 .. 100 ) ],
+        -default => $ls->param('bounce_handler_threshold_score'),
+    );
 
     my $curl_location = `which curl`;
     $curl_location = strip( make_safer($curl_location) );
@@ -313,15 +308,15 @@ sub cgi_default {
         {
             -screen         => 'plugins/bounce_handler/default.tmpl',
             -with           => 'admin',
-			-expr           => 1, 
+            -expr           => 1,
             -wrapper_params => {
                 -Root_Login => $root_login,
                 -List       => $list,
             },
             -vars => {
-	
-				screen              => 'using_bounce_handler',
-				
+
+                screen => 'using_bounce_handler',
+
                 MAIL_SETTINGS       => $DADA::Config::MAIL_SETTINGS,
                 Username            => $Plugin_Config->{Username},
                 Server              => $Plugin_Config->{Server},
@@ -332,11 +327,15 @@ sub cgi_default {
                 curl_location       => $curl_location,
                 plugin_configured   => $plugin_configured,
                 parse_amount_widget => $parse_amount_widget,
-				done                => $done, 
-				bounce_handler_softbounce_score_popup_menu => $bounce_handler_softbounce_score_popup_menu, 
-				bounce_handler_hardbounce_score_popup_menu => $bounce_handler_hardbounce_score_popup_menu, 
-				bounce_handler_decay_score_popup_menu      => $bounce_handler_decay_score_popup_menu, 
-				bounce_handler_threshold_score_popup_menu  => $bounce_handler_threshold_score_popup_menu, 
+                done                => $done,
+                bounce_handler_softbounce_score_popup_menu =>
+                  $bounce_handler_softbounce_score_popup_menu,
+                bounce_handler_hardbounce_score_popup_menu =>
+                  $bounce_handler_hardbounce_score_popup_menu,
+                bounce_handler_decay_score_popup_menu =>
+                  $bounce_handler_decay_score_popup_menu,
+                bounce_handler_threshold_score_popup_menu =>
+                  $bounce_handler_threshold_score_popup_menu,
 
             },
             -list_settings_vars_param => {
@@ -350,25 +349,23 @@ sub cgi_default {
 
 sub edit_prefs {
 
-	my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     $ls->save_w_params(
         {
             -associate => $q,
             -settings  => {
-				bounce_handler_softbounce_score           => undef, 
-				bounce_handler_hardbounce_score           => undef, 
-				bounce_handler_decay_score                => undef, 
-				bounce_handler_threshold_score            => undef, 
-				bounce_handler_forward_msgs_to_list_owner => 0, 
-            	bounce_handler_when_threshold_reached     => undef, 
-			}
+                bounce_handler_softbounce_score           => undef,
+                bounce_handler_hardbounce_score           => undef,
+                bounce_handler_decay_score                => undef,
+                bounce_handler_threshold_score            => undef,
+                bounce_handler_forward_msgs_to_list_owner => 0,
+                bounce_handler_when_threshold_reached     => undef,
+            }
         }
     );
 
     print $q->redirect( -uri => $Plugin_Config->{Plugin_URL} . '?done=1' );
 }
-
-
 
 sub ajax_parse_bounces_results {
 
@@ -389,9 +386,6 @@ sub ajax_parse_bounces_results {
 
     print $r;
 }
-
-
-
 
 sub cgi_parse_bounce {
 
@@ -421,7 +415,7 @@ sub cgi_parse_bounce {
 sub cgi_manual_start {
 
     # This is basically just a wrapper around, cl_main();
-	my $r = ''; 
+    my $r = '';
     if (
         (
             xss_filter( $q->param('passcode') ) eq
@@ -448,13 +442,13 @@ sub cgi_manual_start {
             $Plugin_Config->{MessagesAtOnce} =
               xss_filter( $q->param('messages') );
         }
-		if(defined($q->param('list'))){ 
-			$list = $q->param('list');
-		}
-		else { 
-			$list = undef; # just to make that perfectly clear. 
-		}
-		
+        if ( defined( $q->param('list') ) ) {
+            $list = $q->param('list');
+        }
+        else {
+            $list = undef;    # just to make that perfectly clear.
+        }
+
         $r .= $q->header();
         if ($verbose) {
             $r .= '<pre>';
@@ -469,11 +463,10 @@ sub cgi_manual_start {
     }
     else {
         $r = $q->header();
-        $r .=
-"$DADA::Config::PROGRAM_NAME $DADA::Config::VER Access Denied.";
+        $r .= "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Access Denied.";
     }
 
-	return $r; 
+    return $r;
 }
 
 sub cgi_scorecard {
@@ -481,7 +474,7 @@ sub cgi_scorecard {
     my $page = $q->param('page') || 1;
 
     require DADA::App::BounceHandler::ScoreKeeper;
-    my $bsk = DADA::App::BounceHandler::ScoreKeeper->new({ -list => $list });
+    my $bsk = DADA::App::BounceHandler::ScoreKeeper->new( { -list => $list } );
 
     my $num_rows  = $bsk->num_scorecard_rows;
     my $scorecard = $bsk->raw_scorecard(
@@ -519,7 +512,7 @@ sub cgi_scorecard {
     my $scrn = DADA::Template::Widgets::screen(
         {
             -screen => 'plugins/bounce_handler/scorecard.tmpl',
-            -vars => {
+            -vars   => {
                 Plugin_URL    => $Plugin_Config->{Plugin_URL},
                 Plugin_Name   => $Plugin_Config->{Plugin_Name},
                 num_rows      => $num_rows,
@@ -538,17 +531,13 @@ sub cgi_scorecard {
 
 }
 
-
-
-
 sub cgi_erase_scorecard {
 
     require DADA::App::BounceHandler::ScoreKeeper;
-    my $bsk = DADA::App::BounceHandler::ScoreKeeper->new({ -list => $list });
+    my $bsk = DADA::App::BounceHandler::ScoreKeeper->new( { -list => $list } );
     $bsk->erase;
 
-    print $q->redirect(
-        -uri => $Plugin_Config->{Plugin_URL}, );
+    print $q->redirect( -uri => $Plugin_Config->{Plugin_URL}, );
 
 }
 
@@ -583,8 +572,6 @@ sub cgi_show_plugin_config {
     e_print($scrn);
 }
 
-
-
 sub cgi_bounce_score_search {
 
     my $query = xss_filter( $q->param('query') );
@@ -611,7 +598,7 @@ sub cgi_bounce_score_search {
     my $results_found = 0;
     if ( $results->[0] ) {
         $results_found = 1;
-		@$results = reverse(@$results); 
+        @$results      = reverse(@$results);
     }
 
     require DADA::MailingList::Subscribers;
@@ -625,24 +612,18 @@ sub cgi_bounce_score_search {
             $subscribed_address = 1;
         }
     }
-	
-	# This is just to add newlines to the values of the diagnostic stuff, so it's not all clumped together: 	
-	for(@$results){ 
-		for my $pt_diags(@{$_->{diagnostics}}){ 
-			$pt_diags->{diagnostic_value} = encode_html_entities($_->{diagnostic_value});
-		
-#			$pt_diags->{diagnostic_value} =~      s/& /&amp; /g;
-#			$pt_diags->{diagnostic_value} =~      s/</&lt;/g;
-#			$pt_diags->{diagnostic_value} =~      s/>/&gt;/g;
-#			$pt_diags->{diagnostic_value} =~      s/\"/&quot;/g;
-		
-		
-			$pt_diags->{diagnostic_value} =~ s/(\n|\r)/\<br \/\>\n/g;
-			
-		}
-	}
 
-	my %tmpl_vars = (
+# This is just to add newlines to the values of the diagnostic stuff, so it's not all clumped together:
+    for (@$results) {
+        for my $pt_diags ( @{ $_->{diagnostics} } ) {
+            $pt_diags->{diagnostic_value} =
+              encode_html_entities( $_->{diagnostic_value} );
+            $pt_diags->{diagnostic_value} =~ s/(\n|\r)/\<br \/\>\n/g;
+
+        }
+    }
+
+    my %tmpl_vars = (
         query              => $query,
         subscribed_address => $subscribed_address,
         valid_email        => $valid_email,
@@ -659,13 +640,13 @@ sub cgi_bounce_score_search {
         $scrn = DADA::Template::Widgets::screen(
             {
                 -screen => 'plugins/bounce_handler/bounce_score_search.tmpl',
-                -vars => { %tmpl_vars, },
-			-list_settings_vars_param => {
-                -list   => $list,
-                -dot_it => 1,
+                -vars   => { %tmpl_vars, },
+                -list_settings_vars_param => {
+                    -list   => $list,
+                    -dot_it => 1,
+                },
             },
-			},
-            
+
         );
     }
     else {
@@ -689,9 +670,6 @@ sub cgi_bounce_score_search {
     }
     e_print($scrn);
 }
-
-
-
 
 sub cl_main {
 
@@ -720,7 +698,7 @@ sub cl_main {
         my $bh = DADA::App::BounceHandler->new($Plugin_Config);
         $bh->parse_all_bounces(
             {
-				-list => $list,
+                -list => $list,
                 -test => $test,
             }
         );
@@ -728,8 +706,9 @@ sub cl_main {
 }
 
 sub help {
-	require DADA::Template::Widgets; 
-    return DADA::Template::Widgets::screen({ -screen => 'plugins/bounce_handler/cl_help.tmpl' });
+    require DADA::Template::Widgets;
+    return DADA::Template::Widgets::screen(
+        { -screen => 'plugins/bounce_handler/cl_help.tmpl' } );
 }
 
 sub version {
@@ -751,6 +730,7 @@ sub version {
 
 }
 
+
 =pod
 
 =head1 Name
@@ -759,8 +739,7 @@ Bounce Handler For Dada Mail
 
 =head1 User Guide
 
-The below documentation go into detail on how to install and configure Bounce Handler. A user guide for Bounce Handler is
- available in the Dada Mail Manual chapter, B<Using the Dada Bounce Handler>: 
+The below documentation goes into detail on how to install and configure Bounce Handler. A user guide for Bounce Handler is available in the Dada Mail Manual chapter, B<Using the Dada Bounce Handler>: 
 
 L<http://dadamailproject.com/pro_dada/using_bounce_handler.html>
 
@@ -832,9 +811,9 @@ If you do not know how to set up a cronjob, attempting to set one up for Dada Ma
 
 =head1 Installation
 
-This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. The below installation instructions go through how to install the plugin manually.
+This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. The below installation instructions go through how to install the plugin B<manually>. We suggest using the Dada Mail Installer. 
 
-If you do install this way, note that you still have to create the create the bounce handler email account as well set the cronjob. Both are covered below. 
+If you do install this way, note that you still have to create the create the Bounce Handler email account as well set the cronjob. Both are covered below. 
 
 =head1 Lightning Configuration/Installation Instructions 
 
@@ -850,11 +829,11 @@ B<Your Mailing List -  Change List Information>
 
 =item * Configure the plugin in your .dada_config file
 
-How to do this exactly is covered, below
+(covered below)
 
 =item * chmod 755 the bounce_handler.cgi script
 
-=item * run the plugin via a web browser. 
+=item * visit the plugin via a web browser. 
 
 =item * Set the cronjob (optional)
 
@@ -869,8 +848,6 @@ How to do this exactly is covered, below
 =head2 Part 2
 
 =for html <object width="640" height="510"><param name="movie" value="http://www.youtube.com/v/CnsM994xa7A?fs=1&amp;hl=en_US&amp;rel=0&amp;hd=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/CnsM994xa7A?fs=1&amp;hl=en_US&amp;rel=0&amp;hd=1" type="application/x-shockwave-flash" width="640" height="510" allowscriptaccess="always" allowfullscreen="true"></embed></object>
-
-Below is the detailed version of the above: 
 
 =head1 Configuration
 
@@ -1234,6 +1211,105 @@ Yes.
 
 Even though there's only one Bounce Email Address, it is used by all the mailing lists of your Dada Mail, but Bounce Handler will work with every mailing list I<individually>. Each mailing list also has a separate Bounce Scorecard. 
 
+=head1 Introduction to Bounce Handler Rules
+
+Bounce Handler Rules are what's used when the bounced message is parsed and examined. They're a set of things to look for, and match, in an attempt to figure out what type of bounced message was given back. 
+
+An example Rule: 
+
+     {
+        exim_user_unknown => { 
+            Examine => { 
+                Message_Fields => { 
+                    Status      => [qw(5.x.y)], 
+                    Guessed_MTA => [qw(Exim)],  
+                }, 
+                Data => { 
+                    Email       => 'is_valid',
+                    List        => 'is_valid', 
+                }
+            },
+                Action => { 
+                     add_to_score => 'hardbounce_score',
+                }, 
+            }
+    }, 
+
+B<exim_user_unknown> is the title of the rule -  just a label, nothing else.
+
+B<Examine> holds a set of parameters that the handler looks at when
+trying to figure out what to do with a bounced message. This example
+has a B<Message_Fields> entry and inside that, a B<Status> entry. The
+B<Status> entry holds a list of status codes. The ones in shown there
+all correspond to hard bounces; the mailbox probably doesn't exist. 
+
+B<Message_Fields> also hold a, B<Guessed_MTA> entry - it's explicitly looking for a bounce back from the, I<Exim> mail server. 
+
+
+B<Examine> also holds a B<Data> entry, which holds the B<Email> or B<List> 
+entries, or both. Their values are either 'is_valid', or 'is_invalid'. 
+
+So, to sum this all up, this rule will match a message that has B<Status:> 
+B<Message Field> contaning a user unknown error code, B<(5.1.1, etc)> and also a B<Guessed_MTA> B<Message Field> containing, B<Exim>. The message
+also has to be parsed to have found a valid email and list name. 
+
+If this all matches, the B<Action> is... acted upon. In this case, the offending email address will be appended a, B<Bounce Score> of,
+ whatever, B<hardbounce_score> is, which by is default, B<4>. 
+
+If you would like to have the bounced address automatically removed, without any sort of scoring happening, change the B<action> from,
+
+    add_to_score => 'hardbounce_score',
+
+to: 
+
+    unsubscribe_bounced_email => 'from_list'
+
+Also, changing B<from_list>, to B<from_all_lists> will do the trick. 
+
+Here's a schematic of all the different things you can do: 
+
+ {
+ rule_name => {
+	 Examine => {
+		Message_Fields => {
+			Status               => qw([    ]), 
+			Last-Attempt-Date    => qw([    ]), 
+			Action               => qw([    ]), 
+			Status               => qw([    ]), 
+			Diagnostic-Code      => qw([    ]), 
+			Final-Recipient      => qw([    ]), 
+			Remote-MTA           => qw([    ]), 
+			# etc, etc, etc
+			
+		},
+		Data => { 
+			Email => 'is_valid' | 'is_invalid' 
+			List  => 'is_valid' | 'is_invalid' 
+		}
+	},
+	Action => { 
+	           add_to_score             =>  $x, # where, "$x" is a number
+			   unsubscribe_bounced_email => 'from_list' | 'from_all_lists',
+	},
+ },	
+
+Rules also support the use of regular expressions for matching any of the B<Message_Fields>. 
+
+To tell the parser that you're using a regular expression, make the Message_Field key end in '_regex': 
+
+ 'Final-Recipient_regex' => [(qr/RFC822/)], 
+
+=head2 Customizing Bounce Handler Rules
+
+The default set of Bounce Handler Rules can be found at,
+
+I<dada/data/bounce_handler_rules.pl>
+
+Bounce Handler will also look for a copy of this file in your
+
+I<.dada_files/.configs>
+
+directory, which you can then customize with your own rules. When Dada Mail is upgrading, your customizations will then not be lost. 
 
 =head1 COPYRIGHT
 

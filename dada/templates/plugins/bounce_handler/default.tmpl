@@ -13,41 +13,37 @@
 	</div>
 
 <div id="plugins_bounce_handler_default"></div> 
-
-		<!-- tmpl_unless plugin_configured --> 
-		
-			<div class="badweatherbox">
-			  <p><strong>
-			   Warning! <!-- tmpl_var Plugin_Name --> Not Configured!
-			  </strong></p> 
-	
-			<p>
-			 You must set up the Bounce Handler Email Address in the plugin-specific configuration. 
-			</p> 
-	 		
-			 </div>
-		
-		<!-- /tmpl_unless --> 
-		
-		<!-- tmpl_if done -->
-			<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
-		<!--/tmpl_if-->
-		
-<fieldset> 
- <legend> 
-Bounce Email Scorecard
- </legend> 
-
-<div id="bounce_scorecard_loading"><p>&nbsp;</p></div>
-<div id="bounce_scorecard"></div> 
-
 <form> 
 	<input type="hidden" name="plugin_url"          id="plugin_url"          value="<!-- tmpl_var Plugin_Url -->" /> 
 	<input type="hidden" name="bounce_handler_page" id="bounce_handler_page" value="1" /> 
 </form> 
 
- 
-</fieldset> 
+
+<!-- tmpl_unless plugin_configured --> 
+
+	<div class="badweatherbox">
+	  <p><strong>
+	   Warning! <!-- tmpl_var Plugin_Name --> Not Configured!
+	  </strong></p> 
+
+	<p>
+	 You must set up the Bounce Handler Email Address in the plugin-specific configuration. 
+	</p> 
+		
+	 </div>
+
+<!-- /tmpl_unless --> 
+
+<!-- tmpl_if done -->
+	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
+<!--/tmpl_if-->
+		
+<h1>Bounce Email Scorecard</h1>
+	<p class="alert">The Bounce Scorecard keeps track of subscribed address on your mailing list that bounce back message reports. Click on any address to see
+these message report summaries.</p>
+<div id="bounce_scorecard_loading"><p>&nbsp;</p></div>
+<div id="bounce_scorecard" style="height:375px"></div> 
+
 
 
 

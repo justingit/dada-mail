@@ -1011,8 +1011,13 @@ function bounce_handler_show_scorecard() {
 		dataType: "html"
 	});
 	request.done(function(content) {
-		$jq("#bounce_scorecard").html(content);
-		$jq("#bounce_scorecard_loading").html('<p class="alert">&nbsp;</p>');
+		$jq("#bounce_scorecard").hide('fade', function() {
+			$jq("#bounce_scorecard").html(content);
+			$jq("#bounce_scorecard").show('fade');
+			$jq("#bounce_scorecard_loading").html('<p class="alert">&nbsp;</p>');
+		});
+		
+		
 	});
 }
 

@@ -4057,8 +4057,7 @@ sub mod_dir {
 
 =head1 User Guide
 
-The below documentation go into detail on how to install and configure Dada Bridge. A user guide for Dada Bridge is
- available in the Dada Mail Manual chapter, B<Using Dada Bridge>: 
+The below documentation goes into detail on how to install and configure Dada Bridge. A user guide for Dada Bridge is available in the Dada Mail Manual chapter, B<Using Dada Bridge>: 
 
 L<http://dadamailproject.com/pro_dada/using_bridge.html>
 
