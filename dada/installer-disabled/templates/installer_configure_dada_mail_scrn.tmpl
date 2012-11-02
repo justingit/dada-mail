@@ -448,7 +448,10 @@ If using either the SQL backends, make sure to create a new database before conf
 	<p>
 		<label style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block" for="sql_password">Password:</label> <input type="text" name="sql_password" id="sql_password"/> 
 	</p>
+	<input type="button" class="processing test_sql_connection" value="Test Your SQL Connection"/>
+	<div id="test_sql_connection_results" class="clearskiesbox"></div> 
 </fieldset>
+
 
 </div> 
 
@@ -469,7 +472,7 @@ If using either the SQL backends, make sure to create a new database before conf
 	<a href="#" class="toggleDivs" data-target="plugins_extensions_help">
 	?</a>]</legend>
 
-<div id="plugins_extensions_help" class="clearskiesbox"
+<div id="plugins_extensions_help" class="clearskiesbox">
 
 <p>
 	<!-- tmpl_var PROGRAM_NAME --> comes with several plugins/extensions that add additional functionality to your <!-- tmpl_var PROGRAM_NAME --> install. 
@@ -521,7 +524,10 @@ for it to work correctly. For help on setting the cronjob, see the
 		<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_username">Username:</label> <input type="text" name="bounce_handler_username" id="bounce_handler_username" value="" /></p>
 
 		<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_password">Password:</label> <input type="text" name="bounce_handler_password" id="bounce_handler_password" value="" /></p>
-	 
+	 	<input type="button" class="processing test_bounce_handler_pop3_connection" value="Test Your POP3 Connection"/>
+		<div id="test_bounce_handler_pop3_connection_results" class="clearskiesbox"></div> 
+		
+		
 	</fieldset> 
 </div> 
 

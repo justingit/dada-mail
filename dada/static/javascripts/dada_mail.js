@@ -1,14 +1,14 @@
 $jq(document).ready(function() {
 
 	//Mail Sending >> Send a Message 
-	if ($jq("#send_email_screen").length || $jq("#send_url_email").length || $jq("#list_invite").length) {		
+	if ($jq("#send_email_screen").length || $jq("#send_url_email").length || $jq("#list_invite").length) {
 		$jq("#mass_mailing").on("submit", function(event) {
 			event.preventDefault();
 		});
 		$jq(".sendmassmailing").on("click", function(event) {
 			//var fid = $jq(event.target).closest('form').attr('id'); 
 			var fid = 'mass_mailing';
-			
+
 			if ($jq("#using_ckeditor").length) {
 				// Strange you have to do this, but, you do: 
 				CKEDITOR.instances['html_message_body'].updateElement();
@@ -34,15 +34,16 @@ $jq(document).ready(function() {
 			event.preventDefault();
 			preview_message_receivers();
 		});
-		
+
 		if ($jq("#using_ckeditor").length) {
 			$jq("#html_message_body").ckeditor(
+
 			function() {}, {
 				customConfig: $jq("#support_files_url").val() + '/ckeditor/dada_mail_config.js',
 				toolbar: 'DadaMail_Admin'
 			});
 		}
-		
+
 
 
 
@@ -282,25 +283,30 @@ $jq(document).ready(function() {
 			changeDisplayState($jq(this).attr("data-target"), $jq(this).attr("data-state"));
 		});
 
+		$jq('.test_sql_connection').live("click", function(event) {
+			installer_test_sql_connection();
+		});
+		$jq('.test_bounce_handler_pop3_connection').live("click", function(event) {
+			installer_test_pop3_connection();
+		});
+
+
 		installer_toggleSQL_options();
 		installer_toggle_dada_files_dirOptions();
-		installer_togger_bounce_handler_config(); 
-		
+		installer_togger_bounce_handler_config();
+
 		// Probably hide the help stuff, 
-		$jq("#dada_files_help").hide("blind"); 
-		$jq("#program_url_help").hide("blind"); 
-		$jq("#root_pass_help").hide("blind"); 
-		$jq("#backend_help").hide("blind"); 
-		$jq("#plugins_extensions_help").hide("blind"); 
-		$jq("#bounce_handler_configuration_help").hide("blind"); 
-		$jq("#wysiwyg_editor_help").hide("blind"); 
-		
-		
-		
-		
-		
-		
-		
+		$jq("#dada_files_help").hide();
+		$jq("#program_url_help").hide();
+		$jq("#root_pass_help").hide();
+		$jq("#backend_help").hide();
+		$jq("#plugins_extensions_help").hide();
+		$jq("#bounce_handler_configuration_help").hide();
+		$jq("#wysiwyg_editor_help").hide();
+		$jq("#test_sql_connection_results").hide();
+		$jq("#test_bounce_handler_pop3_connection_results").hide();
+
+
 	}
 	if ($jq("#installer_install_dada_mail").length) {
 		$jq('#move_installer_dir').live("click", function(event) {
@@ -682,7 +688,6 @@ function selectHandler(event) {
 
 // Membership >> List Activity
 
-
 function sub_unsub_trend_chart() {
 	$jq("#amount").on("change", function(event) {
 		draw_sub_unsub_trend_chart();
@@ -745,7 +750,6 @@ backgroundColor: {
 
 // Membership >> user@example.com
 
-
 function mailing_list_history() {
 	$jq("#mailing_list_history_loading").html('<p class="alert">Loading...</p>');
 	var request = $jq.ajax({
@@ -797,7 +801,6 @@ function show_change_profile_password_form() {
 }
 
 // Membership >> Invite 
-
 
 function show_customize_invite_message() {
 	$jq('#customize_invite_message_button').hide('blind');
@@ -857,7 +860,6 @@ function amazon_verify_email() {
 
 
 // Mail Sending >> Mass Mailing Preferences 
-
 
 function previewBatchSendingSpeed() {
 	$jq("#previewBatchSendingSpeed_loading").hide().html('<p class="alert">Loading...</p>').show('fade');
@@ -930,6 +932,63 @@ function toggleManualBatchSettings() {
 }
 
 // Installer 
+
+function installer_test_sql_connection() {
+	var target_div = 'test_sql_connection_results';
+	$jq("#" + target_div).html('<p class="alert">Loading...</p>');
+	if ($jq("#" + target_div).is(':hidden')) {
+		$jq("#" + target_div).show();
+	}
+
+	var request = $jq.ajax({
+		url: $jq("#self_url").val(),
+		type: "POST",
+		cache: false,
+		data: {
+			f: 'cgi_test_sql_connection',
+			backend: $jq("#backend").val(),
+			sql_server: $jq("#sql_server").val(),
+			sql_port: $jq("#sql_port").val(),
+			sql_database: $jq("#sql_database").val(),
+			sql_username: $jq("#sql_username").val(),
+			sql_password: $jq("#sql_password").val()
+		},
+		dataType: "html"
+	});
+	request.done(function(content) {
+		//$jq("#" + target_div).hide('fade');
+		$jq("#" + target_div).html(content);
+		//$jq("#" + target_div).show('fade');
+	});
+
+}
+
+function installer_test_pop3_connection() {
+	var target_div = 'test_bounce_handler_pop3_connection_results';
+	$jq("#" + target_div).html('<p class="alert">Loading...</p>');
+	if ($jq("#" + target_div).is(':hidden')) {
+		$jq("#" + target_div).show();
+	}
+
+	var request = $jq.ajax({
+		url: $jq("#self_url").val(),
+		type: "POST",
+		cache: false,
+		data: {
+			f: 'cgi_test_pop3_connection',
+			bounce_handler_server: $jq("#bounce_handler_server").val(),
+			bounce_handler_username: $jq("#bounce_handler_username").val(),
+			bounce_handler_password: $jq("#bounce_handler_password").val()
+		},
+		dataType: "html"
+	});
+	request.done(function(content) {
+		//$jq("#" + target_div).hide('fade');
+		$jq("#" + target_div).html(content);
+		//$jq("#" + target_div).show('fade');
+	});
+}
+
 function installer_toggleSQL_options() {
 
 	var selected = $jq("#backend option:selected").val();
@@ -943,8 +1002,9 @@ function installer_toggleSQL_options() {
 		}
 	}
 }
-function installer_toggle_dada_files_dirOptions() { 
-	
+
+function installer_toggle_dada_files_dirOptions() {
+
 	if ($jq("#dada_files_dir_setup_auto").prop("checked") == true) {
 		if ($jq('#manual_dada_files_dir_setup').is(':visible')) {
 			$jq('#manual_dada_files_dir_setup').hide('blind');
@@ -957,16 +1017,15 @@ function installer_toggle_dada_files_dirOptions() {
 	}
 }
 
-function installer_togger_bounce_handler_config() { 
+function installer_togger_bounce_handler_config() {
 	if ($jq("#install_bounce_handler").prop("checked") == true) {
 		if ($jq('#additional_bounce_handler_configuration').is(':hidden')) {
 			$jq('#additional_bounce_handler_configuration').show('blind');
 		}
-	}
-	else { 
+	} else {
 		if ($jq('#additional_bounce_handler_configuration').is(':visible')) {
 			$jq('#additional_bounce_handler_configuration').hide('blind');
-		}		
+		}
 	}
 }
 
@@ -1016,8 +1075,8 @@ function bounce_handler_show_scorecard() {
 			$jq("#bounce_scorecard").show('fade');
 			$jq("#bounce_scorecard_loading").html('<p class="alert">&nbsp;</p>');
 		});
-		
-		
+
+
 	});
 }
 
@@ -1078,7 +1137,6 @@ function plugins_bridge_manually_check_messages() {
 
 // Plugins >> Mailing Monitor 
 
-
 function plugins_mailing_monitor() {
 	$jq("#mailing_monitor_results_loading").html('<p class="alert">Loading...</p>');
 	var request = $jq.ajax({
@@ -1097,7 +1155,6 @@ function plugins_mailing_monitor() {
 
 }
 // Plugins >> Tracker
-
 
 function update_plugins_tracker_message_report() {
 
@@ -1122,7 +1179,7 @@ function update_plugins_tracker_message_report() {
 		$tabs.tabs('select', 4);
 		return false;
 	});
-	
+
 	$jq("body").on("click", '.individual_country_geoip', function(event) {
 		event.preventDefault();
 		individual_country_geoip_map($jq(this).attr("data-type"), $jq(this).attr("data-country"), "country_geoip_" + $jq(this).attr("data-type") + "_map");
@@ -1137,7 +1194,7 @@ function update_plugins_tracker_message_report() {
 		event.preventDefault();
 		country_geoip_map($jq(this).attr("data-type"), "country_geoip_" + $jq(this).attr("data-type") + "_map");
 	});
-	
+
 
 	if ($jq("#can_use_country_geoip_data").val() == 1) {
 
@@ -1440,7 +1497,6 @@ function bounce_breakdown_chart(type, label, target_div) {
 
 // Plugins >> Tracker
 
-
 function tracker_turn_page(page_to_turn_to) {
 	$jq("#tracker_page").val(page_to_turn_to);
 	message_history_html();
@@ -1448,7 +1504,6 @@ function tracker_turn_page(page_to_turn_to) {
 }
 
 // Plugins >> Log Viewer
-
 
 function view_logs_results() {
 	$jq("#refresh_button").val('Loading....');
@@ -1583,7 +1638,6 @@ function tracker_purge_log() {
 }
 
 // Plugins >> Password Protect Directories
-
 
 function password_protect_directories_show_change_password_form() {
 	$jq("#change_default_password_button").hide('blind');

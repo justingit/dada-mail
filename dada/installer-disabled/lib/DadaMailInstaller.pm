@@ -101,8 +101,8 @@ my $plugins_extensions = {
 	screen_cache                  => {installed => 0, loc => '../plugins/screen_cache.cgi'}, 
 	log_viewer                    => {installed => 0, loc => '../plugins/log_viewer.cgi'}, 
 	tracker                       => {installed => 0, loc => '../plugins/tracker.cgi'}, 
-	bridge                   => {installed => 0, loc => '../plugins/bridge.cgi'}, 
-	bounce_handler           => {installed => 0, loc => '../plugins/bounce_handler.cgi'}, 
+	bridge                        => {installed => 0, loc => '../plugins/bridge.cgi'}, 
+	bounce_handler                => {installed => 0, loc => '../plugins/bounce_handler.cgi'}, 
 	scheduled_mailings            => {installed => 0, loc => '../plugins/scheduled_mailings.pl'}, 
 	multiple_subscribe            => {installed => 0, loc => '../extensions/multiple_subscribe.cgi'}, 
 	blog_index                    => {installed => 0, loc => '../extensions/blog_index.cgi'}, 
@@ -246,6 +246,8 @@ sub run {
             move_installer_dir_ajax  => \&move_installer_dir_ajax,
 			show_current_dada_config => \&show_current_dada_config, 
 			screen                   => \&screen,
+			cgi_test_sql_connection  => \&cgi_test_sql_connection, 
+			cgi_test_pop3_connection => \&cgi_test_pop3_connection, 
 
         );
         my $flavor = $q->param('f');
@@ -1212,13 +1214,15 @@ sub check_setup {
             $errors->{sql_connection} = 0;
         }
         else {
-            if (
-                test_sql_connection(
-                    $q->param('backend'),      $q->param('sql_server'),
-                    'auto',                    $q->param('sql_database'),
-                    $q->param('sql_username'), $q->param('sql_password'),
-                ) == 0
-              )
+			my ($sql_test, $sql_test_details) = test_sql_connection(
+                $q->param('backend'),      
+				$q->param('sql_server'),
+                'auto',                    
+				$q->param('sql_database'),
+                $q->param('sql_username'), 
+				$q->param('sql_password')
+			); 
+            if ($sql_test == 0)
             {
                 $errors->{sql_connection} = 1;
 
@@ -1981,7 +1985,80 @@ sub test_complete_dada_files_dir_structure_exists {
 
 
 
+sub cgi_test_sql_connection { 
+	    my $dbtype   = strip(xss_filter($q->param('backend')));
+	    my $dbserver = strip(xss_filter($q->param('sql_server')));
+	    my $port     = strip(xss_filter($q->param('sql_port')));
+	    my $database = strip(xss_filter($q->param('sql_database')));
+	    my $user     = strip(xss_filter($q->param('sql_username')));
+	    my $pass     = strip(xss_filter($q->param('sql_password')));
+	
+		my ($status, $details) = test_sql_connection(
+			$dbtype,
+			$dbserver,
+			$port,    
+			$database,
+			$user,    
+			$pass,    
+		);
+	print $q->header(); 
+	#use Data::Dumper; 
+	#print Dumper([$status, $details]);
+	if($status == 1){ 
+		print '<p>Connection Successful!</p>';
+	}
+	else { 
+		print '<p>Connection is NOT Successful. Details:</p>'; 
+		print '<code>' . $details . '</code>'; 
+	}
+		
+}
+sub cgi_test_pop3_connection { 
+	
+	my $bounce_handler_server   = $q->param('bounce_handler_server'); 
+	my $bounce_handler_username = $q->param('bounce_handler_username'); 
+	my $bounce_handler_password = $q->param('bounce_handler_password'); 
+	
+	my ( $pop3_obj, $pop3_status, $pop3_log ) = test_pop3_connection({ 
+        Server    => $bounce_handler_server, 
+        Username  => $bounce_handler_username,
+        Password  => $bounce_handler_password,
+	}); 
+	#use Data::Dumper; 
+	#print $q->header('text/plain');
+	#print Dumper([$pop3_status, $pop3_log]);  
+    print $q->header(); 
+	if($pop3_status == 1){ 
+		print '<p>Connection is Successful!</p>'; 
+	}
+	else { 
+		print '<p>Connection is NOT Successful.</p>'; 
+	}
+	print '<pre>'  . $pop3_log . '</pre>'; 
+}
 
+sub test_pop3_connection { 
+	
+		my ($args) = @_;
+	    require DADA::App::POP3Tools;
+	    my ( $pop3_obj, $pop3_status, $pop3_log ) =
+	      DADA::App::POP3Tools::mail_pop3client_login(
+	        {
+	            server    => $args->{Server},
+	            username  => $args->{Username},
+	            password  => $args->{Password},
+#	            port      => $args->{Port},
+#	            USESSL    => $args->{USESSL},
+#	            AUTH_MODE => $args->{AUTH_MODE},
+	        }
+	      );
+	    if ( defined($pop3_obj) ) {
+	        $pop3_obj->Close();
+	    }
+
+	   return ( $pop3_obj, $pop3_status, $pop3_log );
+	
+}
 sub test_sql_connection {
 	
 #	use Data::Dumper; 
@@ -2011,10 +2088,10 @@ sub test_sql_connection {
     if ($@) {
 		carp $@; 
         $Big_Pile_Of_Errors .= $@; 
-		return 0;
+		return (0, $@);
     }
     else {
-        return 1;
+        return (1, '');
     }
 
 }
