@@ -12,4 +12,3 @@ sub new {
 sub enabled { 
 	return 0; 
 }
-

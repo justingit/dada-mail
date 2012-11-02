@@ -569,20 +569,20 @@ sub parse_all_bounces {
 sub parse_bounce {
 
     my $self       = shift;
+    my ($args) = @_;
+
     my $msg_report = '';
+    my $list = undef;
 
-    my ($args)  = @_;
+    if ( exists( $args->{-list} ) && defined( $args->{-list} ) ) {
+        $list = $args->{-list};
+    }
+    else {
+        $msg_report .=
+          "You MUST pass the, '-list' paramater to, parse_bounce!\n";
+        return ( undef, 0, $msg_report, '' );
+    }
 
-    my $list    = undef; 
-	if(exists($args->{-list}) && defined($args->{-list})){ 
-		$list = $args->{-list};
-	}
-	else { 
-		$msg_report .= "You MUST pass the, '-list' paramater to, parse_bounce!\n"; 
-		return (undef, 0, $msg_report, '' );
-	}
-	
-	
     my $test    = $args->{-test};
     my $message = $args->{-message};
 
@@ -606,20 +606,22 @@ sub parse_bounce {
         warn "No MIME entity found, this message could be garbage, skipping\n";
         $msg_report .=
           "No MIME entity found, this message could be garbage, skipping\n";
-        return (undef,  1, $msg_report, '' );
+        return ( undef, 1, $msg_report, '' );
 
     }
 
     # Run it through the ringer.
-    require DADA::App::BounceHandler::MessageParser;
+    require  DADA::App::BounceHandler::MessageParser;
     my $bp = DADA::App::BounceHandler::MessageParser->new;
+
     ( $email, $found_list, $diagnostics ) = $bp->run_all_parses($entity);
 
     # Test:  Can't find a list?
     if ( !$found_list ) {
-		# $msg_report .= "No valid list found. Ignoring and deleting.\n\n" . $entity->as_string . "\n\n";
+
+# $msg_report .= "No valid list found. Ignoring and deleting.\n\n" . $entity->as_string . "\n\n";
         $msg_report .= "No valid list found. Ignoring and deleting.\n";
-        return (undef, 1, $msg_report, '' );
+        return ( undef, 1, $msg_report, '' );
     }
 
     # Test:  Hey, is this a bounce from me?!
@@ -627,14 +629,16 @@ sub parse_bounce {
         $msg_report .=
           "Bounced message was sent by myself. Ignoring and deleting\n";
         warn "Bounced message was sent by myself. Ignoring and deleting";
-        return (undef, 1, $msg_report, '' );
+        return ( undef, 1, $msg_report, '' );
     }
 
     # Is this from a mailing list I'm currently looking at?
     if ( $found_list ne $list ) {
-	  	$msg_report .= "Bounced message is from a different Mailing List. Skipping over.\n"; 
+        $msg_report .=
+          "Bounced message is from a different Mailing List. Skipping over.\n";
+
         # Save it for another go.
-        return ($found_list, 0, $msg_report, '' );
+        return ( $found_list, 0, $msg_report, '' );
     }
 
     # /Tests!
@@ -653,14 +657,14 @@ sub parse_bounce {
     if ( DADA::App::Guts::check_if_list_exists( -List => $found_list ) == 0 ) {
         $msg_report .=
           'List, ' . $found_list . ' doesn\'t exist. Ignoring and deleting.';
-        return ($found_list, 1, $msg_report, '' );
+        return ( $found_list, 1, $msg_report, '' );
     }
 
     my $lh = DADA::MailingList::Subscribers->new( { -list => $found_list } );
     if ( $lh->check_for_double_email( -Email => $email ) != 1 ) {
         $msg_report .=
 "Bounced Message is from an email address that isn't subscribed to: $found_list. Ignorning.\n";
-        return ($found_list, 1, $msg_report, '' );
+        return ( $found_list, 1, $msg_report, '' );
     }
 
     if ( $args->{-test} != 1 ) {
@@ -669,9 +673,14 @@ sub parse_bounce {
           $self->carry_out_rule( $rule, $found_list, $email, $diagnostics,
             $message );
     }
-    return ($found_list, 1, $msg_report, $rule_report );
+
+	# DEV: For whatever reason, the rule used is never reported. Which is ridiculous. 
+	# So, let's report that! 
+	
+    return ( $found_list, 1, $msg_report, $rule_report );
 
 }
+
 
 
 
@@ -942,7 +951,7 @@ sub carry_out_rule {
     require DADA::App::BounceHandler::Rules;
     my $bhr   = DADA::App::BounceHandler::Rules->new;
     my $Rules = $bhr->rules;
-
+	# $title  eq the rule used. 
     my ( $title, $list, $email, $diagnostics, $message ) = @_;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
@@ -955,11 +964,14 @@ sub carry_out_rule {
     my $i = 0;
     for my $rule (@$Rules) {
         if ( ( keys %$rule )[0] eq $title ) {
-            $actions = $Rules->[$i]->{$title}->{Action};    # wooo that was fun.
+			# Why not just, $rule->{$title}->{Action}? 
+            $actions = $Rules->[$i]->{$title}->{Action};   
+			# And then, why not break? As we'll overrite $actions, anyways. 
         }
         $i++;
     }
 
+	# And, $actions, usually only has one thing. hmm. 
     for my $action ( keys %$actions ) {
 
         if ( $action eq 'add_to_score' ) {
@@ -998,13 +1010,18 @@ sub carry_out_rule {
                 my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
 				if($r->enabled) { 
 	                my $hard_bounce = 0;
+					my $soft_bounce = 0; 
 	                if (   $action eq 'add_to_score'
 	                    && $actions->{$action} eq 'hardbounce_score' )
 	                {
 	                    $hard_bounce = 1;
 	                }
+					elsif (   $action eq 'add_to_score'
+	                    && $actions->{$action} eq 'softbounce_score' ){ 
+						$soft_bounce = 1; 
+	                }
 	                elsif ( $action ne 'add_to_score' ) {
-	                    $hard_bounce = 1;
+	                    #$hard_bounce = 1;
 	                }
 	                else {
 						# ... 
@@ -1015,6 +1032,7 @@ sub carry_out_rule {
 	                            -type  => 'hard',
 	                            -mid   => $diagnostics->{'Simplified-Message-Id'},
 	                            -email => $email,
+								# -rule  => $title, 
 	                        }
 	                    );
 	                }
@@ -1023,7 +1041,8 @@ sub carry_out_rule {
 	                        {
 	                            -type  => 'soft',
 	                            -mid   => $diagnostics->{'Simplified-Message-Id'},
-	                            -email => $email
+	                            -email => $email,
+								# -rule  => $title, 
 	                        }
 	                    );
 	                }
@@ -1035,7 +1054,10 @@ sub carry_out_rule {
             }
         }
 
-        log_action( $list, $email, $diagnostics,
+		# I'm putting the rule used in $diagnostics, for now: 
+		$diagnostics->{matched_rule} = $title; 
+		
+        log_action($list, $email, $diagnostics,
             "$action $actions->{$action}" );
     }
 
@@ -1195,13 +1217,14 @@ sub log_action {
         for ( keys %$diagnostics ) {
             $diagnostics->{$_} =~ s/(\n|\r)/\\n/g;
 
-       # $diagnostics->{$_} =~ s/:/\:/g; # Or, what I'm literally meaning, here.
+       		$diagnostics->{$_} =~ s/\:/__colon__/g; # placeholder. Lame?
             $d .= $_ . ': ' . $diagnostics->{$_} . ', ';
         }
         print BOUNCELOG "[$time]\t$list\t$action\t$email\t$d\n";
     }
 
 }
+
 
 sub close_log {
     if ($Have_Log) {

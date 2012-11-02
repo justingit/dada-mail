@@ -626,6 +626,22 @@ sub cgi_bounce_score_search {
         }
     }
 	
+	# This is just to add newlines to the values of the diagnostic stuff, so it's not all clumped together: 	
+	for(@$results){ 
+		for my $pt_diags(@{$_->{diagnostics}}){ 
+			$pt_diags->{diagnostic_value} = encode_html_entities($_->{diagnostic_value});
+		
+#			$pt_diags->{diagnostic_value} =~      s/& /&amp; /g;
+#			$pt_diags->{diagnostic_value} =~      s/</&lt;/g;
+#			$pt_diags->{diagnostic_value} =~      s/>/&gt;/g;
+#			$pt_diags->{diagnostic_value} =~      s/\"/&quot;/g;
+		
+		
+			$pt_diags->{diagnostic_value} =~ s/(\n|\r)/\<br \/\>\n/g;
+			
+		}
+	}
+
 	my %tmpl_vars = (
         query              => $query,
         subscribed_address => $subscribed_address,

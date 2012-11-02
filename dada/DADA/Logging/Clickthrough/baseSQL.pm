@@ -31,6 +31,7 @@ sub new {
     return $self;
 }
 sub enabled { 
+	my $self = shift; 
 	return 1; 
 }
 
@@ -562,9 +563,20 @@ sub bounce_log {
         if ( $args->{-type} eq 'hard' ) {
             $bounce_type = 'hard_bounce';
         }
-        else {
-            $bounce_type = 'soft_bounce';
-        }
+		else { 
+			$bounce_type = 'soft_bounce';
+		}
+# DEV: 		
+# Right now, things are only reported as hard, or soft. 
+#        elsif ( $args->{-type} eq 'soft' ) {
+#         {
+#            $bounce_type = 'soft_bounce';
+#        }
+#		else { 
+#           $bounce_type = 'other';			
+#		}
+#
+
         my $query = 'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'remote_addr, msg_id, event, details) VALUES (?, ?, ?, ?, ?' . $place_holder_string . ')';
         my $sth = $self->{dbh}->prepare($query);
 

@@ -135,6 +135,8 @@ sub search {
                 # Make fake newlines, newlines:
                 $value =~ s/$newline/\n/g;
 
+				# Make fake colons, colons: 
+				$value =~ s/\_\_colon\_\_/\:/g; 
                 push(
                     @$labeled_digs,
                     {
