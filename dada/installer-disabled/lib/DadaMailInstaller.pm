@@ -457,7 +457,7 @@ sub check_install_or_upgrade {
 sub scrn_configure_dada_mail {
 	
 	my $current_dada_files_parent_location = $q->param('current_dada_files_parent_location'); 	
-	my $install_type                      = $q->param('install_type'); 
+	my $install_type                       = $q->param('install_type'); 
 	$q->delete('current_dada_files_parent_location', 'install_type', 'f', 'submitbutton');
 
 	
@@ -473,7 +473,6 @@ sub scrn_configure_dada_mail {
 		$q->param('install_multiple_subscribe', 1); 
 		$q->param('install_blog_index', 1); 
 		$q->param('install_default_mass_mailing_messages', 1); 
-		# $q->param('install_password_protect_directories', 1); 
 		$q->param('install_change_list_shortname', 1); 
 		
 	}
@@ -495,7 +494,6 @@ sub scrn_configure_dada_mail {
 	}
 	else { 
 		if(test_can_create_dada_files_dir(auto_dada_files_dir()) == 0 ){ 
-			# HTML::FillInForm::Lite will pick up on this 
 			$q->param('dada_files_loc', auto_dada_files_dir()); 
 			$q->param('dada_files_dir_setup', 'manual');  
 		}	
@@ -504,9 +502,10 @@ sub scrn_configure_dada_mail {
 	my $configured_dada_config_file; 
 	my $configured_dada_files_loc; 
 	
+	my $param_vals_from_former_config = undef; 
 	if($install_type eq 'upgrade'){ 
 		$configured_dada_config_file = $current_dada_files_parent_location . '/' . $Dada_Files_Dir_Name .'/.configs/.dada_config'; 
-		$configured_dada_files_loc = $current_dada_files_parent_location; 
+		$configured_dada_files_loc   = $current_dada_files_parent_location; 
 		
 	}
 	else { 
@@ -589,10 +588,55 @@ sub scrn_configure_dada_mail {
 #    if ( defined($q->param('errors')) ) {
         require HTML::FillInForm::Lite;
         my $h = HTML::FillInForm::Lite->new();
+		if($install_type eq 'upgrade' && -e $configured_dada_config_file){ 
+			$q = grab_former_config_vals($q);
+		}
         $scrn = $h->fill( \$scrn, $q );
 #   }
     e_print($scrn);
 
+}
+
+sub grab_former_config_vals { 
+	my $local_q = shift; 
+	
+	$local_q->param('program_url', $DADA::Config::PROGRAM_URL); 
+	
+	my ($support_files_dir_path) =  $DADA::Config::SUPPORT_FILES->{dir} =~ m/^(.*?)\/$Support_Files_Dir_Name$/; 
+	my ($support_files_dir_url)  =  $DADA::Config::SUPPORT_FILES->{url} =~ m/^(.*?)\/$Support_Files_Dir_Name$/; 
+	
+	
+	$local_q->param('support_files_dir_path', $support_files_dir_path);  
+	$local_q->param('support_files_dir_url', $support_files_dir_url);  
+	
+	# BACKEND
+	# In v5 and earlier, there was no $BACKEND_DB, so we'll see what we have, 
+	if(
+	(  $DADA::Config::BACKEND_DB_TYPE          eq 'Default' 
+	&& $DADA::Config::SUBSCRIBER_DB_TYPE       eq 'SQL' 
+	&& $DADA::Config::ARCHIVE_DB_TYPE          eq 'SQL' 
+	&& $DADA::Config::SETTINGS_DB_TYPE         eq 'SQL' 
+	&& $DADA::Config::SESSION_DB_TYPE          eq 'SQL'
+	&& $DADA::Config::BOUNCE_SCORECARD_DB_TYPE eq 'SQL'
+	&& $DADA::Config::CLICKTHROUGH_DB_TYPE     eq 'SQL'
+	) 
+	|| 
+	($DADA::Config::BACKEND_DB_TYPE eq 'SQL')
+	){ 
+		# That means, we have an SQL backend. 
+		#%SQL_PARAMS; 
+		$local_q->param('backend',      $DADA::Config::SQL_PARAMS{dbtype});  
+		$local_q->param('sql_server',   $DADA::Config::SQL_PARAMS{dbserver}); 	
+		$local_q->param('sql_database', $DADA::Config::SQL_PARAMS{database}); 	
+		$local_q->param('sql_port',     $DADA::Config::SQL_PARAMS{port}); 	
+		$local_q->param('sql_username', $DADA::Config::SQL_PARAMS{user}); 	
+		$local_q->param('sql_password', $DADA::Config::SQL_PARAMS{pass});
+		
+	}
+	elsif($DADA::Config::BACKEND_DB_TYPE eq 'Default') { 
+		$local_q->param('backend', 'default'); 
+	}	
+	return $local_q; 
 }
 
 

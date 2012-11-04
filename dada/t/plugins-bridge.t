@@ -59,7 +59,7 @@ Blah Blah Blah
 $entity = $parser->parse_data($test_msg);
 
 
-($errors, $notice) = bridge::test_Check_List_Owner_Return_Path_Header($entity, $errors, $li); 
+($errors, $notice) = bridge::test_Check_List_Owner_Return_Path_Header($ls, $entity, $errors); 
 
 
 ok($errors->{list_owner_return_path_set_funny} == 0, "list_owner_return_path_set_funny has been set to, 0");
@@ -82,11 +82,10 @@ my $status = undef;
 
 ($status, $errors) = bridge::inject(
 	{ 
-		-list      => $list, 
+		-ls        => $ls, 
 		-msg       => $test_msg, 
 		-verbose   => 1, 
 		-test_mail => 1, 
-		-ls        => $ls, 
 	}
 ); 
 
@@ -103,11 +102,10 @@ undef $status;
 
 ($status, $errors) = bridge::inject(
 	{ 
-		-list      => $list, 
+		-ls        => $ls,
 		-msg       => '', 
 		-verbose   => 1, 
 		-test_mail => 1, 
-		-ls        => $ls, 
 	}
 );
 
@@ -131,7 +129,6 @@ $ls->param('get_finished_notification',   0                     );
 
 ($status, $errors) = bridge::inject(
 	{ 
-		-list      => $list, 
 		-msg       => $msg, 
 		-verbose   => 1, 
 		-test_mail => 1, 
@@ -180,7 +177,6 @@ $ls->param('mime_encode_words_in_headers',   1                     );
 
 ($status, $errors) = bridge::inject(
 	{ 
-		-list      => $list, 
 		-msg       => $msg, 
 		-verbose   => 1, 
 		-test_mail => 1, 
@@ -252,7 +248,7 @@ undef $test_msg;
 
 
 $test_msg = slurp('t/corpus/email_messages/from_header_phrase_spoof.eml'); 
-($status, $errors) = bridge::validate_msg($list, \$test_msg, $ls->get);
+($status, $errors) = bridge::validate_msg($ls, \$test_msg);
 
 #use Data::Dumper; 
 #diag Data::Dumper::Dumper($errors); 
@@ -270,7 +266,6 @@ $ls->param('group_list', 1);
 
 ($status, $errors) = bridge::inject(
 	{ 
-		-list      => $list, 
 		-msg       => $msg, 
 		-verbose   => 1, 
 		-test_mail => 1, 
@@ -303,13 +298,12 @@ diag "NOW WE START.";
 
 
 $msg = slurp('t/corpus/email_messages/simple_utf8_msg.eml'); 
-($status, $errors) = bridge::validate_msg($list, \$msg, $ls->get);
+($status, $errors) = bridge::validate_msg($ls, \$msg);
 
 ok($status == 1, "status returning 1"); 
 
 ($status, $errors) = bridge::inject(
 	{ 
-		-list      => $list, 
 		-msg       => $msg, 
 		-verbose   => 1, 
 		-test_mail => 1, 

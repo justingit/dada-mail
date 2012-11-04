@@ -1,41 +1,45 @@
-my $DIR         = '<!-- tmpl_var dada_files_dir -->';
 #---------------------------------------------------------------------#
-$PROGRAM_URL    = '<!-- tmpl_var PROGRAM_URL -->';
+# Dada Mail Outside Config File! (.dada_config)
 
 #---------------------------------------------------------------------#
-$FILES                    = $DIR . '/.lists';
-$TEMPLATES                = $DIR . '/.templates';
-$TMP                      = $DIR . '/.tmp';
-$BACKUPS                  = $DIR . '/.backups';
-$ARCHIVES                 = $DIR . '/.archives';
-$LOGS                     = $DIR . '/.logs'; 
+# The location of your .dada_config directory: 
+#
+$DIR = '<!-- tmpl_var dada_files_dir -->';
+
 #---------------------------------------------------------------------#
-$PROGRAM_USAGE_LOG        = $LOGS . '/dada.txt';
+# The URL to access Dada Mail:
+#
+$PROGRAM_URL = '<!-- tmpl_var PROGRAM_URL -->';
+
 #---------------------------------------------------------------------#
-
-
-# Start Root Password
-
-$PROGRAM_ROOT_PASSWORD    = '<!-- tmpl_var ROOT_PASSWORD -->';
-$ROOT_PASS_IS_ENCRYPTED   = '<!-- tmpl_var ROOT_PASS_IS_ENCRYPTED -->';
-
-# End Root Password
-
+# The location of static, support files
+#
 $SUPPORT_FILES = { 
 	dir => '<!-- tmpl_var support_files_dir_path -->', 
 	url => '<!-- tmpl_var support_files_dir_url -->', 
 };
 
 
+#---------------------------------------------------------------------#
+# The Dada Mail Root Pass: 
+#
+# Start Root Password
+
+$PROGRAM_ROOT_PASSWORD    = '<!-- tmpl_var ROOT_PASSWORD -->';
+$ROOT_PASS_IS_ENCRYPTED   = '<!-- tmpl_var ROOT_PASS_IS_ENCRYPTED -->';
+
+# End Root Password
+#---------------------------------------------------------------------#
+
+
 # start cut for SQL Backend
 =cut
 
-$SUBSCRIBER_DB_TYPE       = 'SQL'; 
-$ARCHIVE_DB_TYPE          = 'SQL'; 
-$SETTINGS_DB_TYPE         = 'SQL'; 
-$SESSION_DB_TYPE          = 'SQL'; 
-$BOUNCE_SCORECARD_DB_TYPE = 'SQL';
-$CLICKTHROUGH_DB_TYPE     = 'SQL'; 
+#---------------------------------------------------------------------#
+#
+# Backend Database Configuration: 
+
+$BACKEND_DB_TYPE = 'SQL'
 
 %SQL_PARAMS = ( 
 
@@ -56,23 +60,15 @@ $CLICKTHROUGH_DB_TYPE     = 'SQL';
 	user             => '<!-- tmpl_var sql_username -->',          
 	pass             => '<!-- tmpl_var sql_password -->',
 
-	subscriber_table                => 'dada_subscribers',
-	profile_table                   => 'dada_profiles', 
-	profile_fields_table 	        => 'dada_profile_fields', 
-	profile_fields_attributes_table => 'dada_profile_fields_attributes',
-	archives_table                  => 'dada_archives', 
-	settings_table                  => 'dada_settings', 
-	session_table                   => 'dada_sessions', 
-	bounce_scores_table             => 'dada_bounce_scores',
-	clickthrough_urls_table         => 'dada_clickthrough_urls', 
-
 );
-
-$LIST_IN_ORDER = 1; 
 
 =cut
 # end cut for SQL Backend
 
+
+#---------------------------------------------------------------------#
+#
+# WYSIWYG Editor/File Browser Options
 
 # start cut for WYSIWYG Editor Options
 =cut
@@ -108,6 +104,7 @@ $FILE_BROWSER_OPTIONS = {
 
 =cut
 # start cut for Dada Mail Profile Options
+
 
 $PROFILE_OPTIONS = { 
 		
