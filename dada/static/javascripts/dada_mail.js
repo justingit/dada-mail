@@ -2,10 +2,10 @@ $jq(document).ready(function() {
 
 	//Mail Sending >> Send a Message 
 	if ($jq("#send_email_screen").length || $jq("#send_url_email").length || $jq("#list_invite").length) {
-		$jq("#mass_mailing").on("submit", function(event) {
+		$jq("body").on("submit", "#mass_mailing", function(event) {
 			event.preventDefault();
 		});
-		$jq(".sendmassmailing").on("click", function(event) {
+		$jq("body").on("click", ".sendmassmailing", function(event) {
 			//var fid = $jq(event.target).closest('form').attr('id'); 
 			var fid = 'mass_mailing';
 
@@ -22,7 +22,7 @@ $jq(document).ready(function() {
 				//alert("It stays off!"); 
 			}
 		});
-		$jq(".ChangeMassMailingButtonLabel").on("click", function(event) {
+		$jq("body").on("click", ".ChangeMassMailingButtonLabel", function(event) {
 			ChangeMassMailingButtonLabel();
 		});
 
@@ -30,7 +30,7 @@ $jq(document).ready(function() {
 		$jq("#tabs").tabs();
 		$jq("#tabs_mass_mailing_options").tabs();
 
-		$jq(".preview_message_receivers").on("click", function(event) {
+		$jq("body").on("click", ".preview_message_receivers", function(event) {
 			event.preventDefault();
 			preview_message_receivers();
 		});
@@ -126,10 +126,10 @@ $jq(document).ready(function() {
 
 	// Membership >> Add (step 2) 
 	if ($jq("#add_email").length) {
-		$jq("#confirm_add").on("submit", function(event) {
+		$jq("body").on("submit", "#confirm_add", function(event) {
 			event.preventDefault();
 		});
-		$jq(".addingemail").on("click", function(event) {
+		$jq("body").on("click", ".addingemail", function(event) {
 			var go = 1;
 			if ($jq(this).hasClass("warnAboutMassSubscription")) {
 				go = warnAboutMassSubscription();
@@ -271,34 +271,45 @@ $jq(document).ready(function() {
 
 	// Installer 
 	if ($jq("#install_or_upgrade").length) {
-		$jq('.installer_changeDisplayStateDivs').live("click", function(event) {
+		$jq("body").on("click", '.installer_changeDisplayStateDivs', function(event) {
 			changeDisplayState($jq(this).attr("data-target"), $jq(this).attr("data-state"));
 		});
 	}
 	if ($jq("#installer_configure_dada_mail").length) {
-		$jq("#backend").on("change", function(event) {
+		$jq("body").on("change", "#backend", function(event) {
 			installer_toggleSQL_options();
 		});
-		$jq('.radiochangeDisplayState').live("click", function(event) {
+		$jq("body").on("click", '.radiochangeDisplayState', function(event) {
 			changeDisplayState($jq(this).attr("data-target"), $jq(this).attr("data-state"));
 		});
 
-		$jq('.test_sql_connection').live("click", function(event) {
+		$jq("body").on("click", '.test_sql_connection', function(event) {
 			installer_test_sql_connection();
 		});
-		$jq('.test_bounce_handler_pop3_connection').live("click", function(event) {
+		$jq("body").on("click", '.test_bounce_handler_pop3_connection', function(event) {
 			installer_test_pop3_connection();
 		});
-
-
+		
+		$jq("body").on('keyup', "#dada_root_pass_again", function(event){
+			
+		     if($jq("#dada_root_pass_again").val() != $jq("#dada_root_pass").val() && $jq("#dada_root_pass_again").val().length){
+				$jq(".dada_pass_no_match").html('<span class="error">Passwords do not match!</span>');
+		     }
+			 else { 
+				$jq(".dada_pass_no_match").html('');
+	        	
+			}
+		});
+		
+		installer_dada_root_pass_options();
 		installer_toggleSQL_options();
 		installer_toggle_dada_files_dirOptions();
 		installer_togger_bounce_handler_config();
 
-		// Probably hide the help stuff, 
 		$jq("#dada_files_help").hide();
 		$jq("#program_url_help").hide();
 		$jq("#root_pass_help").hide();
+		$jq("#support_files_help").hide();
 		$jq("#backend_help").hide();
 		$jq("#plugins_extensions_help").hide();
 		$jq("#bounce_handler_configuration_help").hide();
@@ -309,7 +320,7 @@ $jq(document).ready(function() {
 
 	}
 	if ($jq("#installer_install_dada_mail").length) {
-		$jq('#move_installer_dir').live("click", function(event) {
+		$jq("body").on("click", '#move_installer_dir', function(event) {
 			event.preventDefault();
 			installer_move_installer_dir();
 		});
@@ -333,13 +344,12 @@ $jq(document).ready(function() {
 	// Plugins >> Dada Bridge
 	if ($jq("#plugins_bridge_default").length) {
 
-		$jq(".plugins_bridge_test_pop3").live("click", function(event) {
+		$jq("body").on("click", ".plugins_bridge_test_pop3", function(event) {
 			event.preventDefault();
 			plugins_bridge_test_pop3();
 		});
 
-
-		$jq(".plugins_bridge_manually_check_messages").live("click", function(event) {
+		$jq("body").on("click", '.plugins_bridge_manually_check_messages', function(event) {
 			event.preventDefault();
 			plugins_bridge_manually_check_messages();
 		});
@@ -989,6 +999,19 @@ function installer_test_pop3_connection() {
 	});
 }
 
+function installer_dada_root_pass_options() { 
+	if ($jq("#dada_pass_use_orig").prop("checked") == true) {
+		if ($jq('#dada_root_pass_fields').is(':visible')) {
+			$jq('#dada_root_pass_fields').hide('blind');
+		}
+	}
+	if ($jq("#dada_pass_use_orig").prop("checked") == false) {
+		if ($jq('#dada_root_pass_fields').is(':hidden')) {
+			$jq('#dada_root_pass_fields').show('blind');
+		}
+	}
+	
+}
 function installer_toggleSQL_options() {
 
 	var selected = $jq("#backend option:selected").val();

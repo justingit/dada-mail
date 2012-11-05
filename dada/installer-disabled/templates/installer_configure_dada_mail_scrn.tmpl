@@ -72,7 +72,7 @@
 				 <strong><!-- tmpl_var configured_dada_config_file --></strong>
 				</p>
 			</li>
-			</ul>
+	
 
 			<form target="_blank" action="<!-- tmpl_var Self_URL -->"> 
 				<input type="hidden" name="f" value="show_current_dada_config" /> 
@@ -85,17 +85,24 @@
 			<!-- tmpl_if expr="(install_type eq 'install')" -->
 				<strong>Choose a different location</strong> for your <!-- tmpl_var Dada_Files_Dir_Name --> directory below, 
 				or <strong><a href="<!-- tmpl_var Self_URL -->">start over and Upgrade</a></strong>.
-				
 			<!-- /tmpl_if --> 
 			
-			<!-- tmpl_if comment --> 
-			<p>Use:</p>
-			<ul><li><p><strong><!-- tmpl_var configured_dada_files_loc --></strong></p></li></ul>
-			<p>for the <strong>&quot;<!-- tmpl_var Dada_Files_Dir_Name -->&quot; Directory Location</strong> below, to 
-				<strong>upgrade</strong> this <!-- tmpl_var PROGRAM_NAME --> installation.</p>
 
-			<p>Use a <em>different</em> <!-- tmpl_var Dada_Files_Dir_Name --> location for a <strong>new installation</strong> of <!-- tmpl_var PROGRAM_NAME --></p>
-			<!-- /tmpl_if -->
+				<li>
+					<p>
+						If you're upgrading from a big difference in version (5.x to 6.x, 6.x to 6.y), we suggest <strong>creating a new .dada_config file</strong>
+					</p> 
+				</li>
+				<li> 
+					<p>
+						Values from your previous configuration have be pre-filled below. Any additional 
+						configuration changes you may have made to your .dada_config file 
+						will need to be recreated manually, after this upgrade. 
+					</p> 
+				</li> 
+			</ul> 
+					
+			
 		</div> 
 
 	<!-- /tmpl_if --> 
@@ -260,11 +267,15 @@
 
 
 <fieldset> 
-	<legend>Support Files Directory</legend>
+	<legend>Support Files Directory
+		[<a href="#" class="toggleDivs" data-target="support_files_help">
+		?</a>]
+		
+		</legend>
 	
 
 	
-	<div class="clearskiesbox">
+	<div class="clearskiesbox" id="support_files_help">
 		<p>
 			The Installer will use the Absolute Path and Corresponding URL you set below to 
 			copy over the static files used in Dada Mail: images, stylesheets, and javascript files. 
@@ -288,6 +299,7 @@
 			</ul>
 		</div> 
 	<!-- /tmpl_if -->
+	
 	
 	<p>
 		<label for="support_files_dir_path">Server Absolute Path to the <!-- tmpl_var PROGRAM_NAME --> Support Files Directory:</label><br />
@@ -336,18 +348,33 @@
 <!-- /tmpl_if -->
 
 <div id="root_pass_help" class="clearskiesbox"> 
-
-<p>This is the main password to <!-- tmpl_var PROGRAM_NAME -->, used to create new mailing lists and to 
-access <em>any</em> mailing list.</p> 
+	<p>This is the main password to <!-- tmpl_var PROGRAM_NAME -->, used to create new mailing lists and to 
+	access <em>any</em> mailing list.</p> 
 </div> 
 
-<p><label for="dada_root_pass"><!-- tmpl_var PROGRAM_NAME --> Root Password:</label>
-<br /> 
-<input type="text" id="dada_root_pass" name="dada_root_pass" />
-</p> 
-<p><label for="dada_root_pass_again">Re-type Your <!-- tmpl_var PROGRAM_NAME --> Root Password:</label><br /> 
-<input type="text" id="dada_root_pass_again" name="dada_root_pass_again" /></p> 
-<hr /> 
+	<!-- tmpl_if original_dada_root_pass --> 
+		<p>
+			<input type="checkbox" name="dada_pass_use_orig" id="dada_pass_use_orig" value="1" checked="check" class="radio_toggleDivs" data-target="dada_root_pass_fields"/>
+			<label for="dada_pass_use_orig">
+				Use Previous Dada Root Password
+			</label>
+		</p> 
+		<input type="hidden" name="original_dada_root_pass" value="" /> 
+		<input type="hidden" name="original_dada_root_pass_is_encrypted" value="" /> 
+	<!-- /tmpl_if --> 
+	
+<div id="dada_root_pass_fields"> 	
+	<p><label for="dada_root_pass"><!-- tmpl_var PROGRAM_NAME --> Root Password:</label>
+	<br /> 
+	<input type="password" id="dada_root_pass" name="dada_root_pass" />
+	</p> 
+	<p><label for="dada_root_pass_again">Re-type Your <!-- tmpl_var PROGRAM_NAME --> Root Password:</label><br /> 
+	<input type="password" id="dada_root_pass_again" name="dada_root_pass_again" /><span class="dada_pass_no_match"></span></p> 
+</div> 
+
+
+
+
 </fieldset> 
 
 
@@ -501,8 +528,9 @@ for it to work correctly. For help on setting the cronjob, see the
 <p><input type="checkbox" name="install_bridge" id="install_bridge" value="1" /><label for="install_bridge">Discussion Lists</label> <span class="alert">Requires Additional Configuration (cronjob)</span>	
 </p> 
 
-<p><input type="checkbox" name="install_bounce_handler" id="install_bounce_handler" value="1" class="radio_toggleDivs" data-target="additional_bounce_handler_configuration" />
-	<label for="install_bounce_handler">Bounce Handler</label> <span class="alert">Requires Additional Configuration (cronjob)</span></p> 
+<p>
+	<input type="checkbox" name="install_bounce_handler" id="install_bounce_handler" value="1" class="radio_toggleDivs" data-target="additional_bounce_handler_configuration" />
+	<label for="install_bounce_handler">Bounce Handler</label> <span class="alert">Requires Additional Configuration (cronjob)</span></p>
 
 <div id="additional_bounce_handler_configuration">
 	<fieldset> 

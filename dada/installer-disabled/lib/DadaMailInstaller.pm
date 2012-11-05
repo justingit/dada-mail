@@ -392,6 +392,12 @@ sub cl_help {
 
 sub install_or_upgrade { 
 	
+	eval { 
+		require DADA::App::ScreenCache; 
+		my $c = DADA::App::ScreenCache->new; 
+		   $c->flush;
+	};
+	
 	my $dada_files_parent_dir = $DADA::Config::CONFIG_FILE;
 	   $dada_files_parent_dir =~ s/\/$Dada_Files_Dir_Name\/\.configs\/\.dada_config//;
 	my $found_existing_dada_files_dir = test_complete_dada_files_dir_structure_exists($dada_files_parent_dir);
@@ -463,6 +469,7 @@ sub scrn_configure_dada_mail {
 	
 	# Have we've been here, before? 
 	my %params = $q->Vars;
+
 	if(! keys %params){ 
 		# well, then place some defaults: 
 		$q->param('install_mailing_monitor', 1); 
@@ -501,11 +508,13 @@ sub scrn_configure_dada_mail {
 	
 	my $configured_dada_config_file; 
 	my $configured_dada_files_loc; 
+	my $original_dada_root_pass = undef; 
 	
 	my $param_vals_from_former_config = undef; 
 	if($install_type eq 'upgrade'){ 
 		$configured_dada_config_file = $current_dada_files_parent_location . '/' . $Dada_Files_Dir_Name .'/.configs/.dada_config'; 
 		$configured_dada_files_loc   = $current_dada_files_parent_location; 
+		$original_dada_root_pass = $DADA::Config::PROGRAM_ROOT_PASSWORD;
 		
 	}
 	else { 
@@ -570,6 +579,8 @@ sub scrn_configure_dada_mail {
 				DOC_VER                        => $DOC_VER, 
 				DOC_URL                        => 'http://dadamailproject.com/support/documentation-' . $DOC_VER, 
 				
+				original_dada_root_pass        => $original_dada_root_pass, 
+				
 				support_files_dir_path         => support_files_dir_path_guess(),
 				support_files_dir_url         => support_files_dir_url_guess(),
 				Support_Files_Dir_Name        => $Support_Files_Dir_Name
@@ -584,15 +595,19 @@ sub scrn_configure_dada_mail {
 	# Uh, do are darnest to get the $PROGRAM_URL stuff working correctly, 
 	$scrn = hack_program_url($scrn); 
 
-#    # Refill in all the stuff we just had;
-#    if ( defined($q->param('errors')) ) {
         require HTML::FillInForm::Lite;
         my $h = HTML::FillInForm::Lite->new();
-		if($install_type eq 'upgrade' && -e $configured_dada_config_file){ 
+		if(
+			$install_type eq 'upgrade' 
+		&& -e $configured_dada_config_file
+		&& !defined($q->param('errors'))
+		
+		){ 
 			$q = grab_former_config_vals($q);
 		}
+
         $scrn = $h->fill( \$scrn, $q );
-#   }
+
     e_print($scrn);
 
 }
@@ -602,12 +617,33 @@ sub grab_former_config_vals {
 	
 	$local_q->param('program_url', $DADA::Config::PROGRAM_URL); 
 	
-	my ($support_files_dir_path) =  $DADA::Config::SUPPORT_FILES->{dir} =~ m/^(.*?)\/$Support_Files_Dir_Name$/; 
-	my ($support_files_dir_url)  =  $DADA::Config::SUPPORT_FILES->{url} =~ m/^(.*?)\/$Support_Files_Dir_Name$/; 
+	my $support_files_dir_path;
+	if(defined($DADA::Config::SUPPORT_FILES->{dir})) { 
+		($support_files_dir_path) =  $DADA::Config::SUPPORT_FILES->{dir} =~ m/^(.*?)\/$Support_Files_Dir_Name$/; 
+		$local_q->param('support_files_dir_path', $support_files_dir_path);  
+	}
+	else { 
+		# in v5, there was no $SUPPORT_FILES var, but we're using the same dir as KCFinder, so we can look there: 
+		($support_files_dir_path) = $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir} =~ m/^(.*?)\/$Support_Files_Dir_Name\/$File_Upload_Dir$/; 
+		$local_q->param('support_files_dir_path', $support_files_dir_path);  
+	}
 	
 	
-	$local_q->param('support_files_dir_path', $support_files_dir_path);  
-	$local_q->param('support_files_dir_url', $support_files_dir_url);  
+	my $support_files_dir_url; 
+	if(defined($DADA::Config::SUPPORT_FILES->{url})){ 
+		($support_files_dir_url)  =  $DADA::Config::SUPPORT_FILES->{url} =~ m/^(.*?)\/$Support_Files_Dir_Name$/; 
+		$local_q->param('support_files_dir_url', $support_files_dir_url);  
+	}
+	else { 
+		# in v5, there was no $SUPPORT_FILES var, but we're using the same dir as KCFinder, so we can look there: 
+		($support_files_dir_url) = $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_url} =~ m/^(.*?)\/$Support_Files_Dir_Name\/$File_Upload_Dir$/; 
+		$local_q->param('support_files_dir_url', $support_files_dir_url);  
+	}
+	
+	
+	# Root Password 
+	$local_q->param('original_dada_root_pass',              $DADA::Config::PROGRAM_ROOT_PASSWORD); 
+	$local_q->param('original_dada_root_pass_is_encrypted', $DADA::Config::ROOT_PASS_IS_ENCRYPTED);
 	
 	# BACKEND
 	# In v5 and earlier, there was no $BACKEND_DB, so we'll see what we have, 
@@ -635,8 +671,104 @@ sub grab_former_config_vals {
 	}
 	elsif($DADA::Config::BACKEND_DB_TYPE eq 'Default') { 
 		$local_q->param('backend', 'default'); 
+	}
+	
+	# Plugins/Extensions
+	for my $plugin_ext(qw(
+		mailing_monitor
+		change_root_password
+		screen_cache
+		log_viewer
+		tracker
+		bridge
+		bounce_handler
+		scheduled_mailings
+		multiple_subscribe
+		blog_index
+		default_mass_mailing_messages
+		change_list_shortname
+		password_protect_directories
+		)){ 
+		if(admin_menu_item_used($plugin_ext) == 1){ 
+			$local_q->param('install_' . $plugin_ext, 1); 
+		}
+		else { 
+			$local_q->param('install_' . $plugin_ext, 0); 			
+		}
+	}
+	
+	# v5, these were called something different... 
+	if(admin_menu_item_used('dada_bounce_handler') == 1){ 
+		$local_q->param('install_bounce_handler', 1); 
+	}
+	if(admin_menu_item_used('dada_bridge') == 1){ 
+		$local_q->param('install_bridge', 1); 
+	}
+	
+	# Bounce Handler
+	if(exists($DADA::Config::LIST_SETUP_INCLUDE{admin_email})){ 
+		$local_q->param('bounce_handler_address', $DADA::Config::LIST_SETUP_INCLUDE{admin_email});
+	}
+	if(exists($DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{Server})){ 
+		$local_q->param('bounce_handler_server', $DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{Server}); 
+	}
+	if(exists($DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{Username})){ 
+		$local_q->param('bounce_handler_username', $DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{Username}); 
+	}
+	if(exists($DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{Password})){ 
+		$local_q->param('bounce_handler_password', $DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{Password}); 
+	}
+	
+	# WYSIWYG Editors 
+	# Kinda gotta guess on this one, 
+	if($DADA::Config::WYSIWYG_EDITOR_OPTIONS->{fckeditor}->{enabled} == 1 
+	|| $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{enabled} == 1 
+	|| $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{enabled} == 1 
+	){ 
+		$local_q->param('install_wysiwyg_editors', 1); 
+	}
+	else { 
+		$local_q->param('install_wysiwyg_editors', 0); 
+	}
+		
+	for my $editor(qw(ckeditor fckeditor tiny_mce)){ 
+		# And then, individual: 
+		if($DADA::Config::WYSIWYG_EDITOR_OPTIONS->{$editor}->{enabled} == 1){ 
+			$local_q->param('wysiwyg_editor_install_' . $editor, 1); 
+		}
+		else { 
+			$local_q->param('wysiwyg_editor_install_' . $editor, 0); 		
+		}
+	}
+	if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1){ 
+		$local_q->param('file_browser_install_kcfinder', 1);
 	}	
+	else { 
+		$local_q->param('file_browser_install_kcfinder', 0);
+	}
+			
+	
 	return $local_q; 
+	
+}
+
+
+sub admin_menu_item_used { 
+	my $function = shift; 
+	foreach my $menu(@$DADA::Config::ADMIN_MENU){ 
+		if($menu->{-Title} =~ m/Plugins|Extensions/){ 
+			my $submenu = $menu->{-Submenu}; 
+			foreach my $item(@$submenu) { 
+				warn q{$item->{-Function} } . $item->{-Function}; 
+				warn q{$function} . $function; 
+				if($item->{-Function} eq $function){ 
+					
+					return 1; 
+				}
+			}
+		}
+	}
+	return 0; 
 }
 
 
@@ -1057,10 +1189,18 @@ sub create_dada_config_file {
     if ( !-e $loc . '/.configs' ) {
         croak "$loc does not exist! Stopping!";
     }
-
+	
     require DADA::Security::Password;
-    my $pass =
-      DADA::Security::Password::encrypt_passwd( $args->{-dada_root_pass} );
+	my $pass; 
+	if($q->param('dada_pass_use_orig') == 1){ 
+		$pass = $q->param('original_dada_root_pass'); 
+		if($q->param('original_dada_root_pass_is_encrypted') == 0){ 
+			$pass = DADA::Security::Password::encrypt_passwd( $pass );
+		}
+	}
+	else { 
+		$pass = DADA::Security::Password::encrypt_passwd( $args->{-dada_root_pass} );
+	}
 
 	if(!exists($args->{-program_url})){ 
 		
@@ -1234,25 +1374,31 @@ sub check_setup {
             $errors->{program_url_is_blank} = 0;
         }
 
-        if ( test_str_is_blank( $q->param('dada_root_pass') ) == 1 ) {
-            $errors->{root_pass_is_blank} = 1;
+		if($q->param('dada_pass_use_orig') == 1){ 
+			# Hopefully, original_dada_root_pass has been set. 
+		}
+		else { 
+	        if ( test_str_is_blank( $q->param('dada_root_pass') ) == 1 ) {
+	            $errors->{root_pass_is_blank} = 1;
 
-        }
-        else {
-            $errors->{root_pass_is_blank} = 0;
-        }
-        if (
-            test_pass_match(
-                $q->param('dada_root_pass'),
-                $q->param('dada_root_pass_again')
-            ) == 1
-          )
-        {
-            $errors->{pass_no_match} = 1;
-        }
-        else {
-            $errors->{pass_no_match} = 0;
-        }
+	        }
+	        else {
+	            $errors->{root_pass_is_blank} = 0;
+	        }
+	        if (
+	            test_pass_match(
+	                $q->param('dada_root_pass'),
+	                $q->param('dada_root_pass_again')
+	            ) == 1
+	          )
+	        {
+	            $errors->{pass_no_match} = 1;
+	        }
+	        else {
+	            $errors->{pass_no_match} = 0;
+	        }
+		}
+
 
         if ( $q->param('backend') eq 'default' || $q->param('backend') eq '' ) {
             $errors->{sql_connection} = 0;
@@ -2237,11 +2383,6 @@ sub test_database_empty {
         return 1;
     }
 
-}
-
-sub test_current_dada_dot_config_file_validates { 
-	my $config_file = shift; 
-	
 }
 
 sub move_installer_dir_ajax { 
