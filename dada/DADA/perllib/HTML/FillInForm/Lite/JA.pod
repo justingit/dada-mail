@@ -7,7 +7,7 @@ HTML::FillInForm::Lite::JA - HTMLフォームにデータを充填する
 
 =head1 VERSION
 
-The document describes HTML::FillInForm::Lite version 1.09
+The document describes HTML::FillInForm::Lite version 1.10
 
 =head1 SYNOPSIS
 

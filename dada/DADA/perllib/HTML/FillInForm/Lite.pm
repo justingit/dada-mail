@@ -4,7 +4,7 @@ use 5.006_000; # 5.6.0
 use strict;
 use warnings;
 
-our $VERSION  = '1.09';
+our $VERSION  = '1.10';
 
 use Exporter ();
 our @ISA       = qw(Exporter);
@@ -32,9 +32,9 @@ my $name     = q{[nN][aA][mM][eE]};
 my $value    = q{[vV][aA][lL][uU][eE]};
 
 my $SPACE        =  q{\s};
-my $IDENT        =  q{\w+};
+my $ATTR_NAME    =  q{[\w\-]+};
 my $ATTR_VALUE   =  q{(?: " [^"]* " | ' [^']* ' | [^'"/>\s]+ )};
-my $ATTR         = qq{(?:$SPACE+ $IDENT = $ATTR_VALUE )};
+my $ATTR         = qq{(?:$SPACE+ $ATTR_NAME = $ATTR_VALUE )};
 
 my $FORM         = qq{(?: <$form     $ATTR+ $SPACE*  > )}; # <form>
 my $INPUT        = qq{(?: <$input    $ATTR+ $SPACE*/?> )}; # <input>
@@ -442,7 +442,7 @@ sub _to_form_object{
             $wrapper = {};
             @{$wrapper}{ keys %{$ref} }
                 = map{
-                      ref($_) eq 'ARRAY' ?  $_ 
+                      ref($_) eq 'ARRAY' ?  $_
                     : defined($_)        ? [$_]
                     :                      [  ];
                 } values %{$ref};
@@ -649,7 +649,7 @@ HTML::FillInForm::Lite - Lightweight FillInForm module in Pure Perl
 
 =head1 VERSION
 
-The document describes HTML::FillInForm::Lite version 1.09
+The document describes HTML::FillInForm::Lite version 1.10
 
 =head1 SYNOPSIS
 
@@ -784,7 +784,7 @@ supplied, it will cause C<die>.
 
 I<options> are the same as C<new()>'s.
 
-You can use this method as a both class or instance method, 
+You can use this method as a both class or instance method,
 but you make multiple calls to C<fill()> with the B<same>
 options, it is a little faster to call C<new()> and store the instance.
 
@@ -809,7 +809,7 @@ Perl 5.8.1 or later.
 =head2 Compatibility with C<HTML::FillInForm>
 
 This module implements only the new syntax of C<HTML::FillInForm>
-version 2. However, C<HTML::FillInForm::Lite::Compat> provides 
+version 2. However, C<HTML::FillInForm::Lite::Compat> provides
 an interface compatible with C<HTML::FillInForm>.
 
 =head2 Compatibility with legacy HTML
@@ -818,7 +818,7 @@ This module is designed to process XHTML 1.x.
 
 And it also supporting a good part of HTML 4.x , but there are some
 limitations. First, it doesn't understand HTML-attributes that the name is
-omitted. 
+omitted.
 
 For example:
 
