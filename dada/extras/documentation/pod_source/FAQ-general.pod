@@ -323,11 +323,11 @@ Please, yes.
 
 Dada Mail handles announce only lists with ease - a standard installation will be all you need to run Dada Mail as an announce-only list. 
 
-Dada Mail can also be set up to allow discussion lists, you'll have to also install the B<Dada Bridge> plugin. 
+Dada Mail can also be set up to allow discussion lists, you'll have to also install the B<Bridge> plugin. 
 
 http://dadamailproject.com/support/documentation/bridge.cgi.html
 
-The Dada Bridge Plugin can also be set up to provide announce-only message sending from your mail reader - 
+The Bridge Plugin can also be set up to provide announce-only message sending from your mail reader - 
 
 
 =head2 Does Dada Mail handle bounced messages? 
@@ -436,7 +436,7 @@ Create an HTML document using your favorite HTML editor. Post it somewhere on yo
 
 In the list control panel, go to, <Send a Webpage>. Under, B<HTML Version (Your Webpage)>, check: I<Grab content from this webpage address (URL):> and fill in the url to use. 
 
-=item * Install the the Dada Bridge Plugin and format and send your messages from your mail reader. Your messages B<should> come through almost exactly as you've created them.
+=item * Install the the Bridge Plugin and format and send your messages from your mail reader. Your messages B<should> come through almost exactly as you've created them.
 
 =back
 
@@ -1249,7 +1249,7 @@ The closet thing in Dada Mail is going to be B<Beatitude>, which allows you to s
 
 =head2 What is Dada Mail? 
 
-Dada Mail is a light-weight, fully featured announce-only Mailing List Manager. It does also support discussion lists, with the help of the Dada Bridge Plugin. Discussion support is minimal, compared to its announce-only capabilities. 
+Dada Mail is a light-weight, fully featured announce-only Mailing List Manager. It does also support discussion lists, with the help of the Bridge Plugin. Discussion support is minimal, compared to its announce-only capabilities. 
 
 Dada Mail is primarily run as a plain old CGI script, it does not need any special modules installed, except the one it comes with. It does not run as a mod_perl enabled script and needs no special treatment. If you can run CGI scripts on your hosting account, Dada Mail will work for you. 
 

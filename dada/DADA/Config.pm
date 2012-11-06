@@ -632,7 +632,7 @@ Some of the plugins currently supported are:
 
 =item * Beatitude (Mail Scheduler) 
 
-=item * Dada Bridge
+=item * Bridge
 
 =item * blog_index.cgi
 
@@ -3576,8 +3576,8 @@ EOF
 I<(List-centric, editable per list)> 
 
 This message is sent to someone who is not allowed to post to your 
-list using Dada Bridge plugin. If you do not use the 
-Dada Bridge plugin, this won't be of any use to you! This message 
+list using Bridge plugin. If you do not use the 
+Bridge plugin, this won't be of any use to you! This message 
 can be customized for each list in the list's Control Panel.
 
 =cut
@@ -4811,7 +4811,7 @@ encrypted.
 
 ### Plugins 
 
-# Dada Bridge Plugin: 
+# Bridge Plugin: 
 
 	group_list                   => 0, 
 	
@@ -4852,6 +4852,7 @@ encrypted.
     discussion_pop_server                 => '', 
     discussion_pop_username               => '', 
     discussion_pop_email                  => '', 
+	bridge_list_email_type                => 'pop3_account', 
     discussion_pop_password               => '',
     
     discussion_pop_auth_mode              => 'BEST', 

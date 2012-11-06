@@ -779,7 +779,7 @@ after the Lists are send DADA::Mail::Send.pm should remove this file.
 
 
 This function can also pass a reference to an array of addresses that shouldn't get sent the lsit message, 
-you could theoretically pass the black list, or for the Dada Bridge Plugin, the mail alias address you set up. 
+you could theoretically pass the black list, or for the  Bridge Plugin, the mail alias address you set up. 
 
 				-Ban => [$address_on, $address_two], 
 				

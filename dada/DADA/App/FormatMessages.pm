@@ -289,7 +289,7 @@ sub format_headers_and_body {
 			$entity->head->add(   'Subject', safely_encode($self->Subject));#?
 		}
 	}
-	$entity     = $self->_format_headers($entity); # Dada Bridge stuff. 
+	$entity     = $self->_format_headers($entity); #  Bridge stuff. 
 	$entity     = $self->_fix_for_only_html_part($entity); 
 	$entity     = $self->_format_text($entity);		
 	

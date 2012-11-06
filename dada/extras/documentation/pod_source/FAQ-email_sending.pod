@@ -275,19 +275,19 @@ a little over the reach of this tutorial - but it may be that there's nothing yo
 the SPF record to be setup correctly. 
 
 
-=head2 Using Dada Bridge for Discussion Lists
+=head2 Using Bridge for Discussion Lists
 
 =head3 Method #1 Setup the List Email account on Google Apps, use the Google Apps login info
 
-You'll probably be able to use Dada Bridge with Google Apps, since Dada Bridge only needs to be able to I<receive> email, if like above, 
+You'll probably be able to use Bridge with Google Apps, since Bridge only needs to be able to I<receive> email, if like above, 
 we're setting up Dada Mail to send using the local mail server. 
 
 You'll want to setup the List Email POP account through Google Apps and plug in the Login Info 
-for this List Email into Dada Bridge. A few things should be the same for all Google Apps email accounts, as is listed at: 
+for this List Email into Bridge. A few things should be the same for all Google Apps email accounts, as is listed at: 
 
 http://www.google.com/support/a/bin/answer.py?hl=en&answer=60730
 
-For Dada Bridge, this is broken down as: 
+For Bridge, this is broken down as: 
 
 	List Email: youraddress@yourdomain.com  	
 	POP3 Server pop.gmail.com	
@@ -323,7 +323,7 @@ but it I<can> be used locally by your local mail server to store the bounce mess
 
 =head3 Method #2 Setup a subdomain with a different MX record
 
-Just like with Dada Bridge, another option would be just to set up a new subdomain, with a different MX record that points the subdomain's email delivery to your hosting account's mail server, instead of Google Apps. 
+Just like with Bridge, another option would be just to set up a new subdomain, with a different MX record that points the subdomain's email delivery to your hosting account's mail server, instead of Google Apps. 
 
 
 

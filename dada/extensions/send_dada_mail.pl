@@ -251,7 +251,7 @@ I haven't tested this with Dada Mail 3.x yet (or 4.x). Does it work well?
 
 =head2 SECURITY 
 
-Currently, there's not much security in this script - only the check for a valid list short name. Normally, you'd have to either log into the List Control Panel to send a message out, which requires a password, or, use the Dada Bridge Plugin, which has it's own slew of checks. 
+Currently, there's not much security in this script - only the check for a valid list short name. Normally, you'd have to either log into the List Control Panel to send a message out, which requires a password, or, use the Bridge Plugin, which has it's own slew of checks. 
 
 Because of that, I'd only use this script where you're mighty sure that abuse will not happen (ha.). Abuse of this extension is quite possible and very easy, as you're giving the option of any program to send to any Dada Mail-administrated list as much as it would like. You see where I'm going here with this. OK? Ok. 
 

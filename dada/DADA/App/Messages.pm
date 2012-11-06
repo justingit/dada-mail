@@ -856,7 +856,7 @@ sub send_newest_archive {
 
 
 
-# This one's weird, since it's a part of Dada Bridge 
+# This one's weird, since it's a part of Bridge 
 
 sub send_not_allowed_to_post_msg { 
 	

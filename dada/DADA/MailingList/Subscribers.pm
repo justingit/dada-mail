@@ -954,7 +954,7 @@ for verification.
 =item * authorized_senders
 
 This is the sublist of addresses that can be allowed to post to a mailing list, from an email client, via the 
-B<Dada Bridge> plugin, if this feature has been enabled. 
+B<Bridge> plugin, if this feature has been enabled. 
 
 =item * sub_confirm_list
 
