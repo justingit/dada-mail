@@ -461,19 +461,22 @@ If using either the SQL backends, make sure to create a new database before conf
 
 	<!-- /tmpl_if -->
 	<p>
-		<label style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block" for="sql_server">Server:</label> <input type="text" name="sql_server" id="sql_server" value="localhost" />
+		<label style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block" for="sql_server">Server:</label> <input type="text" name="sql_server" id="sql_server" value="localhost" value="" />
 	</p>
 	<p>
-		<label style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block" for="sql_database">Database:</label> <input type="text" name="sql_database" id="sql_database" />
+		<label style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block" for="sql_database">Database:</label> <input type="text" name="sql_database" id="sql_database" value="" />
 	</p>
 	<p>
 		<label style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block" for="sql_port">Port:</label> <input type="text" name="sql_port" id="sql_port" value="auto" />
 	</p>
 	<p>
-		<label style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block" for="sql_username">Username:</label> <input type="text" name="sql_username" id="sql_username"/>
+		<label style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block" for="sql_username">Username:</label> <input type="text" name="sql_username" id="sql_username" value="" />
 	</p>
 	<p>
-		<label style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block" for="sql_password">Password:</label> <input type="text" name="sql_password" id="sql_password"/> 
+		<label style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block" for="sql_password">Password:</label> 
+		
+		<input type="text" name="sql_password" id="sql_password" value="" /> 
+
 	</p>
 	<input type="button" class="processing test_sql_connection" value="Test Your SQL Connection"/>
 	<div id="test_sql_connection_results" class="clearskiesbox"></div> 
