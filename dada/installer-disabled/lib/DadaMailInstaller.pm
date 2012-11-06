@@ -1,5 +1,7 @@
 package DadaMailInstaller; 
 
+#BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1;}
+#FindBin
 use lib qw(
   ../../
   ../../DADA/perllib
