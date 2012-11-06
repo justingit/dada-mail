@@ -662,8 +662,7 @@ sub grab_former_config_vals {
 	# BACKEND
 	# In v5 and earlier, there was no $BACKEND_DB, so we'll see what we have, 
 	if(
-	(  $BootstrapConfig::BACKEND_DB_TYPE          eq 'Default' 
-	&& $BootstrapConfig::SUBSCRIBER_DB_TYPE       eq 'SQL' 
+	(  $BootstrapConfig::SUBSCRIBER_DB_TYPE       eq 'SQL' 
 	&& $BootstrapConfig::ARCHIVE_DB_TYPE          eq 'SQL' 
 	&& $BootstrapConfig::SETTINGS_DB_TYPE         eq 'SQL' 
 	&& $BootstrapConfig::SESSION_DB_TYPE          eq 'SQL'
