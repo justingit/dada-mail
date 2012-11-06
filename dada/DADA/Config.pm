@@ -245,7 +245,7 @@ obscure files to be saved in.
 
 =cut
 
-($DIR) = $PROGRAM_CONFIG_FILE_DIR =~ m/^(.*?)\/\.configs$/; 
+($DIR) ||= $PROGRAM_CONFIG_FILE_DIR =~ m/^(.*?)\/\.configs$/; 
 
 $FILES ||= $DIR . '/.lists'; 
 

@@ -1,6 +1,6 @@
 package DadaMailInstaller; 
 
-#BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1;}
+BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1;}
 #FindBin
 use lib qw(
   ../../
@@ -27,7 +27,7 @@ BEGIN {
 # Init my CGI obj. 
 use CGI;
 CGI->nph(1)
-  if $DADA::Config::NPH == 1;
+  if $BootstrapConfig::NPH == 1;
 my $q;
 $q = CGI->new;
 $q = decode_cgi_obj($q);
@@ -222,7 +222,9 @@ $DADA::Config::PROGRAM_URL   = program_url_guess();
 $DADA::Config::S_PROGRAM_URL = program_url_guess();
 
 use DADA::Config 6.0.0;
-    $DADA::Config::USER_TEMPLATE = '';
+
+
+    # $DADA::Config::USER_TEMPLATE = '';
 use DADA::App::Guts;
 use DADA::Template::Widgets;
 use DADA::Template::HTML;
@@ -400,7 +402,10 @@ sub install_or_upgrade {
 		   $c->flush;
 	};
 	
-	my $dada_files_parent_dir = $DADA::Config::CONFIG_FILE;
+#	 my $dada_files_parent_dir = $DADA::Config::CONFIG_FILE;
+	my $dada_files_parent_dir = BootstrapConfig::guess_config_file(); 
+	
+#	die $dada_files_parent_dir; 
 	   $dada_files_parent_dir =~ s/\/$Dada_Files_Dir_Name\/\.configs\/\.dada_config//;
 	my $found_existing_dada_files_dir = test_complete_dada_files_dir_structure_exists($dada_files_parent_dir);
 	
@@ -466,6 +471,13 @@ sub scrn_configure_dada_mail {
 	
 	my $current_dada_files_parent_location = $q->param('current_dada_files_parent_location'); 	
 	my $install_type                       = $q->param('install_type'); 
+	
+	if($install_type eq 'upgrade'
+	 && -e $current_dada_files_parent_location . '/' . $Dada_Files_Dir_Name .'/.configs/.dada_config'
+	){ 
+		BootstrapConfig::config_import(make_safer($current_dada_files_parent_location . '/' . $Dada_Files_Dir_Name .'/.configs/.dada_config')); 
+	}
+	
 	$q->delete('current_dada_files_parent_location', 'install_type', 'f', 'submitbutton');
 
 	
@@ -516,16 +528,16 @@ sub scrn_configure_dada_mail {
 	if($install_type eq 'upgrade'){ 
 		$configured_dada_config_file = $current_dada_files_parent_location . '/' . $Dada_Files_Dir_Name .'/.configs/.dada_config'; 
 		$configured_dada_files_loc   = $current_dada_files_parent_location; 
-		$original_dada_root_pass = $DADA::Config::PROGRAM_ROOT_PASSWORD;
+		$original_dada_root_pass = $BootstrapConfig::PROGRAM_ROOT_PASSWORD; # Why is this here, instead of grab_...
 		
 	}
 	else { 
-	   $configured_dada_config_file = $DADA::Config::CONFIG_FILE;
+	   $configured_dada_config_file = $DADA::Config::CONFIG_FILE; # This may also be strange, although if this is an install, it'll just give you the default guess, anyways
 	   $configured_dada_files_loc = $configured_dada_config_file;
 		$configured_dada_files_loc =~ s/\/$Dada_Files_Dir_Name\/\.configs\/\.dada_config//;
 	}
 	
-	my $DOC_VER = $DADA::Config::VER; 
+	my $DOC_VER = $DADA::Config::VER; # I guess this one's fine. 
 	   $DOC_VER =~ s/\s(.*?)$//;
 	   $DOC_VER =~ s/\./\_/g;
 
@@ -617,61 +629,61 @@ sub scrn_configure_dada_mail {
 sub grab_former_config_vals { 
 	my $local_q = shift; 
 	
-	$local_q->param('program_url', $DADA::Config::PROGRAM_URL); 
+	$local_q->param('program_url', $BootstrapConfig::PROGRAM_URL); 
 	
 	my $support_files_dir_path;
-	if(defined($DADA::Config::SUPPORT_FILES->{dir})) { 
-		($support_files_dir_path) =  $DADA::Config::SUPPORT_FILES->{dir} =~ m/^(.*?)\/$Support_Files_Dir_Name$/; 
+	if(defined($BootstrapConfig::SUPPORT_FILES->{dir})) { 
+		($support_files_dir_path) =  $BootstrapConfig::SUPPORT_FILES->{dir} =~ m/^(.*?)\/$Support_Files_Dir_Name$/; 
 		$local_q->param('support_files_dir_path', $support_files_dir_path);  
 	}
 	else { 
 		# in v5, there was no $SUPPORT_FILES var, but we're using the same dir as KCFinder, so we can look there: 
-		($support_files_dir_path) = $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir} =~ m/^(.*?)\/$Support_Files_Dir_Name\/$File_Upload_Dir$/; 
+		($support_files_dir_path) = $BootstrapConfig::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir} =~ m/^(.*?)\/$Support_Files_Dir_Name\/$File_Upload_Dir$/; 
 		$local_q->param('support_files_dir_path', $support_files_dir_path);  
 	}
 	
 	
 	my $support_files_dir_url; 
-	if(defined($DADA::Config::SUPPORT_FILES->{url})){ 
-		($support_files_dir_url)  =  $DADA::Config::SUPPORT_FILES->{url} =~ m/^(.*?)\/$Support_Files_Dir_Name$/; 
+	if(defined($BootstrapConfig::SUPPORT_FILES->{url})){ 
+		($support_files_dir_url)  =  $BootstrapConfig::SUPPORT_FILES->{url} =~ m/^(.*?)\/$Support_Files_Dir_Name$/; 
 		$local_q->param('support_files_dir_url', $support_files_dir_url);  
 	}
 	else { 
 		# in v5, there was no $SUPPORT_FILES var, but we're using the same dir as KCFinder, so we can look there: 
-		($support_files_dir_url) = $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_url} =~ m/^(.*?)\/$Support_Files_Dir_Name\/$File_Upload_Dir$/; 
+		($support_files_dir_url) = $BootstrapConfig::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_url} =~ m/^(.*?)\/$Support_Files_Dir_Name\/$File_Upload_Dir$/; 
 		$local_q->param('support_files_dir_url', $support_files_dir_url);  
 	}
 	
 	
 	# Root Password 
-	$local_q->param('original_dada_root_pass',              $DADA::Config::PROGRAM_ROOT_PASSWORD); 
-	$local_q->param('original_dada_root_pass_is_encrypted', $DADA::Config::ROOT_PASS_IS_ENCRYPTED);
+	$local_q->param('original_dada_root_pass',              $BootstrapConfig::PROGRAM_ROOT_PASSWORD); 
+	$local_q->param('original_dada_root_pass_is_encrypted', $BootstrapConfig::ROOT_PASS_IS_ENCRYPTED);
 	
 	# BACKEND
 	# In v5 and earlier, there was no $BACKEND_DB, so we'll see what we have, 
 	if(
-	(  $DADA::Config::BACKEND_DB_TYPE          eq 'Default' 
-	&& $DADA::Config::SUBSCRIBER_DB_TYPE       eq 'SQL' 
-	&& $DADA::Config::ARCHIVE_DB_TYPE          eq 'SQL' 
-	&& $DADA::Config::SETTINGS_DB_TYPE         eq 'SQL' 
-	&& $DADA::Config::SESSION_DB_TYPE          eq 'SQL'
-	&& $DADA::Config::BOUNCE_SCORECARD_DB_TYPE eq 'SQL'
-	&& $DADA::Config::CLICKTHROUGH_DB_TYPE     eq 'SQL'
+	(  $BootstrapConfig::BACKEND_DB_TYPE          eq 'Default' 
+	&& $BootstrapConfig::SUBSCRIBER_DB_TYPE       eq 'SQL' 
+	&& $BootstrapConfig::ARCHIVE_DB_TYPE          eq 'SQL' 
+	&& $BootstrapConfig::SETTINGS_DB_TYPE         eq 'SQL' 
+	&& $BootstrapConfig::SESSION_DB_TYPE          eq 'SQL'
+	&& $BootstrapConfig::BOUNCE_SCORECARD_DB_TYPE eq 'SQL'
+	&& $BootstrapConfig::CLICKTHROUGH_DB_TYPE     eq 'SQL'
 	) 
 	|| 
-	($DADA::Config::BACKEND_DB_TYPE eq 'SQL')
+	($BootstrapConfig::BACKEND_DB_TYPE eq 'SQL')
 	){ 
 		# That means, we have an SQL backend. 
 		#%SQL_PARAMS; 
-		$local_q->param('backend',      $DADA::Config::SQL_PARAMS{dbtype});  
-		$local_q->param('sql_server',   $DADA::Config::SQL_PARAMS{dbserver}); 	
-		$local_q->param('sql_database', $DADA::Config::SQL_PARAMS{database}); 	
-		$local_q->param('sql_port',     $DADA::Config::SQL_PARAMS{port}); 	
-		$local_q->param('sql_username', $DADA::Config::SQL_PARAMS{user}); 	
-		$local_q->param('sql_password', $DADA::Config::SQL_PARAMS{pass});
+		$local_q->param('backend',      $BootstrapConfig::SQL_PARAMS{dbtype});  
+		$local_q->param('sql_server',   $BootstrapConfig::SQL_PARAMS{dbserver}); 	
+		$local_q->param('sql_database', $BootstrapConfig::SQL_PARAMS{database}); 	
+		$local_q->param('sql_port',     $BootstrapConfig::SQL_PARAMS{port}); 	
+		$local_q->param('sql_username', $BootstrapConfig::SQL_PARAMS{user}); 	
+		$local_q->param('sql_password', $BootstrapConfig::SQL_PARAMS{pass});
 		
 	}
-	elsif($DADA::Config::BACKEND_DB_TYPE eq 'Default') { 
+	elsif($BootstrapConfig::BACKEND_DB_TYPE eq 'Default') { 
 		$local_q->param('backend', 'default'); 
 	}
 	
@@ -708,24 +720,24 @@ sub grab_former_config_vals {
 	}
 	
 	# Bounce Handler
-	if(exists($DADA::Config::LIST_SETUP_INCLUDE{admin_email})){ 
-		$local_q->param('bounce_handler_address', $DADA::Config::LIST_SETUP_INCLUDE{admin_email});
+	if(exists($BootstrapConfig::LIST_SETUP_INCLUDE{admin_email})){ 
+		$local_q->param('bounce_handler_address', $BootstrapConfig::LIST_SETUP_INCLUDE{admin_email});
 	}
-	if(exists($DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{Server})){ 
-		$local_q->param('bounce_handler_server', $DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{Server}); 
+	if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Server})){ 
+		$local_q->param('bounce_handler_server', $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Server}); 
 	}
-	if(exists($DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{Username})){ 
-		$local_q->param('bounce_handler_username', $DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{Username}); 
+	if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Username})){ 
+		$local_q->param('bounce_handler_username', $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Username}); 
 	}
-	if(exists($DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{Password})){ 
-		$local_q->param('bounce_handler_password', $DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{Password}); 
+	if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Password})){ 
+		$local_q->param('bounce_handler_password', $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Password}); 
 	}
 	
 	# WYSIWYG Editors 
 	# Kinda gotta guess on this one, 
-	if($DADA::Config::WYSIWYG_EDITOR_OPTIONS->{fckeditor}->{enabled} == 1 
-	|| $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{enabled} == 1 
-	|| $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{enabled} == 1 
+	if($BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{fckeditor}->{enabled} == 1 
+	|| $BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{enabled} == 1 
+	|| $BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{enabled} == 1 
 	){ 
 		$local_q->param('install_wysiwyg_editors', 1); 
 	}
@@ -735,14 +747,14 @@ sub grab_former_config_vals {
 		
 	for my $editor(qw(ckeditor fckeditor tiny_mce)){ 
 		# And then, individual: 
-		if($DADA::Config::WYSIWYG_EDITOR_OPTIONS->{$editor}->{enabled} == 1){ 
+		if($BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{$editor}->{enabled} == 1){ 
 			$local_q->param('wysiwyg_editor_install_' . $editor, 1); 
 		}
 		else { 
 			$local_q->param('wysiwyg_editor_install_' . $editor, 0); 		
 		}
 	}
-	if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1){ 
+	if($BootstrapConfig::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1){ 
 		$local_q->param('file_browser_install_kcfinder', 1);
 	}	
 	else { 
@@ -757,7 +769,7 @@ sub grab_former_config_vals {
 
 sub admin_menu_item_used { 
 	my $function = shift; 
-	foreach my $menu(@$DADA::Config::ADMIN_MENU){ 
+	foreach my $menu(@$BootstrapConfig::ADMIN_MENU){ 
 		if($menu->{-Title} =~ m/Plugins|Extensions/){ 
 			my $submenu = $menu->{-Submenu}; 
 			foreach my $item(@$submenu) { 
@@ -772,7 +784,6 @@ sub admin_menu_item_used {
 	}
 	return 0; 
 }
-
 
 
 sub connectdb {
@@ -1204,6 +1215,7 @@ sub create_dada_config_file {
 		$pass = DADA::Security::Password::encrypt_passwd( $args->{-dada_root_pass} );
 	}
 
+	# Cripes, why wouldn't we pass a program url? 
 	if(!exists($args->{-program_url})){ 
 		
 	    my $prog_url = $DADA::Config::PROGRAM_URL;
@@ -2141,6 +2153,7 @@ sub test_dada_files_dir_no_exists {
 sub test_complete_dada_files_dir_structure_exists {
 
     my $dada_files_dir = shift;
+
     if ( -e $dada_files_dir . '/' . $Dada_Files_Dir_Name ) {
         for (
             qw(
@@ -2650,6 +2663,148 @@ sub clean_up_var {
 	   $var =~ s/\'/\\\'/g; 
 	return $var; 
 }
+
+package BootstrapConfig;
+no strict; 
+
+BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1;}
+use DADA::Config; 
+
+my $PROGRAM_NAME; 
+my $VER; 
+my $PROGRAM_CONFIG_FILE_DIR = 'auto'; 
+my $OS = $^O;
+my $CONFIG_FILE; 
+
+config_import(); 
+
+sub config_import { 
+
+	$CONFIG_FILE = shift || guess_config_file(); 
+=cut
+
+	# There's no user-servicable parts in the subroutine, so don't make any changes, 
+	# unless you're customizing Dada Mail or debugging something interesting. 
+	#
+	if(exists($ENV{NO_DADA_MAIL_CONFIG_IMPORT})){ 
+			if($ENV{NO_DADA_MAIL_CONFIG_IMPORT} == 1){ 
+				return;
+			} 
+	}
+=cut
+
+	# Keep this as, 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'
+	# What we're doing is, seeing if you've actually changed the variable from
+	# it's default, and if not, we take a best guess.	
+	
+
+	
+	if(-e $CONFIG_FILE && -f $CONFIG_FILE && -s $CONFIG_FILE){ 
+		open(CONFIG, '<:encoding(UTF-8)',  $CONFIG_FILE) 
+			or warn "could not open outside config file, '$CONFIG_FILE' because: $!"; 
+		my $conf;
+		   $conf = do{ local $/; <CONFIG> }; 
+
+		# shooting again, 
+		$conf =~ m/(.*)/ms;
+		$conf = $1;	
+		eval  $conf;
+		if ($@) { 
+			# Well, that's gonna suck. 
+			#die "$PROGRAM_NAME $VER ERROR - Outside config file '$CONFIG_FILE' contains errors:\n\n$@\n\n";
+		}	
+=cut
+
+		if($PROGRAM_CONFIG_FILE_DIR eq 'auto') { 
+			if(! defined $PROGRAM_ERROR_LOG){ 
+				$PROGRAM_ERROR_LOG = $LOGS . '/errors.txt'; 
+				open (STDERR, ">>$PROGRAM_ERROR_LOG")
+				|| warn "$PROGRAM_NAME Error: Cannot redirect STDERR, it's possible that Dada Mail does not have write permissions to this file ($PROGRAM_ERROR_LOG) or it doesn't exist! If Dada Mail cannot make this file for you, create it yourself and give it enough permissions so it may write to it: $!";
+			}
+		}
+=cut
+
+	}
+
+
+=cut
+		
+	if($PROGRAM_URL eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'){ 
+		require CGI; 
+		$PROGRAM_URL = CGI::url(); 
+	}
+	
+	# I really DO NOT think this is the place to massage Config variables if they 
+	# aren't set right, but it will save people headaches, in the long run: 
+
+
+	my %default_table_names = (
+		subscriber_table                   => 'dada_subscribers',
+		profile_table                      => 'dada_profiles', 
+		profile_fields_table 	           => 'dada_profile_fields', 
+		profile_fields_attributes_table    => 'dada_profile_fields_attributes',
+		archives_table                     => 'dada_archives', 
+		settings_table                     => 'dada_settings', 
+		session_table                      => 'dada_sessions', 
+		bounce_scores_table                => 'dada_bounce_scores', 
+		clickthrough_urls_table            => 'dada_clickthrough_urls',
+		clickthrough_url_log_table         => 'dada_clickthrough_url_log', 		
+		mass_mailing_event_log_table       => 'dada_mass_mailing_event_log',
+		password_protect_directories_table => 'dada_password_protect_directories', 
+		
+	); 
+	for(keys %default_table_names){ 
+		if(!exists($SQL_PARAMS{$_})){ 
+			$SQL_PARAMS{$_} = $default_table_names{$_};
+		}
+	}
+=cut
+
+}
+
+sub guess_config_file { 
+	my $CONFIG_FILE_DIR = undef; 
+	
+	# $PROGRAM_CONFIG_FILE_DIR
+	
+	
+	if(defined($OS) !~ m/^Win|^MSWin/i){ 
+		if($DADA::Config::PROGRAM_CONFIG_FILE_DIR ne 'auto' 
+		&& -e $DADA::Config::PROGRAM_CONFIG_FILE_DIR
+		&& -d $DADA::Config::PROGRAM_CONFIG_FILE_DIR
+		) { 
+			$CONFIG_FILE_DIR =  $DADA::Config::PROGRAM_CONFIG_FILE_DIR; 
+		}
+		else { 
+							
+			my $getpwuid_call; 
+			my $good_getpwuid;
+			eval { 
+				$getpwuid_call = ( getpwuid $> )[7];
+			};
+			if(!$@){ 
+				$good_getpwuid = $getpwuid_call;
+			}
+			if($PROGRAM_CONFIG_FILE_DIR eq 'auto'){
+				$CONFIG_FILE_DIR = $good_getpwuid . '/.dada_files/.configs';
+			}
+			else { 
+				$CONFIG_FILE_DIR = $PROGRAM_CONFIG_FILE_DIR;
+			}
+		}
+	}
+	
+	$CONFIG_FILE = $CONFIG_FILE_DIR.'/.dada_config';
+	
+	# yes, shooting yourself in the foot, RTM
+	$CONFIG_FILE =~ /(.*)/; 
+	$CONFIG_FILE = $1;
+	
+	return $CONFIG_FILE; 
+}
+
+
+
 
 
 
