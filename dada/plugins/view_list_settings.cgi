@@ -1,11 +1,9 @@
 #!/usr/bin/perl -w
 use strict;
 
-# make sure the DADA lib is int he lib paths!
-use lib qw(
-	../ 
-	../DADA/perllib
-);
+use FindBin;
+use lib "$FindBin::Bin/../";
+use lib "$FindBin::Bin/../DADA/perllib";
 
 use CGI::Carp qw(fatalsToBrowser);
 

@@ -32,13 +32,9 @@ BEGIN {
 #---------------------------------------------------------------------#
 # The Path to your Perl *Libraries*:
 
-use lib qw(
-	./
-	./DADA
-	./DADA/perllib
-	../../../perl
-	../../../perllib
-);
+use FindBin;
+use lib "$FindBin::Bin";
+use lib "$FindBin::Bin/DADA/perllib";
 
 #---------------------------------------------------------------------#
 

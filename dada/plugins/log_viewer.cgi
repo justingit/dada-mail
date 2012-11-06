@@ -3,11 +3,13 @@
 package log_viewer; 
 
 use strict; 
+use FindBin;
+use lib "$FindBin::Bin/../";
+use lib "$FindBin::Bin/../DADA/perllib";
 
 use CGI::Carp qw(fatalsToBrowser);
 
-# make sure the DADA lib is in the lib paths!
-use lib qw(../ ../DADA/perllib ../../../../perl ../../../../perllib); 
+
 $ENV{PATH} = "/bin:/usr/bin"; 
 delete @ENV{'IFS', 'CDPATH', 'ENV', 'BASH_ENV'};
 # we need this for cookies things;

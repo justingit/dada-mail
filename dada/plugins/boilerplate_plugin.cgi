@@ -2,8 +2,9 @@
 package boilerplate;
 use strict;
 
-# make sure the DADA lib is in the lib paths!
-use lib qw(../ ../DADA/perllib);
+use FindBin;
+use lib "$FindBin::Bin/../";
+use lib "$FindBin::Bin/../DADA/perllib";
 
 # use some of those Modules
 use DADA::Config 6.0.0;

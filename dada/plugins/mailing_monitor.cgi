@@ -5,12 +5,9 @@ use strict;
 
 $|++; 
 
-use lib qw(
-	../ 
-	../DADA/perllib 
-	../../../../perl 
-	../../../../perllib
-);
+use FindBin;
+use lib "$FindBin::Bin/../";
+use lib "$FindBin::Bin/../DADA/perllib";
 
 use CGI::Carp qw(fatalsToBrowser);
 
