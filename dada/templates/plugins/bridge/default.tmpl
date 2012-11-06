@@ -1,4 +1,4 @@
- <!-- tmpl_set name="title" value="Dada Bridge" -->
+ <!-- tmpl_set name="title" value="Bridge" -->
 
 <!-- tmpl_set name="load_modalbox" value="1" -->
 
@@ -165,93 +165,148 @@ to have your messages broadcast to your entire Subscription List.
 
  <table width="100%" cellpadding="5" cellspacing="0">
   <tr> 
-   <td>
+   <td width="100" align="right">
     <label for="discussion_pop_email">
      List Email:
     </label>
    </td>
    <td>
-
-
     <input name="discussion_pop_email" id="discussion_pop_email" type="text" value="<!-- tmpl_var list_settings.discussion_pop_email -->" class="full" <!-- tmpl_unless list_email_status -->style="background:red;font-weight:bold;color:white;border:3px solid black"<!-- /tmpl_unless -->/>
 	
-	
    </td>
   </tr>
+
   <tr> 
-   <td width="125">
-    <label for="discussion_pop_server">
-     POP3 Server:
-    </label>
-   </td>
-   <td>
-    <input name="discussion_pop_server" id="discussion_pop_server" type="text" value="<!-- tmpl_var list_settings.discussion_pop_server -->" class="full" />
-   </td>
-  </tr>
-  <tr>
-   <td width="125">
-    <label for="discussion_pop_username">
-     POP3 Username:
-    </label>
-   </td>
-   <td>
-    <input name="discussion_pop_username" id="discussion_pop_username" type="text" value="<!-- tmpl_var list_settings.discussion_pop_username -->" class="full" />
-   </td>
-  </tr>
-  <tr>
-   <td width="125">
-    <label for="discussion_pop_password">
-     POP3 Password:
-    </label>
-   </td>
-   <td>
-    <input name="discussion_pop_password" id="discussion_pop_password" type="password" value="<!-- tmpl_var name=discussion_pop_password escape="HTML"-->" />
-   </td>
-  </tr>
+	<td align="right">
+		<p><label>Setup As:</label></p>
+	</td> 
+	<td>
+
+	<table> 
+		<tr> 
+			<td>
+				<p>
+					<input type="radio" name="bridge_list_email_type" class="list_email_setup" id="mail_forward_pipe" value="mail_forward_pipe" <!-- tmpl_if expr="(list_settings.bridge_list_email_type eq 'mail_forward_pipe')" -->checked="checked"<!-- /tmpl_if -->>
+				</p>
+			</td>
+			<td>
+				<p>
+					<label for="mail_forward_pipe">Email Forward to Bridge</label>
+				</p>
+				<div id="bridge_mail_forward_pipe_params">
+					<p>Thar be params for mail forwarding!!</p> 
+				</div> 
+			</td>
+		</tr> 
+		<tr> 
+			<td align="right">
+				<p>
+					<input type="radio" name="bridge_list_email_type" class="list_email_setup" id="pop3_account" value="pop3_account" <!-- tmpl_if expr="(list_settings.bridge_list_email_type eq 'pop3_account')" -->checked="checked"<!-- /tmpl_if -->>
+				</p>
+			</td>
+			<td>
+				<p>
+					<label for="pop3_account">POP3 Account</label>
+				</p>
+				
+				
+				<div id="bridge_pop3_account_params">
+					<fieldset> 
+				<table> 
+					 <tr> 
+					   <td>
+					    <label for="discussion_pop_server">
+					     POP3 Server:
+					    </label>
+					   </td>
+					   <td>
+					    <input name="discussion_pop_server" id="discussion_pop_server" type="text" value="<!-- tmpl_var list_settings.discussion_pop_server -->" class="full" />
+					   </td>
+					  </tr>
+					  <tr>
+					   <td width="125">
+					    <label for="discussion_pop_username">
+					     POP3 Username:
+					    </label>
+					   </td>
+					   <td>
+					    <input name="discussion_pop_username" id="discussion_pop_username" type="text" value="<!-- tmpl_var list_settings.discussion_pop_username -->" class="full" />
+					   </td>
+					  </tr>
+					  <tr>
+					   <td width="125">
+					    <label for="discussion_pop_password">
+					     POP3 Password:
+					    </label>
+					   </td>
+					   <td>
+					    <input name="discussion_pop_password" id="discussion_pop_password" type="password" value="<!-- tmpl_var name=discussion_pop_password escape="HTML"-->" />
+					   </td>
+					  </tr>
 
 
-<tr>
-     <td>
-      <p>
-       <label for="discussion_pop_auth_mode">
-        Type:
-       </label>
-      </p>
-     </td>
-     <td>
-      <p>
-       <!-- tmpl_var discussion_pop_auth_mode_popup --> 
-     </p>
-     </td>
-    </tr>
-    
-    
-   </table>
-   
-    <table <!-- tmpl_unless can_use_ssl -->class="disabled"<!--/tmpl_unless-->> 
-     <tr>
-      <td>
-       <p>
-        <input type="checkbox" name="discussion_pop_use_ssl" id="discussion_pop_use_ssl" value="1" <!-- tmpl_if list_settings.discussion_pop_use_ssl -->checked="checked"<!-- /tmpl_if --> <!-- tmpl_unless can_use_ssl -->disabled="disabled"<!--/tmpl_unless-->/>
-       </p>
-      </td>
-      <td>
-       <p>
-        <label for="discussion_pop_use_ssl">
-         Use Secure Sockets Layer (SSL)
-        </label>
-        <!-- tmpl_unless can_use_ssl -->
-            <br />
-            <span class="error">
-             Disabled. The IO::Socket::SSL module needs to be installed.
-            </span>
-        <!--/tmpl_unless--> 
-        
-       </p>
-      </td>
-     </tr>
-    </table> 
-    
+					<tr>
+					     <td>
+					      <p>
+					       <label for="discussion_pop_auth_mode">
+					        Type:
+					       </label>
+					      </p>
+					     </td>
+					     <td>
+					      <p>
+					       <!-- tmpl_var discussion_pop_auth_mode_popup --> 
+					     </p>
+					  </td>
+					 </tr>
+					<tr>
+						<td align="right" valign="top">
+
+
+					       <p>
+					        <input type="checkbox" name="discussion_pop_use_ssl" id="discussion_pop_use_ssl" value="1" <!-- tmpl_if list_settings.discussion_pop_use_ssl -->checked="checked"<!-- /tmpl_if --> <!-- tmpl_unless can_use_ssl -->disabled="disabled"<!--/tmpl_unless-->/>
+					       </p>
+					      </td>
+					      <td valign="top">
+
+					       <p>
+					        <label for="discussion_pop_use_ssl">
+					         Use Secure Sockets Layer (SSL)
+					        </label>
+					        <!-- tmpl_unless can_use_ssl -->
+					            <br />
+					            <span class="error">
+					             Disabled. The IO::Socket::SSL module needs to be installed.
+					            </span>
+					        <!--/tmpl_unless--> 
+
+					       </p>    
+					  </td>
+					 </tr>
+				</table> 
+				 <div class="buttonfloat">
+				 <input type="button" class="cautionary plugins_bridge_test_pop3" value="Test Saved POP3 Login Information..." />
+				</div> 
+				 <div class="floatclear"></div> 	
+				</fieldset> 
+			</div> 
+			
+			</td>
+		</tr>
+	</table> 
+	</div> 
+
+	
+					
+		</td>
+	</tr>
+
+ 
+
+
+</table>
+
+
   </fieldset>   
 
 
@@ -908,12 +963,6 @@ Mailing List Security
 
 
  <div class="buttonfloat">
-
-
-<form method="get" style="display:inline">
- <input name="flavor" type="hidden" value="test_pop3" />
- <input type="submit" class="cautionary plugins_bridge_test_pop3" value="Test Saved POP3 Login Information..." />
-</form> 
 
 
 

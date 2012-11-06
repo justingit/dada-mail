@@ -341,7 +341,7 @@ $jq(document).ready(function() {
 		});
 	}
 
-	// Plugins >> Dada Bridge
+	// Plugins >> Bridge
 	if ($jq("#plugins_bridge_default").length) {
 
 		$jq("body").on("click", ".plugins_bridge_test_pop3", function(event) {
@@ -353,6 +353,14 @@ $jq(document).ready(function() {
 			event.preventDefault();
 			plugins_bridge_manually_check_messages();
 		});
+		
+		$jq("body").on("click", '.list_email_setup', function(event) {
+			bridge_setup_list_email_type_params();
+		});
+		
+		
+		
+		bridge_setup_list_email_type_params(); 
 
 
 
@@ -1130,7 +1138,26 @@ function bounce_handler_parse_bounces() {
 	});
 }
 
-// Plugins >> Dada Bridge 
+// Plugins >> Bridge 
+
+function bridge_setup_list_email_type_params() { 
+	if ($jq("#mail_forward_pipe").prop("checked") == true) {
+		if ($jq('#bridge_mail_forward_pipe_params').is(':hidden')) {
+			$jq('#bridge_mail_forward_pipe_params').show('blind');
+		}
+		if ($jq('#bridge_pop3_account_params').is(':visible')) {
+			$jq('#bridge_pop3_account_params').hide('blind');
+		}
+	}
+	if ($jq("#pop3_account").prop("checked") == true) {
+		if ($jq('#bridge_pop3_account_params').is(':hidden')) {
+			$jq('#bridge_pop3_account_params').show('blind');
+		}
+		if ($jq('#bridge_mail_forward_pipe_params').is(':visible')) {
+			$jq('#bridge_mail_forward_pipe_params').hide('blind');
+		}
+	}	
+}
 
 function plugins_bridge_test_pop3() {
 	Modalbox.show(

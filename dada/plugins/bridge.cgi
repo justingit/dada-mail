@@ -1,6 +1,11 @@
 #!/usr/bin/perl
 package bridge;
 
+
+use FindBin;
+use lib "$FindBin::Bin/../";
+use lib "$FindBin::Bin/../DADA/perllib";
+
 use strict;
 $ENV{PATH} = "/bin:/usr/bin";
 delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
@@ -20,10 +25,7 @@ delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 # that are set here are *optional*
 #---------------------------------------------------------------------#
 
-use lib qw(
-  ../
-  ../DADA/perllib
-);
+
 
 use CGI::Carp qw(fatalsToBrowser);
 
@@ -718,6 +720,7 @@ sub cgi_default {
         prefix_list_name_to_subject                => 0,
         no_prefix_list_name_to_subject_in_archives => 0,
         discussion_pop_email                       => undef,
+        bridge_list_email_type                     => 'pop3_account', 
         discussion_pop_server                      => undef,
         discussion_pop_username                    => undef,
         discussion_pop_password                    => undef,
@@ -1065,14 +1068,17 @@ sub start {
               . ")\n" )
           if $verbose;
 
-        if ( $ls->param('disable_discussion_sending') == 0 ) {
-            e_print(
-"\t* This sending method has been disabled for $list, deleting message... \n"
-            ) if $verbose;
+        if ( $ls->param('disable_discussion_sending') == 1 ) {
+            e_print("\t* Bridge is not enabled for, $list \n") 
+				if $verbose;
             next LIST_QUEUE;
         }
-
-        if (
+        if ( $ls->param('bridge_list_email_type') eq "mail_forward_pipe" ) {
+            e_print("\t* List Email is set up as a Mail Forward to Pipe to Bridge \n") 
+				if $verbose;
+            next LIST_QUEUE;
+        }  
+		if (
             $ls->param('discussion_pop_email') eq $ls->param('list_owner_email')
           )
         {
@@ -1305,20 +1311,28 @@ sub inject_msg {
 		carp "could not remove tmpfile at, $filename"; 
 	}
 	
-    if ( soft_max_msg_test( { -size => $size } ) == 0 ) {
-        send_msg_too_big( $ls, \$msg, $size );
+	
+	if ( $ls->param('bridge_list_email_type') ne "mail_forward_pipe" ) {
+        e_print("\t* Bridge is not enabled to receive mail this way, for this list. \n") 
+			if $verbose;
+				carp "Bridge is not enabled to receive mail this way, for this list."; 
     }
-    else {
+	else { 
+  	  if ( soft_max_msg_test( { -size => $size } ) == 0 ) {
+	        send_msg_too_big( $ls, \$msg, $size );
+	    }
+	    else {
 
-        inject(
-            {
-                -ls        => $ls,
-                -msg       => $msg,
-                -verbose   => $verbose,
-                -test_mail => $test,
-            }
-        );
-    }
+	        inject(
+	            {
+	                -ls        => $ls,
+	                -msg       => $msg,
+	                -verbose   => $verbose,
+	                -test_mail => $test,
+	            }
+	        );
+	    }
+	}
 }
 
 
@@ -1540,7 +1554,7 @@ sub pop3_login {
                     password  => $password,
                     verbose   => $verbose,
                     USESSL    => $ls->param('discussion_pop_use_ssl'),
-                    AUTH_MODE => param('discussion_pop_auth_mode'),
+                    AUTH_MODE => $ls->param('discussion_pop_auth_mode'),
                 }
               );
         };
@@ -3330,9 +3344,9 @@ sub cgi_edit_email_msgs {
                 }
             }
         );
-
-        print $q->redirect( -uri => $Plugin_Config->{Plugin_URL}
-              . '?flavor=edit_email_msgs&done=1' );
+ 
+		
+        print $q->redirect( -uri => $Plugin_Config->{Plugin_URL} . '?flavor=edit_email_msgs&done=1' );
 
     }
 }
