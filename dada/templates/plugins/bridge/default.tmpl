@@ -45,43 +45,7 @@
 
 <fieldset> 
 
-<legend>List Email Address Configuration</legend>
-
- 
-
-  <blockquote class="positive">
- <p>
-
-The <strong>List Email</strong> address is the email address to which you will be sending, 
-to have your messages broadcast to your entire Subscription List.
-
-
-
-   This email account needs to be created, 
-   if it's not already available. Make sure this address is not being used 
-   for <strong>any</strong> other purpose.
-
-
-
-
- </p> 
- <p>
-   The 
-   <strong>
-    List Email 
-   </strong>
-   should be different than both your list owner email address 
-   (<em><!-- tmpl_var list_settings.list_owner_email escape="HTML" --></em>)
-   and your list admin email address (<em><!-- tmpl_var list_settings.admin_email escape="HTML" --></em>). 
-   If 
-   <strong>
-    &quot;Make this list a discussion list&quot;
-   </strong> 
-   has been checked, all subscribers can mail to the <strong>List Email</strong>
-   and have their message sent to all other subscribers. 
- </p>
-</blockquote> 
-
+<legend>List Email Configuration</legend>
 
 <!-- tmpl_if error_list_email_set_to_list_owner_email --> 
 		<ul> 
@@ -165,41 +129,48 @@ to have your messages broadcast to your entire Subscription List.
 
  <table width="100%" cellpadding="5" cellspacing="0">
   <tr> 
-   <td width="100" align="right">
-    <label for="discussion_pop_email">
+   <td width="150" align="right" valign="bottom">
+    <label for="discussion_pop_email" style="font-size:1.5em">
      List Email:
     </label>
    </td>
    <td>
-    <input name="discussion_pop_email" id="discussion_pop_email" type="text" value="<!-- tmpl_var list_settings.discussion_pop_email -->" class="full" <!-- tmpl_unless list_email_status -->style="background:red;font-weight:bold;color:white;border:3px solid black"<!-- /tmpl_unless -->/>
+    <input name="discussion_pop_email" id="discussion_pop_email" type="text" value="<!-- tmpl_var list_settings.discussion_pop_email -->" class="full bigger_button" <!-- tmpl_unless list_email_status -->style="background:red;font-weight:bold;color:white;border:3px solid black"<!-- /tmpl_unless -->/>
 	
    </td>
   </tr>
+</table>
 
+ <table width="100%" cellpadding="0" cellspacing="0">
+  
   <tr> 
-	<td align="right">
+	<td align="right" width="100">
 		<p><label>Setup As:</label></p>
 	</td> 
 	<td>
 
-	<table> 
+	<table width="100%" cellpadding="0" cellspacing="0"> 
 		<tr> 
-			<td>
+			<td width="15">
 				<p>
 					<input type="radio" name="bridge_list_email_type" class="list_email_setup" id="mail_forward_pipe" value="mail_forward_pipe" <!-- tmpl_if expr="(list_settings.bridge_list_email_type eq 'mail_forward_pipe')" -->checked="checked"<!-- /tmpl_if -->>
 				</p>
 			</td>
 			<td>
 				<p>
-					<label for="mail_forward_pipe">Email Forward to Bridge</label>
+					<label for="mail_forward_pipe">Email Forward</label>
 				</p>
 				<div id="bridge_mail_forward_pipe_params">
-					<p>Thar be params for mail forwarding!!</p> 
+					<fieldset>
+						<label for="bridge_mail_forward_pipe_command">Email Forward Pipe Command (example):</label><br /> 
+						<input type="text" class="full" id="bridge_mail_forward_pipe_command" value="|<!-- tmpl_var plugin_path escape="HTML" -->/<!-- tmpl_var plugin_filename escape="HTML" --> --inject --list <!-- tmpl_var list_settings.list -->" />
+					</fieldset>
+					 
 				</div> 
 			</td>
 		</tr> 
 		<tr> 
-			<td align="right">
+			<td align="right" width="15">
 				<p>
 					<input type="radio" name="bridge_list_email_type" class="list_email_setup" id="pop3_account" value="pop3_account" <!-- tmpl_if expr="(list_settings.bridge_list_email_type eq 'pop3_account')" -->checked="checked"<!-- /tmpl_if -->>
 				</p>
@@ -285,10 +256,42 @@ to have your messages broadcast to your entire Subscription List.
 					 </tr>
 				</table> 
 				 <div class="buttonfloat">
-				 <input type="button" class="cautionary plugins_bridge_test_pop3" value="Test Saved POP3 Login Information..." />
+				 <input type="button" class="cautionary plugins_bridge_test_pop3" value="Test POP3 Login Information..." />
 				</div> 
 				 <div class="floatclear"></div> 	
 				</fieldset> 
+				
+				
+				<fieldset> 
+				<p>
+				 <label for="cronjob_url">Manual Run URL:</label><br /> 
+				<input type="text" class="full" id="cronjob_url" value="<!-- tmpl_var Plugin_URL -->?run=1&passcode=<!-- tmpl_var Manual_Run_Passcode -->" />
+				</p>
+
+
+
+				<p> <label for="cronjob_command">cronjob command using curl (example):</label><br /> 
+				<input type="text" class="full" id="cronjob_command" value="<!-- tmpl_var name="curl_location" default="/cannot/find/curl" -->  -s --get --data run=1\;passcode=<!-- tmpl_var Manual_Run_Passcode -->\;verbose=0  --url <!-- tmpl_var Plugin_URL -->" />
+				<!-- tmpl_unless curl_location --> 
+					<span class="error">Can't find the location to curl!</span><br />
+				<!-- /tmpl_unless --> 
+
+				<!-- tmpl_unless Allow_Manual_Run --> 
+				    <span class="error">(Currently disabled)</a>
+				<!-- /tmpl_unless --> 
+				</p>
+
+				 <div class="buttonfloat">
+					<form method="get" style="display:inline">
+					  <input type="button" class="cautionary plugins_bridge_manually_check_messages" value="Manually Check and Send Waiting Messages..." />
+					</form> 
+				 </div> 
+				 <div class="floatclear"></div> 
+
+
+				</fieldset>
+				
+				
 			</div> 
 			
 			</td>
@@ -957,46 +960,7 @@ Mailing List Security
 
 
 
-<fieldset> 
 
-<legend>Manually Run <!-- tmpl_var Plugin_Name --></legend>
-
-
- <div class="buttonfloat">
-
-
-
-<form method="get" style="display:inline">
-  <input type="button" class="cautionary plugins_bridge_manually_check_messages" value="Manually Check and Send Waiting Messages..." />
-</form> 
-
- </div> 
- <div class="floatclear"></div> 
-
-
-
-<p>
- <label for="cronjob_url">Manual Run URL:</label><br /> 
-<input type="text" class="full" id="cronjob_url" value="<!-- tmpl_var Plugin_URL -->?run=1&passcode=<!-- tmpl_var Manual_Run_Passcode -->" />
-</p>
-
-
-
-<p> <label for="cronjob_command">curl command example (for a cronjob):</label><br /> 
-<input type="text" class="full" id="cronjob_command" value="<!-- tmpl_var name="curl_location" default="/cannot/find/curl" -->  -s --get --data run=1\;passcode=<!-- tmpl_var Manual_Run_Passcode -->\;verbose=0  --url <!-- tmpl_var Plugin_URL -->" />
-<!-- tmpl_unless curl_location --> 
-	<span class="error">Can't find the location to curl!</span><br />
-<!-- /tmpl_unless --> 
-
-<!-- tmpl_unless Allow_Manual_Run --> 
-    <span class="error">(Currently disabled)</a>
-<!-- /tmpl_unless --> 
-
-</p>
-
-
-
-</fieldset> 
 
 <fieldset> 
 <legend><!-- tmpl_var Plugin_Name --> Email Templates</legend>

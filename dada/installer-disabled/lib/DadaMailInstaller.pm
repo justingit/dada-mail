@@ -30,6 +30,7 @@ CGI->nph(1)
   if $BootstrapConfig::NPH == 1;
 my $q;
 $q = CGI->new;
+$q->charset($DADA::Config::HTML_CHARSET);
 $q = decode_cgi_obj($q);
 
 
@@ -147,7 +148,7 @@ q{#					{
 
 $plugins_extensions->{bridge}->{code} = 
 q{#					{
-#					-Title      => 'Discussion Lists',
+#					-Title      => 'Bridge',
 #					-Title_URL  => $PLUGIN_URL."/bridge.cgi",
 #					-Function   => 'bridge',
 #					-Activated  => 1,

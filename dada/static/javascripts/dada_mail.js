@@ -1167,7 +1167,12 @@ function plugins_bridge_test_pop3() {
 		height: 480,
 		method: 'post',
 		params: {
-			flavor: 'cgi_test_pop3_ajax',
+			flavor:    'cgi_test_pop3_ajax',
+			server:    $jq("#discussion_pop_server").val(), 
+			username:  $jq("#discussion_pop_username").val(),
+			password:  $jq("#discussion_pop_password").val(),
+			auth_mode: $jq("#discussion_pop_auth_mode option:selected").val(), 
+			use_ssl:   $jq("#discussion_pop_use_ssl").prop("checked") 
 		},
 	});
 }

@@ -694,7 +694,7 @@ $PLUGIN_CONFIGS ||= {
 
 	},
 	
-	Dada_Bridge => {
+	Bridge => {
 
 		Plugin_Name                         => undef,
 		Plugin_URL                          => undef,
@@ -2160,7 +2160,7 @@ $ADMIN_MENU ||= [
 #					},
 
 #					{
-#					-Title      => 'Discussion Lists',
+#					-Title      => 'Bridge',
 #					-Title_URL  => $PLUGIN_URL."/bridge.cgi",
 #					-Function   => 'bridge',
 #					-Activated  => 1,

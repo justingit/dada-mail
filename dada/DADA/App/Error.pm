@@ -30,7 +30,7 @@ use vars qw(@EXPORT);
 my %error;
 
 require CGI;
-my $q = new CGI; 
+my $q = CGI->new; 
    $q->charset($DADA::Config::HTML_CHARSET);
    $q = decode_cgi_obj($q);
 

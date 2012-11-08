@@ -10122,6 +10122,19 @@ EOF
 
 }
 
+sub css {
+	
+	# Backwards compat -  
+	if($q->param('css_file') eq 'default.css') { 
+		require DADA::Template::Widgets; 
+		print $q->header('text/css'); 
+		print DADA::Template::Widgets::_raw_screen({-screen => $DADA::Config::SUPPORT_FILES->{dir} . '/static/css/default.css'}); 	
+	}
+	else { 
+		print $q->header('text/css'); 		
+	}
+}
+
 
 
 

@@ -101,7 +101,7 @@ sub cached {
 sub profile_on {
     my $self = shift;
     use CGI;
-    my $q = new CGI;
+    my $q = CGI->new;
     if ( $DADA::Config::PROFILE_OPTIONS->{enabled} == 1 ) {
         my $profile_cookie_name =
           $DADA::Config::PROFILE_OPTIONS->{cookie_params}->{-name};
