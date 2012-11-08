@@ -16,7 +16,7 @@ $jq(document).ready(function() {
 			var itsatest = $jq(this).hasClass("justatest");
 			var submit_it = sendMailingListMessage(fid, itsatest);
 			if (submit_it == true) {
-				$jq('#' + fid).off('submit');
+				$jq("body").off('submit', '#' + fid);
 				$jq('#' + fid).submit();
 			} else {
 				//alert("It stays off!"); 
@@ -135,7 +135,7 @@ $jq(document).ready(function() {
 				go = warnAboutMassSubscription();
 			}
 			if (go == true) {
-				$jq('#confirm_add').off('submit');
+				$jq('body').off('submit', "#confirm_add");
 				$jq('#confirm_add').submit();
 			}
 		});
@@ -290,6 +290,7 @@ $jq(document).ready(function() {
 			installer_test_pop3_connection();
 		});
 		
+	
 		$jq("body").on('keyup', "#dada_root_pass_again", function(event){
 			
 		     if($jq("#dada_root_pass_again").val() != $jq("#dada_root_pass").val() && $jq("#dada_root_pass_again").val().length){
@@ -301,10 +302,14 @@ $jq(document).ready(function() {
 			}
 		});
 		
+		$jq("body").on('click', "#install_wysiwyg_editors", function(event) { 
+			installer_toggle_wysiwyg_editors_options()
+		}); 
 		installer_dada_root_pass_options();
 		installer_toggleSQL_options();
 		installer_toggle_dada_files_dirOptions();
 		installer_togger_bounce_handler_config();
+		installer_toggle_wysiwyg_editors_options(); 
 
 		$jq("#dada_files_help").hide();
 		$jq("#program_url_help").hide();
@@ -1056,6 +1061,18 @@ function installer_togger_bounce_handler_config() {
 	} else {
 		if ($jq('#additional_bounce_handler_configuration').is(':visible')) {
 			$jq('#additional_bounce_handler_configuration').hide('blind');
+		}
+	}
+}
+
+function installer_toggle_wysiwyg_editors_options() {
+	if ($jq("#install_wysiwyg_editors").prop("checked") == true) {
+		if ($jq('#install_wysiwyg_editors_options').is(':hidden')) {
+			$jq('#install_wysiwyg_editors_options').show('blind');
+		}
+	} else {
+		if ($jq('#install_wysiwyg_editors_options').is(':visible')) {
+			$jq('#install_wysiwyg_editors_options').hide('blind');
 		}
 	}
 }
