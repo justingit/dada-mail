@@ -416,18 +416,6 @@ The SQL password.
 	user             => '',          
 	pass             => '',
 
-	subscriber_table                   => 'dada_subscribers',
-	profile_table                      => 'dada_profiles', 
-	profile_fields_table 	           => 'dada_profile_fields', 
-	profile_fields_attributes_table    => 'dada_profile_fields_attributes',
-	archives_table                     => 'dada_archives', 
-	settings_table                     => 'dada_settings', 
-	session_table                      => 'dada_sessions', 
-	bounce_scores_table                => 'dada_bounce_scores', 
-	clickthrough_urls_table            => 'dada_clickthrough_urls', 
-	clickthrough_url_log_table         => 'dada_clickthrough_url_log', 		
-	mass_mailing_event_log_table       => 'dada_mass_mailing_event_log',
-	password_protect_directories_table => 'dada_password_protect_directories', 
 ) unless keys %SQL_PARAMS; 
 
 

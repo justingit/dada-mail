@@ -1,43 +1,45 @@
-my $DIR         = '/home/account/.dada_files';
 #---------------------------------------------------------------------#
-$PROGRAM_URL    = 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi';
+# Dada Mail Outside Config File! (.dada_config)
 
 #---------------------------------------------------------------------#
-$FILES                    = $DIR . '/.lists';
-$TEMPLATES                = $DIR . '/.templates';
-$TMP                      = $DIR . '/.tmp';
-$BACKUPS                  = $DIR . '/.backups';
-$ARCHIVES                 = $DIR . '/.archives';
-$LOGS                     = $DIR . '/.logs'; 
+# The location of your .dada_config directory: 
+#
+$DIR = '/home/account/.dada_files';
+
 #---------------------------------------------------------------------#
-$PROGRAM_USAGE_LOG        = $LOGS . '/dada.txt';
+# The URL to access Dada Mail:
+#
+$PROGRAM_URL = 'http://example.com/cgi-bin/dada/mail.cgi';
+
 #---------------------------------------------------------------------#
+# The location of static, support files
+#
+$SUPPORT_FILES = { 
+	dir => '/home/account/public_html/dada_mail_support_files', 
+	url => 'http://example.com/dada_mail_support_files', 
+};
 
 
-
+#---------------------------------------------------------------------#
+# The Dada Mail Root Pass: 
+#
 # Start Root Password
 
-$PROGRAM_ROOT_PASSWORD    = 't';
-$ROOT_PASS_IS_ENCRYPTED   = 0; 
+$PROGRAM_ROOT_PASSWORD    = 'test';
+$ROOT_PASS_IS_ENCRYPTED   = '0';
 
 # End Root Password
-
-$SUPPORT_FILES = { 
-	dir => '<!-- tmpl_var support_files_dir_path -->', 
-	url => '<!-- tmpl_var support_files_dir_url -->', 
-};
+#---------------------------------------------------------------------#
 
 
 # start cut for SQL Backend
 =cut
 
-$SUBSCRIBER_DB_TYPE       = 'SQL'; 
-$ARCHIVE_DB_TYPE          = 'SQL'; 
-$SETTINGS_DB_TYPE         = 'SQL'; 
-$SESSION_DB_TYPE          = 'SQL'; 
-$BOUNCE_SCORECARD_DB_TYPE = 'SQL';
-$CLICKTHROUGH_DB_TYPE     = 'SQL'; 
+#---------------------------------------------------------------------#
+#
+# Backend Database Configuration: 
 
+$BACKEND_DB_TYPE = 'SQL';
 
 %SQL_PARAMS = ( 
 
@@ -58,23 +60,15 @@ $CLICKTHROUGH_DB_TYPE     = 'SQL';
 	user             => '',          
 	pass             => '',
 
-	subscriber_table                => 'dada_subscribers',
-	profile_table                   => 'dada_profiles', 
-	profile_fields_table 	        => 'dada_profile_fields', 
-	profile_fields_attributes_table => 'dada_profile_fields_attributes',
-	archives_table                  => 'dada_archives', 
-	settings_table                  => 'dada_settings', 
-	session_table                   => 'dada_sessions', 
-	bounce_scores_table             => 'dada_bounce_scores',
-	clickthrough_urls_table         => 'dada_clickthrough_urls', 
-
 );
-
-$LIST_IN_ORDER = 1; 
-
 
 =cut
 # end cut for SQL Backend
+
+
+#---------------------------------------------------------------------#
+#
+# WYSIWYG Editor/File Browser Options
 
 # start cut for WYSIWYG Editor Options
 =cut
@@ -110,6 +104,7 @@ $FILE_BROWSER_OPTIONS = {
 
 =cut
 # start cut for Dada Mail Profile Options
+
 
 $PROFILE_OPTIONS = { 
 		
@@ -506,6 +501,7 @@ $ADMIN_MENU = [
 
 
 
+
 	{
 	-Title      => 'Plugins',
 	-Activated  => 1,
@@ -622,6 +618,7 @@ $ADMIN_MENU = [
 #					-Activated  => 1,
 #					},
 
+
 #					{
 #					-Title      => 'Archive Blog Index',
 #					-Title_URL  => $EXT_URL."/blog_index.cgi?mode=html&list=<!-- tmpl_var list_settings.list -->",
@@ -631,6 +628,7 @@ $ADMIN_MENU = [
 
 				],
 		},
+		
 
 		{
 		-Title      => 'Your List Control Panel',
@@ -651,7 +649,7 @@ $ADMIN_MENU = [
 					}
 				], 
 		},
-		
+				
 		{
 		-Title      => 'App Information',
 		-Activated  => 1,
@@ -672,6 +670,7 @@ $ADMIN_MENU = [
 
 				],
 			},
+
 ];
 
 

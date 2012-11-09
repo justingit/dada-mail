@@ -34,6 +34,7 @@ while(defined($file = readdir TMPL)) {
     if($file =~ m{(\.tmpl|\.widget)}){ 
     
 		# Wait. Why am I skipping these?
+		next if $file =~ m{example_dada_config.tmpl};
         next if $file =~ m{rss-2_0.tmpl}; 
         next if $file =~ m{atom-1_0.tmpl}; 
         next if $file =~ m{admin_js.tmpl}; 

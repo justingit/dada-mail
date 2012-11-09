@@ -187,42 +187,8 @@ sub _is_binary {
 	}
 }
 
-=cut
-sub pass {
 
-    my $self     = shift;
-    my $screen   = shift;
-    my $filename = $self->cache_dir . '/' . $self->translate_name($screen);
 
-    if ( $self->cached($screen) ) {
-
-        if ($self->_is_binary($filename)) {
-            open SCREEN, '<', DADA::App::Guts::make_safer($filename)
-              or croak("cannot open $filename - $!");
-            binmode SCREEN;
-        }
-        else {
-            open SCREEN, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')',
-              DADA::App::Guts::make_safer($filename)
-              or croak("cannot open $filename - $!");
-        }
-
-        my $return;		 
-        while ( my $l = <SCREEN> ) {
-            $return .= $l;
-        }
-        close(SCREEN)
-          or croak("cannot close $filename - $!");
-
-        return $return;
-
-    }
-    else {
-        croak "data is not cached! " . $!;
-    }
-
-}
-=cut
 
 sub cache {
 

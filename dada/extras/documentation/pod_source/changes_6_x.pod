@@ -1,0 +1,11 @@
+=head1 6.0.0
+
+=head2 Summary 6.0.0
+
+This major release of Dada Mail includes major changes to the Dada Mail codebase. A detailed explanation of these changes, compared to v5 of Dada Mail can be found at, 
+
+L<http://dadamailproject.com/d/dada5_to_dada6.pod.html>
+
+When upgrading from I<any> previous version of Dada Mail, make sure to create a new C<.dada_config> file, as old C<.dada_config> files will not work with v6 of Dada Mail. 
+
+=head3 

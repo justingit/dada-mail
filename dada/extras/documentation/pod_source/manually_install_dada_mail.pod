@@ -85,6 +85,23 @@ Set C<$PROGRAM_URL> to the URL we used to access the, C<mail.cgi> script in the 
 
 =back
 
+=head3 $SUPPORT_FILES
+
+Dada Mail needs a location for its static files - images, css files, javascript files, etc. In your account's public_html directory, create a new directory, called, C<dada_mail_support_files>: 
+
+	mkdir /home/example/public_html/dada_mail_support_files
+
+Then, copy the C<static> directory that's comes in the, C<dada> directory, into this new directory: 
+
+	cp -R /home/example/public_html/cgi-bin/dada/static /home/example/public_html/dada_mail_support_files/static
+	
+Set the variable, C<$SUPPORT_FILES> to the absolute server path, and URL of this directory: 
+
+	$SUPPORT_FILES = { 
+		dir => '/home/example/public_html/dada_mail_support_files', 
+		url => 'http://example.com/dada_mail_support_files', 
+	};
+
 =head3 $PROGRAM_ROOT_PASSWORD - The Dada Mail Root Password
 
 You'll also want to set the main, Dada Mail Root Password for Dada Mail in the I<.dada_config file>. It's saved in the variable, C<$PROGRAM_ROOT_PASSWORD>. There's two ways to do this: 
@@ -161,7 +178,6 @@ Now, just fill out the variables in the .dada_config file. Here's the lines you'
 	pass             => 'dadapass',
 
 For my database, I set the name as, "dadamail" the user as, "dadauser" and the password as, "dadapass". You should be able to spot them, in the code above. 
-
 
 =head3 All Set! 
 

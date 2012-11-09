@@ -683,23 +683,6 @@ sub report_by_message_index {
     my $self          = shift;
 	my ($args)        = @_; 
 	my $sorted_report = [];
-
-# !!! This does not take into effect the range of message ids... 
-=cut	
-	require DADA::App::DataCache; 
-	my $dc = DADA::App::DataCache->new;
-	
-	my $sorted_report_dump = $dc->retrieve(
-		{
-			-list    => $self->{name}, 
-			-name    => 'report_by_message_index', 
-		}
-	);
-	$sorted_report = eval($sorted_report_dump);
-
-	if(! defined($sorted_report)){
-=cut
-
 	    my $report        = {};
 	    my $l;
 	
@@ -1350,14 +1333,6 @@ sub individual_country_geoip_report {
 		$loc->{unique_ip_count} = scalar(@{$loc->{unique_ips}}); 
 		delete($loc->{ip_data});
 	} 
-
-=cut
-	use CGI qw(:standard); 
-	print header('text/plain');
-	use Data::Dumper; 
-	print Dumper($report);  
-=cut
-
 	return $report;
 	
 	

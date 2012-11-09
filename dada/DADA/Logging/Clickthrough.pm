@@ -2,6 +2,11 @@ package DADA::Logging::Clickthrough;
 
 
 use lib qw(../../ ../../perllib);
+use strict; 
+use DADA::Config qw(!:DEFAULT); 
+use DADA::App::Guts;
+my $type;  
+
 
 BEGIN {
     $type = $DADA::Config::CLICKTHROUGH_DB_TYPE;
@@ -12,12 +17,8 @@ BEGIN {
         $type = 'Db';
     }
 }
-
 use base "DADA::Logging::Clickthrough::$type";
 
-use strict; 
-use DADA::Config qw(!:DEFAULT); 
-use DADA::App::Guts;
 
 use Fcntl qw(LOCK_SH);
 use Carp qw(croak carp); 
