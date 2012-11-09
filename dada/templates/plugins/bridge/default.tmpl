@@ -555,20 +555,22 @@ General
   </tr>
 
 
+<!-- tmpl_if comment --> 
 
-	<tr> 
-	<td>
-	<p>
-	 <input type="checkbox" name="discussion_clean_up_replies" id="discussion_clean_up_replies" value="1" <!--tmpl_if list_settings.discussion_clean_up_replies -->checked="checked"<!--/tmpl_if--> />
-	</p></td> 
-	<td> 
-	<label for="discussion_clean_up_replies">Attempt to clean up replies</label>
-	 <em>(Experimental)</em><br /> 
-	An attempt will be made to remove quoted Opening and Signature parts from replies. The Opening and Signature parts usually hold 
-	mailing list/unsubscribe/profile information that often gets repeated, forming long chains at the bottom of mailing list messages. 
-</p> 
-</td> 
-</tr>
+					<tr> 
+					<td>
+					<p>
+					 <input type="checkbox" name="discussion_clean_up_replies" id="discussion_clean_up_replies" value="1" <!--tmpl_if list_settings.discussion_clean_up_replies -->checked="checked"<!--/tmpl_if--> />
+					</p></td> 
+					<td> 
+					<label for="discussion_clean_up_replies">Attempt to clean up replies</label>
+					 <em>(Experimental)</em><br /> 
+					An attempt will be made to remove quoted Opening and Signature parts from replies. The Opening and Signature parts usually hold 
+					mailing list/unsubscribe/profile information that often gets repeated, forming long chains at the bottom of mailing list messages. 
+				</p> 
+				</td> 
+				</tr>
+<!-- /tmpl_if --> 
 
 
 <!-- tmpl_if Allow_Open_Discussion_List -->

@@ -183,6 +183,21 @@ The Subscriber search form has autocomplete capabilities, which searches and mat
 
 The B<Recent Activity> screen now has a graph labeled, B<Subscription Trends>. This graph shows daily, as well as cumulative data on Subscriptions and Unsubscriptions on your mailing list. 
 
+=head1 WYSIWYG editors and Template Tags
+
+In version < 6 of Dada Mail, when template tags like, 
+
+	<!-- tmpl_var list_settings.list_name --> 
+
+are entered in the rich text (rather than source view) of the WYSIWYG editor, the "<", and, ">" characters are converted into their HTML entities, so the source of your message now looks like this: 
+
+	&lt;!-- tmpl_var list_settings.list_name --&gt;
+
+Which breaks the tag, and you will see the original template tag, which will not be converted to its value. 
+
+In v6, Dada Mail will look for these types of conversions, and convert them  back, fixing the template tag, to be parsed correctly. 
+
+
 =head1 Data Cache
 
 Dada Mail now has a data cache, for things like generated JSON files. This data cache can be managed with the new, C<DADA::App::DataCache> module and can be enabled/disabled using the C<$DADA_CACHE> config variable. Old cached data will be removed periodically (1 hour), automatically. The data cache is located in the, 
@@ -250,6 +265,10 @@ Make sure to update any cronjobs, links, etc.
 =head3 List Email Mail Forwarding Support
 
 You may now set up a List Email as a Mail Forward, that pipes a message directory to Dada Bridge, rather than as a POP3 email account, that is checked on a schedule via a cronjob. This should greatly help any lag between when the message is sent to the List Email address, and when the message is checked by Bridge, and sent out to the entire mailing list. 
+
+=head3 Clean Up Replies Filter - Disabled
+
+This experimental feature doesn't work very well and has been disabled in v6. 
 
 =head2 Scheduled Mailings - DEPRECATED
 
