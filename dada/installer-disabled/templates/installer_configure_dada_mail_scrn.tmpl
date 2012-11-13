@@ -87,7 +87,9 @@
 				or <strong><a href="<!-- tmpl_var Self_URL -->">start over and Upgrade</a></strong>.
 			<!-- /tmpl_if --> 
 			
-
+			<!-- tmpl_if expr="(install_type eq 'upgrade')" -->
+			
+			
 				<li>
 					<p>
 						If you're upgrading from a big difference in version (5.x to 6.x, 6.x to 6.y), we suggest <strong>creating a new .dada_config file</strong>
@@ -99,7 +101,10 @@
 						configuration changes you may have made to your .dada_config file 
 						will need to be recreated manually, after this upgrade. 
 					</p> 
-				</li> 
+				</li>
+				
+				<!-- /tmpl_if --> 
+				 
 			</ul> 
 					
 			
