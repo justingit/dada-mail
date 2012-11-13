@@ -2518,7 +2518,6 @@ but may solve some problems people are having. Change this back to
 
 Similar to $FILE_CHMOD, $DIR_CHMOD sets permissions to Directories 
 created with Dada Mail. 
-At the moment, this is limited to backup directories. 
 
 =cut
 
