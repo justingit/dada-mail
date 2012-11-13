@@ -44,9 +44,9 @@ sub _init {
             $self->{dsn}      = 'driver:PostgreSQL';
             $self->{dsn_args} = {
 
-                Handle    => $self->{dbh},
-                TableName => $DADA::Config::SQL_PARAMS{session_table},
-
+                Handle     => $self->{dbh},
+                TableName  => $DADA::Config::SQL_PARAMS{session_table},
+                ColumnType => "binary"
             };
         }
         elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
@@ -130,7 +130,7 @@ sub login_cookies {
         require CGI::Session;
         CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);
 
-        my $session CGI::Session->new( $self->{dsn}, $q, $self->{dsn_args} )
+        my $session = CGI::Session->new( $self->{dsn}, $q, $self->{dsn_args} )
           or carp CGI::Session->errstr();
 
         $session->param( 'Admin_List',     $args{-list} );
