@@ -10142,10 +10142,10 @@ sub  captcha_img {
 
     my $img_str = xss_filter($q->param('img_string'));
 
-    if(-e $DADA::Config::TMP . '/CAPTCHA-' . $img_str . '.png'){
+    if(-e $DADA::Config::TMP . '/capcha_imgs/CAPTCHA-' . $img_str . '.png'){
 
             print $q->header('image/png');
-            open(IMG,  '< ' . $DADA::Config::TMP . '/CAPTCHA-' . $img_str . '.png') or die $!;
+            open(IMG,  '< ' . $DADA::Config::TMP . '/capcha_imgs/CAPTCHA-' . $img_str . '.png') or die $!;
              {
             #slurp it all in
            local $/ = undef;
@@ -10154,10 +10154,10 @@ sub  captcha_img {
             }
         close (IMG) or die $!;
 
-        chmod($DADA::Config::FILE_CHMOD , make_safer($DADA::Config::TMP . '/CAPTCHA-' . $img_str . '.png'));
+        chmod($DADA::Config::FILE_CHMOD , make_safer($DADA::Config::TMP . '/capcha_imgs/CAPTCHA-' . $img_str . '.png'));
 
-        my $success = unlink(make_safer($DADA::Config::TMP . '/CAPTCHA-' . $img_str . '.png'));
-        warn 'Couldn\'t delete file, ' . $DADA::Config::TMP . '/CAPTCHA-' . $img_str . '.png' if $success == 0;
+        my $success = unlink(make_safer($DADA::Config::TMP . '/capcha_imgs/CAPTCHA-' . $img_str . '.png'));
+        warn 'Couldn\'t delete file, ' . $DADA::Config::TMP . '/capcha_imgs/CAPTCHA-' . $img_str . '.png' if $success == 0;
 
     }else{
 

@@ -2566,7 +2566,9 @@ sub csv_subscriber_parse {
 
     $filename =  uriescape($filename);
     $filename =~ s/\s/%20/g;
-
+	die "no filename! "
+		if length($filename <= 0) || $filename eq ''; 
+		
 	# Line translation. 
 	# Don't like it. 
 	# Notes: 

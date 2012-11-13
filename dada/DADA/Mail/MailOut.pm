@@ -155,14 +155,28 @@ sub _init {
 	    my $li = $ls->get();
 
 	    $self->list( $args->{-list} );
-
 	    $self->{ls} = $ls;
-		$self->{li} = $li; 
-	
+		
+		$self->_dir_setup(); 
+		
 		return 1; 
 	}
 
 
+}
+
+sub _dir_setup { 
+	my $self = shift; 
+	# Directory?
+	if(-d $DADA::Config::TMP){ 
+		# Write to it? 
+		if(-w $DADA::Config::TMP) { 
+			carp "Can't write into, '" . $DADA::Config::TMP . "', will try to change directory permissions..."; 
+		}
+		else { 
+			chmod($DADA::Config::DIR_CHMOD , $DADA::Config::TMP)			
+		}
+	}
 }
 
 sub _sanity_test {
@@ -1458,7 +1472,7 @@ sub should_be_restarted {
         my $last_access
             = _poll( $self->dir . '/' . $file_names->{last_access} );
     
-        if ( $self->{li}->{'restart_mailings_after_each_batch'} == 1 ) {
+        if ( $self->{ls}->param('restart_mailings_after_each_batch') == 1 ) {
     
             # Basically, if the sending process isn't locked, we wait the amount
             # of time we'd usually sleep() and if we're over that time, it's time
@@ -1467,7 +1481,7 @@ sub should_be_restarted {
             warn '>>>>restart_mailings_after_each_batch set to, "1"'
                 if $t; 
                 
-            my $sleep_amount = $self->{li}->{'bulk_sleep_amount'};
+            my $sleep_amount = $self->{ls}->param('bulk_sleep_amount');
     
             if ( ( $last_access + $sleep_amount ) <= time ) {
             

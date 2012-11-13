@@ -101,6 +101,31 @@ sub create_CAPTCHA {
 }
 
 
+sub _dir_setup { 
+	my $self = shift; 
+	# Directory?
+	if(-d $DADA::Config::TMP){ 
+		# Write to it? 
+		if(-w $DADA::Config::TMP) { 
+			# good.
+		}
+		else { 
+			chmod($DADA::Config::DIR_CHMOD , $DADA::Config::TMP)			
+		}
+		my $captcha_dir = make_safer($DADA::Config::TMP . '/capcha_imgs'); 
+		if(! -d $captcha_dir) { 
+			mkdir ($captcha_dir, $DADA::Config::DIR_CHMOD );
+			chmod($DADA::Config::DIR_CHMOD , $captcha_dir)
+				if -d $captcha_dir; 
+		}
+		
+	}
+	else { 
+		croak "Can't find, " . $DADA::Config::TMP; 
+	}
+}
+
+
 
 
 
@@ -111,11 +136,11 @@ sub create_CAPTCHA {
 sub create_img { 
 
     my $self = shift; 
+
+	$self->_dir_setup(); 
+
     my ($secret_phrase, $auth_string) = @_;
     
-    GD::SecurityImage->import;
-
-
     # Magic! 
     
     # Don't check if it doesn't exist...
@@ -148,10 +173,10 @@ sub create_img {
 
    my($image_data, $mime_type, $random_number) = $image->out;
    
-
-    open(FILE, "> $DADA::Config::TMP/CAPTCHA-" . substr($auth_string, 0, 11) . '.png') or die $!; 
-    print FILE $image_data or die $!;  
-    close (FILE) or die $!; 
+	my $filename = make_safer($DADA::Config::TMP . "/capcha_imgs/CAPTCHA-" . substr($auth_string, 0, 11) . '.png'); 
+    open my $FILE, ">", $filename or die $!; 
+    print $FILE $image_data or die $!;  
+    close ($FILE) or die $!; 
 
 }
 
