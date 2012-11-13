@@ -533,10 +533,7 @@ http://dadamailproject.com/support/documentation/FAQ-errors.pod.html
 
 Create a new image around 125 x 50 px (if you want to match the size of what's currently be used). Save it as, "dada_mail_logo.png"
 
-Place it in the, I<dada/DADA/Template/templates/img> directory. 
-
-I<Or> place it in your I<.dada_files/.templates/img> directory. This copy will override the copy that comes with Dada Mail and any additional upgrades of the script will 
-not overwrite the custom version of the file you want to use. (This works for all templates located in the I<dada/DADA/Template/templates> directory)
+Place it in your, I<dada_mail_support_files/static/images> directory. 
 
 Remove your screen cache (either delete the, I<.dada_files/.tmp/_screen_cache> directory, or use the Screen Cache plugin) to see your changes take effect. 
 
@@ -1021,113 +1018,6 @@ limit, you can certainly bump up the batch settings to accomodate the resources 
 
 =back
 
-=head2 Screen Load Times
-
-Dada Mail loads its images, javascript and css files through the app itself. Requests for these types of 
-resources fires up a copy of Dada Mail, which then serves it up.
-
-Dada Mail's screen load times can be significantly faster, if you instead copy these types of resources to a different 
-location and call them directly. 
-
-In these examples, we'll use: B<http://example.com/static_dada_files> as the location we're going to copy these resources to.
-
-Before beginning this, be warned that these files may be changed between versions, so these steps would have to be taken every time 
-you upgrade Dada Mail. 
-
-=head3 css files
-
-Dada Mail's css files are in the, I<dada/DADA/Template/templates/css> directory. Copy this directory and place this copy in 
-a different location of your hosting account, where the files can be served statically.
-
-In these examples, we'll use: B<http://example.com/static_dada_files/css>
-
-In the B<list_template.tmpl> file, find: 
-
-	<link rel="stylesheet" href="<!-- tmpl_var S_PROGRAM_URL -->/css/default.css" type="text/css" media="screen" />
-
-In our example, we would change this to: 
-
-	<link rel="stylesheet" href="http://example.com/static_dada_files/css/default.css" type="text/css" media="screen" />
-
-In the B<admin_template.tmpl> file, find: 
-
-	  <link rel="stylesheet" href="<!-- tmpl_var S_PROGRAM_URL -->/css/default.css" type="text/css" media="screen" />
-	<!-- tmpl_if load_modalbox --> 
-	  <link rel="stylesheet" href="<!-- tmpl_var S_PROGRAM_URL -->/css/modalbox.css" type="text/css"  media="screen" />
-	<!-- /tmpl_if -->
-
-In our example, we would change this to: 
-
-  <link rel="stylesheet" href="http://example.com/static_dada_files/css/default.css" type="text/css" media="screen" />
-<!-- tmpl_if load_modalbox --> 
-  <link rel="stylesheet" href="http://example.com/static_dada_files/css/modalbox.css" type="text/css"  media="screen" />
-<!-- /tmpl_if -->
-
-You will also need to find the following in the default.css and modalbox.css file: 
-
-	<!-- tmpl_var S_PROGRAM_URL -->
-
-and, 
-
-	<!-- tmpl_var PROGRAM_URL -->
-
-and change it to your actual Dada Mail URL (or your static img directory - covered below).
-
-=head3 image files
-
-Dada Mail's image files are in the, I<dada/DADA/Template/templates/img> directory. Copy this directory and place this copy in 
-a different location of your hosting account, where the files can be served statically.
-
-In these examples, we'll use: B<http://example.com/static_dada_files/img>
-
-In the B<list_template.tmpl> file, find: 
-	
-	<img src="<!-- tmpl_var S_PROGRAM_URL -->/img/dada_mail_logo.png/" title="<!-- tmpl_var PROGRAM_NAME -->" alt="<!-- tmpl_var PROGRAM_NAME -->" />
-
-In our example, we would change this to: 
-
-	<img src="http://example.com/static_dada_files/img/dada_mail_logo.png/" title="<!-- tmpl_var PROGRAM_NAME -->" alt="<!-- tmpl_var PROGRAM_NAME -->" />
-
-In the B<admin_template.tmpl> file, find: 
-
-	<img src="<!-- tmpl_var S_PROGRAM_URL -->/img/dada_mail_logo.png/" alt="<!-- tmpl_var PROGRAM_NAME -->" />
-
-In our example, we would change this to: 
-
-	<img src="http://example.com/static_dada_files/img/dada_mail_logo.png/" alt="<!-- tmpl_var PROGRAM_NAME -->" />
-
-There are other images you may swap out for their static kin - do a directory search in, I<dada/DADA/Template/templates> for the following: 
-
-	<!-- tmpl_var PROGRAM_URL -->/img/
-
-And replace this with your static URL, in a similar way. 
-
-=head3 javascript files
-
-TODO: All this information is now, outdated. 
-
-Dada Mail's javascript files are in the, I<dada/DADA/Template/templates/js> directory. Copy this directory and place this copy in 
-a different location of your hosting account, where the files can be served statically. 
-
-In these examples, we'll use: B<http://example.com/static_dada_files/js>
-
-In the B<admin_template.tmpl> file, find: 
-
-	  <script src="<!-- tmpl_var S_PROGRAM_URL -->/js/dada_mail.js"         type="text/javascript"></script>
-	  <script src="<!-- tmpl_var S_PROGRAM_URL -->/js/prototype_scriptaculous_package.js" type="text/javascript"></script>
-	
-	<!-- tmpl_if load_modalbox --> 
-	  <script src="<!-- tmpl_var S_PROGRAM_URL -->/js/modalbox.js"                   type="text/javascript"></script>
-	<!-- /tmpl_if --> 
-
-In our example, we would change this to: 
-
-	  <script src="http://example.com/static_dada_files/js/dada_mail.js"         type="text/javascript"></script>
-	  <script src="http://example.com/static_dada_files/js/prototype_scriptaculous_package.js" type="text/javascript"></script>
-	
-	<!-- tmpl_if load_modalbox --> 
-	  <script src="http://example.com/static_dada_files/js/modalbox.js"                   type="text/javascript"></script>
-	<!-- /tmpl_if --> 
 
 =head1 Mail Sending
 
