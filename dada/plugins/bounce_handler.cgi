@@ -612,7 +612,7 @@ sub cgi_bounce_score_search {
     for (@$results) {
         for my $pt_diags ( @{ $_->{diagnostics} } ) {
             $pt_diags->{diagnostic_value} =
-              encode_html_entities( $_->{diagnostic_value} );
+              encode_html_entities( $pt_diags->{diagnostic_value} );
             $pt_diags->{diagnostic_value} =~ s/(\n|\r)/\<br \/\>\n/g;
 
         }
