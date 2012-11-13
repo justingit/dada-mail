@@ -723,14 +723,28 @@ sub grab_former_config_vals {
 	if(exists($BootstrapConfig::LIST_SETUP_INCLUDE{admin_email})){ 
 		$local_q->param('bounce_handler_address', $BootstrapConfig::LIST_SETUP_INCLUDE{admin_email});
 	}
-	if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Server})){ 
-		$local_q->param('bounce_handler_server', $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Server}); 
+	if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler})) { 
+		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Server})){ 
+			$local_q->param('bounce_handler_server', $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Server}); 
+		}
+		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Username})){ 
+			$local_q->param('bounce_handler_username', $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Username}); 
+		}
+		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Password})){ 
+			$local_q->param('bounce_handler_password', $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Password}); 
+		}
 	}
-	if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Username})){ 
-		$local_q->param('bounce_handler_username', $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Username}); 
-	}
-	if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Password})){ 
-		$local_q->param('bounce_handler_password', $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Password}); 
+	# "Bounce_Handler" could also be, "Mystery_Girl" (change made in v4.9.0)
+	elsif(exists($BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl})) { 
+		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl}->{Server})){ 
+			$local_q->param('bounce_handler_server', $BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl}->{Server}); 
+		}
+		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl}->{Username})){ 
+			$local_q->param('bounce_handler_username', $BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl}->{Username}); 
+		}
+		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl}->{Password})){ 
+			$local_q->param('bounce_handler_password', $BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl}->{Password}); 
+		}		
 	}
 	
 	# WYSIWYG Editors 
