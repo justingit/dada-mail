@@ -246,6 +246,10 @@ BEGIN{ use_ok('HTML::Template::Expr'); }
 BEGIN{ use_ok('HTML::Template::MyExpr'); }
 
 BEGIN{ use_ok('Data::Pageset');}
+
+BEGIN{ use_ok('Data::Google::Visualization::DataTable');}
+
+
 BEGIN{ use_ok('IO::Stringy'); }
 
 
