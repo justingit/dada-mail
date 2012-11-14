@@ -1,0 +1,1623 @@
+=head1 Dada Mail Global Variables Configuration Guide 
+
+=head1 DESCRIPTION 
+
+This doc. guides you through all the global configuration variables available to you in Dada Mail. 
+
+B<Defaults> of all these variables are location in the B<dada/DADA/Config.pm> file. 
+
+Other than the variables: 
+
+=over
+
+=item * $PROGRAM_CONFIG_FILE_DIR
+
+=item * $PROGRAM_ERROR_LOG
+
+=back 
+
+B<No other variables should be changed in this file.>
+
+If you use the Dada Mail Installer to install or upgrade Dada Mail, it should correctly change those variables for you. 
+
+I<Rather>, use this documentation of the global variables in this doc, as a guide for making custom 
+changes to your own outside config file (called, C<.dada_config>) 
+
+=head2 How to place new variables in your outside config file (.dada_config)
+
+=head3 Does the Variable Already Exist? 
+
+First, double-check that the variable doesn't already exist in the outside 
+configuration file. Duplicates will simply cause headaches when editing. 
+
+=head4 "=cut" tags
+
+Dada Mail's C<.dada_config> file uses pairs of, C<=cut> tags, similar to multi-line comments. 
+
+Chunks of configuration variables may be inside these C<=cut> tags. These C<=cut> tags will need
+to be removed, before the variables are utilized. For example: 
+
+	=cut
+	# start cut for Dada Mail Profile Options
+
+	$PROFILE_OPTIONS = { 
+		
+		enabled                         => 1, 
+		# ...a whole slew of configuration settings... 
+	};
+
+	=cut
+	# end cut for Dada Mail Profile Options
+
+The strings, 
+
+	=cut
+	# start cut for Dada Mail Profile Options
+
+	=cut
+	# end cut for Dada Mail Profile Options
+
+will need to be removed, before you can utilize the, C<$PROFILE_OPTIONS> variable. 
+
+=head3 Placing New Variables
+
+Place new variables in your outside config file by simply copying the 
+variable you want to set and pasting that variable in 
+your outside config file. You may use what's set in the, I<dada/DADA/Config.pm> file as an example, 
+but do not change what the default is.  
+
+For historical reasons, the outside config file sets the config variables by 
+simply using Perl code, instead of a configuration-specific format. This may 
+change in the future - we don't like this  technique. One problem with this 
+technique is that setting configuration variables successfully means that you will need
+to use strict and valid Perl code. This will make things harder for a casual 
+user of the program perform, successfully - and unfortunately. 
+
+Some things to be careful of: 
+
+The variables set in the I<dada/DADA/Config.pm> file use the, C<||=> operator,
+like this: 
+
+ $SOME_VARIABLE ||= 'some value'; 
+
+Replace the, C<||=> operator with the, C<=> operator, when placing it in the outside config file: 
+
+ $SOME_VARIABLE = 'some custom value'; 
+
+You may also see hashes and arrays with, C<unless> clauses at the end: 
+
+ %SOME_HASH = (
+ 	# a long list of key/value pairs
+ ) unless keys %SOME_HASH; 
+
+or, 
+
+ @SOME_ARRAY = (
+ 	# ... 
+ ) unless scalar @SOME_ARRAY; 
+
+Remove the entire, C<unless> clause: 
+ 
+ %SOME_HASH = (
+ 	# a long list of key/value pairs
+ ); 
+ 
+ 
+ @SOME_ARRAY = (
+ 	# ... 
+ ); 
+
+If you need to set a variable in the outside config file to '0', it 
+may not work. Instead, try setting it to '2'. This is a known - and embarrassing, 
+issue. 
+
+=head1 $PROGRAM_CONFIG_FILE_DIR
+
+C<$PROGRAM_CONFIG_FILE_DIR> holds the absolute path to the B<directory> that the outside 
+config file, C<.dada_config> can be found. 
+
+In the C<Config.pm> file, the C<$PROGRAM_CONFIG_FILE_DIR>
+variable is set to, I<auto> by default. 
+
+If this is the case, Dada Mail will attempt 
+to look for the C<.dada_config> file in the following location: 
+
+ /home/example/.dada_files/.configs
+
+An example of a complete, usable and extendable C<.dada_config> file can be found
+in the Dada Mail distribution at: 
+
+I<dada/extras/examplees/example_dada_config.txt>
+
+You may also want to read the README for this example, located at: 
+
+I<dada/extras/examplees/example_dada_config-README.txt>
+
+
+=head1 $PROGRAM_ERROR_LOG
+
+C<$PROGRAM_ERROR_LOG> should hold the absolute server path to the error log for Dada Mail. Example: 
+
+	$PROGRAM_ERROR_LOG = '/home/example/.dada_files/.logs/errors.txt';
+
+The file itself (in this example, C<errors.txt>) does not need to be created. 
+
+=head1 $DIR
+
+C<$DIR> needs to hold the absolute server path to your C<.dada_files> directory. For example: 
+
+	$DIR = '/home/example/.dada_files';
+
+=head2 Additional Variables: $FILES, $LOGS, $TEMPLATES, $ARCHIVES, $BACKUPS
+
+By default, the following variables, C<$ARCHIVES, $BACKUPS, $FILES, $LOGS, $TEMPLATES> will be set based on the value of C<$DIR>. 
+
+They do not need to be set themselves. 
+
+If C<$DIR> is set to, 
+
+	$DIR = '/home/example/.dada_files';
+
+These variables will be set to the following: 
+
+	$ARCHIVES  = $DIR . '/.archives';
+	$BACKUPS   = $DIR . '/.backups';
+	$FILES     = $DIR . '/.lists';
+	$LOGS      = $DIR . '/.logs';
+	$TEMPLATES = $DIR . '/.templates';
+	$TMP       = $DIR . '/.tmp';
+
+We will not be covering these variables in much detail, except to say that each directory is used to store a specific type of file 
+in Dada Mail. C<$ARCHIVES> and C<$BACKUPS> are not used in the SQL backend. 
+
+=head1 $PROGRAM_URL
+
+C<$PROGRAM_URL> holds the URL of Dada Mail. Example, 
+
+	$PROGRAM_URL = 'http://example.com/cgi-bin/dada/mail.cgi
+
+=head2 $S_PROGRAM_URL
+
+C<$S_PROGRAM_URL> holds the URL you'd like to use for Dada Mail's List Control Panel. For example, if you can 
+map your C<$PROGRAM_URL> to either an, C<http://> URL, or a, C<https://> address, you can set regular access to, 
+
+	$PROGRAM_URL = 'http://example.com/cgi-bin/dada/mail.cgi
+
+and access to the List Control Panel on a secure connection: 
+
+	$S_PROGRAM_URL = 'https://example.com/cgi-bin/dada/mail.cgi
+
+=head1 $SUPPORT_FILES
+
+C<$SUPPORT_FILES> holds a hashref, with the following format: 
+
+	$SUPPORT_FILES = { 
+		dir => '/home/example/public_html/dada_mail_support_files', 
+		url => 'http://example.com/dada_mail_support_files', 
+	};
+
+C<dir> holds the absolute server path to the B<dada_mail_support_files> directory, 
+
+C<url> holds the URL to this same directory. 
+
+The B<dada_mail_support_files> directory holds static files (images, css, javascript files, etc), as well as 
+third part WYSIWYG editors used by Dada Mail. It should be set up for you, but the Dada Mail installer. 
+
+=head1 $PROGRAM_ROOT_PASSWORD
+
+C<$PROGRAM_ROOT_PASSWORD> holds the main (or, "Root") password for Dada Mail. This password 
+is used both to B<create new mailing lists>, as well as B<log into any mailing list>. It should 
+be saved in an encrypted form. 
+
+=head3 $ROOT_PASS_IS_ENCRYPTED
+
+C<$ROOT_PASS_IS_ENCRYPTED> can be set to either, C<1> or, C<0>. If set to, C<1>, 
+it will tell the app that you've encrypted the Dada Mail Root Password. We suggest to 
+always encrypt the Dada Mail Root Password. For example:  
+
+	$PROGRAM_ROOT_PASSWORD    = 'qidfdfqJRIo.IZ6';
+	$ROOT_PASS_IS_ENCRYPTED   = '1';
+
+In this example, the C<$PROGRAM_ROOT_PASSWORD> is encrypted. 
+
+=head4 Encrypt your own $PROGRAM_ROOT_PASSWORD
+
+By default, the Dada Mail Installation should encrypt the Dada Mail Root Password for you. 
+
+Here are the steps to do it manually: 
+
+=over
+
+=item 1
+
+Visit Dada Mail (http://example.com/cgi-bin/dada/mail.cgi), with the following query string: 
+
+	http://example.com/cgi-bin/dada/mail.cgi?f=pass_gen
+
+=item 3
+
+You'll see a page in your browser that asks for a password to 
+encrypt. Type in the password you want to use, and press 'encrypt'. 
+An encrypted password will be outputted. 
+
+=item 4
+
+Copy that encrypted password set it as your C<$PROGRAM_ROOT_PASSWORD> variable. 
+
+=head1 $BACKEND_DB_TYPE
+
+C<$BACKEND_DB_TYPE> sets the type of backend that Dada Mail will use, and can either be set to, 
+C<SQL> for an SQL-type of backend, or C<Default> for a filesytem-based backend. 
+
+We suggest using a SQL backend Dada Mail supports MySQL, PostgreSQL, and SQLite. 
+
+=head3 %SQL_PARAMS
+
+C<%SQL_PARAMS> holds additional paramaters and login credentials for your SQL backend. 
+If you're using the, B<Default> backend, you will not need to work with, C<%SQL_PARAMS>
+
+Example C<%SQL_PARAMS>: 
+
+	%SQL_PARAMS = ( 
+	
+		# May just be, "localhost" 
+		dbserver         => 'localhost',
+		
+		database         => 'my_database',
+	
+		# MySQL:      3306
+		# PostgreSQL: 5432      
+		port             => '3306',
+	
+		# MySQL:      mysql 
+		# PostgreSQL: Pg
+		# SQLite:     SQLite
+		dbtype           => 'mysql',  
+	
+		user             => 'user',          
+		pass             => 'pass',
+		
+	);
+
+C<dbserver> holds name of the database server itself. Example: I<sql.mydomain.com>, or, I<localhost>
+
+C<database> holds the name of the database you are using on the database server.
+
+C<port> holds the port used when connecting to the database server. 
+
+C<dbtype> sets the type of database used. Use: 
+
+Use, C<mysql> for MySQL
+
+Use, C<Pg> for PostgreSQL
+
+Use, C<SQLite> for SQLite
+
+C<user> holds the SQL username.
+
+C<pass> holds the SQL password.
+
+=head4 See Also: $DBI_PARAMS
+
+C<$DBI_PARAMS> holds a hashref with advanced settings, that change the behavior for the underlying
+C<DBI> module, Dada Mail uses.
+
+For more information, see: 
+
+L<http://search.cpan.org/~timb/DBI/DBI.pm#ATTRIBUTES_COMMON_TO_ALL_HANDLES>
+
+
+
+
+=head1 $WYSIWYG_EDITOR_OPTIONS, $FILE_BROWSER_OPTIONS
+
+C<$WYSIWYG_EDITOR_OPTIONS> and C<$FILE_BROWSER_OPTIONS> variables are covered in the following doc: 
+
+L<http://dadamailproject.com/d/features-wysiwyg_editors.pod.html>
+
+=head1 $PROFILE_OPTIONS
+
+C<$PROFILE_OPTIONS> is covered in the following doc: 
+
+L<http://dadamailproject.com/d/features-profiles.pod.html>
+
+=head1 Mailing List Settings
+
+=head1 %LIST_SETUP_DEFAULTS
+
+These defaults will be used when B<creating> a new mailing list. These defaults 
+will also be used for existing lists if there isn't a variable 
+already set. These values correspond to the values created in the 
+maling list databases. An example would be: 
+
+	%LIST_SETUP_DEFAULTS = ( 
+	                         black_list     => 1, 
+	                         sending_method => 'smtp',
+	                        );
+
+This would setup all lists created now with blacklists on, and mail
+being sent using SMTP. 
+
+You may enter the passwords for both POP3 
+(for POP-before-SMTP stuff) and the SMTP SASL password here, but they will be 
+in plain text. When these passwords are saved in the mailing list settings, they are 
+encrypted. 
+
+A full list of the available settings are located in the, I<dada/DADA/Config.pm> file. As with other variables, 
+it's highly suggested to not change the defaults in the C<Config.pm> file, but rather do so in your own, C<.dada_config> file. 
+
+Since there's so many list settings, it's usually easier to just change the settings you'd like, and keep the rest as their default. 
+
+This can be done using the, C<%LIST_SETUP_INCLUDE> variable - 
+
+
+=head1 %LIST_SETUP_INCLUDE
+
+Similar to, C<%LIST_SETUP_DEFAULTS>, C<%LIST_SETUP_INCLUDE> holds defaults values for lists. 
+
+The difference is that any value NOT set here, will be set, in 
+accordance to what %LIST_SETUP_DEFAULTS already has. Because of this,
+it's much more convenient to use this variable in the outside config 
+file. 
+
+For example, if you set up the bounce handler with the bounce 
+email of, "bounces@example.com", 
+you could set %LIST_SETUP_INCLUDE to have these values: 
+
+	 %LIST_SETUP_INCLUDE = (
+	 set_smtp_sender              => 1, # For SMTP   
+	 add_sendmail_f_flag          => 1, # For Sendmail Command
+	 admin_email                  => 'bounces@example.com',
+	 );
+
+And all new lists would automatically be hooked up to the bounce handler. 
+
+=head1 %LIST_SETUP_OVERRIDES
+
+B<%LIST_SETUP_OVERRIDES> will override any setting that's in the 
+B<%LIST_SETUP_DEFAULTS> hash and whatever is set in any of the mailing list 
+preferences. 
+
+=head1 @LIST_SETUP_DONT_CLONE
+
+B<@LIST_SETUP_DONT_CLONE> is a list of settings you'd rather not have allowed to be cloned, 
+in the little feature in the, B<Create a New List> screen, 
+entitled, B<Clone settings from this list:>
+
+
+=head1 $PLUGIN_CONFIGS
+
+C<$PLUGIN_CONFIGS> holds default settings to various Dada Mail plugins and extensions. 
+
+These configuration settings can be set in three different places, which can cause confusion. As with 
+most all other variables, we suggest to only set them in your C<.dada_config> file. 
+
+The order of precendence for the setting of these variables are: 
+
+=over
+
+=item * Inside the plugin/extension itself
+
+=item * Config.pm File
+
+=item * .dada_config file 
+
+=back 
+
+So, if you set the configuration variable in the plugin/extension itself B<and> the 
+C<.dada_config file>, the value in the C<.dada_config> file will be used. 
+
+Refer to the plugin/extension itself to know what the various plugin/extension 
+configuration names and values are and do. 
+
+=head1 $ADMIN_MENU
+
+C<$ADMIN_MENU> holds a complex data structure that represents the left hand menu, 
+you see when logged into Dada Mail's List Control Panel. 
+
+The complex data structure follows a pattern that looks like this, 
+
+	{-Title      => 'Mass Mailing',
+	 -Activated  => 1,
+	 -Submenu    => [
+					{ 
+					-Title      => 'Send a Message',
+					-Title_URL  => "$S_PROGRAM_URL?f=send_email",
+					-Function   => 'send_email',
+					-Activated  => 1,
+					},
+				
+
+C<-Title> holds the name of a section of the left hand menu, for exaple, "Mass Mailing"
+
+C<-Activated> holds a boolean value, to represent if the section should be shown or not; 
+
+Set to, C<1> the section will be shown.  
+
+Set to, C<0> it will not be shown. 
+
+C<-Submenu> holds a hashref representing the menu items and links to screens, below the section. 
+
+Each entry follows a similar pattern: 
+
+C<-Title> holds the name of the link to the item. 
+
+C<-Title_URL> holds the URL to access this item
+
+C<-Function> holds the string that represents this item internally. C<-Function> is 
+important, as it's used for security in Dada Mail. In Dada Mail, you may set simple 
+access restrictions to the various screens in the list control panel. Dada Mail will look 
+to see if the, C<-Function> is allowed to be accessed by the user. 
+
+C<-Activated> holds a boolean value, representing if someone logged in with the B<List Password> 
+has access to this specific screen in the List Control Panel. Set to, C<1> to allow access; set to C<0> to 
+disallow access. 
+
+You may change the access to the various screens of the List Control Panel in the List Control Panel itself; log 
+into a mailing list with the B<Dada Mail Root Password> and navigate to, B<Your List Control Panel - Customize Feature Set>. 
+
+All Items and Sections are always available to someone logged into a mailing list using the B<Dada Mail Root Password>. 
+
+=head1 $FILES
+
+$FILES holds the directory you want your mailing list subscribers, schedules and a few
+obscure files to be saved in. 
+
+
+
+=head1 $MAILPROG
+
+C<$MAILPROG> holds the Absolute Path of your sendmail-like command. 
+
+By default, it is set to, 
+
+	$MAILPROG = '/usr/sbin/sendmail';
+
+
+
+=head1 $MAIL_SETTINGS
+
+C<$MAIL_SETTINGS> holds the path to your sendmail-like command, as well as any 
+flags to be sent to the command. This variable is used for all email sending by 
+the C<sendmail>-like command, except mass mailings. 
+
+Example, 
+
+	$MAIL_SETTINGS      = "|$MAILPROG -t";
+
+In this example, we're telling Dada Mail to pipe to the sendmail command, 
+ we're using the value of the sendmail command from, C<$MAILPROG>, and setting the, C<-t> flag. 
+
+You may also change this entire setting to instead append to a file, which is useful 
+for testing and debugging. For example: 
+
+	$MAIL_SETTINGS      = '>>' . '/home/example/test_mail.txt';
+
+Will append all non-mass mailing message the file at, C</home/example/test_mail.txt>, 
+instead of sending the message out. 
+
+=head1 $MASS_MAIL_SETTINGS
+
+C<$MASS_MAIL_SETTINGS> serves the same purpose as, C<$MAIL_SETTINGS>, but is used only
+for mass mailings. By default, it's set the same as, C<$MAIL_SETTINGS>. 
+
+=head1 $AMAZON_SES_OPTIONS
+
+C<$AMAZON_SES_OPTIONS> sets options for use of the Amazon SES third party email web service. 
+
+This variable is covered in detail: 
+
+L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>
+
+=head1 Security 
+
+
+=head1 $SHOW_ADMIN_LINK
+
+C<$SHOW_ADMIN_LINK> holds a boolean value. Set to, C<0> will remove the B<Administration>
+ link that you see on the Dada Mail default screen (Set to, C<2>, if being used in your C<.dada_config> file).
+
+You may always get to  the administration page by pointing your browser to an address 
+like this: 
+
+	http://mysite.com/cgi-bin/dada/mail.cgi/admin
+
+This is a small security measure but may just stop people from 
+snooping further. 
+
+
+=head1 $ADMIN_FLAVOR_NAME
+
+Complementary to the C<$SHOW_ADMIN_LINK> variable, C<$ADMIN_FLAVOR_NAME> allows you
+ to set the URL needed to access the screen that has the form to log into all the 
+mailing lists administrated by Dada Mail and to the form to create a new mailing list. 
+
+By default, this variable is set to, C<admin>, which means to access this screen, you'd go to a URL that looks like this: 
+
+http://example.com/cgi-bin/dada/mail.cgi/admin
+
+If you set C<$ADMIN_FLAVOR_NAME> to something like, B<kookoo>: 
+
+ $ADMIN_FLAVOR_NAME = 'kookoo'; 
+
+You'd then access this screen via the following URLS; 
+
+http://example.com/cgi-bin/dada/mail.cgi/kookoo
+
+Works best if you have, B<$SHOW_ADMIN_LINK> set to something other than, B<1>. 
+
+When setting this variable remember:
+
+=over
+
+=item * no spaces in the name
+
+Valid values: 
+
+=over
+
+=item * poopoo1234
+
+=item * agabaga
+
+=item * JKdsfkKJjjkkjjk
+
+=back
+
+Invalid values: 
+
+=over
+
+=item * fads fdas    asdf
+
+=item * You Get The Point
+
+=back
+
+=item * Don't set this variable to anything that Dada Mail already uses, like:
+
+=over
+
+=item * subscribe
+
+=item * unsubscribe
+
+=item * login
+
+=item * logout
+
+=item * list
+
+=item * archive
+
+=back
+
+etc. A good way to make sure would be to append, "admin" to your value, like this: 
+
+=over
+
+=item * adminfoofoo
+
+=item * adminlalalala
+
+=item * adminwhakawhaka
+
+=back
+
+No checks will be made to make sure you don't have this value set to something already present, so do be careful setting this variable. 
+
+
+=back
+
+
+=head1 $SIGN_IN_FLAVOR_NAME
+
+Similar to C<$ADMIN_FLAVOR_NAME>, C<$SIGN_IN_FLAVOR_NAME> holds the URL that allows you to log into a particular list (usually), although it is sometimes used to re-login into any of your lists - very similar to the administration screen, but does not give you the form to create a new list. 
+
+The same naming rules apply for this variable as they do for C<$ADMIN_FLAVOR_NAME>. It's also suggested that you append, "sign_in" to the value you set this, like so: 
+
+=over
+
+=item * sign_in_fdskjasdf
+
+=item * sign_in_sneaky_pete
+
+=back
+
+etc. 
+
+
+
+=head1 $DISABLE_OUTSIDE_LOGINS
+
+If set to, B<1>, The only forms that will allow you to log into a Dada Mail list will be by 
+a form supplied by Dada Mail itself. This means, you can't create a different form, outside
+the program to provide a way to login. 
+
+More so than any other option, this variable attempts to stop attempts of logging into a list
+by automated means. 
+
+ 
+=head1 $LOGIN_WIDGET
+
+By default on the list login screen, Dada Mail presents its user 
+with a popup menu with the names of all the lists, hidden or not, that 
+you can select to login to. 
+
+This is done by setting B<$LOGIN_WIDGET> to 'popup_menu'. 
+
+If you want to only have a text box for someone to type in the 
+list Short Name in, set B<$LOGIN_WIDGET> to 'text_box'.
+
+
+=head1 $ALLOW_ROOT_LOGIN
+
+B<Allow the Root Password to Log In to All Lists>
+
+Set the '$ALLOW_ROOT_LOGIN' variable to '1' to allow the Dada Root
+Administrator to use the dada root password to log into any list. 
+This is handy when you have many, many lists and need to tweak them 
+but don't want to keep track of all the list passwords. Setting 
+this variable to '1' does make your lists less secure, as every list 
+can be accessed with the same password and that password is 
+written plainly in this file, unless! you encrypt it (see below).
+
+
+=head1 @ALLOWED_IP_ADDRESSES
+
+You can block anyone from using any list control panel by 
+specifying exactly what IP addresses are allowed. Leave the 
+@ALLOWED_IP_ADDRESSES blank:
+
+	@ALLOWED_IP_ADDRESSES = qw(); 
+
+to disable this security measure. 
+
+To add an address, just list it, like this: 
+	
+	@ALLOWED_IP_ADDRESSES = qw(123.456.67.678 
+	                           215.234.56.9 
+	                           783.456.9.2);
+
+
+
+Please note that crafty people can spoof what IP address they're 
+coming from, and dial-up accounts and connections using DHCP may
+not have the same IP address per session.  
+
+
+=head1 $REFERER_CHECK
+
+Setting $REFERER_CHECK to '1' will only allow you to access admin
+screens if the referer in your web browser is whatever is set in 
+$PROGRAM_URL or $S_PROGRAM_URL. In other words, you won't be able to 
+log in to your list control panel, then stop, check your email on 
+Yahoo! and come back to the list control panel by typing in its URL. 
+
+
+
+=head1 CAPTCHA in Dada Mail
+
+CAPTCH and Dada Mail is covered in the following doc: 
+
+L<http://dadamailproject.com/d/features-CAPTCHA.pod.html>
+
+
+
+=head1 $SHOW_HELP_LINKS						
+
+Most all the list administration screens have direct links to the Dada Mail Manual at
+the bottom of the screen. Set this variable to, C<1> to have them shown or, C<0> 
+to have them not shown. 
+
+The Dada Mail Manual is a paid service, more information about it can be found at: 
+
+L<http://dadamailproject.com/purchase/pro.html>
+
+
+=head1 $HELP_LINKS_URL
+
+The Dada Mail Manual is available online, and also to download. You may use your 
+own copy of the Dada Mail Manual (just somehow password protect it) and set this
+URL to the location to where it is. 
+
+The default setting is the online version that we provide - but it is a paid service.
+
+
+
+
+=head1 Cookies
+
+Dada Mail uses cookies only for its login mechanism. 
+Subscribers are not given a cookie. 
+
+
+=head1 $LOGIN_COOKIE_NAME
+
+B<$LOGIN_COOKIE_NAME> holds the name of the cookie passed to 
+the person's browser that will be accessing the list control 
+panel. 
+
+
+=head1 Cookie Parameters 
+
+Some browsers/servers funkify Dada Mail's cookies. I don't know why.
+You can set additional attributes that are written for Dada Mail 
+cookies by tweaking the %COOKIE_PARAMS hash, as outlined: 
+
+http://search.cpan.org/author/JHI/perl-5.8.0/lib/CGI.pm#HTTP_COOKIES
+
+
+=head1 Windows-Specific Settings
+
+Dada Mail does not really support Windows Servers. 
+
+
+=head1 $NPH
+
+NPH stands for No Parse Headers. I don't know what that means either, 
+but Microsoft servers like it, and I've found that cookies don't get 
+set correctly and you're left with a funky screen saying you did 
+wrong without it. Set this variable to '1' if you're using a Windows 
+server. 
+
+
+It's also a good idea to rename dada nph-dada.cgi for Windows servers 
+that require scripts to use NPH.
+
+
+
+=head1 Logging
+
+=head2 $LOGS
+
+(Set automatically, based on C<$DIR>)
+
+=head2 $PROGRAM_USAGE_LOG
+
+(Set automatically, based on C<$DIR>, C<$LOGS>
+
+C<$PROGRAM_USAGE_LOG> holds a log of actions Dada Mail takes. For example: 
+ subscriptions,  unsubscriptions, control panel logins, etc.
+
+
+=head2 %LOG
+
+C<%LOG> holds a hash representing the various items that are logged in Dada Mail's 
+usage logs. Each value is a boolean, C<1> to enable, C<0> to disable. 
+
+C<subscriptions> controls logging of subscriptions, unsubscriptions, email address updates, etc. Set to, C<1> by default. 
+
+C<mailings> controls the logging of transactual emails (not mass mailings). Set to, C<0> by default. 
+
+C<mass_mailings> controls the logging of mass mailings. Set to, C<1> by default. 
+
+C<mass_mailing_batches> controls the logging of mass mailing batches. Set to, C<1> by default. 
+
+C<logins> controls the logging of logging in, and out of the list control panel. Set to, C<1> by default. 
+
+C<list_lives> controls the logging of list creation and destruction. Set to, C<1> by default. 
+
+=head2 $DEBUG_TRACE
+
+C<$DEBUG_TRACE> controls whether additional debug logging should happen for specific parts of 
+Dada Mail. These logs will be logged in Dada Mail's error log. 
+
+This variable is covered in the Error FAQ: 
+
+L<http://dadamailproject.com/d/FAQ-errors.pod.html#_debug_trace___making_dada_mail_s_own_modules_more_verbose>
+
+ 
+=head2 %CPAN_DEBUG_SETTINGS 
+
+Control what outside CPAN modules give back debugging information. 
+Set the value to, "1" to enabled debugging information from the CPAN module.
+
+This variable is covered in the Error FAQ: 
+
+L<http://dadamailproject.com/d/FAQ-errors.pod.html#tracing_cpan_modules_with__cpan_debug_settings>
+
+=head1 Templating
+
+You may change the look and feel of Dada Mail B<globally> by specifying a
+different template files to use.
+
+=head1 $ADMIN_TEMPLATE
+
+C<$ADMIN_TEMPLATE> should hold an absolute server path to the template used for the List Control Panel. 
+
+The default admin template is located at: 
+
+I<dada/templates/admin_template.tmpl>
+
+By default, this variable is C<undef>. 
+
+
+=head1 $USER_TEMPLATE
+
+$USER_TEMPLATE should hold the absolute server path to the template used for everything
+other than the List Control Panel. 
+
+The default template is located at: 
+
+I<dada/templates/list_template.tmpl>
+
+=head2 $ALTERNATIVE_HTML_TEMPLATE_PATH
+
+C<$ALTERNATIVE_HTML_TEMPLATE_PATH> can hold an alternative location of the, I<dada/templates> 
+directory, if Dada Mail itself cannot find this directory automatically, or you would like to 
+have your own, custom template file collection, and do not want to edit the original files. 
+
+=head1 %BACKUP_HISTORY 
+
+C<%BACKUP_HISTORY> sets how many different revisions of various list 
+files are saved. 
+
+
+=head3 $TEMPLATE_SETTINGS
+
+=head4 oldstyle_backwards_compatibility
+
+Setting this paramater to, C<1> will allow you to use the old-style tags that 
+Dada Mail originaly used. An old-style tag looks like this: 
+
+ [tag]
+
+New-style tags look like this: 
+
+ <!-- tmpl_var tag --> 
+
+And are nothing but HTML::Template-style tags. We'd like to move away from the 
+old-style tags, but still 100% support them, for the time being. Setting this 
+paramater to, C<0> is B<very> much experimental. 
+
+=head4 engine
+
+B<engine> May be changed to one of the following:
+
+=over
+
+=item * Best
+
+=item * HTML Template
+
+=back
+
+When set to, B<Best> or B<HTML Template Pro>, Dada Mail will use C<HTML::Template::Pro>
+if available as the templating engine. If C<HTML::Template::Pro> is not available, 
+Dada Mail will use HTML::Template/HTML::Template::Expr. 
+
+B<Note:> Any templates that required the advanced templating syntax will currently still use C<HTML::Template::Expr>. 
+
+When set to, B<HTML Template>, Dada Mail will only use C<HTML::Template> or C<HTML::Template::Expr>, 
+depending on what's needed.
+
+C<HTML::Template::Pro> will most likely be the faster choice, so it's preferred and 
+Dada Mail will automatically use it, if it is available. 
+
+If you do not want to use C<HTML::Template::Pro> at all, just set C<engine> 
+to, B<HTML Template>. 
+
+=head1 Program Behavior
+
+=head1 $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION 
+
+If set to, B<1>, Dada Mail's mailing monitor will automatically be called. See:
+
+L<http://dadamailproject.com/support/documentation/FAQ-mailing_list_sending.pod.html> 
+
+For more information. 
+
+It's suggested that you use the, B<Monitor Mailing> plugin that's mentioned in the above documentation, as this method has less testing  done to it, but if you can't be bothered (and for the sake of variety), this method is available. 
+
+If you do enable this option, every single time the, I<mail.cgi> program is run, the mailing monitor will be run just before the program quits. This makes things convenient, since you can you just have a cronjob set to run Dada Mail: 
+
+ */5 * * * * /usr/bin/curl http://example.com/cgi-bin/dada/mail.cgi > /dev/null
+
+or, 
+
+ */5 * * * * cd /home/youraccount/cgi-bin/dada/ /usr/bin/perl ./mail.cgi > /dev/null
+
+And you have a mailing monitor running, without any extra scripts to installed. It may also be convenient, if you want the mailing monitor that the C<auto_pick.pl> extension provides, but you don't have access to, or don't know how to set a cronjob. 
+
+
+=head1 $ENFORCE_CLOSED_LOOP_OPT_IN
+
+C<$ENFORCE_CLOSED_LOOP_OPT_IN> enables the Closed-Loop Opt-In System in Dada Mail and disables other features in Dada Mail that work around being 100% in conformance to Dada Mail's Closed-Loop Opt-In System. 
+
+It's B<highly> suggested to set this C<$ENFORCE_CLOSED_LOOP_OPT_IN> set to, C<1>. 
+
+=head4 More Information: 
+
+L<http://dadamailproject.com/installation/using_dada_mail.html>
+
+
+=head1 Multiple Mailing List Sending
+
+=head3 MULTIPLE_LIST_SENDING
+
+Set this variable to, C<1> to enable Multiple Mailing List Sending. 
+
+Set this variable to, C<0> to disable Multiple Mailing List Sending. 
+
+=head3 $MULTIPLE_LIST_SENDING_TYPE
+
+Set to, C<merged> or, C<individual> 
+
+=head4 More Information
+
+See: 
+
+L<http://dadamailproject.com/support/documentation/features-multiple_list_sending.pod.html>
+
+=head1 $SCREEN_CACHE - Caching HTML Screens
+
+Setting B<SCREEN_CACHE> to, 1 will save rendered HTML screens for 
+future use, instead of having the program recreate them each and 
+every time a certain screen is needed. 
+
+If you have dynamic information in list templates, you may not 
+want to use this option. 
+
+More information: 
+
+http://dadamailproject.com/d/FAQ-general.pod.html.html#is_there_a_way_to_speed_up_screen_rendering__how_to_use_the_screen_cache_
+
+=head1 $GLOBAL_BLACK_LIST
+
+A global black list means that all lists being run under Dada Mail 
+use the same black list. Change the value to, "1" to enable.
+
+This feature is only available using the SQL Subscriber backend.
+
+
+=head1 $GLOBAL_UNSUBSCRIBE
+
+Global Unsubscribe means that when a person unsubscribes from one list, they're 
+unsusbcribed from every list under Dada Mail. Change the value to, "1" to enable.
+
+This feature is only available using the SQL Subscriber backend.
+
+It's advised that you take advantage of this feature if you also use the Global 
+List Sending feature. 
+
+
+
+=head1 $HIDDEN_SUBSCRIBER_FIELDS_PREFIX
+
+There may be a situation where you'd like to have a field about a subscriber that isn't publically available for a subscriber 
+to fill out. If this is the case, when naming the field, create the field with the name prefixed with what is saved in the, 
+C<$HIDDEN_SUBSCRIBER_FIELDS_PREFIX> variable. By default, this is set to, C<_> (underscore) 
+
+=head1 @PING_URLS
+
+@PING_URLS holds the URLS that should be sent an XML-RPC message 
+when you add a new message to your archive.
+
+Here's more information: 
+
+http://www.xmlrpc.com/weblogsCom
+
+You'll need the XMLRPC::Lite Perl module installed: 
+
+http://search.cpan.org/~rjray/RPC-XML-0.57/
+
+=head1 $DEFAULT_SCREEN
+
+If no parameters are passed to the mail.cgi script, you will see the
+default or main Dada Mail page. You can override that by setting any 
+URL you want into $DEFAULT_SCREEN.
+
+
+
+If you do override this screen, it is recommended that you provide 
+some way to at least unsubscribe to every one of your lists.
+
+
+
+=head1 $DEFAULT_ADMIN_SCREEN
+
+By default, when you log into the administration area you are shown
+the "Send a Message" screen. You can specify a different URL to 
+go to by changing the $DEFAULT_ADMIN_SCREEN variable.
+
+
+=head1 $DEFAULT_LOGOUT_SCREEN
+
+When a user clicks the, "Logout" link on left hand menu of the control panel, they'll 
+be redirected to the URL located in the, B<$DEFAULT_LOGOUT_SCREEN> variable. By default, 
+this is set to the, B<$PROGRAM_URL> variable. 
+
+=head1 $LIST_QUOTA
+
+$LIST_QUOTA, when set to anything other than B<undef>, can be used 
+to set the maximum number of lists a Dada Mail install can have at 
+one time. 
+
+
+If set in an outside config file, you may also use the value, B<'undef'> 
+to mean, "no quota"
+
+=head1 $SUBSCRIPTION_QUOTA
+
+$SUBSCRIPTION_QUOTA, when set to anything other than B<undef>, can be used 
+to set the maximum number of subscribers in a Dada Mail list. 
+
+B<This> variable will basically also set the limit of the 
+per-list setting, B<subscription_quota>. Any limit set in this setting 
+that's over the limit imposed in the, B<$SUBSCRIPTION_QUOTA> will be ignored. 
+
+If set in an outside config file, you may also use the value, B<'undef'> 
+to mean, "no quota"
+
+
+=head1 $MAILOUT_AT_ONCE_LIMIT
+
+This variable sets how many different mailouts may go out from an 
+installation of Dada Mail at one time. Conservatively, this is set to, B<1> 
+by default. 
+
+There are a few reasons why you wouldn't want to set this to any higher limit, 
+one being that there's a possibility that there is a limit on how many email messages
+you are allowed to go out in a specific period of time. 
+
+Another reason is that sending out too many messages at once may cause the server
+your running to be overloaded. 
+
+=head1 $MAILOUT_STALE_AFTER
+
+B<$MAILOUT_STALE_AFTER> sets, in seconds, how long a mailout can go with no mailing activity 
+until Dada Mail itself won't automatically reload it, from the point it stopped. The default, B<86400> seconds is one full day. 
+
+This variable attempts to safegaurd you against having a dropped mailing that you've, "forgotten" about 
+reloading, "mysteriously" and unintentionally. 
+
+A mailout may still be reloaded if this limit has been surpassed, but it must be done manually, 
+through the list control panel. 
+
+
+
+=head2 $EMAIL_CASE
+
+$EMAIL_CASE configures dada to either lowercase ONLY the 'domain' 
+part of an email, or lowercase the entire email address. Lowercasing 
+the domain is the correct way, since the 'name' part of an email 
+should be case sensitive, but it is almost never handled that way.
+Set this to 'lc_domain' to lowercase JUST the domain, or 
+set this to 'lc_all' to lowercase the entire email address.
+
+
+
+=head2 @EMAIL_EXCEPTIONS
+
+@EMAIL_EXCEPTIONS allows you to enter email addresses that wouldn't 
+normally pass the email address validator. Good for testing offline 
+when all you have is, say, root@localhost working.
+
+
+
+=head2 $LIST_IN_ORDER
+
+C<$LIST_IN_ORDER> controls whether your email list is handled in
+alphabetical order. Having a list in alphabetical order makes a list 
+easier to work with but BE WARNED that this will, especially when 
+you're using a plain text list, slow things down. If you have small 
+lists then this shouldn't be too much of a problem. Set this variable 
+to '1' to have your list sorted, '0', to keep your list unsorted.
+
+=head2 $FILE_CHMOD
+
+$FILE_CHMOD is a variable that sets what permission Dada Mail sets 
+files to when it initially writes them. You can set it to a few things: 
+
+0660 - probably all you need
+0666 - allows anyone to read and write files in the $FILES directory
+0755 - probably insecure
+0777 - shooting yourself in the foot insecure
+0600 - godawful paranoid about the whole thing - life in general, 
+       as secure as it gets
+
+
+
+It's a good idea to figure out what works and leave this variable 
+alone after your lists are set up, as you may not be able to access 
+a list under a different $FILE_CHMOD.
+
+We've changed what the $FILE_CHMOD Dada Mail is shipped (02/13/01) 
+with from 0660 to 0666. Note that this may be less secure than 0660, 
+but may solve some problems people are having. Change this back to 
+0660 if everything seems to have been running just fine.
+
+
+
+=head2 $DIR_CHMOD
+
+Similar to C<$FILE_CHMOD>, C<$DIR_CHMOD> sets permissions to Directories 
+created with Dada Mail. 
+
+
+
+=head2 $HTML_CHARSET
+
+C<$HTML_CHARSET> holds the character sets used for HTML screens. It's suggested
+to only use, C<UTF-8>. 
+
+=head1 List Control Panel
+
+=head1 Email Messages and Headers
+
+
+=head2 @CHARSETS
+
+Charsets that Dada Mail supports. These are the most used; to add 
+your own would look like this: 
+
+	'Description	charset',
+
+There's a TAB between the Description and the actual charset: THIS 
+IS REALLY IMPORTANT. 
+
+
+=head2 @Content_type
+
+These are the default content-types.
+
+=head2 %PRIORITIES
+
+Priorities of mailings. I find people sending me things with the 
+highest priority to tell me about credit cards really don't garner 
+my attention. 
+
+
+=head2 @CONTENT_TRANSFER_ENCODINGS
+
+C<@CONTENT_TRANSFER_ENCODINGS> holds the supported transfer encodings Dada Mail supports. 
+We suggest only using, C<8bit> or, C<quoted-printable>. 
+
+
+=head1 Formatting
+
+
+=head2 Plain Text to HTML Encoding
+
+Dada Mail uses the C<HTML::TextToHTML> CPAN module to convert plain text 
+to HTML when showing plain text in archives and things like that. 
+You can change the behavior of this formatting by changing what 
+arguments get passed to the HTML::TextToHTML module, as described here: 
+
+http://search.cpan.org/~rubykat/txt2html/lib/HTML/TextToHTML.pm#OPTIONS
+
+=head2 $HTML_SCRUBBER_OPTIONS
+
+Dada Mail uses the C<HTML::Scrubber> CPAN module to attempt to strip JavaScript
+from potentially harmful HTML messages when displaying them in its archives. 
+
+C<$HTML_SCRUBBER_OPTIONS> holds the parameters that are passed to C<HTML::Scrubber> 
+when creating a new C<HTML::Scrubber> object. 
+
+
+
+=head1 MIME Settings
+
+
+=head2 %MIME_TYPES
+
+These are the MIME types Dada Mail understands. The file ending is on 
+the left, what MIME type it maps to is on the right. Feel free to add
+your own. Dada Mail should be able to figure out the MIME type of a
+file, but when it can't, it'll fall back on this.
+
+
+
+=head2 $DEFAULT_MIME_TYPE
+
+In case nothing up there matches what someone is trying to upload, 
+there's a default MIME type for a last ditch guess. Some mail 
+readers are sophisticated enough to figure out what an attachment is 
+without its MIME type, but don't count on it. 
+
+
+
+=head2 $MIME_PARANOID 
+
+This is set for the $MIME::Lite::PARANOID variable. Set it to '1' 
+if you don't know if you have the MIME::Base64 or MIME::QuotedPrint
+or you don't know what those are. :) 
+
+
+
+=head2 $MIME_HUSH
+
+Set mime_hush to '1' to suppress/unsuppress all warnings coming from 
+this module.
+
+
+
+=head2 $MIME_OPTIMIZE
+
+Set to: 'faster', 'less memory', or 'no tmp files'. This controls how 
+the MIME::Parser works. For more information: 
+
+http://search.cpan.org/~dskoll/MIME-tools-5.502/lib/MIME/Parser.pm#OPTIMIZING_YOUR_PARSER
+
+
+$MIME_OPTIMIZE ||= 'no tmp files'; 
+
+
+=head1 Default Email Message Templates
+
+The global default Email Message Templates are saved in the Config.pm file. 
+
+Many of these email tempaltes are list-centric and can be edited list by list in the list 
+control panel under, B<Manage Copy - Email Templates>. If what you desire is to edit an email template 
+for just one list, the place to do that is in the list control panel. 
+
+If you desire to set the default email template for all your lists, you'd want to do this in the 
+global configuration (right here, or in the outside configuration file) 
+
+
+=head2 $SUBSCRIBED_MESSAGE
+
+I<(List-centric, editable per list)> 
+
+This is the default "subscription successful!" email message. 
+This message can be customized for each list in the list's Control Panel.
+
+=head2 $SUBSCRIPTION_NOTICE_MESSAGE
+
+This email message is sent to the List Owner, when a new subscription has been made by a subscriber. 
+
+=head2 $UNSUBSCRIBED_MESSAGE
+
+I<(List-centric, editable per list)> 
+
+This is the default "unsubscription successful!" email message. 
+This message can be customized for each list in the list's Control Panel.
+
+
+
+=head2 $CONFIRMATION_MESSAGE
+
+I<(List-centric, editable per list)> 
+
+This is the default "subscription confirmation" email message. 
+This message can be customized for each list in the list's Control Panel.
+
+
+
+=head2 $UNSUB_CONFIRMATION_MESSAGE
+
+I<(List-centric, editable per list)> 
+
+This is the default "subscription confirmation" email message. 
+This message can be customized for each list in the list's Control Panel.
+
+
+
+=head2 $MAILING_LIST_MESSAGE
+
+I<(List-centric, editable per list)> 
+
+This is the default "Mailing List!" email message. 
+This message can be customized for each list in the list's Control Panel.
+
+
+
+=head2 $MAILING_LIST_MESSAGE_HTML
+
+I<(List-centric, editable per list)> 
+
+Similar to $MAILING_LIST_MESSAGE, but used specifically for HTML messages. 
+
+
+
+=head2 $NOT_ALLOWED_TO_POST_MSG
+
+I<(List-centric, editable per list)> 
+
+This message is sent to someone who is not allowed to post to your 
+list using Bridge plugin. If you do not use the 
+Bridge plugin, this won't be of any use to you! This message 
+can be customized for each list in the list's Control Panel.
+
+
+
+=head2 $NOT_ALLOWED_TO_POST_NOTICE_MSG
+
+This message is sent to the List Owner, usually in a discussion list setup, when a message is sent to the list from an email address
+who does not have access to do so. 
+
+
+
+=head2 $YOU_ARE_ALREADY_SUBSCRIBED_MESSAGE
+
+I<(List-centric, editable per list)> 
+
+This message is sent out only if someone that's already currently subscribed to a list tries to subscribe again and 
+you've set the preferences to send an email out, instead of giving this message in the web browser.
+
+
+
+
+=head2 $YOU_ARE_NOT_SUBSCRIBED_MESSAGE
+
+I<(List-centric, editable per list)> 
+
+This message is sent out only if someone that's not currently subscribed to a list tries to unsubscribe and
+you've set the preferences to send an email out, instead of giving this message in the web browser.
+
+
+
+
+=head2 $MAILING_FINISHED_MESSAGE
+
+This email message is sent to the List Owner, when a mass mailing has finished. 
+
+
+
+=head2 $TEXT_INVITE_MESSAGE
+
+The text version of the list invitation message.
+
+
+
+=head2 $HTML_INVITE_MESSAGE
+
+The HTML version of the list invitation message.
+
+
+
+=head2 $SEND_ARCHIVED_MESSAGE
+
+I<(List-centric, editable per list)> 
+
+The text version of the message sent when an archived message is sent 
+to a friend.
+
+
+
+=head2 $HTML_SEND_ARCHIVED_MESSAGE
+
+The HTML version of the message sent when an archived message is sent 
+to a friend.
+
+
+
+=head1 Default HTML Screen Templates
+
+The global default HTML Screen Templates are saved in the Config.pm file. 
+
+Many of these HTML screen templates are list-centric and can be edited list by list in the list 
+control panel under, B<Manage Copy -  HTML Screen Templates>. If what you desire is to edit an HTML screen template 
+for just one list, the place to do that is in the list control panel. 
+
+If you desire to set the default HTML screen template for all your lists, you'd want to do this in the 
+global configuration (right here, or in the outside configuration file) 
+
+
+=head2 $HTML_CONFIRMATION_MESSAGE
+
+I<(List-centric, editable per list)> 
+
+Shown when a request to subscribe is successful.
+
+
+
+=head2 $HTML_UNSUB_CONFIRMATION_MESSAGE
+
+I<(List-centric, editable per list)> 
+
+Shown when a request to unsubscribe is successful.
+
+
+
+=head2 $HTML_SUBSCRIBED_MESSAGE
+
+I<(List-centric, editable per list)> 
+
+Shown when a subscription is successful.
+
+=head2 $HTML_SUBSCRIPTION_REQUEST_MESSAGE
+
+I<(List-centric, editable per list)> 
+
+
+
+=head2 $HTML_UNSUBSCRIBED_MESSAGE
+
+I<(List-centric, editable per list)> 
+
+Shown when an unsubscription is successful.
+
+
+
+=head1 Additional Settings
+
+(advanced hacker stuff)
+
+=head2 Operating System
+
+Dada Mail tries to guess your Operating System using the $^O variable. 
+If it's guessing wrong, you can set it yourself. 
+
+
+
+=head2 $NULL_DEVICE
+
+$NULL_DEVICE refers to where the /dev/null device or file or whatever 
+you more smert people call that thing... is located. On most *nix's, 
+it's at /dev/null. You may have to change it. For example, if you're 
+a Windows folk. 
+
+
+
+=head2 Seed Random Number Generator
+
+if this is taken off, the seed random number will be made from the 
+time, or from something pretty random, depending on your version 
+of Perl.
+
+
+
+=head2 $FIRST_SUB, $SEC_SUB
+
+Where is the salt number located in the encrypted password? It's 
+usually at substr(0,2) but may be different on different systems, 
+some systems are set to substring(3,2).
+Actually, I've only had this problem on one system - mine :) - 
+which was a FreeBsd 4.0 distro. Under most cases, this is NOT going 
+to be your problem!
+
+
+
+=head2 $SALT
+
+The salt number. Change $SALT to
+ 
+	 $SALT = "mj";
+
+if all else fails. 
+
+
+
+=head2 $PIN_WORD $PIN_NUM 
+
+A pin number is made when someone wants to subscribe to your list. 
+They will get a confirmation email with a special link that includes 
+their email, and a pin that's generated from the email and the 
+variables below using a mathematical equation. It's much harder to 
+guess a pin with these two variables changed:
+
+
+
+=head2 $TEXT_CSV_PARAMS
+
+Changes how Dada Mail handles parsing CSV files. See: 
+
+L<http://search.cpan.org/~makamaka/Text-CSV/lib/Text/CSV.pm#new_(\%attr)>
+
+
+
+=head2 @AnyDBM_File
+
+Change what DB Dada Mail will use. 
+Dada Mail can use various db packages to save each list's information.
+It looks for the best one and uses the next package in the list if it 
+can't find it. If you get a software error (an error 500, not having 
+any information changed when creating a new list) you may have to 
+change this to: 
+
+	BEGIN { @AnyDBM_File::ISA = qw(SDBM_File) }
+
+SDBM is the worst package to use, but it is always available with perl.
+See the man page for the AnyDBM_File for more information.
+
+
+
+Check the AnyDBM_File for more info.
+
+
+
+=head2 $ATTACHMENT_TEMPFILE
+
+To add an attachment to a list message in Dada Mail from the control 
+panel, we have to upload it via the web browser. There are two ways 
+we can do this. One is to save the information in the $FILES 
+directory and then open it up, attach it, and then delete it; and the 
+other involves some magical qualities of CGI.pm and MIME::Lite, 
+probably coupled with your server's /tmp file, if you can use it. 
+Setting $ATTACHMENT_TEMPFILE to '1' uploads, saves, attaches and then 
+deletes the file. Setting it to '0' does it magically. I suggest '1', 
+unless you want to play around with it. 
+
+
+
+=head2 $MAIL_VERP_SEPARATOR
+
+See: http://search.cpan.org/~gyepi/Mail-Verp-0.05/Verp.pm
+
+=head2  $VER
+
+This is the version of this Dada Mail Program. 
+Mostly it's used to see if there's a new version out there to use
+and to say that you've got the freshest tools on the Web.
+
+
+
+=head2 $PROGRAM_NAME
+
+This is the name of the program. I guess if this script has a mid-life 
+crisis or something, it can change its name, buy a really fast car 
+and start chasing guys half her age. 
+
+
+
+=head2 %EMAIL_HEADERS
+
+C<%EMAIL_HEADERS> hold the default values of all email headers that Dada Mail 
+supports. Most of the default values have no default (they're set to, C<undef>)
+and in this case, won't be used, unless explicitly set in the program, somewhere. 
+
+You may try changing the default value, (for example, the C<Reply-To> header) 
+but these default value will always be overrided by anything explictly set in
+in the program. 
+
+
+
+=head2 @EMAIL_HEADERS_ORDER
+
+C<@EMAIL_HEADERS_ORDER> sets the order at which email headers are written in, 
+when Dada Mail creates an email message. 
+
+
+
+=head1 SUPPORT
+
+If you need further support for this script, please do not email 
+me directly, but use one of the following channels: 
+
+=over
+
+=item * Dada Mail Support Site
+
+http://dadamailproject.com
+
+=item * The Dada Mailers Discussion List
+
+http://dadamailproject.com/cgi-bin/dada/mail.cgi/dadadev/
+
+=item * Consultation for Dada Mail
+
+http://dadamailproject.com/support/customize.html
+
+=back
+
+
+=head1 CONTACT
+
+My name is Justin Simoni
+
+=head1 COPYRIGHT 
+
+Copyright (c) 1999 - 2012 Justin Simoni All rights reserved. 
+
+This program is free software; you can redistribute it and/or
+modify it under the terms of the GNU General Public License
+as published by the Free Software Foundation; either version 2
+of the License, or (at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program; if not, write to the Free Software
+Foundation, Inc., 59 Temple Place - Suite 330, 
+Boston, MA  02111-1307, USA.
+
+
+=head1 Last Words
+
+To riding bicycles.
+

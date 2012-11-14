@@ -27,6 +27,6 @@ Once C<HTML::Template::Pro> is installed, there's nothing else you need to do, t
 You can disable using C<HTML::Template::Pro>, if you so desire.  See the docs for the C<$TEMPLATE_SETTINGS> 
 config variable:
 
-L<http://dadamailproject.com/d/Config.pm.html#_template_settings>, specifically, the, C<engine> parameter. 
+L<http://dadamailproject.com/d/global_variables.pod.html#_template_settings>, specifically, the, C<engine> parameter. 
 
 =cut

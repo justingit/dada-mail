@@ -159,7 +159,7 @@ Dada Mail uses Perl modules from various sources - mostly CPAN. Each of these mo
 
 In Dada Mail, the CPAN modules that have a debugging/tracing scheme are listed in the, B<%CPAN_DEBUG_SETTINGS> Config.pm variable. More information:
 
-B<http://dadamailproject.com/support/documentation/Config.pm.html#_cpan_debug_settings>
+B<http://dadamailproject.com/support/documentation/global_variables.pod.html#_cpan_debug_settings>
 
 Enabling debugging settings in these modules may help debug issues such as:
 

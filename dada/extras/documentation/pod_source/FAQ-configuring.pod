@@ -99,7 +99,7 @@ I<dada/extras/examples/example_dada_config-README.txt>
 
 For more technical documentation on the C<$PROGRAM_CONFIG_FILE_DIR> variable, see the C<Config.pm> file's entry: 
 
-L<http://dadamailproject.com/support/documentation/Config.pm.html#_program_config_file_dir>
+L<http://dadamailproject.com/support/documentation/global_variables.pod.html#_program_config_file_dir>
 
 
 
@@ -115,9 +115,9 @@ Currently, no. Each instance of Dada Mail requires a separate installation. We h
 
 See the, C<%LIST_SETUP_DEFAULTS> and C<%LIST_SETUP_INCLUDE> Config.pm variables: 
 
-L<http://dadamailproject.com/support/documentation/Config.pm.html#_list_setup_defaults>
+L<http://dadamailproject.com/support/documentation/global_variables.pod.html#_list_setup_defaults>
 
-L<http://dadamailproject.com/d/Config.pm.html#_list_setup_include>
+L<http://dadamailproject.com/d/global_variables.pod.html#_list_setup_include>
 
 =head2 Is there a way to change the List short name? 
 

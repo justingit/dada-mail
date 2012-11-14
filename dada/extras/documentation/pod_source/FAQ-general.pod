@@ -669,7 +669,7 @@ Either, don't edit the individual copy of the list template in the admin control
 
 Information on the %LIST_SETUP_OVERRIDES hash can be found at: 
 
-http://dadamailproject.com/support/documentation/Config.pm.html#list_setting_defaults
+http://dadamailproject.com/support/documentation/global_variables.pod.html#list_setting_defaults
 
 =back
 

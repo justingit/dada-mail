@@ -145,7 +145,7 @@ It's suggested you I<only> do this if you are installing from scratch and not up
 
 See also: 
 
-http://dadamailproject.com/support/documentation-4_0_2/Config.pm.html#_template_settings
+http://dadamailproject.com/support/documentation-4_0_2/global_variables.pod.html#_template_settings
 
 =item * Don't use square brackets this way
 

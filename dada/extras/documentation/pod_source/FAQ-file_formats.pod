@@ -120,7 +120,7 @@ SDBM_File could also be used, but it's own file format limits the amount of info
 
 More information:
 
-http://dadamailproject.com/support/documentation/Config.pm.html#_anydbm_file
+http://dadamailproject.com/support/documentation/global_variables.pod.html#_anydbm_file
 
 Each list has one file, named, I<mj-listshortname>, where listshortname is the list's short name. This file is saved wherever the I<$FILES> Config.pm variable is set to.
 
@@ -210,7 +210,7 @@ SDBM_File could also be used, but it's own file format limits the amount of info
 
 More information:
 
-http://dadamailproject.com/support/documentation/Config.pm.html#_anydbm_file
+http://dadamailproject.com/support/documentation/global_variables.pod.html#_anydbm_file
 
 Each list has one file, named, I<mj-listshortname-archive>, where listshortname is the list's short name. This file is saved wherever the I<$ARCHIVES> Config.pm variable is set to. If the B<$ARCHIVES> variable isn't explicitly set, the value of the B<$FILES> variable is used. 
 
@@ -445,7 +445,7 @@ For more information, see the dada/DADA/App/GenericDBFile/Backup.pm Perl module.
 
 You can set how many copies of backups you'd like to save in the Config.pm variable, %B<BACKUP_HISTORY>
 
-http://dadamailproject.com/support/documentation/Config.pm.html#_backup_history
+http://dadamailproject.com/support/documentation/global_variables.pod.html#_backup_history
 
 
 =head1 Usage Logs
@@ -508,7 +508,7 @@ This method using no temporary session keeping file, but rather keeps all inform
 
 =item * $SESSION_DB_TYPE Config.pm variable: 
 
-L<http://dadamailproject.com/support/documentation/Config.pm.html#_session_db_type>
+L<http://dadamailproject.com/support/documentation/global_variables.pod.html#_session_db_type>
 
 =item * CGI::Session
 

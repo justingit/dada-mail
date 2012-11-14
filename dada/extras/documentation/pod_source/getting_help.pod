@@ -88,7 +88,7 @@ There's a variable in the Config.pm file called, $PROGRAM_ERROR_LOG. Setting thi
 
 More information: 
 
-http://dadamailproject.com/support/documentation/Config.pm.html#_program_error_log
+http://dadamailproject.com/support/documentation/global_variables.pod.html#_program_error_log
 
 =back
 
