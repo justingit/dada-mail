@@ -115,8 +115,6 @@ The first is to set the, C<$PROGRAM_ROOT_PASSWORD> variable to the Dada Mail Roo
  
  # End Root Password
 
-Easy enough. 
-
 The second method is to set an I<encrypted> version of our Dada Mail Root Password. This is what we I<seriously> recommend. 
 
 To do so, visit your Dada Mail (in your web browser, go to the URL you're setting in the C<$PROGRAM_URL> variable) with this query string: C<?f=pass_gen>. You're entire URL will look like this: 
@@ -134,9 +132,9 @@ Follow the instructions to encrypt your Dada Mail Root Password. You'll want to 
  
  # End Root Password
 
-=head3 MySQL Backend
+=head3 SQL Backend
 
-This step is really optional, but we do encourage you to use the MySQL backend. It involves more editing of the C<.dada_config> file - easy stuff. 
+This step is really optional, but we do encourage you to use the MySQL or PostgreSQL backend. It involves more editing of the C<.dada_config>.
 
 You'll need to I<remove> the following lines in your C<.dada_config> file: 
 
@@ -150,11 +148,11 @@ and,
 
 This will enable the SQL configuration
 
-Next, create a new SQL database, specifically for Dada Mail. In these instructions, we're just going to use MySQL, but there are other choices. 
+Next, create a new SQL database, specifically for Dada Mail. In these instructions, we're going to use MySQL, but there are other choices. 
 
 Note the server, database, username and password you've set up. 
 
-Then, create the necessary tables in that database. The schema needed will be in the, I<dada/extras/SQL> directory. The one specific for Dada Mail is called, 
+Then, create the necessary tables in that database. The schema needed will be in the, I<dada/extras/SQL> directory. The one specific for MySQL is called, 
 
 I<dada/extras/SQL/mysql_schema.sql>
 
