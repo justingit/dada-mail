@@ -2490,11 +2490,11 @@ sub screen {
 		
 		
 	}
-	elsif($screen eq 'installer-dada_mail.js'){ 
+	elsif($screen eq 'installer-dada_mail.js' || $screen =~ m/installer\-jquery/ || $screen =~ m/installer\-jquery\-ui/){ 
 		print $q->header('text/javascript');
 		print DADA::Template::Widgets::screen(
 	        {
-	            -screen => 'installer-dada_mail.js',
+	            -screen => $screen,
 	        }
 	    );	
 		
