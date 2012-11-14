@@ -724,7 +724,6 @@ sub message_history_json {
 	
 	
 	if(! defined($json)){ 
-		warn "well, that didn't work."; 
 		my ($total, $msg_ids) = $self->get_all_mids(
 			{ 
 				-page    => $page, 
