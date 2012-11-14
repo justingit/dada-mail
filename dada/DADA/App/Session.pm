@@ -311,7 +311,7 @@ sub change_login {
         require CGI::Session;
 
         CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);
-        my $old_session = CGI::Session->( $self->{dsn}, $q, $self->{dsn_args} )
+        my $old_session = CGI::Session->new( $self->{dsn}, $q, $self->{dsn_args} )
           or carp CGI::Session->errstr();
 
         my $old_password = $old_session->param('Admin_Password');
