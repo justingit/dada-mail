@@ -234,15 +234,17 @@ Visit Dada Mail (http://example.com/cgi-bin/dada/mail.cgi), with the following q
 
 	http://example.com/cgi-bin/dada/mail.cgi?f=pass_gen
 
-=item 3
+=item 2
 
 You'll see a page in your browser that asks for a password to 
 encrypt. Type in the password you want to use, and press 'encrypt'. 
 An encrypted password will be outputted. 
 
-=item 4
+=item 3
 
 Copy that encrypted password set it as your C<$PROGRAM_ROOT_PASSWORD> variable. 
+
+=back
 
 =head1 $BACKEND_DB_TYPE
 
