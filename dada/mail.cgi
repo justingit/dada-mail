@@ -1436,7 +1436,8 @@ sub sending_monitor {
 		my $scrn = DADA::Template::Widgets::screen(
 				{
 					-screen => 'sending_monitor_screen.tmpl',
-	                         -vars   => {
+					-expr   => 1, 
+	                -vars   => {
 						screen                       => 'sending_monitor',
 						mailout_exists               => $mailout_exists,
 						message_id                   => DADA::App::Guts::strip($id),

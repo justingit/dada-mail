@@ -155,12 +155,14 @@
 	
 	
 			      </h3>
-    
-				<h3>
-				<!-- tmpl_if hourly_rate --> 
-				 Average Sending Rate: <!-- tmpl_var hourly_rate --> messages/hour
-				<!-- /tmpl_if -->
-			</h3> 
+    			<!-- hourly rate estimations are way off, with a small sample size... -->
+				<!-- tmpl_if expr="total_sent_out > 9" --> 
+					<h3>
+						<!-- tmpl_if hourly_rate --> 
+					 		Average Sending Rate: <!-- tmpl_var hourly_rate --> messages/hour
+						<!-- /tmpl_if -->
+					</h3>
+				<!-- /tmpl_if -->  
 	
 
 		 	<h3> 
