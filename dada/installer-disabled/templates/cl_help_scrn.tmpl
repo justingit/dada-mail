@@ -1,7 +1,5 @@
 
-
 DADA MAIL INSTALL/CONFIGURATION SCRIPT! 
-
 
 This script has a separate web and command line interface - this help covers
 the command line interface. This interface is currently very volatile and we
@@ -9,8 +7,15 @@ would really appreciate your help in making it better. The web-based installer
 is very easy to use, the command line installer is as easy as most command line 
 utilities are (not exactly optimized for a casual user). 
 
-REQUIRED PARAMETERS:
+Please file any problems at: 
 
+	https://github.com/justingit/dada-mail/issues
+
+INSTALLATION: REQUIRED PARAMETERS:
+
+The following parameters are required, if you're INSTALLING Dada Mail. If you 
+are UPGRADING Dada Mail, you may have other options. 
+ 
 --program_url
 
 	The URL of your Dada Mail, "mail.cgi" script
@@ -18,7 +23,18 @@ REQUIRED PARAMETERS:
 --dada_root_pass
 
 	The Dada Mail Root Password you'd like to use 
+
+--support_files_dir_path
+--support_files_dir_url
+
+	These parameters need to be passed with the value publicly accessible directory 
+	(something in your public_html directory), in both the absolute server path
+	(--support_files_dir_path) and URL (--support_files_dir_url). 
 	
+	This directory will have an additional directory created inside it, called, 
+	"dada_mail_support_files", where the installer will place the necessary 
+	static files/resouces required for Dada Mail. 
+
 --dada_files_loc
 
 	The directory that the installer should create the, ".dada_files" directory 
@@ -57,17 +73,136 @@ the following parameters:
 
 OPTIONAL PARAMETERS
 
+	--install_plugins
+
+Takes a comma separated (no space between the comma) list of plugin/extension names. 
+
+The following plugins/extensions are supported: 
+
+	mailing_monitor
+	change_root_password
+	screen_cache
+	log_viewer
+	tracker
+	bridge
+	bounce_handler
+	scheduled_mailings
+	multiple_subscribe
+	blog_index
+	default_mass_mailing_messages
+	change_list_shortname
+	password_protect_directories
+	
+Example: 
+
+		--install_plugins mailing_monitor,change_root_password,screen_cache
+
+This also works: 
+
+	--install_plugins mailing_monitor --install_plugins change_root_password --install_plugins screen_cache
+
+WYSIWYG Editors
+
+	--install_wysiwyg_editors
+
+If passed, will enable you to install the WYSIWYG editors +  File Browser. 
+You will *also* have to pass one or more of the following: 
+
+	--wysiwyg_editor_install_ckeditor
+
+		Installs CKeditor
+
+	--wysiwyg_editor_install_tiny_mce
+
+		Installs Tiny MCE
+
+	--wysiwyg_editor_install_fckeditor
+
+		Installs FCKeditor (NOT recommended)
+	
+	--file_browser_install_kcfinder
+
+		Installs the KCFinder File Browser/File Uploader
+
+A complete example of invoking the installer with the above parameters: 
+
+	./install.cgi --program_url http://example.com/cgi-bin/dada/mail.cgi \
+	--dada_root_pass secret \
+	--dada_files_loc /home/example \
+	--support_files_dir_path /home/example/public_html \
+	--support_files_dir_url http://example.com \
+	--backend mysql \
+	--sql_server localhost \
+	--sql_port 3306 \
+	--sql_database dada_mail \
+	--sql_username username \
+	--sql_password password \
+	--install_plugins mailing_monitor \
+	--install_plugins change_root_password \
+	--install_plugins screen_cache \
+	--install_plugins log_viewer \
+	--install_plugins tracker \
+	--install_plugins multiple_subscribe \
+	--install_plugins blog_index \
+	--install_plugins default_mass_mailing_message \
+	--install_plugins change_list_shortname \
+	--install_wysiwyg_editors \
+	--wysiwyg_editor_install_ckeditor \
+	--wysiwyg_editor_install_tiny_mce \
+	--file_browser_install_kcfinder
+
+UPGRADING
+
+If you are using the installer to upgrade FROM AN INSTALL OF DADA MAIL YOU INSTALLED, 
+USING THE INSTALLER, you may simply pass the, 
+
+	--dada_files_loc
+		
+flag, as well as the, 
+
+	--upgrading
+	
+parameter, and the installer will install Dada Mail, based on the previous values in your
+global configuration.
+
+You may then pass *additional* parameters, to augment the previous configuration. 
+
+For example: 
+
+	./install.cgi --dada_files_loc /home/account --upgrading
+	
+Will upgrade Dada Mail, pulling the previous global config values, 
+
+	./install.cgi --dada_files_loc /home/account --upgrading \
+	--install_wysiwyg_editors \
+	--wysiwyg_editor_install_ckeditor
+	--install_plugins mailing_monitor,change_root_password,screen_cache
+	
+Will upgrade Dada Mail, pulling the previous global config values, AS WELL AS
+making sure the CKEditor and the three plugins are also installed. 
+
+You CANNOT use the, "--dada_files_dir_setup" parameter with the, "--upgrading" 
+parameter. You must explicitly set the, "--dada_files_loc". 
+
+Not ALL global configuration values can be moved over, when upgrading. Rather, 
+ONLY VARIABLES YOU CAN SET USING THE INSTALLER are supported. 
+
+INSTALLING WITH EXISTING INFORMATION
+
 If performing an partial upgrade or doing some of your installation manually, 
 you can tell Dada Mail to skip some of the tests it would usually preform, before 
 configuring Dada Mail: 
 
 --dada_files_dir_setup 
+
 	If you pass this parameter with a value of, "auto", you do not need to 
 	pass the,  "--dada_files_loc" parameter PROVIDED THAT you're certain that 
 	the directory it automatically discovers to create the, ".dada_files" 
-	directory structure will be correct. 
+	directory structure will be correct. The installer usually guesses the home 
+	directory.
 	
 --skip_configure_SQL
+
 	By default, the installer will make sure the database you pass in, 
 	"--sql_database" doesn't already have the tables required for a Dada Mail
 	install. If you've already set up these tables (for example, in a previous
@@ -76,15 +211,24 @@ configuring Dada Mail:
 	the database, itself. 
 
 --if_dada_files_already_exists
-	If you pass this parameter with a value of, "skip_configure_dada_files", 
+
+	If you pass this parameter, 
+	
+		keep_dir_create_new_config
+
+	The installer will install Dada Mail, even if a already-existing, 
+	".dada_files" directory is found. 
+	
+	If you pass this parameter 
+	
+		skip_configure_dada_files
+		
 	NO other parameter is really required, except, "--dada_files_loc" PROVIDED
 	THAT the directory you pass in that parameter has an already-set up 
 	.dada_files directory,  including a valid .dada_config file. When passing this 
 	parameter, this  script will simply change the, "dada/DADA/Config.pm" file to point to 
 	the already-created ".dada_files" directory.
-	
-	If you pass this paramater with a value of, ""
-		
+			
 OTHER PARAMETERS
 
 --help
@@ -93,6 +237,4 @@ OTHER PARAMETERS
 		./install.cgi | less 
 		
 	(or something similar) so that the script doesn't zoom to the end.
-		
-			
 		

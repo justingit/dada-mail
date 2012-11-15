@@ -276,6 +276,7 @@ sub cl_run {
     my %h = ();
     Getopt::Long::GetOptions(
         \%h,
+		'upgrading!',
         'if_dada_files_already_exists=s',
         'program_url=s',
 		'support_files_dir_path=s',
@@ -290,10 +291,37 @@ sub cl_run {
         'sql_database=s',
         'sql_username=s',
         'sql_password=s',
+		'install_plugins=s@', 
+		'install_wysiwyg_editors!',
+		'wysiwyg_editor_install_ckeditor!',
+		'wysiwyg_editor_install_tiny_mce!',
+		'wysiwyg_editor_install_fckeditor!',
+		'file_browser_install_kcfinder!',
 		'help',
     );
 
- 
+#	use Data::Dumper; 
+#	die Dumper({%h}); 
+	
+	if(exists($h{upgrading})){ 
+		if($h{upgrading} == 1) { 
+			$q->param('install_type', 'upgrade');
+			$q->param('if_dada_files_already_exists', 'keep_dir_create_new_config');
+			$q->param('current_dada_files_parent_location', $h{dada_files_loc}); 
+			$q->param('dada_pass_use_orig', 1); 
+			$q = grab_former_config_vals($q);
+		}
+	}
+	
+	if(exists($h{install_plugins})){ 
+	my @install_plugins	 = split(/,/,join(',',@{$h{install_plugins}}));
+		for(@install_plugins){ 
+			$q->param('install_' . $_, 1); 
+		}
+		delete $h{install_plugins};
+	}
+
+ 	# This is very lazy of me - $q->param() is being used as a stash for persistance 
 	for(keys %h){ 
 		$q->param($_, $h{$_});
 	}
@@ -305,10 +333,10 @@ sub cl_run {
 		cl_help(); 
 		exit;
 	}
-		
-
+	
 	# Uh, so we don't have to re-type this on the cl: 
 	if(exists($h{'dada_root_pass'})){ 
+		$q->param('dada_pass_use_orig', 0); 
 		$q->param('dada_root_pass_again',$h{dada_root_pass}); 
 	}
 	my ( $check_status, $check_errors ) = check_setup();
@@ -787,10 +815,9 @@ sub admin_menu_item_used {
 		if($menu->{-Title} =~ m/Plugins|Extensions/){ 
 			my $submenu = $menu->{-Submenu}; 
 			foreach my $item(@$submenu) { 
-				warn q{$item->{-Function} } . $item->{-Function}; 
-				warn q{$function} . $function; 
+#				warn q{$item->{-Function} } . $item->{-Function}; 
+#				warn q{$function} . $function; 
 				if($item->{-Function} eq $function){ 
-					
 					return 1; 
 				}
 			}
