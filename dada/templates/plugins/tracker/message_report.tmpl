@@ -22,7 +22,14 @@
 		<h1>Tracking Info For: 
 		 <!-- tmpl_var subject escape="HTML" --> 
 		</h1> 
-	
+		
+		<!-- tmpl_if expr="DATA_CACHE == 1" -->
+			<p class="alert" style="float:right">
+				Data below is cached. <a href="<!-- tmpl_var Plugin_URL -->?f=clear_message_data_cache&msg_id=<!-- tmpl_var mid -->">Clear</a>
+			</p>
+			<div style="clear:both"></div>
+		<!-- /tmpl_if --> 
+		
 	<!-- /tmpl_if --> 
 
 	<form id="tracker_message_info">

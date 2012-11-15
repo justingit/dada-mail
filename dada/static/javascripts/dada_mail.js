@@ -390,9 +390,14 @@ $jq(document).ready(function() {
 	}
 
 	if ($jq("#plugins_tracker_default").length) {
+		tracker_parse_links_setup();
 		message_history_html();
 		google.setOnLoadCallback(drawSubscriberHistoryChart());
-
+		
+		$jq("body").on("change", '#tracker_record_view_count', function(event) { 
+			tracker_change_record_view();
+		}); 
+		
 		$jq("body").on("click", '.tracker_turn_page', function(event) {
 			tracker_turn_page($jq(this).attr("data-page"));
 			event.preventDefault();
@@ -401,6 +406,13 @@ $jq(document).ready(function() {
 			tracker_purge_log();
 			event.preventDefault();
 		});
+		
+		$jq("body").on("click", '.tracker_parse_links_setup', function(event) {
+			tracker_parse_links_setup();
+		});
+		
+		
+		
 	}
 	// Plugins >> Password Protect Directories
 	if ($jq("#plugins_password_protect_directories_default").length) {
@@ -1569,11 +1581,48 @@ function bounce_breakdown_chart(type, label, target_div) {
 
 // Plugins >> Tracker
 
+function tracker_change_record_view(){ 
+	var request = $jq.ajax({
+		url: $jq("#plugin_url").val(),
+		type: "POST",
+		cache: false,
+		data: {
+			f: 'save_view_count_prefs',
+			tracker_record_view_count: $jq('#tracker_record_view_count option:selected').val()
+		},
+		dataType: "html"
+	});
+	request.done(function(content) {
+		message_history_html();
+		google.setOnLoadCallback(drawSubscriberHistoryChart());
+	});
+	
+}
+
 function tracker_turn_page(page_to_turn_to) {
 	$jq("#tracker_page").val(page_to_turn_to);
 	message_history_html();
 	google.setOnLoadCallback(drawSubscriberHistoryChart());
 }
+function tracker_parse_links_setup() { 
+	if ($jq("#tracker_auto_parse_links").prop("checked") == true) {
+		if ($jq('#tracker_auto_parse_links_info').is(':hidden')) {
+			$jq('#tracker_auto_parse_links_info').show('blind');
+		}
+		if ($jq('#tracker_noauto_parse_links_info').is(':visible')) {
+			$jq('#tracker_noauto_parse_links_info').hide('blind');
+		}
+	}
+	if ($jq("#tracker_noauto_parse_links").prop("checked") == true) {
+		if ($jq('#tracker_noauto_parse_links_info').is(':hidden')) {
+			$jq('#tracker_noauto_parse_links_info').show('blind');
+		}
+		if ($jq('#tracker_auto_parse_links_info').is(':visible')) {
+			$jq('#tracker_auto_parse_links_info').hide('blind');
+		}
+	}	
+}
+
 
 // Plugins >> Log Viewer
 

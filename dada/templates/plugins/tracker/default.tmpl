@@ -18,19 +18,25 @@
 	 <input type="hidden" name="tracker_page" id="tracker_page" value="1"  /> 
 	 <input type="hidden" name="plugin_url"   id="plugin_url"   value="<!-- tmpl_var Plugin_Url -->" /> 
 	</form> 
-
-<h1>Message Summaries</h1>
+	<!-- tmpl_if expr="DATA_CACHE == 1" -->
+		<p class="alert" style="float:right">
+			Data below is cached. <a href="<!-- tmpl_var Plugin_URL -->?f=clear_data_cache">Clear</a>
+		</p>
+		<div style="clear:both"></div>
+	<!-- /tmpl_if -->
 	
-	<div id="show_table_results_loading"><p>&nbsp;</p></div>
+	Viewing: <!-- tmpl_var tracker_record_view_count_widget --> Records at once. 
+	
 	<div id="show_table_results" style="width:100%; height:325px"></div>
+	<div id="show_table_results_loading"><p>&nbsp;</p></div>
 
 	<div id="subscriber_history_chart_loading"><p>&nbsp;</p></div>
 	<div id="subscriber_history_chart"style="width:100%; height:400px"></div>
 	
 
-
 <fieldset> 
  <legend>Export Logs</legend> 
+<div style="float:right">
  <table> 
   <tr> 
    <td> 
@@ -54,22 +60,9 @@
 </td> 
 </tr> 
 </table> 
+</div> 
+<div style="clear:both">
 </fieldset> 
-
-<fieldset> 
- <legend>Data Cache</legend> 
-
-<p>
-	Tracker data displayed is cached, to speed up page rendering. Data is cached for 1 hour, before it is removed, and the data displayed is recreated. 
-</p>
-
- 
-  <form action="<!-- tmpl_var Plugin_URL -->" method="post">
-   <input type="hidden" name="f" value="clear_data_cache" /> 
-   <input type="submit" value="Clear Data Cache" class="alertive" />
-  </form> 
-</fieldset>
-
 
 <fieldset> 
 <legend>
@@ -88,29 +81,66 @@
   <td> 
    <p>
     <label for="clickthrough_tracking"> 
-     Enable Clickthrough Tracking
+     Track Message Clickthroughs
     </label> 
    </p>
 
-	<table <!-- tmpl_unless can_use_auto_redirect_tag -->class="disabled"<!--/tmpl_unless-->>	 <tr> 
-	  <td> 
-  	<input type="checkbox" id="tracker_auto_parse_links" name="tracker_auto_parse_links"  value="1" <!-- tmpl_if list_settings.tracker_auto_parse_links -->checked="checked"<!--/tmpl_if -->/>
+	<table width="100%">	
+	  <tr> 
+	  <td width="20"> 
+  	<input type="radio" id="tracker_auto_parse_links" name="tracker_auto_parse_links"   class="tracker_parse_links_setup"  value="1" <!-- tmpl_if list_settings.tracker_auto_parse_links -->checked="checked"<!--/tmpl_if -->/>
 	  </td> 
 	  <td> 
 		
 		<p>
-		 <label for="tracker_auto_parse_links">Clickthrough Track All Message Links</label> 
-		 <br /> 
-		 All message links will be parsed into redirect links and tracked. 
-		</p> 
-		
+		 <label for="tracker_auto_parse_links">Auto Tag Message Links</label></p>
 		<!-- tmpl_unless can_use_auto_redirect_tag -->
-			<p class="error"> 
-				Disabled. You must have the HTML::LinkExtor and URI::Find CPAN modules installed. 
-			</p>
-		<!-- /tmpl_unless --> 
+			<div class="badweatherbox"> 
+				<p class="error"> 
+					Disabled. You must have the HTML::LinkExtor and URI::Find CPAN modules installed. 
+				</p>
+			</div> 
+		<!-- /tmpl_unless -->
+		
+		
+		<div id="tracker_auto_parse_links_info"> 
+			<fieldset>
+				<p>
+				 All message links will be parsed into redirect links and tracked. 
+				</p> 
+			</fieldset>
+		</div> 
+
 	  </td> 
 	</tr> 
+	
+	  <tr> 
+	  <td width="20"> 
+  	<input type="radio" id="tracker_noauto_parse_links" name="tracker_auto_parse_links"  class="tracker_parse_links_setup" value="0" <!-- tmpl_unless list_settings.tracker_auto_parse_links -->checked="checked"<!--/tmpl_unless -->/>
+	  </td> 
+	  <td> 
+		
+		<p>
+		 <label for="tracker_noauto_parse_links">Manually Tag Message Links</label></p>
+
+		
+		<div id="tracker_noauto_parse_links_info"> 
+			<fieldset> 
+			<p>Tag Links you would like to track, with the Clickthrough Tag. For example:</p>
+			
+			<p><code>&lt;?dada redirect url=&quot;http://example.com&quot; ?&gt;</code></p>
+
+			<p>HTML Example:</p> 
+			<p><code>&lt;a href=&quot;&lt;?dada redirect url=&quot;http://example.com&quot; ?&gt;&quot;Click Here!&lt;/a&gt;</code></p>
+			
+			</fieldset>
+		</div> 
+
+	  </td> 
+	</tr> 
+	
+	
+	
 	
 	</table>
 
@@ -127,7 +157,7 @@
   <td> 
    <p>
     <label for="enable_open_msg_logging"> 
-     Enable Open Message Logging
+     Track Message Opens
     </label> 
    </p>
   </td>
@@ -142,7 +172,7 @@
   <td> 
    <p>
     <label for="enable_forward_to_a_friend_logging"> 
-     Enable &quot;Forward to a Friend&quot; Logging
+     Track &quot;Forward to a Friend&quot;
     </label> 
    </p>
   </td>
@@ -157,7 +187,7 @@
   <td> 
    <p>
     <label for="enable_view_archive_logging"> 
-     Enable Archive Views Logging
+     Track Archive Views
     </label> 
    </p>
   </td>
@@ -176,22 +206,8 @@
   <td> 
    <p>
     <label for="enable_bounce_logging"> 
-     Enable Bounce Logging
+     Track Bounces
     </label> 
-   </p>
-  </td>
-  </tr>
-  
- <tr> 
-  <td> 
-   <p>
-	&nbsp;
-   </p>
-  </td> 
-  <td> 
-   <p>
-     View: <!-- tmpl_var tracker_record_view_count_widget --> Records at once. 
-<br /><em>(More entries = a slower interface)</em>
    </p>
   </td>
   </tr>
@@ -243,17 +259,5 @@
 
 
 
-<fieldset> 
-<legend>Tracker Help</legend> 
-<p>
- Clickthrough logging works for URLs in mailing list
- messages when the URLs are placed in the  <code>&lt;?dada redirect url=&quot;...&quot; ?&gt;</code> comment. 
-</p>
 
-<p>For example:</p> 
-<p><code>
-&lt;?dada redirect url=&quot;http://example.com&quot; ?&gt;
-</code></p>
-<p>Replace <code>http://example.com</code> with the URL you would like to track clickthroughs. 
-</fieldset> 
 

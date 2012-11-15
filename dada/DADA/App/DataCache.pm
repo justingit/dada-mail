@@ -285,6 +285,10 @@ sub flush {
 	if(exists($args->{-list})){ 
 		$list = $args->{-list};
 	}
+	my $msg_id = undef; 
+	if(exists($args->{-msg_id})){ 
+		$msg_id = $args->{-msg_id};
+	}
     return if $DADA::Config::DATA_CACHE  ne '1';
 
     my $f;
@@ -298,7 +302,10 @@ sub flush {
         next if $f =~ /^\.\.?$/;
 
         $f =~ s(^.*/)();
-		
+
+		if(defined($list) && defined($msg_id)){ 
+			next unless $f =~ m/^$list\.(.*?)\.$msg_id\./; 			
+		}
 		if(defined($list)){ 
 			next unless $f =~ m/^$list\./; 
 		}

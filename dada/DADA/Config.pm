@@ -361,6 +361,7 @@ $AMAZON_SES_OPTIONS ||= {
 $SHOW_ADMIN_LINK        ||= 1;
 $ADMIN_FLAVOR_NAME      ||= 'admin';
 $SIGN_IN_FLAVOR_NAME    ||= 'sign_in';
+$DEFAULT_SCREEN         ||= '';
 $DEFAULT_ADMIN_SCREEN   ||= $S_PROGRAM_URL . '?f=send_email';
 $DEFAULT_LOGOUT_SCREEN  ||= $S_PROGRAM_URL . '?f=' . $ADMIN_FLAVOR_NAME;
 $DISABLE_OUTSIDE_LOGINS ||= 0;
@@ -525,13 +526,14 @@ $TEMPLATE_SETTINGS              ||= {
 
 $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION ||= 0;
 $ENFORCE_CLOSED_LOOP_OPT_IN             ||= 0;
-$MULTIPLE_LIST_SENDING ||= 0;
-$MULTIPLE_LIST_SENDING_TYPE ||= 'merged';    # individual
-$SCREEN_CACHE ||= 1;
-$DATA_CACHE ||= 1;
-$GLOBAL_BLACK_LIST ||= 0;
-$GLOBAL_UNSUBSCRIBE ||= 0;
-$HIDDEN_SUBSCRIBER_FIELDS_PREFIX ||= '_';
+$MULTIPLE_LIST_SENDING                  ||= 0;
+$MULTIPLE_LIST_SENDING_TYPE             ||= 'merged';    # individual
+$GLOBAL_BLACK_LIST                      ||= 0;
+$GLOBAL_UNSUBSCRIBE                     ||= 0;
+$HIDDEN_SUBSCRIBER_FIELDS_PREFIX        ||= '_';
+
+$SCREEN_CACHE                           ||= 1;
+$DATA_CACHE                             ||= 1;
 
 @PING_URLS = qw(
   http://rpc.pingomatic.com/
@@ -539,7 +541,6 @@ $HIDDEN_SUBSCRIBER_FIELDS_PREFIX ||= '_';
   http://ping.blo.gs/
   ) unless scalar @PING_URLS;
 
-$DEFAULT_SCREEN ||= '';
 
 
 # If you do put the $ADMIN_MENU variable in the outside config file,

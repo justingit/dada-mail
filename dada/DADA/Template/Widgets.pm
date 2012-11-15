@@ -128,6 +128,8 @@ FILES                  => $DADA::Config::FILES,
 TEMPLATES              => $DADA::Config::TEMPLATES,
 VER                    => $DADA::Config::VER, 
 
+DATA_CACHE             => $DADA::Config::DATA_CACHE, 
+
 GIVE_PROPS_IN_HTML            => $DADA::Config::GIVE_PROPS_IN_HTML, 
 GIVE_PROPS_IN_SUBSCRIBE_FORM  => $DADA::Config::GIVE_PROPS_IN_SUBSCRIBE_FORM, 
 GIVE_PROPS_IN_ADMIN           => $DADA::Config::GIVE_PROPS_IN_ADMIN, 

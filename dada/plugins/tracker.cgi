@@ -85,6 +85,7 @@ sub run {
 	    'default'                         => \&default,
 	    'm'                               => \&message_report,
 	    'edit_prefs'                      => \&edit_prefs,
+		'save_view_count_prefs'           => \&save_view_count_prefs, 
 	    'download_logs'                   => \&download_logs,
 	    'ajax_delete_log'                 => \&ajax_delete_log,
 		'message_history_html'            => \&message_history_html, 
@@ -99,6 +100,7 @@ sub run {
 		'message_bounce_report_table'     => \&message_bounce_report_table, 
 		'bounce_stats_json'               => \&bounce_stats_json, 
 		'clear_data_cache'                => \&clear_data_cache, 
+		'clear_message_data_cache'        => \&clear_message_data_cache, 
 	);
 	if ($f) {
 	    if ( exists( $Mode{$f} ) ) {
@@ -125,8 +127,9 @@ sub default {
 	
 	
 	my $tracker_record_view_count_widget = $q->popup_menu(
+			-id      => 'tracker_record_view_count',
 			-name    => 'tracker_record_view_count',
-			-values  => [qw(5 10 15 20 25 50 100)],
+			-values  => [qw(5 10 15 20 25 50 75 100)],
 			-default => $ls->param('tracker_record_view_count'), 
 		);			
 	eval { 
@@ -147,6 +150,7 @@ sub default {
                 -Root_Login => $root_login,
                 -List       => $ls->param('list'),
             },
+			-expr => 1, 
             -vars => {
                 done                             => $q->param('done') || 0,
 				Plugin_URL                       => $Plugin_Config->{Plugin_URL}, 
@@ -302,7 +306,18 @@ sub clear_data_cache {
 		}
 	); 
 	print $q->redirect( -uri => $Plugin_Config->{Plugin_URL} . '?done=1' );
-    
+}
+
+sub clear_message_data_cache { 
+	require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new;
+	$dc->flush(
+		{
+			-list   => $list,
+			-msg_id => xss_filter(strip($q->param('msg_id'))), 
+		}
+	); 
+	print $q->redirect( -uri => $Plugin_Config->{Plugin_URL} . '?f=m&mid=' . xss_filter(strip($q->param('msg_id'))));
 }
 
 
@@ -462,6 +477,25 @@ sub ajax_delete_log {
 
 
 
+sub save_view_count_prefs { 
+	$ls->save_w_params(
+    	{ 
+			-associate => $q, 
+			-settings  => { 
+				tracker_record_view_count => 0,
+			}
+		}
+	); 
+	require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new;
+	$dc->flush(
+		{
+			-list => $list
+		}
+	); 
+	
+	print $q->header(); 
+}
 
 sub edit_prefs {
 
@@ -474,13 +508,20 @@ sub edit_prefs {
 				enable_forward_to_a_friend_logging              => 0, 
 				enable_view_archive_logging                     => 0,
                 enable_bounce_logging                           => 0,
-				tracker_record_view_count                       => 0,
 				tracker_clean_up_reports                        => 0, 
 				tracker_auto_parse_links                        => 0, 
 				tracker_show_message_reports_in_mailing_monitor => 0, 
             }
         }
     );
+	require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new;
+	$dc->flush(
+		{
+			-list => $list
+		}
+	); 
+
 
     print $q->redirect( -uri => $Plugin_Config->{Plugin_URL} . '?done=1' );
 }
