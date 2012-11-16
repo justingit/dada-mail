@@ -1716,6 +1716,7 @@ sub setup_support_files_dir {
 		backup_dir($target_loc);	
 	}
 	installer_dircopy($source_package, $target_loc); 
+	unlink(make_safer($target_loc . '/README.txt')); 
 	return 1; 
 }
 
