@@ -738,15 +738,24 @@ sub grab_former_config_vals {
 			$local_q->param('install_' . $plugin_ext, 0); 			
 		}
 	}
-	
-	# v5, these were called something different... 
+	# in v<6, these were called something different... 
 	if(admin_menu_item_used('dada_bounce_handler') == 1){ 
 		$local_q->param('install_bounce_handler', 1); 
 	}
 	if(admin_menu_item_used('dada_bridge') == 1){ 
 		$local_q->param('install_bridge', 1); 
 	}
+	if(admin_menu_item_used('auto_pickup') == 1){ 
+		$local_q->param('install_mailing_monitor', 1); 
+	}
+	if(admin_menu_item_used('clickthrough_tracking') == 1){ 
+		$local_q->param('install_tracker', 1); 
+	}
 	
+	
+	
+	
+		
 	# Bounce Handler
 	if(exists($BootstrapConfig::LIST_SETUP_INCLUDE{admin_email})){ 
 		$local_q->param('bounce_handler_address', $BootstrapConfig::LIST_SETUP_INCLUDE{admin_email});
