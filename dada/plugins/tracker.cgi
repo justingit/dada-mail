@@ -589,6 +589,7 @@ sub message_report {
 	    $scrn = DADA::Template::Widgets::screen(
 	        {
 	            -screen           => 'plugins/tracker/message_report.tmpl',
+				-expr             => 1, 
 	            -vars => {
 					%tmpl_vars, 
 	            },
@@ -599,6 +600,7 @@ sub message_report {
 		 $scrn = DADA::Template::Widgets::wrap_screen(
 		        {
 		            -screen           => 'plugins/tracker/message_report.tmpl',
+					-expr             => 1, 
 		            -with           => 'admin',
 		            -wrapper_params => {
 		                -Root_Login => $root_login,
