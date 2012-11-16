@@ -2157,7 +2157,10 @@ sub _adjust_bounce_score {
 	 
 	my $self = shift; 
 	
-	if($self->list_type eq 'list') { 
+	if(
+		$self->list_type eq 'list'
+	 && $self->mass_test != 1
+	) { 
 		# If we need to, let's decay the bounce scorecard:
 		if($self->{ls}->param('bounce_handler_decay_score') >= 1){ 
 			#if(the bounce handler is enabled for this){ (which currently, there is no "off" for the bounce handler...
