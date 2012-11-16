@@ -14,10 +14,9 @@ $jq(document).ready(function() {
 				CKEDITOR.instances['html_message_body'].updateElement();
 			}
 			var itsatest = $jq(this).hasClass("justatest");
-			var submit_it = sendMailingListMessage(fid, itsatest);
-			if (submit_it == true) {
+			if (sendMailingListMessage(fid, itsatest) == true) {
 				$jq("body").off('submit', '#' + fid);
-				$jq('#' + fid).submit();
+				// $jq('#' + fid).submit();
 			} else {
 				//alert("It stays off!"); 
 			}
@@ -61,10 +60,9 @@ $jq(document).ready(function() {
 		});
 		$jq('body').on('click', '.killMonitoredSending', function(event) {
 			//var fid = 'stop_mass_mailing';
-			var submit_it = killMonitoredSending();
-			if (submit_it == true) {
+			if (killMonitoredSending() == true) {
 				$jq('body').off('submit', '.stop_mass_mailing');
-				$jq(event.target).closest('form').submit();
+				// $jq(event.target).closest('form').submit();
 			} else {
 				// alert("It stays off!"); 
 			}
@@ -83,10 +81,9 @@ $jq(document).ready(function() {
 		$jq('body').on('click', '.pauseMonitoredSending', function(event) {
 			//var fid = $jq(event.target).closest('form').attr('id'); 
 			var fid = 'pause_mass_mailing';
-			var submit_it = pauseMonitoredSending();
-			if (submit_it == true) {
-				$jq('body').off('submit', '#pause_mass_mailing');
-				$jq('#' + fid).submit();
+			if (pauseMonitoredSending() == true) {
+				$jq('body').off('submit', '#' + fid);
+				//$jq('#' + fid).submit();
 			} else {
 				// alert("It stays off!"); 
 			}
@@ -124,19 +121,18 @@ $jq(document).ready(function() {
 		});
 	}
 
+
 	// Membership >> Add (step 2) 
 	if ($jq("#add_email").length) {
 		$jq("body").on("submit", "#confirm_add", function(event) {
 			event.preventDefault();
 		});
 		$jq("body").on("click", ".addingemail", function(event) {
-			var go = 1;
 			if ($jq(this).hasClass("warnAboutMassSubscription")) {
-				go = warnAboutMassSubscription();
-			}
-			if (go == true) {
-				$jq('body').off('submit', "#confirm_add");
-				$jq('#confirm_add').submit();
+				if (warnAboutMassSubscription() == true) {
+					$jq("body").off('submit', "#confirm_add");
+					//$jq('#confirm_add').submit();
+				}
 			}
 		});
 	}
@@ -1974,6 +1970,7 @@ function sendMailingListMessage(fid, itsatest) { /* This is for the Send a Webpa
 	}
 	return true;
 }
+
 
 function warnAboutMassSubscription() {
 
