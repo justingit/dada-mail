@@ -1108,7 +1108,7 @@ sub start {
         e_print("\n"
               . '-' x 72
               . "\nList: "
-              . $ls->{list_name} . '('
+              . $ls->param('list_name') . '('
               . $list
               . ")\n" )
           if $verbose;
@@ -1133,14 +1133,19 @@ sub start {
             next LIST_QUEUE;
         }
 
+
         next
           if !valid_login_information($ls);
+
+
 
         my $lock_file_fh = undef;
         if ( $Plugin_Config->{Enable_POP3_File_Locking} == 1 ) {
             $lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check(
                 { name => 'bridge.lock' } );
         }
+
+
 
         my ( $pop3_obj, $pop3_status, $pop3_log ) = pop3_login($ls);
 
@@ -1151,6 +1156,8 @@ sub start {
               if $verbose;
             return;
         }
+
+
 
         my $msg_count = $pop3_obj->Count;
         my $msgnums   = {};
@@ -1164,14 +1171,17 @@ sub start {
 
         my $local_msg_viewed = 0;
 
+
+
         # Hmm, we do, but then we sort them numerically here:
       MSG_QUEUE: for my $msgnum ( sort { $a <=> $b } keys %$msgnums ) {
-
-            $messages_viewed++;
 
             if ( $messages_viewed >= $Plugin_Config->{MessagesAtOnce} ) {
                 last;
             }
+            $messages_viewed++;
+
+
 
             $local_msg_viewed++;
             e_print( "\t* Message Size: " . $msgnums->{$msgnum} . "\n" )
