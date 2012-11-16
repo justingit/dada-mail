@@ -58,7 +58,7 @@ sub _init {
 
     return if $DADA::Config::SCREEN_CACHE ne '1';
 
-	if(! -w $DADA::Config::TMP || ! -r $DADA::Config::TMP) { 
+	if(! -r $DADA::Config::TMP || ! -w $DADA::Config::TMP || ! -x $DADA::Config::TMP) { 
 		chmod($DADA::Config::DIR_CHMOD , $DADA::Config::TMP)			 
 	}
 	

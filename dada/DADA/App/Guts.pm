@@ -2569,7 +2569,7 @@ sub csv_subscriber_parse {
 	die "no filename! '$filename'"
 		if length($filename) <= 0 || $filename eq ''; 
 	
-	if(! -w $DADA::Config::TMP || ! -r $DADA::Config::TMP) { 
+	if(! -r $DADA::Config::TMP || ! -w $DADA::Config::TMP || ! -x $DADA::Config::TMP) { 
 		chmod($DADA::Config::DIR_CHMOD , $DADA::Config::TMP)			
 	}
 	else { 

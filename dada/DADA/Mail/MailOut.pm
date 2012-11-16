@@ -170,7 +170,7 @@ sub _dir_setup {
 	# Directory?
 	if(-d $DADA::Config::TMP){ 
 		# Write to it? 
-		if(! -w $DADA::Config::TMP || ! -r $DADA::Config::TMP) { 
+		if(! -r $DADA::Config::TMP || ! -w $DADA::Config::TMP || ! -x $DADA::Config::TMP) { 
 			carp "Can't write into, '" . $DADA::Config::TMP . "', will try to change directory permissions..."; 
 			chmod($DADA::Config::DIR_CHMOD , $DADA::Config::TMP)			 
 		}
