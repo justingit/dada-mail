@@ -2568,7 +2568,15 @@ sub csv_subscriber_parse {
     $filename =~ s/\s/%20/g;
 	die "no filename! '$filename'"
 		if length($filename) <= 0 || $filename eq ''; 
-		
+	
+	if(! -w $DADA::Config::TMP || ! -r $DADA::Config::TMP) { 
+		chmod($DADA::Config::DIR_CHMOD , $DADA::Config::TMP)			
+	}
+	else { 
+		# good.
+	}
+
+
 	# Line translation. 
 	# Don't like it. 
 	# Notes: 

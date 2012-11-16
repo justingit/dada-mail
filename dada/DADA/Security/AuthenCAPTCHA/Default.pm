@@ -106,11 +106,11 @@ sub _dir_setup {
 	# Directory?
 	if(-d $DADA::Config::TMP){ 
 		# Write to it? 
-		if(-w $DADA::Config::TMP) { 
-			# good.
+		if(! -w $DADA::Config::TMP || ! -r $DADA::Config::TMP) { 
+			chmod($DADA::Config::DIR_CHMOD , $DADA::Config::TMP)			
 		}
 		else { 
-			chmod($DADA::Config::DIR_CHMOD , $DADA::Config::TMP)			
+			# good.
 		}
 		my $captcha_dir = make_safer($DADA::Config::TMP . '/capcha_imgs'); 
 		if(! -d $captcha_dir) { 

@@ -398,26 +398,26 @@ sub cl_run {
 }
 
 sub cl_quickhelp { 	
-	print DADA::Template::Widgets::screen(
+	e_print(DADA::Template::Widgets::screen(
         {
             -screen => 'cl_quickhelp_scrn.tmpl',
             -vars => {
 
             },
         }
-    );	
+    ));	
 }
 
 sub cl_help { 
 	
-	print DADA::Template::Widgets::screen(
+	e_print( DADA::Template::Widgets::screen(
         {
             -screen => 'cl_help_scrn.tmpl',
             -vars => {
 
             },
         }
-    );	
+    ));	
 }
 
 
@@ -2519,11 +2519,11 @@ sub screen {
 	}
 	elsif($screen eq 'installer-dada_mail.js' || $screen =~ m/installer\-jquery/ || $screen =~ m/installer\-jquery\-ui/){ 
 		print $q->header('text/javascript');
-		print DADA::Template::Widgets::screen(
+		e_print(DADA::Template::Widgets::screen(
 	        {
 	            -screen => $screen,
 	        }
-	    );	
+	    ));	
 		
 		
 		

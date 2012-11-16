@@ -940,13 +940,10 @@ $ADMIN_MENU ||= [
     },
 ];
 
-$LIST_QUOTA ||= undef;
-
-$SUBSCRIPTION_QUOTA ||= undef;
-
+$LIST_QUOTA            ||= undef;
+$SUBSCRIPTION_QUOTA    ||= undef;
 $MAILOUT_AT_ONCE_LIMIT ||= 1;
-
-$MAILOUT_STALE_AFTER ||= 86400;
+$MAILOUT_STALE_AFTER   ||= 86400;
 
 $EMAIL_CASE ||= 'lc_all';
 
@@ -956,8 +953,7 @@ $EMAIL_CASE ||= 'lc_all';
 $LIST_IN_ORDER ||= 0;
 
 $FILE_CHMOD ||= 0666;
-
-$DIR_CHMOD ||= 0777;
+$DIR_CHMOD  ||= 0755;
 
 $HTML_CHARSET ||= 'UTF-8';
 
