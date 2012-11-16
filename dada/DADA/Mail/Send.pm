@@ -1057,7 +1057,7 @@ sub restart_mass_send {
 							     "Type: " . $type, 
 							     
 							   )   if $DADA::Config::LOG{mass_mailings};   
-							    
+		# Why the close? 					    
  	    $self->{mj_log}->close_log if $DADA::Config::LOG{mass_mailings};
  	    
  	    
@@ -1221,7 +1221,10 @@ sub mass_send {
 						-exclude_from    => $self->exclude_from, 
                    }); 
 
-		
+
+					
+					
+					
     	if($self->test_return_after_mo_create == 1){ 
 			warn "test_return_after_mo_create is set to 1, and we're getting out of the mass_send method"
 				if $t; 
@@ -1261,6 +1264,27 @@ sub mass_send {
     
 	my $mailout_id = $status->{id}; 
 	
+	
+	#-------------------------------------------------------------------------#
+	# Log the start of this mailing. 	
+	my $mass_mail_starting_log = join(
+	"\t", 
+	"Message-Id: "     . $mailout_id, 
+	"Subject: "        . $fields{Subject}, 
+	"Started: "        . scalar(localtime($status->{first_access})), 
+	"Mailing Amount: " . $status->{total_sending_out_num},
+	);	
+	
+	if($DADA::Config::LOG{mass_mailings} == 1){ 
+		$self->{mj_log}->mj_log(
+			$self->{list}, 
+			'Mass Mailing Starting',
+			$mass_mail_starting_log
+		);
+	}
+	# /Log the start of this mailing. 
+	#-------------------------------------------------------------------------#
+		
     # Meaning, queueing is ON! Enabled! Big red button! Blinky blinky!
     if($status->{queue} == 1){ 
     
