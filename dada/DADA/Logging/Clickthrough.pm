@@ -364,64 +364,11 @@ sub auto_redirect_tag {
 	
 	my @a;
 	if($type eq 'HTML'){ 
-
-		 sub html_cb {
-		     my($tag, %attr) = @_;
-		     return if $tag ne 'a';  # we only look closer at <a ...>
-			 my $link =  $attr{href}; 
-
-			warn '$link: ' . $link
-			 if $t; 
-			
-			# Skip links that are already tagged up!
-			if($link =~ m/(^(\<\!\-\-|\[|\<\?))|((\]|\-\-\>|\?\>)$)/){ 
-				warn '$link looks to contain tags? skipping.'
-				 if $t; 
-				return; 
-			}
-			else { 
-				# ... 
-			}
-
-			my $redirected_link = $self->redirect_tagify($link); 
-			warn '$redirected_link: ' . $redirected_link
-			 if $t; 
-			
-			my $qm_link         = quotemeta($link);
-			warn '$link: "' . $link . '"'
-				if $t; 
-			warn '$qm_link: "' . $qm_link . '"'
-				if $t; 
-			
-			warn '$redirected_link: "' . $redirected_link . '"' 
-				if $t; 
-			
-			
-			# This line is suspect - it only works with double quotes, ONLY looks at the first (?) 
-			# double quote and doesn't use any sort of API from HTML::LinkExtor. 
-			# 	
-			$self->{auto_redirect_tmp} =~ s/(href(\s*)\=(\s*)(\"?|\'?))$qm_link/$1$redirected_link/;
-
-			# This may be better, for this entire method: 
-			# http://search.cpan.org/~ovid/HTML-TokeParser-Simple-3.15/lib/HTML/TokeParser/Simple.pm#PARSER_VERSUS_TOKENS
-			
-		}
-	
-	
-	    $self->{auto_redirect_tmp} = $s; 
-
+		$s =  $self->HTML_auto_redirect_w_link_ext($s); 		
 		
-		my $p = HTML::LinkExtor->new(\&html_cb);
-		$p->parse($s); 
-				
+		# This won't work, as it'll escape out the redirect tag. DOH!
+		# $s =  $self->HTML_auto_redirect_w_HTML_TokeParser($s); 
 		
-		$s = $self->{auto_redirect_tmp}; 
-		
-		
-		$self->{auto_redirect_tmp} = '';
-		return $s;
-		
-	
 	}
 	else { 
 		
@@ -519,6 +466,114 @@ sub auto_redirect_tag {
 		return $s; 
 	}
 	
+}
+
+
+
+sub HTML_auto_redirect_w_HTML_TokeParser { 
+	
+	print 'HTML_auto_redirect_w_HTML_TokeParser'; 
+	
+	my $self = shift; 
+	my $s    = shift;
+	
+	require HTML::TokeParser::Simple;
+
+	my $parser = HTML::TokeParser::Simple->new(\$s);
+	my $html; 
+	
+	while ( my $token = $parser->get_token ) {
+	    if ($token->is_start_tag('a')) {
+	        my $link = $token->get_attr('href');
+	        if (defined $link) {
+				warn '$link: ' . $link
+				 if $t; 
+
+				# Skip links that are already tagged up!
+				if($link =~ m/(^(\<\!\-\-|\[|\<\?))|((\]|\-\-\>|\?\>)$)/){ 
+					warn '$link looks to contain tags? skipping.'
+					 if $t; 
+					 $html .= $token->as_is;	
+				}
+				else { 
+					# ... 
+				}
+
+				my $redirected_link = $self->redirect_tagify($link); 
+				warn '$redirected_link: ' . $redirected_link
+				 if $t; 
+
+				my $qm_link         = quotemeta($link);
+				warn '$link: "' . $link . '"'
+					if $t; 
+				warn '$qm_link: "' . $qm_link . '"'
+					if $t; 
+
+				warn '$redirected_link: "' . $redirected_link . '"' 
+					if $t;
+				$token->set_attr('href', $redirected_link);
+				$html .= $token->as_is;
+	        }
+	    }
+		else { 
+	    	$html .= $token->as_is;	
+		}
+	}
+	
+#	die '$html :' . $html; 
+	
+	return $html; 
+	
+	
+		
+}
+sub HTML_auto_redirect_w_link_ext { 
+	
+	my $self = shift; 
+	my $s    = shift; 
+	
+	 sub html_cb {
+	     my($tag, %attr) = @_;
+	     return if $tag ne 'a';  # we only look closer at <a ...>
+		 my $link =  $attr{href}; 
+		
+		warn '$link: ' . $link
+		 if $t; 
+		
+		# Skip links that are already tagged up!
+		if($link =~ m/(^(\<\!\-\-|\[|\<\?))|((\]|\-\-\>|\?\>)$)/){ 
+			warn '$link looks to contain tags? skipping.'
+			 if $t; 
+			return; 
+		}
+		else { 
+			# ... 
+		}
+
+		my $redirected_link = $self->redirect_tagify($link); 
+		warn '$redirected_link: ' . $redirected_link
+		 if $t; 
+		
+		my $qm_link         = quotemeta($link);
+		warn '$link: "' . $link . '"'
+			if $t; 
+		warn '$qm_link: "' . $qm_link . '"'
+			if $t; 
+		
+		warn '$redirected_link: "' . $redirected_link . '"' 
+			if $t; 
+			
+		# This line is suspect - it only works with double quotes, ONLY looks at the first (?) 
+		# double quote and doesn't use any sort of API from HTML::LinkExtor. 
+		# 	
+		$self->{auto_redirect_tmp} =~ s/(href(\s*)\=(\s*)(\"?|\'?))$qm_link/$1$redirected_link/;
+	}
+    $self->{auto_redirect_tmp} = $s;
+    my $p = HTML::LinkExtor->new( \&html_cb );
+    $p->parse($s);
+    $s  = $self->{auto_redirect_tmp};
+    $self->{auto_redirect_tmp} = '';
+	return $s; 
 }
 
 
