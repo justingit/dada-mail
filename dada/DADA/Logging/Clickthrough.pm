@@ -395,8 +395,15 @@ sub auto_redirect_tag {
 			
 			warn '$redirected_link: "' . $redirected_link . '"' 
 				if $t; 
-				
-			$self->{auto_redirect_tmp} =~ s/(href(\s*)\=(\s*)\"?)$qm_link/$1$redirected_link/;
+			
+			
+			# This line is suspect - it only works with double quotes, ONLY looks at the first (?) 
+			# double quote and doesn't use any sort of API from HTML::LinkExtor. 
+			# 	
+			$self->{auto_redirect_tmp} =~ s/(href(\s*)\=(\s*)(\"?|\'?))$qm_link/$1$redirected_link/;
+
+			# This may be better, for this entire method: 
+			# http://search.cpan.org/~ovid/HTML-TokeParser-Simple-3.15/lib/HTML/TokeParser/Simple.pm#PARSER_VERSUS_TOKENS
 			
 		}
 	
