@@ -22,43 +22,28 @@
 	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
 <!--/tmpl_if-->
 
-
-<!-- tmpl_if expr="(list_settings.sending_method eq 'sendmail')" --> 
-	<p class="positive">Messages are currently being sent via the sendmail command.</p>
-<!-- /tmpl_if --> 
-<!-- tmpl_if expr="(list_settings.sending_method eq 'smtp')" --> 
-	<p class="alert">Messages are currently being sent via SMTP
-<!-- tmpl_if no_smtp_server_set -->
-		, but make sure to set up your SMTP server settings.
-	<!-- tmpl_else --> 
-		using SMTP server, <!-- tmpl_var list_settings.smtp_server --> 
-	<!-- /tmpl_if --> 
-	</p>	
-<!-- /tmpl_if -->
-<!-- tmpl_if expr="(list_settings.sending_method eq 'amazon_ses')" --> 
-	<p class="positive">Messages are currently being sent via Amazon SES.</p>
-<!-- /tmpl_if --> 
-
-
+<fieldset>
+	
+	<legend>Send Messages Using:</legend>
+	
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form">
 
-	<fieldset>
-	<legend>
-	 Sendmail Options
-	</legend>
 
 
 
-	<table>
+
+	<table width="100%">
 	 <tr>
-	  <td>
-	   <input type="radio" name="sending_method" id="sendmail" value="sendmail" <!-- tmpl_if expr="(list_settings.sending_method eq 'sendmail')" -->checked="checked"<!--/tmpl_if --> />
+	  <td width="20">
+	   <input type="radio" class="sending_prefs_radio" name="sending_method" id="sending_method_sendmail" value="sendmail" <!-- tmpl_if expr="(list_settings.sending_method eq 'sendmail')" -->checked="checked"<!--/tmpl_if --> />
 	  </td>
 	  <td>
 	   <p>
-	    <label for="sendmail">
-	     Send Email Using the <em>sendmail</em> Command
+	    <label for="sending_method_sendmail">
+	     sendmail Command
 	    </label>
+	</p>
+	
 	<!-- tmpl_if comment --> 
 	    <br />
 		<p>
@@ -71,85 +56,78 @@
 		
 		<p><code><!-- tmpl_var MASS_MAIL_SETTINGS  --></code></p>		
 	   <!-- /tmpl_if --> 
+	
+	
+			<div id="sendmail_options" > 
+			<fieldset> 
+			<table width="100%">
+			 <tr>
+			  <td width="20">
+			   <p>
+			    <input type="checkbox" name="add_sendmail_f_flag" id="add_sendmail_f_flag" value="1" <!-- tmpl_if list_settings.add_sendmail_f_flag -->checked="checked"<!--/tmpl_if--> />
+			   </p>
+			  </td>
+			  <td>
+			   <p>
+			    <label for="add_sendmail_f_flag">
+			     Add the Sendmail '-f' flag when sending messages using 
+			     <!-- tmpl_var MAILPROG -->
+			    </label>
+			    <br />
+	This will ultimately set the 'Return-Path' email header to the List Administration email address (<!-- tmpl_var list_settings.admin_email --> ), and bounced messages will return to that address. Otherwise, they will go to the List Owner. 			<br /> 
+			   <!-- tmpl_if comment -->
+			 	<!-- tmpl_var f_flag_settings -->
+			   <!-- /tmpl_if --> 
+				</p>
+
+			<!-- tmpl_if wrong_uid -->
+
+				   <p>
+				    <strong>
+				     Warning!
+				    </strong>
+				    Your effective uid is not the same as your real uid; 
+				    using this option may break mail sending.
+				   </p>
+
+			<!--/tmpl_if-->
+
+			  </td>
+			 </tr>
+			</table> 
+			</fieldset> 
+		</div>
+		
+		
 	  </td>
 	 </tr>
 	</table>
 	
 	
-	<fieldset> 
+
 	
-		<legend>  	
-			
-		<a href="#" class="toggleDivs" data-target="adv_sendmail_options">
-		+/- 
-		</a>
-		 Advanced sendmail Options
-		</legend>
-		<div id="adv_sendmail_options" style="display:none"> 
-		
-		<table cellpadding="5">
-		 <tr>
-		  <td>
-		   <p>
-		    <input type="checkbox" name="add_sendmail_f_flag" id="add_sendmail_f_flag" value="1" <!-- tmpl_if list_settings.add_sendmail_f_flag -->checked="checked"<!--/tmpl_if--> />
-		   </p>
-		  </td>
-		  <td>
-		   <p>
-		    <label for="add_sendmail_f_flag">
-		     Add the Sendmail '-f' flag when sending messages using 
-		     <!-- tmpl_var MAILPROG -->
-		    </label>
-		    <br />
-This will ultimately set the 'Return-Path' email header to the list administration email address (<!-- tmpl_var list_settings.admin_email --> ), and bounced messages will return to that address. Otherwise, they will go to the list owner. 			<br /> 
-		   <!-- tmpl_if comment -->
-		 	<!-- tmpl_var f_flag_settings -->
-		   <!-- /tmpl_if --> 
-			</p>
 
-		<!-- tmpl_if wrong_uid -->
-
-			   <p>
-			    <strong>
-			     Warning!
-			    </strong>
-			    Your effective uid is not the same as your real uid; 
-			    using this option may break mail sending.
-			   </p>
-
-		<!--/tmpl_if-->
-
-		  </td>
-		 </tr>
-		</table> 
-	</div> 
-	</fieldset> 
 	
-</fieldset> 
-
-<fieldset>
-<legend>
- SMTP Options
-</legend>
 
 
-<table>
+
+
+
+<table width="100%">
  <tr>
-  <td>
-   <input type="radio" name="sending_method" id="smtp" value="smtp" <!-- tmpl_if expr="(list_settings.sending_method eq 'smtp')" -->checked="checked"<!--/tmpl_if --> />
+<td width="20">
+<input type="radio" class="sending_prefs_radio" name="sending_method" id="sending_method_smtp" value="smtp" <!-- tmpl_if expr="(list_settings.sending_method eq 'smtp')" -->checked="checked"<!--/tmpl_if --> />
   </td>
   <td>
    <p>
-    <label for="smtp">
-     Send Email Using SMTP
+    <label for="sending_method_smtp">
+     SMTP
     </label>
-    <br />
-    Be sure to correctly configure your SMTP Authentication!
    </p>
 
-  </td>
- </tr>
-</table> 
+<div id="smtp_preferences"> 
+	
+<fieldset> 
 
 <table cellpadding="5">
  <tr>
@@ -182,11 +160,15 @@ This will ultimately set the 'Return-Path' email header to the list administrati
  </tr>
 </table>
 
- 
+
+
+
+
+
 
     <table <!-- tmpl_unless can_use_smtp_ssl -->class="disabled"<!--/tmpl_unless-->> 
      <tr>
-      <td>
+      <td width="20"> 
        <p>
         <input type="checkbox" name="use_smtp_ssl" id="use_smtp_ssl" value="1" <!-- tmpl_if list_settings.use_smtp_ssl -->checked="checked"<!-- /tmpl_if --> <!-- tmpl_unless can_use_smtp_ssl -->disabled="disabled"<!--/tmpl_unless-->/> 
        </p>
@@ -202,28 +184,22 @@ This will ultimately set the 'Return-Path' email header to the list administrati
              Disabled. The Net::SMTP::SSL module needs to be installed.
             </span>
         <!--/tmpl_unless--> 
-        
+
        </p>
       </td>
      </tr>
     </table> 
-    
-    
-    
-	<fieldset>
-	<legend>
-	
-	<a href="#" class="toggleDivs" data-target="smtp_authentication">
-		+/- 
-	</a>
-    SMTP Authentication    
-		 
-	</legend>
-	<div id="smtp_authentication" style="display:none"> 
-		
+
+
+
+
+
+
+	<div id="smtp_authentication"> 
+
 	<table>
 	 <tr>
-	  <td>
+	  <td width="20">
 	   <p>
 	    <input type="checkbox" name="use_sasl_smtp_auth" id="use_sasl_smtp_auth" value="1" <!-- tmpl_if use_sasl_smtp_auth -->checked="checked"<!-- /tmpl_if -->/>
 	   </p>
@@ -234,22 +210,15 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 	     Use SMTP Authentication (SASL)
 	    </label>
 	   </p>
+
+	<div id="SASL_options"> 
+		
+	<fieldset> 
+
+
 	   <table>
 
-	   <tr>
-	     <td>
-	      <p>
-	       <label for="sasl_auth_mechanism">
-	        Type:
-	       </label>
-	      </p>
-	     </td>
-	     <td>
-	      <p>
-	       <!-- tmpl_var mechanism_popup --> 
-	     </p>
-	     </td>
-	    </tr>
+	  
 
 
 	    <tr>
@@ -280,119 +249,148 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 	      </p>
 	     </td>
 	    </tr>
+	
+		 <tr>
+		     <td>
+		      <p>
+		       <label for="sasl_auth_mechanism">
+		        Type:
+		       </label>
+		      </p>
+		     </td>
+		     <td>
+		      <p>
+		       <!-- tmpl_var mechanism_popup --> 
+		     </p>
+		     </td>
+		    </tr>
+		
+		
 	   </table>
+	
+	</div> 
+</fieldset> 
+
+	
 	  </td>
 	 </tr>
 	</table>
 
 
-
-
 	<table>
 	 <tr>
-	  <td>
+	  <td width="20">
 	   <input type="checkbox" name="use_pop_before_smtp" id="use_pop_before_smtp" value="1" <!-- tmpl_if list_settings.use_pop_before_smtp -->checked="checked"<!-- /tmpl_if --> />
 	  </td>
 	  <td>
 	   <p>
 	    <label for="use_pop_before_smtp">
 	     Use POP-Before-SMTP Authentication
-	    </label>
-	    <br />
-	    A connection to your POP Server will be created before any mail will be sent. 
-	    This can authenticate your outgoing mail requests, if your SMTP server 
-	    uses POP-before-SMTP or your SMTP server does not use SASL.
-	   </p>
-	   <p>
-	    POP-before-SMTP Authentication will require your username and password for your 
-	    <strong>
-	     POP3 
-	    </strong>
-	    Account:
-	   </p>
-	   <table border="0">
-	    <tr>
-	     <td>
-	      <p>
-	       <label for="pop3_server">
-	        POP3 Server:
-	       </label>
-	      </p>
-	     </td>
-	     <td>
-	      <p>
-	       <input type="text" name="pop3_server" id="pop3_server" value="<!-- tmpl_var list_settings.pop3_server -->" size="30" />
-	      </p>
-	     </td>
-	    </tr>
-	    <tr>
-	     <td>
-	      <p>
-	       <label for="pop3_username">
-	        POP3 Username:
-	       </label>
-	      </p>
-	     </td>
-	     <td>
-	      <input type="text" name="pop3_username" id="pop3_username" value="<!-- tmpl_var list_settings.pop3_username -->" size="30" />
-	     </td>
-	    </tr>
-	    <tr>
-	     <td>
-	      <p>
-	       <label for="pop3_password">
-	        POP3 Password:
-	       </label>
-	      </p>
-	     </td>
-	     <td>
-	      <p>
-	       <input type="password" name="pop3_password" id="pop3_password" value ="<!-- tmpl_var decrypted_pop3_pass -->" size="30" />
-	      </p>
-	     </td>
-	    </tr>
+	    </label></p>
+				
+			<div id="pop_before_smtp_options">
+			<fieldset> 
 
-	 <tr>
-	     <td>
-	      <p>
-	       <label for="pop3_auth_mode">
-	        Type:
-	       </label>
-	      </p>
-	     </td>
-	     <td>
-	      <p>
-	       <!-- tmpl_var pop3_auth_mode_popup --> 
-	     </p>
-	     </td>
-	    </tr>
+			<div class="clearskiesbox">
+		    A connection to your POP Server will be created before any mail will be sent. 
+		    This can authenticate your outgoing mail requests, if your SMTP server 
+		    uses POP-before-SMTP or your SMTP server does not use SASL.
+		   </p>
+		   <p>
+		    POP-before-SMTP Authentication will require your username and password for your 
+		    <strong>
+		     POP3 
+		    </strong>
+		    Account:
+		   </p>
+			</div> 
+
+		   <table border="0">
+		    <tr>
+		     <td>
+		      <p>
+		       <label for="pop3_server">
+		        POP3 Server:
+		       </label>
+		      </p>
+		     </td>
+		     <td>
+		      <p>
+		       <input type="text" name="pop3_server" id="pop3_server" value="<!-- tmpl_var list_settings.pop3_server -->" size="30" />
+		      </p>
+		     </td>
+		    </tr>
+		    <tr>
+		     <td>
+		      <p>
+		       <label for="pop3_username">
+		        POP3 Username:
+		       </label>
+		      </p>
+		     </td>
+		     <td>
+		      <input type="text" name="pop3_username" id="pop3_username" value="<!-- tmpl_var list_settings.pop3_username -->" size="30" />
+		     </td>
+		    </tr>
+		    <tr>
+		     <td>
+		      <p>
+		       <label for="pop3_password">
+		        POP3 Password:
+		       </label>
+		      </p>
+		     </td>
+		     <td>
+		      <p>
+		       <input type="password" name="pop3_password" id="pop3_password" value ="<!-- tmpl_var decrypted_pop3_pass -->" size="30" />
+		      </p>
+		     </td>
+		    </tr>
+
+		 <tr>
+		     <td>
+		      <p>
+		       <label for="pop3_auth_mode">
+		        Type:
+		       </label>
+		      </p>
+		     </td>
+		     <td>
+		      <p>
+		       <!-- tmpl_var pop3_auth_mode_popup --> 
+		     </p>
+		     </td>
+		    </tr>
 
 
-	   </table>
+		   </table>
 
-	    <table <!-- tmpl_unless can_use_ssl -->class="disabled"<!--/tmpl_unless-->> 
-	     <tr>
-	      <td>
-	       <p>
-	        <input type="checkbox" name="pop3_use_ssl" id="pop3_use_ssl" value="1" <!-- tmpl_if list_settings.pop3_use_ssl -->checked="checked"<!-- /tmpl_if --> <!-- tmpl_unless can_use_ssl -->disabled="disabled"<!--/tmpl_unless-->/>
-	       </p>
-	      </td>
-	      <td>
-	       <p>
-	        <label for="pop3_use_ssl">
-	         Use Secure Sockets Layer (SSL)
-	        </label>
-	        <!-- tmpl_unless can_use_ssl -->
-	            <br />
-	            <span class="error">
-	             Disabled. The IO::Socket::SSL module needs to be installed.
-	            </span>
-	        <!--/tmpl_unless--> 
+		    <table  width="100%" <!-- tmpl_unless can_use_ssl -->class="disabled"<!--/tmpl_unless-->> 
+		     <tr>
+		      <td width="20">
+		       <p>
+		        <input type="checkbox" name="pop3_use_ssl" id="pop3_use_ssl" value="1" <!-- tmpl_if list_settings.pop3_use_ssl -->checked="checked"<!-- /tmpl_if --> />
+		       </p>
+		      </td>
+		      <td>
+		       <p>
+		        <label for="pop3_use_ssl">
+		         Use Secure Sockets Layer (SSL)
+		        </label>
+		        <!-- tmpl_unless can_use_ssl -->
+		            <br />
+		            <span class="error">
+		             Disabled. The IO::Socket::SSL module needs to be installed.
+		            </span>
+		        <!--/tmpl_unless--> 
 
-	       </p>
-	      </td>
-	     </tr>
-	    </table> 
+		       </p>
+		      </td>
+		     </tr>
+		    </table> 
+
+		</fieldset> 
+		</div> 
 
 
 
@@ -407,137 +405,136 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 
 
 
-	</fieldset>
-
-	<fieldset>
-
-	<legend>  	
-	<a href="#" class="toggleDivs" data-target="adv_smtp_options">
-		+/- 
-	</a>
-	 Advanced SMTP Options
-	</legend> 
-
-	<div id="adv_smtp_options" style="display:none"> 
-	
-
-		<table>
-		 <tr>
-		  <td>
-		   <p>
-		    <input type="checkbox" name="set_smtp_sender" id="set_smtp_sender" value="1" <!-- tmpl_if list_settings.set_smtp_sender -->checked="checked"<!-- /tmpl_if -->  />
-		   </p>
-		  </td>
-		  <td>
-		   <p>
-		    <label for="set_smtp_sender">
-		     Set the Sender of SMTP Mailings to the List Administration Address
-		    </label>
-		    <br />
-		    This will ultimately set the 'Return-Path' email header to 
-		    the list administration email address (<!-- tmpl_var list_settings.admin_email -->), 
-		    and bounced messages will return to that address. Otherwise, 
-		    they will go to the list owner.
-		   </p>
-		  </td>
-		 </tr>
-
-		</table>
-	</div> 
-	
-	</fieldset>
-
-   
-</fieldset>
-
-
-	<fieldset>
-	<legend>
-	 Amazon SES Options
-	</legend>
-
-	<table>
+	<table width="100%">
 	 <tr>
-	  <td>
-	   <input type="radio" name="sending_method" id="amazon_ses" value="amazon_ses" <!-- tmpl_if expr="(list_settings.sending_method eq 'amazon_ses')" -->checked="checked"<!--/tmpl_if --> />
+	  <td width="20">
+	   <p>
+	    <input type="checkbox" name="set_smtp_sender" id="set_smtp_sender" value="1" <!-- tmpl_if list_settings.set_smtp_sender -->checked="checked"<!-- /tmpl_if -->  />
+	   </p>
 	  </td>
 	  <td>
 	   <p>
-	    <label for="amazon_ses">
-	     Send Email Using the <em>Amazon Simple Email Service</em>
-	    </label></p>
-	
-		<!-- tmpl_if has_aws_credentials_file --> 
-			<p class="positive">Your AWS crendentials are being looked for in:</p> 
-			<ul> 
-				<li><p class="positive"><!-- tmpl_var aws_credentials_file --></p></li> 
-			</ul>
-		<!-- tmpl_else --> 
-			<p class="error">
-				Cannot find your AWS crendentials (<!-- tmpl_var aws_credentials_file default="not set!" -->)
-			</p>
-		<!-- /tmpl_if -->
-		<!-- tmpl_if has_ses_verify_email_address_script --> 
-			<p class="positive">The, &quot;ses-verify-email-address.pl&quot; script is being looked for at:</p> 
-			<ul> 
-				<li><p class="positive"><!-- tmpl_var ses_verify_email_address_script --></p></li> 
-			</ul>
-		<!-- tmpl_else --> 
-		<p class="error">
-			Cannot find your &quot;ses-verify-email-address.pl&quot; script (<!-- tmpl_var ses_verify_email_address_script default="not set!" -->)
-		</p>
-		<!-- /tmpl_if -->		
-		
-		<!-- tmpl_if amazon_ses_has_needed_cpan_modules --> 
-			<p class="positive" id="has_needed_cpan_modules"> 
-				All needed CPAN modules are installed!
-			</p> 
-		<!-- tmpl_else --> 
-			<p class="error"> 
-				One or more of the following CPAN modules needs to be installed for Amazon SES sending to work:
-			</p>
-			
-			<ul> 
-				<!-- tmpl_loop amazon_ses_required_modules --> 
-					<!-- tmpl_unless installed --> 
-						 <li>
-						 <p class="error">  
-						  <!-- tmpl_var module --> 
-						 </p> 
-						</li> 
-					<!-- /tmpl_unless --> 
-				<!-- /tmpl_loop --> 
-			</ul> 
-		<!-- /tmpl_if --> 
-		
-		<!-- tmpl_if expr="(list_settings.sending_method eq 'amazon_ses')" -->
-			<div class="clearskiesbox">
-				<div id="amazon_ses_get_stats"></div> 
-			</div> 
-		<!-- /tmpl_if --> 
-	
-		<fieldset>
-		<legend>
-		 Amazon SES Tools
-		</legend>
-		<p>
-		<input type="text" name="amazon_ses_verify_email" id="amazon_ses_verify_email" value="<!-- tmpl_var list_settings.list_owner_email -->" /> 
-		<input type="button" class="amazon_verify_email" value="Verify Address for Sending" /> 
-		</p> 
-		<div id="amazon_ses_verify_email_results"> 
-		</div> 
-		<div id="amazon_ses_verify_email_loading"> 
-		<p class="positive">&nbsp;</p>
-		</div> 
-		
-	</fieldset> 
-	
+	    <label for="set_smtp_sender">
+	     Set the Sender of SMTP Mailings to the List Administration Address
+	    </label>
+	    <br />
+	    This will ultimately set the 'Return-Path' email header to 
+	    the List Administration email address (<!-- tmpl_var list_settings.admin_email -->), 
+	    and bounced messages will return to that address. Otherwise, 
+	    they will go to the List Owner.
+	   </p>
 	  </td>
 	 </tr>
+
 	</table>
 	
-	
+
 </fieldset>
+</div> 
+
+
+
+  </td>
+ </tr>
+</table> 
+
+
+
+	
+		<table>
+		 <tr>
+		  <td width="20">
+		   <input type="radio" class="sending_prefs_radio" name="sending_method" id="sending_method_amazon_ses" value="amazon_ses" <!-- tmpl_if expr="(list_settings.sending_method eq 'amazon_ses')" -->checked="checked"<!--/tmpl_if --> />
+		  </td>
+		  <td>
+		   <p>
+			 <label for="sending_method_amazon_ses">
+		Amazon Simple Email Service
+			    </label>
+		   </p>
+			<div id="amazon_ses_preferences">
+			<fieldset> 
+
+			<!-- tmpl_if has_aws_credentials_file --> 
+				<p class="positive">Your AWS crendentials are being looked for in:</p> 
+				<ul> 
+					<li><p class="positive"><!-- tmpl_var aws_credentials_file --></p></li> 
+				</ul>
+			<!-- tmpl_else --> 
+				<p class="error">
+					Cannot find your AWS crendentials (<!-- tmpl_var aws_credentials_file default="not set!" -->)
+				</p>
+			<!-- /tmpl_if -->
+			<!-- tmpl_if has_ses_verify_email_address_script --> 
+				<p class="positive">The, &quot;ses-verify-email-address.pl&quot; script is being looked for at:</p> 
+				<ul> 
+					<li><p class="positive"><!-- tmpl_var ses_verify_email_address_script --></p></li> 
+				</ul>
+			<!-- tmpl_else --> 
+			<p class="error">
+				Cannot find your &quot;ses-verify-email-address.pl&quot; script (<!-- tmpl_var ses_verify_email_address_script default="not set!" -->)
+			</p>
+			<!-- /tmpl_if -->		
+
+			<!-- tmpl_if amazon_ses_has_needed_cpan_modules --> 
+				<p class="positive" id="has_needed_cpan_modules"> 
+					All needed CPAN modules are installed!
+				</p> 
+			<!-- tmpl_else --> 
+				<p class="error"> 
+					One or more of the following CPAN modules needs to be installed for Amazon SES sending to work:
+				</p>
+
+				<ul> 
+					<!-- tmpl_loop amazon_ses_required_modules --> 
+						<!-- tmpl_unless installed --> 
+							 <li>
+							 <p class="error">  
+							  <!-- tmpl_var module --> 
+							 </p> 
+							</li> 
+						<!-- /tmpl_unless --> 
+					<!-- /tmpl_loop --> 
+				</ul> 
+			<!-- /tmpl_if --> 
+
+			<!-- tmpl_if expr="(list_settings.sending_method eq 'amazon_ses')" -->
+				<div class="clearskiesbox">
+					<div id="amazon_ses_get_stats"></div> 
+				</div> 
+			<!-- /tmpl_if --> 
+
+			<fieldset>
+			<legend>
+			 Amazon SES Tools
+			</legend>
+			<p>
+			<input type="text" name="amazon_ses_verify_email" id="amazon_ses_verify_email" value="<!-- tmpl_var list_settings.list_owner_email -->" /> 
+			<input type="button" class="amazon_verify_email" value="Verify Address for Sending" /> 
+			</p> 
+			<div id="amazon_ses_verify_email_results"> 
+			</div> 
+			<div id="amazon_ses_verify_email_loading"> 
+			<p class="positive">&nbsp;</p>
+			</div> 
+
+		</fieldset> 
+
+		</fieldset>
+		</div>
+		
+
+		  </td>
+		 </tr>
+		</table>
+		
+		
+	
+	
+
+	
+	
+
 
 
 <input type="hidden" name="process" id="process" value="1" /> 
@@ -551,6 +548,7 @@ This will ultimately set the 'Return-Path' email header to the list administrati
 </form> 
 <div class="floatclear"></div>
 
+</fieldset> 
 
 
 

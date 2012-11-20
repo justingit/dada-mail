@@ -148,9 +148,47 @@ $jq(document).ready(function() {
 	}
 	// Mail Sending >> Sending Preferences 
 	if ($jq("#sending_preferences").length) {
+		
 		if ($jq("#has_needed_cpan_modules").length) {
 			amazon_ses_get_stats();
 		}
+		
+		sending_prefs_setup(); 
+		toggle_SASL_options(); 
+		toggle_pop_before_SMTP_options(); 
+		
+
+				
+		$jq("body").on("click", '#use_sasl_smtp_auth', function(event) {
+			toggle_SASL_options();
+		});
+		
+		$jq("body").on("click", '#use_pop_before_smtp', function(event) {
+			toggle_pop_before_SMTP_options();
+		});
+				
+		
+		
+		
+		$jq("body").on("click", '.sending_prefs_radio', function(event) {
+			sending_prefs_setup();
+		});
+		
+		
+		
+		$jq("body").on("click", ".test_sending_preferences", function(event) {
+			event.preventDefault();
+			test_sending_preferences();
+		});
+
+		$jq("body").on("click", ".amazon_verify_email", function(event) {
+			event.preventDefault();
+			amazon_verify_email();
+		});
+		
+		
+		
+		
 	}
 
 	// Mail Sending >> Adv Sending Preferences
@@ -235,19 +273,6 @@ $jq(document).ready(function() {
 		show_change_profile_password_form();
 		event.preventDefault();
 	});
-
-	// Mail Sending >> Sending Preferences 
-	$jq(".test_sending_preferences").live("click", function(event) {
-		event.preventDefault();
-		test_sending_preferences();
-	});
-
-	$jq(".amazon_verify_email").live("click", function(event) {
-		event.preventDefault();
-		amazon_verify_email();
-	});
-
-
 
 	// Mail Sending >> Mass Mailing Preferences 
 	$jq(".previewBatchSendingSpeed").live("change", function(event) {
@@ -836,6 +861,65 @@ function show_change_profile_password_form() {
 function show_customize_invite_message() {
 	$jq('#customize_invite_message_button').hide('blind');
 	$jq('#customize_invite_message_form').show('blind');
+}
+
+// Mail Sending >> Sending Preferences
+
+function sending_prefs_setup(){ 
+	
+	var hidden = new Array();
+	var visible = new Array(); 
+	
+	if ($jq("#sending_method_sendmail").prop("checked") == true) {
+		hidden  = ['smtp_preferences', 'amazon_ses_preferences'];
+		visible =  ['sendmail_options'];
+	}
+	if ($jq("#sending_method_smtp").prop("checked") == true) {
+		hidden  = ['sendmail_options', 'amazon_ses_preferences'];
+		visible =  ['smtp_preferences'];
+	}
+	if ($jq("#sending_method_amazon_ses").prop("checked") == true) {
+		hidden  = ['sendmail_options', 'smtp_preferences'];
+		visible =  ['amazon_ses_preferences'];
+	}
+	
+	var i; 
+	for(i = 0; i < hidden.length; i += 1){ 
+		if($jq('#' + hidden[i]).is(':visible')) { 
+			$jq('#' + hidden[i]).hide('blind');
+		}
+	}
+	i = 0;  
+	for(i = 0; i < visible.length; i += 1){ 
+		if($jq('#' + visible[i]).is(':hidden')) { 
+			$jq('#' + visible[i]).show('blind');
+		}
+	}
+}
+
+function toggle_SASL_options(){ 
+	if ($jq("#use_sasl_smtp_auth").prop("checked") == true) {
+		if ($jq('#SASL_options').is(':hidden')) {
+			$jq('#SASL_options').show('blind');
+		}
+	}
+	else { 
+		if ($jq('#SASL_options').is(':visible')) {
+			$jq('#SASL_options').hide('blind');
+		}
+	}
+}
+function toggle_pop_before_SMTP_options(){ 
+	if ($jq("#use_pop_before_smtp").prop("checked") == true) {
+		if ($jq('#pop_before_smtp_options').is(':hidden')) {
+			$jq('#pop_before_smtp_options').show('blind');
+		}
+	}
+	else { 
+		if ($jq('#pop_before_smtp_options').is(':visible')) {
+			$jq('#pop_before_smtp_options').hide('blind');
+		}
+	}
 }
 
 function test_sending_preferences() {
@@ -1923,8 +2007,8 @@ function ChangeMassMailingButtonLabel() {
 		$jq('#send_test_messages_to').hide('fade');
 	} else {
 		$jq("#submit_mass_mailing").prop('value', $jq("#default_mass_mailing_button_label").val());
-		$jq('#submit_test_mailing').show();
-		$jq('#send_test_messages_to').show();
+		$jq('#submit_test_mailing').show('fade');
+		$jq('#send_test_messages_to').show('fade');
 	}
 }
 
