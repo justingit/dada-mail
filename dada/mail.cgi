@@ -4292,7 +4292,7 @@ sub add {
             # DEV: TODO encoding?
             print OUTFILE $q->param('new_emails');
             close(OUTFILE);
-            chmod( 0666, $outfile );
+            chmod( $DADA::Config::FILE_CHMOD, $outfile );
 
           # DEV: why is it, "new_emails.txt"? Is that supposed to be a variable?
             print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
@@ -4547,7 +4547,7 @@ sub upload_that_file {
     }
 
     close(OUTFILE);
-    chmod( 0666, $outfile );
+    chmod( $DADA::Config::FILE_CHMOD, $outfile );
 
 }
 
@@ -4864,7 +4864,7 @@ sub delete_email {
           or die ( "can't write to " . $outfile . ": $!" );
         print $fh $delete_list;
         close($fh);
-        chmod( 0666, $outfile );
+        chmod( $DADA::Config::FILE_CHMOD, $outfile );
 
 		my $new_emails = [];
 		my $new_info   = [];

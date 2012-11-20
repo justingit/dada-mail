@@ -1148,6 +1148,7 @@ sub edit_config_dot_pm {
 			# (what about the error log? ) 
 			$config =~ s/$search2/$replace_with2/; 
 			
+			# Why 0777? 
 			installer_chmod(0777, make_safer('../DADA'));
 			installer_rm($Config_LOC); 
 			
@@ -1155,14 +1156,15 @@ sub edit_config_dot_pm {
 	        print $config_fh $config or croak $!;
 	        close $config_fh or croak $!;
 	
-			installer_chmod(0755, $Config_LOC);
-			installer_chmod(0755, make_safer('../DADA'));
+			installer_chmod($DADA::Config::DIR_CHMOD, $Config_LOC);
+			installer_chmod($DADA::Config::DIR_CHMOD, make_safer('../DADA'));
 	        return 1;
 	}
 }
 
 sub backup_config_dot_pm {
-
+	
+	# Why 0777? 	
     installer_chmod( 0777, '../DADA' );
 
     my $config     = slurp($Config_LOC);
@@ -1175,8 +1177,8 @@ sub backup_config_dot_pm {
     close $backup
       or croak $!;
 
-    installer_chmod( 0755, $backup_loc );
-    installer_chmod( 0755, '../DADA' );
+    installer_chmod( $DADA::Config::DIR_CHMOD, $backup_loc );
+    installer_chmod( $DADA::Config::DIR_CHMOD, '../DADA' );
 }
 
 
@@ -1628,7 +1630,7 @@ sub edit_config_file_for_plugins {
 				my $orig_code = $plugins_extensions->{$plugins_data}->{code}; 
 				my $uncommented_code = quotemeta(uncomment_admin_menu_entry($orig_code));
 				if($config_file =~ m/$uncommented_code/){ 
-					my $installer_successful = installer_chmod(0755, make_safer($plugins_extensions->{$plugins_data}->{loc}));
+					my $installer_successful = installer_chmod($DADA::Config::DIR_CHMOD, make_safer($plugins_extensions->{$plugins_data}->{loc}));
 				}
 			}
 			else { 
@@ -1683,7 +1685,7 @@ qq|\%LIST_SETUP_INCLUDE = (
 );|; 
 						$config_file =~ s/$plugins_config_list_settings_default_orig/$plugins_config_list_settings_default_replace_with/;
 					}
-					my $installer_successful = installer_chmod(0755, make_safer($plugins_extensions->{$plugins_data}->{loc}));
+					my $installer_successful = installer_chmod($DADA::Config::DIR_CHMOD, make_safer($plugins_extensions->{$plugins_data}->{loc}));
 				}
 			}
 		}
@@ -1694,11 +1696,12 @@ qq|\%LIST_SETUP_INCLUDE = (
 	}
 	else { 
 		# write it back? 
+		# Why 0777? 
 		installer_chmod(0777, $dot_configs_file_loc); 
 		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', make_safer($dot_configs_file_loc) or croak $!;
 		print $config_fh $config_file or croak $!;
 		close $config_fh or croak $!;
-		installer_chmod(0644, $dot_configs_file_loc);	
+		installer_chmod($DADA::Config::FILE_CHMOD, $dot_configs_file_loc);	
 	}
 	return 1; 
 	
@@ -1822,7 +1825,7 @@ sub install_wysiwyg_editors {
 	open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', make_safer($dot_configs_file_loc) or croak $!;
 	print $config_fh $config_file or croak $!;
 	close $config_fh or croak $!;
-	installer_chmod(0644, $dot_configs_file_loc);	
+	installer_chmod($DADA::Config::FILE_CHMOD, $dot_configs_file_loc);	
 	
 	return 1; 
 }
@@ -1879,11 +1882,12 @@ sub install_and_configure_kcfinder {
 	        }
 	    );
 		my $fckeditor_config_loc = make_safer($install_path . '/fckeditor/dada_mail_config.js'); 
+		# Why 0777? 
 		installer_chmod(0777, $fckeditor_config_loc); 
 		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $fckeditor_config_loc or croak $!;
 		print $config_fh $fckeditor_config_js or croak $!;
 		close $config_fh or croak $!;
-		installer_chmod(0644, $fckeditor_config_loc);
+		installer_chmod($DADA::Config::FILE_CHMOD, $fckeditor_config_loc);
 		undef $config_fh;
 	}
 	
@@ -1909,7 +1913,7 @@ sub install_and_configure_kcfinder {
 		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $ckeditor_config_loc or croak $!;
 		print $config_fh $ckeditor_config_js or croak $!;
 		close $config_fh or croak $!;
-		installer_chmod(0644, $ckeditor_config_loc);
+		installer_chmod($DADA::Config::FILE_CHMOD, $ckeditor_config_loc);
 		undef $config_fh;
 		
 	}
@@ -1931,7 +1935,7 @@ sub install_and_configure_kcfinder {
 		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $tiny_mce_config_loc or croak $!;
 		print $config_fh $tiny_mce_config_js or croak $!;
 		close $config_fh or croak $!;
-		installer_chmod(0644, $tiny_mce_config_loc);
+		installer_chmod($DADA::Config::FILE_CHMOD, $tiny_mce_config_loc);
 		undef $config_fh;
 		
 	}
@@ -1954,7 +1958,7 @@ sub install_and_configure_kcfinder {
 	open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $kcfinder_config_loc or croak $!;
 	print $config_fh $kcfinder_config_php or croak $!;
 	close $config_fh or croak $!;
-	installer_chmod(0644, $kcfinder_config_loc);
+	installer_chmod($DADA::Config::FILE_CHMOD, $kcfinder_config_loc);
 	undef $config_fh;
 	
 }

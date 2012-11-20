@@ -583,6 +583,8 @@ undef $ar_str;
 undef $should_be;
 
 my $ar_str = q{
+	<p><a href='http://example.com/'>Example</a></p>
+
 	<p><a href="http://google.com">Gooooogle</a></p>
 	
 	<p><a href="[redirect=http://gmail.com]">Gmail!</a></p>
@@ -602,9 +604,16 @@ my $ar_str = q{
 	<p><a href="<?dada redirect url="http://yahoo.com/blah.cgi?f=test" ?>">Yahoo QS Test</a></p>
 	
 	<p><a href = "http://example.com/randomspaces.html">Huh?</a></p>
+	
+	<p><a href='http://example.com/single_quotes.html'>Single Quotes!</a></p>
+	
+	<p><a href=http://example.com/no_quotes.html>No Quotes!</a></p>
+	
 }; 
 
 $should_be = q{
+	<p><a href='<?dada redirect url="http://example.com/" ?>'>Example</a></p>
+
 	<p><a href="<?dada redirect url="http://google.com" ?>">Gooooogle</a></p>
 	
 	<p><a href="[redirect=http://gmail.com]">Gmail!</a></p>
@@ -624,6 +633,11 @@ $should_be = q{
 	<p><a href="<?dada redirect url="http://yahoo.com/blah.cgi?f=test" ?>">Yahoo QS Test</a></p>
 	
 	<p><a href = "<?dada redirect url="http://example.com/randomspaces.html" ?>">Huh?</a></p>
+	
+	<p><a href='<?dada redirect url="http://example.com/single_quotes.html" ?>'>Single Quotes!</a></p>
+	
+	<p><a href=<?dada redirect url="http://example.com/no_quotes.html" ?>>No Quotes!</a></p>
+	
 };
 
 $ar_str = $lc->auto_redirect_tag($ar_str, 'HTML');
@@ -633,6 +647,10 @@ diag $ar_str;
 ok($ar_str eq $should_be, "yeah, they match up! (HTML)"); 
 undef $ar_str; 
 undef $should_be;
+
+#my $ar_str = "<p><a href='http://example.com/single_quotes.html'>Single Quotes!</a></p>"; 
+#   $ar_str = $lc->auto_redirect_tag($ar_str, 'HTML');
+#diag $ar_str;
 
 
 

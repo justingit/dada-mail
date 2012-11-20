@@ -258,7 +258,7 @@ my @statements = split(';', $sql, 11);
 
 sub destroy_SQLite_db { 
 
-	chmod(0666, './test_only_dada_files/test_dada');
+	chmod($DADA::Config::DIR_CHMOD, './test_only_dada_files/test_dada');
 	unlink './test_only_dada_files/test_dada';
 #	if(-e './test_only_dada_files/test_dada'){ 
 #		die "YEAH, IT'S THERE!"; 
