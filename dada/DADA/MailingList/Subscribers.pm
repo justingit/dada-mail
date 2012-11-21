@@ -34,6 +34,7 @@ BEGIN {
 use strict; 
 
 use base "DADA::MailingList::Subscribers::$backend";
+use DADA::App::Guts;
 use DADA::MailingList::Subscriber; 
 use DADA::MailingList::Subscriber::Validate;
 use DADA::Profile::Fields; 
@@ -412,7 +413,7 @@ sub filter_subscribers {
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
     my $li = $ls->get;
 
-    require DADA::App::Guts;
+
 
     my @good_emails = ();
     my @bad_emails  = ();
@@ -435,7 +436,7 @@ sub filter_subscribers {
             # Yeah... nothing...
         }
         else {
-            if ( DADA::App::Guts::check_for_valid_email($check_this_address) ==
+            if ( check_for_valid_email($check_this_address) ==
                 1 )
             {
                 $errors->{invalid_email} = 1;
@@ -467,7 +468,7 @@ sub filter_subscribers {
         }
         else {
             $check_this_address =
-              DADA::App::Guts::lc_email($check_this_address);
+              lc_email($check_this_address);
             push ( @good_emails, $check_this_address );
         }
     }
@@ -721,8 +722,6 @@ sub filter_subscribers_w_meta {
 
 sub write_plaintext_list { 
 	
-	require DADA::App::Guts; 
-	
 	my $self = shift; 
 	
 	# DEV: Needs ot be changed to hashref file paramater passing
@@ -730,9 +729,9 @@ sub write_plaintext_list {
 	            @_); 
 	my $type     = $args{-Type};
 	my $path     = $DADA::Config::TMP ; 
-	my $tmp_id   = DADA::App::Guts::message_id();
+	my $tmp_id   = message_id();
 	my $ln       = $self->{list}; 
-	my $tmp_file = DADA::App::Guts::make_safer($path . '/' . $ln . '.' . $type . '.' . $tmp_id); 
+	my $tmp_file = make_safer($path . '/' . $ln . '.' . $type . '.' . $tmp_id); 
 	
 	# DEV: needs to be changed to an anonymous file handle. 
 	open(TMP_LIST, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $tmp_file) or croak $!;		  
@@ -791,13 +790,8 @@ sub csv_to_cds {
 	my $subscriber_fields = $self->subscriber_fields;
 	
 	require   Text::CSV; 
-	#my $csv = Text::CSV->new; 
 	my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
     
-	require DADA::App::Guts;
-	
-	#die '$csv_line ' . $csv_line; 
-	
 	if ($csv->parse($csv_line)) {
 	    
         my @fields = $csv->fields;
@@ -805,9 +799,8 @@ sub csv_to_cds {
 
         $email =~ s{^<}{};
         $email =~ s{>$}{};
-        $email =  DADA::App::Guts::strip($email); 
-        $email =  DADA::App::Guts::xss_filter($email); 
-        $email =  DADA::App::Guts::cased($email); 
+        $email =  cased(strip(xss_filter($email))); 
+
 
         $cds->{email}  = $email;
 		$cds->{fields} = {};
