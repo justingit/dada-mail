@@ -4690,7 +4690,7 @@ sub add_email {
             my $new_email_count     = 0;
 			my $skipped_email_count = 0; 
 
-            # Each Addres is a CSV line...
+            # Each Address is a CSV line...
             for my $a (@address) {
 	
                 my $info = $lh->csv_to_cds($a);
