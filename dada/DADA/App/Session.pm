@@ -131,7 +131,7 @@ sub login_cookies {
         CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);
 
         my $session = CGI::Session->new( $self->{dsn}, $q, $self->{dsn_args} )
-          or carp CGI::Session->errstr();
+          or carp $!;
 
         $session->param( 'Admin_List',     $args{-list} );
         $session->param( 'Admin_Password', $cipher_pass );
@@ -312,7 +312,7 @@ sub change_login {
 
         CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);
         my $old_session = CGI::Session->new( $self->{dsn}, $q, $self->{dsn_args} )
-          or carp CGI::Session->errstr();
+          or carp $!;
 
         my $old_password = $old_session->param('Admin_Password');
 
@@ -396,7 +396,7 @@ sub logged_into_diff_list {
 
         CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);
         $session = CGI::Session->new( $self->{dsn}, $q, $self->{dsn_args} )
-          or carp CGI::Session->errstr();
+          or carp $!;
 
         $args{-Admin_List}     = $session->param('Admin_List');
         $args{-Admin_Password} = $session->param('Admin_Password');
@@ -454,7 +454,7 @@ sub logout_cookie {
 
         CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);
         my $session = CGI::Session->new( $self->{dsn}, $q, $self->{dsn_args} )
-          or carp CGI::Session->errstr();
+          or carp $!;
 
         $session->delete();
 
@@ -550,11 +550,12 @@ sub check_session_list_security {
         CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);
 
         $session = CGI::Session->load( $self->{dsn}, $q, $self->{dsn_args} )
-          or carp CGI::Session->errstr();
+          or carp $!;
 
-        $args{-Admin_List}     = $session->param('Admin_List');
-        $args{-Admin_Password} = $session->param('Admin_Password');
-
+		if($session) { 
+	        $args{-Admin_List}     = $session->param('Admin_List');
+	        $args{-Admin_Password} = $session->param('Admin_Password');
+		}
     }
     else {
 
