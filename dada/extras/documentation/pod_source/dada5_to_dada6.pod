@@ -18,7 +18,14 @@ Dada Mail is written with the thinnest of veneer of a web framework, and the nex
 
 =head1 Database Schema
 
-There are B<no> changes in any of the database schemas between Dada Mail 5 and Dada Mail 6. 
+For most people, there are B<no> changes in any of the database schemas between Dada Mail 5 and Dada Mail 6. If you are using the B<PostgreSQL> bacend, do note that the B<dada_sessions> table is slightly different. You will want to C<DROP> the current B<dada_sessions> table you have, and recreate the table: 
+
+	CREATE TABLE dada_sessions (
+	    id CHAR(32) NOT NULL PRIMARY KEY,
+	    a_session BYTEA NOT NULL
+	);
+
+Again, this is only for B<PostgreSQL>
 
 Upgrading is fairly straightforward, with no need for any Dada Mail 5 to Dada Mail 6 SQL upgrade scripts. 
 

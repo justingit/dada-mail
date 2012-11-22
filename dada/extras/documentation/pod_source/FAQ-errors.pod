@@ -528,16 +528,30 @@ to find out where the sendmail program is on your server, or ask your system adm
 
 If you're on a WinNT server, you're most likely not going to be using Sendmail this way, you should be sending all your mail using an SMTP server. Check out the Windows readme file for more information on how to set up your copy of Dada Mail for Windows. 
 
-=head2 Global symbol "%Config" requires explicit package name
+=head2 Can't locate JSON.pm, charts/graphs that never load 
 
-This error should be fixed as of version 3.0.0, but if you're using a version lower then this, place the following code near the top of the mail.cgi script: 
+Dada Mail uses the Google Visualization API to create its charts and graphs. This API needs its data given to it in the JSON format and Dada Mail uses the B<JSON> CPAN module to create the data. If you do not have this module currently installed, you will need to install it, yourself. 
 
- BEGIN {
-    if($] > 5.008){
-       require Errno;
-       require Config;
-    }
- }
+See, B<How to install CPAN modules>: L<http://dadamailproject.com/d/FAQ-general.pod.html#how_do_you_install__cpan_perl_modules>
+
+Dada Mail also ships with a disabled copy of B<JSON>. In the I<dada/DADA/perllib> directory, find the directory named, 
+
+C<JSON-remove_to_install>
+
+and the file named, 
+
+C<JSON.pm-remove_to_install> 
+
+and rename them: 
+
+C<JSON>
+
+and, 
+
+C<JSON.pm> 
+
+respectively. 
+
 
 =head2 Can't locate MIME/Base64.pm
 

@@ -2566,8 +2566,9 @@ sub csv_subscriber_parse {
 
     $filename =  uriescape($filename);
     $filename =~ s/\s/%20/g;
-	die "no filename! '$filename'"
-		if length($filename) <= 0 || $filename eq ''; 
+	if(length($filename) <= 0 || $filename eq '') { 
+		return ([], []);
+	}
 	
 	if(! -r $DADA::Config::TMP || ! -w $DADA::Config::TMP || ! -x $DADA::Config::TMP) { 
 		chmod($DADA::Config::DIR_CHMOD , $DADA::Config::TMP)			
@@ -2576,7 +2577,11 @@ sub csv_subscriber_parse {
 		# good.
 	}
 
-
+	if(! -f $DADA::Config::TMP . '/' . $filename) { 
+		return ([], []);
+	}
+	
+	
 	# Line translation. 
 	# Don't like it. 
 	# Notes: 
