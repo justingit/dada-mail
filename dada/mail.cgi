@@ -2594,7 +2594,7 @@ sub adv_sending_preferences {
 				-list   => $list,
 				-vars   => {
 					screen                        => 'adv_sending_preferences',
-					title                         => 'Advanced Sending Preferences',
+					title                         => 'Advanced Options',
 					done                          => $done,
 					precedence_popup_menu         => $precedence_popup_menu,
 					priority_popup_menu           => $priority_popup_menu,

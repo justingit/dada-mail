@@ -290,7 +290,7 @@ sub format_headers_and_body {
 		}
 	}
 	$entity     = $self->_format_headers($entity); #  Bridge stuff. 
-	$entity     = $self->_fix_for_only_html_part($entity); 
+	$entity     = $self->_make_multipart_alternative($entity); 
 	$entity     = $self->_format_text($entity);		
 	
 	# yeah, don't know why you have to do it 
@@ -328,9 +328,9 @@ sub format_phrase_address {
 
 =head1 PRIVATE METHODS
 
-=head2 _fix_for_only_html_part
+=head2 _make_multipart_alternative
 
- $entity = $self->_fix_for_only_html_part($entity); 
+ $entity = $self->_make_multipart_alternative($entity); 
 
 Changes the single part, HTML entity into a multipart/alternative message, 
 with an auto plaintext version. 
@@ -338,11 +338,11 @@ with an auto plaintext version.
 =cut
 
 
-sub _fix_for_only_html_part { 
+sub _make_multipart_alternative { 
 
 	my $self   = shift; 
 	my $entity = shift; 
-	$entity = $self->_create_multipart_from_html($entity); 
+	$entity = $self->_create_multipart($entity); 
 	return $entity; 
 
 }
@@ -680,9 +680,9 @@ sub _remove_opener_image {
 
 =pod
 
-=head2 _create_multipart_from_html
+=head2 _create_multipart
 
- $entity = $self->_create_multipart_from_html($entity); 
+ $entity = $self->_create_multipart($entity); 
 
 
 Recursively goes through a multipart entity, changing any non-attachment
@@ -692,14 +692,23 @@ auto-generated PlainText version.
 =cut
 
 
-sub _create_multipart_from_html { 
+sub _create_multipart { 
 
 	my $self   = shift; 
 	my $entity = shift; 
 	
+	# Don't forget to do the pref check for plaintext... 
 	if(
-	  ($entity->head->mime_type                         eq 'text/html' ) && 
-	  ($entity->head->mime_attr('content-disposition') !~ m/attachment/)
+	  (
+		  ($entity->head->mime_type                         eq 'text/html' ) && 
+		  ($entity->head->mime_attr('content-disposition') !~ m/attachment/)
+	  )
+		|| 
+		(
+		  ($entity->head->mime_type                         eq 'text/plain' ) && 
+		  ($entity->head->mime_attr('content-disposition') !~ m/attachment/)
+		 ) 
+		
 	  ){ 	  		
 			$entity = $self->_make_multipart($entity); 		   
 	}
@@ -715,8 +724,17 @@ sub _create_multipart_from_html {
       			my $i; 
 				for $i (0 .. $#parts) {
 					if(
+					(
 					  ($parts[$i]->head->mime_type eq 'text/html') &&
-					  ($parts[$i]->head->mime_attr('content-disposition') !~ m/attachment/)) { 
+					  ($parts[$i]->head->mime_attr('content-disposition') !~ m/attachment/)
+					)
+					|| 
+					(
+					  ($parts[$i]->head->mime_type eq 'text/plain') &&
+					  ($parts[$i]->head->mime_attr('content-disposition') !~ m/attachment/)
+					)
+					
+					) { 
 							$parts[$i] = $self->_make_multipart($parts[$i]);
 					}
 				$entity->sync_headers('Length'      =>  'COMPUTE',
@@ -752,30 +770,44 @@ sub _make_multipart {
 	# I wanted to do this, before we make it multipart: 
 	my $orig_charset  = $entity->head->mime_attr('content-type.charset'); 
 	my $orig_encoding = $entity->head->mime_encoding;
+	my $orig_type     = $entity->head->mime_type; 
 	
 	require MIME::Entity; 
 		
-	my $html_content = $entity->bodyhandle->as_string;
-	   $html_content = safely_decode($html_content);
-	
+	my $orig_content = safely_decode($entity->bodyhandle->as_string);
+	   
 	$entity->make_multipart('alternative'); 
 	
-	my $plaintext_entity = MIME::Entity->build(
-		Type    => 'text/plain', 
-		Data    => html_to_plaintext(
-			{ 
-				-string => safely_encode($html_content)
-			},
-		),
+	my $new_type = undef;
+	my $new_data = undef; 
+
+	if($orig_type eq 'text/plain'){ 
+		$new_type = 'text/html'; 
+		$new_data = plaintext_to_html({-string => safely_encode($orig_content)});
+	}
+	else { 
+		$new_type = 'text/plain';
+		$new_data = html_to_plaintext({-string => safely_encode($orig_content)});
+	}
+
+	
+	my $new_entity = MIME::Entity->build(
+		Type     => $new_type, 
+		Data     => $new_data, 
 		Encoding => $orig_encoding,
-	  ); 
-	 $plaintext_entity->head->mime_attr(
+	 );
+	 $new_entity->head->mime_attr(
 		"content-type.charset" => $orig_charset,
 	 );
 	
-	$entity->add_part($plaintext_entity, 0); 
-
-	return $entity; 
+	if($orig_type eq 'text/html') { 
+		$new_entity->add_part($new_entity, 0); 
+	}
+	else { 
+		# no offset - HTML part should be after plaintext part
+		$new_entity->add_part($new_entity);  	
+	}
+	return $new_entity; 
 }
 
 

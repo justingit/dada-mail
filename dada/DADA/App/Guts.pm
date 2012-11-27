@@ -86,7 +86,7 @@ require Exporter;
   lc_email
   make_safer
   encode_html_entities
-  webify_plain_text
+  plaintext_to_html
   check_list_setup
   make_all_list_files
   message_id
@@ -1472,7 +1472,7 @@ sub encode_html_entities {
 }
 
 
-sub webify_plain_text { 
+sub plaintext_to_html { 
 
 	my ($args) = @_; 
 	

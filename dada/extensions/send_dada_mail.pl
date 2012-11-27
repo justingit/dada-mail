@@ -2,7 +2,9 @@
 
 use strict; 
 
-use lib qw(../ ../DADA/perllib ../../../perllib ../../../perl); ; 
+use FindBin;
+use lib "$FindBin::Bin/../";
+use lib "$FindBin::Bin/../DADA/perllib";
 
 
 use Getopt::Long; 
@@ -207,38 +209,38 @@ You probably want to set the explict paths to your Dada Mail libraries.
 For example, if your Dada Mail installation is at: 
 
  /home/account/cgi-bin/dada
- 
+
 Your Dada Mail libraries would be at: 
 
  /home/account/cgi-bin/dada
- 
+
 and: 
 
  /home/account/cgi-bin/dada/DADA/perllib
- 
+
 The following lines on top of this script would be changed from: 
 
 
-use lib qw(
+	use lib qw(
 
-../
-../DADA
-../DADA/perllib
+	../
+	../DADA
+	../DADA/perllib
 
-);
+	);
 
 to: 
 
-use lib qw(
+	use lib qw(
 
-../
-../DADA
-../DADA/perllib
+	../
+	../DADA
+	../DADA/perllib
 
- /home/account/cgi-bin/dada
- /home/account/cgi-bin/dada/DADA/perllib
+	 /home/account/cgi-bin/dada
+	 /home/account/cgi-bin/dada/DADA/perllib
  
-); 
+	); 
 
 =head1 DEPENDENCIES
 

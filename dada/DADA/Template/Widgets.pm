@@ -584,7 +584,7 @@ sub default_screen {
 
             # This is strange...
             $all_list_info_dotted->{'list_settings.info'} =
-              webify_plain_text({-str => $all_list_info_dotted->{'list_settings.info'} });
+              plaintext_to_html({-str => $all_list_info_dotted->{'list_settings.info'} });
             $all_list_info_dotted->{'list_settings.info'} =
               _email_protect({-string => $all_list_info_dotted->{'list_settings.info'}} );
 
@@ -1847,7 +1847,7 @@ else {
 		
 	if(exists($args->{-webify_these})){ 
 		foreach(@{$args->{-webify_these}}){ 
-	    	$template_vars->{$_} = webify_plain_text(
+	    	$template_vars->{$_} = plaintext_to_html(
 				{
 					-str    => $template_vars->{$_},
 					-method => 'fast', 
@@ -2532,7 +2532,7 @@ sub webify_and_santize {
     foreach(@{$args->{-to_sanitize}}){ 
     
         
-        $args->{-vars}->{$_} = webify_plain_text({-str =>$args->{-vars}->{$_}});
+        $args->{-vars}->{$_} = plaintext_to_html({-str =>$args->{-vars}->{$_}});
         $args->{-vars}->{$_} = _email_protect(
 			{
 				-string => $args->{-vars}->{$_},
