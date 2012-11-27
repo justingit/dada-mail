@@ -552,10 +552,10 @@ $DATA_CACHE                             ||= 1;
 
 $S_PROGRAM_URL = $PROGRAM_URL;
 my $PLUGIN_URL = $S_PROGRAM_URL;
-$PLUGIN_URL =~ s/\/(\w+)\.(cgi|pl)$/\//;
-$PLUGIN_URL .= 'plugins';
-my $EXT_URL = $PLUGIN_URL;
-$EXT_URL =~ s/plugins/extensions/;
+   $PLUGIN_URL =~ s/\/(\w+)\.(cgi|pl)$/\//;
+   $PLUGIN_URL .= 'plugins';
+my $EXT_URL     = $PLUGIN_URL;
+   $EXT_URL     =~ s/plugins/extensions/;
 
 $ADMIN_MENU ||= [
 
@@ -584,6 +584,14 @@ $ADMIN_MENU ||= [
                 -Function  => 'sending_monitor',
                 -Activated => 1,
             },
+
+            {
+                -Title     => 'Options',
+                -Title_URL => "$S_PROGRAM_URL?f=mass_mailing_options",
+                -Function  => 'mass_mailing_options',
+                -Activated => 1,
+            },
+
         ]
     },
 
@@ -648,7 +656,7 @@ $ADMIN_MENU ||= [
             },
 
             {
-                -Title     => 'Mailing List Options',
+                -Title     => 'Options',
                 -Title_URL => "$S_PROGRAM_URL?f=list_options",
                 -Function  => 'list_options',
                 -Activated => 1,
@@ -669,20 +677,20 @@ $ADMIN_MENU ||= [
         -Submenu   => [
 
             {
-                -Title     => 'Sending Preferences',
+                -Title     => 'Options',
                 -Title_URL => "$S_PROGRAM_URL?f=sending_preferences",
                 -Function  => 'sending_preferences',
                 -Activated => 1,
             },
 
             {
-                -Title     => 'Advanced Sending Preferences',
+                -Title     => 'Advanced Options',
                 -Title_URL => "$S_PROGRAM_URL?f=adv_sending_preferences",
                 -Function  => 'adv_sending_preferences',
                 -Activated => 1,
             },
             {
-                -Title     => 'Mass Mailing Preferences',
+                -Title     => 'Mass Mailing Options',
                 -Title_URL => "$S_PROGRAM_URL?f=mass_mailing_preferences",
                 -Function  => 'mass_mailing_preferences',
                 -Activated => 1,
@@ -695,21 +703,21 @@ $ADMIN_MENU ||= [
         -Activated => 1,
         -Submenu   => [
             {
-                -Title     => 'View Archive',
+                -Title     => 'View',
                 -Title_URL => "$S_PROGRAM_URL?f=view_archive",
                 -Function  => 'view_archive',
                 -Activated => 1,
             },
 
             {
-                -Title     => 'Archive Options',
+                -Title     => 'Options',
                 -Title_URL => "$S_PROGRAM_URL?f=archive_options",
                 -Function  => 'archive_options',
                 -Activated => 1,
             },
 
             {
-                -Title     => 'Advanced Archive Options',
+                -Title     => 'Advanced Options',
                 -Title_URL => "$S_PROGRAM_URL?f=adv_archive_options",
                 -Function  => 'adv_archive_options',
                 -Activated => 1,
