@@ -684,7 +684,7 @@ sub send_url_email {
                     my $good_try = LWP::Simple::get($url);
                     $t           = html_to_plaintext(
 										{
-											-string => $good_try,
+											-str => $good_try,
 											-formatter_params => {
 												base        => $url,
 												before_link => '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET -->',
@@ -693,7 +693,7 @@ sub send_url_email {
 										}
 									);
                 }else{ 
-                    $t           = html_to_plaintext({-string => $q->param('html_message_body')});
+                    $t           = html_to_plaintext({-str => $q->param('html_message_body')});
                 }
             }
 			return undef if redirect_tag_check($t, $list, $root_login) eq undef;

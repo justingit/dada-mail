@@ -1470,7 +1470,7 @@ sub make_search_summary {
 													   -plain_text => 1,
 													 );
 		}else{ 
-			$message = html_to_plaintext({-string => $message}); 
+			$message = html_to_plaintext({-str => $message}); 
 		}
 
 		my @message_lines = split("\n", $message);
@@ -1873,7 +1873,7 @@ sub massaged_msg_for_display {
 		# From what I can figure out, this'll only happen in the 
 		# message blurbs?
         $body = $self->_chomp_out_head_styles($body);
-        $body = html_to_plaintext( { -string => $body } );
+        $body = html_to_plaintext( { -str => $body } );
 		# Total hack: 
 		# I don't want to double-process the $body - perhaps 
 		# that won't do anything weird, but perhaps... it would? 

@@ -1477,7 +1477,7 @@ sub plaintext_to_html {
 	my ($args) = @_; 
 	
 	if(!exists($args->{-str})){ 
-		croak "you MUST pass a string to 1510 in the, '-str' paramater!"; 
+		croak "you MUST pass a string to plaintext_to_html in the, '-str' paramater!"; 
 	}
 	if(!exists($args->{-method})){ 
 		$args->{-method} = "thorough"; 

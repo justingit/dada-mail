@@ -854,7 +854,7 @@ sub _build_email {
 				$plaintext_alt = $PlainText_ver;  
         }
     	else { 
-			    $plaintext_alt = html_to_plaintext({-string => $HTML_ver });
+			    $plaintext_alt = html_to_plaintext({-str => $HTML_ver });
 		}
         $plaintext_alt = safely_encode($plaintext_alt); 
 		$HTML_ver      = safely_encode($HTML_ver); 
