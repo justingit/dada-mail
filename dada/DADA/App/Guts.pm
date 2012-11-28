@@ -975,8 +975,8 @@ sub date_this {
 sub html_to_plaintext { 
 
 	my ($args) = @_; 
-	if(!exists($args->{-string})){ 
-		croak "You need to pass the string you want to convert in the, '-string' param!"; 
+	if(!exists($args->{-str})){ 
+		croak "You need to pass the string you want to convert in the, '-str' param!"; 
 	}
 	if(!exists($args->{-formatter_params})){
 		$args->{-formatter_params} = {
@@ -1000,7 +1000,7 @@ sub html_to_plaintext {
 		my $mask_begining_comment = quotemeta('[--' . $ran_str . 'DM_TMP');
 		my $mask_ending_comment   = quotemeta('DM_TMP' . $ran_str . '--]');
 		
-		my $tmp_str = $args->{-string};
+		my $tmp_str = $args->{-str};
 		   $tmp_str =~ s/\<\!\-\-/$mask_begining_comment/g; 
 		   $tmp_str =~ s/\-\-\>/$mask_ending_comment/g; 
 		if($formatted = $f->parse($tmp_str)){ 
@@ -1010,11 +1010,11 @@ sub html_to_plaintext {
 			carp $DADA::Config::PROGRAM_NAME . ' ' . $DADA::Config::VER . 
 				' warning: Something went wrong with the HTML to PlainText conversion: ' . 
 				$f->error; 
-			return _chomp_off_body(convert_to_ascii($args->{-string})); 
+			return _chomp_off_body(convert_to_ascii($args->{-str})); 
 		}
 	}
 	else { 
-		return _chomp_off_body(convert_to_ascii($args->{-string})); 	
+		return _chomp_off_body(convert_to_ascii($args->{-str})); 	
 	}		
 }
 
