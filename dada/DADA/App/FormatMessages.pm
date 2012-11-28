@@ -700,17 +700,17 @@ sub _create_multipart {
 	# Don't forget to do the pref check for plaintext... 
 	if(
 	  (
-		  ($entity->head->mime_type                         eq 'text/html' ) && 
-		  ($entity->head->mime_attr('content-disposition') !~ m/attachment/)
+		  $entity->head->mime_type                         eq 'text/html'  && 
+		  $entity->head->mime_attr('content-disposition') !~ m/attachment/
 	  )
 		|| 
 		(
-		  ($entity->head->mime_type                         eq 'text/plain' ) && 
-		  ($entity->head->mime_attr('content-disposition') !~ m/attachment/)
-		 ) 
+		     $entity->head->mime_type                         eq 'text/plain' 
+		  && $entity->head->mime_attr('content-disposition') !~ m/attachment/
+		  && $self->{ls}->param('mass_mailing_convert_plaintext_to_html') == 1
+		) 
 		
 	  ){ 	 
-	 		warn 'here.'; 
 	
 			$entity = $self->_make_multipart($entity); 
 			$entity->sync_headers('Length'      =>  'COMPUTE',
@@ -718,8 +718,8 @@ sub _create_multipart {
 			return $entity;    
 	}
 	elsif(
-		   ($entity->head->mime_type                         eq 'multipart/mixed') && 
-	       ($entity->head->mime_attr('content-disposition') !~ m/attachment/)){ 
+		   $entity->head->mime_type                         eq 'multipart/mixed' && 
+	       $entity->head->mime_attr('content-disposition') !~ m/attachment/){ 
       		
       		my @parts = $entity->parts(); 
       		my $i = 0; 
@@ -730,15 +730,15 @@ sub _create_multipart {
 				ALL_PARTS: for $i (0 .. $#parts) {
 					if(
 					(
-					  ($parts[$i]->head->mime_type eq 'text/html') &&
-					  ($parts[$i]->head->mime_attr('content-disposition') !~ m/attachment/)
+					  $parts[$i]->head->mime_type eq 'text/html' &&
+					  $parts[$i]->head->mime_attr('content-disposition') !~ m/attachment/
 					)
 					|| 
 					(
-					  ($parts[$i]->head->mime_type eq 'text/plain') &&
-					  ($parts[$i]->head->mime_attr('content-disposition') !~ m/attachment/)
+					     $parts[$i]->head->mime_type eq 'text/plain'
+					  && $parts[$i]->head->mime_attr('content-disposition') !~ m/attachment/
+					  && $self->{ls}->param('mass_mailing_convert_plaintext_to_html') == 1
 					)
-					
 					) { 
 							$parts[$i] = $self->_make_multipart($parts[$i]);
 							# Seriously. How many could there be?
@@ -804,7 +804,7 @@ sub _make_multipart {
 	 );
 
 	if($orig_type eq 'text/html') { 
-		$new_entity->add_part($new_entity, 0); 
+		$entity->add_part($new_entity, 0); 
 	}
 	else { 
 		# no offset - HTML part should be after plaintext part
