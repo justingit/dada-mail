@@ -3085,6 +3085,7 @@ sub _config_import {
             $good_getpwuid = $getpwuid_call;
         }
         if ( $PROGRAM_CONFIG_FILE_DIR eq 'auto' ) {
+			$good_getpwuid =~ s/\/$//; 
             $CONFIG_FILE_DIR = $good_getpwuid . '/.dada_files/.configs';
         }
         else {

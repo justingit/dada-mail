@@ -434,10 +434,9 @@ sub install_or_upgrade {
 #	 my $dada_files_parent_dir = $DADA::Config::CONFIG_FILE;
 	my $dada_files_parent_dir = BootstrapConfig::guess_config_file(); 
 	
-#	die $dada_files_parent_dir; 
 	   $dada_files_parent_dir =~ s/\/$Dada_Files_Dir_Name\/\.configs\/\.dada_config//;
 	my $found_existing_dada_files_dir = test_complete_dada_files_dir_structure_exists($dada_files_parent_dir);
-	
+
    my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen => 'install_or_upgrade.tmpl',
@@ -484,7 +483,7 @@ sub check_install_or_upgrade {
 		my $current_dada_files_parent_location = $q->param('current_dada_files_parent_location'); 	
 		if(test_complete_dada_files_dir_structure_exists($current_dada_files_parent_location) == 1){ 
 			&scrn_configure_dada_mail; 
-			return;			
+			return;
 		}
 		else { 
 			$q->param('error_cant_find_dada_files_location', 1); 
@@ -2841,6 +2840,7 @@ sub guess_config_file {
 				$good_getpwuid = $getpwuid_call;
 			}
 			if($PROGRAM_CONFIG_FILE_DIR eq 'auto'){
+				$good_getpwuid =~ s/\/$//; 
 				$CONFIG_FILE_DIR = $good_getpwuid . '/.dada_files/.configs';
 			}
 			else { 
