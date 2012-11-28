@@ -94,6 +94,7 @@ html, body {
 
 /* admin */
 #Menu {
+	position:relative;
 	margin-left: -100%;
 	float: left;
 	width: 199px;
@@ -102,6 +103,7 @@ html, body {
 	background-color: #fff;
 	text-align: left;
 	line-height: 150%;
+
 }
 
 /* BOTH */
