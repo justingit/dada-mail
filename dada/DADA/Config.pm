@@ -2416,6 +2416,9 @@ EOF
     cipher_key => undef,
     admin_menu => undef,
 
+	# Mass Mailing Options
+	mass_mailing_convert_plaintext_to_html => 0, 
+	
     #quotas
     use_subscription_quota => 0,
     subscription_quota     => 0,
