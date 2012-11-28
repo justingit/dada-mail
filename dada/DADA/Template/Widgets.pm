@@ -1914,6 +1914,8 @@ else {
 		# * Write a filter to remove dots, replace with, "_dot_" instead?
 		# * change any variables with a dot name with, "_dot_" too. Will 
 		# That inpose too much of a speed hit?
+		# 
+		# HTML::Template::Pro also doesn't work with tmpl_set
 		
 		$engine = 'html_template_expr';  
 	}
@@ -2020,8 +2022,6 @@ else {
 		$final_params{list} =  $args->{-list};  
 	}
 	
-	
-	
    $template->param(%final_params); 
 	%_ht_tmpl_set_params = (); 
 	if(exists($args->{-return_params})){ 
@@ -2040,9 +2040,14 @@ else {
 				# ... like this. 
 				
 				%final_params = (%final_params, %_ht_tmpl_set_params); 
+				#use Data::Dumper; 
+				#die Dumper({%final_params});
 				return ($str, {%final_params}); 
 			}
 			else { 
+				#use Data::Dumper; 
+				#die Dumper({%final_params}); 
+				
 				return ($template->output(), {%final_params});	
 
 			}
@@ -2050,9 +2055,11 @@ else {
 		else { 
 			if($engine eq 'html_template_pro'){
 				# No, I do not know why I have to decode what H::T::Pro gives me. 
+								 
 				return safely_decode($template->output(), 1); 
 			}
 			else { 
+								 
 				return $template->output();
 			}
 		}
@@ -2304,7 +2311,7 @@ sub wrap_screen {
 			}
 		}
 	}	 
-		
+	
 	if($with eq 'list'){ 
 	
 		# list_template is the wrapper template - it calls, screen()
@@ -2334,8 +2341,7 @@ sub wrap_screen {
 		require DADA::Template::HTML; 	
 		my $template = DADA::Template::HTML::list_template(
 			%{$args->{-wrapper_params}}, # This is currently, "blank" - where is put in here - header_params? 
-			-vars => $vars,				 # This currently only has, "title" and, "content" - everything else should 
-										 # already be filled out. 
+			-vars => $vars,				 
 			-Part => 'full', 
 			-List => $list_param, 
 			); 			
