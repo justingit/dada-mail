@@ -134,6 +134,10 @@ $jq(document).ready(function() {
 					//$jq('#confirm_add').submit();
 				}
 			}
+			else { 
+				// Invitations.
+				$jq("body").off('submit', "#confirm_add");
+			}
 		});
 	}
 
