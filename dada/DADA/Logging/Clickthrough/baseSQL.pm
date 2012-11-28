@@ -254,11 +254,17 @@ sub r_log {
 	my $remote_address = undef; 
 	if(!exists($args->{-remote_addr})){ 
 		$remote_address = $self->remote_addr;
+		$args->{-remote_addr} = $remote_address; 
 	}
 	else { 
 		$remote_address = $args->{-remote_addr}; 
 	}
 	
+	if ( $self->{ls}->param('enable_open_msg_logging') == 1 ) {
+		if($self->_recorded_open_recently($args) <= 0) { 
+			$self->o_log($args); 
+		}
+	}
 	
     if ( $self->{ls}->param('clickthrough_tracking') == 1 ) {
         my $place_holder_string = '';
@@ -304,6 +310,60 @@ sub r_log {
         return 0;
     }
 }
+
+
+sub _recorded_open_recently {
+    my $self = shift;
+    my ($args) = @_;
+
+    my $query;
+
+	if ($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql'){ 
+	    if ( $args->{-timestamp} ) {
+	        $query =
+	            'SELECT COUNT(*) from '
+	          . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+	          . ' where list = ? AND remote_addr = ? AND msg_id = ? AND event = ? AND timestamp >= ' . $args->{timestamp} . ' - INTERVAL "1 HOUR"'; 
+	    }
+	    else {
+	        $query =
+	            'SELECT COUNT(*) from '
+	          . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+	          . ' where list = ? AND remote_addr = ? AND msg_id = ? AND event = ? AND timestamp >= NOW() - INTERVAL "1 HOUR"';
+	    }
+	}
+	elsif ($DADA::Config::SQL_PARAMS{dbtype} eq 'Pg'){
+	    if ( $args->{-timestamp} ) {
+	        $query =
+	            'SELECT COUNT(*) from '
+	          . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+	          . ' where list = ? msg_id = ? AND event = ? AND timestamp >= DATE_SUB('
+	          . $args->{timestamp}
+	          . ', INTERVAL 1 HOUR)';
+	    }
+	    else {
+	        $query =
+	            'SELECT COUNT(*) from '
+	          . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+	          . ' where list = ? AND remote_addr = ? AND msg_id = ? AND event = ? AND timestamp >= DATE_SUB(NOW(), INTERVAL 1 HOUR)';
+	    }		
+	}
+	else { 
+		 # I'm not sure if I want to tackle SQLite, atm... 
+		return 1; 
+	}
+	
+
+    my $sth = $self->{dbh}->prepare($query);
+
+    $sth->execute( $self->{name}, $args->{-remote_addr}, $args->{-mid}, 'open' )
+      or croak "cannot do statment '$query'! $DBI::errstr\n";
+
+    my @row = $sth->fetchrow_array();
+    $sth->finish;
+    return $row[0];
+}
+
 
 sub o_log {
 	my $self      = shift; 
