@@ -547,6 +547,7 @@ sub run {
 	'search_archive'             =>    \&search_archive,
 	'send_archive'               =>    \&send_archive,
 	'list_invite'                =>    \&list_invite,
+	'mass_mailing_options'       =>    \&mass_mailing_options, 
 	'pass_gen'                   =>    \&pass_gen,
 	'send_url_email'             =>    \&send_url_email,
 	'feature_set'                =>    \&feature_set,
@@ -1597,6 +1598,55 @@ sub list_invite {
 				-cgi_obj     => $q,
 			}
 		);
+}
+
+
+sub mass_mailing_options {
+
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'mass_mailing_options'
+    );
+	$list = $admin_list; 
+
+	if(!$process) { 
+		require DADA::Template::Widgets;
+		my  $scrn =  DADA::Template::Widgets::wrap_screen(
+			{
+				-screen => 'mass_mailing_options.tmpl',
+				-with   => 'admin', 
+				-expr   => 1, 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
+				-vars   => {
+					done => $done,
+				},
+				-list_settings_vars_param => {
+					-list    => $list,
+					-dot_it => 1,
+				},
+			}
+		); 
+	
+		e_print($scrn); 
+	}
+	else { 
+		my $ls = DADA::MailingList::Settings->new({-list => $list}); 
+		$ls->save_w_params(
+            {
+                -associate => $q,
+                -settings  => {
+					mass_mailing_convert_plaintext_to_html => 0, 
+				}
+			}
+		); 
+		print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
+              . '?flavor=mass_mailing_options&done=1' );
+	}
+	
+
 }
 
 
