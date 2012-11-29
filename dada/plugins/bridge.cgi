@@ -1134,8 +1134,11 @@ sub start {
         }
 
 
-        next
-          if !valid_login_information($ls);
+    	if(!valid_login_information($ls)) { 
+			e_print("\t\tLogin information doesn't seem to be valid. Make sure you've supplied everything needed: List Email, POP3 Server, POP3 Username, POP3 Password")
+			 if $verbose; 
+			next; 
+		}
 
 
 
@@ -1629,10 +1632,10 @@ sub pop3_login {
 sub valid_login_information {
 
     my $ls = shift;
-    return 0 if !$ls->param('discussion_pop_server');
-    return 0 if !$ls->param('discussion_pop_username');
-    return 0 if !$ls->param('discussion_pop_email');
-    return 0 if !$ls->param('discussion_pop_password');
+    return 0 if ! defined($ls->param('discussion_pop_server'));
+    return 0 if ! defined(!$ls->param('discussion_pop_username'));
+    return 0 if ! defined(!$ls->param('discussion_pop_email'));
+    return 0 if ! defined(!$ls->param('discussion_pop_password'));
     return 1;
 }
 
