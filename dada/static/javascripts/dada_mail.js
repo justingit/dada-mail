@@ -17,6 +17,7 @@ $jq(document).ready(function() {
 			if (sendMailingListMessage(fid, itsatest) == true) {
 				$jq("body").off('submit', '#' + fid);
 				// $jq('#' + fid).submit();
+				return true;
 			} else {
 				//alert("It stays off!"); 
 			}
@@ -63,6 +64,7 @@ $jq(document).ready(function() {
 			if (killMonitoredSending() == true) {
 				$jq('body').off('submit', '.stop_mass_mailing');
 				// $jq(event.target).closest('form').submit();
+				return true;
 			} else {
 				// alert("It stays off!"); 
 			}
@@ -84,6 +86,7 @@ $jq(document).ready(function() {
 			if (pauseMonitoredSending() == true) {
 				$jq('body').off('submit', '#' + fid);
 				//$jq('#' + fid).submit();
+				return true;
 			} else {
 				// alert("It stays off!"); 
 			}
@@ -132,11 +135,13 @@ $jq(document).ready(function() {
 				if (warnAboutMassSubscription() == true) {
 					$jq("body").off('submit', "#confirm_add");
 					//$jq('#confirm_add').submit();
+					return true;
 				}
 			}
 			else { 
 				// Invitations.
 				$jq("body").off('submit', "#confirm_add");
+				return true;
 			}
 		});
 	}
