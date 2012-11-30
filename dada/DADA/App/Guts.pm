@@ -2598,7 +2598,9 @@ sub csv_subscriber_parse {
 
 	my $line; 
 	while(defined($line = <$NE>)){ 
-		#chomp($line); 
+
+		 # this line can break when weird, 
+		 # non-utf-8 stuff is attempted to be read. 
 		 $line =~ s{\r\n|\r}{\n}g;
 		 print $NE2 $line; 
 	}
