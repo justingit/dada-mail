@@ -73,7 +73,12 @@ sub _init {
 
 	$self->{tmp_scorecard}   = {}; 
 	$self->{tmp_remove_list} = {};
-
+		
+	my $list_lookup_table = {};
+	foreach(available_lists()) { 
+		$list_lookup_table->{$_} = 1; 
+	}
+	$self->{list_lookup_table} = $list_lookup_table; 
 }
 
 sub erase_score_card {
@@ -620,22 +625,26 @@ sub parse_bounce {
     if ( !$found_list ) {
 
 # $msg_report .= "No valid list found. Ignoring and deleting.\n\n" . $entity->as_string . "\n\n";
-        $msg_report .= "No valid list found. Ignoring and deleting.\n";
+        $msg_report .= "No valid list found. Ignoring and deleting. Ignoring and deleting.\n";
         return ( undef, 1, $msg_report, '' );
     }
+	if(! exists($self->{list_lookup_table}->{$found_list})) { 
+        $msg_report .= "list found does not exist ($found_list).\n";
+        return ( undef, 1, $msg_report, '' );		
+	}
 
     # Test:  Hey, is this a bounce from me?!
     if ( $self->bounce_from_me($entity) ) {
         $msg_report .=
-          "Bounced message was sent by myself. Ignoring and deleting\n";
-        warn "Bounced message was sent by myself. Ignoring and deleting";
+          "Bounced message was sent by myself. Ignoring and deleting.\n";
+        warn "Bounced message was sent by myself. Ignoring and deleting.";
         return ( undef, 1, $msg_report, '' );
     }
 
     # Is this from a mailing list I'm currently looking at?
     if ( $found_list ne $list ) {
         $msg_report .=
-          "Bounced message is from a different Mailing List. Skipping over.\n";
+          "Bounced message is from a different Mailing List ($found_list). Skipping over.\n";
 
         # Save it for another go.
         return ( $found_list, 0, $msg_report, '' );
