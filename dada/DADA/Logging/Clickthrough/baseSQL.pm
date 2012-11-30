@@ -17,6 +17,7 @@ use Carp qw(croak carp);
 
 use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;    # For now, my dear.
+use Try::Tiny; 
 
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_Logging_Clickthrough};
 
@@ -259,13 +260,19 @@ sub r_log {
 	else { 
 		$remote_address = $args->{-remote_addr}; 
 	}
-	
+
 	if ( $self->{ls}->param('enable_open_msg_logging') == 1 ) {
-		if($self->_recorded_open_recently($args) <= 0) { 
+		my $recorded_open_recently = 1; 
+		try {
+			$recorded_open_recently = $self->_recorded_open_recently($args);
+		} catch {
+			carp "Couldn't execute, '_recorded_open_recently', : $_";
+		};
+		if($recorded_open_recently <= 0) { 
 			$self->o_log($args); 
 		}
 	}
-	
+			
     if ( $self->{ls}->param('clickthrough_tracking') == 1 ) {
         my $place_holder_string = '';
         my $sql_snippet         = '';
@@ -319,7 +326,24 @@ sub _recorded_open_recently {
     my $query;
 
 	if ($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql'){ 
-	    if ( $args->{-timestamp} ) {
+		    if ( $args->{-timestamp} ) {
+		        $query =
+		            'SELECT COUNT(*) from '
+		          . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+		          . ' where list = ? msg_id = ? AND event = ? AND timestamp >= DATE_SUB('
+		          . $args->{timestamp}
+		          . ', INTERVAL 1 HOUR)';
+		    }
+		    else {
+		        $query =
+		            'SELECT COUNT(*) from '
+		          . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+		          . ' where list = ? AND remote_addr = ? AND msg_id = ? AND event = ? AND timestamp >= DATE_SUB(NOW(), INTERVAL 1 HOUR)';
+		    }
+	}
+	elsif ($DADA::Config::SQL_PARAMS{dbtype} eq 'Pg'){
+		
+		if ( $args->{-timestamp} ) {
 	        $query =
 	            'SELECT COUNT(*) from '
 	          . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
@@ -331,22 +355,7 @@ sub _recorded_open_recently {
 	          . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
 	          . ' where list = ? AND remote_addr = ? AND msg_id = ? AND event = ? AND timestamp >= NOW() - INTERVAL "1 HOUR"';
 	    }
-	}
-	elsif ($DADA::Config::SQL_PARAMS{dbtype} eq 'Pg'){
-	    if ( $args->{-timestamp} ) {
-	        $query =
-	            'SELECT COUNT(*) from '
-	          . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
-	          . ' where list = ? msg_id = ? AND event = ? AND timestamp >= DATE_SUB('
-	          . $args->{timestamp}
-	          . ', INTERVAL 1 HOUR)';
-	    }
-	    else {
-	        $query =
-	            'SELECT COUNT(*) from '
-	          . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
-	          . ' where list = ? AND remote_addr = ? AND msg_id = ? AND event = ? AND timestamp >= DATE_SUB(NOW(), INTERVAL 1 HOUR)';
-	    }		
+		
 	}
 	else { 
 		 # I'm not sure if I want to tackle SQLite, atm... 
