@@ -18,14 +18,14 @@ Dada Mail is written with the thinnest of veneer of a web framework, and the nex
 
 =head1 Database Schema
 
-For most people, there are B<no> changes in any of the database schemas between Dada Mail 5 and Dada Mail 6. If you are using the B<PostgreSQL> bacend, do note that the B<dada_sessions> table is slightly different. You will want to C<DROP> the current B<dada_sessions> table you have, and recreate the table: 
+For most people, there are B<no> changes in any of the database schemas between Dada Mail 5 and Dada Mail 6. If you are using the B<PostgreSQL> backend, do note that the B<dada_sessions> table is slightly different. You will want to C<DROP> the current B<dada_sessions> table you have, and recreate the table: 
 
 	CREATE TABLE dada_sessions (
 	    id CHAR(32) NOT NULL PRIMARY KEY,
 	    a_session BYTEA NOT NULL
 	);
 
-Again, this is only for B<PostgreSQL>
+Again, this is only for B<PostgreSQL>.
 
 Upgrading is fairly straightforward, with no need for any Dada Mail 5 to Dada Mail 6 SQL upgrade scripts. 
 
@@ -222,7 +222,7 @@ The Tracker plugin has been essentially rewritten, and its features have been ex
 The new charts/graphs/maps are powered by the Google Visualization API. Data, in the JSON format is created for Dada Mail using the Perl CPAN module, 
 JSON (L<http://search.cpan.org/~makamaka/JSON/>). This module will need to be installed on your hosting platform for these charts/graphs/maps to be created. 
 
-Although not part of the standard Perl Library, the module proves to be so useful, that it's usually already installed on many hosting platforms (like LWP, CGI, etc). 
+Although not part of the standard Perl Library, the module proves to be so useful, that it's usually already installed on many hosting platforms (like LWP, CGI, etc). Dada Mail will be shipped with a copy of this module, although it will be disabled (enabling just means renaming a file and a directory - covered in the Error FAQ)
 
 =head3 Expanded location-based information
 
@@ -244,6 +244,14 @@ Both the city, and country-level Geo IP databases can be found in the,
 I<dada/data>
 
 directory.
+
+=head3 An, "open" is recorded, when a, "clickthrough" is recorded when no "open" is previously recorded. 
+
+What this means, is this: 
+
+Opens are counted when a special embedded image is loaded from the email message you send out. This works well, except when images are not displayed by default by the mail reader, which is often the default for mail readers, or if you're sending out a PlainText message, which does not support embedded images. 
+
+To counteract that, Dada Mail supports simply counting a "clickthrough" also as an, "open", if it hasn't also already recorded an open for that specific user, and that specific email message. This is going to lead to a potentially higher - and more accurate open rate in Tracker. 
 
 =head2 Bounce Handler 
 
