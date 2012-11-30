@@ -22,7 +22,7 @@ O_RDONLY
 LOCK_EX
 LOCK_SH 
 LOCK_NB); 
-
+use Carp qw(croak); 
 
 use base qw(DADA::App::GenericDBFile);
 
