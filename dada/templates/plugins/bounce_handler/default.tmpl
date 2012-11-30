@@ -49,20 +49,24 @@ these message report summaries.</p>
 
 
 <fieldset> 
- <legend>Manually Run <!-- tmpl_var Plugin_Name --></legend> 
+ <legend>
+	Manually Run <!-- tmpl_var Plugin_Name -->
+</legend> 
 
-<form action="<!-- tmpl_var Plugin_URL -->">
-
+<form action="<!-- tmpl_var Plugin_URL -->" id="parse_bounces_form">
 <input type="checkbox" name="bounce_test" id="bounce_test" value="bounces" /><label for="test"><label for="bounce_test">Test With Awaiting Messages</label>
+<p>
+	<label for="parse_amount">
+		Review
+	</label> 
+		up to <!-- tmpl_var parse_amount_widget --> Messages.
+</p>
 
-<p><label for="parse_amount">Review</label> up to <!-- tmpl_var parse_amount_widget --> Messages.</p>
+<input type="hidden" name="flavor" id="flavor" value="cgi_parse_bounce" /> 
 
-<input type="hidden" name="flavor" value="cgi_parse_bounce" /> 
 <div class="buttonfloat"> 
-
-<input type="submit" class="cautionary" value="Parse Bounces..." />
+	<input type="submit" class="cautionary" id="parse_bounces_button" value="Parse Bounces..." />
 </div> 
-
 <div class="floatclear"></div> 
 
 </form>

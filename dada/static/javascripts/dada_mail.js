@@ -368,6 +368,13 @@ $jq(document).ready(function() {
 			bounce_handler_turn_page($jq(this).attr("data-page"));
 			event.preventDefault();
 		});
+		
+		$jq("body").on("submit", "#parse_bounces_form", function(event) {
+			event.preventDefault();
+		});
+		$jq("body").on("click", "#parse_bounces_button", function(event) {
+			ajax_parse_bounces_results(); 
+		}); 
 	}
 	if ($jq("#plugins_bounce_handler_parse_bounce").length) {
 		bounce_handler_parse_bounces();
@@ -1229,6 +1236,7 @@ function bounce_handler_show_scorecard() {
 	});
 }
 
+
 function bounce_handler_turn_page(page_to_turn_to) {
 	$jq("#bounce_handler_page").val(page_to_turn_to);
 	bounce_handler_show_scorecard();
@@ -1255,6 +1263,22 @@ function bounce_handler_parse_bounces() {
 
 	});
 }
+
+function ajax_parse_bounces_results() { 
+	Modalbox.show(
+	$jq("#plugin_url").val(), {
+		title: 'Parse Results...',
+		width: 640,
+		height: 480,
+		method: 'post',
+		params: {
+			flavor:    'ajax_parse_bounces_results',
+			parse_amount: $jq('#parse_amount').val(),
+			bounce_test:  $jq('#bounce_test').val()
+		},
+	});
+}
+
 
 // Plugins >> Bridge 
 
