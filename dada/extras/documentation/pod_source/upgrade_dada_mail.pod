@@ -157,9 +157,4 @@ The rest of the installer form will be hidden, as no extra configuration is need
 
 It's a B<I<very very>> good idea to look at the changelog and not B<any> incompatibilities between versions. It's possible that incompatibilities could break your installation, when you upgrade. 
 
-=head1 Screencasts
-
-The following screencast walks through how to upgrade Dada Mail. The original Dada Mail was installed using the Dada Mail installer: 
-
-=for html <p><iframe width="800" height="437" src="http://www.youtube.com/embed/beP_R-zQ9m0" frameborder="0" allowfullscreen></iframe></p>
 
