@@ -582,8 +582,7 @@ sub filter_subscribers_w_meta {
 
 	my $fields = $self->subscriber_fields(); 
 	
-	require Text::CSV; 
-	#my $csv = Text::CSV->new;
+	require   Text::CSV; 
 	my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
     
 	# What's this for, again?
@@ -812,7 +811,7 @@ sub csv_to_cds {
 		}
        
     } else {
-        carp $DADA::Config::PROGRAM_NAME . " Error: CSV parsing error: parse() failed on argument: ". $csv->error_input() . ' ' . $csv->error_diag ();;         
+        carp $DADA::Config::PROGRAM_NAME . " Error: CSV parsing error: parse() failed on argument: ". $csv->error_input() . ' ' . $csv->error_diag();         
 		$cds->{email} = $csv_line; 
     }
 	

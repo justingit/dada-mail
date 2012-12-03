@@ -4632,8 +4632,33 @@ sub add_email {
         my $new_emails = [];
         my $new_info   = [];
 
-        ( $new_emails, $new_info ) =
-          DADA::App::Guts::csv_subscriber_parse( $admin_list, $new_emails_fn );
+		try { 
+			( $new_emails, $new_info ) = DADA::App::Guts::csv_subscriber_parse( $admin_list, $new_emails_fn );
+		} catch {
+			my $error = $_; 
+			require DADA::Template::Widgets;
+	        my $scrn = DADA::Template::Widgets::wrap_screen(
+	            {
+	                -screen => 'add_email_error_screen.tmpl',
+					-with           => 'admin', 
+					-wrapper_params => { 
+						-Root_Login => $root_login,
+						-List       => $list,  
+					},
+					-expr   => 1,
+	                -vars   => {
+						error => $error 
+	                },
+					-list_settings_vars_param => {
+						-list => $list,
+						-dot_it => 1,
+					},
+	            }
+	        );
+			e_print($scrn);
+			return; 
+		};
+		
 
         my (
             $subscribed,       $not_subscribed, $black_listed,

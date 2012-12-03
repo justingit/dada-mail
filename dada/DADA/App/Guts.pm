@@ -6,48 +6,13 @@ use lib qw(
 	../../DADA/perllib
 );
 
+use DADA::Config qw(!:DEFAULT);  
 
 use Encode qw(encode decode);
 use Params::Validate ':all';
 use Try::Tiny; 
-
-# evaluate these once at compile time
-use constant HAS_URI_ESCAPE_XS => eval { require URI::Escape::XS; 1; }; # Much faster, but requires C compiler.
-use constant HAS_URI_ESCAPE    => eval { require URI::Escape; 1; };
-
-=pod
-
-=head1 NAME
-
-
-DADA::App::Guts
-
-=head1 SYNOPSIS 
-
- use DADA::App::Guts; 
-
-=head1 DESCRIPTION 
-
-This module holds commonly used subroutines for the variety of other modules
-in Dada Mail. This module is slowly fading away, in favor of having much of
-Dada Mail Object Oriented. There are some subroutines that are, in reality, 
-just wrappers around the new, Object Oriented ways of doing things. They are
-noted here.
-
-=head1 SUBROUTINES
-
-=cut
-
-
-
-
-
-
 use Carp qw(carp croak);
 
-use DADA::Config qw(!:DEFAULT);  
-
- 
 use Fcntl qw(
 O_WRONLY 
 O_TRUNC 
@@ -119,7 +84,44 @@ require Exporter;
 
 
 use strict; 
-use vars qw(@EXPORT); 
+use vars qw(@EXPORT);
+
+# evaluate these once at compile time
+use constant HAS_URI_ESCAPE_XS => eval { require URI::Escape::XS; 1; }; # Much faster, but requires C compiler.
+use constant HAS_URI_ESCAPE    => eval { require URI::Escape; 1; };
+
+=pod
+
+=head1 NAME
+
+
+DADA::App::Guts
+
+=head1 SYNOPSIS 
+
+ use DADA::App::Guts; 
+
+=head1 DESCRIPTION 
+
+This module holds commonly used subroutines for the variety of other modules
+in Dada Mail. This module is slowly fading away, in favor of having much of
+Dada Mail Object Oriented. There are some subroutines that are, in reality, 
+just wrappers around the new, Object Oriented ways of doing things. They are
+noted here.
+
+=head1 SUBROUTINES
+
+=cut
+
+
+
+
+
+
+
+
+
+ 
 
 
 
@@ -2596,13 +2598,15 @@ sub csv_subscriber_parse {
 	open my $NE2, '>:encoding('. $DADA::Config::HTML_CHARSET . ')', make_safer($DADA::Config::TMP . '/' . $filename . '.translated') 
 		or die "Can't open: " . make_safer($DADA::Config::TMP . '/' . $filename . '.translated') . ' because: '  . $!;
 
+	my $c = 0; 
 	my $line; 
 	while(defined($line = <$NE>)){ 
-
+		$c++; 
 		 # this line can break when weird, 
 		 # non-utf-8 stuff is attempted to be read. 
 		 $line =~ s{\r\n|\r}{\n}g;
-		 print $NE2 $line; 
+		 print $NE2 $line
+			or warn "cannot translate line #" . $c . 'because: ' . $!; 
 	}
 	
 	close ($NE) or die $!;
@@ -2610,7 +2614,8 @@ sub csv_subscriber_parse {
 
 	close $NE2 or die $!; 
 	undef ($NE2); 
-	# /Done line ending translation. 
+	# /Done line ending translation.
+	undef ($c);  
 
     open my $NE3, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $DADA::Config::TMP . '/' . $filename . '.translated'
         or die "Can't open: " . $DADA::Config::TMP . '/' . $filename . '.translated' . ' because: '  . $!;
