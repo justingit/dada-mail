@@ -6,9 +6,8 @@ Dada Mail
 
 =head1 INTRODUCTION
 
-Dada Mail is a completely contemporary, mature and intuitive web-based
-e-mail list management system, which runs on most any Unix-like hosting
-account that can run custom CGI scripts.
+Dada Mail is a contemporary, mature and intuitive web-based
+e-mail list management system.
 
 Dada Mail handles Closed-Loop Opt-in/Opt-out subscriptions, sending
 complex announce-only and/or discussion mailing list messages with an
@@ -16,11 +15,8 @@ advanced, fault-tolerant mass mailing monitor, supports the
 archiving/viewing/searching/resending/syndicating (rss, atom feeds) 
 of sent messages and doing all this and a whole lot more with style.
 
-Dada Mail can handle custom subscriber fields and you can use the
-information it captures for partial list sending based on a query and
-Dada Mail's email templating system allows you to create targeted and
-completely custom email messages for each and every one one of your
-subscribers.
+Dada Mail can handle custom subscriber fields and searching these fields, allowing you to send mass mailing to only part of your mailing list.  Dada Mail's email templating system allows you to create targeted and
+completely custom email messages (mail merging) for each and every one one of your subscribers.
 
 Dada Mail is bundled with additional plugins and extensions to extend
 Dada Mail's capabilities. Some of the plugins/extensions support
@@ -28,11 +24,15 @@ advanced bounce handling, clickthrough tracking, mass mail scheduling,
 blog interfaces of archived messages, AJAX subscription form trickery
 and lots of other surprises.
 
-Dada Mail produces XHTML valid web content and sticks to best practices
+Dada Mail produces HTML5 web content and sticks to best practices
 when creating email messages. Write Once: Distribute Everywhere. Dada
 Mail is free software that you're able to use, modify, share and enhance
 under the terms of the GNU General Public License. Dada Mail is written
 in Perl because we love Perl.
+
+Dada Mail's system requirements are minimal: it runs as a CGI script, requires only Perl 5.8.1, supports multiple SQL backend flavors (as well as a file/directory-based backend), bundles all of its CPAN Perl module dependencies, and comes with a web-based installer. Download/Upload the distro, run the installer script. 
+
+Dada Mail works well in shared hosting environments thanks to its mass sending throttling capabilities. Dada Mail can also work well with large mailing lists that require a third party email service, like Amazon SES. 
 
 By Justin Simoni
 
@@ -44,13 +44,13 @@ L<http://dadamailproject.com>
 
 =head1 INSTALLING 
 
-L<http://dadamailproject.com/support/documentation/install_dada_mail.pod.html>
+L<http://dadamailproject.com/d/install_dada_mail.pod.html>
 
 =head1 DOCUMENTATION
 
 See: 
 
-L<http://dadamailproject.com/support/documentation>
+L<http://dadamailproject.com/d>
 
 Version-specific documentation is located in this distribution, under: 
 
@@ -82,12 +82,6 @@ Dada Mail is developed openly at:
 	
 "master" - always stable
 
-"dev" - always unstable, new features/bugfixes should be branched off of, "dev" 
-
-We're following the model basically described, here: 
-
-L<http://nvie.com/posts/a-successful-git-branching-model/>
-	
 Mailing List: 
 
 L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
