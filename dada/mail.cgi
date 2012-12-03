@@ -285,7 +285,7 @@ if($ENV{PATH_INFO}){
 		}
 		else { 
 			# this is backwards compat. 
-			$q->param('css_file', 'default.css'); 
+			$q->param('css_file', 'dada_mail.css'); 
 		}
 
    }elsif($info =~ /^captcha_img/){
@@ -10270,10 +10270,10 @@ EOF
 sub css {
 	
 	# Backwards compat -  
-	if($q->param('css_file') eq 'default.css') { 
+	if($q->param('css_file') eq 'dada_mail.css') { 
 		require DADA::Template::Widgets; 
 		print $q->header('text/css'); 
-		print DADA::Template::Widgets::_raw_screen({-screen => $DADA::Config::SUPPORT_FILES->{dir} . '/static/css/default.css'}); 	
+		print DADA::Template::Widgets::_raw_screen({-screen => $DADA::Config::SUPPORT_FILES->{dir} . '/static/css/dada_mail.css'}); 	
 	}
 	else { 
 		print $q->header('text/css'); 		

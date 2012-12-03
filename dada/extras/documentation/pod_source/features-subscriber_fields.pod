@@ -77,7 +77,7 @@ Because of this, you will no longer be able to use complete confirmaton URLS, (U
 
 =head2 The Subscription Form Template
 
-Every single instance of the subscription form is handled by one template file, living in the dada/DADA/Template/templates directory called, C<subscription_form_widget.tmpl>. Changes to this file will affect every instance of the subscription form in the program. 
+Every single instance of the subscription form is handled by one template file, living in the dada/templates directory called, C<subscription_form_widget.tmpl>. Changes to this file will affect every instance of the subscription form in the program. 
 
 =head2 Importing Subscribers
 

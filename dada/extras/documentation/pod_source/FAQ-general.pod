@@ -551,7 +551,7 @@ B<Short Answer:>
 
 If all you want to do is tweak the CSS styles of Dada Mail, the global CSS file is located at: 
 
- dada/DADA/Template/templates/default.css
+ dada_mail_support_files/statis/css/dada_mail.css
 
 You will never see this file directly in use in Dada Mail, but you can view it in your web browser by adding I</css> to the end of the URL to Dada Mail: 
 
@@ -575,7 +575,7 @@ Dada Mail uses different templating systems depending on what needs to be done, 
 
 Most of the HTML that Dada Mail produces is stored in templates in the: 
 
- dada/DADA/Template/templates
+ dada/templates
 
 directory.
 
@@ -625,7 +625,7 @@ Some of the places this system is used are as follows:
 
 Sometimes called the User Template, the default template lives at: 
 
- dada/DADA/Template/templates/list_template.tmpl
+ dada/templates/list_template.tmpl
 
 You may edit this file directly, although you most likely do not want to, since your changes will be lost when you upgrade the program. 
 
@@ -643,11 +643,11 @@ You can also set B<$USER_TEMPLATE> to a URL - if your server supports that. Ther
 
 Dada Mail will actually look for any of the template that are located in the default template directory, 
 
- dada/DADA/Template/templates
+ dada/templates
 
-in whichever directory you set the B<$TEMPLATES> Config.pm variable to. If you did not set this variable, it defaults to whatever you set the $FILES variable to. Making changes to this copy will override the copy in the dada/DADA/Template/templates location. 
+in whichever directory you set the B<$TEMPLATES> Config.pm variable to. If you did not set this variable, it defaults to whatever you set the $FILES variable to. Making changes to this copy will override the copy in the dada/templates location. 
 
-The above information is valid for any of the templates located in the dada/DADA/Template/templates directory. 
+The above information is valid for any of the templates located in the dada/templates directory. 
 
 =back
 

@@ -2495,11 +2495,11 @@ sub show_current_dada_config {
 }
 sub screen { 
 	my $screen = $q->param('screen'); 
-	if($screen eq '/static/css/default.css'){ 
+	if($screen eq '/static/css/dada_mail.css'){ 
 		print $q->header('text/css');
 		my $t = DADA::Template::Widgets::screen(
 	        {
-	            -screen => 'installer-default.css',
+	            -screen => 'installer-dada_mail.css',
 	            -vars => {
 
 	            },

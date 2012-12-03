@@ -101,7 +101,7 @@ If you would like to customize the Default CAPTCHA, also add the C<$GD_SECURITYI
         
 	        # There's some magic here, 
 	        # If the font is located in the, 
-	        # dada/DADA/Template/templates directory, 
+	        # dada/templates directory, 
 	        # You don't have to put the absolute path, 
 	        # just the filename. 
         
