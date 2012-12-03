@@ -167,6 +167,19 @@ This does create an additional thing that needs to be configured for Dada Mail t
 
 The Tracker plugin and all of its functionality now requires the use of one of the SQL backends. 
 
+=head1 List Control Panel 
+
+=head2 Admin Menu
+
+=head3 View Subscribers: Shows # of Subscribers
+
+The, "View Subscribers" Admin Menu now shows the number of subscribers you have on the current mailing list you're logged into. This is automatically updated every 5 minutes
+
+=head3 Monitor Your Mailings - Auto Updated
+
+The, "Monitor Your Mailings" Admin Menu shows how many mass mailings are going out on the current mailing lsit you're logged into, as well as the total number of mass mailings that are going out. This is now automatically updated 
+every 5 minutes. 
+
 =head1 List Control Panel Screens
 
 =head2 Mass Mailing >> Send a Message

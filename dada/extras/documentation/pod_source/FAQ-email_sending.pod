@@ -16,7 +16,7 @@ http://dadamailproject.com/support/documentation/FAQ-mailing_list_sending.pod.ht
 
 http://dadamailproject.com/support/documentation/FAQ-general.pod.html.html
 
-=item * ERROR FAQ
+=item * Error FAQ
 
 http://dadamailproject.com/support/documentation/FAQ-general.pod.html.html
 
