@@ -1,5 +1,12 @@
 $jq(document).ready(function() {
 
+
+	// Admin Menu 
+	if($jq("#navcontainer").length){ 
+		admin_menu_sending_monitor_notification();
+		admin_menu_subscriber_count_notification(); 
+	}
+	
 	//Mail Sending >> Send a Message 
 	if ($jq("#send_email_screen").length || $jq("#send_url_email").length || $jq("#list_invite").length) {
 		$jq("body").on("submit", "#mass_mailing", function(event) {
@@ -49,7 +56,8 @@ $jq(document).ready(function() {
 
 
 	}
-
+	
+	
 	// Mail Sending >> Mailing Monitor Index
 	if ($jq("#sending_monitor_index").length) {
 		refreshpage(60, $jq("#s_program_url").val() + "?f=sending_monitor");
@@ -523,6 +531,42 @@ $jq(document).ready(function() {
 });
 
 
+// Admin Menu 
+function admin_menu_sending_monitor_notification() { 
+	admin_menu_notification('admin_menu_mailing_monitor_notification', 'admin_menu_sending_monitor');
+}
+
+function admin_menu_subscriber_count_notification() { 	
+	admin_menu_notification('admin_menu_subscriber_count_notification', 'admin_menu_view_list');
+}
+
+function admin_menu_notification(flavor, target_class) { 
+	var r =  60 * 5 * 1000; // Every 5 minutes. 
+	var refresh_loop = function(no_loop) {
+		var request = $jq.ajax({	
+			url: $jq('#navcontainer').attr("data-s_program_url"),
+			type: "POST",
+			cache: false,
+			data: {
+				f: flavor,
+			},
+			dataType: "html"
+		});
+		request.done(function(content) {
+			if($jq('.' + target_class + '_notification').length) { 
+				$jq('.' + target_class + '_notification').remove();	
+			}
+			//console.log('update! ' + target_class); 
+			$jq('.' + target_class).append('<span class="' + target_class + '_notification"> ' + content + '</span>');
+		});
+			if (no_loop != 1) {
+				setTimeout(
+				refresh_loop, r);
+			}
+		}
+	setTimeout(refresh_loop, r);
+	refresh_loop(1);
+}
 
 // Mass Mailings >> Monitor Your Mailings 
 

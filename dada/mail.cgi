@@ -498,7 +498,8 @@ sub run {
 	'remove_all_subscribers'     =>    \&remove_all_subscribers,
 	'view_list_options'          =>    \&list_cp_options,
 	'membership'                 =>    \&membership,
-	'admin_change_profile_password' => \&admin_change_profile_password, 
+	'admin_change_profile_password' 
+	                             => \&admin_change_profile_password, 
 	'update_email_results'       =>    \&update_email_results, 
 	'admin_update_email'         =>    \&admin_update_email, 
 	'mailing_list_history'       =>    \&mailing_list_history, 
@@ -508,10 +509,14 @@ sub run {
 	'add_email'                  =>    \&add_email,
 	'delete_email'               =>    \&delete_email,
 	'subscription_options'       =>    \&subscription_options,
+	'admin_menu_subscriber_count_notification' 
+	                             => \&admin_menu_subscriber_count_notification, 
+	'admin_menu_mailing_monitor_notification'  
+	                             => \&admin_menu_mailing_monitor_notification, 
 	'send_email'                 =>    \&send_email,
 	'message_body_help'          =>    \&message_body_help, 
 	'url_message_body_help'      =>    \&url_message_body_help, 
-	'preview_message_receivers'    =>    \&preview_message_receivers,
+	'preview_message_receivers'  =>    \&preview_message_receivers,
 	'sending_monitor'            =>    \&sending_monitor,
 	'print_mass_mailing_log'     =>    \&print_mass_mailing_log,
 	'preview_form'               =>    \&preview_form,
@@ -904,6 +909,68 @@ sub sign_in {
     }
 
 }
+
+sub admin_menu_subscriber_count_notification { 
+	
+	print $q->header(); 
+	
+	try { 		
+		
+		my ($admin_list, $root_login, $checksout) = check_list_security(
+											-cgi_obj         => $q,
+											-manual_override => 1
+										);
+		if($checksout) { 					
+			$list = $admin_list; 
+			require DADA::MailingList::Subscribers; 
+			my $lh = DADA::MailingList::Subscribers->new({-list => $list});
+			my $num = $lh->num_subscribers(); 
+			if($num > 0) { 
+				e_print('(' . commify($num) . ')');  
+			}
+		}
+	} catch { 
+		carp ($_); 
+	}
+}
+
+sub admin_menu_mailing_monitor_notification { 
+	
+	print $q->header(); 
+	
+    try {
+	
+		my ($admin_list, $root_login, $checksout) = check_list_security(
+											-cgi_obj         => $q,
+											-manual_override => 1
+										);
+		if($checksout) {
+			
+			$list = $admin_list; 
+	        require DADA::Mail::MailOut;
+	        my @mailouts =
+	          DADA::Mail::MailOut::current_mailouts( { -list => $list } );
+	         my $list_mailouts = $#mailouts + 1;
+	
+	        my (
+	            $monitor_mailout_report, $total_mailouts,
+	            $active_mailouts,        $paused_mailouts,
+	            $queued_mailouts,        $inactive_mailouts
+	          )
+	          = DADA::Mail::MailOut::monitor_mailout(
+	            {
+	                -verbose => 0,
+	                -list    => $list,
+	                -action  => 0,
+	            }
+	          );
+			 e_print($list_mailouts . '/' . $total_mailouts);  	
+		}
+    } catch { 
+		warn "Problems filling out the 'Sending Monitor' admin menu item with interesting bits of information about the mailouts: $_";
+    }	
+}
+
 
 
 sub send_email {
@@ -4862,6 +4929,8 @@ sub add_email {
         }
     }
 }
+
+
 
 
 

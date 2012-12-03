@@ -754,7 +754,7 @@ li.archive_badges_li {
 	text-decoration: none;
 }
 
-#navcontainer span {
+#navcontainer span.title {
 	display: block;
 	/* h, w */
 	padding: 2px 5px;
@@ -782,7 +782,7 @@ li.archive_badges_li {
 	text-decoration: none;
 	font-size: .9em;
 }
-#navcontainer ul ul span {
+#navcontainer ul ul span.title {
 	color: #fff;
 }
 

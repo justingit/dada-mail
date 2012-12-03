@@ -10,7 +10,9 @@ Key:
 [*] Naw...
 [?] Someday
 
-
+[ ] File import for subscribers: 
+	Perhaps have an area to put the ecoding of the file you're trying to import? 
+	
 [ ] Simple Subscriber Stats in the L hand admin menu - 1 - 999; 1k - 999k; 1M+..
 [ ] Tracker 
 	FASTER Queries to the DB, what's the problem ?

@@ -156,36 +156,6 @@ sub make_admin_menu {
     my $li          = shift;
 
    #---------------------------------------------------------------------------#
-
-    my $nav_list_mailouts  = '?';
-    my $nav_total_mailouts = '?';
-
-    eval {
-        require DADA::Mail::MailOut;
-
-        my @mailouts =
-          DADA::Mail::MailOut::current_mailouts( { -list => $li->{list} } );
-        $nav_list_mailouts = $#mailouts + 1;
-
-        my (
-            $monitor_mailout_report, $total_mailouts,
-            $active_mailouts,        $paused_mailouts,
-            $queued_mailouts,        $inactive_mailouts
-          )
-          = DADA::Mail::MailOut::monitor_mailout(
-            {
-                -verbose => 0,
-                -list    => $li->{list},
-                -action  => 0,
-            }
-          );
-        $nav_total_mailouts = $total_mailouts;
-    };
-    if ($@) {
-        warn
-"Problems filling out the 'Sending Monitor' admin menu item with interesting bits of information about the mailouts: $@";
-    }
-
     require DADA::Template::Widgets;
 
    #---------------------------------------------------------------------------#
@@ -221,28 +191,16 @@ sub make_admin_menu {
                 $subnav->{-Activated} = $SUBNAVS->{ $subnav->{-Title} };
             }
 
-            $subnav->{-Activated} = 1
-              if ( $permissions eq 'superuser' );
-            if ( $subnav->{-Title} =~ m/Monitor Your/ ) {
+			if ( $permissions eq 'superuser' ) { 
+            	$subnav->{-Activated} = 1;
+			}
+            
+            if ( $subnav->{-Title} =~ m/Invite/ ) {
                 $subnav->{-Title} = DADA::Template::Widgets::screen(
                     {
                         -data => \$subnav->{-Title},
                         -vars => {
-
-                            list_mailouts  => $nav_list_mailouts,
-                            total_mailouts => $nav_total_mailouts,
-
-                        },
-                    }
-                );
-            }
-            elsif ( $subnav->{-Title} =~ m/Invite/ ) {
-                $subnav->{-Title} = DADA::Template::Widgets::screen(
-                    {
-                        -data => \$subnav->{-Title},
-                        -vars => {
-                            'list_settings.enable_mass_subscribe' =>
-                              $li->{enable_mass_subscribe},
+                            'list_settings.enable_mass_subscribe' => $li->{enable_mass_subscribe},
                         },
                     }
                 );
@@ -254,6 +212,7 @@ sub make_admin_menu {
                     Activated => $subnav->{-Activated},
                     Title_URL => $subnav->{-Title_URL},
                     Title     => $subnav->{-Title},
+					Function  => $subnav->{-Function},
                     (
                         (
                             exists( $li->{disabled_screen_view} )

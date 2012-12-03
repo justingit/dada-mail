@@ -769,7 +769,7 @@ sub check_admin_cgi_security {
     # last but not least, we see if they're allowed in this particular function.
     # we are sneaky shits, aren't we?!
 
-        if ( $root_logged_in != 1 ) {
+        if ( $root_logged_in != 1 && $args{-Function} ne undef) {
             require DADA::Template::Widgets::Admin_Menu;
             my $function_permissions =
               DADA::Template::Widgets::Admin_Menu::check_function_permissions(
