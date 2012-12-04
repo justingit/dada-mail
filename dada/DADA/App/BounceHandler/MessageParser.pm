@@ -193,19 +193,18 @@ sub run_all_parses {
 
 	    # This is a special case - since this outside module adds pseudo diagonistic
 	    # reports, we'll say, add them if they're NOT already there:
+#
+#		    my ( $bp_list, $bp_email, $bp_diagnostics ) =
+#		      $self->parse_using_m_ds_bp($entity);
+#
+#		    # There's no test for these in the module itself, so we
+#		    # won't even look for them.
+#		    #$list  ||= $bp_list;
+#		    #$email ||= $bp_email;
+#
+#		    %{$diagnostics} = ( %{$diagnostics}, %{$bp_diagnostics} )
+#		      if $bp_diagnostics;
 
-=cut
-		    my ( $bp_list, $bp_email, $bp_diagnostics ) =
-		      $self->parse_using_m_ds_bp($entity);
-
-		    # There's no test for these in the module itself, so we
-		    # won't even look for them.
-		    #$list  ||= $bp_list;
-		    #$email ||= $bp_email;
-
-		    %{$diagnostics} = ( %{$diagnostics}, %{$bp_diagnostics} )
-		      if $bp_diagnostics;
-=cut
 
 	}
     chomp($email) if $email;
