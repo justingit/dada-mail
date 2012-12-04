@@ -601,8 +601,30 @@ qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User un
                     #unsubscribe_bounced_email => 'from_list',
                     add_to_score => 'hardbounce_score',
                 }
-              } },
+              } 
+		},
 
+
+        {
+
+            qmail_tmp_error => {
+              Examine => {
+                    Message_Fields => {
+	                    Status      => [qw(4.3.0)],
+	                    Guessed_MTA => [qw(Qmail)],
+	                },
+                    Data => {
+                        Email => 'is_valid',
+                        List  => 'is_valid',
+                    }
+                },
+                Action => {
+                    add_to_score => 'softbounce_score',
+                }
+              }
+		},
+		
+		
         {
             exim_user_unknown => {
                 Examine => {
