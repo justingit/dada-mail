@@ -222,6 +222,26 @@ sub rules {
 
 }
 
+sub rule { 
+	
+	# Awful code. 
+	my $self  = shift; 
+	my $rt   = shift; 
+	my $Rules = $self->rules; 
+	
+    
+	my $ir; 
+  	RULES: for ( $ir = 0 ; $ir <= $#$Rules ; $ir++ ) {
+		my $rule  = $Rules->[$ir];
+	    my $title = ( keys %$rule )[0];
+		if($title eq $rt){
+			return $Rules->[$ir];
+		}
+	}
+	
+	return {};
+}
+
 sub DESTROY { }
 
 1;

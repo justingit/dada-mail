@@ -1,0 +1,29 @@
+<!-- begin manually_enter_bounces_results --> 
+
+<h1>Message Diagnostics</h1> 
+<table>
+<!-- tmpl_loop diagnostics -->
+	<tr>
+		<td>
+			<strong>
+			<!-- tmpl_var diagnostic_label ESCAPE="HTML" -->: 
+			</strong>
+		</td>
+		<td>
+		<!-- tmpl_var diagnostic_value  -->
+		</td>
+	</tr>
+<!-- /tmpl_loop -->
+</table> 
+
+<h1>Raw Results:</h1> 
+<pre>
+<!-- tmpl_var msg_report escape="HTML"  --> 
+</pre> 
+
+<h1>Rule Matched: <!-- tmpl_var rule_title --></h1> 
+<pre>
+	<!-- tmpl_var rule --> 
+</pre> 
+<!-- end manually_enter_bounces_results escape="HTML" --> 
+ 

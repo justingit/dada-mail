@@ -79,7 +79,7 @@ sub run_all_parses {
 	  my ( $rfc6522_list, $rfc6522_email, $rfc6522_diagnostics ) =
           $self->parse_for_rfc6522($entity);
         $list  ||= $rfc6522_list;
-        $email ||= $rfc6522_email;
+        $email ||= $rfc6522_email;		
         %{$diagnostics} = ( %{$diagnostics}, %{$rfc6522_diagnostics} )
           if $rfc6522_diagnostics;		
 	} 
@@ -91,7 +91,7 @@ sub run_all_parses {
 	        %{$diagnostics} = ( %{$diagnostics}, %{$ss_diagnostics} )
 	          if $ss_diagnostics;
 	}
-	else { 
+	else { 		
 		# Else, let's try other things: 
 	    my ( $gp_list, $gp_email, $gp_diagnostics ) = $self->generic_parse($entity);
 		if(!$list) { 
@@ -102,112 +102,112 @@ sub run_all_parses {
 	    }
 	    %{$diagnostics} = ( %{$diagnostics}, %{$gp_diagnostics} )
 			if $gp_diagnostics;
+
+		# This should really do the same thing, first look for tell-tale signs
+		# that the bounce is a qmail-like bounce, before parsing it out. 
+		# (and along down the line...)
+
+	    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
+	        my ( $qmail_list, $qmail_email, $qmail_diagnostics ) =
+	          $self->parse_for_qmail($entity);
+	        $list  ||= $qmail_list;
+	        $email ||= $qmail_email;
+	        %{$diagnostics} = (%{$qmail_diagnostics}, %{$diagnostics})
+	          if $qmail_diagnostics;
+	    }
+
+	    if ( ( !$list ) || ( !$email ) || !keys %$diagnostics ) {
+
+			my ( $exim_list, $exim_email, $exim_diagnostics ) =
+	          $self->parse_for_exim($entity);
+
+				$list  ||= $exim_list;
+	        	$email ||= $exim_email;				
+			if(!keys %$diagnostics) { 
+				$diagnostics = $exim_diagnostics; 
+			}
+			elsif(keys %$exim_diagnostics) { 
+				%{$diagnostics} = (%{$exim_diagnostics}, %{$diagnostics} );
+			}
+			
+	    }
+
+	    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
+
+	        my ( $ms_list, $ms_email, $ms_diagnostics ) =
+	          $self->parse_for_f__king_exchange($entity);
+	        $list  ||= $ms_list;
+	        $email ||= $ms_email;
+	        %{$diagnostics} = (%{$ms_diagnostics},  %{$diagnostics} )
+	          if $ms_diagnostics;
+	    }
+	    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
+
+	        my ( $nv_list, $nv_email, $nv_diagnostics ) =
+	          $self->parse_for_novell($entity);
+	        $list  ||= $nv_list;
+	        $email ||= $nv_email;
+	        %{$diagnostics} = (  %{$nv_diagnostics}, %{$diagnostics} )
+	          if $nv_diagnostics;
+	    }
+
+	    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
+
+	        my ( $g_list, $g_email, $g_diagnostics ) =
+	          $self->parse_for_gordano($entity);
+	        $list  ||= $g_list;
+	        $email ||= $g_email;
+	        %{$diagnostics} = (%{$g_diagnostics}, %{$diagnostics})
+	          if $g_diagnostics;
+	    }
+
+	    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
+
+	        my ( $y_list, $y_email, $y_diagnostics ) =
+	          $self->parse_for_overquota_yahoo($entity);
+	        $list  ||= $y_list;
+	        $email ||= $y_email;
+	        %{$diagnostics} = (%{$y_diagnostics} ,%{$diagnostics} )
+	          if $y_diagnostics;
+	    }
+
+	    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
+
+	        my ( $el_list, $el_email, $el_diagnostics ) =
+	          $self->parse_for_earthlink($entity);
+	        $list  ||= $el_list;
+	        $email ||= $el_email;
+	        %{$diagnostics} = (%{$el_diagnostics}, %{$diagnostics} )
+	          if $el_diagnostics;
+	    }
+
+	    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
+	        my ( $wl_list, $wl_email, $wl_diagnostics ) =
+	          $self->parse_for_windows_live($entity);
+
+	        $list  ||= $wl_list;
+	        $email ||= $wl_email;
+	        %{$diagnostics} = (%{$wl_diagnostics}, %{$diagnostics} )
+	          if $wl_diagnostics;
+	    }
+
+	    # This is a special case - since this outside module adds pseudo diagonistic
+	    # reports, we'll say, add them if they're NOT already there:
+
+=cut
+		    my ( $bp_list, $bp_email, $bp_diagnostics ) =
+		      $self->parse_using_m_ds_bp($entity);
+
+		    # There's no test for these in the module itself, so we
+		    # won't even look for them.
+		    #$list  ||= $bp_list;
+		    #$email ||= $bp_email;
+
+		    %{$diagnostics} = ( %{$diagnostics}, %{$bp_diagnostics} )
+		      if $bp_diagnostics;
+=cut
+
 	}
-
-	# This should really do the same thing, first look for tell-tale signs
-	# that the bounce is a qmail-like bounce, before parsing it out. 
-	# (and along down the line...)
-	
-    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
-        my ( $qmail_list, $qmail_email, $qmail_diagnostics ) =
-          $self->parse_for_qmail($entity);
-        $list  ||= $qmail_list;
-        $email ||= $qmail_email;
-        %{$diagnostics} = (%{$qmail_diagnostics}, %{$diagnostics})
-          if $qmail_diagnostics;
-    }
-
-    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
-
-		my ( $exim_list, $exim_email, $exim_diagnostics ) =
-          $self->parse_for_exim($entity);
-
-		if(!$list){
-			$list = $exim_list;
-		}
-		if(!$email) { 
-        	$email = $exim_email;
-        }
-		%{$diagnostics} = (%{$exim_diagnostics}, %{$diagnostics} )
-          if $exim_diagnostics;
-    }
-
-    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
-
-        my ( $ms_list, $ms_email, $ms_diagnostics ) =
-          $self->parse_for_f__king_exchange($entity);
-        $list  ||= $ms_list;
-        $email ||= $ms_email;
-        %{$diagnostics} = (%{$ms_diagnostics},  %{$diagnostics} )
-          if $ms_diagnostics;
-    }
-    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
-
-        my ( $nv_list, $nv_email, $nv_diagnostics ) =
-          $self->parse_for_novell($entity);
-        $list  ||= $nv_list;
-        $email ||= $nv_email;
-        %{$diagnostics} = (  %{$nv_diagnostics}, %{$diagnostics} )
-          if $nv_diagnostics;
-    }
-
-    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
-
-        my ( $g_list, $g_email, $g_diagnostics ) =
-          $self->parse_for_gordano($entity);
-        $list  ||= $g_list;
-        $email ||= $g_email;
-        %{$diagnostics} = (%{$g_diagnostics}, %{$diagnostics})
-          if $g_diagnostics;
-    }
-
-    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
-
-        my ( $y_list, $y_email, $y_diagnostics ) =
-          $self->parse_for_overquota_yahoo($entity);
-        $list  ||= $y_list;
-        $email ||= $y_email;
-        %{$diagnostics} = (%{$y_diagnostics} ,%{$diagnostics} )
-          if $y_diagnostics;
-    }
-
-    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
-
-        my ( $el_list, $el_email, $el_diagnostics ) =
-          $self->parse_for_earthlink($entity);
-        $list  ||= $el_list;
-        $email ||= $el_email;
-        %{$diagnostics} = (%{$el_diagnostics}, %{$diagnostics} )
-          if $el_diagnostics;
-    }
-
-    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
-        my ( $wl_list, $wl_email, $wl_diagnostics ) =
-          $self->parse_for_windows_live($entity);
-
-        $list  ||= $wl_list;
-        $email ||= $wl_email;
-        %{$diagnostics} = (%{$wl_diagnostics}, %{$diagnostics} )
-          if $wl_diagnostics;
-    }
-
-    # This is a special case - since this outside module adds pseudo diagonistic
-    # reports, we'll say, add them if they're NOT already there:
-
-
-    my ( $bp_list, $bp_email, $bp_diagnostics ) =
-      $self->parse_using_m_ds_bp($entity);
-
-    # There's no test for these in the module itself, so we
-    # won't even look for them.
-    #$list  ||= $bp_list;
-    #$email ||= $bp_email;
-
-    %{$diagnostics} = ( %{$diagnostics}, %{$bp_diagnostics} )
-      if $bp_diagnostics;
-
-
-
     chomp($email) if $email;
 
     #small hack, turns, %2 into, '-'
@@ -703,7 +703,11 @@ sub parse_for_rfc6522 {
 			$diag->{'Message-Id'} = $self->find_message_id_in_headers($orig_msg_entity);
 		}
 	}
-	$diag->{'Notification'} = $notification; 
+	$diag->{'Notification'} = $notification
+		if defined $notification;
+	
+	$diag->{parsed_by} .= 'parse_for_rfc6522'; 
+    
 	return ( $list, $email, $diag );
 	
 }
@@ -743,8 +747,9 @@ sub parse_for_secureserver_dot_net {
 		# Customer Support at 480-624-2500.
 		
 		# tell me why I'm not using the range operator? 
-		my $begin  = quotemeta('Customer Support at 480-624-2500.');
- 		my $begin2 = quotemeta("This is a permanent error; I've given up. Sorry it didn't work out.");
+		my $begin   = quotemeta('Your mail message to the following address(es) could not be delivered'); 
+		my $begin1  = quotemeta('Customer Support at 480-624-2500.');
+ 		my $begin2  = quotemeta("This is a permanent error; I've given up. Sorry it didn't work out.");
 
 		my $end = quotemeta('--- Below this line is a copy of the message.');
 		my $stuff = ''; 
@@ -754,26 +759,35 @@ sub parse_for_secureserver_dot_net {
         if ( $IO = $body->open("r") ) {    # "r" for reading.
             while ( defined( $_ = $IO->getline ) ) {
    				my $data = $_;
-                if($data =~ /$begin|$begin2/) { 
+                if($data =~ /$begin|$begin1|$begin2/) { 
 					$state = 1;
-                	next;
+                	#next;
+					# print "state == 1\n"; 
 				}
 				if($data =~ /$end/){ 
 					$state = 0;
 					last; 
 				}
 				if ( $state == 1 ) {
+					# print "adding stuff!\n";
                 	$stuff .= $data; 
 				}
 
 			}
 		}
-		
+		# print "all the stuff:\n$stuff\n"; 
+		$diag->{'Notification'} = $stuff
+		 if defined $stuff;
 		$stuff =~ m/\<(.*?)\>\:(.*)/ms; 
 	 	$email =  $1;
 		$email = strip($email); 
 		$diag->{'Diagnostic-Code'} = $2; 
 		$diag->{'Diagnostic-Code'} = strip($diag->{'Diagnostic-Code'}); 
+
+		undef $IO; 
+		undef $stuff; 
+		undef $state;
+		
 		#$list = $self->generic_body_parse_for_list($entity); 
 		
 		# Right now, I only have rules for, mailbox full kin of stuff so if it's not one of those , 
@@ -784,6 +798,52 @@ sub parse_for_secureserver_dot_net {
 		if($diag->{'Diagnostic-Code'} =~ m/mailfolder is full|Mail quota exceeded/){ 
 			$diag->{Guessed_MTA} = 'secureserver_dot_net'; 
 		}
+		
+		# This is strange, as the "orginal" message is embedded within the error report - after, 
+		# --- Below this line is a copy of the message.
+		# Which is stupid: 
+		
+		my $stuff = ''; 
+		my $state = 0;
+		
+		my $IO;
+        if ( $IO = $body->open("r") ) {    # "r" for reading.
+            while ( defined( $_ = $IO->getline ) ) {
+   				my $data = $_;
+                if($data =~ /$end/) { # End is just a new beginning... 
+					$state = 1;
+                	next;
+				}
+				if ( $state == 1 ) {
+                	$stuff .= $data; 
+				}
+				# And this just goes to the end of the message. 
+
+			}
+		}
+		undef $IO; 
+		# And then, just do a generic parse on the original message: 
+		require MIME::Parser;
+	    my $parser = new MIME::Parser;
+	    $parser = optimize_mime_parser($parser);
+	    
+	   	my $copy_entity;
+		$stuff =~ s/^(\n|\r)//ms; 
+       eval { $copy_entity = $parser->parse_data($stuff) };
+		if($@){ 
+			carp "problems with parsing entity: $@";
+		}
+
+	
+#		my ( $gp_list, $gp_email, $gp_diagnostics ) = $self->generic_parse($copy_entity);
+
+		my $gp_list   = $self->list_in_list_headers($copy_entity);
+
+
+	    $list  ||= $gp_list;
+#		$email ||= $gp_email; 
+#		%{$diag} = ( %{$diag}, %{$gp_diagnostics} )
+#			if $gp_diagnostics;
 	} 
 	return ( $list, $email, $diag );
 	
@@ -815,12 +875,14 @@ sub parse_for_qmail {
     my $end_pattern4 = 'Your original message headers are included below.';
 
     my ( $addr, $reason );
-
+	
+	
     if ( !@parts ) {
         my $body = $entity->bodyhandle;
         my $IO;
         if ($body) {
             if ( $IO = $body->open("r") ) {    # "r" for reading.
+				my $notification = undef; 
                 while ( defined( $_ = $IO->getline ) ) {
 
                     my $data = $_;
@@ -829,6 +891,7 @@ sub parse_for_qmail {
                       if $data =~ /$end_pattern|$end_pattern2|$end_pattern3/;
 
                     if ( $state == 1 ) {
+						$notification .= $_; 
                         $data =~ s/\n/ /g;
 
                         if ( $data =~ /\t(\S+\@\S+)/ ) {
@@ -928,6 +991,9 @@ sub parse_for_qmail {
                         }
                     }
                 }
+				
+				$diag->{Notification} = $notification
+					if defined $notification;
             }
 
 # Not Good:
@@ -961,67 +1027,77 @@ sub parse_for_exim {
 
     my $self   = shift;
     my $entity = shift;
-    my ( $email, $list );
+    my $email;
+ 	my $list;
     my $diag = {};
 
-    my $pattern =
-      'This message was created automatically by mail delivery software';
-    my $end_pattern  = '------ This is a copy of the message';
-    my $end_pattern2 = '--- The header of the original message is following.';
+    my $pattern      = quotemeta('This message was created automatically by mail delivery software');
+    my $end_pattern  = quotemeta('------ This is a copy of the message');
+    my $end_pattern2 = quotemeta('--- The header of the original message is following.');
 
     my @parts = $entity->parts;
     if ( !@parts ) {
         if ( $entity->head->mime_type =~ /text/ ) {
-
+			my $data = ''; 
             my $body = $entity->bodyhandle;
             my $IO;
+			
+
             if ($body) {
                 if ( $IO = $body->open("r") ) {    # "r" for reading.
-
                     my $state = 0;
-
                     while ( defined( $_ = $IO->getline ) ) {
-
-                        my $data = $_;
-
-                        $state = 1 if $data =~ /\Q$pattern/;
-                        $state = 0 if $data =~ /$end_pattern|$end_pattern2/;
-
+						if($_ =~ m/$pattern/) { 
+							$state = 1;
+						}
+						if($_ =~ m/$end_pattern|$end_pattern2/) { 
+							$state = 0;
+	                    };
                         if ( $state == 1 ) {
-                            $diag->{Guessed_MTA} = 'Exim';
-                            $diag->{'Diagnostic-Code'} .= $data;
-
-                            if ( $data =~ m/unknown local-part/ ) {
-
+							$data .= $_;
+                            if ( $_ =~ m/unknown local-part/ ) {
                                 $diag->{'Status'} = '5.x.y';
-
                             }
 							# This should probably be moved to the Rules...
 							# And these are fairly genreal-purpose...
-							elsif ($data =~ m/This user doesn\'t have a (.*?) account|unknown user|This account has been disabled or discontinued|or discontinued \[\#102\]|User(.*?)does not exist|Invalid mailbox|mailbox unavailable|550\-5\.1\.1|550 5\.1\.1|Recipient does not exist here/) { 
+							elsif ($_ =~ m/This user doesn\'t have a (.*?) account|unknown user|This account has been disabled or discontinued|or discontinued \[\#102\]|User(.*?)does not exist|Invalid mailbox|mailbox unavailable|550\-5\.1\.1|550 5\.1\.1|Recipient does not exist here/) { 
                                 $diag->{'Status'} = '5.x.y';								
 							}
                             else {
                             }
-
-                            if ( $data =~ /(\S+\@\S+)/ ) {
+							
+							
+							if($_ =~ m/RCPT TO\:\<(\S+\@\S+)\>\:/){ 
+								$email = $1; 	
+							}	
+                            elsif ( $_ =~ /(\S+\@\S+)/ ) {
                                 $email = $1;
                                 $email = strip($email);
-                                $email =~ s/^\<|\>$//g if $email;
+								if($email =~ m/\.$/){ 
+									# This can be ridiculous, but you get messages like this: 
+									#    The mail server could not deliver mail to user@example.com.
+									$email =~ s/\.$//; 
+								}
+								elsif($email) { 
+	                                $email =~ s/^\<|\>$//g;
+								}
                             }
-
                         }
                     }
                 }
 				$IO->close;
+				$diag->{'Notification'} = $data
+					if defined $data;
             }
             if ( $diag->{'Diagnostic-Code'} =~ m/yahoo.com/ )
             {    # actually, I guess if the email address is from yahoo...
                 $diag->{'Remote-MTA'} = 'yahoo.com';
             }
 
-            if ( $diag->{Guessed_MTA} eq 'Exim' ) {
-
+             #if ( $diag->{Guessed_MTA} eq 'Exim' ) {
+			 if ( $entity->head->count( 'X-Failed-Recipients', 0 ) ) {
+				$diag->{Guessed_MTA} = 'Exim';
+                
                 # well, looks like we got something...
                 if ( $entity->head->get( 'X-Failed-Recipients', 0 ) ) {
                     $email = $entity->head->get( 'X-Failed-Recipients', 0 );
@@ -1280,8 +1356,10 @@ sub parse_for_overquota_yahoo {
                     while ( defined( $_ = $IO->getline ) ) {
                         my $data = $_;
                         $state = 1 if $data =~ /$pattern/;
-                        $diag->{'Remote-MTA'} = 'yahoo.com';
 
+                        if ( $state == 1 ) {
+                        	$diag->{'Remote-MTA'} = 'yahoo.com';
+						}
                         if ( $state == 1 ) {
                             $data =~ s/\n/ /g;     #what's up with that?
                             if ( $data =~ /\<(\S+\@\S+)\>\:/ ) {

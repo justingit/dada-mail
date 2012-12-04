@@ -390,7 +390,12 @@ $jq(document).ready(function() {
 			bounce_handler_parse_bounces();
 		});
 	}
-
+	if ($jq("#manually_enter_bounces").length) {
+		$jq("#manually_enter_bounces_button").on("click", function(event) {
+			bounce_handler_manually_enter_bounces();
+		});
+	}
+	
 	// Plugins >> Bridge
 	if ($jq("#plugins_bridge_default").length) {
 
@@ -1321,6 +1326,29 @@ function ajax_parse_bounces_results() {
 			bounce_test:  $jq('#bounce_test').val()
 		},
 	});
+}
+
+function bounce_handler_manually_enter_bounces() { 
+	var target_id = 'manually_enter_bounces_results'; 
+	$jq("#" + target_id + "_loading").html('<p class="alert">Loading</p>');
+	$jq("#" + target_id).html('');
+	var request = $jq.ajax({
+		url: $jq("#plugin_url").val(),
+		type: "POST",
+		cache: false,
+		data: {
+			flavor: 'manually_enter_bounces',
+			process: $jq('#process').val(), 
+			msg:     $jq('#msg').val(),
+		},
+		dataType: "html"
+	});
+	request.done(function(content) {
+		$jq("#" + target_id).html(content);
+		$jq("#" + target_id + "_loading").html('<p class="alert">&nbsp;</p>');
+
+	});
+	
 }
 
 

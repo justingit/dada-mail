@@ -1,5 +1,9 @@
 $Rules = [
 	
+	
+
+
+
     {
         amazon_ses_dsn_no_such_user => {
             Examine => {
@@ -108,7 +112,7 @@ $Rules = [
                 Examine => {
                     Message_Fields => {
                         Action => [qw(failed Failed)],
-                        Status => [qw(5.2.2 4.2.2 5.0.0 5.1.1)],
+                        Status => ['5.2.2', '4.2.2', '5.0.0', '5.1.1', '5.2.2 (mailbox full)'],
                         'Final-Recipient_regex' => [ (qr/822/) ],
                         'Diagnostic-Code_regex' => [
                             (
@@ -200,7 +204,7 @@ qr/552|exceeded storage allocation|over quota|storage full|mailbox full|disk quo
                         Status                  => [qw(5.2.2 5.x.y)],
                         'Diagnostic-Code_regex' => [
                             (
-qr/mailbox is full|Exceeded storage allocation|recipient storage full|mailbox full|storage full/
+qr/mailbox is full|Exceeded storage allocation|recipient storage full|mailbox full|storage full|Not enough storage space/
                             )
                         ],
 
@@ -217,6 +221,29 @@ qr/mailbox is full|Exceeded storage allocation|recipient storage full|mailbox fu
                 }
             }
         },
+		        {
+		            qmail_over_quota2 => {
+		                Examine => {
+		                    Message_Fields => {
+
+		                        Guessed_MTA             => [qw(Qmail)],
+		                        'Notification_regex' => [
+		                            (qr/mailbox is full|Exceeded storage allocation|recipient storage full|mailbox full|storage full|Not enough storage space/)
+		                        ],
+
+		                    },
+
+		                    Data => {
+		                        Email => 'is_valid',
+		                        List  => 'is_valid',
+		                    }
+		                },
+		                Action => {
+
+		                    add_to_score => 'softbounce_score',
+		                }
+		            }
+		        },
 
         {
             over_quota_552 => {
@@ -429,8 +456,32 @@ qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User un
                         List  => 'is_valid',
                     }
                 },
-                Action => { add_to_score => 'hardbounce_score', }
-              } },
+                Action => { 
+					add_to_score => 'hardbounce_score', 
+				}
+              } 
+		},
+		
+		{
+            following_recipients_failed => {
+                Examine => {
+                    Message_Fields => {
+                        Action                  => [qw(failed)],
+                        Status                  => [qw(5.5.0)],
+						Notification_regex      => [ (qr/following recipients failed/) ],
+                    },
+                    Data => {
+                        Email => 'is_valid',
+                        List  => 'is_valid',
+                    }
+                },
+                Action => { 
+					add_to_score => 'hardbounce_score', 
+				}
+              } 
+		},
+
+
 
         {
 
@@ -734,7 +785,7 @@ qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User un
 	                    Message_Fields => {
 	                        Status                  => [qw(4.4.1)],
 	                        Action                  => [qw(failed)],
-							'Diagnostic-Code_regex' =>  [ (qr/(C|c)onnection refused/) ],
+							'Diagnostic-Code_regex' =>  [ (qr/delivery temporarily suspended/) ],
 	                    },
 	                    Data => {
 	                        Email => 'is_valid',
@@ -851,7 +902,155 @@ qr/551 not our customer|User unknown|ecipient no longer/
         #					},
         #					}
         #},
+		
+	    {
+	        generic_mailbox_unavailable => {
+	            Examine => {
+	                Message_Fields => {
+	                    'Notification_regex' => [qr/mailbox unavailable/],
+	                },
+	                Data => {
+	                    Email => 'is_valid',
+	                    List  => 'is_valid',
+	                }
+	            },
+	            Action => {
+					add_to_score => 'hardbounce_score',
+	            }
+	        }
+	    },		
+	    {
+	        generic_no_such_user_here => {
+	            Examine => {
+	                Message_Fields => {
+	                    'Notification_regex' => [qr/No Such User Here|The email account that you tried to reach does not exist/],
+	                },
+	                Data => {
+	                    Email => 'is_valid',
+	                    List  => 'is_valid',
+	                }
+	            },
+	            Action => {
+					add_to_score => 'hardbounce_score',
+	            }
+	        }
+	    },
+		{
+	        disabled_or_discontinued => {
+	            Examine => {
+	                Message_Fields => {
+	                    'Notification_regex' => [qr/This account has been disabled or discontinued/],
+	                },
+	                Data => {
+	                    Email => 'is_valid',
+	                    List  => 'is_valid',
+	                }
+	            },
+	            Action => {
+					add_to_score => 'hardbounce_score',
+	            }
+	        }
+	    },
 
+		{
+	        permanent_error => {
+	            Examine => {
+	                Message_Fields => {
+	                    'Notification_regex' => [qr/This is a permanent error\./],
+	                },
+	                Data => {
+	                    Email => 'is_valid',
+	                    List  => 'is_valid',
+	                }
+	            },
+	            Action => {
+					add_to_score => 'hardbounce_score',
+	            }
+	        }
+	    },
+
+
+		{
+	        no_mailbox_here_by_that_name => {
+	            Examine => {
+	                Message_Fields => {
+	                    'Notification_regex' => [qr/no mailbox here by that name/],
+	                },
+	                Data => {
+	                    Email => 'is_valid',
+	                    List  => 'is_valid',
+	                }
+	            },
+	            Action => {
+					add_to_score => 'hardbounce_score',
+	            }
+	        }
+	    },
+	
+	    {
+	        generic_could_not_deliver_mail => {
+	            Examine => {
+	                Message_Fields => {
+	                    'Notification_regex' => [qr/The mail server could not deliver mail to/],
+	                },
+	                Data => {
+	                    Email => 'is_valid',
+	                    List  => 'is_valid',
+	                }
+	            },
+	            Action => {
+					add_to_score => 'hardbounce_score',
+	            }
+	        }
+	    },
+	    {
+	        generic_domain_may_not_exist => {
+	            Examine => {
+	                Message_Fields => {
+	                    'Notification_regex' => [qr/domain may not exist/],
+	                },
+	                Data => {
+	                    Email => 'is_valid',
+	                    List  => 'is_valid',
+	                }
+	            },
+	            Action => {
+					add_to_score => 'hardbounce_score',
+	            }
+	        }
+	    },
+	    {
+	        generic_retry_time_not_reached_for_any_host => {
+	            Examine => {
+	                Message_Fields => {
+	                    'Notification_regex' => [qr/retry time not reached for any host after a long failure period/],
+	                },
+	                Data => {
+	                    Email => 'is_valid',
+	                    List  => 'is_valid',
+	                }
+	            },
+	            Action => {
+					add_to_score => 'hardbounce_score',
+	            }
+	        }
+	    },
+	    {
+	        generic_account_is_locked => {
+	            Examine => {
+	                Message_Fields => {
+	                    'Notification_regex' => [qr/account is locked/],
+	                },
+	                Data => {
+	                    Email => 'is_valid',
+	                    List  => 'is_valid',
+	                }
+	            },
+	            Action => {
+					add_to_score => 'softbounce_score',
+	            }
+	        }
+	    },
         {
 
             unknown_bounce_type => {

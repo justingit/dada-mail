@@ -225,7 +225,7 @@ sub test_files {
     my $i = 1;
     for my $testfile (@$test_files) {
         $r .= "Test #$i: $testfile\n" . '-' x 60 . "\n";
-        my ($found_list, $need_to_delete, $msg_report, $rule_report ) =
+        my ($found_list, $need_to_delete, $msg_report, $rule_report, $diag) =
           $self->parse_bounce( 
 			{ 
 				-message => $self->openfile($testfile), 
@@ -431,9 +431,10 @@ sub parse_all_bounces {
 
                     my $msg_report  = '';
                     my $rule_report = '';
+					my $diag        = {};
                     eval {
 
-                        ($found_list, $need_to_delete, $msg_report, $rule_report ) =
+                        ($found_list, $need_to_delete, $msg_report, $rule_report, $diag) =
                           $self->parse_bounce(
                             {
                                 -list    => $list_to_check,
@@ -611,7 +612,7 @@ sub parse_bounce {
         warn "No MIME entity found, this message could be garbage, skipping\n";
         $msg_report .=
           "No MIME entity found, this message could be garbage, skipping\n";
-        return ( undef, 1, $msg_report, '' );
+        return ( undef, 1, $msg_report, '', {});
 
     }
 
@@ -626,11 +627,11 @@ sub parse_bounce {
 
 # $msg_report .= "No valid list found. Ignoring and deleting.\n\n" . $entity->as_string . "\n\n";
         $msg_report .= "No valid list found. Ignoring and deleting. Ignoring and deleting.\n";
-        return ( undef, 1, $msg_report, '' );
+        return ( undef, 1, $msg_report, '', {});
     }
 	if(! exists($self->{list_lookup_table}->{$found_list})) { 
         $msg_report .= "list found does not exist ($found_list).\n";
-        return ( undef, 1, $msg_report, '' );		
+        return ( undef, 1, $msg_report, '', {});		
 	}
 
     # Test:  Hey, is this a bounce from me?!
@@ -638,7 +639,7 @@ sub parse_bounce {
         $msg_report .=
           "Bounced message was sent by myself. Ignoring and deleting.\n";
         warn "Bounced message was sent by myself. Ignoring and deleting.";
-        return ( undef, 1, $msg_report, '' );
+        return ( undef, 1, $msg_report, '', {});
     }
 
     # Is this from a mailing list I'm currently looking at?
@@ -647,7 +648,7 @@ sub parse_bounce {
           "Bounced message is from a different Mailing List ($found_list). Skipping over.\n";
 
         # Save it for another go.
-        return ( $found_list, 0, $msg_report, '' );
+        return ( $found_list, 0, $msg_report, '', $diagnostics );
     }
 
     # /Tests!
@@ -662,18 +663,20 @@ sub parse_bounce {
     my $bhr = DADA::App::BounceHandler::Rules->new;
     my $rule = $bhr->find_rule_to_use( $found_list, $email, $diagnostics );
 
+	$diagnostics->{matched_rule} = $rule;
+	
     $msg_report .= "\n* Using Rule: $rule\n";
     if ( DADA::App::Guts::check_if_list_exists( -List => $found_list ) == 0 ) {
         $msg_report .=
           'List, ' . $found_list . ' doesn\'t exist. Ignoring and deleting.';
-        return ( $found_list, 1, $msg_report, '' );
+        return ( $found_list, 1, $msg_report, '', $diagnostics);
     }
 
     my $lh = DADA::MailingList::Subscribers->new( { -list => $found_list } );
     if ( $lh->check_for_double_email( -Email => $email ) != 1 ) {
         $msg_report .=
 "Bounced Message is from an email address that isn't subscribed to: $found_list. Ignorning.\n";
-        return ( $found_list, 1, $msg_report, '' );
+        return ( $found_list, 1, $msg_report, '', $diagnostics);
     }
 
     if ( $args->{-test} != 1 ) {
@@ -686,7 +689,7 @@ sub parse_bounce {
 	# DEV: For whatever reason, the rule used is never reported. Which is ridiculous. 
 	# So, let's report that! 
 	
-    return ( $found_list, 1, $msg_report, $rule_report );
+    return ( $found_list, 1, $msg_report, $rule_report, $diagnostics);
 
 }
 

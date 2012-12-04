@@ -226,6 +226,7 @@ sub cgi_main {
             'cgi_bounce_score_search'    => \&cgi_bounce_score_search,
             'cgi_show_plugin_config'     => \&cgi_show_plugin_config,
             'ajax_parse_bounces_results' => \&ajax_parse_bounces_results,
+			'manually_enter_bounces'     => \&manually_enter_bounces, 
             'cgi_erase_scorecard'        => \&cgi_erase_scorecard,
             'edit_prefs'                 => \&edit_prefs,
         );
@@ -664,6 +665,93 @@ sub cgi_bounce_score_search {
         );
     }
     e_print($scrn);
+}
+
+
+
+sub manually_enter_bounces { 
+	
+	my $process = xss_filter(strip($q->param('process'))) || 0; 
+	
+	require DADA::Template::Widgets; 
+	
+	if(! $process ) {  
+        my $scrn = DADA::Template::Widgets::wrap_screen(
+            {
+                -screen         => 'plugins/bounce_handler/manually_enter_bounces.tmpl',
+                -with           => 'admin',
+                -wrapper_params => {
+                    -Root_Login => $root_login,
+                    -List       => $list,
+                },
+                -vars                     => { 
+					Plugin_URL => $Plugin_Config->{Plugin_URL},
+				},
+                -list_settings_vars_param => {
+                    -list   => $list,
+                    -dot_it => 1,
+                },
+            }
+
+        );
+	    e_print($scrn);	
+	}
+	else { 
+		my $msg = $q->param('msg'); 
+		   $msg =~ s/\r\n/\n/g;
+		
+		my $bh = DADA::App::BounceHandler->new($Plugin_Config);
+		my ($found_list, $need_to_delete, $msg_report, $rule_report, $diag ) =
+		   $bh->parse_bounce( 
+			{ 
+				-message => $msg, 
+				-test    => 1, 
+				-list    => $list, 
+			} 
+		);
+		my $diags_ht = [];
+		
+		for my $i_d ( keys %$diag ) {
+			my $v = encode_html_entities( $diag->{$i_d} ); 
+			   $v  =~ s/(\n|\r)/\<br \/\>\n/g;
+            push(@$diags_ht, 
+				{
+					diagnostic_label => $i_d, 
+					diagnostic_value => $v , 
+				}
+			);
+        }
+
+	    require DADA::App::BounceHandler::Rules;
+	    my $bhr = DADA::App::BounceHandler::Rules->new;
+		my $rule = $bhr->rule($diag->{matched_rule}); 
+        
+		require Data::Dumper; 
+        my $scrn = DADA::Template::Widgets::screen(
+            {
+                -screen         => 'plugins/bounce_handler/manually_enter_bounces_results.tmpl',
+                -with           => 'admin',
+                -wrapper_params => {
+                    -Root_Login => $root_login,
+                    -List       => $list,
+                },
+                -vars                     => { 
+					msg_report  => $msg_report, 
+					diagnostics =>  $diags_ht, 
+					rule_title  => $diag->{matched_rule}, 
+					rule        => Data::Dumper::Dumper($rule), 
+				},
+                -list_settings_vars_param => {
+                    -list   => $list,
+                    -dot_it => 1,
+                },
+            }
+
+        );
+		print $q->header(); 
+	    e_print($scrn);	
+
+	}
 }
 
 sub cl_main {

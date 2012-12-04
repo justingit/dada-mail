@@ -64,7 +64,7 @@ ok($found_list eq 'dadatest', 'found list');
 ok($diag->{'Simplified-Message-Id'} eq '20111030223332', "found 'Simplified-Message-Id'"); 
 ok($diag->{Bounce_To} eq 'bounces@dadademo.com', "found 'Bounce_To'"); 
 ok($diag->{Bounce_From} eq 'MAILER-DAEMON@outbound-ss-2114.bluehost.com', "found 'Bounce_From'"); 
-ok($diag->{std_reason} eq 'user_unknown', "found 'std_reason'"); # Mail::DeliveryStatus::BounceParser
+#ok($diag->{std_reason} eq 'user_unknown', "found 'std_reason'"); # Mail::DeliveryStatus::BounceParser
 ok($diag->{'Message-Id'} eq '<20111030223332.29501507@skazat.com>', "found 'Message-Id'"); 
 # Diagnostic-Code
 ok($diag->{Guessed_MTA} eq 'Qmail', "found Guessed_MTA"); 
@@ -100,7 +100,7 @@ ok($email eq 'bouncing.email@example.com', 'found email address.');
 ok($found_list eq 'dadatest', 'found list');
 ok($diag->{'Simplified-Message-Id'} eq '20090507110112', "found 'Simplified-Message-Id'"); 
 ok($diag->{'Message-Id'} eq '<20090507110112.30203023@example.com>', "found 'Message-Id'"); 
-ok($diag->{std_reason} eq 'user_unknown', "found 'std_reason'"); # Mail::DeliveryStatus::BounceParser
+#ok($diag->{std_reason} eq 'user_unknown', "found 'std_reason'"); # Mail::DeliveryStatus::BounceParser
 #ok($diag->{'Remote-MTA'} eq 'yahoo.com', "found 'Remote-MTA'"); 
 
 #diag Dumper($diag); 
@@ -110,7 +110,9 @@ $rule = $bhr->find_rule_to_use( $found_list, $email, $diag );
 # This is sooooo wrong, but I'd need to re-parse this bounce, which I'm 
 # I just don't have the time to, right now: 
 #
-ok($rule eq 'exim_user_unknown', "rule is: $rule"); 
+
+#ok($rule eq 'exim_user_unknown', "rule is 'exim_user_unknown': '$rule'"); 
+ok($rule eq 'generic_mailbox_unavailable', "rule is 'generic_mailbox_unavailable': '$rule'"); 
 
 
 undef $msg; 
@@ -141,7 +143,7 @@ ok($found_list eq 'dadatest', 'found list');
 ok($diag->{'Simplified-Message-Id'} eq '20111030223332', "found 'Simplified-Message-Id'"); 
 ok($diag->{Bounce_To} eq 'bounces@dadademo.com', "found 'Bounce_To'"); 
 ok($diag->{Bounce_From} eq 'MAILER-DAEMON@oproxy6-pub.bluehost.com', "found 'Bounce_From'"); 
-ok($diag->{std_reason} eq 'user_unknown', "found 'std_reason'"); # Mail::DeliveryStatus::BounceParser
+#ok($diag->{std_reason} eq 'user_unknown', "found 'std_reason'"); # Mail::DeliveryStatus::BounceParser
 ok($diag->{'Message-Id'} eq '<20111030223332.29501507@skazat.com>', "found 'Message-Id'"); 
 # Diagnostic-Code
 ok($diag->{Guessed_MTA} eq 'Qmail', "found Guessed_MTA"); 
@@ -174,7 +176,7 @@ ok($found_list eq 'dadatest', 'found list');
 ok($diag->{'Simplified-Message-Id'} eq '20111030223332', "found 'Simplified-Message-Id'"); 
 ok($diag->{Bounce_To} eq 'bounces@dadademo.com', "found 'Bounce_To'"); 
 ok($diag->{Bounce_From} eq 'MAILER-DAEMON@outbound-ss-1742.bluehost.com', "found 'Bounce_From'"); 
-ok($diag->{std_reason} eq 'user_unknown', "found 'std_reason'"); # Mail::DeliveryStatus::BounceParser
+#ok($diag->{std_reason} eq 'user_unknown', "found 'std_reason'"); # Mail::DeliveryStatus::BounceParser
 ok($diag->{'Message-Id'} eq '<20111030223332.29501507@skazat.com>', "found 'Message-Id'"); 
 like($diag->{'Diagnostic-Code'}, qr/Remote host said\: 554 delivery error/, 'found diagnostic code'); 
 ok($diag->{Guessed_MTA} eq 'Qmail', "found Guessed_MTA"); 
@@ -216,7 +218,7 @@ ok($found_list eq 'dadatest', 'found list');
 ok($diag->{'Simplified-Message-Id'} eq '20111127194053', "found 'Simplified-Message-Id'"); 
 #ok($diag->{Bounce_To} eq 'bounces@dadademo.com', "found 'Bounce_To'"); 
 #ok($diag->{Bounce_From} eq 'MAILER-DAEMON@outbound-ss-1742.bluehost.com', "found 'Bounce_From'"); 
-ok($diag->{std_reason} eq 'user_unknown', "found 'std_reason'"); # Mail::DeliveryStatus::BounceParser
+#ok($diag->{std_reason} eq 'user_unknown', "found 'std_reason'"); # Mail::DeliveryStatus::BounceParser
 ok($diag->{'Message-Id'} eq '<20111127194053.58725276@skazat.com>', "found 'Message-Id'"); 
 like($diag->{'Diagnostic-Code'}, qr/Unknown address error 550/, 'found diagnostic code'); 
 ok($diag->{Guessed_MTA} eq 'Amazon_SES', "found Amazon_SES"); 
@@ -256,7 +258,7 @@ $entity = $parser->parse_data($msg);
 ( $email, $found_list, $diag ) = $bhmp->run_all_parses($entity);
 diag 'email: ' . $email; 
 diag 'list: ' . $list; 
-#diag Dumper($diag); 
+diag Dumper($diag); 
 $rule = $bhr->find_rule_to_use( $found_list, $email, $diag );
 diag 'rule: ' . $rule; 
 
@@ -268,12 +270,22 @@ undef $diag;
 undef $entity;
 
 
+
+
+
+diag 'looking at: bounce-secureservers.net-mailfolder_is_full.eml'; 
 $msg    = dada_test_config::slurp('t/corpus/email_messages/bounce-secureservers.net-mailfolder_is_full.eml'); 
 $entity = $parser->parse_data($msg);
 ( $email, $found_list, $diag ) = $bhmp->run_all_parses($entity);
-ok($email eq 'subscriber@example.com'); 
-ok($found_list eq 'dadatest', 'found list');
+diag 'email: ' . $email; 
+diag 'list: '  . $found_list; 
+diag Dumper($diag); 
 $rule = $bhr->find_rule_to_use( $found_list, $email, $diag );
+diag 'rule: ' . $rule; 
+
+ok($email eq 'subscriber@example.com'); 
+
+ok($found_list eq 'dadatest', 'found list(' . $found_list . ')');
 ok($rule eq 'secureserver_dot_net_mailbox_full', "rule is: $rule"); 
 undef $msg; 
 undef $email; 
@@ -284,6 +296,9 @@ undef $entity;
 
 
 
+
+
+diag "looking at: bounce_secureserver.net-mail_quota_exceeded.eml"; 
 $msg    = dada_test_config::slurp('t/corpus/email_messages/bounce_secureserver.net-mail_quota_exceeded.eml'); 
 $entity = $parser->parse_data($msg);
 ( $email, $found_list, $diag ) = $bhmp->run_all_parses($entity);
@@ -300,14 +315,19 @@ undef $entity;
 
 
 
-
+diag "looking at: bounce-exim-something.eml"; 
 $msg    = dada_test_config::slurp('t/corpus/email_messages/bounce-exim-something.eml'); 
 $entity = $parser->parse_data($msg);
 ( $email, $found_list, $diag ) = $bhmp->run_all_parses($entity);
 ok($email eq 'subscriber@example.com'); 
 ok($found_list eq 'dadatest', 'found list');
 $rule = $bhr->find_rule_to_use( $found_list, $email, $diag );
-ok($rule eq 'exim_user_unknown', "rule is: $rule"); 
+
+diag 'email:' . $email; 
+diag 'found_list:' . $found_list; 
+diag Dumper($diag);
+ok($rule eq 'exim_user_unknown', "rule is 'exim_user_unknown': '$rule'"); 
+
 undef $msg; 
 undef $email; 
 undef $found_list; 
@@ -317,7 +337,7 @@ undef $entity;
 
 
 
-
+diag "looking at: bounce-dsn-user_unknown.eml"; 
 $msg    = dada_test_config::slurp('t/corpus/email_messages/bounce-dsn-user_unknown.eml'); 
 $entity = $parser->parse_data($msg);
 ( $email, $found_list, $diag ) = $bhmp->run_all_parses($entity);

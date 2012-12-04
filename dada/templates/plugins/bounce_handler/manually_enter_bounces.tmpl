@@ -1,0 +1,13 @@
+<div id="manually_enter_bounces"></div> 
+
+
+<form action="<!-- tmpl_var Plugin_URL -->" method="post"> 
+	<input type="hidden" name="plugin_url" id="plugin_url" value="<!-- tmpl_var Plugin_URL -->" />
+	<input type="hidden" name="process" id="process" value="1" /> 
+	<input type="hidden" name="flavor" id="flavor" value="manually_enter_bounces" /> 
+	<textarea name="msg" id="msg" cols="80" rows="20" style="margin: 5px; padding: 5px;font: .8em/1.6em Monaco,Mono,'Courier New',Courier,monospace;"></textarea>
+	<input type="button" id="manually_enter_bounces_button" value="Parse..." /> 
+</form> 
+
+<div id="manually_enter_bounces_results_loading"></div> 
+<div id="manually_enter_bounces_results"></div> 
