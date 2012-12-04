@@ -289,6 +289,10 @@ I<.dada_files/.configs>
 
 directory, make your own changes/customizations, and the Bounce Handler will use your copy, instead of what ships with Dada Mail. 
 
+=head3 More Rules Added 
+
+Over 10 new rules have been added to the Bounce Handler Rules. For the most part, these rules are easy to understand and only match a specific type of bounce, making them easy to modify. 
+
 =head2 Bridge
 
 =head3 Filename change: dada_bridge.pl to bridge.cgi
