@@ -304,7 +304,7 @@ $ADMIN_MENU = [
 					},
 
 					{
-					-Title      => 'Monitor Your Mailings <!-- tmpl_var list_mailouts -->/<!-- tmpl_var total_mailouts -->',
+					-Title      => 'Monitor Your Mailings',
 					-Title_URL  => "$S_PROGRAM_URL?f=sending_monitor",
 					-Function   => 'sending_monitor',
 					-Activated  => 1,
