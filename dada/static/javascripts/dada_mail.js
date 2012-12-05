@@ -271,7 +271,7 @@ $jq(document).ready(function() {
 						}));
 					},
 					error: function() {
-						alert('something is wrong');
+						console.log('something is wrong with, "search_list_auto_complete"');
 					},
 				});
 			},
