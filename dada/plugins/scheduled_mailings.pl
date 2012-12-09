@@ -461,7 +461,6 @@ sub edit  {
 						-Root_Login => $yeah_root_login,
 						-vars => { 
 							load_wysiwyg_editor => 1, 
-							load_modalbox       => 1, 
 						}
 						);
 

@@ -1,14 +1,18 @@
 	<!-- tmpl_set name="title" value="Plugins &#187; Bounce Handler &#187; Bounce Log Search Results" --> 
 	
-<p id="breadcrumbs">
- <a href="<!-- tmpl_var Plugin_URL -->"> 
- <!-- tmpl_var Plugin_Name --> 
- </a> 
+<!-- tmpl_if chrome --> 
+
+	<p id="breadcrumbs">
+	 <a href="<!-- tmpl_var Plugin_URL -->"> 
+	 <!-- tmpl_var Plugin_Name --> 
+	 </a> 
  
- &#187;
+	 &#187;
  
- Search Results for: <!-- tmpl_var query ESCAPE="HTML" --> 
-</p> 
+	 Search Results for: <!-- tmpl_var query ESCAPE="HTML" --> 
+	</p> 
+
+<!-- /tmpl_if --> 
 
 
 

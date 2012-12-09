@@ -636,7 +636,7 @@ sub cgi_bounce_score_search {
         $scrn = DADA::Template::Widgets::screen(
             {
                 -screen => 'plugins/bounce_handler/bounce_score_search.tmpl',
-                -vars   => { %tmpl_vars, },
+                -vars   => { %tmpl_vars, chrome => 0,},
                 -list_settings_vars_param => {
                     -list   => $list,
                     -dot_it => 1,

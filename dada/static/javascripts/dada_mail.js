@@ -1,6 +1,19 @@
 $jq(document).ready(function() {
 
-
+	$jq("a.modalbox").live("click", function(event) {
+		event.preventDefault();
+		$jq.colorbox(
+			{
+				top: 0, 
+				fixed: true, 
+				initialHeight: 50, 
+				maxHeight: 480, 
+				maxWidth: 649,
+				opacity: .50,
+				href: $jq(this).attr("href")
+			});
+	}); 
+	
 	// Admin Menu 
 	if($jq("#navcontainer").length){ 
 		admin_menu_sending_monitor_notification();
@@ -417,10 +430,29 @@ $jq(document).ready(function() {
 		
 		bridge_setup_list_email_type_params(); 
 
-
-
-
-
+	}
+	
+	// Plugins >> Change List Shortname
+	if($jq("#plugins_change_list_shortname").length) { 
+		$jq("body").on("submit", "#change_name_form", function(event) {
+			event.preventDefault();
+		});
+		
+		$jq("body").on("click", "#verify_button", function(event) {
+			$jq.colorbox({
+				top: 0, 
+				fixed: true, 
+				initialHeight: 50, 
+				maxHeight: 480, 
+				maxWidth: 649,
+				opacity: .50, 
+				href: $jq("#plugin_url").val(),
+				data: {
+						flavor: $jq('#flavor').val(), 
+						new_name: $jq('#new_name').val() 
+				}
+			});
+		});
 	}
 
 	// Plugins >> Mailing Monitor
@@ -498,14 +530,6 @@ $jq(document).ready(function() {
 		$jq("#delete_log").on("click", function(event) {
 			delete_log();
 		});
-
-
-
-
-
-
-
-
 	}
 
 
@@ -542,8 +566,7 @@ $jq(document).ready(function() {
 	$jq('.radio_toggleDivs').live("click", function(event) {
 		toggleDisplay($jq(this).attr("data-target"));
 	});
-
-
+		
 });
 
 
@@ -999,13 +1022,16 @@ function toggle_pop_before_SMTP_options(){
 }
 
 function test_sending_preferences() {
-	Modalbox.show(
-	$jq("#s_program_url").val(), {
-		title: 'Testing Sending Preferences...',
-		width: 640,
-		height: 480,
-		method: 'post',
-		params: {
+	
+	$jq.colorbox({
+		top: 0, 
+		fixed: true, 
+		initialHeight: 50, 
+		maxHeight: 480, 
+		maxWidth: 649,
+		opacity: .50, 
+		href: $jq("#s_program_url").val(),
+		data: {
 			f: 'sending_preferences_test',
 			add_sendmail_f_flag: $jq('#add_sendmail_f_flag').val(),
 			smtp_server: $jq('#smtp_server').val(),
@@ -1023,9 +1049,10 @@ function test_sending_preferences() {
 			set_smtp_sender: $jq('#set_smtp_sender').val(),
 			process: $jq('#process').val(),
 			sending_method: $jq('input[name=sending_method]:checked').val()
-		},
-	});
+			}
+		});
 }
+
 
 
 
@@ -1324,19 +1351,21 @@ function bounce_handler_parse_bounces() {
 	});
 }
 
-function ajax_parse_bounces_results() { 
-	Modalbox.show(
-	$jq("#plugin_url").val(), {
-		title: 'Parse Results...',
-		width: 640,
-		height: 480,
-		method: 'post',
-		params: {
+function ajax_parse_bounces_results() { 	
+	$jq.colorbox({
+		top: 0, 
+		fixed: true, 
+		initialHeight: 50, 
+		maxHeight: 480, 
+		maxWidth: 649,
+		opacity: .50, 
+		href: $jq("#plugin_url").val(),
+		data: {
 			flavor:    'ajax_parse_bounces_results',
 			parse_amount: $jq('#parse_amount').val(),
 			bounce_test:  $jq('#bounce_test').val()
-		},
-	});
+			}
+		});
 }
 
 function bounce_handler_manually_enter_bounces() { 
@@ -1384,34 +1413,38 @@ function bridge_setup_list_email_type_params() {
 	}	
 }
 
-function plugins_bridge_test_pop3() {
-	Modalbox.show(
-	$jq("#plugin_url").val(), {
-		title: 'Test Results...',
-		width: 640,
-		height: 480,
-		method: 'post',
-		params: {
+function plugins_bridge_test_pop3() {	
+	$jq.colorbox({
+		top: 0, 
+		fixed: true, 
+		initialHeight: 50, 
+		maxHeight: 480, 
+		maxWidth: 649,
+		opacity: .50, 
+		href: $jq("#plugin_url").val(),
+		data: {
 			flavor:    'cgi_test_pop3_ajax',
 			server:    $jq("#discussion_pop_server").val(), 
 			username:  $jq("#discussion_pop_username").val(),
 			password:  $jq("#discussion_pop_password").val(),
 			auth_mode: $jq("#discussion_pop_auth_mode option:selected").val(), 
-			use_ssl:   $jq("#discussion_pop_use_ssl").prop("checked") 
-		},
-	});
+			use_ssl:   $jq("#discussion_pop_use_ssl").prop("checked")
+			}
+		});
 }
 
 function plugins_bridge_manually_check_messages() {
-	Modalbox.show(
-	$jq("#plugin_url").val(), {
-		title: 'Test Results...',
-		width: 640,
-		height: 480,
-		method: 'post',
-		params: {
+	$jq.colorbox({
+		top: 0, 
+		fixed: true, 
+		initialHeight: 50, 
+		maxHeight: 480, 
+		maxWidth: 649,
+		opacity: .50, 
+		href: $jq("#plugin_url").val(),
+		data: {
 			flavor: 'admin_cgi_manual_start_ajax',
-		},
+			}
 	});
 }
 
@@ -1593,12 +1626,7 @@ function country_geoip_map(type, target_div) {
 				$jq("#" + target_div).show('fade');
 			});
 
-
-
-
 			google.visualization.events.addListener(chart, 'select', country_geoip_map_selectHandler);
-
-
 
 			function country_geoip_map_selectHandler(event) {
 				var selectedItem = chart.getSelection()[0];
@@ -2105,15 +2133,18 @@ function preview_message_receivers() {
 	f_params['f'] = 'preview_message_receivers';
 	f_params['alternative_lists'] = alternative_lists;
 	f_params['multi_list_send_no_dupe'] = multi_list_send_no_dupes;
-
-	Modalbox.show(
-	$jq("#s_program_url").val(), {
-		title: 'Mass Mailing Recipients (preview)',
-		width: 640,
-		height: 480,
-		method: 'post',
-		params: f_params,
+	
+	$jq.colorbox({
+		top: 0, 
+		fixed: true, 
+		initialHeight: 50, 
+		maxHeight: 480, 
+		maxWidth: 649,
+		opacity: .50, 
+		href: $jq("#s_program_url").val(),
+		data: f_params
 	});
+	
 }
 
 function ChangeMassMailingButtonLabel() {

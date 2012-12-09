@@ -150,8 +150,8 @@ code in the, I<static/javascripts/dada_mail.js> file.
 
 =head2 Migration from Prototype/Scriptaculous to jQuery/jQueryUI
 
-Most of the JavaScript that relies on the Prototype/Scriptaculous libraries has been migrated to jQuery/jQueryUI. Some remains, 
-and jQuery has been configured in, C<NoConflict> mode. We hope to move all Prototype/Scriptaculous code to jQuery eventually. 
+All JavaScript that relied on the Prototype/Scriptaculous libraries has been migrated to jQuery/jQueryUI. The Modalbox Prototype library has been ported 
+to Jack Moore's excellent ColorBox: L<http://www.jacklmoore.com/colorbox>
 
 =head1 Static Files directory location, $SUPPORT_FILES config variable, Installation and Configuration
 

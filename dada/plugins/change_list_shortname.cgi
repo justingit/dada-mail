@@ -102,37 +102,6 @@ sub test_sub {
 
 
 
-sub cgi_default_tmpl {
-
-return q{ 
-	
-	<!-- tmpl_set name="load_modalbox" value="1" -->
-	<!-- tmpl_set name="title" value="Plugins &#187; Change List Shortname" -->
-	<div id="screentitle"> 
-		<div id="screentitlepadding">
-			<!-- tmpl_var title --> 
-		</div>
-		<!-- tmpl_include help_link_widget.tmpl -->
-	</div>
-	
-	
-	<fieldset> 
-	
-	
-    <form action="<!-- tmpl_var Plugin_URL -->" method="post" id="change_name_form" name="change_name_form" onSubmit="Modalbox.show('<!-- tmpl_var Plugin_URL -->', {title: 'Confirm List Shortname Change...', width: 640, height:480, params: Form.serialize('change_name_form')}); return false;" value="Verify your List Short Name Change...">
-		<input type="hidden" name="flavor" id="flavor" value="verify_change_list_shortname" />
-		<p><label for="new_name">Your New List Short Name:</label><input type="text" name="new_name" id="new_name" value="" maxlength="16" /></p>
-		<div class="buttonfloat">
-		<input type="button" onclick="Modalbox.show('<!-- tmpl_var Plugin_URL -->', {title: 'Confirm List Shortname Change...', width: 640, height:480, params: Form.serialize('change_name_form')}); return false;" value="Verify Your List Short Name Change..." class="alertive" /> 
-		</div> 
-		<div class="floatclear"></div>
-	</form>
-
-	</fieldset> 
-
-};
-
-}
 
 sub cgi_default { 
 	
@@ -142,13 +111,12 @@ sub cgi_default {
 	}
 	
 	
-	my $data = cgi_default_tmpl(); 
     require DADA::Template::Widgets;
 	require DADA::MailingList::Settings; 
 	
      my $scrn = DADA::Template::Widgets::wrap_screen(
          {
-             -data           => \$data,
+             -screen         => 'plugins/change_list_shortname/default.tmpl',
              -with           => 'admin',
 			 -expr           => 1, 
              -wrapper_params => {
@@ -206,99 +174,6 @@ sub sql_backend_only_message {
 
 
 
-
-
-sub verify_change_list_shortname_tmpl { 
-	
-
-return q{ 
-	
-		<!-- tmpl_if errors --> 
-	
-		<h1>Problems!</h1>
-		
-		<p>Some problems were found with the new List Short Name you picked out:</p> 
-		
-		<div class="badweatherbox">
-		
-		<ul>
-			
-	
-		<!-- tmpl_if flags_list_exists -->
-
-			 <li><p>
-			   This list Short Name already exists. Please choose a different Short Name.
-			 </p></li>
-
-		<!-- /tmpl_if -->
-
-		<!-- tmpl_if flags_list -->
-			 <li><p>
-			   Please fill out a Short Name.
-			 </p></li>
-
-		<!-- /tmpl_if -->
-
-		<!-- tmpl_if flags_shortname_too_long -->
-
-			 <li><p>
-			   Your list Short Name is longer than 16 characters.
-			 </p></li>
-
-		<!-- /tmpl_if -->
-
-		<!-- tmpl_if flags_slashes_in_name -->
-
-			 <li><p>
-			   Your list Short Name cannot have slashes (&quot;/&quot; or &quot;\&quot;) in the name itself.
-			 </p></li>
-
-		<!-- /tmpl_if -->
-
-		<!-- tmpl_if flags_weird_characters -->
-
-			 <li><p>
-			   Your list Short Name appears to have weird characters in the 
-			   name that may create problems. Please use only lowercase 
-			   alphanumeric characters (e.g.: abc123).
-			 </p></li>
-
-		<!-- /tmpl_if -->
-
-		<!-- tmpl_if flags_quotes -->
-			 <li><p>
-			   Your list Short Name cannot contain quotes.
-			 </p></li>
-
-		<!-- /tmpl_if -->
-		
-		</div> 
-		
-	<!-- tmpl_else --> 
-		<fieldset> 
-		<legend>Verification Successul</legend>
-		<p>Your new List Short Name checks out.</p> 
-		
-		
-		<p><strong>Please make a backup of your current Dada Mail database, before continuing.</strong></p> 
-		
-		<form action="<!-- tmpl_var Plugin_URL -->"  method="post" >
-			<input type="hidden" name="flavor" id="flavor" value="change_list_shortname" />
-			<input type="hidden" name="new_name" id="new_name" value="<!-- tmpl_var new_name -->" /> 
-			<div class="buttonfloat">
-			<input type="submit" value="Change your list short name from, &quot;<!-- tmpl_var list_settings.list -->&quot; to, &quot;<!-- tmpl_var new_name -->&quot;" class="processing" /> 
-			</div> 
-			<div class="floatclear"></div>
-			
-		</form>
-		</fieldset> 
-		
-	<!-- /tmpl_if --> 
-
-};
-	
-}
-
 sub verify_change_list_shortname {
     my $new_name = strip( xss_filter( $q->param('new_name') ) );
     my ( $errors, $flags ) = check_list_setup(
@@ -329,12 +204,11 @@ sub verify_change_list_shortname {
 	}
 	
 	
-	my $data = verify_change_list_shortname_tmpl(); 
     require DADA::Template::Widgets;
 	
      my $scrn = DADA::Template::Widgets::screen(
          {
-             -data           => \$data,
+             -screen         => 'plugins/change_list_shortname/verify.tmpl',
   			 -expr           => 1, 
              -vars => {
 				Plugin_URL => $q->url, 
