@@ -1,8 +1,8 @@
-$jq(document).ready(function() {
+$(document).ready(function() {
 
-	$jq("a.modalbox").live("click", function(event) {
+	$("a.modalbox").live("click", function(event) {
 		event.preventDefault();
-		$jq.colorbox(
+		$.colorbox(
 			{
 				top: 0, 
 				fixed: true, 
@@ -10,56 +10,56 @@ $jq(document).ready(function() {
 				maxHeight: 480, 
 				maxWidth: 649,
 				opacity: .50,
-				href: $jq(this).attr("href")
+				href: $(this).attr("href")
 			});
 	}); 
 	
 	// Admin Menu 
-	if($jq("#navcontainer").length){ 
+	if($("#navcontainer").length){ 
 		admin_menu_sending_monitor_notification();
 		admin_menu_subscriber_count_notification(); 
 	}
 	
 	//Mail Sending >> Send a Message 
-	if ($jq("#send_email_screen").length || $jq("#send_url_email").length || $jq("#list_invite").length) {
-		$jq("body").on("submit", "#mass_mailing", function(event) {
+	if ($("#send_email_screen").length || $("#send_url_email").length || $("#list_invite").length) {
+		$("body").on("submit", "#mass_mailing", function(event) {
 			event.preventDefault();
 		});
-		$jq("body").on("click", ".sendmassmailing", function(event) {
-			//var fid = $jq(event.target).closest('form').attr('id'); 
+		$("body").on("click", ".sendmassmailing", function(event) {
+			//var fid = $(event.target).closest('form').attr('id'); 
 			var fid = 'mass_mailing';
 
-			if ($jq("#using_ckeditor").length) {
+			if ($("#using_ckeditor").length) {
 				// Strange you have to do this, but, you do: 
 				CKEDITOR.instances['html_message_body'].updateElement();
 			}
-			var itsatest = $jq(this).hasClass("justatest");
+			var itsatest = $(this).hasClass("justatest");
 			if (sendMailingListMessage(fid, itsatest) == true) {
-				$jq("body").off('submit', '#' + fid);
-				// $jq('#' + fid).submit();
+				$("body").off('submit', '#' + fid);
+				// $('#' + fid).submit();
 				return true;
 			} else {
 				//alert("It stays off!"); 
 			}
 		});
-		$jq("body").on("click", ".ChangeMassMailingButtonLabel", function(event) {
+		$("body").on("click", ".ChangeMassMailingButtonLabel", function(event) {
 			ChangeMassMailingButtonLabel();
 		});
 
 		ChangeMassMailingButtonLabel();
-		$jq("#tabs").tabs();
-		$jq("#tabs_mass_mailing_options").tabs();
+		$("#tabs").tabs();
+		$("#tabs_mass_mailing_options").tabs();
 
-		$jq("body").on("click", ".preview_message_receivers", function(event) {
+		$("body").on("click", ".preview_message_receivers", function(event) {
 			event.preventDefault();
 			preview_message_receivers();
 		});
 
-		if ($jq("#using_ckeditor").length) {
-			$jq("#html_message_body").ckeditor(
+		if ($("#using_ckeditor").length) {
+			$("#html_message_body").ckeditor(
 
 			function() {}, {
-				customConfig: $jq("#support_files_url").val() + '/ckeditor/dada_mail_config.js',
+				customConfig: $("#support_files_url").val() + '/ckeditor/dada_mail_config.js',
 				toolbar: 'DadaMail_Admin'
 			});
 		}
@@ -72,19 +72,19 @@ $jq(document).ready(function() {
 	
 	
 	// Mail Sending >> Mailing Monitor Index
-	if ($jq("#sending_monitor_index").length) {
-		refreshpage(60, $jq("#s_program_url").val() + "?f=sending_monitor");
+	if ($("#sending_monitor_index").length) {
+		refreshpage(60, $("#s_program_url").val() + "?f=sending_monitor");
 	}
 
-	if ($jq("#sending_monitor_container").length || $jq("#sending_monitor_index").length) {
-		$jq('body').on('submit', '.stop_mass_mailing', function(event) {
+	if ($("#sending_monitor_container").length || $("#sending_monitor_index").length) {
+		$('body').on('submit', '.stop_mass_mailing', function(event) {
 			event.preventDefault();
 		});
-		$jq('body').on('click', '.killMonitoredSending', function(event) {
+		$('body').on('click', '.killMonitoredSending', function(event) {
 			//var fid = 'stop_mass_mailing';
 			if (killMonitoredSending() == true) {
-				$jq('body').off('submit', '.stop_mass_mailing');
-				// $jq(event.target).closest('form').submit();
+				$('body').off('submit', '.stop_mass_mailing');
+				// $(event.target).closest('form').submit();
 				return true;
 			} else {
 				// alert("It stays off!"); 
@@ -93,29 +93,29 @@ $jq(document).ready(function() {
 	}
 
 
-	if ($jq("#sending_monitor_container").length) {
+	if ($("#sending_monitor_container").length) {
 
 		update_sending_monitor_interface(
-		$jq("#message_id").val(), $jq("#message_type").val(), $jq("#target_id").val(), $jq("#refresh_after").val());
+		$("#message_id").val(), $("#message_type").val(), $("#target_id").val(), $("#refresh_after").val());
 
-		$jq('body').on('submit', '#pause_mass_mailing', function(event) {
+		$('body').on('submit', '#pause_mass_mailing', function(event) {
 			event.preventDefault();
 		});
-		$jq('body').on('click', '.pauseMonitoredSending', function(event) {
-			//var fid = $jq(event.target).closest('form').attr('id'); 
+		$('body').on('click', '.pauseMonitoredSending', function(event) {
+			//var fid = $(event.target).closest('form').attr('id'); 
 			var fid = 'pause_mass_mailing';
 			if (pauseMonitoredSending() == true) {
-				$jq('body').off('submit', '#' + fid);
-				//$jq('#' + fid).submit();
+				$('body').off('submit', '#' + fid);
+				//$('#' + fid).submit();
 				return true;
 			} else {
 				// alert("It stays off!"); 
 			}
 		});
 
-		if ($jq("#tracker_reports").length) {
+		if ($("#tracker_reports").length) {
 			refresh_tracker_plugin(
-			$jq("#tracker_url").val(), $jq("#message_id").val(), 'tracker_reports_container');
+			$("#tracker_url").val(), $("#message_id").val(), 'tracker_reports_container');
 		}
 
 
@@ -123,45 +123,45 @@ $jq(document).ready(function() {
 
 
 	// Membership >> View List	
-	if ($jq("#view_list_viewport").length) {
+	if ($("#view_list_viewport").length) {
 		view_list_viewport(1);
 	}
 
 	// Membership >> List Activity
-	if ($jq("#list_activity").length) {
+	if ($("#list_activity").length) {
 		google.setOnLoadCallback(sub_unsub_trend_chart());
 	}
 	// Membership >> user@example.com
-	if ($jq("#mailing_list_history").length) {
+	if ($("#mailing_list_history").length) {
 		mailing_list_history();
 	}
 
 	// Membership >> Invite/Add
-	if ($jq("#add").length) {
-		$jq("#add_one").hide();
-		$jq("#show_progress").hide();
-		$jq("#fileupload").live("submit", function(event) {
+	if ($("#add").length) {
+		$("#add_one").hide();
+		$("#show_progress").hide();
+		$("#fileupload").live("submit", function(event) {
 			check_status();
 		});
 	}
 
 
 	// Membership >> Add (step 2) 
-	if ($jq("#add_email").length) {
-		$jq("body").on("submit", "#confirm_add", function(event) {
+	if ($("#add_email").length) {
+		$("body").on("submit", "#confirm_add", function(event) {
 			event.preventDefault();
 		});
-		$jq("body").on("click", ".addingemail", function(event) {
-			if ($jq(this).hasClass("warnAboutMassSubscription")) {
+		$("body").on("click", ".addingemail", function(event) {
+			if ($(this).hasClass("warnAboutMassSubscription")) {
 				if (warnAboutMassSubscription() == true) {
-					$jq("body").off('submit', "#confirm_add");
-					//$jq('#confirm_add').submit();
+					$("body").off('submit', "#confirm_add");
+					//$('#confirm_add').submit();
 					return true;
 				}
 			}
 			else { 
 				// Invitations.
-				$jq("body").off('submit', "#confirm_add");
+				$("body").off('submit', "#confirm_add");
 				return true;
 			}
 		});
@@ -169,17 +169,17 @@ $jq(document).ready(function() {
 
 
 	// Membership >> Invite
-	if ($jq("#list_invite").length) {
-		$jq("#customize_invite_message_form").hide();
-		$jq('.show_customize_invite_message').live("click", function(event) {
+	if ($("#list_invite").length) {
+		$("#customize_invite_message_form").hide();
+		$('.show_customize_invite_message').live("click", function(event) {
 			event.preventDefault();
 			show_customize_invite_message();
 		});
 	}
 	// Mail Sending >> Sending Preferences 
-	if ($jq("#sending_preferences").length) {
+	if ($("#sending_preferences").length) {
 		
-		if ($jq("#has_needed_cpan_modules").length) {
+		if ($("#has_needed_cpan_modules").length) {
 			amazon_ses_get_stats();
 		}
 		
@@ -189,29 +189,29 @@ $jq(document).ready(function() {
 		
 
 				
-		$jq("body").on("click", '#use_sasl_smtp_auth', function(event) {
+		$("body").on("click", '#use_sasl_smtp_auth', function(event) {
 			toggle_SASL_options();
 		});
 		
-		$jq("body").on("click", '#use_pop_before_smtp', function(event) {
+		$("body").on("click", '#use_pop_before_smtp', function(event) {
 			toggle_pop_before_SMTP_options();
 		});
 				
 		
 		
 		
-		$jq("body").on("click", '.sending_prefs_radio', function(event) {
+		$("body").on("click", '.sending_prefs_radio', function(event) {
 			sending_prefs_setup();
 		});
 		
 		
 		
-		$jq("body").on("click", ".test_sending_preferences", function(event) {
+		$("body").on("click", ".test_sending_preferences", function(event) {
 			event.preventDefault();
 			test_sending_preferences();
 		});
 
-		$jq("body").on("click", ".amazon_verify_email", function(event) {
+		$("body").on("click", ".amazon_verify_email", function(event) {
 			event.preventDefault();
 			amazon_verify_email();
 		});
@@ -222,12 +222,12 @@ $jq(document).ready(function() {
 	}
 
 	// Mail Sending >> Adv Sending Preferences
-	if ($jq("#adv_sending_preferences").length) {
-		$jq("#misc_options").hide();
+	if ($("#adv_sending_preferences").length) {
+		$("#misc_options").hide();
 	}
 	// Mail Sending >> Mass Mailing Preferences 
-	if ($jq("#mass_mailing_preferences").length) {
-		if ($jq("#amazon_ses_get_stats").length) {
+	if ($("#mass_mailing_preferences").length) {
+		if ($("#amazon_ses_get_stats").length) {
 			amazon_ses_get_stats();
 		} else {
 			// amazon_ses_get_stats does a previewBatchSendingSpeed(), 
@@ -239,45 +239,45 @@ $jq(document).ready(function() {
 
 
 	// Membership >> View List
-	$jq(".change_type").live("click", function(event) {
-		change_type($jq(this).attr("data-type"));
+	$(".change_type").live("click", function(event) {
+		change_type($(this).attr("data-type"));
 		event.preventDefault();
 	});
-	$jq(".turn_page").live("click", function(event) {
-		turn_page($jq(this).attr("data-page"));
+	$(".turn_page").live("click", function(event) {
+		turn_page($(this).attr("data-page"));
 		event.preventDefault();
 	});
-	$jq(".change_order").live("click", function(event) {
-		change_order($jq(this).attr("data-by"), $jq(this).attr("data-dir"));
+	$(".change_order").live("click", function(event) {
+		change_order($(this).attr("data-by"), $(this).attr("data-dir"));
 		event.preventDefault();
 	});
-	$jq(".search_list").live("click", function(event) {
+	$(".search_list").live("click", function(event) {
 		search_list();
 		event.preventDefault();
 	});
-	$jq("#search_form").live("submit", function(event) {
+	$("#search_form").live("submit", function(event) {
 		search_list();
 		event.preventDefault();
 	});
-	$jq(".clear_search").live("click", function(event) {
+	$(".clear_search").live("click", function(event) {
 		clear_search();
 		event.preventDefault();
 	});
-	$jq('#search_query').live('keydown', function() {
-		$jq("#search_query").autocomplete({
+	$('#search_query').live('keydown', function() {
+		$("#search_query").autocomplete({
 			source: function(request, response) {
-				$jq.ajax({
-					url: $jq("#s_program_url").val(),
+				$.ajax({
+					url: $("#s_program_url").val(),
 					type: "POST",
 					dataType: "json",
 					data: {
 						f: 'search_list_auto_complete',
 						length: 10,
-						type: $jq("#type").val(),
+						type: $("#type").val(),
 						query: request.term
 					},
 					success: function(data) {
-						response($jq.map(data, function(item) {
+						response($.map(data, function(item) {
 							return {
 								value: item.email,
 							}
@@ -290,70 +290,70 @@ $jq(document).ready(function() {
 			},
 			minLength: 3,
 			open: function() {
-				$jq(this).removeClass("ui-corner-all").addClass("ui-corner-top");
+				$(this).removeClass("ui-corner-all").addClass("ui-corner-top");
 			},
 			close: function() {
-				$jq(this).removeClass("ui-corner-top").addClass("ui-corner-all");
+				$(this).removeClass("ui-corner-top").addClass("ui-corner-all");
 			}
 		});
 	});
 
 	// Membership >> user@example.com
-	$jq(".change_profile_password").live("click", function(event) {
+	$(".change_profile_password").live("click", function(event) {
 		show_change_profile_password_form();
 		event.preventDefault();
 	});
 
 	// Mail Sending >> Mass Mailing Preferences 
-	$jq(".previewBatchSendingSpeed").live("change", function(event) {
+	$(".previewBatchSendingSpeed").live("change", function(event) {
 		previewBatchSendingSpeed();
 	});
 
-	$jq("#amazon_ses_auto_batch_settings").live("click", function(event) {
+	$("#amazon_ses_auto_batch_settings").live("click", function(event) {
 		toggleManualBatchSettings();
 	});
 
 
 	// Version Check 
-	$jq('#check_version').live('click', function(event) {
+	$('#check_version').live('click', function(event) {
 		event.preventDefault();
-		check_newest_version($jq('#check_version').attr("data-ver"));
+		check_newest_version($('#check_version').attr("data-ver"));
 	});
 
 	// Installer 
-	if ($jq("#install_or_upgrade").length) {
-		$jq("body").on("click", '.installer_changeDisplayStateDivs', function(event) {
-			changeDisplayState($jq(this).attr("data-target"), $jq(this).attr("data-state"));
+	if ($("#install_or_upgrade").length) {
+		$("body").on("click", '.installer_changeDisplayStateDivs', function(event) {
+			changeDisplayState($(this).attr("data-target"), $(this).attr("data-state"));
 		});
 	}
-	if ($jq("#installer_configure_dada_mail").length) {
-		$jq("body").on("change", "#backend", function(event) {
+	if ($("#installer_configure_dada_mail").length) {
+		$("body").on("change", "#backend", function(event) {
 			installer_toggleSQL_options();
 		});
-		$jq("body").on("click", '.radiochangeDisplayState', function(event) {
-			changeDisplayState($jq(this).attr("data-target"), $jq(this).attr("data-state"));
+		$("body").on("click", '.radiochangeDisplayState', function(event) {
+			changeDisplayState($(this).attr("data-target"), $(this).attr("data-state"));
 		});
 
-		$jq("body").on("click", '.test_sql_connection', function(event) {
+		$("body").on("click", '.test_sql_connection', function(event) {
 			installer_test_sql_connection();
 		});
-		$jq("body").on("click", '.test_bounce_handler_pop3_connection', function(event) {
+		$("body").on("click", '.test_bounce_handler_pop3_connection', function(event) {
 			installer_test_pop3_connection();
 		});
 		
 	
-		$jq("body").on('keyup', "#dada_root_pass_again", function(event){
+		$("body").on('keyup', "#dada_root_pass_again", function(event){
 			
-		     if($jq("#dada_root_pass_again").val() != $jq("#dada_root_pass").val() && $jq("#dada_root_pass_again").val().length){
-				$jq(".dada_pass_no_match").html('<span class="error">Passwords do not match!</span>');
+		     if($("#dada_root_pass_again").val() != $("#dada_root_pass").val() && $("#dada_root_pass_again").val().length){
+				$(".dada_pass_no_match").html('<span class="error">Passwords do not match!</span>');
 		     }
 			 else { 
-				$jq(".dada_pass_no_match").html('');
+				$(".dada_pass_no_match").html('');
 	        	
 			}
 		});
 		
-		$jq("body").on('click', "#install_wysiwyg_editors", function(event) { 
+		$("body").on('click', "#install_wysiwyg_editors", function(event) { 
 			installer_toggle_wysiwyg_editors_options()
 		}); 
 		installer_dada_root_pass_options();
@@ -362,67 +362,67 @@ $jq(document).ready(function() {
 		installer_togger_bounce_handler_config();
 		installer_toggle_wysiwyg_editors_options(); 
 
-		$jq("#dada_files_help").hide();
-		$jq("#program_url_help").hide();
-		$jq("#root_pass_help").hide();
-		$jq("#support_files_help").hide();
-		$jq("#backend_help").hide();
-		$jq("#plugins_extensions_help").hide();
-		$jq("#bounce_handler_configuration_help").hide();
-		$jq("#wysiwyg_editor_help").hide();
-		$jq("#test_sql_connection_results").hide();
-		$jq("#test_bounce_handler_pop3_connection_results").hide();
+		$("#dada_files_help").hide();
+		$("#program_url_help").hide();
+		$("#root_pass_help").hide();
+		$("#support_files_help").hide();
+		$("#backend_help").hide();
+		$("#plugins_extensions_help").hide();
+		$("#bounce_handler_configuration_help").hide();
+		$("#wysiwyg_editor_help").hide();
+		$("#test_sql_connection_results").hide();
+		$("#test_bounce_handler_pop3_connection_results").hide();
 
 
 	}
-	if ($jq("#installer_install_dada_mail").length) {
-		$jq("body").on("click", '#move_installer_dir', function(event) {
+	if ($("#installer_install_dada_mail").length) {
+		$("body").on("click", '#move_installer_dir', function(event) {
 			event.preventDefault();
 			installer_move_installer_dir();
 		});
 	}
 
 	// Plugins >> Bounce Handler 
-	if ($jq("#plugins_bounce_handler_default").length) {
+	if ($("#plugins_bounce_handler_default").length) {
 		bounce_handler_show_scorecard();
-		$jq("body").on("click", '.bounce_handler_turn_page', function(event) {
-			bounce_handler_turn_page($jq(this).attr("data-page"));
+		$("body").on("click", '.bounce_handler_turn_page', function(event) {
+			bounce_handler_turn_page($(this).attr("data-page"));
 			event.preventDefault();
 		});
 		
-		$jq("body").on("submit", "#parse_bounces_form", function(event) {
+		$("body").on("submit", "#parse_bounces_form", function(event) {
 			event.preventDefault();
 		});
-		$jq("body").on("click", "#parse_bounces_button", function(event) {
+		$("body").on("click", "#parse_bounces_button", function(event) {
 			ajax_parse_bounces_results(); 
 		}); 
 	}
-	if ($jq("#plugins_bounce_handler_parse_bounce").length) {
+	if ($("#plugins_bounce_handler_parse_bounce").length) {
 		bounce_handler_parse_bounces();
-		$jq("#parse_bounces_button").on("click", function(event) {
+		$("#parse_bounces_button").on("click", function(event) {
 			bounce_handler_parse_bounces();
 		});
 	}
-	if ($jq("#manually_enter_bounces").length) {
-		$jq("#manually_enter_bounces_button").on("click", function(event) {
+	if ($("#manually_enter_bounces").length) {
+		$("#manually_enter_bounces_button").on("click", function(event) {
 			bounce_handler_manually_enter_bounces();
 		});
 	}
 	
 	// Plugins >> Bridge
-	if ($jq("#plugins_bridge_default").length) {
+	if ($("#plugins_bridge_default").length) {
 
-		$jq("body").on("click", ".plugins_bridge_test_pop3", function(event) {
+		$("body").on("click", ".plugins_bridge_test_pop3", function(event) {
 			event.preventDefault();
 			plugins_bridge_test_pop3();
 		});
 
-		$jq("body").on("click", '.plugins_bridge_manually_check_messages', function(event) {
+		$("body").on("click", '.plugins_bridge_manually_check_messages', function(event) {
 			event.preventDefault();
 			plugins_bridge_manually_check_messages();
 		});
 		
-		$jq("body").on("click", '.list_email_setup', function(event) {
+		$("body").on("click", '.list_email_setup', function(event) {
 			bridge_setup_list_email_type_params();
 		});
 		
@@ -433,33 +433,33 @@ $jq(document).ready(function() {
 	}
 	
 	// Plugins >> Change List Shortname
-	if($jq("#plugins_change_list_shortname").length) { 
-		$jq("body").on("submit", "#change_name_form", function(event) {
+	if($("#plugins_change_list_shortname").length) { 
+		$("body").on("submit", "#change_name_form", function(event) {
 			event.preventDefault();
 		});
 		
-		$jq("body").on("click", "#verify_button", function(event) {
-			$jq.colorbox({
+		$("body").on("click", "#verify_button", function(event) {
+			$.colorbox({
 				top: 0, 
 				fixed: true, 
 				initialHeight: 50, 
 				maxHeight: 480, 
 				maxWidth: 649,
 				opacity: .50, 
-				href: $jq("#plugin_url").val(),
+				href: $("#plugin_url").val(),
 				data: {
-						flavor: $jq('#flavor').val(), 
-						new_name: $jq('#new_name').val() 
+						flavor: $('#flavor').val(), 
+						new_name: $('#new_name').val() 
 				}
 			});
 		});
 	}
 
 	// Plugins >> Mailing Monitor
-	if ($jq("#plugins_mailing_monitor_default").length) {
+	if ($("#plugins_mailing_monitor_default").length) {
 
 		plugins_mailing_monitor();
-		$jq("#mailing_monitor_button").live("click", function(event) {
+		$("#mailing_monitor_button").live("click", function(event) {
 			event.preventDefault();
 			plugins_mailing_monitor();
 		});
@@ -469,8 +469,8 @@ $jq(document).ready(function() {
 
 
 	// Plugins >> Beatitude
-	if ($jq("#plugins_beatitude_schedule_form").length) {		
-		$jq("body").on("click", ".preview_message_receivers", function(event) {
+	if ($("#plugins_beatitude_schedule_form").length) {		
+		$("body").on("click", ".preview_message_receivers", function(event) {
 			event.preventDefault();
 			preview_message_receivers();
 		});
@@ -478,29 +478,29 @@ $jq(document).ready(function() {
 	
 	
 	// Plugins >> Tracker
-	if ($jq("#plugins_tracker_message_report").length) {
+	if ($("#plugins_tracker_message_report").length) {
 		update_plugins_tracker_message_report();
 	}
 
-	if ($jq("#plugins_tracker_default").length) {
+	if ($("#plugins_tracker_default").length) {
 		tracker_parse_links_setup();
 		message_history_html();
 		google.setOnLoadCallback(drawSubscriberHistoryChart());
 		
-		$jq("body").on("change", '#tracker_record_view_count', function(event) { 
+		$("body").on("change", '#tracker_record_view_count', function(event) { 
 			tracker_change_record_view();
 		}); 
 		
-		$jq("body").on("click", '.tracker_turn_page', function(event) {
-			tracker_turn_page($jq(this).attr("data-page"));
+		$("body").on("click", '.tracker_turn_page', function(event) {
+			tracker_turn_page($(this).attr("data-page"));
 			event.preventDefault();
 		});
-		$jq("body").on("click", '.tracker_purge_log', function(event) {
+		$("body").on("click", '.tracker_purge_log', function(event) {
 			tracker_purge_log();
 			event.preventDefault();
 		});
 		
-		$jq("body").on("click", '.tracker_parse_links_setup', function(event) {
+		$("body").on("click", '.tracker_parse_links_setup', function(event) {
 			tracker_parse_links_setup();
 		});
 		
@@ -508,26 +508,26 @@ $jq(document).ready(function() {
 		
 	}
 	// Plugins >> Password Protect Directories
-	if ($jq("#plugins_password_protect_directories_default").length) {
-		$jq("#change_password_button").live("click", function(event) {
+	if ($("#plugins_password_protect_directories_default").length) {
+		$("#change_password_button").live("click", function(event) {
 			password_protect_directories_show_change_password_form();
 		});
 	}
 
 	// Plugins >> Log Viewer
-	if ($jq("#plugin_log_viewer_default").length) {
+	if ($("#plugin_log_viewer_default").length) {
 		view_logs_results();
 
-		$jq("#log_name").on("change", function(event) {
+		$("#log_name").on("change", function(event) {
 			view_logs_results();
 		});
-		$jq("#lines").on("change", function(event) {
+		$("#lines").on("change", function(event) {
 			view_logs_results();
 		});
-		$jq("#refresh_button").on("click", function(event) {
+		$("#refresh_button").on("click", function(event) {
 			view_logs_results();
 		});
-		$jq("#delete_log").on("click", function(event) {
+		$("#delete_log").on("click", function(event) {
 			delete_log();
 		});
 	}
@@ -535,36 +535,36 @@ $jq(document).ready(function() {
 
 
 	/* Global */
-	$jq(".previous").live("click", function(event) {
+	$(".previous").live("click", function(event) {
 		event.preventDefault();
 		history.back();
 	});
 
-	$jq(".fade_me").live("click", function(event) {
-		$jq('#alertbox').effect('fade');
+	$(".fade_me").live("click", function(event) {
+		$('#alertbox').effect('fade');
 		event.preventDefault();
 	});
 
-	$jq('.toggleCheckboxes').live("click", function(event) {
+	$('.toggleCheckboxes').live("click", function(event) {
 		toggleCheckboxes(
-		$jq(this).prop("checked"), $jq(this).attr("data-target_class"));
+		$(this).prop("checked"), $(this).attr("data-target_class"));
 	});
-	$jq('.linkToggleCheckboxes').live("click", function(event) {
+	$('.linkToggleCheckboxes').live("click", function(event) {
 		event.preventDefault();
 		var state = true;
-		if ($jq(this).attr("data-state") == "false") {
+		if ($(this).attr("data-state") == "false") {
 			state = false;
 		}
 		toggleCheckboxes(
-		state, $jq(this).attr("data-target_class"));
+		state, $(this).attr("data-target_class"));
 	});
 
-	$jq('.toggleDivs').live("click", function(event) {
+	$('.toggleDivs').live("click", function(event) {
 		event.preventDefault();
-		toggleDisplay($jq(this).attr("data-target"));
+		toggleDisplay($(this).attr("data-target"));
 	});
-	$jq('.radio_toggleDivs').live("click", function(event) {
-		toggleDisplay($jq(this).attr("data-target"));
+	$('.radio_toggleDivs').live("click", function(event) {
+		toggleDisplay($(this).attr("data-target"));
 	});
 		
 });
@@ -582,8 +582,8 @@ function admin_menu_subscriber_count_notification() {
 function admin_menu_notification(flavor, target_class) { 
 	var r =  60 * 5 * 1000; // Every 5 minutes. 
 	var refresh_loop = function(no_loop) {
-		var request = $jq.ajax({	
-			url: $jq('#navcontainer').attr("data-s_program_url"),
+		var request = $.ajax({	
+			url: $('#navcontainer').attr("data-s_program_url"),
 			type: "POST",
 			cache: false,
 			data: {
@@ -592,11 +592,11 @@ function admin_menu_notification(flavor, target_class) {
 			dataType: "html"
 		});
 		request.done(function(content) {
-			if($jq('.' + target_class + '_notification').length) { 
-				$jq('.' + target_class + '_notification').remove();	
+			if($('.' + target_class + '_notification').length) { 
+				$('.' + target_class + '_notification').remove();	
 			}
 			//console.log('update! ' + target_class); 
-			$jq('.' + target_class).append('<span class="' + target_class + '_notification"> ' + content + '</span>');
+			$('.' + target_class).append('<span class="' + target_class + '_notification"> ' + content + '</span>');
 		});
 			if (no_loop != 1) {
 				setTimeout(
@@ -612,8 +612,8 @@ function admin_menu_notification(flavor, target_class) {
 function update_sending_monitor_interface(message_id, type, target_id, refresh_after) {
 	var r = refresh_after * 1000;
 	var refresh_loop = function(no_loop) {
-			var request = $jq.ajax({
-				url: $jq("#s_program_url").val(),
+			var request = $.ajax({
+				url: $("#s_program_url").val(),
 				type: "POST",
 				cache: false,
 				data: {
@@ -625,9 +625,9 @@ function update_sending_monitor_interface(message_id, type, target_id, refresh_a
 				dataType: "html"
 			});
 			request.done(function(content) {
-				$jq("#" + target_id).html(content);
-				$jq("#progressbar").progressbar({
-					value: ($jq("#progressbar_percent").val() / 1)
+				$("#" + target_id).html(content);
+				$("#progressbar").progressbar({
+					value: ($("#progressbar_percent").val() / 1)
 				});
 			});
 			if (no_loop != 1) {
@@ -642,7 +642,7 @@ function update_sending_monitor_interface(message_id, type, target_id, refresh_a
 
 function refresh_tracker_plugin(tracker_url, message_id, target_id) {
 	var tracker_refresh_loop = function(no_loop) {
-			$jq("#tracker_reports_container").load(tracker_url, {
+			$("#tracker_reports_container").load(tracker_url, {
 				chrome: 0,
 				f: "m",
 				mid: message_id
@@ -664,7 +664,7 @@ function refresh_tracker_plugin(tracker_url, message_id, target_id) {
 // Membership >> Invite/Add
 
 function check_status() {
-	$jq("#show_progress").show();
+	$("#show_progress").show();
 	keep_updating_status_bar = 1;
 	update_status_bar();
 }
@@ -679,29 +679,29 @@ function update_status_bar() {
 				return;
 			}
 			// console.log('update_status_bar_loop called'); 
-			var request = $jq.ajax({
-				url: $jq("#s_program_url").val(),
+			var request = $.ajax({
+				url: $("#s_program_url").val(),
 				type: "GET",
 				data: {
 					f: 'check_status',
-					new_email_file: $jq('#new_email_file').val(),
-					rand_string: $jq('#rand_string').val()
+					new_email_file: $('#new_email_file').val(),
+					rand_string: $('#rand_string').val()
 				},
 				dataType: "json",
 				success: function(data) {
 					//console.log('data.percent:"' + data.percent +  '"'); 
-					//$jq.each(data, function(key, val) {
+					//$.each(data, function(key, val) {
 					//		console.log(key + ' => ' + val); 
 					//});
 					if (data.percent > 0) {
-						$jq("#progressbar").progressbar({
+						$("#progressbar").progressbar({
 							value: data.percent
 						});
-						$jq('#upload_status').html('<p>Uploading File: ' + data.percent + '%</p>');
+						$('#upload_status').html('<p>Uploading File: ' + data.percent + '%</p>');
 						if (data.percent == 100) {
 							keep_updating_status_bar = 0;
 							no_loop = 1;
-							$jq('#upload_status').html('<p>Upload Complete! Processing...</p>');
+							$('#upload_status').html('<p>Upload Complete! Processing...</p>');
 						}
 						//console.log('done?'); 
 					}
@@ -725,65 +725,65 @@ function update_status_bar() {
 /* Membership >> View List */
 
 function view_list_viewport(initial) {
-	$jq("#view_list_viewport_loading").html('<p class="alert">Loading...</p>');
-	var request = $jq.ajax({
-		url: $jq("#s_program_url").val(),
+	$("#view_list_viewport_loading").html('<p class="alert">Loading...</p>');
+	var request = $.ajax({
+		url: $("#s_program_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
 			f: 'view_list',
 			mode: 'viewport',
-			type: $jq("#type").val(),
-			page: $jq("#page").val(),
-			query: $jq("#query").val(),
-			order_by: $jq("#order_by").val(),
-			order_dir: $jq("#order_dir").val()
+			type: $("#type").val(),
+			page: $("#page").val(),
+			query: $("#query").val(),
+			order_by: $("#order_by").val(),
+			order_dir: $("#order_dir").val()
 		},
 		dataType: "html"
 	});
 	request.done(function(content) {
 
 		if (initial == 1) {
-			$jq("#view_list_viewport").hide();
-			$jq("#view_list_viewport").html(content);
-			$jq("#view_list_viewport").show('fade');
+			$("#view_list_viewport").hide();
+			$("#view_list_viewport").html(content);
+			$("#view_list_viewport").show('fade');
 		} else {
-			$jq("#view_list_viewport").html(content);
+			$("#view_list_viewport").html(content);
 		}
 
-		$jq("#view_list_viewport_loading").html('<p class="alert">&nbsp;</p>');
+		$("#view_list_viewport_loading").html('<p class="alert">&nbsp;</p>');
 
 		google.setOnLoadCallback(drawTrackerDomainBreakdownChart());
 	});
 }
 
 function turn_page(page_to_turn_to) {
-	$jq("#page").val(page_to_turn_to);
+	$("#page").val(page_to_turn_to);
 	view_list_viewport();
 }
 
 function change_type(type_to_go_to) {
-	$jq("#type").val(type_to_go_to);
-	$jq("#page").val(1);
+	$("#type").val(type_to_go_to);
+	$("#page").val(1);
 	view_list_viewport();
 }
 
 function search_list() {
-	$jq("#page").val(1);
-	$jq("#query").val($jq("#search_query").val());
+	$("#page").val(1);
+	$("#query").val($("#search_query").val());
 	view_list_viewport();
 }
 
 function clear_search() {
-	$jq("#query").val('');
-	$jq("#page").val(1);
+	$("#query").val('');
+	$("#page").val(1);
 	view_list_viewport();
 }
 
 function change_order(order_by, order_dir) {
-	$jq("#order_by").val(order_by);
-	$jq("#order_dir").val(order_dir);
-	$jq("#page").val(1);
+	$("#order_by").val(order_by);
+	$("#order_dir").val(order_dir);
+	$("#page").val(1);
 	view_list_viewport();
 }
 
@@ -791,13 +791,13 @@ var domain_breakdown_chart; // you've got to be serious...
 var domain_breakdown_chart_data;
 
 function drawTrackerDomainBreakdownChart() {
-	$jq("#domain_break_down_chart_loading").html('<p class="alert">Loading...</p>');
-	$jq.ajax({
-		url: $jq("#s_program_url").val(),
+	$("#domain_break_down_chart_loading").html('<p class="alert">Loading...</p>');
+	$.ajax({
+		url: $("#s_program_url").val(),
 		dataType: "json",
 		data: {
 			f: 'domain_breakdown_json',
-			type: $jq("#type").val(),
+			type: $("#type").val(),
 		},
 		async: true,
 		success: function(jsonData) {
@@ -811,8 +811,8 @@ function drawTrackerDomainBreakdownChart() {
 					width: "90%",
 					height: "90%"
 				},
-				width: $jq('#domain_break_down_chart').attr("data-width"),
-				height: $jq('#domain_break_down_chart').attr("data-height"),
+				width: $('#domain_break_down_chart').attr("data-width"),
+				height: $('#domain_break_down_chart').attr("data-height"),
 				pieSliceTextStyle: {
 					color: '#FFFFFF'
 				},
@@ -820,7 +820,7 @@ function drawTrackerDomainBreakdownChart() {
 				is3D: true
 			};
 			domain_breakdown_chart.draw(domain_breakdown_chart_data, options);
-			$jq("#domain_break_down_chart_loading").html('<p class="alert">&nbsp;</p>');
+			$("#domain_break_down_chart_loading").html('<p class="alert">&nbsp;</p>');
 			google.visualization.events.addListener(domain_breakdown_chart, 'select', selectHandler);
 
 		},
@@ -834,8 +834,8 @@ function selectHandler(event) {
 	var str = domain_breakdown_chart_data.getFormattedValue(item.row, 0);
 	// alert(str); 
 	if (str != 'other') {
-		$jq("#query").val($jq("#search_query").val("@" + str));
-		$jq("#page").val(1);
+		$("#query").val($("#search_query").val("@" + str));
+		$("#page").val(1);
 		search_list()
 	}
 }
@@ -844,7 +844,7 @@ function selectHandler(event) {
 // Membership >> List Activity
 
 function sub_unsub_trend_chart() {
-	$jq("#amount").on("change", function(event) {
+	$("#amount").on("change", function(event) {
 		draw_sub_unsub_trend_chart();
 	});
 
@@ -876,24 +876,24 @@ backgroundColor: {
 	var sub_unsub_trend_c = new google.visualization.AreaChart(document.getElementById('sub_unsub_trends'));
 
 	function draw_sub_unsub_trend_chart() {
-		$jq("#amount").prop('disabled', true);
+		$("#amount").prop('disabled', true);
 		google.visualization.events.addListener(sub_unsub_trend_c, 'ready', function() {
-			$jq("#amount").prop('disabled', false);
+			$("#amount").prop('disabled', false);
 		});
 
-		$jq("#sub_unsub_trends_loading").html('<p class="alert">Loading...</p>');
-		$jq.ajax({
-			url: $jq("#s_program_url").val(),
+		$("#sub_unsub_trends_loading").html('<p class="alert">Loading...</p>');
+		$.ajax({
+			url: $("#s_program_url").val(),
 			data: {
 				f: 'sub_unsub_trends_json',
-				days: $jq("#amount option:selected").val()
+				days: $("#amount option:selected").val()
 			},
 			dataType: "json",
 			async: true,
 			success: function(jsonData) {
 				data = new google.visualization.DataTable(jsonData);
 				sub_unsub_trend_c.draw(data, options);
-				$jq("#sub_unsub_trends_loading").html('<p class="alert">&nbsp;</p>');
+				$("#sub_unsub_trends_loading").html('<p class="alert">&nbsp;</p>');
 			},
 		});
 	}
@@ -906,60 +906,60 @@ backgroundColor: {
 // Membership >> user@example.com
 
 function mailing_list_history() {
-	$jq("#mailing_list_history_loading").html('<p class="alert">Loading...</p>');
-	var request = $jq.ajax({
-		url: $jq("#s_program_url").val(),
+	$("#mailing_list_history_loading").html('<p class="alert">Loading...</p>');
+	var request = $.ajax({
+		url: $("#s_program_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
 			f: 'mailing_list_history',
-			email: $jq("#email").val()
+			email: $("#email").val()
 		},
 		dataType: "html"
 	});
 	request.done(function(content) {
-		$jq("#mailing_list_history").hide().html(content).show('fade');
+		$("#mailing_list_history").hide().html(content).show('fade');
 
-		$jq("#mailing_list_history_loading").html('<p class="alert">&nbsp;</p>');
+		$("#mailing_list_history_loading").html('<p class="alert">&nbsp;</p>');
 	});
 }
 
 function updateEmail() {
 	var is_for_all_lists = 0;
 	if (
-	$jq('#for_all_mailing_lists').val() == 1 && $jq("#for_all_mailing_lists").prop("checked") == true) {
+	$('#for_all_mailing_lists').val() == 1 && $("#for_all_mailing_lists").prop("checked") == true) {
 		is_for_all_lists = 1;
 	}
-	$jq("#update_email_results_loading").html('<p class="alert">Loading...</p>');
-	var request = $jq.ajax({
-		url: $jq("#s_program_url").val(),
+	$("#update_email_results_loading").html('<p class="alert">Loading...</p>');
+	var request = $.ajax({
+		url: $("#s_program_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
 			f: 'update_email_results',
-			updated_email: $jq("#updated_email").val(),
-			email: $jq("#original_email").val(),
+			updated_email: $("#updated_email").val(),
+			email: $("#original_email").val(),
 			for_all_lists: is_for_all_lists
 		},
 		dataType: "html"
 	});
 	request.done(function(content) {
-		$jq("#update_email_results").html(content);
-		$jq("#update_email_results_loading").html('<p class="alert">&nbsp;</p>');
-		$jq("#update_email_results").show('blind');
+		$("#update_email_results").html(content);
+		$("#update_email_results_loading").html('<p class="alert">&nbsp;</p>');
+		$("#update_email_results").show('blind');
 	});
 }
 
 function show_change_profile_password_form() {
-	$jq("#change_profile_password_button").hide('blind');
-	$jq("#change_profile_password_form").show('blind');
+	$("#change_profile_password_button").hide('blind');
+	$("#change_profile_password_form").show('blind');
 }
 
 // Membership >> Invite 
 
 function show_customize_invite_message() {
-	$jq('#customize_invite_message_button').hide('blind');
-	$jq('#customize_invite_message_form').show('blind');
+	$('#customize_invite_message_button').hide('blind');
+	$('#customize_invite_message_form').show('blind');
 }
 
 // Mail Sending >> Sending Preferences
@@ -969,86 +969,86 @@ function sending_prefs_setup(){
 	var hidden = new Array();
 	var visible = new Array(); 
 	
-	if ($jq("#sending_method_sendmail").prop("checked") == true) {
+	if ($("#sending_method_sendmail").prop("checked") == true) {
 		hidden  = ['smtp_preferences', 'amazon_ses_preferences'];
 		visible =  ['sendmail_options'];
 	}
-	if ($jq("#sending_method_smtp").prop("checked") == true) {
+	if ($("#sending_method_smtp").prop("checked") == true) {
 		hidden  = ['sendmail_options', 'amazon_ses_preferences'];
 		visible =  ['smtp_preferences'];
 	}
-	if ($jq("#sending_method_amazon_ses").prop("checked") == true) {
+	if ($("#sending_method_amazon_ses").prop("checked") == true) {
 		hidden  = ['sendmail_options', 'smtp_preferences'];
 		visible =  ['amazon_ses_preferences'];
 	}
 	
 	var i; 
 	for(i = 0; i < hidden.length; i += 1){ 
-		if($jq('#' + hidden[i]).is(':visible')) { 
-			$jq('#' + hidden[i]).hide('blind');
+		if($('#' + hidden[i]).is(':visible')) { 
+			$('#' + hidden[i]).hide('blind');
 		}
 	}
 	i = 0;  
 	for(i = 0; i < visible.length; i += 1){ 
-		if($jq('#' + visible[i]).is(':hidden')) { 
-			$jq('#' + visible[i]).show('blind');
+		if($('#' + visible[i]).is(':hidden')) { 
+			$('#' + visible[i]).show('blind');
 		}
 	}
 }
 
 function toggle_SASL_options(){ 
-	if ($jq("#use_sasl_smtp_auth").prop("checked") == true) {
-		if ($jq('#SASL_options').is(':hidden')) {
-			$jq('#SASL_options').show('blind');
+	if ($("#use_sasl_smtp_auth").prop("checked") == true) {
+		if ($('#SASL_options').is(':hidden')) {
+			$('#SASL_options').show('blind');
 		}
 	}
 	else { 
-		if ($jq('#SASL_options').is(':visible')) {
-			$jq('#SASL_options').hide('blind');
+		if ($('#SASL_options').is(':visible')) {
+			$('#SASL_options').hide('blind');
 		}
 	}
 }
 function toggle_pop_before_SMTP_options(){ 
-	if ($jq("#use_pop_before_smtp").prop("checked") == true) {
-		if ($jq('#pop_before_smtp_options').is(':hidden')) {
-			$jq('#pop_before_smtp_options').show('blind');
+	if ($("#use_pop_before_smtp").prop("checked") == true) {
+		if ($('#pop_before_smtp_options').is(':hidden')) {
+			$('#pop_before_smtp_options').show('blind');
 		}
 	}
 	else { 
-		if ($jq('#pop_before_smtp_options').is(':visible')) {
-			$jq('#pop_before_smtp_options').hide('blind');
+		if ($('#pop_before_smtp_options').is(':visible')) {
+			$('#pop_before_smtp_options').hide('blind');
 		}
 	}
 }
 
 function test_sending_preferences() {
 	
-	$jq.colorbox({
+	$.colorbox({
 		top: 0, 
 		fixed: true, 
 		initialHeight: 50, 
 		maxHeight: 480, 
 		maxWidth: 649,
 		opacity: .50, 
-		href: $jq("#s_program_url").val(),
+		href: $("#s_program_url").val(),
 		data: {
 			f: 'sending_preferences_test',
-			add_sendmail_f_flag: $jq('#add_sendmail_f_flag').val(),
-			smtp_server: $jq('#smtp_server').val(),
-			smtp_port: $jq('#smtp_port').val(),
-			use_smtp_ssl: $jq('#use_smtp_ssl').val(),
-			use_sasl_smtp_auth: $jq('#use_sasl_smtp_auth').val(),
-			sasl_auth_mechanism: $jq('#sasl_auth_mechanism').val(),
-			sasl_smtp_username: $jq('#sasl_smtp_username').val(),
-			sasl_smtp_password: $jq('#sasl_smtp_password').val(),
-			use_pop_before_smtp: $jq('#use_pop_before_smtp').val(),
-			pop3_server: $jq('#pop3_server').val(),
-			pop3_username: $jq('#pop3_username').val(),
-			pop3_password: $jq('#pop3_password').val(),
-			pop3_use_ssl: $jq('#pop3_use_ssl').val(),
-			set_smtp_sender: $jq('#set_smtp_sender').val(),
-			process: $jq('#process').val(),
-			sending_method: $jq('input[name=sending_method]:checked').val()
+			add_sendmail_f_flag: $('#add_sendmail_f_flag').val(),
+			smtp_server: $('#smtp_server').val(),
+			smtp_port: $('#smtp_port').val(),
+			use_smtp_ssl: $('#use_smtp_ssl').val(),
+			use_sasl_smtp_auth: $('#use_sasl_smtp_auth').val(),
+			sasl_auth_mechanism: $('#sasl_auth_mechanism').val(),
+			sasl_smtp_username: $('#sasl_smtp_username').val(),
+			sasl_smtp_password: $('#sasl_smtp_password').val(),
+			use_pop_before_smtp: $('#use_pop_before_smtp').val(),
+			pop3_server: $('#pop3_server').val(),
+			pop3_username: $('#pop3_username').val(),
+			pop3_password: $('#pop3_password').val(),
+			pop3_use_ssl: $('#pop3_use_ssl').val(),
+			set_smtp_sender: $('#set_smtp_sender').val(),
+			process: $('#process').val(),
+			sending_method: $('input[name=sending_method]:checked').val()
 			}
 		});
 }
@@ -1058,21 +1058,21 @@ function test_sending_preferences() {
 
 
 function amazon_verify_email() {
-	$jq("#amazon_ses_verify_email_results").hide('fade');
-	$jq("#amazon_ses_verify_email_loading").html('<p class="alert">Loading...</p>');
-	var request = $jq.ajax({
-		url: $jq("#s_program_url").val(),
+	$("#amazon_ses_verify_email_results").hide('fade');
+	$("#amazon_ses_verify_email_loading").html('<p class="alert">Loading...</p>');
+	var request = $.ajax({
+		url: $("#s_program_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
 			f: 'amazon_ses_verify_email',
-			amazon_ses_verify_email: $jq("#amazon_ses_verify_email").val()
+			amazon_ses_verify_email: $("#amazon_ses_verify_email").val()
 		},
 		dataType: "html"
 	});
 	request.done(function(content) {
-		$jq("#amazon_ses_verify_email_results").html(content).show('fade');
-		$jq("#amazon_ses_verify_email_loading").html('<p class="alert">&nbsp;</p>');
+		$("#amazon_ses_verify_email_results").html(content).show('fade');
+		$("#amazon_ses_verify_email_loading").html('<p class="alert">&nbsp;</p>');
 	});
 }
 
@@ -1080,38 +1080,38 @@ function amazon_verify_email() {
 // Mail Sending >> Mass Mailing Preferences 
 
 function previewBatchSendingSpeed() {
-	$jq("#previewBatchSendingSpeed_loading").hide().html('<p class="alert">Loading...</p>').show('fade');
+	$("#previewBatchSendingSpeed_loading").hide().html('<p class="alert">Loading...</p>').show('fade');
 
 
 	var enable_bulk_batching = 0;
-	if ($jq('#enable_bulk_batching').prop('checked') == true) {
+	if ($('#enable_bulk_batching').prop('checked') == true) {
 		enable_bulk_batching = 1;
 	}
 	var amazon_ses_auto_batch_settings = 0;
-	if ($jq("#amazon_ses_get_stats").length) {
-		if ($jq('#amazon_ses_auto_batch_settings').prop('checked') == true) {
+	if ($("#amazon_ses_get_stats").length) {
+		if ($('#amazon_ses_auto_batch_settings').prop('checked') == true) {
 			amazon_ses_auto_batch_settings = 1;
 		}
 	}
 
-	var request = $jq.ajax({
-		url: $jq("#s_program_url").val(),
+	var request = $.ajax({
+		url: $("#s_program_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
 			f: 'previewBatchSendingSpeed',
 			enable_bulk_batching: enable_bulk_batching,
-			mass_send_amount: $jq('#mass_send_amount').val(),
-			bulk_sleep_amount: $jq('#bulk_sleep_amount').val(),
+			mass_send_amount: $('#mass_send_amount').val(),
+			bulk_sleep_amount: $('#bulk_sleep_amount').val(),
 			amazon_ses_auto_batch_settings: amazon_ses_auto_batch_settings
 		},
 		dataType: "html"
 	});
 	request.done(function(content) {
-		$jq("#previewBatchSendingSpeed").hide("fade", function() {
-			$jq("#previewBatchSendingSpeed").html(content);
-			$jq("#previewBatchSendingSpeed_loading").html('');
-			$jq("#previewBatchSendingSpeed").show('fade');
+		$("#previewBatchSendingSpeed").hide("fade", function() {
+			$("#previewBatchSendingSpeed").html(content);
+			$("#previewBatchSendingSpeed_loading").html('');
+			$("#previewBatchSendingSpeed").show('fade');
 		});
 	});
 
@@ -1119,9 +1119,9 @@ function previewBatchSendingSpeed() {
 }
 
 function amazon_ses_get_stats() {
-	$jq("#amazon_ses_get_stats_loading").hide().html('<p class="alert">Loading...</p>').show('fade');
-	var request = $jq.ajax({
-		url: $jq("#s_program_url").val(),
+	$("#amazon_ses_get_stats_loading").hide().html('<p class="alert">Loading...</p>').show('fade');
+	var request = $.ajax({
+		url: $("#s_program_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
@@ -1130,20 +1130,20 @@ function amazon_ses_get_stats() {
 		dataType: "html"
 	});
 	request.done(function(content) {
-		$jq("#amazon_ses_get_stats").hide("fade", function() {
-			$jq("#amazon_ses_get_stats").html(content);
-			$jq("#amazon_ses_get_stats_loading").html('');
-			$jq("#amazon_ses_get_stats").show('fade');
+		$("#amazon_ses_get_stats").hide("fade", function() {
+			$("#amazon_ses_get_stats").html(content);
+			$("#amazon_ses_get_stats_loading").html('');
+			$("#amazon_ses_get_stats").show('fade');
 		});
 	});
 }
 
 function toggleManualBatchSettings() {
-	if ($jq("#amazon_ses_auto_batch_settings").prop("checked") == true) {
-		$jq("#manual_batch_settings").hide('fade');
+	if ($("#amazon_ses_auto_batch_settings").prop("checked") == true) {
+		$("#manual_batch_settings").hide('fade');
 	} else {
-		if ($jq('#manual_batch_settings').is(":hidden")) {
-			$jq("#manual_batch_settings").show('fade');
+		if ($('#manual_batch_settings').is(":hidden")) {
+			$("#manual_batch_settings").show('fade');
 		}
 	}
 	previewBatchSendingSpeed();
@@ -1153,130 +1153,130 @@ function toggleManualBatchSettings() {
 
 function installer_test_sql_connection() {
 	var target_div = 'test_sql_connection_results';
-	$jq("#" + target_div).html('<p class="alert">Loading...</p>');
-	if ($jq("#" + target_div).is(':hidden')) {
-		$jq("#" + target_div).show();
+	$("#" + target_div).html('<p class="alert">Loading...</p>');
+	if ($("#" + target_div).is(':hidden')) {
+		$("#" + target_div).show();
 	}
 
-	var request = $jq.ajax({
-		url: $jq("#self_url").val(),
+	var request = $.ajax({
+		url: $("#self_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
 			f: 'cgi_test_sql_connection',
-			backend: $jq("#backend").val(),
-			sql_server: $jq("#sql_server").val(),
-			sql_port: $jq("#sql_port").val(),
-			sql_database: $jq("#sql_database").val(),
-			sql_username: $jq("#sql_username").val(),
-			sql_password: $jq("#sql_password").val()
+			backend: $("#backend").val(),
+			sql_server: $("#sql_server").val(),
+			sql_port: $("#sql_port").val(),
+			sql_database: $("#sql_database").val(),
+			sql_username: $("#sql_username").val(),
+			sql_password: $("#sql_password").val()
 		},
 		dataType: "html"
 	});
 	request.done(function(content) {
-		//$jq("#" + target_div).hide('fade');
-		$jq("#" + target_div).html(content);
-		//$jq("#" + target_div).show('fade');
+		//$("#" + target_div).hide('fade');
+		$("#" + target_div).html(content);
+		//$("#" + target_div).show('fade');
 	});
 
 }
 
 function installer_test_pop3_connection() {
 	var target_div = 'test_bounce_handler_pop3_connection_results';
-	$jq("#" + target_div).html('<p class="alert">Loading...</p>');
-	if ($jq("#" + target_div).is(':hidden')) {
-		$jq("#" + target_div).show();
+	$("#" + target_div).html('<p class="alert">Loading...</p>');
+	if ($("#" + target_div).is(':hidden')) {
+		$("#" + target_div).show();
 	}
 
-	var request = $jq.ajax({
-		url: $jq("#self_url").val(),
+	var request = $.ajax({
+		url: $("#self_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
 			f: 'cgi_test_pop3_connection',
-			bounce_handler_server: $jq("#bounce_handler_server").val(),
-			bounce_handler_username: $jq("#bounce_handler_username").val(),
-			bounce_handler_password: $jq("#bounce_handler_password").val()
+			bounce_handler_server: $("#bounce_handler_server").val(),
+			bounce_handler_username: $("#bounce_handler_username").val(),
+			bounce_handler_password: $("#bounce_handler_password").val()
 		},
 		dataType: "html"
 	});
 	request.done(function(content) {
-		//$jq("#" + target_div).hide('fade');
-		$jq("#" + target_div).html(content);
-		//$jq("#" + target_div).show('fade');
+		//$("#" + target_div).hide('fade');
+		$("#" + target_div).html(content);
+		//$("#" + target_div).show('fade');
 	});
 }
 
 function installer_dada_root_pass_options() { 
-	if ($jq("#dada_pass_use_orig").prop("checked") == true) {
-		if ($jq('#dada_root_pass_fields').is(':visible')) {
-			$jq('#dada_root_pass_fields').hide('blind');
+	if ($("#dada_pass_use_orig").prop("checked") == true) {
+		if ($('#dada_root_pass_fields').is(':visible')) {
+			$('#dada_root_pass_fields').hide('blind');
 		}
 	}
-	if ($jq("#dada_pass_use_orig").prop("checked") == false) {
-		if ($jq('#dada_root_pass_fields').is(':hidden')) {
-			$jq('#dada_root_pass_fields').show('blind');
+	if ($("#dada_pass_use_orig").prop("checked") == false) {
+		if ($('#dada_root_pass_fields').is(':hidden')) {
+			$('#dada_root_pass_fields').show('blind');
 		}
 	}
 	
 }
 function installer_toggleSQL_options() {
 
-	var selected = $jq("#backend option:selected").val();
+	var selected = $("#backend option:selected").val();
 	if (selected == 'mysql' || selected == 'Pg') {
-		if ($jq('#sql_info').is(':hidden')) {
-			$jq('#sql_info').show('blind');
+		if ($('#sql_info').is(':hidden')) {
+			$('#sql_info').show('blind');
 		}
 	} else {
-		if ($jq('#sql_info').is(':visible')) {
-			$jq('#sql_info').hide('blind');
+		if ($('#sql_info').is(':visible')) {
+			$('#sql_info').hide('blind');
 		}
 	}
 }
 
 function installer_toggle_dada_files_dirOptions() {
 
-	if ($jq("#dada_files_dir_setup_auto").prop("checked") == true) {
-		if ($jq('#manual_dada_files_dir_setup').is(':visible')) {
-			$jq('#manual_dada_files_dir_setup').hide('blind');
+	if ($("#dada_files_dir_setup_auto").prop("checked") == true) {
+		if ($('#manual_dada_files_dir_setup').is(':visible')) {
+			$('#manual_dada_files_dir_setup').hide('blind');
 		}
 	}
-	if ($jq("#dada_files_dir_setup_manual").prop("checked") == true) {
-		if ($jq('#manual_dada_files_dir_setup').is(':hidden')) {
-			$jq('#manual_dada_files_dir_setup').show('blind');
+	if ($("#dada_files_dir_setup_manual").prop("checked") == true) {
+		if ($('#manual_dada_files_dir_setup').is(':hidden')) {
+			$('#manual_dada_files_dir_setup').show('blind');
 		}
 	}
 }
 
 function installer_togger_bounce_handler_config() {
-	if ($jq("#install_bounce_handler").prop("checked") == true) {
-		if ($jq('#additional_bounce_handler_configuration').is(':hidden')) {
-			$jq('#additional_bounce_handler_configuration').show('blind');
+	if ($("#install_bounce_handler").prop("checked") == true) {
+		if ($('#additional_bounce_handler_configuration').is(':hidden')) {
+			$('#additional_bounce_handler_configuration').show('blind');
 		}
 	} else {
-		if ($jq('#additional_bounce_handler_configuration').is(':visible')) {
-			$jq('#additional_bounce_handler_configuration').hide('blind');
+		if ($('#additional_bounce_handler_configuration').is(':visible')) {
+			$('#additional_bounce_handler_configuration').hide('blind');
 		}
 	}
 }
 
 function installer_toggle_wysiwyg_editors_options() {
-	if ($jq("#install_wysiwyg_editors").prop("checked") == true) {
-		if ($jq('#install_wysiwyg_editors_options').is(':hidden')) {
-			$jq('#install_wysiwyg_editors_options').show('blind');
+	if ($("#install_wysiwyg_editors").prop("checked") == true) {
+		if ($('#install_wysiwyg_editors_options').is(':hidden')) {
+			$('#install_wysiwyg_editors_options').show('blind');
 		}
 	} else {
-		if ($jq('#install_wysiwyg_editors_options').is(':visible')) {
-			$jq('#install_wysiwyg_editors_options').hide('blind');
+		if ($('#install_wysiwyg_editors_options').is(':visible')) {
+			$('#install_wysiwyg_editors_options').hide('blind');
 		}
 	}
 }
 
 function installer_move_installer_dir() {
 
-	$jq("#move_results").hide();
-	var request = $jq.ajax({
-		url: $jq("#self_url").val(),
+	$("#move_results").hide();
+	var request = $.ajax({
+		url: $("#self_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
@@ -1285,8 +1285,8 @@ function installer_move_installer_dir() {
 		dataType: "html"
 	});
 	request.done(function(content) {
-		$jq("#move_results").html(content);
-		$jq("#move_results").show('blind');
+		$("#move_results").html(content);
+		$("#move_results").show('blind');
 	});
 }
 
@@ -1301,22 +1301,22 @@ function installer_move_installer_dir() {
 // Plugins >> Bounce Bounce Handler
 
 function bounce_handler_show_scorecard() {
-	$jq("#bounce_scorecard_loading").html('<p class="alert">Loading...</p>');
-	var request = $jq.ajax({
-		url: $jq("#plugin_url").val(),
+	$("#bounce_scorecard_loading").html('<p class="alert">Loading...</p>');
+	var request = $.ajax({
+		url: $("#plugin_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
 			flavor: 'cgi_scorecard',
-			page: $jq('#bounce_handler_page').val(),
+			page: $('#bounce_handler_page').val(),
 		},
 		dataType: "html"
 	});
 	request.done(function(content) {
-		$jq("#bounce_scorecard").hide('fade', function() {
-			$jq("#bounce_scorecard").html(content);
-			$jq("#bounce_scorecard").show('fade');
-			$jq("#bounce_scorecard_loading").html('<p class="alert">&nbsp;</p>');
+		$("#bounce_scorecard").hide('fade', function() {
+			$("#bounce_scorecard").html(content);
+			$("#bounce_scorecard").show('fade');
+			$("#bounce_scorecard_loading").html('<p class="alert">&nbsp;</p>');
 		});
 
 
@@ -1325,67 +1325,67 @@ function bounce_handler_show_scorecard() {
 
 
 function bounce_handler_turn_page(page_to_turn_to) {
-	$jq("#bounce_handler_page").val(page_to_turn_to);
+	$("#bounce_handler_page").val(page_to_turn_to);
 	bounce_handler_show_scorecard();
 }
 
 function bounce_handler_parse_bounces() {
-	$jq("#parse_bounce_results_loading").html('<p class="alert">Loading</p>');
-	$jq("#parse_bounces_button").val('Parsing...');
-	var request = $jq.ajax({
-		url: $jq("#plugin_url").val(),
+	$("#parse_bounce_results_loading").html('<p class="alert">Loading</p>');
+	$("#parse_bounces_button").val('Parsing...');
+	var request = $.ajax({
+		url: $("#plugin_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
 			flavor: 'ajax_parse_bounces_results',
-			parse_amount: $jq('#parse_amount').val(),
-			bounce_test: $jq('#bounce_test').val()
+			parse_amount: $('#parse_amount').val(),
+			bounce_test: $('#bounce_test').val()
 		},
 		dataType: "html"
 	});
 	request.done(function(content) {
-		$jq("#parse_bounce_results").html(content);
-		$jq("#parse_bounces_button").val('Parse Bounces');
-		$jq("#parse_bounce_results_loading").html('<p class="alert">&nbsp;</p>');
+		$("#parse_bounce_results").html(content);
+		$("#parse_bounces_button").val('Parse Bounces');
+		$("#parse_bounce_results_loading").html('<p class="alert">&nbsp;</p>');
 
 	});
 }
 
 function ajax_parse_bounces_results() { 	
-	$jq.colorbox({
+	$.colorbox({
 		top: 0, 
 		fixed: true, 
 		initialHeight: 50, 
 		maxHeight: 480, 
 		maxWidth: 649,
 		opacity: .50, 
-		href: $jq("#plugin_url").val(),
+		href: $("#plugin_url").val(),
 		data: {
 			flavor:    'ajax_parse_bounces_results',
-			parse_amount: $jq('#parse_amount').val(),
-			bounce_test:  $jq('#bounce_test').val()
+			parse_amount: $('#parse_amount').val(),
+			bounce_test:  $('#bounce_test').val()
 			}
 		});
 }
 
 function bounce_handler_manually_enter_bounces() { 
 	var target_id = 'manually_enter_bounces_results'; 
-	$jq("#" + target_id + "_loading").html('<p class="alert">Loading</p>');
-	$jq("#" + target_id).html('');
-	var request = $jq.ajax({
-		url: $jq("#plugin_url").val(),
+	$("#" + target_id + "_loading").html('<p class="alert">Loading</p>');
+	$("#" + target_id).html('');
+	var request = $.ajax({
+		url: $("#plugin_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
 			flavor: 'manually_enter_bounces',
-			process: $jq('#process').val(), 
-			msg:     $jq('#msg').val(),
+			process: $('#process').val(), 
+			msg:     $('#msg').val(),
 		},
 		dataType: "html"
 	});
 	request.done(function(content) {
-		$jq("#" + target_id).html(content);
-		$jq("#" + target_id + "_loading").html('<p class="alert">&nbsp;</p>');
+		$("#" + target_id).html(content);
+		$("#" + target_id + "_loading").html('<p class="alert">&nbsp;</p>');
 
 	});
 	
@@ -1395,53 +1395,53 @@ function bounce_handler_manually_enter_bounces() {
 // Plugins >> Bridge 
 
 function bridge_setup_list_email_type_params() { 
-	if ($jq("#mail_forward_pipe").prop("checked") == true) {
-		if ($jq('#bridge_mail_forward_pipe_params').is(':hidden')) {
-			$jq('#bridge_mail_forward_pipe_params').show('blind');
+	if ($("#mail_forward_pipe").prop("checked") == true) {
+		if ($('#bridge_mail_forward_pipe_params').is(':hidden')) {
+			$('#bridge_mail_forward_pipe_params').show('blind');
 		}
-		if ($jq('#bridge_pop3_account_params').is(':visible')) {
-			$jq('#bridge_pop3_account_params').hide('blind');
+		if ($('#bridge_pop3_account_params').is(':visible')) {
+			$('#bridge_pop3_account_params').hide('blind');
 		}
 	}
-	if ($jq("#pop3_account").prop("checked") == true) {
-		if ($jq('#bridge_pop3_account_params').is(':hidden')) {
-			$jq('#bridge_pop3_account_params').show('blind');
+	if ($("#pop3_account").prop("checked") == true) {
+		if ($('#bridge_pop3_account_params').is(':hidden')) {
+			$('#bridge_pop3_account_params').show('blind');
 		}
-		if ($jq('#bridge_mail_forward_pipe_params').is(':visible')) {
-			$jq('#bridge_mail_forward_pipe_params').hide('blind');
+		if ($('#bridge_mail_forward_pipe_params').is(':visible')) {
+			$('#bridge_mail_forward_pipe_params').hide('blind');
 		}
 	}	
 }
 
 function plugins_bridge_test_pop3() {	
-	$jq.colorbox({
+	$.colorbox({
 		top: 0, 
 		fixed: true, 
 		initialHeight: 50, 
 		maxHeight: 480, 
 		maxWidth: 649,
 		opacity: .50, 
-		href: $jq("#plugin_url").val(),
+		href: $("#plugin_url").val(),
 		data: {
 			flavor:    'cgi_test_pop3_ajax',
-			server:    $jq("#discussion_pop_server").val(), 
-			username:  $jq("#discussion_pop_username").val(),
-			password:  $jq("#discussion_pop_password").val(),
-			auth_mode: $jq("#discussion_pop_auth_mode option:selected").val(), 
-			use_ssl:   $jq("#discussion_pop_use_ssl").prop("checked")
+			server:    $("#discussion_pop_server").val(), 
+			username:  $("#discussion_pop_username").val(),
+			password:  $("#discussion_pop_password").val(),
+			auth_mode: $("#discussion_pop_auth_mode option:selected").val(), 
+			use_ssl:   $("#discussion_pop_use_ssl").prop("checked")
 			}
 		});
 }
 
 function plugins_bridge_manually_check_messages() {
-	$jq.colorbox({
+	$.colorbox({
 		top: 0, 
 		fixed: true, 
 		initialHeight: 50, 
 		maxHeight: 480, 
 		maxWidth: 649,
 		opacity: .50, 
-		href: $jq("#plugin_url").val(),
+		href: $("#plugin_url").val(),
 		data: {
 			flavor: 'admin_cgi_manual_start_ajax',
 			}
@@ -1451,9 +1451,9 @@ function plugins_bridge_manually_check_messages() {
 // Plugins >> Mailing Monitor 
 
 function plugins_mailing_monitor() {
-	$jq("#mailing_monitor_results_loading").html('<p class="alert">Loading...</p>');
-	var request = $jq.ajax({
-		url: $jq("#plugin_url").val(),
+	$("#mailing_monitor_results_loading").html('<p class="alert">Loading...</p>');
+	var request = $.ajax({
+		url: $("#plugin_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
@@ -1462,8 +1462,8 @@ function plugins_mailing_monitor() {
 		dataType: "html"
 	});
 	request.done(function(content) {
-		$jq("#mailing_monitor_results").html(content);
-		$jq("#mailing_monitor_results_loading").html('<p class="alert">&nbsp;</p>');
+		$("#mailing_monitor_results").html(content);
+		$("#mailing_monitor_results_loading").html('<p class="alert">&nbsp;</p>');
 	});
 
 }
@@ -1471,45 +1471,45 @@ function plugins_mailing_monitor() {
 
 function update_plugins_tracker_message_report() {
 
-	var $tabs = $jq("#tabs").tabs();
-	$jq('body').on('click', '.to_clickthroughs', function(event) {
+	var $tabs = $("#tabs").tabs();
+	$('body').on('click', '.to_clickthroughs', function(event) {
 		$tabs.tabs('select', 0);
 		return false;
 	});
-	$jq('body').on('click', '.to_opens', function(event) {
+	$('body').on('click', '.to_opens', function(event) {
 		$tabs.tabs('select', 1);
 		return false;
 	});
-	$jq('body').on('click', '.to_archive_views', function(event) {
+	$('body').on('click', '.to_archive_views', function(event) {
 		$tabs.tabs('select', 2);
 		return false;
 	});
-	$jq('body').on('click', '.to_forwards', function(event) {
+	$('body').on('click', '.to_forwards', function(event) {
 		$tabs.tabs('select', 3);
 		return false;
 	});
-	$jq('body').on('click', '.to_bounces', function(event) {
+	$('body').on('click', '.to_bounces', function(event) {
 		$tabs.tabs('select', 4);
 		return false;
 	});
 
-	$jq("body").on("click", '.individual_country_geoip', function(event) {
+	$("body").on("click", '.individual_country_geoip', function(event) {
 		event.preventDefault();
-		individual_country_geoip_map($jq(this).attr("data-type"), $jq(this).attr("data-country"), "country_geoip_" + $jq(this).attr("data-type") + "_map");
+		individual_country_geoip_map($(this).attr("data-type"), $(this).attr("data-country"), "country_geoip_" + $(this).attr("data-type") + "_map");
 	});
 
-	$jq("body").on("click", '.individual_country_cumulative_geoip_table', function(event) {
+	$("body").on("click", '.individual_country_cumulative_geoip_table', function(event) {
 		event.preventDefault();
-		individual_country_cumulative_geoip_table($jq(this).attr("data-type"), $jq(this).attr("data-country"), "country_geoip_" + $jq(this).attr("data-type") + "_map");
+		individual_country_cumulative_geoip_table($(this).attr("data-type"), $(this).attr("data-country"), "country_geoip_" + $(this).attr("data-type") + "_map");
 	});
 
-	$jq("body").on("click", '.back_to_geoip_map', function(event) {
+	$("body").on("click", '.back_to_geoip_map', function(event) {
 		event.preventDefault();
-		country_geoip_map($jq(this).attr("data-type"), "country_geoip_" + $jq(this).attr("data-type") + "_map");
+		country_geoip_map($(this).attr("data-type"), "country_geoip_" + $(this).attr("data-type") + "_map");
 	});
 
 
-	if ($jq("#can_use_country_geoip_data").val() == 1) {
+	if ($("#can_use_country_geoip_data").val() == 1) {
 
 		country_geoip_table('clickthroughs', 'Clickthroughs', 'country_geoip_clickthroughs_table');
 		country_geoip_table('opens', 'Opens', 'country_geoip_opens_table');
@@ -1541,14 +1541,14 @@ function update_plugins_tracker_message_report() {
 
 function country_geoip_table(type, label, target_div) {
 
-	$jq("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
-	var request = $jq.ajax({
-		url: $jq("#plugin_url").val(),
+	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
+	var request = $.ajax({
+		url: $("#plugin_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
 			f: 'country_geoip_table',
-			mid: $jq('#tracker_message_id').val(),
+			mid: $('#tracker_message_id').val(),
 			type: type,
 			label: label,
 		},
@@ -1556,12 +1556,12 @@ function country_geoip_table(type, label, target_div) {
 	});
 	request.done(function(content) {
 
-		$jq("#" + target_div).hide();
-		$jq("#" + target_div).html(content);
-		$jq("#" + target_div).show('fade');
+		$("#" + target_div).hide();
+		$("#" + target_div).html(content);
+		$("#" + target_div).show('fade');
 
-		$jq("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
-		$jq("#sortable_table_" + type).tablesorter();
+		$("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
+		$("#sortable_table_" + type).tablesorter();
 	});
 }
 
@@ -1593,13 +1593,13 @@ var country_geoip_map_infos = {
 
 function country_geoip_map(type, target_div) {
 
-	$jq("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
-	$jq.ajax({
-		url: $jq("#plugin_url").val(),
+	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
+	$.ajax({
+		url: $("#plugin_url").val(),
 		type: "POST",
 		data: {
 			f: 'country_geoip_json',
-			mid: $jq('#tracker_message_id').val(),
+			mid: $('#tracker_message_id').val(),
 			type: type,
 		},
 		dataType: "json",
@@ -1610,8 +1610,8 @@ function country_geoip_map(type, target_div) {
 			var data = new google.visualization.DataTable(jsonData);
 			var options = {
 				region: 'world',
-				width: $jq('#' + target_div).attr("data-width"),
-				height: $jq('#' + target_div).attr("data-height"),
+				width: $('#' + target_div).attr("data-width"),
+				height: $('#' + target_div).attr("data-height"),
 				keepAspectRatio: true,
 				backgroundColor: "#FFFFFF",
 				colorAxis: {
@@ -1620,10 +1620,10 @@ function country_geoip_map(type, target_div) {
 			};
 			var chart = new google.visualization.GeoChart(document.getElementById(target_div));
 
-			$jq("#" + target_div).hide("fade", function() {
+			$("#" + target_div).hide("fade", function() {
 				chart.draw(data, options);
-				$jq("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
-				$jq("#" + target_div).show('fade');
+				$("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
+				$("#" + target_div).show('fade');
 			});
 
 			google.visualization.events.addListener(chart, 'select', country_geoip_map_selectHandler);
@@ -1642,12 +1642,12 @@ function country_geoip_map(type, target_div) {
 
 
 function individual_country_geoip_map(type, country, target_div) {
-	$jq("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
-	$jq.ajax({
-		url: $jq("#plugin_url").val(),
+	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
+	$.ajax({
+		url: $("#plugin_url").val(),
 		data: {
 			f: 'individual_country_geoip_json',
-			mid: $jq('#tracker_message_id').val(),
+			mid: $('#tracker_message_id').val(),
 			type: type,
 			country: country
 		},
@@ -1660,40 +1660,40 @@ function individual_country_geoip_map(type, country, target_div) {
 				region: country,
 				displayMode: 'markers',
 				resolution: 'provinces',
-				width: $jq('#' + target_div).attr("data-width"),
-				height: $jq('#' + target_div).attr("data-height"),
+				width: $('#' + target_div).attr("data-width"),
+				height: $('#' + target_div).attr("data-height"),
 				colorAxis: {
 					colors: ['#3399ff', '#ff0066']
 				}
 			};
 			var chart = new google.visualization.GeoChart(document.getElementById(target_div));
 
-			$jq("#" + target_div).hide("fade", function() {
+			$("#" + target_div).hide("fade", function() {
 				chart.draw(data, options);
-				$jq("#" + target_div + "_loading").html('<p class="alert"><a href="#" data-type="' + type + '" class="back_to_geoip_map">&lt; &lt;Back to World Map</a> | <a href="#"  data-type="' + type + '" data-country="' + country + '" class="individual_country_cumulative_geoip_table">Table View</a></p>');
-				$jq("#" + target_div).show('fade');
+				$("#" + target_div + "_loading").html('<p class="alert"><a href="#" data-type="' + type + '" class="back_to_geoip_map">&lt; &lt;Back to World Map</a> | <a href="#"  data-type="' + type + '" data-country="' + country + '" class="individual_country_cumulative_geoip_table">Table View</a></p>');
+				$("#" + target_div).show('fade');
 			});
 		}
 	});
 }
 
 function individual_country_cumulative_geoip_table(type, country, target_div) {
-	$jq("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
-	$jq.ajax({
-		url: $jq("#plugin_url").val(),
+	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
+	$.ajax({
+		url: $("#plugin_url").val(),
 		data: {
 			f: 'individual_country_geoip_report_table',
-			mid: $jq('#tracker_message_id').val(),
+			mid: $('#tracker_message_id').val(),
 			type: 'ALL',
 			country: country
 		},
 		dataType: "html",
 		async: true,
 		success: function(content) {
-			$jq("#" + target_div).hide("fade", function() {
-				$jq("#" + target_div).html(content);
-				$jq("#" + target_div + "_loading").html('<p class="alert"><a href="#" data-type="' + type + '" data-country="' + country + '"  class="individual_country_geoip">&lt; &lt; Back to Country Map</a></p>');
-				$jq("#" + target_div).show('fade');
+			$("#" + target_div).hide("fade", function() {
+				$("#" + target_div).html(content);
+				$("#" + target_div + "_loading").html('<p class="alert"><a href="#" data-type="' + type + '" data-country="' + country + '"  class="individual_country_geoip">&lt; &lt; Back to Country Map</a></p>');
+				$("#" + target_div).show('fade');
 			});
 		}
 	});
@@ -1701,12 +1701,12 @@ function individual_country_cumulative_geoip_table(type, country, target_div) {
 }
 
 function data_over_time_graph(type, label, target_div) {
-	$jq("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
-	var request = $jq.ajax({
-		url: $jq("#plugin_url").val(),
+	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
+	var request = $.ajax({
+		url: $("#plugin_url").val(),
 		data: {
 			f: 'data_over_time_json',
-			mid: $jq("#tracker_message_id").val(),
+			mid: $("#tracker_message_id").val(),
 			type: type,
 			label: label,
 		},
@@ -1722,8 +1722,8 @@ function data_over_time_graph(type, label, target_div) {
 					width: "70%",
 					height: "70%"
 				},
-				width: $jq('#' + target_div).attr("data-width"),
-				height: $jq('#' + target_div).attr("data-height"),
+				width: $('#' + target_div).attr("data-width"),
+				height: $('#' + target_div).attr("data-height"),
 				backgroundColor: {
 					stroke: '#FFFFFF',
 					strokeWidth: 0
@@ -1734,44 +1734,44 @@ function data_over_time_graph(type, label, target_div) {
 			};
 			var chart = new google.visualization.AreaChart(document.getElementById(target_div));
 			chart.draw(data, options);
-			$jq("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
+			$("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
 		},
 	});
 }
 
 function message_bounce_report_table(bounce_type, target_div) {
 
-	$jq("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
-	var request = $jq.ajax({
-		url: $jq("#plugin_url").val(),
+	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
+	var request = $.ajax({
+		url: $("#plugin_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
 			f: 'message_bounce_report_table',
-			mid: $jq('#tracker_message_id').val(),
+			mid: $('#tracker_message_id').val(),
 			bounce_type: bounce_type
 		},
 		dataType: "html"
 	});
 	request.done(function(content) {
 
-		$jq("#" + target_div).hide();
-		$jq("#" + target_div).html(content);
-		$jq("#" + target_div).show('fade');
+		$("#" + target_div).hide();
+		$("#" + target_div).html(content);
+		$("#" + target_div).show('fade');
 
-		$jq("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
-		//	  $jq("#sortable_table_" + type).tablesorter(); 
+		$("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
+		//	  $("#sortable_table_" + type).tablesorter(); 
 	});
 }
 
 function bounce_breakdown_chart(type, label, target_div) {
-	$jq("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
-	$jq.ajax({
-		url: $jq("#plugin_url").val(),
+	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
+	$.ajax({
+		url: $("#plugin_url").val(),
 		dataType: "json",
 		data: {
 			f: 'bounce_stats_json',
-			mid: $jq('#tracker_message_id').val(),
+			mid: $('#tracker_message_id').val(),
 			bounce_type: type,
 			label: label
 		},
@@ -1786,9 +1786,9 @@ function bounce_breakdown_chart(type, label, target_div) {
 					width: "90%",
 					height: "90%"
 				},
-				title: $jq('#' + target_div).attr("data-title"),
-				width: $jq('#' + target_div).attr("data-width"),
-				height: $jq('#' + target_div).attr("data-height"),
+				title: $('#' + target_div).attr("data-title"),
+				width: $('#' + target_div).attr("data-width"),
+				height: $('#' + target_div).attr("data-height"),
 
 				pieSliceTextStyle: {
 					color: '#FFFFFF'
@@ -1797,7 +1797,7 @@ function bounce_breakdown_chart(type, label, target_div) {
 				is3D: true
 			};
 			chart.draw(data, options);
-			$jq("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
+			$("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
 		},
 	});
 }
@@ -1806,13 +1806,13 @@ function bounce_breakdown_chart(type, label, target_div) {
 // Plugins >> Tracker
 
 function tracker_change_record_view(){ 
-	var request = $jq.ajax({
-		url: $jq("#plugin_url").val(),
+	var request = $.ajax({
+		url: $("#plugin_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
 			f: 'save_view_count_prefs',
-			tracker_record_view_count: $jq('#tracker_record_view_count option:selected').val()
+			tracker_record_view_count: $('#tracker_record_view_count option:selected').val()
 		},
 		dataType: "html"
 	});
@@ -1824,25 +1824,25 @@ function tracker_change_record_view(){
 }
 
 function tracker_turn_page(page_to_turn_to) {
-	$jq("#tracker_page").val(page_to_turn_to);
+	$("#tracker_page").val(page_to_turn_to);
 	message_history_html();
 	google.setOnLoadCallback(drawSubscriberHistoryChart());
 }
 function tracker_parse_links_setup() { 
-	if ($jq("#tracker_auto_parse_links").prop("checked") == true) {
-		if ($jq('#tracker_auto_parse_links_info').is(':hidden')) {
-			$jq('#tracker_auto_parse_links_info').show('blind');
+	if ($("#tracker_auto_parse_links").prop("checked") == true) {
+		if ($('#tracker_auto_parse_links_info').is(':hidden')) {
+			$('#tracker_auto_parse_links_info').show('blind');
 		}
-		if ($jq('#tracker_noauto_parse_links_info').is(':visible')) {
-			$jq('#tracker_noauto_parse_links_info').hide('blind');
+		if ($('#tracker_noauto_parse_links_info').is(':visible')) {
+			$('#tracker_noauto_parse_links_info').hide('blind');
 		}
 	}
-	if ($jq("#tracker_noauto_parse_links").prop("checked") == true) {
-		if ($jq('#tracker_noauto_parse_links_info').is(':hidden')) {
-			$jq('#tracker_noauto_parse_links_info').show('blind');
+	if ($("#tracker_noauto_parse_links").prop("checked") == true) {
+		if ($('#tracker_noauto_parse_links_info').is(':hidden')) {
+			$('#tracker_noauto_parse_links_info').show('blind');
 		}
-		if ($jq('#tracker_auto_parse_links_info').is(':visible')) {
-			$jq('#tracker_auto_parse_links_info').hide('blind');
+		if ($('#tracker_auto_parse_links_info').is(':visible')) {
+			$('#tracker_auto_parse_links_info').hide('blind');
 		}
 	}	
 }
@@ -1851,21 +1851,21 @@ function tracker_parse_links_setup() {
 // Plugins >> Log Viewer
 
 function view_logs_results() {
-	$jq("#refresh_button").val('Loading....');
-	var request = $jq.ajax({
-		url: $jq("#plugin_url").val(),
+	$("#refresh_button").val('Loading....');
+	var request = $.ajax({
+		url: $("#plugin_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
 			flavor: 'ajax_view_logs_results',
-			log_name: $jq('#log_name').val(),
-			lines: $jq('#lines').val()
+			log_name: $('#log_name').val(),
+			lines: $('#lines').val()
 		},
 		dataType: "html"
 	});
 	request.done(function(content) {
-		$jq("#view_logs_results").html(content);
-		$jq("#refresh_button").val('Refresh');
+		$("#view_logs_results").html(content);
+		$("#refresh_button").val('Refresh');
 	});
 }
 
@@ -1873,13 +1873,13 @@ function delete_log() {
 	var confirm_msg = "Are you sure you want to delete this log? ";
 	confirm_msg += "There is no way to undo this deletion.";
 	if (confirm(confirm_msg)) {
-		var request = $jq.ajax({
-			url: $jq("#plugin_url").val(),
+		var request = $.ajax({
+			url: $("#plugin_url").val(),
 			type: "POST",
 			cache: false,
 			data: {
 				flavor: 'ajax_delete_log',
-				log_name: $jq('#log_name').val(),
+				log_name: $('#log_name').val(),
 			},
 			dataType: "html"
 		});
@@ -1897,22 +1897,22 @@ function delete_log() {
 
 function message_history_html() {
 
-	$jq("#show_table_results_loading").html('<p class="alert">Loading...</p>');
-	var request = $jq.ajax({
-		url: $jq("#plugin_url").val(),
+	$("#show_table_results_loading").html('<p class="alert">Loading...</p>');
+	var request = $.ajax({
+		url: $("#plugin_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
 			f: 'message_history_html',
-			page: $jq("#tracker_page").val(),
+			page: $("#tracker_page").val(),
 		},
 		dataType: "html"
 	});
 	request.done(function(content) {
-		$jq("#show_table_results").hide('fade', function() {
-			$jq("#show_table_results").html(content);
-			$jq("#show_table_results").show('fade');
-			$jq("#show_table_results_loading").html('<p class="alert">&nbsp;</p>');
+		$("#show_table_results").hide('fade', function() {
+			$("#show_table_results").html(content);
+			$("#show_table_results").show('fade');
+			$("#show_table_results_loading").html('<p class="alert">&nbsp;</p>');
 		});
 
 	});
@@ -1921,12 +1921,12 @@ function message_history_html() {
 var SubscriberHistoryChart;
 
 function drawSubscriberHistoryChart() {
-	$jq("#subscriber_history_chart_loading").html('<p class="alert">Loading...</p>');
-	var request = $jq.ajax({
-		url: $jq("#plugin_url").val(),
+	$("#subscriber_history_chart_loading").html('<p class="alert">Loading...</p>');
+	var request = $.ajax({
+		url: $("#plugin_url").val(),
 		data: {
 			f: 'message_history_json',
-			page: $jq("#tracker_page").val(),
+			page: $("#tracker_page").val(),
 
 		},
 		cache: false,
@@ -1945,10 +1945,10 @@ function drawSubscriberHistoryChart() {
 				height: 400
 			};
 			var SubscriberHistoryChart = new google.visualization.LineChart(document.getElementById('subscriber_history_chart'));
-			$jq("#subscriber_history_chart").hide('fade');
+			$("#subscriber_history_chart").hide('fade');
 			SubscriberHistoryChart.draw(data, options);
-			$jq("#subscriber_history_chart").show('fade');
-			$jq("#subscriber_history_chart_loading").html('<p class="alert">&nbsp;</p>');
+			$("#subscriber_history_chart").show('fade');
+			$("#subscriber_history_chart_loading").html('<p class="alert">&nbsp;</p>');
 
 		},
 	});
@@ -1959,8 +1959,8 @@ function tracker_purge_log() {
 	var confirm_msg = "Are you sure you want to delete this log? ";
 	confirm_msg += "There is no way to undo this deletion.";
 	if (confirm(confirm_msg)) {
-		var request = $jq.ajax({
-			url: $jq("#plugin_url").val(),
+		var request = $.ajax({
+			url: $("#plugin_url").val(),
 			type: "POST",
 			cache: false,
 			data: {
@@ -1985,8 +1985,8 @@ function tracker_purge_log() {
 // Plugins >> Password Protect Directories
 
 function password_protect_directories_show_change_password_form() {
-	$jq("#change_default_password_button").hide('blind');
-	$jq("#change_default_password_form").show('blind');
+	$("#change_default_password_button").hide('blind');
+	$("#change_default_password_form").show('blind');
 }
 
 
@@ -2000,23 +2000,23 @@ function password_protect_directories_show_change_password_form() {
 /* Global */
 
 function toggleCheckboxes(status, target_class) {
-	$jq('.' + target_class).each(function() {
-		$jq(this).prop("checked", status);
+	$('.' + target_class).each(function() {
+		$(this).prop("checked", status);
 	});
 }
 
 function toggleDisplay(target) {
-	$jq('#' + target).toggle('blind');
+	$('#' + target).toggle('blind');
 }
 
 function changeDisplayState(target, state) {
 	if (state == 'show') {
-		if ($jq('#' + target).is(':hidden')) {
-			$jq('#' + target).show('blind');
+		if ($('#' + target).is(':hidden')) {
+			$('#' + target).show('blind');
 		}
 	} else {
-		if ($jq('#' + target).is(':visible')) {
-			$jq('#' + target).hide('blind');
+		if ($('#' + target).is(':visible')) {
+			$('#' + target).hide('blind');
 		}
 	}
 }
@@ -2104,8 +2104,8 @@ function real_message() {
 
 
 function toggleTwo(targetOpen, targetClose) {
-	Effect.BlindUp($jq(targetClose));
-	Effect.BlindDown($jq(targetOpen));
+	Effect.BlindUp($(targetClose));
+	Effect.BlindDown($(targetOpen));
 }
 
 
@@ -2118,15 +2118,15 @@ function preview_message_receivers() {
 	var multi_list_send_no_dupes = 0;
 
 
-	$jq("#field_comparisons :input").each(function() {
+	$("#field_comparisons :input").each(function() {
 		f_params[this.name] = this.value;
 	});
-	$jq("input:checkbox[name=alternative_list]:checked").each(function() {
+	$("input:checkbox[name=alternative_list]:checked").each(function() {
 		al.push(this.value);
 	});
 	alternative_lists = al.join(',');
 	if (
-	$jq('#multi_list_send_no_dupes').val() == 1 && $jq("#multi_list_send_no_dupes").prop("checked") == true) {
+	$('#multi_list_send_no_dupes').val() == 1 && $("#multi_list_send_no_dupes").prop("checked") == true) {
 		multi_list_send_no_dupes = 1;
 	}
 
@@ -2134,37 +2134,37 @@ function preview_message_receivers() {
 	f_params['alternative_lists'] = alternative_lists;
 	f_params['multi_list_send_no_dupe'] = multi_list_send_no_dupes;
 	
-	$jq.colorbox({
+	$.colorbox({
 		top: 0, 
 		fixed: true, 
 		initialHeight: 50, 
 		maxHeight: 480, 
 		maxWidth: 649,
 		opacity: .50, 
-		href: $jq("#s_program_url").val(),
+		href: $("#s_program_url").val(),
 		data: f_params
 	});
 	
 }
 
 function ChangeMassMailingButtonLabel() {
-	if ($jq("#archive_message").prop("checked") == true && $jq("#archive_no_send").prop("checked") == true) {
-		$jq("#submit_mass_mailing").prop('value', 'Archive Message');
-		$jq('#submit_test_mailing').hide('fade');
-		$jq('#send_test_messages_to').hide('fade');
+	if ($("#archive_message").prop("checked") == true && $("#archive_no_send").prop("checked") == true) {
+		$("#submit_mass_mailing").prop('value', 'Archive Message');
+		$('#submit_test_mailing').hide('fade');
+		$('#send_test_messages_to').hide('fade');
 	} else {
-		$jq("#submit_mass_mailing").prop('value', $jq("#default_mass_mailing_button_label").val());
-		$jq('#submit_test_mailing').show('fade');
-		$jq('#send_test_messages_to').show('fade');
+		$("#submit_mass_mailing").prop('value', $("#default_mass_mailing_button_label").val());
+		$('#submit_test_mailing').show('fade');
+		$('#send_test_messages_to').show('fade');
 	}
 }
 
 
 function sendMailingListMessage(fid, itsatest) { /* This is for the Send a Webpage - did they fill in a URL? */
-	if ($jq("#f").val() == 'send_url_email') {
-		if ($jq('input[name=sending_method]:checked').val() == 'url') {
+	if ($("#f").val() == 'send_url_email') {
+		if ($('input[name=sending_method]:checked').val() == 'url') {
 			if (
-			$jq("#url").val() == 'http://' || $jq("#url").val().length <= 0) {
+			$("#url").val() == 'http://' || $("#url").val().length <= 0) {
 				alert('You have not filled in a URL! Mass Mailing Stopped.');
 				return false;
 			}
@@ -2181,23 +2181,23 @@ function sendMailingListMessage(fid, itsatest) { /* This is for the Send a Webpa
 	confirm_msg += " mailing to be sent?";
 	confirm_msg += " Mailing list sending cannot be easily stopped.";
 
-	if ($jq("#Subject").val().length <= 0) {
+	if ($("#Subject").val().length <= 0) {
 		var no_subject_msg = "The Subject: header of this message has been left blank. Send anyways?";
 		if (!confirm(no_subject_msg)) {
 			alert('Mass Mailing canceled.');
 			return false;
 		}
 	}
-	if ($jq("#im_sure").prop("checked") == false) {
+	if ($("#im_sure").prop("checked") == false) {
 		if (!confirm(confirm_msg)) {
 			alert('Mass Mailing canceled.');
 			return false;
 		}
 	}
-	if ($jq("#new_win").prop("checked") == true) {
-		$jq("#" + fid).attr("target", "_blank");
+	if ($("#new_win").prop("checked") == true) {
+		$("#" + fid).attr("target", "_blank");
 	} else {
-		$jq("#" + fid).attr("target", "_self");
+		$("#" + fid).attr("target", "_self");
 	}
 	return true;
 }
