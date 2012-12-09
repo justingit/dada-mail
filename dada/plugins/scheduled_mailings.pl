@@ -212,13 +212,6 @@ sub main {
 #---------------------------------------------------------------------#
 
 
-
-
-
-
-
-
-
 	my $help     = 0;
 	my $test; 
 	my $verbose  = 0; 
@@ -468,10 +461,17 @@ sub edit  {
 						-Root_Login => $yeah_root_login,
 						-vars => { 
 							load_wysiwyg_editor => 1, 
+							load_modalbox       => 1, 
 						}
 						);
 
-	$scrn .= '<p><a href="' . $Plugin_Config->{Plugin_URL} . '">' . $Plugin_Config->{Plugin_Name} . '</a> &#187 Add/Edit</p>';
+
+$scrn .= '<div id="screentitle"> 
+	<div id="screentitlepadding">
+	 ' . '<a href="' . $Plugin_Config->{Plugin_URL} . '">' . $Plugin_Config->{Plugin_Name} . '</a> &#187 Add/Edit
+	</div>
+</div>
+'; 
 
 
 	$scrn .=  $schedule_form; 
@@ -561,7 +561,12 @@ sub schedule_index {
 	
 	my $r;
 	   
-    	$r .= '<p><a href="' . $Plugin_Config->{Plugin_URL} . '">' . $Plugin_Config->{Plugin_Name} . '</a></p>';
+	$r .= '<div id="screentitle"> 
+		<div id="screentitlepadding">
+		 ' . '<a href="' . $Plugin_Config->{Plugin_URL} . '">' . $Plugin_Config->{Plugin_Name} . '</a> &#187 Add/Edit
+		</div>
+	</div>
+	';
 	
 	
 	   $r .= "<p class=error>Scheduled Mailing Removed.</p>" if $q->param('message') eq 'r'; 
@@ -667,7 +672,7 @@ $r .= DADA::Template::Widgets::screen(
 		}
 	); 
 
-
+=cut
 	$r .= DADA::Template::Widgets::screen(
 			{
 				-screen  => 'help_link_widget.tmpl', 
@@ -679,7 +684,7 @@ $r .= DADA::Template::Widgets::screen(
 
 			}
 		); 
-
+=cut
 
 	return $r; 
 }
@@ -776,7 +781,8 @@ sub schedule_form {
 	
 	
 	$f .= q{
-
+	<div id="plugins_beatitude_schedule_form"></div>
+	
 	<fieldset> 
  	<legend>Scheduling Options</legend>
 
@@ -953,7 +959,18 @@ for my $p_field(@$undotted_fields){
 }
 
 
-
+$f .= '<fieldset>
+ <legend>
+  
+  <a href="#" class="toggleDivs" data-target="partial_sending_options_widget">
+  +/- 
+ </a>Partial Mailing List Sending
+ </legend>    
+ 
+ <div id="partial_sending_options_widget" style="display:none;width:90%">
+ <input type="hidden" name="s_program_url" id="s_program_url" value="'.$DADA::Config::S_PROGRAM_URL.'" />
+'; 
+ 
 require DADA::Template::Widgets; 
 $f .= DADA::Template::Widgets::screen({
 	-screen => 'partial_sending_options_widget.tmpl',
@@ -966,6 +983,10 @@ $f .= DADA::Template::Widgets::screen({
 	}
 ); 
 
+$f .= ' </div> 
+</fieldset>'; 
+
+
 $f .= $q->hidden('key', $key);	
 $f .= $q->hidden('process', 'true');
 $f .= $q->hidden('flavor', 'edit');	 
@@ -976,6 +997,8 @@ $f .= $q->end_form();
 
 
 $f .= $q->p('&nbsp;') . $q->p($q->a({-href => $Plugin_Config->{Plugin_URL}}, '<- Schedule Index...')); 	
+
+=cut
 
 $f .= DADA::Template::Widgets::screen(
 		{
@@ -988,7 +1011,7 @@ $f .= DADA::Template::Widgets::screen(
 			
 		}
 	); 
-
+=cut
 
 
 
@@ -1455,10 +1478,15 @@ sub from_text_widget {
 			{
 				-data => \$t, 
 				-vars => { 
-					#default_text => $form_vals{$type.'_ver'}->{text},
 					
+					($type eq 'PlainText') 
+					? 
+					(default_text => $form_vals{$type.'_ver'}->{text},) 
+					: 	
+					(
 					html_message_body_content            => $form_vals{$type.'_ver'}->{text},
 					html_message_body_content_js_escaped => js_enc($form_vals{$type.'_ver'}->{text}),
+					), 
 					
 					source       => $form_vals{$type.'_ver'}->{source}, 
 					type         => $type, 

@@ -434,6 +434,17 @@ $jq(document).ready(function() {
 
 	}
 
+
+
+	// Plugins >> Beatitude
+	if ($jq("#plugins_beatitude_schedule_form").length) {		
+		$jq("body").on("click", ".preview_message_receivers", function(event) {
+			event.preventDefault();
+			preview_message_receivers();
+		});
+	}	
+	
+	
 	// Plugins >> Tracker
 	if ($jq("#plugins_tracker_message_report").length) {
 		update_plugins_tracker_message_report();

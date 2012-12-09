@@ -197,10 +197,7 @@ sub save_from_params {
 	$form_vals{'PlainText_ver'}->{text}                 = $q->param('PlainText_text'); 
 	$form_vals{'HTML_ver'}->{text}                      = $q->param('html_message_body'); 
 	
-	
-	
-	
-	
+
 	$form_vals{attachments} = []; 
 	
 	
@@ -256,6 +253,9 @@ sub save_from_params {
 	}
 		
 	$form_vals{partial_sending_params} = $saved_pso; 
+	
+	#use Data::Dumper; 
+	# die Dumper(\%form_vals); 
 	
 	my $s_key = $q->param('key'); 			
 	my $key = $self->save_record(
@@ -778,7 +778,6 @@ sub _build_email {
 	# MIME::Lite::HTML and call it good. 
 	my ($pt_flags,   $pt_checksum,   $pt_headers,   $PlainText_ver) = $self->_create_text_ver(-record => $record, -type => 'PlainText'); 
 	my ($html_flags, $html_checksum, $html_headers, $HTML_ver)      = $self->_create_text_ver(-record => $record, -type => 'HTML'); 
-	
 		
 	#use Data::Dumper; 
 	#die Data::Dumper::Dumper($HTML_ver); 
@@ -889,6 +888,7 @@ sub _build_email {
 			}
 			else { 
 				
+
 				my $new_entity = MIME::Entity->build(Type => 'multipart/mixed'); 
 				$new_entity->add_part($entity);
 				for my $att(@{$record->{attachments}}){ 
@@ -938,6 +938,7 @@ sub _build_email {
 						
 		}
 		else{ 
+	
 			$entity = MIME::Entity->build(
 						Type      =>'multipart/mixed',
 				  	  ); 
@@ -1058,6 +1059,9 @@ sub _create_text_ver {
 	my $data         = undef;
 	my $create_flags = {}; 
 	 
+	#use Data::Dumper; 
+	#die Dumper($record); 
+	
 	if($record->{$type . '_ver'}->{source} eq 'from_file'){ 
 		$data = $self->_from_file($record->{$type . '_ver'}->{file});
 	}elsif($record->{$type . '_ver'}->{source} eq 'from_url'){ 
