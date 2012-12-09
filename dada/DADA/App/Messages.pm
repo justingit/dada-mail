@@ -358,7 +358,7 @@ sub send_subscription_request_denied_message {
 				#-vars => $args->{-vars}, 
 				-vars => { 
 					'subscriber.email' => $args->{-email}, 
-					%$args->{-vars},
+					%{$args->{-vars}},
 				}
 			},
 			-test         => $args->{-test}, 
