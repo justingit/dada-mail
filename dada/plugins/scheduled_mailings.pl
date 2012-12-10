@@ -464,12 +464,20 @@ sub edit  {
 						}
 						);
 
-
+my $hlw = DADA::Template::Widgets::screen(
+	{
+		-screen  => 'help_link_widget.tmpl', 
+		-vars => { 
+			screen => 'scheduled_mailings',
+			title  => 'Beatitude User Guide', 
+		},
+	}
+); 
+						
 $scrn .= '<div id="screentitle"> 
 	<div id="screentitlepadding">
 	 ' . '<a href="' . $Plugin_Config->{Plugin_URL} . '">' . $Plugin_Config->{Plugin_Name} . '</a> &#187 Add/Edit
-	</div>
-</div>
+	</div> ' . $hlw . '</div>
 '; 
 
 
@@ -559,13 +567,20 @@ sub schedule_index {
 	
 	
 	my $r;
-	   
+	my $hlw = DADA::Template::Widgets::screen(
+		{
+			-screen  => 'help_link_widget.tmpl', 
+			-vars => { 
+				screen => 'scheduled_mailings',
+				title  => 'Beatitude User Guide', 
+			},
+		}
+	);
+	
 	$r .= '<div id="screentitle"> 
 		<div id="screentitlepadding">
 		 ' . '<a href="' . $Plugin_Config->{Plugin_URL} . '">' . $Plugin_Config->{Plugin_Name} . '</a> &#187 Add/Edit
-		</div>
-	</div>
-	';
+		</div>' . $hlw . '</div>';
 	
 	
 	   $r .= "<p class=error>Scheduled Mailing Removed.</p>" if $q->param('message') eq 'r'; 
@@ -671,19 +686,7 @@ $r .= DADA::Template::Widgets::screen(
 		}
 	); 
 
-=cut
-	$r .= DADA::Template::Widgets::screen(
-			{
-				-screen  => 'help_link_widget.tmpl', 
-				-vars => { 
-					screen => 'scheduled_mailings',
-					title  => 'Beatitude User Guide', 
-				},
 
-
-			}
-		); 
-=cut
 
 	return $r; 
 }
@@ -997,20 +1000,6 @@ $f .= $q->end_form();
 
 $f .= $q->p('&nbsp;') . $q->p($q->a({-href => $Plugin_Config->{Plugin_URL}}, '<- Schedule Index...')); 	
 
-=cut
-
-$f .= DADA::Template::Widgets::screen(
-		{
-			-screen  => 'help_link_widget.tmpl', 
-			-vars => { 
-				screen => 'scheduled_mailings',
-				title  => 'Beatitude User Guide', 
-			},
-			
-			
-		}
-	); 
-=cut
 
 
 
