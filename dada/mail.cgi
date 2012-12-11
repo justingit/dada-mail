@@ -118,6 +118,19 @@ if($ENV{QUERY_STRING} =~ m/^\?/){
 
 }
 
+# PROGRAM_URL has a, "?"
+# PATH INFO is blank
+# QUERY_STRING starts with a, "/"
+if(
+      $DADA::Config::PROGRAM_URL =~ m/\?$/
+   && length($ENV{PATH_INFO}) == 0
+   && $ENV{QUERY_STRING}      =~ m/^\//
+){ 
+	$ENV{PATH_INFO}    = $ENV{QUERY_STRING};
+	$ENV{QUERY_STRING} = ''; 
+}
+
+
 sub hook {
 	my ($filename, $buffer, $bytes_read, $data) = @_;
 
