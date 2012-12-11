@@ -956,24 +956,6 @@ sub install_dada_mail {
 			$log .= "* Success!\n"; 
 		}	
 	}
-
-	
-	if(	$args->{-if_dada_files_already_exists} eq 'skip_configure_dada_files' || $args->{-if_dada_files_already_exists} eq 'keep_dir_create_new_config'){ 
-	
-		$log .= "* Removing old screen cache files...\n"; 
-		eval { 
-			require DADA::App::ScreenCache; 
-			my $c = DADA::App::ScreenCache->new; 
-			   $c->flush;
-		};
-		if($@){ 
-			$log .="* Problems with removing old screen cache files: $@\n"; 
-		}
-		else { 
-			$log .="* Success!\n"; 
-		}
-	}
-
 	
 	if($args->{-if_dada_files_already_exists} eq 'skip_configure_dada_files'){ 
 		$log .= "* Skipping configuration of directory creation, config file and backend options\n"; 
@@ -1116,9 +1098,48 @@ sub install_dada_mail {
 		} 
 	}
 
+
+	$log .= "* Removing old Screen Cache...\n";
+	eval { 
+		remove_old_screen_cache($args);
+	};
+	if($@){ 
+	    $log .= "* WARNING: Couldn't remove old screen cache - you may have to do this manually: $@\n";
+	}
+	else { 
+		$log .= "* Success!\n";		
+     }
+
     # That's it.
     $log .= "* Installation and Configuration Complete!\n";
     return ( $log, $status, $errors );
+}
+
+
+
+sub remove_old_screen_cache { 
+	my ($args) = @_; 
+	my $screen_cache_dir = $args->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.tmp/_screen_cache'; 
+
+	if(-d  $screen_cache_dir){ 
+		    my $f;
+		    opendir( CACHE, make_safer($screen_cache_dir))
+				or croak "Can't open '" . $screen_cache_dir . "' to read because: $!";
+		    while ( defined( $f = readdir CACHE ) ) {
+        		#don't read '.' or '..'
+		        next if $f =~ /^\.\.?$/;
+		        $f =~ s(^.*/)();
+		        my $n = unlink( make_safer( $screen_cache_dir . '/' . $f ) );
+		        carp make_safer( $screen_cache_dir . '/' . $f ) . ' didn\'t go quietly'
+		          if $n == 0;
+		    }
+		    closedir(CACHE);
+			return 1; 
+	}
+	else { 
+		return 1; 
+	}
+
 }
 
 
