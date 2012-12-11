@@ -365,9 +365,12 @@ sub edit_prefs {
 
 sub ajax_parse_bounces_results {
 
-    if ( $q->param('bounce_test') ) {
-        $test = $q->param('bounce_test');
+    if ( $q->param('test') ) {
+        $test = $q->param('test');
     }
+	else { 
+		$test = undef; 
+	}
 
     if ( defined( xss_filter( $q->param('parse_amount') ) ) ) {
         $Plugin_Config->{MessagesAtOnce} =
@@ -397,7 +400,7 @@ sub cgi_parse_bounce {
 
             -vars => {
                 parse_amount   => xss_filter( $q->param('parse_amount') ),
-                bounce_test    => xss_filter( $q->param('bounce_test') ),
+                test           => xss_filter( $q->param('test') ),
                 Plugin_Name    => $Plugin_Config->{Plugin_Name},
                 Plugin_URL     => $Plugin_Config->{Plugin_URL},
                 MessagesAtOnce => $Plugin_Config->{MessagesAtOnce},

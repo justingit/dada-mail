@@ -148,7 +148,7 @@ sub test_bounces {
         push( @$files_to_test, $test_type );
     }
     else {
-        return "I don't know what you want me to test!\n";
+        return "I don't know what you want me to test! ($test_type)\n";
     }
 
     if ( scalar @$files_to_test > 0 ) {
@@ -291,17 +291,22 @@ sub parse_all_bounces {
     my ($args) = @_;
 
     my $list;
-    my $test = 0;
+	# Type of test
+    my $test = undef;
+	# Running a test? 
+	my $isa_test = 0; 
+	
     my $log  = '';
 
     if ( exists( $args->{-list} ) ) {
         $list = $args->{-list};
     }
+	
     if ( exists( $args->{-test} ) ) {
-        $test = $args->{-test};
-    }
-    else {
-        $test = 0;
+        $test     = $args->{-test};
+		if($test eq 'bounces') { 
+			$isa_test = 1; 
+		}
     }
 
     my @all_lists_to_check   = ();
@@ -337,7 +342,7 @@ sub parse_all_bounces {
             return $log;
         }
 		
-		if($test) { 
+		if($isa_test == 1) { 
         	$log .= "Testing is enabled -  messages will be parsed and examined, but will not be acted upon.\n\n"
 		}
 		
@@ -439,7 +444,7 @@ sub parse_all_bounces {
                             {
                                 -list    => $list_to_check,
                                 -message => $full_msg,
-                                -test    => $test,
+                                -test    => $isa_test,
                             }
                           );
                     };
@@ -513,7 +518,7 @@ sub parse_all_bounces {
             }
         } # MSGCHECK
 
-        if (!$test) {
+        if (!$isa_test) {
             for (@delete_list) {
                 $log .= "deleting message #: $_\n";
                 $pop3_obj->Delete($_);
@@ -533,7 +538,7 @@ sub parse_all_bounces {
             );
         }
 
-		if (!$test) {
+		if (!$isa_test) {
 		    $log .= "\nSaving Scores...\n\n";
 		    my $r = $self->save_scores(
 				{
@@ -543,7 +548,7 @@ sub parse_all_bounces {
 		    $log .= $r;
 		    undef $r;
 		}
-	    if (!$test) {
+	    if (!$isa_test) {
 			my $r;
 			
 			if($ls->param('bounce_handler_when_threshold_reached') eq 'move_to_bounced_sublist') {  
@@ -589,6 +594,7 @@ sub parse_bounce {
         return ( undef, 0, $msg_report, '' );
     }
 
+	# NOT the type of test - just if this is a test, or not!
     my $test    = $args->{-test};
     my $message = $args->{-message};
 
@@ -816,15 +822,21 @@ sub save_scores {
 
             }
         }
-
+		
+		$m.= "\n";
+		
         my $removal_list = $bsk->removal_list();
-
-        $m .= "Addresses to be removed:\n" . '-' x 72 . "\n";
-        for my $bad_email (@$removal_list) {
-            $self->{tmp_remove_list}->{$list}->{$bad_email} = 1;
-            $m .= "* $bad_email\n";
-        }
-
+		
+		if(scalar(@$removal_list) > 0){ 
+	        $m .= "Subscribers to be removed:\n" . '-' x 72 . "\n";
+	        for my $bad_email (@$removal_list) {
+	            $self->{tmp_remove_list}->{$list}->{$bad_email} = 1;
+	            $m .= "* $bad_email\n";
+	        }
+		}
+		else { 
+			$m .= "No Subscribers need to be removed.\n"; 
+		}
         $m .= "\nFlushing old scores\n";
         $bsk->flush_old_scores();
 

@@ -1331,14 +1331,19 @@ function bounce_handler_turn_page(page_to_turn_to) {
 function bounce_handler_parse_bounces() {
 	$("#parse_bounce_results_loading").html('<p class="alert">Loading</p>');
 	$("#parse_bounces_button").val('Parsing...');
+	
+	var isa_test = 0; 
+	if($("#test").prop("checked") == true) { 
+		isa_test = 'bounces';
+	}
 	var request = $.ajax({
 		url: $("#plugin_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
-			flavor: 'ajax_parse_bounces_results',
+			flavor:       'ajax_parse_bounces_results',
 			parse_amount: $('#parse_amount').val(),
-			bounce_test: $('#bounce_test').val()
+			test:         isa_test
 		},
 		dataType: "html"
 	});
@@ -1351,6 +1356,11 @@ function bounce_handler_parse_bounces() {
 }
 
 function ajax_parse_bounces_results() {
+	
+	var isa_test = 0; 
+	if($("#test").prop("checked") == true) { 
+		isa_test = 'bounces';
+	}
 	$.colorbox({
 		top: 0,
 		fixed: true,
@@ -1362,8 +1372,11 @@ function ajax_parse_bounces_results() {
 		data: {
 			flavor: 'ajax_parse_bounces_results',
 			parse_amount: $('#parse_amount').val(),
-			bounce_test: $('#bounce_test').val()
-		}
+			test:         isa_test
+		},
+		onComplete:function(){
+			bounce_handler_show_scorecard();
+		},
 	});
 }
 

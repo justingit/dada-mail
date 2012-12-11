@@ -11,7 +11,7 @@
 <form name="some_form" id="some_form"> 
 	<input type="hidden" id="plugin_url"    name="plugin_url"        value="<!-- tmpl_var Plugin_Url -->" /> 
 	<input type="hidden" id="parse_amount"  name="parse_amount"  value="<!-- tmpl_if parse_amount --><!-- tmpl_var parse_amount --><!-- tmpl_else --><!-- tmpl_var MessagesAtOnce --><!-- /tmpl_if -->" /> 
-	<input type="hidden" id="bounce_test"   name="bounce_test"   value="<!-- tmpl_if bounce_test --><!-- tmpl_var bounce_test --><!-- tmpl_else --><!-- /tmpl_if -->" />
+	<input type="hidden" id="test"   name="test"   value="<!-- tmpl_if test --><!-- tmpl_var test --><!-- tmpl_else --><!-- /tmpl_if -->" />
 	<input type="button" value="Parse Bounces" id="parse_bounces_button" class="processing" /> 
 </form>
 
