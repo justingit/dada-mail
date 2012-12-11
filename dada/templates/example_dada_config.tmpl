@@ -283,7 +283,7 @@ $PLUGIN_CONFIGS = {
 
 $S_PROGRAM_URL            ||= $PROGRAM_URL;
 my $PLUGIN_URL              = $S_PROGRAM_URL;
-   $PLUGIN_URL              =~ s/\/(\w+)\.(cgi|pl)$/\//;
+   $PLUGIN_URL              =~ s/\/(\w+)\.(cgi|pl)(\??)$/\//;
    $PLUGIN_URL             .= 'plugins';
 my $EXT_URL = $PLUGIN_URL;
    $EXT_URL =~ s/plugins/extensions/;
