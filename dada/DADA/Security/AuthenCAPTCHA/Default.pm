@@ -1,7 +1,7 @@
 package DADA::Security::AuthenCAPTCHA::Default;
 use lib qw(../../../ ../../../DADA/perllib); 
 use DADA::Config qw(!:DEFAULT); 
-
+use DADA::App::Guts;
 
 # I do this, so if we don't have GD, the thing doesn't act like we do...
 use GD; 
