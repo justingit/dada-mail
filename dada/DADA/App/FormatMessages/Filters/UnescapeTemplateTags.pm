@@ -81,7 +81,9 @@ sub filter {
 	my $html;
 	
 	if(exists($args->{-html_msg})){ 
-		return $self->unescape_template_tags($args->{-html_msg}); 
+		$args->{-html_msg} = $self->unescape_template_tags($args->{-html_msg}); 
+		$args->{-html_msg} = $self->remove_ckeditor_strangeness($args->{-html_msg}); 
+		return $args->{-html_msg}; 
 	}
 	else { 
 		croak "you MUST pass your HTML message in, 'html_msg'!"; 
@@ -111,6 +113,15 @@ sub unescape_template_tags {
 	
 }
 
+sub remove_ckeditor_strangeness { 
+	my $self = shift; 
+	my $str  = shift; 
+	
+	# Brute force attack! 
+	$str =~ s/href\=(\"|\')((\{C\})+)/href\=$1/g; 
+	
+	return $str; 
+}
 
 
 
