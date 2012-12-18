@@ -2756,23 +2756,11 @@ config_import();
 sub config_import { 
 
 	$CONFIG_FILE = shift || guess_config_file(); 
-=cut
-
-	# There's no user-servicable parts in the subroutine, so don't make any changes, 
-	# unless you're customizing Dada Mail or debugging something interesting. 
-	#
-	if(exists($ENV{NO_DADA_MAIL_CONFIG_IMPORT})){ 
-			if($ENV{NO_DADA_MAIL_CONFIG_IMPORT} == 1){ 
-				return;
-			} 
-	}
-=cut
-
+	
 	# Keep this as, 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'
 	# What we're doing is, seeing if you've actually changed the variable from
 	# it's default, and if not, we take a best guess.	
 	
-
 	
 	if(-e $CONFIG_FILE && -f $CONFIG_FILE && -s $CONFIG_FILE){ 
 		open(CONFIG, '<:encoding(UTF-8)',  $CONFIG_FILE) 
@@ -2788,53 +2776,8 @@ sub config_import {
 			# Well, that's gonna suck. 
 			#die "$PROGRAM_NAME $VER ERROR - Outside config file '$CONFIG_FILE' contains errors:\n\n$@\n\n";
 		}	
-=cut
-
-		if($PROGRAM_CONFIG_FILE_DIR eq 'auto') { 
-			if(! defined $PROGRAM_ERROR_LOG){ 
-				$PROGRAM_ERROR_LOG = $LOGS . '/errors.txt'; 
-				open (STDERR, ">>$PROGRAM_ERROR_LOG")
-				|| warn "$PROGRAM_NAME Error: Cannot redirect STDERR, it's possible that Dada Mail does not have write permissions to this file ($PROGRAM_ERROR_LOG) or it doesn't exist! If Dada Mail cannot make this file for you, create it yourself and give it enough permissions so it may write to it: $!";
-			}
-		}
-=cut
 
 	}
-
-
-=cut
-		
-	if($PROGRAM_URL eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'){ 
-		require CGI; 
-		$PROGRAM_URL = CGI::url(); 
-	}
-	
-	# I really DO NOT think this is the place to massage Config variables if they 
-	# aren't set right, but it will save people headaches, in the long run: 
-
-
-	my %default_table_names = (
-		subscriber_table                   => 'dada_subscribers',
-		profile_table                      => 'dada_profiles', 
-		profile_fields_table 	           => 'dada_profile_fields', 
-		profile_fields_attributes_table    => 'dada_profile_fields_attributes',
-		archives_table                     => 'dada_archives', 
-		settings_table                     => 'dada_settings', 
-		session_table                      => 'dada_sessions', 
-		bounce_scores_table                => 'dada_bounce_scores', 
-		clickthrough_urls_table            => 'dada_clickthrough_urls',
-		clickthrough_url_log_table         => 'dada_clickthrough_url_log', 		
-		mass_mailing_event_log_table       => 'dada_mass_mailing_event_log',
-		password_protect_directories_table => 'dada_password_protect_directories', 
-		
-	); 
-	for(keys %default_table_names){ 
-		if(!exists($SQL_PARAMS{$_})){ 
-			$SQL_PARAMS{$_} = $default_table_names{$_};
-		}
-	}
-=cut
-
 }
 
 sub guess_config_file { 
