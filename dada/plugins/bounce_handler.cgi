@@ -55,7 +55,7 @@ my $Plugin_Config = {
     Allow_Manual_Run         => 1,
     Manual_Run_Passcode      => undef,
     Enable_POP3_File_Locking => 1,
-    Plugin_URL               => $q->url,
+    Plugin_URL               => self_url(),
     Plugin_Name              => 'Bounce Handler',
 };
 
@@ -814,6 +814,14 @@ sub version {
     $r .= "Random Aphorism: " . $ap[ int rand( $#ap + 1 ) ] . "\n\n";
     return $r;
 
+}
+
+sub self_url { 
+	my $self_url = $q->url; 
+	if($self_url eq 'http://' . $ENV{HTTP_HOST}){ 
+			$self_url = $ENV{SCRIPT_URI};
+	}
+	return $self_url; 	
 }
 
 

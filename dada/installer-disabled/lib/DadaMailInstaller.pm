@@ -39,7 +39,7 @@ $q = decode_cgi_obj($q);
 # $Self_URL may need not be set manually - but I'm hoping not. 
 # If the script doesn't post properly, go ahead and configure it manually
 #
-my $Self_URL            = $q->url;
+my $Self_URL            = self_url();
 
 # You'll normally not want to change this, but I leave it to you to decide
 #
@@ -1995,6 +1995,13 @@ sub uncomment_admin_menu_entry {
 
 
 
+sub self_url { 
+	my $self_url = $q->url; 
+	if($self_url eq 'http://' . $ENV{HTTP_HOST}){ 
+		$self_url = $ENV{SCRIPT_URI};
+	}
+	return $self_url; 	
+}
 
 sub program_url_guess {
     my $program_url = $Self_URL;
