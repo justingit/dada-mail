@@ -27,6 +27,7 @@ use lib "$FindBin::Bin/../DADA/perllib";
 use CGI::Carp qw(fatalsToBrowser);
 
 
+
 use DADA::Config 5.0.0 qw(!:DEFAULT);
 use DADA::Template::HTML; 
 use DADA::App::Guts;
@@ -450,8 +451,7 @@ sub edit  {
 		$schedule_form =  schedule_form(undef,$message);
 	}
 	
-
-	
+	#die $schedule_form; 
 	my $scrn = ''; 
 	
 	$scrn .=  admin_template_header(
@@ -460,7 +460,7 @@ sub edit  {
 						-Form       => 0,
 						-Root_Login => $yeah_root_login,
 						-vars => { 
-							load_wysiwyg_editor => 1, 
+							#load_wysiwyg_editor => 1, 
 						}
 						);
 
@@ -485,7 +485,7 @@ $scrn .= '<div id="screentitle">
 	$scrn .=  admin_template_footer(-Form    => 0, 
 						    -List    => $li->{list},
 						); 
-						
+			
 	e_print($scrn); 
 						    
 }
@@ -782,19 +782,18 @@ sub schedule_form {
 	$f .= $message; 
 	
 	
-	$f .= q{
+	$f .= '
 	<div id="plugins_beatitude_schedule_form"></div>
-	
+	<form action="' . $Plugin_Config->{Plugin_URL} . '" method="post">
 	<fieldset> 
  	<legend>Scheduling Options</legend>
-
-	};
+	';
 	
 	
 	$f .= $q->p({-class => "positive"}, 'Server time is: ' . $mss->printable_date(time));
 	
 		
-	$f .= $q->start_form(-action => $Plugin_Config->{Plugin_URL});
+	#$f .= $q->start_form(-action => $Plugin_Config->{Plugin_URL});
 	$f .= (
 		   $q->p($q->b('Scheduled Message Name:'), 
 		   $q->textfield(
@@ -863,6 +862,7 @@ $f .= q{
 	$f .= message_widget(-type => 'PlainText', -form_vals => \%form_vals); 
 	$f .= message_widget(-type => 'HTML', -form_vals => \%form_vals); 
 
+	
 $f.= q{ 
 
 </fieldset> 
@@ -995,8 +995,8 @@ $f .= $q->hidden('flavor', 'edit');
 
 $f .= submit_widget($key); 
 
-$f .= $q->end_form(); 
-
+#$f .= $q->end_form(); 
+$f .= '</form>';
 
 $f .= $q->p('&nbsp;') . $q->p($q->a({-href => $Plugin_Config->{Plugin_URL}}, '<- Schedule Index...')); 	
 
@@ -1012,6 +1012,7 @@ if($q->param('debug')){
 
 
 
+#die $f; 
 
 	return $f; 
     	
@@ -1119,7 +1120,6 @@ sub date_widget {
 		
   	  ); 
 		$r .= '</div>'; 
-
 	return $r; 
 }
 
@@ -1272,6 +1272,7 @@ $r .= qq{
 
 		
 	};
+	
 
 if($type !~ m/plain/i){ 	
 my $url_options .= qq{
@@ -1479,7 +1480,7 @@ sub from_text_widget {
 					source       => $form_vals{$type.'_ver'}->{source}, 
 					type         => $type, 
 					
-					%wysiwyg_vars,
+					#%wysiwyg_vars,
 				},
 				-expr => 1, 
 				-list_settings_vars       => $li, # Uh, ok - $li is global. That's stupid. 
