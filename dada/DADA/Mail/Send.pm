@@ -1565,13 +1565,8 @@ sub mass_send {
 			my $stop_email;
 			my $mailing_amount;
 			
-			# let's take count of the start time
-			 my $mail_start_time = $status->{first_access};  
-			#
 			# pretty sure $status is still in affect...
 			
-			my $log_mail_start_time = scalar(localtime($mail_start_time)); 	
-
 			# Let's tell em we're in control: 
 			#
 			$mailout->set_controlling_pid($$);
@@ -1906,7 +1901,7 @@ sub mass_send {
 								if $t;
 			                my $batch_status = $mailout->status({-mail_fields => 0}); 
 		                
-	                       my $batch_log_message = "Subject:$fields{Subject}, Start Time: $log_mail_start_time"; 
+	                       my $batch_log_message = "Subject:$fields{Subject}, Start Time: " . scalar(localtime($status->{first_access})); 
 							for(keys %$batch_status){ 
 								next if $_ eq 'email_fields';
 								next if $_ =~ m/formatted/; 
@@ -2088,26 +2083,31 @@ sub mass_send {
 			
 			# Old, crufty, complicated stuff...
 			$mailing_amount   = $mailing_count; 
-			my $log_mail_end_time = scalar(localtime(time));
-			
+			my $unformatted_end_time = time; 
 			if( $self->{ls}->param('get_finished_notification')  == 1){ 			
 			    
 			    warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' sending finished notification' 
 			        if $t; 
 			        
                 $self->_email_batched_finished_notification(
-                    -fields       => \%fields, 
-                    -start_time   => $mail_start_time, 
-                    -end_time     => $log_mail_end_time, 
-                    
+                    -start_time   => $ending_status->{first_access}, 
+                    -end_time     => $unformatted_end_time,
                     -emails_sent  => $ending_status->{total_sent_out},
-                    
                     -last_email   => $stop_email,
+                    -fields       => \%fields, 
                 ); 
                                                         
 			}
 			# End Old, Complicated, Crufty Stuff....
-			my $mass_mail_finished_log = "Message-Id: $mailout_id\tSubject: $fields{Subject}\tStarted: $log_mail_start_time\tFinished: $log_mail_end_time\tMailing Amount: $mailing_amount"; 			
+			my $mass_mail_finished_log = join(
+				"\t", 
+				"Message-Id: "     . $mailout_id, 
+				"Subject: "        . $fields{Subject}, 
+				"Started: "        . scalar(localtime($ending_status->{first_access})), 
+				"Finished: "       . scalar(localtime($unformatted_end_time)), 
+				"Mailing Amount: " . $mailing_amount,
+			); 
+			
 			if($DADA::Config::LOG{mass_mailings} == 1){ 
 				$self->{mj_log}->mj_log(
 					$self->{list}, 
@@ -2639,7 +2639,9 @@ sub _email_batched_finished_notification {
 
 	# Amazon SES may have a limit of 1 message/sec, 
 	# so we give ourselves a little space after a mass mailing
-	if($self->{ls}->param('sending_method') eq 'amazon_ses' || $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/){
+	if(
+		$self->{ls}->param('sending_method') eq 'amazon_ses' 
+	 || $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/){
 		sleep(1); 
 	}
 	#
@@ -2671,7 +2673,7 @@ sub _email_batched_finished_notification {
     my $formatted_start_time = '';
     my $formatted_end_time   = '';
 
-    if ( $args{-start_time} ) {
+    if ( defined($args{-start_time} )) {
 
         my ( $s_sec, $s_min, $s_hour, $s_day, $s_month, $s_year ) =
           ( localtime( $args{-start_time} ) )[ 0, 1, 2, 3, 4, 5 ];
@@ -2684,7 +2686,7 @@ sub _email_batched_finished_notification {
 
     }
 
-    if ( $args{-end_time} ) {
+    if ( defined($args{-end_time}) ) {
 
         my ( $e_sec, $e_min, $e_hour, $e_day, $e_month, $e_year ) =
           ( localtime( $args{-end_time} ) )[ 0, 1, 2, 3, 4, 5 ];
@@ -2730,7 +2732,8 @@ sub _email_batched_finished_notification {
 	# warn q{ $self->{ls}->{sending_method} } . $self->{ls}->{sending_method}; 
 	my $disposition = 'inline'; 
 	my $type        = 'message/rfc822';
-	if($self->{ls}->param('sending_method') eq 'amazon_ses' || $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/){
+	if($self->{ls}->param('sending_method') eq 'amazon_ses' 
+	|| $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/){
 			$disposition = 'attachment'; 
 			$type        = 'text/plain'; 
 	}
