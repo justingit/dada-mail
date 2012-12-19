@@ -1267,10 +1267,12 @@ sub mass_send {
 	
 	#-------------------------------------------------------------------------#
 	# Log the start of this mailing. 	
+	my $s_l_subject = $fields{Subject}; 
+	   $s_l_subject =~ s/\r|\n//g;
 	my $mass_mail_starting_log = join(
 	"\t", 
 	"Message-Id: "     . $mailout_id, 
-	"Subject: "        . $fields{Subject}, 
+	"Subject: "        . $s_l_subject, 
 	"Started: "        . scalar(localtime($status->{first_access})), 
 	"Mailing Amount: " . $status->{total_sending_out_num},
 	);	
@@ -2099,10 +2101,12 @@ sub mass_send {
                                                         
 			}
 			# End Old, Complicated, Crufty Stuff....
+			my $f_l_subject = $fields{Subject}; 
+			   $f_l_subject =~ s/\r|\n//g;
 			my $mass_mail_finished_log = join(
 				"\t", 
 				"Message-Id: "     . $mailout_id, 
-				"Subject: "        . $fields{Subject}, 
+				"Subject: "        . $f_l_subject, 
 				"Started: "        . scalar(localtime($ending_status->{first_access})), 
 				"Finished: "       . scalar(localtime($unformatted_end_time)), 
 				"Mailing Amount: " . $mailing_amount,
