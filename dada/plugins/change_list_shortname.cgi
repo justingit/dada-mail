@@ -38,7 +38,7 @@ my $ls;
 
 my $Plugin_Config                = {}; 
    $Plugin_Config->{Plugin_Name} = 'Change List Shortname'; 
-   $Plugin_Config->{Plugin_URL}  = $q->url; 
+   $Plugin_Config->{Plugin_URL}  = self_url(); 
 
 
 &init_vars; 
@@ -211,7 +211,7 @@ sub verify_change_list_shortname {
              -screen         => 'plugins/change_list_shortname/verify.tmpl',
   			 -expr           => 1, 
              -vars => {
-				Plugin_URL => $q->url, 
+				Plugin_URL => $Plugin_Config->{Plugin_URL}, 
 				errors     => $errors, 
 				new_name   => $new_name, 
 				%{$change_list_name_errors}, 
@@ -282,6 +282,17 @@ my $c = DADA::App::ScreenCache->new;
 print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?f=logout&login_url='. $DADA::Config::S_PROGRAM_URL . '?f=' . $DADA::Config::ADMIN_FLAVOR_NAME); 
 
 }
+
+
+sub self_url { 
+	my $self_url = $q->url; 
+	if($self_url eq 'http://' . $ENV{HTTP_HOST}){ 
+			$self_url = $ENV{SCRIPT_URI};
+	}
+	return $self_url; 	
+}
+
+
 =pod
 
 =head1 Plugin: change_list_shortname.cgi - Change your mailing list's Short Name

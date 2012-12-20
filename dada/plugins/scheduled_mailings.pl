@@ -52,7 +52,7 @@ $Plugin_Config->{Log} = undef, # Example: $LOGS . '/schedules.txt';
 # and are redirected to an 
 # outside page, you may need to set this manually. 
 
-$Plugin_Config->{Plugin_URL} = $q->url; 
+$Plugin_Config->{Plugin_URL}          = self_url(); 
 
 $Plugin_Config->{Allow_Manual_Run}    = 1; 
 
@@ -64,12 +64,6 @@ $Plugin_Config->{Manual_Run_Passcode} = undef;
 
 
 $Plugin_Config->{Plugin_Name} = 'Beatitude'; 
-
-
-my $App_Version          = '.6';
-
-
-
 
 my $mss; 
 my $list; 
@@ -2015,8 +2009,6 @@ pod2text ./schedule_mailings.pl | less
 
 sub version { 
 
-	#heh, subversion, wild. 
-	print $Plugin_Config->{Plugin_Name} . " Version: $App_Version\n"; 
 	print "$DADA::Config::PROGRAM_NAME Version: $DADA::Config::VER\n\n"; 
 	exit; 
 	
@@ -2066,6 +2058,14 @@ sub close_log{
 	if($Have_Log){ 
 		close(LOG); 
 	}
+}
+
+sub self_url { 
+	my $self_url = $q->url; 
+	if($self_url eq 'http://' . $ENV{HTTP_HOST}){ 
+			$self_url = $ENV{SCRIPT_URI};
+	}
+	return $self_url; 	
 }
 
 =pod

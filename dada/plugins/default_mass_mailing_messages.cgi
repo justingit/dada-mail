@@ -41,8 +41,8 @@ my $pt_fn;
 my $html_fn; 
 
 my $Plugin_Config                = {}; 
-   $Plugin_Config->{Plugin_Name} = 'Password Protect Directories'; 
-   $Plugin_Config->{Plugin_URL}  = $q->url; 
+   $Plugin_Config->{Plugin_Name} = 'Default Mass Mailing Messages'; 
+   $Plugin_Config->{Plugin_URL}  = self_url(); 
 
 
 &init_vars; 
@@ -182,7 +182,7 @@ sub cgi_default {
                  -List       => $list,
              },
              -vars => {
-				Plugin_URL => $q->url, 
+				Plugin_URL => $Plugin_Config->{Plugin_URL}, 
 				default_plaintext_message_content_data => $default_plaintext_message_content_data, 
 				default_html_message_content_data      => $default_html_message_content_data, 
 				plaintext_message_source_isa_url       => $plaintext_message_source_isa_url,
@@ -241,7 +241,7 @@ sub save_params {
 			}
 		}
 	);
-	print $q->redirect($q->url . '?done=1;pt_return=' . $pt_return . ';html_return=' . $html_return); 
+	print $q->redirect($Plugin_Config->{Plugin_URL} . '?done=1;pt_return=' . $pt_return . ';html_return=' . $html_return); 
 }
 
 sub save_file { 
@@ -282,6 +282,15 @@ sub view_file {
 		croak('sorry I cannot show, ' . $fn);
 	}
 	
+}
+
+
+sub self_url { 
+	my $self_url = $q->url; 
+	if($self_url eq 'http://' . $ENV{HTTP_HOST}){ 
+			$self_url = $ENV{SCRIPT_URI};
+	}
+	return $self_url; 	
 }
 
 

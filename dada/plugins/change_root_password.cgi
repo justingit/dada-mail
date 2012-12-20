@@ -28,7 +28,7 @@ my $q = new CGI;
    $q->charset($DADA::Config::HTML_CHARSET);
    $q = decode_cgi_obj($q);
 
-my $URL = $q->url; 
+my $URL = self_url(); 
 
 # This will take care of all out security woes
 my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q, 
@@ -214,6 +214,15 @@ EOF
 ; 
 
 }
+
+sub self_url { 
+	my $self_url = $q->url; 
+	if($self_url eq 'http://' . $ENV{HTTP_HOST}){ 
+			$self_url = $ENV{SCRIPT_URI};
+	}
+	return $self_url; 	
+}
+
 
 
 =pod

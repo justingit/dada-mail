@@ -30,7 +30,7 @@ my $Plugin_Config = {};
 # and are redirected to an 
 # outside page, you may need to set this manually.
 
-$Plugin_Config->{Plugin_URL}   =  $q->url; 
+$Plugin_Config->{Plugin_URL}   = self_url(); 
 
 
 $Plugin_Config->{Plugin_Name}  = 'Log Viewer'; 
@@ -458,6 +458,14 @@ sub get_logs {
 		'Bounce Handler Log'     => $DADA::Config::LOGS . '/' . 'bounces.txt', 
 	);
 	return %logs; 
+}
+
+sub self_url { 
+	my $self_url = $q->url; 
+	if($self_url eq 'http://' . $ENV{HTTP_HOST}){ 
+			$self_url = $ENV{SCRIPT_URI};
+	}
+	return $self_url; 	
 }
 
 =pod

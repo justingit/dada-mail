@@ -31,7 +31,7 @@ my $q = new CGI;
 
 my $Plugin_Config = {}; 
    $Plugin_Config->{Plugin_Name}         = 'Mailing Monitor';
-   $Plugin_Config->{Plugin_URL}          = $q->url;
+   $Plugin_Config->{Plugin_URL}          = self_url();
    $Plugin_Config->{Allow_Manual_Run}    = 1;
    $Plugin_Config->{Manual_Run_Passcode} = undef; 
 
@@ -187,6 +187,16 @@ sub mailing_monitor_results {
 
 
 }
+
+sub self_url { 
+	my $self_url = $q->url; 
+	if($self_url eq 'http://' . $ENV{HTTP_HOST}){ 
+			$self_url = $ENV{SCRIPT_URI};
+	}
+	return $self_url; 	
+}
+
+
 
 =head1 Mailing Monitor Plugin
 

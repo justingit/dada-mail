@@ -21,10 +21,10 @@ my $verbose = 0;
 
 my $Plugin_Config = {};
 
-$Plugin_Config->{Plugin_URL} = $q->url;
+$Plugin_Config->{Plugin_URL}         = self_url();
 
 # Set to, 1, to enable
-$Plugin_Config->{Allow_Manual_Run} = 1;
+$Plugin_Config->{Allow_Manual_Run}   = 1;
 
 # Pick some sort of passcode, for a semblance of security 
 $Plugin_Config->{Manual_Run_Passcode} = '';
@@ -107,12 +107,10 @@ sub view {
     my $curl_location = `which curl`;
     $curl_location = strip( make_safer($curl_location) );
 
-
     require DADA::Template::Widgets;
-	my $view_template = view_template();
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
-			-data => \$view_template, 
+			-screen         => 'plugins/screen_cache/view.tmpl', 
 			-with           => 'admin', 
 			-wrapper_params => { 
 				-Root_Login => $root_login,
@@ -164,163 +162,12 @@ sub cgi_manual_start {
 
 
 
-sub view_template { 
-	
-return q{ 
-	<!-- begin clear_screen_cache.tmpl --> 
-
-	<!-- tmpl_set name="title" value="Plugins &#187; Screen Cache" -->
-	<div id="screentitle"> 
-		<div id="screentitlepadding">
-			<!-- tmpl_var title --> 
-		</div>
-		<!-- tmpl_include help_link_widget.tmpl -->
-	</div>
-
-
-	<div class="clearskiesbox">
-	
-		<p>Screen Caching is currently <strong>
-	<!-- tmpl_if cache_active --> 
-
-		enabled.
-
-	<!-- tmpl_else --> 
-
-		disabled.
-
-	<!-- /tmpl_if -->
-	</strong>
-
-	</div> 
-	
-
-	<!-- tmpl_if file_list --> 
-
-		 <div class="buttonfloat">
-
-
-		<form action="<!-- tmpl_var Plugin_URL -->" method="POST"> 
-			<input type="hidden" name="process" value="flush" />
-			 <input type="submit" class="alertive" value="Remove All Cached Screens" />
-		</form> 
-
-		 </div>
-		 <div class="floatclear"></div>
-
-
-		<div style="max-height: 300px; overflow: auto; border:1px solid black">
-
-		<table class="stripedtable">
-
-
-		<tr> 
-		  <td></td> 
-
-		  <td>Filename</td> 
-		  <td>Size (kb)</td> 
-
-		  <td></td> 
-
-		 </tr> 
-
-
-
-
-
-		<!-- tmpl_loop file_list --> 
-
-			   <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
-		  <td>
-
-
-		  <form action="<!-- tmpl_var Plugin_URL -->" method="POST"> 
-			<input type="hidden" name="f" value="clear_screen_cache" /> 
-			<input type="hidden" name="process" value="remove" />
-
-			<input type="hidden" name="filename" value="<!-- tmpl_var name -->" --> 
-
-			<input type="submit" class="alertive" value="&#8855;">
-		   </form> 
-
-		  </td> 
-
-
-		  <td><span title="<!-- tmpl_var name -->"><!-- tmpl_var cutoff_name --><!-- tmpl_var dotdot --></span></td> 
-		  <td><!-- tmpl_var size --></td> 
-
-		  <td>
-		   <form action="<!-- tmpl_var Plugin_URL -->" method="POST" target="preview"> 
-			<input type="hidden" name="f" value="clear_screen_cache" /> 
-			<input type="hidden" name="process" value="view" />
-
-			<input type="hidden" name="filename" value="<!-- tmpl_var name -->" --> 
-
-			<input type="submit" class="cautionary" value="View...">
-		   </form> 
-
-		  </td> 
-
-		 </tr> 
-
-		<!--/tmpl_loop-->
-
-
-
-
-		</table> 
-		</div> 
-
-
-		<p> 
-		 <strong>
-		  Cached Screen Preview:
-		 </strong> 
-		</p>
-
-		<iframe height="500" name="preview" width="100%"></iframe>
-
-	<!-- tmpl_else --> 
-
-		<!-- tmpl_if cache_active --> 
-		
-			<p class="positive">
-			  There are currently no cached screens.
-			</p>
-		
-		<!-- /tmpl_if --> 
-		
-	<!--/tmpl_if-->
-	
-	<fieldset> 
-	
-	<p>
-	 <label for="cronjob_url">Manual Run URL:</label><br /> 
-	<input type="text" class="full" id="cronjob_url" value="<!-- tmpl_var Plugin_URL -->?run=1&passcode=<!-- tmpl_var Manual_Run_Passcode -->" />
-	</p>
-
-
-
-	<p> <label for="cronjob_command">curl command example (for a cronjob):</label><br /> 
-	<input type="text" class="full" id="cronjob_command" value="<!-- tmpl_var name="curl_location" default="/cannot/find/curl" -->  -s --get --data run=1\;passcode=<!-- tmpl_var Manual_Run_Passcode -->\;verbose=0  --url <!-- tmpl_var Plugin_URL -->" />
-	<!-- tmpl_unless curl_location --> 
-		<span class="error">Can't find the location to curl!</span><br />
-	<!-- /tmpl_unless --> 
-
-	<!-- tmpl_unless Allow_Manual_Run --> 
-	    <span class="error">(Currently disabled)</a>
-	<!-- /tmpl_unless --> 
-
-	</p>
-
-
-
-	</fieldset> 
-	
-
-	<!-- end clear_screen_cache.tmpl --> 
-};
-
+sub self_url { 
+	my $self_url = $q->url; 
+	if($self_url eq 'http://' . $ENV{HTTP_HOST}){ 
+			$self_url = $ENV{SCRIPT_URI};
+	}
+	return $self_url; 	
 }
 
 =pod

@@ -1066,7 +1066,7 @@ After that, you'll need to configure outgoing email messages to set the B<Dada L
 
 =head3 If you're using th sendmail command: 
 
-In the list control panel, go to B<Mail Sending - Sending Preferences> and 
+In the list control panel, go to B<Mail Sending - Sending Options> and 
 check: B<Add the Sendmail '-f' flag when sending messages ...>
 
 This I<should> set the sending to the admin email, and in turn, set the
@@ -1074,7 +1074,7 @@ B<Return-Path> header. Dada Mail is shipped to have this option set by default.
 
 =head3 If you're using SMTP sending: 
 
-In the list control panel, go to: B<Sending Preferences - Sending Preferences>
+In the list control panel, go to: B<Mail Sending - Sending Options>
 and check the box labeled: B<Set the Sender of SMTP mailings to the 
 list administration email address>  Dada Mail is shipped to have this option set by default. 
 

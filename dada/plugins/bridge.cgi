@@ -52,7 +52,7 @@ $Plugin_Config->{Plugin_Name} = 'Bridge';
 # But, if you are having trouble saving settings
 # and are redirected to an
 # outside page, you may need to set this manually.
-$Plugin_Config->{Plugin_URL} = $q->url;
+$Plugin_Config->{Plugin_URL} = self_url();
 
 # Can the checking of awaiting messages to send out happen by invoking this
 # script from a URL? (CGI mode?)
@@ -3507,12 +3507,25 @@ sub inject {
 
 }
 
+
+sub self_url { 
+	my $self_url = $q->url; 
+	if($self_url eq 'http://' . $ENV{HTTP_HOST}){ 
+			$self_url = $ENV{SCRIPT_URI};
+	}
+	return $self_url; 	
+}
+
 END {
 
     if ( defined($parser) ) {
         $parser->filer->purge;
     }
 }
+
+
+
+
 
 package SimpleModeration;
 
@@ -4096,6 +4109,13 @@ sub mod_dir {
 
 }
 
+
+
+
+
+
+
+
 =pod
 
 =head1 Bridge
@@ -4252,11 +4272,11 @@ Set the size in octects.
 
 =head2 Allow_Open_Discussion_List
 
-If set to, C<1> a new option will be available in Dada Bridge's list control panel to allow you to have a discussion list that anyone can send messages to. 
+If set to, C<1> a new option will be available in Bridge's list control panel to allow you to have a discussion list that anyone can send messages to. 
 
 =head2 Room_For_One_More_Check
 
-C<Room_For_One_More_Check> looks to see how many mass mailings are currently in the mass mailing queue. If its at or above the limit set in C<$MAILOUT_AT_ONCE_LIMIT>, Dada Bridge will not attempt to look for and (possibly) create another mass mailing to join the queue. 
+C<Room_For_One_More_Check> looks to see how many mass mailings are currently in the mass mailing queue. If its at or above the limit set in C<$MAILOUT_AT_ONCE_LIMIT>, Bridge will not attempt to look for and (possibly) create another mass mailing to join the queue. 
 
 =head2 Enable_POP3_File_Locking
 
@@ -4276,13 +4296,13 @@ C<Check_Multiple_Return_Path_Headers> is another validity test for received mess
 
 A cronjob will need to be set for Bridge, if you have a mailing list that uses a POP3 account for its List Email. If you are using Mail Forwards only, no cronjob needs to be set. 
 
-Generally, setting the cronjob to have Dada Bridge run automatically just means that you have to have a cronjob access a specific URL. The URL looks something like this:
+Generally, setting the cronjob to have Bridge run automatically just means that you have to have a cronjob access a specific URL. The URL looks something like this:
 
  http://example.com/cgi-bin/dada/plugins/bridge.cgi?run=1&verbose=1
 
 Where, I<http://example.com/cgi-bin/dada/plugins/bridge.cgi> is the URL to your copy of bridge.cgi
 
-You'll see the specific URL used for your installation of Dada Mail in the web-based control panel for Dada Bridge, under the label, B< Manual Run URL:> 
+You'll see the specific URL used for your installation of Dada Mail in the web-based control panel for Bridge, under the label, B< Manual Run URL:> 
 
 This should work for most Cpanel-based hosting accounts.
 
@@ -4293,7 +4313,7 @@ In this example, I'll be running the script every 5 minutes ( */5 * * * * ) - ta
 
 	*/5 * * * * /usr/local/bin/curl -s --get --data run=1\;verbose=0\; --url http://example.com/cgi-bin/dada/plugins/bridge.cgi
 
-=head2 Disallowing running Dada Bridge manually (via URL) 
+=head2 Disallowing running Bridge manually (via URL) 
 
 If you DO NOT want to use this way of invoking the program to check awaiting messages and send them out, make sure to set the B<plugin config variable> (which we'll cover below) C<Allow_Manual_Run> to, C<0>. 
 
@@ -4322,9 +4342,9 @@ As mentioned above, the C<Manual_Run_Passcode> allows you to set some sort of se
 
 =item * verbose
 
-By default, you'll receive the a report of how Dada Bridge is doing downloading awaiting messages, validating them and sending them off. 
+By default, you'll receive the a report of how Bridge is doing downloading awaiting messages, validating them and sending them off. 
 
-This is sometimes not so desired, especially in a cron environment, since all this informaiton will be emailed to you (or someone) everytime the script is run. You can run Dada Bridge with a cron that looks like this:
+This is sometimes not so desired, especially in a cron environment, since all this informaiton will be emailed to you (or someone) everytime the script is run. You can run Bridge with a cron that looks like this:
 
  */5 * * * * /usr/local/bin/curl -s --get --data run=1 --url http://example.com/cgi-bin/dada/plugins/bridge.cgi >/dev/null 2>&1
 
@@ -4332,13 +4352,13 @@ The, >/dev/null 2>&1 line throws away any values returned.
 
 Since all the information being returned from the plugin is done sort of indirectly, this also means that any problems actually running the program will also be thrown away.
 
-If you set verbose to, C<0>, under normal operation, Dada Bridge won't show any output, but if there's a server error, you'll receive an email about it. This is probably a good thing. Example:
+If you set verbose to, C<0>, under normal operation, Bridge won't show any output, but if there's a server error, you'll receive an email about it. This is probably a good thing. Example:
 
  * * * * * /usr/local/bin/curl -s --get --data run=1\;verbose=0 --url http://example.com/cgi-bin/dada/plugins/bridge.cgi
 
 =item * test
 
-Runs Dada Bridge in test mode by checking the messages awaiting and parsing them, but not actually carrying out any sending. 
+Runs Bridge in test mode by checking the messages awaiting and parsing them, but not actually carrying out any sending. 
 
 =back 
 
@@ -4366,7 +4386,7 @@ Finally, I also had to pass the actual URL of the plugin using the --url flag.
 
 This plugin can also be invoked in a command line interface. 
 
-To use Dada Bridge via the command line, first change into the directory that Dada Bridge resides in, and issue the command:
+To use Bridge via the command line, first change into the directory that Bridge resides in, and issue the command:
 
  ./bridge.cgi --help
 
@@ -4384,7 +4404,7 @@ Where, I</home/myaccount/cgi-bin/dada/plugins> is the full path to the directory
 =head1 Manual Installation
 
 
-=head2 Configuring Dada Bridge's Plugin Side
+=head2 Configuring Bridge's Plugin Side
 
 =head2 #1 Change the permissions of the, bridge.cgi script to, "755"
 
@@ -4393,7 +4413,7 @@ Find the C<bridge.cgi> script in your I<dada/plugins> directory. Change its perm
 =head2 #2 Configure your outside config file (.dada_config)
 
 You'll most likely want to edit your outside config file (C<.dada_config>)
-so that it shows Dada Bridge in the left-hand menu, under the, B<Plugins> heading. 
+so that it shows Bridge in the left-hand menu, under the, B<Plugins> heading. 
 
 First, see if the following lines are present in your C<.dada_config> file: 
 

@@ -26,13 +26,13 @@ $q->charset($DADA::Config::HTML_CHARSET);
 $q = decode_cgi_obj($q);
 my $verbose = $q->param('verbose') || 0; 
 
-my $Plugin_Config                = {}; 
-   $Plugin_Config->{Plugin_Name} = 'Password Protect Directories'; 
-   $Plugin_Config->{Plugin_URL}  = $q->url; 
-   $Plugin_Config->{Allow_Manual_Run} = 1; 
+my $Plugin_Config                        = {}; 
+   $Plugin_Config->{Plugin_Name}         = 'Password Protect Directories'; 
+   $Plugin_Config->{Plugin_URL}          = self_url(); 
+   $Plugin_Config->{Allow_Manual_Run}    = 1; 
    $Plugin_Config->{Manual_Run_Passcode} = undef; 
    $Plugin_Config->{Base_Absolute_Path}  = $ENV{DOCUMENT_ROOT} . '/';
-   $Plugin_Config->{Base_URL} = 'http://' . $ENV{HTTP_HOST} . '/'; 
+   $Plugin_Config->{Base_URL}            = 'http://' . $ENV{HTTP_HOST} . '/'; 
 
 &init_vars; 
 
@@ -363,6 +363,16 @@ sub delete_dir {
 	   $htp->remove({-id => $id});
 	print $q->redirect(-uri => $Plugin_Config->{Plugin_URL} . '?done=1'); 
 	
+}
+
+
+
+sub self_url { 
+	my $self_url = $q->url; 
+	if($self_url eq 'http://' . $ENV{HTTP_HOST}){ 
+			$self_url = $ENV{SCRIPT_URI};
+	}
+	return $self_url; 	
 }
 
 __END__
