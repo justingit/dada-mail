@@ -1,3 +1,76 @@
+
+=head1 6.0.0 Release Candiate 2
+
+=head2 Summary 6.0.0 Release Candidate 2
+
+The changes below summarize the differences between RC1 and RC2 of the v6.0.0 Release
+
+=over
+
+=item * Membership >> Invite/Subscribe/Add was not functional, for anything except for the Subscribers sublist
+
+This was a problem of a missing class in the, B<Add Checked Addresses to [sublist]> button. 
+
+=item * Mass Mailing Started/Finished log messages were truncated
+
+These log messages were missing some of the information that should have been present. 
+
+=item * "Mass Mailing Finished" Message had the incorrect "finishing time" and, "Duration Time"
+
+=item * Plugin URLs and Installer URL better guessed
+
+The installer and plugin URLs attempt to guess their own URL, so you do not need to configure these things, yourself. 
+
+Unfortunetly, it does not always get them right, depending on your hosting environment. Code has been added to make this guess better. 
+
+=item * Screen Cache plugin's HTML has now been templated out
+
+=item * Beatitude: Some options could not be saved, due to sloppy HTML
+
+=item * CKEditor and the, "{C}" string: 
+
+CKeditor seems to place the, "{C}" string in the source of HTML messages, when there'a a comment tag in an, "href" tag attribute (like, for example, in a link). Since Dada Mail's template tags are also valid HTML comments, they are found in, "href" attributes often. 
+
+This string is never I<removed> by CKeditor, and thus, will break the link. It seems that this character is some sort of placeholder for comment tags, but seems not to be handled correctly by CKeditor. 
+
+This string is now looked for, and removed, before messages are sent. 
+
+=item * "Automatically set batching speeds based on your Amazon SES limits" was not functioning correctly 
+
+=item * The Default CAPTCHA type was not working correctly, always returning an error
+
+=item * Better support for server environments that don't support data sent via Path Infos
+
+There's a trick in Dada Mail, where you can set the Program's URL to have a, "?" at the end of the URL, like this: 
+
+	$PROGRAM_URL = 'http://example.com/cgi-bin/dada/mail.cgi?'; 
+
+Which will then turn any Path Info, into a query string
+
+Dada Mail will now correctly look for this, and use any information that I<looks> like a Path Info, passed as a query string as Path Info information and also correctly read double-question mark query strings correctly as well. 
+
+It's still a hack-y workaround, but hopefully, could help someone get their work done. Is this a problem with "Zeus" webservers?
+
+=item * Installer: now correctly removes the old screen cache, during an install/upgrade
+
+=item * Installer: now correctly set the, $PROGRAM_ERROR_LOG variable, even if the .dada_files location is set to, "auto"
+
+=item * Bounce Handler: web-based interface to parse bounces broken
+
+The web-based interface to check any awaiting messages and parse them would look as if you're testing messages, but the messages would actually be parsed, scored and logged, except the messages would not be removed. This has been fixed. 
+
+
+
+
+
+
+
+
+
+
+=back
+
+
 =head1 6.0.0
 
 =head2 Summary 6.0.0
