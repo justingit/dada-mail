@@ -35,7 +35,7 @@ Keep it that way, same case (B<UTF-8>) - same everything.
 
 Dada Mail is only tested with the charset set this way. 
 
-=head2 Advanced Sending Preferences
+=head2 Mail Sending - Advanced Options
 
 =head3 Default Character Set 
 
@@ -148,9 +148,9 @@ No explicit encoding/decoding is done in Dada Mail when saving/retrieving data. 
 
 The Plugins and Extensions that come with Dada Mail have not been as thoroughly tested as the main program. There's still warts. 
 
-=head3 Dada Bridge
+=head3 Bridge
 
-Dada Bridge has a unique position needing to handle a lot of different stuff thown at it and 
+Bridge has a unique position needing to handle a lot of different stuff thown at it and 
 deal with it gracefully. Dada Mail I<does>, in fact, handle, any realistic character set/encoding you throw at it, 
 but Dada Mail will convert messages it receives to its internal format, before it resends it out to your list. 
 

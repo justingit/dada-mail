@@ -942,96 +942,106 @@ sub install_dada_mail {
     my $errors = {};
     my $status = 1;
 
+    if (
+        $args->{-if_dada_files_already_exists} eq 'keep_dir_create_new_config' )
+    {
+        $log .= "* Backing up current configuration file\n";
+        eval { backup_current_config_file($args); };
+        if ($@) {
+            $log .= "* Problems backing up config file: $@\n";
+            $errors->{cant_backup_orig_config_file} = 1;
+        }
+        else {
+            $log .= "* Success!\n";
+        }
+    }
 
-	if($args->{-if_dada_files_already_exists} eq 'keep_dir_create_new_config'){ 
-		$log .= "* Backing up current configuration file\n";
-		eval { 
-			backup_current_config_file($args); 
-		}; 
-		if($@){ 
-			$log .= "* Problems backing up config file: $@\n"; 
-			$errors->{cant_backup_orig_config_file} = 1;
-		}
-		else { 
-			$log .= "* Success!\n"; 
-		}	
-	}
-	
-	if($args->{-if_dada_files_already_exists} eq 'skip_configure_dada_files'){ 
-		$log .= "* Skipping configuration of directory creation, config file and backend options\n"; 
-	}
-	else { 
-    	$log .=
-	        "* Attempting to make $DADA::Config::PROGRAM_NAME Files at, "
-	      . $args->{-install_dada_files_loc} . '/'
-	      . $Dada_Files_Dir_Name . "\n";
+    if ( $args->{-if_dada_files_already_exists} eq 'skip_configure_dada_files' )
+    {
+        $log .=
+"* Skipping configuration of directory creation, config file and backend options\n";
+    }
+    else {
+        $log .=
+            "* Attempting to make $DADA::Config::PROGRAM_NAME Files at, "
+          . $args->{-install_dada_files_loc} . '/'
+          . $Dada_Files_Dir_Name . "\n";
 
-		if($args->{-if_dada_files_already_exists} eq 'keep_dir_create_new_config'){ 
-			$log .= "* Skipping directory creation\n"; 
-		}
-		else { 			
-		    # Making the .dada_files structure
-		    if ( create_dada_files_dir_structure( $args->{-install_dada_files_loc} ) == 1 ) {
-		        $log .= "* Success!\n";
-		    }
-		    else {
-		        $log .= "* Problems Creating Directory Structure! STOPPING!\n";
-		        $errors->{cant_create_dada_files} = 1;
-		        $status = 0;
-		        return ( $log, $status, $errors );
-		    }
-		}
+        if ( $args->{-if_dada_files_already_exists} eq
+            'keep_dir_create_new_config' )
+        {
+            $log .= "* Skipping directory creation\n";
+        }
+        else {
+            # Making the .dada_files structure
+            if (
+                create_dada_files_dir_structure(
+                    $args->{-install_dada_files_loc}
+                ) == 1
+              )
+            {
+                $log .= "* Success!\n";
+            }
+            else {
+                $log .= "* Problems Creating Directory Structure! STOPPING!\n";
+                $errors->{cant_create_dada_files} = 1;
+                $status = 0;
+                return ( $log, $status, $errors );
+            }
+        }
 
-	    # Making the .dada_config file
-	    $log .= "* Attempting to create .dada_config file...\n";
-	    if ( create_dada_config_file($args) == 1 ) {
-	        $log .= "* Success!\n";
-	    }
-	    else {
-	        $log .= "* Problems Creating .dada_config file! STOPPING!\n";
-	        $errors->{cant_create_dada_config} = 1;
-	        $status = 0;
-	        return ( $log, $status, $errors );
-	    }
+        # Making the .dada_config file
+        $log .= "* Attempting to create .dada_config file...\n";
+        if ( create_dada_config_file($args) == 1 ) {
+            $log .= "* Success!\n";
+        }
+        else {
+            $log .= "* Problems Creating .dada_config file! STOPPING!\n";
+            $errors->{cant_create_dada_config} = 1;
+            $status = 0;
+            return ( $log, $status, $errors );
+        }
 
-	    # Creating the needed SQL tables
-	    if ( $args->{-backend} eq 'default' || $args->{-backend} eq '' ) {
-	        # ...
-	    }
-	    else {
-	        if($args->{-skip_configure_SQL} == 1){ 
-				$log .= "* Skipping the creation of the SQL Tables...\n";
-			}
-			else { 
-			
-				$log .= "* Attempting to create SQL Tables...\n";
-		        my $sql_ok = create_sql_tables($args);
-		        if ( $sql_ok == 1 ) {
-		            $log .= "* Success!\n";
-		        }
-		        else {
-		            $log .= "* Problems Creating SQL Tables! STOPPING!\n";
-		            $errors->{cant_create_sql_tables} = 1;
-		            $status = 0;
-		            return ( $log, $status, $errors );
-		        }
-			}
-	    }
-	}
-	
+        # Creating the needed SQL tables
+        if ( $args->{-backend} eq 'default' || $args->{-backend} eq '' ) {
+
+            # ...
+        }
+        else {
+            if ( $args->{-skip_configure_SQL} == 1 ) {
+                $log .= "* Skipping the creation of the SQL Tables...\n";
+            }
+            else {
+
+                $log .= "* Attempting to create SQL Tables...\n";
+                my $sql_ok = create_sql_tables($args);
+                if ( $sql_ok == 1 ) {
+                    $log .= "* Success!\n";
+                }
+                else {
+                    $log .= "* Problems Creating SQL Tables! STOPPING!\n";
+                    $errors->{cant_create_sql_tables} = 1;
+                    $status = 0;
+                    return ( $log, $status, $errors );
+                }
+            }
+        }
+    }
+
     # Editing the Config.pm file
 
     if ( test_can_read_config_dot_pm() == 1 ) {
         $log .= "* WARNING: Cannot read, $Config_LOC!\n";
         $errors->{cant_read_config_dot_pm} = 1;
-		# $status = 0; ?
+
+        # $status = 0; ?
     }
 
     $log .= "* Attempting to backup original $Config_LOC file...\n";
     eval { backup_config_dot_pm(); };
     if ($@) {
-        $Big_Pile_Of_Errors .= $@; 
-		$log .= "* WARNING: Could not backup, $Config_LOC! (<code>$@</code>)\n";
+        $Big_Pile_Of_Errors .= $@;
+        $log .= "* WARNING: Could not backup, $Config_LOC! (<code>$@</code>)\n";
         $errors->{cant_backup_dada_dot_config} = 1;
     }
     else {
@@ -1039,76 +1049,72 @@ sub install_dada_mail {
     }
 
     $log .= "* Attempting to edit $Config_LOC file...\n";
-    if ( test_can_write_config_dot_pm() == 1) {
-       $log .= "* WARNING: Cannot write to, $Config_LOC!\n";
+    if ( test_can_write_config_dot_pm() == 1 ) {
+        $log .= "* WARNING: Cannot write to, $Config_LOC!\n";
         $errors->{cant_edit_config_dot_pm} = 1;
-	# $status = 0; ?
+
+        # $status = 0; ?
     }
-   else {
-		if(
-			$args->{-install_dada_files_loc} eq auto_dada_files_dir() && 
-			$args->{-dada_files_dir_setup}   eq 'auto'
-		){ 
-			$log .= "* No need to edit $Config_LOC file - you've set the $Dada_Files_Dir_Name location to, 'auto!'\n";
-		}
-		else { 	
-	        if ( edit_config_dot_pm( $args->{-install_dada_files_loc} ) == 1 ) {
-	            $log .= "* Success!\n";
-	        }
-	        else {
-	            $log .= "* WARNING: Cannot edit $Config_LOC!\n";
-	            $errors->{cant_edit_dada_dot_config} = 1;
-	        }
-		}
+    else {
+
+        if ( edit_config_dot_pm($args) == 1 ) {
+            $log .= "* Success!\n";
+        }
+        else {
+            $log .= "* WARNING: Cannot edit $Config_LOC!\n";
+            $errors->{cant_edit_dada_dot_config} = 1;
+        }
+
     }
-	$log .= "* Setting up Support Files Directory...\n";
-	eval {setup_support_files_dir($args);}; 
-	if($@){ 
+    $log .= "* Setting up Support Files Directory...\n";
+    eval { setup_support_files_dir($args); };
+    if ($@) {
         $log .= "* WARNING: Couldn't set up support files directory! $@\n";
         $errors->{cant_set_up_support_files_directory} = 1;
         $status = 0;
 
-	}
-	else { 
-        $log .= "* Success!\n";		
-	} 
-	
-	$log .= "* Installing plugins/extensions...\n";
-	eval {edit_config_file_for_plugins($args);}; 
-	if($@){ 
-        $log .= "* WARNING: Couldn't complete installing plugins/extensions! $@\n";
+    }
+    else {
+        $log .= "* Success!\n";
+    }
+
+    $log .= "* Installing plugins/extensions...\n";
+    eval { edit_config_file_for_plugins($args); };
+    if ($@) {
+        $log .=
+          "* WARNING: Couldn't complete installing plugins/extensions! $@\n";
         $errors->{cant_install_plugins_extensions} = 1;
-	}
-	else { 
-        $log .= "* Success!\n";		
-	} 
-	
-	if($args->{-if_dada_files_already_exists} eq 'skip_configure_dada_files') { 
-		$log .= "* Skipping WYSIWYG setup...\n";	
-	}
-	else { 
-		$log .= "* Installing WYSIWYG Editors...\n";
-		eval {install_wysiwyg_editors($args);}; 
-		if($@){ 
-	        $log .= "* WARNING: Couldn't complete installing WYSIWYG editors! $@\n";
-	        $errors->{cant_install_wysiwyg_editors} = 1;
-		}
-		else { 
-	        $log .= "* Success!\n";		
-		} 
-	}
+    }
+    else {
+        $log .= "* Success!\n";
+    }
 
+    if ( $args->{-if_dada_files_already_exists} eq 'skip_configure_dada_files' )
+    {
+        $log .= "* Skipping WYSIWYG setup...\n";
+    }
+    else {
+        $log .= "* Installing WYSIWYG Editors...\n";
+        eval { install_wysiwyg_editors($args); };
+        if ($@) {
+            $log .=
+              "* WARNING: Couldn't complete installing WYSIWYG editors! $@\n";
+            $errors->{cant_install_wysiwyg_editors} = 1;
+        }
+        else {
+            $log .= "* Success!\n";
+        }
+    }
 
-	$log .= "* Removing old Screen Cache...\n";
-	eval { 
-		remove_old_screen_cache($args);
-	};
-	if($@){ 
-	    $log .= "* WARNING: Couldn't remove old screen cache - you may have to do this manually: $@\n";
-	}
-	else { 
-		$log .= "* Success!\n";		
-     }
+    $log .= "* Removing old Screen Cache...\n";
+    eval { remove_old_screen_cache($args); };
+    if ($@) {
+        $log .=
+"* WARNING: Couldn't remove old screen cache - you may have to do this manually: $@\n";
+    }
+    else {
+        $log .= "* Success!\n";
+    }
 
     # That's it.
     $log .= "* Installation and Configuration Complete!\n";
@@ -1144,42 +1150,49 @@ sub remove_old_screen_cache {
 
 
 sub edit_config_dot_pm {
-    my $loc          = shift;
-    my $search       = qr/\$PROGRAM_CONFIG_FILE_DIR \= \'(.*?)\'\;/;
-	my $search2      = qr/\$PROGRAM_ERROR_LOG \= (.*?)\;/;
+
+    my ($args) = @_;
 	
-	if($loc eq 'auto') { 
-		carp "\$loc has been set to, 'auto' - nothing to edit!"; 
-		return 1; 
-	}
-	else { 
-		
-	    my $replace_with  = q{$PROGRAM_CONFIG_FILE_DIR = '} . $loc . '/' . $Dada_Files_Dir_Name . q{/.configs';};
-		my $replace_with2 = q{$PROGRAM_ERROR_LOG = '}       . $loc . '/' . $Dada_Files_Dir_Name . q{/.logs/errors.txt';};
-	    #eval {
-			$Config_LOC = make_safer($Config_LOC); 
-		 
-	        my $config = slurp($Config_LOC);
-	     
-	
-		   # I really only have that one thing to edit - 
-	       $config =~ s/$search/$replace_with/;
-			
-			# (what about the error log? ) 
-			$config =~ s/$search2/$replace_with2/; 
-			
-			# Why 0777? 
-			installer_chmod(0777, make_safer('../DADA'));
-			installer_rm($Config_LOC); 
-			
-	        open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $Config_LOC or croak $!;
-	        print $config_fh $config or croak $!;
-	        close $config_fh or croak $!;
-	
-			installer_chmod($DADA::Config::DIR_CHMOD, $Config_LOC);
-			installer_chmod($DADA::Config::DIR_CHMOD, make_safer('../DADA'));
-	        return 1;
-	}
+    my $search  = qr/\$PROGRAM_CONFIG_FILE_DIR \= \'(.*?)\'\;/;
+    my $search2 = qr/\$PROGRAM_ERROR_LOG \= (.*?)\;/;
+
+    my $replace_with =
+        q{$PROGRAM_CONFIG_FILE_DIR = '}
+      . $args->{-install_dada_files_loc} . '/'
+      . $Dada_Files_Dir_Name
+      . q{/.configs';};
+
+    my $replace_with2 =
+        q{$PROGRAM_ERROR_LOG = '}
+      . $args->{-install_dada_files_loc} . '/'
+      . $Dada_Files_Dir_Name
+      . q{/.logs/errors.txt';};
+    $Config_LOC = make_safer($Config_LOC);
+
+    my $config = slurp($Config_LOC);
+
+	# "auto" usually does the job, 
+    if ( $args->{-dada_files_dir_setup} ne 'auto' ) {
+        $config =~ s/$search/$replace_with/;
+    }
+
+    # (what about the error log? )
+    $config =~ s/$search2/$replace_with2/;
+
+    # Why 0777?
+    installer_chmod( 0777, make_safer('../DADA') );
+    installer_rm($Config_LOC);
+
+    open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')',
+      $Config_LOC
+      or croak $!;
+    print $config_fh $config or croak $!;
+    close $config_fh or croak $!;
+
+    installer_chmod( $DADA::Config::FILE_CHMOD, $Config_LOC );
+    installer_chmod( $DADA::Config::DIR_CHMOD,  make_safer('../DADA') );
+    return 1;
+
 }
 
 sub backup_config_dot_pm {
@@ -2515,7 +2528,7 @@ sub move_installer_dir_ajax {
 
 
 sub show_current_dada_config { 
-	print $q->header('text/css'); 
+	print $q->header('text/plain'); 
     my $config_file_loc = $q->param('config_file'); 
         my $config_file_contents =
           DADA::Template::Widgets::_slurp($config_file_loc);

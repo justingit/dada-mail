@@ -174,7 +174,7 @@ $(document).ready(function() {
 			show_customize_invite_message();
 		});
 	}
-	// Mail Sending >> Sending Preferences 
+	// Mail Sending >> Sending Options 
 	if ($("#sending_preferences").length) {
 
 		if ($("#has_needed_cpan_modules").length) {
@@ -219,11 +219,11 @@ $(document).ready(function() {
 
 	}
 
-	// Mail Sending >> Adv Sending Preferences
+	// Mail Sending >> Advanced Options
 	if ($("#adv_sending_preferences").length) {
 		$("#misc_options").hide();
 	}
-	// Mail Sending >> Mass Mailing Preferences 
+	// Mail Sending >> Mass Mailing Options 
 	if ($("#mass_mailing_preferences").length) {
 		if ($("#amazon_ses_get_stats").length) {
 			amazon_ses_get_stats();
@@ -302,7 +302,7 @@ $(document).ready(function() {
 		event.preventDefault();
 	});
 
-	// Mail Sending >> Mass Mailing Preferences 
+	// Mail Sending >> Mass Mailing Options 
 	$(".previewBatchSendingSpeed").live("change", function(event) {
 		previewBatchSendingSpeed();
 	});
@@ -961,7 +961,7 @@ function show_customize_invite_message() {
 	$('#customize_invite_message_form').show('blind');
 }
 
-// Mail Sending >> Sending Preferences
+// Mail Sending >> Sending Options
 
 function sending_prefs_setup() {
 
@@ -1075,7 +1075,7 @@ function amazon_verify_email() {
 }
 
 
-// Mail Sending >> Mass Mailing Preferences 
+// Mail Sending >> Mass Mailing Options 
 
 function previewBatchSendingSpeed() {
 	$("#previewBatchSendingSpeed_loading").hide().html('<p class="alert">Loading...</p>').show('fade');
