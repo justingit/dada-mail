@@ -798,8 +798,7 @@ li.archive_badges_li {
 }
 
 .stripedtable {
-	border: 1px solid red; /* for testing. */
-
+	/*border: 1px solid red;*/ /* for testing. */
 	border-collapse: collapse;
 	background-color: #fff;
 	width: 100%;
