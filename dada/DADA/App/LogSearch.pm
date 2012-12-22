@@ -267,9 +267,9 @@ sub sub_unsub_trends {
 	if(exists($args->{-days})){ 
 		$days = $args->{-days};
 	}
-	my $day_limit = scalar(localtime(past_date($time, ($days + 1))));
+	my $day_limit = scalar(localtime(past_date($time, $days)));
 	my $limit_day_str = simplified_date_str($day_limit); 
-	
+		
 	my $count = 0; 
 	my %trends = ();
 	my @dates; 
@@ -321,7 +321,7 @@ sub sub_unsub_trends {
 
 	# Fill in missing dates. 
 	# Most likely, there are days nothing happened. 
-	for(1 .. $days){ 
+	for(1 .. ($days)){ 
 		my $s_date = simplified_date_str(scalar(localtime(past_date($time, $_))));
 		#print '!$s_date:' . $s_date . "\n";
 		if(!exists($trends{$s_date})){ 
@@ -356,7 +356,7 @@ sub past_date {
     my $days = shift || 1;
 	return $time if $days == 0; 
     my $now  = defined $time ? $time : time;
-    my $then = $now - 60 * 60 * 24 * $days;
+    my $then = $now - 60 * 60 * 24 * ($days - 1); # why, -1? 
     my $ndst = ( localtime $now )[8] > 0;
     my $tdst = ( localtime $then )[8] > 0;
 
