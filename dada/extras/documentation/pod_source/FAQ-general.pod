@@ -219,22 +219,10 @@ This will be a more advanced topic.
 
 I<Is there a way to Mass-Subscribe email addresses from the list control panel?>
 
-B<Versions 4.7.0+>:
 
-Log into your mailing list and go to: B<Your Mailing List - Mailing List Options>
+Log into your mailing list and go to: B<Your Mailing List - Options>
 
 Under the heading, B<List Control Panel Subscriptions> check the option, B<Enable Adding Subscribers from within the List Control Panel> 
-
-You can then go to: B<Your Subscribers - Invite/Add> and mass-subscribe 
-addresses. 
-
-B<Versions 4.4.0 - 4.6.1>
-
-Log into your mailing list with the B<Dada Mail Root Password> and go to: 
-
-B<Your List Control Panel - Options>
-
-Check the option labeled, B<Enable, "Subscribe Checked Subscribers" button [...]>
 
 You can then go to: B<Your Subscribers - Invite/Add> and mass-subscribe 
 addresses. 

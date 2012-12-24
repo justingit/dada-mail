@@ -19,7 +19,7 @@ giving up too much security.
 
 This feature can be enabled per list, in the list control panel under, 
 
-I<Your Mailing list - Mailing List Options>
+I<Your Mailing list - Options>
 
 Looking for the fieldset labeled, 
 
@@ -71,7 +71,7 @@ This is a new, experimental feature and we'd like feedback on how it's working f
 =head2 "Subscription" Options disabled 
 
 Since this feature basically skips *over* all the options you can set in the, I<Subscriptions> fieldset in the, 
-I<Your Mailing List - Mailing List Options> screen, 
+I<Your Mailing List - Options> screen, 
 so none of those options are available, if this feature is turned on. 
 
 =head2 Nothing's really easily editable

@@ -2048,7 +2048,7 @@ sub list_options {
 	            -list   => $list,
 	            -vars   => {
 	                screen => 'list_options',
-	                title  => 'Mailing List Options',
+	                title  => 'Optons',
 	                done                                     => $done,
 	                CAPTCHA_TYPE                             => $DADA::Config::CAPTCHA_TYPE,
 	                can_use_mx_lookup                        => $can_use_mx_lookup,
