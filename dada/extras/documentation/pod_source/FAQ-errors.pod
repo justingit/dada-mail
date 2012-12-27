@@ -77,13 +77,13 @@ Again - the correct directive for your version of C<mod_security> could be diffe
 If Dada Mail has a problem completing a task, it will show its I<own error message>, similar to what's below: 
 
 	Yikes! App/Server Problem!
-
+	
 	We apologize, but the server encountered a problem when attempting to complete its task.
-
+	
 	More information about this error may be available in the program's own error log.
-
+	
 	Contact the Server Admin
-
+	
 	Time of error: (Time Stamp)
 
 For security reasons, Dada Mail will I<not> show the complete error in the browser window. To find out what the actually error is, you will need to consult B<Dada Mail's own error log> 
@@ -97,7 +97,7 @@ I<.dada_files/.logs/errors.txt>
 If you are having trouble finding your error log, or did not use the Dada Mail Installer, you can find exactly where the error log is set in within your B<dada/DADA/Config.pm> file, under the variable, C<$PROGRAM_ERROR_LOG>. The line looks similar to this: 
 
 	$PROGRAM_ERROR_LOG = "/home/youraccount/.dada_files/.logs/errors.txt";
-	
+
 You may read the error log file directly by downloading it, etc. 
 
 If the error you're receiving doesn't stop you from logging into your List Control Panel, you may also use the B<Log Viewer> plugin to view the error log as well. This plugin is also installed by default when you install Dada Mail using its built in Installer. 
@@ -756,7 +756,7 @@ This has many disadvantages and can be dangerous - I'll explain the script and h
 
 First off, rename your, B<mail.cgi> script to something like, B<real_mail.cgi>. Create a new file called, B<mail.cgi> and have this as its contents: 
 
- #!/usr/bin/perl -w
+ #!/usr/bin/perl
  use strict; 
  use File::Find; 
  
