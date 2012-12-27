@@ -1,4 +1,4 @@
-#!/usr/bin/perl -w
+#!/usr/bin/perl
 package default_mass_mailing_messages;
 use strict;
 
