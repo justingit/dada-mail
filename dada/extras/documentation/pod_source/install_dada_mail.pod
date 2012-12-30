@@ -290,6 +290,16 @@ Once you've gotten the, C<dada/DADA/Config.pm> file edited (if needed) and moved
 
 Good Luck! 
 
+=head1 Screencast
+
+This screencast goes step by step, slowly through the entire process of installing Dada Mail, on your own website. 
+
+=begin html
+
+<iframe width="853" height="480" src="http://www.youtube.com/embed/x7PRauNDKA4" frameborder="0" allowfullscreen></iframe>
+
+=end html
+
 =head1 Command Line Interface
 
 An alternative, command line interface is available, instructions can be 
