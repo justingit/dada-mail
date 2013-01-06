@@ -1193,12 +1193,12 @@ sub start {
             if ( max_msg_test( { -size => $msgnums->{$msgnum} } ) == 0 ) {
 
                 # We don't do anything else to this guy
-                next QUEUE;
+                next MSG_QUEUE;
             }
 
             my $full_msg = $pop3_obj->Retrieve($msgnum);
 
-            # We're taking a guess on this one:
+            # We're taking a guess on this decoding:
             $full_msg = safely_decode($full_msg);
 
             push( @{ $checksums->{$list} }, create_checksum( \$full_msg ) );
