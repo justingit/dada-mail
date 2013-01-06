@@ -11198,6 +11198,9 @@ sub profile_update_email {
 	}
 	else {
 
+		# DEV: Currently there is no description of what the error is, just 
+		# that, "there is one". Perhaps change that? 
+		#
 		require    DADA::Template::Widgets;
 		my $scrn = DADA::Template::Widgets::wrap_screen(
 				{
