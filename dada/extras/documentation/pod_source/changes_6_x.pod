@@ -1,3 +1,30 @@
+=head1 6.0.1
+
+=head2 Summary 6.0.1
+
+This release features one minor bug fix to the Bridge plugin, no other code changes are present. If you are using the v6.0.0 B<Stable> release, 
+but are not using the Bridge plugin, this upgrade is entirely optional. 
+
+If you're already running v6.0.0 Stable of Dada Mail, and would like to simply replace the I<dada/plugins/bridge.cgi> 
+script, with the fixed version, you may do so: 
+
+L<https://github.com/justingit/dada-mail/blob/8547605c588d6ed5ee59d08698863e6986b8d3f4/dada/plugins/bridge.cgi>
+
+=head2 Bugfixes 6.0.1
+
+=head3 Bridge: Label not found for 'next QUEUE' at bridge.cgi line 1196
+
+L<https://github.com/justingit/dada-mail/issues/332>
+
+=head1 6.0.0
+
+=head2 Summary 6.0.0
+
+This major release of Dada Mail includes major changes to the Dada Mail codebase. A detailed explanation of these changes, compared to v5 of Dada Mail can be found at, 
+
+L<http://dadamailproject.com/d/dada5_to_dada6.pod.html>
+
+When upgrading from I<any> previous version of Dada Mail, make sure to create a new C<.dada_config> file, as old C<.dada_config> files will not work with v6 of Dada Mail. 
 
 =head1 6.0.0 Release Candiate 2
 
@@ -59,26 +86,4 @@ It's still a hack-y workaround, but hopefully, could help someone get their work
 
 The web-based interface to check any awaiting messages and parse them would look as if you're testing messages, but the messages would actually be parsed, scored and logged, except the messages would not be removed. This has been fixed. 
 
-
-
-
-
-
-
-
-
-
 =back
-
-
-=head1 6.0.0
-
-=head2 Summary 6.0.0
-
-This major release of Dada Mail includes major changes to the Dada Mail codebase. A detailed explanation of these changes, compared to v5 of Dada Mail can be found at, 
-
-L<http://dadamailproject.com/d/dada5_to_dada6.pod.html>
-
-When upgrading from I<any> previous version of Dada Mail, make sure to create a new C<.dada_config> file, as old C<.dada_config> files will not work with v6 of Dada Mail. 
-
-=head3 
