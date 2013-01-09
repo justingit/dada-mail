@@ -3429,7 +3429,7 @@ sub subscription_requests {
         }
     }
 
-    my @address        = $q->param('address')        || ();
+    my @address        = $q->param('address');
     my $return_to      = $q->param('return_to')      || '';
     my $return_address = $q->param('return_address') || '';
 
@@ -3439,7 +3439,9 @@ sub subscription_requests {
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
+	
     if ( $q->param('process') =~ m/approve/i ) {
+	
         for my $email (@address) {
             $lh->move_subscriber(
                 {
