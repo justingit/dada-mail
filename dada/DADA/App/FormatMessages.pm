@@ -290,8 +290,12 @@ sub format_headers_and_body {
 		}
 	}
 	$entity     = $self->_format_headers($entity); #  Bridge stuff. 
-	$entity     = $self->_make_multipart_alternative($entity); 
-	$entity     = $self->_format_text($entity);		
+	
+	if(defined($self->{list})){
+		$entity = $self->_make_multipart_alternative($entity); 
+	}
+
+	$entity = $self->_format_text($entity);		
 	
 	# yeah, don't know why you have to do it 
 	# RIGHT BEFORE you make it a string...
