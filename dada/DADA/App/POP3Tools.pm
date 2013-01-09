@@ -112,7 +112,7 @@ sub _lock_pop3_check {
 		# oh, boy - the lockfile exists. 
 		if(-M _lockfile_name($args) > 1){ 
 			# And it's really old. Let's remove! 
-			_unlock_pop3_check($args);
+			_remove_pop3_check($args);
 		}
 	}
     
@@ -136,6 +136,16 @@ sub _lock_pop3_check {
 
 
 
+sub _remove_pop3_check { 
+	
+	my ($args) = @_;
+    
+	if(-f _lockfile_name($args)){ 
+		unlink(_lockfile_name($args)) 
+			or carp "couldn't delete lock file: '" . _lockfile_name($args) . "' - $!";
+	}
+	
+}
 
 sub _unlock_pop3_check { 
 
