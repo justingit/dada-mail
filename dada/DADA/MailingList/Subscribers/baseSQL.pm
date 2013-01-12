@@ -126,6 +126,8 @@ sub search_list {
             -search_type     => 'any',
             -order_by        => $args->{-order_by},
             -order_dir       => $args->{-order_dir},
+			#-start           => $args->{ -start }, 
+			#'-length'        => $args->{'-length'}, 
         }
     );
 
@@ -139,6 +141,11 @@ sub search_list {
 
     while ( $row = $sth->fetchrow_hashref ) {
 
+		# DEV: It would be better to use LIMIT, x, y in the query, 
+		# but we still need the total search results number, and something like, 
+		# select count(*) from (select [...]);
+		# isn't working as well as I'd like
+		
         $count++;
         next if $count < ( $args->{ -start } * $args->{ '-length' });
         next if $count >  ( $args->{ -start } * $args->{ '-length' }) + ($args->{'-length'}) ;
@@ -532,8 +539,14 @@ sub SQL_subscriber_profile_join_statement {
 		$query .= ' ASC'; 
 	}
 	
+	if(exists($args->{ -start }) && exists($args->{ '-length' })) { 
+		$query .= ' LIMIT '; 
+		$query .= ($args->{ -start } * $args->{ '-length' });
+		$query .= ', ';
+		$query .=  $args->{'-length'};
+	}
+	
 
-    #    }
     warn 'QUERY: ' . $query
       if $t;
 	
@@ -789,26 +802,24 @@ sub subscription_list {
     my $self = shift;
 
     my ($args) = @_;
-    if ( !exists( $args->{ -start } ) ) {
-        $args->{ -start } = 0;
+    if ( !exists( $args->{-start} ) ) {
+        $args->{-start} = 0;
     }
-    if ( !exists( $args->{ -type } ) ) {
-        $args->{ -type } = 'list';
+    if ( !exists( $args->{-type} ) ) {
+        $args->{-type} = 'list';
     }
-
-	
 
     my $email;
     my $count  = 0;
     my $list   = [];
     my $fields = $self->subscriber_fields;
 
-    if ( !exists( $args->{ -partial_listing } ) ) {
-        $args->{ -partial_listing } = {};
+    if ( !exists( $args->{-partial_listing} ) ) {
+        $args->{-partial_listing} = {};
     }
 
     my $query = $self->SQL_subscriber_profile_join_statement($args);
-    my $sth = $self->{dbh}->prepare($query);
+    my $sth   = $self->{dbh}->prepare($query);
 
     $sth->execute()
       or croak "cannot do statment (for subscription_list)! $DBI::errstr\n";
@@ -821,26 +832,15 @@ sub subscription_list {
 
     while ( $hashref = $sth->fetchrow_hashref ) {
 
-		if($count < ( $args->{ -start } * $args->{ '-length' })) { 
-			$count++;
-			next; 
-		}
-        if ( exists( $args->{'-length'} ) ) {
-			$count++;
-            last if $count > ( ( $args->{ -start } * $args->{ '-length' }) + ($args->{'-length'}) );
-        }
-		else { 
-		}
-
-		# Probably, just add it here? 
-		$hashref->{type} = $args->{-type}; 
+        # Probably, just add it here?
+        $hashref->{type} = $args->{-type};
 
         $hashref->{fields} = [];
 
         for (@$fields) {
 
             if ( exists( $mf_lt{$_} ) ) {
-                push (
+                push(
                     @{ $hashref->{fields} },
                     {
                         name  => $_,
@@ -852,13 +852,14 @@ sub subscription_list {
 
         }
 
-        push ( @$list, $hashref );
+        push( @$list, $hashref );
 
     }
 
     return $list;
 
 }
+
 
 sub filter_list_through_blacklist {
 
