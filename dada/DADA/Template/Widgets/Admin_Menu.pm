@@ -116,9 +116,9 @@ sub check_function_permissions {
             }
             foreach my $subnav ( @{ $nav->{-Submenu} } ) {
                 my $subnav_entry;
-                if ( $subnav->{-Title} ) {
-                    if ( exists( $SUBNAVS->{ $subnav->{-Title} } ) ) {
-                        $subnav->{-Activated} = $SUBNAVS->{ $subnav->{-Title} };
+                if ( $subnav->{-Function} ) {
+                    if ( exists( $SUBNAVS->{ $subnav->{-Function} } ) ) {
+                        $subnav->{-Activated} = $SUBNAVS->{ $subnav->{-Function} };
                     }
                     if (   $subnav->{-Activated} == 0
                         && $subnav->{-Function} eq $args{-Function} )
@@ -184,11 +184,11 @@ sub make_admin_menu {
 
         foreach my $subnav ( @{ $nav->{-Submenu} } ) {
 
-            next if !$subnav->{-Title};
+            next if !$subnav->{-Function};
 
             #again, what?
-            if ( exists( $SUBNAVS->{ $subnav->{-Title} } ) ) {
-                $subnav->{-Activated} = $SUBNAVS->{ $subnav->{-Title} };
+            if ( exists( $SUBNAVS->{ $subnav->{-Function} } ) ) {
+                $subnav->{-Activated} = $SUBNAVS->{ $subnav->{-Function} };
             }
 
 			if ( $permissions eq 'superuser' ) { 
@@ -301,20 +301,20 @@ sub make_feature_menu {
             }
             foreach my $subnav ( @{ $nav->{-Submenu} } ) {
                 my $subnav_entry;
-                if ( $subnav->{-Title} ) {
+                if ( $subnav->{-Function} ) {
 
                     #turn off.
-                    if ( exists( $SUBNAVS->{ $subnav->{-Title} } ) ) {
-                        $subnav->{-Activated} = $SUBNAVS->{ $subnav->{-Title} };
+                    if ( exists( $SUBNAVS->{ $subnav->{-Function} } ) ) {
+                        $subnav->{-Activated} = $SUBNAVS->{ $subnav->{-Function} };
                     }
 
                     if ( $subnav->{-Activated} == 1 ) {
                         $subnav_entry =
-"<br />&nbsp;<input type=\"checkbox\" name='SUBNAV-$subnav->{-Title}' checked=\"checked\" value=\"1\" />$subnav->{-Title}\n";
+"<br />&nbsp;<input type=\"checkbox\" name='SUBNAV-$subnav->{-Function}' checked=\"checked\" value=\"1\" />$subnav->{-Title}\n";
                     }
                     else {
                         $subnav_entry =
-"<br />&nbsp;<input type=\"checkbox\" name='SUBNAV-$subnav->{-Title}' value=\"1\" />$subnav->{-Title}\n";
+"<br />&nbsp;<input type=\"checkbox\" name='SUBNAV-$subnav->{-Function}' value=\"1\" />$subnav->{-Title}\n";
                     }
                     $menu .= $subnav_entry;
                 }
@@ -372,9 +372,9 @@ sub create_save_set {
             if ( $prev_info == 0 ) {
                 $s_default = $subnav->{-Activated};
             }
-            my $save_subnav = $param_hashref->{"SUBNAV-$subnav->{-Title}"}
+            my $save_subnav = $param_hashref->{"SUBNAV-$subnav->{-Function}"}
               || $s_default;    #|| $subnav->{-Activated};
-            $save_set .= "SUBNAV-$subnav->{-Title}\=$save_subnav;";
+            $save_set .= "SUBNAV-$subnav->{-Function}\=$save_subnav;";
         }
     }
     return $save_set;
