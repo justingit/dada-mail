@@ -1469,6 +1469,7 @@ sub from_text_widget {
 					(
 					html_message_body_content            => $form_vals{$type.'_ver'}->{text},
 					html_message_body_content_js_escaped => js_enc($form_vals{$type.'_ver'}->{text}),
+					using_no_wysiwyg_editor              => 1, 
 					), 
 					
 					source       => $form_vals{$type.'_ver'}->{source}, 
