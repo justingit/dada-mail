@@ -34,7 +34,7 @@ $TEST_SQL_PARAMS = {
 	}, 
 
 	PostgreSQL => { 
-		test_enabled     => 0, 
+		test_enabled     => 1, 
 		database         => 'dadademo_test',
 	    dbserver         => 'localhost', # may just be, "localhost"   	   
 	    port             => '5432',      # mysql: 3306, Postgres: 5432   	   
@@ -54,6 +54,10 @@ $TEST_SQL_PARAMS = {
 		clickthrough_url_log_table       => 'test_dada_clickthrough_url_log', 		
 
 		mass_mailing_event_log_table    => 'test_dada_mass_mailing_event_log', 
+		password_protect_directories_table    => 'test_dada_password_protect_directories', 
+
+
+
 	}, 
 
 	SQLite => {

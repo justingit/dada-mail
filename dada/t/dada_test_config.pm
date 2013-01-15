@@ -444,11 +444,14 @@ my @statements = split(';', $sql, 11);
 		my $session_table           		 = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{session_table};
 		my $bounce_scores_table     		 = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{bounce_scores_table};
 		my $profile_table            		 = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_table};  
-		my $profile_fields_table             = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_fields_table};
-		my $profile_fields_attributes_table  = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_fields_attributes_table};
-		my $clickthrough_urls_table          = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{clickthrough_urls_table};
-		my $clickthrough_url_log_table       = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{clickthrough_url_log_table};
-		my $mass_mailing_event_log_table     = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{mass_mailing_event_log_table};
+		my $profile_fields_table                = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_fields_table};
+		my $profile_fields_attributes_table     = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_fields_attributes_table};
+		my $clickthrough_urls_table             = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{clickthrough_urls_table};
+		my $clickthrough_url_log_table          = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{clickthrough_url_log_table};
+		my $mass_mailing_event_log_table        = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{mass_mailing_event_log_table};
+		my $password_protect_directories_table  = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{password_protect_directories_table};
+	
+		
 		
 		
 		$_ =~ s{CREATE TABLE dada_settings}{CREATE TABLE $settings_table}; 
@@ -462,11 +465,14 @@ my @statements = split(';', $sql, 11);
 		$_ =~ s{CREATE TABLE dada_clickthrough_urls}{CREATE TABLE $clickthrough_urls_table};	
 		$_ =~ s{CREATE TABLE dada_clickthrough_url_log}{CREATE TABLE $clickthrough_url_log_table};	
 		$_ =~ s{CREATE TABLE dada_mass_mailing_event_log}{CREATE TABLE $mass_mailing_event_log_table};	
+		$_ =~ s{CREATE TABLE dada_password_protect_directories}{CREATE TABLE $password_protect_directories_table};	
+
+	#	print "query: $_"; 
+
 
 	    my $sth = $dbh->prepare($_); #  or croak $DBI::errstr; 
 	       $sth->execute or carp $DBI::errstr; 
-		#print "query: $_"; 
-    
+		
     }
     
     
