@@ -820,6 +820,62 @@ sub csv_to_cds {
 }
 
 
+sub domain_stats_json { 
+	my $self    = shift;
+	my ($args)  = @_; 
+	if(!exists($args->{-count})){ 
+		$args->{-count} = 10; 
+	}
+	if(!exists($args->{-printout})){ 
+		$args->{-printout} = 0; 
+	}
+	my $stats = $self->domain_stats(
+		{ 
+			-count => $args->{-count},
+			-type  => $args->{-type},
+		}
+	);
+	
+	require         Data::Google::Visualization::DataTable;
+	my $datatable = Data::Google::Visualization::DataTable->new();
+
+	$datatable->add_columns(
+	       { id => 'domain',     label => "Domain",        type => 'string',},
+	       { id => 'number',     label => "Number",        type => 'number',},
+	);
+
+	for(@$stats){ 
+		$datatable->add_rows(
+	        [
+	               { v => $_->{domain} },
+	               { v => $_->{number} },
+	       ],
+		);
+	}
+
+	# Fancy-pants
+	my $json = $datatable->output_javascript(
+		pretty  => 1,
+	);
+	if($args->{-printout} == 1){ 
+		require CGI; 
+		my $q = CGI->new; 
+		
+		print $q->header(
+			'-Cache-Control' => 'no-cache, must-revalidate',
+			-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
+			-type            =>  'application/json',
+		);
+		print $json; 
+	}
+	else { 
+		return $json;
+	}
+	
+}
+
+
+
 
 
 
