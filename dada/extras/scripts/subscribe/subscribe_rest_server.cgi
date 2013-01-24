@@ -1,14 +1,11 @@
 #!/usr/bin/perl 
 use strict;
 
-use lib qw(
-	../../../
-	../../../DADA/perllib
-	../../
-	../../DADA/perllib
-	./
-	./DADA/perlib
-);
+use FindBin;
+use lib "$FindBin::Bin";
+use lib "$FindBin::Bin/DADA/perllib";
+use lib "$FindBin::Bin/../../../";
+use lib "$FindBin::Bin/../../../DADA/perllib";
 
 
 use JSON; 

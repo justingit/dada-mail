@@ -5,13 +5,11 @@ use strict;
 # DO NOT USE THIS SCRIPT WITHOUT FULLY BACKING UP YOUR ENTIRE DADA MAIL INSTALL 
 
 
-use lib qw(
-./ 
-./DADA/perllib
-
-../../
-../../DADA/perllib
-);
+use FindBin;
+use lib "$FindBin::Bin";
+use lib "$FindBin::Bin/DADA/perllib";
+use lib "$FindBin::Bin/../../";
+use lib "$FindBin::Bin/../../DADA/perllib";
 
 
 # REALLY. 
@@ -43,7 +41,6 @@ print '<pre>';
 use Fcntl qw(
 O_RDWR O_CREAT); 
 
-use lib qw(./ ./DADA ./DADA/perllib); 
 
 #use AnyDBM_File; 
 use DBI;

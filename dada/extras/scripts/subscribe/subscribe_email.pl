@@ -8,7 +8,7 @@ use FindBin;
 use lib "$FindBin::Bin";
 use lib "$FindBin::Bin/DADA/perllib";
 use lib "$FindBin::Bin/../../../";
-use lib "$FindBin::Bin/../../..//DADA/perllib";
+use lib "$FindBin::Bin/../../../DADA/perllib";
 
 
 

@@ -1,13 +1,10 @@
 #!/usr/bin/perl 
 
-use lib qw(
-	../../../
-	../../../DADA/perllib
-	../../
-	../../DADA/perllib
-	./
-	./DADA/perllib
-); 
+use FindBin;
+use lib "$FindBin::Bin";
+use lib "$FindBin::Bin/DADA/perllib";
+use lib "$FindBin::Bin/../../../";
+use lib "$FindBin::Bin/../../../DADA/perllib"; 
 
 use SOAP::Transport::HTTP;
 SOAP::Transport::HTTP::CGI   

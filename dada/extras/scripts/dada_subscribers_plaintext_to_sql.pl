@@ -1,13 +1,11 @@
 #!/usr/bin/perl
 
-use lib qw(
-./ 
-./DADA/perllib
+use FindBin;
+use lib "$FindBin::Bin";
+use lib "$FindBin::Bin/DADA/perllib";
+use lib "$FindBin::Bin/../../";
+use lib "$FindBin::Bin/../../DADA/perllib";
 
-../../
-../../DADA/perllib
-
-); 
 use CGI::Carp qw(fatalsToBrowser); 
 
 use strict; 
@@ -44,8 +42,6 @@ print '<pre>';
 
 use Fcntl qw(
 O_RDWR O_CREAT LOCK_SH); 
-
-use lib qw(./ ./DADA ./DADA/perllib); 
 
 print "beginning...\n";
 
