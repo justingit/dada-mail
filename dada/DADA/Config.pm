@@ -1764,7 +1764,7 @@ EOF
 
 $NOT_ALLOWED_TO_POST_NOTICE_MSG ||= <<EOF
 
-The attached message was not sent to your Mailing List, 
+The attached message was sent to your Mailing List, 
 
 	<!-- tmpl_var list_settings.list_name -->
 	
