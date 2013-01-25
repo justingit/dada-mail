@@ -1750,67 +1750,69 @@ sub screen {
     }
     
     
-###
+	###
 
-if($DADA::Config::PROFILE_OPTIONS->{enabled} == 1 && $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/){ 
-	if(
-	     exists($args->{-profile_vars})       || 
-	     exists($args->{-profile_vars_param})
-	 ){ 
+	if($DADA::Config::PROFILE_OPTIONS->{enabled} == 1 && $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/){ 
+		if(
+		     exists($args->{-profile_vars})       || 
+		     exists($args->{-profile_vars_param})
+		 ){ 
  
-	     if( !exists($args->{-profile_vars_param}) ){ 
-	         # Well, nothing. 
-	         $args->{-profile_vars_param} = {}; 
-	     }
-	     else { 
+		     if( !exists($args->{-profile_vars_param}) ){ 
+		         # Well, nothing. 
+		         $args->{-profile_vars_param} = {}; 
+		     }
+		     else { 
          
-	         if(
-	             !exists($args->{-profile_vars})      &&  # Don't write over something that's already there. 
-	              exists($args->{-profile_vars_param})    # This is a rehash of the last if() statement, but it's here, for clarity...
-	         ){  
-				if(exists($args->{-profile_vars_param}->{-email})){ 
-			         require DADA::Profile; 
-					 my $prof = DADA::Profile->new(
-						{
-							-email => $args->{-profile_vars_param}->{-email},
+		         if(
+		             !exists($args->{-profile_vars})      &&  # Don't write over something that's already there. 
+		              exists($args->{-profile_vars_param})    # This is a rehash of the last if() statement, but it's here, for clarity...
+		         ){  
+					if(exists($args->{-profile_vars_param}->{-email})){ 
+				         require DADA::Profile; 
+						 my $prof = DADA::Profile->new(
+							{
+								-email => $args->{-profile_vars_param}->{-email},
+							}
+						);
+						if($prof->exists){ 
+			             $args->{-profile_vars} = $prof->get(
+							{
+								-dotted => 1,
+							}
+						);
+			        	}
+						else { 
+							$args->{-profile_vars} = {};
 						}
-					);
-					if($prof->exists){ 
-		             $args->{-profile_vars} = $prof->get(
-						{
-							-dotted => 1,
-						}
-					);
-		        	}
-					else { 
-						$args->{-profile_vars} = {};
-					}
-		         }
-			}
-	    }
+			         }
+				}
+		    }
     
 
-	   if(!exists($args->{-vars}->{profile})){
+		   if(!exists($args->{-vars}->{profile})){
      
-	         $args->{-vars}->{profile} = [];
-	         foreach(keys %{$args->{-profile_vars}}){ 
-	             my $nk = $_; 
-	             $nk =~ s/profile\.//; 
-	             push( @{$args->{-vars}->{profile}}, {name => $nk, value => $args->{-profile_vars}->{$_}});   
-	         }
-	     }
-	 }
-	 else { 
-	     $args->{-profile_vars}       = {};
-	     $args->{-profile_vars_param} = {};
-	 }
-}
-else { 
-	$args->{-profile_vars}       = {};
-    $args->{-profile_vars_param} = {};
-}
+		         $args->{-vars}->{profile} = [];
+		         foreach(keys %{$args->{-profile_vars}}){ 
+		             my $nk = $_; 
+		             $nk =~ s/profile\.//; 
+		             push( @{$args->{-vars}->{profile}}, {name => $nk, value => $args->{-profile_vars}->{$_}});   
+		         }
+		     }
+		 }
+		 else { 
+		     $args->{-profile_vars}       = {};
+		     $args->{-profile_vars_param} = {};
+		 }
+	}
+	else { 
+		$args->{-profile_vars}       = {};
+	    $args->{-profile_vars_param} = {};
+	}
 
-
+	if(exists($args->{-time})){ 
+		$TMP_TIME = $args->{-time};
+	}
 
 
     
