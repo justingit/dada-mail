@@ -2940,8 +2940,9 @@ sub send_invalid_msgs_to_owner {
         );
 
         $reply->attach(
-            Type => 'text/plain',
-            Data => $ls->param('invalid_msgs_to_owner_msg'),
+            Type     => 'text/plain',
+            Encoding => $ls->param('plaintext_encoding'),
+            Data     => $ls->param('invalid_msgs_to_owner_msg'),
         );
 
         $reply->attach(
@@ -3735,8 +3736,9 @@ sub moderation_msg {
 
         # attach parts
         $reply->attach(
-            Type => 'text/plain',
-            Data => $ls->param('moderation_msg'),
+            Type     => 'text/plain',
+            Encoding => $ls->param('plaintext_encoding'),
+            Data     => $ls->param('moderation_msg'),
         );
         $reply->attach(
             Type        => 'message/rfc822',
@@ -3820,10 +3822,11 @@ sub send_moderation_msg {
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
 
     my $reply = MIME::Entity->build(
-        Type    => "text/plain",
-        To      => $from,
-        Subject => $ls->param('await_moderation_msg_subject'),
-        Data    => $ls->param('await_moderation_msg'),
+        Type     => "text/plain",
+        Encoding => $ls->param('plaintext_encoding'),
+        To       => $from,
+        Subject  => $ls->param('await_moderation_msg_subject'),
+        Data     => $ls->param('await_moderation_msg'),
     );
 
     require DADA::App::Messages;
@@ -3896,10 +3899,11 @@ sub send_accept_msg {
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
 
     my $reply = MIME::Entity->build(
-        Type    => "text/plain",
-        To      => $from,
-        Subject => $ls->param('accept_msg_subject'),
-        Data    => $ls->param('accept_msg'),
+        Type     => "text/plain",
+        Encoding => $ls->param('plaintext_encoding'),
+        To       => $from,
+        Subject  => $ls->param('accept_msg_subject'),
+        Data     => $ls->param('accept_msg'),
     );
 
     require DADA::App::Messages;
@@ -3969,10 +3973,11 @@ sub send_reject_msg {
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
 
     my $reply = MIME::Entity->build(
-        Type    => "text/plain",
-        To      => $from,
-        Subject => $ls->param('rejection_msg_subject'),
-        Data    => $ls->param('rejection_msg'),
+        Type     => "text/plain",
+        Encoding => $ls->param('plaintext_encoding'),
+        To       => $from,
+        Subject  => $ls->param('rejection_msg_subject'),
+        Data     => $ls->param('rejection_msg'),
     );
 
     require DADA::App::Messages;
