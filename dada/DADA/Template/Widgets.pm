@@ -11,6 +11,8 @@ use DADA::Config qw(!:DEFAULT);
 
 use constant HAS_HTML_TEMPLATE_PRO => eval { require HTML::Template::Pro; 1; }; 
 
+my $TMP_TIME = undef; 
+
 # A weird fix.
 BEGIN {
    if($] > 5.008){
@@ -2078,7 +2080,7 @@ else {
 
 sub date_params { 
 	
-	my $time = shift || time;
+	my $time = shift || $TMP_TIME || time;
 	
 	my %params = ();
 	 
@@ -2497,21 +2499,54 @@ sub hack_in_tmpl_set_support {
 sub filter_time_piece {
 	
     my $text_ref = shift;
-
-    my $match = qr/\<\!\-\- tmpl_time_piece (.*?) \-\-\>/;
+	my $time     = $TMP_TIME || time; 
+	
+    my $match = qr/\<\!\-\- tmpl_strftime (.*?) \-\-\>/;
     
 	my @taglist = (); 
 	@taglist = $$text_ref =~ m/$match/gi;
     
-	if(exists($taglist[0])){ 
+	my $can_use_time_piece = 1;
+	my $can_use_posix      = 1; ; 
+	my $t                  = undef; 
+	if(exists($taglist[0])){  
 		
-		require Time::Piece; 
-		my $t = Time::Piece->new;
-	
+		try { 
+			require Time::Piece; 
+			#$t = Time::Piece->new;
+		     $t = Time::Piece::localtime($time);
+		} catch {
+			$can_use_time_piece = 0; 
+			carp "Time::Piece doesn't work!? $_"; 
+		};
+		
+		if($can_use_time_piece == 0){ 
+			# I mean, who knows. 
+			try { 
+				require POSIX; 
+				POSIX::->import( 'strftime' );
+			} catch {
+				$can_use_posix = 0; 
+			};
+		}
+		if($can_use_time_piece == 0 && $can_use_posix == 0){ 
+			croak '<!-- tmpl_var tmpl_strftime [...] --> tags unsupported! Install Time::Piece!'; 
+		}
+		
 		while (@taglist) {
-			my $time = shift @taglist; 
-			my $formatted_time = $t->strftime($time);
-			my $formatted_match = quotemeta("<!-- tmpl_strftime $time -->");
+			 # I have no understanding of this, rather than, my $format(@taglist) { } 
+			my $format = shift @taglist;
+			
+			my $formatted_time = undef; 
+			
+			if($can_use_time_piece) { 
+				$formatted_time = $t->strftime($format);
+			}
+			else { 
+				my ($sec,$min,$hour,$mday,$mon,$year,$wday,$yday,$isdst) = localtime($time);
+				$formatted_time = POSIX::strftime($format, $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst );
+			}
+			my $formatted_match = quotemeta("<!-- tmpl_strftime $format -->");
 			$$text_ref =~ s/$formatted_match/$formatted_time/gi;
 	    }
 
