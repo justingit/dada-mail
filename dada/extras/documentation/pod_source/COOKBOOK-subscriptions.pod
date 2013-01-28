@@ -32,6 +32,27 @@ You can also pass Profile Fields for the subscriber, just use the, C<-fields> pa
 
 C<subscribe_email.pl> can also be called from within another script using something like Perl's, C<exec> function. 
 
+=head3 PHP Example
+
+Here's an example for a php script, that uses php's C<shell_exec> function (make sure to change the permissions of C<subscribe_email.pl> to, C<755>): 
+
+	<?php
+		var $email = 'user@example.com'; 
+		var $list  = 'mylist'; 
+		shell_exec("/home1/zazarazz/public_html/dadamail/extras/scripts/subscribe/subscribe_email.pl --list $list --email $email");
+	?>
+
+To make things easier I<while testing>, you may wish to disable Dada Mail's feature of limiting Subscription Confirmations. This feature disallows someone to 
+continually attempt to subscribe the same email address. In testing, this may be exactly what you'd like to do. 
+
+In, I<Your Mailing List - Options> 
+
+Uncheck the option, I<Limit Subscription Confirmation Sending>. Once done testing, you may want to re-enable this option. 
+
+ Limit Subscription Confirmation Sending 
+
+
+
 =head2 Web Services 
 
 =head2 SOAP

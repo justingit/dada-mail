@@ -1764,7 +1764,7 @@ EOF
 
 $NOT_ALLOWED_TO_POST_NOTICE_MSG ||= <<EOF
 
-The attached message was not sent to your Mailing List, 
+The attached message was sent to your Mailing List, 
 
 	<!-- tmpl_var list_settings.list_name -->
 	
@@ -2926,6 +2926,8 @@ EOF
   physical_address
   password
 
+  bridge_list_email_type
+
   disable_discussion_sending
   discussion_pop_server
   discussion_pop_username
@@ -2933,6 +2935,7 @@ EOF
   discussion_pop_password
   discussion_pop_auth_mode
   discussion_pop_use_ssl
+
 
   ) unless keys %LIST_SETUP_OVERRIDES;
 

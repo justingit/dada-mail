@@ -160,6 +160,8 @@ Text::Wrap
 
 Time::Local
 
+Time::Piece
+
 Try::Tiny
 
 URI::Escape

@@ -3,12 +3,14 @@
 use strict;
 
 package subscribe_email;
-use lib qw(
-	./ 
-	./DADA/perllib
-	../../../
-	../../../DADA/perllib
-	);
+
+use FindBin;
+use lib "$FindBin::Bin";
+use lib "$FindBin::Bin/DADA/perllib";
+use lib "$FindBin::Bin/../../../";
+use lib "$FindBin::Bin/../../../DADA/perllib";
+
+
 
 use DADA::Config;
 use DADA::App::Subscriptions;

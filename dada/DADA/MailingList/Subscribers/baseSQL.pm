@@ -126,6 +126,8 @@ sub search_list {
             -search_type     => 'any',
             -order_by        => $args->{-order_by},
             -order_dir       => $args->{-order_dir},
+			#-start           => $args->{ -start }, 
+			#'-length'        => $args->{'-length'}, 
         }
     );
 
@@ -139,6 +141,11 @@ sub search_list {
 
     while ( $row = $sth->fetchrow_hashref ) {
 
+		# DEV: It would be better to use LIMIT, x, y in the query, 
+		# but we still need the total search results number, and something like, 
+		# select count(*) from (select [...]);
+		# isn't working as well as I'd like
+		
         $count++;
         next if $count < ( $args->{ -start } * $args->{ '-length' });
         next if $count >  ( $args->{ -start } * $args->{ '-length' }) + ($args->{'-length'}) ;
@@ -227,59 +234,6 @@ sub domain_stats {
 
 }
 
-sub domain_stats_json { 
-	my $self    = shift;
-	my ($args)  = @_; 
-	if(!exists($args->{-count})){ 
-		$args->{-count} = 10; 
-	}
-	if(!exists($args->{-printout})){ 
-		$args->{-printout} = 0; 
-	}
-	my $stats = $self->domain_stats(
-		{ 
-			-count => $args->{-count},
-			-type  => $args->{-type},
-		}
-	);
-	
-	require         Data::Google::Visualization::DataTable;
-	my $datatable = Data::Google::Visualization::DataTable->new();
-
-	$datatable->add_columns(
-	       { id => 'domain',     label => "Domain",        type => 'string',},
-	       { id => 'number',     label => "Number",        type => 'number',},
-	);
-
-	for(@$stats){ 
-		$datatable->add_rows(
-	        [
-	               { v => $_->{domain} },
-	               { v => $_->{number} },
-	       ],
-		);
-	}
-
-	# Fancy-pants
-	my $json = $datatable->output_javascript(
-		pretty  => 1,
-	);
-	if($args->{-printout} == 1){ 
-		require CGI; 
-		my $q = CGI->new; 
-		
-		print $q->header(
-			'-Cache-Control' => 'no-cache, must-revalidate',
-			-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
-			-type            =>  'application/json',
-		);
-		print $json; 
-	}
-	else { 
-		return $json;
-	}
-	
-}
 sub SQL_subscriber_profile_join_statement {
 
     my $self = shift;
@@ -532,8 +486,14 @@ sub SQL_subscriber_profile_join_statement {
 		$query .= ' ASC'; 
 	}
 	
-
-    #    }
+	if(exists($args->{ -start }) && exists($args->{ '-length' })) { 
+		$query .= ' LIMIT '; 
+		$query .=  $args->{'-length'};
+		$query .= ' OFFSET ';
+		$query .= ($args->{ -start } * $args->{ '-length' });
+		
+	}
+	
     warn 'QUERY: ' . $query
       if $t;
 	
@@ -789,26 +749,24 @@ sub subscription_list {
     my $self = shift;
 
     my ($args) = @_;
-    if ( !exists( $args->{ -start } ) ) {
-        $args->{ -start } = 0;
+    if ( !exists( $args->{-start} ) ) {
+        $args->{-start} = 0;
     }
-    if ( !exists( $args->{ -type } ) ) {
-        $args->{ -type } = 'list';
+    if ( !exists( $args->{-type} ) ) {
+        $args->{-type} = 'list';
     }
-
-	
 
     my $email;
     my $count  = 0;
     my $list   = [];
     my $fields = $self->subscriber_fields;
 
-    if ( !exists( $args->{ -partial_listing } ) ) {
-        $args->{ -partial_listing } = {};
+    if ( !exists( $args->{-partial_listing} ) ) {
+        $args->{-partial_listing} = {};
     }
 
     my $query = $self->SQL_subscriber_profile_join_statement($args);
-    my $sth = $self->{dbh}->prepare($query);
+    my $sth   = $self->{dbh}->prepare($query);
 
     $sth->execute()
       or croak "cannot do statment (for subscription_list)! $DBI::errstr\n";
@@ -821,26 +779,15 @@ sub subscription_list {
 
     while ( $hashref = $sth->fetchrow_hashref ) {
 
-		if($count < ( $args->{ -start } * $args->{ '-length' })) { 
-			$count++;
-			next; 
-		}
-        if ( exists( $args->{'-length'} ) ) {
-			$count++;
-            last if $count > ( ( $args->{ -start } * $args->{ '-length' }) + ($args->{'-length'}) );
-        }
-		else { 
-		}
-
-		# Probably, just add it here? 
-		$hashref->{type} = $args->{-type}; 
+        # Probably, just add it here?
+        $hashref->{type} = $args->{-type};
 
         $hashref->{fields} = [];
 
         for (@$fields) {
 
             if ( exists( $mf_lt{$_} ) ) {
-                push (
+                push(
                     @{ $hashref->{fields} },
                     {
                         name  => $_,
@@ -852,13 +799,14 @@ sub subscription_list {
 
         }
 
-        push ( @$list, $hashref );
+        push( @$list, $hashref );
 
     }
 
     return $list;
 
 }
+
 
 sub filter_list_through_blacklist {
 

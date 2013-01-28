@@ -613,125 +613,132 @@ ok(!$@, "Good! The simple doc example doesn't give back and error!");
 like($r, qr/Dear/); 
 
 
+
+
 SKIP: {
 
-    skip "Multiple Subscriber Profile Fields is not supported with this current backend." 
-        if $lh->can_have_subscriber_fields == 0; 
+		    skip "Multiple Subscriber Profile Fields is not supported with this current backend." 
+		        if $lh->can_have_subscriber_fields == 0; 
 
-	require DADA::ProfileFieldsManager;
-	my $pfm = DADA::ProfileFieldsManager->new;
-		 	$pfm->add_field(
-				{
-					-field          => 'field1', 
-					-fallback_value => 'fallback value for field 1',
-					-label          => 'Field 1!', 
-				}
-			);
+			require DADA::ProfileFieldsManager;
+			my $pfm = DADA::ProfileFieldsManager->new;
+				 	$pfm->add_field(
+						{
+							-field          => 'field1', 
+							-fallback_value => 'fallback value for field 1',
+							-label          => 'Field 1!', 
+						}
+					);
 			
-	# This test makes sure fallback fields are used, 
-	# if nothing else is given (not even a subscriber) 
-	$scalar = '<!-- tmpl_var subscriber.field1 -->';
-    $r = DADA::Template::Widgets::screen(
-		{ 
-			-data => \$scalar, 
-			-subscriber_vars_param    => {
-				-list                 => $list, 
-				-use_fallback_vars     => 1
-			},
-		}
-	); 
-	ok($r eq 'fallback value for field 1', 'fallback field stuff is working!');
-	undef $scalar; 
-	undef $r;
+			# This test makes sure fallback fields are used, 
+			# if nothing else is given (not even a subscriber) 
+			$scalar = '<!-- tmpl_var subscriber.field1 -->';
+		    $r = DADA::Template::Widgets::screen(
+				{ 
+					-data => \$scalar, 
+					-subscriber_vars_param    => {
+						-list                 => $list, 
+						-use_fallback_vars     => 1
+					},
+				}
+			); 
+			ok($r eq 'fallback value for field 1', 'fallback field stuff is working!');
+			undef $scalar; 
+			undef $r;
 	
-	# This test makes sure there fallback fields are used, 
-	# even if there is a subscriber (but no field value) 
+			# This test makes sure there fallback fields are used, 
+			# even if there is a subscriber (but no field value) 
 	
-	#
-	# I'm curious: 
-	# What happens if we give this a email address that isn't subscribed?
-	$scalar = '<!-- tmpl_var subscriber.field1 -->';
-    $r = DADA::Template::Widgets::screen(
-		{ 
-			-data => \$scalar, 
-			-subscriber_vars_param => {
-				-list              => $list, 
-				-use_fallback_vars => 1,
-	            -email             => 'made up', 
-	            -type              => 'list',
-			},
-		}
-	); 
-	ok($r eq 'fallback value for field 1', 'fallback field stuff is working!');
-	undef $scalar; 
-	undef $r;
-	
-	
+			#
+			# I'm curious: 
+			# What happens if we give this a email address that isn't subscribed?
+			$scalar = '<!-- tmpl_var subscriber.field1 -->';
+		    $r = DADA::Template::Widgets::screen(
+				{ 
+					-data => \$scalar, 
+					-subscriber_vars_param => {
+						-list              => $list, 
+						-use_fallback_vars => 1,
+			            -email             => 'made up', 
+			            -type              => 'list',
+					},
+				}
+			); 
+			ok($r eq 'fallback value for field 1', 'fallback field stuff is working!');
+			undef $scalar; 
+			undef $r;
 	
 	
-	# This test makes sure there fallback fields are used, 
-	# even if there is a subscriber (but no field value) 
-	my $email = 'fallbackfieldtest@example.com'; 
-	$lh->add_subscriber(
-       { 
-             -email         => $email,
-             -type          => 'list', 
-             -fields        =>  {}, # no values for this. 
-        }
-    );
-	$scalar = '<!-- tmpl_var subscriber.field1 -->';
-    $r = DADA::Template::Widgets::screen(
-		{ 
-			-data => \$scalar, 
-			-subscriber_vars_param => {
-				-list              => $list, 
-				-use_fallback_vars => 1,
-	            -email             => $email, 
-	            -type              => 'list',
-			},
-		}
-	); 
-	ok($r eq 'fallback value for field 1', 'fallback field stuff is working!');
-	undef $scalar; 
-	undef $r;
-	undef $email; 
+	
+	
+			# This test makes sure there fallback fields are used, 
+			# even if there is a subscriber (but no field value) 
+			my $email = 'fallbackfieldtest@example.com'; 
+			$lh->add_subscriber(
+		       { 
+		             -email         => $email,
+		             -type          => 'list', 
+		             -fields        =>  {}, # no values for this. 
+		        }
+		    );
+			$scalar = '<!-- tmpl_var subscriber.field1 -->';
+		    $r = DADA::Template::Widgets::screen(
+				{ 
+					-data => \$scalar, 
+					-subscriber_vars_param => {
+						-list              => $list, 
+						-use_fallback_vars => 1,
+			            -email             => $email, 
+			            -type              => 'list',
+					},
+				}
+			); 
+			ok($r eq 'fallback value for field 1', 'fallback field stuff is working!');
+			undef $scalar; 
+			undef $r;
+			undef $email; 
 	
 	
 
 	
 	
-	# This test makes sure there fallback fields aren't used, 
-	# if there is a subscriber, with value in the field. 
-	$email = 'fallbackfieldtest2@example.com'; 
-	my $field1_value = 'fallbackfieldtest2 field value!'; 
-	$lh->add_subscriber(
-       { 
-             -email         => $email,
-             -type          => 'list', 
-             -fields        =>  {
-				field1      => $field1_value, 
-			}, 
-        }
-    );
-	$scalar = '<!-- tmpl_var subscriber.field1 -->';
-    $r = DADA::Template::Widgets::screen(
-		{ 
-			-data => \$scalar, 
-			-subscriber_vars_param => {
-			   -list              => $list, 
-	           -email             => $email, 
-	           -type              => 'list',
- 			   -use_fallback_vars => 1,
-			},
-		}
-	); 
-	diag $r; 
-	ok($r eq $field1_value, 'fallback field was not used');
-	undef $scalar; 
-	undef $r;
-	undef $email; 
+			# This test makes sure there fallback fields aren't used, 
+			# if there is a subscriber, with value in the field. 
+			$email = 'fallbackfieldtest2@example.com'; 
+			my $field1_value = 'fallbackfieldtest2 field value!'; 
+			$lh->add_subscriber(
+		       { 
+		             -email         => $email,
+		             -type          => 'list', 
+		             -fields        =>  {
+						field1      => $field1_value, 
+					}, 
+		        }
+		    );
+			$scalar = '<!-- tmpl_var subscriber.field1 -->';
+		    $r = DADA::Template::Widgets::screen(
+				{ 
+					-data => \$scalar, 
+					-subscriber_vars_param => {
+					   -list              => $list, 
+			           -email             => $email, 
+			           -type              => 'list',
+		 			   -use_fallback_vars => 1,
+					},
+				}
+			); 
+			diag $r; 
+			ok($r eq $field1_value, 'fallback field was not used');
+			undef $scalar; 
+			undef $r;
+			undef $email; 
 		
 };
+
+
+
+
+
 
 =cut
 
@@ -814,7 +821,192 @@ undef($p);
 
 
 
+# <!-- tmpl_strftime [...] --> 
+#           Fri Jan 25 01:22:15 2013
+my $time = '1359102135';
 
+$scalar = '<!-- tmpl_strftime %a, %d %b %Y -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq 'Fri, 25 Jan 2013'); 
+
+# %U 	Week number of the given year, starting with the first Sunday as the first week 
+# 13 (for the 13th full week of the year)
+
+$scalar = '<!-- tmpl_strftime %U -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq '03');
+
+# %V ISO-8601:1988 week number of the given year, starting with the first week of the year with at least 4 weekdays, 
+# with Monday being the start of the week 
+# 01 through 53 (where 53 accounts for an overlapping week)
+$scalar = '<!-- tmpl_strftime %V -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq '04');
+
+# %W 	A numeric representation of the week of the year, starting with the first Monday as the first week 
+# 46 (for the 46th week of the year beginning with a Monday)
+$scalar = '<!-- tmpl_strftime %W -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq '03');
+
+# Month 	--- 	---
+# %b 	Abbreviated month name, based on the locale 	Jan through Dec
+$scalar = '<!-- tmpl_strftime %b -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq 'Jan');
+
+# %B 	Full month name, based on the locale 	January through December
+$scalar = '<!-- tmpl_strftime %B -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq 'January');
+
+# %h 	Abbreviated month name, based on the locale (an alias of %b) 	Jan through Dec
+$scalar = '<!-- tmpl_strftime %h -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq 'Jan');
+
+# %m 	Two digit representation of the month 	01 (for January) through 12 (for December)
+$scalar = '<!-- tmpl_strftime %m -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq '01');
+
+# Year 	--- 	---
+# %C 	Two digit representation of the century (year divided by 100, truncated to an integer) 	19 for the 20th Century
+$scalar = '<!-- tmpl_strftime %C -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq '20');
+
+# %g Two digit representation of the year going by ISO-8601:1988 standards (see %V) 
+# Example: 09 for the week of January 6, 2009
+$scalar = '<!-- tmpl_strftime %g -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq '13');
+
+# %G 	The full four-digit version of %g 	Example: 2008 for the week of January 3, 2009
+$scalar = '<!-- tmpl_strftime %G -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq '2013');
+
+# %y 	Two digit representation of the year 	Example: 09 for 2009, 79 for 1979
+$scalar = '<!-- tmpl_strftime %y -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq '13');
+
+# %Y 	Four digit representation for the year 	Example: 2038
+$scalar = '<!-- tmpl_strftime %Y -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq '2013');
+
+# Time 	--- 	---
+# %H 	Two digit representation of the hour in 24-hour format 	00 through 23
+$scalar = '<!-- tmpl_strftime %H -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq '01');
+
+# %k 	Two digit representation of the hour in 24-hour format, with a space preceding single digits 	0 through 23
+$scalar = '<!-- tmpl_strftime %k -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq ' 1');
+
+# %I 	Two digit representation of the hour in 12-hour format 	01 through 12
+$scalar = '<!-- tmpl_strftime %I -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq '01');
+
+# %l (lower-case 'L') 	Hour in 12-hour format, with a space preceding single digits 	1 through 12
+$scalar = '<!-- tmpl_strftime %l -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq ' 1');
+
+# %M 	Two digit representation of the minute 	00 through 59
+$scalar = '<!-- tmpl_strftime %M -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq '22');
+
+# %p 	UPPER-CASE 'AM' or 'PM' based on the given time 	Example: AM for 00:31, PM for 22:23
+$scalar = '<!-- tmpl_strftime %p -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq 'AM');
+
+# This doesn't seem to work... 
+## %P 	lower-case 'am' or 'pm' based on the given time 	Example: am for 00:31, pm for 22:23
+#$scalar = '<!-- tmpl_strftime %P -->'; 
+#$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+#ok($r eq 'am');
+
+# %r 	Same as "%I:%M:%S %p" 	Example: 09:34:17 PM for 21:34:17
+$scalar = '<!-- tmpl_strftime %r -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq '01:22:15 AM');
+
+# %R 	Same as "%H:%M" 	Example: 00:35 for 12:35 AM, 16:44 for 4:44 PM
+$scalar = '<!-- tmpl_strftime %R -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq '01:22');
+
+# %S 	Two digit representation of the second 	00 through 59
+$scalar = '<!-- tmpl_strftime %S -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq '15');
+
+# %T 	Same as "%H:%M:%S" 	Example: 21:34:17 for 09:34:17 PM
+$scalar = '<!-- tmpl_strftime %T -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq '01:22:15');
+
+# %X 	Preferred time representation based on locale, without the date 	Example: 03:59:16 or 15:59:16
+$scalar = '<!-- tmpl_strftime %X -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq '01:22:15');
+
+# %z 	The time zone offset. Not implemented as described on Windows. See below for more information.
+# Example: -0500 for US Eastern Time
+# %Z 	The time zone abbreviation. Not implemented as described on Windows. See below for more information. 	Example: EST for Eastern Time
+# Time and Date Stamps 	--- 	---
+# %c 	Preferred date and time stamp based on locale 	Example: Tue Feb 5 00:45:10 2009 for February 5, 2009 at 12:45:10 AM
+
+# %D 	Same as "%m/%d/%y" 	Example: 02/05/09 for February 5, 2009
+$scalar = '<!-- tmpl_strftime %D -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq '01/25/13');
+
+# %F 	Same as "%Y-%m-%d" (commonly used in database datestamps) 	Example: 2009-02-05 for February 5, 2009
+$scalar = '<!-- tmpl_strftime %F -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq '2013-01-25');
+
+# %s 	Unix Epoch Time timestamp (same as the time() function) 	Example: 305815200 for September 10, 1979 08:40:00 AM
+$scalar = '<!-- tmpl_strftime %s -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq '1359102135');
+
+TODO: {
+    local $TODO = 'No idea why, "%x" gives "01/25/2013" and not, 01/25/13';	
+
+	# %x 	Preferred date representation based on locale, without the time 	Example: 02/05/09 for February 5, 2009
+	$scalar = '<!-- tmpl_strftime %x -->'; 
+	$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+	ok($r eq '01/25/13'); #?!?!
+}; 
+
+
+# Miscellaneous 	--- 	---
+# %n 	A newline character ("\n") 	---
+$scalar = '<!-- tmpl_strftime %n -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq "\n");
+
+# %t 	A Tab character ("\t") 	---
+$scalar = '<!-- tmpl_strftime %t -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq "\t");
+
+# %% 	A literal percentage character ("%") 	---
+$scalar = '<!-- tmpl_strftime %% -->'; 
+$r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
+ok($r eq '%');
+
+#/ <!-- tmpl_strftime [...] -->
 
 
 

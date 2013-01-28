@@ -4,7 +4,7 @@ setting                          varchar(64),
 value                            text
 );
 
-CREATE TABLE "dada_subscribers" (
+CREATE TABLE dada_subscribers (
 email_id                         serial,
 email                            varchar(80),
 list                             varchar(16),

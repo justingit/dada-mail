@@ -1,5 +1,7 @@
 #!/usr/bin/perl 
 
+my $large_num = 1000; 
+
 use lib
   qw(./t ./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib );
 BEGIN { $ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1 }
@@ -1757,7 +1759,7 @@ ok( $status == 0, "Status is 0 ($status)" );
 ##############################################################################
 # subscription_list
 my $sub_list = [];
-my @num      = ( 1 ... 1000 );
+my @num      = ( 1 ... $large_num );
 for (@num) {
     $lh->add_subscriber(
         {
@@ -1767,7 +1769,7 @@ for (@num) {
     );
 }
 
-ok( $lh->num_subscribers == 1000, "subscribed 1000 addresses." );
+ok( $lh->num_subscribers == $large_num, "subscribed $large_num addresses." );
 $sub_list = $lh->subscription_list(
     {
         -start    => 0,
@@ -1802,16 +1804,45 @@ $sub_list = $lh->subscription_list(
     {
 
         #-start    => 0,
-        #'-length' => 1000,
+        #'-length' => $large_num,
         -type => 'list',
     }
 );
-ok( ( $#$sub_list + 1 ) == 1000,
-    "1000 subscribers were returned! (" . ( $#$sub_list + 1 ) . ")" );
+ok( ( $#$sub_list + 1 ) == $large_num,
+    "$large_num subscribers were returned! (" . ( $#$sub_list + 1 ) . ")" );
 
 ##############################################################################
 # remove_all_subscribers
-ok( $lh->remove_all_subscribers == 1000, "Removed all the subscribers!" );
+ok( $lh->remove_all_subscribers == $large_num, "Removed all the subscribers!" );
+for("a".."z" ){ 
+    $lh->add_subscriber(
+        {
+            -email =>  $_ . '@example.com',
+            -type  => 'list',
+        }
+    );	
+}
+$sub_list = $lh->subscription_list(
+    {
+        -type => 'list',
+    }
+);
+ok( ( $#$sub_list + 1 ) == 26,
+    "26 subscribers were returned! (" . ( $#$sub_list + 1 ) . ")" );
+
+$sub_list = $lh->subscription_list(
+    {
+        -start  => 1,
+		-length => 13,
+    }
+);
+ok($sub_list->[0]->{email} eq  'n@example.com');
+ok($sub_list->[12]->{email} eq 'z@example.com');
+
+ok( $lh->remove_all_subscribers == 26, "Removed all the subscribers!" );
+
+
+
 
 # clone
 for ( 'one@one.com', 'two@two.com', 'three@three.com' ) {
@@ -1884,6 +1915,7 @@ $lh->remove_all_subscribers( { -type => 'black_list' } );
 
 # /copy_all_subscribers
 
+#----------------------------------------------------------------------------#
 # subsribed_to
 
 for ( 'list', 'black_list', 'white_list' ) {
@@ -1900,11 +1932,92 @@ my $st = [];
 $st = $lh->member_of({-email => 'test@example.com'}); 
 ok(scalar(@$st) == 3, "3 list types returned."); 
 
-#use Data::Dumper; 
-#diag Dumper($st); 
-
-
+for ( 'list', 'black_list', 'white_list' ) {
+	ok($lh->remove_all_subscribers( { -type => $_ } ) == 1);
+}
 # /subsribed_to
+#----------------------------------------------------------------------------#
+
+#----------------------------------------------------------------------------#
+# domain_stats
+for(qw(1 2 3 4 5)){ 
+	$lh->add_subscriber(
+	    {
+	        -email => $_ . '@example.com',
+	        -type  => 'list',
+	    }
+	);
+}
+
+
+for(qw(1 2 3 4)){ 
+	$lh->add_subscriber(
+	    {
+	        -email => $_ . '@gmail.com',
+	        -type  => 'list',
+	    }
+	);
+}
+	
+for(qw(1 2 3)){ 
+	$lh->add_subscriber(
+	    {
+	        -email => $_ . '@hotmail.com',
+	        -type  => 'list',
+	    }
+	);
+}
+
+for(qw(1 2)){ 
+	$lh->add_subscriber(
+	    {
+	        -email => $_ . '@yahoo.com',
+	        -type  => 'list',
+	    }
+	);
+}
+
+for(qw(1)){ 
+	$lh->add_subscriber(
+	    {
+	        -email => $_ . '@live.com',
+	        -type  => 'list',
+	    }
+	);
+}
+my $stats= $lh->domain_stats({-count => 3}); 
+
+#use Data::Dumper; 
+#diag Dumper($stats); 
+# $VAR1 = [
+#           {
+#             'domain' => 'example.com',
+#             'number' => 5
+#           },
+#           {
+#             'domain' => 'gmail.com',
+#             'number' => 4
+#           },
+#           {
+#             'domain' => 'other',
+#             'number' => 6
+#           }
+#         ];
+
+ok($stats->[0]->{domain} eq 'example.com');
+ok($stats->[0]->{number} == 5);
+
+ok($stats->[1]->{domain} eq 'gmail.com');
+ok($stats->[1]->{number} == 4);
+
+ok($stats->[2]->{domain} eq 'other');
+ok($stats->[2]->{number} == 6);
+
+ok($lh->remove_all_subscribers( { -type => 'list' } ) == 15);
+
+# domain_stats
+#----------------------------------------------------------------------------#
+
 
 
 dada_test_config::remove_test_list;

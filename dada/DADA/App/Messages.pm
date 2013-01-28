@@ -35,6 +35,7 @@ use vars qw(@EXPORT);
 sub send_generic_email { 
 	my ($args) = @_; 
 	
+	
 	if(! exists($args->{-test})){ 
 		$args->{-test} = 0;
 	}
@@ -889,8 +890,10 @@ sub send_not_allowed_to_post_msg {
 									To           => '"'. escape_for_sending($li->{list_name}) .'" <'. $args->{-email} .'>',
 									);
 									
-	$reply->attach(Type => 'text/plain', 
-				   Data  => $li->{not_allowed_to_post_msg}
+	$reply->attach(
+				   Type     => 'text/plain', 
+				   Encoding => $li->{plaintext_encoding},
+				   Data     => $li->{not_allowed_to_post_msg}
 				  ); 
 				
 	$reply->attach( Type        => 'message/rfc822', 
@@ -907,6 +910,7 @@ sub send_not_allowed_to_post_msg {
 	my %headers = _mime_headers_from_string($headers);  
 
 	# well, I guess three lines ain't that bad; 
+
 
 	send_generic_email(
 		{

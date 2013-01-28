@@ -494,7 +494,6 @@ sub _format_text {
 							carp "Problems with filter: $_";
 						};
 					}
-					
 								
 				} #/ discussion lists
  	
@@ -704,14 +703,15 @@ sub _create_multipart {
 	# Don't forget to do the pref check for plaintext... 
 	if(
 	  (
-		  $entity->head->mime_type                         eq 'text/html'  && 
-		  $entity->head->mime_attr('content-disposition') !~ m/attachment/
+		     $entity->head->mime_type                        eq 'text/html'  
+		  && $entity->head->mime_attr('content-disposition') !~ m/attachment/
 	  )
 		|| 
 		(
-		     $entity->head->mime_type                         eq 'text/plain' 
-		  && $entity->head->mime_attr('content-disposition') !~ m/attachment/
+		     $entity->head->mime_type                                     eq 'text/plain' 
+		  && $entity->head->mime_attr('content-disposition')              !~ m/attachment/
 		  && $self->{ls}->param('mass_mailing_convert_plaintext_to_html') == 1
+		  && $self->mass_mailing                                          == 1
 		) 
 		
 	  ){ 	 
@@ -742,6 +742,7 @@ sub _create_multipart {
 					     $parts[$i]->head->mime_type eq 'text/plain'
 					  && $parts[$i]->head->mime_attr('content-disposition') !~ m/attachment/
 					  && $self->{ls}->param('mass_mailing_convert_plaintext_to_html') == 1
+					  && $self->mass_mailing                                          == 1
 					)
 					) { 
 							$parts[$i] = $self->_make_multipart($parts[$i]);
@@ -791,6 +792,20 @@ sub _make_multipart {
 	if($orig_type eq 'text/plain'){ 
 		$new_type = 'text/html'; 
 		$new_data = plaintext_to_html({-str => safely_encode($orig_content)});
+		
+		# I kind of agree this is a strange place to put this, but H::T template tags 
+		# are getting clobbered: 
+		
+		try {
+			require DADA::App::FormatMessages::Filters::UnescapeTemplateTags; 
+			my $utt = DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new; 
+			$new_data = $utt->filter({-html_msg => $new_data});
+		} catch {
+			carp "Problems with filter: $_";
+		};
+		
+		
+		
 	}
 	else { 
 		$new_type = 'text/plain';

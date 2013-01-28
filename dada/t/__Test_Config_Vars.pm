@@ -19,22 +19,24 @@ $TEST_SQL_PARAMS = {
 	    user             => 'test',          
 	    pass             => '',
     
-	    subscriber_table 				=> 'test_dada_subscribers',
-		profile_table                   => 'test_dada_profiles', 
-		profile_fields_table 	        => 'test_dada_profile_fields', 
-		profile_fields_attributes_table => 'test_dada_profile_fields_attributes',
-	    archives_table   				=> 'test_dada_archives', 
-	    settings_table   				=> 'test_dada_settings', 
-	    session_table    				=> 'test_dada_sessions',
-		bounce_scores_table 			=> 'test_dada_bounce_scores',
-		clickthrough_urls_table         => 'test_dada_clickthrough_urls', 
-		clickthrough_url_log_table       => 'test_dada_clickthrough_url_log', 		
-		mass_mailing_event_log_table    => 'test_dada_mass_mailing_event_log', 
+	    subscriber_table 				   => 'test_dada_subscribers',
+		profile_table                      => 'test_dada_profiles', 
+		profile_fields_table 	           => 'test_dada_profile_fields', 
+		profile_fields_attributes_table    => 'test_dada_profile_fields_attributes',
+	    archives_table   				   => 'test_dada_archives', 
+	    settings_table   				   => 'test_dada_settings', 
+	    session_table    				   => 'test_dada_sessions',
+		bounce_scores_table 			   => 'test_dada_bounce_scores',
+		clickthrough_urls_table            => 'test_dada_clickthrough_urls', 
+		clickthrough_url_log_table         => 'test_dada_clickthrough_url_log', 		
+		mass_mailing_event_log_table       => 'test_dada_mass_mailing_event_log', 
+		password_protect_directories_table => 'test_dada_password_protect_directories', 
+		
 		
 	}, 
 
 	PostgreSQL => { 
-		test_enabled     => 0, 
+		test_enabled     => 1, 
 		database         => 'dadademo_test',
 	    dbserver         => 'localhost', # may just be, "localhost"   	   
 	    port             => '5432',      # mysql: 3306, Postgres: 5432   	   
@@ -54,6 +56,10 @@ $TEST_SQL_PARAMS = {
 		clickthrough_url_log_table       => 'test_dada_clickthrough_url_log', 		
 
 		mass_mailing_event_log_table    => 'test_dada_mass_mailing_event_log', 
+		password_protect_directories_table    => 'test_dada_password_protect_directories', 
+
+
+
 	}, 
 
 	SQLite => {
