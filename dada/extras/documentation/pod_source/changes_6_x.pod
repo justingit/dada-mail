@@ -1,3 +1,65 @@
+=head1 6.0.2
+
+=head2 Summary 6.0.2
+
+This release fixes bugs found in the v6.0.1 version of Dada Mail. It's a suggested upgrade for anyone
+running v6.0.0 or v6.0.1
+
+=head2 Bugfixes 6.0.2
+
+=head3  <!-- tmpl_strftime [...] --> template tags don't work 
+
+https://github.com/justingit/dada-mail/issues/345
+
+=head3  Bridge: "Setup as" Email Forward/POP3 Account option used when cloning a list 
+
+https://github.com/justingit/dada-mail/issues/344
+
+=head3 "Not Allowed to Post" Message, grammatical error 
+
+https://github.com/justingit/dada-mail/issues/343
+
+=head3 Bridge: Transactional email messages, specific to Bridge/Moderation do not have correct encoding 
+
+https://github.com/justingit/dada-mail/issues/342
+
+=head3  Messages converted from PlainText to HTML will have broken template tags 
+
+https://github.com/justingit/dada-mail/issues/341
+
+=head3 Transactional Emails are bring coverted from PlainText to HTML 
+
+https://github.com/justingit/dada-mail/issues/340
+
+=head3  Domain Stats broken for PlainText Backend 
+
+https://github.com/justingit/dada-mail/issues/339
+
+=head3  Scheduled Mailings HTML window missing v6 
+
+https://github.com/justingit/dada-mail/issues/338
+
+=head3  jQuery UI images with wrong paths in jQuery stylesheet 
+
+https://github.com/justingit/dada-mail/issues/337
+
+=head3 "Your List Control Panel » Customize Feature Set" Broken 
+
+https://github.com/justingit/dada-mail/issues/336
+
+=head3 Removing Stale POP3 Locks doesn't work 
+
+https://github.com/justingit/dada-mail/issues/335
+
+=head3  Multiple Subscribe doesn't seem to be working 
+
+https://github.com/justingit/dada-mail/issues/334
+
+=head3 Error when creating a new profile account. 
+
+https://github.com/justingit/dada-mail/issues/333
+
+
 =head1 6.0.1
 
 =head2 Summary 6.0.1
