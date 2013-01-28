@@ -1814,6 +1814,35 @@ ok( ( $#$sub_list + 1 ) == $large_num,
 ##############################################################################
 # remove_all_subscribers
 ok( $lh->remove_all_subscribers == $large_num, "Removed all the subscribers!" );
+for("a".."z" ){ 
+    $lh->add_subscriber(
+        {
+            -email =>  $_ . '@example.com',
+            -type  => 'list',
+        }
+    );	
+}
+$sub_list = $lh->subscription_list(
+    {
+        -type => 'list',
+    }
+);
+ok( ( $#$sub_list + 1 ) == 26,
+    "26 subscribers were returned! (" . ( $#$sub_list + 1 ) . ")" );
+
+$sub_list = $lh->subscription_list(
+    {
+        -start  => 1,
+		-length => 13,
+    }
+);
+ok($sub_list->[0]->{email} eq  'n@example.com');
+ok($sub_list->[12]->{email} eq 'z@example.com');
+
+ok( $lh->remove_all_subscribers == 26, "Removed all the subscribers!" );
+
+
+
 
 # clone
 for ( 'one@one.com', 'two@two.com', 'three@three.com' ) {

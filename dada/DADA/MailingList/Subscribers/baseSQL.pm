@@ -488,12 +488,12 @@ sub SQL_subscriber_profile_join_statement {
 	
 	if(exists($args->{ -start }) && exists($args->{ '-length' })) { 
 		$query .= ' LIMIT '; 
-		$query .= ($args->{ -start } * $args->{ '-length' });
-		$query .= ', ';
 		$query .=  $args->{'-length'};
+		$query .= ' OFFSET ';
+		$query .= ($args->{ -start } * $args->{ '-length' });
+		
 	}
 	
-
     warn 'QUERY: ' . $query
       if $t;
 	
