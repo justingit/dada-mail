@@ -5669,7 +5669,7 @@ sub adv_archive_options {
 				},
 		        -vars   => {
 		            screen => 'adv_archive_options',
-		            title  => 'Advanced Archive Options',
+		            title  => 'Advanced Options',
 
 		            done                       => $done,
 		            archive_index_count_menu   => $archive_index_count_menu,
