@@ -460,54 +460,63 @@ EOF
         my $messagename = substr( $_, length($list) + 1 );
         my $parser = $parser;
         my $entity;
+
+        # unescape URI encoded stuff:
+        $messagename =~ s/%([0-9A-Fa-f]{2})/chr(hex($1))/eg;
+
         eval {
             $entity = $parser->parse_data(
                 safely_encode( $mod->get_msg( { -msg_id => $messagename } ) ) );
         };
         if ( !$entity ) {
-            croak "no entity found! die'ing!";
+
+            #croak "no entity found! die'ing!";
+            print "can't show message $messagename: $@\n";
         }
-        my $subject = $entity->head->get( 'Subject', 0 );
-        $subject =~ s/\n//g;
-        my $from = $entity->head->get( 'From', 0 );
-        $from =~ s/\n//g;
-        my $date = $entity->head->get( 'Date', 0 );
-        $date =~ s/\n//g;
-        my $messagehdr =
-          "From: " . $from . "; Subj: " . $subject . " ; Date: " . $date;
+        else {
+            my $subject = $entity->head->get( 'Subject', 0 );
+            $subject =~ s/\n//g;
+            my $from = $entity->head->get( 'From', 0 );
+            $from =~ s/\n//g;
+            my $date = $entity->head->get( 'Date', 0 );
+            $date =~ s/\n//g;
+            my $messagehdr =
+              "From: " . $from . "; Subj: " . $subject . " ; Date: " . $date;
 
 #        my $messagetxt = quotemeta($entity->head->get('Body', 0));
 #        my $view_link = "<a href=\"#\" onMouseOver=\"open_new_window(\'" . $messagehdr . "<br>" . $messagetxt . "\')\">View</a>";
 
-        my $confirmation_link =
-            "<a href="
-          . $Plugin_Config->{Plugin_URL}
-          . '?flavor=mod&list='
-          . DADA::App::Guts::uriescape($list)
-          . '&process=confirm&msg_id='
-          . DADA::App::Guts::uriescape($messagename)
-          . ">Accept</a>";
+            my $confirmation_link =
+                "<a href="
+              . $Plugin_Config->{Plugin_URL}
+              . '?flavor=mod&list='
+              . DADA::App::Guts::uriescape($list)
+              . '&process=confirm&msg_id='
+              . DADA::App::Guts::uriescape($messagename)
+              . ">Accept</a>";
 
-        my $deny_link =
-            "<a href="
-          . $Plugin_Config->{Plugin_URL}
-          . '?flavor=mod&list='
-          . DADA::App::Guts::uriescape($list)
-          . '&process=deny&msg_id='
-          . DADA::App::Guts::uriescape($messagename)
-          . ">Reject</a>";
+            my $deny_link =
+                "<a href="
+              . $Plugin_Config->{Plugin_URL}
+              . '?flavor=mod&list='
+              . DADA::App::Guts::uriescape($list)
+              . '&process=deny&msg_id='
+              . DADA::App::Guts::uriescape($messagename)
+              . ">Reject</a>";
 
-        print $confirmation_link . " or "
-          . $deny_link . " - "
-          . $messagehdr . "\n"
-          if $verbose;
+            print $confirmation_link . " or "
+              . $deny_link . " - "
+              . $messagehdr . "\n"
+              if $verbose;
+        }
     }
 
     print '</pre>';
-    print '<p><a href="'
-      . $Plugin_Config->{Plugin_URL}
-      . ' ">Awaiting Message Index...</a></p>';
 
+    #    print '<p><a href="'
+    #      . $Plugin_Config->{Plugin_URL}
+    #      . ' ">Awaiting Message Index...</a></p>';
+    #
     print admin_template_footer(
         -Form => 0,
         -List => $list,
@@ -3595,22 +3604,24 @@ sub awaiting_msgs {
     my @awaiting_msgs;
     my %allfiles;
 
+    my $f;
     if ( opendir( MOD_MSGS, $self->mod_dir ) ) {
-
-        %allfiles = map { $_, ( stat($_) )[9] } readdir(MOD_MSGS);
+        while ( defined( $f = readdir MOD_MSGS ) ) {
+            next if $f =~ /^\.\.?$/;
+            $f =~ s(^.*/)();
+            $allfiles{$f} = ( stat( $self->mod_dir . '/' . $f ) )[9];
+        }
 
         closedir(MOD_MSGS)
           or carp "couldn't close: " . $self->mod_dir;
 
-        for my $key ( sort $allfiles{$a} <=> $allfiles{$b}, keys %allfiles ) {
-
-            next if ( $key =~ /^\.\.?$/ );
-
-            $key =~ s(^.*/)();
-            if ( $key =~ m/$pattern/ ) {
-                push( @awaiting_msgs, $key );
-            }
-
+        # if you still need the keys...
+        foreach my $key (    #
+            sort { $allfiles{$b} <=> $allfiles{$a} }    #
+            keys %allfiles
+          )
+        {
+            push( @awaiting_msgs, $key );
         }
 
     }
