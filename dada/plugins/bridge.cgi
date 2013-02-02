@@ -456,8 +456,8 @@ EOF
     my $awaiting_msgs = $mod->awaiting_msgs();
     print "List of Messages Still Awaiting Moderation:\n\n"
       if $verbose;
-    for (@$awaiting_msgs) {
-        my $messagename = substr( $_, length($list) + 1 );
+	
+    for my $messagename(@$awaiting_msgs) {
         my $parser = $parser;
         my $entity;
 
@@ -3609,6 +3609,9 @@ sub awaiting_msgs {
         while ( defined( $f = readdir MOD_MSGS ) ) {
             next if $f =~ /^\.\.?$/;
             $f =~ s(^.*/)();
+			next unless $f =~ m/^$pattern/;
+			my $name = $f; 
+			$f =~ s/^$pattern//; 	
             $allfiles{$f} = ( stat( $self->mod_dir . '/' . $f ) )[9];
         }
 
@@ -4112,9 +4115,9 @@ sub mod_msg_filename {
     $message_id = DADA::App::Guts::uriescape($message_id);
     return
         $self->mod_dir . '/'
-      . DADA::App::Guts::uriescape( $self->{list} ) . '-'
-      . $message_id;
-
+ 	   . DADA::App::Guts::uriescape( $self->{list} ) . '-'
+       . $message_id;
+ 
 }
 
 sub mod_dir {
