@@ -1146,7 +1146,7 @@ sub start {
     	if(!valid_login_information($ls)) { 
 			e_print("\t\tLogin information doesn't seem to be valid. Make sure you've supplied everything needed: List Email, POP3 Server, POP3 Username, POP3 Password")
 			 if $verbose; 
-			next; 
+			next LIST_QUEUE; 
 		}
 
 
@@ -1166,7 +1166,7 @@ sub start {
         if ( $pop3_status == 0 ) {
             e_print("\t* POP3 connection failed!\n")
               if $verbose;
-            return;
+            next LIST_QUEUE; 
         }
 
 
