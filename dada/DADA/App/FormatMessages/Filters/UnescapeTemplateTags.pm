@@ -94,18 +94,22 @@ sub unescape_template_tags {
 	my $self = shift; 
 	my $str  = shift; 
 
-	# regular
+	# Regular
+	# Start Tags
 	$str =~ s/(&lt;!--(\s+)tmpl_)(.*?)(--&gt;)/<!-- tmpl_$3-->/g;
 	$str =~ s/(&lt;!--(\s+)TMPL_)(.*?)(--&gt;)/<!-- TMPL_$3-->/g;
 
-	$str =~ s/(&lt;!--(\s+)\/tmpl_)(.*?)(--&gt;)/<!-- tmpl_$3-->/g;
-	$str =~ s/(&lt;!--(\s+)\/TMPL_)(.*?)(--&gt;)/<!-- TMPL_$3-->/g;
+	# End Tags
+	$str =~ s/(&lt;!--(\s+)\/tmpl_)(.*?)(--&gt;)/<!--\/tmpl_$3-->/g;
+	$str =~ s/(&lt;!--(\s+)\/TMPL_)(.*?)(--&gt;)/<!--\/TMPL_$3-->/g;
 	
 
-	# consice
+	# Consice
+	# Start Tags
 	$str =~ s/(&lt;tmpl_)(.*?)&gt;/<tmpl_$2>/g;
 	$str =~ s/(&lt;TMPL_)(.*?)&gt;/<TMPL_$2>/g;
-	
+
+	# End Tags
 	$str =~ s/(&lt;\/tmpl_)(.*?)&gt;/<\/tmpl_$2>/g;
 	$str =~ s/(&lt;\/TMPL_)(.*?)&gt;/<\/TMPL_$2>/g;
 	
