@@ -100,8 +100,8 @@ sub unescape_template_tags {
 	$str =~ s/(&lt;!--(\s+)TMPL_)(.*?)(--&gt;)/<!-- TMPL_$3-->/g;
 
 	# End Tags
-	$str =~ s/(&lt;!--(\s+)\/tmpl_)(.*?)(--&gt;)/<!--\/tmpl_$3-->/g;
-	$str =~ s/(&lt;!--(\s+)\/TMPL_)(.*?)(--&gt;)/<!--\/TMPL_$3-->/g;
+	$str =~ s/(&lt;!--(\s+)\/tmpl_)(.*?)(--&gt;)/<!-- \/tmpl_$3-->/g;
+	$str =~ s/(&lt;!--(\s+)\/TMPL_)(.*?)(--&gt;)/<!-- \/TMPL_$3-->/g;
 	
 
 	# Consice
