@@ -10,6 +10,11 @@ Key:
 [*] Naw...
 [?] Someday
 
+[ ] There should be a test in the PlaiNText -> HTML message changer to make sure the template is still valid. 
+ 	And if it isn't, abort the change! 
+[ ] Template and Template Tag checkers - is it a valid template? Warn if it ain't!
+[ ] Look at date on messages, if that's realistic. Option to deny messages that are too old. 
+
 
 why doesn't the mailing monitor show STALE mass mailings? THe hell is an, "inactive" mailing? 
 
