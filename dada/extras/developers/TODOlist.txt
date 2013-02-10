@@ -10,6 +10,15 @@ Key:
 [*] Naw...
 [?] Someday
 
+
+
+[ ] AJAXify all the confirmation HTML stuff - so instead of going to a new screen, you just get a colorbox popup - with the new screen as a back. Have to clean up those screens, so that they make sense in both situations. Maybe simplify the error screens. Yeah! 
+
+[ ] Add in newest version of CKEditor
+[ ] Ability to see other sublists (already invited) (Subscription Confirmation...) 
+
+[ ] Look for JSON modules - not there? "install" them ourselves (renamed JSON-remove[..] files/directories. 
+
 [ ] There should be a test in the PlaiNText -> HTML message changer to make sure the template is still valid. 
  	And if it isn't, abort the change! 
 [ ] Template and Template Tag checkers - is it a valid template? Warn if it ain't!
