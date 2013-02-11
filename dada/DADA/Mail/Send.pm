@@ -2870,16 +2870,14 @@ sub _mail_merge {
         $subscriber_vars->{'subscriber.email'}        = shift @$data;
         $subscriber_vars->{'subscriber.email_name'}   = shift @$data;
         $subscriber_vars->{'subscriber.email_domain'} = shift @$data;
-        $subscriber_vars->{'subscriber.pin'}          = shift @$data;
         
         # DEV: These are sort of weird - I'd rather get rid of global list sending altogether. It's messy.
         $labeled_data{'list_settings.list'}           = shift @$data;
         $labeled_data{'list_settings.list_name'}      = shift @$data;
-        
-        
         $labeled_data{message_id}                     = shift @$data;
-
-    my $merge_fields = $self->{merge_fields};
+        $labeled_data{token}                          = shift @$data;
+ 
+	my $merge_fields = $self->{merge_fields};
         
     my $i = 0;
     for($i=0; $i<=$#$merge_fields; $i++){ 

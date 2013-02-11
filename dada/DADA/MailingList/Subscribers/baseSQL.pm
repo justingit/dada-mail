@@ -1129,12 +1129,19 @@ sub create_mass_sending_file {
         -Test_Recipient  => undef,
         -partial_sending => {},
         -exclude_from    => [],
-
+		-Create_Tokens   => 0, 
         @_
     );
 
     my $list = $self->{list};
     my $type = $args{-Type};
+
+	my $ct = undef; 
+	if($args{-Create_Tokens} == 1){ 
+		require DADA::App::Subscriptions::ConfirmationTokens; 
+		$ct    = DADA::App::Subscriptions::ConfirmationTokens->new();
+	}
+		
 
     my @f_a_lists = available_lists();
     my %list_names;
@@ -1210,11 +1217,10 @@ sub create_mass_sending_file {
 		) {
 	        $first_email = $args{-Test_Recipient};
 	    }
-	    my $to_pin = make_pin( -Email => $first_email, -List => $self->{list} );
 	    my ( $lo_e_name, $lo_e_domain ) = split( '@', $first_email );
 
 	    my @lo  = (
-	        $first_email, $lo_e_name, $lo_e_domain, $to_pin, $self->{list},
+	        $first_email, $lo_e_name, $lo_e_domain, $self->{list},
 	        $list_names{ $self->{list} }, $n_msg_id,
 	    );
 
@@ -1273,14 +1279,26 @@ sub create_mass_sending_file {
                 my @sub = (
                     $field_ref->{email},
                     ( split( '@', $field_ref->{email} ) ),
-                    make_pin(
-                        -Email => $field_ref->{email},
-                        -List  => $self->{list}
-                    ),
                     $field_ref->{list},
                     $list_names{ $field_ref->{list} },
                     $n_msg_id,
                 );
+
+				if($args{-Create_Tokens} == 1){ 
+					my $token = $ct->save(
+						{
+							-list  => $field_ref->{list}, 
+							-email => $field_ref->{email},
+							-data  => {
+								flavor => 'sub_confirm', 
+							}
+						}
+					);
+					push( @sub, $token );
+				}
+				else { 
+					push( @sub, '' );
+				}
 
                 for ( @{ $self->subscriber_fields } ) {
                     if ( defined( $field_ref->{$_} ) ) {
@@ -1292,8 +1310,8 @@ sub create_mass_sending_file {
                     }
 
                     push( @sub, $field_ref->{$_} );
-
                 }
+
                 if ( $csv->combine(@sub) ) {
                     my $hstring = $csv->string;
                     print $SENDINGFILE $hstring, "\n";

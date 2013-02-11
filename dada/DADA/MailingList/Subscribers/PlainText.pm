@@ -789,10 +789,7 @@ sub remove_from_list {
 
 When sending list messages to the entire list, we make a temp file called $istname.list.$listid
 where $listname is the name of your list, and $list_id is an id number, usually made form the list, 
-and created form the message ID if we have one. This also creates the pin number for each emal address and 
-saves it into this file like so: 
-
-	email::pin 
+and created form the message ID if we have one.
 
 This can easilly be feed into either the Mail::Bulkmail module or our homebrew batch system. 
 after the Lists are send DADA::Mail::Send.pm should remove this file. 
@@ -897,7 +894,6 @@ sub create_mass_sending_file {
 	        $first_email = $args{-Test_Recipient};
 	    }
     
-		my $to_pin = make_pin(-Email => $first_email, -List => $list);
 		my ($lo_e_name, $lo_e_domain) = split('@', $first_email); 
 	
 	
@@ -906,7 +902,6 @@ sub create_mass_sending_file {
 					$first_email,
 					$lo_e_name, 
 					$lo_e_domain, 
-					$to_pin, 
 					$list,
 	                $self->{ls}->param('list_name'), 
 					$n_msg_id,
@@ -931,7 +926,6 @@ sub create_mass_sending_file {
 				my @sub = (
 					$email,
 					( split ( '@', $email ) ), 
-					make_pin( -Email => $email, -List => $list),
 					$list,
 					$self->{ls}->param('list_name'),
 					$n_msg_id,
