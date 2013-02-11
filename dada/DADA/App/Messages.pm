@@ -229,14 +229,14 @@ sub send_confirmation_message {
 				
 			-tmpl_params => {
 				-list_settings_vars_param => {-list => $args->{-list}},
-	            -subscriber_vars_param    => {-list => $args->{-list}, -email => $args->{-email}, -type => 'sub_confirm_list'},
-	            -vars                     => {
-	                                            'subscriber.pin' => make_pin(
-																	-Email => $args->{-email}, 
-																	-List  => $args->{-list}
-																	),
-	                                         },
-		
+	            -subscriber_vars_param    => {
+					-list  => $args->{-list}, 
+					-email => $args->{-email}, 
+					-type  => 'sub_confirm_list'
+				},
+	            -vars => {
+					'list.confirmation_token' => $args->{-token},
+				},
 			},
 			
 			-test => $args->{-test},
@@ -406,12 +406,17 @@ sub send_unsub_confirmation_message {
 				
 	    -body        => $confirmation_msg, 
 		-tmpl_params => {
-			-list_settings_vars_param => {-list => $args->{-list}},
-            -subscriber_vars_param    => {-list => $args->{-list}, -email => $args->{-email}, -type => 'list'},
+			-list_settings_vars_param => {
+				-list => $args->{-list}
+			},
+            -subscriber_vars_param    => {
+				-list  => $args->{-list}, 
+				-email => $args->{-email}, 
+				-type  => 'list'
+			},
             -vars                     => {
-                                            'subscriber.pin'  => make_pin(-Email => $args->{-email}, -List => $args->{-list}), #DEV: do I need this?
-                                         },
-										
+				'list.confirmation_token' => $args->{-token},
+			},
 			},
 			-test         => $args->{-test},
 		}

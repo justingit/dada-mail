@@ -1,6 +1,9 @@
 package DADA::App::Subscriptions;
 
-use lib qw(../../ ../../perllib);
+use lib qw(
+	../../ 
+	../../perllib
+);
 
 
 use DADA::Config qw(!:DEFAULT);  
@@ -64,6 +67,64 @@ sub _init {}
 
 
 
+sub token { 
+	
+	my $self = shift; 
+    my ($args) = @_; 
+	my $q; 
+	
+	if(! exists($args->{-cgi_obj}) ){ 
+		croak 'Error: No CGI Object passed in the -cgi_obj parameter.'; 
+	}
+	else { 
+		$q = $args->{-cgi_obj};
+	}
+	
+	my $token = xss_filter($q->param('token')); 
+ 
+	require DADA::App::Subscriptions::ConfirmationTokens; 
+	my $ct    = DADA::App::Subscriptions::ConfirmationTokens->new();
+	if($ct->exists($token)){ 
+		my $data = $ct->fetch($token); 
+
+		if($data->{data}->{flavor} eq 'sub_confirm'){
+			$q->param('email', $data->{email}); 
+			$q->param('list', $data->{list}); 
+			$q->param('token', $token); 
+			$self->confirm(
+	            {
+	                -html_output => $args->{-html_output}, 
+	                -cgi_obj     => $q,
+	            },
+	        );
+		}
+		elsif($data->{data}->{flavor} eq 'unsub_confirm'){
+			$q->param('email', $data->{email}); 
+			$q->param('list', $data->{list}); 
+			$q->param('token', $token); 
+			$self->unsub_confirm(
+	            {
+	                -html_output => $args->{-html_output}, 
+	                -cgi_obj     => $q,
+	            },
+	        );		
+		}
+		else { 
+			return user_error(
+                -Error => 'token_problem',            
+				-test  => $self->test, 
+            );
+		}
+	}
+	else { 
+		return user_error(
+            -Error => 'token_problem',            
+			-test  => $self->test, 
+        );
+	}
+
+
+}
 
 sub subscribe { 
     
@@ -184,10 +245,7 @@ sub subscribe {
 	            	-confirmed     => 0, 
 				}
 	        );
-
-	        # This is... slightly weird.
-	        $args->{-cgi_obj}->param('pin', DADA::App::Guts::make_pin(-Email => $email, -List => $list));  
-
+	
 	        $self->confirm(
 	            {
 	                -html_output => $args->{-html_output}, 
@@ -281,13 +339,13 @@ sub subscribe {
             }            
         }
         
-    }else{ 
+    }else{ # $status == 1; 
         
         # The idea is, we'll save the information for the subscriber in the confirm list, and then 
         # move the info to the actual subscription list, 
         # And then remove the information from the confirm list, when we're all done. 
         
-        my $rm_status = $lh->remove_subscriber(
+        $lh->remove_subscriber(
 			{
             	-email => $email, 
                 -type  => 'sub_confirm_list',
@@ -305,6 +363,18 @@ sub subscribe {
         
         if($mail_your_subscribed_msg == 0){ 
         
+			require DADA::App::Subscriptions::ConfirmationTokens; 
+			my $ct    = DADA::App::Subscriptions::ConfirmationTokens->new();
+			my $token = $ct->save(
+				{
+					-list  => $list, 
+					-email => $email,
+					-data  => {
+						flavor => 'sub_confirm', 
+					}
+				}
+			);
+			
             require DADA::App::Messages;
             DADA::App::Messages::send_confirmation_message(
 				{
@@ -312,6 +382,7 @@ sub subscribe {
 	                -email  => $email, 
 	                -ls_obj => $ls, 
 					-test   => $self->test, 
+					-token  => $token,
         		}
 			); 
 
@@ -400,16 +471,11 @@ sub confirm {
     my $q = $args->{-cgi_obj}; 
     my $list  = xss_filter($q->param('list')); 
     my $email = lc_email( strip ( xss_filter( $q->param( 'email' ) ) ) ); 
-        
-    my $pin   = xss_filter($q->param('pin')); 
 
     warn '$list: ' . $list
         if $t; 
     warn '$email: ' . $email
         if $t;
-    warn '$pin: ' . $pin
-        if $t; 
-        
     my $list_exists = DADA::App::Guts::check_if_list_exists(-List => $list);
     
 	require DADA::MailingList::Settings;
@@ -526,11 +592,11 @@ sub confirm {
 						# for the moment, I'm just going to put that value in, myself: 
 
 						#flavor       => xss_filter($q->param('flavor')), 
-						flavor        => 'n', 
+						flavor        => 't', 
 
 						list         => xss_filter( $q->param('list')), 
 						email        => lc_email( strip ( xss_filter( $q->param( 'email' ) ) ) ), 
-						pin          => xss_filter($q->param('pin')), 
+						token        => xss_filter($q->param('token')), 
 						captcha_auth => xss_filter($captcha_auth),        
 
 						},
@@ -604,22 +670,6 @@ sub confirm {
             }
         }
     }    
-                                                
-    
-    my $is_pin_valid = check_email_pin(
-		-Email => $email, 
-		-List => $list, 
-		-Pin => $pin
-	);
-    warn '$is_pin_valid set to: ' . $is_pin_valid
-        if $t; 
-    if ($is_pin_valid == 0) {
-        $status = 0; 
-        $errors->{invalid_pin} = 1;
-        warn '>>>> $errors->{invalid_pin} set to: ' . $errors->{invalid_pin}
-			if $t; 
-        
-    }
 
     # DEV it would be *VERY* strange to fall into this, since we've already checked this...
     if($args->{-html_output} != 0){
@@ -673,10 +723,9 @@ sub confirm {
                 $self->test ? return $r : print $fh safely_encode(  $r) and return; 
                 
             }else{            
-                
+
                 my @list_of_errors = qw(
                     invalid_email
-                    invalid_pin
                     mx_lookup_failed
                     subscribed
                     closed_list
@@ -873,8 +922,10 @@ sub confirm {
                     	}
 		        	);                                   
                 }
-        
-        
+				warn q{$q->param('token')} . $q->param('token'); 
+				require DADA::App::Subscriptions::ConfirmationTokens; 
+				my $ct    = DADA::App::Subscriptions::ConfirmationTokens->new();
+				   $ct->remove_by_token($q->param('token')); 
         	}else{ 
         
                 warn '>>>> >>> >>> Sending: "Mailing List Confirmation - Already Subscribed" message' 
@@ -973,7 +1024,6 @@ sub unsubscribe {
     my $list  = xss_filter($q->param('list')); 
     my $email = lc_email( strip ( xss_filter( $q->param( 'email' ) ) ) ); 
        
-    my $pin   = xss_filter($q->param('pin')); 
     
     # If the list doesn't exist, don't go through the process, 
     # Just go to the default page, 
@@ -993,7 +1043,8 @@ sub unsubscribe {
         # and show the list page. 
         
         if (!$email){                                    
-
+			warn "no email."
+				if $t; 
             my $r = $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '?f=list&list=' . $list . '&error_no_email=1&set_flavor=u'); 
             $self->test ? return $r : print $fh safely_encode(  $r) and return;
         }
@@ -1008,14 +1059,11 @@ sub unsubscribe {
     require DADA::MailingList::Subscribers;  
     my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
             
-    # Basically, if double opt out is turn off, 
-    # make up a pin
-    # and confirm the unsub from there
-    # This *still* does error check the unsub request
-    # just in a different place. 
-  
+   
   	my $skip_unsub_confirm_if_logged_in = 0; 
 	if($ls->param('skip_unsub_confirm_if_logged_in')){
+		warn 'skip_unsub_confirm_if_logged_in = 1'
+			if $t; 
 		require DADA::Profile::Session; 
 		my $sess = DADA::Profile::Session->new; 
 		if($sess->is_logged_in){	
@@ -1023,24 +1071,27 @@ sub unsubscribe {
 			if ($sess_email eq $email){ 
 				# something... 
 				$skip_unsub_confirm_if_logged_in = 1;
+				warn "person logged in, skipping confirmation."
+					if $t; 
 			}
 		}
+	}
+	else { 
+		warn 'skip_unsub_confirm_if_logged_in = 0'
+			if $t; 
 	}
 	
     if(
 		(
-		$ls->param('unsub_confirm_email')       == 0 || 
-		$skip_unsub_confirm_if_logged_in == 1
+		   $ls->param('unsub_confirm_email') == 0 
+		|| $skip_unsub_confirm_if_logged_in  == 1
 		)
 		&&
-		$args->{-no_auto_config}         == 0 
+		   $args->{-no_auto_config}          == 0 
 	){  
         warn 'skipping the unsubscription process and going straight to the confirmation process'
             if $t;
-    
-        # This is... slightly weird.
-        $args->{-cgi_obj}->param('pin', DADA::App::Guts::make_pin(-Email => $email, -List => $list));  
-    
+        
 		warn 'adding, ' . $email . ' to unsub_confirm_list'
 			if $t; 
 		# This will error out, if '$email' is not a valid email address. Strangely enough!
@@ -1050,8 +1101,6 @@ sub unsubscribe {
                 -type          => 'unsub_confirm_list', 
             }
         );
-        
-        
         warn 'going to unsub_confirm()'
 			if $t; 			
         return $self->unsub_confirm(
@@ -1062,14 +1111,19 @@ sub unsubscribe {
         );
      }       
  
-    # If there's already a pin, 
-    # (that we didn't just make) 
-    # Confirm the unsubscription
-
-    if($pin && $args->{-no_auto_config}  == 0 ){
-        return $self->unsub_confirm({-html_output => $args->{-html_output}, -cgi_obj =>  $args->{-cgi_obj}}); #we'll change this one later...
+=cut I can't figure out what this is for... 
+    if($args->{-no_auto_config}  == 0 ){
+		warn '-no_auto_config = 0'
+			if $t; 
+        return $self->unsub_confirm(
+			{
+				-html_output => $args->{-html_output}, 
+				-cgi_obj     =>  $args->{-cgi_obj}
+			}
+		); #we'll change this one later...
     }
-
+=cut
+	
     my ($status, $errors) = $lh->unsubscription_check(
 								{
 									-email => $email, 
@@ -1097,8 +1151,6 @@ sub unsubscribe {
         && scalar( keys %$errors ) == 1
         && $errors->{not_subscribed} == 1 )
     {
-		
-		
         # Changed the status to, "1" BUT,
         $status = 1;
 
@@ -1184,6 +1236,18 @@ sub unsubscribe {
 		}
 		else { 
 			
+			require DADA::App::Subscriptions::ConfirmationTokens; 
+			my $ct    = DADA::App::Subscriptions::ConfirmationTokens->new(); 
+			my $token = $ct->save(
+				{
+					-list  => $list, 
+					-email => $email,
+					-data  => {
+						flavor => 'unsub_confirm', 
+					}
+				}
+			);
+			
 	        # Send the URL with the unsub confirmation URL:
 	        require DADA::App::Messages;    
 	        DADA::App::Messages::send_unsub_confirmation_message(
@@ -1191,6 +1255,7 @@ sub unsubscribe {
 	            	-list         => $list, 
 		            -email        => $email, 
 		            -settings_obj => $ls, 
+					-token        => $token, 
 	            	-test         => $self->test,
 				}
 			);
@@ -1274,7 +1339,6 @@ sub unsub_confirm {
     my $q     = $args->{-cgi_obj}; 
     my $list  = xss_filter($q->param('list')); 
     my $email = lc_email( strip ( xss_filter( $q->param( 'email' ) ) ) );
-    my $pin   = xss_filter($q->param('pin')); 
     
     if($args->{-html_output} != 0){ 
         if(check_if_list_exists(-List => $list) == 0){
@@ -1325,14 +1389,6 @@ sub unsub_confirm {
             );
         }
     }
-    
-    if(check_email_pin(-Email => $email, -List  => $list, -Pin   => $pin) == 0){ 
-         $status = 0; 
-         $errors->{invalid_pin} = 1; 
-         
-         warn '"' . $email . '" invalid pin found!'
-            if $t; 
-    }
 
 	# send you're already unsub'd message? 
 	# First, only one error and is the error that you're not sub'd?
@@ -1371,10 +1427,6 @@ sub unsub_confirm {
 	    # ...
 	}
 	
-
-
-
-    
     # My last check - are they currently on the Unsubscription confirmation list?!
     if($lh->check_for_double_email(-Email => $email,-Type  => 'unsub_confirm_list')  == 0){ 
         $status = 0; 
@@ -1421,7 +1473,6 @@ sub unsub_confirm {
             }else{ 
             
                 my @list_of_errors = qw(
-                    invalid_pin
                     not_subscribed
                     invalid_email
                     not_on_unsub_confirm_list
@@ -1507,6 +1558,10 @@ sub unsub_confirm {
 				-test  => $self->test,
 			}
 		);
+		
+		require DADA::App::Subscriptions::ConfirmationTokens; 
+		my $ct    = DADA::App::Subscriptions::ConfirmationTokens->new();
+		   $ct->remove_by_token($q->param('token'));
         
         if($ls->param('send_unsub_success_email') == 1){ 
 	

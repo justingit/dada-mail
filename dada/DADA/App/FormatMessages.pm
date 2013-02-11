@@ -1370,12 +1370,19 @@ sub _macro_tags {
 				); 
 	
 	my $type; 
+	
+	if($args{-type} eq 'confirm_subscribe' || $args{-type} eq 'confirm_unsubscribe'){ 
 
-	if($args{-type} eq 'subscribe'){ 
+		my $link = '<!-- tmpl_var PROGRAM_URL -->/t/<!-- tmpl_var list.confirmation_token -->/';
+		return $link;
+
+	}
+	elsif($args{-type} eq 'subscribe'){ 
 	
 		$type = 's'; 
 	
-	}elsif($args{-type} eq 'unsubscribe'){ 
+	}
+	elsif($args{-type} eq 'unsubscribe'){ 
 	
 		# We really shouldn't even been in this sub, if there's no list... 
 		if($self->no_list == 1){ 
@@ -1390,20 +1397,8 @@ sub _macro_tags {
 				$type = 'u'; 
 			}
 		}
-	}elsif($args{-type} eq 'confirm_subscribe'){ 
-	
-		$type = 'n';
-		$args{-email} ||= '<!-- tmpl_var subscriber.email_name -->@<!-- tmpl_var subscriber.email_domain -->';
-		$args{-pin}   ||= '<!-- tmpl_var subscriber.pin -->';
-	
-	}elsif($args{-type} eq 'confirm_unsubscribe'){ 
-		
-		$type = 'u'; 
-		$args{-email} ||= '<!-- tmpl_var subscriber.email_name -->@<!-- tmpl_var subscriber.email_domain -->';
-		$args{-pin}   ||= '<!-- tmpl_var subscriber.pin -->';
-	
 	}
-	
+
 	my $link = $args{-url} . '/';
 	
 	if($args{-escape_all} == 1){ 
@@ -1637,6 +1632,7 @@ sub can_find_sub_confirm_link {
 	    }
 
 	    my @sub_confirm_urls = (
+			'<!-- tmpl_var PROGRAM_URL -->/t/<!-- tmpl_var list.confirmation_token -->',
 	        '<!-- tmpl_var list_confirm_subscribe_link -->',
 			'<!-- tmpl_var PROGRAM_URL -->/n/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/<!-- tmpl_var subscriber.pin -->/'
 	  	);
@@ -1669,6 +1665,10 @@ sub subscription_confirmationation {
 	        # ...
 	    }
 	    else {
+		
+		warn "can't find sub confirm link: \n" . 
+		$args->{-str}; 
+			
 	    	$args->{-str} = 'To subscribe to, "<!-- tmpl_var list_settings.list_name -->", click the link below:
 <!-- tmpl_var list_confirm_subscribe_link -->
 
@@ -1686,6 +1686,7 @@ sub can_find_unsub_confirm_link {
 	    }
 
 	    my @unsub_confirm_urls = (
+			'<!-- tmpl_var PROGRAM_URL -->/t/<!-- tmpl_var list.confirmation_token -->',
 	        '<!-- tmpl_var list_confirm_unsubscribe_link -->',
 			'<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/<!-- tmpl_var subscriber.pin -->/'
 	  	);

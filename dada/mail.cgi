@@ -310,33 +310,29 @@ if($ENV{PATH_INFO}){
         $q->param('img_string',   $pi_img_string)
             if $pi_img_string;
 
-    }elsif($info =~ /^(s|n|u|ur)/){
+	}elsif($info =~ /^t\//){
+		
+		my ($pi_flavor, $pi_token) = split('/', $info, 2);
+		$q->param('flavor', 'token'); 
+		$q->param('token', $pi_token); 
+		
+    }elsif($info =~ /^(s|u)/){
 
-        my ($pi_flavor, $pi_list, $pi_email, $pi_domain, $pi_pin) = split('/', $info, 5);
+        my ($pi_flavor, $pi_list, $pi_email, $pi_domain) = split('/', $info, 4);
 
         # HACK: If there is no name and a domain, the entire email address is in "email"
         # and there is no domain.
         # move all the other variables to the right
-        # This being only the pin, at the moment
-        # 2.10 should have relieved this issue...
 
         if($pi_email !~ m/\@/){
             $pi_email = $pi_email . '@' . $pi_domain
                 if $pi_domain;
-        }else{
-            $pi_pin = $pi_domain
-                if !$pi_pin;
         }
 
 		# For whatever reason (bug somewhere?!) the 
 		# last character of an unsubscription link - say on the last line of an 
 		# email message, contains a, "=". No fun! 
-		# If that's so, it's not a valid pin and we should ignore.
-		#
-		
-		if($pi_pin eq '='){ 
-			undef $pi_pin;
-		}
+
 		if($pi_list =~ m/\=$/){ 
 			$pi_list =~ s/\=$//; 
 		}
@@ -347,8 +343,6 @@ if($ENV{PATH_INFO}){
             if $pi_list;
         $q->param('email',  $pi_email)
             if $pi_email;
-        $q->param('pin',    $pi_pin)
-            if $pi_pin;
 
     }elsif($info =~ /^subscriber_help|^list/){
 
@@ -430,15 +424,6 @@ elsif($q->param('l')){
 	$q->param('list',  $q->param('l'));
 }
 
-my $pin = undef;
-if($q->param('pin')){
-	$pin = $q->param('pin');
-}
-elsif($q->param('p')){
-	$pin = $q->param('p');
-	$q->param('pin', $q->param('p'));
-}
-
 my $process          = $q->param('process');
 my $list_name        = $q->param('list_name');
 my $admin_email      = $q->param('admin_email');
@@ -468,7 +453,6 @@ if($email){
 $list        = xss_filter($list);
 $flavor      = xss_filter($flavor);
 $email       = xss_filter($email);
-$pin         = xss_filter($pin);
 $keyword     = xss_filter($keyword);
 $set_flavor  = xss_filter($set_flavor);
 $id          = xss_filter($id);
@@ -490,7 +474,7 @@ sub run {
 	'subscribe'                  =>    \&subscribe,
 	'subscribe_flash_xml'        =>    \&subscribe_flash_xml,
 	'unsubscribe_flash_xml'      =>    \&unsubscribe_flash_xml,
-	'new'                        =>    \&confirm,
+	'token'                      =>    \&token, 
 	'unsubscribe'                =>    \&unsubscribe,
 	'login'                      =>    \&login,
 	'logout'                     =>    \&logout,
@@ -611,7 +595,6 @@ sub run {
 	# this comes into play when you have to create a url using these as parts of it.
 
 	's'                         =>    \&subscribe,
-	'n'                         =>    \&confirm,
 	'u'                         =>    \&unsubscribe,
 	'ur'                        =>    \&unsubscribe_request, 
 	'smtm'                      =>    \&what_is_dada_mail,
@@ -7455,7 +7438,6 @@ sub unsubscribe_request {
 		return;
 	}
 
-
 	  require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
 			{
@@ -7472,40 +7454,18 @@ sub unsubscribe_request {
 
 
 
-sub confirm {
-
-    my %args = (-html_output => 1, @_) ;
-
+sub token { 
+	
+ my %args = (-html_output => 1, @_) ;
     require DADA::App::Subscriptions;
     my $das = DADA::App::Subscriptions->new;
-       $das->confirm(
+       $das->token(
         {
             -cgi_obj     => $q,
             -html_output => $args{-html_output},
         }
     );
-
 }
-
-
-
-
-sub unsub_confirm {
-
-    print $q->header();
-
-    my %args = (-html_output => 1, @_);
-     require DADA::App::Subscriptions;
-    my $das = DADA::App::Subscriptions->new;
-       $das->unsub_confirm(
-        {
-            -cgi_obj     => $q,
-            -html_output => $args{-html_output},
-        }
-    );
-
-}
-
 
 
 
@@ -7550,10 +7510,9 @@ sub resend_conf {
     my $ls = DADA::MailingList::Settings->new({-list => $list});
     my $lh = DADA::MailingList::Subscribers->new({-list => $list});
 
-
 	my ($sec, $min, $hour, $day, $month, $year) = (localtime)[0,1,2,3,4,5];
 
-
+	# This is just really broken... should be a CAPTCHA... 
 	# I'm assuming this happens if we FAILED this test below (1 = failure for check_email_pin)
 	#
 	if(DADA::App::Guts::check_email_pin(

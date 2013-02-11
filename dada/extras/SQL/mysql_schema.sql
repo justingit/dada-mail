@@ -14,9 +14,15 @@ list_type                        varchar(64),
 list_status                      char(1)
 ) CHARACTER SET utf8 COLLATE utf8_bin;
 
-
 CREATE INDEX dada_subscribers_all_index ON dada_subscribers (email(80), list, list_type, list_status);
 
+CREATE TABLE IF NOT EXISTS dada_confirmation_tokens ( 
+id INT4 NOT NULL PRIMARY KEY AUTO_INCREMENT,
+timestamp TIMESTAMP DEFAULT NOW(),
+token varchar(256),
+data text,
+UNIQUE (token)
+);
 
 
 CREATE TABLE IF NOT EXISTS dada_profiles ( 
@@ -52,7 +58,7 @@ CREATE TABLE IF NOT EXISTS dada_profile_fields_attributes (
 
 CREATE TABLE IF NOT EXISTS dada_archives (
 list                          varchar(16),
-archive_id                    varchar(32),
+archive_id                    `,
 subject                       text,
 message                       mediumtext,
 format                        text,
