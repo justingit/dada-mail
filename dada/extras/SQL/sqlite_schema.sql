@@ -12,6 +12,14 @@ list_type varchar(64),
 list_status char(1)
 );
 
+CREATE TABLE IF NOT EXISTS dada_confirmation_tokens ( 
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+token varchar(256) UNIQUE,
+data text
+);
+
+
 CREATE TABLE IF NOT EXISTS dada_profiles (
 profile_id INTEGER PRIMARY KEY AUTOINCREMENT,
 email varchar(80) not null UNIQUE,

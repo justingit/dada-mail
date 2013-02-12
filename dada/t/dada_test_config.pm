@@ -175,6 +175,7 @@ sub create_SQLite_db {
     use DADA::Config; 
 	#$DADA::Config::DBI_PARAMS->{dada_connection_method} = 'connect';  
 
+	$DADA::Config::BACKEND_DB_TYPE          = 'SQL'; 
 	$DADA::Config::SETTINGS_DB_TYPE         = 'SQL'; 
 	$DADA::Config::ARCHIVE_DB_TYPE          = 'SQL'; 
 	$DADA::Config::SUBSCRIBER_DB_TYPE       = 'SQL'; 
@@ -279,6 +280,7 @@ sub create_MySQL_db {
 
 
     use DADA::Config; 
+	$DADA::Config::BACKEND_DB_TYPE          = 'SQL'; 
 	$DADA::Config::SETTINGS_DB_TYPE         = 'SQL'; 
 	$DADA::Config::ARCHIVE_DB_TYPE          = 'SQL'; 
 	$DADA::Config::SUBSCRIBER_DB_TYPE       = 'SQL'; 
@@ -412,6 +414,7 @@ sub create_PostgreSQL_db {
 
 
    use DADA::Config; 
+	$DADA::Config::BACKEND_DB_TYPE          = 'SQL'; 
 	$DADA::Config::SETTINGS_DB_TYPE         = 'SQL'; 
 	$DADA::Config::ARCHIVE_DB_TYPE          = 'SQL'; 
 	$DADA::Config::SUBSCRIBER_DB_TYPE       = 'SQL'; 
