@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS dada_profile_fields_attributes (
 
 CREATE TABLE IF NOT EXISTS dada_archives (
 list                          varchar(16),
-archive_id                    `,
+archive_id                    varchar(32),
 subject                       text,
 message                       mediumtext,
 format                        text,

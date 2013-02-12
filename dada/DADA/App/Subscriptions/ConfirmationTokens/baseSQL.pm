@@ -6,6 +6,27 @@ use lib qw(
 
 use Carp qw(croak carp);
 
+sub new {
+	
+	my $class = shift;	
+	my ($args) = @_; 
+	
+	my $self = {};			
+	bless $self, $class;
+
+	$self->_init($args); 
+	return $self;
+}
+
+sub _init  { 
+    my $self   = shift; 
+	my ($args) = @_; 
+	$self->_sql_init();
+}
+
+
+
+
 sub _sql_init {
 
     my $self = shift;
@@ -29,31 +50,15 @@ sub _sql_init {
     }
 }
 
-sub save {
 
-    my $self = shift;
-    my $args = shift;
 
-    if ( !exists( $args->{-list} ) ) {
-        croak "no -list!";
-    }
-    if ( !exists( $args->{-email} ) ) {
-        croak "no -email!";
-    }
-    if ( !exists( $args->{-data} ) ) {
-        croak "no -data!";
-    }
 
-    my $data = {
-        list  => $args->{-list},
-        email => $args->{-email},
-        data  => $args->{-data},
-    };
-
-    my $frozen = $self->_freeze($data);
-    my $token  = $self->token;
-
-    my $query =
+sub _backend_specific_save { 
+	my $self   = shift; 
+	my $token  = shift; 
+	my $frozen = shift; 
+	
+	my $query =
       'INSERT INTO dada_confirmation_tokens(token, data) VALUES (?,?)';
 
     #  warn 'Query: ' . $query
@@ -65,8 +70,7 @@ sub save {
       or croak "cannot do statement! $DBI::errstr\n";
     $sth->finish;
 
-    return $token;
-
+	return 1; 
 }
 
 sub fetch {
@@ -137,37 +141,6 @@ sub exists {
     }
 }
 
-sub _freeze {
-    my $self = shift;
-    my $data = shift;
-
-    require Data::Dumper;
-    my $d = new Data::Dumper( [$data], ["D"] );
-    $d->Indent(0);
-    $d->Purity(1);
-    $d->Useqq(0);
-    $d->Deepcopy(0);
-    $d->Quotekeys(1);
-    $d->Terse(0);
-
-    # ;$D added to make certain we get our data structure back when we thaw
-    return $d->Dump() . ';$D';
-
-}
-
-sub _thaw {
-
-    my $self = shift;
-    my $data = shift;
-
-    # To make -T happy
-    my ($safe_string) = $data =~ m/^(.*)$/s;
-    my $rv = eval($safe_string);
-    if ($@) {
-        croak "couldn't thaw data!";
-    }
-    return $rv;
-}
 
 sub _remove_expired_tokens {
 	

@@ -922,7 +922,7 @@ sub confirm {
                     	}
 		        	);                                   
                 }
-				warn q{$q->param('token')} . $q->param('token'); 
+#				warn q{$q->param('token')} . $q->param('token'); 
 				require DADA::App::Subscriptions::ConfirmationTokens; 
 				my $ct    = DADA::App::Subscriptions::ConfirmationTokens->new();
 				   $ct->remove_by_token($q->param('token')); 

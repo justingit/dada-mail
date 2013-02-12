@@ -199,7 +199,8 @@ $q->param('email', '');
 		"$li->{list_name} Mailing List Subscription Confirmation", 
 		"Subject: Set Correctly"
 	);
-	
+
+=cut	
 	my $pin = DADA::App::Guts::make_pin(-Email => $email, -List => $list); 
 	
 	my $confirm_url = quotemeta($DADA::Config::PROGRAM_URL . '/n/dadatest/subscribe/example.com/'.$pin.'/'); 
@@ -208,6 +209,7 @@ $q->param('email', '');
 	    local $TODO = 'Looks like there is a bug in the test itself - the message needs to be decoded from quoted-printable, but this needs to be double-checked.';	
 			like($confirm_email, qr/$confirm_url/, 'Confirmation link found and correct.'); 
 	}
+=cut
 	
 	ok($lh->check_for_double_email(-Email => $email, -Type => 'sub_confirm_list'), 'check_for_double_email'); 
 	
@@ -230,7 +232,7 @@ $q->param('email', '');
 
 # Step #2: Confirm: 
 
-	$q->param('pin', $pin);
+#	$q->param('pin', $pin);
 	
 	$regex = quotemeta('<h1>Your Mailing List Subscription is Successful</h1>'); 
 	like($dap->confirm({-cgi_obj => $q}), qr/$regex/);
@@ -303,13 +305,13 @@ undef $log;
 	$msg = slurp($mh->test_send_file); 
 	$entity = $parser->parse_data($msg); 
 	
- 	$confirm_url = quotemeta($DADA::Config::PROGRAM_URL . '/u/dadatest/subscribe/example.com/'.$pin.'/'); 
-
-	TODO: {
-	    local $TODO = 'Looks like there is a bug in the test itself - the message needs to be decoded from quoted-printable, but this needs to be double-checked.';	
-
-	like($msg, qr/$confirm_url/, 'Unsub Confirmation link found and correct.');
-};
+# 	$confirm_url = quotemeta($DADA::Config::PROGRAM_URL . '/u/dadatest/subscribe/example.com/'.$pin.'/'); 
+#
+#	TODO: {
+#	    local $TODO = 'Looks like there is a bug in the test itself - the message needs to be decoded from quoted-printable, but this needs to be double-checked.';	
+#
+#	like($msg, qr/$confirm_url/, 'Unsub Confirmation link found and correct.');
+#};
 	
 #	like($msg, qr/To:(.*?)subscribe\@example.com/, "To: set correctly"); 
 #	like($msg, qr/Subject\: Dada Test List Mailing List Unsubscription Confirmation/, "Subject: set correctly"); 
@@ -355,7 +357,7 @@ undef $log;
 	
 # Step #4: Confirm the Unsubscription:
 
-	$q->param('pin', $pin); 
+#	$q->param('pin', $pin); 
 	
 	$regex = '<h1>Unsubscription is Successful</h1>';
 	like($dap->unsub_confirm({-cgi_obj => $q,}), qr/$regex/);

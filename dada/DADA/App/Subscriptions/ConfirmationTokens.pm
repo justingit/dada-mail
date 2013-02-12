@@ -5,30 +5,24 @@ use lib qw(
 	../../../perllib
 );
 
+use DADA::Config qw(!:DEFAULT); 	
 use Carp qw(croak carp); 
 use Try::Tiny; 
 
-use base qw(DADA::App::Subscriptions::ConfirmationTokens::baseSQL); 
 
-
-sub new {
-	
-	my $class = shift;	
-	my ($args) = @_; 
-	
-	my $self = {};			
-	bless $self, $class;
-
-	$self->_init($args); 
-	$self->_sql_init(); 
-
-	return $self;
+BEGIN { 
+	my $type = $DADA::Config::BACKEND_DB_TYPE;
+	if($type eq 'SQL'){ 
+			$backend = 'baseSQL';
+	}
+	elsif($type eq 'Default'){ 
+		$backend = 'Db'; 
+	}
+	else { 
+		die "Unknown \$BACKEND_DB_TYPE: '$type' Supported types: 'SQL', 'Default'"; 
+	}
 }
-
-sub _init  { 
-    my $self   = shift; 
-	my ($args) = @_; 
-}
+use base "DADA::App::Subscriptions::ConfirmationTokens::$backend";
 
 sub token { 
 	my $self = shift; 
@@ -42,6 +36,69 @@ sub token {
 	}
 	return $str; 
 }
+
+sub save {
+
+    my $self = shift;
+    my $args = shift;
+
+    if ( !exists( $args->{-list} ) ) {
+        croak "no -list!";
+    }
+    if ( !exists( $args->{-email} ) ) {
+        croak "no -email!";
+    }
+    if ( !exists( $args->{-data} ) ) {
+        croak "no -data!";
+    }
+
+    my $data = {
+        list  => $args->{-list},
+        email => $args->{-email},
+        data  => $args->{-data},
+    };
+
+    my $frozen = $self->_freeze($data);
+    my $token  = $self->token;
+
+	$self->_backend_specific_save($token, $frozen); 
+
+    return $token;
+
+}
+
+sub _freeze {
+    my $self = shift;
+    my $data = shift;
+
+    require Data::Dumper;
+    my $d = new Data::Dumper( [$data], ["D"] );
+    $d->Indent(0);
+    $d->Purity(1);
+    $d->Useqq(0);
+    $d->Deepcopy(0);
+    $d->Quotekeys(1);
+    $d->Terse(0);
+
+    # ;$D added to make certain we get our data structure back when we thaw
+    return $d->Dump() . ';$D';
+
+}
+
+sub _thaw {
+
+    my $self = shift;
+    my $data = shift;
+
+    # To make -T happy
+    my ($safe_string) = $data =~ m/^(.*)$/s;
+    my $rv = eval($safe_string);
+    if ($@) {
+        croak "couldn't thaw data!";
+    }
+    return $rv;
+}
+
 
 
 

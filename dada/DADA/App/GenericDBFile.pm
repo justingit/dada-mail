@@ -139,14 +139,18 @@ sub _db_filename {
 	my $self = shift;
 	my $fn = $self->{name}; 	
 	   $fn =~ s/ /_/g; 
+	
+	 
 	   
 	   my $dir = $DADA::Config::FILES; 
 	      $dir = $DADA::Config::ARCHIVES  if $self->{function} eq "archives"; 
           $dir = $DADA::Config::LOGS      if $self->{function} eq "bounces"; 
           $dir = $DADA::Config::TMP       if $self->{function} eq "simple_auth_string_state"; 
           $dir = $DADA::Config::TMP       if $self->{function} eq "CAPTCHA"; 
+          $dir = $DADA::Config::TMP       if $self->{function} eq "confirmation_tokens"; 
+
               
-       if($self->{function} ne 'bounces' && $self->{function} ne 'simple_auth_string_state'){
+       if($self->{function} ne 'bounces' && $self->{function} ne 'simple_auth_string_state' && $self->{function} ne 'confirmation_tokens'){
 	       $fn = $dir . '/mj-' . $self->{name}; 
 	   }elsif($self->{function} eq 'bounces'){
 
@@ -160,6 +164,8 @@ sub _db_filename {
 	       $fn = $dir . '/' . '__auth_state';	   
 	   }elsif($self->{function} eq 'CAPTCHA'){
 	       $fn = $dir . '/' . '__CAPTCHA';
+	   }elsif($self->{function} eq 'confirmation_tokens'){
+	       $fn = $dir . '/' . '__confirmation_tokens';	
 	   }else{ 
 	        carp "misconfiguration in _db_filename!"; 
 	   }

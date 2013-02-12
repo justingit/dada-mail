@@ -19,6 +19,7 @@ use DADA::MailingList::Settings;
 use DADA::Mail::Send; 
 use DADA::App::Messages; 
 
+my $fake_token = '1234'; 
 
 use MIME::Parser; 
 my $parser = new MIME::Parser; 
@@ -74,6 +75,7 @@ DADA::App::Messages::send_confirmation_message(
         -email  => $email, 
         -ls_obj => $ls, 
 		-test   => 1, 
+		-token  => $fake_token,	
 	}
 );
 $msg = slurp($mh->test_send_file); 
@@ -93,9 +95,8 @@ like($msg, qr/To:(.*?)$email_name\@$email_domain/, "To: set correctly 1");
  
 
 
-my $pin = DADA::App::Guts::make_pin(-Email => $email, -List => $list); 
-my $confirm_url = quotemeta('/n/'. $list . '/' . $email_name . '/' . $email_domain . '/'.$pin.'/'); 
-
+my $confirm_url = quotemeta('/t/'. $fake_token . '/'); 
+diag $msg_str; 
 like($msg_str, qr/$confirm_url/, 'Confirmation link found and correct.'); 
 like($msg_str, qr/$li->{list_name}/, "List Name Found"); 
 like($msg_str, qr/$li->{privacy_policy}/, "Privacy Policy Found"); 
@@ -144,7 +145,6 @@ like($msg_str, qr/List Name\: $li->{list_name}/, "Found: List Name");
 like($msg_str, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
 like($msg_str, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
 like($msg_str, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
-#like($msg_str, qr/Subscriber Pin\: $pin/, "Found: Subscriber Pin"); 
 like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
 
 # Reset: 
@@ -266,8 +266,6 @@ like($msg_str, qr/List Name\: $li->{list_name}/, "Found: List Name");
 like($msg_str, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
 like($msg_str, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
 like($msg_str, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
-#like($msg, qr/Subscriber Pin\: $pin/, "Found: Subscriber Pin"); 
-#like($msg_str, qr/Subscriber Pin\: /, "Did Not Find: Subscriber Pin"); 
 
 like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
 
@@ -435,8 +433,6 @@ like($msg_str, qr/List Name\: $li->{list_name}/, "Found: List Name");
 like($msg_str, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
 like($msg_str, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
 like($msg_str, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
-#like($msg_str, qr/Subscriber Pin\: $pin/, "Found: Subscriber Pin"); 
-#like($msg_str, qr/Subscriber Pin\: /, "Did Not Find: Subscriber Pin");
 like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
 
 # Reset: 
@@ -475,6 +471,7 @@ DADA::App::Messages::send_unsub_confirmation_message(
         -email        => $email, 
         -settings_obj => $ls, 
     	-test         => 1,
+		-token        => $fake_token, 
 	}
 );
 
@@ -515,10 +512,9 @@ ok(
 
 
 
-$pin = DADA::App::Guts::make_pin(-Email => $email, -List => $list); 
 
-$confirm_url = quotemeta('/u/'. $list . '/' . $email_name . '/' . $email_domain . '/'.$pin.'/'); 
-
+$confirm_url = quotemeta('/t/'. $fake_token . '/'); 
+diag $msg_str; 
 like($msg_str, qr/$confirm_url/,            'Confirmation link found and correct.'); 
 like($msg_str, qr/$li->{list_name}/,        "List Name Found"); 
 like($msg_str, qr/$li->{privacy_policy}/,   "Privacy Policy Found"); 
@@ -547,6 +543,7 @@ DADA::App::Messages::send_unsub_confirmation_message(
         -email  => $email, 
         -ls_obj => $ls, 
 		-test   => 1, 
+		-token  => $fake_token, 
 	}
 );
 
@@ -568,7 +565,6 @@ like($msg_str, qr/List Name\: $li->{list_name}/, "Found: List Name");
 like($msg_str, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
 like($msg_str, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
 like($msg_str, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
-#like($msg_str, qr/Subscriber Pin\: $pin/, "Found: Subscriber Pin"); 
 like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
 
 
@@ -678,10 +674,6 @@ ok(
 like($msg_str, qr/List Name\: $li->{list_name}/, "Found: List Name"); 
 like($msg_str, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
 like($msg_str, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
-# Huh. Not sure what to do with this...
-#like($msg_str, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
-#like($msg_str, qr/Subscriber Pin\: $pin/, "Found: Subscriber Pin"); 
-#like($msg_str, qr/Subscriber Pin\: /, "Did Not Find: Subscriber Pin");
 like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
 
 # Reset: 
@@ -1096,8 +1088,6 @@ TODO: {
 		like($msg_str, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
 };
 
-#like($msg_str, qr/Subscriber Pin\: $pin/, "Found: Subscriber Pin"); 
-#like($msg_str, qr/Subscriber Pin\: /, "Did Not Find: Subscriber Pin");
 like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
 
 # Reset: 
@@ -1158,8 +1148,6 @@ TODO: {
 
 };
 
-#like($msg_str, qr/Subscriber Pin\: $pin/, "Found: Subscriber Pin"); 
-#like($msg_str, qr/Subscriber Pin\: /, "Did Not Find: Subscriber Pin");
 like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
 
 # Reset: 

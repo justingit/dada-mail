@@ -12,6 +12,12 @@ list_type                        varchar(64),
 list_status                      char(1)
 );
 
+CREATE TABLE dada_confirmation_tokens ( 
+id serial,
+timestamp TIMESTAMP DEFAULT NOW(),
+token varchar(256) UNIQUE,
+data text
+);
 
 CREATE TABLE dada_profiles (
 	profile_id			         serial,
