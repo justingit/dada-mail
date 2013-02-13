@@ -1,10 +1,10 @@
 package DADA::App::Guts;
 use 5.008_001; 
 
-use lib qw(
-	../../ 
-	../../DADA/perllib
-);
+use FindBin;
+use lib "$FindBin::Bin/../../";
+use lib "$FindBin::Bin/../../DADA/perllib";
+
 
 use DADA::Config qw(!:DEFAULT);  
 
@@ -2041,7 +2041,7 @@ sub SQL_check_setup {
 		$table_count = $table_count + $tables_to_look_for{$_}; 
 	}
 	
-	if($table_count < 12) { 
+	if($table_count < 13) { 
 		
 		my $r = create_probable_missing_tables(); 
 		if( $r == 0){ 
@@ -2056,126 +2056,45 @@ sub SQL_check_setup {
 }
 
 sub create_probable_missing_tables { 
-
-
-	my %schema = (); 
 	
-$schema{mysql} = q{ 
-CREATE TABLE IF NOT EXISTS dada_mass_mailing_event_log (
-id INT4 NOT NULL PRIMARY KEY AUTO_INCREMENT,
-list varchar(16),
-timestamp TIMESTAMP DEFAULT NOW(),
-remote_addr text, 
-msg_id text, 
-event text,
-details text
-); 
-
-CREATE TABLE IF NOT EXISTS dada_clickthrough_url_log (
-id INT4 NOT NULL PRIMARY KEY AUTO_INCREMENT,
-list varchar(16),
-timestamp TIMESTAMP DEFAULT NOW(),
-remote_addr text,
-msg_id text, 
-url text
-);
-
-CREATE TABLE IF NOT EXISTS dada_password_protect_directories (
-id INT4 NOT NULL PRIMARY KEY AUTO_INCREMENT,
-list varchar(16),
-name text,
-url text,
-path text,
-use_custom_error_page char(1),
-custom_error_page text,
-default_password text
-);
-
-};
-$schema{Pg} = q{ 
-CREATE TABLE dada_mass_mailing_event_log (
-id serial,
-list varchar(16),
-timestamp TIMESTAMP DEFAULT NOW(),
-remote_addr text, 
-msg_id text, 
-event text,
-details text
-); 
-
-CREATE TABLE dada_clickthrough_url_log (
-id serial,
-list varchar(16),
-timestamp TIMESTAMP DEFAULT NOW(),
-remote_addr text,
-msg_id text, 
-url text
-);
-
-CREATE TABLE dada_password_protect_directories (
-id serial,
-list varchar(16),
-name text,
-url text,
-path text,
-use_custom_error_page char(1),
-custom_error_page text,
-default_password text
-);
-
-};
-$schema{SQLite} = q{ 
-CREATE TABLE IF NOT EXISTS dada_mass_mailing_event_log (
-id INTEGER PRIMARY KEY AUTOINCREMENT,
-list varchar(16),
-timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-remote_addr text, 
-msg_id text,
-event text,
-details text
-); 
-
-CREATE TABLE IF NOT EXISTS dada_clickthrough_url_log (
-id INTEGER PRIMARY KEY AUTOINCREMENT,
-list varchar(16),
-timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-remote_addr text, 
-msg_id text,
-url text
-);	
-
-CREATE TABLE IF NOT EXISTS dada_password_protect_directories (
-id INTEGER PRIMARY KEY AUTOINCREMENT,
-list varchar(16),
-name text,
-url text,
-path text,
-use_custom_error_page char(1),
-custom_error_page text,
-default_password text
-);
-};
-
-	my @statements = split(';', $schema{$DADA::Config::SQL_PARAMS{dbtype}}, 3);
-
-	for(@statements){ 
+	my $db_type = $DADA::Config::SQL_PARAMS{dbtype}; 
 	
-		require DADA::App::DBIHandle; 
-		my $dbi_obj = DADA::App::DBIHandle->new; 
-		my $dbh = $dbi_obj->dbh_obj;
-		# warn 'query: ' . $_ . "\n" . '-' x 72 . "\n";;
-		eval {  
-			my $sth = $dbh->prepare($_) or croak $DBI::errstr; 
+	my $sql_file = '';
+    if ($db_type eq 'mysql' ) {
+        $sql_file = 'mysql_schema.sql';
+    }
+    elsif ( $db_type eq 'Pg' ) {
+	}
+	elsif ( $db_type eq 'SQLite' ) {
+        $sql_file = 'sqlite_schema.sql';
+    }
+	my $schema = slurp( make_safer( $FindBin::Bin . '/../../extras/SQL/' . $sql_file ) );
+    my @statements = split( ';', $schema );
+    
+	require DADA::App::DBIHandle; 
+	my $dbi_obj = DADA::App::DBIHandle->new; 
+	my $dbh = $dbi_obj->dbh_obj;
+
+	for my $create_table(@statements){ 
+		try {  
+			
+			if($db_type eq 'Pg'){ 
+				my $table_name = $create_table; 
+				   $table_name =~ m/CREATE TABLE (.*?) \(/;
+				   $table_name = $1;
+				my $table_exists_query = "SELECT true FROM pg_tables WHERE tablename = ?"; 	
+				my ($table_exists) = $dbh->selectrow_array($table_exists_query, undef, $table_name)
+					or croak $DBI::errstr;
+				next if $table_exists !~ /true/i; 
+			}
+			
+			my $sth = $dbh->prepare($create_table)
+				or croak $DBI::errstr; 
 			$sth->execute
 				or croak "cannot do statment $DBI::errstr\n"; 
-		};
-		if($@){ 
-			carp $@;
-			# This is lame - PG < 9.1 does not supper CREATE IF NOT EXISTS... so this 
-			# errors out... 
-			if($DADA::Config::SQL_PARAMS{dbtype} ne 'Pg'){ 
-				return 0; 
-			}
+		}
+		catch { 
+			carp "Couldn't create necessary SQL table - you may have to do this, manually: $_";
 		}
 	} 
 
