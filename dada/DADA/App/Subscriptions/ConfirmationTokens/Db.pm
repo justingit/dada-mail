@@ -29,7 +29,8 @@ sub _init {
 sub _backend_specific_save { 
 
 	my $self   = shift; 
-	my $token  = shift; 
+	my $token  = shift;
+	my $email  = shift; # not used.  
 	my $frozen = shift; 
 	
 	$self->_open_db; 
@@ -66,6 +67,7 @@ sub remove_by_token {
     return 1;
 
 }
+sub remove_by_metadata {}
 
 sub exists {
     my $self  = shift;

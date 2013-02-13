@@ -1,9 +1,9 @@
 package DADA::App::Guts;
 use 5.008_001; 
 
-use FindBin;
-use lib "$FindBin::Bin/../../";
-use lib "$FindBin::Bin/../../DADA/perllib";
+
+use lib "/../../";
+use lib "/../../DADA/perllib";
 
 
 use DADA::Config qw(!:DEFAULT);  
@@ -2056,7 +2056,6 @@ sub SQL_check_setup {
 }
 
 sub create_probable_missing_tables { 
-	
 	my $db_type = $DADA::Config::SQL_PARAMS{dbtype}; 
 	
 	my $sql_file = '';
@@ -2064,11 +2063,12 @@ sub create_probable_missing_tables {
         $sql_file = 'mysql_schema.sql';
     }
     elsif ( $db_type eq 'Pg' ) {
+        $sql_file = 'postgres_schema.sql';			
 	}
 	elsif ( $db_type eq 'SQLite' ) {
         $sql_file = 'sqlite_schema.sql';
     }
-	my $schema = slurp( make_safer( $FindBin::Bin . '/../../extras/SQL/' . $sql_file ) );
+	my $schema = slurp( make_safer( 'extras/SQL/' . $sql_file ) );
     my @statements = split( ';', $schema );
     
 	require DADA::App::DBIHandle; 

@@ -16,6 +16,7 @@ CREATE TABLE dada_confirmation_tokens (
 id serial,
 timestamp TIMESTAMP DEFAULT NOW(),
 token varchar(256) UNIQUE,
+email varchar(80),
 data text
 );
 

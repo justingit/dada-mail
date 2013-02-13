@@ -1220,9 +1220,21 @@ sub create_mass_sending_file {
 	    my ( $lo_e_name, $lo_e_domain ) = split( '@', $first_email );
 
 	    my @lo  = (
-	        $first_email, $lo_e_name, $lo_e_domain, $self->{list},
-	        $list_names{ $self->{list} }, $n_msg_id,
+	        $first_email, 
+			$lo_e_name, 
+			$lo_e_domain, 
+			$self->{list},
+	        $list_names{ $self->{list} }, 
+			$n_msg_id,
 	    );
+		# Fake token... 
+		if($args{-Create_Tokens} == 1){ 
+			push( @lo, '0123faketoken012345678901234567890123456' );
+		}
+		else { 
+			push( @lo, '' );
+		}
+		
 
 	# To add to @lo, I want to bring up the Dada Profile and see if there's anything
 	# in there...
@@ -1278,7 +1290,7 @@ sub create_mass_sending_file {
 
                 my @sub = (
                     $field_ref->{email},
-                    ( split( '@', $field_ref->{email} ) ),
+                    ( split( '@', $field_ref->{email} ) ), # 2..
                     $field_ref->{list},
                     $list_names{ $field_ref->{list} },
                     $n_msg_id,

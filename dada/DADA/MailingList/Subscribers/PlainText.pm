@@ -817,7 +817,7 @@ sub create_mass_sending_file {
 				-Save_At          => undef, 
 				
 				-Test_Recipient   => undef, 
-				
+				-Create_Tokens    => 0, 
 				@_); 
 	
 	my $list       = $self->{list}; 
@@ -825,6 +825,11 @@ sub create_mass_sending_file {
 	my $path       = $DADA::Config::TMP ; 
 	my $type       = $args{-Type}; 
 	
+	my $ct = undef; 
+	if($args{-Create_Tokens} == 1){ 
+		require DADA::App::Subscriptions::ConfirmationTokens; 
+		$ct    = DADA::App::Subscriptions::ConfirmationTokens->new();
+	}
 	
 	my $message_id = message_id();
 	
@@ -906,6 +911,13 @@ sub create_mass_sending_file {
 	                $self->{ls}->param('list_name'), 
 					$n_msg_id,
 				);
+			# Fake token... 
+		if($args{-Create_Tokens} == 1){ 
+			push( @lo, '0123faketoken012345678901234567890123456' );
+		}
+		else { 
+			push( @lo, '' );
+		}
 		 if ( $csv->combine(@lo) ) {
 		     my $hstring = $csv->string;
 		     print $SENDINGFILE $hstring, "\n";
@@ -930,6 +942,23 @@ sub create_mass_sending_file {
 					$self->{ls}->param('list_name'),
 					$n_msg_id,
 				);
+				
+				if($args{-Create_Tokens} == 1){ 
+					my $token = $ct->save(
+						{
+							-list  => $list, 
+							-email => $email,
+							-data  => {
+								flavor => 'sub_confirm', 
+							}
+						}
+					);
+					push( @sub, $token );
+				}
+				else { 
+					push( @sub, '' );
+				}
+				
 				if ( $csv->combine(@sub) ) {
 				     my $hstring = $csv->string;
 				     print $SENDINGFILE $hstring, "\n";

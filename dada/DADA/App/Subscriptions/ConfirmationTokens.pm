@@ -52,6 +52,12 @@ sub save {
         croak "no -data!";
     }
 
+	my $remove_previous = 0; 	
+    if ( exists( $args->{-remove_previous} ) ) {
+        $remove_previous = $args->{-remove_previous};
+    }
+
+
     my $data = {
         list  => $args->{-list},
         email => $args->{-email},
@@ -61,7 +67,15 @@ sub save {
     my $frozen = $self->_freeze($data);
     my $token  = $self->token;
 
-	$self->_backend_specific_save($token, $frozen); 
+	if($remove_previous == 1){ 
+		$self->remove_by_metadata(
+			{ 
+				-email    => $args->{-email},
+				-metadata => $args->{-data}, 
+			}
+		); 
+	}
+	$self->_backend_specific_save($token, $args->{-email}, $frozen); 
 
     return $token;
 

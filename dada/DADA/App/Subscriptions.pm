@@ -371,7 +371,9 @@ sub subscribe {
 					-email => $email,
 					-data  => {
 						flavor => 'sub_confirm', 
-					}
+						type   => 'list', 
+					},
+					-remove_previous => 1, 
 				}
 			);
 			
@@ -1244,7 +1246,9 @@ sub unsubscribe {
 					-email => $email,
 					-data  => {
 						flavor => 'unsub_confirm', 
-					}
+						type   => 'list', 
+					},
+					-remove_previous => 1, 
 				}
 			);
 			
