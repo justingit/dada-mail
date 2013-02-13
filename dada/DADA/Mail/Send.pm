@@ -2875,7 +2875,7 @@ sub _mail_merge {
         $labeled_data{'list_settings.list'}           = shift @$data;
         $labeled_data{'list_settings.list_name'}      = shift @$data;
         $labeled_data{message_id}                     = shift @$data;
-        $labeled_data{token}                          = shift @$data;
+        $labeled_data{'list.confirmation_token'}      = shift @$data;
  
 	my $merge_fields = $self->{merge_fields};
         
