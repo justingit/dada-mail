@@ -10,6 +10,11 @@ Key:
 [*] Naw...
 [?] Someday
 
+[] Revist docs on Bridge - update. 
+
+[ ] Rss to email converter? 
+
+[ ] Subject encoded in Russian: Новости сайта doesn't work? 
 
 
 [ ] AJAXify all the confirmation HTML stuff - so instead of going to a new screen, you just get a colorbox popup - with the new screen as a back. Have to clean up those screens, so that they make sense in both situations. Maybe simplify the error screens. Yeah! 
