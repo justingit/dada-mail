@@ -13,6 +13,9 @@ use dada_test_config;
 #use Test::More qw(no_plan); 
 
 use DADA::Config qw(!:DEFAULT); 
+$DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions} = 1; 
+
+
 my $list = dada_test_config::create_test_list;
 my $email = 'user@example.com'; 
 

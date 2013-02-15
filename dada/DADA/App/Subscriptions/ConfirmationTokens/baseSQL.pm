@@ -1,10 +1,15 @@
 package DADA::App::Subscriptions::ConfirmationTokens::baseSQL;
+use strict; 
+
 use lib qw(
   ../../../../
   ../../../../perllib
 );
 
 use Carp qw(croak carp);
+use DADA::Config qw(!:DEFAULT);
+
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions}; 
 
 sub new {
 
@@ -37,17 +42,16 @@ sub _sql_init {
     else {
     }
 
-    if ( !$dbi_obj ) {
-        require DADA::App::DBIHandle;
-        $dbi_obj = DADA::App::DBIHandle->new;
-        $self->{dbh} = $dbi_obj->dbh_obj;
-    }
-    else {
-        $self->{dbh} = $dbi_obj->dbh_obj;
-    }
+    require DADA::App::DBIHandle;
+    my $dbi_obj = DADA::App::DBIHandle->new;
+    $self->{dbh} = $dbi_obj->dbh_obj;
 }
 
 sub _backend_specific_save {
+	
+	warn '_backend_specific_save' 
+		if $t; 
+		
     my $self   = shift;
     my $token  = shift;
     my $email  = shift;
@@ -56,10 +60,18 @@ sub _backend_specific_save {
     my $query =
         'INSERT INTO '
       . $self->{sql_params}->{confirmation_tokens_table}
-      . '(token, email, data) VALUES (?,?,?)';
+      . '(token, email, data) VALUES(?,?,?)';
 
-    #  warn 'Query: ' . $query
-    #      if $t;
+    warn 'Query: ' . $query
+        if $t;
+
+
+	if($t){ 
+		warn "email: $email"; 
+		warn "token: $token"; 
+		warn "frozen: $frozen"; 
+		
+	}
 
     my $sth = $self->{dbh}->prepare($query);
 
@@ -71,6 +83,10 @@ sub _backend_specific_save {
 }
 
 sub fetch {
+	
+	warn 'fetch'
+		if $t; 
+		
     my $self  = shift;
     my $token = shift;
 
@@ -79,6 +95,10 @@ sub fetch {
       . $self->{sql_params}->{confirmation_tokens_table}
       . ' where token = ?';
 
+	warn 'Query:' . $query
+		if $t; 
+	
+	
     my $sth = $self->{dbh}->prepare($query);
 
     $sth->execute( $token, ) or croak "cannot do statement! $DBI::errstr\n";
@@ -96,6 +116,9 @@ sub fetch {
 
 sub remove_by_token {
 
+	warn 'remove_by_token' 
+		if $t; 
+		
     my $self  = shift;
     my $token = shift;
 
@@ -103,7 +126,8 @@ sub remove_by_token {
         'DELETE FROM '
       . $self->{sql_params}->{confirmation_tokens_table}
       . ' WHERE token = ?';
-
+	warn 'Query:' . $query
+		if $t; 
     my $sth = $self->{dbh}->prepare($query);
 
     $sth->execute($token)
@@ -116,6 +140,9 @@ sub remove_by_token {
 
 sub remove_by_metadata {
 
+	warn 'remove_by_metadata'
+		if $t; 
+		
     my $self = shift;
     my ($args) = @_;
 
@@ -129,6 +156,11 @@ sub remove_by_metadata {
         'SELECT * from '
       . $self->{sql_params}->{confirmation_tokens_table}
       . ' where email = ?';
+
+	warn 'Query:' . $query
+		if $t; 
+	
+
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute($email)
       or croak "cannot do statement! $DBI::errstr\n";
@@ -159,6 +191,10 @@ sub remove_by_metadata {
 }
 
 sub exists {
+	
+	warn 'exists' 
+		if $t; 
+		
     my $self  = shift;
     my $token = shift;
 
@@ -191,6 +227,9 @@ sub exists {
 
 sub _remove_expired_tokens {
 
+	warn '_remove_expired_tokens' 
+		if $t; 
+		
     my $self = shift;
     my $query;
 
@@ -198,16 +237,20 @@ sub _remove_expired_tokens {
         $query =
             'DELETE FROM '
           . $self->{sql_params}->{confirmation_tokens_table}
-          . ' WHERE timestamp >= DATE_SUB(NOW(), INTERVAL 1 DAY)';
+          . ' WHERE timestamp <= DATE_SUB(NOW(), INTERVAL 1 DAY)';
 
     }
     elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'Pg' ) {
         $query =
             'DELETE FROM '
           . $self->{sql_params}->{confirmation_tokens_table}
-          . ' WHERE timestamp >= NOW() - INTERVAL "1 DAY"';
+          . " WHERE timestamp <= NOW() - INTERVAL '1 DAY'";
+
     }
 
+	warn 'QUERY:' . $query
+		if $t; 
+		
     $self->{dbh}->do($query);
 
 }

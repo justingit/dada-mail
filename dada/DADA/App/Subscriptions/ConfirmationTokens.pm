@@ -5,7 +5,9 @@ use lib qw(
 	../../../perllib
 );
 
-use DADA::Config qw(!:DEFAULT); 	
+use DADA::Config qw(!:DEFAULT);
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions}; 
+
 use Carp qw(croak carp); 
 use Try::Tiny; 
 

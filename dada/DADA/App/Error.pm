@@ -29,6 +29,9 @@ use strict;
 use vars qw(@EXPORT);
 my %error;
 
+use Try::Tiny; 
+use Carp qw(carp croak); 
+
 require CGI;
 my $q = CGI->new; 
    $q->charset($DADA::Config::HTML_CHARSET);
@@ -70,8 +73,10 @@ sub cgi_user_error {
    		-Email            => undef, 
 		-Error_Message    => undef, 
 		-Wrapper_Template => 'list', 
+		-Template_Vars    => {}, 
    		@_
 	);
+
 
 	require DADA::Template::Widgets; 
 	
@@ -83,6 +88,8 @@ sub cgi_user_error {
 	if($args{-Error} !~ /unreadable_db_files|sql_connect_error|bad_setup/){
 		$list_exists = check_if_list_exists( -List=> $args{-List}, -Dont_Die  => 1) || 0;
 	}
+	
+	my $template_vars = $args{-Template_Vars};
 	
 	if($list_exists > 0) { 
 		require  DADA::MailingList::Settings; 
@@ -109,25 +116,20 @@ sub cgi_user_error {
 	my $subscription_form; 
     my $unsubscription_form;
     
-	if($args{-Error} !~ /unreadable_db_files|sql_connect_error|bad_setup|bad_SQL_setup|install_dir_still_around/){
-		
-   	 if($args{-List}){ 
-			$subscription_form    = DADA::Template::Widgets::subscription_form({ -list => $args{-List}, -email => $args{-Email}, -give_props => 0 }); 
-	    	$unsubscription_form  = DADA::Template::Widgets::subscription_form({ -list => $args{-List}, -email => $args{-Email}, -flavor_is => 'u', -give_props => 0} ); 
-	    }else{ 
-	    	$subscription_form   = DADA::Template::Widgets::subscription_form({-email => $args{-Email}, -give_props => 0}); # -show_hidden =>1 ?!?!?!
-	    	$unsubscription_form = DADA::Template::Widgets::subscription_form({-email => $args{-Email}, -flavor_is => 'u', -give_props => 0}); # -show_hidden => 1?!?!?!
-	    }
+	if($args{-Error} !~ /unreadable_db_files|sql_connect_error|bad_setup|bad_SQL_setup|install_dir_still_around/){	
+	 	if($args{-List}){ 
+				$subscription_form    = DADA::Template::Widgets::subscription_form({ -list => $args{-List}, -email => $args{-Email}, -give_props => 0 }); 
+		    	$unsubscription_form  = DADA::Template::Widgets::subscription_form({ -list => $args{-List}, -email => $args{-Email}, -flavor_is => 'u', -give_props => 0} ); 
+		}else{ 
+			$subscription_form   = DADA::Template::Widgets::subscription_form({-email => $args{-Email}, -give_props => 0}); # -show_hidden =>1 ?!?!?!
+			$unsubscription_form = DADA::Template::Widgets::subscription_form({-email => $args{-Email}, -flavor_is => 'u', -give_props => 0}); # -show_hidden => 1?!?!?!
+		}
 	}
 
 	my $unknown_dirs = []; 
 	if($args{-Error} eq 'bad_setup'){ 
 		my @tests = ($DADA::Config::FILES, $DADA::Config::TEMPLATES , $DADA::Config::TMP );
 		
-		# Your guess is as good as mine for what this was all about... 
-		#if($DADA::Config::OS){ 
-		#	push(@tests, $DADA::Config::OS);
-		#}
 		my %sift; 
 		for(@tests){$sift{$_}++}
 		@tests = keys %sift; 
@@ -146,13 +148,77 @@ sub cgi_user_error {
 		}
 	}
 
+	if($args{-Error} eq 'already_sent_sub_confirmation' 
+	|| $args{-Error} eq 'already_sent_unsub_confirmation'
+	){ 	
+		my $list  = $args{-List}; 
+		my $email = $args{-Email}; 
+		my $rm; 
+		if($args{-Error} eq 'already_sent_sub_confirmation') { 
+			$rm = 's';
+		}
+		elsif($args{-Error} eq 'already_sent_unsub_confirmation') { 
+			$rm = 'u';		
+		}
+		require DADA::MailingList::Settings;
+	    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+	    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+	    my $can_use_captcha = 0;
+
+	    if ( $ls->param('captcha_sub') == 1 ) {
+	        try {
+	            require DADA::Security::AuthenCAPTCHA;
+				$can_use_captcha = 1;
+	        }
+	        catch {
+	            carp "CAPTCHA Not working correctly?: $_";
+	            $can_use_captcha = 0;
+	        };
+		}
+		if($can_use_captcha == 1){ 
+			my $cap = DADA::Security::AuthenCAPTCHA->new; 
+			my $CAPTCHA_string = $cap->get_html($DADA::Config::RECAPTCHA_PARAMS->{public_key}); 
+
+			require DADA::Template::Widgets;
+			my $r =  DADA::Template::Widgets::wrap_screen(
+				{
+				-screen                   => 'resend_conf_captcha_step.tmpl', 
+				-with                     => 'list',
+				-list_settings_vars_param => {-list => $ls->param('list')},
+				-subscriber_vars_param    => {
+					-list  => $list, 
+					-email => $email, 
+					-type  => 'sub_confirm_list'},
+				-dada_pseudo_tag_filter   => 1, 
+				-vars   => {
+					%{$template_vars},
+					rm               => $rm, 
+					CAPTCHA_string   => $CAPTCHA_string,
+					flavor           => 'resend_conf', 
+					list             => xss_filter( $list), 
+					email            => $email, 
+					token            => xss_filter($q->param('token')), 
+					captcha_auth     => xss_filter($q->param('captcha_auth')),        
+					},
+				},
+			);
+			print $r; 
+			return; 	
+		}
+		else { 
+			# Well, nothing, 
+			# Continue below: 
+		}
+		
+	}
+	
 
 
 	my $screen = ''; 
 	my $r      = ''; 
 	
 	eval { 
-	$screen =  DADA::Template::Widgets::wrap_screen(
+		$screen =  DADA::Template::Widgets::wrap_screen(
 				{
 					-screen => 'error_' . $args{-Error} . '_screen.tmpl',  
 					($args{-Wrapper_Template} eq 'admin' ? 
@@ -170,6 +236,7 @@ sub cgi_user_error {
 					)
 					),
 					-vars => { 
+							%{$template_vars},
 							subscription_form     => $subscription_form, 
 							unsubscription_form   => $unsubscription_form, 
 							list_login_form       => $list_login_form, 
@@ -178,9 +245,7 @@ sub cgi_user_error {
 							unknown_dirs          => $unknown_dirs, 
 							PROGRAM_URL           => $DADA::Config::PROGRAM_URL, 
 							S_PROGRAM_URL         => $DADA::Config::S_PROGRAM_URL, 
-							error_message         => $args{-Error_Message},    
-				
-			
+							error_message         => $args{-Error_Message},
 					},
 		
 					-list_settings_vars       => $li, 
@@ -189,7 +254,7 @@ sub cgi_user_error {
 				}
 			); 
        	
-		}; 
+	}; 
 	
     if($@){ 
 		if(defined($args{-Error_Message})){ 

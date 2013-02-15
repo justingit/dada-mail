@@ -31,7 +31,7 @@ $TEST_SQL_PARAMS = {
 		clickthrough_url_log_table         => 'test_dada_clickthrough_url_log', 		
 		mass_mailing_event_log_table       => 'test_dada_mass_mailing_event_log', 
 		password_protect_directories_table => 'test_dada_password_protect_directories', 
-		
+		confirmation_tokens_table          => 'test_dada_confirmation_tokens',
 		
 	}, 
 
@@ -57,7 +57,8 @@ $TEST_SQL_PARAMS = {
 
 		mass_mailing_event_log_table    => 'test_dada_mass_mailing_event_log', 
 		password_protect_directories_table    => 'test_dada_password_protect_directories', 
-
+		confirmation_tokens_table          => 'test_dada_confirmation_tokens',
+		
 
 
 	}, 
@@ -78,6 +79,8 @@ $TEST_SQL_PARAMS = {
 		clickthrough_urls_table         => 'test_dada_clickthrough_urls', 
 		clickthrough_url_log_table      => 'test_dada_clickthrough_url_log', 		
 		mass_mailing_event_log_table    => 'test_dada_mass_mailing_event_log', 
+		password_protect_directories_table    => 'test_dada_password_protect_directories', 
+		confirmation_tokens_table          => 'test_dada_confirmation_tokens',
 				
 	},
 	

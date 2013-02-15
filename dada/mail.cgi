@@ -597,6 +597,7 @@ sub run {
 	's'                         =>    \&subscribe,
 	'u'                         =>    \&unsubscribe,
 	'ur'                        =>    \&unsubscribe_request, 
+	't'                         =>    \&token, 
 	'smtm'                      =>    \&what_is_dada_mail,
 	'test_layout'               =>    \&test_layout,
 	'send_email_testsuite'      =>    \&send_email_testsuite,
@@ -7468,133 +7469,224 @@ sub token {
 }
 
 
+sub resend_conf { 
 
+	require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+    my $can_use_captcha = 1;
+    
+    if ( $ls->param('captcha_sub') == 1 ) {
+        try {
+            require DADA::Security::AuthenCAPTCHA;
+        }
+        catch {
+            carp "CAPTCHA Not working correctly?: $_";
+            $can_use_captcha = 0;
+        };
+	}	
+	if($can_use_captcha == 1){ 
+		&resend_conf_captcha;
+	}
+	else { 
+		&resend_conf_no_captcha;
+	}
+	
+}
 
-sub resend_conf {
+sub resend_conf_captcha { 
+	require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+	
+	my $captcha_worked = 0;
+    my $captcha_auth   = 1;
+    if ( !xss_filter( $q->param('recaptcha_response_field') ) ) {
+        $captcha_worked = 0;
+    }
+    else {
+        require DADA::Security::AuthenCAPTCHA;
+        my $cap    = DADA::Security::AuthenCAPTCHA->new;
+        my $result = $cap->check_answer(
+            $DADA::Config::RECAPTCHA_PARAMS->{private_key},
+            $DADA::Config::RECAPTCHA_PARAMS->{'remote_address'},
+            $q->param('recaptcha_challenge_field'),
+            $q->param('recaptcha_response_field')
+        );
+        if ( $result->{is_valid} == 1 ) {
+            $captcha_auth   = 1;
+            $captcha_worked = 1;
+        }
+        else {
+            $captcha_worked = 0;
+            $captcha_auth   = 0;
+        }
+    }
+    if ( $captcha_worked == 1 ) {
+		if ( $q->param('rm') eq 's' ) {
+            my $sub_info = $lh->get_subscriber(
+                {
+                    -email => $email,
+                    -type  => 'sub_confirm_list',
+                }
+            );
+            my $rm_status = $lh->remove_subscriber(
+                {
+                    -email => $email,
+                    -type  => 'sub_confirm_list'
+                }
+            );
+            $q->param( 'list',  $list );
+            $q->param( 'email', $email );
+            $q->param( 'f',     's' );
+            &subscribe;
+            return;
+        }
+        elsif ( $q->param('rm') eq 'u' ) {
 
+            # I like the idea better that we call the function directly...
+            my $rm_status = $lh->remove_subscriber(
+                {
+                    -email => $email,
+                    -type  => 'unsub_confirm_list'
+                }
+            );
+            $q->param( 'list',  $list );
+            $q->param( 'email', $email );
+            $q->param( 'f',     'u' );
+            &unsubscribe;
+            return;
+        }
+    }
+    else {
+		print $q->header(); 
+		my $error = ''; 
+		if($q->param('rm') eq 's'){ 
+			$error = 'already_sent_sub_confirmation'; 
+		}
+		elsif($q->param('rm') eq 'u'){ 
+			$error = 'already_sent_unsub_confirmation'; 			
+		}
+		else { 
+			die 'unknown $rm!'; 
+		}
+		user_error(
+			-Error         => $error, 
+			-List          => $list, 
+            -Email         => $email,
+			-Template_Vars => {
+				captcha_auth => 0,
+			}
+#            -fh    => $args->{-fh},
+#			-test  => $self->test, 
+ 		); 
+    }
+    
+}
+sub resend_conf_no_captcha {
 
-    my $list_exists = check_if_list_exists(
-						-List       => $list,
-					);
+    my $list_exists = check_if_list_exists( -List => $list, );
 
-    if($list_exists == 0){
+    if ( $list_exists == 0 ) {
         &default;
         return;
     }
-    if (!$email){
-        $q->param('error_no_email', 1);
+    if ( !$email ) {
+        $q->param( 'error_no_email', 1 );
         list_page();
         return;
     }
-
-    if(
-		$q->param('rm') eq 's' ||
-		$q->param('rm') eq 'u'
-	){
-		# ...
-    }
-	else {
-		&default;
+    if (   $q->param('rm') ne 's'
+        || $q->param('rm') ne 'u' )
+    {
+        &default;
         return;
-	}
-
-    if($q->request_method() !~ m/POST/i){
+    }
+    if ( $q->request_method() !~ m/POST/i ) {
         &default;
         return;
     }
 
-
     require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
 
-    my $ls = DADA::MailingList::Settings->new({-list => $list});
-    my $lh = DADA::MailingList::Subscribers->new({-list => $list});
-
-	my ($sec, $min, $hour, $day, $month, $year) = (localtime)[0,1,2,3,4,5];
-
-	# This is just really broken... should be a CAPTCHA... 
+    my ( $sec, $min, $hour, $day, $month, $year ) =
+      (localtime)[ 0, 1, 2, 3, 4, 5 ];
+	# This is just really broken... should be a CAPTCHA...
 	# I'm assuming this happens if we FAILED this test below (1 = failure for check_email_pin)
 	#
-	if(DADA::App::Guts::check_email_pin(
-							-Email => $month . '.' . $day . '.' . $email,
-							-Pin   => xss_filter($q->param('auth_code')),
-							-List  => $list,
-							)
-							== 0
-	){
+    if (
+        DADA::App::Guts::check_email_pin(
+            -Email => $month . '.' . $day . '.' . $email,
+            -Pin   => xss_filter( $q->param('auth_code') ),
+            -List  => $list,
+        ) == 0
+      )
+    {
 
-		my ($e_day, $e_month, $e_stuff) = split('.', $email);
+        my ( $e_day, $e_month, $e_stuff ) = split( '.', $email );
+        #  Ah, I see, it only is blocked for a... day?
+        if ( $e_day != $day || $e_month != $month ) {
+            # a stale blocking thingy.
+            if ( $q->param('rm') eq 's' ) {
+                my $rm_status = $lh->remove_subscriber(
+                    {
+                        -email => $email,
+                        -type  => 'sub_confirm_list'
+                    }
+                );
+            }
+            elsif ( $q->param('rm') eq 'u' ) {
 
-		#  Ah, I see, it only is blocked for a... day?
-		if($e_day != $day || $e_month != $month){
-			# a stale blocking thingy.
-			if($q->param('rm') eq 's'){
-				my $rm_status = $lh->remove_subscriber(
-					{
-						-email => $email,
-						-type  => 'sub_confirm_list'
-					}
-				);
-			}
-			elsif($q->param('rm') eq 'u'){
+                my $rm_status = $lh->remove_subscriber(
+                    {
+                        -email => $email,
+                        -type  => 'unsub_confirm_list'
+                    }
+                );
+            }
+        }
+        list_page();
+        return;
+    }
+    else {
+        if ( $q->param('rm') eq 's' ) {
+            my $sub_info = $lh->get_subscriber(
+                {
+                    -email => $email,
+                    -type  => 'sub_confirm_list',
+                }
+            );
+            my $rm_status = $lh->remove_subscriber(
+                {
+                    -email => $email,
+                    -type  => 'sub_confirm_list'
+                }
+            );
+            $q->param( 'list',  $list );
+            $q->param( 'email', $email );
+            $q->param( 'f',     's' );
+            &subscribe;
+            return;
+        }
+        elsif ( $q->param('rm') eq 'u' ) {
 
-				my $rm_status = $lh->remove_subscriber(
-					{
-						-email => $email,
-						-type  => 'unsub_confirm_list'
-					}
-				);
-			}
-		}
-
-
-		list_page();
-		return;
-	}
-	else {
-
-
-	    if($q->param('rm') eq 's'){
-
-			my $sub_info = $lh->get_subscriber(
-			                {
-			                        -email => $email,
-			                        -type  => 'sub_confirm_list',
-			                }
-			        );
-
-	        my $rm_status = $lh->remove_subscriber(
-				{
-					-email => $email,
-					-type  => 'sub_confirm_list'
-				}
-			);
-
-			$q->param('list', $list);
-			$q->param('email', $email);
-			$q->param('f', 's');
-			&subscribe;
-	        return;
-
-	    }elsif($q->param('rm') eq 'u'){
-			# I like the idea better that we call the function directly...
-	        my $rm_status = $lh->remove_subscriber(
-				{
-					-email => $email,
-					-type  => 'unsub_confirm_list'
-				}
-			);
-
-			$q->param('list', $list);
-			$q->param('email', $email);
-			$q->param('f', 'u');
-
-			&unsubscribe;
-	        return;
-
-	    }
-
-	}
+            # I like the idea better that we call the function directly...
+            my $rm_status = $lh->remove_subscriber(
+                {
+                    -email => $email,
+                    -type  => 'unsub_confirm_list'
+                }
+            );
+            $q->param( 'list',  $list );
+            $q->param( 'email', $email );
+            $q->param( 'f',     'u' );
+            &unsubscribe;
+            return;
+        }
+    }
 }
 
 

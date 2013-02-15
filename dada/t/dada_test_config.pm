@@ -324,6 +324,7 @@ my @statements = split(';', $sql);
 		my $clickthrough_url_log_table          = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{clickthrough_url_log_table};
 		my $mass_mailing_event_log_table        = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{mass_mailing_event_log_table};
 		my $password_protect_directories_table  = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{password_protect_directories_table};
+		my $confirmation_tokens_table           = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{confirmation_tokens_table};
 		
 		
 		$_ =~ s{CREATE TABLE dada_settings}{CREATE TABLE $settings_table}; 
@@ -345,7 +346,8 @@ my @statements = split(';', $sql);
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profile_fields_attributes}{CREATE TABLE IF NOT EXISTS $profile_fields_attributes_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_clickthrough_url_log}{CREATE TABLE IF NOT EXISTS $clickthrough_url_log_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_mass_mailing_event_log}{CREATE TABLE IF NOT EXISTS $mass_mailing_event_log_table};	
-		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_password_protect_directories}{CREATE TABLE $password_protect_directories_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_password_protect_directories}{CREATE TABLE IF NOT EXISTS $password_protect_directories_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_confirmation_tokens}{CREATE TABLE IF NOT EXISTS $confirmation_tokens_table};	
 
 		#print 'query: ' . $_; 
 			

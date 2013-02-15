@@ -347,13 +347,13 @@ sub _recorded_open_recently {
 	        $query =
 	            'SELECT COUNT(*) from '
 	          . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
-	          . ' where list = ? AND remote_addr = ? AND msg_id = ? AND event = ? AND timestamp >= ' . $args->{timestamp} . ' - INTERVAL "1 HOUR"'; 
+	          . " where list = ? AND remote_addr = ? AND msg_id = ? AND event = ? AND timestamp >= ' . $args->{timestamp} . ' - INTERVAL '1 HOUR'"; 
 	    }
 	    else {
 	        $query =
 	            'SELECT COUNT(*) from '
 	          . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
-	          . ' where list = ? AND remote_addr = ? AND msg_id = ? AND event = ? AND timestamp >= NOW() - INTERVAL "1 HOUR"';
+	          . " where list = ? AND remote_addr = ? AND msg_id = ? AND event = ? AND timestamp >= NOW() - INTERVAL '1 HOUR'";
 	    }
 		
 	}

@@ -14,8 +14,7 @@ use Try::Tiny;
 
 use vars qw($AUTOLOAD); 
 use strict; 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions}; 
-
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions}; 
 
 my %allowed = (
 	test => 0, 
@@ -69,6 +68,9 @@ sub _init {}
 
 sub token { 
 	
+	warn 'token'
+		if $t; 
+		
 	my $self = shift; 
     my ($args) = @_; 
 	my $q; 
@@ -85,12 +87,23 @@ sub token {
 	require DADA::App::Subscriptions::ConfirmationTokens; 
 	my $ct    = DADA::App::Subscriptions::ConfirmationTokens->new();
 	if($ct->exists($token)){ 
+		warn 'token exists'
+			if $t; 
+			
 		my $data = $ct->fetch($token); 
 
 		if($data->{data}->{flavor} eq 'sub_confirm'){
+			
+			warn 'sub_confirm' 
+				if $t; 
+				
 			$q->param('email', $data->{email}); 
 			$q->param('list', $data->{list}); 
 			$q->param('token', $token); 
+			
+			warn 'confirming'
+				if $t; 
+				
 			$self->confirm(
 	            {
 	                -html_output => $args->{-html_output}, 
@@ -763,7 +776,7 @@ sub confirm {
     
     else{ 
     	if($ls->param('enable_subscription_approval_step') == 1){ 
- 			# we go HERE, if subscriptions need to be approved. Got that?S
+ 			# we go HERE, if subscriptions need to be approved. Got that?
 			$lh->move_subscriber(
                 {
                     -email            => $email,
@@ -773,6 +786,10 @@ sub confirm {
 	        		-confirmed        => 1, 
                 }
 			);
+			require DADA::App::Subscriptions::ConfirmationTokens; 
+			my $ct    = DADA::App::Subscriptions::ConfirmationTokens->new();
+			   $ct->remove_by_token($q->param('token')); 
+			
             my $s = $ls->param('html_subscription_request_message');
             require DADA::Template::Widgets; 
             my $r .= DADA::Template::Widgets::wrap_screen(
@@ -924,7 +941,6 @@ sub confirm {
                     	}
 		        	);                                   
                 }
-#				warn q{$q->param('token')} . $q->param('token'); 
 				require DADA::App::Subscriptions::ConfirmationTokens; 
 				my $ct    = DADA::App::Subscriptions::ConfirmationTokens->new();
 				   $ct->remove_by_token($q->param('token')); 
