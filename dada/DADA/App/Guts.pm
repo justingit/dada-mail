@@ -1811,6 +1811,7 @@ sub user_error {
         -fh            => \*STDOUT,
         -Error_Message => undef,
         -test          => 0,
+		-Template_Vars => {},
         @_
     );
 
@@ -1826,6 +1827,7 @@ sub user_error {
         -Error         => $error,
         -Email         => $email,
         -Error_Message => $args{-Error_Message},
+		-Template_Vars => $args{-Template_Vars},
     );
 
     $test ? return $error_msg : print $fh safely_encode($error_msg) and return;
@@ -2710,7 +2712,7 @@ sub grab_url {
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2012 Justin Simoni 
+Copyright (c) 1999 - 2013 Justin Simoni 
 
 http://justinsimoni.com 
 

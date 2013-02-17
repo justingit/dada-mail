@@ -132,25 +132,32 @@ People will still be able to subscribe/unsubscribe
 
 
 <!-- tmpl_if list_settings.enable_closed_loop_opt_in --> 
-	<p class="positive">
-		(Closed-Loop Opt-In) is enabled. 
+	<div class="clearskiesbox">
+	<p>
+		Closed-Loop Opt-In is <strong>enabled</strong>.
 	</p>
+	</div>
 <!-- tmpl_else --> 
-<p class="error">
-		(Closed-Loop Opt-In) has been disabled! 
-</p>
+	<div class="badweatherbox">
+	<p>
+		Closed-Loop Opt-In has been <strong>disabled</strong>.
+	</p>
+	</div> 
 <!-- /tmpl_if --> 
 <!-- tmpl_if list_settings.invite_only_list --> 
-	<p class="error">
-		Subscription Confirmations are not used, since this mailing list is Invitation-Only.
-	</p> 
+	<div class="badweatherbox">
+		<p>
+			Subscription Confirmations are not used, since this mailing list is Invitation-Only.
+		</p> 
+	</div> 
 <!-- /tmpl_if -->
 <!-- tmpl_if list_settings.closed_list --> 
-	<p class="error">
+	<div class="badweatherbox">
+	<p>
 		Subscription Confirmations are not used, since this mailing list is Closed.
 	</p> 
+	</div> 
 <!-- /tmpl_if -->
-
 
 
  <table cellspacing="5" width="100%">
@@ -215,10 +222,22 @@ People will still be able to subscribe/unsubscribe
 	      Limit Subscription Confirmation Sending 
 	     </label>
 	     <br />
-		When enabled, only one confirmation message can be sent out at one time per subscriber, without the subscriber manually requesting (basically, by clicking a button) that a new subscription confirmation be sent.
+
+		Users will need to manually request additional subscription confirmation emails, if they try 
+		to subscribe more than once. This is to stop abuse of the confirmation process. 
 		
-		
-	    </p>
+		</p>
+		<table cellpadding="5">
+				<tr> 
+					<td> 
+					    <input type="checkbox" name="limit_sub_confirm_use_captcha" id="limit_sub_confirm_use_captcha" value="1" <!-- tmpl_if list_settings.limit_sub_confirm_use_captcha -->checked="checked"<!--/tmpl_if--> />						
+					</td>
+					<td> 
+						<label for="limit_sub_confirm_use_captcha">Enable CAPTCHA</label><br/> 
+						A CAPTCHA will need to be solved, before another confirmation email is sent. 
+					</td>
+				</tr>
+		</table>
 	   </td>
 	  </tr>
 
@@ -585,12 +604,20 @@ Unsubscription Confirmations
 		     </label>
 		     <br />
 
-			
-			When enabled, only one confirmation message can be sent out at one time per subscriber, without the subscriber manually requesting (basically, by clicking a button) that a new unsubscription confirmation be sent.
+				Users will need to manually request additional unsubscription confirmation emails, if they try 
+				to unsubscribe more than once. This is to stop abuse of the confirmation process. 
 
-			This helps cut down on unneeded message-sending and abuse of the unsubscription confirmation system. 
-			
-
+					<table cellpadding="5">
+							<tr> 
+								<td> 
+								    <input type="checkbox" name="limit_unsub_confirm_use_captcha" id="limit_unsub_confirm_use_captcha" value="1" <!-- tmpl_if list_settings.limit_unsub_confirm_use_captcha -->checked="checked"<!--/tmpl_if--> />						
+								</td>
+								<td> 
+									<label for="limit_unsub_confirm_use_captcha">Enable CAPTCHA</label><br/> 
+									A CAPTCHA will need to be solved, before another confirmation email is sent. 
+								</td>
+							</tr>
+					</table>
 			
 			
 		    </p>

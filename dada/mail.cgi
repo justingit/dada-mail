@@ -2069,7 +2069,9 @@ sub list_options {
 					send_newest_archive                     => 0,
                     mx_check                                => 0,
                     limit_sub_confirm                       => 0,
+					limit_sub_confirm_use_captcha           => 0,
                     limit_unsub_confirm                     => 0,
+					limit_unsub_confirm_use_captcha         => 0,
                     email_your_subscribed_msg               => 0,
                     email_you_are_not_subscribed_msg        => 0,
                     use_alt_url_sub_confirm_success         => 0,
@@ -7469,29 +7471,39 @@ sub token {
 }
 
 
-sub resend_conf { 
+sub resend_conf {
 
-	require DADA::MailingList::Settings;
+    require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
-    my $can_use_captcha = 1;
-    
-    if ( $ls->param('captcha_sub') == 1 ) {
+    my $can_use_captcha = 0;
+
+    if (
+        (
+               $q->param('rm') eq 's'
+            && $ls->param('limit_sub_confirm_use_captcha') == 1
+        )
+        || (   $q->param('rm') eq 'u'
+            && $ls->param('limit_unsub_confirm_use_captcha') == 1 )
+      )
+    {
+	
         try {
             require DADA::Security::AuthenCAPTCHA;
+            $can_use_captcha = 1;
         }
         catch {
             carp "CAPTCHA Not working correctly?: $_";
             $can_use_captcha = 0;
         };
-	}	
-	if($can_use_captcha == 1){ 
-		&resend_conf_captcha;
-	}
-	else { 
-		&resend_conf_no_captcha;
-	}
-	
+    }	
+    if ( $can_use_captcha == 1 ) {
+        &resend_conf_captcha;
+    }
+    else {
+        &resend_conf_no_captcha;
+    }
+
 }
 
 sub resend_conf_captcha { 
@@ -7559,7 +7571,6 @@ sub resend_conf_captcha {
         }
     }
     else {
-		print $q->header(); 
 		my $error = ''; 
 		if($q->param('rm') eq 's'){ 
 			$error = 'already_sent_sub_confirmation'; 
@@ -7575,7 +7586,7 @@ sub resend_conf_captcha {
 			-List          => $list, 
             -Email         => $email,
 			-Template_Vars => {
-				captcha_auth => 0,
+				captcha_auth => $captcha_auth,
 			}
 #            -fh    => $args->{-fh},
 #			-test  => $self->test, 
@@ -7585,6 +7596,8 @@ sub resend_conf_captcha {
 }
 sub resend_conf_no_captcha {
 
+
+	
     my $list_exists = check_if_list_exists( -List => $list, );
 
     if ( $list_exists == 0 ) {
@@ -7596,9 +7609,9 @@ sub resend_conf_no_captcha {
         list_page();
         return;
     }
-    if (   $q->param('rm') ne 's'
-        || $q->param('rm') ne 'u' )
-    {
+    if (  $q->param('rm') ne 's'
+        && $q->param('rm') ne 'u' )
+    {	
         &default;
         return;
     }
@@ -7612,11 +7625,13 @@ sub resend_conf_no_captcha {
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
 
+
     my ( $sec, $min, $hour, $day, $month, $year ) =
       (localtime)[ 0, 1, 2, 3, 4, 5 ];
 	# This is just really broken... should be a CAPTCHA...
 	# I'm assuming this happens if we FAILED this test below (1 = failure for check_email_pin)
 	#
+	
     if (
         DADA::App::Guts::check_email_pin(
             -Email => $month . '.' . $day . '.' . $email,
@@ -7625,7 +7640,6 @@ sub resend_conf_no_captcha {
         ) == 0
       )
     {
-
         my ( $e_day, $e_month, $e_stuff ) = split( '.', $email );
         #  Ah, I see, it only is blocked for a... day?
         if ( $e_day != $day || $e_month != $month ) {
@@ -7652,6 +7666,8 @@ sub resend_conf_no_captcha {
         return;
     }
     else {
+
+	
         if ( $q->param('rm') eq 's' ) {
             my $sub_info = $lh->get_subscriber(
                 {
@@ -7672,7 +7688,6 @@ sub resend_conf_no_captcha {
             return;
         }
         elsif ( $q->param('rm') eq 'u' ) {
-
             # I like the idea better that we call the function directly...
             my $rm_status = $lh->remove_subscriber(
                 {
@@ -11297,7 +11312,7 @@ __END__
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2012 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2013 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

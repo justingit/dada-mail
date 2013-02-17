@@ -2477,8 +2477,11 @@ EOF
     unsub_confirm_email             => 1,    # Closed-Loop Opt-Out
                                              # I know, confusing.
     skip_unsub_confirm_if_logged_in => 0,
-    limit_sub_confirm               => 1,
-    limit_unsub_confirm             => 1,
+
+    limit_sub_confirm                 => 1,
+    limit_sub_confirm_use_captcha     => 1,
+    limit_unsub_confirm               => 1,
+    limit_unsub_confirm_use_captcha   => 1,
 
     use_alt_url_sub_confirm_success  => 0,
     alt_url_sub_confirm_success_w_qs => 0,

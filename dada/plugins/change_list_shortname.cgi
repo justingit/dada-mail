@@ -370,7 +370,7 @@ You can now log into your List Control Panel (make sure to log in with the B<Dad
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2012 
+Copyright (c) 1999 - 2013 
 
 Justin Simoni
 

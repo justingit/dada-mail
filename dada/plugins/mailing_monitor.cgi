@@ -296,7 +296,7 @@ See: http://dadamailproject.com/contact
 
 =head1 LICENCE AND COPYRIGHT
 
-Copyright (c) 1999 - 2012 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2013 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

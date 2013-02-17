@@ -76,20 +76,22 @@ sub cgi_user_error {
 		-Template_Vars    => {}, 
    		@_
 	);
-
-
+	
 	require DADA::Template::Widgets; 
 	
 	my  $available_lists_ref; 
 	my $li              = {}; 
 	my $list_login_form = ""; 
 	my $list_exists     = 0; 
-	
+	my $template_vars = $args{-Template_Vars};
+	# Dumb. 
+	if(!exists($template_vars->{captcha_auth})){ 
+		$template_vars->{captcha_auth} = 1; 
+	}	
+		
 	if($args{-Error} !~ /unreadable_db_files|sql_connect_error|bad_setup/){
 		$list_exists = check_if_list_exists( -List=> $args{-List}, -Dont_Die  => 1) || 0;
 	}
-	
-	my $template_vars = $args{-Template_Vars};
 	
 	if($list_exists > 0) { 
 		require  DADA::MailingList::Settings; 
@@ -165,7 +167,16 @@ sub cgi_user_error {
 	    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 	    my $can_use_captcha = 0;
 
-	    if ( $ls->param('captcha_sub') == 1 ) {
+	    if (
+	        (
+	               $rm eq 's'
+	            && $ls->param('limit_sub_confirm_use_captcha') == 1
+	        )
+	        || (   $rm eq 'u'
+	            && $ls->param('limit_unsub_confirm_use_captcha') == 1 )
+	      )
+	    {
+
 	        try {
 	            require DADA::Security::AuthenCAPTCHA;
 				$can_use_captcha = 1;
@@ -175,6 +186,7 @@ sub cgi_user_error {
 	            $can_use_captcha = 0;
 	        };
 		}
+
 		if($can_use_captcha == 1){ 
 			my $cap = DADA::Security::AuthenCAPTCHA->new; 
 			my $CAPTCHA_string = $cap->get_html($DADA::Config::RECAPTCHA_PARAMS->{public_key}); 
@@ -184,6 +196,7 @@ sub cgi_user_error {
 				{
 				-screen                   => 'resend_conf_captcha_step.tmpl', 
 				-with                     => 'list',
+				-expr                     => 1, 
 				-list_settings_vars_param => {-list => $ls->param('list')},
 				-subscriber_vars_param    => {
 					-list  => $list, 
@@ -198,7 +211,6 @@ sub cgi_user_error {
 					list             => xss_filter( $list), 
 					email            => $email, 
 					token            => xss_filter($q->param('token')), 
-					captcha_auth     => xss_filter($q->param('captcha_auth')),        
 					},
 				},
 			);
@@ -278,7 +290,7 @@ sub cgi_user_error {
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2012 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2013 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

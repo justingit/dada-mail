@@ -61,11 +61,12 @@ sub get_html {
     return qq{
 
     <p>
-    <img src="$DADA::Config::PROGRAM_URL/captcha_img/$img_string/" /><br /> 
+    <img src="$DADA::Config::PROGRAM_URL/captcha_img/$img_string/" /><br />
+	<em>(CAPTCHA is case sensitive)</em>
     
     <!-- as far as I know, this doesn't do anythng... should it? --> 
     <input type="hidden" name="recaptcha_challenge_field" value="$img_string" /> 
-    
+    <br />
     <input type="text" name="recaptcha_response_field" value="" /> 
     </p>
     
@@ -280,7 +281,7 @@ sub _create_CAPTCHA_auth_string {
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2012 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2013 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

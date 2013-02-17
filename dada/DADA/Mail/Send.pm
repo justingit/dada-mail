@@ -3511,7 +3511,7 @@ is controlled by C<DADA::Mail::MailOut>.
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2012 Justin Simoni 
+Copyright (c) 1999 - 2013 Justin Simoni 
 me - justinsimoni.com
 http://justinsimoni.com 
 All rights reserved. 
