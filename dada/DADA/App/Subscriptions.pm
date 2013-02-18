@@ -1,8 +1,8 @@
 package DADA::App::Subscriptions;
 
 use lib qw(
-	../../ 
-	../../perllib
+	../../.
+	../../DADA/perllib
 );
 
 

@@ -1362,7 +1362,6 @@ sub _macro_tags {
 
 	my %args = (-url         => '<!-- tmpl_var PROGRAM_URL -->', # Really.
 				-email        => undef, 
-				-pin          => undef, 
 				-list         => $self->{list},
 				-escape_list  => 1,
 				-escape_all   => 0,
@@ -1402,7 +1401,7 @@ sub _macro_tags {
 	my $link = $args{-url} . '/';
 	
 	if($args{-escape_all} == 1){ 
-		for($args{-email}, $args{-pin}, $type, $args{-list}){ 
+		for($args{-email}, $type, $args{-list}){ 
 			$_ = uriescape($_);
 		}
 		
@@ -1427,7 +1426,6 @@ sub _macro_tags {
 	push(@qs,  $type)         if $type;   
 	push(@qs,  '<!-- tmpl_var list_settings.list -->')  if $args{-list};	
 	push(@qs,  $args{-email}) if $args{-email};
-	push(@qs,  $args{-pin})   if $args{-pin};
 	
 	$link .= join '/', @qs; 
 	
@@ -1634,7 +1632,6 @@ sub can_find_sub_confirm_link {
 	    my @sub_confirm_urls = (
 			'<!-- tmpl_var PROGRAM_URL -->/t/<!-- tmpl_var list.confirmation_token -->',
 	        '<!-- tmpl_var list_confirm_subscribe_link -->',
-			'<!-- tmpl_var PROGRAM_URL -->/n/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/<!-- tmpl_var subscriber.pin -->/'
 	  	);
 	    if ( $DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} ==
 	        1 )
@@ -1688,7 +1685,6 @@ sub can_find_unsub_confirm_link {
 	    my @unsub_confirm_urls = (
 			'<!-- tmpl_var PROGRAM_URL -->/t/<!-- tmpl_var list.confirmation_token -->',
 	        '<!-- tmpl_var list_confirm_unsubscribe_link -->',
-			'<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/<!-- tmpl_var subscriber.pin -->/'
 	  	);
 	    if ( $DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} ==
 	        1 )

@@ -1,11 +1,16 @@
 #!/usr/bin/perl
 use strict; 
 
-use lib qw(./t ./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib 
-	
-	/Users/justin/Documents/DadaMail/build/bundle/perllib
-	
-	); 
+
+use FindBin;
+use lib "$FindBin::Bin";
+use lib "$FindBin::Bin/../";
+use lib "$FindBin::Bin/../DADA/perllib";
+
+
+	#	/Users/justin/Documents/DadaMail/build/bundle/perllib
+
+
 BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
 use dada_test_config; 
 
@@ -235,7 +240,19 @@ $q->param('email', '');
 #	$q->param('pin', $pin);
 	
 	$regex = quotemeta('<h1>Your Mailing List Subscription is Successful</h1>'); 
-	like($dap->confirm({-cgi_obj => $q}), qr/$regex/);
+
+	my $confirm; 
+	
+	eval { 
+		$confirm = $dap->confirm({-cgi_obj => $q}); 
+	};
+	if($@){ 
+		diag 'error: ' . $@;
+		use Data::Dumper; 
+		diag Dumper({%INC});
+	} 
+	
+	like($confirm, qr/$regex/);
 
 	ok($lh->check_for_double_email(-Email => $email, -Type => 'list'), 'check_for_double_email'); 
 	ok($lh->check_for_double_email(-Email => $email, -Type => 'sub_confirm_list') == 0, 'check_for_double_email'); 
