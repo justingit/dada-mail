@@ -1,4 +1,35 @@
-=head1 6.0.2
+=head1 6.1.0
+
+=head2 Summary 6.1.0
+
+This release of Dada Mail features a new URL confirmation system that is hoped to be more secure 
+and less easy to spoof than previous iterations of Dada Mail. Since the previous system has been used 
+in one form, or anothr, in Dada Mail since the original release of the app in 1999, we highly suggest literally I<anyone>
+running Dada Mail to upgrade.
+
+An extended reasoning and explaination for the changes made in this version can be found at: 
+
+L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/archive/homepage_blog/20130218232934/>
+
+As always, we look forward to your feedback about the changes and enhancements we make in Dada Mail. 
+
+=head2 Bugfixes 6.1.0- 
+
+=head3  Profile Unsubscribe links for plus-addresses don't work 
+
+https://github.com/justingit/dada-mail/issues/351
+
+=head3 PlainText to HTML Mass Mailing Messages break ending tmpl_if, tmpl_unless, tmpl_loop blocks
+
+https://github.com/justingit/dada-mail/issues/350
+
+=head3 Bridge stops list processing if one list has a problem
+
+https://github.com/justingit/dada-mail/issues/348
+
+=head3 No entity found! die'ing! at bridge.cgi line 467
+
+https://github.com/justingit/dada-mail/issues/346
 
 =head2 Summary 6.0.2
 
