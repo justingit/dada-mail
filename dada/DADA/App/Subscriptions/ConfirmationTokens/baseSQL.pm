@@ -9,7 +9,7 @@ use lib qw(
 use Carp qw(croak carp);
 use DADA::Config qw(!:DEFAULT);
 
-my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions}; 
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions}; 
 
 sub new {
 
