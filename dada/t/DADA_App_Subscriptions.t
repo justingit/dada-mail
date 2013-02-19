@@ -51,7 +51,7 @@ ok($dap->test == 1, "Testing is on...");
 # sub-subscribe-no-cgi
 # 
 eval{ $dap->subscribe();};
-like($@, qr/No CGI Object/);
+like($@, qr/No CGI Object/, 'no CGI object');
 
 # sub-subscribe-redirect-error_invalid_list
 my $regex = quotemeta('Location: ' . $DADA::Config::PROGRAM_URL . '?error_invalid_list=1'); 
@@ -82,7 +82,7 @@ $q->param('list', '');
 
 	$q->param('list', $list); 
 	$regex = quotemeta('Location: ' . 'http://example.com/confirm_failed.html'); 
-	like($dap->subscribe({-cgi_obj => $q,}), qr/$regex/);
+	like($dap->subscribe({-cgi_obj => $q,}), qr/$regex/, 'Location');
 
 
 	$ls->save(
@@ -93,12 +93,12 @@ $q->param('list', '');
 		}
 	);
 	$regex = quotemeta('Location: ' . 'http://example.com/confirm_failed.html?list=' . $list . '&rm=sub_confirm&status=0&email=&errors[]=invalid_email'); 
-	like($dap->subscribe({-cgi_obj => $q,}), qr/$regex/);
+	like($dap->subscribe({-cgi_obj => $q,}), qr/$regex/, 'Location (2)');
 
 	$q->param('email', 'bad'); 
 
 	$regex = quotemeta('Location: ' . 'http://example.com/confirm_failed.html?list=' . $list . '&rm=sub_confirm&status=0&email=bad&errors[]=invalid_email'); 
-	like($dap->subscribe({-cgi_obj => $q,}), qr/$regex/);
+	like($dap->subscribe({-cgi_obj => $q,}), qr/$regex/, 'confirm_failed');
 
 	$q->param('email', ''); 
 	$q->param('list', ''); 
@@ -125,9 +125,11 @@ $q->param('email', $email);
 $q->param('list',  $list );
 
 $regex = '<h1>Please Confirm Your Mailing List Subscription</h1>';
-like($dap->subscribe({-cgi_obj => $q,}), qr/$regex/); 
+diag "and here, it's halting, eh?"; 
 
-my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
+like($dap->subscribe({-cgi_obj => $q,}), qr/$regex/, 'Please Confirm Your Mailing List Subscription'); 
+
+my $lh = DADA::MailingList::Subscribers->new({-list => $list}, 'Please Confirm'); 
 ok(
 	$lh->check_for_double_email(
 		-Email => $email, 
@@ -218,7 +220,7 @@ $q->param('email', '');
 	
 	ok($lh->check_for_double_email(-Email => $email, -Type => 'sub_confirm_list'), 'check_for_double_email'); 
 	
-	ok(unlink($mh->test_send_file)); 
+	ok(unlink($mh->test_send_file), 'unlinked test_send_file'); 
 	undef $confirm_email; 
 	undef $entity; 
 	
