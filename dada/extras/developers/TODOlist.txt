@@ -10,14 +10,37 @@ Key:
 [*] Naw...
 [?] Someday
 
+[] Revist docs on Bridge - update. 
+
+[ ] Rss to email converter? 
+
+[ ] Subject encoded in Russian: Новости сайта doesn't work? 
+
+
+[ ] AJAXify all the confirmation HTML stuff - so instead of going to a new screen, you just get a colorbox popup - with the new screen as a back. Have to clean up those screens, so that they make sense in both situations. Maybe simplify the error screens. Yeah! 
+
+[ ] Add in newest version of CKEditor
+[ ] Ability to see other sublists (already invited) (Subscription Confirmation...) 
+
+[ ] Look for JSON modules - not there? "install" them ourselves (renamed JSON-remove[..] files/directories. 
+
+[ ] There should be a test in the PlaiNText -> HTML message changer to make sure the template is still valid. 
+ 	And if it isn't, abort the change! 
+[ ] Template and Template Tag checkers - is it a valid template? Warn if it ain't!
+[ ] Look at date on messages, if that's realistic. Option to deny messages that are too old. 
+
 
 why doesn't the mailing monitor show STALE mass mailings? THe hell is an, "inactive" mailing? 
 
-
-[x] File import for subscribers: 
-	Perhaps have an area to put the ecoding of the file you're trying to import? 
+[ ] Simplify SES stuff 
+	[ ] Make it an option when installing (perhaps put it in a plugin?) 
+	[ ] Save public/private key in config
+	[ ] no more need for those goofy outside scripts. Blech. 
+	[ ] Additional docs on SPF/DKIM stuff
 	
-[x] Simple Subscriber Stats in the L hand admin menu - 1 - 999; 1k - 999k; 1M+..
+
+
+	
 [ ] Tracker 
 	FASTER Queries to the DB, what's the problem ?
 		[ ] Is it really all that slow? 
@@ -26,8 +49,6 @@ why doesn't the mailing monitor show STALE mass mailings? THe hell is an, "inact
 	Show data, normalized by subscription size. 
 	Smaller Redirect links
 	
-[x] Switch from Prototype/Scriptaculous to JQuery
-	Oh yeah... 
 	
 [ ] way to see every mailinglist, an address is subscribed on? Maybe a way for a root login to go into a user's Profile? 
 
@@ -42,12 +63,6 @@ why doesn't the mailing monitor show STALE mass mailings? THe hell is an, "inact
 [ ] Docs on moving from "Basic Mailing List" to Dada Mail
 [ ] Docs on moving/migrating from MailMan to Dada Mail
 
-[x] if the, <!-- tmpl_var message_body --> is not in the mailing list message template, the message just isn't sent - this 
-should be checked and warned against, as well as auto-inserted, if there is a problem. 
-
-[x] Remove the save button in FCKeditor
-
-[x] Bundle FCkeditor/Ckeditor? 
 
 [ ] Markdown support - 
 Write "PlainText" messages in TextTile, and have them formatted when shown in messages, etc - option to turn into HTML when sending? 

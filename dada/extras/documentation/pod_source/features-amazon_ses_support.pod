@@ -94,6 +94,32 @@ Amazon SES starts out with a small sending quota - 1,000 messages you may send i
 
 L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/index.html?ManagingActivity.PlanningAhead.html>
 
+=head1 Dependencies
+
+Amazon SES requires a few more CPAN Perl modules than the base Dada Mail install requires. Make sure you already have, or can install the following CPAN Perl modules: 
+
+=over
+
+=item * Cwd
+
+=item * Digest::SHA
+
+=item * URI::Escape
+
+=item * MIME::Base64	
+
+=item * Crypt::SSLeay	
+
+=item * XML::LibXML
+
+=item * LWP 6
+
+=back
+
+See also the FAQ, B<How do you install, "CPAN Perl Modules"> 
+
+L<http://dadamailproject.com/d/FAQ-general.pod.html#how_do_you_install__cpan_perl_modules>
+
 
 =head1 Configuration
 
