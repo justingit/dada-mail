@@ -1889,7 +1889,7 @@ Thanks!
 
 - <!-- tmpl_var list_settings.list_owner_email -->
 EOF
-  ;
+;
 
 $PROFILE_ACTIVATION_MESSAGE_SUBJECT ||=
   'Profile Authorization Code for, <!-- tmpl_var profile.email -->';
@@ -1897,24 +1897,24 @@ $PROFILE_ACTIVATION_MESSAGE ||= <<EOF
 
 Hello, here's the authorization link to activate your <!-- tmpl_var PROGRAM_NAME --> Profile: 
 
-<!-- tmpl_var PROGRAM_URL -->/profile_activate/<!-- tmpl_var profile.email_name -->/<!-- tmpl_var profile.email_domain -->/<!-- tmpl_var auth_code -->/ 
+<!-- tmpl_var app.profile_activation_link --> 
 
 -- <!-- tmpl_var PROGRAM_NAME --> 
 
 EOF
-  ;
+;
 
 $PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT ||=
   'Profile Authorization Code for, <!-- tmpl_var profile.email -->';
 $PROFILE_RESET_PASSWORD_MESSAGE ||= <<EOF
 Hello, here's the authorization link to reset your <!-- tmpl_var PROGRAM_NAME --> Profile Password:
 
-<!-- tmpl_var PROGRAM_URL -->/profile_reset_password/<!-- tmpl_var profile.email_name -->/<!-- tmpl_var profile.email_domain -->/<!-- tmpl_var auth_code -->/
+<!-- tmpl_var app.profile_reset_password_link -->
 
 -- <!-- tmpl_var PROGRAM_NAME -->
 
 EOF
-  ;
+;
 
 $PROFILE_UPDATE_EMAIL_MESSAGE_SUBJECT ||=
 'Profile Update Email Authorization Code for, <!-- tmpl_var profile.email -->';
@@ -1930,12 +1930,12 @@ to:
 	
 Please click the link below to make this update: 	
 
-<!-- tmpl_var PROGRAM_URL -->/profile_update_email/<!-- tmpl_var profile.email_name -->/<!-- tmpl_var profile.email_domain -->/<!-- tmpl_var profile.update_email_auth_code -->/
+<!-- tmpl_var app.profile_update_email_link -->
 
 -- <!-- tmpl_var PROGRAM_NAME -->
 
 EOF
-  ;
+;
 
 $PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE_SUBJECT ||=
 'Profile Email Update Notification, From: <!-- tmpl_var profile.prev_email -->, To: <!-- tmpl_var profile.email -->';

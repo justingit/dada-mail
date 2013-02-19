@@ -962,11 +962,20 @@ sub send_profile_activation_email {
     my $self = shift;
     my ($args) = @_;
 
-	# We're currently faking this: 
-	my ($n, $d) = split('@', $self->{email}); 
-	
+    # We're currently faking this:
+    my ( $n, $d ) = split( '@', $self->{email} );
 
     my $auth_code = $self->set_auth_code($args);
+    my $profile_activation_link =
+        $DADA::Config::PROGRAM_URL
+      . '/profile_activate/'
+      . uriescape($n) 
+      . '/'
+      . $d 
+      . '/'
+      . $auth_code 
+      . '/';
+
     require DADA::App::Messages;
     DADA::App::Messages::send_generic_email(
         {
@@ -979,11 +988,12 @@ sub send_profile_activation_email {
             -body        => $DADA::Config::PROFILE_ACTIVATION_MESSAGE,
             -tmpl_params => {
                 -vars => {
-                    auth_code              => $auth_code,
-                    email                  => $self->{email},
-					'profile.email'        => $self->{email}, 
-					'profile.email_name'   => $n, 
-					'profile.email_domain' => $d, 					
+                    auth_code                    => $auth_code,
+                    email                        => $self->{email},
+                    'profile.email'              => $self->{email},
+                    'profile.email_name'         => $n,
+                    'profile.email_domain'       => $d,
+                    'app.profile_activation_link' => $profile_activation_link, 
                 },
             },
         }
@@ -1001,6 +1011,14 @@ sub send_profile_reset_password_email {
 	my ($n, $d) = split('@', $self->{email});
 	
     my $auth_code = $self->set_auth_code($args);
+	my $profile_reset_confirmation_link = $DADA::Config::PROGRAM_URL 
+	. '/profile_reset_password/'
+    . uriescape($n) 
+    . '/'
+    . $d 
+    . '/'
+    . $auth_code 
+    . '/';
     require DADA::App::Messages;
     DADA::App::Messages::send_generic_email(
         {
@@ -1014,11 +1032,12 @@ sub send_profile_reset_password_email {
             -body        => $DADA::Config::PROFILE_RESET_PASSWORD_MESSAGE,
             -tmpl_params => {
                 -vars => {
-                    auth_code              => $auth_code,
-                   	'profile.email'        => $self->{email},
-					'profile.email_name'   => $n, 
-					'profile.email_domain' => $d,
-					email                  => $self->{email},
+                    auth_code                             => $auth_code,
+                   	'profile.email'                       => $self->{email},
+					'profile.email_name'                  => $n, 
+					'profile.email_domain'                => $d,
+					email                                 => $self->{email},
+					'app.profile_reset_password_link'     => $profile_reset_confirmation_link, 
                 },
             },
         }
@@ -1068,6 +1087,16 @@ sub send_update_profile_email_email {
 	
 	# We're currently faking this: 
 	my ($n, $d) = split('@', $self->{email});
+	my $auth_code = $args->{-update_email_auth_code}; 
+	
+	my $update_profile_email_link = $DADA::Config::PROGRAM_URL 
+	. '/profile_update_email/'
+    . uriescape($n) 
+    . '/'
+    . $d 
+    . '/'
+    . $auth_code 
+    . '/';
 	
 	my $info = $self->get({-dotted => 1}); 
 	
@@ -1089,7 +1118,7 @@ sub send_update_profile_email_email {
                    	'profile.email'                  => $self->{email},
 					'profile.email_name'             => $n, 
 					'profile.email_domain'           => $d,
-					
+					'app.profile_update_email_link'  => $update_profile_email_link, 
                 },
             },
         }
