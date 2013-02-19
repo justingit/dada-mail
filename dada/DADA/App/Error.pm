@@ -214,8 +214,7 @@ sub cgi_user_error {
 					},
 				},
 			);
-			print $r; 
-			return; 	
+			return $r; 	
 		}
 		else { 
 			# Well, nothing, 
