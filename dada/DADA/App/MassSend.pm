@@ -1062,6 +1062,7 @@ sub list_invite {
                 					}, 
 				}
             );
+			# Should this happen for TESTS as well?!
             $lh->add_subscriber(
                 { 
                     -email         => $info->{email}, 
