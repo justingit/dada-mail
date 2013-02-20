@@ -949,7 +949,9 @@ sub create_mass_sending_file {
 							-list  => $list, 
 							-email => $email,
 							-data  => {
-								flavor => 'sub_confirm', 
+								flavor      => 'sub_confirm', 
+								type        => 'list', 
+								remote_addr => $ENV{REMOTE_ADDR},  
 							}
 						}
 					);

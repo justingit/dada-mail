@@ -1297,12 +1297,16 @@ sub create_mass_sending_file {
                 );
 
 				if($args{-Create_Tokens} == 1){ 
+					# In this case, the remote_addr WOULD be different, as it's being 
+					# sent by the List Owner, not the user. 
 					my $token = $ct->save(
 						{
 							-list  => $field_ref->{list}, 
 							-email => $field_ref->{email},
 							-data  => {
-								flavor => 'sub_confirm', 
+								flavor      => 'sub_confirm', 
+								type        => 'list', 
+								remote_addr => $ENV{REMOTE_ADDR},  
 							}
 						}
 					);

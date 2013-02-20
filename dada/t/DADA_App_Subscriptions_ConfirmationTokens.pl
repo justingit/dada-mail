@@ -32,7 +32,9 @@ my $token = $ct->save(
 		-list  => $list, 
 		-email => $email,
 		-data  => {
-			flavor => 'sub_confirm', 
+			flavor      => 'sub_confirm', 
+			type        => 'list', 
+			remote_addr => $ENV{REMOTE_ADDR}, 
 		}
 	}
 );
