@@ -233,9 +233,20 @@ People will still be able to subscribe/unsubscribe
 					    <input type="checkbox" name="limit_sub_confirm_use_captcha" id="limit_sub_confirm_use_captcha" value="1" <!-- tmpl_if list_settings.limit_sub_confirm_use_captcha -->checked="checked"<!--/tmpl_if--> />						
 					</td>
 					<td> 
-						<label for="limit_sub_confirm_use_captcha">Enable CAPTCHA</label><br/> 
+						<label for="limit_sub_confirm_use_captcha" <!-- tmpl_unless can_use_captcha -->class="disabled"<!-- /tmpl_unless -->>Enable CAPTCHA</label><br/> 
 						A CAPTCHA will need to be solved, before another confirmation email is sent. 
 					</td>
+					 <!-- tmpl_unless can_use_captcha -->
+						<div class="badweatherbox">
+						  <p>
+					       <strong>
+						    Disabled.
+						   </strong> 
+						   The CAPTCHA system (<strong><!-- tmpl_var CAPTCHA_TYPE --></strong>) needs to be successfully configured. 	   
+					     </p>
+				    	</div> 
+				   <!--/tmpl_unless-->
+					
 				</tr>
 		</table>
 	   </td>
@@ -441,19 +452,16 @@ People will still be able to subscribe/unsubscribe
      presented with. This theoretically stops web-bots from subscribing themselves to your list.
     </p>
     
-    
 	 <!-- tmpl_unless can_use_captcha -->
-	    
 		<div class="badweatherbox">
-	    <p>
-	      <strong>Disabled.</strong> The CAPTCHA system (<strong><!-- tmpl_var CAPTCHA_TYPE --></strong>) needs to be successfully configured. 
-	   
-	    </p>
-    </div> 
-
-        <!--/tmpl_unless-->
-
-
+		  <p>
+	       <strong>
+		    Disabled.
+		   </strong> 
+		   The CAPTCHA system (<strong><!-- tmpl_var CAPTCHA_TYPE --></strong>) needs to be successfully configured. 	   
+	     </p>
+    	</div> 
+   <!--/tmpl_unless-->
 
    </td>
   </tr>
@@ -613,8 +621,20 @@ Unsubscription Confirmations
 								    <input type="checkbox" name="limit_unsub_confirm_use_captcha" id="limit_unsub_confirm_use_captcha" value="1" <!-- tmpl_if list_settings.limit_unsub_confirm_use_captcha -->checked="checked"<!--/tmpl_if--> />						
 								</td>
 								<td> 
-									<label for="limit_unsub_confirm_use_captcha">Enable CAPTCHA</label><br/> 
+									<label for="limit_unsub_confirm_use_captcha" <!-- tmpl_unless can_use_captcha -->class="disabled"<!-- /tmpl_unless -->>Enable CAPTCHA</label><br/> 
 									A CAPTCHA will need to be solved, before another confirmation email is sent. 
+									
+									 <!-- tmpl_unless can_use_captcha -->
+										<div class="badweatherbox">
+										  <p>
+									       <strong>
+										    Disabled.
+										   </strong> 
+										   The CAPTCHA system (<strong><!-- tmpl_var CAPTCHA_TYPE --></strong>) needs to be successfully configured. 	   
+									     </p>
+								    	</div> 
+								   <!--/tmpl_unless-->
+									
 								</td>
 							</tr>
 					</table>
