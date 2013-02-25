@@ -185,7 +185,7 @@ sub rules {
 	my $actual_rules_loc = undef; 
 	my @loc_for_rules = (
 	# Custom Ruleset
-	$DADA::Config::DIR . '/.configs/bounce_handler_rules.pl'
+	$DADA::Config::DIR . '/.configs/bounce_handler_rules.pl',
 
 	# From the module, itself
 	'../../../data/bounce_handler_rules.pl',
