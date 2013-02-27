@@ -5597,9 +5597,10 @@ sub adv_archive_options {
         }
 
         my $can_use_html_scrubber = 1;
-
-        eval { require HTML::Scrubber; };
-        if ($@) {
+		try { 
+        	require HTML::Scrubber;
+		} catch { 
+			carp "HTML::Scrubber not working correctly?: $_";  
             $can_use_html_scrubber = 0;
         }
 
