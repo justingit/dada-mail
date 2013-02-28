@@ -699,7 +699,8 @@ sub _scrub_js {
 		$body = $scrubber->scrub($body); 
 	} catch { 
 		carp "Cannot use HTML::Scrubber: $_"; 
-	}
+	};
+	
 	return $body;	
 }
 

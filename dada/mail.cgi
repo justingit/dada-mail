@@ -5602,7 +5602,7 @@ sub adv_archive_options {
 		} catch { 
 			carp "HTML::Scrubber not working correctly?: $_";  
             $can_use_html_scrubber = 0;
-        }
+        };
 
 		my $can_use_recaptcha_mailhide = 1; 
 		try { 
