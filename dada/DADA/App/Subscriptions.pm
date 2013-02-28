@@ -1137,18 +1137,18 @@ sub unsubscribe {
         );
      }       
  
-=cut I can't figure out what this is for... 
-    if($args->{-no_auto_config}  == 0 ){
-		warn '-no_auto_config = 0'
-			if $t; 
-        return $self->unsub_confirm(
-			{
-				-html_output => $args->{-html_output}, 
-				-cgi_obj     =>  $args->{-cgi_obj}
-			}
-		); #we'll change this one later...
-    }
-=cut
+# I can't figure out what this is for... 
+#    if($args->{-no_auto_config}  == 0 ){
+#		warn '-no_auto_config = 0'
+#			if $t; 
+ #       return $self->unsub_confirm(
+#			{
+#				-html_output => $args->{-html_output}, 
+#				-cgi_obj     =>  $args->{-cgi_obj}
+#			}
+#		); #we'll change this one later...
+#    }
+#
 	
     my ($status, $errors) = $lh->unsubscription_check(
 								{
