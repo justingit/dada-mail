@@ -4,7 +4,7 @@ use lib qw(./ ../ ../../ ../../DADA ../perllib);
 use DADA::Config qw(!:DEFAULT); 	
 use DADA::App::Guts;
 use Carp qw(carp croak); 
-
+use Try::Tiny; 
 
 
 # A weird fix.
@@ -691,19 +691,16 @@ sub _scrub_js {
 	my $self = shift; 
 	my $body = shift; 
 
-	eval {require HTML::Scrubber; };
-	
-	if($@){ 
-
-		return $body;
-	}
-	else {
-		
-	    my $scrubber = HTML::Scrubber->new(
+	try {  
+		require HTML::Scrubber;
+		my $scrubber = HTML::Scrubber->new(
 	    	%{$DADA::Config::HTML_SCRUBBER_OPTIONS}
 	    );
-		return  $scrubber->scrub($body); 
+		$body = $scrubber->scrub($body); 
+	} catch { 
+		carp "Cannot use HTML::Scrubber: $_"; 
 	}
+	return $body;	
 }
 
 

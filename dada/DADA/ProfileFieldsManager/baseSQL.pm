@@ -44,14 +44,14 @@ sub _columns {
 
 sub fields {
 
-    my $self = shift;
+    my $self   = shift;
     my ($args) = @_;
+    my $l      = [];
 
-    my $l = [];
-	# I don't know, but this isn't always working... 
-	
+    # I don't know, but this isn't always working...
+
     if ( exists( $self->{cache}->{fields} ) ) {
-    	$l = $self->{cache}->{fields};
+        $l = $self->{cache}->{fields};
     }
     else {
        # I'm assuming, "columns" always returns the columns in the same order...
@@ -60,11 +60,11 @@ sub fields {
         $self->{cache}->{fields} = $l;
     }
 
-    if ( !exists( $args->{ -show_hidden_fields } ) ) {
-        $args->{ -show_hidden_fields } = 1;
+    if ( !exists( $args->{-show_hidden_fields} ) ) {
+        $args->{-show_hidden_fields} = 1;
     }
-    if ( !exists( $args->{ -dotted } ) ) {
-        $args->{ -dotted } = 0;
+    if ( !exists( $args->{-dotted} ) ) {
+        $args->{-dotted} = 0;
     }
 
     # We just want the fields *other* than what's usually there...
@@ -81,41 +81,37 @@ sub fields {
     for (@$l) {
 
         if ( !exists( $omit_fields{$_} ) ) {
-
-            if ( $args->{ -show_hidden_fields } == 1 ) {
-                if ( $args->{ -dotted } == 1 ) {
-                    push ( @r, 'subscriber.' . $_ );
+            if ( $args->{-show_hidden_fields} == 1 ) {
+                if ( $args->{-dotted} == 1 ) {
+                    push( @r, 'subscriber.' . $_ );
                 }
                 else {
-                    push ( @r, $_ );
+                    push( @r, $_ );
                 }
             }
             elsif ( $DADA::Config::HIDDEN_SUBSCRIBER_FIELDS_PREFIX eq undef ) {
-                if ( $args->{ -dotted } == 1 ) {
-                    push ( @r, 'subscriber.' . $_ );
+                if ( $args->{-dotted} == 1 ) {
+                    push( @r, 'subscriber.' . $_ );
                 }
                 else {
-
-                    push ( @r, $_ );
+                    push( @r, $_ );
                 }
             }
             else {
-
                 if (   $_ !~ m/^$DADA::Config::HIDDEN_SUBSCRIBER_FIELDS_PREFIX/
-                    && $args->{ -show_hidden_fields } == 0 )
+                    && $args->{-show_hidden_fields} == 0 )
                 {
-                    if ( $args->{ -dotted } == 1 ) {
-                        push ( @r, 'subscriber.' . $_ );
-                    }
-                    else {
-
-                        push ( @r, $_ );
-                    }
-                }
-                else {
-
                     # ...
                 }
+                else {
+                    if ( $args->{-dotted} == 1 ) {
+                        push( @r, 'subscriber.' . $_ );
+                    }
+                    else {
+                        push( @r, $_ );
+                    }
+                }
+
             }
         }
     }

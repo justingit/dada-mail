@@ -176,7 +176,7 @@ sub remove_by_metadata {
         #		warn '$metadata' . Dumper($metadata);
 
         if (   $data->{data}->{flavor} eq $metadata->{flavor}
-            && $data->{data}->{type} eq $metadata->{type} )
+            && $data->{data}->{type}   eq $metadata->{type} )
         {
             push( @$tokens, $row->{token} );
         }

@@ -92,6 +92,13 @@ sub token {
 			
 		my $data = $ct->fetch($token); 
 
+		if(exists($data->{data}->{remote_addr})){ 
+			if($data->{data}->{remote_addr} ne $ENV{REMOTE_ADDR}){ 
+				require Data::Dumper; 
+				carp 'Token\'s env REMOTE_ADDR (' . $data->{data}->{remote_addr} . ') is different than current referer (' . $ENV{REMOTE_ADDR} .')'; 
+				carp "Additional Information: " . Data::Dumper::Dumper($data); 
+			}
+		}
 		if($data->{data}->{flavor} eq 'sub_confirm'){
 			
 			warn 'sub_confirm' 
@@ -383,8 +390,9 @@ sub subscribe {
 					-list  => $list, 
 					-email => $email,
 					-data  => {
-						flavor => 'sub_confirm', 
-						type   => 'list', 
+						flavor      => 'sub_confirm', 
+						type        => 'list', 
+						remote_addr => $ENV{REMOTE_ADDR}, 
 					},
 					-remove_previous => 1, 
 				}
@@ -1262,8 +1270,9 @@ sub unsubscribe {
 					-list  => $list, 
 					-email => $email,
 					-data  => {
-						flavor => 'unsub_confirm', 
-						type   => 'list', 
+						flavor      => 'unsub_confirm', 
+						type        => 'list', 
+						remote_addr => $ENV{REMOTE_ADDR},  
 					},
 					-remove_previous => 1, 
 				}

@@ -1021,6 +1021,32 @@ function toggle_pop_before_SMTP_options() {
 
 function test_sending_preferences() {
 
+
+	var set_smtp_sender = 0;
+	if ($('#set_smtp_sender').prop('checked') == true) {
+		set_smtp_sender = 1;
+	}
+	var pop3_use_ssl = 0; 
+	if ($('#pop3_use_ssl').prop('checked') == true) {
+		pop3_use_ssl = 1;
+	}
+	var use_pop_before_smtp = 0; 
+	if ($('#use_pop_before_smtp').prop('checked') == true) {
+		use_pop_before_smtp = 1;
+	}	
+	var use_sasl_smtp_auth = 0; 
+	if ($('#use_sasl_smtp_auth').prop('checked') == true) {
+		use_sasl_smtp_auth = 1;
+	}	
+	var use_smtp_ssl = 0; 
+	if ($('#use_smtp_ssl').prop('checked') == true) {
+		use_smtp_ssl = 1;
+	}
+	var add_sendmail_f_flag = 0; 
+	if ($('#add_sendmail_f_flag').prop('checked') == true) {
+		add_sendmail_f_flag = 1;
+	}	
+	
 	$.colorbox({
 		top: 0,
 		fixed: true,
@@ -1031,22 +1057,22 @@ function test_sending_preferences() {
 		href: $("#s_program_url").val(),
 		data: {
 			f: 'sending_preferences_test',
-			add_sendmail_f_flag: $('#add_sendmail_f_flag').val(),
+			sending_method: $('input[name=sending_method]:checked').val(),
+			add_sendmail_f_flag: add_sendmail_f_flag,
 			smtp_server: $('#smtp_server').val(),
 			smtp_port: $('#smtp_port').val(),
-			use_smtp_ssl: $('#use_smtp_ssl').val(),
-			use_sasl_smtp_auth: $('#use_sasl_smtp_auth').val(),
+			use_smtp_ssl: use_smtp_ssl,
+			use_sasl_smtp_auth: use_sasl_smtp_auth,
 			sasl_auth_mechanism: $('#sasl_auth_mechanism').val(),
 			sasl_smtp_username: $('#sasl_smtp_username').val(),
 			sasl_smtp_password: $('#sasl_smtp_password').val(),
-			use_pop_before_smtp: $('#use_pop_before_smtp').val(),
+			use_pop_before_smtp: use_pop_before_smtp,
 			pop3_server: $('#pop3_server').val(),
 			pop3_username: $('#pop3_username').val(),
 			pop3_password: $('#pop3_password').val(),
-			pop3_use_ssl: $('#pop3_use_ssl').val(),
-			set_smtp_sender: $('#set_smtp_sender').val(),
-			process: $('#process').val(),
-			sending_method: $('input[name=sending_method]:checked').val()
+			pop3_use_ssl: pop3_use_ssl,
+			set_smtp_sender: set_smtp_sender,
+			process: $('#process').val()
 		}
 	});
 }

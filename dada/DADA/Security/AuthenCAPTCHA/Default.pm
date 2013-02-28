@@ -5,8 +5,10 @@ use DADA::App::Guts;
 
 # I do this, so if we don't have GD, the thing doesn't act like we do...
 use GD; 
-
 use GD::SecurityImage; 
+
+# Needed by GD::SecurityImage
+require Math::Trig; 
 
 use strict; 
 

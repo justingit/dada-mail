@@ -6,7 +6,9 @@ use lib qw(
 
 use Encode; 
 use Try::Tiny; 
-use CGI::Carp qw(croak carp); 
+use Carp qw(croak carp); 
+#   $Carp::Verbose = 1;
+
 use DADA::Config qw(!:DEFAULT);  
 
 use constant HAS_HTML_TEMPLATE_PRO => eval { require HTML::Template::Pro; 1; }; 
@@ -553,7 +555,11 @@ sub default_screen {
         if ( !$subscriber_fields ) {
             require DADA::MailingList::Subscribers;
             my $lh = DADA::MailingList::Subscribers->new( { -list => $l } );
-            $subscriber_fields = $lh->subscriber_fields;
+            $subscriber_fields = $lh->subscriber_fields(
+				{
+					-show_hidden_fields => 0,
+				}
+			);
         }
 
         # /This is a weird placement...
@@ -2690,6 +2696,7 @@ sub subscription_form {
 			-show_hidden_fields => 0,
 		}
 	);
+		
 	my $field_attrs       = $pfm->get_all_field_attributes;
 	
 	my $named_subscriber_fields = [];
