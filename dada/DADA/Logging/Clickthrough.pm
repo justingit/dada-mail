@@ -731,9 +731,17 @@ sub redirect_encode {
 	    if ( !defined($key) ) {
 	        $key = $self->add( $mid, $url, $atts);
 	    }
-	    my $redirect_url =  $DADA::Config::PROGRAM_URL . '/r/'
-	      . $self->{name} . '/'
-	      . $key . '/';
+	    my $redirect_url =  
+			$DADA::Config::PROGRAM_URL . '/r/'
+	      . $self->{name} 
+		  . '/'
+	      . $key 
+	      . '/';
+	
+		if($self->{ls}->param('tracker_track_email') == 1) { 
+			$redirect_url .= '<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/'; 
+		}
+
 		warn '$redirect_url: ' . $redirect_url
 			if $t; 
 		

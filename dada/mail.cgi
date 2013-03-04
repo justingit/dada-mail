@@ -257,17 +257,21 @@ if($ENV{PATH_INFO}){
         $q->param('what_is_dada_mail');
 
     }elsif($info =~ /^spacer_image/){
+		# spacer_image/list/mid/spacer.png';
+		# Or
+		# spacer_image/list/mid/email_name/email_domain/spacer.png';
+		
+	    $q->param('flavor', 'm_o_c');
+		
+		my @data = split('/', $info);
+		
+        $q->param('list', $data[1]);
+        $q->param('mid',  $data[2]);
 
-        my ($throwaway, $pi_list, $pi_mid, $bollocks) = split('/', $info);
-
-        $q->param('flavor', 'm_o_c');
-
-        $q->param('list',   $pi_list)
-            if $pi_list;
-
-        $q->param('mid',    $pi_mid)
-            if $pi_mid;
-
+		if($data[3] ne 'spacer_image.png' && $data[4] && $data[5] && $data[5] eq 'spacer.png'){ 
+	        $q->param('email',   $data[3] . '@' . $data[4]);
+		} 
+		
 }elsif($info =~ /^img/){
 
         my ($pi_flavor, $img_name, $extran) = split('/', $info);
@@ -355,7 +359,7 @@ if($ENV{PATH_INFO}){
 
     }elsif($info =~ /^r/){
        # my ($pi_flavor, $pi_list, $pi_k, $pi_mid, @pi_url) = split('/', $info);
-         my ($pi_flavor, $pi_list, $pi_key) = split('/', $info);
+         my ($pi_flavor, $pi_list, $pi_key, $pi_email_name, $pi_email_domain,  ) = split('/', $info, 5);
         my $pi_url;
 
         $q->param('flavor', $pi_flavor)
@@ -366,6 +370,11 @@ if($ENV{PATH_INFO}){
 
 	       $q->param('key',   $pi_key)
 	            if $pi_key;
+		 my $pi_email = $pi_email_name . '@' . $pi_email_domain
+		         if $pi_email_name && $pi_email_domain;
+		  $q->param('email',  $pi_email)
+		         if $pi_email;
+		
     }elsif($info =~ /^what_is_dada_mail$/){
 
         $q->param('flavor', 'what_is_dada_mail');
@@ -10275,6 +10284,8 @@ sub file_attachment {
 
 sub redirection {
 
+#	use Data::Dumper; 
+#	die Dumper([$q->param('key'), $q->param('email')] ); 
     require DADA::Logging::Clickthrough;
     my $r = DADA::Logging::Clickthrough->new({-list => $q->param('list')});
 	if(! $r->enabled) { 
@@ -10331,8 +10342,14 @@ sub m_o_c {
           DADA::Logging::Clickthrough->new( { -list => $q->param('list') } );
 		if($r->enabled) { 
 	        if ( defined( $q->param('mid') ) ) {
-	            $r->o_log( { -mid => $q->param('mid'), } );
-	        }
+	            
+				$r->o_log( 
+					{ 
+						-mid   => $q->param('mid'), 
+						-email => $q->param('email'), 
+					} 
+				);
+			}
   		}	
 	}
     require MIME::Base64;

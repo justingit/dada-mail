@@ -10,6 +10,9 @@ Key:
 [*] Naw...
 [?] Someday
 
+
+[ ] Perhaps another email protection scheme - just break the email address. 
+
 [] Revist docs on Bridge - update. 
 
 [ ] Rss to email converter? 

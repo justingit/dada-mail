@@ -381,6 +381,10 @@ sub o_log {
 	if(exists($args->{-timestamp})){ 
 		$timestamp = $args->{-timestamp};
 	}
+	if(!exists($args->{-email})){ 
+		$args->{-email} = '';
+	}
+	
 	my $ts_snippet = ''; 
 	my $place_holder_string = ''; 
 	
@@ -397,14 +401,20 @@ sub o_log {
 	}
 	
     if ( $self->{ls}->param('enable_open_msg_logging') == 1 ) {
-        my $query =
-'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'remote_addr, msg_id, event) VALUES (?, ?, ?, ?' . $place_holder_string .')';
+        my $query = 'INSERT INTO ' 
+		. $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} 
+		.'(list, ' 
+		. $ts_snippet 
+		. 'remote_addr, msg_id, event, email) VALUES (?, ?, ?, ?, ?' 
+		. $place_holder_string 
+		.')';
+		
         my $sth = $self->{dbh}->prepare($query);
 		if(defined($timestamp)){ 
-			$sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, 'open' );
+			$sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, 'open', $args->{-email});
 		}
 		else { 
-			$sth->execute($self->{name}, $remote_address, $args->{-mid}, 'open' );
+			$sth->execute($self->{name}, $remote_address, $args->{-mid}, 'open', $args->{-email});
         }
 		$sth->finish;
         return 1;
@@ -920,18 +930,18 @@ sub export_logs {
 			$sql_snippet = ', ' . $sql_snippet; 
 		}
 		
-		my $title_status = $csv->print ($fh, [qw(timestamp remote_addr msg_id url), @$custom_fields]);
+		my $title_status = $csv->print ($fh, [qw(timestamp remote_addr msg_id url, email), @$custom_fields]);
 		print $fh "\n";
 		
-        $query = 'SELECT timestamp, remote_addr, msg_id, url'. $sql_snippet .' FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ?';
+        $query = 'SELECT timestamp, remote_addr, msg_id, url, email'. $sql_snippet .' FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ?';
     }
     elsif ( $args->{-type} eq 'activity' ) {
 	
-		my $title_status = $csv->print ($fh, [qw(timestamp remote_addr msg_id activity details)]);
+		my $title_status = $csv->print ($fh, [qw(timestamp remote_addr msg_id activity details, email)]);
 		print $fh "\n";
 		
 		# timestamp list message_id activity details
-        $query = 'SELECT timestamp, remote_addr, msg_id, event, details FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ?';
+        $query = 'SELECT timestamp, remote_addr, msg_id, event, details, email FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ?';
     }
 	if(defined($args->{-mid})){ 
 		$query .= ' AND msg_id = ?'; 
@@ -1837,7 +1847,14 @@ sub purge_log {
 		$self->{dbh}->do($query1, {}, ($self->{name})) or die "cannot do statment $DBI::errstr\n"; 
 		$self->{dbh}->do($query2, {}, ($self->{name})) or die "cannot do statment $DBI::errstr\n";
 
-
+		require DADA::App::DataCache; 
+		my $dc = DADA::App::DataCache->new;
+		$dc->flush(
+			{
+				-list => $self->{name}
+			}
+		);
+		
 	return 1; 
 }
 
