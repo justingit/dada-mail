@@ -261,6 +261,10 @@ sub r_log {
 		$remote_address = $args->{-remote_addr}; 
 	}
 
+	if(!exists($args->{-email})){ 
+		$args->{-email} = ''; 
+	}
+	
 	if ( $self->{ls}->param('enable_open_msg_logging') == 1 ) {
 		my $recorded_open_recently = 1; 
 		try {
@@ -297,17 +301,17 @@ sub r_log {
 			$place_holder_string .= ' ,?';
 		}
         my $query =
-            'INSERT INTO ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} .'(list,' . $ts_snippet .'remote_addr, msg_id, url'
+            'INSERT INTO ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} .'(list,' . $ts_snippet .'remote_addr, msg_id, url, email'
           . $sql_snippet
-          . ') VALUES (?, ?, ?, ?'
+          . ') VALUES (?, ?, ?, ?, ?'
           . $place_holder_string . ')';
 
         my $sth = $self->{dbh}->prepare($query);
         if(defined($timestamp)){ 
-			$sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, $args->{-url}, @values );
+			$sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, $args->{-url}, $args->{-email}, @values );
 		}
 		else { 
-			$sth->execute($self->{name}, $remote_address, $args->{-mid}, $args->{-url}, @values );			
+			$sth->execute($self->{name}, $remote_address, $args->{-mid}, $args->{-url}, $args->{-email}, @values );			
 		}
         $sth->finish;
 
@@ -914,9 +918,6 @@ sub export_logs {
 		$args->{-mid} = undef; #really. 
 	}
 
-
-    my $l;
-
     require Text::CSV;
     my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
 	
@@ -937,7 +938,7 @@ sub export_logs {
     }
     elsif ( $args->{-type} eq 'activity' ) {
 	
-		my $title_status = $csv->print ($fh, [qw(timestamp remote_addr msg_id activity details, email)]);
+		my $title_status = $csv->print ($fh, [qw(timestamp remote_addr msg_id activity details email)]);
 		print $fh "\n";
 		
 		# timestamp list message_id activity details
@@ -961,6 +962,62 @@ sub export_logs {
         print $fh "\n";
     }
 }
+
+sub export_by_email { 
+	
+	my $self   = shift; 
+	my ($args) = @_;
+	
+	require Text::CSV;
+    my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
+
+	if(!exists($args->{-fh})){ 
+		$args->{-fh} = \*STDOUT;
+	}
+	my $fh = $args->{-fh}; 
+	
+	if(!exists($args->{-type})){ 
+		$args->{-type} = 'clickthrough';
+	}
+	if(!exists($args->{-mid})){ 
+		$args->{-mid} = undef; #really. 
+	}
+	
+	my $query; 
+	
+	if ( $args->{-type} eq 'clickthrough' ) {
+	    $query = 'SELECT DISTINCT(email) FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ?';
+	}
+	elsif ( $args->{-type} eq 'open' ) { 
+		$query = 'SELECT DISTINCT(email) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND event = open';
+	}
+	
+	if(defined($args->{-mid})){ 
+		$query .= ' AND msg_id = ?'; 
+	}		
+	$query .= ' ORDER BY email ASC';
+			
+	my $sth = $self->{dbh}->prepare($query);
+    
+	if(defined($args->{-mid})){ 
+		$sth->execute($self->{name}, $args->{-mid});
+    }
+	else { 
+		$sth->execute($self->{name});
+	}
+	
+	warn $query
+	 if $t; 
+	
+	while ( my $fields = $sth->fetchrow_arrayref ) {
+        my $status = $csv->print( $fh, $fields );
+        print $fh "\n";
+    }
+	
+}
+
+
+
 
 
 sub can_use_country_geoip_data { 

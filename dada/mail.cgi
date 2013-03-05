@@ -10299,9 +10299,10 @@ sub redirection {
 			   if(defined($mid) && defined($url)){
 		       		$r->r_log(
 						{ 
-							-mid  => $mid, 
-							-url  => $url, 
-							-atts => $atts
+							-mid   => $mid, 
+							-url   => $url, 
+							-atts  => $atts,
+							-email => $q->param('email'),
 						}
 					);
 				}

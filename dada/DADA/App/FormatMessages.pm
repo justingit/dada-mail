@@ -654,7 +654,7 @@ sub _add_opener_image {
 	my $self    = shift; 
 	my $content = shift; 
 	my $url; 
-	if($self->{ls}->param() == 1) { 
+	if($self->{ls}->param('tracker_track_email') == 1) { 
 		$url = '<!-- tmpl_var PROGRAM_URL -->/spacer_image/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var message_id -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/spacer.png';
 	}
 	else { 
