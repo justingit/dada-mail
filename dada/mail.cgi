@@ -405,8 +405,8 @@ elsif($q->param('f')){
 	$flavor = $q->param('f');
 	$q->param('flavor', $q->param('f'));
 }
-my $email = undef;
 
+my $email = undef;
 if($q->param('email')){
 	$email = $q->param('email');
 }
