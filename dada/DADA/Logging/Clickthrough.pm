@@ -472,7 +472,7 @@ sub auto_redirect_tag {
 
 sub HTML_auto_redirect_w_HTML_TokeParser { 
 	
-	print 'HTML_auto_redirect_w_HTML_TokeParser'; 
+#	print 'HTML_auto_redirect_w_HTML_TokeParser'; 
 	
 	my $self = shift; 
 	my $s    = shift;
