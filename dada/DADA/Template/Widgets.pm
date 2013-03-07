@@ -2660,7 +2660,7 @@ sub subscription_form {
    
     my ($args) = @_; 
     
-        
+    
     if(! exists($args->{-give_props})){
         $args->{-give_props} = $DADA::Config::GIVE_PROPS_IN_SUBSCRIBE_FORM; 
     }
@@ -2681,6 +2681,11 @@ sub subscription_form {
 	if(! exists($args->{-show_fields})){ 
 		$args->{-show_fields} = 1; 
 	}
+	
+	if(! exists($args->{-magic_form})){
+    	$args->{-magic_form} = 1; 
+	}
+
     
     my $li;
     my @available_lists = available_lists(-Dont_Die => 1); 
@@ -2752,7 +2757,10 @@ sub subscription_form {
 		}
 		
 		else {
-			if($DADA::Config::PROFILE_OPTIONS->{enable_magic_subscription_forms} == 1) { 
+			if(
+				$DADA::Config::PROFILE_OPTIONS->{enable_magic_subscription_forms} == 1
+			&&  $args->{-magic_form} == 1
+		) { 
 				require DADA::Profile::Session; 
 				my $sess = DADA::Profile::Session->new; 
 				if($sess->is_logged_in){ 
