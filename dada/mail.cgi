@@ -7491,39 +7491,45 @@ sub unsubscribe {
 
 }
 
-sub outdated_sub_links { 
-	
-	my $flavor_is = 's'; 
-	if($q->param('q_orig_flavor') eq 'u'){ 
-		$flavor_is = 'u'; 
-	}
-	
-	require DADA::Template::Widgets;
-	my $scrn = DADA::Template::Widgets::wrap_screen(
-	{
-		-screen                   => 'outdated_sub_links_screen.tmpl',
-		-with                     => 'list', 
-		-list                     => $list, 
-		-expr                     => 1,
-		
+sub outdated_sub_links {
+
+    if ( check_if_list_exists( -List => $list ) == 0 ) {
+        undef($list);
+        &default;
+        return;
+    }
+
+    my $flavor_is = 's';
+    if ( $q->param('q_orig_flavor') eq 'u' ) {
+        $flavor_is = 'u';
+    }
+
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+        {
+            -screen => 'outdated_sub_links_screen.tmpl',
+            -with   => 'list',
+            -list   => $list,
+            -expr   => 1,
+
 #		-list_settings_vars_param => {-list => $list,},
 #		-subscriber_vars_param    => {-list => $list, -email => $email, -type => 'list'},
 
-	 	-vars => { 
-			show_profile_widget => 0,
-			subscription_form => DADA::Template::Widgets::subscription_form(
-				{
-					-list       => $list, 
-					-email      => $email, 
-					-give_props => 0,
-					-flavor_is  => $flavor_is, 
-					-magic_form => 0, 
-				},
-			),
-		}
-	}
-	);
-	e_print($scrn);
+            -vars => {
+                show_profile_widget => 0,
+                subscription_form => DADA::Template::Widgets::subscription_form(
+                    {
+                        -list       => $list,
+                        -email      => $email,
+                        -give_props => 0,
+                        -flavor_is  => $flavor_is,
+                        -magic_form => 0,
+                    },
+                ),
+            }
+        }
+    );
+    e_print($scrn);
 }
 
 
