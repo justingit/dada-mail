@@ -97,6 +97,19 @@ sub token {
 				require Data::Dumper; 
 				carp 'Token\'s env REMOTE_ADDR (' . $data->{data}->{remote_addr} . ') is different than current referer (' . $ENV{REMOTE_ADDR} .')'; 
 				carp "Additional Information: " . Data::Dumper::Dumper($data); 
+				if($q->param('simple_test') ne 'pass') {
+					return user_error(
+		                -Error => 'mismatch_ip_on_confirm',            
+						-test  => $self->test, 
+						-Template_Vars => {
+							t      => $token,
+							flavor => $data->{data}->{flavor}, 
+						}
+		            );
+				}
+				else { 
+					carp "User has manually 'proved' that they're real - moving along,";
+				}
 			}
 		}
 		if($data->{data}->{flavor} eq 'sub_confirm'){
@@ -105,7 +118,7 @@ sub token {
 				if $t; 
 				
 			$q->param('email', $data->{email}); 
-			$q->param('list', $data->{list}); 
+			$q->param('list',  $data->{list}); 
 			$q->param('token', $token); 
 			
 			warn 'confirming'

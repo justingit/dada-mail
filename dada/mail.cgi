@@ -310,6 +310,60 @@ if($ENV{PATH_INFO}){
         $q->param('img_string',   $pi_img_string)
             if $pi_img_string;
 
+	}elsif($info =~ /^ur/){
+        my ($pi_flavor, $pi_list, $pi_email, $pi_domain) = split('/', $info, 4);
+        
+		$pi_email = $pi_email . '@' . $pi_domain;
+		 
+		# Get rid of that last, "=" that sometimes shows up on quoted-printable msgs. 
+		if($pi_email =~ m/\=$/){ 
+			$pi_email =~ s/\=$//; 
+		}
+		
+        $q->param('flavor', $pi_flavor)
+            if $pi_flavor;
+        $q->param('list',   $pi_list)
+            if $pi_list;
+        $q->param('email',  $pi_email)
+            if $pi_email;
+
+    }elsif($info =~ /^(s|n|u)/){ 
+		my ($pi_flavor, $pi_list, $pi_email, $pi_domain, $pi_pin) = split('/', $info, 5);
+		
+        if($pi_email !~ m/\@/){
+            $pi_email = $pi_email . '@' . $pi_domain
+                if $pi_domain;
+			if($pi_email =~ m/\=$/){ 
+				$pi_email =~ s/\=$//; 
+			}		
+				
+				
+        }else{
+            $pi_pin = $pi_domain
+                if !$pi_pin;
+        }
+		
+		if($pi_pin eq '='){ 
+			undef $pi_pin;
+		}
+		if($pi_list =~ m/\=$/){ 
+			$pi_list =~ s/\=$//; 
+		}		
+# 
+#        $q->param('flavor', $pi_flavor)
+#            if $pi_flavor;
+# Rather, we redirect them, to attempt to sub/unsub again, 
+		$q->param('flavor', 'outdated_sub_links');
+		$q->param('q_orig_flavor', $pi_flavor)
+		            if $pi_flavor;
+		
+        $q->param('list',   $pi_list)
+            if $pi_list;
+        $q->param('email',  $pi_email)
+            if $pi_email;
+        $q->param('pin',    $pi_pin)
+            if $pi_pin;
+
 	}elsif($info =~ /^t\//){
 		
 		my ($pi_flavor, $pi_token) = split('/', $info, 2);
@@ -405,8 +459,8 @@ elsif($q->param('f')){
 	$flavor = $q->param('f');
 	$q->param('flavor', $q->param('f'));
 }
-my $email = undef;
 
+my $email = undef;
 if($q->param('email')){
 	$email = $q->param('email');
 }
@@ -591,13 +645,20 @@ sub run {
 
 
 
-	# these params are the same as above, but are smaller in actual size
-	# this comes into play when you have to create a url using these as parts of it.
+# These handled the oldstyle confirmation. For some backwards compat, I've changed
+# them so that there's at least a shim to the new system, 
+#
+#	's'                         =>    \&subscribe,
+#	'n'                         =>    \&confirm,
+#	'u'                         =>    \&unsubscribe,
+	'outdated_sub_links'        =>    \&outdated_sub_links, 
 
-	's'                         =>    \&subscribe,
-	'u'                         =>    \&unsubscribe,
-	'ur'                        =>    \&unsubscribe_request, 
+# This is the new system
 	't'                         =>    \&token, 
+
+# unsubscribe_request is simply a form - already filled out, to unsubscribe. 
+	'ur'                        =>    \&unsubscribe_request, 
+
 	'smtm'                      =>    \&what_is_dada_mail,
 	'test_layout'               =>    \&test_layout,
 	'send_email_testsuite'      =>    \&send_email_testsuite,
@@ -7430,6 +7491,47 @@ sub unsubscribe {
         }
     );
 
+}
+
+sub outdated_sub_links {
+
+    if ( check_if_list_exists( -List => $list ) == 0 ) {
+        undef($list);
+        &default;
+        return;
+    }
+
+    my $flavor_is = 's';
+    if ( $q->param('q_orig_flavor') eq 'u' ) {
+        $flavor_is = 'u';
+    }
+
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+        {
+            -screen => 'outdated_sub_links_screen.tmpl',
+            -with   => 'list',
+            -list   => $list,
+            -expr   => 1,
+
+#		-list_settings_vars_param => {-list => $list,},
+#		-subscriber_vars_param    => {-list => $list, -email => $email, -type => 'list'},
+
+            -vars => {
+                show_profile_widget => 0,
+                subscription_form => DADA::Template::Widgets::subscription_form(
+                    {
+                        -list       => $list,
+                        -email      => $email,
+                        -give_props => 0,
+                        -flavor_is  => $flavor_is,
+                        -magic_form => 0,
+                    },
+                ),
+            }
+        }
+    );
+    e_print($scrn);
 }
 
 
