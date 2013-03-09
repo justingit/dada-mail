@@ -601,6 +601,10 @@ sub confirm {
     
 	        if($captcha_worked == 0){ 
             
+				my $simple_test = 0; 
+				if($q->param('simple_test') eq 'pass'){ 
+					$simple_test = 1; 
+				}
 	            warn '>>>> >>>> Showing confirm_captcha_step_screen screen'
 	                if $t; 
  
@@ -634,6 +638,8 @@ sub confirm {
 						email        => lc_email( strip ( xss_filter( $q->param( 'email' ) ) ) ), 
 						token        => xss_filter($q->param('token')), 
 						captcha_auth => xss_filter($captcha_auth),        
+						
+						simple_test         => (($simple_test == 1) ? ($q->param('simple_test')) : (undef)),
 
 						},
 					},
