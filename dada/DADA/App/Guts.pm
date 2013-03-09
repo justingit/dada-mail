@@ -2,8 +2,8 @@ package DADA::App::Guts;
 use 5.008_001; 
 
 
-use lib "/../../";
-use lib "/../../DADA/perllib";
+use lib "../../";
+use lib "../../DADA/perllib";
 
 
 use DADA::Config qw(!:DEFAULT);  

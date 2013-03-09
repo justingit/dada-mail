@@ -645,16 +645,18 @@ sub run {
 
 
 
-	# these params are the same as above, but are smaller in actual size
-	# this comes into play when you have to create a url using these as parts of it.
-
+# These handled the oldstyle confirmation. For some backwards compat, I've changed
+# them so that there's at least a shim to the new system, 
+#
 #	's'                         =>    \&subscribe,
 #	'n'                         =>    \&confirm,
 #	'u'                         =>    \&unsubscribe,
 	'outdated_sub_links'        =>    \&outdated_sub_links, 
 
+# This is the new system
 	't'                         =>    \&token, 
 
+# unsubscribe_request is simply a form - already filled out, to unsubscribe. 
 	'ur'                        =>    \&unsubscribe_request, 
 
 	'smtm'                      =>    \&what_is_dada_mail,
