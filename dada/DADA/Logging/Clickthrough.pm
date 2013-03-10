@@ -333,6 +333,7 @@ sub parse_string {
 			if $t; 
 	}
 	else { 
+		# ...
 	}
 
     my $pat = $self->redirect_regex();
@@ -747,9 +748,13 @@ sub redirect_encode {
 
 }
 
+
+
+
 sub redirect_tagify { 
 	my $self = shift; 
 	my $url  = shift; 
+	   $url  =~ s/\n|\r//g;
 	return '<?dada redirect url="' . $url . '" ?>'; 
 }
 
