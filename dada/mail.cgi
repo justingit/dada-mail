@@ -349,14 +349,21 @@ if($ENV{PATH_INFO}){
 		if($pi_list =~ m/\=$/){ 
 			$pi_list =~ s/\=$//; 
 		}		
-# 
-#        $q->param('flavor', $pi_flavor)
-#            if $pi_flavor;
-# Rather, we redirect them, to attempt to sub/unsub again, 
-		$q->param('flavor', 'outdated_sub_links');
-		$q->param('q_orig_flavor', $pi_flavor)
-		            if $pi_flavor;
-		
+
+		# Rather, we redirect them, to attempt to sub/unsub again, 
+		if(
+			($pi_flavor eq 'n') 
+	     || ($pi_flavor eq 'u' && $pi_pin)
+		){ 
+			$q->param('flavor', 'outdated_sub_links');
+			$q->param('q_orig_flavor', $pi_flavor)
+			            if $pi_flavor;			
+		}
+		else { 
+			$q->param('flavor', $pi_flavor)
+				if $pi_flavor;
+		}
+
         $q->param('list',   $pi_list)
             if $pi_list;
         $q->param('email',  $pi_email)
@@ -648,9 +655,10 @@ sub run {
 # These handled the oldstyle confirmation. For some backwards compat, I've changed
 # them so that there's at least a shim to the new system, 
 #
-#	's'                         =>    \&subscribe,
 #	'n'                         =>    \&confirm,
-#	'u'                         =>    \&unsubscribe,
+
+	's'                         =>    \&subscribe,
+	'u'                         =>    \&unsubscribe,
 	'outdated_sub_links'        =>    \&outdated_sub_links, 
 
 # This is the new system
