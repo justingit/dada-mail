@@ -11,7 +11,17 @@ This screen isn't meant to actually be shown to the user, other than in somewhat
 
 We've written an extended description about this here: 
 
-FILL THIS IN!
+L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/archive/homepage_blog/20130310231707/>
+
+=head2 Bugfixes 6.2.0
+
+=head3 Subscriber profile fields disappeared.
+
+L<https://github.com/justingit/dada-mail/issues/358>
+
+=head3 "Unknown code ref type given ''. " in "Advanced Archive Options" screen
+
+L<https://github.com/justingit/dada-mail/issues/357>
 
 =head1 6.1.1
 
