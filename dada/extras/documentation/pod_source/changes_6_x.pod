@@ -1,3 +1,28 @@
+=head1 6.2.0
+
+=head2 Summary 6.2.0
+
+This release follows up on the discovery that a lot of the weirdness with the sub/unsub confirmation process 
+happens when the sub/unsub request, and the sub/unsub confirmations come from different IP Addresses. 
+
+To counter that in a simple way, there's now a check for IP address same-ness, and if that test fails, 
+a simple screen is shown, presenting the user to manually click on the button to finish the confirmation process.
+This screen isn't meant to actually be shown to the user, other than in somewhat strange circumstances. 
+
+We've written an extended description about this here: 
+
+L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/archive/homepage_blog/20130310231707/>
+
+=head2 Bugfixes 6.2.0
+
+=head3 Subscriber profile fields disappeared.
+
+L<https://github.com/justingit/dada-mail/issues/358>
+
+=head3 "Unknown code ref type given ''. " in "Advanced Archive Options" screen
+
+L<https://github.com/justingit/dada-mail/issues/357>
+
 =head1 6.1.1
 
 =head2 Summary 6.1.1

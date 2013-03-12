@@ -1,7 +1,10 @@
 package DADA::App::FormatMessages;
 
 use strict; 
-use lib qw(../../ ../../DADA/perllib); 
+use lib qw(
+	../../ 
+	../../DADA/perllib
+); 
 
 
 use DADA::Config qw(!:DEFAULT);
@@ -12,9 +15,7 @@ use MIME::Parser;
 use MIME::Entity; 
 use DADA::App::Guts; 
 use Try::Tiny; 
-
 use Carp qw(croak carp); 
-
 use vars qw($AUTOLOAD); 
 
 my $t = 0; 
@@ -1363,82 +1364,89 @@ B<-type> can be:
 
 =cut
 
-sub _macro_tags { 
+sub _macro_tags {
 
-	my $self = shift; 
-	
+    my $self = shift;
 
-	my %args = (-url         => '<!-- tmpl_var PROGRAM_URL -->', # Really.
-				-email        => undef, 
-				-list         => $self->{list},
-				-escape_list  => 1,
-				-escape_all   => 0,
-				@_
-				); 
-	
-	my $type; 
-	
-	if($args{-type} eq 'confirm_subscribe' || $args{-type} eq 'confirm_unsubscribe'){ 
+    my %args = (
+        -url         => '<!-- tmpl_var PROGRAM_URL -->',    # Really.
+        -email       => undef,
+        -list        => $self->{list},
+        -escape_list => 1,
+        -escape_all  => 0,
+        @_
+    );
 
-		my $link = '<!-- tmpl_var PROGRAM_URL -->/t/<!-- tmpl_var list.confirmation_token -->/';
-		return $link;
+    my $type;
 
-	}
-	elsif($args{-type} eq 'subscribe'){ 
-	
-		$type = 's'; 
-	
-	}
-	elsif($args{-type} eq 'unsubscribe'){ 
-	
-		# We really shouldn't even been in this sub, if there's no list... 
-		if($self->no_list == 1){ 
-			$type = 'u'; 
-		}
-		else { 	
-			# And, that's it.
-			if($self->{ls}->param('unsub_link_behavior') eq 'show_unsub_form'){ 
-				$type = 'ur'; 
-			}
-			else { 
-				$type = 'u'; 
-			}
-		}
-	}
+    if (   $args{-type} eq 'confirm_subscribe'
+        || $args{-type} eq 'confirm_unsubscribe' )
+    {
 
-	my $link = $args{-url} . '/';
-	
-	if($args{-escape_all} == 1){ 
-		for($args{-email}, $type, $args{-list}){ 
-			$_ = uriescape($_);
-		}
-		
-	}elsif($args{-escape_list} == 1){ 
-		$args{-list} = uriescape($args{-list}); 
-	}
-	
-	if($args{-email}){ 
+        my $link =
+'<!-- tmpl_var PROGRAM_URL -->/t/<!-- tmpl_var list.confirmation_token -->/';
+        return $link;
 
-		my $tmp_email = $args{-email};
-	
-		    $tmp_email =~ s/\@/\//g;	# snarky. Replace, "@" with, "/"
-		    $tmp_email =~ s/\+/_p2Bp_/g;
-	    
-		    $args{-email} = $tmp_email; 
-	}
-	else { 
-		 $args{-email} = '<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->'
-	}
-	
-	my @qs; 
-	push(@qs,  $type)         if $type;   
-	push(@qs,  '<!-- tmpl_var list_settings.list -->')  if $args{-list};	
-	push(@qs,  $args{-email}) if $args{-email};
-	
-	$link .= join '/', @qs; 
-	
-	return $link . '/';
-	
+    }
+    elsif ( $args{-type} eq 'subscribe' ) {
+
+        $type = 's';
+
+    }
+    elsif ( $args{-type} eq 'unsubscribe' ) {
+
+        # We really shouldn't even been in this sub, if there's no list...
+        if ( $self->no_list == 1 ) {
+            $type = 'u';
+        }
+        else {
+            # And, that's it.
+            if (
+                $self->{ls}->param('unsub_link_behavior') eq 'show_unsub_form' )
+            {
+                $type = 'ur';
+            }
+            else {
+                $type = 'u';
+            }
+        }
+    }
+
+    my $link = $args{-url} . '/';
+
+    if ( $args{-escape_all} == 1 ) {
+        for ( $args{-email}, $type, $args{-list} ) {
+            $_ = uriescape($_);
+        }
+
+    }
+    elsif ( $args{-escape_list} == 1 ) {
+        $args{-list} = uriescape( $args{-list} );
+    }
+
+    if ( $args{-email} ) {
+
+        my $tmp_email = $args{-email};
+
+        $tmp_email =~ s/\@/\//g;       # snarky. Replace, "@" with, "/"
+        $tmp_email =~ s/\+/_p2Bp_/g;
+
+        $args{-email} = $tmp_email;
+    }
+    else {
+        $args{-email} =
+'<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->';
+    }
+
+    my @qs;
+    push( @qs, $type )                                  if $type;
+    push( @qs, '<!-- tmpl_var list_settings.list -->' ) if $args{-list};
+    push( @qs, $args{-email} )                          if $args{-email};
+
+    $link .= join '/', @qs;
+
+    return $link . '/';
+
 }
 
 

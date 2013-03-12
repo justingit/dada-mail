@@ -49,13 +49,11 @@ sub fields {
     my $l      = [];
 
     # I don't know, but this isn't always working...
-
     if ( exists( $self->{cache}->{fields} ) ) {
         $l = $self->{cache}->{fields};
     }
     else {
        # I'm assuming, "columns" always returns the columns in the same order...
-
         $l = $self->_columns;
         $self->{cache}->{fields} = $l;
     }
@@ -78,46 +76,28 @@ sub fields {
     );
 
     my @r;
-    for (@$l) {
+    for my $field (@$l) {
 
-        if ( !exists( $omit_fields{$_} ) ) {
-            if ( $args->{-show_hidden_fields} == 1 ) {
-                if ( $args->{-dotted} == 1 ) {
-                    push( @r, 'subscriber.' . $_ );
-                }
-                else {
-                    push( @r, $_ );
-                }
-            }
-            elsif ( $DADA::Config::HIDDEN_SUBSCRIBER_FIELDS_PREFIX eq undef ) {
-                if ( $args->{-dotted} == 1 ) {
-                    push( @r, 'subscriber.' . $_ );
-                }
-                else {
-                    push( @r, $_ );
-                }
-            }
-            else {
-                if (   $_ !~ m/^$DADA::Config::HIDDEN_SUBSCRIBER_FIELDS_PREFIX/
-                    && $args->{-show_hidden_fields} == 0 )
-                {
-                    # ...
-                }
-                else {
-                    if ( $args->{-dotted} == 1 ) {
-                        push( @r, 'subscriber.' . $_ );
-                    }
-                    else {
-                        push( @r, $_ );
-                    }
-                }
+        next
+          if exists( $omit_fields{$field} );
 
-            }
+        next
+          if ( $args->{-show_hidden_fields} == 0
+            && $DADA::Config::HIDDEN_SUBSCRIBER_FIELDS_PREFIX ne undef
+            && $field =~ m/^$DADA::Config::HIDDEN_SUBSCRIBER_FIELDS_PREFIX/ );
+
+        if ( $args->{-dotted} == 1 ) {
+            push( @r, 'subscriber.' . $field );
         }
+        else {
+            push( @r, $field );
+        }
+
     }
 
     return \@r;
 }
+
 
 
 sub add_field {

@@ -333,6 +333,7 @@ sub parse_string {
 			if $t; 
 	}
 	else { 
+		# ...
 	}
 
     my $pat = $self->redirect_regex();
@@ -472,7 +473,7 @@ sub auto_redirect_tag {
 
 sub HTML_auto_redirect_w_HTML_TokeParser { 
 	
-	print 'HTML_auto_redirect_w_HTML_TokeParser'; 
+#	print 'HTML_auto_redirect_w_HTML_TokeParser'; 
 	
 	my $self = shift; 
 	my $s    = shift;
@@ -755,9 +756,13 @@ sub redirect_encode {
 
 }
 
+
+
+
 sub redirect_tagify { 
 	my $self = shift; 
 	my $url  = shift; 
+	   $url  =~ s/\n|\r//g;
 	return '<?dada redirect url="' . $url . '" ?>'; 
 }
 
