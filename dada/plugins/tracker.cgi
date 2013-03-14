@@ -325,18 +325,28 @@ sub clear_message_data_cache {
 
 sub export_subscribers { 
 	
-	my $type = xss_filter($q->param('log_type')); 
-	if($type ne 'clickthrough' && $type ne 'activity'){ 
-		$type = 'clickthrough'; 
+	my $mid = xss_filter($q->param('mid')); 
+	my $type = xss_filter($q->param('type')); 
+	if($type ne 'clickthroughs' && $type ne 'opens'){ 
+		$type = 'clickthroughs'; 
 	}
 	
-	my $header  = 'Content-disposition: attachement; filename=' . $list . '-' . $type . '.csv' .  "\n"; 
-	   $header .= 'Content-type: text/csv' . "\n\n";
+	my $header  = 'Content-disposition: attachement; filename=' 
+			      . $list 
+			      . '-' 
+			      . $type 
+			      . '-subscribers-' 
+			      . $mid 
+			      . '.csv' 
+			      .  "\n";
+	
+	$header .= 'Content-type: text/csv' . "\n\n";
     print $header;
 
    $rd->export_by_email(
 		{
 			-type => $type, 
+			-mid  => $mid, 
 			-fh   => \*STDOUT
 		}
 	);

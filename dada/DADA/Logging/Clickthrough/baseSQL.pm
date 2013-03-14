@@ -977,7 +977,7 @@ sub export_by_email {
 	my $fh = $args->{-fh}; 
 	
 	if(!exists($args->{-type})){ 
-		$args->{-type} = 'clickthrough';
+		$args->{-type} = 'clickthroughs';
 	}
 	if(!exists($args->{-mid})){ 
 		$args->{-mid} = undef; #really. 
@@ -985,11 +985,13 @@ sub export_by_email {
 	
 	my $query; 
 	
-	if ( $args->{-type} eq 'clickthrough' ) {
+	if ( $args->{-type} eq 'clickthroughs' ) {
+#		print $fh 'clickthroughs'; 
 	    $query = 'SELECT DISTINCT(email) FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ?';
 	}
-	elsif ( $args->{-type} eq 'open' ) { 
-		$query = 'SELECT DISTINCT(email) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND event = open';
+	elsif ( $args->{-type} eq 'opens' ) { 
+#		print $fh 'opens'; 
+		$query = 'SELECT DISTINCT(email) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . " WHERE list = ? AND event = 'open'";
 	}
 	
 	if(defined($args->{-mid})){ 
@@ -1005,6 +1007,10 @@ sub export_by_email {
 	else { 
 		$sth->execute($self->{name});
 	}
+	
+#	print $fh $query . "\n";
+#	print $fh . '$self->{name} ' . $self->{name} . "\n"; 
+#	print $fh . '$args->{-mid} ' . $args->{-mid} . "\n"; 
 	
 	warn $query
 	 if $t; 
