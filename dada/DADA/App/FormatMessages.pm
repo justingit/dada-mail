@@ -792,7 +792,7 @@ sub _make_multipart {
 
 	if($orig_type eq 'text/plain'){ 
 		$new_type = 'text/html'; 
-		$new_data = plaintext_to_html({-str => safely_encode($orig_content)});
+		$new_data = plaintext_to_html({-str => $orig_content});
 		
 		# I kind of agree this is a strange place to put this, but H::T template tags 
 		# are getting clobbered: 
@@ -810,12 +810,12 @@ sub _make_multipart {
 	}
 	else { 
 		$new_type = 'text/plain';
-		$new_data = html_to_plaintext({-str => safely_encode($orig_content)});
+		$new_data = html_to_plaintext({-str => $orig_content});
 	}
 	
 	my $new_entity = MIME::Entity->build(
 		Type     => $new_type, 
-		Data     => $new_data, 
+		Data     => safely_encode($new_data), 
 		Encoding => $orig_encoding,
 	 );
 
