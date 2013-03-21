@@ -10,6 +10,12 @@ Key:
 [*] Naw...
 [?] Someday
 
+[ ] Screencast on how to install CPAN modules you may just need. 
+[] Mailhide configuration in installer
+[] SES configuration in installer
+[ ] Thank you, quick question, is there a way for DadaMail to pull recent information from an RSS feed to do regular mails of recent posts? MailChimp does this and its handy for automated emails.
+
+
 [ ] No, the old style confirmation links won't work. I wanted to truly get this upgrade out asap - so I had to make decisions on what exactly was critical to push out. 
 
 Now that I have some time, maybe the best thing to do is have such links bring the user to a screen that says something like, "link expired, try that all again, sorry about that: (show sub/unsub form)"
