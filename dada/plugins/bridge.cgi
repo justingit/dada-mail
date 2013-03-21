@@ -811,51 +811,42 @@ sub cgi_default {
     my $discussion_pop_password =
       DADA::Security::Password::cipher_decrypt( $ls->param('cipher_key'),
         $ls->param('discussion_pop_password') );
-
+ 
     if ( $q->param('process') eq 'edit' ) {
-        ( $list_email_status, $list_email_errors ) = validate_list_email(
-            {
-                -list       => $list,
-                -list_email => $q->param('discussion_pop_email'),
-            }
-        );
+	
+		if ( $Plugin_Config->{Allow_Open_Discussion_List} == 0 ) {
+		    $q->param( 'open_discussion_list', 0 );
+		}
 
-        if ( $list_email_status == 1 ) {
+		$q->param(
+		    'discussion_pop_password',
+		    DADA::Security::Password::cipher_encrypt(
+		        $ls->param('cipher_key'),
+		        $q->param('discussion_pop_password')
+		    )
+		);
 
-            if ( $Plugin_Config->{Allow_Open_Discussion_List} == 0 ) {
-                $q->param( 'open_discussion_list', 0 );
-            }
-            else {
-            }
+		$ls->save_w_params(
+		    {
+		        -associate => $q,
+		        -settings  => { %bridge_settings_defaults }
+		    }
+		);
 
-            $q->param(
-                'discussion_pop_password',
-                DADA::Security::Password::cipher_encrypt(
-                    $ls->param('cipher_key'),
-                    $q->param('discussion_pop_password')
-                )
-            );
-
-            $ls->save_w_params(
-                {
-                    -associate => $q,
-                    -settings  => { %bridge_settings_defaults }
-                }
-            );
-
-            print $q->redirect(
-                -uri => $Plugin_Config->{Plugin_URL} . '?done=1' );
-            return;
-        }
-        else {
-            $q->param( 'done', 0 );
-            $discussion_pop_password = $q->param('discussion_pop_password');
-        }
+		print $q->redirect(
+		    -uri => $Plugin_Config->{Plugin_URL} . '?done=1' );
+		return;
     }
     else {
-
         # Not editing!
     }
+
+	( $list_email_status, $list_email_errors ) = validate_list_email(
+		{
+			-list       => $list,
+			-list_email => $ls->param('discussion_pop_email'),
+		}
+	);
 
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
     my $auth_senders_count =
@@ -871,12 +862,13 @@ sub cgi_default {
           $lh->subscription_list( { -type => 'authorized_senders' } );
     }
 
-    my $can_use_ssl = 0;
-    eval { require IO::Socket::SSL };
-    if ( !$@ ) {
-        $can_use_ssl = 1;
-    }
-
+    my $can_use_ssl = 1;
+	try { 
+		require IO::Socket::SSL; 
+	} catch {
+		$can_use_ssl = 0;
+	};
+	
     my $discussion_pop_auth_mode_popup = $q->popup_menu(
         -id       => 'discussion_pop_auth_mode',
 	    -name     => 'discussion_pop_auth_mode',
@@ -1655,7 +1647,7 @@ sub validate_msg {
     my $msg      = ${$test_msg};    # copy of orig
 
     my $status = 1;
-    my $notice = undef;
+    my $notice = '';
 
     # DEV:
     # This should *really* mention each and every test....
@@ -2209,7 +2201,7 @@ sub test_Check_List_Owner_Return_Path_Header {
     my $ls     = shift;
     my $entity = shift;
     my $errors = shift;
-    my $notice = 0;
+    my $notice = '';
 
     require Email::Address;
 
@@ -2267,7 +2259,7 @@ sub test_Check_List_Owner_Return_Path_Header {
         $errors->{list_owner_return_path_set_funny} = 0;
 
         $notice .=
-"\t\t * Address set in, From: header, ($from_address) matches, Return-Path address ($return_path_address) Yeah!\n"
+"\t\t * Address set in, From: header, ($from_address) matches, Return-Path address ($return_path_address)\n"
           if $verbose;
 
     }
