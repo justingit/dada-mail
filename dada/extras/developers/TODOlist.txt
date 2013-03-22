@@ -10,6 +10,8 @@ Key:
 [*] Naw...
 [?] Someday
 
+
+[ ] Bridge needs a fancier change password thingy for the POP3 account thing. 
 [ ] Screencast on how to install CPAN modules you may just need. 
 [] Mailhide configuration in installer
 [] SES configuration in installer
