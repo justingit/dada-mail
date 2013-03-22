@@ -1,8 +1,4 @@
 $Rules = [
-	
-	
-
-
 
     {
         amazon_ses_dsn_no_such_user => {
@@ -40,15 +36,31 @@ $Rules = [
             }
         }
     },
-
+    {
+        secureserver_dot_net_mailbox_full => {
+            Examine => {
+                Message_Fields => {
+                    Guessed_MTA  => [qw(secureserver_dot_net)],
+					'Diagnostic-Code_regex' => [qr/mailfolder is full|Mail quota exceeded/],
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+				add_to_score => 'softbounce_score',
+            }
+        }
+    },
+	
 		
         {
-            qmail_delivery_delay_notification => {
+            yelling_mailbox_is_full=> {
                 Examine => {
                     Message_Fields => {
-                        Guessed_MTA => [qw(Qmail)],
-                        'Diagnostic-Code_regex' =>
-                          [qr/The mail system will continue delivery attempts/],
+                        'Notification_regex' => [qr/INBOX IS FULL/],
+						 Action              => [qw(failed)],
                     },
 
                     Data => {
@@ -57,8 +69,7 @@ $Rules = [
                     }
                 },
                 Action => {
-
-                    #nothing!
+					add_to_score => 'softbounce_score',
                 }
             }
         },
@@ -221,29 +232,29 @@ qr/mailbox is full|Exceeded storage allocation|recipient storage full|mailbox fu
                 }
             }
         },
-		        {
-		            qmail_over_quota2 => {
-		                Examine => {
-		                    Message_Fields => {
+        {
+            qmail_over_quota2 => {
+                Examine => {
+                    Message_Fields => {
 
-		                        Guessed_MTA             => [qw(Qmail)],
-		                        'Notification_regex' => [
-		                            (qr/mailbox is full|Exceeded storage allocation|recipient storage full|mailbox full|storage full|Not enough storage space/)
-		                        ],
+                        Guessed_MTA             => [qw(Qmail)],
+                        'Notification_regex' => [
+                            (qr/mailbox is full|Exceeded storage allocation|recipient storage full|mailbox full|storage full|Not enough storage space|user is over quota/)
+                        ],
 
-		                    },
+                    },
 
-		                    Data => {
-		                        Email => 'is_valid',
-		                        List  => 'is_valid',
-		                    }
-		                },
-		                Action => {
+                    Data => {
+                        Email => 'is_valid',
+                        List  => 'is_valid',
+                    }
+                },
+                Action => {
 
-		                    add_to_score => 'softbounce_score',
-		                }
-		            }
-		        },
+                    add_to_score => 'softbounce_score',
+                }
+            }
+        },
 
         {
             over_quota_552 => {
@@ -285,7 +296,22 @@ qr/mailbox is full|Exceeded storage allocation|recipient storage full|mailbox fu
                 Action => { add_to_score => 'softbounce_score', }
             }
         },
+        {
+            delivery_delayed => {
+                Examine => {
+                    Message_Fields => {
+                        Status => [qw(4.4.7)],
+                        Action => [qw(delayed)],
+                    },
 
+                    Data => {
+                        Email => 'is_valid',
+                        List  => 'is_valid',
+                    }
+                },
+                Action => { add_to_score => 'softbounce_score', }
+            }
+        },
         {
             delivery_time_expired => {
                 Examine => {
@@ -924,6 +950,25 @@ qr/551 not our customer|User unknown|ecipient no longer/
         #					},
         #					}
         #},
+	    {
+	        no_such_recipient => {
+	            Examine => {
+	                Message_Fields => {
+	                    Status => [qw(5.0.0)],
+	                    Action => [qw(failed)],
+	                    'Diagnostic-Code_regex' => [qr/No such recipient/],
+	                },
+	                Data => {
+	                    Email => 'is_valid',
+	                    List  => 'is_valid',
+	                }
+	            },
+	            Action => {
+					add_to_score => 'hardbounce_score',
+	            }
+	        }
+	    },		
+
 		
 	    {
 	        generic_mailbox_unavailable => {
@@ -1070,6 +1115,24 @@ qr/551 not our customer|User unknown|ecipient no longer/
 	            },
 	            Action => {
 					add_to_score => 'softbounce_score',
+	            }
+	        }
+	    },
+	    {
+	        generic_unknown_address => {
+	            Examine => {
+	                Message_Fields => {
+						Action => [qw(failed)],
+						Status_regex => [qr/5\.0\.0/],
+	                    'Diagnostic-Code_regex' => [qr/Unknown address/],
+	                },
+	                Data => {
+	                    Email => 'is_valid',
+	                    List  => 'is_valid',
+	                }
+	            },
+	            Action => {
+					add_to_score => 'hardbounce_score',
 	            }
 	        }
 	    },
