@@ -325,7 +325,7 @@ sub subscribe {
 				$ls->param('use_alt_url_sub_confirm_failed') == 1
 			){ 
             
-                my $qs = ''; 
+                my $qs = undef; 
                 if($ls->param('alt_url_sub_confirm_failed_w_qs') == 1){ 
                     $qs = 'list=' . $list . '&rm=sub_confirm&status=0&email=' . uriescape($email);
                     $qs .= '&errors[]=' . $_ for keys %$errors; 
@@ -442,7 +442,7 @@ sub subscribe {
             if(
                 $ls->param('use_alt_url_sub_confirm_success')       ==  1 
               ){ 
-                my $qs = ''; 
+                my $qs = undef; 
                 if($ls->param('alt_url_sub_confirm_success_w_qs') == 1){ 
                     $qs  = 'list=' . $list . '&rm=sub_confirm&status=1&email=' . uriescape($email); 
                     $qs .= '&' . $_ . '=' . uriescape($fields->{$_}) for keys %$fields; 
@@ -750,7 +750,7 @@ sub confirm {
 				$ls->param('use_alt_url_sub_failed')      == 1 
 			){ 
                         
-                my $qs = ''; 
+                my $qs = undef; 
                 warn '>>>> >>>> >>>> alt_url_sub_failed_w_qs set to: ' . $ls->param('alt_url_sub_failed_w_qs')
                     if $t; 
                     
@@ -992,7 +992,7 @@ sub confirm {
 		        	$ls->param('use_alt_url_sub_success') == 1
 		        ){
         
-                    my $qs = ''; 
+                    my $qs = undef; 
                     if($ls->param('alt_url_sub_success_w_qs') == 1){ 
                         $qs = 'list=' . $list . '&rm=sub&status=1&email=' . uriescape($email); 
                     }
@@ -1220,7 +1220,7 @@ sub unsubscribe {
 				$ls->param('use_alt_url_unsub_confirm_failed') == 1 
 			){ 
                 
-                my $qs = ''; 
+                my $qs = undef; 
                 # With a query string?
                 if($ls->param('alt_url_unsub_confirm_failed_w_qs') == 1){ 
                     $qs = 'list=' . $list . '&rm=unsub_confirm&status=0&email=' . uriescape($email);
@@ -1332,7 +1332,7 @@ sub unsubscribe {
             ){ 
             
                 # With... Query String?
-                my $qs = ''; 
+                my $qs = undef; 
                 if($ls->param('alt_url_unsub_confirm_success_w_qs') == 1){ 
                     $qs = 'list=' . $list . '&rm=unsub_confirm&status=1&email=' . uriescape($email); 
                 }
@@ -1508,7 +1508,7 @@ sub unsub_confirm {
                 $ls->param('use_alt_url_unsub_failed') == 1
             ){ 
             
-                my $qs = ''; 
+                my $qs = undef; 
                 if($ls->param('alt_url_unsub_failed_w_qs') == 1){ 
                     $qs = 'list=' . $list . '&rm=unsub&status=0&email=' . uriescape($email); 
                     $qs .= '&errors[]=' . $_ for keys %$errors; 
@@ -1630,7 +1630,7 @@ sub unsub_confirm {
             if(
                 $ls->param('use_alt_url_unsub_success') == 1
               ){ 
-                my $qs = ''; 
+                my $qs = undef; 
                 if($ls->param('alt_url_unsub_success_w_qs') == 1){ 
                     $qs = 'list=' . $list . '&rm=unsub&status=1&email=' . uriescape($email);  
                 }
@@ -1662,7 +1662,7 @@ sub alt_redirect {
 
     my $self = shift;
     my $url  = shift;
-    my $qs   = shift;
+    my $qs   = shift || undef;
 
     require CGI;
     my $q = CGI->new;
@@ -1670,17 +1670,18 @@ sub alt_redirect {
 
     $url = strip($url);
 
-    if ( isa_url($url) ) {
-
-        #...
-    }
-    else {
+    if ( ! isa_url($url) ) {
         $url = 'http://' . $url;
     }
 
-    return $q->redirect( $url . '?' . $qs );
-}
+    if ($qs) {
+        return $q->redirect( $url . '?' . $qs );
+    }
+    else {
+        return $q->redirect($url);
+    }
 
+}
 
 
 

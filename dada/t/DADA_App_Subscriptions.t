@@ -46,6 +46,12 @@ my $dap = DADA::App::Subscriptions->new;
 ok($dap->test == 1, "Testing is on..."); 
 
 
+# alt_redirect 
+my $url = $dap->alt_redirect('example.com', undef); 
+like($url, qr/http\:\/\//, 'http:// added');
+unlike($url, qr/\?/, 'no query string');
+
+
 ### sub subscribe 
 
 # sub-subscribe-no-cgi
