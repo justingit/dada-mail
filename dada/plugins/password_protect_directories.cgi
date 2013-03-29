@@ -303,13 +303,13 @@ sub sql_backend_only_message {
 
 sub process_edit_dir { 
 	
-	my $name = xss_filter( $q->param('name') ) || undef;
-    my $url  = xss_filter( $q->param('url') )  || undef;
-    my $path = xss_filter( $q->param('path') ) || undef;
+	my $name                  = xss_filter( $q->param('name') ) || undef;
+    my $url                   = xss_filter( $q->param('url') )  || undef;
+    my $path                  = xss_filter( $q->param('path') ) || undef;
     my $use_custom_error_page = xss_filter( $q->param('use_custom_error_page') ) || 0;
-    my $custom_error_page = xss_filter( $q->param('custom_error_page') )|| undef;
-    my $default_password = xss_filter( $q->param('default_password') ) || undef;
-	my $id               = xss_filter( $q->param('id') ) || undef;
+    my $custom_error_page     = xss_filter( $q->param('custom_error_page') )|| undef;
+    my $default_password      = xss_filter( $q->param('default_password') ) || undef;
+	my $id                    = xss_filter( $q->param('id') ) || undef;
 	
 	my $htp = DADA::Profile::Htpasswd->new({-list => $list});
 	

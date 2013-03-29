@@ -339,22 +339,72 @@ sub write_htaccess {
 	
 	my $entry = $self->get({-id => $args->{-id}}); 
 	
-	open my $htaccess, '>', $entry->{path} . '/' . '.htaccess' or die $! ;
-	print $htaccess "
-AuthType Basic
-AuthName \"" . encode_html_entities($entry->{name}) . "\"
-AuthUserFile " . $entry->{path} . "/.htpasswd
-Require valid-user
-";
-if($entry->{use_custom_error_page} == 1 && defined($entry->{custom_error_page})){ 
-	print $htaccess "ErrorDocument 401 " . $entry->{custom_error_page} . "\n";
-}
-else { 
-	print $htaccess "ErrorDocument 401 /dada/mail.cgi?f=profile&error_profile_login=1\n";
+	my $custom_error_page = undef; 
+	if($entry->{use_custom_error_page} == 1 && defined($entry->{custom_error_page})){ 
+		$custom_error_page = $entry->{custom_error_page}
+	}
+	
+	my $htaccess_content = ''; 
+	if(-e $entry->{path} . '/' . '.htaccess') { 
+		$htaccess_content = $self->grab_htaccess_content({-path => $entry->{path}}); 
+	}
+	
+	my $open_pat  = quotemeta('# Begin ' . $DADA::Config::PROGRAM_NAME . ' Password Protect Directives'); 
+	my $close_pat = quotemeta('# End ' . $DADA::Config::PROGRAM_NAME . ' Password Protect Directives'); 
+	
+	require DADA::Template::Widgets; 
+	my $data = DADA::Template::Widgets::screen(
+        {
+            -screen => 'plugins/password_protect_directories/htaccess_file.tmpl',
+ 			-vars => { 
+				name             => $entry->{name}, 
+				path              => $entry->{path}, 
+				custom_error_page => $custom_error_page,
+			},
+        }
+    );
+
+	if($htaccess_content =~ m/$open_pat(.*)$close_pat/gs){ 
+	#	croak "yes"; 
+		$htaccess_content =~ s/$open_pat(.*)$close_pat/$data/gs; 
+	}
+	else { 
+#		croak "no."; 
+		$htaccess_content = $htaccess_content . "\n\n" . $data; 
+	}
+	my $loc  = $entry->{path} . '/' . '.htaccess'; 
+	
+	
+	open my $htaccess_file, '>', $loc        or croak $!; 
+	print   $htaccess_file $htaccess_content or croak $!; 
+	close   $htaccess_file                   or croak $!; 
+
 }
 
-	close $htaccess; 
+
+
+
+sub grab_htaccess_content { 
+	my $self   = shift; 
+	my ($args) = @_; 
+	if(! exists($args->{-path})) { 
+		croak, "you MUST pass the, '-path' paramater!"; 
+	}
+	my $path = $args->{-path}; 
+	my $loc  = $path . '/' . '.htaccess'; 
+	my $data = ''; 
+	if(-e $loc) { 
+		$data = DADA::App::Guts::slurp($loc); 
+		return $data; 
+	}
+	else { 
+		return ''; 
+	}
 }
+
+
+
+
 
 sub write_htpasswd { 
 	my $self = shift;
