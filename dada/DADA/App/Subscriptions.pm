@@ -118,7 +118,7 @@ sub token {
 				if $t; 
 				
 			$q->param('email', $data->{email}); 
-			$q->param('list',  $data->{list}); 
+			$q->param('list',  $data->{data}->{list}); 
 			$q->param('token', $token); 
 			
 			warn 'confirming'
@@ -133,7 +133,7 @@ sub token {
 		}
 		elsif($data->{data}->{flavor} eq 'unsub_confirm'){
 			$q->param('email', $data->{email}); 
-			$q->param('list', $data->{list}); 
+			$q->param('list',  $data->{data}->{list}); 
 			$q->param('token', $token); 
 			$self->unsub_confirm(
 	            {
@@ -400,11 +400,11 @@ sub subscribe {
 			my $ct    = DADA::App::Subscriptions::ConfirmationTokens->new();
 			my $token = $ct->save(
 				{
-					-list  => $list, 
 					-email => $email,
 					-data  => {
-						flavor      => 'sub_confirm', 
+						list        => $list, 
 						type        => 'list', 
+						flavor      => 'sub_confirm', 
 						remote_addr => $ENV{REMOTE_ADDR}, 
 					},
 					-remove_previous => 1, 
@@ -1285,12 +1285,12 @@ sub unsubscribe {
 			require DADA::App::Subscriptions::ConfirmationTokens; 
 			my $ct    = DADA::App::Subscriptions::ConfirmationTokens->new(); 
 			my $token = $ct->save(
-				{
-					-list  => $list, 
+				{ 
 					-email => $email,
 					-data  => {
-						flavor      => 'unsub_confirm', 
+						list        => $list,
 						type        => 'list', 
+						flavor      => 'unsub_confirm', 
 						remote_addr => $ENV{REMOTE_ADDR},  
 					},
 					-remove_previous => 1, 

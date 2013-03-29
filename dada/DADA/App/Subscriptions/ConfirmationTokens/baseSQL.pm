@@ -67,8 +67,8 @@ sub _backend_specific_save {
 
 
 	if($t){ 
-		warn "email: $email"; 
-		warn "token: $token"; 
+		warn "email:  $email"; 
+		warn "token:  $token"; 
 		warn "frozen: $frozen"; 
 		
 	}
@@ -166,17 +166,18 @@ sub remove_by_metadata {
       or croak "cannot do statement! $DBI::errstr\n";
 
     while ( $row = $sth->fetchrow_hashref ) {
-
-        #		use Data::Dumper;
-
+	
         my $frozen_data = $row->{data};
         my $data        = $self->_thaw($frozen_data);
 
         #		warn '$data:'    . Dumper($data);
         #		warn '$metadata' . Dumper($metadata);
 
-        if (   $data->{data}->{flavor} eq $metadata->{flavor}
-            && $data->{data}->{type}   eq $metadata->{type} )
+        if (   
+			   $data->{data}->{list}   eq $metadata->{list}
+            && $data->{data}->{type}   eq $metadata->{type}
+			&& $data->{data}->{flavor} eq $metadata->{flavor}
+		)
         {
             push( @$tokens, $row->{token} );
         }
@@ -189,6 +190,32 @@ sub remove_by_metadata {
 
     return scalar(@$tokens);
 }
+
+
+sub num_tokens { 
+
+    my $self = shift;
+
+    my $query =
+        'SELECT COUNT(*) FROM '
+      . $self->{sql_params}->{confirmation_tokens_table};
+
+    my $sth = $self->{dbh}->prepare($query);
+    $sth->execute()
+      or croak "cannot do statment '$query'! $DBI::errstr\n";
+
+    my $count = $sth->fetchrow_array;
+
+    $sth->finish;
+	
+    if ( $count eq undef ) {
+        return 0;
+    }
+    else {
+        return $count;
+    }
+}
+
 
 sub exists {
 	

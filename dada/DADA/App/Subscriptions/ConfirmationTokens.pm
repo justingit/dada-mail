@@ -44,9 +44,6 @@ sub save {
     my $self = shift;
     my $args = shift;
 
-    if ( !exists( $args->{-list} ) ) {
-        croak "no -list!";
-    }
     if ( !exists( $args->{-email} ) ) {
         croak "no -email!";
     }
@@ -61,7 +58,6 @@ sub save {
 
 
     my $data = {
-        list  => $args->{-list},
         email => $args->{-email},
         data  => $args->{-data},
     };

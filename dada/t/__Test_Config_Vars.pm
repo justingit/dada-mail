@@ -57,7 +57,7 @@ $TEST_SQL_PARAMS = {
 
 		mass_mailing_event_log_table    => 'test_dada_mass_mailing_event_log', 
 		password_protect_directories_table    => 'test_dada_password_protect_directories', 
-		confirmation_tokens_table          => 'test_dada_confirmation_tokens',
+		confirmation_tokens_table             => 'test_dada_confirmation_tokens',
 		
 
 
