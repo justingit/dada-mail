@@ -1,5 +1,35 @@
 =head1 6.2.1
 
+=head2 Summary 6.2.2
+
+This release fixes bugs found in the v6.2.1 version of Dada Mail. It's a suggested upgrade for anyone
+running v6.2.1 or lower. 
+
+=head2 Changes 6.2.2
+
+=head3 Bounce Handler - new rules
+
+More rules were added to the Bounce Handler, to better parse bounces
+
+=head3 Redirect URLs in Sub/Unsub process detect query strings
+
+These URLs also can add their own query strings, to pass information, but if you set a URL that already has a query string, 
+things will break. This issue is now fixed. 
+
+=head2 Bugfixes 6.2.2
+
+=head3  Bug with multiple subscribe  
+
+L<https://github.com/justingit/dada-mail/issues/365>
+
+=head3 Unsubscription Confirmations, puts an extra "?" to the url
+
+L<https://github.com/justingit/dada-mail/issues/364>
+
+=head3 convert_to_ascii in DADA::App::Guts strips out characters like, Ü, ß, etc
+
+L<https://github.com/justingit/dada-mail/issues/361>
+
 =head2 Summary 6.2.1
 
 There was a mis-labeling of v6.2.0 as v6.1.2, which never had a release. v6.2.1 is released simply to fix this bobble. 

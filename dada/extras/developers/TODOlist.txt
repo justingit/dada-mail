@@ -10,23 +10,38 @@ Key:
 [*] Naw...
 [?] Someday
 
-[ ] No, the old style confirmation links won't work. I wanted to truly get this upgrade out asap - so I had to make decisions on what exactly was critical to push out. 
+
+[] Add timestamp field to dada_subscribers
+[ ] Ability to see other sublists (already invited) (Subscription Confirmation...) 
+
+[ ] Bridge needs a fancier change password thingy for the POP3 account thing. 
+[ ] Screencast on how to install CPAN modules you may just need. 
+[] Mailhide configuration in installer
+[] SES configuration in installer
+[ ] Docs on moving from "Basic Mailing List" to Dada Mail
+
+!!!
+[ ] Rss to email converter? 
+[ ] Thank you, quick question, is there a way for DadaMail to pull recent information from an RSS feed to do regular mails of recent posts? MailChimp does this and its handy for automated emails.
+[ ] - Beatitude - needs to be able to read RSS/Atom Feeds
+    http://search.cpan.org/~btrott/XML-Feed/
+
+
+[x] No, the old style confirmation links won't work. I wanted to truly get this upgrade out asap - so I had to make decisions on what exactly was critical to push out. 
 
 Now that I have some time, maybe the best thing to do is have such links bring the user to a screen that says something like, "link expired, try that all again, sorry about that: (show sub/unsub form)"
 
 
 
-[] Revist docs on Bridge - update. 
+[x] Revist docs on Bridge - update. 
 
-[ ] Rss to email converter? 
 
-[ ] Subject encoded in Russian: Новости сайта doesn't work? 
-
+[x] Subject encoded in Russian: Новости сайта doesn't work? 
+(for me? YES.)
 
 [ ] AJAXify all the confirmation HTML stuff - so instead of going to a new screen, you just get a colorbox popup - with the new screen as a back. Have to clean up those screens, so that they make sense in both situations. Maybe simplify the error screens. Yeah! 
 
 [ ] Add in newest version of CKEditor
-[ ] Ability to see other sublists (already invited) (Subscription Confirmation...) 
 
 [ ] Look for JSON modules - not there? "install" them ourselves (renamed JSON-remove[..] files/directories. 
 
@@ -51,7 +66,7 @@ why doesn't the mailing monitor show STALE mass mailings? THe hell is an, "inact
 	FASTER Queries to the DB, what's the problem ?
 		[ ] Is it really all that slow? 
 	[x] Drop PlainText support? 
-	Support tracking by email address
+	[x]Support tracking by email address
 	Show data, normalized by subscription size. 
 	Smaller Redirect links
 	
@@ -66,7 +81,6 @@ why doesn't the mailing monitor show STALE mass mailings? THe hell is an, "inact
 
 [ ] Manual in ePub format
 
-[ ] Docs on moving from "Basic Mailing List" to Dada Mail
 [ ] Docs on moving/migrating from MailMan to Dada Mail
 
 
@@ -85,7 +99,7 @@ Meaning, there's a new field, Called, "visibility" (or, whatever), that you can 
 If it's 1, it's shown, if it's 0, it's not. 
 
 
-[ ] A truly random pin for subs and unsubs. 
+[x] A truly random pin for subs and unsubs. 
 This again, would need a new field in dada_subscribers and probably break compat with the non-SQL backends, which is a bummer. 
 Maybe just use a csv format for PlainText? (and only use such functionality, for pins... - not profile fields...) 
 
@@ -293,7 +307,7 @@ action: subscribe, unsubscribe, disable, enable, move...? there are all verbs
 origin of action - from the subscriber, or the list owner? 
 
 
-[ ] Bounce emails are getting out of control. It may be time to use that, "active" field that's in the subscription table, that's currently dormant, to, instead of removing email addresses, we simply, "disable" the address from being used. This'll stop subscription lists from going to hell, if there's a problem on the mail server of our side (and the problem is, it's bouncing our own messages) 
+[x] Bounce emails are getting out of control. It may be time to use that, "active" field that's in the subscription table, that's currently dormant, to, instead of removing email addresses, we simply, "disable" the address from being used. This'll stop subscription lists from going to hell, if there's a problem on the mail server of our side (and the problem is, it's bouncing our own messages) 
 
 The user can re-enable their subscription through the profile dealy-do. Brilliant! 
 
@@ -928,8 +942,6 @@ for nursing homes, retirement centers, and the elderly
 2.11 alpha - (old to do) 
     
   
-[ ] - Beatitude - needs to be able to read RSS/Atom Feeds
-    http://search.cpan.org/~btrott/XML-Feed/
     
 [ ] - Archives - need passcode. 
     Need email address that's subscribed and/or passcode to view archived messages - 
@@ -948,7 +960,7 @@ http://www.quirksmode.org/dom/maxlength.html
 
 [] add a, "resend" button to the archive editor
 [] create a, "drafts" archive.  
-[] enable sending a message straight into STDIN from bridge.cgi (perchance)
+[x] enable sending a message straight into STDIN from bridge.cgi (perchance)
 [x] add documentation about whiz-bang new FCKeditor stuff (test more)
 
 Archives have the [listshortname], etc appended to subject - used to not, need pref for that. 

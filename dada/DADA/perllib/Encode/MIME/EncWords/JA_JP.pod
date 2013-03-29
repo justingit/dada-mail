@@ -1,0 +1,160 @@
+use utf8;
+
+=encoding utf-8
+
+=head1 NAME
+
+Encode::MIME::EncWords::JA_JP - MIME の「B」・「Q」ヘッダエンコーディング (代替案)
+
+=head1 SYNOPSIS
+
+    use Encode::MIME::EncWords;
+    use Encode qw/encode decode/;
+    
+    # ヘッダデコードする。
+    $utf8   = decode('MIME-EncWords', $header);
+    
+    # 初期のキャラクタセット (UTF-8) でヘッダエンコードする。
+    $header = encode('MIME-EncWords', $utf8);
+    
+    # ほかのキャラクタセットでヘッダエンコードする。
+    Encode::MIME::EncWords->config(Charset => 'GB2312');
+    $header = encode('MIME-EncWords', $utf8);
+
+=head1 ABSTRACT
+
+このモジュールは、RFC 2047 に述べる
+MIME のヘッダエンコーディングを実装している。
+エンコーディングの名前には、みっつの変種と、
+キャラクタセットに特化したひとつの簡易版がある。
+
+  エンコーディング名         encode() の結果        備考
+  ------------------------------------------------------------------
+  MIME-EncWords              (B と Q を自動判別)
+  MIME-EncWords-B            =?XXXX?B?...?=         初期値は UTF-8。
+  MIME-EncWords-Q            =?XXXX?Q?...?=                ,,
+  MIME-EncWords-ISO_2022_JP  =?ISO-2022-JP?B?...?=
+
+decode() の結果は、どのエンコーディングでも同じになる。
+
+=head1 DESCRIPTION
+
+このモジュールは、L<Encode::MIME::Header> コアモジュールが提供する
+C<MIME-*> エンコーディングの代替となることを意図している。
+このモジュールの使いかたをよく知るためには、L<Encode> を参照してほしい。
+
+=head2 モジュール独自の機能
+
+=over 4
+
+=item config(KEY => VALUE, ...);
+
+I<クラスメソッド。>
+KEY => VALUE の対でオプションを設定する。
+次のオプションが使える。
+
+=over 4
+
+=item Charset
+
+[encode] データ要素を変換するのに使うキャラクタセット。
+初期値は C<"UTF-8">。
+C<MIME-EncWords-ISO_2022_JP> では C<"ISO-2022-JP"> に固定。
+
+=item Detect7bit
+
+[decode/encode] エンコードされていない部分の
+7 ビットキャラクタセットを判別しようとする。
+初期値は C<"YES">。
+
+=item Field
+
+[encode] ヘッダフィールドの名前。エンコードされた結果の最初の行で、
+これの長さが考慮される。
+初期値は C<undef>。
+
+=item Mapping
+
+[decode/encode] キャラクタセットの名前に対して実際に使うマッピングを指定する。
+初期値は C<"EXTENDED">。
+
+=item MaxLineLen
+
+[encode] 行の最大長 (改行を除く)。
+初期値は C<76>。
+
+=item Minimal
+
+[encode] エンコーディングを最小限にするか否か。
+初期値は C<"YES">。
+
+=back
+
+オプションの詳細については L<MIME::EncWords::JA_JP> を参照。
+
+=back
+
+=head1 CAVEAT
+
+=over 4
+
+=item *
+
+MIME ヘッダエンコーディング用のエンコーディングモジュールは、
+こみいったヘッダフィールドを簡単に作り出したり、
+そこから望みの要素を取り出したりできる打ち出の小槌ではない。
+
+アドレスヘッダフィールド (To:、From: など) をデコードするには、
+まず mailbox-list を分解する。
+そして、個々の要素をエンコーディングモジュールでデコードする。
+これをエンコードするには、
+今度は個々の要素をエンコーディングモジュールでエンコードする。
+そして、エンコードした要素から mailbox-list を組み立てる。
+mailbox-list の組み立てや分解には、L<Mail::Address>
+のようなモジュールが使えるだろう。
+
+=item *
+
+行を LF (C<"\n">) で区切る。
+RFC5322 は、インターネットのメッセージでは行を CRLF (C<"\r\n">)
+で区切るとしている。
+
+=back
+
+=head1 BUGS
+
+バグやバグのような動作は開発者に知らせてください。
+
+CPAN Request Tracker:
+L<http://rt.cpan.org/Public/Dist/Display.html?Name=MIME-EncWords>.
+
+=head1 VERSION
+
+C<$VERSION> 変数を参照してほしい。
+
+B<これは実験的なリリースである>。仕様は近い将来、変わるかもしれない。
+
+このパッケージの開発版が次の場所にある。
+L<http://hatuka.nezumi.nu/repos/MIME-EncWords/>。
+
+=head1 SEE ALSO
+
+L<Encode>, L<Encode::MIME::Header>, L<MIME::EncWords::JA_JP>.
+
+RFC 2047 I<MIME (Multipurpose Internet Mail Extensions) Part Three:
+Message Header Extensions for Non-ASCII Text>.
+
+=head1 AUTHOR
+
+Hatuka*nezumi - IKEDA Soji <hatuka(at)nezumi.nu>
+
+=head1 COPYRIGHT
+
+Copyright (C) 2011 Hatuka*nezumi - IKEDA Soji.
+
+This program is free software; you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+
+=cut
+

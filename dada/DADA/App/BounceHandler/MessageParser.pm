@@ -271,6 +271,10 @@ sub generic_parse {
 
     $email = DADA::App::Guts::strip($email);
     $email =~ s/^\<|\>$//g if $email;
+	if(!$email) { 
+		$email = $self->generic_body_parse_for_email($entity); 
+	}
+
     $list = DADA::App::Guts::strip($list) if $list;
     return ( $list, $email, \%return );
 
@@ -567,6 +571,44 @@ sub generic_body_parse_for_list {
     }
 }
 
+sub generic_body_parse_for_email {
+
+    my $self   = shift;
+    my $entity = shift;
+    my $email;
+
+    my @parts = $entity->parts;
+    if ( !@parts ) {
+
+	    my $body = $entity->bodyhandle;
+	    my $IO;
+		
+	    return undef if !defined($body);
+
+	    if ( $IO = $body->open("r") ) {    # "r" for reading.
+	        while ( defined( $_ = $IO->getline ) ) {
+	            chomp($_);
+				if($_ =~ m/Your message to \<(.*?)\> was automatically rejected/){ 
+					return $1; 
+				}
+			}
+		}
+    }
+    else {
+        my $i;
+        for $i ( 0 .. $#parts ) {
+            my $part = $parts[$i];
+            $email = $self->generic_body_parse_for_email($part);
+            if ($email) {
+                return $email;
+            }
+        }
+    }
+}
+
+
+
+
 sub find_list_from_unsub_link {
 
     my $self   = shift;
@@ -706,7 +748,8 @@ sub parse_for_rfc6522 {
 		if defined $notification;
 	
 	$diag->{parsed_by} .= 'parse_for_rfc6522'; 
-    
+    $email =~ s/\<|\>//g; 
+	$email = strip($email); 
 	return ( $list, $email, $diag );
 	
 }
@@ -988,6 +1031,10 @@ sub parse_for_qmail {
                             $diag->{Guessed_MTA} = 'Qmail';
                             $diag->{'Diagnostic-Code'} = $data;
                         }
+						elsif($data =~ m/user is over quota/){ 
+                            $diag->{Guessed_MTA} = 'Qmail';
+                            $diag->{'Diagnostic-Code'} = $data;							
+						}
                     }
                 }
 				
@@ -1060,13 +1107,16 @@ sub parse_for_exim {
 							# This should probably be moved to the Rules...
 							# And these are fairly genreal-purpose...
 							elsif ($_ =~ m/This user doesn\'t have a (.*?) account|unknown user|This account has been disabled or discontinued|or discontinued \[\#102\]|User(.*?)does not exist|Invalid mailbox|mailbox unavailable|550\-5\.1\.1|550 5\.1\.1|Recipient does not exist here/) { 
-                                $diag->{'Status'} = '5.x.y';								
+                                $diag->{'Status'} = '5.x.y';
 							}
                             else {
                             }
 							
 							
-							if($_ =~ m/RCPT TO\:\<(\S+\@\S+)\>\:/){ 
+							if($_ =~ m/This user doesn't have a (.*?) account \((.*?)\)/){ 
+								$email = $2; 
+							}
+							elsif($_ =~ m/RCPT TO\:\<(\S+\@\S+)\>\:/){ 
 								$email = $1; 	
 							}	
                             elsif ( $_ =~ /(\S+\@\S+)/ ) {

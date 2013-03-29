@@ -223,17 +223,8 @@ my @statements = split(';', $sql, 11);
 		my $clickthrough_url_log_table          = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{clickthrough_url_log_table};
 		my $mass_mailing_event_log_table        = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{mass_mailing_event_log_table};
 		my $password_protect_directories_table  = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{password_protect_directories_table};
-		
-#		$_ =~ s{CREATE TABLE dada_settings}{CREATE TABLE $settings_table}; 
-#		$_ =~ s{CREATE TABLE dada_subscribers}{CREATE TABLE $subscribers_table}; 
-#		$_ =~ s{CREATE TABLE dada_archives}{CREATE TABLE $archives_table}; 
-#		$_ =~ s{CREATE TABLE dada_sessions}{CREATE TABLE $session_table}; 
-#		$_ =~ s{CREATE TABLE dada_bounce_scores}{CREATE TABLE $bounce_scores_table};
-#		$_ =~ s{CREATE TABLE dada_profiles}{CREATE TABLE $profile_table};
-#		$_ =~ s{CREATE TABLE dada_profile_fields}{CREATE TABLE $profile_fields_table};
-#		$_ =~ s{CREATE TABLE dada_profile_fields_attributes}{CREATE TABLE $profile_fields_attributes_table};
-#		$_ =~ s{CREATE TABLE dada_clickthrough_urls}{CREATE TABLE $clickthrough_urls_table};	
-				
+		my $confirmation_tokens_table           = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{confirmation_tokens_table};
+						
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_settings}{CREATE TABLE IF NOT EXISTS $settings_table}; 
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_subscribers}{CREATE TABLE IF NOT EXISTS $subscribers_table}; 
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_archives}{CREATE TABLE IF NOT EXISTS $archives_table}; 
@@ -246,6 +237,7 @@ my @statements = split(';', $sql, 11);
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_clickthrough_url_log}{CREATE TABLE IF NOT EXISTS $clickthrough_url_log_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_mass_mailing_event_log}{CREATE TABLE IF NOT EXISTS $mass_mailing_event_log_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_password_protect_directories}{CREATE TABLE $password_protect_directories_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_confirmation_tokens}{CREATE TABLE IF NOT EXISTS $confirmation_tokens_table};	
 		
 		#print 'query: ' . $_; 
         my $sth = $dbh->prepare($_) or croak $DBI::errstr; 
@@ -327,14 +319,14 @@ my @statements = split(';', $sql);
 		my $confirmation_tokens_table           = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{confirmation_tokens_table};
 		
 		
-		$_ =~ s{CREATE TABLE dada_settings}{CREATE TABLE $settings_table}; 
-		$_ =~ s{CREATE TABLE dada_subscribers}{CREATE TABLE $subscribers_table}; 
-		$_ =~ s{CREATE TABLE dada_archives}{CREATE TABLE $archives_table}; 
-		$_ =~ s{CREATE TABLE dada_sessions}{CREATE TABLE $session_table}; 
-		$_ =~ s{CREATE TABLE dada_bounce_scores}{CREATE TABLE $bounce_scores_table};
-		$_ =~ s{CREATE TABLE dada_profiles}{CREATE TABLE $profile_table};
-		$_ =~ s{CREATE TABLE dada_profile_fields}{CREATE TABLE $profile_fields_table};
-		$_ =~ s{CREATE TABLE dada_profile_fields_attributes}{CREATE TABLE $profile_fields_attributes_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_settings}{CREATE TABLE $settings_table}; 
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_subscribers}{CREATE TABLE $subscribers_table}; 
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_archives}{CREATE TABLE $archives_table}; 
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_sessions}{CREATE TABLE $session_table}; 
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_bounce_scores}{CREATE TABLE $bounce_scores_table};
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profiles}{CREATE TABLE $profile_table};
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profile_fields}{CREATE TABLE $profile_fields_table};
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profile_fields_attributes}{CREATE TABLE $profile_fields_attributes_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_clickthrough_urls}{CREATE TABLE $clickthrough_urls_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_settings}{CREATE TABLE IF NOT EXISTS $settings_table}; 
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_subscribers}{CREATE TABLE IF NOT EXISTS $subscribers_table}; 
@@ -368,44 +360,25 @@ sub destroy_MySQL_db {
     my $dbi_handle = DADA::App::DBIHandle->new; 
 
     my $dbh = $dbi_handle->dbh_obj;
-        $dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{subscriber_table})
-            or carp "cannot do statement! $DBI::errstr\n";  
 
-        $dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{archives_table})
-        	or carp "cannot do statement! $DBI::errstr\n";  
-
-        $dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{settings_table})
-        	or carp "cannot do statement! $DBI::errstr\n";  
-
-        $dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{session_table})
-            or carp "cannot do statement! $DBI::errstr\n";  
-
-		$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{bounce_scores_table})
-        	or carp "cannot do statement! $DBI::errstr\n";
-
-		$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{profile_table})
-			or carp "cannot do statement! $DBI::errstr\n";
-			
-		$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{profile_fields_table})
-            or carp "cannot do statement! $DBI::errstr\n";	
-
-		$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{profile_fields_attributes_table})
-        	or carp "cannot do statement! $DBI::errstr\n";
-
-		$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{clickthrough_urls_table})
-        	or carp "cannot do statement! $DBI::errstr\n";
-
-		$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{clickthrough_url_log_table})
-        	or carp "cannot do statement! $DBI::errstr\n";
-
-		$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{mass_mailing_event_log_table})
-        	or carp "cannot do statement! $DBI::errstr\n";
-
-		$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{password_protect_directories_table})
-		      or carp "cannot do statement! $DBI::errstr\n";
-
-		
-			
+	 for(qw(
+		subscriber_table
+		archives_table
+		settings_table
+		session_table
+		bounce_scores_table
+		profile_table
+		profile_fields_table
+		profile_fields_attributes_table
+		clickthrough_urls_table
+		clickthrough_url_log_table
+		mass_mailing_event_log_table
+		password_protect_directories_table
+		confirmation_tokens_table
+		)){ 
+	        $dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{$_})
+	            or carp "cannot do statement! $DBI::errstr\n";  
+		}
 }
 
 
@@ -464,6 +437,7 @@ my @statements = split(';', $sql, 11);
 		my $clickthrough_url_log_table          = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{clickthrough_url_log_table};
 		my $mass_mailing_event_log_table        = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{mass_mailing_event_log_table};
 		my $password_protect_directories_table  = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{password_protect_directories_table};
+		my $confirmation_tokens_table           = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{confirmation_tokens_table};
 	
 		
 		
@@ -480,8 +454,9 @@ my @statements = split(';', $sql, 11);
 		$_ =~ s{CREATE TABLE dada_clickthrough_url_log}{CREATE TABLE $clickthrough_url_log_table};	
 		$_ =~ s{CREATE TABLE dada_mass_mailing_event_log}{CREATE TABLE $mass_mailing_event_log_table};	
 		$_ =~ s{CREATE TABLE dada_password_protect_directories}{CREATE TABLE $password_protect_directories_table};	
+		$_ =~ s{CREATE TABLE dada_confirmation_tokens}{CREATE TABLE IF NOT EXISTS $confirmation_tokens_table};	
 
-	#	print "query: $_"; 
+#		print "query: $_"; 
 
 
 	    my $sth = $dbh->prepare($_); #  or croak $DBI::errstr; 
@@ -494,47 +469,29 @@ my @statements = split(';', $sql, 11);
 
 sub destroy_PostgreSQL_db { 
 
-  require DADA::App::DBIHandle;
+ require DADA::App::DBIHandle;
     my $dbi_handle = DADA::App::DBIHandle->new; 
 
     my $dbh = $dbi_handle->dbh_obj;
-    $dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{subscriber_table})
-        or carp "cannot do statement! $DBI::errstr\n";  
 
-    $dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{archives_table})
-    	or carp "cannot do statement! $DBI::errstr\n";  
-
-    $dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{settings_table})
-    	or carp "cannot do statement! $DBI::errstr\n";  
-
-    $dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{session_table})
-        or carp "cannot do statement! $DBI::errstr\n";  
-
-	$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{bounce_scores_table})
-    	or carp "cannot do statement! $DBI::errstr\n";
-
-	$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_table})
-		or carp "cannot do statement! $DBI::errstr\n";
-		
-	$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_fields_table})
-        or carp "cannot do statement! $DBI::errstr\n";	
-
-	$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_fields_attributes_table})
-    	or carp "cannot do statement! $DBI::errstr\n";
-
-	$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{clickthrough_urls_table})
-       	or carp "cannot do statement! $DBI::errstr\n";
-
-	$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{clickthrough_url_log_table})
-       	or carp "cannot do statement! $DBI::errstr\n";
-
-	$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{mass_mailing_event_log_table})
-       	or carp "cannot do statement! $DBI::errstr\n";
-
-	$dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{password_protect_directories_table})
-	      or carp "cannot do statement! $DBI::errstr\n";
-
-	
+	 for(qw(
+		subscriber_table
+		archives_table
+		settings_table
+		session_table
+		bounce_scores_table
+		profile_table
+		profile_fields_table
+		profile_fields_attributes_table
+		clickthrough_urls_table
+		clickthrough_url_log_table
+		mass_mailing_event_log_table
+		password_protect_directories_table
+		confirmation_tokens_table
+		)){ 
+	        $dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{$_})
+	            or carp "cannot do statement! $DBI::errstr\n";  
+		}	
 }
 
 

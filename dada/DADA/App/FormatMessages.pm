@@ -792,7 +792,7 @@ sub _make_multipart {
 
 	if($orig_type eq 'text/plain'){ 
 		$new_type = 'text/html'; 
-		$new_data = plaintext_to_html({-str => safely_encode($orig_content)});
+		$new_data = plaintext_to_html({-str => $orig_content});
 		
 		# I kind of agree this is a strange place to put this, but H::T template tags 
 		# are getting clobbered: 
@@ -810,12 +810,12 @@ sub _make_multipart {
 	}
 	else { 
 		$new_type = 'text/plain';
-		$new_data = html_to_plaintext({-str => safely_encode($orig_content)});
+		$new_data = html_to_plaintext({-str => $orig_content});
 	}
 	
 	my $new_entity = MIME::Entity->build(
 		Type     => $new_type, 
-		Data     => $new_data, 
+		Data     => safely_encode($new_data), 
 		Encoding => $orig_encoding,
 	 );
 
@@ -974,63 +974,63 @@ sub _format_headers {
 
 
 
-sub _encode_header { 
-	
-	my $self       = shift; 
-	my $label      = shift; 
-	my $value      = shift; 
-	my $new_value  = undef; 
+sub _encode_header {
 
-	return $value 
-	 	unless $self->im_encoding_headers;
-	
-	require MIME::EncWords;
-	
-	if(
-	   $label eq 'Subject'           || 
-	   $label eq 'List'              ||
-	   $label eq 'List-URL'          || 
-	   $label eq 'List-Owner'        ||
-	   $label eq  'List-Subscribe'   ||
-	   $label eq  'List-Unsubscribe' ||
-	   $label eq 'just_phrase'
-	){ 
+    my $self      = shift;
+    my $label     = shift;
+    my $value     = shift;
+    my $new_value = undef;
 
+    return $value
+      unless $self->im_encoding_headers;
+
+    require MIME::EncWords;
+
+    if (   $label eq 'Subject'
+        || $label eq 'List'
+        || $label eq 'List-URL'
+        || $label eq 'List-Owner'
+        || $label eq 'List-Subscribe'
+        || $label eq 'List-Unsubscribe'
+        || $label eq 'just_phrase' )
+    {
+	    
+		# Bug: https://rt.cpan.org/Ticket/Display.html?id=84295
+		my $MaxLineLen = -1;
 	
-		$new_value = 
-		MIME::EncWords::encode_mimewords(
-			$value, 
-			Encoding => 'Q',
-			Charset  => $self->{ls}->param('charset_value'),
-		); 
-	}
-	else { 
-		require Email::Address;	
-		 my @addresses = Email::Address->parse($value); 
-		 for my $address(@addresses){
-			
-		 	my $phrase = $address->phrase;
-		
-		    $address->phrase(	
-				MIME::EncWords::encode_mimewords(
-					$phrase, 
-					Encoding => 'Q',
-					Charset  => $self->{ls}->param('charset_value'),
-				) 
-			);
-		}
-		my @new_addresses = (); 
-		for(@addresses){ 
-		
-			push(@new_addresses, $_->format()); 
-		}
-		
-		$new_value = join(', ', @new_addresses);
-	}
-		
-	
-	return $new_value; 
-		
+        $new_value = MIME::EncWords::encode_mimewords(
+            $value,
+            Encoding   => 'Q',
+            MaxLineLen => $MaxLineLen,
+			Charset    => $self->{ls}->param('charset_value'),
+        );
+
+    }
+    else {
+        require Email::Address;
+        my @addresses = Email::Address->parse($value);
+        for my $address (@addresses) {
+
+            my $phrase = $address->phrase;
+
+            $address->phrase(
+                MIME::EncWords::encode_mimewords(
+                    $phrase,
+                    Encoding => 'Q',
+                    Charset  => $self->{ls}->param('charset_value'),
+                )
+            );
+        }
+        my @new_addresses = ();
+        for (@addresses) {
+            push( @new_addresses, $_->format() );
+        }
+
+        $new_value = join( ', ', @new_addresses );
+    }
+
+    return $new_value;
+
 }
 
 

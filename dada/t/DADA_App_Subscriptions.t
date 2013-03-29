@@ -46,6 +46,16 @@ my $dap = DADA::App::Subscriptions->new;
 ok($dap->test == 1, "Testing is on..."); 
 
 
+# alt_redirect 
+my $url = $dap->alt_redirect('example.com', undef); 
+like($url, qr/http\:\/\//, 'http:// added');
+unlike($url, qr/\?/, 'no query string');
+undef $url; 
+
+my $url = $dap->alt_redirect('http://example.com/index.cgi?foo=bar', 'batz=bing'); 
+ok($url = 'http://example.com/index.cgi?foo=bar&batz=bing'); 
+
+
 ### sub subscribe 
 
 # sub-subscribe-no-cgi

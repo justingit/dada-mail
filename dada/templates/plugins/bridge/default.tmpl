@@ -16,13 +16,8 @@
 	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
 <!--/tmpl_if-->
 
-<!-- tmpl_unless list_email_status -->
-	<div class="badweatherbox">
-		  <p><strong>
-			Information Not Saved! Please Fix Problems Below.
-		</strong></p>
-	</div> 
-<!--/tmpl_unless--> 
+<!-- tmpl_unless list_email_status --><!--/tmpl_unless-->
+
 <form name="default_form" action="<!-- tmpl_var Plugin_URL --> "method="post">
 	 <input type="hidden" name="plugin_url"   id="plugin_url"   value="<!-- tmpl_var Plugin_Url -->" /> 
 
@@ -35,7 +30,7 @@
   </strong></p> 
 
 <p>
- Uncheck the option labeled, <em>Disable sending using this method</em> below to enable this plugin for this Mailing List.
+ Uncheck the option labeled, <strong>Disable sending using this method</strong> below to enable this plugin for this Mailing List.
 </p>
  </div> 
   
@@ -47,81 +42,67 @@
 
 <legend>List Email Configuration</legend>
 
-<!-- tmpl_if error_list_email_set_to_list_owner_email --> 
-		<ul> 
-			<li>
-				<p class="error">
-					Your List Email was set to the same address as the List Owner Email. It needs to be set to a different address. 
-				</p>
-			</li>
-		</ul>
-	<!-- /tmpl_if -->
+<!-- tmpl_if error_list_email_set_to_list_owner_email -->
+ 	<div class="badweatherbox">
+		<p>
+			Your List Email is set to the same address as the <strong>List Owner Email</strong>. It needs to be set to a different address. 
+		</p>
+	</div> 
+<!-- /tmpl_if -->
 	
 <!-- tmpl_if error_list_email_set_to_another_list_owner_email --> 
-		<ul> 
-			<li>
-				<p class="error">
-					Your List Email was set to the same address as a List Owner Email address of a different Mailing List. It needs to be set to a different address. 
-				</p>
-			</li>
-		</ul>
+ 	<div class="badweatherbox">
+		<p>
+			Your List Email is set to the same address as a <strong>List Owner Email address of a different Mailing List</strong>. It needs to be set to a different address. 
+		</p>
+	</div> 
 	<!-- /tmpl_if -->
 		
 <!-- tmpl_if error_list_email_set_to_list_admin_email --> 
-	<ul> 
-		<li>
-			<p class="error">
-				Your List Email was set to the same address as the List Admin Email. It needs to be set to a different address. 
-			</p>
-		</li>
-	</ul>
+ 	<div class="badweatherbox">
+		<p>
+			Your List Email is set to the same address as the <strong>List Admin Email</strong>. It needs to be set to a different address. 
+		</p>
+	</div> 
 <!-- /tmpl_if -->
 <!-- tmpl_if error_list_email_set_to_another_list_admin_email --> 
-	<ul> 
-		<li>
-			<p class="error">
-				Your List Email was set to the same address as the List Admin Email address of a different Mailing List. It needs to be set to a different address. 
-			</p>
-		</li>
-	</ul>
+ 	<div class="badweatherbox">
+		<p>
+			Your List Email is set to the same address as the <strong>List Admin Email address of a different Mailing List</strong>. It needs to be set to a different address. 
+		</p>
+	</div> 
 <!-- /tmpl_if -->
 
 <!-- tmpl_if error_list_email_subscribed_to_list --> 
-	<ul> 
-		<li>
-			<p class="error">
-				Your List Email is currently subscribed to your Subscription List. It needs to be set to a different address. 
-			</p>
-		</li>
-	</ul>
+ 	<div class="badweatherbox">
+		<p>
+			Your List Email is currently subscribed to your <strong>Subscription List</strong>. It needs to be set to a different address. 
+		</p>
+	</div> 
 <!-- /tmpl_if -->
 <!-- tmpl_if error_list_email_subscribed_to_authorized_senders --> 
-	<ul> 
-		<li>
-			<p class="error">
-				Your List Email is currently subscribed to your Authorized Senders List. It needs to be set to a different address. 
-			</p>
-		</li>
-	</ul>
+	<div class="badweatherbox">
+		<p>
+			Your List Email is currently subscribed to your <strong>Authorized Senders List</strong>. It needs to be set to a different address. 
+		</p>
+	</div> 
 <!-- /tmpl_if -->
 
 <!-- tmpl_if error_list_email_subscribed_to_another_list --> 
-	<ul> 
-		<li>
-			<p class="error">
-				Your List Email is currently subscribed to another mailing list's Subscription List. It needs to be set to a different address. 
+	<div class="badweatherbox">
+		<p>
+				Your List Email is currently subscribed to <strong>another mailing list's Subscription List</strong>. It needs to be set to a different address. 
 			</p>
-		</li>
-	</ul>
+	</div> 
+	
 <!-- /tmpl_if -->
 <!-- tmpl_if error_list_email_subscribed_to_another_authorized_senders --> 
-	<ul> 
-		<li>
-			<p class="error">
-				Your List Email is currently subscribed to another mailing list's Authorized Senders List. It needs to be set to a different address. 
-			</p>
-		</li>
-	</ul>
+	<div class="badweatherbox">
+	<p>
+			Your List Email is currently subscribed to <strong>another mailing list's Authorized Senders List</strong>. It needs to be set to a different address. 
+		</p>
+	</div> 
+
 <!-- /tmpl_if -->
 
 
@@ -760,8 +741,7 @@ General
       </td>
       <td>
        <label for="send_msg_copy_to">
-        forwarded  a copy <label for="send_msg_copy_address">to</label>:
-       </label>
+        forward a copy to:</label>
        <p>
         <input type="text" name="send_msg_copy_address" id="send_msg_copy_address"value="<!-- tmpl_var list_settings.send_msg_copy_address -->" />
        </p>

@@ -5,13 +5,13 @@ use 5.008_001;
 use lib "../../";
 use lib "../../DADA/perllib";
 
+use Carp qw(carp croak);
 
 use DADA::Config qw(!:DEFAULT);  
 
 use Encode qw(encode decode);
 use Params::Validate ':all';
 use Try::Tiny; 
-use Carp qw(carp croak);
 
 use Fcntl qw(
 O_WRONLY 
@@ -22,8 +22,6 @@ O_RDONLY
 LOCK_EX
 LOCK_SH 
 LOCK_NB); 
-
-
 
 require Exporter;
 @ISA = qw(Exporter);
@@ -181,10 +179,7 @@ sub check_for_valid_email {
 	return $email_check; 
 
 }
-							
-							
-							
-							
+
 =pod
 
 =head2 strip
@@ -1082,81 +1077,76 @@ takes a string and dumbly strips out HTML tags,
  
 
 
-sub convert_to_ascii { 
+sub convert_to_ascii {
 
-	 my $message_body = shift;
- 
-     
- #change html tags to ascii art ;)
- #strip html tags
- 
- # $message_body  =~ s/<title>/Title:/gi;
- 
- $message_body  =~ s/<title>//gi;
- $message_body  =~ s/<\/title>//gi;
- $message_body  =~ s/<b>|<\/b>/\*/gi;
- $message_body  =~ s/<i>|<\/i>/\//gi;
- $message_body  =~ s/<u>|<\/u>/_/gi;
- $message_body  =~ s/<li>/\[\*\]/g;
- $message_body  =~ s/<\/li>/\n/g;
- 
+    my $message_body = shift;
 
-# These are lame things to deal with bad UTF-8 handling by Dada Mail - 
-# Sending HTML Messages, with a plaintext ver w/UTF-8 stuff messes up 
-# sending? Why? Is that *actually* true? 
-# I almost want to say it's the HTML::Entities that's messing up, but 
-# I can't get my head around it. 
-# UPDATE 03/01/10 - this needed anymore? 
-# Sending/Saving/Viewing works with UTF-8 stuff... 
-require         HTML::Entities::Numbered;
-$message_body = HTML::Entities::Numbered::name2decimal($message_body); 
-# And, uh, what do these do, again? 
-$message_body =~ s/\&\#\d\d\d\;//g;  
-$message_body =~ s/\&\#\d\d\d\d\;//g;
+    # These things are sort of dumb.
+    $message_body =~ s/<title>//gi;
+    $message_body =~ s/<\/title>//gi;
+    $message_body =~ s/<b>|<\/b>/\*/gi;
+    $message_body =~ s/<i>|<\/i>/\//gi;
+    $message_body =~ s/<u>|<\/u>/_/gi;
+    $message_body =~ s/<li>/\[\*\]/g;
+    $message_body =~ s/<\/li>/\n/g;
 
-# &#12345; won't work, even with UTF-8. I think this is UTF-8+BOM
-$message_body =~ s/\&\#\d\d\d\d\d\;//g; # seriously, 5 (BOM stuff?)
+    $message_body = remove_html_comments($message_body);
+    $message_body = remove_html_tags($message_body);
 
+# Um! There's HTML::EntitiesPurePerl and also the Best.pm module. Let's... do something about that.
+# Don't I ship with HTML::Entities?!
+# HTML::EntitiesPurePerl is mine is sort of silly... grr!
+# Although decode_entities is PP in HTML::Entities anyways. Sigh.
 
+    try {
+        require HTML::Entities;
+        $message_body = HTML::Entities::decode_entities($message_body);
+    }
+    catch {
+        $message_body = oldschool_decode_entities($message_body);
+    };
 
+    # And then, this?
+    $message_body =~ s/\n(\s*)\n(\s*)\n/\n/gi;
+    $message_body =~ s/^\s\s\s//mgi;
 
-## Currently, I don't know what to set this as... so we'll set it as... this!
- $message_body =~ s/\&#149\;/\*/g; 
- 
- $message_body =~ s/\&nbsp\;/ /g; 
- 
- 
- 
- $message_body =~ s{ <!                   # comments begin with a `<!'
-                         # followed by 0 or more comments;
- 
-     (.*?)		# this is actually to eat up comments in non 
- 			# random places
- 
-      (                  # not suppose to have any white space here
- 
-                         # just a quick start;
-       --                # each comment starts with a `--'
-         .*?             # and includes all text up to and including
-       --                # the *next* occurrence of `--'
-         \s*             # and may have trailing while space
-                         #   (albeit not leading white space XXX)
-      )+                 # repetire ad libitum  XXX should be * not +
-     (.*?)		# trailing non comment text
-    > # up to a `>'
- }{
-     if ($1 || $3) {	# this silliness for embedded comments in tags
- 	"<!$1 $3>";
-     } 
- }gesx;                 # mutate into nada, nothing, and niente
+    return $message_body;
+
+}
 
 
- 
 
 
- 
- $message_body =~ s{ < # opening angle bracket
- 
+
+sub remove_html_comments { 
+	my $s = shift; 
+	$s =~ s{ <!                   # comments begin with a `<!'
+	                         # followed by 0 or more comments;
+	     (.*?)		# this is actually to eat up comments in non 
+	 			# random places
+
+	      (                  # not suppose to have any white space here
+
+	                         # just a quick start;
+	       --                # each comment starts with a `--'
+	         .*?             # and includes all text up to and including
+	       --                # the *next* occurrence of `--'
+	         \s*             # and may have trailing while space
+	                         #   (albeit not leading white space XXX)
+	      )+                 # repetire ad libitum  XXX should be * not +
+	     (.*?)		# trailing non comment text
+	    > # up to a `>'
+	 }{
+	     if ($1 || $3) {	# this silliness for embedded comments in tags
+	 	"<!$1 $3>";
+	     } 
+	 }gesx;                 # mutate into nada, nothing, and niente
+	return $s; 
+}
+
+sub remove_html_tags { 
+	my $s = shift; 
+	$s =~ s{ < # opening angle bracket
      (?:                 # Non-backreffing grouping paren
           [^>'"] *       # 0 or more things that are neither > nor ' nor "
              |           #    or else
@@ -1167,19 +1157,13 @@ $message_body =~ s/\&\#\d\d\d\d\d\;//g; # seriously, 5 (BOM stuff?)
                          #  hm.... are null tags <> legal? XXX
     > # closing angle bracket
  }{}gsx;                 # mutate into nada, nothing, and niente
+	
+	return $s; 
+ 
+}
 
-# }
-
-	# Um! There's HTML::EntitiesPurePerl and also the Best.pm module. Let's... do something about that. 
-	# Don't I ship with HTML::Entities?!
-	# HTML::EntitiesPurePerl is mine is sort of silly... grr!
-	# Although decode_entities is PP in HTML::Entities anyways. Sigh. 
-
-	eval {require HTML::Entities}; 
-	if(!$@){ 
-		$message_body = HTML::Entities::decode_entities($message_body);
-	}else{ 
-		
+sub oldschool_decode_entities { 
+	my $s = shift; 
 		# thar be old, crufty code
 		 my %entity = (
 	 
@@ -1287,7 +1271,7 @@ $message_body =~ s/\&\#\d\d\d\d\d\;//g; # seriously, 5 (BOM stuff?)
 		 );
 		 
 	 
-	 $message_body =~ s{ (
+	 $s =~ s{ (
 			 & # an entity starts with a semicolon
 			 ( 
 			\x23\d+    # and is either a pound (#) and numbers
@@ -1314,18 +1298,8 @@ $message_body =~ s/\&\#\d\d\d\d\d\;//g; # seriously, 5 (BOM stuff?)
 		 for $chr ( 0 .. 255 ) { 
 			 $entity{ '#' . $chr } = chr($chr);
 		 }
-	 
- 
-} 
- 
- $message_body =~ s/\n(\s*)\n(\s*)\n/\n/gi;
- $message_body =~ s/^\s\s\s//mgi;
-  
- return $message_body; 
-
-
+	return $s; 
 }
-
 
 # This is pretty bizarre - perhaps better to put this in DADA::Template::Widgets, 
 # or something, and then have an option to encode the output? 
