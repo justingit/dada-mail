@@ -1,4 +1,27 @@
-=head1 6.2.1
+=head1 6.3.0 Alpha
+
+=head2 Summary 6.3.0 
+
+=head2 Features 6.3.0
+
+=head3 Email Tracking for Opens/Clickthroughs
+
+Dada Mail can now be set to optionally track email addresses, when tracking Clickthroughs and Message Opens. These address can currently be exported per mass mailing. This feature is somewhat experimental, as features that can stem from this new ability can be vastly expanded. 
+
+This feature also requires changes to Dada Mail's SQL schema, which should happen automatically, during the first run of Dada Mail, after an upgrade. One can perform these changes manually, by issuing the following SQL: 
+
+	ALTER TABLE dada_clickthrough_url_log ADD email VARCHAR(80) AFTER url;
+	ALTER TABLE dada_mass_mailing_event_log ADD email VARCHAR(80) AFTER details;
+
+=head3 Password Protect Directories Plugin: Works with already-exisiting .htaccess
+
+In past versions, the Password Protect Directories Plugin would write (and if there was an already existing .htaccess file, Write I<Over>) its own C<.htaccess> file. This does not play nicely with anything else that may need to use an .htaccess file. 
+
+Now, this plugin will first look and see if an C<.htaccess> file exists, and if so, if specific directives for the plugin itself exist. If so, the plugin will only update the file and change the directives it needs in order for the plugin to work. 
+
+It's advised, that if you upgrade to first disable the plugin's cronjob, remove the directives in the C<.htaccess> file specific for the plugin (or the entire C<.htaccess> file, if nothing else requires this file, upgrade, and then re-set the cronjob for this plugin. 
+
+=head1 6.2.2
 
 =head2 Summary 6.2.2
 
