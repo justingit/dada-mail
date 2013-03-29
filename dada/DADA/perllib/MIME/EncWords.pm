@@ -130,7 +130,7 @@ if (MIME::Charset::USE_ENCODE) {
 #------------------------------
 
 ### The package version, both in 1.23 style *and* usable by MakeMaker:
-$VERSION = '1.012.3';
+$VERSION = '1.012.6';
 
 ### Public Configuration Attributes
 $Config = {
@@ -873,14 +873,14 @@ sub encode_mimewords  {
 	} elsif ($Params{Encoding} eq 'A' and ! $b and $q) {
 	    $enc = 'Q';
 	# Otherwise, assuming 'Q', when characters to be encoded are more than
-	# 6th of total, 'B' will win.
+	# 6th of total (plus a little fraction), 'B' will win.
 	# Note: This might give 'Q' so great advantage...
 	} else {
 	    my @no_enc = grep { ! $_->[1] } @triplets;
 	    my $total = length join('', map { $_->[0] } (@no_enc, @s_enc));
 	    my $q = scalar(() = join('', map { $_->[0] } @s_enc) =~
 			   m{[^- !*+/0-9A-Za-z]}g);
-	    if ($total < $q * 6) {
+	    if ($total + 8 < $q * 6) {
 		$enc = 'B';
 	    } else {
 		$enc = 'Q';
@@ -897,24 +897,26 @@ sub encode_mimewords  {
     }
 
     # Split long ``words''.
-    my @splitted;
+    my @splitwords;
     my $restlen;
     if ($Params{MaxLineLen} < 0) {
-      @splitted = @triplets;
+      @splitwords = @triplets;
     } else {
       $restlen = $firstlinelen;
       foreach (@triplets) {
 	my ($s, $enc, $csetobj) = @$_;
 
-	push @splitted, &_split($s, $enc, $csetobj, $restlen, $maxrestlen);
-	my ($last, $lastenc, $lastcsetobj) = @{$splitted[-1]};
+	my @s = &_split($s, $enc, $csetobj, $restlen, $maxrestlen);
+	push @splitwords, @s;
+	my ($last, $lastenc, $lastcsetobj) = @{$s[-1]};
 	my $lastlen;
 	if ($lastenc) {
 	    $lastlen = $lastcsetobj->encoded_header_len($last, $lastenc);
 	} else {
 	    $lastlen = length($last);
 	}
-	$restlen -= $lastlen; # FIXME: Sometimes estimated longer
+	$restlen = $maxrestlen if scalar @s > 1; # has split; new line(s) fed
+	$restlen -= $lastlen;
 	$restlen = $maxrestlen if $restlen <= 1;
       }
     }
@@ -922,7 +924,7 @@ sub encode_mimewords  {
     # Do encoding.
     my @lines;
     $restlen = $firstlinelen;
-    foreach (@splitted) {
+    foreach (@splitwords) {
 	my ($str, $encoding, $charsetobj) = @$_;
 	next unless length($str);
 
@@ -978,10 +980,10 @@ sub _split {
 	return ([$str, $encoding, $charset]);
     }
 
-    my (@splitted, $ustr, $first);
+    my (@splitwords, $ustr, $first);
     while (length($str)) {
 	if ($charset->encoded_header_len($str, $encoding) <= $restlen) {
-	    push @splitted, [$str, $encoding, $charset];
+	    push @splitwords, [$str, $encoding, $charset];
 	    last;
 	}
 	$ustr = $str;
@@ -996,10 +998,10 @@ sub _split {
 	    ($first, $str) = &_clip_unsafe($ustr, $encoding, $charset,
 					   $maxrestlen);
 	}
-	push @splitted, [$first, $encoding, $charset];
+	push @splitwords, [$first, $encoding, $charset];
 	$restlen = $maxrestlen;
     }
-    return @splitted;
+    return @splitwords;
 }
 
 # _split_ascii RAW, ROOM_OF_FIRST_LINE, MAXRESTLEN
@@ -1012,12 +1014,12 @@ sub _split_ascii {
     my $maxrestlen = shift;
     $restlen ||= $maxrestlen;
 
-    my @splitted;
+    my @splitwords;
     my $ascii = MIME::Charset->new("US-ASCII", Mapping => 'STANDARD');
     foreach my $line (split(/(?:[\t ]*[\r\n]+)+/, $s)) {
         my $spc = '';
 	foreach my $word (split(/([\t ]+)/, $line)) {
-	    next unless scalar(@splitted) or $word; # skip first garbage
+	    next unless scalar(@splitwords) or $word; # skip first garbage
 	    if ($word =~ /[\t ]/) {
 		$spc = $word;
 		next;
@@ -1026,33 +1028,33 @@ sub _split_ascii {
 	    my $cont = $spc.$word;
 	    my $elen = length($cont);
 	    next unless $elen;
-	    if (scalar(@splitted)) {
+	    if (scalar(@splitwords)) {
 		# Concatenate adjacent words so that encoded-word and
 		# unencoded text will adjoin with separating whitespace.
 		if ($elen <= $restlen) {
-		    $splitted[-1]->[0] .= $cont;
+		    $splitwords[-1]->[0] .= $cont;
 		    $restlen -= $elen;
 		} else {
-		    push @splitted, [$cont, undef, $ascii];
+		    push @splitwords, [$cont, undef, $ascii];
 		    $restlen = $maxrestlen - $elen;
 		}
 	    } else {
-		push @splitted, [$cont, undef, $ascii];
+		push @splitwords, [$cont, undef, $ascii];
 		$restlen -= $elen;
 	    }
 	    $spc = '';
 	}
 	if ($spc) {
-	    if (scalar(@splitted)) {
-		$splitted[-1]->[0] .= $spc;
+	    if (scalar(@splitwords)) {
+		$splitwords[-1]->[0] .= $spc;
 		$restlen -= length($spc);
 	    } else { # only WSPs
-		push @splitted, [$spc, undef, $ascii];
+		push @splitwords, [$spc, undef, $ascii];
 		$restlen = $maxrestlen - length($spc);
 	    }
 	}
     }
-    return @splitted;
+    return @splitwords;
 }
 
 # _clip_unsafe UNICODE, ENCODING, CHARSET_OBJECT, ROOM_OF_FIRST_LINE
@@ -1070,7 +1072,7 @@ sub _clip_unsafe {
     # Seek maximal division point.
     my ($shorter, $longer) = (0, length($ustr));
     while ($shorter < $longer) {
-	my $cur = int(($shorter + $longer + 1) / 2);
+	my $cur = ($shorter + $longer + 1) >> 1;
 	my $enc = substr($ustr, 0, $cur);
 	if (MIME::Charset::USE_ENCODE ne '') {
 	    $enc = $charset->undecode($enc);
