@@ -50,6 +50,10 @@ ok($dap->test == 1, "Testing is on...");
 my $url = $dap->alt_redirect('example.com', undef); 
 like($url, qr/http\:\/\//, 'http:// added');
 unlike($url, qr/\?/, 'no query string');
+undef $url; 
+
+my $url = $dap->alt_redirect('http://example.com/index.cgi?foo=bar', 'batz=bing'); 
+ok($url = 'http://example.com/index.cgi?foo=bar&batz=bing'); 
 
 
 ### sub subscribe 
