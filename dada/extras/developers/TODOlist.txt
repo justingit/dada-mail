@@ -10,6 +10,11 @@ Key:
 [*] Naw...
 [?] Someday
 
+=======
+
+[ ] Perhaps another email protection scheme - just break the email address. 
+
+[ ] No, the old style confirmation links won't work. I wanted to truly get this upgrade out asap - so I had to make decisions on what exactly was critical to push out. 
 
 [] Add timestamp field to dada_subscribers
 [ ] Ability to see other sublists (already invited) (Subscription Confirmation...) 
@@ -28,6 +33,9 @@ Key:
 
 
 [x] No, the old style confirmation links won't work. I wanted to truly get this upgrade out asap - so I had to make decisions on what exactly was critical to push out. 
+=======
+[] Revist docs on Bridge - update. 
+>>>>>>> features-email_tracking
 
 Now that I have some time, maybe the best thing to do is have such links bring the user to a screen that says something like, "link expired, try that all again, sorry about that: (show sub/unsub form)"
 

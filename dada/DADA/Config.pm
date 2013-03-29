@@ -2886,6 +2886,7 @@ EOF
     tracker_clean_up_reports                        => 1,
     tracker_auto_parse_links                        => 1,
     tracker_show_message_reports_in_mailing_monitor => 0,
+    tracker_track_email                             => 0,
 
     #	tracker_enable_data_cache                           => 1,
     #	tracker_dada_cache_expires                          => 1, # in hours

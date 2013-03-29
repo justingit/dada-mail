@@ -101,6 +101,7 @@ sub run {
 		'bounce_stats_json'               => \&bounce_stats_json, 
 		'clear_data_cache'                => \&clear_data_cache, 
 		'clear_message_data_cache'        => \&clear_message_data_cache, 
+		'export_subscribers'              => \&export_subscribers, 
 	);
 	if ($f) {
 	    if ( exists( $Mode{$f} ) ) {
@@ -322,6 +323,39 @@ sub clear_message_data_cache {
 
 
 
+sub export_subscribers { 
+	
+	my $mid = xss_filter($q->param('mid')); 
+	my $type = xss_filter($q->param('type')); 
+	if($type ne 'clickthroughs' && $type ne 'opens'){ 
+		$type = 'clickthroughs'; 
+	}
+	
+	my $header  = 'Content-disposition: attachement; filename=' 
+			      . $list 
+			      . '-' 
+			      . $type 
+			      . '-subscribers-' 
+			      . $mid 
+			      . '.csv' 
+			      .  "\n";
+	
+	$header .= 'Content-type: text/csv' . "\n\n";
+    print $header;
+
+   $rd->export_by_email(
+		{
+			-type => $type, 
+			-mid  => $mid, 
+			-fh   => \*STDOUT
+		}
+	);
+	
+	 
+}
+
+
+
 
 sub message_history_html { 
 	
@@ -505,6 +539,7 @@ sub edit_prefs {
             -settings  => {
                 clickthrough_tracking                           => 0,
                 enable_open_msg_logging                         => 0,
+				tracker_track_email                             => 0,
 				enable_forward_to_a_friend_logging              => 0, 
 				enable_view_archive_logging                     => 0,
                 enable_bounce_logging                           => 0,

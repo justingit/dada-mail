@@ -1979,15 +1979,14 @@ sub SQL_check_setup {
 	my $table_count = 0; 
 	my $dbi_obj     = undef; 
 	my $dbh         = undef; ; 
-	eval { 
+	try { 
 		require DADA::App::DBIHandle; 
 		$dbi_obj = DADA::App::DBIHandle->new; 
 		$dbh = $dbi_obj->dbh_obj;
-	};
-	if($@){ 
-		carp "error attempting to create dbi object: $@"; 
+	} catch { 
+		carp "error attempting to create dbi object: $_"; 
 		return 0; 
-	}
+	};
 	
 	my %tables_to_look_for = (); 
 	foreach(keys %DADA::Config::SQL_PARAMS){ 
@@ -1998,19 +1997,14 @@ sub SQL_check_setup {
 	
 
 	foreach my $table_name(keys %tables_to_look_for){ 
-	
-		eval{ 
+		$tables_to_look_for{$table_name} = 1; 	
+		try { 
 		    # * If an error is raised, the table does not exist.
 		    $dbh->do('SELECT * FROM ' . $table_name . ' WHERE 1 = 0')
 				or croak "cannot do statement! $DBI::errstr\n";
+		} catch { 
+			$tables_to_look_for{$table_name} = 0; 
 		};
-		
-		if($@){ 
-			# ...  
-		}
-		else { 
-			$tables_to_look_for{$table_name} = 1; 
-		}
 	}
 	
 	foreach(keys %tables_to_look_for){ 
@@ -2018,7 +2012,6 @@ sub SQL_check_setup {
 	}
 	
 	if($table_count < 13) { 
-		
 		my $r = create_probable_missing_tables(); 
 		if( $r == 0){ 
 			return 0; 
@@ -2027,7 +2020,13 @@ sub SQL_check_setup {
 		}
 	}
 
-		return 1; 
+	# v6.3.0 changed the schema of the, 
+		# * dada_mass_mailing_event_log
+		# * dada_clickthrough_url_log
+	# adding an, "email" column - let's make sure that's there. 
+	upgrade_tables(); 
+	
+	return 1; 
 
 }
 
@@ -2071,11 +2070,52 @@ sub create_probable_missing_tables {
 		}
 		catch { 
 			carp "Couldn't create necessary SQL table - you may have to do this, manually: $_";
-		}
+		};
 	} 
 
 return 1; 
 
+}
+
+
+sub upgrade_tables { 
+	my $dbi_obj     = undef; 
+	my $dbh         = undef;
+	
+	try { 
+		require DADA::App::DBIHandle; 
+		$dbi_obj = DADA::App::DBIHandle->new; 
+		$dbh = $dbi_obj->dbh_obj;
+	} catch { 
+		carp "error attempting to create dbi object: $_"; 
+		return 0; 
+	};
+	
+	foreach my $tablename(qw(clickthrough_url_log_table mass_mailing_event_log_table)){ 
+		my $sth = $dbh->prepare("SELECT * FROM " .  $DADA::Config::SQL_PARAMS{$tablename} ." WHERE 1=0");
+	       $sth->execute();
+	   my $fields = $sth->{NAME};
+	   $sth->finish;
+	   my $n_fields = {};
+	   foreach(@$fields){$n_fields->{$_} = 1;}
+	   if(exists($n_fields->{email})) { 
+			# good to go. 
+	   }
+		else { 
+			my $query; 
+			if($tablename eq 'clickthrough_url_log_table') { 
+				$query = 'ALTER TABLE ' . $DADA::Config::SQL_PARAMS{$tablename} . ' ADD email VARCHAR(80) AFTER url';				  
+			}
+			elsif($tablename eq 'mass_mailing_event_log_table'){ 
+				$query = 'ALTER TABLE ' . $DADA::Config::SQL_PARAMS{$tablename} . ' ADD email VARCHAR(80) AFTER details'; 
+			}
+			else { 
+				croak "unknown error!"; 
+			} 
+			my $sth2 = $dbh->do($query)
+				or croak $dbh->errstr; 	
+		}
+	}
 }
 
 =pod

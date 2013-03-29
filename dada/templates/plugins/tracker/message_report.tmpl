@@ -255,6 +255,19 @@
 				<!-- tmpl_else --> 
 					<p class="alert">Nothing to report.</p> 
 				<!-- /tmpl_if --> 
+
+	<fieldset> 
+		<div class="buttonfloat">
+		<form action="<!-- tmpl_var PluginURL -->" method="post"> 
+		<input type="hidden" name="f"    value="export_subscribers" /> 
+		<input type="hidden" name="type" value="clickthroughs" /> 
+		<input type="hidden" name="mid"  value="<!-- tmpl_var mid -->" />
+		<input type="submit" value="Export Subscribers Clickthroughing This Message" class="processing" /> 
+		</form>
+		</div> 
+		<div class="floatclear"></div>	
+	</fieldset> 
+	
 	</div> 
 	<div id="opens">
 		<h2>Message Opens by Country</h2>
@@ -278,6 +291,20 @@
 	<div id="over_time_opens_graph_loading"></div> 
 	<div id="over_time_opens_graph" data-width="720" data-height="400" style="width:720px;height:400px"></div> 
 
+
+		
+		<fieldset> 
+			<div class="buttonfloat">
+			<form action="<!-- tmpl_var PluginURL -->" method="post"> 
+			<input type="hidden" name="f"    value="export_subscribers" /> 
+			<input type="hidden" name="type" value="opens" /> 
+			<input type="hidden" name="mid"  value="<!-- tmpl_var mid -->" />
+			<input type="submit" value="Export Subscribers Opening This Message" class="processing" /> 
+			</form>
+			</div> 
+			<div class="floatclear"></div>	
+		</fieldset>
+		
 	</div> 
 	
 	<div id="archive_views">
@@ -301,6 +328,9 @@
 		<h2>Archive Views Over Time</h2> 
 		<div id="over_time_view_archive_graph_loading"></div> 
 		<div id="over_time_view_archive_graph" data-width="720" data-height="400" style="width:720px;height:400px"></div>
+
+		
+		
 	</div> 
 	
 	<div id="forwards">
