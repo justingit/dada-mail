@@ -1666,16 +1666,22 @@ sub alt_redirect {
 
     require CGI;
     my $q = CGI->new;
-       $q->charset($DADA::Config::HTML_CHARSET);
+    $q->charset($DADA::Config::HTML_CHARSET);
 
     $url = strip($url);
 
-    if ( ! isa_url($url) ) {
+    if ( !isa_url($url) ) {
         $url = 'http://' . $url;
     }
-
     if ($qs) {
-        return $q->redirect( $url . '?' . $qs );
+        if ( $url =~ m/\?/ ) {
+
+            # Already has a query string?!
+            $url = $q->redirect( $url . '&' . $qs );
+        }
+        else {
+            $url = $q->redirect( $url . '?' . $qs );
+        }
     }
     else {
         return $q->redirect($url);
