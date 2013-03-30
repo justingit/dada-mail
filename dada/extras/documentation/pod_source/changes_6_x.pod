@@ -6,12 +6,15 @@
 
 =head3 Email Tracking for Opens/Clickthroughs
 
-Dada Mail can now be set to optionally track email addresses, when tracking Clickthroughs and Message Opens. These address can currently be exported per mass mailing. This feature is somewhat experimental, as features that can stem from this new ability can be vastly expanded. 
+Dada Mail can now be set to optionally track email addresses, when tracking Clickthroughs and Message Opens. These address can currently be exported per mass mailing. This feature is somewhat experimental, as features that can stem from this new ability can be vastly expanded from what Dada Mail currently has. 
 
 This feature also requires changes to Dada Mail's SQL schema, which should happen automatically, during the first run of Dada Mail, after an upgrade. One can perform these changes manually, by issuing the following SQL: 
 
 	ALTER TABLE dada_clickthrough_url_log ADD email VARCHAR(80) AFTER url;
 	ALTER TABLE dada_mass_mailing_event_log ADD email VARCHAR(80) AFTER details;
+
+The option to track email addresses is located in the Tracker's list control panel screen, under, B<Preferences> - B<Track with Email Addresses>. 
+
 
 =head3 Password Protect Directories Plugin: Works with already-exisiting .htaccess
 
