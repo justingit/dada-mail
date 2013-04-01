@@ -296,7 +296,7 @@ p.small {
 
 /* ----- CODE ----- */
 
-code, pre {
+code, pre, p.fake_code {
 	margin: 5px;
 	padding: 5px;
 	border: 1px solid #ccc;
