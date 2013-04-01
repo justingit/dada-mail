@@ -17,6 +17,7 @@ $(document).ready(function() {
 	if ($("#navcontainer").length) {
 		admin_menu_sending_monitor_notification();
 		admin_menu_subscriber_count_notification();
+		admin_menu_archive_count_notification();
 	}
 
 	//Mail Sending >> Send a Message 
@@ -576,6 +577,9 @@ function admin_menu_sending_monitor_notification() {
 
 function admin_menu_subscriber_count_notification() {
 	admin_menu_notification('admin_menu_subscriber_count_notification', 'admin_menu_view_list');
+}
+function admin_menu_archive_count_notification() { 
+	admin_menu_notification('admin_menu_archive_count_notification', 'admin_menu_view_archive');	
 }
 
 function admin_menu_notification(flavor, target_class) {
