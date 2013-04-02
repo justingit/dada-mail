@@ -6,6 +6,7 @@ use FindBin;
 use lib "$FindBin::Bin/../";
 use lib "$FindBin::Bin/../DADA/perllib";
 use lib "$FindBin::Bin/../../../../perllib";
+use lib "$FindBin::Bin/../../../../perl";
 
 use strict;
 $ENV{PATH} = "/bin:/usr/bin";

@@ -7,9 +7,7 @@ use lib "$FindBin::Bin";
 use lib "$FindBin::Bin/../";
 use lib "$FindBin::Bin/../DADA/perllib";
 use lib "$FindBin::Bin/../../../../perllib";
-
-
-	#	/Users/justin/Documents/DadaMail/build/bundle/perllib
+use lib "$FindBin::Bin/../../../../perl";
 
 
 BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}

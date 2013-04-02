@@ -6,6 +6,7 @@ use FindBin;
 use lib "$FindBin::Bin/../";
 use lib "$FindBin::Bin/../DADA/perllib";
 use lib "$FindBin::Bin/../../../../perllib";
+use lib "$FindBin::Bin/../../../../perl";
 
 # use some of those Modules
 use DADA::Config 6.0.0;
