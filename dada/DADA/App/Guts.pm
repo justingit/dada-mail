@@ -1976,7 +1976,6 @@ sub check_setup {
 
 sub SQL_check_setup {
 	
-	my $table_count = 0; 
 	my $dbi_obj     = undef; 
 	my $dbh         = undef; ; 
 	try { 
@@ -1988,35 +1987,39 @@ sub SQL_check_setup {
 		return 0; 
 	};
 	
-	my %tables_to_look_for = (); 
+	my %tables_to_create = (); 
 	foreach(keys %DADA::Config::SQL_PARAMS){ 
 		if($_ =~ m/table/){ 
-			$tables_to_look_for{$DADA::Config::SQL_PARAMS{$_}} = 0;
+			$tables_to_create{$DADA::Config::SQL_PARAMS{$_}} = 0;
 		}
 	}
-	
 
-	foreach my $table_name(keys %tables_to_look_for){ 
-		$tables_to_look_for{$table_name} = 1; 	
+	foreach my $table_name(keys %tables_to_create){ 
 		try { 
+			my $query = 'SELECT * FROM ' . $table_name . ' WHERE 1 = 0';
 		    # * If an error is raised, the table does not exist.
-		    $dbh->do('SELECT * FROM ' . $table_name . ' WHERE 1 = 0')
-				or croak "cannot do statement! $DBI::errstr\n";
+		    $dbh->do($query)
+				or croak "cannot do statement: '$query': $DBI::errstr\n";
 		} catch { 
-			$tables_to_look_for{$table_name} = 0; 
+			$tables_to_create{$table_name} = 1; 
 		};
 	}
 	
-	foreach(keys %tables_to_look_for){ 
-		$table_count = $table_count + $tables_to_look_for{$_}; 
+	my $need_to_create = 0; 
+	foreach(keys %tables_to_create){ 
+		if($tables_to_create{$_} == 1) {
+			$need_to_create++; 
+		}
 	}
 	
-	if($table_count < 13) { 
-		my $r = create_probable_missing_tables(); 
+	if($need_to_create > 1) { 
+		
+		my $r = create_probable_missing_tables(\%tables_to_create); 
 		if( $r == 0){ 
 			return 0; 
 		}
 		else { 
+			# ...
 		}
 	}
 
@@ -2031,6 +2034,9 @@ sub SQL_check_setup {
 }
 
 sub create_probable_missing_tables { 
+	
+	my ($tables_to_create) = @_; 
+	
 	my $db_type = $DADA::Config::SQL_PARAMS{dbtype}; 
 	
 	my $sql_file = '';
@@ -2050,30 +2056,39 @@ sub create_probable_missing_tables {
 	my $dbi_obj = DADA::App::DBIHandle->new; 
 	my $dbh = $dbi_obj->dbh_obj;
 
-	for my $create_table(@statements){ 
-		try {  
-			
-			if($db_type eq 'Pg'){ 
-				my $table_name = $create_table; 
-				   $table_name =~ m/CREATE TABLE (.*?) \(/;
-				   $table_name = $1;
-				my $table_exists_query = "SELECT true FROM pg_tables WHERE tablename = ?"; 	
-				my ($table_exists) = $dbh->selectrow_array($table_exists_query, undef, $table_name)
-					or croak $DBI::errstr;
-				next if $table_exists !~ /true/i; 
-			}
-			
-			my $sth = $dbh->prepare($create_table)
-				or croak $DBI::errstr; 
-			$sth->execute
-				or croak "cannot do statment $DBI::errstr\n"; 
+	for my $create_table(@statements){
+		
+		my $table_name = undef; 		
+		if($db_type eq 'Pg'){ 
+			   $table_name = $create_table; 
+			   $table_name =~ m/CREATE TABLE (.*?) \(/;
+			   $table_name = $1;
 		}
-		catch { 
-			carp "Couldn't create necessary SQL table - you may have to do this, manually: $_";
-		};
+		else {
+		   $table_name = $create_table; 
+		   $table_name =~ m/CREATE TABLE IF NOT EXISTS (.*?) \(/;
+		   $table_name = $1;
+		}
+				
+		if($tables_to_create->{$table_name} == 1){ 
+			warn "need to create table, '$table_name'";
+			
+			try { 
+				my $sth = $dbh->prepare($create_table)
+					or croak $DBI::errstr; 
+				$sth->execute
+					or croak "cannot do statment $DBI::errstr\n"; 
+			}
+			catch { 
+				carp "Couldn't create necessary SQL table, '$table_name' with query, '$create_table' - you may have to do this, manually: $_";
+			};
+		}
+		else {
+			warn "no not need to create table, '$table_name'";
+		}
 	} 
 
-return 1; 
+	return 1; 
 
 }
 
@@ -2097,21 +2112,24 @@ sub upgrade_tables {
 	   my $fields = $sth->{NAME};
 	   $sth->finish;
 	   my $n_fields = {};
-	   foreach(@$fields){$n_fields->{$_} = 1;}
+	   foreach(@$fields){
+		   $n_fields->{$_} = 1;
+	   }
 	   if(exists($n_fields->{email})) { 
 			# good to go. 
 	   }
 		else { 
 			my $query; 
 			if($tablename eq 'clickthrough_url_log_table') { 
-				$query = 'ALTER TABLE ' . $DADA::Config::SQL_PARAMS{$tablename} . ' ADD email VARCHAR(80) AFTER url';				  
+				$query = 'ALTER TABLE ' . $DADA::Config::SQL_PARAMS{$tablename} . ' ADD email VARCHAR(80)';
 			}
 			elsif($tablename eq 'mass_mailing_event_log_table'){ 
-				$query = 'ALTER TABLE ' . $DADA::Config::SQL_PARAMS{$tablename} . ' ADD email VARCHAR(80) AFTER details'; 
+				$query = 'ALTER TABLE ' . $DADA::Config::SQL_PARAMS{$tablename} . ' ADD email VARCHAR(80)'; 
 			}
 			else { 
 				croak "unknown error!"; 
 			} 
+			warn 'Query: ' . $query; 
 			my $sth2 = $dbh->do($query)
 				or croak $dbh->errstr; 	
 		}
@@ -2286,7 +2304,6 @@ sub escape_for_sending {
 	$s =~ s/\"/\\\"/g;	
 	$s =~ s/\,/\\,/g;
 	$s =~ s/:/\\:/g;
-	
 	
 	
 	return $s; 
@@ -2766,4 +2783,3 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 
 1; 
-
