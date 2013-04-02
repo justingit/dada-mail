@@ -926,7 +926,49 @@ sub html_archive_list {
 	                -Write_Year    => $li->{archive_show_year},
 	                -Write_H_And_M => $li->{archive_show_hour_and_minute},
 	                -Write_Second  => $li->{archive_show_second});
-    
+					
+					my $header_from      = undef;
+	                my $orig_header_from = undef;
+
+	                if ($raw_msg) {
+	                    $header_from = $archive->get_header(
+	                        -header => 'From',
+	                        -key    => $entries->[$i]
+	                    );
+	                    $orig_header_from = $header_from;
+	                }
+	
+					my $can_use_gravatar_url = 0;
+	                my $gravatar_img_url     = '';
+
+	                if ( $ls->param('enable_gravatars') ) {
+
+	                    eval { require Gravatar::URL };
+	                    if ( !$@ ) {
+	                        $can_use_gravatar_url = 1;
+
+	                        require Email::Address;
+	                        if ( defined($orig_header_from) ) {
+	                            ;
+	                            eval {
+	                                $orig_header_from =
+	                                  ( Email::Address->parse($orig_header_from) )
+	                                  [0]->address;
+	                            };
+	                        }
+	                        $gravatar_img_url = gravatar_img_url(
+	                            {
+	                                -email => $orig_header_from,
+	                                -default_gravatar_url =>
+	                                  $ls->param('default_gravatar_url'),
+	                            }
+	                        );
+	                    }
+	                    else {
+	                        $can_use_gravatar_url = 0;
+	                    }
+	                }
+		                	
    # die $archive->message_blurb(-key => $entries->[$i]); 
 	                my $entry = { 				
 	                        id               => $entries->[$i], 
@@ -937,6 +979,13 @@ sub html_archive_list {
 	                        list             => $list, 
 	                        uri_escaped_list => uriescape($list),
 	                        PROGRAM_URL      => $DADA::Config::PROGRAM_URL, 
+		                    'list_settings.enable_gravatars' =>
+		                      $ls->param('enable_gravatars'),
+	
+	
+		                    can_use_gravatar_url => $can_use_gravatar_url,
+		                    gravatar_img_url     => $gravatar_img_url,
+	
 	                        message_blurb    => $archive->message_blurb(-key => $entries->[$i]),
 	                    }; 
                 
