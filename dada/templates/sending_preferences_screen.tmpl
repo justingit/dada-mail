@@ -455,27 +455,6 @@
 			<div id="amazon_ses_preferences">
 			<fieldset> 
 
-			<!-- tmpl_if has_aws_credentials_file --> 
-				<p class="positive">Your AWS crendentials are being looked for in:</p> 
-				<ul> 
-					<li><p class="positive"><!-- tmpl_var aws_credentials_file --></p></li> 
-				</ul>
-			<!-- tmpl_else --> 
-				<p class="error">
-					Cannot find your AWS crendentials (<!-- tmpl_var aws_credentials_file default="not set!" -->)
-				</p>
-			<!-- /tmpl_if -->
-			<!-- tmpl_if has_ses_verify_email_address_script --> 
-				<p class="positive">The, &quot;ses-verify-email-address.pl&quot; script is being looked for at:</p> 
-				<ul> 
-					<li><p class="positive"><!-- tmpl_var ses_verify_email_address_script --></p></li> 
-				</ul>
-			<!-- tmpl_else --> 
-			<p class="error">
-				Cannot find your &quot;ses-verify-email-address.pl&quot; script (<!-- tmpl_var ses_verify_email_address_script default="not set!" -->)
-			</p>
-			<!-- /tmpl_if -->		
-
 			<!-- tmpl_if amazon_ses_has_needed_cpan_modules --> 
 				<p class="positive" id="has_needed_cpan_modules"> 
 					All needed CPAN modules are installed!

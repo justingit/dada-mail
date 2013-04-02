@@ -58,16 +58,29 @@ sub _init {
 		
 }
 
+sub verify_sender { 
+	my $self = shift; 
+	my ($args) = @_; 
+	
+	require Net::Amazon::SES; 
+	my $ses_obj = Net::Amazon::SES->new( $DADA::Config::AMAZON_SES_OPTIONS ); 
+
+	my ($status, $result) = $ses_obj->verify_sender($args);
+	
+	return ($status, $result);
+}
+
+
+
+
 sub get_stats {
     my $self = shift;
+	require Net::Amazon::SES; 
+	my $ses_obj = Net::Amazon::SES->new( $DADA::Config::AMAZON_SES_OPTIONS ); 
 
-    my $get_stats_script =
-      $DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script};
-    my $aws_credentials_file =
-      $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file};
-
-    my $result = `$get_stats_script -k $aws_credentials_file -q`;
-
+	my ($status, $result) = $ses_obj->get_stats();
+	
+	
     my ( $label, $data ) = split( "\n", $result );
     my ( $SentLast24Hours, $Max24HourSend, $MaxSendRate ) =
       split( /\s+/, $data );

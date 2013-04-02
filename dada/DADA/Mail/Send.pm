@@ -821,12 +821,7 @@ sub send {
 			}
 			else { 
 				#carp "creating a new ses_obj"; 
-				$ses_obj = Net::Amazon::SES->new(
-					{ 
-						-creds => $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file}, 
-						# -trace => 1, 
-					}
-				); 
+				$ses_obj = Net::Amazon::SES->new( $DADA::Config::AMAZON_SES_OPTIONS ); 
 				$self->ses_obj($ses_obj); 
 			}		
 			my $msg = ''; 

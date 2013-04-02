@@ -2606,17 +2606,16 @@ sub amazon_ses_verify_email {
     );
 
 	my $amazon_ses_verify_email = $q->param('amazon_ses_verify_email'); 
-	if(!-e $DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script}){ 
-		print $q->header(); 
-		print '<p class="error">Cannot find, "' . $DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script} .'"</p>'; 
-		return; 
-	}
 	if(check_for_valid_email($amazon_ses_verify_email) == 1){ 
 		print $q->header(); 
 		print '<p class="error">Invalid Email Address!</p>'; 
 	}
 	else { 
-		`$DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script} -v $amazon_ses_verify_email -k $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file}`; 
+		
+		require DADA::App::AmazonSES; 
+		my $ses = DADA::App::AmazonSES->new; 
+	    my ($status, $result) = $ses->verify_sender({-email => $amazon_ses_verify_email}); 
+		
 		print $q->header(); 
 		print '<p class="positive">Verification Sent! Check the email account for: ' . $amazon_ses_verify_email . ' to complete the verification!</p>'; 
 	}
@@ -2637,39 +2636,28 @@ sub amazon_ses_get_stats {
 		|| ($ls->param('sending_method') eq 'smtp' && $ls->param('smtp_server') =~ m/amazonaws\.com/)
 	){ 
 		
-		my ( $SentLast24Hours, $Max24HourSend, $MaxSendRate );
-		my $found_ses_get_stats_script = 1; 
-		if(!-e $DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script}){ 
-			$found_ses_get_stats_script = 0; 
-		}
-		else { 
-			require DADA::App::AmazonSES; 
-			my $ses = DADA::App::AmazonSES->new; 
-		    my ( $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats; 
-		
-			print $q->header(); 
-			require DADA::Template::Widgets;
-			e_print(DADA::Template::Widgets::screen(
-				{
-					-screen => 'amazon_ses_get_stats_widget.tmpl',
-					-vars   => {
-						MaxSendRate                => commify($MaxSendRate),
-						Max24HourSend              => commify($Max24HourSend),
-						SentLast24Hours            => commify($SentLast24Hours),
-						found_ses_get_stats_script => $found_ses_get_stats_script,  
 
-						ses_get_stats_script       => $DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script},
-						
-					}
+		require DADA::App::AmazonSES; 
+		my $ses = DADA::App::AmazonSES->new; 
+	    my ( $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats; 
+
+		print $q->header(); 
+		require DADA::Template::Widgets;
+		e_print(DADA::Template::Widgets::screen(
+			{
+				-screen => 'amazon_ses_get_stats_widget.tmpl',
+				-vars   => {
+					MaxSendRate                => commify($MaxSendRate),
+					Max24HourSend              => commify($Max24HourSend),
+					SentLast24Hours            => commify($SentLast24Hours),
 				}
-			));
-			
-		}
+			}
+		));
 	}
 	else { 
 		print $q->header(); 
-		# Nothing... 
 	}
+	
 }
 
 
