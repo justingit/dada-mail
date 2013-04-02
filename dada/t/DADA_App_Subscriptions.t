@@ -6,8 +6,10 @@ use FindBin;
 use lib "$FindBin::Bin";
 use lib "$FindBin::Bin/../";
 use lib "$FindBin::Bin/../DADA/perllib";
-use lib "$FindBin::Bin/../../../../perllib";
-use lib "$FindBin::Bin/../../../../perl";
+BEGIN { 
+	my $b__dir = ( getpwuid($>) )[7].'/perl';
+    push @INC,$b__dir.'5/lib/perl5',$b__dir.'5/lib/perl5/x86_64-linux-thread-multi',map { $b__dir . $_ } @INC;
+}
 
 
 BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
