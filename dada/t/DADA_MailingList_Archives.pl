@@ -71,6 +71,7 @@ my $mla = DADA::MailingList::Archives->new({-list => $list});
 ok(defined $mla,                        'new() returned something, good!' );
 ok( $mla->isa('DADA::MailingList::Archives'),   "  and it's the right class" );
 
+ok($mla->num_archives == 0, "no archive entries."); 
 
 
 #$archive -> set_archive_info($subject, $message, $format, $raw_msg);
@@ -87,6 +88,9 @@ ok($set_return_pass == 1, "adding a new archive entry *with* a message id return
 
 my $exists = $mla->check_if_entry_exists($message_id); 
 ok($exists == 1, "check_if_entry_exists says our archived message exists!"); 
+
+
+ok($mla->num_archives == 1, "1 archive entries.");
 
 
 my $entries = $mla->get_archive_entries(); 

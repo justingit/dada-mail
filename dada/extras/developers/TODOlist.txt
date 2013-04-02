@@ -14,9 +14,12 @@ Key:
 
 [ ] Perhaps another email protection scheme - just break the email address. 
 
-[ ] No, the old style confirmation links won't work. I wanted to truly get this upgrade out asap - so I had to make decisions on what exactly was critical to push out. 
+[x] No, the old style confirmation links won't work. I wanted to truly get this upgrade out asap - so I had to make decisions on what exactly was critical to push out. 
+	Old Style Confirmation Links now have a realistic fallback
 
+[] Move to CKeditor 4, removal of FCKeditor
 [] Add timestamp field to dada_subscribers
+[] Ability to SEE other sublists...
 [ ] Ability to see other sublists (already invited) (Subscription Confirmation...) 
 
 [ ] Bridge needs a fancier change password thingy for the POP3 account thing. 

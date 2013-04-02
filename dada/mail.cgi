@@ -576,10 +576,10 @@ sub run {
 	'add_email'                  =>    \&add_email,
 	'delete_email'               =>    \&delete_email,
 	'subscription_options'       =>    \&subscription_options,
-	'admin_menu_subscriber_count_notification' 
-	                             => \&admin_menu_subscriber_count_notification, 
-	'admin_menu_mailing_monitor_notification'  
-	                             => \&admin_menu_mailing_monitor_notification, 
+	
+	'admin_menu_subscriber_count_notification' =>  \&admin_menu_subscriber_count_notification, 
+	'admin_menu_mailing_monitor_notification'  =>  \&admin_menu_mailing_monitor_notification,
+	'admin_menu_archive_count_notification'    =>  \&admin_menu_archive_count_notification,  
 	'send_email'                 =>    \&send_email,
 	'message_body_help'          =>    \&message_body_help, 
 	'url_message_body_help'      =>    \&url_message_body_help, 
@@ -985,29 +985,8 @@ sub sign_in {
 
 }
 
-sub admin_menu_subscriber_count_notification { 
-	
-	print $q->header(); 
-	
-	try { 		
-		
-		my ($admin_list, $root_login, $checksout) = check_list_security(
-											-cgi_obj         => $q,
-											-manual_override => 1
-										);
-		if($checksout) { 					
-			$list = $admin_list; 
-			require DADA::MailingList::Subscribers; 
-			my $lh = DADA::MailingList::Subscribers->new({-list => $list});
-			my $num = $lh->num_subscribers(); 
-			if($num > 0) { 
-				e_print('(' . commify($num) . ')');  
-			}
-		}
-	} catch { 
-		carp ($_); 
-	}
-}
+
+
 
 sub admin_menu_mailing_monitor_notification { 
 	
@@ -1045,6 +1024,63 @@ sub admin_menu_mailing_monitor_notification {
 		warn "Problems filling out the 'Sending Monitor' admin menu item with interesting bits of information about the mailouts: $_";
     }	
 }
+
+
+
+sub admin_menu_subscriber_count_notification { 
+	
+	print $q->header(); 
+	
+	try { 		
+		
+		my ($admin_list, $root_login, $checksout) = check_list_security(
+											-cgi_obj         => $q,
+											-manual_override => 1
+										);
+		if($checksout) { 					
+			$list = $admin_list; 
+			require DADA::MailingList::Subscribers; 
+			my $lh = DADA::MailingList::Subscribers->new({-list => $list});
+			my $num = $lh->num_subscribers(); 
+			if($num > 0) { 
+				e_print('(' . commify($num) . ')');  
+			}
+		}
+	} catch { 
+		carp ($_); 
+	}
+}
+
+
+
+
+
+sub admin_menu_archive_count_notification { 
+	
+	print $q->header(); 
+	
+	try { 		
+		
+		my ($admin_list, $root_login, $checksout) = check_list_security(
+											-cgi_obj         => $q,
+											-manual_override => 1
+										);
+		if($checksout) { 					
+			$list = $admin_list; 
+			require DADA::MailingList::Archives; 
+			my $lh = DADA::MailingList::Archives->new({-list => $list});
+			my $num = $lh->num_archives(); 
+			if($num > 0) { 
+				e_print('(' . commify($num) . ')');  
+			}
+		}
+	} catch { 
+		carp ($_); 
+	}
+}
+
+
+
 
 
 
