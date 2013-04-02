@@ -1175,7 +1175,6 @@ sub profile_widget {
                 gravatar_img_url => gravatar_img_url(
                     {
                         -email                => $email,
-                        -default_gravatar_url => $DADA::Config::PROFILE_OPTIONS->{gravatar_options}->{default_gravatar_url},
                         -size => '30',
                     }
                 ),
