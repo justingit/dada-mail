@@ -1,52 +1,56 @@
 #!/usr/bin/perl 
-use strict; 
+use strict;
 
 use FindBin;
 use lib "$FindBin::Bin/../";
 use lib "$FindBin::Bin/../DADA/perllib";
-use lib "$FindBin::Bin/../../../../perllib";
-use lib "$FindBin::Bin/../../../../perl";
 
-
-use CGI::Carp qw(fatalsToBrowser); 
-
-my $Plugin_Config = {}; 
-
-$Plugin_Config->{Default_List}       = undef; 
-$Plugin_Config->{Entries}            = undef; 
-$Plugin_Config->{Style}              = 'full'; 
-$Plugin_Config->{Allow_QS_Overrides} = 1;
+BEGIN { 
+	my $b__dir = ( getpwuid($>) )[7].'/perl';
+    push @INC,$b__dir.'5/lib/perl5',$b__dir.'5/lib/perl5/x86_64-linux-thread-multi',map { $b__dir . $_ } @INC;
+}
 
 use DADA::Config 6.0.0;
 
-use CGI; 
-use Try::Tiny; 
+use CGI::Carp qw(fatalsToBrowser);
 
-use DADA::App::Guts; 
-use DADA::MailingList::Settings; 
-use DADA::MailingList::Archives; 
+my $Plugin_Config = {};
+$Plugin_Config->{Default_List}       = undef;
+$Plugin_Config->{Entries}            = undef;
+$Plugin_Config->{Style}              = 'full';
+$Plugin_Config->{Allow_QS_Overrides} = 1;
 
-&init_vars; 
-&main; 
+use CGI;
+use Try::Tiny;
 
-sub init_vars { 
+use DADA::App::Guts;
+use DADA::MailingList::Settings;
+use DADA::MailingList::Archives;
+use DADA::App::ScreenCache;
+my $c = DADA::App::ScreenCache->new;
 
-    # DEV: This NEEDS to be in its own module - perhaps DADA::App::PluginHelper or something?
+&init_vars;
+&main;
 
-     while ( my $key = each %$Plugin_Config ) {
-        
-        if(exists($DADA::Config::PLUGIN_CONFIGS->{blog_index}->{$key})){ 
-        
-            if(defined($DADA::Config::PLUGIN_CONFIGS->{blog_index}->{$key})){ 
-                    
-                $Plugin_Config->{$key} = $DADA::Config::PLUGIN_CONFIGS->{blog_index}->{$key};
-        
+sub init_vars {
+
+# DEV: This NEEDS to be in its own module - perhaps DADA::App::PluginHelper or something?
+
+    while ( my $key = each %$Plugin_Config ) {
+
+        if ( exists( $DADA::Config::PLUGIN_CONFIGS->{blog_index}->{$key} ) ) {
+
+            if (
+                defined( $DADA::Config::PLUGIN_CONFIGS->{blog_index}->{$key} ) )
+            {
+
+                $Plugin_Config->{$key} =
+                  $DADA::Config::PLUGIN_CONFIGS->{blog_index}->{$key};
+
             }
         }
-     }
+    }
 }
-
-
 
 sub main {
 
@@ -71,14 +75,27 @@ sub main {
         }
         if ( $q->param('style') ) {
             $Plugin_Config->{Style} = xss_filter( $q->param('style') );
+            if (   $Plugin_Config->{Style} ne 'blurb'
+                || $Plugin_Config->{Style} ne 'full' )
+            {
+                $Plugin_Config->{Style} = 'full';
+            }
         }
     }
 
+    my $cache_filename =
+        $list
+      . '.blog_index.'
+      . $Plugin_Config->{Style} . '.'
+      . $Plugin_Config->{Entries} . '.'
+      . $mode . '.scrn';
+    if ( $c->cached($cache_filename) ) {
+        $c->show($cache_filename);
+        return;
+    }
+
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
-
     my $ah = DADA::MailingList::Archives->new( { -list => $list } );
-
     my $entries = $ah->get_archive_entries();
 
     my $amount;
@@ -89,7 +106,7 @@ sub main {
         $amount = int( $Plugin_Config->{Entries} - 1 );
     }
     else {
-        $amount = $li->{archive_index_count};
+        $amount = $ls->param('archive_index_count');
     }
 
     if ( $amount > $#$entries ) {
@@ -113,11 +130,11 @@ sub main {
 
         my $pretty_date = date_this(
             -Packed_Date   => $entry,
-            -Write_Month   => $li->{archive_show_month},
-            -Write_Day     => $li->{archive_show_day},
-            -Write_Year    => $li->{archive_show_year},
-            -Write_H_And_M => $li->{archive_show_hour_and_minute},
-            -Write_Second  => $li->{archive_show_second},
+            -Write_Month   => $ls->param('archive_show_month'),
+            -Write_Day     => $ls->param('archive_show_day'),
+            -Write_Year    => $ls->param('archive_show_year'),
+            -Write_H_And_M => $ls->param('archive_show_hour_and_minute'),
+            -Write_Second  => $ls->param('archive_show_second'),
         );
 
         my $from_email = find_from_whom($raw_msg)
@@ -204,54 +221,51 @@ sub main {
         $scrn = "document.write('" . js_enc($scrn) . "');";
         $scrn = $q->header('text/javascript') . $scrn;
         e_print($scrn);
-
-        #$c->cache('blog_index.js', \$scrn);
     }
     elsif ( $mode eq 'html' ) {
         $scrn = $q->header() . $scrn;
         e_print($scrn);
-
-        #$c->cache('blog_index.html', \$scrn);
     }
 
+    $c->cache($cache_filename);
+
 }
 
-sub can_use_gravatar_url { 
+sub can_use_gravatar_url {
 
     my $can_use_gravatar_url = 1;
-    try { 
-		require Gravatar::URL;
-	} catch { 
-		$can_use_gravatar_url = 0; 
-	};
-	return $can_use_gravatar_url; 
+    try {
+        require Gravatar::URL;
+    }
+    catch {
+        $can_use_gravatar_url = 0;
+    };
+    return $can_use_gravatar_url;
 }
 
+sub find_from_whom {
+    my $raw_msg = shift;
+    return undef if !defined $raw_msg;
 
-sub find_from_whom { 
-	my $raw_msg = shift;
-	return undef if ! defined $raw_msg; 
-	 
-	my $from_address = undef; 
-	try{ 
-		require MIME::Parser;
-	    my $parser = new MIME::Parser;
-	    $parser = optimize_mime_parser($parser);
-		my $entity = $parser->parse_data($raw_msg);
-		my $orig_header_from;
-	    if($orig_header_from = $entity->head->get( 'From', 0 )){ 
-			require Email::Address; 
-			$from_address =
+    my $from_address = undef;
+    try {
+        require MIME::Parser;
+        my $parser = new MIME::Parser;
+        $parser = optimize_mime_parser($parser);
+        my $entity = $parser->parse_data($raw_msg);
+        my $orig_header_from;
+        if ( $orig_header_from = $entity->head->get( 'From', 0 ) ) {
+            require Email::Address;
+            $from_address =
               ( Email::Address->parse($orig_header_from) )[0]->address;
-		}
-		
-	} catch { 
-		return undef; 
-	};
-	return $from_address; 
+        }
+
+    }
+    catch {
+        return undef;
+    };
+    return $from_address;
 }
-
-
 
 =head1 NAME
 
@@ -498,5 +512,4 @@ Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA  02111-1307, USA.
 
 =cut
-
 
