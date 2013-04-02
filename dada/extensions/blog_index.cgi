@@ -7,7 +7,7 @@ use lib "$FindBin::Bin/../DADA/perllib";
 
 BEGIN { 
 	my $b__dir = ( getpwuid($>) )[7].'/perl';
-    push @INC,$b__dir.'5/lib/perl5',$b__dir.'5/lib/perl5/x86_64-linux-thread-multi',map { $b__dir . $_ } @INC;
+    push @INC,$b__dir.'5/lib/perl5',$b__dir.'5/lib/perl5/x86_64-linux-thread-multi',$b__dir.'lib',map { $b__dir . $_ } @INC;
 }
 
 use DADA::Config 6.0.0;
@@ -76,22 +76,11 @@ sub main {
         if ( $q->param('style') ) {
             $Plugin_Config->{Style} = xss_filter( $q->param('style') );
             if (   $Plugin_Config->{Style} ne 'blurb'
-                || $Plugin_Config->{Style} ne 'full' )
+                && $Plugin_Config->{Style} ne 'full' )
             {
                 $Plugin_Config->{Style} = 'full';
             }
         }
-    }
-
-    my $cache_filename =
-        $list
-      . '.blog_index.'
-      . $Plugin_Config->{Style} . '.'
-      . $Plugin_Config->{Entries} . '.'
-      . $mode . '.scrn';
-    if ( $c->cached($cache_filename) ) {
-        $c->show($cache_filename);
-        return;
     }
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
@@ -99,7 +88,6 @@ sub main {
     my $entries = $ah->get_archive_entries();
 
     my $amount;
-
     if ( defined( $Plugin_Config->{Entries} )
         && $Plugin_Config->{Entries} >= 1 )
     {
@@ -112,6 +100,23 @@ sub main {
     if ( $amount > $#$entries ) {
         $amount = $#$entries;
     }
+
+    my $cache_filename =
+        $list
+      . '.blog_index.'
+      . $Plugin_Config->{Style} . '.'
+      . $amount . '.'
+      . $mode . '.scrn';
+    if ( $c->cached($cache_filename) ) {
+        $c->show($cache_filename);
+        return;
+    }
+
+
+
+
+
+
 
     my @archive_entries = ();
 
@@ -227,7 +232,7 @@ sub main {
         e_print($scrn);
     }
 
-    $c->cache($cache_filename);
+    $c->cache($cache_filename, \$scrn);
 
 }
 
