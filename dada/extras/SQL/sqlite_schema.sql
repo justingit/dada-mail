@@ -102,4 +102,3 @@ use_custom_error_page char(1),
 custom_error_page text,
 default_password text
 );
-

@@ -21,7 +21,7 @@ data text
 );
 
 CREATE TABLE dada_profiles (
-	profile_id			         serial,
+	profile_id                   serial,
 	email                        varchar(80) not null UNIQUE,
 	password                     text,
 	auth_code                    varchar(64),
@@ -115,6 +115,3 @@ use_custom_error_page char(1),
 custom_error_page text,
 default_password text
 );
-
-
-
