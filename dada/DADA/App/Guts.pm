@@ -2402,32 +2402,45 @@ sub mailhide_encode {
 
 
 
-sub gravatar_img_url { 
+sub gravatar_img_url {
 
-	my ($args) = @_; 
-	my $url = undef; 
-	
-	if(!exists($args->{-size})){ 
-		$args->{-size} = 80;
-	}
-	
-	my $can_use_gravatar_url = 1;
-    try { 
-		require Gravatar::URL;
-	} catch { 
-		$can_use_gravatar_url = 0; 
-	};
-    
-	if($can_use_gravatar_url == 1){ 
-		if(isa_url($args->{-default_gravatar_url})){ 
-       		$url = Gravatar::URL::gravatar_url(email => $args->{-email}, default => $args->{-default_gravatar_url}, size => $args->{-size});
-		}
-		else { 
-			$url = Gravatar::URL::gravatar_url(email => $args->{-email}, size => $args->{-size});
-	    }
-	}
-	return $url; 
-	
+    my ($args) = @_;
+    my $url = undef;
+
+    if ( !exists( $args->{-size} ) ) {
+        $args->{-size} = 80;
+    }
+    if ( !exists( $args->{-default_gravatar_url} ) ) {
+        $args->{-default_gravatar_url} =
+          $DADA::Config::PROFILE_OPTIONS->{gravatar_options}
+          ->{default_gravatar_url};
+    }
+
+    my $can_use_gravatar_url = 1;
+    try {
+        require Gravatar::URL;
+    }
+    catch {
+        $can_use_gravatar_url = 0;
+    };
+
+    if ( $can_use_gravatar_url == 1 ) {
+        if ( isa_url( $args->{-default_gravatar_url} ) ) {
+            $url = Gravatar::URL::gravatar_url(
+                email   => $args->{-email},
+                default => $args->{-default_gravatar_url},
+                size    => $args->{-size}
+            );
+        }
+        else {
+            $url = Gravatar::URL::gravatar_url(
+                email => $args->{-email},
+                size  => $args->{-size}
+            );
+        }
+    }
+    return $url;
+
 }
 
 

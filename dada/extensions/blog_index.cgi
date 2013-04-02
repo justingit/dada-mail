@@ -3,101 +3,23 @@ use strict;
 
 use FindBin;
 use lib "$FindBin::Bin/../";
+use lib qw(../../../..//perllib);
 use lib "$FindBin::Bin/../DADA/perllib";
-
 use CGI::Carp qw(fatalsToBrowser); 
 
 my $Plugin_Config = {}; 
 
 $Plugin_Config->{Default_List}       = undef; 
-
 $Plugin_Config->{Entries}            = undef; 
-
 $Plugin_Config->{Style}              = 'full'; 
-
-$Plugin_Config->{Allow_QS_Overrides} = 1; 
-
-$Plugin_Config->{Template}           = q{ 
-
-<!-- Stuff that goes in before the entries! --> 
-
-
-<!-- The entries! --> 
-
-<!-- tmpl_loop archive_entries --> 
-
-    <h2><!-- tmpl_var pretty_subject --></h2> 
-    
-    <p style="text-align:right;color:#999">Published on <!-- tmpl_var pretty_date --></p>
-    
-    <!-- tmpl_if blurb_style --> 
-        <p><blockquote><em>
-    <!--/tmpl_if--> 
-    
-    <!-- tmpl_var message --><!-- tmpl_if blurb_style -->...</em>
-        
-         <a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list -->/<!-- tmpl_var message_id -->/">
-      [More]
-     </a>
-        
-        </blockquote></p>
-    <!--/tmpl_if--> 
-
-
-    
-    <p style="text-align:right">
-     <a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list -->/<!-- tmpl_var message_id -->/">
-      [Permalink]
-     </a>
-    </p>
-    
-
-<!-- /tmpl_loop --> 
-
-
-<!-- Stuff that goes in after the entries! --> 
-
-
-
-}; 
-
-
-
-
-
-
+$Plugin_Config->{Allow_QS_Overrides} = 1;
 
 use DADA::Config 6.0.0;
 
-use HTML::Template; 
-
-
-
-my %Global_Template_Options = (
-		#debug             => 1, 		
-		path              => [$DADA::Config::TEMPLATES],
-		die_on_bad_params => 0,
-		
-		(
-            ($DADA::Config::CPAN_DEBUG_SETTINGS{HTML_TEMPLATE} == 1) ? 
-                (debug => 1, ) :
-                ()
-        ), 
-
-
-);
-
-
-
-
-
-
-use CGI::Carp qw(fatalsToBrowser); 
 use CGI; 
-
+use Try::Tiny; 
 
 use DADA::App::Guts; 
-# use DADA::App::ScreenCache; 
 use DADA::MailingList::Settings; 
 use DADA::MailingList::Archives; 
 
@@ -123,73 +45,69 @@ sub init_vars {
 
 
 
-sub main { 
-    
-    
+sub main {
+
     my $q = CGI->new;
-	$q->charset($DADA::Config::HTML_CHARSET);
+    $q->charset($DADA::Config::HTML_CHARSET);
 
-       $q = decode_cgi_obj($q);
- 	my $mode = 'js'; 
-    if($q->param('mode')){ 
-		$mode = $q->param('mode'); 
-	}
-
-	my $list = $Plugin_Config->{Default_List}; 
-	if($q->param('list')){ 
-		$list = xss_filter($q->param('list')); 
-	}
-	
-	if($Plugin_Config->{Allow_QS_Overrides} == 1){
-		
-		if($q->param('entries')){ 
-			$Plugin_Config->{Entries} = xss_filter($q->param('entries')); 
-		}
-		if($q->param('style')){ 
-			$Plugin_Config->{Style} = xss_filter($q->param('style')); 
-		}
-	}
-	
-    my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-    my $li = $ls->get; 
-	
-    my $ah = DADA::MailingList::Archives->new({-list => $list});
-    
-    my $entries = $ah->get_archive_entries(); 
-    
-    my $amount; 
- 
-   if(defined($Plugin_Config->{Entries}) && $Plugin_Config->{Entries} >= 1){ 
-        $amount  = int($Plugin_Config->{Entries} - 1);
+    $q = decode_cgi_obj($q);
+    my $mode = 'js';
+    if ( $q->param('mode') ) {
+        $mode = $q->param('mode');
     }
-    else { 
-        $amount  = $li->{archive_index_count};    
-    }
-    
-	if($amount > $#$entries){ 
-		$amount = $#$entries;
-	}
-    
-    my @archive_entries =  (); 
-    
-    
-    
-    
-    my $i = 0; 
-    for($i = 0; $i <=$amount; $i++){ 
-    
-        my $entry          = $entries->[$i];
-    
-    
-        my ($subject, $message, $format, $raw_msg) = $ah->get_archive_info($entry); 
-        
-		# ?
-        my $pretty_subject = $ah->_parse_in_list_info(-data => $subject);
 
-		$pretty_subject = pretty($pretty_subject);
-     
-		
-			
+    my $list = $Plugin_Config->{Default_List};
+    if ( $q->param('list') ) {
+        $list = xss_filter( $q->param('list') );
+    }
+
+    if ( $Plugin_Config->{Allow_QS_Overrides} == 1 ) {
+
+        if ( $q->param('entries') ) {
+            $Plugin_Config->{Entries} = xss_filter( $q->param('entries') );
+        }
+        if ( $q->param('style') ) {
+            $Plugin_Config->{Style} = xss_filter( $q->param('style') );
+        }
+    }
+
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $li = $ls->get;
+
+    my $ah = DADA::MailingList::Archives->new( { -list => $list } );
+
+    my $entries = $ah->get_archive_entries();
+
+    my $amount;
+
+    if ( defined( $Plugin_Config->{Entries} )
+        && $Plugin_Config->{Entries} >= 1 )
+    {
+        $amount = int( $Plugin_Config->{Entries} - 1 );
+    }
+    else {
+        $amount = $li->{archive_index_count};
+    }
+
+    if ( $amount > $#$entries ) {
+        $amount = $#$entries;
+    }
+
+    my @archive_entries = ();
+
+    my $i = 0;
+    for ( $i = 0 ; $i <= $amount ; $i++ ) {
+
+        my $entry = $entries->[$i];
+
+        my ( $subject, $message, $format, $raw_msg ) =
+          $ah->get_archive_info($entry);
+
+        # ?
+        my $pretty_subject = $ah->_parse_in_list_info( -data => $subject );
+
+        $pretty_subject = pretty($pretty_subject);
+
         my $pretty_date = date_this(
             -Packed_Date   => $entry,
             -Write_Month   => $li->{archive_show_month},
@@ -198,103 +116,137 @@ sub main {
             -Write_H_And_M => $li->{archive_show_hour_and_minute},
             -Write_Second  => $li->{archive_show_second},
         );
-    
-    
-    
-     my $massaged_message_for_display; 
-     if($Plugin_Config->{Style} eq 'blurb'){ 
-     
-        $massaged_message_for_display    = $ah->message_blurb(-key => $entry),
-     }elsif($Plugin_Config->{Style} eq 'full'){ 
 
-        my $content_type; 
-        
-        ($massaged_message_for_display, $content_type) = $ah->massaged_msg_for_display(-key => $entry, -body_only => 1);
-    
-    }else { 
-        die 'Unsupported $Plugin_Config->{Style} type!'; 
+        my $from_email = find_from_whom($raw_msg)
+          || $ls->param('list_owner_email');
+
+        my $massaged_message_for_display;
+        if ( $Plugin_Config->{Style} eq 'blurb' ) {
+
+            $massaged_message_for_display =
+              $ah->message_blurb( -key => $entry ),
+              ;
+        }
+        elsif ( $Plugin_Config->{Style} eq 'full' ) {
+
+            my $content_type;
+
+            ( $massaged_message_for_display, $content_type ) =
+              $ah->massaged_msg_for_display( -key => $entry, -body_only => 1 );
+
+        }
+        else {
+            die 'Unsupported $Plugin_Config->{Style} type!';
+        }
+
+        push(
+            @archive_entries,
+            {
+                pretty_subject => $pretty_subject,
+                $subject       => $subject,
+                pretty_date    => $pretty_date,
+                message        => $massaged_message_for_display,
+                PROGRAM_URL    => $DADA::Config::PROGRAM_URL,
+                list           => $list,
+                message_id     => $entry,
+
+                'list_settings.enable_gravatars' =>
+                  $ls->param('enable_gravatars'),
+                can_use_gravatar_url => can_use_gravatar_url(),
+                gravatar_img_url     => gravatar_img_url(
+                    {
+                        -email => $from_email,
+                        -size  => '80',
+                        -default_gravatar_url =>
+                          $ls->param('default_gravatar_url'),
+                    }
+                ),
+
+                blurb_style => ( $Plugin_Config->{Style} eq 'blurb' ) ? 1 : 0,
+
+            }
+        );
+
     }
-    
-        push(@archive_entries, {
-            pretty_subject => $pretty_subject, 
-            $subject       => $subject, 
-            pretty_date    => $pretty_date, 
-            message        => $massaged_message_for_display, 
-            PROGRAM_URL    => $DADA::Config::PROGRAM_URL, 
-            list           => $list, 
-            message_id     => $entry, 
-            blurb_style    => ($Plugin_Config->{Style} eq 'blurb') ? 1 : 0, 
-            
-                                    }
-       );  
-    
+
+    my $scrn;
+
+    require DADA::Template::Widgets;
+
+    $scrn = DADA::Template::Widgets::screen(
+        {
+            -screen => 'extensions/blog_index/blog_index.tmpl',
+            -vars   => {
+
+                list            => $list,
+                archive_entries => \@archive_entries,
+
+                PROGRAM_URL => $DADA::Config::PROGRAM_URL,
+                list        => $list,
+
+                #message_id     => $entry,
+                blurb_style => ( $Plugin_Config->{Style} eq 'blurb' ) ? 1 : 0,
+
+            },
+            -list_settings_vars => {
+                -list   => $list,
+                -dot_it => 1,
+
+            }
+        }
+    );
+
+    if ( $mode eq 'js' ) {
+
+        $scrn = "document.write('" . js_enc($scrn) . "');";
+        $scrn = $q->header('text/javascript') . $scrn;
+        e_print($scrn);
+
+        #$c->cache('blog_index.js', \$scrn);
+    }
+    elsif ( $mode eq 'html' ) {
+        $scrn = $q->header() . $scrn;
+        e_print($scrn);
+
+        #$c->cache('blog_index.html', \$scrn);
     }
 
-
- 
-  # my $c = DADA::App::ScreenCache->new; 
-	#if($mode eq 'js'){ 
-	#	if($c->cached('blog_index.js')){ 
-	#		$c->show('blog_index.js'); 
-	#		return;
-	#	}
-	#}
-	#elsif($mode eq 'html'){ 
-	#	if($c->cached('blog_index.html')){ 
-	#		$c->show('blog_index.html'); 
-	#		return;
-	#	}
-	#}
-
-
-   my $scrn; 
-
-	require DADA::Template::Widgets; 
-	
-
-   
-   $scrn = DADA::Template::Widgets::screen(
-		{ 
-			-data =>  \$Plugin_Config->{Template}, 
-            -vars => 
-				{
-					
-                      list  => $list, 
-                      archive_entries => \@archive_entries, 
-                      
-                      PROGRAM_URL    => $DADA::Config::PROGRAM_URL, 
-                      list           => $list, 
-                      #message_id     => $entry, 
-                      blurb_style    => ($Plugin_Config->{Style} eq 'blurb') ? 1 : 0,   
-                    
-                 },
-			-list_settings_vars => { 
-										-list   => $list, 
-										-dot_it => 1, 
-							
-								}
-			}
-		); 
-
-	if($mode eq 'js'){ 
-		
-	
-		$scrn = "document.write('" .  js_enc($scrn) . "');";
-		$scrn = $q->header('text/javascript') . $scrn; 	
-		e_print($scrn); 
-		#$c->cache('blog_index.js', \$scrn);
-	}
-	elsif($mode eq 'html'){ 
-		$scrn = $q->header() . $scrn; 
-		e_print($scrn);
-		#$c->cache('blog_index.html', \$scrn);
-	}
-
-
-
-	
 }
 
+sub can_use_gravatar_url { 
+
+    my $can_use_gravatar_url = 1;
+    try { 
+		require Gravatar::URL;
+	} catch { 
+		$can_use_gravatar_url = 0; 
+	};
+	return $can_use_gravatar_url; 
+}
+
+
+sub find_from_whom { 
+	my $raw_msg = shift;
+	return undef if ! defined $raw_msg; 
+	 
+	my $from_address = undef; 
+	try{ 
+		require MIME::Parser;
+	    my $parser = new MIME::Parser;
+	    $parser = optimize_mime_parser($parser);
+		my $entity = $parser->parse_data($raw_msg);
+		my $orig_header_from;
+	    if($orig_header_from = $entity->head->get( 'From', 0 )){ 
+			require Email::Address; 
+			$from_address =
+              ( Email::Address->parse($orig_header_from) )[0]->address;
+		}
+		
+	} catch { 
+		return undef; 
+	};
+	return $from_address; 
+}
 
 
 

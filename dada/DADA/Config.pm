@@ -335,7 +335,6 @@ $PLUGIN_CONFIGS ||= {
         Entries            => undef,
         Style              => undef,
         Allow_QS_Overrides => undef,
-        Template           => undef,
 
     },
 
