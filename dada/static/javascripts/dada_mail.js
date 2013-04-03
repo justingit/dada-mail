@@ -1086,22 +1086,21 @@ function test_sending_preferences() {
 
 
 function amazon_verify_email() {
-	$("#amazon_ses_verify_email_results").hide('fade');
-	$("#amazon_ses_verify_email_loading").html('<p class="alert">Loading...</p>');
-	var request = $.ajax({
-		url: $("#s_program_url").val(),
-		type: "POST",
-		cache: false,
+	
+	$.colorbox({
+		top: 0,
+		fixed: true,
+		initialHeight: 50,
+		maxHeight: 480,
+		maxWidth: 649,
+		opacity: .50,
+		href: $("#s_program_url").val(),
 		data: {
 			f: 'amazon_ses_verify_email',
 			amazon_ses_verify_email: $("#amazon_ses_verify_email").val()
-		},
-		dataType: "html"
+		}
 	});
-	request.done(function(content) {
-		$("#amazon_ses_verify_email_results").html(content).show('fade');
-		$("#amazon_ses_verify_email_loading").html('<p class="alert">&nbsp;</p>');
-	});
+	
 }
 
 

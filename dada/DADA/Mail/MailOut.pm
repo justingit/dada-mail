@@ -248,7 +248,7 @@ sub batch_params {
 
 		require DADA::App::AmazonSES; 
 		my $ses = DADA::App::AmazonSES->new; 
-	    my ( $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats; 
+	    my ($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats; 
         #                  0          10_000             5
 
         #		$Max24HourSend = 100_000;

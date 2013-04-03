@@ -1,25 +1,23 @@
 <!-- begin previewBatchSendingSpeed_widget.tmpl --> 
 
 <!-- tmpl_if enable_bulk_batching --> 
-<!-- tmpl_if somethings_wrong --> 
-<div class="badweatherbox">
-<p>
-	what kind of information are you giving me?!
-</p>
-</div> 
+
+	<!-- tmpl_if somethings_wrong --> 
+	
+		<p>
+			<strong>Warning!</strong>  There's a problem with the saved AWS Credentials. 
+		</p>
+	
+	<!-- tmpl_else -->
+		<p>
+			Messages will be sent at a rate of up to <strong><!-- tmpl_var per_hour --> Messages/Hour</strong>. Mailing to <strong><!-- tmpl_var num_subscribers --> subscribers</strong> will take at least <strong><!-- tmpl_var time_to_send --></strong>.
+		</p>
+	<!-- /tmpl_if -->
 
 <!-- tmpl_else -->
-
-
-<p>
-	Messages will be sent at a rate of up to <strong><!-- tmpl_var per_hour --> Messages/Hour</strong>. Mailing to <strong><!-- tmpl_var num_subscribers --> subscribers</strong> will take at least <strong><!-- tmpl_var time_to_send --></strong>.
-</p>
-<!-- /tmpl_if -->
-
-<!-- tmpl_else -->
-<p>
-	Batch Settings will not be used.
-</p>
+	<p>
+		Batch Settings will not be used.
+	</p>
 <!-- /tmpl_if -->
 
 

@@ -2605,20 +2605,34 @@ sub amazon_ses_verify_email {
         -Function => 'sending_preferences'
     );
 
-	my $amazon_ses_verify_email = $q->param('amazon_ses_verify_email'); 
+	my $valid_email             = 1; 
+	my $status                  = undef; 
+	my $result                  = undef; 
+	my $amazon_ses_verify_email = xss_filter(strip($q->param('amazon_ses_verify_email'))); 
 	if(check_for_valid_email($amazon_ses_verify_email) == 1){ 
-		print $q->header(); 
-		print '<p class="error">Invalid Email Address!</p>'; 
+		$valid_email = 0; 
 	}
 	else { 
-		
 		require DADA::App::AmazonSES; 
 		my $ses = DADA::App::AmazonSES->new; 
-	    my ($status, $result) = $ses->verify_sender({-email => $amazon_ses_verify_email}); 
-		
-		print $q->header(); 
-		print '<p class="positive">Verification Sent! Check the email account for: ' . $amazon_ses_verify_email . ' to complete the verification!</p>'; 
+	    ($status, $result) = $ses->verify_sender( { -email => $amazon_ses_verify_email } ); 
 	}
+
+	print $q->header(); 
+	require DADA::Template::Widgets;
+	e_print(DADA::Template::Widgets::screen(
+		{
+			-screen => 'amazon_ses_verify_email_widget.tmpl',
+			-expr   => 1, 
+			-vars   => {
+				amazon_ses_verify_email => $amazon_ses_verify_email, 
+				valid_email             => $valid_email, 
+				status                  => $status,
+				result                  => $result, 
+			}
+		}
+	));
+	
 
 }
 
@@ -2639,14 +2653,16 @@ sub amazon_ses_get_stats {
 
 		require DADA::App::AmazonSES; 
 		my $ses = DADA::App::AmazonSES->new; 
-	    my ( $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats; 
+	    my ($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats; 
 
 		print $q->header(); 
 		require DADA::Template::Widgets;
 		e_print(DADA::Template::Widgets::screen(
 			{
 				-screen => 'amazon_ses_get_stats_widget.tmpl',
+				-expr   => 1, 
 				-vars   => {
+					status                     => $status,
 					MaxSendRate                => commify($MaxSendRate),
 					Max24HourSend              => commify($Max24HourSend),
 					SentLast24Hours            => commify($SentLast24Hours),

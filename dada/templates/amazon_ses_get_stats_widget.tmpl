@@ -1,21 +1,26 @@
 <!-- begin amazon_ses_get_stats_widget.tmpl --> 
-
-	<p>
-		Your current Amazon SES sending limit is: 
+	<!-- tmpl_if expr="(status == 200)" -->
+		<p>
+			Your current Amazon SES sending limit is: 
+				<strong>
+					<!-- tmpl_var MaxSendRate --> message(s)/second
+				</strong>
+			with a limit of 
 			<strong>
-				<!-- tmpl_var MaxSendRate --> message(s)/second
+				<!-- tmpl_var Max24HourSend --> messages
+			</strong> 
+			every 24 hours. 
+	
+			<strong>
+				<!-- tmpl_var SentLast24Hours --> messages
 			</strong>
-		with a limit of 
-		<strong>
-			<!-- tmpl_var Max24HourSend --> messages
-		</strong> 
-		every 24 hours. 
 	
-		<strong>
-			<!-- tmpl_var SentLast24Hours --> messages
-		</strong>
-	
-		have been sent in the last 24 hours.
-	</p>
+			have been sent in the last 24 hours.
+		</p>
+	<!-- tmpl_else --> 
+		<p>
+			<strong>Warning!</strong>  There's a problem with the saved AWS Credentials. 
+		</p>	
+	<!-- /tmpl_if -->
 
 <!-- end amazon_ses_get_stats_widget.tmpl --> 

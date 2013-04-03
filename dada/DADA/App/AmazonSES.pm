@@ -80,13 +80,17 @@ sub get_stats {
 
 	my ($status, $result) = $ses_obj->get_stats();
 	
-	
-    my ( $label, $data ) = split( "\n", $result );
-    my ( $SentLast24Hours, $Max24HourSend, $MaxSendRate ) =
-      split( /\s+/, $data );
+	if($status != 200) { 
+		return ($status, undef, undef, undef); 
+	}
+	else { 
+		
+	    my ( $label, $data ) = split( "\n", $result );
+	    my ( $SentLast24Hours, $Max24HourSend, $MaxSendRate ) =
+	      split( /\s+/, $data );
 
-    return ( $SentLast24Hours, $Max24HourSend, $MaxSendRate );
-
+	    return ($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate );
+	}
 }
 
 1;
