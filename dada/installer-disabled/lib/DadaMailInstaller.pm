@@ -98,6 +98,14 @@ my $list_settings_defaults_end_cut = quotemeta(
 q{=cut
 # end cut for list settings defaults}
 ); 
+my $amazon_ses_begin_cut = quotemeta(
+q{# start cut for Amazon SES Options
+=cut}
+); 
+my $amazon_ses_end_cut = quotemeta(
+q{=cut
+# end cut for Amazon SES Options}
+); 
 
 my $plugins_extensions = { 
 	change_root_password          => {installed => 0, loc => '../plugins/change_root_password.cgi'}, 
@@ -243,17 +251,18 @@ sub run {
         # Old-school switcheroo
         my %Mode = (
 
-			install_or_upgrade       => \&install_or_upgrade, 
-            check_install_or_upgrade => \&check_install_or_upgrade, 
-			install_dada             => \&install_dada,
+            install_or_upgrade       => \&install_or_upgrade,
+            check_install_or_upgrade => \&check_install_or_upgrade,
+            install_dada             => \&install_dada,
             scrn_configure_dada_mail => \&scrn_configure_dada_mail,
             check                    => \&check,
             move_installer_dir_ajax  => \&move_installer_dir_ajax,
-			show_current_dada_config => \&show_current_dada_config, 
-			screen                   => \&screen,
-			cgi_test_sql_connection  => \&cgi_test_sql_connection, 
-			cgi_test_pop3_connection => \&cgi_test_pop3_connection, 
-
+            show_current_dada_config => \&show_current_dada_config,
+            screen                   => \&screen,
+            cgi_test_sql_connection  => \&cgi_test_sql_connection,
+            cgi_test_pop3_connection => \&cgi_test_pop3_connection,
+            cgi_test_amazon_ses_configuration =>
+              \&cgi_test_amazon_ses_configuration,
         );
         my $flavor = $q->param('f');
         if ($flavor) {
@@ -613,8 +622,6 @@ sub scrn_configure_dada_mail {
                 PROGRAM_URL                    => program_url_guess(),
                 S_PROGRAM_URL                  => program_url_guess(),
                 Dada_Files_Dir_Name            => $Dada_Files_Dir_Name,
-				Big_Pile_Of_Errors             => $Big_Pile_Of_Errors,
-				Trace                          => $Trace, 
 				#lists_available                => $lists_available, 
 				configured_dada_config_file    => $configured_dada_config_file,
 				configured_dada_files_loc      => $configured_dada_files_loc, 
@@ -625,7 +632,12 @@ sub scrn_configure_dada_mail {
 				
 				support_files_dir_path         => support_files_dir_path_guess(),
 				support_files_dir_url         => support_files_dir_url_guess(),
-				Support_Files_Dir_Name        => $Support_Files_Dir_Name
+				Support_Files_Dir_Name        => $Support_Files_Dir_Name,
+				
+				amazon_ses_requirements_widget => DADA::Template::Widgets::amazon_ses_requirements_widget(), 
+				
+				Big_Pile_Of_Errors             => $Big_Pile_Of_Errors,
+				Trace                          => $Trace, 
 				
 
             },
@@ -657,8 +669,10 @@ sub scrn_configure_dada_mail {
 sub grab_former_config_vals { 
 	my $local_q = shift; 
 	
+	# $PROGRAM_URL
 	$local_q->param('program_url', $BootstrapConfig::PROGRAM_URL); 
 	
+	# $SUPPORT_FILES
 	my $support_files_dir_path;
 	if(defined($BootstrapConfig::SUPPORT_FILES->{dir})) { 
 		($support_files_dir_path) =  $BootstrapConfig::SUPPORT_FILES->{dir} =~ m/^(.*?)\/$Support_Files_Dir_Name$/; 
@@ -669,8 +683,6 @@ sub grab_former_config_vals {
 		($support_files_dir_path) = $BootstrapConfig::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir} =~ m/^(.*?)\/$Support_Files_Dir_Name\/$File_Upload_Dir$/; 
 		$local_q->param('support_files_dir_path', $support_files_dir_path);  
 	}
-	
-	
 	my $support_files_dir_url; 
 	if(defined($BootstrapConfig::SUPPORT_FILES->{url})){ 
 		($support_files_dir_url)  =  $BootstrapConfig::SUPPORT_FILES->{url} =~ m/^(.*?)\/$Support_Files_Dir_Name$/; 
@@ -683,7 +695,7 @@ sub grab_former_config_vals {
 	}
 	
 	
-	# Root Password 
+	# $PROGRAM_ROOT_PASSWORD
 	$local_q->param('original_dada_root_pass',              $BootstrapConfig::PROGRAM_ROOT_PASSWORD); 
 	$local_q->param('original_dada_root_pass_is_encrypted', $BootstrapConfig::ROOT_PASS_IS_ENCRYPTED);
 	
@@ -751,10 +763,6 @@ sub grab_former_config_vals {
 		$local_q->param('install_tracker', 1); 
 	}
 	
-	
-	
-	
-		
 	# Bounce Handler
 	if(exists($BootstrapConfig::LIST_SETUP_INCLUDE{admin_email})){ 
 		$local_q->param('bounce_handler_address', $BootstrapConfig::LIST_SETUP_INCLUDE{admin_email});
@@ -809,6 +817,16 @@ sub grab_former_config_vals {
 	}	
 	else { 
 		$local_q->param('file_browser_install_kcfinder', 0);
+	}
+	
+	# $AMAZON_SES_OPTIONS
+	if(defined($BootstrapConfig::AMAZON_SES_OPTIONS->{AWSAccessKeyId})
+	&& defined($BootstrapConfig::AMAZON_SES_OPTIONS->{AWSSecretKey}) 
+	){ 
+		$local_q->param('configure_amazon_ses', 1);
+		$local_q->param('amazon_ses_AWSAccessKeyId', $BootstrapConfig::AMAZON_SES_OPTIONS->{AWSAccessKeyId});
+		$local_q->param('amazon_ses_AWSSecretKey',   $BootstrapConfig::AMAZON_SES_OPTIONS->{AWSSecretKey});
+
 	}
 			
 	
@@ -922,7 +940,6 @@ sub scrn_install_dada_mail {
             S_PROGRAM_URL                 => program_url_guess(),
 			submitted_PROGRAM_URL         => $q->param('program_url'),
 			Self_URL                      => $Self_URL, 
-
 			
 	 		}
         }
@@ -1316,6 +1333,14 @@ sub create_dada_config_file {
         $args->{-sql_password} = ''; 
 	}
 	
+	# Since it's so simple, I'm placing it right here, rather than its own sub. 
+	my $AWSAccessKeyId = ''; 
+	my $AWSSecretKey   = ''; 
+	if($q->param('configure_amazon_ses') == 1){ 
+		$AWSAccessKeyId = $q->param('amazon_ses_AWSAccessKeyId'); 
+		$AWSSecretKey   = $q->param('amazon_ses_AWSSecretKey'); 
+	}
+	
     my $outside_config_file = DADA::Template::Widgets::screen(
         {
             -screen => 'example_dada_config.tmpl',
@@ -1338,7 +1363,9 @@ sub create_dada_config_file {
                     sql_username => clean_up_var($args->{-sql_username}),
                     sql_password => clean_up_var($args->{-sql_password}),
                   )
-                : ()
+                : (),
+				AWSAccessKeyId => $AWSAccessKeyId, 
+				AWSSecretKey   => $AWSSecretKey, 
             }
         }
     );
@@ -1352,6 +1379,11 @@ sub create_dada_config_file {
         $outside_config_file =~ s/$sql_begin_cut//;
         $outside_config_file =~ s/$sql_end_cut//;
     }
+
+	if($q->param('configure_amazon_ses') == 1){ 
+        $outside_config_file =~ s/$amazon_ses_begin_cut//;
+        $outside_config_file =~ s/$amazon_ses_end_cut//;		
+	}
 
     open my $dada_config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', make_safer( $loc . '/.configs/.dada_config' )
       or croak $!;
@@ -2336,6 +2368,40 @@ sub cgi_test_pop3_connection {
 	}
 	print '<pre>'  . $pop3_log . '</pre>'; 
 }
+
+sub cgi_test_amazon_ses_configuration { 
+	
+	my $amazon_ses_AWSAccessKeyId = $q->param('amazon_ses_AWSAccessKeyId'); 
+	my $amazon_ses_AWSSecretKey   = $q->param('amazon_ses_AWSSecretKey'); 
+	my ($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ); 
+	
+	eval { 
+		require DADA::App::AmazonSES; 
+		my $ses = DADA::App::AmazonSES->new; 
+		($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats(
+			{ 
+				AWSAccessKeyId => $amazon_ses_AWSAccessKeyId, 
+				AWSSecretKey    => $amazon_ses_AWSSecretKey, 
+			}
+		); 
+	};
+	print $q->header(); 
+	require DADA::Template::Widgets;
+	e_print(DADA::Template::Widgets::screen(
+		{
+			-screen => 'amazon_ses_get_stats_widget.tmpl',
+			-expr   => 1, 
+			-vars   => {
+				status                     => $status,
+				MaxSendRate                => $MaxSendRate,
+				Max24HourSend              => $Max24HourSend,
+				SentLast24Hours            => $SentLast24Hours,
+			}
+		}
+	));
+}
+
+
 
 sub test_pop3_connection { 
 	

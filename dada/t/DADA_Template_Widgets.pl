@@ -276,7 +276,7 @@ undef($d);
 #                    ); 
 #  
 #  use DADA::Template::Widgets; 
-#  print DADA::Template::Wigets::screen(
+#  print DADA::Template::Widgets::screen(
 #  
 #            { 
 #                 -subscriber_vars => $subscriber,
@@ -399,7 +399,7 @@ undef($d);
 #                      ); 
 #  
 #  use DADA::Template::Widgets; 
-#  print DADA::Template::Wigets::screen(
+#  print DADA::Template::Widgets::screen(
 #  
 #            { 
 #                 -list_settings_vars => $list_settings,

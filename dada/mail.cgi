@@ -2322,70 +2322,6 @@ sub sending_preferences {
          }
 
 
-		# Amazon SES Test for stuff. 
-		my $has_aws_credentials_file = 0; 
-		if(defined($DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file}) && (-e $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file})){ 
-			$has_aws_credentials_file = 1; 
-		}
-		my $has_ses_verify_email_address_script = 0; 
-		if(defined($DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script}) && (-e $DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script})){ 
-			$has_ses_verify_email_address_script = 1; 
-		}
-		
-
-		my $amazon_ses_required_modules = [ 
-			{module => 'Cwd', installed => 1}, 
-			{module => 'Digest::SHA', installed => 1}, 
-			{module => 'URI::Escape', installed => 1}, 
-			{module => 'MIME::Base64', installed => 1}, 	
-			{module => 'Crypt::SSLeay', installed => 1}, 	
-			{module => 'XML::LibXML', installed => 1},
-			{module => 'LWP 6',       installed => 1}, 
-		];
-
-
-		my $amazon_ses_has_needed_cpan_modules = 1; 
-		eval {require Cwd;};           
-		if($@){
-			$amazon_ses_required_modules->[0]->{installed}           = 0;
-			$amazon_ses_has_needed_cpan_modules = 0;
-		}
-		eval {require Digest::SHA;};   
-		if($@){
-			$amazon_ses_required_modules->[1]->{installed}           = 0;
-			$amazon_ses_has_needed_cpan_modules = 0;
-		}
-		eval {require URI::Escape;};
-		if($@){
-			$amazon_ses_required_modules->[2]->{installed}           = 0;
-			$amazon_ses_has_needed_cpan_modules = 0;
-		}
-		eval {require MIME::Base64;};  
-		if($@){
-			$amazon_ses_required_modules->[3]->{installed}           = 0;
-			$amazon_ses_has_needed_cpan_modules = 0;
-		}
-		eval {require Crypt::SSLeay;}; 
-		if($@){
-			$amazon_ses_required_modules->[4]->{installed}           = 0;
-			$amazon_ses_has_needed_cpan_modules = 0;
-		}
-		eval {require XML::LibXML;};
-		if($@){
-			$amazon_ses_required_modules->[5]->{installed}           = 0;
-			$amazon_ses_has_needed_cpan_modules = 0; 
-		}
-		eval {require LWP;};
-		if($@){
-			$amazon_ses_required_modules->[6]->{installed}           = 0;
-			$amazon_ses_has_needed_cpan_modules = 0; 
-		}
-		else { 
-			if($LWP::VERSION < 6){ 
-				$amazon_ses_required_modules->[6]->{installed}           = 0;
-				$amazon_ses_has_needed_cpan_modules = 0;
-			}
-		}
 
         require    DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -2417,13 +2353,9 @@ sub sending_preferences {
 					sasl_smtp_username  => $q->param('sasl_smtp_username') ? $q->param('sasl_smtp_username') : $li->{sasl_smtp_username},
 					sasl_smtp_password  => $q->param('sasl_smtp_password') ? $q->param('sasl_smtp_password') : $decrypted_sasl_pass,
 				
-					# Amazon SES 
-					has_aws_credentials_file            => $has_aws_credentials_file, 
-					has_ses_verify_email_address_script => $has_ses_verify_email_address_script, 
-					aws_credentials_file                => $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file},
-					ses_verify_email_address_script     => $DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script},
-					amazon_ses_has_needed_cpan_modules  => $amazon_ses_has_needed_cpan_modules, 
-					amazon_ses_required_modules         => $amazon_ses_required_modules, 
+					amazon_ses_requirements_widget => DADA::Template::Widgets::amazon_ses_requirements_widget(), 
+					
+					
 				},
 				-list_settings_vars_param => {
 					-list    => $list,
@@ -2605,21 +2537,34 @@ sub amazon_ses_verify_email {
         -Function => 'sending_preferences'
     );
 
-	my $amazon_ses_verify_email = $q->param('amazon_ses_verify_email'); 
-	if(!-e $DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script}){ 
-		print $q->header(); 
-		print '<p class="error">Cannot find, "' . $DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script} .'"</p>'; 
-		return; 
-	}
+	my $valid_email             = 1; 
+	my $status                  = undef; 
+	my $result                  = undef; 
+	my $amazon_ses_verify_email = xss_filter(strip($q->param('amazon_ses_verify_email'))); 
 	if(check_for_valid_email($amazon_ses_verify_email) == 1){ 
-		print $q->header(); 
-		print '<p class="error">Invalid Email Address!</p>'; 
+		$valid_email = 0; 
 	}
 	else { 
-		`$DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script} -v $amazon_ses_verify_email -k $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file}`; 
-		print $q->header(); 
-		print '<p class="positive">Verification Sent! Check the email account for: ' . $amazon_ses_verify_email . ' to complete the verification!</p>'; 
+		require DADA::App::AmazonSES; 
+		my $ses = DADA::App::AmazonSES->new; 
+	    ($status, $result) = $ses->verify_sender( { -email => $amazon_ses_verify_email } ); 
 	}
+
+	print $q->header(); 
+	require DADA::Template::Widgets;
+	e_print(DADA::Template::Widgets::screen(
+		{
+			-screen => 'amazon_ses_verify_email_widget.tmpl',
+			-expr   => 1, 
+			-vars   => {
+				amazon_ses_verify_email => $amazon_ses_verify_email, 
+				valid_email             => $valid_email, 
+				status                  => $status,
+				result                  => $result, 
+			}
+		}
+	));
+	
 
 }
 
@@ -2637,39 +2582,30 @@ sub amazon_ses_get_stats {
 		|| ($ls->param('sending_method') eq 'smtp' && $ls->param('smtp_server') =~ m/amazonaws\.com/)
 	){ 
 		
-		my ( $SentLast24Hours, $Max24HourSend, $MaxSendRate );
-		my $found_ses_get_stats_script = 1; 
-		if(!-e $DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script}){ 
-			$found_ses_get_stats_script = 0; 
-		}
-		else { 
-			require DADA::App::AmazonSES; 
-			my $ses = DADA::App::AmazonSES->new; 
-		    my ( $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats; 
-		
-			print $q->header(); 
-			require DADA::Template::Widgets;
-			e_print(DADA::Template::Widgets::screen(
-				{
-					-screen => 'amazon_ses_get_stats_widget.tmpl',
-					-vars   => {
-						MaxSendRate                => commify($MaxSendRate),
-						Max24HourSend              => commify($Max24HourSend),
-						SentLast24Hours            => commify($SentLast24Hours),
-						found_ses_get_stats_script => $found_ses_get_stats_script,  
 
-						ses_get_stats_script       => $DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script},
-						
-					}
+		require DADA::App::AmazonSES; 
+		my $ses = DADA::App::AmazonSES->new; 
+	    my ($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats; 
+
+		print $q->header(); 
+		require DADA::Template::Widgets;
+		e_print(DADA::Template::Widgets::screen(
+			{
+				-screen => 'amazon_ses_get_stats_widget.tmpl',
+				-expr   => 1, 
+				-vars   => {
+					status                     => $status,
+					MaxSendRate                => commify($MaxSendRate),
+					Max24HourSend              => commify($Max24HourSend),
+					SentLast24Hours            => commify($SentLast24Hours),
 				}
-			));
-			
-		}
+			}
+		));
 	}
 	else { 
 		print $q->header(); 
-		# Nothing... 
 	}
+	
 }
 
 
