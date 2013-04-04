@@ -358,15 +358,17 @@ $(document).ready(function() {
 		$("body").on('click', "#install_wysiwyg_editors", function(event) {
 			installer_toggle_wysiwyg_editors_options()
 		});
+		$("body").on('click', "#configure_amazon_ses", function(event) {
+			installer_toggle_configure_amazon_ses_options();
+		});
+		
 		installer_dada_root_pass_options();
 		installer_toggleSQL_options();
 		installer_toggle_dada_files_dirOptions();
 		installer_togger_bounce_handler_config();
 		installer_toggle_wysiwyg_editors_options();
+		installer_toggle_configure_amazon_ses_options(); 
 		
-		$("body").on('click', "#configure_amazon_ses", function(event) {
-			installer_toggle_configure_amazon_ses_options();
-		});
 		
 		
 

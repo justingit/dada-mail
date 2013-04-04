@@ -485,7 +485,11 @@ If using either the SQL backends, make sure to create a new database before conf
 		<input type="text" name="sql_password" id="sql_password" value="" /> 
 
 	</p>
-	<input type="button" class="processing test_sql_connection" value="Test Your SQL Connection"/>
+	<div class="buttonfloat"> 
+		<input type="button" class="processing test_sql_connection" value="Test Your SQL Connection"/>
+	</div>
+	<div class="floatclear"></div> 
+	 
 	<div id="test_sql_connection_results" class="clearskiesbox"></div> 
 </fieldset>
 
@@ -562,7 +566,13 @@ for it to work correctly. For help on setting the cronjob, see the
 		<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_username">Username:</label> <input type="text" name="bounce_handler_username" id="bounce_handler_username" value="" /></p>
 
 		<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_password">Password:</label> <input type="text" name="bounce_handler_password" id="bounce_handler_password" value="" /></p>
-	 	<input type="button" class="processing test_bounce_handler_pop3_connection" value="Test Your POP3 Connection"/>
+	 	
+		<div class="buttonfloat"> 
+			<input type="button" class="processing test_bounce_handler_pop3_connection" value="Test Your POP3 Connection"/>
+		</div>
+		<div class="floatclear"></div> 
+	
+	
 		<div id="test_bounce_handler_pop3_connection_results" class="clearskiesbox"></div> 
 		
 		
@@ -639,14 +649,10 @@ editors also have the ability to make simple HTML tables for basic layouts.
 
 </div> 
 
-<h1>Advanced Configuration (Optional)</h1> 	
-
-
-
 <fieldset> 
-	
+	<legend>Advanced Configuration (Optional)</legend>
 	<p>
-		<input type="checkbox" name="configure_amazon_ses" id="configure_amazon_ses" value="1" checked="checked" />			
+		<input type="checkbox" name="configure_amazon_ses" id="configure_amazon_ses" value="1" />			
 	<label for="configure_amazon_ses">Configure Amazon SES</label>
 	</p>
 	<div id="amazon_ses_options">
@@ -667,9 +673,15 @@ editors also have the ability to make simple HTML tables for basic layouts.
 			</label> 
 			<input type="text" name="amazon_ses_AWSSecretKey" id="amazon_ses_AWSSecretKey" value=""  class="midi" />
 		</p>
+		<div class="buttonfloat"> 
 		<p>
 			<input type="button" class="processing test_amazon_ses_configuration" value="Test Your AWS Credentials"/>
 		</p>
+		
+		</div>
+		<div class="floatclear"></div> 
+		
+		
 		<div id="test_amazon_ses_configuration_results" class="clearskiesbox"></div> 
 		
 		
