@@ -75,8 +75,13 @@ sub verify_sender {
 
 sub get_stats {
     my $self = shift;
+	my ($args) = @_; 
+	
+	if(! exists($args->{AWSAccessKeyId}) || ! exists($args->{AWSSecretKey})) { 
+		$args = $DADA::Config::AMAZON_SES_OPTIONS, 
+	}
 	require Net::Amazon::SES; 
-	my $ses_obj = Net::Amazon::SES->new( $DADA::Config::AMAZON_SES_OPTIONS ); 
+	my $ses_obj = Net::Amazon::SES->new( $args ); 
 
 	my ($status, $result) = $ses_obj->get_stats();
 	
@@ -84,7 +89,6 @@ sub get_stats {
 		return ($status, undef, undef, undef); 
 	}
 	else { 
-		
 	    my ( $label, $data ) = split( "\n", $result );
 	    my ( $SentLast24Hours, $Max24HourSend, $MaxSendRate ) =
 	      split( /\s+/, $data );

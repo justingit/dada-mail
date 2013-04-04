@@ -2322,70 +2322,6 @@ sub sending_preferences {
          }
 
 
-		# Amazon SES Test for stuff. 
-		my $has_aws_credentials_file = 0; 
-		if(defined($DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file}) && (-e $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file})){ 
-			$has_aws_credentials_file = 1; 
-		}
-		my $has_ses_verify_email_address_script = 0; 
-		if(defined($DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script}) && (-e $DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script})){ 
-			$has_ses_verify_email_address_script = 1; 
-		}
-		
-
-		my $amazon_ses_required_modules = [ 
-			{module => 'Cwd', installed => 1}, 
-			{module => 'Digest::SHA', installed => 1}, 
-			{module => 'URI::Escape', installed => 1}, 
-			{module => 'MIME::Base64', installed => 1}, 	
-			{module => 'Crypt::SSLeay', installed => 1}, 	
-			{module => 'XML::LibXML', installed => 1},
-			{module => 'LWP 6',       installed => 1}, 
-		];
-
-
-		my $amazon_ses_has_needed_cpan_modules = 1; 
-		eval {require Cwd;};           
-		if($@){
-			$amazon_ses_required_modules->[0]->{installed}           = 0;
-			$amazon_ses_has_needed_cpan_modules = 0;
-		}
-		eval {require Digest::SHA;};   
-		if($@){
-			$amazon_ses_required_modules->[1]->{installed}           = 0;
-			$amazon_ses_has_needed_cpan_modules = 0;
-		}
-		eval {require URI::Escape;};
-		if($@){
-			$amazon_ses_required_modules->[2]->{installed}           = 0;
-			$amazon_ses_has_needed_cpan_modules = 0;
-		}
-		eval {require MIME::Base64;};  
-		if($@){
-			$amazon_ses_required_modules->[3]->{installed}           = 0;
-			$amazon_ses_has_needed_cpan_modules = 0;
-		}
-		eval {require Crypt::SSLeay;}; 
-		if($@){
-			$amazon_ses_required_modules->[4]->{installed}           = 0;
-			$amazon_ses_has_needed_cpan_modules = 0;
-		}
-		eval {require XML::LibXML;};
-		if($@){
-			$amazon_ses_required_modules->[5]->{installed}           = 0;
-			$amazon_ses_has_needed_cpan_modules = 0; 
-		}
-		eval {require LWP;};
-		if($@){
-			$amazon_ses_required_modules->[6]->{installed}           = 0;
-			$amazon_ses_has_needed_cpan_modules = 0; 
-		}
-		else { 
-			if($LWP::VERSION < 6){ 
-				$amazon_ses_required_modules->[6]->{installed}           = 0;
-				$amazon_ses_has_needed_cpan_modules = 0;
-			}
-		}
 
         require    DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -2417,13 +2353,9 @@ sub sending_preferences {
 					sasl_smtp_username  => $q->param('sasl_smtp_username') ? $q->param('sasl_smtp_username') : $li->{sasl_smtp_username},
 					sasl_smtp_password  => $q->param('sasl_smtp_password') ? $q->param('sasl_smtp_password') : $decrypted_sasl_pass,
 				
-					# Amazon SES 
-					has_aws_credentials_file            => $has_aws_credentials_file, 
-					has_ses_verify_email_address_script => $has_ses_verify_email_address_script, 
-					aws_credentials_file                => $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file},
-					ses_verify_email_address_script     => $DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script},
-					amazon_ses_has_needed_cpan_modules  => $amazon_ses_has_needed_cpan_modules, 
-					amazon_ses_required_modules         => $amazon_ses_required_modules, 
+					amazon_ses_requirements_widget => DADA::Template::Widgets::amazon_ses_requirements_widget(), 
+					
+					
 				},
 				-list_settings_vars_param => {
 					-list    => $list,

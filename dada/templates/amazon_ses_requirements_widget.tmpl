@@ -1,0 +1,31 @@
+<!-- begin amazon_ses_requirements_widget.tmpl --> 
+
+<!-- tmpl_if amazon_ses_has_needed_cpan_modules --> 
+	
+		<p class="positive" id="has_needed_cpan_modules"> 
+			<!-- All needed CPAN modules are installed! -->
+		</p>
+	
+<!-- tmpl_else --> 
+	
+	<div class="badweatherbox"> 
+		
+		<p> 
+			One or more of the following CPAN modules needs to be installed for Amazon SES sending to work:
+		</p>
+
+		<ul> 
+			<!-- tmpl_loop amazon_ses_required_modules --> 
+				<!-- tmpl_unless installed --> 
+					 <li>
+					 <p>  
+					  <!-- tmpl_var module --> 
+					 </p> 
+					</li> 
+				<!-- /tmpl_unless --> 
+			<!-- /tmpl_loop --> 
+		</ul> 
+	</div> 
+<!-- /tmpl_if --> 
+
+<!-- end amazon_ses_requirements_widget.tmpl --> 

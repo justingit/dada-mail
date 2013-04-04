@@ -603,13 +603,11 @@ editors also have the ability to make simple HTML tables for basic layouts.
 
 </div> 
 
-<p>
 	<p>
 		<input type="checkbox" name="install_wysiwyg_editors" id="install_wysiwyg_editors" value="1" checked="checked" />			
 	<label for="install_wysiwyg_editors">Install and Configure WYSIWYG Editors</label>
 	</p>
 	
-</p>
 
 
 	
@@ -640,6 +638,53 @@ editors also have the ability to make simple HTML tables for basic layouts.
 </fieldset> 
 
 </div> 
+
+<h1>Advanced Configuration (Optional)</h1> 	
+
+
+
+<fieldset> 
+	
+	<p>
+		<input type="checkbox" name="configure_amazon_ses" id="configure_amazon_ses" value="1" checked="checked" />			
+	<label for="configure_amazon_ses">Configure Amazon SES</label>
+	</p>
+	<div id="amazon_ses_options">
+	<fieldset> 
+		
+		<!-- tmpl_var amazon_ses_requirements_widget -->
+
+		<p>
+			<label style="width: 18em;float: left;text-align: right;margin-right: 0.5em;display: block" for="amazon_ses_AWSAccessKeyId">
+				AWS Access Key ID:
+			</label> 
+			<input type="text" name="amazon_ses_AWSAccessKeyId" id="amazon_ses_AWSAccessKeyId" value="" class="midi" />
+		</p>
+
+		<p>
+			<label style="width: 18em;float: left;text-align: right;margin-right: 0.5em;display: block" for="amazon_ses_AWSSecretKey">
+				AWS Secret Access Key:
+			</label> 
+			<input type="text" name="amazon_ses_AWSSecretKey" id="amazon_ses_AWSSecretKey" value=""  class="midi" />
+		</p>
+		<p>
+			<input type="button" class="processing test_amazon_ses_configuration" value="Test Your AWS Credentials"/>
+		</p>
+		<div id="test_amazon_ses_configuration_results" class="clearskiesbox"></div> 
+		
+		
+	</fieldset> 	
+	</div> 
+
+</fieldset> 
+
+
+
+
+
+
+
+
 
 <input type="hidden" name="f" value="check" /> 
 
