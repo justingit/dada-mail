@@ -54,12 +54,15 @@ Dada Mail has updated it's Geo IP databases to the newest, April release.
 
 I<This product includes GeoLite data created by MaxMind, available from L<http://www.maxmind.com>.>
 
+=head3 blog_index.cgi extension: cached screens
+
+The HTML/Javascript that the C<blog_index.cgi> extension makes is now cached, helping relieve unneeded load on your backend. 
+
 =head1 6.2.2
 
 =head2 Summary 6.2.2
 
-This release fixes bugs found in the v6.2.1 version of Dada Mail. It's a suggested upgrade for anyone
-running v6.2.1 or lower. 
+This release fixes bugs found in the v6.2.1 version of Dada Mail. It's a suggested upgrade for anyone running v6.2.1 or lower. 
 
 =head2 Changes 6.2.2
 
