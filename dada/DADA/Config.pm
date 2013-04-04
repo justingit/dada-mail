@@ -406,41 +406,29 @@ $REFERER_CHECK          ||= 0;
 # Set to Either, "Default" or, "reCAPTCHA";
 $CAPTCHA_TYPE ||= 'Default';
 $GD_SECURITYIMAGE_PARAMS ||= {
-
     'rand_string_from' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZaeiouy',
     'rand_string_size' => 6,
-
     'new' => {
-
         width  => 250,
         height => 125,
         lines  => 10,
-
         #gd_font    => 'Giant',
         send_ctobg => 1,
-
         # There's some magic here,
         # If the font is located in the,
         # dada/templates directory,
         # You don't have to put the absolute path,
         # just the filename.
-
         font    => 'StayPuft.ttf',
         bgcolor => "#CCFFCC",
         angle   => 13,
         ptsize  => 30,
-
     },
-
     create => {
-
         ttf => 'circle',
-
         # normal => 'circle',
     },
-
     particle => [ 500, undef ],
-
 };
 $RECAPTCHA_PARAMS ||= {
     remote_address => $ENV{'REMOTE_ADDR'},
