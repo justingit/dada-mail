@@ -2392,6 +2392,7 @@ sub cgi_test_amazon_ses_configuration {
 			-screen => 'amazon_ses_get_stats_widget.tmpl',
 			-expr   => 1, 
 			-vars   => {
+				has_ses_options            => 1, 
 				status                     => $status,
 				MaxSendRate                => $MaxSendRate,
 				Max24HourSend              => $Max24HourSend,
