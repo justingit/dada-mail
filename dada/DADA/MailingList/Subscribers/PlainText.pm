@@ -946,11 +946,12 @@ sub create_mass_sending_file {
 				if($args{-Create_Tokens} == 1){ 
 					my $token = $ct->save(
 						{
-							-list  => $list, 
 							-email => $email,
 							-data  => {
+								list        => $list, 
 								flavor      => 'sub_confirm', 
 								type        => 'list', 
+								invite      => 1,  
 								remote_addr => $ENV{REMOTE_ADDR},  
 							}
 						}
