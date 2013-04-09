@@ -379,12 +379,10 @@ $MAILPROG           ||= '/usr/sbin/sendmail';
 $MAIL_SETTINGS      ||= "|$MAILPROG -t";
 $MASS_MAIL_SETTINGS ||= "|$MAILPROG -t";
 
-$AMAZON_SES_OPTIONS ||= {
-    aws_credentials_file            => undef,
-    ses_verify_email_address_script => undef,
-    ses_get_stats_script            => undef,
+$AMAZON_SES_OPTIONS ||= { 
+	AWSAccessKeyId => undef, 
+	AWSSecretKey   => undef, 
 };
-
 
 
 

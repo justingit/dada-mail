@@ -7,6 +7,7 @@ use lib qw(
 
 use vars qw($AUTOLOAD); 
 use Carp qw(croak carp);
+use Try::Tiny; 
 
 my %allowed = (); 
 
@@ -62,11 +63,17 @@ sub verify_sender {
 	my $self = shift; 
 	my ($args) = @_; 
 	
-	require Net::Amazon::SES; 
-	my $ses_obj = Net::Amazon::SES->new( $DADA::Config::AMAZON_SES_OPTIONS ); 
-
-	my ($status, $result) = $ses_obj->verify_sender($args);
+	my $status = undef; 
+	my $result = undef; 
 	
+	try { 
+		require Net::Amazon::SES; 
+		my $ses_obj = Net::Amazon::SES->new( $DADA::Config::AMAZON_SES_OPTIONS ); 
+		($status, $result) = $ses_obj->verify_sender($args);
+	}
+	catch { 
+		carp $_; 
+	};
 	return ($status, $result);
 }
 
@@ -80,10 +87,19 @@ sub get_stats {
 	if(! exists($args->{AWSAccessKeyId}) || ! exists($args->{AWSSecretKey})) { 
 		$args = $DADA::Config::AMAZON_SES_OPTIONS, 
 	}
-	require Net::Amazon::SES; 
-	my $ses_obj = Net::Amazon::SES->new( $args ); 
-
-	my ($status, $result) = $ses_obj->get_stats();
+	
+	my $ses_obj  = undef; 
+	my $status   = undef; 
+	my $result   = undef; 
+	try { 
+		require Net::Amazon::SES; 
+		$ses_obj = Net::Amazon::SES->new( $args ); 
+		($status, $result) = $ses_obj->get_stats();
+	}
+	catch { 
+		carp $_; 
+		return (undef, undef, undef, undef); 
+	};
 	
 	if($status != 200) { 
 		return ($status, undef, undef, undef); 

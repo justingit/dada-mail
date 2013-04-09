@@ -2589,15 +2589,27 @@ sub amazon_ses_get_stats {
 	
 	my $ls = DADA::MailingList::Settings->new({-list => $list}); 
 	
+	my $has_ses_options = 1; 
+	if(! defined($DADA::Config::AMAZON_SES_OPTIONS->{AWSAccessKeyId}) || ! defined($DADA::Config::AMAZON_SES_OPTIONS->{AWSSecretKey})) { 
+		$has_ses_options = 0; 
+	}
+
+	
+	
 	if(     $ls->param('sending_method') eq 'amazon_ses'
 		|| ($ls->param('sending_method') eq 'smtp' && $ls->param('smtp_server') =~ m/amazonaws\.com/)
 	){ 
 		
-
-		require DADA::App::AmazonSES; 
-		my $ses = DADA::App::AmazonSES->new; 
-	    my ($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats; 
-
+		my $status = undef; 
+		my $SentLast24Hours = undef; 
+		my $Max24HourSend = undef; 
+		my $MaxSendRate = undef; 
+		
+		if($has_ses_options == 1) { 
+			require DADA::App::AmazonSES; 
+			my $ses = DADA::App::AmazonSES->new; 
+		   ($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats; 
+		}
 		print $q->header(); 
 		require DADA::Template::Widgets;
 		e_print(DADA::Template::Widgets::screen(
@@ -2606,6 +2618,7 @@ sub amazon_ses_get_stats {
 				-expr   => 1, 
 				-vars   => {
 					status                     => $status,
+					has_ses_options            => $has_ses_options, 
 					MaxSendRate                => commify($MaxSendRate),
 					Max24HourSend              => commify($Max24HourSend),
 					SentLast24Hours            => commify($SentLast24Hours),
