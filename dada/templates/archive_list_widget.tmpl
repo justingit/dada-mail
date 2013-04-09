@@ -18,12 +18,43 @@
 		<!-- tmpl_if message_blurb -->
 
 			  <blockquote><p>
+				
+				
+				<!-- tmpl_if list_settings.enable_gravatars --> 
+
+					<!-- tmpl_if can_use_gravatar_url --> 
+
+				    	<!-- tmpl_if gravatar_img_url --> 
+
+				        	<img src="<!-- tmpl_var gravatar_img_url -->" style="float:left; padding:5px;" /> 
+
+				    	<!-- /tmpl_if --> 
+
+					<!-- /tmpl_if --> 
+
+				<!-- /tmpl_if -->
+				
+				
+				
 			   <em>
 			    <!-- tmpl_var message_blurb -->...
 			   </em>
 			  </p>
 			</blockquote>
+			<!-- tmpl_if list_settings.enable_gravatars --> 
 
+				<!-- tmpl_if can_use_gravatar_url --> 
+
+			    	<!-- tmpl_if gravatar_img_url -->
+			
+						<div class="floatclear"></div> 
+			
+			    	<!-- /tmpl_if --> 
+
+				<!-- /tmpl_if --> 
+
+			<!-- /tmpl_if -->
+			
 		<!--/tmpl_if-->
 
 

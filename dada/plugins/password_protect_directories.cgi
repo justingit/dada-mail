@@ -11,6 +11,10 @@ delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 use FindBin;
 use lib "$FindBin::Bin/../";
 use lib "$FindBin::Bin/../DADA/perllib";
+BEGIN { 
+	my $b__dir = ( getpwuid($>) )[7].'/perl';
+    push @INC,$b__dir.'5/lib/perl5',$b__dir.'5/lib/perl5/x86_64-linux-thread-multi',$b__dir.'lib',map { $b__dir . $_ } @INC;
+}
 
 use CGI::Carp qw(fatalsToBrowser);
 
@@ -303,13 +307,13 @@ sub sql_backend_only_message {
 
 sub process_edit_dir { 
 	
-	my $name = xss_filter( $q->param('name') ) || undef;
-    my $url  = xss_filter( $q->param('url') )  || undef;
-    my $path = xss_filter( $q->param('path') ) || undef;
+	my $name                  = xss_filter( $q->param('name') ) || undef;
+    my $url                   = xss_filter( $q->param('url') )  || undef;
+    my $path                  = xss_filter( $q->param('path') ) || undef;
     my $use_custom_error_page = xss_filter( $q->param('use_custom_error_page') ) || 0;
-    my $custom_error_page = xss_filter( $q->param('custom_error_page') )|| undef;
-    my $default_password = xss_filter( $q->param('default_password') ) || undef;
-	my $id               = xss_filter( $q->param('id') ) || undef;
+    my $custom_error_page     = xss_filter( $q->param('custom_error_page') )|| undef;
+    my $default_password      = xss_filter( $q->param('default_password') ) || undef;
+	my $id                    = xss_filter( $q->param('id') ) || undef;
 	
 	my $htp = DADA::Profile::Htpasswd->new({-list => $list});
 	

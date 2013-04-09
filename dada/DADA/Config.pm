@@ -335,7 +335,6 @@ $PLUGIN_CONFIGS ||= {
         Entries            => undef,
         Style              => undef,
         Allow_QS_Overrides => undef,
-        Template           => undef,
 
     },
 
@@ -407,41 +406,29 @@ $REFERER_CHECK          ||= 0;
 # Set to Either, "Default" or, "reCAPTCHA";
 $CAPTCHA_TYPE ||= 'Default';
 $GD_SECURITYIMAGE_PARAMS ||= {
-
     'rand_string_from' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZaeiouy',
     'rand_string_size' => 6,
-
     'new' => {
-
         width  => 250,
         height => 125,
         lines  => 10,
-
         #gd_font    => 'Giant',
         send_ctobg => 1,
-
         # There's some magic here,
         # If the font is located in the,
         # dada/templates directory,
         # You don't have to put the absolute path,
         # just the filename.
-
         font    => 'StayPuft.ttf',
         bgcolor => "#CCFFCC",
         angle   => 13,
         ptsize  => 30,
-
     },
-
     create => {
-
         ttf => 'circle',
-
         # normal => 'circle',
     },
-
     particle => [ 500, undef ],
-
 };
 $RECAPTCHA_PARAMS ||= {
     remote_address => $ENV{'REMOTE_ADDR'},
@@ -2448,6 +2435,7 @@ EOF
 
 	# Mass Mailing Options
 	mass_mailing_convert_plaintext_to_html => 0, 
+	mass_mailing_block_css_to_inline_css   => 0, 
 	
     #quotas
     use_subscription_quota => 0,
@@ -2886,6 +2874,7 @@ EOF
     tracker_clean_up_reports                        => 1,
     tracker_auto_parse_links                        => 1,
     tracker_show_message_reports_in_mailing_monitor => 0,
+    tracker_track_email                             => 0,
 
     #	tracker_enable_data_cache                           => 1,
     #	tracker_dada_cache_expires                          => 1, # in hours
@@ -2977,8 +2966,8 @@ $ATTACHMENT_TEMPFILE ||= 0;
 
 $MAIL_VERP_SEPARATOR ||= '-';
 
-$VERSION = 6.2.2;
-$VER     = '6.2.2 Stable - 03/29/13';
+$VERSION = 6.3.0;
+$VER     = '6.3.0 Stable 04/08/13';
 
 #
 #

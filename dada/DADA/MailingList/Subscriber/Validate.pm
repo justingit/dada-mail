@@ -113,7 +113,9 @@ sub subscription_check {
                     {
                         $errors{mx_lookup_failed} = 1;
                     }
-                    carp "mx check error: $@" if $@;
+					if( $@ ) { 
+                    	carp "warning: mx check didn't work: $@, for email, '$email' on list, '" . $self->{list} . "'";
+					}
                 };
             }
         }

@@ -5,6 +5,10 @@ package bridge;
 use FindBin;
 use lib "$FindBin::Bin/../";
 use lib "$FindBin::Bin/../DADA/perllib";
+BEGIN { 
+	my $b__dir = ( getpwuid($>) )[7].'/perl';
+    push @INC,$b__dir.'5/lib/perl5',$b__dir.'5/lib/perl5/x86_64-linux-thread-multi',$b__dir.'lib',map { $b__dir . $_ } @INC;
+}
 
 use strict;
 $ENV{PATH} = "/bin:/usr/bin";
@@ -713,7 +717,7 @@ sub validate_list_email {
     for my $t_list ( available_lists() ) {
 
         my $ls = DADA::MailingList::Settings->new( { -list => $t_list } );
-        if ( $ls->param('list_owner_email') eq $list_email ) {
+        if ( cased($ls->param('list_owner_email')) eq cased($list_email) ) {
             if ( $t_list eq $list ) {
                 $errors->{list_email_set_to_list_owner_email} = 1;
             }
@@ -722,7 +726,7 @@ sub validate_list_email {
             }
             $status = 0;
         }
-        if ( $ls->param('admin_email') eq $list_email ) {
+        if ( cased($ls->param('admin_email')) eq cased($list_email) ) {
 
             if ( $t_list eq $list ) {
                 $errors->{list_email_set_to_list_admin_email} = 1;

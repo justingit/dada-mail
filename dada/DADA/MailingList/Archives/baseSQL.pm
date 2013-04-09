@@ -111,6 +111,22 @@ sub can_display_message_source {
 }
 
 
+sub num_archives {
+
+    my $self   = shift;
+    my ($args) = @_; 
+	
+    my @row;
+    my $query = 'SELECT COUNT(*)  FROM ' .  $self->{sql_params}->{archives_table} . ' WHERE list = ?';
+
+	my $sth = $self->{dbh}->prepare('SELECT * FROM ' . $self->{sql_params}->{archives_table});
+    my $count = $self->{dbh}->selectrow_array($query, undef,  $self->{list}); 
+	return $count;
+
+}
+
+
+
 
 sub print_message_source { 
 

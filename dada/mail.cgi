@@ -35,6 +35,10 @@ BEGIN {
 use FindBin;
 use lib "$FindBin::Bin";
 use lib "$FindBin::Bin/DADA/perllib";
+BEGIN { 
+	my $b__dir = ( getpwuid($>) )[7].'/perl';
+    push @INC,$b__dir.'5/lib/perl5',$b__dir.'5/lib/perl5/x86_64-linux-thread-multi',$b__dir.'lib',map { $b__dir . $_ } @INC;
+}
 
 #---------------------------------------------------------------------#
 
@@ -257,17 +261,21 @@ if($ENV{PATH_INFO}){
         $q->param('what_is_dada_mail');
 
     }elsif($info =~ /^spacer_image/){
+		# spacer_image/list/mid/spacer.png';
+		# Or
+		# spacer_image/list/mid/email_name/email_domain/spacer.png';
+		
+	    $q->param('flavor', 'm_o_c');
+		
+		my @data = split('/', $info);
+		
+        $q->param('list', $data[1]);
+        $q->param('mid',  $data[2]);
 
-        my ($throwaway, $pi_list, $pi_mid, $bollocks) = split('/', $info);
-
-        $q->param('flavor', 'm_o_c');
-
-        $q->param('list',   $pi_list)
-            if $pi_list;
-
-        $q->param('mid',    $pi_mid)
-            if $pi_mid;
-
+		if($data[3] ne 'spacer_image.png' && $data[4] && $data[5] && $data[5] eq 'spacer.png'){ 
+	        $q->param('email',   $data[3] . '@' . $data[4]);
+		} 
+		
 }elsif($info =~ /^img/){
 
         my ($pi_flavor, $img_name, $extran) = split('/', $info);
@@ -416,7 +424,7 @@ if($ENV{PATH_INFO}){
 
     }elsif($info =~ /^r/){
        # my ($pi_flavor, $pi_list, $pi_k, $pi_mid, @pi_url) = split('/', $info);
-         my ($pi_flavor, $pi_list, $pi_key) = split('/', $info);
+         my ($pi_flavor, $pi_list, $pi_key, $pi_email_name, $pi_email_domain,  ) = split('/', $info, 5);
         my $pi_url;
 
         $q->param('flavor', $pi_flavor)
@@ -427,6 +435,11 @@ if($ENV{PATH_INFO}){
 
 	       $q->param('key',   $pi_key)
 	            if $pi_key;
+		 my $pi_email = $pi_email_name . '@' . $pi_email_domain
+		         if $pi_email_name && $pi_email_domain;
+		  $q->param('email',  $pi_email)
+		         if $pi_email;
+		
     }elsif($info =~ /^what_is_dada_mail$/){
 
         $q->param('flavor', 'what_is_dada_mail');
@@ -567,10 +580,10 @@ sub run {
 	'add_email'                  =>    \&add_email,
 	'delete_email'               =>    \&delete_email,
 	'subscription_options'       =>    \&subscription_options,
-	'admin_menu_subscriber_count_notification' 
-	                             => \&admin_menu_subscriber_count_notification, 
-	'admin_menu_mailing_monitor_notification'  
-	                             => \&admin_menu_mailing_monitor_notification, 
+	
+	'admin_menu_subscriber_count_notification' =>  \&admin_menu_subscriber_count_notification, 
+	'admin_menu_mailing_monitor_notification'  =>  \&admin_menu_mailing_monitor_notification,
+	'admin_menu_archive_count_notification'    =>  \&admin_menu_archive_count_notification,  
 	'send_email'                 =>    \&send_email,
 	'message_body_help'          =>    \&message_body_help, 
 	'url_message_body_help'      =>    \&url_message_body_help, 
@@ -976,29 +989,8 @@ sub sign_in {
 
 }
 
-sub admin_menu_subscriber_count_notification { 
-	
-	print $q->header(); 
-	
-	try { 		
-		
-		my ($admin_list, $root_login, $checksout) = check_list_security(
-											-cgi_obj         => $q,
-											-manual_override => 1
-										);
-		if($checksout) { 					
-			$list = $admin_list; 
-			require DADA::MailingList::Subscribers; 
-			my $lh = DADA::MailingList::Subscribers->new({-list => $list});
-			my $num = $lh->num_subscribers(); 
-			if($num > 0) { 
-				e_print('(' . commify($num) . ')');  
-			}
-		}
-	} catch { 
-		carp ($_); 
-	}
-}
+
+
 
 sub admin_menu_mailing_monitor_notification { 
 	
@@ -1036,6 +1028,63 @@ sub admin_menu_mailing_monitor_notification {
 		warn "Problems filling out the 'Sending Monitor' admin menu item with interesting bits of information about the mailouts: $_";
     }	
 }
+
+
+
+sub admin_menu_subscriber_count_notification { 
+	
+	print $q->header(); 
+	
+	try { 		
+		
+		my ($admin_list, $root_login, $checksout) = check_list_security(
+											-cgi_obj         => $q,
+											-manual_override => 1
+										);
+		if($checksout) { 					
+			$list = $admin_list; 
+			require DADA::MailingList::Subscribers; 
+			my $lh = DADA::MailingList::Subscribers->new({-list => $list});
+			my $num = $lh->num_subscribers(); 
+			if($num > 0) { 
+				e_print('(' . commify($num) . ')');  
+			}
+		}
+	} catch { 
+		carp ($_); 
+	}
+}
+
+
+
+
+
+sub admin_menu_archive_count_notification { 
+	
+	print $q->header(); 
+	
+	try { 		
+		
+		my ($admin_list, $root_login, $checksout) = check_list_security(
+											-cgi_obj         => $q,
+											-manual_override => 1
+										);
+		if($checksout) { 					
+			$list = $admin_list; 
+			require DADA::MailingList::Archives; 
+			my $lh = DADA::MailingList::Archives->new({-list => $list});
+			my $num = $lh->num_archives(); 
+			if($num > 0) { 
+				e_print('(' . commify($num) . ')');  
+			}
+		}
+	} catch { 
+		carp ($_); 
+	}
+}
+
+
+
 
 
 
@@ -1743,6 +1792,15 @@ sub mass_mailing_options {
 	$list = $admin_list; 
 
 	if(!$process) { 
+		
+		my $can_use_css_inliner = 1; 
+		try { 
+			require CSS::Inliner; 
+		}
+		catch { 
+			$can_use_css_inliner = 0;
+		};
+		
 		require DADA::Template::Widgets;
 		my  $scrn =  DADA::Template::Widgets::wrap_screen(
 			{
@@ -1755,6 +1813,7 @@ sub mass_mailing_options {
 				},
 				-vars   => {
 					done => $done,
+					can_use_css_inliner => $can_use_css_inliner, 
 				},
 				-list_settings_vars_param => {
 					-list    => $list,
@@ -1772,6 +1831,7 @@ sub mass_mailing_options {
                 -associate => $q,
                 -settings  => {
 					mass_mailing_convert_plaintext_to_html => 0, 
+					mass_mailing_block_css_to_inline_css   => 0, 
 				}
 			}
 		); 
@@ -2273,70 +2333,6 @@ sub sending_preferences {
          }
 
 
-		# Amazon SES Test for stuff. 
-		my $has_aws_credentials_file = 0; 
-		if(defined($DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file}) && (-e $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file})){ 
-			$has_aws_credentials_file = 1; 
-		}
-		my $has_ses_verify_email_address_script = 0; 
-		if(defined($DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script}) && (-e $DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script})){ 
-			$has_ses_verify_email_address_script = 1; 
-		}
-		
-
-		my $amazon_ses_required_modules = [ 
-			{module => 'Cwd', installed => 1}, 
-			{module => 'Digest::SHA', installed => 1}, 
-			{module => 'URI::Escape', installed => 1}, 
-			{module => 'MIME::Base64', installed => 1}, 	
-			{module => 'Crypt::SSLeay', installed => 1}, 	
-			{module => 'XML::LibXML', installed => 1},
-			{module => 'LWP 6',       installed => 1}, 
-		];
-
-
-		my $amazon_ses_has_needed_cpan_modules = 1; 
-		eval {require Cwd;};           
-		if($@){
-			$amazon_ses_required_modules->[0]->{installed}           = 0;
-			$amazon_ses_has_needed_cpan_modules = 0;
-		}
-		eval {require Digest::SHA;};   
-		if($@){
-			$amazon_ses_required_modules->[1]->{installed}           = 0;
-			$amazon_ses_has_needed_cpan_modules = 0;
-		}
-		eval {require URI::Escape;};
-		if($@){
-			$amazon_ses_required_modules->[2]->{installed}           = 0;
-			$amazon_ses_has_needed_cpan_modules = 0;
-		}
-		eval {require MIME::Base64;};  
-		if($@){
-			$amazon_ses_required_modules->[3]->{installed}           = 0;
-			$amazon_ses_has_needed_cpan_modules = 0;
-		}
-		eval {require Crypt::SSLeay;}; 
-		if($@){
-			$amazon_ses_required_modules->[4]->{installed}           = 0;
-			$amazon_ses_has_needed_cpan_modules = 0;
-		}
-		eval {require XML::LibXML;};
-		if($@){
-			$amazon_ses_required_modules->[5]->{installed}           = 0;
-			$amazon_ses_has_needed_cpan_modules = 0; 
-		}
-		eval {require LWP;};
-		if($@){
-			$amazon_ses_required_modules->[6]->{installed}           = 0;
-			$amazon_ses_has_needed_cpan_modules = 0; 
-		}
-		else { 
-			if($LWP::VERSION < 6){ 
-				$amazon_ses_required_modules->[6]->{installed}           = 0;
-				$amazon_ses_has_needed_cpan_modules = 0;
-			}
-		}
 
         require    DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -2368,13 +2364,9 @@ sub sending_preferences {
 					sasl_smtp_username  => $q->param('sasl_smtp_username') ? $q->param('sasl_smtp_username') : $li->{sasl_smtp_username},
 					sasl_smtp_password  => $q->param('sasl_smtp_password') ? $q->param('sasl_smtp_password') : $decrypted_sasl_pass,
 				
-					# Amazon SES 
-					has_aws_credentials_file            => $has_aws_credentials_file, 
-					has_ses_verify_email_address_script => $has_ses_verify_email_address_script, 
-					aws_credentials_file                => $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file},
-					ses_verify_email_address_script     => $DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script},
-					amazon_ses_has_needed_cpan_modules  => $amazon_ses_has_needed_cpan_modules, 
-					amazon_ses_required_modules         => $amazon_ses_required_modules, 
+					amazon_ses_requirements_widget => DADA::Template::Widgets::amazon_ses_requirements_widget(), 
+					
+					
 				},
 				-list_settings_vars_param => {
 					-list    => $list,
@@ -2556,21 +2548,34 @@ sub amazon_ses_verify_email {
         -Function => 'sending_preferences'
     );
 
-	my $amazon_ses_verify_email = $q->param('amazon_ses_verify_email'); 
-	if(!-e $DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script}){ 
-		print $q->header(); 
-		print '<p class="error">Cannot find, "' . $DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script} .'"</p>'; 
-		return; 
-	}
+	my $valid_email             = 1; 
+	my $status                  = undef; 
+	my $result                  = undef; 
+	my $amazon_ses_verify_email = xss_filter(strip($q->param('amazon_ses_verify_email'))); 
 	if(check_for_valid_email($amazon_ses_verify_email) == 1){ 
-		print $q->header(); 
-		print '<p class="error">Invalid Email Address!</p>'; 
+		$valid_email = 0; 
 	}
 	else { 
-		`$DADA::Config::AMAZON_SES_OPTIONS->{ses_verify_email_address_script} -v $amazon_ses_verify_email -k $DADA::Config::AMAZON_SES_OPTIONS->{aws_credentials_file}`; 
-		print $q->header(); 
-		print '<p class="positive">Verification Sent! Check the email account for: ' . $amazon_ses_verify_email . ' to complete the verification!</p>'; 
+		require DADA::App::AmazonSES; 
+		my $ses = DADA::App::AmazonSES->new; 
+	    ($status, $result) = $ses->verify_sender( { -email => $amazon_ses_verify_email } ); 
 	}
+
+	print $q->header(); 
+	require DADA::Template::Widgets;
+	e_print(DADA::Template::Widgets::screen(
+		{
+			-screen => 'amazon_ses_verify_email_widget.tmpl',
+			-expr   => 1, 
+			-vars   => {
+				amazon_ses_verify_email => $amazon_ses_verify_email, 
+				valid_email             => $valid_email, 
+				status                  => $status,
+				result                  => $result, 
+			}
+		}
+	));
+	
 
 }
 
@@ -2588,39 +2593,30 @@ sub amazon_ses_get_stats {
 		|| ($ls->param('sending_method') eq 'smtp' && $ls->param('smtp_server') =~ m/amazonaws\.com/)
 	){ 
 		
-		my ( $SentLast24Hours, $Max24HourSend, $MaxSendRate );
-		my $found_ses_get_stats_script = 1; 
-		if(!-e $DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script}){ 
-			$found_ses_get_stats_script = 0; 
-		}
-		else { 
-			require DADA::App::AmazonSES; 
-			my $ses = DADA::App::AmazonSES->new; 
-		    my ( $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats; 
-		
-			print $q->header(); 
-			require DADA::Template::Widgets;
-			e_print(DADA::Template::Widgets::screen(
-				{
-					-screen => 'amazon_ses_get_stats_widget.tmpl',
-					-vars   => {
-						MaxSendRate                => commify($MaxSendRate),
-						Max24HourSend              => commify($Max24HourSend),
-						SentLast24Hours            => commify($SentLast24Hours),
-						found_ses_get_stats_script => $found_ses_get_stats_script,  
 
-						ses_get_stats_script       => $DADA::Config::AMAZON_SES_OPTIONS->{ses_get_stats_script},
-						
-					}
+		require DADA::App::AmazonSES; 
+		my $ses = DADA::App::AmazonSES->new; 
+	    my ($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats; 
+
+		print $q->header(); 
+		require DADA::Template::Widgets;
+		e_print(DADA::Template::Widgets::screen(
+			{
+				-screen => 'amazon_ses_get_stats_widget.tmpl',
+				-expr   => 1, 
+				-vars   => {
+					status                     => $status,
+					MaxSendRate                => commify($MaxSendRate),
+					Max24HourSend              => commify($Max24HourSend),
+					SentLast24Hours            => commify($SentLast24Hours),
 				}
-			));
-			
-		}
+			}
+		));
 	}
 	else { 
 		print $q->header(); 
-		# Nothing... 
 	}
+	
 }
 
 
@@ -5693,24 +5689,18 @@ sub adv_archive_options {
         my $gravatar_img_url     = '';
         my $can_use_gravatar_url = 1;
         try { 
-			require Gravatar::URL 
+			require Gravatar::URL;
 		} catch { 
 			$can_use_gravatar_url = 0; 
 		};
-		
+	
 		if ( $can_use_gravatar_url == 1) { 
-            require Email::Address;
-            if ( isa_url( $li->{default_gravatar_url} ) ) {
-
-                $gravatar_img_url = Gravatar::URL::gravatar_url(
-                    email   => $ls->param('list_owner_email'),
-                    default => $li->{default_gravatar_url}
-                );
-            }
-            else {
-                $gravatar_img_url = Gravatar::URL::gravatar_url(
-                    email => $ls->param('list_owner_email') );
-            }
+                $gravatar_img_url = gravatar_img_url(
+					{ 
+	                    -email                => $ls->param('list_owner_email'),
+	                    -default_gravatar_url => $ls->param('default_gravatar_url'),
+            		}
+				);
         }
     
 
@@ -8145,9 +8135,7 @@ sub new_list {
 sub archive {
 
     # are we dealing with a real list?
-    my $list_exists = check_if_list_exists(
-        -List       => $list,
-    );
+    my $list_exists = check_if_list_exists( -List => $list, );
 
     if ( $list_exists == 0 ) {
 
@@ -8160,18 +8148,14 @@ sub archive {
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     require DADA::Profile;
-	my $prof = DADA::Profile->new({-from_session => 1});
+    my $prof = DADA::Profile->new( { -from_session => 1 } );
     my $allowed_to_view_archives = 1;
-	if($prof){
- 		$allowed_to_view_archives = $prof->allowed_to_view_archives(
-	        {
-	            -list         => $list,
-	        }
-	    );
-	}
+    if ($prof) {
+        $allowed_to_view_archives =
+          $prof->allowed_to_view_archives( { -list => $list, } );
+    }
     if ( $allowed_to_view_archives == 0 ) {
         user_error( -List => $list, -Error => "not_allowed_to_view_archives" );
         return;
@@ -8181,7 +8165,7 @@ sub archive {
 
     require DADA::Template::Widgets;
 
-    if ( $li->{show_archives} == 0 ) {
+    if ( $ls->param('show_archives') == 0 ) {
         user_error( -List => $list, -Error => "no_show_archives" );
         return;
     }
@@ -8195,42 +8179,43 @@ sub archive {
 
     my $archive_send_form = '';
     $archive_send_form = DADA::Template::Widgets::archive_send_form(
-        $list, $id,
+        $list,
+        $id,
         xss_filter( $q->param('send_archive_errors') ),
-        $li->{captcha_archive_send_form},
+        $ls->param('captcha_archive_send_form'),
         xss_filter( $q->param('captcha_fail') )
-      )
-      if $li->{archive_send_form} == 1 && defined($id);
+    ) if $ls->param('archive_send_form') == 1 && defined($id);
 
     my $nav_table = '';
-    $nav_table = $archive->make_nav_table( -Id => $id, -List => $li->{list} )
+    $nav_table =
+      $archive->make_nav_table( -Id => $id, -List => $ls->param('list') )
       if defined($id);
 
     my $archive_search_form = '';
-    $archive_search_form = $archive->make_search_form( $li->{list} )
-      if $li->{archive_search_form} == 1;
+    $archive_search_form = $archive->make_search_form( $ls->param('list') )
+      if $ls->param('archive_search_form') == 1;
 
     my $archive_subscribe_form = "";
 
-    if ( $li->{hide_list} ne "1" ) {
+    if ( $ls->param('hide_list') ne "1" ) {
 
-		# DEV: This takes the cake for worst hack I have found... today.
+        # DEV: This takes the cake for worst hack I have found... today.
         my $info = '<!-- tmpl_var list_settings.info -->';
-		   $info = DADA::Template::Widgets::screen(
-				{
-					-data => \$info,
-					-list_settings_vars_param => {-list => $list,  -dot_it => 1 },
-					-webify_and_santize_these => [qw(list_settings.info)],
-				}
-			);
+        $info = DADA::Template::Widgets::screen(
+            {
+                -data                     => \$info,
+                -list_settings_vars_param => { -list => $list, -dot_it => 1 },
+                -webify_and_santize_these => [qw(list_settings.info)],
+            }
+        );
 
-        unless ( $li->{archive_subscribe_form} eq "0" ) {
+        unless ( $ls->param('archive_subscribe_form') eq "0" ) {
 
-			$archive_subscribe_form .= $info;
+            $archive_subscribe_form .= $info;
             $archive_subscribe_form .=
               DADA::Template::Widgets::subscription_form(
                 {
-                    -list       => $li->{list},
+                    -list       => $ls->param('list'),
                     -email      => $email,
                     -give_props => 0,
                 }
@@ -8241,7 +8226,7 @@ sub archive {
     my $archive_widgets = {
         archive_send_form      => $archive_send_form,
         nav_table              => $nav_table,
-        publish_archives_rss   => $li->{publish_archives_rss} ? 1 : 0,
+        publish_archives_rss   => $ls->param('publish_archives_rss') ? 1 : 0,
         archive_search_form    => $archive_search_form,
         archive_subscribe_form => $archive_subscribe_form,
     };
@@ -8250,10 +8235,12 @@ sub archive {
 
     if ( !$id ) {
 
-		if (!$c->profile_on && $c->cached( 'archive/' . $list . '/' . $start  . '.scrn') ) {
-		    $c->show( 'archive/' . $list . '/' . $start  . '.scrn');
-		    return;
-		}
+        if (  !$c->profile_on
+            && $c->cached( 'archive/' . $list . '/' . $start . '.scrn' ) )
+        {
+            $c->show( 'archive/' . $list . '/' . $start . '.scrn' );
+            return;
+        }
 
         my $th_entries = [];
 
@@ -8279,11 +8266,11 @@ sub archive {
                 $subject = DADA::Template::Widgets::screen(
                     {
                         -data                     => \$subject,
-                        -vars                     => $li,
-                        -list_settings_vars       => $li,
+                        -vars                     => $ls->get,
+                        -list_settings_vars       => $ls->get,
                         -list_settings_vars_param => { -dot_it => 1 },
                         -dada_pseudo_tag_filter   => 1,
-                        -subscriber_vars_param    =>
+                        -subscriber_vars_param =>
                           { -use_fallback_vars => 1, -list => $list },
                     },
 
@@ -8291,13 +8278,55 @@ sub archive {
 
                 # this is so atrocious.
                 my $date = date_this(
-                    -Packed_Date   => $archive->_massaged_key( $entries->[$i] ),
-                    -Write_Month   => $li->{archive_show_month},
-                    -Write_Day     => $li->{archive_show_day},
-                    -Write_Year    => $li->{archive_show_year},
-                    -Write_H_And_M => $li->{archive_show_hour_and_minute},
-                    -Write_Second  => $li->{archive_show_second}
+                    -Packed_Date => $archive->_massaged_key( $entries->[$i] ),
+                    -Write_Month => $ls->param('archive_show_month'),
+                    -Write_Day   => $ls->param('archive_show_day'),
+                    -Write_Year  => $ls->param('archive_show_year'),
+                    -Write_H_And_M =>
+                      $ls->param('archive_show_hour_and_minute'),
+                    -Write_Second => $ls->param('archive_show_second'),
                 );
+                my $header_from      = undef;
+                my $orig_header_from = undef;
+
+                if ($raw_msg) {
+                    $header_from = $archive->get_header(
+                        -header => 'From',
+                        -key    => $entries->[$i]
+                    );
+                    $orig_header_from = $header_from;
+                }
+
+                my $can_use_gravatar_url = 0;
+                my $gravatar_img_url     = '';
+
+                if ( $ls->param('enable_gravatars') ) {
+
+                    eval { require Gravatar::URL };
+                    if ( !$@ ) {
+                        $can_use_gravatar_url = 1;
+
+                        require Email::Address;
+                        if ( defined($orig_header_from) ) {
+                            ;
+                            eval {
+                                $orig_header_from =
+                                  ( Email::Address->parse($orig_header_from) )
+                                  [0]->address;
+                            };
+                        }
+                        $gravatar_img_url = gravatar_img_url(
+                            {
+                                -email => $orig_header_from,
+                                -default_gravatar_url =>
+                                  $ls->param('default_gravatar_url'),
+                            }
+                        );
+                    }
+                    else {
+                        $can_use_gravatar_url = 0;
+                    }
+                }
 
                 my $entry = {
                     id               => $entries->[$i],
@@ -8307,17 +8336,21 @@ sub archive {
                     list             => $list,
                     uri_escaped_list => uriescape($list),
                     PROGRAM_URL      => $DADA::Config::PROGRAM_URL,
-                    message_blurb    =>
+                    message_blurb =>
                       $archive->message_blurb( -key => $entries->[$i] ),
+                    'list_settings.enable_gravatars' =>
+                      $ls->param('enable_gravatars'),
+                    can_use_gravatar_url => $can_use_gravatar_url,
+                    gravatar_img_url     => $gravatar_img_url,
 
                 };
 
                 $stopped_at++;
-                push ( @archive_nums,  $num );
-                push ( @archive_links, $link );
+                push( @archive_nums,  $num );
+                push( @archive_links, $link );
                 $num++;
 
-                push ( @$th_entries, $entry );
+                push( @$th_entries, $entry );
 
             }
         }
@@ -8329,7 +8362,7 @@ sub archive {
 
             #fix if we're doing reverse chronologic
             $bullet = ( ( $#{$entries} + 1 ) - ( $archive_nums[$ii] ) + 1 )
-              if ( $li->{sort_archives_in_reverse} == 1 );
+              if ( $ls->param('sort_archives_in_reverse') == 1 );
 
             # yeah, whatever.
             $th_entries->[$ii]->{bullet} = $bullet;
@@ -8339,45 +8372,39 @@ sub archive {
         my $index_nav = $archive->create_index_nav($stopped_at);
 
         require DADA::Profile;
-		my $prof = DADA::Profile->new(
-			{
-				-from_session => 1
-			}
-		);
-	    my $allowed_to_view_archives = 1;
-		if($prof){
-	 		$allowed_to_view_archives = $prof->allowed_to_view_archives(
-		        {
-		            -list         => $list,
-		        }
-		    );
-		}
+        my $prof = DADA::Profile->new( { -from_session => 1 } );
+        my $allowed_to_view_archives = 1;
+        if ($prof) {
+            $allowed_to_view_archives =
+              $prof->allowed_to_view_archives( { -list => $list, } );
+        }
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'archive_index_screen.tmpl',
-				-with   => 'list', 
+                -with   => 'list',
                 -vars   => {
                     list                     => $list,
-                    list_name                => $li->{list_name},
+                    list_name                => $ls->param('list_name'),
                     entries                  => $th_entries,
                     index_nav                => $index_nav,
                     flavor_archive           => 1,
                     allowed_to_view_archives => $allowed_to_view_archives,
-                    publish_archives_rss => $li->{publish_archives_rss} ? 1 : 0,
+                    publish_archives_rss => $ls->param('publish_archives_rss')
+                    ? 1
+                    : 0,
 
                     %$archive_widgets,
 
                 },
-                -list_settings_vars       => $li,
+                -list_settings_vars       => $ls->get,
                 -list_settings_vars_param => { -dot_it => 1 },
 
             }
         );
         e_print($scrn);
 
-        if (!$c->profile_on)
-        {
+        if ( !$c->profile_on ) {
             $c->cache( 'archive/' . $list . '/' . $start . '.scrn', \$scrn );
 
         }
@@ -8395,7 +8422,7 @@ sub archive {
                 -status => '301 Moved Permanently',
                 -uri    => $DADA::Config::PROGRAM_URL
                   . '/archive/'
-                  . $li->{list} . '/'
+                  . $ls->param('list') . '/'
                   . $id . '/',
             );
             return;
@@ -8405,30 +8432,26 @@ sub archive {
 
             print $q->redirect( -uri => $DADA::Config::PROGRAM_URL
                   . '/archive/'
-                  . $li->{list}
+                  . $ls->param('list')
                   . '/' );
             return;
         }
 
         $id = $archive->_massaged_key($id);
 
-        if (   $li->{archive_send_form} != 1
-            && $li->{captcha_archive_send_form} != 1 )
+        if (   $ls->param('archive_send_form') != 1
+            && $ls->param('captcha_archive_send_form') != 1 )
         {
 
-            if (!$c->profile_on &&
-	 			$c->cached( 'archive/' . $list . '/' . $id . '.scrn' )
-			) {
-                $c->show( 'archive/' . $list . '/' . $id . '.scrn' );				
-				require DADA::Logging::Clickthrough; 
-				my $r = DADA::Logging::Clickthrough->new({-list => $list});
-				if($r->enabled) { 
-					$r->view_archive_log(
-						{ 
-							-mid => $id, 
-						}
-					);
-				}
+            if (  !$c->profile_on
+                && $c->cached( 'archive/' . $list . '/' . $id . '.scrn' ) )
+            {
+                $c->show( 'archive/' . $list . '/' . $id . '.scrn' );
+                require DADA::Logging::Clickthrough;
+                my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
+                if ( $r->enabled ) {
+                    $r->view_archive_log( { -mid => $id, } );
+                }
                 return;
             }
         }
@@ -8450,7 +8473,7 @@ sub archive {
         my ( $massaged_message_for_display, $content_type ) =
           $archive->massaged_msg_for_display( -key => $id, -body_only => 1 );
 
-        my $show_iframe = $li->{html_archives_in_iframe} || 0;
+        my $show_iframe = $ls->param('html_archives_in_iframe') || 0;
         if ( $content_type eq 'text/plain' ) {
             $show_iframe = 0;
         }
@@ -8471,13 +8494,14 @@ sub archive {
 
             # DEV: This logic should not be here...
 
-			# DEV: This is stupid, and I don't think it's a great idea.
-	        $header_from = $archive->_parse_in_list_info( -data => $header_from );
-	
-            if ( $li->{archive_protect_email} eq 'recaptcha_mailhide' ) {
+            # DEV: This is stupid, and I don't think it's a great idea.
+            $header_from =
+              $archive->_parse_in_list_info( -data => $header_from );
+
+            if ( $ls->param('archive_protect_email') eq 'recaptcha_mailhide' ) {
                 $header_from = mailhide_encode($header_from);
             }
-            elsif ( $li->{archive_protect_email} eq 'spam_me_not' ) {
+            elsif ( $ls->param('archive_protect_email') eq 'spam_me_not' ) {
                 $header_from = spam_me_not_encode($header_from);
             }
             else {
@@ -8508,24 +8532,24 @@ sub archive {
         }
 
         my $attachments =
-          ( $li->{display_attachments} == 1 )
+          ( $ls->param('display_attachments') == 1 )
           ? $archive->attachment_list($id)
           : [];
 
         # this is so atrocious.
         my $date = date_this(
             -Packed_Date   => $id,
-            -Write_Month   => $li->{archive_show_month},
-            -Write_Day     => $li->{archive_show_day},
-            -Write_Year    => $li->{archive_show_year},
-            -Write_H_And_M => $li->{archive_show_hour_and_minute},
-            -Write_Second  => $li->{archive_show_second}
+            -Write_Month   => $ls->param('archive_show_month'),
+            -Write_Day     => $ls->param('archive_show_day'),
+            -Write_Year    => $ls->param('archive_show_year'),
+            -Write_H_And_M => $ls->param('archive_show_hour_and_minute'),
+            -Write_Second  => $ls->param('archive_show_second'),
         );
 
         my $can_use_gravatar_url = 0;
         my $gravatar_img_url     = '';
 
-        if ( $li->{enable_gravatars} ) {
+        if ( $ls->param('enable_gravatars') ) {
 
             eval { require Gravatar::URL };
             if ( !$@ ) {
@@ -8540,16 +8564,13 @@ sub archive {
                           ->address;
                     };
                 }
-                if ( isa_url( $li->{default_gravatar_url} ) ) {
-                    $gravatar_img_url =
-                      Gravatar::URL::gravatar_url( email => $orig_header_from );
-                }
-                else {
-                    $gravatar_img_url = Gravatar::URL::gravatar_url(
-                        email   => $orig_header_from,
-                        default => $li->{default_gravatar_url}
-                    );
-                }
+                $gravatar_img_url = gravatar_img_url(
+                    {
+                        -email => $orig_header_from,
+                        -default_gravatar_url =>
+                          $ls->param('default_gravatar_url'),
+                    }
+                );
             }
             else {
                 $can_use_gravatar_url = 0;
@@ -8559,10 +8580,10 @@ sub archive {
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'archive_screen.tmpl',
-				-with   => 'list', 
+                -with   => 'list',
                 -vars   => {
                     list      => $list,
-                    list_name => $li->{list_name},
+                    list_name => $ls->param('list_name'),
                     id        => $id,
 
                     # DEV. OK - riddle ME why there's two of these...
@@ -8572,7 +8593,7 @@ sub archive {
                     js_enc_subject      => js_enc($subject),
                     uri_encoded_subject => uriescape($subject),
                     uri_encoded_url     => uriescape(
-                        $DADA::Config::PROGRAM_URL
+                            $DADA::Config::PROGRAM_URL
                           . '/archive/'
                           . $list . '/'
                           . $id . '/'
@@ -8589,7 +8610,8 @@ sub archive {
                     ? $q->param('send_archive_errors')
                     : undef,
                     show_iframe     => $show_iframe,
-                    discussion_list => ( $li->{group_list} == 1 ) ? 1 : 0,
+                    discussion_list => ( $ls->param('group_list') == 1 ) ? 1
+                    : 0,
 
                     header_from         => $header_from,
                     in_reply_to_id      => $in_reply_to_id,
@@ -8597,30 +8619,26 @@ sub archive {
                     attachments         => $attachments,
                     date                => $date,
                     add_social_bookmarking_badges =>
-                      $li->{add_social_bookmarking_badges},
+                      $ls->param('add_social_bookmarking_badges'),
                     can_use_gravatar_url => $can_use_gravatar_url,
                     gravatar_img_url     => $gravatar_img_url,
                     %$archive_widgets,
 
                 },
-                -list_settings_vars       => $li,
+                -list_settings_vars       => $ls->get,
                 -list_settings_vars_param => { -dot_it => 1 },
             }
         );
         e_print($scrn);
 
-		require DADA::Logging::Clickthrough; 
-		my $r = DADA::Logging::Clickthrough->new({-list => $list});
-		if($r->enabled) { 
-			$r->view_archive_log(
-				{ 
-					-mid => $id, 
-				}
-			);
-		}
-        if (!$c->profile_on &&
-	   		$li->{archive_send_form} != 1
-            && $li->{captcha_archive_send_form} != 1 )
+        require DADA::Logging::Clickthrough;
+        my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
+        if ( $r->enabled ) {
+            $r->view_archive_log( { -mid => $id, } );
+        }
+        if (  !$c->profile_on
+            && $ls->param('archive_send_form') != 1
+            && $ls->param('captcha_archive_send_form') != 1 )
         {
             $c->cache( 'archive/' . $list . '/' . $id . '.scrn', \$scrn );
 
@@ -10385,6 +10403,8 @@ sub file_attachment {
 
 sub redirection {
 
+#	use Data::Dumper; 
+#	die Dumper([$q->param('key'), $q->param('email')] ); 
     require DADA::Logging::Clickthrough;
     my $r = DADA::Logging::Clickthrough->new({-list => $q->param('list')});
 	if(! $r->enabled) { 
@@ -10398,9 +10418,10 @@ sub redirection {
 			   if(defined($mid) && defined($url)){
 		       		$r->r_log(
 						{ 
-							-mid  => $mid, 
-							-url  => $url, 
-							-atts => $atts
+							-mid   => $mid, 
+							-url   => $url, 
+							-atts  => $atts,
+							-email => $q->param('email'),
 						}
 					);
 				}
@@ -10441,8 +10462,14 @@ sub m_o_c {
           DADA::Logging::Clickthrough->new( { -list => $q->param('list') } );
 		if($r->enabled) { 
 	        if ( defined( $q->param('mid') ) ) {
-	            $r->o_log( { -mid => $q->param('mid'), } );
-	        }
+	            
+				$r->o_log( 
+					{ 
+						-mid   => $q->param('mid'), 
+						-email => $q->param('email'), 
+					} 
+				);
+			}
   		}	
 	}
     require MIME::Base64;
@@ -11103,7 +11130,6 @@ sub profile {
 						gravatar_img_url             => gravatar_img_url(
 															{
 																-email                => $email,
-																-default_gravatar_url => $DADA::Config::PROFILE_OPTIONS->{gravatar_options}->{default_gravatar_url},
 															}
 														),
 						protected_directories => $protected_directories, 

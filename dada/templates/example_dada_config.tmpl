@@ -106,6 +106,20 @@ $FILE_BROWSER_OPTIONS = {
 =cut
 # end cut for WYSIWYG Editor Options
 
+# start cut for Amazon SES Options
+=cut
+
+$AMAZON_SES_OPTIONS = { 
+	AWSAccessKeyId => '<!-- tmpl_var AWSAccessKeyId -->', 
+	AWSSecretKey   => '<!-- tmpl_var AWSSecretKey -->', 
+};
+
+=cut
+# end cut for Amazon SES Options
+
+
+
+
 =cut
 # start cut for Dada Mail Profile Options
 
@@ -243,8 +257,7 @@ $PLUGIN_CONFIGS = {
 		Entries                             => undef,
 		Style                               => undef,
 		Allow_QS_Overrides                  => undef,
-		Template                            => undef,
-
+		
     }, 
 
     log_viewer => {	

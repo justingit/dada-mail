@@ -1,0 +1,25 @@
+<!-- tmpl_if valid_email -->
+	<!-- tmpl_if expr="(status == 200)" --> 
+		<div class="clearskiesbox">		
+			<p>
+				Verification Sent! Check the email account for: <!-- tmpl_var amazon_ses_verify_email --> to complete the verification!
+			</p>
+		</div>
+	<!-- tmpl_else -->
+		<div class="badweatherbox"> 
+			<p>
+				<strong>
+					Warning!
+				</strong>  
+				There's a problem with the saved AWS Credentials. 
+			</p>
+		</div>
+	<!-- /tmpl_if --> 
+<!-- tmpl_else -->
+	<div class="badweatherbox"> 
+		<p>
+			Invalid Email Address! Please double-check you've entered a valid email address. 
+		</p>
+	</div>
+<!-- /tmpl_if --> 
+

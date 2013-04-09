@@ -118,6 +118,18 @@ sub can_display_message_source {
 }
 
 
+
+sub num_archives {
+
+    my $self   = shift;
+    my ($args) = @_; 
+	return scalar( keys %{$self->{DB_HASH}});
+	
+
+}
+
+
+
 sub print_message_source { 
 
 	my $self = shift; 

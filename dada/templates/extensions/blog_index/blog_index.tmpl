@@ -1,0 +1,62 @@
+<!-- Stuff that goes in before the entries! --> 
+
+
+<!-- The entries! --> 
+
+<!-- tmpl_loop archive_entries --> 
+	
+    <h1>
+		<a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list -->/<!-- tmpl_var message_id -->/">
+			<!-- tmpl_var pretty_subject -->
+		</a>
+	</h1> 
+
+    <p style="text-align:right;color:#999">
+		Published on <!-- tmpl_var pretty_date -->
+	</p>
+
+	<p>
+	
+    <!-- tmpl_if blurb_style --> 
+        <blockquote><em>
+    <!--/tmpl_if--> 
+    
+	
+		<!-- tmpl_if list_settings.enable_gravatars --> 
+	
+			<!-- tmpl_if can_use_gravatar_url --> 
+	
+		    	<!-- tmpl_if gravatar_img_url --> 
+	    
+		        	<img src="<!-- tmpl_var gravatar_img_url -->" style="float:left; padding:5px;" /> 
+	    
+		    	<!-- /tmpl_if --> 
+	    
+			<!-- /tmpl_if --> 
+	
+		<!-- /tmpl_if -->
+		
+
+
+    <!-- tmpl_var message --><!-- tmpl_if blurb_style -->...</em>
+        
+         <a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list -->/<!-- tmpl_var message_id -->/">
+      [More]
+     </a>
+        
+        </blockquote></p>
+    <!--/tmpl_if--> 
+
+
+    
+    <p style="text-align:right">
+     <a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list -->/<!-- tmpl_var message_id -->/">
+      [Permalink]
+     </a>
+    </p>
+    
+
+<!-- /tmpl_loop --> 
+
+
+<!-- Stuff that goes in after the entries! --> 

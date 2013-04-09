@@ -91,9 +91,14 @@ sub token {
 			if $t; 
 			
 		my $data = $ct->fetch($token); 
-
+		if(!exists($data->{data}->{invite})) { 
+			$data->{data}->{invite} = 0; 
+		}
 		if(exists($data->{data}->{remote_addr})){ 
-			if($data->{data}->{remote_addr} ne $ENV{REMOTE_ADDR}){ 
+			if(
+				 $data->{data}->{remote_addr} ne $ENV{REMOTE_ADDR}
+		      && $data->{data}->{invite} != 1
+			){ 
 				require Data::Dumper; 
 				carp 'Token\'s env REMOTE_ADDR (' . $data->{data}->{remote_addr} . ') is different than current referer (' . $ENV{REMOTE_ADDR} .')'; 
 				carp "Additional Information: " . Data::Dumper::Dumper($data); 

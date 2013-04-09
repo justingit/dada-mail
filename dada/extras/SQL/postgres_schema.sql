@@ -21,7 +21,7 @@ data text
 );
 
 CREATE TABLE dada_profiles (
-	profile_id			         serial,
+	profile_id                   serial,
 	email                        varchar(80) not null UNIQUE,
 	password                     text,
 	auth_code                    varchar(64),
@@ -91,7 +91,8 @@ timestamp TIMESTAMP DEFAULT NOW(),
 remote_addr text, 
 msg_id text, 
 event text,
-details text
+details text,
+email varchar(80)
 ); 
 
 CREATE TABLE dada_clickthrough_url_log (
@@ -100,7 +101,8 @@ list varchar(16),
 timestamp TIMESTAMP DEFAULT NOW(),
 remote_addr text,
 msg_id text, 
-url text
+url text,
+email varchar(80)
 );
 
 CREATE TABLE dada_password_protect_directories (
@@ -113,6 +115,3 @@ use_custom_error_page char(1),
 custom_error_page text,
 default_password text
 );
-
-
-

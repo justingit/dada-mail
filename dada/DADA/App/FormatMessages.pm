@@ -424,7 +424,17 @@ sub _format_text {
 			if($content){ # do I need this?
 				
 				if($entity->head->mime_type eq 'text/html') { 
-						
+
+					if($self->{ls}->param('mass_mailing_block_css_to_inline_css') == 1){ 
+						try {
+							require DADA::App::FormatMessages::Filters::CSSInliner; 
+							my $css_inliner = DADA::App::FormatMessages::Filters::CSSInliner->new; 
+							$content = $css_inliner->filter({-html_msg => $content});
+						} catch {
+							carp "Problems with filter: $_";
+						};
+					}
+											
 					if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1) { 
 						try {
 							require DADA::App::FormatMessages::Filters::InlineEmbeddedImages; 
@@ -654,7 +664,16 @@ sub _add_opener_image {
 
 	my $self    = shift; 
 	my $content = shift; 
-	my $img_opener_code = '<!--open_img--><img src="<!-- tmpl_var PROGRAM_URL -->/spacer_image/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var message_id -->/spacer.png" width="1" height="1" /><!--/open_img-->';
+
+	my $url = '<!-- tmpl_var PROGRAM_URL -->/spacer_image/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var message_id -->/spacer.png';		
+	
+	if($self->no_list != 1) { 
+		if($self->{ls}->param('tracker_track_email') == 1) { 
+			$url = '<!-- tmpl_var PROGRAM_URL -->/spacer_image/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var message_id -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/spacer.png';
+		}
+	}
+
+	my $img_opener_code = '<!--open_img--><img src="' . $url .'" width="1" height="1" /><!--/open_img-->';
 	
 	if($content =~ m/\<\/body(.*?)\>/i){ 
 					#</body>

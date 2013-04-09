@@ -926,7 +926,49 @@ sub html_archive_list {
 	                -Write_Year    => $li->{archive_show_year},
 	                -Write_H_And_M => $li->{archive_show_hour_and_minute},
 	                -Write_Second  => $li->{archive_show_second});
-    
+					
+					my $header_from      = undef;
+	                my $orig_header_from = undef;
+
+	                if ($raw_msg) {
+	                    $header_from = $archive->get_header(
+	                        -header => 'From',
+	                        -key    => $entries->[$i]
+	                    );
+	                    $orig_header_from = $header_from;
+	                }
+	
+					my $can_use_gravatar_url = 0;
+	                my $gravatar_img_url     = '';
+
+	                if ( $ls->param('enable_gravatars') ) {
+
+	                    eval { require Gravatar::URL };
+	                    if ( !$@ ) {
+	                        $can_use_gravatar_url = 1;
+
+	                        require Email::Address;
+	                        if ( defined($orig_header_from) ) {
+	                            ;
+	                            eval {
+	                                $orig_header_from =
+	                                  ( Email::Address->parse($orig_header_from) )
+	                                  [0]->address;
+	                            };
+	                        }
+	                        $gravatar_img_url = gravatar_img_url(
+	                            {
+	                                -email => $orig_header_from,
+	                                -default_gravatar_url =>
+	                                  $ls->param('default_gravatar_url'),
+	                            }
+	                        );
+	                    }
+	                    else {
+	                        $can_use_gravatar_url = 0;
+	                    }
+	                }
+		                	
    # die $archive->message_blurb(-key => $entries->[$i]); 
 	                my $entry = { 				
 	                        id               => $entries->[$i], 
@@ -937,6 +979,11 @@ sub html_archive_list {
 	                        list             => $list, 
 	                        uri_escaped_list => uriescape($list),
 	                        PROGRAM_URL      => $DADA::Config::PROGRAM_URL, 
+		                    'list_settings.enable_gravatars' =>
+		                      $ls->param('enable_gravatars'),
+		                    can_use_gravatar_url => $can_use_gravatar_url,
+		                    gravatar_img_url     => $gravatar_img_url,
+	
 	                        message_blurb    => $archive->message_blurb(-key => $entries->[$i]),
 	                    }; 
                 
@@ -1175,7 +1222,6 @@ sub profile_widget {
                 gravatar_img_url => gravatar_img_url(
                     {
                         -email                => $email,
-                        -default_gravatar_url => $DADA::Config::PROFILE_OPTIONS->{gravatar_options}->{default_gravatar_url},
                         -size => '30',
                     }
                 ),
@@ -1184,6 +1230,91 @@ sub profile_widget {
         }
     );
 
+}
+
+
+sub amazon_ses_requirements_widget { 
+	
+	my $amazon_ses_required_modules = [ 
+		{module => 'Cwd', installed => 1}, 
+		{module => 'Digest::SHA', installed => 1}, 
+		{module => 'URI::Escape', installed => 1}, 
+		{module => 'MIME::Base64', installed => 1}, 	
+		{module => 'Crypt::SSLeay', installed => 1}, 	
+		{module => 'XML::LibXML', installed => 1},
+		{module => 'LWP 6',       installed => 1}, 
+#		{module => 'Some::Unknown::Module',       installed => 1}, 
+	];
+
+
+	my $amazon_ses_has_needed_cpan_modules = 1; 
+	try {
+		require Cwd;
+	} catch { 
+		$amazon_ses_required_modules->[0]->{installed}           = 0;
+		$amazon_ses_has_needed_cpan_modules = 0;
+	};
+	try {
+		require Digest::SHA;
+	} catch { 
+		$amazon_ses_required_modules->[1]->{installed}           = 0;
+		$amazon_ses_has_needed_cpan_modules = 0;
+	};
+	try {
+		require URI::Escape;
+	} catch { 
+		$amazon_ses_required_modules->[2]->{installed}           = 0;
+		$amazon_ses_has_needed_cpan_modules = 0;
+	};
+	try {
+		require MIME::Base64;
+	} catch { 
+		$amazon_ses_required_modules->[3]->{installed}           = 0;
+		$amazon_ses_has_needed_cpan_modules = 0;
+	};
+	try {
+		require Crypt::SSLeay;
+	} catch { 
+		$amazon_ses_required_modules->[4]->{installed}           = 0;
+		$amazon_ses_has_needed_cpan_modules = 0;
+	};
+	try {
+		require XML::LibXML;
+	} catch { 
+		$amazon_ses_required_modules->[5]->{installed}           = 0;
+		$amazon_ses_has_needed_cpan_modules = 0; 
+	};
+	eval {require LWP;};
+	if($@){
+		$amazon_ses_required_modules->[6]->{installed}           = 0;
+		$amazon_ses_has_needed_cpan_modules = 0; 
+	}
+	else { 
+		if($LWP::VERSION < 6){ 
+			$amazon_ses_required_modules->[6]->{installed}           = 0;
+			$amazon_ses_has_needed_cpan_modules = 0;
+		}
+	}
+#	try {
+#		require Some::Unknown::Module;
+#	} catch { 
+#		$amazon_ses_required_modules->[7]->{installed}           = 0;
+#		$amazon_ses_has_needed_cpan_modules = 0; 
+#	};
+	
+	
+	
+	return screen(
+		{
+			-screen => 'amazon_ses_requirements_widget.tmpl',
+#			-expr   => 1, 
+			-vars   => {
+				amazon_ses_has_needed_cpan_modules  => $amazon_ses_has_needed_cpan_modules, 
+				amazon_ses_required_modules         => $amazon_ses_required_modules, 
+			}
+		}
+	);
+	
 }
 
 
@@ -1396,7 +1527,7 @@ paramater, like so:
                    ); 
  
  use DADA::Template::Widgets; 
- print DADA::Template::Wigets::screen(
+ print DADA::Template::Widgets::screen(
  
            { 
                 -subscriber_vars => $subscriber,
@@ -1432,7 +1563,7 @@ or:
                      ); 
  
  use DADA::Template::Widgets; 
- print DADA::Template::Wigets::screen(
+ print DADA::Template::Widgets::screen(
  
            { 
                 -list_settings_vars => $list_settings,

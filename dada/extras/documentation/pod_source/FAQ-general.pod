@@ -442,8 +442,7 @@ Installing these modules may be tricky for the uninitiated. We'll go over a few 
 
 =head3 The cpan Shell
  
-The, C<cpan> shell is how one usually installs CPAN modules. You'll need root access to your hosting account, 
-usually, but you can install CPAN modules in your home directory. This topic is well over the 
+The, C<cpan> shell is how one usually installs CPAN modules. You'll need root access to your hosting account, usually, but you can install CPAN modules in your home directory. This topic is well over the 
 forté of this particular FAQ, but do see: 
 
 L<http://perl-begin.org/topics/cpan/life-with-cpan/non-root/> 
@@ -456,39 +455,11 @@ So, say you need a Perl CPAN module that Dada Mail wants to use, like C<Gravatar
 
  cpan install Gravatar::URL
 
-If you do have your own, private CPAN library, you'll have to tweak Dada Mail to let it know where it is. Say you have your local CPAN library at, 
-
- /home/youraccount/perllib
-
-In Dada Mail's C<mail.cgi> file, you'd have to find the, C<use lib> lines: 
-
- use lib qw(		
-	./ 
-	./DADA 
-	./DADA/perllib
-	../../../perl
-	../../../perllib
- );
-
-And just add your new CPAN library: 
-
- use lib qw(		
-	./ 
-	./DADA 
-	./DADA/perllib
-	../../../perl
-	../../../perllib
-    /home/youraccount/perllib
- );
-
 =head3 Cpanel's Perl Module Installer
 
 If all this talk of shells and commands and CPANs has you confused, you're in luck, if you have a hosting account that's powered by Cpanel. 
 
-Your Cpanel may have a Perl Module Installer - in your cPanel, look for, I<Perl Module Installer>. Once in this screen, just enter the module you'd like to install, like, C<Gravatar::URL>. and it'll handle on the hard stuff for you, similar to how its down above. 
-
-You still have to tweak your C<use lib> line in the C<mail.cgi> directory - so be aware of that. 
-
+Your Cpanel may have a Perl Module Installer - in your cPanel look for, I<Perl Module Installer>. Once in this screen, just enter the module you'd like to install, like, C<Gravatar::URL>. and it'll handle on the hard stuff for you, similar to how its down above. 
 
 =head1 The List Confirmation Process
 

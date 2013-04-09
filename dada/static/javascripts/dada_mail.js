@@ -17,6 +17,7 @@ $(document).ready(function() {
 	if ($("#navcontainer").length) {
 		admin_menu_sending_monitor_notification();
 		admin_menu_subscriber_count_notification();
+		admin_menu_archive_count_notification();
 	}
 
 	//Mail Sending >> Send a Message 
@@ -338,6 +339,10 @@ $(document).ready(function() {
 		$("body").on("click", '.test_bounce_handler_pop3_connection', function(event) {
 			installer_test_pop3_connection();
 		});
+		$("body").on("click", '.test_amazon_ses_configuration', function(event) {
+			test_amazon_ses_configuration();
+		});
+		
 
 
 		$("body").on('keyup', "#dada_root_pass_again", function(event) {
@@ -353,11 +358,19 @@ $(document).ready(function() {
 		$("body").on('click', "#install_wysiwyg_editors", function(event) {
 			installer_toggle_wysiwyg_editors_options()
 		});
+		$("body").on('click', "#configure_amazon_ses", function(event) {
+			installer_toggle_configure_amazon_ses_options();
+		});
+		
 		installer_dada_root_pass_options();
 		installer_toggleSQL_options();
 		installer_toggle_dada_files_dirOptions();
 		installer_togger_bounce_handler_config();
 		installer_toggle_wysiwyg_editors_options();
+		installer_toggle_configure_amazon_ses_options(); 
+		
+		
+		
 
 		$("#dada_files_help").hide();
 		$("#program_url_help").hide();
@@ -369,6 +382,7 @@ $(document).ready(function() {
 		$("#wysiwyg_editor_help").hide();
 		$("#test_sql_connection_results").hide();
 		$("#test_bounce_handler_pop3_connection_results").hide();
+		$("#test_amazon_ses_configuration_results").hide();
 
 
 	}
@@ -576,6 +590,9 @@ function admin_menu_sending_monitor_notification() {
 
 function admin_menu_subscriber_count_notification() {
 	admin_menu_notification('admin_menu_subscriber_count_notification', 'admin_menu_view_list');
+}
+function admin_menu_archive_count_notification() { 
+	admin_menu_notification('admin_menu_archive_count_notification', 'admin_menu_view_archive');	
 }
 
 function admin_menu_notification(flavor, target_class) {
@@ -1082,22 +1099,21 @@ function test_sending_preferences() {
 
 
 function amazon_verify_email() {
-	$("#amazon_ses_verify_email_results").hide('fade');
-	$("#amazon_ses_verify_email_loading").html('<p class="alert">Loading...</p>');
-	var request = $.ajax({
-		url: $("#s_program_url").val(),
-		type: "POST",
-		cache: false,
+	
+	$.colorbox({
+		top: 0,
+		fixed: true,
+		initialHeight: 50,
+		maxHeight: 480,
+		maxWidth: 649,
+		opacity: .50,
+		href: $("#s_program_url").val(),
 		data: {
 			f: 'amazon_ses_verify_email',
 			amazon_ses_verify_email: $("#amazon_ses_verify_email").val()
-		},
-		dataType: "html"
+		}
 	});
-	request.done(function(content) {
-		$("#amazon_ses_verify_email_results").html(content).show('fade');
-		$("#amazon_ses_verify_email_loading").html('<p class="alert">&nbsp;</p>');
-	});
+	
 }
 
 
@@ -1231,6 +1247,33 @@ function installer_test_pop3_connection() {
 	});
 }
 
+
+
+function test_amazon_ses_configuration() {
+	var target_div = 'test_amazon_ses_configuration_results';
+	$("#" + target_div).html('<p class="alert">Loading...</p>');
+	if ($("#" + target_div).is(':hidden')) {
+		$("#" + target_div).show();
+	}
+
+	var request = $.ajax({
+		url: $("#self_url").val(),
+		type: "POST",
+		cache: false,
+		data: {
+			f: 'cgi_test_amazon_ses_configuration',
+			amazon_ses_AWSAccessKeyId: $("#amazon_ses_AWSAccessKeyId").val(), 
+			amazon_ses_AWSSecretKey: $("#amazon_ses_AWSSecretKey").val(), 	
+		},
+		dataType: "html"
+	});
+	request.done(function(content) {
+		$("#" + target_div).html(content);
+	});
+}
+
+
+
 function installer_dada_root_pass_options() {
 	if ($("#dada_pass_use_orig").prop("checked") == true) {
 		if ($('#dada_root_pass_fields').is(':visible')) {
@@ -1295,6 +1338,18 @@ function installer_toggle_wysiwyg_editors_options() {
 			$('#install_wysiwyg_editors_options').hide('blind');
 		}
 	}
+}
+
+function installer_toggle_configure_amazon_ses_options() { 
+	if ($("#configure_amazon_ses").prop("checked") == true) {
+		if ($('#amazon_ses_options').is(':hidden')) {
+			$('#amazon_ses_options').show('blind');
+		}
+	} else {
+		if ($('#amazon_ses_options').is(':visible')) {
+			$('#amazon_ses_options').hide('blind');
+		}
+	}	
 }
 
 function installer_move_installer_dir() {

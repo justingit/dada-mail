@@ -1301,12 +1301,13 @@ sub create_mass_sending_file {
 					# sent by the List Owner, not the user. 
 					my $token = $ct->save(
 						{
-							-list  => $field_ref->{list}, 
 							-email => $field_ref->{email},
 							-data  => {
+								list        => $field_ref->{list}, 
 								flavor      => 'sub_confirm', 
 								type        => 'list', 
-								remote_addr => $ENV{REMOTE_ADDR},  
+								remote_addr => $ENV{REMOTE_ADDR},
+								invite      => 1,  
 							}
 						}
 					);
