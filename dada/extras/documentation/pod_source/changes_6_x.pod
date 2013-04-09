@@ -1,8 +1,8 @@
-=head1 6.3.0 Beta 1
+=head1 6.3.0
 
 =head2 Summary 6.3.0 
 
-v6.3.0 of Dada Mail comes with enhancements to Dada Mail's Amazon SES sending support, Gravatar support and tracking email addresses for message opens/clickthroughs. 
+v6.3.0 of Dada Mail comes with enhancements to Dada Mail's Amazon SES sending support, Gravatar support and support for tracking email addresses on message opens/clickthroughs. 
 
 =head2 Features 6.3.0
 
@@ -22,9 +22,9 @@ L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>
 
 =head3 Email Tracking for Opens/Clickthroughs
 
-Dada Mail can now be set to optionally track email addresses, when tracking Clickthroughs and Message Opens. These address can currently be exported per mass mailing. This feature is somewhat experimental, as features that can stem from this new ability can be vastly expanded from what Dada Mail currently has. 
+Dada Mail can now be set to optionally track email addresses, when tracking Clickthroughs and Message Opens. These address can currently be exported per mass mailing. This feature is somewhat experimental, as features that can stem from this new ability will be vastly expanded on in the future. We'd like to get the feature out there, in it's current state, to start gathering information to be used for analytic support. 
 
-This feature also requires changes to Dada Mail's SQL schema, which should happen automatically, during the first run of Dada Mail, after an upgrade. One can perform these changes manually, by issuing the following SQL: 
+This feature also requires changes to Dada Mail's SQL schema, which should happen automatically during the first run of Dada Mail, right after an upgrade. One can perform these changes manually, by issuing the following SQL: 
 
 	ALTER TABLE dada_clickthrough_url_log ADD email VARCHAR(80);
 	ALTER TABLE dada_mass_mailing_event_log ADD email VARCHAR(80);
@@ -39,7 +39,6 @@ The list control panel's admin menu will now list how many archives you have, un
 
 Gravatars ( https://en.gravatar.com/ ) now show up in the List screen, the List's Archive indexes, and in the B<blog_index.cgi> plugin. 
 
-
 =head3 Password Protect Directories Plugin: Works with already-exisiting .htaccess
 
 In past versions, the Password Protect Directories Plugin would write (and if there was an already existing .htaccess file, Write I<Over>) its own C<.htaccess> file. This does not play nicely with anything else that may need to use an .htaccess file. 
@@ -50,13 +49,13 @@ It's advised, that if you upgrade to first disable the plugin's cronjob, remove 
 
 =head3 Geo IP databases Updated
 
-Dada Mail has updated it's Geo IP databases to the newest, April release. 
+Dada Mail has updated it's Geo IP databases to the newest, April 2013 release. 
 
 I<This product includes GeoLite data created by MaxMind, available from L<http://www.maxmind.com>.>
 
 =head3 blog_index.cgi extension: cached screens
 
-The HTML/Javascript that the C<blog_index.cgi> extension makes is now cached, helping relieve unneeded load on your backend. 
+The HTML/Javascript data that the C<blog_index.cgi> extension makes are now cached, helping relieve unneeded load on your backend. 
 
 =head1 6.2.2
 
