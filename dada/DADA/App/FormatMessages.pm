@@ -424,7 +424,17 @@ sub _format_text {
 			if($content){ # do I need this?
 				
 				if($entity->head->mime_type eq 'text/html') { 
-						
+
+					if($self->{ls}->param('mass_mailing_block_css_to_inline_css') == 1){ 
+						try {
+							require DADA::App::FormatMessages::Filters::CSSInliner; 
+							my $css_inliner = DADA::App::FormatMessages::Filters::CSSInliner->new; 
+							$content = $css_inliner->filter({-html_msg => $content});
+						} catch {
+							carp "Problems with filter: $_";
+						};
+					}
+											
 					if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1) { 
 						try {
 							require DADA::App::FormatMessages::Filters::InlineEmbeddedImages; 

@@ -2435,6 +2435,7 @@ EOF
 
 	# Mass Mailing Options
 	mass_mailing_convert_plaintext_to_html => 0, 
+	mass_mailing_block_css_to_inline_css   => 0, 
 	
     #quotas
     use_subscription_quota => 0,

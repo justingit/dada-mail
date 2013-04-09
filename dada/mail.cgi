@@ -1792,6 +1792,15 @@ sub mass_mailing_options {
 	$list = $admin_list; 
 
 	if(!$process) { 
+		
+		my $can_use_css_inliner = 1; 
+		try { 
+			require CSS::Inliner; 
+		}
+		catch { 
+			$can_use_css_inliner = 0;
+		};
+		
 		require DADA::Template::Widgets;
 		my  $scrn =  DADA::Template::Widgets::wrap_screen(
 			{
@@ -1804,6 +1813,7 @@ sub mass_mailing_options {
 				},
 				-vars   => {
 					done => $done,
+					can_use_css_inliner => $can_use_css_inliner, 
 				},
 				-list_settings_vars_param => {
 					-list    => $list,
@@ -1821,6 +1831,7 @@ sub mass_mailing_options {
                 -associate => $q,
                 -settings  => {
 					mass_mailing_convert_plaintext_to_html => 0, 
+					mass_mailing_block_css_to_inline_css   => 0, 
 				}
 			}
 		); 

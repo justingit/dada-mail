@@ -30,6 +30,25 @@
 </td>	
 </tr> 
 
+<tr> 
+<td width="20">
+	<input type="checkbox" name="mass_mailing_block_css_to_inline_css" id="mass_mailing_block_css_to_inline_css" value="1" <!-- tmpl_if list_settings.mass_mailing_block_css_to_inline_css -->checked="checked"<!-- /tmpl_if --> />
+</td>	
+<td with="20">
+	<label for="mass_mailing_block_css_to_inline_css" <!-- tmpl_unless can_use_css_inliner -->class="disabled"<!-- /tmpl_unless -->>
+		Convert CSS &lt;style&gt; blocks to inline styles in HTML messages <em>(Experimental)</em>
+	</label> <br /> 
+	Inline styles are more widely supported in various mail readers.
+	
+	<!-- tmpl_unless can_use_css_inliner --> 
+		<div class="badweatherbox">
+			<p><strong>Disabled</strong>. The Perl CPAN module, <strong>CSS::Inliner</strong> will need to be installed.</p>
+		</div> 
+	<!-- /tmpl_unless -->
+</td>	
+</tr>
+
+
 </table> 
 
 </fieldset> 
