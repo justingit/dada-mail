@@ -91,7 +91,7 @@ sub token {
 			if $t; 
 			
 		my $data = $ct->fetch($token); 
-		if(!exists($data->{data}->{invite}) { 
+		if(!exists($data->{data}->{invite})) { 
 			$data->{data}->{invite} = 0; 
 		}
 		if(exists($data->{data}->{remote_addr})){ 
