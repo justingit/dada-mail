@@ -1,7 +1,7 @@
 # Begin <!-- tmpl_var PROGRAM_NAME --> Password Protect Directives
 
 AuthType Basic
-AuthName <!-- tmpl_var name -->
+AuthName "<!-- tmpl_var name -->"
 AuthUserFile <!-- tmpl_var path -->/.htpasswd
 Require valid-user
 
@@ -11,7 +11,7 @@ ErrorDocument 401 <!-- tmpl_var custom_error_page -->
 
 <!-- tmpl_else -->
 
-ErrorDocument 401 dada/mail.cgi?f=profile&error_profile_login=1
+ErrorDocument 401 <!-- tmpl_var PROGRAM_URL -->?f=profile&error_profile_login=1
 
 <!-- /tmpl_if -->
 
