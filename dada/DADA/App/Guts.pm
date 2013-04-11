@@ -2012,7 +2012,7 @@ sub SQL_check_setup {
 		}
 	}
 	
-	if($need_to_create > 1) { 
+	if($need_to_create >= 1) { 
 		
 		my $r = create_probable_missing_tables(\%tables_to_create); 
 		if( $r == 0){ 
