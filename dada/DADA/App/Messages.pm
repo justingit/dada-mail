@@ -306,6 +306,10 @@ sub send_subscription_request_approved_message {
 	}
 	my $li    = $ls->get; 
 
+	if(!exists($args->{-vars})){ 
+		$args->{-vars} = {};
+	}
+
 	send_generic_email (
 		{
 			-list         => $args->{-list}, 
@@ -343,6 +347,10 @@ sub send_subscription_request_denied_message {
 		$ls = $args->{-ls_obj};
 	}
 	my $li    = $ls->get; 
+
+	if(!exists($args->{-vars})){ 
+		$args->{-vars} = {};
+	}
 
 	send_generic_email (
 		{
