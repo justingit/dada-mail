@@ -725,6 +725,12 @@ sub grab_former_config_vals {
 	elsif($BootstrapConfig::BACKEND_DB_TYPE eq 'Default') { 
 		$local_q->param('backend', 'default'); 
 	}
+	elsif(
+			$BootstrapConfig::SUBSCRIBER_DB_TYPE eq 'Default'
+		 || $BootstrapConfig::SETTINGS_DB_TYPE   eq 'Default' 
+	) { 
+		$local_q->param('backend', 'default'); 
+	}
 	
 	# Plugins/Extensions
 	for my $plugin_ext(qw(
