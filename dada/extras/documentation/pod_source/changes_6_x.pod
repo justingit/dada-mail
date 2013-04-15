@@ -1,3 +1,23 @@
+=head1 6.3.1
+
+=head2 Summary 6.3.1
+
+This release fixes bugs found in the v6.3.0 version of Dada Mail. It's a suggested upgrade for anyone running v6.3.0 or lower.
+
+=head2 Bugfixes 6.3.1
+
+=head3 Sending Subscription Approval/Denial messages causes server error
+
+L<https://github.com/justingit/dada-mail/issues/370>
+
+=head3 SQL Table schema checker looks for wrong # of needed tables (off by one, problem)
+
+L<https://github.com/justingit/dada-mail/issues/369>
+
+=head3 Password Protect Directories: "AuthName" in .htaccess file left unquoted
+
+L<https://github.com/justingit/dada-mail/issues/368>
+
 =head1 6.3.0
 
 =head2 Summary 6.3.0 
