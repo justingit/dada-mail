@@ -72,14 +72,12 @@ allow you to continue, unless this directory is successfully found.
 
 Two new options are presented to you in the installer, if you are B<upgrading>. 
 
-=over
-
-=item * Create a new .dada_config file
+=head3 Create a new .dada_config file
 
 Select this option if you are B<upgrading between major versions> of Dada Mail. For example, version B<5>.0.0 to version B<6>.0.0 or, 
 from version 6.B<0>.0 to version 6.B<2>.0. 
 
-=head3 Why Create a new .dada_config file? 
+=head4 Why Create a new .dada_config file? 
 
 Changes are periodically made to Dada Mail's default configuration and it's a good idea to have the installer create a new C<.dada_config> file to 
 take advantage of any new enhancements and also to keep your C<.dada_config> file current and compatible with your new copy of 
@@ -89,13 +87,12 @@ The Installer will read your old C<.dada_config> file and pre-fill in the config
 
 If you have manually editing the C<.dada_config> file, note that the installer does not support moving over any manual edits when you upgrade. You will need to manually copy over these configurations after the upgrade is completed. The Installer will make a backup of your previous C<.dada_config> file, to make this easy to do. 
 
-=item * Use the current .dada_config file
+=head3  Use the current .dada_config file
 
 Select this option if you are upgrading between minor versions of Dada Mail. For example, version 5.0.B<0> to 5.0.B<1>. 
 
 The rest of the installer form will be hidden, as no extra configuration is needed. 
 
-=back
 
 =head2 Changelog 
 
