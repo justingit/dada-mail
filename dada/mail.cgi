@@ -7843,19 +7843,20 @@ sub text_list {
 
     my $email;
 
-	my $header  = 'Content-Disposition: attachement; filename="' . $list . '-' . $type . '.csv"' .  "\n"; 
-	   $header .= 'Content-type: text/csv' . "\n\n"; 
-		
+	my $header = $q->header(
+		-attachment => $list . '-' . $type . '.csv',
+		-type       => 'text/csv', 
+	);
 	print $header; 
-		
-	    $lh->print_out_list(
-			{ 
-				-type      => $type,
-				-query     => $query, 
-				-order_by  => $order_by, 
-				-order_dir => $order_dir, 
-			}
-		 );
+	
+    $lh->print_out_list(
+		{ 
+			-type      => $type,
+			-query     => $query, 
+			-order_by  => $order_by, 
+			-order_dir => $order_dir, 
+		}
+	 );
 }
 
 
