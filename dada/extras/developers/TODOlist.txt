@@ -12,8 +12,21 @@ Key:
 
 =======
 
-[ ] Perhaps another email protection scheme - just break the email address. 
+[ ] Time to simplify the unsubscription system.                  
 
+[ ] Perhaps another email protection scheme - just break the email address. 
+	[ ] Also: The act says, “Recipients of commercial electronic mail have a right to decline to receive additional commercial electronic mail from the same source.”
+	So, unsub link is one-click w/embedded address, but encoded somehow. 
+		Encoding broken? Give manual instructions
+		Put in one-step unsub form, with partially decoded address (MD5?), asking you to re-enter your address. 
+			Does not match up? Show an error message, describing what may be going on. 
+				Constant Contact: 
+					Oops. The email address you entered doesn’t match.
+					Don’t remember signing up? If a friend forwarded you the email from The John D'oh Corporation, you were never on the mailing list. 
+					If you no longer wish to receive these emails, make sure to tell your friend to stop forwarding them to you.
+	
+	
+	
 [x] No, the old style confirmation links won't work. I wanted to truly get this upgrade out asap - so I had to make decisions on what exactly was critical to push out. 
 	Old Style Confirmation Links now have a realistic fallback
 
