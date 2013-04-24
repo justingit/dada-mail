@@ -696,63 +696,62 @@ sub unique_and_dupe {
 }
 
 
-sub get_all_mids { 
+sub get_all_mids {
 
-	my $self = shift; 
-	my ($args) = @_;
-	
-	if(!exists($args->{-page})){ 
-		$args->{-page} = 1; 
-	}
-	if(!exists($args->{-entries})){ 
-		$args->{-entries} = 10; 
-	}
-	
-	# postgres: $query .= ' SELECT DISTINCT ON(' . $subscriber_table . '.email) ';
-	# This query could probably be made into one, if I could simple use a join, or something,
+    my $self = shift;
+    my ($args) = @_;
 
-	# DEV: There's also this idea: 
-	# SELECT * FROM table ORDER BY rec_date LIMIT ?, ?} #
-	#     q{SELECT * FROM table ORDER BY rec_date LIMIT ?, ?}
-	
-	my $msg_id_query1 = ''; 
-	if($self->{ls}->param('tracker_clean_up_reports') == 1){ 
-						# SELECT msg_id FROM dada_mass_mailing_event_log WHERE list = 'dada_announce' AND event = 'num_subscribers'; 
-      $msg_id_query1 = 'SELECT msg_id FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND event = \'num_subscribers\' GROUP BY msg_id ORDER BY msg_id DESC;';
-	}
-	else { 
-						 
-		$msg_id_query1 = 'SELECT msg_id FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? GROUP BY msg_id ORDER BY msg_id DESC;';
-	}
- #   my $msg_id_query2 =
- #     'SELECT msg_id FROM dada_clickthrough_url_log WHERE list = ? GROUP BY msg_id  ORDER BY msg_id DESC;';
+    if ( !exists( $args->{-page} ) ) {
+        $args->{-page} = 1;
+    }
+    if ( !exists( $args->{-entries} ) ) {
+        $args->{-entries} = 10;
+    }
 
-    my $msg_id1 = $self->{dbh}->selectcol_arrayref($msg_id_query1, {}, ($self->{name})); #($statement, \%attr, @bind_values);
- #   my $msg_id2 = $self->{dbh}->selectcol_arrayref($msg_id_query2, {}, ($self->{name}));
- #   push( @$msg_id1, @$msg_id2 );
- #   $msg_id1 = $self->unique_and_dupe($msg_id1);
+# postgres: $query .= ' SELECT DISTINCT ON(' . $subscriber_table . '.email) ';
+# This query could probably be made into one, if I could simple use a join, or something
+# DEV: There's also this idea:
+# SELECT * FROM table ORDER BY rec_date LIMIT ?, ?} #
+#     q{SELECT * FROM table ORDER BY rec_date LIMIT ?, ?}
 
-#	use Data::Dumper;
-#	die Data::Dumper::Dumper($msg_id1); 
-	my $total = 0; 
-	#if(exists $msg_id1->[0]){ 
-		$total = scalar @$msg_id1; 
-	#}
-	if($total == 0){ 
-		return ($total, []);
-	}	
+    my $query = '';
+    if ( $self->{ls}->param('tracker_clean_up_reports') == 1 ) {
 
-	my $begin = ($args->{-entries} - 1) * ($args->{-page} - 1);
-	my $end   = $begin + ($args->{-entries} - 1);
+        $query =
+            'SELECT msg_id FROM '
+          . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+          . ' WHERE list = ? AND event = \'num_subscribers\' GROUP BY msg_id ORDER BY msg_id DESC;';
+    }
+    else {
 
-	if($end > $total - 1){ 
-		$end = $total -1; 
-	}
+        $query =
+            'SELECT msg_id FROM '
+          . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+          . ' WHERE list = ? GROUP BY msg_id ORDER BY msg_id DESC;';
+    }
 
-	@$msg_id1 = @$msg_id1[$begin..$end];
-	
-	return ($total, $msg_id1);
+    my $msg_id1 =
+      $self->{dbh}->selectcol_arrayref( $query, {}, ( $self->{name} ) );
 
+    warn 'Query: ' . $query
+      if $t;
+
+    my $total = 0;
+    $total = scalar @$msg_id1;
+    if ( $total == 0 ) {
+        return ( $total, [] );
+    }
+
+    my $begin = ( $args->{-entries} - 1 ) * ( $args->{-page} - 1 );
+    my $end = $begin + ( $args->{-entries} - 1 );
+
+    if ( $end > $total - 1 ) {
+        $end = $total - 1;
+    }
+
+    @$msg_id1 = @$msg_id1[ $begin .. $end ];
+
+    return ( $total, $msg_id1 );
 
 }
 
@@ -761,8 +760,8 @@ sub get_all_mids {
 
 sub report_by_message_index {
 
-	my $st = time; 
-	
+	#my $t = time; 
+
     my $self          = shift;
 	my ($args)        = @_; 
 	my $sorted_report = [];
@@ -796,28 +795,19 @@ sub report_by_message_index {
 	          $self->{dbh}
 	          ->selectcol_arrayref( $clickthrough_count_query, {}, $self->{name}, $msg_id )->[0];
 
-	        my $misc_count_query =
-	'SELECT COUNT(msg_id) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND msg_id = ? AND event = ?';
-
-		for(
-			qw(
-				open
-				soft_bounce
-				hard_bounce
-				forward_to_a_friend
-				view_archive
-			)
-		){ 
-			$report->{$msg_id}->{$_} =
-	          $self->{dbh}
-	          ->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $msg_id, $_ )->[0];
+		
+		my $basic_event_counts = $self->msg_basic_event_count($msg_id); 
+		for(keys %$basic_event_counts) { 
+			$report->{$msg_id}->{$_} = $basic_event_counts->{$_};
 		}
-
+		
 	        my $num_sub_query =
 	'SELECT details FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND msg_id = ? AND event = ?';
 
+			#my $nst = time; 
 	        $report->{$msg_id}->{num_subscribers} = $self->{dbh}->selectcol_arrayref( $num_sub_query, { MaxRows => 1 }, $self->{name}, $msg_id, 'num_subscribers' )->[0];
-
+			#warn 'total num_sub time:' . (time - $nst); 
+			
 	    }
 
 	    require DADA::MailingList::Archives;
@@ -839,7 +829,37 @@ sub report_by_message_index {
 
 	        push( @$sorted_report, $report->{$_} );
 	    }
+	
+	#warn "total report_by_message_index time:" . (time - $t); 
+	
+	
     return $sorted_report;
+}
+
+sub msg_basic_event_count { 
+	
+	my $self    = shift; 
+	my $msg_id = shift; 
+	my $basic_events = {};
+    my %ok_events = (
+        open                => 1,
+        soft_bounce         => 1,
+        hard_bounce         => 1,
+        forward_to_a_friend => 1,
+        view_archive        => 1,
+    );
+	
+	my $basic_count_query = 'SELECT msg_id, event, COUNT(*) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? GROUP BY msg_id, event';
+	my $sth              = $self->{dbh}->prepare($basic_count_query);
+       $sth->execute( $self->{name}, $msg_id);
+
+    while ( my ( $m, $e, $c ) = $sth->fetchrow_array ) {
+		if($ok_events{$e}){ 
+			$basic_events->{$e} = $c; 
+		}
+	}
+	
+	return $basic_events;
 }
 
 sub report_by_message {
@@ -859,26 +879,11 @@ sub report_by_message {
       $self->{dbh}->selectcol_arrayref( $num_sub_query, { MaxRows => 1 },
         $self->{name}, $mid, 'num_subscribers' )->[0];
 
-    my $misc_count_query =
-        'SELECT COUNT(msg_id) FROM '
-      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
-      . ' WHERE list = ? AND msg_id = ? AND event = ?';
+	my $basic_event_counts = $self->msg_basic_event_count($mid); 
+	for(keys %$basic_event_counts) { 
+		$report->{$_} = $basic_event_counts->{$_};
+	}
 
-    for (
-        qw(
-        open
-        soft_bounce
-        hard_bounce
-        forward_to_a_friend
-        view_archive
-        )
-      )
-    {
-        $report->{$_} =
-          $self->{dbh}
-          ->selectcol_arrayref( $misc_count_query, {}, $self->{name}, $mid,
-            $_ )->[0];
-    }
 
     my $url_clickthroughs_query =
         'SELECT url, COUNT(url) AS count FROM '
