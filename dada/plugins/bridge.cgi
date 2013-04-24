@@ -998,48 +998,32 @@ sub cl_main {
         	inject_msg();
 		} catch { 
 			carp "Problems with injecting message: $_"; 
-		}
+		};
     }
     elsif ($test) {
-
         $verbose = 1;
-
         if ( $test eq 'pop3' ) {
-
             test_pop3();
-
         }
         else {
-
             print "I don't know what you want to test!\n\n";
             help();
-
         }
-
     }
     elsif ($help) {
-
         help();
-
     }
     else {
-
         start();
-
         require DADA::Mail::MailOut;
-
         if ($list) {
-
             DADA::Mail::MailOut::monitor_mailout(
                 { -verbose => 0, -list => $list } );
         }
         else {
-
             DADA::Mail::MailOut::monitor_mailout( { -verbose => 0 } );
-
         }
     }
-
 }
 
 sub init { }
