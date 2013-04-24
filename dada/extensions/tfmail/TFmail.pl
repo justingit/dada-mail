@@ -14,7 +14,7 @@ use lib qw(
 
 
 use DADA::Config; 
-use DADA::MailingList::Subscribers; 
+use Try::Tiny; 
 
 #/Dada-ized
 
@@ -842,47 +842,52 @@ sub send_confirmation_email
 
 # Dada-ized
 
-sub dada_mail_subscribe { 
-	
-	my ($treq, $confto) = @_;
+sub dada_mail_subscribe {
 
-    my $dm_email                   = $treq->param($treq->config('email_input', ''));
-    
-    my $list                       = $treq->config('dada_mail_list', '');
-    
-    my $dada_mail_subscribe_email  = $treq->param('dada_mail_subscribe_email');
+    my ( $treq, $confto ) = @_;
+    my $dm_email = $treq->param( $treq->config( 'email_input', '' ) );
+    my $list = $treq->config( 'dada_mail_list', '' );
+    my $dada_mail_subscribe_email = $treq->param('dada_mail_subscribe_email');
 
-	if((defined($list)) && (defined($dm_email))){	
-		my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
-		if(($dada_mail_subscribe_email eq "1") || ($dada_mail_subscribe_email eq "yes")){ 
-			my ($status, $errors) = $lh->subscription_check({-email => $dm_email}); 
-			if($status == 1){ 
-			
-                require CGI; 
-                my $local_q = new CGI; 
-                   $local_q->delete_all();
-                   $local_q->param('list', $list); 
-                   $local_q->param('email', $dm_email);
-                   $local_q->param('f', 's'); 
-                   
-                foreach(@{$lh->subscriber_fields}){ 
-                    $local_q->param($_, $treq->param($_)); 
-                }
-                
-                require   DADA::App::Subscriptions; 
-                my $das = DADA::App::Subscriptions->new; 
-                
-                $das->subscribe(
-                     {
-                        
-                        -html_output => 0,
-                        -cgi_obj     => $local_q, 
-                        
-                     }
-                ); 
-			}
-		}
-	}
+    if ( ( defined($list) ) && ( defined($dm_email) ) ) {
+		try { 
+			require DADA::MailingList::Subscribers; 
+	        my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+	        if (   ( $dada_mail_subscribe_email eq "1" )
+	            || ( $dada_mail_subscribe_email eq "yes" ) )
+	        {
+	            my ( $status, $errors ) =
+	              $lh->subscription_check( { -email => $dm_email } );
+	            if ( $status == 1 ) {
+
+	                require CGI;
+	                my $local_q = new CGI;
+	                $local_q->delete_all();
+	                $local_q->param( 'list',  $list );
+	                $local_q->param( 'email', $dm_email );
+	                $local_q->param( 'f',     's' );
+
+	                foreach ( @{ $lh->subscriber_fields } ) {
+	                    $local_q->param( $_, $treq->param($_) );
+	                }
+
+	                require DADA::App::Subscriptions;
+	                my $das = DADA::App::Subscriptions->new;
+
+	                $das->subscribe(
+	                    {
+
+	                        -html_output => 0,
+	                        -cgi_obj     => $local_q,
+
+	                    }
+	                );
+	            }
+	        }
+	    }
+	} catch { 
+		warn "Problems with Dada Mail Subscription: '$_'"; 
+	};
 }
 
 # /Dada-ized
