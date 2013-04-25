@@ -22,7 +22,7 @@ You can reconfigure your Dada Mail to use the SQL backend by using the Dada Mail
 
 =head2 Reenable the Dada Mail Installer
 
-Renable the Dada Mail installer by moving the I<dada/installer> directory back into place - it may have been renamed to, C<installer-disabled>(followed by a random string of letters/numbers) and changing the permissions of the, I<dada/installer/installer.cgi> script to, C<755>. Visit the, C<install.cgi> script again in your web browser and follow the directions to install Dada Mail with one of the SQL backends: 
+Renable the Dada Mail installer by moving the I<dada/installer> directory back into place - it may have been renamed to, C<installer-disabled>(followed by a random string of letters/numbers) and changing the permissions of the, I<dada/installer/install.cgi> script to, C<755>. Visit the, C<install.cgi> script again in your web browser and follow the directions to install Dada Mail with one of the SQL backends: 
 
 L<http://dadamailproject.com/d/install_dada_mail.pod>
 

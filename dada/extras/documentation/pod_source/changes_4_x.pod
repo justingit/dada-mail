@@ -1688,7 +1688,7 @@ L<http://dadamailproject.com/support/documentation/upgrade_dada_mail.pod.html>
 The installar script may also be run via the command line - instructions can be 
 found on how to use it, by invoking the script with the, C<--help> flag, 
 
- shell>./installer.cgi --help
+ shell>./install.cgi --help
 
 =head4 Installation Terminology Changes
 
