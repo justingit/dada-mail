@@ -445,6 +445,7 @@ sub SQL_subscriber_profile_join_statement {
 
             my @terms = split(',', $args->{-partial_listing}->{$field}->{$search_type} );
             foreach my $term(@terms) {
+				$term = strip($term); 
                 push(
                     @s_snippets,
                     $table . '.'
@@ -530,13 +531,12 @@ sub SQL_subscriber_profile_join_statement {
 		$query .= ' LIMIT '; 
 		$query .=  $args->{'-length'};
 		$query .= ' OFFSET ';
-		$query .= ($args->{ -start } * $args->{ '-length' });
-		
+		$query .= ($args->{ -start } * $args->{ '-length' });		
 	}
 	
-    warn 'QUERY: ' . $query;
-#      if $t;
-	
+    warn 'QUERY: ' . $query
+      if $t;
+
     return $query;
 }
 
