@@ -215,7 +215,7 @@ sub subscribe {
 					if($ls->param('use_alt_url_sub_confirm_failed') != 1) { 
 						# Test sub-subscribe-redirect-error_no_email
 						# This is just so we don't use the actual error screen.
-				  		my $r = $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '?f=list&list=' . $list . '&error_no_email=1&set_flavor=s'); 
+				  		my $r = $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '?f=list&list=' . $list . '&error_no_email=1'); 
 						$self->test ? return $r : print $fh safely_encode(  $r) and return; 
 					}
 		        }
@@ -542,7 +542,7 @@ sub confirm {
 				if($ls->param('use_alt_url_sub_failed') != 1) { 
 	            	warn '>>>> >>>> no email passed. Redirecting to list screen'
 		                if $t; 
-		            my $r = $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '?f=list&list=' . $list . '&error_no_email=1&set_flavor=s'); 
+		            my $r = $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '?f=list&list=' . $list . '&error_no_email=1'); 
 		            $self->test ? return $r : print $fh safely_encode(  $r) and return;
 				}	
 			}
@@ -1040,141 +1040,101 @@ sub confirm {
     }
 }
 
+sub unsubscribe {
 
+    my $self = shift;
+    my ($args) = @_;
 
+    croak if !$args->{-cgi_obj};
 
-sub unsubscribe { 
-
-    my $self = shift; 
-    my ($args) = @_; 
-    
-	warn 'Starting Unsubscription.' 
-        if $t;
-
-    require DADA::Template::HTML;
-    
-    croak if ! $args->{-cgi_obj}; 
-    
-    if(! exists($args->{-html_output})){ 
-        $args->{-html_output} = 1; 
+    if ( !exists( $args->{-html_output} ) ) {
+        $args->{-html_output} = 1;
     }
-        
-    if(! exists($args->{-fh})){ 
+    if ( !exists( $args->{-fh} ) ) {
         $args->{-fh} = \*STDOUT;
     }
-	# do not like this. 
-	if(! exists($args->{-no_auto_config})){ 
-		$args->{-no_auto_config} = 0; 
-	}
-    my $fh = $args->{-fh}; 
-    
-    
-    
-    my $q     = $args->{-cgi_obj}; 
-    my $list  = xss_filter($q->param('list')); 
-    my $email = lc_email( strip ( xss_filter( $q->param( 'email' ) ) ) ); 
-       
-    
-    # If the list doesn't exist, don't go through the process, 
-    # Just go to the default page, 
-    # Set the flavor to, "unsubscribe"
-    # And give a word out that the list ain't there: 
-    
-    if($args->{-html_output} != 0){ 
-    
-        if(check_if_list_exists(-List => $list) == 0){     
-           my $r = $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '?error_invalid_list=1&set_flavor=u'); 
-           $self->test ? return $r : print $fh safely_encode(  $r) and return;       
-        }
-    
-        # If the list is there, 
-        # but there's no email already filled out, 
-        # state that an email needs to be filled out
-        # and show the list page. 
-        
-        if (!$email){                                    
-			warn "no email."
-				if $t; 
-            my $r = $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '?f=list&list=' . $list . '&error_no_email=1&set_flavor=u'); 
-            $self->test ? return $r : print $fh safely_encode(  $r) and return;
-        }
+    my $fh = $args->{-fh};
+    my $q = $args->{-cgi_obj};
 
+    my $list       = $q->param('list');
+    my $mid        = $q->param('mid');
+    my $unsub_hash = $q->param('unsub_hash');
+    my $process    = $q->param('process') || undef;
+    my $is_valid   = 1;
+
+	my $list_exists = DADA::App::Guts::check_if_list_exists(-List => $list);
+   
+    if ( $process == 1 ) {
+        my $email = lc_email( strip ( xss_filter( $q->param('email') )));
+        require DADA::App::Subscriptions::Unsub;
+        my $dasu = DADA::App::Subscriptions::Unsub->new( { -list => $list } );
+
+        $is_valid = $dasu->validate_unsub(
+            {
+                -email      => $email,
+                -mid        => $mid,
+                -unsub_hash => $unsub_hash,
+            }
+        );
+        if ($is_valid) {
+#			$args->{-list}       = $list; 
+#			$args->{-mid}        = $mid; 
+#			$args->{-unsub_hash} = $unsub_hash;
+#			$args->{-email}      = $unsub_hash;
+#			
+#		    
+			$self->complete_unsubscription($args); 
+        }
     }
-   
-    require DADA::MailingList::Settings; 
-    
-   
-    my $ls = DADA::MailingList::Settings->new({-list => $list}); 
 
-    require DADA::MailingList::Subscribers;  
-    my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
-            
-   
-  	my $skip_unsub_confirm_if_logged_in = 0; 
-	if($ls->param('skip_unsub_confirm_if_logged_in')){
-		warn 'skip_unsub_confirm_if_logged_in = 1'
-			if $t; 
-		require DADA::Profile::Session; 
-		my $sess = DADA::Profile::Session->new; 
-		if($sess->is_logged_in){	
-			my $sess_email = $sess->get;
-			if ($sess_email eq $email){ 
-				# something... 
-				$skip_unsub_confirm_if_logged_in = 1;
-				warn "person logged in, skipping confirmation."
-					if $t; 
-			}
-		}
-	}
-	else { 
-		warn 'skip_unsub_confirm_if_logged_in = 0'
-			if $t; 
-	}
+    require DADA::Template::Widgets;
+    my $r = DADA::Template::Widgets::wrap_screen(
+        {
+            -screen => 'list_unsub_step1.tmpl',
+            -with   => 'list',
+            -expr   => 1,
+            -vars   => {
+                mid         => $mid,
+                unsub_hash  => $unsub_hash,
+                process     => $process,
+                is_valid    => $is_valid,
+				list_exists => $list_exists, 
+            },
+			($list_exists == 1) ? (
+            -list_settings_vars_param => { 
+				-list => $list,
+			},
+			) : () 
+        }
+    );
+    $self->test ? return $r : print $fh safely_encode($r) and return;
+
+}
+
+sub complete_unsubscription {
+
+    my $self = shift;
+    my ($args) = @_;
+
+    croak if !$args->{-cgi_obj};
+
+    if ( !exists( $args->{-html_output} ) ) {
+        $args->{-html_output} = 1;
+    }
+    if ( !exists( $args->{-fh} ) ) {
+        $args->{-fh} = \*STDOUT;
+    }
+    my $fh = $args->{-fh};
+    my $q  = $args->{-cgi_obj};
+
+	my $list  = $q->param('list'); 
+	my $email = $q->param('email'); 
 	
-    if(
-		(
-		   $ls->param('unsub_confirm_email') == 0 
-		|| $skip_unsub_confirm_if_logged_in  == 1
-		)
-		&&
-		   $args->{-no_auto_config}          == 0 
-	){  
-        warn 'skipping the unsubscription process and going straight to the confirmation process'
-            if $t;
-        
-		warn 'adding, ' . $email . ' to unsub_confirm_list'
-			if $t; 
-		# This will error out, if '$email' is not a valid email address. Strangely enough!
-        $lh->add_subscriber(
-            {
-                -email         => $email, 
-                -type          => 'unsub_confirm_list', 
-            }
-        );
-        warn 'going to unsub_confirm()'
-			if $t; 			
-        return $self->unsub_confirm(
-            {
-                -html_output => $args->{-html_output}, 
-                -cgi_obj     => $args->{-cgi_obj},
-            }
-        );
-     }       
- 
-# I can't figure out what this is for... 
-#    if($args->{-no_auto_config}  == 0 ){
-#		warn '-no_auto_config = 0'
-#			if $t; 
- #       return $self->unsub_confirm(
-#			{
-#				-html_output => $args->{-html_output}, 
-#				-cgi_obj     =>  $args->{-cgi_obj}
-#			}
-#		); #we'll change this one later...
-#    }
-#
-	
-    my ($status, $errors) = $lh->unsubscription_check(
+	my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+    
+	# Seriously, this is the only check I'm doing: 	
+	my ($status, $errors) = $lh->unsubscription_check(
 								{
 									-email => $email, 
 									-skip => ['no_list']
@@ -1188,478 +1148,129 @@ sub unsubscribe {
             }
         }
         else { 
-            warn '"' . $email . '" passed unsubscription_check()'
- 				if $t; 
+            warn '"' . $email . '" passed unsubscription_check()';
         }
     }
+	
+	if($status == 0) { 
+		return user_error(
+	        -List  => $list, 
+	        -Error => 'not_subscribed',            
+	        -Email => $email,
+	        -fh    => $args->{-fh},
+			-test  => $self->test, 
+	    ); 
+		return;
+	}
+ 
+	# Ok, Done? Good: 
+	
 
+    if (
+           $ls->param('black_list') == 1
+        && $ls->param('add_unsubs_to_black_list') == 1
 
-    # send you're already unsub'd message? 
-	# First, only one error and is the error that you're not sub'd?
-    my $send_you_are_not_subscribed_email = 0;
-    if (   $ls->param('email_you_are_not_subscribed_msg') == 1
-        && $status == 0
-        && scalar( keys %$errors ) == 1
-        && $errors->{not_subscribed} == 1 )
+      )
     {
-        # Changed the status to, "1" BUT,
-        $status = 1;
-
-        # Mark that we have to send a special email.
-        $send_you_are_not_subscribed_email = 1;
-    }
-    else {
-		warn "else,what?" if $t; 
-        # ...
-    }
-
-	
-    # If there's any problems, handle them. 
-    if($status == 0){ 
-    	
-		warn '$status: ' . $status if $t; 
-        if($args->{-html_output} != 0){ 
-        
-            # URL redirect?
-            if(
-				$ls->param('use_alt_url_unsub_confirm_failed') == 1 
-			){ 
-                
-                my $qs = undef; 
-                # With a query string?
-                if($ls->param('alt_url_unsub_confirm_failed_w_qs') == 1){ 
-                    $qs = 'list=' . $list . '&rm=unsub_confirm&status=0&email=' . uriescape($email);
-                    $qs .= '&errors[]=' . $_ for keys %$errors; 
+        if (
+            $lh->check_for_double_email(
+                -Email => $email,
+                -Type  => 'black_list'
+            ) == 0
+          )
+        {
+            # Not on, already:
+            $lh->add_subscriber(
+                {
+                    -email      => $email,
+                    -type       => 'black_list',
+                    -dupe_check => {
+                        -enable  => 1,
+                        -on_dupe => 'ignore_add',
+                    },
                 }
-                my $r = $self->alt_redirect($ls->param('alt_url_unsub_confirm_failed'), $qs);
-                $self->test ? return $r : print $fh safely_encode(  $r) and return; 
-                
-            }else{        
-                # If not, show the correct error screen. 
-                ### invalid_email -> unsub_invalid_email 
-                
-                my @list_of_errors = qw(
-                    invalid_email
-                    not_subscribed
-                    settings_possibly_corrupted
-                    already_sent_unsub_confirmation
-                ); 
-                for(@list_of_errors){ 
-                    if ($errors->{$_} == 1){ 
-                    
-                        # Special Case. 
-                        $_ = 'unsub_invalid_email' 
-                            if $_ eq 'invalid_email';
-                       # warn "showing error, $_"; 
-                        return user_error(
-                            -List  => $list, 
-                            -Error => $_,            
-                            -Email => $email,
-                            -fh    => $args->{-fh},
-							-test  => $self->test, 
-                        ); 
-                    }
-                }
-
-                # Fallback
-                return user_error(
-                    -List  => $list, 
-                    -Email => $email,
-                    -fh    => $args->{-fh},
-					-test  => $self->test, 
-                );    
-            }
-        }
-    }else{    # Else, the unsubscribe request was OK, 
-     
-		# Are we just pretending thing went alright? 
-		if($send_you_are_not_subscribed_email == 1){ 
-	        # Send the URL with the unsub confirmation URL:
-	        require DADA::App::Messages;    
-	        DADA::App::Messages::send_not_subscribed_message(
-				{
-	            	-list         => $list, 
-		            -email        => $email, 
-		            -settings_obj => $ls, 
-	            	-test         => $self->test,
-				}
-			);
-		}
-		else { 
-			
-			require DADA::App::Subscriptions::ConfirmationTokens; 
-			my $ct    = DADA::App::Subscriptions::ConfirmationTokens->new(); 
-			my $token = $ct->save(
-				{ 
-					-email => $email,
-					-data  => {
-						list        => $list,
-						type        => 'list', 
-						flavor      => 'unsub_confirm', 
-						remote_addr => $ENV{REMOTE_ADDR},  
-					},
-					-remove_previous => 1, 
-				}
-			);
-			
-	        # Send the URL with the unsub confirmation URL:
-	        require DADA::App::Messages;    
-	        DADA::App::Messages::send_unsub_confirmation_message(
-				{
-	            	-list         => $list, 
-		            -email        => $email, 
-		            -settings_obj => $ls, 
-					-token        => $token, 
-	            	-test         => $self->test,
-				}
-			);
-       
-          # Why is this removed, before seeing if they're actually subscribed? 
- 	      my $rm_status = $lh->remove_subscriber(
-				{
-					-email =>$email, 
-					-type  => 'unsub_confirm_list'
-				}
-			);
-	        $lh->add_subscriber(
-	            {
-	                -email => $email,
-	                -type  => 'unsub_confirm_list',
-	            }
-	        );
-		}
-        
-        if($args->{-html_output} != 0){ 
-        
-            # Redirect?
-            if(
-                $ls->param('use_alt_url_unsub_confirm_success') == 1 
-            ){ 
-            
-                # With... Query String?
-                my $qs = undef; 
-                if($ls->param('alt_url_unsub_confirm_success_w_qs') == 1){ 
-                    $qs = 'list=' . $list . '&rm=unsub_confirm&status=1&email=' . uriescape($email); 
-                }
-                my $r = $self->alt_redirect($ls->param('alt_url_unsub_confirm_success'), $qs);
-                $self->test ? return $r : print $fh safely_encode(  $r) and return; 
-                
-            }else{ 
-               my $s = $ls->param('html_unsub_confirmation_message');
-               require DADA::Template::Widgets; 
-               my $r = DADA::Template::Widgets::wrap_screen({ 
-                                                       -data                     => \$s,
-													   -with                     => 'list', 
-                                                       -list_settings_vars_param => {-list => $ls->param('list'),},
-                                                       -subscriber_vars_param    => {-list => $ls->param('list'), -email => $email, -type => 'list'},
-                                                       -dada_pseudo_tag_filter  => 1, 
-                                                       -vars                    => { email => $email, subscriber_email => $email}, 
-            
-               } 
-               ); 
-				$self->test ? return $r : print $fh safely_encode(  $r) and return;
-				
-            }                 
-        }
-    }
-}
-
-
-
-
-sub unsub_confirm { 
-	
-
-    my $self = shift; 
-    my ($args) = @_; 
-
-	warn 'Starting Unsubscription Confirmation.' 
-        if $t;
-    
-    require DADA::Template::HTML;
-    
-    croak if ! $args->{-cgi_obj}; 
-    
-    if(! exists($args->{-html_output})){ 
-        $args->{-html_output} = 1; 
-    }
-     
-    if(! exists($args->{-fh})){ 
-        $args->{-fh} = \*STDOUT;
-    }
-    my $fh = $args->{-fh};
-    
-   
-    my $q     = $args->{-cgi_obj}; 
-    my $list  = xss_filter($q->param('list')); 
-    my $email = lc_email( strip ( xss_filter( $q->param( 'email' ) ) ) );
-    
-    if($args->{-html_output} != 0){ 
-        if(check_if_list_exists(-List => $list) == 0){
-            
-            warn 'redirecting to: ' . $DADA::Config::PROGRAM_URL . '?error_invalid_list=1&set_flavor=u'
-                if $t; 
-                
-           my $r = $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '?error_invalid_list=1&set_flavor=u'); 
-		   $self->test ? return $r : print $fh safely_encode(  $r) and return;
-		
-        }
-    }
-    
-    require DADA::MailingList::Subscribers;  
-    my $lh = DADA::MailingList::Subscribers->new({-list => $list});
-
-    require DADA::MailingList::Settings; 
-    my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-    
-    my($status, $errors) = $lh->unsubscription_check(
-								{
-                                 	-email => $email, 
-                                 	-skip  => ['already_sent_unsub_confirmation'],
-                           		}
-							);
-    
-    if($t){ 
-        if($status == 0){ 
-            warn '"' . $email . '" failed unsubscription_check(). Details: '; 
-            for(keys %$errors){ 
-                warn 'Error: ' . $_ . ' => ' . $errors->{$_}; 
-            }
-        }
-        else { 
-            warn '"' . $email . '" passed unsubscription_check()'; 
-        }
-    }
-
-
-    if($args->{-html_output} != 0){ 
-        if($errors->{no_list} == 1){ 
-            return user_error(
-                -List  => $list, 
-                -Error => "no_list", 
-                -Email => $email
-                -test  => $self->test, 
-				# no -fh?
             );
         }
+
     }
 
-	# send you're already unsub'd message? 
-	# First, only one error and is the error that you're not sub'd?
-	my $send_you_are_not_subscribed_email = 0;
-	if (   $ls->param('email_you_are_not_subscribed_msg') == 1
-	    && $status == 0
-	    && scalar( keys %$errors ) == 1
-	    && $errors->{not_subscribed} == 1 )
-	{
+    warn 'removing, ' . $email . ' from, "list"'
+      if $t;
 
-	    # Changed the status to, "1" BUT,
-	    $status = 1;
+    $lh->remove_subscriber(
+        {
+            -email => $email,
+            -type  => 'list'
+        }
+    );
 
-	    # Mark that we have to send a special email.
-	    $send_you_are_not_subscribed_email = 1;
-		
-		# We probably have to do this, so as not to have this error on us
-		# (potentially?)
-		my $rm_status = $lh->remove_subscriber(
-			{
-				-email =>$email, 
-				-type  => 'unsub_confirm_list'
-			}
-		);
- 
-        return $self->unsubscribe(
+    require DADA::App::Messages;
+    DADA::App::Messages::send_owner_happenings(
+        {
+            -list  => $list,
+            -email => $email,
+            -role  => "unsubscribed",
+            -test  => $self->test,
+        }
+    );
+
+    if ( $ls->param('send_unsub_success_email') == 1 ) {
+
+        require DADA::App::Messages;
+        DADA::App::Messages::send_unsubscribed_message(
             {
-                -html_output    => $args->{-html_output}, 
-                -cgi_obj        => $args->{-cgi_obj},
-				-no_auto_config => 1, 
+                -list   => $list,
+                -email  => $email,
+                -ls_obj => $ls,
+                -test   => $self->test,
             }
         );
-	}
-	else {
 
-	    # ...
-	}
-	
-    # My last check - are they currently on the Unsubscription confirmation list?!
-    if($lh->check_for_double_email(-Email => $email,-Type  => 'unsub_confirm_list')  == 0){ 
-        $status = 0; 
-        $errors->{not_on_unsub_confirm_list} = 1; 
-        warn ' $errors->{not_on_unsub_confirm_list} set to 1'
-            if $t; 
-    }
-    else {
-    	
-		warn 'removing, ' . $email . ' from unsub_confirm_list'
-			if $t; 
-        my $rm_status = $lh->remove_subscriber(
-			{ 
-	            -email => $email, 
-	            -type  => 'unsub_confirm_list'
-             }
-		);    
-                    
     }
 
-    
-    if($status == 0){ 
-    
-        warn 'Status has been set to, "0"'
-            if $t; 
-            
-        if($args->{-html_output} != 0){ 
-    
-            if(
-                $ls->param('use_alt_url_unsub_failed') == 1
-            ){ 
-            
-                my $qs = undef; 
-                if($ls->param('alt_url_unsub_failed_w_qs') == 1){ 
-                    $qs = 'list=' . $list . '&rm=unsub&status=0&email=' . uriescape($email); 
-                    $qs .= '&errors[]=' . $_ for keys %$errors; 
-                }
-                warn 'Redirecting to: ' . $ls->param('alt_url_unsub_failed') . $qs 
-                    if $t; 
-                    
-                my $r = $self->alt_redirect($ls->param('alt_url_unsub_failed'), $qs);
-                $self->test ? return $r : print $fh safely_encode(  $r) and return; 
-                    
-            }else{ 
-            
-                my @list_of_errors = qw(
-                    not_subscribed
-                    invalid_email
-                    not_on_unsub_confirm_list
-                    settings_possibly_corrupted
-                    
-                    
-                ); 
-                for(@list_of_errors){ 
-                    if ($errors->{$_} == 1){ 
-                    
-                        # Special Case. 
-                        $_ = 'unsub_invalid_email' 
-                            if $_ eq 'invalid_email';
-                        
-                        warn 'Showing user_error: ' . $_
-                            if $t; 
-
-                        return user_error(
-                            -List  => $list, 
-                            -Error => $_,            
-                            -Email => $email,
-                            -fh    => $args->{-fh},
-							-test  => $self->test, 
-                        ); 
-                    }
-                }
-                # Fallback
-                warn "Fallback error!" if $t; 
-                return user_error(
-                    -List  => $list, 
-                    -Email => $email,
-                    -fh    => $args->{-fh},
-					-test  => $self->test, 
-                );    
-            }
-            
-        }
-    }else{ 
- 
-        warn 'Status is set to, "1"'
-            if $t; 
-        
-        
-		
-        if(
-            $ls->param('black_list')               == 1 && 
-            $ls->param('add_unsubs_to_black_list') == 1
-
-        ){
-        	if($lh->check_for_double_email(-Email => $email, -Type  => 'black_list')  == 0){ 
-				# Not on, already: 
-				$lh->add_subscriber(
-				    {
-				        -email => $email,  
-						-type => 'black_list', 
-						-dupe_check    => {
-											-enable  => 1, 
-											-on_dupe => 'ignore_add',  
-	                					},
-				    }
-				);
-			}
-
-        }
-             
-    	warn 'removing, ' . $email . ' from, "list"'
-			if $t; 
-			
-		# This is the only place where we're removing from, 'list' that I can find 
-        $lh->remove_subscriber(
-		{ 
-               -email => $email, 
-               -type  => 'list'
-          	}
-		);
-        
-        require DADA::App::Messages; 
-        DADA::App::Messages::send_owner_happenings(
+	require DADA::Logging::Clickthrough; 
+    my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
+    if ( $r->enabled ) {
+        $r->unsubscribe_log(
 			{
-				-list  => $list, 
-				-email => $email, 
-				-role  => "unsubscribed",
-				-test  => $self->test,
+				-mid   => $q->param('mid'), 
+				-email => $q->param('email'), 
 			}
 		);
-		
-		require DADA::App::Subscriptions::ConfirmationTokens; 
-		my $ct    = DADA::App::Subscriptions::ConfirmationTokens->new();
-		   $ct->remove_by_token($q->param('token'));
-        
-        if($ls->param('send_unsub_success_email') == 1){ 
-	
-            require DADA::App::Messages; 
-            DADA::App::Messages::send_unsubscribed_message(
-				{
-					-list      => $list,
-                    -email     => $email,
-                    -ls_obj    => $ls,
-					-test      => $self->test,
-				}	
-			); 
+    }
 
-        }
-
-        if($args->{-html_output} != 0){ 
-            if(
-                $ls->param('use_alt_url_unsub_success') == 1
-              ){ 
-                my $qs = undef; 
-                if($ls->param('alt_url_unsub_success_w_qs') == 1){ 
-                    $qs = 'list=' . $list . '&rm=unsub&status=1&email=' . uriescape($email);  
-                }
-                my $r = $self->alt_redirect($ls->param('alt_url_unsub_success'), $qs);
-                $self->test ? return $r : print $fh safely_encode(  $r) and return;
-            
-            }else{                
-               my $s = $ls->param('html_unsubscribed_message');
-               require DADA::Template::Widgets; 
-               my $r =  DADA::Template::Widgets::wrap_screen(
-					{ 
-  						-data                     => \$s,
-						-with                     => 'list', 
-						-list_settings_vars_param => {-list => $ls->param('list')},
-						-dada_pseudo_tag_filter   => 1, 
-						-subscriber_vars          => {'subscriber.email' => $email},
-						}
-				); 
-                $self->test ? return $r : print $fh safely_encode(  $r) and return; 
-
+    if ( $args->{-html_output} != 0 ) {
+        if ( $ls->param('use_alt_url_unsub_success') == 1 ) {
+            my $qs = undef;
+            if ( $ls->param('alt_url_unsub_success_w_qs') == 1 ) {
+                $qs = 'list='
+                  . $list
+                  . '&rm=unsub&status=1&email='
+                  . uriescape($email);
             }
+            my $r =
+              $self->alt_redirect( $ls->param('alt_url_unsub_success'), $qs );
+            $self->test ? return $r : print $fh safely_encode($r) and return;
+
         }
-    } 
+        else {
+            my $s = $ls->param('html_unsubscribed_message');
+            require DADA::Template::Widgets;
+            my $r = DADA::Template::Widgets::wrap_screen(
+                {
+                    -data => \$s,
+                    -with => 'list',
+                    -list_settings_vars_param =>
+                      { -list => $ls->param('list') },
+                    -dada_pseudo_tag_filter => 1,
+                    -subscriber_vars        => { 'subscriber.email' => $email },
+                }
+            );
+            $self->test ? return $r : print $fh safely_encode($r) and return;
+        }
+    }
 }
+
 
 
 

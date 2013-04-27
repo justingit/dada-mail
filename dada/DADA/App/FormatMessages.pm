@@ -472,6 +472,23 @@ sub _format_text {
 							carp "Problem removing existing opener images: $_"; 
 						}
 					}
+					
+					
+					# This attempts to strip any unsubscription links in messages
+					# (think: replying) 
+					try {
+						require DADA::App::FormatMessages::Filters::RemoveUnsubLinks; 
+						my $rul = DADA::App::FormatMessages::Filters::RemoveUnsubLinks->new; 
+						$content = $rul->filter({-data => $content});
+					} catch {
+						carp "Problems with filter: $_";
+					};
+					
+					
+					
+					
+					
+					
 #					if($self->{ls}->param('discussion_clean_up_replies') == 1) { 
 #						try {
 #							require DADA::App::FormatMessages::Filters::CleanUpReplies; 
@@ -1279,7 +1296,7 @@ sub _expand_macro_tags {
 	}
 	
 	$data =~ s/\<\!\-\- tmpl_var list_subscribe_link \-\-\>/$s_link/g;	
-	$data =~ s/\<\!\-\- tmpl_var list_unsubscribe_link \-\-\>/$us_link/g;
+#	$data =~ s/\<\!\-\- tmpl_var list_unsubscribe_link \-\-\>/$us_link/g;
 	
 	# confirmations.
 	
@@ -1406,21 +1423,24 @@ sub _macro_tags {
     }
     elsif ( $args{-type} eq 'unsubscribe' ) {
 
-        # We really shouldn't even been in this sub, if there's no list...
-        if ( $self->no_list == 1 ) {
-            $type = 'u';
-        }
-        else {
-            # And, that's it.
-            if (
-                $self->{ls}->param('unsub_link_behavior') eq 'show_unsub_form' )
-            {
-                $type = 'ur';
-            }
-            else {
-                $type = 'u';
-            }
-        }
+		return '<!-- tmpl_var list_unsubscripton_link -->';
+#
+#        # We really shouldn't even been in this sub, if there's no list...
+#        if ( $self->no_list == 1 ) {
+#            $type = 'u';
+#        }
+#        else {
+#            # And, that's it.
+#            if (
+#                $self->{ls}->param('unsub_link_behavior') eq 'show_unsub_form' )
+#            {
+#                $type = 'ur';
+#            }
+#            else {
+#                $type = 'u';
+#            }
+#        }
+
     }
 
     my $link = $args{-url} . '/';
@@ -1795,13 +1815,13 @@ sub can_find_unsub_link {
     my @unsub_urls = (
         $DADA::Config::PROGRAM_URL . '/u/' . $self->{-List},
         '<!-- tmpl_var list_unsubscribe_link -->',
-        '<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->',
-        '<!-- tmpl_var PROGRAM_URL -->?f=u&l=<!-- tmpl_var list_settings.list -->',
-		'<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/',
-
-        '<!-- tmpl_var PROGRAM_URL -->/ur/<!-- tmpl_var list_settings.list -->',
-        '<!-- tmpl_var PROGRAM_URL -->?f=ur&l=<!-- tmpl_var list_settings.list -->',
-		'<!-- tmpl_var PROGRAM_URL -->/ur/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/',
+#        '<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->',
+#        '<!-- tmpl_var PROGRAM_URL -->?f=u&l=<!-- tmpl_var list_settings.list -->',
+#		'<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/',
+#
+#       '<!-- tmpl_var PROGRAM_URL -->/ur/<!-- tmpl_var list_settings.list -->',
+#      '<!-- tmpl_var PROGRAM_URL -->?f=ur&l=<!-- tmpl_var list_settings.list -->',
+#		'<!-- tmpl_var PROGRAM_URL -->/ur/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/',
 
  );
     if ( $DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} ==
@@ -2276,6 +2296,8 @@ sub email_template {
 			
             if ($content) {
 
+				use Data::Dumper; 
+				warn '%screen_vars ' . Dumper(\%screen_vars); 
                 # And, that's it.
                 $content = DADA::Template::Widgets::screen(
                     {

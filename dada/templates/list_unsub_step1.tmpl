@@ -1,0 +1,57 @@
+<h1>Unsubscribe From <!-- tmpl_var list_settings.list_name --></h1>
+
+<!-- tmpl_if list_exists --> 
+
+	<!-- tmpl_if expr="((process == 1) && (is_valid == 0))" --> 
+	<div class="badweatherbox"> 
+	 <p><strong>Problems with Unsubscription</strong>
+		<p>
+			Please make sure you're entering the correct email address that was subscribed, below. 
+		</p>
+	
+		<p>To be manually removed from this mailing list, please email the List Owner at:</p> 
+		<p style="text-align:center">
+			<strong>
+				<a href="mailto:<!-- tmpl_var list_settings.list_owner_email -->?Subject=Unsubscription%20Request%20from%20<!-- tmpl_var list_settings.list_name escape=URL -->">
+					<!-- tmpl_var list_settings.list_owner_email -->
+				</a>
+			</strong>
+		</p>	
+	</div>  
+
+	<!-- /tmpl_if -->
+
+	<fieldset> 
+	
+	<p>
+		Please enter your 
+			<label for="email">
+				email address
+			</label>
+		that is currently subscribed, below:
+	</p> 
+
+	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" /> 
+		<input type="hidden" id="flavor" name="flavor" value="u" />
+		<input type="hidden" id="list" name="list" value="<!-- tmpl_var list_settings.list -->" />
+		<input type="hidden" id="mid" name="mid" value="<!-- tmpl_var mid -->" /> 
+		<input type="hidden" id="unsub_hash" name="unsub_hash" value="<!-- tmpl_var unsub_hash -->" /> 
+		<input type="hidden" id="process" name="process" value="1" /> 
+		<input type="text"   id="email" name="email" value="" />
+		<input type="submit" value="Unsubscribe" /> 
+	</form> 
+
+	</fieldset> 
+	
+<!-- tmpl_else --> 
+	
+	<h1>Problems with Unsubscription Link!</h1>
+	
+	<p>
+		Make sure you that the entire Unsubscription Link has been followed, either by clicking it, or by copying and pasting it, in its entirely.
+	</p>
+	<p>
+		The Unsubscription Link could be <em>very</em> long, so make sure to follow the <em>entire</em> link.
+	</p>
+	
+<!-- /tmpl_if --> 

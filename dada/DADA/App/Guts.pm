@@ -67,6 +67,7 @@ require Exporter;
   escape_for_sending
   entity_protected_str
   spam_me_not_encode
+  anony_star_address_encode
   optimize_mime_parser
   mailhide_encode
   gravatar_img_url
@@ -2354,6 +2355,20 @@ sub spam_me_not_encode {
 	}
 	return $encodedString;
 }
+
+
+
+sub anony_star_address_encode { 	
+	my $str = shift; 
+	my ($n, $d) = split('@', $str); 
+	if(length($n) == 1){ 
+		return '*@'. $d; 
+	} 
+	else { 
+		return substr($n, 0,1) . '*' x (length($n) -1)  . '@' . $d;  
+	}
+}
+
 
 
 

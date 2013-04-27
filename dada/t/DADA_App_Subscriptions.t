@@ -74,7 +74,7 @@ like($dap->subscribe({-cgi_obj => $q}), qr/$regex/, 'sub-subscribe-redirect-erro
 
 # sub-subscribe-redirect-error_no_email
 $q->param('list', $list); 
-$regex = quotemeta('Location: ' . $DADA::Config::PROGRAM_URL . '?f=list&list=' . $list . '&error_no_email=1&set_flavor=s'); 
+$regex = quotemeta('Location: ' . $DADA::Config::PROGRAM_URL . '?f=list&list=' . $list . '&error_no_email=1'); 
 like($dap->subscribe({-cgi_obj => $q}), qr/$regex/, 'sub-subscribe-redirect-error_no_email'); 
 $q->param('list', ''); 
 
@@ -182,7 +182,7 @@ like($dap->confirm({-cgi_obj => $q}), qr/$regex/, 'sub-confirm-redirect-error_in
 
 $q->param('list', $list); 
 $q->param('email', ''); 
-$regex = quotemeta('Location: ' . $DADA::Config::PROGRAM_URL . '?f=list&list=' . $list . '&error_no_email=1&set_flavor=s'); 
+$regex = quotemeta('Location: ' . $DADA::Config::PROGRAM_URL . '?f=list&list=' . $list . '&error_no_email=1'); 
 like($dap->confirm({-cgi_obj => $q}), qr/$regex/, 'sub-confirm-redirect-error_no_email'); 
 $q->param('list', '');
 $q->param('email', '');

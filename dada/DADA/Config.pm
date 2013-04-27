@@ -1186,9 +1186,6 @@ Please save this email message for future reference.
 * Date of this subscription: 
 <!-- tmpl_var date -->
 
-* Want to remove yourself from this mailing list at any time? Use the form at: 
-<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->
-
 * Need Help? Contact: 
 <!-- tmpl_var list_settings.list_owner_email -->
 
@@ -1233,9 +1230,6 @@ Please save this email message for future reference.
 
 * Date of this subscription: 
 <!-- tmpl_var date -->
-
-* Want to remove yourself from this mailing list at any time? Use this link:
-<!-- tmpl_var list_unsubscribe_link -->
 
 * Need Help? Contact: 
 <!-- tmpl_var list_settings.list_owner_email -->
@@ -1457,27 +1451,6 @@ To confirm this unsubscription, please follow the URL below:
 
 (Click the URL above, or copy and paste the URL into your browser. 
 Doing so will remove you to this list.)
-
------------------------------------------------------------------------
-
-The following is the description given for this list: 
-
-<!-- tmpl_var list_settings.info -->
-
------------------------------------------------------------------------
-
-This Closed-Loop Opt-Out confirmation email was sent to protect the privacy
-of the owner of this email address. 
-
-Furthermore, the following privacy policy is associated with this list: 
-
-<!-- tmpl_var list_settings.privacy_policy -->
-
-Please read and understand this privacy policy. 
-
-If you did not ask to be removed from this particular list, please
-do not visit the confirmation URL above. The confirmation for removal 
-will not go through and no other action on your part will be needed.
 
 To contact the owner of this email list, please use the address below: 
 
@@ -1777,14 +1750,6 @@ so you do not have to subscribe again. This message has been sent
 to protect your privacy and only allow this information to be 
 available to you. 
 
-If you would like to change your subscription, please visit this address: 
-
-<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/
-
-If the above URL is inoperable, make sure that you have copied the 
-entire address. Some mail readers will wrap a long URL and thus break
-this automatic unsubscribe mechanism. 
-
 To contact the owner of this email list, please use the address below: 
 
 <mailto:<!-- tmpl_var list_settings.list_owner_email -->>
@@ -1854,7 +1819,6 @@ The List Owner of, "<!-- tmpl_var list_settings.list_name -->" (<!-- tmpl_var li
 * If you'd like to subscribe, just click the link below: 
 <!-- tmpl_var list_confirm_subscribe_link --> 
 
-(You can always remove yourself from the mailing list, at any time) 
 <!-- tmpl_if list_settings.group_list --> 
 * This mailing list is a group discussion list <!-- tmpl_if list_settings.enable_moderation -->(moderated)<!-- tmpl_else -->(unmoderated)<!-- /tmpl_if -->. Once subscribed, you can start a new thread, by sending an email message to, <!-- tmpl_var list_settings.discussion_pop_email --> 
 <!-- tmpl_else --> 
@@ -2035,11 +1999,6 @@ $HTML_INVITE_MESSAGE ||= <<EOF
     <!-- tmpl_var list_confirm_subscribe_link -->
    </a>
   </strong>
- </p>
- <p>
-  <em>
-   (You can always remove yourself from the mailing list, at any time)
-  </em>
  </p>
 </li>
 
@@ -2344,9 +2303,6 @@ $HTML_SUBSCRIBED_MESSAGE ||= <<EOF
   </strong>
  </p>
 </blockquote> 
-
-<p>An email will be sent to your address giving you more details of 
-this subscription, including how to unsubscribe in the future.</p>
 
 EOF
   ;

@@ -121,10 +121,10 @@ sub cgi_user_error {
 	if($args{-Error} !~ /unreadable_db_files|sql_connect_error|bad_setup|bad_SQL_setup|install_dir_still_around/){	
 	 	if($args{-List}){ 
 				$subscription_form    = DADA::Template::Widgets::subscription_form({ -list => $args{-List}, -email => $args{-Email}, -give_props => 0 }); 
-		    	$unsubscription_form  = DADA::Template::Widgets::subscription_form({ -list => $args{-List}, -email => $args{-Email}, -flavor_is => 'u', -give_props => 0} ); 
+		    	$unsubscription_form  = DADA::Template::Widgets::subscription_form({ -list => $args{-List}, -email => $args{-Email}, -give_props => 0} ); 
 		}else{ 
 			$subscription_form   = DADA::Template::Widgets::subscription_form({-email => $args{-Email}, -give_props => 0}); # -show_hidden =>1 ?!?!?!
-			$unsubscription_form = DADA::Template::Widgets::subscription_form({-email => $args{-Email}, -flavor_is => 'u', -give_props => 0}); # -show_hidden => 1?!?!?!
+			$unsubscription_form = DADA::Template::Widgets::subscription_form({-email => $args{-Email}, -give_props => 0}); # -show_hidden => 1?!?!?!
 		}
 	}
 

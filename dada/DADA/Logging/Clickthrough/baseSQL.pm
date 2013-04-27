@@ -680,6 +680,57 @@ sub bounce_log {
     }
 }
 
+sub unsubscribe_log { 
+	my $self      = shift; 
+    my ($args)    = @_;
+	my $timestamp = undef; 
+	if(exists($args->{-timestamp})){ 
+		$timestamp = $args->{-timestamp};
+	}
+	if(!exists($args->{-email})){ 
+		$args->{-email} = '';
+	}
+	
+	my $ts_snippet = ''; 
+	my $place_holder_string = ''; 
+	
+	if(defined($timestamp)){ 
+		$ts_snippet = 'timestamp,'; 
+		$place_holder_string .= ' ,?';
+	}
+	my $remote_address = undef; 
+	if(!exists($args->{-remote_addr})){ 
+		$remote_address = $self->remote_addr;
+	}
+	else { 
+		$remote_address = $args->{-remote_addr}; 
+	}
+	
+#    if ( $self->{ls}->param('enable_open_msg_logging') == 1 ) {
+        my $query = 'INSERT INTO ' 
+		. $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} 
+		.'(list, ' 
+		. $ts_snippet 
+		. 'remote_addr, msg_id, event, email) VALUES (?, ?, ?, ?, ?' 
+		. $place_holder_string 
+		.')';
+		
+        my $sth = $self->{dbh}->prepare($query);
+		if(defined($timestamp)){ 
+			$sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, 'unsubscribe', $args->{-email});
+		}
+		else { 
+			$sth->execute($self->{name}, $remote_address, $args->{-mid}, 'unsubscribe', $args->{-email});
+        }
+		$sth->finish;
+        return 1;
+#    }
+#    else {
+#        return 0;
+#    }
+		
+}
+
 sub unique_and_dupe {
     my $self  = shift;
     my $array = shift;

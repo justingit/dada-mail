@@ -318,24 +318,15 @@ if($ENV{PATH_INFO}){
         $q->param('img_string',   $pi_img_string)
             if $pi_img_string;
 
-	}elsif($info =~ /^ur/){
-        my ($pi_flavor, $pi_list, $pi_email, $pi_domain) = split('/', $info, 4);
-        
-		$pi_email = $pi_email . '@' . $pi_domain;
-		 
-		# Get rid of that last, "=" that sometimes shows up on quoted-printable msgs. 
-		if($pi_email =~ m/\=$/){ 
-			$pi_email =~ s/\=$//; 
-		}
-		
-        $q->param('flavor', $pi_flavor)
-            if $pi_flavor;
-        $q->param('list',   $pi_list)
-            if $pi_list;
-        $q->param('email',  $pi_email)
-            if $pi_email;
+	}elsif($info =~ /^u\//){
+        my ($pi_flavor, $pi_list, $pi_mid, $pi_hash) = split('/', $info, 4);
+  		
+        $q->param('flavor',      $pi_flavor);
+        $q->param('list',        $pi_list);
+		$q->param('mid',         $pi_mid); 
+        $q->param('unsub_hash',  $pi_hash);
 
-    }elsif($info =~ /^(s|n|u)/){ 
+    }elsif($info =~ /^(s|n)/){ 
 		my ($pi_flavor, $pi_list, $pi_email, $pi_domain, $pi_pin) = split('/', $info, 5);
 		
         if($pi_email !~ m/\@/){
@@ -361,7 +352,6 @@ if($ENV{PATH_INFO}){
 		# Rather, we redirect them, to attempt to sub/unsub again, 
 		if(
 			($pi_flavor eq 'n') 
-	     || ($pi_flavor eq 'u' && $pi_pin)
 		){ 
 			$q->param('flavor', 'outdated_sub_links');
 			$q->param('q_orig_flavor', $pi_flavor)
@@ -513,7 +503,6 @@ my $done             = $q->param('done');
 my $id               = $q->param('id');
 my $advanced         = $q->param('advanced') || 'no';
 my $help             = $q->param('help');
-my $set_flavor       = $q->param('set_flavor');
 
 
 #---------------------------------------------------------------------#
@@ -528,7 +517,6 @@ $list        = xss_filter($list);
 $flavor      = xss_filter($flavor);
 $email       = xss_filter($email);
 $keyword     = xss_filter($keyword);
-$set_flavor  = xss_filter($set_flavor);
 $id          = xss_filter($id);
 
 if($q->param('auth_state')){
@@ -815,7 +803,6 @@ sub default {
            # {
                 -email              => $email,
                 -list               => $list,
-                -set_flavor         => $set_flavor,
                 -error_invalid_list => $q->param('error_invalid_list'),
            # }
         );
@@ -872,7 +859,7 @@ sub list_page {
 
     require DADA::MailingList::Settings;
 
-    if ( !$email && !$set_flavor && ( $q->param('error_no_email') != 1 ) ) {
+    if ( !$email && ( $q->param('error_no_email') != 1 ) ) {
         if (!$c->profile_on && $c->cached( 'list/' . $list . '.scrn' ) ) {
             $c->show( 'list/' . $list  . '.scrn');
             return;
@@ -888,13 +875,12 @@ sub list_page {
         -list           => $list,
         -cgi_obj        => $q,
         -email          => $email,
-        -set_flavor     => $set_flavor,
         -error_no_email => $q->param('error_no_email') || 0,
 
     );
     e_print($scrn);
 
-    if (!$c->profile_on && !$email && !$set_flavor && ( $q->param('error_no_email') != 1 ) ) {
+    if (!$c->profile_on && !$email && ( $q->param('error_no_email') != 1 ) ) {
         $c->cache( 'list/' . $list . '.scrn', \$scrn );
     }
 
@@ -7512,11 +7498,6 @@ sub outdated_sub_links {
         return;
     }
 
-    my $flavor_is = 's';
-    if ( $q->param('q_orig_flavor') eq 'u' ) {
-        $flavor_is = 'u';
-    }
-
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
@@ -7535,7 +7516,6 @@ sub outdated_sub_links {
                         -list       => $list,
                         -email      => $email,
                         -give_props => 0,
-                        -flavor_is  => $flavor_is,
                         -magic_form => 0,
                     },
                 ),
@@ -11114,11 +11094,22 @@ sub profile {
 				if(scalar(@$l_p_d) > 0){ 
 					@$protected_directories = (@$protected_directories, @$l_p_d); 
 				}
+				
+				require DADA::App::Subscriptions::Unsub; 
+				my $dasu = DADA::App::Subscriptions::Unsub->new({-list => $i->{list}});
+				my $unsub_link = $dasu->unsub_link({-email => $email, -mid => '00000000000000'}); 
+				
 				push(@$filled, 
-					{%{$i}, 
-					%{$li}, 
-					PROGRAM_URL => $DADA::Config::PROGRAM_URL})
+					{
+						%{$i}, 
+						%{$li}, 
+						PROGRAM_URL => $DADA::Config::PROGRAM_URL,
+						list_unsubscription_link  => $unsub_link, 
+					}
+				)
 			}
+		
+			
 			my $scrn = '';
 		    require DADA::Template::Widgets;
 		    $scrn .=  DADA::Template::Widgets::wrap_screen(

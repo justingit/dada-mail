@@ -532,7 +532,6 @@ sub default_screen {
         -show_hidden        => undef,
         -name               => undef,
         -email              => undef,
-        -set_flavor         => undef,
         -error_invalid_list => 0,
         @_
     );
@@ -625,7 +624,6 @@ sub default_screen {
     my $list_popup_menu = list_popup_menu(
         -email      => $args{email},
         -list       => $args{list},
-        -set_flavor => $args{set_flavor},
     );
 
 	return wrap_screen(
@@ -636,7 +634,6 @@ sub default_screen {
             -vars   => {
                 list_popup_menu    => $list_popup_menu,
                 email              => $args{ -email },
-                set_flavor         => $args{ -set_flavor },
                 list_information   => \@list_information,
                 visible_lists      => $visible_lists,
                 error_invalid_list => $args{ -error_invalid_list },
@@ -655,19 +652,10 @@ sub list_page {
 
 	my %args = (-list           => undef, 
 			    -email          => undef, 
-				-set_flavor     => undef,
 				-error_no_email => undef, 
 				-cgi_obj        => undef, 
 				@_);
     
-
-    if(exists($args{-set_flavor}) && ($args{-set_flavor} eq 'unsubscribe' || $args{-set_flavor} eq 'u')){ 
-        $args{-set_flavor} = 'u' 
-    }
-    else {
-        $args{-set_flavor} = 's' 
-    }
-
 	require DADA::MailingList::Settings; 
 	
 	my $ls = DADA::MailingList::Settings->new({-list => $args{-list}}); 
@@ -692,9 +680,8 @@ sub list_page {
 
         -vars                     => 
         { 
-            subscription_form         => subscription_form({-list => $args{-list}, -email => $args{-email}, -flavor_is => $args{-set_flavor}, -give_props => 0 }), 
+            subscription_form         => subscription_form({-list => $args{-list}, -email => $args{-email}, -give_props => 0 }), 
             error_no_email            => $args{-error_no_email}, 
-            set_flavor                => $args{-set_flavor},
             html_archive_list         => $html_archive_list, 
 			#allowed_to_view_archives  => $allowed_to_view_archives,  
         },
@@ -2796,9 +2783,6 @@ sub subscription_form {
         $args->{-give_props} = $DADA::Config::GIVE_PROPS_IN_SUBSCRIBE_FORM; 
     }
    	
-    if(! exists($args->{-ajax_subscribe_extension})){ 
-        $args->{-ajax_subscribe_extension} = 0; 
-    }   
     
     if(! exists($args->{-script_url})){ 
         $args->{-script_url} = $DADA::Config::PROGRAM_URL; 
@@ -2861,13 +2845,6 @@ sub subscription_form {
             }
         }
         
-
-        # rewrite.
-		# THis is pretty weird. 
-        if(! exists ( $args->{'-flavor_is'} ) && defined($q->param('set_flavor'))){ 
-               $args->{'-flavor_is'} = xss_filter($q->param('set_flavor')); 
-        }
-
         my $i = 0; 
         foreach my $sf(@$subscriber_fields){ 
             if(defined($q->param($sf))){ 
@@ -2916,19 +2893,7 @@ sub subscription_form {
 
     
     my $list = $args->{-list} || undef; 
-    if(! exists $args->{-flavor_is}){ 
-        $args->{-flavor_is} = 'subscribe'; 
-    }
-    
-
-
-    my $flavor_is_subscribe   = 1; 
-    my $flavor_is_unsubscribe = 0; 
-    if($args->{-flavor_is} eq 'u' || $args->{-flavor_is} eq 'unsubscribe'){ 
-        $flavor_is_subscribe   = 0; 
-        $flavor_is_unsubscribe = 1;  
-    }
-    
+        
     if(
 		$list && 
 		check_if_list_exists( -List=> $list, -Dont_Die  => 1) > 0
@@ -2957,12 +2922,7 @@ sub subscription_form {
                             subscriber_fields        => $named_subscriber_fields,
                             list                     => $list, 
                             email                    => $args->{-email},
-                            flavor_is_subscribe      => $flavor_is_subscribe, 
-                            flavor_is_unsubscribe    => $flavor_is_unsubscribe,
-                            # list_popup_menu          => list_popup_menu(),
-                            # list_checkbox_menu       => list_popup_menu(-as_checkboxes => 1), 
                             give_props               => $args->{-give_props}, 
-                            ajax_subscribe_extension => $args->{-ajax_subscribe_extension},
                             script_url               => $args->{-script_url}, 
 							show_fields              => $args->{-show_fields}, 
 							profile_logged_in        => $args->{-profile_logged_in}, 
@@ -2986,12 +2946,9 @@ sub subscription_form {
                             subscriber_fields        => $named_subscriber_fields,
                             list                     => $list, 
                             email                    => $args->{-email},
-                            flavor_is_subscribe      => $flavor_is_subscribe, 
-                            flavor_is_unsubscribe    => $flavor_is_unsubscribe,
                             list_popup_menu          => list_popup_menu(),
                             list_checkbox_menu       => list_popup_menu(-as_checkboxes => 1), 
                             give_props               => $args->{-give_props} == 1, 
-                            ajax_subscribe_extension => $args->{-ajax_subscribe_extension}, 
                             multiple_lists           => $args->{-multiple_lists}, 
                             script_url               => $args->{-script_url}, 
 							show_fields              => $args->{-show_fields}, 
