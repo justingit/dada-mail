@@ -493,11 +493,11 @@ $(document).ready(function() {
 		update_plugins_tracker_message_report();
 	}
 
+
 	if ($("#plugins_tracker_default").length) {
 		tracker_parse_links_setup();
+		
 		message_history_html();
-		google.setOnLoadCallback(drawSubscriberHistoryChart());
-
 		$("body").on("change", '#tracker_record_view_count', function(event) {
 			tracker_change_record_view();
 		});
@@ -1911,7 +1911,6 @@ function tracker_change_record_view() {
 	});
 	request.done(function(content) {
 		message_history_html();
-		google.setOnLoadCallback(drawSubscriberHistoryChart());
 	});
 
 }
@@ -1919,7 +1918,6 @@ function tracker_change_record_view() {
 function tracker_turn_page(page_to_turn_to) {
 	$("#tracker_page").val(page_to_turn_to);
 	message_history_html();
-	google.setOnLoadCallback(drawSubscriberHistoryChart());
 }
 
 function tracker_parse_links_setup() {
@@ -1991,6 +1989,8 @@ function delete_log() {
 
 function message_history_html() {
 
+	//console.log('running message_history_html'); 
+
 	$("#show_table_results_loading").html('<p class="alert">Loading...</p>');
 	var request = $.ajax({
 		url: $("#plugin_url").val(),
@@ -2008,6 +2008,8 @@ function message_history_html() {
 			$("#show_table_results").show('fade');
 			$("#show_table_results_loading").html('<p class="alert">&nbsp;</p>');
 		});
+		
+		google.setOnLoadCallback(drawSubscriberHistoryChart());  
 
 	});
 }
@@ -2015,6 +2017,9 @@ function message_history_html() {
 var SubscriberHistoryChart;
 
 function drawSubscriberHistoryChart() {
+	
+	//console.log('runnning drawSubscriberHistoryChart'); 
+	
 	$("#subscriber_history_chart_loading").html('<p class="alert">Loading...</p>');
 	var request = $.ajax({
 		url: $("#plugin_url").val(),
@@ -2064,7 +2069,6 @@ function tracker_purge_log() {
 		});
 		request.done(function(content) {
 			message_history_html();
-			google.setOnLoadCallback(drawSubscriberHistoryChart());
 		});
 		// something like request.error(function () { ... });
 		//onFailure: function() { 

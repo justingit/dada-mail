@@ -378,6 +378,11 @@ sub message_history_html {
 			-entries => $ls->param('tracker_record_view_count'), 
 		}
 	);
+	
+	if( defined($html)){ 
+		warn 'message_history_html cached in file'; 
+	}
+	
 	if(! defined($html)){ 
 		
 		my ($total, $msg_ids) = $rd->get_all_mids(
@@ -408,16 +413,19 @@ sub message_history_html {
 			}
 		}
 
-		my $report_by_message_id = $rd->report_by_message_index({-all_mids => $msg_ids}) || []; 
-	#	require Data::Dumper; 
-	#	my $report_by_message_id_dump = Data::Dumper::Dumper($report_by_message_id); 
+		my $report_by_message_id = $rd->report_by_message_index(
+			{
+				-all_mids => $msg_ids, #Strange speedup
+				-page     => $page_num,
+			}
+		) || []; 
+
 	    require    DADA::Template::Widgets;
 	    $html = DADA::Template::Widgets::screen(
 	        {
 	            -screen           => 'plugins/tracker/clickthrough_table.tmpl',
 	            -vars => {
 	                report_by_message_index   => $report_by_message_id,
-	#				report_by_message_id_dump => $report_by_message_id_dump, 
 					first_page                => $page_info->first_page(), 
 					last_page                 => $page_info->last_page(), 
 					next_page                 => $page_info->next_page(), 

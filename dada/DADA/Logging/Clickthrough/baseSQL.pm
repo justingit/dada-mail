@@ -760,10 +760,15 @@ sub get_all_mids {
 
 sub report_by_message_index {
 
+	# warn 'report_by_message_index'; 
 	#my $t = time; 
 
     my $self          = shift;
 	my ($args)        = @_; 
+
+	require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new; 
+
 	my $sorted_report = [];
 	    my $report        = {};
 	    my $l;
@@ -777,10 +782,12 @@ sub report_by_message_index {
 		}
 		else { 
 			# Not using total, right now... 
-			($total, $msg_id1) = $self->get_all_mids();
+			($total, $msg_id1) = $self->get_all_mids(); # no vars? 
 		}
-	
-	
+		if(!exists($args->{-page})){ 
+			$args->{-page} = 1; 
+		}
+		
 	    for my $msg_id (@$msg_id1) {
 		
 			next 
@@ -830,8 +837,25 @@ sub report_by_message_index {
 	        push( @$sorted_report, $report->{$_} );
 	    }
 	
-	#warn "total report_by_message_index time:" . (time - $t); 
-	
+		# The idea is if we've already calculated all this, no 
+		# reason to do it twice, if the table and graph are shown together. 
+		if(! $dc->cached(
+			{
+			-list    => $self->{name}, 
+			-name    => 'message_history_json', 
+			-page    => $args->{-page}, 
+			-entries => $self->{ls}->param('tracker_record_view_count')
+			}
+		)){
+			# warn 'creating message_history_json JSON ffrom report_by_message_index'; 
+			$self->message_history_json(
+				{
+					-report_by_message_index_data => $sorted_report,
+					-page                         => $args->{-page}, 
+					-printout                     => 0,	
+				}
+			);
+		}
 	
     return $sorted_report;
 }
