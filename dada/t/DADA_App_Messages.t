@@ -517,7 +517,7 @@ $confirm_url = quotemeta('/t/'. $fake_token . '/');
 diag $msg_str; 
 like($msg_str, qr/$confirm_url/,            'Confirmation link found and correct.'); 
 like($msg_str, qr/$li->{list_name}/,        "List Name Found"); 
-like($msg_str, qr/$li->{privacy_policy}/,   "Privacy Policy Found"); 
+#like($msg_str, qr/$li->{privacy_policy}/,   "Privacy Policy Found"); 
 like($msg_str, qr/$li->{physical_address}/, "Physical Address Found"); 
 like($msg_str, qr/$li->{list_owner_email}/, "List Owner ($li->{list_owner_email}) Found"); 
 

@@ -96,6 +96,6 @@ The rest of the installer form will be hidden, as no extra configuration is need
 
 =head2 Changelog 
 
-It's a B<I<very very>> good idea to look at the changelog and not B<any> incompatibilities between versions. It's possible that incompatibilities could break your installation, when you upgrade. 
+It's a B<I<very very>> good idea to look at the changelog and note B<any> incompatibilities between versions. It's possible that incompatibilities could break your installation, when you upgrade. 
 
 Changelog: L<http://dadamailproject.com/d/changes_6_x.pod.html>
