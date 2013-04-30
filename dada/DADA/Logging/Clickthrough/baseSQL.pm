@@ -870,13 +870,6 @@ sub report_by_message_index {
 			$report->{$msg_id}->{$_} = $basic_event_counts->{$_};
 		}
 		
-	        my $num_sub_query =
-	'SELECT details FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND msg_id = ? AND event = ?';
-
-			#my $nst = time; 
-	        $report->{$msg_id}->{num_subscribers} = $self->{dbh}->selectcol_arrayref( $num_sub_query, { MaxRows => 1 }, $self->{name}, $msg_id, 'num_subscribers' )->[0];
-			#warn 'total num_sub time:' . (time - $nst); 
-			
 	    }
 
 	    require DADA::MailingList::Archives;
@@ -918,18 +911,55 @@ sub msg_basic_event_count {
         view_archive        => 1,
 		unsubscribe         => 1, 
     );
-	
 	my $basic_count_query = 'SELECT msg_id, event, COUNT(*) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? GROUP BY msg_id, event';
 	my $sth              = $self->{dbh}->prepare($basic_count_query);
        $sth->execute( $self->{name}, $msg_id);
-
     while ( my ( $m, $e, $c ) = $sth->fetchrow_array ) {
 		if($ok_events{$e}){ 
 			$basic_events->{$e} = $c; 
 		}
 	}
+	$sth->finish; 
+	undef $sth; 
 	
+	# num subscribers
+ 	my $num_sub_query = 'SELECT details FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND msg_id = ? AND event = ?';
+	$basic_events->{num_subscribers} = $self->{dbh}->selectcol_arrayref( $num_sub_query, { MaxRows => 1 }, $self->{name}, $msg_id, 'num_subscribers' )->[0];
+	# num subscribers 
+	
+	# Unique Opens
+	my $uo_query = 'SELECT msg_id, event, email, COUNT(*) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? and event = \'open\' GROUP BY msg_id, event, email'; 
+	my $uo_count  = 0; 
+	my $sth      = $self->{dbh}->prepare($uo_query);
+       $sth->execute( $self->{name}, $msg_id);
+	# Just counting what gets returned. 
+	while ( my ( $m, $e, $c ) = $sth->fetchrow_array ) {
+		$uo_count++; 
+	}
+	$basic_events->{unique_open} = $uo_count; 
+	$sth->finish; 
+	# /Unique Opens
+	
+	$basic_events->{unique_opens_percent}          = $self->percentage($basic_events->{'unique_open'},                                       $basic_events->{num_subscribers}); 
+	$basic_events->{unique_bounces_percent}        = $self->percentage(int($basic_events->{'soft_bounce'} + $basic_events->{'hard_bounce'}), $basic_events->{num_subscribers}); 
+	$basic_events->{unique_unsubscribes_percent}   = $self->percentage($basic_events->{'unsubscribe'},                                       $basic_events->{num_subscribers}); 
+
 	return $basic_events;
+
+}
+
+sub percentage { 
+	my $self = shift; 
+	my $num  = shift; 
+	my $total = shift; 
+	my $p     = 0; 
+	return 0 unless $total > 0; 
+	try { 
+		$p =  int(int($num)/int($total) * 100); 
+	} catch { 
+		carp "problems finding percentage: $_"; 
+	};
+	return $p; 
 }
 
 sub report_by_message {
@@ -941,19 +971,10 @@ sub report_by_message {
     my $report   = {};
     my $l;
 		
-    my $num_sub_query =
-        'SELECT details FROM '
-      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
-      . ' WHERE list = ? AND msg_id = ? AND event = ?';
-    $report->{num_subscribers} =
-      $self->{dbh}->selectcol_arrayref( $num_sub_query, { MaxRows => 1 },
-        $self->{name}, $mid, 'num_subscribers' )->[0];
-
 	my $basic_event_counts = $self->msg_basic_event_count($mid); 
 	for(keys %$basic_event_counts) { 
 		$report->{$_} = $basic_event_counts->{$_};
 	}
-
 
     my $url_clickthroughs_query =
         'SELECT url, COUNT(url) AS count FROM '

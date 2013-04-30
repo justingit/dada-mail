@@ -71,20 +71,11 @@
 
 <form method="post"> 
 <input type="hidden" name="f" value="edit_prefs" /> 
-<table border="0"> 
- <tr> 
-  <td> 
-   <p>
-    <input type="checkbox" name="clickthrough_tracking" id="clickthrough_tracking"  value="1" <!-- tmpl_if list_settings.clickthrough_tracking -->checked="checked"<!--/tmpl_if --> 
-   </p>
-  </td> 
-  <td> 
-   <p>
-    <label for="clickthrough_tracking"> 
-     Track Message Clickthroughs
-    </label> 
-   </p>
 
+
+<h3>
+	<strong>Track Message Clickthroughs:</strong> 
+</h3> 
 	<table width="100%">	
 	  <tr> 
 	  <td width="20"> 
@@ -93,7 +84,7 @@
 	  <td> 
 		
 		<p>
-		 <label for="tracker_auto_parse_links">Auto Tag Message Links</label></p>
+		 <label for="tracker_auto_parse_links">Automatically</label></p>
 		<!-- tmpl_unless can_use_auto_redirect_tag -->
 			<div class="badweatherbox"> 
 				<p class="error"> 
@@ -121,7 +112,7 @@
 	  <td> 
 		
 		<p>
-		 <label for="tracker_noauto_parse_links">Manually Tag Message Links</label></p>
+		 <label for="tracker_noauto_parse_links">Manually, By Tagging Message Links</label></p>
 
 		
 		<div id="tracker_noauto_parse_links_info"> 
@@ -144,25 +135,41 @@
 	
 	</table>
 
+<h3>
+ <strong>
+  Track Message Opens:
+ </strong>
+   </h3>
+	
+	<table width="100%">	
+	  <tr> 
+	  <td width="20"> 
+  	<input type="radio" id="tracker_track_opens_directly" name="tracker_track_opens_method"   class="tracker_track_opens_directly"  value="directly" <!-- tmpl_if list_settings.tracker_track_opens_method -->checked="checked"<!--/tmpl_if -->/>
+	  </td> 
+	  <td> 
+		<label for="tracker_track_opens_directly">Directly</label>,
+		 using an embedded image
+	  </td> 
+	 </tr> 
+	  <tr> 
+	  <td width="20"> 
+  	<input type="radio" id="tracker_track_opens_indirectly" name="tracker_track_opens_method"   class="tracker_track_opens_indirectly"  value="indirectly" <!-- tmpl_if list_settings.tracker_track_opens_method -->checked="checked"<!--/tmpl_if -->/>
+	  </td> 
+	  <td> 
+		<label for="tracker_track_opens_indirectly">
+			Indirectly
+		</label>,
+		 when a user interacts with your messages
+	  </td> 
+	 </tr> 
+	</table>
+	
 
-  </td>
-  </tr> 
 
-  <tr> 
-  <td> 
-   <p>
-    <input type="checkbox" name="enable_open_msg_logging" id="enable_open_msg_logging"  value="1" <!-- tmpl_if list_settings.enable_open_msg_logging -->checked="checked"<!--/tmpl_if --> 
-   </p>	
-  </td> 
-  <td> 
-   <p>
-    <label for="enable_open_msg_logging"> 
-     Track Message Opens
-    </label> 
-   </p>
-  </td>
-  </tr> 
+<br /> 
+<br />
 
+<table border="0">
   <tr> 
   <td> 
    <p>
@@ -180,7 +187,7 @@
   </tr> 
 
 
-
+<!-- tmpl_if comment --> 
    <tr> 
   <td> 
    <p>
@@ -195,6 +202,8 @@
    </p>
   </td>
   </tr>
+<!-- /tmpl_if --> 
+<!-- tmpl_if comment --> 
 
    <tr> 
   <td> 
@@ -210,11 +219,12 @@
    </p>
   </td>
   </tr>
+<!-- /tmpl_if --> 
 
 
 
 
-  
+<!-- tmpl_if comment --> 
    <tr> 
   <td> 
    <p>
@@ -229,6 +239,7 @@
    </p>
   </td>
   </tr>
+<!-- /tmpl_if --> 
 
    <tr> 
   <td> 

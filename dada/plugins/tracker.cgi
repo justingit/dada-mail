@@ -31,6 +31,7 @@ my $q = new CGI;
 $q->charset($DADA::Config::HTML_CHARSET);
 $q = decode_cgi_obj($q);
 
+use Try::Tiny; 
 
 my $Plugin_Config                  = {}; 
 $Plugin_Config->{Plugin_Name}      = 'Tracker'; 
@@ -600,25 +601,29 @@ sub message_report {
 		 push(@$s_url_report, {url => $v, count => $u_url_report->{$v}}); 
 	}
 	
-	
-	
+			
 	my %tmpl_vars = (
-		mid                        => $q->param('mid')                            || '',
-        subject                    => find_message_subject( $q->param('mid') )    || '',
-        url_report                 => $s_url_report                               || [],
-        num_subscribers            => commify($m_report->{num_subscribers})       || 0,
-        opens                      => commify($m_report->{'open'})                || 0, 
-        clickthroughs              => commify($m_report->{'clickthroughs'})       || 0, 
-		soft_bounce                => commify($m_report->{'soft_bounce'})         || 0,
-        hard_bounce                => commify($m_report->{'hard_bounce'})         || 0,
-		view_archive               => commify($m_report->{'view_archive'})        || 0, 
-		forward_to_a_friend        => commify($m_report->{'forward_to_a_friend'}) || 0,
-		soft_bounce_report         => $m_report->{'soft_bounce_report'}           || [],
-		hard_bounce_report         => $m_report->{'hard_bounce_report'}           || [],
-		can_use_country_geoip_data => $rd->can_use_country_geoip_data, 
-		Plugin_URL                 => $Plugin_Url,
-		Plugin_Name                => $Plugin_Config->{Plugin_Name},
-		chrome                     => $chrome, 
+		mid                         => $q->param('mid')                            || '',
+        subject                     => find_message_subject( $q->param('mid') )    || '',
+        url_report                  => $s_url_report                               || [],
+        num_subscribers             => commify($m_report->{num_subscribers})       || 0,
+        opens                       => commify($m_report->{'open'})                || 0, 
+        unique_opens                => commify($m_report->{'unique_open'})         || 0, 
+        unique_opens_percent        => $m_report->{'unique_opens_percent'}         || 0, 
+        clickthroughs               => commify($m_report->{'clickthroughs'})       || 0, 
+		unsubscribes                => commify($m_report->{'unsubscribe'})         || 0, 
+		unique_unsubscribes_percent => $m_report->{'unique_unsubscribes_percent'}  || 0, 
+		soft_bounce                 => commify($m_report->{'soft_bounce'})         || 0,
+        hard_bounce                 => commify($m_report->{'hard_bounce'})         || 0,
+		unique_bounces_percent      => $m_report->{'unique_bounces_percent'}       || 0, 
+		view_archive                => commify($m_report->{'view_archive'})        || 0, 
+		forward_to_a_friend         => commify($m_report->{'forward_to_a_friend'}) || 0,
+		soft_bounce_report          => $m_report->{'soft_bounce_report'}           || [],
+		hard_bounce_report          => $m_report->{'hard_bounce_report'}           || [],
+		can_use_country_geoip_data  => $rd->can_use_country_geoip_data, 
+		Plugin_URL                  => $Plugin_Url,
+		Plugin_Name                 => $Plugin_Config->{Plugin_Name},
+		chrome                      => $chrome, 
 	); 
 	my $scrn = ''; 
 	require DADA::Template::Widgets;

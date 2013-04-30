@@ -68,14 +68,15 @@
 	<td> 
 	 <p>
 	  <strong>
-	   		  <a href="#" class="to_opens"> Opens</a>
+	 	<a href="#" class="to_opens">Opens</a>
 	  </strong> 
 	 </p> 
 	 </td> 
 	 <td> 
 	 <p style="text-align:right"> 
 	  <a href="#" class="to_opens">
-		<!-- tmpl_var opens -->
+		Total: <strong><!-- tmpl_var opens --></strong>, Unique: <strong><!-- tmpl_var unique_opens --></strong> - <strong><!-- tmpl_var unique_opens_percent -->%</strong>
+		
 	 </a> 
 	
 	 </p>
@@ -110,13 +111,41 @@
 	 </td> 
 	 <td> 
 	 <p style="text-align:right"> 
-	  <a href="#" class="to_unsubscribes"><!-- tmpl_var unsubscribes  default="0" --></a>
+	  <a href="#" class="to_unsubscribes">
+	<strong> 
+		<!-- tmpl_var unsubscribes default="0" -->
+	</strong> 
+	- 
+	<strong> 
+		<!-- tmpl_var unique_unsubscribes_percent -->%
+	</strong> 
+	</a>
 	 </p>
 	</td> 
 	</tr>
 
 	
+	
 	<tr>
+	<td> 
+	 <p>
+	  <strong>
+	   <a href="#" class="to_bounces">Bounces</a>
+	  </strong> 
+	 </p> 
+	 </td> 
+	 <td> 
+	 <p style="text-align:right"> 
+	  <a href="#" class="to_bounces">
+	Soft: <strong><!-- tmpl_var soft_bounce default="0" --></strong>, 
+	Hard: <strong><!-- tmpl_var hard_bounce  default="0" --></strong> 
+	- <strong><!-- tmpl_var unique_bounces_percent -->%</strong>
+	</a>
+	 </p>
+	</td> 
+	</tr>	
+	
+	<tr class="alt">
 	<td> 
 	 <p>
 	  <strong>
@@ -133,7 +162,7 @@
 	
 	
 	
-	<tr class="alt">
+	<tr>
 	<td> 
 	 <p>
 	  <strong>
@@ -149,20 +178,7 @@
 	</tr>
 	
 	
-	<tr>
-	<td> 
-	 <p>
-	  <strong>
-	   <a href="#" class="to_bounces">Bounces (soft/hard)</a>
-	  </strong> 
-	 </p> 
-	 </td> 
-	 <td> 
-	 <p style="text-align:right"> 
-	  <a href="#" class="to_bounces"><!-- tmpl_var soft_bounce default="0" -->/<!-- tmpl_var hard_bounce  default="0" --></a>
-	 </p>
-	</td> 
-	</tr>	
+	
 	
 	</table> 
 	</div> 
@@ -192,24 +208,35 @@
 			</li>
 			
 
-			<li>
-			<a href="#archive_views">
-			Archive Views
-			</a>
-			</li>
-			<li>
-			<a href="#forwards">
-			Forwards
-			</a>
-			</li>
+
 			<li>
 			<a href="#bounces">
 			Bounces
 			</a>
 			</li>
+			
+			<li>
+			<a href="#archive_views">
+			Archive Views
+			</a>
+			</li>
+			
+			<li>
+			<a href="#forwards">
+			Forwards
+			</a>
+			</li>
+			
+			
 		</ul>
 
 	<div id="opens">
+		<!-- tmpl_if comment --> 
+		<h2>
+			Total Opens: <!-- tmpl_var opens -->, Unique Opens: <!-- tmpl_var unique_opens --> - <!-- tmpl_var unique_opens_percent -->%
+		</h2>
+		<!-- /tmpl_if --> 
+		
 		<h2>Message Opens by Country</h2>
 		<!-- tmpl_if can_use_country_geoip_data --> 
 			<table class="stripedtable">
