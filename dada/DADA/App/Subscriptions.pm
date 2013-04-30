@@ -1045,7 +1045,12 @@ sub unsubscribe {
     my $self = shift;
     my ($args) = @_;
 
-    croak if !$args->{-cgi_obj};
+
+	for ('-cgi_obj' ) {
+        if ( !exists( $args->{$_} ) ) {
+            croak "You MUST pass the, " . $_ . " paramater!";
+        }
+	}
 
     if ( !exists( $args->{-html_output} ) ) {
         $args->{-html_output} = 1;
@@ -1054,12 +1059,13 @@ sub unsubscribe {
         $args->{-fh} = \*STDOUT;
     }
     my $fh = $args->{-fh};
-    my $q = $args->{-cgi_obj};
+    my $q  = $args->{-cgi_obj};
 
     my $list       = $q->param('list');
     my $mid        = $q->param('mid');
     my $unsub_hash = $q->param('unsub_hash');
     my $process    = $q->param('process') || undef;
+	my $email_hint = $q->param('email_hint') || undef; 
     my $is_valid   = 1;
 
 	my $list_exists = DADA::App::Guts::check_if_list_exists(-List => $list);
@@ -1077,13 +1083,8 @@ sub unsubscribe {
             }
         );
         if ($is_valid) {
-#			$args->{-list}       = $list; 
-#			$args->{-mid}        = $mid; 
-#			$args->{-unsub_hash} = $unsub_hash;
-#			$args->{-email}      = $unsub_hash;
-#			
-#		    
 			$self->complete_unsubscription($args); 
+			return; 
         }
     }
 
@@ -1096,6 +1097,7 @@ sub unsubscribe {
             -vars   => {
                 mid         => $mid,
                 unsub_hash  => $unsub_hash,
+				email_hint  => $email_hint, 
                 process     => $process,
                 is_valid    => $is_valid,
 				list_exists => $list_exists, 
@@ -1116,7 +1118,11 @@ sub complete_unsubscription {
     my $self = shift;
     my ($args) = @_;
 
-    croak if !$args->{-cgi_obj};
+	for ('-cgi_obj' ) {
+        if ( !exists( $args->{$_} ) ) {
+            croak "You MUST pass the, " . $_ . " paramater!";
+        }
+	}
 
     if ( !exists( $args->{-html_output} ) ) {
         $args->{-html_output} = 1;
@@ -1164,7 +1170,6 @@ sub complete_unsubscription {
 	}
  
 	# Ok, Done? Good: 
-	
 
     if (
            $ls->param('black_list') == 1

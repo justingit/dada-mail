@@ -47,8 +47,8 @@ sub _init {
         $self->{ls} =
           DADA::MailingList::Settings->new( { -list => $self->{name} } );
     }
-    my $self->{begin_uu_str} = "begin 644 uuencode.uu\n";
-    my $self->{end_uu_str}   = "`\nend\n";
+    $self->{begin_uu_str} = "begin 644 uuencode.uu\n";
+    $self->{end_uu_str}   = "`\nend\n";
 
 }
 
@@ -64,18 +64,40 @@ sub unsub_link {
 
     my $hash = $self->make_unsub_hash($args);
 
-    carp 'unsub link: '
-      . $DADA::Config::PROGRAM_URL . '/' . 'u' . '/'
-      . $self->{name} . '/'
-      . $args->{-mid} . '/'
-      . $hash . '/';
-
-    return
+    my $unsub_link = 
         $DADA::Config::PROGRAM_URL . '/' . 'u' . '/'
       . $self->{name} . '/'
       . $args->{-mid} . '/'
       . $hash . '/';
+	if($self->{ls}->param('unsub_show_email_hint')){ 
+		$unsub_link .= $self->unsub_hint({-email => $args->{-email}}) 
+		. '/'; 
+	}
+}
 
+
+sub unsub_hint { 
+	my $self = shift; 
+	my ($args) = @_; 
+	for ('-email' ) {
+        if ( !exists( $args->{$_} ) ) {
+            croak "You MUST pass the, " . $_ . " paramater!";
+        }
+	}
+    my ($n, $d) = split('@', $args->{-email}); 
+
+	if(length($n) == 1){ 
+		return '*/'. $d; 
+	}
+	else { 
+		return 
+		$self->perl_hex(substr($n, 0,1) 
+		. '*' 
+		. int((length($n) -1))) 
+		. '/' 
+		. 
+		$self->perl_hex($d);  
+	}
 }
 
 sub make_unsub_hash {

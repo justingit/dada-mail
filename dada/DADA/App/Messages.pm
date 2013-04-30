@@ -268,6 +268,11 @@ sub send_subscribed_message {
 	}
 	my $li    = $ls->get; 
 
+	require DADA::App::Subscriptions::Unsub; 
+	my $dasu = DADA::App::Subscriptions::Unsub->new({-list => $args->{-list}});
+	my $unsub_link = $dasu->unsub_link({-email => $args->{-email}, -mid => '00000000000000'}); 
+	$args->{-vars}->{list_unsubscribe_link} = $unsub_link; 
+
 	send_generic_email (
 		{
 			-list         => $args->{-list}, 

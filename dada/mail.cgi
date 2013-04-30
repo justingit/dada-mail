@@ -319,12 +319,18 @@ if($ENV{PATH_INFO}){
             if $pi_img_string;
 
 	}elsif($info =~ /^u\//){
-        my ($pi_flavor, $pi_list, $pi_mid, $pi_hash) = split('/', $info, 4);
+        my ($pi_flavor, $pi_list, $pi_mid, $pi_hash, $pi_name_hint, $pi_domain_hint) = split('/', $info, 6);
   		
         $q->param('flavor',      $pi_flavor);
         $q->param('list',        $pi_list);
 		$q->param('mid',         $pi_mid); 
         $q->param('unsub_hash',  $pi_hash);
+
+		if($pi_name_hint && $pi_domain_hint){ 
+			
+			my ($f_l, $n_stars) = split(/\*/, perl_dehex($pi_name_hint)); 
+			$q->param('email_hint', $f_l . ('*' x int($n_stars)) . '@' . perl_dehex($pi_domain_hint)); 
+		}
 
     }elsif($info =~ /^(s|n)/){ 
 		my ($pi_flavor, $pi_list, $pi_email, $pi_domain, $pi_pin) = split('/', $info, 5);
@@ -572,6 +578,7 @@ sub run {
 	'admin_menu_subscriber_count_notification' =>  \&admin_menu_subscriber_count_notification, 
 	'admin_menu_mailing_monitor_notification'  =>  \&admin_menu_mailing_monitor_notification,
 	'admin_menu_archive_count_notification'    =>  \&admin_menu_archive_count_notification,  
+	'admin_menu_sending_preferences_notification' => \&admin_menu_sending_preferences_notification, 
 	'send_email'                 =>    \&send_email,
 	'message_body_help'          =>    \&message_body_help, 
 	'url_message_body_help'      =>    \&url_message_body_help, 
@@ -1068,6 +1075,35 @@ sub admin_menu_archive_count_notification {
 		carp ($_); 
 	}
 }
+
+sub admin_menu_sending_preferences_notification { 
+		print $q->header(); 
+
+		try { 
+			my ($admin_list, $root_login, $checksout) = check_list_security(
+												-cgi_obj         => $q,
+												-manual_override => 1
+											);
+			if($checksout) { 					
+				$list = $admin_list; 
+				require DADA::MailingList::Settings;
+		        my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+		
+				if($ls->param('sending_method') eq 'sendmail'){ 
+					e_print('(sendmail)'); 
+				}
+				elsif($ls->param('sending_method') eq 'smtp'){ 
+					e_print('(SMTP)'); 
+				}
+				elsif($ls->param('sending_method') eq 'amazon_ses'){ 
+					e_print('(Amazon SES)'); 					
+				}				
+			}
+		} catch { 
+			carp ($_); 
+		}
+	}
+
 
 
 
@@ -2154,6 +2190,7 @@ sub list_options {
 	                can_use_captcha                          => $can_use_captcha,
 					send_subscription_notice_to_popup_menu   => $send_subscription_notice_to_popup_menu, 
 					send_unsubscription_notice_to_popup_menu => $send_unsubscription_notice_to_popup_menu, 
+					list_owner_email_anonystar_address        => DADA::App::Guts::anonystar_address_encode($ls->param('list_owner_email')), 
 	            },
 	            -list_settings_vars_param => {
 	                -list   => $list,
@@ -2213,6 +2250,7 @@ sub list_options {
                     use_alt_url_unsub_failed                => 0,
                     alt_url_unsub_failed                    => '',
                     alt_url_unsub_failed_w_qs               => 0,
+					unsub_show_email_hint                  => 0, 
                     enable_subscription_approval_step       => 0,
 					enable_mass_subscribe                   => 0,
 					send_subscribed_by_list_owner_message   => 0,

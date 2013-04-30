@@ -68,22 +68,6 @@
 	<td> 
 	 <p>
 	  <strong>
-	    	  <a href="#" class="to_clickthroughs">Clickthroughs</a>
-	  </strong> 
-	 </p> 
-	 </td> 
-	 <td> 
-	 <p style="text-align:right"> 
-	  <a href="#" class="to_clickthroughs"><!-- tmpl_var clickthroughs --></a>
-	 </p>
-	</td> 
-	</tr>
-		
-	
-	<tr>
-	<td> 
-	 <p>
-	  <strong>
 	   		  <a href="#" class="to_opens"> Opens</a>
 	  </strong> 
 	 </p> 
@@ -99,7 +83,40 @@
 	</tr>
 	
 	
+
+	<tr>
+	<td> 
+	 <p>
+	  <strong>
+	    	  <a href="#" class="to_clickthroughs">Clickthroughs</a>
+	  </strong> 
+	 </p> 
+	 </td> 
+	 <td> 
+	 <p style="text-align:right"> 
+	  <a href="#" class="to_clickthroughs"><!-- tmpl_var clickthroughs --></a>
+	 </p>
+	</td> 
+	</tr>
+
+
 	<tr class="alt">
+	<td> 
+	 <p>
+	  <strong>
+	    	  <a href="#" class="to_unsubscribes">Unsubscribes</a>
+	  </strong> 
+	 </p> 
+	 </td> 
+	 <td> 
+	 <p style="text-align:right"> 
+	  <a href="#" class="to_unsubscribes"><!-- tmpl_var unsubscribes  default="0" --></a>
+	 </p>
+	</td> 
+	</tr>
+
+	
+	<tr>
 	<td> 
 	 <p>
 	  <strong>
@@ -116,7 +133,7 @@
 	
 	
 	
-	<tr>
+	<tr class="alt">
 	<td> 
 	 <p>
 	  <strong>
@@ -132,7 +149,7 @@
 	</tr>
 	
 	
-	<tr class="alt">
+	<tr>
 	<td> 
 	 <p>
 	  <strong>
@@ -155,16 +172,26 @@
 
 	<div id="tabs"> 
 		<ul>
-			<li>
-			<a href="#clickthroughs">
-			Clickthroughs
-			</a>
-			</li>
+			
 			<li>
 			<a href="#opens">
 			Opens
 			</a>
 			</li>
+			
+			<li>
+			<a href="#clickthroughs">
+			Clickthroughs
+			</a>
+			</li>
+			
+			<li>
+			<a href="#unsubscribes">
+			Unsubscribes
+			</a>
+			</li>
+			
+
 			<li>
 			<a href="#archive_views">
 			Archive Views
@@ -182,11 +209,47 @@
 			</li>
 		</ul>
 
-	<div id="clickthroughs">
+	<div id="opens">
+		<h2>Message Opens by Country</h2>
+		<!-- tmpl_if can_use_country_geoip_data --> 
+			<table class="stripedtable">
+			 <tr> 
+			<td width="350"> 
+			   <div id="country_geoip_opens_table_loading"></div> 
+			   <div id="country_geoip_opens_table"></div>
+			  </td> 
+			  <td> 
+			   <div id="country_geoip_opens_map_loading"></div> 
+			   <div id="country_geoip_opens_map" data-width="640" data-height="400" style="width:640px;height:400px"></div>
+			  </td> 
+			 </tr>
+			</table>
+			<!-- tmpl_else --> 
+				<p class="alert">Nothing to report.</p> 
+			<!-- /tmpl_if -->
+	<h2>Message Opens Over Time</h2> 
+	<div id="over_time_opens_graph_loading"></div> 
+	<div id="over_time_opens_graph" data-width="720" data-height="400" style="width:720px;height:400px"></div> 
+
+
 		
+		<fieldset> 
+			<div class="buttonfloat">
+			<form action="<!-- tmpl_var PluginURL -->" method="post"> 
+			<input type="hidden" name="f"    value="export_subscribers" /> 
+			<input type="hidden" name="type" value="opens" /> 
+			<input type="hidden" name="mid"  value="<!-- tmpl_var mid -->" />
+			<input type="submit" value="Export Subscribers Opening This Message" class="processing" /> 
+			</form>
+			</div> 
+			<div class="floatclear"></div>	
+		</fieldset>
+		
+	</div> 
 	
-
-
+	
+	<div id="clickthroughs">
+	
 		<h2>Clickthroughs by Country</h2>
 		
 		<!-- tmpl_if can_use_country_geoip_data --> 
@@ -269,43 +332,31 @@
 	</fieldset> 
 	
 	</div> 
-	<div id="opens">
-		<h2>Message Opens by Country</h2>
-		<!-- tmpl_if can_use_country_geoip_data --> 
-			<table class="stripedtable">
-			 <tr> 
-			<td width="350"> 
-			   <div id="country_geoip_opens_table_loading"></div> 
-			   <div id="country_geoip_opens_table"></div>
-			  </td> 
-			  <td> 
-			   <div id="country_geoip_opens_map_loading"></div> 
-			   <div id="country_geoip_opens_map" data-width="640" data-height="400" style="width:640px;height:400px"></div>
-			  </td> 
-			 </tr>
-			</table>
-			<!-- tmpl_else --> 
-				<p class="alert">Nothing to report.</p> 
-			<!-- /tmpl_if -->
-	<h2>Message Opens Over Time</h2> 
-	<div id="over_time_opens_graph_loading"></div> 
-	<div id="over_time_opens_graph" data-width="720" data-height="400" style="width:720px;height:400px"></div> 
-
-
+	
+	<div id="unsubscribes"> 
 		
-		<fieldset> 
-			<div class="buttonfloat">
-			<form action="<!-- tmpl_var PluginURL -->" method="post"> 
-			<input type="hidden" name="f"    value="export_subscribers" /> 
-			<input type="hidden" name="type" value="opens" /> 
-			<input type="hidden" name="mid"  value="<!-- tmpl_var mid -->" />
-			<input type="submit" value="Export Subscribers Opening This Message" class="processing" /> 
-			</form>
-			</div> 
-			<div class="floatclear"></div>	
-		</fieldset>
+		<h2>Unsubscribes</h2>
+		<table class="stripedtable">
+		 <tr> 
+		  <td> 
+				<div id="unsubscribe_table_loading"></div> 
+				<div id="unsubscribe_table" style="width:350px;height:400px"></div>
+			</td>
+			<td>
+				<div id="unsubscribe_graph_loading"></div> 
+				<div id="unsubscribe_graph" data-width="640" data-height="400" data-title="Unsubscribes"></div> 
+			</td>
+		   </tr>
+		</table>
+		
+		
+		<h2>Unsubscribes Over Time</h2> 
+		<div id="over_time_unsubscribe_graph_loading"></div> 
+		<div id="over_time_unsubscribe_graph" data-width="720" data-height="400" style="width:720px;height:400px"></div>
+		
 		
 	</div> 
+	
 	
 	<div id="archive_views">
 	<h2>Archive Views by Country</h2>

@@ -101,8 +101,8 @@ sub run {
 		'individual_country_geoip_json'   => \&individual_country_geoip_json, 
 		'individual_country_geoip_report_table' => \&individual_country_geoip_report_table, 
 		'data_over_time_json'             => \&data_over_time_json, 
-		'message_bounce_report_table'     => \&message_bounce_report_table, 
-		'bounce_stats_json'               => \&bounce_stats_json, 
+		'message_email_report_table'      => \&message_email_report_table, 
+		'email_stats_json'                => \&email_stats_json, 
 		'clear_data_cache'                => \&clear_data_cache, 
 		'clear_message_data_cache'        => \&clear_message_data_cache, 
 		'export_subscribers'              => \&export_subscribers, 
@@ -277,24 +277,24 @@ sub data_over_time_json {
 	
 }
 
-sub message_bounce_report_table { 
+sub message_email_report_table { 
 	my $mid = $q->param('mid'); 
-	my $bounce_type = $q->param('bounce_type') || 'soft'; 
-	$rd->message_bounce_report_table(
+	my $type = $q->param('type') || 'soft_bounce'; 
+	$rd->message_email_report_table(
 		{
 			-mid             => $mid,
-			-bounce_type     => $bounce_type, 
+			-type            => $type, 
 			-printout        => 1
 		}
 	);
 }
-sub bounce_stats_json { 
+sub email_stats_json { 
 		my $mid = $q->param('mid'); 
-		my $bounce_type = $q->param('bounce_type') || 'soft'; 
-		$rd->bounce_stats_json(
+		my $type = $q->param('type') || 'soft_bounce'; 
+		$rd->email_stats_json(
 			{
 				-mid             => $mid,
-				-bounce_type     => $bounce_type, 
+				-type            => $type, 
 				-printout        => 1
 			}
 		);

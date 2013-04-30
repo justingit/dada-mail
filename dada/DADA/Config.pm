@@ -1189,6 +1189,9 @@ Please save this email message for future reference.
 * Need Help? Contact: 
 <!-- tmpl_var list_settings.list_owner_email -->
 
+* Unsubscribe at any time, by visiting: 
+<!-- tmpl_var list_unsubscribe_link --> 
+
 <!-- tmpl_if PROFILE_ENABLED --><!-- tmpl_if new_profile --> 
 * Check out your Profile to update your subscription information: 
 
@@ -2411,6 +2414,8 @@ EOF
 
     get_sub_notice                => 1,
     send_subscription_notice_to   => 'list_owner',
+
+	unsub_show_email_hint         => 1, 
     get_unsub_notice              => 1,
     send_unsubscription_notice_to => 'list_owner',
 

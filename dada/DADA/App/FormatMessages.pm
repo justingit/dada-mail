@@ -2296,8 +2296,8 @@ sub email_template {
 			
             if ($content) {
 
-				use Data::Dumper; 
-				warn '%screen_vars ' . Dumper(\%screen_vars); 
+				# use Data::Dumper; 
+				# warn '%screen_vars ' . Dumper(\%screen_vars); 
                 # And, that's it.
                 $content = DADA::Template::Widgets::screen(
                     {

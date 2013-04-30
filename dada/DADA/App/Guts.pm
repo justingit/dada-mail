@@ -67,10 +67,11 @@ require Exporter;
   escape_for_sending
   entity_protected_str
   spam_me_not_encode
-  anony_star_address_encode
+  anonystar_address_encode
   optimize_mime_parser
   mailhide_encode
   gravatar_img_url
+  perl_dehex
   csv_parse
   decode_cgi_obj
   safely_decode
@@ -2358,7 +2359,7 @@ sub spam_me_not_encode {
 
 
 
-sub anony_star_address_encode { 	
+sub anonystar_address_encode { 	
 	my $str = shift; 
 	my ($n, $d) = split('@', $str); 
 	if(length($n) == 1){ 
@@ -2481,6 +2482,11 @@ sub gravatar_img_url {
 sub perl_dechex { 
 	my $s = shift; 
 	return sprintf("%X", $s);
+}
+sub perl_dehex {
+    my $s    = shift;
+    $s =~ s/([a-fA-F0-9][a-fA-F0-9])/chr(hex($1))/eg;
+    return $s;
 }
 
 

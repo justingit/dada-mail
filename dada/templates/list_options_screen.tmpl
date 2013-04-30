@@ -534,6 +534,39 @@ People will still be able to subscribe/unsubscribe
 
 
  <table cellspacing="5">
+	
+	<tr>
+   <td>
+    <input type="checkbox" name="unsub_show_email_hint" id="unsub_show_email_hint" value="1" <!-- tmpl_if list_settings.unsub_show_email_hint -->checked="checked"<!--/tmpl_if --> />
+   </td>
+   <td width="99%">
+    <p>
+     <label for="unsub_show_email_hint"> 
+      Show Email Hint
+     </label>
+     <br />
+     The Unsubscription Form will have the user's email address partially shown to help users fill out the form, with the correct email address. 	
+    </p>
+	<blockquote> 
+	<p>
+		<strong>
+			 Example:
+		</strong>
+		
+		<em>
+			<!-- tmpl_var list_settings.list_owner_email -->
+		</em>	
+		 will be shown as,
+		<em>
+			<!-- tmpl_var list_owner_email_anonystar_address -->
+		</em>
+	</p>
+	</blockquote> 
+	
+   </td>
+  </tr>
+
+
   <tr>
    <td>
     <input type="checkbox" name="get_unsub_notice" id="get_unsub_notice" value="1" <!-- tmpl_if list_settings.get_unsub_notice -->checked="checked"<!--/tmpl_if --> />
