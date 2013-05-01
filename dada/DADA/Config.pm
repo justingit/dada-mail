@@ -2823,17 +2823,15 @@ EOF
     msg_labeled_as_spam_msg => $MSG_LABELED_AS_SPAM_MSG,
 
     # Tracker
-
-    clickthrough_tracking                           => 1,
-    enable_open_msg_logging                         => 1,
-    enable_bounce_logging                           => 1,
-    enable_forward_to_a_friend_logging              => 1,
-    enable_view_archive_logging                     => 1,
     tracker_record_view_count                       => 10,
-    tracker_clean_up_reports                        => 1,
+
     tracker_auto_parse_links                        => 1,
-    tracker_show_message_reports_in_mailing_monitor => 0,
+    tracker_track_opens_method                      => 'directly',
+
     tracker_track_email                             => 0,
+
+    tracker_clean_up_reports                        => 1,
+    tracker_show_message_reports_in_mailing_monitor => 0,
 
     #	tracker_enable_data_cache                           => 1,
     #	tracker_dada_cache_expires                          => 1, # in hours

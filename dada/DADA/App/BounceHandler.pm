@@ -1027,7 +1027,6 @@ sub carry_out_rule {
             warn "unknown rule trying to be carried out, ignoring";
         }
 
-        if ( $ls->param('enable_bounce_logging') ) {
             if ( exists( $diagnostics->{'Simplified-Message-Id'} ) ) {
                 $report .= "\nSaving bounced email report in tracker\n";
                 require DADA::Logging::Clickthrough;
@@ -1076,7 +1075,7 @@ sub carry_out_rule {
                 warn
 "cannot log bounced email from, '$email' for, '$list' in tracker log - no Simplified-Message-Id found. Ignoring!";
             }
-        }
+        
 
 		# I'm putting the rule used in $diagnostics, for now: 
 		$diagnostics->{matched_rule} = $title; 

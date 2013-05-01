@@ -241,85 +241,88 @@ sub key_exists {
 
 sub r_log {
 
-    my $self      = shift; 
+    my $self      = shift;
     my ($args)    = @_;
-	my $timestamp = undef; 
-	if(exists($args->{-timestamp})){ 
-		$timestamp = $args->{-timestamp};
-	}
-	my $atts = {};
-	if(exists($args->{-atts})){ 
-		$atts = $args->{-atts};
-	}
-	
-	my $remote_address = undef; 
-	if(!exists($args->{-remote_addr})){ 
-		$remote_address = $self->remote_addr;
-		$args->{-remote_addr} = $remote_address; 
-	}
-	else { 
-		$remote_address = $args->{-remote_addr}; 
-	}
+    my $timestamp = undef;
+    if ( exists( $args->{-timestamp} ) ) {
+        $timestamp = $args->{-timestamp};
+    }
+    my $atts = {};
+    if ( exists( $args->{-atts} ) ) {
+        $atts = $args->{-atts};
+    }
 
-	if(!exists($args->{-email})){ 
-		$args->{-email} = ''; 
-	}
-	
-	if ( $self->{ls}->param('enable_open_msg_logging') == 1 ) {
-		my $recorded_open_recently = 1; 
-		try {
-			$recorded_open_recently = $self->_recorded_open_recently($args);
-		} catch {
-			carp "Couldn't execute, '_recorded_open_recently', : $_";
-		};
-		if($recorded_open_recently <= 0) { 
-			$self->o_log($args); 
-		}
-	}
-			
-    if ( $self->{ls}->param('clickthrough_tracking') == 1 ) {
-        my $place_holder_string = '';
-        my $sql_snippet         = '';
-
-        my @values    = ();
-        my $fields    = $self->custom_fields;
-        my $lt_fields = {};
-        foreach (@$fields) {
-            $lt_fields->{$_} = 1;
-        }
-
-        foreach ( keys %$atts ) {
-            if ( exists( $lt_fields->{$_} ) ) {
-                push( @values, $atts->{$_} );
-                $place_holder_string .= ' ,?';
-                $sql_snippet .= ' ,' . $_;
-            }
-        }
-		my $ts_snippet = ''; 
-		if(defined($timestamp)){ 
-			$ts_snippet = 'timestamp,'; 
-			$place_holder_string .= ' ,?';
-		}
-        my $query =
-            'INSERT INTO ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} .'(list,' . $ts_snippet .'remote_addr, msg_id, url, email'
-          . $sql_snippet
-          . ') VALUES (?, ?, ?, ?, ?'
-          . $place_holder_string . ')';
-
-        my $sth = $self->{dbh}->prepare($query);
-        if(defined($timestamp)){ 
-			$sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, $args->{-url}, $args->{-email}, @values );
-		}
-		else { 
-			$sth->execute($self->{name}, $remote_address, $args->{-mid}, $args->{-url}, $args->{-email}, @values );			
-		}
-        $sth->finish;
-
-        return 1;
+    my $remote_address = undef;
+    if ( !exists( $args->{-remote_addr} ) ) {
+        $remote_address = $self->remote_addr;
+        $args->{-remote_addr} = $remote_address;
     }
     else {
-        return 0;
+        $remote_address = $args->{-remote_addr};
     }
+
+    if ( !exists( $args->{-email} ) ) {
+        $args->{-email} = '';
+    }
+
+    my $recorded_open_recently = 1;
+    try {
+        $recorded_open_recently = $self->_recorded_open_recently($args);
+    }
+    catch {
+        carp "Couldn't execute, '_recorded_open_recently', : $_";
+    };
+    if ( $recorded_open_recently <= 0 ) {
+        $self->o_log($args);
+    }
+
+    my $place_holder_string = '';
+    my $sql_snippet         = '';
+
+    my @values    = ();
+    my $fields    = $self->custom_fields;
+    my $lt_fields = {};
+    foreach (@$fields) {
+        $lt_fields->{$_} = 1;
+    }
+
+    foreach ( keys %$atts ) {
+        if ( exists( $lt_fields->{$_} ) ) {
+            push( @values, $atts->{$_} );
+            $place_holder_string .= ' ,?';
+            $sql_snippet .= ' ,' . $_;
+        }
+    }
+    my $ts_snippet = '';
+    if ( defined($timestamp) ) {
+        $ts_snippet = 'timestamp,';
+        $place_holder_string .= ' ,?';
+    }
+    my $query =
+        'INSERT INTO '
+      . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table}
+      . '(list,'
+      . $ts_snippet
+      . 'remote_addr, msg_id, url, email'
+      . $sql_snippet
+      . ') VALUES (?, ?, ?, ?, ?'
+      . $place_holder_string . ')';
+
+    my $sth = $self->{dbh}->prepare($query);
+    if ( defined($timestamp) ) {
+        $sth->execute( $self->{name}, $timestamp, $remote_address,
+            $args->{-mid}, $args->{-url}, $args->{-email}, @values );
+    }
+    else {
+        $sth->execute(
+            $self->{name}, $remote_address, $args->{-mid},
+            $args->{-url}, $args->{-email}, @values
+        );
+    }
+    $sth->finish;
+
+    return 1;
+
 }
 
 
@@ -379,53 +382,53 @@ sub _recorded_open_recently {
 
 
 sub o_log {
-	my $self      = shift; 
+    my $self      = shift;
     my ($args)    = @_;
-	my $timestamp = undef; 
-	if(exists($args->{-timestamp})){ 
-		$timestamp = $args->{-timestamp};
-	}
-	if(!exists($args->{-email})){ 
-		$args->{-email} = '';
-	}
-	
-	my $ts_snippet = ''; 
-	my $place_holder_string = ''; 
-	
-	if(defined($timestamp)){ 
-		$ts_snippet = 'timestamp,'; 
-		$place_holder_string .= ' ,?';
-	}
-	my $remote_address = undef; 
-	if(!exists($args->{-remote_addr})){ 
-		$remote_address = $self->remote_addr;
-	}
-	else { 
-		$remote_address = $args->{-remote_addr}; 
-	}
-	
-    if ( $self->{ls}->param('enable_open_msg_logging') == 1 ) {
-        my $query = 'INSERT INTO ' 
-		. $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} 
-		.'(list, ' 
-		. $ts_snippet 
-		. 'remote_addr, msg_id, event, email) VALUES (?, ?, ?, ?, ?' 
-		. $place_holder_string 
-		.')';
-		
-        my $sth = $self->{dbh}->prepare($query);
-		if(defined($timestamp)){ 
-			$sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, 'open', $args->{-email});
-		}
-		else { 
-			$sth->execute($self->{name}, $remote_address, $args->{-mid}, 'open', $args->{-email});
-        }
-		$sth->finish;
-        return 1;
+    my $timestamp = undef;
+    if ( exists( $args->{-timestamp} ) ) {
+        $timestamp = $args->{-timestamp};
+    }
+    if ( !exists( $args->{-email} ) ) {
+        $args->{-email} = '';
+    }
+
+    my $ts_snippet          = '';
+    my $place_holder_string = '';
+
+    if ( defined($timestamp) ) {
+        $ts_snippet = 'timestamp,';
+        $place_holder_string .= ' ,?';
+    }
+    my $remote_address = undef;
+    if ( !exists( $args->{-remote_addr} ) ) {
+        $remote_address = $self->remote_addr;
     }
     else {
-        return 0;
+        $remote_address = $args->{-remote_addr};
     }
+
+    my $query =
+        'INSERT INTO '
+      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+      . '(list, '
+      . $ts_snippet
+      . 'remote_addr, msg_id, event, email) VALUES (?, ?, ?, ?, ?'
+      . $place_holder_string . ')';
+
+    my $sth = $self->{dbh}->prepare($query);
+    if ( defined($timestamp) ) {
+        $sth->execute( $self->{name}, $timestamp, $remote_address,
+            $args->{-mid}, 'open', $args->{-email} );
+    }
+    else {
+        $sth->execute(
+            $self->{name}, $remote_address, $args->{-mid},
+            'open',        $args->{-email}
+        );
+    }
+    $sth->finish;
+    return 1;
+
 }
 
 sub sc_log {
@@ -540,26 +543,22 @@ sub forward_to_a_friend_log {
 	}
 	
 	
-    if ( $self->{ls}->param('enable_forward_to_a_friend_logging') == 1 ) {
-		my $query =
+	my $query =
 'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'remote_addr, msg_id, event) VALUES (?, ?, ?, ?' . $place_holder_string . ')';
-        
-		my $sth = $self->{dbh}->prepare($query);
-		if(defined($timestamp)){ 
-	        $sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, 'forward_to_a_friend') 
-				or carp "cannot do statement! $DBI::errstr\n";
-		}
-		else { 
-	        $sth->execute($self->{name}, $remote_address, $args->{-mid}, 'forward_to_a_friend') 
-				or carp "cannot do statement! $DBI::errstr\n";;			
-		}
-        $sth->finish;
+       
+	my $sth = $self->{dbh}->prepare($query);
+	if(defined($timestamp)){ 
+        $sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, 'forward_to_a_friend') 
+			or carp "cannot do statement! $DBI::errstr\n";
+	}
+	else { 
+        $sth->execute($self->{name}, $remote_address, $args->{-mid}, 'forward_to_a_friend') 
+			or carp "cannot do statement! $DBI::errstr\n";;			
+	}
+       $sth->finish;
 
-        return 1;
-    }
-    else {
-        return 0;
-    }
+       return 1;
+   
 }
 
 
@@ -589,7 +588,6 @@ sub view_archive_log {
 	}
 
 
-    if ( $self->{ls}->param('enable_view_archive_logging') == 1 ) {
 		my $query =
 'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'remote_addr, msg_id, event) VALUES (?, ?, ?, ?' . $place_holder_string . ')';
 
@@ -605,10 +603,7 @@ sub view_archive_log {
         $sth->finish;
 
         return 1;
-    }
-    else {
-        return 0;
-    }
+    
 }
 
 
@@ -616,68 +611,65 @@ sub view_archive_log {
 
 
 sub bounce_log {
-   # my ( $self, $type, $mid, $email ) = @_;
 
-	my $self      = shift; 
-	my ($args)    = @_;
-	my $timestamp = undef; 
-	if(exists($args->{-timestamp})){ 
-		$timestamp = $args->{-timestamp};
-	}
-	my $ts_snippet = ''; 
-	my $place_holder_string = ''; 
-	
-	if(defined($timestamp)){ 
-		$ts_snippet = 'timestamp,'; 
-		$place_holder_string .= ' ,?';
-	}
-	
-	my $remote_address = undef; 
-	if(!exists($args->{-remote_addr})){ 
-		$remote_address = $self->remote_addr;
-	}
-	else { 
-		$remote_address = $args->{-remote_addr}; 
-	}
-	
-    if ( $self->{ls}->param('enable_bounce_logging') == 1 ) {
+    # my ( $self, $type, $mid, $email ) = @_;
 
-        my $bounce_type = '';
-        if ( $args->{-type} eq 'hard' ) {
-            $bounce_type = 'hard_bounce';
-        }
-		else { 
-			$bounce_type = 'soft_bounce';
-		}
-# DEV: 		
-# Right now, things are only reported as hard, or soft. 
-#        elsif ( $args->{-type} eq 'soft' ) {
-#         {
-#            $bounce_type = 'soft_bounce';
-#        }
-#		else { 
-#           $bounce_type = 'other';			
-#		}
-#
+    my $self      = shift;
+    my ($args)    = @_;
+    my $timestamp = undef;
+    if ( exists( $args->{-timestamp} ) ) {
+        $timestamp = $args->{-timestamp};
+    }
+    my $ts_snippet          = '';
+    my $place_holder_string = '';
 
-        my $query = 'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'remote_addr, msg_id, event, details) VALUES (?, ?, ?, ?, ?' . $place_holder_string . ')';
-        my $sth = $self->{dbh}->prepare($query);
+    if ( defined($timestamp) ) {
+        $ts_snippet = 'timestamp,';
+        $place_holder_string .= ' ,?';
+    }
 
-		if(defined($timestamp)){ 
-        	$sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, $bounce_type, $args->{-email} );
-		}
-		else { 
-			$sth->execute($self->{name}, $remote_address, $args->{-mid}, $bounce_type, $args->{-email} );
-	        
-		}
-        $sth->finish;
-
-        close(LOG);
-        return 1;
+    my $remote_address = undef;
+    if ( !exists( $args->{-remote_addr} ) ) {
+        $remote_address = $self->remote_addr;
     }
     else {
-        return 0;
+        $remote_address = $args->{-remote_addr};
     }
+
+    my $bounce_type = '';
+    if ( $args->{-type} eq 'hard' ) {
+        $bounce_type = 'hard_bounce';
+    }
+    else {
+        $bounce_type = 'soft_bounce';
+    }
+    my $query =
+        'INSERT INTO '
+      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+      . '(list, '
+      . $ts_snippet
+      . 'remote_addr, msg_id, event, details) VALUES (?, ?, ?, ?, ?'
+      . $place_holder_string . ')';
+    my $sth = $self->{dbh}->prepare($query);
+
+    if ( defined($timestamp) ) {
+        $sth->execute(
+            $self->{name}, $timestamp,   $remote_address,
+            $args->{-mid}, $bounce_type, $args->{-email}
+        );
+    }
+    else {
+        $sth->execute(
+            $self->{name}, $remote_address, $args->{-mid},
+            $bounce_type,  $args->{-email}
+        );
+
+    }
+    $sth->finish;
+
+    close(LOG);
+    return 1;
+
 }
 
 
@@ -695,7 +687,6 @@ sub unsubscribe_log {
 	}
 	
 	
-	if ( $self->{ls}->param('enable_open_msg_logging') == 1 ) {
 		my $recorded_open_recently = 1; 
 		try {
 			$recorded_open_recently = $self->_recorded_open_recently($args);
@@ -705,10 +696,7 @@ sub unsubscribe_log {
 		if($recorded_open_recently <= 0) { 
 			$self->o_log($args); 
 		}
-	}
-	
-	
-	
+		
 	my $ts_snippet = ''; 
 	my $place_holder_string = ''; 
 	
@@ -724,7 +712,6 @@ sub unsubscribe_log {
 		$remote_address = $args->{-remote_addr}; 
 	}
 	
-#    if ( $self->{ls}->param('enable_open_msg_logging') == 1 ) {
         my $query = 'INSERT INTO ' 
 		. $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} 
 		.'(list, ' 
@@ -742,10 +729,6 @@ sub unsubscribe_log {
         }
 		$sth->finish;
         return 1;
-#    }
-#    else {
-#        return 0;
-#    }
 		
 }
 

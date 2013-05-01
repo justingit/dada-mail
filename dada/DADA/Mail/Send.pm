@@ -1651,35 +1651,31 @@ sub mass_send {
 			#
 			
 			# DEV: Should we only use this for mass mailings to, "list"?!
-			if($self->{ls}->param('clickthrough_tracking') == 1){ 
-				# This still sucks, since this'll reparse after each restart.
-				require DADA::Logging::Clickthrough; 
-				my $ct = DADA::Logging::Clickthrough->new(
-							{
-								-list => $self->{list},
-								
-								# I guess one way to find out if the
-								# InactiveDestroy stuff is working, 
-								# Is isf DADA::Logging::Clickthrough
-								# is working without this kludge: 
-								#
-								#-li   => $self->{ls}->params, 
-								#
-							}
-						); 
-				if($ct->enabled) { 
-					%fields = $ct->parse_email(
-					    {
-					        -fields => \%fields,
-							-mid    => $fields{'Message-ID'},
-					    }
-					);
-					undef $ct; 
-					# And, that's it.
-				}
-			}
-			else { 
-			}
+			# This still sucks, since this'll reparse after each restart.
+			require DADA::Logging::Clickthrough; 
+			my $ct = DADA::Logging::Clickthrough->new(
+						{
+							-list => $self->{list},
+							
+							# I guess one way to find out if the
+							# InactiveDestroy stuff is working, 
+							# Is isf DADA::Logging::Clickthrough
+							# is working without this kludge: 
+							#
+							#-li   => $self->{ls}->params, 
+							#
+						}
+					); 
+			if($ct->enabled) { 
+				%fields = $ct->parse_email(
+				    {
+				        -fields => \%fields,
+						-mid    => $fields{'Message-ID'},
+				    }
+				);
+				undef $ct; 
+				# And, that's it.
+			}			
 			#
 			##################################################################			
 			

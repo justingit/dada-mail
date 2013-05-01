@@ -573,7 +573,7 @@ sub _format_text {
                 
 				if($self->no_list != 1) { 
 	      			if(defined($self->{list})){
-						if ($self->{ls}->param('enable_open_msg_logging') == 1 && $entity->head->mime_type  eq 'text/html'){ 
+						if ($self->{ls}->param('tracker_track_opens_method') eq 'directly' && $entity->head->mime_type  eq 'text/html'){ 
 							$content = $self->_add_opener_image($content);
 						}
 					}

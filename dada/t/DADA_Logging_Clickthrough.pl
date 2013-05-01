@@ -17,11 +17,9 @@ my $list = dada_test_config::create_test_list;
 my $ls = DADA::MailingList::Settings->new( { -list => $list } );
    $ls->save(
 	{ 
-		clickthrough_tracking                               => 1,
-		enable_open_msg_logging                             => 1, 
-		enable_bounce_logging                               => 1,
-		enable_forward_to_a_friend_logging                  => 1, 
-		enable_view_archive_logging                         => 1, 	
+		tracker_auto_parse_links                            => 1, 
+		tracker_track_opens_method                          => 'directly', 
+
 		tracker_record_view_count                           => 10, 
 		tracker_clean_up_reports                            => 1, 
 		tracker_auto_parse_links                            => 1, 
