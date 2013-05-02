@@ -2421,14 +2421,12 @@ EOF
 
     enable_closed_loop_opt_in       => 1,    # Closed-Loop Opt-In
     skip_sub_confirm_if_logged_in   => 0,
-    unsub_confirm_email             => 1,    # Closed-Loop Opt-Out
-                                             # I know, confusing.
+
     skip_unsub_confirm_if_logged_in => 0,
 
     limit_sub_confirm                 => 1,
     limit_sub_confirm_use_captcha     => 1,
     limit_unsub_confirm               => 1,
-    limit_unsub_confirm_use_captcha   => 1,
 
     use_alt_url_sub_confirm_success  => 0,
     alt_url_sub_confirm_success_w_qs => 0,
@@ -2446,25 +2444,13 @@ EOF
     alt_url_sub_failed_w_qs => 0,
     alt_url_sub_failed      => '',
 
-    use_alt_url_unsub_confirm_success  => 0,
-    alt_url_unsub_confirm_success_w_qs => 0,
-    alt_url_unsub_confirm_success      => '',
-
-    use_alt_url_unsub_confirm_failed  => 0,
-    alt_url_unsub_confirm_failed      => '',
-    alt_url_unsub_confirm_failed_w_qs => 0,
-
     use_alt_url_unsub_success  => 0,
     alt_url_unsub_success_w_qs => 0,
     alt_url_unsub_success      => '',
 
-    use_alt_url_unsub_failed          => 0,
-    alt_url_unsub_failed_w_qs         => 0,
-    alt_url_unsub_failed              => '',
     enable_subscription_approval_step => 0,
     captcha_sub                       => 0,
 
-    unsub_link_behavior => 'process_immediately',
 
     send_subscribed_by_list_owner_message   => 0,
     send_unsubscribed_by_list_owner_message => 0,

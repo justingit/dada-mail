@@ -2214,7 +2214,6 @@ sub list_options {
                     get_unsub_notice                        => 0,
                     enable_closed_loop_opt_in               => 0,
                     skip_sub_confirm_if_logged_in           => 0,
-                    unsub_confirm_email                     => 0,
                     skip_unsub_confirm_if_logged_in         => 0,
                     send_unsub_success_email                => 0,
                     send_sub_success_email                  => 0,
@@ -2223,7 +2222,6 @@ sub list_options {
                     limit_sub_confirm                       => 0,
 					limit_sub_confirm_use_captcha           => 0,
                     limit_unsub_confirm                     => 0,
-					limit_unsub_confirm_use_captcha         => 0,
                     email_your_subscribed_msg               => 0,
                     email_you_are_not_subscribed_msg        => 0,
                     use_alt_url_sub_confirm_success         => 0,
@@ -2238,18 +2236,9 @@ sub list_options {
                     use_alt_url_sub_failed                  => 0,
                     alt_url_sub_failed                      => '',
                     alt_url_sub_failed_w_qs                 => 0,
-                    use_alt_url_unsub_confirm_success       => 0,
-                    alt_url_unsub_confirm_success           => '',
-                    alt_url_unsub_confirm_success_w_qs      => 0,
-                    use_alt_url_unsub_confirm_failed        => 0,
-                    alt_url_unsub_confirm_failed            => '',
-                    alt_url_unsub_confirm_failed_w_qs       => 0,
                     use_alt_url_unsub_success               => 0,
                     alt_url_unsub_success                   => '',
                     alt_url_unsub_success_w_qs              => 0,
-                    use_alt_url_unsub_failed                => 0,
-                    alt_url_unsub_failed                    => '',
-                    alt_url_unsub_failed_w_qs               => 0,
 					unsub_show_email_hint                  => 0, 
                     enable_subscription_approval_step       => 0,
 					enable_mass_subscribe                   => 0,
@@ -2257,7 +2246,6 @@ sub list_options {
 					send_unsubscribed_by_list_owner_message => 0, 
 					send_last_archived_msg_mass_mailing     => 0, 
                     captcha_sub                             => 0,
-					unsub_link_behavior                     => undef, 
 					
 					send_subscription_notice_to             => undef, 
 					send_unsubscription_notice_to           => undef,  
@@ -7610,15 +7598,7 @@ sub resend_conf {
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
     my $can_use_captcha = 0;
 
-    if (
-        (
-               $q->param('rm') eq 's'
-            && $ls->param('limit_sub_confirm_use_captcha') == 1
-        )
-        || (   $q->param('rm') eq 'u'
-            && $ls->param('limit_unsub_confirm_use_captcha') == 1 )
-      )
-    {
+    if ($ls->param('limit_sub_confirm_use_captcha') == 1) {
 	
         try {
             require DADA::Security::AuthenCAPTCHA;

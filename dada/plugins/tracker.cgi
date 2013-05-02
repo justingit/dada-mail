@@ -107,6 +107,9 @@ sub run {
 		'clear_data_cache'                => \&clear_data_cache, 
 		'clear_message_data_cache'        => \&clear_message_data_cache, 
 		'export_subscribers'              => \&export_subscribers, 
+		
+		'message_email_activity_listing_table'  => \&message_email_activity_listing_table, 
+		'message_individual_email_activity_report_table' => \&message_individual_email_activity_report_table, 
 	);
 	if ($f) {
 	    if ( exists( $Mode{$f} ) ) {
@@ -359,6 +362,27 @@ sub export_subscribers {
 	 
 }
 
+sub message_email_activity_listing_table { 
+	
+	my $mid = xss_filter($q->param('mid')); 	
+   $rd->message_email_activity_listing_table(
+		{
+			-mid  => $mid, 
+		}
+	);
+}
+
+sub message_individual_email_activity_report_table { 
+
+	my $mid   = xss_filter($q->param('mid')); 
+	my $email = xss_filter($q->param('email')); 
+   my $report = $rd->message_individual_email_activity_report_table(
+		{
+			-mid    => $mid, 
+			-email  => $email, 
+		}
+	);
+}
 
 
 

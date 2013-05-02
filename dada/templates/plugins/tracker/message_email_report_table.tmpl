@@ -8,6 +8,11 @@
 	  <td> 
 	   <strong>Email Address</strong>
 	  </td> 
+	
+	  <!-- tmpl_if show_count --> 
+		<td>&nbsp;</td>
+	  <!-- /tmpl_if --> 
+	
 	 </tr> 
 
 <!-- tmpl_loop report --> 
@@ -19,11 +24,25 @@
 		 <!-- tmpl_var email -->
 	    </a>
 		<!-- tmpl_else --> 
-			<!-- tmpl_var email -->		
+			
+		<a href="#" class="message_individual_email_activity" data-email="<!-- tmpl_var email -->">
+			<!-- tmpl_if __first__  --> 
+				<span id="first_for_<!-- tmpl_var label -->"><!-- tmpl_var email --></span>
+			<!-- tmpl_else --> 
+				<!-- tmpl_var email -->
+			<!-- /tmpl_if --> 
+		</a> 
 		<!-- /tmpl_if --> 
-	
-	
 	  </td> 
+	
+		<!-- tmpl_if count --> 
+			<td> 
+				<p>
+					<!-- tmpl_var count -->
+				</p> 
+			</td>
+		<!-- /tmpl_if --> 
+		
 	 </tr>
 <!-- /tmpl_loop -->
 

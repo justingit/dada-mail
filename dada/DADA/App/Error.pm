@@ -150,32 +150,16 @@ sub cgi_user_error {
 		}
 	}
 
-	if($args{-Error} eq 'already_sent_sub_confirmation' 
-	|| $args{-Error} eq 'already_sent_unsub_confirmation'
-	){ 	
+	if($args{-Error} eq 'already_sent_sub_confirmation'){ 	
 		my $list  = $args{-List}; 
 		my $email = $args{-Email}; 
-		my $rm; 
-		if($args{-Error} eq 'already_sent_sub_confirmation') { 
-			$rm = 's';
-		}
-		elsif($args{-Error} eq 'already_sent_unsub_confirmation') { 
-			$rm = 'u';		
-		}
+		my $rm = 's';
 		require DADA::MailingList::Settings;
 	    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 	    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 	    my $can_use_captcha = 0;
 
-	    if (
-	        (
-	               $rm eq 's'
-	            && $ls->param('limit_sub_confirm_use_captcha') == 1
-	        )
-	        || (   $rm eq 'u'
-	            && $ls->param('limit_unsub_confirm_use_captcha') == 1 )
-	      )
-	    {
+	    if ($ls->param('limit_sub_confirm_use_captcha') == 1) {
 
 	        try {
 	            require DADA::Security::AuthenCAPTCHA;

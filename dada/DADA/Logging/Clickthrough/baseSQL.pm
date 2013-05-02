@@ -1113,6 +1113,9 @@ sub can_use_country_geoip_data {
 
 
 sub ip_data { 
+	
+	# Todo: add email stuff to that. 
+	# Remember bounces and everything else use a different column for email address!
 	my $self   = shift; 
 	my ($args) = @_; 
 
@@ -2012,6 +2015,247 @@ sub email_stats_json {
 		return $json;
 	}
 	
+}
+
+sub message_email_activity_listing {
+	 
+	my $self   = shift; 
+	my ($args) = @_; 
+	
+	# mass mailing event log, no bounces
+	my $query = 'SELECT email, COUNT(email) as "count" FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? AND event != \'num_subscribers\' GROUP BY msg_id, email ORDER BY count DESC;'; 
+	my $sth = $self->{dbh}->prepare($query);
+	   $sth->execute( $self->{name}, $args->{-mid} )
+	      	or croak "cannot do statement! $DBI::errstr\n";
+	my $r; 
+	my $emails_events = {}; 
+	while (my $row = $sth->fetchrow_hashref ) {		
+    	$emails_events->{$row->{email}} = $row->{count}
+	}
+	$sth->finish; 
+	undef $sth; 
+
+	# mass mailing event log, bounces
+ 	$query = 'SELECT details, COUNT(event) as "count" FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? AND (event = \'soft_bounce\' OR event = \'hard_bounce\') GROUP BY msg_id, details ORDER BY count DESC;'; 
+	my $sth = $self->{dbh}->prepare($query);
+	   $sth->execute( $self->{name}, $args->{-mid} )
+	      	or croak "cannot do statement! $DBI::errstr\n";
+	my $r; 
+	my $emails_bounces = {}; 
+	while (my $row = $sth->fetchrow_hashref ) {
+    	$emails_bounces->{$row->{details}} = $row->{count}
+	}
+	$sth->finish; 
+	undef $sth; 
+	# mass mailing event log, bounces
+	
+	# clickthrough log 
+	   $query = 'SELECT email, COUNT(email) as "count" FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ? AND msg_id = ?  GROUP BY msg_id, email ORDER BY count DESC;'; 
+	my $sth = $self->{dbh}->prepare($query);
+	   $sth->execute( $self->{name}, $args->{-mid} )
+	      	or croak "cannot do statement! $DBI::errstr\n";
+	my $r; 
+	my $emails_clicks = {}; 
+	while (my $row = $sth->fetchrow_hashref ) {
+    	$emails_clicks->{$row->{email}} = $row->{count}
+	}
+	$sth->finish; 
+	undef $sth; 
+	#/ clickthrough log 
+
+	my $folded = $emails_events; 
+	# now, fold 'em all up; 
+	foreach(keys %$emails_bounces){ 
+		if(exists($folded->{$_})){ 
+			$folded->{$_} = $folded->{$_} + $emails_bounces->{$_}; 
+		}
+		else { 
+			$folded->{$_} = $emails_bounces->{$_}; 
+		}
+	}
+	foreach(keys %$emails_clicks){ 
+		if(exists($folded->{$_})){ 
+			$folded->{$_} = $folded->{$_} + $emails_clicks->{$_}; 
+		}
+		else { 
+			$folded->{$_} = $emails_clicks->{$_}; 
+		}
+	}
+	
+	
+	# Sorted Index
+	my @index = sort { $folded->{$b} <=> $folded->{$a} } keys %$folded; 
+	my $sorted = []; 
+	foreach(@index){ 
+		next if !defined($_); 
+		next if $_ eq ''; 
+		push(@$sorted, {
+			email => $_, 
+			count => $folded->{$_}, 
+			});
+	}
+	return $sorted; 
+}
+
+sub message_email_activity_listing_table { 
+	my $self   = shift; 
+	my ($args) = @_; 
+	my $html;
+		
+	require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new;  
+	$html = $dc->retrieve(
+		{
+			-list    => $self->{name}, 
+			-name    => 'message_email_activity_listing_table' . '.' . $args->{-mid}, 
+		}
+	);
+	
+	if(!defined($html)){ 
+			
+		my $report = $self->message_email_activity_listing($args);
+		require DADA::Template::Widgets; 
+	    $html = DADA::Template::Widgets::screen(
+	        {
+	            -screen           => 'plugins/tracker/message_email_report_table.tmpl',
+				-expr => 1, 
+	            -vars => {
+	#				type          => $args->{-type},
+					report        => $report, 
+					num           => scalar(@$report), 
+					title         => 'some sort of title, here', 
+					label         => 'message_email_activity_listing_table',
+					show_count    => 1,  
+	            },
+	        }
+	    );	
+	
+		$dc->cache(
+			{ 
+				-list    => $self->{name}, 
+				-name    => 'message_email_activity_listing_table' . '.' . $args->{-mid},
+				-data    => \$html, 
+			}
+		);
+	}
+	
+	use CGI qw(:standard); 
+	print header(); 
+	print $html;
+	
+}
+
+sub message_individual_email_activity_report {
+	my $self   = shift; 
+	my ($args) = @_; 
+	
+	my $email = $args->{-email}; 
+	my $mid   = $args->{-mid}; 
+	
+	my %labels = (
+		open                => 'Open', 
+		clickthrough        => 'Clickthrough', 
+		unsubscribe         => 'Unsubcribe', 
+		soft_bounce         => 'Soft Bounce', 
+		hard_bounce         => 'Hard Bounce', 
+	);
+	
+	my $return = []; 
+	my $event_query = 'SELECT timestamp, remote_addr, event FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? AND ((email = ?) OR (event LIKE \'%bounce\' AND details = ?)) ORDER BY timestamp DESC';
+    my $click_query = 'SELECT timestamp, remote_addr, url FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ? and msg_id = ? and email = ? ORDER BY timestamp DESC';
+		
+	my $sth = $self->{dbh}->prepare($event_query);
+	   $sth->execute($self->{name}, $mid, $email, $email);
+	my $row; 
+	while ( $row = $sth->fetchrow_hashref ) {
+		my $time = $self->timestamp_to_time($row->{timestamp});
+		push(
+			@$return, {
+			time        => $time, 
+			timestamp   => $row->{timestamp}, 
+			ctime       => scalar(localtime($time)), 
+			ip          => $row->{remote_addr}, 
+			event       => $row->{event}, 
+			event_label => $labels{$row->{event}},
+			}
+		); 
+	}
+	$sth->finish;
+	undef $row;  
+	undef $sth; 
+
+	my $sth = $self->{dbh}->prepare($click_query);
+	   $sth->execute($self->{name}, $mid, $email);
+	my $row; 
+	while ( $row = $sth->fetchrow_hashref ) {
+		
+		my $time = $self->timestamp_to_time($row->{timestamp});
+		push(
+			@$return, {
+			timestamp   => $row->{timestamp}, 
+			time        => $time, 
+			ctime       => scalar(localtime($time)), 
+			ip          => $row->{remote_addr}, 
+			event       => 'clickthrough', 
+			event_label => $labels{clickthrough},
+			url         => $row->{url},
+			}
+		); 
+	}
+	$sth->finish; 
+	undef $sth;	
+	
+	@$return = map { $_->[0] }
+      sort { $a->[1] <=> $b->[1] }
+      map { [ $_, $_->{'time'} ] } @$return;
+
+	
+	return $return;
+	
+}
+
+sub message_individual_email_activity_report_table { 
+	my $self   = shift; 
+	my ($args) = @_;
+	
+	my $html;
+		
+	require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new;  
+	$html = $dc->retrieve(
+		{
+			-list    => $self->{name}, 
+			-name    => 'message_individual_email_activity_report' . '.' . $args->{-mid} . '.' . $args->{-email}, 
+		}
+	);
+	
+	if(!defined($html)){ 
+	
+		my $report = $self->message_individual_email_activity_report($args); 
+	
+		require DADA::Template::Widgets; 
+	    $html = DADA::Template::Widgets::screen(
+	        {
+	            -screen           => 'plugins/tracker/message_individual_email_activity_report_table.tmpl',
+				-expr => 1, 
+	            -vars => {
+					email         => $args->{-email}, 
+					report        => $report, 
+	            },
+	        }
+	    );	
+		$dc->cache(
+			{ 
+				-list    => $self->{name}, 
+				-name    => 'message_individual_email_activity_report' . '.' . $args->{-mid} . '.' . $args->{-email}, 
+				-data    => \$html, 
+			}
+		);
+	}
+
+	use CGI qw(:standard); 
+	print header(); 
+	print $html;	
 }
 
 

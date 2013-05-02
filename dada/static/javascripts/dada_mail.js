@@ -1577,42 +1577,34 @@ function plugins_mailing_monitor() {
 function update_plugins_tracker_message_report() {
 
 	var $tabs = $("#tabs").tabs();
-	
-	/* This fantastically, doesn't work! 
-	var tab_links = new Array('.to_opens', '.to_clickthroughs', '.to_unsubscribes', '.to_archive_views', '.to_forwards', '.to_bounces'); 
-	for (var i=0; i < tab_links.length; i++) { 
-		//alert(i); 
-		//alert(tab_links[i]); 
-		var classname = tab_links[i]; 
-		var index = i; 
-		$('body').on('click', classname, function(event) {
-			//alert('yes. ' + classname); 
-			$tabs.tabs('select', index);
-			return false;
-		});
-	}
-	*/
 
-	$('body').on('click', '.to_opens', function(event) {
+	$('body').on('click', '.to_subscriber_activity', function(event) {
 		$tabs.tabs('select', 0); return false;
 	});
-	$('body').on('click', '.to_clickthroughs', function(event) {
+	$('body').on('click', '.to_opens', function(event) {
 		$tabs.tabs('select', 1); return false;
 	});
-	$('body').on('click', '.to_unsubscribes', function(event) {
+	$('body').on('click', '.to_clickthroughs', function(event) {
 		$tabs.tabs('select', 2); return false;
 	});
-	$('body').on('click', '.to_bounces', function(event) {
+	$('body').on('click', '.to_unsubscribes', function(event) {
 		$tabs.tabs('select', 3); return false;
 	});
-	$('body').on('click', '.to_archive_views', function(event) {
+	$('body').on('click', '.to_bounces', function(event) {
 		$tabs.tabs('select', 4); return false;
 	});
-	$('body').on('click', '.to_forwards', function(event) {
+	$('body').on('click', '.to_archive_views', function(event) {
 		$tabs.tabs('select', 5); return false;
 	});
+	$('body').on('click', '.to_forwards', function(event) {
+		$tabs.tabs('select', 6); return false;
+	});
 
-
+	$("body").on("click", '.message_individual_email_activity', function(event) {
+		event.preventDefault();
+		message_individual_email_activity_table($(this).attr("data-email"), "message_individual_email_activity_report_table");
+	});
+	
 
 	$("body").on("click", '.individual_country_geoip', function(event) {
 		event.preventDefault();
@@ -1628,10 +1620,14 @@ function update_plugins_tracker_message_report() {
 		event.preventDefault();
 		country_geoip_map($(this).attr("data-type"), "country_geoip_" + $(this).attr("data-type") + "_map");
 	});
+	
 
 	var tracker_message_report_callback = $.Callbacks();
 	
 	if ($("#can_use_country_geoip_data").val() == 1) {
+
+		tracker_message_report_callback.add(tracker_message_email_activity_listing_table('message_email_activity_listing_table'));
+
 
 		tracker_message_report_callback.add(country_geoip_table('clickthroughs', 'Clickthroughs', 'country_geoip_clickthroughs_table'));
 		tracker_message_report_callback.add(country_geoip_table('opens', 'Opens', 'country_geoip_opens_table'));
@@ -1768,6 +1764,27 @@ function country_geoip_map(type, target_div) {
 
 }
 
+function message_individual_email_activity_table(email, target_div) { 
+	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
+	$.ajax({
+		url: $("#plugin_url").val(),
+		data: {
+			f: 'message_individual_email_activity_report_table',
+			mid: $('#tracker_message_id').val(),
+			email: email, 
+		},
+		dataType: "html",
+		async: true,
+		success: function(content) {
+			$("#" + target_div).hide("fade", function() {
+				$("#" + target_div).html(content);
+				$("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
+				$("#" + target_div).show('fade');
+			});
+		}
+	});
+	
+}
 
 function individual_country_geoip_map(type, country, target_div) {
 	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
@@ -1891,6 +1908,38 @@ function message_email_report_table(type, target_div) {
 
 		$("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
 		//	  $("#sortable_table_" + type).tablesorter(); 
+	});
+}
+
+function tracker_message_email_activity_listing_table(target_div) { 
+	console.log('target_div:' + target_div); 
+
+	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
+	var request = $.ajax({
+		url: $("#plugin_url").val(),
+		type: "POST",
+		cache: false,
+		data: {
+			f: 'message_email_activity_listing_table',
+			mid: $('#tracker_message_id').val(),
+		},
+		dataType: "html"
+	});
+	request.done(function(content) {
+
+		$("#" + target_div).hide();
+		$("#" + target_div).html(content);
+		$("#" + target_div).show('fade');
+
+		$("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
+		//$("#sortable_table_" + type).tablesorter();
+		if ($('#first_for_message_email_activity_listing_table').length) {
+			message_individual_email_activity_table($('#first_for_message_email_activity_listing_table').html(), 'message_individual_email_activity_report_table'); 
+		}		
+
+
+		// alert("This: " + $('#first_for_message_email_activity_listing_table').html()); 
+		
 	});
 }
 

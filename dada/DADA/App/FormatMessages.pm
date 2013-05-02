@@ -1424,22 +1424,6 @@ sub _macro_tags {
     elsif ( $args{-type} eq 'unsubscribe' ) {
 
 		return '<!-- tmpl_var list_unsubscripton_link -->';
-#
-#        # We really shouldn't even been in this sub, if there's no list...
-#        if ( $self->no_list == 1 ) {
-#            $type = 'u';
-#        }
-#        else {
-#            # And, that's it.
-#            if (
-#                $self->{ls}->param('unsub_link_behavior') eq 'show_unsub_form' )
-#            {
-#                $type = 'ur';
-#            }
-#            else {
-#                $type = 'u';
-#            }
-#        }
 
     }
 
