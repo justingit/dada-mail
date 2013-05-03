@@ -1630,10 +1630,10 @@ sub _depersonalize_mlm_template {
 			og => '<!-- tmpl_var list_subscribe_link -->',
 			re => '<!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list -->', 
 		},
-		{
-			og => '<!-- tmpl_var list_unsubscribe_link -->', 
-			re => '<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->', 
-		}, 
+#		{
+#			og => '<!-- tmpl_var list_unsubscribe_link -->', 
+#			re => '<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->', 
+#		}, 
 		{
 			og => '<!-- tmpl_var PROGRAM_URL -->/profile_login/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/', 
 			re => '<!-- tmpl_var PROGRAM_URL -->/profile_login/', 
@@ -1796,9 +1796,8 @@ sub can_find_unsub_link {
         die "You MUST pass the, '-str' paramater!";
     }
 
-    my @unsub_urls = (
-        $DADA::Config::PROGRAM_URL . '/u/' . $self->{-List},
-        '<!-- tmpl_var list_unsubscribe_link -->',
+    my @unsub_urls = ('<!-- tmpl_var list_unsubscribe_link -->'); 
+#        $DADA::Config::PROGRAM_URL . '/u/' . $self->{-List},
 #        '<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->',
 #        '<!-- tmpl_var PROGRAM_URL -->?f=u&l=<!-- tmpl_var list_settings.list -->',
 #		'<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/',
@@ -1806,13 +1805,13 @@ sub can_find_unsub_link {
 #       '<!-- tmpl_var PROGRAM_URL -->/ur/<!-- tmpl_var list_settings.list -->',
 #      '<!-- tmpl_var PROGRAM_URL -->?f=ur&l=<!-- tmpl_var list_settings.list -->',
 #		'<!-- tmpl_var PROGRAM_URL -->/ur/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/',
-
- );
-    if ( $DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} ==
-        1 )
-    {
-        push( @unsub_urls, '[list_unsubscribe_link]' );
-    }
+#
+# );
+#    if ( $DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} ==
+#       1 )
+#    {
+#        push( @unsub_urls, '[list_unsubscribe_link]' );
+#    }
 
     for my $unsub_url (@unsub_urls) {
         $unsub_url = quotemeta($unsub_url);
