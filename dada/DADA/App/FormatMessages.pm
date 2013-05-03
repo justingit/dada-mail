@@ -2416,35 +2416,24 @@ sub email_template {
 					if $t; 
 				
 				if($header_value =~ m/\[|\</){ # has a template? (optimization)
-					# carp "$header_value needs to be templated out!"; 
-					# Template
 					$header_value = DADA::Template::Widgets::screen(
 	                    {
 	                       %screen_vars,
 	                        -data                   => \$header_value, 
 	                    }
 	                ); 
-
-				
 					warn 'Template:' . safely_encode( $header_value)
 						if $t;
-				
-					# Encode
-					$header_value = $self->_encode_header($header, $header_value); 
-					warn 'encode EncWords:' . safely_encode( $header_value)
-						if $t; 
-				
-				
-					# Remove the old
-					$args->{-entity}->head->delete($header);
-				
-					# Add
-					$args->{-entity}->head->add($header, $header_value);
 				}
-				else { 
-					#carp "Skipping: $header_value since there ain't no template in there."; 
-				} # /has a template? (optimization)
-			 
+				
+				$header_value = $self->_encode_header($header, $header_value); 
+				warn 'encode EncWords:' . safely_encode( $header_value)
+					if $t; 
+						
+				# Remove the old, add the new: 
+				$args->{-entity}->head->delete($header);
+				$args->{-entity}->head->add($header, $header_value);
+				
 				warn 'now:'. safely_encode( $header_value)
 					if $t;
             }                
