@@ -2446,14 +2446,6 @@ sub email_template {
 
 
 
-sub DESTROY {
-
-	my $self = shift; 
-	$self->{parser}->filer->purge;
-}
-
-
-
 
 sub pre_process_msg_strings { 
 	my $text_ver = shift || undef; 
@@ -2511,6 +2503,12 @@ sub pre_process_msg_strings {
 	}
 	
 	return($text_ver, $html_ver); 
+}
+
+sub DESTROY {
+
+	my $self = shift; 
+	$self->{parser}->filer->purge;
 }
 
 
