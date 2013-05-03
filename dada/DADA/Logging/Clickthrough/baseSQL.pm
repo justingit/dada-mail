@@ -2123,7 +2123,7 @@ sub message_email_activity_listing_table {
 	#				type          => $args->{-type},
 					report        => $report, 
 					num           => scalar(@$report), 
-					title         => 'some sort of title, here', 
+					title         => 'Subscriber Activity', 
 					label         => 'message_email_activity_listing_table',
 					show_count    => 1,  
 	            },
