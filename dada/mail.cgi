@@ -11057,7 +11057,7 @@ sub profile {
 					{
 						%{$i}, 
 						%{$li}, 
-						PROGRAM_URL => $DADA::Config::PROGRAM_URL,
+						PROGRAM_URL            => $DADA::Config::PROGRAM_URL,
 						list_unsubscribe_link  => $unsub_link, 
 					}
 				)

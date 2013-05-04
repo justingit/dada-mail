@@ -477,8 +477,8 @@ sub _format_text {
 					# This attempts to strip any unsubscription links in messages
 					# (think: replying) 
 					try {
-						require DADA::App::FormatMessages::Filters::RemoveUnsubLinks; 
-						my $rul = DADA::App::FormatMessages::Filters::RemoveUnsubLinks->new; 
+						require DADA::App::FormatMessages::Filters::RemoveTokenLinks; 
+						my $rul = DADA::App::FormatMessages::Filters::RemoveTokenLinks->new; 
 						$content = $rul->filter({-data => $content});
 					} catch {
 						carp "Problems with filter: $_";

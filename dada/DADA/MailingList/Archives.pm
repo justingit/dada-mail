@@ -690,8 +690,8 @@ sub _neuter_confirmation_token_links {
 	my $body = shift; 
 	
 	try {
-		require DADA::App::FormatMessages::Filters::RemoveUnsubLinks; 
-		my $rul = DADA::App::FormatMessages::Filters::RemoveUnsubLinks->new; 
+		require DADA::App::FormatMessages::Filters::RemoveTokenLinks; 
+		my $rul = DADA::App::FormatMessages::Filters::RemoveTokenLinks->new; 
 		$body = $rul->filter({-data => $body});
 	} catch {
 		carp "Problems with filter: $_";

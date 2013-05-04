@@ -1,4 +1,4 @@
-package DADA::App::FormatMessages::Filters::RemoveUnsubLinks;
+package DADA::App::FormatMessages::Filters::RemoveTokenLinks;
 use strict; 
 
 use lib qw(
