@@ -38,8 +38,6 @@ while(defined($file = readdir TMPL)) {
         next if $file =~ m{rss-2_0.tmpl}; 
         next if $file =~ m{atom-1_0.tmpl}; 
         next if $file =~ m{admin_js.tmpl}; 
-        next if $file =~ m{unsubscription_check_xml.tmpl}; 
-        next if $file =~ m{subscription_check_xml.tmpl}; 
 
         push(@files, $file);
     }
@@ -131,7 +129,7 @@ my $template_strings = {
     SUBSCRIPTION_NOTICE_MESSAGE => $DADA::Config::SUBSCRIPTION_NOTICE_MESSAGE,
     UNSUBSCRIBED_MESSAGE        => $DADA::Config::UNSUBSCRIBED_MESSAGE,
     CONFIRMATION_MESSAGE        => $DADA::Config::CONFIRMATION_MESSAGE,
-    UNSUB_CONFIRMATION_MESSAGE  => $DADA::Config::UNSUB_CONFIRMATION_MESSAGE,
+    UNSUBSCRIPTION_REQUEST_MESSAGE  => $DADA::Config::UNSUBSCRIPTION_REQUEST_MESSAGE,
     SUBSCRIPTION_REQUEST_APPROVED_MESSAGE =>
       $DADA::Config::SUBSCRIPTION_REQUEST_APPROVED_MESSAGE,
     SUBSCRIPTION_REQUEST_DENIED_MESSAGE =>
@@ -170,8 +168,8 @@ my $template_strings = {
     SEND_ARCHIVED_MESSAGE       => $DADA::Config::SEND_ARCHIVED_MESSAGE,
     HTML_SEND_ARCHIVED_MESSAGE  => $DADA::Config::HTML_SEND_ARCHIVED_MESSAGE,
     HTML_CONFIRMATION_MESSAGE   => $DADA::Config::HTML_CONFIRMATION_MESSAGE,
-    HTML_UNSUB_CONFIRMATION_MESSAGE =>
-      $DADA::Config::HTML_UNSUB_CONFIRMATION_MESSAGE,
+    HTML_UNSUBSCRIPTION_REQUEST_MESSAGE =>
+      $DADA::Config::HTML_UNSUBSCRIPTION_REQUEST_MESSAGE,
     HTML_SUBSCRIBED_MESSAGE => $DADA::Config::HTML_SUBSCRIBED_MESSAGE,
     HTML_SUBSCRIPTION_REQUEST_MESSAGE =>
       $DADA::Config::HTML_SUBSCRIPTION_REQUEST_MESSAGE,

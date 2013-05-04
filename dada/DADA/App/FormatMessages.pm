@@ -484,28 +484,6 @@ sub _format_text {
 						carp "Problems with filter: $_";
 					};
 					
-					
-					
-					
-					
-					
-#					if($self->{ls}->param('discussion_clean_up_replies') == 1) { 
-#						try {
-#							require DADA::App::FormatMessages::Filters::CleanUpReplies; 
-#							my $cur = DADA::App::FormatMessages::Filters::CleanUpReplies->new; 
-#							$content = $cur->filter(
-#								{
-#									-msg  => $content, 
-#									-type => $entity->head->mime_type, 
-#									-list => $self->{list},
-#								}
-#							);
-#						} catch {
-#							carp "Problems with filter: $_";
-#						};		
-#					}
-					
-					
 					if($self->{ls}->param('discussion_template_defang') == 1) { 
 						try {
 							$content = $self->template_defang({-data => $content});
@@ -1407,8 +1385,7 @@ sub _macro_tags {
 
     my $type;
 
-    if (   $args{-type} eq 'confirm_subscribe'
-        || $args{-type} eq 'confirm_unsubscribe' )
+    if (   $args{-type} eq 'confirm_subscribe' )
     {
 
         my $link =
@@ -1421,7 +1398,7 @@ sub _macro_tags {
         $type = 's';
 
     }
-    elsif ( $args{-type} eq 'unsubscribe' ) {
+    elsif ( $args{-type} eq 'unsubscribe' || $args{-type} eq 'confirm_unsubscribe') {
 
 		return '<!-- tmpl_var list_unsubscripton_link -->';
 
@@ -1714,17 +1691,9 @@ sub can_find_unsub_confirm_link {
 	    }
 
 	    my @unsub_confirm_urls = (
-			'<!-- tmpl_var PROGRAM_URL -->/t/<!-- tmpl_var list.confirmation_token -->',
+			'<!-- tmpl_var list_unsubscribe_link -->',
 	        '<!-- tmpl_var list_confirm_unsubscribe_link -->',
-	  	);
-	    if ( $DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} ==
-	        1 )
-	    {
-	        push( @unsub_confirm_urls, '[list_confirm_unsubscribe_link]' );
-		    push( @unsub_confirm_urls, '[plain_list_confirm_unsubscribe_link]' );
-			
-	    }
-	
+	  	);	
 	    for my $url (@unsub_confirm_urls) {
 	        $url = quotemeta($url);
 	        if ( $args->{-str} =~ m/$url/ ) {
@@ -1748,7 +1717,7 @@ sub unsubscription_confirmationation {
 	    }
 	    else {
 	    	$args->{-str} = 'To be removed from, "<!-- tmpl_var list_settings.list_name -->", click the link below:
-<!-- tmpl_var list_confirm_unsubscribe_link -->
+<!-- tmpl_var list_unsubscribe_link -->
 
 ' . $args->{-str};
 		}
@@ -1797,21 +1766,6 @@ sub can_find_unsub_link {
     }
 
     my @unsub_urls = ('<!-- tmpl_var list_unsubscribe_link -->'); 
-#        $DADA::Config::PROGRAM_URL . '/u/' . $self->{-List},
-#        '<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->',
-#        '<!-- tmpl_var PROGRAM_URL -->?f=u&l=<!-- tmpl_var list_settings.list -->',
-#		'<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/',
-#
-#       '<!-- tmpl_var PROGRAM_URL -->/ur/<!-- tmpl_var list_settings.list -->',
-#      '<!-- tmpl_var PROGRAM_URL -->?f=ur&l=<!-- tmpl_var list_settings.list -->',
-#		'<!-- tmpl_var PROGRAM_URL -->/ur/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/',
-#
-# );
-#    if ( $DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} ==
-#       1 )
-#    {
-#        push( @unsub_urls, '[list_unsubscribe_link]' );
-#    }
 
     for my $unsub_url (@unsub_urls) {
         $unsub_url = quotemeta($unsub_url);

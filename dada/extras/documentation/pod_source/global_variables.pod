@@ -1287,7 +1287,7 @@ This message can be customized for each list in the list's Control Panel.
 
 
 
-=head2 $UNSUB_CONFIRMATION_MESSAGE
+=head2 $UNSUBSCRIPTION_REQUEST_MESSAGE
 
 I<(List-centric, editable per list)> 
 
@@ -1405,7 +1405,7 @@ Shown when a request to subscribe is successful.
 
 
 
-=head2 $HTML_UNSUB_CONFIRMATION_MESSAGE
+=head2 $HTML_UNSUBSCRIPTION_REQUEST_MESSAGE
 
 I<(List-centric, editable per list)> 
 

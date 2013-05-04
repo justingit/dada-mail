@@ -96,7 +96,9 @@ sub remove_unsub_links {
 	my $str  = shift; 
 	# list mid hash
 	
-	$str =~ s{$DADA::Config::PROGRAM_URL/u/([a-zA-Z0-9_]*?)/([0-9].*)/([a-zA-Z0-9_]*?)/}{$DADA::Config::PROGRAM_URL/u/$1/$2/REMOVED/}g;
+	# This is for a hint
+	$str =~ s{$DADA::Config::PROGRAM_URL/t/([a-zA-Z0-9_]*?)/}{$DADA::Config::PROGRAM_URL/t/REMOVED/}g;
+	
 	
 	return $str; 
 	

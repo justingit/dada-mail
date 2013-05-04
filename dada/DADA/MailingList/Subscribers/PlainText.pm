@@ -944,18 +944,40 @@ sub create_mass_sending_file {
 				);
 				
 				if($args{-Create_Tokens} == 1){ 
-					my $token = $ct->save(
-						{
-							-email => $email,
-							-data  => {
-								list        => $list, 
-								flavor      => 'sub_confirm', 
-								type        => 'list', 
-								invite      => 1,  
-								remote_addr => $ENV{REMOTE_ADDR},  
+					my $token; 
+					if($type eq 'invitelist') { 
+						# this is to confirm a subscription
+
+						$token = $ct->save(
+							{
+								-email => $email,
+								-data  => {
+									list        => $list, 
+									flavor      => 'sub_confirm', 
+									type        => 'list', 
+									remote_addr => $ENV{REMOTE_ADDR},
+									invite      => 1,  
+								}
 							}
-						}
-					);
+						);
+					}
+					else { 
+						# this is to confirm an UNsubscription: 
+						$token = $ct->save(
+							{
+								-email => $email,
+								-data  => {
+									list        => $list, 
+									type        => 'list', 
+									flavor      => 'unsub_confirm', 
+									mid         => $n_msg_id,
+					#				remote_addr => $ENV{REMOTE_ADDR}, 
+									email_hint  => DADA::App::Guts::anonystar_address_encode($email),
+								},
+								-reset_previous_timestamp => 1, 
+							}
+						);
+					}
 					push( @sub, $token );
 				}
 				else { 

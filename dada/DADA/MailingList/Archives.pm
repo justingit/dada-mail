@@ -685,6 +685,20 @@ sub make_search_form {
 
 
 
+sub _neuter_confirmation_token_links { 
+	my $self = shift; 
+	my $body = shift; 
+	
+	try {
+		require DADA::App::FormatMessages::Filters::RemoveUnsubLinks; 
+		my $rul = DADA::App::FormatMessages::Filters::RemoveUnsubLinks->new; 
+		$body = $rul->filter({-data => $body});
+	} catch {
+		carp "Problems with filter: $_";
+	};
+	return $body; 
+	
+}
 
 sub _scrub_js { 
 
@@ -1846,7 +1860,10 @@ sub massaged_msg_for_display {
           . $args{-key}
           . ', list: '
           . $self->{list_info}->{list};
-    }	
+    }
+
+	$body = $self->_neuter_confirmation_token_links($body);
+
     $body = $self->_scrub_js($body)
       if $self->{ls}->param('disable_archive_js') == 1;
 

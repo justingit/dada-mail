@@ -104,6 +104,7 @@ login_switch_widget
 screen
 absolute_path
 subscription_form
+unsubscription_form
 archive_send_form
 profile_widget
 _raw_screen
@@ -2957,6 +2958,25 @@ sub subscription_form {
                     });      
     }
 
+}
+
+
+sub unsubscription_form { 
+    my ($args) = @_; 
+    return screen({
+        -screen => 'unsubscription_form_widget.tmpl', 
+        -vars   => {
+                       
+                        list                     => $args->{-list}, 
+                        email                    => $args->{-email},
+                    },
+					-list_settings_vars_param => {
+						-list    => $args->{-list},
+						-dot_it => 1,
+					},
+					
+                }
+	);  
 }
 
 

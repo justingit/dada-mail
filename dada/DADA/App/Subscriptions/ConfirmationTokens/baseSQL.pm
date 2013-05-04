@@ -192,6 +192,82 @@ sub remove_by_metadata {
 }
 
 
+
+
+sub reset_timestamp_by_metadata {
+		
+	#warn 'reset_timestamp_by_metadata called'; 
+	
+    my $self = shift;
+    my ($args) = @_;
+
+    my $email    = $args->{-email};
+    my $metadata = $args->{-metadata};
+    my $to_save   = [];
+    my $row      = {};
+
+    # hopefully, this will not be a large list returned (heh...)
+    my $query =
+        'SELECT token, email, data from '
+      . $self->{sql_params}->{confirmation_tokens_table}
+      . ' where email = ?';
+
+	warn 'Query:' . $query
+		if $t; 
+	
+
+    my $sth = $self->{dbh}->prepare($query);
+    $sth->execute($email)
+      or croak "cannot do statement! $DBI::errstr\n";
+
+    while ( $row = $sth->fetchrow_hashref ) {
+	
+        my $frozen_data = $row->{data};
+        my $data        = $self->_thaw($frozen_data);
+
+        if (   
+			   $data->{data}->{list}   eq $metadata->{list}
+            && $data->{data}->{type}   eq $metadata->{type}
+			&& $data->{data}->{flavor} eq $metadata->{flavor}
+		)
+        {
+            push( @$to_save, $row );
+        }
+    }
+    $sth->finish;
+	undef $sth; 
+	
+	if(scalar(@$to_save) < 1){ 
+		#warn 'didnt find anything'; 
+		return undef;
+	}
+		else { 
+		#warn 'found something:'; 
+	    foreach my $reup (@$to_save) {
+			 my $reup_query = 'UPDATE '
+							  . $self->{sql_params}->{confirmation_tokens_table} 
+							  . ' SET timestamp = NOW() WHERE token = ? AND email = ?';
+			if($self->{sql_params}->{dbtype} eq 'SQLite'){ 
+				$reup_query =~ s/timestamp \= NOW\(\)/timestamp = CURRENT_TIMESTAMP/;
+			}				
+				
+			#warn 'query: ' . $reup_query; 
+			#warn '$reup->{token} ' . $reup->{token}; 
+			#warn '$reup->{email} ' . $reup->{email}; 		
+	         my $sth = $self->{dbh}->prepare($reup_query);
+			
+		     $sth->execute($reup->{token}, $reup->{email})
+		     	or croak "cannot do statement! $DBI::errstr\n";
+			# I really don't like th idea that multiple rows are returned, but we only return 1 token... 
+			return $reup->{token}; 
+		
+	    }
+		
+	}
+}
+
+
+
 sub num_tokens { 
 
     my $self = shift;
@@ -264,14 +340,14 @@ sub _remove_expired_tokens {
         $query =
             'DELETE FROM '
           . $self->{sql_params}->{confirmation_tokens_table}
-          . ' WHERE timestamp <= DATE_SUB(NOW(), INTERVAL 1 DAY)';
+          . ' WHERE timestamp <= DATE_SUB(NOW(), INTERVAL 60 DAYS)';
 
     }
     elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'Pg' ) {
         $query =
             'DELETE FROM '
           . $self->{sql_params}->{confirmation_tokens_table}
-          . " WHERE timestamp <= NOW() - INTERVAL '1 DAY'";
+          . " WHERE timestamp <= NOW() - INTERVAL '60 DAYS'";
 
     }
 

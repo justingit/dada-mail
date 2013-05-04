@@ -15,10 +15,11 @@ require Exporter;
 send_generic_email
 
 send_confirmation_message
-send_unsub_confirmation_message
 
 send_unsubscribed_message
 send_subscribed_message
+
+send_unsubscribe_request_message
 
 send_owner_happenings
 send_newest_archive
@@ -385,9 +386,8 @@ sub send_subscription_request_denied_message {
 
 
 
-
-sub send_unsub_confirmation_message { 
-
+sub send_unsubscribe_request_message { 
+	
 	my ($args) = @_;
 	
 	####
@@ -402,10 +402,15 @@ sub send_unsub_confirmation_message {
 		my $li = $ls->get; 
 	####
 	
-	my $confirmation_msg = $li->{unsub_confirmation_message};
+	my $unsubscription_request_message = $DADA::Config::UNSUBSCRIPTION_REQUEST_MESSAGE;
 	require DADA::App::FormatMessages; 
 	my $fm = DADA::App::FormatMessages->new(-List => $args->{-list}); 
-	   $confirmation_msg = $fm->unsubscription_confirmationation({-str => $confirmation_msg}); 
+	   $unsubscription_request_message = $fm->unsubscription_confirmationation({-str => $unsubscription_request_message}); 
+	
+	require DADA::App::Subscriptions::Unsub; 
+	my $dasu = DADA::App::Subscriptions::Unsub->new({-list => $args->{-list}});
+	my $unsub_link = $dasu->unsub_link({-email => $args->{-email}, -mid => '00000000000000'}); 
+	
 	
 	send_generic_email(
 		{	
@@ -414,10 +419,10 @@ sub send_unsub_confirmation_message {
 		-headers     => 
 			{
 					 To      =>  '"'. escape_for_sending($li->{list_name}) .' Subscriber"  <' . $args->{-email} . '>',
-					 Subject =>  $li->{unsub_confirmation_message_subject}, 
+					 Subject =>  $DADA::Config::UNSUBSCRIPTION_REQUEST_MESSAGE_SUBJECT, 
 			},
 				
-	    -body        => $confirmation_msg, 
+	    -body        => $unsubscription_request_message, 
 		-tmpl_params => {
 			-list_settings_vars_param => {
 				-list => $args->{-list}
@@ -428,7 +433,8 @@ sub send_unsub_confirmation_message {
 				-type  => 'list'
 			},
             -vars                     => {
-				'list.confirmation_token' => $args->{-token},
+#				'list.confirmation_token' => $args->{-token},
+				list_unsubscribe_link => $unsub_link,
 			},
 			},
 			-test         => $args->{-test},
@@ -440,6 +446,7 @@ sub send_unsub_confirmation_message {
        $log->mj_log($args->{-list}, 'Unsubscription Confirmation Sent for ' . $args->{-list} . '.list', $args->{-email});     
  
 }
+
 
 
 

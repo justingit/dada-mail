@@ -1,3 +1,5 @@
+<!-- begin list_unsubscribe.tmpl --> 
+
 <h1>Unsubscribe From <!-- tmpl_var list_settings.list_name --></h1>
 
 <!-- tmpl_if list_exists --> 
@@ -24,7 +26,7 @@
 
 	<fieldset> 
 		
-	<!-- tmpl_if email_hint --> 
+	<!-- tmpl_if list_settings.unsub_show_email_hint --> 
 		<h1>Address Hint: <!-- tmpl_var email_hint --></h1> 
 	<!-- /tmpl_if -->
 	
@@ -38,9 +40,7 @@
 
 	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" /> 
 		<input type="hidden" id="flavor" name="flavor" value="u" />
-		<input type="hidden" id="list" name="list" value="<!-- tmpl_var list_settings.list -->" />
-		<input type="hidden" id="mid" name="mid" value="<!-- tmpl_var mid -->" /> 
-		<input type="hidden" id="unsub_hash" name="unsub_hash" value="<!-- tmpl_var unsub_hash -->" /> 
+		<input type="hidden" id="token" name="token" value="<!-- tmpl_var token -->" /> 
 		<input type="hidden" id="process" name="process" value="1" /> 
 		<input type="text"   id="email" name="email" value="" />
 		<input type="submit" value="Unsubscribe" /> 
@@ -60,3 +60,5 @@
 	</p>
 	
 <!-- /tmpl_if --> 
+
+<!-- end list_unsubscribe.tmpl --> 

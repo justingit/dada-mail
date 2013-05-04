@@ -121,10 +121,10 @@ sub cgi_user_error {
 	if($args{-Error} !~ /unreadable_db_files|sql_connect_error|bad_setup|bad_SQL_setup|install_dir_still_around/){	
 	 	if($args{-List}){ 
 				$subscription_form    = DADA::Template::Widgets::subscription_form({ -list => $args{-List}, -email => $args{-Email}, -give_props => 0 }); 
-		    	$unsubscription_form  = DADA::Template::Widgets::subscription_form({ -list => $args{-List}, -email => $args{-Email}, -give_props => 0} ); 
+		    	$unsubscription_form  = DADA::Template::Widgets::unsubscription_form({ -list => $args{-List}, -email => $args{-Email}, -give_props => 0} ); 
 		}else{ 
 			$subscription_form   = DADA::Template::Widgets::subscription_form({-email => $args{-Email}, -give_props => 0}); # -show_hidden =>1 ?!?!?!
-			$unsubscription_form = DADA::Template::Widgets::subscription_form({-email => $args{-Email}, -give_props => 0}); # -show_hidden => 1?!?!?!
+			$unsubscription_form = DADA::Template::Widgets::unsubscription_form({-email => $args{-Email}, -give_props => 0}); # -show_hidden => 1?!?!?!
 		}
 	}
 
@@ -150,16 +150,34 @@ sub cgi_user_error {
 		}
 	}
 
-	if($args{-Error} eq 'already_sent_sub_confirmation'){ 	
+	if($args{-Error} eq 'already_sent_sub_confirmation' 
+	|| $args{-Error} eq 'already_sent_unsub_confirmation'
+	){ 	
 		my $list  = $args{-List}; 
 		my $email = $args{-Email}; 
-		my $rm = 's';
+		my $rm; 
+		if($args{-Error} eq 'already_sent_sub_confirmation') { 
+			$rm = 's';
+		}
+		elsif($args{-Error} eq 'already_sent_unsub_confirmation') { 
+			$rm = 'unsubscription_request';		
+		}
 		require DADA::MailingList::Settings;
 	    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 	    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 	    my $can_use_captcha = 0;
 
-	    if ($ls->param('limit_sub_confirm_use_captcha') == 1) {
+#	    if (
+#	        (
+#	               $rm eq 's'
+#	            && $ls->param('limit_sub_confirm_use_captcha') == 1
+#	        )
+#	        || (   $rm eq 'u'
+#	            && $ls->param('limit_unsub_confirm_use_captcha') == 1 )
+#	      )
+#	    {
+	
+		if($ls->param('limit_sub_confirm_use_captcha') == 1) { 
 
 	        try {
 	            require DADA::Security::AuthenCAPTCHA;
@@ -185,7 +203,7 @@ sub cgi_user_error {
 				-subscriber_vars_param    => {
 					-list  => $list, 
 					-email => $email, 
-					-type  => 'sub_confirm_list'},
+					-type  => 'sub_confirm_list'}, #what?
 				-dada_pseudo_tag_filter   => 1, 
 				-vars   => {
 					%{$template_vars},

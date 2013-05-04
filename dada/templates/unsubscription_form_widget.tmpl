@@ -1,0 +1,19 @@
+<!-- begin unsubscription_form_widget.tmpl -->
+
+<fieldset>
+<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+	<input type="hidden" name="list" value="<!-- tmpl_var list escape=HTML -->" />
+    <p>
+	<label for="email" class="label_profile_fields" >
+	Email&nbsp;Address: 
+	</label>
+	<input type="text" name="email" id="email" value="<!-- tmpl_var email escape=HTML -->" /> <span class="error">* Required</span>
+	</p>
+	<input type="hidden" name="f" id="f_s" value="unsubscription_request" />
+	<p style="text-align:right;display:block">
+	<input type="submit" value="Unsubscribe" class="processing" />
+	</p> 
+</form> 
+</fieldset>
+
+<!-- end unsubscription_form_widget.tmpl -->

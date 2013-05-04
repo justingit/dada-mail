@@ -1,0 +1,24 @@
+<!-- begin outdated_subscription_urls_screen.tmpl --> 
+
+<h1>Outdated Link</h1> 
+<p>
+<!-- tmpl_if expr="orig_flavor eq 's'" --> 
+	The Subscription
+<!-- tmpl_else --> 
+The Unsubscription
+<!-- /tmpl_if --> 
+link you followed is outdated. We apologize for the inconvenience - the 
+confirmation system has been enhanced. Please re-fill out the form, below: 
+
+<!-- tmpl_if expr="orig_flavor eq 's'" --> 
+	<!-- tmpl_var subscription_form --> 
+<!-- tmpl_else --> 
+	<!-- tmpl_var unsubscription_form --> 
+<!-- /tmpl_if --> 
+
+</p>
+
+
+
+
+<!-- end outdated_subscription_urls_screen.tmpl --> 

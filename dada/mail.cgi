@@ -309,7 +309,8 @@ if($ENV{PATH_INFO}){
 			$q->param('css_file', 'dada_mail.css'); 
 		}
 
-   }elsif($info =~ /^captcha_img/){
+   }
+  elsif($info =~ /^captcha_img/){
 
         my ($pi_flavor, $pi_img_string, $extran) = split('/', $info);
 
@@ -318,61 +319,57 @@ if($ENV{PATH_INFO}){
         $q->param('img_string',   $pi_img_string)
             if $pi_img_string;
 
-	}elsif($info =~ /^u\//){
-        my ($pi_flavor, $pi_list, $pi_mid, $pi_hash, $pi_name_hint, $pi_domain_hint) = split('/', $info, 6);
-  		
-        $q->param('flavor',      $pi_flavor);
-        $q->param('list',        $pi_list);
-		$q->param('mid',         $pi_mid); 
-        $q->param('unsub_hash',  $pi_hash);
 
-		if($pi_name_hint && $pi_domain_hint){ 
-			
-			my ($f_l, $n_stars) = split(/\*/, perl_dehex($pi_name_hint)); 
-			$q->param('email_hint', $f_l . ('*' x int($n_stars)) . '@' . perl_dehex($pi_domain_hint)); 
-		}
-
-    }elsif($info =~ /^(s|n)/){ 
-		my ($pi_flavor, $pi_list, $pi_email, $pi_domain, $pi_pin) = split('/', $info, 5);
+	}
+	elsif($info =~ /^(s|n|u)/){ 
 		
-        if($pi_email !~ m/\@/){
-            $pi_email = $pi_email . '@' . $pi_domain
-                if $pi_domain;
-			if($pi_email =~ m/\=$/){ 
-				$pi_email =~ s/\=$//; 
-			}		
+		my ($pi_flavor, $pi_list, $pi_email, $pi_domain, $pi_pin) = split('/', $info, 5);
+
+		if($pi_email) { 
+	        if($pi_email !~ m/\@/){
+	            $pi_email = $pi_email . '@' . $pi_domain
+	                if $pi_domain;
+				if($pi_email =~ m/\=$/){ 
+					$pi_email =~ s/\=$//; 
+				}		
 				
 				
-        }else{
-            $pi_pin = $pi_domain
-                if !$pi_pin;
-        }
+	        }else{
+	            $pi_pin = $pi_domain
+	                if !$pi_pin;
+	        }
+		}
 		
 		if($pi_pin eq '='){ 
 			undef $pi_pin;
 		}
-		if($pi_list =~ m/\=$/){ 
-			$pi_list =~ s/\=$//; 
-		}		
+		if($pi_list) { 
+			if($pi_list =~ m/\=$/){ 
+				$pi_list =~ s/\=$//; 
+			}		
+		}
+		
 
-		# Rather, we redirect them, to attempt to sub/unsub again, 
 		if(
 			($pi_flavor eq 'n') 
+	     || ($pi_flavor eq 'u')
 		){ 
-			$q->param('flavor', 'outdated_sub_links');
-			$q->param('q_orig_flavor', $pi_flavor)
-			            if $pi_flavor;			
+			$q->param('flavor', 'outdated_subscription_urls');
+			$q->param('orig_flavor', $pi_flavor)
+			            if $pi_flavor;	
 		}
 		else { 
-			$q->param('flavor', $pi_flavor)
-				if $pi_flavor;
+
+		$q->param('flavor', $pi_flavor)
+			if $pi_flavor;
 		}
 
         $q->param('list',   $pi_list)
             if $pi_list;
         $q->param('email',  $pi_email)
             if $pi_email;
-        $q->param('pin',    $pi_pin)
+# pin? 
+       $q->param('pin',    $pi_pin)
             if $pi_pin;
 
 	}elsif($info =~ /^t\//){
@@ -381,34 +378,6 @@ if($ENV{PATH_INFO}){
 		$q->param('flavor', 'token'); 
 		$q->param('token', $pi_token); 
 		
-    }elsif($info =~ /^(s|u)/){
-
-        my ($pi_flavor, $pi_list, $pi_email, $pi_domain) = split('/', $info, 4);
-
-        # HACK: If there is no name and a domain, the entire email address is in "email"
-        # and there is no domain.
-        # move all the other variables to the right
-
-        if($pi_email !~ m/\@/){
-            $pi_email = $pi_email . '@' . $pi_domain
-                if $pi_domain;
-        }
-
-		# For whatever reason (bug somewhere?!) the 
-		# last character of an unsubscription link - say on the last line of an 
-		# email message, contains a, "=". No fun! 
-
-		if($pi_list =~ m/\=$/){ 
-			$pi_list =~ s/\=$//; 
-		}
-		
-        $q->param('flavor', $pi_flavor)
-            if $pi_flavor;
-        $q->param('list',   $pi_list)
-            if $pi_list;
-        $q->param('email',  $pi_email)
-            if $pi_email;
-
     }elsif($info =~ /^subscriber_help|^list/){
 
         my ($pi_flavor, $pi_list) = split('/', $info);
@@ -544,6 +513,7 @@ sub run {
 	'unsubscribe_flash_xml'      =>    \&unsubscribe_flash_xml,
 	'token'                      =>    \&token, 
 	'unsubscribe'                =>    \&unsubscribe,
+	'unsubscription_request'     =>    \&unsubscription_request, 
 	'login'                      =>    \&login,
 	'logout'                     =>    \&logout,
 	'log_into_another_list'      =>    \&log_into_another_list,
@@ -667,7 +637,7 @@ sub run {
 
 	's'                         =>    \&subscribe,
 	'u'                         =>    \&unsubscribe,
-	'outdated_sub_links'        =>    \&outdated_sub_links, 
+	'outdated_subscription_urls'        =>    \&outdated_subscription_urls, 
 
 # This is the new system
 	't'                         =>    \&token, 
@@ -6921,7 +6891,6 @@ sub edit_html_type {
     for (
         qw(
         html_confirmation_message
-        html_unsub_confirmation_message
         html_subscribed_message
         html_unsubscribed_message
 
@@ -6966,7 +6935,6 @@ sub edit_html_type {
         for (
             qw(
             html_confirmation_message
-            html_unsub_confirmation_message
             html_subscribed_message
             html_unsubscribed_message
             )
@@ -6982,7 +6950,6 @@ sub edit_html_type {
                 -associate => $q,
                 -settings => {
                     html_confirmation_message       => '',
-                    html_unsub_confirmation_message => '',
                     html_subscribed_message         => '',
                     html_unsubscribed_message       => '',
                 }
@@ -7444,64 +7411,6 @@ sub subscribe {
 
 
 
-sub subscribe_flash_xml {
-
-    if($q->param('test') == 1){
-        print $q->header('text/plain');
-    }else{
-        print $q->header('application/x-www-form-urlencoded');
-    }
-
-    if(check_if_list_exists(-List => $list) == 0){
-        #note! This should be handled in the subscription_check_xml() method,
-        # but this object *also* checks to see if a list is real. Chick/Egg
-        e_print('<subscription><email>' . $email . '</email><status>0</status><errors><error>no_list</error></errors></subscription>');
-    }else{
-        my $lh = DADA::MailingList::Subscribers->new({-list => $list});
-        my ($xml, $status, $errors) =  $lh->subscription_check_xml(
-											{
-												-email => $email
-											},
-										);
-        e_print($xml);
-
-        if($status == 1){
-            subscribe(-html_output => 0);
-        }
-    }
-}
-
-
-
-
-sub unsubscribe_flash_xml {
-
-    if($q->param('test') == 1){
-        print $q->header('text/plain');
-    }else{
-        print $q->header('application/x-www-form-urlencoded');
-    }
-
-    if(check_if_list_exists(-List => $list) == 0){
-        e_print('<unsubscription><email>' . $email . '</email><status>0</status><errors><error>no_list</error></errors></unsubscription>');
-    }else{
-        my $lh = DADA::MailingList::Subscribers->new({-list => $list});
-        my ($xml, $status, $errors) =  $lh->unsubscription_check_xml(
-											{
-												-email => $email
-											}
-										);
-        e_print($xml);
-
-        if($status == 1){
-            unsubscribe(-html_output => 0);
-        }
-    }
-}
-
-
-
-
 sub unsubscribe {
 
     my %args = (-html_output => 1, @_);
@@ -7516,7 +7425,24 @@ sub unsubscribe {
 
 }
 
-sub outdated_sub_links {
+
+
+sub unsubscription_request {
+	
+    my %args = (-html_output => 1, @_);
+     require DADA::App::Subscriptions;
+    my $das = DADA::App::Subscriptions->new;
+       $das->unsubscription_request(
+        {
+            -cgi_obj     => $q,
+            -html_output => $args{-html_output},
+        }
+    );
+
+		
+}
+
+sub outdated_subscription_urls {
 
     if ( check_if_list_exists( -List => $list ) == 0 ) {
         undef($list);
@@ -7524,10 +7450,12 @@ sub outdated_sub_links {
         return;
     }
 
+	my $orig_flavor = $q->param('orig_flavor') || undef; 
+
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
-            -screen => 'outdated_sub_links_screen.tmpl',
+            -screen => 'outdated_subscription_urls_screen.tmpl',
             -with   => 'list',
             -list   => $list,
             -expr   => 1,
@@ -7537,6 +7465,8 @@ sub outdated_sub_links {
 
             -vars => {
                 show_profile_widget => 0,
+				orig_flavor         => $orig_flavor, 
+
                 subscription_form => DADA::Template::Widgets::subscription_form(
                     {
                         -list       => $list,
@@ -7544,7 +7474,13 @@ sub outdated_sub_links {
                         -give_props => 0,
                         -magic_form => 0,
                     },
-                ),
+				),
+				unsubscription_form => DADA::Template::Widgets::unsubscription_form(
+					{
+                        -list       => $list,
+                        -email      => $email,
+                    },
+				),
             }
         }
     );
@@ -7666,7 +7602,7 @@ sub resend_conf_captcha {
             &subscribe;
             return;
         }
-        elsif ( $q->param('rm') eq 'u' ) {
+        elsif ( $q->param('rm') eq 'unsubscription_request' ) {
 
             # I like the idea better that we call the function directly...
             my $rm_status = $lh->remove_subscriber(
@@ -7677,8 +7613,8 @@ sub resend_conf_captcha {
             );
             $q->param( 'list',  $list );
             $q->param( 'email', $email );
-            $q->param( 'f',     'u' );
-            &unsubscribe;
+            $q->param( 'f',     'unsubscription_request' );
+            &unsubscription_request;
             return;
         }
     }
@@ -7687,7 +7623,7 @@ sub resend_conf_captcha {
 		if($q->param('rm') eq 's'){ 
 			$error = 'already_sent_sub_confirmation'; 
 		}
-		elsif($q->param('rm') eq 'u'){ 
+		elsif($q->param('rm') eq 'unsubscription_request'){ 
 			$error = 'already_sent_unsub_confirmation'; 			
 		}
 		else { 
@@ -7809,8 +7745,8 @@ sub resend_conf_no_captcha {
             );
             $q->param( 'list',  $list );
             $q->param( 'email', $email );
-            $q->param( 'f',     'u' );
-            &unsubscribe;
+            $q->param( 'f',     'unsubscription_request' );
+            &unsubscription_request;
             return;
         }
     }
@@ -11122,7 +11058,7 @@ sub profile {
 						%{$i}, 
 						%{$li}, 
 						PROGRAM_URL => $DADA::Config::PROGRAM_URL,
-						list_unsubscription_link  => $unsub_link, 
+						list_unsubscribe_link  => $unsub_link, 
 					}
 				)
 			}

@@ -143,10 +143,13 @@ sub exists {
 	
 }
 
-
+sub reset_timestamp_by_metadata { 
+	return undef; 
+}
 sub _remove_expired_tokens {
 	return 1; 
 }
+
 
 DESTROY {
 	my $self = shift; 
