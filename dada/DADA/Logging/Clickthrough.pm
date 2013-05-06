@@ -769,7 +769,10 @@ sub redirect_tagify {
 
 
 
-sub message_history_json { 	
+sub message_history_json {
+	
+	# warn 'message_history_json'; 
+	
 	my $self = shift; 
 	my ($args) = @_; 
 	
@@ -783,6 +786,18 @@ sub message_history_json {
 	if(!exists($args->{-printout})){ 
 		$args->{-printout} = 0;
 	}
+	my $cached_data = undef; 
+	if(exists($args->{-report_by_message_index_data})) { 
+		# warn 'getting $cached_data from $args->{-report_by_message_index_data}';
+		$cached_data = $args->{-report_by_message_index_data};
+	}
+	else { 
+		# warn 'no $cached_data passed.';
+	}
+	
+	
+	
+	
 	my $json; 
 	
 	require DADA::App::DataCache; 
@@ -797,18 +812,31 @@ sub message_history_json {
 		}
 	);
 	
+	#if( defined($json)){ 
+	#	# warn 'But! json data cached in file.'; 
+	#}
 	
 	if(! defined($json)){ 
-		my ($total, $msg_ids) = $self->get_all_mids(
-			{ 
-				-page    => $page, 
-				-entries => $self->{ls}->param('tracker_record_view_count'),  
-			
-			}
-		);
-	
-	 	my $report_by_message_index = $self->report_by_message_index({-all_mids => $msg_ids}) || [];
-	
+		my $total; 
+		my $msg_ids; 
+		
+		# We can pass the data we make in $report_by_message_index
+		# and save us this step. 
+		my $report_by_message_index; 
+		if(!$cached_data) { 
+			($total, $msg_ids) = $self->get_all_mids(
+				{ 
+					-page    => $page, 
+					-entries => $self->{ls}->param('tracker_record_view_count'),  
+				}
+			);
+		 	$report_by_message_index = $self->report_by_message_index({-all_mids => $msg_ids}) || [];		
+		}
+		else { 
+			$report_by_message_index = $cached_data;
+		}
+		#######
+		
 		my $num_subscribers = []; 
 		my $opens           = [];
 		my $clickthroughs   = [];

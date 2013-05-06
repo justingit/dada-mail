@@ -125,8 +125,18 @@ sub save_record {
 		if(exists $self->{DB_HASH}->{$key}){ 
 		    
 			my $tmp = $self->{DB_HASH}->{$key};
-			%$tmp = (%$tmp, %{$args{-data}}); 
-			$self->{DB_HASH}->{$key} = $tmp; 
+
+			
+			if(keys %{$args{-data}}){
+			
+				if(! keys %$tmp){ 
+					$tmp = {};
+				}
+				%$tmp = (%$tmp, %{$args{-data}}); 
+				$self->{DB_HASH}->{$key} = $tmp; 
+			}
+
+
 		}else{
 		    
 			$self->{DB_HASH}->{$key} = $args{-data}; 
