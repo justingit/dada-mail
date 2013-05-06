@@ -1318,6 +1318,8 @@ sub create_mass_sending_file {
 						);
 					}
 					else { 
+						
+						this has to be uniwue, as the mid is uniqe
 						# this is to confirm an UNsubscription: 
 						$token = $ct->save(
 							{
