@@ -1642,14 +1642,16 @@ function update_plugins_tracker_message_report() {
 
 	}
 
+	google.setOnLoadCallback(tracker_the_basics_piechart('opens', 'Opens', 'the_basics_opens')); 
+	google.setOnLoadCallback(tracker_the_basics_piechart('unsubscribes', 'Unsubscribes', 'the_basics_unsubscribes')); 
+	google.setOnLoadCallback(tracker_the_basics_piechart('bounces', 'Bounces', 'the_basics_bounces')); 
+
+
 	google.setOnLoadCallback(data_over_time_graph('clickthroughs', 'Clickthroughs', 'over_time_clickthroughs_graph'));
 	google.setOnLoadCallback(data_over_time_graph('unsubscribes', 'Unsubscribes', 'over_time_unsubscribe_graph'));
 	google.setOnLoadCallback(data_over_time_graph('opens', 'Opens', 'over_time_opens_graph'));
 	google.setOnLoadCallback(data_over_time_graph('view_archive', 'Archive Views', 'over_time_view_archive_graph'));
 	google.setOnLoadCallback(data_over_time_graph('forward_to_a_friend', 'Forwards', 'over_time_forwards_graph'));
-
-
-
 
 	google.setOnLoadCallback(email_breakdown_chart('unsubscribe', 'Unsubscribes', 'unsubscribe_graph'));
 	google.setOnLoadCallback(email_breakdown_chart('soft_bounce', 'Soft Bounces', 'soft_bounce_graph'));
@@ -1983,6 +1985,48 @@ function email_breakdown_chart(type, label, target_div) {
 		},
 	});
 }
+
+function tracker_the_basics_piechart(type, label, target_div) {
+	
+	console.log('type:' + type + ' label: ' + label + ' target_div:' + target_div); 
+	
+	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
+	$.ajax({
+		url: $("#plugin_url").val(),
+		dataType: "json",
+		data: {
+			f: 'the_basics_piechart_json',
+			mid: $('#tracker_message_id').val(),
+			type: type,
+			label: label
+		},
+		async: true,
+		success: function(jsonData) {
+			var data = new google.visualization.DataTable(jsonData);
+			var chart = new google.visualization.PieChart(document.getElementById(target_div));
+			var options = {
+				chartArea: {
+					left: 10,
+					top: 10,
+					width: "90%",
+					height: "90%"
+				},
+				title: $('#' + target_div).attr("data-title"),
+				width: $('#' + target_div).attr("data-width"),
+				height: $('#' + target_div).attr("data-height"),
+
+				pieSliceTextStyle: {
+					color: '#FFFFFF'
+				},
+				colors: ["ffabab", "ffabff", "a1a1f0", "abffff", "abffab", "ffffab"],
+				is3D: true
+			};
+			chart.draw(data, options);
+			$("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
+		},
+	});
+}
+
 
 
 // Plugins >> Tracker

@@ -110,6 +110,8 @@ sub run {
 		
 		'message_email_activity_listing_table'  => \&message_email_activity_listing_table, 
 		'message_individual_email_activity_report_table' => \&message_individual_email_activity_report_table, 
+		
+		'the_basics_piechart_json'       => \&the_basics_piechart_json, 
 	);
 	if ($f) {
 	    if ( exists( $Mode{$f} ) ) {
@@ -365,9 +367,9 @@ sub export_subscribers {
 sub message_email_activity_listing_table { 
 	
 	my $mid = xss_filter($q->param('mid')); 	
-   $rd->message_email_activity_listing_table(
+   	$rd->message_email_activity_listing_table(
 		{
-			-mid  => $mid, 
+			-mid  => $mid,
 		}
 	);
 }
@@ -376,10 +378,25 @@ sub message_individual_email_activity_report_table {
 
 	my $mid   = xss_filter($q->param('mid')); 
 	my $email = xss_filter($q->param('email')); 
-   my $report = $rd->message_individual_email_activity_report_table(
+	$rd->message_individual_email_activity_report_table(
 		{
 			-mid    => $mid, 
 			-email  => $email, 
+		}
+	);
+}
+
+sub the_basics_piechart_json { 
+	my $mid   = xss_filter($q->param('mid')); 
+	my $type  = xss_filter($q->param('type')); 
+	my $label = xss_filter($q->param('label')); 
+
+	$rd->msg_basic_event_count_json(
+		{
+			-mid      => $mid, 
+			-type     => $type, 
+			-label    => $label, 
+			-printout => 1, 
 		}
 	);
 }
@@ -441,7 +458,7 @@ sub message_history_html {
 		my $report_by_message_id = $rd->report_by_message_index(
 			{
 				-all_mids => $msg_ids, #Strange speedup
-				-page     => $page_num,
+				-page     => $page,
 			}
 		) || []; 
 

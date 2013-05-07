@@ -946,13 +946,136 @@ sub msg_basic_event_count {
 	$basic_events->{unique_open} = $uo_count; 
 	$sth->finish; 
 	# /Unique Opens
-	
-	$basic_events->{unique_opens_percent}          = $self->percentage($basic_events->{'unique_open'},                                       $basic_events->{num_subscribers}); 
+	$basic_events->{unique_opens_percent}          = $self->percentage($basic_events->{'unique_open'}, $basic_events->{num_subscribers}); 
+	$basic_events->{unique_soft_bounces_percent}   = $self->percentage(int($basic_events->{'soft_bounce'}), $basic_events->{num_subscribers}); 
+	$basic_events->{unique_hard_bounces_percent}   = $self->percentage(int($basic_events->{'hard_bounce'}), $basic_events->{num_subscribers}); 
 	$basic_events->{unique_bounces_percent}        = $self->percentage(int($basic_events->{'soft_bounce'} + $basic_events->{'hard_bounce'}), $basic_events->{num_subscribers}); 
-	$basic_events->{unique_unsubscribes_percent}   = $self->percentage($basic_events->{'unsubscribe'},                                       $basic_events->{num_subscribers}); 
+	$basic_events->{unique_unsubscribes_percent}   = $self->percentage($basic_events->{'unsubscribe'}, $basic_events->{num_subscribers}); 
+
 
 	return $basic_events;
 
+}
+
+
+sub msg_basic_event_count_json { 
+	
+
+	
+    my $self          = shift;
+	my ($args)        = @_;
+	
+	if(!exists($args->{-printout})){ 
+		$args->{-printout} = 0;
+	}
+	my $json; 
+	
+	require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new; 
+
+	$json = $dc->retrieve(
+		{
+			-list    => $self->{name}, 
+			-name    => 'msg_basic_event_count_json' . '.' . $args->{-mid} . '.' . $args->{-type}, 
+		}
+	);
+	
+
+	if(! defined($json)){ 
+
+		my $report = $self->msg_basic_event_count($args->{-mid});	
+
+		require Data::Google::Visualization::DataTable; 
+		my $datatable = Data::Google::Visualization::DataTable->new();
+
+		$datatable->add_columns(
+		       { id => 'category',   label => "Category",      type => 'string',},
+		       { id => 'number',     label => "Number",        type => 'number',},
+		);
+
+
+		if($args->{-type} eq 'opens') { 
+			$datatable->add_rows(
+		        [
+		               { v => 'Unique Opens' },
+		               { v => $report->{unique_opens_percent} },
+		       ],
+			);
+			$datatable->add_rows(
+		        [
+		               { v => 'Unopened' },
+		               { v => (100 - int($report->{unique_opens_percent})) },
+		       ],
+			);
+			
+			
+		}
+		elsif($args->{-type} eq 'unsubscribes') { 
+			$datatable->add_rows(
+		        [
+		               { v => 'Unsubscribes' },
+		               { v => $report->{unique_unsubscribes_percent} },
+		       ],
+			);
+			$datatable->add_rows(
+		        [
+		               { v => 'Still Subscribed' },
+		               { v => (100 - int($report->{unique_unsubscribes_percent})) },
+		       ],
+			);
+			
+			
+		}
+		elsif($args->{-type} eq 'bounces') {
+			$datatable->add_rows(
+		        [
+		               { v => 'Soft Bounces' },
+		               { v => $report->{unique_soft_bounces_percent} },
+		       ],
+			);
+			$datatable->add_rows(
+		        [
+		               { v => 'Hard Bounces' },
+		               { v => $report->{unique_hard_bounces_percent} },
+		       ],
+			);
+			$datatable->add_rows(
+		        [
+		               { v => 'Delivered' },
+		               { v => (100 - ($report->{unique_soft_bounces_percent} + $report->{unique_hard_bounces_percent})) },
+		       ],
+			);		
+		}
+
+
+		$json = $datatable->output_javascript(
+			pretty  => 1,
+		);
+		$dc->cache(
+			{ 
+				-list    => $self->{name}, 
+				-name    => 'msg_basic_event_count_json' . '.' . $args->{-mid} . '.' . $args->{-type}, 
+				-data    => \$json, 
+			}
+		);
+		
+	}
+	
+	if($args->{-printout} == 1){ 
+		require CGI; 
+		my $q = CGI->new; 
+		print $q->header(
+			'-Cache-Control' => 'no-cache, must-revalidate',
+			-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
+			-type            =>  'application/json',
+		);
+		print $json; 
+	}
+	else { 
+		return $json; 
+	}
+	
+	
 }
 
 sub percentage { 
@@ -960,12 +1083,16 @@ sub percentage {
 	my $num  = shift; 
 	my $total = shift; 
 	my $p     = 0; 
+; 
+	
 	return 0 unless $total > 0; 
 	try { 
 		$p =  int(int($num)/int($total) * 100); 
 	} catch { 
 		carp "problems finding percentage: $_"; 
 	};
+
+	
 	return $p; 
 }
 
@@ -2281,6 +2408,10 @@ sub message_individual_email_activity_report_table {
 	print header(); 
 	print $html;	
 }
+
+
+
+
 
 
 
