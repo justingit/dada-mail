@@ -662,7 +662,7 @@ The default email messages that are easily editable are located in the Config.pm
 
 =item * $CONFIRMATION_MESSAGE
 
-=item * $UNSUB_CONFIRMATION_MESSAGE
+=item * $UNSUBSCRIPTION_REQUEST_MESSAGE
 
 =item * $MAILING_LIST_MESSAGE
 
@@ -693,7 +693,7 @@ List HTML screens are used for the operation of a mailing list. The screens that
 
 =item * $HTML_CONFIRMATION_MESSAGE
 
-=item * $HTML_UNSUB_CONFIRMATION_MESSAGE
+=item * $HTML_UNSUBSCRIPTION_REQUEST_MESSAGE
 
 =item * $HTML_SUBSCRIBED_MESSAGE
 

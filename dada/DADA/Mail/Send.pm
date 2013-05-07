@@ -65,6 +65,7 @@ my %allowed = (
 	
 	net_smtp_obj                  => undef, 
 	ses_obj                       => undef, 
+	#unsub_obj                     => undef, 
 	
 ); 
 
@@ -1131,6 +1132,14 @@ sub mass_send {
 	
 	
 	$self->im_mass_sending(1); 
+#	require DADA::App::Subscriptions::Unsub; 
+#	$self->unsub_obj(DADA::App::Subscriptions::Unsub->new(
+#		{
+#			-list => $self->{list}, 
+#			-ls_obj => $self->{ls},
+#		}
+#	));	
+		
 		
 	warn '[' . $self->{list} . '] starting mass_send at' . time
 	    if $t;
@@ -1642,35 +1651,31 @@ sub mass_send {
 			#
 			
 			# DEV: Should we only use this for mass mailings to, "list"?!
-			if($self->{ls}->param('clickthrough_tracking') == 1){ 
-				# This still sucks, since this'll reparse after each restart.
-				require DADA::Logging::Clickthrough; 
-				my $ct = DADA::Logging::Clickthrough->new(
-							{
-								-list => $self->{list},
-								
-								# I guess one way to find out if the
-								# InactiveDestroy stuff is working, 
-								# Is isf DADA::Logging::Clickthrough
-								# is working without this kludge: 
-								#
-								#-li   => $self->{ls}->params, 
-								#
-							}
-						); 
-				if($ct->enabled) { 
-					%fields = $ct->parse_email(
-					    {
-					        -fields => \%fields,
-							-mid    => $fields{'Message-ID'},
-					    }
-					);
-					undef $ct; 
-					# And, that's it.
-				}
-			}
-			else { 
-			}
+			# This still sucks, since this'll reparse after each restart.
+			require DADA::Logging::Clickthrough; 
+			my $ct = DADA::Logging::Clickthrough->new(
+						{
+							-list => $self->{list},
+							
+							# I guess one way to find out if the
+							# InactiveDestroy stuff is working, 
+							# Is isf DADA::Logging::Clickthrough
+							# is working without this kludge: 
+							#
+							#-li   => $self->{ls}->params, 
+							#
+						}
+					); 
+			if($ct->enabled) { 
+				%fields = $ct->parse_email(
+				    {
+				        -fields => \%fields,
+						-mid    => $fields{'Message-ID'},
+				    }
+				);
+				undef $ct; 
+				# And, that's it.
+			}			
 			#
 			##################################################################			
 			
@@ -2487,16 +2492,7 @@ sub list_headers {
 			$lh{'List-Subscribe'}   =   '<<!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>'; 
 		}
 
-		# List-Unsubscribe
-		# I'm not using the _macro_tags method, out of sake of performance
-		# That method should really be moved into DADA::Template::Widgets
-		#
-		if($self->{ls}->param('unsub_link_behavior') eq 'show_unsub_form'){ 
-			$lh{'List-Unsubscribe'} =   '<<!-- tmpl_var PROGRAM_URL -->/ur/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>'; 
-		}
-		else { 
-			$lh{'List-Unsubscribe'} =   '<<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>'; 
-		}
+		$lh{'List-Unsubscribe'} =   '<<!-- tmpl_var list_unsubscribe_link -->>'; 
 
 		# List-Owner
 		$lh{'List-Owner'}       =   '<<!-- tmpl_var list_settings.list_owner_email -->>';
@@ -2872,6 +2868,17 @@ sub _mail_merge {
         $labeled_data{message_id}                     = shift @$data;
         $labeled_data{'list.confirmation_token'}      = shift @$data;
  
+
+		$labeled_data{'list_unsubscribe_link'} = $DADA::Config::PROGRAM_URL . '/t/' . $labeled_data{'list.confirmation_token'} . '/'; 
+		
+		
+#		$labeled_data{'list_unsubscribe_link'} = $self->unsub_obj->unsub_link(
+#			{
+#				-mid   => $labeled_data{message_id}, 
+#				-email => $subscriber_vars->{'subscriber.email'}
+#			}
+#		);
+#		warn q{$labeled_data{'list_unsubscribe_link'} } . $labeled_data{'list_unsubscribe_link'}; 
 	my $merge_fields = $self->{merge_fields};
         
     my $i = 0;
@@ -2887,8 +2894,7 @@ sub _mail_merge {
             $subscriber_vars->{'subscriber.' . $merge_fields->[$i]} = $data->[$i];       
         }
         else { 
-		  	 $subscriber_vars->{'subscriber.' . $merge_fields->[$i]} = $self->{field_attr}->{$merge_fields->[$i]}->{fallback_value};  
-          
+		  	 $subscriber_vars->{'subscriber.' . $merge_fields->[$i]} = $self->{field_attr}->{$merge_fields->[$i]}->{fallback_value};   
         }
     }
 

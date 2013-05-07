@@ -623,7 +623,7 @@ sub create_subscriber_list {
         	-Test_Recipient  => $args->{-mh_obj}->mass_test_recipient,
 	        -Ban             => $args->{-mh_obj}->{do_not_send_to},
 			
-			-Create_Tokens   => $args->{-mh_obj}->list_type eq 'invitelist' ? 1 : 0,
+			-Create_Tokens   => ($args->{-mh_obj}->list_type eq 'invitelist' || $args->{-mh_obj}->list_type eq 'list') ? 1 : 0,
 			
 	        # -Sending_Lists   => $args->{-mh_obj}->also_send_to,
 			# I'm pretty scoobied why these are passed as params, and the above are just 

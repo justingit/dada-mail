@@ -530,18 +530,9 @@ ok(
 # unsub confirm email
 ok(
     $fm->can_find_unsub_confirm_link(
-        { -str => $DADA::Config::UNSUB_CONFIRMATION_MESSAGE, }
+        { -str => $DADA::Config::UNSUBSCRIPTION_REQUEST_MESSAGE, }
     ),
     "found unsub confirm link in html mailing list message!"
-);
-ok(
-    $fm->can_find_unsub_confirm_link(
-        {
-            -str =>
-              $DADA::Config::LIST_SETUP_DEFAULTS{unsub_confirmation_message},
-        }
-    ),
-    "found unsub confirm link in html mailing list message(2)!"
 );
 
 ok( $fm->can_find_unsub_confirm_link( { -str => 'nothing', } ) == 0,

@@ -1339,18 +1339,44 @@ sub create_mass_sending_file {
 				if($args{-Create_Tokens} == 1){ 
 					# In this case, the remote_addr WOULD be different, as it's being 
 					# sent by the List Owner, not the user. 
-					my $token = $ct->save(
-						{
-							-email => $field_ref->{email},
-							-data  => {
-								list        => $field_ref->{list}, 
-								flavor      => 'sub_confirm', 
-								type        => 'list', 
-								remote_addr => $ENV{REMOTE_ADDR},
-								invite      => 1,  
+					my $token; 
+					
+					if($type eq 'invitelist') { 
+						# this is to confirm a subscription
+						
+						$token = $ct->save(
+							{
+								-email => $field_ref->{email},
+								-data  => {
+									list        => $field_ref->{list}, 
+									flavor      => 'sub_confirm', 
+									type        => 'list', 
+									remote_addr => $ENV{REMOTE_ADDR},
+									invite      => 1,  
+								}
 							}
-						}
-					);
+						);
+					}
+					else { 
+						
+						$token = $ct->save(
+							{
+								-email => $field_ref->{email},
+								-data  => {
+									list        => $field_ref->{list}, 
+									type        => 'list', 
+									flavor      => 'unsub_confirm', 
+									mid         => $n_msg_id,
+					#				remote_addr => $ENV{REMOTE_ADDR}, 
+									email_hint  => DADA::App::Guts::anonystar_address_encode($field_ref->{email}),
+								},
+					#			-reset_previous_timestamp => 1, # NO! MID has to be unique. DOH. 
+							}
+						);
+						
+						
+					}
+
 					push( @sub, $token );
 				}
 				else { 

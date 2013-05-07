@@ -294,11 +294,10 @@ sub set_archive_info {
 			($new_message, $new_format) = $self->_faked_oldstyle_message($raw_msg);
 		}
 		
-		if($self->{ls}->param('enable_open_msg_logging') == 1){ 
-			if($new_format !~ /plain/){ 
-				$new_message = $self->_remove_opener_image($new_message);
-				$raw_msg     = $self->_remove_opener_image($raw_msg);
-			}
+		# remove opener image! 
+		if($new_format !~ /plain/){ 
+			$new_message = $self->_remove_opener_image($new_message);
+			$raw_msg     = $self->_remove_opener_image($raw_msg);
 		}
 		
 		my $query = 'INSERT INTO '. $self->{sql_params}->{archives_table} .' VALUES (?,?,?,?,?,?)';

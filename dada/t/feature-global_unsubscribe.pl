@@ -74,8 +74,6 @@ ok($lh3->num_subscribers == 1, "One in #3");
 
 require DADA::MailingList::Settings; 
 my $das = DADA::App::Subscriptions->new; 
-my $ls3 = DADA::MailingList::Settings->new({-list => $list3});
-$ls3->param('unsub_confirm_email', 0); 
 
 use DADA::App::Subscriptions; 
 my $dap = DADA::App::Subscriptions->new; 

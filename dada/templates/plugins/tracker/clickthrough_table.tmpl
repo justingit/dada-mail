@@ -62,6 +62,7 @@
 
 		  <table class="stripedtable">
 		   <tr> 
+			
 		    <td> 
 			 <p>
 			  <strong> 
@@ -69,6 +70,7 @@
 			  </strong> 
 			 </p>
 			</td> 
+			
 		    <td> 
 			 <p>
 			  <strong> 
@@ -76,6 +78,7 @@
 			  </strong> 
 			 </p>
 			</td>
+			
 		    <td> 
 			 <p>
 			  <strong> 
@@ -83,6 +86,16 @@
 			  </strong> 
 			 </p>
 			</td>
+			
+			<td> 
+			 <p>
+			  <strong> 
+				Opens
+			  </strong> 
+			 </p>
+			</td>
+			
+			
 		    <td> 
 			 <p>
 			  <strong> 
@@ -90,13 +103,18 @@
 			  </strong> 
 			 </p>
 			</td>
+			
+
+
 		    <td> 
 			 <p>
 			  <strong> 
-				Opens
+				Unsubscribes
 			  </strong> 
 			 </p>
 			</td>
+			
+			
 		    <td> 
 			 <p>
 			  <strong> 
@@ -136,27 +154,47 @@
 				<!-- tmpl_var date --> 
 		      </p> 
 		     </td> 
+		
+		
 		     <td> 
 		      <p>
 		       <a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
-			    <!-- tmpl_var num_subscribers  --> 
+			    <!-- tmpl_var num_subscribers  default="-"--> 
 			   </a> 
 		      </p>
 			 </td> 
+			
+			 <td> 
+		      <p>
+		       <a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
+			    <!-- tmpl_var open default="-"  --> 
+			   </a> 
+		      </p>
+			 </td>
+			
+			
+			
 		     <td> 
 		      <p>
 		       <a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
-			    <!-- tmpl_var count   --> 
+			    <!-- tmpl_var count  default="-"  --> 
 			   </a> 
 		      </p>
-			 </td> 
+			 </td>
+			 
+			
+			 
 		     <td> 
 		      <p>
 		       <a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
-			    <!-- tmpl_var open   --> 
+			    <!-- tmpl_var unsubscribe  default="-"  --> 
 			   </a> 
 		      </p>
-			 </td> 
+			 </td>
+			
+			
+
+			
 		     <td> 
 		      <p>
 		       <a href="<!-- tmpl_var Plugin_URL -->?f=m&mid=<!-- tmpl_var mid -->">

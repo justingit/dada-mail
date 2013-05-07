@@ -55,6 +55,10 @@ sub save {
     if ( exists( $args->{-remove_previous} ) ) {
         $remove_previous = $args->{-remove_previous};
     }
+	my $reset_previous_timestamp = 0; 	
+    if ( exists( $args->{-reset_previous_timestamp} ) ) {
+        $reset_previous_timestamp = $args->{-reset_previous_timestamp};
+    }
 
 
     my $data = {
@@ -73,9 +77,30 @@ sub save {
 			}
 		); 
 	}
-	$self->_backend_specific_save($token, $args->{-email}, $frozen); 
-
-    return $token;
+	if($reset_previous_timestamp == 1){ 
+		#warn 'calling reset_timestamp_by_metadata'; 
+		my $prev_token = $self->reset_timestamp_by_metadata(
+				{ 
+					-email    => $args->{-email},
+					-metadata => $args->{-data}, 
+				}
+			);
+		if(defined($prev_token)) { 
+			return $prev_token; 
+		}
+		else { 
+			# We didn't find one
+			#warn 'making a new one.'; 
+			$self->_backend_specific_save($token, $args->{-email}, $frozen); 
+			return $token; 
+		}
+		
+	}
+	else { 
+		$self->_backend_specific_save($token, $args->{-email}, $frozen); 
+		return $token;
+	}
+	
 
 }
 

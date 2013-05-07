@@ -15,9 +15,13 @@ $(document).ready(function() {
 
 	// Admin Menu 
 	if ($("#navcontainer").length) {
-		admin_menu_sending_monitor_notification();
-		admin_menu_subscriber_count_notification();
-		admin_menu_archive_count_notification();
+		
+		var admin_menu_callbacks = $.Callbacks();
+		admin_menu_callbacks.add(admin_menu_sending_monitor_notification());
+		admin_menu_callbacks.add(admin_menu_subscriber_count_notification());
+		admin_menu_callbacks.add(admin_menu_archive_count_notification());
+		admin_menu_callbacks.add(admin_menu_sending_preferences_notification());
+		admin_menu_callbacks.fire(); 
 	}
 
 	//Mail Sending >> Send a Message 
@@ -585,15 +589,23 @@ $(document).ready(function() {
 
 
 function admin_menu_sending_monitor_notification() {
+	console.log('admin_menu_sending_monitor_notification'); 
 	admin_menu_notification('admin_menu_mailing_monitor_notification', 'admin_menu_sending_monitor');
 }
 
 function admin_menu_subscriber_count_notification() {
+	console.log('admin_menu_subscriber_count_notification'); 
 	admin_menu_notification('admin_menu_subscriber_count_notification', 'admin_menu_view_list');
 }
 function admin_menu_archive_count_notification() { 
+	console.log('admin_menu_archive_count_notification'); 
 	admin_menu_notification('admin_menu_archive_count_notification', 'admin_menu_view_archive');	
 }
+
+function admin_menu_sending_preferences_notification() { 
+	admin_menu_notification('admin_menu_sending_preferences_notification', 'admin_menu_sending_preferences');	
+}
+
 
 function admin_menu_notification(flavor, target_class) {
 	var r = 60 * 5 * 1000; // Every 5 minutes. 
@@ -1565,26 +1577,34 @@ function plugins_mailing_monitor() {
 function update_plugins_tracker_message_report() {
 
 	var $tabs = $("#tabs").tabs();
-	$('body').on('click', '.to_clickthroughs', function(event) {
-		$tabs.tabs('select', 0);
-		return false;
+
+	$('body').on('click', '.to_subscriber_activity', function(event) {
+		$tabs.tabs('select', 0); return false;
 	});
 	$('body').on('click', '.to_opens', function(event) {
-		$tabs.tabs('select', 1);
-		return false;
+		$tabs.tabs('select', 1); return false;
 	});
-	$('body').on('click', '.to_archive_views', function(event) {
-		$tabs.tabs('select', 2);
-		return false;
+	$('body').on('click', '.to_clickthroughs', function(event) {
+		$tabs.tabs('select', 2); return false;
 	});
-	$('body').on('click', '.to_forwards', function(event) {
-		$tabs.tabs('select', 3);
-		return false;
+	$('body').on('click', '.to_unsubscribes', function(event) {
+		$tabs.tabs('select', 3); return false;
 	});
 	$('body').on('click', '.to_bounces', function(event) {
-		$tabs.tabs('select', 4);
-		return false;
+		$tabs.tabs('select', 4); return false;
 	});
+	$('body').on('click', '.to_archive_views', function(event) {
+		$tabs.tabs('select', 5); return false;
+	});
+	$('body').on('click', '.to_forwards', function(event) {
+		$tabs.tabs('select', 6); return false;
+	});
+
+	$("body").on("click", '.message_individual_email_activity', function(event) {
+		event.preventDefault();
+		message_individual_email_activity_table($(this).attr("data-email"), "message_individual_email_activity_report_table");
+	});
+	
 
 	$("body").on("click", '.individual_country_geoip', function(event) {
 		event.preventDefault();
@@ -1600,14 +1620,19 @@ function update_plugins_tracker_message_report() {
 		event.preventDefault();
 		country_geoip_map($(this).attr("data-type"), "country_geoip_" + $(this).attr("data-type") + "_map");
 	});
+	
 
-
+	var tracker_message_report_callback = $.Callbacks();
+	
 	if ($("#can_use_country_geoip_data").val() == 1) {
 
-		country_geoip_table('clickthroughs', 'Clickthroughs', 'country_geoip_clickthroughs_table');
-		country_geoip_table('opens', 'Opens', 'country_geoip_opens_table');
-		country_geoip_table('view_archive', 'Archive Views', 'country_geoip_view_archive_table');
-		country_geoip_table('forward_to_a_friend', 'Forwards', 'country_geoip_forwards_table');
+		tracker_message_report_callback.add(tracker_message_email_activity_listing_table('message_email_activity_listing_table'));
+
+
+		tracker_message_report_callback.add(country_geoip_table('clickthroughs', 'Clickthroughs', 'country_geoip_clickthroughs_table'));
+		tracker_message_report_callback.add(country_geoip_table('opens', 'Opens', 'country_geoip_opens_table'));
+		tracker_message_report_callback.add(country_geoip_table('view_archive', 'Archive Views', 'country_geoip_view_archive_table'));
+		tracker_message_report_callback.add(country_geoip_table('forward_to_a_friend', 'Forwards', 'country_geoip_forwards_table'));
 
 
 		google.setOnLoadCallback(country_geoip_map('clickthroughs', 'country_geoip_clickthroughs_map'));
@@ -1617,19 +1642,27 @@ function update_plugins_tracker_message_report() {
 
 	}
 
+	google.setOnLoadCallback(tracker_the_basics_piechart('opens', 'Opens', 'the_basics_opens')); 
+	google.setOnLoadCallback(tracker_the_basics_piechart('unsubscribes', 'Unsubscribes', 'the_basics_unsubscribes')); 
+	google.setOnLoadCallback(tracker_the_basics_piechart('bounces', 'Bounces', 'the_basics_bounces')); 
+
+
 	google.setOnLoadCallback(data_over_time_graph('clickthroughs', 'Clickthroughs', 'over_time_clickthroughs_graph'));
+	google.setOnLoadCallback(data_over_time_graph('unsubscribes', 'Unsubscribes', 'over_time_unsubscribe_graph'));
 	google.setOnLoadCallback(data_over_time_graph('opens', 'Opens', 'over_time_opens_graph'));
 	google.setOnLoadCallback(data_over_time_graph('view_archive', 'Archive Views', 'over_time_view_archive_graph'));
 	google.setOnLoadCallback(data_over_time_graph('forward_to_a_friend', 'Forwards', 'over_time_forwards_graph'));
 
+	google.setOnLoadCallback(email_breakdown_chart('unsubscribe', 'Unsubscribes', 'unsubscribe_graph'));
+	google.setOnLoadCallback(email_breakdown_chart('soft_bounce', 'Soft Bounces', 'soft_bounce_graph'));
+	google.setOnLoadCallback(email_breakdown_chart('hard_bounce', 'Hard Bounces', 'hard_bounce_graph'));
 
+	tracker_message_report_callback.add(message_email_report_table('unsubscribe', 'unsubscribe_table'));
+	tracker_message_report_callback.add(message_email_report_table('soft_bounce', 'soft_bounce_table'));
+	tracker_message_report_callback.add(message_email_report_table('hard_bounce', 'hard_bounce_table'));
 
-	google.setOnLoadCallback(bounce_breakdown_chart('soft', 'Soft Bounces', 'soft_bounce_graph'));
-	google.setOnLoadCallback(bounce_breakdown_chart('hard', 'Hard Bounces', 'hard_bounce_graph'));
-
-	message_bounce_report_table('soft', 'soft_bounce_table');
-	message_bounce_report_table('hard', 'hard_bounce_table');
-
+	tracker_message_report_callback.fire(); 
+	
 }
 
 function country_geoip_table(type, label, target_div) {
@@ -1733,6 +1766,27 @@ function country_geoip_map(type, target_div) {
 
 }
 
+function message_individual_email_activity_table(email, target_div) { 
+	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
+	$.ajax({
+		url: $("#plugin_url").val(),
+		data: {
+			f: 'message_individual_email_activity_report_table',
+			mid: $('#tracker_message_id').val(),
+			email: email, 
+		},
+		dataType: "html",
+		async: true,
+		success: function(content) {
+			$("#" + target_div).hide("fade", function() {
+				$("#" + target_div).html(content);
+				$("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
+				$("#" + target_div).show('fade');
+			});
+		}
+	});
+	
+}
 
 function individual_country_geoip_map(type, country, target_div) {
 	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
@@ -1832,17 +1886,19 @@ function data_over_time_graph(type, label, target_div) {
 	});
 }
 
-function message_bounce_report_table(bounce_type, target_div) {
+function message_email_report_table(type, target_div) {
 
+	console.log('type:' + type + ' target_div:' + target_div); 
+	
 	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
 	var request = $.ajax({
 		url: $("#plugin_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
-			f: 'message_bounce_report_table',
+			f: 'message_email_report_table',
 			mid: $('#tracker_message_id').val(),
-			bounce_type: bounce_type
+			type: type
 		},
 		dataType: "html"
 	});
@@ -1857,15 +1913,50 @@ function message_bounce_report_table(bounce_type, target_div) {
 	});
 }
 
-function bounce_breakdown_chart(type, label, target_div) {
+function tracker_message_email_activity_listing_table(target_div) { 
+	console.log('target_div:' + target_div); 
+
+	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
+	var request = $.ajax({
+		url: $("#plugin_url").val(),
+		type: "POST",
+		cache: false,
+		data: {
+			f: 'message_email_activity_listing_table',
+			mid: $('#tracker_message_id').val(),
+		},
+		dataType: "html"
+	});
+	request.done(function(content) {
+
+		$("#" + target_div).hide();
+		$("#" + target_div).html(content);
+		$("#" + target_div).show('fade');
+
+		$("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
+		//$("#sortable_table_" + type).tablesorter();
+		if ($('#first_for_message_email_activity_listing_table').length) {
+			message_individual_email_activity_table($('#first_for_message_email_activity_listing_table').html(), 'message_individual_email_activity_report_table'); 
+		}		
+
+
+		// alert("This: " + $('#first_for_message_email_activity_listing_table').html()); 
+		
+	});
+}
+
+function email_breakdown_chart(type, label, target_div) {
+	
+	console.log('type:' + type + ' label: ' + label + ' target_div:' + target_div); 
+	
 	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
 	$.ajax({
 		url: $("#plugin_url").val(),
 		dataType: "json",
 		data: {
-			f: 'bounce_stats_json',
+			f: 'email_stats_json',
 			mid: $('#tracker_message_id').val(),
-			bounce_type: type,
+			type: type,
 			label: label
 		},
 		async: true,
@@ -1894,6 +1985,48 @@ function bounce_breakdown_chart(type, label, target_div) {
 		},
 	});
 }
+
+function tracker_the_basics_piechart(type, label, target_div) {
+	
+	console.log('type:' + type + ' label: ' + label + ' target_div:' + target_div); 
+	
+	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
+	$.ajax({
+		url: $("#plugin_url").val(),
+		dataType: "json",
+		data: {
+			f: 'the_basics_piechart_json',
+			mid: $('#tracker_message_id').val(),
+			type: type,
+			label: label
+		},
+		async: true,
+		success: function(jsonData) {
+			var data = new google.visualization.DataTable(jsonData);
+			var chart = new google.visualization.PieChart(document.getElementById(target_div));
+			var options = {
+				chartArea: {
+					left: 10,
+					top: 10,
+					width: "90%",
+					height: "90%"
+				},
+				title: $('#' + target_div).attr("data-title"),
+				width: $('#' + target_div).attr("data-width"),
+				height: $('#' + target_div).attr("data-height"),
+
+				pieSliceTextStyle: {
+					color: '#FFFFFF'
+				},
+				colors: ["ffabab", "ffabff", "a1a1f0", "abffff", "abffab", "ffffab"],
+				is3D: true
+			};
+			chart.draw(data, options);
+			$("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
+		},
+	});
+}
+
 
 
 // Plugins >> Tracker

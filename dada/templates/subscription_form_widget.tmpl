@@ -1,43 +1,25 @@
 <!-- begin subscription_form_widget.tmpl --> 
 
-
-
-<!-- tmpl_if ajax_subscribe_extension --> 
-
-        
-    <form action="<!-- tmpl_var script_url -->" onsubmit="external( ['list', 'f_s', 'f_u', 'email' <!-- tmpl_loop subscriber_fields -->,'<!-- tmpl_var name escape=HTML -->'<!--/tmpl_loop -->,'NO_CACHE'], [need_redirect] ); return false;">
-
-<!-- tmpl_else --> 
-
-    <form action="<!-- tmpl_var script_url -->" method="post">
-
-<!-- /tmpl_if --> 
+<form action="<!-- tmpl_var script_url -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 
 <fieldset>
 <legend>
- Subscribe/Unsubscribe <!-- tmpl_if single_list --> on <!-- tmpl_var list_settings.list_name --><!-- tmpl_else --><!-- /tmpl_if -->
+ Subscribe <!-- tmpl_if single_list --> to <!-- tmpl_var list_settings.list_name --><!-- tmpl_else --><!-- /tmpl_if -->
 </legend>
 
 <!-- tmpl_if single_list --> 
-
     <!-- tmpl_if list_settings.closed_list -->
-
 	    <p class="error"> 
-	     This list is currently closed to future subscribers. You may still unsubscribe.
+	     This list is currently closed to future subscribers.
 	    </p>
-	
 	<!-- tmpl_else --> 
-	
 		<!-- tmpl_if list_settings.invite_only_list --> 
 			<p class="error">
-				This mailing list is currently invitation-only. You may still unsubscribe.
+				This mailing list is currently invitation-only.
 			</p>
 		<!-- /tmpl_if -->
-		
     <!-- /tmpl_if -->
-
     <input type="hidden" name="list" value="<!-- tmpl_var list escape=HTML -->" />
-
 <!-- tmpl_else --> 
     
     <!-- tmpl_if multiple_lists --> 
@@ -58,6 +40,7 @@
     <!-- /tmpl_if --> 
     
 <!-- /tmpl_if -->
+
 <p>
 <label for="email" class="label_profile_fields" >
 Email&nbsp;Address: 
@@ -74,13 +57,8 @@ Email&nbsp;Address:
 
 	
 <!-- tmpl_if show_fields --> 
-
 	<!-- tmpl_if subscriber_fields --> 
-
-	    <hr style="border-top: 1px solid black;" /> 
-
-	    <!-- tmpl_loop subscriber_fields --> 
-  
+	    <!-- tmpl_loop subscriber_fields --> 	
 	        <p>
 	        <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
 	        <!-- tmpl_if pretty_name --> 
@@ -91,69 +69,21 @@ Email&nbsp;Address:
 			</label>
 	        <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var given_value escape=HTML -->"  />
 	        </p>
-  
-  
 	    <!-- /tmpl_loop --> 
-
 	<!-- /tmpl_if --> 
-
-
-
 <!-- /tmpl_if -->
-<hr style="border-top: 1px solid black;" /> 
 
-<!-- tmpl_if list_settings.closed_list --> 
-
- 
-    <p> 
-    <label for="f_u" class="label_profile_fields">Unsubscribe</label> 
-    <input type="radio" name="f"  id="f_u"  value="unsubscribe" checked="checked" />
-    </p>  
-
-<!-- tmpl_else --> 
-	
-	<!-- tmpl_if list_settings.invite_only_list -->
-		
-		<p> 
-	    <label for="f_u" class="label_profile_fields">Unsubscribe</label> 
-	    <input type="radio" name="f"  id="f_u"  value="unsubscribe" checked="checked" />
-	    </p>
-	
-	<!-- tmpl_else --> 
-		<p>
-	    <label for="f_s" class="label_profile_fields">
-	    Subscribe
-	    </label>
-	    <input type="radio" name="f" id="f_s" value="subscribe" <!-- tmpl_if flavor_is_subscribe -->checked="checked"<!-- /tmpl_if --> />
-	    </p> 
-    
-	    <p> 
-	    <label for="f_u" class="label_profile_fields">Unsubscribe</label> 
-	    <input type="radio" name="f"  id="f_u"  value="unsubscribe" <!-- tmpl_if flavor_is_unsubscribe -->checked="checked"<!-- /tmpl_if --> />
-	    </p>
-	<!-- /tmpl_if --> 
-<!-- /tmpl_if --> 
-
-<hr style="border-top: 1px solid black;" /> 
+<input type="hidden" name="f" id="f_s" value="subscribe" />
 
 <p style="text-align:right;display:block">
-<input type="submit" value="Submit Your Information" class="processing" />
+<input type="submit" value="Subscribe" class="processing" />
 </p> 
 
-
 <!-- tmpl_if give_props --> 
-
     <p style="font-size:10px;font-family:Verdana,Arial,sans-serif;"><a href="http://dadamailproject.com" target="_blank" style="font-size:10px;font-family:Verdana,Arial,sans-serif;">Powered by <!-- tmpl_var name="PROGRAM_NAME" --> <!-- tmpl_var VER --> Mailing List Manager</a></p>
-
 <!-- /tmpl_if --> 
-
-
-
 
 </fieldset>
 </form> 
 
-
-
-  
 <!-- end subscription_form_widget.tmpl --> 

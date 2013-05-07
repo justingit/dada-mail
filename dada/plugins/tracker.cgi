@@ -31,6 +31,7 @@ my $q = new CGI;
 $q->charset($DADA::Config::HTML_CHARSET);
 $q = decode_cgi_obj($q);
 
+use Try::Tiny; 
 
 my $Plugin_Config                  = {}; 
 $Plugin_Config->{Plugin_Name}      = 'Tracker'; 
@@ -101,11 +102,16 @@ sub run {
 		'individual_country_geoip_json'   => \&individual_country_geoip_json, 
 		'individual_country_geoip_report_table' => \&individual_country_geoip_report_table, 
 		'data_over_time_json'             => \&data_over_time_json, 
-		'message_bounce_report_table'     => \&message_bounce_report_table, 
-		'bounce_stats_json'               => \&bounce_stats_json, 
+		'message_email_report_table'      => \&message_email_report_table, 
+		'email_stats_json'                => \&email_stats_json, 
 		'clear_data_cache'                => \&clear_data_cache, 
 		'clear_message_data_cache'        => \&clear_message_data_cache, 
 		'export_subscribers'              => \&export_subscribers, 
+		
+		'message_email_activity_listing_table'  => \&message_email_activity_listing_table, 
+		'message_individual_email_activity_report_table' => \&message_individual_email_activity_report_table, 
+		
+		'the_basics_piechart_json'       => \&the_basics_piechart_json, 
 	);
 	if ($f) {
 	    if ( exists( $Mode{$f} ) ) {
@@ -277,24 +283,24 @@ sub data_over_time_json {
 	
 }
 
-sub message_bounce_report_table { 
+sub message_email_report_table { 
 	my $mid = $q->param('mid'); 
-	my $bounce_type = $q->param('bounce_type') || 'soft'; 
-	$rd->message_bounce_report_table(
+	my $type = $q->param('type') || 'soft_bounce'; 
+	$rd->message_email_report_table(
 		{
 			-mid             => $mid,
-			-bounce_type     => $bounce_type, 
+			-type            => $type, 
 			-printout        => 1
 		}
 	);
 }
-sub bounce_stats_json { 
+sub email_stats_json { 
 		my $mid = $q->param('mid'); 
-		my $bounce_type = $q->param('bounce_type') || 'soft'; 
-		$rd->bounce_stats_json(
+		my $type = $q->param('type') || 'soft_bounce'; 
+		$rd->email_stats_json(
 			{
 				-mid             => $mid,
-				-bounce_type     => $bounce_type, 
+				-type            => $type, 
 				-printout        => 1
 			}
 		);
@@ -358,6 +364,42 @@ sub export_subscribers {
 	 
 }
 
+sub message_email_activity_listing_table { 
+	
+	my $mid = xss_filter($q->param('mid')); 	
+   	$rd->message_email_activity_listing_table(
+		{
+			-mid  => $mid,
+		}
+	);
+}
+
+sub message_individual_email_activity_report_table { 
+
+	my $mid   = xss_filter($q->param('mid')); 
+	my $email = xss_filter($q->param('email')); 
+	$rd->message_individual_email_activity_report_table(
+		{
+			-mid    => $mid, 
+			-email  => $email, 
+		}
+	);
+}
+
+sub the_basics_piechart_json { 
+	my $mid   = xss_filter($q->param('mid')); 
+	my $type  = xss_filter($q->param('type')); 
+	my $label = xss_filter($q->param('label')); 
+
+	$rd->msg_basic_event_count_json(
+		{
+			-mid      => $mid, 
+			-type     => $type, 
+			-label    => $label, 
+			-printout => 1, 
+		}
+	);
+}
 
 
 
@@ -416,7 +458,7 @@ sub message_history_html {
 		my $report_by_message_id = $rd->report_by_message_index(
 			{
 				-all_mids => $msg_ids, #Strange speedup
-				-page     => $page_num,
+				-page     => $page,
 			}
 		) || []; 
 
@@ -549,14 +591,14 @@ sub edit_prefs {
         {
             -associate => $q,
             -settings  => {
-                clickthrough_tracking                           => 0,
-                enable_open_msg_logging                         => 0,
-				tracker_track_email                             => 0,
-				enable_forward_to_a_friend_logging              => 0, 
-				enable_view_archive_logging                     => 0,
-                enable_bounce_logging                           => 0,
-				tracker_clean_up_reports                        => 0, 
+
 				tracker_auto_parse_links                        => 0, 
+
+                tracker_track_opens_method                      => undef,
+
+				tracker_track_email                             => 0,
+
+				tracker_clean_up_reports                        => 0, 
 				tracker_show_message_reports_in_mailing_monitor => 0, 
             }
         }
@@ -608,25 +650,29 @@ sub message_report {
 		 push(@$s_url_report, {url => $v, count => $u_url_report->{$v}}); 
 	}
 	
-	
-	
+			
 	my %tmpl_vars = (
-		mid                        => $q->param('mid')                            || '',
-        subject                    => find_message_subject( $q->param('mid') )    || '',
-        url_report                 => $s_url_report                               || [],
-        num_subscribers            => commify($m_report->{num_subscribers})       || 0,
-        opens                      => commify($m_report->{'open'})                || 0, 
-        clickthroughs              => commify($m_report->{'clickthroughs'})       || 0, 
-		soft_bounce                => commify($m_report->{'soft_bounce'})         || 0,
-        hard_bounce                => commify($m_report->{'hard_bounce'})         || 0,
-		view_archive               => commify($m_report->{'view_archive'})        || 0, 
-		forward_to_a_friend        => commify($m_report->{'forward_to_a_friend'}) || 0,
-		soft_bounce_report         => $m_report->{'soft_bounce_report'}           || [],
-		hard_bounce_report         => $m_report->{'hard_bounce_report'}           || [],
-		can_use_country_geoip_data => $rd->can_use_country_geoip_data, 
-		Plugin_URL                 => $Plugin_Url,
-		Plugin_Name                => $Plugin_Config->{Plugin_Name},
-		chrome                     => $chrome, 
+		mid                         => $q->param('mid')                            || '',
+        subject                     => find_message_subject( $q->param('mid') )    || '',
+        url_report                  => $s_url_report                               || [],
+        num_subscribers             => commify($m_report->{num_subscribers})       || 0,
+        opens                       => commify($m_report->{'open'})                || 0, 
+        unique_opens                => commify($m_report->{'unique_open'})         || 0, 
+        unique_opens_percent        => $m_report->{'unique_opens_percent'}         || 0, 
+        clickthroughs               => commify($m_report->{'clickthroughs'})       || 0, 
+		unsubscribes                => commify($m_report->{'unsubscribe'})         || 0, 
+		unique_unsubscribes_percent => $m_report->{'unique_unsubscribes_percent'}  || 0, 
+		soft_bounce                 => commify($m_report->{'soft_bounce'})         || 0,
+        hard_bounce                 => commify($m_report->{'hard_bounce'})         || 0,
+		unique_bounces_percent      => $m_report->{'unique_bounces_percent'}       || 0, 
+		view_archive                => commify($m_report->{'view_archive'})        || 0, 
+		forward_to_a_friend         => commify($m_report->{'forward_to_a_friend'}) || 0,
+		soft_bounce_report          => $m_report->{'soft_bounce_report'}           || [],
+		hard_bounce_report          => $m_report->{'hard_bounce_report'}           || [],
+		can_use_country_geoip_data  => $rd->can_use_country_geoip_data, 
+		Plugin_URL                  => $Plugin_Url,
+		Plugin_Name                 => $Plugin_Config->{Plugin_Name},
+		chrome                      => $chrome, 
 	); 
 	my $scrn = ''; 
 	require DADA::Template::Widgets;
