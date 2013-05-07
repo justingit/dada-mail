@@ -803,44 +803,16 @@ $ADMIN_MENU ||= [
             #					# if you want to use them!
 
             #					{
-            #					-Title      => 'Boilerplate Example',
-            #					-Title_URL  => $PLUGIN_URL."/boilerplate_plugin.cgi",
-            #					-Function   => 'boilerplate',
-            #					-Activated  => 1,
-            #					},
-
-            #					{
-            #					-Title      => 'Change the Program Root Password',
-            #					-Title_URL  => $PLUGIN_URL."/change_root_password.cgi",
-            #					-Function   => 'change_root_password',
+            #					-Title      => 'Mailing Monitor',
+            #					-Title_URL  => $PLUGIN_URL."/mailing_monitor.cgi",
+            #					-Function   => 'mailing_monitor',
             #					-Activated  => 0,
-            #					},
-
-            #					{
-            #					-Title      => 'Screen Cache',
-            #					-Title_URL  => $PLUGIN_URL."/screen_cache.cgi",
-            #					-Function   => 'screen_cache',
-            #					-Activated  => 0,
-            #					},
-
-            #					{
-            #					-Title      => 'View Logs',
-            #					-Title_URL  => $PLUGIN_URL."/log_viewer.cgi",
-            #					-Function   => 'log_viewer',
-            #					-Activated  => 1,
             #					},
 
             #					{
             #					-Title      => 'Tracker',
             #					-Title_URL  => $PLUGIN_URL."/tracker.cgi",
             #					-Function   => 'tracker',
-            #					-Activated  => 1,
-            #					},
-
-            #					{
-            #					-Title      => 'Bridge',
-            #					-Title_URL  => $PLUGIN_URL."/bridge.cgi",
-            #					-Function   => 'bridge',
             #					-Activated  => 1,
             #					},
 
@@ -852,6 +824,13 @@ $ADMIN_MENU ||= [
             #					},
 
             #					{
+            #					-Title      => 'Bridge',
+            #					-Title_URL  => $PLUGIN_URL."/bridge.cgi",
+            #					-Function   => 'bridge',
+            #					-Activated  => 1,
+            #					},
+
+            #					{
             #					-Title      => 'Scheduled Mailings',
             #					-Title_URL  => $PLUGIN_URL."/scheduled_mailings.pl",
             #					-Function   => 'scheduled_mailings',
@@ -859,16 +838,16 @@ $ADMIN_MENU ||= [
             #					},
 
             #					{
-            #					-Title      => 'View List Settings',
-            #					-Title_URL  => $PLUGIN_URL."/view_list_settings.cgi",
-            #					-Function   => 'view_list_settings',
-            #					-Activated  => 1,
+            #					-Title      => 'Change the Program Root Password',
+            #					-Title_URL  => $PLUGIN_URL."/change_root_password.cgi",
+            #					-Function   => 'change_root_password',
+            #					-Activated  => 0,
             #					},
 
             #					{
-            #					-Title      => 'Mailing Monitor',
-            #					-Title_URL  => $PLUGIN_URL."/mailing_monitor.cgi",
-            #					-Function   => 'mailing_monitor',
+            #					-Title      => 'Change Your List Short Name',
+            #					-Title_URL  => $PLUGIN_URL."/change_list_shortname.cgi",
+            #					-Function   => 'change_list_shortname',
             #					-Activated  => 0,
             #					},
 
@@ -887,11 +866,39 @@ $ADMIN_MENU ||= [
            #					},
 
             #					{
-            #					-Title      => 'Change Your List Short Name',
-            #					-Title_URL  => $PLUGIN_URL."/change_list_shortname.cgi",
-            #					-Function   => 'change_list_shortname',
+            #					-Title      => 'View Logs',
+            #					-Title_URL  => $PLUGIN_URL."/log_viewer.cgi",
+            #					-Function   => 'log_viewer',
+            #					-Activated  => 1,
+            #					},
+
+
+            #					{
+            #					-Title      => 'Screen Cache',
+            #					-Title_URL  => $PLUGIN_URL."/screen_cache.cgi",
+            #					-Function   => 'screen_cache',
             #					-Activated  => 0,
             #					},
+
+
+            #					{
+            #					-Title      => 'Boilerplate Example',
+            #					-Title_URL  => $PLUGIN_URL."/boilerplate_plugin.cgi",
+            #					-Function   => 'boilerplate',
+            #					-Activated  => 1,
+            #					},
+
+
+            #					{
+            #					-Title      => 'View List Settings',
+            #					-Title_URL  => $PLUGIN_URL."/view_list_settings.cgi",
+            #					-Function   => 'view_list_settings',
+            #					-Activated  => 1,
+            #					},
+
+
+
+
 
         ],
     },
@@ -2799,7 +2806,7 @@ EOF
     tracker_auto_parse_links                        => 1,
     tracker_track_opens_method                      => 'directly',
 
-    tracker_track_email                             => 0,
+    tracker_track_email                             => 1,
 
     tracker_clean_up_reports                        => 1,
     tracker_show_message_reports_in_mailing_monitor => 0,
