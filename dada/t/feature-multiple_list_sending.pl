@@ -24,9 +24,9 @@ my $list3 = dada_test_config::create_test_list({-remove_existing_list => 1, -rem
 require DADA::App::Guts;
 require DADA::MailingList::Subscribers; 
 
-my $ls  = DADA::MailingList::Subscribers->new({-list => $list}); 
-my $ls2 = DADA::MailingList::Subscribers->new({-list => $list2});   
-my $ls3 = DADA::MailingList::Subscribers->new({-list => $list3});   
+my $lh  = DADA::MailingList::Subscribers->new({-list => $list}); 
+my $lh2 = DADA::MailingList::Subscribers->new({-list => $list2});   
+my $lh3 = DADA::MailingList::Subscribers->new({-list => $list3});   
 
 
 # Add the ones all list's share: 
@@ -38,7 +38,7 @@ my @subs = qw(
 	user4@example.com
 	user5@example.com
 ); 
-my @ls_s = ($ls, $ls2, $ls3); 
+my @ls_s = ($lh, $lh2, $lh3); 
 
 for my $local_ls(@ls_s){ 
 	for my $sub(@subs){ 
@@ -52,19 +52,19 @@ for my $local_ls(@ls_s){
 
 # Add the ones specific to each list
 #
-$ls->add_subscriber(
+$lh->add_subscriber(
 	{
 		-email => 'only_on_dadatest@example.com', 
 	}
 );
 
-$ls2->add_subscriber(
+$lh2->add_subscriber(
 	{
 		-email => 'only_on_dadatest2@example.com', 
 	}
 );
 
-$ls3->add_subscriber(
+$lh3->add_subscriber(
 	{
 		-email => 'only_on_dadatest3@example.com', 
 	}
@@ -75,7 +75,7 @@ my $sl = [];
 
 
 # Let's see what we have, that's unique to our first list: 
-$sl = $ls->subscription_list(
+$sl = $lh->subscription_list(
 	{
 		-exclude_from => [$list2, $list3],
 	}
@@ -87,12 +87,12 @@ undef $sl;
 
 
 # Let's see if we can't confuse it - should still only return one result
-$ls->add_subscriber(
+$lh->add_subscriber(
 	{
 		-email => 'somewhereelse@fubar.com', 
 	}
 );
-$sl = $ls->subscription_list(
+$sl = $lh->subscription_list(
 	{
 		-exclude_from    => [$list2, $list3],
 		-partial_listing => {
@@ -108,12 +108,12 @@ undef $sl;
 
 
 # What if we add that subscriber to list #2? We shouldn't get any results:
-$ls2->add_subscriber(
+$lh2->add_subscriber(
 	{
 		-email => 'somewhereelse@fubar.com', 
 	}
 );
-$sl = $ls->subscription_list(
+$sl = $lh->subscription_list(
 	{
 		-exclude_from    => [$list2, $list3],
 		-partial_listing => {
@@ -129,7 +129,7 @@ undef $sl;
 
 
 # But, what if we're not looking at list #2, just list #3? We should get one result: 
-$sl = $ls->subscription_list(
+$sl = $lh->subscription_list(
 	{
 		-exclude_from    => [$list3],
 		-partial_listing => {
@@ -162,8 +162,8 @@ $pf->{manager}->add_field(
 	}
 );
 
-for my $sub(@{$ls->subscription_list}){ 
-	$ls->edit_subscriber(
+for my $sub(@{$lh->subscription_list}){ 
+	$lh->edit_subscriber(
 		{
 			-email    => $sub->{email}, 
 			-fields   => { 
@@ -179,7 +179,7 @@ for my $sub(@{$ls->subscription_list}){
 undef $sl; 
 
 
-$sl = $ls->subscription_list(
+$sl = $lh->subscription_list(
 	{
 		-partial_listing => {
 								one => 
@@ -196,7 +196,7 @@ undef $sl;
 
 
 
-$sl = $ls->subscription_list(
+$sl = $lh->subscription_list(
 	{
 		-exclude_from    => [$list2, $list3],
 		-partial_listing => {
@@ -209,7 +209,6 @@ $sl = $ls->subscription_list(
 );
 ok(scalar @$sl == 1, "OK! We have 1 subscribers, unique to this one list (" . scalar @$sl . ")"); 
 undef $sl; 
-
 
 
 # This is now a test to make sure that the DADA::Mail::MailOut module actually
@@ -299,7 +298,7 @@ undef $mo;
 $DADA::Config::MULTIPLE_LIST_SENDING_TYPE = 'merged'; 
 #
 
-$sl = $ls->subscription_list(
+$sl = $lh->subscription_list(
 	{
 		-include_from     => [$list2],
 	}
@@ -309,7 +308,7 @@ undef $sl;
 
 
 
-$sl = $ls->subscription_list(
+$sl = $lh->subscription_list(
 	{
 		-include_from     => [$list2, $list3],
 	}
@@ -319,7 +318,7 @@ undef $sl;
 
 
 # I guess this is valid, as it doesn't do anything wrong, but it's still sort of weird: 
-$sl = $ls->subscription_list(
+$sl = $lh->subscription_list(
 	{
 		-include_from     => [$list],
 	}
@@ -329,7 +328,7 @@ undef $sl;
 
 
 
-$sl = $ls->subscription_list(
+$sl = $lh->subscription_list(
 	{
 		-include_from    => [$list2, $list3],
 		-partial_listing => {
@@ -342,6 +341,92 @@ $sl = $ls->subscription_list(
 );
 ok(scalar @$sl == 7, "OK! We have 7 subscribers (" . scalar @$sl . ")"); 
 undef $sl; 
+
+
+
+# So now let's do more fancier partial listings: 
+
+# kapow.
+$lh->remove_all_subscribers;
+my $new_subs = [
+	{
+		-email => 'justin@example.com', 
+		-fields   => { 
+			one   => "Denver", 
+			two   => "CO", 
+			three => "red",
+		}
+	},
+	{
+		-email => 'bob@example.com', 
+		-fields   => { 
+			one   => "Hartford", 
+			two   => "CT", 
+			three => "green",
+		}
+	},
+	{
+		-email => 'love@example.com', 
+		-fields   => { 
+			one   => "Portland", 
+			two   => "OR", 
+			three => "blue",
+		}
+	},
+	{
+		-email => 'lover@example.com', 
+		-fields   => { 
+			one   => "Seattle", 
+			two   => "WA", 
+			three => "yellow",
+		}
+	},
+	{
+		-email => 'geek@example.com', 
+		-fields   => { 
+			one   => "Seattle", 
+			two   => "WA", 
+			three => "red",
+		}
+	},
+
+];
+for(@$new_subs) {
+	$lh->add_subscriber($_);
+}
+ok($lh->num_subscribers == 5); 
+$sl = $lh->subscription_list(
+	{
+		-partial_listing => {
+								one => 
+									{
+										not_equal_to => 'Seattle',
+									}
+							},
+	}
+);
+ok(scalar @$sl == 3, "OK! We have 3 subscribers (" . scalar @$sl . ")"); 
+undef $sl; 
+$sl = $lh->subscription_list(
+	{
+		-partial_listing => {
+								one => 
+									{
+										not_equal_to => 'Seattle',
+									},
+								three => 
+									{
+										not_equal_to => 'red,green',
+									}
+
+
+							},
+	}
+);
+ok(scalar @$sl == 1, "OK! We have 1 subscribers (" . scalar @$sl . ")"); 
+undef $sl; 
+
+
 
 
 
