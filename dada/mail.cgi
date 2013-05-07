@@ -1172,16 +1172,31 @@ sub preview_message_receivers {
         push(@$undotted_fields, {name => $undotted_field});
     }
     my $partial_sending = {};
-    for my $field(@$undotted_fields){
-		if($q->param('field_comparison_type_' . $field->{name}) eq 'equal_to'){
-			next if length($q->param('field_value_' . $field->{name})) <= 0 || $q->param('field_value_' . $field->{name}) eq ''; 
-		    $partial_sending->{$field->{name}} = {equal_to => $q->param('field_value_' . $field->{name})};
-		}
-		elsif($q->param('field_comparison_type_' . $field->{name}) eq 'like'){
-			next if length($q->param('field_value_' . $field->{name})) <= 0 || $q->param('field_value_' . $field->{name}) eq ''; 
-			
-			$partial_sending->{$field->{name}} = {like => $q->param('field_value_' . $field->{name})};
-		}
+    for my $field (@$undotted_fields) {
+        if ( $q->param( 'field_comparison_type_' . $field->{name} ) eq
+            'equal_to' )
+        {
+            $partial_sending->{ $field->{name} } =
+              { equal_to => $q->param( 'field_value_' . $field->{name} ) };
+        }
+        elsif ( $q->param( 'field_comparison_type_' . $field->{name} ) eq
+            'like' )
+        {
+            $partial_sending->{ $field->{name} } =
+              { like => $q->param( 'field_value_' . $field->{name} ) };
+        }elsif ( $q->param( 'field_comparison_type_' . $field->{name} ) eq
+                'not_equal_to' )
+        {
+            $partial_sending->{ $field->{name} } =
+              { not_equal_to => $q->param( 'field_value_' . $field->{name} ) };
+        }
+        elsif ( $q->param( 'field_comparison_type_' . $field->{name} ) eq
+            'not_like' )
+        {
+            $partial_sending->{ $field->{name} } =
+              { not_like => $q->param( 'field_value_' . $field->{name} ) };
+        }
+        
     }
 
 #	use Data::Dumper; 

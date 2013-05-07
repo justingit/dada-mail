@@ -396,7 +396,19 @@ sub send_email {
             {
                 $partial_sending->{ $field->{name} } =
                   { like => $q->param( 'field_value_' . $field->{name} ) };
+            }elsif ( $q->param( 'field_comparison_type_' . $field->{name} ) eq
+	                'not_equal_to' )
+            {
+                $partial_sending->{ $field->{name} } =
+                  { not_equal_to => $q->param( 'field_value_' . $field->{name} ) };
             }
+            elsif ( $q->param( 'field_comparison_type_' . $field->{name} ) eq
+                'not_like' )
+            {
+                $partial_sending->{ $field->{name} } =
+                  { not_like => $q->param( 'field_value_' . $field->{name} ) };
+            }
+	        
         }
 
         ######/ Blah blah blah, parital listing

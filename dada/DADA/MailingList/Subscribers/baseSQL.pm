@@ -380,53 +380,94 @@ sub SQL_subscriber_profile_join_statement {
         # It's somewhat strange, as this relies on the email address in the
         # profile (I think?) to work, if we're looking for email addresses...
 
-        my @add_q = ();
-        for ( keys %{ $args->{-partial_listing} } ) {
+        my @add_q      = ();
 
+        for my $field( keys %{ $args->{-partial_listing} } ) {
+			
+			my @s_snippets = ();
+			
             # This is to make sure we're always using the email from the
             # subscriber table - this stops us from not seeing an email
             # address that doesn't have a profile...
             my $table = $profile_fields_table;
-            if ( $_ eq 'email' ) {
+            if ( $field eq 'email' ) {
                 $table = $subscriber_table;
             }
 
-            # /
-
-            if ( exists( $args->{-partial_listing}->{$_}->{equal_to} ) ) {
-                if ( length( $args->{-partial_listing}->{$_}->{equal_to} ) > 0 )
+            my $search_type   = undef;
+            my $search_op     = undef;
+            my $search_pre    = undef;
+            my $search_app    = undef;
+			my $search_binder = undef; 
+            if ( exists( $args->{-partial_listing}->{$field}->{equal_to} ) ) {
+                if ( length( $args->{-partial_listing}->{$field}->{equal_to} ) > 0 )
                 {
-                    push(
-                        @add_q,
-                        $table . '.' 
-                          . $_ . ' = '
-                          . $self->{dbh}->quote(
-                            $args->{-partial_listing}->{$_}->{equal_to}
-                          )
-                    );
+                    $search_type   = 'equal_to';
+                    $search_op     = '=';
+                    $search_pre    = '';
+                    $search_app    = '';
+                    $search_binder = 'OR';
+
                 }
             }
-            elsif ( exists( $args->{-partial_listing}->{$_}->{like} ) ) {
-                if ( length( $args->{-partial_listing}->{$_}->{like} ) > 0 ) {
-                    push(
-                        @add_q,
-                        $table . '.' 
-                          . $_ 
-                          . ' LIKE '
-                          . $self->{dbh}->quote(
-                            '%' . $args->{-partial_listing}->{$_}->{like} . '%'
-                          )
-                    );
+            elsif ( exists( $args->{-partial_listing}->{$field}->{like} ) ) {
+                if ( length( $args->{-partial_listing}->{$field}->{like} ) > 0 ) {
+                    $search_type   = 'like';
+                    $search_op     = 'LIKE';
+                    $search_pre    = '%';
+                    $search_app    = '%';
+                    $search_binder = 'OR';
+  
+              }
+            }
+            elsif ( exists( $args->{-partial_listing}->{$field}->{not_equal_to} ) ) {
+                if ( length( $args->{-partial_listing}->{$field}->{not_equal_to} ) > 0 ) {
+                    $search_type   = 'not_equal_to';
+                    $search_op     = '!=';
+                    $search_pre    = '';
+                    $search_app    = '';
+                    $search_binder = 'AND';
+
                 }
             }
+            elsif ( exists( $args->{-partial_listing}->{$field}->{not_like} ) ) {
+                if ( length( $args->{-partial_listing}->{$field}->{not_like} ) > 0 ) {
+                    $search_type   = 'not_like';
+                    $search_op     = 'NOT LIKE';
+                    $search_pre    = '%';
+                    $search_app    = '%';
+                    $search_binder = 'AND';
+
+                }
+            }
+
+            next if $search_type eq undef;
+
+            my @terms = split(',', $args->{-partial_listing}->{$field}->{$search_type} );
+            foreach my $term(@terms) {
+				$term = strip($term); 
+                push(
+                    @s_snippets,
+                    $table . '.'
+                      . $field . ' '
+                      . $search_op . ' '
+                      . $self->{dbh}->quote(
+                            $search_pre
+                          . $term
+                          . $search_app
+                      )
+                );
+            }
+			 push( @add_q, '(' . join( ' ' . $search_binder . ' ', @s_snippets ) . ')' );
         }
-        my $query_pl;
-        if ( $add_q[0] ) {
-            $query_pl =
-              ' AND ( ' . join( ' ' . $query_type . ' ', @add_q ) . ') ';
-            $query .= $query_pl;
-        }
-    }
+       
+
+	    my $query_pl;
+	    if ( $add_q[0] ) {
+	        $query_pl = ' AND ( ' . join( ' ' . $query_type . ' ', @add_q ) . ') ';
+	        $query .= $query_pl;
+	    }
+	}
 
    # -exclude_from is to return results from subscribers who *aren't* subscribed
    # to another list.
@@ -490,13 +531,12 @@ sub SQL_subscriber_profile_join_statement {
 		$query .= ' LIMIT '; 
 		$query .=  $args->{'-length'};
 		$query .= ' OFFSET ';
-		$query .= ($args->{ -start } * $args->{ '-length' });
-		
+		$query .= ($args->{ -start } * $args->{ '-length' });		
 	}
 	
     warn 'QUERY: ' . $query
       if $t;
-	
+
     return $query;
 }
 
