@@ -50,9 +50,7 @@ sub _init {
     }
 
 	$self->{ct} = DADA::App::Subscriptions::ConfirmationTokens->new();
-	
-    $self->{begin_uu_str} = "begin 644 uuencode.uu\n";
-    $self->{end_uu_str}   = "`\nend\n";
+
 
 }
 
@@ -79,7 +77,7 @@ sub unsub_link {
 #				remote_addr => $ENV{REMOTE_ADDR}, 
 				email_hint  => DADA::App::Guts::anonystar_address_encode($args->{-email}),
 			},
-			-reset_previous_timestamp => 1, 
+#			-reset_previous_timestamp => 1, 
 		}
 	);
 

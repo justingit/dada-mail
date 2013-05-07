@@ -128,6 +128,12 @@ sub num_tokens {
 
 }
 
+sub tokens { 
+	my $self = shift; 
+	my @k = keys %{$self->{DB_HASH}};
+	return [@k];
+}
+
 sub exists {
     my $self  = shift;
     my $token = shift;

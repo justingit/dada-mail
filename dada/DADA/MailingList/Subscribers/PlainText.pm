@@ -974,7 +974,7 @@ sub create_mass_sending_file {
 					#				remote_addr => $ENV{REMOTE_ADDR}, 
 									email_hint  => DADA::App::Guts::anonystar_address_encode($email),
 								},
-								-reset_previous_timestamp => 1, 
+								#-reset_previous_timestamp => 1, 
 							}
 						);
 					}

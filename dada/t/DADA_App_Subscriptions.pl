@@ -104,7 +104,6 @@ ok($ct->exists($token2) == 1);
 
 dada_test_config::remove_test_list;
 dada_test_config::remove_test_list({-name => 'test2'});
-
 dada_test_config::wipe_out;
 
 

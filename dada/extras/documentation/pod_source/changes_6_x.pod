@@ -1,8 +1,8 @@
 =head1 6.4.0
 
-=head2 Summary 6.4.0 Alpha 1
+=head2 Summary 6.4.0 Beta 1
 
-=head2 Features 6.4.0 Alpha 1
+=head2 Features 6.4.0 Beta 1
 
 =head3 Unsubscription Process: Vastly Simplified
 
@@ -43,6 +43,12 @@ Message data is now reported by subscriber, as well as by IP/location/Over Time.
 =head4 Unsubscribes 
 
 Subscriber Unsubscribes are now logged in Dada Mail and reported by the Tracker plugin. a seperate tab in the message Tracker shows a list of all unsubscriptions; data is also broken down by domain name, and graphed over time. 
+
+=head3 Partial Sending Options Expanded
+
+Partial List Sending has now been expanded to allow you to search both with what could be in your list (equal, like), as well as what may not be in your list (not equal to, unlike). 
+
+You may now search for more than one term, per field, at one time - example: a First Name of either I<Justin>, OR I<John>. 
 
 =head1 6.3.1
 

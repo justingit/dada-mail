@@ -1048,8 +1048,11 @@ sub unsubscription_request {
         if $t;
 
     require DADA::Template::HTML;
-    
-    croak if ! $args->{-cgi_obj}; 
+
+    if ( ! $args->{-cgi_obj}){ 
+        croak 'Error: No CGI Object passed in the -cgi_obj parameter.'; 
+    }
+
   
     if(! exists($args->{-html_output})){ 
         $args->{-html_output} = 1; 
@@ -1242,11 +1245,10 @@ sub unsubscribe {
     my $self = shift;
     my ($args) = @_;
 
-    for ('-cgi_obj') {
-        if ( !exists( $args->{$_} ) ) {
-            croak "You MUST pass the, " . $_ . " paramater!";
-        }
-    }
+	if ( ! $args->{-cgi_obj}){ 
+		croak 'Error: No CGI Object passed in the -cgi_obj parameter.'; 
+	}
+ 
     if ( !exists( $args->{-html_output} ) ) {
         $args->{-html_output} = 1;
     }
@@ -1263,7 +1265,7 @@ sub unsubscribe {
 
         # I may expand on this, in the future...
         my $r = $q->redirect(
-            -uri => $DADA::Config::PROGRAM_URL . '?error_invalid_list=1' );
+            -uri => $DADA::Config::PROGRAM_URL . '?flavor=outdated_subscription_urls' );
         $self->test ? return $r : print $fh safely_encode($r) and return;
     }
 
