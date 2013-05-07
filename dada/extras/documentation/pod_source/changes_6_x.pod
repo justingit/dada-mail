@@ -1,3 +1,49 @@
+=head1 6.4.0
+
+=head2 Summary 6.4.0 Alpha 1
+
+=head2 Features 6.4.0 Alpha 1
+
+=head3 Unsubscription Process: Vastly Simplified
+
+The unsubscription process for Dada Mail has been redesigned, and has been vastly simplified. 
+
+All mass mailings require an unsubscription link to be present in the message itself. This unsubscription link is now unique to the list, mass mailing and subscriber it's sent to. 
+
+Clicking the unsubscription link will bring the subscriber to a screen, with a simple form, which only requires that they fill out their email address. An optional email address hint can be shown, to help subscribers know which email address of they're subscribed with. Once a subscriber has filled out their email address and submitted the form, they will be unsubscribed immediately. 
+
+This unsubscription link will be removed in discussion lists, so replies will not potentially re-send the unsubscription link of a subscriber, to the entire mailing list. Unsubscription links will also be removed from archive messages. 
+
+To make the unsubscription process as simple and fool-proof as possible, many of the advanced options that were available in the mailing list's control panel have been removed. This was done to make 100% sure that users of Dada Mail were following email best practices, as well as following the newest revision of the CAN SPAM 2008 revision. 
+
+Unsubscriptions are now tracked, and data can be viewed/exported in the Tracker plugin. The date of the unsubscription, IP address, subscriber email address, mass mailing the unsubscription was made from, and the mailing list name will be saved.
+
+More information about Dada Mail's Unsubscription System can be found in the new feature overview for unsubscriptions: 
+
+L<http://dadamailproject.com/d/features-unsubscription_system.pod.html>
+
+=head3 Tracker Plugin
+
+=head4 Tracker Preferences: Simplified
+
+Tracker preferences have been simplified, to make sure as much data is collected by default. You may now track clickthroughs automatically, or manually; track message opens directly or indirectly and track with or without your email data. 
+
+=head4 Faster!
+
+Work has been done to make the index of mass mailings data and graph render faster. Expect speedups of 2x-5x. 
+
+=head4 Opens: Total + Unique Reported
+
+Message Opens are now reported as both the total amount of opens recorded per message, as well as unique opens per message/subscriber. The percentage of unique opens/total subscribers is also shown. 
+
+=head4 Subscriber Activity
+
+Message data is now reported by subscriber, as well as by IP/location/Over Time. Activities such as message opens, clickthroughs, unsubscribes and bounces are shown per-subscriber in chronological order. Subscribers are sorted from most active to least active, allowing you to easily see who your busiest members are, and what they're doing. 
+
+=head4 Unsubscribes 
+
+Subscriber Unsubscribes are now logged in Dada Mail and reported by the Tracker plugin. a seperate tab in the message Tracker shows a list of all unsubscriptions; data is also broken down by domain name, and graphed over time. 
+
 =head1 6.3.1
 
 =head2 Summary 6.3.1
