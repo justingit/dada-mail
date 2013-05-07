@@ -1319,8 +1319,6 @@ sub create_mass_sending_file {
 					}
 					else { 
 						
-						this has to be uniwue, as the mid is uniqe
-						# this is to confirm an UNsubscription: 
 						$token = $ct->save(
 							{
 								-email => $field_ref->{email},
@@ -1332,7 +1330,7 @@ sub create_mass_sending_file {
 					#				remote_addr => $ENV{REMOTE_ADDR}, 
 									email_hint  => DADA::App::Guts::anonystar_address_encode($field_ref->{email}),
 								},
-								-reset_previous_timestamp => 1, 
+					#			-reset_previous_timestamp => 1, # NO! MID has to be unique. DOH. 
 							}
 						);
 						
