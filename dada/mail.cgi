@@ -374,7 +374,8 @@ if($ENV{PATH_INFO}){
 
 	}elsif($info =~ /^t\//){
 		
-		my ($pi_flavor, $pi_token) = split('/', $info, 2);
+		my ($pi_flavor, $pi_token, $etc) = split('/', $info, 3);
+
 		$q->param('flavor', 'token'); 
 		$q->param('token', $pi_token); 
 		

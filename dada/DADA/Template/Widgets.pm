@@ -2962,21 +2962,36 @@ sub subscription_form {
 
 
 sub unsubscription_form { 
+	
+	
     my ($args) = @_; 
-    return screen({
-        -screen => 'unsubscription_form_widget.tmpl', 
-        -vars   => {
+    
+	if(! exists($args->{-list})) { 
+		croak "you MUST pass a, '-list'"; 
+	}
+	my $list_exists = check_if_list_exists( -List=> $args->{-list}, -Dont_Die  => 1) || 0;
+	
+	if($list_exists == 0){ 
+		croak "list,  '" .  $args->{-list} . "' does not exist."; 
+
+	}
+	else { 
+	
+		return screen({
+	        -screen => 'unsubscription_form_widget.tmpl', 
+	        -vars   => {
                        
-                        list                     => $args->{-list}, 
-                        email                    => $args->{-email},
-                    },
-					-list_settings_vars_param => {
-						-list    => $args->{-list},
-						-dot_it => 1,
-					},
+	                        list                     => $args->{-list}, 
+	                        email                    => $args->{-email},
+	                    },
+						-list_settings_vars_param => {
+							-list    => $args->{-list},
+							-dot_it => 1,
+						},
 					
-                }
-	);  
+	                }
+		);  
+	}
 }
 
 
