@@ -1436,7 +1436,7 @@ will be needed.
 
 To contact the owner of this email list, please use the address below: 
 
-<mailto:<!-- tmpl_var list_settings.list_owner_email -->>
+mailto:<!-- tmpl_var list_settings.list_owner_email -->
 
 The following physical address is associated with this mailing list: 
 
@@ -1464,14 +1464,14 @@ to remove:
 
 To contact the owner of this email list, please use the address below: 
 
-<mailto:<!-- tmpl_var list_settings.list_owner_email -->>
+mailto:<!-- tmpl_var list_settings.list_owner_email -->
 
 The following physical address is associated with this mailing list: 
 
 <!-- tmpl_var list_settings.physical_address -->
 
 
-- <mailto:<!-- tmpl_var list_settings.list_owner_email -->>
+- mailto:<!-- tmpl_var list_settings.list_owner_email -->
 
 EOF
   ;
@@ -1723,7 +1723,7 @@ for more information.
 
 You may email the List Owner at: 
 
-	<mailto:<!-- tmpl_var list_settings.list_owner_email -->>
+	mailto:<!-- tmpl_var list_settings.list_owner_email -->
 
 	-- <!-- tmpl_var PROGRAM_NAME -->
 
@@ -1762,7 +1762,7 @@ available to you.
 
 To contact the owner of this email list, please use the address below: 
 
-<mailto:<!-- tmpl_var list_settings.list_owner_email -->>
+mailto:<!-- tmpl_var list_settings.list_owner_email -->
 
 
 - <!-- tmpl_var list_settings.list_owner_email -->
@@ -1789,7 +1789,7 @@ available to you.
 
 To contact the owner of this email list, please use the address below: 
 
-<mailto:<!-- tmpl_var list_settings.list_owner_email -->>
+mailto:<!-- tmpl_var list_settings.list_owner_email -->
 
 EOF
   ;

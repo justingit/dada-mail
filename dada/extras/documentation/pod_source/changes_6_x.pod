@@ -44,11 +44,20 @@ Message data is now reported by subscriber, as well as by IP/location/Over Time.
 
 Subscriber Unsubscribes are now logged in Dada Mail and reported by the Tracker plugin. a seperate tab in the message Tracker shows a list of all unsubscriptions; data is also broken down by domain name, and graphed over time. 
 
+=head4 Total Recipients Logged
+
+Dada Mail has the ability to only send a mass mailing to part of a mailing list, but up until now, only logged the total subscriber count. Now, Dada Mail will log both the total subscriber count, plus the total count of recipients that are sent the message. This will help Tracker message reports to be more precise.  
+
+=head4 csv Export Email Lists: Soft/Hard Bounces, Unsubscribes, Email Activity
+
+Tracker supports csv exporting email addresses for soft/hard bounces, unsubscribers, and email activity, for each message. 
+
+
 =head3 Partial Sending Options Expanded
 
 Partial List Sending has now been expanded to allow you to search both with what could be in your list (equal, like), as well as what may not be in your list (not equal to, unlike). 
 
-You may now search for more than one term, per field, at one time - example: a First Name of either I<Justin>, OR I<John>. 
+You may now search for more than one term, per field, at one time - example: a First Name of either I<Justin>, OR I<John>. This is done by simply listing the various search terms you'd like, separated by a comma. For example, First Name is Like B<Justin,John>
 
 =head1 6.3.1
 

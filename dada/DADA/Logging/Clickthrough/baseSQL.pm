@@ -482,6 +482,58 @@ sub sc_log {
 
 
 
+sub total_recipients_log {
+    my $self      = shift;
+    my ($args)    = @_;
+    my $timestamp = undef;
+    if ( exists( $args->{-timestamp} ) ) {
+        $timestamp = $args->{-timestamp};
+    }
+    my $ts_snippet          = '';
+    my $place_holder_string = '';
+
+    if ( defined($timestamp) ) {
+        $ts_snippet = 'timestamp,';
+        $place_holder_string .= ' ,?';
+    }
+
+    my $remote_address = undef;
+    if ( !exists( $args->{-remote_addr} ) ) {
+        $remote_address = $self->remote_addr;
+    }
+    else {
+        $remote_address = $args->{-remote_addr};
+    }
+
+    my $query =
+        'INSERT INTO '
+      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+      . '(list, '
+      . $ts_snippet
+      . 'remote_addr, msg_id, event, details) VALUES (?, ?, ?, ?, ?'
+      . $place_holder_string . ')';
+
+    my $sth = $self->{dbh}->prepare($query);
+    if ( defined($timestamp) ) {
+        $sth->execute(
+            $self->{name}, $timestamp,        $remote_address,
+            $args->{-mid}, 'total_recipients', $args->{-num}
+        ) or carp "cannot do statement! $DBI::errstr\n";
+    }
+    else {
+        $sth->execute(
+            $self->{name},     $remote_address, $args->{-mid},
+            'total_recipients', $args->{-num}
+        ) or carp "cannot do statement! $DBI::errstr\n";
+    }
+    $sth->finish;
+
+    return 1;
+}
+
+
+
+
 
 sub logged_sc {
     my $self = shift;
@@ -869,11 +921,10 @@ sub report_by_message_index {
 
 	    # Now, sorted:
 	    for ( sort { $b <=> $a } keys %$report ) {
-	        $report->{$_}->{mid} = $_;    # this again.
-	        $report->{$_}->{date} =
-	          DADA::App::Guts::date_this( -Packed_Date => $_, );
+	        $report->{$_}->{mid}           = $_;    # this again.
+	        $report->{$_}->{date}          = DADA::App::Guts::date_this( -Packed_Date => $_, );
 			$report->{$_}->{S_PROGRAM_URL} = $DADA::Config::S_PROGRAM_URL; 
-			$report->{$_}->{list} = $self->{name}; 
+			$report->{$_}->{list}          = $self->{name}; 
 	        if ( $mja->check_if_entry_exists($_) ) {
 	            $report->{$_}->{message_subject} = $mja->get_archive_subject($_)
 	              || $_;
@@ -934,7 +985,15 @@ sub msg_basic_event_count {
 	# num subscribers
  	my $num_sub_query = 'SELECT details FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND msg_id = ? AND event = ?';
 	$basic_events->{num_subscribers} = $self->{dbh}->selectcol_arrayref( $num_sub_query, { MaxRows => 1 }, $self->{name}, $msg_id, 'num_subscribers' )->[0];
-	# num subscribers 
+	# total recipients
+ 	my $total_recipients_query = 'SELECT details FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND msg_id = ? AND event = ?';
+	$basic_events->{total_recipients} = $self->{dbh}->selectcol_arrayref( $total_recipients_query, { MaxRows => 1 }, $self->{name}, $msg_id, 'total_recipients' )->[0];
+	# num subscribers
+	if(! defined($basic_events->{total_recipients}) || $basic_events->{total_recipients} eq ''){ 
+		$basic_events->{total_recipients} = $basic_events->{num_subscribers};
+	}
+	
+	
 	
 	# Unique Opens
 	my $uo_query = 'SELECT msg_id, event, email, COUNT(*) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? and event = \'open\' GROUP BY msg_id, event, email'; 
@@ -948,11 +1007,11 @@ sub msg_basic_event_count {
 	$basic_events->{unique_open} = $uo_count; 
 	$sth->finish; 
 	# /Unique Opens
-	$basic_events->{unique_opens_percent}          = $self->percentage($basic_events->{'unique_open'}, $basic_events->{num_subscribers}); 
-	$basic_events->{unique_soft_bounces_percent}   = $self->percentage(int($basic_events->{'soft_bounce'}), $basic_events->{num_subscribers}); 
-	$basic_events->{unique_hard_bounces_percent}   = $self->percentage(int($basic_events->{'hard_bounce'}), $basic_events->{num_subscribers}); 
-	$basic_events->{unique_bounces_percent}        = $self->percentage(int($basic_events->{'soft_bounce'} + $basic_events->{'hard_bounce'}), $basic_events->{num_subscribers}); 
-	$basic_events->{unique_unsubscribes_percent}   = $self->percentage($basic_events->{'unsubscribe'}, $basic_events->{num_subscribers}); 
+	$basic_events->{unique_opens_percent}          = $self->percentage($basic_events->{'unique_open'}, $basic_events->{total_recipients}); 
+	$basic_events->{unique_soft_bounces_percent}   = $self->percentage(int($basic_events->{'soft_bounce'}), $basic_events->{total_recipients}); 
+	$basic_events->{unique_hard_bounces_percent}   = $self->percentage(int($basic_events->{'hard_bounce'}), $basic_events->{total_recipients}); 
+	$basic_events->{unique_bounces_percent}        = $self->percentage(int($basic_events->{'soft_bounce'} + $basic_events->{'hard_bounce'}), $basic_events->{total_recipients}); 
+	$basic_events->{unique_unsubscribes_percent}   = $self->percentage($basic_events->{'unsubscribe'}, $basic_events->{total_recipients}); 
 
 
 	return $basic_events;
@@ -1988,6 +2047,10 @@ sub message_email_report_table {
 		croak 'you MUST pass -type!'; 
 	}
 	
+	if(! exists($args->{-vars})){ 
+		$args->{-vars} = {}; 
+	}
+	
 	require DADA::App::DataCache; 
 	my $dc = DADA::App::DataCache->new; 
 
@@ -2020,6 +2083,7 @@ sub message_email_report_table {
 					report        => $report, 
 					num           => scalar(@$report), 
 					title         => $title,  
+					%{$args->{-vars}}, 
 	            },
 	        }
 	    );	
@@ -2034,6 +2098,44 @@ sub message_email_report_table {
 	use CGI qw(:standard); 
 	print header(); 
 	e_print($html); 
+}
+
+
+
+sub message_email_report_export_csv {
+	
+	my $self   = shift; 
+	my ($args) = @_; 
+	
+	if(! exists($args->{-type})){ 
+		croak 'you MUST pass -type!'; 
+	}
+	
+	if(!exists($args->{-fh})){ 
+		$args->{-fh} = \*STDOUT;
+	}
+	my $fh = $args->{-fh};
+	
+	require Text::CSV;
+    my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
+	my $report = []; 
+	
+	if($args->{-type} eq 'email_activity') { 
+		$report = $self->message_email_activity_listing($args);
+	
+	}
+	else { 
+		$report = $self->message_email_report($args);
+	}
+	
+	my $title_status = $csv->print($fh, ['email type: ' . $args->{-type}]);
+	print $fh "\n";
+	
+	for my $i_report(@$report){ 
+		my $email = $i_report->{email};
+		my $status = $csv->print( $fh, [$email] );
+        print $fh "\n";
+	}
 }
 
 
@@ -2253,6 +2355,11 @@ sub message_email_activity_listing {
 sub message_email_activity_listing_table { 
 	my $self   = shift; 
 	my ($args) = @_; 
+	
+	if(! exists($args->{-vars})){ 
+		$args->{-vars} = {}; 
+	}
+	
 	my $html;
 		
 	require DADA::App::DataCache; 
@@ -2278,7 +2385,8 @@ sub message_email_activity_listing_table {
 					num           => scalar(@$report), 
 					title         => 'Subscriber Activity', 
 					label         => 'message_email_activity_listing_table',
-					show_count    => 1,  
+					show_count    => 1, 
+					%{$args->{-vars}},  
 	            },
 	        }
 	    );	
@@ -2371,6 +2479,8 @@ sub message_individual_email_activity_report_table {
 	my $self   = shift; 
 	my ($args) = @_;
 	
+
+	
 	my $html;
 		
 	require DADA::App::DataCache; 
@@ -2394,6 +2504,7 @@ sub message_individual_email_activity_report_table {
 	            -vars => {
 					email         => $args->{-email}, 
 					report        => $report, 
+
 	            },
 	        }
 	    );	

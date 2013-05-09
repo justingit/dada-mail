@@ -1257,6 +1257,8 @@ sub mass_send {
 	# This is for the Tracker.
 	my $num_subscribers = $lh->num_subscribers;
 	   $self->num_subscribers($num_subscribers); 
+
+	
 	
 	if( ! $mailout->still_around ){ 
 		warn '[' . $self->{list} . ']  Mass mailing seems to have been removed. exit()ing'
@@ -1266,6 +1268,8 @@ sub mass_send {
 
     my $status = $mailout->status({-mail_fields => 0}); 
     
+	my $num_total_recipients = $status->{total_sending_out_num};
+	
 	my $mailout_id = $status->{id}; 
 	
 	
@@ -1278,7 +1282,7 @@ sub mass_send {
 	"Message-Id: "     . $mailout_id, 
 	"Subject: "        . $s_l_subject, 
 	"Started: "        . scalar(localtime($status->{first_access})), 
-	"Mailing Amount: " . $status->{total_sending_out_num},
+	"Mailing Amount: " . $status->{num_total_recipients},
 	);	
 	
 	if($DADA::Config::LOG{mass_mailings} == 1){ 
@@ -1413,9 +1417,12 @@ sub mass_send {
 				if $t;
 				
             $self->_log_sub_count(
-                                   -msg_id          => $fields{'Message-ID'}, 
-                                   -num_subscribers => $num_subscribers,
-                                ); 
+                {
+                    -msg_id               => $fields{'Message-ID'},
+                    -num_subscribers      => $num_subscribers,
+                    -num_total_recipients => $num_total_recipients,
+                }
+            );
             #
             #
             #
@@ -3053,75 +3060,87 @@ sub _massaged_for_archive {
 sub _log_sub_count {
 
     my $self = shift;
-
-    my %args = (
-        -msg_id          => undef,
-        -num_subscribers => 0,
-        @_
-    );
-
+	my ($args) = @_; 
+	
     return
       if $self->list_type ne 'list';
 
     return
       if $self->mass_test;
 
+    my $log_it = 0;
 
-	require DADA::Logging::Clickthrough;
-	my $r = DADA::Logging::Clickthrough->new(
-	    {
-	        -list => $self->{list},
-	        -ls   => $self->{ls},
-	    }
-	);
-	return if ! $r->enabled; 
+    require DADA::Logging::Clickthrough;
+    my $r = DADA::Logging::Clickthrough->new(
+        {
+            -list => $self->{list},
+            -ls   => $self->{ls},
+        }
+    );
+    return if !$r->enabled;
+
+    my $msg_id = $args->{-msg_id};
+    $msg_id =~ s/\<|\>//g;
+    $msg_id =~ s/\.(.*)//;
+
+    my $num_subscribers      = $args->{-num_subscribers};
+	my $num_total_recipients = $args->{-num_total_recipients}; 
 	
-	
-	my $msg_id = $args{-msg_id};
-	   $msg_id =~ s/\<|\>//g;
-	   $msg_id =~ s/\.(.*)//;
-	my $num_subscribers = $args{-num_subscribers};
-    
-	warn 'logged_sc is returning, "' . $r->logged_sc({-mid => $msg_id}) . '"'
-		if $t; 
-		
+    warn 'logged_sc is returning, "'
+      . $r->logged_sc( { -mid => $msg_id } ) . '"'
+      if $t;
+
     if ( $self->restart_with ) {
-		if($r->logged_sc({-mid => $msg_id})){ 
-        	# We got it. 
-			return;
-		}
-		else { 
-			# We don't got it?!
-			warn '_log_sub_count: $msg_id: ' 
-	          . $msg_id
-	          . '$num_subscribers:'
-	          . $num_subscribers
-	          if $t;
-	        $r->sc_log(
-	            {
-	                -mid => $msg_id,
-	                -num => $num_subscribers
-	            }
-	        );	
-		}
+        if ( $r->logged_sc( { -mid => $msg_id } ) ) {
+            # We got it.
+            $log_it = 0;
+        }
+        else {
+            # We don't got it?!
+            warn '_log_sub_count: $msg_id: '
+              . $msg_id
+              . '$num_subscribers:'
+              . $num_subscribers
+              if $t;
+            $log_it = 1;
+        }
     }
     else {
-
-		warn '_log_sub_count: $msg_id: ' 
+        warn '_log_sub_count: $msg_id: '
           . $msg_id
           . '$num_subscribers:'
           . $num_subscribers
           if $t;
+        $log_it = 1;
+
+    }
+
+    if ( $log_it == 1 ) {
         $r->sc_log(
             {
                 -mid => $msg_id,
                 -num => $num_subscribers
             }
         );
-
+        $r->sc_log(
+            {
+                -mid => $msg_id,
+                -num => $num_subscribers,
+            }
+        );
+        $r->total_recipients_log(
+            {
+                -mid => $msg_id,
+                -num => $num_total_recipients,
+            }
+        );
+    }
+    else {
+		#... 
     }
 
 }
+
 
 
 

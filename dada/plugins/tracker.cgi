@@ -103,6 +103,7 @@ sub run {
 		'individual_country_geoip_report_table' => \&individual_country_geoip_report_table, 
 		'data_over_time_json'             => \&data_over_time_json, 
 		'message_email_report_table'      => \&message_email_report_table, 
+		'message_email_report_export_csv' => \&message_email_report_export_csv, 
 		'email_stats_json'                => \&email_stats_json, 
 		'clear_data_cache'                => \&clear_data_cache, 
 		'clear_message_data_cache'        => \&clear_message_data_cache, 
@@ -290,10 +291,39 @@ sub message_email_report_table {
 		{
 			-mid             => $mid,
 			-type            => $type, 
-			-printout        => 1
+			-printout        => 1,
+			-vars            => { 
+				Plugin_URL => $Plugin_Config->{Plugin_URL}, 
+				mid        => $mid, 
+				type       => $type, 
+			}
 		}
 	);
 }
+
+
+sub message_email_report_export_csv { 
+	my $mid = $q->param('mid'); 
+	my $type = $q->param('type') || 'soft_bounce';
+	
+	my $header = $q->header(
+		-attachment => 'email_report-' . $list . '-' . $type . '.' . $mid . '.csv',
+		-type       => 'text/csv', 
+	);
+	print $header;
+	
+	$rd->message_email_report_export_csv(
+		{
+			-mid             => $mid,
+			-type            => $type, 
+		}
+	);
+}
+
+
+
+
+
 sub email_stats_json { 
 		my $mid = $q->param('mid'); 
 		my $type = $q->param('type') || 'soft_bounce'; 
@@ -370,6 +400,10 @@ sub message_email_activity_listing_table {
    	$rd->message_email_activity_listing_table(
 		{
 			-mid  => $mid,
+			-vars => { 
+				mid  => $mid, 
+				type => 'email_activity', 
+			}
 		}
 	);
 }
@@ -382,6 +416,7 @@ sub message_individual_email_activity_report_table {
 		{
 			-mid    => $mid, 
 			-email  => $email, 
+
 		}
 	);
 }
@@ -656,6 +691,7 @@ sub message_report {
         subject                     => find_message_subject( $q->param('mid') )    || '',
         url_report                  => $s_url_report                               || [],
         num_subscribers             => commify($m_report->{num_subscribers})       || 0,
+        total_recipients            => commify($m_report->{total_recipients})      || 0,
         opens                       => commify($m_report->{'open'})                || 0, 
         unique_opens                => commify($m_report->{'unique_open'})         || 0, 
         unique_opens_percent        => $m_report->{'unique_opens_percent'}         || 0, 

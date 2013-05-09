@@ -11,7 +11,14 @@
 	<table class="stripedtable" style="width:325px">
 	<tr> 
 	  <td> 
-	   <strong>Email Address</strong>
+	   <strong>Email Address</strong> 
+		<span style="font-size:.8em">
+			(
+			<a href="<!-- tmpl_var Plugin_URL -->?f=message_email_report_export_csv&mid=<!-- tmpl_var mid ESCAPE="URL" -->&type=<!-- tmpl_var type  ESCAPE="URL" -->">
+				export .csv
+			</a>
+			)
+		</span>
 	  </td> 
 	
 	  <!-- tmpl_if show_count --> 

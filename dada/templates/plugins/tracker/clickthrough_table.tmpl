@@ -66,15 +66,7 @@
 		  <table class="stripedtable">
 		   <tr> 
 			
-		    <td> 
-			 <p>
-			  <strong> 
-				Subject
-			  </strong> 
-			 </p>
-			</td> 
-			
-		    <td> 
+			<td> 
 			 <p>
 			  <strong> 
 				Sent
@@ -85,10 +77,38 @@
 		    <td> 
 			 <p>
 			  <strong> 
+				Subject
+			  </strong> 
+			 </p>
+			</td> 
+			
+			<td> 
+			 <p>
+			  <strong> 
+				Archive
+			  </strong> 
+			 </p>
+			</td>
+			
+			
+
+			
+		    <td> 
+			 <p>
+			  <strong> 
 				Subscribers
 			  </strong> 
 			 </p>
 			</td>
+			
+			<td> 
+			 <p>
+			  <strong> 
+				Recipients
+			  </strong> 
+			 </p>
+			</td>
+			
 			
 			<td> 
 			 <p>
@@ -129,6 +149,13 @@
 
 			<!-- tmpl_loop report_by_message_index --> 
 			<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
+				
+				<td> 
+			  <p>
+				<!-- tmpl_var date --> 
+		      </p> 
+		     </td>
+		
 			 <td> 
 	          <p>
 	          
@@ -136,11 +163,6 @@
 				 	 <strong>
 					<a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
 					<!-- tmpl_var message_subject escape="HTML" -->
-					</a> 
-					
-					<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_archive&list=<!-- tmpl_var list -->&id=<!-- tmpl_var mid -->">
-					 </strong>
-						(View) 
 					</a> 
 				<!-- tmpl_else --> 
 					 <strong>
@@ -152,11 +174,24 @@
 	 		   
 			  </p>
 			 </td> 
-			 <td> 
-			  <p>
-				<!-- tmpl_var date --> 
-		      </p> 
-		     </td> 
+			
+			<td>
+				
+			<!-- tmpl_if message_subject -->
+								
+				<p>
+				<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_archive&list=<!-- tmpl_var list -->&id=<!-- tmpl_var mid -->" target="_blank">
+				 </strong>
+					View 
+				</a> 
+			</p>
+			<!-- tmpl_else --> 
+			
+			<!-- /tmpl_if --> 
+			
+			
+			
+
 		
 		
 		     <td> 
@@ -166,6 +201,16 @@
 			   </a> 
 		      </p>
 			 </td> 
+			
+			 <td> 
+		      <p>
+		       <a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
+			    <!-- tmpl_var total_recipients  default="-"--> 
+			   </a> 
+		      </p>
+			 </td>
+			
+			
 			
 			 <td> 
 		      <p>
