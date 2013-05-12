@@ -2298,12 +2298,15 @@ sub message_email_activity_listing {
 	my $r; 
 	my $emails_bounces = {}; 
 	while (my $row = $sth->fetchrow_hashref ) {
-    	$emails_bounces->{$row->{details}} = $row->{count}
+    	$emails_bounces->{$row->{details}} = (int($row->{count}) * .5); # WEIGHTED (down)
 	}
 	$sth->finish; 
 	undef $sth; 
 	# mass mailing event log, bounces
 	
+	#
+	# I'm going to weigh Clickthroughs more than other things... 
+	#
 	# clickthrough log 
 	   $query = 'SELECT email, COUNT(email) as "count" FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ? AND msg_id = ?  GROUP BY msg_id, email ORDER BY count DESC;'; 
 	my $sth = $self->{dbh}->prepare($query);
@@ -2312,7 +2315,7 @@ sub message_email_activity_listing {
 	my $r; 
 	my $emails_clicks = {}; 
 	while (my $row = $sth->fetchrow_hashref ) {
-    	$emails_clicks->{$row->{email}} = $row->{count}
+    	$emails_clicks->{$row->{email}} = (int($row->{count}) * 5) # WEIGHTED!
 	}
 	$sth->finish; 
 	undef $sth; 
