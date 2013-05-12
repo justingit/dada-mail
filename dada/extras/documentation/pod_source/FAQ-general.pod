@@ -229,48 +229,33 @@ addresses.
 
 =head1 Unsubscriptions 
 
-=head2 How do I turn off, "one-click" unsubscription links? 
+=head2 How do I turn off, "one-click" unsubscription links?
 
-I<I have a discussion list and the unsub links are being clicked on by other users, sending unsubscription confirmations out. Yikes!> 
+B<Short Answer> You can't. 
 
-Replace the unsubscription tag: 
+Dada Mail requires that every message you send in a mass mailing contain a unsubscription link - including discussion messages. 
+
+The following tag is required to be present in every message sent in a mass mailing: 
 
  <!-- tmpl_var list_unsubscribe_link --> 
 
-With the following: 
+This tag will be replaced by an unsubcription link that will be unique to the user's email address, mailing list, and mass mailing that it's sent in. When it's clicked, 
+the user will need to simply retype their email address and submit the form presented to them. Once they do that, the user will be removed from the mailing list. 
 
- <!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->
+There is an option in the List Control Panel to provide an email address hint in, I<Your Mailing List Options>, under I<Unsubscriptions>: B<Show Email Hint> 
 
-This will provide a link to unsubscribe, but the user will have to manually enter their email address. Good to use for discussion lists.
+If you're running a discussion mailing list, you may want to disable this option, so that other members of the mailing list don't abuse the unsubscription system, by unsubscribing other members. 
+
+This problem should be mitigated, as members will need to use their own unsubscription link to remove themselves, and a user cannot use the unsubscription link sent to themselves, to unsubscribe another person. Usubscription links are also stripped from messages replied to, and resent to the mailing list, as well as messages shown in Dada Mail's public message archives. 
 
 =head2 Unsubscription links are placed on top of my mailing list messages, why? 
 
-Dada Mail has an in-program policy of requiring the unsubscription link to be prsent 
-in any mass mailing messages it sends out. This is to stop blatant abuse of the program, but we also 
-do sincerely suggest this as a best practice when using the program. If an unsubscribe link is not found 
+Dada Mail has an in-program policy of requiring the unsubscription link to be prsent  in all messages sent in a mass mailing. This is to stop blatant abuse of the program, but we also  do sincerely suggest this as a best practice when using the program. If an unsubscribe link is not found 
 in your mailing list message, Dada Mail will simply add one to the top of the message. 
 
-The following unsubscription links/tags can be used: 
-
-=over
-
-=item * Path Info style, embeds in the email address of the subscriber
+The following tag is required in your mailing list message: 
 
 	<!-- tmpl_var list_unsubscribe_link -->
-
-=item * Path Info style, embeds in the email address of the subscriber
-
-	<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/
-
-=item * Path Info style, DOES NOT embed the email address of the subscriber
-
-	<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->
-
-=item * Query-String style, does NOT embed the email address of the subscriber: 
-
-	<!-- tmpl_var PROGRAM_URL -->?f=u&l=<!-- tmpl_var list_settings.list -->
-
-=back
 
 =head1 Hosting
 
@@ -303,7 +288,6 @@ L<http://dadamailproject.com/support/documentation/upgrade_dada_mail.pod.html>
 =head2 I have an older version of Dada Mail, or something called Mojo Mail, should I upgrade? 
 
 Please, yes. 
-
 
 =head1 Features
 
@@ -879,6 +863,13 @@ These two messages can be changed globaly in the Config.pm file, under the varia
 
 If a list already has edited any of the email message templates, your global changes will not take affect for that list. 
 
+Your mailing list message will be required to have the unsubscription link available: 
+
+	<!-- list_unsubscribe_link --> 
+	
+If you remove it from your mailing list message template, it will be re-added, before sending. 
+
+
 =head2 Are the messages I send with Dada Mail traceable back to me? 
 
 Yes. 
@@ -1110,12 +1101,11 @@ Dada Mail takes care of much of the drudgery of maintaining a mailing list. It p
 
 =item * List Subscriptions
 
-
 Dada Mail will take care of subscriptions and unsubscriptions from each list it manages. Subscription and Unsubscription requests are done via web forms on web pages. Would-be subscribers fill out a form with their email address. 
 
 When submitted, Dada Mail will take the request and email a confirmation. This email confirmation will include a special URL that includes a special 'pin' number, which is used to confirm the correct person wants to subscribe. Following this link will subscribe the email address. 
 
-Unsubscription is a similar process, where someone who wants to unsubscribe will fill out a web form with their email address and receive a confirmation email.   
+Unsubscription is a similar process, where someone who wants to unsubscribe will fill out a web form with their email address. 
 
 Dada Mail does not support email confirmation. That is, confirming an address by having to replying to an email. The URL confirmation is usually much simpler and doesn't make you create an alias email that goes to a program that does the confirmation. We circumvent quite a bit of complexity this way. 
 

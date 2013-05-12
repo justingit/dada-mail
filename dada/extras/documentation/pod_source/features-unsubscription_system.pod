@@ -1,6 +1,6 @@
 =pod
 
-=head1 Dada Mail's Unsunscription System
+=head1 Dada Mail's Unsubscription System
 
 =head1 Introduction
 

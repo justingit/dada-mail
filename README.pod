@@ -9,7 +9,7 @@ Dada Mail
 Dada Mail is a contemporary, mature and intuitive web-based
 e-mail list management system.
 
-Dada Mail handles Closed-Loop Opt-in/Opt-out subscriptions, sending
+Dada Mail handles Closed-Loop Opt-in subscriptions, sending
 complex announce-only and/or discussion mailing list messages with an
 advanced, fault-tolerant mass mailing monitor, supports the
 archiving/viewing/searching/resending/syndicating (rss, atom feeds) 

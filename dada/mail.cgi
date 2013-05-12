@@ -510,8 +510,6 @@ sub run {
 	my %Mode = (
 	'default'                    =>    \&default,
 	'subscribe'                  =>    \&subscribe,
-	'subscribe_flash_xml'        =>    \&subscribe_flash_xml,
-	'unsubscribe_flash_xml'      =>    \&unsubscribe_flash_xml,
 	'token'                      =>    \&token, 
 	'unsubscribe'                =>    \&unsubscribe,
 	'unsubscription_request'     =>    \&unsubscription_request, 
@@ -535,7 +533,7 @@ sub run {
 	'view_list_options'          =>    \&list_cp_options,
 	'membership'                 =>    \&membership,
 	'admin_change_profile_password' 
-	                             => \&admin_change_profile_password, 
+	                             =>    \&admin_change_profile_password, 
 	'update_email_results'       =>    \&update_email_results, 
 	'admin_update_email'         =>    \&admin_update_email, 
 	'mailing_list_history'       =>    \&mailing_list_history, 

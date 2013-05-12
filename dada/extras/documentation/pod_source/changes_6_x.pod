@@ -52,7 +52,6 @@ Dada Mail has the ability to only send a mass mailing to part of a mailing list,
 
 Tracker supports csv exporting email addresses for soft/hard bounces, unsubscribers, and email activity, for each message. 
 
-
 =head3 Partial Sending Options Expanded
 
 Partial List Sending has now been expanded to allow you to search both with what could be in your list (equal, like), as well as what may not be in your list (not equal to, unlike). 
