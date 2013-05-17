@@ -4135,6 +4135,9 @@ The below documentation goes into detail on how to I<install> and I<configure> B
 
 L<http://dadamailproject.com/pro_dada/using_bridge.html>
 
+For more information on Pro Dada/Dada Mail Manual: 
+
+L<http://dadamailproject.com/purchase/pro.html>
 
 =head1 Obtaining The Plugin
 

@@ -905,6 +905,8 @@ The activities that are logged and reported include:
 
 =item * # of recorded opens/views
 
+=item * # of unsubscribes
+
 =item * # bounces, both soft and hard
 
 =back
@@ -913,8 +915,7 @@ The activities that are logged and reported include:
 
 These fancy reports include the above information in tabular data, as well 
 as in a line graph, for past mass mailings to help you spot general trends. 
-This information can also be exported into .csv files, giving you more flexibility, 
-specific to your needs. 
+This information can also be exported into .csv files, giving you more flexibility, specific to your needs. 
 
 
 =head2 Individual Messages/Campaigns
@@ -941,6 +942,19 @@ If you suddenly get a ton of bounced messages for a mailing from addresses you k
 =back
 
 All this message-specific data can also be exported via .csv files that may be downloaded. 
+
+=head1 User Guide
+
+For a guide on using Tracker, see the Dada Mail Manual: 
+
+L<http://dadamailproject.com/pro_dada/using_tracker.html>
+
+For more information on Pro Dada/Dada Mail Manual: 
+
+L<http://dadamailproject.com/purchase/pro.html>
+
+
+What's below will go into installing the plugin and advanced configuration.
 
 =head1 Installing tracker.cgi
 
@@ -984,176 +998,6 @@ Uncomment the lines, by taking off the, "#"'s:
 
 Save your C<.dada_config> file.
 
-=head1 Using tracker.cgi
-
-For the most part, the Tracker plugin simply reports data that's collected about your mass mailings. 
-
-=head2 Preferences
-
-You may enabled/disable any of the items Tracker track independently in the plugin's Preferences.
-
-=head3 Track Message Clickthroughs
-
-When enabled, allows you to use the Redirect Tags to track links that are clicked on 
-in your mass mailing message. 
-
-=head4 Auto Tag Message Links
-
-When selected, ALL links found in an email message will be tracked by converting them into redirect tags and then clickthrough-tracked links.
-
-=head4  Manually Tag Message Links
-
-When selected no link will be clickthrough-tracked by default, but you may craft your own Redirect Tags manually, for any link you'd like to track. 
-
-=head3 Track Message Opens 
-
-When enabled, allows you to track open/viewing of messages. 
-
-Opens are tracked, by counting the requests of a small, special image that's embedded in your email message. This means, you'll need to send your mass mailings in HTML, or have Dada Mail convert your PlainText messages to HTML. This can be done in the list control panel, under: B<Mass Mailing - Options>; enabled the option labeled, I<Convert PlainText-only Mass Email Messages to HTML>
-
-Mail readers sometimes block the display of images  in your HTML email messages. Because of this, Dada Mail will I<also> count the first clickthrough of a tracked link as also an, "Open". This does work for both PlainText and HTML messages
-
-=head3 Track "Forward to a Friend" 
-
-When enabled, use of the "Forward to a Friend" function for each message will be counted.  
-
-B<More Information>:
-L<http://dadamailproject.com/d/features_forward_to_a_friend.pod.html>
-
-=head3 Track Archive Views 
-
-When enabled, allows you to track every time a visitor views an archived message. 
-
-=head3 Track Bounces 
-
-When enabled, any bounces, both soft or hard, are tallied up. You will need to have the 
-bounce handler installed for this to work. 
-
-=head3 Clean Up Tracker Reports
-
-When enabled, tries to get rid of a lot of the, "line noise" that could be present in 
-your logs, because of weird logging behaviour. 
-
-This will also remove opens/clickthroughs and even 
-bounces from I<test> messages, so if you are sending a test message and you
-want to test out if the clickthrough URLs are working, etc, disable this preference, 
-send your test messages and enable it, after you're done. 
-
-=head2 Clickthroughs
-
-Clickthroughs are tracked by creating a "Redirect" tag, that holds the URL you want to track. 
-
-
-If you have a PlainText message you want to send and you want to track who clicks on a specific link, say, 
-
- http://example.com
-
-You would write this URL inside a redirect tag, like this: 
-
-I<E<lt>?dada redirect url="http://exampleB<>.com" ?E<gt>>
-
-Replace "I<http://exampleB<>.com>" with whatever URL you would like to track.
-
-This redirect tag will be replaced by Dada Mail with a URL that, when clicked, will record  the click and redirect your user to the URL you specified within the tag. 
-
-In an HTML message, you would craft the redirect tag the same way, except that the redirect tag goes within the, "href" paramater of the, "a" tag. Again, this sounds difficult, but for example: 
-
-If you have a link created like this: 
-
-	<a href="http://example.com">
-	 Go to my Example site!
-	</a> 
-
-You would simply, like before replace, 
-
- http://example.com
-
- with the redirect tag, 
-
-I<E<lt>?dada redirect url="http://exampleB<>.com" ?E<gt>>
-
-and put this inside the href parameter, like this: 
-
-<a href="I<E<lt>?dada redirect url="http://exampleB<>.com" ?E<gt>>">
-Go to my Example site!
-</a>
-
-If you have messages where you want to track many, many links and the above 
-sounds tedious and easy to mess up, or your authoring workflow doesn't 
-play nice with these redirect tags, there is an option in the preferences labeled,
-
-B<Auto Tag Message Links> 
-
-Which will do all this for you, automatically. Any links that you have manually 
-added a redirect tag to will be untouched, just in case. 
-
-=head3 Backwards Compatibility with the [redirect=] tag
-
-Past versions of Dada Mail (before v4.5.0) used a different syntax for redirect URLs. 
-The syntax looked like this: 
-
- [redirect=http://example.com]
-
-This tag format is still supported, but consider it deprecated. 
-
-=head3 Clickthrough Tags and WYSIWYG editors (CKeditor/Tiny MCE/FCKeditor) 
-
-In-browser HTML WYSIWYG editors have a hard time working with Dada Mail's redirect tags, and will corrupt the tags by turning many of the characters into their entities, like this: 
-
-	<a href="&lt;?dada redirect url=&quot;http://example.com&quot; ?&gt;">
-	 Go to my Example site!
-	</a>
-
-If you use a WYSIWYG editor with Dada Mail, we suggest using the, B<Auto Tag Message Links> option in Dada Mail, or disable the WYSIWYG Editor.
-
-Copying and pasting HTML from a separate program which does not corrupt the tag (like Dreamweaver),  will still be affected even if you simply paste the HTML into the WYSIWYG editor and even if you do it into the HTML Source. 
-
-For most other Desktop-based WYSIWYG editors, including Dreamweaver, 
-double-check that the editor does not corrupt the redirect tag. 
-
-=head3 Limitations of Redirect tags
-
-One thing that you cannot do with the redirect tags, is embedd other Dada Mail Template Tags within the redirect tag.
-
-This will not work: 
-
- <?dada redirect url="http://example.com/index.html?email=<!-- tmpl_var subscriber.email -->" ?>
-
-=head3 Capturing Additional Paramaters with Redirect Tags
-
-It is possible to capture and log additional paramaters in the redirect tags, besides the 
-URL clicked on. For example, you can craft a redirect tag, like this: 
-
- <?dada redirect url="http://example.com" custom_param="some value" ?>
-
-Where, C<custom_param> is the additional paramater you'd like to capture and, C<some value> is the value you'd like
-to save. The value can be different for different links, in different messages, across different messages, etc. 
-
-B<Treat this feature as experimental.> The Tracker plugin will not display additional paramater data, 
-but the data can be found in the downloadable .csv files created by the Tracker Plugin. 
-
-Before using your additional paramaters, make sure both the C<dada_clickthrough_urls> 
-and C<dada_clickthrough_url_log> tables both hold a column named the same as this paramater as the last column. 
-
-In our above example, the following SQL will do the job: 
-
-	ALTER TABLE dada_clickthrough_urls    ADD custom_param TEXT;
-	ALTER TABLE dada_clickthrough_url_log ADD custom_param TEXT;
-
-You may add as many different params as you would like. 
-
-=head2 Opens
-
-Opens tracking allows you to keep count of how many times a message is viewed by your subscribers. 
-
-
-=head2 Subscriber Count Tracking 
-
-Subscriber Count Logging simply records how many subscribers are on your mailing list, 
-at the time a mass mailing goes out. 
-
-Subscriber Count Logging does not work by tallying up all individual subscribers/unsubscribes, 
-so the graph created will tend to look fairly normalized. 
 
 =head1 Specific Plugin Config Variables
 
@@ -1198,41 +1042,28 @@ Like, C<GeoIP_Db>, this variables holds the absolute file path to the City Geo I
 
 L<http://www.maxmind.com/download/geoip/database/GeoLiteCity.dat.xz>
 
-=head1 Getting the Most Out of the Tracker Plugin
-
-=head2 Turn On Archiving
-
-Having messages archived allows you to see the message the reports are generated for. Without it, you'll 
-just have a long list of dates/numbers to remember about your mass mailings/campaigns. 
-
-You can have archiving enabled, but not show your archives publically. This is a better 
-option than disabling archiving completely. 
-
-=head2 Install the Bounce Handler
-
-The bounces that are logged and shown with the Tracker plugin only work if you have the bounce handler installed,
-It's installation is a little more trickier than the Tracker plugin, but it's well worth it for data it generates
-
-
-=head2 Auto Tag Message Links
-
-It's interesting to track one or a view links using the redirect tags to track clickthroughs, but another trend to follow would be how all links in an email message fare against each other. 
-
-=head3 Discussion Lists and Clickthrough Tracking
-
-Discussion Lists may not benefit as much from clickthrough tracking and tracking all lists in a message, since 
-the list owner gives up control over the content of a message. Rather, the members of a list create the content and 
-having clickthrough URLs in place of the actual URLs written can get in the way of discussions. There's also a chance that 
-nefarious URLs can be hidden within a clickthrough URL - not something you want. 
-
-=head2 Sending a Test Message? 
-
-Test message will not be shown in the Tracker's reports. 
-
 =head1 Compatibility with clickthrough_tracking.cgi
 
 The previous iteration of this plugin (tracker.cgi) was called, B<clickthrough_tracker.cgi>. Do not 
 use this old plugin with anything newer than v4.5.0 of Dada Mail. It will not work correctly. 
+
+=head2 Backwards Compatibility with the [redirect=] tag
+
+Past versions of Dada Mail (before v4.5.0) used a different syntax for redirect URLs. 
+The syntax looked like this: 
+
+ [redirect=http://example.com]
+
+This tag format is still supported, but consider it deprecated. 
+
+=head2 Limitations of Redirect tags
+
+One thing that you cannot do with the redirect tags, is embedd other Dada Mail Template Tags within the redirect tag.
+
+This will not work: 
+
+ <?dada redirect url="http://example.com/index.html?email=<!-- tmpl_var subscriber.email -->" ?>
+
 
 =head2 Upgrade Notes
 
@@ -1247,8 +1078,7 @@ be moved over,
 
 There is a script called, I<dada_clickthrough_plaintext_to_sql.pl> located in the, 
 I<dada/extras/scripts> directory that will do this conversion. Move it into your, 
-I<dada> directory, change its permissions to, C<755> and run it I<once> in your 
-web browser. It may take a few minutes to run to completion. 
+I<dada> directory, change its permissions to, C<755> and run it I<once> in your web browser. It may take a few minutes to run to completion. 
 
 
 =head1 COPYRIGHT 
