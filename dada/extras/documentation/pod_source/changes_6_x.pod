@@ -1,8 +1,8 @@
 =head1 6.4.0
 
-=head2 Summary 6.4.0 Beta 2
+=head2 Summary 6.4.0
 
-=head2 Features 6.4.0 Beta 2
+=head2 Features 6.4.0
 
 =head3 Unsubscription Process: Vastly Simplified
 
