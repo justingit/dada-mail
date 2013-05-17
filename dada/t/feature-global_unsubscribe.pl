@@ -81,27 +81,6 @@ my $dap = DADA::App::Subscriptions->new;
 ok($dap->test == 1, "Testing is on..."); 
 
 
-require CGI; 
-my $q = new CGI; 
-   $q = decode_cgi_obj($q);
-
-$q->param('email', 'user3@example.com'); 
-$q->param('list',   $list3); 
-$q->param('f',      'u'); 
-diag $dap->unsubscribe({-cgi_obj => $q,}); 
-	
-
-ok($lh->num_subscribers == 0,  "Zero in #1"); 
-ok($lh2->num_subscribers == 0, "Zero in #2"); 
-ok($lh3->num_subscribers == 0, "Zero in #3");
-
-# There's still a potential problem with the above method, if BOTH global unsub 
-# and global black list is on - it's fixed in code, but there's presently, no 
-# test for it. Yet. 
-
-
-
-
 dada_test_config::remove_test_list;
 dada_test_config::remove_test_list({-name => $list2});
 dada_test_config::remove_test_list({-name => $list3});
