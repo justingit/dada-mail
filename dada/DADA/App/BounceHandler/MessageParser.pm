@@ -7,6 +7,7 @@ use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;
 use 5.008_001;
 use Mail::Verp;
+use Try::Tiny; 
 
 use Carp qw(croak carp);
 use vars qw($AUTOLOAD);
@@ -756,11 +757,15 @@ sub parse_for_rfc6522 {
 
 
 sub generic_human_readable_parse { 
-	my $self = shift;
+	my $self   = shift;
 	my $entity = shift; 
-	
-	return $entity->bodyhandle->as_string; 
-	
+	my $msg; 
+	try {
+		$msg =  $entity->bodyhandle->as_string; 
+	} catch { 
+		carp "Problems creating generic_human_readable_parse: '$_'";
+	};
+	return $msg; 
 }
 
 
