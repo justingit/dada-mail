@@ -1007,13 +1007,17 @@ sub msg_basic_event_count {
 	$basic_events->{unique_open} = $uo_count; 
 	$sth->finish; 
 	# /Unique Opens
-	$basic_events->{unique_opens_percent}          = $self->percentage($basic_events->{'unique_open'}, $basic_events->{total_recipients}); 
+	$basic_events->{unique_opens_percent}          
+		= $self->percentage($basic_events->{'unique_open'}, 
+			($basic_events->{total_recipients} - ($basic_events->{'soft_bounce'} + $basic_events->{'hard_bounce'}))
+	);
+	 
+	$basic_events->{unique_unsubscribes_percent}   = $self->percentage($basic_events->{'unsubscribe'}, $basic_events->{total_recipients}); 
+	
 	$basic_events->{unique_soft_bounces_percent}   = $self->percentage(int($basic_events->{'soft_bounce'}), $basic_events->{total_recipients}); 
 	$basic_events->{unique_hard_bounces_percent}   = $self->percentage(int($basic_events->{'hard_bounce'}), $basic_events->{total_recipients}); 
 	$basic_events->{unique_bounces_percent}        = $self->percentage(int($basic_events->{'soft_bounce'} + $basic_events->{'hard_bounce'}), $basic_events->{total_recipients}); 
-	$basic_events->{unique_unsubscribes_percent}   = $self->percentage($basic_events->{'unsubscribe'}, $basic_events->{total_recipients}); 
-
-
+	
 	return $basic_events;
 
 }
