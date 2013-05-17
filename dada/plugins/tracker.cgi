@@ -164,6 +164,7 @@ sub default {
             },
 			-expr => 1, 
             -vars => {
+				screen                           => 'using_tracker', 
                 done                             => $q->param('done') || 0,
 				Plugin_URL                       => $Plugin_Config->{Plugin_URL}, 
 				tracker_record_view_count_widget => $tracker_record_view_count_widget, 
@@ -687,6 +688,9 @@ sub message_report {
 	
 			
 	my %tmpl_vars = (
+		
+		screen                      => 'using_tracker', 
+		
 		mid                         => $q->param('mid')                            || '',
         subject                     => find_message_subject( $q->param('mid') )    || '',
         url_report                  => $s_url_report                               || [],
@@ -708,7 +712,8 @@ sub message_report {
 		can_use_country_geoip_data  => $rd->can_use_country_geoip_data, 
 		Plugin_URL                  => $Plugin_Url,
 		Plugin_Name                 => $Plugin_Config->{Plugin_Name},
-		chrome                      => $chrome, 
+		chrome                      => $chrome, 		
+		
 	); 
 	my $scrn = ''; 
 	require DADA::Template::Widgets;
