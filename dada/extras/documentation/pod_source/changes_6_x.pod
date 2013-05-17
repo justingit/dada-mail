@@ -6,17 +6,17 @@
 
 =head3 Unsubscription Process: Vastly Simplified
 
-The unsubscription process for Dada Mail has been redesigned, and has been vastly simplified. 
+The unsubscription process for Dada Mail has been redesigned, and is now much more simplified, than it has been, in past versions of Dada Mail. Here's how it works: 
 
-All mass mailings require an unsubscription link to be present in the message itself. This unsubscription link is now unique to the list, mass mailing and subscriber it's sent to. 
+All mass mailings require an unsubscription link to be present in the message itself. This unsubscription link is now unique to the mailing list, mass mailing and subscriber it's sent to. 
 
-Clicking the unsubscription link will bring the subscriber to a screen, with a simple form, which only requires that they fill out their email address. An optional email address hint can be shown, to help subscribers know which email address of they're subscribed with. Once a subscriber has filled out their email address and submitted the form, they will be unsubscribed immediately. 
+Clicking the unsubscription link will bring the subscriber to a screen, with a simple form, which only requires that they fill out their email address. An optional email address hint can be shown, to help subscribers know which email address they're subscribed with. Once a subscriber has filled out their email address and submitted the form, they will be unsubscribed immediately. There is no longer an option to send an unsubscription confirmation email message to the user. 
 
-This unsubscription link will be removed in discussion lists, so replies will not potentially re-send the unsubscription link of a subscriber, to the entire mailing list. Unsubscription links will also be removed from archive messages. 
+The unsubscription link will be removed in discussion lists when messages are replied to, to stop potentially re-sending the unique unsubscription link of a subscriber, to the entire mailing list. Unsubscription links will also be removed from archive messages. 
 
-To make the unsubscription process as simple and fool-proof as possible, many of the advanced options that were available in the mailing list's control panel have been removed. This was done to make 100% sure that users of Dada Mail were following email best practices, as well as following the newest revision of the CAN SPAM 2008 revision. 
+To make the unsubscription process as simple and fool-proof as possible, many of the advanced options that were available in the mailing list's control panel have been removed. This was done to make 100% sure that users of Dada Mail were following email best practices, as well as following the newest CAN SPAM 2008 revision. 
 
-Unsubscriptions are now tracked, and data can be viewed/exported in the Tracker plugin. The date of the unsubscription, IP address, subscriber email address, mass mailing the unsubscription was made from, and the mailing list name will be saved.
+Unsubscriptions are now tracked, and data can be viewed/exported in the Tracker plugin. The date of the unsubscription, IP address, subscriber email address, mass mailing the unsubscription was made from, and the mailing list   will be saved.
 
 More information about Dada Mail's Unsubscription System can be found in the new feature overview for unsubscriptions: 
 
@@ -26,7 +26,7 @@ L<http://dadamailproject.com/d/features-unsubscription_system.pod.html>
 
 =head4 Tracker Preferences: Simplified
 
-Tracker preferences have been simplified, to make sure as much data is collected by default. You may now track clickthroughs automatically, or manually; track message opens directly or indirectly and track with or without your email data. 
+Tracker preferences have been simplified, to make sure as much data is collected by default. You may now track clickthroughs automatically, or manually; track message opens directly or indirectly and track with or without your email data. Tracking, Archive views, "Forward to a Friend" and Bounces will always be enabled for you. 
 
 =head4 Faster!
 
