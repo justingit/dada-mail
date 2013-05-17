@@ -142,7 +142,7 @@ speed up sending by .3 - .7 seconds/I<message>.
 Dada Mail now has support for various simple Date and Time formats to use in HTML and Email templates, 
 as well support for more flexible/advanced C<strftime> formats:
 
-L<http://dadamailproject.com/support/documentation/features-email_template_syntax.pod#date_related_tags>
+L<http://dadamailproject.com/support/documentation/features-email_template_syntax.pod.html#date_related_tags>
 
 =head3 New import script, dada_archives_backup_to_sql.pl
 
