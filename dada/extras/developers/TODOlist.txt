@@ -14,6 +14,8 @@ Key:
 
 [ ] ARF reports? 
 
+[ ] Complaint Tracking?
+
 [ ] Bounce Handler - ability to substract x from all scored addresses
 	[ ] Ability to act upon all addresses in scorecard
 
