@@ -6694,7 +6694,6 @@ sub edit_type {
         qw(
         confirmation_message
         subscribed_message
-        unsub_confirmation_message
         unsubscribed_message
         mailing_list_message
         mailing_list_message_html
@@ -6767,10 +6766,6 @@ sub edit_type {
                       $dfm->can_find_sub_confirm_link(
                         { -str => $li->{invite_message_html} }
                       ),
-                    unsub_confirm_link_found_in_unsub_confirmation_message =>
-                      $dfm->can_find_unsub_confirm_link(
-                        { -str => $li->{unsub_confirmation_message} }
-                      ),
                 },
                 -list_settings_vars       => $li,
                 -list_settings_vars_param => { -dot_it => 1, },
@@ -6795,8 +6790,6 @@ sub edit_type {
             unsubscribed_message
             confirmation_message_subject
             confirmation_message
-            unsub_confirmation_message_subject
-            unsub_confirmation_message
             mailing_list_message_from_phrase
             mailing_list_message_to_phrase
             mailing_list_message_subject
@@ -6851,8 +6844,6 @@ sub edit_type {
 					unsubscribed_by_list_owner_message          => undef,  
                     unsubscribed_message_subject                => undef,
                     unsubscribed_message                        => undef,
-                    unsub_confirmation_message_subject          => undef,
-                    unsub_confirmation_message                  => undef,
                     mailing_list_message_from_phrase            => undef,
                     mailing_list_message_to_phrase              => undef,
                     mailing_list_message_subject                => undef,
