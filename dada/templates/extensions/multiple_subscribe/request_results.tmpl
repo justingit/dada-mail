@@ -1,0 +1,47 @@
+<!-- begin extensions/multiple_subscribe/request_results.tmpl --> 
+
+
+<!-- tmpl_set name="title" value="Subscribe to Multiple Lists" --> 
+
+<h1>
+	Subscription Results: 
+</h1>
+
+
+<!-- tmpl_loop lists_worked_on --> 
+
+    <h2><!-- tmpl_var list_name --></h2>
+    
+    <!-- tmpl_if status --> 
+    
+        <p>
+         Your request was successful!
+        </p> 
+    
+    <!-- tmpl_else --> 
+    
+        <h3>Looks like there were problems:</h3>
+        
+        <ul>
+        <!-- tmpl_loop errors --> 
+            <li>
+             <p class="error">
+              <!-- tmpl_var error -->
+             </p>
+            </li>
+         <!--/tmpl_loop --> 
+        </ul>
+        
+        
+    <!-- /tmpl_if --> 
+    
+<!-- /tmpl_loop --> 
+
+    
+<!-- tmpl_if debug --> 
+
+    <!-- tmpl_var debug_info --> 
+
+<!-- /tmpl_if --> 
+
+<!-- end extensions/multiple_subscribe/request_results.tmpl --> 

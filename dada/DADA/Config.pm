@@ -264,114 +264,113 @@ $PROFILE_OPTIONS ||= {
 
 
 
-$PLUGIN_CONFIGS ||= {
+$PLUGIN_CONFIGS ||= { 
 
-    Bounce_Handler => {
-        Server                   => undef,
-        Username                 => undef,
-        Password                 => undef,
-        Port                     => undef,
-        USESSL                   => undef,
-        AUTH_MODE                => undef,
-        Plugin_Name              => undef,
-        Plugin_URL               => undef,
-        Allow_Manual_Run         => undef,
-        Manual_Run_Passcode      => undef,
-        Enable_POP3_File_Locking => undef,
-        Log                      => undef,
-        MessagesAtOnce           => undef,
-        Max_Size_Of_Any_Message  => undef,
-        Rules                    => undef,
+	Bounce_Handler => {
+		Server                      => undef,
+		Username                    => undef,
+		Password                    => undef,
+		Port                        => undef,
+		USESSL                      => undef,
+		AUTH_MODE                   => undef,
+		Plugin_Name                 => undef,
+		Plugin_URL                  => undef,
+		Allow_Manual_Run            => undef,
+		Manual_Run_Passcode         => undef,
+		Enable_POP3_File_Locking    => undef, 
+		Log                         => undef,
+		MessagesAtOnce              => undef,
+		Max_Size_Of_Any_Message     => undef,
+		Rules                       => undef,
 
-    },
+	},
 
-    Beatitude => {
+	Beatitude => {
 
-        Plugin_Name         => undef,
-        Plugin_URL          => undef,
-        Allow_Manual_Run    => undef,
-        Manual_Run_Passcode => undef,
-        Log                 => undef,
+		Plugin_Name                 => undef,
+		Plugin_URL                  => undef,
+		Allow_Manual_Run            => undef,
+		Manual_Run_Passcode         => undef,
+		Log                         => undef,
 
-    },
+	},
+	
+	Bridge => {
 
-    Bridge => {
-
-        Plugin_Name                         => undef,
-        Plugin_URL                          => undef,
-        Allow_Manual_Run                    => undef,
-        Manual_Run_Passcode                 => undef,
-        MessagesAtOnce                      => undef,
-        Soft_Max_Size_Of_Any_Message        => undef,
-        Max_Size_Of_Any_Message             => undef,
-        Allow_Open_Discussion_List          => undef,
-        Room_For_One_More_Check             => undef,
-        Enable_POP3_File_Locking            => undef,
-        Check_List_Owner_Return_Path_Header => undef,
-        Check_Multiple_Return_Path_Headers  => undef,
-
-    },
-
-    Tracker => {
-
-        Plugin_Name => undef,
-        Plugin_URL  => undef,
-        Geo_IP_Db   => undef,
+		Plugin_Name                         => undef,
+		Plugin_URL                          => undef,
+		Allow_Manual_Run                    => undef,
+		Manual_Run_Passcode                 => undef,
+		MessagesAtOnce                      => undef,
+		Soft_Max_Size_Of_Any_Message        => undef,
+		Max_Size_Of_Any_Message             => undef,
+		Allow_Open_Discussion_List          => undef,
+		Room_For_One_More_Check             => undef,
+		Enable_POP3_File_Locking            => undef,
+		Check_List_Owner_Return_Path_Header => undef,
+		Check_Multiple_Return_Path_Headers  => undef,
 
     },
 
-    Mailing_Monitor => {
+	Tracker => {
 
-        Plugin_Name         => undef,
-        Plugin_URL          => undef,
-        Allow_Manual_Run    => undef,
-        Manual_Run_Passcode => undef,
+		Plugin_Name                         => undef,
+		Plugin_URL                          => undef,
+		Geo_IP_Db                           => undef,
+		
+	},
 
-    },
+	Mailing_Monitor => {
+
+		Plugin_Name                         => undef,
+		Plugin_URL                          => undef,
+		Allow_Manual_Run                    => undef,
+		Manual_Run_Passcode                 => undef,
+
+	},
+
+    log_viewer => {	
+
+		Plugin_URL                          => undef,
+		tail_command                        => undef,
+
+	},
+
+	default_mass_mailing_messages => {
+
+		Plugin_Name                         => undef,
+		Plugin_URL                          => undef,
+
+	},
+
+	password_protect_directories => {
+
+		Plugin_Name                         => undef,
+		Plugin_URL                          => undef,
+		Allow_Manual_Run                    => undef,
+		Manual_Run_Passcode                 => undef,
+		Base_Absolute_Path                  => undef, 
+		Base_URL                            => undef, 
+
+	},
 
     blog_index => {
 
-        Default_List       => undef,
-        Entries            => undef,
-        Style              => undef,
-        Allow_QS_Overrides => undef,
+		Default_List                        => undef,
+		Entries                             => undef,
+		Style                               => undef,
+		Allow_QS_Overrides                  => undef,
 
-    },
+	}, 
 
-    log_viewer => {
+	multiple_subscribe => {	
 
-        Plugin_URL   => undef,
-        tail_command => undef,
+		Plugin_Name                         => undef,
+		Plugin_URL                          => undef,
 
-    },
-
-    default_mass_mailing_messages => {
-
-        Plugin_Name => undef,
-        Plugin_URL  => undef,
-
-    },
-
-    password_protect_directories => {
-
-        Plugin_Name         => undef,
-        Plugin_URL          => undef,
-        Allow_Manual_Run    => undef,
-        Manual_Run_Passcode => undef,
-        Base_Absolute_Path  => undef,
-        Base_URL            => undef,
-
-    },
-
-    change_list_shortname => {
-
-        Plugin_Name => undef,
-        Plugin_URL  => undef,
-
-    },
+	},
 
 };
-
 
 
 
