@@ -74,34 +74,11 @@ ok($lh3->num_subscribers == 1, "One in #3");
 
 require DADA::MailingList::Settings; 
 my $das = DADA::App::Subscriptions->new; 
-my $ls3 = DADA::MailingList::Settings->new({-list => $list3});
-$ls3->param('unsub_confirm_email', 0); 
 
 use DADA::App::Subscriptions; 
 my $dap = DADA::App::Subscriptions->new; 
    $dap->test(1);
 ok($dap->test == 1, "Testing is on..."); 
-
-
-require CGI; 
-my $q = new CGI; 
-   $q = decode_cgi_obj($q);
-
-$q->param('email', 'user3@example.com'); 
-$q->param('list',   $list3); 
-$q->param('f',      'u'); 
-diag $dap->unsubscribe({-cgi_obj => $q,}); 
-	
-
-ok($lh->num_subscribers == 0,  "Zero in #1"); 
-ok($lh2->num_subscribers == 0, "Zero in #2"); 
-ok($lh3->num_subscribers == 0, "Zero in #3");
-
-# There's still a potential problem with the above method, if BOTH global unsub 
-# and global black list is on - it's fixed in code, but there's presently, no 
-# test for it. Yet. 
-
-
 
 
 dada_test_config::remove_test_list;

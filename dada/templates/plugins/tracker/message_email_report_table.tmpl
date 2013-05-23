@@ -1,0 +1,71 @@
+<!-- begin plugins/tracker/message_email_report_table.tmpl -->
+
+
+
+
+<!-- tmpl_if report --> 
+	<div> 
+	  <div style="max-width:350px; max-height: 400px; overflow: auto; border:1px solid black overflow-y: scroll; overflow-x: hidden;">
+	
+	
+	<table class="stripedtable" style="width:325px">
+	<tr> 
+	  <td> 
+	   <strong>Email Address</strong> 
+		<span style="font-size:.8em">
+			(
+			<a href="<!-- tmpl_var Plugin_URL -->?f=message_email_report_export_csv&mid=<!-- tmpl_var mid ESCAPE="URL" -->&type=<!-- tmpl_var type  ESCAPE="URL" -->">
+				export .csv
+			</a>
+			)
+		</span>
+	  </td> 
+	
+	  <!-- tmpl_if show_count --> 
+		<td>&nbsp;</td>
+	  <!-- /tmpl_if --> 
+	
+	 </tr> 
+
+<!-- tmpl_loop report --> 
+	<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
+	  <td>
+		
+		<!-- tmpl_if expr="((type eq 'soft_bounce') || (type eq 'hard_bounce'))" -->
+		<a class="modalbox"  href="./bounce_handler.cgi?flavor=cgi_bounce_score_search;query=<!-- tmpl_var email escape="URL" -->;chrome=0" title="Bounce Log for <!-- tmpl_var email escape="HTML" -->" >
+		 <!-- tmpl_var email -->
+	    </a>
+		<!-- tmpl_else --> 
+			
+		<a href="#" class="message_individual_email_activity" data-email="<!-- tmpl_var email -->">
+			<!-- tmpl_if __first__  --> 
+				<span id="first_for_<!-- tmpl_var label -->"><!-- tmpl_var email --></span>
+			<!-- tmpl_else --> 
+				<!-- tmpl_var email -->
+			<!-- /tmpl_if --> 
+		</a> 
+		<!-- /tmpl_if --> 
+	  </td> 
+	
+		<!-- tmpl_if count --> 
+			<td> 
+				<p>
+					<!-- tmpl_var count -->
+				</p> 
+			</td>
+		<!-- /tmpl_if --> 
+		
+	 </tr>
+<!-- /tmpl_loop -->
+
+</table> 
+<p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var num -->&nbsp;</p> 
+ </div>
+</div>
+
+<!-- tmpl_else --> 
+	<p class="alert">No <!-- tmpl_var title --> addresses to report.</p> 
+<!-- /tmpl_if -->
+
+
+<!-- end plugins/tracker/message_email_report_table.tmpl -->

@@ -9,7 +9,7 @@ These docs will guide you through an installation of Dada Mail, originally insta
 =begin html
 
 <div class="see_also">
-<p> For information on how to upgrade Dada Mail from an install that wasn't done using the inclused Dada Mail Installer, see, <a href="./FAQ-install_upgrade.pod.html##upgrading_dada_mail_from_different_installation_types>Upgrading Dada Mail From Different Installation Types</a></p>
+<p> For information on how to upgrade Dada Mail from an install that wasn't done using the included Dada Mail Installer, see, <a href="./FAQ-install_upgrade.pod.html#upgrading_dada_mail_from_different_installation_types">Upgrading Dada Mail From Different Installation Types</a></p>
 </div> 
 
 =end html
@@ -96,6 +96,6 @@ The rest of the installer form will be hidden, as no extra configuration is need
 
 =head2 Changelog 
 
-It's a B<I<very very>> good idea to look at the changelog and not B<any> incompatibilities between versions. It's possible that incompatibilities could break your installation, when you upgrade. 
+It's a B<I<very very>> good idea to look at the changelog and note B<any> incompatibilities between versions. It's possible that incompatibilities could break your installation, when you upgrade. 
 
 Changelog: L<http://dadamailproject.com/d/changes_6_x.pod.html>

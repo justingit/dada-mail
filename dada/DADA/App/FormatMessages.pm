@@ -472,22 +472,17 @@ sub _format_text {
 							carp "Problem removing existing opener images: $_"; 
 						}
 					}
-#					if($self->{ls}->param('discussion_clean_up_replies') == 1) { 
-#						try {
-#							require DADA::App::FormatMessages::Filters::CleanUpReplies; 
-#							my $cur = DADA::App::FormatMessages::Filters::CleanUpReplies->new; 
-#							$content = $cur->filter(
-#								{
-#									-msg  => $content, 
-#									-type => $entity->head->mime_type, 
-#									-list => $self->{list},
-#								}
-#							);
-#						} catch {
-#							carp "Problems with filter: $_";
-#						};		
-#					}
 					
+					
+					# This attempts to strip any unsubscription links in messages
+					# (think: replying) 
+					try {
+						require DADA::App::FormatMessages::Filters::RemoveTokenLinks; 
+						my $rul = DADA::App::FormatMessages::Filters::RemoveTokenLinks->new; 
+						$content = $rul->filter({-data => $content});
+					} catch {
+						carp "Problems with filter: $_";
+					};
 					
 					if($self->{ls}->param('discussion_template_defang') == 1) { 
 						try {
@@ -556,7 +551,7 @@ sub _format_text {
                 
 				if($self->no_list != 1) { 
 	      			if(defined($self->{list})){
-						if ($self->{ls}->param('enable_open_msg_logging') == 1 && $entity->head->mime_type  eq 'text/html'){ 
+						if ($self->{ls}->param('tracker_track_opens_method') eq 'directly' && $entity->head->mime_type  eq 'text/html'){ 
 							$content = $self->_add_opener_image($content);
 						}
 					}
@@ -1279,7 +1274,7 @@ sub _expand_macro_tags {
 	}
 	
 	$data =~ s/\<\!\-\- tmpl_var list_subscribe_link \-\-\>/$s_link/g;	
-	$data =~ s/\<\!\-\- tmpl_var list_unsubscribe_link \-\-\>/$us_link/g;
+#	$data =~ s/\<\!\-\- tmpl_var list_unsubscribe_link \-\-\>/$us_link/g;
 	
 	# confirmations.
 	
@@ -1390,8 +1385,7 @@ sub _macro_tags {
 
     my $type;
 
-    if (   $args{-type} eq 'confirm_subscribe'
-        || $args{-type} eq 'confirm_unsubscribe' )
+    if (   $args{-type} eq 'confirm_subscribe' )
     {
 
         my $link =
@@ -1404,23 +1398,10 @@ sub _macro_tags {
         $type = 's';
 
     }
-    elsif ( $args{-type} eq 'unsubscribe' ) {
+    elsif ( $args{-type} eq 'unsubscribe' || $args{-type} eq 'confirm_unsubscribe') {
 
-        # We really shouldn't even been in this sub, if there's no list...
-        if ( $self->no_list == 1 ) {
-            $type = 'u';
-        }
-        else {
-            # And, that's it.
-            if (
-                $self->{ls}->param('unsub_link_behavior') eq 'show_unsub_form' )
-            {
-                $type = 'ur';
-            }
-            else {
-                $type = 'u';
-            }
-        }
+		return '<!-- tmpl_var list_unsubscripton_link -->';
+
     }
 
     my $link = $args{-url} . '/';
@@ -1626,10 +1607,10 @@ sub _depersonalize_mlm_template {
 			og => '<!-- tmpl_var list_subscribe_link -->',
 			re => '<!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list -->', 
 		},
-		{
-			og => '<!-- tmpl_var list_unsubscribe_link -->', 
-			re => '<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->', 
-		}, 
+#		{
+#			og => '<!-- tmpl_var list_unsubscribe_link -->', 
+#			re => '<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->', 
+#		}, 
 		{
 			og => '<!-- tmpl_var PROGRAM_URL -->/profile_login/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/', 
 			re => '<!-- tmpl_var PROGRAM_URL -->/profile_login/', 
@@ -1710,17 +1691,9 @@ sub can_find_unsub_confirm_link {
 	    }
 
 	    my @unsub_confirm_urls = (
-			'<!-- tmpl_var PROGRAM_URL -->/t/<!-- tmpl_var list.confirmation_token -->',
+			'<!-- tmpl_var list_unsubscribe_link -->',
 	        '<!-- tmpl_var list_confirm_unsubscribe_link -->',
-	  	);
-	    if ( $DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} ==
-	        1 )
-	    {
-	        push( @unsub_confirm_urls, '[list_confirm_unsubscribe_link]' );
-		    push( @unsub_confirm_urls, '[plain_list_confirm_unsubscribe_link]' );
-			
-	    }
-	
+	  	);	
 	    for my $url (@unsub_confirm_urls) {
 	        $url = quotemeta($url);
 	        if ( $args->{-str} =~ m/$url/ ) {
@@ -1744,7 +1717,7 @@ sub unsubscription_confirmationation {
 	    }
 	    else {
 	    	$args->{-str} = 'To be removed from, "<!-- tmpl_var list_settings.list_name -->", click the link below:
-<!-- tmpl_var list_confirm_unsubscribe_link -->
+<!-- tmpl_var list_unsubscribe_link -->
 
 ' . $args->{-str};
 		}
@@ -1792,23 +1765,7 @@ sub can_find_unsub_link {
         die "You MUST pass the, '-str' paramater!";
     }
 
-    my @unsub_urls = (
-        $DADA::Config::PROGRAM_URL . '/u/' . $self->{-List},
-        '<!-- tmpl_var list_unsubscribe_link -->',
-        '<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->',
-        '<!-- tmpl_var PROGRAM_URL -->?f=u&l=<!-- tmpl_var list_settings.list -->',
-		'<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/',
-
-        '<!-- tmpl_var PROGRAM_URL -->/ur/<!-- tmpl_var list_settings.list -->',
-        '<!-- tmpl_var PROGRAM_URL -->?f=ur&l=<!-- tmpl_var list_settings.list -->',
-		'<!-- tmpl_var PROGRAM_URL -->/ur/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/',
-
- );
-    if ( $DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} ==
-        1 )
-    {
-        push( @unsub_urls, '[list_unsubscribe_link]' );
-    }
+    my @unsub_urls = ('<!-- tmpl_var list_unsubscribe_link -->'); 
 
     for my $unsub_url (@unsub_urls) {
         $unsub_url = quotemeta($unsub_url);
@@ -2276,6 +2233,8 @@ sub email_template {
 			
             if ($content) {
 
+				# use Data::Dumper; 
+				# warn '%screen_vars ' . Dumper(\%screen_vars); 
                 # And, that's it.
                 $content = DADA::Template::Widgets::screen(
                     {

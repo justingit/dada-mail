@@ -65,6 +65,7 @@ my %allowed = (
 	
 	net_smtp_obj                  => undef, 
 	ses_obj                       => undef, 
+	#unsub_obj                     => undef, 
 	
 ); 
 
@@ -1131,6 +1132,14 @@ sub mass_send {
 	
 	
 	$self->im_mass_sending(1); 
+#	require DADA::App::Subscriptions::Unsub; 
+#	$self->unsub_obj(DADA::App::Subscriptions::Unsub->new(
+#		{
+#			-list => $self->{list}, 
+#			-ls_obj => $self->{ls},
+#		}
+#	));	
+		
 		
 	warn '[' . $self->{list} . '] starting mass_send at' . time
 	    if $t;
@@ -1248,6 +1257,8 @@ sub mass_send {
 	# This is for the Tracker.
 	my $num_subscribers = $lh->num_subscribers;
 	   $self->num_subscribers($num_subscribers); 
+
+	
 	
 	if( ! $mailout->still_around ){ 
 		warn '[' . $self->{list} . ']  Mass mailing seems to have been removed. exit()ing'
@@ -1257,6 +1268,8 @@ sub mass_send {
 
     my $status = $mailout->status({-mail_fields => 0}); 
     
+	my $num_total_recipients = $status->{total_sending_out_num};
+	
 	my $mailout_id = $status->{id}; 
 	
 	
@@ -1269,7 +1282,7 @@ sub mass_send {
 	"Message-Id: "     . $mailout_id, 
 	"Subject: "        . $s_l_subject, 
 	"Started: "        . scalar(localtime($status->{first_access})), 
-	"Mailing Amount: " . $status->{total_sending_out_num},
+	"Mailing Amount: " . $status->{num_total_recipients},
 	);	
 	
 	if($DADA::Config::LOG{mass_mailings} == 1){ 
@@ -1404,9 +1417,12 @@ sub mass_send {
 				if $t;
 				
             $self->_log_sub_count(
-                                   -msg_id          => $fields{'Message-ID'}, 
-                                   -num_subscribers => $num_subscribers,
-                                ); 
+                {
+                    -msg_id               => $fields{'Message-ID'},
+                    -num_subscribers      => $num_subscribers,
+                    -num_total_recipients => $num_total_recipients,
+                }
+            );
             #
             #
             #
@@ -1642,35 +1658,31 @@ sub mass_send {
 			#
 			
 			# DEV: Should we only use this for mass mailings to, "list"?!
-			if($self->{ls}->param('clickthrough_tracking') == 1){ 
-				# This still sucks, since this'll reparse after each restart.
-				require DADA::Logging::Clickthrough; 
-				my $ct = DADA::Logging::Clickthrough->new(
-							{
-								-list => $self->{list},
-								
-								# I guess one way to find out if the
-								# InactiveDestroy stuff is working, 
-								# Is isf DADA::Logging::Clickthrough
-								# is working without this kludge: 
-								#
-								#-li   => $self->{ls}->params, 
-								#
-							}
-						); 
-				if($ct->enabled) { 
-					%fields = $ct->parse_email(
-					    {
-					        -fields => \%fields,
-							-mid    => $fields{'Message-ID'},
-					    }
-					);
-					undef $ct; 
-					# And, that's it.
-				}
-			}
-			else { 
-			}
+			# This still sucks, since this'll reparse after each restart.
+			require DADA::Logging::Clickthrough; 
+			my $ct = DADA::Logging::Clickthrough->new(
+						{
+							-list => $self->{list},
+							
+							# I guess one way to find out if the
+							# InactiveDestroy stuff is working, 
+							# Is isf DADA::Logging::Clickthrough
+							# is working without this kludge: 
+							#
+							#-li   => $self->{ls}->params, 
+							#
+						}
+					); 
+			if($ct->enabled) { 
+				%fields = $ct->parse_email(
+				    {
+				        -fields => \%fields,
+						-mid    => $fields{'Message-ID'},
+				    }
+				);
+				undef $ct; 
+				# And, that's it.
+			}			
 			#
 			##################################################################			
 			
@@ -2487,16 +2499,7 @@ sub list_headers {
 			$lh{'List-Subscribe'}   =   '<<!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>'; 
 		}
 
-		# List-Unsubscribe
-		# I'm not using the _macro_tags method, out of sake of performance
-		# That method should really be moved into DADA::Template::Widgets
-		#
-		if($self->{ls}->param('unsub_link_behavior') eq 'show_unsub_form'){ 
-			$lh{'List-Unsubscribe'} =   '<<!-- tmpl_var PROGRAM_URL -->/ur/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>'; 
-		}
-		else { 
-			$lh{'List-Unsubscribe'} =   '<<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>'; 
-		}
+		$lh{'List-Unsubscribe'} =   '<<!-- tmpl_var list_unsubscribe_link -->>'; 
 
 		# List-Owner
 		$lh{'List-Owner'}       =   '<<!-- tmpl_var list_settings.list_owner_email -->>';
@@ -2872,6 +2875,17 @@ sub _mail_merge {
         $labeled_data{message_id}                     = shift @$data;
         $labeled_data{'list.confirmation_token'}      = shift @$data;
  
+
+		$labeled_data{'list_unsubscribe_link'} = $DADA::Config::PROGRAM_URL . '/t/' . $labeled_data{'list.confirmation_token'} . '/'; 
+		
+		
+#		$labeled_data{'list_unsubscribe_link'} = $self->unsub_obj->unsub_link(
+#			{
+#				-mid   => $labeled_data{message_id}, 
+#				-email => $subscriber_vars->{'subscriber.email'}
+#			}
+#		);
+#		warn q{$labeled_data{'list_unsubscribe_link'} } . $labeled_data{'list_unsubscribe_link'}; 
 	my $merge_fields = $self->{merge_fields};
         
     my $i = 0;
@@ -2887,8 +2901,7 @@ sub _mail_merge {
             $subscriber_vars->{'subscriber.' . $merge_fields->[$i]} = $data->[$i];       
         }
         else { 
-		  	 $subscriber_vars->{'subscriber.' . $merge_fields->[$i]} = $self->{field_attr}->{$merge_fields->[$i]}->{fallback_value};  
-          
+		  	 $subscriber_vars->{'subscriber.' . $merge_fields->[$i]} = $self->{field_attr}->{$merge_fields->[$i]}->{fallback_value};   
         }
     }
 
@@ -3047,75 +3060,87 @@ sub _massaged_for_archive {
 sub _log_sub_count {
 
     my $self = shift;
-
-    my %args = (
-        -msg_id          => undef,
-        -num_subscribers => 0,
-        @_
-    );
-
+	my ($args) = @_; 
+	
     return
       if $self->list_type ne 'list';
 
     return
       if $self->mass_test;
 
+    my $log_it = 0;
 
-	require DADA::Logging::Clickthrough;
-	my $r = DADA::Logging::Clickthrough->new(
-	    {
-	        -list => $self->{list},
-	        -ls   => $self->{ls},
-	    }
-	);
-	return if ! $r->enabled; 
+    require DADA::Logging::Clickthrough;
+    my $r = DADA::Logging::Clickthrough->new(
+        {
+            -list => $self->{list},
+            -ls   => $self->{ls},
+        }
+    );
+    return if !$r->enabled;
+
+    my $msg_id = $args->{-msg_id};
+    $msg_id =~ s/\<|\>//g;
+    $msg_id =~ s/\.(.*)//;
+
+    my $num_subscribers      = $args->{-num_subscribers};
+	my $num_total_recipients = $args->{-num_total_recipients}; 
 	
-	
-	my $msg_id = $args{-msg_id};
-	   $msg_id =~ s/\<|\>//g;
-	   $msg_id =~ s/\.(.*)//;
-	my $num_subscribers = $args{-num_subscribers};
-    
-	warn 'logged_sc is returning, "' . $r->logged_sc({-mid => $msg_id}) . '"'
-		if $t; 
-		
+    warn 'logged_sc is returning, "'
+      . $r->logged_sc( { -mid => $msg_id } ) . '"'
+      if $t;
+
     if ( $self->restart_with ) {
-		if($r->logged_sc({-mid => $msg_id})){ 
-        	# We got it. 
-			return;
-		}
-		else { 
-			# We don't got it?!
-			warn '_log_sub_count: $msg_id: ' 
-	          . $msg_id
-	          . '$num_subscribers:'
-	          . $num_subscribers
-	          if $t;
-	        $r->sc_log(
-	            {
-	                -mid => $msg_id,
-	                -num => $num_subscribers
-	            }
-	        );	
-		}
+        if ( $r->logged_sc( { -mid => $msg_id } ) ) {
+            # We got it.
+            $log_it = 0;
+        }
+        else {
+            # We don't got it?!
+            warn '_log_sub_count: $msg_id: '
+              . $msg_id
+              . '$num_subscribers:'
+              . $num_subscribers
+              if $t;
+            $log_it = 1;
+        }
     }
     else {
-
-		warn '_log_sub_count: $msg_id: ' 
+        warn '_log_sub_count: $msg_id: '
           . $msg_id
           . '$num_subscribers:'
           . $num_subscribers
           if $t;
+        $log_it = 1;
+
+    }
+
+    if ( $log_it == 1 ) {
         $r->sc_log(
             {
                 -mid => $msg_id,
                 -num => $num_subscribers
             }
         );
-
+        $r->sc_log(
+            {
+                -mid => $msg_id,
+                -num => $num_subscribers,
+            }
+        );
+        $r->total_recipients_log(
+            {
+                -mid => $msg_id,
+                -num => $num_total_recipients,
+            }
+        );
+    }
+    else {
+		#... 
     }
 
 }
+
 
 
 

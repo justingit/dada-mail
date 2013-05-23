@@ -241,85 +241,88 @@ sub key_exists {
 
 sub r_log {
 
-    my $self      = shift; 
+    my $self      = shift;
     my ($args)    = @_;
-	my $timestamp = undef; 
-	if(exists($args->{-timestamp})){ 
-		$timestamp = $args->{-timestamp};
-	}
-	my $atts = {};
-	if(exists($args->{-atts})){ 
-		$atts = $args->{-atts};
-	}
-	
-	my $remote_address = undef; 
-	if(!exists($args->{-remote_addr})){ 
-		$remote_address = $self->remote_addr;
-		$args->{-remote_addr} = $remote_address; 
-	}
-	else { 
-		$remote_address = $args->{-remote_addr}; 
-	}
+    my $timestamp = undef;
+    if ( exists( $args->{-timestamp} ) ) {
+        $timestamp = $args->{-timestamp};
+    }
+    my $atts = {};
+    if ( exists( $args->{-atts} ) ) {
+        $atts = $args->{-atts};
+    }
 
-	if(!exists($args->{-email})){ 
-		$args->{-email} = ''; 
-	}
-	
-	if ( $self->{ls}->param('enable_open_msg_logging') == 1 ) {
-		my $recorded_open_recently = 1; 
-		try {
-			$recorded_open_recently = $self->_recorded_open_recently($args);
-		} catch {
-			carp "Couldn't execute, '_recorded_open_recently', : $_";
-		};
-		if($recorded_open_recently <= 0) { 
-			$self->o_log($args); 
-		}
-	}
-			
-    if ( $self->{ls}->param('clickthrough_tracking') == 1 ) {
-        my $place_holder_string = '';
-        my $sql_snippet         = '';
-
-        my @values    = ();
-        my $fields    = $self->custom_fields;
-        my $lt_fields = {};
-        foreach (@$fields) {
-            $lt_fields->{$_} = 1;
-        }
-
-        foreach ( keys %$atts ) {
-            if ( exists( $lt_fields->{$_} ) ) {
-                push( @values, $atts->{$_} );
-                $place_holder_string .= ' ,?';
-                $sql_snippet .= ' ,' . $_;
-            }
-        }
-		my $ts_snippet = ''; 
-		if(defined($timestamp)){ 
-			$ts_snippet = 'timestamp,'; 
-			$place_holder_string .= ' ,?';
-		}
-        my $query =
-            'INSERT INTO ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} .'(list,' . $ts_snippet .'remote_addr, msg_id, url, email'
-          . $sql_snippet
-          . ') VALUES (?, ?, ?, ?, ?'
-          . $place_holder_string . ')';
-
-        my $sth = $self->{dbh}->prepare($query);
-        if(defined($timestamp)){ 
-			$sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, $args->{-url}, $args->{-email}, @values );
-		}
-		else { 
-			$sth->execute($self->{name}, $remote_address, $args->{-mid}, $args->{-url}, $args->{-email}, @values );			
-		}
-        $sth->finish;
-
-        return 1;
+    my $remote_address = undef;
+    if ( !exists( $args->{-remote_addr} ) ) {
+        $remote_address = $self->remote_addr;
+        $args->{-remote_addr} = $remote_address;
     }
     else {
-        return 0;
+        $remote_address = $args->{-remote_addr};
     }
+
+    if ( !exists( $args->{-email} ) ) {
+        $args->{-email} = '';
+    }
+
+    my $recorded_open_recently = 1;
+    try {
+        $recorded_open_recently = $self->_recorded_open_recently($args);
+    }
+    catch {
+        carp "Couldn't execute, '_recorded_open_recently', : $_";
+    };
+    if ( $recorded_open_recently <= 0 ) {
+        $self->o_log($args);
+    }
+
+    my $place_holder_string = '';
+    my $sql_snippet         = '';
+
+    my @values    = ();
+    my $fields    = $self->custom_fields;
+    my $lt_fields = {};
+    foreach (@$fields) {
+        $lt_fields->{$_} = 1;
+    }
+
+    foreach ( keys %$atts ) {
+        if ( exists( $lt_fields->{$_} ) ) {
+            push( @values, $atts->{$_} );
+            $place_holder_string .= ' ,?';
+            $sql_snippet .= ' ,' . $_;
+        }
+    }
+    my $ts_snippet = '';
+    if ( defined($timestamp) ) {
+        $ts_snippet = 'timestamp,';
+        $place_holder_string .= ' ,?';
+    }
+    my $query =
+        'INSERT INTO '
+      . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table}
+      . '(list,'
+      . $ts_snippet
+      . 'remote_addr, msg_id, url, email'
+      . $sql_snippet
+      . ') VALUES (?, ?, ?, ?, ?'
+      . $place_holder_string . ')';
+
+    my $sth = $self->{dbh}->prepare($query);
+    if ( defined($timestamp) ) {
+        $sth->execute( $self->{name}, $timestamp, $remote_address,
+            $args->{-mid}, $args->{-url}, $args->{-email}, @values );
+    }
+    else {
+        $sth->execute(
+            $self->{name}, $remote_address, $args->{-mid},
+            $args->{-url}, $args->{-email}, @values
+        );
+    }
+    $sth->finish;
+
+    return 1;
+
 }
 
 
@@ -379,53 +382,53 @@ sub _recorded_open_recently {
 
 
 sub o_log {
-	my $self      = shift; 
+    my $self      = shift;
     my ($args)    = @_;
-	my $timestamp = undef; 
-	if(exists($args->{-timestamp})){ 
-		$timestamp = $args->{-timestamp};
-	}
-	if(!exists($args->{-email})){ 
-		$args->{-email} = '';
-	}
-	
-	my $ts_snippet = ''; 
-	my $place_holder_string = ''; 
-	
-	if(defined($timestamp)){ 
-		$ts_snippet = 'timestamp,'; 
-		$place_holder_string .= ' ,?';
-	}
-	my $remote_address = undef; 
-	if(!exists($args->{-remote_addr})){ 
-		$remote_address = $self->remote_addr;
-	}
-	else { 
-		$remote_address = $args->{-remote_addr}; 
-	}
-	
-    if ( $self->{ls}->param('enable_open_msg_logging') == 1 ) {
-        my $query = 'INSERT INTO ' 
-		. $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} 
-		.'(list, ' 
-		. $ts_snippet 
-		. 'remote_addr, msg_id, event, email) VALUES (?, ?, ?, ?, ?' 
-		. $place_holder_string 
-		.')';
-		
-        my $sth = $self->{dbh}->prepare($query);
-		if(defined($timestamp)){ 
-			$sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, 'open', $args->{-email});
-		}
-		else { 
-			$sth->execute($self->{name}, $remote_address, $args->{-mid}, 'open', $args->{-email});
-        }
-		$sth->finish;
-        return 1;
+    my $timestamp = undef;
+    if ( exists( $args->{-timestamp} ) ) {
+        $timestamp = $args->{-timestamp};
+    }
+    if ( !exists( $args->{-email} ) ) {
+        $args->{-email} = '';
+    }
+
+    my $ts_snippet          = '';
+    my $place_holder_string = '';
+
+    if ( defined($timestamp) ) {
+        $ts_snippet = 'timestamp,';
+        $place_holder_string .= ' ,?';
+    }
+    my $remote_address = undef;
+    if ( !exists( $args->{-remote_addr} ) ) {
+        $remote_address = $self->remote_addr;
     }
     else {
-        return 0;
+        $remote_address = $args->{-remote_addr};
     }
+
+    my $query =
+        'INSERT INTO '
+      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+      . '(list, '
+      . $ts_snippet
+      . 'remote_addr, msg_id, event, email) VALUES (?, ?, ?, ?, ?'
+      . $place_holder_string . ')';
+
+    my $sth = $self->{dbh}->prepare($query);
+    if ( defined($timestamp) ) {
+        $sth->execute( $self->{name}, $timestamp, $remote_address,
+            $args->{-mid}, 'open', $args->{-email} );
+    }
+    else {
+        $sth->execute(
+            $self->{name}, $remote_address, $args->{-mid},
+            'open',        $args->{-email}
+        );
+    }
+    $sth->finish;
+    return 1;
+
 }
 
 sub sc_log {
@@ -476,6 +479,58 @@ sub sc_log {
 
     return 1;
 }
+
+
+
+sub total_recipients_log {
+    my $self      = shift;
+    my ($args)    = @_;
+    my $timestamp = undef;
+    if ( exists( $args->{-timestamp} ) ) {
+        $timestamp = $args->{-timestamp};
+    }
+    my $ts_snippet          = '';
+    my $place_holder_string = '';
+
+    if ( defined($timestamp) ) {
+        $ts_snippet = 'timestamp,';
+        $place_holder_string .= ' ,?';
+    }
+
+    my $remote_address = undef;
+    if ( !exists( $args->{-remote_addr} ) ) {
+        $remote_address = $self->remote_addr;
+    }
+    else {
+        $remote_address = $args->{-remote_addr};
+    }
+
+    my $query =
+        'INSERT INTO '
+      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+      . '(list, '
+      . $ts_snippet
+      . 'remote_addr, msg_id, event, details) VALUES (?, ?, ?, ?, ?'
+      . $place_holder_string . ')';
+
+    my $sth = $self->{dbh}->prepare($query);
+    if ( defined($timestamp) ) {
+        $sth->execute(
+            $self->{name}, $timestamp,        $remote_address,
+            $args->{-mid}, 'total_recipients', $args->{-num}
+        ) or carp "cannot do statement! $DBI::errstr\n";
+    }
+    else {
+        $sth->execute(
+            $self->{name},     $remote_address, $args->{-mid},
+            'total_recipients', $args->{-num}
+        ) or carp "cannot do statement! $DBI::errstr\n";
+    }
+    $sth->finish;
+
+    return 1;
+}
+
 
 
 
@@ -540,26 +595,22 @@ sub forward_to_a_friend_log {
 	}
 	
 	
-    if ( $self->{ls}->param('enable_forward_to_a_friend_logging') == 1 ) {
-		my $query =
+	my $query =
 'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'remote_addr, msg_id, event) VALUES (?, ?, ?, ?' . $place_holder_string . ')';
-        
-		my $sth = $self->{dbh}->prepare($query);
-		if(defined($timestamp)){ 
-	        $sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, 'forward_to_a_friend') 
-				or carp "cannot do statement! $DBI::errstr\n";
-		}
-		else { 
-	        $sth->execute($self->{name}, $remote_address, $args->{-mid}, 'forward_to_a_friend') 
-				or carp "cannot do statement! $DBI::errstr\n";;			
-		}
-        $sth->finish;
+       
+	my $sth = $self->{dbh}->prepare($query);
+	if(defined($timestamp)){ 
+        $sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, 'forward_to_a_friend') 
+			or carp "cannot do statement! $DBI::errstr\n";
+	}
+	else { 
+        $sth->execute($self->{name}, $remote_address, $args->{-mid}, 'forward_to_a_friend') 
+			or carp "cannot do statement! $DBI::errstr\n";;			
+	}
+       $sth->finish;
 
-        return 1;
-    }
-    else {
-        return 0;
-    }
+       return 1;
+   
 }
 
 
@@ -589,7 +640,6 @@ sub view_archive_log {
 	}
 
 
-    if ( $self->{ls}->param('enable_view_archive_logging') == 1 ) {
 		my $query =
 'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'remote_addr, msg_id, event) VALUES (?, ?, ?, ?' . $place_holder_string . ')';
 
@@ -605,10 +655,7 @@ sub view_archive_log {
         $sth->finish;
 
         return 1;
-    }
-    else {
-        return 0;
-    }
+    
 }
 
 
@@ -616,14 +663,92 @@ sub view_archive_log {
 
 
 sub bounce_log {
-   # my ( $self, $type, $mid, $email ) = @_;
 
+    # my ( $self, $type, $mid, $email ) = @_;
+
+    my $self      = shift;
+    my ($args)    = @_;
+    my $timestamp = undef;
+    if ( exists( $args->{-timestamp} ) ) {
+        $timestamp = $args->{-timestamp};
+    }
+    my $ts_snippet          = '';
+    my $place_holder_string = '';
+
+    if ( defined($timestamp) ) {
+        $ts_snippet = 'timestamp,';
+        $place_holder_string .= ' ,?';
+    }
+
+    my $remote_address = undef;
+    if ( !exists( $args->{-remote_addr} ) ) {
+        $remote_address = $self->remote_addr;
+    }
+    else {
+        $remote_address = $args->{-remote_addr};
+    }
+
+    my $bounce_type = '';
+    if ( $args->{-type} eq 'hard' ) {
+        $bounce_type = 'hard_bounce';
+    }
+    else {
+        $bounce_type = 'soft_bounce';
+    }
+    my $query =
+        'INSERT INTO '
+      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+      . '(list, '
+      . $ts_snippet
+      . 'remote_addr, msg_id, event, details) VALUES (?, ?, ?, ?, ?'
+      . $place_holder_string . ')';
+    my $sth = $self->{dbh}->prepare($query);
+
+    if ( defined($timestamp) ) {
+        $sth->execute(
+            $self->{name}, $timestamp,   $remote_address,
+            $args->{-mid}, $bounce_type, $args->{-email}
+        );
+    }
+    else {
+        $sth->execute(
+            $self->{name}, $remote_address, $args->{-mid},
+            $bounce_type,  $args->{-email}
+        );
+
+    }
+    $sth->finish;
+
+    close(LOG);
+    return 1;
+
+}
+
+
+
+
+sub unsubscribe_log { 
 	my $self      = shift; 
-	my ($args)    = @_;
+    my ($args)    = @_;
 	my $timestamp = undef; 
 	if(exists($args->{-timestamp})){ 
 		$timestamp = $args->{-timestamp};
 	}
+	if(!exists($args->{-email})){ 
+		$args->{-email} = '';
+	}
+	
+	
+		my $recorded_open_recently = 1; 
+		try {
+			$recorded_open_recently = $self->_recorded_open_recently($args);
+		} catch {
+			carp "Couldn't execute, '_recorded_open_recently', : $_";
+		};
+		if($recorded_open_recently <= 0) { 
+			$self->o_log($args); 
+		}
+		
 	my $ts_snippet = ''; 
 	my $place_holder_string = ''; 
 	
@@ -631,7 +756,6 @@ sub bounce_log {
 		$ts_snippet = 'timestamp,'; 
 		$place_holder_string .= ' ,?';
 	}
-	
 	my $remote_address = undef; 
 	if(!exists($args->{-remote_addr})){ 
 		$remote_address = $self->remote_addr;
@@ -640,44 +764,24 @@ sub bounce_log {
 		$remote_address = $args->{-remote_addr}; 
 	}
 	
-    if ( $self->{ls}->param('enable_bounce_logging') == 1 ) {
-
-        my $bounce_type = '';
-        if ( $args->{-type} eq 'hard' ) {
-            $bounce_type = 'hard_bounce';
-        }
-		else { 
-			$bounce_type = 'soft_bounce';
-		}
-# DEV: 		
-# Right now, things are only reported as hard, or soft. 
-#        elsif ( $args->{-type} eq 'soft' ) {
-#         {
-#            $bounce_type = 'soft_bounce';
-#        }
-#		else { 
-#           $bounce_type = 'other';			
-#		}
-#
-
-        my $query = 'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'remote_addr, msg_id, event, details) VALUES (?, ?, ?, ?, ?' . $place_holder_string . ')';
+        my $query = 'INSERT INTO ' 
+		. $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} 
+		.'(list, ' 
+		. $ts_snippet 
+		. 'remote_addr, msg_id, event, email) VALUES (?, ?, ?, ?, ?' 
+		. $place_holder_string 
+		.')';
+		
         my $sth = $self->{dbh}->prepare($query);
-
 		if(defined($timestamp)){ 
-        	$sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, $bounce_type, $args->{-email} );
+			$sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, 'unsubscribe', $args->{-email});
 		}
 		else { 
-			$sth->execute($self->{name}, $remote_address, $args->{-mid}, $bounce_type, $args->{-email} );
-	        
-		}
-        $sth->finish;
-
-        close(LOG);
+			$sth->execute($self->{name}, $remote_address, $args->{-mid}, 'unsubscribe', $args->{-email});
+        }
+		$sth->finish;
         return 1;
-    }
-    else {
-        return 0;
-    }
+		
 }
 
 sub unique_and_dupe {
@@ -810,13 +914,6 @@ sub report_by_message_index {
 			$report->{$msg_id}->{$_} = $basic_event_counts->{$_};
 		}
 		
-	        my $num_sub_query =
-	'SELECT details FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND msg_id = ? AND event = ?';
-
-			#my $nst = time; 
-	        $report->{$msg_id}->{num_subscribers} = $self->{dbh}->selectcol_arrayref( $num_sub_query, { MaxRows => 1 }, $self->{name}, $msg_id, 'num_subscribers' )->[0];
-			#warn 'total num_sub time:' . (time - $nst); 
-			
 	    }
 
 	    require DADA::MailingList::Archives;
@@ -824,11 +921,10 @@ sub report_by_message_index {
 
 	    # Now, sorted:
 	    for ( sort { $b <=> $a } keys %$report ) {
-	        $report->{$_}->{mid} = $_;    # this again.
-	        $report->{$_}->{date} =
-	          DADA::App::Guts::date_this( -Packed_Date => $_, );
+	        $report->{$_}->{mid}           = $_;    # this again.
+	        $report->{$_}->{date}          = DADA::App::Guts::date_this( -Packed_Date => $_, );
 			$report->{$_}->{S_PROGRAM_URL} = $DADA::Config::S_PROGRAM_URL; 
-			$report->{$_}->{list} = $self->{name}; 
+			$report->{$_}->{list}          = $self->{name}; 
 	        if ( $mja->check_if_entry_exists($_) ) {
 	            $report->{$_}->{message_subject} = $mja->get_archive_subject($_)
 	              || $_;
@@ -873,19 +969,196 @@ sub msg_basic_event_count {
         hard_bounce         => 1,
         forward_to_a_friend => 1,
         view_archive        => 1,
+		unsubscribe         => 1, 
     );
-	
 	my $basic_count_query = 'SELECT msg_id, event, COUNT(*) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? GROUP BY msg_id, event';
 	my $sth              = $self->{dbh}->prepare($basic_count_query);
        $sth->execute( $self->{name}, $msg_id);
-
     while ( my ( $m, $e, $c ) = $sth->fetchrow_array ) {
 		if($ok_events{$e}){ 
 			$basic_events->{$e} = $c; 
 		}
 	}
+	$sth->finish; 
+	undef $sth; 
+	
+	# num subscribers
+ 	my $num_sub_query = 'SELECT details FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND msg_id = ? AND event = ?';
+	$basic_events->{num_subscribers} = $self->{dbh}->selectcol_arrayref( $num_sub_query, { MaxRows => 1 }, $self->{name}, $msg_id, 'num_subscribers' )->[0];
+	# total recipients
+ 	my $total_recipients_query = 'SELECT details FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND msg_id = ? AND event = ?';
+	$basic_events->{total_recipients} = $self->{dbh}->selectcol_arrayref( $total_recipients_query, { MaxRows => 1 }, $self->{name}, $msg_id, 'total_recipients' )->[0];
+	# num subscribers
+	if(! defined($basic_events->{total_recipients}) || $basic_events->{total_recipients} eq ''){ 
+		$basic_events->{total_recipients} = $basic_events->{num_subscribers};
+	}
+	
+	
+	
+	# Unique Opens
+	my $uo_query = 'SELECT msg_id, event, email, COUNT(*) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? and event = \'open\' GROUP BY msg_id, event, email'; 
+	my $uo_count  = 0; 
+	my $sth      = $self->{dbh}->prepare($uo_query);
+       $sth->execute( $self->{name}, $msg_id);
+	# Just counting what gets returned. 
+	while ( my ( $m, $e, $c ) = $sth->fetchrow_array ) {
+		$uo_count++; 
+	}
+	$basic_events->{unique_open} = $uo_count; 
+	$sth->finish; 
+	# /Unique Opens
+	$basic_events->{unique_opens_percent}          
+		= $self->percentage($basic_events->{'unique_open'}, 
+			($basic_events->{total_recipients} - ($basic_events->{'soft_bounce'} + $basic_events->{'hard_bounce'}))
+	);
+	 
+	$basic_events->{unique_unsubscribes_percent}   = $self->percentage($basic_events->{'unsubscribe'}, $basic_events->{total_recipients}); 
+	
+	$basic_events->{unique_soft_bounces_percent}   = $self->percentage(int($basic_events->{'soft_bounce'}), $basic_events->{total_recipients}); 
+	$basic_events->{unique_hard_bounces_percent}   = $self->percentage(int($basic_events->{'hard_bounce'}), $basic_events->{total_recipients}); 
+	$basic_events->{unique_bounces_percent}        = $self->percentage(int($basic_events->{'soft_bounce'} + $basic_events->{'hard_bounce'}), $basic_events->{total_recipients}); 
 	
 	return $basic_events;
+
+}
+
+
+sub msg_basic_event_count_json { 
+	
+
+	
+    my $self          = shift;
+	my ($args)        = @_;
+	
+	if(!exists($args->{-printout})){ 
+		$args->{-printout} = 0;
+	}
+	my $json; 
+	
+	require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new; 
+
+	$json = $dc->retrieve(
+		{
+			-list    => $self->{name}, 
+			-name    => 'msg_basic_event_count_json' . '.' . $args->{-mid} . '.' . $args->{-type}, 
+		}
+	);
+	
+
+	if(! defined($json)){ 
+
+		my $report = $self->msg_basic_event_count($args->{-mid});	
+
+		require Data::Google::Visualization::DataTable; 
+		my $datatable = Data::Google::Visualization::DataTable->new();
+
+		$datatable->add_columns(
+		       { id => 'category',   label => "Category",      type => 'string',},
+		       { id => 'number',     label => "Number",        type => 'number',},
+		);
+
+
+		if($args->{-type} eq 'opens') { 
+			$datatable->add_rows(
+		        [
+		               { v => 'Unique Opens' },
+		               { v => $report->{unique_opens_percent} },
+		       ],
+			);
+			$datatable->add_rows(
+		        [
+		               { v => 'Unopened' },
+		               { v => (100 - int($report->{unique_opens_percent})) },
+		       ],
+			);
+			
+			
+		}
+		elsif($args->{-type} eq 'unsubscribes') { 
+			$datatable->add_rows(
+		        [
+		               { v => 'Unsubscribes' },
+		               { v => $report->{unique_unsubscribes_percent} },
+		       ],
+			);
+			$datatable->add_rows(
+		        [
+		               { v => 'Still Subscribed' },
+		               { v => (100 - int($report->{unique_unsubscribes_percent})) },
+		       ],
+			);
+			
+			
+		}
+		elsif($args->{-type} eq 'bounces') {
+			$datatable->add_rows(
+		        [
+		               { v => 'Soft Bounces' },
+		               { v => $report->{unique_soft_bounces_percent} },
+		       ],
+			);
+			$datatable->add_rows(
+		        [
+		               { v => 'Hard Bounces' },
+		               { v => $report->{unique_hard_bounces_percent} },
+		       ],
+			);
+			$datatable->add_rows(
+		        [
+		               { v => 'Delivered' },
+		               { v => (100 - ($report->{unique_soft_bounces_percent} + $report->{unique_hard_bounces_percent})) },
+		       ],
+			);		
+		}
+
+
+		$json = $datatable->output_javascript(
+			pretty  => 1,
+		);
+		$dc->cache(
+			{ 
+				-list    => $self->{name}, 
+				-name    => 'msg_basic_event_count_json' . '.' . $args->{-mid} . '.' . $args->{-type}, 
+				-data    => \$json, 
+			}
+		);
+		
+	}
+	
+	if($args->{-printout} == 1){ 
+		require CGI; 
+		my $q = CGI->new; 
+		print $q->header(
+			'-Cache-Control' => 'no-cache, must-revalidate',
+			-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
+			-type            =>  'application/json',
+		);
+		print $json; 
+	}
+	else { 
+		return $json; 
+	}
+	
+	
+}
+
+sub percentage { 
+	my $self = shift; 
+	my $num  = shift; 
+	my $total = shift; 
+	my $p     = 0; 
+; 
+	
+	return 0 unless $total > 0; 
+	try { 
+		$p =  int(int($num)/int($total) * 100); 
+	} catch { 
+		carp "problems finding percentage: $_"; 
+	};
+
+	
+	return $p; 
 }
 
 sub report_by_message {
@@ -897,19 +1170,10 @@ sub report_by_message {
     my $report   = {};
     my $l;
 		
-    my $num_sub_query =
-        'SELECT details FROM '
-      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
-      . ' WHERE list = ? AND msg_id = ? AND event = ?';
-    $report->{num_subscribers} =
-      $self->{dbh}->selectcol_arrayref( $num_sub_query, { MaxRows => 1 },
-        $self->{name}, $mid, 'num_subscribers' )->[0];
-
 	my $basic_event_counts = $self->msg_basic_event_count($mid); 
 	for(keys %$basic_event_counts) { 
 		$report->{$_} = $basic_event_counts->{$_};
 	}
-
 
     my $url_clickthroughs_query =
         'SELECT url, COUNT(url) AS count FROM '
@@ -1065,6 +1329,9 @@ sub can_use_country_geoip_data {
 
 
 sub ip_data { 
+	
+	# Todo: add email stuff to that. 
+	# Remember bounces and everything else use a different column for email address!
 	my $self   = shift; 
 	my ($args) = @_; 
 
@@ -1602,6 +1869,9 @@ sub data_over_time {
 	elsif($args->{-type} eq 'view_archive') { 
 		$query = 'SELECT timestamp FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'view_archive\' AND list = ? '; 					
 	}
+	elsif($args->{-type} eq 'unsubscribes') { 
+		$query = 'SELECT timestamp FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'unsubscribe\' AND list = ? '; 					
+	}
 	 
 	if($mid){ 
 		$query .= ' AND msg_id = ?'; 
@@ -1705,53 +1975,85 @@ sub data_over_time_json {
 
 
 
-sub message_bounce_report { 
-	
-	my $self = shift; 
-	my ($args) = @_; 
-	
-	if(!exists($args->{-mid})){ 
-		croak "You MUST pass the, '-mid' paramater!"; 
-	}
-	my $mid = $args->{-mid};
-	my $type = 'soft'; 
-	if(exists($args->{-bounce_type})){ 
-		$type = $args->{-bounce_type};
-	}
-	
-        my $bounce_query =
-            'SELECT timestamp, details from '
-          . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
-          . ' WHERE list = ? AND msg_id = ? AND event = ? ORDER BY details';
-        my $sth = $self->{dbh}->prepare($bounce_query);
+sub message_email_report {
 
-        $sth->execute( $self->{name}, $mid, $type . '_bounce' );
-        my @bounce_report = ();
-        while (my $row = $sth->fetchrow_hashref ) {
-            my ( $name, $domain ) = split( '@', $row->{details} );
-            push(
-                @bounce_report,
-                {
-                    timestamp    => $row->{timestamp},
-                    email        => $row->{details},
-                    email_name   => $name,
-                    email_domain => $domain,
-                }
-            );
-        }		
-        # sort by domain...
-        my @sorted = map { $_->[0] }
-          sort { $a->[1] cmp $b->[1] }
-          map { [ $_, $_->{email_domain} ] } @bounce_report;
-        $sth->finish;
+    my $self = shift;
+    my ($args) = @_;
 
-		return [@sorted]; 
-		
+    # warn '$args->{-type} ' . $args->{-type};
+    if ( !exists( $args->{-mid} ) ) {
+        croak "You MUST pass the, '-mid' paramater!";
+    }
+    my $mid  = $args->{-mid};
+    my $type = undef;
+
+    if ( exists( $args->{-type} ) ) {
+        $type = $args->{-type};
+    }
+    else {
+        croak 'you MUST pass -type!';
+    }
+
+	my $email_col = undef; 
+	
+	# Guh.
+	if($type =~ m/bounce/) { 
+		$email_col = 'details'; 
+	}
+	elsif($type =~ m/unsubscribe/){ 
+		$email_col = 'email';
+	}
+	
+    my $query =
+        'SELECT timestamp, ' . $email_col . ' from '
+      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+      . ' WHERE list = ? AND msg_id = ? AND event  = ? ORDER BY ' . $email_col;
+
+	warn 'Query: ' . $query
+		if $t; 
+
+    my $sth = $self->{dbh}->prepare($query);
+
+    $sth->execute( $self->{name}, $mid, $type );
+    my @report = ();
+    while ( my $row = $sth->fetchrow_hashref ) {
+        my ( $name, $domain ) = split( '@', $row->{$email_col} );
+        push(
+            @report,
+            {
+                timestamp    => $row->{timestamp},
+                email        => $row->{$email_col},
+                email_name   => $name,
+                email_domain => $domain,
+            }
+        );
+    }
+
+    # sort by domain...
+    my @sorted = map { $_->[0] }
+      sort { $a->[1] cmp $b->[1] }
+      map { [ $_, $_->{email_domain} ] } @report;
+    $sth->finish;
+
+	use Data::Dumper; 
+	warn Dumper(\@sorted); 
+	
+    return [@sorted];
+
 }
-sub message_bounce_report_table { 
+sub message_email_report_table { 
 	my $self   = shift; 
 	my ($args) = @_; 
 	my $html; 
+	
+	# warn '$args->{-type} ' . $args->{-type}; 
+	if(! exists($args->{-type})){ 
+		croak 'you MUST pass -type!'; 
+	}
+	
+	if(! exists($args->{-vars})){ 
+		$args->{-vars} = {}; 
+	}
 	
 	require DADA::App::DataCache; 
 	my $dc = DADA::App::DataCache->new; 
@@ -1759,34 +2061,40 @@ sub message_bounce_report_table {
 	$html = $dc->retrieve(
 		{
 			-list    => $self->{name}, 
-			-name    => 'message_bounce_report_table' . '.' . $args->{-mid} . '.' . $args->{-bounce_type} , 
+			-name    => 'message_email_report_table' . '.' . $args->{-mid} . '.' . $args->{-type} , 
 		}
 	);
 	if(! defined($html)){ 
 	
 		my $title; 
-		if($args->{-bounce_type} eq 'soft'){ 
-			$title => 'Soft'; 
+		if($args->{-type} eq 'soft_bounce'){ 
+			$title = 'Soft Bounces'; 
 		}
-		else { 
-			$title => 'Hard'; 
+		elsif($args->{-type} eq 'hard_bounce'){ 
+			$title = 'Hard Bounces'; 
 		}
-		my $report = $self->message_bounce_report($args);
+		elsif($args->{-type} eq 'unsubscribe'){ 
+			$title = 'Unsubscribes'; 
+		}
+		my $report = $self->message_email_report($args);
 		require DADA::Template::Widgets; 
 	    $html = DADA::Template::Widgets::screen(
 	        {
-	            -screen           => 'plugins/tracker/message_bounce_report_table.tmpl',
+	            -screen           => 'plugins/tracker/message_email_report_table.tmpl',
+				-expr => 1, 
 	            -vars => {
-					bounce_report => $report, 
-					num_bounces   => scalar(@$report), 
+					type          => $args->{-type},
+					report        => $report, 
+					num           => scalar(@$report), 
 					title         => $title,  
+					%{$args->{-vars}}, 
 	            },
 	        }
 	    );	
 		$dc->cache(
 			{ 
 				-list    => $self->{name}, 
-				-name    => 'message_bounce_report_table' . '.' . $args->{-mid} . '.' . $args->{-bounce_type} , 
+				-name    => 'message_email_report_table' . '.' . $args->{-mid} . '.' . $args->{-type} , 
 				-data    => \$html, 
 			}
 		);
@@ -1797,7 +2105,45 @@ sub message_bounce_report_table {
 }
 
 
-sub bounce_stats { 
+
+sub message_email_report_export_csv {
+	
+	my $self   = shift; 
+	my ($args) = @_; 
+	
+	if(! exists($args->{-type})){ 
+		croak 'you MUST pass -type!'; 
+	}
+	
+	if(!exists($args->{-fh})){ 
+		$args->{-fh} = \*STDOUT;
+	}
+	my $fh = $args->{-fh};
+	
+	require Text::CSV;
+    my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
+	my $report = []; 
+	
+	if($args->{-type} eq 'email_activity') { 
+		$report = $self->message_email_activity_listing($args);
+	
+	}
+	else { 
+		$report = $self->message_email_report($args);
+	}
+	
+	my $title_status = $csv->print($fh, ['email type: ' . $args->{-type}]);
+	print $fh "\n";
+	
+	for my $i_report(@$report){ 
+		my $email = $i_report->{email};
+		my $status = $csv->print( $fh, [$email] );
+        print $fh "\n";
+	}
+}
+
+
+sub email_stats { 
 	
 	my $self = shift; 
 	my ($args) = @_; 
@@ -1810,19 +2156,22 @@ sub bounce_stats {
 		$count = $args->{-count};
 	}
 	
-	my $type = 'soft'; 
-	if(exists($args->{-bounce_type})){ 
-		$type = $args->{-bounce_type};
+	my $type = undef; 
+	if(exists($args->{-type})){ 
+		$type = $args->{-type};
+	}
+	else { 
+		croak 'you MUST pass -type!'; 
 	}
 	
-	my $report = $self->message_bounce_report($args);
+	my $report = $self->message_email_report($args);
 	
 	
 	my $data = {};
 
-	for my $bounce_report(@$report ){ 
+	for my $report(@$report ){ 
 
-		my $email = $bounce_report->{email};
+		my $email = $report->{email};
 
 		my ($name, $domain) = split('@', $email); 
 		if(!exists($data->{$domain})){ 
@@ -1857,7 +2206,7 @@ sub bounce_stats {
 
 }
 
-sub bounce_stats_json { 
+sub email_stats_json { 
 	my $self = shift; 
 	my ($args) = @_; 
 	
@@ -1873,12 +2222,12 @@ sub bounce_stats_json {
 	$json = $dc->retrieve(
 		{
 			-list    => $self->{name}, 
-			-name    => 'bounce_stats_json' . '.' . $args->{-mid} . '.' . $args->{-count} . '.' . $args->{-bounce_type} , 
+			-name    => 'email_stats_json' . '.' . $args->{-mid} . '.' . $args->{-count} . '.' . $args->{-type} , 
 		}
 	);
 	
 	if(!defined($json)){ 
-		my $stats = $self->bounce_stats($args);
+		my $stats = $self->email_stats($args);
 	 
 
 		require         Data::Google::Visualization::DataTable;
@@ -1904,7 +2253,7 @@ sub bounce_stats_json {
 		$dc->cache(
 			{ 
 				-list    => $self->{name}, 
-				-name    => 'bounce_stats_json' . '.' . $args->{-mid} . '.' . $args->{-count} . '.' . $args->{-bounce_type} , 
+				-name    => 'email_stats_json' . '.' . $args->{-mid} . '.' . $args->{-count} . '.' . $args->{-type} , 
 				-data    => \$json, 
 			}
 		);
@@ -1926,6 +2275,263 @@ sub bounce_stats_json {
 	}
 	
 }
+
+sub message_email_activity_listing {
+	 
+	my $self   = shift; 
+	my ($args) = @_; 
+	
+	# mass mailing event log, no bounces
+	my $query = 'SELECT email, COUNT(email) as "count" FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? AND event != \'num_subscribers\' GROUP BY msg_id, email ORDER BY count DESC;'; 
+	my $sth = $self->{dbh}->prepare($query);
+	   $sth->execute( $self->{name}, $args->{-mid} )
+	      	or croak "cannot do statement! $DBI::errstr\n";
+	my $r; 
+	my $emails_events = {}; 
+	while (my $row = $sth->fetchrow_hashref ) {		
+    	$emails_events->{$row->{email}} = $row->{count}
+	}
+	$sth->finish; 
+	undef $sth; 
+
+	# mass mailing event log, bounces
+ 	$query = 'SELECT details, COUNT(event) as "count" FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? AND (event = \'soft_bounce\' OR event = \'hard_bounce\') GROUP BY msg_id, details ORDER BY count DESC;'; 
+	my $sth = $self->{dbh}->prepare($query);
+	   $sth->execute( $self->{name}, $args->{-mid} )
+	      	or croak "cannot do statement! $DBI::errstr\n";
+	my $r; 
+	my $emails_bounces = {}; 
+	while (my $row = $sth->fetchrow_hashref ) {
+    	$emails_bounces->{$row->{details}} = (int($row->{count}) * .5); # WEIGHTED (down)
+	}
+	$sth->finish; 
+	undef $sth; 
+	# mass mailing event log, bounces
+	
+	#
+	# I'm going to weigh Clickthroughs more than other things... 
+	#
+	# clickthrough log 
+	   $query = 'SELECT email, COUNT(email) as "count" FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ? AND msg_id = ?  GROUP BY msg_id, email ORDER BY count DESC;'; 
+	my $sth = $self->{dbh}->prepare($query);
+	   $sth->execute( $self->{name}, $args->{-mid} )
+	      	or croak "cannot do statement! $DBI::errstr\n";
+	my $r; 
+	my $emails_clicks = {}; 
+	while (my $row = $sth->fetchrow_hashref ) {
+    	$emails_clicks->{$row->{email}} = (int($row->{count}) * 5) # WEIGHTED!
+	}
+	$sth->finish; 
+	undef $sth; 
+	#/ clickthrough log 
+
+	my $folded = $emails_events; 
+	# now, fold 'em all up; 
+	foreach(keys %$emails_bounces){ 
+		if(exists($folded->{$_})){ 
+			$folded->{$_} = $folded->{$_} + $emails_bounces->{$_}; 
+		}
+		else { 
+			$folded->{$_} = $emails_bounces->{$_}; 
+		}
+	}
+	foreach(keys %$emails_clicks){ 
+		if(exists($folded->{$_})){ 
+			$folded->{$_} = $folded->{$_} + $emails_clicks->{$_}; 
+		}
+		else { 
+			$folded->{$_} = $emails_clicks->{$_}; 
+		}
+	}
+	
+	
+	# Sorted Index
+	my @index = sort { $folded->{$b} <=> $folded->{$a} } keys %$folded; 
+	my $sorted = []; 
+	foreach(@index){ 
+		next if !defined($_); 
+		next if $_ eq ''; 
+		push(@$sorted, {
+			email => $_, 
+			count => $folded->{$_}, 
+			});
+	}
+	return $sorted; 
+}
+
+sub message_email_activity_listing_table { 
+	my $self   = shift; 
+	my ($args) = @_; 
+	
+	if(! exists($args->{-vars})){ 
+		$args->{-vars} = {}; 
+	}
+	
+	my $html;
+		
+	require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new;  
+	$html = $dc->retrieve(
+		{
+			-list    => $self->{name}, 
+			-name    => 'message_email_activity_listing_table' . '.' . $args->{-mid}, 
+		}
+	);
+	
+	if(!defined($html)){ 
+			
+		my $report = $self->message_email_activity_listing($args);
+		require DADA::Template::Widgets; 
+	    $html = DADA::Template::Widgets::screen(
+	        {
+	            -screen           => 'plugins/tracker/message_email_report_table.tmpl',
+				-expr => 1, 
+	            -vars => {
+	#				type          => $args->{-type},
+					report        => $report, 
+					num           => scalar(@$report), 
+					title         => 'Subscriber Activity', 
+					label         => 'message_email_activity_listing_table',
+					show_count    => 1, 
+					%{$args->{-vars}},  
+	            },
+	        }
+	    );	
+	
+		$dc->cache(
+			{ 
+				-list    => $self->{name}, 
+				-name    => 'message_email_activity_listing_table' . '.' . $args->{-mid},
+				-data    => \$html, 
+			}
+		);
+	}
+	
+	use CGI qw(:standard); 
+	print header(); 
+	print $html;
+	
+}
+
+sub message_individual_email_activity_report {
+	my $self   = shift; 
+	my ($args) = @_; 
+	
+	my $email = $args->{-email}; 
+	my $mid   = $args->{-mid}; 
+	
+	my %labels = (
+		open                => 'Open', 
+		clickthrough        => 'Clickthrough', 
+		unsubscribe         => 'Unsubcribe', 
+		soft_bounce         => 'Soft Bounce', 
+		hard_bounce         => 'Hard Bounce', 
+	);
+	
+	my $return = []; 
+	my $event_query = 'SELECT timestamp, remote_addr, event FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? AND ((email = ?) OR (event LIKE \'%bounce\' AND details = ?)) ORDER BY timestamp DESC';
+    my $click_query = 'SELECT timestamp, remote_addr, url FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ? and msg_id = ? and email = ? ORDER BY timestamp DESC';
+		
+	my $sth = $self->{dbh}->prepare($event_query);
+	   $sth->execute($self->{name}, $mid, $email, $email);
+	my $row; 
+	while ( $row = $sth->fetchrow_hashref ) {
+		my $time = $self->timestamp_to_time($row->{timestamp});
+		push(
+			@$return, {
+			time        => $time, 
+			timestamp   => $row->{timestamp}, 
+			ctime       => scalar(localtime($time)), 
+			ip          => $row->{remote_addr}, 
+			event       => $row->{event}, 
+			event_label => $labels{$row->{event}},
+			}
+		); 
+	}
+	$sth->finish;
+	undef $row;  
+	undef $sth; 
+
+	my $sth = $self->{dbh}->prepare($click_query);
+	   $sth->execute($self->{name}, $mid, $email);
+	my $row; 
+	while ( $row = $sth->fetchrow_hashref ) {
+		
+		my $time = $self->timestamp_to_time($row->{timestamp});
+		push(
+			@$return, {
+			timestamp   => $row->{timestamp}, 
+			time        => $time, 
+			ctime       => scalar(localtime($time)), 
+			ip          => $row->{remote_addr}, 
+			event       => 'clickthrough', 
+			event_label => $labels{clickthrough},
+			url         => $row->{url},
+			}
+		); 
+	}
+	$sth->finish; 
+	undef $sth;	
+	
+	@$return = map { $_->[0] }
+      sort { $a->[1] <=> $b->[1] }
+      map { [ $_, $_->{'time'} ] } @$return;
+
+	
+	return $return;
+	
+}
+
+sub message_individual_email_activity_report_table { 
+	my $self   = shift; 
+	my ($args) = @_;
+	
+
+	
+	my $html;
+		
+	require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new;  
+	$html = $dc->retrieve(
+		{
+			-list    => $self->{name}, 
+			-name    => 'message_individual_email_activity_report' . '.' . $args->{-mid} . '.' . $args->{-email}, 
+		}
+	);
+	
+	if(!defined($html)){ 
+	
+		my $report = $self->message_individual_email_activity_report($args); 
+	
+		require DADA::Template::Widgets; 
+	    $html = DADA::Template::Widgets::screen(
+	        {
+	            -screen           => 'plugins/tracker/message_individual_email_activity_report_table.tmpl',
+				-expr => 1, 
+	            -vars => {
+					email         => $args->{-email}, 
+					report        => $report, 
+
+	            },
+	        }
+	    );	
+		$dc->cache(
+			{ 
+				-list    => $self->{name}, 
+				-name    => 'message_individual_email_activity_report' . '.' . $args->{-mid} . '.' . $args->{-email}, 
+				-data    => \$html, 
+			}
+		);
+	}
+
+	use CGI qw(:standard); 
+	print header(); 
+	print $html;	
+}
+
+
+
+
 
 
 

@@ -715,12 +715,10 @@ sub send_url_email {
             if($q->param('content_from') eq 'url'){ 
 				
 				#/ Redirect tag check
-				if($ls->param('clickthrough_tracking') == 1){ # optimize this, just because fetching a URL could be slow. 
 					require   LWP::Simple;
 					eval { $LWP::Simple::ua->agent('Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')'); }; 
 		            my $rtc = LWP::Simple::get($url);
 					return undef if redirect_tag_check($rtc, $list, $root_login) eq undef;
-				}
 				# Redirect tag check
 				
 				my $errors = undef; 
@@ -1598,38 +1596,34 @@ sub redirect_tag_check {
 	my ($str, $list, $root_login) = @_; 
 	require DADA::MailingList::Settings; 
 	my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-	if($ls->param('clickthrough_tracking') == 1){ 
-		require DADA::Logging::Clickthrough; 
-		my $ct = DADA::Logging::Clickthrough->new(
-			{
-				-list => $list,
-				-ls   => $ls, 
-			}
-		); 
-		if(! $ct->enabled){ 
-			return 1; 
+	require DADA::Logging::Clickthrough; 
+	my $ct = DADA::Logging::Clickthrough->new(
+		{
+			-list => $list,
+			-ls   => $ls, 
+		}
+	); 
+	if(! $ct->enabled){ 
+		return 1; 
 #			report_mass_mail_errors('Clickthrough is not enabled for this backend.', $list, $root_login);
 #			return undef;  
-		}
-		eval { 
-			$ct->check_redirect_urls(
-				{ 
-					-str         => $str, 
-					-raise_error => 1, 
-				}
-			); 
-		};
-		if($@){ 
-			report_mass_mail_errors($@, $list, $root_login);
-			return undef;  
-		}
-		else { 
-			return 1; 
-		}
+	}
+	eval { 
+		$ct->check_redirect_urls(
+			{ 
+				-str         => $str, 
+				-raise_error => 1, 
+			}
+		); 
+	};
+	if($@){ 
+		report_mass_mail_errors($@, $list, $root_login);
+		return undef;  
 	}
 	else { 
 		return 1; 
 	}
+
 }
 
 sub report_mass_mail_errors { 

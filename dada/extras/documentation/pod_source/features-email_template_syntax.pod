@@ -308,11 +308,6 @@ example.com
 
 =back
 
-A very special case happens with email messages that are sent for B<email subscription confirmations>, B<email unsubscriotion confirmations> and B<List Invitations>
-
-In these email messages you also have the option to use the, C<E<lt>!-- tmpl_var subscriber.pin --E<gt>> tag. This tag holds the B<pin number> used to subscribe and unsubscribe an email subscriber. 
-
-
 You can also access the subscriber's saved field values. For example, if you have a field named, B<first_name>, you can use the following tag: 
 
  <!-- tmpl_var subscriber.first_name -->

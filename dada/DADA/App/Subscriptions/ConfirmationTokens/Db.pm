@@ -128,6 +128,12 @@ sub num_tokens {
 
 }
 
+sub tokens { 
+	my $self = shift; 
+	my @k = keys %{$self->{DB_HASH}};
+	return [@k];
+}
+
 sub exists {
     my $self  = shift;
     my $token = shift;
@@ -143,10 +149,13 @@ sub exists {
 	
 }
 
-
+sub reset_timestamp_by_metadata { 
+	return undef; 
+}
 sub _remove_expired_tokens {
 	return 1; 
 }
+
 
 DESTROY {
 	my $self = shift; 

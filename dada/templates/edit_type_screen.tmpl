@@ -188,46 +188,7 @@
 	<textarea name="subscribed_message" id="subscribed_message" rows="10" cols="50" ><!-- tmpl_var list_settings.subscribed_message escape=HTML --></textarea> 
 	</p>
 </fieldset>
-<fieldset>
-	<legend>
-		Unsubscription Confirmation Email 
-	</legend>
-	<p>
-		This email is sent when someone requests to be unsubscribed from your list. 
-	</p>
-	
-	<!-- tmpl_if list_settings.unsub_confirm_email --> 
-			<p class="positive">Closed-Loop Opt-Out is Enabled.</p>
-	<!-- tmpl_else --> 
-		<p class="error">Closed-Loop Opt-Out is Disabled.</p>
-	<!-- /tmpl_if --> 
-	
-	<p>
-		Make sure to place the <code>&lt;!-- tmpl_var list_confirm_unsubscribe_link --&gt;</code> tag in the body of this email message!
-	</p>
-	
-		<p>
-	 <label for="unsub_confirmation_message_subject" class="label_by_5">Subject:</label> <input type="text" name="unsub_confirmation_message_subject" id="unsub_confirmation_message_subject" value="<!-- tmpl_var list_settings.unsub_confirmation_message_subject escape=HTML -->" class="midi" />
-	</p>
-	
-	
-	<!-- tmpl_if unsub_confirm_link_found_in_unsub_confirmation_message --> 
-		<p class="positive">
-			Unsubscription Confirmation Link found in Template. Good!
-		</p>
-	<!-- tmpl_else --> 
-		<p class="error">
-			Yikes! Couldn't find an Unsubscription Confirmation Link (<code>&lt;!-- tmpl_var list_confirm_unsubscribe_link --&gt;</code>)in your template! If your mailing is sent out without one, a subscription confirmation link will be automatically prepended to the top of your message. 
-		</p>
-	<!-- /tmpl_if -->
-	
-	
-	<p><label for="unsub_confirmation_message">PlainText Message:</label>
-	
-	
-<textarea name="unsub_confirmation_message" id="unsub_confirmation_message" rows="10" cols="50" ><!-- tmpl_var list_settings.unsub_confirmation_message escape=HTML --></textarea> 
-	</p>
-</fieldset>
+
 <fieldset>
 	<legend>
 		Unsubscription Successful Email Message 
@@ -674,7 +635,7 @@
 			<code>&lt;!-- tmpl_var list_settings.list_name --&gt;</code> 
 		</td>
 		<td>
-			The name of your list. 
+			The name of your mailing list. 
 		</td>
 	</tr>
 	<tr>
@@ -682,7 +643,7 @@
 			<code>&lt;!-- tmpl_var list_settings.info --&gt;</code> 
 		</td>
 		<td>
-			The description of your list. 
+			The description of your mailing list. 
 		</td>
 	</tr>
 	<tr>
@@ -714,19 +675,20 @@
 	<t
 	<tr>
 		<td>
-			<code>&lt;!-- tmpl_var list_confirm_unsubscribe_link --&gt;</code> 
+			<code>&lt;!-- tmpl_var list_settings.physical_address --&gt;</code> 
 		</td>
 		<td>
-			The unsubscription confirmation link. Only used (and also required!) in the, "UnSubscription Confirmation Email" template.
+			The physical address of your mailing list. 
 		</td>
 	</tr>
+
 	
 	<tr>
 		<td>
 			<code>&lt;!-- tmpl_var list_settings.privacy_policy --&gt;</code> 
 		</td>
 		<td>
-			The privacy policy of your list. 
+			The privacy policy of your mailing list. 
 		</td>
 	</tr>
 	<tr>

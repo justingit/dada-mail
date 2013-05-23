@@ -56,7 +56,7 @@ $Plugin_Config->{Plugin_Name} = 'Bridge';
 # But, if you are having trouble saving settings
 # and are redirected to an
 # outside page, you may need to set this manually.
-$Plugin_Config->{Plugin_URL} = self_url();
+$Plugin_Config->{Plugin_URL} = $q->self_url();
 
 # Can the checking of awaiting messages to send out happen by invoking this
 # script from a URL? (CGI mode?)
@@ -4135,6 +4135,9 @@ The below documentation goes into detail on how to I<install> and I<configure> B
 
 L<http://dadamailproject.com/pro_dada/using_bridge.html>
 
+For more information on Pro Dada/Dada Mail Manual: 
+
+L<http://dadamailproject.com/purchase/pro.html>
 
 =head1 Obtaining The Plugin
 

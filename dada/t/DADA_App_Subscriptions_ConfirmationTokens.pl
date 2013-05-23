@@ -45,7 +45,6 @@ ok($ct->exists($token) == 1);
 ok($ct->num_tokens == 1); 
 
 my $data = $ct->fetch($token); 
-
 ok($data->{email}          eq $email); 
 ok($data->{data}->{list}   eq $list); 
 ok($data->{data}->{flavor} eq 'sub_confirm'); 

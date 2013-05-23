@@ -1,0 +1,58 @@
+<!-- begin extensions/multiple_subscribe/default.tmpl --> 
+
+<!-- tmpl_set name="title" value="Subscribe/Unsubscribe to Multiple Lists" --> 
+
+<!-- tmpl_if error_invalid_email --> 
+	<p class="error">
+	 The email you submitted is invalid.
+	</p>
+<!--/tmpl_if-->
+
+<!-- tmpl_var subscription_form --> 
+
+<h1>
+ Available Lists:
+</h1>
+
+<!-- tmpl_loop lists -->
+    
+    <h2>
+     <a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var uri_escaped_list -->/">
+      <!-- tmpl_var list_name -->
+     </a>
+     </h2>
+    <p>
+     <!-- tmpl_var html_info -->
+   </p>
+    
+   <!-- tmpl_if show_archives -->
+        
+        <!-- tmpl_if newest_archive_blurb -->
+            
+            <blockquote>
+             <p>
+              <strong>
+               <a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var uri_escaped_list -->/newest/">
+                Last Message: <!-- tmpl_var newest_archive_subject -->
+               </a>
+              </strong>
+             </p>
+             <p>
+              <em>
+               <!-- tmpl_var newest_archive_blurb -->...
+              </em>
+             </p>
+             <p style="text-align:right">
+              <a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var uri_escaped_list -->/newest/">
+               More...
+              </a>
+             </p>
+            </blockquote>
+            
+        <!--/tmpl_if-->
+    
+    <!--/tmpl_if-->
+
+<!--/tmpl_loop-->
+
+<!-- end extensions/multiple_subscribe/default.tmpl --> 

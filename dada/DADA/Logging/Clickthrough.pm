@@ -849,12 +849,13 @@ sub message_history_json {
 		my $datatable = Data::Google::Visualization::DataTable->new();
 
 		$datatable->add_columns(
-			   { id => 'date',          label => 'Date',         type => 'string'}, 
-		       { id => 'subscribers',   label => "Subscribers",  type => 'number'},
-		       { id => 'opens',         label => "Opens",        type => 'number'},
-		       { id => 'clickthroughs', label => "Clickthroughs",        type => 'number'},
-		       { id => 'soft_bounces',  label => "Soft Bounces", type => 'number'},
-		       { id => 'hard_bounces',  label => "Hard Bounces", type => 'number'},
+			   { id => 'date',          label => 'Date',          type => 'string'}, 
+		       { id => 'subscribers',   label => "Subscribers",   type => 'number'},
+		       { id => 'opens',         label => "Opens",         type => 'number'},
+		       { id => 'clickthroughs', label => "Clickthroughs", type => 'number'},
+		       { id => 'unsubscribes',  label => "Unsubscribes",  type => 'number'},
+		       { id => 'soft_bounces',  label => "Soft Bounces",  type => 'number'},
+		       { id => 'hard_bounces',  label => "Hard Bounces",  type => 'number'},
 		);
 	
 	
@@ -867,10 +868,11 @@ sub message_history_json {
 		
 				my $date; 
 				my $num_subscribers = $_->{num_subscribers}; 
-				my $opens = 0;
-				my $clickthroughs = 0;
-				my $soft_bounces = 0;
-				my $hard_bounces = 0;  
+				my $opens           = 0;
+				my $clickthroughs   = 0;
+				my $unsubscribes    = 0;
+				my $soft_bounces    = 0;
+				my $hard_bounces    = 0;  
 			
 				if(defined($_->{open})){ 
 					$opens = $_->{open};	
@@ -878,6 +880,11 @@ sub message_history_json {
 				if(defined($_->{count})){ 
 					$clickthroughs = $_->{count};	
 				}
+				
+				if(defined($_->{unsubscribe})){ 
+					$unsubscribes = $_->{unsubscribe};	
+				}
+				
 				if(defined($_->{soft_bounce})){ 
 					$soft_bounces = $_->{soft_bounce};	
 				}
@@ -894,6 +901,7 @@ sub message_history_json {
 		                subscribers   => $num_subscribers ,
 		                opens         => $opens ,
 		                clickthroughs => $clickthroughs,
+		                unsubscribes  => $unsubscribes,
 		                soft_bounces  => $soft_bounces, 
 		                hard_bounces  => $hard_bounces ,
 					}

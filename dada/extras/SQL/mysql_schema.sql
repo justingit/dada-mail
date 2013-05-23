@@ -19,7 +19,7 @@ CREATE INDEX dada_subscribers_all_index ON dada_subscribers (email(80), list, li
 CREATE TABLE IF NOT EXISTS dada_confirmation_tokens ( 
 id INT4 NOT NULL PRIMARY KEY AUTO_INCREMENT,
 timestamp TIMESTAMP DEFAULT NOW(),
-token varchar(256),
+token varchar(255),
 email varchar(80),
 data text,
 UNIQUE (token)

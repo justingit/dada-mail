@@ -233,7 +233,7 @@ sub unsubscription_check {
 
     if ( !$skip{already_sent_unsub_confirmation} ) {
         my $li = $ls->get;
-        if ( $li->{limit_unsub_confirm} == 1 ) {
+        if ( $li->{limit_sub_confirm} == 1 ) {
             $errors{already_sent_unsub_confirmation} = 1
               if $self->{lh}->check_for_double_email(
                 -Email => $email,
@@ -255,60 +255,6 @@ sub unsubscription_check {
 
     return ( $status, \%errors );
 
-}
-
-sub subscription_check_xml {
-
-    my $self = shift;
-    my ($args) = @_;
-    my ( $status, $errors ) = $self->subscription_check($args);
-
-    my $errors_array_ref = [];
-    push ( @$errors_array_ref, { error => $_ } ) for keys %$errors;
-
-    require DADA::Template::Widgets;
-    my $xml = DADA::Template::Widgets::screen(
-        {
-            -screen => 'subscription_check_xml.tmpl',
-            -vars   => {
-                email  => $args->{ -email },
-                errors => $errors_array_ref,
-                status => $status,
-
-            },
-
-        }
-    );
-
-    $xml =~ s/\n|\r|\s|\t//g;
-
-    return ( $xml, $status, $errors );
-}
-
-sub unsubscription_check_xml {
-
-    my $self = shift;
-    my ($args) = @_;
-    my ( $status, $errors ) = $self->unsubscription_check($args);
-
-    my $errors_array_ref = [];
-    push ( @$errors_array_ref, { error => $_ } ) for keys %$errors;
-
-    require DADA::Template::Widgets;
-    my $xml = DADA::Template::Widgets::screen(
-        {
-            -screen => 'unsubscription_check_xml.tmpl',
-            -vars   => {
-                email  => $args->{ -email },
-                errors => $errors_array_ref,
-                status => $status,
-
-            },
-        }
-    );
-    $xml =~ s/\n|\r|\s|\t//g;
-
-    return ( $xml, $status, $errors );
 }
 
 1;

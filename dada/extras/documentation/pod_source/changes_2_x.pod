@@ -3964,7 +3964,7 @@ http://sourceforge.net/tracker/index.php?func=detail&aid=820557&group_id=13002&a
 
 http://sourceforge.net/tracker/index.php?func=detail&aid=818374&group_id=13002&atid=113002
 
-=item * [ 818353 ] Config.pm $HTML_UNSUB_CONFIRMATION_MESSAGE
+=item * [ 818353 ] Config.pm $HTML_UNSUBSCRIPTION_REQUEST_MESSAGE
 
 http://sourceforge.net/tracker/index.php?func=detail&aid=818353&group_id=13002&atid=113002
 

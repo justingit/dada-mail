@@ -309,7 +309,8 @@ if($ENV{PATH_INFO}){
 			$q->param('css_file', 'dada_mail.css'); 
 		}
 
-   }elsif($info =~ /^captcha_img/){
+   }
+  elsif($info =~ /^captcha_img/){
 
         my ($pi_flavor, $pi_img_string, $extran) = split('/', $info);
 
@@ -318,101 +319,66 @@ if($ENV{PATH_INFO}){
         $q->param('img_string',   $pi_img_string)
             if $pi_img_string;
 
-	}elsif($info =~ /^ur/){
-        my ($pi_flavor, $pi_list, $pi_email, $pi_domain) = split('/', $info, 4);
-        
-		$pi_email = $pi_email . '@' . $pi_domain;
-		 
-		# Get rid of that last, "=" that sometimes shows up on quoted-printable msgs. 
-		if($pi_email =~ m/\=$/){ 
-			$pi_email =~ s/\=$//; 
-		}
-		
-        $q->param('flavor', $pi_flavor)
-            if $pi_flavor;
-        $q->param('list',   $pi_list)
-            if $pi_list;
-        $q->param('email',  $pi_email)
-            if $pi_email;
 
-    }elsif($info =~ /^(s|n|u)/){ 
-		my ($pi_flavor, $pi_list, $pi_email, $pi_domain, $pi_pin) = split('/', $info, 5);
+	}
+	elsif($info =~ /^(s|n|u)/){ 
 		
-        if($pi_email !~ m/\@/){
-            $pi_email = $pi_email . '@' . $pi_domain
-                if $pi_domain;
-			if($pi_email =~ m/\=$/){ 
-				$pi_email =~ s/\=$//; 
-			}		
+		my ($pi_flavor, $pi_list, $pi_email, $pi_domain, $pi_pin) = split('/', $info, 5);
+
+		if($pi_email) { 
+	        if($pi_email !~ m/\@/){
+	            $pi_email = $pi_email . '@' . $pi_domain
+	                if $pi_domain;
+				if($pi_email =~ m/\=$/){ 
+					$pi_email =~ s/\=$//; 
+				}		
 				
 				
-        }else{
-            $pi_pin = $pi_domain
-                if !$pi_pin;
-        }
+	        }else{
+	            $pi_pin = $pi_domain
+	                if !$pi_pin;
+	        }
+		}
 		
 		if($pi_pin eq '='){ 
 			undef $pi_pin;
 		}
-		if($pi_list =~ m/\=$/){ 
-			$pi_list =~ s/\=$//; 
-		}		
+		if($pi_list) { 
+			if($pi_list =~ m/\=$/){ 
+				$pi_list =~ s/\=$//; 
+			}		
+		}
+		
 
-		# Rather, we redirect them, to attempt to sub/unsub again, 
 		if(
 			($pi_flavor eq 'n') 
-	     || ($pi_flavor eq 'u' && $pi_pin)
+	     || ($pi_flavor eq 'u')
 		){ 
-			$q->param('flavor', 'outdated_sub_links');
-			$q->param('q_orig_flavor', $pi_flavor)
-			            if $pi_flavor;			
+			$q->param('flavor', 'outdated_subscription_urls');
+			$q->param('orig_flavor', $pi_flavor)
+			            if $pi_flavor;	
 		}
 		else { 
-			$q->param('flavor', $pi_flavor)
-				if $pi_flavor;
+
+		$q->param('flavor', $pi_flavor)
+			if $pi_flavor;
 		}
 
         $q->param('list',   $pi_list)
             if $pi_list;
         $q->param('email',  $pi_email)
             if $pi_email;
-        $q->param('pin',    $pi_pin)
+# pin? 
+       $q->param('pin',    $pi_pin)
             if $pi_pin;
 
 	}elsif($info =~ /^t\//){
 		
-		my ($pi_flavor, $pi_token) = split('/', $info, 2);
+		my ($pi_flavor, $pi_token, $etc) = split('/', $info, 3);
+
 		$q->param('flavor', 'token'); 
 		$q->param('token', $pi_token); 
 		
-    }elsif($info =~ /^(s|u)/){
-
-        my ($pi_flavor, $pi_list, $pi_email, $pi_domain) = split('/', $info, 4);
-
-        # HACK: If there is no name and a domain, the entire email address is in "email"
-        # and there is no domain.
-        # move all the other variables to the right
-
-        if($pi_email !~ m/\@/){
-            $pi_email = $pi_email . '@' . $pi_domain
-                if $pi_domain;
-        }
-
-		# For whatever reason (bug somewhere?!) the 
-		# last character of an unsubscription link - say on the last line of an 
-		# email message, contains a, "=". No fun! 
-
-		if($pi_list =~ m/\=$/){ 
-			$pi_list =~ s/\=$//; 
-		}
-		
-        $q->param('flavor', $pi_flavor)
-            if $pi_flavor;
-        $q->param('list',   $pi_list)
-            if $pi_list;
-        $q->param('email',  $pi_email)
-            if $pi_email;
-
     }elsif($info =~ /^subscriber_help|^list/){
 
         my ($pi_flavor, $pi_list) = split('/', $info);
@@ -513,7 +479,6 @@ my $done             = $q->param('done');
 my $id               = $q->param('id');
 my $advanced         = $q->param('advanced') || 'no';
 my $help             = $q->param('help');
-my $set_flavor       = $q->param('set_flavor');
 
 
 #---------------------------------------------------------------------#
@@ -528,7 +493,6 @@ $list        = xss_filter($list);
 $flavor      = xss_filter($flavor);
 $email       = xss_filter($email);
 $keyword     = xss_filter($keyword);
-$set_flavor  = xss_filter($set_flavor);
 $id          = xss_filter($id);
 
 if($q->param('auth_state')){
@@ -546,10 +510,9 @@ sub run {
 	my %Mode = (
 	'default'                    =>    \&default,
 	'subscribe'                  =>    \&subscribe,
-	'subscribe_flash_xml'        =>    \&subscribe_flash_xml,
-	'unsubscribe_flash_xml'      =>    \&unsubscribe_flash_xml,
 	'token'                      =>    \&token, 
 	'unsubscribe'                =>    \&unsubscribe,
+	'unsubscription_request'     =>    \&unsubscription_request, 
 	'login'                      =>    \&login,
 	'logout'                     =>    \&logout,
 	'log_into_another_list'      =>    \&log_into_another_list,
@@ -570,7 +533,7 @@ sub run {
 	'view_list_options'          =>    \&list_cp_options,
 	'membership'                 =>    \&membership,
 	'admin_change_profile_password' 
-	                             => \&admin_change_profile_password, 
+	                             =>    \&admin_change_profile_password, 
 	'update_email_results'       =>    \&update_email_results, 
 	'admin_update_email'         =>    \&admin_update_email, 
 	'mailing_list_history'       =>    \&mailing_list_history, 
@@ -584,6 +547,7 @@ sub run {
 	'admin_menu_subscriber_count_notification' =>  \&admin_menu_subscriber_count_notification, 
 	'admin_menu_mailing_monitor_notification'  =>  \&admin_menu_mailing_monitor_notification,
 	'admin_menu_archive_count_notification'    =>  \&admin_menu_archive_count_notification,  
+	'admin_menu_sending_preferences_notification' => \&admin_menu_sending_preferences_notification, 
 	'send_email'                 =>    \&send_email,
 	'message_body_help'          =>    \&message_body_help, 
 	'url_message_body_help'      =>    \&url_message_body_help, 
@@ -672,7 +636,7 @@ sub run {
 
 	's'                         =>    \&subscribe,
 	'u'                         =>    \&unsubscribe,
-	'outdated_sub_links'        =>    \&outdated_sub_links, 
+	'outdated_subscription_urls'        =>    \&outdated_subscription_urls, 
 
 # This is the new system
 	't'                         =>    \&token, 
@@ -815,7 +779,6 @@ sub default {
            # {
                 -email              => $email,
                 -list               => $list,
-                -set_flavor         => $set_flavor,
                 -error_invalid_list => $q->param('error_invalid_list'),
            # }
         );
@@ -872,7 +835,7 @@ sub list_page {
 
     require DADA::MailingList::Settings;
 
-    if ( !$email && !$set_flavor && ( $q->param('error_no_email') != 1 ) ) {
+    if ( !$email && ( $q->param('error_no_email') != 1 ) ) {
         if (!$c->profile_on && $c->cached( 'list/' . $list . '.scrn' ) ) {
             $c->show( 'list/' . $list  . '.scrn');
             return;
@@ -888,13 +851,12 @@ sub list_page {
         -list           => $list,
         -cgi_obj        => $q,
         -email          => $email,
-        -set_flavor     => $set_flavor,
         -error_no_email => $q->param('error_no_email') || 0,
 
     );
     e_print($scrn);
 
-    if (!$c->profile_on && !$email && !$set_flavor && ( $q->param('error_no_email') != 1 ) ) {
+    if (!$c->profile_on && !$email && ( $q->param('error_no_email') != 1 ) ) {
         $c->cache( 'list/' . $list . '.scrn', \$scrn );
     }
 
@@ -1082,6 +1044,35 @@ sub admin_menu_archive_count_notification {
 		carp ($_); 
 	}
 }
+
+sub admin_menu_sending_preferences_notification { 
+		print $q->header(); 
+
+		try { 
+			my ($admin_list, $root_login, $checksout) = check_list_security(
+												-cgi_obj         => $q,
+												-manual_override => 1
+											);
+			if($checksout) { 					
+				$list = $admin_list; 
+				require DADA::MailingList::Settings;
+		        my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+		
+				if($ls->param('sending_method') eq 'sendmail'){ 
+					e_print('(sendmail)'); 
+				}
+				elsif($ls->param('sending_method') eq 'smtp'){ 
+					e_print('(SMTP)'); 
+				}
+				elsif($ls->param('sending_method') eq 'amazon_ses'){ 
+					e_print('(Amazon SES)'); 					
+				}				
+			}
+		} catch { 
+			carp ($_); 
+		}
+	}
+
 
 
 
@@ -2183,6 +2174,7 @@ sub list_options {
 	                can_use_captcha                          => $can_use_captcha,
 					send_subscription_notice_to_popup_menu   => $send_subscription_notice_to_popup_menu, 
 					send_unsubscription_notice_to_popup_menu => $send_unsubscription_notice_to_popup_menu, 
+					list_owner_email_anonystar_address        => DADA::App::Guts::anonystar_address_encode($ls->param('list_owner_email')), 
 	            },
 	            -list_settings_vars_param => {
 	                -list   => $list,
@@ -2206,16 +2198,12 @@ sub list_options {
                     get_unsub_notice                        => 0,
                     enable_closed_loop_opt_in               => 0,
                     skip_sub_confirm_if_logged_in           => 0,
-                    unsub_confirm_email                     => 0,
-                    skip_unsub_confirm_if_logged_in         => 0,
                     send_unsub_success_email                => 0,
                     send_sub_success_email                  => 0,
 					send_newest_archive                     => 0,
                     mx_check                                => 0,
                     limit_sub_confirm                       => 0,
 					limit_sub_confirm_use_captcha           => 0,
-                    limit_unsub_confirm                     => 0,
-					limit_unsub_confirm_use_captcha         => 0,
                     email_your_subscribed_msg               => 0,
                     email_you_are_not_subscribed_msg        => 0,
                     use_alt_url_sub_confirm_success         => 0,
@@ -2230,25 +2218,16 @@ sub list_options {
                     use_alt_url_sub_failed                  => 0,
                     alt_url_sub_failed                      => '',
                     alt_url_sub_failed_w_qs                 => 0,
-                    use_alt_url_unsub_confirm_success       => 0,
-                    alt_url_unsub_confirm_success           => '',
-                    alt_url_unsub_confirm_success_w_qs      => 0,
-                    use_alt_url_unsub_confirm_failed        => 0,
-                    alt_url_unsub_confirm_failed            => '',
-                    alt_url_unsub_confirm_failed_w_qs       => 0,
                     use_alt_url_unsub_success               => 0,
                     alt_url_unsub_success                   => '',
                     alt_url_unsub_success_w_qs              => 0,
-                    use_alt_url_unsub_failed                => 0,
-                    alt_url_unsub_failed                    => '',
-                    alt_url_unsub_failed_w_qs               => 0,
+					unsub_show_email_hint                  => 0, 
                     enable_subscription_approval_step       => 0,
 					enable_mass_subscribe                   => 0,
 					send_subscribed_by_list_owner_message   => 0,
 					send_unsubscribed_by_list_owner_message => 0, 
 					send_last_archived_msg_mass_mailing     => 0, 
                     captcha_sub                             => 0,
-					unsub_link_behavior                     => undef, 
 					
 					send_subscription_notice_to             => undef, 
 					send_unsubscription_notice_to           => undef,  
@@ -6715,7 +6694,6 @@ sub edit_type {
         qw(
         confirmation_message
         subscribed_message
-        unsub_confirmation_message
         unsubscribed_message
         mailing_list_message
         mailing_list_message_html
@@ -6788,10 +6766,6 @@ sub edit_type {
                       $dfm->can_find_sub_confirm_link(
                         { -str => $li->{invite_message_html} }
                       ),
-                    unsub_confirm_link_found_in_unsub_confirmation_message =>
-                      $dfm->can_find_unsub_confirm_link(
-                        { -str => $li->{unsub_confirmation_message} }
-                      ),
                 },
                 -list_settings_vars       => $li,
                 -list_settings_vars_param => { -dot_it => 1, },
@@ -6816,8 +6790,6 @@ sub edit_type {
             unsubscribed_message
             confirmation_message_subject
             confirmation_message
-            unsub_confirmation_message_subject
-            unsub_confirmation_message
             mailing_list_message_from_phrase
             mailing_list_message_to_phrase
             mailing_list_message_subject
@@ -6872,8 +6844,6 @@ sub edit_type {
 					unsubscribed_by_list_owner_message          => undef,  
                     unsubscribed_message_subject                => undef,
                     unsubscribed_message                        => undef,
-                    unsub_confirmation_message_subject          => undef,
-                    unsub_confirmation_message                  => undef,
                     mailing_list_message_from_phrase            => undef,
                     mailing_list_message_to_phrase              => undef,
                     mailing_list_message_subject                => undef,
@@ -6924,7 +6894,6 @@ sub edit_html_type {
     for (
         qw(
         html_confirmation_message
-        html_unsub_confirmation_message
         html_subscribed_message
         html_unsubscribed_message
 
@@ -6969,7 +6938,6 @@ sub edit_html_type {
         for (
             qw(
             html_confirmation_message
-            html_unsub_confirmation_message
             html_subscribed_message
             html_unsubscribed_message
             )
@@ -6985,7 +6953,6 @@ sub edit_html_type {
                 -associate => $q,
                 -settings => {
                     html_confirmation_message       => '',
-                    html_unsub_confirmation_message => '',
                     html_subscribed_message         => '',
                     html_unsubscribed_message       => '',
                 }
@@ -7447,64 +7414,6 @@ sub subscribe {
 
 
 
-sub subscribe_flash_xml {
-
-    if($q->param('test') == 1){
-        print $q->header('text/plain');
-    }else{
-        print $q->header('application/x-www-form-urlencoded');
-    }
-
-    if(check_if_list_exists(-List => $list) == 0){
-        #note! This should be handled in the subscription_check_xml() method,
-        # but this object *also* checks to see if a list is real. Chick/Egg
-        e_print('<subscription><email>' . $email . '</email><status>0</status><errors><error>no_list</error></errors></subscription>');
-    }else{
-        my $lh = DADA::MailingList::Subscribers->new({-list => $list});
-        my ($xml, $status, $errors) =  $lh->subscription_check_xml(
-											{
-												-email => $email
-											},
-										);
-        e_print($xml);
-
-        if($status == 1){
-            subscribe(-html_output => 0);
-        }
-    }
-}
-
-
-
-
-sub unsubscribe_flash_xml {
-
-    if($q->param('test') == 1){
-        print $q->header('text/plain');
-    }else{
-        print $q->header('application/x-www-form-urlencoded');
-    }
-
-    if(check_if_list_exists(-List => $list) == 0){
-        e_print('<unsubscription><email>' . $email . '</email><status>0</status><errors><error>no_list</error></errors></unsubscription>');
-    }else{
-        my $lh = DADA::MailingList::Subscribers->new({-list => $list});
-        my ($xml, $status, $errors) =  $lh->unsubscription_check_xml(
-											{
-												-email => $email
-											}
-										);
-        e_print($xml);
-
-        if($status == 1){
-            unsubscribe(-html_output => 0);
-        }
-    }
-}
-
-
-
-
 sub unsubscribe {
 
     my %args = (-html_output => 1, @_);
@@ -7519,7 +7428,24 @@ sub unsubscribe {
 
 }
 
-sub outdated_sub_links {
+
+
+sub unsubscription_request {
+	
+    my %args = (-html_output => 1, @_);
+     require DADA::App::Subscriptions;
+    my $das = DADA::App::Subscriptions->new;
+       $das->unsubscription_request(
+        {
+            -cgi_obj     => $q,
+            -html_output => $args{-html_output},
+        }
+    );
+
+		
+}
+
+sub outdated_subscription_urls {
 
     if ( check_if_list_exists( -List => $list ) == 0 ) {
         undef($list);
@@ -7527,15 +7453,12 @@ sub outdated_sub_links {
         return;
     }
 
-    my $flavor_is = 's';
-    if ( $q->param('q_orig_flavor') eq 'u' ) {
-        $flavor_is = 'u';
-    }
+	my $orig_flavor = $q->param('orig_flavor') || undef; 
 
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
-            -screen => 'outdated_sub_links_screen.tmpl',
+            -screen => 'outdated_subscription_urls_screen.tmpl',
             -with   => 'list',
             -list   => $list,
             -expr   => 1,
@@ -7545,15 +7468,22 @@ sub outdated_sub_links {
 
             -vars => {
                 show_profile_widget => 0,
+				orig_flavor         => $orig_flavor, 
+
                 subscription_form => DADA::Template::Widgets::subscription_form(
                     {
                         -list       => $list,
                         -email      => $email,
                         -give_props => 0,
-                        -flavor_is  => $flavor_is,
                         -magic_form => 0,
                     },
-                ),
+				),
+				unsubscription_form => DADA::Template::Widgets::unsubscription_form(
+					{
+                        -list       => $list,
+                        -email      => $email,
+                    },
+				),
             }
         }
     );
@@ -7607,15 +7537,7 @@ sub resend_conf {
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
     my $can_use_captcha = 0;
 
-    if (
-        (
-               $q->param('rm') eq 's'
-            && $ls->param('limit_sub_confirm_use_captcha') == 1
-        )
-        || (   $q->param('rm') eq 'u'
-            && $ls->param('limit_unsub_confirm_use_captcha') == 1 )
-      )
-    {
+    if ($ls->param('limit_sub_confirm_use_captcha') == 1) {
 	
         try {
             require DADA::Security::AuthenCAPTCHA;
@@ -7683,7 +7605,7 @@ sub resend_conf_captcha {
             &subscribe;
             return;
         }
-        elsif ( $q->param('rm') eq 'u' ) {
+        elsif ( $q->param('rm') eq 'unsubscription_request' ) {
 
             # I like the idea better that we call the function directly...
             my $rm_status = $lh->remove_subscriber(
@@ -7694,8 +7616,8 @@ sub resend_conf_captcha {
             );
             $q->param( 'list',  $list );
             $q->param( 'email', $email );
-            $q->param( 'f',     'u' );
-            &unsubscribe;
+            $q->param( 'f',     'unsubscription_request' );
+            &unsubscription_request;
             return;
         }
     }
@@ -7704,7 +7626,7 @@ sub resend_conf_captcha {
 		if($q->param('rm') eq 's'){ 
 			$error = 'already_sent_sub_confirmation'; 
 		}
-		elsif($q->param('rm') eq 'u'){ 
+		elsif($q->param('rm') eq 'unsubscription_request'){ 
 			$error = 'already_sent_unsub_confirmation'; 			
 		}
 		else { 
@@ -7826,8 +7748,8 @@ sub resend_conf_no_captcha {
             );
             $q->param( 'list',  $list );
             $q->param( 'email', $email );
-            $q->param( 'f',     'u' );
-            &unsubscribe;
+            $q->param( 'f',     'unsubscription_request' );
+            &unsubscription_request;
             return;
         }
     }
@@ -11129,11 +11051,22 @@ sub profile {
 				if(scalar(@$l_p_d) > 0){ 
 					@$protected_directories = (@$protected_directories, @$l_p_d); 
 				}
+				
+				require DADA::App::Subscriptions::Unsub; 
+				my $dasu = DADA::App::Subscriptions::Unsub->new({-list => $i->{list}});
+				my $unsub_link = $dasu->unsub_link({-email => $email, -mid => '00000000000000'}); 
+				
 				push(@$filled, 
-					{%{$i}, 
-					%{$li}, 
-					PROGRAM_URL => $DADA::Config::PROGRAM_URL})
+					{
+						%{$i}, 
+						%{$li}, 
+						PROGRAM_URL            => $DADA::Config::PROGRAM_URL,
+						list_unsubscribe_link  => $unsub_link, 
+					}
+				)
 			}
+		
+			
 			my $scrn = '';
 		    require DADA::Template::Widgets;
 		    $scrn .=  DADA::Template::Widgets::wrap_screen(

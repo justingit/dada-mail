@@ -1,0 +1,57 @@
+<!-- begin plugins/tracker/message_individual_email_activity_report_table.tmpl -->
+
+
+<div>
+<div style="max-height: 400px; overflow: auto; border:1px solid black overflow-y: scroll; overflow-x: hidden;font-size:.75em">
+
+	<table class="stripedtable" style="border:1px solid black;border-collapse: collapse;width:640px">
+		<thead style="background-color:#999999;color:#FFFFFF;  text-align:center">
+		<tr style="background-color:#999999;color:#FFFFFF;  text-align:center">
+			<th colspan="3" style="background-color:#333333;color:#FFFFFF; text-align:center">
+				<p>
+					<strong> 
+						<!-- tmpl_var email -->
+					</strong> 
+				</p>
+			</th>
+		 </tr> 
+		 <tr> 
+				<th style="background-color:#999999;color:#FFFFFF; text-align:center">
+					Timestamp
+				</th>
+				<th style="background-color:#999999;color:#FFFFFF; text-align:center">
+					Event
+				</th>
+				<th style="background-color:#999999;color:#FFFFFF; text-align:center">
+					URL
+				</th>
+		</thead>
+		<tbody>
+		</tr>
+		<!-- tmpl_loop report --> 
+			<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
+				<td width="200"><p style="font-size:11px"><!-- tmpl_var ctime --></p></td>
+			 	<td width="100"><p style="font-size:11px"><!-- tmpl_var event_label --></p></td>
+				<td width="340">
+					
+					<!-- tmpl_if url --> 
+					<p style="font-size:11px">
+						<a href="<!-- tmpl_var url -->" target="_blank">
+							<!-- tmpl_var url -->
+						</a>
+					</p>
+					<!-- tmpl_else --> 
+						&nbsp;
+					<!-- /tmpl_if --> 
+					</td>
+			</tr> 
+		<!-- /tmpl_loop --> 
+		</tbody>
+	</table> 
+</div> 
+
+</div> 
+
+<!-- end plugins/tracker/message_individual_email_activity_report_table.tmpl -->
+
+
