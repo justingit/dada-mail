@@ -15,7 +15,7 @@ list_status char(1)
 CREATE TABLE IF NOT EXISTS dada_confirmation_tokens ( 
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-token varchar(256) UNIQUE,
+token varchar(255) UNIQUE,
 email varchar(80),
 data text
 );

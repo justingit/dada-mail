@@ -15,7 +15,7 @@ list_status                      char(1)
 CREATE TABLE dada_confirmation_tokens ( 
 id serial,
 timestamp TIMESTAMP DEFAULT NOW(),
-token varchar(256) UNIQUE,
+token varchar(255) UNIQUE,
 email varchar(80),
 data text
 );
