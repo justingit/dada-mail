@@ -71,7 +71,7 @@ Session/State management for access to the list control panel. See, C<DADA::Prof
 
 =head2 DADA::App::Subscribers> 
 
-Holds extremely high level subroutines to work directly with Dada Mail's subscription and unsubsription system. Extremely useful. API is a little tricky. 
+Holds extremely high level subroutines to work directly with Dada Mail's subscription and unsubscription system. Extremely useful. API is a little tricky. 
 
 =head1 DADA::Config
 
