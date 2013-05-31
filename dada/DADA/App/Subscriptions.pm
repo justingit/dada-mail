@@ -1083,7 +1083,12 @@ sub unsubscription_request {
         if (!$email){                                    
 			warn "no email."
 				if $t; 
-            my $r = $q->redirect(-uri => $DADA::Config::PROGRAM_URL . '?f=outdated_subscription_urls&list=' . $list . '&orig_flavor=u'); 
+            my $r = $q->redirect(
+				-uri => $DADA::Config::PROGRAM_URL 
+					. '?f=outdated_subscription_urls&list=' 
+					. $list 
+					. '&orig_flavor=u'
+				); 
             $self->test ? return $r : print $fh safely_encode(  $r) and return;
         }
 
@@ -1265,7 +1270,12 @@ sub unsubscribe {
 
         # I may expand on this, in the future...
         my $r = $q->redirect(
-            -uri => $DADA::Config::PROGRAM_URL . '?flavor=outdated_subscription_urls' );
+            -uri => $DADA::Config::PROGRAM_URL 
+			. '?flavor=outdated_subscription_urls&orig_flavor=u&list=' 
+			. xss_filter(strip($q->param('list')))
+			. '&email=' 
+			. xss_filter(strip($q->param('email')))
+		);
         $self->test ? return $r : print $fh safely_encode($r) and return;
     }
 

@@ -321,8 +321,11 @@ if($ENV{PATH_INFO}){
 
 
 	}
-	elsif($info =~ /^(s|n|u)/){ 
-		
+	elsif($info =~ /^(s|n|u|ur)/){ 
+		# s is sort of weird. 
+		# u is an old unsub link - unsub confirmation as well? 
+		# ur is the alternative form of the unsub link, that gives you a form
+		# n is the old sub confirmation
 		my ($pi_flavor, $pi_list, $pi_email, $pi_domain, $pi_pin) = split('/', $info, 5);
 
 		if($pi_email) { 
@@ -353,10 +356,13 @@ if($ENV{PATH_INFO}){
 		if(
 			($pi_flavor eq 'n') 
 	     || ($pi_flavor eq 'u')
+	     || ($pi_flavor eq 'ur')
 		){ 
 			$q->param('flavor', 'outdated_subscription_urls');
 			$q->param('orig_flavor', $pi_flavor)
 			            if $pi_flavor;	
+			$q->param('orig_flavor', 'u')
+			            if $pi_flavor eq 'ur';			
 		}
 		else { 
 
@@ -632,17 +638,16 @@ sub run {
 # These handled the oldstyle confirmation. For some backwards compat, I've changed
 # them so that there's at least a shim to the new system, 
 #
-#	'n'                         =>    \&confirm,
-
-	's'                         =>    \&subscribe,
-	'u'                         =>    \&unsubscribe,
-	'outdated_subscription_urls'        =>    \&outdated_subscription_urls, 
+#	'n'                          =>    \&confirm,
+	's'                          =>    \&subscribe,
+	'u'                          =>    \&unsubscribe,
+	'outdated_subscription_urls' =>    \&outdated_subscription_urls, 
 
 # This is the new system
 	't'                         =>    \&token, 
 
-# unsubscribe_request is simply a form - already filled out, to unsubscribe. 
-	'ur'                        =>    \&unsubscribe_request, 
+	# This doesn't really happen, anymore: 
+	'ur'                        =>    \&outdated_subscription_urls, 
 
 	'smtm'                      =>    \&what_is_dada_mail,
 	'test_layout'               =>    \&test_layout,
@@ -7490,29 +7495,6 @@ sub outdated_subscription_urls {
     e_print($scrn);
 }
 
-
-
-
-sub unsubscribe_request { 
-
-	if(check_if_list_exists(-List => $list) == 0){
-		&default;
-		return;
-	}
-
-	  require DADA::Template::Widgets;
-        my $scrn = DADA::Template::Widgets::wrap_screen(
-			{
-				-screen                   => 'unsubscribe_request.tmpl',
-				-with                     => 'list', 
-				-list                     => $list, 
-                -list_settings_vars_param => {-list => $list,},
-                -subscriber_vars_param    => {-list => $list, -email => $email, -type => 'list'},
-                -dada_pseudo_tag_filter   => 1, 
-			}
-		);
-		e_print($scrn);
-}
 
 
 
