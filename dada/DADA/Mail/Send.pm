@@ -1339,7 +1339,8 @@ sub mass_send {
         carp 'Sending is currently paused.'; 
 		$mailout->log('Warning: Sending is currently paused.'); 
 		
-        return; 
+		return $fields{'Message-ID'};
+
     }
 
 	if($status->{integrity_check} != 1){ 
