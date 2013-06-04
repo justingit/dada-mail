@@ -11,6 +11,11 @@ Key:
 [?] Someday
 
 =======
+[ ]  bounce handler - weekly reports? 
+
+[ ] is the POP3 login tester in the installer wonky? 
+
+[ ] Move, "$HTML_SUBSCRIPTION_REQUEST_MESSAGE" and friends out of Config.pm file, into template files. 
 
 [ ] ARF reports? 
 
