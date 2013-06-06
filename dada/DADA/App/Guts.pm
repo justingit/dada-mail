@@ -78,6 +78,7 @@ require Exporter;
   safely_encode
   slurp
   grab_url
+  can_use_LWP_Simple
 );
 
 
@@ -2766,6 +2767,17 @@ sub grab_url {
 		   $tmp = safely_decode($tmp); 
 		   return $tmp; 
 	}
+}
+
+sub can_use_LWP_Simple { 
+	my $can_use_lwp_simple = 1; 
+	try { 
+		require LWP::Simple;
+	}
+	catch { 
+		$can_use_lwp_simple = 0; 	
+	};
+	return $can_use_lwp_simple;
 }
 
 

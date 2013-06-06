@@ -1405,14 +1405,6 @@ Shown when a request to subscribe is successful.
 
 
 
-=head2 $HTML_UNSUBSCRIPTION_REQUEST_MESSAGE
-
-I<(List-centric, editable per list)> 
-
-Shown when a request to unsubscribe is successful.
-
-
-
 =head2 $HTML_SUBSCRIBED_MESSAGE
 
 I<(List-centric, editable per list)> 

@@ -10521,20 +10521,20 @@ sub profile_login {
 	}
 	else {
 			my $scrn = '';
-			my $can_use_captcha = 1;
+			my $can_use_captcha = 0;
 			my $CAPTCHA_string  = '';
 			my $cap             = undef;
 			if($DADA::Config::PROFILE_OPTIONS->{enable_captcha} == 1){
 				try { 
 					require DADA::Security::AuthenCAPTCHA; 
 					$cap  = DADA::Security::AuthenCAPTCHA->new;
+					$can_use_captcha = 1; 
 				} catch {
 					carp "CAPTCHA Not working correctly?: $_";  
-					$can_use_captcha = 0;
 				};
 				
 			}
-
+			
 		   if($can_use_captcha == 1){
 
             	$CAPTCHA_string = $cap->get_html($DADA::Config::RECAPTCHA_PARAMS->{public_key});

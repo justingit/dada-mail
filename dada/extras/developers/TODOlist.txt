@@ -11,6 +11,9 @@ Key:
 [?] Someday
 
 =======
+
+[ ] Pagination on the public archive screens
+
 [ ]  bounce handler - weekly reports? 
 
 [ ] is the POP3 login tester in the installer wonky? 

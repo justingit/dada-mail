@@ -106,6 +106,9 @@ $FILE_BROWSER_OPTIONS = {
 =cut
 # end cut for WYSIWYG Editor Options
 
+# Global Template Options
+$USER_TEMPLATE = '<!-- tmpl_var template_options_USER_TEMPLATE -->';
+
 # start cut for Amazon SES Options
 =cut
 
@@ -126,10 +129,10 @@ $AMAZON_SES_OPTIONS = {
 
 $PROFILE_OPTIONS = { 
 		
-	enabled                         => 1, 
-	profile_email                   => '', 
-	enable_captcha                  => 1, 
-	enable_magic_subscription_forms => 1, 
+	enabled                         => <!-- tmpl_var profiles_enabled -->, 
+	profile_email                   => '<!-- tmpl_var profiles_profile_email default="" -->', 
+	enable_captcha                  => <!-- tmpl_var profiles_enable_captcha -->, 
+	enable_magic_subscription_forms => <!-- tmpl_var profiles_enable_magic_subscription_forms -->, 
 	
 	update_email_options            => 
 	{ 
@@ -146,16 +149,16 @@ $PROFILE_OPTIONS = {
 	
 	features => 
 	{ 
-		help                        => 1,
-		login                       => 1, 
-		register                    => 1, 
-		password_reset              => 1, 
-		profile_fields              => 1,  
-		mailing_list_subscriptions  => 1,
-		protected_directories       => 1,  
-		update_email_address        => 1, 
-		change_password             => 1, 
-		delete_profile              => 1,
+		help                        => <!-- tmpl_var profiles_help -->, 
+		login                       => <!-- tmpl_var profiles_login -->, 
+		register                    => <!-- tmpl_var profiles_register -->, 
+		password_reset              => <!-- tmpl_var profiles_password_reset -->, 
+		profile_fields              => <!-- tmpl_var profiles_profile_fields -->, 
+		mailing_list_subscriptions  => <!-- tmpl_var profiles_mailing_list_subscriptions -->, 
+		protected_directories       => <!-- tmpl_var profiles_protected_directories -->, 
+		update_email_address        => <!-- tmpl_var profiles_update_email_address -->, 
+		change_password             => <!-- tmpl_var profiles_change_password -->, 
+		delete_profile              => <!-- tmpl_var profiles_delete_profile -->, 
 	},
 	cookie_params =>
 	{ 

@@ -1224,10 +1224,9 @@ sub unsubscription_request {
         
         if($args->{-html_output} != 0){ 
         
-               my $s = $DADA::Config::HTML_UNSUBSCRIPTION_REQUEST_MESSAGE;
                require DADA::Template::Widgets; 
                my $r = DADA::Template::Widgets::wrap_screen({ 
-                                                       -data                     => \$s,
+                                                       -screen                   => 'list_confirm_unsubscribe.tmpl',
 													   -with                     => 'list', 
                                                        -list_settings_vars_param => {-list => $ls->param('list'),},
                                                        -subscriber_vars_param    => {-list => $ls->param('list'), -email => $email, -type => 'list'},

@@ -539,16 +539,76 @@ for it to work correctly. For help on setting the cronjob, see the
 
 <p><input type="checkbox" name="install_tracker" id="install_tracker" value="1" /><label for="install_tracker">Tracker</label></p> 
 
-<p><input type="checkbox" name="install_bridge" id="install_bridge" value="1" /><label for="install_bridge">Bridge</label> <span class="alert">Requires Additional Configuration (cronjob)</span>	
+<p>
+	<input type="checkbox" name="install_bridge" id="install_bridge" value="1" class="radio_toggleDivs" data-target="bridge_configuration" />
+	<label for="install_bridge">
+		Bridge
+	</label>
+	<span class="alert">Requires Additional Configuration (cronjob)</span>	
 </p> 
+<div id="bridge_configuration">
+	<fieldset> 
+		<legend>Bridge Configuration</legend>
+
+		<p>
+			<label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bridge_MessagesAtOnce">
+				# Messages to Check at Once:
+			</label>
+			<select name="bridge_MessagesAtOnce" id="bridge_MessagesAtOnce">
+				<option value="1">1</option> 
+				<option value="2">2</option> 
+				<option value="3">3</option> 
+				<option value="4">4</option> 
+				<option value="5">5</option> 
+				<option value="10">10</option> 
+				<option value="15">15</option> 
+				<option value="20">20</option> 
+			</select>
+		</p>
+		<p>
+			<label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bridge_Soft_Max_Size_Of_Any_Message">
+				Soft Max Size for Messages:
+			</label>
+			<select name="bridge_Soft_Max_Size_Of_Any_Message" id="bridge_Soft_Max_Size_Of_Any_Message">
+				<option value="1048576" selected="selected">1 Megabyte</option> 
+				<option value="2097152">2 Megabytes</option> 
+				<option value="2621440">2.5 Megabytes</option>
+				<option value="3145728">3 Megabytes</option> 
+				<option value="4194304">4 Megabytes</option> 
+				<option value="5242880">5 Megabytes</option> 
+			</select>
+		</p>
+
+		<p>
+			<label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bridge_Max_Size_Of_Any_Message">
+				Hard Max Size for Messages:
+			</label>
+			<select name="bridge_Max_Size_Of_Any_Message" id="bridge_Max_Size_Of_Any_Message">
+				<option value="1048576">1 Megabyte</option> 
+				<option value="2097152">2 Megabytes</option> 
+				<option value="2621440" selected="selected">2.5 Megabytes</option>
+				<option value="3145728">3 Megabytes</option> 
+				<option value="4194304">4 Megabytes</option> 
+				<option value="5242880">5 Megabytes</option> 
+				<option value="6291456">6 Megabytes</option> 
+				<option value="7340032">7 Megabytes</option> 
+				<option value="8388608">8 Megabytes</option> 
+				<option value="9437184">9 Megabytes</option> 
+				<option value="10485760">10 Megabytes</option> 
+			</select>
+		</p>
+
+
+	</fieldset>
+</div> 
 
 <p>
-	<input type="checkbox" name="install_bounce_handler" id="install_bounce_handler" value="1" class="radio_toggleDivs" data-target="additional_bounce_handler_configuration" />
+	<input type="checkbox" name="install_bounce_handler" id="install_bounce_handler" value="1" class="radio_toggleDivs" data-target="bounce_handler_configuration" />
 	<label for="install_bounce_handler">Bounce Handler</label> <span class="alert">Requires Additional Configuration (cronjob)</span></p>
 
-<div id="additional_bounce_handler_configuration">
+<div id="bounce_handler_configuration">
 	<fieldset> 
-		<legend>Additional Bounce Handler Configuration [
+		<legend>Bounce Handler Configuration [
 			<a href="#" class="toggleDivs" data-target="bounce_handler_configuration_help">
 		?</a>]</legend>
 	
@@ -567,6 +627,54 @@ for it to work correctly. For help on setting the cronjob, see the
 
 		<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_password">Password:</label> <input type="text" name="bounce_handler_password" id="bounce_handler_password" value="" /></p>
 	 	
+		<fieldset>
+			<legend>
+				<a href="#" class="toggleDivs" data-target="additional_bounce_handler_configuration">
+				+/-
+				</a> Additional Configuration Options
+			</legend>
+
+		<div id="additional_bounce_handler_configuration"> 
+			<p>
+				<label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_USESSL">
+					Use Secure Sockets Layer (SSL)  
+				</label>
+				<input type="checkbox" name="bounce_handler_USESSL" id="bounce_handler_USESSL" value="1" />
+			</p>
+
+			<p>
+				<label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_AUTH_MODE">
+					Auth. Type  
+				</label>
+				<select name="bounce_handler_AUTH_MODE" id="bounce_handler_AUTH_MODE">
+					<option value="BEST">BEST</option> 
+					<option value="PASS">PASS</option> 
+					<option value="APOP">APOP</option> 
+					<option value="CRAM-MD5">CRAM-MD5</option> 
+				</select> 
+			</p>
+
+			<p>
+				<label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_MessagesAtOnce">
+					# Messages to Check at Once
+				</label>
+				<select name="bounce_handler_MessagesAtOnce" id="bounce_handler_MessagesAtOnce">
+					<option value="1">1</option> 
+					<option value="5">5</option> 
+					<option value="10">10</option> 
+					<option value="25">25</option> 
+					<option value="50">50</option> 
+					<option value="100" selected="selected">100</option> 
+					<option value="150">150</option> 
+					<option value="200">200</option> 
+				</select> 
+				
+			
+			</p>
+		
+		</div> 
+		</fieldset> 
+	
 		<div class="buttonfloat"> 
 			<input type="button" class="processing test_bounce_handler_pop3_connection" value="Test Your POP3 Connection"/>
 		</div>
@@ -651,50 +759,181 @@ editors also have the ability to make simple HTML tables for basic layouts.
 
 <fieldset> 
 	<legend>Advanced Configuration (Optional)</legend>
+
+
 	<p>
-		<input type="checkbox" name="configure_amazon_ses" id="configure_amazon_ses" value="1" />			
-	<label for="configure_amazon_ses">Configure Amazon SES</label>
+		<input type="checkbox" name="configure_profiles" id="configure_profiles" value="1" />			
+	<label for="configure_profiles">
+		Configure Profiles
+	</label>
 	</p>
-	<div id="amazon_ses_options">
+	
+	<div id="profiles_options">
 	<fieldset> 
-		
-		<!-- tmpl_var amazon_ses_requirements_widget -->
-
 		<p>
-			<label style="width: 18em;float: left;text-align: right;margin-right: 0.5em;display: block" for="amazon_ses_AWSAccessKeyId">
-				AWS Access Key ID:
-			</label> 
-			<input type="text" name="amazon_ses_AWSAccessKeyId" id="amazon_ses_AWSAccessKeyId" value="" class="midi" />
+			<input type="checkbox" name="profiles_enabled" id="profiles_enabled" value="1" checked="checked" />			
+		<label for="profiles_enabled">Enable Profiles</label>
+		</p>
+		
+		<p>
+		<label for="profiles_profile_email">Profile Administration Email:</label>
+		<input type="text" name="profiles_profile_email" id="profiles_profile_email" value="" class="midi"/>			
 		</p>
 
+	
+		
+		<h2>
+			Enabled Features:
+		</h2>
+		
+
+		
+		
 		<p>
-			<label style="width: 18em;float: left;text-align: right;margin-right: 0.5em;display: block" for="amazon_ses_AWSSecretKey">
-				AWS Secret Access Key:
-			</label> 
-			<input type="text" name="amazon_ses_AWSSecretKey" id="amazon_ses_AWSSecretKey" value=""  class="midi" />
+			<input type="checkbox" name="profiles_enable_captcha" id="profiles_enable_captcha" value="1" checked="checked" />			
+		<label for="profiles_enable_captcha">CAPTCHA</label>
 		</p>
-		<div class="buttonfloat"> 
+		
 		<p>
-			<input type="button" class="processing test_amazon_ses_configuration" value="Test Your AWS Credentials"/>
+		<input type="checkbox" name="profiles_enable_magic_subscription_forms" id="profiles_enable_magic_subscription_forms" value="1" checked="checked" />				
+		<label for="profiles_enable_magic_subscription_forms">Magic Subscription Forms:</label>
 		</p>
 		
-		</div>
-		<div class="floatclear"></div> 
+		<p>
+			<input type="checkbox" name="profiles_help" id="profiles_help" value="1" checked="checked" />			
+		<label for="profiles_help">Help Screen</label>
+		</p>
+
+		<p>
+			<input type="checkbox" name="profiles_login" id="profiles_login" value="1" checked="checked" />			
+		<label for="profiles_login">Profile Login</label>
+		</p>
+
+		<p>
+			<input type="checkbox" name="profiles_register" id="profiles_register" value="1" checked="checked" />			
+		<label for="profiles_register">Profile Registration</label>
+		</p>
+
+		<p>
+			<input type="checkbox" name="profiles_password_reset" id="profiles_password_reset" value="1" checked="checked" />			
+		<label for="profiles_password_reset">Password Reset</label>
+		</p>
+
+		<p>
+			<input type="checkbox" name="profiles_profile_fields" id="profiles_profile_fields" value="1" checked="checked" />			
+		<label for="profiles_profile_fields">Profile Fields</label>
+		</p>
+
+		<p>
+			<input type="checkbox" name="profiles_mailing_list_subscriptions" id="profiles_mailing_list_subscriptions" value="1" checked="checked" />			
+		<label for="profiles_mailing_list_subscriptions">Mailing List Subscriptions</label>
+		</p>
+
+		<p>
+			<input type="checkbox" name="profiles_protected_directories" id="profiles_protected_directories" value="1" checked="checked" />			
+		<label for="profiles_protected_directories">Password Protected Directory Information</label>
+		</p>
+
+		<p>
+			<input type="checkbox" name="profiles_update_email_address" id="profiles_update_email_address" value="1" checked="checked" />			
+		<label for="profiles_update_email_address">Update Email Address</label>
+		</p>
 		
 		
-		<div id="test_amazon_ses_configuration_results" class="clearskiesbox"></div> 
+		<p>
+			<input type="checkbox" name="profiles_change_password" id="profiles_change_password" value="1" checked="checked" />			
+		<label for="profiles_change_password">Change Password</label>
+		</p>
 		
 		
-	</fieldset> 	
-	</div> 
+		
+
+
+		<p>
+			<input type="checkbox" name="profiles_delete_profile" id="profiles_delete_profile" value="1" checked="checked" />			
+		<label for="profiles_delete_profile">Profile Deletion</label>
+		</p>
+		
+	</fieldset>
+</div> 
+
+
+
+<p>
+	<input type="checkbox" name="configure_templates" id="configure_templates" value="1" />			
+<label for="configure_templates">Configure Global Template Options</label>
+</p>
+
+
+<div id="template_options">
+<fieldset> 
+	<p>
+		<input type="checkbox" name="configure_user_template" id="configure_user_template" value="1" />			
+		<label for="configure_user_template">
+			Set a Global, User-Facing Template
+		</label>
+	</p>
+	
+	<p>
+		<label for="template_options_USER_TEMPLATE">
+			Server Absolute Path or URL to your User Template:
+		</label>
+		<br />
+		<input type="text" name="template_options_USER_TEMPLATE" id="template_options_USER_TEMPLATE" value="" class="full" />
+	</p>
+	<div class="buttonfloat"> 
+	<p>
+		<input type="button" class="processing test_user_template" value="Test Your User Template"/>
+	</p>
+	
+	</div>
+	<div class="floatclear"></div> 
+	<div id="test_user_template_results" class="clearskiesbox"></div> 
+	
+	
+</fieldset> 	
+</div> 
+
+<p>
+	<input type="checkbox" name="configure_amazon_ses" id="configure_amazon_ses" value="1" />			
+<label for="configure_amazon_ses">Configure Amazon SES</label>
+</p>
+<div id="amazon_ses_options">
+<fieldset> 
+	
+	<!-- tmpl_var amazon_ses_requirements_widget -->
+
+	<p>
+		<label style="width: 18em;float: left;text-align: right;margin-right: 0.5em;display: block" for="amazon_ses_AWSAccessKeyId">
+			AWS Access Key ID:
+		</label> 
+		<input type="text" name="amazon_ses_AWSAccessKeyId" id="amazon_ses_AWSAccessKeyId" value="" class="midi" />
+	</p>
+
+	<p>
+		<label style="width: 18em;float: left;text-align: right;margin-right: 0.5em;display: block" for="amazon_ses_AWSSecretKey">
+			AWS Secret Access Key:
+		</label> 
+		<input type="text" name="amazon_ses_AWSSecretKey" id="amazon_ses_AWSSecretKey" value=""  class="midi" />
+	</p>
+	<div class="buttonfloat"> 
+	<p>
+		<input type="button" class="processing test_amazon_ses_configuration" value="Test Your AWS Credentials"/>
+	</p>
+	
+	</div>
+	<div class="floatclear"></div> 
+	
+	
+	<div id="test_amazon_ses_configuration_results" class="clearskiesbox"></div> 
+	
+	
+</fieldset> 	
+</div> 
+ 
+
 
 </fieldset> 
-
-
-
-
-
-
 
 
 

@@ -1,0 +1,24 @@
+<p>
+	<strong> 
+		Testing: <!-- tmpl_var template_options_USER_TEMPLATE -->
+	</strong> 
+</p> 
+
+<!-- tmpl_if isa_url --> 
+	<p>Fetching as a URL...</p>
+	
+	<!-- tmpl_if can_use_lwp_simple --> 
+		
+	<!-- tmpl_else --> 
+		<p><strong>Problem:</strong> LWP CPAN module will need to be installed to fetch via a URL. 
+	<!-- /tmpl_if --> 
+<!-- tmpl_else --> 
+	<p>Fetching as a File...</p>
+<!-- /tmpl_if --> 
+
+<!-- tmpl_if can_get_content --> 
+	<p>Content found!</p> 
+<!-- tmpl_else --> 
+	<p>Content could not be found!</p> 
+<!-- /tmpl_if --> 
+

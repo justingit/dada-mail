@@ -677,8 +677,6 @@ List HTML screens are used for the operation of a mailing list. The screens that
 
 =item * $HTML_CONFIRMATION_MESSAGE
 
-=item * $HTML_UNSUBSCRIPTION_REQUEST_MESSAGE
-
 =item * $HTML_SUBSCRIBED_MESSAGE
 
 =item * $HTML_UNSUBSCRIBED_MESSAGE
