@@ -110,10 +110,10 @@ $FILE_BROWSER_OPTIONS = {
 
 $PROFILE_OPTIONS = { 
 		
-	enabled                         => <!-- tmpl_var profiles_enabled -->, 
+	enabled                         => <!-- tmpl_var profiles_enabled default="0" -->, 
 	profile_email                   => '<!-- tmpl_var profiles_profile_email default="" -->', 
-	enable_captcha                  => <!-- tmpl_var profiles_enable_captcha -->, 
-	enable_magic_subscription_forms => <!-- tmpl_var profiles_enable_magic_subscription_forms -->, 
+	enable_captcha                  => <!-- tmpl_var profiles_enable_captcha  default="0" -->, 
+	enable_magic_subscription_forms => <!-- tmpl_var profiles_enable_magic_subscription_forms  default="0" -->, 
 	
 	update_email_options            => 
 	{ 
@@ -130,16 +130,16 @@ $PROFILE_OPTIONS = {
 	
 	features => 
 	{ 
-		help                        => <!-- tmpl_var profiles_help -->, 
-		login                       => <!-- tmpl_var profiles_login -->, 
-		register                    => <!-- tmpl_var profiles_register -->, 
-		password_reset              => <!-- tmpl_var profiles_password_reset -->, 
-		profile_fields              => <!-- tmpl_var profiles_profile_fields -->, 
-		mailing_list_subscriptions  => <!-- tmpl_var profiles_mailing_list_subscriptions -->, 
-		protected_directories       => <!-- tmpl_var profiles_protected_directories -->, 
-		update_email_address        => <!-- tmpl_var profiles_update_email_address -->, 
-		change_password             => <!-- tmpl_var profiles_change_password -->, 
-		delete_profile              => <!-- tmpl_var profiles_delete_profile -->, 
+		help                        => <!-- tmpl_var profiles_help  default="0" -->, 
+		login                       => <!-- tmpl_var profiles_login  default="0" -->, 
+		register                    => <!-- tmpl_var profiles_register default="0"  -->, 
+		password_reset              => <!-- tmpl_var profiles_password_reset  default="0" -->, 
+		profile_fields              => <!-- tmpl_var profiles_profile_fields  default="0" -->, 
+		mailing_list_subscriptions  => <!-- tmpl_var profiles_mailing_list_subscriptions  default="0" -->, 
+		protected_directories       => <!-- tmpl_var profiles_protected_directories  default="0" -->, 
+		update_email_address        => <!-- tmpl_var profiles_update_email_address  default="0" -->, 
+		change_password             => <!-- tmpl_var profiles_change_password  default="0" -->, 
+		delete_profile              => <!-- tmpl_var profiles_delete_profile  default="0" -->, 
 	},
 	cookie_params =>
 	{ 
@@ -168,10 +168,10 @@ $USER_TEMPLATE  = '<!-- tmpl_var template_options_USER_TEMPLATE -->';
 #---------------------------------------------------------------------#
 # Security Options 
 
-$SHOW_ADMIN_LINK        = <!-- tmpl_var security_SHOW_ADMIN_LINK -->; 
-$DISABLE_OUTSIDE_LOGINS = <!-- tmpl_var security_DISABLE_OUTSIDE_LOGINS -->;
-$ADMIN_FLAVOR_NAME      = '<!-- tmpl_var security_ADMIN_FLAVOR_NAME -->'; 
-$SIGN_IN_FLAVOR_NAME    = '<!-- tmpl_var security_SIGN_IN_FLAVOR_NAME -->'; 
+$SHOW_ADMIN_LINK        = <!-- tmpl_var security_SHOW_ADMIN_LINK  default="1" -->; 
+$DISABLE_OUTSIDE_LOGINS = <!-- tmpl_var security_DISABLE_OUTSIDE_LOGINS  default="0" -->;
+$ADMIN_FLAVOR_NAME      = '<!-- tmpl_var security_ADMIN_FLAVOR_NAME  default="admin" -->'; 
+$SIGN_IN_FLAVOR_NAME    = '<!-- tmpl_var security_SIGN_IN_FLAVOR_NAME  default="sign_in" -->'; 
 <!-- /tmpl_if -->
 
 
@@ -180,9 +180,9 @@ $SIGN_IN_FLAVOR_NAME    = '<!-- tmpl_var security_SIGN_IN_FLAVOR_NAME -->';
 #---------------------------------------------------------------------#
 # Mass Mailing Options 
 
-$MAILOUT_AT_ONCE_LIMIT = <!-- tmpl_var mass_mailing_MAILOUT_AT_ONCE_LIMIT -->; 
-$MULTIPLE_LIST_SENDING = <!-- tmpl_var mass_mailing_MULTIPLE_LIST_SENDING -->; 
-$MAILOUT_STALE_AFTER   = <!-- tmpl_var mass_mailing_MAILOUT_STALE_AFTER -->; 
+$MAILOUT_AT_ONCE_LIMIT = <!-- tmpl_var mass_mailing_MAILOUT_AT_ONCE_LIMIT default="1" -->; 
+$MULTIPLE_LIST_SENDING = <!-- tmpl_var mass_mailing_MULTIPLE_LIST_SENDING default="0" -->; 
+$MAILOUT_STALE_AFTER   = <!-- tmpl_var mass_mailing_MAILOUT_STALE_AFTER  default="86400" -->; 
 <!-- /tmpl_if -->
 
 
