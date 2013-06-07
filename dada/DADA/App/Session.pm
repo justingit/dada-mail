@@ -238,6 +238,11 @@ sub kcfinder_session_begin {
 
     $session->set( KCFINDER => $KCFINDER );
     $session->save;
+	chmod(
+		$DADA::Config::FILE_CHMOD, 
+		make_safer($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_dir} . '/sess_' . $sess_id)
+	);
+
 
     if ( $new_sess == 1 ) {
         require CGI;
