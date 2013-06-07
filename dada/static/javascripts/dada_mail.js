@@ -364,33 +364,38 @@ $(document).ready(function() {
 		});
 
 		$("body").on('click', "#install_wysiwyg_editors", function(event) {
-			installer_toggle_wysiwyg_editors_options()
+			installer_checkbox_toggle_option_groups('install_wysiwyg_editors', 'install_wysiwyg_editors_options');
 		});
 		$("body").on('click', "#configure_amazon_ses", function(event) {
-			installer_toggle_configure_amazon_ses_options();
+			installer_checkbox_toggle_option_groups('configure_amazon_ses', 'amazon_ses_options'); 
 		});
 
 		$("body").on('click', "#configure_profiles", function(event) {
-			installer_toggle_configure_profile_options();
+			installer_checkbox_toggle_option_groups('configure_profiles', 'profiles_options');
 		});
 		$("body").on('click', "#configure_templates", function(event) {
-			installer_toggle_configure_templates_options();
+			installer_checkbox_toggle_option_groups('configure_templates', 'template_options');
 		});
-		
+		$("body").on('click', "#configure_security", function(event) {
+			installer_checkbox_toggle_option_groups('configure_security', 'security_options'); 
+		});
 
+		$("body").on('click', "#configure_mass_mailing", function(event) {
+			installer_checkbox_toggle_option_groups('configure_mass_mailing', 'mass_mailing_options');
+		});
 
-
-		
 		installer_dada_root_pass_options();
 		installer_toggleSQL_options();
 		installer_toggle_dada_files_dirOptions();
-		installer_toggle_bridge_config();
-		installer_toggle_bounce_handler_config();
-		installer_toggle_wysiwyg_editors_options();
-		installer_toggle_configure_amazon_ses_options(); 
-		installer_toggle_configure_profile_options();
-		installer_toggle_configure_templates_options();
 		
+		installer_checkbox_toggle_option_groups('install_bridge', 'bridge_configuration');  
+		installer_checkbox_toggle_option_groups('install_bounce_handler', 'bounce_handler_configuration');  
+		installer_checkbox_toggle_option_groups('install_wysiwyg_editors', 'install_wysiwyg_editors_options');
+		installer_checkbox_toggle_option_groups('configure_amazon_ses', 'amazon_ses_options'); 
+		installer_checkbox_toggle_option_groups('configure_profiles', 'profiles_options');
+		installer_checkbox_toggle_option_groups('configure_templates', 'template_options');
+		installer_checkbox_toggle_option_groups('configure_security', 'security_options');
+		installer_checkbox_toggle_option_groups('configure_mass_mailing', 'mass_mailing_options');
 
 		$("#dada_files_help").hide();
 		$("#program_url_help").hide();
@@ -405,7 +410,6 @@ $(document).ready(function() {
 		$("#test_bounce_handler_pop3_connection_results").hide();
 		$("#test_user_template_results").hide(); 
 		$("#test_amazon_ses_configuration_results").hide();
-
 
 	}
 	if ($("#installer_install_dada_mail").length) {
@@ -1330,7 +1334,17 @@ function test_user_template() {
 
 
 
-
+function installer_checkbox_toggle_option_groups(checkbox_id, target_id){ 
+	if ($("#" + checkbox_id).prop("checked") == true) {
+		if ($('#' + target_id).is(':hidden')) {
+			$('#' + target_id).show('blind');
+		}
+	} else {
+		if ($('#' + checkbox_id).is(':visible')) {
+			$('#' + target_id).hide('blind');
+		}
+	}
+}
 
 function installer_dada_root_pass_options() {
 	if ($("#dada_pass_use_orig").prop("checked") == true) {
@@ -1374,78 +1388,11 @@ function installer_toggle_dada_files_dirOptions() {
 	}
 }
 
-function installer_toggle_bridge_config() {
-	if ($("#install_bridge").prop("checked") == true) {
-		if ($('#bridge_configuration').is(':hidden')) {
-			$('#bridge_configuration').show('blind');
-		}
-	} else {
-		if ($('#bridge_configuration').is(':visible')) {
-			$('#bridge_configuration').hide('blind');
-		}
-	}
-}
 
-function installer_toggle_bounce_handler_config() {
-	if ($("#install_bounce_handler").prop("checked") == true) {
-		if ($('#bounce_handler_configuration').is(':hidden')) {
-			$('#bounce_handler_configuration').show('blind');
-		}
-	} else {
-		if ($('#bounce_handler_configuration').is(':visible')) {
-			$('#bounce_handler_configuration').hide('blind');
-		}
-	}
-}
 
-function installer_toggle_wysiwyg_editors_options() {
-	if ($("#install_wysiwyg_editors").prop("checked") == true) {
-		if ($('#install_wysiwyg_editors_options').is(':hidden')) {
-			$('#install_wysiwyg_editors_options').show('blind');
-		}
-	} else {
-		if ($('#install_wysiwyg_editors_options').is(':visible')) {
-			$('#install_wysiwyg_editors_options').hide('blind');
-		}
-	}
-}
 
-function installer_toggle_configure_amazon_ses_options() { 
-	if ($("#configure_amazon_ses").prop("checked") == true) {
-		if ($('#amazon_ses_options').is(':hidden')) {
-			$('#amazon_ses_options').show('blind');
-		}
-	} else {
-		if ($('#amazon_ses_options').is(':visible')) {
-			$('#amazon_ses_options').hide('blind');
-		}
-	}	
-}
 
-function installer_toggle_configure_profile_options() { 
-	if ($("#configure_profiles").prop("checked") == true) {
-		if ($('#profiles_options').is(':hidden')) {
-			$('#profiles_options').show('blind');
-		}
-	} else {
-		if ($('#profiles_options').is(':visible')) {
-			$('#profiles_options').hide('blind');
-		}
-	}	
-}
 
-function installer_toggle_configure_templates_options() { 
-	if ($("#configure_templates").prop("checked") == true) {
-		if ($('#template_options').is(':hidden')) {
-			$('#template_options').show('blind');
-		}
-	} else {
-		if ($('#template_options').is(':visible')) {
-			$('#template_options').hide('blind');
-		}
-	}	
-	
-}
 
 function installer_move_installer_dir() {
 

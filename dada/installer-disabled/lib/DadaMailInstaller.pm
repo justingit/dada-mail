@@ -64,15 +64,7 @@ my $Trace               = 0;
 
 # These are strings we look for in the example_dada_config.tmpl file which 
 # we need to remove. 
-my $sql_begin_cut = quotemeta(
-    q{# start cut for SQL Backend
-=cut}
-);
-my $sql_end_cut = quotemeta(
-    q{=cut
-# end cut for SQL Backend
-}
-);
+
 my $plugins_config_begin_cut = quotemeta(
 q{# start cut for plugin configs
 =cut}
@@ -98,23 +90,6 @@ my $list_settings_defaults_end_cut = quotemeta(
 q{=cut
 # end cut for list settings defaults}
 ); 
-my $amazon_ses_begin_cut = quotemeta(
-q{# start cut for Amazon SES Options
-=cut}
-); 
-my $amazon_ses_end_cut = quotemeta(
-q{=cut
-# end cut for Amazon SES Options}
-); 
-
-my $profiles_begin_cut = quotemeta(
-q{=cut
-# start cut for Dada Mail Profile Options}
-);
-my $profiles_end_cut = quotemeta(
-q{=cut
-# end cut for Dada Mail Profile Options}
-);
 
 
 my $plugins_extensions = { 
@@ -742,14 +717,7 @@ sub grab_former_config_vals {
 	) { 
 		$local_q->param('backend', 'default'); 
 	}
-	
-	# $USER_TEMPLATE
-	if(defined($BootstrapConfig::USER_TEMPLATE)){ 
-		$local_q->param('configure_templates',          1); 
-		$local_q->param('configure_user_template',      1); 
-		$local_q->param('template_options_USER_TEMPLATE', $BootstrapConfig::USER_TEMPLATE); 
-	}
-	
+		
 	# Plugins/Extensions
 	for my $plugin_ext(qw(
 		mailing_monitor
@@ -896,7 +864,44 @@ sub grab_former_config_vals {
 
 	}
 	
+	# Global Template Options 
+	if(defined($BootstrapConfig::USER_TEMPLATE)) { 
+		$local_q->param('configure_templates', 1); 
+		$local_q->param('configure_user_template', 1); 
+		$local_q->param('template_options_USER_TEMPLATE', $BootstrapConfig::USER_TEMPLATE); 		
+	}
 	
+	# Configure Security Options
+	if(
+		defined($BootstrapConfig::SHOW_ADMIN_LINK)
+	||  defined($BootstrapConfig::DISABLE_OUTSIDE_LOGINS)
+	||  defined($BootstrapConfig::ADMIN_FLAVOR_NAME)
+	||  defined($BootstrapConfig::SIGN_IN_FLAVOR_NAME)
+	) { 
+		$local_q->param('configure_security', 1);
+		if($BootstrapConfig::SHOW_ADMIN_LINK == 2){ 
+			$local_q->param('security_no_show_admin_link', 1);
+		}
+		else { 
+			$local_q->param('security_no_show_admin_link', 0);
+		}
+		$local_q->param('security_DISABLE_OUTSIDE_LOGINS', $BootstrapConfig::DISABLE_OUTSIDE_LOGINS);	
+		$local_q->param('security_ADMIN_FLAVOR_NAME',      $BootstrapConfig::ADMIN_FLAVOR_NAME);	
+		$local_q->param('security_SIGN_IN_FLAVOR_NAME',    $BootstrapConfig::SIGN_IN_FLAVOR_NAME);	
+	}
+	
+	# Mass Mailing Options
+	if(
+		defined($BootstrapConfig::MAILOUT_AT_ONCE_LIMIT)
+	||  defined($BootstrapConfig::MULTIPLE_LIST_SENDING)
+	||  defined($BootstrapConfig::MAILOUT_STALE_AFTER)
+		
+	){ 
+		$local_q->param('configure_mass_mailing', 1); 
+		$local_q->param('mass_mailing_MAILOUT_AT_ONCE_LIMIT', $BootstrapConfig::MAILOUT_AT_ONCE_LIMIT);	
+		$local_q->param('mass_mailing_MULTIPLE_LIST_SENDING', $BootstrapConfig::MULTIPLE_LIST_SENDING);	
+		$local_q->param('mass_mailing_MAILOUT_STALE_AFTER',   $BootstrapConfig::MAILOUT_STALE_AFTER);		
+	}
 	
 	# $AMAZON_SES_OPTIONS
 	if(defined($BootstrapConfig::AMAZON_SES_OPTIONS->{AWSAccessKeyId})
@@ -1397,11 +1402,22 @@ sub create_dada_config_file {
 
 	# Cripes, why wouldn't we pass a program url? 
 	if(!exists($args->{-program_url})){ 
-		
 	    my $prog_url = $DADA::Config::PROGRAM_URL;
 	    $prog_url =~ s{installer\/install\.cgi}{mail\.cgi};
 		$args->{-program_url} = $prog_url;
 	}
+
+
+	my $SQL_params = {};
+    if ( $args->{-backend} ne 'default' && $args->{-backend} ne '' ) {
+		$SQL_params->{configure_SQL} = 1; 
+		$SQL_params->{backend}       = $args->{-backend};
+        $SQL_params->{sql_server}    = $args->{-sql_server};
+        $SQL_params->{sql_database}  = clean_up_var($args->{-sql_database});
+        $SQL_params->{sql_port}      = clean_up_var($args->{-sql_port});
+        $SQL_params->{sql_username}  = clean_up_var($args->{-sql_username});
+        $SQL_params->{sql_password}  = clean_up_var($args->{-sql_password});
+    }
 
 	if($args->{-backend} eq 'SQLite'){ 
 		$args->{-sql_server} = ''; 
@@ -1413,6 +1429,7 @@ sub create_dada_config_file {
 	
 	my $profiles_params = {}; 
 	if($q->param('configure_profiles') == 1){ 
+		$profiles_params->{configure_profiles} = 1; 
 		for(qw(
 			enabled
 			profile_email
@@ -1439,18 +1456,43 @@ sub create_dada_config_file {
 		}
 	}
 	
-	my $template_options_USER_TEMPLATE = ''; 
+	my $template_options_params = {};
 	if($q->param('configure_templates') == 1 &&  $q->param('configure_user_template') == 1){ 
-		$template_options_USER_TEMPLATE = clean_up_var($q->param('template_options_USER_TEMPLATE'));	
+		$template_options_params->{template_options_USER_TEMPLATE} = clean_up_var($q->param('template_options_USER_TEMPLATE'));	
+		$template_options_params->{configure_templates} = 1;
 	}
 	
+	my $security_params = {};
+	if($q->param('configure_security') == 1){ 
+		$security_params->{configure_security} = 1; 
+		if($q->param('security_no_show_admin_link') == 1){ 
+			$security_params->{security_SHOW_ADMIN_LINK} = 2; 
+		}
+		else { 
+			$security_params->{security_SHOW_ADMIN_LINK} = 0; 			
+		}
+		$security_params->{security_DISABLE_OUTSIDE_LOGINS} = clean_up_var($q->param('security_DISABLE_OUTSIDE_LOGINS')); 
+		if(length($q->param('security_ADMIN_FLAVOR_NAME')) > 0) { 
+			$security_params->{security_ADMIN_FLAVOR_NAME} = clean_up_var($q->param('security_ADMIN_FLAVOR_NAME')); 
+		}
+		if(length($q->param('security_SIGN_IN_FLAVOR_NAME')) > 0) { 
+			$security_params->{security_SIGN_IN_FLAVOR_NAME} = clean_up_var($q->param('security_SIGN_IN_FLAVOR_NAME')); 
+		}
+	}
 	
-	# Since it's so simple, I'm placing it right here, rather than its own sub. 
-	my $AWSAccessKeyId = ''; 
-	my $AWSSecretKey   = ''; 
+	my $mass_mailing_params = {}; 
+	if($q->param('configure_mass_mailing') == 1){ 
+		$mass_mailing_params->{configure_mass_mailing} = 1; 
+		$mass_mailing_params->{mass_mailing_MAILOUT_AT_ONCE_LIMIT} = clean_up_var($q->param('mass_mailing_MAILOUT_AT_ONCE_LIMIT')); 
+		$mass_mailing_params->{mass_mailing_MULTIPLE_LIST_SENDING} = clean_up_var($q->param('mass_mailing_MULTIPLE_LIST_SENDING')); 
+		$mass_mailing_params->{mass_mailing_MAILOUT_STALE_AFTER}   = clean_up_var($q->param('mass_mailing_MAILOUT_STALE_AFTER')); 
+	}
+	
+	my $amazon_ses_params = {}; 
 	if($q->param('configure_amazon_ses') == 1){ 
-		$AWSAccessKeyId = $q->param('amazon_ses_AWSAccessKeyId'); 
-		$AWSSecretKey   = $q->param('amazon_ses_AWSSecretKey'); 
+		$amazon_ses_params->{configure_amazon_ses} = 1; 
+		$amazon_ses_params->{AWSAccessKeyId} = $q->param('amazon_ses_AWSAccessKeyId');
+		$amazon_ses_params->{AWSSecretKey} = $q->param('amazon_ses_AWSSecretKey'); 
 	}
 	
 	
@@ -1467,43 +1509,15 @@ sub create_dada_config_file {
 				support_files_dir_url  => $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name, 
 				Big_Pile_Of_Errors     => $Big_Pile_Of_Errors, 
 				Trace                  => $Trace, 
-                ( $args->{-backend} ne 'default' || $args->{-backend} eq '' )
-                ? (
-                    backend      => $args->{-backend},
-                    sql_server   => $args->{-sql_server},
-                    sql_database => clean_up_var($args->{-sql_database}),
-                    sql_port     => clean_up_var($args->{-sql_port}),
-                    sql_username => clean_up_var($args->{-sql_username}),
-                    sql_password => clean_up_var($args->{-sql_password}),
-                  )
-                : (),
-				template_options_USER_TEMPLATE => $template_options_USER_TEMPLATE, 
+				%{$SQL_params},
+			    %{$template_options_params},
 				%{$profiles_params},
-				AWSAccessKeyId => $AWSAccessKeyId, 
-				AWSSecretKey   => $AWSSecretKey, 
+				%{$security_params},
+				%{$mass_mailing_params}, 
+				%{$amazon_ses_params},
             }
         }
-    );
-
-    # SQL Stuff.
-    if ( $args->{-backend} eq 'default' || $args->{-backend} eq '' ) {
-
-        # ...
-    }
-    else {
-        $outside_config_file =~ s/$sql_begin_cut//;
-        $outside_config_file =~ s/$sql_end_cut//;
-    }
-
-	if($q->param('configure_amazon_ses') == 1){ 
-        $outside_config_file =~ s/$amazon_ses_begin_cut//;
-        $outside_config_file =~ s/$amazon_ses_end_cut//;		
-	}
-	if($q->param('configure_profiles') == 1){ 
-        $outside_config_file =~ s/$profiles_begin_cut//;
-        $outside_config_file =~ s/$profiles_end_cut//;		
-	}
-
+    );	
 
     open my $dada_config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', make_safer( $loc . '/.configs/.dada_config' )
       or croak $!;

@@ -748,8 +748,10 @@ editors also have the ability to make simple HTML tables for basic layouts.
 		
 	<h2>File Browsers/Uploaders</h2>
 
-	<input type="checkbox" name="file_browser_install_kcfinder" id="file_browser_install_kcfinder" value="1" checked="checked"/>			
-	<label for="file_browser_install_kcfinder">Install KCFinder</label>
+	<p>
+		<input type="checkbox" name="file_browser_install_kcfinder" id="file_browser_install_kcfinder" value="1" checked="checked"/>			
+		<label for="file_browser_install_kcfinder">Install KCFinder</label>
+	</p>
 		</fieldset> 
 </div> 
 
@@ -894,6 +896,85 @@ editors also have the ability to make simple HTML tables for basic layouts.
 </fieldset> 	
 </div> 
 
+
+
+<p>
+	<input type="checkbox" name="configure_security" id="configure_security" value="1" />			
+<label for="configure_security">Configure Security Options</label>
+</p>
+<div id="security_options">
+<fieldset> 
+	<p>
+		<input type="checkbox" name="security_no_show_admin_link" id="security_no_show_admin_link" value="1" />			
+		<label for="security_no_show_admin_link">Hide Administration Link</label>
+	</p>
+	<p>
+		<input type="checkbox" name="security_DISABLE_OUTSIDE_LOGINS" id="security_DISABLE_OUTSIDE_LOGINS" value="1" />			
+		<label for="security_DISABLE_OUTSIDE_LOGINS">Disable Outside Logins</label>
+	</p>
+	
+	<p>
+	<label for="security_ADMIN_FLAVOR_NAME">Admin Flavor Name:</label>
+	<input type="text" name="security_ADMIN_FLAVOR_NAME" id="security_ADMIN_FLAVOR_NAME" value="" />			
+	</p>
+
+	<p>
+	<label for="security_SIGN_IN_FLAVOR_NAME">Sign In Flavor Name:</label>
+	<input type="text" name="security_SIGN_IN_FLAVOR_NAME" id="security_SIGN_IN_FLAVOR_NAME" value="" />			
+	</p>
+	
+</fieldset> 	
+</div> 
+
+<p>
+	<input type="checkbox" name="configure_mass_mailing" id="configure_mass_mailing" value="1" />			
+<label for="configure_mass_mailing">Configure Global Mass Mailing Options</label>
+</p>
+<div id="mass_mailing_options">
+<fieldset> 
+	
+	<p>
+		<label for="mass_mailing_MAILOUT_AT_ONCE_LIMIT">
+			Mass Mailings at Once Limit: 
+		</label>
+		<select name="mass_mailing_MAILOUT_AT_ONCE_LIMIT" id="mass_mailing_MAILOUT_AT_ONCE_LIMIT">
+			<option value="1">1</option> 
+			<option value="2">2</option> 
+			<option value="3">3</option> 
+			<option value="4">4</option> 
+			<option value="5">5</option> 
+			<option value="6">6</option> 
+			<option value="7">7</option> 
+			<option value="8">8</option> 
+			<option value="9">9</option> 
+			<option value="10">10</option> 
+		</select>
+	</p>
+
+	<p>
+		<input type="checkbox" name="mass_mailing_MULTIPLE_LIST_SENDING" id="mass_mailing_MULTIPLE_LIST_SENDING" value="1" />
+		<label for="mass_mailing_MULTIPLE_LIST_SENDING">Multiple Mailing List Sending</label>
+	</p>
+	
+	<p>
+		<label for="mass_mailing_MAILOUT_STALE_AFTER">
+			Mass Mailings Stale After: 
+		</label>
+		<select name="mass_mailing_MAILOUT_STALE_AFTER" id="mass_mailing_MAILOUT_STALE_AFTER">
+			<option value="21600">6 hours</option>
+			<option value="43200">12 hours</option>
+			<option value="86400" selected="selected">1 Day</option> 
+			<option value="172800">2 Days</option> 
+			<option value="259200">3 Days</option>
+		</select>
+	</p>
+</fieldset> 	
+</div> 
+
+
+
+ 
+
 <p>
 	<input type="checkbox" name="configure_amazon_ses" id="configure_amazon_ses" value="1" />			
 <label for="configure_amazon_ses">Configure Amazon SES</label>
@@ -930,8 +1011,6 @@ editors also have the ability to make simple HTML tables for basic layouts.
 	
 </fieldset> 	
 </div> 
- 
-
 
 </fieldset> 
 

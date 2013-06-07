@@ -35,12 +35,8 @@ $ROOT_PASS_IS_ENCRYPTED   = '<!-- tmpl_var ROOT_PASS_IS_ENCRYPTED -->';
 # End Root Password
 #---------------------------------------------------------------------#
 
-
-# start cut for SQL Backend
-=cut
-
+<!-- tmpl_if configure_SQL --> 
 #---------------------------------------------------------------------#
-#
 # Backend Database Configuration: 
 
 $BACKEND_DB_TYPE = 'SQL';
@@ -65,13 +61,13 @@ $BACKEND_DB_TYPE = 'SQL';
 	pass             => '<!-- tmpl_var sql_password -->',
 
 );
+<!-- /tmpl_if --> 
 
-=cut
-# end cut for SQL Backend
+
+
 
 
 #---------------------------------------------------------------------#
-#
 # WYSIWYG Editor/File Browser Options
 
 # start cut for WYSIWYG Editor Options
@@ -106,26 +102,11 @@ $FILE_BROWSER_OPTIONS = {
 =cut
 # end cut for WYSIWYG Editor Options
 
-# Global Template Options
-$USER_TEMPLATE = '<!-- tmpl_var template_options_USER_TEMPLATE -->';
 
-# start cut for Amazon SES Options
-=cut
+<!-- tmpl_if configure_profiles --> 
 
-$AMAZON_SES_OPTIONS = { 
-	AWSAccessKeyId => '<!-- tmpl_var AWSAccessKeyId -->', 
-	AWSSecretKey   => '<!-- tmpl_var AWSSecretKey -->', 
-};
-
-=cut
-# end cut for Amazon SES Options
-
-
-
-
-=cut
-# start cut for Dada Mail Profile Options
-
+#---------------------------------------------------------------------#
+# Profile Options 
 
 $PROFILE_OPTIONS = { 
 		
@@ -169,8 +150,56 @@ $PROFILE_OPTIONS = {
 
 };
 
-=cut
-# end cut for Dada Mail Profile Options
+<!-- /tmpl_if --> 
+
+
+
+<!-- tmpl_if configure_templates --> 
+#---------------------------------------------------------------------#
+# Template Options 
+
+$USER_TEMPLATE  = '<!-- tmpl_var template_options_USER_TEMPLATE -->';
+<!-- /tmpl_if --> 
+
+
+
+
+<!-- tmpl_if configure_security --> 
+#---------------------------------------------------------------------#
+# Security Options 
+
+$SHOW_ADMIN_LINK        = <!-- tmpl_var security_SHOW_ADMIN_LINK -->; 
+$DISABLE_OUTSIDE_LOGINS = <!-- tmpl_var security_DISABLE_OUTSIDE_LOGINS -->;
+$ADMIN_FLAVOR_NAME      = '<!-- tmpl_var security_ADMIN_FLAVOR_NAME -->'; 
+$SIGN_IN_FLAVOR_NAME    = '<!-- tmpl_var security_SIGN_IN_FLAVOR_NAME -->'; 
+<!-- /tmpl_if -->
+
+
+
+<!-- tmpl_if configure_mass_mailing --> 
+#---------------------------------------------------------------------#
+# Mass Mailing Options 
+
+$MAILOUT_AT_ONCE_LIMIT = <!-- tmpl_var mass_mailing_MAILOUT_AT_ONCE_LIMIT -->; 
+$MULTIPLE_LIST_SENDING = <!-- tmpl_var mass_mailing_MULTIPLE_LIST_SENDING -->; 
+$MAILOUT_STALE_AFTER   = <!-- tmpl_var mass_mailing_MAILOUT_STALE_AFTER -->; 
+<!-- /tmpl_if -->
+
+
+
+
+
+<!-- tmpl_if configure_amazon_ses --> 
+#---------------------------------------------------------------------#
+# Amazon SES Options
+
+$AMAZON_SES_OPTIONS = { 
+	AWSAccessKeyId => '<!-- tmpl_var AWSAccessKeyId -->', 
+	AWSSecretKey   => '<!-- tmpl_var AWSSecretKey -->', 
+};
+<!-- /tmpl_if -->
+
+
 
 
 # start cut for list settings defaults
@@ -184,6 +213,9 @@ $PROFILE_OPTIONS = {
 
 =cut
 # end cut for list settings defaults
+
+
+
 
 
 # start cut for plugin configs
@@ -299,6 +331,9 @@ $PLUGIN_CONFIGS = {
 
 =cut
 # end cut for plugin configs
+
+
+
 
 
 # start cut for list control panel menu
