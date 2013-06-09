@@ -109,7 +109,7 @@ ok(
 );
 
 eval { $ls->save( { bad => "bad" } ); };
-ok( defined($@), "Error when attempting to save a non-existant setting: $@" );
+ok( defined($@), "Error when attempting to save a non-existent setting: $@" );
 
 # This tests to make sure various passwords, that are encrypted can be set by default, unencrypted:
 
@@ -225,7 +225,7 @@ ok( $ls->param('list') eq 'dadatest',
 # This will throw an error:
 eval { $ls->param( 'bad', 'bad' ); };
 ok( defined($@),
-    "Error when attempting to save (via param) a non-existant setting: $@" );
+    "Error when attempting to save (via param) a non-existent setting: $@" );
 like(
     $@,
     qr/Cannot call param\(\) on unknown setting\,/,

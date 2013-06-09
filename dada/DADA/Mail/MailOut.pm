@@ -429,8 +429,14 @@ sub create {
 	File::Copy::move($orig_name, $live_name)
 		or warn "could not move file from, '$orig_name', to, '$live_name': $!"; 
 	
-	
 	$self->dir($live_name); 
+
+	# I have to reset this to, as it's set in, create_subscriber_list(); 
+	# For whatever reason. 
+	
+    $self->subscriber_list(
+        $self->dir . '/' . $file_names->{tmp_subscriber_list} );
+
 
     #well, I guess I'll return 1 for success...
     return 1;
@@ -1970,7 +1976,6 @@ sub message_for_mail_send {
 
 
 
-
 sub clean_up {
 
     my $self = shift;
@@ -1985,7 +1990,19 @@ sub clean_up {
     croak "Make sure to call, 'associate' before calling cleanup!"
         if ! $self->dir; 
 
-	my $lock = $self->lock_file($self->mailout_directory_name); 
+	my $orig_name = $self->dir; 
+		
+	# so, we rename things, to get them out of the way, right away:
+	my $tmp_name = $orig_name;
+	   $tmp_name =~ s/sendout/TMP_sendout/; 
+	
+	require File::Copy; 
+	File::Copy::move($orig_name, $tmp_name)
+		or warn "could not move file from, '$orig_name', to, '$tmp_name': $!"; 
+		
+	$self->dir($tmp_name); 
+
+	my $lock = $self->lock_file($self->mailout_directory_name({-tmp => 1})); 
     
     my @deep_six_list;
 
@@ -2018,7 +2035,7 @@ sub clean_up {
 
         # good to go.
 		$self->unlock_file($lock); 
-		unlink($self->mailout_directory_name . '.lock'); 
+		unlink($self->mailout_directory_name({-tmp => 1}) . '.lock'); 
 
     }
     else {
