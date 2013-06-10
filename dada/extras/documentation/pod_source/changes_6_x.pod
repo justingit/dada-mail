@@ -1,3 +1,19 @@
+=head1 6.4.2
+
+=head2 Summary 6.4.2
+
+This version is primarilly a bug-fix release.
+
+=head2 Bugfixes 6.4.2
+
+=head3 Tracker: Links with "&amp;" in query string do not get tracked
+
+L<https://github.com/justingit/dada-mail/issues/380>
+
+=head3 Bridge: Moderation Links Broken
+
+L<https://github.com/justingit/dada-mail/issues/381>
+
 =head1 6.4.1
 
 =head2 Summary 6.4.1
