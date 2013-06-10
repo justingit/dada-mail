@@ -471,63 +471,65 @@ sub auto_redirect_tag {
 
 
 
-sub HTML_auto_redirect_w_HTML_TokeParser { 
-	
-#	print 'HTML_auto_redirect_w_HTML_TokeParser'; 
-	
-	my $self = shift; 
-	my $s    = shift;
-	
-	require HTML::TokeParser::Simple;
+# sub HTML_auto_redirect_w_HTML_TokeParser { 
+# 	
+# #	print 'HTML_auto_redirect_w_HTML_TokeParser'; 
+# 	
+# 	my $self = shift; 
+# 	my $s    = shift;
+# 	
+# 	require HTML::TokeParser::Simple;
+# 
+# 	my $parser = HTML::TokeParser::Simple->new(\$s);
+# 	my $html; 
+# 	
+# 	while ( my $token = $parser->get_token ) {
+# 	    if ($token->is_start_tag('a')) {
+# 	        my $link = $token->get_attr('href');
+# 	        if (defined $link) {
+# 				warn '$link: ' . $link
+# 				 if $t; 
+# 
+# 				# Skip links that are already tagged up!
+# 				if($link =~ m/(^(\<\!\-\-|\[|\<\?))|((\]|\-\-\>|\?\>)$)/){ 
+# 					warn '$link looks to contain tags? skipping.'
+# 					 if $t; 
+# 					 $html .= $token->as_is;	
+# 				}
+# 				else { 
+# 					# ... 
+# 				}
+# 
+# 				my $redirected_link = $self->redirect_tagify($link); 
+# 				warn '$redirected_link: ' . $redirected_link
+# 				 if $t; 
+# 
+# 				my $qm_link         = quotemeta($link);
+# 				warn '$link: "' . $link . '"'
+# 					if $t; 
+# 				warn '$qm_link: "' . $qm_link . '"'
+# 					if $t; 
+# 
+# 				warn '$redirected_link: "' . $redirected_link . '"' 
+# 					if $t;
+# 				$token->set_attr('href', $redirected_link);
+# 				$html .= $token->as_is;
+# 	        }
+# 	    }
+# 		else { 
+# 	    	$html .= $token->as_is;	
+# 		}
+# 	}
+# 	
+# #	die '$html :' . $html; 
+# 	
+# 	return $html; 
+# 	
+# 	
+# 		
+# }
+#
 
-	my $parser = HTML::TokeParser::Simple->new(\$s);
-	my $html; 
-	
-	while ( my $token = $parser->get_token ) {
-	    if ($token->is_start_tag('a')) {
-	        my $link = $token->get_attr('href');
-	        if (defined $link) {
-				warn '$link: ' . $link
-				 if $t; 
-
-				# Skip links that are already tagged up!
-				if($link =~ m/(^(\<\!\-\-|\[|\<\?))|((\]|\-\-\>|\?\>)$)/){ 
-					warn '$link looks to contain tags? skipping.'
-					 if $t; 
-					 $html .= $token->as_is;	
-				}
-				else { 
-					# ... 
-				}
-
-				my $redirected_link = $self->redirect_tagify($link); 
-				warn '$redirected_link: ' . $redirected_link
-				 if $t; 
-
-				my $qm_link         = quotemeta($link);
-				warn '$link: "' . $link . '"'
-					if $t; 
-				warn '$qm_link: "' . $qm_link . '"'
-					if $t; 
-
-				warn '$redirected_link: "' . $redirected_link . '"' 
-					if $t;
-				$token->set_attr('href', $redirected_link);
-				$html .= $token->as_is;
-	        }
-	    }
-		else { 
-	    	$html .= $token->as_is;	
-		}
-	}
-	
-#	die '$html :' . $html; 
-	
-	return $html; 
-	
-	
-		
-}
 sub HTML_auto_redirect_w_link_ext { 
 	
 	my $self = shift; 
@@ -550,24 +552,38 @@ sub HTML_auto_redirect_w_link_ext {
 		else { 
 			# ... 
 		}
-
-		my $redirected_link = $self->redirect_tagify($link); 
-		warn '$redirected_link: ' . $redirected_link
-		 if $t; 
 		
-		my $qm_link         = quotemeta($link);
-		warn '$link: "' . $link . '"'
-			if $t; 
-		warn '$qm_link: "' . $qm_link . '"'
-			if $t; 
-		
-		warn '$redirected_link: "' . $redirected_link . '"' 
-			if $t; 
+		my @links_to_look_at = ($link); 
+		if($link =~ m/\&/){ 
+			# There's some weird stuff happening in HTML::LinkExtor, 
+			# Which will change, "&amps;" back to, "&", probably due to 
+			# A well-reasoned... reason. But it still breaks shit. 
+			# So I look for both: 
 			
-		# This line is suspect - it only works with double quotes, ONLY looks at the first (?) 
-		# double quote and doesn't use any sort of API from HTML::LinkExtor. 
-		# 	
-		$self->{auto_redirect_tmp} =~ s/(href(\s*)\=(\s*)(\"?|\'?))$qm_link/$1$redirected_link/;
+			my $ampersand_link = $link; 
+			   $ampersand_link =~ s/\&/\&amp;/g;
+			push(@links_to_look_at, $ampersand_link); 
+		}
+		
+		foreach my $single_link(@links_to_look_at){ 
+			my $redirected_link = $self->redirect_tagify($single_link); 
+			warn '$redirected_link: ' . $redirected_link
+			 if $t; 
+		
+			my $qm_link         = quotemeta($single_link);
+			warn '$single_link: "' . $single_link . '"'
+				if $t; 
+			warn '$qm_link: "' . $qm_link . '"'
+				if $t; 
+		
+			warn '$redirected_link: "' . $redirected_link . '"' 
+				if $t; 
+			
+			# This line is suspect - it only works with double quotes, ONLY looks at the first (?) 
+			# double quote and doesn't use any sort of API from HTML::LinkExtor. 
+			# 	
+			$self->{auto_redirect_tmp} =~ s/(href(\s*)\=(\s*)(\"?|\'?))$qm_link/$1$redirected_link/;
+		}
 	}
     $self->{auto_redirect_tmp} = $s;
     my $p = HTML::LinkExtor->new( \&html_cb );
