@@ -38,7 +38,7 @@ my $Plugin_Config = {};
 
 $Plugin_Config->{Plugin_Name} = 'Multiple Subscribe';
 
-$Plugin_Config->{Plugin_URL}  = $q->self_url();
+$Plugin_Config->{Plugin_URL}  = $q->url();
 
 
 
@@ -180,7 +180,7 @@ sub subscription_form {
                 subscription_form => DADA::Template::Widgets::subscription_form(
                     {
                         -multiple_lists => 1,
-                        -script_url     => $q->self_url(),
+                        -script_url     => $q->url(),
                         -give_props     => 0
                     }
                 ),

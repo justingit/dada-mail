@@ -360,8 +360,8 @@ If you have root access to your own server and NO mail is being sent with any em
 
 Adding the following lines to your C<.dada_config> file: 
 
-	$MAIL_SETTINGS      = '>>' . $TMP . '/mail.txt';
-	$MASS_MAIL_SETTINGS = '>>' . $TMP . '/mail.txt';
+	$MAIL_SETTINGS      = '>>' . $DIR . '/.tmp/mail.txt';
+	$MASS_MAIL_SETTINGS = '>>' . $DIR . '/.tmp/mail.txt';
 
 Will simply write out all email messages sent from all mailing lists (that are set up to use sendmail to send out messages) into a file in the C<.dada_files/.tmp> directory called, C<mail.txt>
 

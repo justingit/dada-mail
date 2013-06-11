@@ -1,3 +1,19 @@
+=head1 6.4.2
+
+=head2 Summary 6.4.2
+
+This version is primarilly a bug-fix release.
+
+=head2 Bugfixes 6.4.2
+
+=head3 Tracker: Links with "&amp;" in query string do not get tracked
+
+L<https://github.com/justingit/dada-mail/issues/380>
+
+=head3 Bridge: Moderation Links Broken
+
+L<https://github.com/justingit/dada-mail/issues/381>
+
 =head1 6.4.1
 
 =head2 Summary 6.4.1
@@ -15,7 +31,7 @@ Rename the current, I<MailOut.pm> file you have within your Dada Mail installati
 Grab the version of the MailOut.pm file w/the bugfix, here: 
 
 L<https://raw.github.com/justingit/dada-mail/v6_4_1-stable_2013_06_09/dada/DADA/Mail/MailOut.pm>
-	
+
 And put this version up, where the original file was, in: I<dada/DADA/Mail>  
 
 Good to go! Again, these directions are only for users who are currently running B<v6.4.0> of Dada Mail. Everyone else is suggested to upgrade Dada Mail using the usual upgrade directions. 
