@@ -68,11 +68,10 @@ Membership (<!-- tmpl_var type_title -->)
 
 <!-- tmpl_if expr="(type eq 'list')" --> 
 	<!-- tmpl_if going_over_quota -->
-		 <div class="clearskiesbox">
+		 <div class="badweatherbox">
 			<p>
 			 Warning! You cannot subscribe all the addresses that you have submitted,
-			 since you will go over your subscription limit of <!-- tmpl_var list_settings.subscription_quota -->
-			 subscribers. Please re-submit a smaller number of addresses to subscribe.
+			 since you will go over your subscription limit. Please re-submit a smaller number of addresses to subscribe.
 			</p>
 		</div>
 	<!--/tmpl_if-->

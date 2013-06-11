@@ -151,12 +151,19 @@ sub subscription_check {
         || $args->{ -type } ne 'authorized_senders' )
     {
         if ( !$skip{over_subscription_quota} ) {
+			my $num_subscribers = $self->{lh}->num_subscribers; 
             if ( $list_info->{use_subscription_quota} == 1 ) {
-                if ( ( $self->{lh}->num_subscribers + 1 ) >=
+                if ( ( $num_subscribers + 1 ) >=
                     $list_info->{subscription_quota} )
                 {
                     $errors{over_subscription_quota} = 1;
                 }
+            }
+			elsif(defined($DADA::Config::SUBSCRIPTION_QUOTA)
+				&& $DADA::Config::SUBSCRIPTION_QUOTA > 0
+				&& $num_subscribers + 1 >= $DADA::Config::SUBSCRIPTION_QUOTA
+			){			
+				$errors{over_subscription_quota} = 1;
             }
         }
     }

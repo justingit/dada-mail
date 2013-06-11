@@ -37,32 +37,43 @@
 
 
 <!-- tmpl_if EXPR="(type eq 'list')" -->
-	
-	<!-- tmpl_if list_settings.use_subscription_quota -->
-		
-		<!-- tmpl_if subscription_quota_reached -->
-			<div class="badweatherbox">
-			<p>
-			 <strong>Warning!</strong>
-			<p> You are at or above the number of 
-			 Subscribers allowed (<!-- tmpl_var list_settings.subscription_quota -->)! 
-			 You may not Subscribe any more.
-			</p>
-			</div>
 			
-		<!--tmpl_else-->
+	<!-- tmpl_if subscription_quota_reached -->
+		<div class="badweatherbox">
+		<p>
+		 <strong>Warning!</strong>
+		</p>
+		<p> You are at or above the number of 
+		 Subscribers you may have for this mailing list. 
+		 You may not subscribe any more.
+		</p>
+		</div>
+		
+	<!--tmpl_else-->
+	
+		<!-- tmpl_if use_subscription_quota --> 
+			<div class="badweatherbox">
+				<p>
+					There is currently a limit of, <!-- tmpl_var subscription_quota --> 
+					Subscribers allowed to be subscribed on your mailing list.
+				</p>
+			</div> 
+		<!-- /tmpl_if --> 
+		
+		<!-- tmpl_if SUBSCRIPTION_QUOTA --> 
+	
 			<div class="badweatherbox">			
 			<p>
 				<strong>Warning!</strong>
 			</p> 
-			
-			<p>You have a limit of <!-- tmpl_var list_settings.subscription_quota -->
-			 subscriber(s) maximum allowed onto this Mailing List. You currently have 
+		
+			<p>There is a limit of <!-- tmpl_var SUBSCRIPTION_QUOTA -->
+			 subscriber(s) maximum allowed on any Mailing List. You currently have 
 			 <!-- tmpl_var num_subscribers --> Subscriber(s).
 			</p>
 		</div>
-			
-		<!--/tmpl_if-->
+	<!-- /tmpl_if --> 
+
 		
 	<!--/tmpl_if-->
 	
@@ -137,7 +148,7 @@
 
 		 <div class="buttonfloat">
 		  <input type="reset"  class="cautionary" value="Clear Changes" />
-		  <input type="submit" class="processing" value="Verify Address..." />
+		  <input type="submit"                    value="Verify Address..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing"<!-- /tmpl_if -->/>
 		 </div>
 		 <div class="floatclear"></div>
 
@@ -189,7 +200,7 @@
 
 	 <div class="buttonfloat">
 	  <input type="reset"  class="cautionary" value="Clear Changes" />
-	  <input type="submit" class="processing" value="Verify Addresses..." />
+	  <input type="submit"                    value="Verify Addresses..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing"<!-- /tmpl_if -->/>
 	 </div>
 	 <div class="floatclear"></div>
 	</form>
@@ -249,7 +260,7 @@
 	
 	 <div class="buttonfloat">
 	  <input type="reset"  class="cautionary" value="Clear Changes" />
-	  <input type="submit" class="processing" value="Verify Addresses..." />
+	  <input type="submit" value="Verify Addresses..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing"<!-- /tmpl_if --> />
 	 </div>
 	 <div class="floatclear"></div>
 	</form>
