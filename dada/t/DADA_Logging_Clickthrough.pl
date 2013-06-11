@@ -611,6 +611,10 @@ my $ar_str = q{
 	
 	<p><a href=http://example.com/no_quotes.html>No Quotes!</a></p>
 	
+	<p><a href="http://example.com/amp.html?foo&bar">ampersan query string</a></p>
+	
+	<p><a href="http://example.com/escaped_amp.html?foo&amp;bar">escaped ampersan query string</a></p>
+
 }; 
 
 $should_be = q{
@@ -640,11 +644,16 @@ $should_be = q{
 	
 	<p><a href=<?dada redirect url="http://example.com/no_quotes.html" ?>>No Quotes!</a></p>
 	
+	<p><a href="<?dada redirect url="http://example.com/amp.html?foo&bar" ?>">ampersan query string</a></p>
+	
+	<p><a href="<?dada redirect url="http://example.com/escaped_amp.html?foo&amp;bar" ?>">escaped ampersan query string</a></p>
+
 };
 
 $ar_str = $lc->auto_redirect_tag($ar_str, 'HTML');
+diag 'ar_str:' . $ar_str; 
 
-diag $ar_str;
+diag $should_be;
  
 ok($ar_str eq $should_be, "yeah, they match up! (HTML)"); 
 undef $ar_str; 

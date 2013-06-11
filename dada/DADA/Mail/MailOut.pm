@@ -386,7 +386,8 @@ sub create {
 
     $self->message( $args->{-fields} );
 
-    $self->create_directory();
+	# dir should now be set to the TMP_ directory
+    $self->_create_initial_directory();
 
     # The Temporary Subscriber List
     $self->create_subscriber_list( 
@@ -414,6 +415,28 @@ sub create {
 
     # A Copy of the Message Being Sent Out
     $self->create_raw_message();
+
+	# Everything made? OK, let's change the dir name, save that name, and move on, 
+	my $orig_name = $self->dir; 
+	my $live_name = $orig_name; 
+       $live_name =~ s/TMP_sendout/sendout/; 
+	$live_name = make_safer($live_name); 
+	
+	warn "moving directory from: '$orig_name', to: '$live_name'..."
+		if $t;
+		
+	require File::Copy; 
+	File::Copy::move($orig_name, $live_name)
+		or warn "could not move file from, '$orig_name', to, '$live_name': $!"; 
+	
+	$self->dir($live_name); 
+
+	# I have to reset this to, as it's set in, create_subscriber_list(); 
+	# For whatever reason. 
+	
+    $self->subscriber_list(
+        $self->dir . '/' . $file_names->{tmp_subscriber_list} );
+
 
     #well, I guess I'll return 1 for success...
     return 1;
@@ -543,32 +566,33 @@ sub is_batch_locked {
     }
 }
 
-sub create_directory {
+sub _create_initial_directory {
 
     my $self = shift;
 
-    if ( -d $self->mailout_directory_name() ) {
+	my $tmp_dir_name = make_safer($self->mailout_directory_name({-tmp => 1}));
+    if ( -d  $tmp_dir_name) {
         croak "Mass Mailing directory, '"
-            . $self->mailout_directory_name
+            . $tmp_dir_name
             . "' already exists?!";
     }
 
-    if ( !-d $self->mailout_directory_name ) {
+    if ( !-d $tmp_dir_name ) {
         croak
-            "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! Could not create, '" . $self->mailout_directory_name . "'- $!"
-            unless mkdir( $self->mailout_directory_name, $DADA::Config::DIR_CHMOD  );
-        chmod( $DADA::Config::DIR_CHMOD , $self->mailout_directory_name )
-            if -d $self->mailout_directory_name;
+            "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! Could not create, '" . $tmp_dir_name . "'- $!"
+            unless mkdir( $tmp_dir_name, $DADA::Config::DIR_CHMOD  );
+        chmod( $DADA::Config::DIR_CHMOD , $tmp_dir_name )
+            if -d $tmp_dir_name;
     }
 
-    if ( !-d $self->mailout_directory_name ) {
+    if ( !-d $tmp_dir_name ) {
         croak "Mass Mailing Directory never created at: '"
-            . $self->mailout_directory_name . "'";
+            . $tmp_dir_name . "'";
     }
 
-    $self->dir( $self->mailout_directory_name );
+    $self->dir( $tmp_dir_name );
     
-    warn 'Directory created at: ' . $self->mailout_directory_name . ' saved in $self->dir as: ' . $self->dir
+    warn 'Directory created at: ' . $tmp_dir_name . ' saved in $self->dir as: ' . $self->dir
         if $t; 
         
     return 1; 
@@ -578,6 +602,10 @@ sub create_directory {
 sub mailout_directory_name {
 
     my $self = shift;
+    my ($args) = @_;  
+    if(!exists($args->{-tmp})){ 
+		$args->{-tmp} = 0; 
+	}
     my $tmp  = $self->_internal_message_id;
 
     my $letter_id = $tmp;
@@ -585,10 +613,17 @@ sub mailout_directory_name {
     $letter_id =~ s/\>|\<//g;
 
     $letter_id = DADA::App::Guts::strip($letter_id);
-
+	
+	my $prepend = ''; 
+	if($args->{-tmp} == 1){ 
+		$prepend = 'TMP_'; 
+	}
+	
     return make_safer(
         $DADA::Config::TMP 
-        . '/sendout-'
+        . '/' 
+		. $prepend
+		. 'sendout-'
         . $self->{list} 
         . '-'
         . $self->mailout_type 
@@ -1941,7 +1976,6 @@ sub message_for_mail_send {
 
 
 
-
 sub clean_up {
 
     my $self = shift;
@@ -1956,7 +1990,19 @@ sub clean_up {
     croak "Make sure to call, 'associate' before calling cleanup!"
         if ! $self->dir; 
 
-	my $lock = $self->lock_file($self->mailout_directory_name); 
+	my $orig_name = $self->dir; 
+		
+	# so, we rename things, to get them out of the way, right away:
+	my $tmp_name = $orig_name;
+	   $tmp_name =~ s/sendout/TMP_sendout/; 
+	
+	require File::Copy; 
+	File::Copy::move($orig_name, $tmp_name)
+		or warn "could not move file from, '$orig_name', to, '$tmp_name': $!"; 
+		
+	$self->dir($tmp_name); 
+
+	my $lock = $self->lock_file($self->mailout_directory_name({-tmp => 1})); 
     
     my @deep_six_list;
 
@@ -1989,7 +2035,7 @@ sub clean_up {
 
         # good to go.
 		$self->unlock_file($lock); 
-		unlink($self->mailout_directory_name . '.lock'); 
+		unlink($self->mailout_directory_name({-tmp => 1}) . '.lock'); 
 
     }
     else {

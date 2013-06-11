@@ -1,3 +1,49 @@
+=head1 6.4.2
+
+=head2 Summary 6.4.2
+
+This version is primarilly a bug-fix release.
+
+=head2 Bugfixes 6.4.2
+
+=head3 Tracker: Links with "&amp;" in query string do not get tracked
+
+L<https://github.com/justingit/dada-mail/issues/380>
+
+=head3 Bridge: Moderation Links Broken
+
+L<https://github.com/justingit/dada-mail/issues/381>
+
+=head1 6.4.1
+
+=head2 Summary 6.4.1
+
+This version is primarily a bug-fix release, dealing with mass mailings that will be paused as soon as they're created.
+
+It's a problem that probably started in the v6.4.0 release of Dada Mail (although it could have bitten those before this ver.). 
+
+The fix was made basically in one file, so if you are currently running B<v6.4.0> of Dada Mail (and ONLY this version), you may do the following, instead of having to completely re-install Dada Mail: 
+
+The file that needs to be changed out is at: I<dada/DADA/Mail/MailOut.pm> 
+
+Rename the current, I<MailOut.pm> file you have within your Dada Mail installation. 
+
+Grab the version of the MailOut.pm file w/the bugfix, here: 
+
+L<https://raw.github.com/justingit/dada-mail/v6_4_1-stable_2013_06_09/dada/DADA/Mail/MailOut.pm>
+
+And put this version up, where the original file was, in: I<dada/DADA/Mail>  
+
+Good to go! Again, these directions are only for users who are currently running B<v6.4.0> of Dada Mail. Everyone else is suggested to upgrade Dada Mail using the usual upgrade directions. 
+
+This bugfix may also help the problem with Mass Mailings that I<finish> correctly, but also leave a notice in the Mailing Monitor, that it's still around and corrupted. We'd love to hear your feedback. 
+
+=head2 Bugfixes 6.4.1
+
+=head3 Mass Mailings Sometimes Paused After Creation 
+
+L<https://github.com/justingit/dada-mail/issues/379>
+
 =head1 6.4.0
 
 =head2 Summary 6.4.0

@@ -52,7 +52,7 @@ my $broken_mailout = DADA::Mail::MailOut->new();
 ok(!defined $broken_mailout, 'new() returned undef when no list was passed...' );
 
 my $broken_mailout_two = DADA::Mail::MailOut->new({ -list => $list });
-ok(!defined $broken_mailout_two,              'new() returned nothing with a non-existant list - good!' );
+ok(!defined $broken_mailout_two,              'new() returned nothing with a non-existent list - good!' );
 
 
 

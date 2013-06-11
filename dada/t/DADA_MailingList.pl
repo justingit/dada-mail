@@ -50,7 +50,7 @@ DADA::MailingList::Remove({-name => 'mytestlist'});
 
 
 eval { DADA::MailingList::Remove({-name => 'mytestlist'})  }; 
-ok($@, "calling DADA::MailingList::Remove() with a non-existant causes an error!: $@");     
+ok($@, "calling DADA::MailingList::Remove() with a non-existent causes an error!: $@");     
 
 
 

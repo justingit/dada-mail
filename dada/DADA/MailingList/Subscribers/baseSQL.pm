@@ -1173,6 +1173,9 @@ sub create_mass_sending_file {
         @_
     );
 
+
+	my $b_time = time; 
+	
     my $list = $self->{list};
     my $type = $args{-Type};
 
@@ -1429,6 +1432,11 @@ sub create_mass_sending_file {
       or croak(
 "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error - could not close temporary sending  file '$sending_file' successfully"
       );
+
+	if($t){ 
+		warn "Mass Sending File Time Creation: " . (time - $b_time) . " seconds."; 
+	}
+	
 
     return ( $sending_file, $total );
 
