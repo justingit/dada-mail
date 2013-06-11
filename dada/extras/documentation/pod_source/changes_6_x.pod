@@ -1,3 +1,89 @@
+=head1 6.5.0 alpha 1
+
+=head2 Summary 6.5.0 alpha 1
+
+=head2 Features 6.5.0 alpha 1
+
+This version of Dada Mail features many additional configuration options available when using the included Installer: 
+
+=over
+
+=item * Profiles
+
+Enable/Disable the following Profile Features: 
+
+=over
+
+=item * Profiles in General 
+
+=item * Set the Profile Administratiin Email
+
+=item * CAPTCHA
+
+=item * Magic Subscription Forms
+
+=item * Help Screen
+
+=item * Profile Login
+
+=item * Profile Registration
+
+=item * Password Reset
+
+=item * Profile Fields
+
+=item * Mailing List Subscriptions
+
+=item * Password Protected Directory Information 
+
+=item * Update Email Address
+
+=item * Change Password
+
+=item * Profile Deletion 
+
+=back
+
+=item * Global Template Options
+
+=over
+
+=item *  Set a Global, User-Facing Template
+
+(Absolute File Path, or URL) 
+
+=back
+
+=item * Security Options
+
+=over
+
+=item * Hide Administration Link
+
+=item * Disable Outside Logins
+
+=item * Admin Flavor Name
+
+=item * Sign In Flavor Name
+
+=back
+
+=item * Global Mass Mailing Options 
+
+=over
+
+=item *  Mass Mailings at Once Limit
+
+=item *  Multiple Mailing List Sending
+
+=item *  Mass Mailings Stale After Limit
+
+=back
+
+These global paramaters can be read from previous configurations, and can be editing using the installer or directly in the C<.dada_config> file. 
+
+=back
+
 =head1 6.4.2
 
 =head2 Summary 6.4.2
