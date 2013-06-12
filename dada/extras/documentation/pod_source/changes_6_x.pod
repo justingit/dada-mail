@@ -1,3 +1,15 @@
+=head1 6.4.3
+
+=head2 Summary 6.4.3
+
+This version is primarilly a bug-fix release.
+
+=head2 Bugfixes 6.4.3
+
+=head3 Subscription Quotas don't really... work
+
+L<https://github.com/justingit/dada-mail/issues/382>
+
 =head1 6.4.2
 
 =head2 Summary 6.4.2
