@@ -4,7 +4,7 @@
 
 =head1 Step #1: Download Dada Mail
 
-Here's the direct download to Dada Mail v6.4.2:
+Here's the direct download to Dada Mail v6.5.0 Alpha 1:
 
 L<http://dadamail.googlecode.com/files/dada-6_5_0-alpha1tar.gz>
 

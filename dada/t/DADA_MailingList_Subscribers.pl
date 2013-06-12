@@ -2020,6 +2020,90 @@ ok($lh->remove_all_subscribers( { -type => 'list' } ) == 15);
 
 
 
+# Subscription Quotas
+#
+# Let's add 1,000 to start: 
+for(1..1_000) { 
+	$lh->add_subscriber(
+	    {
+	        -email  => $_ . 'sub_quota@example.com',
+	        -type   => 'list',
+	    }
+	);
+}
+
+# Set a global quota: 
+$DADA::Config::SUBSCRIPTION_QUOTA = 1000; 
+
+my ( $status, $errors ) = $lh->subscription_check(
+    {
+        -email => 'yetonemoresubscriber@example.com',
+        -Type  => 'list',
+    }
+);
+ok( $status == 0, "Status is 0 ($status)" );
+ok( $errors->{over_subscription_quota} == 1, "over_subscription_quota"); 
+
+
+
+# Disable the quota. Still works? 
+$DADA::Config::SUBSCRIPTION_QUOTA = undef;  
+my ( $status, $errors ) = $lh->subscription_check(
+    {
+        -email => 'yetonemoresubscriber@example.com',
+        -Type  => 'list',
+    }
+);
+ok( $status == 1, "Status is 1 ($status)" );
+
+
+# List-specific quota: 
+$ls->save(
+	{ 
+		use_subscription_quota => 1, 
+		subscription_quota     => 1000, 
+	}	
+); 
+my ( $status, $errors ) = $lh->subscription_check(
+    {
+        -email => 'yetonemoresubscriber@example.com',
+        -Type  => 'list',
+    }
+);
+ok( $status == 0, "Status is 0 ($status)" );
+ok( $errors->{over_subscription_quota} == 1, "over_subscription_quota"); 
+
+# List-specific quota, bigger than Global Quota - global quota should be used:  
+$DADA::Config::SUBSCRIPTION_QUOTA = 1000; 
+$ls->save(
+	{ 
+		use_subscription_quota => 1, 
+		subscription_quota     => 50000, 
+	}	
+); 
+my ( $status, $errors ) = $lh->subscription_check(
+    {
+        -email => 'yetonemoresubscriber@example.com',
+        -Type  => 'list',
+    }
+);
+ok( $status == 0, "Status is 0 ($status)" );
+ok( $errors->{over_subscription_quota} == 1, "over_subscription_quota"); 
+
+#undef($subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid); 
+my ($subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid)
+	= $lh->filter_subscribers(
+		{
+			-emails => ['yetonemoresubscriber@example.com'],
+			-type   => 'list',
+		}
+	);
+ok($invalid->[0] eq 'yetonemoresubscriber@example.com'); 	
+
+ok($lh->remove_all_subscribers( { -type => 'list' } ) == 1000);
+
+
+
 dada_test_config::remove_test_list;
 dada_test_config::wipe_out;
 

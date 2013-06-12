@@ -3088,6 +3088,7 @@ sub view_list {
     $list = $admin_list;
 
     my $add_email_count                  = xss_filter($q->param('add_email_count'))                  || 0;
+	my $skipped_email_count              = xss_filter($q->param('skipped_email_count'))              || 0; 
     my $delete_email_count               = xss_filter($q->param('delete_email_count'))               || 0;
     my $black_list_add                   = xss_filter($q->param('black_list_add'))                   || 0;
     my $approved_count                   = xss_filter($q->param('approved_count'))                   || 0;
@@ -3123,12 +3124,12 @@ sub view_list {
 					order_by         => $order_by, 
 					order_dir        => $order_dir, 
 					
-					
-				    add_email_count   => $add_email_count,                 
-				    delete_email_count     => $delete_email_count,            
-				    black_list_add  => $black_list_add,                  
-				    approved_count   => $approved_count,                 
-				    denied_count    => $denied_count,                  
+				    add_email_count                  => $add_email_count, 
+				    skipped_email_count              => $skipped_email_count,                 
+				    delete_email_count               => $delete_email_count,            
+				    black_list_add                   => $black_list_add,                  
+				    approved_count                   => $approved_count,                 
+				    denied_count                     => $denied_count,                  
 					bounced_list_moved_to_list_count => $bounced_list_moved_to_list_count, 
 					bounced_list_removed_from_list   => $bounced_list_removed_from_list, 
 					
@@ -4522,15 +4523,24 @@ sub add {
 
         require DADA::MailingList::Settings;
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-        my $li = $ls->get;
 
         my $num_subscribers            = $lh->num_subscribers;
         my $subscription_quota_reached = 0;
-        $subscription_quota_reached = 1
-          if ( $li->{use_subscription_quota} == 1 )
-          && ( $num_subscribers >= $li->{subscription_quota} )
-          && ( $num_subscribers + $li->{subscription_quota} > 1 );
-
+		
+		if($type eq 'list') { 
+			if($ls->param('use_subscription_quota') == 1 
+			 && ( $num_subscribers >= $ls->param('subscription_quota') )
+		     && ( $num_subscribers + $ls->param('subscription_quota') > 1 )
+			) { 
+				$subscription_quota_reached = 1 ; 
+			}
+			elsif(defined($DADA::Config::SUBSCRIPTION_QUOTA)
+			&& $DADA::Config::SUBSCRIPTION_QUOTA > 0
+			&& $num_subscribers >= $DADA::Config::SUBSCRIPTION_QUOTA){ 
+				$subscription_quota_reached = 1;
+			}
+		}
+		
         my $list_type_switch_widget = $q->popup_menu(
             -name     => 'type',
             '-values' => [ keys %list_types ],
@@ -4818,16 +4828,46 @@ sub add_email {
 
         my $num_subscribers = $lh->num_subscribers;
 
-        my $going_over_quota = undef;
-
+        
 # and for some reason, this is its own subroutine...
 # This is down here, so the status bar won't disapear before this page is loaded (or the below redirect)
         dump_meta_file();
 
-        $going_over_quota = 1
-          if ( ( $num_subscribers + $#$not_subscribed ) >=
-            $ls->param('subscription_quota') )
-          && ( $ls->param('use_subscription_quota') == 1 );
+
+		# This is to see if we're already over quota: 
+		my $subscription_quota_reached = 0; 
+		if($type eq 'list') { 
+			if($ls->param('use_subscription_quota') == 1 
+			 && ( $num_subscribers >= $ls->param('subscription_quota') )
+		     && ( $num_subscribers + $ls->param('subscription_quota') > 1 )
+			) { 
+				$subscription_quota_reached = 1 ; 
+			}
+			elsif(defined($DADA::Config::SUBSCRIPTION_QUOTA)
+			&& $DADA::Config::SUBSCRIPTION_QUOTA > 0
+			&& $num_subscribers >= $DADA::Config::SUBSCRIPTION_QUOTA){ 
+				$subscription_quota_reached = 1;
+			}
+		}
+		if($subscription_quota_reached) { 
+			print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?f=add&type=list'); 
+			return; 
+		}
+
+		my $going_over_quota = 0;
+		if($type eq 'list') { 
+	        if ($ls->param('use_subscription_quota') == 1
+	 		&& ( $num_subscribers + scalar(@$not_subscribed) ) > $ls->param('subscription_quota') 
+			) { 
+				$going_over_quota = 1; 
+			}
+			elsif (
+				defined($DADA::Config::SUBSCRIPTION_QUOTA)
+			&&  $DADA::Config::SUBSCRIPTION_QUOTA > 0
+			&& ($num_subscribers + scalar(@$not_subscribed)) > $DADA::Config::SUBSCRIPTION_QUOTA){ 
+				$going_over_quota = 1;
+			}
+		}
 
         my $addresses_to_add = 0;
         $addresses_to_add = 1
@@ -4899,6 +4939,19 @@ sub add_email {
         }
         else {
 
+			my $quota_limit = undef;
+			if($type eq 'list') { 
+		        if ($ls->param('use_subscription_quota') == 1) { 
+					$quota_limit = $ls->param('subscription_quota') ; 
+				}
+				elsif (
+					defined($DADA::Config::SUBSCRIPTION_QUOTA)
+				&&  $DADA::Config::SUBSCRIPTION_QUOTA > 0
+				) { 
+					$quota_limit = $DADA::Config::SUBSCRIPTION_QUOTA;
+				}
+			}
+			
 			if(
 				$ls->param('enable_mass_subscribe') != 1 &&
 				$type eq 'list'
@@ -4909,30 +4962,40 @@ sub add_email {
             my @address             = $q->param("address");
             my $new_email_count     = 0;
 			my $skipped_email_count = 0; 
-
+			my $num_subscribers     = $lh->num_subscribers;
+			my $new_total           = $num_subscribers; 
             # Each Address is a CSV line...
             for my $a (@address) {
 	
-                my $info = $lh->csv_to_cds($a);
-                my $dmls = $lh->add_subscriber(
-                    {
-                        -email 		    => $info->{email},
-                        -fields 		=> $info->{fields},
-                        -type   		=> $type,
-						-fields_options => {
-							-mode => $q->param('fields_options_mode')
-						},
-						-dupe_check    => {
-							-enable  => 1,
-							-on_dupe => 'ignore_add',
-	                	},
-                    }
-                );
-				if(defined($dmls)){ # undef means it wasn't added. 
-                	$new_email_count++;
-            	}
+				my $info = undef; 
+				my $dmls = undef;
+				
+				if($type eq 'list' && defined($quota_limit) && $new_total >= $quota_limit){ 
+					$skipped_email_count++; 					
+				}
 				else { 
-					$skipped_email_count++; 
+	                $info = $lh->csv_to_cds($a);
+	                $dmls = $lh->add_subscriber(
+	                    {
+	                        -email 		    => $info->{email},
+	                        -fields 		=> $info->{fields},
+	                        -type   		=> $type,
+							-fields_options => {
+								-mode => $q->param('fields_options_mode')
+							},
+							-dupe_check    => {
+								-enable  => 1,
+								-on_dupe => 'ignore_add',
+		                	},
+	                    }
+	                );
+					$new_total++; 
+					if(defined($dmls)){ # undef means it wasn't added. 
+	                	$new_email_count++;
+	            	}
+					else { 
+						$skipped_email_count++; 
+					}
 				}
 			}
 

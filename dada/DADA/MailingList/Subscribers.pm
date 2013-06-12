@@ -433,15 +433,25 @@ sub filter_subscribers {
             }
         }
 
-        if (   $type ne 'black_list'
-            || $type ne 'authorized_senders'
-            || $type ne 'white_list' )
-        {
+# I don't quote understand why these, and only these are exempt - 
+# Should basically only work with, "list" 
+#
+#        if (   $type ne 'black_list'
+#            || $type ne 'authorized_senders'
+#            || $type ne 'white_list' )
+#        {
+		 if($type eq 'list') { 
             if ( $li->{use_subscription_quota} == 1 ) {
                 if ( ( $num_subscribers + 1 ) >= $li->{subscription_quota} ) {
                     $errors->{over_subscription_quota} = 1;
                 }
             }
+			elsif(defined($DADA::Config::SUBSCRIPTION_QUOTA)
+				&& $DADA::Config::SUBSCRIPTION_QUOTA > 0
+				&& $num_subscribers + 1 >= $DADA::Config::SUBSCRIPTION_QUOTA
+			){			
+			    $errors->{over_subscription_quota} = 1;	
+			}
         }
 
         if (   $errors->{invalid_email} == 1

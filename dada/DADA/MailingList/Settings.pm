@@ -187,6 +187,7 @@ sub post_process_get {
             }
         }
 
+		# This says basically, make sure the list subscription quota is <= the global list sub quota. 
         $DADA::Config::SUBSCRIPTION_QUOTA ||= undef;
 
         if (   $DADA::Config::SUBSCRIPTION_QUOTA
@@ -196,6 +197,8 @@ sub post_process_get {
         {
             $li->{subscription_quota} = $DADA::Config::SUBSCRIPTION_QUOTA;
         }
+
+
 
         for ( 'sasl_smtp_password', 'pop3_password',
             'discussion_pop_password' )
