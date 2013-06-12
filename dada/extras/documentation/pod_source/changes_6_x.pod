@@ -1,8 +1,8 @@
-=head1 6.5.0 alpha 1
+=head1 6.5.0 alpha 2
 
-=head2 Summary 6.5.0 alpha 1
+=head2 Summary 6.5.0 alpha 2
 
-=head2 Features 6.5.0 alpha 1
+=head2 Features 6.5.0 alpha 2
 
 This version of Dada Mail features many additional configuration options available when using the included Installer: 
 
