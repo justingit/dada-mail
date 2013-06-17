@@ -272,6 +272,25 @@ sub subscribe {
 			$skip_sub_confirm_if_logged_in == 1
 		){    
 	
+			# I still have to make a confirmation token, the CAPTCHA step before
+			# confirmation step #1 still requires it. 
+			require DADA::App::Subscriptions::ConfirmationTokens; 
+			my $ct    = DADA::App::Subscriptions::ConfirmationTokens->new();
+			my $token = $ct->save(
+				{
+					-email => $email,
+					-data  => {
+						list        => $list, 
+						type        => 'list', 
+						flavor      => 'sub_confirm', 
+						remote_addr => $ENV{REMOTE_ADDR}, 
+					},
+					-remove_previous => 1, 
+				}
+			);
+			
+			# And then, we have to stick the token in the query, 
+			$args->{-cgi_obj}->param('token', $token); 
 			
 	        $lh->add_subscriber(
 	            {
