@@ -292,14 +292,21 @@ sub subscribe {
 			# And then, we have to stick the token in the query, 
 			$args->{-cgi_obj}->param('token', $token); 
 			
-	        $lh->add_subscriber(
+	        my $add_to_sub_confirm_list = $lh->add_subscriber(
 	            {
 	                -email         => $email, 
 	                -type          => 'sub_confirm_list', 
 	                -fields        => $fields,
 	            	-confirmed     => 0, 
+					-dupe_check => {
+			            -enable  => 1,
+			            -on_dupe => 'ignore_add',
+			        },
 				}
 	        );
+			if(!defined($add_to_sub_confirm_list)) { 
+				warn "address, $email, wasn't added to the sub_confirm_list correctly - is it already on there?"; 
+			}
 	
 	        $self->confirm(
 	            {
@@ -413,6 +420,11 @@ sub subscribe {
                  -type      => 'sub_confirm_list', 
                  -fields    => $fields,
 	             -confirmed => 0, 
+				 -dupe_check => {
+		         	-enable  => 1,
+		            -on_dupe => 'ignore_add',
+		         },
+
              }
         ); 
         
@@ -1237,6 +1249,10 @@ sub unsubscription_request {
 	            {
 	                -email => $email,
 	                -type  => 'unsub_confirm_list',
+					 -dupe_check => {
+			         	-enable  => 1,
+			            -on_dupe => 'ignore_add',
+			         },
 	            }
 	        );
 		}

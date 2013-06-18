@@ -276,6 +276,73 @@ ok(
     )
 );
 
+diag "Justin! there are, " . $lh->num_subscribers . "on this list."; 
+
+# So, add_subscriber actually doesn't have a dupe check by default, so it is possible to 
+# add the same address multiple times. Most of the app knows this, and takes pains to make sure dupe check is enabled, 
+# just in case, but if it's not, it shouldn't ever, ever, ever add the same address twice to one sublist. Ever. 
+
+# So rather, let's start by doing just that: 
+ok(
+    $lh->add_subscriber(
+        {
+            -email => 'duper@example.com',
+            -type  => 'sub_confirm_list',
+	        -dupe_check => {
+	            -enable  => 1,
+	            -on_dupe => 'ignore_add',
+	        },
+
+        }
+    ),
+    'added duper@example.com sub_confirm_list (1)'
+); 
+ok(
+    $lh->add_subscriber(
+        {
+            -email => 'duper@example.com',
+            -type  => 'sub_confirm_list',
+	        -dupe_check => {
+	            -enable  => 1,
+	            -on_dupe => 'ignore_add',
+	        },
+
+        }
+    ) eq indef,
+    'couldn\'t add duper@example.com sub_confirm_list (2)'
+);
+ok(
+    $lh->add_subscriber(
+        {
+            -email => 'duper@example.com',
+            -type  => 'sub_confirm_list',
+	        -dupe_check => {
+	            -enable  => 1,
+	            -on_dupe => 'ignore_add',
+	        },
+
+        }
+    ) eq indef,
+    'couldn\'t add duper@example.com sub_confirm_list (3)'
+); 
+
+$lh->move_subscriber({
+    -email => 'duper@example.com',
+	-from  => 'sub_confirm_list', 
+	-to    => 'list',
+#	{ 
+#	    -dupe_check    => {
+#							-enable  => 1, 
+#							-on_dupe => 'only_move_once',  
+ #   					}, 
+#	} 
+});
+
+ok($lh->num_subscribers == 1, "there are now one subscriber on list"); 
+ok( $lh->remove_all_subscribers == 1, "Removed all the subscribers!" );
+
+
+
 ###
 
 #### copy_subscriber
