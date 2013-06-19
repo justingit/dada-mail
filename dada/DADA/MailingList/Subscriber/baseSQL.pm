@@ -283,11 +283,7 @@ sub move {
                       WHERE list_type   = ? 
                       AND   email       = ?';
 
-	## Unsubs via a subscriber are done by first moving  them to the unsub_confirm_list
-	#if($args->{ -to } eq 'unsub_confirm_list' && $DADA::Config::GLOBAL_UNSUBSCRIBE == 1){ 
 		$query .=' AND list = ' . $self->{dbh}->quote($self->{list}); 
-	#}
-		
     my $sth = $self->{dbh}->prepare($query);
 
     my $rv =
@@ -295,31 +291,19 @@ sub move {
       or croak "cannot do statement (at move_subscriber)! $DBI::errstr\n";
 
     if ( $rv == 1 ) {
-		if ( $DADA::Config::LOG{subscriptions} ) {
-			#	        $self->{'log'}->mj_log(
-			#	            $self->{list},
-			#	            'Moved from:  '
-			#	              . $self->{list} . '.'
-			#	              . $self->type . ' to: '
-			#	              . $self->{list} . '.'
-			#	              . $args->{ -to },
-			#	            $self->email,
-			#	        );
+		if ( $DADA::Config::LOG{subscriptions} == 1 ) {
+			$self->{'log'}->mj_log( 
+				$self->{list},
+		        "Unsubscribed from ". $self->{list} . "." . $self->type,
+		         $self->email 
+			);
+		    $self->{'log'}->mj_log( 
+				$self->{list},
+		        'Subscribed to ' . $self->{list} . '.' . $args->{ -to },
+		        $self->email 
+			);
+		}
 
-	
-			if ( $DADA::Config::LOG{subscriptions} == 1 ) {
-				$self->{'log'}->mj_log( 
-					$self->{list},
-			        "Unsubscribed from ". $self->{list} . "." . $self->type,
-			         $self->email 
-				);
-			    $self->{'log'}->mj_log( 
-					$self->{list},
-			        'Subscribed to ' . $self->{list} . '.' . $args->{ -to },
-			        $self->email 
-				);
-			}
-	    }
 
 	    # Since this is a reference, this should do what I want -
 	    $self = DADA::MailingList::Subscriber->new(
@@ -334,7 +318,7 @@ sub move {
         #carp "Hey, that worked!";
     }
     else {
-        carp "Something's wrong. Returned $rv rows, expected 1";
+        carp "Something's wrong. Returned $rv rows, expected 1 - have >1 copies of the email address been moved?";
     }
 }
 

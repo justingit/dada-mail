@@ -206,7 +206,7 @@ sub admin_template {
 	if($DADA::Config::ADMIN_TEMPLATE){ 	
 		$admin_template = fetch_admin_template($DADA::Config::ADMIN_TEMPLATE); 
 	}else{ 
-		$admin_template = DADA::Template::Widgets::_raw_screen({-screen => 'admin_template.tmpl'}); 
+		$admin_template = DADA::Template::Widgets::_raw_screen({-screen => 'admin_template.tmpl', -encoding => 1}); 
 	}
 	
 	my $login_switch_widget = ''; 
@@ -304,7 +304,7 @@ sub default_template {
 	# DEV: should the templates found in the other ways be run through the templating system? I kinda think they should...  
 	if(!$DADA::Config::USER_TEMPLATE){ 		
 		require DADA::Template::Widgets; 	   
-		return DADA::Template::Widgets::_raw_screen({-screen => 'list_template.tmpl'}); 
+		return DADA::Template::Widgets::_raw_screen({-screen => 'list_template.tmpl', -encoding => 1}); 
 	}else{ 
 		if(DADA::App::Guts::isa_url($DADA::Config::USER_TEMPLATE)){ 
 			return open_template_from_url(-URL => $DADA::Config::USER_TEMPLATE);

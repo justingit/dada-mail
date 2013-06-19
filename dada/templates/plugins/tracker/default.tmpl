@@ -146,7 +146,7 @@
 	<table width="100%">	
 	  <tr> 
 	  <td width="20"> 
-  	<input type="radio" id="tracker_track_opens_directly" name="tracker_track_opens_method"   class="tracker_track_opens_directly"  value="directly" <!-- tmpl_if list_settings.tracker_track_opens_method -->checked="checked"<!--/tmpl_if -->/>
+  	<input type="radio" id="tracker_track_opens_directly" name="tracker_track_opens_method"   class="tracker_track_opens_directly"  value="directly" <!-- tmpl_if expr="(list_settings.tracker_track_opens_method eq 'directly')" -->checked="checked"<!--/tmpl_if -->/>
 	  </td> 
 	  <td> 
 		<label for="tracker_track_opens_directly">Directly</label>,
@@ -155,7 +155,7 @@
 	 </tr> 
 	  <tr> 
 	  <td width="20"> 
-  	<input type="radio" id="tracker_track_opens_indirectly" name="tracker_track_opens_method"   class="tracker_track_opens_indirectly"  value="indirectly" <!-- tmpl_if list_settings.tracker_track_opens_method -->checked="checked"<!--/tmpl_if -->/>
+  	<input type="radio" id="tracker_track_opens_indirectly" name="tracker_track_opens_method"   class="tracker_track_opens_indirectly"  value="indirectly" <!-- tmpl_if expr="(list_settings.tracker_track_opens_method ne 'directly')" -->checked="checked"<!--/tmpl_if -->/>
 	  </td> 
 	  <td> 
 		<label for="tracker_track_opens_indirectly">
