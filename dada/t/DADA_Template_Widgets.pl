@@ -10,6 +10,8 @@ use DADA::Config;
 use DADA::Template::Widgets; 
 use DADA::MailingList::Subscribers; 
 use DADA::MailingList::Settings; 
+use DADA::App::Guts; 
+use utf8; 
 
 
 BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
@@ -1007,6 +1009,84 @@ $r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });
 ok($r eq '%');
 
 #/ <!-- tmpl_strftime [...] -->
+
+
+
+# UTF-8 Stuff: 
+use Encode qw(encode decode);
+
+
+my $no_tags = 't/corpus/templates/utf8_no_tags.tmpl'; 
+my $return_should_be = 'ゴジラこんにちは！'; 
+
+
+undef($r); 
+$r = DADA::Template::Widgets::_slurp($no_tags); 
+diag Encode::encode($DADA::Config::HTML_CHARSET, $r);
+diag Encode::encode($DADA::Config::HTML_CHARSET, $return_should_be);
+ok($r eq $return_should_be); 
+
+undef($r); 
+$r =  DADA::Template::Widgets::screen({
+	-screen => $no_tags, 
+}); 
+
+diag Encode::encode($DADA::Config::HTML_CHARSET, $r);
+diag Encode::encode($DADA::Config::HTML_CHARSET, $return_should_be);
+ok($r eq $return_should_be); 
+
+my $nothing = undef; 
+#$DADA::Config::ADMIN_TEMPLATE = $return_should_be; 
+# THis is just kinda weird: 
+use File::Copy; 
+copy('templates/admin_template.tmpl', 'templates/admin_template.tmpl-bak'); 
+open my $a_t, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', 'templates/admin_template.tmpl' or croak $!; 
+print $a_t $return_should_be or die; 
+close($a_t) or die; 
+
+
+my $admin = DADA::Template::Widgets::_raw_screen({-screen => 'admin_template.tmpl', -encoding => 1}); 
+ok($admin eq $return_should_be); 
+diag Encode::encode($DADA::Config::HTML_CHARSET, $admin);
+
+
+
+
+
+undef ($admin);
+require DADA::Template::HTML; 
+my $admin = DADA::Template::HTML::admin_template(
+	-HTML_Header => 0, 
+	-List       => $list,  
+	-Part       => 'full', 
+); 
+ok($admin eq $return_should_be); 
+diag Encode::encode($DADA::Config::HTML_CHARSET, $admin);
+
+
+
+
+undef($admin); 
+my $admin = $r = DADA::Template::Widgets::wrap_screen(
+		{
+			-data    => \$nothing, 
+			-with   => 'admin',  
+			-wrapper_params => { 
+				-HTML_Header => 0, 
+				-List       => $list,  
+			},
+
+		}
+	);	
+
+ok($admin eq $return_should_be); 
+diag Encode::encode($DADA::Config::HTML_CHARSET, $admin);
+
+unlink('templates/admin_template.tmpl') or die "that didn't work."; 
+move('templates/admin_template.tmpl-bak', 'templates/admin_template.tmpl'); 
+
+
+
 
 
 

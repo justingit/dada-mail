@@ -1983,9 +1983,56 @@ sub screen {
 			);
 	    }
 	}
+
+
+	# Which templating engine to use? 
+	#
+	my $template;
+	my $engine = 'html_template'; 
+ 
+	if($args->{-expr} == 1){ 
+
+		# DEV: 
+		# I'm still using H::T::Expr on all templates that require H::T::Expr
+		# syntax, even though H::T::Pro supports it, because H::T::Expr will
+		# barf of variable names w/dots in them. 
+		# What to do? 
+		# * Write a filter to remove dots, replace with, "_dot_" instead?
+		# * change any variables with a dot name with, "_dot_" too. Will 
+		# That inpose too much of a speed hit?
+		# 
+		# HTML::Template::Pro also doesn't work with tmpl_set
+		
+		$engine = 'html_template_expr';  
+	}
+	elsif ( $args->{-pro} == 1
+        && HAS_HTML_TEMPLATE_PRO )
+    {
+        $engine = 'html_template_pro'; 
+    }
+    elsif (defined($args->{-pro}) && $args->{-pro} == 0 ) {
+            $engine = 'html_template'; 
+    }
+    elsif ( $DADA::Config::TEMPLATE_SETTINGS->{engine} =~ m/HTML Template Pro|Best/i
+        && HAS_HTML_TEMPLATE_PRO )
+    {
+        $engine = 'html_template_pro'; 
+    }
+    else { 
+            $engine = 'html_template';
+    }	
+	#print "engine is $engine\n"; 
+
 	
 	my $filters = []; 
- 	if($args->{-screen}){
+ 	if($args->{-screen} && $engine ne 'html_template'){
+		
+		# HTML::Template now has a open_mode, where you can 
+		# set your encoding for opening. Hurrah!
+		# Not sure about HTML::Template::Pro - nothing in the docs say 
+		# anything about encoding, which is weird. 
+		#
+		
 		push(@$filters, 
 				{ 
 					sub    => \&decode_str,
@@ -2027,50 +2074,16 @@ sub screen {
 		}
 	}
 	
-	# Which templating engine to use? 
-	#
-	my $template;
-	my $engine = 'html_template'; 
- 
-	if($args->{-expr} == 1){ 
 
-		# DEV: 
-		# I'm still using H::T::Expr on all templates that require H::T::Expr
-		# syntax, even though H::T::Pro supports it, because H::T::Expr will
-		# barf of variable names w/dots in them. 
-		# What to do? 
-		# * Write a filter to remove dots, replace with, "_dot_" instead?
-		# * change any variables with a dot name with, "_dot_" too. Will 
-		# That inpose too much of a speed hit?
-		# 
-		# HTML::Template::Pro also doesn't work with tmpl_set
-		
-		$engine = 'html_template_expr';  
-	}
-	elsif ( $args->{-pro} == 1
-        && HAS_HTML_TEMPLATE_PRO )
-    {
-        $engine = 'html_template_pro'; 
-    }
-    elsif (defined($args->{-pro}) && $args->{-pro} == 0 ) {
-            $engine = 'html_template'; 
-    }
-    elsif ( $DADA::Config::TEMPLATE_SETTINGS->{engine} =~ m/HTML Template Pro|Best/i
-        && HAS_HTML_TEMPLATE_PRO )
-    {
-        $engine = 'html_template_pro'; 
-    }
-    else { 
-            $engine = 'html_template';
-    }
-		
 	if($engine eq 'html_template'){ 
-		require HTML::Template;
+		require HTML::Template;		
+		# print "version is $HTML::Template::VERSION\n";
 		if($args->{-screen}){
 			 $template = HTML::Template->new(
 			 	%Global_Template_Options, 
-				filename => $args->{-screen},
-				filter => $filters,                 
+				filename  => $args->{-screen},
+				filter    => $filters,    
+				open_mode => '<:encoding(' . $DADA::Config::HTML_CHARSET . ')',
 			);
 		}
 		elsif($args->{-data}){ 
@@ -2078,6 +2091,7 @@ sub screen {
 			if($args->{-decode_before} == 1){ 
 				${$args->{-data}} = safely_decode(${$args->{-data}}, 1); 
 			}
+			require HTML::Template;
 			$template = HTML::Template->new(
 			%Global_Template_Options, 
 			scalarref => $args->{-data},
@@ -2518,7 +2532,7 @@ sub validate_screen {
 
 sub decode_str { 
 	my $ref = shift;
- 		${$ref} = safely_decode(${$ref}); 
+ 	   ${$ref} = safely_decode(${$ref}); 
 }
 
 sub dada_backwards_compatibility { 
