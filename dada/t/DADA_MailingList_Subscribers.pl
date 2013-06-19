@@ -308,7 +308,7 @@ ok(
 	        },
 
         }
-    ) eq indef,
+    ) eq undef,
     'couldn\'t add duper@example.com sub_confirm_list (2)'
 );
 ok(
@@ -322,7 +322,7 @@ ok(
 	        },
 
         }
-    ) eq indef,
+    ) eq undef,
     'couldn\'t add duper@example.com sub_confirm_list (3)'
 ); 
 
