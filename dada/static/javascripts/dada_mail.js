@@ -328,6 +328,16 @@ $(document).ready(function() {
 		$("body").on("click", '.installer_changeDisplayStateDivs', function(event) {
 			changeDisplayState($(this).attr("data-target"), $(this).attr("data-state"));
 		});
+		
+		$("#install_or_upgrade_form").validate({
+			rules: {
+				current_dada_files_parent_location: { 
+					required: true,
+					minlength: 5
+				}
+			}
+		});
+		
 	}
 	if ($("#installer_configure_dada_mail").length) {
 		$("body").on("change", "#backend", function(event) {
@@ -350,17 +360,69 @@ $(document).ready(function() {
 		$("body").on("click", '.test_amazon_ses_configuration', function(event) {
 			test_amazon_ses_configuration();
 		});
-		
 
+		jQuery.validator.addMethod("alphanumericunderscore", function(value, element) {
+	    return this.optional(element) || value == value.match(/^[-a-zA-Z0-9_]+$/);
+	    }, "Only letters, Numbers and Underscores Allowed.");
+		jQuery.validator.addMethod("alphanumeric", function(value, element) {
+	    return this.optional(element) || value == value.match(/^[-a-zA-Z0-9]+$/);
+	    }, "Only letters and Numbers Allowed.");
 
-		$("body").on('keyup', "#dada_root_pass_again", function(event) {
-
-			if ($("#dada_root_pass_again").val() != $("#dada_root_pass").val() && $("#dada_root_pass_again").val().length) {
-				$(".dada_pass_no_match").html('<span class="error">Passwords do not match!</span>');
-			} else {
-				$(".dada_pass_no_match").html('');
-
-			}
+			
+		$("#installform").validate({
+			rules: {
+				program_url: { 
+					required: true,
+					url: true	
+				}, 
+				support_files_dir_path: { 
+					required: true,					
+				},
+				support_files_dir_url: { 
+						required: true,
+						url: true	
+				},
+				dada_root_pass: {
+					required: true,
+					minlength: 8
+				},
+				dada_root_pass_again: {
+					required: true,
+					minlength: 8,
+					equalTo: "#dada_root_pass"
+				},
+				bounce_handler_address: {
+					required: false,
+					email: true
+				},
+				security_ADMIN_FLAVOR_NAME: { 
+					required: false, 
+					alphanumericunderscore: true
+				},
+				security_SIGN_IN_FLAVOR_NAME: { 
+					required: false, 
+					alphanumericunderscore: true
+				},
+				amazon_ses_AWSAccessKeyId: { 
+					required: false, 
+					alphanumeric: true
+				},
+				amazon_ses_AWSSecretKey: { 
+					required: false, 
+					alphanumeric: true
+				}
+			}, 
+			messages: {
+				dada_root_pass: {
+					required: "Please provide a Root Password",
+					minlength: "Your password must be at least 8 characters long"
+				},
+				dada_root_pass_again: {
+					required: "Please provide a Root Password",
+					minlength: "Your password must be at least 8 characters long",
+					equalTo: "Please enter the same Root Password as above"
+				}
+			}					
 		});
 
 		$("body").on('click', "#install_wysiwyg_editors", function(event) {
