@@ -618,8 +618,7 @@ sub list_template {
 }
 
 sub HTML_Footer { 
-	return '<a href="http://dadamailproject.com" target="_blank">Dada Mail ' . $DADA::Config::VER . '</a> | Copyright &copy; 1999-2012, <a href="http://dadamailproject.com/justin" target="_blank">Simoni Creative</a>';
-	
+	return '<a href="http://dadamailproject.com" target="_blank">Dada Mail ' . $DADA::Config::VER . '</a> | Copyright &copy; 1999-2013, <a href="http://dadamailproject.com/justin" target="_blank">Simoni Creative</a>';	
 }
 
 sub open_template_from_url { 
