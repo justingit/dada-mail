@@ -1082,6 +1082,7 @@ sub login_switch_widget {
 							  -style => 'display:inline;margin:0px',
 							  ) . 
 			   $q->popup_menu(-name    => 'change_to_list', 
+							  -id      => 'change_to_list', 
 							  -value   => [@lists], 
 							  -default => $args->{-list},
 							  -labels  => {%label}, 

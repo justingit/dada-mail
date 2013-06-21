@@ -420,14 +420,39 @@ textarea,
 	font-style: italic;
 	
 }
-#Header select {
-	font-size: .9em;
+#Header select { 
+	font-size: .8em;
 	font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
 	width: 150px;
 	background-color: #efefef;
 	margin: 0px;
 	padding: 1px;
 }
+
+#Header .select2-container
+ {
+		font-size: .8em;
+		font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
+		width: 150px;
+		margin: 0px;
+		padding: 1px;
+		text-shadow: none;
+		bottom:-6px;
+		color:#000;
+}
+#Header .select2-choice { 
+    height: 22px; 
+	line-height: 22px; 
+		color:#000;	
+}
+#Header .select2-container a:hover { 
+	color:#000;
+}
+
+#Header .select2-choice a:hover { 
+	color:#000;
+}
+
 
 /* affects buttons only: */
 input[type="submit"],
