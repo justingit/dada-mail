@@ -16,8 +16,68 @@ $(document).ready(function() {
 			}
 		});
 	}
-	if ($("#profile_login_registration").length) {
+	
+	
+	if ($("#create_new_list").length) {
 		
+		var nobadcharacters_regex = /(\>|\<|\")/;
+		jQuery.validator.addMethod("nobadcharacters", function(value, element) {
+	    return this.optional(element) || !(nobadcharacters_regex.test(value));
+	    }, "Value cannot contain, &lt;'s, &gt;'s or, &quot;'s.");
+		
+		var no_weird_characters_regex = /[^a-zA-Z0-9_]/; 
+		jQuery.validator.addMethod("no_weird_characters", function(value, element) {
+	    return this.optional(element) || !(no_weird_characters_regex.test(value));
+	    }, "Value can only contain alpha-numeric characters, and underscores");
+
+		var no_reserved_words_regex = /_screen_cache/; 
+		jQuery.validator.addMethod("no_reserved_words", function(value, element) {
+	    return this.optional(element) || !(no_reserved_words_regex.test(value));
+	    }, "Value cannot contain any reserved words");
+
+		
+		
+		$("#create_new_list").validate({
+			debug: false, 
+			rules: {
+				list_name: { 
+					required: true,
+					nobadcharacters: true
+				},
+				list: { 
+					required: true,
+					no_weird_characters: true,
+					no_reserved_words: true,
+					maxlength: 16
+				},
+				password: {
+					required: true,
+					minlength: 4
+				},
+				retype_password: {
+					required: true,
+					minlength: 4,
+					equalTo: "#password"
+				},
+				list_owner_email: {
+					required: true,
+					email: true
+				},
+				info: { 
+					required: true			
+				},
+				privacy_policy: {
+					required: true		
+				},
+				physical_address: { 
+					required: true			
+				}
+			}
+		}); 
+	
+	
+	}	
+	if ($("#profile_login_registration").length) {
 		if ($("#profile_login").length) {
 			$("#profile_login").validate({
 				debug: false, 

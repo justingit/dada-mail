@@ -7890,11 +7890,11 @@ sub new_list {
         my $flags  = shift;
         my $pw_check;
 
-       if($DADA::Config::DISABLE_OUTSIDE_LOGINS == 1){
-            require DADA::Security::SimpleAuthStringState;
-            my $sast =  DADA::Security::SimpleAuthStringState->new;
-            my $auth_state = $q->param('auth_state');
+        require DADA::Security::SimpleAuthStringState;
+        my $sast =  DADA::Security::SimpleAuthStringState->new;
+        my $auth_state = $q->param('auth_state');
 
+       if($DADA::Config::DISABLE_OUTSIDE_LOGINS == 1){
             if($sast->check_state($auth_state) != 1){
                 user_error(-List => undef, -Error => 'incorrect_login_url');
                 return;
@@ -7994,6 +7994,8 @@ sub new_list {
 
 						lists_exist                       => $lists_exist,
 						list_popup_menu                   => $list_popup_menu,
+						auth_state                        => $sast->make_state
+					
 					},
 				}
 			);
