@@ -1,8 +1,7 @@
 $(document).ready(function() {
 	if ($("#subscription_form").length) {
 		$("#subscription_form").validate({
-			debug: true, 
-			
+			debug: false, 
 			rules: {
 				email: { 
 					required: true,
