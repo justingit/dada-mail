@@ -2902,7 +2902,7 @@ sub screen {
 		print $q->header('text/javascript');
 		e_print(DADA::Template::Widgets::screen(
 	        {
-	            -screen => $screen,
+	            -screen => make_safer($screen),
 	        }
 	    ));	
 	}
