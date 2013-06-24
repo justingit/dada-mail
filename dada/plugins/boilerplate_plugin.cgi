@@ -26,7 +26,7 @@ use CGI::Carp qw(fatalsToBrowser);
 run()
   unless caller();
 
-sub run {
+sub default {
 
     # This will take care of all out security woes
     my ( $admin_list, $root_login ) = check_list_security(

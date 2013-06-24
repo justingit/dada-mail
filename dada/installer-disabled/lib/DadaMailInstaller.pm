@@ -2859,6 +2859,7 @@ sub show_current_dada_config {
 }
 sub screen { 
 	my $screen = $q->param('screen'); 
+	
 	if($screen eq '/static/css/dada_mail.css'){ 
 		print $q->header('text/css');
 		my $t = DADA::Template::Widgets::screen(
@@ -2896,6 +2897,7 @@ sub screen {
 	}
 	elsif(
 		$screen eq 'installer-dada_mail.js' 
+	 || $screen eq 'installer-dada_mail.installer.js' 
 	 || $screen =~ m/installer\-jquery/ 
 	 || $screen =~ m/installer\-jquery\-ui/
 	){ 
@@ -2905,6 +2907,9 @@ sub screen {
 	            -screen => make_safer($screen),
 	        }
 	    ));	
+	}
+	elsif($screen =~ /^\/static/) {
+		print $q->header('text/plain');
 	}
 }
 

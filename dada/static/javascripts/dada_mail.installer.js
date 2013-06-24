@@ -72,6 +72,9 @@ $(document).ready(function() {
 					required: false,
 					email: true
 				},
+				template_options_USER_TEMPLATE: {
+					required: "#configure_user_template:checked"
+				},
 				security_ADMIN_FLAVOR_NAME: { 
 					required: false, 
 					alphanumericunderscore: true
