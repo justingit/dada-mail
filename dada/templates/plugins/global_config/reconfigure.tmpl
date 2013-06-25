@@ -1,0 +1,45 @@
+<!-- tmpl_set name="title" value="Global Config Helper" -->
+
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		<!-- tmpl_var title --> 
+	</div>
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
+<div id="gobal_config_helper"></div> 
+
+
+	<p>
+		<strong>
+			Couldn't reconfigure the Installer!
+		</strong>
+	</p>
+
+	<p>Yikes! The following problems were found:</p> 
+	<ul>
+		<!-- tmpl_if found_install_dir -->
+			<li>
+				<p>
+					The, &quot;installer&quot; directory could not be found.
+				</p>
+			</li>
+		<!-- /tmpl_if --> 
+	
+		<!-- tmpl_if moved_installer_dir_back -->
+			<li>
+				<p>
+					Could not rename the, &quot;installer-disabled.xxx&quot; directory back
+				</p> 
+			</li>	
+		<!-- /tmpl_if --> 
+	
+		<!-- tmpl_var chmoded_installer_script -->
+		<li>
+			<p>
+				Could not change the install.cgi file back to, &quot;755&quot;
+			</p> 
+		</li>	
+	<!-- /tmpl_if --> 
+	</ul> 
+
+Your <!-- tmpl_var PROGRAM_NAME --> has not be reconfigured. 

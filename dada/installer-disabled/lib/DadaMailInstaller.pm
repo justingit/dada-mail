@@ -106,6 +106,7 @@ my $plugins_extensions = {
 	default_mass_mailing_messages => {installed => 0, loc => '../plugins/default_mass_mailing_messages.cgi'}, 
 	password_protect_directories  => {installed => 0, loc => '../plugins/password_protect_directories.cgi'}, 
 	change_list_shortname         => {installed => 0, loc => '../plugins/change_list_shortname.cgi'},  
+	global_config                 => {installed => 0, loc => '../plugins/global_config.cgi'},   
 };
 $plugins_extensions->{change_root_password}->{code} = 
 q{#					{
@@ -209,6 +210,15 @@ q{#					{
 #					-Function   => 'change_list_shortname',
 #					-Activated  => 0,
 #					},};
+
+$plugins_extensions->{global_config}->{code} =
+q{#					{
+#					-Title      => 'Global Configuration',
+#					-Title_URL  => $PLUGIN_URL."/global_config.cgi",
+#					-Function   => 'global_config',
+#					-Activated  => 0,
+#					},};
+
 
 
 # An unconfigured Dada Mail won't have these exactly handy to use. 
@@ -518,7 +528,7 @@ sub scrn_configure_dada_mail {
 		$q->param('install_blog_index', 1); 
 		$q->param('install_default_mass_mailing_messages', 1); 
 		$q->param('install_change_list_shortname', 1); 
-		
+		$q->param('global_config', 0); 		
 	}
 
 =cut	
@@ -732,6 +742,7 @@ sub grab_former_config_vals {
 		blog_index
 		default_mass_mailing_messages
 		change_list_shortname
+		global_config
 		password_protect_directories
 		)){ 
 		if(admin_menu_item_used($plugin_ext) == 1){ 
@@ -924,14 +935,16 @@ sub admin_menu_item_used {
 		if($menu->{-Title} =~ m/Plugins|Extensions/){ 
 			my $submenu = $menu->{-Submenu}; 
 			foreach my $item(@$submenu) { 
-#				warn q{$item->{-Function} } . $item->{-Function}; 
-#				warn q{$function} . $function; 
+			#	warn q{$item->{-Function} } . $item->{-Function}; 
+			#	warn q{$function} . $function; 
 				if($item->{-Function} eq $function){ 
+		#			warn $function . 'is returning 1'; 
 					return 1; 
 				}
 			}
 		}
 	}
+#	warn $function . ' is returning 0'; 
 	return 0; 
 }
 

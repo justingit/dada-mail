@@ -85,11 +85,9 @@ $(document).ready(function() {
 				},
 				amazon_ses_AWSAccessKeyId: { 
 					required: false, 
-					alphanumeric: true
 				},
 				amazon_ses_AWSSecretKey: { 
 					required: false, 
-					alphanumeric: true
 				}
 			}, 
 			messages: {

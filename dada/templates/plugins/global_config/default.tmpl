@@ -1,0 +1,31 @@
+<!-- tmpl_set name="title" value="Global Config Helper" -->
+
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		<!-- tmpl_var title --> 
+	</div>
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
+<div id="gobal_config_helper"></div> 
+
+
+<p>
+This plugin will reconfigure the bundled <!-- tmpl_var PROGRAM_NAME --> Installer, 
+re-enabling it, and allowing you to use it to reconfigure your <!-- tmpl_var PROGRAM_NAME -->.
+</p> 
+
+<p>
+	Once re-enabled, you <em>must</em> go through with the reconfiguration of 
+	<!-- tmpl_var PROGRAM_NAME -->. 
+	<strong>
+		Ready? 
+	</strong>
+</p>
+<form action="<!-- tmpl_var Plugin_URL -->" method="post">
+	<input type="hidden" name="f" value="reconfigure" /> 
+	<div style="text-align:center">
+	<input type="submit" value="       &#187; Reconfigure <!-- tmpl_var PROGRAM_NAME -->!  &#171;       " class="processing bigger_button" />
+</div>
+
+</form> 
+

@@ -363,10 +363,16 @@ $PLUGIN_CONFIGS ||= {
 
 	}, 
 
-	multiple_subscribe => {	
+	multiple_subscribe => {
 
 		Plugin_Name                         => undef,
 		Plugin_URL                          => undef,
+
+	},
+
+	Global_Config => {
+
+		Plugin_Name                         => undef,
 
 	},
 
@@ -879,6 +885,12 @@ $ADMIN_MENU ||= [
             #					-Activated  => 0,
             #					},
 
+			#					{
+			#					-Title      => 'Global Configuration',
+			#					-Title_URL  => $PLUGIN_URL."/global_config.cgi",
+			#					-Function   => 'global_config',
+			#					-Activated  => 0,
+			#					},
 
             #					{
             #					-Title      => 'Boilerplate Example',
@@ -917,12 +929,12 @@ $ADMIN_MENU ||= [
             #					-Activated  => 1,
             #					},
 
-#					{
-#					-Title      => 'Archive Blog Index',
-#					-Title_URL  => $EXT_URL."/blog_index.cgi?mode=html&list=<!-- tmpl_var list_settings.list -->",
-#					-Function   => 'blog_index',
-#					-Activated  => 1,
-#					},
+            #					{
+            #					-Title      => 'Archive Blog Index',
+            #					-Title_URL  => $EXT_URL."/blog_index.cgi?mode=html&list=<!-- tmpl_var list_settings.list -->",
+            #					-Function   => 'blog_index',
+            #					-Activated  => 1,
+            #					},
 
         ],
     },
