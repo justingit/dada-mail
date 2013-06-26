@@ -1,8 +1,8 @@
-=head1 6.5.0 alpha 3
+=head1 6.5.0 Beta 1
 
-=head2 Summary 6.5.0 alpha 3
+=head2 Summary 6.5.0 Beta 1
 
-=head2 Features 6.5.0 alpha 3
+=head2 Features 6.5.0 Beta 1
 
 =head3 New Plugin: Global Config
 
