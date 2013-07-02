@@ -1080,6 +1080,7 @@ sub login_switch_widget {
 		$scrn = $q->start_form(-action => $DADA::Config::S_PROGRAM_URL, 
 							  -method => "post",
 							  -style => 'display:inline;margin:0px',
+							  -id    => 'change_to_list_form', 
 							  ) . 
 			   $q->popup_menu(-name    => 'change_to_list', 
 							  -id      => 'change_to_list', 
@@ -1095,7 +1096,7 @@ sub login_switch_widget {
 						   -override => 1,
 				 ) . 
 	
-			   $q->submit(-value => 'switch', -class=>'small_button') .
+			   $q->submit(-value => 'switch', -class=>'small_button', -id => 'submit_change_to_list') .
 			   $q->end_form(); 
 	}else{ 
 		$scrn = '';

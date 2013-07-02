@@ -15,9 +15,18 @@ $(document).ready(function() {
 
 	// Admin Menu 
 	
-	if ($("#change_to_list").length) { 
+	if ($("#change_to_list_form").length) { 
 		$("#change_to_list").select2();
+		$("body").on("submit", "#change_to_list_form", function(event) {
+			event.preventDefault();
+		});	
+		$("body").on("click", "#submit_change_to_list", function(event) {		
+			$("#change_to_list").val($("#change_to_list").select2("val"));
+			$("body").off('submit', '#change_to_list_form');
+			return true; 
+		});		
 	}
+	
 	if ($("#navcontainer").length) {
 		
 		var admin_menu_callbacks = $.Callbacks();
