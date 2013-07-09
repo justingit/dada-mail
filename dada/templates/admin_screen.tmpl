@@ -62,10 +62,14 @@
     
     <!-- tmpl_if expr="list_max_reached == 1" -->
         
-        <p class="error">
-         You have reached the maximum number of Mailing Lists that can be created.
-        </p>
-        
+		 <div class="badweatherbox">
+		    <p>
+	         You have reached the maximum number of Mailing Lists that can be created.
+	        </p>
+	
+        </div> 
+		<!-- tmpl_include upgrade_to_pro_dada.tmpl -->
+
     <!-- tmpl_else -->
         
         <p>

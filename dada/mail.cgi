@@ -4588,6 +4588,7 @@ sub add {
 					screen                     => 'add',
                     subscription_quota_reached => $subscription_quota_reached,
                     num_subscribers            => $num_subscribers,
+                    SUBSCRIPTION_QUOTA         => $DADA::Config::SUBSCRIPTION_QUOTA, 
                     type       => $type,
                     type_title => $type_title,
                     flavor     => 'add',

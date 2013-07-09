@@ -219,7 +219,14 @@ q{#					{
 #					-Activated  => 0,
 #					},};
 
-
+my $advanced_config_params = {
+    show_profiles                       => 1,
+    show_global_template_options        => 1,
+    show_security_options               => 1,
+    show_global_mass_mailing_options    => 1,
+    show_amazon_ses_options             => 1,
+    show_annoying_whiny_pro_dada_notice => 0,
+};
 
 # An unconfigured Dada Mail won't have these exactly handy to use. 
 $DADA::Config::PROGRAM_URL   = program_url_guess();
@@ -584,6 +591,8 @@ sub scrn_configure_dada_mail {
 			-with   => 'list', 
 			-expr   => 1, 
             -vars => {
+	
+				%$advanced_config_params, 
 				
 				# These are tricky.... 
 				SUPPORT_FILES_URL               => $Self_URL . '?f=screen&screen=',
@@ -2923,6 +2932,16 @@ sub screen {
 	}
 	elsif($screen =~ /^\/static/) {
 		print $q->header('text/plain');
+	}
+	elsif($screen eq 'upgrade_to_pro_dada.jpg'){ 
+		print $q->header('image/jpg');
+		print DADA::Template::Widgets::_raw_screen(
+            {
+                -screen   => 'upgrade_to_pro_dada.jpg',
+                -encoding => 0,
+            }
+        );
+		 
 	}
 }
 
