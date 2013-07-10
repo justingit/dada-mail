@@ -1,14 +1,8 @@
-=head1 6.5.0 Beta 1
+=head1 6.5.0
 
-=head2 Summary 6.5.0 Beta 1
+=head2 Summary 6.5.0
 
-=head2 Features 6.5.0 Beta 1
-
-=head3 New Plugin: Global Config
-
-B<Global Config> is a new plugin for Dada Mail. It allows you to easily drop back into Dada Mail's included Installer, letting you reconfigure Dada Mail's global configuration. 
-
-This plugin itself is itself can be installed via the Dada Mail Installer. 
+=head2 Features 6.5.0
 
 =head3 Enhanced Installer: More Configuration Options
 
@@ -52,6 +46,8 @@ Enable/Disable the following Profile Features:
 
 =back
 
+=item * Screen and Data Cache Control 
+
 =item * Global Template Options
 
 =over
@@ -90,36 +86,59 @@ Enable/Disable the following Profile Features:
 
 These global paramaters can be read from previous configurations, and can be editing using the installer or directly in the C<.dada_config> file. 
 
+A new doc helps explain the plethora of options available: 
+
+L<http://dadamailproject.com/support/documentation/install_dada_mail-advanced_configuration.pod.html>
+
+We're shipping the Installer that comes with Pro Dada with B<all these options> available to be configured. 
+
+We're shipping Basic Dada Mail, B<with only Amazon SES> configuration available. We're really hoping you love Dada Mail enough to go and get a copy of Pro Dada: 
+
+L<http://dadamailproject.com/purchase/pro.html> 
+
+And honestly, we're hoping this helps to entice you to support the Dada Mail Project!
+
 =back
+
+=head3 New Plugin: Global Config
+
+B<Global Config> is a new plugin for Dada Mail. It allows you to easily drop back into Dada Mail's included Installer, letting you reconfigure Dada Mail's global configuration. 
+
+This plugin itself can be installed via the Dada Mail Installer. Spooky.
 
 =head3 Client-Side Form Validation
 
-Dada Mail now includes the B<jQuery Validation Plugin>, and uses this plugin for client-side form validation in the Dada Mail Installer, Subscription form, Create a New List form, and the various Dada Mail Profile forms. I<(Server-side validation is still there)>
+Dada Mail now includes the B<jQuery Validation Plugin>, and uses this plugin for client-side form validation in the Dada Mail Installer, Subscription Form, Create a New List form, and the various Dada Mail Profile forms. I<(Server-side validation is still there)>
 
 =head3 Mailing List Switcher Form Enhanced
 
 Dada Mail now includes the B<Select2 jQuery Plugin>, and utilizes it in the Mailing List Switch Form you'll see in the upper right hand corner of the List Control Panel. With this plugin, it's now easier to find the mailing list you'd like to work with, especially if you have many dozens of mailing lists running on your Dada Mail. The enhancement allows you to search through the available mailing lists, rather than just simply scrolling through them. 
 
-=head2 Changes 6.5.0 alpha 3
+=head2 Changes 6.5.0
 
-=head3 Installer-specific JavaScript: Removed from main, "dada_mail.js" File
+=head3 JavaScript Changes
+
+=head4 Installer-specific JavaScript: Removed from main, "dada_mail.js" File
 
 Installer-specific JavaScript has been removed from the main, "dada_mail.js" file, creating a smaller "dada_mail.js" file. 
 
-
-=head3 new, "dada_mail.user.js" file
+=head4 new, "dada_mail.user.js" file
 
 The, "dada_mail.user.js" file holds JavaScript for user-facing Dada Mail screens. At the moment, this is most client-side form validation for various user forms, including the Subscription Form. 
 
-The following new HTML can be seen in the head of the C<list_template.tmpl>
+The following new HTML can now be seen in the head of the C<list_template.tmpl>
 
 	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/jquery-1.8.2.min.js"></script>
 	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/jquery.validate.js"></script>
 	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/dada_mail.user.js"></script>
 
-You may optionally add these lines to your own List Template to gain the same client-side valiation, but this is currently entirely optional. 
+You may optionally add these lines to your own List Template to gain the same client-side valiation, but this is entirely optional. 
 
 Documentation on these lines will be made available, once the stable release of v6.5.0 is made. 
+
+=head Plugin: change_root_password.cgi DEPRECATED
+
+The plugin, B<change_root_password.cgi> has now landed itself on the DEPRECATED list of plugins that comes with Dada Mail. Since the new, B<Global Config> plugin allows you to easily change the Dada Mail Root Password, amongst many other things, this plugin can now be retired. 
 
 =head1 6.4.3
 

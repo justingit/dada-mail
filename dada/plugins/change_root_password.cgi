@@ -235,6 +235,10 @@ sub self_url {
 
 change_root_password.cgi - B<EXPERIMENTAL> Dada Mail plugin to allow you to easily change the Dada Mail Root Password. 
 
+=head1 DEPRECATED
+
+The plugin, B<change_root_password.cgi> has now landed itself on the DEPRECATED list of plugins that comes with Dada Mail. Since the new, B<Global Config> plugin allows you to easily change the Dada Mail Root Password, amongst many other things, this plugin can now be retired. 
+
 =head1 VERSION
 
 Refer to the version of Dada Mail you're using - NEVER use a version of this proggy with an earlier or later version of Dada Mail. 
