@@ -1,0 +1,305 @@
+=pod
+
+=head1 Advanced Configuration with the Dada Mail Installer
+
+This doc covers the options in the Dada Mail Installer, under the heading, B<Advanced Configuration (Optional)>
+
+If you're looking for general instructions on how to use the Dada Mail Installer, look no further than, 
+
+L<http://dadamailproject.com/support/documentation/install_dada_mail.pod.html>
+
+=head1 Introduction
+
+Dada Mail's global configuration is saved in a file called, C<.dada_config>, which itself is saved in the, C<.dada_files/.configs> directory. The file is plain text, but is a valid Perl script, so be I<very, very> careful if/when you edit it by hand. The installer is generally provided to you so don't have to do this, but many, many global configuration options exist, that aren't supported by the Dada Mail Installer. For a rundown of what's fully available, see: 
+
+L<http://dadamailproject.com/support/documentation/global_variables.pod.html>
+
+We'll be listing the actual global variables used, when discussing what the installer configures for you. You do have the option to edit the C<.dada_config> file that the installer creates, to make even more customizations. 
+
+As a warning, the installer only supports reading in, and editing variables that are presented to you, in the Installer itself. That means anything that's not presented to you, will be lost if you change the configuration, with the Installer again. Because of this, you'll want to put your own unsupported (by the Installer) configuration changes in a centralized place in your C<.dada_config> file, so you can easily (manually - copy and paste!) move them back to the C<.dada_config> file that's generated.
+
+=head2 Configure Profiles
+
+Profiles allow your users to manage their own subscriptions, in one centralized location. For an overview of Dada Mail Profiles, see: 
+
+L<http://dadamailproject.com/support/documentation/features-profiles.pod.html>
+
+In general, this option allows you to configure the, C<$PROFILE_OPTIONS> config variable, which is explained in detail in the doc above. You'll notice that not all of the paramaters in that variable are supported by the installer. 
+
+=head3 Profile Administration Email
+
+The Profile Administration Email holds an email address that used for any transactional email messages that go out for Profile tasks. Since Dada Mail Profiles aren't tied to any one mailing list, Dada Mail won't know exactly what address to use. 
+
+We highly encourage you to fill out this variable, or these email messages may not be sent out correctly. You may use just an email address: 
+
+	me@mydomain.com
+
+a little more fancy, with a full email header, with phrase:  
+
+	"My First and Last Name!" <me@mydomain.com>
+
+You may set two email addresses: 
+
+	"My First and Last Name!" <me@mydomain.com>, "Another User" <someone.else@example.com>', 
+
+Although the C<From:> header that goes out will only hold B<one> email address.
+
+If Profiles are enabled and the Profile Administration Email is left blank, the List Owner email address of one of your mailing lists will be used instead.
+
+=head3 Enabled Features
+
+=head4 CAPTCHA
+
+Registration for Dada Mail Profiles can be verified along with a CAPTCHA. We recommend this feature, if CAPTCHA is available.
+
+=head4 Magic Subscription Forms
+
+Magic Subscription Forms are pre-filled out with the user's email address, if they're logged into Dada Mail.
+
+=head4 Help Screen
+
+Allows you to show/hide the, B<What are Dada Mail Profiles?> link and screen. You'll see this link in the top-right corner of the user-facing UI, by default. 
+
+=head4 Profile Login
+
+Allows your users to log into their Profile. Disabling this feature will basically disable much of Profiles, so be careful when disabling. 
+
+=head4 Profile Registration
+
+Controls whether a new user may register to a new Dada Mail Profile. If disabled, a user may still be registered by doing the following: 
+
+=over
+
+=item *  Subscribing to a new mailing list 
+
+If Profiles are enabled, and a user does not already have a Profile, subscribing to a mailing list will create a new Profile for them, and the credentials will be sent to them, in the, "Subscription Successful!" email message. 
+
+=item * The List Owner editing their Profile
+
+Profiles can be edited in the, B<Manage Subscribers - View> screen. 
+
+=back
+
+=head4 Password Reset
+
+Controls whether the, B<Forgot Your Profile Password?> form is shown or not. If it's not shown, a user's Profile password may still be reset by a List Owner, if they're logged in with the Dada Mail Root Password. 
+
+=head4 Profile Fields
+
+Controls whether the user may edit their own Subscriber Profile Fields in their own Profile (once logged in). If disabled, a user's Subscriber Profile Fields can still be edited by a List Owner, if they're logged in with the Dada Mail Root Password. 
+
+=head4 Mailing List Subscriptions
+
+Controls whether the, B<Your Mailing List Subscriptions> section is visible to your user in their Profile (once logged in).
+
+=head4 Password Protected Directory Information
+
+Controls whether The, B<Password Protect Directories> section is visible to your user in their Profile (once logged in). If disabled, Protected Directories will B<still be available> if any are set up, just not listed in the user's Profile. 
+
+=head4 Update Email Address
+
+Controls whether the, B<Update Your Profile Email Address > section is visible to your user in their Profile (once logged in). If disabled, a user's Profile password can still be edited by a List Owner, if they're logged in with the Dada Mail Root Password. 
+
+=head4 Change Password
+
+Controls whether the, B< Change Your Profile Password >  section is visible to your user in their Profile (once logged in). 
+
+=head4 Profile Deletion
+
+Controls whether the, B<Delete This Profile> section is visible to your user in their Profile (once logged in). 
+
+=head2 Configure Caching 
+
+Dada Mail caches information, so to not have to constantly connect to your backend database and/or perform time-consuming calculations. 
+
+=head3 Enable Screen Cache
+
+The Screen Cache caches the HTML screens you would see in your web browser. We suggest to always have it enabled, unless you're making customizations to the templates themselves, in which case it's exceptionally convenient to disable the Screen Cache. 
+
+B<Config Variable:> C<$SCREEN_CACHE>
+
+=head3 Enable Data Cache 
+
+The Data Cache caches mostly JSON data created by Dada Mail for the graphs and charts it produces. Most of these graphs and charts are produced by the Tracker plugin, but other charts do exist. Since this data is cached, the data shown is not always 100% current. You may disable the Data Cache if you'd like to have the data shown always be the newest data available. 
+
+B<Config Variable:> C<$DATA_CACHE>
+
+=head2 Configure Global Template Options 
+
+Global Template Options allow you to set a B<Global>, user-facing template. That's the template that's shown for basically anything that's not the Admin List Control Panel. 
+
+Although you can set a list-specific template, this leaves any screen that's not tied to a specific mailing list left using the default template, which you may not find desirable. Setting a global, user-facing template here will fill in that needed customization. If you're happy with the global List Template, you may find no need to make mailing-list specific templates, as they'll use whatever you set here. 
+
+How to create a template is covered in detail in the chapter, Introduction to Dada Mail HTML Screen Templates
+
+=head3 Set a Global, User-Facing Template 
+
+Check this option, if you'd like to set a Gloval, User-Facing Template. You'll be setting where this template can be found, right below this option - 
+
+=head3 Server Absolute Path or URL to your User Template: 
+
+This is where you'll want to enter I<either> the absolute path to your template file, or the URL that it can be found at. 
+
+B<Config Variable:> C<$USER_TEMPLATE>
+
+=head3 Test Your User Template
+
+Use this button to check if Dada Mail will be able to retrieve your template. Currently this button only checks if the template can be found, not if the template is valid.
+
+=head2 Configure Security Options 
+
+=head3 Hide Administration Link
+
+Dada Mail usually shows a simple link to the administration login screen, on the bottom of the default screen. If you would rather this link not be so publically advertised, you my check this option. 
+
+You may always get to  the administration page by pointing your browser to an address like this: 
+
+	http://mysite.com/cgi-bin/dada/mail.cgi/admin
+
+This is a small security measure but may just stop people from 
+snooping further. 
+
+=head3 Disable Outside Logins
+
+This option controls whether login information posted to Dada Mail can only be allowed by a form supplied by Dada Mail itself. This means, you can't create a different form, outside the program to provide a way to login (or do something similar programmatically)
+
+More so than any other option, this variable attempts to stop attempts of logging into a list by automated means. 
+
+=head3 Admin Flavor Name
+
+Complementary to B<Hide Administration Link>, B<Admin Flavor Name> allows you to set the URL needed to access the screen that has the form to log into all the mailing lists administrated by Dada Mail and to the form to create a new mailing list. 
+
+By default, this is set to, C<admin>, which means to access this screen, you'd go to a URL that looks like this: 
+
+L<http://example.com/cgi-bin/dada/mail.cgi/admin>
+
+If you set the B<Admin Flavor Name> to something like, B<kookoo>, you'd then access this screen via the following URL; 
+
+L<http://example.com/cgi-bin/dada/mail.cgi/kookoo>
+
+When setting this option remember:
+
+=over
+
+=item * no spaces in the name
+
+Valid values: 
+
+=over
+
+=item * poopoo1234
+
+=item * agabaga
+
+=item * JKdsfkKJjjkkjjk
+
+=back
+
+Invalid values: 
+
+=over
+
+=item * fads fdas    asdf
+
+=item * You Get The Point
+
+=back
+
+=item * Don't set this variable to anything that Dada Mail already uses, like:
+
+=over
+
+=item * subscribe
+
+=item * unsubscribe
+
+=item * login
+
+=item * logout
+
+=item * list
+
+=item * archive
+
+=back
+
+etc. A good way to make sure would be to append, "admin" to your value, like this: 
+
+=over
+
+=item * adminfoofoo
+
+=item * adminlalalala
+
+=item * adminwhakawhaka
+
+=back
+
+No checks will be made to make sure you don't have this value set to something already present, so do be careful setting this variable. 
+
+B<Global Variable:> C<$ADMIN_FLAVOR_NAME>
+
+=head3 Sign In Flavor Name
+
+Similar to B<Admin Flavor Name>, B<Sign In Flavor Name> holds the URL that allows you to log into a particular list (usually), although it is sometimes used to re-login into any of your lists - very similar to the administration screen, but does not give you the form to create a new list. 
+
+The same naming rules apply for this variable as they do for B<Admin Flavor Name>,. It's also suggested that you append, "sign_in" to the value you set this, like so: 
+
+=over
+
+=item * sign_in_fdskjasdf
+
+=item * sign_in_sneaky_pete
+
+=back
+
+etc. 
+
+B<Global Variable:> C<$SIGN_IN_FLAVOR_NAME>
+
+=head2  Configure Global Mass Mailing Options 
+
+Some mass mailing options are set globally, as sending limitations may be account-wide, rather than mailing list-wide. Mailing List-specific Mass Mailing Options are found in the List Control Panel, under: B<Mail Sending - Mass Mailing Options>
+
+=head3 Mass Mailings at Once Limit
+
+This sets how many different mass mailings may go out from an 
+installation of Dada Mail at one time. Conservatively, this is set to, B<1> 
+by default. 
+
+There are a few reasons why you wouldn't want to set this to any higher limit, 
+one being that there's a possibility that there is a limit on how many email messages you are allowed to go out in a specific period of time. 
+
+Another reason is that sending out too many messages at once may cause the server your running to be overloaded. 
+
+But, if you've got the bandwidth, and the horsepower, feel free to raise this limit. 
+
+B<Global Variable:> C<$MAILOUT_AT_ONCE_LIMIT>
+
+=head3 Multiple Mailing List Sending
+
+Check this option to enable multiple mailing list sending. In a nutshell, when enabled, you'll have the option to send the same message to multiple mailing lists, at one time. For more information, see: 
+
+L<http://dadamailproject.com/support/documentation/features-multiple_list_sending.pod.html>
+
+B<Global Variable:> C<$MULTIPLE_LIST_SENDING>
+
+This option does not change the C<$MULTIPLE_LIST_SENDING_TYPE> variable - it's set to, C<merged>, by default.  
+
+=head3 Mass Mailings Stale After
+
+B<Mass Mailings Stale After> sets how long a mailout can go with no mailing activity  until Dada Mail itself won't automatically reload it, from the point it stopped. 
+
+This option attempts to safegaurd you against having a dropped mailing that you've, "forgotten" about reloading, "mysteriously" and unintentionally. 
+
+A mailout may still be reloaded if this limit has been surpassed, but it must be done manually, through the list control panel. 
+
+B<Global Variable:> C<$MAILOUT_STALE_AFTER>
+
+=head2 Configure Amazon SES 
+
+You may set up Dada Mail to send via Amazon's Simple Email Service. This is a third party email sending service, which may have a much higher daily email quota and sending rate than what may be allowed on your own hosting account. Amazon SES does charge a fairly low rate for their service (about $0.10 per thousand messages sent). For more information, see the Amazon SES own site (L<http://aws.amazon.com/ses/>) and Dada Mail's docs on Amazon SES (L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>)
+
+Amazon SES does have a long list of required Perl CPAN modules that need to be installed, before SES sending will work. If any modules are not installed, the installer will list which CPAN modules are still needed. 
+
+To configure Dada Mail to use SES sending, first check the checkbox labeled,B< Configure Amazon SES>  Then, you will need to give the installer your B<AWS Access Key ID> and a B<AWS Secret Access Key>. To test your information, click the, B<Test Your AWS Credentials> button. 

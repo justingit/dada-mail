@@ -261,13 +261,18 @@ Optionally, you may also configure the B<WYSIWYG> editors that come bundled with
 
 If you would like to use the bundled WYSIWYG editors with Dada Mail, check the option, B<Install and Configure WYSIWYG Editors> - which is checked by default. Uncheck this option, if you'd like to skip setting up the WYSIWYG editors - the various options will be hidden. 
 
-=head2 Amazon SES (Optional)
+=head2 Advanced Configuration (Optional)
 
-Optionally, you may set up Dada Mail to send via Amazon's Simple Email Service. This is a third party email sending service, which may have a much higher daily email quota and sending rate than what may be allowed on your own hosting account. Amazon SES does charge a fairly low rate for their service (about $0.10 per thousand messages sent). For more information, see the Amazon SES own site (L<http://aws.amazon.com/ses/>) and Dada Mail's docs on Amazon SES (L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>)
+=begin html 
 
-Amazon SES does have a long list of required Perl CPAN modules that need to be installed, before SES sending will work. If any modules are not installed, the installer will list which CPAN modules are still needed. 
+<p>Dada Mail's Installer also supports setting quite a few advanced global configuration settings and paramaters. <a href="./install_dada_mail-advanced_configuration.pod.html">This section is covered in detail, here.
+</a></p>
 
-To configure Dada Mail to use SES sending, first check the checkbox labeled,B< Configure Amazon SES>  Then, you will need to give the installer your B<AWS Access Key ID> and a B<AWS Secret Access Key>. To test your information, click the, B<Test Your AWS Credentials> button. 
+Many of the Advanced Configuration paramaters are only available in Pro Dada: 
+
+L<http://dadamailproject.com/purchase/pro.html> 
+
+=end html
 
 =head2 Completing the Installation and Configuration. 
 
@@ -305,7 +310,13 @@ Good Luck!
 
 =head1 Making Additional Global Configuration Changes using the Dada Mail Installer
 
-Along with Installing Dada Mail, the Dada Mail Installer can also help reconfigure the global configuration of Dada Mail, at any time in the future, after your installation. To do this, you will need to: 
+Along with Installing Dada Mail, the Dada Mail Installer can also help reconfigure the global configuration of Dada Mail, at any time in the future, after your installation. 
+
+Dada Mail comes with a plugin called, B<Global Configuration> to make this easy. It itself can be installer using the Dada Mail installer. Once installed, it can be accessed in the List Control Panel, under, "Plugins". Make sure you have logged into a mailing list, with the Dada Mail Root Pass, as it's not available, if you log in with the List Password. 
+
+You can also re-enable the Dada Mail Installer Manually. 
+
+To do this, you will need to: 
 
 =over
 
