@@ -12,9 +12,7 @@ In these directions, I'll be giving examples of shell commands you may issue to 
 
 To help disuade you even I<further> with installing Dada Mail "Manually", consider that the Installer has a command line interface! No need to re-invent the wheel: 
 
-http://dadamailproject.com/support/documentation/install_dada_mail.pod.html#command_line_interface
-
-http://dadamailproject.com/support/documentation/install_dada-command_line.pod.html
+L<http://dadamailproject.com/support/documentation/install_dada-command_line.pod.html>
 
 Download Dada Mail at: 
 

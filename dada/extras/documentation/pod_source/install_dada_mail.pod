@@ -349,6 +349,8 @@ found on how to use it, by invoking the script with the, C<--help> flag,
 
  shell>./install.cgi --help
 
+L<http://dadamailproject.com/support/documentation/install_dada-command_line.pod.html>
+
 most of the options available on the web-based interface are available in the command line interface, except the installation of the plugins/extensions. 
 
 =head1 Manual Installation
