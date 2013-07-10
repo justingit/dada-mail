@@ -123,6 +123,14 @@ sub remove_ckeditor_strangeness {
 	
 	# Brute force attack! 
 	$str =~ s/href\=(\"|\')((\{C\})+)/href\=$1/g; 
+
+# Oh oh! But there's more! 
+my $empty_body = 
+quotemeta(q|<body id="cke_pastebin" style="position: absolute; top: 116px; width: 1px; height: 1px; overflow: hidden; left: -1000px; ">
+
+</body>|);
+
+	$str =~ s/$empty_body//;
 	
 	return $str; 
 }
