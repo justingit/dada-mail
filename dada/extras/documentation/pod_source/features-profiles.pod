@@ -74,69 +74,51 @@ List owners can also opt to have the first step of the  closed-loop opt-in syste
 
 =head1 Configurating and Customizing Profiles
 
-Dada Mail Profile options can be globally configured in your C<.dada_config> file. If you used the Dada Mail Installer to install Dada Mail, the necessary lines in your C<.dada_config> should already be present. They should look like this: 
+Dada Mail Profile options can be globally configured in your C<.dada_config> file. If you used the Dada Mail Installer to install Dada Mail, the necessary lines in your C<.dada_config> should already be present. They should look similar to this: 
 
-
-	=cut
-	# start cut for Dada Mail Profile Options
-
-	$PROFILE_OPTIONS ||= { 
+$PROFILE_OPTIONS = { 
 		
-		enabled                         => 1, 
-		profile_email                   => '', 
-		enable_captcha                  => 1, 
-		enable_magic_subscription_forms => 1, 
+	enabled                         => 1, 
+	profile_email                   => '', 
+	enable_captcha                  => 1, 
+	enable_magic_subscription_forms => 1, 
 	
-		update_email_options            => 
-		{ 
-			send_notification_to_profile_email => 0, 
-			subscription_check_skip            => 'auto', 
+	update_email_options            => 
+	{ 
+		send_notification_to_profile_email => 0, 
+		subscription_check_skip            => 'auto', 
 		
-		},
+	},
 		
-		gravatar_options => 
-		{
-			enable_gravators     => 1, 
-			default_gravatar_url => undef,
-		},
+	gravatar_options => 
+	{
+		enable_gravators     => 1, 
+		default_gravatar_url => undef,
+	},
 	
-		features => 
-		{ 
-			help                        => 1,
-			login                       => 1, 
-			register                    => 1, 
-			password_reset              => 1, 
-			profile_fields              => 1,  
-			mailing_list_subscriptions  => 1,
-			protected_directories       => 1,  
-			update_email_address        => 1, 
-			change_password             => 1, 
-			delete_profile              => 1,
-		},
-		cookie_params =>
-		{ 
-			-name    => 'dada_profile',  
-		    -path    => '/',
-		    -expires => '+1y',		
-		},
+	features => 
+	{ 
+		help                        => 1,
+		login                       => 1, 
+		register                    => 1, 
+		password_reset              => 1, 
+		profile_fields              => 1, 
+		mailing_list_subscriptions  => 1, 
+		protected_directories       => 1, 
+		update_email_address        => 1, 
+		change_password             => 1, 
+		delete_profile              => 1, 
+	},                                 
+	cookie_params =>
+	{ 
+		-name    => 'dada_profile',  
+	    -path    => '/',
+	    -expires => '+1y',		
+	},
 
-	};
+};
 
-
-	=cut
-	# end cut for Dada Mail Profile Options
-
-I<(if these lines are not present, you may add them to your .dada_config file)>
-
-To enable, B<FIRST> temove the following =cut lines (if present): 
-
-	=cut
-	# start cut for Dada Mail Profile Options
-
-	=cut
-	# end cut for Dada Mail Profile Options
-
-You can now configure your Profile Options. 
+I<(if these lines are not present, you may paste them into your .dada_config file)>
 
 =head2 $PROFILE_OPTIONS
 
