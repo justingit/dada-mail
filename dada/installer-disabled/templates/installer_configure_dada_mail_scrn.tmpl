@@ -701,7 +701,7 @@ for it to work correctly. For help on setting the cronjob, see the
 
 <p><input type="checkbox" name="install_password_protect_directories" id="install_password_protect_directories" value="1"  /><label for="install_password_protect_directories">Password Protect Directories</label> <span class="alert">Optionally Requires Additional Configuration (cronjob)</span>	</p> 
 
-<p><input type="checkbox" name="install_global_config" id="install_global_config" value="1"  /><label for="install_global_config">Global Config</label></p> 
+<p><input type="checkbox" name="install_global_config" id="install_global_config" value="1"  /><label for="install_global_config">Global Configuration</label></p> 
 
 </fieldset> 
 
@@ -804,7 +804,7 @@ editors also have the ability to make simple HTML tables for basic layouts.
 		
 			<p>
 			<input type="checkbox" name="profiles_enable_magic_subscription_forms" id="profiles_enable_magic_subscription_forms" value="1" checked="checked" />				
-			<label for="profiles_enable_magic_subscription_forms">Magic Subscription Forms:</label>
+			<label for="profiles_enable_magic_subscription_forms">Magic Subscription Forms</label>
 			</p>
 		
 			<p>
@@ -866,6 +866,32 @@ editors also have the ability to make simple HTML tables for basic layouts.
 	</div> 
 <!-- /tmpl_if --> 
 
+<!-- tmpl_if show_cache_options --> 
+<p>
+	<input type="checkbox" name="configure_cache" id="configure_cache" value="1" />			
+<label for="configure_cache">Configure Caching</label>
+</p>
+
+
+<div id="cache_options">
+<fieldset> 
+	<p>
+		<input type="checkbox" name="cache_options_SCREEN_CACHE" id="cache_options_SCREEN_CACHE" value="1"  />			
+		<label for="cache_options_SCREEN_CACHE">
+			Enable Screen Cache
+		</label>
+	</p>
+
+	<p>
+		<input type="checkbox" name="cache_options_DATA_CACHE" id="cache_options_DATA_CACHE" value="1" />			
+		<label for="cache_options_DATA_CACHE">
+			Enable Data Cache
+		</label>
+	</p>
+
+	</div>
+
+<!-- /tmpl_if --> 
 
 
 <!-- tmpl_if show_global_template_options --> 
@@ -905,6 +931,7 @@ editors also have the ability to make simple HTML tables for basic layouts.
 	</fieldset> 	
 	</div> 
 	<!-- /tmpl_if --> 
+	
 
 
 	<!-- tmpl_if show_security_options --> 

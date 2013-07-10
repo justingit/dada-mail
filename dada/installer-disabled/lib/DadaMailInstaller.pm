@@ -224,6 +224,7 @@ my $advanced_config_params = {
     show_global_template_options        => 1,
     show_security_options               => 1,
     show_global_mass_mailing_options    => 1,
+    show_cache_options                  => 1,
     show_amazon_ses_options             => 1,
     show_annoying_whiny_pro_dada_notice => 0,
 };
@@ -890,6 +891,34 @@ sub grab_former_config_vals {
 		$local_q->param('configure_user_template', 1); 
 		$local_q->param('template_options_USER_TEMPLATE', $BootstrapConfig::USER_TEMPLATE); 		
 	}
+
+	# Global Template Options 
+	if(defined($BootstrapConfig::SCREEN_CACHE) || defined($BootstrapConfig::DATA_CACHE)) { 
+		$local_q->param('configure_cache', 1); 
+		# Watch this, now: 
+		if(defined($BootstrapConfig::SCREEN_CACHE)) {
+			if($BootstrapConfig::SCREEN_CACHE ne '1') {				
+				$local_q->param('cache_options_SCREEN_CACHE', 0); 	
+			}
+			else { 
+				$local_q->param('cache_options_SCREEN_CACHE', 1); 	
+			}		
+		}
+		if(defined($BootstrapConfig::DATA_CACHE)) { 
+			if($BootstrapConfig::DATA_CACHE ne '1') {
+				$local_q->param('cache_options_DATA_CACHE', 0); 			
+			}
+			else {
+				$local_q->param('cache_options_DATA_CACHE', 1); 	
+			}
+		}
+	}
+	else { 
+		# Defaul to, "1". Better way? 
+		$local_q->param('cache_options_SCREEN_CACHE', 1); 	
+		$local_q->param('cache_options_DATA_CACHE', 1); 			
+	}
+
 	
 	# Configure Security Options
 	if(
@@ -1121,6 +1150,8 @@ sub install_dada_mail {
             $log .= "* Problems Creating .dada_config file! STOPPING!\n";
             $errors->{cant_create_dada_config} = 1;
             $status = 0;
+			
+
             return ( $log, $status, $errors );
         }
 
@@ -1483,6 +1514,25 @@ sub create_dada_config_file {
 		$template_options_params->{template_options_USER_TEMPLATE} = clean_up_var($q->param('template_options_USER_TEMPLATE'));	
 		$template_options_params->{configure_templates} = 1;
 	}
+
+	my $cache_options_params = {};
+	if($q->param('configure_cache') == 1){ 
+		$cache_options_params->{configure_cache} = 1;
+		if(clean_up_var($q->param('cache_options_SCREEN_CACHE')) == 1){ 
+			$cache_options_params->{cache_options_SCREEN_CACHE} = 1;
+		}
+		else { 
+			$cache_options_params->{cache_options_SCREEN_CACHE} = 2;
+		}
+		if(clean_up_var($q->param('cache_options_DATA_CACHE')) == 1){ 
+			$cache_options_params->{cache_options_DATA_CACHE} = 1;
+		}
+		else { 
+			$cache_options_params->{cache_options_DATA_CACHE} = 2;
+		}
+	}
+	
+
 	
 	my $security_params = {};
 	if($q->param('configure_security') == 1){ 
@@ -1532,6 +1582,7 @@ sub create_dada_config_file {
 				Big_Pile_Of_Errors     => $Big_Pile_Of_Errors, 
 				Trace                  => $Trace, 
 				%{$SQL_params},
+				%{$cache_options_params}, 
 			    %{$template_options_params},
 				%{$profiles_params},
 				%{$security_params},

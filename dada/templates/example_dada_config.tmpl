@@ -152,7 +152,13 @@ $PROFILE_OPTIONS = {
 
 <!-- /tmpl_if --> 
 
+<!-- tmpl_if configure_cache --> 
+#---------------------------------------------------------------------#
+# Cache Options 
 
+$SCREEN_CACHE = <!-- tmpl_var cache_options_SCREEN_CACHE  default="1" -->; 
+$DATA_CACHE   = <!-- tmpl_var cache_options_DATA_CACHE  default="1" -->; 
+<!-- /tmpl_if --> 
 
 <!-- tmpl_if configure_templates --> 
 #---------------------------------------------------------------------#

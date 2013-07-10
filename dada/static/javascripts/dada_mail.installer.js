@@ -116,6 +116,12 @@ $(document).ready(function() {
 		$("body").on('click', "#configure_templates", function(event) {
 			installer_checkbox_toggle_option_groups('configure_templates', 'template_options');
 		});
+
+		$("body").on('click', "#configure_cache", function(event) {
+			installer_checkbox_toggle_option_groups('configure_cache', 'cache_options');
+		});
+		
+		
 		$("body").on('click', "#configure_security", function(event) {
 			installer_checkbox_toggle_option_groups('configure_security', 'security_options'); 
 		});
@@ -136,6 +142,8 @@ $(document).ready(function() {
 		installer_checkbox_toggle_option_groups('configure_templates', 'template_options');
 		installer_checkbox_toggle_option_groups('configure_security', 'security_options');
 		installer_checkbox_toggle_option_groups('configure_mass_mailing', 'mass_mailing_options');
+		installer_checkbox_toggle_option_groups('configure_cache', 'cache_options');
+
 
 		$("#dada_files_help").hide();
 		$("#program_url_help").hide();
@@ -265,13 +273,15 @@ function test_user_template() {
 }
 
 function installer_checkbox_toggle_option_groups(checkbox_id, target_id){ 
-	if ($("#" + checkbox_id).prop("checked") == true) {
-		if ($('#' + target_id).is(':hidden')) {
-			$('#' + target_id).show('blind');
-		}
-	} else {
-		if ($('#' + checkbox_id).is(':visible')) {
-			$('#' + target_id).hide('blind');
+	if ($("#" + checkbox_id).length) {	
+		if ($("#" + checkbox_id).prop("checked") == true) {
+			if ($('#' + target_id).is(':hidden')) {
+				$('#' + target_id).show('blind');
+			}
+		} else {
+			if ($('#' + checkbox_id).is(':visible')) {
+				$('#' + target_id).hide('blind');
+			}
 		}
 	}
 }
