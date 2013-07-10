@@ -659,10 +659,13 @@ sub bounce_from_ses {
 	my $self = shift; 
 	my $entity = shift; 
 	# As far as I know, it's all from: 
-	my $amazon_ses_from = 'MAILER-DAEMON@email-bounces.amazonses.com'; 
-	my $qm_ses = quotemeta($amazon_ses_from); 
+	my $amazon_ses_from1 =~ 'MAILER-DAEMON@email-bounces.amazonses.com'; 
+	my $qm_ses1 = quotemeta($amazon_ses_from1); 
 	
-	if($entity->head->get( 'From', 0 ) =~ m/$qm_ses/){ 
+	my $amazon_ses_from2 =~ 'MAILER-DAEMON@amazonses.com'; 
+	my $qm_ses2 = quotemeta($amazon_ses_from2); 
+
+	if($entity->head->get( 'From', 0 ) =~ m/$qm_ses1|$qm_ses2/){ 
 		return 1; 
 	}
 	else { 

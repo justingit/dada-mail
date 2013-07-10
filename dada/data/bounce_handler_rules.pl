@@ -19,6 +19,133 @@ $Rules = [
             }
         }
     },
+
+    {
+        amazon_ses_delivery_expired => {
+            Examine => {
+                Message_Fields => {
+                    Guessed_MTA  => [qw(Amazon_SES)],
+					Action => [qw(failed)],
+					Status_regex => [qr/5\.0\.0/],
+                    'Diagnostic-Code_regex' => [qr/5\.4\.7 \- Delivery expired/],
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+				add_to_score => 'hardbounce_score',
+            }
+        }
+    },
+    {
+        amazon_ses_delivery_expired_soft => {
+            Examine => {
+                Message_Fields => {
+                    Guessed_MTA             => [qw(Amazon_SES)],
+					Action                  => [qw(failed)],
+					Status                  => [qw(4.4.7)],
+                    'Diagnostic-Code_regex' => [qr/4\.4\.7 Message expired/],
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+				add_to_score => 'softbounce_score',
+            }
+        }
+    },
+
+
+
+    {
+        gmail_disabled_account => {
+            Examine => {
+                Message_Fields => {
+					Action                  => [qw(failed)],
+					Status                  => [qw(5.2.1)],
+                    'Diagnostic-Code_regex' => [qr/The email account that you tried to reach is disabled/],
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+				add_to_score => 'softbounce_score',
+            }
+        }
+    },
+
+    {
+        blackberry_handheld_5_0_0 => {
+            Examine => {
+                Message_Fields => {
+					Action                  => [qw(failed Failed)],
+					Status                  => [qw(5.0.0)],
+                    'Notification_regex' => [qr/not been delivered to the recipient's BlackBerry Handheld/],
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+				add_to_score => 'hardbounce_score',
+            }
+        }
+    },
+
+
+	
+
+    {
+        mailbox_currently_suspended => {
+            Examine => {
+                Message_Fields => {
+					Action                  => [qw(failed)],
+					Status                  => [qw(5.3.0)],
+                    'Diagnostic-Code_regex' => [qr/SUSPEND|Mailbox currently suspended/],
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+				add_to_score => 'softbounce_score',
+            }
+        }
+    },
+
+
+
+    {
+        mailbox_does_not_exist_5_dot_6_dot_0 => {
+            Examine => {
+                Message_Fields => {
+                    Action                  => [qw(failed)],
+                    Status                  => [qw(5.6.0)],
+                    'Notification_regex'    => [qr/not exist/],
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+				add_to_score => 'hardbounce_score',
+            }
+        }
+    },
+
+
+
+
+
     {
         secureserver_dot_net_mailbox_full => {
             Examine => {
@@ -124,10 +251,9 @@ $Rules = [
                     Message_Fields => {
                         Action => [qw(failed Failed)],
                         Status => ['5.2.2', '4.2.2', '5.0.0', '5.1.1', '5.2.2 (mailbox full)'],
-                        'Final-Recipient_regex' => [ (qr/822/) ],
                         'Diagnostic-Code_regex' => [
                             (
-qr/552|exceeded storage allocation|over quota|storage full|mailbox full|disk quota exceeded|Mail quota exceeded|Quota violation/
+qr/552|quota exceeded|exceeded storage allocation|over quota|storage full|mailbox full|disk quota exceeded|Mail quota exceeded|Quota violation/
                             )
                         ]
                     },
@@ -207,6 +333,31 @@ qr/552|exceeded storage allocation|over quota|storage full|mailbox full|disk quo
         },
 
         {
+            yahoo_no_account => {
+                Examine => {
+                    Message_Fields => {
+                        'Notification_regex' => [ (qr/This user doesn\'t have a yahoo\.com/) ],
+                    },
+                    Data => {
+                        Email => 'is_valid',
+                        List  => 'is_valid',
+                    }
+                },
+                Action => {
+
+                    add_to_score => 'hardbounce_score',
+                }
+            }
+        },
+
+
+
+
+
+
+
+
+        {
             qmail_over_quota => {
                 Examine => {
                     Message_Fields => {
@@ -255,6 +406,32 @@ qr/mailbox is full|Exceeded storage allocation|recipient storage full|mailbox fu
                 }
             }
         },
+
+
+        {
+            ya_over_quota => {
+                Examine => {
+                    Message_Fields => {
+
+                        Status             => [qw(5.0.0)],
+                        'Notification_regex' => [
+                            (qr/mailbox is full|Exceeded storage allocation|recipient storage full|mailbox full|storage full|Not enough storage space|user is over quota/)
+                        ],
+                    },
+
+                    Data => {
+                        Email => 'is_valid',
+                        List  => 'is_valid',
+                    }
+                },
+                Action => {
+
+                    add_to_score => 'softbounce_score',
+                }
+            }
+        },
+
+
 
         {
             over_quota_552 => {
@@ -756,6 +933,27 @@ qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User un
                 },
               } },
 
+
+	        {
+
+	            relay_not_permitted_5dot3dot0_status => {
+	                Examine => {
+	                    Message_Fields => {
+	                        Action                  => [qw(failed)],
+	                        Status                  => [qw(5.3.0)],
+	                        'Diagnostic-Code_regex' => [ (qr/relay not permitted/) ],
+
+	                    },
+	                    Data => {
+	                        Email => 'is_valid',
+	                        List  => 'is_valid',
+	                    }
+	                },
+	                Action => { add_to_score => 'hardbounce_score', }
+	              } 
+			},
+
+		
         {
 
             user_unknown_5dot3dot0_status => {
@@ -774,7 +972,8 @@ qr/SMTP\; 550|550 MAILBOX NOT FOUND|550 5\.1\.1 unknown or illegal alias|User un
                     }
                 },
                 Action => { add_to_score => 'hardbounce_score', }
-              } },
+              } 
+		},
 
         {
             user_inactive => {
@@ -878,6 +1077,32 @@ qr/551 not our customer|User unknown|ecipient no longer/
             }
         },
 
+
+		
+		
+        {
+            no_such_domain => {
+                Examine => {
+                    Message_Fields => {
+
+                        Status                  => [qw(5.3.0)],
+                        Action                  => [qw(failed)],
+                        'Diagnostic-Code_regex' => [ (qr/No such domain at this location/) ],
+                    },
+                    Data => {
+                        Email => 'is_valid',
+                        List  => 'is_valid',
+                    }
+                },
+                Action => {
+
+                    #unsubscribe_bounced_email => 'from_list',
+                    add_to_score => 'hardbounce_score',
+                },
+            }
+        },
+		
+		
         {
             unknown_domain => {
                 Examine => {
@@ -918,11 +1143,7 @@ qr/551 not our customer|User unknown|ecipient no longer/
                     }
                 },
                 Action => {
-
-            # TODO
-            # Again, not sure quite what to put here - will be silently ignored.
-
-                  # NOTE: Sometimes this message is sent by servers of spammers.
+                    add_to_score => 'hardbounce_score',
                 },
             }
         },
@@ -986,6 +1207,44 @@ qr/551 not our customer|User unknown|ecipient no longer/
 	            }
 	        }
 	    },		
+
+	    {
+	        generic_mailbox_unavailable2 => {
+	            Examine => {
+	                Message_Fields => {
+						Status                  => [qw(5.3.0 5.2.0)],
+	                    'Diagnostic-Code_regex' => [qr/mailbox unavailable/i],
+	                },
+	                Data => {
+	                    Email => 'is_valid',
+	                    List  => 'is_valid',
+	                }
+	            },
+	            Action => {
+					add_to_score => 'hardbounce_score',
+	            }
+	        }
+	    },		
+
+	    {
+	        not_much_to_go_on_5_3_0 => {
+	            Examine => {
+	                Message_Fields => {
+						Status                  => [qw(5.3.0)],
+	                },
+	                Data => {
+	                    Email => 'is_valid',
+	                    List  => 'is_valid',
+	                }
+	            },
+	            Action => {
+					add_to_score => 'softbounce_score',
+	            }
+	        }
+	    },		
+
+
+
 	    {
 	        generic_no_such_user_here => {
 	            Examine => {
@@ -1002,6 +1261,65 @@ qr/551 not our customer|User unknown|ecipient no longer/
 	            }
 	        }
 	    },
+	    {
+	        sender_denied => {
+	            Examine => {
+	                Message_Fields => {
+						Status_regex            => [qr/5\.0\.0|5\.1\.0/],
+	                    'Diagnostic-Code_regex' => [qr/sender denied/i],
+	                },
+	                Data => {
+	                    Email => 'is_valid',
+	                    List  => 'is_valid',
+	                }
+	            },
+	            Action => {
+					add_to_score => 'hardbounce_score',
+	            }
+	        }
+	    },
+	
+	    {
+	        denylist => {
+	            Examine => {
+	                Message_Fields => {
+	                    'Diagnostic-Code_regex' => [qr/Sender is on user denylist/i],
+	                },
+	                Data => {
+	                    Email => 'is_valid',
+	                    List  => 'is_valid',
+	                }
+	            },
+	            Action => {
+					add_to_score => 'hardbounce_score',
+	            }
+	        }
+	    },
+	
+	
+	
+	
+	
+			
+	    {
+	        error_5_7_1 => {
+	            Examine => {
+	                Message_Fields => {
+						Status            => [qw(5.7.1)],
+	                },
+	                Data => {
+	                    Email => 'is_valid',
+	                    List  => 'is_valid',
+	                }
+	            },
+	            Action => {
+					add_to_score => 'hardbounce_score',
+	            }
+	        }
+	    },		
+	
+	
+	
 		{
 	        disabled_or_discontinued => {
 	            Examine => {
@@ -1124,7 +1442,7 @@ qr/551 not our customer|User unknown|ecipient no longer/
 	                Message_Fields => {
 						Action => [qw(failed)],
 						Status_regex => [qr/5\.0\.0/],
-	                    'Diagnostic-Code_regex' => [qr/Unknown address/],
+	                    'Diagnostic-Code_regex' => [qr/Unknown address|unknown user account/],
 	                },
 	                Data => {
 	                    Email => 'is_valid',
