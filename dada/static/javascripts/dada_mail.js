@@ -531,16 +531,16 @@ $(document).ready(function() {
 
 
 function admin_menu_sending_monitor_notification() {
-	console.log('admin_menu_sending_monitor_notification'); 
+	/* console.log('admin_menu_sending_monitor_notification'); */
 	admin_menu_notification('admin_menu_mailing_monitor_notification', 'admin_menu_sending_monitor');
 }
 
 function admin_menu_subscriber_count_notification() {
-	console.log('admin_menu_subscriber_count_notification'); 
+	/* console.log('admin_menu_subscriber_count_notification');  */
 	admin_menu_notification('admin_menu_subscriber_count_notification', 'admin_menu_view_list');
 }
 function admin_menu_archive_count_notification() { 
-	console.log('admin_menu_archive_count_notification'); 
+	/* console.log('admin_menu_archive_count_notification'); */
 	admin_menu_notification('admin_menu_archive_count_notification', 'admin_menu_view_archive');	
 }
 
