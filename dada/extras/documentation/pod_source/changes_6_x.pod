@@ -114,6 +114,16 @@ Dada Mail now includes the B<jQuery Validation Plugin>, and uses this plugin for
 
 Dada Mail now includes the B<Select2 jQuery Plugin>, and utilizes it in the Mailing List Switch Form you'll see in the upper right hand corner of the List Control Panel. With this plugin, it's now easier to find the mailing list you'd like to work with, especially if you have many dozens of mailing lists running on your Dada Mail. The enhancement allows you to search through the available mailing lists, rather than just simply scrolling through them. 
 
+=head3 Bounce Handler
+
+=head4 Admin Menu: Bounce Scorecard Count Shown
+
+The number of addresses on the Bounce Scorecard is now shown beside the admin menu for the Bounce Handler 
+
+=head4 More Rules! 
+
+Around 15 new rules have been added to the Bounce Handler. Bounce Handler rules are used to correctly sort out and understand the bounces the Bounce Handler receives. 
+
 =head2 Changes 6.5.0
 
 =head3 JavaScript Changes

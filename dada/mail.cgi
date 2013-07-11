@@ -555,6 +555,7 @@ sub run {
 	'admin_menu_mailing_monitor_notification'  =>  \&admin_menu_mailing_monitor_notification,
 	'admin_menu_archive_count_notification'    =>  \&admin_menu_archive_count_notification,  
 	'admin_menu_sending_preferences_notification' => \&admin_menu_sending_preferences_notification, 
+	'admin_menu_bounce_handler_notification'      => \&admin_menu_bounce_handler_notification, 
 	'send_email'                 =>    \&send_email,
 	'message_body_help'          =>    \&message_body_help, 
 	'url_message_body_help'      =>    \&url_message_body_help, 
@@ -1052,35 +1053,55 @@ sub admin_menu_archive_count_notification {
 }
 
 sub admin_menu_sending_preferences_notification { 
-		print $q->header(); 
+	print $q->header(); 
 
-		try { 
-			my ($admin_list, $root_login, $checksout) = check_list_security(
-												-cgi_obj         => $q,
-												-manual_override => 1
-											);
-			if($checksout) { 					
-				$list = $admin_list; 
-				require DADA::MailingList::Settings;
-		        my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-		
-				if($ls->param('sending_method') eq 'sendmail'){ 
-					e_print('(sendmail)'); 
-				}
-				elsif($ls->param('sending_method') eq 'smtp'){ 
-					e_print('(SMTP)'); 
-				}
-				elsif($ls->param('sending_method') eq 'amazon_ses'){ 
-					e_print('(Amazon SES)'); 					
-				}				
+	try { 
+		my ($admin_list, $root_login, $checksout) = check_list_security(
+											-cgi_obj         => $q,
+											-manual_override => 1
+										);
+		if($checksout) { 					
+			$list = $admin_list; 
+			require DADA::MailingList::Settings;
+	        my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+
+			if($ls->param('sending_method') eq 'sendmail'){ 
+				e_print('(sendmail)'); 
 			}
-		} catch { 
-			carp ($_); 
+			elsif($ls->param('sending_method') eq 'smtp'){ 
+				e_print('(SMTP)'); 
+			}
+			elsif($ls->param('sending_method') eq 'amazon_ses'){ 
+				e_print('(Amazon SES)'); 					
+			}				
 		}
+	} catch { 
+		carp ($_); 
 	}
+}
 
 
+sub admin_menu_bounce_handler_notification { 
+	print $q->header(); 
 
+	try { 
+		my ($admin_list, $root_login, $checksout) = check_list_security(
+											-cgi_obj         => $q,
+											-manual_override => 1
+										);
+		if($checksout) { 					
+			$list = $admin_list; 
+			require DADA::App::BounceHandler::ScoreKeeper; 
+			my $bsk = DADA::App::BounceHandler::ScoreKeeper->new( { -list => $list } );
+		    my $num = $bsk->num_scorecard_rows; 
+			if($num > 0) { 
+				e_print('(' . commify($num) . ')');  
+			}
+		}
+	} catch { 
+		carp ($_); 
+	}
+}
 
 
 

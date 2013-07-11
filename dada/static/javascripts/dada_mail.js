@@ -34,6 +34,8 @@ $(document).ready(function() {
 		admin_menu_callbacks.add(admin_menu_subscriber_count_notification());
 		admin_menu_callbacks.add(admin_menu_archive_count_notification());
 		admin_menu_callbacks.add(admin_menu_sending_preferences_notification());
+		admin_menu_callbacks.add(admin_menu_bounce_handler_notification());
+		
 		admin_menu_callbacks.fire(); 
 	}
 
@@ -544,6 +546,10 @@ function admin_menu_archive_count_notification() {
 
 function admin_menu_sending_preferences_notification() { 
 	admin_menu_notification('admin_menu_sending_preferences_notification', 'admin_menu_sending_preferences');	
+}
+
+function admin_menu_bounce_handler_notification() { 
+	admin_menu_notification('admin_menu_bounce_handler_notification', 'admin_menu_bounce_handler');	
 }
 
 
