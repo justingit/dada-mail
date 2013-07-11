@@ -1,0 +1,36 @@
+<!-- begin list_confirm_unsubscribe.tmpl --> 
+
+<!-- tmpl_set name="title" value="Unsubscription Confirmation Sent" -->
+<!-- tmpl_set name="show_profile_widget" value="0" --> 
+
+<p>An email message has been sent to the following address:</p>
+
+<blockquote>
+ <p>
+  <strong>
+  <!-- tmpl_var subscriber.email -->
+  </strong>
+ </p>
+</blockquote>
+ 
+<p>to confirm that address's <em>removal</em> from the following list: </p>
+
+<blockquote>
+ <p>
+  <strong>
+  <!-- tmpl_var list_settings.list_name -->
+  </strong>
+ </p>
+</blockquote>
+
+<p>Upon receiving this message, you will need to follow a confirmation 
+URL, located in the message itself.</p>
+
+<p style="text-align:center">
+ <a href="mailto:<!-- tmpl_var list_settings.list_owner_email -->">
+  <!-- tmpl_var list_settings.list_owner_email -->
+ </a>
+</p>
+
+
+<!-- end list_confirm_unsubscribe.tmpl --> 

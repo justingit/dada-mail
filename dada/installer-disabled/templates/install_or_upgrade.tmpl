@@ -13,7 +13,7 @@
 <!-- /tmpl_if -->
 
 <fieldset> 	
-	<form action="<!-- tmpl_var Self_URL -->" method="post" id="installform"> 
+	<form action="<!-- tmpl_var Self_URL -->" method="post" id="install_or_upgrade_form"> 
 	<p><input type="radio" name="install_type" id="install" value="install" <!-- tmpl_unless found_existing_dada_files_dir -->checked="checked"<!-- /tmpl_unless --> class="installer_changeDisplayStateDivs" data-state="hide" data-target="upgrade_options" /><label for="install">Installation</label></p>
 	<p><input type="radio" name="install_type" id="upgrade" value="upgrade" <!-- tmpl_if found_existing_dada_files_dir -->checked="checked"<!-- /tmpl_if -->  class="installer_changeDisplayStateDivs" data-state="show" data-target="upgrade_options" /><label for="upgrade">Upgrade</label></p>
 	
@@ -31,7 +31,7 @@
 		</div>
 		<!-- /tmpl_if --> 
 		<p><label for="current_dada_files_parent_location">Current .dada_files Location:</label><br/>
-			<input type="text" name="current_dada_files_parent_location" value="<!-- tmpl_if found_existing_dada_files_dir --><!-- tmpl_var dada_files_parent_dir --><!-- /tmpl_if -->" style="text-align:right" class="midi" /><span class="fake_input">/<!-- tmpl_var Dada_Files_Dir_Name --></span>
+			<input type="text" name="current_dada_files_parent_location" id="current_dada_files_parent_location" value="<!-- tmpl_if found_existing_dada_files_dir --><!-- tmpl_var dada_files_parent_dir --><!-- /tmpl_if -->" style="text-align:right" class="midi" /><span class="fake_input">/<!-- tmpl_var Dada_Files_Dir_Name --></span>
 		</p>
 		</div>
 		
@@ -39,7 +39,7 @@
 
 	<input type="submit" name="submitbutton" value="&#187; Continue &#171;" class="processing bigger_button" />
 </div>
-	</form>
+</form>
 </fieldset> 
 
 <!-- end install_or_upgrade -->

@@ -3,6 +3,8 @@
 <!-- tmpl_set name="title" value="Profile Login" --> 
 <!-- tmpl_set name="show_profile_widget" value="0" --> 
 
+<div id="profile_login_registration"></div>
+
 <!-- tmpl_if expr="profile_feature_help == 1" -->
 	<p style="text-align:right">
 		<a href="<!-- tmpl_var PROGRAM_URL -->/profile_help/">
@@ -105,17 +107,21 @@
 	<fieldset> 
 		<legend>Log Into Your Profile</legend>
 	
-	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="profile_login"> 
 	
 		<input type="hidden" name="f" value="profile_login" /> 
 		<input type="hidden" name="process" value="1" /> 
 
 		<p>
-			<label for="login_email" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">Email Address:</label><input type="text" name="email" id="login_email" value="<!-- tmpl_var email -->" /> 
+			<label for="login_email" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
+				Email Address:</label>
+			<input type="email" name="login_email" id="login_email" value="<!-- tmpl_var login_email escape="HTML" -->" /> 
 		</p>
 		<p>
-			<label for="login_password" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">Password:</label><input type="password" name="password" id="login_password" value="" /> 
-
+			<label for="login_password" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
+				Password:
+			</label>
+			<input type="password" name="login_password" id="login_password" value="" /> 
 
 		<div class="buttonfloat">
 			<input type="submit" value="Log Into Your Profile" /> 
@@ -128,6 +134,20 @@
 
 <!-- /tmpl_if --> 
 
+
+<!-- tmpl_if error_profile_activate --> 
+	<div class="badweatherbox">
+	<ul>
+		<!-- tmpl_if error_invalid_auth_code --> 
+			<li>
+				<p>
+					Auth code is not valid. Make sure to copy/paste the entire registration link. 
+				</p> 
+			</li>
+		<!-- /tmpl_if -->		
+	</ul> 
+	</div> 
+<!-- /tmpl_if --> 
 
 <!-- tmpl_if error_profile_register --> 
 	<div class="badweatherbox">
@@ -176,16 +196,25 @@
 		Register a Profile to easily manage all your <!-- PROGRAM_NAME --> Subscriptions.
 	</p> 
 
-	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="profile_register"> 
 		<input type="hidden" name="f" value="profile_register" /> 
 		<p>
-			<label for="register_email" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">Email Address:</label><input type="text" name="email" id="register_email" value="<!-- tmpl_var email -->" /> 
+			<label for="register_email" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
+				Email Address:
+			</label>
+			<input type="email" name="register_email" id="register_email" value="<!-- tmpl_var register_email -->" /> 
 		</p>
 		<p>
-			<label for="register_email_again" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">Email Address (again):</label><input type="text" name="email_again" id="register_email_again" value="<!-- tmpl_var email_again -->" /> 
+			<label for="register_email_again" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
+				Email Address (again):
+			</label>
+			<input type="email" name="register_email_again" id="register_email_again" value="<!-- tmpl_var register_email_again -->" /> 
 		</p>
 		<p>
-			<label for="register_password" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">Password:</label><input type="password" name="password" id="register_password" value="" /> 
+			<label for="register_password" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
+				Password:
+			</label>
+			<input type="password" name="register_password" id="register_password" value="" /> 
 		</p>
 	
 		<!-- tmpl_if can_use_captcha --> 
@@ -216,9 +245,24 @@
 
 <!-- tmpl_if error_profile_reset_password --> 
 	<div class="badweatherbox">
-	 <p>
-		Profile user Unknown - have you registered?
-	</p>
+		<ul>
+			<!-- tmpl_if error_invalid_auth_code --> 
+				<li>
+					<p>
+						Auth code is not valid. Make sure to copy/paste the entire password reset link. 
+					</p>
+				</li> 
+			<!-- /tmpl_if --> 
+			
+			<!-- tmpl_if error_unknown_user --> 
+				<li>
+					<p>
+						User Unknown - have you registered?
+					</p>
+				</li> 
+			<!-- /tmpl_if -->
+			
+		</ul> 
 	</div> 
 <!-- /tmpl_if --> 
 
@@ -230,13 +274,13 @@
 		Forgot Your Profile Password?
 	</legend>
 
-	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="profile_reset_password"> 
 		<input type="hidden" name="f" value='profile_reset_password' /> 
 		<p>
 			<label for="reset_email" style="width: 7em;float: left;text-align: right;margin-right: 0.5em;display: block">
 				Email Address:
 			</label>
-			 <input type="text" id="reset_email" name="email" value="<!-- tmpl_var email -->" />
+			 <input type="text" id="reset_email" name="reset_email" value="<!-- tmpl_var reset_email -->" />
 		</p> 
 	
 

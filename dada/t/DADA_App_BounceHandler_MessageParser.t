@@ -186,7 +186,7 @@ ok($diag->{Bounce_Subject} eq 'failure notice', "found Bounce_Subject");
 
 
 $rule = $bhr->find_rule_to_use( $found_list, $email, $diag );
-ok($rule eq 'qmail_user_unknown', "rule is: $rule"); 
+ok($rule eq 'yahoo_no_account', "rule is: $rule"); 
 
 undef $msg; 
 undef $email; 

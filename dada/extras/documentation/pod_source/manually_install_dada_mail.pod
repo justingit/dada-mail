@@ -8,6 +8,12 @@ Unless you like to or need to, it's much easier now to use the Dada Mail Install
 
 In these directions, I'll be giving examples of shell commands you may issue to complete each step. They may need to be slightly modify to work with your particular environment. Noting too tricky, though. 
 
+=head1 Command Line Installer
+
+To help disuade you even I<further> with installing Dada Mail "Manually", consider that the Installer has a command line interface! No need to re-invent the wheel: 
+
+L<http://dadamailproject.com/support/documentation/install_dada-command_line.pod.html>
+
 Download Dada Mail at: 
 
 L<http://dadamailproject.com/download>

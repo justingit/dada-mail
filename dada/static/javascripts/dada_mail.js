@@ -14,6 +14,19 @@ $(document).ready(function() {
 	});
 
 	// Admin Menu 
+	
+	if ($("#change_to_list_form").length) { 
+		$("#change_to_list").select2();
+		$("body").on("submit", "#change_to_list_form", function(event) {
+			event.preventDefault();
+		});	
+		$("body").on("click", "#submit_change_to_list", function(event) {		
+			$("#change_to_list").val($("#change_to_list").select2("val"));
+			$("body").off('submit', '#change_to_list_form');
+			return true; 
+		});		
+	}
+	
 	if ($("#navcontainer").length) {
 		
 		var admin_menu_callbacks = $.Callbacks();
@@ -21,6 +34,8 @@ $(document).ready(function() {
 		admin_menu_callbacks.add(admin_menu_subscriber_count_notification());
 		admin_menu_callbacks.add(admin_menu_archive_count_notification());
 		admin_menu_callbacks.add(admin_menu_sending_preferences_notification());
+		admin_menu_callbacks.add(admin_menu_bounce_handler_notification());
+		
 		admin_menu_callbacks.fire(); 
 	}
 
@@ -323,79 +338,6 @@ $(document).ready(function() {
 		check_newest_version($('#check_version').attr("data-ver"));
 	});
 
-	// Installer 
-	if ($("#install_or_upgrade").length) {
-		$("body").on("click", '.installer_changeDisplayStateDivs', function(event) {
-			changeDisplayState($(this).attr("data-target"), $(this).attr("data-state"));
-		});
-	}
-	if ($("#installer_configure_dada_mail").length) {
-		$("body").on("change", "#backend", function(event) {
-			installer_toggleSQL_options();
-		});
-		$("body").on("click", '.radiochangeDisplayState', function(event) {
-			changeDisplayState($(this).attr("data-target"), $(this).attr("data-state"));
-		});
-
-		$("body").on("click", '.test_sql_connection', function(event) {
-			installer_test_sql_connection();
-		});
-		$("body").on("click", '.test_bounce_handler_pop3_connection', function(event) {
-			installer_test_pop3_connection();
-		});
-		$("body").on("click", '.test_amazon_ses_configuration', function(event) {
-			test_amazon_ses_configuration();
-		});
-		
-
-
-		$("body").on('keyup', "#dada_root_pass_again", function(event) {
-
-			if ($("#dada_root_pass_again").val() != $("#dada_root_pass").val() && $("#dada_root_pass_again").val().length) {
-				$(".dada_pass_no_match").html('<span class="error">Passwords do not match!</span>');
-			} else {
-				$(".dada_pass_no_match").html('');
-
-			}
-		});
-
-		$("body").on('click', "#install_wysiwyg_editors", function(event) {
-			installer_toggle_wysiwyg_editors_options()
-		});
-		$("body").on('click', "#configure_amazon_ses", function(event) {
-			installer_toggle_configure_amazon_ses_options();
-		});
-		
-		installer_dada_root_pass_options();
-		installer_toggleSQL_options();
-		installer_toggle_dada_files_dirOptions();
-		installer_togger_bounce_handler_config();
-		installer_toggle_wysiwyg_editors_options();
-		installer_toggle_configure_amazon_ses_options(); 
-		
-		
-		
-
-		$("#dada_files_help").hide();
-		$("#program_url_help").hide();
-		$("#root_pass_help").hide();
-		$("#support_files_help").hide();
-		$("#backend_help").hide();
-		$("#plugins_extensions_help").hide();
-		$("#bounce_handler_configuration_help").hide();
-		$("#wysiwyg_editor_help").hide();
-		$("#test_sql_connection_results").hide();
-		$("#test_bounce_handler_pop3_connection_results").hide();
-		$("#test_amazon_ses_configuration_results").hide();
-
-
-	}
-	if ($("#installer_install_dada_mail").length) {
-		$("body").on("click", '#move_installer_dir', function(event) {
-			event.preventDefault();
-			installer_move_installer_dir();
-		});
-	}
 
 	// Plugins >> Bounce Handler 
 	if ($("#plugins_bounce_handler_default").length) {
@@ -589,21 +531,25 @@ $(document).ready(function() {
 
 
 function admin_menu_sending_monitor_notification() {
-	console.log('admin_menu_sending_monitor_notification'); 
+	/* console.log('admin_menu_sending_monitor_notification'); */
 	admin_menu_notification('admin_menu_mailing_monitor_notification', 'admin_menu_sending_monitor');
 }
 
 function admin_menu_subscriber_count_notification() {
-	console.log('admin_menu_subscriber_count_notification'); 
+	/* console.log('admin_menu_subscriber_count_notification');  */
 	admin_menu_notification('admin_menu_subscriber_count_notification', 'admin_menu_view_list');
 }
 function admin_menu_archive_count_notification() { 
-	console.log('admin_menu_archive_count_notification'); 
+	/* console.log('admin_menu_archive_count_notification'); */
 	admin_menu_notification('admin_menu_archive_count_notification', 'admin_menu_view_archive');	
 }
 
 function admin_menu_sending_preferences_notification() { 
 	admin_menu_notification('admin_menu_sending_preferences_notification', 'admin_menu_sending_preferences');	
+}
+
+function admin_menu_bounce_handler_notification() { 
+	admin_menu_notification('admin_menu_bounce_handler_notification', 'admin_menu_bounce_handler');	
 }
 
 
@@ -1199,187 +1145,6 @@ function toggleManualBatchSettings() {
 		}
 	}
 	previewBatchSendingSpeed();
-}
-
-// Installer 
-
-function installer_test_sql_connection() {
-	var target_div = 'test_sql_connection_results';
-	$("#" + target_div).html('<p class="alert">Loading...</p>');
-	if ($("#" + target_div).is(':hidden')) {
-		$("#" + target_div).show();
-	}
-
-	var request = $.ajax({
-		url: $("#self_url").val(),
-		type: "POST",
-		cache: false,
-		data: {
-			f: 'cgi_test_sql_connection',
-			backend: $("#backend").val(),
-			sql_server: $("#sql_server").val(),
-			sql_port: $("#sql_port").val(),
-			sql_database: $("#sql_database").val(),
-			sql_username: $("#sql_username").val(),
-			sql_password: $("#sql_password").val()
-		},
-		dataType: "html"
-	});
-	request.done(function(content) {
-		//$("#" + target_div).hide('fade');
-		$("#" + target_div).html(content);
-		//$("#" + target_div).show('fade');
-	});
-
-}
-
-function installer_test_pop3_connection() {
-	var target_div = 'test_bounce_handler_pop3_connection_results';
-	$("#" + target_div).html('<p class="alert">Loading...</p>');
-	if ($("#" + target_div).is(':hidden')) {
-		$("#" + target_div).show();
-	}
-
-	var request = $.ajax({
-		url: $("#self_url").val(),
-		type: "POST",
-		cache: false,
-		data: {
-			f: 'cgi_test_pop3_connection',
-			bounce_handler_server: $("#bounce_handler_server").val(),
-			bounce_handler_username: $("#bounce_handler_username").val(),
-			bounce_handler_password: $("#bounce_handler_password").val()
-		},
-		dataType: "html"
-	});
-	request.done(function(content) {
-		//$("#" + target_div).hide('fade');
-		$("#" + target_div).html(content);
-		//$("#" + target_div).show('fade');
-	});
-}
-
-
-
-function test_amazon_ses_configuration() {
-	var target_div = 'test_amazon_ses_configuration_results';
-	$("#" + target_div).html('<p class="alert">Loading...</p>');
-	if ($("#" + target_div).is(':hidden')) {
-		$("#" + target_div).show();
-	}
-
-	var request = $.ajax({
-		url: $("#self_url").val(),
-		type: "POST",
-		cache: false,
-		data: {
-			f: 'cgi_test_amazon_ses_configuration',
-			amazon_ses_AWSAccessKeyId: $("#amazon_ses_AWSAccessKeyId").val(), 
-			amazon_ses_AWSSecretKey: $("#amazon_ses_AWSSecretKey").val(), 	
-		},
-		dataType: "html"
-	});
-	request.done(function(content) {
-		$("#" + target_div).html(content);
-	});
-}
-
-
-
-function installer_dada_root_pass_options() {
-	if ($("#dada_pass_use_orig").prop("checked") == true) {
-		if ($('#dada_root_pass_fields').is(':visible')) {
-			$('#dada_root_pass_fields').hide('blind');
-		}
-	}
-	if ($("#dada_pass_use_orig").prop("checked") == false) {
-		if ($('#dada_root_pass_fields').is(':hidden')) {
-			$('#dada_root_pass_fields').show('blind');
-		}
-	}
-
-}
-
-function installer_toggleSQL_options() {
-
-	var selected = $("#backend option:selected").val();
-	if (selected == 'mysql' || selected == 'Pg') {
-		if ($('#sql_info').is(':hidden')) {
-			$('#sql_info').show('blind');
-		}
-	} else {
-		if ($('#sql_info').is(':visible')) {
-			$('#sql_info').hide('blind');
-		}
-	}
-}
-
-function installer_toggle_dada_files_dirOptions() {
-
-	if ($("#dada_files_dir_setup_auto").prop("checked") == true) {
-		if ($('#manual_dada_files_dir_setup').is(':visible')) {
-			$('#manual_dada_files_dir_setup').hide('blind');
-		}
-	}
-	if ($("#dada_files_dir_setup_manual").prop("checked") == true) {
-		if ($('#manual_dada_files_dir_setup').is(':hidden')) {
-			$('#manual_dada_files_dir_setup').show('blind');
-		}
-	}
-}
-
-function installer_togger_bounce_handler_config() {
-	if ($("#install_bounce_handler").prop("checked") == true) {
-		if ($('#additional_bounce_handler_configuration').is(':hidden')) {
-			$('#additional_bounce_handler_configuration').show('blind');
-		}
-	} else {
-		if ($('#additional_bounce_handler_configuration').is(':visible')) {
-			$('#additional_bounce_handler_configuration').hide('blind');
-		}
-	}
-}
-
-function installer_toggle_wysiwyg_editors_options() {
-	if ($("#install_wysiwyg_editors").prop("checked") == true) {
-		if ($('#install_wysiwyg_editors_options').is(':hidden')) {
-			$('#install_wysiwyg_editors_options').show('blind');
-		}
-	} else {
-		if ($('#install_wysiwyg_editors_options').is(':visible')) {
-			$('#install_wysiwyg_editors_options').hide('blind');
-		}
-	}
-}
-
-function installer_toggle_configure_amazon_ses_options() { 
-	if ($("#configure_amazon_ses").prop("checked") == true) {
-		if ($('#amazon_ses_options').is(':hidden')) {
-			$('#amazon_ses_options').show('blind');
-		}
-	} else {
-		if ($('#amazon_ses_options').is(':visible')) {
-			$('#amazon_ses_options').hide('blind');
-		}
-	}	
-}
-
-function installer_move_installer_dir() {
-
-	$("#move_results").hide();
-	var request = $.ajax({
-		url: $("#self_url").val(),
-		type: "POST",
-		cache: false,
-		data: {
-			f: 'move_installer_dir_ajax',
-		},
-		dataType: "html"
-	});
-	request.done(function(content) {
-		$("#move_results").html(content);
-		$("#move_results").show('blind');
-	});
 }
 
 

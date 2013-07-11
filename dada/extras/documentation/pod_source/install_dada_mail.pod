@@ -4,9 +4,9 @@
 
 =head1 Step #1: Download Dada Mail
 
-Here's the direct download to Dada Mail v6.4.3:
+Here's the direct download to Dada Mail v6.5.0:
 
-L<http://dadamail.googlecode.com/files/dada-6_4_3.tar.gz>
+L<http://dadamail.googlecode.com/files/dada-6_5_0.tar.gz>
 
 =head2 Pro Dada Subscriber?
 
@@ -18,9 +18,9 @@ Here's more information about B<Pro Dada>:
 
 L<http://dadamailproject.com/purchase/pro.html> 
 
-=head1 Step #2 Upload the, "dada-6_4_3.tar.gz" distro into your cgi-bin
+=head1 Step #2 Upload the, "dada-6_5_0.tar.gz" distro into your cgi-bin
 
-Once you download the C<dada-6_4_3.tar.gz> distro (you will B<not> have to uncompress the distribution), upload it to your hosting account's I<cgi-bin>.
+Once you download the C<dada-6_5_0.tar.gz> distro (you will B<not> have to uncompress the distribution), upload it to your hosting account's I<cgi-bin>.
 
 =begin html
 
@@ -39,17 +39,17 @@ Download the, C<uncompress_dada.cgi> script from here:
 =begin html 
 
 <ul>
-<li><strong><a href="https://raw.github.com/justingit/dada-mail/v6_4_3-stable_2013_06_11/uncompress_dada.cgi">uncompress_dada.cgi</a> (Save Page/Link As...)</strong></li></ul>
+<li><strong><a href="https://raw.github.com/justingit/dada-mail/v6_5_0-rc1_2013_07_11/uncompress_dada.cgi">uncompress_dada.cgi</a> (Save Page/Link As...)</strong></li></ul>
 
 =end html
 
-and upload this script (PlainTest/ASCII mode - NOT binary!) to your hosting account's I<cgi-bin> directory - right alongside the I<dada-6_4_3.tar.gz> distro you just put up. 
+and upload this script (PlainTest/ASCII mode - NOT binary!) to your hosting account's I<cgi-bin> directory - right alongside the I<dada-6_5_0.tar.gz> distro you just put up. 
 
 =head1 Step #4 Change permissions of the, "uncompress_dada.cgi" file to, "755"
 
 =head1 Step #5 Visit the, "uncompress_dada.cgi" script in your web browser. 
 
-The, C<uncompress_dada.cgi> should attempt to uncompress the I<dada-6_4_3.tar.gz> distro, change the necessary permissions of various files and prep the actual installer for you to use. 
+The, C<uncompress_dada.cgi> should attempt to uncompress the I<dada-6_5_0.tar.gz> distro, change the necessary permissions of various files and prep the actual installer for you to use. 
 
 Once it's finished running, you should be presented with a link to use the actual installer. Click the link at the bottom of the screen and go ahead and configure Dada Mail! 
 
@@ -60,7 +60,7 @@ Once it's finished running, you should be presented with a link to use the actua
 <p>See, <a href="./FAQ-install_upgrade.pod.html#prepping_dada_mail_manually">Prepping Dada Mail Manually</a> if this doesn't happen and you get a message in your browser window, sort of like this: </p>
 
 <pre>
-Can't find dada-6_4_3.tar to uncompress!
+Can't find dada-6_5_0.tar to uncompress!
 
 You may have to uncompress and prep Dada Mail manually.
 </pre> 
@@ -261,13 +261,18 @@ Optionally, you may also configure the B<WYSIWYG> editors that come bundled with
 
 If you would like to use the bundled WYSIWYG editors with Dada Mail, check the option, B<Install and Configure WYSIWYG Editors> - which is checked by default. Uncheck this option, if you'd like to skip setting up the WYSIWYG editors - the various options will be hidden. 
 
-=head2 Amazon SES (Optional)
+=head2 Advanced Configuration (Optional)
 
-Optionally, you may set up Dada Mail to send via Amazon's Simple Email Service. This is a third party email sending service, which may have a much higher daily email quota and sending rate than what may be allowed on your own hosting account. Amazon SES does charge a fairly low rate for their service (about $0.10 per thousand messages sent). For more information, see the Amazon SES own site (L<http://aws.amazon.com/ses/>) and Dada Mail's docs on Amazon SES (L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>)
+=begin html 
 
-Amazon SES does have a long list of required Perl CPAN modules that need to be installed, before SES sending will work. If any modules are not installed, the installer will list which CPAN modules are still needed. 
+<p>Dada Mail's Installer also supports setting quite a few advanced global configuration settings and paramaters. <a href="./install_dada_mail-advanced_configuration.pod.html">This section is covered in detail, here.
+</a></p>
 
-To configure Dada Mail to use SES sending, first check the checkbox labeled,B< Configure Amazon SES>  Then, you will need to give the installer your B<AWS Access Key ID> and a B<AWS Secret Access Key>. To test your information, click the, B<Test Your AWS Credentials> button. 
+Many of the Advanced Configuration paramaters are only available in Pro Dada: 
+
+L<http://dadamailproject.com/purchase/pro.html> 
+
+=end html
 
 =head2 Completing the Installation and Configuration. 
 
@@ -305,7 +310,13 @@ Good Luck!
 
 =head1 Making Additional Global Configuration Changes using the Dada Mail Installer
 
-Along with Installing Dada Mail, the Dada Mail Installer can also help reconfigure the global configuration of Dada Mail, at any time in the future, after your installation. To do this, you will need to: 
+Along with Installing Dada Mail, the Dada Mail Installer can also help reconfigure the global configuration of Dada Mail, at any time in the future, after your installation. 
+
+Dada Mail comes with a plugin called, B<Global Configuration> to make this easy. It itself can be installer using the Dada Mail installer. Once installed, it can be accessed in the List Control Panel, under, "Plugins". Make sure you have logged into a mailing list, with the Dada Mail Root Pass, as it's not available, if you log in with the List Password. 
+
+You can also re-enable the Dada Mail Installer Manually. 
+
+To do this, you will need to: 
 
 =over
 
@@ -337,6 +348,8 @@ An alternative, command line interface is available, instructions can be
 found on how to use it, by invoking the script with the, C<--help> flag, 
 
  shell>./install.cgi --help
+
+L<http://dadamailproject.com/support/documentation/install_dada-command_line.pod.html>
 
 most of the options available on the web-based interface are available in the command line interface, except the installation of the plugins/extensions. 
 

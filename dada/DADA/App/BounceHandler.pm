@@ -995,6 +995,11 @@ sub carry_out_rule {
         $i++;
     }
 
+#	if( $diagnostics->{matched_rule} eq 'unknown_bounce_type') { 
+#		$self->save_bounce( $list, $email, $diagnostics, 'blah', $message );
+#	}
+
+
 	# And, $actions, usually only has one thing. hmm. 
     for my $action ( keys %$actions ) {
 
@@ -1160,6 +1165,50 @@ sub unsubscribe_bounced_email {
     return $report;
 
 }
+
+
+sub save_bounce {
+
+    my $self = shift;
+    my ( $list, $email, $diagnostics, $action, $message ) = @_;
+    my $report;
+
+	require DADA::Security::Password; 
+	my $rand_str = DADA::Security::Password::generate_rand_string();
+
+    my $file = $DADA::Config::TMP . '/bounced_messages/' . $list . '-' . time . '-' . $rand_str;
+
+    $file = DADA::App::Guts::make_safer($file);
+
+    open( APPENDLOG, ">$file" ) or die $!;
+
+    chmod( $DADA::Config::FILE_CHMOD, $file );
+
+		my $entity;
+	    eval { 
+			$entity = $self->parser->parse_data($message) ;
+			require Email::Address;		
+			require POSIX; 
+		
+			# This is wrong in a few ways: 
+			# The should be the envelope sender, not the "From:" header
+			# the date should probably be the datein the email message. 
+			# We'll try this out... 	
+			my $rough_from = $entity->head->get('From', 0);
+			my $from_address = ( Email::Address->parse($rough_from) )[0]->address;
+			print APPENDLOG 'From ' . $from_address . ' ' . POSIX::ctime(time); 
+		};
+		if($@){ 
+			carp "problem, somewhere: $@"; 
+		}	
+    print APPENDLOG $message. "\n\n";
+    close(APPENDLOG) or die $!;
+
+    return $report;
+
+}
+
+
 
 sub append_message_to_file {
 

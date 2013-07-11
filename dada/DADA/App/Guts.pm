@@ -78,6 +78,7 @@ require Exporter;
   safely_encode
   slurp
   grab_url
+  can_use_LWP_Simple
 );
 
 
@@ -703,14 +704,14 @@ sub available_lists {
 	        ######################################################################
 
 	        my $query = 'SELECT DISTINCT list from '
-	          . $DADA::Config::SQL_PARAMS{settings_table};
+	          . $DADA::Config::SQL_PARAMS{settings_table} . ' WHERE list != ?';
 
 	        if ( $in_order == 1 ) {
 	            $query .= ' ORDER BY list ASC';
 	        }
 
 	        $sth = $dbh->prepare($query);
-	        $sth->execute() or croak; 
+	        $sth->execute('') or croak; 
 		};
 
 # BUGFIX:
@@ -2766,6 +2767,17 @@ sub grab_url {
 		   $tmp = safely_decode($tmp); 
 		   return $tmp; 
 	}
+}
+
+sub can_use_LWP_Simple { 
+	my $can_use_lwp_simple = 1; 
+	try { 
+		require LWP::Simple;
+	}
+	catch { 
+		$can_use_lwp_simple = 0; 	
+	};
+	return $can_use_lwp_simple;
 }
 
 

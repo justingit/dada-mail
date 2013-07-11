@@ -419,7 +419,8 @@ if($ENV{PATH_INFO}){
  	elsif($info =~ m/^profile/) {
 		# profile_login
 		# profile_help
-
+		# profile_activate 
+		
 		# email is used just to pre-fill in the login form.
 
 	    my ($pi_flavor, $pi_user, $pi_domain, $pi_auth_code) = split('/', $info, 4);
@@ -554,6 +555,7 @@ sub run {
 	'admin_menu_mailing_monitor_notification'  =>  \&admin_menu_mailing_monitor_notification,
 	'admin_menu_archive_count_notification'    =>  \&admin_menu_archive_count_notification,  
 	'admin_menu_sending_preferences_notification' => \&admin_menu_sending_preferences_notification, 
+	'admin_menu_bounce_handler_notification'      => \&admin_menu_bounce_handler_notification, 
 	'send_email'                 =>    \&send_email,
 	'message_body_help'          =>    \&message_body_help, 
 	'url_message_body_help'      =>    \&url_message_body_help, 
@@ -1051,35 +1053,55 @@ sub admin_menu_archive_count_notification {
 }
 
 sub admin_menu_sending_preferences_notification { 
-		print $q->header(); 
+	print $q->header(); 
 
-		try { 
-			my ($admin_list, $root_login, $checksout) = check_list_security(
-												-cgi_obj         => $q,
-												-manual_override => 1
-											);
-			if($checksout) { 					
-				$list = $admin_list; 
-				require DADA::MailingList::Settings;
-		        my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-		
-				if($ls->param('sending_method') eq 'sendmail'){ 
-					e_print('(sendmail)'); 
-				}
-				elsif($ls->param('sending_method') eq 'smtp'){ 
-					e_print('(SMTP)'); 
-				}
-				elsif($ls->param('sending_method') eq 'amazon_ses'){ 
-					e_print('(Amazon SES)'); 					
-				}				
+	try { 
+		my ($admin_list, $root_login, $checksout) = check_list_security(
+											-cgi_obj         => $q,
+											-manual_override => 1
+										);
+		if($checksout) { 					
+			$list = $admin_list; 
+			require DADA::MailingList::Settings;
+	        my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+
+			if($ls->param('sending_method') eq 'sendmail'){ 
+				e_print('(sendmail)'); 
 			}
-		} catch { 
-			carp ($_); 
+			elsif($ls->param('sending_method') eq 'smtp'){ 
+				e_print('(SMTP)'); 
+			}
+			elsif($ls->param('sending_method') eq 'amazon_ses'){ 
+				e_print('(Amazon SES)'); 					
+			}				
 		}
+	} catch { 
+		carp ($_); 
 	}
+}
 
 
+sub admin_menu_bounce_handler_notification { 
+	print $q->header(); 
 
+	try { 
+		my ($admin_list, $root_login, $checksout) = check_list_security(
+											-cgi_obj         => $q,
+											-manual_override => 1
+										);
+		if($checksout) { 					
+			$list = $admin_list; 
+			require DADA::App::BounceHandler::ScoreKeeper; 
+			my $bsk = DADA::App::BounceHandler::ScoreKeeper->new( { -list => $list } );
+		    my $num = $bsk->num_scorecard_rows; 
+			if($num > 0) { 
+				e_print('(' . commify($num) . ')');  
+			}
+		}
+	} catch { 
+		carp ($_); 
+	}
+}
 
 
 
@@ -4587,6 +4609,7 @@ sub add {
 					screen                     => 'add',
                     subscription_quota_reached => $subscription_quota_reached,
                     num_subscribers            => $num_subscribers,
+                    SUBSCRIPTION_QUOTA         => $DADA::Config::SUBSCRIPTION_QUOTA, 
                     type       => $type,
                     type_title => $type_title,
                     flavor     => 'add',
@@ -7889,11 +7912,11 @@ sub new_list {
         my $flags  = shift;
         my $pw_check;
 
-       if($DADA::Config::DISABLE_OUTSIDE_LOGINS == 1){
-            require DADA::Security::SimpleAuthStringState;
-            my $sast =  DADA::Security::SimpleAuthStringState->new;
-            my $auth_state = $q->param('auth_state');
+        require DADA::Security::SimpleAuthStringState;
+        my $sast =  DADA::Security::SimpleAuthStringState->new;
+        my $auth_state = $q->param('auth_state');
 
+       if($DADA::Config::DISABLE_OUTSIDE_LOGINS == 1){
             if($sast->check_state($auth_state) != 1){
                 user_error(-List => undef, -Error => 'incorrect_login_url');
                 return;
@@ -7993,6 +8016,8 @@ sub new_list {
 
 						lists_exist                       => $lists_exist,
 						list_popup_menu                   => $list_popup_menu,
+						auth_state                        => $sast->make_state
+					
 					},
 				}
 			);
@@ -10584,20 +10609,20 @@ sub profile_login {
 	}
 	else {
 			my $scrn = '';
-			my $can_use_captcha = 1;
+			my $can_use_captcha = 0;
 			my $CAPTCHA_string  = '';
 			my $cap             = undef;
 			if($DADA::Config::PROFILE_OPTIONS->{enable_captcha} == 1){
 				try { 
 					require DADA::Security::AuthenCAPTCHA; 
 					$cap  = DADA::Security::AuthenCAPTCHA->new;
+					$can_use_captcha = 1; 
 				} catch {
 					carp "CAPTCHA Not working correctly?: $_";  
-					$can_use_captcha = 0;
 				};
 				
 			}
-
+			
 		   if($can_use_captcha == 1){
 
             	$CAPTCHA_string = $cap->get_html($DADA::Config::RECAPTCHA_PARAMS->{public_key});
@@ -10612,8 +10637,13 @@ sub profile_login {
 					-vars   => {
 						errors                       => $all_errors,
 						%$named_errs,
-						email	                     => xss_filter($q->param('email'))            || '',
-						email_again                  => xss_filter($q->param('email_again'))      || '',
+						
+						email	                     => xss_filter($q->param('email'))                || '',
+						login_email	                 => xss_filter($q->param('login_email'))          || '',
+						register_email	             => xss_filter($q->param('register_email'))       || '',
+						reset_email	                 => xss_filter($q->param('reset_email'))          || '',
+						register_email_again         => xss_filter($q->param('register_email_again')) || '',
+						
 						error_profile_login          => $q->param('error_profile_login')          || '',
 						error_profile_register       => $q->param('error_profile_register')       || '',
 						error_profile_activate       => $q->param('error_profile_activate')       || '',
@@ -10634,8 +10664,8 @@ sub profile_login {
 	else {
 		my ($status, $errors) = $prof_sess->validate_profile_login(
 			{
-				-email    => $q->param('email'),
-				-password => $q->param('password'),
+				-email    => xss_filter($q->param('login_email')),
+				-password => xss_filter($q->param('login_password')),
 
 			},
 		);
@@ -10643,8 +10673,8 @@ sub profile_login {
 		if($status == 1){
 			my $cookie = $prof_sess->login(
 				{
-					-email    => $q->param('email'),
-					-password => $q->param('password'),
+					-email    => xss_filter($q->param('login_email')),
+					-password => xss_filter($q->param('login_password')),
 				},
 			);
 			#DEV: encoding?
@@ -10687,18 +10717,19 @@ sub profile_register {
 		default();
 		return;
 	}
-	require DADA::Profile;
-	my $prof = DADA::Profile->new({-email => $email});
 
+
+	require    DADA::Profile;
 	if(! DADA::Profile::feature_enabled('register') == 1){ 
 		default();
 		return;
 	}
 
-	my $email       = strip(cased(xss_filter($q->param('email'      ))));
-	my $email_again = strip(cased(xss_filter($q->param('email_again'))));
-	my $password    = strip(xss_filter($q->param('password')));
+	my $register_email       = strip(cased(xss_filter($q->param('register_email'      ))));
+	my $register_email_again = strip(cased(xss_filter($q->param('register_email_again'))));
+	my $register_password    = strip(xss_filter($q->param('register_password')));
 
+	my $prof = DADA::Profile->new({-email => $register_email});
 
 
 	if($prof->exists() &&
@@ -10709,9 +10740,9 @@ sub profile_register {
 
 	my($status, $errors) = $prof->is_valid_registration(
 		{
-			-email 		               => $email,
-			-email_again               => $email_again,
-			-password                  => $password,
+			-email 		               => $register_email,
+			-email_again               => $register_email_again,
+			-password                  => $register_password,
 	        -recaptcha_challenge_field => $q->param( 'recaptcha_challenge_field' ),
 	        -recaptcha_response_field  => $q->param( 'recaptcha_response_field'),
 		}
@@ -10731,7 +10762,7 @@ sub profile_register {
 	else {
 		$prof->setup_profile(
 			{
-				-password    => $password,
+				-password    => $register_password,
 			}
 		);
 		my $scrn = '';
@@ -10742,7 +10773,7 @@ sub profile_register {
 				-with   => 'list', 
 				-vars   => {
 
-					'profile.email' => $email,
+					'profile.email' => $register_email,
 				}
 			}
 		);
@@ -10768,7 +10799,7 @@ sub profile_activate {
 	}
 	
 	my $email       = strip(cased(xss_filter($q->param('email'))));
-	my $auth_code = xss_filter($q->param('auth_code'));
+	my $auth_code   = xss_filter($q->param('auth_code'));
 
 
 
@@ -10781,6 +10812,9 @@ sub profile_activate {
 				-auth_code => xss_filter($q->param('auth_code')) || '',
 			}
 		);
+		
+
+		
 		if($status == 1){
 			$prof->activate;
 			my $profile = $prof->get();
@@ -10795,6 +10829,7 @@ sub profile_activate {
 				}
 			}
 			$q->param('errors',                 $p_errors);
+			$q->param('error_invalid_auth_code', $errors->{invalid_auth_code}); 
 			$q->param('error_profile_activate', 1        );
 			profile_login();
 			return;
@@ -11203,14 +11238,19 @@ sub profile_reset_password {
 		return;
 	}
 
-	my $email     = cased(xss_filter($q->param('email')));
-	my $password  = xss_filter($q->param('password'))  || undef;
-	my $auth_code = xss_filter($q->param('auth_code')) || undef;
+	my $reset_email     = cased(xss_filter($q->param('reset_email')));
+	my $auth_code       = xss_filter($q->param('auth_code'))           || undef;
 
+	if($auth_code){ 
+		$reset_email = $email; 
+	}
 	require DADA::Profile;
-	my $prof = DADA::Profile->new({-email => $email});
+	my $prof = DADA::Profile->new({-email => $reset_email});
 
-	if($email){
+	if($reset_email){
+		
+		my $password  = xss_filter($q->param('password'))      || undef;
+		
 		if($auth_code){
 			my ($status, $errors) = $prof->is_valid_activation(
 				{
@@ -11225,7 +11265,7 @@ sub profile_reset_password {
 							-screen => 'profile_reset_password.tmpl',
 							-with   => 'list', 
 							-vars   => {
-								email     => $email,
+								email     => $reset_email,
 								auth_code => $auth_code,
 							}
 						}
@@ -11243,8 +11283,8 @@ sub profile_reset_password {
 					$prof->activate();
 					# Log The person in.
 					# Probably pass the needed stuff to profile_login via CGI's param()
-					$q->param('email',    $email);
-					$q->param('password', $password);
+					$q->param('login_email',    $reset_email);
+					$q->param('login_password', $password);
 					$q->param('process',  1);
 
 					# and just called the subroutine itself. Hazzah!
@@ -11253,10 +11293,12 @@ sub profile_reset_password {
 				}
 			}
 			else {
+
 				my $p_errors = [];
 				for(keys %$errors){
 					if($errors->{$_} == 1){
 						push(@$p_errors, $_);
+						$q->param('error_' . $_, 1); 
 					}
 				}
 				$q->param('error_profile_reset_password', 1);
@@ -11277,8 +11319,8 @@ sub profile_reset_password {
 						-screen => 'profile_reset_password_confirm.tmpl',
 						-with   => 'list', 
 						-vars   => {
-							email           => $email,
-							'profile.email' => $email,
+							email           => $reset_email,
+							'profile.email' => $reset_email,
 						}
 					}
 				);
@@ -11287,8 +11329,9 @@ sub profile_reset_password {
 			}
 			else {
 				$q->param('error_profile_reset_password', 1);
+				$q->param('error_unknown_user', 1);
 				$q->param('errors', ['unknown_user']);
-				$q->param('email', $email);
+				$q->param('email', $reset_email);
 				profile_login();
 			}
 		}

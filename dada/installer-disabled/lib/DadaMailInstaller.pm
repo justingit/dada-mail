@@ -64,15 +64,7 @@ my $Trace               = 0;
 
 # These are strings we look for in the example_dada_config.tmpl file which 
 # we need to remove. 
-my $sql_begin_cut = quotemeta(
-    q{# start cut for SQL Backend
-=cut}
-);
-my $sql_end_cut = quotemeta(
-    q{=cut
-# end cut for SQL Backend
-}
-);
+
 my $plugins_config_begin_cut = quotemeta(
 q{# start cut for plugin configs
 =cut}
@@ -98,14 +90,7 @@ my $list_settings_defaults_end_cut = quotemeta(
 q{=cut
 # end cut for list settings defaults}
 ); 
-my $amazon_ses_begin_cut = quotemeta(
-q{# start cut for Amazon SES Options
-=cut}
-); 
-my $amazon_ses_end_cut = quotemeta(
-q{=cut
-# end cut for Amazon SES Options}
-); 
+
 
 my $plugins_extensions = { 
 	change_root_password          => {installed => 0, loc => '../plugins/change_root_password.cgi'}, 
@@ -121,6 +106,7 @@ my $plugins_extensions = {
 	default_mass_mailing_messages => {installed => 0, loc => '../plugins/default_mass_mailing_messages.cgi'}, 
 	password_protect_directories  => {installed => 0, loc => '../plugins/password_protect_directories.cgi'}, 
 	change_list_shortname         => {installed => 0, loc => '../plugins/change_list_shortname.cgi'},  
+	global_config                 => {installed => 0, loc => '../plugins/global_config.cgi'},   
 };
 $plugins_extensions->{change_root_password}->{code} = 
 q{#					{
@@ -225,6 +211,23 @@ q{#					{
 #					-Activated  => 0,
 #					},};
 
+$plugins_extensions->{global_config}->{code} =
+q{#					{
+#					-Title      => 'Global Configuration',
+#					-Title_URL  => $PLUGIN_URL."/global_config.cgi",
+#					-Function   => 'global_config',
+#					-Activated  => 0,
+#					},};
+
+my $advanced_config_params = {
+    show_profiles                       => 1,
+    show_global_template_options        => 1,
+    show_security_options               => 1,
+    show_global_mass_mailing_options    => 1,
+    show_cache_options                  => 1,
+    show_amazon_ses_options             => 1,
+    show_annoying_whiny_pro_dada_notice => 0,
+};
 
 # An unconfigured Dada Mail won't have these exactly handy to use. 
 $DADA::Config::PROGRAM_URL   = program_url_guess();
@@ -261,6 +264,7 @@ sub run {
             screen                   => \&screen,
             cgi_test_sql_connection  => \&cgi_test_sql_connection,
             cgi_test_pop3_connection => \&cgi_test_pop3_connection,
+			cgi_test_user_template   => \&cgi_test_user_template, 
             cgi_test_amazon_ses_configuration =>
               \&cgi_test_amazon_ses_configuration,
         );
@@ -532,7 +536,7 @@ sub scrn_configure_dada_mail {
 		$q->param('install_blog_index', 1); 
 		$q->param('install_default_mass_mailing_messages', 1); 
 		$q->param('install_change_list_shortname', 1); 
-		
+		$q->param('global_config', 0); 		
 	}
 
 =cut	
@@ -588,6 +592,8 @@ sub scrn_configure_dada_mail {
 			-with   => 'list', 
 			-expr   => 1, 
             -vars => {
+	
+				%$advanced_config_params, 
 				
 				# These are tricky.... 
 				SUPPORT_FILES_URL               => $Self_URL . '?f=screen&screen=',
@@ -731,7 +737,7 @@ sub grab_former_config_vals {
 	) { 
 		$local_q->param('backend', 'default'); 
 	}
-	
+		
 	# Plugins/Extensions
 	for my $plugin_ext(qw(
 		mailing_monitor
@@ -746,6 +752,7 @@ sub grab_former_config_vals {
 		blog_index
 		default_mass_mailing_messages
 		change_list_shortname
+		global_config
 		password_protect_directories
 		)){ 
 		if(admin_menu_item_used($plugin_ext) == 1){ 
@@ -755,7 +762,7 @@ sub grab_former_config_vals {
 			$local_q->param('install_' . $plugin_ext, 0); 			
 		}
 	}
-	# in v<6, these were called something different... 
+	# in ver. < 6, these were called something different... 
 	if(admin_menu_item_used('dada_bounce_handler') == 1){ 
 		$local_q->param('install_bounce_handler', 1); 
 	}
@@ -767,6 +774,19 @@ sub grab_former_config_vals {
 	}
 	if(admin_menu_item_used('clickthrough_tracking') == 1){ 
 		$local_q->param('install_tracker', 1); 
+	}
+	
+	# Bridge
+	if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bridge})) { 
+		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{MessagesAtOnce})){ 
+			$local_q->param('bridge_MessagesAtOnce', $BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{MessagesAtOnce}); 
+		}
+		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{Soft_Max_Size_Of_Any_Message})){ 
+			$local_q->param('bridge_Soft_Max_Size_Of_Any_Message', $BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{Soft_Max_Size_Of_Any_Message}); 
+		}
+		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{Max_Size_Of_Any_Message})){ 
+			$local_q->param('bridge_Max_Size_Of_Any_Message', $BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{Max_Size_Of_Any_Message}); 
+		}
 	}
 	
 	# Bounce Handler
@@ -782,6 +802,15 @@ sub grab_former_config_vals {
 		}
 		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Password})){ 
 			$local_q->param('bounce_handler_password', $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Password}); 
+		}
+		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{USESSL})){ 
+			$local_q->param('bounce_handler_USESSL', $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{USESSL}); 
+		}
+		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{AUTH_MODE})){ 
+			$local_q->param('bounce_handler_AUTH_MODE', $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{AUTH_MODE}); 
+		}
+		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{MessagesAtOnce})){ 
+			$local_q->param('bounce_handler_MessagesAtOnce', $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{MessagesAtOnce}); 
 		}
 	}
 	# "Bounce_Handler" could also be, "Mystery_Girl" (change made in v4.9.0)
@@ -825,6 +854,104 @@ sub grab_former_config_vals {
 		$local_q->param('file_browser_install_kcfinder', 0);
 	}
 	
+	# Profiles
+	if(exists($BootstrapConfig::PROFILE_OPTIONS->{enabled})) { 
+		
+		$local_q->param('configure_profiles', 1);
+		
+		for(qw(enabled profile_email enable_captcha enable_magic_subscription_forms)){ 
+			if(exists($BootstrapConfig::PROFILE_OPTIONS->{$_})){ 
+				$local_q->param('profiles_' . $_, $BootstrapConfig::PROFILE_OPTIONS->{$_}); 
+			}
+		}
+		# Features 
+		
+		for(qw(
+			help                      
+			login                     
+			register                  
+			password_reset            
+			profile_fields            
+			mailing_list_subscriptions
+			protected_directories     
+			update_email_address      
+			change_password
+			delete_profile  
+		)) { 
+			if(exists($BootstrapConfig::PROFILE_OPTIONS->{features}->{$_})){ 
+				$local_q->param('profiles_' . $_, $BootstrapConfig::PROFILE_OPTIONS->{features}->{$_}); 
+			}			
+		}          
+
+	}
+	
+	# Global Template Options 
+	if(defined($BootstrapConfig::USER_TEMPLATE)) { 
+		$local_q->param('configure_templates', 1); 
+		$local_q->param('configure_user_template', 1); 
+		$local_q->param('template_options_USER_TEMPLATE', $BootstrapConfig::USER_TEMPLATE); 		
+	}
+
+	# Global Template Options 
+	if(defined($BootstrapConfig::SCREEN_CACHE) || defined($BootstrapConfig::DATA_CACHE)) { 
+		$local_q->param('configure_cache', 1); 
+		# Watch this, now: 
+		if(defined($BootstrapConfig::SCREEN_CACHE)) {
+			if($BootstrapConfig::SCREEN_CACHE ne '1') {				
+				$local_q->param('cache_options_SCREEN_CACHE', 0); 	
+			}
+			else { 
+				$local_q->param('cache_options_SCREEN_CACHE', 1); 	
+			}		
+		}
+		if(defined($BootstrapConfig::DATA_CACHE)) { 
+			if($BootstrapConfig::DATA_CACHE ne '1') {
+				$local_q->param('cache_options_DATA_CACHE', 0); 			
+			}
+			else {
+				$local_q->param('cache_options_DATA_CACHE', 1); 	
+			}
+		}
+	}
+	else { 
+		# Defaul to, "1". Better way? 
+		$local_q->param('cache_options_SCREEN_CACHE', 1); 	
+		$local_q->param('cache_options_DATA_CACHE', 1); 			
+	}
+
+	
+	# Configure Security Options
+	if(
+		defined($BootstrapConfig::SHOW_ADMIN_LINK)
+	||  defined($BootstrapConfig::DISABLE_OUTSIDE_LOGINS)
+	||  defined($BootstrapConfig::ADMIN_FLAVOR_NAME)
+	||  defined($BootstrapConfig::SIGN_IN_FLAVOR_NAME)
+	) { 
+		$local_q->param('configure_security', 1);
+		if($BootstrapConfig::SHOW_ADMIN_LINK == 2){ 
+			$local_q->param('security_no_show_admin_link', 1);
+		}
+		else { 
+			$local_q->param('security_no_show_admin_link', 0);
+		}
+		$local_q->param('security_DISABLE_OUTSIDE_LOGINS', $BootstrapConfig::DISABLE_OUTSIDE_LOGINS);	
+		$local_q->param('security_ADMIN_FLAVOR_NAME',      $BootstrapConfig::ADMIN_FLAVOR_NAME);	
+		$local_q->param('security_SIGN_IN_FLAVOR_NAME',    $BootstrapConfig::SIGN_IN_FLAVOR_NAME);	
+	}
+	
+	# Mass Mailing Options
+	if(
+		defined($BootstrapConfig::MAILOUT_AT_ONCE_LIMIT)
+	||  defined($BootstrapConfig::MULTIPLE_LIST_SENDING)
+	||  defined($BootstrapConfig::MAILOUT_STALE_AFTER)
+		
+	){ 
+		$local_q->param('configure_mass_mailing', 1); 
+		$local_q->param('mass_mailing_MAILOUT_AT_ONCE_LIMIT', $BootstrapConfig::MAILOUT_AT_ONCE_LIMIT);	
+		$local_q->param('mass_mailing_MULTIPLE_LIST_SENDING', $BootstrapConfig::MULTIPLE_LIST_SENDING);	
+		$local_q->param('mass_mailing_MAILOUT_STALE_AFTER',   $BootstrapConfig::MAILOUT_STALE_AFTER);		
+	}
+	
 	# $AMAZON_SES_OPTIONS
 	if(defined($BootstrapConfig::AMAZON_SES_OPTIONS->{AWSAccessKeyId})
 	&& defined($BootstrapConfig::AMAZON_SES_OPTIONS->{AWSSecretKey}) 
@@ -832,7 +959,6 @@ sub grab_former_config_vals {
 		$local_q->param('configure_amazon_ses', 1);
 		$local_q->param('amazon_ses_AWSAccessKeyId', $BootstrapConfig::AMAZON_SES_OPTIONS->{AWSAccessKeyId});
 		$local_q->param('amazon_ses_AWSSecretKey',   $BootstrapConfig::AMAZON_SES_OPTIONS->{AWSSecretKey});
-
 	}
 			
 	
@@ -847,14 +973,16 @@ sub admin_menu_item_used {
 		if($menu->{-Title} =~ m/Plugins|Extensions/){ 
 			my $submenu = $menu->{-Submenu}; 
 			foreach my $item(@$submenu) { 
-#				warn q{$item->{-Function} } . $item->{-Function}; 
-#				warn q{$function} . $function; 
+			#	warn q{$item->{-Function} } . $item->{-Function}; 
+			#	warn q{$function} . $function; 
 				if($item->{-Function} eq $function){ 
+		#			warn $function . 'is returning 1'; 
 					return 1; 
 				}
 			}
 		}
 	}
+#	warn $function . ' is returning 0'; 
 	return 0; 
 }
 
@@ -1022,6 +1150,8 @@ sub install_dada_mail {
             $log .= "* Problems Creating .dada_config file! STOPPING!\n";
             $errors->{cant_create_dada_config} = 1;
             $status = 0;
+			
+
             return ( $log, $status, $errors );
         }
 
@@ -1325,11 +1455,22 @@ sub create_dada_config_file {
 
 	# Cripes, why wouldn't we pass a program url? 
 	if(!exists($args->{-program_url})){ 
-		
 	    my $prog_url = $DADA::Config::PROGRAM_URL;
 	    $prog_url =~ s{installer\/install\.cgi}{mail\.cgi};
 		$args->{-program_url} = $prog_url;
 	}
+
+
+	my $SQL_params = {};
+    if ( $args->{-backend} ne 'default' && $args->{-backend} ne '' ) {
+		$SQL_params->{configure_SQL} = 1; 
+		$SQL_params->{backend}       = $args->{-backend};
+        $SQL_params->{sql_server}    = $args->{-sql_server};
+        $SQL_params->{sql_database}  = clean_up_var($args->{-sql_database});
+        $SQL_params->{sql_port}      = clean_up_var($args->{-sql_port});
+        $SQL_params->{sql_username}  = clean_up_var($args->{-sql_username});
+        $SQL_params->{sql_password}  = clean_up_var($args->{-sql_password});
+    }
 
 	if($args->{-backend} eq 'SQLite'){ 
 		$args->{-sql_server} = ''; 
@@ -1339,13 +1480,93 @@ sub create_dada_config_file {
         $args->{-sql_password} = ''; 
 	}
 	
-	# Since it's so simple, I'm placing it right here, rather than its own sub. 
-	my $AWSAccessKeyId = ''; 
-	my $AWSSecretKey   = ''; 
-	if($q->param('configure_amazon_ses') == 1){ 
-		$AWSAccessKeyId = $q->param('amazon_ses_AWSAccessKeyId'); 
-		$AWSSecretKey   = $q->param('amazon_ses_AWSSecretKey'); 
+	my $profiles_params = {}; 
+	if($q->param('configure_profiles') == 1){ 
+		$profiles_params->{configure_profiles} = 1; 
+		for(qw(
+			enabled
+			profile_email
+			enable_captcha	
+			enable_magic_subscription_forms			
+			help                      			
+			login                     			
+			register                  			
+			password_reset            			
+			profile_fields            			
+			mailing_list_subscriptions			
+			protected_directories     			
+			update_email_address      			
+			change_password           			
+			delete_profile            					
+			)){ 
+				if($_ ne 'profile_email'){ 
+					$profiles_params->{'profiles_' . $_} = $q->param('profiles_' . $_) || 0;
+				}
+				else { 
+					$profiles_params->{'profiles_' . $_} = $q->param('profiles_' . $_) || '';					
+				}
+				$profiles_params->{'profiles_' . $_} = clean_up_var($profiles_params->{'profiles_' . $_});  
+		}
 	}
+	
+	my $template_options_params = {};
+	if($q->param('configure_templates') == 1 &&  $q->param('configure_user_template') == 1){ 
+		$template_options_params->{template_options_USER_TEMPLATE} = clean_up_var($q->param('template_options_USER_TEMPLATE'));	
+		$template_options_params->{configure_templates} = 1;
+	}
+
+	my $cache_options_params = {};
+	if($q->param('configure_cache') == 1){ 
+		$cache_options_params->{configure_cache} = 1;
+		if(clean_up_var($q->param('cache_options_SCREEN_CACHE')) == 1){ 
+			$cache_options_params->{cache_options_SCREEN_CACHE} = 1;
+		}
+		else { 
+			$cache_options_params->{cache_options_SCREEN_CACHE} = 2;
+		}
+		if(clean_up_var($q->param('cache_options_DATA_CACHE')) == 1){ 
+			$cache_options_params->{cache_options_DATA_CACHE} = 1;
+		}
+		else { 
+			$cache_options_params->{cache_options_DATA_CACHE} = 2;
+		}
+	}
+	
+
+	
+	my $security_params = {};
+	if($q->param('configure_security') == 1){ 
+		$security_params->{configure_security} = 1; 
+		if($q->param('security_no_show_admin_link') == 1){ 
+			$security_params->{security_SHOW_ADMIN_LINK} = 2; 
+		}
+		else { 
+			$security_params->{security_SHOW_ADMIN_LINK} = 0; 			
+		}
+		$security_params->{security_DISABLE_OUTSIDE_LOGINS} = clean_up_var($q->param('security_DISABLE_OUTSIDE_LOGINS')); 
+		if(length($q->param('security_ADMIN_FLAVOR_NAME')) > 0) { 
+			$security_params->{security_ADMIN_FLAVOR_NAME} = clean_up_var($q->param('security_ADMIN_FLAVOR_NAME')); 
+		}
+		if(length($q->param('security_SIGN_IN_FLAVOR_NAME')) > 0) { 
+			$security_params->{security_SIGN_IN_FLAVOR_NAME} = clean_up_var($q->param('security_SIGN_IN_FLAVOR_NAME')); 
+		}
+	}
+	
+	my $mass_mailing_params = {}; 
+	if($q->param('configure_mass_mailing') == 1){ 
+		$mass_mailing_params->{configure_mass_mailing} = 1; 
+		$mass_mailing_params->{mass_mailing_MAILOUT_AT_ONCE_LIMIT} = clean_up_var($q->param('mass_mailing_MAILOUT_AT_ONCE_LIMIT')); 
+		$mass_mailing_params->{mass_mailing_MULTIPLE_LIST_SENDING} = clean_up_var($q->param('mass_mailing_MULTIPLE_LIST_SENDING')); 
+		$mass_mailing_params->{mass_mailing_MAILOUT_STALE_AFTER}   = clean_up_var($q->param('mass_mailing_MAILOUT_STALE_AFTER')); 
+	}
+	
+	my $amazon_ses_params = {}; 
+	if($q->param('configure_amazon_ses') == 1){ 
+		$amazon_ses_params->{configure_amazon_ses} = 1; 
+		$amazon_ses_params->{AWSAccessKeyId} = $q->param('amazon_ses_AWSAccessKeyId');
+		$amazon_ses_params->{AWSSecretKey} = $q->param('amazon_ses_AWSSecretKey'); 
+	}
+	
 	
     my $outside_config_file = DADA::Template::Widgets::screen(
         {
@@ -1360,36 +1581,16 @@ sub create_dada_config_file {
 				support_files_dir_url  => $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name, 
 				Big_Pile_Of_Errors     => $Big_Pile_Of_Errors, 
 				Trace                  => $Trace, 
-                ( $args->{-backend} ne 'default' || $args->{-backend} eq '' )
-                ? (
-                    backend      => $args->{-backend},
-                    sql_server   => $args->{-sql_server},
-                    sql_database => clean_up_var($args->{-sql_database}),
-                    sql_port     => clean_up_var($args->{-sql_port}),
-                    sql_username => clean_up_var($args->{-sql_username}),
-                    sql_password => clean_up_var($args->{-sql_password}),
-                  )
-                : (),
-				AWSAccessKeyId => $AWSAccessKeyId, 
-				AWSSecretKey   => $AWSSecretKey, 
+				%{$SQL_params},
+				%{$cache_options_params}, 
+			    %{$template_options_params},
+				%{$profiles_params},
+				%{$security_params},
+				%{$mass_mailing_params}, 
+				%{$amazon_ses_params},
             }
         }
-    );
-
-    # SQL Stuff.
-    if ( $args->{-backend} eq 'default' || $args->{-backend} eq '' ) {
-
-        # ...
-    }
-    else {
-        $outside_config_file =~ s/$sql_begin_cut//;
-        $outside_config_file =~ s/$sql_end_cut//;
-    }
-
-	if($q->param('configure_amazon_ses') == 1){ 
-        $outside_config_file =~ s/$amazon_ses_begin_cut//;
-        $outside_config_file =~ s/$amazon_ses_end_cut//;		
-	}
+    );	
 
     open my $dada_config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', make_safer( $loc . '/.configs/.dada_config' )
       or croak $!;
@@ -1711,7 +1912,56 @@ sub edit_config_file_for_plugins {
 			 		$orig_code = quotemeta($orig_code); 
 					$config_file =~ s/$orig_code/$uncommented_code/;
 
-					# Fancy stuff for bounce handler, 
+					# Fancy stuff for Bridge, 
+					if($plugins_data eq 'bridge'){ 
+						# uncomment the plugins config, 
+						$config_file =~ s/$plugins_config_begin_cut//; 
+						$config_file =~ s/$plugins_config_end_cut//; 
+					 	# then, we have to fill in all the stuff in.
+					 	# Not a fav. tecnique!
+
+						my $plugins_config_bridge_orig = quotemeta(
+q|	Bridge => {
+
+		Plugin_Name                         => undef,
+		Plugin_URL                          => undef,
+		Allow_Manual_Run                    => undef,
+		Manual_Run_Passcode                 => undef,
+		MessagesAtOnce                      => undef,
+		Soft_Max_Size_Of_Any_Message        => undef,
+		Max_Size_Of_Any_Message             => undef,
+		Allow_Open_Discussion_List          => undef,
+		Room_For_One_More_Check             => undef,
+		Enable_POP3_File_Locking            => undef,
+		Check_List_Owner_Return_Path_Header => undef,
+		Check_Multiple_Return_Path_Headers  => undef,
+|);
+						my $bridge_MessagesAtOnce               = clean_up_var($q->param('bridge_MessagesAtOnce')); 
+						my $bridge_Soft_Max_Size_Of_Any_Message = clean_up_var($q->param('bridge_Soft_Max_Size_Of_Any_Message')); 
+						my $bridge_Max_Size_Of_Any_Message = clean_up_var($q->param('bridge_Max_Size_Of_Any_Message')); 
+
+
+						my $plugins_config_bridge_replace_with = 
+"	Bridge => {
+
+		Plugin_Name                         => undef,
+		Plugin_URL                          => undef,
+		Allow_Manual_Run                    => undef,
+		Manual_Run_Passcode                 => undef,
+		MessagesAtOnce                      => '$bridge_MessagesAtOnce',
+		Soft_Max_Size_Of_Any_Message        => '$bridge_Soft_Max_Size_Of_Any_Message',
+		Max_Size_Of_Any_Message             => '$bridge_Max_Size_Of_Any_Message',
+		Allow_Open_Discussion_List          => undef,
+		Room_For_One_More_Check             => undef,
+		Enable_POP3_File_Locking            => undef,
+		Check_List_Owner_Return_Path_Header => undef,
+		Check_Multiple_Return_Path_Headers  => undef,
+";
+						$config_file =~ s/$plugins_config_bridge_orig/$plugins_config_bridge_replace_with/; 
+						 
+					}
+
+					# Fancy stuff for Bounce Handler, 
 					if($plugins_data eq 'bounce_handler'){ 
 						# uncomment the plugins config, 
 						$config_file =~ s/$plugins_config_begin_cut//; 
@@ -1722,18 +1972,47 @@ sub edit_config_file_for_plugins {
 q|	Bounce_Handler => {
 		Server                      => undef,
 		Username                    => undef,
-		Password                    => undef,|
+		Password                    => undef,
+		Port                        => undef,
+		USESSL                      => undef,
+		AUTH_MODE                   => undef,
+		Plugin_Name                 => undef,
+		Plugin_URL                  => undef,
+		Allow_Manual_Run            => undef,
+		Manual_Run_Passcode         => undef,
+		Enable_POP3_File_Locking    => undef, 
+		Log                         => undef,
+		MessagesAtOnce              => undef,
+		Max_Size_Of_Any_Message     => undef,
+		Rules                       => undef,|
 					);
-					my $bounce_handler_address  = clean_up_var($q->param('bounce_handler_address')); 
-					my $bounce_handler_server   = clean_up_var($q->param('bounce_handler_server'));
-					my $bounce_handler_username = clean_up_var($q->param('bounce_handler_username')); 
-					my $bounce_handler_password = clean_up_var($q->param('bounce_handler_password')); 
+					my $bounce_handler_address        = clean_up_var($q->param('bounce_handler_address')); 
+					my $bounce_handler_server         = clean_up_var($q->param('bounce_handler_server'));
+					my $bounce_handler_username       = clean_up_var($q->param('bounce_handler_username')); 
+					my $bounce_handler_password       = clean_up_var($q->param('bounce_handler_password')); 
+					my $bounce_handler_USESSL         = clean_up_var($q->param('bounce_handler_USESSL')); 
+					my $bounce_handler_AUTH_MODE      = clean_up_var($q->param('bounce_handler_AUTH_MODE')); 
+					my $bounce_handler_MessagesAtOnce = clean_up_var($q->param('bounce_handler_MessagesAtOnce')); 
+
 
 					my $plugins_config_bounce_handler_replace_with = 
 "	Bounce_Handler => {
 		Server                      => '$bounce_handler_server',
 		Username                    => '$bounce_handler_username',
-		Password                    => '$bounce_handler_password',";
+		Password                    => '$bounce_handler_password',
+		Port                        => undef,
+		USESSL                      => '$bounce_handler_USESSL',
+		AUTH_MODE                   => '$bounce_handler_AUTH_MODE',
+		Plugin_Name                 => undef,
+		Plugin_URL                  => undef,
+		Allow_Manual_Run            => undef,
+		Manual_Run_Passcode         => undef,
+		Enable_POP3_File_Locking    => undef, 
+		Log                         => undef,
+		MessagesAtOnce              => '$bounce_handler_MessagesAtOnce',
+		Max_Size_Of_Any_Message     => undef,
+		Rules                       => undef,";
+
 					$config_file =~ s/$plugins_config_bounce_handler_orig/$plugins_config_bounce_handler_replace_with/; 
 					# Now, do the same for list settings defaults: 
 					$config_file =~ s/$list_settings_defaults_begin_cut//; 
@@ -2353,14 +2632,23 @@ sub cgi_test_sql_connection {
 }
 sub cgi_test_pop3_connection { 
 	
-	my $bounce_handler_server   = $q->param('bounce_handler_server'); 
-	my $bounce_handler_username = $q->param('bounce_handler_username'); 
-	my $bounce_handler_password = $q->param('bounce_handler_password'); 
+	my $bounce_handler_server         = $q->param('bounce_handler_server'); 
+	my $bounce_handler_username       = $q->param('bounce_handler_username'); 
+	my $bounce_handler_password       = $q->param('bounce_handler_password'); 
+	my $bounce_handler_USESSL         = $q->param('bounce_handler_USESSL') || 0; 
+	my $bounce_handler_AUTH_MODE      = $q->param('bounce_handler_AUTH_MODE') || 'BEST'; 
+#	my $bounce_handler_MessagesAtOnce = $q->param('bounce_handler_MessagesAtOnce') || 100; 
+	
+	$bounce_handler_server   = make_safer($bounce_handler_server); 
+	$bounce_handler_username = make_safer($bounce_handler_username); 	
+	$bounce_handler_password = make_safer($bounce_handler_password);
 	
 	my ( $pop3_obj, $pop3_status, $pop3_log ) = test_pop3_connection({ 
         Server    => $bounce_handler_server, 
         Username  => $bounce_handler_username,
         Password  => $bounce_handler_password,
+		USESSL    => $bounce_handler_USESSL,
+		AUTH_MODE => $bounce_handler_AUTH_MODE,
 	}); 
 	#use Data::Dumper; 
 	#print $q->header('text/plain');
@@ -2373,6 +2661,41 @@ sub cgi_test_pop3_connection {
 		print '<p>Connection is NOT Successful.</p>'; 
 	}
 	print '<pre>'  . $pop3_log . '</pre>'; 
+}
+
+sub cgi_test_user_template { 
+	my $template_options_USER_TEMPLATE = $q->param('template_options_USER_TEMPLATE'); 
+	my $can_get_content = 0; 
+	my $can_use_lwp_simple = DADA::App::Guts::can_use_LWP_Simple; 
+	my $isa_url = isa_url($template_options_USER_TEMPLATE); 
+	if($isa_url) { 
+		if(grab_url($template_options_USER_TEMPLATE)) { 
+			$can_get_content = 1; 
+		} 
+	}
+	else { 
+		if(-e $template_options_USER_TEMPLATE){ 
+			$can_get_content = 1; 
+		}
+	}
+
+	
+	print $q->header(); 
+	require DADA::Template::Widgets;
+	e_print(DADA::Template::Widgets::screen(
+		{
+			-screen => 'test_user_template.tmpl',
+			-expr   => 1, 
+			-vars   => {
+				template_options_USER_TEMPLATE => $template_options_USER_TEMPLATE, 
+				can_use_lwp_simple             => $can_use_lwp_simple, 
+				isa_url                        => $isa_url, 
+				can_get_content                => $can_get_content,
+			}
+		}
+	));
+	
+	
 }
 
 sub cgi_test_amazon_ses_configuration { 
@@ -2421,8 +2744,8 @@ sub test_pop3_connection {
 	            username  => $args->{Username},
 	            password  => $args->{Password},
 #	            port      => $args->{Port},
-#	            USESSL    => $args->{USESSL},
-#	            AUTH_MODE => $args->{AUTH_MODE},
+	            USESSL    => $args->{USESSL},
+	            AUTH_MODE => $args->{AUTH_MODE},
 	        }
 	      );
 	    if ( defined($pop3_obj) ) {
@@ -2609,6 +2932,7 @@ sub show_current_dada_config {
 }
 sub screen { 
 	my $screen = $q->param('screen'); 
+	
 	if($screen eq '/static/css/dada_mail.css'){ 
 		print $q->header('text/css');
 		my $t = DADA::Template::Widgets::screen(
@@ -2644,16 +2968,31 @@ sub screen {
 		
 		
 	}
-	elsif($screen eq 'installer-dada_mail.js' || $screen =~ m/installer\-jquery/ || $screen =~ m/installer\-jquery\-ui/){ 
+	elsif(
+		$screen eq 'installer-dada_mail.js' 
+	 || $screen eq 'installer-dada_mail.installer.js' 
+	 || $screen =~ m/installer\-jquery/ 
+	 || $screen =~ m/installer\-jquery\-ui/
+	){ 
 		print $q->header('text/javascript');
 		e_print(DADA::Template::Widgets::screen(
 	        {
-	            -screen => $screen,
+	            -screen => make_safer($screen),
 	        }
 	    ));	
-		
-		
-		
+	}
+	elsif($screen =~ /^\/static/) {
+		print $q->header('text/plain');
+	}
+	elsif($screen eq 'upgrade_to_pro_dada.jpg'){ 
+		print $q->header('image/jpg');
+		print DADA::Template::Widgets::_raw_screen(
+            {
+                -screen   => 'upgrade_to_pro_dada.jpg',
+                -encoding => 0,
+            }
+        );
+		 
 	}
 }
 
