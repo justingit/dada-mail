@@ -114,7 +114,7 @@ Dada Mail now includes the B<jQuery Validation Plugin>, and uses this plugin for
 
 Dada Mail now includes the B<Select2 jQuery Plugin>, and utilizes it in the Mailing List Switch Form you'll see in the upper right hand corner of the List Control Panel. With this plugin, it's now easier to find the mailing list you'd like to work with, especially if you have many dozens of mailing lists running on your Dada Mail. The enhancement allows you to search through the available mailing lists, rather than just simply scrolling through them. 
 
-=head3 Bounce Handler
+=head3 Plugin: Bounce Handler
 
 =head4 Admin Menu: Bounce Scorecard Count Shown
 
@@ -146,7 +146,7 @@ You may optionally add these lines to your own List Template to gain the same cl
 
 Documentation on these lines will be made available, once the stable release of v6.5.0 is made. 
 
-=head Plugin: change_root_password.cgi DEPRECATED
+=head3 Plugin: change_root_password.cgi DEPRECATED
 
 The plugin, B<change_root_password.cgi> has now landed itself on the DEPRECATED list of plugins that comes with Dada Mail. Since the new, B<Global Config> plugin allows you to easily change the Dada Mail Root Password, amongst many other things, this plugin can now be retired. 
 

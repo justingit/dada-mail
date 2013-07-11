@@ -183,6 +183,8 @@ When setting this option remember:
 
 =item * no spaces in the name
 
+=back
+
 Valid values: 
 
 =over
@@ -205,7 +207,7 @@ Invalid values:
 
 =back
 
-=item * Don't set this variable to anything that Dada Mail already uses, like:
+Don't set this variable to anything that Dada Mail already uses, like:
 
 =over
 

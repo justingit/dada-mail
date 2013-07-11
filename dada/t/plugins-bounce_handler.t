@@ -48,7 +48,10 @@ $entity = $parser->parse_data($test_msg);
 require DADA::App::BounceHandler::MessageParser;
 my $bhmp = DADA::App::BounceHandler::MessageParser->new;
 my ($e, $l, $d) = $bhmp->run_all_parses($entity); 
-ok($e eq 'bouncing.email@example.com'); 
+
+#use Data::Dumper; 
+#diag Dumper([$e, $l, $d]); 
+ok($e eq 'bouncing.email@example.com',"($e)"); 
  
 dada_test_config::remove_test_list;
 dada_test_config::wipe_out;
