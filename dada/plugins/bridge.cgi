@@ -3070,7 +3070,7 @@ sub handle_errors {
         print "\t\t* Message has multiple 'Return-Path' headers. Ignoring. \n"
           if $verbose;
         warn
-"$DADA::Config::PROGRAM_NAME Error: Message has multiple 'Return-Path' headers. Ignoring.1023";
+"$DADA::Config::PROGRAM_NAME Error: Message has multiple 'Return-Path' headers. Ignoring.";
 
     }
     elsif ( $errors->{msg_from_list_address} ) {
