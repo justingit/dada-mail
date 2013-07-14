@@ -345,9 +345,9 @@ If you have a subcriber field named, B<first_name>, we can change the example ab
  Hazzah!
  
  -- <!-- tmpl_var list_settings.list_owner_email -->
- 
+
 This could print out something like: 
- 
+
  Hello, John,
  
  You are subscribed to my list, My Awesome List. 
