@@ -150,6 +150,20 @@ Documentation on these lines will be made available, once the stable release of 
 
 The plugin, B<change_root_password.cgi> has now landed itself on the DEPRECATED list of plugins that comes with Dada Mail. Since the new, B<Global Config> plugin allows you to easily change the Dada Mail Root Password, amongst many other things, this plugin can now be retired. 
 
+=head2 Bugfixes 6.5.0 
+
+=head3 Email addresses will be subscribed x times, depending on how many times they're listed in the, "sub_confirm_list" sublist
+
+L<https://github.com/justingit/dada-mail/issues/386>
+
+=head3  multi-byte characters in template files in dada/templates, etc are wrongly encoded/decoded when viewed 
+
+L<https://github.com/justingit/dada-mail/issues/387>
+
+=head3  CAPTCHA will fail, on subscription step #2, if step #1 is skipped (closed list opt in) 
+
+L<https://github.com/justingit/dada-mail/issues/385>
+
 =head1 6.4.3
 
 =head2 Summary 6.4.3
