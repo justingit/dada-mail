@@ -30,25 +30,30 @@ if ( -e 'dada' ) {
 
 print p(i("Starting Adventure..."));
 
-
 print p("Uncompressing $gz...");
-`gunzip $gz`;
 
-my $tar = $gz;
-   $tar =~ s/\.gz$//;
+`tar -xvzf $gz`;
 
-if ( !-e $tar ) {
-    print p( 'Can\'t find ' . $tar . ' to uncompress!' );
-    print p('You may have to uncompress and prep Dada Mail manually.');
+if (! -e 'dada' ) {
 
-    exit;
+	`gunzip $gz`;
+	my $tar = $gz;
+	   $tar =~ s/\.gz$//;
+	if ( !-e $tar ) {
+	    print p( 'Can\'t find ' . $tar . ' to uncompress!' );
+	    print p('You may have to uncompress and prep Dada Mail manually.');
+	    exit;
+	}
+	else {
+	    print p(i("Success!"));
+		print p("Unrolling $tar");
+		`tar -xvf $tar`;
+	}
 }
-else {
-    print p(i("Success!"));
+else { 
+    print p(i("Success!"));	
 }
 
-print p("Unrolling $tar");
-`tar -xvf $tar`;
 
 if ( !-e 'dada' ) {
     print p("Can't find 'dada' directory!");
