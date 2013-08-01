@@ -297,13 +297,13 @@ $(document).ready(function() {
 					success: function(data) {
 						response($.map(data, function(item) {
 							return {
-								value: item.email,
+								value: item.email
 							}
 						}));
 					},
 					error: function() {
 						console.log('something is wrong with, "search_list_auto_complete"');
-					},
+					}
 				});
 			},
 			minLength: 3,
@@ -561,7 +561,7 @@ function admin_menu_notification(flavor, target_class) {
 				type: "POST",
 				cache: false,
 				data: {
-					f: flavor,
+					f: flavor
 				},
 				dataType: "html"
 			});
@@ -771,7 +771,7 @@ function drawTrackerDomainBreakdownChart() {
 		dataType: "json",
 		data: {
 			f: 'domain_breakdown_json',
-			type: $("#type").val(),
+			type: $("#type").val()
 		},
 		async: true,
 		success: function(jsonData) {
@@ -796,8 +796,7 @@ function drawTrackerDomainBreakdownChart() {
 			domain_breakdown_chart.draw(domain_breakdown_chart_data, options);
 			$("#domain_break_down_chart_loading").html('<p class="alert">&nbsp;</p>');
 			google.visualization.events.addListener(domain_breakdown_chart, 'select', selectHandler);
-
-		},
+		}
 	});
 }
 
@@ -843,8 +842,8 @@ backgroundColor: {
 		title: "Subscription Trends",
 		animation: {
 			duration: 1000,
-			easing: 'out',
-		},
+			easing: 'out'
+		}
 	};
 	var data;
 	var sub_unsub_trend_c = new google.visualization.AreaChart(document.getElementById('sub_unsub_trends'));
@@ -868,7 +867,7 @@ backgroundColor: {
 				data = new google.visualization.DataTable(jsonData);
 				sub_unsub_trend_c.draw(data, options);
 				$("#sub_unsub_trends_loading").html('<p class="alert">&nbsp;</p>');
-			},
+			}
 		});
 	}
 
@@ -1123,7 +1122,7 @@ function amazon_ses_get_stats() {
 		type: "POST",
 		cache: false,
 		data: {
-			f: 'amazon_ses_get_stats',
+			f: 'amazon_ses_get_stats'
 		},
 		dataType: "html"
 	});
@@ -1165,7 +1164,7 @@ function bounce_handler_show_scorecard() {
 		cache: false,
 		data: {
 			flavor: 'cgi_scorecard',
-			page: $('#bounce_handler_page').val(),
+			page: $('#bounce_handler_page').val()
 		},
 		dataType: "html"
 	});
@@ -1234,7 +1233,7 @@ function ajax_parse_bounces_results() {
 		},
 		onComplete:function(){
 			bounce_handler_show_scorecard();
-		},
+		}
 	});
 }
 
@@ -1249,7 +1248,7 @@ function bounce_handler_manually_enter_bounces() {
 		data: {
 			flavor: 'manually_enter_bounces',
 			process: $('#process').val(),
-			msg: $('#msg').val(),
+			msg: $('#msg').val()
 		},
 		dataType: "html"
 	});
@@ -1313,7 +1312,7 @@ function plugins_bridge_manually_check_messages() {
 		opacity: .50,
 		href: $("#plugin_url").val(),
 		data: {
-			flavor: 'admin_cgi_manual_start_ajax',
+			flavor: 'admin_cgi_manual_start_ajax'
 		}
 	});
 }
@@ -1327,7 +1326,7 @@ function plugins_mailing_monitor() {
 		type: "POST",
 		cache: false,
 		data: {
-			flavor: 'mailing_monitor_results',
+			flavor: 'mailing_monitor_results'
 		},
 		dataType: "html"
 	});
@@ -1441,7 +1440,7 @@ function country_geoip_table(type, label, target_div) {
 			f: 'country_geoip_table',
 			mid: $('#tracker_message_id').val(),
 			type: type,
-			label: label,
+			label: label
 		},
 		dataType: "html"
 	});
@@ -1461,25 +1460,23 @@ var country_geoip_map_infos = {
 	clickthroughs: {
 		type: 'clickthroughs',
 		data: '',
-		chart: '',
+		chart: ''
 	},
 	opens: {
 		type: 'opens',
 		data: '',
-		chart: '',
+		chart: ''
 	},
 	view_archive: {
 		type: 'view_archive',
 		data: '',
-		chart: '',
+		chart: ''
 	},
 	forward_to_a_friend: {
 		type: 'forward_to_a_friend',
 		data: '',
-		chart: '',
-	},
-
-
+		chart: ''
+	}
 };
 
 function country_geoip_map(type, target_div) {
@@ -1491,7 +1488,7 @@ function country_geoip_map(type, target_div) {
 		data: {
 			f: 'country_geoip_json',
 			mid: $('#tracker_message_id').val(),
-			type: type,
+			type: type
 		},
 		dataType: "json",
 		cache: false,
@@ -1538,7 +1535,7 @@ function message_individual_email_activity_table(email, target_div) {
 		data: {
 			f: 'message_individual_email_activity_report_table',
 			mid: $('#tracker_message_id').val(),
-			email: email, 
+			email: email
 		},
 		dataType: "html",
 		async: true,
@@ -1620,7 +1617,7 @@ function data_over_time_graph(type, label, target_div) {
 			f: 'data_over_time_json',
 			mid: $("#tracker_message_id").val(),
 			type: type,
-			label: label,
+			label: label
 		},
 		cache: false,
 		dataType: "json",
@@ -1647,7 +1644,7 @@ function data_over_time_graph(type, label, target_div) {
 			var chart = new google.visualization.AreaChart(document.getElementById(target_div));
 			chart.draw(data, options);
 			$("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
-		},
+		}
 	});
 }
 
@@ -1688,7 +1685,7 @@ function tracker_message_email_activity_listing_table(target_div) {
 		cache: false,
 		data: {
 			f: 'message_email_activity_listing_table',
-			mid: $('#tracker_message_id').val(),
+			mid: $('#tracker_message_id').val()
 		},
 		dataType: "html"
 	});
@@ -1747,7 +1744,7 @@ function email_breakdown_chart(type, label, target_div) {
 			};
 			chart.draw(data, options);
 			$("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
-		},
+		}
 	});
 }
 
@@ -1788,7 +1785,7 @@ function tracker_the_basics_piechart(type, label, target_div) {
 			};
 			chart.draw(data, options);
 			$("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
-		},
+		}
 	});
 }
 
@@ -1869,7 +1866,7 @@ function delete_log() {
 			cache: false,
 			data: {
 				flavor: 'ajax_delete_log',
-				log_name: $('#log_name').val(),
+				log_name: $('#log_name').val()
 			},
 			dataType: "html"
 		});
@@ -1896,7 +1893,7 @@ function message_history_html() {
 		cache: false,
 		data: {
 			f: 'message_history_html',
-			page: $("#tracker_page").val(),
+			page: $("#tracker_page").val()
 		},
 		dataType: "html"
 	});
@@ -1923,8 +1920,7 @@ function drawSubscriberHistoryChart() {
 		url: $("#plugin_url").val(),
 		data: {
 			f: 'message_history_json',
-			page: $("#tracker_page").val(),
-
+			page: $("#tracker_page").val()
 		},
 		cache: false,
 		dataType: "json",
@@ -1947,7 +1943,7 @@ function drawSubscriberHistoryChart() {
 			$("#subscriber_history_chart").show('fade');
 			$("#subscriber_history_chart_loading").html('<p class="alert">&nbsp;</p>');
 
-		},
+		}
 	});
 }
 
@@ -1961,7 +1957,7 @@ function tracker_purge_log() {
 			type: "POST",
 			cache: false,
 			data: {
-				f: 'ajax_delete_log',
+				f: 'ajax_delete_log'
 			},
 			dataType: "html"
 		});

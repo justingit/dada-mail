@@ -51,6 +51,9 @@ html, body {
 	text-shadow: 1px 1px 2px #330033;
 }
 
+#Header img { 
+ border:0px; 	
+}
 #Logo {
 	float: left;
 	text-align: left;
