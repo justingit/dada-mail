@@ -12,6 +12,12 @@ Key:
 
 =======
 
+[ ] Token creation on mass mailings take Foreverrrrrr!
+
+[ ] Template checker for HTML/Email Templates
+
+[ ] RSS to email
+
 [ ] Pagination on the public archive screens
 
 [ ]  bounce handler - weekly reports? 
