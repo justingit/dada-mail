@@ -312,7 +312,8 @@ sub parse_all_bounces {
     my @all_lists_to_check   = ();
 	my $all_list_mode        = 0; 
 	my $per_list_check_limit = 0; 
-	
+	my $lists_lookup_table   = {};
+		
     if ( defined($list) ) {
         push( @all_lists_to_check, $list );
     }
@@ -320,9 +321,19 @@ sub parse_all_bounces {
         # Guess, we'll do 'em all!
         @all_lists_to_check = available_lists();
 		$all_list_mode   = 1; 
+		foreach(@all_lists_to_check){ 
+			$lists_lookup_table->{$_} = 1; 
+		}
     }	
-    LISTCHECK: 
-	for my $list_to_check (@all_lists_to_check) {
+     
+#	for my $list_to_check (@all_lists_to_check) {
+	my $i; 
+LISTCHECK: for ($i = 0; $i < scalar(@all_lists_to_check); $i++) {
+		my $list_to_check = $all_lists_to_check[$i]; 
+		if($all_lists_to_check[$i] eq undef){ 
+			$log .= "Breaking out!\n"; 
+			last LISTCHECK; 
+		}
 
         my $ls =
           DADA::MailingList::Settings->new( { -list => $list_to_check } );
@@ -477,9 +488,7 @@ sub parse_all_bounces {
 								$log .= "Problems forwarding message to the List Owner!\n";
 							}
 						}
-					}
-					
-					
+					}	
                 }
 
 				
@@ -488,7 +497,7 @@ sub parse_all_bounces {
                     push( @delete_list, $msgnum );
                 }
 
-
+				# Looks like when you pass, --messages on the cl, this doesn't get set: 
                 if ( ( $#delete_list + 1 ) >= $self->config->{MessagesAtOnce} )
                 {
 
@@ -501,12 +510,33 @@ sub parse_all_bounces {
 				# This stops us from going through tons of messages for bounces, that
 				# don't belong to this list. 
 				if($all_list_mode) {
-					if($found_list ne $list_to_check) { 
-						$per_list_check_limit++; 
-						if($per_list_check_limit >= $self->config->{MessagesAtOnce}){ 
-							$log .= "Bounces are coming from a different mailing list altogether - moving on!\n"; 
-							$per_list_check_limit = 0;
-							last MSGCHECK; 
+					if($found_list ne $list_to_check) {
+						
+						# Did we already set the, "Breakout" idea? 
+						if($all_lists_to_check[$i+2] ne undef) { 
+							
+							# No? This list exist? 
+							if($lists_lookup_table->{$found_list} == 1){ 
+								
+								# Yes? Setup the breakout: 
+								$all_lists_to_check[$i+1] = $found_list; 
+								$all_lists_to_check[$i+2] = undef; 
+								last MSGCHECK; 
+							}
+							else { 
+								# That list don't exist!
+								last MSGCHECK; 
+							}
+						}
+						else { 
+							
+							# We did? OK, well let's scan, some more: 
+							$per_list_check_limit++; 
+							if($per_list_check_limit >= $self->config->{MessagesAtOnce}){ 
+								$log .= "Bounces are coming from a different mailing list altogether - moving on!\n"; 
+								$per_list_check_limit = 0;
+								last MSGCHECK; 
+							}
 						}
 					}
 					else { 
