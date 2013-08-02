@@ -809,7 +809,7 @@ This variable is covered in the Error FAQ:
 
 L<http://dadamailproject.com/d/FAQ-errors.pod.html#_debug_trace___making_dada_mail_s_own_modules_more_verbose>
 
- 
+
 =head2 %CPAN_DEBUG_SETTINGS 
 
 Control what outside CPAN modules give back debugging information. 
