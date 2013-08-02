@@ -620,14 +620,14 @@ sub send {
                                  if($mailer->dataend){ 
                                     # oh hey, everything worked!
                                  }else{ 
-                                    carp "problems completing sending message to SMTP server.";
+                                    carp "problems completing sending message to SMTP server. (dataend)";
                                  }
                                 
                             }else{ 
-                                carp "problems sending message to SMTP server.";
+                                carp "problems sending message to SMTP server. (datasend)";
                             }
                         }else{ 
-                            carp "problems sending DATA command to SMTP server.";
+                            carp "problems sending DATA command to SMTP server. (data)";
                         }
                     } else{ 
                         carp "problems sending '" . $to . "' in 'RCPT TO:<>' command to SMTP server."; 

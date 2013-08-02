@@ -37,6 +37,7 @@ require Exporter;
   delete_list_info
   check_if_list_exists
   available_lists
+ fisher_yates_shuffle
   archive_message
   js_enc
   setup_list
@@ -642,10 +643,11 @@ Using all these paramaters at once would look something like this:
 my $cache = {};
 sub available_lists {
     my %args = validate(@_, {
-        '-As_Ref'      => { regex => qr/\A[01]\z/,   optional => 1, default => 0 },
-        '-In_Order'    => { regex => qr/\A[01]\z/,   optional => 1, default => 0 },
-        '-Dont_Die'    => { regex => qr/\A[01]\z/,   optional => 1, default => 0 },
-        '-clear_cache' => { regex => qr/\A[01]\z/,   optional => 1, default => 0 }, 
+        '-As_Ref'          => { regex => qr/\A[01]\z/,   optional => 1, default => 0 },
+        '-In_Order'        => { regex => qr/\A[01]\z/,   optional => 1, default => 0 },
+        '-In_Random_Order' => { regex => qr/\A[01]\z/,   optional => 1, default => 0 }, 
+        '-Dont_Die'        => { regex => qr/\A[01]\z/,   optional => 1, default => 0 },
+        '-clear_cache'     => { regex => qr/\A[01]\z/,   optional => 1, default => 0 }, 
     }); 
 
     my $in_order        = $args{-In_Order};
@@ -671,13 +673,18 @@ sub available_lists {
     }
     if ( $in_order == 1 ) {
         if ( exists( $cache->{available_lists_in_order} ) ) {
-
             #$ic++; carp "CACHE! $ic++";
             $want_ref == "1"
               ? return $cache->{available_lists_in_order}
               : return @{ $cache->{available_lists_in_order} };
         }
     }
+	elsif($args{-In_Random_Order} == 1) { 
+		fisher_yates_shuffle($cache->{available_lists}); 
+		$want_ref == "1"
+          ? return $cache->{available_lists}
+          : return @{ $cache->{available_lists} };
+	}
     else {
         if ( exists( $cache->{available_lists} ) ) {
 
@@ -817,12 +824,25 @@ sub available_lists {
 		 $cache->{available_lists_in_order} = \@available_lists;
          $cache->{available_lists}          = \@available_lists;
      }
+	elsif($args{-In_Random_Order} == 1) { 
+		fisher_yates_shuffle($cache->{available_lists}); 
+	}
 	else { 
 		$cache->{available_lists} = \@available_lists;
 	}
      #$nc++; carp "not CACHED! $nc";
      $want_ref == "1" ? return \@available_lists : return @available_lists;
 
+}
+
+sub fisher_yates_shuffle {
+    my $array = shift;
+    my $i;
+    for ($i = @$array; --$i; ) {
+        my $j = int rand ($i+1);
+        next if $i == $j;
+        @$array[$i,$j] = @$array[$j,$i];
+    }
 }
 
 
