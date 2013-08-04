@@ -1,9 +1,9 @@
 $(document).ready(function() {
 	if ($("#subscription_form").length) {
 		$("#subscription_form").validate({
-			debug: false, 
+			debug: false,
 			rules: {
-				email: { 
+				email: {
 					required: true,
 					email: true
 				}
@@ -22,7 +22,7 @@ $(document).ready(function() {
 		
 		var nobadcharacters_regex = /(\>|\<|\")/;
 		jQuery.validator.addMethod("nobadcharacters", function(value, element) {
-	    return this.optional(element) || !(nobadcharacters_regex.test(value));
+ 			return this.optional(element) || !(nobadcharacters_regex.test(value));
 	    }, "Value cannot contain, &lt;'s, &gt;'s or, &quot;'s.");
 		
 		var no_weird_characters_regex = /[^a-zA-Z0-9_]/; 
@@ -115,7 +115,7 @@ $(document).ready(function() {
 					
 					},
 					register_password : { 
-						required : true,
+						required : true
 					}
 				},
 				messages: {
