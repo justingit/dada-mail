@@ -207,7 +207,7 @@ function installer_test_pop3_connection() {
 	}
 
 	var bounce_handler_USESSL = 0; 
-	if($("#bounce_handler_USESSL").prop("checked") == true){ 
+	if($("#bounce_handler_USESSL").prop("checked") === true){ 
 		bounce_handler_USESSL = 1; 
 	}
 	var request = $.ajax({
@@ -278,7 +278,7 @@ function test_user_template() {
 
 function installer_checkbox_toggle_option_groups(checkbox_id, target_id){ 
 	if ($("#" + checkbox_id).length) {	
-		if ($("#" + checkbox_id).prop("checked") == true) {
+		if ($("#" + checkbox_id).prop("checked") === true) {
 			if ($('#' + target_id).is(':hidden')) {
 				$('#' + target_id).show('blind');
 			}
@@ -291,12 +291,12 @@ function installer_checkbox_toggle_option_groups(checkbox_id, target_id){
 }
 
 function installer_dada_root_pass_options() {
-	if ($("#dada_pass_use_orig").prop("checked") == true) {
+	if ($("#dada_pass_use_orig").prop("checked") === true) {
 		if ($('#dada_root_pass_fields').is(':visible')) {
 			$('#dada_root_pass_fields').hide('blind');
 		}
 	}
-	if ($("#dada_pass_use_orig").prop("checked") == false) {
+	if ($("#dada_pass_use_orig").prop("checked") === false) {
 		if ($('#dada_root_pass_fields').is(':hidden')) {
 			$('#dada_root_pass_fields').show('blind');
 		}
@@ -320,12 +320,12 @@ function installer_toggleSQL_options() {
 
 function installer_toggle_dada_files_dirOptions() {
 
-	if ($("#dada_files_dir_setup_auto").prop("checked") == true) {
+	if ($("#dada_files_dir_setup_auto").prop("checked") === true) {
 		if ($('#manual_dada_files_dir_setup').is(':visible')) {
 			$('#manual_dada_files_dir_setup').hide('blind');
 		}
 	}
-	if ($("#dada_files_dir_setup_manual").prop("checked") == true) {
+	if ($("#dada_files_dir_setup_manual").prop("checked") === true) {
 		if ($('#manual_dada_files_dir_setup').is(':hidden')) {
 			$('#manual_dada_files_dir_setup').show('blind');
 		}

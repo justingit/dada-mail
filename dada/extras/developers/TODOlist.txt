@@ -22,7 +22,7 @@ Key:
 
 [ ]  bounce handler - weekly reports? 
 
-[ ] is the POP3 login tester in the installer wonky? 
+[x] is the POP3 login tester in the installer wonky? 
 
 [ ] Move, "$HTML_SUBSCRIPTION_REQUEST_MESSAGE" and friends out of Config.pm file, into template files. 
 
@@ -33,11 +33,11 @@ Key:
 [ ] Bounce Handler - ability to substract x from all scored addresses
 	[ ] Ability to act upon all addresses in scorecard
 
-[-] Time to simplify the unsubscription system.                  
+[x] Time to simplify the unsubscription system.                  
 	Need a better error page, if you don't type in the correct address
-	[ ] Error page for when you click on an outdated unsub link, or a "REMOVED" unsub link
+	[x] Error page for when you click on an outdated unsub link, or a "REMOVED" unsub link
 	[x] Way to send you that unsub link, if you didn't receive one, via email
-	[-] Docs on new email unsub system, describe system, how it works, changes from previous system, etc. 
+	[x] Docs on new email unsub system, describe system, how it works, changes from previous system, etc. 
 	
 	
 [ ] Perhaps another email protection scheme - just break the email address. 

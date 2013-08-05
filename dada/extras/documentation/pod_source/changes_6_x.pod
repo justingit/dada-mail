@@ -1,3 +1,17 @@
+=head1 6.5.1
+
+=head2 Summary 6.5.1
+
+This release features severeal fixes for JavaScript incompatibilities when running Dada Mail within Internet Explorer. 
+
+Users of Dada Mail have reported that many of the screens in Dada Mail's list control panel are completely unusable, when using Internet Explorer. This release hopes to fix those historical problems. 
+
+=head2 Bugfixes 6.5.1
+
+=head3 Javascript in dada_mail.js has Internet Explorer-Specific Bugs 
+
+l<https://github.com/justingit/dada-mail/issues/391>
+
 =head1 6.5.0
 
 =head2 Summary 6.5.0
