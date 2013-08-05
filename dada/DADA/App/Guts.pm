@@ -679,19 +679,22 @@ sub available_lists {
               : return @{ $cache->{available_lists_in_order} };
         }
     }
-	elsif($args{-In_Random_Order} == 1) { 
-		fisher_yates_shuffle($cache->{available_lists}); 
-		$want_ref == "1"
-          ? return $cache->{available_lists}
-          : return @{ $cache->{available_lists} };
-	}
     else {
         if ( exists( $cache->{available_lists} ) ) {
-
-            #$ic++; carp "CACHE! $ic++";
-            $want_ref == "1"
-              ? return $cache->{available_lists}
-              : return @{ $cache->{available_lists} };
+			my $copy = $cache->{available_lists};
+			if($args{-In_Random_Order} == 1) { 
+				
+				fisher_yates_shuffle($copy); 
+				$want_ref == "1"
+				? return $copy
+				: return @$copy;
+				
+			}
+			else { 
+				$want_ref == "1"
+				? return $cache->{available_lists}
+				: return @{ $cache->{available_lists} };
+			}
         }
     }
 
@@ -810,7 +813,6 @@ sub available_lists {
     }
 
     if ( $in_order == 1 ) {
-
          my $labels = {};
          for my $l (@available_lists) {
              my $ls =
@@ -823,16 +825,19 @@ sub available_lists {
            keys %$labels;
 		 $cache->{available_lists_in_order} = \@available_lists;
          $cache->{available_lists}          = \@available_lists;
+	  	 $want_ref == "1" ? return \@available_lists : return @available_lists;
      }
-	elsif($args{-In_Random_Order} == 1) { 
-		fisher_yates_shuffle($cache->{available_lists}); 
-	}
 	else { 
 		$cache->{available_lists} = \@available_lists;
+		if($args{-In_Random_Order} == 1) {
+			my $copy = $cache->{available_lists};
+			fisher_yates_shuffle($copy); 
+			$want_ref == "1" ? return $copy : return @$copy;
+		}
+		else { 
+			$want_ref == "1" ? return \@available_lists : return @available_lists;
+		}		
 	}
-     #$nc++; carp "not CACHED! $nc";
-     $want_ref == "1" ? return \@available_lists : return @available_lists;
-
 }
 
 sub fisher_yates_shuffle {

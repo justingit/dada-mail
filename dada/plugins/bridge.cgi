@@ -1036,7 +1036,7 @@ sub start {
         e_print(
 "Running all lists - \nTo test an individual list, pass the list shortname in the '--list' parameter...\n\n"
         ) if $verbose;
-        @lists = available_lists({-In_Random_Order => 1});
+        @lists = available_lists(-In_Random_Order => 1);
     }
     else {
         $lists[0] = $run_list;
@@ -1529,7 +1529,7 @@ sub test_pop3 {
         e_print(
 "Testing all lists - \nTo test an individual list, pass the list shortname in the '--list' parameter...\n\n"
         );
-        @lists = available_lists({-In_Random_Order => 1});
+        @lists = available_lists(-In_Random_Order => 1);
     }
     else {
         push( @lists, $run_list );
