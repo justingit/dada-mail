@@ -10,7 +10,7 @@ Users of Dada Mail have reported that many of the screens in Dada Mail's list co
 
 =head3 Javascript in dada_mail.js has Internet Explorer-Specific Bugs 
 
-l<https://github.com/justingit/dada-mail/issues/391>
+L<https://github.com/justingit/dada-mail/issues/391>
 
 =head1 6.5.0
 
