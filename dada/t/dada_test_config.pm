@@ -2,6 +2,8 @@ package dada_test_config;
 
 use __Test_Config_Vars; 
 use Carp qw(croak carp); 
+#$Carp::Verbose = 1; 
+
 
 BEGIN { 
     use FindBin '$Bin';
@@ -356,6 +358,9 @@ my @statements = split(';', $sql);
 
 sub destroy_MySQL_db { 
 
+ #	carp 'destroy_MySQL_db1'; 
+#	warn 'destroy_MySQL_db2';
+	 
   require DADA::App::DBIHandle;
     my $dbi_handle = DADA::App::DBIHandle->new; 
 
@@ -376,6 +381,10 @@ sub destroy_MySQL_db {
 		password_protect_directories_table
 		confirmation_tokens_table
 		)){ 
+			
+			carp "removing: " . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{$_}; 
+		 
+		
 	        $dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{$_})
 	            or carp "cannot do statement! $DBI::errstr\n";  
 		}

@@ -817,7 +817,6 @@ sub create_mass_sending_file {
 				-Save_At          => undef, 
 				
 				-Test_Recipient   => undef, 
-				-Create_Tokens    => 0, 
 				@_); 
 	
 	my $list       = $self->{list}; 
@@ -825,11 +824,6 @@ sub create_mass_sending_file {
 	my $path       = $DADA::Config::TMP ; 
 	my $type       = $args{-Type}; 
 	
-	my $ct = undef; 
-	if($args{-Create_Tokens} == 1){ 
-		require DADA::App::Subscriptions::ConfirmationTokens; 
-		$ct    = DADA::App::Subscriptions::ConfirmationTokens->new();
-	}
 	
 	my $message_id = message_id();
 	
@@ -911,27 +905,6 @@ sub create_mass_sending_file {
 	                $self->{ls}->param('list_name'), 
 					$n_msg_id,
 				);
-			# Fake token... 
-		if($args{-Create_Tokens} == 1){ 
-			
-				my $fe_token = $ct->save(
-					{
-						-email => $first_email,
-						-data  => {
-							list        => $self->{list}, 
-							type        => 'list', 
-							flavor      => 'unsub_confirm', 
-							mid         => $n_msg_id,
-							email_hint  => DADA::App::Guts::anonystar_address_encode($first_email),
-						},
-					}
-				);
-			
-			push( @lo, $fe_token );
-		}
-		else { 
-			push( @lo, '' );
-		}
 		 if ( $csv->combine(@lo) ) {
 		     my $hstring = $csv->string;
 		     print $SENDINGFILE $hstring, "\n";
@@ -956,48 +929,7 @@ sub create_mass_sending_file {
 					$self->{ls}->param('list_name'),
 					$n_msg_id,
 				);
-				
-				if($args{-Create_Tokens} == 1){ 
-					my $token; 
-					if($type eq 'invitelist') { 
-						# this is to confirm a subscription
-
-						$token = $ct->save(
-							{
-								-email => $email,
-								-data  => {
-									list        => $list, 
-									flavor      => 'sub_confirm', 
-									type        => 'list', 
-									remote_addr => $ENV{REMOTE_ADDR},
-									invite      => 1,  
-								}
-							}
-						);
-					}
-					else { 
-						# this is to confirm an UNsubscription: 
-						$token = $ct->save(
-							{
-								-email => $email,
-								-data  => {
-									list        => $list, 
-									type        => 'list', 
-									flavor      => 'unsub_confirm', 
-									mid         => $n_msg_id,
-					#				remote_addr => $ENV{REMOTE_ADDR}, 
-									email_hint  => DADA::App::Guts::anonystar_address_encode($email),
-								},
-								#-reset_previous_timestamp => 1, 
-							}
-						);
-					}
-					push( @sub, $token );
-				}
-				else { 
-					push( @sub, '' );
-				}
-				
+								
 				if ( $csv->combine(@sub) ) {
 				     my $hstring = $csv->string;
 				     print $SENDINGFILE $hstring, "\n";

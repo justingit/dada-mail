@@ -67,6 +67,8 @@ my %allowed = (
 	ses_obj                       => undef, 
 	#unsub_obj                     => undef, 
 	
+	child_ct_obj                  => undef, 
+	
 ); 
 
 my %defaults        = %DADA::Config::EMAIL_HEADERS;
@@ -743,7 +745,7 @@ sub send {
             				
                 # print "NOT SENDING - sending message to test file: '" . $self->test_send_file . "'"; 
                 open(MAIL, '>>' . $self->test_send_file) 
-					or die "couldn't open test file: $!"; 	
+					or die "couldn't open test file: '" . $self->test_send_file . "' because: $!"; 	
                 
             }
             else { 
@@ -1495,6 +1497,7 @@ sub mass_send {
             
             setpgrp; 
                        
+
 			##################################################################
 			# DEV: EXPLANATION: 
 			# This is all to attempt that, 
@@ -1548,6 +1551,9 @@ sub mass_send {
 				$mailout = DADA::Mail::MailOut->new({ -list => $self->{list}, -ls_obj => $self->{ls} }); 
 				$mailout->associate($pass_id, $pass_type); 
 			   
+				require DADA::App::Subscriptions::ConfirmationTokens;
+				$self->child_ct_obj(DADA::App::Subscriptions::ConfirmationTokens->new()); 
+				$self->child_ct_obj->{dbh} = $dbh;
 			
 				## And many, many more, 
 				## We'd probably have to undef and make a new object for 
@@ -1555,6 +1561,10 @@ sub mass_send {
 				## And what else? 
 				## DADA::Mail::MailOut needs a way to pass the shared database (now new) 
 				## Handle... 
+			}
+			else { 
+				require DADA::App::Subscriptions::ConfirmationTokens;
+				$self->child_ct_obj(DADA::App::Subscriptions::ConfirmationTokens->new()); 				
 			}
 			
 			##################################################################
@@ -2830,155 +2840,196 @@ sub _verp {
 }
 
 
-sub _mail_merge { 
+sub _mail_merge {
 
-    my $self = shift; 
-	my $orig_entity; 
-    
-    my ($args) = @_; 
+    my $self = shift;
+    my $orig_entity;
 
-    if(! exists($args->{-entity})){ 
-        croak 'you need to pass the -entity paramater'; 
+    my ($args) = @_;
+
+    if ( !exists( $args->{-entity} ) ) {
+        croak 'you need to pass the -entity paramater';
     }
-	else { 
-		$orig_entity = $args->{-entity}; 
-	}
-
-   if(! exists($args->{-data})){ 
-        croak 'you need to pass the -data paramater'; 
+    else {
+        $orig_entity = $args->{-entity};
     }
 
-	if(exists($args->{-fm_obj})) { 
-		# ...  
-	}
-	else { 
-		croak "you MUST pass the -fm_obj paramater!"; 
-	}
+    if ( !exists( $args->{-data} ) ) {
+        croak 'you need to pass the -data paramater';
+    }
 
+    if ( exists( $args->{-fm_obj} ) ) {
 
+        # ...
+    }
+    else {
+        croak "you MUST pass the -fm_obj paramater!";
+    }
 
-    # So all we really have to do is label and arrange the values we have and populate the email message. 
-    # Here we go: 
-    
-    my $data = $args->{-data}; 
-    
+# So all we really have to do is label and arrange the values we have and populate the email message.
+# Here we go:
 
-    my  %labeled_data = (); 
-    my  $subscriber_vars = {}; 
-    
-        $subscriber_vars->{'subscriber.email'}        = shift @$data;
-        $subscriber_vars->{'subscriber.email_name'}   = shift @$data;
-        $subscriber_vars->{'subscriber.email_domain'} = shift @$data;
-        
-        # DEV: These are sort of weird - I'd rather get rid of global list sending altogether. It's messy.
-        $labeled_data{'list_settings.list'}           = shift @$data;
-        $labeled_data{'list_settings.list_name'}      = shift @$data;
-        $labeled_data{message_id}                     = shift @$data;
-        $labeled_data{'list.confirmation_token'}      = shift @$data;
- 
+    my $data = $args->{-data};
 
-		$labeled_data{'list_unsubscribe_link'} = $DADA::Config::PROGRAM_URL . '/t/' . $labeled_data{'list.confirmation_token'} . '/'; 
-		
-		
-#		$labeled_data{'list_unsubscribe_link'} = $self->unsub_obj->unsub_link(
-#			{
-#				-mid   => $labeled_data{message_id}, 
-#				-email => $subscriber_vars->{'subscriber.email'}
-#			}
-#		);
-#		warn q{$labeled_data{'list_unsubscribe_link'} } . $labeled_data{'list_unsubscribe_link'}; 
-	my $merge_fields = $self->{merge_fields};
-        
+    my %labeled_data    = ();
+    my $subscriber_vars = {};
+
+    $subscriber_vars->{'subscriber.email'}        = shift @$data;
+    $subscriber_vars->{'subscriber.email_name'}   = shift @$data;
+    $subscriber_vars->{'subscriber.email_domain'} = shift @$data;
+
+# DEV: These are sort of weird - I'd rather get rid of global list sending altogether. It's messy.
+    $labeled_data{'list_settings.list'}      = shift @$data;
+    $labeled_data{'list_settings.list_name'} = shift @$data;
+    $labeled_data{message_id}                = shift @$data;
+
+	# type is passed in, $self->list_type
+    my $confirmation_token = $self->_make_token(
+        {
+            -list   => $labeled_data{'list_settings.list'},
+            -email  => $subscriber_vars->{'subscriber.email'},
+            -msg_id => $labeled_data{message_id},
+        }
+    );
+
+    $labeled_data{'list.confirmation_token'} = $confirmation_token;    # list invites? Messed up.
+    $labeled_data{'list_unsubscribe_link'} = $DADA::Config::PROGRAM_URL . '/t/'
+      . $labeled_data{'list.confirmation_token'} . '/';
+
+    my $merge_fields = $self->{merge_fields};
+
     my $i = 0;
-    for($i=0; $i<=$#$merge_fields; $i++){ 
-   
-		# DEV: Euh - this is basically doing what I want - 
-		# caching the fallback field stuff, 
-		# so that we only grab this info once, and reuse it. 
-		# this stops multiple calls to the DADA::ProfileFieldsManager->get_all_field_attributes method
-		# which is good. 
-		
-        if(DADA::App::Guts::strip($args->{-data}->[$i])){
-            $subscriber_vars->{'subscriber.' . $merge_fields->[$i]} = $data->[$i];       
+    for ( $i = 0 ; $i <= $#$merge_fields ; $i++ ) {
+
+# DEV: Euh - this is basically doing what I want -
+# caching the fallback field stuff,
+# so that we only grab this info once, and reuse it.
+# this stops multiple calls to the DADA::ProfileFieldsManager->get_all_field_attributes method
+# which is good.
+
+        if ( DADA::App::Guts::strip( $args->{-data}->[$i] ) ) {
+            $subscriber_vars->{ 'subscriber.' . $merge_fields->[$i] } =
+              $data->[$i];
         }
-        else { 
-		  	 $subscriber_vars->{'subscriber.' . $merge_fields->[$i]} = $self->{field_attr}->{$merge_fields->[$i]}->{fallback_value};   
+        else {
+            $subscriber_vars->{ 'subscriber.' . $merge_fields->[$i] } =
+              $self->{field_attr}->{ $merge_fields->[$i] }->{fallback_value};
         }
     }
 
-	# Add the, "To:" header (very important!) 
-	my $To_header = ''; 
-	
-	if($self->list_type eq 'invitelist'){ 
-		$To_header   = $args->{-fm_obj}->format_phrase_address(
-				$self->{ls}->param('invite_message_to_phrase'), 
-				$subscriber_vars->{'subscriber.email'}
-			);					
-	}
-	else { 
-    	$To_header   = $args->{-fm_obj}->format_phrase_address(
-			$self->{ls}->param('mailing_list_message_to_phrase'), 
-			$subscriber_vars->{'subscriber.email'}
-		);
-	}
-	if($orig_entity->head->get('To', 0)){ 
-	   $orig_entity->head->delete('To');
-	}
-	$orig_entity->head->add('To', $To_header);
-			
-	my $expr = 0; 
-	if($self->{ls}->param('enable_email_template_expr') == 1){ 
-		$expr = 1; 
-	}
-	
-	#carp "ORIGINAL ENTITY: \n";
-	#carp '-' x 72 . "\n"; 
-	#carp $orig_entity->as_string;
-	#carp '-' x 72 . "\n"; 
-	
-	#carp "LABELED DATA\n" ;
-	#carp '-' x 72 . "\n"; 
-	#use Data::Dumper; 
-	#carp Dumper({%labeled_data}); 
-	#carp '-' x 72 . "\n"; 
-	
-    my $entity = $args->{-fm_obj}->email_template(
-                    {
-                        -entity                   => $orig_entity,                         
-                        -list_settings_vars       => $self->{ls}->params, 
-                        -list_settings_vars_param => {-dot_it => 1},
-                        -subscriber_vars          => $subscriber_vars,
-                        -vars                   => 
-                            {
-								# You know, I need at least this:
-								message_id => $labeled_data{message_id},
-                               %labeled_data,
-                            },
-						-expr => $expr, 
-                    }
-                );
+    # Add the, "To:" header (very important!)
+    my $To_header = '';
 
-	#carp "MODIFIED ENTITY\n"; 
-	#carp '-' x 72 . "\n"; 
-	#carp $entity->as_string;
-	#carp '-' x 72 . "\n"; 
-	
-	
-   my $msg = $entity->as_string; 
-	   $msg = safely_decode($msg); 
-	
-	
-    undef($entity); 
-	undef($orig_entity); 
-    my ($h, $b) = split("\n\n", $msg, 2); 
-	undef ($msg);
-	
-	my %final = (
-        $self->return_headers($h), 
-        Body => $b,
-    ); 
-    
-    return %final; 
+    if ( $self->list_type eq 'invitelist' ) {
+        $To_header = $args->{-fm_obj}->format_phrase_address(
+            $self->{ls}->param('invite_message_to_phrase'),
+            $subscriber_vars->{'subscriber.email'}
+        );
+    }
+    else {
+        $To_header =
+          $args->{-fm_obj}->format_phrase_address(
+            $self->{ls}->param('mailing_list_message_to_phrase'),
+            $subscriber_vars->{'subscriber.email'} );
+    }
+    if ( $orig_entity->head->get( 'To', 0 ) ) {
+        $orig_entity->head->delete('To');
+    }
+    $orig_entity->head->add( 'To', $To_header );
+
+    my $expr = 0;
+    if ( $self->{ls}->param('enable_email_template_expr') == 1 ) {
+        $expr = 1;
+    }
+
+    #carp "ORIGINAL ENTITY: \n";
+    #carp '-' x 72 . "\n";
+    #carp $orig_entity->as_string;
+    #carp '-' x 72 . "\n";
+
+    #carp "LABELED DATA\n" ;
+    #carp '-' x 72 . "\n";
+    #use Data::Dumper;
+    #carp Dumper({%labeled_data});
+    #carp '-' x 72 . "\n";
+
+    my $entity = $args->{-fm_obj}->email_template(
+        {
+            -entity                   => $orig_entity,
+            -list_settings_vars       => $self->{ls}->params,
+            -list_settings_vars_param => { -dot_it => 1 },
+            -subscriber_vars          => $subscriber_vars,
+            -vars                     => {
+
+                # You know, I need at least this:
+                message_id => $labeled_data{message_id},
+                %labeled_data,
+            },
+            -expr => $expr,
+        }
+    );
+
+    #carp "MODIFIED ENTITY\n";
+    #carp '-' x 72 . "\n";
+    #carp $entity->as_string;
+    #carp '-' x 72 . "\n";
+
+    my $msg = $entity->as_string;
+    $msg = safely_decode($msg);
+
+    undef($entity);
+    undef($orig_entity);
+    my ( $h, $b ) = split( "\n\n", $msg, 2 );
+    undef($msg);
+
+    my %final = ( $self->return_headers($h), Body => $b, );
+
+    return %final;
+}
+
+
+sub _make_token {
+
+    my $self = shift;
+    my ($args) = @_;
+    my $token;
+
+    if ( $self->list_type eq 'invitelist' ) {
+
+        # this is to confirm a subscription
+        $token = $self->child_ct_obj->save(
+            {
+                -email => $args->{-email},
+                -data  => {
+                    list        => $args->{-list},
+                    flavor      => 'sub_confirm',
+                    type        => 'list',
+                    remote_addr => $ENV{REMOTE_ADDR},
+                    invite      => 1,
+                }
+            }
+        );
+    }
+    else {
+
+        $token = $self->child_ct_obj->save(
+            {
+                -email => $args->{-email},
+                -data  => {
+                    list       => $args->{-list},
+                    type       => 'list',
+                    flavor     => 'unsub_confirm',
+                    mid        => $args->{-msg_id},
+                    email_hint => DADA::App::Guts::anonystar_address_encode(
+                        $args->{-email}
+                    ),
+                },
+            }
+        );
+
+    }
+
+    return $token;
 }
 
 
