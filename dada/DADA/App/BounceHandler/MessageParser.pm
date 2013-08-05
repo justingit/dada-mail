@@ -12,6 +12,11 @@ use Try::Tiny;
 use Carp qw(croak carp);
 use vars qw($AUTOLOAD);
 
+my $t = 0; 
+
+if($t == 1){ 
+	require Data::Dumper;
+}
 my %allowed = ();
 
 sub new {
@@ -69,32 +74,83 @@ sub run_all_parses {
 	# Amazon SES is sort of special, since it's very, very easy to understand if
 	# It's coming from it: 
 	if($self->bounce_from_ses($entity)){ 
+		warn "bounce_from_ses"
+			if $t; 
+			
 		  my ( $ses_list, $ses_email, $ses_diagnostics ) =
 	          $self->parse_for_amazon_ses($entity);
 	        $list  ||= $ses_list;
 	        $email ||= $ses_email;
+			
+			warn "list: $list" 
+				if $t; 
+			warn "email: $email" 
+				if $t; 
+				
+			warn "diagnostics: \n" . Data::Dumper::Dumper($ses_diagnostics)
+				if $t; 
+			
 	        %{$diagnostics} = ( %{$diagnostics}, %{$ses_diagnostics} )
 	          if $ses_diagnostics;
 	}
 	elsif($self->isa_rfc6522_bounce($entity)) { 
+		warn "isa_rfc6522_bounce"
+			if $t; 
+			
 	  my ( $rfc6522_list, $rfc6522_email, $rfc6522_diagnostics ) =
           $self->parse_for_rfc6522($entity);
         $list  ||= $rfc6522_list;
-        $email ||= $rfc6522_email;		
+        $email ||= $rfc6522_email;
+
+		warn "list: $rfc6522_list" 
+			if $t; 
+		warn "email: $rfc6522_email" 
+			if $t; 
+			
+		warn "diagnostics: \n" . Data::Dumper::Dumper($rfc6522_diagnostics)
+			if $t; 
+		
         %{$diagnostics} = ( %{$diagnostics}, %{$rfc6522_diagnostics} )
-          if $rfc6522_diagnostics;		
+          if $rfc6522_diagnostics;
 	} 
 	elsif($self->bounce_from_secureserver_dot_net($entity)){ 
+		
+		warn "bounce_from_secureserver_dot_net"
+			if $t; 
+		
+		
 		  my ( $ss_list, $ss_email, $ss_diagnostics ) =
 	          $self->parse_for_secureserver_dot_net($entity);
+	
+			warn "list: $ss_list" 
+				if $t; 
+			warn "email: $ss_email" 
+				if $t; 
+
+			warn "diagnostics: \n" . Data::Dumper::Dumper($ss_diagnostics)
+				if $t; 
+	
 	        $list  ||= $ss_list;
 	        $email ||= $ss_email;
+	
+	
 	        %{$diagnostics} = ( %{$diagnostics}, %{$ss_diagnostics} )
 	          if $ss_diagnostics;
 	}
 	else { 		
-		# Else, let's try other things: 
+		
+		warn "generic_parse"
+			if $t; 
+		
 	    my ( $gp_list, $gp_email, $gp_diagnostics ) = $self->generic_parse($entity);
+	
+		warn "list: $gp_list" 
+			if $t; 
+		warn "email: $gp_email" 
+			if $t; 
+		warn "diagnostics: \n" . Data::Dumper::Dumper($gp_diagnostics)
+			if $t; 
+
 		if(!$list) { 
 	    	$list = $gp_list;
 		}
@@ -109,8 +165,20 @@ sub run_all_parses {
 		# (and along down the line...)
 
 	    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
+		
+			warn "parse_for_qmail"
+				if $t; 
+		
 	        my ( $qmail_list, $qmail_email, $qmail_diagnostics ) =
 	          $self->parse_for_qmail($entity);
+	
+			warn "list: $qmail_list" 
+				if $t; 
+			warn "email: $qmail_email" 
+				if $t; 
+			warn "diagnostics: \n" . Data::Dumper::Dumper($qmail_diagnostics)
+				if $t; 
+	
 	        $list  ||= $qmail_list;
 	        $email ||= $qmail_email;
 	        %{$diagnostics} = (%{$qmail_diagnostics}, %{$diagnostics})
@@ -119,9 +187,19 @@ sub run_all_parses {
 
 	    if ( ( !$list ) || ( !$email ) || !keys %$diagnostics ) {
 
+			warn "parse_for_exim"
+				if $t; 
+
 			my ( $exim_list, $exim_email, $exim_diagnostics ) =
 	          $self->parse_for_exim($entity);
 
+			warn "list: $exim_list" 
+				if $t; 
+			warn "email: $exim_email" 
+				if $t; 
+			warn "diagnostics: \n" . Data::Dumper::Dumper($exim_diagnostics)
+				if $t; 
+				
 				$list  ||= $exim_list;
 	        	$email ||= $exim_email;				
 			if(!keys %$diagnostics) { 
@@ -135,8 +213,19 @@ sub run_all_parses {
 
 	    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
 
+			warn "parse_for_f__king_exchange"
+				if $t; 
+				
 	        my ( $ms_list, $ms_email, $ms_diagnostics ) =
 	          $self->parse_for_f__king_exchange($entity);
+	
+			warn "list: $ms_list" 
+				if $t; 
+			warn "email: $ms_email" 
+				if $t; 
+			warn "diagnostics: \n" . Data::Dumper::Dumper($ms_diagnostics)
+				if $t; 
+	
 	        $list  ||= $ms_list;
 	        $email ||= $ms_email;
 	        %{$diagnostics} = (%{$ms_diagnostics},  %{$diagnostics} )
@@ -144,8 +233,20 @@ sub run_all_parses {
 	    }
 	    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
 
+			warn "parse_for_novell"
+				if $t; 
+				
 	        my ( $nv_list, $nv_email, $nv_diagnostics ) =
 	          $self->parse_for_novell($entity);
+	
+			warn "list: $nv_list" 
+				if $t; 
+			warn "email: $nv_email" 
+				if $t; 
+			warn "diagnostics: \n" . Data::Dumper::Dumper($nv_diagnostics)
+				if $t; 
+	
+	
 	        $list  ||= $nv_list;
 	        $email ||= $nv_email;
 	        %{$diagnostics} = (  %{$nv_diagnostics}, %{$diagnostics} )
@@ -277,6 +378,7 @@ sub generic_parse {
 	}
 
     $list = DADA::App::Guts::strip($list) if $list;
+
     return ( $list, $email, \%return );
 
 }
