@@ -1169,7 +1169,6 @@ sub create_mass_sending_file {
         -Test_Recipient  => undef,
         -partial_sending => {},
         -exclude_from    => [],
-		-Create_Tokens   => 0, 
         @_
     );
 
@@ -1178,14 +1177,7 @@ sub create_mass_sending_file {
 	
     my $list = $self->{list};
     my $type = $args{-Type};
-
-	my $ct = undef; 
-	if($args{-Create_Tokens} == 1){ 
-		require DADA::App::Subscriptions::ConfirmationTokens; 
-		$ct    = DADA::App::Subscriptions::ConfirmationTokens->new();
-	}
 		
-
     my @f_a_lists = available_lists();
     my %list_names;
     for (@f_a_lists) {
@@ -1270,28 +1262,6 @@ sub create_mass_sending_file {
 	        $list_names{ $self->{list} }, 
 			$n_msg_id,
 	    );
-		# Fake token... 
-		if($args{-Create_Tokens} == 1){ 
-			
-			my $fe_token = $ct->save(
-				{
-					-email => $first_email,
-					-data  => {
-						list        => $self->{list}, 
-						type        => 'list', 
-						flavor      => 'unsub_confirm', 
-						mid         => $n_msg_id,
-		#				remote_addr => $ENV{REMOTE_ADDR}, 
-						email_hint  => DADA::App::Guts::anonystar_address_encode($first_email),
-					},
-				}
-			);
-			push( @lo, $fe_token);
-		}
-		else { 
-			push( @lo, '' );
-		}
-		
 
 	# To add to @lo, I want to bring up the Dada Profile and see if there's anything
 	# in there...
@@ -1352,53 +1322,6 @@ sub create_mass_sending_file {
                     $list_names{ $field_ref->{list} },
                     $n_msg_id,
                 );
-
-				if($args{-Create_Tokens} == 1){ 
-					# In this case, the remote_addr WOULD be different, as it's being 
-					# sent by the List Owner, not the user. 
-					my $token; 
-					
-					if($type eq 'invitelist') { 
-						# this is to confirm a subscription
-						
-						$token = $ct->save(
-							{
-								-email => $field_ref->{email},
-								-data  => {
-									list        => $field_ref->{list}, 
-									flavor      => 'sub_confirm', 
-									type        => 'list', 
-									remote_addr => $ENV{REMOTE_ADDR},
-									invite      => 1,  
-								}
-							}
-						);
-					}
-					else { 
-						
-						$token = $ct->save(
-							{
-								-email => $field_ref->{email},
-								-data  => {
-									list        => $field_ref->{list}, 
-									type        => 'list', 
-									flavor      => 'unsub_confirm', 
-									mid         => $n_msg_id,
-					#				remote_addr => $ENV{REMOTE_ADDR}, 
-									email_hint  => DADA::App::Guts::anonystar_address_encode($field_ref->{email}),
-								},
-					#			-reset_previous_timestamp => 1, # NO! MID has to be unique. DOH. 
-							}
-						);
-						
-						
-					}
-
-					push( @sub, $token );
-				}
-				else { 
-					push( @sub, '' );
-				}
 
                 for ( @{ $self->subscriber_fields } ) {
                     if ( defined( $field_ref->{$_} ) ) {

@@ -5,6 +5,8 @@ use lib qw(./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib ./t);
 
 BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
 use dada_test_config; 
+use Carp qw(croak carp); 
+# $Carp::Verbose = 1; 
 
 use Test::More; 
 unless(dada_test_config::MySQL_test_enabled()  ) {
@@ -16,6 +18,7 @@ else {
 
 
 SKIP: {
+	
         eval { require DBD::mysql };
 
         skip "DBD::mysql not installed", 2 if $@;
@@ -36,7 +39,7 @@ SKIP: {
         $file = <FILE>; 
     }
     close(FILE); 
-    
+	
     eval $file;
     
     if ($@){ 
@@ -44,6 +47,8 @@ SKIP: {
     } 
     sleep(5); 
     
+#	carp 'dada_test_config::destroy_MySQL_db();1'; 
+#	warn 'dada_test_config::destroy_MySQL_db();2'; 
     dada_test_config::destroy_MySQL_db();
 
 
