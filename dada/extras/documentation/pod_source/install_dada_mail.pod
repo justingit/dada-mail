@@ -4,9 +4,9 @@
 
 =head1 Step #1: Download Dada Mail
 
-Here's the direct download to Dada Mail v6.5.1:
+Here's the direct download to Dada Mail v6.5.2:
 
-L<http://dadamail.googlecode.com/files/dada-6_5_1.tar.gz>
+L<http://dadamail.googlecode.com/files/dada-6_5_2.tar.gz>
 
 =head2 Pro Dada Subscriber?
 
@@ -18,9 +18,9 @@ Here's more information about B<Pro Dada>:
 
 L<http://dadamailproject.com/purchase/pro.html> 
 
-=head1 Step #2 Upload the, "dada-6_5_1.tar.gz" distro into your cgi-bin
+=head1 Step #2 Upload the, "dada-6_5_2.tar.gz" distro into your cgi-bin
 
-Once you download the C<dada-6_5_1.tar.gz> distro (you will B<not> have to uncompress the distribution), upload it to your hosting account's I<cgi-bin>.
+Once you download the C<dada-6_5_2.tar.gz> distro (you will B<not> have to uncompress the distribution), upload it to your hosting account's I<cgi-bin>.
 
 =begin html
 
@@ -39,17 +39,17 @@ Download the, C<uncompress_dada.cgi> script from here:
 =begin html 
 
 <ul>
-<li><strong><a href="https://raw.github.com/justingit/dada-mail/v6_5_1-stable_2013_08_04/uncompress_dada.cgi">uncompress_dada.cgi</a> (Save Page/Link As...)</strong></li></ul>
+<li><strong><a href="https://raw.github.com/justingit/dada-mail/v6_5_2-stable_2013_08_06/uncompress_dada.cgi">uncompress_dada.cgi</a> (Save Page/Link As...)</strong></li></ul>
 
 =end html
 
-and upload this script (PlainTest/ASCII mode - NOT binary!) to your hosting account's I<cgi-bin> directory - right alongside the I<dada-6_5_1.tar.gz> distro you just put up. 
+and upload this script (PlainTest/ASCII mode - NOT binary!) to your hosting account's I<cgi-bin> directory - right alongside the I<dada-6_5_2.tar.gz> distro you just put up. 
 
 =head1 Step #4 Change permissions of the, "uncompress_dada.cgi" file to, "755"
 
 =head1 Step #5 Visit the, "uncompress_dada.cgi" script in your web browser. 
 
-The, C<uncompress_dada.cgi> should attempt to uncompress the I<dada-6_5_1.tar.gz> distro, change the necessary permissions of various files and prep the actual installer for you to use. 
+The, C<uncompress_dada.cgi> should attempt to uncompress the I<dada-6_5_2.tar.gz> distro, change the necessary permissions of various files and prep the actual installer for you to use. 
 
 Once it's finished running, you should be presented with a link to use the actual installer. Click the link at the bottom of the screen and go ahead and configure Dada Mail! 
 
@@ -60,7 +60,7 @@ Once it's finished running, you should be presented with a link to use the actua
 <p>See, <a href="./FAQ-install_upgrade.pod.html#prepping_dada_mail_manually">Prepping Dada Mail Manually</a> if this doesn't happen and you get a message in your browser window, sort of like this: </p>
 
 <pre>
-Can't find dada-6_5_1.tar to uncompress!
+Can't find dada-6_5_2.tar to uncompress!
 
 You may have to uncompress and prep Dada Mail manually.
 </pre> 

@@ -1,3 +1,41 @@
+=head1 6.5.2
+
+=head2 Summary 6.5.2
+
+This release aims to fix a definate problem when sending mass mailings: there seems to be a large pause between submitting a mass mailing (say, from the "Send a Message"screen), and when the mass mailing actually starts up fully, to get sent. 
+
+This pause stems from Dada Mail's new confirmation token system, which it seems we're still breaking in and tuning up to be perfect. All confirmation tokens used for the unsubscription link are specific to the mailing list, subscriber, and mass mailing they're sent out in - that way, you can track unsubscribes, per mass mailing, which is a great tool to have. 
+
+The token creation takes a bit of time - maybe 30 seconds (on my rig) per 10,000 addresses. Not a big deal, with a list of 10,000 addresses total, but the lag gets really obvious on larger lists. Lag is one thing, but what's also happening is that Dada Mail doesn't refresh to the mailing monitor screen anymore (it seems) - rather, it'll just hang out on the, "Send a Message" screen, seemingly indefinetly, while you're waiting for something to happen. Even worse, it sometimes refreshes to a blank screen. Definetly not acceptable. 
+
+So, this release is out to answer that problem: instead of all the confirmation tokens being created at one time (when the temp. copy of your mailing list addresses is also made), which is what causes this slowdown, the tokens are now made right when they're needed - right before the individual message is sent out. The time to make all these tokens is most likely the I<same>, but a few minutes spread out over a few hours of sending time isn't going to be very noticeable - Dada Mail will most likely adjust its sending speeds to conpensate for any slowdown, automatically, anyways. 
+
+One worry is that since saving these tokens takes place in the SQL backend you're running, attempting to keep an SQL server connection alive for so long won't work. Thankfully, the MySQL backend has an, "auto reconnect" setting enabled in Dada Mail, and most people are running Dada Mail w/the MySQL backend. If the connection does still fail, Dada Mail should stop sending in a somewhat clean way, and the mass mailing will pick itself up, after a slight delay, and try again, with the address it left off on.
+
+We do look forward to the feedback towards this change - so send that in! 
+
+This release also fixes an issue with the Bridge plugin - a bug was introduced in the v6.5.1 release, with trying to workaround another issue with Bridge: 
+
+When Bridge is run on it's cronjob schedule, it'll check for awaiting messages and send anything that's been sent to the List Email's inbox. There is a limit on how many messages Bridge will look at, in one run - and by default, it's very conservatively set to only B<1> message. If you have > 1 mailing lists using Bridge, that are both somewhat active, whatever mailing list is checked first will hog up Bridge's quota of looking at messages and your second list will never be checked. Bad news. 
+
+So, to counter that, instead of always looking at the mailing lists in the same order (alphabetically, basically), Bridge now will look at mailing lists in a more random order, giving all your mailing lists a fair shot at being checked. 
+
+We bobbled on implementing the, "randomness" of this all and Bridge wouldn't work at all. Egg on our face. 
+
+If you're running Bridge, do look into using a Mail Forward, rather than a POP3 account for your List Email: messages are received instantaneously by Brige (rather than Bridge checking things on a schedule), and you won't fall victim to any queue problems, like this fix hopes to mitigate: 
+
+L<http://dadamailproject.com/d/bridge.cgi.html#setup_as__mail_forward>
+
+=head2 Bugfixes 6.5.2
+
+=head3  Mass Mailing takes a very long time to setup, UI fails to refresh to Mailing Monitor screen. 
+
+L<https://github.com/justingit/dada-mail/issues/394>
+
+=head3  Bridge does not run manually/on schedule after v6.5.1 upgrade 
+
+L<https://github.com/justingit/dada-mail/issues/393>
+
 =head1 6.5.1
 
 =head2 Summary 6.5.1
