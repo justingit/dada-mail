@@ -12,6 +12,8 @@ Key:
 
 =======
 
+[ ] Map to go along with Physical Address
+
 [ ] Token creation on mass mailings take Foreverrrrrr!
 
 [ ] Template checker for HTML/Email Templates
