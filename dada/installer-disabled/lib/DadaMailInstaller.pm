@@ -1438,7 +1438,7 @@ sub create_dada_config_file {
 
      eval {
     if ( !-e $loc . '/.configs' ) {
-        croak "$loc does not exist! Stopping!";
+        croak "'" . $loc . '/.configs' . "' does not exist! Stopping!";
     }
 	
     require DADA::Security::Password;
