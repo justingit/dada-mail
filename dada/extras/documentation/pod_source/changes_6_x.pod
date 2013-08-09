@@ -2,7 +2,7 @@
 
 =head2 Summary 6.5.2
 
-This release aims to fix a definate problem when sending mass mailings: there seems to be a large pause between submitting a mass mailing (say, from the "Send a Message"screen), and when the mass mailing actually starts up fully, to get sent. 
+This release aims to fix a definite problem when sending mass mailings: there seems to be a large pause between submitting a mass mailing (say, from the "Send a Message"screen), and when the mass mailing actually starts up fully, to get sent. 
 
 This pause stems from Dada Mail's new confirmation token system, which it seems we're still breaking in and tuning up to be perfect. All confirmation tokens used for the unsubscription link are specific to the mailing list, subscriber, and mass mailing they're sent out in - that way, you can track unsubscribes, per mass mailing, which is a great tool to have. 
 
