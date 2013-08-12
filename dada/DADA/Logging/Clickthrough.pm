@@ -109,8 +109,12 @@ sub parse_email {
 
     my %final = ( $self->return_headers($h), Body => $b, );
 
-    return %final;
-
+	if($args->{-as_ref} == 1){ 
+		return { %final }; 
+	}
+	else { 
+	    return %final;
+	}
 }
 
 sub return_headers {
