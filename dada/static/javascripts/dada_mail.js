@@ -1419,10 +1419,14 @@ function update_plugins_tracker_message_report() {
 	google.setOnLoadCallback(email_breakdown_chart('unsubscribe', 'Unsubscribes', 'unsubscribe_graph'));
 	google.setOnLoadCallback(email_breakdown_chart('soft_bounce', 'Soft Bounces', 'soft_bounce_graph'));
 	google.setOnLoadCallback(email_breakdown_chart('hard_bounce', 'Hard Bounces', 'hard_bounce_graph'));
+	google.setOnLoadCallback(email_breakdown_chart('errors_sending_to', 'Sending Errors', 'errors_sending_to_graph'));
 
-	tracker_message_report_callback.add(message_email_report_table('unsubscribe', 'unsubscribe_table'));
-	tracker_message_report_callback.add(message_email_report_table('soft_bounce', 'soft_bounce_table'));
-	tracker_message_report_callback.add(message_email_report_table('hard_bounce', 'hard_bounce_table'));
+
+	tracker_message_report_callback.add(message_email_report_table('unsubscribe',    'unsubscribe_table'));
+	tracker_message_report_callback.add(message_email_report_table('soft_bounce',    'soft_bounce_table'));
+	tracker_message_report_callback.add(message_email_report_table('hard_bounce',    'hard_bounce_table'));
+	tracker_message_report_callback.add(message_email_report_table('errors_sending_to', 'errors_sending_to_table'));
+
 
 	tracker_message_report_callback.fire(); 
 	

@@ -50,24 +50,22 @@
 		<tr>
 		
 				
-					<td style="width:250px;background:#fff"> 
-						<div id="the_basics_opens" data-title="Opens" data-width="250" data-height="150" data-label="Opens"></div>
-						<div id="the_basics_opens_loading"></div>
-					</td> 
+		<td style="width:250px;background:#fff"> 
+			<div id="the_basics_bounces" data-title="Bounces" data-width="250" data-height="150" data-label="Opens"></div>
+			<div id="the_basics_bounces_loading"></div>
+		</td>
+				
+		<td style="width:250px;background:#fff"> 
+			<div id="the_basics_opens" data-title="Opens" data-width="250" data-height="150" data-label="Opens"></div>
+			<div id="the_basics_opens_loading"></div>
+		</td> 
 
-					<td style="width:250px;background:#fff"> 
-						<div id="the_basics_unsubscribes" data-title="Unsubscribes" data-width="250" data-height="150" data-label="Unsubscribes"></div>
-						<div id="the_basics_unsubscribes_loading"></div>
-					</td>
+		<td style="width:250px;background:#fff"> 
+			<div id="the_basics_unsubscribes" data-title="Unsubscribes" data-width="250" data-height="150" data-label="Unsubscribes"></div>
+			<div id="the_basics_unsubscribes_loading"></div>
+		</td>
 
-					<td style="width:250px;background:#fff"> 
-						<div id="the_basics_bounces" data-title="Bounces" data-width="250" data-height="150" data-label="Opens"></div>
-						<div id="the_basics_bounces_loading"></div>
-
-					</td>
-					
-					
-					<td>
+			<td>
  			<table class="stripedtable">
 
  
@@ -105,7 +103,8 @@
 			</td> 
 			<td> 
 			 <p style="text-align:right"> 
-				<!-- tmpl_var total_recipients -->
+				Total: <strong><!-- tmpl_var total_recipients --></strong>, 
+				Received: <strong><!-- tmpl_var received --></strong> - <strong><!-- tmpl_var received_percent -->%</strong>
 			</p> 
 			</td>
 			</tr>
@@ -272,6 +271,12 @@
 			<li>
 			<a href="#bounces">
 			Bounces
+			</a>
+			</li>
+			
+			<li>
+			<a href="#errors_sending_to">
+			Sending Errors
 			</a>
 			</li>
 			
@@ -529,7 +534,7 @@
 		   </tr>
 		</table>
 		
-		
+	
 		<h2>Hard Bounces</h2>
 		<table class="stripedtable">
 		 <tr> 
@@ -543,12 +548,23 @@
 			</td>
 		   </tr>
 		</table>
-		
-		
 
 	</div> 
 
-
+	<div id="errors_sending_to">
+		<table class="stripedtable">
+		 <tr> 
+		  <td> 
+				<div id="errors_sending_to_table_loading"></div> 
+				<div id="errors_sending_to_table" style="width:350px;height:400px"></div>
+			</td>
+			<td>
+				<div id="errors_sending_to_graph_loading"></div> 
+				<div id="errors_sending_to_graph" data-width="640" data-height="400" data-title="Sending Errors"></div> 
+			</td>
+		   </tr>
+		</table>		
+	</div> 
 </div> 
 
 

@@ -704,6 +704,8 @@ sub message_report {
 		unique_unsubscribes_percent => $m_report->{'unique_unsubscribes_percent'}  || 0, 
 		soft_bounce                 => commify($m_report->{'soft_bounce'})         || 0,
         hard_bounce                 => commify($m_report->{'hard_bounce'})         || 0,
+        received                 => commify($m_report->{'received'})               || 0,
+		received_percent          => $m_report->{'received_percent'}               || 0,  
 		unique_bounces_percent      => $m_report->{'unique_bounces_percent'}       || 0, 
 		view_archive                => commify($m_report->{'view_archive'})        || 0, 
 		forward_to_a_friend         => commify($m_report->{'forward_to_a_friend'}) || 0,

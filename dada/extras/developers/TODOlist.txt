@@ -12,9 +12,11 @@ Key:
 
 =======
 
+[ ] total_processed log, in case you cut a mass mailing short. 
+
 [ ] Map to go along with Physical Address
 
-[ ] Token creation on mass mailings take Foreverrrrrr!
+[x] Token creation on mass mailings take Foreverrrrrr!
 
 [ ] Template checker for HTML/Email Templates
 

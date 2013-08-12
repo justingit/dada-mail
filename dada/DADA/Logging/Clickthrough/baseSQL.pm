@@ -718,8 +718,62 @@ sub bounce_log {
 
     }
     $sth->finish;
+    return 1;
 
-    close(LOG);
+}
+
+
+
+sub error_sending_to_log {
+
+    # my ( $self, $type, $mid, $email ) = @_;
+
+    my $self      = shift;
+    my ($args)    = @_;
+    my $timestamp = undef;
+    if ( exists( $args->{-timestamp} ) ) {
+        $timestamp = $args->{-timestamp};
+    }
+    my $ts_snippet          = '';
+    my $place_holder_string = '';
+
+    if ( defined($timestamp) ) {
+        $ts_snippet = 'timestamp,';
+        $place_holder_string .= ' ,?';
+    }
+
+    my $remote_address = undef;
+    if ( !exists( $args->{-remote_addr} ) ) {
+        $remote_address = $self->remote_addr;
+    }
+    else {
+        $remote_address = $args->{-remote_addr};
+    }
+
+    my $query =
+        'INSERT INTO '
+      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+      . '(list, '
+      . $ts_snippet
+      . 'remote_addr, msg_id, event, email) VALUES (?, ?, ?, ?, ?'
+      . $place_holder_string . ')';
+    my $sth = $self->{dbh}->prepare($query);
+
+	my $event = 'errors_sending_to'; 
+    if ( defined($timestamp) ) {
+        $sth->execute(
+            $self->{name}, $timestamp,   $remote_address,
+            $args->{-mid}, $event, $args->{-email}
+        );
+    }
+    else {
+        $sth->execute(
+            $self->{name}, $remote_address, $args->{-mid},
+            $event,  $args->{-email}
+        );
+
+    }
+    $sth->finish;
     return 1;
 
 }
@@ -970,6 +1024,7 @@ sub msg_basic_event_count {
         forward_to_a_friend => 1,
         view_archive        => 1,
 		unsubscribe         => 1, 
+		errors_sending_to   => 1, 
     );
 	my $basic_count_query = 'SELECT msg_id, event, COUNT(*) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? GROUP BY msg_id, event';
 	my $sth              = $self->{dbh}->prepare($basic_count_query);
@@ -982,6 +1037,10 @@ sub msg_basic_event_count {
 	$sth->finish; 
 	undef $sth; 
 	
+	if(!exists($basic_events->{errors_sending_to})){ 
+		$basic_events->{errors_sending_to} = 0; 
+	}
+	
 	# num subscribers
  	my $num_sub_query = 'SELECT details FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND msg_id = ? AND event = ?';
 	$basic_events->{num_subscribers} = $self->{dbh}->selectcol_arrayref( $num_sub_query, { MaxRows => 1 }, $self->{name}, $msg_id, 'num_subscribers' )->[0];
@@ -993,7 +1052,19 @@ sub msg_basic_event_count {
 		$basic_events->{total_recipients} = $basic_events->{num_subscribers};
 	}
 	
-	
+	# Received: 
+	# total_recipients - soft_bounce - hard_bounce - errors_sending_to
+	$basic_events->{received} = 
+	  int($basic_events->{total_recipients})
+	- int($basic_events->{soft_bounce})
+	- int($basic_events->{hard_bounce})
+    - int($basic_events->{errors_sending_to});
+
+	# Delivered to (sent successfully, could bounce back) 
+	# total_recipients - errors_sending_to
+	$basic_events->{delivered_to} = 
+	  int($basic_events->{total_recipients})
+    - int($basic_events->{errors_sending_to});	
 	
 	# Unique Opens
 	my $uo_query = 'SELECT msg_id, event, email, COUNT(*) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? and event = \'open\' GROUP BY msg_id, event, email'; 
@@ -1008,19 +1079,53 @@ sub msg_basic_event_count {
 	$sth->finish; 
 	# /Unique Opens
 	$basic_events->{unique_opens_percent}          
-		= $self->percentage($basic_events->{'unique_open'}, 
-			($basic_events->{total_recipients} - ($basic_events->{'soft_bounce'} + $basic_events->{'hard_bounce'}))
+		= $self->percentage(
+			$basic_events->{unique_open}, 
+			$basic_events->{received}
 	);
-	 
-	$basic_events->{unique_unsubscribes_percent}   = $self->percentage($basic_events->{'unsubscribe'}, $basic_events->{total_recipients}); 
 	
-	$basic_events->{unique_soft_bounces_percent}   = $self->percentage(int($basic_events->{'soft_bounce'}), $basic_events->{total_recipients}); 
-	$basic_events->{unique_hard_bounces_percent}   = $self->percentage(int($basic_events->{'hard_bounce'}), $basic_events->{total_recipients}); 
-	$basic_events->{unique_bounces_percent}        = $self->percentage(int($basic_events->{'soft_bounce'} + $basic_events->{'hard_bounce'}), $basic_events->{total_recipients}); 
+	# Unsubscribes 
+	$basic_events->{unique_unsubscribes_percent} = 
+		$self->percentage(
+			$basic_events->{unsubscribe}, 
+			$basic_events->{delivered_to}
+		); 
 	
+	$basic_events->{unique_soft_bounces_percent} = 
+		$self->percentage(
+			int($basic_events->{soft_bounce}), 
+			$basic_events->{delivered_to}
+		); 
+	
+	$basic_events->{unique_hard_bounces_percent} = 
+		$self->percentage(
+			int($basic_events->{hard_bounce}), 
+			$basic_events->{delivered_to}
+		); 
+	
+	$basic_events->{unique_bounces_percent} = 
+		$basic_events->{unique_soft_bounces_percent} 
+	  + $basic_events->{unique_hard_bounces_percent};
+	
+	# Received Percent
+	$basic_events->{received_percent} = 
+		$self->percentage(
+			int($basic_events->{received}), 
+			$basic_events->{total_recipients}
+	); 
+	
+	# Errors Sending To
+	$basic_events->{errors_sending_to_percent} = 
+		$self->percentage(
+			int($basic_events->{errors_sending_to}), 
+			$basic_events->{total_recipients}
+	); 
+		
 	return $basic_events;
 
 }
+
+
 
 
 sub msg_basic_event_count_json { 
@@ -1106,10 +1211,18 @@ sub msg_basic_event_count_json {
 			);
 			$datatable->add_rows(
 		        [
-		               { v => 'Delivered' },
-		               { v => (100 - ($report->{unique_soft_bounces_percent} + $report->{unique_hard_bounces_percent})) },
+		               { v => 'Received' },
+		               { v => $report->{received_percent} },
 		       ],
 			);		
+			$datatable->add_rows(
+		        [
+		               { v => 'Sending Errors' },
+		               { v => $report->{errors_sending_to_percent} },
+		       ],
+			);		
+
+
 		}
 
 
@@ -2003,6 +2116,9 @@ sub message_email_report {
 	elsif($type =~ m/unsubscribe/){ 
 		$email_col = 'email';
 	}
+	elsif($type =~ m/errors_sending_to/){ 
+		$email_col = 'email';
+	}
 	
     my $query =
         'SELECT timestamp, ' . $email_col . ' from '
@@ -2426,6 +2542,7 @@ sub message_individual_email_activity_report {
 		unsubscribe         => 'Unsubcribe', 
 		soft_bounce         => 'Soft Bounce', 
 		hard_bounce         => 'Hard Bounce', 
+		errors_sending_to   => 'Sending Error', 
 	);
 	
 	my $return = []; 

@@ -1765,6 +1765,7 @@ sub mass_send {
 							warn $warning; 
 							$mailout->log($warning);
 							$mailout->countsubscriber;
+							$self->_log_sending_error({-mid   => $mailout->_internal_message_id, -email => $mailing, -adjust_total_recipients => 1});
 							next SUBSCRIBERLOOP;
 						}
 						else {
@@ -2268,8 +2269,37 @@ sub _set_clickthrough_tracking_stuff {
 
 
 
+sub _log_sending_error { 
+	
+	my $self = shift; 
+	my ($args) = @_; 
+	my $r;
+	
+	my $mid = $args->{-mid}; 
+	   $mid =~ s/\.(.*?)$//; 
 
-
+	# -adjust_total_recipients doesn't do anything, right now. 
+	try { 
+		require DADA::Logging::Clickthrough;
+	    $r = DADA::Logging::Clickthrough->new( { -list => $self->{ list } } );
+	    if ( $r->enabled ) {
+	        $r->error_sending_to_log(
+	            {
+	                -mid   => $mid,
+	                -email => $args->{-email},
+	            }
+	        );
+	    }
+	} catch { 
+		carp "Problems logging error w/sending to: " . $args->{-email} . " (oh, what a world!): $_"; 
+		return undef; 
+	};
+	
+	undef $r; 
+	
+	return 1; 
+	
+}
 sub _adjust_bounce_score {
 	 
 	my $self = shift; 

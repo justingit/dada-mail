@@ -1661,7 +1661,7 @@ sub sending_monitor {
         }
         else {
 
-            warn "No, no need to restart.";
+           # warn "No, no need to restart.";
 
             $restart_count = 0;
         }
