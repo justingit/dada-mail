@@ -1376,20 +1376,20 @@ sub sending_monitor_index {
 
 sub sending_monitor {
 
-    my ($admin_list, $root_login) = check_list_security(
-										-cgi_obj  => $q,
-                                        -Function => 'sending_monitor'
-									);
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'sending_monitor'
+    );
 
     require DADA::MailingList::Settings;
-	require DADA::Mail::MailOut;
+    require DADA::Mail::MailOut;
 
     $list = $admin_list;
 
-	my $mo = DADA::Mail::MailOut->new({-list => $list});
-	my ($batching_enabled, $batch_size, $batch_wait) = $mo->batch_params;
-	
-    my $ls = DADA::MailingList::Settings->new({-list => $list});
+    my $mo = DADA::Mail::MailOut->new( { -list => $list } );
+    my ( $batching_enabled, $batch_size, $batch_wait ) = $mo->batch_params;
+
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
     # munging the message id.
     # kinda dumb, but it's sort of up in the air,
@@ -1397,71 +1397,75 @@ sub sending_monitor {
     # so we have to be *real* careful to get it to a state
     # that we *need* it in.
 
-    my $id = DADA::App::Guts::strip($q->param('id'));
-       $id =~ s/\@/_at_/g;
-	   $id =~ s/\>|\<//g;
+    my $id = DADA::App::Guts::strip( $q->param('id') );
+    $id =~ s/\@/_at_/g;
+    $id =~ s/\>|\<//g;
 
-	if(!$q->param('id')){
-		sending_monitor_index(); 
-		return; 
+    if ( !$q->param('id') ) {
+        sending_monitor_index();
+        return;
     }
 
     # 10 is the factory default setting to wait per batch.
     # Let's not refresh an faster, or we'll never have time
     # to read the actual screen.
 
-     my $refresh_after = 10;
-     if($refresh_after < $batch_wait){
-			$refresh_after = $batch_wait;
-		}
+    my $refresh_after = 10;
+    if ( $refresh_after < $batch_wait ) {
+        $refresh_after = $batch_wait;
+    }
 
-	# Type ala, list, invitation list, etc
-	my $type = $q->param('type');
-	   $type = xss_filter(DADA::App::Guts::strip($type));
+    # Type ala, list, invitation list, etc
+    my $type = $q->param('type');
+    $type = xss_filter( DADA::App::Guts::strip($type) );
 
     my $restart_count = $q->param('restart_count') || 0;
 
-	require  DADA::Mail::Send;
+    require DADA::Mail::Send;
     my $mh = DADA::Mail::Send->new(
-				{
-					-list   => $list,
-					-ls_obj => $ls,
-				}
-			 );
+        {
+            -list   => $list,
+            -ls_obj => $ls,
+        }
+    );
 
     my $auto_pickup = 0;
 
     # Kill - the, [Stop] button was pressed. Pressed really hard.
 
-    if ($q->param('process') eq 'kill'){
+    if ( $q->param('process') eq 'kill' ) {
 
-        if(DADA::Mail::MailOut::mailout_exists($list, $id, $type) == 1){
+        if ( DADA::Mail::MailOut::mailout_exists( $list, $id, $type ) == 1 ) {
 
-            my $mailout = DADA::Mail::MailOut->new({ -list => $list });
-               $mailout->associate($id, $type);
-               $mailout->clean_up;
+            my $mailout = DADA::Mail::MailOut->new( { -list => $list } );
+            $mailout->associate( $id, $type );
+            $mailout->clean_up;
 
-            print $q->redirect(
-						-url => $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&killed_it=1'
-					);
-			return;
+            print $q->redirect( -url => $DADA::Config::S_PROGRAM_URL
+                  . '?f=sending_monitor&killed_it=1' );
+            return;
 
-        } else {
+        }
+        else {
             die "mailout does NOT exists! What's going on?!";
         }
 
-    }elsif ($q->param('process') eq 'pause'){
-	
-        if(DADA::Mail::MailOut::mailout_exists($list, $id, $type) == 1){
+    }
+    elsif ( $q->param('process') eq 'pause' ) {
 
-            my $mailout = DADA::Mail::MailOut->new({ -list => $list });
-               $mailout->associate($id, $type);
-               $mailout->pause();
+        if ( DADA::Mail::MailOut::mailout_exists( $list, $id, $type ) == 1 ) {
 
-            print $q->redirect(
-					-url => $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&id=' . $id . '&type=' . $type . '&paused_it=1'
-				);
-				
+            my $mailout = DADA::Mail::MailOut->new( { -list => $list } );
+            $mailout->associate( $id, $type );
+            $mailout->pause();
+
+            print $q->redirect( -url => $DADA::Config::S_PROGRAM_URL
+                  . '?f=sending_monitor&id='
+                  . $id
+                  . '&type='
+                  . $type
+                  . '&paused_it=1' );
+
         }
         else {
 
@@ -1470,17 +1474,20 @@ sub sending_monitor {
         }
 
     }
-    elsif ($q->param('process') eq 'resume'){
- 
-       if(DADA::Mail::MailOut::mailout_exists($list, $id, $type) == 1){
+    elsif ( $q->param('process') eq 'resume' ) {
 
-            my $mailout = DADA::Mail::MailOut->new({ -list => $list });
-               $mailout->associate($id, $type);
-               $mailout->resume();
+        if ( DADA::Mail::MailOut::mailout_exists( $list, $id, $type ) == 1 ) {
 
-            print $q->redirect(
-				-url => $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&id=' . $id . '&type=' . $type . '&resume_it=1'
-			);
+            my $mailout = DADA::Mail::MailOut->new( { -list => $list } );
+            $mailout->associate( $id, $type );
+            $mailout->resume();
+
+            print $q->redirect( -url => $DADA::Config::S_PROGRAM_URL
+                  . '?f=sending_monitor&id='
+                  . $id
+                  . '&type='
+                  . $type
+                  . '&resume_it=1' );
         }
         else {
 
@@ -1488,11 +1495,45 @@ sub sending_monitor {
 
         }
 
-    # Restart is usually called by the program itself, automagically via a redirect if DADA::Mail::MailOut says we should restart.
+# Restart is usually called by the program itself, automagically via a redirect if DADA::Mail::MailOut says we should restart.
     }
-    elsif ($q->param('process') eq 'restart'){
+    elsif ( $q->param('process') eq 'restart' ) {
 
+        my $restart_time = 1;
 
+        # Let's make sure that restart worked...
+        my $should_be_restarted = 0;
+        eval {
+
+            my $mailout = DADA::Mail::MailOut->new( { -list => $list } );
+            $mailout->associate( $id, $type );
+            $should_be_restarted = $mailout->should_be_restarted;
+
+            if ( $should_be_restarted == 1 ) {
+                $mh->restart_mass_send( $id, $type );
+				sleep(5); 
+            }
+        };
+
+        my $refresh_url;
+        if ( $should_be_restarted == 1 ) {
+            $refresh_url =
+                $DADA::Config::S_PROGRAM_URL
+              . '?f=sending_monitor&id='
+              . $id
+              . '&type='
+              . $type
+              . ' &restart_count='
+              . $restart_count;
+        }
+        else {
+            $refresh_url =
+                $DADA::Config::S_PROGRAM_URL
+              . '?f=sending_monitor&id='
+              . $id
+              . '&type='
+              . $type;
+        }
         print $q->header();
         print "<html>
                 <head>
@@ -1502,7 +1543,7 @@ sub sending_monitor {
                  function refreshpage(sec){
 
                     var refreshafter = sec/1 * 1000;
-                    setTimeout(\"self.location.href='$DADA::Config::S_PROGRAM_URL?f=sending_monitor&id=$id&type=$type&restart_count=$restart_count';\",refreshafter);
+                    setTimeout(\"self.location.href='$refresh_url';\",refreshafter);
                 }
 
                 </script>
@@ -1512,21 +1553,22 @@ sub sending_monitor {
                  <body>
                  ";
 
-        my $restart_time = 1;
-
-        # Let's make sure that restart worked...
-        eval { $mh->restart_mass_send($id, $type); };
-
         # If not...
-        if($@){
+        if ($@) {
             print "<h1>Problems Reloading!:</h1><pre>$@</pre>";
+
             # We're going to refresh, see if it gets better.
             $restart_time = 5;
         }
 
-        # Provide a link in case browser redirect is working
-        print '<a href="' . "$DADA::Config::S_PROGRAM_URL?f=sending_monitor&id=$id&type=$type&restart_count=$restart_count" . '">Reloading Mailing...</a>';
+        if ( $should_be_restarted == 1 ) {
 
+            # Provide a link in case browser redirect is working
+            print '<a href="' . $refresh_url . '">Reloading Mailing...</a>';
+        }
+        else {
+            print '<a href="' . $refresh_url . '">Refreshing Screen....</a>';
+        }
         print "
 
         <script type=\"text/javascript\">
@@ -1535,203 +1577,238 @@ sub sending_monitor {
         </body>
        </html>";
 
-       return;
+        return;
     }
-	elsif ($q->param('process') eq 'ajax'){
+    elsif ( $q->param('process') eq 'ajax' ) {
 
-
-        my $mailout        = undef;
-        my $status         = {};
-        my $mailout_exists = 0;
-        my $mailout_exists = 0;
+        my $mailout                = undef;
+        my $status                 = {};
+        my $mailout_exists         = 0;
+        my $mailout_exists         = 0;
         my $my_test_mailout_exists = 0;
         eval {
-			$my_test_mailout_exists = DADA::Mail::MailOut::mailout_exists($list, $id, $type);
-		};
-		
-        if(!$@){
+            $my_test_mailout_exists =
+              DADA::Mail::MailOut::mailout_exists( $list, $id, $type );
+        };
+
+        if ( !$@ ) {
             $mailout_exists = $my_test_mailout_exists;
         }
 
-        if($mailout_exists){
+        if ($mailout_exists) {
 
             $mailout_exists = 1;
-            $mailout        = DADA::Mail::MailOut->new({ -list => $list });
-            $mailout->associate($id, $type);
-            $status         = $mailout->status();
+            $mailout = DADA::Mail::MailOut->new( { -list => $list } );
+            $mailout->associate( $id, $type );
+            $status = $mailout->status();
 
-        }else {
-	
+        }
+        else {
+
             # Nothing - I believe this is handled in the template.
 
         }
 
-		my (
-			$monitor_mailout_report,
-			$total_mailouts,
-			$active_mailouts,
-			$paused_mailouts,
-			$queued_mailouts,
-			$inactive_mailouts
-		) = DADA::Mail::MailOut::monitor_mailout(
-			{
-				-verbose => 0,
-				-list    => $list
-			}
-		);
+        my (
+            $monitor_mailout_report, $total_mailouts,
+            $active_mailouts,        $paused_mailouts,
+            $queued_mailouts,        $inactive_mailouts
+          )
+          = DADA::Mail::MailOut::monitor_mailout(
+            {
+                -verbose => 0,
+                -list    => $list
+            }
+          );
 
-		warn '$status->{should_be_restarted} ' . $status->{should_be_restarted}; 
-		warn q{$ls->param('auto_pickup_dropped_mailings') } . $ls->param('auto_pickup_dropped_mailings') ; 
-		warn '$restart_count' . $restart_count; 
-		warn '$status->{mailout_stale}' . $status->{mailout_stale}; 
-		warn '$active_mailouts' . $active_mailouts; 
-		
-		if(
-		$status->{should_be_restarted}								   == 1 && # It's dead in the water.
-		$ls->param('auto_pickup_dropped_mailings')                            == 1 && # Auto Pickup is turned on...
-		# $status->{total_sending_out_num} - $status->{total_sent_out} >  0 && # There's more subscribers to send out to
-		$restart_count                                                 <= 0 && # We haven't *just* restarted this thing
-		$status->{mailout_stale}                                       != 1 && # The mailout hasn't been sitting around too long without being restarted,
-		$active_mailouts                                                < $DADA::Config::MAILOUT_AT_ONCE_LIMIT # There's not already too many mailouts going out.
-		){
-			
-			warn "Yes, we need to restart!"; 
-			
-			# Whew! Take that for making sure that the damn thing is supposed to be sent.
-		
-			my $reload_url = $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&id=' . $id . '&process=restart&type=' . $type . '&restart_count=1'; 
+        #warn '$status->{should_be_restarted} ' . $status->{should_be_restarted};
+        #warn q{$ls->param('auto_pickup_dropped_mailings') }
+        #  . $ls->param('auto_pickup_dropped_mailings');
+        #warn '$restart_count' . $restart_count;
+        #warn '$status->{mailout_stale}' . $status->{mailout_stale};
+        #warn '$active_mailouts' . $active_mailouts;
 
-			print $q->header(); 
-			print "<script type=\"text/javascript\"> 
+        if (
+            $status->{should_be_restarted} == 1 &&    # It's dead in the water.
+            $ls->param('auto_pickup_dropped_mailings') == 1
+            &&    # Auto Pickup is turned on...
+             # $status->{total_sending_out_num} - $status->{total_sent_out} >  0 && # There's more subscribers to send out to
+            $restart_count <= 0 &&    # We haven't *just* restarted this thing
+            $status->{mailout_stale} != 1
+            && # The mailout hasn't been sitting around too long without being restarted,
+            $active_mailouts <
+            $DADA::Config::MAILOUT_AT_ONCE_LIMIT # There's not already too many mailouts going out.
+          )
+        {
+
+            warn "Yes, we need to restart!";
+
+   # Whew! Take that for making sure that the damn thing is supposed to be sent.
+
+            my $reload_url =
+                $DADA::Config::S_PROGRAM_URL
+              . '?f=sending_monitor&id='
+              . $id
+              . '&process=restart&type='
+              . $type
+              . '&restart_count=1';
+
+            print $q->header();
+            print "<script type=\"text/javascript\"> 
 			window.location.replace('$reload_url'); 
 			</script>";
-			return;
-		} else {
-			
-			warn "No, no need to restart."; 
-			
-			$restart_count = 0;
-		}
+            return;
+        }
+        else {
 
+            warn "No, no need to restart.";
 
-		my $sending_status = [];
-		for(keys %$status){
-			next if $_ eq 'email_fields';
-			push(@$sending_status, {key => $_, value => $status->{$_}});
+            $restart_count = 0;
         }
 
-		# If we're... say... 2x a batch setting and NOTHING has been sent,
-		# let's say a mailing will be automatically started in... time since last - wait time.
+        my $sending_status = [];
+        for ( keys %$status ) {
+            next if $_ eq 'email_fields';
+            push( @$sending_status, { key => $_, value => $status->{$_} } );
+        }
 
-		my $will_restart_in = undef;
-		if(time - $status->{last_access} > ($batch_wait * 1.5)){
-			my $tardy_threshold = $batch_wait * 3;
-			if($tardy_threshold < 60){
-				$tardy_threshold = 60;
-			}
-			
-			$will_restart_in = $tardy_threshold - (time - $status->{last_access});
-			if($will_restart_in >= 1){
-				$will_restart_in =   _formatted_runtime($will_restart_in);
-			}
-			else {
-				$will_restart_in = undef;
-			}
-		}
+# If we're... say... 2x a batch setting and NOTHING has been sent,
+# let's say a mailing will be automatically started in... time since last - wait time.
 
- 		my $hourly_rate = 0;
-		if($status->{mailing_time} > 0){
-			$hourly_rate = commify(int(($status->{total_sent_out} / $status->{mailing_time}) * 60 * 60 + .5));
-		}
-		require DADA::Template::Widgets;
-		my $header_subject_label = DADA::Template::Widgets::screen(
-			{
-				-data                     => \$status->{email_fields}->{Subject},
-				-list_settings_vars_param => {
-					-list   => $list,
-					-dot_it => 1,
-				},
-				-subscriber_vars_param => {
-				-use_fallback_vars => 1,
-				-list              => $list,
-			},
-			-decode_before => 1,
-			}
-		);
-		
-		my $scrn = DADA::Template::Widgets::screen(
-				{
-					-screen => 'sending_monitor_screen.tmpl',
-					-expr   => 1, 
-	                -vars   => {
-						screen                       => 'sending_monitor',
-						mailout_exists               => $mailout_exists,
-						message_id                   => DADA::App::Guts::strip($id),
-						message_type                 => $q->param('type'),
-						total_sent_out               => $status->{total_sent_out},
-						total_sending_out_num        => $status->{total_sending_out_num},
-						mailing_time                 => $status->{mailing_time},
-						mailing_time_formatted       => $status->{mailing_time_formatted},
-						hourly_rate                  => $hourly_rate,
-						percent_done                 => $status->{percent_done},
-						status_bar_width             => int($status->{percent_done}) * 5,
-						negative_status_bar_width    => 500 - (int($status->{percent_done}) * 5),
-						need_to_send_out             => ( $status->{total_sending_out_num} - $status->{total_sent_out}),
-						time_since_last_sendout      => _formatted_runtime((time - int($status->{last_access}))),
-						its_killed                   => $status->{should_be_restarted},
-						header_subject               => safely_decode($status->{email_fields}->{Subject},1 ),
-						header_subject_label         => (length($header_subject_label) > 50) ? (substr($header_subject_label, 0, 49) . '...') : ($header_subject_label),
-						auto_pickup_dropped_mailings => $ls->param('auto_pickup_dropped_mailings'),
-						sending_done                 => ($status->{percent_done} < 100) ? 0 : 1,
-						refresh_after                => $refresh_after,
-						killed_it                    => $q->param('killed_it') ? 1 : 0,
-						sending_status               => $sending_status,
-						is_paused                    => $status->{paused} > 0 ? 1 : 0,
-						paused                       => $status->{paused},
-						queue                        => $status->{queue},
-						queued_mailout               => $status->{queued_mailout},
-						queue_place                  => ($status->{queue_place} + 1), # adding one since humans like counting from, "1"
-						queue_total                  => ($status->{queue_total} + 1), # adding one since humans like counting from, "1"
-						status_mailout_stale         => $status->{mailout_stale},
-						MAILOUT_AT_ONCE_LIMIT        => $DADA::Config::MAILOUT_AT_ONCE_LIMIT,
-						will_restart_in              => $will_restart_in,
-						integrity_check              => $status->{integrity_check},
-					},
-				}
-			);
-		print $q->header();
-		e_print($scrn);
+        my $will_restart_in = undef;
+        if ( time - $status->{last_access} > ( $batch_wait * 1.5 ) ) {
+            my $tardy_threshold = $batch_wait * 3;
+            if ( $tardy_threshold < 60 ) {
+                $tardy_threshold = 60;
+            }
+
+            $will_restart_in =
+              $tardy_threshold - ( time - $status->{last_access} );
+            if ( $will_restart_in >= 1 ) {
+                $will_restart_in = _formatted_runtime($will_restart_in);
+            }
+            else {
+                $will_restart_in = undef;
+            }
+        }
+
+        my $hourly_rate = 0;
+        if ( $status->{mailing_time} > 0 ) {
+            $hourly_rate = commify(
+                int(
+                    ( $status->{total_sent_out} / $status->{mailing_time} ) *
+                      60 *
+                      60 + .5
+                )
+            );
+        }
+        require DADA::Template::Widgets;
+        my $header_subject_label = DADA::Template::Widgets::screen(
+            {
+                -data => \$status->{email_fields}->{Subject},
+                -list_settings_vars_param => {
+                    -list   => $list,
+                    -dot_it => 1,
+                },
+                -subscriber_vars_param => {
+                    -use_fallback_vars => 1,
+                    -list              => $list,
+                },
+                -decode_before => 1,
+            }
+        );
+
+        my $scrn = DADA::Template::Widgets::screen(
+            {
+                -screen => 'sending_monitor_screen.tmpl',
+                -expr   => 1,
+                -vars   => {
+                    screen                 => 'sending_monitor',
+                    mailout_exists         => $mailout_exists,
+                    message_id             => DADA::App::Guts::strip($id),
+                    message_type           => $q->param('type'),
+                    total_sent_out         => $status->{total_sent_out},
+                    total_sending_out_num  => $status->{total_sending_out_num},
+                    mailing_time           => $status->{mailing_time},
+                    mailing_time_formatted => $status->{mailing_time_formatted},
+                    hourly_rate            => $hourly_rate,
+                    percent_done           => $status->{percent_done},
+                    status_bar_width => int( $status->{percent_done} ) * 5,
+                    negative_status_bar_width => 500 -
+                      ( int( $status->{percent_done} ) * 5 ),
+                    need_to_send_out => (
+                        $status->{total_sending_out_num} -
+                          $status->{total_sent_out}
+                    ),
+                    time_since_last_sendout => _formatted_runtime(
+                        ( time - int( $status->{last_sent} ) )
+                    ),
+                    its_killed => $status->{should_be_restarted},
+                    header_subject =>
+                      safely_decode( $status->{email_fields}->{Subject}, 1 ),
+                    header_subject_label =>
+                      ( length($header_subject_label) > 50 )
+                    ? ( substr( $header_subject_label, 0, 49 ) . '...' )
+                    : ($header_subject_label),
+                    auto_pickup_dropped_mailings =>
+                      $ls->param('auto_pickup_dropped_mailings'),
+                    sending_done => ( $status->{percent_done} < 100 ) ? 0 : 1,
+                    refresh_after  => $refresh_after,
+                    killed_it      => $q->param('killed_it') ? 1 : 0,
+                    sending_status => $sending_status,
+                    is_paused      => $status->{paused} > 0 ? 1 : 0,
+                    paused         => $status->{paused},
+                    queue          => $status->{queue},
+                    queued_mailout => $status->{queued_mailout},
+                    queue_place    => ( $status->{queue_place} + 1 )
+                    ,    # adding one since humans like counting from, "1"
+                    queue_total => ( $status->{queue_total} + 1 )
+                    ,    # adding one since humans like counting from, "1"
+                    status_mailout_stale => $status->{mailout_stale},
+                    MAILOUT_AT_ONCE_LIMIT =>
+                      $DADA::Config::MAILOUT_AT_ONCE_LIMIT,
+                    will_restart_in => $will_restart_in,
+                    integrity_check => $status->{integrity_check},
+                },
+            }
+        );
+        print $q->header();
+        e_print($scrn);
     }
-	else { 
-		
-		my $tracker_url = $DADA::Config::S_PROGRAM_URL; 
-		   $tracker_url =~ m/(^.*\/)(.*?)/; #just use the url to get the filename with a regex 
-		   $tracker_url = $1 . 'plugins/tracker.cgi'; 
-	
-		require DADA::Template::Widgets; 
-		my $scrn = DADA::Template::Widgets::wrap_screen(
-			{ 
-				-screen => 'sending_monitor_container_screen.tmpl',
-				-with           => 'admin', 
-				-wrapper_params => { 
-					-Root_Login => $root_login,
-					-List       => $list,  
-				},
-				-vars => { 
-					screen                       => 'sending_monitor',
-					message_id                   => DADA::App::Guts::strip($id),
-					message_type                 => $q->param('type'),
-					refresh_after                => $refresh_after,
-					tracker_url                  => $tracker_url, 
-					'list_settings.tracker_show_message_reports_in_mailing_monitor' 
-						=> $ls->param('tracker_show_message_reports_in_mailing_monitor'),
-					list_type_isa_list           => ($q->param('type') eq 'list')       ? 1 : 0,
-				}
-			}
-		); 
-		e_print($scrn); 
-		
-	}
+    else {
+
+        my $tracker_url = $DADA::Config::S_PROGRAM_URL;
+        $tracker_url =~
+          m/(^.*\/)(.*?)/;    #just use the url to get the filename with a regex
+        $tracker_url = $1 . 'plugins/tracker.cgi';
+
+        require DADA::Template::Widgets;
+        my $scrn = DADA::Template::Widgets::wrap_screen(
+            {
+                -screen         => 'sending_monitor_container_screen.tmpl',
+                -with           => 'admin',
+                -wrapper_params => {
+                    -Root_Login => $root_login,
+                    -List       => $list,
+                },
+                -vars => {
+                    screen        => 'sending_monitor',
+                    message_id    => DADA::App::Guts::strip($id),
+                    message_type  => $q->param('type'),
+                    refresh_after => $refresh_after,
+                    tracker_url   => $tracker_url,
+'list_settings.tracker_show_message_reports_in_mailing_monitor'
+                      => $ls->param(
+                        'tracker_show_message_reports_in_mailing_monitor'),
+                    list_type_isa_list => ( $q->param('type') eq 'list' )
+                    ? 1
+                    : 0,
+                }
+            }
+        );
+        e_print($scrn);
+
+    }
 }
 
 

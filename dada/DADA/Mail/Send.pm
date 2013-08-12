@@ -1480,6 +1480,7 @@ sub mass_send {
                 
         } elsif (defined $pid) { # $pid is zero here if defined
             
+
 			warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Fork successful. (From Child)'
 				if $t;
 				            
@@ -1494,8 +1495,11 @@ sub mass_send {
             
             warn "($$) _clarify_dbi_stuff"
 				if $t; 
-			my $mailout = $self->_clarify_dbi_stuff({-dmmo_obj => $mailout}); 
+			$mailout = $self->_clarify_dbi_stuff({-dmmo_obj => $mailout}); 
 		
+			$mailout->update_last_access;
+			
+			
 			# this is annoyingly complicated											
 					
 			my $mailing; 
@@ -1587,7 +1591,8 @@ sub mass_send {
 			}
 			else { 
 				carp "'$filename' doesn't exist?"; 
-			}
+			} 
+			
 			# while we have people on the list.. 
 			SUBSCRIBERLOOP: while(defined($mail_info = <MAILLIST>)){ 	
 				chomp($mail_info);	
@@ -1740,7 +1745,6 @@ sub mass_send {
 						if $t; 
 					warn 'Try #' . $tries 
 						if $t; 
-						
 					my $send_return = $self->send(%nfields, from_mass_send => 1); # The from_mass_send is a hack. 
 					if($send_return == -1 && $tries < 3){
 						my $warning = '[' . $self->{list} . '] Mass Mailing:' . $mailout_id 
@@ -1750,20 +1754,34 @@ sub mass_send {
 						 warn $warning; 
 						$mailout->log($warning);
 						sleep($batch_wait); 
+						$mailout->update_last_access; 
 					}
 					elsif($send_return == -1 && $tries >= 3){ 
-						my $warning = '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Bailing out of Mailing for now - last message to, ' . $nfields{To} . ' was unable to be sent! exit()ing!';
-						carp $warning;
-						$mailout->log_problem_address({-address => $nfields{To}}); 
-						$mailout->log($warning);
-						$mailout->unlock_batch_lock;
-						exit(0);
+						
+						# if we've already logged this guy
+						if($mailout->isa_problem_address({-address => $mailing})){ 
+							# Time to skip.
+							my $warning = '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Cannot send to, address: ' . $mailing . 'after 2 x 3 tries, skipping and logging address.';
+							warn $warning; 
+							$mailout->log($warning);
+							$mailout->countsubscriber;
+							next SUBSCRIBERLOOP;
+						}
+						else {
+							my $warning = '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Bailing out of Mailing for now - last message to, ' . $nfields{To} . ' was unable to be sent! exit()ing!';
+							warn $warning;
+							$mailout->log($warning);
+							$mailout->log_problem_address({-address => $mailing}); 
+							$mailout->update_last_access; 
+							$mailout->unlock_batch_lock;
+							exit(0);
+						}
 					}
 					else { 
 						
 						warn 'That try seemed to work!'
 							if $t; 
-							
+
 						last TRIES; 
 					}
 				}

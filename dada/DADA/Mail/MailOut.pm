@@ -41,7 +41,7 @@ my $file_names = {
 
     batchlock               => 'batchlock.txt',
     tmp_subscriber_list     => 'tmp_subscriber_list.txt',
-    problem_subscriber_list => 'problem_subscriber_list',  
+    problem_subscriber_list => 'problem_subscriber_list.txt',  
     num_sending_to          => 'num_sending_to.txt',
     counter                 => 'counter.txt',
     first_access            => 'first_access.txt', 
@@ -919,31 +919,36 @@ sub countsubscriber {
 
 	$self->unlock_file($lock);
 	
+	$self->update_last_access(); 
+
+   return $new_count; 
+
+}
 
 
-#######
-# DEV: And then something totally different - what?
-# (should be its own method)
 
-	my $file2 = make_safer($self->dir . '/' . $file_names->{last_access});
+
+    
+sub update_last_access { 
+
+	warn "update_last_access"
+		if $t; 
+
+	my $self = shift; 
 	
-	my $lock2 = $self->lock_file($file2);
+	my $file = make_safer($self->dir . '/' . $file_names->{last_access});
+	
+	my $lock = $self->lock_file($file);
 	
     sysopen( FH,
-        $file2,
+        $file,
         O_RDWR | O_CREAT, 
 		$DADA::Config::FILE_CHMOD
-    ) or croak "can't open '$file2' because: $!";
+    ) or croak "can't open '$file' because: $!";
  
 
-    if ( $^O =~ /solaris/g ) {
-        flock( FH, LOCK_SH )
-          or croak "can't flock '$file2'  because: $!";
-    }
-    else {
-        flock( FH, LOCK_EX )
-          or croak "can't flock '$file2'  because: $!";
-    }
+	flock( FH, LOCK_EX )
+	  or croak "can't flock '$file'  because: $!";
 
 
     seek( FH, 0, 0 ) or croak "can't rewind counter: $!";
@@ -951,14 +956,8 @@ sub countsubscriber {
     ( print FH time, "\n" ) or croak "can't write counter: $!";
     close FH                or croak "can't close counter: $!";
 
-	$self->unlock_file($lock2);
+	$self->unlock_file($lock);
 	
-
-    ######
-    # DEV: and then back to where we were...
-        return $new_count; 
-    
-    
 }
 
 
@@ -1257,6 +1256,10 @@ sub status {
         = _poll( $self->dir . '/' . $file_names->{last_access} );
 	$status->{last_access_formatted}
 		= scalar(localtime($status->{last_access})); 	
+		
+	$status->{last_sent} = (stat ( $self->dir . '/' . $file_names->{counter} ))[9];
+	$status->{last_sent_formatted}
+		= scalar(localtime($status->{last_sent})); 	
 		
    $status->{first_access}
         = _poll( $self->dir . '/' . $file_names->{first_access} );
@@ -2359,6 +2362,44 @@ sub log_problem_address {
 	print PROBLEMS $args->{-address} . "\n";
 	close(PROBLEMS);  
 	
+}
+
+
+
+sub isa_problem_address {
+	
+	my $self   = shift; 
+	my ($args) = @_; 
+	
+	
+	my $file = $self->dir . '/' . $file_names->{problem_subscriber_list};
+       $file = make_safer($file);
+
+    sysopen( LIST, $file, O_RDWR | O_CREAT,
+        $DADA::Config::FILE_CHMOD )
+      or croak "couldn't open '$file' for reading: $!\n";
+
+    flock( LIST, LOCK_SH );
+    binmode LIST, ':encoding(' . $DADA::Config::HTML_CHARSET . ')';
+
+    my $check_this = undef;
+    my $in_list    = 0;
+
+    while ( defined( $check_this = <LIST> ) ) {
+
+        chomp($check_this);
+
+        if ( cased($check_this) eq cased($args->{-address}) ) {
+            $in_list = 1;
+            last;
+        }
+    }
+
+    close(LIST);
+
+    return $in_list;
+
+
 }
 
 
