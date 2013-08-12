@@ -39,16 +39,17 @@ use strict;
 
 my $file_names = {
 
-    batchlock           => 'batchlock.txt',
-    tmp_subscriber_list => 'tmp_subscriber_list.txt',
-    num_sending_to      => 'num_sending_to.txt',
-    counter             => 'counter.txt',
-    first_access        => 'first_access.txt', 
-    last_access         => 'last_access.txt',
-    raw_message         => 'raw_message.txt',
-    pause               => 'paused.txt',
-    pid                 => 'pid.txt', 
-    'log'               => 'log.txt', 
+    batchlock               => 'batchlock.txt',
+    tmp_subscriber_list     => 'tmp_subscriber_list.txt',
+    problem_subscriber_list => 'problem_subscriber_list',  
+    num_sending_to          => 'num_sending_to.txt',
+    counter                 => 'counter.txt',
+    first_access            => 'first_access.txt', 
+    last_access             => 'last_access.txt',
+    raw_message             => 'raw_message.txt',
+    pause                   => 'paused.txt',
+    pid                     => 'pid.txt', 
+    'log'                   => 'log.txt', 
 
 };
 
@@ -416,6 +417,9 @@ sub create {
     # A Copy of the Message Being Sent Out
     $self->create_raw_message();
 
+	# Problem List! 
+	$self->problem_subscriber_list_file(); 
+	
 	# Everything made? OK, let's change the dir name, save that name, and move on, 
 	my $orig_name = $self->dir; 
 	my $live_name = $orig_name; 
@@ -752,6 +756,29 @@ sub create_log_file {
     
 }
 
+sub problem_subscriber_list_file { 
+	
+    my $self = shift;
+
+    my $file = $self->dir . '/' . $file_names->{'problem_subscriber_list'};
+       $file = make_safer($file); 
+    
+    open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $file  )
+        or croak
+        "Couldn't create the problem_subscriber_list file at: '"
+        . $file
+        . " 'because: "
+        . $!;
+  
+    close(LOG)
+        or croak " didn't close '$file' poperly because: " . $!;
+    chmod($DADA::Config::FILE_CHMOD, $file);    
+    warn 'problem_subscriber_list file created at ' . $file
+        if $t; 
+    
+    return 1; 
+
+}
 
 
 sub create_counter {
@@ -1381,11 +1408,18 @@ sub status {
 	# DEV: I'm weirded out at the reason why status() is doing something like
 	# thing. Huh?!
     if ( $process_has_stalled == 1 ) {
-
-        warn 
-            "process has stalled. Unlocking batchlock, so it may start again!"
-				if $t; 
-
+		
+		if($self->is_batch_locked == 1){ 
+	        warn 
+	            "Process has stalled. Unlocking batchlock, so it may start again!"
+					if $t; 
+		}
+		else { 
+	        warn 
+	            "Process has stalled. Batch is not locked."
+					if $t; 			
+		}
+		
         if ( $status->{total_sent_out} == $status->{total_sending_out_num} ) {
             warn
                 "Well, wait, the amount to send out equals the number we have to send out - I think we're done, will unlock anyways, to get around niggly stuff, but expect warnings..."
@@ -1435,42 +1469,7 @@ sub is_mailout_stale {
     
     my $self                = shift; 
     my $last_access         = shift || croak "at the moment, you have to pass the, last_access time manually (hey sorry!)"; 
-	# I don't know why we can't just _poll the  last_access file ourselves....
-	# Am I so strict in keeping with the API? 
-	# Or, could it be a documented optimization? 
-	# Or, undocumented?  
-	
-    #my $should_be_restarted = shift;
-    #
-	#warn "stale check:"
-	#	if $t; 
-    #
-    #croak '$should_be_restarted ' . $should_be_restarted; 
-    
-    
-   #if(
-	#	$should_be_restarted == 1 || 
-	#	$should_be_restarted == 0
-	#){     
-        # Yeah, I don't any idea...  
-    #} 
-    #else { 
-    #	croak "yeah, you have to pass the, should_be_restarted_bit, too, soaray!"; 
-    #}
-    
-	# The only thing I can think of is, the, "should_be_restarted" is passed, 
-	# So that a mailing isn't seen as stale *and* broken? 
-	# Dunno... 
-	#
-	# You'd think this would always be, "0" for a stale mailing, anyways, since
-	# one of the checks for, "should_be_restarted" is time since a batch went out... 
-    #if($should_be_restarted == 0){ 
-    
-	#
-     #   return 0; 
-     #}
-     #else { 
-         
+
         if((int(time) - $last_access) > $DADA::Config::MAILOUT_STALE_AFTER){ 
             return 1;
         } 
@@ -1478,12 +1477,6 @@ sub is_mailout_stale {
             return 0; 
         }
         # 86,400 seconds in an hour. 
-    #}    
-
-	# NOTE: I like the simplier version of this method - this module is getting 
-	# much much too complicated for its own good
-
-
 }
 
 
@@ -1554,7 +1547,7 @@ sub should_be_restarted {
                         # And it's time to restart?
                         # let's do it:
                         
-                        warn '>>>> >>>> >>>> >>>>Yes. The mailing SHOULD be restarted.'
+                        warn '>>>> >>>> >>>> >>>>Yes. The mailing SHOULD be restarted. (' . $$ . ')'
                             if $t; 
                             
                         return 1;
@@ -1569,7 +1562,7 @@ sub should_be_restarted {
                         warn '>>>> >>>> >>>> >>>>process has NOT stalled.'
                             if $t; 
                         
-                        warn '>>>> >>>> >>>> >>>>No. The mailing SHOULD NOT be restarted.'
+                        warn '>>>> >>>> >>>> >>>>No. The mailing SHOULD NOT be restarted. (' . $$ . ')'
                             if $t; 
                             
                         return 0;
@@ -1584,7 +1577,7 @@ sub should_be_restarted {
                     warn '>>>> >>>> >>>> batch is NOT locked.'
                         if $t;
                     
-                    warn '>>>> >>>> >>>> Yes. The mailing SHOULD be restarted.'
+                    warn '>>>> >>>> >>>> Yes. The mailing SHOULD be restarted. (' . $$ . ')'
                         if $t;
                         
                     return 1;
@@ -1597,7 +1590,7 @@ sub should_be_restarted {
                  warn '>>>> >>>>Mailing is either sleeping or hasn\'t been inactive for enough time.'
                     if $t; 
                     
-                warn '>>>> >>>>No. The mailing SHOULD NOT be restarted.'
+                warn '>>>> >>>>No. The mailing SHOULD NOT be restarted. (' . $$ . ')'
                     if $t; 
                     
                 # not time yet...
@@ -1621,7 +1614,7 @@ sub should_be_restarted {
                     warn '>>>> >>>> >>>> process has stalled.'
                         if $t;
                         
-                    warn '>>>> >>>> >>>> Yes. The mailing SHOULD be restarted.'
+                    warn '>>>> >>>> >>>> Yes. The mailing SHOULD be restarted. (' . $$ . ')'
                         if  $t;   
                     # Yes? Let's restart.
     
@@ -1647,7 +1640,7 @@ sub should_be_restarted {
                     warn '>>>> >>>> >>>> process has stalled.'
                         if $t;
                   
-                    warn '>>>> >>>> >>>> Yes. The mailing SHOULD be restarted.'
+                    warn '>>>> >>>> >>>> Yes. The mailing SHOULD be restarted. (' . $$ . ')'
                         if  $t;
                         
                   # carp "Batch ain't locked. process is stalled."; 
@@ -1659,7 +1652,7 @@ sub should_be_restarted {
                 else { 
                     warn '>>>> >>>> >>>> process has NOT stalled.'
                         if $t; 
-                    warn '>>>> >>>> >>>> No. The mailing SHOULD Not be restarted.'
+                    warn '>>>> >>>> >>>> No. The mailing SHOULD Not be restarted. (' . $$ . ')'
                         if  $t;
                     return 0; 
 
@@ -1757,8 +1750,6 @@ sub still_around {
 	
 	
 	if(! -e $self->dir) { 
-	# The above is probably much more economical than the below: 
-	#if(DADA::Mail::MailOut::mailout_exists($self->list,  $self->_internal_message_id, $self->mailout_type) == 0){ 
 		carp  '[' . $self->list . ']   Mass Mailing:"' . $self->_internal_message_id .
 		' attempting to send a mass mailing that doesn\'t exist anymore? Failed "still_around" test '; 
 		  return undef;  
@@ -1768,10 +1759,6 @@ sub still_around {
 	}
 
 }
-
-
-
-
 
 
 
@@ -1858,6 +1845,9 @@ sub _poll {
 
 sub reload {
 
+	warn "reload called ($$)"
+		if $t; 
+		
     my $self = shift;
 
 
@@ -1893,8 +1883,7 @@ sub reload {
 		
 		if($self->process_stalled_after < 0){ 
 			$self->status;
-			carp "Reloading message..."; 
-			
+			carp "Reloading message... ($$)"; 
 		}
 		else {
         
@@ -1910,7 +1899,7 @@ sub reload {
    }
     else {
         
-        carp "Reloading message..."; 
+        carp "Reloading message... ($$)";  
 
     }
 
@@ -2355,6 +2344,24 @@ sub log {
 	close(MO_LOG);  
 	
 }
+
+sub log_problem_address { 
+	
+	my $self   = shift; 
+	my ($args) = @_; 
+	
+	my $file = $self->dir . '/' . $file_names->{problem_subscriber_list};
+       $file = make_safer($file);
+
+	open(PROBLEMS, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file) 
+		or carp $!; 
+	flock(PROBLEMS, LOCK_SH);
+	print PROBLEMS $args->{-address} . "\n";
+	close(PROBLEMS);  
+	
+}
+
+
 
 
 

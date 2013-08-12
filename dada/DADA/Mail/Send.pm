@@ -22,6 +22,8 @@ use DADA::App::Guts;
 		
 use vars qw($AUTOLOAD); 
 use Carp qw(croak carp);
+   #$Carp::Verbose = 1; 
+
 use Try::Tiny; 
 
 use Fcntl qw(
@@ -378,6 +380,11 @@ sub send {
    
     # and back to your regularly scheduled send() subroutine...
 
+
+	if($fields{To} =~ m/\<bad\.apple\@example\.com\>$/) { 
+		return -1; 
+	}
+
 	if ($local_li->{strip_message_headers} == 1) { 	
 		%fields = $self->_strip_fields(%fields) 
 	}
@@ -655,6 +662,7 @@ sub send {
             
             if($@){ # Something went wrong when trying to send...
                 carp "Problems sending via SMTP: $@"; 
+				return -1; 
             }
          
          }
@@ -745,15 +753,16 @@ sub send {
             				
                 # print "NOT SENDING - sending message to test file: '" . $self->test_send_file . "'"; 
                 open(MAIL, '>>' . $self->test_send_file) 
-					or die "couldn't open test file: '" . $self->test_send_file . "' because: $!"; 	
+					or warn "couldn't open test file: '" . $self->test_send_file . "' because: $!"
+					and return -1; 
                 
             }
             else { 
             	
-                open(MAIL,$live_mailing_settings) 
-					or $self->_send_die($fields{Debug});		
-            
-            }
+                open(MAIL,$live_mailing_settings) ||
+					warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: can't pipe to mail program using settings: $DADA::Config::MAIL_SETTINGS or $DADA::Config::MASS_MAIL_SETTINGS: $!"
+					and return -1; 
+			}
 
 			
 			# Well, probably, no? 
@@ -781,24 +790,11 @@ sub send {
 
             print MAIL $fields{Body} . "\n"; # DEV: Why the last, "\n"?
             close(MAIL) 
-                or carp "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Warning: 
+                or warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Warning: 
                          didn't close pipe to '$live_mailing_settings' while 
-                         attempting to send a message to: '" . $fields{To} ." because:' $!";  
-				#  Can probably search and see if, "$!" holds something like, 
-				# "Broken pipe" that we can 	than say, "Well, THAT didn't work, 
-				# let's go back a step and exit..."
-				
-				# A broken pipe can be caused (I think) by a message that gets sent with a period on its own line 
-				# and then, when you attempt to send even more info, it'll bork and give you this error - it
-				# doesn't necessarily mean that the message didn't get send. Ugh. 
-				# if($! =~ m/broken pipe/i){ 
-				# 	if($self->im_mass_sending == 1){ 
-				# 		carp "Broken Pipe error! returning -1 - Mass Mailing should be exit()ed!"; 
-				# 	}
-				# 	return -1; 
-				#}
-				
-				
+                         attempting to send a message to: '" . $fields{To} ." because:' $!"
+				and return -1;  
+								
         }
 		elsif($local_li->{sending_method} eq 'amazon_ses' ) { 
 
@@ -841,12 +837,17 @@ sub send {
             $msg .= "\n"; 
             $msg .= $fields{Body} . "\n"; # DEV: Why the last, "\n"?
 			#warn "sending " . time; 
-			$ses_obj->send_msg(
+			my ($response_code, $response_content) = $ses_obj->send_msg(
 				{
 					-msg => $msg, 
 				}
 			);
-			#warn "sent! " . time; 
+			if($response_code == 200){ 
+				return 1; 
+			}
+			else { 
+				return -1; 
+			}
 		}
 		else { 
 			die 'Unknown Sending Method: "' . $local_li->{sending_method} . '"'; 
@@ -1073,10 +1074,12 @@ sub restart_mass_send {
 
 sub mass_send { 
 
-	my $self = shift; 
-	
+	my $self   = shift; 	
 	my ($args) = @_; 
 	
+	carp "mass_send called from PID: $$"
+		if $t; 
+		
 	my %param_headers = (); 
 	
 	if(ref($args)){
@@ -1134,16 +1137,8 @@ sub mass_send {
 	
 	
 	$self->im_mass_sending(1); 
-#	require DADA::App::Subscriptions::Unsub; 
-#	$self->unsub_obj(DADA::App::Subscriptions::Unsub->new(
-#		{
-#			-list => $self->{list}, 
-#			-ls_obj => $self->{ls},
-#		}
-#	));	
-		
-		
-	warn '[' . $self->{list} . '] starting mass_send at' . time
+
+	carp '[' . $self->{list} . '] (' . $$ . ') starting mass_send at: ' . scalar(localtime(time))
 	    if $t;
 	    
 	my %fields = ( 
@@ -1186,7 +1181,7 @@ sub mass_send {
 	
     if($self->restart_with){ 
         
-        warn '[' . $self->{list} . ']  restart_with is defined.'
+        warn '[' . $self->{list} . '] restart_with is defined.'
             if $t; 
     
         # Shazzam!
@@ -1197,9 +1192,9 @@ sub mass_send {
         
         if($mailout->should_be_restarted == 1){ 
         
-            warn '[' . $self->{list} . '] mass mailing is reporting the mailing should be restarted.'
+            warn '[' . $self->{list} . '] mass mailing is reporting the mailing should be restarted from PID:' . $$
                 if $t; 
-			$mailout->log('mass mailing is reporting that it should be restarted.');
+			$mailout->log('mass mailing is reporting that it should be restarted from PID:' . $$);
                         
             my $raw_msg = $mailout->reload(); 
             
@@ -1263,7 +1258,7 @@ sub mass_send {
 	
 	
 	if( ! $mailout->still_around ){ 
-		warn '[' . $self->{list} . ']  Mass mailing seems to have been removed. exit()ing'
+		warn '[' . $self->{list} . '] Mass Mailing seems to have been removed. exit()ing'
             if $t;
 		exit(0); 
 	}
@@ -1300,11 +1295,11 @@ sub mass_send {
     # Meaning, queueing is ON! Enabled! Big red button! Blinky blinky!
     if($status->{queue} == 1){ 
     
-        warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' queueing is enabled.'
+        warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' queueing is enabled.'
             if $t; 
     	$mailout->log('Queueing is enabled.'); 
 		
-        warn  '[' . $self->{list} . ']   Mass Mailing:' . $mailout_id . ' $status->{queue_place} ' . $status->{queue_place}
+        warn  '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' $status->{queue_place} ' . $status->{queue_place}
 			if $t; 
 		$mailout->log('$status->{queue_place} ' . $status->{queue_place}); 
 			
@@ -1496,87 +1491,11 @@ sub mass_send {
             
             
             setpgrp; 
-                       
-
-			##################################################################
-			# DEV: EXPLANATION: 
-			# This is all to attempt that, 
-			# * DBI handles made before the fork aren't used 
-			#   in the child process
-			# * Any DBI handles in the child process don't exist
-			#   in the parent process
-			# * Any references to DBI Handles we didn't get to
-			#   will have the, InactiveDestroy attribute set
-			#   so that when the child process goes, the parent will
-			#   copy will still be around. 
-			##################################################################
-
-			if($DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/ || 
-			   $DADA::Config::ARCHIVE_DB_TYPE    =~ m/SQL/ || 
-			   $DADA::Config::SETTINGS_DB_TYPE   =~ m/SQL/
-			 ){        
-			
-				require DBI; 
-				#sub MakeAllDBHsForkSafe {
-					if($DBI::VERSION >= 1.49){ 
-					    my %drivers = DBI->installed_drivers;
-					    for my $drh (values %drivers) {
-					        map { $drh->{InactiveDestroy} = 1 } @{$drh->{ChildHandles}};
-					    }
-					}
-				#}
-
-				# Our own DBI handle: 
-				require DADA::App::DBIHandle; 
-				my $dbih = DADA::App::DBIHandle->new; 
-				my $dbh = $dbih->dbh_obj; 
-
-
-
-				# Let's get rid of the ones that are known: 
-				# DADA::MailingList::Settings
-				$self->{ls}->{dbh}->{InactiveDestroy} = 1;
-				$self->{ls}->{dbh} = undef;
-				$self->{ls}->{dbh} = $dbh; 
-				$self->{list_info} = $self->{ls}->params; 
-				
-				my $pass_id   = $mailout->_internal_message_id; 
-				my $pass_type = $mailout-> mailout_type; 
-				
-				# DADA::Mail::MailOut uses DADA::MailingList::Settings and 
-				# DADA::MailingList::Subscribers
-				# The only way to figure this out totally is to get rid of the 
-				# current DADA::Mail::MailOut object and re-make it. Weird, huh? 
-				$mailout = undef; 
-				$mailout = DADA::Mail::MailOut->new({ -list => $self->{list}, -ls_obj => $self->{ls} }); 
-				$mailout->associate($pass_id, $pass_type); 
-			   
-				require DADA::App::Subscriptions::ConfirmationTokens;
-				$self->child_ct_obj(DADA::App::Subscriptions::ConfirmationTokens->new()); 
-				$self->child_ct_obj->{dbh} = $dbh;
-			
-				## And many, many more, 
-				## We'd probably have to undef and make a new object for 
-				## DADA::Mail::MailOut.... 
-				## And what else? 
-				## DADA::Mail::MailOut needs a way to pass the shared database (now new) 
-				## Handle... 
-			}
-			else { 
-				require DADA::App::Subscriptions::ConfirmationTokens;
-				$self->child_ct_obj(DADA::App::Subscriptions::ConfirmationTokens->new()); 				
-			}
-			
-			##################################################################
-			
-			
-
+            
+            warn "($$) _clarify_dbi_stuff"
+				if $t; 
+			my $mailout = $self->_clarify_dbi_stuff({-dmmo_obj => $mailout}); 
 		
-		    #warn "starting the sending process."; 
-		    
-			# child here
-			# parent process pid is available with getppid
-
 			# this is annoyingly complicated											
 					
 			my $mailing; 
@@ -1588,9 +1507,7 @@ sub mass_send {
 			my $mailing_count; 									
 			my $stop_email;
 			my $mailing_amount;
-			
-			# pretty sure $status is still in affect...
-			
+						
 			# Let's tell em we're in control: 
 			#
 			$mailout->set_controlling_pid($$);
@@ -1599,22 +1516,16 @@ sub mass_send {
 			#
 			# 
 			
-			
-			# ok, now lets open that list up
-			
-			#warn ' $mailout->subscriber_list ' . $mailout->subscriber_list; 
-			
-			my $somethings_wrong = 0;
-			
+
 			require Text::CSV; 
 			my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
-			
 			
 			open(MAILLIST, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $mailout->subscriber_list) or 
 				croak "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: 
 				       can't open mailing list (at: '" . $mailout->subscriber_list .
 				      "') to send a Mailing List Message: $!"; 
-			
+
+
 			##################################################################
 			# Check to have semaphore file for the actual sending list 
 			# The ONLY time this list is accessed with the semaphore file 
@@ -1622,36 +1533,22 @@ sub mass_send {
 			
 			my $lock = $mailout->lock_file($mailout->subscriber_list);
 			
-			warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' opened MAILLIST'
+			warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . " opened MAILLIST ($$)"
 			    if $t; 
 			$mailout->log('opened MAILLIST'); 
-			
-			
-			##################################################################
-			# Although there's the problem with Solaris, I doubt this lock 
-			# ever works. The semaphore above probably works a whole lot better. 
-			#
 
-
-
-			if($^O =~ /solaris/g){ 
-			    # DEV For whatever reason (anyone?) Solaris DOES NOT like this type of locking. More research has be done..
-			
-			    flock(MAILLIST, LOCK_SH) or $somethings_wrong = 1;
-			}
-			else { 
-                flock(MAILLIST, LOCK_EX) or $somethings_wrong = 1; 
-			}
-
+			my $somethings_wrong = 0;
+            flock(MAILLIST, LOCK_EX) 
+				or $somethings_wrong = 1; 
             if($somethings_wrong == 1){ 
                 carp "temporary sending file is locked - another process sending the message?! exiting sending process..."; 
 				$mailout->log('Warning: temporary sending file is locked - another process sending the message?! exiting sending process...'); 
                 exit(0); 
             }
+
 			#
 			##################################################################
 
-                    
 			my $check_restart_state = 0; 
 			# only check the state IF we need to, otherwise, skip the check and save some cycles. 
 			if($self->restart_with){ 
@@ -1660,44 +1557,8 @@ sub mass_send {
                 $check_restart_state = 1; 
             }
 
-			##################################################################
-			# ClickThrough Tracking Stuff
-			# This sometimes fail, if the SQL connection is dropped. 
-			# ! I've currently taken off the optimization that works around 
-			# this problem, in hopes that we can find a solution, that doesn't
-			# involve a workaround, but a fix, instead. 
-			#
-			
-			# DEV: Should we only use this for mass mailings to, "list"?!
-			# This still sucks, since this'll reparse after each restart.
-			require DADA::Logging::Clickthrough; 
-			my $ct = DADA::Logging::Clickthrough->new(
-						{
-							-list => $self->{list},
-							
-							# I guess one way to find out if the
-							# InactiveDestroy stuff is working, 
-							# Is isf DADA::Logging::Clickthrough
-							# is working without this kludge: 
-							#
-							#-li   => $self->{ls}->params, 
-							#
-						}
-					); 
-			if($ct->enabled) { 
-				%fields = $ct->parse_email(
-				    {
-				        -fields => \%fields,
-						-mid    => $fields{'Message-ID'},
-				    }
-				);
-				undef $ct; 
-				# And, that's it.
-			}			
-			#
-			##################################################################			
-			
-				
+			$self->_set_clickthrough_tracking_stuff({-fields => \%fields}); 
+
             warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' locking batch' 
                 if $t; 
             $mailout->batch_lock;
@@ -1730,21 +1591,26 @@ sub mass_send {
 			# while we have people on the list.. 
 			SUBSCRIBERLOOP: while(defined($mail_info = <MAILLIST>)){ 	
 				chomp($mail_info);	
-				
+
+
+
+
+
 				##############################################################
 				# calling status() is resource-intensive, but calling 
 				# ->paused isn't. We'll call pause to see if a mailing is 
 				# paused, so we don't have to go through the entire batch on a 
 				# paused() mailing. "queue" requires finding information about 
 				# ALL mailings, so it is quite resource-intensive.
-				
+				# Is mailout paused? 
+				#
 				my $is_mailout_paused = $mailout->paused; 
-				warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . 
+				warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . 
 				     ' $mailout->paused reporting: ' . $is_mailout_paused
 				 	if $t; 
 				
 				if($is_mailout_paused > 0){                            
-					carp '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . 
+					carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . 
 					     ' Mailing has been paused - exit()ing';
 					$mailout->log('Warning: Mailing has been paused - exit()ing'); 
 					$mailout->unlock_batch_lock;
@@ -1762,7 +1628,7 @@ sub mass_send {
 					$mailout->pause;
 					exit(0); 
 				}
-				#
+				# / Is mailout paused? 
 				##############################################################
 
 				
@@ -1787,7 +1653,13 @@ sub mass_send {
 				
 				warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' $check_restart_state set to ' . $check_restart_state
 				    if $t; 
-				    
+
+
+
+
+
+
+    
 				##############################################################
 				# These are all checks to make sure we're starting the mailing
 				# at the right place in the list. 
@@ -1826,12 +1698,14 @@ sub mass_send {
 			    }
 				#
 				##############################################################
+
+
+
+
 			
 				
-				# This is new - see the note in the 2nd if statement below. 
 				$stop_email = $mailing;
-				
-				
+								
  				my %nfields = $self->_mail_merge(
 				    {
 				        -entity => $entity->dup,
@@ -1840,34 +1714,69 @@ sub mass_send {
 				    }
 				);
 								
-				# Debug Information, Always nice
-                $nfields{Debug} = {
-                    -Messages_Sent    => $n_people, 
-                    -Last_Email       => $mailing,
-                    -Message_Subject  => $fields{Subject},
-                    -List_File        => $path_to_list,
-                    -List_File_Size   => -s"$path_to_list",
-                    -Sending_To       => $fields{To}, 
-                };
+#				# Debug Information, Always nice
+#                $nfields{Debug} = {
+#                    -Messages_Sent    => $n_people, 
+#                    -Last_Email       => $mailing,
+#                    -Message_Subject  => $fields{Subject},
+#                    -List_File        => $path_to_list,
+#                    -List_File_Size   => -s"$path_to_list",
+#                    -Sending_To       => $fields{To}, 
+#                };
                 
                 warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' sending mail'
                     if $t; 
-                
-				my $send_return = $self->send(%nfields, from_mass_send => 1); # The from_mass_send is a hack. 
-                # How, about, if this returns, "-1", the mailing didn't work, and we should just retry again, somehow
-				if($send_return == -1){ 
-					carp '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' Bailing out of Mailing for now - last message was unable to be sent! exit()ing!';
-					$mailout->log('Warning: Bailing out of Mailing for now - last message was unable to be sent! exit()ing!'); 
-					exit(0);
-				}
-				else { 
-					 # ...
-				}
 
+                
+				##############################################################
+				# Three strikes, and you're out: 
+				
+				
+				my $tries = 0; 
+				TRIES: while($tries <= 3){ 	
+					$tries++;
+					
+					warn 'sending to: ' . $nfields{To}
+						if $t; 
+					warn 'Try #' . $tries 
+						if $t; 
+						
+					my $send_return = $self->send(%nfields, from_mass_send => 1); # The from_mass_send is a hack. 
+					if($send_return == -1 && $tries < 3){
+						my $warning = '[' . $self->{list} . '] Mass Mailing:' . $mailout_id 
+						. ' Problems sending to, ' . $nfields{To} 
+						. ', waiting: ' . $batch_wait . ' seconds to try again. '
+						. 'Try # ' . $tries;
+						 warn $warning; 
+						$mailout->log($warning);
+						sleep($batch_wait); 
+					}
+					elsif($send_return == -1 && $tries >= 3){ 
+						my $warning = '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Bailing out of Mailing for now - last message to, ' . $nfields{To} . ' was unable to be sent! exit()ing!';
+						carp $warning;
+						$mailout->log_problem_address({-address => $nfields{To}}); 
+						$mailout->log($warning);
+						$mailout->unlock_batch_lock;
+						exit(0);
+					}
+					else { 
+						
+						warn 'That try seemed to work!'
+							if $t; 
+							
+						last TRIES; 
+					}
+				}
+				
+				# / Three strikes, and you're out: 
+				##############################################################				
+				
+				##############################################################
+				# Count Subscriber
+				#
+				
                 warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' counting subscriber.'
                     if $t; 
-               
-     			# Ah, ok, so I don't even have to rollback, as the subscriber gets counted here. Brilliant! 
 
                 my $new_count = $mailout->countsubscriber; 
                  
@@ -1876,12 +1785,19 @@ sub mass_send {
                 warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' $new_count set to, ' . $new_count
                 	if $t; 
         
+				# And this almost never happens: 
                if($mailing_count != $new_count){ 
                     carp("Warning: \$mailing_count ($mailing_count) is not the same as \$new_count ($new_count) - problems are likely to happen..."); 
 					$mailout->log("\$mailing_count ($mailing_count) is not the same as \$new_count ($new_count) - problems are likely to happen..."); 
                }
                
 				$n_people++; 
+				
+				# /Count Subscriber
+				##############################################################
+				
+				
+				
 				
 				# I hate to wrap this in yet another If... state ment, but... 
 				if($self->mass_test == 1){ 
@@ -1917,7 +1833,7 @@ sub mass_send {
 								$self->ses_obj(undef);
 							}
 							
-							warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' calling Mail::MailOut::status() '
+							warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' calling Mail::MailOut::status() '
 								if $t;
 			                my $batch_status = $mailout->status({-mail_fields => 0}); 
 		                
@@ -1930,8 +1846,6 @@ sub mass_send {
                          
                           	$mailout->log('Batch Successfully Completed: ' .  $batch_log_message);
 
-	                        
-                        
 							if($batch_status->{queued_mailout} == 1){  
 								carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Mailing has been queued - exit()ing'; 
 								$mailout->log('Warning: Mailing has been queued - exit()ing'); 
@@ -1939,7 +1853,7 @@ sub mass_send {
 								exit(0); 
 							}
 							if($batch_status->{paused} > 0){                          
-								carp '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' Mailing has been paused - exit()ing';
+								carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Mailing has been paused - exit()ing';
 								$mailout->log('Warning: Mailing has been paused - exit()ing'); 
 								$mailout->unlock_batch_lock;
 								exit(0);
@@ -1981,11 +1895,11 @@ sub mass_send {
 									}
 								}
 								#
-								#
+								# / Tweak Sleep Times
 								##############################################
 									
 								my $before_sleep_time = time; 
-								warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' Sleeping for ' . $sleep_for_this_amount . ' seconds. See you in the morning. Time: ' . $before_sleep_time
+								warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Sleeping for ' . $sleep_for_this_amount . ' seconds. See you in the morning. Time: ' . $before_sleep_time
 									if $t; 
 							
 								#
@@ -1998,11 +1912,11 @@ sub mass_send {
 								#
 								#
 							
-								warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' I\'m awake! from sleep()ing, Time: ' . time . ', Slept for: ' . (time - $before_sleep_time) . ' seconds. '
+								warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' I\'m awake! from sleep()ing, Time: ' . time . ', Slept for: ' . (time - $before_sleep_time) . ' seconds. '
 									if $t; 
 								
 								if( ! $mailout->still_around ){
-									warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' Seems to have been removed. exit()ing'
+									warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Seems to have been removed. exit()ing'
 							            if $t; 
 									exit(0); 
 								}
@@ -2012,12 +1926,12 @@ sub mass_send {
 									
 									# Good to go.
 								
-									warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . " Controlling PID check says we're ($$) still in control."
+									warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . " Controlling PID check says we're ($$) still in control."
 										if $t;
 										
 								}
 								else { 
-									warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . 
+									warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . 
 										 ' Problem! Another process (Current PID: ' . $$ . ', Controlling PID: ' . 
 										   $batch_status->{controlling_pid} .' has taken over sending for this mailing! ' . 
 										   ' exit()ing to allow that process to do it\'s business!'; 
@@ -2033,13 +1947,13 @@ sub mass_send {
                             
 	                       } else { 
                         
-	                            warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' restart_mailings_after_each_batch is enabled.'
+	                            warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' restart_mailings_after_each_batch is enabled.'
 	                                if $t; 
                             
 	                            close(MAILLIST)
 	                                or carp "Problems closing the temporary sending file (" . $mailout->subscriber_list ."), Reason: $!";
 
-	                            warn  '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' unlocking batch lock.'
+	                            warn  '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' unlocking batch lock.'
 	                                if $t; 
                                 
 								$mailout->unlock_file($lock);
@@ -2052,7 +1966,7 @@ sub mass_send {
 	                            # cleanup, so let's not go quite yet. 
                             
 	                            if($batch_status->{total_sent_out} < $batch_status->{total_sending_out_num}){ # We have more mailings to do. 
-	                                warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' As far as I can tell, there\'s more mailing to do.'
+	                                warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' As far as I can tell, there\'s more mailing to do.'
 	                                    if $t; 
 	                                exit(0); 
 	                            }
@@ -2060,41 +1974,33 @@ sub mass_send {
 	                        }  
                         
                         
-	                        # DEV NOTE: All these variables don't make any sense to me. 
-	                        # It's severily complicated and I'm certain I haven't a clue what's going on. 
-	                        # Honestly. 
-	                        #
-                        
-	                        # keep a count on how many batches we had. 
-	                        # $batch_num++;
-                        
 	                        # and figure out where we are in this batch. 
 	                        $n_letters+=$letters;
-	                        #$sleep_num++;
 					  
 						}
 						else { 
-						    warn  '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' More messages to be sent in this batch ' 
+						    warn  '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' More messages to be sent in this batch ' 
 						        if $t; 
 					
 						}
 					
-			        }	   
-			         
-	            } # if($self->mass_test == 1){ 
-			} # while(defined($mail_info = <MAILLIST>)){ 
-			
-			warn  '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' We\'ve gone through the MAILLIST, it seems?'
+			        }
+				}
+			}
+			         			
+			warn  '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' We\'ve gone through the MAILLIST, it seems?'
 			    if $t; 
 			
+			# Net::SMTP Object cleanup
 			if(defined($self->net_smtp_obj)){ 
 				# Guess we gotta quit the connection that's still going on... 
-				warn  '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' Quitting a SMTP connection that\'s still going on... '
+				warn  '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Quitting a SMTP connection that\'s still going on... '
 					if $t; 
 				$self->net_smtp_obj->quit
                		or carp "problems 'QUIT'ing SMTP server.";
 			}
 			
+			# SES Object cleanup
 			if(defined($self->ses_obj)){
 				$self->ses_obj(undef); 
 			}
@@ -2106,7 +2012,7 @@ sub mass_send {
 			my $unformatted_end_time = time; 
 			if( $self->{ls}->param('get_finished_notification')  == 1){ 			
 			    
-			    warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' sending finished notification' 
+			    warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' sending finished notification' 
 			        if $t; 
 			        
                 $self->_email_batched_finished_notification(
@@ -2139,7 +2045,7 @@ sub mass_send {
 			}
 			$mailout->log($mass_mail_finished_log);
 			
-			warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' closing MAILLIST'
+			warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' closing MAILLIST'
 			    if $t; 
 			    
 			close(MAILLIST)
@@ -2147,7 +2053,7 @@ sub mass_send {
 			
 			
 			#warn "unlocking batch.."; 
-			warn  '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' unlocking batch lock' 
+			warn  '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' unlocking batch lock' 
 			    if $t; 
 			
 			
@@ -2155,17 +2061,15 @@ sub mass_send {
 			unlink($mailout->subscriber_list . 'lock');
 		    $mailout->unlock_batch_lock; 
 
-			#warn "Cleaning up my mess...";
-			warn  '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' cleaning up!'
+			warn  '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' cleaning up!'
 			    if $t; 
-			    
             $mailout->clean_up; 
             
 
 			# Undef'ing net_smtp_obj if needed... 
 			if(defined($self->net_smtp_obj)){ 	
 				
-				warn  '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' Quitting a SMTP connection at end of mass_send' 
+				warn  '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Quitting a SMTP connection at end of mass_send' 
 					if $t;
 					
 				$self->net_smtp_obj->quit
@@ -2180,24 +2084,173 @@ sub mass_send {
 			}
 			
 
-			warn  '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' We\'re done. exit()ing!' 
+			warn  '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' We\'re done. exit()ing!' 
 			    if $t;
            	exit(0);		 
 
 		} elsif ($! =~ /No more process/) {
-			warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' Getting error in fork: $! - sleeping for 5 seconds and retrying (don\'t hold your breath)'
+			
+			warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Getting error in fork: $! - sleeping for 5 seconds and retrying (don\'t hold your breath)'
 			     if $t; 
 			# EAGAIN, supposedly recoverable fork error
 			sleep 5;
 			redo FORK;
+			
 		} else {
-			warn '[' . $self->{list} . ']  Mass Mailing:' . $mailout_id . ' Fork wasn\'t so successful.'
+			
+			warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Fork wasn\'t so successful.'
 				if $t;
 			# weird fork error
 			croak "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error in Mail.pm, Unable to Fork new process to mass e-mail list message: $!\n";
 			}
 		}
-	} 
+	}
+
+
+
+
+
+sub _clarify_dbi_stuff {
+
+    my $self = shift;
+    my ($args) = @_;
+
+    my $mailout = $args->{-dmmo_obj};
+
+    ##################################################################
+    # DEV: EXPLANATION:
+    # This is all to attempt that,
+    # * DBI handles made before the fork aren't used
+    #   in the child process
+    # * Any DBI handles in the child process don't exist
+    #   in the parent process
+    # * Any references to DBI Handles we didn't get to
+    #   will have the, InactiveDestroy attribute set
+    #   so that when the child process goes, the parent will
+    #   copy will still be around.
+    ##################################################################
+
+    if (   $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/
+        || $DADA::Config::ARCHIVE_DB_TYPE  =~ m/SQL/
+        || $DADA::Config::SETTINGS_DB_TYPE =~ m/SQL/ )
+    {
+
+        require DBI;
+        if ( $DBI::VERSION >= 1.49 ) {
+            my %drivers = DBI->installed_drivers;
+            for my $drh ( values %drivers ) {
+                map { $drh->{InactiveDestroy} = 1 } @{ $drh->{ChildHandles} };
+            }
+        }
+
+        # Our own DBI handle:
+        require DADA::App::DBIHandle;
+        my $dbih = DADA::App::DBIHandle->new;
+        my $dbh  = $dbih->dbh_obj;
+
+        # Let's get rid of the ones that are known:
+        # DADA::MailingList::Settings
+        $self->{ls}->{dbh}->{InactiveDestroy} = 1;
+        $self->{ls}->{dbh}                    = undef;
+        $self->{ls}->{dbh}                    = $dbh;
+        $self->{list_info}                    = $self->{ls}->params;
+
+        my $pass_id   = $mailout->_internal_message_id;
+        my $pass_type = $mailout->mailout_type;
+
+        # DADA::Mail::MailOut uses DADA::MailingList::Settings and
+        # DADA::MailingList::Subscribers
+        # The only way to figure this out totally is to get rid of the
+        # current DADA::Mail::MailOut object and re-make it. Weird, huh?
+
+        $mailout = undef;
+        $mailout = DADA::Mail::MailOut->new(
+            {
+                -list   => $self->{list},
+                -ls_obj => $self->{ls}
+            }
+        );
+
+        $mailout->associate( $pass_id, $pass_type );
+
+        require DADA::App::Subscriptions::ConfirmationTokens;
+        $self->child_ct_obj(
+            DADA::App::Subscriptions::ConfirmationTokens->new() );
+        $self->child_ct_obj->{dbh} = $dbh;
+
+        ## And many, many more,
+        ## We'd probably have to undef and make a new object for
+        ## DADA::Mail::MailOut....
+        ## And what else?
+        ## DADA::Mail::MailOut needs a way to pass the shared database (now new)
+        ## Handle...
+
+    }
+    else {
+        require DADA::App::Subscriptions::ConfirmationTokens;
+        $self->child_ct_obj(
+            DADA::App::Subscriptions::ConfirmationTokens->new() );
+    }
+
+    return $mailout;
+
+}
+
+
+
+
+sub _set_clickthrough_tracking_stuff {
+
+    my $self = shift;
+    my ($args) = @_;
+
+    my $fields = $args->{-fields};
+
+    ##################################################################
+    # ClickThrough Tracking Stuff
+    # This sometimes fail, if the SQL connection is dropped.
+    # ! I've currently taken off the optimization that works around
+    # this problem, in hopes that we can find a solution, that doesn't
+    # involve a workaround, but a fix, instead.
+    #
+
+    # DEV: Should we only use this for mass mailings to, "list"?!
+    # This still sucks, since this'll reparse after each restart.
+    require DADA::Logging::Clickthrough;
+    my $ct = DADA::Logging::Clickthrough->new(
+        {
+            -list => $self->{list},
+
+            # I guess one way to find out if the
+            # InactiveDestroy stuff is working,
+            # Is isf DADA::Logging::Clickthrough
+            # is working without this kludge:
+            #
+            #-li   => $self->{ls}->params,
+            #
+        }
+    );
+    if ( $ct->enabled ) {
+        $fields = $ct->parse_email(
+            {
+                -as_ref => 1,
+                -fields => $fields,
+                -mid    => $fields->{'Message-ID'},
+
+            }
+        );
+        undef $ct;
+
+        # And, that's it.
+    }
+    #
+    ##################################################################
+
+}
+
+
+
+
 
 sub _adjust_bounce_score {
 	 
@@ -2795,22 +2848,6 @@ sub _email_batched_finished_notification {
 }
 
 
-
-
-sub _send_die { 
-	
-	my $self  = shift; 
-	my $debug = shift; 
-	my $report;
-	
-	if($debug){ 
-		$report = "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Mass Mailing Error! INFORMATION: Messages Sent: $debug->{-Messages_Sent},  Mailing Failed At Address: $debug->{-Last_Email}, Message Subject: $debug->{-Message_Subject}, Using List File: $debug->{-List_File}, List File Size: $debug->{-List_File_Size} bytes, Details: $!";
-		croak($report); 
-	}else{
-		croak("$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: can't pipe to mail program using settings: '$DADA::Config::MAIL_SETTINGS or $DADA::Config::MASS_MAIL_SETTINGS': $!\n");
-	}
-	
-}
 
 
 sub _verp { 
