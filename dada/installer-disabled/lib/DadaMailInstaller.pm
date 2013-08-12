@@ -225,6 +225,7 @@ my $advanced_config_params = {
     show_security_options               => 1,
     show_global_mass_mailing_options    => 1,
     show_cache_options                  => 1,
+    show_debugging_options              => 1,
     show_amazon_ses_options             => 1,
     show_annoying_whiny_pro_dada_notice => 0,
 };
@@ -892,7 +893,7 @@ sub grab_former_config_vals {
 		$local_q->param('template_options_USER_TEMPLATE', $BootstrapConfig::USER_TEMPLATE); 		
 	}
 
-	# Global Template Options 
+	# Caching Options 
 	if(defined($BootstrapConfig::SCREEN_CACHE) || defined($BootstrapConfig::DATA_CACHE)) { 
 		$local_q->param('configure_cache', 1); 
 		# Watch this, now: 
@@ -919,7 +920,24 @@ sub grab_former_config_vals {
 		$local_q->param('cache_options_DATA_CACHE', 1); 			
 	}
 
-	
+
+	# Debugging Options 
+	if(defined($BootstrapConfig::DEBUG_TRACE) || defined(%BootstrapConfig::CPAN_DEBUG_SETTINGS)) { 
+		$local_q->param('configure_debugging', 1); 
+		foreach(keys %{$BootstrapConfig::DEBUG_TRACE}) { 
+			$local_q->param(
+				'debugging_options_' . $_,
+				$BootstrapConfig::DEBUG_TRACE->{$_}
+			);
+		}
+		foreach(keys %BootstrapConfig::CPAN_DEBUG_SETTINGS) { 
+			$local_q->param(
+				'debugging_options_' . $_,
+				$BootstrapConfig::CPAN_DEBUG_SETTINGS{$_}
+			);
+		}
+
+	}
 	# Configure Security Options
 	if(
 		defined($BootstrapConfig::SHOW_ADMIN_LINK)
@@ -1532,7 +1550,37 @@ sub create_dada_config_file {
 		}
 	}
 	
+	
+	
+	
+	my $debugging_options_params = {};
+	if($q->param('configure_debugging') == 1){ 
+		$debugging_options_params->{configure_debugging} = 1;
+		my @debug_options = qw(
+			DADA_App_DBIHandle
+			DADA_App_Subscriptions
+			DADA_Logging_Clickthrough
+			DADA_Profile
+			DADA_Profile_Fields
+			DADA_Profile_Session
+			DADA_Mail_MailOut
+			DADA_Mail_Send
+			DADA_App_BounceHandler_ScoreKeeper
+			DADA_MailingList_baseSQL
 
+			DBI
+			HTML_TEMPLATE
+			MIME_LITE_HTML
+			MAIL_POP3CLIENT
+			NET_SMTP
+
+		);
+
+		for my $debug_option(@debug_options) { 
+			$debugging_options_params->{'debugging_options_' . $debug_option} = clean_up_var($q->param('debugging_options_' . $debug_option)) || 0; 
+		}
+		
+	}
 	
 	my $security_params = {};
 	if($q->param('configure_security') == 1){ 
@@ -1582,7 +1630,8 @@ sub create_dada_config_file {
 				Big_Pile_Of_Errors     => $Big_Pile_Of_Errors, 
 				Trace                  => $Trace, 
 				%{$SQL_params},
-				%{$cache_options_params}, 
+				%{$cache_options_params},
+				%{$debugging_options_params}, 
 			    %{$template_options_params},
 				%{$profiles_params},
 				%{$security_params},

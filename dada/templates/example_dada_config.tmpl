@@ -160,6 +160,39 @@ $SCREEN_CACHE = <!-- tmpl_var cache_options_SCREEN_CACHE  default="1" -->;
 $DATA_CACHE   = <!-- tmpl_var cache_options_DATA_CACHE  default="1" -->; 
 <!-- /tmpl_if --> 
 
+
+<!-- tmpl_if configure_debugging --> 
+#---------------------------------------------------------------------#
+# Debugging Options 
+
+$DEBUG_TRACE = {
+
+    DADA_App_DBIHandle                 => <!-- tmpl_var debugging_options_DADA_App_DBIHandle  default="0" -->,
+    DADA_App_Subscriptions             => <!-- tmpl_var debugging_options_DADA_App_Subscriptions  default="0" -->,
+    DADA_Logging_Clickthrough          => <!-- tmpl_var debugging_options_DADA_Logging_Clickthrough  default="0" -->,
+    DADA_Profile                       => <!-- tmpl_var debugging_options_DADA_Profile  default="0" -->,
+    DADA_Profile_Fields                => <!-- tmpl_var debugging_options_DADA_Profile_Fields  default="0" -->,
+    DADA_Profile_Session               => <!-- tmpl_var debugging_options_DADA_Profile_Session  default="0" -->,
+    DADA_Mail_MailOut                  => <!-- tmpl_var debugging_options_DADA_Mail_MailOut  default="0" -->,
+    DADA_Mail_Send                     => <!-- tmpl_var debugging_options_DADA_Mail_Send  default="0" -->,
+    DADA_App_BounceHandler_ScoreKeeper => <!-- tmpl_var debugging_options_DADA_App_BounceHandler_ScoreKeeper  default="0" -->,
+    DADA_MailingList_baseSQL           => <!-- tmpl_var debugging_options_DADA_MailingList_baseSQL  default="0" -->,
+
+};
+
+%CPAN_DEBUG_SETTINGS = (
+
+    DBI             =>  <!-- tmpl_var debugging_options_DBI  default="0" -->,
+    HTML_TEMPLATE   =>  <!-- tmpl_var debugging_options_HTML_TEMPLATE  default="0" -->,
+    MIME_LITE_HTML  =>  <!-- tmpl_var debugging_options_MIME_LITE_HTML  default="0" -->,
+    MAIL_POP3CLIENT =>  <!-- tmpl_var debugging_options_MAIL_POP3CLIENT  default="0" -->,
+    NET_SMTP        =>  <!-- tmpl_var debugging_options_NET_SMTP  default="0" -->,
+
+);
+
+<!-- /tmpl_if --> 
+
+
 <!-- tmpl_if configure_templates --> 
 #---------------------------------------------------------------------#
 # Template Options 

@@ -120,6 +120,10 @@ $(document).ready(function() {
 		$("body").on('click', "#configure_cache", function(event) {
 			installer_checkbox_toggle_option_groups('configure_cache', 'cache_options');
 		});
+
+		$("body").on('click', "#configure_debugging", function(event) {
+			installer_checkbox_toggle_option_groups('configure_debugging', 'debugging_options');
+		});
 		
 		
 		$("body").on('click', "#configure_security", function(event) {
@@ -143,6 +147,7 @@ $(document).ready(function() {
 		installer_checkbox_toggle_option_groups('configure_security', 'security_options');
 		installer_checkbox_toggle_option_groups('configure_mass_mailing', 'mass_mailing_options');
 		installer_checkbox_toggle_option_groups('configure_cache', 'cache_options');
+		installer_checkbox_toggle_option_groups('configure_debugging', 'debugging_options');
 
 
 		$("#dada_files_help").hide();

@@ -898,6 +898,127 @@ editors also have the ability to make simple HTML tables for basic layouts.
 
 <!-- /tmpl_if --> 
 
+<!-- tmpl_if show_debugging_options --> 
+<p>
+	<input type="checkbox" name="configure_debugging" id="configure_debugging" value="1" />			
+<label for="configure_debugging">Configure Debugging</label>
+</p>
+
+
+<div id="debugging_options">
+<fieldset> 
+	
+	<p>
+		<input type="checkbox" name="debugging_options_DADA_App_DBIHandle" id="debugging_options_DADA_App_DBIHandle" value="1"  />			
+		<label for="debugging_options_DADA_App_DBIHandle">
+			DADA::App::DBIHandle
+		</label>
+	</p>
+
+	<p>
+		<input type="checkbox" name="debugging_options_DADA_App_Subscriptions" id="debugging_options_DADA_App_Subscriptions" value="1"  />			
+		<label for="debugging_options_DADA_App_Subscriptions">
+			DADA::App::Subscriptions
+		</label>
+	</p>
+
+	<p>
+		<input type="checkbox" name="debugging_options_DADA_Logging_Clickthrough" id="debugging_options_DADA_Logging_Clickthrough" value="1"  />			
+		<label for="debugging_options_DADA_Logging_Clickthrough">
+			DADA::Logging::Clickthrough
+		</label>
+	</p>
+
+	<p>
+		<input type="checkbox" name="debugging_options_DADA_Profile" id="debugging_options_DADA_Profile" value="1"  />			
+		<label for="debugging_options_DADA_Profile">
+			DADA::Profile
+		</label>
+	</p>
+
+	<p>
+		<input type="checkbox" name="debugging_options_DADA_Profile_Fields" id="debugging_options_DADA_Profile_Fields" value="1"  />			
+		<label for="debugging_options_DADA_Profile_Fields">
+			DADA::Profile::Fields
+		</label>
+	</p>
+
+	<p>
+		<input type="checkbox" name="debugging_options_DADA_Profile_Session" id="debugging_options_DADA_Profile_Session" value="1"  />			
+		<label for="debugging_options_DADA_Profile_Session">
+			DADA::Profile::Session
+		</label>
+	</p>
+
+	<p>
+		<input type="checkbox" name="debugging_options_DADA_Mail_MailOut" id="debugging_options_DADA_Mail_MailOut" value="1"  />			
+		<label for="debugging_options_DADA_Mail_MailOut">
+			DADA::Mail::MailOut
+		</label>
+	</p>
+
+	<p>
+		<input type="checkbox" name="debugging_options_DADA_Mail_Send" id="debugging_options_DADA_Mail_Send" value="1"  />			
+		<label for="debugging_options_DADA_Mail_Send">
+			DADA::Mail::Send
+		</label>
+	</p>
+
+	<p>
+		<input type="checkbox" name="debugging_options_DADA_App_BounceHandler_ScoreKeeper" id="debugging_options_DADA_App_BounceHandler_ScoreKeeper" value="1"  />			
+		<label for="debugging_options_DADA_App_BounceHandler_ScoreKeeper">
+			DADA::App::BounceHandler::ScoreKeeper
+		</label>
+	</p>
+
+	<p>
+		<input type="checkbox" name="debugging_options_DADA_MailingList_baseSQL" id="debugging_options_DADA_MailingList_baseSQL" value="1"  />			
+		<label for="debugging_options_DADA_MailingList_baseSQL">
+			DADA::MailingList::baseSQL
+		</label>
+	</p>
+
+	<p>
+		<input type="checkbox" name="debugging_options_DBI" id="debugging_options_DBI" value="1"  />			
+		<label for="debugging_options_DBI">
+			DBI
+		</label>
+	</p>
+
+	<p>
+		<input type="checkbox" name="debugging_options_HTML_Template" id="debugging_options_HTML_Template" value="1"  />			
+		<label for="debugging_options_HTML_Template">
+			HTML::Template
+		</label>
+	</p>
+
+	<p>
+		<input type="checkbox" name="debugging_options_MIME_LITE_HTML" id="debugging_options_MIME_LITE_HTML" value="1"  />			
+		<label for="debugging_options_MIME_LITE_HTML">
+			MIME::LITE::HTML
+		</label>
+	</p>
+
+	<p>
+		<input type="checkbox" name="debugging_options_MAIL_POP3CLIENT" id="debugging_options_MAIL_POP3CLIENT" value="1"  />			
+		<label for="debugging_options_MAIL_POP3CLIENT">
+			Mail::POP3Client
+		</label>
+	</p>
+
+	<p>
+		<input type="checkbox" name="debugging_options_NET_SMTP" id="debugging_options_NET_SMTP" value="1"  />			
+		<label for="debugging_options_NET_SMTP">
+			Net::SMTP
+		</label>
+	</p>
+
+</div>
+
+<!-- /tmpl_if --> 
+
+
+
 
 <!-- tmpl_if show_global_template_options --> 
 
