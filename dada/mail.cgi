@@ -1580,7 +1580,12 @@ sub sending_monitor {
 			}
 		);
 
-			
+		warn '$status->{should_be_restarted} ' . $status->{should_be_restarted}; 
+		warn q{$ls->param('auto_pickup_dropped_mailings') } . $ls->param('auto_pickup_dropped_mailings') ; 
+		warn '$restart_count' . $restart_count; 
+		warn '$status->{mailout_stale}' . $status->{mailout_stale}; 
+		warn '$active_mailouts' . $active_mailouts; 
+		
 		if(
 		$status->{should_be_restarted}								   == 1 && # It's dead in the water.
 		$ls->param('auto_pickup_dropped_mailings')                            == 1 && # Auto Pickup is turned on...
@@ -1589,7 +1594,9 @@ sub sending_monitor {
 		$status->{mailout_stale}                                       != 1 && # The mailout hasn't been sitting around too long without being restarted,
 		$active_mailouts                                                < $DADA::Config::MAILOUT_AT_ONCE_LIMIT # There's not already too many mailouts going out.
 		){
-
+			
+			warn "Yes, we need to restart!"; 
+			
 			# Whew! Take that for making sure that the damn thing is supposed to be sent.
 		
 			my $reload_url = $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&id=' . $id . '&process=restart&type=' . $type . '&restart_count=1'; 
@@ -1600,6 +1607,9 @@ sub sending_monitor {
 			</script>";
 			return;
 		} else {
+			
+			warn "No, no need to restart."; 
+			
 			$restart_count = 0;
 		}
 
