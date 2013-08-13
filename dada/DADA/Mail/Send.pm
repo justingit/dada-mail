@@ -382,6 +382,7 @@ sub send {
 
 
 	if($fields{To} =~ m/\<bad\.apple\@example\.com\>$/) { 
+		warn 'bad apple!'; 
 		return -1; 
 	}
 
@@ -750,18 +751,18 @@ sub send {
             
 	
 			if($self->test){ 
-            				
                 # print "NOT SENDING - sending message to test file: '" . $self->test_send_file . "'"; 
-                open(MAIL, '>>' . $self->test_send_file) 
-					or warn "couldn't open test file: '" . $self->test_send_file . "' because: $!"
-					and return -1; 
-                
+                unless(open(MAIL, '>>' . $self->test_send_file)) { 
+					warn "couldn't open test file: '" . $self->test_send_file . "' because: $!";
+					return -1; 
+                }
             }
             else { 
-            	
-                open(MAIL,$live_mailing_settings) ||
-					warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: can't pipe to mail program using settings: $DADA::Config::MAIL_SETTINGS or $DADA::Config::MASS_MAIL_SETTINGS: $!"
-					and return -1; 
+
+                unless(open(MAIL,$live_mailing_settings)) { 
+					warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: can't pipe to mail program using settings: $DADA::Config::MAIL_SETTINGS or $DADA::Config::MASS_MAIL_SETTINGS: $!";
+					return -1; 
+				}
 			}
 
 			
@@ -789,12 +790,15 @@ sub send {
 
 
             print MAIL $fields{Body} . "\n"; # DEV: Why the last, "\n"?
-            close(MAIL) 
-                or warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Warning: 
+
+
+            unless(close(MAIL)) {  
+            	warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Warning: 
                          didn't close pipe to '$live_mailing_settings' while 
-                         attempting to send a message to: '" . $fields{To} ." because:' $!"
-				and return -1;  
-								
+                         attempting to send a message to: '" . $fields{To} ." because:' $!";
+				return -1;  
+			}
+		
         }
 		elsif($local_li->{sending_method} eq 'amazon_ses' ) { 
 
@@ -856,7 +860,7 @@ sub send {
        
 		$self->{mj_log}->mj_log($local_li->{list}, 'Mail Sent', "Recipient:$recipient_for_log, Subject:$fields{Subject}") 
 			if $DADA::Config::LOG{mailings};     
-			
+
 		$local_li = {};
 			
    		return 1; 
@@ -1746,6 +1750,8 @@ sub mass_send {
 					warn 'Try #' . $tries 
 						if $t; 
 					my $send_return = $self->send(%nfields, from_mass_send => 1); # The from_mass_send is a hack. 
+					warn '$send_return:"'.$send_return.'"';
+					
 					if($send_return == -1 && $tries < 3){
 						my $warning = '[' . $self->{list} . '] Mass Mailing:' . $mailout_id 
 						. ' Problems sending to, ' . $nfields{To} 
