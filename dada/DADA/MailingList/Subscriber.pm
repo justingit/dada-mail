@@ -14,7 +14,7 @@ BEGIN {
 }
 use base "DADA::MailingList::Subscriber::$type";
 use Carp qw(carp croak);
-
+$Carp::Verbose = 1; 
 use strict;
 
 use Carp qw(croak carp confess);
@@ -135,7 +135,7 @@ sub _init {
 	##############################################################################
 	# This is the new stuff, I guess:
 	if($self->{lh}->allowed_list_types($args->{-type}) != 1){ 
-        croak "list_type passed in, -type is not valid"; 
+        croak "list_type passed in, -type (" . $args->{ -type } . ") is not valid 3";
     }	
 	#/This is the new stuff, I guess: 
 	##############################################################################	
@@ -221,7 +221,7 @@ sub copy {
     }
 
     if($self->{lh}->allowed_list_types($args->{-to}) != 1){ 
-        croak "list_type passed in, -to is not valid"; 
+        croak "list_type passed in, -type (" . $args->{ -type } . ") is not valid 4";
     }
 
     my $moved_from_checks_out = 0; 

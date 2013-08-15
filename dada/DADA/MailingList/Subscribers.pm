@@ -181,17 +181,27 @@ sub also_subscribed_to {
 	my ($args) = @_; 
 	
 	my @lists = (); 
+	if(! exists($args->{-types})){ 
+		$args->{-types} = [qw(list)];
+	}
 	
-	foreach my $list(available_lists()){ 
+	
+	LIST: foreach my $list(available_lists()){ 
+
 		next
-			if $list eq $self->{list};
-		
+			if $list eq $self->{list};	
+
 		my $temp_lh = DADA::MailingList::Subscribers->new({-list => $list});
-		if($temp_lh->check_for_double_email(
-	        -Email => $args->{ -email },
-	        -Type  => $args->{ -type }
-	    ) == 1){
-			push(@lists, $list); 
+				
+		for my $type(@{$args->{-types}}){ 
+			if($temp_lh->check_for_double_email(
+		        -Email => $args->{ -email },
+		        -Type  => $type
+		    ) == 1){
+				push(@lists, $list); 
+				undef $temp_lh;
+				next LIST; 
+			}
 		}
 		undef $temp_lh;
 	}
@@ -211,7 +221,6 @@ sub admin_remove_subscribers {
 		croak "you MUST pass the, '-type' paramater!"; 
 	}
 	my $type      = $args->{-type};
-	
 
 	my $d_count = 0; 
 	for my $address(@$addresses){ 
@@ -270,6 +279,153 @@ sub admin_remove_subscribers {
 	return($d_count, $bl_count); 
 		
 }
+
+
+
+sub admin_update_address { 
+
+	my $self = shift; 
+	my ($args) = @_; 
+	
+	my $addresses = $args->{-addresses}; 
+	if(! exists($args->{-type})){ 
+		croak "you MUST pass the, '-type' paramater!"; 
+	}
+	my $type          = $args->{-type};
+	my $email         = $args->{-email}; 
+	my $updated_email = $args->{-updated_email}; 
+
+	my $og_prof = undef; 
+	
+	if($self->can_have_subscriber_fields) { 
+		require DADA::Profile; 
+		$og_prof = DADA::Profile->new({-email => $email}); 	
+	}
+		
+	# Switch the addresses around
+
+	require DADA::Logging::Usage;
+    my $log = new DADA::Logging::Usage;
+
+	$self->remove_subscriber(
+		{
+			-email  => cased($email),
+			-type   => $type, 
+			-log_it => 0, 
+		}
+	);
+	$self->add_subscriber(
+		{
+			-email  => cased($updated_email), 
+			-type   => $type, 
+			-log_it => 0,
+		}
+	);
+	$log->mj_log(
+		 $self->{list}, 
+		'Updated Subscription for ' .  $self->{list} . '.' . $type,  
+		$email . ':' . $updated_email
+	);
+	
+	
+	# PROFILES
+	
+	if(! $self->can_have_subscriber_fields) { 
+	
+	}
+	else { 
+		
+		# JUST one list? 
+		# it gets a little crazy... 
+	
+		# Basically what we want to do is this: 
+		# If the OLD address is subscribed to > 1 list, don't mess with the current
+		# profile information, 
+		# If the NEW address already has profile information, do not overwrite it
+		# 
+
+		# 
+		my $og_subscriptions = $og_prof->subscribed_to({-type => 'list'}); 
+
+		if(! $og_prof->exists){ 
+			# Make one (old email) 
+			$og_prof->insert({
+			    -password  => $og_prof->_rand_str(8),
+			    -activated => 1,
+			}); 
+		}
+
+		# Is there another mailing list that has the old address as a subscriber? 
+		# Remember, we already changed over ONE of the subscriptions. 
+
+		if(scalar(@$og_subscriptions) >= 1){ 
+	
+			my $updated_prof = DADA::Profile->new({-email => $updated_email});
+			# This already around? 
+			if($updated_prof->exists){ 
+		
+				# Got any information? 
+				if($updated_prof->{fields}->are_empty){ 
+			
+					# No info in there yet? 
+					$updated_prof->{fields}->insert({
+						-fields => $og_prof->{fields}->get, 
+						-mode   => 'writeover', 
+					}); 		
+				}
+			}
+			else {
+		
+				# So there's not a profile, yet? 
+				# COPY (don't move) the old profile info, 
+				# to the new profile
+				# (inludeds fields) 
+				my $new_prof = $og_prof->copy({ 
+					-from => $email, 
+					-to   => $updated_email, 
+				}); 
+			}
+		}
+		else { 
+	
+			# So, no other mailing list has a subscription for the new email address
+			# 
+			my $updated_prof = DADA::Profile->new({-email => $updated_email});
+			# But does this profile already exists for the updated address? 
+			
+			if($updated_prof->exists){ 
+		
+				 # Well, nothing, since it already exists.
+			}
+			else { 
+		
+				# updated our old email profile, to the new email 
+				# Only ONE subscription, w/Profile
+				# First save the updated email
+				
+				$og_prof->update({ 
+					-activated      => 1, 
+					-update_email	=> $updated_email, 
+				}); 
+				# Then this method changes the updated email to the email..
+				# And changes the profiles fields, as well... 
+				$og_prof->update_email;		
+			}
+		}
+		# so, the old prof have any subscriptions? 
+		my $old_prof = DADA::Profile->new({-email => $email}); 
+		if($old_prof->exists){ 
+			# Again, this will only touch, "list" sublist...
+			if(scalar(@{$old_prof->subscribed_to}) == 0) { 
+				# Then we can remove it, 
+				$old_prof->remove;
+			}
+		}
+	}
+	
+	return 1; 
+}
+
 
 
 

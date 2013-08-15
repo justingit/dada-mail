@@ -136,7 +136,7 @@ sub move {
     }
     
     if($self->{lh}->allowed_list_types($args->{-to} ) != 1){ 
-        croak "list_type passed in, -to is not valid"; 
+        croak "list_type passed in, -type (" . $args->{ -type } . ") is not valid 2";
     }
 
    

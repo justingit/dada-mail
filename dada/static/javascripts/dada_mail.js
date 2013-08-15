@@ -159,24 +159,27 @@ $(document).ready(function() {
 	}
 	if($("#membership").length) {
 
-		$("body").on("click", "#validate_update_email", function(event) {
-			updateEmail();
-		});	
-		$("body").on("click", "#validate_update_email_for_all_mailing_lists", function(event) {
-			updateEmail(1);
-		});	
-
-		$("body").on("click", "#remove_from_multiple_lists_button", function(event) {
-			remove_from_multiple_lists();
+		$("body").on("submit", "#remove_email_form", function(event) {
+			event.preventDefault();
 		});
+		$("body").on("click", "#validate_remove_email", function(event) {
+			validate_remove_email();
+		});
+		$("body").on("click", "#validate_remove_email_multiple_lists", function(event) {
+			validate_remove_email(1);
+		});
+		
+		twiddle_validate_multiple_lists_button('validate_update_email_for_multiple_lists');
+		twiddle_validate_multiple_lists_button('validate_remove_email_multiple_lists');
+		
+		$("body").on("click", "#validate_update_email", function(event) {
+			validate_update_email();
+		});	
+		$("body").on("click", "#validate_update_email_for_multiple_lists", function(event) {
+			validate_update_email(1);
+		});	
 
-		if($("#remove_from_multiple_lists_button").length) { 
-						
-			$("body").on("change", '#type_remove', function(event) {
-				twiddle_remove_from_multiple_lists_button(); 
-			});
-			twiddle_remove_from_multiple_lists_button();
-		}
+
 		
 	}
 
@@ -934,37 +937,39 @@ function mailing_list_history() {
 }
 
 
-function twiddle_remove_from_multiple_lists_button() { 
-
+function twiddle_validate_multiple_lists_button(button_id) { 
+	if($('#' + button_id).length < 1) { 
+		return; 
+	}
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
 		type: "GET",
 		data: {
-			f: 'also_subscribed_to',
+			f: 'also_member_of',
 			email: $("#email").val(),
 			type:  $("#type_remove option:selected").val()
 		},
 		dataType: "json",
 		success: function(data) {
-			if(data.subscribed_to_other_lists == 1){ 
+			if(data.also_member_of == 1){ 
 				 //alert("showing..."); 
-				if ($('#remove_from_multiple_lists_button').hasClass('disabled')) {
-					$("#remove_from_multiple_lists_button").removeClass('disabled');
+				if ($('#' + button_id).hasClass('disabled')) {
+					$('#' + button_id).removeClass('disabled');
 				}
-				if($('#remove_from_multiple_lists_button').prop('disabled',true)) { 
-					$('#remove_from_multiple_lists_button').prop('disabled',false)
+				if($('#' + button_id).prop('disabled',true)) { 
+					$('#' + button_id).prop('disabled',false)
 				}				
 			}
 			else { 
 				 //alert("hiding..."); 
-				if ($('#remove_from_multiple_lists_button').hasClass('disabled')) {
-					//$("#remove_from_multiple_lists_button").hide('fade');
+				if ($('#' + button_id).hasClass('disabled')) {
+					/* ... */
 				}
 				else { 
-					$("#remove_from_multiple_lists_button").addClass('disabled');
+					$('#' + button_id).addClass('disabled');
 				}
-				if($('#remove_from_multiple_lists_button').prop('disabled',false)) { 
-					$('#remove_from_multiple_lists_button').prop('disabled',true)
+				if($('#' + button_id).prop('disabled',false)) { 
+					$('#' + button_id).prop('disabled',true)
 				}
 				
 			}
@@ -979,7 +984,7 @@ function twiddle_remove_from_multiple_lists_button() {
 }
 
 
-function updateEmail(is_for_all_lists) {
+function validate_update_email(is_for_all_lists) {
 		
 	$.colorbox({
 		top: 0,
@@ -990,7 +995,7 @@ function updateEmail(is_for_all_lists) {
 		opacity: 0.50,
 		href: $("#s_program_url").val(),
 		data: {
-			f: 'update_email_results',
+			f: 'validate_update_email',
 			updated_email: $("#updated_email").val(),
 			email:         $("#original_email").val(),
 			for_all_lists: is_for_all_lists	
@@ -998,7 +1003,8 @@ function updateEmail(is_for_all_lists) {
 	});
 }
 
-function remove_from_multiple_lists() { 
+function validate_remove_email(for_multiple_lists) { 
+	
 	$.colorbox({
 		top: 0,
 		fixed: true,
@@ -1008,10 +1014,10 @@ function remove_from_multiple_lists() {
 		opacity: 0.50,
 		href: $("#s_program_url").val(),
 		data: {
-			f:     'remove_from_multiple_lists',
-			email: $("#email").val(),
-			type:  $("#type_remove option:selected").val()
-			
+			f:                  'validate_remove_email',
+			email:              $("#email").val(),
+			type:               $("#type_remove option:selected").val(),
+			for_multiple_lists: for_multiple_lists	
 		}
 	});
 	

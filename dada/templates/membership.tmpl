@@ -44,7 +44,11 @@
 
 
 	<!-- tmpl_unless member_of_num --> 
-		<h2><!-- tmpl_var email --> isn't a part of your Mailing List</h2>
+		<div class="clearskiesbox">
+			<p>
+				<!-- tmpl_var email --> isn't a part of your Mailing List.
+			</p>
+		</div>
 	<!-- tmpl_else --> 
 
 		<h2>Member of:</h2>
@@ -117,12 +121,12 @@
 			&#8596; Update
 		</label> address to:
 		
-		<input type="text" id="updated_email" name="updated_email" value="<!-- tmpl_var email -->" class="midi" />
-		<input type="button" value="Update..." class="cautionary" id="validate_update_email" class="midi" />
+		<input type="text" id="updated_email" name="updated_email" value="<!-- tmpl_var email -->" />
+		<input type="button" value="Update..." class="cautionary" id="validate_update_email" />
 		
 		<!-- tmpl_if root_login -->
 			<!-- tmpl_if can_have_subscriber_fields -->
-				<input type="button" value="Update on All Mailing Lists..." class="cautionary" id="validate_update_email_for_all_mailing_lists" />
+				<input type="button" value="Update on Multiple Mailing Lists..." class="cautionary" id="validate_update_email_for_multiple_lists" />
 			<!-- /tmpl_if -->
 		<!-- /tmpl_if --> 
 		
@@ -137,7 +141,7 @@
 	
 	<!-- tmpl_if remove_from_num --> 
 
-		<form  action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="remove_email_form">
 		<input type="hidden" name="process" value="delete" />
 	
 		<input type="hidden" name="address" value="<!-- tmpl_var email -->" />
@@ -145,10 +149,10 @@
 		<input type="hidden" name="return_to" value="membership" />
 		<input type="hidden" name="return_address" value="<!-- tmpl_var email -->" />
 		<p>
-			<label for="type_remove">&#8592;  Remove</label> address from: <!-- tmpl_var remove_from_popup_menu -->
-			<input type="submit" value="Remove" class="cautionary"  />
+			<label for="type_remove">&#8592;  Remove</label> address:
+			<input type="button" id="validate_remove_email" value="Remove..." class="cautionary"  />
 			<!-- tmpl_if root_login -->
-				<input type="button" id="remove_from_multiple_lists_button" value="Remove on Multiple Mailing Lists..." class="cautionary"  />
+				<input type="button" id="validate_remove_email_multiple_lists" value="Remove on Multiple Mailing Lists..." class="cautionary"  />
 			<!-- /tmpl_if -->
 			</p>
 		</form>
