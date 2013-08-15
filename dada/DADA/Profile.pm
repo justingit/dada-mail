@@ -456,16 +456,37 @@ sub subscribed_to {
     for (@available_lists) {
         my $lh = DADA::MailingList::Subscribers->new( { -list => $_ } );
 
-        if (
-            $lh->check_for_double_email(
-                -Email => $self->{email},
-                -Type  => $args->{ -type }
-            )
-          )
-        {
-            push ( @$subscriptions, $_ );
-        }
-
+		if($args->{-type} eq ':all'){ 
+			
+			my %list_types = (
+							  list               => 'Subscribers',
+			                  black_list         => 'Black Listed',
+			                  white_list         => 'White Listed', # White listed isn't working, no?
+			                  authorized_senders => 'Authorized Senders',
+			                  sub_request_list   => 'Subscription Requests',
+							  bounced_list       => 'Bouncing Addresses',
+			);
+			
+			ALL_TYPES: for my $s_type(keys %list_types){
+				if ($lh->check_for_double_email(
+	                	-Email => $self->{email},
+	                	-Type  => $s_type,
+				)) {
+	            	push ( @$subscriptions, $_ );
+					last ALL_TYPES;
+	        	}
+			}
+		}else { 
+	        if (
+	            $lh->check_for_double_email(
+	                -Email => $self->{email},
+	                -Type  => $args->{ -type }
+	            )
+	          )
+	        {
+	            push ( @$subscriptions, $_ );
+	        }
+		}
         # This needs its own method...
 
         $lss->{$_} = DADA::MailingList::Settings->new( { -list => $_ } );
@@ -1443,7 +1464,7 @@ C<subscribed_to> returns an array ref of all the lists the profile is subscribed
 
 You can pass a C<-type> param to change which sublists are looked at. The default is, C<list>. 
 
-You can also pass the, C<-html_tmpl_params> paramater (set to, "1") to return back a complex data struture that works well with HTML::Template: 
+You can also pass the, C<-html_tmpl_params> paramater (set to, "1") to return back a complex data structure that works well with HTML::Template: 
 
 If our profile was subscribed to the list, I<mylist> this: 
 	
@@ -1452,7 +1473,7 @@ If our profile was subscribed to the list, I<mylist> this:
 			-email => 'user@example.com'
 		}
 	); 
-	$p->subscribed_to_list(
+	$p->subscribed_to(
 		{
 			-list             => 'my list', 
 			-html_tmpl_params => 1, 

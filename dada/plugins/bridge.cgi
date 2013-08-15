@@ -140,20 +140,6 @@ use MIME::Parser;
 use MIME::Entity;
 use Getopt::Long;
 
-my %Global_Template_Options = (
-
-    #debug              => 1,
-    path              => [$DADA::Config::TEMPLATES],
-    die_on_bad_params => 0,
-
-    (
-          ( $DADA::Config::CPAN_DEBUG_SETTINGS{HTML_TEMPLATE} == 1 )
-        ? ( debug => 1, )
-        : ()
-    ),
-
-);
-
 my $parser = new MIME::Parser;
 $parser = optimize_mime_parser($parser);
 

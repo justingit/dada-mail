@@ -126,15 +126,24 @@ sub search {
 
 
 sub subscription_search {
-	
+
     my $self = shift;
     my ($args) = @_;
     if ( !exists( $args->{-email} ) ) {
         croak "you MUST pass the, '-email' paramater!";
     }
-    if ( !exists( $args->{-list} ) ) {
-        croak "you MUST pass the, '-list' paramater!";
+
+    if ( exists( $args->{-list} ) ) {
+        #warn 'args list exists!';
     }
+    else {
+        #warn 'args list does not exist!';
+
+    }
+
+    #    if ( !exists( $args->{-list} ) ) {
+    #        croak "you MUST pass the, '-list' paramater!";
+    #    }
 
     my $results = [];
 
@@ -143,36 +152,67 @@ sub subscription_search {
     open my $LOG_FILE, '<', $file
       or die "Cannot read log at: '" . $file . "' because: " . $!;
 
-    while ( my $l = <$LOG_FILE> ) {
-        chomp($l);
+		my $lines = 0; 
 
+	
+    LOGFILE: while ( my $l = <$LOG_FILE> ) {
+        chomp($l);
+		$lines++; 
 # Looking for entries like,
 # [Mon Jan 30 22:56:41 2012]	list	174.16.92.159	Subscribed to list.list	example209@example.com
-        my $llr = $self->log_line_report(
-		{ 
-			-list => $args->{-list}, 
-			-email => $args->{-email}, 
-			-line  => $l
-		}
-	);
-	
-		next if ! keys %$llr; 
-        if (   
-			$llr->{list} eq $args->{-list}
-            
-			&& (
-				$llr->{email} eq $args->{-email} 
-				|| 
-				$llr->{updated_email} eq $args->{-email}
-				)
-			)
-        {
-            push( @$results, $llr );
-        }
-    }
+        my $llr = {};
+        if ( exists( $args->{-list} ) ) {
 
+            $llr = $self->log_line_report(
+                {
+                    -email => $args->{-email},
+                    -line  => $l,
+                    -list  => $args->{-list}
+                }
+            );
+        }
+        else {
+            $llr = $self->log_line_report(
+                {
+                    -email => $args->{-email},
+                    -line  => $l,
+                }
+            );
+
+        }
+        if(!keys %$llr) { 
+			warn 'no keys!'; 
+			next LOGFILE; 
+		}
+        if ( exists( $args->{-list} ) ) {
+
+            if (
+                $llr->{list} eq $args->{-list}
+                && (   $llr->{email} eq $args->{-email}
+                    || $llr->{updated_email} eq $args->{-email} )
+              )
+            {
+                push( @$results, $llr );
+            }
+        }
+        else {
+
+            if (
+
+                $llr->{email} eq $args->{-email}
+                || $llr->{updated_email} eq $args->{-email}
+
+              )
+            {
+
+                push( @$results, $llr );
+            }
+        }
+
+    }
     close $LOG_FILE;
 
+	# warn 'lines: ' . $lines; 
     return $results;
 
 }
@@ -194,17 +234,65 @@ sub log_line_report {
 		invitelist         => 'List Invitations', 
     );
 
+#	if(exists($args->{-list})) { 
+#		warn "log_line_report: args list exists."; 
+#	}
+#	else { 
+#		warn "log_line_report: args list DOES NOT exist."; 
+#		
+#	}
+	
 	# An attempt at optimization
+		
+	if(exists($args->{-list})){ 	
+		if($list ne $args->{-list}) { 
+			#warn 'here.' . $args->{-line}; 
+			return {};
+		} 
+	}
 	if(exists($args->{-email}) && exists($args->{-list})){ 
-		return {} if($email ne $args->{-email} && $list ne $args->{-list}); 
+		
+		my ($e, $ue) = ''; 		
+		if($email =~ m/\:/){ 
+			($e, $ue) = split(':', $email);
+			
+		}
+		else { 
+			$e  = $email; 
+			$ue = $email; 
+		}
+		
+		 if(($e ne $args->{-email} && $ue ne $args->{-email}) && $list ne $args->{-list}) { 
+
+		#	warn 'e: "' . $e . '"'; 
+		#	warn 'ue: "' . $ue . '"'; 
+		#	warn '$args->{-email} "' . $args->{-email} . '"';
+
+		#	warn 'here.' . $args->{-line}; 
+			
+			return {};
+		}
 	}
 	elsif(exists($args->{-email})){ 
-		return {} if $email ne $args->{-email}; 
+		my ($e, $ue) = '';
+		if($email =~ m/\:/){ 
+			($e, $ue) = split(':', $email); 
+		}
+		else { 
+			$e  = $email; 
+			$ue = $email; 
+		}
+		
+		if($e ne $args->{-email} && $ue ne $args->{-email}) {
+			#warn 'e: "' . $e . '"'; 
+			#warn 'ue: "' . $ue . '"'; 
+			#warn '$args->{-email} "' . $args->{-email} . '"';
+			#
+			#warn 'here.' . $args->{-line}; 	 
+			return {};
+		}
+		
 	}
-	elsif(exists($args->{-list})){ 
-		return {} if $list ne $args->{-list}; 
-	}
-   
 
     my $sublist     = undef;
     my $base_action = undef;

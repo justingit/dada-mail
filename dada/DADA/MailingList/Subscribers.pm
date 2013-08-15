@@ -175,6 +175,32 @@ sub member_of {
     return $dmls->member_of($args);	
 }
 
+sub also_subscribed_to { 
+	
+	my $self = shift; 
+	my ($args) = @_; 
+	
+	my @lists = (); 
+	
+	foreach my $list(available_lists()){ 
+		next
+			if $list eq $self->{list};
+		
+		my $temp_lh = DADA::MailingList::Subscribers->new({-list => $list});
+		if($temp_lh->check_for_double_email(
+	        -Email => $args->{ -email },
+	        -Type  => $args->{ -type }
+	    ) == 1){
+			push(@lists, $list); 
+		}
+		undef $temp_lh;
+	}
+	
+	return @lists; 
+}
+
+
+
 sub admin_remove_subscribers { 
 	
 	my $self = shift; 

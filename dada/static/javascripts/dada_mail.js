@@ -152,6 +152,32 @@ $(document).ready(function() {
 	// Membership >> user@example.com
 	if ($("#mailing_list_history").length) {
 		mailing_list_history();
+		$(".radio_toggle_membership_history").live("click", function(event) {
+			mailing_list_history();
+		}); 
+		
+	}
+	if($("#membership").length) {
+
+		$("body").on("click", "#validate_update_email", function(event) {
+			updateEmail();
+		});	
+		$("body").on("click", "#validate_update_email_for_all_mailing_lists", function(event) {
+			updateEmail(1);
+		});	
+
+		$("body").on("click", "#remove_from_multiple_lists_button", function(event) {
+			remove_from_multiple_lists();
+		});
+
+		if($("#remove_from_multiple_lists_button").length) { 
+						
+			$("body").on("change", '#type_remove', function(event) {
+				twiddle_remove_from_multiple_lists_button(); 
+			});
+			twiddle_remove_from_multiple_lists_button();
+		}
+		
 	}
 
 	// Membership >> Invite/Add
@@ -879,13 +905,24 @@ backgroundColor: {
 
 function mailing_list_history() {
 	$("#mailing_list_history_loading").html('<p class="alert">Loading...</p>');
+
+	var scope = 'this_list';
+	if($("#toggle_membership_history").length){ 
+		if ($("#membership_history_all_lists").prop("checked") === true) {
+			scope = $("#membership_history_all_lists").val();
+			//alert("SCOPE: " + scope); 
+		} else if ($("#membership_history_this_list").prop("checked") === true) {	
+			scope = $("#membership_history_this_list").val();
+		}
+	}
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
 			f: 'mailing_list_history',
-			email: $("#email").val()
+			email: $("#email").val(),
+			membership_history: scope
 		},
 		dataType: "html"
 	});
@@ -896,30 +933,88 @@ function mailing_list_history() {
 	});
 }
 
-function updateEmail() {
-	var is_for_all_lists = 0;
-	if (
-	$('#for_all_mailing_lists').val() == 1 && $("#for_all_mailing_lists").prop("checked") === true) {
-		is_for_all_lists = 1;
-	}
-	$("#update_email_results_loading").html('<p class="alert">Loading...</p>');
+
+function twiddle_remove_from_multiple_lists_button() { 
+
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
-		type: "POST",
-		cache: false,
+		type: "GET",
+		data: {
+			f: 'also_subscribed_to',
+			email: $("#email").val(),
+			type:  $("#type_remove option:selected").val()
+		},
+		dataType: "json",
+		success: function(data) {
+			if(data.subscribed_to_other_lists == 1){ 
+				 //alert("showing..."); 
+				if ($('#remove_from_multiple_lists_button').hasClass('disabled')) {
+					$("#remove_from_multiple_lists_button").removeClass('disabled');
+				}
+				if($('#remove_from_multiple_lists_button').prop('disabled',true)) { 
+					$('#remove_from_multiple_lists_button').prop('disabled',false)
+				}				
+			}
+			else { 
+				 //alert("hiding..."); 
+				if ($('#remove_from_multiple_lists_button').hasClass('disabled')) {
+					//$("#remove_from_multiple_lists_button").hide('fade');
+				}
+				else { 
+					$("#remove_from_multiple_lists_button").addClass('disabled');
+				}
+				if($('#remove_from_multiple_lists_button').prop('disabled',false)) { 
+					$('#remove_from_multiple_lists_button').prop('disabled',true)
+				}
+				
+			}
+		},
+		error: function(xhr, ajaxOptions, thrownError) {
+			console.log('status: ' + xhr.status);
+			console.log('thrownError:' + thrownError);
+			return undef; 
+		}
+	});
+	
+}
+
+
+function updateEmail(is_for_all_lists) {
+		
+	$.colorbox({
+		top: 0,
+		fixed: true,
+		initialHeight: 50,
+		maxHeight: 480,
+		maxWidth: 649,
+		opacity: 0.50,
+		href: $("#s_program_url").val(),
 		data: {
 			f: 'update_email_results',
 			updated_email: $("#updated_email").val(),
-			email: $("#original_email").val(),
-			for_all_lists: is_for_all_lists
-		},
-		dataType: "html"
+			email:         $("#original_email").val(),
+			for_all_lists: is_for_all_lists	
+		}
 	});
-	request.done(function(content) {
-		$("#update_email_results").html(content);
-		$("#update_email_results_loading").html('<p class="alert">&nbsp;</p>');
-		$("#update_email_results").show('blind');
+}
+
+function remove_from_multiple_lists() { 
+	$.colorbox({
+		top: 0,
+		fixed: true,
+		initialHeight: 50,
+		maxHeight: 480,
+		maxWidth: 649,
+		opacity: 0.50,
+		href: $("#s_program_url").val(),
+		data: {
+			f:     'remove_from_multiple_lists',
+			email: $("#email").val(),
+			type:  $("#type_remove option:selected").val()
+			
+		}
 	});
+	
 }
 
 function show_change_profile_password_form() {

@@ -2,6 +2,8 @@
 	<!-- tmpl_if all_list_status --> 
 		<div class="clearskiesbox">
 			<p><strong>Validation Successful!</strong></p> 
+		</div> 
+		
 			<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">				
 				<input type="hidden" name="f" value="admin_update_email" /> 
 				<input type="hidden" name="email" value="<!-- tmpl_var email -->" /> 
@@ -9,12 +11,11 @@
 				<input type="hidden" name="for_all_lists" value="<!-- tmpl_var for_all_lists -->" /> 
 				<input type="submit" value="Update Subscription of: <!-- tmpl_var email --> to, <!-- tmpl_var updated_email -->" class="processing" />
 			</form> 
-		</div> 
 	<!-- tmpl_else --> 
 		<div class="badweatherbox">
 			<p><strong>Problems with Address Update:</strong></p> 
 			<!-- tmpl_loop all_list_reports --> 
-				<p><strong>Mailing List: <!-- tmpl_var list_name --></strong></p> 
+				<p><strong>Mailing List: <!-- tmpl_var list_name --> (<!-- tmpl_var list -->)</strong></p> 
 				<ul>
 				<!-- tmpl_loop all_reports -->
 					<li><strong><!-- tmpl_var type_title --></strong></li>
