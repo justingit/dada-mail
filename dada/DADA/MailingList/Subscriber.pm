@@ -65,11 +65,10 @@ sub _init {
 
  ##############################################################################
 # This is the new stuff, I guess: 
-	if ( !exists $args->{ -type } ) {
-	    $args->{ -type } = 'list';
-	}
- 	$self->{type} = $args->{ -type };
 
+	if(exists($args->{-type})) { 
+		$self->{type} = $args->{ -type };
+	}
 
 	if ( !exists $args->{ -email } ) {
 	    croak("You MUST supply an email address in the -email paramater!");
@@ -81,12 +80,13 @@ sub _init {
 		$args->{-validation_check} = 1; 
 	}
 	if(
+		exists($args->{-type})         &&
 		$args->{-type} ne 'black_list' &&
-		$args->{-type} ne 'white_list'
+		$args->{-type} ne 'white_list' 
 	){ 
 		if($args->{-validation_check} == 1) { 		
 		    if(DADA::App::Guts::check_for_valid_email($args->{-email}) == 1){ 
-		        croak "email, '" . $args->{-email} ."' passed in, -email is not valid"; 
+		        croak "email, '" . $args->{-email} ."' passed in, -email is not valid, type: " . $args->{-type}; 
 		    }
 		}
 	}
@@ -134,9 +134,11 @@ sub _init {
 
 	##############################################################################
 	# This is the new stuff, I guess:
-	if($self->{lh}->allowed_list_types($args->{-type}) != 1){ 
-        croak "list_type passed in, -type (" . $args->{ -type } . ") is not valid 3";
-    }	
+	if(exists($args->{-type})){ 
+		if($self->{lh}->allowed_list_types($args->{-type}) != 1){ 
+	        croak "list_type passed in, -type (" . $args->{ -type } . ") is not valid 3";
+	    }	
+	}
 	#/This is the new stuff, I guess: 
 	##############################################################################	
 

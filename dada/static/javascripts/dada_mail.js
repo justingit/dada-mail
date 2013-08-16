@@ -159,6 +159,33 @@ $(document).ready(function() {
 	}
 	if($("#membership").length) {
 
+
+		
+
+
+		$("body").on("submit", "#add_email_form", function(event) {
+			event.preventDefault();
+		});
+		$("submit", "#add_email_form").bind("keypress", function (e) {
+		    if (e.keyCode == 13) {
+		        return false;
+		    }
+		});
+		$("body").on("click", "#validate_add_email", function(event) {
+			validate_add_email();
+		});
+	
+		
+		
+		$("body").on("submit", "#update_email_form", function(event) {
+			event.preventDefault();
+		});
+		$("submit", "#update_email_form").bind("keypress", function (e) {
+		    if (e.keyCode == 13) {
+		        return false;
+		    }
+		});
+
 		$("body").on("submit", "#remove_email_form", function(event) {
 			event.preventDefault();
 		});
@@ -983,9 +1010,30 @@ function twiddle_validate_multiple_lists_button(button_id) {
 	
 }
 
+function validate_add_email() { 
+	$.colorbox({
+		top: 0,
+		fixed: true,
+		initialHeight: 50,
+		maxHeight: 480,
+		maxWidth: 649,
+		opacity: 0.50,
+		href: $("#s_program_url").val(),
+		data: {
+			f:              'add',
+			chrome:         0, 
+			email:          $("#add_email").val(),
+			type:           $("#type_add").val(),
+			process:        $("#add_process").val(),  
+			rand_string:    $("#add_rand_string").val(), 
+			method:         $("#add_method").val(), 
+			return_to:      $("#add_return_to").val(), 
+			return_address: $("#add_return_address").val(), 
+		}
+	});
+}
 
-function validate_update_email(is_for_all_lists) {
-		
+function validate_update_email(is_for_all_lists) {		
 	$.colorbox({
 		top: 0,
 		fixed: true,

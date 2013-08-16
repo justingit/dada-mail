@@ -392,6 +392,7 @@ sub remove {
 sub member_of {
 	
     my $self = shift;	
+
     my $query =
         'SELECT list_type FROM '
       . $self->{sql_params}->{subscriber_table}

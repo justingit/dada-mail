@@ -2,32 +2,36 @@
 
 <!-- tmpl_set name="title" value="Membership &#187; Verify Invitations/Additions" -->
 
-<div id="screentitle"> 
-	<div id="screentitlepadding">
+<!-- tmpl_if chrome --> 
 
-Membership (<!-- tmpl_var type_title -->) 
-&#187; 
-<!-- tmpl_if expr="(type eq 'list')" --> 
-	Invite
-	<!-- tmpl_if list_settings.enable_mass_subscribe -->
-		/ Subscribe
-	<!-- /tmpl_if -->
-<!-- tmpl_else --> 
-	Add
-<!-- /tmpl_if -->
-&#187; 
- <strong>Verify</strong>
-&#187;
-<!-- tmpl_if expr="(type eq 'list')" --> 
-	Send Invitation
-	<!-- tmpl_if list_settings.enable_mass_subscribe -->
-		/ Subscribe
-	<!-- /tmpl_if -->
-<!-- tmpl_else --> 
-	Add
-<!-- /tmpl_if -->
+	<div id="screentitle"> 
+		<div id="screentitlepadding">
 
-</div>
+	Membership (<!-- tmpl_var type_title -->) 
+	&#187; 
+	<!-- tmpl_if expr="(type eq 'list')" --> 
+		Invite
+		<!-- tmpl_if list_settings.enable_mass_subscribe -->
+			/ Subscribe
+		<!-- /tmpl_if -->
+	<!-- tmpl_else --> 
+		Add
+	<!-- /tmpl_if -->
+	&#187; 
+	 <strong>Verify</strong>
+	&#187;
+	<!-- tmpl_if expr="(type eq 'list')" --> 
+		Send Invitation
+		<!-- tmpl_if list_settings.enable_mass_subscribe -->
+			/ Subscribe
+		<!-- /tmpl_if -->
+	<!-- tmpl_else --> 
+		Add
+	<!-- /tmpl_if -->
+
+	</div>
+
+<!-- /tmpl_if --> 
 
 </div> 
 <div id="add_email"></div>
@@ -592,10 +596,12 @@ Invalid Email Addresses
 </div>
 <!-- /tmpl_if -->
 
-
 	 <div class="buttonfloat">
-	  <input type="button" class="cautionary previous" value="<< Re-Enter Addresses" />
 
+	<!-- tmpl_if chrome --> 
+	 	<input type="button" class="cautionary previous" value="<< Re-Enter Addresses" />
+	<!-- /tmpl_if --> 
+	
 	<!-- tmpl_if expr="(type eq 'list')" --> 
 	  <input type="submit"  name="process" value="Send Invitation... >>" <!-- tmpl_if list_settings.closed_list -->disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing addingemail"<!-- /tmpl_if --> />
 	<!-- /tmpl_if -->

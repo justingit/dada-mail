@@ -3869,13 +3869,7 @@ sub membership {
     my $bounced_list_moved_to_list_count =
       $q->param('bounced_list_moved_to_list_count') || 0;
     my $bounced_list_removed_from_list =
-      $q->param('bounced_list_removed_from_list') || 0;
-
-	my $is_valid_email = 1; 
-	if(check_for_valid_email($email)   == 1){ 
-		$is_valid_email = 0; 
-	}
-	
+      $q->param('bounced_list_removed_from_list') || 0;	
 	
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
@@ -3915,11 +3909,9 @@ sub membership {
         my $fields = [];
 
         my $subscriber_info = {};
-		if($is_valid_email){ 
 		   # this is a hack - if type has nothing, this fails, so we fill it in with, "list"
 		   if(!defined($type) || $type eq ''){ $type = 'list'; }
-           $subscriber_info = $lh->get_subscriber( { -email => $email, -type => $type } );
-		}
+           $subscriber_info = $lh->get_subscriber( { -email => $email } );
 		
         # DEV: This is repeated quite a bit...
         require DADA::ProfileFieldsManager;
@@ -3937,12 +3929,10 @@ sub membership {
         }
 
         my $subscribed_to_lt = {};
-		if($is_valid_email) { 
-	        for ( @{ $lh->member_of( { -email => $email } ) } ) {
-	            $subscribed_to_lt->{$_} = 1;
-	        }
-		}
-
+		for ( @{ $lh->member_of( { -email => $email } ) } ) {
+            $subscribed_to_lt->{$_} = 1;
+        }
+		
 		my %add_list_types = %list_types; 
 		
         my $add_to = {
@@ -4099,8 +4089,7 @@ m/^(list|black_list|white_list|authorized_senders|bounced_list)$/
 					can_have_subscriber_fields =>
                       $lh->can_have_subscriber_fields,
 
-					is_valid_email => $is_valid_email,
-
+					
                 },
                 -list_settings_vars_param => {
                     -list   => $list,
@@ -4172,7 +4161,8 @@ sub validate_update_email {
 	if($process != 1) { 
 
 		my $list_validations = []; 
-	
+		my $none_validated   = 1; 
+		
 		for my $to_validate_list(@$lists_to_validate) { 
 		
 			my $type_reports = []; 
@@ -4201,6 +4191,9 @@ sub validate_update_email {
 			        }
 			    );
 
+				if($sub_status == 1 && $none_validated == 1){ 
+					$none_validated = 0; 
+				}
 				my $errors = [];
 				for(keys %$sub_errors){ 
 					push(@$errors, {error => $_, error_title => $error_title{$_}}); 
@@ -4238,6 +4231,7 @@ sub validate_update_email {
 					email                  => $email, 
 					updated_email          => $updated_email, 
 					update_list_validation => $list_validations, 
+					none_validated         => $none_validated, 
 					validate_dump          => Data::Dumper::Dumper($list_validations), 
 					#all_list_status       => $all_list_status,
 					#all_list_reports      => $all_list_reports, 
@@ -4604,10 +4598,10 @@ sub add {
 
     $list = $admin_list;
 
+	my $chrome         = $q->param('chrome'); 
 	my $type           = $q->param('type') || 'list';
 	my $return_to      = $q->param('return_to') || ''; 
 	my $return_address = $q->param('return_address') || ''; 
-	
 	
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
@@ -4658,7 +4652,8 @@ sub add {
             '&type='
           . $q->param('type')
           . '&new_email_file='
-          . $q->param('new_email_file');
+          . $q->param('new_email_file'); 
+
         if ( DADA::App::Guts::strip( $q->param('new_emails') ) ne "" ) {
 
           # DEV: why is it, "new_emails.txt"? Is that supposed to be a variable?
@@ -4674,7 +4669,7 @@ sub add {
             print OUTFILE $q->param('new_emails');
             close(OUTFILE);
             chmod( $DADA::Config::FILE_CHMOD, $outfile );
-
+			
           # DEV: why is it, "new_emails.txt"? Is that supposed to be a variable?
             print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL
                   . '?f=add_email&fn='
@@ -4683,6 +4678,8 @@ sub add {
                   . $qs
  				  . '&return_to=' . $return_to
 				  . '&return_address=' . $return_address
+				  . '&chrome=' 
+		          . $chrome
 				);
 
         }
@@ -4950,8 +4947,9 @@ sub add_email {
     );
     $list = $admin_list;
 
-	my $return_to      = $q->param('return_to') || ''; 
+	my $return_to      = $q->param('return_to')      || ''; 
 	my $return_address = $q->param('return_address') || ''; 
+	my $chrome         = $q->param('chrome'); 
 	
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
@@ -5083,38 +5081,62 @@ sub add_email {
 			}
 		}
 		
-		
+		my %vars = (
+			can_have_subscriber_fields => $lh->can_have_subscriber_fields,
+            going_over_quota           => $going_over_quota,
+            field_names                => $field_names,
+            subscribed                 => $subscribed,
+            not_subscribed             => $not_subscribed,
+            black_listed               => $black_listed,
+            not_white_listed           => $not_white_listed,
+            invalid                    => $invalid,
+            type                       => $type,
+            type_title                 => $type_title,
+			root_login                 => $root_login,
+			return_to                  => $return_to, 
+			return_address             => $return_address,
+			chrome                     => $chrome, 
+		); 
+
         require DADA::Template::Widgets;
-        my $scrn = DADA::Template::Widgets::wrap_screen(
-            {
-                -screen => 'add_email_screen.tmpl',
-				-with           => 'admin', 
-				-wrapper_params => { 
-					-Root_Login => $root_login,
-					-List       => $list,  
-				},
-				-expr   => 1,
-                -vars   => {
-					can_have_subscriber_fields          => $lh->can_have_subscriber_fields,
-                    going_over_quota   => $going_over_quota,
-                    field_names        => $field_names,
-                    subscribed         => $subscribed,
-                    not_subscribed     => $not_subscribed,
-                    black_listed       => $black_listed,
-                    not_white_listed   => $not_white_listed,
-                    invalid            => $invalid,
-                    type               => $type,
-                    type_title         => $type_title,
-					root_login         => $root_login,
-					return_to          => $return_to, 
-					return_address     => $return_address,
-                },
-				-list_settings_vars_param => {
-					-list => $list,
-					-dot_it => 1,
-				},
-            }
-        );
+		my $scrn; 
+		if($chrome == 1){ 
+	        $scrn = DADA::Template::Widgets::wrap_screen(
+	            {
+	                -screen => 'add_email_screen.tmpl',
+					-with           => 'admin', 
+					-wrapper_params => { 
+						-Root_Login => $root_login,
+						-List       => $list,  
+					},
+					-expr   => 1,
+	                -vars   => {
+						%vars, 
+	                },
+					-list_settings_vars_param => {
+						-list => $list,
+						-dot_it => 1,
+					},
+	            }
+	        );
+		}
+		else { 
+	        $scrn = DADA::Template::Widgets::screen(
+	            {
+	                -screen => 'add_email_screen.tmpl',
+					-expr   => 1,
+	                -vars   => {
+						%vars, 
+	                },
+					-list_settings_vars_param => {
+						-list => $list,
+						-dot_it => 1,
+					},
+	            }
+	        );
+			
+		}
+		print $q->header(); 
 		e_print($scrn);
     }
     else {
