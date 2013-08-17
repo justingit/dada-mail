@@ -1552,7 +1552,7 @@ C<remove_subscriber> removes a subscriber from a sublist.
 
 C<-email> is required and should hold a valid email address in form of: C<user@example.com>
 
-C<-type> holds the sublist you want to subscribe the address to, if no sublist is passed, B<list> is used as a default.
+C<-type> holds the sublist you want to subscribe the address to - you'll want to always explicitly set the type. 
 
 No other paramaters are honored.
 

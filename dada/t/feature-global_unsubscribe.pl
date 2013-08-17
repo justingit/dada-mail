@@ -48,7 +48,7 @@ ok($lh3->num_subscribers == 3, "Three in #3");
 
 
 # Now, let's remove someone from ONE list: 
-$lh->remove_subscriber({-email => 'user@example.com'}); 
+$lh->remove_subscriber({-email => 'user@example.com', -type => 'list'}); 
 
 ok($lh->num_subscribers == 2,  "Two in #1"); 
 ok($lh2->num_subscribers == 2, "Two in #2"); 

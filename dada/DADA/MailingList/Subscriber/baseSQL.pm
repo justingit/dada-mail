@@ -176,7 +176,11 @@ sub get {
 sub move {
 
     my $self = shift;
-
+	
+	if(! defined($self->type)){ 
+		croak("'type' needs to be defined!"); 
+	}
+	
     my ($args) = @_;
 
     if ( !exists $args->{ -to } ) {
@@ -184,7 +188,7 @@ sub move {
     }
 
     if ( $self->{lh}->allowed_list_types( $args->{ -to }) != 1 ) {
-        croak "list_type passed in, -type (" . $args->{ -type } . ") is not valid 1";
+        croak "list type passed in, -to (" . $args->{ -to } . ") is not valid 1";
     }
 	if(!exists($args->{-confirmed})){ 
 		$args->{-confirmed} = 0; 
@@ -325,6 +329,11 @@ sub move {
 sub remove {
 
     my $self = shift;
+
+	if(! defined($self->type)){ 
+		croak("'type' needs to be defined!"); 
+	}
+
 	my ($args) = @_; 
 	if(!exists($args->{-log_it})){ 
 		$args->{-log_it} = 1; 
@@ -369,7 +378,10 @@ sub remove {
     my $rv;
 
    
-
+	if($t){ 
+		require Data::Dumper; 
+		warn 'execute params: ' . Data::Dumper::Dumper([$self->email, $self->type]); 
+	}
    	$rv = $sth->execute( $self->email, $self->type )
 		or croak "cannot do statement (at: remove from list)! $DBI::errstr\n";
 

@@ -11567,12 +11567,14 @@ sub profile_update_email {
 				);
 				$lh->remove_subscriber(
 					{
-						-email => cased($profile_info->{'profile.email'})
+						-email => cased($profile_info->{'profile.email'}),
+						-type  => 'list'
 					}
 				);
 				$lh->add_subscriber(
 					{
-						-email => cased($profile_info->{'profile.update_email'})
+						-email => cased($profile_info->{'profile.update_email'}),
+						-type  => 'list'
 					}
 				);
 			}

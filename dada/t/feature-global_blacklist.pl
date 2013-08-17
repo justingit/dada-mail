@@ -85,9 +85,11 @@ $lh3->add_subscriber(
 my $filtered = $lh3->filter_list_through_blacklist; 
 
 ok($filtered->[0]->{email} eq $black_listed, "Found our black listed address from list #1 in list #3.");
+
 $lh3->remove_subscriber(
 	{
 		-email => $black_listed, 
+		-type  => 'list'
 	},
 ); 
 
@@ -101,6 +103,10 @@ my ($subscribed, $not_subscribed, $bl, $not_white_listed, $invalid)
 			-emails => [$black_listed], 
 		}
 	);
+	
+use Data::Dumper; 
+diag Dumper([$subscribed, $not_subscribed, $bl, $not_white_listed, $invalid]); 
+
 ok($bl->[0] eq $black_listed, "filter_subscribers has black listed subscriber from list #1"); 
 
 

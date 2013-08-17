@@ -69,6 +69,9 @@ sub _init {
 	if(exists($args->{-type})) { 
 		$self->{type} = $args->{ -type };
 	}
+	else { 
+		carp "no -type passed."; 
+	}
 
 	if ( !exists $args->{ -email } ) {
 	    croak("You MUST supply an email address in the -email paramater!");
@@ -152,7 +155,12 @@ sub fields {
 }
 sub type { 
 	my $self = shift; 
-	return $self->{type};
+	if(!exists($self->{type})){ 
+		return undef; 
+	}
+	else { 
+		return $self->{type};
+	}
 }
 sub email { 
 	my $self = shift; 
@@ -164,7 +172,12 @@ sub email {
 sub edit {
 
     my $self = shift;
-    my ($args) = @_;
+    
+	if(! defined($self->type)){ 
+		croak("'type' needs to be defined!"); 
+	}
+
+	my ($args) = @_;
 	
 	
     if ( !exists $args->{ -fields } ) {
@@ -214,7 +227,12 @@ sub edit {
 
 sub copy { 
 	
- my $self   = shift; 
+	my $self   = shift; 
+
+	if(! defined($self->type)){ 
+		croak("'type' needs to be defined!"); 
+	}
+
 
     my ($args) = @_;
 
@@ -223,7 +241,7 @@ sub copy {
     }
 
     if($self->{lh}->allowed_list_types($args->{-to}) != 1){ 
-        croak "list_type passed in, -type (" . $args->{ -type } . ") is not valid 4";
+        croak "list type passed in, -to (" . $args->{ -to } . ") is not valid";
     }
 
     my $moved_from_checks_out = 0; 

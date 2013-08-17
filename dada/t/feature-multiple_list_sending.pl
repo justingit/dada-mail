@@ -166,11 +166,12 @@ for my $sub(@{$lh->subscription_list}){
 	$lh->edit_subscriber(
 		{
 			-email    => $sub->{email}, 
+			-type     => 'list', 
 			-fields   => { 
 				one   => "ONE", 
 				two   => "TWO", 
 				three => "THREE",
-			}
+			}, 
 		}
 	);
 }
