@@ -166,8 +166,6 @@ $(document).ready(function() {
 			membership_activity();
 		}
 		
-
-
 		$("body").on("submit", "#add_email_form", function(event) {
 			event.preventDefault();
 		});
@@ -180,8 +178,6 @@ $(document).ready(function() {
 			validate_add_email();
 		});
 	
-		
-		
 		$("body").on("submit", "#update_email_form", function(event) {
 			event.preventDefault();
 		});
@@ -210,7 +206,10 @@ $(document).ready(function() {
 		$("body").on("click", "#validate_update_email_for_multiple_lists", function(event) {
 			validate_update_email(1);
 		});	
-
+		
+		if($("#bouncing_address_information").length) {
+			membership_bouncing_address_information(); 
+		}
 
 		
 	}
@@ -1093,6 +1092,34 @@ function validate_remove_email(for_multiple_lists) {
 			for_multiple_lists: for_multiple_lists	
 		}
 	});
+	
+}
+
+function membership_bouncing_address_information() { 
+	
+	$("#membership_bouncing_address_information").hide().html('<p class="alert">Loading...</p>').show('fade');
+	var request = $.ajax({
+		url: $("#s_program_url").val(),
+		type: "POST",
+		cache: false,
+		data: {
+			f:               'view_bounce_history',
+			email:           $("#email").val(),
+			return_to:       'membership',
+			return_address:  $("#email").val()
+		},
+		dataType: "html"
+	});
+	request.done(function(content) {
+		$("#membership_bouncing_address_information").hide("fade", function() {
+			$("#membership_bouncing_address_information").html(content);
+			$("#membership_bouncing_address_information_loading").html('');
+			$("#membership_bouncing_address_information").show('fade');
+		});
+	});
+
+
+
 	
 }
 

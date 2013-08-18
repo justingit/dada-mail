@@ -63,132 +63,146 @@
 	</ul>
 
 	<div id="membership_tab"> 
-			<!-- tmpl_unless member_of_num --> 
-				<div class="clearskiesbox">
-					<p>
-						<!-- tmpl_var email --> isn't a part of your Mailing List.
-					</p>
-				</div>
-			<!-- tmpl_else --> 
 
-				<h2>Member of:</h2>
+		<!-- tmpl_if is_bouncing_address --> 
+			<h1><!-- tmpl_var email --> is Bouncing Back Messages.</h1> 
+			
+			<p>
+				Choose to either reinstate the address back on to your Subscribers,
+				 or Unsubscribe this address permanently from your mailing list:
+			</p> 
+			
+			<div id="bouncing_address_information"></div> 
+			<div id="membership_bouncing_address_information_loading"></div> 
+			<div id="membership_bouncing_address_information"></div> 
+			
+		<!-- tmpl_else --> 
+		
+				<!-- tmpl_unless member_of_num --> 
+					<div class="clearskiesbox">
+						<p>
+							<!-- tmpl_var email --> isn't a part of your Mailing List.
+						</p>
+					</div>
+				<!-- tmpl_else --> 
 
-				<ul style="list-style: none;">
-					<!-- tmpl_loop member_of --> 
-						<li>
-							<strong><!-- tmpl_var type_title --></strong>
-						</li>
-					<!-- /tmpl_loop -->
-				</ul>
-			<!-- /tmpl_unless --> 
+				
+					<h2>Member of:</h2>
 
+					<ul style="list-style: none;">
+						<!-- tmpl_loop member_of --> 
+							<li>
+								<strong><!-- tmpl_var type_title --></strong>
+							</li>
+						<!-- /tmpl_loop -->
+					</ul>
+				<!-- /tmpl_unless --> 
 
-
-
-			<!-- tmpl_if list_settings.enable_subscription_approval_step -->
-				<!-- tmpl_if subscribed_to_sub_request_list --> 
-					<fieldset>
-					<legend>Subscription Requests</legend>
-					<p><!-- tmpl_var email --> has requested to be Subscribed to your Mailing List.</p>
-					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
-						<input type="hidden" name="f"       value="subscription_requests" />
-						<input type="hidden" name="type" value="sub_request_list" />
-						<input type="hidden" name="address" value="<!-- tmpl_var email -->" />
-						<input type="hidden" name="return_to" value="membership" />
-						<input type="hidden" name="return_address" value="<!-- tmpl_var email -->" />
-						<input type="submit" name="process"  class="plain" value="Approve Subscription Request" />
-						<input type="submit" name="process"  class="plain" value="Deny Subscription Request" />
-					</form>
-					</fieldset>
+				<!-- tmpl_if list_settings.enable_subscription_approval_step -->
+					<!-- tmpl_if subscribed_to_sub_request_list --> 
+						<fieldset>
+						<legend>Subscription Requests</legend>
+						<p><!-- tmpl_var email --> has requested to be Subscribed to your Mailing List.</p>
+						<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+							<input type="hidden" name="f"       value="subscription_requests" />
+							<input type="hidden" name="type" value="sub_request_list" />
+							<input type="hidden" name="address" value="<!-- tmpl_var email -->" />
+							<input type="hidden" name="return_to" value="membership" />
+							<input type="hidden" name="return_address" value="<!-- tmpl_var email -->" />
+							<input type="submit" name="process"  class="plain" value="Approve Subscription Request" />
+							<input type="submit" name="process"  class="plain" value="Deny Subscription Request" />
+						</form>
+						</fieldset>
+					<!-- /tmpl_if -->
 				<!-- /tmpl_if -->
-			<!-- /tmpl_if -->
 
 
-		<!-- tmpl_if add_to_num --> 
+			<!-- tmpl_if add_to_num --> 
+
+				<fieldset>
+				<legend>Add</legend>
+
+					<form  action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" id="add_email_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+						<input type="hidden" name="email" value="<!-- tmpl_var email -->" id="add_email" />
+						<input type="hidden" name="process" value="1" id="add_process"/>
+						<input type="hidden" name="rand_string" id="add_rand_string" value="<!-- tmpl_var rand_string -->" />
+						<input type="hidden" name="method" value="via_add_one" id="add_method" />
+						<input type="hidden" name="return_to" value="membership" id="add_return_to" />
+						<input type="hidden" name="return_address" value="<!-- tmpl_var email -->" id="add_return_address" />
+						<p>
+							<label for="type_add">
+								&#8594; Add
+							</label>
+							address to: <!-- tmpl_var add_to_popup_menu -->
+							<input type="button" value="Add..."  class="processing"  id="validate_add_email" />
+						</p>
+					</form>
+				</fieldset>
+			<!-- /tmpl_if --> 
+
+			<fieldset> 
+
+				<legend>Update</legend>
+
+				<!-- tmpl_if member_of_num --> 
+
+				<form action="<!-- tmpl_var S_PROGRAM_URL -->" id="update_email_form" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+					<input type="hidden" name="original_email" id="original_email" value="<!-- tmpl_var email -->" />
+				<p>
+					<label for="updated_email">
+						&#8596; Update
+					</label> address to:
+
+					<input type="text" id="updated_email" name="updated_email" value="<!-- tmpl_var email -->" />
+					<input type="button" value="Update..." class="cautionary" id="validate_update_email" />
+
+					<!-- tmpl_if root_login -->
+						<!-- tmpl_if can_have_subscriber_fields -->
+							<input type="button" value="Update on Multiple Mailing Lists..." class="cautionary" id="validate_update_email_for_multiple_lists" />
+						<!-- /tmpl_if -->
+					<!-- /tmpl_if --> 
+
+				</form> 
+
+				<!-- /tmpl_if -->
+
+			</fieldset> 
 
 			<fieldset>
-			<legend>Add</legend>
+				<legend>Remove</legend>
 
-				<form  action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" id="add_email_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-					<input type="hidden" name="email" value="<!-- tmpl_var email -->" id="add_email" />
-					<input type="hidden" name="process" value="1" id="add_process"/>
-					<input type="hidden" name="rand_string" id="add_rand_string" value="<!-- tmpl_var rand_string -->" />
-					<input type="hidden" name="method" value="via_add_one" id="add_method" />
-					<input type="hidden" name="return_to" value="membership" id="add_return_to" />
-					<input type="hidden" name="return_address" value="<!-- tmpl_var email -->" id="add_return_address" />
+				<!-- tmpl_if remove_from_num --> 
+
+					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="remove_email_form">
+					<input type="hidden" name="process" value="delete" />
+
+					<input type="hidden" name="address" value="<!-- tmpl_var email -->" />
+					<input type="hidden" name="f"       value="remove_subscribers" />	
+					<input type="hidden" name="return_to" value="membership" />
+					<input type="hidden" name="return_address" value="<!-- tmpl_var email -->" />
 					<p>
-						<label for="type_add">
-							&#8594; Add
-						</label>
-						address to: <!-- tmpl_var add_to_popup_menu -->
-						<input type="button" value="Add..."  class="processing"  id="validate_add_email" />
-					</p>
-				</form>
-			</fieldset>
-		<!-- /tmpl_if --> 
+						<label for="type_remove">&#8592;  Remove</label> address:
+						<input type="button" id="validate_remove_email" value="Remove..." class="cautionary"  />
+						<!-- tmpl_if root_login -->
+							<input type="button" id="validate_remove_email_multiple_lists" value="Remove on Multiple Mailing Lists..." class="cautionary"  />
+						<!-- /tmpl_if -->
+						</p>
+					</form>
 
-		<fieldset> 
-
-			<legend>Update</legend>
-
-			<!-- tmpl_if member_of_num --> 
-
-			<form action="<!-- tmpl_var S_PROGRAM_URL -->" id="update_email_form" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-				<input type="hidden" name="original_email" id="original_email" value="<!-- tmpl_var email -->" />
-			<p>
-				<label for="updated_email">
-					&#8596; Update
-				</label> address to:
-
-				<input type="text" id="updated_email" name="updated_email" value="<!-- tmpl_var email -->" />
-				<input type="button" value="Update..." class="cautionary" id="validate_update_email" />
-
-				<!-- tmpl_if root_login -->
-					<!-- tmpl_if can_have_subscriber_fields -->
-						<input type="button" value="Update on Multiple Mailing Lists..." class="cautionary" id="validate_update_email_for_multiple_lists" />
-					<!-- /tmpl_if -->
-				<!-- /tmpl_if --> 
-
-			</form> 
-
-			<!-- /tmpl_if -->
-
-		</fieldset> 
-
-		<fieldset>
-			<legend>Remove</legend>
-
-			<!-- tmpl_if remove_from_num --> 
-
-				<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="remove_email_form">
-				<input type="hidden" name="process" value="delete" />
-
-				<input type="hidden" name="address" value="<!-- tmpl_var email -->" />
-				<input type="hidden" name="f"       value="remove_subscribers" />	
-				<input type="hidden" name="return_to" value="membership" />
-				<input type="hidden" name="return_address" value="<!-- tmpl_var email -->" />
-				<p>
-					<label for="type_remove">&#8592;  Remove</label> address:
-					<input type="button" id="validate_remove_email" value="Remove..." class="cautionary"  />
-					<!-- tmpl_if root_login -->
-						<input type="button" id="validate_remove_email_multiple_lists" value="Remove on Multiple Mailing Lists..." class="cautionary"  />
-					<!-- /tmpl_if -->
-					</p>
-				</form>
-
-				<!-- tmpl_if subscribed_to_list -->
-					<!-- tmpl_if list_settings.black_list -->
-						<!-- tmpl_if list_settings.add_unsubs_to_black_list -->
-							<p class="alert">
-								Subscribers that are unsubscribed from this mailing list will be added to the Black List.
-							</p>
+					<!-- tmpl_if subscribed_to_list -->
+						<!-- tmpl_if list_settings.black_list -->
+							<!-- tmpl_if list_settings.add_unsubs_to_black_list -->
+								<p class="alert">
+									Subscribers that are unsubscribed from this mailing list will be added to the Black List.
+								</p>
+							<!-- /tmpl_if -->
 						<!-- /tmpl_if -->
 					<!-- /tmpl_if -->
-				<!-- /tmpl_if -->
 
 
-			<!-- /tmpl_if --> 
-		</fieldset>
+				<!-- /tmpl_if --> 
+			</fieldset>
+		<!-- /tmpl_if --> 
 	</div>
 	
 	<div id="subscriber_history_tab"> 

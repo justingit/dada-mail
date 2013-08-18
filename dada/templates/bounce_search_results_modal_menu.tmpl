@@ -15,6 +15,15 @@
 <input type="hidden" name="f"     value="process_bouncing_addresses" />
 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
 
+<!-- tmpl_if return_to --> 
+	<input type="hidden" name="return_to" value="<!-- tmpl_var return_to ESCAPE=HTML -->" />
+<!-- /tmpl_if --> 
+<!-- tmpl_if return_address --> 
+	<input type="hidden" name="return_address" value="<!-- tmpl_var return_address ESCAPE=HTML -->" />
+<!-- /tmpl_if --> 
+
+	
+
 <input type="submit" name="process" class="processing"  value="&#8594; Move Bouncing Address Back to Subscribers" />
 <input type="submit" name="process" class="cautionary"  value="&#8855; Remove Bouncing Address" />
 </form>

@@ -3558,6 +3558,9 @@ sub view_bounce_history {
     );
     $list = $admin_list;
 
+	my $return_to      = $q->param('return_to')      || 'view_list';
+    my $return_address = $q->param('return_address') || undef;
+
     require DADA::App::BounceHandler::Logs;
     my $bhl     = DADA::App::BounceHandler::Logs->new;
     my $results = $bhl->search(
@@ -3579,6 +3582,8 @@ sub view_bounce_history {
                     total_bounces  => scalar(@$results),
                     email          => $email,
                     type           => 'bounced_list',
+					return_to      => $return_to, 
+					return_address => $return_address, 
                 }
             }
         )
@@ -3984,7 +3989,13 @@ sub membership {
 
         }
 
-        #%list_types
+		
+		my $is_bouncing_address = 0; 
+		my $bouncing_info       = '';
+		if($subscribed_to_lt->{bounced_list} == 1){ 
+			$is_bouncing_address = 1; 
+			
+		}
 
         my $add_to_popup_menu = $q->popup_menu(
             -name     => 'type',
@@ -4070,6 +4081,7 @@ m/^(list|black_list|white_list|authorized_senders|bounced_list)$/
                     remove_from_popup_menu => $remove_from_popup_menu,
                     remove_from_num        => scalar(@$remove_from),
                     member_of              => $member_of,
+					is_bouncing_address    => $is_bouncing_address,
                     rand_string            => generate_rand_string(),
                     member_of_num          => scalar(@$remove_from),
                     add_to_num             => scalar( keys %$add_to ),
@@ -4427,7 +4439,7 @@ sub validate_remove_email {
 	      . ';delete_email_count='
 	      . $full_d_count
 	      . ';type='
-	      . $type
+	      . ''
 	      . ';black_list_add='
 	      . $full_bl_count;
 
@@ -9938,6 +9950,10 @@ sub process_bouncing_addresses {
 	$list = $admin_list;
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
+	my $return_to      = $q->param('return_to')      || 'view_list';
+    my $return_address = $q->param('return_address') || undef;
+    
+
 	if($q->param('process') =~ m/remove/i){ 
 	    my ( $d_count, $bl_count ) = $lh->admin_remove_subscribers(
 	        {
@@ -9947,13 +9963,17 @@ sub process_bouncing_addresses {
 	    );
 		 my $uri =
 		        $DADA::Config::S_PROGRAM_URL
-		      . '?flavor=view_list'
+		      . '?flavor='
+		      . $return_to
 		      . '&bounced_list_removed_from_list='
 		      . $d_count
 		      . '&type='
 		      . $type
 		      . '&black_list_add='
-		      . $bl_count;
+		      . $bl_count
+		      . '&email='
+		      . $return_address; 
+		
 			print $q->redirect( -uri => $uri );
 		
 	}
@@ -9972,15 +9992,21 @@ sub process_bouncing_addresses {
 			);
 			$m_count++; 
 		}
+
+		
 		
 		# maybe if the bounce_list num_subscribers count is 0, we just go to the view_list screen.
 		my $uri =
 	        $DADA::Config::S_PROGRAM_URL
-	      . '?flavor=view_list'
+	      . '?flavor='
+	      . $return_to
 	      . '&type='
 	      . $type
 	      . '&bounced_list_moved_to_list_count='
-	      . $m_count;
+	      . $m_count
+	      . '&email='
+	      . $return_address; 
+	
 		print $q->redirect( -uri => $uri );
 	 
 	

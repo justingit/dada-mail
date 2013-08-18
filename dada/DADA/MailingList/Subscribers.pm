@@ -236,10 +236,11 @@ sub admin_remove_subscribers {
 
 	my $bl_count = 0; 
 	if($type eq 'list' || $type eq 'bounced_list'){
+				
 	    if($self->{ls}->param('black_list')               == 1 &&
 	       $self->{ls}->param('add_unsubs_to_black_list') == 1
 	       ){
-
+			
 			for(@$addresses){
 				my $a = $self->add_subscriber(
 					{
