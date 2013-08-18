@@ -890,15 +890,27 @@ sub admin {
         return;
     }
 
-    my $login_widget = $q->param('login_widget') || $DADA::Config::LOGIN_WIDGET;
-    require DADA::Template::Widgets;
-    my $scrn = DADA::Template::Widgets::admin(
-        -login_widget => $login_widget,
-        -cgi_obj      => $q
-    );
-    e_print($scrn);
+	my ($admin_list, $root_login, $checksout) = check_list_security(
+													-cgi_obj         => $q,  
+                                                    -Function        => 'admin',
+                                                    -manual_override => 1,
+                                                );
+    if($checksout){ 
+		print $q->redirect(-uri => $DADA::Config::DEFAULT_ADMIN_SCREEN); 
+		return; 
+	}
+	else { 
 
-    return;
+	    my $login_widget = $q->param('login_widget') || $DADA::Config::LOGIN_WIDGET;
+	    require DADA::Template::Widgets;
+	    my $scrn = DADA::Template::Widgets::admin(
+	        -login_widget => $login_widget,
+	        -cgi_obj      => $q
+	    );
+	    e_print($scrn);
+
+	    return;
+	}
 }
 
 
