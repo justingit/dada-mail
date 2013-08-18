@@ -2640,10 +2640,8 @@ sub message_individual_email_activity_report_table {
 			}
 		);
 	}
+	return $html
 
-	use CGI qw(:standard); 
-	print header(); 
-	print $html;	
 }
 
 

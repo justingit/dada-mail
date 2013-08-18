@@ -413,7 +413,8 @@ sub message_individual_email_activity_report_table {
 
 	my $mid   = xss_filter($q->param('mid')); 
 	my $email = xss_filter($q->param('email')); 
-	$rd->message_individual_email_activity_report_table(
+	print $q->header(); 
+	print $rd->message_individual_email_activity_report_table(
 		{
 			-mid    => $mid, 
 			-email  => $email, 

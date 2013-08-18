@@ -150,16 +150,21 @@ $(document).ready(function() {
 		google.setOnLoadCallback(sub_unsub_trend_chart());
 	}
 	// Membership >> user@example.com
-	if ($("#mailing_list_history").length) {
-		mailing_list_history();
-		$(".radio_toggle_membership_history").live("click", function(event) {
-			mailing_list_history();
-		}); 
-		
-	}
+	
 	if($("#membership").length) {
 
+		$("#tabs").tabs();
+		
+		if ($("#mailing_list_history").length) {
+			mailing_list_history();
+			$(".radio_toggle_membership_history").live("click", function(event) {
+				mailing_list_history();
+			}); 		
+		}
 
+		if($("#membership_activity").length) {
+			membership_activity();
+		}
 		
 
 
@@ -961,6 +966,26 @@ function mailing_list_history() {
 
 		$("#mailing_list_history_loading").html('<p class="alert">&nbsp;</p>');
 	});
+}
+
+function membership_activity() { 
+	$("#membership_activity_loading").html('<p class="alert">Loading...</p>');
+	var request = $.ajax({
+		url: $("#s_program_url").val(),
+		type: "POST",
+		cache: false,
+		data: {
+			f: 'membership_activity',
+			email: $("#email").val(),
+		},
+		dataType: "html"
+	});
+	request.done(function(content) {
+		$("#membership_activity").hide().html(content).show('fade');
+
+		$("#membership_activity_loading").html('<p class="alert">&nbsp;</p>');
+	});
+	
 }
 
 

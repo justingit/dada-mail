@@ -545,6 +545,7 @@ sub run {
 	'validate_update_email'      =>    \&validate_update_email, 
 	'validate_remove_email'      =>    \&validate_remove_email, 
 	'mailing_list_history'       =>    \&mailing_list_history, 
+	'membership_activity'        =>    \&membership_activity, 
 	'export_membership_history'  =>    \&export_membership_history, 
 	'add'                        =>    \&add,
 	'check_status'               =>    \&check_status,
@@ -4536,6 +4537,136 @@ sub mailing_list_history {
 
 
 
+sub membership_activity {
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'membership'
+    );
+    $list = $admin_list;
+
+    my $email = xss_filter( $q->param('email') );
+    my $mode   = xss_filter( $q->param('mode') ) || 'html';
+
+	if($mode eq 'html') { 
+	    require DADA::Logging::Clickthrough;
+	    my $rd = DADA::Logging::Clickthrough->new( { -list => $list } );
+
+	    require DADA::MailingList::Archives;
+	    my $ma = DADA::MailingList::Archives->new( { -list => $list } );
+	    print $q->header();
+	    my $activity_tables = [];
+	    my ( $total, $mids ) = $rd->get_all_mids;
+	    foreach my $mid (@$mids) {
+
+	        my $activity_table =
+	          $rd->message_individual_email_activity_report_table(
+	            {
+	                -mid   => $mid,
+	                -email => $email,
+
+	            }
+	          );
+
+	        my $archive_exists  = 0;
+	        my $archive_subject = '';
+	        if ( $ma->check_if_entry_exists($mid) ) {
+	            $archive_exists  = 1;
+	            $archive_subject = $ma->get_archive_subject($mid);
+	        }
+
+	        push(
+	            @$activity_tables,
+	            {
+	                activity_table  => $activity_table,
+	                archive_exists  => $archive_exists,
+	                archive_subject => $archive_subject,
+					mid             => $mid, 
+	            }
+	        );
+	    }
+
+	    require DADA::Template::Widgets;
+	    my $scrn = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'membership_activity_screen.tmpl',
+	            -vars   => { activity_tables => $activity_tables, },
+	            -list_settings_vars_param => {
+	                -list   => $list,
+	                -dot_it => 1,
+	            },
+	        }
+	    );
+	    print $scrn;
+	}
+	else { 
+		
+		my $at_email = $email; 
+		$at_email =~ s/\@/_at_/; 
+		
+		require DADA::Logging::Clickthrough;
+	    my $rd = DADA::Logging::Clickthrough->new( { -list => $list } );
+	    
+		require Text::CSV;
+	    my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
+
+		my $fh = \*STDOUT;
+
+		my $header = $q->header(
+			-attachment => 'membership_activity-' . $at_email . '-' . $list . '-' . time .  '.csv',
+			-type       => 'text/csv', 
+		);
+		print $fh $header;
+
+#		timestamp   
+#		time        
+#		event_label 
+
+		my @cols = qw(
+			ctime       
+			mid  
+			email
+			ip          
+			event       
+			url         
+		); 
+
+		my $status = $csv->print($fh, [@cols]); 
+		print $fh "\n";
+	
+	    my ( $total, $mids ) = $rd->get_all_mids;
+	    foreach my $mid (@$mids) {
+
+	        my $report =
+	          $rd->message_individual_email_activity_report(
+	            {
+	                -mid   => $mid,
+	                -email => $email,
+	            }
+	          );
+	
+			for my $line(@$report) { 
+				my @lines = (); 
+				foreach(@cols){
+					if($_ eq 'email'){ 
+						push(@lines, $email);
+					}
+					elsif($_ eq 'mid'){ 
+						push(@lines, $mid); 
+					} 
+					else { 
+						push(@lines, $line->{$_}); 
+					}
+				}
+				$status = $csv->print( $fh, [@lines] );
+	        	print $fh "\n";
+			}
+		}
+	}
+}
+
+
+
+
 sub admin_change_profile_password { 
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
@@ -4598,7 +4729,9 @@ sub add {
 
     $list = $admin_list;
 
-	my $chrome         = $q->param('chrome'); 
+	my $chrome         = $q->param('chrome');
+	if($chrome ne '0'){ $chrome = 1; }
+	
 	my $type           = $q->param('type') || 'list';
 	my $return_to      = $q->param('return_to') || ''; 
 	my $return_address = $q->param('return_address') || ''; 
@@ -4950,6 +5083,7 @@ sub add_email {
 	my $return_to      = $q->param('return_to')      || ''; 
 	my $return_address = $q->param('return_address') || ''; 
 	my $chrome         = $q->param('chrome'); 
+	if($chrome ne '0'){ $chrome = 1; }
 	
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
