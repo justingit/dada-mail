@@ -1055,16 +1055,16 @@ sub msg_basic_event_count {
 	# Received: 
 	# total_recipients - soft_bounce - hard_bounce - errors_sending_to
 	$basic_events->{received} = 
-	  int($basic_events->{total_recipients})
-	- int($basic_events->{soft_bounce})
-	- int($basic_events->{hard_bounce})
-    - int($basic_events->{errors_sending_to});
+	  $basic_events->{total_recipients}
+	- $basic_events->{soft_bounce}
+	- $basic_events->{hard_bounce}
+    - $basic_events->{errors_sending_to};
 
 	# Delivered to (sent successfully, could bounce back) 
 	# total_recipients - errors_sending_to
 	$basic_events->{delivered_to} = 
-	  int($basic_events->{total_recipients})
-    - int($basic_events->{errors_sending_to});	
+	  $basic_events->{total_recipients}
+    - $basic_events->{errors_sending_to};	
 	
 	# Unique Opens
 	my $uo_query = 'SELECT msg_id, event, email, COUNT(*) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? and event = \'open\' GROUP BY msg_id, event, email'; 
@@ -1093,13 +1093,13 @@ sub msg_basic_event_count {
 	
 	$basic_events->{unique_soft_bounces_percent} = 
 		$self->percentage(
-			int($basic_events->{soft_bounce}), 
+			$basic_events->{soft_bounce}, 
 			$basic_events->{delivered_to}
 		); 
 	
 	$basic_events->{unique_hard_bounces_percent} = 
 		$self->percentage(
-			int($basic_events->{hard_bounce}), 
+			$basic_events->{hard_bounce}, 
 			$basic_events->{delivered_to}
 		); 
 	
@@ -1110,14 +1110,14 @@ sub msg_basic_event_count {
 	# Received Percent
 	$basic_events->{received_percent} = 
 		$self->percentage(
-			int($basic_events->{received}), 
+			$basic_events->{received}, 
 			$basic_events->{total_recipients}
 	); 
 	
 	# Errors Sending To
 	$basic_events->{errors_sending_to_percent} = 
 		$self->percentage(
-			int($basic_events->{errors_sending_to}), 
+			$basic_events->{errors_sending_to}, 
 			$basic_events->{total_recipients}
 	); 
 		
@@ -1174,7 +1174,7 @@ sub msg_basic_event_count_json {
 			$datatable->add_rows(
 		        [
 		               { v => 'Unopened' },
-		               { v => (100 - int($report->{unique_opens_percent})) },
+		               { v => (100 - $report->{unique_opens_percent}) },
 		       ],
 			);
 			
@@ -1190,7 +1190,7 @@ sub msg_basic_event_count_json {
 			$datatable->add_rows(
 		        [
 		               { v => 'Still Subscribed' },
-		               { v => (100 - int($report->{unique_unsubscribes_percent})) },
+		               { v => (100 - $report->{unique_unsubscribes_percent}) },
 		       ],
 			);
 			
@@ -1261,17 +1261,20 @@ sub percentage {
 	my $num  = shift; 
 	my $total = shift; 
 	my $p     = 0; 
-; 
+
+	$num = $num + 0; 
+	$total = $total + 0; 
 	
 	return 0 unless $total > 0; 
 	try { 
-		$p =  int(int($num)/int($total) * 100); 
+		$p =  $num/$total * 100; 
 	} catch { 
 		carp "problems finding percentage: $_"; 
 	};
 
+	return sprintf ("%.1f", $p); 
 	
-	return $p; 
+	#return $p; 
 }
 
 sub report_by_message {
@@ -1899,7 +1902,7 @@ sub timestamp_to_time {
 	my ($date, $time) = split(' ', $timestamp); 
 	my ($year, $month, $day) = split('-', $date); 
 	my ($hour, $minute, $second) = split(':', $time); 
-	$second = int($second - 0.5) ;
+	$second = int($second - 0.5) ; # no idea. 
 	return Time::Local::timelocal( $second, $minute, $hour, $day, $month-1, $year );
 }
 

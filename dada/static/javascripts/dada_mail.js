@@ -1557,11 +1557,16 @@ function update_plugins_tracker_message_report() {
 	$('body').on('click', '.to_bounces', function(event) {
 		$tabs.tabs('select', 4); return false;
 	});
-	$('body').on('click', '.to_archive_views', function(event) {
+	
+	$('body').on('click', '.to_sending_errors', function(event) {
 		$tabs.tabs('select', 5); return false;
 	});
-	$('body').on('click', '.to_forwards', function(event) {
+	
+	$('body').on('click', '.to_archive_views', function(event) {
 		$tabs.tabs('select', 6); return false;
+	});
+	$('body').on('click', '.to_forwards', function(event) {
+		$tabs.tabs('select', 7); return false;
 	});
 
 	$("body").on("click", '.message_individual_email_activity', function(event) {
