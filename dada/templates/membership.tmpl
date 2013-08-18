@@ -199,7 +199,6 @@
 				<input type="hidden" name="mode" value="export_csv" /> 				
 				<input type="hidden" name="email" value="<!-- tmpl_var email -->" /> 
 				
-				
 				<p>
 				<input type="radio" id="membership_history_this_list" name="membership_history" value="this_list" class="radio_toggle_membership_history" checked="checked" />
 				<label for="membership_history_this_list">
@@ -216,21 +215,29 @@
 					<div id="mailing_list_history"></div>
 				
 				
-		<!-- tmpl_if root_login -->		
 				<div class="buttonfloat"> 
 					<input type="submit" value="Export (csv)" class="processing" />
 				</div> 
 				<div class="floatclear"></div>
 			</form>
-		<!-- /tmpl_if -->
 	</div>  
 	
 	<div id="activity_tab">
 		
 		<form id="membership_activity_form"> 
-			<div id="membership_activity_loading"></div>
-			<div id="membership_activity"></div>
-			  
+		<div id="membership_activity_loading"></div>
+		<div id="membership_activity"></div>
+
+		<input type="hidden" name="flavor" value="membership_activity" /> 
+		<input type="hidden" name="mode" value="export_csv" /> 				
+		<input type="hidden" name="email" value="<!-- tmpl_var email -->" /> 
+	
+		<div class="buttonfloat"> 
+			<input type="submit" value="Export (csv)" class="processing" />
+		</div> 
+		<div class="floatclear"></div>
+	
+	
 		</form>
 
 	</div>

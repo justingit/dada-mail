@@ -4172,7 +4172,7 @@ sub validate_update_email {
 			my $sv = DADA::MailingList::Subscriber::Validate->new( { -list => $to_validate_list } );
 			my $ls = DADA::MailingList::Settings->new( { -list => $to_validate_list } );
 		
-			for my $type(@{$lh->member_of({-email => $email})}){ 
+			for my $type(@{$lh->member_of({-email => $email, -types => [qw(list black_list white_list authorized_senders)],})}){ 
 				my $sublists = [];		
 				# new address
 				my ( $sub_status, $sub_errors ) = $sv->subscription_check(
@@ -4361,7 +4361,7 @@ sub validate_remove_email {
 			my $tmp_lh = DADA::MailingList::Subscribers->new({-list => $tmp_list});
 			
 			my $sublists = [];
-			for my $sublist(@{$tmp_lh->member_of({-email => $email})}){ 
+			for my $sublist(@{$tmp_lh->member_of({-email => $email, -types => [qw(list black_list white_list authorized_senders)],})}){ 
 				push(@$sublists, 
 					{
 						type => $sublist, 
@@ -4380,6 +4380,9 @@ sub validate_remove_email {
 				}
 			); 
 		}
+		
+		require Data::Dumper; 
+		my $subscribed_lists_dump = Data::Dumper::Dumper($subscribed_lists);
 
 		require DADA::Template::Widgets; 
 		print $q->header(); 
@@ -4393,6 +4396,7 @@ sub validate_remove_email {
 						list_type_label           => $list_types{$type}, 
 						for_multiple_lists        => $for_multiple_lists, 
 						subscribed_lists          => $subscribed_lists, 
+						subscribed_lists_dump     => $subscribed_lists_dump, 
 					}
 				}
 			)
