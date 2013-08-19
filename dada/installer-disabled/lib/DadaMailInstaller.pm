@@ -1277,6 +1277,21 @@ sub install_dada_mail {
         }
     }
 
+
+    $log .= "* Checking for needed CPAN modules to install...\n";
+    eval { install_missing_CPAN_modules(); };
+    if ($@) {
+        $log .=
+          "* Problems installing missing CPAN modules - skipping: $@\n";
+        # $errors->{cant_install_plugins_extensions} = 1;
+    }
+    else {
+        $log .= "* Done!\n";
+    }
+
+
+
+
     $log .= "* Removing old Screen Cache...\n";
     eval { remove_old_screen_cache($args); };
     if ($@) {
@@ -2227,6 +2242,53 @@ sub install_wysiwyg_editors {
 	installer_chmod($DADA::Config::FILE_CHMOD, $dot_configs_file_loc);	
 	
 	return 1; 
+}
+
+
+
+sub install_missing_CPAN_modules { 
+	my $has_JSON = 1;
+	eval { 
+		require JSON; 
+	};
+	if($@) { 
+		$has_JSON = 0; 
+	}
+	eval { 
+		require JSON::PP; 
+	};
+	if($@) { 
+		$has_JSON = 0; 
+	}
+	
+	if($has_JSON == 0) {
+		my $JSON_pm  = make_safer('../DADA/perllib/JSON.pm-remove_to_install');  
+		my $JSON_dir = make_safer('../DADA/perllib/JSON-remove_to_install'); 
+		
+		if(-d $JSON_dir && -e $JSON_pm){ 
+			my $JSON_dir_new = $JSON_dir; 
+			   $JSON_dir_new =~ s/\-remove_to_install$//; 
+			   $JSON_dir_new = make_safer($JSON_dir_new); 
+			
+			my $JSON_pm_new = $JSON_pm; 
+			   $JSON_pm_new =~ s/\-remove_to_install$//; 
+			   $JSON_pm_new = make_safer($JSON_pm_new); 
+
+			installer_mv($JSON_dir, $JSON_dir_new); 
+			installer_mv($JSON_pm,  $JSON_pm_new);
+
+			if(-d $JSON_dir_new && -e $JSON_pm_new){ 
+				return 1;
+			}
+			else { 
+				return ; 
+			}
+		}
+	}
+	else { 
+		return 1; 
+	}
+		
 }
 
 
