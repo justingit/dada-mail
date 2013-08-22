@@ -9,8 +9,11 @@ use CGI qw(:standard);
 # For information on what this script is used for, please see:
 # http://dadamailproject.com/d/install_dada_mail.pod.html
 
-# You may have to update this, depending on the version of Dada Mail!
-my $basic = 'dada-6_5_2.tar.gz';
+# What's the name of the file I'm looking for to uncompress? 
+# Basic Dada Mail
+my $basic = 'dada-6_6_0-beta1.tar.gz';
+#
+# Pro Dada
 my $pro   = 'pro_' . $basic;
 
 my $using = $pro;
