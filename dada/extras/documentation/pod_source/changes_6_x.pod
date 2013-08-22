@@ -154,6 +154,15 @@ It's unclear yet what to do with a subscriber, that has saved Profile Field info
 
 We're not sure yet, but we encourage feedback. 
 
+=head3 uncompress_dada.cgi script
+
+The helper script named, C<uncompress_dada.cgi> is kept intentionally simple, so as to be super-quick to download, and easy to read along, if little niggling changes need to be made for your environment. We've changed a few things to make things more flexible: 
+
+Some people moving from Basic Dada Mail, to Pro Dada mail noticed that if BOTH the C<dada-6_x_y.tar.gz> distro and C<pro_dada-6_x_y> distro are present in your installing directory, the C<dada-6_x_y.tar.gz> will be used, causing confusion. C<uncompress_dada.cgi> will now explicitly look for the C<pro_dada-6_x_y> first. 
+
+
+
+f both the, "dada.tar.gz" disto AND pro_dada.tar.gz disto are present, this script will go for the pro_dada.tar.gz distro. 
 
 
 
