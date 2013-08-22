@@ -845,6 +845,10 @@ sub confirm {
                     -to               => 'sub_request_list', 
 	        		-mode             => 'writeover', 
 	        		-confirmed        => 1, 
+					-fields_options => {
+						-mode => 'preserve_if_defined',
+					},
+	
                 }
 			);
 			require DADA::App::Subscriptions::ConfirmationTokens; 
@@ -911,6 +915,10 @@ sub confirm {
                         -to               => 'list', 
 		        		-mode             => 'writeover', 
 		        		-confirmed        => 1, 
+						-fields_options => {
+							-mode => 'preserve_if_defined',
+						},
+		
                     }
                 );
 				

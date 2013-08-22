@@ -5344,6 +5344,8 @@ sub add_email {
 					$skipped_email_count++; 					
 				}
 				else { 
+					
+					my $fields_options_mode = $q->param('fields_options_mode') || 'preserve_if_defined';
 	                $info = $lh->csv_to_cds($a);
 	                $dmls = $lh->add_subscriber(
 	                    {
@@ -5351,7 +5353,7 @@ sub add_email {
 	                        -fields 		=> $info->{fields},
 	                        -type   		=> $type,
 							-fields_options => {
-								-mode => $q->param('fields_options_mode')
+								-mode => $fields_options_mode,
 							},
 							-dupe_check    => {
 								-enable  => 1,

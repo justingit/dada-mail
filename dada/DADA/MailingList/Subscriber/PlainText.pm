@@ -176,7 +176,7 @@ sub move {
 			)->remove;
 		}
 	}
-	else { 
+	else {  # I assume this is, "writeover_check"
 	    if($self->{lh}->check_for_double_email(-Email => $args->{-email}, -Type => $args->{-to}) == 1){ 
 	        croak "email passed in, -email ( $args->{-email}) is already subscribed to list passed in, '-to' ($args->{-to})"; 
 	    }
