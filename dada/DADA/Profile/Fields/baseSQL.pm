@@ -55,6 +55,16 @@ sub insert {
 			# this is kinda weird, but: 
 			$self->{email} = $args->{ -email };
 			return 1; 
+	}		
+		
+	if($args->{-mode} eq 'preserve_if_defined' && $fields_exists){ 
+		$self->{email} = $args->{ -email };
+		unless($self->are_empty) { 
+			return 1; 
+		}
+		else { 
+			# Well, do what's below, 
+		}
 	}
 	
 	if ($fields_exists) {
@@ -77,12 +87,9 @@ sub insert {
 			); 
 		}
 
-			$tmp_pf->remove;
+		$tmp_pf->remove;
 		undef $tmp_pf; 
  	}
-
-
-	
 
     my $sql_str             = '';
     my $place_holder_string = '';

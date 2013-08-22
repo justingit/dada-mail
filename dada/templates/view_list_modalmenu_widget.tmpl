@@ -12,7 +12,7 @@
 	<!-- tmpl_else --> 
 		<!-- tmpl_var name="add_email_count" --> address(es) have been 
 	<!-- /tmpl_if --> 
-	added to your <!-- tmpl_var type_title -->.
+	added to <!-- tmpl_var type_title -->.
 	</p>
 <!-- /tmpl_if -->
 
@@ -24,7 +24,7 @@
 		<!-- tmpl_else --> 
 			<!-- tmpl_var name="skipped_email_count" --> address(es) 
 		<!-- /tmpl_if --> 	
-			could not be added to your <!-- tmpl_var type_title -->.
+			could not be added to <!-- tmpl_var type_title -->.
 	</p>	
 <!-- /tmpl_if -->
 
@@ -35,7 +35,7 @@
 		<!-- tmpl_else --> 
 			<!-- tmpl_var delete_email_count --> address(es) have been 
 		<!-- /tmpl_if --> 	
-			removed from, <!-- tmpl_var type_title -->.
+			removed<!-- tmpl_if type_title--> from, <!-- tmpl_var type_title --><!-- /tmpl_if -->.
 	</p>
 <!-- /tmpl_if -->
 
@@ -70,7 +70,7 @@
 		<!-- tmpl_else --> 
 			<!-- tmpl_var name="bounced_list_moved_to_list_count" --> address(es) have been 
 		<!-- /tmpl_if -- >
-			moved back to your <a href="javascript:change_type('list');">Subscription List</a>.
+			moved back to Subscription List.
 	</p>
 <!-- /tmpl_if -->
 
@@ -82,7 +82,7 @@
 	<!-- tmpl_else --> 
 		<!-- tmpl_var name="bounced_list_removed_from_list" --> bouncing address(es) have been 
 	<!-- /tmpl_if -->
-	permanently removed from you <a href="javascript:change_type('list');">Subscribers</a>.
+	permanently removed from you Subscribers.
 	</p>
 <!-- /tmpl_if -->
 
@@ -94,7 +94,7 @@
 			<!-- tmpl_var black_list_add --> address(es) have been
 		<!-- /tmpl_if -->
 		
-		 added to your <a href="javascript:change_type('black_list');">Black List</a>. 
+		 added to Black List. 
 	</p>
 <!-- /tmpl_if -->
 

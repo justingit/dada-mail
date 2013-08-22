@@ -413,7 +413,8 @@ sub message_individual_email_activity_report_table {
 
 	my $mid   = xss_filter($q->param('mid')); 
 	my $email = xss_filter($q->param('email')); 
-	$rd->message_individual_email_activity_report_table(
+	print $q->header(); 
+	print $rd->message_individual_email_activity_report_table(
 		{
 			-mid    => $mid, 
 			-email  => $email, 
@@ -704,6 +705,9 @@ sub message_report {
 		unique_unsubscribes_percent => $m_report->{'unique_unsubscribes_percent'}  || 0, 
 		soft_bounce                 => commify($m_report->{'soft_bounce'})         || 0,
         hard_bounce                 => commify($m_report->{'hard_bounce'})         || 0,
+  		
+		errors_sending_to        => commify($m_report->{'errors_sending_to'})      || 0,
+		errors_sending_to_percent => $m_report->{'errors_sending_to_percent'}      || 0, 
         received                 => commify($m_report->{'received'})               || 0,
 		received_percent          => $m_report->{'received_percent'}               || 0,  
 		unique_bounces_percent      => $m_report->{'unique_bounces_percent'}       || 0, 

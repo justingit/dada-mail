@@ -1,44 +1,57 @@
 #!/usr/bin/perl -T
 use strict;
 
-# For information on what this script is used for, please see:
-# http://dadamailproject.com/d/install_dada_mail.pod.html
-
-# You may have to update this, depending on the version of Dada Mail!
-my $gz = 'dada-6_5_2.tar.gz';
-
 $ENV{PATH} = "/bin:/usr/bin";
 delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 use CGI::Carp qw(fatalsToBrowser);
 use CGI qw(:standard);
+
+# For information on what this script is used for, please see:
+# http://dadamailproject.com/d/install_dada_mail.pod.html
+
+# What's the name of the file I'm looking for to uncompress? 
+# Basic Dada Mail
+my $basic = 'dada-6_6_0-beta1.tar.gz';
+#
+# Pro Dada
+my $pro   = 'pro_' . $basic;
+
+my $using = $pro;
+
 print header();
-
-if ( !-e $gz ) {
-    $gz = 'pro_' . $gz;
-}
-if ( !-e $gz ) {
-    print p( 'Can\'t find ' . $gz . ' to uncompress!' );
-    exit;
-}
-
 print h1('Adventures with Dada Mail!');
+
+if ( !-e $pro ) {
+    
+	print p("Can't find Pro Dada distribution at, $pro, looking for Basic distribution..."); 
+	$using = $basic;
+	
+	if ( !-e $basic ) {
+	    print p('Yikes! Can\'t find either the  '
+	          . $basic . ' or '
+	          . $pro
+	          . ' Dada Mail distributions to uncompress!' );
+	    exit;
+	}
+}
+
 if ( -e 'dada' ) {
     print p(
-"STOPPING! 'dada' directory already exists! Please manually move this directory, before running this script!"
+"Yikes! A directory named, \"dada\" already exists in this location! Please manually move this directory, before running this script!"
     );
     exit;
 }
 
 print p( i("Starting Adventure...") );
 
-print p("Uncompressing $gz...");
+print p("Uncompressing $using...");
 
-`tar -xvzf $gz`;
+`tar -xvzf $using`;
 
 if ( !-e 'dada' ) {
 
-    `gunzip $gz`;
-    my $tar = $gz;
+    `gunzip $using`;
+    my $tar = $using;
     $tar =~ s/\.gz$//;
     if ( !-e $tar ) {
         print p( 'Can\'t find ' . $tar . ' to uncompress!' );
@@ -55,6 +68,7 @@ else {
     print p( i("Success!") );
 }
 
+print p( i("Checking to see if \"dada\" directory now exists...") );
 if ( !-e 'dada' ) {
     print p("Can't find 'dada' directory!");
     exit;
@@ -64,6 +78,8 @@ else {
 }
 
 print p("Changing permissions of dada/mail.cgi to, 755");
+`chmod 755 dada`;
+`chmod 755 dada/DADA`;
 `chmod 755 dada/mail.cgi`;
 `chmod 777 dada/DADA/Config.pm`;
 
@@ -74,6 +90,7 @@ print p(
     "Enabling installer at $installer_loc by moving it to, $new_installer_loc\n"
 );
 
+`chmod 755 $new_installer_loc`;
 `mv $installer_loc $new_installer_loc`;
 `chmod 755 $new_installer_loc/install.cgi`;
 

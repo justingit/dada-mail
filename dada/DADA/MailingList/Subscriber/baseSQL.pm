@@ -176,7 +176,11 @@ sub get {
 sub move {
 
     my $self = shift;
-
+	
+	if(! defined($self->type)){ 
+		croak("'type' needs to be defined!"); 
+	}
+	
     my ($args) = @_;
 
     if ( !exists $args->{ -to } ) {
@@ -184,30 +188,68 @@ sub move {
     }
 
     if ( $self->{lh}->allowed_list_types( $args->{ -to }) != 1 ) {
-        croak "list_type passed in, -to is not valid";
+        croak "list type passed in, -to (" . $args->{ -to } . ") is not valid 1";
     }
 	if(!exists($args->{-confirmed})){ 
 		$args->{-confirmed} = 0; 
 	}
 
 	
+	if(!exists($args->{-fields_options}->{-mode})){ 
+		$args->{-fields_options}->{-mode} = 'preserve_if_defined'; 
+	}
+	
+	
 	###
 	# This is sort of strange,
+	my $make_new_profile = 0; 
+	
 	if($self->{lh}->can_have_subscriber_fields == 1){ 
 		if($args->{-confirmed} == 1){ 
+			
+			
 			require DADA::Profile::Fields; 
 			my $dpf = DADA::Profile::Fields->new;
+			
+			my $og_profile_exists = $dpf->exists({-email => $self->email}); # no, "*"; 
+			
+			if($og_profile_exists == 0){ 
+				$make_new_profile = 1;
+			}
+			elsif($args->{-fields_options}->{-mode} eq 'writeover') { 
+				$make_new_profile = 1; 
+			# Is there already a Profile for this address? 
+			} 
+			elsif($args->{-fields_options}->{-mode} eq 'preserve' && $og_profile_exists) { 
+				$make_new_profile = 1; 
+			}
+			elsif($args->{-fields_options}->{-mode} eq 'preserve_if_defined' && $og_profile_exists){ 
+				
+				my $dpf_empty_check = DADA::Profile::Fields->new({-email => $self->email}); 
+				# I don't like this juggling around. 				
+				if($dpf_empty_check->are_empty) { 
+					$make_new_profile = 1; 
+				}
+				undef $dpf_empty_check; 
+			}
+
+
 			if($dpf->exists({-email => '*' . $self->email})){ 
 				my $dpf2 = DADA::Profile::Fields->new({-email => '*' . $self->email});
-				my $fields = $dpf2->get;
-				$dpf2->remove; 
-				$dpf->insert(
-					{
-						-email     => $self->{email},
-						-fields    => $fields, 
-						-confirmed => 1, 
-					}
-				); 
+				if($make_new_profile == 1) { 
+					my $fields = $dpf2->get;
+					$dpf2->remove; 
+					$dpf->insert(
+						{
+							-email     => $self->{email},
+							-fields    => $fields, 
+							-confirmed => 1, 
+						}
+					); 
+				}
+				else { 
+					$dpf2->remove; # This removes the profile for, *asterick email address. 
+				}
 			}
 		}
 	}
@@ -264,7 +306,7 @@ sub move {
             )->remove;
         }
     }
-    else {
+    else { # I'm assumin this is, "writeover_check" 
         if (
             $self->{lh}->check_for_double_email(
                 -Email => $args->{ -email },
@@ -325,6 +367,11 @@ sub move {
 sub remove {
 
     my $self = shift;
+
+	if(! defined($self->type)){ 
+		croak("'type' needs to be defined!"); 
+	}
+
 	my ($args) = @_; 
 	if(!exists($args->{-log_it})){ 
 		$args->{-log_it} = 1; 
@@ -369,7 +416,10 @@ sub remove {
     my $rv;
 
    
-
+	if($t){ 
+		require Data::Dumper; 
+		warn 'execute params: ' . Data::Dumper::Dumper([$self->email, $self->type]); 
+	}
    	$rv = $sth->execute( $self->email, $self->type )
 		or croak "cannot do statement (at: remove from list)! $DBI::errstr\n";
 
@@ -392,12 +442,32 @@ sub remove {
 sub member_of {
 	
     my $self = shift;	
+	my ($args) = @_;
+	
     my $query =
         'SELECT list_type FROM '
       . $self->{sql_params}->{subscriber_table}
       . ' WHERE email = ? AND  list = ? AND list_status = ?';
-    return $self->{dbh}->selectcol_arrayref( $query, {},
+    my $list_types = $self->{dbh}->selectcol_arrayref( $query, {},
         ( $self->email,  $self->{list}, 1 ) );
+
+	if(exists($args->{-types})){ 
+		my $lt = {}; 
+		foreach(@{$args->{-types}}){ 
+			$lt->{$_} = 1; 
+		}
+		my $filtered_list_types = []; 
+		foreach(@$list_types){ 
+			if($lt->{$_} == 1){ 
+				push(@$filtered_list_types, $_); 
+			}
+		}
+		return $filtered_list_types; 
+	}
+	else { 
+		return $list_types; 
+	}
+
 
 }
 

@@ -868,7 +868,7 @@ sub remove_bounces {
 
     # Remove the Subscriber:
     for (@remove_list) {
-        $lh->remove_subscriber( { -email => $_, } );
+        $lh->remove_subscriber( { -email => $_, -type => 'list'} );
         $m .= "Removing: $_\n";
     }
 

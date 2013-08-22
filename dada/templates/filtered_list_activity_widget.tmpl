@@ -8,7 +8,14 @@
 	<!-- tmpl_if expr="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list') || (type eq 'sub_request_list') || (type eq 'bounced_list')  || (type eq 'invitelist'))" -->
 	
 		<li>
-			
+		
+	
+		<!-- tmpl_if show_list_name --> 
+			<strong>
+				<!-- tmpl_var list -->
+			</strong>:
+		<!-- /tmpl_if --> 
+		
 		<!-- tmpl_if expr="(action eq 'subscribed')" --> 
 			&#8594; <!-- tmpl_if show_email --><a href="<!-- tmpl_var S_PROGRAM_URL -->?f=membership;email=<!-- tmpl_var email escape=URL -->;type=<!-- tmpl_var type -->"><!-- tmpl_var email --></a><!-- /tmpl_if -->
 			<!-- tmpl_if expr="(type eq 'list')" -->

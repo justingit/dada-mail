@@ -136,7 +136,7 @@ sub move {
     }
     
     if($self->{lh}->allowed_list_types($args->{-to} ) != 1){ 
-        croak "list_type passed in, -to is not valid"; 
+        croak "list_type passed in, -type (" . $args->{ -type } . ") is not valid 2";
     }
 
    
@@ -176,7 +176,7 @@ sub move {
 			)->remove;
 		}
 	}
-	else { 
+	else {  # I assume this is, "writeover_check"
 	    if($self->{lh}->check_for_double_email(-Email => $args->{-email}, -Type => $args->{-to}) == 1){ 
 	        croak "email passed in, -email ( $args->{-email}) is already subscribed to list passed in, '-to' ($args->{-to})"; 
 	    }
@@ -241,7 +241,9 @@ sub remove {
 sub member_of {
 	
     my $self = shift;	
-	my $found = [];
+	my ($args) = @_;
+
+	my $list_types = [];
 	
 	my $lh = DADA::MailingList::Subscribers->new({-list => $self->{list}});
 	foreach(keys %{$lh->get_list_types}){ 
@@ -249,10 +251,27 @@ sub member_of {
 	        -Email => $self->email,
 	        -Type  => $_,
 	    ) == 1){
-			push(@$found, $_); 
+			push(@$list_types, $_); 
 		}
 	}
-	return $found; 
+
+	if(exists($args->{-types})){ 
+		my $lt = {}; 
+		foreach(@{$args->{-types}}){ 
+			$lt->{$_} = 1; 
+		}
+		my $filtered_list_types = []; 
+		foreach(@$list_types){ 
+			if($lt->{$_} == 1){ 
+				push(@$filtered_list_types, $_); 
+			}
+		}
+		return $filtered_list_types; 
+	}
+	else { 
+		return $list_types; 
+	}
+
 } 
 
 

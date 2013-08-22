@@ -70,12 +70,19 @@ sub subscription_check {
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
     my $list_info = $ls->get;
 
-    if ( $args->{ -type } ne 'black_list' ) {
+    if ( $args->{ -type } ne 'black_list' &&  $args->{ -type } ne 'white_list') {
         if ( !$skip{invalid_email} ) {
             $errors{invalid_email} = 1
               if DADA::App::Guts::check_for_valid_email($email) == 1;
         }
     }
+	else { 
+		if(DADA::App::Guts::check_for_valid_email($email) == 1) { 
+			if($email !~ m/^\@|\@$/){ 
+				$errors{invalid_email} = 1;
+			}
+		}
+	}
 
     if ( !$skip{subscribed} ) {
         $errors{subscribed} = 1

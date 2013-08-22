@@ -845,6 +845,10 @@ sub confirm {
                     -to               => 'sub_request_list', 
 	        		-mode             => 'writeover', 
 	        		-confirmed        => 1, 
+					-fields_options => {
+						-mode => 'preserve_if_defined',
+					},
+	
                 }
 			);
 			require DADA::App::Subscriptions::ConfirmationTokens; 
@@ -853,7 +857,7 @@ sub confirm {
 			
             my $s = $ls->param('html_subscription_request_message');
             require DADA::Template::Widgets; 
-            my $r .= DADA::Template::Widgets::wrap_screen(
+            my $r = DADA::Template::Widgets::wrap_screen(
                          { 
                             -data                     => \$s,
 							-with                     => 'list', 
@@ -911,6 +915,10 @@ sub confirm {
                         -to               => 'list', 
 		        		-mode             => 'writeover', 
 		        		-confirmed        => 1, 
+						-fields_options => {
+							-mode => 'preserve_if_defined',
+						},
+		
                     }
                 );
 				

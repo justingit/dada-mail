@@ -382,7 +382,7 @@ sub destroy_MySQL_db {
 		confirmation_tokens_table
 		)){ 
 			
-			carp "removing: " . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{$_}; 
+#			carp "removing: " . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{$_}; 
 		 
 		
 	        $dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{$_})

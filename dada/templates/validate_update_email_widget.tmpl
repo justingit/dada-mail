@@ -1,0 +1,112 @@
+<!-- begin validate_update_email_widget.tmpl --> 
+
+	
+	<!-- tmpl_if expr="(email eq updated_email)" --> 
+		<div class="badweatherbox">
+			<p>
+				<strong>
+					The updated email address you've entered is the same as the current address.
+				</strong> 
+			</p> 
+		</div> 		
+	<!-- tmpl_else --> 
+	
+		<!-- tmpl_if none_validated --> 
+
+			<div class="badweatherbox">
+				<p>
+					<strong>
+						No Mailing Lists or sublists validated.
+					</strong> 
+				</p> 
+			</div> 
+		
+		<!-- tmpl_else --> 
+		
+			<div class="clearskiesbox">
+
+				<p>
+					<strong>
+						Confirm Updating <!-- tmpl_var email --> to, <!-- tmpl_var updated_email -->.
+					</strong>
+			
+					<p>
+						Check the Sublist you would like to update 
+						<strong>
+						<!-- tmpl_var email -->
+						</strong>		
+						<!-- tmpl_if for_multiple_lists --> 
+							for each mailing list.
+						<!-- tmpl_else --> 
+						 	from.
+						<!-- /tmpl_if --> 
+					</p>
+			
+			
+				</p>
+
+			</div> 
+	
+			<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+		
+				<input type="hidden" name="f" value="validate_update_email" /> 
+				<input type="hidden" name="email" value="<!-- tmpl_var email -->" /> 
+				<input type="hidden" name="updated_email" value="<!-- tmpl_var updated_email -->" />
+				<input type="hidden" name="process" value="1" /> 
+
+
+			<!-- tmpl_loop update_list_validation --> 
+
+				<ul> 
+					<li>
+						<p>
+							<strong> 
+								<!-- tmpl_var list_settings.list_name -->
+							</strong>
+						</p>
+					</li> 
+					<!-- tmpl_loop sublists --> 
+		
+						<!-- tmpl_if status --> 
+							<p>
+								<input type="checkbox" name="update_list" id="<!-- tmpl_var list_settings.list -->:<!-- tmpl_var type -->" value="<!-- tmpl_var list_settings.list -->:<!-- tmpl_var type -->" checked="checked" />
+								<label for="<!-- tmpl_var list_settings.list -->:<!-- tmpl_var type -->">
+									<!-- tmpl_var type_label -->
+								</label>
+							</p>
+			
+						<!-- tmpl_else --> 
+							<p><strong><!-- tmpl_var type_label --> has problems with updating:</strong> </p> 
+							<ul>
+								<!-- tmpl_loop errors --> 
+									<li><!-- tmpl_var error_title --></li>
+								<!-- /tmpl_loop -->
+							</ul>					  
+						<!-- /tmpl_if --> 
+		
+		
+				</li>
+				<!-- /tmpl_loop --> 
+			</ul>
+			<!-- /tmpl_loop -->
+
+	
+
+			<input type="submit" value="Update Subscription of: <!-- tmpl_var email --> to, <!-- tmpl_var updated_email -->" class="processing" />
+		</form> 
+		
+		<!-- /tmpl_if --> 
+
+<!-- /tmpl_if --> 
+
+<!-- tmpl_if comment --> 
+
+	<pre>
+	<!-- tmpl_var validate_dump -->
+	</pre>
+
+<!-- /tmpl_if --> 
+
+
+
+<!-- end validate_update_email_widget.tmpl --> 
