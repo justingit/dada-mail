@@ -9,37 +9,42 @@ use CGI qw(:standard);
 # For information on what this script is used for, please see:
 # http://dadamailproject.com/d/install_dada_mail.pod.html
 
-# What's the name of the file I'm looking for to uncompress? 
+# What's the name of the file I'm looking for to uncompress?
 # Basic Dada Mail
 my $basic = 'dada-6_6_0-beta1.tar.gz';
 #
 # Pro Dada
-my $pro   = 'pro_' . $basic;
+my $pro = 'pro_' . $basic;
 
 my $using = $pro;
 
 print header();
 print h1('Adventures with Dada Mail!');
 
-if ( !-e $pro ) {
-    
-	print p("Can't find Pro Dada distribution at, $pro, looking for Basic distribution..."); 
-	$using = $basic;
-	
-	if ( !-e $basic ) {
-	    print p('Yikes! Can\'t find either the  '
-	          . $basic . ' or '
-	          . $pro
-	          . ' Dada Mail distributions to uncompress!' );
-	    exit;
-	}
-}
-
 if ( -e 'dada' ) {
     print p(
 "Yikes! A directory named, \"dada\" already exists in this location! Please manually move this directory, before running this script!"
     );
     exit;
+}
+
+if ( !-e $pro ) {
+
+    print p(
+"Can't find Pro Dada distribution at, $pro, looking for Basic distribution..."
+    );
+    $using = $basic;
+
+    if ( !-e $basic ) {
+        print p('Yikes! Can\'t find either the  '
+              . $basic . ' or '
+              . $pro
+              . ' Dada Mail distributions to uncompress!' );
+        exit;
+    }
+	else { 
+		print p("Found, $basic!"); 
+	}
 }
 
 print p( i("Starting Adventure...") );
