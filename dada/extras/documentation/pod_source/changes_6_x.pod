@@ -6,33 +6,33 @@
 
 =head3 Mass Mailing Enhancements: Sending Error Detection and Reporting
 
-Dada Mail has enhanced its sending error detection during mass mailings. Due to how many messages go out during a mass mailing, and how fast you may be sending out these messages, problems on your hosting account's end of things could potentially happen. Historically, Dada Mail has been not as bright as it could be in handling and reporting these problems. 
+Dada Mail has enhanced its sending error detection during mass mailings. Due to how many messages go out during a mass mailing and how fast you may be sending out these messages, problems with mail sending could potentially happen. Historically, Dada Mail has been less than bright than it could be when handling and reporting these problems.
 
-Now, Dada Mail is tuned to catch addresses causing problems, and do some intelligent things: 
+Dada Mail is now tuned to catch addresses causing problems and perform some intelligent tasks: 
 
-=head4 Problems? Try again!
+=head4 Problems?! Try again.
 
-If a message to an address is not sending correctly, Dada Mail will now wait a small perioud of time, and try sending twice more. This should help with any I<very> temporary problems dealing with your mail system itself (your own MTA, an outside SMTP server, or service like Amazon SES). Hey, things happen, every once in awhile. 
+If a message to an address is not sending out correctly, Dada Mail will now wait a small perioud of time (a few seconds), and try sending twice more. This should help with any I<very> temporary problems dealing with your mail system itself (your own MTA, an outside SMTP server, or service like Amazon SES). Hey, things happen, every once in awhile. The idea is that brief hiccups on your end, shouldn't mean a subscriber misses receiving a message from you. 
 
-=head4 Still having problems? Give it a rest and try again, once more
+=head4 Still having problems? Give it a rest and try again, one more time
 
-If, after three tries  sending the message, the message still doesn't get sent, Dada Mail will temporarily stop it's entire mass mailing process and start again, after a slightly longer amount of time. This is to make sure there isn't a problem  with Dada Mail itself, the resources its taking on the server, or any other very strange, very fringe problems. 
+If, after three tries sending the message, the message still doesn't get sent, Dada Mail will now temporarily stop it's entire mass mailing process and start again, after a slightly longer amount of time (a few minutes). This is to make sure there isn't a problem with Dada Mail itself - the resources its taking on the server, or any other very strange, very fringe problems. 
 
-After this wait, Dada Mail will start its mass mailing process at the address that was having the delivery problems and try it again, three more times - just to make sure. If this is successful, great! Business as usual. If the address fails in sending, the address is logged, and skipped over and the next address is then sent to. 
+After this wait, Dada Mail will start its mass mailing process at the address that was having the delivery problems and try for another round of three more times - just to make sure. If this is successful, great! Business as usual. If the address fails in sending, the address is logged, and skipped over and the next address is then sent to. 
 
 =head4 Sending Error? Log and Report.
 
-This is marked improvement over what Dada Mail has done in the past: basically do nothing very intelligent when an address fails during sending. Addresses that fail are now reported with the Tracker plugin, where you can see exactly which addresses are causing problems (this data can be exported as a .csv file, as well!) and what percentage of your total mailing list is having problems with sending errors. 
+This is marked improvement over what Dada Mail has done in the past: basically do nothing very intelligent when an address fails during sending. Addresses that fail are now reported, using the Tracker plugin, which allows you to see exactly which addresses are causing problems (this data can be exported as a .csv file, as well!) and what percentage of your total mailing list is having problems with sending errors. 
 
-Now that you know this information, you can then take some action to fix it. The majority of problems on cheap, shared hosting platforms is mass mailing I<speed>: you're sending too fast. This is also the eaisest problem to fix, as Dada Mail supports changing how fast a mass mailing goes out, through it's batch sending system. For more complicated problems, you can look in Dada Mail's error logs for more details - Dada Mail's Log Viewer plugin also makes this easy. 
+Now that you know this information, you can then take some action to fix it. The majority of problems on cheap, shared hosting platforms is mass mailing I<speed>: you're sending too fast. This is also the eaisest problem to fix, as Dada Mail supports changing how fast a mass mailing goes out, through it's batch sending system. For more complicated problems, you can then look in Dada Mail's error logs for more details - Dada Mail's Log Viewer plugin also makes this easy.
 
 =head4 Track it. 
 
-Since sending errors are now reported, the reports created by the Tracker plugin can now be more accurate. Message opens, bounce rates, etc. percentages now do not count addresses that failed to even be sent out by Dada Mail, giving you a beter idea on how many messages were interacted with, compared to how many were sent out, correctly (rather than the full total). 
+Since sending errors are now reported, the reports created by the Tracker plugin can now be more accurate. Message opens, bounce rates, etc. percentages now do not count addresses that failed to even be sent out by Dada Mail, giving you a better idea on how many messages were interacted with, compared to how many were sent out, correctly (rather than the full total). 
 
 =head4 Feedback Welcome!
 
-We're sure we'll be getting a lot of feedback from users that are just noticing that they may be having problems on their end with sending. We're hoping that armed with this new data, that deliverability will increase. 
+We're sure we'll be getting a lot of feedback from users that are just noticing that they may be having problems on their end with sending. We're hoping that armed with this new data, that deliverability will increase.
 
 =head3 Tracker plugin enhancements: Sending Errors
 
@@ -40,57 +40,55 @@ Along with logged Sending Errors, the Tracker plugin has been updated to report 
 
 =head4 "The Basics" Pie Chart
 
-Sending Errors are first show reported, per message in the first Pie Chart at the top of the screen. The pie chart is composed of Delivered Messages, Hand Soft Bounces, as well as addresses that causes Sending Errors. 
+Sending Errors are first shown reported, per message, in the first Pie Chart at the top of the screen. The pie chart is composed of Delivered Messages, Hand/Soft Bounces, as well as addresses that had Sending Errors. 
 
-Sending Errors are also reported in the right-hand table, under, "Sending Errors" as both the total number of Sending Errors, and the percentage compared to how many addresses were sent to. 
+Sending Errors are also reported in the right-hand table, under, B<Sending Errors> as both the total number of Sending Errors, and the percentage compared to how many addresses were sent to. 
 
 =head4 "Sending Errors" tab
 
-"Sending Errors" also has its own tab, underneither, "The Basics". This tab will both list the addresses where Sending Errors happened with, as well as a pie chart, broken down by domain. There's also functionality to export these addresses as a .csv file. 
+B<Sending Errors> also has its own tab, underneith, B<The Basics>. This tab will both list the addresses where Sending Errors happened, as well as a pie chart, broken down by domain. There's also an option to export these addresses as a .csv file. 
 
 =head4 Other Tracker changes: more accurate report percentages
 
-The Tracker plugin now shows percentages to the nearest tenth of a percent, rather than rounding up numbers to the nearest whole number. 
+The Tracker plugin now shows percentages to the nearest tenth of a percent, rather than rounding up numbers to the nearest whole number. This helps in getting a better picture of what's happening with your mailing list: things like Sender Errors, Bounces and Unsubscribes could be a very small amount of activity, when compared to how large your mailing list is. 
 
 =head3 Working with Subscribers: More Powerful Tools
 
 List Owners now have much more powerful tools to work with individual subscribers of their mailing lists, as well as the ability to work across different mailing lists. The completely rewritten Membership screen now has four separate tabs to work with your subscriber: B<Membership>, B<Subscriber History>, B<Mailing List Activity>, B<Profile>. 
 
-If you're logged into a mailing list with the Dada Mail Root Password (as opposed to your List Password), 
-
 =head4 Membership
 
-The Membership tab allows you to work with the email address of the Subscriber. Here, you can Add, Update or Remove the address for your mailing list. A Dada Mail mailing list is actually composed of many different sublist types, so for example when you send a mass mailing out, you're sending a message out to your Subscribers sublist. Your Subscribers is what you normally think of, when you think of your, "mailing list". 
+The Membership tab allows you to work with the email address of the Subscriber. Here, you can B<Add>, B<Update> or B<Remove> the address for your mailing list. A Dada Mail mailing list is actually composed of many different sublist types, so for example, when you send a mass mailing out, you're sending a message out to your B<Subscribers> sublist.
 
 But, Dada Mail has other sublists that do fancy things. For example, Dada Mail's Black List allows you to have a list of addresses that aren't allowed to join your list. The Authorized Senders list is a list of addresses that are allowed to send out a message from their own mail reader, without having to log into Dada Mail, that then gets delivered to your Subscribers (this is done with the Bridge plugin, which is bundled with Dada Mail) 
 
-The Membership tab allows you to add/update/remove addresses across these sublists. If you're logged into a mailing list with the Dada Mail Root Pass, you'll also be able to do all things things, across all mailing lists! 
+The Membership tab allows you to Add/Update/Remove addresses across these sublists. If you're logged into a mailing list with the Dada Mail Root Pass, you'll also be able to do all things things, across all mailing lists! 
 
-Dada Mail is smart, when allowing you to work with the addresses that make up your mailing list, as these addresses are the most valuable asset of the whole system! Checks are done to make sure you're not going to mess subscriptions, and all these functions only happen, after Dada Mail validates your request and you confirm the changes. 
+Dada Mail is smart when allowing you to work with the addresses that make up your mailing list, as these addresses are the most valuable asset of the whole system! Checks are done to make sure you're not going to mess up subscriptions, and all these functions only happen after Dada Mail validates your request and I<you> confirm the changes. 
 
 =head4 Subscriber History
 
-Dada Mail logs the subscriber history of an address: when the address was added/updated/remove from your mailing lists, and their underlying sublists. This, "paper trail" helps in painting a picture of the how this address has become apart of your mailing list. Information recorded includes the time of the add/update/removal, IP address what exactly was done with the address. 
+Dada Mail logs the subscriber history of an address: when the address was added/updated/removed from one of your mailing lists and their underlying sublists. This, "paper trail" helps out when painting a picture of how this address has become a part of your mailing list. Information recorded includes the time of the add/update/removal, IP address of the request, and what exactly was done with the address. 
 
-This information can also be exported in a .csv format, to be opened and worked with, in any application that understand this format, things like Excel or other spreadsheet applications.
+This information can also be exported in a .csv format, to be opened and worked with, in any application that understand this format - things like Excel or other spreadsheet applications.
 
 If you have logged into your mailing list with the Dada Mail Root Password, you may view the history for the mailing list you're currently logged into, as well as all mailing lists - the latter can also be exported to .csv format. 
 
 =head4 Mailing List Activity
 
-The Mailing List Activity tab shows you how the subscriber has interacted with the mass mailings you've sent. Things like, opens, clickthroughs, unsubscriptions, sending errors, bounces are tracked for each message you send out. This information is shown for each recent mass mailing you have sent out. 
+The, B<Mailing List Activity> tab shows you how the subscriber has interacted with the mass mailings you've sent. Things like, Opens, Clickthroughs, Unsubscriptions, Sending errors, Hard/Soft Bounces are tracked for each message you send out. This information is shown for each recent mass mailing that's sent. 
 
-Like the Subscriber History, this data can also be exported in .csv format, to be opened up in an outside application. Data that's exported includes the data and time of the activity, what type of activity this was, if it was a clickthrough, what URL was clicked through, the message id of the message, as well as the IP address the subscriber was coming from. 
+Like the B<Subscriber History>, this data can also be exported in .csv format, to be opened up in an outside application. Data that's exported includes the data and time of the activity, what type of activity this was, if it was a clickthrough, what URL was clicked through, the message id of the message, as well as the IP address the subscriber was coming from. 
 
 =head4 Profile
 
-The Profile tab allows you to work with the Subscriber's Profile. Dada Mail's Profile system allows you to save additional information, other than an email address, that's association with your subscriber. These fields are pretty free form, so you can add whatever you'd like: First Name, Last Name, City, State, Favorite Color, etc. 
+The Profile tab allows you to work with the Subscriber's Profile. Dada Mail's Profile system allows you to save additional information, other than an email address, that's association with your subscriber. These fields are pretty free-form, so you can add whatever you'd like: First Name, Last Name, City, State, Favorite Color, etc. 
 
 These fields can be edited by the user themselves, as well as in this tab. You may also change the password used by your user to access their own information. 
 
 =head3 Administration Screen changes
 
-Changes have been made to the, "Administration" screen - if you are already logged into a mailing list, you'll be redirected to the default list control panel screen (usually, B<Send a Message>), rather than to the Administration screen, that simply I<tells> you you're logged in, and provides a link to go this same screen. 
+Changes have been made to the, B<Administration> screen - if you are already logged into a mailing list, you'll be redirected to the default list control panel screen (usually, B<Send a Message>), rather than to the Administration screen, that simply I<tells> you you're logged in and provides a link to go this same screen. 
 
 =head3 Black/White List Definition Changes
 
@@ -104,17 +102,19 @@ or parts of email addresses, like this:
 
 	@example.com
 
-It wasn't entirely clear what was meant by, "part" of an address, so this has been clarified: the part of an email address B<must> include the, B<@> symbol, to remove the ambiguity of if you want to Black List the user or domain part of the address and something like this doesn't happen: 
+It wasn't entirely clear what was meant by, "part" of an address, so this has been clarified: 
 
-	example.com@someofdomain.com
+The part of an email address B<must> include the, B<@> symbol, to remove the ambiguity of if you want to Black List the user or domain part of the address and something like this doesn't happen: 
 
-So the following are now not valid Black List (or White List) entries: 
+	example.com@someotherdomain.com
+
+So the following are now I<not> valid Black List (or White List) entries: 
 
 	user
 
 	example.com
 
-If you do have entries like this in your current Black List/White List, they simply won't do much. 
+If you do have entries like this in your current Black List/White List, they simply won't do much of anything. 
 
 =head3 Installer
 
@@ -124,7 +124,31 @@ The included Dada Mail Installer now allows you to enabled Debugging Options for
 
 =head4 JSON module installed if needed
 
-The JSON CPAN module is used heavily in Dada Mail, but is not installed by defautl on many hosting platforms. To make things easier, the Dada Mail Installer will look to see if it's already installed system-wide and if it isn't, will move a bundled Pure-Perl version of the module into its own perllib, thus making it available to be used. This saves some time from having to manually doing this same thing yourself, every time an upgrade is done. It's still suggested to install the JSON Perl module yourself to get the XS-version for speed. 
+The JSON CPAN modules are used heavily in Dada Mail, but is not installed by default on many hosting platforms. To make things easier, the Dada Mail Installer will look to see if they're already installed system-wide and if they're not, it will move a bundled Pure-Perl version of the modules into its own perllib, thus making it available to be used. This saves some time from having to manually doing this same thing yourself, every time an upgrade is done. 
+
+It's still suggested to install the JSON Perl module yourself to get the XS-version for speed, either manually, or using cpan/cpanmin
+
+=head2 Changes 6.6.0
+
+=head3 Profile Fields
+
+In previous versions of Dada Mail, the app had a curious, if not downright broken behavior when it come to Profile Fields: 
+
+If a subscriber was a member of one mailing list, and was then subscribed to another mailing list, any saved Profile Fields tied to that address would be B<lost> - even if that new subscription didn't have any new Profile Fields passed to Dada Mail.
+
+This behavior has now changed: 
+
+If an address, that has saved Profile Field information, and is subscribed to a mailing list, that original information will now be B<preserved>. If an address is subscribed, but had no profile field information saved, any new information would then be B<saved>. 
+
+It's unclear yet what to do with a subscriber, that has saved Profile Field information that's subscribed to another mailing list, along with I<new> Profile Field information - should the new information be used instead? Should the old information be kept? Shoudl some sort of sophisticated folding of data happen? Should it be a pref. somewhere? (per mass import, in the list control panel?) 
+
+We're not sure yet, but we encourage feedback. 
+
+=head3 uncompress_dada.cgi script
+
+The helper script named, C<uncompress_dada.cgi> is kept intentionally simple, so as to be super-quick to download, and easy to read along, if little niggling changes need to be made for your environment. We've changed a few things to make things more flexible: 
+
+Some people moving from Basic Dada Mail, to Pro Dada mail noticed that if BOTH the C<dada-6_x_y.tar.gz> distro and C<pro_dada-6_x_y> distro are present in your installing directory, the C<dada-6_x_y.tar.gz> will be used, causing confusion. C<uncompress_dada.cgi> will now explicitly look for the C<pro_dada-6_x_y> first. 
 
 =head2 Bugfixes 6.6.0
 
@@ -139,33 +163,6 @@ https://github.com/justingit/dada-mail/issues/395
 =head3 Mass Mailings sometime Reload, without end - browser says, "Reloading Mailing..." 
 
 L<https://github.com/justingit/dada-mail/issues/399>
-
-=head2 Changes 6.6.0
-
-=head3 Profile Fields
-
-In previous versions of Dada Mail, the app had a curious, if not downright broken behavior when it come to Profile Fields: 
-
-If a subscriber was a member of one list, and was then subscribed to another list, any saved Profile Fields tied to that address would be lost - even if that new subscription didn't have any Profile Fields passed to Dada Mail.
-
-This behavior has now changed: If an address, that has saved Profile Field information, is subscribed to a list, that original information will now be preserved. If an address is subscribed, but had no profile field information saved, any new information would then be saved. 
-
-It's unclear yet what to do with a subscriber, that has saved Profile Field information, that's subscribed to another list, along with I<new> Profile Field information - should the new information be used instead? Should the old information be kept? Shoudl some sort of sophisticated folding of data happen? Should it be a pref. somewhere? (per mass import, in the list control panel?) 
-
-We're not sure yet, but we encourage feedback. 
-
-=head3 uncompress_dada.cgi script
-
-The helper script named, C<uncompress_dada.cgi> is kept intentionally simple, so as to be super-quick to download, and easy to read along, if little niggling changes need to be made for your environment. We've changed a few things to make things more flexible: 
-
-Some people moving from Basic Dada Mail, to Pro Dada mail noticed that if BOTH the C<dada-6_x_y.tar.gz> distro and C<pro_dada-6_x_y> distro are present in your installing directory, the C<dada-6_x_y.tar.gz> will be used, causing confusion. C<uncompress_dada.cgi> will now explicitly look for the C<pro_dada-6_x_y> first. 
-
-
-
-f both the, "dada.tar.gz" disto AND pro_dada.tar.gz disto are present, this script will go for the pro_dada.tar.gz distro. 
-
-
-
 
 =head1 6.5.2
 
