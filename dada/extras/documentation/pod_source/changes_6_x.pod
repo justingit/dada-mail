@@ -95,7 +95,7 @@ Changes have been made to the, B<Administration> screen - if you are already log
 The Black List can currently hold email addresses, 
 
 	user@example.com
-	
+
 or parts of email addresses, like this: 
 
 	user@
