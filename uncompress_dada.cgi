@@ -73,7 +73,7 @@ else {
     print p( i("Success!") );
 }
 
-print p( i("Checking to see if \"dada\" directory now exists...") );
+print p( "Checking to see if \"dada\" directory now exists..." );
 if ( !-e 'dada' ) {
     print p("Can't find 'dada' directory!");
     exit;
