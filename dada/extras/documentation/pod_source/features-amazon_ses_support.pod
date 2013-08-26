@@ -64,7 +64,7 @@ It's not known how performance compares to the SES API.
 
 =head3 No Discussion List Support
 
-Since every email address that's set in the C<From:> header of any outgoing email message sent through Amazon SES, setting up a discussion list using it is probably unrealistic. 
+Dada Mail preserves the, From: header address, when it sends out messages received from the mailing list's subscribers. This makes using Amazon SES for discussion lists unrealistic, as every subscriber of your mailing list would need to be verified through Amazon SES. 
 
 =head3 Different email headers sent
 
@@ -137,8 +137,7 @@ In Dada Mail, log into your list control panel and go to:
 
 I<Mail Sending - Options> 
 
-There should be an option, along with sending via the sendmail command and sending via SMTP, 
-to send via I<Amazon Simple Email Service >. 
+There should be an option, along with sending via the sendmail command and sending via SMTP, to send via I<Amazon Simple Email Service >. 
 
 If Dada Mail notices you're missing any required CPAN modules, it'll notify you. Don't try using sending via this method, until all these prerequisites are met.
 
