@@ -1750,7 +1750,8 @@ sub mass_send {
 					warn 'Try #' . $tries 
 						if $t; 
 					my $send_return = $self->send(%nfields, from_mass_send => 1); # The from_mass_send is a hack. 
-					warn '$send_return:"'.$send_return.'"';
+					warn '$send_return:"'.$send_return.'"'
+						if $t; 
 					
 					if($send_return == -1 && $tries < 3){
 						my $warning = '[' . $self->{list} . '] Mass Mailing:' . $mailout_id 
