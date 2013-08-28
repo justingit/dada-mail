@@ -1,21 +1,34 @@
 <!-- begin membership_activity_screen.tmpl --> 
 
-<!-- tmpl_loop activity_tables --> 
+<!-- tmpl_if activity_tables --> 
 
-	<!-- tmpl_if archive_subject --> 
-		<h1>
-			<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive;id=<!-- tmpl_var mid -->" target="_blank">
-			<!-- tmpl_var archive_subject escape="HTML" --> 
-			</a>
-		</h1>
-	<!-- tmpl_else --> 
-		<h1>
-			# <!-- tmpl_var mid --> 
-		</h1>
-	<!-- /tmpl_if --> 
+	<!-- tmpl_loop activity_tables --> 
 
-	<!-- tmpl_var activity_table --> 
+		<!-- tmpl_if archive_subject --> 
+			<h1>
+				<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive;id=<!-- tmpl_var mid -->" target="_blank">
+				<!-- tmpl_var archive_subject escape="HTML" --> 
+				</a>
+			</h1>
+		<!-- tmpl_else --> 
+			<h1>
+				# <!-- tmpl_var mid --> 
+			</h1>
+		<!-- /tmpl_if --> 
+
+		<!-- tmpl_var activity_table --> 
 	
-<!-- /tmpl_loop --> 
+	<!-- /tmpl_loop --> 
+
+<!-- tmpl_else --> 
+
+	<div class="clearskiesbox">
+		<p>
+			There hasn't yet been any logged Membership Activity for this mailing list. 
+		</p>
+	</div> 
+
+<!-- /tmpl_if --> 
+
 
 <!-- end membership_activity_screen.tmpl --> 
