@@ -14,7 +14,7 @@ BEGIN {
 }
 use base "DADA::MailingList::Subscriber::$type";
 use Carp qw(carp croak);
-$Carp::Verbose = 1; 
+# $Carp::Verbose = 1; 
 use strict;
 
 use Carp qw(croak carp confess);
@@ -70,7 +70,8 @@ sub _init {
 		$self->{type} = $args->{ -type };
 	}
 	else { 
-		carp "no -type passed."; 
+		carp "no -type passed in new() -type is an option paramater, but my cause problems for methods that do need it."
+			if $t; 
 	}
 
 	if ( !exists $args->{ -email } ) {
