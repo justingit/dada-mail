@@ -173,6 +173,27 @@
 
 				<!-- tmpl_if remove_from_num --> 
 
+				<!-- tmpl_if subscribed_to_list -->
+					<!-- tmpl_if list_settings.black_list -->
+						<!-- tmpl_if list_settings.add_unsubs_to_black_list -->
+						<div class="clearskiesbox">
+							<p><strong>Black Listing is enabled.</strong></p>
+							<p>
+								Subscribers that are Unsubscribed from this mailing list are added automatically to your Black List.
+							</p>
+							<!-- tmpl_if list_settings.allow_blacklisted_to_subscribe --> 
+								Subscribers may resubscribe themselves. 
+							<!-- /tmpl_if --> 
+							<!-- tmpl_if list_settings.allow_admin_to_subscribe_blacklisted --> 
+								The List Owner may still resubscribe Black Listed addresses. 
+							<!-- /tmpl_if -->
+							
+						</div> 
+						<!-- /tmpl_if -->
+					<!-- /tmpl_if -->
+				<!-- /tmpl_if -->
+
+
 					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="remove_email_form">
 					<input type="hidden" name="process" value="delete" />
 
@@ -189,15 +210,6 @@
 						</p>
 					</form>
 
-					<!-- tmpl_if subscribed_to_list -->
-						<!-- tmpl_if list_settings.black_list -->
-							<!-- tmpl_if list_settings.add_unsubs_to_black_list -->
-								<p class="alert">
-									Subscribers that are unsubscribed from this mailing list will be added to the Black List.
-								</p>
-							<!-- /tmpl_if -->
-						<!-- /tmpl_if -->
-					<!-- /tmpl_if -->
 
 
 				<!-- /tmpl_if --> 
@@ -230,7 +242,7 @@
 				
 				
 				<div class="buttonfloat"> 
-					<input type="submit" value="Export (csv)" class="processing" />
+					<input type="submit" value="Export Subscriber History (csv)" class="processing" />
 				</div> 
 				<div class="floatclear"></div>
 			</form>
@@ -247,7 +259,7 @@
 		<input type="hidden" name="email" value="<!-- tmpl_var email -->" /> 
 	
 		<div class="buttonfloat"> 
-			<input type="submit" value="Export (csv)" class="processing" />
+			<input type="submit" value="Export Mailing List Activity (csv)" class="processing" />
 		</div> 
 		<div class="floatclear"></div>
 	
