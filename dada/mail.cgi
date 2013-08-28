@@ -4331,8 +4331,7 @@ sub also_member_of {
 		}
 	); 
     if(scalar @also_subscribed_to > 0){ 
-		$mto = 1; 
-		last; 
+		$mto = 1;  
  	}
 	require JSON::PP; 
 	my $json = JSON::PP->new->allow_nonref;

@@ -181,7 +181,7 @@ sub subscription_search {
 
         }
         if(!keys %$llr) { 
-			warn 'no keys!'; 
+			# warn 'no keys!'; 
 			next LOGFILE; 
 		}
         if ( exists( $args->{-list} ) ) {
@@ -362,7 +362,7 @@ sub sub_unsub_trends {
 	my %trends = ();
 	my @dates; 
 		
-    while( defined(my  $log_line = $bw->readline ) ) {
+    READTHELOGS: while( defined(my  $log_line = $bw->readline ) ) {
 		chomp($log_line); 
 		my $llr = $self->log_line_report(
 			{ 
@@ -395,7 +395,7 @@ sub sub_unsub_trends {
 					){ #count
 					delete $trends{$day_str};
 
-					last;
+					last READTHELOGS;
 				}
 			}
 		}
@@ -539,7 +539,7 @@ sub list_activity {
 
 	my $limit = 100; 
 	my $count = 0; 
-    while( defined(my  $log_line = $bw->readline ) ) {
+    LISTACTIVITY: while( defined(my  $log_line = $bw->readline ) ) {
 		chomp($log_line); 
 		my $llr = $self->log_line_report(
 			{ 
@@ -552,7 +552,7 @@ sub list_activity {
 			$count++;  
 		}
 		if($count >= $limit){ 
-			last; 
+			last LISTACTIVITY; 
 		}
     }
 	$bw->close;
