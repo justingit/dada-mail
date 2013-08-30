@@ -17,6 +17,74 @@ $(document).ready(function() {
 		});
 	}
 	
+	if ($("#ajax_subscribe_form_demo").length) {
+		
+		/* We're in control, now: */
+		$("body").on("submit", "#ajax_subscribe_form_demo", function(event) {
+			event.preventDefault();
+		});
+		$("submit", "#ajax_subscribe_form_demo").bind("keypress", function (e) {
+		    if (e.keyCode == 13) {
+		        return false;
+		    }
+		});
+		
+		$('body').on('click', '#subscribe_button', function(event) {
+			
+			var fields = {};
+			
+			$("#subscriber_fields :input").each(function() {
+				fields[this.name] = this.value;
+			}); 
+							
+			$.ajax({
+				url: $("#ajax_subscribe_form_demo").attr("action") + '/json/subscribe/',
+				type: "POST",
+				dataType: "json",
+				cache: false,
+				data: JSON.stringify(
+					{ 
+						list:  $("#list").val(),
+						email: $("#email").val(),
+						fields: fields
+					 }
+				),
+			    contentType: "application/json; charset=utf-8",
+				success: function(data) {
+					console.log('data:' + JSON.stringify(data)); 
+					var html = ''; 
+					if(data.status === 0){ 
+						/* Uh uh.*/
+						html += '<h1>Problems with your request:</h1>'; 
+						html += '<ul>'; 
+						$.each(data.errors, function(index, value) {
+							console.log(index + ': ' + value);
+						});
+						$.each(data.error_descriptions, function(index, value) {
+							html += '<li>' + value + '</li>';
+						});
+						html += '</ul>'; 
+					}
+					else { 
+						html += '<h1>Request Successful!:</h1>'; 
+						html += '<p>Your Subscription Request was Successful!</p>'; 
+					}
+					
+					/* html += '<code>' + JSON.stringify(data) + '</code>' */
+					
+					$.colorbox({
+						html: html,
+						opacity: 0.50
+					});
+				},
+				error: function(xhr, ajaxOptions, thrownError) {
+					console.log('status: ' + xhr.status);
+					console.log('thrownError:' + thrownError);
+				}
+			}); 
+		}); 
+	} 
+	
 	
 	if ($("#create_new_list").length) {
 		

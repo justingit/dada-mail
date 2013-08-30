@@ -185,8 +185,13 @@ sub subscribe {
 
     my $q    = $args->{-cgi_obj};
     my $list = xss_filter( $q->param('list') );
-
+		warn '$list: ' . $list 
+			if $t; 
+			
     my $email = lc_email( strip( xss_filter( $q->param('email') ) ) );
+	warn '$email: ' . $email 
+		if $t; 
+
 
     my $list_exists = DADA::App::Guts::check_if_list_exists( -List => $list );
     my $ls = undef;
@@ -194,18 +199,25 @@ sub subscribe {
     require DADA::MailingList::Settings;
 
     if ($list_exists) {
+		warn 'list exists.' 
+			if $t; 
         $ls = DADA::MailingList::Settings->new( { -list => $list } );
     }
-
+	else { 
+		warn 'list does NOT exist.' 
+			if $t; 
+		
+	}
+	
     # ! $list_exists
     if ( $list_exists == 0 ) {
         if ( $args->{-html_output} == 0 && $args->{-return_json} == 1 ) {
-            my $json = $self->jsonify(
+			my $json = $self->jsonify(
                 {
-                    status => 0,
-                    list   => $list,
-                    email  => $email,
-                    errors => { invalid_list => 1 }
+                    -status => 0,
+                    -list   => $list,
+                    -email  => $email,
+                    -errors => { invalid_list => 1 }
                 }
             );
             $self->test ? return $json : print $fh safely_encode($json)
@@ -225,10 +237,10 @@ sub subscribe {
         if ( $args->{-html_output} == 0 && $args->{-return_json} == 1 ) {
             my $json = $self->jsonify(
                 {
-                    status => 0,
-                    list   => $list,
-                    email  => $email,
-                    errors => { invalid_email => 1 }
+                    -status => 0,
+                    -list   => $list,
+                    -email  => $email,
+                    -errors => { invalid_email => 1 }
                 }
             );
             $self->test ? return $json : print $fh safely_encode($json)
@@ -400,10 +412,10 @@ sub subscribe {
         if ( $args->{-html_output} == 0 && $args->{-return_json} == 1 ) {
             my $json = $self->jsonify(
                 {
-                    status => 0,
-                    list   => $list,
-                    email  => $email,
-                    errors => $errors
+                    -status => 0,
+                    -list   => $list,
+                    -email  => $email,
+                    -errors => $errors
                 }
             );
             $self->test ? return $json : print $fh safely_encode($json)
@@ -536,7 +548,7 @@ sub subscribe {
         }
         if ( $args->{-html_output} == 0 && $args->{-return_json} == 1 ) {
             my $json =
-              $self->jsonify( { status => 1, list => $list, email => $email } );
+              $self->jsonify( { -status => 1, -list => $list, -email => $email } );
             $self->test ? return $json : print $fh safely_encode($json)
               and return;
         }
@@ -898,10 +910,10 @@ sub confirm {
         if ( $args->{-html_output} == 0 && $args->{-return_json} == 1 ) {
             my $json = $self->jsonify(
                 {
-                    status => 0,
-                    list   => $list,
-                    email  => $email,
-                    errors => $errors
+                    -status => 0,
+                    -list   => $list,
+                    -email  => $email,
+                    -errors => $errors
                 }
             );
             $self->test ? return $json : print $fh safely_encode($json)
@@ -1015,7 +1027,7 @@ sub confirm {
 
             if ( $args->{-html_output} == 0 && $args->{-return_json} == 1 ) {
                 my $json =
-                  $self->jsonify( { status => 1, list => $list, email => $email } );
+                  $self->jsonify( { -status => 1, -list => $list, -email => $email } );
                 $self->test ? return $json : print $fh safely_encode($json)
                   and return;
             }
@@ -1189,7 +1201,7 @@ sub confirm {
 
             if ( $args->{-html_output} == 0 && $args->{-return_json} == 1 ) {
                 my $json =
-                  $self->jsonify( { status => 1, list => $list, email => $email } );
+                  $self->jsonify( { -status => 1, -list => $list, -email => $email } );
                 $self->test ? return $json : print $fh safely_encode($json)
                   and return;
             }
@@ -1743,17 +1755,51 @@ sub jsonify {
 	require    JSON::PP;
     my $json = JSON::PP->new->allow_nonref;
     
+	my $sub_descriptions = $self->subscription_error_descriptions; 
+	my $error_descriptions = {}; 
+	for(keys %{$args->{-errors}}) { 
+		$error_descriptions->{$_} = $sub_descriptions->{$_};
+	}
+	
 	my $data_back = $json->pretty->encode(
 		{ 
 		list      => $args->{-list}, 
 		email     => $args->{-email}, 
 		status    => $args->{-status}, 
 		errors    => $args->{-errors}, 
+		error_descriptions => $error_descriptions,
 		}
 	); 
 	return $data_back; 
 }
 
+sub subscription_error_descriptions { 
+	return { 
+
+	    invalid_email                 => 'Your email address isn\'t valid!', 
+
+	    subscribed                    => 'Your email address is already subscribed!', 
+
+	    invite_only_list              => 'This mailing list can currently be subscribed by invitation only.', 
+
+	    closed_list                   => 'This mailing list is currently closed to future subscribers!', 
+
+	    mx_lookup_failed              => 'Your email address doesn\'t appear to be from a valid host!', 
+
+	    black_listed                   => 'That email address is currently not allowed to subscribe to this mailing list!', 
+
+	    not_white_listed              => 'You currently aren\'t allowed to subscribe to this mailing list!', 
+
+	    over_subscription_quota       => 'This mailing list has reached its subscription quota!', 
+
+	    already_sent_sub_confirmation => 'Check your email - we\'ve already sent you a subscription confirmation email!', 
+
+	    settings_possibly_corrupted   => 'There\s an internal problem - sorry!', 
+
+
+	}; 
+	
+}
 
 
 sub alt_redirect {

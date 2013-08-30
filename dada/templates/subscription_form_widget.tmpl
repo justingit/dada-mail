@@ -1,6 +1,6 @@
 <!-- begin subscription_form_widget.tmpl --> 
 
-<form action="<!-- tmpl_var script_url -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="subscription_form">
+<form action="<!-- tmpl_var script_url -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="<!-- tmpl_var subscription_form_id default="subscription_form" -->">
 
 <fieldset>
 <legend>
@@ -19,7 +19,7 @@
 			</p>
 		<!-- /tmpl_if -->
     <!-- /tmpl_if -->
-    <input type="hidden" name="list" value="<!-- tmpl_var list escape=HTML -->" />
+    <input type="hidden" name="list" id="list" value="<!-- tmpl_var list escape=HTML -->" />
 <!-- tmpl_else --> 
     
     <!-- tmpl_if multiple_lists --> 
@@ -57,6 +57,7 @@ Email&nbsp;Address:
 
 	
 <!-- tmpl_if show_fields --> 
+	<div id="subscriber_fields"> 
 	<!-- tmpl_if subscriber_fields --> 
 	    <!-- tmpl_loop subscriber_fields --> 	
 	        <p>
@@ -67,16 +68,17 @@ Email&nbsp;Address:
 				<!-- tmpl_var name escape=HTML -->: 
 			<!-- /tmpl_if --> 
 			</label>
-	        <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var given_value escape=HTML -->"  />
+	        <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" class="subscriber_field" value="<!-- tmpl_var given_value escape=HTML -->"  />
 	        </p>
 	    <!-- /tmpl_loop --> 
 	<!-- /tmpl_if --> 
+	</div> 
 <!-- /tmpl_if -->
 
 <input type="hidden" name="f" id="f_s" value="subscribe" />
 
 <p style="text-align:right;display:block">
-<input type="submit" value="Subscribe" class="processing" />
+<input type="submit" value="Subscribe" class="processing" id="subscribe_button" />
 </p> 
 
 <!-- tmpl_if give_props --> 

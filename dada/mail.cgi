@@ -286,7 +286,17 @@ if($ENV{PATH_INFO}){
             if $img_name;
 
 
-}elsif($info =~ /^js/){
+}
+elsif($info =~ /^rest_subscribe_demo/){ 
+	my ($pi_flavor, $pi_list, $extran) = split('/', $info, 3);
+	$q->param('flavor', 'rest_subscribe_demo');
+    $q->param('list', $pi_list);
+}
+elsif($info =~ /^json\/subscribe/){ 
+	warn 'here.'; 
+    $q->param('flavor', 'restful_subscribe');	
+}
+elsif($info =~ /^js/){
 
         my ($pi_flavor, $js_lib, $extran) = split('/', $info);
 
@@ -320,9 +330,6 @@ if($ENV{PATH_INFO}){
             if $pi_img_string;
 
 
-	}
-	elsif($info =~ /^json\/subscribe/){ 
-        $q->param('flavor', 'restful_subscribe');	
 	}
 	elsif($info =~ /^(s|n|u|ur)/){ 
 		# s is sort of weird. 
@@ -521,6 +528,7 @@ sub run {
 	'default'                    =>    \&default,
 	'subscribe'                  =>    \&subscribe,
 	'restful_subscribe'          =>    \&restful_subscribe, 
+	'rest_subscribe_demo'        =>    \&rest_subscribe_demo, 
 	'token'                      =>    \&token, 
 	'unsubscribe'                =>    \&unsubscribe,
 	'unsubscription_request'     =>    \&unsubscription_request, 
@@ -7860,10 +7868,11 @@ sub restful_subscribe {
     my $json = JSON::PP->new->allow_nonref;
 
     # We expect the data to be in YAML format
-    unless ( $q->content_type eq 'application/json' ) {
-        die '425 use application/json';
-    }
+  #  unless ( $q->content_type eq 'application/json' ) {
+  #     die '425 use application/json, content-type is, ' . $q->content_type;
+  #  }
     my $post_data = $q->param('POSTDATA');
+
     my $data      = undef;
     eval { $data = $json->decode($post_data); };
 
@@ -7871,35 +7880,44 @@ sub restful_subscribe {
         die '400';
     }
 
-    $q->param( 'list',  $data->{list} );
-    $q->param( 'email', $data->{email} );
-    $q->param( 'f',     'subscribe' );
+	my $new_q = CGI->new; 
+	$new_q->delete_all; 
+	
+    $new_q->param( 'list',  $data->{list} );
+    $new_q->param( 'email', $data->{email} );
+    $new_q->param( 'f',     'subscribe' );
+    $new_q->param( 'flavor',     'subscribe' );
 
-    my $lh = DADA::MailingList::Subscribers->new( { -list => $data->{list} } );
+	require DADA::ProfileFieldsManager; 
+    my $pfm         = DADA::ProfileFieldsManager->new;
 
     # Profile Fields
-    for ( @{ $lh->subscriber_fields } ) {
+    for ( @{ $pfm->fields } ) {
         if ( exists( $data->{fields}->{$_} ) ) {
-            $q->param( $_, $data->{fields}->{$_} );
+            $new_q->param( $_, $data->{fields}->{$_} );
         }
     }
 
     require DADA::App::Subscriptions;
     my $das = DADA::App::Subscriptions->new;
 
-    my $json = $das->subscribe(
-        {
-            -cgi_obj     => $q,
-            -return_json => 1,
-        }
-    );
+	use Data::Dumper; 
+    warn Dumper($new_q); 
 
-	print $q->header(
+   
+	print $new_q->header(
 		'-Cache-Control' => 'no-cache, must-revalidate',
 		-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
 		-type            =>  'application/json',
 	);
-	print $json; 
+
+	$das->subscribe(
+	        {
+	            -cgi_obj     => $new_q,
+	            -return_json => 1,
+	        }
+	    );
+	warn 'json:' . $json;; 
 	
 }
 
@@ -10742,6 +10760,33 @@ sub subscriber_help {
 
 }
 
+sub rest_subscribe_demo { 
+	
+	require DADA::Template::Widgets;
+	my $subscription_form =
+      DADA::Template::Widgets::subscription_form(
+        {
+			-subscription_form_id => 'ajax_subscribe_form_demo', 
+			-magic_form           => 0,
+			(defined($list) ? (-list => $list,) : ())
+        }
+      );
+
+	    my $scrn =  DADA::Template::Widgets::wrap_screen(
+			{
+				-screen => 'rest_subscribe_demo.tmpl',
+				-with   => 'list', 
+				-expr => 1,
+				-vars   => {
+					subscription_form => $subscription_form, 
+				}, 
+			}
+		);
+		e_print($scrn);
+
+
+}
+
 
 
 
@@ -10939,7 +10984,7 @@ sub css {
 
 sub  captcha_img {
 
-    my $img_str = xss_filter($q->param('img_string'));
+    my $img_str = xss_filter($q->param(' '));
 
     if(-e $DADA::Config::TMP . '/capcha_imgs/CAPTCHA-' . $img_str . '.png'){
 

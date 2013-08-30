@@ -407,6 +407,7 @@ sub list_popup_menu {
 	if($args{-as_checkboxes} == 1){ 
         return  $q->checkbox_group(
                                    -name      => $args{-name}, 
+								   -id        => $args{-name}, 
                                   '-values'   => [@opt_labels],
                                    -labels    => $labels,
                                    -columns   => 2, 
@@ -2446,7 +2447,7 @@ sub wrap_screen {
 	my $vars = { 
 		content => $tmpl, 
 	};
-	for(qw(title show_profile_widget load_wysiwyg_editor load_google_viz SUPPORT_FILES_URL)){ 
+	for(qw(title show_profile_widget load_wysiwyg_editor load_google_viz load_colorbox SUPPORT_FILES_URL)){ 
 		if(exists($params->{$_})){ 
 			# variables within variables... 
 			$vars->{$_} = $params->{$_}; 
@@ -2796,12 +2797,15 @@ sub subscription_form {
    
     my ($args) = @_; 
     
+    my $list = undef; 
+	if(exists($args->{-list})){ 
+		$list = $args->{-list};
+	}
     
     if(! exists($args->{-give_props})){
         $args->{-give_props} = $DADA::Config::GIVE_PROPS_IN_SUBSCRIBE_FORM; 
     }
-   	
-    
+
     if(! exists($args->{-script_url})){ 
         $args->{-script_url} = $DADA::Config::PROGRAM_URL; 
     }
@@ -2817,6 +2821,10 @@ sub subscription_form {
 	
 	if(! exists($args->{-magic_form})){
     	$args->{-magic_form} = 1; 
+	}
+	
+	if(! exists($args->{-subscription_form_id})) { 
+		$args->{-subscription_form_id} = 'subscription_form_id';
 	}
 
     
@@ -2900,18 +2908,9 @@ sub subscription_form {
 				}
 			}
 		}
-		
-		
-		
-		
-		
+			
     }
-
-
-
-    
-    my $list = $args->{-list} || undef; 
-        
+            
     if(
 		$list && 
 		check_if_list_exists( -List=> $list, -Dont_Die  => 1) > 0
@@ -2944,6 +2943,7 @@ sub subscription_form {
                             script_url               => $args->{-script_url}, 
 							show_fields              => $args->{-show_fields}, 
 							profile_logged_in        => $args->{-profile_logged_in}, 
+							subscription_form_id     => $args->{-subscription_form_id}, 
 							
                         },
 						-list_settings_vars_param => {
@@ -2971,6 +2971,8 @@ sub subscription_form {
                             script_url               => $args->{-script_url}, 
 							show_fields              => $args->{-show_fields}, 
 							profile_logged_in        => $args->{-profile_logged_in}, 
+							subscription_form_id     => $args->{-subscription_form_id}, 
+							
                         }
                     });      
     }
