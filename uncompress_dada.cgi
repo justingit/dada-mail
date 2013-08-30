@@ -95,8 +95,8 @@ print p(
     "Enabling installer at $installer_loc by moving it to, $new_installer_loc\n"
 );
 
-`chmod 755 $new_installer_loc`;
 `mv $installer_loc $new_installer_loc`;
+`chmod 755 $new_installer_loc`;
 `chmod 755 $new_installer_loc/install.cgi`;
 
 print p( i("Done!") );
