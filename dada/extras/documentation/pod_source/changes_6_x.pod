@@ -54,17 +54,27 @@ The Tracker plugin now shows percentages to the nearest tenth of a percent, rath
 
 =head3 Working with Subscribers: More Powerful Tools
 
-List Owners now have much more powerful tools to work with individual subscribers of their mailing lists, as well as the ability to work across different mailing lists. The completely rewritten Membership screen now has four separate tabs to work with your subscriber: B<Membership>, B<Subscriber History>, B<Mailing List Activity>, B<Profile>. 
+List Owners now have much more powerful tools to work with individual subscribers of their mailing lists, as well as the ability to work across different mailing lists. The completely rewritten Membership screen now has four separate tabs to work with your mailing list member: B<Membership>, B<Subscriber History>, B<Mailing List Activity>, B<Profile>. 
 
 =head4 Membership
 
-The Membership tab allows you to work with the email address of the Subscriber. Here, you can B<Add>, B<Update> or B<Remove> the address for your mailing list. A Dada Mail mailing list is actually composed of many different sublist types, so for example, when you send a mass mailing out, you're sending a message out to your B<Subscribers> sublist.
+The Membership tab allows you to work with the email address of one of your mailing list members. Here, you may B<Add>, B<Update> or B<Remove> the address for your mailing list. A Dada Mail mailing list is actually composed of many different B<sublist> types. So, for example, when you send a mass mailing out, you're sending a message out to your B<Subscribers> sublist.
 
-But, Dada Mail has other sublists that do fancy things. For example, Dada Mail's Black List allows you to have a list of addresses that aren't allowed to join your list. The Authorized Senders list is a list of addresses that are allowed to send out a message from their own mail reader, without having to log into Dada Mail, that then gets delivered to your Subscribers (this is done with the Bridge plugin, which is bundled with Dada Mail) 
+But, Dada Mail has other sublists that provide different roles. For example, Dada Mail's B<Black List> allows you to have a list of addresses that aren't allowed to join your list. This is also known as a, B<Suppression List>
 
-The Membership tab allows you to Add/Update/Remove addresses across these sublists. If you're logged into a mailing list with the Dada Mail Root Pass, you'll also be able to do all things things, across all mailing lists! 
+The, B<Authorized Senders> sublist is a list of addresses that are allowed to send out a message from their own mail reader, without having to log into Dada Mail, that then gets delivered to your Subscribers (this is done with the Bridge plugin, which is bundled with Dada Mail) 
 
-Dada Mail is smart when allowing you to work with the addresses that make up your mailing list, as these addresses are the most valuable asset of the whole system! Checks are done to make sure you're not going to mess up subscriptions, and all these functions only happen after Dada Mail validates your request and I<you> confirm the changes. 
+The Membership tab allows you to Add/Update/Remove addresses across these sublists. If you're logged into a mailing list with the Dada Mail Root Password, you'll also be able to do all things things, across all your mailing lists.
+
+Dada Mail is smart when allowing you to work with the addresses that make up your mailing list, as these addresses are the most valuable asset of the whole system. Checks are done to make sure you're not going to mess up subscriptions, and all these functions only happen after Dada Mail validates your request and I<you> confirm the changes. 
+
+Listed in the B<Membership> tab will be all the B<sublists> an individual email address is a member of, for the Mailing List you're currently logged into. Be aware that one address may be a member of I<multiple> sublists. 
+
+For example, an address may be both a B<Subscriber> (Subscribers receive mass mailings sent to the mailing list), an B<Authorized Sender> (Authorized Senders are able to send messages via Bridge, as well as moderate messages sent via Bridge to a mailing list set up as a discussion list), as well as being on the B<White List> (Only White Listed members are allowed to subscribe to a mailing list). 
+
+An address could also be simply on the B<Black List>, with no permission to be a member of your B<Subscribers>, until they're first removed from the Black List and added to the B<Subscribers> sublist. 
+
+If an address is currently on the B<Subscription Requests> sublist, they will be awaiting approval from the List Owner to join the Subscribers sublist. You may B<Approve> or B<Deny> this request on this screen as well. 
 
 =head4 Subscriber History
 
