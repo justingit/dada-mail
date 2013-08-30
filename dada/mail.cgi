@@ -321,6 +321,9 @@ if($ENV{PATH_INFO}){
 
 
 	}
+	elsif($info =~ /^json\/subscribe/){ 
+        $q->param('flavor', 'restful_subscribe');	
+	}
 	elsif($info =~ /^(s|n|u|ur)/){ 
 		# s is sort of weird. 
 		# u is an old unsub link - unsub confirmation as well? 
@@ -517,6 +520,7 @@ sub run {
 	my %Mode = (
 	'default'                    =>    \&default,
 	'subscribe'                  =>    \&subscribe,
+	'restful_subscribe'          =>    \&restful_subscribe, 
 	'token'                      =>    \&token, 
 	'unsubscribe'                =>    \&unsubscribe,
 	'unsubscription_request'     =>    \&unsubscription_request, 
@@ -7848,6 +7852,55 @@ sub subscribe {
         }
     );
 
+}
+
+sub restful_subscribe {
+
+    require JSON::PP;
+    my $json = JSON::PP->new->allow_nonref;
+
+    # We expect the data to be in YAML format
+    unless ( $q->content_type eq 'application/json' ) {
+        die '425 use application/json';
+    }
+    my $post_data = $q->param('POSTDATA');
+    my $data      = undef;
+    eval { $data = $json->decode($post_data); };
+
+    if ($@) {
+        die '400';
+    }
+
+    $q->param( 'list',  $data->{list} );
+    $q->param( 'email', $data->{email} );
+    $q->param( 'f',     'subscribe' );
+
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $data->{list} } );
+
+    # Profile Fields
+    for ( @{ $lh->subscriber_fields } ) {
+        if ( exists( $data->{fields}->{$_} ) ) {
+            $q->param( $_, $data->{fields}->{$_} );
+        }
+    }
+
+    require DADA::App::Subscriptions;
+    my $das = DADA::App::Subscriptions->new;
+
+    my $json = $das->subscribe(
+        {
+            -cgi_obj     => $q,
+            -return_json => 1,
+        }
+    );
+
+	print $q->header(
+		'-Cache-Control' => 'no-cache, must-revalidate',
+		-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
+		-type            =>  'application/json',
+	);
+	print $json; 
+	
 }
 
 
