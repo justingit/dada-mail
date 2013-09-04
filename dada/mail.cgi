@@ -293,7 +293,6 @@ elsif($info =~ /^rest_subscribe_demo/){
     $q->param('list', $pi_list);
 }
 elsif($info =~ /^json\/subscribe/){ 
-	warn 'here.'; 
     $q->param('flavor', 'restful_subscribe');	
 }
 elsif($info =~ /^js/){
@@ -7867,29 +7866,30 @@ sub restful_subscribe {
     require JSON::PP;
     my $json = JSON::PP->new->allow_nonref;
 
-    # We expect the data to be in YAML format
-  #  unless ( $q->content_type eq 'application/json' ) {
-  #     die '425 use application/json, content-type is, ' . $q->content_type;
-  #  }
+   unless ( $q->content_type =~ m/application\/json/ ) {
+         die '425';
+   }
+
     my $post_data = $q->param('POSTDATA');
 
-    my $data      = undef;
-    eval { $data = $json->decode($post_data); };
-
-    if ($@) {
-        die '400';
+    my $data = undef;
+    try {
+        $data = $json->decode($post_data);
     }
+    catch {
+        die '400';
+    };
 
-	my $new_q = CGI->new; 
-	$new_q->delete_all; 
-	
-    $new_q->param( 'list',  $data->{list} );
-    $new_q->param( 'email', $data->{email} );
-    $new_q->param( 'f',     'subscribe' );
-    $new_q->param( 'flavor',     'subscribe' );
+    my $new_q = CGI->new;
+    $new_q->delete_all;
 
-	require DADA::ProfileFieldsManager; 
-    my $pfm         = DADA::ProfileFieldsManager->new;
+    $new_q->param( 'list',   $data->{list} );
+    $new_q->param( 'email',  $data->{email} );
+    $new_q->param( 'f',      'subscribe' );
+    $new_q->param( 'flavor', 'subscribe' );
+
+    require DADA::ProfileFieldsManager;
+    my $pfm = DADA::ProfileFieldsManager->new;
 
     # Profile Fields
     for ( @{ $pfm->fields } ) {
@@ -7901,24 +7901,54 @@ sub restful_subscribe {
     require DADA::App::Subscriptions;
     my $das = DADA::App::Subscriptions->new;
 
-	use Data::Dumper; 
-    warn Dumper($new_q); 
+    my $callback = xss_filter( strip( $q->url_param('callback') ) ) || undef;
 
-   
-	print $new_q->header(
-		'-Cache-Control' => 'no-cache, must-revalidate',
-		-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
-		-type            =>  'application/json',
-	);
+    my $header = undef;
 
-	$das->subscribe(
-	        {
-	            -cgi_obj     => $new_q,
-	            -return_json => 1,
-	        }
-	    );
-	warn 'json:' . $json;; 
-	
+    if ($callback) {
+        $header = $new_q->header(
+            -type                          => 'application/javascript',
+            'Access-Control-Allow-Origin'  => '*',
+            'Access-Control-Allow-Methods' => 'POST',
+            '-Cache-Control'               => 'no-cache, must-revalidate',
+            -expires                       => 'Mon, 26 Jul 1997 05:00:00 GMT',
+        );
+
+    }
+    else {
+        $header = $new_q->header(
+            -type            => 'application/json',
+            '-Cache-Control' => 'no-cache, must-revalidate',
+            -expires         => 'Mon, 26 Jul 1997 05:00:00 GMT',
+        );
+
+    }
+
+    my $json = $das->subscribe(
+        {
+            -cgi_obj     => $new_q,
+            -return_json => 1,
+        }
+    );
+
+    #	warn "\$callback\n" . $callback;
+    #	warn "\$header\n" . $header;
+
+    print $header;
+
+    if ($callback) {
+        print $callback . '(' . $json . ');';
+
+		warn $callback . '(' . $json . ');';
+
+    }
+    else {
+        print $json, "\n";
+
+        warn 'no callback: ' . $json, "\n";
+
+    }
+
 }
 
 

@@ -185,13 +185,12 @@ sub subscribe {
 
     my $q    = $args->{-cgi_obj};
     my $list = xss_filter( $q->param('list') );
-		warn '$list: ' . $list 
-			if $t; 
-			
-    my $email = lc_email( strip( xss_filter( $q->param('email') ) ) );
-	warn '$email: ' . $email 
-		if $t; 
+    warn '$list: ' . $list
+      if $t;
 
+    my $email = lc_email( strip( xss_filter( $q->param('email') ) ) );
+    warn '$email: ' . $email
+      if $t;
 
     my $list_exists = DADA::App::Guts::check_if_list_exists( -List => $list );
     my $ls = undef;
@@ -199,20 +198,20 @@ sub subscribe {
     require DADA::MailingList::Settings;
 
     if ($list_exists) {
-		warn 'list exists.' 
-			if $t; 
+        warn 'list exists.'
+          if $t;
         $ls = DADA::MailingList::Settings->new( { -list => $list } );
     }
-	else { 
-		warn 'list does NOT exist.' 
-			if $t; 
-		
-	}
-	
+    else {
+        warn 'list does NOT exist.'
+          if $t;
+
+    }
+
     # ! $list_exists
     if ( $list_exists == 0 ) {
         if ( $args->{-html_output} == 0 && $args->{-return_json} == 1 ) {
-			my $json = $self->jsonify(
+            my $json = $self->jsonify(
                 {
                     -status => 0,
                     -list   => $list,
@@ -220,8 +219,7 @@ sub subscribe {
                     -errors => { invalid_list => 1 }
                 }
             );
-            $self->test ? return $json : print $fh safely_encode($json)
-              and return;
+            return $json;
         }
         else {
             # Test sub-subscribe-redirect-error_invalid_list
@@ -243,8 +241,7 @@ sub subscribe {
                     -errors => { invalid_email => 1 }
                 }
             );
-            $self->test ? return $json : print $fh safely_encode($json)
-              and return;
+            return $json;
         }
         elsif ($args->{-html_output} == 1
             && $ls->param('use_alt_url_sub_confirm_failed') == 1 )
@@ -258,8 +255,6 @@ sub subscribe {
                   . '&rm=subscribe&status=0&email='
                   . uriescape($email);
                 $qs .= '&errors[]=' . $_ for keys %$errors;
-
-            #$qs .= '&' . $_ . '=' . uriescape($fields->{$_}) for keys %$fields;
             }
 
             my $r =
@@ -315,6 +310,20 @@ sub subscribe {
 
     if ( $status == 1 ) {
 
+
+		if (   $ls->param('enable_closed_loop_opt_in') == 0
+	        && $ls->param('captcha_sub') == 1
+	        && $args->{-html_output} == 0
+	        && $args->{-return_json} == 1 )
+	    {
+	        return jsonify(
+	            -status => 0,
+	            -list   => $list,
+	            -email  => $email,
+	            -error  => 'api_unavailable',
+	        );
+	    }
+	    
         my $skip_sub_confirm_if_logged_in = 0;
         if ( $ls->param('skip_sub_confirm_if_logged_in') ) {
             require DADA::Profile::Session;
@@ -418,8 +427,7 @@ sub subscribe {
                     -errors => $errors
                 }
             );
-            $self->test ? return $json : print $fh safely_encode($json)
-              and return;
+            return $json;
         }
         elsif ($args->{-html_output} == 1
             && $ls->param('use_alt_url_sub_confirm_failed') )
@@ -548,9 +556,9 @@ sub subscribe {
         }
         if ( $args->{-html_output} == 0 && $args->{-return_json} == 1 ) {
             my $json =
-              $self->jsonify( { -status => 1, -list => $list, -email => $email } );
-            $self->test ? return $json : print $fh safely_encode($json)
-              and return;
+              $self->jsonify(
+                { -status => 1, -list => $list, -email => $email } );
+            return $json;
         }
         elsif ($args->{-html_output} == 1
             && $ls->param('use_alt_url_sub_confirm_success') )
@@ -683,7 +691,6 @@ sub confirm {
 
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
-    # CATPCHA stuff isn't going to be useful for the JSON stuff.
 
     warn 'captcha_sub set to: ' . $ls->param('captcha_sub')
       if $t;
@@ -916,8 +923,7 @@ sub confirm {
                     -errors => $errors
                 }
             );
-            $self->test ? return $json : print $fh safely_encode($json)
-              and return;
+            return $json;
         }
         elsif ($args->{-html_output} == 1
             && $ls->param('use_alt_url_sub_failed') == 1 )
@@ -1027,9 +1033,9 @@ sub confirm {
 
             if ( $args->{-html_output} == 0 && $args->{-return_json} == 1 ) {
                 my $json =
-                  $self->jsonify( { -status => 1, -list => $list, -email => $email } );
-                $self->test ? return $json : print $fh safely_encode($json)
-                  and return;
+                  $self->jsonify(
+                    { -status => 1, -list => $list, -email => $email } );
+                return $json;
             }
             else {
                 my $s = $ls->param('html_subscription_request_message');
@@ -1201,9 +1207,9 @@ sub confirm {
 
             if ( $args->{-html_output} == 0 && $args->{-return_json} == 1 ) {
                 my $json =
-                  $self->jsonify( { -status => 1, -list => $list, -email => $email } );
-                $self->test ? return $json : print $fh safely_encode($json)
-                  and return;
+                  $self->jsonify(
+                    { -status => 1, -list => $list, -email => $email } );
+                return $json;
             }
             elsif ($args->{-html_output} == 0
                 && $ls->param('use_alt_url_sub_success') == 1 )
@@ -1745,62 +1751,71 @@ sub complete_unsubscription {
     }
 }
 
+sub jsonify {
+    my $self = shift;
+    my ($args) = @_;
 
-
-
-sub jsonify { 
-	my $self = shift; 
-	my ($args) = @_; 
-	
-	require    JSON::PP;
+    require JSON::PP;
     my $json = JSON::PP->new->allow_nonref;
-    
-	my $sub_descriptions = $self->subscription_error_descriptions; 
-	my $error_descriptions = {}; 
-	for(keys %{$args->{-errors}}) { 
-		$error_descriptions->{$_} = $sub_descriptions->{$_};
+
+    my $sub_descriptions   = $self->subscription_error_descriptions;
+    my $error_descriptions = {};
+    for ( keys %{ $args->{-errors} } ) {
+        $error_descriptions->{$_} = $sub_descriptions->{$_};
+    }
+
+	my $return = {
+		list               => $args->{-list},
+        email              => $args->{-email},
+        status             => $args->{-status},
+	};
+	
+	if(keys %{ $args->{-errors}} ) { 
+		$return->{errors}             = $args->{-errors};
+        $return->{error_descriptions} = $error_descriptions;
 	}
-	
-	my $data_back = $json->pretty->encode(
-		{ 
-		list      => $args->{-list}, 
-		email     => $args->{-email}, 
-		status    => $args->{-status}, 
-		errors    => $args->{-errors}, 
-		error_descriptions => $error_descriptions,
-		}
-	); 
-	return $data_back; 
+
+    my $data_back = $json->pretty->encode($return);
+    return $data_back;
 }
 
-sub subscription_error_descriptions { 
-	return { 
+sub subscription_error_descriptions {
+    return {
 
-	    invalid_email                 => 'Your email address isn\'t valid!', 
+		invalid_list  => 'The mailing list you\'re trying to subscribe to is not valid!', 
+		
+        invalid_email => 'Your email address is not valid!',
 
-	    subscribed                    => 'Your email address is already subscribed!', 
+		api_unavailable => 'Sorry, we are unable to fullfill your request.', 
+		
+        subscribed => 'Your email address is already subscribed!',
 
-	    invite_only_list              => 'This mailing list can currently be subscribed by invitation only.', 
+        invite_only_list =>
+          'This mailing list can currently be subscribed by invitation only.',
 
-	    closed_list                   => 'This mailing list is currently closed to future subscribers!', 
+        closed_list =>
+          'This mailing list is currently closed to future subscribers!',
 
-	    mx_lookup_failed              => 'Your email address doesn\'t appear to be from a valid host!', 
+        mx_lookup_failed =>
+          'Your email address doesn\'t appear to be from a valid host!',
 
-	    black_listed                   => 'That email address is currently not allowed to subscribe to this mailing list!', 
+        black_listed =>
+'That email address is currently not allowed to subscribe to this mailing list!',
 
-	    not_white_listed              => 'You currently aren\'t allowed to subscribe to this mailing list!', 
+        not_white_listed =>
+          'You currently aren\'t allowed to subscribe to this mailing list!',
 
-	    over_subscription_quota       => 'This mailing list has reached its subscription quota!', 
+        over_subscription_quota =>
+          'This mailing list has reached its subscription quota!',
 
-	    already_sent_sub_confirmation => 'Check your email - we\'ve already sent you a subscription confirmation email!', 
+        already_sent_sub_confirmation =>
+'Check your email - we\'ve already sent you a subscription confirmation email!',
 
-	    settings_possibly_corrupted   => 'There\s an internal problem - sorry!', 
+        settings_possibly_corrupted => 'There\s an internal problem - sorry!',
 
+    };
 
-	}; 
-	
 }
-
 
 sub alt_redirect {
 
@@ -1855,7 +1870,7 @@ DADA::App::Subscriptions
  
  # Awkwardly use CGI.pm's param() method to stuff paramaters for 
  # DADA::App::Subscriptions->subscribe() to use
-
+ 
  use CGI; 
  my $q = CGI->new; 
  $q->param('list', 'yourlist');
@@ -1873,9 +1888,6 @@ DADA::App::Subscriptions
 =head1 DESCRIPTION
 
 This module holds reusable code for a user to subscribe or unsubscribe from a Dada Mail mailing list. 
-This is the code that's hit, basically when someone fills out a subscription form on a page of a website, 
-but it can be used in scripts outside of Dada Mail to perform similar actions. Dada Mail does ship with a few
-examples of this, which we'll get into, soon enough. 
 
 =head1 Public Methods
 
@@ -1892,8 +1904,9 @@ C<new> takes no arguments.
  $das->test(1);
 
 Passing, C<test> a value of, C<1> will turn this module into testing mode. Usually (and also, awkwardly) this module will 
-perform the needed job of printing any HTML needed to complete the request you've given it. If testing mode is on, the HTML will 
-merely be returned to you. 
+perform the needed job of printing any HTML needed to complete the request you've given it.
+
+If testing mode is on, the HTML will merely be returned to you. 
 
 Email messages will also be printed to a text file, instead of being sent out. 
 
@@ -1943,18 +1956,9 @@ It's quite apparrent that the API of this method is not very well thought-out. T
 started as a subroutine in the main, C<mail.cgi> script itself that overgrown its bounds considerably, but didn't 
 receive a re-design of its API. Also, returning, C<undef> on success is also not very helpful. 
 
-These types of issues will be addressed in later versions of Dada Mail, but not anytime before v4.4.0 of the application. 
-We will make a very obvious note in the changelog about it. We promise. Ok? Ok. 
+Rather, you may want to look into Dada Mail's Experimental JSON API: 
 
-=head3 Examples
-
-This method is the best way to hook into Dada Mail's subscription API, but its awkward API can leave many head-scratching.
-Currently, the best way to understand how to use it, would be to see examples of its usage. 
-
-The B<Subscription Cookbook> contains a small, command line utility script that wraps this method into something a little easier to work with
-and also has several examples of using the method, including augmented form handling scripts and a proof-of-concept SOAP server/client(s):
-
-http://dadamailproject.com/support/documentation/COOKBOOK-subscriptions.pod.html
+L<http://dadamailproject.com/d/COOKBOOK-subscriptions.pod.html>
 
 =head1 AUTHOR
 

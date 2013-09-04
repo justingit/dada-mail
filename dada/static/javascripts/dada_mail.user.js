@@ -38,9 +38,9 @@ $(document).ready(function() {
 			}); 
 							
 			$.ajax({
-				url: $("#ajax_subscribe_form_demo").attr("action") + '/json/subscribe/',
+				url: $("#ajax_subscribe_form_demo").attr("action") + '/json/subscribe',
 				type: "POST",
-				dataType: "json",
+				dataType: "jsonp",
 				cache: false,
 				data: JSON.stringify(
 					{ 
@@ -80,6 +80,10 @@ $(document).ready(function() {
 				error: function(xhr, ajaxOptions, thrownError) {
 					console.log('status: ' + xhr.status);
 					console.log('thrownError:' + thrownError);
+					$.colorbox({
+						html: '<h1>Apologies,</h1><p>An error occured while processing your request. Please try again in a few minutes.</p>',
+						opacity: 0.50
+					});
 				}
 			}); 
 		}); 
