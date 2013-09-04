@@ -320,7 +320,7 @@ elsif($info =~ /^js/){
 
    }
   elsif($info =~ /^captcha_img/){
-
+	
         my ($pi_flavor, $pi_img_string, $extran) = split('/', $info);
 
         $q->param('flavor', 'captcha_img');
@@ -11012,9 +11012,9 @@ sub css {
 
 
 
-sub  captcha_img {
+sub captcha_img {
 
-    my $img_str = xss_filter($q->param(' '));
+    my $img_str = xss_filter($q->param('img_string'));
 
     if(-e $DADA::Config::TMP . '/capcha_imgs/CAPTCHA-' . $img_str . '.png'){
 
