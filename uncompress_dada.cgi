@@ -11,7 +11,7 @@ use CGI qw(:standard);
 
 # What's the name of the file I'm looking for to uncompress?
 # Basic Dada Mail
-my $basic = 'dada-6_6_0-beta1.tar.gz';
+my $basic = 'dada-6_6_0.tar.gz';
 #
 # Pro Dada
 my $pro = 'pro_' . $basic;

@@ -6,9 +6,275 @@
 
 A challenge people face is trying to tie Dada Mail's subscription system with another system, like a checkout part of a shopping cart, boards/forum, blog or CMS software.
 
-Dada Mail has hooks into its subscribe system, that you can use by making a small perl script, that can be called from your main program. (If you app is written in Perl, an outside program may not be something you'll need to make) 
+=head1 RESTful API
 
-=head2 Command Line Utility - subscribe_email.pl
+Dada Mail has an, B<EXPERIMENTAL> RESTful API. 
+
+B<POST> a request to your Dada Mail URL, with the following path: 
+
+L<http://example.com/cgi-bin/dada/mail.cgi/json/subscribe>
+
+I<(B</json/subscribe> is the PATH INFO you need)>
+
+Your POST Data will need to be in JSON, and have the following two fields, and an optional third: 
+
+=over
+
+=item * list
+
+C<list> holds the list shortname you would like to make the subscription to
+
+=item * email
+
+C<email> holds the email address you would like the subscription for
+
+=item * fields
+
+B<Optional>: C<fields> holds the Subscriber Profile Fields you would like to pass. 
+
+=back
+
+Here's an example of data in JSON to subscribe, B<user@example.com> to a list, B<mylist>: 
+
+	{
+	   "email" : "user@example.com",
+	   "list" : "mylist"
+	}
+
+Here's an example, with two Subscriber Profile Fields, first_name and, last_name: 
+
+	{
+	   "email" : "user@example.com",
+	   "fields" : {
+	      "last_name" : "Example",
+	      "first_name" : "Jason"
+	   },
+	   "list" : "mylist"
+	}
+
+B<Results> will also come back as JSON. For example, a successful request will return the following JSON document: 
+
+	{
+	   "email" : "test@example.com",
+	   "status" : 1,                
+	   "list" : "example"           
+	}
+
+=over
+
+=item * status
+
+B<status> tells you if the request worked, or not.
+
+A value of B<1> means success, a value of, B<0> means failure.
+
+=item * errors
+
+If they're any problems with the request, they'll be listed in the, B<errors> array. The following errors may be returned: 
+
+=over
+
+=item * invalid_list
+
+=item * invalid_email
+
+=item * subscribed
+
+=item * invite_only_list
+
+=item * closed_list
+
+=item * mx_lookup_failed
+
+=item * black_listed
+
+=item * not_white_listed
+
+=item * over_subscription_quota
+
+=item * already_sent_sub_confirmation
+
+=item * settings_possibly_corrupted
+
+=back
+
+For example, sending a request with an invalid email address, 
+
+	{
+	   "email" : "invalid email",
+	   "list" : "mylist"
+	}
+
+Will return a JSON document, like this: 
+
+	{
+	   "email" : "invalid email",
+	   "errors" : {
+	      "invalid_email" : 1
+	   },
+	   "status" : 0,
+	   "error_descriptions" : {
+	      "invalid_email" : "Your email address isn't valid!"
+	   },
+	   "list" : "mylist"
+	}
+
+B<email> and, B<list> will be returned as you sent them, B<status> will have a value of, B<0> (meaning there was a problem), and the B<error> array will have one entry in it, with a B<key> of, B<invalid_email> (the error), and a value of, B<1>. 
+
+=item * error_descriptions
+
+Also on failure, another array named, B<error_descriptions> will also be returned. This holds a description of any errors produced. Keys will be named the same as the errors, but the values will be a description of what the error means. 
+
+=back
+
+Make sure your requests are made with the C<list> and C<email> params set in your POST DATA, and you set a C<Content-Type> of, C<application/json>. The return JSON will be sent with a C<Content-Type> of, C<application/json> 
+
+=head3 Incompatible List Settings
+
+The RESTful API only can work, if no additional steps need to be taken by your user. The following mailing list settings will not work with this API: 
+
+=over
+
+=item * Disabling Closed-Loop Opt-In, Enabling CAPTCHA on Subscription Confirmation
+
+We never suggest disabling B<Closed-Loop Opt-In>, but disabling it, while enabling B<CAPTCHA on Subscription Confirmation> requires Dada Mail to show the CAPTCHA form, to complete the unsubscription. 
+
+If you do have this mixture of settings, a status of, B<0> will be returned, with an error, B<api_unavailable>. 
+
+=back
+
+
+=head2 JSONP
+
+This API also supports sending a request using JSONP. If using JSONP, make sure to append the PATH INFO, with the query string, setting the name of your callback, like this: 
+
+    http://example.com/cgi-bin/dada/mail.cgi/json/subscribe?callback=mycustomcallback
+
+The JSONP document will be returned, encapsulated by the callback function name: 
+
+	mycustomcallback({
+	   "email" : "test@example.com",
+	   "status" : 1,                
+	   "list" : "mylist"           
+	});
+
+When calling via JSONP, the C<Content-Type> will be send back as, C<application/javascript>, rather than, C<application/json>
+
+=head2 Example Implementations
+
+=head3 JavaScript/jQuery
+
+The following is a bare-bones example on how to use the JSONP API to send a subscription request, using jQuery
+
+	$.ajax({
+		url: 'http://example.com/cgi-bin/dada/mail.cgi/json/subscribe',
+		type: "POST",
+		dataType: "jsonp",
+		cache: false,
+		data: JSON.stringify(
+			{ 
+				list:  'mylist',
+				email: 'test@example.com',
+				fields: { 
+					first_name: 'Jason', 
+					last_name: 'Example'
+				}
+			 }
+		),
+	    contentType: "application/json; charset=utf-8",
+		success: function(data) {
+			console.log('data:' + JSON.stringify(data)); 
+			if(data.status === 0){ 
+				/* Problems! */
+			}
+			else { 
+				/* Success! */
+			}
+		},
+		error: function(xhr, ajaxOptions, thrownError) {
+			console.log('status: ' + xhr.status);
+			console.log('thrownError:' + thrownError);
+		}
+	});
+
+=head3 jQuery Demo
+
+Dada Mail itself has a RESTful/AJAX Demo screen, that transforms Dada Mail's subscription form into a jQuery-powered form, that makes a request using the JSON API, and shows the results in a modal window, created with a jQuery library called, Colorbox: L<http://www.jacklmoore.com/colorbox/>
+
+You may try out the demo on your own Dada Mail, by going to the following screen: 
+
+L<http://example.com/cgi-bin/dada/mail.cgi/rest_subscribe_demo/>
+
+You may add a list short name to the PATH INFO, to have a form, with only that one mailing list: 
+
+L<http://example.com/cgi-bin/dada/mail.cgi/rest_subscribe_demo/mylist/>
+
+The fundamentals of how the demo works is similar to the stripped down example above - just using a little embelishment to make things a little snazzier. 
+
+=head3 Perl
+
+The following is a bare-bones example on how to use the JSON API to send a subscription request, using Perl: 
+
+	#!/usr/bin/perl 
+
+	use JSON;
+	use HTTP::Request;
+	use HTTP::Request::Common;
+	use LWP::UserAgent;
+	use Data::Dumper;
+
+	my $ua = LWP::UserAgent->new;
+
+	my $json = JSON->new->allow_nonref;
+	my $data = $json->utf8->encode(
+	    {
+	        list  => 'mylist',
+	        email => 'test@example.com',
+	    }
+	);
+
+	my $response = $ua->request(
+	    POST 'http://example.com/cgi-bin/dada/mail.cgi/json/subscribe',
+	    'Content-Type' => 'application/json',
+	    Content        => $data
+	);
+
+	if ( $response->is_success ) {
+
+	    my $r = $json->utf8->decode( $response->decoded_content );
+
+	    print Dumper($r);
+
+	    if ( $r->{status} == 1 ) {
+	        print "Success!\n";
+	    }
+	    else {
+	        print "Problems!\n";
+	    }
+	}
+	else {
+	    die $response->decoded_content;
+	}
+
+=head3 PHP
+
+If you can, please contribute an example!
+
+=head3 Python
+
+If you can, please contribute an example!
+
+=head3 Ruby
+
+If you can, please contribute an example!
+
+=head1 Perl API
+
+You may use Dada Mail's own modules in your own app, see: 
+
+L<http://dadamailproject.com/d/App_Subscriptions.pm.html>
+
+=head1 Command Line Utility - subscribe_email.pl
 
 Find a copy of C<subscribe_email.pl> in the Dada Mail distro at: 
 
@@ -42,8 +308,7 @@ Here's an example for a php script, that uses php's C<shell_exec> function (make
 		shell_exec("/home1/zazarazz/public_html/dadamail/extras/scripts/subscribe/subscribe_email.pl --list $list --email $email");
 	?>
 
-To make things easier I<while testing>, you may wish to disable Dada Mail's feature of limiting Subscription Confirmations. This feature disallows someone to 
-continually attempt to subscribe the same email address. In testing, this may be exactly what you'd like to do. 
+To make things easier I<while testing>, you may wish to disable Dada Mail's feature of limiting Subscription Confirmations. This feature disallows someone to continually attempt to subscribe the same email address. In testing, this may be exactly what you'd like to do. 
 
 In, I<Your Mailing List - Options> 
 
@@ -51,18 +316,15 @@ Uncheck the option, I<Limit Subscription Confirmation Sending>. Once done testin
 
  Limit Subscription Confirmation Sending 
 
+=head3 Other examples
 
-
-
-=head1 Other examples
-
-=head2 FormMail Integration
+=head4 FormMail Integration
 
 See the sourcecode to FormMail to see how we integrated Dada Mail subscription capabilities in this simple form handler:
 
 http://dadamailproject.com/d/Dada-ized_FormMail_README.pod.html
 
-=head2 TFmail Integration 
+=head4 TFmail Integration 
 
 See the sourcecode to TFmail to see how we integrated Dada Mail subscription capabilities in this simple form handler:
 
