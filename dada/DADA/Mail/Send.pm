@@ -1565,7 +1565,7 @@ sub mass_send {
                 $check_restart_state = 1; 
             }
 
-			$self->_set_clickthrough_tracking_stuff({-fields => \%fields}); 
+			%fields = $self->_set_clickthrough_tracking_stuff({-fields => \%fields}); 
 
             warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' locking batch' 
                 if $t; 
@@ -2272,6 +2272,8 @@ sub _set_clickthrough_tracking_stuff {
     #
     ##################################################################
 
+	return %{$fields}; 
+	
 }
 
 
