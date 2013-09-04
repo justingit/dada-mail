@@ -8,7 +8,7 @@ This release of Dada Mail focuses on three main features:
 
 =item * Sending Error Detection and Reporting
 
-=item * Redesigned Membership Screen or List OWners
+=item * Redesigned Membership Admin Screen
 
 =item * New RESTful API for Subscriptions
 
