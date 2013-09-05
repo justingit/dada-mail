@@ -41,6 +41,23 @@ $(document).ready(function() {
 
 	//Mail Sending >> Send a Message 
 	if ($("#send_email_screen").length || $("#send_url_email").length || $("#list_invite").length) {
+		
+		$("body").on("click", ".kcfinder_open", function(event) {
+			event.preventDefault();
+			openKCFinder(this); 
+		});
+		
+		$("body").on("click", ".remove_attachment", function(event) {
+			//alert($(this).attr("data-attachment")); 
+			$("#" + $(this).attr("data-attachment")).val('Select...'); 
+		});
+		
+			
+		
+		
+		
+		
+		
 		$("body").on("submit", "#mass_mailing", function(event) {
 			event.preventDefault();
 		});
@@ -2533,4 +2550,18 @@ function removeSubscriberField(form_name) {
 
 	form_name.target = "_self";
 
+}
+
+function openKCFinder(field) {
+    window.KCFinder = {
+        callBack: function(url) {
+            field.value = url.replace(/http\:\/\/dadademo.com\/dada_mail_support_files\/file_uploads\//, ''); 
+			//url.substring(url.lastIndexOf('/')+1);
+            window.KCFinder = null;
+        }
+    };
+    window.open('http://dadademo.com/dada_mail_support_files/kcfinder/browse.php', 'kcfinder_textbox',
+        'status=0, toolbar=0, location=0, menubar=0, directories=0, ' +
+        'resizable=1, scrollbars=0, width=800, height=600'
+    );
 }

@@ -16,7 +16,7 @@ use Carp qw(carp croak);
 use strict; 
 use vars qw($AUTOLOAD); 
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_MassSend}; 
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_MassSend}; 
 
 
 my %allowed = (
@@ -313,9 +313,9 @@ sub send_email {
 			return; 
         }
 
-        my @cleanup_attachments = ();
 
         my @attachments = $self->has_attachments( { -cgi_obj => $q } );
+
         my @compl_att = ();
 
         if (@attachments) {
@@ -325,13 +325,10 @@ sub send_email {
 
                 #carp '$_ ' . $_;
 
-                my ( $msg_att, $filename ) =
+                my ( $msg_att ) =
                   $self->make_attachment( { -name => $_, -cgi_obj => $q } );
                 push( @compl_att, $msg_att )
                   if $msg_att;
-
-                push( @cleanup_attachments, $filename )
-                  if $filename;
             }
 
             if ( $compl_att[0] ) {
@@ -497,9 +494,6 @@ sub send_email {
             print $q->redirect( -uri => $uri );
         }
 
-        if ( $DADA::Config::ATTACHMENT_TEMPFILE == 1 ) {
-            $self->clean_up_attachments( [@cleanup_attachments] );
-        }
         return;
     }
 }
@@ -1274,15 +1268,17 @@ sub has_attachments {
 		
     my @ive_got    = (); 
 
-	my $num = $q->param('attachment'); 
+	my $num = 3; 
 	
-    for(1 .. $num) { 
-      #  warn "Working on: " . $_; 
-        
-        my $filename = $q->param('attachment_' . $_);
-      #  warn '$filename ' . $filename; 
-        if(defined($filename) && length($filename) > 1){  
-            push(@ive_got, 'attachment_' . $_);
+    for(1 .. $num) {       
+        my $filename = $q->param('attachment' . $_);
+		warn '$filename:' . $filename
+			if $t; 
+        if(defined($filename) && length($filename) > 1){ 
+	 		if($filename ne 'Select...') { 
+				warn 'I\'ve got, ' . 'attachment' . $_;
+            	push(@ive_got, $filename);
+			}
         }
     }
     return @ive_got;
@@ -1291,118 +1287,56 @@ sub has_attachments {
 
 
 
-sub make_attachment { 
+sub make_attachment {
 
-	my $self = shift; 
-	my ($args) = @_; 
-    my $name = $args->{-name};
-  
-	my $q = $args->{-cgi_obj};
-	
-    require MIME::Lite; 
+    my $self   = shift;
+    my ($args) = @_;
+    my $name   = $args->{-name};
 
-    
-    my $attachment    = $q->param($name);    
-    
-  #  warn '$attachment ' . $attachment; 
-    
-    my $uploaded_file = ''; 
-    
-    if(!$attachment){ 
-        warn '!$attachment'; 
-        return (undef, undef); 
+    require MIME::Lite;
+
+    if ( !$name ) {
+        warn '!$name';
+        return undef;
     }
-    
-    my $a_type = $self->find_attachment_type($attachment);
 
+    warn '$name:: ' . $name
+      if $t;
 
-    
-    my $attach_name =  $attachment; 
-       $attach_name =~ s!^.*(\\|\/)!!;
-       $attach_name =~ s/\s/%20/g;
-       
-    my %mime_args = ( Type              =>  $a_type,
-                      # Id              => '<'.$attach_name.'>',
-                      Filename          =>  $attach_name,
-                      Disposition       =>  $self->make_a_disposition($a_type), 
-					  Datestamp         => 0, 
-                      ); 
-                      
-    my $attachment_file;
-    
-    # Oh, great, I just busted that... 
-    
-    # kinda used only for testing at the moment; 
-    #if($name =~ m/^filepath_attachment/){ 
-    #
-    #    $mime_args{Path} = $attachment; 
-    #     $file_uploaded_file   = $attach_name;
-    #
-    #}else{ 
-    
-        if($DADA::Config::ATTACHMENT_TEMPFILE == 1){ 
-            
-            # $name is the CGI paramater name - we need to pass that
-            # to keep the CGI object, "magic"
-            
-            my $attachment_file = $self->file_upload(
-				{
-					-cgi_obj => $q, -name => $name
-				}
-			); 
-               $mime_args{Path} =  $attachment_file;    
-               $uploaded_file   =  $attachment_file;
-                        
-        }else{ 
-        
-             $mime_args{FH}  =  $attachment;
-             $uploaded_file  = $attach_name; 
-        }                  
-    #}
-    
-   # warn '$uploaded_file ' . $uploaded_file; 
-    
-    my $msg_att = MIME::Lite->new(%mime_args); 
-       $msg_att->attr('Content-Location' =>  $attach_name);
+    my $filename = $name;
+    $filename =~ s/(.*?)\///;
 
+    warn '$filename: ' . $filename
+      if $t;
 
-	# I'm not sure what's making the, '-meta.txt' files, but this should 
-	# help remove them /hack
-	dump_attachment_meta_file($uploaded_file); 
-	
-    return($msg_att, $uploaded_file); 
-        
+    my $a_type = $self->find_attachment_type($filename);
+
+    warn '$a_type: ' . $a_type
+      if $t;
+
+    $filename =~ s!^.*(\\|\/)!!;
+    $filename =~ s/\s/%20/g;
+
+    my %mime_args = (
+        Type        => $a_type,
+        Disposition => $self->make_a_disposition($a_type),
+        Datestamp   => 0,
+        Id          => $filename,
+        Filename    => $filename,
+        Path        => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir} . '/' . $name,
+    );
+
+    if ($t) {
+        require Data::Dumper;
+        warn '%mime_args' . Data::Dumper::Dumper( {%mime_args} );
+    }
+
+    my $msg_att = MIME::Lite->new(%mime_args);
+    $msg_att->attr( 'Content-Location' => $filename );
+
+    return $msg_att;
+
 }
-
-
-# /hack
-sub dump_attachment_meta_file {
-    my $filename = shift;
-    $filename =~ s{^(.*)\/}{};
-
-    $filename = uriescape($filename);
-
-    my $full_path_to_filename =
-      make_safer( $DADA::Config::TMP . '/' . $filename . '-meta.txt' );
-
-	if(! -e $full_path_to_filename){ 
-		
-	}
-	else { 
-		
-  	  my $chmod_check =
-	      chmod( $DADA::Config::FILE_CHMOD, $full_path_to_filename );
-	    if ( $chmod_check != 1 ) {
-	        warn "could not chmod '$full_path_to_filename' correctly.";
-	    }
-
-	    my $unlink_check = unlink($full_path_to_filename);
-	    if ( $unlink_check != 1 ) {
-	        warn "deleting meta file didn't work for: " . $full_path_to_filename;
-	    }
-	}
-}
-
 
 
 
@@ -1455,41 +1389,8 @@ sub find_attachment_type {
         warn "attachment MIME Type never figured out, letting MIME::Lite handle this..."; 
         $a_type = 'AUTO';
     } 
-    
+
     return $a_type; 
-}
-
-
-
-
-sub file_upload {
-
-	my $self = shift; 
-	
-	my ($args) = @_; 
-	my $q = $args->{-cgi_obj};
-    my $upload_file = $args->{-name};
-    
-    my $fu   = CGI->new(); 
-    my $file = $fu->param($upload_file);  
-    if ($file ne "") {
-        my $fileName = $file; 
-           $fileName =~ s!^.*(\\|\/)!!;   
-
-
-        $fileName = uriescape($fileName);
-          
-        my $outfile = make_safer($DADA::Config::TMP . '/' . time . '_' . $fileName);
-         
-        open (OUTFILE, '>' . $outfile) or warn("can't write to '" . $outfile . "' because: $!");        
-        while (my $bytesread = read($file, my $buffer, 1024)) { 
-            print OUTFILE $buffer;
-        } 
-        close (OUTFILE);
-        chmod($DADA::Config::FILE_CHMOD, $outfile);  
-        return $outfile;
-    }
-    
 }
 
 
@@ -1516,20 +1417,6 @@ sub backdated_msg_id {
 }
 
 
-
-
-sub clean_up_attachments { 
-
-	my $self  = shift; 
-    my $files = shift || [];
-    for(@$files){ 
-        $_ = make_safer($_); 
-        warn "could not remove '$_'"
-            unless
-                unlink($_) > 0;
-                    # i love the above!
-    }
-}
 
 
 sub mass_mailout_info { 

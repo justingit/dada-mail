@@ -1,42 +1,22 @@
 <!-- begin file_attachments_widget.tmpl --> 
 
-<!-- 
-<fieldset> 
+<div id="attachment_widgets"> 
 
-<legend>
-	   <a href="#" class="toggleDivs" data-target="file_attachments">
-      +/- 
-     </a>File Attachments
-</legend>
+	<p>
+		<input readonly="readonly" name="attachment1" id="attachment1" type="text" class="kcfinder_open" value="Select..." style="cursor:pointer" />
+		<input type="button" value="x"  class="remove_attachment"  data-attachment="attachment1" />
+	</p>
 
+	<p>
+		<input readonly="readonly" name="attachment2" id="attachment1" type="text" class="kcfinder_open" value="Select..." style="cursor:pointer" />
+		<input type="button" value="x"  class="remove_attachment"  data-attachment="attachment2" />
+	</p>
+	
+	<p>
+		<input readonly="readonly" name="attachment3" id="attachment1" type="text" class="kcfinder_open" value="Select..." style="cursor:pointer" />
+		<input type="button" value="x"  class="remove_attachment"  data-attachment="attachment3" />
+	</p>
 
-
-<div id="file_attachments" style="display:none"> 
---> 
-         <p>
-         <input type="file" name="attachment_1"  size="36" /><br /> 
-         <input type="file" name="attachment_2"  size="36" /><br /> 
-         <input type="file" name="attachment_3"  size="36" /><br />  
-
-         <!-- tmpl_if comment --> 
-
-			You can continue to add to this list, like so: 
-
-	         <input type="file" name="attachment_4"  size="36" /><br />          
-	         <input type="file" name="attachment_5"  size="36" /><br />          
-
-			Just reflect the number of attachments you have in the, "attachment" 
-			hidden form field, below: 
-		
-		<!-- /tmpl_if --> 
-
-         </p>
-         
-	    <input type="hidden" name="attachment" value="3" />
-
-<!-- 
 </div> 
-</fieldset>
---> 
 
 <!-- end file_attachments_widget.tmpl --> 

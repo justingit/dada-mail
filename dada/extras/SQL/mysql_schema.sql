@@ -118,3 +118,14 @@ use_custom_error_page char(1),
 custom_error_page text,
 default_password text
 );
+
+
+CREATE TABLE IF NOT EXISTS dada_message_drafts (
+id INT4 NOT NULL PRIMARY KEY AUTO_INCREMENT,
+list varchar(16),
+timestamp TIMESTAMP DEFAULT NOW(),
+role varchar(80),
+draft mediumtext
+);
+
+
