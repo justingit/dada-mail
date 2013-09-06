@@ -5306,9 +5306,8 @@ sub add_email {
 					},
 	            }
 	        );
-			
+			print $q->header(); 
 		}
-		print $q->header(); 
 		e_print($scrn);
     }
     else {
