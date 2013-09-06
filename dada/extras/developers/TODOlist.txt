@@ -11,6 +11,10 @@ Key:
 [?] Someday
 
 =======
+[ ] Bridge: gotta state the message size limits on the admin screen - people have no idea. 
+
+[ ] Installer - it'd be nice if the guess fo the.dada_fiels loc looked for the saved PROGRAM_URL - if it seems not to be the same loc as where we're installed - DON'T use it! 
+[ ] Installer - more easily set up CAPTCHA stuff (reCaptcha, etc) 
 
 [ ] total_processed log, in case you cut a mass mailing short. 
 
