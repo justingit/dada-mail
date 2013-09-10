@@ -348,7 +348,8 @@ sub priority_popup_menu {
 	}
 	
     my $priority_popup_menu = $q->popup_menu(
-							  		-name    =>'X-Priority',
+							  		-name    => 'X-Priority',
+									id       => 'X-Priority',
                                     -values  =>[keys %DADA::Config::PRIORITIES],
                                     -labels  => \%DADA::Config::PRIORITIES,
                                     -default =>  $default, 

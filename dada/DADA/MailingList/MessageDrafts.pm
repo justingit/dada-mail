@@ -20,3 +20,4 @@ BEGIN {
 }
 use base "DADA::MailingList::MessageDrafts::$backend";
 
+1;

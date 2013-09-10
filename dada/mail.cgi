@@ -571,6 +571,7 @@ sub run {
 	'admin_menu_sending_preferences_notification' => \&admin_menu_sending_preferences_notification, 
 	'admin_menu_bounce_handler_notification'      => \&admin_menu_bounce_handler_notification, 
 	'send_email'                 =>    \&send_email,
+	'draft_notification'         =>    \&draft_notification, 
 	'message_body_help'          =>    \&message_body_help, 
 	'url_message_body_help'      =>    \&url_message_body_help, 
 	'preview_message_receivers'  =>    \&preview_message_receivers,
@@ -1147,6 +1148,25 @@ sub send_email {
 				-root_login  => $root_login,
 			}
 		);
+}
+
+
+
+
+sub draft_notification { 
+	my ($admin_list, $root_login) = check_list_security(
+										-cgi_obj  => $q,
+                                        -Function => 'send_email'); 
+	require DADA::Template::Widgets; 
+	print $q->header(); 
+	e_print(
+		DADA::Template::Widgets::screen(
+			{ 
+				-screen => 'draft_notification_widget.tmpl',
+			}
+		)
+	); 
+
 }
 
 

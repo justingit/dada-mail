@@ -52,15 +52,16 @@ $(document).ready(function() {
 			$("#" + $(this).attr("data-attachment")).val('Select...'); 
 		});
 		
-			
-		
-		
-		
-		
-		
 		$("body").on("submit", "#mass_mailing", function(event) {
 			event.preventDefault();
 		});
+		
+		$("body").on("click", ".savedraft", function(event) {
+			var fid = 'mass_mailing';
+			$("body").off('submit', '#' + fid);
+			return true;
+		});
+			
 		$("body").on("click", ".sendmassmailing", function(event) {
 			//var fid = $(event.target).closest('form').attr('id'); 
 			var fid = 'mass_mailing';
@@ -97,6 +98,32 @@ $(document).ready(function() {
 				customConfig: $("#support_files_url").val() + '/ckeditor/dada_mail_config.js',
 				toolbar: 'DadaMail_Admin'
 			});
+		}
+		
+		$("body").on("click", "#restore_from_draft", function(event) {
+		 	window.location.replace($("#s_program_url").val() + '?f=send_email&restore_from_draft=1');
+		}); 
+		
+		$("body").on("click", "#create_a_new_mass_mailing", function(event) {
+			$.colorbox.close(); 
+		}); 
+		
+		
+		if($("#has_draft").val() == "1") { 
+			$.colorbox({
+				top: 0,
+				fixed: true,
+				initialHeight: 50,
+				maxHeight: 480,
+				maxWidth: 649,
+				opacity: 0.50,
+				href: $("#s_program_url").val(),
+				data: {
+					flavor: 'draft_notification',
+					'screen': 'send_email'
+				}
+			});
+			
 		}
 
 

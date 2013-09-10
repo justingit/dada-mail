@@ -16,7 +16,7 @@ use Carp qw(carp croak);
 use strict; 
 use vars qw($AUTOLOAD); 
 
-my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_MassSend}; 
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_MassSend}; 
 
 
 my %allowed = (
@@ -79,6 +79,7 @@ sub send_email {
 
     my $process    = xss_filter( strip( $q->param('process') ) );
     my $flavor     = xss_filter( strip( $q->param('flavor') ) );
+	my $restore_from_draft = $q->param('restore_from_draft') || 0; 
     my $root_login = $args->{-root_login};
 
     my $list;
@@ -136,7 +137,12 @@ sub send_email {
         ) = $self->mass_mailout_info($list);
 
 
-
+		require DADA::MailingList::MessageDrafts; 
+		my $d = DADA::MailingList::MessageDrafts->new({-list => $list}); 
+		my $has_draft = 0; 
+		if($d->has_draft && $restore_from_draft != 1){
+			$has_draft = 1; 
+		}
 
         require DADA::Template::Widgets;
 		my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars($list);  
@@ -154,6 +160,7 @@ sub send_email {
                 -vars => {
                     screen => 'send_email',
                     flavor => $flavor,
+					has_draft =>$has_draft, 
                     priority_popup_menu =>
                       DADA::Template::Widgets::priority_popup_menu($li),
                     type            => 'list',
@@ -184,11 +191,28 @@ sub send_email {
                 -list_settings_vars_param => { -dot_it => 1, },
             }
         );
+
+
+		require DADA::MailingList::MessageDrafts; 
+		my $d = DADA::MailingList::MessageDrafts->new({-list => $list}); 
+		if($d->has_draft && $restore_from_draft == 1){
+			my $q_draft = $d->fetch(); 
+			require HTML::FillInForm::Lite;
+		    my $h = HTML::FillInForm::Lite->new();
+		    $scrn = $h->fill( \$scrn, $q_draft );
+		}
         if ( $args->{-html_output} == 1 ) {
             e_print($scrn);
         }
 
     }
+	elsif($process eq 'Save as Draft'){ 
+		require DADA::MailingList::MessageDrafts; 
+		my $d = DADA::MailingList::MessageDrafts->new({-list => $list}); 
+		$d->save({-cgi_obj => $q});
+		print $q->header(); 
+		print "DRAFT SAVED";  
+	}
     else {
 
         require DADA::App::FormatMessages;
