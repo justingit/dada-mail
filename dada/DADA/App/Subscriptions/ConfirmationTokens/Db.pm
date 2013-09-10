@@ -152,6 +152,15 @@ sub exists {
 sub reset_timestamp_by_metadata { 
 	return undef; 
 }
+
+sub remove_all_tokens {
+	my $self = shift; 
+	foreach(keys %{$self->{DB_HASH}}) { 
+		delete($self->{DB_HASH}->{$_}); 
+	}	
+}
+
+
 sub _remove_expired_tokens {
 	return 1; 
 }
@@ -160,7 +169,6 @@ sub _remove_expired_tokens {
 DESTROY {
 	my $self = shift; 
 	$self->_close_db;
-	
 }
 
 
