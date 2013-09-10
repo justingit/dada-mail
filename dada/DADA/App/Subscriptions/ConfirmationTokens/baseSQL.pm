@@ -328,6 +328,20 @@ sub exists {
     }
 }
 
+
+sub remove_all_tokens { 
+	my $self = shift; 
+	warn 'remove_all_tokens' 
+		if $t; 
+		 
+    my $query = 'DELETE FROM ' . $self->{sql_params}->{confirmation_tokens_table};
+	warn 'QUERY:' . $query
+		if $t; 
+		
+    $self->{dbh}->do($query);
+		
+}
+
 sub _remove_expired_tokens {
 
 	warn '_remove_expired_tokens' 
