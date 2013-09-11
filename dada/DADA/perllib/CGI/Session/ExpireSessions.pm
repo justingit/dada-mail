@@ -57,7 +57,7 @@ our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 our @EXPORT = qw(
 
 );
-our $VERSION = '1.09';
+our $VERSION = '1.13';
 
 # -----------------------------------------------
 
@@ -331,11 +331,11 @@ __END__
 
 =head1 NAME
 
-C<CGI::Session::ExpireSessions> - Delete expired C<CGI::Session>-type db-based and file-based sessions
+CGI::Session::ExpireSessions - Expires CGI::Session db-based and file-based sessions
 
 =head1 Synopsis
 
-	#!/usr/bin/perl
+	#!/usr/bin/env perl
 
 	use strict;
 	use warnings;
@@ -382,11 +382,11 @@ Sessions can be expired under one of three conditions:
 
 =over 4
 
-=item You deem the session to be expired as of now
+=item o You deem the session to be expired as of now
 
 =over 4
 
-=item Methods: C<expire_db_sessions()> and C<expire_file_sessions()>
+=item o Methods: C<expire_db_sessions()> and C<expire_file_sessions()>
 
 You want the session to be expired and hence deleted now because it's last access time is longer ago than the
 time you specify in the call to new, using the delta parameter.
@@ -397,14 +397,14 @@ In other words, force sessions to expire.
 
 The module has always used this condition to delete sessions.
 
-=item Method: C<expire_sessions()>
+=item o Method: C<expire_sessions()>
 
 You want the session to be expired and hence deleted now because it's C<last access> time is longer ago than the
 time you specify in the call to new, using the delta parameter.
 
 =back
 
-=item The session has already expired
+=item o The session has already expired
 
 This section applies to all 3 methods: C<expire_db_sessions()>, C<expire_file_sessions()> and C<expire_sessions()>.
 
@@ -417,7 +417,7 @@ C<CGI::Session> would delete the session automatically if you used C<CGI::Sessio
 
 Note: This condition assumes the session's expiration time is defined (it does not have to be).
 
-=item The file size is <= 5 bytes and was accessed more than 'delta' seconds ago
+=item o The file size is <= 5 bytes and was accessed more than 'delta' seconds ago
 
 This condition is new as of V 1.03.
 
@@ -478,7 +478,7 @@ Parameters which can be used with C<new()>, C<set()>, or C<expire_*()>:
 
 =over 4
 
-=item cgi_session_dsn
+=item o cgi_session_dsn
 
 This is the DSN (Data Source Name) used by C<CGI::Session> to control what type of sessions
 you previously created and what type of sessions you now wish to expire.
@@ -495,22 +495,22 @@ The default value is undef, which means C<CGI::Session> defaults to file-based s
 
 This parameter is optional for file-based sessions, and mandatory for db-based sessions.
 
-=item dbh
+=item o dbh
 
 This is a database handle for the database containing the table 'sessions'.
 
 Either this parameter is mandatory, or the temp_dir parameter is mandatory.
 
-=item delta
+=item o delta
 
 =over 4
 
-=item Methods: C<expire_db_sessions()> and C<expire_file_sessions()>
+=item o Methods: C<expire_db_sessions()> and C<expire_file_sessions()>
 
 This is the number of seconds since the C<last access> to the session, which determines
 whether or not the session will be expired.
 
-=item Method: C<expire_sessions()>
+=item o Method: C<expire_sessions()>
 
 This is the number of seconds since the C<last access> time of the session, which determines
 whether or not the session will be expired.
@@ -523,7 +523,7 @@ By default, then, sessions which were last accessed more than 2 days ago are exp
 
 This parameter is optional.
 
-=item dsn_args
+=item o dsn_args
 
 If your cgi_session_dsn uses file-based storage, then this hashref might contain keys such as:
 
@@ -550,7 +550,7 @@ The default value for this parameter is undef.
 
 These parameters are optional for file-based sessions, and mandatory for db-based sessions.
 
-=item table_name
+=item o table_name
 
 This is the name of the database table used to hold the sessions.
 
@@ -558,7 +558,7 @@ The default value is 'sessions'.
 
 This parameter is optional.
 
-=item temp_dir
+=item o temp_dir
 
 This is the name of the temp directory where you store CGI::Session-type session files.
 
@@ -566,7 +566,7 @@ The default value is '/tmp'.
 
 Either this parameter is mandatory, or the dbh parameter is mandatory.
 
-=item time
+=item o time
 
 The session's C<last access> time is subtracted from the value of this parameter, and if the result
 is greater than or equal to the value of parameter 'delta', then the session is expired.
@@ -577,7 +577,7 @@ The default value is obtained by calling time().
 
 This parameter is optional.
 
-=item verbose
+=item o verbose
 
 This is a integer, 0 or 1, which - when set to 1 - causes progress messages to be
 written to STDOUT.
@@ -606,13 +606,13 @@ Return value:
 
 =over 4
 
-=item undef
+=item o undef
 
 Returns undef if your version of C<CGI::Session> does not support method C<find()>.
 
 Also, returns undef when C<CGI::Session>'s method C<find()> failed for some reason.
 
-=item 1
+=item o 1
 
 Returns 1 when C<find()> succeeds.
 
@@ -629,18 +629,6 @@ See the examples/ directory in the distro.
 
 There are 2 demo programs: expire-sessions.pl and expire-set.pl.
 
-=head1 Required Modules
-
-=over 4
-
-=item Carp
-
-=item CGI::Session
-
-=item File::Spec
-
-=back
-
 =head1 Author
 
 C<CGI::Session::ExpireSessions> was written by Ron Savage I<E<lt>ron@savage.net.auE<gt>> in 2004.
@@ -649,8 +637,7 @@ Home page: http://savage.net.au/index.html
 
 =head1 Copyright
 
-Australian copyright (c) 2004, Ron Savage. All rights reserved.
-
+Australian copyright (c) 2004, Ron Savage.
 	All Programs of mine are 'OSI Certified Open Source Software';
 	you can redistribute them and/or modify them under the terms of
 	The Artistic License, a copy of which is available at:
