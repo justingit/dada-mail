@@ -6,7 +6,7 @@ use strict;
 use Storable;
 require CGI::Session::ErrorHandler;
 
-$CGI::Session::Serialize::storable::VERSION = '4.38';
+$CGI::Session::Serialize::storable::VERSION = '4.43';
 @CGI::Session::Serialize::storable::ISA               = ( "CGI::Session::ErrorHandler" );
 
 =pod

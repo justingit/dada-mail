@@ -13,7 +13,7 @@ use Fcntl qw( :DEFAULT :flock );
 use vars qw( @ISA $VERSION $FILE_NAME $UMask $NO_FOLLOW );
 
 @ISA         = ( "CGI::Session::Driver" );
-$VERSION     = '4.38';
+$VERSION     = '4.43';
 $FILE_NAME   = "cgisess.db";
 $UMask       = 0660;
 $NO_FOLLOW   = eval { O_NOFOLLOW } || 0;
@@ -179,8 +179,8 @@ CGI::Session::Driver::db_file - CGI::Session driver for BerkeleyDB using DB_File
 
 =head1 SYNOPSIS
 
-    $s = new CGI::Session("driver:db_file", $sid);
-    $s = new CGI::Session("driver:db_file", $sid, {FileName=>'/tmp/cgisessions.db'});
+    $s = CGI::Session->new("driver:db_file", $sid);
+    $s = CGI::Session->new("driver:db_file", $sid, {FileName=>'/tmp/cgisessions.db'});
 
 =head1 DESCRIPTION
 

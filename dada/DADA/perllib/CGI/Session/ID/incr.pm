@@ -8,7 +8,7 @@ use Carp "croak";
 use Fcntl qw( :DEFAULT :flock );
 use CGI::Session::ErrorHandler;
 
-$CGI::Session::ID::incr::VERSION = '4.38';
+$CGI::Session::ID::incr::VERSION = '4.43';
 @CGI::Session::ID::incr::ISA     = qw( CGI::Session::ErrorHandler );
 
 
@@ -44,7 +44,7 @@ CGI::Session::ID::incr - CGI::Session ID driver
 =head1 SYNOPSIS
 
     use CGI::Session;
-    $session = new CGI::Session("id:Incr", undef, {
+    $session = CGI::Session->new("id:Incr", undef, {
                                 Directory   => '/tmp',
                                 IDFile      => '/tmp/cgisession.id',
                                 IDInit      => 1000,

@@ -7,7 +7,7 @@ use Carp;
 use CGI::Session::Driver::DBI;
 
 @CGI::Session::Driver::mysql::ISA       = qw( CGI::Session::Driver::DBI );
-$CGI::Session::Driver::mysql::VERSION   = '4.38';
+$CGI::Session::Driver::mysql::VERSION   = '4.43';
 
 sub _mk_dsnstr {
     my ($class, $dsn) = @_;
@@ -73,11 +73,11 @@ CGI::Session::Driver::mysql - CGI::Session driver for MySQL database
 
 =head1 SYNOPSIS
 
-    $s = new CGI::Session( 'driver:mysql', $sid);
-    $s = new CGI::Session( 'driver:mysql', $sid, { DataSource  => 'dbi:mysql:test',
+    $s = CGI::Session->new( 'driver:mysql', $sid);
+    $s = CGI::Session->new( 'driver:mysql', $sid, { DataSource  => 'dbi:mysql:test',
                                                    User        => 'sherzodr',
                                                    Password    => 'hello' });
-    $s = new CGI::Session( 'driver:mysql', $sid, { Handle => $dbh } );
+    $s = CGI::Session->new( 'driver:mysql', $sid, { Handle => $dbh } );
 
 =head1 DESCRIPTION
 
@@ -93,7 +93,7 @@ defined as a primary key, or at least "unique", like this:
 
 To use different column names, change the 'create table' statement, and then simply do this:
 
-    $s = new CGI::Session('driver:mysql', undef,
+    $s = CGI::Session->new('driver:mysql', undef,
     {
         TableName=>'session',
         IdColName=>'my_id',
@@ -103,7 +103,7 @@ To use different column names, change the 'create table' statement, and then sim
 
 or
 
-    $s = new CGI::Session('driver:mysql', undef,
+    $s = CGI::Session->new('driver:mysql', undef,
     {
         TableName=>'session',
         IdColName=>'my_id',
@@ -115,9 +115,9 @@ or
 
 B<mysql> driver supports all the arguments documented in L<CGI::Session::Driver::DBI|CGI::Session::Driver::DBI>. In addition, I<DataSource> argument can optionally leave leading "dbi:mysql:" string out:
 
-    $s = new CGI::Session( 'driver:mysql', $sid, {DataSource=>'shopping_cart'});
+    $s = CGI::Session->new( 'driver:mysql', $sid, {DataSource=>'shopping_cart'});
     # is the same as:
-    $s = new CGI::Session( 'driver:mysql', $sid, {DataSource=>'dbi:mysql:shopping_cart'});
+    $s = CGI::Session->new( 'driver:mysql', $sid, {DataSource=>'dbi:mysql:shopping_cart'});
 
 =head2 BACKWARDS COMPATIBILITY
 

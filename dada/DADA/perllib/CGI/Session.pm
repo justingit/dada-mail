@@ -1,13 +1,10 @@
 package CGI::Session;
-
-# $Id$
-
 use strict;
 use Carp;
 use CGI::Session::ErrorHandler;
 
 @CGI::Session::ISA      = qw( CGI::Session::ErrorHandler );
-$CGI::Session::VERSION  = '4.42';
+$CGI::Session::VERSION  = '4.48';
 $CGI::Session::NAME     = 'CGISESSID';
 $CGI::Session::IP_MATCH = 0;
 
@@ -23,7 +20,7 @@ sub import {
     return unless @args;
 
   ARG:
-    foreach my $arg (@args) {
+    for my $arg (@args) {
         if ($arg eq '-ip_match') {
             $CGI::Session::IP_MATCH = 1;
             last ARG;
@@ -135,7 +132,7 @@ sub _id_generator   {
     return $self->{_OBJECTS}->{id} = "CGI::Session::ID::" . $self->{_DSN}->{id};
 }
 
-sub _ip_matches {
+sub ip_matches {
   return ( $_[0]->{_DATA}->{_SESSION_REMOTE_ADDR} eq $ENV{REMOTE_ADDR} );
 }
 
@@ -170,15 +167,16 @@ sub query {
 
 sub name {
     my $self = shift;
+    my $name = shift;
     
     if (ref $self) {
-        unless ( @_ ) {
+        unless ( defined $name ) {
             return $self->{_NAME} || $CGI::Session::NAME;
         }
-        return $self->{_NAME} = $_[0];
+        return $self->{_NAME} = $name;
     }
     
-    $CGI::Session::NAME = $_[0] if @_;
+    $CGI::Session::NAME = $name if defined $name;
     return $CGI::Session::NAME;
 }
 
@@ -220,7 +218,7 @@ sub flush {
     my $self = shift;
 
     # Would it be better to die or err if something very basic is wrong here? 
-    # I'm trying to address the DESTORY related warning
+    # I'm trying to address the DESTROY related warning
     # from: http://rt.cpan.org/Ticket/Display.html?id=17541
     # return unless defined $self;
 
@@ -440,10 +438,12 @@ sub find {
         return $class->set_error( "find(): couldn't create driver object. " . $pm->errstr );
     }
 
-    my $dont_update_atime = 0;
+    # Read-only isn't the perfect name here. In read-only mode, we skip the ip_match check,
+    # and don't update the atime. We *do* still delete expired sessions and session params.
+    my $read_only = 1;
     my $driver_coderef = sub {
         my ($sid) = @_;
-        my $session = $class->load( $dsn, $sid, $dsn_args, $dont_update_atime );
+        my $session = $class->load( $dsn, $sid, $dsn_args, $read_only );
         unless ( $session ) {
             return $class->set_error( "find(): couldn't load session '$sid'. " . $class->errstr );
         }
@@ -467,7 +467,7 @@ CGI::Session - persistent session data in CGI applications
 
     # Object initialization:
     use CGI::Session;
-    $session = new CGI::Session();
+    $session = CGI::Session->new();
 
     $CGISESSID = $session->id();
 
@@ -521,7 +521,7 @@ Following is the overview of all the available methods accessible via CGI::Sessi
 
 =head2 new( $dsn, $query||$sid, \%dsn_args, \%session_params )
 
-Constructor. Returns new session object, or undef on failure. Error message is accessible through L<errstr() - class method|CGI::Session::ErrorHandler/errstr>. If called on an already initialized session will re-initialize the session based on already configured object. This is only useful after a call to L<load()|/"load">.
+Constructor. Returns new session object, or undef on failure. Error message is accessible through L<errstr() - class method|CGI::Session::ErrorHandler/"errstr()">. If called on an already initialized session will re-initialize the session based on already configured object. This is only useful after a call to L<load()|/"load()">.
 
 Can accept up to three arguments, $dsn - Data Source Name, $query||$sid - query object OR a string representing session id, and finally, \%dsn_args, arguments used by $dsn components.
 
@@ -567,7 +567,7 @@ B<id> - ID generator to use when new session is to be created. Available ID gene
 
 For example, to get CGI::Session store its data using DB_File and serialize data using FreezeThaw:
 
-    $s = new CGI::Session("driver:DB_File;serializer:FreezeThaw", undef);
+    $s = CGI::Session->new("driver:DB_File;serializer:FreezeThaw", undef);
 
 If called with three arguments, first two will be treated as in the previous example, and third argument will be C<\%dsn_args>, which will be passed to C<$dsn> components (namely, driver, serializer and id generators) for initialization purposes. Since all the $dsn components must initialize to some default value, this third argument should not be required for most drivers to operate properly.
 
@@ -596,7 +596,7 @@ undef is acceptable as a valid placeholder to any of the above arguments, which 
 =head2 load( $dsn, $query, \%dsn_args, \%session_params )
 
 Accepts the same arguments as new(), and also returns a new session object, or
-undef on failure.  The difference is, L<new()|/"new"> can create a new session if
+undef on failure.  The difference is, L<new()|/"new()"> can create a new session if
 it detects expired and non-existing sessions, but C<load()> does not.
 
 C<load()> is useful to detect expired or non-existing sessions without forcing the library to create new sessions. So now you can do something like this:
@@ -657,7 +657,7 @@ sub load {
         _QUERY      => undef        # query object
     }, $class;
 
-    my ($dsn,$query_or_sid,$dsn_args,$update_atime,$params);
+    my ($dsn,$query_or_sid,$dsn_args,$read_only,$params);
     # load($query||$sid)
     if ( @_ == 1 ) {
         $self->_set_query_or_sid($_[0]);
@@ -665,24 +665,24 @@ sub load {
     # Two or more args passed:
     # load($dsn, $query||$sid)
     elsif ( @_ > 1 ) {
-        ($dsn, $query_or_sid, $dsn_args,$update_atime) = @_;
+        ($dsn, $query_or_sid, $dsn_args,$read_only) = @_;
 
         # Make it backwards-compatible (update_atime is an undocumented key in %$params).
         # In fact, update_atime as a key is not used anywhere in the code as yet.
         # This patch is part of the patch for RT#33437.
-        if ( ref $update_atime and ref $update_atime eq 'HASH' ) {
-            $params = {%$update_atime};
-            $update_atime = $params->{'update_atime'};
+        if ( ref $read_only and ref $read_only eq 'HASH' ) {
+            $params = {%$read_only};
+            $read_only = $params->{'read_only'};
 
             if ($params->{'name'}) {
                 $self->{_NAME} = $params->{'name'};
             }
         }
 
-        # Since $update_atime is not part of the public API
-        # we ignore any value but the one we use internally: 0.
-        if (defined $update_atime and $update_atime ne '0') {
-            return $class->set_error( "Too many arguments to load(). First extra argument was: $update_atime");
+        # Since $read_only is not part of the public API
+        # we ignore any value but the one we use internally: 1.
+        if (defined $read_only and $read_only != '1') {
+            return $class->set_error( "Too many arguments to load(). First extra argument was: $read_only");
          }
 
         if ( defined $dsn ) {      # <-- to avoid 'Uninitialized value...' warnings
@@ -736,20 +736,12 @@ sub load {
         return $self->set_error( "Invalid data structure returned from thaw()" );
     }
 
-    # checking if previous session ip matches current ip
-    if($CGI::Session::IP_MATCH) {
-      unless($self->_ip_matches) {
-        $self->_set_status( STATUS_DELETED );
-        $self->flush;
-        return $self;
-      }
-    }
 
     # checking for expiration ticker
     if ( $self->{_DATA}->{_SESSION_ETIME} ) {
         if ( ($self->{_DATA}->{_SESSION_ATIME} + $self->{_DATA}->{_SESSION_ETIME}) <= time() ) {
             $self->_set_status( STATUS_EXPIRED |    # <-- so client can detect expired sessions
-                                STATUS_DELETED );   # <-- session should be removed from database
+                STATUS_DELETED );                   # <-- session should be removed from database
             $self->flush();                         # <-- flush() will do the actual removal!
             return $self;
         }
@@ -757,16 +749,27 @@ sub load {
 
     # checking expiration tickers of individuals parameters, if any:
     my @expired_params = ();
-    while (my ($param, $max_exp_interval) = each %{ $self->{_DATA}->{_SESSION_EXPIRE_LIST} } ) {
-        if ( ($self->{_DATA}->{_SESSION_ATIME} + $max_exp_interval) <= time() ) {
-            push @expired_params, $param;
+    if ( $self->{_DATA}->{_SESSION_EXPIRE_LIST} ) {
+        while (my ($param, $max_exp_interval) = each %{ $self->{_DATA}->{_SESSION_EXPIRE_LIST} } ) {
+            if ( ($self->{_DATA}->{_SESSION_ATIME} + $max_exp_interval) <= time() ) {
+                push @expired_params, $param;
+            }
         }
     }
     $self->clear(\@expired_params) if @expired_params;
 
-    # We update the atime by default, but if this (otherwise undocoumented)
-    # parameter is explicitly set to false, we'll turn the behavior off
-    if ( ! defined $update_atime ) {
+
+
+    if (not defined $read_only) {
+        # checking if previous session ip matches current ip
+        if($CGI::Session::IP_MATCH) {
+            unless($self->ip_matches) {
+                $self->_set_status( STATUS_DELETED );
+                $self->flush;
+                return $self;
+            }
+        }
+
         $self->{_DATA}->{_SESSION_ATIME} = time();      # <-- updating access time
         $self->_set_status( STATUS_MODIFIED );          # <-- access time modified above
     }
@@ -798,7 +801,7 @@ sub _load_pluggables {
                        id         => "ID",
                        );
     my $dsn = $self->{_DSN};
-    foreach my $plug qw(driver serializer id) {
+    for my $plug (qw(driver serializer id)) {
         my $mod_name = $dsn->{ $plug };
         if (not defined $mod_name) {
             $mod_name = $DEFAULT_FOR{ $plug };
@@ -852,7 +855,7 @@ a warning and undef will be returned.
 
 =head2 param_hashref()
 
-B<Deprecated>. Use L<dataref()|/"dataref"> instead.
+B<Deprecated>. Use L<dataref()|/"dataref()"> instead.
 
 =head2 dataref()
 
@@ -871,7 +874,7 @@ Useful for having all session data in a hashref, but too risky to update.
 
 =head2 save_param($query, \@list)
 
-Saves query parameters to session object. In other words, it's the same as calling L<param($name, $value)|/"param"> for every single query parameter returned by C<< $query->param() >>. The first argument, if present, should be either CGI object or any object which can provide param() method. If it's undef, defaults to the return value of L<query()|/"query">, which returns C<< CGI->new >>. If second argument is present and is a reference to an array, only those query parameters found in the array will be stored in the session. undef is a valid placeholder for any argument to force default behavior.
+Saves query parameters to session object. In other words, it's the same as calling L<param($name, $value)|/"param($name)"> for every single query parameter returned by C<< $query->param() >>. The first argument, if present, should be either CGI object or any object which can provide param() method. If it's undef, defaults to the return value of L<query()|/"query()">, which returns C<< CGI->new >>. If second argument is present and is a reference to an array, only those query parameters found in the array will be stored in the session. undef is a valid placeholder for any argument to force default behavior.
 
 =head2 load_param()
 
@@ -894,14 +897,14 @@ reference to an array, only the named parameters are cleared.
 
 =head2 flush()
 
-Synchronizes data in memory  with the copy serialized by the driver. Call flush() 
+Synchronizes data in memory with the copy serialized by the driver. Call flush()
 if you need to access the session from outside the current session object. You should
-call flush() sometime before your program exits. 
+call flush() sometime before your program exits.
 
 As a last resort, CGI::Session will automatically call flush for you just
 before the program terminates or session object goes out of scope. Automatic
 flushing has proven to be unreliable, and in some cases is now required
-in places that worked with CGI::Session 3.x. 
+in places that worked with CGI::Session 3.x.
 
 Always explicitly calling C<flush()> on the session before the
 program exits is recommended. For extra safety, call it immediately after
@@ -924,7 +927,7 @@ Read-only method. Returns the time when the session was first created in seconds
 
 =head2 expire($param, $time)
 
-Sets expiration interval relative to L<atime()|/"atime">.
+Sets expiration interval relative to L<atime()|/"atime()">.
 
 If used with no arguments, returns the expiration interval if it was ever set. If no expiration was ever set, returns undef. For backwards compatibility, a method named C<etime()> does the same thing.
 
@@ -1068,10 +1071,22 @@ Actually, the above code is nothing but waste. The same effect could've been ach
 
 L<is_empty()|/"is_empty"> is useful only if you wanted to catch requests for expired sessions, and create new session afterwards. See L<is_expired()|/"is_expired"> for an example.
 
+=head2 ip_match()
+
+Returns true if $ENV{REMOTE_ADDR} matches the remote address stored in the session.
+
+If you have an application where you are sure your users' IPs are constant
+during a session, you can consider enabling an option to make this check:
+
+    use CGI::Session '-ip_match';
+
+Usually you don't call ip_match() directly, but by using the above method. It is useful
+only if you want to call it inside of coderef passed to the L<find()|/"find( \&code )"> method. 
+
 =head2 delete()
 
 Sets the objects status to be "deleted".  Subsequent read/write requests on the
-same object will fail.  To physically delete it from the data store you need to call L<flush()>.
+same object will fail.  To physically delete it from the data store you need to call L<flush()|/"flush()">.
 CGI::Session attempts to do this automatically when the object is being destroyed (usually as
 the script exits), but see L<A Warning about Auto-flushing>.
 
@@ -1087,7 +1102,7 @@ The following line, for instance, will remove sessions already expired, but whic
 
     CGI::Session->find( sub {} );
 
-Notice, above \&code didn't have to do anything, because load(), which is called to initialize sessions inside find(), will automatically remove expired sessions. Following example will remove all the objects that are 10+ days old:
+Notice, above \&code didn't have to do anything, because load(), which is called to initialize sessions inside L<find()|/"find( \&code )">, will automatically remove expired sessions. Following example will remove all the objects that are 10+ days old:
 
     CGI::Session->find( \&purge );
     sub purge {
@@ -1168,6 +1183,17 @@ The default value of this hashref is undef.
 
 B<Note:> find() is meant to be convenient, not necessarily efficient. It's best suited in cron scripts.
 
+=head2 name($new_name)
+
+The $new_name parameter is optional. If supplied it sets the query or cookie parameter name to be used.
+
+It defaults to I<$CGI::Session::NAME>, which defaults to I<CGISESSID>.
+
+You are strongly discouraged from using the global variable I<$CGI::Session::NAME>, since it is
+deprecated (as are all global variables) and will be removed in a future version of this module.
+
+Return value: The current query or cookie parameter name.
+
 =head1 MISCELLANEOUS METHODS
 
 =head2 remote_addr()
@@ -1190,7 +1216,7 @@ Returns a dump of the session object. Useful for debugging purposes only.
 
 =head2 header()
 
-A wrapper for L<CGI.pm|CGI>'s header() method. Calling this method
+A wrapper for C<CGI>'s header() method. Calling this method
 is equivalent to something like this:
 
     $cookie = CGI::Cookie->new(-name=>$session->name, -value=>$session->id);
@@ -1200,17 +1226,17 @@ You can minimize the above into:
 
     print $session->header();
 
-It will retrieve the name of the session cookie from C<$session->name()> which defaults to C<$CGI::Session::NAME>. If you want to use a different name for your session cookie, do something like following before creating session object:
+It will retrieve the name of the session cookie from C<$session->name()> which defaults to C<$CGI::Session::NAME>. If you want to use a different name for your session cookie, do something like this before creating session object:
 
     CGI::Session->name("MY_SID");
     $session = CGI::Session->new(undef, $cgi, \%attrs);
 
-Now, $session->header() uses "MY_SID" as a name for the session cookie. For all additional options that can
-be passed, see the C<header()> docs in L<CGI>. 
+Now, $session->header() uses "MY_SID" as the name for the session cookie. For all additional options that can
+be passed, see the C<header()> docs in C<CGI>.
 
 =head2 query()
 
-Returns query object associated with current session object. Default query object class is L<CGI.pm|CGI>.
+Returns query object associated with current session object. Default query object class is C<CGI>.
 
 =head2 DEPRECATED METHODS
 
@@ -1227,7 +1253,7 @@ CGI::Session consists of several components such as L<drivers|"DRIVERS">, L<seri
 
 =head2 DRIVERS
 
-Following drivers are included in the standard distribution:
+The following drivers are included in the standard distribution:
 
 =over 4
 
@@ -1251,6 +1277,8 @@ L<sqlite|CGI::Session::Driver::sqlite> - for storing session data in SQLite. Req
 Full name: B<CGI::Session::Driver::sqlite>
 
 =back
+
+Other drivers are available from CPAN.
 
 =head2 SERIALIZERS
 
@@ -1280,7 +1308,7 @@ Full name: B<CGI::Session::Serialize::yaml>
 
 =head2 ID GENERATORS
 
-Following ID generators are available:
+The following ID generators are included in the standard distribution.
 
 =over 4
 
@@ -1301,7 +1329,7 @@ L<static|CGI::Session::ID::static> - generates static session ids. B<CGI::Sessio
 
 =head1 A Warning about Auto-flushing
 
-Auto-flushing can be unreliable for the following reasons. Explict flushing
+Auto-flushing can be unreliable for the following reasons. Explicit flushing
 after key session updates is recommended. 
 
 =over 4
@@ -1339,21 +1367,49 @@ at object destruction time.
 
 =head1 A Warning about UTF8
 
-Trying to use UTF8 in a program which uses CGI::Session has lead to problems. See RT#21981 and RT#28516.
+You are strongly encouraged to refer to, at least, the first of these articles, for help with UTF8.
 
-In the first case the user tried "use encoding 'utf8';" in the program, and in the second case the user tried
-"$dbh->do(qq|set names 'utf8'|);".
+L<http://en.wikibooks.org/wiki/Perl_Programming/Unicode_UTF-8>
 
-Until this problem is understood and corrected, users are advised to avoid UTF8 in conjunction with CGI::Session.
+L<http://perl.bristolbath.org/blog/lyle/2008/12/giving-cgiapplication-internationalization-i18n.html>
 
-For details, see: http://rt.cpan.org/Public/Bug/Display.html?id=28516 (and ...id=21981).
+L<http://metsankulma.homelinux.net/cgi-bin/l10n_example_4/main.cgi>
 
-Lastly, note that parameters such as 'utf-8' can be passed to the C<header()> method
-when C<header()> is used to send a cookie. E.g.:
+L<http://rassie.org/archives/247>
 
-	print $session->header(charset => 'utf-8');
+L<http://www.di-mgt.com.au/cryptoInternational2.html>
 
-See L</header()> for a fuller discussion of the use of the C<header()> method in conjunction with cookies.
+Briefly, these are the issues:
+
+=over 4
+
+=item The file containing the source code of your program
+
+Consider "use utf8;" or "use encoding 'utf8';".
+
+=item Influencing the encoding of the program's input
+
+Use:
+
+    binmode STDIN, ":encoding(utf8)";.
+
+    Of course, the program can get input from other sources, e.g. HTML template files, not just STDIN.
+
+=item Influencing the encoding of the program's output
+
+Use:
+
+    binmode STDOUT, ":encoding(utf8)";
+
+    When using CGI.pm, you can use $q->charset('UTF-8'). This is the same as passing 'UTF-8' to CGI's C<header()> method.
+
+    Alternately, when using CGI::Session, you can use $session->header(charset => 'utf-8'), which will be
+    passed to the query object's C<header()> method. Clearly this is preferable when the query object might not be
+    of type CGI.
+
+    See L</header()> for a fuller discussion of the use of the C<header()> method in conjunction with cookies.
+
+=back
 
 =head1 TRANSLATIONS
 
@@ -1361,7 +1417,7 @@ This document is also available in Japanese.
 
 =over 4
 
-=item o 
+=item o
 
 Translation based on 4.14: http://digit.que.ne.jp/work/index.cgi?Perldoc/ja
 
@@ -1377,7 +1433,7 @@ CGI::Session evolved to what it is today with the help of following developers. 
 
 =over 4
 
-=item Andy Lester 
+=item Andy Lester
 
 =item Brian King E<lt>mrbbking@mac.comE<gt>
 
@@ -1387,7 +1443,7 @@ CGI::Session evolved to what it is today with the help of following developers. 
 
 =item Igor Plisco E<lt>igor@plisco.ruE<gt>
 
-=item Mark Stosberg 
+=item Mark Stosberg
 
 =item Matt LeBlanc E<lt>mleblanc@cpan.orgE<gt>
 
@@ -1412,13 +1468,13 @@ This library is free software. You can modify and or distribute it under the sam
 =head1 PUBLIC CODE REPOSITORY
 
 You can see what the developers have been up to since the last release by
-checking out the code repository. You can browse the Subversion repository from here:
+checking out the code repository. You can browse the git repository from here:
 
- http://svn.cromedome.net/repos/CGI-Session
+ http://github.com/cromedome/cgi-session/tree/master
 
-Or check it directly with C<svn> from here:
+Or check out the code with:
 
- https://svn.cromedome.net/repos/CGI-Session
+ git clone git://github.com/cromedome/cgi-session.git
 
 =head1 SUPPORT
 

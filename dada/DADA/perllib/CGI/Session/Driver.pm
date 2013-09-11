@@ -1,14 +1,12 @@
 package CGI::Session::Driver;
 
-# $Id$
-
 use strict;
-#use diagnostics;
+#
 
 use Carp;
 use CGI::Session::ErrorHandler;
 
-$CGI::Session::Driver::VERSION = '4.38';
+$CGI::Session::Driver::VERSION = '4.43';
 @CGI::Session::Driver::ISA     = qw(CGI::Session::ErrorHandler);
 
 sub new {
@@ -36,7 +34,7 @@ sub new {
     # perform a shallow copy of $args, to prevent modification
     my $self = bless ({%$args}, $class);
     return $self if $self->init();
-    return $self->set_error( "%s->init() returned false", $class);
+    return $self->set_error( "$class->init() returned false");
 }
 
 sub init { 1 }
@@ -73,13 +71,6 @@ __END__;
 =head1 NAME
 
 CGI::Session::Driver - CGI::Session driver specifications
-
-=head1 WARNING
-
-Version 4.0 of CGI::Session's driver specification is B<NOT> backward compatible with previous specification. If you already have a driver developed to work with the previous version you're highly encouraged to upgrade your driver code to make it compatible with the current version. Fortunately, current driver specs are a lot easier to adapt to.
-
-If you need any help converting your driver to meet current specs, send me an e-mail. For support information see
-L<CGI::Session|CGI::Session>
 
 =head1 SYNOPSIS
 
@@ -208,6 +199,16 @@ All driver F<.pm> files must be lowercase!
 DBI-related drivers are better off using L<CGI::Session::Driver::DBI|CGI::Session::Driver::DBI> as base, but don't have to.
 
 =back
+
+=head1 BACKWARDS COMPATIBILITY
+
+Version 4.0 of CGI::Session's driver specification is B<NOT> backward
+compatible with the previous specification. If you already have a driver
+developed to work with the previous version you're highly encouraged to upgrade
+your driver code to make it compatible with the current version. Fortunately,
+current driver specs are a lot easier to adapt to.
+
+For support information see L<CGI::Session|CGI::Session>
 
 =head1 LICENSING
 
