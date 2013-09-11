@@ -2,7 +2,7 @@ package CGI::Session::Tutorial;
 
 # $Id$
 
-$CGI::Session::Tutorial::VERSION = '4.42';
+$CGI::Session::Tutorial::VERSION = '4.43';
 
 =pod
 
@@ -104,7 +104,7 @@ To make L<CGI::Session|CGI::Session>'s functionality available in your program d
 
 Whenever you're ready to create a new session in your application, do the following:
 
-    $session = new CGI::Session() or die CGI::Session->errstr;
+    $session = CGI::Session->new () or die CGI::Session->errstr;
 
 Above line will first try to re-initialize an existing session by consulting cookies and necessary QUERY_STRING parameters. If it fails will create a brand new session with a unique ID, which is normally called I<session ID>, I<SID> for short, and can be accessed through L<id()|CGI::Session/id()> - object method.
 
@@ -112,7 +112,7 @@ We didn't check for any session cookies above, did we? No, we didn't, but CGI::S
 
 NOTE: For the above syntax to work as intended your application needs to have write access to your computer's I<TEMPDIR> folder, which is usually F</tmp> in UNIX. If it doesn't, or if you wish to store this application's session files in a different place, you may pass the third argument like so:
 
-    $session = new CGI::Session(undef, undef, {Directory=>'../tmp/sessions'});
+    $session = CGI::Session->new(undef, undef, {Directory=>'../tmp/sessions'});
 
 Now it will store all the newly created sessions in (and will attempt to initialize requested sessions from) that folder. Don't worry if the directory hierarchy you want to use doesn't already exist. It will be created for you. For details on how session data are stored refer to L<CGI::Session::Driver::file|CGI::Session::Driver::file>, which is the default driver used in our above example.
 
@@ -127,7 +127,7 @@ To make sure CGI::Session will be able to read your cookie at next request you n
 C<name()> returns C<CGISESSID> by default. If you prefer a different cookie name, you can change it as easily too, but you have to do it before CGI::Session object is created:
 
     CGI::Session->name("SID");
-    $session = new CGI::Session();
+    $session = CGI::Session->new();
 
 Baking the cookie wasn't too difficult, was it? But there is an even easier way to send a cookie using CGI::Session:
 
@@ -141,15 +141,15 @@ Of course, this method of initialization will only work if client is accepting c
 
 If you already have session id to be initialized you may pass it as the only argument, or the second argument of multi-argument syntax:
 
-    $session = new CGI::Session( $sid );
-    $session = new CGI::Session( "serializer:freezethaw", $sid );
-    $session = new CGI::Session( "driver:mysql", $sid, {Handle=>$dbh} );
+    $session = CGI::Session->new( $sid );
+    $session = CGI::Session->new( "serializer:freezethaw", $sid );
+    $session = CGI::Session->new( "driver:mysql", $sid, {Handle=>$dbh} );
 
 By default CGI::Session uses standard L<CGI|CGI> to parse queries and cookies. If you prefer to use a different, but compatible object you can pass that object in place of $sid:
 
-    $cgi     = new CGI::Simple();
-    $session = new CGI::Session ( $cgi );
-    $session = new CGI::Session( "driver:db_file;serializer:storable", $cgi);
+    $cgi     = CGI::Simple->new();
+    $session = CGI::Session->new( $cgi );
+    $session = CGI::Session->new( "driver:db_file;serializer:storable", $cgi);
     # etc
 
 See L<CGI::Simple|CGI::Simple>
@@ -221,7 +221,7 @@ Generated checkboxes will be pre-filled using previously saved information.
 
 If you're making use of L<HTML::Template|HTML::Template> to separate the code from the skin, you can as well associate L<CGI::Session|CGI::Session> object with HTML::Template and access all the parameters from within HTML files. We love this trick!
 
-    $template = new HTML::Template(filename=>"some.tmpl", associate=>$session);
+    $template = HTML::Template->new(filename=>"some.tmpl", associate=>$session);
     print $template->output();
 
 Assuming the session object stored "first_name" and "email" parameters while being associated with HTML::Template, you can access those values from within your "some.tmpl" file now:
@@ -346,7 +346,7 @@ One way to help with this is by also checking that the IP address that the sessi
 
 If you have an application where you are sure your users' IPs are constant during a session, you can consider enabling an option to make this check:
 
-    use CGI::Session ( '-ip_match' );
+    use CGI::Session '-ip_match';
 
 For backwards compatibility, you can also achieve this by setting $CGI::Session::IP_MATCH to a true value.  This makes sure that before initializing a previously stored session, it checks if the ip address stored in the session matches the ip address of the user asking for that session. In which case the library returns the session, otherwise it dies with a proper error message.
 

@@ -19,7 +19,7 @@ BEGIN {
 }
 
 @CGI::Session::Driver::file::ISA        = ( "CGI::Session::Driver" );
-$CGI::Session::Driver::file::VERSION    = '4.38';
+$CGI::Session::Driver::file::VERSION    = '4.43';
 $FileName                               = "cgisess_%s";
 $NoFlock                                = 0;
 $UMask                                  = 0660;
@@ -175,9 +175,9 @@ CGI::Session::Driver::file - Default CGI::Session driver
 
 =head1 SYNOPSIS
 
-    $s = new CGI::Session();
-    $s = new CGI::Session("driver:file", $sid);
-    $s = new CGI::Session("driver:file", $sid, {Directory=>'/tmp'});
+    $s = CGI::Session->new();
+    $s = CGI::Session->new("driver:file", $sid);
+    $s = CGI::Session->new("driver:file", $sid, {Directory=>'/tmp'});
 
 
 =head1 DESCRIPTION
@@ -193,7 +193,7 @@ you wish to set your own FileName template, do so before requesting for session 
     use CGI::Session::Driver::file; # This line is mandatory.
     # Time passes...
     $CGI::Session::Driver::file::FileName = "%s.dat";
-    $s = new CGI::Session();
+    $s = CGI::Session->new();
 
 For backwards compatibility with 3.x, you can also use the variable name
 C<$CGI::Session::File::FileName>, which will override the one above. 

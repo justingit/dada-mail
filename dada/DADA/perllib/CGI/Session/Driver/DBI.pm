@@ -9,7 +9,7 @@ use Carp;
 use CGI::Session::Driver;
 
 @CGI::Session::Driver::DBI::ISA = ( "CGI::Session::Driver" );
-$CGI::Session::Driver::DBI::VERSION = '4.38';
+$CGI::Session::Driver::DBI::VERSION = '4.43';
 
 
 sub init {
@@ -202,8 +202,8 @@ Before you can use any DBI-based session drivers you need to make sure compatibl
 
 Your session table can define additional columns, but the above two are required. Name of the session table is expected to be I<sessions> by default. You may use a different name if you wish. To do this you have to pass I<TableName> as part of your C< \%dsn_args >:
 
-    $s = new CGI::Session('driver:sqlite', undef, {TableName=>'my_sessions'});
-    $s = new CGI::Session('driver:mysql', undef,
+    $s = CGI::Session->new('driver:sqlite', undef, {TableName=>'my_sessions'});
+    $s = CGI::Session->new('driver:mysql', undef,
     {
         TableName=>'my_sessions',
         DataSource=>'dbi:mysql:shopping_cart'.
@@ -211,7 +211,7 @@ Your session table can define additional columns, but the above two are required
 
 To use different column names, change the 'create table' statement, and then simply do this:
 
-    $s = new CGI::Session('driver:pg', undef,
+    $s = CGI::Session->new('driver:pg', undef,
     {
         TableName=>'session',
         IdColName=>'my_id',
@@ -221,7 +221,7 @@ To use different column names, change the 'create table' statement, and then sim
 
 or
 
-    $s = new CGI::Session('driver:pg', undef,
+    $s = CGI::Session->new('driver:pg', undef,
     {
         TableName=>'session',
         IdColName=>'my_id',
