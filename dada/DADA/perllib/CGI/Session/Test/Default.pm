@@ -11,11 +11,11 @@ our $CURRENT;
 sub ok_later (&;$);
     
 
-$CGI::Session::Test::Default::VERSION = '4.42';
+$CGI::Session::Test::Default::VERSION = '4.47';
 
-=head1 CGI::Session::Test::Default
+=head1 NAME
 
-Run a suite of tests for a given CGI::Session::Driver
+CGI::Session::Test::Default - Run a suite of tests for a given CGI::Session::Driver
 
 =head2 new()
 
@@ -274,10 +274,10 @@ sub run {
         
         #
         # creating an overloaded object to be stored into session
-        my $overloaded_class = OverloadedObjectClass->new("ABCDEFG");
-        ok($overloaded_class, "OverloadedObjectClass created successfully");
-        ok(overload::Overloaded($overloaded_class) , "OverloadedObjectClass is properly overloaded");
-        ok(ref ($overloaded_class) eq "OverloadedObjectClass", "OverloadedObjectClass is an object");
+        my $overloaded_class = OverloadedClass->new("ABCDEFG");
+        ok($overloaded_class, "OverloadedClass created successfully");
+        ok(overload::Overloaded($overloaded_class) , "OverloadedClass is properly overloaded");
+        ok(ref ($overloaded_class) eq "OverloadedClass", "OverloadedClass is an object");
         $session->param("overloaded_object", $overloaded_class);
         
         ok($session->param("overloaded_object") eq "ABCDEFG");
@@ -290,7 +290,7 @@ sub run {
         $simple_class2->emails(1, 'sherzodr@cpan.org');
         $simple_class2->blogs('lost+found', 'http://author.cpan.org/');
         $simple_class2->blogs('yigitlik', 'http://author.cpan.org/uz/');
-        my $embedded = OverloadedObjectClass->new("Embedded");
+        my $embedded = OverloadedClass->new("Embedded");
         $session->param("embedded_simple_and_overloaded",[ undef, $simple_class2, $embedded, $embedded ]);
 
         ok(!defined($session->param("embedded_simple_and_overloaded")->[0]),"First element of anonymous array undef");
@@ -398,7 +398,7 @@ struct (
 
 
 
-package OverloadedObjectClass;
+package OverloadedClass;
 
 use strict;
 use overload (

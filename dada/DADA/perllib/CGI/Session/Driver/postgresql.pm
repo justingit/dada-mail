@@ -15,7 +15,7 @@ use Carp "croak";
 use CGI::Session::Driver::DBI;
 use DBD::Pg qw(PG_BYTEA PG_TEXT);
 
-$CGI::Session::Driver::postgresql::VERSION = '4.38';
+$CGI::Session::Driver::postgresql::VERSION = '4.43';
 @CGI::Session::Driver::postgresql::ISA     = qw( CGI::Session::Driver::DBI );
 
 
@@ -91,7 +91,7 @@ CGI::Session::Driver::postgresql - PostgreSQL driver for CGI::Session
 =head1 SYNOPSIS
 
     use CGI::Session;
-    $session = new CGI::Session("driver:PostgreSQL", undef, {Handle=>$dbh});
+    $session = CGI::Session->new("driver:PostgreSQL", undef, {Handle=>$dbh});
 
 =head1 DESCRIPTION
 
@@ -109,13 +109,13 @@ Before you can use any DBI-based session drivers you need to make sure compatibl
 and within your code use:
 
     use CGI::Session;
-    $session = new CGI::Session("driver:PostgreSQL", undef, {Handle=>$dbh, ColumnType=>"binary"});
+    $session = CGI::Session->new("driver:PostgreSQL", undef, {Handle=>$dbh, ColumnType=>"binary"});
 
 Please note the I<ColumnType> argument. PostgreSQL's text type has problems when trying to hold a null character. (Known as C<"\0"> in Perl, not to be confused with SQL I<NULL>). If you know there is no chance of ever having a null character in the serialized data, you can leave off the I<ColumnType> attribute. Using a I<BYTEA> column type and C<< ColumnType => 'binary' >> is recommended when using L<Storable|CGI::Session::Serialize::storable> as the serializer or if there's any possibility that a null value will appear in any of the serialized data.
 
 To use different column names, change the 'create table' statement, and then simply do this:
 
-    $s = new CGI::Session('driver:pg', undef,
+    $s = CGI::Session->new('driver:pg', undef,
     {
         TableName=>'session',
         IdColName=>'my_id',
@@ -125,7 +125,7 @@ To use different column names, change the 'create table' statement, and then sim
 
 or
 
-    $s = new CGI::Session('driver:pg', undef,
+    $s = CGI::Session->new('driver:pg', undef,
     {
         TableName=>'session',
         IdColName=>'my_id',
