@@ -139,9 +139,15 @@ sub send_email {
 
 		require DADA::MailingList::MessageDrafts; 
 		my $d = DADA::MailingList::MessageDrafts->new({-list => $list}); 
-		my $has_draft = 0; 
+		my $has_draft       = 0; 
+		my $latest_draft_id = undef; 
+		my $draft_id        = undef; 
 		if($d->has_draft && $restore_from_draft != 1){
 			$has_draft = 1; 
+		}
+		if($d->has_draft){ 
+			$latest_draft_id = $d->latest_draft_id; 
+			$draft_id        = $latest_draft_id;
 		}
 
         require DADA::Template::Widgets;
@@ -160,7 +166,9 @@ sub send_email {
                 -vars => {
                     screen => 'send_email',
                     flavor => $flavor,
+					draft_id => $draft_id, 
 					has_draft =>$has_draft, 
+					latest_draft_id => $latest_draft_id, 
                     priority_popup_menu =>
                       DADA::Template::Widgets::priority_popup_menu($li),
                     type            => 'list',
@@ -207,11 +215,32 @@ sub send_email {
 
     }
 	elsif($process eq 'Save as Draft'){ 
+
 		require DADA::MailingList::MessageDrafts; 
 		my $d = DADA::MailingList::MessageDrafts->new({-list => $list}); 
-		$d->save({-cgi_obj => $q});
-		print $q->header(); 
-		print "DRAFT SAVED";  
+		
+		my $draft_id = $q->param('draft_id') || undef; 
+		warn '$draft_id:' . $draft_id;
+		my $saved_draft_id = $d->save(
+			{
+				-id      => $draft_id, 
+				-cgi_obj => $q,
+			}
+		);
+		warn '$saved_draft_id:' . $saved_draft_id; 
+		
+		require JSON::PP;
+	    my $json = JSON::PP->new->allow_nonref;
+	    my $return = {
+			id => $saved_draft_id
+	    };
+	   	print $q->header(
+			'-Cache-Control' => 'no-cache, must-revalidate',
+			-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
+			-type            =>  'application/json',
+		);
+		warn '$json->pretty->encode($return);:' .  $json->pretty->encode($return);
+		print $json->pretty->encode($return);
 	}
     else {
 

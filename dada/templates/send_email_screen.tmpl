@@ -41,8 +41,12 @@
  <input type="hidden" name="support_files_url" id="support_files_url" value="<!-- tmpl_var SUPPORT_FILES_URL -->" />
 
 
- <input type="hidden" name="f"         value="send_email" />
- <input type="hidden" id="has_draft" name="has_draft" value="<!-- tmpl_var has_draft default="0" -->" /> 
+<input type="hidden" name="f"         value="send_email" />
+
+<input type="hidden" id="has_draft"       name="has_draft"       value="<!-- tmpl_var has_draft default="0" -->" />
+<input type="hidden" id="draft_id"        name="draft_id"        value="<!-- tmpl_var draft_id -->" /> 
+<input type="hidden" id="latest_draft_id" name="latest_draft_id" value="<!-- tmpl_var latest_draft_id -->" />
+
 	  
 <!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
 <fieldset> 

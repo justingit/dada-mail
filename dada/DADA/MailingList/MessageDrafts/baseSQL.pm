@@ -66,15 +66,32 @@ sub save {
     my $draft =
       $self->stringify_cgi_params( { -cgi_obj => $args->{-cgi_obj} } );
 
-    my $query = 'INSERT INTO dada_message_drafts (list, screen, role, draft) VALUES (?,?,?,?)';
+	if(!exists($args->{-id}) || ! defined($args->{-id})){ 
+		my $query = 'INSERT INTO dada_message_drafts (list, screen, role, draft) VALUES (?,?,?,?)';
+	    my $sth = $self->{dbh}->prepare($query);
 
-    my $sth = $self->{dbh}->prepare($query);
+	    $sth->execute( $self->{list}, 'send_email', $args->{-role}, $draft )
+	      or croak "cannot do statment '$query'! $DBI::errstr\n";
 
-    $sth->execute( $self->{list}, 'send_email', $args->{-role}, $draft )
-      or croak "cannot do statment '$query'! $DBI::errstr\n";
-
-    $sth->finish;
-
+	    $sth->finish;
+		#return $sth->{mysql_insertid};
+	    if ($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
+			warn 'mysql_insertid' . $sth->{mysql_insertid};
+			return $sth->{mysql_insertid}; 
+		}
+		else { 
+			warn 'last_insert_id' . $sth->{last_insert_id};
+			return $sth->{last_insert_id};
+		}
+	}
+	else { 
+		my $query = 'UPDATE dada_message_drafts SET screen = ?, role = ?, draft = ? WHERE list = ? AND id = ?';
+	    my $sth = $self->{dbh}->prepare($query);
+	    $sth->execute('send_email', $args->{-role}, $draft, $self->{list}, $args->{-id} )
+	      or croak "cannot do statment '$query'! $DBI::errstr\n";
+	    $sth->finish;
+		return $args->{-id}; 
+	}
 }
 
 
@@ -100,16 +117,30 @@ sub has_draft {
     }
     else {
         return $count;
-    }
-    
-	
+    }	
 }
 
+
+sub latest_draft_id { 
+	my $self = shift; 
+		
+	my $query = 'SELECT id FROM dada_message_drafts WHERE list = ? AND screen = ? AND role = ? ORDER BY id DESC';
+	my $sth = $self->{dbh}->prepare($query);
+	
+    $sth->execute( $self->{list}, 'send_email', 'draft')
+      or croak "cannot do statment '$query'! $DBI::errstr\n";
+	my $hashref; 
+	
+	FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
+		$sth->finish;
+		return $hashref->{id}; 
+	}
+}
 
 sub fetch { 
 	my $self = shift; 
 	
-	my $query = 'SELECT list, screen, role, draft FROM dada_message_drafts WHERE list = ? AND screen = ? AND role = ?';
+	my $query = 'SELECT id, list, screen, role, draft FROM dada_message_drafts WHERE list = ? AND screen = ? AND role = ? ORDER BY id DESC';
 	my $sth = $self->{dbh}->prepare($query);
 
 	my $saved = ''; 
@@ -173,7 +204,7 @@ sub params_to_save {
 
     my $self = shift;
 
-    return {
+    my $params =  {
 	
 		'Reply-To' => 1, 
 		'X-Priority' => 1, 
@@ -189,13 +220,10 @@ sub params_to_save {
 		backdate_second     => 1, 
 		backdate_hour_label => 1, 
 		
-		# Profile Fields Stuff... 
-		
-		
-		# This should be dynamic, as well... 
+		# This should be dynamic
 		attachment1 => 1, 
-		attachment2 => 2, 
-		attachment3 => 3, 
+		attachment2 => 1, 
+		attachment3 => 1, 
 		
 		im_sure     => 1, 
 		new_win     => 1, 
@@ -205,6 +233,19 @@ sub params_to_save {
         html_message_body => 1,
         text_message_body => 1,
     };
+
+	$params->{field_comparison_type_email} = 1; 
+	$params->{field_value_email}           = 1; 
+	
+	require DADA::ProfileFieldsManager;
+	 my $pfm = DADA::ProfileFieldsManager->new;
+	 my $subscriber_fields = $pfm->fields;
+	foreach(@$subscriber_fields) { 
+		$params->{'field_comparison_type_' . $_} = 1; 
+		$params->{'field_value_' . $_}           = 1; 		
+	}
+
+	return $params;
 }
 
 

@@ -57,9 +57,32 @@ $(document).ready(function() {
 		});
 		
 		$("body").on("click", ".savedraft", function(event) {
-			var fid = 'mass_mailing';
-			$("body").off('submit', '#' + fid);
-			return true;
+			//var fid = 'mass_mailing';
+			//$("body").off('submit', '#' + fid);
+			//alert( $("#mass_mailing").serialize() );
+			//return true;
+			//alert("draft saved!"); 
+			var request = $.ajax({
+				url: $("#s_program_url").val(),
+				type: "POST",
+				dataType: "json",
+				cache: false,
+				data: $("#mass_mailing").serialize() + '&process=Save%20as%20Draft'
+			});
+			request.done(function(content) {
+				$("#draft_id").val(content.id); 
+				$.colorbox({
+					top: 0,
+					fixed: true,
+					initialHeight: 50,
+					maxHeight: 480,
+					maxWidth: 649,
+					width: 480,
+					height: 120,
+					opacity: 0.50,
+					html: '<h1>Draft Saved.</h1>'
+				});
+			});
 		});
 			
 		$("body").on("click", ".sendmassmailing", function(event) {
@@ -101,7 +124,7 @@ $(document).ready(function() {
 		}
 		
 		$("body").on("click", "#restore_from_draft", function(event) {
-		 	window.location.replace($("#s_program_url").val() + '?f=send_email&restore_from_draft=1');
+		 	window.location.replace($("#s_program_url").val() + '?f=send_email&restore_from_draft=1&draft_id=' + $("#latest_draft_id").val());
 		}); 
 		
 		$("body").on("click", "#create_a_new_mass_mailing", function(event) {
