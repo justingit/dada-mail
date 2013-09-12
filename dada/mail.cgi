@@ -565,13 +565,16 @@ sub run {
 	'delete_email'               =>    \&delete_email,
 	'subscription_options'       =>    \&subscription_options,
 	
+	'admin_menu_drafts_notification'           =>  \&admin_menu_drafts_notification, 
 	'admin_menu_subscriber_count_notification' =>  \&admin_menu_subscriber_count_notification, 
 	'admin_menu_mailing_monitor_notification'  =>  \&admin_menu_mailing_monitor_notification,
 	'admin_menu_archive_count_notification'    =>  \&admin_menu_archive_count_notification,  
 	'admin_menu_sending_preferences_notification' => \&admin_menu_sending_preferences_notification, 
 	'admin_menu_bounce_handler_notification'      => \&admin_menu_bounce_handler_notification, 
 	'send_email'                 =>    \&send_email,
-	'draft_notification'         =>    \&draft_notification, 
+	'draft_saved_notification'   =>    \&draft_saved_notification, 
+	'drafts'                     =>    \&drafts,
+	'delete_draft'               =>    \&delete_draft, 
 	'message_body_help'          =>    \&message_body_help, 
 	'url_message_body_help'      =>    \&url_message_body_help, 
 	'preview_message_receivers'  =>    \&preview_message_receivers,
@@ -987,7 +990,33 @@ sub sign_in {
 
 
 
-
+sub admin_menu_drafts_notification { 
+	print $q->header(); 
+	
+    try {
+	
+		my ($admin_list, $root_login, $checksout) = check_list_security(
+											-cgi_obj         => $q,
+											-manual_override => 1
+										);
+		if($checksout) {
+			
+			$list = $admin_list; 
+			require DADA::MailingList::MessageDrafts; 
+			my $d = DADA::MailingList::MessageDrafts->new({-list => $list}); 
+			my $num = $d->count; 
+			
+			if($num > 0) { 
+				e_print('(' . commify($num) . ')');  
+			}
+			
+			
+		}
+    } catch { 
+		warn "Problems filling out the 'Sending Monitor' admin menu item with interesting bits of information about the mailouts: $_";
+    }	
+	
+}
 sub admin_menu_mailing_monitor_notification { 
 	
 	print $q->header(); 
@@ -1153,7 +1182,7 @@ sub send_email {
 
 
 
-sub draft_notification { 
+sub draft_saved_notification { 
 	my ($admin_list, $root_login) = check_list_security(
 										-cgi_obj  => $q,
                                         -Function => 'send_email'); 
@@ -1162,11 +1191,63 @@ sub draft_notification {
 	e_print(
 		DADA::Template::Widgets::screen(
 			{ 
-				-screen => 'draft_notification_widget.tmpl',
+				-screen => 'draft_saved_notification_widget.tmpl',
 			}
 		)
 	); 
+}
 
+
+
+sub drafts { 
+	my ($admin_list, $root_login) = check_list_security(
+										-cgi_obj  => $q,
+                                        -Function => 'drafts'); 
+										require DADA::Template::Widgets;
+	$list = $admin_list; 
+	
+	my $delete_draft = $q->param('delete_draft') || 0; 
+	
+	require DADA::MailingList::MessageDrafts; 
+	my $d = DADA::MailingList::MessageDrafts->new({-list => $list}); 
+	
+	my $scrn = DADA::Template::Widgets::wrap_screen(
+			{
+				-screen => 'drafts.tmpl',
+                -with   => 'admin', 
+				-wrapper_params => { 
+					-Root_Login => $root_login,
+					-List       => $list,  
+				},
+				-vars   => {
+					screen                       => 'drafts',
+					delete_draft => $delete_draft, 
+					draft_index => $d->draft_index, 
+				},
+				-list_settings_vars_param => {
+					-list    => $list,
+					-dot_it => 1,
+				},
+			}
+		);
+	e_print($scrn);
+}
+
+
+sub delete_draft { 
+	
+	my ($admin_list, $root_login) = check_list_security(
+										-cgi_obj  => $q,
+                                        -Function => 'drafts'); 
+	$list = $admin_list; 
+	
+	my $id = $q->param('id'); 
+	
+	require DADA::MailingList::MessageDrafts; 
+	my $d = DADA::MailingList::MessageDrafts->new({-list => $list}); 
+	   $d->remove($id);
+	print $q->redirect(-url => $DADA::Config::S_PROGRAM_URL . '?f=drafts&delete_draft=1');
+	
 }
 
 

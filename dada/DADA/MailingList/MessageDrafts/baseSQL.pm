@@ -66,44 +66,44 @@ sub save {
     my $draft =
       $self->stringify_cgi_params( { -cgi_obj => $args->{-cgi_obj} } );
 
-	if(!exists($args->{-id}) || ! defined($args->{-id})){ 
-		my $query = 'INSERT INTO dada_message_drafts (list, screen, role, draft) VALUES (?,?,?,?)';
-	    my $sth = $self->{dbh}->prepare($query);
+    if ( !exists( $args->{-id} ) || !defined( $args->{-id} ) ) {
+        my $query =
+'INSERT INTO dada_message_drafts (list, screen, role, draft, last_modified_timestap) VALUES (?,?,?,?, NOW())';
+        my $sth = $self->{dbh}->prepare($query);
 
-	    $sth->execute( $self->{list}, 'send_email', $args->{-role}, $draft )
-	      or croak "cannot do statment '$query'! $DBI::errstr\n";
+        $sth->execute( $self->{list}, 'send_email', $args->{-role}, $draft )
+          or croak "cannot do statment '$query'! $DBI::errstr\n";
 
-	    $sth->finish;
-		#return $sth->{mysql_insertid};
-	    if ($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
-			warn 'mysql_insertid' . $sth->{mysql_insertid};
-			return $sth->{mysql_insertid}; 
-		}
-		else { 
-			warn 'last_insert_id' . $sth->{last_insert_id};
-			return $sth->{last_insert_id};
-		}
-	}
-	else { 
-		my $query = 'UPDATE dada_message_drafts SET screen = ?, role = ?, draft = ? WHERE list = ? AND id = ?';
-	    my $sth = $self->{dbh}->prepare($query);
-	    $sth->execute('send_email', $args->{-role}, $draft, $self->{list}, $args->{-id} )
-	      or croak "cannot do statment '$query'! $DBI::errstr\n";
-	    $sth->finish;
-		return $args->{-id}; 
-	}
+        $sth->finish;
+
+        #return $sth->{mysql_insertid};
+        if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
+            warn 'mysql_insertid' . $sth->{mysql_insertid};
+            return $sth->{mysql_insertid};
+        }
+        else {
+            warn 'last_insert_id' . $sth->{last_insert_id};
+            return $sth->{last_insert_id};
+        }
+    }
+    else {
+        my $query =
+'UPDATE dada_message_drafts SET screen = ?, role = ?, draft = ?, last_modified_timestap = NOW() WHERE list = ? AND id = ?';
+        my $sth = $self->{dbh}->prepare($query);
+        $sth->execute(
+            'send_email',  $args->{-role}, $draft,
+            $self->{list}, $args->{-id}
+        ) or croak "cannot do statment '$query'! $DBI::errstr\n";
+        $sth->finish;
+        return $args->{-id};
+    }
 }
 
-
-
-
-sub has_draft { 
-	my $self = shift; 
+sub has_draft {
+    my $self = shift;
 
     my $query =
-        'SELECT COUNT(*) FROM '
-      . 'dada_message_drafts'
-      . ' WHERE list = ?';
+      'SELECT COUNT(*) FROM ' . 'dada_message_drafts' . ' WHERE list = ?';
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute( $self->{list} )
       or croak "cannot do statment '$query'! $DBI::errstr\n";
@@ -117,50 +117,121 @@ sub has_draft {
     }
     else {
         return $count;
-    }	
+    }
+}
+
+sub latest_draft_id {
+    my $self = shift;
+
+    my $query =
+'SELECT id FROM dada_message_drafts WHERE list = ? AND screen = ? AND role = ? ORDER BY last_modified_timestap DESC';
+    my $sth = $self->{dbh}->prepare($query);
+
+    $sth->execute( $self->{list}, 'send_email', 'draft' )
+      or croak "cannot do statment '$query'! $DBI::errstr\n";
+    my $hashref;
+
+  FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
+        $sth->finish;
+        return $hashref->{id};
+    }
+}
+
+sub fetch {
+    my $self = shift;
+	my $id   = shift || undef; 
+	
+    my $query;
+    if(!$id) { 
+		$query = 'SELECT id, list, screen, role, draft FROM dada_message_drafts WHERE list = ? AND screen = ? AND role = ? ORDER BY id DESC';
+    }
+	else { 		
+		$query = 'SELECT id, list, screen, role, draft FROM dada_message_drafts WHERE list = ? AND screen = ? AND role = ? AND id = ? ORDER BY id DESC';		
+	}
+	my $sth = $self->{dbh}->prepare($query);
+
+    my $saved = '';
+	
+	if(!$id) { 
+	    $sth->execute( $self->{list}, 'send_email', 'draft' )
+	      or croak "cannot do statment '$query'! $DBI::errstr\n";
+	}
+	else { 		
+	    $sth->execute( $self->{list}, 'send_email', 'draft', $id )
+	      or croak "cannot do statment '$query'! $DBI::errstr\n";		
+	}
+    my $hashref;
+
+  FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
+        $sth->finish;
+        $saved = $hashref->{draft};
+    }
+
+	my $q = $self->decode_draft($saved); 
+
+    return $q;
+
 }
 
 
-sub latest_draft_id { 
+
+
+sub count { 
 	my $self = shift; 
-		
-	my $query = 'SELECT id FROM dada_message_drafts WHERE list = ? AND screen = ? AND role = ? ORDER BY id DESC';
-	my $sth = $self->{dbh}->prepare($query);
+    my ($args) = @_; 
 	
-    $sth->execute( $self->{list}, 'send_email', 'draft')
-      or croak "cannot do statment '$query'! $DBI::errstr\n";
-	my $hashref; 
-	
-	FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
-		$sth->finish;
-		return $hashref->{id}; 
-	}
+    my @row;
+    my $query = 'SELECT COUNT(*)  FROM ' .  'dada_message_drafts' . ' WHERE list = ?';
+    my $count = $self->{dbh}->selectrow_array($query, undef,  $self->{list}); 
+	return $count;
 }
 
-sub fetch { 
+
+
+sub remove { 
 	my $self = shift; 
-	
-	my $query = 'SELECT id, list, screen, role, draft FROM dada_message_drafts WHERE list = ? AND screen = ? AND role = ? ORDER BY id DESC';
-	my $sth = $self->{dbh}->prepare($query);
+	my $id   = shift; 
+	my $query =  'DELETE FROM ' . 'dada_message_drafts' . ' WHERE id = ? AND list = ?';
+	my $sth = $self->{dbh}->prepare($query); 
+	$sth->execute($id, $self->{list}); 
+	$sth->finish;
+	return 1; 
+}
 
-	my $saved = ''; 
-	
-    $sth->execute( $self->{list}, 'send_email', 'draft')
-      or croak "cannot do statment '$query'! $DBI::errstr\n";
-	my $hashref; 
-	
-	FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
-		$sth->finish;
-		$saved = $hashref->{draft};
-	}
-    
-	open  my $fh, '<', \$saved || die $!;
+sub decode_draft { 
+	my $self  = shift; 
+	my $saved = shift; 
+	open my $fh, '<', \$saved || die $!;
+    require CGI;
+    my $q = CGI->new($fh);
+    return $q; 
+}
 
-	require CGI; 
-	my $q = CGI->new($fh); 
-	
-	return $q; 
-	
+sub draft_index {
+    my $self = shift;
+    my $r    = [];
+
+    my $query = 'SELECT * FROM dada_message_drafts WHERE list = ? AND role = ? ORDER BY last_modified_timestap DESC';
+    my $sth = $self->{dbh}->prepare($query);
+
+    $sth->execute( $self->{list}, 'draft' )
+		or croak "cannot do statment '$query'! $DBI::errstr\n";
+    my $hashref;
+
+  	FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
+		my $q = $self->decode_draft($hashref->{draft});
+		push(@$r, { 
+			id => $hashref->{id}, 
+			list => $hashref->{list}, 
+			created_timestamp => $hashref->{created_timestamp}, 
+			last_modified_timestap => $hashref->{last_modified_timestap}, 
+			screen  => $hashref->{screen}, 
+			role    => $hashref->{role}, 
+			Subject => $q->param('Subject'),
+		});
+    }
+    $sth->finish;
+	return $r; 
 }
 
 sub stringify_cgi_params {
@@ -178,7 +249,7 @@ sub stringify_cgi_params {
     my $buffer = "";
     open my $fh, ">", \$buffer or die 'blarg!' . $!;
     $q->save($fh);
-	return $buffer; 
+    return $buffer;
 }
 
 sub remove_unwanted_params {
@@ -204,49 +275,48 @@ sub params_to_save {
 
     my $self = shift;
 
-    my $params =  {
-	
-		'Reply-To' => 1, 
-		'X-Priority' => 1, 
-		
-		archive_message     => 1, 
-		archive_no_send     => 1, 
-		back_date           => 1, 
-		backdate_month      => 1, 
-		backdate_day        => 1, 
-		backdate_year       => 1, 
-		backdate_hour       => 1, 
-		backdate_minute     => 1, 
-		backdate_second     => 1, 
-		backdate_hour_label => 1, 
-		
-		# This should be dynamic
-		attachment1 => 1, 
-		attachment2 => 1, 
-		attachment3 => 1, 
-		
-		im_sure     => 1, 
-		new_win     => 1, 
-		test_recipient => 1, 
-		
+    my $params = {
+
+        'Reply-To'   => 1,
+        'X-Priority' => 1,
+
+        archive_message     => 1,
+        archive_no_send     => 1,
+        back_date           => 1,
+        backdate_month      => 1,
+        backdate_day        => 1,
+        backdate_year       => 1,
+        backdate_hour       => 1,
+        backdate_minute     => 1,
+        backdate_second     => 1,
+        backdate_hour_label => 1,
+
+        # This should be dynamic
+        attachment1 => 1,
+        attachment2 => 1,
+        attachment3 => 1,
+
+        im_sure        => 1,
+        new_win        => 1,
+        test_recipient => 1,
+
         Subject           => 1,
         html_message_body => 1,
         text_message_body => 1,
     };
 
-	$params->{field_comparison_type_email} = 1; 
-	$params->{field_value_email}           = 1; 
-	
-	require DADA::ProfileFieldsManager;
-	 my $pfm = DADA::ProfileFieldsManager->new;
-	 my $subscriber_fields = $pfm->fields;
-	foreach(@$subscriber_fields) { 
-		$params->{'field_comparison_type_' . $_} = 1; 
-		$params->{'field_value_' . $_}           = 1; 		
-	}
+    $params->{field_comparison_type_email} = 1;
+    $params->{field_value_email}           = 1;
 
-	return $params;
+    require DADA::ProfileFieldsManager;
+    my $pfm               = DADA::ProfileFieldsManager->new;
+    my $subscriber_fields = $pfm->fields;
+    foreach (@$subscriber_fields) {
+        $params->{ 'field_comparison_type_' . $_ } = 1;
+        $params->{ 'field_value_' . $_ }           = 1;
+    }
+
+    return $params;
 }
-
 
 1;

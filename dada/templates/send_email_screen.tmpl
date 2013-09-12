@@ -35,6 +35,16 @@
 
 <!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
 
+
+<!-- tmpl_if draft_id --> 
+	<div class="clearskiesbox">
+		<h1>You're working on a Saved Draft Message.</h1> 
+		<input type="button" value="" /> 
+	</div> 
+    
+<!-- /tmpl_if --> 
+
+
 <form name="mass_mailing" id="mass_mailing" enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
 
  <input type="hidden" name="s_program_url"     id="s_program_url"     value="<!-- tmpl_var S_PROGRAM_URL -->" />
@@ -43,11 +53,11 @@
 
 <input type="hidden" name="f"         value="send_email" />
 
-<input type="hidden" id="has_draft"       name="has_draft"       value="<!-- tmpl_var has_draft default="0" -->" />
-<input type="hidden" id="draft_id"        name="draft_id"        value="<!-- tmpl_var draft_id -->" /> 
-<input type="hidden" id="latest_draft_id" name="latest_draft_id" value="<!-- tmpl_var latest_draft_id -->" />
+<input type="hidden" id="draft_alert"  name="draft_alert"  value="<!-- tmpl_var draft_alert default="0" -->" />
+<input type="hidden" id="draft_id"     name="draft_id"     value="<!-- tmpl_var draft_id -->" /> 
 
-	  
+<div id="draft_notice"><p class="alert" style="text-align:right">&nbsp;</p></div>
+
 <!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
 <fieldset> 
  <legend>Message Body [<a href="#" onclick="$.colorbox({inline:true, href:$('#message_body_help')})">?</a>]</legend>

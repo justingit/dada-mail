@@ -1,6 +1,14 @@
 <!-- begin send_a_list_message_button_widget.tmpl -->
 
 <div class="buttonfloat">
+<div id="send_test_messages_to"> 
+ <label for="test_recipient">Send Test Messages To:</label>
+ <input type="text" id="test_recipient" name="test_recipient" value="<!-- tmpl_var list_settings.list_owner_email -->" />
+</div>
+</div>
+<div class="floatclear"></div>
+
+<div class="buttonfloat">
 	
 <!-- tmpl_unless expr="(mass_mailing_type eq 'invite')" -->
 	<input type="submit" class="processing savedraft"  name="process" id="submit_draft" value="Save as Draft" />
@@ -11,43 +19,11 @@
 
 
 
- <input type="hidden" id="default_mass_mailing_button_label" name="default_mass_mailing_button_label" value="<!-- tmpl_if expr="(mass_mailing_type eq 'invite')" -->Send Invitations<!-- tmpl_else -->Send Mass Mailing<!-- /tmpl_if -->" />
+<input type="hidden" id="default_mass_mailing_button_label" name="default_mass_mailing_button_label" value="<!-- tmpl_if expr="(mass_mailing_type eq 'invite')" -->Send Invitations<!-- tmpl_else -->Send Mass Mailing<!-- /tmpl_if -->" />
 </div>
 <br />
 <div class="floatclear"></div>
 
-<div class="buttonfloat">
-
- 
-
- <input type="checkbox" name="im_sure" id="im_sure" value="1" />
- <label for="im_sure">
-  I'm sure.
- </label>
- <br />
- <input type="checkbox" name="new_win" id="new_win" value="1" checked="checked" />
- <label for="new_win">
-  Open in a new window.
- </label>
- 
-
-
-</div>
-<div class="floatclear"></div>
-
-<div class="buttonfloat">
-
-<!-- nice. -->
-<br />
-<br />
-
-<div id="send_test_messages_to"> 
- <label for="test_recipient">Send Test Messages To:</label>
- <input type="text" id="test_recipient" name="test_recipient" value="<!-- tmpl_var list_settings.list_owner_email -->" />
-</div>
-
-</div>
-<div class="floatclear"></div>
 
 
 <!-- end send_a_list_message_button_widget.tmpl -->

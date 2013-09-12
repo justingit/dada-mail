@@ -599,6 +599,13 @@ $ADMIN_MENU ||= [
             },
 
             {
+                -Title     => 'Drafts',
+                -Title_URL => "$S_PROGRAM_URL?f=drafts",
+                -Function  => 'drafts',
+                -Activated => 1,
+            },
+
+            {
                 -Title => 'Monitor Your Mailings',
                 -Title_URL => "$S_PROGRAM_URL?f=sending_monitor",
                 -Function  => 'sending_monitor',

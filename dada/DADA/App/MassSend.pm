@@ -79,9 +79,8 @@ sub send_email {
 
     my $process    = xss_filter( strip( $q->param('process') ) );
     my $flavor     = xss_filter( strip( $q->param('flavor') ) );
-	my $restore_from_draft = $q->param('restore_from_draft') || 0; 
+	my $restore_from_draft = $q->param('restore_from_draft') || 'true'; 
     my $root_login = $args->{-root_login};
-
     my $list;
     if ( !exists( $args->{-list} ) ) {
         croak "You must pass the -list paramater!";
@@ -128,9 +127,7 @@ sub send_email {
         );
     }
 
-    if ( !$process ) {
-
-			
+    if ( !$process ) {	
         my (
             $num_list_mailouts, $num_total_mailouts,
             $active_mailouts,   $mailout_will_be_queued
@@ -139,15 +136,19 @@ sub send_email {
 
 		require DADA::MailingList::MessageDrafts; 
 		my $d = DADA::MailingList::MessageDrafts->new({-list => $list}); 
-		my $has_draft       = 0; 
-		my $latest_draft_id = undef; 
+		
 		my $draft_id        = undef; 
-		if($d->has_draft && $restore_from_draft != 1){
-			$has_draft = 1; 
+		
+		if($restore_from_draft ne 'true' && $d->has_draft){
+			$draft_id    = undef; 
 		}
-		if($d->has_draft){ 
-			$latest_draft_id = $d->latest_draft_id; 
-			$draft_id        = $latest_draft_id;
+		elsif($restore_from_draft eq 'true' && $d->has_draft){ 
+			if(defined($q->param('draft_id'))){ 
+				$draft_id = $q->param('draft_id');
+			}
+			else { 
+				$draft_id        = $d->latest_draft_id;
+			}
 		}
 
         require DADA::Template::Widgets;
@@ -166,9 +167,9 @@ sub send_email {
                 -vars => {
                     screen => 'send_email',
                     flavor => $flavor,
-					draft_id => $draft_id, 
-					has_draft =>$has_draft, 
-					latest_draft_id => $latest_draft_id, 
+
+					draft_id    => $draft_id, 
+
                     priority_popup_menu =>
                       DADA::Template::Widgets::priority_popup_menu($li),
                     type            => 'list',
@@ -203,8 +204,8 @@ sub send_email {
 
 		require DADA::MailingList::MessageDrafts; 
 		my $d = DADA::MailingList::MessageDrafts->new({-list => $list}); 
-		if($d->has_draft && $restore_from_draft == 1){
-			my $q_draft = $d->fetch(); 
+		if($d->has_draft && $restore_from_draft eq 'true'){
+			my $q_draft = $d->fetch($draft_id); 
 			require HTML::FillInForm::Lite;
 		    my $h = HTML::FillInForm::Lite->new();
 		    $scrn = $h->fill( \$scrn, $q_draft );
