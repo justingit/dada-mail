@@ -24,7 +24,7 @@ Profiles allow your users to manage their own subscriptions, in one centralized 
 
 L<http://dadamailproject.com/support/documentation/features-profiles.pod.html>
 
-In general, this option allows you to configure the, C<$PROFILE_OPTIONS> config variable, which is explained in detail in the doc above. You'll notice that not all of the paramaters in that variable are supported by the installer. 
+In general, this option allows you to configure the, C<$PROFILE_OPTIONS> config variable, which is explained in detail in the doc above. You'll notice that not all of the parameters in that variable are supported by the installer. 
 
 =head3 Profile Administration Email
 

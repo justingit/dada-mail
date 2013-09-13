@@ -73,7 +73,7 @@ A shortcoming to this technique is that the password required to log in will be 
 
 =head2 Call the screen by mimicking a web browser
 
-Another idea is to write a simple WWW client that'll then post the CGI paramaters to Dada Mail and then print back the results. In this case, the results will return the cookie information needed to keep the session alive (or really, start the session), The refresh to the list control panel and the HTML that says, "Hey! We're logging in!":
+Another idea is to write a simple WWW client that'll then post the CGI parameters to Dada Mail and then print back the results. In this case, the results will return the cookie information needed to keep the session alive (or really, start the session), The refresh to the list control panel and the HTML that says, "Hey! We're logging in!":
 
 
  #!/usr/bin/perl 
@@ -267,7 +267,7 @@ Breaking this down:
 
 =item * the form field itself
 
-You'll have to tweak the, C<action> paramater to point to the script we just made. 
+You'll have to tweak the, C<action> parameter to point to the script we just made. 
 
 =item * process
 

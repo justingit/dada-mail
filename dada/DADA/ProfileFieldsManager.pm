@@ -107,7 +107,7 @@ DADA::ProfileFieldsManager
 
  my $pfm = DADA::ProfileFieldsManager->new
 
-C<new> requires no paramaters.
+C<new> requires no parameters.
 
 A C<DADA::ProfileFieldsManager> object will be returned. 
 
@@ -119,7 +119,7 @@ C<fields> returns an array ref of the names of the columns that represent the Su
 
 C<fields> returns the fields in the order they are usually stored in the SQL table. 
 
-C<fields> requires no paramaters. 
+C<fields> requires no parameters. 
 
 =head2 add_field
 
@@ -133,17 +133,17 @@ C<fields> requires no paramaters.
 
 C<add_field()> adds a field to the profile_fields table. 
 
-C<-field> is a required paramater and should be the name of the field you want to 
+C<-field> is a required parameter and should be the name of the field you want to 
 create. This field has to be a valid column name for whatever backend you're using. 
 It's suggested that you stick with lowercase, less than 16 character names. 
 
-Not passing a name for your field in the C<-field> paramater will cause the an unrecoverable error.
+Not passing a name for your field in the C<-field> parameter will cause the an unrecoverable error.
 
-C<-fallback_value> is an optional paramater, it's a more free form value, used when the profile does not have a value for this profile field. This is usually used in templating
+C<-fallback_value> is an optional parameter, it's a more free form value, used when the profile does not have a value for this profile field. This is usually used in templating
 
-C<-label> is an optional paramater and is used in forms that capture Subscriber Profile Fields information as a, "friendlier" version of the field name. 
+C<-label> is an optional parameter and is used in forms that capture Subscriber Profile Fields information as a, "friendlier" version of the field name. 
 
-This method will return C<undef> if there's a problem with the paramaters passed. See also the, C<validate_subscriber_field_name()> method. 
+This method will return C<undef> if there's a problem with the parameters passed. See also the, C<validate_subscriber_field_name()> method. 
 
 =head2 save_field_attributes
 
@@ -170,7 +170,7 @@ but will error if you attempt to save a field attribute to a field that does not
 C<edit_subscriber_field()> is used to rename a subscriber field. Usually, this means that a column is renamed in table. 
 Various SQL backends do this differently and this method should provide the necessary magic. 
 
-C<-old_name> and C<-new_name> are required paramaters and the method will croak if you do not 
+C<-old_name> and C<-new_name> are required parameters and the method will croak if you do not 
 pass both. 
 
 This method will also croak if either the C<-old_name> does not exist, or the C<-new_name> exists. 

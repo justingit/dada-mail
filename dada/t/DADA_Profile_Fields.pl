@@ -74,12 +74,12 @@ undef $fields;
 
 
 $pf = DADA::Profile::Fields->new; 
-# C<insert> inserts a new record into the profile table. This method requires a few paramaters: 
+# C<insert> inserts a new record into the profile table. This method requires a few parameters: 
 
 #C<-email> is required and should hold a valid email address in the form of: C<user@example.com>
 
 eval { $pf->insert(); };
-ok($@, "calling insert without any paramaters causes an error!: $@");
+ok($@, "calling insert without any parameters causes an error!: $@");
 
 
 # This method should return, C<1> on success.  
@@ -89,7 +89,7 @@ ok($pf->exists({-email => 'user@example.com'}) == 1, "exists.");
 # remove and clean up.
 ok($pf->remove == 1, "removed."); 
 
-# C<-fields> holds the Subscriber Profile Fields passed as a hashref. It is an optional paramater. 
+# C<-fields> holds the Subscriber Profile Fields passed as a hashref. It is an optional parameter. 
 $pf->{manager}->add_field({-field => 'one'}); 
 undef $pf; 
 
@@ -108,7 +108,7 @@ undef $prof;
 undef $pf; 
 
 # C<-mode> sets the way the new profile will be created and can either be set to, C<writeover> or, C<preserve>
-# When set to, C<writeover>, any existing profile belonging to the email passed in the <-email> paramater will be clobbered. 
+# When set to, C<writeover>, any existing profile belonging to the email passed in the <-email> parameter will be clobbered. 
 $pf = DADA::Profile::Fields->new; 
 $pf->insert(
 	{
@@ -150,7 +150,7 @@ undef $pf;
 
 
 # C<-confirmed> confirmed can also be passed with a value of either C<1> or, 
-# C<0>, with C<1> being the default if the paramater is not passed. 
+# C<0>, with C<1> being the default if the parameter is not passed. 
 #
 # Unconfirmed profiles are marked as existing, but not, "live" as a way to save 
 # the profile information, until the profile can be confirmed, by a user. 
@@ -228,7 +228,7 @@ undef $pf;
 
 
 # C<remove> removes the Subscriber Profile Fields assocaited with the email address passed in the 
-# C<-email> paramater.
+# C<-email> parameter.
 $pf = DADA::Profile::Fields->new; 
 $pf->insert(
 	{
@@ -238,7 +238,7 @@ $pf->insert(
 ok($pf->remove == 1, "removed the profile."); 
 
 
-# C<-email> is a required paramater. Not passing it will cause this method to return, C<undef>. 
+# C<-email> is a required parameter. Not passing it will cause this method to return, C<undef>. 
 #
 # Passing an email that doesn't have a profile saved will also return, C<undef>. Check before by using, C<exists()>
 
@@ -260,15 +260,15 @@ ok($pf->remove == 1, "removed the profile.");
  ); 
 
 
-#Not passing a name for your field in the C<-field> paramater will cause the an unrecoverable error.
+#Not passing a name for your field in the C<-field> parameter will cause the an unrecoverable error.
 
 eval { $pf->{manager}->add_field; }; 
 ok(defined($@), "eval trapped an error"); 
 
 
-# C<-fallback_value> is an optional paramater, it's a more free form value, used when the profile does not have a value for this profile field. This is usually used in templating
+# C<-fallback_value> is an optional parameter, it's a more free form value, used when the profile does not have a value for this profile field. This is usually used in templating
 #
-# C<-label> is an optional paramater and is used in forms that capture Subscriber Profile Fields information as a, "friendlier" version of the field name. 
+# C<-label> is an optional parameter and is used in forms that capture Subscriber Profile Fields information as a, "friendlier" version of the field name. 
 
 ok($pf->{manager}->_field_attributes_exist({-field => 'myfield'}) == 1, "Field Attr. exists.");
 my $f_des = $pf->{manager}->get_all_field_attributes;
@@ -276,7 +276,7 @@ ok($f_des->{myfield}->{fallback_value} eq 'a default', "Default was saved.");
 ok($f_des->{myfield}->{label} eq 'My Field!', "label was saved.");
 ok($pf->{manager}->remove_field({-field => 'myfield'}) == 1, "Profile Removed."); 
 
-#This method will return C<undef> if there's a problem with the paramaters passed. See also the, C<validate_subscriber_field_name()> method. 
+#This method will return C<undef> if there's a problem with the parameters passed. See also the, C<validate_subscriber_field_name()> method. 
 
 ok($pf->{manager}->add_field({-field => "Spaces in the name"}) eq undef, "undef returned with incorrect -field name"); 
 undef $f_des; 
@@ -327,7 +327,7 @@ SKIP: {
 	ok($pf->{manager}->field_exists({-field => 'myfield' }) == 0, "original field doesn't exist.");
 
 
-	#C<-old_name> and C<-new_name> are required paramaters and the method will croak if you do not 
+	#C<-old_name> and C<-new_name> are required parameters and the method will croak if you do not 
 	#pass both. 
 
 	eval{$pf->{manager}->edit_subscriber_field;};

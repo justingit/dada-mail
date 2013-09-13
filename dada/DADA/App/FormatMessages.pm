@@ -1599,7 +1599,7 @@ sub _depersonalize_mlm_template {
 	my $self = shift; 
 	my ($args) = @_; 
 	if(!exists($args->{-msg})){ 
-		croak "you MUST pass the, '-msg' paramater!"; 
+		croak "you MUST pass the, '-msg' parameter!"; 
 	}
 	
 	my $tags = [ 
@@ -1634,7 +1634,7 @@ sub can_find_sub_confirm_link {
 	    my $self = shift;
 	    my ($args) = @_;
 	    if ( !exists( $args->{-str} ) ) {
-	        die "You MUST pass the, '-str' paramater!";
+	        die "You MUST pass the, '-str' parameter!";
 	    }
 
 	    my @sub_confirm_urls = (
@@ -1687,7 +1687,7 @@ sub can_find_unsub_confirm_link {
 	    my $self = shift;
 	    my ($args) = @_;
 	    if ( !exists( $args->{-str} ) ) {
-	        die "You MUST pass the, '-str' paramater!";
+	        die "You MUST pass the, '-str' parameter!";
 	    }
 
 	    my @unsub_confirm_urls = (
@@ -1729,7 +1729,7 @@ sub can_find_message_body_tag {
     my $self = shift;
     my ($args) = @_;
     if ( !exists( $args->{-str} ) ) {
-        die "You MUST pass the, '-str' paramater!";
+        die "You MUST pass the, '-str' parameter!";
     }
 
     my @message_body_tags = (
@@ -1762,7 +1762,7 @@ sub can_find_unsub_link {
     my $self = shift;
     my ($args) = @_;
     if ( !exists( $args->{-str} ) ) {
-        die "You MUST pass the, '-str' paramater!";
+        die "You MUST pass the, '-str' parameter!";
     }
 
     my @unsub_urls = ('<!-- tmpl_var list_unsubscribe_link -->'); 
@@ -2025,7 +2025,7 @@ B<HTML::Entities> entity:
                   }
               ); 
 
-Optionally, you may also pass the C<-parser_params> paramater, which will direct the parser on how
+Optionally, you may also pass the C<-parser_params> parameter, which will direct the parser on how
 specifically to parse the message. Currently, there is only one param to play around with: 
 C<-input_mechanism> - you can set this to either, B<parse> (which is the default), or B<parse_open>. 
 
@@ -2125,8 +2125,8 @@ For the B<To> and B<From> headers, this subroutine will only attempt to template
 part of the header and will make sure that the phrase is properly escaped out. 
 
 One main difference between this subroutine and C<screen> is that this subroutine does not take the
-template to work with in the C<-data>, or, C<-screen> paramater, but instead takes it in the, C<-entity>
-paramater. The C<-entity> paramater should be populated like so: 
+template to work with in the C<-data>, or, C<-screen> parameter, but instead takes it in the, C<-entity>
+parameter. The C<-entity> parameter should be populated like so: 
 
  use MIME::Parser;
  my $parser = new MIME::Parser; 

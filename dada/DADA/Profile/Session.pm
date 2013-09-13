@@ -312,7 +312,7 @@ DADA::Profile::Session
 
 C<new> returns a DADA::Profile::Session object. 
 
-C<new> does not take any paramaters and returns a C<DADA::Profile::Session> object. 
+C<new> does not take any parameters and returns a C<DADA::Profile::Session> object. 
 
 =head2 login
 
@@ -352,7 +352,7 @@ if the profile is not actually logged in.
 
 C<validate_profile_login> is used to make sure the login information you give is valid. 
 
-It requires two paramaters: 
+It requires two parameters: 
 
 C<-email> should be the email address associated with the profile. 
 

@@ -1621,7 +1621,7 @@ sub complete_unsubscription {
 
     for ('-cgi_obj') {
         if ( !exists( $args->{$_} ) ) {
-            croak "You MUST pass the, " . $_ . " paramater!";
+            croak "You MUST pass the, " . $_ . " parameter!";
         }
     }
 
@@ -1902,7 +1902,7 @@ DADA::App::Subscriptions
  # Create a new object - no arguments needed
  my $das = DADA::App::Subscriptions->new; 
  
- # Awkwardly use CGI.pm's param() method to stuff paramaters for 
+ # Awkwardly use CGI.pm's param() method to stuff parameters for 
  # DADA::App::Subscriptions->subscribe() to use
  
  use CGI; 
@@ -1948,7 +1948,7 @@ You probably only want to use, C<test> if you're actually I<testing>, via the un
 
 =head2 subscribe
 
- # Awkwardly use CGI.pm's param() method to stuff paramaters for 
+ # Awkwardly use CGI.pm's param() method to stuff parameters for 
  # DADA::App::Subscriptions->subscribe() to use
  
  use CGI; 
@@ -1964,8 +1964,8 @@ You probably only want to use, C<test> if you're actually I<testing>, via the un
     }
  );
 
-C<subscribe> requires one paramater, C<-cgi-obj>, which needs to be a CGI.pm object 
-(a CGI.pm param-compatible module won't work, but we may work on that) THAT IN ITSELF has two paramaters: 
+C<subscribe> requires one parameter, C<-cgi-obj>, which needs to be a CGI.pm object 
+(a CGI.pm param-compatible module won't work, but we may work on that) THAT IN ITSELF has two parameters: 
 
 =over
 
@@ -1979,7 +1979,7 @@ holding the email address you want to work with
 
 =back
 
-C<-html_output> is an optional paramater, if set to, C<0>, this method will not print out the HTML 
+C<-html_output> is an optional parameter, if set to, C<0>, this method will not print out the HTML 
 user message telling the user if everything went well (or not). 
 
 On success, this method will return, C<undef>

@@ -1219,6 +1219,7 @@ sub drafts {
 					-Root_Login => $root_login,
 					-List       => $list,  
 				},
+				-expr   => 1, 
 				-vars   => {
 					screen                       => 'drafts',
 					delete_draft => $delete_draft, 
@@ -3875,7 +3876,7 @@ sub remove_all_subscribers {
 	# maybe the only check we'll do is to see if anything currently exists. 
 	# If there is? Don't do the clone. 
 	# If there isn't Do the clone
-	# maybe have a paramater saying what to do on an error. 
+	# maybe have a parameter saying what to do on an error. 
 	# or just return undef. 
 	
     my ( $admin_list, $root_login ) = check_list_security(

@@ -550,7 +550,7 @@ sub fancy_print_out_list {
 
     if ( !exists( $args->{ -type } ) ) {
         croak
-'you must supply the type of list we are looking at in, the "-type" paramater';
+'you must supply the type of list we are looking at in, the "-type" parameter';
     }
 
     if ( !exists( $args->{ -FH } ) ) {
@@ -751,10 +751,10 @@ sub clone {
     my $self = shift;
     my ($args) = @_;
     if ( !exists( $args->{-from} ) ) {
-        croak "Need to pass the, '-from' (list type) paramater!";
+        croak "Need to pass the, '-from' (list type) parameter!";
     }
     if ( !exists( $args->{-to} ) ) {
-        croak "Need to pass the, '-from' (list type) paramater!";
+        croak "Need to pass the, '-from' (list type) parameter!";
     }
     if ( $self->allowed_list_types( $args->{-from} ) == 0 ) {
         croak $args->{-from} . " is not a valid list type!";
@@ -1440,7 +1440,7 @@ sub remove_this_listtype {
     my ($args) = @_; 
 
     if ( !exists( $args->{ -type } ) ) {
-        croak('You MUST specific a list type in the "-type" paramater');
+        croak('You MUST specific a list type in the "-type" parameter');
     }
     else {
         if ( $self->allowed_list_types( $args->{ -type } ) != 1 ) {

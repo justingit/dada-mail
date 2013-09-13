@@ -13,12 +13,12 @@ use DADA::App::Guts;
 
 
 eval { DADA::MailingList::Create() }; 
-ok($@, "calling DADA::MailingList::Create() without any paramaters causes an error!: $@");     
+ok($@, "calling DADA::MailingList::Create() without any parameters causes an error!: $@");     
 
 my $list = dada_test_config::create_test_list(); 
 
 eval { DADA::MailingList::Create({-list => $list}) }; 
-ok($@, "calling DADA::MailingList::Create() with the list paramater containing a list that exists causes an error!: $@");     
+ok($@, "calling DADA::MailingList::Create() with the list parameter containing a list that exists causes an error!: $@");     
 
 dada_test_config::remove_test_list(); 
 
@@ -29,7 +29,7 @@ my $ls;
 
 eval{ $ls = DADA::MailingList::Create({-list => 'mytestlist'}); };
 #ok($ls->isa('DADA::MailingList::Settings')); 
-ok($@, "calling DADA::MailingList::Create() with only the list paramater  causes an error!: $@");     
+ok($@, "calling DADA::MailingList::Create() with only the list parameter  causes an error!: $@");     
 
 
 $ls = DADA::MailingList::Create(
@@ -41,7 +41,7 @@ $ls = DADA::MailingList::Create(
 );
 #ok($ls->isa('DADA::MailingList::Settings')); 
 
-ok($ls->isa('DADA::MailingList::Settings'), "calling DADA::MailingList::Create() with the -list and -settings paramater worked.");     
+ok($ls->isa('DADA::MailingList::Settings'), "calling DADA::MailingList::Create() with the -list and -settings parameter worked.");     
 undef $ls; 
 
 

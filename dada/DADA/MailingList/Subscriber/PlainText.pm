@@ -22,10 +22,10 @@ sub add {
         $args->{ -type } = 'list';
     }
     if ( !exists $args->{ -email } ) {
-        croak("You MUST supply an email address in the -email paramater!");
+        croak("You MUST supply an email address in the -email parameter!");
     }
     if ( length( DADA::App::Guts::strip( $args->{ -email } ) ) <= 0 ) {
-        croak("You MUST supply an email address in the -email paramater!");
+        croak("You MUST supply an email address in the -email parameter!");
     }
 
     if ( !exists $args->{ -fields } ) {
@@ -132,7 +132,7 @@ sub move {
     my ($args) = @_;
     
     if(! exists $args->{-to}){ 
-        croak "You must pass a value in the -to paramater!"; 
+        croak "You must pass a value in the -to parameter!"; 
     }
     
     if($self->{lh}->allowed_list_types($args->{-to} ) != 1){ 

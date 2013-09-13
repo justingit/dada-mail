@@ -134,7 +134,7 @@ sub _init {
     if ( !$self->_sanity_test($args) ) {
 
         carp
-            "sanity test failed - something's wrong with the paramaters you passed.";
+            "sanity test failed - something's wrong with the parameters you passed.";
         return undef;
 
     }
@@ -3290,13 +3290,13 @@ A few subroutines are exported by default:
 
  my @mailouts  = DADA::Mail::MailOut::current_mailouts({-list => $list});  
 
-Returns an array of hashrefs that reflect the current mailouts. It can take one paramater, a listshortname. If passed, it will only return mailouts pertaining to that particular list. 
+Returns an array of hashrefs that reflect the current mailouts. It can take one parameter, a listshortname. If passed, it will only return mailouts pertaining to that particular list. 
 
 =head2 mailout_exists
 
  my $exists    = DADA::Mail::MailOut::mailout_exists($list, $id, $type); 
 
-Returns B<1> if a mailout exists, B<0> if it doesn't. The three paramaters are B<required>. 
+Returns B<1> if a mailout exists, B<0> if it doesn't. The three parameters are B<required>. 
 
 =head2 monitor_mailout
 
@@ -3309,9 +3309,9 @@ This subroutine can take a few options, like so:
 
  my $report = monitor_mailout({ -list => $list, -verbose => 0}); 
 
-If you pass a listshortname in the, B<-list> paramater, only that specific list's mailouts will be checked. 
+If you pass a listshortname in the, B<-list> parameter, only that specific list's mailouts will be checked. 
 
-If you set the, B<-verbose> paramater to a true value, the subroutine will print the report, as well as pass the report as its return value.
+If you set the, B<-verbose> parameter to a true value, the subroutine will print the report, as well as pass the report as its return value.
 
 
 =head1 DIAGNOSTICS

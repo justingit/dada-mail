@@ -26,8 +26,8 @@ use DADA::Template::Widgets;
 ### screen
 
 
-# Variables to be used in the template can be passed using the, C<-vars> paramater, which maps to the, 
-# B<H::T> paramater, C<param>. C<-vars> should hold a reference to a hash: 
+# Variables to be used in the template can be passed using the, C<-vars> parameter, which maps to the, 
+# B<H::T> parameter, C<param>. C<-vars> should hold a reference to a hash: 
 # 
 #  my $scalar = 'I wanted to say: <!-- tmpl_var var1 -->'; 
 #  print DADA::Template::Widgets::screen(
@@ -131,7 +131,7 @@ undef $scalar;
 
 # To tell C<screen> to use a specific subscriber information, you have two different methods. 
 # 
-# The first is to give the paramaters to *which* subscriber to use, via the C<-subscriber_vars_param>: 
+# The first is to give the parameters to *which* subscriber to use, via the C<-subscriber_vars_param>: 
 # 
 #  print DADA::Template::Widgets::screen(
 #     {
@@ -263,8 +263,8 @@ undef($d);
 
 # If you'd like, you can also pass the Subscriber Profile Fields information yourself - this may be useful if
 # you're in some sort of recursive subroutine, or if you already have the information on hand. You may
-# do so by passing the, C<-subscriber_vars> paramater, I<instead> of the C<-subscriber_vars_param>
-# paramater, like so: 
+# do so by passing the, C<-subscriber_vars> parameter, I<instead> of the C<-subscriber_vars_param>
+# parameter, like so: 
 # 
 #  use DADA::MailingList::Subscribers; 
 #  my $lh = DADA::MailingList::Subscribers->new({-list => 'listshortname'}); 
@@ -320,7 +320,7 @@ like($r, qr/email_domain: example.com/);
 undef($r); 
 undef($d);
 
-# The B<-subscriber_vars> paramater is also a way to override what gets printed for the, B<subscriber.> 
+# The B<-subscriber_vars> parameter is also a way to override what gets printed for the, B<subscriber.> 
 # variables, since nothing is done to check the validity of what you're passing. So, keep that in mind - 
 # all these are shortcuts and syntactic sugar. And we I<like> sugar. 
 
@@ -778,8 +778,8 @@ eval {
 		}
 	);	
 };
-ok($@, "calling 'wrap_screen' without a '-with' paramater causes an error' $@");
-$regex = quotemeta("you must pass the, '-with' paramater"); 
+ok($@, "calling 'wrap_screen' without a '-with' parameter causes an error' $@");
+$regex = quotemeta("you must pass the, '-with' parameter"); 
 like($@, qr/$regex/); 
 
 
@@ -790,8 +790,8 @@ eval {
 		}
 	);	
 };
-ok($@, "calling 'wrap_screen' with an incorrect, '-with paramater causes an error' $@");
-$regex = quotemeta("'-with' paramater must be either, 'list' or, 'admin'"); 
+ok($@, "calling 'wrap_screen' with an incorrect, '-with parameter causes an error' $@");
+$regex = quotemeta("'-with' parameter must be either, 'list' or, 'admin'"); 
 like($@, qr/$regex/);
 
 

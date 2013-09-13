@@ -122,7 +122,7 @@ I<(if these lines are not present, you may paste them into your .dada_config fil
 
 =head2 $PROFILE_OPTIONS
 
-The following describes the various paramaters and options available to you, for configurating Profiles. Nothing needs to be done for Profiles to work - they're enabled by default - just make sure that you are running Dada Mail with one of the B<SQL Backends>.
+The following describes the various parameters and options available to you, for configurating Profiles. Nothing needs to be done for Profiles to work - they're enabled by default - just make sure that you are running Dada Mail with one of the B<SQL Backends>.
 
 =head3 enabled
 
@@ -210,7 +210,7 @@ By default, this setting is set simply to, C<auto>, which will tell Dada Mail to
 
 =head3 features
 
-C<feature> holds paramaters representing most of the major user-facing features of Profiles. Setting the paramater to, C<1> will enable the features, C<0> to disable the feature. 
+C<feature> holds parameters representing most of the major user-facing features of Profiles. Setting the parameter to, C<1> will enable the features, C<0> to disable the feature. 
 
 =over
 

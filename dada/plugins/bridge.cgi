@@ -1499,7 +1499,7 @@ yourlistshortname> and outputting a lot of information on the command line.
 
 --inject
 
-When this flag is passed, Bridge will then read a full email message from STDIN, and process the message it receives. You will need to also pass the, --list paramater. 
+When this flag is passed, Bridge will then read a full email message from STDIN, and process the message it receives. You will need to also pass the, --list parameter. 
 
 This flag will only work if you have set your mailing list to use a  Email Forward as its List Email, and not a POP3 Account. 
 
@@ -2334,10 +2334,10 @@ sub process {
     my ($args) = @_;
 
     if ( !exists( $args->{-ls} ) ) {
-        croak "You must pass a -ls paramater!";
+        croak "You must pass a -ls parameter!";
     }
     if ( !exists( $args->{-msg} ) ) {
-        croak "You must pass a -msg paramater!";
+        croak "You must pass a -msg parameter!";
     }
 
     my $test_mail = 0;
@@ -2407,10 +2407,10 @@ sub dm_format {
     my ($args) = @_;
 
     if ( !exists( $args->{-ls} ) ) {
-        croak "You must pass a -ls paramater!";
+        croak "You must pass a -ls parameter!";
     }
     if ( !exists( $args->{-msg} ) ) {
-        croak "You must pass a -msg paramater!";
+        croak "You must pass a -msg parameter!";
     }
 
     my $ls  = $args->{-ls};
@@ -2552,10 +2552,10 @@ sub deliver_copy {
     my ($args) = @_;
 
     if ( !exists( $args->{-ls} ) ) {
-        croak "You must pass a -ls paramater!";
+        croak "You must pass a -ls parameter!";
     }
     if ( !exists( $args->{-msg} ) ) {
-        croak "You must pass a -msg paramater!";
+        croak "You must pass a -msg parameter!";
     }
 
     my $ls  = $args->{-ls};
@@ -2630,10 +2630,10 @@ sub deliver {
     my ($args) = @_;
 
     if ( !exists( $args->{-ls} ) ) {
-        croak "You must pass a -ls paramater!";
+        croak "You must pass a -ls parameter!";
     }
     if ( !exists( $args->{-msg} ) ) {
-        croak "You must pass a -msg paramater!";
+        croak "You must pass a -msg parameter!";
     }
 
     my $ls  = $args->{-ls};
@@ -2723,16 +2723,16 @@ sub archive {
     my ($args) = @_;
 
     if ( !exists( $args->{-ls} ) ) {
-        croak "You must pass a -ls paramater!";
+        croak "You must pass a -ls parameter!";
     }
     if ( !exists( $args->{-msg} ) ) {
-        croak "You must pass a -msg paramater!";
+        croak "You must pass a -msg parameter!";
     }
     if ( !exists( $args->{-msg_id} ) ) {
-        croak "You must pass a -msg_id paramater!";
+        croak "You must pass a -msg_id parameter!";
     }
     if ( !exists( $args->{-saved_msg} ) ) {
-        croak "You must pass a -saved_msg paramater!";
+        croak "You must pass a -saved_msg parameter!";
     }
 
     my $ls        = $args->{-ls};
@@ -4380,7 +4380,7 @@ To use Bridge via the command line, first change into the directory that Bridge 
 
 =head2 Command Line Interface for Cronjobs: 
 
-You can also invoke C<bridge.cgi> from the command line interface for cronjobs. The secret is to actually have two commands in one. The first command changes into the same directory as the C<bridge.cgi> script, the second invokes the script with the paramaters you'd like. 
+You can also invoke C<bridge.cgi> from the command line interface for cronjobs. The secret is to actually have two commands in one. The first command changes into the same directory as the C<bridge.cgi> script, the second invokes the script with the parameters you'd like. 
 
 For example: 
 

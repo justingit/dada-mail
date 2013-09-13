@@ -22,11 +22,11 @@ sub Create {
     my ($args) = @_;
 
     if ( !exists( $args->{ -list } )) {
-        croak("You must supply a list name in the '-list' paramater.");
+        croak("You must supply a list name in the '-list' parameter.");
     }
 
     if ( !exists( $args->{ -settings } )) {
-        croak("You must supply settings in the '-settings' paramater.");
+        croak("You must supply settings in the '-settings' parameter.");
     }
 
 	if( ! exists($args->{-test})) { 
@@ -130,7 +130,7 @@ sub Remove {
     my ($args) = @_;
 
     if ( !$args->{-name} ) {
-        croak("You must supply a list name in the '-name' paramater.");
+        croak("You must supply a list name in the '-name' parameter.");
     }
     
     require DADA::App::Guts;
@@ -283,11 +283,11 @@ or even,
 
 Creates all the necessary files for a Dada Mailing List. 
 
-The B<-list> paramater should hold  the 
+The B<-list> parameter should hold  the 
 list shortname of your mailing list - which itself should be no more than 16
 characters and should only include letters/numbers.
 
-The, B<-settings> paramater should hold a hashref with the key/values that make 
+The, B<-settings> parameter should hold a hashref with the key/values that make 
 up your list settings. Only keys that are mentioned in the Config.pm's C<%LIST_SETUP_DEFAULTS>
 can be passed - trying to pass keys that aren't mentioned will cause an error. 
 
@@ -301,7 +301,7 @@ This method returns a B<DADA::MailingList::Settings> object.
 
  DADA::MailingList::Remove({ -name => 'mylist', -delete_backups => 1}); 
 
-Removes a Mailing List. the B<-name> paramater is required. B<-delete_backups> 
+Removes a Mailing List. the B<-name> parameter is required. B<-delete_backups> 
 is optional, but when set to 1, will remove any backups of the list settings, 
 archives or schedules. 
 

@@ -129,7 +129,7 @@ sub verify_sender {
 	my ($args) = @_; 
 	
 	if(!exists($args->{-email})) { 
-		croak "You MUST pass the, '-email' paramater!"; 
+		croak "You MUST pass the, '-email' parameter!"; 
 	}
 	
 	my $params = {

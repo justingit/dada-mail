@@ -388,7 +388,7 @@ sub grab_htaccess_content {
 	my $self   = shift; 
 	my ($args) = @_; 
 	if(! exists($args->{-path})) { 
-		croak, "you MUST pass the, '-path' paramater!"; 
+		croak, "you MUST pass the, '-path' parameter!"; 
 	}
 	my $path = $args->{-path}; 
 	my $loc  = $path . '/' . '.htaccess'; 

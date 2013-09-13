@@ -27,7 +27,7 @@ my $mh;
 # This will fail: 
 #eval {$mh = DADA::Mail::Send->new();};
 #ok($@); 
-#like($@, qr/You MUST pass the \-list paramater\!/); 
+#like($@, qr/You MUST pass the \-list parameter\!/); 
 
 
 

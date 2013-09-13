@@ -241,7 +241,7 @@ sub check_redirect_urls {
 		$args->{-raise_error} = 0; 
 	}
 	if(!exists($args->{-str})){ 
-		croak "you must pass a string in the, -str paramater!"; 
+		croak "you must pass a string in the, -str parameter!"; 
 	}
 	
 	my $valid   = [];

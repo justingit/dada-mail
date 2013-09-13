@@ -255,7 +255,7 @@ We suggest using a SQL backend Dada Mail supports MySQL, PostgreSQL, and SQLite.
 
 =head3 %SQL_PARAMS
 
-C<%SQL_PARAMS> holds additional paramaters and login credentials for your SQL backend. 
+C<%SQL_PARAMS> holds additional parameters and login credentials for your SQL backend. 
 If you're using the, B<Default> backend, you will not need to work with, C<%SQL_PARAMS>
 
 Example C<%SQL_PARAMS>: 
@@ -860,7 +860,7 @@ files are saved.
 
 =head4 oldstyle_backwards_compatibility
 
-Setting this paramater to, C<1> will allow you to use the old-style tags that 
+Setting this parameter to, C<1> will allow you to use the old-style tags that 
 Dada Mail originaly used. An old-style tag looks like this: 
 
  [tag]
@@ -871,7 +871,7 @@ New-style tags look like this:
 
 And are nothing but HTML::Template-style tags. We'd like to move away from the 
 old-style tags, but still 100% support them, for the time being. Setting this 
-paramater to, C<0> is B<very> much experimental. 
+parameter to, C<0> is B<very> much experimental. 
 
 =head4 engine
 

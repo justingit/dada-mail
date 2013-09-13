@@ -1,8 +1,10 @@
 <!-- begin send_email_screen.tmpl -->
 
+<form name="mass_mailing" id="mass_mailing" enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+
+	
 <!-- tmpl_set name="title" value="Mass Mailing &#187; Send a Message" -->
 <!-- tmpl_set name="load_wysiwyg_editor" value="1" -->
-
 
 <div id="screentitle"> 
 	<div id="screentitlepadding">
@@ -13,7 +15,8 @@
 
 <div id="send_email_screen"></div> 
 
-
+<!-- tmpl_include test_sent_notice_widget.tmpl --> 
+<!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
 
 <!-- tmpl_if list_settings.group_list --> 
     <div class="clearskiesbox">
@@ -33,19 +36,7 @@
 	<!-- /tmpl_if -->
 <!-- /tmpl_unless -->
 
-<!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
 
-
-<!-- tmpl_if draft_id --> 
-	<div class="clearskiesbox">
-		<h1>You're working on a Saved Draft Message.</h1> 
-		<input type="button" value="" /> 
-	</div> 
-    
-<!-- /tmpl_if --> 
-
-
-<form name="mass_mailing" id="mass_mailing" enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
 
  <input type="hidden" name="s_program_url"     id="s_program_url"     value="<!-- tmpl_var S_PROGRAM_URL -->" />
  <input type="hidden" name="support_files_url" id="support_files_url" value="<!-- tmpl_var SUPPORT_FILES_URL -->" />
@@ -55,15 +46,13 @@
 
 <input type="hidden" id="draft_alert"  name="draft_alert"  value="<!-- tmpl_var draft_alert default="0" -->" />
 <input type="hidden" id="draft_id"     name="draft_id"     value="<!-- tmpl_var draft_id -->" /> 
-
-<div id="draft_notice"><p class="alert" style="text-align:right">&nbsp;</p></div>
+<!-- tmpl_include draft_notice_widget.tmpl --> 
 
 <!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
+
 <fieldset> 
  <legend>Message Body [<a href="#" onclick="$.colorbox({inline:true, href:$('#message_body_help')})">?</a>]</legend>
 
-
-	
 <div id="tabs"> 
 	
 	<ul> 
@@ -158,15 +147,14 @@
 	<!-- /tmpl_if --> 
 </div> 
 
-
 </fieldset> 
+
+
 <!-- tmpl_include send_a_list_message_button_widget.tmpl -->
 
 
 </form>
 
-
- 
 <!-- tmpl_include send_email_message_body_help_widget.tmpl -->
 
 <!-- end send_email_screen.tmpl -->

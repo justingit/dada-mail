@@ -195,9 +195,9 @@ Like the sendmail command, it's real use is when you call it in another script. 
 
 =head1 REQUIRED ARGUMENTS
 
-As you'll notice from these examples, the, B<--list> flag is being passed, and the paramater is set to a B<valid list short name> 
+As you'll notice from these examples, the, B<--list> flag is being passed, and the parameter is set to a B<valid list short name> 
 
-If this paramater is missing, or the list short name is not valid the script will exit with an C<exit> status of, C<1> and you won't be sending anything. 
+If this parameter is missing, or the list short name is not valid the script will exit with an C<exit> status of, C<1> and you won't be sending anything. 
 
 =head1 OPTIONS
 

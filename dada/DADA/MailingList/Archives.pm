@@ -1731,7 +1731,7 @@ sub _take_off_sigs {
 
 returns a string, given a -key - an id/key of an archived message. 
 
-Can have many paramaters passed to it: 
+Can have many parameters passed to it: 
 
 =over
 

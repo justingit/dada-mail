@@ -56,33 +56,42 @@ sub save {
     my $self = shift;
     my ($args) = @_;
 
+    if ( !exists( $args->{-cgi_obj} ) ) {
+        croak "You MUST pass a, '-cgi_obj' parameter!";
+    }
+
+    if ( !exists( $args->{-screen} ) ) {
+        die
+          "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
+    }
     if ( !exists( $args->{-role} ) ) {
         $args->{-role} = 'draft';
     }
-    if ( !exists( $args->{-cgi_obj} ) ) {
-        croak "You MUST pass a, '-cgi_obj' paramater!";
+    my $id = undef;
+    if ( exists( $args->{-id} ) ) {
+        $id = $args->{-id};
     }
-
+    
     my $draft =
-      $self->stringify_cgi_params( { -cgi_obj => $args->{-cgi_obj} } );
+      $self->stringify_cgi_params(
+        { -cgi_obj => $args->{-cgi_obj}, -screen => $args->{-screen} } );
 
-    if ( !exists( $args->{-id} ) || !defined( $args->{-id} ) ) {
+    if ( !defined($id) ) {
+
         my $query =
 'INSERT INTO dada_message_drafts (list, screen, role, draft, last_modified_timestap) VALUES (?,?,?,?, NOW())';
         my $sth = $self->{dbh}->prepare($query);
 
-        $sth->execute( $self->{list}, 'send_email', $args->{-role}, $draft )
+        $sth->execute( $self->{list}, $args->{-screen}, $args->{-role}, $draft )
           or croak "cannot do statment '$query'! $DBI::errstr\n";
 
         $sth->finish;
 
         #return $sth->{mysql_insertid};
         if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
-            warn 'mysql_insertid' . $sth->{mysql_insertid};
             return $sth->{mysql_insertid};
         }
         else {
-            warn 'last_insert_id' . $sth->{last_insert_id};
             return $sth->{last_insert_id};
         }
     }
@@ -90,10 +99,9 @@ sub save {
         my $query =
 'UPDATE dada_message_drafts SET screen = ?, role = ?, draft = ?, last_modified_timestap = NOW() WHERE list = ? AND id = ?';
         my $sth = $self->{dbh}->prepare($query);
-        $sth->execute(
-            'send_email',  $args->{-role}, $draft,
-            $self->{list}, $args->{-id}
-        ) or croak "cannot do statment '$query'! $DBI::errstr\n";
+        $sth->execute( $args->{-screen}, $args->{-role}, $draft,
+            $self->{list}, $args->{-id} )
+          or croak "cannot do statment '$query'! $DBI::errstr\n";
         $sth->finish;
         return $args->{-id};
     }
@@ -101,11 +109,22 @@ sub save {
 
 sub has_draft {
     my $self = shift;
+    my ($args) = @_;
+
+    if ( !exists( $args->{-role} ) ) {
+        $args->{-role} = 'draft';
+    }
+    if ( !exists( $args->{-screen} ) ) {
+        die
+          "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
+    }
 
     my $query =
-      'SELECT COUNT(*) FROM ' . 'dada_message_drafts' . ' WHERE list = ?';
+        'SELECT COUNT(*) FROM '
+      . 'dada_message_drafts'
+      . ' WHERE list = ? AND screen = ? AND role = ?';
     my $sth = $self->{dbh}->prepare($query);
-    $sth->execute( $self->{list} )
+    $sth->execute( $self->{list}, $args->{-screen}, $args->{-role} )
       or croak "cannot do statment '$query'! $DBI::errstr\n";
 
     my $count = $sth->fetchrow_array;
@@ -123,11 +142,20 @@ sub has_draft {
 sub latest_draft_id {
     my $self = shift;
 
+    my ($args) = @_;
+    if ( !exists( $args->{-role} ) ) {
+        $args->{-role} = 'draft';
+    }
+    if ( !exists( $args->{-screen} ) ) {
+        die
+          "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
+    }
+
     my $query =
 'SELECT id FROM dada_message_drafts WHERE list = ? AND screen = ? AND role = ? ORDER BY last_modified_timestap DESC';
     my $sth = $self->{dbh}->prepare($query);
 
-    $sth->execute( $self->{list}, 'send_email', 'draft' )
+    $sth->execute( $self->{list}, $args->{-screen}, $args->{-role} )
       or croak "cannot do statment '$query'! $DBI::errstr\n";
     my $hashref;
 
@@ -139,99 +167,117 @@ sub latest_draft_id {
 
 sub fetch {
     my $self = shift;
-	my $id   = shift || undef; 
-	
-    my $query;
-    if(!$id) { 
-		$query = 'SELECT id, list, screen, role, draft FROM dada_message_drafts WHERE list = ? AND screen = ? AND role = ? ORDER BY id DESC';
+    my ($args) = @_;
+
+    if ( !exists( $args->{-role} ) ) {
+        $args->{-role} = 'draft';
     }
-	else { 		
-		$query = 'SELECT id, list, screen, role, draft FROM dada_message_drafts WHERE list = ? AND screen = ? AND role = ? AND id = ? ORDER BY id DESC';		
-	}
-	my $sth = $self->{dbh}->prepare($query);
+    if ( !exists( $args->{-screen} ) ) {
+        die
+          "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
+    }
+    my $id = undef;
+    if ( exists( $args->{-id} ) ) {
+        $id = $args->{-id};
+    }
+
+    my $query;
+    if ( !$id ) {
+        $query =
+'SELECT id, list, screen, role, draft FROM dada_message_drafts WHERE list = ? AND screen = ? AND role = ? ORDER BY id DESC';
+    }
+    else {
+        $query =
+'SELECT id, list, screen, role, draft FROM dada_message_drafts WHERE list = ? AND screen = ? AND role = ? AND id = ? ORDER BY id DESC';
+
+    }
+
+    my $sth = $self->{dbh}->prepare($query);
 
     my $saved = '';
-	
-	if(!$id) { 
-	    $sth->execute( $self->{list}, 'send_email', 'draft' )
-	      or croak "cannot do statment '$query'! $DBI::errstr\n";
-	}
-	else { 		
-	    $sth->execute( $self->{list}, 'send_email', 'draft', $id )
-	      or croak "cannot do statment '$query'! $DBI::errstr\n";		
-	}
+
+    if ( !$id ) {
+        $sth->execute( $self->{list}, $args->{-screen}, 'draft' )
+          or croak "cannot do statment '$query'! $DBI::errstr\n";
+    }
+    else {
+        $sth->execute( $self->{list}, $args->{-screen}, 'draft', $id )
+          or croak "cannot do statment '$query'! $DBI::errstr\n";
+    }
     my $hashref;
 
-  FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
-        $sth->finish;
+    while ( $hashref = $sth->fetchrow_hashref ) {
         $saved = $hashref->{draft};
+        $sth->finish;
+        last;
     }
 
-	my $q = $self->decode_draft($saved); 
+    my $q = $self->decode_draft($saved);
 
     return $q;
 
 }
 
+sub count {
+    my $self = shift;
+    my ($args) = @_;
 
-
-
-sub count { 
-	my $self = shift; 
-    my ($args) = @_; 
-	
     my @row;
-    my $query = 'SELECT COUNT(*)  FROM ' .  'dada_message_drafts' . ' WHERE list = ?';
-    my $count = $self->{dbh}->selectrow_array($query, undef,  $self->{list}); 
-	return $count;
+    my $query =
+      'SELECT COUNT(*)  FROM ' . 'dada_message_drafts' . ' WHERE list = ?';
+    my $count = $self->{dbh}->selectrow_array( $query, undef, $self->{list} );
+    return $count;
 }
 
-
-
-sub remove { 
-	my $self = shift; 
-	my $id   = shift; 
-	my $query =  'DELETE FROM ' . 'dada_message_drafts' . ' WHERE id = ? AND list = ?';
-	my $sth = $self->{dbh}->prepare($query); 
-	$sth->execute($id, $self->{list}); 
-	$sth->finish;
-	return 1; 
+sub remove {
+    my $self = shift;
+    my $id   = shift;
+    my $query =
+      'DELETE FROM ' . 'dada_message_drafts' . ' WHERE id = ? AND list = ?';
+    my $sth = $self->{dbh}->prepare($query);
+    $sth->execute( $id, $self->{list} );
+    $sth->finish;
+    return 1;
 }
 
-sub decode_draft { 
-	my $self  = shift; 
-	my $saved = shift; 
-	open my $fh, '<', \$saved || die $!;
+sub decode_draft {
+    my $self  = shift;
+    my $saved = shift;
+    open my $fh, '<', \$saved || die $!;
     require CGI;
     my $q = CGI->new($fh);
-    return $q; 
+    return $q;
 }
 
 sub draft_index {
     my $self = shift;
     my $r    = [];
 
-    my $query = 'SELECT * FROM dada_message_drafts WHERE list = ? AND role = ? ORDER BY last_modified_timestap DESC';
+    my $query =
+'SELECT * FROM dada_message_drafts WHERE list = ? AND role = ? ORDER BY last_modified_timestap DESC';
     my $sth = $self->{dbh}->prepare($query);
 
     $sth->execute( $self->{list}, 'draft' )
-		or croak "cannot do statment '$query'! $DBI::errstr\n";
+      or croak "cannot do statment '$query'! $DBI::errstr\n";
     my $hashref;
 
-  	FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
-		my $q = $self->decode_draft($hashref->{draft});
-		push(@$r, { 
-			id => $hashref->{id}, 
-			list => $hashref->{list}, 
-			created_timestamp => $hashref->{created_timestamp}, 
-			last_modified_timestap => $hashref->{last_modified_timestap}, 
-			screen  => $hashref->{screen}, 
-			role    => $hashref->{role}, 
-			Subject => $q->param('Subject'),
-		});
+  FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
+        my $q = $self->decode_draft( $hashref->{draft} );
+        push(
+            @$r,
+            {
+                id                     => $hashref->{id},
+                list                   => $hashref->{list},
+                created_timestamp      => $hashref->{created_timestamp},
+                last_modified_timestap => $hashref->{last_modified_timestap},
+                screen                 => $hashref->{screen},
+                role                   => $hashref->{role},
+                Subject                => $q->param('Subject'),
+            }
+        );
     }
     $sth->finish;
-	return $r; 
+    return $r;
 }
 
 sub stringify_cgi_params {
@@ -240,11 +286,16 @@ sub stringify_cgi_params {
     my ($args) = @_;
 
     if ( !exists( $args->{-cgi_obj} ) ) {
-        croak "You MUST pass a, '-cgi_obj' paramater!";
+        croak "You MUST pass a, '-cgi_obj' parameter!";
+    }
+    if ( !exists( $args->{-screen} ) ) {
+        die
+          "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
     }
 
     my $q = $args->{-cgi_obj};
-    $q = $self->remove_unwanted_params( { -cgi_obj => $args->{-cgi_obj} } );
+    $q = $self->remove_unwanted_params(
+        { -cgi_obj => $args->{-cgi_obj}, -screen => $args->{-screen} } );
 
     my $buffer = "";
     open my $fh, ">", \$buffer or die 'blarg!' . $!;
@@ -253,13 +304,22 @@ sub stringify_cgi_params {
 }
 
 sub remove_unwanted_params {
-    my $self   = shift;
+    my $self = shift;
     my ($args) = @_;
-    my $q      = $args->{-cgi_obj};
+
+    if ( !exists( $args->{-cgi_obj} ) ) {
+        croak "You MUST pass a, '-cgi_obj' parameter!";
+    }
+    if ( !exists( $args->{-screen} ) ) {
+        die
+          "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
+    }
 
     require CGI;
-    my $new_q          = CGI->new($q);
-    my $params_to_save = $self->params_to_save;
+    my $q     = $args->{-cgi_obj};
+    my $new_q = CGI->new($q);
+    my $params_to_save =
+      $self->params_to_save( { -screen => $args->{-screen} } );
 
     for ( $new_q->param ) {
         unless ( exists( $params_to_save->{$_} ) ) {
@@ -274,11 +334,19 @@ sub remove_unwanted_params {
 sub params_to_save {
 
     my $self = shift;
+    my ($args) = @_;
+
+    if ( !exists( $args->{-screen} ) ) {
+        die
+          "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
+    }
 
     my $params = {
-
         'Reply-To'   => 1,
         'X-Priority' => 1,
+
+        html_message_body => 1,
+        text_message_body => 1,
 
         archive_message     => 1,
         archive_no_send     => 1,
@@ -291,18 +359,10 @@ sub params_to_save {
         backdate_second     => 1,
         backdate_hour_label => 1,
 
-        # This should be dynamic
-        attachment1 => 1,
-        attachment2 => 1,
-        attachment3 => 1,
-
-        im_sure        => 1,
-        new_win        => 1,
         test_recipient => 1,
 
-        Subject           => 1,
-        html_message_body => 1,
-        text_message_body => 1,
+        Subject => 1,
+
     };
 
     $params->{field_comparison_type_email} = 1;
@@ -316,6 +376,23 @@ sub params_to_save {
         $params->{ 'field_value_' . $_ }           = 1;
     }
 
+    if ( $args->{-screen} eq 'send_email' ) {
+
+        $params->{attachment1} = 1;
+        $params->{attachment2} = 1;
+        $params->{attachment3} = 1;
+    }
+    elsif ( $args->{-screen} eq 'send_url_email' ) {
+
+        $params->{content_from}          = 1;
+        $params->{url}                   = 1;
+        $params->{auto_create_plaintext} = 1;
+        $params->{url_options}           = 1;
+        $params->{remove_javascript}     = 1;
+        $params->{url_username}          = 1;
+        $params->{url_password}          = 1;
+        $params->{proxy}                 = 1;
+    }
     return $params;
 }
 

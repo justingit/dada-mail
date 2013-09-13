@@ -2942,14 +2942,14 @@ sub _mail_merge {
     my ($args) = @_;
 
     if ( !exists( $args->{-entity} ) ) {
-        croak 'you need to pass the -entity paramater';
+        croak 'you need to pass the -entity parameter';
     }
     else {
         $orig_entity = $args->{-entity};
     }
 
     if ( !exists( $args->{-data} ) ) {
-        croak 'you need to pass the -data paramater';
+        croak 'you need to pass the -data parameter';
     }
 
     if ( exists( $args->{-fm_obj} ) ) {
@@ -2957,7 +2957,7 @@ sub _mail_merge {
         # ...
     }
     else {
-        croak "you MUST pass the -fm_obj paramater!";
+        croak "you MUST pass the -fm_obj parameter!";
     }
 
 # So all we really have to do is label and arrange the values we have and populate the email message.
@@ -3534,12 +3534,12 @@ send the same message twice, to a subscriber that may be on two lists.
 
 C<-test> is optional and should hold a value of either C<1> or, C<0>. If set to C<1> 
 the mass mailing will NOT be sent out, via email, but rather written to a file. This file 
-can be specified using the, C<test_send_file> method. The <-test> paramater works 
+can be specified using the, C<test_send_file> method. The <-test> parameter works 
 the same way as the C<test> method. 
 
 C<-mass_test> is optional and should hold a value of either C<1> or, C<0>. If set to 
 C<1> a mass mailing will be done, but only sent to the recipient set in, C<-test_recipient>, 
-or the list owner, if no valid recipient is set. Works the same as the, C<mass_test> paramater. 
+or the list owner, if no valid recipient is set. Works the same as the, C<mass_test> parameter. 
 
 C<-test_recipient> is option and should hold a valid email address of where test mass 
 mailings should be sent. The, <-mass_test> argument should also be set to, C<1>. 

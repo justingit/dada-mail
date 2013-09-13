@@ -534,7 +534,7 @@ DADA::MailingList::Subscribers - API for the Dada Mailing List Settings
 		}
 	);
  
- # save a setting, from a CGI paramater, with a fallback variable: 
+ # save a setting, from a CGI parameter, with a fallback variable: 
  $ls->save_w_params(
 	-associate => $q, # our CGI object
 	-settings  => { 
@@ -597,7 +597,7 @@ A C<DADA::MailingList::Settings> object will be returned.
 
  my $li = $ls->get; 
 
-There are no public paramaters that we suggest passing to this method. 
+There are no public parameters that we suggest passing to this method. 
 
 This method returns a hashref that contains each and every key/value pair of settings associated with the mailing list you're working with.
 
@@ -611,11 +611,11 @@ None, really.
 
  $ls->save({list_name => 'my new list name'}); 
 
-C<save> accepts a hashref as a paramater. The hashref should contain key/value pairs of list settings you'd like to change. All key/values passed will re-write any options saved. There is no validation of the information you passed. 
+C<save> accepts a hashref as a parameter. The hashref should contain key/value pairs of list settings you'd like to change. All key/values passed will re-write any options saved. There is no validation of the information you passed. 
 
 DO NOT pass, I<list> as one of the key/value pairs. The method will return an error. 
 
-This method is most convenient when you have many list settings you'd like saved at one time. See the, C<param> method if all you want to do is save one list setting paramater. 
+This method is most convenient when you have many list settings you'd like saved at one time. See the, C<param> method if all you want to do is save one list setting parameter. 
 
 Returns B<1> on success. 
 
@@ -659,7 +659,7 @@ The actual settings you attempt to save have to actually exist. Make sure the na
  # Save a Value
  $ls->param('list_name', 'my new list name'); 
 
-C<param> can be used to get and save  a list setting paramater. 
+C<param> can be used to get and save  a list setting parameter. 
 
 Call C<param> with one argument to receive the value of the name of the setting you're passing. 
 
@@ -695,7 +695,7 @@ Returns the exact same thing as the, C<get> method, except does caching of any i
 
 The name, C<param> and, C<params> is taken from the CGI.pm module: 
 
-Many different modules support passing paramater values to their own methods, as a sort of shortcut. We had this in mind, but we haven't used or tested how compatible this idea is. When and if we do, we'll update the documentation to reflect this. 
+Many different modules support passing parameter values to their own methods, as a sort of shortcut. We had this in mind, but we haven't used or tested how compatible this idea is. When and if we do, we'll update the documentation to reflect this. 
 
 =head1 BUGS AND LIMITATIONS
 

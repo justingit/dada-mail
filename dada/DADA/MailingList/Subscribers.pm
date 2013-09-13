@@ -221,7 +221,7 @@ sub admin_remove_subscribers {
 	
 	my $addresses = $args->{-addresses}; 
 	if(! exists($args->{-type})){ 
-		croak "you MUST pass the, '-type' paramater!"; 
+		croak "you MUST pass the, '-type' parameter!"; 
 	}
 	my $type      = $args->{-type};
 
@@ -293,7 +293,7 @@ sub admin_update_address {
 	
 	my $addresses = $args->{-addresses}; 
 	if(! exists($args->{-type})){ 
-		croak "you MUST pass the, '-type' paramater!"; 
+		croak "you MUST pass the, '-type' parameter!"; 
 	}
 	my $type          = $args->{-type};
 	my $email         = $args->{-email}; 
@@ -906,7 +906,7 @@ sub write_plaintext_list {
 	
 	my $self = shift; 
 	
-	# DEV: Needs ot be changed to hashref file paramater passing
+	# DEV: Needs ot be changed to hashref file parameter passing
 	my %args = (-Type => 'list', 
 	            @_); 
 	my $type     = $args{-Type};
@@ -1255,7 +1255,7 @@ Except for being able to change the name of a Subscriber Field in SQLite, every 
 
 Below are the list of I<Public> methods that we recommend using when manipulating a Dada Mail Subscription List:
 
-Every method has its paramaters, if required (and when it's stated that they're required, I<they are>), passed as a hashref. 
+Every method has its parameters, if required (and when it's stated that they're required, I<they are>), passed as a hashref. 
 
 =head2 Initializing
 
@@ -1340,9 +1340,9 @@ will return, C<0> and not a DADA::MailingList::Subscriber object.
 
 =over
 
-=item * You must pass an email in the -email paramater!
+=item * You must pass an email in the -email parameter!
 
-You forgot to pass an email in the, -email paramater, ie: 
+You forgot to pass an email in the, -email parameter, ie: 
 
  # DON'T do this:
  $lh->add_subscriber();
@@ -1375,9 +1375,9 @@ C<-type> holds the sublist you want to work with. If no sublist is passed, B<lis
 
 =over
 
-=item * You must pass an email in the -email paramater!
+=item * You must pass an email in the -email parameter!
 
-You forgot to pass an email in the, -email paramater, ie: 
+You forgot to pass an email in the, -email parameter, ie: 
 
  # DON'T do this:
  $lh->get_subscriber();
@@ -1444,9 +1444,9 @@ Those diagnostics may pop up, if you use this method incorrectly
 
 =over
 
-=item * The -mode paramater must be set to, 'update', 'writeover' or left undefined!
+=item * The -mode parameter must be set to, 'update', 'writeover' or left undefined!
 
-You didn't set the -mode paramater correctly.
+You didn't set the -mode parameter correctly.
 
 =back
 
@@ -1466,7 +1466,7 @@ C<-from> holds the sublist you're moving from.
 
 C<-to> holds the sublist you're moving to. 
 
-All paramaters are required. No other paramaters will be honored. 
+All parameters are required. No other parameters will be honored. 
 
 This method will C<die> if the subscriber isn't actually subscribed to the sublist set in, C<-from> or, 
 B<is> already subscribed in the sublist set in, C<-to>. 
@@ -1514,7 +1514,7 @@ C<-from> holds the sublist you're copying from.
 
 C<-to> holds the sublist you're copying to. 
 
-All paramaters are required. No other paramaters will be honored. 
+All parameters are required. No other parameters will be honored. 
 
 This method will C<die> if the subscriber isn't actually subscribed to the sublist set in, C<-from> or, 
 B<is> already subscribed in the sublist set in, C<-to>.
@@ -1558,15 +1558,15 @@ C<-email> is required and should hold a valid email address in form of: C<user@e
 
 C<-type> holds the sublist you want to subscribe the address to - you'll want to always explicitly set the type. 
 
-No other paramaters are honored.
+No other parameters are honored.
 
 =head3 Diagnostics
 
 =over
 
-=item * You must pass an email in the -email paramater!
+=item * You must pass an email in the -email parameter!
 
-You forgot to pass an email in the, -email paramater, ie: 
+You forgot to pass an email in the, -email parameter, ie: 
 
  # DON'T do this:
  $lh->remove_subscriber();
@@ -1582,7 +1582,7 @@ You forgot to pass an email in the, -email paramater, ie:
 Returns a hashref of the allowed sublist types. The keys are the actual sublist types, the value is simply set to, C<1>, for 
 easy lookup tabling. 
 
-Takes no paramaters. 
+Takes no parameters. 
 
 The current list of allowed sublist types are: 
 
@@ -1608,7 +1608,7 @@ The current list of allowed sublist types are:
 
 =head2 check_for_double_email
 
-B<Note!> The naming, coding and paramater style is somewhat old and crufty and this method is on the chopping block for a re-write
+B<Note!> The naming, coding and parameter style is somewhat old and crufty and this method is on the chopping block for a re-write
 
  my $is_subscribed = $lh->check_for_double_email(
 	-Email          => 'user@example.com,
@@ -1790,7 +1790,7 @@ This is a very powerful and complex method. There's dragons in the code, but the
 Used to validated a large amount of addresses at one time. Similar to C<subscripton_check> but is meant for more than one
 address. It's also meant to be  bit faster than looping a list of addresses through C<subscripton_check>. 
 
-Accepts two paramaters. 
+Accepts two parameters. 
 
 C<-email> is an array ref of email addresses . 
 
@@ -1833,7 +1833,7 @@ In other words, if someone is both black listed and white listed, during validat
 
 Similar to C<filter_subscribers>, but allows you to pass the subscriber field information with the email address.
 
-The, C<-email> paramater should hold an arrayref of hashrefs, instead of just an array ref. The hashref itself should have the form of: 
+The, C<-email> parameter should hold an arrayref of hashrefs, instead of just an array ref. The hashref itself should have the form of: 
 
  {
 	-email => 'user@example.com',
@@ -1865,7 +1865,7 @@ if no value is saved in this field for a particular subscriber. It is optional.
 
 =over
 
-=item * You must pass a value in the -field paramater!
+=item * You must pass a value in the -field parameter!
 
 You forget to name your new field.
 
@@ -1900,7 +1900,7 @@ Returns the Subscriber Profile Fields in the Subscription List, in the form of a
 
 Takes no arguments... usually. 
 
-Internally (and privately), it does accept the, C<-dotted> paramater. This will prepend, 'subscriber.' to every field name.
+Internally (and privately), it does accept the, C<-dotted> parameter. This will prepend, 'subscriber.' to every field name.
 
 =head3 Diagnostics
 
@@ -1924,17 +1924,17 @@ C<-old_name> holds the name of the field you want to rename.
 
 C<-new_name> holds what you'd like to rename the field in C<-old_name> to. 
 
-Both paramaters are required.
+Both parameters are required.
 
 =head3 Diagnostics
 
 =over
 
-=item * You MUST supply the old field name in the -old_name paramater!
+=item * You MUST supply the old field name in the -old_name parameter!
 
 You forgot to pass the old field name.
 
-=item * You MUST supply the new field name in the -new_name paramater!
+=item * You MUST supply the new field name in the -new_name parameter!
 
 You forgot to pass the new field name.
 
@@ -2011,7 +2011,7 @@ of the error set as the key and the value set to, B<1> if this error was found.
 
 C<-field> is required and should be the name of the field you're attempting to validate. 
 
-C<-skip> is an optional paramater and is used to list the errors you're not so interested in. It should be set to an array ref. 
+C<-skip> is an optional parameter and is used to list the errors you're not so interested in. It should be set to an array ref. 
 
 =head3 Subscriber Validation Requirements
 
@@ -2093,9 +2093,9 @@ of the error set as the key and the value set to, B<1> if this error was found.
 
 C<-field> is required and should be the name of the field you're attempting to validate. 
 
-C<-skip> is an optional paramater and is used to list the errors you're not so interested in. It should be set to an array ref. 
+C<-skip> is an optional parameter and is used to list the errors you're not so interested in. It should be set to an array ref. 
 
-C<-die_for_me> is another optional paramater. If set to, C<1>, an error found in validation will prove fatal. 
+C<-die_for_me> is another optional parameter. If set to, C<1>, an error found in validation will prove fatal. 
 
 The entire list of errors that can be reported back are as follows: 
 
@@ -2165,7 +2165,7 @@ Is called internally, when creating a new field via, C<add_subscriber_field>, so
 
 =over
 
-=item * You MUST pass a value in the -field paramater!
+=item * You MUST pass a value in the -field parameter!
 
 =back
 
@@ -2185,7 +2185,7 @@ Used to remove a fallback field value. Used internally.
 
 =over
 
-=item * You MUST pass a value in the -field paramater!
+=item * You MUST pass a value in the -field parameter!
 
 =back
 

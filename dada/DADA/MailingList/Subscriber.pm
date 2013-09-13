@@ -70,15 +70,15 @@ sub _init {
 		$self->{type} = $args->{ -type };
 	}
 	else { 
-		carp "no -type passed in new() -type is an option paramater, but my cause problems for methods that do need it."
+		carp "no -type passed in new() -type is an option parameter, but my cause problems for methods that do need it."
 			if $t; 
 	}
 
 	if ( !exists $args->{ -email } ) {
-	    croak("You MUST supply an email address in the -email paramater!");
+	    croak("You MUST supply an email address in the -email parameter!");
 	}
 	if ( length( strip( $args->{ -email } ) ) <= 0 ) {
-	    croak("You MUST supply an email address in the -email paramater!");
+	    croak("You MUST supply an email address in the -email parameter!");
 	}
 	if( !exists($args->{-validation_check})){ 
 		$args->{-validation_check} = 1; 
@@ -192,7 +192,7 @@ sub edit {
 
     if ( $args->{ -mode } !~ /update|writeover/ ) {
         croak
-"The -mode paramater must be set to, 'update', 'writeover' or left undefined!";
+"The -mode parameter must be set to, 'update', 'writeover' or left undefined!";
     }
 
     my $orig_values = {};
@@ -238,7 +238,7 @@ sub copy {
     my ($args) = @_;
 
     if(! exists $args->{-to}){ 
-        croak "You must pass a value in the -to paramater!"; 
+        croak "You must pass a value in the -to parameter!"; 
     }
 
     if($self->{lh}->allowed_list_types($args->{-to}) != 1){ 

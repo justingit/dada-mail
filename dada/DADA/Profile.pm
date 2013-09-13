@@ -157,7 +157,7 @@ sub create {
 	my ($args) = @_; 
 	
 	if(!exists($args->{-email})){ 
-		croak "You must pass an email in the, -email paramater!"; 
+		croak "You must pass an email in the, -email parameter!"; 
 	}
 	my $p = DADA::Profile->new(
 		{
@@ -391,10 +391,10 @@ sub copy {
 	my $self = shift; 
     my ($args) = @_;
     if ( !exists( $args->{ -from } ) ) {
-        die "you MUST pass the, '-from' paramater!";
+        die "you MUST pass the, '-from' parameter!";
     }
     if ( !exists( $args->{ -to } ) ) {
-        die "you MUST pass the, '-to' paramater!";
+        die "you MUST pass the, '-to' parameter!";
     }
 
 	require DADA::Profile::Fields; 
@@ -1073,7 +1073,7 @@ sub confirm_update_profile_email {
 	my ($args) = @_; 
 	
 	if(! exists($args->{-updated_email}) ){ 
-		croak "You MUST pass the email to update the profile in, '-updated_email' paramater!"; 
+		croak "You MUST pass the email to update the profile in, '-updated_email' parameter!"; 
 	}
 	
 	my $auth_code = $self->_rand_str; 
@@ -1100,10 +1100,10 @@ sub send_update_profile_email_email {
 	my ($args) = @_; 
 	
 	if(! exists( $args->{-updated_email} ) ){ 
-		croak "You MUST pass the email to update the profile in, '-updated_email' paramater!"; 
+		croak "You MUST pass the email to update the profile in, '-updated_email' parameter!"; 
 	}
 	if(! exists($args->{-update_email_auth_code}) ){ 
-		croak "You MUST pass the auth_code to update the profile in, '-update_email_auth_code' paramater!"; 
+		croak "You MUST pass the auth_code to update the profile in, '-update_email_auth_code' parameter!"; 
 	}
 	
 	# We're currently faking this: 
@@ -1164,7 +1164,7 @@ sub send_update_email_notification {
 	
 	
 	if(! exists( $args->{-prev_email} ) ){ 
-		croak "You MUST pass the old email  in, '-prev_email' paramater!"; 
+		croak "You MUST pass the old email  in, '-prev_email' parameter!"; 
 	}
 	my $info = $self->get({-dotted => 1}); 
 	
@@ -1385,8 +1385,8 @@ DADA::Profile
 
 C<new> returns a DADA::Profile object. 
 
-C<new> requires you to either pass the C<-email> paramater, with a valid email 
-address, or the, C<-from_session> paramater, set to, C<1>: 
+C<new> requires you to either pass the C<-email> parameter, with a valid email 
+address, or the, C<-from_session> parameter, set to, C<1>: 
 
  my $p = DADA::Profile->new(
 	{ 
@@ -1464,7 +1464,7 @@ C<subscribed_to> returns an array ref of all the lists the profile is subscribed
 
 You can pass a C<-type> param to change which sublists are looked at. The default is, C<list>. 
 
-You can also pass the, C<-html_tmpl_params> paramater (set to, "1") to return back a complex data structure that works well with HTML::Template: 
+You can also pass the, C<-html_tmpl_params> parameter (set to, "1") to return back a complex data structure that works well with HTML::Template: 
 
 If our profile was subscribed to the list, I<mylist> this: 
 	
@@ -1525,10 +1525,10 @@ Or, to deactivate:
 	}
  ); 
 
-C<activate> is used primarily to activate a profile. If no paramaters are passed, 
+C<activate> is used primarily to activate a profile. If no parameters are passed, 
 the method will activate a profile. 
 
-You may pass the, C<-activate> paramater, set to either C<1> or, C<0> to activate or deactivate the profile. 
+You may pass the, C<-activate> parameter, set to either C<1> or, C<0> to activate or deactivate the profile. 
 
 =head2 allowed_to_view_archives
 	
@@ -1542,7 +1542,7 @@ You may pass the, C<-activate> paramater, set to either C<1> or, C<0> to activat
 
 C<allowed_to_view_archives> returns either C<1>, if the profile is allowed to view archives for a particular list, or, C<0> if they aren't. 
 
-The, C<-list> paramater is required and needs to be filled out to a specific Dada Mail List (shortname). If no C<-list> paramater is passed, this method will croak. 
+The, C<-list> parameter is required and needs to be filled out to a specific Dada Mail List (shortname). If no C<-list> parameter is passed, this method will croak. 
 
 Several things will change the return value of this method: 
 
@@ -1578,7 +1578,7 @@ Will return C<1> if the passwords do match and will return C<0> if they do not m
  ); 
 
 C<is_valid_registration> is used to validate a new registration. This usually means taking information from an HTML form and passing it through this method, to make sure 
-that the information passed is valid, so we can start the registration process. It requires a few paramaters: 
+that the information passed is valid, so we can start the registration process. It requires a few parameters: 
 
 =over
 
@@ -1588,15 +1588,15 @@ Should hold the email address, associated with the new profile
 
 =item * -email_again
 
-Should match exactly what's passed in the, C<-email> paramater. 
+Should match exactly what's passed in the, C<-email> parameter. 
 
 =item * -password
 
-Should hold a valid password. Currently, this just means that I<something> has to be passed in this paramater. 
+Should hold a valid password. Currently, this just means that I<something> has to be passed in this parameter. 
 
 =back
 
-If CAPTCHA is enabled for Profiles, (via the Config.pm C<$PROFILE_OPTIONS-E<gt>{gravatar_options}-E<gt>{enable_gravators}> paramater) the following two paramaters also have to be passed: 
+If CAPTCHA is enabled for Profiles, (via the Config.pm C<$PROFILE_OPTIONS-E<gt>{gravatar_options}-E<gt>{enable_gravators}> parameter) the following two parameters also have to be passed: 
 
 =over
 
@@ -1674,7 +1674,7 @@ Scarily, there's no checks on the validity of the information passed. This shoul
 This method is similar to, C<is_valid_registration>, as it returns a two-element array, the first element set to either C<1>, for validity and C<0> for not, with the second element being 
 a hashref of key/values describing what went wrong. 
 
-In this case, the only thing it's looking for the is the authorization code, which you should pass in the, C<-auth_code> paramater. 
+In this case, the only thing it's looking for the is the authorization code, which you should pass in the, C<-auth_code> parameter. 
 
 This is the authorization code that used in the email sent out to confirm a new profile. If the authorization code is not current, $status will be set to, C<0> 
 and the second element hashref will have the current key/value pair: 

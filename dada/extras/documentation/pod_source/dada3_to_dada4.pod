@@ -41,7 +41,7 @@ Although old-style tags are not used in Dada Mail, they're still, 100% supported
 
 If you'd like to completely turn off support for old-style tags, Look into the
 Config variable, C<$TEMPLATE_SETTINGS> and change the, C<oldstyle_backwards_compatibility> 
-paramater to, C<0>.
+parameter to, C<0>.
 
 =head2 SQL Backend
 

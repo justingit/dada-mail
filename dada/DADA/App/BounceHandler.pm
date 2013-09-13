@@ -590,7 +590,7 @@ sub parse_bounce {
     }
     else {
         $msg_report .=
-          "You MUST pass the, '-list' paramater to, parse_bounce!\n";
+          "You MUST pass the, '-list' parameter to, parse_bounce!\n";
         return ( undef, 0, $msg_report, '' );
     }
 
@@ -709,13 +709,13 @@ sub forward_to_list_owner {
 	
 	 
 	if(!exists($args->{-msg})){ 	
-		croak "you MUST pass a msg in the, '-msg' paramater!"; 
+		croak "you MUST pass a msg in the, '-msg' parameter!"; 
 	}
 	else { 
 		$msg = $args->{-msg}; 
 	}
 	if(!exists($args->{-ls_obj})){ 	
-		croak "you MUST pass a DM::ML::LS object in the, '-ls_obj' paramater!"; 
+		croak "you MUST pass a DM::ML::LS object in the, '-ls_obj' parameter!"; 
 	}
 	
 	

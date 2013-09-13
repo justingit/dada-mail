@@ -2098,7 +2098,7 @@ sub message_email_report {
 
     # warn '$args->{-type} ' . $args->{-type};
     if ( !exists( $args->{-mid} ) ) {
-        croak "You MUST pass the, '-mid' paramater!";
+        croak "You MUST pass the, '-mid' parameter!";
     }
     my $mid  = $args->{-mid};
     my $type = undef;

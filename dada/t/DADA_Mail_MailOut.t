@@ -79,12 +79,12 @@ ok( $mailout->isa('DADA::Mail::MailOut'),   "  and it's the right class" );
 
 
 eval { $mailout->create() }; 
-ok($@, "calling create without any paramaters causes an error!: $@"); 
+ok($@, "calling create without any parameters causes an error!: $@"); 
 undef $mailout; 
 
 $mailout = DADA::Mail::MailOut->new({ -list => $list });
 eval { $mailout->create({ -fields => $test_msg_fields }) }; 
-ok($@, "calling create with a '-fields' paramater, but no 'Message-ID' header in those fields causes an error!: $@"); 
+ok($@, "calling create with a '-fields' parameter, but no 'Message-ID' header in those fields causes an error!: $@"); 
 undef $mailout; 
 
 
@@ -96,7 +96,7 @@ $test_msg_fields->{'Message-ID'} = '<' .  DADA::App::Guts::message_id() . '.'. $
 
 $mailout = DADA::Mail::MailOut->new({ -list => $list });
 eval { $mailout->create({ -fields => $test_msg_fields, -list_type => 'list' }) }; 
-ok($@, "calling create with a '-fields' paramater, but no 'DADA::Mail::Send object causes an error!: $@"); 
+ok($@, "calling create with a '-fields' parameter, but no 'DADA::Mail::Send object causes an error!: $@"); 
 undef $mailout; 
 
 $mailout = DADA::Mail::MailOut->new({ -list => $list });

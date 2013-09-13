@@ -54,6 +54,13 @@
 				</p> 
 			</td>
 			<td>
+				<p>
+					<strong>
+						Screen
+					</strong>
+				</p> 
+			</td>
+			<td>
 				<p>&nbsp;</p>
 				</p> 
 			</td>
@@ -94,12 +101,23 @@
 						<!-- tmpl_var last_modified_timestap --> 
 					</a>
 				</p> 
+				<td>
+					<p>
+						<!-- tmpl_if expr="(screen eq 'send_email')" --> 
+							Send a Message
+						<!-- /tmpl_if --> 
+						<!-- tmpl_if expr="(screen eq 'send_url_email')" --> 
+							Send a Webpage
+						<!-- /tmpl_if --> 
+						
+					</p> 
+
 			</td>
 			<td>
 					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="POST">
 						<input type="hidden" name="id" value="<!-- tmpl_var id -->" />
 						<input type="hidden" name="flavor" value="delete_draft" /> 
-						<input type="submit" name="" value="[x]" class="alertive" />  
+							<input type="submit" name="" value="&#8855;" class="alertive" />  		
 					</form> 
 				</p> 
 			</td>
@@ -115,6 +133,27 @@
 	</div> 
     
 <!-- /tmpl_if --> 
+
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get">
+	<input type="hidden" name="flavor"             value="send_url_email" /> 
+	<input type="hidden" name="restore_from_draft" value="false" /> 
+<div class="buttonfloat"> 	
+	<input type="submit" class="processing" value="+ Send a Webpage" />
+</div> 
+</form>
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get">
+	<input type="hidden" name="flavor"             value="send_email" /> 
+	<input type="hidden" name="restore_from_draft" value="false" /> 
+<div class="buttonfloat"> 	
+	<input type="submit" class="processing" value="+ Send a Message" />
+</div> 
+</form>
+
+
+
+
+<div class="floatclear"></div> 
+
 
 
 

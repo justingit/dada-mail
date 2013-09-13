@@ -1329,7 +1329,7 @@ includes support for HTML::Template::Expr:
 
 L<http://search.cpan.org/~samtregar/HTML-Template-Expr/Expr.pm>
 
-with just a paramater change. The default is to use HTML::Template. 
+with just a parameter change. The default is to use HTML::Template. 
 No other HTML::Template::* modules are used. 
 
 I won't delve into great detail on how to make a HTML::Template or HTML::Template::Expr template, 
@@ -1353,7 +1353,7 @@ B<HTML::Template>'s C<output> will return. No post processing is done after that
 
 Getting data to screen can be done in basically two ways: 
 
-Via the C<-data> paramater: 
+Via the C<-data> parameter: 
 
  my $scalar = 'This is my information!'; 
  print DADA::Template::Widgets::screen(
@@ -1362,9 +1362,9 @@ Via the C<-data> paramater:
     }
  ); 
 
-The information in B<-data> needs to be a reference to a scalar value. In B<H::T>, it maps to the C<scalarref> paramater. 
+The information in B<-data> needs to be a reference to a scalar value. In B<H::T>, it maps to the C<scalarref> parameter. 
 
-Via the C<-screen> paramater: 
+Via the C<-screen> parameter: 
 
  print DADA::Template::Widgets::screen(
     {
@@ -1374,10 +1374,10 @@ Via the C<-screen> paramater:
 
 which should be a filename to whatever template you'd like to use. 
 
-In B<H::T>, it maps to the C<filename> paramater. 
+In B<H::T>, it maps to the C<filename> parameter. 
 
 If the data you're giving C<screen> is an HTML::Template::Expr template, you may also pass over the, 
-C<-expr> paramater with a value of, C<1>: 
+C<-expr> parameter with a value of, C<1>: 
 
  print DADA::Template::Widgets::screen(
     {
@@ -1386,8 +1386,8 @@ C<-expr> paramater with a value of, C<1>:
     }
  );
 
-Variables to be used in the template can be passed using the, C<-vars> paramater, which maps to the, 
-B<H::T> paramater, C<param>. C<-vars> should hold a reference to a hash: 
+Variables to be used in the template can be passed using the, C<-vars> parameter, which maps to the, 
+B<H::T> parameter, C<param>. C<-vars> should hold a reference to a hash: 
 
  my $scalar = 'I wanted to say: <!-- tmpl_var var1 -->'; 
  print DADA::Template::Widgets::screen(
@@ -1454,7 +1454,7 @@ programming but shortcuts?
 
 To tell C<screen> to use a specific subscriber information, you have two different methods. 
 
-The first is to give the paramaters to *which* subscriber to use, via the C<-subscriber_vars_param>: 
+The first is to give the parameters to *which* subscriber to use, via the C<-subscriber_vars_param>: 
 
  print DADA::Template::Widgets::screen(
     {
@@ -1468,11 +1468,11 @@ The first is to give the paramaters to *which* subscriber to use, via the C<-sub
  );
 
 This will basically have C<screen> call the B<DADA::MailingList::Subscribers::*> C<get_subscriber> 
-method and pass the paramaters set in this hashref. It's best to make sure the subscriber I<exists>, 
+method and pass the parameters set in this hashref. It's best to make sure the subscriber I<exists>, 
 or you may run into trouble.
 
 The subscriber information will be passed to B<HTML::Template> via its C<param> method. The name of 
-the paramaters will be appended with, B<subscriber.>, so as not to clobber any other variables you're 
+the parameters will be appended with, B<subscriber.>, so as not to clobber any other variables you're 
 passing, so if you have a field named, "first_name", you can use a template var that looks like this: 
 
  <!-- tmpl_var subscriber.first_name --> 
@@ -1505,8 +1505,8 @@ and this will loop over your Subscriber Profile Fields.
 
 If you'd like, you can also pass the Subscriber Profile Fields information yourself - this may be useful if
 you're in some sort of recursive subroutine, or if you already have the information on hand. You may
-do so by passing the, C<-subscriber_vars> paramater, I<instead> of the C<-subscriber_vars_param>
-paramater, like so: 
+do so by passing the, C<-subscriber_vars> parameter, I<instead> of the C<-subscriber_vars_param>
+parameter, like so: 
 
  use DADA::MailingList::Subscribers; 
  my $lh = DADA::MailingList::Subscribers->new({-list => 'listshortname'}); 
@@ -1529,7 +1529,7 @@ paramater, like so:
 
 The, B<subscriber> variable will still be magically created for you. 
 
-The B<-subscriber_vars> paramater is also a way to override what gets printed for the, B<subscriber.> 
+The B<-subscriber_vars> parameter is also a way to override what gets printed for the, B<subscriber.> 
 variables, since nothing is done to check the validity of what you're passing. So, keep that in mind - 
 all these are shortcuts and syntactic sugar. And we I<like> sugar. 
 
@@ -1624,7 +1624,7 @@ sub screen {
     # This is for mispelings: 
 	foreach('-list_settings_param', 'list_settings_param', 'list_settings_vars_params', '-list_settings_vars_params', 'list_settings_params', '-list_settings_params'){ 
 		if(exists($args->{$_})){ 
-			croak "Incorrect paramater passed to DADA::Template::Widgets:'$_'. Did you mean to pass, '-list_settings_vars_param'? $@";
+			croak "Incorrect parameter passed to DADA::Template::Widgets:'$_'. Did you mean to pass, '-list_settings_vars_param'? $@";
 		}
 	}
 
@@ -2378,14 +2378,14 @@ It takes the same options as, C<screen> and adds a few of its own:
 C<-with> is required and should be set to either, C<list>, or C<admin>, depending on 
 whether you want to wrap the template in either the list or admin template. 
 
-C<-wrapper_params> can also be passed and the value of its paramaters (confusingly)
+C<-wrapper_params> can also be passed and the value of its parameters (confusingly)
 will be different, depending on if you're using C<list> or, C<admin> for, C<-with>
 
 For, C<list>:
 
 =over
 
-=item * any paramater you would usually send to DADA::Template::HTML::list_template()
+=item * any parameter you would usually send to DADA::Template::HTML::list_template()
 
 Example: 
 
@@ -2405,7 +2405,7 @@ For, C<admin>
 
 =over
 
-=item * any paramater you would usually send to, DADA::Template::HTML::admin_template
+=item * any parameter you would usually send to, DADA::Template::HTML::admin_template
 
 	my $scrn .= DADA::Template::Widgets::wrap_screen(
 		{
@@ -2429,11 +2429,11 @@ sub wrap_screen {
 	my ($args) = @_; 
 
 	if(!exists($args->{-with})){ 
-		croak "you must pass the, '-with' paramater"; 
+		croak "you must pass the, '-with' parameter"; 
 	}
 	else { 
 		if($args->{-with} !~ m/^(list|admin)$/){ 
-			croak "'-with' paramater must be either, 'list' or, 'admin'";
+			croak "'-with' parameter must be either, 'list' or, 'admin'";
 		}
 	}
 	my $with = $args->{-with}; 

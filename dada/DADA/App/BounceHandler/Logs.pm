@@ -63,13 +63,13 @@ sub search {
     my $self = shift;
     my ($args) = @_;
     if ( !exists( $args->{-query} ) ) {
-        croak "you MUST pass the, '-query' paramater!";
+        croak "you MUST pass the, '-query' parameter!";
     }
     if ( !exists( $args->{-list} ) ) {
-        croak "you MUST pass the, '-list' paramater!";
+        croak "you MUST pass the, '-list' parameter!";
     }
     if ( !exists( $args->{-file} ) ) {
-        croak "you MUST pass the, '-file' paramater!";
+        croak "you MUST pass the, '-file' parameter!";
     }
 
     my $query = $args->{-query};

@@ -81,10 +81,10 @@ sub filter {
 	my ($args) = @_;
 	
 	if(! exists($args->{-type} )) { 
-		croak "you MUST pass the, '-type' paramater!"; 
+		croak "you MUST pass the, '-type' parameter!"; 
 	}
 	if(! exists($args->{-list} )) { 
-		croak "you MUST pass the, '-list' paramater!"; 
+		croak "you MUST pass the, '-list' parameter!"; 
 	}
 
 	if($args->{-type} eq 'text/html') { 

@@ -344,7 +344,7 @@ Enable/Disable the following Profile Features:
 
 =back
 
-These global paramaters can be read from previous configurations, and can be editing using the installer or directly in the C<.dada_config> file. 
+These global parameters can be read from previous configurations, and can be editing using the installer or directly in the C<.dada_config> file. 
 
 A new doc helps explain the plethora of options available: 
 

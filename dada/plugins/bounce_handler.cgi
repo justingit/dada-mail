@@ -1135,7 +1135,7 @@ This will have Bounce Handler check any awaiting messages.
 A I<Pretty Good Guess> of what the entire cronjob should be set to is located 
 in the web-based crontrol panel for Bounce Handler, under the fieldset legend, B<Manually Run Bounce Handler>, under the heading, B<curl command example (for a cronjob):>
 
-=head3 Customizing your cronjob with added paramaters
+=head3 Customizing your cronjob with added parameters
 
 =head4 passcode
 
@@ -1164,7 +1164,7 @@ Set a B<passcode> in Bounce Handler's Config variable, B<Manual_Run_Passcode>. T
 			
 		},
 
-Find the config paramater named, B<Manual_Run_Passcode> and set it to whatever you'd like this Passcode to be: 
+Find the config parameter named, B<Manual_Run_Passcode> and set it to whatever you'd like this Passcode to be: 
 
 		Manual_Run_Passcode         => 'sneaky',
 
@@ -1198,13 +1198,13 @@ There's a slew of optional arguments you can give to this script. To use Bounce 
 
  ./bounce_handler.cgi --help
 
-For a full list of paramaters. 
+For a full list of parameters. 
 
 You may set the cronjob via the command line interface, rather than the web-based way. You may run into file permission problems when running it this way, depending on your server setup. 
 
 =head2 Command Line Interface for Cronjobs: 
 
-The secret is to actually have two commands in one. The first command changes into the same directory as the C<bounce_handler.cgi> script, the second invokes the script with the paramaters you'd like. 
+The secret is to actually have two commands in one. The first command changes into the same directory as the C<bounce_handler.cgi> script, the second invokes the script with the parameters you'd like. 
 
 For example: 
 
@@ -1234,9 +1234,9 @@ Defaults to: B<0>. Set to, B<1>, if you'd like (and can) connect to the POP serv
 
 Defaults to: B<BEST>
 
-Allowed paramaters: B<BEST>, B<PASS>, B<APOP>, B<CRAM-MD5>. 
+Allowed parameters: B<BEST>, B<PASS>, B<APOP>, B<CRAM-MD5>. 
 
-If the default of, B<BEST> isn't working, try the various allowed paramaters. B<PASS> passes the POP3 password in cleartext. 
+If the default of, B<BEST> isn't working, try the various allowed parameters. B<PASS> passes the POP3 password in cleartext. 
 
 =over
 
@@ -1270,7 +1270,7 @@ This is covered above, under, B<passcode>
 
 Defaults to B<1> 
 
-When enabled, Bounce Handler will use a lock file to make sure only one connection to the POP server is done at one time. Disable this by setting this paramater to, B<0>. 
+When enabled, Bounce Handler will use a lock file to make sure only one connection to the POP server is done at one time. Disable this by setting this parameter to, B<0>. 
 
 =head2 Log
 

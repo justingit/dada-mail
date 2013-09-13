@@ -178,7 +178,7 @@ Maybe just use a csv format for PlainText? (and only use such functionality, for
 
 
 [] SpamAssassin plugin config for Dada Bridge? 
-	Just so it's easier to pass custom paramaters to SpamAssassin, in Dada Bridge (just whatever is needed in new()) 
+	Just so it's easier to pass custom parameters to SpamAssassin, in Dada Bridge (just whatever is needed in new()) 
 
 
 filter_subscribers enhancements
@@ -821,7 +821,7 @@ http://osdir.com/ml/lang.perl.modules.html-template/2006-12/msg00004.html
 		[+] Meh, it ain't goin anywhere, the PP version Really really needs to be rewritten, because it sucks!
 
 [ ] Get rid of DADA::Template::HTML, since it's stupid and horribly written and being superceded by DADA::Template::Widgets anyways
-	[ ] Add a, "wrap" paramater to DADA::Template::Widgets::screen, so that you can do the things DADA::Template::HTML does, but do it better
+	[ ] Add a, "wrap" parameter to DADA::Template::Widgets::screen, so that you can do the things DADA::Template::HTML does, but do it better
 	[ ] Get rid of that option to have <form> tags made - that was stupod
 	[ ] This will also get rid of the problem of these templates being, "different" than the other templates in Dada Mail. Yeah!
 

@@ -130,7 +130,7 @@ sub subscription_search {
     my $self = shift;
     my ($args) = @_;
     if ( !exists( $args->{-email} ) ) {
-        croak "you MUST pass the, '-email' paramater!";
+        croak "you MUST pass the, '-email' parameter!";
     }
 
     if ( exists( $args->{-list} ) ) {
@@ -142,7 +142,7 @@ sub subscription_search {
     }
 
     #    if ( !exists( $args->{-list} ) ) {
-    #        croak "you MUST pass the, '-list' paramater!";
+    #        croak "you MUST pass the, '-list' parameter!";
     #    }
 
     my $results = [];

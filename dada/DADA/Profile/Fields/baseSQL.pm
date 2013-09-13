@@ -16,10 +16,10 @@ sub insert {
     my ($args) = @_;
 	if(!exists($self->{email})){ 
  	   if ( !exists $args->{ -email } ) {
-	        croak("You MUST supply an email address in the -email paramater!");
+	        croak("You MUST supply an email address in the -email parameter!");
 	    }
 	    if ( length( strip( $args->{ -email } ) ) <= 0 ) {
-	        croak("You MUST supply an email address in the -email paramater!");
+	        croak("You MUST supply an email address in the -email parameter!");
 	    }
 	}
 	else { 

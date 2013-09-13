@@ -430,7 +430,7 @@ https://github.com/justingit/dada-mail/issues/209
 
 https://github.com/justingit/dada-mail/issues/210
 
-=head3 <form> tags have no, 'accept-charset="..."' paramater
+=head3 <form> tags have no, 'accept-charset="..."' parameter
 
 https://github.com/justingit/dada-mail/issues/211
 
@@ -918,12 +918,12 @@ https://github.com/justingit/dada-mail/issues/145
 
 =back
 
-=head3 ajax_include_subscribe.cgi - set the mailing list you want the form to use, by query string paramater
+=head3 ajax_include_subscribe.cgi - set the mailing list you want the form to use, by query string parameter
 
 In the, C<ajax_include_subscribe.cgi> script, you had the choice of either creating a form that allows you to 
 show ALL lists available, or set a configuration variable within the script, to only show one list by default. 
 
-You may now set whichever list you would like the subscription form to use, via the, C<list> query string paramater: 
+You may now set whichever list you would like the subscription form to use, via the, C<list> query string parameter: 
 
  <script type="text/javascript" src="http://example.com/cgi-bin/dada/extensions/ajax_include_subscribe.cgi?list=mylist"></script> 
  
@@ -1220,7 +1220,7 @@ screen. This seems to make things appear much more snappy.
 =head2 Subscription/Unsubscription Custom URL Redirect API Change
 
 If there's an error with a subscription/unsubscription request, Dada Mail would 
-add a list of the errors it came across by passing them in query string with a paramater named, C<errors>. 
+add a list of the errors it came across by passing them in query string with a parameter named, C<errors>. 
 This name has been changed to, C<errors[]> to help out php folk. This is tied to this bug: 
 
 L<https://github.com/justingit/dada-mail/issues#issue/109>
@@ -2157,7 +2157,7 @@ A new Plugin Config Paramater called, C<Check_Multiple_From_Addresses> has been 
 and has a default value of, C<1>. When enabled, messages that have more than one 
 sender aren't supported by Dada Bridge and these messages will be ignored. 
 
-Set this paramater to, C<0> to revert to the previous behavior. 
+Set this parameter to, C<0> to revert to the previous behavior. 
 
 =head3 Mail Sending - "broken pipe" catch removed
 
@@ -2196,7 +2196,7 @@ http://github.com/justingit/dada-mail/issues/closed/#issue/6
 
 http://github.com/justingit/dada-mail/issues/closed#issue/10
 
-=head3 pop3_username paramater not passed to sending_preferences.tmpl
+=head3 pop3_username parameter not passed to sending_preferences.tmpl
 
 http://github.com/justingit/dada-mail/issues/closed#issue/12
 

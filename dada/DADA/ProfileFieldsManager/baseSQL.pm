@@ -109,7 +109,7 @@ sub add_field {
     my ($args) = @_;
 
     if ( !exists $args->{ -field } ) {
-        croak "You must pass a value in the -field paramater!";
+        croak "You must pass a value in the -field parameter!";
     }
     $args->{ -field } = lc( $args->{ -field } );
 
@@ -254,10 +254,10 @@ sub edit_field {
     my ($args) = @_;
 
     if ( !exists( $args->{ -old_name } ) ) {
-        croak "You MUST supply the old field name in the -old_name paramater!";
+        croak "You MUST supply the old field name in the -old_name parameter!";
     }
     if ( !exists( $args->{ -new_name } ) ) {
-        croak "You MUST supply the new field name in the -new_name paramater!";
+        croak "You MUST supply the new field name in the -new_name parameter!";
     }
 	if(! $self->field_exists({-field => $args->{ -old_name }})){ 
 		croak 'field, ' . $args->{ -old_name } . ' does not exist!'; 

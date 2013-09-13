@@ -109,11 +109,11 @@ There's been some confusing amongst... amongst myself in some of the terms used 
 
 I've decided on, "Black List". Some list settings are named, "black_list_*" and some are named, "blacklist_*"
 
-These currently won't change, but the I<error> paramaters have. They should all be, B<black_list> 
+These currently won't change, but the I<error> parameters have. They should all be, B<black_list> 
 
 =head3 screen API
 
-The B<DADA::Template::Widgets> C<screen> subroutine has gone through significant changes - one of the largest is the move from passing paramaters in a hash, to passing paramaters in a hashref. All the old paramaters will work (and there's a slew of new, I<optional> ones, but these paramaters must be passed in a hashref. So: 
+The B<DADA::Template::Widgets> C<screen> subroutine has gone through significant changes - one of the largest is the move from passing parameters in a hash, to passing parameters in a hashref. All the old parameters will work (and there's a slew of new, I<optional> ones, but these parameters must be passed in a hashref. So: 
 
  print DADA:Template::Widgets::screen(-screen => foo.tmpl); # No!
 
@@ -4138,7 +4138,7 @@ Batch mailings sometimes do not get logged in some instances. If the mailing pro
 
 =item * [ 777320 ] 2.8.8 - cookies not setting 'expires' attribute
 
-The %COOKIE_PARAMS Config.pm variable will hold paramaters passed to the cookies mojo sets. It's a good place to start if you need to tweak the cookie.
+The %COOKIE_PARAMS Config.pm variable will hold parameters passed to the cookies mojo sets. It's a good place to start if you need to tweak the cookie.
 
 =item * [ 776400 ] Bulkmail problems on win2k (alarm bug)
 

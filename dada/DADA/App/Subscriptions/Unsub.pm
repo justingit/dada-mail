@@ -34,7 +34,7 @@ sub _init {
 
     for ('-list') {
         if ( !exists( $args->{$_} ) ) {
-            croak "You MUST pass the, " . $_ . " paramater!";
+            croak "You MUST pass the, " . $_ . " parameter!";
         }
     }
 
@@ -62,7 +62,7 @@ sub unsub_link {
 
     for ( '-mid', '-email' ) {
         if ( !exists( $args->{$_} ) ) {
-            croak "You MUST pass the, " . $_ . " paramater!";
+            croak "You MUST pass the, " . $_ . " parameter!";
         }
     }
 

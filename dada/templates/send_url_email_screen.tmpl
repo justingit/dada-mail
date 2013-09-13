@@ -13,15 +13,13 @@
 
 <div id="send_url_email"></div> 
 
-
-
-
-
+<!-- tmpl_include test_sent_notice_widget.tmpl --> 
 <!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
 
 
 <form name="mass_mailing" id="mass_mailing" action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post">
  <input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" />
+ <input type="hidden" id="f" name="f" value="send_url_email" />
  <input type="hidden" name="support_files_url" id="support_files_url" value="<!-- tmpl_var SUPPORT_FILES_URL -->" />
  
 
@@ -30,33 +28,22 @@
 	 <div class="disabled">
 	  <p class="error">
 	   Disabled. The 'MIME::Lite::HTML' Perl Library needs to be installed, or is missing required components. More information below:
-	   
 	  </p>
-	  
 	  <pre> 
-<!-- tmpl_var mime_lite_html_error -->
+		<!-- tmpl_var mime_lite_html_error -->
 	  </pre> 
-	  
-	  
 	 </div>
 	 
 <!-- tmpl_else-->
-	 
 	 <!-- tmpl_unless can_use_lwp_simple -->
-
-
 		  <div class="disabled">
 		  <p class="error">
 		   Disabled. The 'LWP' Perl Library needs to be installed. More information below: 
 		  </p>
-		  
 		  <pre> 
-<!-- tmpl_var lwp_simple_error --> 
+			<!-- tmpl_var lwp_simple_error --> 
 		  </pre> 
-		  
-		  
-		 </div>
-		 
+		 </div> 
 			<!-- tmpl_else-->
 
         <!-- tmpl_if list_settings.group_list --> 
@@ -67,10 +54,13 @@
 		</div>
 		<!--/tmpl_if--> 
 
+<input type="hidden" id="draft_alert"  name="draft_alert"  value="<!-- tmpl_var draft_alert default="0" -->" />
+<input type="hidden" id="draft_id"     name="draft_id"     value="<!-- tmpl_var draft_id -->" /> 
+<!-- tmpl_include draft_notice_widget.tmpl --> 
+
 <!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
 	
 	<fieldset> 
-		<!-- <legend>Message Body [<a href="#" class="message_body_help">?</a>]</legend>-->
 		 <legend>Message Body [<a href="#" onclick="$.colorbox({inline:true, href:$('#message_body_help')})">?</a>]</legend>
 
 		<div id="tabs"> 
@@ -210,7 +200,7 @@
 			  </td>
 			  <td>
 			   <p>
-				<input type="password" name="url_password" />
+				<input type="text" name="url_password" />
 			   </p>
 			  </td>
 			 </tr>
@@ -224,7 +214,7 @@
 			  </td>
 			  <td>
 			   <p>
-				<input type="password" name="proxy" />
+				<input type="text" name="proxy" />
 			   </p>
 			  </td>
 			 </tr>
@@ -256,10 +246,6 @@
 		 <p>
 			 <!-- tmpl_include plaintext_message_form_field_widget.tmpl -->
 		 </p>
-
-
-
-		 <input type="hidden" name="f" value="send_url_email" />
 	</div> 
 	
 </div> 

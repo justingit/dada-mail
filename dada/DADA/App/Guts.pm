@@ -402,13 +402,13 @@ sub make_template {
 
     if ( !$args->{-List} ) {
         carp
-            "You need to supply a List make_template({-List => your_list}) in the paramaters.";
+            "You need to supply a List make_template({-List => your_list}) in the parameters.";
         return undef;
     }
     
     if ( !$args->{-Template} ) {
         carp
-            "You need to supply a Template make_template({-Template => your_list}) in the paramaters.";
+            "You need to supply a Template make_template({-Template => your_list}) in the parameters.";
         return undef;
     }
 
@@ -463,7 +463,7 @@ sub delete_list_template {
 
      if ( !$args->{-List} ) {
         carp
-            "You need to supply a List make_template({-List => your_list}) in the paramaters.";
+            "You need to supply a List make_template({-List => your_list}) in the parameters.";
         return undef;
     }
     
@@ -610,7 +610,7 @@ sub check_if_list_exists {
 
 return an array containing the listshortnames of available list. 
 
-Can take a few paramaters - all are optional: 
+Can take a few parameters - all are optional: 
 
 =over
 
@@ -629,7 +629,7 @@ As the name implies, the subroutine won't kill the program calling it, if there'
 
 =back
 
-Using all these paramaters at once would look something like this: 
+Using all these parameters at once would look something like this: 
 
  my $available_lists = available_lists(
                                         -As_Ref => 1, 
@@ -1483,7 +1483,7 @@ sub plaintext_to_html {
 	my ($args) = @_; 
 	
 	if(!exists($args->{-str})){ 
-		croak "you MUST pass a string to plaintext_to_html in the, '-str' paramater!"; 
+		croak "you MUST pass a string to plaintext_to_html in the, '-str' parameter!"; 
 	}
 	if(!exists($args->{-method})){ 
 		$args->{-method} = "thorough"; 

@@ -265,12 +265,12 @@ If you would like to use the bundled WYSIWYG editors with Dada Mail, check the o
 
 =begin html 
 
-<p>Dada Mail's Installer also supports setting quite a few advanced global configuration settings and paramaters. <a href="./install_dada_mail-advanced_configuration.pod.html">This section is covered in detail, here.
+<p>Dada Mail's Installer also supports setting quite a few advanced global configuration settings and parameters. <a href="./install_dada_mail-advanced_configuration.pod.html">This section is covered in detail, here.
 </a></p>
 
 =end html
 
-Many of the Advanced Configuration paramaters are only available in Pro Dada: 
+Many of the Advanced Configuration parameters are only available in Pro Dada: 
 
 L<http://dadamailproject.com/purchase/pro.html> 
 

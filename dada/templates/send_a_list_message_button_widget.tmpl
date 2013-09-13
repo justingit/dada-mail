@@ -11,11 +11,11 @@
 <div class="buttonfloat">
 	
 <!-- tmpl_unless expr="(mass_mailing_type eq 'invite')" -->
-	<input type="submit" class="processing savedraft"  name="process" id="submit_draft" value="Save as Draft" />
+	<input type="button" class="processing savedraft "  name="process" id="submit_draft" value="Save as Draft" />
 <!-- /tmpl_unless -->
 	
- <input type="submit" class="cautionary sendmassmailing justatest"  name="process" id="submit_test_mailing" value="<!-- tmpl_if expr="(mass_mailing_type eq 'invite')" -->Send a Test Invitation<!-- tmpl_else -->Send a Test Message<!-- /tmpl_if -->" />
- <input type="submit" class="processing sendmassmailing"            name="process" id="submit_mass_mailing" value="<!-- tmpl_if expr="(mass_mailing_type eq 'invite')" -->Send Invitations<!-- tmpl_else -->Send Mass Mailing<!-- /tmpl_if -->" />
+ <input type="submit" class="processing sendmassmailing justatest "  name="process" id="submit_test_mailing" value="<!-- tmpl_if expr="(mass_mailing_type eq 'invite')" -->Send a Test Invitation<!-- tmpl_else -->Send a Test Message<!-- /tmpl_if -->" />
+ <input type="submit" class="cautionary sendmassmailing "            name="process" id="submit_mass_mailing" value="<!-- tmpl_if expr="(mass_mailing_type eq 'invite')" -->Send Invitations<!-- tmpl_else -->Send Mass Mailing<!-- /tmpl_if -->" />
 
 
 

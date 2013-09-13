@@ -182,16 +182,16 @@ ok(
 ### move_subscriber
 
 eval { $lh->move_subscriber(); };
-ok( $@, "calling move_subscriber without any paramaters causes an error!: $@" );
+ok( $@, "calling move_subscriber without any parameters causes an error!: $@" );
 
 eval { $lh->move_subscriber( { -to => 'blahblah' } ); };
 ok( $@,
-    "calling move_subscriber with incorrect -to paramater causes an error!: $@"
+    "calling move_subscriber with incorrect -to parameter causes an error!: $@"
 );
 
 eval { $lh->move_subscriber( { -to => 'blahblah', -from => 'yayaya' } ); };
 ok( $@,
-"calling move_subscriber with incorrect -to and -from paramater causes an error!: $@"
+"calling move_subscriber with incorrect -to and -from parameter causes an error!: $@"
 );
 
 eval {
@@ -348,16 +348,16 @@ ok( $lh->remove_all_subscribers == 1, "Removed all the subscribers!" );
 #### copy_subscriber
 
 eval { $lh->copy_subscriber(); };
-ok( $@, "calling copy_subscriber without any paramaters causes an error!: $@" );
+ok( $@, "calling copy_subscriber without any parameters causes an error!: $@" );
 
 eval { $lh->copy_subscriber( { -to => 'blahblah' } ); };
 ok( $@,
-    "calling copy_subscriber with incorrect -to paramater causes an error!: $@"
+    "calling copy_subscriber with incorrect -to parameter causes an error!: $@"
 );
 
 eval { $lh->copy_subscriber( { -to => 'blahblah', -from => 'yayaya' } ); };
 ok( $@,
-"calling copy_subscriber with incorrect -to and -from paramater causes an error!: $@"
+"calling copy_subscriber with incorrect -to and -from parameter causes an error!: $@"
 );
 
 eval {
@@ -457,7 +457,7 @@ ok(
             -email => 'mytest@example.com'
         }
     ),
-    "Calling copy_subscriber with correct paramaters works!"
+    "Calling copy_subscriber with correct parameters works!"
 );
 ok(
     $lh->remove_from_list(
@@ -623,7 +623,7 @@ SKIP: {
 
     eval { ( $errors, $details ) = $lh->validate_subscriber_field_name(); };
     ok( $@,
-"calling validate_subscriber_field_name without any paramaters causes an error!: $@"
+"calling validate_subscriber_field_name without any parameters causes an error!: $@"
     );
     undef($errors);
     undef($details);
@@ -633,7 +633,7 @@ SKIP: {
     ### subscriber_field_exists
     eval { $lh->subscriber_field_exists };
     ok( $@,
-"calling subscriber_field_exists without any paramaters causes an error!: $@"
+"calling subscriber_field_exists without any parameters causes an error!: $@"
     );
 
     my $s = $lh->add_subscriber_field( { -field => 'myfield' } );

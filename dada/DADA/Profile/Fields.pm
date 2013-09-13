@@ -117,7 +117,7 @@ DADA::Profile::Fields
 
  my $pf = DADA::Profile::Fields->new
 
-C<new> requires no paramaters.
+C<new> requires no parameters.
 
 A C<DADA::Profile::Fields> object will be returned. 
 
@@ -129,21 +129,21 @@ A C<DADA::Profile::Fields> object will be returned.
  }	
  ); 
 
-C<insert> inserts a new record into the profile table. This method requires a few paramaters: 
+C<insert> inserts a new record into the profile table. This method requires a few parameters: 
 
 C<-email> is required and should hold a valid email address in the form of: C<user@example.com>
 
-C<-fields> holds the Subscriber Profile Fields passed as a hashref. It is an optional paramater. 
+C<-fields> holds the Subscriber Profile Fields passed as a hashref. It is an optional parameter. 
 
 C<-mode> sets the way the new profile will be created and can either be set to, C<writeover> or, C<preserve>
 
-When set to, C<writeover>, any existing profile belonging to the email passed in the <-email> paramater will be clobbered. 
+When set to, C<writeover>, any existing profile belonging to the email passed in the <-email> parameter will be clobbered. 
 
 When set to, C<preserve>, this method will first look and see if an already existing profile exists and if so, will not create a new one, but simply exit the method. 
 
-C<writeover> is the default, if no paramater is passed. 
+C<writeover> is the default, if no parameter is passed. 
 
-C<-confirmed> confirmed can also be passed with a value of either C<1> or, C<0>, with C<1> being the default if the paramater is not passed. 
+C<-confirmed> confirmed can also be passed with a value of either C<1> or, C<0>, with C<1> being the default if the parameter is not passed. 
 
 Unconfirmed profiles are marked as existing, but not, "live" as a way to save the profile information, until the profile can be confirmed, by a user. 
 
@@ -155,7 +155,7 @@ This method should return, C<1> on success.
 
 C<get> returns the Subscriber Profile Fields for the email address passed in, C<-email> as a hashref. 
 
-C<-email> is a required paramater. Not passing it will cause this method to return, C<undef>. 
+C<-email> is a required parameter. Not passing it will cause this method to return, C<undef>. 
 
 Passing an email that doesn't have a profile saved will also return, C<undef>. Check before by using, C<exists()>
 
@@ -169,7 +169,7 @@ C<-dotted> is an optional paramter, and will return the keys of the hashref appe
 		}
 	); 
 
-C<exists> return either C<1>, if the profile associated with the email address passed in the C<-email> paramater has a profile
+C<exists> return either C<1>, if the profile associated with the email address passed in the C<-email> parameter has a profile
 
 or, C<0> if there is no profile. 
 
@@ -183,12 +183,12 @@ or, C<0> if there is no profile.
  ); 
 
 C<remove> removes the Subscriber Profile Fields assocaited with the email address passed in the 
-C<-email> paramater. 
+C<-email> parameter. 
 
 C<remove> will return the number of rows removed - this should hopefully be only C<1>. Any larger number 
 would be a serious problem. 
 
-C<-email> is a required paramater. Not passing it will cause this method to return, C<undef>. 
+C<-email> is a required parameter. Not passing it will cause this method to return, C<undef>. 
 
 Passing an email that doesn't have a profile saved will also return, C<undef>. Check before by using, C<exists()>
 

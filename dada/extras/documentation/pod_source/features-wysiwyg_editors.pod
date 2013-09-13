@@ -100,7 +100,7 @@ Configuration of the editors to work with Dada Mail is done in the configuration
 		},
 	};
 
-For each editor's paramaters (C<fckeditor>, C<ckeditor>, C<tiny_mce>), there are two more named paramaters, C<enabled> and, C<url>. 
+For each editor's parameters (C<fckeditor>, C<ckeditor>, C<tiny_mce>), there are two more named parameters, C<enabled> and, C<url>. 
 
 C<enabled> can be set to C<1> to enable the editor, or C<0> to disable. Disabled editors will not be available to be used in your mailing lists, even if they're installed on your hosting account. If any of your mailing lists have selected a editor that you then disable, they will default in using B<no> editor. 
 
@@ -119,7 +119,7 @@ Configuration for the KCFinder file browser to work with Dada Mail is done in th
 		},
 	};
 
-The, C<kcfinder> paramater has additional paramaters to configure: 
+The, C<kcfinder> parameter has additional parameters to configure: 
 
 C<enabled> can be set to C<1> to enable KCFinder, or C<0> to disable. 
 
@@ -147,7 +147,7 @@ Although Dada Mail ships with these editors and the file upload/browser in the,
 
 I<dada/extras/packages>
 
-directory. We don't encourage you to either set the C<url> paramaters to use editors/etc I<directly> from where they are, or even copy/move the editors/etc to a better location. 
+directory. We don't encourage you to either set the C<url> parameters to use editors/etc I<directly> from where they are, or even copy/move the editors/etc to a better location. 
 
 Rather, it's best to download them directly from the editors/etc. own site. The former probably won't work at all if you're installing Dada Mail inside your cgi-bin. 
 
