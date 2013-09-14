@@ -219,9 +219,9 @@ html, body {
 	padding-left: 10px;
 	padding-right: 10px;
 	font-size: 1em;
-	-webkit-box-shadow: 0 4px 8px rgba(51,0,0,0.5);
-	-moz-box-shadow: 0 4px 8px rgba(51,0,0,0.5);
-	box-shadow: 0 4px 8px rgba(51,0,0,0.5);
+	-webkit-box-shadow: 0 4px 8px 0 rgba(51,0,0,0.5);
+	-moz-box-shadow: 0 4px 8px 0 rgba(51,0,0,0.5);
+	box-shadow: 0 4px 8px 0 rgba(51,0,0,0.5);
 	-webkit-border-radius: 5px;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
@@ -413,9 +413,9 @@ textarea,
 	border-color: #666;
 	font-size: 1em;
 	font-family: Helvetica,Verdana,Arial,sans-serif;
-	-moz-box-shadow: inset 0px 1px 3px rgba(51,0,0,0.3);
-	-webkit-box-shadow: inset 0px 1px 3px rgba(51,0,0,0.3);
-	box-shadow: inset 0px 1px 3px rgba(51,0,0,0.3)
+	-moz-box-shadow:  0px 1px 3px 0 rgba(51,0,0,0.3) inset;
+	-webkit-box-shadow:  0px 1px 0 3px rgba(51,0,0,0.3) inset;
+	box-shadow:  0px 1px 3px 0 rgba(51,0,0,0.3) inset;
 }
 .fake_input { 
 	margin-left:0; 
@@ -485,11 +485,14 @@ input.small_button {
 }
 
 input.bigger_button { 
-	font-size: 1.75em; 
+	font-size: 1.5em; 
 	
-	-webkit-border-radius: 5px;
-	-moz-border-radius: 5px;
-	border-radius: 5px;
+	-webkit-border-radius: 1px;
+	-moz-border-radius: 1px;
+	border-radius: 1px;
+	padding:.3em; 
+	color:#999;
+	
 }
 
 #Header input.small_button {
@@ -534,16 +537,16 @@ textarea {
 
 
 input.processing {
-	background-color: #9f9;
+	background-color: #cfc;
 	color: #333;
 }
 input.cautionary {
-	background-color: #ff9;
+	background-color: #ffc;
 	color: #333;
 }
 
 input.alertive {
-	background-color: #f33;
+	background-color: #f66;
 	color: #fcc;
 }
 
@@ -733,6 +736,12 @@ li.archive_badges_li {
 	font-size: 1em;
 	font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
 	text-shadow: 1px 1px 2px #330033;
+	
+	-webkit-box-shadow: inset 0px -4px 4px 0px rgba(51, 0, 0, .4);
+	-moz-box-shadow: inset 0px -4px 4px 0px rgba(51, 0, 0, .4);
+	box-shadow: inset 0px -4px 4px 0px rgba(51, 0, 0, .4);
+	
+	
 }
 #screentitle a,
 #screentitle hover,
@@ -792,6 +801,12 @@ li.archive_badges_li {
 	font-size: 1em;
 	font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
 	text-shadow: 1px 1px 2px #330033;
+	
+	-webkit-box-shadow: inset 0 -4px 8px rgba(51,0,0,0.4);
+	-moz-box-shadow: inset  0 -4px 8px rgba(51,0,0,0.4);
+	box-shadow: inset 0 -4px 8px rgba(51,0,0,0.4);
+	
+	
 }
 
 /* this is the horizontal separator */
@@ -982,5 +997,42 @@ table.tablesorter thead tr .headerSortDown {
 table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
 background-color: #8dbdd8;
 }
+
+#form_widgets {
+  margin-top:60px;	
+  float:left;
+  width:100%;
+
+}
+#entire_form {
+  position: relative;
+}
+#top_floating_button_wrapper { /* required to avoid jumping */
+  position: absolute;
+  width:100%;
+
+
+}
+#buttons {
+  position: absolute;
+  top: 0;
+/*  padding-top: 19px;*/
+  background-color: #ededed; /* rgba(255, 255, 255, 1); */
+  width:100%;
+  border-bottom:1px solid #ccc;
+
+
+	-webkit-box-shadow: 0 8px 8px 0 rgba(51,0,0,0.5);
+	-moz-box-shadow: 0 8px 8px 0rgba(51,0,0,0.5);
+	box-shadow: 0 8px 8px 0 rgba(51,0,0,0.5);
+
+
+}
+#buttons.fixed {
+  position: fixed;
+  top: 0;
+ 
+}
+
 
 

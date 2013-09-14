@@ -1003,14 +1003,14 @@ sub admin_menu_drafts_notification {
 			
 			$list = $admin_list; 
 			require DADA::MailingList::MessageDrafts; 
+
 			my $d = DADA::MailingList::MessageDrafts->new({-list => $list}); 
-			my $num = $d->count; 
-			
-			if($num > 0) { 
-				e_print('(' . commify($num) . ')');  
+			if($d->enabled) { 
+				my $num = $d->count; 
+				if($num > 0) { 
+					e_print('(' . commify($num) . ')');  
+				}
 			}
-			
-			
 		}
     } catch { 
 		warn "Problems filling out the 'Sending Monitor' admin menu item with interesting bits of information about the mailouts: $_";
@@ -1211,6 +1211,12 @@ sub drafts {
 	require DADA::MailingList::MessageDrafts; 
 	my $d = DADA::MailingList::MessageDrafts->new({-list => $list}); 
 	
+	my $di = [];
+	
+	if($d->enabled) { 
+		$di = $d->draft_index;
+	}
+	my $enabled = $d->enabled; 
 	my $scrn = DADA::Template::Widgets::wrap_screen(
 			{
 				-screen => 'drafts.tmpl',
@@ -1221,9 +1227,10 @@ sub drafts {
 				},
 				-expr   => 1, 
 				-vars   => {
-					screen                       => 'drafts',
+					screen => 'drafts',
 					delete_draft => $delete_draft, 
-					draft_index => $d->draft_index, 
+					draft_index => $di, 
+					enabled     => $enabled,
 				},
 				-list_settings_vars_param => {
 					-list    => $list,
@@ -1246,6 +1253,7 @@ sub delete_draft {
 	
 	require DADA::MailingList::MessageDrafts; 
 	my $d = DADA::MailingList::MessageDrafts->new({-list => $list}); 
+	die "not enabled! " unless $d->enabled; 
 	   $d->remove($id);
 	print $q->redirect(-url => $DADA::Config::S_PROGRAM_URL . '?f=drafts&delete_draft=1');
 	

@@ -115,3 +115,13 @@ use_custom_error_page char(1),
 custom_error_page text,
 default_password text
 );
+
+CREATE TABLE dada_message_drafts (
+id serial not null UNIQUE,
+list varchar(16),
+created_timestamp TIMESTAMP DEFAULT NOW(),
+last_modified_timestap TIMESTAMP, 
+screen  varchar(80),
+role varchar(80),
+draft text
+);

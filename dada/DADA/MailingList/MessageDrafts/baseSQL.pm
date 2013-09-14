@@ -52,7 +52,37 @@ sub _sql_init {
     $self->{dbh} = $dbi_obj->dbh_obj;
 }
 
+sub id_exists {
+
+    my $self = shift;
+    my $id   = shift;
+
+	if(!defined($id) || $id eq ''){ 
+		return 0;
+	}
+    my $query =
+        'SELECT COUNT(*) FROM '
+      . $self->{sql_params}->{message_drafts_table}
+      . ' WHERE list = ? AND id = ?';
+    my $sth = $self->{dbh}->prepare($query);
+    $sth->execute( $self->{list}, $id )
+      or croak "cannot do statment '$query'! $DBI::errstr\n";
+
+    my $count = $sth->fetchrow_array;
+
+    $sth->finish;
+
+    if ( $count eq undef ) {
+        return 0;
+    }
+    else {
+        return $count;
+    }
+
+}
+
 sub save {
+
     my $self = shift;
     my ($args) = @_;
 
@@ -71,7 +101,9 @@ sub save {
     if ( exists( $args->{-id} ) ) {
         $id = $args->{-id};
     }
-    
+	
+	warn '$id:' . $id; 
+	
     my $draft =
       $self->stringify_cgi_params(
         { -cgi_obj => $args->{-cgi_obj}, -screen => $args->{-screen} } );
@@ -79,7 +111,9 @@ sub save {
     if ( !defined($id) ) {
 
         my $query =
-'INSERT INTO dada_message_drafts (list, screen, role, draft, last_modified_timestap) VALUES (?,?,?,?, NOW())';
+            'INSERT INTO '
+          . $self->{sql_params}->{message_drafts_table}
+          . ' (list, screen, role, draft, last_modified_timestap) VALUES (?,?,?,?, NOW())';
         my $sth = $self->{dbh}->prepare($query);
 
         $sth->execute( $self->{list}, $args->{-screen}, $args->{-role}, $draft )
@@ -92,18 +126,27 @@ sub save {
             return $sth->{mysql_insertid};
         }
         else {
-            return $sth->{last_insert_id};
-        }
+			my $last_insert_id = $self->{dbh}->last_insert_id(undef, undef, $self->{sql_params}->{message_drafts_table}, undef);
+        	warn '$last_insert_id:' . $last_insert_id; 
+			return $last_insert_id; 
+		}
     }
     else {
+	
+	    if ( !$self->id_exists($id) ) {
+            croak "id, '$id' doesn't exist!";
+        }
+    
         my $query =
-'UPDATE dada_message_drafts SET screen = ?, role = ?, draft = ?, last_modified_timestap = NOW() WHERE list = ? AND id = ?';
+            'UPDATE '
+          . $self->{sql_params}->{message_drafts_table}
+          . ' SET screen = ?, role = ?, draft = ?, last_modified_timestap = NOW() WHERE list = ? AND id = ?';
         my $sth = $self->{dbh}->prepare($query);
         $sth->execute( $args->{-screen}, $args->{-role}, $draft,
             $self->{list}, $args->{-id} )
           or croak "cannot do statment '$query'! $DBI::errstr\n";
         $sth->finish;
-        return $args->{-id};
+        return $id;
     }
 }
 
@@ -121,7 +164,7 @@ sub has_draft {
 
     my $query =
         'SELECT COUNT(*) FROM '
-      . 'dada_message_drafts'
+      . $self->{sql_params}->{message_drafts_table}
       . ' WHERE list = ? AND screen = ? AND role = ?';
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute( $self->{list}, $args->{-screen}, $args->{-role} )
@@ -152,7 +195,9 @@ sub latest_draft_id {
     }
 
     my $query =
-'SELECT id FROM dada_message_drafts WHERE list = ? AND screen = ? AND role = ? ORDER BY last_modified_timestap DESC';
+        'SELECT id FROM '
+      . $self->{sql_params}->{message_drafts_table}
+      . ' WHERE list = ? AND screen = ? AND role = ? ORDER BY last_modified_timestap DESC';
     my $sth = $self->{dbh}->prepare($query);
 
     $sth->execute( $self->{list}, $args->{-screen}, $args->{-role} )
@@ -184,11 +229,20 @@ sub fetch {
     my $query;
     if ( !$id ) {
         $query =
-'SELECT id, list, screen, role, draft FROM dada_message_drafts WHERE list = ? AND screen = ? AND role = ? ORDER BY id DESC';
+            'SELECT id, list, screen, role, draft FROM '
+          . $self->{sql_params}->{message_drafts_table}
+          . ' WHERE list = ? AND screen = ? AND role = ? ORDER BY id DESC';
     }
     else {
+	
+	    if ( !$self->id_exists($id) ) {
+            croak "id, '$id' doesn't exist!";
+        }
+    
         $query =
-'SELECT id, list, screen, role, draft FROM dada_message_drafts WHERE list = ? AND screen = ? AND role = ? AND id = ? ORDER BY id DESC';
+            'SELECT id, list, screen, role, draft FROM '
+          . $self->{sql_params}->{message_drafts_table}
+          . ' WHERE list = ? AND screen = ? AND role = ? AND id = ? ORDER BY id DESC';
 
     }
 
@@ -224,7 +278,9 @@ sub count {
 
     my @row;
     my $query =
-      'SELECT COUNT(*)  FROM ' . 'dada_message_drafts' . ' WHERE list = ?';
+        'SELECT COUNT(*)  FROM '
+      . $self->{sql_params}->{message_drafts_table}
+      . ' WHERE list = ?';
     my $count = $self->{dbh}->selectrow_array( $query, undef, $self->{list} );
     return $count;
 }
@@ -232,8 +288,15 @@ sub count {
 sub remove {
     my $self = shift;
     my $id   = shift;
+
+    if ( !$self->id_exists($id) ) {
+        croak "id, '$id' doesn't exist!";
+    }
+
     my $query =
-      'DELETE FROM ' . 'dada_message_drafts' . ' WHERE id = ? AND list = ?';
+        'DELETE FROM '
+      . $self->{sql_params}->{message_drafts_table}
+      . ' WHERE id = ? AND list = ?';
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute( $id, $self->{list} );
     $sth->finish;
@@ -254,7 +317,9 @@ sub draft_index {
     my $r    = [];
 
     my $query =
-'SELECT * FROM dada_message_drafts WHERE list = ? AND role = ? ORDER BY last_modified_timestap DESC';
+        'SELECT * FROM '
+      . $self->{sql_params}->{message_drafts_table}
+      . ' WHERE list = ? AND role = ? ORDER BY last_modified_timestap DESC';
     my $sth = $self->{dbh}->prepare($query);
 
     $sth->execute( $self->{list}, 'draft' )
@@ -295,7 +360,11 @@ sub stringify_cgi_params {
 
     my $q = $args->{-cgi_obj};
     $q = $self->remove_unwanted_params(
-        { -cgi_obj => $args->{-cgi_obj}, -screen => $args->{-screen} } );
+        {
+            -cgi_obj => $args->{-cgi_obj},
+            -screen  => $args->{-screen}
+        }
+    );
 
     my $buffer = "";
     open my $fh, ">", \$buffer or die 'blarg!' . $!;
@@ -394,6 +463,10 @@ sub params_to_save {
         $params->{proxy}                 = 1;
     }
     return $params;
+}
+
+sub enabled { 
+	return 1; 
 }
 
 1;

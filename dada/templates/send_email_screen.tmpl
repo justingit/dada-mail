@@ -1,8 +1,5 @@
 <!-- begin send_email_screen.tmpl -->
 
-<form name="mass_mailing" id="mass_mailing" enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
-
-	
 <!-- tmpl_set name="title" value="Mass Mailing &#187; Send a Message" -->
 <!-- tmpl_set name="load_wysiwyg_editor" value="1" -->
 
@@ -12,8 +9,12 @@
 	</div>
 	<!-- tmpl_include help_link_widget.tmpl -->
 </div>
-
 <div id="send_email_screen"></div> 
+
+<form name="mass_mailing" id="mass_mailing" enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+
+<div id="entire_form">
+  <div id="form_widgets">
 
 <!-- tmpl_include test_sent_notice_widget.tmpl --> 
 <!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
@@ -42,10 +43,11 @@
  <input type="hidden" name="support_files_url" id="support_files_url" value="<!-- tmpl_var SUPPORT_FILES_URL -->" />
 
 
-<input type="hidden" name="f"         value="send_email" />
+<input type="hidden" id="f"            name="f"  value="send_email" />
 
 <input type="hidden" id="draft_alert"  name="draft_alert"  value="<!-- tmpl_var draft_alert default="0" -->" />
 <input type="hidden" id="draft_id"     name="draft_id"     value="<!-- tmpl_var draft_id -->" /> 
+<input type="hidden" id="draft_enabled" name="draft_enabled" value="<!-- tmpl_var draft_enabled -->" />
 <!-- tmpl_include draft_notice_widget.tmpl --> 
 
 <!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
@@ -117,6 +119,14 @@
  				 Subscriber Fields
 			</a>
 		</li>
+		<li>
+			<a href="#send_email_test_recipient">
+ 				 Testing
+			</a>
+		</li>
+		
+		
+		
 		<!-- /tmpl_if --> 
 
 		</ul>
@@ -145,13 +155,26 @@
 		<!-- tmpl_include subscriber_field_tags_listing_widget.tmpl --> 
 		</div> 
 	<!-- /tmpl_if --> 
+
+	<div id="send_email_test_recipient">		
+	<!-- tmpl_include send_email_test_recipient_widget.tmpl --> 
+	</div> 
+
+
 </div> 
 
 </fieldset> 
 
+</div>
 
-<!-- tmpl_include send_a_list_message_button_widget.tmpl -->
 
+<div id="top_floating_button_wrapper">
+  <div id="buttons">
+	<!-- tmpl_include send_a_list_message_button_widget.tmpl -->
+  </div>
+</div>
+
+</div>
 
 </form>
 

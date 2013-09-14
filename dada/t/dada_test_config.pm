@@ -226,6 +226,8 @@ my @statements = split(';', $sql, 11);
 		my $mass_mailing_event_log_table        = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{mass_mailing_event_log_table};
 		my $password_protect_directories_table  = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{password_protect_directories_table};
 		my $confirmation_tokens_table           = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{confirmation_tokens_table};
+		my $message_drafts_table                = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{message_drafts_table};
+
 						
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_settings}{CREATE TABLE IF NOT EXISTS $settings_table}; 
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_subscribers}{CREATE TABLE IF NOT EXISTS $subscribers_table}; 
@@ -240,6 +242,7 @@ my @statements = split(';', $sql, 11);
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_mass_mailing_event_log}{CREATE TABLE IF NOT EXISTS $mass_mailing_event_log_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_password_protect_directories}{CREATE TABLE $password_protect_directories_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_confirmation_tokens}{CREATE TABLE IF NOT EXISTS $confirmation_tokens_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_message_drafts}{CREATE TABLE IF NOT EXISTS $message_drafts_table};	
 		
 		#print 'query: ' . $_; 
         my $sth = $dbh->prepare($_) or croak $DBI::errstr; 
@@ -319,6 +322,7 @@ my @statements = split(';', $sql);
 		my $mass_mailing_event_log_table        = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{mass_mailing_event_log_table};
 		my $password_protect_directories_table  = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{password_protect_directories_table};
 		my $confirmation_tokens_table           = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{confirmation_tokens_table};
+		my $message_drafts_table                = $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{message_drafts_table};
 		
 		
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_settings}{CREATE TABLE $settings_table}; 
@@ -342,6 +346,7 @@ my @statements = split(';', $sql);
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_mass_mailing_event_log}{CREATE TABLE IF NOT EXISTS $mass_mailing_event_log_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_password_protect_directories}{CREATE TABLE IF NOT EXISTS $password_protect_directories_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_confirmation_tokens}{CREATE TABLE IF NOT EXISTS $confirmation_tokens_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_message_drafts}{CREATE TABLE IF NOT EXISTS $message_drafts_table};	
 
 		#print 'query: ' . $_; 
 			
@@ -380,6 +385,7 @@ sub destroy_MySQL_db {
 		mass_mailing_event_log_table
 		password_protect_directories_table
 		confirmation_tokens_table
+		message_drafts_table
 		)){ 
 			
 #			carp "removing: " . $__Test_Config_Vars::TEST_SQL_PARAMS->{MySQL}->{$_}; 
@@ -447,6 +453,7 @@ my @statements = split(';', $sql, 11);
 		my $mass_mailing_event_log_table        = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{mass_mailing_event_log_table};
 		my $password_protect_directories_table  = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{password_protect_directories_table};
 		my $confirmation_tokens_table           = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{confirmation_tokens_table};
+		my $message_drafts_table                = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{message_drafts_table};
 	
 		
 		
@@ -464,6 +471,7 @@ my @statements = split(';', $sql, 11);
 		$_ =~ s{CREATE TABLE dada_mass_mailing_event_log}{CREATE TABLE $mass_mailing_event_log_table};	
 		$_ =~ s{CREATE TABLE dada_password_protect_directories}{CREATE TABLE $password_protect_directories_table};	
 		$_ =~ s{CREATE TABLE dada_confirmation_tokens}{CREATE TABLE IF NOT EXISTS $confirmation_tokens_table};	
+		$_ =~ s{CREATE TABLE dada_message_drafts}{CREATE TABLE IF NOT EXISTS $message_drafts_table};	
 
 #		print "query: $_"; 
 
@@ -497,6 +505,7 @@ sub destroy_PostgreSQL_db {
 		mass_mailing_event_log_table
 		password_protect_directories_table
 		confirmation_tokens_table
+		message_drafts_table
 		)){ 
 	        $dbh->do('DROP TABLE ' . $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{$_})
 	            or carp "cannot do statement! $DBI::errstr\n";  

@@ -3097,8 +3097,7 @@ sub _config_import {
         mass_mailing_event_log_table       => 'dada_mass_mailing_event_log',
         password_protect_directories_table => 'dada_password_protect_directories',
         confirmation_tokens_table          => 'dada_confirmation_tokens',
-
-
+		message_drafts_table               => 'dada_message_drafts', 
     );
     for ( keys %default_table_names ) {
         if ( !exists( $SQL_PARAMS{$_} ) ) {

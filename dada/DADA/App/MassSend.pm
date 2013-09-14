@@ -122,26 +122,28 @@ sub send_email {
             $active_mailouts,   $mailout_will_be_queued
         ) = $self->mass_mailout_info($list);
 
+		my $draft_id = undef;
+        
         require DADA::MailingList::MessageDrafts;
         my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
+		if($d->enabled) { 
 
-        my $draft_id = undef;
-
-        if (   $restore_from_draft ne 'true'
-            && $d->has_draft( { -screen => 'send_email' } ) )
-        {
-            $draft_id = undef;
-        }
-        elsif ($restore_from_draft eq 'true'
-            && $d->has_draft( { -screen => 'send_email' } ) )
-        {
-            if ( defined( $q->param('draft_id') ) ) {
-                $draft_id = $q->param('draft_id');
-            }
-            else {
-                $draft_id = $d->latest_draft_id( { -screen => 'send_email' } );
-            }
-        }
+	        if (   $restore_from_draft ne 'true'
+	            && $d->has_draft( { -screen => 'send_email' } ) )
+	        {
+	            $draft_id = undef;
+	        }
+	        elsif ($restore_from_draft eq 'true'
+	            && $d->has_draft( { -screen => 'send_email' } ) )
+	        {
+	            if ( defined( $q->param('draft_id') ) ) {
+	                $draft_id = $q->param('draft_id');
+	            }
+	            else {
+	                $draft_id = $d->latest_draft_id( { -screen => 'send_email' } );
+	            }
+	        }
+		}
 
         require DADA::Template::Widgets;
         my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars($list);
@@ -160,6 +162,7 @@ sub send_email {
                     flavor => $flavor,
 
                     draft_id       => $draft_id,
+					draft_enabled  => $d->enabled, 
                     test_sent      => $test_sent,
                     test_recipient => $test_recipient,
 
@@ -198,14 +201,17 @@ sub send_email {
 
         require DADA::MailingList::MessageDrafts;
         my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
-        if (   $d->has_draft( { -screen => 'send_email' } )
-            && $restore_from_draft eq 'true' )
-        {
-            my $q_draft = $d->fetch({-id => $draft_id, -screen => 'send_email'});
-            require HTML::FillInForm::Lite;
-            my $h = HTML::FillInForm::Lite->new();
-            $scrn = $h->fill( \$scrn, $q_draft, fill_password => 1 );
-        }
+
+		if($d->enabled) { 
+	        if (   $d->has_draft( { -screen => 'send_email' } )
+	            && $restore_from_draft eq 'true' )
+	        {
+	            my $q_draft = $d->fetch({-id => $draft_id, -screen => 'send_email'});
+	            require HTML::FillInForm::Lite;
+	            my $h = HTML::FillInForm::Lite->new();
+	            $scrn = $h->fill( \$scrn, $q_draft, fill_password => 1 );
+	        }
+		}
         if ( $args->{-html_output} == 1 ) {
             e_print($scrn);
         }
@@ -533,7 +539,11 @@ sub send_email {
                 require DADA::MailingList::MessageDrafts;
                 my $d =
                   DADA::MailingList::MessageDrafts->new( { -list => $list } );
-                $d->remove($draft_id);
+				if($d->enabled) { 
+	                if(defined($draft_id)) { 
+						$d->remove($draft_id);
+					}
+				}
                 my $uri =
                     $DADA::Config::S_PROGRAM_URL
                   . '?f=sending_monitor&type=list&id='
@@ -628,27 +638,27 @@ sub send_url_email {
             $active_mailouts,   $mailout_will_be_queued
         ) = $self->mass_mailout_info($list);
 
+		my $draft_id = undef;
+		
 		require DADA::MailingList::MessageDrafts;
         my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
-
-        my $draft_id = undef;
-
-        if (   $restore_from_draft ne 'true'
-            && $d->has_draft( { -screen => 'send_url_email' } ) )
-        {
-            $draft_id = undef;
+		if($d->enabled) { 
+	        if (   $restore_from_draft ne 'true'
+	            && $d->has_draft( { -screen => 'send_url_email' } ) )
+	        {
+	            $draft_id = undef;
+	        }
+	        elsif ($restore_from_draft eq 'true'
+	            && $d->has_draft( { -screen => 'send_url_email' } ) )
+	        {
+	            if ( defined( $q->param('draft_id') ) ) {
+	                $draft_id = $q->param('draft_id');
+	            }
+	            else {
+	                $draft_id = $d->latest_draft_id( { -screen => 'send_url_email' } );
+	            }
+	        }
         }
-        elsif ($restore_from_draft eq 'true'
-            && $d->has_draft( { -screen => 'send_url_email' } ) )
-        {
-            if ( defined( $q->param('draft_id') ) ) {
-                $draft_id = $q->param('draft_id');
-            }
-            else {
-                $draft_id = $d->latest_draft_id( { -screen => 'send_url_email' } );
-            }
-        }
-        
         require DADA::Template::Widgets;
         my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars($list);
 
@@ -666,6 +676,7 @@ sub send_url_email {
                     screen                  => 'send_url_email',
 
                     draft_id       => $draft_id,
+					draft_enabled  => $d->enabled, 
                     test_sent      => $test_sent,
                     test_recipient => $test_recipient,
 
@@ -708,15 +719,16 @@ sub send_url_email {
 
         require DADA::MailingList::MessageDrafts;
         my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
-        if (   $d->has_draft( { -screen => 'send_url_email' } )
-            && $restore_from_draft eq 'true' )
-        {
-            my $q_draft = $d->fetch({-id => $draft_id, -screen => 'send_url_email'});
-            require HTML::FillInForm::Lite;
-            my $h = HTML::FillInForm::Lite->new();
-            $scrn = $h->fill( \$scrn, $q_draft, fill_password => 1 );
-        }
-
+		if($d->enabled) { 
+	        if (   $d->has_draft( { -screen => 'send_url_email' } )
+	            && $restore_from_draft eq 'true' )
+	        {
+	            my $q_draft = $d->fetch({-id => $draft_id, -screen => 'send_url_email'});
+	            require HTML::FillInForm::Lite;
+	            my $h = HTML::FillInForm::Lite->new();
+	            $scrn = $h->fill( \$scrn, $q_draft, fill_password => 1 );
+	        }
+		}
         e_print($scrn);
 
     }
@@ -1074,7 +1086,9 @@ sub send_url_email {
 	                require DADA::MailingList::MessageDrafts;
 	                my $d =
 	                  DADA::MailingList::MessageDrafts->new( { -list => $list } );
-	                $d->remove($draft_id);
+					if($d->enabled) { 
+		                $d->remove($draft_id);
+					}
 	                my $uri =
 	                    $DADA::Config::S_PROGRAM_URL
 	                  . '?f=sending_monitor&type=list&id='
@@ -1140,6 +1154,8 @@ sub save_as_draft {
 	require DADA::MailingList::MessageDrafts;
     my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
 
+	return unless $d->enabled; 
+	
     my $draft_id = $q->param('draft_id') || undef;
 
     # warn '$draft_id:' . $draft_id;
@@ -1171,6 +1187,7 @@ sub list_invite {
     my $q      = $args->{-cgi_obj};
 
     my $process = xss_filter( strip( $q->param('process') ) );
+warn '$process ' . $process; 
     my $flavor  = xss_filter( strip( $q->param('flavor') ) );
 
     my ( $admin_list, $root_login ) = check_list_security(
@@ -1291,7 +1308,7 @@ sub list_invite {
         e_print($scrn);
 
     }
-    elsif ( $process =~ m/send a test invitation|send invitations/i )
+    elsif ( $process =~ m/send test invitation|send a test invitation|send invitations/i )
     { # $process is dependent on the label of the button - which is not a good idea
 
         my @address                 = $q->param('address');

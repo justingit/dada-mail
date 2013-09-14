@@ -13,11 +13,15 @@
 
 <div id="send_url_email"></div> 
 
-<!-- tmpl_include test_sent_notice_widget.tmpl --> 
-<!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
-
-
 <form name="mass_mailing" id="mass_mailing" action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post">
+
+	<div id="entire_form">
+	  <div id="form_widgets">
+
+	<!-- tmpl_include test_sent_notice_widget.tmpl --> 
+	<!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
+
+
  <input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" />
  <input type="hidden" id="f" name="f" value="send_url_email" />
  <input type="hidden" name="support_files_url" id="support_files_url" value="<!-- tmpl_var SUPPORT_FILES_URL -->" />
@@ -54,8 +58,10 @@
 		</div>
 		<!--/tmpl_if--> 
 
-<input type="hidden" id="draft_alert"  name="draft_alert"  value="<!-- tmpl_var draft_alert default="0" -->" />
-<input type="hidden" id="draft_id"     name="draft_id"     value="<!-- tmpl_var draft_id -->" /> 
+<input type="hidden" id="draft_alert"   name="draft_alert"  value="<!-- tmpl_var draft_alert default="0" -->" />
+<input type="hidden" id="draft_id"      name="draft_id"     value="<!-- tmpl_var draft_id -->" /> 
+<input type="hidden" id="draft_enabled" name="draft_enabled" value="<!-- tmpl_var draft_enabled -->" />
+
 <!-- tmpl_include draft_notice_widget.tmpl --> 
 
 <!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
@@ -276,6 +282,7 @@
 				</a>
 			</li>
 		<!-- /tmpl_if --> 
+		
 
 <!-- tmpl_if comment --> 
 
@@ -293,6 +300,11 @@
 			</a>
 		</li>
 		<!-- /tmpl_if --> 
+		<li>
+			<a href="#send_email_test_recipient">
+ 				 Testing
+			</a>
+		</li>
 
 		</ul>
 		
@@ -321,16 +333,35 @@
 		<!-- tmpl_include subscriber_field_tags_listing_widget.tmpl --> 
 		</div> 
 	<!-- /tmpl_if --> 
+
+	<div id="send_email_test_recipient">		
+	<!-- tmpl_include send_email_test_recipient_widget.tmpl --> 
+	</div> 
+	
 </div>		 
 	<!-- /tmpl_unless -->
  
 <!-- /tmpl_unless -->
 
+</div>
+
+
+<div id="top_floating_button_wrapper">
+  <div id="buttons">
+	<!-- tmpl_include send_a_list_message_button_widget.tmpl -->
+  </div>
+</div>
+
+</div>
+
+</form>
+
+
+
+
+
 <!-- tmpl_include send_url_email_message_body_help_widget.tmpl -->		
 
  
-<!-- tmpl_include send_a_list_message_button_widget.tmpl -->
-
-</form> 
 
 <!-- end send_url_screen.tmpl -->

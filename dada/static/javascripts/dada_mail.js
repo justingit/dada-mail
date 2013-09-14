@@ -43,7 +43,25 @@ $(document).ready(function() {
 
 	//Mail Sending >> Send a Message 
 	if ($("#send_email_screen").length || $("#send_url_email").length || $("#list_invite").length) {
-				
+		
+		
+	  var msie6 = $.browser == 'msie' && $.browser.version < 7;
+	  if (!msie6) {
+	    var top = $('#buttons').offset().top - parseFloat($('#buttons').css('margin-top').replace(/auto/, 0));
+	    $(window).scroll(function (event) {
+	      // what the y position of the scroll is
+	      var y = $(this).scrollTop();
+
+	      // whether that's below the form
+	      if (y >= top) {
+	        // if so, ad the fixed class
+	        $('#buttons').addClass('fixed');
+	      } else {
+	        // otherwise remove it
+	        $('#buttons').removeClass('fixed');
+	      }
+	    });
+	  }
 		
 		$("body").on("click", ".kcfinder_open", function(event) {
 			event.preventDefault();
@@ -64,15 +82,18 @@ $(document).ready(function() {
 			auto_save_as_draft();
 			
 			$("body").on("click", ".savedraft", function(event) {
+				$("#button_action_notice").html('Working...');
 				var ds = save_draft(false); 
 				admin_menu_drafts_notification();
+				$("#button_action_notice").html('&nbsp;');	
 				if(ds === true) { 
 					$.colorbox({
 						top: 0,
 						fixed: true,
 						initialHeight: 50,
 						maxHeight: 480,
-						maxWidth: 649,
+						maxWidth: 849,
+						width: 700,
 						opacity: 0.50,
 						href: $("#s_program_url").val(),
 						data: {
@@ -80,7 +101,6 @@ $(document).ready(function() {
 							'screen': $("#f").val()
 						}
 					});
-					
 				}
 				else if(ds === false) { 
 					//alert('Error Saving Draft: '); 
@@ -90,6 +110,9 @@ $(document).ready(function() {
 			
 			
 		$("body").on("click", ".sendmassmailing", function(event) {
+			
+			$("#button_action_notice").html('Working...');
+			
 			//var fid = $(event.target).closest('form').attr('id'); 
 			var fid = 'mass_mailing';
 
@@ -99,10 +122,32 @@ $(document).ready(function() {
 			}
 			var itsatest = $(this).hasClass("justatest");
 			if (sendMailingListMessage(fid, itsatest) === true) {
-				save_draft(false);
-				admin_menu_drafts_notification();
-				$("body").off('submit', '#' + fid);
-				return true;
+				if($("#f").val() != 'list_invite') { 
+					save_draft(false);
+					admin_menu_drafts_notification();
+				}
+				if($("#f").val() == 'list_invite' && itsatest == true) { 
+					// alert('now were sending out a test message!');
+					var request = $.ajax({
+						url: $("#s_program_url").val(),
+						type: "POST",
+						dataType: "html",
+						cache: false,
+						data: $("#mass_mailing").serialize() + '&process=Send%20Test%20Invitation',
+						success: function(content) {
+							alert("List Invitation Test Sent"); 
+						},
+						error: function(xhr, ajaxOptions, thrownError) {
+							alert('Error Sending List Invitation Test: ' + thrownError); 
+							console.log('status: ' + xhr.status);
+							console.log('thrownError:' + thrownError);
+						}, 
+					});	
+				}
+				else { 					
+					$("body").off('submit', '#' + fid);
+					return true;
+				}
 			}
 		});
 		$("body").on("click", ".ChangeMassMailingButtonLabel", function(event) {
@@ -125,6 +170,19 @@ $(document).ready(function() {
 				toolbar: 'DadaMail_Admin'
 			});
 		}
+
+		$("body").on("click", ".cancel_message", function(event) {
+			$("#button_action_notice").html('Working...');
+			save_draft(false)
+			var confirm_msg = "Delete Draft Message?";
+			if (confirm(confirm_msg)) {
+				window.location.replace($("#s_program_url").val() + '?f=delete_draft&id=' + $("#draft_id").val());
+			 }
+			else { 
+				$("#button_action_notice").html('&nbsp;');
+				
+			}
+		}); 
 		
 		$("body").on("click", "#keep_working_on_draft", function(event) {
 			$.colorbox.close(); 
@@ -141,6 +199,15 @@ $(document).ready(function() {
 		$("body").on("click", ".restore_from_draft_link", function(event) {
 			event.preventDefault();
 			$("#" + $(this).attr("data-target")).submit();
+		}); 
+		
+		$("body").on("submit", "#delete_draft_form", function(event) {
+			if (confirm('Delete Draft?')) {
+				return true; 
+			}
+			else { 
+				return false;
+			}
 		}); 
 	}
 	// Mail Sending >> Mailing Monitor Index
@@ -702,6 +769,8 @@ function admin_menu_notification(flavor, target_class) {
 function save_draft(async) { 
 	
 	var r = false; 
+	
+	/* alert($("#mass_mailing").serialize() + '&process=save_as_draft'); */
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
 		type: "POST",
@@ -710,6 +779,7 @@ function save_draft(async) {
 		async: async,
 		data: $("#mass_mailing").serialize() + '&process=save_as_draft',
 		success: function(content) {
+			//alert('content.id ' + content.id); 
 			$("#draft_id").val(content.id); 
 			$('#draft_notice .alert').text('Draft Saved: ' + new Date().format("yyyy-MM-dd h:mm:ss")); 
 			r = true; 
@@ -725,6 +795,9 @@ function save_draft(async) {
 }
 
 function auto_save_as_draft() {
+	if($("#draft_enabled").val() === 0){ 
+		return; 
+	}
 	var r = 60 * 1000; // Every 1 minute. 
 	var refresh_loop = function(no_loop) {
 		$('#draft_notice .alert').text('auto-saving...'); 
@@ -740,7 +813,7 @@ function auto_save_as_draft() {
 				admin_menu_drafts_notification();
 			},
 			error: function(xhr, ajaxOptions, thrownError) {
-				$('#draft_notice .alert').text('Problems suto-saving!'  + new Date().format("yyyy-MM-dd h:mm:ss"));
+				$('#draft_notice .alert').text('Problems auto-saving!'  + new Date().format("yyyy-MM-dd h:mm:ss"));
 				console.log('status: ' + xhr.status);
 				console.log('thrownError:' + thrownError);
 			}
@@ -2488,6 +2561,17 @@ function sendMailingListMessage(fid, itsatest) { /* This is for the Send a Webpa
 		}
 	}
 
+	if ($("#send_email_screen").length) {
+		var has_html = 1; 
+		var has_text = 1; 
+		if($("#html_message_body").val() == ""){ has_html = 0;}
+		if($("#text_message_body").val() == ""){ has_text = 0;}
+		if(has_html === 0 && has_text === 0){ 
+			alert("Please write an HTML and/or PlainText message."); 
+			return false;
+		} 
+	}
+	
 	if ($("#Subject").val().length <= 0) {
 		var no_subject_msg = "The Subject: header of this message has been left blank. Send anyways?";
 		if (!confirm(no_subject_msg)) {
@@ -2495,7 +2579,11 @@ function sendMailingListMessage(fid, itsatest) { /* This is for the Send a Webpa
 			return false;
 		}
 	}
-
+	else if(itsatest === false) { 
+		if (!confirm('Send Mass Mailing?')) {
+			return false;
+		}		
+	}
 	return true;
 }
 

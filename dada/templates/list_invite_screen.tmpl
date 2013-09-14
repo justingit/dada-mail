@@ -32,10 +32,17 @@
 <div id="list_invite"></div> 
 
 
-<!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
 
 <form name="mass_mailing" id="mass_mailing" action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-<input type="hidden" name="f" value="list_invite" />
+
+	<div id="entire_form">
+	  <div id="form_widgets">
+
+		<!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
+
+
+
+<input type="hidden" id="f" name="f" value="list_invite" />
 
 <!-- tmpl_if verified_addresses --> 
 
@@ -260,11 +267,18 @@
 	</div> 
 	</fieldset>
 	</div> 
-
-
 </div> 
 
-<!-- tmpl_include send_a_list_message_button_widget.tmpl --> 
+</div>
+
+
+<div id="top_floating_button_wrapper">
+  <div id="buttons">
+	<!-- tmpl_include send_a_list_message_button_widget.tmpl -->
+  </div>
+</div>
+
+</div>
 
 
 </form> 
