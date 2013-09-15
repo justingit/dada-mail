@@ -124,7 +124,7 @@ id INT4 NOT NULL PRIMARY KEY AUTO_INCREMENT,
 list varchar(16),
 created_timestamp TIMESTAMP DEFAULT NOW(),
 last_modified_timestap TIMESTAMP, 
-screen  varchar(80),
+screen varchar(80),
 role varchar(80),
 draft mediumtext
 );

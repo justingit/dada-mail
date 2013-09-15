@@ -32,6 +32,7 @@ $TEST_SQL_PARAMS = {
 		mass_mailing_event_log_table       => 'test_dada_mass_mailing_event_log', 
 		password_protect_directories_table => 'test_dada_password_protect_directories', 
 		confirmation_tokens_table          => 'test_dada_confirmation_tokens',
+		message_drafts_table               => 'test_dada_message_drafts',
 		
 	}, 
 
@@ -58,6 +59,7 @@ $TEST_SQL_PARAMS = {
 		mass_mailing_event_log_table    => 'test_dada_mass_mailing_event_log', 
 		password_protect_directories_table    => 'test_dada_password_protect_directories', 
 		confirmation_tokens_table             => 'test_dada_confirmation_tokens',
+		message_drafts_table               => 'test_dada_message_drafts',
 		
 
 
@@ -81,6 +83,7 @@ $TEST_SQL_PARAMS = {
 		mass_mailing_event_log_table    => 'test_dada_mass_mailing_event_log', 
 		password_protect_directories_table    => 'test_dada_password_protect_directories', 
 		confirmation_tokens_table          => 'test_dada_confirmation_tokens',
+		message_drafts_table               => 'test_dada_message_drafts',
 				
 	},
 	

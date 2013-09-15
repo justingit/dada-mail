@@ -488,6 +488,7 @@ $DEBUG_TRACE ||= {
     DADA_Mail_Send                     => 0,
     DADA_App_BounceHandler_ScoreKeeper => 0,
     DADA_MailingList_baseSQL           => 0,
+	DADA_MailingList_MessageDrafts     => 0, 
 
 };
 

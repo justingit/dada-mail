@@ -7974,11 +7974,19 @@ sub restful_subscribe {
 
     require JSON::PP;
     my $json = JSON::PP->new->allow_nonref;
-
-   unless ( $q->content_type =~ m/application\/json/ ) {
-         die '425';
+   if (! $q->content_type || $q->content_type =~ m/text\/html/ ) {
+		# RTFM!
+		my $api_doc_url = 'http://dadamailproject.com/d/COOKBOOK-subscriptions.pod.html#restful_api';
+		print $q->header();
+		print '<p>API Documentation: <a href="' . $api_doc_url . '"/>' . $api_doc_url . '</a></p>';
+		return;
    }
-
+   elsif ( $q->content_type =~ m/application\/json/ ) {
+   		# well. OK, then. 
+	}
+   else{ 
+	   die '425';
+	}
     my $post_data = $q->param('POSTDATA');
 
     my $data = undef;
@@ -8048,13 +8056,13 @@ sub restful_subscribe {
     if ($callback) {
         print $callback . '(' . $json . ');';
 
-		warn $callback . '(' . $json . ');';
+		# warn $callback . '(' . $json . ');';
 
     }
     else {
         print $json, "\n";
 
-        warn 'no callback: ' . $json, "\n";
+        # warn 'no callback: ' . $json, "\n";
 
     }
 

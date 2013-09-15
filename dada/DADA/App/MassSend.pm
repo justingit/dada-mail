@@ -182,9 +182,11 @@ sub send_email {
                     kcfinder_url =>
                       $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{url},
                     kcfinder_upload_dir =>
-                      $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir},
+                      $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}
+                      ->{upload_dir},
                     kcfinder_upload_url =>
-                      $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_url},
+                      $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}
+                      ->{upload_url},
 
                     mailout_will_be_queued => $mailout_will_be_queued,
                     num_list_mailouts      => $num_list_mailouts,
@@ -208,19 +210,16 @@ sub send_email {
             }
         );
 
-        require DADA::MailingList::MessageDrafts;
-        my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
+        if ( $restore_from_draft eq 'true' ) {
+            $scrn = $self->fill_in_draft_msg(
+                {
+                    -list     => $list,
+                    -screen   => 'send_email',
+                    -str      => $scrn,
+                    -draft_id => $draft_id,
 
-        if ( $d->enabled ) {
-            if (   $d->has_draft( { -screen => 'send_email' } )
-                && $restore_from_draft eq 'true' )
-            {
-                my $q_draft =
-                  $d->fetch( { -id => $draft_id, -screen => 'send_email' } );
-                require HTML::FillInForm::Lite;
-                my $h = HTML::FillInForm::Lite->new();
-                $scrn = $h->fill( \$scrn, $q_draft, fill_password => 1 );
-            }
+                }
+            );
         }
         if ( $args->{-html_output} == 1 ) {
             e_print($scrn);
@@ -727,19 +726,15 @@ sub send_url_email {
                 -list_settings_vars_param => { -dot_it => 1, },
             }
         );
-
-        require DADA::MailingList::MessageDrafts;
-        my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
-        if ( $d->enabled ) {
-            if (   $d->has_draft( { -screen => 'send_url_email' } )
-                && $restore_from_draft eq 'true' )
-            {
-                my $q_draft = $d->fetch(
-                    { -id => $draft_id, -screen => 'send_url_email' } );
-                require HTML::FillInForm::Lite;
-                my $h = HTML::FillInForm::Lite->new();
-                $scrn = $h->fill( \$scrn, $q_draft, fill_password => 1 );
-            }
+        if ( $restore_from_draft eq 'true' ) {
+            $scrn = $self->fill_in_draft_msg(
+                {
+                    -list     => $list,
+                    -screen   => 'send_url_email',
+                    -str      => $scrn,
+                    -draft_id => $draft_id,
+                }
+            );
         }
         e_print($scrn);
 
@@ -1561,6 +1556,37 @@ sub list_invite {
     }
 }
 
+sub fill_in_draft_msg {
+    my $self = shift;
+    my ($args) = @_;
+
+    for ( '-list', '-screen', '-str', '-draft_id' ) {
+        if ( !exists( $args->{$_} ) ) {
+            croak "You MUST pass the, '$_' parameter!";
+        }
+    }
+    my $str;
+
+    require DADA::MailingList::MessageDrafts;
+    my $d =
+      DADA::MailingList::MessageDrafts->new( { -list => $args->{-list} } );
+    return $args->{-str}
+      unless ( $d->enabled );
+    if ( $d->has_draft( { -screen => $args->{-screen} } ) ) {
+        my $q_draft =
+          $d->fetch(
+            { -id => $args->{-draft_id}, -screen => $args->{-screen} } );
+        require HTML::FillInForm::Lite;
+        my $h       = HTML::FillInForm::Lite->new();
+        my $tmp_str = $args->{-str};
+        $str = $h->fill( \$tmp_str, $q_draft, fill_password => 1 );
+        return $str;
+    }
+    else {
+        $args->{-str};
+    }
+}
+
 sub has_attachments {
 
     my $self = shift;
@@ -1577,22 +1603,27 @@ sub has_attachments {
         warn '$filename:' . $filename
           if $t;
         if ( defined($filename) && length($filename) > 1 ) {
-            if ( $filename ne 'Select A File...' && length($filename) > 0) {
+            if ( $filename ne 'Select A File...' && length($filename) > 0 ) {
                 warn 'I\'ve got, ' . 'attachment' . $_
-					if $t; 
-				if(! -e $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir} . '/' . $filename) { 
-					my $new_filename = uriunescape($filename);
-					if(! -e $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir} . '/' . $new_filename) { 
-						carp "I can't find attachment file: $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir} . '/' . $filename"; 
-					} 
-					else { 
-	                	push( @ive_got, $new_filename );					
-					}
-				}
-				else {
-                	push( @ive_got, $filename );
-            	}
-			}
+                  if $t;
+                if ( !-e $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}
+                    ->{upload_dir} . '/' . $filename )
+                {
+                    my $new_filename = uriunescape($filename);
+                    if ( !-e $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}
+                        ->{upload_dir} . '/' . $new_filename )
+                    {
+                        carp
+"I can't find attachment file: $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir} . '/' . $filename";
+                    }
+                    else {
+                        push( @ive_got, $new_filename );
+                    }
+                }
+                else {
+                    push( @ive_got, $filename );
+                }
+            }
         }
     }
     return @ive_got;

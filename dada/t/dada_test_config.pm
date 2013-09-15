@@ -352,6 +352,8 @@ my @statements = split(';', $sql);
 			
 		if(length($_) > 10){ 
 
+			#warn 'QUERY: ' . $_; 
+			
 			my $sth = $dbh->prepare($_); 
 	       	$sth->execute; 
 	    }

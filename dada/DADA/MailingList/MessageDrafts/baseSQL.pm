@@ -54,6 +54,9 @@ sub _sql_init {
 
 sub id_exists {
 
+	warn 'id_exists'
+		if $t; 
+
     my $self = shift;
     my $id   = shift;
 
@@ -69,6 +72,8 @@ sub id_exists {
       or croak "cannot do statment '$query'! $DBI::errstr\n";
 
     my $count = $sth->fetchrow_array;
+	warn '$count:' . $count
+		if $t; 
 
     $sth->finish;
 
@@ -83,6 +88,9 @@ sub id_exists {
 
 sub save {
 
+	warn 'save'
+		if $t; 
+		
     my $self = shift;
     my ($args) = @_;
 
@@ -91,7 +99,7 @@ sub save {
     }
 
     if ( !exists( $args->{-screen} ) ) {
-        die
+        croak
           "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
     }
     if ( !exists( $args->{-role} ) ) {
@@ -109,7 +117,10 @@ sub save {
         { -cgi_obj => $args->{-cgi_obj}, -screen => $args->{-screen} } );
 
     if ( !defined($id) ) {
-
+		
+		warn 'id undefined.'
+			if $t; 
+			
         my $query =
             'INSERT INTO '
           . $self->{sql_params}->{message_drafts_table}
@@ -127,7 +138,9 @@ sub save {
         }
         else {
 			my $last_insert_id = $self->{dbh}->last_insert_id(undef, undef, $self->{sql_params}->{message_drafts_table}, undef);
-        	warn '$last_insert_id:' . $last_insert_id; 
+        	warn '$last_insert_id:' . $last_insert_id
+				if $t; 
+				
 			return $last_insert_id; 
 		}
     }
@@ -136,7 +149,10 @@ sub save {
 	    if ( !$self->id_exists($id) ) {
             croak "id, '$id' doesn't exist!";
         }
-    
+
+		warn 'id defined.'
+			if $t; 
+		
         my $query =
             'UPDATE '
           . $self->{sql_params}->{message_drafts_table}
@@ -151,6 +167,10 @@ sub save {
 }
 
 sub has_draft {
+	
+	warn 'has_draft'
+		if $t; 
+		
     my $self = shift;
     my ($args) = @_;
 
@@ -158,7 +178,7 @@ sub has_draft {
         $args->{-role} = 'draft';
     }
     if ( !exists( $args->{-screen} ) ) {
-        die
+        croak
           "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
     }
 
@@ -190,7 +210,7 @@ sub latest_draft_id {
         $args->{-role} = 'draft';
     }
     if ( !exists( $args->{-screen} ) ) {
-        die
+        croak
           "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
     }
 

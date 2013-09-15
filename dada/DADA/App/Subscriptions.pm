@@ -210,13 +210,14 @@ sub subscribe {
 
     # ! $list_exists
     if ( $list_exists == 0 ) {
+		my $r = {
+            status       => 0,
+            list         => $list,
+            email        => $email,
+            errors       => { invalid_list => 1 },
+			redirect_url => $DADA::Config::PROGRAM_URL . '?error_invalid_list=1', 
+        };
         if ( $args->{-html_output} == 0 ) {
-            my $r = {
-                status => 0,
-                list   => $list,
-                email  => $email,
-                errors => { invalid_list => 1 }
-            };
             if ( $args->{-return_json} == 1 ) {
                 return $self->jsonify($r);
             }
@@ -226,23 +227,22 @@ sub subscribe {
         }
         else {
             # Test sub-subscribe-redirect-error_invalid_list
-            my $r = $q->redirect(
-                -uri => $DADA::Config::PROGRAM_URL . '?error_invalid_list=1' );
-            $self->test ? return $r : print $fh safely_encode($r) and return;
+            my $rd = $q->redirect(-uri => $r->{redirect_url} );
+            $self->test ? return $rd : print $fh safely_encode($rd) and return;
         }
     }
 
     #/ !$list_exists
 
     if ( !$email ) {
+	    my $r = {
+            status => 0,
+            list   => $list,
+            email  => $email,
+            errors       => { invalid_email => 1 },
+			redirect_url => $ls->param('alt_url_sub_confirm_failed'), 
+        };
         if ( $args->{-html_output} == 0 ) {
-            my $r = {
-                status => 0,
-                list   => $list,
-                email  => $email,
-                errors => { invalid_email => 1 }
-            };
-
             if ( $args->{-return_json} == 1 ) {
 	            return $self->jsonify($r);
     
@@ -250,7 +250,7 @@ sub subscribe {
             elsif ( $args->{-return_json} == 0 ) {
 				            return $r;
     
-        }
+        	}
         }
         elsif ( $args->{-html_output} == 1 ) {
             if ( ls->param('use_alt_url_sub_confirm_failed') == 1 ) {
@@ -264,22 +264,10 @@ sub subscribe {
                     $qs .= '&errors[]=' . $_ for keys %$errors;
                 }
 
-                my $r =
-                  $self->alt_redirect( $ls->param('alt_url_sub_confirm_failed'),
+                my $rd =
+                  $self->alt_redirect( $r->{redirect_url},
                     $qs );
-                $self->test ? return $r : print $fh safely_encode($r)
-                  and return;
-            }
-            elsif ( $args->{-html_output} == 0 ) {
-
-                # Test sub-subscribe-redirect-error_no_email
-                # This is just so we don't use the actual error screen.
-                my $r =
-                  $q->redirect( -uri => $DADA::Config::PROGRAM_URL
-                      . '?f=list&list='
-                      . $list
-                      . '&error_no_email=1' );
-                $self->test ? return $r : print $fh safely_encode($r)
+                $self->test ? return $rd : print $fh safely_encode($rd)
                   and return;
             }
         }
@@ -436,14 +424,14 @@ sub subscribe {
     }
 
     if ( $status == 0 ) {
-
+		my $r = {
+            status       => 0,
+            list         => $list,
+            email        => $email,
+            errors       => $errors,
+			redirect_url => $ls->param('alt_url_sub_confirm_failed'), 
+        };
         if ( $args->{-html_output} == 0 ) {
-            my $r = {
-                status => 0,
-                list   => $list,
-                email  => $email,
-                errors => $errors
-            };
             if ( $args->{-return_json} == 1 ) {
                 return $self->jsonify($r);
             }
@@ -463,10 +451,10 @@ sub subscribe {
                     $qs .= '&' . $_ . '=' . uriescape( $fields->{$_} )
                       for keys %$fields;
                 }
-                my $r =
-                  $self->alt_redirect( $ls->param('alt_url_sub_confirm_failed'),
+                my $rd =
+                  $self->alt_redirect($r->{redirect_url},
                     $qs );
-                $self->test ? return $r : print $fh safely_encode($r)
+                $self->test ? return $rd : print $fh safely_encode($rd)
                   and return;
             }
             elsif ( $ls->param('use_alt_url_sub_confirm_failed') != 1 ) {
@@ -576,8 +564,8 @@ sub subscribe {
             );
 
         }
+		my $r = { status => 1, list => $list, email => $email, redirect_url => $ls->param('alt_url_sub_confirm_success'), };
         if ( $args->{-html_output} == 0 ) {
-            my $r = { status => 1, list => $list, email => $email };
             if ( $args->{-return_json} == 1 ) {
                 return $self->jsonify($r);
             }
@@ -596,10 +584,10 @@ sub subscribe {
                     $qs .= '&' . $_ . '=' . uriescape( $fields->{$_} )
                       for keys %$fields;
                 }
-                my $r =
+                my $rd =
                   $self->alt_redirect(
-                    $ls->param('alt_url_sub_confirm_success'), $qs );
-                $self->test ? return $r : print $fh safely_encode($r)
+                    $r->{redirect_url}, $qs );
+                $self->test ? return $rd : print $fh safely_encode($rd)
                   and return;
             }
             elsif ( $ls->param('use_alt_url_sub_confirm_success') != 1 ) {
@@ -937,13 +925,15 @@ sub confirm {
           . $ls->param('alt_url_sub_failed')
           if $t;
 
+          my $r = {
+              status => 0,
+              list   => $list,
+              email  => $email,
+              errors => $errors,
+			  redirect_url => $ls->param('alt_url_sub_failed'), 
+          };
+
         if ( $args->{-html_output} == 0 ) {
-            my $r = {
-                status => 0,
-                list   => $list,
-                email  => $email,
-                errors => $errors
-            };
             if ( $args->{-return_json} == 1 ) {
                 return $self->jsonify($r);
             }
@@ -967,12 +957,12 @@ sub confirm {
 
                 }
                 warn '>>>> >>>> >>>> redirecting to: '
-                  . $ls->param('alt_url_sub_failed')
+                  . $r->{redirect_url}
                   . $qs
                   if $t;
-                my $r =
-                  $self->alt_redirect( $ls->param('alt_url_sub_failed'), $qs );
-                $self->test ? return $r : print $fh safely_encode($r)
+                my $rd =
+                  $self->alt_redirect( $r->{redirect_url}, $qs );
+                $self->test ? return $rd : print $fh safely_encode($rd)
                   and return;
             }
             elsif ( $ls->param('alt_url_sub_failed_w_qs') != 1 ) {
@@ -1057,8 +1047,8 @@ sub confirm {
                 }
             );
 
+            my $r = { status => 1, list => $list, email => $email };
             if ( $args->{-html_output} == 0 ) {
-                my $r = { status => 1, list => $list, email => $email };
                 if ( $args->{-return_json} == 1 ) {
                     return $self->jsonify($r);
                 }
@@ -1070,7 +1060,7 @@ sub confirm {
             elsif ( $args->{-html_output} == 1 ) {
                 my $s = $ls->param('html_subscription_request_message');
                 require DADA::Template::Widgets;
-                my $r = DADA::Template::Widgets::wrap_screen(
+                my $rd = DADA::Template::Widgets::wrap_screen(
                     {
                         -data => \$s,
                         -with => 'list',
@@ -1086,7 +1076,7 @@ sub confirm {
                           { email => $email, subscriber_email => $email },
                     }
                 );
-                $self->test ? return $r : print $fh safely_encode($r)
+                $self->test ? return $rd : print $fh safely_encode($rd)
                   and return;
             }
         }
@@ -1235,9 +1225,8 @@ sub confirm {
                 );
             }
 
+			my $r = { status => 1, list => $list, email => $email, redirect_url => $ls->param('alt_url_sub_success'), };
             if ( $args->{-html_output} == 0 ) {
-
-                my $r = { status => 1, list => $list, email => $email };
                 if ( $args->{-return_json} == 1 ) {
                     return $self->jsonify($r);
                 }
@@ -1255,12 +1244,12 @@ sub confirm {
                           . uriescape($email);
                     }
                     warn 'redirecting to: '
-                      . $ls->param('alt_url_sub_success')
+                      . $r->{redirect_url}
                       . $qs
                       if $t;
 
                     my $r =
-                      $self->alt_redirect( $ls->param('alt_url_sub_success'),
+                      $self->alt_redirect( $r->{redirect_url},
                         $qs );
                     $self->test ? return $r : print $fh safely_encode($r)
                       and return;
@@ -1272,7 +1261,7 @@ sub confirm {
 
                     my $s = $ls->param('html_subscribed_message');
                     require DADA::Template::Widgets;
-                    my $r .= DADA::Template::Widgets::wrap_screen(
+                    my $rd .= DADA::Template::Widgets::wrap_screen(
                         {
                             -data           => \$s,
                             -with           => 'list',
@@ -1294,7 +1283,7 @@ sub confirm {
                         }
                     );
 
-                    $self->test ? return $r : print $fh safely_encode($r)
+                    $self->test ? return $rd : print $fh safely_encode($rd)
                       and return;
                 }
             }
