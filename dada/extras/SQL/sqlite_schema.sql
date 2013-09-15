@@ -109,6 +109,7 @@ CREATE TABLE IF NOT EXISTS dada_message_drafts (
 list varchar(16),
 created_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 last_modified_timestap TIMESTAMP, 
+name varchar(80), 
 screen  varchar(80),
 role varchar(80),
 draft text
