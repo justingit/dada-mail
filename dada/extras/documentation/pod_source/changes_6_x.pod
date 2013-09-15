@@ -1,3 +1,35 @@
+=head1 6.7.0
+
+=head2 Summary 6.7.0
+
+=head2 Features 6.7.0
+
+=head3 Mass Mailing: Save as Draft
+
+Dada Mail now supports saving unfinished messages, called Drafts. 
+
+In past versions of Dada Mail, it was always awkward to keep an unfinished copy of your message: You would either have to keep a browser window always open with your unfinished message, save your message in a different place (in a text file, on your computer), or another awkward solution. Thankfully, that's no more! 
+
+Dada Mail can now save a Draft message right in the, "Send a Message", or "Send a Wepage" screen. Messages are also auto-saved automatically every minute, in case your browser window inadvertantly is closed by accident. Draft messages will also be saved automatically, whenever you send out a test mass mailing. 
+
+An unlimited number of draft messages may be saved, viewed, edited - and if you want to start over, you may cancel the message, and delete the draft.
+
+All form fields available to you in the, "Send a Message", and "Send a Webpage" screen are saved, when a draft is saved, including message headers, message body, as well as Archive Options Partial Mailing List Sending Options, File Attachments, and Testing Options. 
+
+=head3 Mass Mailing: File Attachments
+
+File Attachment uploading is now handled by the included KCFinder web file manager. This allows you to easily upload attachments before sending a message out, as well as attach files already uploaded. 
+
+Attachments can now also be removed from your message easily. 
+
+
+=head2 Changes 6.7.0
+
+=head3 Send Mass Mailing Buttons: Always on Top
+
+The group of buttons in the, Send a Message and Send a Webpage screens now always float on top of the form itself, making it easier to always have Draft Saving/Canceling and Mass Mailing Testing/Sending available to you. 
+
+
 =head1 6.6.0
 
 =head2 Summary 6.6.0
@@ -14,7 +46,7 @@ This release of Dada Mail focuses on three main features:
 
 =back
 
-=head2 Features
+=head2 Features 6.6.0
 
 =head3 Mass Mailing Enhancements: Sending Error Detection and Reporting
 

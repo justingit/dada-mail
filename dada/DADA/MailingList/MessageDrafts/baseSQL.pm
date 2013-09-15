@@ -102,7 +102,7 @@ sub save {
         $id = $args->{-id};
     }
 	
-	warn '$id:' . $id; 
+#	warn '$id:' . $id; 
 	
     my $draft =
       $self->stringify_cgi_params(
@@ -450,6 +450,8 @@ sub params_to_save {
         $params->{attachment1} = 1;
         $params->{attachment2} = 1;
         $params->{attachment3} = 1;
+        $params->{attachment4} = 1;
+        $params->{attachment5} = 1;
     }
     elsif ( $args->{-screen} eq 'send_url_email' ) {
 
@@ -462,7 +464,11 @@ sub params_to_save {
         $params->{url_password}          = 1;
         $params->{proxy}                 = 1;
     }
-    return $params;
+#	use Data::Dumper; 
+#	warn Dumper($params); 
+
+   return $params;
+
 }
 
 sub enabled { 

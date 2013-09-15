@@ -68,9 +68,13 @@ $(document).ready(function() {
 			openKCFinder(this); 
 		});
 		
+		setup_attachment_fields(); 
 		$("body").on("click", ".remove_attachment", function(event) {
-			//alert($(this).attr("data-attachment")); 
-			$("#" + $(this).attr("data-attachment")).val('Select...'); 
+			if(confirm("Remove Attachment?")) { 
+				$("#" + $(this).attr("data-attachment")).val(''); 
+				$("#" + $(this).attr("data-attachment") + "_button").text('Select a File...'); 
+				$(this).hide(); 
+			}
 		});
 		
 		$("body").on("submit", "#mass_mailing", function(event) {
@@ -766,11 +770,25 @@ function admin_menu_notification(flavor, target_class) {
 
 // Mass Mailing >> Send a Message 
 
+function setup_attachment_fields() { 
+	var a_nums = [1,2,3,4,5];
+	for (var i = 0; i < a_nums.length; i++) {	
+		if($("#attachment" + a_nums[i]).length) { 
+			if($("#attachment" + a_nums[i]).val() != ""){ 
+		
+				$("#attachment" + a_nums[i] + "_button").html('<img src="' + $("#SUPPORT_FILES_URL").val() + '/static/images/attachment_icon.gif" />' + $("#attachment" + a_nums[i]).val());
+	        }
+			else { 
+				$("#attachment" + a_nums[i] + "_remove_button").hide(); 					
+			}
+		}
+	}	
+}
 function save_draft(async) { 
 	
 	var r = false; 
 	
-	/* alert($("#mass_mailing").serialize() + '&process=save_as_draft'); */
+    /* alert($("#mass_mailing").serialize() + '&process=save_as_draft'); */
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
 		type: "POST",
@@ -2722,15 +2740,23 @@ function removeSubscriberField(form_name) {
 function openKCFinder(field) {
     window.KCFinder = {
         callBack: function(url) {
-            field.value = url.replace(/http\:\/\/dadademo.com\/dada_mail_support_files\/file_uploads\//, ''); 
-			//url.substring(url.lastIndexOf('/')+1);
+			var kcfinder_upload_url = escapeRegExp($("#kcfinder_upload_url").val() + '/'); 
+			var re = new RegExp(kcfinder_upload_url,'g');
+			var new_val = url.replace(re, ''); 
+            $(field).html('<img src="' + $("#SUPPORT_FILES_URL").val() + '/static/images/attachment_icon.gif" />' + new_val);			
+			$("#" + $(field).attr("data-attachment")).val(new_val); 
+			$("#" + $(field).attr("data-attachment") + '_remove_button').show(); 			
             window.KCFinder = null;
         }
     };
-    window.open('http://dadademo.com/dada_mail_support_files/kcfinder/browse.php', 'kcfinder_textbox',
+    window.open($("#kcfinder_url").val() + '/browse.php', 'kcfinder_textbox',
         'status=0, toolbar=0, location=0, menubar=0, directories=0, ' +
         'resizable=1, scrollbars=0, width=800, height=600'
     );
+}
+
+function escapeRegExp(str) {
+  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
 
 

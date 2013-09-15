@@ -63,14 +63,14 @@ sub send_email {
     my ($args) = @_;
     my $q      = $args->{-cgi_obj};
 
-    my $process            = xss_filter( strip( $q->param('process') ) );
-    my $flavor             = xss_filter( strip( $q->param('flavor') ) );
-    my $root_login         = $args->{-root_login};
+    my $process    = xss_filter( strip( $q->param('process') ) );
+    my $flavor     = xss_filter( strip( $q->param('flavor') ) );
+    my $root_login = $args->{-root_login};
     my $list;
 
     my $restore_from_draft = $q->param('restore_from_draft') || 'true';
-    my $test_sent          = xss_filter( strip( $q->param('test_sent') ) ) || 0;
-    my $test_recipient     = $q->param('test_recipient');
+    my $test_sent = xss_filter( strip( $q->param('test_sent') ) ) || 0;
+    my $test_recipient = $q->param('test_recipient');
 
     if ( !exists( $args->{-list} ) ) {
         croak "You must pass the -list parameter!";
@@ -122,28 +122,29 @@ sub send_email {
             $active_mailouts,   $mailout_will_be_queued
         ) = $self->mass_mailout_info($list);
 
-		my $draft_id = undef;
-        
+        my $draft_id = undef;
+
         require DADA::MailingList::MessageDrafts;
         my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
-		if($d->enabled) { 
+        if ( $d->enabled ) {
 
-	        if (   $restore_from_draft ne 'true'
-	            && $d->has_draft( { -screen => 'send_email' } ) )
-	        {
-	            $draft_id = undef;
-	        }
-	        elsif ($restore_from_draft eq 'true'
-	            && $d->has_draft( { -screen => 'send_email' } ) )
-	        {
-	            if ( defined( $q->param('draft_id') ) ) {
-	                $draft_id = $q->param('draft_id');
-	            }
-	            else {
-	                $draft_id = $d->latest_draft_id( { -screen => 'send_email' } );
-	            }
-	        }
-		}
+            if (   $restore_from_draft ne 'true'
+                && $d->has_draft( { -screen => 'send_email' } ) )
+            {
+                $draft_id = undef;
+            }
+            elsif ($restore_from_draft eq 'true'
+                && $d->has_draft( { -screen => 'send_email' } ) )
+            {
+                if ( defined( $q->param('draft_id') ) ) {
+                    $draft_id = $q->param('draft_id');
+                }
+                else {
+                    $draft_id =
+                      $d->latest_draft_id( { -screen => 'send_email' } );
+                }
+            }
+        }
 
         require DADA::Template::Widgets;
         my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars($list);
@@ -162,7 +163,7 @@ sub send_email {
                     flavor => $flavor,
 
                     draft_id       => $draft_id,
-					draft_enabled  => $d->enabled, 
+                    draft_enabled  => $d->enabled,
                     test_sent      => $test_sent,
                     test_recipient => $test_recipient,
 
@@ -177,6 +178,14 @@ sub send_email {
                     # I don't really have this right now...
                     MAILOUT_AT_ONCE_LIMIT =>
                       $DADA::Config::MAILOUT_AT_ONCE_LIMIT,
+
+                    kcfinder_url =>
+                      $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{url},
+                    kcfinder_upload_dir =>
+                      $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir},
+                    kcfinder_upload_url =>
+                      $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_url},
+
                     mailout_will_be_queued => $mailout_will_be_queued,
                     num_list_mailouts      => $num_list_mailouts,
                     num_total_mailouts     => $num_total_mailouts,
@@ -202,23 +211,24 @@ sub send_email {
         require DADA::MailingList::MessageDrafts;
         my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
 
-		if($d->enabled) { 
-	        if (   $d->has_draft( { -screen => 'send_email' } )
-	            && $restore_from_draft eq 'true' )
-	        {
-	            my $q_draft = $d->fetch({-id => $draft_id, -screen => 'send_email'});
-	            require HTML::FillInForm::Lite;
-	            my $h = HTML::FillInForm::Lite->new();
-	            $scrn = $h->fill( \$scrn, $q_draft, fill_password => 1 );
-	        }
-		}
+        if ( $d->enabled ) {
+            if (   $d->has_draft( { -screen => 'send_email' } )
+                && $restore_from_draft eq 'true' )
+            {
+                my $q_draft =
+                  $d->fetch( { -id => $draft_id, -screen => 'send_email' } );
+                require HTML::FillInForm::Lite;
+                my $h = HTML::FillInForm::Lite->new();
+                $scrn = $h->fill( \$scrn, $q_draft, fill_password => 1 );
+            }
+        }
         if ( $args->{-html_output} == 1 ) {
             e_print($scrn);
         }
 
     }
     elsif ( $process eq 'save_as_draft' ) {
-		$self->save_as_draft({-cgi_obj => $q, -list => $list});
+        $self->save_as_draft( { -cgi_obj => $q, -list => $list } );
     }
     else {
 
@@ -528,7 +538,7 @@ sub send_email {
 
         if ( $args->{-html_output} == 1 ) {
             if ( $process =~ m/test/i ) {
-                $self->wait_for_it($list, $message_id);
+                $self->wait_for_it( $list, $message_id );
                 print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL . '?f='
                       . $flavor
                       . '&test_sent=1&test_recipient='
@@ -539,11 +549,11 @@ sub send_email {
                 require DADA::MailingList::MessageDrafts;
                 my $d =
                   DADA::MailingList::MessageDrafts->new( { -list => $list } );
-				if($d->enabled) { 
-	                if(defined($draft_id)) { 
-						$d->remove($draft_id);
-					}
-				}
+                if ( $d->enabled ) {
+                    if ( defined($draft_id) ) {
+                        $d->remove($draft_id);
+                    }
+                }
                 my $uri =
                     $DADA::Config::S_PROGRAM_URL
                   . '?f=sending_monitor&type=list&id='
@@ -566,8 +576,8 @@ sub send_url_email {
     my $flavor  = xss_filter( strip( $q->param('flavor') ) );
 
     my $restore_from_draft = $q->param('restore_from_draft') || 'true';
-    my $test_sent          = xss_filter( strip( $q->param('test_sent') ) ) || 0;
-    my $test_recipient     = $q->param('test_recipient');
+    my $test_sent = xss_filter( strip( $q->param('test_sent') ) ) || 0;
+    my $test_recipient = $q->param('test_recipient');
 
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
@@ -638,26 +648,27 @@ sub send_url_email {
             $active_mailouts,   $mailout_will_be_queued
         ) = $self->mass_mailout_info($list);
 
-		my $draft_id = undef;
-		
-		require DADA::MailingList::MessageDrafts;
+        my $draft_id = undef;
+
+        require DADA::MailingList::MessageDrafts;
         my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
-		if($d->enabled) { 
-	        if (   $restore_from_draft ne 'true'
-	            && $d->has_draft( { -screen => 'send_url_email' } ) )
-	        {
-	            $draft_id = undef;
-	        }
-	        elsif ($restore_from_draft eq 'true'
-	            && $d->has_draft( { -screen => 'send_url_email' } ) )
-	        {
-	            if ( defined( $q->param('draft_id') ) ) {
-	                $draft_id = $q->param('draft_id');
-	            }
-	            else {
-	                $draft_id = $d->latest_draft_id( { -screen => 'send_url_email' } );
-	            }
-	        }
+        if ( $d->enabled ) {
+            if (   $restore_from_draft ne 'true'
+                && $d->has_draft( { -screen => 'send_url_email' } ) )
+            {
+                $draft_id = undef;
+            }
+            elsif ($restore_from_draft eq 'true'
+                && $d->has_draft( { -screen => 'send_url_email' } ) )
+            {
+                if ( defined( $q->param('draft_id') ) ) {
+                    $draft_id = $q->param('draft_id');
+                }
+                else {
+                    $draft_id =
+                      $d->latest_draft_id( { -screen => 'send_url_email' } );
+                }
+            }
         }
         require DADA::Template::Widgets;
         my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars($list);
@@ -673,10 +684,10 @@ sub send_url_email {
                 -expr => 1,
                 -vars => {
 
-                    screen                  => 'send_url_email',
+                    screen => 'send_url_email',
 
                     draft_id       => $draft_id,
-					draft_enabled  => $d->enabled, 
+                    draft_enabled  => $d->enabled,
                     test_sent      => $test_sent,
                     test_recipient => $test_recipient,
 
@@ -719,28 +730,29 @@ sub send_url_email {
 
         require DADA::MailingList::MessageDrafts;
         my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
-		if($d->enabled) { 
-	        if (   $d->has_draft( { -screen => 'send_url_email' } )
-	            && $restore_from_draft eq 'true' )
-	        {
-	            my $q_draft = $d->fetch({-id => $draft_id, -screen => 'send_url_email'});
-	            require HTML::FillInForm::Lite;
-	            my $h = HTML::FillInForm::Lite->new();
-	            $scrn = $h->fill( \$scrn, $q_draft, fill_password => 1 );
-	        }
-		}
+        if ( $d->enabled ) {
+            if (   $d->has_draft( { -screen => 'send_url_email' } )
+                && $restore_from_draft eq 'true' )
+            {
+                my $q_draft = $d->fetch(
+                    { -id => $draft_id, -screen => 'send_url_email' } );
+                require HTML::FillInForm::Lite;
+                my $h = HTML::FillInForm::Lite->new();
+                $scrn = $h->fill( \$scrn, $q_draft, fill_password => 1 );
+            }
+        }
         e_print($scrn);
 
     }
     elsif ( $process eq 'save_as_draft' ) {
-		$self->save_as_draft({-cgi_obj => $q, -list => $list});
+        $self->save_as_draft( { -cgi_obj => $q, -list => $list } );
     }
     else {
 
         if ($can_use_mime_lite_html) {
-	
-	        my $draft_id = $q->param('draft_id');
-	
+
+            my $draft_id = $q->param('draft_id');
+
             require DADA::App::FormatMessages;
 
             my $url = strip( $q->param('url') );
@@ -993,7 +1005,7 @@ sub send_url_email {
                               $q->param( 'field_value_' . $field->{name} ) };
                     }
                 }
-				my $og_test_recipient = '';
+                my $og_test_recipient = '';
                 if ( $q->param('archive_no_send') != 1 ) {
 
                     # Woo Ha! Send away!
@@ -1075,26 +1087,28 @@ sub send_url_email {
 
                 }
 
-	            if ( $process =~ m/test/i ) {
-					$self->wait_for_it($list, $message_id);
-	                print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL . '?f='
-	                      . $flavor
-	                      . '&test_sent=1&test_recipient='
-	                      . $og_test_recipient );
-	            }
-	            else {
-	                require DADA::MailingList::MessageDrafts;
-	                my $d =
-	                  DADA::MailingList::MessageDrafts->new( { -list => $list } );
-					if($d->enabled) { 
-		                $d->remove($draft_id);
-					}
-	                my $uri =
-	                    $DADA::Config::S_PROGRAM_URL
-	                  . '?f=sending_monitor&type=list&id='
-	                  . $message_id;
-	                print $q->redirect( -uri => $uri );
-	            }
+                if ( $process =~ m/test/i ) {
+                    $self->wait_for_it( $list, $message_id );
+                    print $q->redirect(
+                            -uri => $DADA::Config::S_PROGRAM_URL . '?f='
+                          . $flavor
+                          . '&test_sent=1&test_recipient='
+                          . $og_test_recipient );
+                }
+                else {
+                    require DADA::MailingList::MessageDrafts;
+                    my $d =
+                      DADA::MailingList::MessageDrafts->new(
+                        { -list => $list } );
+                    if ( $d->enabled ) {
+                        $d->remove($draft_id);
+                    }
+                    my $uri =
+                        $DADA::Config::S_PROGRAM_URL
+                      . '?f=sending_monitor&type=list&id='
+                      . $message_id;
+                    print $q->redirect( -uri => $uri );
+                }
             }
             else {
           # DEV: This should probably be fleshed out to be a bit more verbose...
@@ -1109,59 +1123,58 @@ sub send_url_email {
     }
 }
 
+sub wait_for_it {
+    my $self       = shift;
+    my $list       = shift;
+    my $message_id = shift;
 
-sub wait_for_it { 
-	my $self = shift; 
-	my $list       = shift; 
-	my $message_id = shift; 
-	
-	my $still_working = 1; 
-	my $tries         = 0; 
-	require DADA::Mail::MailOut; 
-	SENDING_CHECK: while($still_working) { 
-		$tries++; 
-		if(DADA::Mail::MailOut::mailout_exists( $list, $message_id, 'list' ) == 1){ 
-			sleep(3);
-		}
-		else { 
-			$still_working = 0; 
-			last SENDING_CHECK; 
-		}
-		if($tries > 5){ 
-			last SENDING_CHECK;
-		}
-	}
-	return 1; 
+    my $still_working = 1;
+    my $tries         = 0;
+    require DADA::Mail::MailOut;
+  SENDING_CHECK: while ($still_working) {
+        $tries++;
+        if ( DADA::Mail::MailOut::mailout_exists( $list, $message_id, 'list' )
+            == 1 )
+        {
+            sleep(3);
+        }
+        else {
+            $still_working = 0;
+            last SENDING_CHECK;
+        }
+        if ( $tries > 5 ) {
+            last SENDING_CHECK;
+        }
+    }
+    return 1;
 }
 
+sub save_as_draft {
 
+    my $self = shift;
+    my ($args) = @_;
 
-sub save_as_draft { 
-	
-	my $self   = shift; 
-	my ($args) = @_; 
+    my $q = $args->{-cgi_obj};
+    my $list;
 
-	my $q = $args->{-cgi_obj}; 
-	my $list; 
-	
-	if ( !exists( $args->{-list} ) ) {
+    if ( !exists( $args->{-list} ) ) {
         croak "You must pass the -list parameter!";
     }
     else {
         $list = $args->{-list};
     }
-    
-	require DADA::MailingList::MessageDrafts;
+
+    require DADA::MailingList::MessageDrafts;
     my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
 
-	return unless $d->enabled; 
-	
+    return unless $d->enabled;
+
     my $draft_id = $q->param('draft_id') || undef;
 
     # warn '$draft_id:' . $draft_id;
     my $saved_draft_id = $d->save(
         {
-			-cgi_obj => $q,
+            -cgi_obj => $q,
             -id      => $draft_id,
             -screen  => $q->param('f'),
         }
@@ -1187,8 +1200,8 @@ sub list_invite {
     my $q      = $args->{-cgi_obj};
 
     my $process = xss_filter( strip( $q->param('process') ) );
-warn '$process ' . $process; 
-    my $flavor  = xss_filter( strip( $q->param('flavor') ) );
+    warn '$process ' . $process;
+    my $flavor = xss_filter( strip( $q->param('flavor') ) );
 
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
@@ -1308,7 +1321,8 @@ warn '$process ' . $process;
         e_print($scrn);
 
     }
-    elsif ( $process =~ m/send test invitation|send a test invitation|send invitations/i )
+    elsif ( $process =~
+        m/send test invitation|send a test invitation|send invitations/i )
     { # $process is dependent on the label of the button - which is not a good idea
 
         my @address                 = $q->param('address');
@@ -1556,17 +1570,29 @@ sub has_attachments {
 
     my @ive_got = ();
 
-    my $num = 3;
+    my $num = 5;
 
     for ( 1 .. $num ) {
         my $filename = $q->param( 'attachment' . $_ );
         warn '$filename:' . $filename
           if $t;
         if ( defined($filename) && length($filename) > 1 ) {
-            if ( $filename ne 'Select...' ) {
-                warn 'I\'ve got, ' . 'attachment' . $_;
-                push( @ive_got, $filename );
-            }
+            if ( $filename ne 'Select A File...' && length($filename) > 0) {
+                warn 'I\'ve got, ' . 'attachment' . $_
+					if $t; 
+				if(! -e $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir} . '/' . $filename) { 
+					my $new_filename = uriunescape($filename);
+					if(! -e $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir} . '/' . $new_filename) { 
+						carp "I can't find attachment file: $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir} . '/' . $filename"; 
+					} 
+					else { 
+	                	push( @ive_got, $new_filename );					
+					}
+				}
+				else {
+                	push( @ive_got, $filename );
+            	}
+			}
         }
     }
     return @ive_got;

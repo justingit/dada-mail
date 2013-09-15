@@ -1,22 +1,62 @@
 <!-- begin file_attachments_widget.tmpl --> 
 
-<div id="attachment_widgets"> 
+<!-- tmpl_if kcfinder_enabled --> 
 
-	<p>
-		<input readonly="readonly" name="attachment1" id="attachment1" type="text" class="kcfinder_open" value="Select..." style="cursor:pointer" />
-		<input type="button" value="x"  class="remove_attachment"  data-attachment="attachment1" />
-	</p>
+	<div id="attachment_widgets"> 
 
-	<p>
-		<input readonly="readonly" name="attachment2" id="attachment1" type="text" class="kcfinder_open" value="Select..." style="cursor:pointer" />
-		<input type="button" value="x"  class="remove_attachment"  data-attachment="attachment2" />
-	</p>
-	
-	<p>
-		<input readonly="readonly" name="attachment3" id="attachment1" type="text" class="kcfinder_open" value="Select..." style="cursor:pointer" />
-		<input type="button" value="x"  class="remove_attachment"  data-attachment="attachment3" />
-	</p>
+		<input type="hidden" id="kcfinder_url"        name="kcfinder_url"        value="<!-- tmpl_var kcfinder_url -->"        />
+		<input type="hidden" id="kcfinder_upload_dir" name="kcfinder_upload_dir" value="<!-- tmpl_var kcfinder_upload_dir -->" />
+		<input type="hidden" id="kcfinder_upload_url" name="kcfinder_upload_url" value="<!-- tmpl_var kcfinder_upload_url -->" />
+		<input type="hidden" id="SUPPORT_FILES_URL"   name="SUPPORT_FILES_URL"   value="<!-- tmpl_var SUPPORT_FILES_URL -->"   /> 
 
-</div> 
+		<p>
+			<button type="button" name="attachment1_button" id="attachment1_button" value=""  data-attachment="attachment1" class="kcfinder_open"/>Select a File...</button>
+			<input  type="hidden" name="attachment1"        id="attachment1"        value="" /> 
+			<input type="button" value="[x]"  class="remove_attachment alertive" id="attachment1_remove_button" data-attachment="attachment1" />
+		</p>
+
+		<p>
+			<button type="button" name="attachment2_button" id="attachment2_button" value=""  data-attachment="attachment2" class="kcfinder_open"/>Select a File...</button>
+			<input  type="hidden" name="attachment2"        id="attachment2"        value="" /> 
+			<input type="button" value="[x]"  class="remove_attachment alertive" id="attachment2_remove_button" data-attachment="attachment2" />
+		</p>
+
+
+		<p>
+			<button type="button" name="attachment3_button" id="attachment3_button" value=""  data-attachment="attachment3" class="kcfinder_open"/>Select a File...</button>
+			<input  type="hidden" name="attachment3"        id="attachment3"        value="" /> 
+			<input type="button" value="[x]"  class="remove_attachment alertive" id="attachment3_remove_button" data-attachment="attachment3" />
+		</p>
+
+
+		<p>
+			<button type="button" name="attachment4_button" id="attachment4_button" value=""  data-attachment="attachment4" class="kcfinder_open"/>Select a File...</button>
+			<input  type="hidden" name="attachment4"        id="attachment4"        value="" /> 
+			<input type="button" value="[x]"  class="remove_attachment alertive" id="attachment4_remove_button" data-attachment="attachment4" />
+		</p>
+
+
+		<p>
+			<button type="button" name="attachment5_button" id="attachment5_button" value=""  data-attachment="attachment5" class="kcfinder_open"/>Select a File...</button>
+			<input  type="hidden" name="attachment5"        id="attachment5"        value="" /> 
+			<input type="button" value="[x]"  class="remove_attachment alertive" id="attachment5_remove_button" data-attachment="attachment5" />
+		</p>
+
+
+
+	</div> 
+<!-- tmpL_else --> 
+	<div id="badweatherbox">
+		<p>
+			<strong>
+				Disabled.
+			</strong>
+		</p>
+		<p>
+			KCFinder needs to be enabled.
+		</p>
+	</div> 
+
+<!-- /tmpl_if --> 
 
 <!-- end file_attachments_widget.tmpl --> 

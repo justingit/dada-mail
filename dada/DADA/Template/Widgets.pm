@@ -117,7 +117,8 @@ use vars qw( @EXPORT );
 
 my %Global_Template_Variables = (
 SUPPORT_FILES_URL  => $DADA::Config::SUPPORT_FILES->{url}, 
-
+kcfinder_enabled   => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled}, 		
+		
 ROOT_PASS_IS_ENCRYPTED => $DADA::Config::ROOT_PASS_IS_ENCRYPTED, 
 PROGRAM_NAME           => $DADA::Config::PROGRAM_NAME, 
 PROGRAM_URL            => $DADA::Config::PROGRAM_URL,

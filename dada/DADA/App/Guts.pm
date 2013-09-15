@@ -47,6 +47,7 @@ require Exporter;
   e_print
   decode_he
   uriescape
+  uriunescape
   lc_email
   make_safer
   encode_html_entities
@@ -1361,6 +1362,18 @@ sub uriescape {
          die "URI::Escape was expected to be found but is missing. It should be bundled with the Dada mail distribution";
      }
 } 
+sub uriunescape {
+     my $string = shift;
+
+     if (HAS_URI_ESCAPE_XS) {
+         return URI::Escape::XS::uri_unescape($string);
+     }elsif (HAS_URI_ESCAPE){
+         return URI::Escape::uri_unescape($string);
+     }else {
+         die "URI::Escape was expected to be found but is missing. It should be bundled with the Dada mail distribution";
+     }
+} 
+
    
    
 sub js_enc {
