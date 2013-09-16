@@ -259,6 +259,32 @@ etc.
 
 B<Global Variable:> C<$SIGN_IN_FLAVOR_NAME>
 
+=head2 Configure CAPTCHA
+
+Dada Mail uses CAPTCHA challenge-response tests optionally for many things: as a additional step to confirm a subscription, for the Forward a Friend form, and other places. 
+
+Dada Mail also supports Mailhide, which uses the reCAPTCHA system to easily protect email addresses shown in Dada Mail's public archives. 
+
+In this section, we can configure the CAPTCHA options in Dada Mail: 
+
+=head3 CAPTCHA Type
+
+Dada Mail allows you to choose between two CAPTCHA types: it's Default, and reCAPTCHA. If available, we suggest using the reCAPTCHA system, as it's more sophisticated, than the CAPTCHA system shipped with Dada Mail. reCAPTCHA does require the, C<CAPTCHA::reCAPTCHA> CPAN module installed. 
+
+You'll also need to sign up for an API key at the reCAPTCHA site: L<http://www.google.com/recaptcha>. Once you've signed up, you'll need to input both the Public and Private reCAPTCHA API key into Dada Mail. Dada Mail will also need the Remote Host filled out - this is basically your domain name, (example.com). 
+
+=head4 Test CAPTCHA Configuration
+
+Once you've made your selection of what type of CAPTCHA system to use, and inputted any necessary information, you may use the, B<Test CAPTCHA Configuration> button to make sure the CAPTCHA system is working. Results should be shown below the button, as well as an example of the CAPTCHA widget. If the widget does not show, double-check that the information you've added is correct. 
+
+=head3 reCAPTCHA Mailhide
+
+reCAPTCHA Mailhide is also supported, and also needs a Public and Private API key, which can be created here: L<http://www.google.com/recaptcha/mailhide/> - NOTE! That this API key pair is different from your reCAPTHCA public/private key - they're not interchangeable. 
+
+=head4 Test reCAPTCHA Mailhide Configuration
+
+You may use the, B<Test reCAPTCHA Mailhide Configuration> button to make sure the Mailhide system is working. Results should be shown below the button, as well as an example of a protected email address. If the example does not show, double-check that the information you've added is correct.
+
 =head2  Configure Global Mass Mailing Options 
 
 Some mass mailing options are set globally, as sending limitations may be account-wide, rather than mailing list-wide. Mailing List-specific Mass Mailing Options are found in the List Control Panel, under: B<Mail Sending - Mass Mailing Options>
