@@ -17,6 +17,7 @@ $(document).ready(function() {
 	
 	}
 	if ($("#installer_configure_dada_mail").length) {
+				
 		$("body").on("change", "#backend", function(event) {
 			installer_toggleSQL_options();
 		});
@@ -33,7 +34,15 @@ $(document).ready(function() {
 		$("body").on("click", '.test_user_template', function(event) {
 			test_user_template();
 		});
-
+		$("body").on("click", '.test_CAPTCHA_configuration', function(event) {
+			test_CAPTCHA_configuration();
+		});
+		$("body").on("click", '.test_captcha_reCAPTCHA_Mailhide_configuration', function(event) {
+			test_captcha_reCAPTCHA_Mailhide_configuration();
+		});
+		
+		
+		
 		$("body").on("click", '.test_amazon_ses_configuration', function(event) {
 			test_amazon_ses_configuration();
 		});
@@ -129,6 +138,11 @@ $(document).ready(function() {
 		$("body").on('click', "#configure_security", function(event) {
 			installer_checkbox_toggle_option_groups('configure_security', 'security_options'); 
 		});
+		
+		$("body").on('click', "#configure_captcha", function(event) {
+			installer_checkbox_toggle_option_groups('configure_captcha', 'captcha_options'); 
+		});
+		
 
 		$("body").on('click', "#configure_mass_mailing", function(event) {
 			installer_checkbox_toggle_option_groups('configure_mass_mailing', 'mass_mailing_options');
@@ -137,7 +151,8 @@ $(document).ready(function() {
 		installer_dada_root_pass_options();
 		installer_toggleSQL_options();
 		installer_toggle_dada_files_dirOptions();
-	
+		installer_toggle_captcha_type_options();
+
 		installer_checkbox_toggle_option_groups('install_bridge', 'bridge_configuration');  
 		installer_checkbox_toggle_option_groups('install_bounce_handler', 'bounce_handler_configuration');  
 		installer_checkbox_toggle_option_groups('install_wysiwyg_editors', 'install_wysiwyg_editors_options');
@@ -145,6 +160,7 @@ $(document).ready(function() {
 		installer_checkbox_toggle_option_groups('configure_profiles', 'profiles_options');
 		installer_checkbox_toggle_option_groups('configure_templates', 'template_options');
 		installer_checkbox_toggle_option_groups('configure_security', 'security_options');
+		installer_checkbox_toggle_option_groups('configure_captcha', 'captcha_options');
 		installer_checkbox_toggle_option_groups('configure_mass_mailing', 'mass_mailing_options');
 		installer_checkbox_toggle_option_groups('configure_cache', 'cache_options');
 		installer_checkbox_toggle_option_groups('configure_debugging', 'debugging_options');
@@ -162,6 +178,7 @@ $(document).ready(function() {
 		$("#test_sql_connection_results").hide();
 		$("#test_bounce_handler_pop3_connection_results").hide();
 		$("#test_user_template_results").hide(); 
+		$("#test_CAPTCHA_configuration_results").hide(); 
 		$("#test_amazon_ses_configuration_results").hide();
 
 	}
@@ -259,6 +276,7 @@ function test_amazon_ses_configuration() {
 	});
 }
 
+
 function test_user_template() {
 	var target_div = 'test_user_template_results';
 	$("#" + target_div).html('<p class="alert">Loading...</p>');
@@ -279,6 +297,98 @@ function test_user_template() {
 	request.done(function(content) {
 		$("#" + target_div).html(content);
 	});
+}
+function test_CAPTCHA_configuration() {
+	var target_div = 'test_CAPTCHA_configuration_results';
+	$("#" + target_div).html('<p class="alert">Loading...</p>');
+	if ($("#" + target_div).is(':hidden')) {
+		$("#" + target_div).show();
+	}
+	
+	var flavor = ''; 
+	if($("#captcha_type_default").prop("checked") === true) { 
+		flavor = 'default'; 
+	}
+	else if($("#captcha_type_recaptcha").prop("checked") === true) { 
+		flavor = 'recaptcha'; 		
+	}
+	else { 
+		alert("Unknown CAPTCHA Type!"); 
+	}
+	if(flavor == 'default') { 
+		var request = $.ajax({
+			url: $("#self_url").val(),
+			type: "POST",
+			cache: false,
+			data: {
+				f: 'cgi_test_default_CAPTCHA'
+			},
+			dataType: "html"
+		});
+		request.done(function(content) {
+			$("#" + target_div).html(content);
+		});
+	}
+	else { 
+		var request = $.ajax({
+			url: $("#self_url").val(),
+			type: "POST",
+			cache: false,
+			data: {
+				f: 'cgi_test_CAPTCHA_reCAPTCHA',
+				captcha_reCAPTCHA_public_key: $("#captcha_reCAPTCHA_public_key").val()
+			},
+			dataType: "html"
+		});
+		request.done(function(content) {
+			//alert("done!"); 
+			$("#" + target_div).html(content);
+			
+			$.getScript("http://www.google.com/recaptcha/api/js/recaptcha_ajax.js", function(data, textStatus, jqxhr) {
+			  Recaptcha.create($("#captcha_reCAPTCHA_public_key").val(),
+			    "recaptcha_example",
+			    {
+			      theme: "red",
+			      callback: Recaptcha.focus_response_field,
+			    }
+			  );
+		    }); 
+			
+		});
+		request.error(function(xhr, ajaxOptions, thrownError) {
+			alert('status: ' + xhr.status);
+			alert('thrownError:' + thrownError);
+			console.log('status: ' + xhr.status);
+			console.log('thrownError:' + thrownError);
+		}); 
+
+	}
+}
+
+function test_captcha_reCAPTCHA_Mailhide_configuration() {
+	
+	var target_div = 'captcha_reCAPTCHA_Mailhide_configuration_results';
+	
+	$("#" + target_div).html('<p class="alert">Loading...</p>');
+	if ($("#" + target_div).is(':hidden')) {
+		$("#" + target_div).show();
+	}
+	
+	var request = $.ajax({
+		url: $("#self_url").val(),
+		type: "POST",
+		cache: false,
+		data: {
+			f: 'cgi_test_captcha_reCAPTCHA_Mailhide',
+			captcha_reCAPTCHA_Mailhide_public_key:  $("#captcha_reCAPTCHA_Mailhide_public_key").val(), 
+			captcha_reCAPTCHA_Mailhide_private_key: $("#captcha_reCAPTCHA_Mailhide_private_key").val()
+		},
+		dataType: "html"
+	});
+	request.done(function(content) {
+		$("#" + target_div).html(content);
+	});
+	
 }
 
 function installer_checkbox_toggle_option_groups(checkbox_id, target_id){ 
@@ -321,6 +431,27 @@ function installer_toggleSQL_options() {
 			$('#sql_info').hide('blind');
 		}
 	}
+}
+
+function installer_toggle_captcha_type_options() { 
+
+	var selected = ''; 
+	if($("#captcha_type_default").prop("checked") === true) { 
+		selected = 'captcha_type_default'; 
+	}
+	else if($("#captcha_type_recaptcha").prop("checked") === true) { 
+		selected = 'captcha_type_recaptcha'; 		
+	}
+
+	if (selected == 'captcha_type_recaptcha') {
+		if ($('#recaptcha_settings').is(':hidden')) {
+			$('#recaptcha_settings').show('blind');
+		}
+	} else {
+		if ($('#recaptcha_settings').is(':visible')) {
+			$('#recaptcha_settings').hide('blind');
+		}
+	}	
 }
 
 function installer_toggle_dada_files_dirOptions() {

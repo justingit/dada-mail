@@ -128,60 +128,93 @@ sub _dir_setup {
 	}
 }
 
+sub create_img {
+
+    my $self = shift;
+
+    my ( $secret_phrase, $auth_string ) = @_;
+
+    $self->_dir_setup();
+
+    my ( $image_data, $mime_type, $random_number ) =
+      $self->create_img_data( $secret_phrase, $auth_string );
+
+    my $filename =
+      make_safer( $DADA::Config::TMP
+          . "/capcha_imgs/CAPTCHA-"
+          . substr( $auth_string, 0, 11 )
+          . '.png' );
+    open my $FILE, ">", $filename or die $!;
+    print $FILE $image_data or die $!;
+    close($FILE) or die $!;
+
+}
 
 
+sub create_img_data {
 
+    my $self = shift;
 
+    my ( $secret_phrase, $auth_string ) = @_;
 
+    # Magic!
 
-
-
-sub create_img { 
-
-    my $self = shift; 
-
-	$self->_dir_setup(); 
-
-    my ($secret_phrase, $auth_string) = @_;
-    
-    # Magic! 
-    
     # Don't check if it doesn't exist...
-    if(exists($DADA::Config::GD_SECURITYIMAGE_PARAMS->{'new'}->{'font'})){ 
-    
-        if(-e $DADA::Config::GD_SECURITYIMAGE_PARAMS->{'new'}->{'font'}){ 
+    if ( exists( $DADA::Config::GD_SECURITYIMAGE_PARAMS->{'new'}->{'font'} ) ) {
+
+        if ( -e $DADA::Config::GD_SECURITYIMAGE_PARAMS->{'new'}->{'font'} ) {
+
             # well, good show!
         }
-        else { 
-            
-            require DADA::Template::Widgets; 
-            my $guess = DADA::Template::Widgets::file_path($DADA::Config::GD_SECURITYIMAGE_PARAMS->{'new'}->{'font'}); 
-            
-            if($guess){ 
-            
-                $DADA::Config::GD_SECURITYIMAGE_PARAMS->{'new'}->{'font'} = $guess; 
-            } else { 
-                warn "Cannot find the font, " . $DADA::Config::GD_SECURITYIMAGE_PARAMS->{'new'}->{'font'} . " anywhere!?"; 
+        else {
+
+            require DADA::Template::Widgets;
+            my $guess = DADA::Template::Widgets::file_path(
+                $DADA::Config::GD_SECURITYIMAGE_PARAMS->{'new'}->{'font'} );
+
+            if ($guess) {
+
+                $DADA::Config::GD_SECURITYIMAGE_PARAMS->{'new'}->{'font'} =
+                  $guess;
+            }
+            else {
+                warn "Cannot find the font, "
+                  . $DADA::Config::GD_SECURITYIMAGE_PARAMS->{'new'}->{'font'}
+                  . " anywhere!?";
             }
         }
     }
-    
-    
-   # Create a normal image
 
-   my $image = GD::SecurityImage->new(%{$DADA::Config::GD_SECURITYIMAGE_PARAMS->{'new'}});
-      $image->random($secret_phrase);
-      $image->create(%{$DADA::Config::GD_SECURITYIMAGE_PARAMS->{'create'}});
-      $image->particle($DADA::Config::GD_SECURITYIMAGE_PARAMS->{'particle'}->[0], $DADA::Config::GD_SECURITYIMAGE_PARAMS->{'particle'}->[1]); 
+    # Create a normal image
 
-   my($image_data, $mime_type, $random_number) = $image->out;
-   
-	my $filename = make_safer($DADA::Config::TMP . "/capcha_imgs/CAPTCHA-" . substr($auth_string, 0, 11) . '.png'); 
-    open my $FILE, ">", $filename or die $!; 
-    print $FILE $image_data or die $!;  
-    close ($FILE) or die $!; 
+    my $image = GD::SecurityImage->new(
+        %{ $DADA::Config::GD_SECURITYIMAGE_PARAMS->{'new'} } );
+    $image->random($secret_phrase);
+    $image->create( %{ $DADA::Config::GD_SECURITYIMAGE_PARAMS->{'create'} } );
+    $image->particle(
+        $DADA::Config::GD_SECURITYIMAGE_PARAMS->{'particle'}->[0],
+        $DADA::Config::GD_SECURITYIMAGE_PARAMS->{'particle'}->[1]
+    );
+
+    my ( $image_data, $mime_type, $random_number ) = $image->out;
+
+    return ( $image_data, $mime_type, $random_number );
 
 }
+
+sub inline_img_data { 
+	my $self = shift; 
+	my ( $secret_phrase, $auth_string ) = @_;
+    
+    my ( $image_data, $mime_type, $random_number ) =
+      $self->create_img_data( $secret_phrase, $auth_string );
+
+	require MIME::Base64; 
+	my $encoded = MIME::Base64::encode_base64($image_data);
+	return 'data:image/' . $mime_type. ';base64,' . $encoded; 
+	
+}
+
 
 sub remove_CAPTCHA { 
 

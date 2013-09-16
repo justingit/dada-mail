@@ -1,0 +1,25 @@
+<!-- begin captcha_default_test_widget.tmpl --> 
+	<!-- tmpl_if errors --> 
+		<div class="badweatherbox"> 
+			<p>
+				<strong>
+					Default CAPTCHA Configuration Failed:
+				</strong>
+			</p>
+			<p><code><!-- tmpl_var errors escape="HTML" --></code></p>
+		</div> 
+		
+	<!-- tmpl_else --> 
+	
+		<div class="clearskiesbox"> 
+			<p>
+				If you see the CAPTCHA widget below, <strong>Default CAPTCHA</strong> Configuration Worked!.
+			</p>
+			
+			<p style="text-align:center"><img src="<!-- tmpl_var captcha -->" /></p>
+			
+		</div>
+	
+	<!-- /tmpl_if --> 
+	
+<!-- end captcha_recaptcha_test_widget.tmpl -->
