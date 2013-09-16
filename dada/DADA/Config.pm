@@ -446,7 +446,7 @@ $RECAPTHCA_MAILHIDE_PARAMS ||= {
 
 
 $SHOW_HELP_LINKS ||= 1;
-$HELP_LINKS_URL  ||= 'http://dadamailproject.com/pro_dada/6.6.0';
+$HELP_LINKS_URL  ||= 'http://dadamailproject.com/pro_dada/6.7.0';
 
 
 $LOGIN_COOKIE_NAME ||= 'dadalogin';
@@ -2891,8 +2891,8 @@ $ATTACHMENT_TEMPFILE ||= 0;
 
 $MAIL_VERP_SEPARATOR ||= '-';
 
-$VERSION = 6.6.0;
-$VER     = '6.6.0 Stable 9/4/13';
+$VERSION = 6.7.0;
+$VER     = '6.7.0 Stable 9/16/13';
 
 #
 #

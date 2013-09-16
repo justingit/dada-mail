@@ -22,6 +22,13 @@ File Attachment uploading is now handled by the included KCFinder web file manag
 
 Attachments can now also be removed from your message easily. 
 
+=head3 Installer
+
+=head4 CAPTCHA Options
+
+The included Dada Mail Installer now allows you to configure the CAPTCHA system that comes with Dada Mail. Dada Mail comes shipped with support for its own CAPTCHA system, as well as reCAPTCHA. Dada Mail also has support for the reCAPTCHA Mailhide system, to protect email addresses in its public message archives. 
+
+These options are located under the, B<Advanced Configuration (Optional)> heading, and is available in our Pro Dada distribution. 
 
 =head2 Changes 6.7.0
 
