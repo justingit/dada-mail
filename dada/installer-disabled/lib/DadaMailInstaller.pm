@@ -947,6 +947,27 @@ sub grab_former_config_vals {
 		}
 
 	}
+	
+	# Configure Security Options
+	if(
+		defined($BootstrapConfig::SHOW_ADMIN_LINK)
+	||  defined($BootstrapConfig::DISABLE_OUTSIDE_LOGINS)
+	||  defined($BootstrapConfig::ADMIN_FLAVOR_NAME)
+	||  defined($BootstrapConfig::SIGN_IN_FLAVOR_NAME)
+	) { 
+		$local_q->param('configure_security', 1);
+		if($BootstrapConfig::SHOW_ADMIN_LINK == 2){ 
+			$local_q->param('security_no_show_admin_link', 1);
+		}
+		else { 
+			$local_q->param('security_no_show_admin_link', 0);
+		}
+		$local_q->param('security_DISABLE_OUTSIDE_LOGINS', $BootstrapConfig::DISABLE_OUTSIDE_LOGINS);	
+		$local_q->param('security_ADMIN_FLAVOR_NAME',      $BootstrapConfig::ADMIN_FLAVOR_NAME);	
+		$local_q->param('security_SIGN_IN_FLAVOR_NAME',    $BootstrapConfig::SIGN_IN_FLAVOR_NAME);	
+		
+	}
+
 	# Configure CAPTCHA
 	if(
 		defined($BootstrapConfig::CAPTCHA_TYPE) || 
@@ -973,30 +994,13 @@ sub grab_former_config_vals {
 		}
 		
 		if(defined($BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS->{public_key})){ 
-			$q->param('captcha_reCAPTCHA_Mailhide_public_key', $BootstrapConfig::RECAPTCHA_PARAMS->{public_key}); 
+			$q->param('captcha_reCAPTCHA_Mailhide_public_key', $BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS->{public_key}); 
 		}
 		if(defined($BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS->{private_key})){ 
-			$q->param('captcha_reCAPTCHA_Mailhide_private_key', $BootstrapConfig::RECAPTCHA_PARAMS->{private_key}); 
+			$q->param('captcha_reCAPTCHA_Mailhide_private_key', $BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS->{private_key}); 
 		}
 	}
 
-	# Configure Security Options
-	if(
-		defined($BootstrapConfig::SHOW_ADMIN_LINK)
-	||  defined($BootstrapConfig::DISABLE_OUTSIDE_LOGINS)
-	||  defined($BootstrapConfig::ADMIN_FLAVOR_NAME)
-	||  defined($BootstrapConfig::SIGN_IN_FLAVOR_NAME)
-	) { 
-		$local_q->param('configure_security', 1);
-		if($BootstrapConfig::SHOW_ADMIN_LINK == 2){ 
-			$local_q->param('security_no_show_admin_link', 1);
-		}
-		else { 
-			$local_q->param('security_no_show_admin_link', 0);
-		}
-	}
-
-	
 	
 	
 	# Mass Mailing Options
