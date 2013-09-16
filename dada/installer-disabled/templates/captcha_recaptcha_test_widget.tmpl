@@ -1,0 +1,29 @@
+<!-- begin captcha_recaptcha_test_widget.tmpl --> 
+	<!-- tmpl_if errors --> 
+		<div class="badweatherbox"> 
+			<p>
+				<strong>
+					reCAPTCHA Configuration Failed:
+				</strong>
+			</p>
+			<p><code><!-- tmpl_var errors escape="HTML" --></code></p>
+		</div> 
+		
+	<!-- tmpl_else --> 
+	
+<!-- tmpl_if comment --> 
+<!-- tmpl_var captcha escape="HTML" --></pre> 
+<!-- /tmpl_if --> 
+		
+		<div class="clearskiesbox"> 
+			<p>
+				If you see the reCAPTCHA widget below, <strong>reCAPTCHA</strong> Configuration Worked!.
+			</p>
+		
+		<div id="recaptcha_example"></div>
+		
+		</div>
+	
+	<!-- /tmpl_if --> 
+	
+<!-- end captcha_recaptcha_test_widget.tmpl --> 

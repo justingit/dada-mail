@@ -223,6 +223,7 @@ my $advanced_config_params = {
     show_profiles                       => 1,
     show_global_template_options        => 1,
     show_security_options               => 1,
+    show_captcha_options                => 1, 
     show_global_mass_mailing_options    => 1,
     show_cache_options                  => 1,
     show_debugging_options              => 1,
@@ -268,6 +269,10 @@ sub run {
 			cgi_test_user_template   => \&cgi_test_user_template, 
             cgi_test_amazon_ses_configuration =>
               \&cgi_test_amazon_ses_configuration,
+			cgi_test_CAPTCHA_reCAPTCHA => \&cgi_test_CAPTCHA_reCAPTCHA,
+			#cgi_test_CAPTCHA_reCAPTCHA_iframe => \&cgi_test_CAPTCHA_reCAPTCHA_iframe, 
+			cgi_test_default_CAPTCHA => \&cgi_test_default_CAPTCHA, 
+			cgi_test_captcha_reCAPTCHA_Mailhide => \&cgi_test_captcha_reCAPTCHA_Mailhide,  
         );
         my $flavor = $q->param('f');
         if ($flavor) {
@@ -606,7 +611,11 @@ sub scrn_configure_dada_mail {
                 can_use_DBI                    => test_can_use_DBI(),
 				can_use_MySQL                  => test_can_use_MySQL(), 
 				can_use_Pg                     => test_can_use_Pg(), 
-				can_use_SQLite                 => test_can_use_SQLite(), 								
+				can_use_SQLite                 => test_can_use_SQLite(), 
+				can_use_GD                     => test_can_use_GD(), 	
+				can_use_CAPTCHA_reCAPTCHA      => test_can_use_CAPTCHA_reCAPTCHA(), 							
+				can_use_CAPTCHA_reCAPTCHA_Mailhide => test_can_use_CAPTCHA_reCAPTCHA_Mailhide(), 							
+
                 error_cant_read_config_dot_pm  => test_can_read_config_dot_pm(),
                 error_cant_write_config_dot_pm => test_can_write_config_dot_pm(),
 				home_dir_guess                 => guess_home_dir(),
@@ -938,6 +947,39 @@ sub grab_former_config_vals {
 		}
 
 	}
+	# Configure CAPTCHA
+	if(
+		defined($BootstrapConfig::CAPTCHA_TYPE) || 
+		keys %{$BootstrapConfig::RECAPTCHA_PARAMS} || 
+		keys %{$BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS}
+	) { 
+		$local_q->param('configure_captcha', 1);
+		
+		if($BootstrapConfig::CAPTCHA_TYPE eq 'Default'){ 
+			$local_q->param('captcha_type', 'Default');
+		}
+		elsif($BootstrapConfig::CAPTCHA_TYPE eq 'reCAPTCHA'){
+			$local_q->param('captcha_type', 'reCAPTCHA');
+		}
+		
+		if(defined($BootstrapConfig::RECAPTCHA_PARAMS->{remote_address})){ 
+			$q->param('captcha_reCAPTCHA_remote_addr', $BootstrapConfig::RECAPTCHA_PARAMS->{remote_address}); 
+		}
+		if(defined($BootstrapConfig::RECAPTCHA_PARAMS->{public_key})){ 
+			$q->param('captcha_reCAPTCHA_public_key', $BootstrapConfig::RECAPTCHA_PARAMS->{public_key}); 
+		}
+		if(defined($BootstrapConfig::RECAPTCHA_PARAMS->{private_key})){ 
+			$q->param('captcha_reCAPTCHA_private_key', $BootstrapConfig::RECAPTCHA_PARAMS->{private_key}); 
+		}
+		
+		if(defined($BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS->{public_key})){ 
+			$q->param('captcha_reCAPTCHA_Mailhide_public_key', $BootstrapConfig::RECAPTCHA_PARAMS->{public_key}); 
+		}
+		if(defined($BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS->{private_key})){ 
+			$q->param('captcha_reCAPTCHA_Mailhide_private_key', $BootstrapConfig::RECAPTCHA_PARAMS->{private_key}); 
+		}
+	}
+
 	# Configure Security Options
 	if(
 		defined($BootstrapConfig::SHOW_ADMIN_LINK)
@@ -952,10 +994,10 @@ sub grab_former_config_vals {
 		else { 
 			$local_q->param('security_no_show_admin_link', 0);
 		}
-		$local_q->param('security_DISABLE_OUTSIDE_LOGINS', $BootstrapConfig::DISABLE_OUTSIDE_LOGINS);	
-		$local_q->param('security_ADMIN_FLAVOR_NAME',      $BootstrapConfig::ADMIN_FLAVOR_NAME);	
-		$local_q->param('security_SIGN_IN_FLAVOR_NAME',    $BootstrapConfig::SIGN_IN_FLAVOR_NAME);	
 	}
+
+	
+	
 	
 	# Mass Mailing Options
 	if(
@@ -1615,6 +1657,20 @@ sub create_dada_config_file {
 		}
 	}
 	
+	
+	my $captcha_params = {};
+	if($q->param('configure_captcha') == 1){ 
+		$captcha_params->{configure_captcha} = 1; 
+		$captcha_params->{captcha_type}  = clean_up_var($q->param('captcha_type')); 
+		$captcha_params->{captcha_reCAPTCHA_remote_addr} = clean_up_var($q->param('captcha_reCAPTCHA_remote_addr')); 
+		$captcha_params->{captcha_reCAPTCHA_public_key} = clean_up_var($q->param('captcha_reCAPTCHA_public_key')); 
+		$captcha_params->{captcha_reCAPTCHA_private_key} = clean_up_var($q->param('captcha_reCAPTCHA_private_key')); 
+		$captcha_params->{captcha_reCAPTCHA_Mailhide_public_key} = clean_up_var($q->param('captcha_reCAPTCHA_Mailhide_public_key')); 
+		$captcha_params->{captcha_reCAPTCHA_Mailhide_private_key} = clean_up_var($q->param('captcha_reCAPTCHA_Mailhide_private_key')); 
+	}
+	
+	
+	
 	my $mass_mailing_params = {}; 
 	if($q->param('configure_mass_mailing') == 1){ 
 		$mass_mailing_params->{configure_mass_mailing} = 1; 
@@ -1650,6 +1706,7 @@ sub create_dada_config_file {
 			    %{$template_options_params},
 				%{$profiles_params},
 				%{$security_params},
+				%{$captcha_params}, 
 				%{$mass_mailing_params}, 
 				%{$amazon_ses_params},
             }
@@ -2634,6 +2691,39 @@ sub test_can_use_SQLite {
         return 1;
     }
 }
+sub test_can_use_CAPTCHA_reCAPTCHA {
+    eval { require Captcha::reCAPTCHA; };
+    if ($@) {
+		carp $@; 
+		$Big_Pile_Of_Errors .= $@; 
+        return 0;
+    }
+    else {
+        return 1;
+    }
+}
+sub test_can_use_CAPTCHA_reCAPTCHA_Mailhide {
+    eval { require Captcha::reCAPTCHA::Mailhide; };
+    if ($@) {
+		carp $@; 
+		$Big_Pile_Of_Errors .= $@; 
+        return 0;
+    }
+    else {
+        return 1;
+    }
+}
+sub test_can_use_GD {
+    eval { require GD; };
+    if ($@) {
+		carp $@; 
+		$Big_Pile_Of_Errors .= $@; 
+        return 0;
+    }
+    else {
+        return 1;
+    }
+}
 
 
 
@@ -2837,6 +2927,109 @@ sub cgi_test_amazon_ses_configuration {
 				MaxSendRate                => $MaxSendRate,
 				Max24HourSend              => $Max24HourSend,
 				SentLast24Hours            => $SentLast24Hours,
+			}
+		}
+	));
+}
+
+
+sub cgi_test_default_CAPTCHA { 
+	
+	my $captcha = ''; 
+	my $errors  = undef; 
+	my $captcha = undef; 
+
+	eval { 
+		
+		$DADA::Config::TMP = './';
+		
+	    require DADA::Security::AuthenCAPTCHA::Default;
+	    my $c = DADA::Security::AuthenCAPTCHA::Default->new;
+	
+	    require DADA::Security::Password; 
+	    my $secret_phrase = DADA::Security::Password::generate_rand_string(
+			$DADA::Config::GD_SECURITYIMAGE_PARAMS->{rand_string_from}, 
+			$DADA::Config::GD_SECURITYIMAGE_PARAMS->{rand_string_size}
+		);
+	    my $auth_string   = $c->_create_CAPTCHA_auth_string($secret_phrase); 
+	
+	    $captcha = $c->inline_img_data($secret_phrase, $auth_string);
+	
+	};
+	if($@){ 
+		$errors = $@; 
+	}	
+	
+	print $q->header(); 
+	require DADA::Template::Widgets;
+	e_print(DADA::Template::Widgets::screen(
+		{
+			-screen => 'captcha_default_test_widget.tmpl',
+			-expr   => 1, 
+			-vars   => {
+				errors  => $errors, 
+				captcha => $captcha, 
+			}
+		}
+	));
+	
+}
+sub cgi_test_CAPTCHA_reCAPTCHA { 
+	my $captcha_reCAPTCHA_public_key = $q->param('captcha_reCAPTCHA_public_key'); 
+	
+	my $captcha = ''; 
+	my $errors  = undef; 
+	eval { 
+	    require Captcha::reCAPTCHA;
+	    my $c = Captcha::reCAPTCHA->new;
+	     $captcha = $c->get_html( $captcha_reCAPTCHA_public_key );
+	};
+	if($@){ 
+		$errors = $@; 
+	}
+		
+	print $q->header(); 
+	require DADA::Template::Widgets;
+	e_print(DADA::Template::Widgets::screen(
+		{
+			-screen => 'captcha_recaptcha_test_widget.tmpl',
+			-expr   => 1, 
+			-vars   => {
+				errors   => $errors, 
+				Self_URL => $Self_URL, 
+				captcha  => $captcha, 
+				captcha_reCAPTCHA_public_key => $captcha_reCAPTCHA_public_key, 
+			}
+		}
+	));
+}
+
+             
+sub cgi_test_captcha_reCAPTCHA_Mailhide {
+	 
+	my $captcha_reCAPTCHA_Mailhide_public_key  = $q->param('captcha_reCAPTCHA_Mailhide_public_key'); 
+	my $captcha_reCAPTCHA_Mailhide_private_key = $q->param('captcha_reCAPTCHA_Mailhide_private_key'); 
+	
+	my $captcha = ''; 
+	my $errors  = undef; 
+	eval { 
+	    require Captcha::reCAPTCHA::Mailhide;
+	    my $c = Captcha::reCAPTCHA::Mailhide->new;
+	     $captcha = $c->mailhide_html($captcha_reCAPTCHA_Mailhide_public_key,  $captcha_reCAPTCHA_Mailhide_private_key, 'test@example.com' );
+	};
+	if($@){ 
+		$errors = $@; 
+	}
+		
+	print $q->header(); 
+	require DADA::Template::Widgets;
+	e_print(DADA::Template::Widgets::screen(
+		{
+			-screen => 'captcha_recaptcha_mailhide_test_widget.tmpl',
+			-expr   => 1, 
+			-vars   => {
+				errors   => $errors, 
+				captcha  => $captcha, 
 			}
 		}
 	));

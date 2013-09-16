@@ -1091,6 +1091,152 @@ editors also have the ability to make simple HTML tables for basic layouts.
 	</div> 
 <!-- /tmpl_if --> 
 
+<!-- tmpl_if show_captcha_options --> 
+
+	<p>
+		<input type="checkbox" name="configure_captcha" id="configure_captcha" value="1" />			
+	<label for="configure_captcha">Configure CAPTCHA Options</label>
+	</p>
+	<div id="captcha_options">
+	<fieldset> 
+		
+		
+		<div class="clearskiesbox"> 
+		
+		<!-- tmpl_if can_use_GD --> 
+				<ul>
+					
+				<li>
+					<p>
+						<strong>Default</strong> CAPTCHA is Supported.
+					</p>
+				</li>
+		<!-- tmpl_else --> 
+			<li>
+				<p>
+					The <strong>GD</strong> CPAN module needs to be installed, for reCAPTCHA support. 
+				</p>
+			</li> 
+		<!-- /tmpl_if --> 
+		<!-- tmpl_if can_use_CAPTCHA_reCAPTCHA --> 
+			<li>
+				<p>
+					<strong>reCAPTCHA</strong> is Supported.
+				</p>
+			</li>
+		<!-- tmpl_else --> 
+			<li>
+				<p>
+					The <strong>CAPTCHA::reCAPTCHA</strong> CPAN module needs to be installed, for reCAPTCHA support. 
+				</p>
+			</li> 
+		<!-- /tmpl_if --> 
+		
+		<!-- tmpl_if can_use_CAPTCHA_reCAPTCHA_Mailhide --> 
+			<li> 
+				<p>
+					<strong>reCAPTCHA Mailhide</strong> is Supported.
+				</p>
+			</li>
+		<!-- tmpl_else --> 
+			<li>
+				<p>
+					The <strong>CAPTCHA::reCAPTCHA::Mailhide</strong> CPAN module needs to be installed, for reCAPTCHA Mailhide support. 
+				</p>
+			</li> 
+		<!-- /tmpl_if --> 
+		</div> 
+	
+		<h2>CAPTCHA Type:</h2>
+	
+		<p>
+			<input type="radio" name="captcha_type" id="captcha_type_default" value="Default" checked="checked" class="radiochangeDisplayState" data-target="recaptcha_settings" data-state="hide" />
+			<label for="captcha_type_default">Default CAPTCHA Type</label>
+		<br />
+			<input type="radio" name="captcha_type" id="captcha_type_recaptcha" value="reCAPTCHA" class="radiochangeDisplayState" data-target="recaptcha_settings" data-state="show" />
+			<label for="captcha_type_recaptcha">reCAPTCHA (Recommended)</label>
+		</p>
+		
+		<div id="recaptcha_settings"> 
+			<p>
+				<strong>
+					More Information: 
+				</strong>
+				<a href="http://www.google.com/recaptcha" target="_blank">
+					http://www.google.com/recaptcha
+				</a>
+			</p>
+			<p>
+				<label style="width: 18em;float: left;text-align: right;margin-right: 0.5em;display: block" for="captcha_reCAPTCHA_remote_addr">
+					Remote Address:
+				</label> 
+				<input type="text" name="captcha_reCAPTCHA_remote_addr" id="captcha_reCAPTCHA_remote_addr" value="" class="midi" />
+			</p>
+	
+			<p>
+				<label style="width: 18em;float: left;text-align: right;margin-right: 0.5em;display: block" for="captcha_reCAPTCHA_public_key">
+					reCPATCHA Public Key:
+				</label> 
+				<input type="text" name="captcha_reCAPTCHA_public_key" id="captcha_reCAPTCHA_public_key" value="" class="midi" />
+			</p>
+
+			<p>
+				<label style="width: 18em;float: left;text-align: right;margin-right: 0.5em;display: block" for="captcha_reCAPTCHA_private_key">
+					reCPATCHA Private Key:
+				</label> 
+				<input type="text" name="captcha_reCAPTCHA_private_key" id="captcha_reCAPTCHA_private_key" value="" class="midi" />
+			</p>
+		</div> 
+		
+		<div class="buttonfloat"> 
+			<p>
+				<input type="button" class="processing test_CAPTCHA_configuration" value="Test CAPTCHA Configuration"/>
+			</p>
+		</div>
+		<div class="floatclear"></div> 
+		<div id="test_CAPTCHA_configuration_results"></div> 
+		
+		
+		<h2>reCAPTCHA Mailhide Settings:</h2>
+		
+		<p>
+			<strong>
+				More Information: 
+			</strong>
+			<a href="http://www.google.com/recaptcha/mailhide/" target="_blank">
+				http://www.google.com/recaptcha/mailhide/
+			</a>
+		</p>
+		
+		<p>
+			<label style="width: 18em;float: left;text-align: right;margin-right: 0.5em;display: block" for="captcha_reCAPTCHA_Mailhide_public_key">
+				reCAPTCHA Mailhide Public Key:
+			</label> 
+			<input type="text" name="captcha_reCAPTCHA_Mailhide_public_key" id="captcha_reCAPTCHA_Mailhide_public_key" value="" class="midi" />
+		</p>
+
+		<p>
+			<label style="width: 18em;float: left;text-align: right;margin-right: 0.5em;display: block" for="captcha_reCAPTCHA_Mailhide_private_key">
+				reCAPTCHA Mailhide Private Key:
+			</label> 
+			<input type="text" name="captcha_reCAPTCHA_Mailhide_private_key" id="captcha_reCAPTCHA_Mailhide_private_key" value="" class="midi" />
+		</p>
+		
+		<div class="buttonfloat"> 
+			<p>
+				<input type="button" class="processing test_captcha_reCAPTCHA_Mailhide_configuration" value="Test reCAPTCHA Mailhide Configuration"/>
+			</p>
+		</div>
+		<div class="floatclear"></div> 
+		<div id="captcha_reCAPTCHA_Mailhide_configuration_results"></div> 
+		
+		
+		 
+	</fieldset> 	
+	</div> 
+<!-- /tmpl_if --> 
+
+
 <!-- tmpl_if show_global_mass_mailing_options --> 
 
 	<p>
