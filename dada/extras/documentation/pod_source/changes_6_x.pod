@@ -36,6 +36,29 @@ These options are located under the, B<Advanced Configuration (Optional)> headin
 
 The group of buttons in the, Send a Message and Send a Webpage screens now always float on top of the form itself, making it easier to always have Draft Saving/Canceling and Mass Mailing Testing/Sending available to you. 
 
+=head1 6.6.1
+
+=head2 Summary 6.6.1
+
+This is a bugfix-only release, that focuses on bugs found in the subscription process, most notably problems with custom URL redirects. 
+
+=head2 Changes 6.6.1
+
+=head3 Subscription Process: 60+ more unit tests
+
+We ran into a few problems with the subscription process, which recently had a larger overhaul. While fixing the problems, we added around 60+ new unit tests to the 40+ that were already there for this part of the app, to help make sure additional problems won't crop up. 
+
+=head3 Included CPAN Module Upgrades
+
+=head4 CGI::Session to v4.48
+
+=head4 GI::Session::ExpiredSessions to v1.13
+
+=head2 Bugfixes 6.6.1
+
+=head3 Verify Subscribers Screen shows double header
+
+L<https://github.com/justingit/dada-mail/issues/402>
 
 =head1 6.6.0
 
