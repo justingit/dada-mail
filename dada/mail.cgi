@@ -11812,16 +11812,20 @@ sub profile_logout {
 	my $prof_sess = DADA::Profile::Session->new;
 
 	$prof_sess->logout;
+	my $redirect_to = $DADA::Config::PROGRAM_URL . '?f=profile_login&logged_out=1';
+	if($q->referer()) { 
+		$redirect_to = $q->referer();
+	}
 	print $q->header(
 		-cookie => [$prof_sess->logout_cookie],
         -nph     => $DADA::Config::NPH,
-        -Refresh =>'0; URL=' . $DADA::Config::PROGRAM_URL . '?f=profile_login&logged_out=1',
+        -Refresh =>'0; URL=' . $redirect_to,
 	);
     print $q->start_html(
 		-title=>'Logging Out...',
         -BGCOLOR=>'#FFFFFF'
     );
-    print $q->p($q->a({-href => $DADA::Config::PROGRAM_URL . '?f=profile_login&logged_out=1'}, 'Logging Out...'));
+    print $q->p($q->a({-href => $redirect_to}, 'Logging Out...'));
     print $q->end_html();
 	return;
 
