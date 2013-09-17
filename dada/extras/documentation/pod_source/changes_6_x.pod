@@ -8,13 +8,13 @@
 
 Dada Mail now supports saving unfinished messages, called Drafts. 
 
-In past versions of Dada Mail, it was always awkward to keep an unfinished copy of your message: You would either have to keep a browser window always open with your unfinished message, save your message in a different place (in a text file, on your computer), or another awkward solution. Thankfully, that's no more! 
+In past versions of Dada Mail, it was always awkward to keep an unfinished copy of your message: You would either have to keep a browser window always open with your unfinished message, save your message in a different place (in a text file on your computer), or another awkward solution. Thankfully, that's no more.
 
-Dada Mail can now save a Draft message right in the, "Send a Message", or "Send a Wepage" screen. Messages are also auto-saved automatically every minute, in case your browser window inadvertantly is closed by accident. Draft messages will also be saved automatically, whenever you send out a test mass mailing. 
+Dada Mail can now save a Draft message right in the, "Send a Message", or "Send a Wepage" screen. Messages are also auto-saved automatically every minute, in case your browser window inadvertantly is closed by accident. Draft messages will also be saved, whenever you send out a test mass mailing. 
 
 An unlimited number of draft messages may be saved, viewed, edited - and if you want to start over, you may cancel the message, and delete the draft.
 
-All form fields available to you in the, "Send a Message", and "Send a Webpage" screen are saved, when a draft is saved, including message headers, message body, as well as Archive Options Partial Mailing List Sending Options, File Attachments, and Testing Options. 
+All form fields available to you in the, "Send a Message", and "Send a Webpage" screen are saved, when a draft is saved, including message headers, message body, and all the other Options available: Archive Options Partial Mailing List Sending Options, File Attachments, and Testing Options. 
 
 =head3 Mass Mailing: File Attachments
 
