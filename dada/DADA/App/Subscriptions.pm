@@ -1787,7 +1787,7 @@ sub jsonify {
         status => $args->{status},
     };
 
-    if ( keys %{ $args->{-errors} } ) {
+    if ( keys %{ $args->{errors} } ) {
         $return->{errors}             = $args->{errors};
         $return->{error_descriptions} = $error_descriptions;
     }
