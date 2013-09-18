@@ -637,10 +637,9 @@ sub run {
 	'ver'                        =>    \&ver,
 	'resend_conf'                =>    \&resend_conf,
 
-
-
-	'subscription_form_html'     =>    \&subscription_form_html,
-	'subscription_form_js'       =>    \&subscription_form_js,
+	'subscription_form_html'          =>    \&subscription_form_html,
+	'subscription_form_js'            =>    \&subscription_form_js,
+	'jquery_plugin_subscription_form' => \&jquery_plugin_subscription_form, 
 
 
 	'what_is_dada_mail'          =>    \&what_is_dada_mail,
@@ -10832,6 +10831,20 @@ sub subscription_form {
         -list => $list,
     });
 
+}
+
+sub jquery_plugin_subscription_form { 
+	require DADA::Template::Widgets;
+	my $subscription_form =
+      DADA::Template::Widgets::subscription_form(
+        {
+			-subscription_form_id => 'jquery_subscription_form', 
+			-magic_form           => 0,
+			(defined($list) ? (-list => $list,) : ())
+        }
+      );
+	print $q->header(); 
+	print $subscription_form
 }
 
 sub subscription_form_html {
