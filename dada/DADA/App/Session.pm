@@ -811,21 +811,21 @@ sub enforce_admin_cgi_security {
         if ( $flags->{$_} == 1 ) {
 
             if ( $_ eq 'no_admin_permissions' ) {
-                my $error_msg = DADA::App::Error::cgi_user_error(
-                    -List             => $args{-Admin_List},
-                    -Error            => $_,
-                    -Wrapper_Template => 'admin',
-                );
+                my $error_msg = DADA::App::Error::cgi_user_error({
+                    -list             => $args{-Admin_List},
+                    -error            => $_,
+                    -wrap_with        => 'admin',
+                });
 
   #go, errors in the... whatever shouldn't make the script process anything more
                 print $error_msg;
             }
             else {
 
-                my $error_msg = DADA::App::Error::cgi_user_error(
-                    -List  => $args{-Admin_List},
-                    -Error => $_
-                );
+                my $error_msg = DADA::App::Error::cgi_user_error({
+                    -list  => $args{-Admin_List},
+                    -error => $_
+                });
 
   #go, errors in the... whatever shouldn't make the script process anything more
                 e_print($error_msg);

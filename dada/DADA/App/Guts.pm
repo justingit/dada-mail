@@ -1811,41 +1811,37 @@ sub check_list_setup {
 
 deals with errors from a CGI interface
 
-	user_error(-List => 'my_list', 
-	           -Error => 'some_error', 
-	           -Email => 'some@email.com'); 
+	user_error({-list => 'my_list', 
+	           -error => 'some_error', 
+	           -email => 'some@email.com'}); 
 
 
 =cut
 
 
 sub user_error {
+	my ($args) = @_; 
+	
+    my $list  = $args->{-list};
+    my $error = $args->{-error};
+    my $email = $args->{-email};
+	my $fh = undef; 
+	if(!exists($args->{-fh})){ 
+		$fh = \*STDOUT;
+	}
 
-    my %args = (
-        -List          => undef,
-        -Error         => undef,
-        -Email         => undef,
-        -fh            => \*STDOUT,
-        -Error_Message => undef,
-        -test          => 0,
-		-Template_Vars => {},
-        @_
-    );
-
-    my $list  = $args{-List};
-    my $error = $args{-Error};
-    my $email = $args{-Email};
-    my $fh    = $args{-fh};
-    my $test  = $args{-test};
+#    my $fh    = $args->{-fh};
+    my $test  = $args->{-test};
 
     require DADA::App::Error;
     my $error_msg = DADA::App::Error::cgi_user_error(
-        -List          => $list,
-        -Error         => $error,
-        -Email         => $email,
-        -Error_Message => $args{-Error_Message},
-		-Template_Vars => $args{-Template_Vars},
-    );
+		{
+        -list          => $list,
+        -error         => $error,
+        -email         => $email,
+		-vars          => $args->{-vars},
+    	}
+	);
 
     $test ? return $error_msg : print $fh safely_encode($error_msg) and return;
 
