@@ -49,31 +49,26 @@ $(document).ready(function() {
 						fields: fields
 					 }
 				),
-			    contentType: "application/json; charset=utf-8",
+			    contentType: "application/json; charset=UTF-8",
 				success: function(data) {
 					console.log('data:' + JSON.stringify(data)); 
 					var html = ''; 
 					if(data.status === 0){ 
-						/* Uh uh.*/
-						html += '<h1>Problems with your request:</h1>'; 
-						html += '<ul>'; 
 						$.each(data.errors, function(index, value) {
 							console.log(index + ': ' + value);
 						});
 						$.each(data.error_descriptions, function(index, value) {
-							html += '<li>' + value + '</li>';
+							html += value;
 						});
-						html += '</ul>'; 
 					}
 					else { 
-						html += '<h1>Request Successful!:</h1>'; 
-						html += '<p>Your Subscription Request was Successful!</p>'; 
+						html += data.success_message;
 					}
-					
-					/* html += '<code>' + JSON.stringify(data) + '</code>' */
-					
+										
 					$.colorbox({
 						html: html,
+						maxHeight: 480,
+						maxWidth: 649,
 						opacity: 0.50
 					});
 				},

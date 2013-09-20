@@ -931,7 +931,7 @@ sub grab_former_config_vals {
 
 
 	# Debugging Options 
-	if(defined($BootstrapConfig::DEBUG_TRACE) || defined(%BootstrapConfig::CPAN_DEBUG_SETTINGS)) { 
+	if(defined($BootstrapConfig::DEBUG_TRACE) || keys %BootstrapConfig::CPAN_DEBUG_SETTINGS) { 
 		$local_q->param('configure_debugging', 1); 
 		foreach(keys %{$BootstrapConfig::DEBUG_TRACE}) { 
 			$local_q->param(

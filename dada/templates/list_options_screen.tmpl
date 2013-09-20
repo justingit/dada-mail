@@ -173,7 +173,7 @@ People will still be able to subscribe/unsubscribe
    <td width="99%">
     <p>
      <label for="enable_closed_loop_opt_in">
-      Send Subscription Confirmation Emails (Closed-Loop Opt-In)
+      Enable Closed-Loop Opt-In
      </label>
      <br /> 
      <strong>
@@ -360,14 +360,45 @@ People will still be able to subscribe/unsubscribe
       Enable Subscription Requests Approving/Denying
      </label>
      <br />
-     If a subscription confirmation is successful, instead of automatically subscribing an email address, 
-	 hold the address to be approved or denied for subscription by the list owner. 
+     When a Subscription Confirmation is complete,
+	 hold the address for the Subscription to be <strong>Approved/Denied</strong> by the List Owner. 
     </p>
 
-	<p>
-		The list owner will then be able to finish the subscription process, depending on if they 
-		want the address to be subscribed to the mailing list.
-	</p>
+
+
+  <table cellspacing="5">
+  <tr>
+   <td>
+    <input type="checkbox" name="use_alt_url_subscription_approval_step" id="use_alt_url_subscription_approval_step" value="1" <!-- tmpl_if list_settings.use_alt_url_subscription_approval_step -->checked="checked"<!--/tmpl_if--> />
+   </td>
+   <td width="99%">
+    <p>
+     <label for="use_alt_url_subscription_approval_step">
+      Redirect to this URL (instead of showing the default, &quot;List Subscription Request&quot; message):
+     </label>
+    </p>
+
+    <table cellspacing="5" width="100%">
+     <tr> 
+      <td>
+       <input type="text" name="alt_url_subscription_approval_step" value="<!-- tmpl_var list_settings.alt_url_subscription_approval_step escape="HTML" -->" class="full" />
+      </td> 
+     </tr> 
+     <tr> 
+      <td> 
+       <input type="checkbox" name="alt_url_subscription_approval_step_w_qs" id="alt_url_subscription_approval_step_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_subscription_approval_step_w_qs -->checked="checked"<!--/tmpl_if--> />
+       <label for="alt_url_subscription_approval_step_w_qs">Redirect with query string</label>
+      </td> 
+     </tr> 
+    </table>      
+   </td>
+  </tr>
+ </table>
+
+
+
+
+
    </td>
   </tr>
 </table> 

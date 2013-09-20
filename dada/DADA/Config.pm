@@ -2435,6 +2435,12 @@ EOF
     alt_url_unsub_success_w_qs => 0,
     alt_url_unsub_success      => '',
 
+
+	use_alt_url_subscription_approval_step  => 0,
+	alt_url_subscription_approval_step      => '',
+    alt_url_subscription_approval_step_w_qs => 0,
+
+
     enable_subscription_approval_step => 0,
     captcha_sub                       => 0,
 

@@ -1,22 +1,6 @@
-#!/usr/bin/perl
-
-use FindBin;
-use lib "$FindBin::Bin";
-use lib "$FindBin::Bin/DADA/perllib";
-use lib "$FindBin::Bin/../../";
-use lib "$FindBin::Bin/../../DADA/perllib";
-
-
-use CGI::Carp qw(fatalsToBrowser); 
-
-
-
-use CGI qw(:standard); 
-
-print header();
+#!/usr/bin/perl -w
 
 use strict; 
-
 
 # DO NOT USE THIS SCRIPT WITHOUT FULLY BACKING UP YOUR ENTIRE DADA MAIL INSTALL 
 
@@ -24,10 +8,12 @@ use strict;
 
 
 # REALLY. 
+use CGI::Carp qw(fatalsToBrowser); 
 
 
-use DADA::Config; 
-use DADA::App::Guts; 
+use Carp qw(croak carp); 
+
+
 
 
 my $database         = $DADA::Config::SQL_PARAMS{database};
@@ -37,18 +23,30 @@ my $user             = $DADA::Config::SQL_PARAMS{user};
 my $pass             = $DADA::Config::SQL_PARAMS{pass};
 my $dbtype           = $DADA::Config::SQL_PARAMS{dbtype};
 
+use FindBin;
+use lib "$FindBin::Bin";
+use lib "$FindBin::Bin/DADA/perllib";
+use lib "$FindBin::Bin/../../";
+use lib "$FindBin::Bin/../../DADA/perllib";
+
+use DADA::Config 5.0.0; 
+#use DADA::App::Guts; 
+
 
 my $dbh; 
 
+use CGI qw(:standard); 
 
+print header(); 
 print '<pre>';
 
 
 use Fcntl qw(
 O_RDWR O_CREAT); 
 
+use lib qw(./ ./DADA ./DADA/perllib); 
 
-use AnyDBM_File; 
+#use AnyDBM_File; 
 use DBI;
 
 connectdb();
@@ -58,25 +56,102 @@ print "beginning...\n";
 for my $list(local_available_lists()){ 
 
 	print "\tworking on list: '$list'...\n";
-	
-	my %old_data; 
-	print "\t" . $DADA::Config::FILES . '/mj-' . $list . "\n";
 
-	my $filename = $DADA::Config::FILES . '/mj-' . $list;
-	
-	tie %old_data, "AnyDBM_File", $filename,  O_RDWR|O_CREAT, $DADA::Config::FILE_CHMOD  or die $!;  
+    if(-d $DADA::Config::BACKUPS . '/' . $list){ 
+        print "great, it looks like we have a backup of the list...\n";
+        
+        if(-d $DADA::Config::BACKUPS . '/' . $list . '/settings'){ 
+         
+         
+            print "and well... hey! We ever have backups of the list settings - how novel!\n";
+            
+            my $backup_dir = $DADA::Config::BACKUPS . '/' . $list . '/settings'; 
+            my $backup; 
+            my $backups;
+            
+            if(opendir(DIR, $backup_dir)){ 
+                while(defined($backup = readdir DIR) ) {
+            
+                    next if ! -d $backup_dir . '/' . $backup;
+                    next if $backup =~ /^\.\.?$/;
+                    next if (($backup eq '') || ($backup eq ' ')); 
+                    
+                    $backup         =~ s(^.*/)(); 
+            
+                    push(@$backups, $backup);
+                }
+                closedir(DIR) or warn "didn't close properly... $!"; 
+                
+                #desc
+                @$backups = sort {$b <=> $a} @$backups;
 
+                #and.. we'll use the newest one. 
+                
 
-	for my $key(keys %old_data){ 
-		my $value = $old_data{$key}; 
+            }else{ 
+                warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! Could not open backup directory: '" . $backup_dir ."' $!";
+            }
+             
+         
+         my $freshest_backup_dir = $backup_dir . '/' . $backups->[0];
+         my %new_values = (); 
 
-		save_setting($list, $key, $value); 
-		
-		print "\t\tentry $key... Done!\n";
-	}
-	
-	untie %old_data; 
-		
+               opendir(ADIR, $freshest_backup_dir) || die "can't opendir $freshest_backup_dir: $!";
+   			
+   			my @files = grep { -f "$freshest_backup_dir/$_" } readdir(ADIR);
+            
+            closedir(ADIR);
+            
+			for my $value(@files){ 
+			    
+				next if $value =~ /^\.\.?$/;
+				$value         =~ s(^.*/)();
+				
+				my $value_file = $freshest_backup_dir . '/' . $value;
+				
+				if(-e $value_file){ 
+					open(VALUE, $value_file) or carp $!; 
+					
+					$new_values{$value} = do{ local $/; <VALUE> }; 
+                                       
+					close(VALUE) or carp $!;
+									
+				}else{ 
+					croak $value_file . "doesn't exist?!";
+				}
+				
+				
+			}
+
+			
+			    for(keys %new_values){ 
+			    
+			        if(! exists($DADA::Config::LIST_SETUP_DEFAULTS{$_})){ 
+			            carp "skipping restoring setting: $_ (not used anymore?) on list: " . $list; 
+			            delete($new_values{$_}); 
+			        } else { 
+			        
+			             print "list: $list\n\key: $_\n"; #value: $new_values{$_}\n\n";
+			             save_setting($list, $_, $new_values{$_}); 
+			        }
+			    }
+			
+		#	}
+			    
+			#$self->save({%new_values});
+            #save_setting($list, $_, $new_values{$_}); 
+           
+           
+          # print "list: $list\n\key: $_\nvalue: $new_values{$_}\n\n";
+         
+         
+         
+         
+        }
+        
+        
+    }
+    
 }
 
 print "Done.\n\n"; 
@@ -132,11 +207,11 @@ sub local_available_lists {
 	my @available_lists = (); 
 	my $present_list;
 	
-	require DADA::MailingList::Settings;  
+
 		   
 	my $path = $DADA::Config::FILES; 
 	 #untaint 
-	$path = make_safer($path); 
+	#$path = make_safer($path); 
 	$path =~ /(.*)/; 
 	$path = $1; 
 	
@@ -170,17 +245,7 @@ sub local_available_lists {
 			push(@clean_unique, $_) 
 				if(defined($_) && $_ ne "" && $_ !~ m/^\s+$/);
 		}
-		
-		if($args{-In_Order} == 1){ 
-		
-			my $labels = {}; 
-			for my $l( @clean_unique){		
-				my $ls        = DADA::MailingList::Settings->new({-list => $l}); 
-				my $li        = $ls->get; 		
-				$labels->{$l} = $li->{list_name};
-			}			
-			@clean_unique = sort { uc($labels->{$a}) cmp uc($labels->{$b}) } keys %$labels;						  
-		}
+
 		
 		$want_ref == "1" ? return \@clean_unique : return @clean_unique;
 		
@@ -203,17 +268,20 @@ sub local_available_lists {
 
 __END__
 
+
 =pod
 
-=head1 dada_settings_db_to_sql.pl
+=head1 dada_settings_backup_to_sql.pl
 
 =head1 Description
 
-C<dada_settings_db_to_sql.pl> migration script converts your Dada Mail List Settings from the Default backend, to one of the SQL backends. 
+C<dada_settings_backup_to_sql.pl> migration script converts your Dada Mail List Settings I<Backups> from the Default backend, to one of the SQL backends. 
 
-The Default backend for the List Settings is going to be a database file, like the Berkeley DB file format. 
+The Default backend for the List Settings is going to be a database file, like the Berkeley DB file format. The I<Backup> of this will be a collection of files/directories, usually saved in the I<.dada_files/.backups> directory. This script should only be used if your List Settings are corrupted are unusable - both of which can happen during a server move. Backups are only made for the Default Backend and no backups are made for the SQL backend. 
 
-C<dada_settings_db_to_sql.pl> is to be used I<after> you have reconfigured Dada Mail to use one of the SQL backends - you'll most likely do this via the Dada Mail installer. Once you have reconfigured your Dada Mail, none of your previous mailing lists will be available, until after you run this migration script. 
+If you List Settings are not corrupted use the, C<dada_settings_db_to_sql.pl> script. 
+
+C<dada_settings_backup_to_sql.pl> is to be used I<after> you have reconfigured Dada Mail to use one of the SQL backends - you'll most likely do this via the Dada Mail installer. Once you have reconfigured your Dada Mail, none of your previous mailing lists will be available, until after you run this migration script. 
 
 Before running this migration script, please make sure to backup your important Dada Mail files/information, most notably, the B<.dada_files> directory. 
 
@@ -223,11 +291,11 @@ No configuration will need to be done in this script itself. The permissions of 
 
 =head1 Using
 
-Visit C<dada_settings_db_to_sql.pl> in your web browser, or run the script via the command line. Make sure to B<only run this script once>, or data will be duplicated. 
+Visit C<dada_settings_backup_to_sql.pl> in your web browser, or run the script via the command line. Make sure to B<only run this script once>, or data will be duplicated. 
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2013 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2012 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -244,7 +312,6 @@ along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 =cut
-
 
 
 

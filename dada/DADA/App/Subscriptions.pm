@@ -95,14 +95,14 @@ sub token {
                   . $ENV{REMOTE_ADDR} . ')';
                 carp "Additional Information: " . Data::Dumper::Dumper($data);
                 if ( $q->param('simple_test') ne 'pass' ) {
-                    return user_error(
-                        -Error         => 'mismatch_ip_on_confirm',
+                    return user_error({
+                        -error         => 'mismatch_ip_on_confirm',
                         -test          => $self->test,
-                        -Template_Vars => {
+                        -vars => {
                             t      => $token,
                             flavor => $data->{data}->{flavor},
                         }
-                    );
+					});
                 }
                 else {
                     carp
@@ -139,17 +139,17 @@ sub token {
             );
         }
         else {
-            return user_error(
-                -Error => 'token_problem',
+            return user_error({
+                -error => 'token_problem',
                 -test  => $self->test,
-            );
+            });
         }
     }
     else {
-        return user_error(
-            -Error => 'token_problem',
+        return user_error({
+            -error => 'token_problem',
             -test  => $self->test,
-        );
+        });
     }
 
 }
@@ -213,14 +213,16 @@ sub subscribe {
    # ! $list_exists
     if ( $list_exists == 0 ) {
         my $r = {
-            status => 0,
-            list   => $list,
-            email  => $email,
-            errors => { invalid_list => 1 },
-            redirect =>
-              { url => $DADA::Config::PROGRAM_URL . '?error_invalid_list=1', 
-				query => 'list=&email=' . uriescape($email) . 'errors[]=invalid_list'
-			}
+            status   => 0,
+            list     => $list,
+            email    => $email,
+            errors   => { invalid_list => 1 },
+            redirect => {
+                url   => $DADA::Config::PROGRAM_URL . '?error_invalid_list=1',
+                query => 'list=&email='
+                  . uriescape($email)
+                  . 'errors[]=invalid_list'
+            }
         };
         if ( $args->{-html_output} == 0 ) {
             if ( $args->{-return_json} == 1 ) {
@@ -234,6 +236,7 @@ sub subscribe {
             # Test sub-subscribe-redirect-error_invalid_list
             my $rd = $self->alt_redirect($r);
             $self->test ? return $rd : print $fh safely_encode($rd) and return;
+
             # There's also:
             #return user_error(
             #    -List  => $list,
@@ -357,15 +360,13 @@ sub subscribe {
 "address, $email, wasn't added to the sub_confirm_list correctly - is it already on there?";
             }
 
-            $self->confirm(
+            return $self->confirm(
                 {
                     -return_json => $args->{-return_json},
                     -html_output => $args->{-html_output},
                     -cgi_obj     => $args->{-cgi_obj},
                 },
             );
-
-            return;
         }
     }
 
@@ -411,9 +412,9 @@ sub subscribe {
         };
         my $qs = 'list='
           . uriescape($list)
-		  .'&email=' 
-		  . uriescape($email)
-		  . '&status=0'
+          . '&email='
+          . uriescape($email)
+          . '&status=0'
           . '&rm=sub_confirm';
         $qs .= '&errors[]=' . $_ for keys %$errors;
         $qs .= '&' . $_ . '=' . uriescape( $fields->{$_} ) for keys %$fields;
@@ -453,23 +454,23 @@ sub subscribe {
 
                 for (@list_of_errors) {
                     if ( $errors->{$_} == 1 ) {
-                        return user_error(
-                            -List  => $list,
-                            -Error => $_,
-                            -Email => $email,
+                        return user_error({
+                            -list  => $list,
+                            -error => $_,
+                            -email => $email,
                             -fh    => $args->{-fh},
                             -test  => $self->test,
-                        );
+                        });
                     }
                 }
 
                 # Fallback
-                return user_error(
-                    -List  => $list,
-                    -Email => $email,
+                return user_error({
+                    -list  => $list,
+                    -email => $email,
                     -fh    => $args->{-fh},
                     -test  => $self->test,
-                );
+                });
             }
         }
     }
@@ -540,6 +541,7 @@ sub subscribe {
             );
         }
         my $r = {
+            flavor   => 'subscription_confirmation',
             status   => 1,
             list     => $list,
             email    => $email,
@@ -553,9 +555,9 @@ sub subscribe {
         };
         my $qs = 'list='
           . uriescape($list)
-		  .'&email=' 
-		  . uriescape($email)
-		  . '&status=1'
+          . '&email='
+          . uriescape($email)
+          . '&status=1'
           . '&rm=sub_confirm';
         $qs .= '&' . $_ . '=' . uriescape( $fields->{$_} ) for keys %$fields;
         $r->{redirect}->{query} = $qs;
@@ -575,24 +577,13 @@ sub subscribe {
                   and return;
             }
             else {
-                my $s = $ls->param('html_confirmation_message');
-                require DADA::Template::Widgets;
-                my $r = DADA::Template::Widgets::wrap_screen(
+                my $s = $self->_subscription_confirmation_success_msg(
                     {
-                        -data => \$s,
-                        -with => 'list',
-                        -list_settings_vars_param =>
-                          { -list => $ls->param('list'), },    # um, -dot_it?
-                        -subscriber_vars_param => {
-                            -list  => $ls->param('list'),
-                            -email => $email,
-                            -type  => 'sub_confirm_list'
-                        },
-                        -dada_pseudo_tag_filter => 1,
+                        -list   => $args->{list},
+                        -email  => $args->{email},
+                        -chrome => 1,
                     }
                 );
-
-                # Test: sub_confirm-sub_confirm_success
                 $self->test ? return $r : print $fh safely_encode($r)
                   and return;
             }
@@ -690,9 +681,7 @@ sub confirm {
 
     warn 'captcha_sub set to: ' . $ls->param('captcha_sub')
       if $t;
-
     if ( $ls->param('captcha_sub') == 1 ) {
-
         my $can_use_captcha = 1;
         try {
             require DADA::Security::AuthenCAPTCHA;
@@ -701,23 +690,13 @@ sub confirm {
             carp "CAPTCHA Not working correctly?: $_";
             $can_use_captcha = 0;
         };
-
         if ( $can_use_captcha == 1 ) {
-
             warn '>>>> Captcha step is enabled...'
               if $t;
-
-            # CAPTCHA STUFF
-
-            # warn "captcha on...";
-
             my $captcha_worked = 0;
             my $captcha_auth   = 1;
-
             if ( !xss_filter( $q->param('recaptcha_response_field') ) ) {
-
                 $captcha_worked = 0;
-
             }
             else {
                 require DADA::Security::AuthenCAPTCHA;
@@ -728,7 +707,6 @@ sub confirm {
                     $q->param('recaptcha_challenge_field'),
                     $q->param('recaptcha_response_field')
                 );
-
                 if ( $result->{is_valid} == 1 ) {
                     $captcha_auth   = 1;
                     $captcha_worked = 1;
@@ -737,23 +715,16 @@ sub confirm {
                     $captcha_worked = 0;
                     $captcha_auth   = 0;
                 }
-
             }
-
             if ( $captcha_worked == 0 ) {
-
                 my $simple_test = 0;
                 if ( $q->param('simple_test') eq 'pass' ) {
                     $simple_test = 1;
                 }
                 warn '>>>> >>>> Showing confirm_captcha_step_screen screen'
                   if $t;
-
                 my $cap = DADA::Security::AuthenCAPTCHA->new;
-                my $CAPTCHA_string =
-                  $cap->get_html(
-                    $DADA::Config::RECAPTCHA_PARAMS->{public_key} );
-
+                my $CAPTCHA_string = $cap->get_html($DADA::Config::RECAPTCHA_PARAMS->{public_key} );
                 require DADA::Template::Widgets;
                 my $r = DADA::Template::Widgets::wrap_screen(
                     {
@@ -767,53 +738,34 @@ sub confirm {
                             -type  => 'sub_confirm_list'
                         },
                         -dada_pseudo_tag_filter => 1,
-
                         -vars => {
-
                             CAPTCHA_string => $CAPTCHA_string,
-
-# BUGFIX:
-#  2308530  	 3.0.0 - sub Confirm CAPTCHA broken w/close-loop disabled
-# https://sourceforge.net/tracker2/?func=detail&aid=2308530&group_id=13002&atid=113002
-# I'm trying to figure out where this would not be, "n", but I'm faiing, so
-# for the moment, I'm just going to put that value in, myself:
-
-                            #flavor       => xss_filter($q->param('flavor')),
                             flavor => 't',
-
                             list  => xss_filter( $q->param('list') ),
                             email => lc_email(
                                 strip( xss_filter( $q->param('email') ) )
                             ),
                             token        => xss_filter( $q->param('token') ),
                             captcha_auth => xss_filter($captcha_auth),
-
                             simple_test => (
                                   ( $simple_test == 1 )
                                 ? ( $q->param('simple_test') )
                                 : (undef)
                             ),
-
                         },
                     },
                 );
-
                 $self->test ? return $r : print $fh safely_encode($r)
                   and return;
-
             }
-
-            #/ CAPTCHA STUFF
         }
         else {
-            carp "Captcha stuff isn't available!";
+            carp "Captcha isn't available!";
         }
     }
     else {
-
         warn '>>>> Captcha step is disabled.'
           if $t;
-
     }
 
     my ( $status, $errors ) = $lh->subscription_check(
@@ -876,13 +828,13 @@ sub confirm {
             if ( $errors->{no_list} == 1 ) {
                 warn '>>>> >>>> No list found.'
                   if $t;
-                return user_error(
-                    -List  => $list,
-                    -Error => "no_list",
-                    -Email => $email,
+                return user_error({
+                    -list  => $list,
+                    -error => "no_list",
+                    -email => $email,
                     -fh    => $args->{-fh},
                     -test  => $self->test,
-                );
+                });
             }
         }
     }
@@ -904,10 +856,10 @@ sub confirm {
           if $t;
 
         my $r = {
-            status => 0,
-            list   => $list,
-            email  => $email,
-            errors => $errors,
+            status   => 0,
+            list     => $list,
+            email    => $email,
+            errors   => $errors,
             redirect => {
                 using            => $ls->param('use_alt_url_sub_failed'),
                 using_with_query => $ls->param('alt_url_sub_failed_w_qs'),
@@ -948,28 +900,28 @@ sub confirm {
 
                 for (@list_of_errors) {
                     if ( $errors->{$_} == 1 ) {
-                        return user_error(
-                            -List  => $list,
-                            -Error => $_,
-                            -Email => $email,
+                        return user_error({
+                            -list  => $list,
+                            -error => $_,
+                            -email => $email,
                             -fh    => $args->{-fh},
                             -test  => $self->test,
-                        );
+                        });
                     }
                 }
 
                 # Fallback.
-                return user_error(
-                    -List  => $list,
-                    -Email => $email,
+                return user_error({
+                    -list  => $list,
+                    -email => $email,
                     -fh    => $args->{-fh},
                     -test  => $self->test,
-                );
+                });
             }
         }
     }
-    elsif($status == 1) {
-	
+    elsif ( $status == 1 ) {
+
         if ( $ls->param('enable_subscription_approval_step') == 1 ) {
 
             # we go HERE, if subscriptions need to be approved. Got that?
@@ -1016,24 +968,26 @@ sub confirm {
                 }
             );
 
-            my $r = { 
-				status         => 1, 
-				list           => $list, 
-				email          => $email,
-				needs_approval => 1, 
-				redirect => { 
-					using            => $ls->param('use_alt_url_sub_success'),
-					using_with_query => $ls->param('alt_url_sub_success_w_qs'),
-					url              => $ls->param('alt_url_sub_success'),
-                	query            => '',
-				}
-			 };
-			 my $qs = 'list='
-               . $list
-               . '&rm=sub&needs_approval=1&status=1&email='
-               . uriescape($email);
-            $r->{redirect}->{query} = $qs; 
-			
+			# There's no, "Well, hey! You've already done that!" check here. Sigh. 
+            my $r = {
+                flavor         => 'subscription_requires_approval',
+                status         => 1,
+                list           => $list,
+                email          => $email,
+                needs_approval => 1,
+                redirect       => {
+                    using            => $ls->param('use_alt_url_subscription_approval_step'),
+                    using_with_query => $ls->param('alt_url_subscription_approval_step'),
+                    url              => $ls->param('alt_url_subscription_approval_step_w_qs'),
+                    query            => '',
+                }
+            };
+            my $qs = 'list='
+              . $list
+              . '&rm=sub&subscription_requires_approval=1&status=1&email='
+              . uriescape($email);
+            $r->{redirect}->{query} = $qs;
+
             if ( $args->{-html_output} == 0 ) {
                 if ( $args->{-return_json} == 1 ) {
                     return $self->jsonify($r);
@@ -1043,37 +997,26 @@ sub confirm {
                 }
             }
             else {
-			    if ( $ls->param('use_alt_url_sub_success') == 1 ) {
-	                my $rd = $self->alt_redirect($r);
-	                $self->test ? return $rd : print $fh safely_encode($rd)
-	                  and return;
-	            }
-	        	else {
-	        
-	                my $s = $ls->param('html_subscription_request_message');
-	                require DADA::Template::Widgets;
-	                my $rd = DADA::Template::Widgets::wrap_screen(
-	                    {
-	                        -data => \$s,
-	                        -with => 'list',
-	                        -list_settings_vars_param =>
-	                          { -list => $ls->param('list'), },
-	                        -subscriber_vars_param => {
-	                            -list  => $ls->param('list'),
-	                            -email => $email,
-	                            -type  => 'sub_request_list'
-	                        },
-	                        -dada_pseudo_tag_filter => 1,
-	                        -vars =>
-	                          { email => $email, subscriber_email => $email },
-	                    }
-	                );
-	                $self->test ? return $rd : print $fh safely_encode($rd)
-	                  and return;
-				}
+                if ( $ls->param('use_alt_url_sub_success') == 1 ) {
+                    my $rd = $self->alt_redirect($r);
+                    $self->test ? return $rd : print $fh safely_encode($rd)
+                      and return;
+                }
+                else {
+
+                    my $s = $self->_subscription_requires_approval_message(
+		                {
+		                    -list   => $list,
+		                    -email  => $email,
+		                    -chrome => 1,
+		                }
+		            );
+                    $self->test ? return $s : print $fh safely_encode($s)
+                      and return;
+                }
             }
         }
-        elsif($ls->param('enable_subscription_approval_step') != 1) {
+        elsif ( $ls->param('enable_subscription_approval_step') != 1 ) {
 
             my $new_pass    = '';
             my $new_profile = 0;
@@ -1218,23 +1161,24 @@ sub confirm {
                 );
             }
 
-            my $r = { 
-				status         => 1, 
-				list           => $list, 
-				email          => $email,
-				needs_approval => 1, 
-				redirect => { 
-					using            => $ls->param('use_alt_url_sub_success'),
-					using_with_query => $ls->param('alt_url_sub_success_w_qs'),
-					url              => $ls->param('alt_url_sub_success'),
-                	query            => '',
-				}
-			 };
-			 my $qs = 'list='
-               . $list
-               . '&rm=sub&needs_approval=1&status=1&email='
-               . uriescape($email);
-            $r->{redirect}->{query} = $qs; 
+            my $r = {
+                flavor         => 'subscription',
+                status         => 1,
+                list           => $list,
+                email          => $email,
+                needs_approval => 1,
+                redirect       => {
+                    using            => $ls->param('use_alt_url_sub_success'),
+                    using_with_query => $ls->param('alt_url_sub_success_w_qs'),
+                    url              => $ls->param('alt_url_sub_success'),
+                    query            => '',
+                }
+            };
+            my $qs = 'list='
+              . $list
+              . '&rm=sub&needs_approval=1&status=1&email='
+              . uriescape($email);
+            $r->{redirect}->{query} = $qs;
 
             if ( $args->{-html_output} == 0 ) {
                 if ( $args->{-return_json} == 1 ) {
@@ -1246,39 +1190,26 @@ sub confirm {
             }
             elsif ( $args->{-html_output} == 1 ) {
                 if ( $ls->param('use_alt_url_sub_success') == 1 ) {
-                    my $r = $self->alt_redirect( $r );
-                    $self->test ? return $r : print $fh safely_encode($r) and return;
+                    my $r = $self->alt_redirect($r);
+                    $self->test ? return $r : print $fh safely_encode($r)
+                      and return;
                 }
                 else {
 
                     warn 'Printing out, Subscription Successful screen'
                       if $t;
 
-                    my $s = $ls->param('html_subscribed_message');
-                    require DADA::Template::Widgets;
-                    my $rd .= DADA::Template::Widgets::wrap_screen(
+                    my $s = $self->_subscription_successful_message(
                         {
-                            -data           => \$s,
-                            -with           => 'list',
-                            -wrapper_params => {
-                                -header_params =>
-                                  { -cookie => [$sess_cookie], },
-                                -prof_sess_obj => $sess,
-                            },
-                            -list_settings_vars_param =>
-                              { -list => $ls->param('list'), },
-                            -subscriber_vars_param => {
-                                -list  => $ls->param('list'),
-                                -email => $email,
-                                -type  => 'list'
-                            },
-                            -dada_pseudo_tag_filter => 1,
-                            -vars =>
-                              { email => $email, subscriber_email => $email },
+                            -list        => $args->{list},
+                            -email       => $args->{email},
+                            -chrome      => 1,
+                            -sess        => $sess,
+                            -sess_cookie => $sess_cookie,
                         }
                     );
 
-                    $self->test ? return $rd : print $fh safely_encode($rd)
+                    $self->test ? return $s : print $fh safely_encode($s)
                       and return;
                 }
             }
@@ -1405,23 +1336,23 @@ sub unsubscription_request {
                       if $_ eq 'invalid_email';
 
                     # warn "showing error, $_";
-                    return user_error(
-                        -List  => $list,
-                        -Error => $_,
-                        -Email => $email,
+                    return user_error({
+                        -list  => $list,
+                        -error => $_,
+                        -email => $email,
                         -fh    => $args->{-fh},
                         -test  => $self->test,
-                    );
+                    });
                 }
             }
 
             # Fallback
             return user_error(
-                -List  => $list,
-                -Email => $email,
+                -list  => $list,
+                -email => $email,
                 -fh    => $args->{-fh},
                 -test  => $self->test,
-            );
+            });
         }
 
     }
@@ -1533,20 +1464,20 @@ sub unsubscribe {
     require DADA::App::Subscriptions::ConfirmationTokens;
     my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
     if ( !$ct->exists($token) ) {
-        return user_error(
-            -Error => 'token_problem',
+        return user_error({
+            -error => 'token_problem',
             -test  => $self->test,
-        );
+        });
     }
 
     my $data = $ct->fetch($token);
 
     # not sure how you got here, but, whatever:
     if ( $data->{data}->{flavor} ne 'unsub_confirm' ) {
-        return user_error(
-            -Error => 'token_problem',
+        return user_error({
+            -error => 'token_problem',
             -test  => $self->test,
-        );
+        });
     }
 
     my $is_valid = 1;
@@ -1649,13 +1580,13 @@ sub complete_unsubscription {
     # Hmm, so we're not subscribed?
     if ( $status == 0 ) {
 
-        return user_error(
-            -List  => $list,
-            -Error => 'not_subscribed',
-            -Email => $email,
+        return user_error({
+            -list  => $list,
+            -error => 'not_subscribed',
+            -email => $email,
             -fh    => $args->{-fh},
             -test  => $self->test,
-        );
+        });
         return;
     }
 
@@ -1684,7 +1615,6 @@ sub complete_unsubscription {
                 }
             );
         }
-
     }
 
     warn 'removing, ' . $email . ' from, "list"'
@@ -1778,7 +1708,8 @@ sub jsonify {
     my $sub_descriptions   = $self->subscription_error_descriptions;
     my $error_descriptions = {};
     for ( keys %{ $args->{errors} } ) {
-        $error_descriptions->{$_} = $sub_descriptions->{$_};
+        $error_descriptions->{$_} = $self->_user_error_msg(
+		); 
     }
 
     my $return = {
@@ -1791,9 +1722,234 @@ sub jsonify {
         $return->{errors}             = $args->{errors};
         $return->{error_descriptions} = $error_descriptions;
     }
+    else {
+        if ( $args->{flavor} eq 'subscription_confirmation' ) {
+            $return->{success_message} =
+              $self->_subscription_confirmation_success_msg(
+                {
+                    -list   => $args->{list},
+                    -email  => $args->{email},
+                    -chrome => 0,
+                }
+              );
+        }
+        elsif ( $args->{flavor} eq 'subscription' ) {
+            $return->{success_message} =
+              $self->_subscription_successful_message(
+                {
+                    -list   => $args->{list},
+                    -email  => $args->{email},
+                    -chrome => 0,
+                }
+              );
+        }
+        elsif ( $args->{flavor} eq 'subscription_requires_approval' ) {
+	        $return->{success_message} =
+            $self->_subscription_requires_approval_message(
+                {
+                    -list   => $args->{list},
+                    -email  => $args->{email},
+                    -chrome => 0,
+                }
+            );
+        }
+        else {
+            warn 'unkown flavor, "' . $args->{flavor} . '"';
+        }
 
+    }
     my $data_back = $json->pretty->encode($return);
     return $data_back;
+}
+
+sub _subscription_confirmation_success_msg {
+    my $self = shift;
+    my ($args) = @_;
+
+    my $list = $args->{-list};
+
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $args->{-list} } );
+
+    my $s = $ls->param('html_confirmation_message');
+    require DADA::Template::Widgets;
+    my $r;
+    if ( $args->{chrome} == 1 ) {
+        $r = DADA::Template::Widgets::wrap_screen(
+            {
+                -data => \$s,
+                -with => 'list',
+                -expr => 1,
+                -vars => { chrome => $args->{-chrome}, },
+                -list_settings_vars_param =>
+                  { -list => $ls->param('list'), -dot_it => 1, },
+                -subscriber_vars_param => {
+                    -list  => $ls->param('list'),
+                    -email => $args->{-email},
+                    -type  => 'sub_confirm_list'
+                },
+                -dada_pseudo_tag_filter => 1,
+            }
+        );
+    }
+    else {
+        $r = DADA::Template::Widgets::screen(
+            {
+                -data => \$s,
+                -expr => 1,
+                -vars => { chrome => $args->{-chrome}, },
+                -list_settings_vars_param =>
+                  { -list => $ls->param('list'), -dot_it => 1, },
+                -subscriber_vars_param => {
+                    -list  => $ls->param('list'),
+                    -email => $args->{-email},
+                    -type  => 'sub_confirm_list'
+                },
+                -dada_pseudo_tag_filter => 1,
+            }
+        );
+    }
+
+    return $r;
+
+}
+
+sub _subscription_successful_message {
+
+    my $self = shift;
+    my ($args) = @_;
+    my $sess_cookie;
+    my $sess;
+
+    my $list = $args->{-list};
+
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $args->{-list} } );
+
+    my $s = $ls->param('html_subscribed_message');
+    require DADA::Template::Widgets;
+    my $r;
+    if ( $args->{chrome} == 1 ) {
+        $r = DADA::Template::Widgets::wrap_screen(
+            {
+                -data           => \$s,
+                -with           => 'list',
+                -wrapper_params => {
+                    -header_params => { -cookie => [ $args->{-sess_cookie} ], },
+                    -prof_sess_obj => $args->{-sess},
+                },
+                -list_settings_vars_param => { -list => $ls->param('list'), },
+                -subscriber_vars_param    => {
+                    -list  => $ls->param('list'),
+                    -email => $args->{-email},
+                    -type  => 'list'
+                },
+                -dada_pseudo_tag_filter => 1,
+                -vars                   => {
+                    chrome           => $args->{-chrome},
+                    email            => $args->{-email},
+                    subscriber_email => $args->{-email},
+                },
+            }
+        );
+    }
+    else {
+        $r = DADA::Template::Widgets::screen(
+            {
+                -data                     => \$s,
+                -list_settings_vars_param => { -list => $ls->param('list'), },
+                -subscriber_vars_param    => {
+                    -list  => $ls->param('list'),
+                    -email => $args->{-email},
+                    -type  => 'list'
+                },
+                -dada_pseudo_tag_filter => 1,
+                -vars                   => {
+                    chrome           => $args->{-chrome},
+                    email            => $args->{-email},
+                    subscriber_email => $args->{-email}
+                },
+            }
+
+        );
+    }
+
+    return $r;
+}
+
+sub _subscription_requires_approval_message {
+
+    my $self = shift;
+    my ($args) = @_;
+
+    my $list = $args->{-list};
+
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $args->{-list} } );
+
+    my $s = $ls->param('html_subscription_request_message');
+    require DADA::Template::Widgets;
+    my $r;
+    if ( $args->{chrome} == 1 ) {
+        $r = DADA::Template::Widgets::wrap_screen(
+            {
+                -data                     => \$s,
+                -with                     => 'list',
+                -list_settings_vars_param => { -list => $ls->param('list'), },
+                -subscriber_vars_param    => {
+                    -list  => $ls->param('list'),
+                    -email => $args->{-email},
+                    -type  => 'sub_request_list'
+                },
+                -dada_pseudo_tag_filter => 1,
+                -vars                   => {
+                    chrome           => $args->{-chrome},
+                    email            => $args->{-email},
+                    subscriber_email => $args->{-email}
+                },
+            }
+        );
+    }
+    else {
+        $r = DADA::Template::Widgets::screen(
+            {
+                -data                     => \$s,
+                -list_settings_vars_param => { -list => $ls->param('list'), },
+                -subscriber_vars_param    => {
+                    -list  => $ls->param('list'),
+                    -email => $args->{-email},
+                    -type  => 'sub_request_list'
+                },
+                -dada_pseudo_tag_filter => 1,
+                -vars                   => {
+                    chrome           => $args->{-chrome},
+                    email            => $args->{-email},
+                    subscriber_email => $args->{-email}
+                },
+            }
+        );
+    }
+
+    return $r;
+}
+
+
+sub _user_error_msg { 
+	my $self = shift; 
+	my ($args) = @_; 
+	require DADA::App::Error;
+
+    my $s = DADA::App::Error::cgi_user_error(
+		{ 
+        -list          => $args->{list},
+        -error         => $args->{error},
+        -email         => $args->{email},
+		-vars => { 
+			$args{-vars},
+		},
+    );
+    return $s; 
+
 }
 
 sub subscription_error_descriptions {
@@ -1838,20 +1994,20 @@ sub subscription_error_descriptions {
 sub alt_redirect {
 
     my $self = shift;
-	my ($args) = @_; 
-	
-	my $url = $args->{redirect}->{url}; 
-	
+    my ($args) = @_;
+
+    my $url = $args->{redirect}->{url};
+
     require CGI;
     my $q = CGI->new;
-       $q->charset($DADA::Config::HTML_CHARSET);
+    $q->charset($DADA::Config::HTML_CHARSET);
 
     $url = strip($url);
 
     if ( !isa_url($url) ) {
         $url = 'http://' . $url;
     }
-    if ($args->{redirect}->{using_with_query} == 1) {
+    if ( $args->{redirect}->{using_with_query} == 1 ) {
         if ( $url =~ m/\?/ ) {
 
             # Already has a query string?!
