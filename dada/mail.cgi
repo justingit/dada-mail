@@ -644,6 +644,7 @@ sub run {
         'captcha_img'                => \&captcha_img,
         'ver'                        => \&ver,
         'resend_conf'                => \&resend_conf,
+        'show_error'                 => \&show_error, 
 
         'subscription_form_html'          => \&subscription_form_html,
         'subscription_form_js'            => \&subscription_form_js,
@@ -8310,6 +8311,8 @@ sub resend_conf_captcha {
     }
     if ( $captcha_worked == 1 ) {
         if ( $q->param('rm') eq 's' ) {
+	
+			# so, what's $sub_info for?!
             my $sub_info = $lh->get_subscriber(
                 {
                     -email => $email,
@@ -8324,6 +8327,7 @@ sub resend_conf_captcha {
             );
             $q->param( 'list',  $list );
             $q->param( 'email', $email );
+			$q->delete('f', 'flavor', 'rm', 'recaptcha_challenge_field', 'recaptcha_response_field', 'token');
             $q->param( 'f',     's' );
             &subscribe;
             return;
@@ -8474,6 +8478,45 @@ sub resend_conf_no_captcha {
             return;
         }
     }
+}
+
+
+sub show_error { 
+	my $email = xss_filter( $q->param('email') ) || undef;
+	my $error = xss_filter( $q->param('error') ) || undef;
+	my $list  = xss_filter( $q->param('list') ) || undef;
+	
+	require DADA::MailingList::Settings;
+	
+	my $ls = DADA::MailingList::Settings->new({-list => $list});
+	
+	my $list_exists = check_if_list_exists( -List => $list, );
+    if ( $list_exists == 0 ) {
+        &default;
+        return;
+    }
+    if ( !$email ) {
+        $q->param( 'error_no_email', 1 );
+        list_page();
+        return;
+    }
+	
+	if($error ne 'already_sent_sub_confirmation') { 
+        &default;
+        return;
+	}
+	
+	require DADA::App::Error;
+    my $error_msg = DADA::App::Error::cgi_user_error(
+		{
+        -list          => $list,
+        -error         => $error,
+        -email         => $email,
+    	}
+	);
+    e_print($error_msg); 
+	
+
 }
 
 sub text_list {

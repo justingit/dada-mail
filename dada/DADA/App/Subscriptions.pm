@@ -95,14 +95,16 @@ sub token {
                   . $ENV{REMOTE_ADDR} . ')';
                 carp "Additional Information: " . Data::Dumper::Dumper($data);
                 if ( $q->param('simple_test') ne 'pass' ) {
-                    return user_error({
-                        -error         => 'mismatch_ip_on_confirm',
-                        -test          => $self->test,
-                        -vars => {
-                            t      => $token,
-                            flavor => $data->{data}->{flavor},
+                    return user_error(
+                        {
+                            -error => 'mismatch_ip_on_confirm',
+                            -test  => $self->test,
+                            -vars  => {
+                                t      => $token,
+                                flavor => $data->{data}->{flavor},
+                            }
                         }
-					});
+                    );
                 }
                 else {
                     carp
@@ -139,17 +141,21 @@ sub token {
             );
         }
         else {
-            return user_error({
-                -error => 'token_problem',
-                -test  => $self->test,
-            });
+            return user_error(
+                {
+                    -error => 'token_problem',
+                    -test  => $self->test,
+                }
+            );
         }
     }
     else {
-        return user_error({
-            -error => 'token_problem',
-            -test  => $self->test,
-        });
+        return user_error(
+            {
+                -error => 'token_problem',
+                -test  => $self->test,
+            }
+        );
     }
 
 }
@@ -184,6 +190,10 @@ sub subscribe {
     my $fh = $args->{-fh};
 
     my $q    = $args->{-cgi_obj};
+
+	use Data::Dumper; 
+	warn Dumper({$q->Vars}); 
+
     my $list = xss_filter( $q->param('list') );
     warn '$list: ' . $list
       if $t;
@@ -191,6 +201,8 @@ sub subscribe {
     my $email = lc_email( strip( xss_filter( $q->param('email') ) ) );
     warn '$email: ' . $email
       if $t;
+
+ 
 
     my $list_exists = DADA::App::Guts::check_if_list_exists( -List => $list );
     my $ls = undef;
@@ -207,7 +219,7 @@ sub subscribe {
           if $t;
 
     }
-
+ 
    # This is a special case, since without a valid list, we can't run any of the
    # other validation stuff!
    # ! $list_exists
@@ -226,10 +238,10 @@ sub subscribe {
         };
         if ( $args->{-html_output} == 0 ) {
             if ( $args->{-return_json} == 1 ) {
-                return $self->jsonify($r);
+				return $self->fancy_data({-data => $r, -type => 'json'}); 
             }
             else {
-                return $r;
+				return $self->fancy_data({-data => $r}); 			
             }
         }
         else {
@@ -250,6 +262,7 @@ sub subscribe {
     }
 
     #/ !$list_exists
+ 
 
     # Do a little Subscriber Profile Fields Work...
     require DADA::MailingList::Subscribers;
@@ -281,94 +294,124 @@ sub subscribe {
     # This is kind of strange...
     my $skip_sub_confirm_if_logged_in = 0;
 
+ 
+
     if ( $status == 1 ) {
+
+ 
 
   # What would be more useful, is if more information on *how* you
   # could finish this was given - like a way to point to a URL for this request,
   # and a way to redirect to another screen, after the request.
   #
+#		warn q{$ls->param('enable_closed_loop_opt_in')} . $ls->param('enable_closed_loop_opt_in');
+#		warn q{$ls->param('captcha_sub')} . $ls->param('captcha_sub'); 
+#		warn q{$ls->param('enable_subscription_approval_step')} . $ls->param('enable_subscription_approval_step'); 
+#		warn q{$args->{-html_output} } . $args->{-html_output}; 
+		
+		
         if (   $ls->param('enable_closed_loop_opt_in') == 0
             && $ls->param('captcha_sub') == 1
-            && $args->{-html_output} == 0 )
+			&& $ls->param('enable_subscription_approval_step') == 0
+			&& $args->{-html_output} == 0 
+			)
         {
             my $r = {
-                status => 0,
-                list   => $list,
-                email  => $email,
-                error  => 'api_unavailable',
+				flavor  => 'subscription_requires_captcha', 
+                status  => 1,
+                list    => $list,
+                email   => $email,
+				redirect => {
+	                url   => $DADA::Config::PROGRAM_URL . '?f=subscribe&email=' . uriescape($email) . '&list=' . uriescape($list),
+	            }
             };
 
+			# So this is a little munge, as we basically have to re-submit the subscription request, 
+			# BUT, we don't want to make it out like we're... resubmitting the subscription request: 
+			my $rm_status = $lh->remove_subscriber(
+                {
+                    -email => $email,
+                    -type  => 'sub_confirm_list'
+                }
+            );
+            # OK - 
+
             if ( $args->{-return_json} == 1 ) {
-                return $self->jsonify($r);
+				return $self->fancy_data({-data => $r, -type => 'json'}); 
             }
             else {
-                return $r;
+				return $self->fancy_data({-data => $r}); 			
             }
         }
 
         my $skip_sub_confirm_if_logged_in = 0;
-        if ( $ls->param('skip_sub_confirm_if_logged_in') ) {
-            require DADA::Profile::Session;
-            my $sess = DADA::Profile::Session->new;
-            if ( $sess->is_logged_in ) {
-                my $sess_email = $sess->get;
-                if ( $sess_email eq $email ) {
 
-                    # something...
-                    $skip_sub_confirm_if_logged_in = 1;
-                }
-            }
-        }
-        if (   $ls->param('enable_closed_loop_opt_in') == 0
-            || $skip_sub_confirm_if_logged_in == 1 )
-        {
+		# Not EVEN going to attempt: 
+		if($args->{-html_output} == 1) {  
+	        if ( $ls->param('skip_sub_confirm_if_logged_in') ) {
+	            require DADA::Profile::Session;
+	            my $sess = DADA::Profile::Session->new;
+	            if ( $sess->is_logged_in ) {
+	                my $sess_email = $sess->get;
+	                if ( $sess_email eq $email ) {
 
-            # I still have to make a confirmation token, the CAPTCHA step before
-            # confirmation step #1 still requires it.
-            require DADA::App::Subscriptions::ConfirmationTokens;
-            my $ct    = DADA::App::Subscriptions::ConfirmationTokens->new();
-            my $token = $ct->save(
-                {
-                    -email => $email,
-                    -data  => {
-                        list        => $list,
-                        type        => 'list',
-                        flavor      => 'sub_confirm',
-                        remote_addr => $ENV{REMOTE_ADDR},
-                    },
-                    -remove_previous => 1,
-                }
-            );
+	                    # something...
+	                    $skip_sub_confirm_if_logged_in = 1;
+	                }
+	            }
+	        }
+	        if (   $ls->param('enable_closed_loop_opt_in') == 0
+	            || $skip_sub_confirm_if_logged_in == 1 )
+	        {
 
-            # And then, we have to stick the token in the query,
-            $args->{-cgi_obj}->param( 'token', $token );
+	            # I still have to make a confirmation token, the CAPTCHA step before
+	            # confirmation step #1 still requires it.
+	            require DADA::App::Subscriptions::ConfirmationTokens;
+	            my $ct    = DADA::App::Subscriptions::ConfirmationTokens->new();
+	            my $token = $ct->save(
+	                {
+	                    -email => $email,
+	                    -data  => {
+	                        list        => $list,
+	                        type        => 'list',
+	                        flavor      => 'sub_confirm',
+	                        remote_addr => $ENV{REMOTE_ADDR},
+	                    },
+	                    -remove_previous => 1,
+	                }
+	            );
 
-            my $add_to_sub_confirm_list = $lh->add_subscriber(
-                {
-                    -email      => $email,
-                    -type       => 'sub_confirm_list',
-                    -fields     => $fields,
-                    -confirmed  => 0,
-                    -dupe_check => {
-                        -enable  => 1,
-                        -on_dupe => 'ignore_add',
-                    },
-                }
-            );
-            if ( !defined($add_to_sub_confirm_list) ) {
-                warn
-"address, $email, wasn't added to the sub_confirm_list correctly - is it already on there?";
-            }
+	            # And then, we have to stick the token in the query,
+	            $args->{-cgi_obj}->param( 'token', $token );
 
-            return $self->confirm(
-                {
-                    -return_json => $args->{-return_json},
-                    -html_output => $args->{-html_output},
-                    -cgi_obj     => $args->{-cgi_obj},
-                },
-            );
-        }
-    }
+	            my $add_to_sub_confirm_list = $lh->add_subscriber(
+	                {
+	                    -email      => $email,
+	                    -type       => 'sub_confirm_list',
+	                    -fields     => $fields,
+	                    -confirmed  => 0,
+	                    -dupe_check => {
+	                        -enable  => 1,
+	                        -on_dupe => 'ignore_add',
+	                    },
+	                }
+	            );
+	            if ( !defined($add_to_sub_confirm_list) ) {
+	                warn
+	"address, $email, wasn't added to the sub_confirm_list correctly - is it already on there?";
+	            }
+
+	            return $self->confirm(
+	                {
+	                    -return_json => $args->{-return_json},
+	                    -html_output => $args->{-html_output},
+	                    -cgi_obj     => $args->{-cgi_obj},
+	                },
+	            );
+	        }
+	    }
+	}
+ 
 
     my $mail_your_subscribed_msg = 0;
 
@@ -384,17 +427,16 @@ sub subscribe {
             #/
 
             my @num = keys %$errors;
-
             if ( $#num == 0 ) {    # meaning, "subscribed" is the only error...
-
                 # Don't Treat as an Error
                 $status = 1;
-
                 # But send a private error message out...
                 $mail_your_subscribed_msg = 1;
             }
         }
     }
+
+ 
 
     if ( $status == 0 ) {
         my $r = {
@@ -423,10 +465,10 @@ sub subscribe {
 
         if ( $args->{-html_output} == 0 ) {
             if ( $args->{-return_json} == 1 ) {
-                return $self->jsonify($r);
+				return $self->fancy_data({-data => $r, -type => 'json'}); 
             }
             else {
-                return $r;
+				return $self->fancy_data({-data => $r}); 			
             }
         }
         elsif ( $args->{-html_output} == 1 ) {
@@ -454,27 +496,33 @@ sub subscribe {
 
                 for (@list_of_errors) {
                     if ( $errors->{$_} == 1 ) {
-                        return user_error({
-                            -list  => $list,
-                            -error => $_,
-                            -email => $email,
-                            -fh    => $args->{-fh},
-                            -test  => $self->test,
-                        });
+                        return user_error(
+                            {
+                                -list  => $list,
+                                -error => $_,
+                                -email => $email,
+                                -fh    => $args->{-fh},
+                                -test  => $self->test,
+                            }
+                        );
                     }
                 }
 
                 # Fallback
-                return user_error({
-                    -list  => $list,
-                    -email => $email,
-                    -fh    => $args->{-fh},
-                    -test  => $self->test,
-                });
+                return user_error(
+                    {
+                        -list  => $list,
+                        -email => $email,
+                        -fh    => $args->{-fh},
+                        -test  => $self->test,
+                    }
+                );
             }
         }
     }
     elsif ( $status == 1 ) {
+
+ 
 
 # The idea is, we'll save the information for the subscriber in the confirm list, and then
 # move the info to the actual subscription list,
@@ -564,10 +612,10 @@ sub subscribe {
 
         if ( $args->{-html_output} == 0 ) {
             if ( $args->{-return_json} == 1 ) {
-                return $self->jsonify($r);
+				return $self->fancy_data({-data => $r, -type => 'json'}); 
             }
             else {
-                return $r;
+				return $self->fancy_data({-data => $r}); 			
             }
         }
         else {
@@ -577,14 +625,16 @@ sub subscribe {
                   and return;
             }
             else {
+				
                 my $s = $self->_subscription_confirmation_success_msg(
                     {
-                        -list   => $args->{list},
-                        -email  => $args->{email},
+                        -list   => $list,
+                        -email  => $email,
                         -chrome => 1,
                     }
                 );
-                $self->test ? return $r : print $fh safely_encode($r)
+
+                $self->test ? return $s : print $fh safely_encode($s)
                   and return;
             }
         }
@@ -724,7 +774,9 @@ sub confirm {
                 warn '>>>> >>>> Showing confirm_captcha_step_screen screen'
                   if $t;
                 my $cap = DADA::Security::AuthenCAPTCHA->new;
-                my $CAPTCHA_string = $cap->get_html($DADA::Config::RECAPTCHA_PARAMS->{public_key} );
+                my $CAPTCHA_string =
+                  $cap->get_html(
+                    $DADA::Config::RECAPTCHA_PARAMS->{public_key} );
                 require DADA::Template::Widgets;
                 my $r = DADA::Template::Widgets::wrap_screen(
                     {
@@ -738,16 +790,16 @@ sub confirm {
                             -type  => 'sub_confirm_list'
                         },
                         -dada_pseudo_tag_filter => 1,
-                        -vars => {
+                        -vars                   => {
                             CAPTCHA_string => $CAPTCHA_string,
-                            flavor => 't',
-                            list  => xss_filter( $q->param('list') ),
-                            email => lc_email(
+                            flavor         => 't',
+                            list           => xss_filter( $q->param('list') ),
+                            email          => lc_email(
                                 strip( xss_filter( $q->param('email') ) )
                             ),
                             token        => xss_filter( $q->param('token') ),
                             captcha_auth => xss_filter($captcha_auth),
-                            simple_test => (
+                            simple_test  => (
                                   ( $simple_test == 1 )
                                 ? ( $q->param('simple_test') )
                                 : (undef)
@@ -828,13 +880,15 @@ sub confirm {
             if ( $errors->{no_list} == 1 ) {
                 warn '>>>> >>>> No list found.'
                   if $t;
-                return user_error({
-                    -list  => $list,
-                    -error => "no_list",
-                    -email => $email,
-                    -fh    => $args->{-fh},
-                    -test  => $self->test,
-                });
+                return user_error(
+                    {
+                        -list  => $list,
+                        -error => "no_list",
+                        -email => $email,
+                        -fh    => $args->{-fh},
+                        -test  => $self->test,
+                    }
+                );
             }
         }
     }
@@ -874,10 +928,10 @@ sub confirm {
 
         if ( $args->{-html_output} == 0 ) {
             if ( $args->{-return_json} == 1 ) {
-                return $self->jsonify($r);
+				return $self->fancy_data({-data => $r, -type => 'json'}); 
             }
             else {
-                return $r;
+				return $self->fancy_data({-data => $r}); 			
             }
         }
         elsif ( $args->{-html_output} == 1 ) {
@@ -900,23 +954,27 @@ sub confirm {
 
                 for (@list_of_errors) {
                     if ( $errors->{$_} == 1 ) {
-                        return user_error({
-                            -list  => $list,
-                            -error => $_,
-                            -email => $email,
-                            -fh    => $args->{-fh},
-                            -test  => $self->test,
-                        });
+                        return user_error(
+                            {
+                                -list  => $list,
+                                -error => $_,
+                                -email => $email,
+                                -fh    => $args->{-fh},
+                                -test  => $self->test,
+                            }
+                        );
                     }
                 }
 
                 # Fallback.
-                return user_error({
-                    -list  => $list,
-                    -email => $email,
-                    -fh    => $args->{-fh},
-                    -test  => $self->test,
-                });
+                return user_error(
+                    {
+                        -list  => $list,
+                        -email => $email,
+                        -fh    => $args->{-fh},
+                        -test  => $self->test,
+                    }
+                );
             }
         }
     }
@@ -968,7 +1026,7 @@ sub confirm {
                 }
             );
 
-			# There's no, "Well, hey! You've already done that!" check here. Sigh. 
+          # There's no, "Well, hey! You've already done that!" check here. Sigh.
             my $r = {
                 flavor         => 'subscription_requires_approval',
                 status         => 1,
@@ -976,10 +1034,13 @@ sub confirm {
                 email          => $email,
                 needs_approval => 1,
                 redirect       => {
-                    using            => $ls->param('use_alt_url_subscription_approval_step'),
-                    using_with_query => $ls->param('alt_url_subscription_approval_step'),
-                    url              => $ls->param('alt_url_subscription_approval_step_w_qs'),
-                    query            => '',
+                    using =>
+                      $ls->param('use_alt_url_subscription_approval_step'),
+                    using_with_query =>
+                      $ls->param('alt_url_subscription_approval_step'),
+                    url =>
+                      $ls->param('alt_url_subscription_approval_step_w_qs'),
+                    query => '',
                 }
             };
             my $qs = 'list='
@@ -989,12 +1050,12 @@ sub confirm {
             $r->{redirect}->{query} = $qs;
 
             if ( $args->{-html_output} == 0 ) {
-                if ( $args->{-return_json} == 1 ) {
-                    return $self->jsonify($r);
-                }
-                else {
-                    return $r;
-                }
+	            if ( $args->{-return_json} == 1 ) {
+					return $self->fancy_data({-data => $r, -type => 'json'}); 
+	            }
+	            else {
+					return $self->fancy_data({-data => $r}); 			
+	            }
             }
             else {
                 if ( $ls->param('use_alt_url_sub_success') == 1 ) {
@@ -1005,12 +1066,12 @@ sub confirm {
                 else {
 
                     my $s = $self->_subscription_requires_approval_message(
-		                {
-		                    -list   => $list,
-		                    -email  => $email,
-		                    -chrome => 1,
-		                }
-		            );
+                        {
+                            -list   => $list,
+                            -email  => $email,
+                            -chrome => 1,
+                        }
+                    );
                     $self->test ? return $s : print $fh safely_encode($s)
                       and return;
                 }
@@ -1181,12 +1242,12 @@ sub confirm {
             $r->{redirect}->{query} = $qs;
 
             if ( $args->{-html_output} == 0 ) {
-                if ( $args->{-return_json} == 1 ) {
-                    return $self->jsonify($r);
-                }
-                else {
-                    return $r;
-                }
+	            if ( $args->{-return_json} == 1 ) {
+					return $self->fancy_data({-data => $r, -type => 'json'}); 
+	            }
+	            else {
+					return $self->fancy_data({-data => $r}); 			
+	            }
             }
             elsif ( $args->{-html_output} == 1 ) {
                 if ( $ls->param('use_alt_url_sub_success') == 1 ) {
@@ -1201,8 +1262,8 @@ sub confirm {
 
                     my $s = $self->_subscription_successful_message(
                         {
-                            -list        => $args->{list},
-                            -email       => $args->{email},
+                            -list        => $list,
+                            -email       => $email,
                             -chrome      => 1,
                             -sess        => $sess,
                             -sess_cookie => $sess_cookie,
@@ -1336,23 +1397,27 @@ sub unsubscription_request {
                       if $_ eq 'invalid_email';
 
                     # warn "showing error, $_";
-                    return user_error({
-                        -list  => $list,
-                        -error => $_,
-                        -email => $email,
-                        -fh    => $args->{-fh},
-                        -test  => $self->test,
-                    });
+                    return user_error(
+                        {
+                            -list  => $list,
+                            -error => $_,
+                            -email => $email,
+                            -fh    => $args->{-fh},
+                            -test  => $self->test,
+                        }
+                    );
                 }
             }
 
             # Fallback
             return user_error(
-                -list  => $list,
-                -email => $email,
-                -fh    => $args->{-fh},
-                -test  => $self->test,
-            });
+                {
+                    -list  => $list,
+                    -email => $email,
+                    -fh    => $args->{-fh},
+                    -test  => $self->test,
+                }
+            );
         }
 
     }
@@ -1464,20 +1529,24 @@ sub unsubscribe {
     require DADA::App::Subscriptions::ConfirmationTokens;
     my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
     if ( !$ct->exists($token) ) {
-        return user_error({
-            -error => 'token_problem',
-            -test  => $self->test,
-        });
+        return user_error(
+            {
+                -error => 'token_problem',
+                -test  => $self->test,
+            }
+        );
     }
 
     my $data = $ct->fetch($token);
 
     # not sure how you got here, but, whatever:
     if ( $data->{data}->{flavor} ne 'unsub_confirm' ) {
-        return user_error({
-            -error => 'token_problem',
-            -test  => $self->test,
-        });
+        return user_error(
+            {
+                -error => 'token_problem',
+                -test  => $self->test,
+            }
+        );
     }
 
     my $is_valid = 1;
@@ -1580,13 +1649,15 @@ sub complete_unsubscription {
     # Hmm, so we're not subscribed?
     if ( $status == 0 ) {
 
-        return user_error({
-            -list  => $list,
-            -error => 'not_subscribed',
-            -email => $email,
-            -fh    => $args->{-fh},
-            -test  => $self->test,
-        });
+        return user_error(
+            {
+                -list  => $list,
+                -error => 'not_subscribed',
+                -email => $email,
+                -fh    => $args->{-fh},
+                -test  => $self->test,
+            }
+        );
         return;
     }
 
@@ -1698,68 +1769,122 @@ sub complete_unsubscription {
     }
 }
 
-sub jsonify {
+sub fancy_data {
     my $self = shift;
     my ($args) = @_;
+	if(!exists($args->{-type})){ 
+		$args->{-type} = 'perl';
+	}
 
-    require JSON::PP;
-    my $json = JSON::PP->new->allow_nonref;
-
-    my $sub_descriptions   = $self->subscription_error_descriptions;
-    my $error_descriptions = {};
-    for ( keys %{ $args->{errors} } ) {
-        $error_descriptions->{$_} = $self->_user_error_msg(
-		); 
-    }
+	my $data = $args->{-data}; 
+	my $type = $args->{-type}, 
 
     my $return = {
-        list   => $args->{list},
-        email  => $args->{email},
-        status => $args->{status},
+        list   => $data->{list},
+        email  => $data->{email},
+        status => $data->{status},
+		redirect => $data->{redirect}, 
     };
 
-    if ( keys %{ $args->{errors} } ) {
-        $return->{errors}             = $args->{errors};
+    my $error_descriptions = {};
+	
+    for ( keys %{ $data->{errors} } ) {
+		if($_ eq 'already_sent_sub_confirmation') {			
+			$return->{error_descriptions}->{already_sent_sub_confirmation} = 'use redirect';
+			$return->{redirect_required}  = 'subscription_requires_captcha';
+	 		$return->{redirect}->{url} = 
+				$DADA::Config::PROGRAM_URL 
+				. '?f=show_error&email=' 
+				. uriescape($data->{email}) 
+				. '&list=' 
+				. uriescape($data->{list}) 
+				. '&error=already_sent_sub_confirmation';
+		}
+		elsif($_ eq 'invalid_list'){ 
+			$return->{error_descriptions}->{invalid_list} = 'use redirect';
+			$return->{redirect_required}  = 'invalid_list';
+		}
+		else { 
+			
+			$error_descriptions->{$_} = $self->_user_error_msg({
+	            -list   => $data->{list},
+	            -email  => $data->{email},
+	            -chrome => 0,
+	            -error  => $_,
+	        });
+	        
+			
+		}
+    }
+
+    if ( keys %{ $data->{errors} } ) {
+        $return->{errors}             = $data->{errors};
         $return->{error_descriptions} = $error_descriptions;
     }
     else {
-        if ( $args->{flavor} eq 'subscription_confirmation' ) {
+        if ( $data->{flavor} eq 'subscription_confirmation' ) {
             $return->{success_message} =
               $self->_subscription_confirmation_success_msg(
                 {
-                    -list   => $args->{list},
-                    -email  => $args->{email},
+                    -list   => $data->{list},
+                    -email  => $data->{email},
                     -chrome => 0,
                 }
               );
         }
-        elsif ( $args->{flavor} eq 'subscription' ) {
+        elsif ( $data->{flavor} eq 'subscription' ) {
             $return->{success_message} =
               $self->_subscription_successful_message(
                 {
-                    -list   => $args->{list},
-                    -email  => $args->{email},
+                    -list   => $data->{list},
+                    -email  => $data->{email},
                     -chrome => 0,
                 }
               );
         }
-        elsif ( $args->{flavor} eq 'subscription_requires_approval' ) {
-	        $return->{success_message} =
-            $self->_subscription_requires_approval_message(
+		elsif( $data->{flavor} eq 'subscription_requires_captcha') { 
+			$return->{success_message} = 'use redirect';
+			$return->{redirect_required} = 'subscription_requires_captcha'
+		}
+        elsif ( $data->{flavor} eq 'subscription_requires_approval' ) {
+            $return->{success_message} =
+              $self->_subscription_requires_approval_message(
                 {
-                    -list   => $args->{list},
-                    -email  => $args->{email},
+                    -list   => $data->{list},
+                    -email  => $data->{email},
                     -chrome => 0,
                 }
-            );
+              );
         }
         else {
-            warn 'unkown flavor, "' . $args->{flavor} . '"';
+            warn 'unkown flavor, "' . $data->{flavor} . '"';
         }
-
     }
-    my $data_back = $json->pretty->encode($return);
-    return $data_back;
+
+	if(!exists($data->{redirect}->{using})){ 
+		$data->{redirect}->{using} = 0; 
+	}
+	$data->{redirect}->{using} = int($data->{redirect}->{using}); 
+	if(!exists($data->{redirect}->{using_with_query})){ 
+		$data->{redirect}->{using_with_query} = 0; 
+	}
+	$data->{redirect}->{using_with_query} = int($data->{redirect}->{using_with_query}); 
+	if(!exists($data->{redirect}->{url})){ 
+		$data->{redirect}->{url}= ''; 
+	}
+	if(!exists($data->{redirect}->{query})){ 
+		$data->{redirect}->{query}= ''; 
+	}
+
+	if($args->{-type} eq 'json') { 
+		require JSON::PP;
+	    my $json = JSON::PP->new->allow_nonref;
+	    my $data_back = $json->pretty->encode($return);
+	    return $data_back;
+	}
+	else { 
+		return $return; 
+	}
 }
 
 sub _subscription_confirmation_success_msg {
@@ -1774,7 +1899,7 @@ sub _subscription_confirmation_success_msg {
     my $s = $ls->param('html_confirmation_message');
     require DADA::Template::Widgets;
     my $r;
-    if ( $args->{chrome} == 1 ) {
+    if ( $args->{-chrome} == 1 ) {
         $r = DADA::Template::Widgets::wrap_screen(
             {
                 -data => \$s,
@@ -1829,7 +1954,7 @@ sub _subscription_successful_message {
     my $s = $ls->param('html_subscribed_message');
     require DADA::Template::Widgets;
     my $r;
-    if ( $args->{chrome} == 1 ) {
+    if ( $args->{-chrome} == 1 ) {
         $r = DADA::Template::Widgets::wrap_screen(
             {
                 -data           => \$s,
@@ -1890,7 +2015,7 @@ sub _subscription_requires_approval_message {
     my $s = $ls->param('html_subscription_request_message');
     require DADA::Template::Widgets;
     my $r;
-    if ( $args->{chrome} == 1 ) {
+    if ( $args->{-chrome} == 1 ) {
         $r = DADA::Template::Widgets::wrap_screen(
             {
                 -data                     => \$s,
@@ -1933,63 +2058,23 @@ sub _subscription_requires_approval_message {
     return $r;
 }
 
-
-sub _user_error_msg { 
-	my $self = shift; 
-	my ($args) = @_; 
-	require DADA::App::Error;
-
+sub _user_error_msg {
+    my $self = shift;
+    my ($args) = @_;
+    require DADA::App::Error;
     my $s = DADA::App::Error::cgi_user_error(
-		{ 
-        -list          => $args->{list},
-        -error         => $args->{error},
-        -email         => $args->{email},
-		-vars => { 
-			$args{-vars},
-		},
+        {
+            -list   => $args->{-list},
+            -error  => $args->{-error},
+            -email  => $args->{-email},
+            -vars   => $args->{-vars}, 
+            -chrome => $args->{-chrome},
+        }
     );
-    return $s; 
-
+    return $s;
 }
 
-sub subscription_error_descriptions {
-    return {
 
-        invalid_list =>
-          'The mailing list you\'re trying to subscribe to is not valid!',
-
-        invalid_email => 'Your email address is not valid!',
-
-        api_unavailable => 'Sorry, we are unable to fullfill your request.',
-
-        subscribed => 'Your email address is already subscribed!',
-
-        invite_only_list =>
-          'This mailing list can currently be subscribed by invitation only.',
-
-        closed_list =>
-          'This mailing list is currently closed to future subscribers!',
-
-        mx_lookup_failed =>
-          'Your email address doesn\'t appear to be from a valid host!',
-
-        black_listed =>
-'That email address is currently not allowed to subscribe to this mailing list!',
-
-        not_white_listed =>
-          'You currently aren\'t allowed to subscribe to this mailing list!',
-
-        over_subscription_quota =>
-          'This mailing list has reached its subscription quota!',
-
-        already_sent_sub_confirmation =>
-'Check your email - we\'ve already sent you a subscription confirmation email!',
-
-        settings_possibly_corrupted => 'There\s an internal problem - sorry!',
-
-    };
-
-}
 
 sub alt_redirect {
 
