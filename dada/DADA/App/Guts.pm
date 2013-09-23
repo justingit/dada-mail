@@ -1829,6 +1829,9 @@ sub user_error {
 	if(!exists($args->{-fh})){ 
 		$fh = \*STDOUT;
 	}
+	else { 
+		$fh = $args->{-fh};
+	}
 
 #    my $fh    = $args->{-fh};
     my $test  = $args->{-test};
