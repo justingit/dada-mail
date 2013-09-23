@@ -54,9 +54,12 @@ $(document).ready(function() {
 					console.log('data:' + JSON.stringify(data)); 
 					var html = ''; 
 					if(data.status === 0){ 
+						var already_sent_sub_confirmation = 0; 
+												
 						$.each(data.errors, function(index, value) {
 							console.log(index + ': ' + value);
 						});
+						
 						$.each(data.error_descriptions, function(index, value) {
 							html += value;
 						});
@@ -64,13 +67,30 @@ $(document).ready(function() {
 					else { 
 						html += data.success_message;
 					}
-										
-					$.colorbox({
-						html: html,
-						maxHeight: 480,
-						maxWidth: 649,
-						opacity: 0.50
-					});
+					
+					if(typeof data.redirect_required === 'undefined') {
+						if(data.redirect.using === 1) {
+							if(data.redirect.using_with_query === 1){ 
+								window.location.href = data.redirect.url + '?' + data.redirect.query; 
+							}
+							else { 
+								window.location.href = data.redirect.url;
+							}
+						}
+						else { 
+							$.colorbox({
+								html: html,
+								maxHeight: 480,
+								maxWidth: 649,
+								opacity: 0.50
+							}); 
+						}
+					}
+					else { 
+						/* Success, or Error: it may not be something we can work with: */
+						//alert(data.redirect_required); 
+						window.location.href = data.redirect.url;
+					}
 				},
 				error: function(xhr, ajaxOptions, thrownError) {
 					console.log('status: ' + xhr.status);
