@@ -29,6 +29,7 @@ my %error;
 
 use Try::Tiny;
 use Carp qw(carp croak);
+$Carp::Verbose = 1; 
 
 require CGI;
 my $q = CGI->new;
@@ -80,6 +81,13 @@ sub cgi_user_error {
     my $li              = {};
     my $list_login_form = "";
     my $list_exists     = 0;
+
+    if ( !exists( $args->{-wrap_with} ) ) {
+        $args->{-wrap_with} = 'list';
+    }
+    if ( !exists( $args->{-chrome} ) ) {
+        $args->{-chrome} = 1;
+    }
 
     if ( !exists( $args->{-vars}->{captcha_auth} ) ) {
         $args->{-vars}->{captcha_auth} = 1;
@@ -231,7 +239,7 @@ sub cgi_user_error {
                     },    #what?
                     -dada_pseudo_tag_filter => 1,
                     -vars                   => {
-                        %{$args->{-vars}},
+                        %{ $args->{-vars} },
                         rm             => $rm,
                         CAPTCHA_string => $CAPTCHA_string,
                         flavor         => 'resend_conf',
@@ -254,40 +262,67 @@ sub cgi_user_error {
     my $r      = '';
 
     eval {
-        $screen = DADA::Template::Widgets::wrap_screen(
-            {
-                -screen => 'error_' . $args->{-error} . '_screen.tmpl',
-                (
-                    $args->{-wrap_with} eq 'admin'
-                    ? (
-                        -with           => 'admin',
-                        -wrapper_params => {
+        if ( $args->{-chrome} == 1 )
+        {
+            $screen = DADA::Template::Widgets::wrap_screen(
+                {
+                    -screen => 'error_' . $args->{-error} . '_screen.tmpl',
+                    (
+                        $args->{-wrap_with} eq 'admin'
+                        ? (
+                            -with           => 'admin',
+                            -wrapper_params => {
 
-                            #-Root_Login => $root_login,
-                            -List => $args->{-list},
-                        },
+                                #-Root_Login => $root_login,
+                                -List => $args->{-list},
+                            },
 
-                      )
-                    : ( -with => 'list', )
-                ),
-                -vars => {
-                    %{$args->{-vars}},
-                    subscription_form   => $subscription_form,
-                    unsubscription_form => $unsubscription_form,
-                    list_login_form     => $list_login_form,
-                    email               => $args->{-email},
-                    auth_code           => $auth_code,
-                    unknown_dirs        => $unknown_dirs,
-                    PROGRAM_URL         => $DADA::Config::PROGRAM_URL,
-                    S_PROGRAM_URL       => $DADA::Config::S_PROGRAM_URL,
-                    error_message       => $args->{-error_message},
-                },
+                          )
+                        : ( -with => 'list', )
+                    ),
+                    -vars => {
+                        %{ $args->{-vars} },
+                        subscription_form   => $subscription_form,
+                        unsubscription_form => $unsubscription_form,
+                        list_login_form     => $list_login_form,
+                        email               => $args->{-email},
+                        auth_code           => $auth_code,
+                        unknown_dirs        => $unknown_dirs,
+                        PROGRAM_URL         => $DADA::Config::PROGRAM_URL,
+                        S_PROGRAM_URL       => $DADA::Config::S_PROGRAM_URL,
+                        error_message       => $args->{-error_message},
+                    },
 
-                -list_settings_vars       => $li,
-                -list_settings_vars_param => { -dot_it => 1 },
-                -subscriber_vars => { 'subscriber.email' => $args->{-email} },
-            }
-        );
+                    -list_settings_vars       => $li,
+                    -list_settings_vars_param => { -dot_it => 1 },
+                    -subscriber_vars =>
+                      { 'subscriber.email' => $args->{-email} },
+                }
+            );
+        }
+        else {
+            $screen = DADA::Template::Widgets::screen(
+                {
+                    -screen => 'error_' . $args->{-error} . '_screen.tmpl',
+                    -vars   => {
+                        %{ $args->{-vars} },
+                        subscription_form   => $subscription_form,
+                        unsubscription_form => $unsubscription_form,
+                        list_login_form     => $list_login_form,
+                        email               => $args->{-email},
+                        auth_code           => $auth_code,
+                        unknown_dirs        => $unknown_dirs,
+                        PROGRAM_URL         => $DADA::Config::PROGRAM_URL,
+                        S_PROGRAM_URL       => $DADA::Config::S_PROGRAM_URL,
+                        error_message       => $args->{-error_message},
+                    },
+                    -list_settings_vars       => $li,
+                    -list_settings_vars_param => { -dot_it => 1 },
+                    -subscriber_vars =>
+                      { 'subscriber.email' => $args->{-email} },
+                }
+            );
+        }
 
     };
 
@@ -295,7 +330,8 @@ sub cgi_user_error {
         if ( defined( $args->{-error_message} ) ) {
 
             die
-"Problems showing error message? - $@, \n\n\nOriginal error message: " . $args->{-error_message};
+"Problems showing error message? - $@, \n\n\nOriginal error message: "
+              . $args->{-error_message};
         }
         else {
             die "Problems showing error message? - $@";
