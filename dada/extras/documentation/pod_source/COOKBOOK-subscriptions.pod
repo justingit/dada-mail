@@ -14,7 +14,7 @@ B<POST> a request to your Dada Mail URL, with the following path:
 
 L<http://example.com/cgi-bin/dada/mail.cgi/json/subscribe>
 
-I<(B</json/subscribe> is the PATH INFO you need)>
+(C</json/subscribe> is the PATH INFO you need)
 
 Your POST Data will need to be in JSON, and have the following two fields, and an optional third: 
 
@@ -22,15 +22,15 @@ Your POST Data will need to be in JSON, and have the following two fields, and a
 
 =item * list
 
-C<list> holds the list shortname you would like to make the subscription to
+B<list> holds the list shortname you would like to make the subscription to
 
 =item * email
 
-C<email> holds the email address you would like the subscription for
+B<email> holds the email address you would like the subscription for
 
 =item * fields
 
-B<Optional>: C<fields> holds the Subscriber Profile Fields you would like to pass. 
+B<Optional>: B<fields> holds the Subscriber Profile Fields you would like to pass. 
 
 =back
 
@@ -41,7 +41,7 @@ Here's an example of data in JSON to subscribe, B<user@example.com> to a list, B
 	   "list" : "mylist"
 	}
 
-Here's an example, with two Subscriber Profile Fields, first_name and, last_name: 
+Here's an example, with two Subscriber Profile Fields, C<first_name> and C<last_name>: 
 
 	{
 	   "email" : "user@example.com",
@@ -55,22 +55,51 @@ Here's an example, with two Subscriber Profile Fields, first_name and, last_name
 B<Results> will also come back as JSON. For example, a successful request will return the following JSON document: 
 
 	{
-	   "email" : "test@example.com",
-	   "status" : 1,                
-	   "list" : "example"           
+	   "email" : "user@example.com",
+	   "redirect" : {
+	      "query" : "list=mylist&email=user%40example.com&status=1&rm=sub_confirm",
+	      "using_with_query" : 1,
+	      "url" : "http://example.com/alt_url_sub_confirm_success.html",
+	      "using" : 1
+	   },
+	   "status" : 1,
+	   "success_message" : "<h1>Request Successful, Check Your Email!</h1> [...]",
+	   "list" : "mylist"
 	}
 
 =over
+
+=item * email
+
+B<email> holds the email address you passed. 
+
+=item * list
+
+B<list> holds the list short name you passed. 
 
 =item * status
 
 B<status> tells you if the request worked, or not.
 
-A value of B<1> means success, a value of, B<0> means failure.
+A value of C<1> means success, a value of, C<0> means failure.
+
+If a request is successful, the following will also be returned: 
+
+=over
+
+=item * success_message
+
+B<success_message> holds the success message, for this particular request in HTML. 
+
+=back
+
+If a request comes back as failing, the following will also be returned: 
+
+=over
 
 =item * errors
 
-If they're any problems with the request, they'll be listed in the, B<errors> array. The following errors may be returned: 
+Problems with a request be listed in the, B<errors> array. The following errors may be returned: 
 
 =over
 
@@ -108,41 +137,102 @@ For example, sending a request with an invalid email address,
 Will return a JSON document, like this: 
 
 	{
-	   "email" : "invalid email",
+	   "email" : "",
+	   "redirect" : {
+	      "query" : "list=mylist&email=&status=0&rm=sub_confirm&errors[]=invalid_email",
+	      "using_with_query" : 1,
+	      "url" : "http://example.com/alt_url_sub_confirm_failed.html",
+	      "using" : 1
+	   },
 	   "errors" : {
 	      "invalid_email" : 1
 	   },
 	   "status" : 0,
 	   "error_descriptions" : {
-	      "invalid_email" : "Your email address isn't valid!"
+	      "invalid_email" : "<h1>Double Check Your Email Address</h1> [...]"
 	   },
 	   "list" : "mylist"
 	}
 
-B<email> and, B<list> will be returned as you sent them, B<status> will have a value of, B<0> (meaning there was a problem), and the B<error> array will have one entry in it, with a B<key> of, B<invalid_email> (the error), and a value of, B<1>. 
+B<email> and, B<list> will be returned as you sent them, B<status> will have a value of, C<0> (meaning there was a problem), and the B<error> array will have one entry in it, with a B<key> of, B<invalid_email> (the error), and a value of, C<1>. 
 
 =item * error_descriptions
 
-Also on failure, another array named, B<error_descriptions> will also be returned. This holds a description of any errors produced. Keys will be named the same as the errors, but the values will be a description of what the error means. 
+Also on failure, another array named, B<error_descriptions> will also be returned. This holds a description of any errors produced. Keys will be named the same as the errors, but the values will be a description of what the error means, in HTML. 
 
 =back
 
-Make sure your requests are made with the C<list> and C<email> params set in your POST DATA, and you set a C<Content-Type> of, C<application/json>. The return JSON will be sent with a C<Content-Type> of, C<application/json> 
+Make sure your requests are made with the B<list> and B<email> params set in your POST DATA, and set the C<Content-Type> to C<application/json>. The returned JSON will be sent with a C<Content-Type> of, C<application/json> 
 
-=head3 Incompatible List Settings
+Dada Mail supports custom URL redirects, for many of its subscription request functions, and these custom redirect settings are also passed to you in the return JSON document. 
 
-The RESTful API only can work, if no additional steps need to be taken by your user. The following mailing list settings will not work with this API: 
+=item * redirect
+
+Both successful and failed requests may also pass a B<redirect> array, with the following: 
 
 =over
 
-=item * Disabling Closed-Loop Opt-In, Enabling CAPTCHA on Subscription Confirmation
+=item * url
 
-We never suggest disabling B<Closed-Loop Opt-In>, but disabling it, while enabling B<CAPTCHA on Subscription Confirmation> requires Dada Mail to show the CAPTCHA form, to complete the unsubscription. 
+B<url> holds the URL used to redirect, for the particular request made.
 
-If you do have this mixture of settings, a status of, B<0> will be returned, with an error, B<api_unavailable>. 
+=item * query 
+
+B<query> holds a query string you may append to the URL, if you would like to pass information to the redirect URL. 
+
+=item * using
+
+B<using> is set to, C<1> if the mailing list settings say that this redirect is enabled. 
+
+=item * using_w_qa
+
+B<using_w_qa> is set to, C<1> if the mailing list settings say that this redirect is enabled, and using the query string. 
 
 =back
 
+All these parameters are passed to you, but it is your choice on whether you want to use or ignore them. 
+
+=back
+
+=head3 Situations That Require Additional User Input
+
+There are some cases where a redirect back to Dada Mail will be required, to handle the request correctly. 
+
+For example, Dada Mail can be set up to limit the amount of subscription requests made, per a particular email address, to a particular mailing list. 
+
+So if > 1 request is made, rather than try to handle it twice, Dada Mail will instead return with a failure. When handled by Dada Mail itself, the user would then be presented with the option to resend a subscription request, after a CAPTCHA is filled out. 
+
+This isn't something you can do, purely with the RESTful API, but you can see if you need to point the user to Dada Mail. 
+
+For example, say this is the second request to subscribe: 
+
+	{
+	   "email" : "user@example.com",
+	   "list" : "mylist"
+	}
+
+Rather than a succesful request, the following JSON will be returned: 
+
+	{
+	   "email" : "user@example.com",
+	   "redirect" : {
+	      "query" : "list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=already_sent_sub_confirmation",
+	      "using_with_query" : 1,
+	      "url" : "http://example.com/cgi-bin/dada/mail.cgi?f=show_error&email=user%40example.com&list=dadatest&error=already_sent_sub_confirmation",
+	      "using" : 1
+	   },
+	   "errors" : {
+	      "already_sent_sub_confirmation" : 1
+	   },
+	   "status" : 0,
+	   "redirect_required" : "subscription_requires_captcha",
+	   "error_descriptions" : {
+	      "already_sent_sub_confirmation" : "use redirect"
+	   },
+	   "list" : "mylist"
+	}
+
+The errror, B<already_sent_sub_confirmation> will have an associated C<error_description> with a value of, C<use redirect>. The C<redirect> array will have a key, C<url>, whose value will be the URL you'll need to redirect your user to, to complete the request. 
 
 =head2 JSONP
 
@@ -155,7 +245,8 @@ The JSONP document will be returned, encapsulated by the callback function name:
 	mycustomcallback({
 	   "email" : "test@example.com",
 	   "status" : 1,                
-	   "list" : "mylist"           
+	   "list" : "mylist"         
+	   [ ... ]
 	});
 
 When calling via JSONP, the C<Content-Type> will be send back as, C<application/javascript>, rather than, C<application/json>
@@ -164,7 +255,8 @@ When calling via JSONP, the C<Content-Type> will be send back as, C<application/
 
 =head3 JavaScript/jQuery
 
-The following is a bare-bones example on how to use the JSONP API to send a subscription request, using jQuery
+The following is a bare-bones example on how to use the JSONP API to send a subscription request using jQuery - but  it still supports
+custom redirects, as well as any needed redirects for additional user input: 
 
 	$.ajax({
 		url: 'http://example.com/cgi-bin/dada/mail.cgi/json/subscribe',
@@ -181,35 +273,47 @@ The following is a bare-bones example on how to use the JSONP API to send a subs
 				}
 			 }
 		),
-	    contentType: "application/json; charset=utf-8",
+	    contentType: "application/json; charset=UTF-8",
 		success: function(data) {
 			console.log('data:' + JSON.stringify(data)); 
-			if(data.status === 0){ 
-				/* Problems! */
+			var html = ''; 
+			if(data.status === 0){ 												
+				$.each(data.errors, function(index, value) {
+					console.log(index + ': ' + value);
+				});
+				$.each(data.error_descriptions, function(index, value) {
+					html += value;
+				});
 			}
 			else { 
-				/* Success! */
+				html += data.success_message;
+			}
+			if(typeof data.redirect_required === 'undefined') {
+				if(data.redirect.using === 1) {
+					if(data.redirect.using_with_query === 1){ 
+						window.location.href = data.redirect.url + '?' + data.redirect.query; 
+					}
+					else { 
+						window.location.href = data.redirect.url;
+					}
+				}
+				else { 
+						/* Display "html" */
+					}); 
+				}
+			}
+			else { 
+				/* Success, or Error: it may not be something we can work with: */
+				//alert(data.redirect_required); 
+				window.location.href = data.redirect.url;
 			}
 		},
 		error: function(xhr, ajaxOptions, thrownError) {
 			console.log('status: ' + xhr.status);
 			console.log('thrownError:' + thrownError);
+			/* Uh oh... */
 		}
-	});
-
-=head3 jQuery Demo
-
-Dada Mail itself has a RESTful/AJAX Demo screen, that transforms Dada Mail's subscription form into a jQuery-powered form, that makes a request using the JSON API, and shows the results in a modal window, created with a jQuery library called, Colorbox: L<http://www.jacklmoore.com/colorbox/>
-
-You may try out the demo on your own Dada Mail, by going to the following screen: 
-
-L<http://example.com/cgi-bin/dada/mail.cgi/rest_subscribe_demo/>
-
-You may add a list short name to the PATH INFO, to have a form, with only that one mailing list: 
-
-L<http://example.com/cgi-bin/dada/mail.cgi/rest_subscribe_demo/mylist/>
-
-The fundamentals of how the demo works is similar to the stripped down example above - just using a little embelishment to make things a little snazzier. 
+	}); 
 
 =head3 Perl
 
@@ -267,6 +371,136 @@ If you can, please contribute an example!
 =head3 Ruby
 
 If you can, please contribute an example!
+
+=head1 jQuery Plugin 
+
+Dada Mail comes with a jQuery Plugin, that can be used to create a subscription form on a webpage, handle the request and show the results in a modal window, only redirecting the user, if additional steps are required. The plugin uses the RESTful API, described above.
+
+To use the jQuery plugin, you'll first need to call the plugin javascript, along with other .js files it needs, in the head of your document: 
+
+	<script src="http://example.com/static/javascripts/jquery-1.8.2.min.js"></script>
+	<script src="http://example.com/static/javascripts/jquery.dadamail.js"></script>
+	<script src="http://example.com/static/javascripts/dada_mail.user.js"></script>
+
+	<link rel="stylesheet" href="http://example.com/static/css/colorbox/colorbox.css">
+	<script src="http://example.com/static/javascripts/colorbox/jquery.colorbox-min.js"></script>
+
+The jQuery plugin has two "methods" you may use.
+
+=head2 CreateSubscribeForm
+
+	$(document).ready(function() {
+
+		var targetDiv = '#mydiv';
+	
+		/* Initialize: */
+		$(targetDiv).DadaMail(
+			{
+				DadaMailURL: 'http://example.com/cgi-bin/dada/mail.cgi', 
+				list: 'yourlist', 
+				modal: 1
+			}
+		)
+	
+		/* Create the form: */
+		$(targetDiv).DadaMail('CreateSubscribeForm');
+
+	}); 
+
+This will place a subscription form in a div with the id of, B<mydiv>
+
+=head3 Initializtion Paramaters
+
+To work correctly you'll need to pass the following paramaters: 
+
+=over
+
+=item * DadaMailURL
+
+B<DadaMailURL> should hold the URL to your Dada Mail
+
+=back
+
+Optionally, the following paramaters may also be passed: 
+
+=over
+
+=item * list
+
+B<list> should hold a list short name of the list you want your subscription form to be for. If no B<list> parameter is passed, 
+the subscripton form made will have a dropdown widget to allow your user to select which mailing list they would like to subscribe to. 
+
+=item * modal
+
+B<modal> (default: B<1>) allows you to set if the results of requests submitted from the form are shown in a modal window, or if results are shown in the entire browser window, by redirecting directly to Dada Mail. 
+
+To show in the modal window, B<modal> should be set to, C<1>, to redirect, B<modal> should be set to, C<0> 
+
+=back
+
+=head2 Modal
+
+The B<Modal> method will allow you to have a Dada Mail subscription form I<already present on your webpage> controlled by this plugin: 
+
+B<JavaScript:>
+
+	$(document).ready(function() {
+
+		var targetDiv = '#mydiv';
+
+		/* Initialize: */
+		$(targetDiv).DadaMail(
+			{
+				targetForm: 'myForm'
+			}	
+		);
+
+		/* Control the form: */
+		$(targetDiv).DadaMail('Modal');
+
+	});
+
+B<Your Subscription Form:>
+
+	<div id="mydiv">
+		<form action="http://example.com/cgi-bin/dada/mail.cgi"  id="myForm">
+			<input type="hidden" name="flavor" value="subscribe" />
+			<input type="hidden" name="list" value="mylist" />
+			<input type="text" name="email" value="" />
+			<input type="submit" value="Subscribe" />
+		</form>
+	</div>
+
+
+The subscription form with the id of, "myForm" will now show its results in a modal window. This method only has one, required paramater: 
+
+=over
+
+=item * targetForm
+
+This should hold the id of the form you would like this plugin to control. 
+
+=back
+
+The subscription form itself needs to have the following form fields, which are the same form fields used for any Dada Mail mailing list subscription form: 
+
+=over
+
+=item * flavor 
+
+Set to, C<subscribe>
+
+=item * list
+
+B<list> holds the B<list short name> of the mailing list you want to subscribe to
+
+=item * email
+
+B<email> is the form field used by your user, to type in their email address in. 
+
+=back
+
+The B<action> of the form also should be the URL to your Dada Mail (C<http://example.com/cgi-bin/dada/mail.cgi>). If done correctly, the form alone should make a successful request to your Dada Mail install, thus working even if JavaScript has been disabled. 
 
 =head1 Perl API
 
