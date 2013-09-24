@@ -2824,9 +2824,14 @@ sub subscription_form {
 	if(! exists($args->{-magic_form})){
     	$args->{-magic_form} = 1; 
 	}
+
+	if(! exists($args->{-show_fieldset})) { 
+		$args->{-show_fieldset} = 1;
+	}
+
 	
 	if(! exists($args->{-subscription_form_id})) { 
-		$args->{-subscription_form_id} = 'subscription_form_id';
+		$args->{-subscription_form_id} = undef;
 	}
 
     
@@ -2946,6 +2951,7 @@ sub subscription_form {
 							show_fields              => $args->{-show_fields}, 
 							profile_logged_in        => $args->{-profile_logged_in}, 
 							subscription_form_id     => $args->{-subscription_form_id}, 
+							show_fieldset            => $args->{-show_fieldset}, 
 							
                         },
 						-list_settings_vars_param => {
@@ -2974,6 +2980,7 @@ sub subscription_form {
 							show_fields              => $args->{-show_fields}, 
 							profile_logged_in        => $args->{-profile_logged_in}, 
 							subscription_form_id     => $args->{-subscription_form_id}, 
+							show_fieldset            => $args->{-show_fieldset}, 
 							
                         }
                     });      
