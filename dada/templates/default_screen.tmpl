@@ -1,7 +1,8 @@
 <!-- begin default_screen.tmpl -->
 
 <!-- tmpl_set name="title" value="Subscribe to a Mailing List" -->
- 
+<!-- tmpl_set name="load_colorbox" value="1" -->
+
 
 <!-- tmpl_if error_invalid_list --> 
 	<div class="badweatherbox">
@@ -15,9 +16,10 @@
 <!--/tmpl_if-->
 
 <!-- tmpl_if visible_lists --> 
-
+<div id="modal_subscribe_form">
     <!-- tmpl_var subscription_form --> 
-    
+</div> 
+
     <h1>
      Available Mailing Lists:
     </h1>
