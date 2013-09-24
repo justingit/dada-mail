@@ -20,7 +20,7 @@ All form fields available to you in the, "Send a Message", and "Send a Webpage" 
 
 File Attachment uploading is now handled by the included KCFinder web file manager. This allows you to easily upload attachments before sending a message out, as well as attach files already uploaded. 
 
-Attachments can now also be removed from your message easily. 
+Attachments can now also be removed from your messages easily. 
 
 =head3 Installer
 
@@ -30,11 +30,27 @@ The included Dada Mail Installer now allows you to configure the CAPTCHA system 
 
 These options are located under the, B<Advanced Configuration (Optional)> heading, and is available in our Pro Dada distribution. 
 
+=head3 jQuery Dada Mail subscription plugin
+
+Dada Mail now ships with a jQuery plugin, to help with creating subscription forms, as well as handling the requests from them in a modal window. This means users do not have to be redirected away from your main website, to Dada Mail, if they would like to sign up for a mailing list of yours. 
+
+Dada Mail now uses this plugin's functionality itself, and subscription forms on the default screen of Dada Mail, as well as on each mailing list's List Page are now enabled to use the modal window jQuery plugin way of doing things. 
+
+This plugin has 100% support for graceful degredation, if a user uses Dada Mail, without having JavaScript enabled. 
+
+See the Subscription Cookbook docs, for more information about this plugin: 
+
+L<http://dadamailproject.com/d/COOKBOOK-subscriptions.pod.html>
+
 =head2 Changes 6.7.0
 
 =head3 Send Mass Mailing Buttons: Always on Top
 
 The group of buttons in the, Send a Message and Send a Webpage screens now always float on top of the form itself, making it easier to always have Draft Saving/Canceling and Mass Mailing Testing/Sending available to you. 
+
+=head3 Expanded RESTful API
+
+The RESTful API for mailing list subscriptions has been expanded to include support for custom URL redirects, as well as working with situations where additional information is required from a user, to successfully complete a request. 
 
 =head1 6.6.1
 
