@@ -205,18 +205,7 @@ if ( $ENV{PATH_INFO} ) {
         $info =~ s/(^\/|\/$)//g;    #get rid of fore and aft slashes
     }
 
-    if ( $info =~ m/subscription_form_js$/ ) {
-
-        my ( $pi_flavor, $pi_list ) = split( '/', $info, 2 );
-
-        $q->param( 'flavor', $pi_flavor )
-          if $pi_flavor;
-
-        $q->param( 'list', $pi_list )
-          if $pi_list;
-
-    }
-    elsif ( $info =~ m/^$DADA::Config::SIGN_IN_FLAVOR_NAME$/ ) {
+    if ( $info =~ m/^$DADA::Config::SIGN_IN_FLAVOR_NAME$/ ) {
 
         my ( $sifn, $pi_list ) = split( '/', $info, 2 );
 
@@ -644,11 +633,9 @@ sub run {
         'captcha_img'                => \&captcha_img,
         'ver'                        => \&ver,
         'resend_conf'                => \&resend_conf,
-        'show_error'                 => \&show_error, 
+        'show_error'                 => \&show_error,
 
-        'subscription_form_html'          => \&subscription_form_html,
-        'subscription_form_js'            => \&subscription_form_js,
-        'jquery_plugin_subscription_form' => \&jquery_plugin_subscription_form,
+        'subscription_form_html' => \&subscription_form_html,
 
         'what_is_dada_mail'      => \&what_is_dada_mail,
         'profile_activate'       => \&profile_activate,
@@ -7509,6 +7496,7 @@ sub edit_html_type {
         qw(
         html_confirmation_message
         html_subscribed_message
+        html_subscription_request_message
         html_unsubscribed_message
 
         )
@@ -7553,6 +7541,7 @@ sub edit_html_type {
             qw(
             html_confirmation_message
             html_subscribed_message
+            html_subscription_request_message
             html_unsubscribed_message
             )
           )
@@ -7566,9 +7555,10 @@ sub edit_html_type {
             {
                 -associate => $q,
                 -settings  => {
-                    html_confirmation_message => '',
-                    html_subscribed_message   => '',
-                    html_unsubscribed_message => '',
+                    html_confirmation_message         => '',
+                    html_subscribed_message           => '',
+                    html_subscription_request_message => '',
+                    html_unsubscribed_message         => '',
                 }
             }
         );
@@ -8311,8 +8301,8 @@ sub resend_conf_captcha {
     }
     if ( $captcha_worked == 1 ) {
         if ( $q->param('rm') eq 's' ) {
-	
-			# so, what's $sub_info for?!
+
+            # so, what's $sub_info for?!
             my $sub_info = $lh->get_subscriber(
                 {
                     -email => $email,
@@ -8327,8 +8317,9 @@ sub resend_conf_captcha {
             );
             $q->param( 'list',  $list );
             $q->param( 'email', $email );
-			$q->delete('f', 'flavor', 'rm', 'recaptcha_challenge_field', 'recaptcha_response_field', 'token');
-            $q->param( 'f',     's' );
+            $q->delete( 'f', 'flavor', 'rm', 'recaptcha_challenge_field',
+                'recaptcha_response_field', 'token' );
+            $q->param( 'f', 's' );
             &subscribe;
             return;
         }
@@ -8480,17 +8471,16 @@ sub resend_conf_no_captcha {
     }
 }
 
+sub show_error {
+    my $email = xss_filter( $q->param('email') ) || undef;
+    my $error = xss_filter( $q->param('error') ) || undef;
+    my $list  = xss_filter( $q->param('list') )  || undef;
 
-sub show_error { 
-	my $email = xss_filter( $q->param('email') ) || undef;
-	my $error = xss_filter( $q->param('error') ) || undef;
-	my $list  = xss_filter( $q->param('list') ) || undef;
-	
-	require DADA::MailingList::Settings;
-	
-	my $ls = DADA::MailingList::Settings->new({-list => $list});
-	
-	my $list_exists = check_if_list_exists( -List => $list, );
+    require DADA::MailingList::Settings;
+
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+
+    my $list_exists = check_if_list_exists( -List => $list, );
     if ( $list_exists == 0 ) {
         &default;
         return;
@@ -8500,22 +8490,21 @@ sub show_error {
         list_page();
         return;
     }
-	
-	if($error ne 'already_sent_sub_confirmation') { 
+
+    if ( $error ne 'already_sent_sub_confirmation' ) {
         &default;
         return;
-	}
-	
-	require DADA::App::Error;
+    }
+
+    require DADA::App::Error;
     my $error_msg = DADA::App::Error::cgi_user_error(
-		{
-        -list          => $list,
-        -error         => $error,
-        -email         => $email,
-    	}
-	);
-    e_print($error_msg); 
-	
+        {
+            -list  => $list,
+            -error => $error,
+            -email => $email,
+        }
+    );
+    e_print($error_msg);
 
 }
 
@@ -11007,37 +10996,21 @@ sub restore_lists {
 
 }
 
-sub subscription_form {
+sub subscription_form_html {
 
-    require DADA::Template::Widgets;
-    return DADA::Template::Widgets::subscription_form( { -list => $list, } );
-
-}
-
-sub jquery_plugin_subscription_form {
+    my $subscription_form_id = $q->param('subscription_form_id')
+      || 'jquery_subscription_form';
     require DADA::Template::Widgets;
     my $subscription_form = DADA::Template::Widgets::subscription_form(
         {
-            -subscription_form_id => 'jquery_subscription_form',
+            -subscription_form_id => $subscription_form_id,
+            -show_fieldset        => 0,
             -magic_form           => 0,
             ( defined($list) ? ( -list => $list, ) : () )
         }
     );
     print $q->header();
-    print $subscription_form;
-}
-
-sub subscription_form_html {
-
-    print $q->header();
-    e_print( subscription_form() );
-
-}
-
-sub subscription_form_js {
-    print $q->header();
-    my $js_form = js_enc( subscription_form() );
-    e_print( 'document.write(\'' . $js_form . '\');' );
+    e_print($subscription_form);
 }
 
 sub test_layout {
@@ -11497,15 +11470,18 @@ sub profile_login {
                         errors => $all_errors,
                         %$named_errs,
 
-                        email => xss_filter( $q->param('email') ) || '',
+                        email => xss_filter( $q->param('email') )
+                          || '',
                         login_email => xss_filter( $q->param('login_email') )
                           || '',
                         register_email =>
-                          xss_filter( $q->param('register_email') ) || '',
+                          xss_filter( $q->param('register_email') )
+                          || '',
                         reset_email => xss_filter( $q->param('reset_email') )
                           || '',
                         register_email_again =>
-                          xss_filter( $q->param('register_email_again') ) || '',
+                          xss_filter( $q->param('register_email_again') )
+                          || '',
 
                         error_profile_login => $q->param('error_profile_login')
                           || '',
@@ -12023,22 +11999,28 @@ sub profile {
                     -with   => 'list',
                     -expr   => 1,
                     -vars   => {
-                        errors => $q->param('errors') || 0,
+                        errors => $q->param('errors')
+                          || 0,
                         'profile.email'   => $email,
                         subscriber_fields => $fields,
                         subscriptions     => $filled,
                         has_subscriptions => $has_subscriptions,
-                        welcome           => $q->param('welcome') || '',
-                        edit => $q->param('edit') || '',
+                        welcome           => $q->param('welcome')
+                          || '',
+                        edit => $q->param('edit')
+                          || '',
                         errors_change_password =>
-                          $q->param('errors_change_password') || '',
+                          $q->param('errors_change_password')
+                          || '',
                         errors_update_email => $q->param('errors_update_email')
                           || '',
                         error_invalid_email => $q->param('error_invalid_email')
                           || '',
                         error_profile_exists =>
-                          $q->param('error_profile_exists') || '',
-                        updated_email => $q->param('updated_email') || '',
+                          $q->param('error_profile_exists')
+                          || '',
+                        updated_email => $q->param('updated_email')
+                          || '',
 
                         gravators_enabled =>
                           $DADA::Config::PROFILE_OPTIONS->{gravatar_options}
