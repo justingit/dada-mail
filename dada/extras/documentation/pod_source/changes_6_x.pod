@@ -48,6 +48,14 @@ L<http://dadamailproject.com/d/COOKBOOK-subscriptions.pod.html>
 
 The group of buttons in the, Send a Message and Send a Webpage screens now always float on top of the form itself, making it easier to always have Draft Saving/Canceling and Mass Mailing Testing/Sending available to you. 
 
+=head3  Subscription Requests Approving/Denying Options
+
+Options for Subscription Requests Approving/Denying have now been expanded: 
+
+You may now set a custom Rediect (with, or without a query string) for Subscription request approvals, or denials. 
+
+You may now also set custom HTML to be shown to let your users know their request must be approved by the List Owner. 
+
 =head3 Expanded RESTful API
 
 The RESTful API for mailing list subscriptions has been expanded to include support for custom URL redirects, as well as working with situations where additional information is required from a user, to successfully complete a request. 
