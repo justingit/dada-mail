@@ -2197,77 +2197,78 @@ EOF
 
 $HTML_CONFIRMATION_MESSAGE ||= <<EOF
 
-<!-- tmpl_set name="title" value="Please Confirm Your Mailing List Subscription" --> 
+<!-- tmpl_set name="title" value="Request Successful, Check Your Email!" --> 
 
-<p>An email message has been sent to the following address:</p>
+<!-- tmpl_unless chrome --> 
+	<h1><!-- tmpl_var title --></h1>
+<!-- /tmpl_unless --> 
 
-<blockquote>
- <p>
-  <strong>
-  <!-- tmpl_var subscriber.email -->
-  </strong>
- </p>
-</blockquote>
- 
-<p>to confirm the subscription to the following list: </p>
-
-<blockquote>
- <p>
-  <strong>
-  <!-- tmpl_var list_settings.list_name -->
-  </strong>
- </p>
-</blockquote>
-
-<p>Upon receiving this message, you will need to follow a confirmation 
-URL, located in the message itself.</p>
-
-<p>This confirmation process, known as Closed-Loop Opt-In Confirmation, has 
-been put into place to protect the privacy of the owner of this email 
-address.</p>
-
-<p>If you do not receive this confirmation, make sure that this email 
-address: </p>
-
- <blockquote>
- <p>
-  <strong>
-   <a href="mailto:<!-- tmpl_var list_settings.list_owner_email -->">
-    <!-- tmpl_var list_settings.list_owner_email -->
-   </a>
-  </strong>
- </p>
-</blockquote>
-
-
-<p>is in your 
- <strong> 
-  address book
- </strong> 
- or 
- <strong> 
-  whitelist
- </strong>
- .
+<p>Your request to subscribe to 
+<strong><!-- tmpl_var list_settings.list_name --></strong> was successful! 
 </p>
 
 <p>
- <strong> 
-  <a href="<!-- tmpl_var PROGRAM_URL -->/subscriber_help/<!-- tmpl_var list_settings.list -->/">
-   How to add <!-- tmpl_var list_settings.list_owner_email --> to your address book/white list
-  </a>
- </strong> 
-</p>
+	<strong>
+		Next Step:
+	</strong>
+	
+make sure to <strong>confirm</strong> your subscription by 
+following the confirmation link we've just sent you via email.</p>
 
-<p>If you still do not receive a confirmation for subscription in 
-the next twenty-four hours or you have any other questions regarding 
-this mailing list, please contact the List Owner at: </p>
+<p>
+Your confirmation email will be coming from: <a href="mailto:<!-- tmpl_var list_settings.list_owner_email -->"><!-- tmpl_var list_settings.list_owner_email --></a></p>
 
-<p style="text-align:center">
- <a href="mailto:<!-- tmpl_var list_settings.list_owner_email -->">
-  <!-- tmpl_var list_settings.list_owner_email -->
- </a>
-</p>
+<!-- tmpl_if chrome --> 
+
+	<p>This confirmation process, known as Closed-Loop Opt-In Confirmation, has 
+	been put into place to protect the privacy of the owner of this email 
+	address.</p>
+
+	<p>If you do not receive this confirmation, make sure that this email 
+	address: </p>
+
+	 <blockquote>
+	 <p>
+	  <strong>
+	   <a href="mailto:<!-- tmpl_var list_settings.list_owner_email -->">
+	    <!-- tmpl_var list_settings.list_owner_email -->
+	   </a>
+	  </strong>
+	 </p>
+	</blockquote>
+
+
+	<p>is in your 
+	 <strong> 
+	  address book
+	 </strong> 
+	 or 
+	 <strong> 
+	  whitelist
+	 </strong>
+	 .
+	</p>
+
+	<p>
+	 <strong> 
+	  <a href="<!-- tmpl_var PROGRAM_URL -->/subscriber_help/<!-- tmpl_var list_settings.list -->/">
+	   How to add <!-- tmpl_var list_settings.list_owner_email --> to your address book/white list
+	  </a>
+	 </strong> 
+	</p>
+
+	<p>If you still do not receive a confirmation for subscription in 
+	the next twenty-four hours or you have any other questions regarding 
+	this mailing list, please contact the List Owner at: </p>
+
+	<p style="text-align:center">
+	 <a href="mailto:<!-- tmpl_var list_settings.list_owner_email -->">
+	  <!-- tmpl_var list_settings.list_owner_email -->
+	 </a>
+	</p>
+
+<!-- /tmpl_if --> 
+
 
 EOF
   ;
@@ -2301,29 +2302,18 @@ EOF
 
 $HTML_SUBSCRIPTION_REQUEST_MESSAGE ||= <<EOF 
 
-<!-- tmpl_set name="title" value="Your Request For Subscription is Complete" -->
+<!-- tmpl_set name="title" value="Success! Request For Subscription is Complete" -->
 
-<p>The List Owner for:</p>
+<!-- tmpl_unless chrome --> 
+	<h1><!-- tmpl_var title --></h1>
+<!-- /tmpl_unless -->
 
-<blockquote>
- <p>
+<p>The List Owner for 
   <strong>
    <!-- tmpl_var list_settings.list_name -->
-  </strong>
- </p>
-</blockquote>
+  </strong> has received your request to subscribe.</p>
 
-<p>has been notified that you have requested a subscription for:</p>
-
-<blockquote>  
- <p>
-  <strong>
-  <!-- tmpl_var subscriber.email -->
-  </strong>
- </p>
-</blockquote> 
-
-<p>An email message will be sent to your address when you have been approved or denied a subscription</p>
+<p>You'll be notified via email when your request has been answered.</p>
 
 EOF
 ; 
