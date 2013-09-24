@@ -1806,20 +1806,17 @@ sub fancy_data {
 		}
 		else { 
 			
-			$error_descriptions->{$_} = $self->_user_error_msg({
+			$return->{error_descriptions}->{$_} = $self->_user_error_msg({
 	            -list   => $data->{list},
 	            -email  => $data->{email},
 	            -chrome => 0,
 	            -error  => $_,
 	        });
-	        
-			
 		}
     }
 
     if ( keys %{ $data->{errors} } ) {
-        $return->{errors}             = $data->{errors};
-        $return->{error_descriptions} = $error_descriptions;
+		$return->{errors}             = $data->{errors};
     }
     else {
         if ( $data->{flavor} eq 'subscription_confirmation' ) {
