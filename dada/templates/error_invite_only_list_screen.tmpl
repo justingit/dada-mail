@@ -1,10 +1,15 @@
 <!-- begin error_invite_only_screen.tmpl --> 
 
-<!-- tmpl_set name="title" value="This mailing list is invitation only" -->
+<!-- tmpl_set name="title" value="Sorry: Invitation Only" -->
 <!-- tmpl_set name="show_profile_widget" value="0" -->
 
+<!-- tmpl_unless chrome --> 
+	<h1><!-- tmpl_var title --></h1>
+<!-- /tmpl_unless --> 
+
+
 <p>
-	This Mailing List can only be subscribed to by invitation. 
+	This mailing List can only be subscribed to by invitation. 
 </p>
 
 <!-- tmpl_include error_footer_widget.tmpl -->

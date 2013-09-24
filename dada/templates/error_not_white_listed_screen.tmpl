@@ -3,8 +3,12 @@
 <!-- tmpl_set name="title" value="There Seems to be a Problem" -->
 <!-- tmpl_set name="show_profile_widget" value="0" -->
 
+<!-- tmpl_unless chrome --> 
+	<h1><!-- tmpl_var title --></h1>
+<!-- /tmpl_unless --> 
 
-	<!-- tmpl_include error_black_listed_screen.tmpl -->
+
+<!-- tmpl_include error_black_listed_screen.tmpl -->
 
 
 <!-- end error_not_white_listed_screen.tmpl --> 

@@ -1,17 +1,19 @@
 <!-- begin error_invalid_email_screen.tmpl --> 
 
-<!-- tmpl_set name="title" value="Invalid Email Address" -->
+<!-- tmpl_set name="title" value="Double Check Your Email Address" -->
 <!-- tmpl_set name="show_profile_widget" value="0" -->
+
+<!-- tmpl_unless chrome --> 
+	<h1><!-- tmpl_var title --></h1>
+<!-- /tmpl_unless --> 
 
 <p>
  The address you gave, 
  <strong>
   <!-- tmpl_var subscriber.email -->
  </strong>, 
-doesn't seem to pass verification. It's possible that you just typed it in
-incorrectly:</p> 
+doesn't seem to pass verification.</p> 
 
-<!-- tmpl_var subscription_form --> 
 
 <!-- tmpl_include error_footer_widget.tmpl -->
 

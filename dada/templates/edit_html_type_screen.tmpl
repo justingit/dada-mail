@@ -36,15 +36,18 @@
 
 <fieldset> 
 <legend>
-	Subscription Confirmation Screen:
+	Subscription Confirmation:
  </legend>
+
+<!-- tmpl_if enable_closed_loop_opt_in --> 
+	<p class="alert">Closed-Loop Opt-In is enabled.</p>
+<!-- tmpl_else --> 
+	<p class="alert">Closed-Loop Opt-In  is disabled.</p>
+<!-- /tmpl_if --> 
+
+
 <p>
-	
-	 This text is shown after someone enters their email address 
- to subscribe to your list.
-</p>
-<p>
- <textarea name="html_confirmation_message" id="html_confirmation_message" rows="10" cols="50" style="<!-- tmpl_var text_area_style -->"><!-- tmpl_var list_settings.html_confirmation_message --></textarea> 
+ <textarea name="html_confirmation_message" id="html_confirmation_message" rows="10" cols="50"><!-- tmpl_var list_settings.html_confirmation_message --></textarea> 
 </p>
 
 </fieldset> 
@@ -55,20 +58,30 @@
  </legend>
  
 <p>
- This text is shown after the subscriber clicks on the 
- confirmation email's subscription link.
-</p>
-<p>
- <textarea name="html_subscribed_message" id="html_subscribed_message" rows="10" cols="50" style="<!-- tmpl_var text_area_style -->"><!-- tmpl_var list_settings.html_subscribed_message --></textarea>
+ <textarea name="html_subscribed_message" id="html_subscribed_message" rows="10" cols="50"><!-- tmpl_var list_settings.html_subscribed_message --></textarea>
 </p>
 </fieldset> 
+
+
+<fieldset> 
+	
+ <legend> Subscription Requests:</legend>
+ 
+<!-- tmpl_if enable_subscription_approval_step --> 
+	<p class="alert"> Subscription Requests Approving/Denying is enabled.</p>
+<!-- tmpl_else --> 
+	<p class="alert"> Subscription Requests Approving/Denying is disabled.</p>
+<!-- /tmpl_if --> 
+<p>
+ <textarea name="html_subscription_request_message" id="html_subscription_request_message" rows="10" cols="50"><!-- tmpl_var list_settings.html_subscription_request_message --></textarea>
+</p>
+</fieldset> 
+
 	
 <fieldset>
 	<legend>Unsubscription Successful Screen:</legend>
-<p> This text is shown after someone unsubscribes.
-</p>
 <p>
- <textarea name="html_unsubscribed_message" id="html_unsubscribed_message" rows="10" cols="50" style="<!-- tmpl_var text_area_style -->"><!-- tmpl_var list_settings.html_unsubscribed_message --></textarea>
+ <textarea name="html_unsubscribed_message" id="html_unsubscribed_message" rows="10" cols="50"><!-- tmpl_var list_settings.html_unsubscribed_message --></textarea>
 </p>
 </fieldset> 
 

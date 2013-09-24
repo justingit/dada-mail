@@ -3,6 +3,11 @@
 <!-- tmpl_set name="title" value="Invalid Email Address" -->
 <!-- tmpl_set name="show_profile_widget" value="0" -->
 
+<!-- tmpl_unless chrome --> 
+	<h1><!-- tmpl_var title --></h1>
+<!-- /tmpl_unless --> 
+
+
 <p>The email address you gave,</p>
 
 <blockquote>
@@ -16,16 +21,7 @@
  
 <p>doesn't seem to pass our verification because we couldn't find the hostname.
 It's possible that you just typed it in
-incorrectly. You may 
-
-<a href="#" onclick="history.back(); return false">
- go back
-</a> 
-
-and resubmit your address, or use the form below:</p> 
-
-<!-- tmpl_var subscription_form --> 
-
+incorrectly.
 
 <!-- tmpl_include error_footer_widget.tmpl -->
 

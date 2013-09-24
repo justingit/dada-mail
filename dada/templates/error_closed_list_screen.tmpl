@@ -3,9 +3,13 @@
 <!-- tmpl_set name="title" value="Unable to Subscribe" -->
 <!-- tmpl_set name="show_profile_widget" value="0" -->
 
+<!-- tmpl_unless chrome -->
+	<h1><!-- tmpl_var title --></h1>
+<!-- /tmpl_unless -->
+
 <p>
- This list you are trying to subscribe to is closed. Only the list administrator can 
-subscribe people to the list.
+ This list you are trying to subscribe to is <strong>Closed</strong>. Only the List Owner can 
+subscribe people to the mailing list.
 </p>
 
 <!-- tmpl_include error_footer_widget.tmpl -->

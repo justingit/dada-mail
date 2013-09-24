@@ -1,10 +1,15 @@
 <!-- begin error_over_subscription_quota_screen.tmpl --> 
 
-<!-- tmpl_set name="title" value="Unable to Subscribe" -->
+<!-- tmpl_set name="title" value="Sorry! Unable to Subscribe" -->
 <!-- tmpl_set name="show_profile_widget" value="0" -->
 
+<!-- tmpl_unless chrome --> 
+	<h1><!-- tmpl_var title --></h1>
+<!-- /tmpl_unless --> 
+
+
 <p>
- This Mailing List has reached its set Subscriber quota. 
+ This mailing list has reached its set Subscriber quota. 
 </p>
 
 <!-- tmpl_include error_footer_widget.tmpl -->

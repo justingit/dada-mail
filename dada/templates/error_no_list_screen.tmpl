@@ -1,11 +1,13 @@
 <!-- begin error_no_list_screen.tmpl --> 
 
-<!-- tmpl_set name="title" value="Couldn't Find Mailing List" -->
+<!-- tmpl_set name="title" value="Which Mailing List?" -->
 <!-- tmpl_set name="show_profile_widget" value="0" -->
 
-<p>
- It's possible that it has been deleted or moved 
- and the form you used is a bit out of date.
-</p>
+<!-- tmpl_unless chrome --> 
+	<h1><!-- tmpl_var title --></h1>
+<!-- /tmpl_unless --> 
+
+
+<p>The mailing you're trying to subscribe to, may not exist anymore.</p>
 
 <!-- end error_no_list_screen.tmpl --> 
