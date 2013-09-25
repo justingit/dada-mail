@@ -16,7 +16,8 @@
 				DadaMailURL: "../../../dada/mail.cgi",
 				list: undefined,
 				targetForm: undefined,
-				modal: 1
+				modal: 1,
+				LoadingMessage: '<h1>Sending Over Request...</h1><p>One second as we look over what you\'ve given us...</p>' 
             },
             options
         );
@@ -34,7 +35,7 @@
     /** #### INITIALISER #### */
     Plugin.prototype._init = function ( target, options ) { };
 
-    Plugin.prototype.ControlTheForm = function (targetForm)
+    Plugin.prototype.ControlTheForm = function (targetForm, loadingMsg)
     {	
 	
 			
@@ -52,10 +53,17 @@
 			event.preventDefault();
 			var fields = {};
 
-			$(targetForm + " :input").each(function() {
+			$("#" + targetForm + " :input").each(function() {
 				fields[this.name] = this.value;
 			}); 
-							
+					
+			$.colorbox({
+				html: loadingMsg,
+				maxHeight: 480,
+				maxWidth: 649,
+				opacity: 0.50
+			}); 
+					
 			$.ajax({
 				url: $("#" + targetForm).attr("action") + '/json/subscribe',
 				type: "POST",
@@ -124,7 +132,7 @@
     Plugin.prototype.Modal = function ()
     {	
 		this.options.DadaMailURL = $('#' + this.options.targetForm).attr("action"); // not really used. but... 
-		this.ControlTheForm(this.options.targetForm);
+		this.ControlTheForm(this.options.targetForm, this.options.LoadingMessage);
 	}
 
     Plugin.prototype.CreateSubscribeForm = function ()
@@ -144,7 +152,7 @@
 				thisCopy.$T.html(data);	
 				//alert(thisCopy.options.Modal);
 				if(thisCopy.options.modal == 1) { 
-					thisCopy.ControlTheForm(form_id); 	
+					thisCopy.ControlTheForm(form_id, thisCopy.options.LoadingMessage); 	
 				}				
 			},
 			error: function() {
