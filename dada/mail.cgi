@@ -272,11 +272,6 @@ if ( $ENV{PATH_INFO} ) {
           if $img_name;
 
     }
-    elsif ( $info =~ /^rest_subscribe_demo/ ) {
-        my ( $pi_flavor, $pi_list, $extran ) = split( '/', $info, 3 );
-        $q->param( 'flavor', 'rest_subscribe_demo' );
-        $q->param( 'list',   $pi_list );
-    }
     elsif ( $info =~ /^json\/subscribe/ ) {
         $q->param( 'flavor', 'restful_subscribe' );
     }
@@ -520,7 +515,6 @@ sub run {
         'default'                       => \&default,
         'subscribe'                     => \&subscribe,
         'restful_subscribe'             => \&restful_subscribe,
-        'rest_subscribe_demo'           => \&rest_subscribe_demo,
         'token'                         => \&token,
         'unsubscribe'                   => \&unsubscribe,
         'unsubscription_request'        => \&unsubscription_request,
@@ -11069,28 +11063,6 @@ sub subscriber_help {
 
 }
 
-sub rest_subscribe_demo {
-
-    require DADA::Template::Widgets;
-    my $subscription_form = DADA::Template::Widgets::subscription_form(
-        {
-            -subscription_form_id => 'ajax_subscribe_form_demo',
-            -magic_form           => 0,
-            ( defined($list) ? ( -list => $list, ) : () )
-        }
-    );
-
-    my $scrn = DADA::Template::Widgets::wrap_screen(
-        {
-            -screen => 'rest_subscribe_demo.tmpl',
-            -with   => 'list',
-            -expr   => 1,
-            -vars   => { subscription_form => $subscription_form, },
-        }
-    );
-    e_print($scrn);
-
-}
 
 sub show_img {
 
