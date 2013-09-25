@@ -326,9 +326,9 @@ The following is a bare-bones example on how to use the JSON API to send a subsc
 	use HTTP::Request::Common;
 	use LWP::UserAgent;
 	use Data::Dumper;
-
+	
 	my $ua = LWP::UserAgent->new;
-
+	
 	my $json = JSON->new->allow_nonref;
 	my $data = $json->utf8->encode(
 	    {
@@ -336,19 +336,19 @@ The following is a bare-bones example on how to use the JSON API to send a subsc
 	        email => 'test@example.com',
 	    }
 	);
-
+	
 	my $response = $ua->request(
 	    POST 'http://example.com/cgi-bin/dada/mail.cgi/json/subscribe',
 	    'Content-Type' => 'application/json',
 	    Content        => $data
 	);
-
+	
 	if ( $response->is_success ) {
-
+	
 	    my $r = $json->utf8->decode( $response->decoded_content );
-
+		
 	    print Dumper($r);
-
+		
 	    if ( $r->{status} == 1 ) {
 	        print "Success!\n";
 	    }
@@ -381,7 +381,7 @@ To use the jQuery plugin, you'll first need to call the plugin javascript, along
 	<script src="http://example.com/static/javascripts/jquery-1.8.2.min.js"></script>
 	<script src="http://example.com/static/javascripts/jquery.dadamail.js"></script>
 	<script src="http://example.com/static/javascripts/dada_mail.user.js"></script>
-
+	
 	<link rel="stylesheet" href="http://example.com/static/css/colorbox/colorbox.css">
 	<script src="http://example.com/static/javascripts/colorbox/jquery.colorbox-min.js"></script>
 
@@ -390,7 +390,7 @@ The jQuery plugin has two "methods" you may use.
 =head2 CreateSubscribeForm
 
 	$(document).ready(function() {
-
+	
 		var targetDiv = '#mydiv';
 	
 		/* Initialize: */
@@ -404,12 +404,12 @@ The jQuery plugin has two "methods" you may use.
 	
 		/* Create the form: */
 		$(targetDiv).DadaMail('CreateSubscribeForm');
-
+		
 	}); 
 
 This will place a subscription form in a div with the id of, B<mydiv>
 
-=head3 Initializtion Paramaters
+=head3 Initialization Paramaters
 
 To work correctly you'll need to pass the following paramaters: 
 
@@ -432,7 +432,7 @@ the subscripton form made will have a dropdown widget to allow your user to sele
 
 =item * modal
 
-B<modal> (default: B<1>) allows you to set if the results of requests submitted from the form are shown in a modal window, or if results are shown in the entire browser window, by redirecting directly to Dada Mail. 
+B<modal> (default: C<1>) allows you to set if the results of requests submitted from the form are shown in a modal window, or if results are shown in the entire browser window, by redirecting directly to Dada Mail. 
 
 To show in the modal window, B<modal> should be set to, C<1>, to redirect, B<modal> should be set to, C<0> 
 
@@ -445,19 +445,19 @@ The B<Modal> method will allow you to have a Dada Mail subscription form I<alrea
 B<JavaScript:>
 
 	$(document).ready(function() {
-
+	
 		var targetDiv = '#mydiv';
-
+		
 		/* Initialize: */
 		$(targetDiv).DadaMail(
 			{
 				targetForm: 'myForm'
 			}	
 		);
-
+		
 		/* Control the form: */
 		$(targetDiv).DadaMail('Modal');
-
+		
 	});
 
 B<Your Subscription Form:>
