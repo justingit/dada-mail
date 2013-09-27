@@ -54,26 +54,33 @@ sub _sql_init {
 
 sub id_exists {
 
-	warn 'id_exists'
-		if $t; 
+    warn 'id_exists'
+      if $t;
 
     my $self = shift;
     my $id   = shift;
 
-	if(!defined($id) || $id eq ''){ 
-		return 0;
-	}
+    if ( !defined($id) || $id eq '' ) {
+        return 0;
+    }
     my $query =
         'SELECT COUNT(*) FROM '
       . $self->{sql_params}->{message_drafts_table}
       . ' WHERE list = ? AND id = ?';
+
+    warn 'QUERY: ' . $query
+      if $t;
+
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute( $self->{list}, $id )
       or croak "cannot do statment '$query'! $DBI::errstr\n";
 
+    warn 'QUERY: ' . $query
+      if $t;
+
     my $count = $sth->fetchrow_array;
-	warn '$count:' . $count
-		if $t; 
+    warn '$count:' . $count
+      if $t;
 
     $sth->finish;
 
@@ -88,9 +95,9 @@ sub id_exists {
 
 sub save {
 
-	warn 'save'
-		if $t; 
-		
+    warn 'save'
+      if $t;
+
     my $self = shift;
     my ($args) = @_;
 
@@ -109,22 +116,31 @@ sub save {
     if ( exists( $args->{-id} ) ) {
         $id = $args->{-id};
     }
-	
-#	warn '$id:' . $id; 
-	
+
+    #	warn '$id:' . $id;
+
     my $draft =
       $self->stringify_cgi_params(
         { -cgi_obj => $args->{-cgi_obj}, -screen => $args->{-screen} } );
 
     if ( !defined($id) ) {
-		
-		warn 'id undefined.'
-			if $t; 
-			
+
+        warn 'id undefined.'
+          if $t;
+
         my $query =
             'INSERT INTO '
           . $self->{sql_params}->{message_drafts_table}
           . ' (list, screen, role, draft, last_modified_timestap) VALUES (?,?,?,?, NOW())';
+
+        # Uh, it's gotta be a little different.
+        if ( $self->{sql_params}->{dbtype} eq 'SQLite' ) {
+            $query =~ s/NOW\(\)/CURRENT_TIMESTAMP/;
+        }
+
+        warn 'QUERY: ' . $query
+          if $t;
+
         my $sth = $self->{dbh}->prepare($query);
 
         $sth->execute( $self->{list}, $args->{-screen}, $args->{-role}, $draft )
@@ -137,26 +153,32 @@ sub save {
             return $sth->{mysql_insertid};
         }
         else {
-			my $last_insert_id = $self->{dbh}->last_insert_id(undef, undef, $self->{sql_params}->{message_drafts_table}, undef);
-        	warn '$last_insert_id:' . $last_insert_id
-				if $t; 
-				
-			return $last_insert_id; 
-		}
+            my $last_insert_id =
+              $self->{dbh}->last_insert_id( undef, undef,
+                $self->{sql_params}->{message_drafts_table}, undef );
+            warn '$last_insert_id:' . $last_insert_id
+              if $t;
+
+            return $last_insert_id;
+        }
     }
     else {
-	
-	    if ( !$self->id_exists($id) ) {
+
+        if ( !$self->id_exists($id) ) {
             croak "id, '$id' doesn't exist!";
         }
 
-		warn 'id defined.'
-			if $t; 
-		
+        warn 'id defined.'
+          if $t;
+
         my $query =
             'UPDATE '
           . $self->{sql_params}->{message_drafts_table}
           . ' SET screen = ?, role = ?, draft = ?, last_modified_timestap = NOW() WHERE list = ? AND id = ?';
+
+        warn 'QUERY: ' . $query
+          if $t;
+
         my $sth = $self->{dbh}->prepare($query);
         $sth->execute( $args->{-screen}, $args->{-role}, $draft,
             $self->{list}, $args->{-id} )
@@ -167,10 +189,10 @@ sub save {
 }
 
 sub has_draft {
-	
-	warn 'has_draft'
-		if $t; 
-		
+
+    warn 'has_draft'
+      if $t;
+
     my $self = shift;
     my ($args) = @_;
 
@@ -186,6 +208,10 @@ sub has_draft {
         'SELECT COUNT(*) FROM '
       . $self->{sql_params}->{message_drafts_table}
       . ' WHERE list = ? AND screen = ? AND role = ?';
+
+    warn 'QUERY: ' . $query
+      if $t;
+
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute( $self->{list}, $args->{-screen}, $args->{-role} )
       or croak "cannot do statment '$query'! $DBI::errstr\n";
@@ -218,6 +244,10 @@ sub latest_draft_id {
         'SELECT id FROM '
       . $self->{sql_params}->{message_drafts_table}
       . ' WHERE list = ? AND screen = ? AND role = ? ORDER BY last_modified_timestap DESC';
+
+    warn 'QUERY: ' . $query
+      if $t;
+
     my $sth = $self->{dbh}->prepare($query);
 
     $sth->execute( $self->{list}, $args->{-screen}, $args->{-role} )
@@ -254,17 +284,20 @@ sub fetch {
           . ' WHERE list = ? AND screen = ? AND role = ? ORDER BY id DESC';
     }
     else {
-	
-	    if ( !$self->id_exists($id) ) {
+
+        if ( !$self->id_exists($id) ) {
             croak "id, '$id' doesn't exist!";
         }
-    
+
         $query =
             'SELECT id, list, screen, role, draft FROM '
           . $self->{sql_params}->{message_drafts_table}
           . ' WHERE list = ? AND screen = ? AND role = ? AND id = ? ORDER BY id DESC';
 
     }
+
+    warn 'QUERY: ' . $query
+      if $t;
 
     my $sth = $self->{dbh}->prepare($query);
 
@@ -295,12 +328,15 @@ sub fetch {
 sub count {
     my $self = shift;
     my ($args) = @_;
-
     my @row;
     my $query =
-        'SELECT COUNT(*)  FROM '
+        'SELECT COUNT(*) FROM '
       . $self->{sql_params}->{message_drafts_table}
       . ' WHERE list = ?';
+
+    warn 'QUERY: ' . $query
+      if $t;
+
     my $count = $self->{dbh}->selectrow_array( $query, undef, $self->{list} );
     return $count;
 }
@@ -310,17 +346,22 @@ sub remove {
     my $id   = shift;
 
     if ( !$self->id_exists($id) ) {
-        croak "id, '$id' doesn't exist!";
+        carp "id, '$id' doesn't exist! in remove()";
+        return -1;
     }
 
     my $query =
         'DELETE FROM '
       . $self->{sql_params}->{message_drafts_table}
       . ' WHERE id = ? AND list = ?';
+
+    warn 'QUERY: ' . $query
+      if $t;
+
     my $sth = $self->{dbh}->prepare($query);
-    $sth->execute( $id, $self->{list} );
+    my $rows = $sth->execute( $id, $self->{list} );
     $sth->finish;
-    return 1;
+    return $rows;
 }
 
 sub decode_draft {
@@ -340,6 +381,10 @@ sub draft_index {
         'SELECT * FROM '
       . $self->{sql_params}->{message_drafts_table}
       . ' WHERE list = ? AND role = ? ORDER BY last_modified_timestap DESC';
+
+    warn 'QUERY: ' . $query
+      if $t;
+
     my $sth = $self->{dbh}->prepare($query);
 
     $sth->execute( $self->{list}, 'draft' )
@@ -484,15 +529,16 @@ sub params_to_save {
         $params->{url_password}          = 1;
         $params->{proxy}                 = 1;
     }
-#	use Data::Dumper; 
-#	warn Dumper($params); 
 
-   return $params;
+    #	use Data::Dumper;
+    #	warn Dumper($params);
+
+    return $params;
 
 }
 
-sub enabled { 
-	return 1; 
+sub enabled {
+    return 1;
 }
 
 1;
