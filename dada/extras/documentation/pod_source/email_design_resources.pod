@@ -1,0 +1,57 @@
+=pod
+
+=head1 Email Design Resources
+
+=begin html
+
+<p>
+	<a href="http://briangraves.github.io/ResponsiveEmailPatterns/">Responsive Email Patterns</a><br>
+	<em>A collection of patterns and modules for responsive emails.</em>
+</p>
+<p>
+	<a href="http://zurb.com/playground/responsive-email-templates">Responsive Email Templates by Zurb</a>
+</p>
+<p>
+	<a href="http://htmlemailboilerplate.com/">HTML Email Boilerplate.</a>
+</p>
+<p>
+	<a href="http://emailbtn.net/">Bulletproof Email Buttons</a>
+</p>
+<p>
+	<a href="http://emailbg.net/">Bulletproof Email Background Images</a>
+</p>
+<p>
+	<a href="http://emailwizardry.nightjar.com.au/">Email Wizardy</a>
+	<br />
+	<em>Mastering the dark art of HTML email, one UTF-8 encoded character at a time</em>
+</p>
+
+=end html
+
+=head1 Books
+
+=begin html
+
+<p>
+	<a href="http://www.amazon.com/Create-Stunning-HTML-Email-Works/dp/0980576865">Create Stunning HTML Email That Just Works</a>
+</p>
+<p>
+	<a href="http://www.amazon.com/Email-Marketing-Rules-Straight-Hearts/dp/1484183304">Email Marketing Rules: How to Wear a White Hat, Shoot Straight, and Win Hearts</a>
+</p>
+<p>
+	<a href="http://modernhtmlemail.com/">Modern HTML Email - A guide to building robust, responsive, and effective HTML email.</a>
+</p>
+
+=end html
+
+=head1 Testing
+
+=begin html 
+
+<p>
+	<a href="http://www.emailonacid.com/">Email on Acid</a>
+</p>
+
+=end html
+
+=cut
