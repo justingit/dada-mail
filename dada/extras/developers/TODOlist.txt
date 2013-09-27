@@ -1020,7 +1020,7 @@ http://www.quirksmode.org/dom/maxlength.html
 [ ] sending a disc. message from the list control panel *still* does not append the, [list] thingy to the subject, if it's supposed to...
 
 [] add a, "resend" button to the archive editor
-[] create a, "drafts" archive.  
+[x] create a, "drafts" archive.  
 [x] enable sending a message straight into STDIN from bridge.cgi (perchance)
 [x] add documentation about whiz-bang new FCKeditor stuff (test more)
 
