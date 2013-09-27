@@ -66,7 +66,7 @@ fallback_value varchar(80)
 
 CREATE TABLE IF NOT EXISTS dada_clickthrough_urls (
 url_id INTEGER PRIMARY KEY AUTOINCREMENT,
-redirect_id varchar(16), 
+redirect_id varchar(16),
 msg_id text,
 url text
 );
@@ -80,7 +80,7 @@ msg_id text,
 event text,
 details text,
 email varchar(80)
-); 
+);
 
 CREATE TABLE IF NOT EXISTS dada_clickthrough_url_log (
 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -103,16 +103,13 @@ custom_error_page text,
 default_password text
 );
 
-
 CREATE TABLE IF NOT EXISTS dada_message_drafts (
-	id INTEGER PRIMARY KEY AUTOINCREMENT,
+id INTEGER PRIMARY KEY AUTOINCREMENT,
 list varchar(16),
 created_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 last_modified_timestap TIMESTAMP, 
-name varchar(80), 
-screen  varchar(80),
+name varchar(80),
+screen varchar(80),
 role varchar(80),
 draft text
 );
-
-
