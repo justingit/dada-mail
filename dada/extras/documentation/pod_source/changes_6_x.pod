@@ -8,13 +8,13 @@
 
 Dada Mail now supports saving unfinished messages, called Drafts. 
 
-In past versions of Dada Mail, it was always awkward to keep an unfinished copy of your message: You would either have to keep a browser window always open with your unfinished message, save your message in a different place (in a text file on your computer), or another awkward solution. Thankfully, that's no more.
+In past versions of Dada Mail, it was always awkward to keep an unfinished copy of your message: You would either have to keep a browser window always open with your unfinished message, save your message in a different place (in a text file on your computer), or another, hand-rolled solution. Thankfully, that's no more.
 
-Dada Mail can now save a Draft message right in the, "Send a Message", or "Send a Wepage" screen. Messages are also auto-saved automatically every minute, in case your browser window inadvertantly is closed by accident. Draft messages will also be saved, whenever you send out a test mass mailing. 
+Dada Mail can now save a Draft message right in the, "Send a Message", or "Send a Wepage" screen. Messages are also auto-saved automatically every minute, in case your browser window is inadvertantly closed by accident. Draft messages will also be saved, whenever you send out a test mass mailing. 
 
-An unlimited number of draft messages may be saved, viewed, edited - and if you want to start over, you may cancel the message, and delete the draft.
+An unlimited number of draft messages may be saved, viewed, edited - and if you want to start over, you may cancel the message and delete the draft.
 
-All form fields available to you in the, "Send a Message", and "Send a Webpage" screen are saved, when a draft is saved, including message headers, message body, and all the other Options available: Archive Options Partial Mailing List Sending Options, File Attachments, and Testing Options. 
+All form fields and widgets available to you in the, "Send a Message", and "Send a Webpage" screen are saved, when a draft is saved, including message headers, message body, and all the other Options available: Archive Options Partial Mailing List Sending Options, File Attachments, and Testing Options. 
 
 =head3 Mass Mailing: File Attachments
 
@@ -30,13 +30,13 @@ The included Dada Mail Installer now allows you to configure the CAPTCHA system 
 
 These options are located under the, B<Advanced Configuration (Optional)> heading, and is available in our Pro Dada distribution. 
 
-=head3 jQuery Dada Mail subscription plugin
+=head3 jQuery Dada Mail Subscription plugin
 
-Dada Mail now ships with a jQuery plugin, to help with creating subscription forms, as well as handling the requests from them in a modal window. This means users do not have to be redirected away from your main website, to Dada Mail, if they would like to sign up for a mailing list of yours. 
+Dada Mail now ships with its own jQuery plugin, to help with creating subscription forms, as well as handling the requests from them in a modal window, rather than being redirected away from your main website, to Dada Mail.
 
-Dada Mail now uses this plugin's functionality itself, and subscription forms on the default screen of Dada Mail, as well as on each mailing list's List Page are now enabled to use the modal window jQuery plugin way of doing things. 
+Dada Mail now uses this plugin's functionality itself, and subscription forms on the default screen of Dada Mail, as well as on each mailing list's List Page are now enabled to use the modal window jQuery plugin.
 
-This plugin has 100% support for graceful degredation, if a user uses Dada Mail, without having JavaScript enabled. 
+This plugin has 100% support for graceful degredation, if a user uses Dada Mail without having JavaScript enabled, the subscription process will work very similary as to have it worked before the jQuery plugin/modal menu were created. 
 
 See the Subscription Cookbook docs, for more information about this plugin: 
 
@@ -58,7 +58,9 @@ You may now also set custom HTML to be shown to let your users know their reques
 
 =head3 Expanded RESTful API
 
-The RESTful API for mailing list subscriptions has been expanded to include support for custom URL redirects, as well as working with situations where additional information is required from a user, to successfully complete a request. 
+The RESTful API for mailing list subscriptions has been expanded to include support for custom URL redirects, as well as working with situations where additional information is required from a user, to successfully complete a request.
+
+A Javascript/jQuery example is also provided, that supports all the new bells and whistles. 
 
 =head1 6.6.1
 
