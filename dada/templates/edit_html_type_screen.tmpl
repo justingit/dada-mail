@@ -39,7 +39,7 @@
 	Subscription Confirmation:
  </legend>
 
-<!-- tmpl_if enable_closed_loop_opt_in --> 
+<!-- tmpl_if list_settings.enable_closed_loop_opt_in --> 
 	<p class="alert">Closed-Loop Opt-In is enabled.</p>
 <!-- tmpl_else --> 
 	<p class="alert">Closed-Loop Opt-In  is disabled.</p>
@@ -54,7 +54,7 @@
 
 <fieldset> 
 	
- <legend>Subscription Successful Screen:
+ <legend>Subscription Successful:
  </legend>
  
 <p>
@@ -67,10 +67,10 @@
 	
  <legend> Subscription Requests:</legend>
  
-<!-- tmpl_if enable_subscription_approval_step --> 
-	<p class="alert"> Subscription Requests Approving/Denying is enabled.</p>
+<!-- tmpl_if list_settings.enable_subscription_approval_step --> 
+	<p class="alert">Subscription Requests Approving/Denying is enabled.</p>
 <!-- tmpl_else --> 
-	<p class="alert"> Subscription Requests Approving/Denying is disabled.</p>
+	<p class="alert">Subscription Requests Approving/Denying is disabled.</p>
 <!-- /tmpl_if --> 
 <p>
  <textarea name="html_subscription_request_message" id="html_subscription_request_message" rows="10" cols="50"><!-- tmpl_var list_settings.html_subscription_request_message --></textarea>
@@ -79,7 +79,7 @@
 
 	
 <fieldset>
-	<legend>Unsubscription Successful Screen:</legend>
+	<legend>Unsubscription Successful:</legend>
 <p>
  <textarea name="html_unsubscribed_message" id="html_unsubscribed_message" rows="10" cols="50"><!-- tmpl_var list_settings.html_unsubscribed_message --></textarea>
 </p>
@@ -100,14 +100,10 @@
 
 <fieldset>
 	<legend>
-	<a href="#" class="toggleDivs" data-target="template_tags">
-    +/- 
-   </a> Available Template Tags
+	Available Template Tags
    </legend>    
    
-   <div id="template_tags" style="display:none;width:90%">
-
-
+   <div id="template_tags">
 <table class="tagchart">
  <tr align="center">
   <td>
@@ -117,10 +113,21 @@
   </td>
   <td>
    <strong>
-    Is Replaced With
+    Value
    </strong>
   </td>
  </tr>
+
+ <tr>
+  <td>
+   <code>&lt;!-- tmpl_var chrome --&gt;</code>
+  </td>
+  <td>
+	This variable is set to, B<1>, if the message is shown in <!-- tmpl_var PROGRAM_NAME -->'s own layout, 
+	and set to, B<0> if the message is instead shown alone in a modal window. 
+  </td>
+ </tr>
+
  <tr>
   <td>
    <code>&lt;!-- tmpl_var  subscriber.email --&gt;</code>
