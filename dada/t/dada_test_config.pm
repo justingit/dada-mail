@@ -207,7 +207,7 @@ for(keys  %DADA::Config::SQL_PARAMS){
 
 close(SQL) or croak $!; 
 
-my @statements = split(';', $sql, 11); 
+my @statements = split(';', $sql); 
 
     my $dbh = $dbi_handle->dbh_obj;
     
@@ -240,11 +240,11 @@ my @statements = split(';', $sql, 11);
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_clickthrough_urls}{CREATE TABLE IF NOT EXISTS $clickthrough_urls_table};
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_clickthrough_url_log}{CREATE TABLE IF NOT EXISTS $clickthrough_url_log_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_mass_mailing_event_log}{CREATE TABLE IF NOT EXISTS $mass_mailing_event_log_table};	
-		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_password_protect_directories}{CREATE TABLE $password_protect_directories_table};	
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_password_protect_directories}{CREATE TABLE IF NOT EXISTS $password_protect_directories_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_confirmation_tokens}{CREATE TABLE IF NOT EXISTS $confirmation_tokens_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_message_drafts}{CREATE TABLE IF NOT EXISTS $message_drafts_table};	
 		
-		#print 'query: ' . $_; 
+		print 'query: ' . $_ . "\n\n"; 
         my $sth = $dbh->prepare($_) or croak $DBI::errstr; 
 
        $sth->execute
@@ -434,7 +434,7 @@ sub create_PostgreSQL_db {
 
 close(SQL) or croak $!; 
 
-my @statements = split(';', $sql, 11); 
+my @statements = split(';', $sql); 
 
     my $dbh = $dbi_handle->dbh_obj;
     
