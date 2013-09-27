@@ -320,7 +320,7 @@ custom redirects, as well as any needed redirects for additional user input:
 The following is a bare-bones example on how to use the JSON API to send a subscription request, using Perl: 
 
 	#!/usr/bin/perl 
-
+	
 	use JSON;
 	use HTTP::Request;
 	use HTTP::Request::Common;
@@ -374,16 +374,21 @@ If you can, please contribute an example!
 
 =head1 jQuery Plugin 
 
-Dada Mail comes with a jQuery Plugin, that can be used to create a subscription form on a webpage, handle the request and show the results in a modal window, only redirecting the user, if additional steps are required. The plugin uses the RESTful API, described above.
+Dada Mail comes with a jQuery Plugin, that can be used to create a subscription form on a webpage, handle the request and show the results in a modal window, only redirecting the user if additional steps are required. The plugin uses the RESTful API, described above.
 
-To use the jQuery plugin, you'll first need to call the plugin javascript, along with other .js files it needs, in the head of your document: 
+To use the jQuery plugin, you'll first need to load the plugin's .js file, along with other .js files it requires, in the head of your document: 
 
 	<script src="http://example.com/static/javascripts/jquery-1.8.2.min.js"></script>
-	<script src="http://example.com/static/javascripts/jquery.dadamail.js"></script>
-	<script src="http://example.com/static/javascripts/dada_mail.user.js"></script>
 	
 	<link rel="stylesheet" href="http://example.com/static/css/colorbox/colorbox.css">
 	<script src="http://example.com/static/javascripts/colorbox/jquery.colorbox-min.js"></script>
+
+	<script src="http://example.com/static/javascripts/jquery.dadamail.js"></script>
+	
+	
+B<jquery.dadamail.js) is the jQuery plugin itself, but it does require B<jQuery> to be loaded (in our case, it's called, B<jquery-1.8.2.min.js), as well the Colorbox jQuery plugin (L<http://www.jacklmoore.com/colorbox/>). 
+
+All these are bundled with Dada Mail, but you may use your own copies, if you'd like. To change the design of the modal window that pops up, you'll want to work with Colorbox's own .css file. 
 
 The jQuery plugin has two "methods" you may use.
 
