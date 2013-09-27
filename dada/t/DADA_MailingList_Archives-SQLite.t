@@ -17,7 +17,7 @@ else {
 SKIP: {
         eval { require DBD::SQLite };
 
-        skip "DBD::mysql not installed", 2 if $@;
+        skip "DBD::SQLite not installed", 2 if $@;
 
 		
     dada_test_config::create_SQLite_db(); 
