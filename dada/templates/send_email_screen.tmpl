@@ -21,7 +21,9 @@
 
 <!-- tmpl_if list_settings.group_list --> 
     <div class="clearskiesbox">
-		<p>Discussion List Support is enabled and Discussion List preferences will be honored.
+		<p>
+			Discussion List Support is enabled and Discussion List preferences will be honored.
+		</p>
 	</div> 
 	
 <!--/tmpl_if--> 
@@ -33,10 +35,16 @@
 		 Warning! No SMTP Server has been set!
 		</p>
 	</div> 
-	
 	<!-- /tmpl_if -->
 <!-- /tmpl_unless -->
 
+<!-- tmpl_if draft_id --> 
+	<div class="clearskiesbox">
+		<p>
+			Draft message restored below:
+		</p>
+	</div> 
+<!-- /tmpl_If --> 
 
 
  <input type="hidden" name="s_program_url"     id="s_program_url"     value="<!-- tmpl_var S_PROGRAM_URL -->" />
