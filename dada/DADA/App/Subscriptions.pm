@@ -191,9 +191,12 @@ sub subscribe {
 
     my $q    = $args->{-cgi_obj};
 
-	use Data::Dumper; 
-	warn Dumper({$q->Vars}); 
-
+	if($t == 1) { 
+		warn 'sent over Vars:'; 
+		require Data::Dumper; 
+		warn Data::Dumper::Dumper({$q->Vars}); 
+	}
+	
     my $list = xss_filter( $q->param('list') );
     warn '$list: ' . $list
       if $t;
