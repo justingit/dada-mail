@@ -161,7 +161,8 @@ sub check_for_valid_email {
 			defined(
 				Email::Valid->address(
 					-address => $email, 
-					-fudge   => 0
+					-fudge   => 0,
+					-mxcheck => 0,
 				)
 			)
 		){     
@@ -196,8 +197,8 @@ a simple subroutine to take off leading and trailing white spaces
 =cut
 
 sub strip {
-    my $string = shift || undef;
-    if ($string) {
+    my $string = shift;
+    if (defined($string)) {
         $string =~ s/^\s+//o;
         $string =~ s/\s+$//o;
         return $string;
@@ -2228,15 +2229,19 @@ javascript, etc code from being executed.
 
 =cut
 
-sub xss_filter { 
-	my $t = shift; 
-	   if($t){ 
-		   #$t =~ s/[^A-Za-z0-9 ]*/ /g;
-		   $t =~ s/\</&lt;/g; 
-		   $t =~ s/\>/&gt;/g; 
-		   $t =~ s/\"/&quot;/g;
-	   }
-	   return $t;
+sub xss_filter {
+    my $t = shift;
+    if ( defined($t) ) {
+
+        #$t =~ s/[^A-Za-z0-9 ]*/ /g;
+        $t =~ s/\</&lt;/g;
+        $t =~ s/\>/&gt;/g;
+        $t =~ s/\"/&quot;/g;
+        return $t;
+    }
+    else {
+        return undef;
+    }
 }
 
 
