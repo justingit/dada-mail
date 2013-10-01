@@ -68,7 +68,6 @@ sub subscription_check {
     }
 
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
-    my $list_info = $ls->get;
 
     if ( $args->{ -type } ne 'black_list' &&  $args->{ -type } ne 'white_list') {
         if ( !$skip{invalid_email} ) {
@@ -98,17 +97,17 @@ sub subscription_check {
     {
 	
 		if ( !$skip{invite_only_list} ) {
-            $errors{invite_only_list} = 1 if $list_info->{invite_only_list} == 1;
+            $errors{invite_only_list} = 1 if $ls->param('invite_only_list') == 1;
         }
 
         if ( !$skip{closed_list} ) {
-            $errors{closed_list} = 1 if $list_info->{closed_list} == 1;
+            $errors{closed_list} = 1 if $ls->param('closed_list') == 1;
         }
     }
 
     if ( $args->{ -type } ne 'black_list' ) {
         if ( !$skip{mx_lookup_failed} ) {
-            if ( $list_info->{mx_check} == 1 ) {
+            if ( $ls->param('mx_check') == 1 ) {
                 require Email::Valid;
                 eval {
                     unless (
@@ -121,7 +120,7 @@ sub subscription_check {
                         $errors{mx_lookup_failed} = 1;
                     }
 					if( $@ ) { 
-                    	carp "warning: mx check didn't work: $@, for email, '$email' on list, '" . $self->{list} . "'";
+                    	carp "warning: mx check didn't work: $@, for email, '$email' on list, '" . $self->{list} . "'";                       
 					}
                 };
             }
@@ -130,7 +129,7 @@ sub subscription_check {
 
     if ( $args->{ -type } ne 'black_list' ) {
         if ( !$skip{black_listed} ) {
-            if ( $list_info->{black_list} eq "1" ) {
+            if ( $ls->param('black_list') == 1) {
                 $errors{black_listed} = 1
                   if $self->{lh}->check_for_double_email(
                     -Email => $email,
@@ -143,7 +142,7 @@ sub subscription_check {
     if ( $args->{ -type } ne 'white_list' ) {
         if ( !$skip{not_white_listed} ) {
 
-            if ( $list_info->{enable_white_list} == 1 ) {
+            if ( $ls->param('enable_white_list') == 1 ) {
 
                 $errors{not_white_listed} = 1
                   if $self->{lh}->check_for_double_email(
@@ -159,9 +158,9 @@ sub subscription_check {
     {
         if ( !$skip{over_subscription_quota} ) {
 			my $num_subscribers = $self->{lh}->num_subscribers; 
-            if ( $list_info->{use_subscription_quota} == 1 ) {
+            if ( $ls->param('use_subscription_quota') == 1 ) {
                 if ( ( $num_subscribers + 1 ) >=
-                    $list_info->{subscription_quota} )
+                    $ls->param('subscription_quota') )
                 {
                     $errors{over_subscription_quota} = 1;
                 }
@@ -176,7 +175,7 @@ sub subscription_check {
     }
 
     if ( !$skip{already_sent_sub_confirmation} ) {
-        if ( $list_info->{limit_sub_confirm} == 1 ) {
+        if ( $ls->param('limit_sub_confirm') == 1 ) {
             $errors{already_sent_sub_confirmation} = 1
               if $self->{lh}->check_for_double_email(
                 -Email => $email,
