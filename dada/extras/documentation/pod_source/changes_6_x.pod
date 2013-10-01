@@ -6,15 +6,15 @@
 
 =head3 Mass Mailing: Save as Draft
 
-Dada Mail now supports saving unfinished messages, called Drafts. 
+In past versions of Dada Mail, it was always awkward to keep an unfinished copy of your message: You would either have to keep a browser window always open with this message, save your message in a different place (in a text file on your computer), or use another, hand-rolled solution. 
 
-In past versions of Dada Mail, it was always awkward to keep an unfinished copy of your message: You would either have to keep a browser window always open with your unfinished message, save your message in a different place (in a text file on your computer), or another, hand-rolled solution. Thankfully, that's no more.
+Now, Dada Mail supports saving unfinished messages, called Drafts. Rejoice!
 
-Dada Mail can now save a Draft message right in the, "Send a Message", or "Send a Wepage" screen. Messages are also auto-saved automatically every minute, in case your browser window is inadvertantly closed by accident. Draft messages will also be saved, whenever you send out a test mass mailing. 
+Dada Mail can now save a Draft message right in the "Send a Message" or "Send a Wepage" control panel screens. Messages are also auto-saved every minute, in case your browser window is inadvertantly closed by accident. Draft messages will also be saved whenever you send out a test mass mailing, and waiting for you, whenever you come back to send out the message to your subscribers. 
 
-An unlimited number of draft messages may be saved, viewed, edited - and if you want to start over, you may cancel the message and delete the draft.
+An unlimited number of draft messages may also be saved, viewed and edited.If you want to start over, you also may cancel the message and delete the draft.
 
-All form fields and widgets available to you in the, "Send a Message", and "Send a Webpage" screen are saved, when a draft is saved, including message headers, message body, and all the other Options available: Archive Options Partial Mailing List Sending Options, File Attachments, and Testing Options. 
+All form fields and widgets available to you in the "Send a Message" and "Send a Webpage" screen are saved when a draft is saved, including: message headers, your message bodies (both PlainText and HTML), and all the other Options available: Archive Options Partial Mailing List Sending Options, File Attachments, and Testing Options. 
 
 =head3 Mass Mailing: File Attachments
 
@@ -22,23 +22,33 @@ File Attachment uploading is now handled by the included KCFinder web file manag
 
 Attachments can now also be removed from your messages easily. 
 
+This is a marked improvement over the previous system of just providing a file upload widget, which allowed you to only select a file on your desktop to upload. A new system for file attachments was sorely needed, if we ever wanted to get the Save as Draft feature in Dada Mail. 
+
 =head3 Installer
+
+Dada Mail's included installer allows you to install, reconfigure, and upgrade Dada Mail, without having to touch a single (often confusing to users) config file.
+
+This installer features support for a large subset of the global configuration variables supported by Dada Mail itself, and we're constantly working on supporting more and more of the global variables an features. 
 
 =head4 CAPTCHA Options
 
-The included Dada Mail Installer now allows you to configure the CAPTCHA system that comes with Dada Mail. Dada Mail comes shipped with support for its own CAPTCHA system, as well as reCAPTCHA. Dada Mail also has support for the reCAPTCHA Mailhide system, to protect email addresses in its public message archives. 
+Dada Mail has shipped with support for its own CAPTCHA system, as well as support for the reCAPTCHA service (L<http://www.google.com/recaptcha>). Dada Mail also has support for the related reCAPTCHA Mailhide system (L<http://www.google.com/recaptcha/mailhide/>), to protect email addresses in its public message archives. 
 
-These options are located under the, B<Advanced Configuration (Optional)> heading, and is available in our Pro Dada distribution. 
+The included Dada Mail Installer now allows you to configure the CAPTCHA system that comes with Dada Mail. These options are located under the, B<Advanced Configuration (Optional)> heading, and is available in our Pro Dada distribution. 
+
+We're shipping Basic Dada Mail B<with only Amazon SES> configuration available in, B<Advanced Configuration>. We're really hoping you love Dada Mail enough to go and get a copy of Pro Dada: 
+
+L<http://dadamailproject.com/purchase/pro.html> 
 
 =head3 jQuery Dada Mail Subscription plugin
 
-Dada Mail now ships with its own jQuery plugin, to help with creating subscription forms, as well as handling the requests from them in a modal window, rather than being redirected away from your main website, to Dada Mail.
+Dada Mail now ships with its own jQuery plugin, to easily create subscription forms, as well as handling the requests inside a modal window, rather than being redirected away from your main website to Dada Mail.
 
-Dada Mail now uses this plugin's functionality itself, and subscription forms on the default screen of Dada Mail, as well as on each mailing list's List Page are now enabled to use the modal window jQuery plugin.
+Dada Mail uses the jQuery plugin itself - you'll notice it in action on subscription forms handled by Dada Mail, in the app itself.
 
-This plugin has 100% support for graceful degredation, if a user uses Dada Mail without having JavaScript enabled, the subscription process will work very similary as to have it worked before the jQuery plugin/modal menu were created. 
+The jQuery plugin has 100% support for graceful degredation: if a user uses Dada Mail without having JavaScript enabled, the subscription process will work very similary to how it worked before the jQuery plugin enhancements were put in place. 
 
-See the Subscription Cookbook docs, for more information about this plugin: 
+See the Subscription Cookbook docs for more information about this plugin: 
 
 L<http://dadamailproject.com/d/COOKBOOK-subscriptions.pod.html>
 
@@ -46,9 +56,13 @@ L<http://dadamailproject.com/d/COOKBOOK-subscriptions.pod.html>
 
 =head3 Send Mass Mailing Buttons: Always on Top
 
-The group of buttons in the, Send a Message and Send a Webpage screens now always float on top of the form itself, making it easier to always have Draft Saving/Canceling and Mass Mailing Testing/Sending available to you. 
+In previous versions of Dada Mail, buttons used to Test, or Send out Mass Mailing were located at the I<bottom> of the screen, after what could be a very long form, forcing you to scroll down, to submit your message.
+
+Now, the group of buttons in the, Send a Message and Send a Webpage screens  always float on top of the form itself, making it easier to always have Draft Saving/Canceling and Mass Mailing Testing/Sending available to you. 
 
 =head3  Subscription Requests Approving/Denying Options
+
+Dada Mail's Subscriptoion Request system allows you to approve subscriptions to your mailing list.
 
 Options for Subscription Requests Approving/Denying have now been expanded: 
 
@@ -60,7 +74,7 @@ You may now also set custom HTML to be shown to let your users know their reques
 
 The RESTful API for mailing list subscriptions has been expanded to include support for custom URL redirects, as well as working with situations where additional information is required from a user, to successfully complete a request.
 
-A Javascript/jQuery example is also provided, that supports all the new bells and whistles. 
+A Javascript/jQuery example is also provided, that supports all these new fancy bells and whistles. 
 
 =head1 6.6.1
 
