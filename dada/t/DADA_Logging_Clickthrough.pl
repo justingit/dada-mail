@@ -273,10 +273,6 @@ ok( $r_url eq $test_url );
 # This is kinda strange - we have to reinit the object:
 
 
-#diag "still here."; 
-
-
-
 =cut
 undef($lc);
 $lc = DADA::Logging::Clickthrough->new( { -list => $list } );
@@ -286,9 +282,6 @@ $lc = DADA::Logging::Clickthrough->new( { -list => $list } );
 # Now, it should do what I want it to do:
 ok( $lc->r_log({-mid =>  $test_mid, -url => $test_url }) == 1 );
 
-
-
-#diag "still here.";
 
 # purge_log
 

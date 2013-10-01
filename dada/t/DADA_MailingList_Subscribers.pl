@@ -1645,8 +1645,6 @@ SKIP: {
 "Multiple Subscriber Profile Fields is not supported with this current backend."
       if $lh->can_have_subscriber_fields == 0;
 
-    #diag "still here.";
-
     for (qw(1 2)) {
         ok( $lh->add_subscriber_field( { -field => 'field' . $_ } ),
             'added field, ' . $_ );
@@ -1943,7 +1941,6 @@ ok( $lh->remove_this_listtype( { -type => $tmp_list } ) == 1,
 ########################
 $lh->remove_all_subscribers( { -type => 'list' } );
 $lh->remove_all_subscribers( { -type => 'black_list' } );
-#diag "here.";
 
 for ( 'one@one.com', 'two@two.com', 'three@three.com' ) {
     $lh->add_subscriber(
@@ -1953,16 +1950,13 @@ for ( 'one@one.com', 'two@two.com', 'three@three.com' ) {
         }
     );
 }
-diag "here.";
 $lh->copy_all_subscribers(
     {
         -from => 'list',
         -to   => 'black_list',
     }
 );
-diag "here.";
 ok( $lh->num_subscribers( { -type => 'list' } ) == 3, "3 subscribers! (x3)" );
-diag "here.";
 ok( $lh->num_subscribers( { -type => 'black_list' } ) == 3, "3 black listed!" );
 
 # Do it again!
