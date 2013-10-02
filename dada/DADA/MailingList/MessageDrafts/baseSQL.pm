@@ -131,7 +131,7 @@ sub save {
         my $query =
             'INSERT INTO '
           . $self->{sql_params}->{message_drafts_table}
-          . ' (list, screen, role, draft, last_modified_timestap) VALUES (?,?,?,?, NOW())';
+          . ' (list, screen, role, draft, last_modified_timestamp) VALUES (?,?,?,?, NOW())';
 
         # Uh, it's gotta be a little different.
         if ( $self->{sql_params}->{dbtype} eq 'SQLite' ) {
@@ -174,7 +174,7 @@ sub save {
         my $query =
             'UPDATE '
           . $self->{sql_params}->{message_drafts_table}
-          . ' SET screen = ?, role = ?, draft = ?, last_modified_timestap = NOW() WHERE list = ? AND id = ?';
+          . ' SET screen = ?, role = ?, draft = ?, last_modified_timestamp = NOW() WHERE list = ? AND id = ?';
 
         warn 'QUERY: ' . $query
           if $t;
@@ -243,7 +243,7 @@ sub latest_draft_id {
     my $query =
         'SELECT id FROM '
       . $self->{sql_params}->{message_drafts_table}
-      . ' WHERE list = ? AND screen = ? AND role = ? ORDER BY last_modified_timestap DESC';
+      . ' WHERE list = ? AND screen = ? AND role = ? ORDER BY last_modified_timestamp DESC';
 
     warn 'QUERY: ' . $query
       if $t;
@@ -380,7 +380,7 @@ sub draft_index {
     my $query =
         'SELECT * FROM '
       . $self->{sql_params}->{message_drafts_table}
-      . ' WHERE list = ? AND role = ? ORDER BY last_modified_timestap DESC';
+      . ' WHERE list = ? AND role = ? ORDER BY last_modified_timestamp DESC';
 
     warn 'QUERY: ' . $query
       if $t;
@@ -399,7 +399,7 @@ sub draft_index {
                 id                     => $hashref->{id},
                 list                   => $hashref->{list},
                 created_timestamp      => $hashref->{created_timestamp},
-                last_modified_timestap => $hashref->{last_modified_timestap},
+                last_modified_timestamp => $hashref->{last_modified_timestamp},
                 screen                 => $hashref->{screen},
                 role                   => $hashref->{role},
                 Subject                => $q->param('Subject'),

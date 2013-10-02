@@ -10,7 +10,7 @@ In past versions of Dada Mail, it was always awkward to keep an unfinished copy 
 
 Now, Dada Mail supports saving unfinished messages, called Drafts. Rejoice!
 
-Dada Mail can now save a Draft message right in the "Send a Message" or "Send a Wepage" control panel screens. Messages are also auto-saved every minute, in case your browser window is inadvertantly closed by accident. Draft messages will also be saved whenever you send out a test mass mailing, and waiting for you, whenever you come back to send out the message to your subscribers. 
+Dada Mail can now save a Draft message right in the "Send a Message" or "Send a Wepage" control panel screens. Messages are also auto-saved every minute, in case your browser window is inadvertently closed by accident. Draft messages will also be saved whenever you send out a test mass mailing, and waiting for you, whenever you come back to send out the message to your subscribers. 
 
 An unlimited number of draft messages may also be saved, viewed and edited.If you want to start over, you also may cancel the message and delete the draft.
 
