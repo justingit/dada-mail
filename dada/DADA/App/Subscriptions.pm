@@ -1740,36 +1740,42 @@ sub complete_unsubscription {
     my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
     $ct->remove_by_token( $q->param('token') );
 
+    my $r = {
+        flavor   => 'subscription_confirmation',
+        status   => 1,
+        list     => $list,
+        email    => $email,
+        redirect => {
+            using            => $ls->param('use_alt_url_unsub_success'),
+            using_with_query => $ls->param('alt_url_unsub_success_w_qs'),
+            url              => $ls->param('alt_url_unsub_success'),
+            query            => 'list=' . uriescape($list) . '&rm=unsub&status=1&email=' . uriescape($email),
+        }
+    };
+
     if ( $args->{-html_output} == 1 ) {
         if ( $ls->param('use_alt_url_unsub_success') == 1 ) {
-            my $qs = undef;
-            if ( $ls->param('alt_url_unsub_success_w_qs') == 1 ) {
-                $qs = 'list='
-                  . $list
-                  . '&rm=unsub&status=1&email='
-                  . uriescape($email);
-            }
-            my $r =
-              $self->alt_redirect( $ls->param('alt_url_unsub_success'), $qs );
-            $self->test ? return $r : print $fh safely_encode($r) and return;
-
-        }
-        else {
-            my $s = $ls->param('html_unsubscribed_message');
-            require DADA::Template::Widgets;
-            my $r = DADA::Template::Widgets::wrap_screen(
-                {
-                    -data => \$s,
-                    -with => 'list',
-                    -list_settings_vars_param =>
-                      { -list => $ls->param('list') },
-                    -dada_pseudo_tag_filter => 1,
-                    -subscriber_vars        => { 'subscriber.email' => $email },
-                }
-            );
-            $self->test ? return $r : print $fh safely_encode($r) and return;
-        }
+            my $rd = $self->alt_redirect($r);
+            $self->test ? return $rd : print $fh safely_encode($rd) and return;
+    	}
+		else {
+	        my $s = $ls->param('html_unsubscribed_message');
+	        require DADA::Template::Widgets;
+	        my $return = DADA::Template::Widgets::wrap_screen(
+	            {
+	                -data                     => \$s,
+	                -with                     => 'list',
+	                -list_settings_vars_param => { -list => $ls->param('list') },
+	                -dada_pseudo_tag_filter   => 1,
+	                -subscriber_vars          => { 'subscriber.email' => $email },
+	            }
+	        );
+	        $self->test ? return $return : print $fh safely_encode($return) and return;
+		}
     }
+	else { 
+		# Else, I dunno! There's no, -html_output argument, here!"; 
+	}
 }
 
 sub fancy_data {
@@ -2081,6 +2087,9 @@ sub alt_redirect {
     my $self = shift;
     my ($args) = @_;
 
+	if(!exists($args->{redirect}->{url})){ 
+		croak "I need a url, before I can redirect to it!"; 
+	}
     my $url = $args->{redirect}->{url};
 
     require CGI;
