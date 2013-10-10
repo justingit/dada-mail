@@ -1,6 +1,26 @@
-=head1 6.7.0
+=pod
 
-=head2 Summary 6.7.0
+=head1 6.7.1
+
+=head2 Summary 6.7.1
+
+This release is primarily a bugfix release. 
+
+=head2 Bugfixes 6.7.1
+
+=head3 "Unsubscriptions" option" " If an unsubscription is successful, redirect to this URL: " does not work
+
+L<https://github.com/justingit/dada-mail/issues/405>
+
+=head3 Dada permits illegal email addresses to be added like "user@myname. com"
+
+L<https://github.com/justingit/dada-mail/issues/407>
+
+=head3 ">>" characters in the button label: "Subscribe Checked Subscribers >>" cause mod_security to trigger on form submission
+
+L<https://github.com/justingit/dada-mail/issues/408>
+
+=head1 6.7.0
 
 =head2 Features 6.7.0
 
