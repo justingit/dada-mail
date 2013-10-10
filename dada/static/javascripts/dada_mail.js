@@ -2614,7 +2614,7 @@ function warnAboutMassSubscription() {
 	confirm_msg += "Subscription of unconfirmed email address(es) should always be avoided. ";
 	confirm_msg += "\n\n";
 
-	confirm_msg += " If wanting to add unconfirmed email address(es), use the \"Send Invitation... >>\"";
+	confirm_msg += " If wanting to add unconfirmed email address(es), use the \"Send Invitation...\"";
 	confirm_msg += " option to allow the subscriber to confirm their own subscription.";
 
 	if (!confirm(confirm_msg)) {

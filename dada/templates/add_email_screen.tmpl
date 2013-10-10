@@ -603,17 +603,17 @@ Invalid Email Addresses
 	<!-- /tmpl_if --> 
 	
 	<!-- tmpl_if expr="(type eq 'list')" --> 
-	  <input type="submit"  name="process" value="Send Invitation... >>" <!-- tmpl_if list_settings.closed_list -->disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing addingemail"<!-- /tmpl_if --> />
+	  <input type="submit"  name="process" value="Send Invitation... &rArr;" <!-- tmpl_if list_settings.closed_list -->disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing addingemail"<!-- /tmpl_if --> />
 	<!-- /tmpl_if -->
 
 	<!-- tmpl_if expr="(type eq 'list')" --> 
 		<!-- tmpl_if ENFORCE_CLOSED_LOOP_OPT_IN --> 
 			<!-- ... --> 
 		<!-- tmpl_else --> 
-			<input type="submit" <!-- tmpl_unless list_settings.enable_mass_subscribe -->disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing addingemail warnAboutMassSubscription"<!-- /tmpl_unless -->  name="process"  value="Subscribe Checked Addresses >>" />	
+			<input type="submit" <!-- tmpl_unless list_settings.enable_mass_subscribe -->disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing addingemail warnAboutMassSubscription"<!-- /tmpl_unless -->  name="process"  value="Subscribe Checked Addresses &rArr;" />	
 		<!-- /tmpl_if --> 
 	<!-- tmpl_else --> 
-		<input type="submit" class="processing addingemail" name="process"  value="Add Checked Addresses to <!-- tmpl_var type_title --> >>" />
+		<input type="submit" class="processing addingemail" name="process"  value="Add Checked Addresses to <!-- tmpl_var type_title --> &rArr;" />
 	<!-- /tmpl_if -->
 	 </div>
 	 <div class="floatclear"></div>
