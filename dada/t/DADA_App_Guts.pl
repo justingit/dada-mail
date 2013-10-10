@@ -59,6 +59,9 @@ ok(check_for_valid_email('example.co.uk')                == 1);
 ok(check_for_valid_email('newline@example.com' . "\n")   == 1); 
 ok(check_for_valid_email('newline@example.com' . "\r\n") == 1); 
 ok(check_for_valid_email('newline@example.com' . "\r")   == 1); 
+ok(check_for_valid_email('spaces@example. com')   == 1); 
+ok(check_for_valid_email('spaces@example . com')   == 1); 
+ok(check_for_valid_email('spaces@example .com')   == 1); 
 
 
 TODO: {

@@ -143,46 +143,43 @@ specify that addres in the B<@DADA::Config::EMAIL_EXCEPTIONS> array in the Confi
 =cut
 
 
-sub check_for_valid_email { 
+sub check_for_valid_email {
 
     my $email = shift or undef;
     my $email_check = 0;
-
-	# BUGFIX: 
-	#  2191258  	 3.0.0 - email addresses with newlines are seen as valid
-	# https://sourceforge.net/tracker2/?func=detail&aid=2191258&group_id=13002&atid=113002
-    if(
-		$email =~ m/\@/      && 
-		$email !~ m/\r|\n/
-	){ # This is to weed out the obvious... 
-    # /BUGFIX
+    if (   $email =~ m/\@/
+        && $email !~ m/\r|\n/
+        && $email !~ m/\s/ )
+    {    # This is to weed out the obvious...
+            # /BUGFIX
         require Email::Valid;
-        if(
-			defined(
-				Email::Valid->address(
-					-address => $email, 
-					-fudge   => 0,
-					-mxcheck => 0,
-				)
-			)
-		){     
-            $email_check =  0;
-        } else { 
-            
-            $email_check =  1;
+        if (
+            defined(
+                Email::Valid->address(
+                    -address => $email,
+                    -fudge   => 0,
+                    -mxcheck => 0,
+                )
+            )
+          )
+        {
+            $email_check = 0;
         }
-    } 
-    else { 
-        $email_check = 1; 
+        else {
+
+            $email_check = 1;
+        }
     }
-    
-    
-	my %exceptions; 
-	for(@DADA::Config::EMAIL_EXCEPTIONS){
-	    $exceptions{$_}++
-	} 
-	$email_check = 0 if exists($exceptions{$email}); 	
-	return $email_check; 
+    else {
+        $email_check = 1;
+    }
+
+    my %exceptions;
+    for (@DADA::Config::EMAIL_EXCEPTIONS) {
+        $exceptions{$_}++;
+    }
+    $email_check = 0 if exists( $exceptions{$email} );
+    return $email_check;
 
 }
 
