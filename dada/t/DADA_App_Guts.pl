@@ -48,34 +48,22 @@ dada_test_config::remove_test_list({-name => $list3});
 
 ### check_for_valid_email
  
-ok(check_for_valid_email('test@example.com')             == 0); 
-ok(check_for_valid_email('test@example.co.uk')           == 0); 
-ok(check_for_valid_email('test.one.two@example.co.uk')   == 0); 
-ok(check_for_valid_email('test@example.nu')              == 0); 
-ok(check_for_valid_email('test+0@example.nu')            == 0); 
-ok(check_for_valid_email('test')                         == 1); 
-ok(check_for_valid_email('test@example')                 == 1); 
-ok(check_for_valid_email('example.co.uk')                == 1); 
-ok(check_for_valid_email('newline@example.com' . "\n")   == 1); 
-ok(check_for_valid_email('newline@example.com' . "\r\n") == 1); 
-ok(check_for_valid_email('newline@example.com' . "\r")   == 1); 
-ok(check_for_valid_email('spaces@example. com')   == 1); 
-ok(check_for_valid_email('spaces@example . com')   == 1); 
-ok(check_for_valid_email('spaces@example .com')   == 1); 
-
-
-TODO: {
-    local $TODO = 'This test fails, see bug report at: http://rt.cpan.org/Public/Bug/Display.html?id=24465';
-       
-   # diag("Next test will fail."); 
-   # diag("See: http://rt.cpan.org/Public/Bug/Display.html?id=24465 ");
-    ok(check_for_valid_email('test @example.nu')           == 1); 
-
-};
-
-
-
-ok(check_for_valid_email('test+0')                     == 1); 
+ok( check_for_valid_email('test@example.com') == 0 );
+ok( check_for_valid_email('test@example.co.uk') == 0 );
+ok( check_for_valid_email('test.one.two@example.co.uk') == 0 );
+ok( check_for_valid_email('test@example.nu') == 0 );
+ok( check_for_valid_email('test+0@example.nu') == 0 );
+ok( check_for_valid_email('test') == 1 );
+ok( check_for_valid_email('test@example') == 1 );
+ok( check_for_valid_email('example.co.uk') == 1 );
+ok( check_for_valid_email( 'newline@example.com' . "\n" ) == 1 );
+ok( check_for_valid_email( 'newline@example.com' . "\r\n" ) == 1 );
+ok( check_for_valid_email( 'newline@example.com' . "\r" ) == 1 );
+ok( check_for_valid_email('spaces@example. com') == 1 );
+ok( check_for_valid_email('spaces@example . com') == 1 );
+ok( check_for_valid_email('spaces@example .com') == 1 );
+ok( check_for_valid_email('test @example.nu') == 1 );
+ok( check_for_valid_email('test+0') == 1 );
 
 
 
