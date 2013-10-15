@@ -13,8 +13,23 @@ use HTML::Template::MyExpr;
 use DADA::Config; 
 
 
+my @dirs = (
 
-my $dir = 'templates'; 
+	'templates', 
+	'templates/plugins/bounce_handler',
+	'templates/plugins/bridge',
+	'templates/plugins/change_list_shortname',
+	'templates/plugins/default_mass_mailing_messages',
+	'templates/plugins/global_config',
+	'templates/plugins/log_viewer',
+	'templates/plugins/mailing_monitor',
+	'templates/plugins/password_protect_directories',
+	'templates/plugins/screen_cache',
+	'templates/plugins/shared',
+	'templates/plugins/tracker',
+	
+	'installer-disabled/templates',
+); 
 
 #Work on this one later...
 # archive_screen.tmpl
@@ -22,35 +37,31 @@ my $dir = 'templates';
 
 my @files = (); 
 
-my $file;
-	
-	
-opendir(TMPL, $dir) or die "can't open '$dir' to read: $!";
+foreach my $dir(@dirs) { 
 
-while(defined($file = readdir TMPL)) {
-    #don't read '.' or '..'
-    next if $file =~ /^\.\.?$/; 
+	my $file;
+	opendir(TMPL, $dir) or die "can't open '$dir' to read: $!";
 
-    if($file =~ m{(\.tmpl|\.widget)}){ 
-    
-		# Wait. Why am I skipping these?
-		next if $file =~ m{example_dada_config.tmpl};
-        next if $file =~ m{rss-2_0.tmpl}; 
-        next if $file =~ m{atom-1_0.tmpl}; 
-        next if $file =~ m{admin_js.tmpl}; 
+	while(defined($file = readdir TMPL)) {
+	    #don't read '.' or '..'
+	    next if $file =~ /^\.\.?$/; 
 
-        push(@files, $file);
-    }
+	    if($file =~ m{(\.tmpl|\.widget)}){ 
+			# Wait. Why am I skipping these?
+#			next if $file =~ m{example_dada_config.tmpl};
+#	        next if $file =~ m{rss-2_0.tmpl}; 
+#	        next if $file =~ m{atom-1_0.tmpl}; 
+	        push(@files, $dir . '/' . $file);
+	    }
+	 }
+}
 
-
-     
- }
-
-
+=cut
 for my $test_file (@files) {
     html_ok( strip_comments( open_file( $dir . '/' . $test_file ) ),
         $test_file . ' through Lint test' );
 }
+=cut
 
 
 
@@ -59,7 +70,7 @@ for my $test_file (@files) {
 
     eval {
         my $template = HTML::Template::MyExpr->new(
-            path              => $dir,
+            path              => 'templates',
             die_on_bad_params => 0,
             loop_context_vars => 1,
             filename          => $test_file,
