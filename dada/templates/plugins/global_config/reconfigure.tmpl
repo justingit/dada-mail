@@ -33,13 +33,13 @@
 			</li>	
 		<!-- /tmpl_if --> 
 	
-		<!-- tmpl_var chmoded_installer_script -->
-		<li>
-			<p>
-				Could not change the install.cgi file back to, &quot;755&quot;
-			</p> 
-		</li>	
-	<!-- /tmpl_if --> 
+		<!-- tmpl_if chmoded_installer_script -->
+			<li>
+				<p>
+					Could not change the install.cgi file back to, &quot;755&quot;
+				</p> 
+			</li>	
+		<!-- /tmpl_if --> 
 	</ul> 
 
-Your <!-- tmpl_var PROGRAM_NAME --> has not be reconfigured. 
+Your <!-- tmpl_var PROGRAM_NAME --> has not been reconfigured. 
