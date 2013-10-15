@@ -2154,8 +2154,8 @@ sub message_email_report {
       map { [ $_, $_->{email_domain} ] } @report;
     $sth->finish;
 
-	use Data::Dumper; 
-	warn Dumper(\@sorted); 
+	# use Data::Dumper; 
+	# warn Dumper(\@sorted); 
 	
     return [@sorted];
 
