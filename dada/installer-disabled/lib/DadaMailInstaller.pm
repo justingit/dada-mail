@@ -1686,8 +1686,8 @@ sub create_dada_config_file {
 	my $amazon_ses_params = {}; 
 	if($q->param('configure_amazon_ses') == 1){ 
 		$amazon_ses_params->{configure_amazon_ses} = 1; 
-		$amazon_ses_params->{AWSAccessKeyId} = $q->param('amazon_ses_AWSAccessKeyId');
-		$amazon_ses_params->{AWSSecretKey} = $q->param('amazon_ses_AWSSecretKey'); 
+		$amazon_ses_params->{AWSAccessKeyId} = strip($q->param('amazon_ses_AWSAccessKeyId'));
+		$amazon_ses_params->{AWSSecretKey}   = strip($q->param('amazon_ses_AWSSecretKey')); 
 	}
 	
 	
@@ -2905,8 +2905,8 @@ sub cgi_test_user_template {
 
 sub cgi_test_amazon_ses_configuration { 
 	
-	my $amazon_ses_AWSAccessKeyId = $q->param('amazon_ses_AWSAccessKeyId'); 
-	my $amazon_ses_AWSSecretKey   = $q->param('amazon_ses_AWSSecretKey'); 
+	my $amazon_ses_AWSAccessKeyId = strip($q->param('amazon_ses_AWSAccessKeyId')); 
+	my $amazon_ses_AWSSecretKey   = strip($q->param('amazon_ses_AWSSecretKey')); 
 	my ($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ); 
 	
 	eval { 
