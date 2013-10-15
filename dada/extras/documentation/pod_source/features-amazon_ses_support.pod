@@ -4,67 +4,330 @@
 
 =head1 Introduction
 
-From, http://aws.amazon.com/ses/ : 
+B<From, L<http://aws.amazon.com/ses/>>:
 
-I<Amazon Simple Email Service (Amazon SES) is a highly scalable and 
-cost-effective bulk and transactional email-sending service for businesses 
-and developers. Amazon SES eliminates the complexity and expense of building an in-house email solution or licensing, installing, and operating a third-party email service. The service integrates with other AWS services, making it easy to send emails from applications being hosted on services such as Amazon EC2. With Amazon SES there  is no long-term commitment, minimum spend or negotiation required - businesses can utilize a free usage tier and after that enjoy low fees for the number of emails sent plus data transfer fees.>
+I<Amazon Simple Email Service (Amazon SES) is a highly scalable and cost-effective bulk and transactional email-sending service for businesses and developers. Amazon SES eliminates the complexity and expense of building an in-house email solution or licensing, installing, and operating a third-party email service.>
 
-Dada Mail has support for Amazon SES, both by using the Amazon SES API and using the Amazon SES SMTP Interface. The SMTP Interface is probably B<easier to set up>, it's possible that the SES API is B<faster>. 
+Dada Mail supports Amazon SES, both by using the Amazon SES API (as well as using the Amazon SES SMTP Interface.)
 
-If you're having trouble sending messages using your hosting account's mail server, perhaps because of the time it takes to complete a mass mailing, or because of the amount of mail you're sending, using Amazon SES may be an interesting alternative. 
+Amazon SES is on solution to the problem of trying to send too many messages too quickly on a hosting plan that may not support such numbers. It does this by allowing you to send out your messages with what could be a very generous quota, while also having good deliverability: users who abuse the service are disallowed future use. 
 
-Amazon SES costs around $0.10 per thousand messages you send. See: 
+Amazon SES costs around $0.10 per I<thousand> messages you send. See: 
 
 L<http://aws.amazon.com/ses/pricing/>
 
-for current pricing. Using the service in a non-production mode is free. 
-
-Dada Mail does not currently work 100% with Amazon's EC2 hosting, which is something else, entirely.  
-
-=head1 Experimental Support! 
-
-Support for Amazon SES is currently labeled as, B<Experimental> (as Amazon labels SES itself as, I<Beta>). We would love your feedback on how it's working for you, but please understand there may be a few unknowns left to uncover. 
-
-Some things to consider: 
+for current pricing. Using the service in a testing, non-production mode is free. 
 
 =head1 Use for Closed-List Opt-In Subscriptions Lists Only
 
-Since Amazon SES is an outside, third party sending service, you'll absolutely need to use a mailing list that's B<100% confirmed opt-in>. If you don't, complaints of abuse sent to Amazon, manually sent or automatically sent, will most likely disallow you from furthering your use of their service. 
+Since Amazon SES is an outside, third party sending service, you'll need to use a mailing list that's B<100% confirmed opt-in>. If you don't, complaints of abuse sent to Amazon will most likely disallow you from continuing to use  their service. 
 
 =head2 Bounce Handler Support
 
 Here's the overview of Bounce support for SES:
 L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/index.html?SendingEmail.BounceAndComplaintNotifications.html>
 
-Dada Mail's support for bounce handling w/SES sending is also B<Experimental>. We'd love to get your feedback. 
-
 When you use Dada Mail with SES, Dada Mail I<will> set the C<Return-Path> header explicitly.
 
-Dada Mail's included Bounce Handler has rules specifically for Amazon SES. 
+Dada Mail's included Bounce Handler has rules specifically for Amazon SES, and we do suggest using it, if you use Amazon SES.  
 
-One caveat of using Bounce Handler is that the Bounce Handler email address has to be verified by Amazon to receive the bounces, just like you would verify a sender. Best thing to do would be to create the bounce handler email address and verify it I<before> you configure the Bounce Handler and the rest of Dada Mail with this address, since Bounce Handler will not automatically verify itself - it'll most likely simply ignore the request. 
+=head1 Configuration
+
+During installation of Dada Mail, you'll need to plug in your B<AWS Access Key ID> and B<AWS Secret Access Key>.
+
+Getting this all set up is fairly easy in the Amazon AWS control panel, although the steps are a little more numbered than we'd like them to be. Amazon AWS covers a plethora of different services. 
+
+=head2 Obtaining your AWS Access Key ID and AWS Secret Access Key
+
+There's a few ways to create the necessary Users/Groups in the Amazon AWS system, that will then give you the necessary keys you need. Below, we describe a simple way that should give you a secure and specific user, just for SES. 
+
+=head3 Sign up for Amazon Web Services
+
+Begin the signup procedure for Amazon's AWS: 
+
+L<https://portal.aws.amazon.com/gp/aws/developer/registration/index.html>
+
+You'll be asked to create a new Amazon account and give Amazon your payment information.
+
+=head3 Set up an IAM User
+
+Once you're signed up to AWS, log in: 
+
+L<https://portal.aws.amazon.com/gp/aws/manageYourAccount>
+
+Once logged on, you'll want to make a new IAM User here: 
+
+L<https://console.aws.amazon.com/iam/home?#users>
+
+Click the button labeled, B<Create New Users>, 
+
+=begin html 
+
+<p style="text-align:center">
+<img src="http://dadamailproject.com/images/support/ses/create_new_users.jpg" width="800" height="434" class="screenshot" /><br /> 
+<em>Create New Users</em> 
+</p>
+
+=end html 
+
+Under, B<Enter User Names:> enter a username. For this walkthrough, I'm going to enter B<DadaMail>. 
+
+Make sure, B<Generate an access key for each User> is checked. 
+
+Click the button labeled, B<Create>
+
+=begin html 
+
+<p style="text-align:center">
+<img src="http://dadamailproject.com/images/support/ses/create_users.jpg" width="800" height="434" class="screenshot" /><br /> 
+<em>Create!</em> 
+</p>
+
+=end html 
+
+
+
+Once this new user is created, click the link labeled, B<Show User Security Credentials> 
+
+=begin html 
+
+<p style="text-align:center">
+<img src="http://dadamailproject.com/images/support/ses/show_user_security_creds.jpg" width="800" height="434" class="screenshot" /><br /> 
+<em>Show Security Credentials</em> 
+</p>
+
+=end html 
+
+
+and copy the, B<Access Key ID> and, B<Secret Access Key>. Save this information in a safe place: we'll need it later. 
+
+Once you're finished, click B<Close Window> (you may have to do this twice) 
+
+We now have to attach a new B<User Policy>. 
+
+=head3 Create a User Policy for your new User
+
+Check the checkbox next to the user you just created.
+
+
+=begin html 
+
+<p style="text-align:center">
+<img src="http://dadamailproject.com/images/support/ses/1_user_selected.jpg" width="800" height="434" class="screenshot" /><br /> 
+<em>Select Your New User</em> 
+</p>
+
+=end html 
+
+
+Below the listing for this user, you'll see the user's details. Click on the B<Permissions> tab. 
+
+=begin html 
+
+<p style="text-align:center">
+<img src="http://dadamailproject.com/images/support/ses/user_permissions.jpg" width="800" height="434" class="screenshot" /><br /> 
+<em>The, Permissions Tab</em> 
+</p>
+
+=end html 
+
+In that tab, click on the button labeled, B<Attach User Policy>.
+
+=begin html 
+
+<p style="text-align:center">
+<img src="http://dadamailproject.com/images/support/ses/attach_user_policy.jpg" width="800" height="434" class="screenshot" /><br /> 
+<em>Attach User Policy</em> 
+</p>
+
+=end html 
+
+Under, B<Select Policy Template> choose, B<Amazon SES Full Access>. 
+
+=begin html 
+
+<p style="text-align:center">
+<img src="http://dadamailproject.com/images/support/ses/select_ses_full_access.jpg" width="800" height="434" class="screenshot" /><br /> 
+<em>Select Amazon SES Full Access</em> 
+</p>
+
+=end html 
+
+The, B<Policy Name> and B<Policy Document> will be shown - we won't need to work with that, so just click the button labeled, B<Apply Policy>
+
+=begin html 
+
+<p style="text-align:center">
+<img src="http://dadamailproject.com/images/support/ses/apply_policy.jpg" width="800" height="434" class="screenshot" /><br /> 
+<em></em> 
+</p>
+
+=end html 
+
+We can now use the B<Access Key ID> and B<Secret Access Key> in Dada Mail. 
+
+=head2 Set the Access Key ID and Secret Access Key in Dada Mail. 
+
+The B<Access Key ID> and B<Secret Access Key> are set in Dada Mail's global configuration file, called, C<.dada_config>. You may either add the following lines I<directly> in your C<.dada_config> file: 
+
+	$AMAZON_SES_OPTIONS = { 
+		AWSAccessKeyId => 'AKIAI3K72UE32N5BRZSA', 
+		AWSSecretKey   => 'GIuwhcVRY2QaCk9BNpRsZOqIH7bF4jr1O5VeSkay', 
+	};
+
+I<(using your own B<Access Key ID> and B<Secret Access Key>)> Or, have the included Dada Mail Installer set this up for you: 
+
+=head3 Using the Dada Mail Installer
+
+In the Dada Mail Installer, find the section labeled, B<Advanced Configuration (Optional)>. 
+
+Check the checkbox labeled, B<Configure Amazon SES>. 
+
+=begin html 
+
+<p style="text-align:center">
+<img src="http://dadamailproject.com/images/support/ses/installer-configure_amazon_ses.jpg" width="800" height="434" class="screenshot" /><br /> 
+<em>Configure Amazon SES</em> 
+</p>
+
+=end html 
+
+Textboxes to plug in the B<Access Key ID> and B<Secret Access Key> we just retrieved will be revealed. Plug in those two keys, and test them by clicking the button labeled, B<Test Your AWS Credentials>. 
+
+=begin html 
+
+<p style="text-align:center">
+<img src="http://dadamailproject.com/images/support/ses/installer-test_amazon_ses.jpg" width="800" height="434" class="screenshot" /><br /> 
+<em>Testing the Amazon SES Credentials</em> 
+</p>
+
+=end html 
+
+If the credentials work, you'll be told what your current sending quota is.
+
+Complete the installation/configuration by clicking, B<Configure Pro Dada/Dada Mail!>
+
+=head4 More Information on the Dada Mail Installer
+
+The Dada Mail Installer can be used to install and upgrade Dada Mail, as well as change the global configuration of an already installed copy of Dada Mail. 
+
+More information on how to change the global configuration of an already installed copy of Dada Mail, see: 
+
+L<http://dadamailproject.com/d/install_dada_mail.pod.html>
+
+Other advanced configuration options are available to you: 
+
+L<http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html>
+
+=head2 Setting up a Mailing List to use Amazon SES Sending 
+
+Once the AWS B<Access Key ID> and B<Secret Access Key> are configured in Dada Mail, you can then set up a mailing list to use SES for sending. 
+
+Log into your mailing list and go to, B<Mail Sending - Options> 
+
+Under, B<Send Messages Using:>, select, B<Amazon Simple Email Service>
+
+=begin html 
+
+<p style="text-align:center">
+<img src="http://dadamailproject.com/images/support/ses/mail_sending_options_select_ses.jpg" width="800" height="434" class="screenshot" /><br /> 
+<em>Selecting, Amazon Simple Email Service</em> 
+</p>
+
+=end html 
+
+If you haven't already, you'll need to also B<Verify> each sender that'll be using the service. For Dada Mail, that means verifying the List Owner, and if you're using the Bounce Handler, perhaps the List Administration email address:  
+
+Under B<Amazon SES Tools> fill in your List Owner's email address, and click, B<Verify Address For Sending>. 
+
+=begin html 
+
+<p style="text-align:center">
+<img src="http://dadamailproject.com/images/support/ses/mail_sending_options_verify_sender.jpg" width="800" height="434" class="screenshot" /><br /> 
+<em>Verifying a Sender</em> 
+</p>
+
+=end html 
+
+That email account will receive an email message from Amazon AWS, with a verification link to click, to finish the verification process. 
+
+=begin html 
+
+<p style="text-align:center">
+<img src="http://dadamailproject.com/images/support/ses/ses_verification_link.jpg" width="800" height="434" class="screenshot" /><br /> 
+<em>SES Sender Verification Email Message</em> 
+</p>
+
+=end html 
+
+=head3 Verifying the Bounce Handler
+
+If you're using  a different email address for your mailing list's List Owner, and List Administrator, make sure to verify B<both> addresses. 
+
+This can be a little tricky, if the account for the List Administrator Address is being checked by the Bounce Handler, to process any bounced messages sent back from your mailing list. 
+
+What you'll basically need to do is check the POP3 mailbox of your Bounce Handler, before the Bounce Handler does. Easiest way to do that, is to remove the cronjob that runs the Bounce Handler on a schedule, send the Amazon SES sender verification email (using the same steps above), log into the email account yourself, find the message sent by Amazon SES and click on the verification email found in that message. Once that's done, you can reset the cronjob for the Bounce Handler, is it was before. 
+
+=head4 Other Ways to Verify a Sender
+
+The Amazon SES Dashboard itself allows you to Verify a Sender: 
+
+L<https://console.aws.amazon.com/ses/home?#verified-senders-email:>
+
+Click the button labeled, B<Verify a New Email Address> to get started. 
+
+=head2 Set Your Mass Mailing Batch Settings
+
+When using SES for mail sending in Dada Mail, it's important to keep below the sending quota set by Amazon SES. This limit can fluctuate - usually upwards, while you use the service. 
+
+To make things easier, Dada Mail can be set to automatically adjust its Batch Settings to work within your limit, but not above it. 
+
+In Dada Mail's List Control Panel, go to: B<Mail Sending - Mass Mailing Options> and check: 
+
+B<Automatically set batching speeds based on your Amazon SES limits>
+
+=begin html 
+
+<p style="text-align:center">
+<img src="http://dadamailproject.com/images/support/ses/auto_adjust_batch_changes.jpg" width="800" height="434" class="screenshot" /><br /> 
+<em>Auto-Adjust Batch Settings</em> 
+</p>
+
+=end html 
+
+Your batch settings will now grow or shrink, depending on your current Amazon SES sending limits. If you do go over your total 24 hour quota, mass mailings will not be sent out, and batches will be set to wait for 5 minutes, before trying to be sent again. When your 24 hour quota is lifted, sending will once again take place. 
+
+=head2 Request Full Production Access
+
+Once you're done testing Amazon SES, you'll want to request full production access here: 
+
+L<http://aws.amazon.com/ses/fullaccessrequest>
+
+I<Without> full production access, you'll only be able to send messages to addresses that have manually been verified.
+
+=head1 Setting up SPF Records
+
+Setting up SPF Records to work with Amazon SES for your entire domain is covered at: 
+
+L<http://docs.aws.amazon.com/ses/latest/DeveloperGuide/spf.html>
+
+=head1 Setting up DKIM in AWS (Easy DKIM)
+
+Dada Mail does not support sending messages with a DKIM signature, but Amazon SES does - thus, if you send messages with Dada Mail, through Amazon SES and set up Easy DKIM, your messages will be signed. Here's how to do that:
+
+L<http://docs.aws.amazon.com/ses/latest/DeveloperGuide/easy-dkim.html>
 
 =head1 Limitations
 
-=head2 Method: Amazon SES API
+=head2 Amazon SES API
 
 =head3 Performance 
 
-Sending via Amazon SES is done with a persistent HTTP connection, so performance shouldn't be too bad. Expect around .3 seconds/message for I<just> passing the email message from Dada Mail to the Amazon SES service. 
-
-=head2 Method: Amazon SES SMTP Interface
-
-=head3 Performance 
-
-It's not known how performance compares to the SES API. 
-
-=head2 Both Methods
-
+Sending via Amazon SES is done with a persistent HTTP connection, so performance should be pretty good!. Expect around .3 seconds/message for I<just> passing the email message from Dada Mail to the Amazon SES service. 
 
 =head3 No Discussion List Support
 
-Dada Mail preserves the, From: header address, when it sends out messages received from the mailing list's subscribers. This makes using Amazon SES for discussion lists unrealistic, as every subscriber of your mailing list would need to be verified through Amazon SES. 
+Dada Mail preserves the C<From>: header address, when it sends out messages received from the mailing list's subscribers. This makes using Amazon SES for discussion lists unrealistic, as every subscriber of your mailing list would need to be verified through Amazon SES. 
 
 =head3 Different email headers sent
 
@@ -113,151 +376,6 @@ Amazon SES requires a few more CPAN Perl modules than the base Dada Mail install
 See also the FAQ, B<How do you install, "CPAN Perl Modules"> 
 
 L<http://dadamailproject.com/d/FAQ-general.pod.html#how_do_you_install__cpan_perl_modules>
-
-
-=head1 Configuration
-
-=head2 Both Methods: Sign up for Amazon Web Services
-
-Begin the signup procedure for Amazon's AWS: 
-
-L<https://aws-portal.amazon.com/gp/aws/developer/registration>
-
-You'll be asked to create a new Amazon account and give Amazon your payment information.
-
-=head2 Method: Amazon SES API
-
-During the installation process, using the included Dada Mail Installer, you'll need to plug in your B<AWS Access Key ID> and a B<AWS Secret Access Key>. Both can found in the B<Security Credentials> section of your AWS account (Under, B<My Account / Console>, click on, B<Security Credentials>). 
-
-The installer will tell you if you meet all the requirements to use Amazon SES, and allow you to test the B<AWS Access Key ID> and B<AWS Secret Access Key> that you plug in. 
-
-=head3 Configuring Dada Mail to use the Amazon SES API
-
-In Dada Mail, log into your list control panel and go to: 
-
-I<Mail Sending - Options> 
-
-There should be an option, along with sending via the sendmail command and sending via SMTP, to send via I<Amazon Simple Email Service >. 
-
-If Dada Mail notices you're missing any required CPAN modules, it'll notify you. Don't try using sending via this method, until all these prerequisites are met.
-
-=head3 Verify your List Owner
-
-Before you can send any email messages using Amazon SES in Dada Mail, you have to 
-verify your list owner.
-
-Under, I<Amazon SES Tools>, right on the I<Mail Sending  Options> screen, you should see a little verifier. Enter your List Owner email address and click, I<Verify Address for Sending>. You can also use verify addresses in the SES console, itself. 
-
-Once verified, you may use Dada Mail's built-in Mail Sending Options Tester to see if Amazon SES sending is working. 
-
-If it is, congratulations! You're now using Amazon SES to send email out, using Dada Mail. You can further test Amazon SES 
-on a small test list by verifying individual addresses in your subscription list using the same verification utility. To 
-really use Amazon SES for mass mailing, you'll need to request full production access from Amazon. 
-
-=head2 Method: Amazon SES SMTP Interface
-
-Here's the overview of Amazon SES SMTP Interface: 
-
-L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/SMTP.html>
-
-You'll first have to create a SMTP username and password: 
-
-L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/SMTP.Credentials.html>
-
-and then configure Dada Mail to use these credentials: 
-
-=head3 Configuring Dada Mail to use the Amazon SES SMTP Interface
-
-Log into your Dada Mail List and go to: B<Mail Sending - Options> 
-
-Choose, B<Send Email Using SMTP>
-
-For the, B<SMTP Server:>, use, C<email-smtp.us-east-1.amazonaws.com>
-
-For the B<Port> use, C<465>
-
-B<Check> I<Use Secure Sockets Layer (SSL)>
-
-B<Check> I<Use SMTP Authentication (SASL)>
-
-For B<Type:> use, B<PLAIN>
-
-Fill out the, B<Username> and B<Password> with the username and password provided by Amazon. 
-
-=head3 Verify your List Owner
-
-B<Sign in to the AWS Management Console> at, 
-
-L<https://console.aws.amazon.com/s3/home>
-
-Once at the Amazon AWS Console, click the, B<Amazon SES> tab, click on, B<Verified Senders> and click the button labeled, B<Verify a New Sender>. Enter in your List Owner. You will have to do this for each different List Owner you plan to use. 
-
-=head2 Set Your Mass Mailing Batch Settings
-
-You'll want to make sure to send below your Amazon SES sending quota. This can be done automatically by Dada Mail. 
-
-Go to: B<Mail Sending - Mass Mailing Options> and check the option, 
-
-B<Automatically set batching speeds based on your Amazon SES limits>
-
-Your batch settings will now grow or shrink, depending on your current Amazon SES sending limits. If you do go over your total 24 hour quota, mass mailings will not be sent out, and batches will be set to wait for 5 minutes, before trying to be sent again. When your 24 hour quota is lifted, sending will once again take place. 
-
-=head2 Both Methods: Request Full Production Access
-
-Once you're done testing Amazon SES, you'll want to request full production access: 
-
-L<http://aws.amazon.com/ses/fullaccessrequest>
-
-Without full production access, you'll only be able to send messages to addresses that have manually been verified. 
-
-=head1 Alternative Ways to Use Amazon SES with Dada Mail
-
-You can use Amazon SES through your existing mail server, as outlined here: 
-
-L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/IntegratingWithServer.html>
-
-
-=head1 SPF, Sender ID, and DKIM
-
-Since you're asking a third party to send email on behalf of you, you'll most likely want to make sure you have  a correct B<SPF Record> set up to tell the world that that's OK. 
-
-Amazon's doc's have an overview on how to do this, 
-
-L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/index.html?SPFSenderIDDKIM.html>
-
-=over
-
-=item * SPF
-
-http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/index.html?SPF.html
-
-=item * Send-ID
-
-http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/index.html?SenderID.html
-
-=item * DKIM
-
-http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/index.html?DKIM.html
-
-=back
-
-=head1 Bugs
-
-Please give feedback using the links, below: 
-
-=head1 Feedback Appreciated
-
-Amazon SES support is currently a little rough and we need feedback on how it's working for you. Please either use the forum/boards: 
-
-L<http://dadamailproject.com/support/boards>
-
-Discuss on our dev. list: 
-
-L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
-
-And/or file an issue: 
-
-L<http://github.com/justingit/dada-mail/issues>
 
 =head1 Related Projects
 
