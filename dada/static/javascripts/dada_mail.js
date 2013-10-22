@@ -82,8 +82,11 @@ $(document).ready(function() {
 		});
 		
 		if ($("#send_email_screen").length || $("#send_url_email").length) {
-
-			auto_save_as_draft();
+			if($("#draft_enabled").val() == 1){ 
+				auto_save_as_draft();
+			}
+			else { 
+			}
 			
 			$("body").on("click", ".savedraft", function(event) {
 				$("#button_action_notice").html('Working...');
@@ -127,8 +130,13 @@ $(document).ready(function() {
 			var itsatest = $(this).hasClass("justatest");
 			if (sendMailingListMessage(fid, itsatest) === true) {
 				if($("#f").val() != 'list_invite') { 
-					save_draft(false);
-					admin_menu_drafts_notification();
+					if($("#draft_enabled").val() == 1){ 
+						save_draft(false);
+						admin_menu_drafts_notification();
+					}
+					else { 
+				
+					}
 				}
 				if($("#f").val() == 'list_invite' && itsatest == true) { 
 					// alert('now were sending out a test message!');
