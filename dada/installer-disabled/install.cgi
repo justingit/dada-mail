@@ -2,8 +2,10 @@
 use strict;
 
 use FindBin;
-use lib "../$FindBin::Bin";
-use lib "../$FindBin::Bin/DADA/perllib";
+use lib "$FindBin::Bin/../";
+use lib "$FindBin::Bin/../DADA/perllib";
+use lib "$FindBin::Bin/lib";
+
 
 BEGIN {
     my $b__dir = ( getpwuid($>) )[7] . '/perl';
