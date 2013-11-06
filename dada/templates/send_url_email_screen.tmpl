@@ -12,13 +12,6 @@
 </div>
 <div id="send_url_email"></div> 
 
-<!-- tmpl_if draft_id --> 
-	<div class="clearskiesbox">
-		<p>
-			Draft message restored below:
-		</p>
-	</div> 
-<!-- /tmpl_If --> 
 
 <form name="mass_mailing" id="mass_mailing" action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post">
 
@@ -27,6 +20,14 @@
 
 	<!-- tmpl_include test_sent_notice_widget.tmpl --> 
 	<!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
+
+	<!-- tmpl_if draft_id --> 
+		<div class="clearskiesbox">
+			<p>
+				Draft message restored below:
+			</p>
+		</div> 
+	<!-- /tmpl_If --> 
 
 
  <input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" />
