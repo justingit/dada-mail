@@ -404,7 +404,10 @@ sub auto_redirect_tag {
 			# Whoa, let's hide any URLs that already have redirect tags around them!
 			
 			
+			
+			
 			# A few cases we'll look for... 
+			
 			
 			# Old School! 
 			push(@$links,
@@ -453,12 +456,20 @@ sub auto_redirect_tag {
 		for my $specific_url(@unique_uris){ 
 			warn '$specific_url ' . $specific_url
 				if $t; 
-			my $qm_link    = quotemeta($specific_url); 
-			my $redirected = $self->redirect_tagify($specific_url);
-			warn '$redirected ' . $redirected
-				if $t;
-			# (somewhat simple regex) 
-			$s =~ s/([^redirect\=\"])($qm_link)/$1$redirected/g;
+				
+			if(
+				$specific_url =~ m/mailto\:/ && 
+				$self->{ls}->param('tracker_auto_parse_mailto_links') != 1
+			){  
+			}
+			else { 
+				my $qm_link    = quotemeta($specific_url); 
+				my $redirected = $self->redirect_tagify($specific_url);
+				warn '$redirected ' . $redirected
+					if $t;
+				# (somewhat simple regex) 
+				$s =~ s/([^redirect\=\"])($qm_link)/$1$redirected/g;
+			}
 		}
 		
 		# Now, put 'em back!
@@ -553,9 +564,14 @@ sub HTML_auto_redirect_w_link_ext {
 			 if $t; 
 			return; 
 		}
+		elsif($link =~ m/^mailto\:/ && $self->{ls}->param('tracker_auto_parse_mailto_links') != 1) { 
+			warn '$link looks like it\'s an email address, and prefs are set to skip those.'; 
+			return;  
+		}
 		else { 
 			# ... 
 		}
+			
 		
 		my @links_to_look_at = ($link); 
 		if($link =~ m/\&/){ 

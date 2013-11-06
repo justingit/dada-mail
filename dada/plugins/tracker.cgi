@@ -629,25 +629,18 @@ sub edit_prefs {
             -associate => $q,
             -settings  => {
 
-				tracker_auto_parse_links                        => 0, 
-
+                tracker_auto_parse_links                        => 0,
+                tracker_auto_parse_mailto_links                 => 0,
                 tracker_track_opens_method                      => undef,
-
-				tracker_track_email                             => 0,
-
-				tracker_clean_up_reports                        => 0, 
-				tracker_show_message_reports_in_mailing_monitor => 0, 
+                tracker_track_email                             => 0,
+                tracker_clean_up_reports                        => 0,
+                tracker_show_message_reports_in_mailing_monitor => 0,
             }
         }
     );
-	require DADA::App::DataCache; 
-	my $dc = DADA::App::DataCache->new;
-	$dc->flush(
-		{
-			-list => $list
-		}
-	); 
-
+    require DADA::App::DataCache;
+    my $dc = DADA::App::DataCache->new;
+    $dc->flush( { -list => $list } );
 
     print $q->redirect( -uri => $Plugin_Config->{Plugin_URL} . '?done=1' );
 }

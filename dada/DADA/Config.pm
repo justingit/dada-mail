@@ -2790,6 +2790,7 @@ EOF
     tracker_record_view_count                       => 10,
 
     tracker_auto_parse_links                        => 1,
+    tracker_auto_parse_mailto_links                 => 0, 
     tracker_track_opens_method                      => 'directly',
 
     tracker_track_email                             => 1,
