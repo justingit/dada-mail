@@ -23,6 +23,7 @@ my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 		tracker_record_view_count                           => 10, 
 		tracker_clean_up_reports                            => 1, 
 		tracker_auto_parse_links                            => 1, 
+	    tracker_auto_parse_mailto_links                     => 0, 
 		tracker_show_message_reports_in_mailing_monitor     => 0,
 	}
 ); 
@@ -32,10 +33,6 @@ my $key;
 
 my $lc = DADA::Logging::Clickthrough->new( { -list => $list } );
 ok( $lc->isa('DADA::Logging::Clickthrough') );
-
-
-
-
 
 my @redirect_urls = (
 
@@ -273,10 +270,6 @@ ok( $r_url eq $test_url );
 # This is kinda strange - we have to reinit the object:
 
 
-=cut
-undef($lc);
-$lc = DADA::Logging::Clickthrough->new( { -list => $list } );
-=cut
 
 
 # Now, it should do what I want it to do:
@@ -577,8 +570,11 @@ ok($ar_str eq $should_be, "yeah, they match up!");
 undef $ar_str; 
 undef $should_be;
 
+
 my $ar_str = q{
 	<p><a href='http://example.com/'>Example</a></p>
+
+	<p><a href='http://example.com/'>Example</a></p><!-- Dupe Link -->
 
 	<p><a href="http://google.com">Gooooogle</a></p>
 	
@@ -610,8 +606,10 @@ my $ar_str = q{
 
 }; 
 
-$should_be = q{
+my $should_be = q{
 	<p><a href='<?dada redirect url="http://example.com/" ?>'>Example</a></p>
+
+	<p><a href='<?dada redirect url="http://example.com/" ?>'>Example</a></p><!-- Dupe Link -->
 
 	<p><a href="<?dada redirect url="http://google.com" ?>">Gooooogle</a></p>
 	
@@ -644,37 +642,42 @@ $should_be = q{
 };
 
 $ar_str = $lc->auto_redirect_tag($ar_str, 'HTML');
-diag 'ar_str:' . $ar_str; 
-
-diag $should_be;
+diag 'ar_str:'     . $ar_str; 
+diag 'should_be: ' . $should_be;
  
 ok($ar_str eq $should_be, "yeah, they match up! (HTML)"); 
 undef $ar_str; 
 undef $should_be;
 
-#my $ar_str = "<p><a href='http://example.com/single_quotes.html'>Single Quotes!</a></p>"; 
-#   $ar_str = $lc->auto_redirect_tag($ar_str, 'HTML');
-#diag $ar_str;
 
-
-
-
-
-
-
-=cut
-my $ar_str = q{<p><a href = "http://example.com/randomspaces.html">Huh?</a></p>}; 
-
-my $should_be = q{<p><a href = "<?dada redirect url="http://example.com/randomspaces.html" ?>">Huh?</a></p>};
-
-my $ar_str = $lc->auto_redirect_tag($ar_str, 'HTML');
-
-diag $ar_str;
- 
-ok($ar_str eq $should_be, "yeah, they match up! (HTML)"); 
+#mailto: links are not redirected, by default. 
+my $test_email_link = '<a href="mailto:user@example.com">test</a>'; 
+my $ar_str = $lc->auto_redirect_tag($test_email_link, 'HTML');
+diag '$ar_str ' . $ar_str; 
+ok($test_email_link eq $ar_str, 'mailto: links are NOT redirected, by default.'); 
+#undef $test_email_link; 
 undef $ar_str; 
-undef $should_be;
-=cut
+
+diag "NEXT!"; 
+
+# OK, well, what if it is: 
+undef($lc); 
+
+$ls->save({ tracker_auto_parse_mailto_links => 1 });
+
+
+my $lc = DADA::Logging::Clickthrough->new( { -list => $list } );
+my $test_email_link2 = '<a href="mailto:user@example.com">test</a>'; 
+my $ar_str = $lc->auto_redirect_tag($test_email_link2, 'HTML');
+ok( $lc->isa('DADA::Logging::Clickthrough') );
+
+diag '$test_email_link2 ' . $test_email_link2; 
+diag '$ar_str ' . $ar_str; 
+
+ok($test_email_link2 ne $ar_str, 'mailto: links are NOT redirected, by default - but we changed the settings so that they will!.');
+
+undef $test_email_link2; 
+undef $ar_str; 
 
 
 

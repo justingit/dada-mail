@@ -45,9 +45,7 @@ sub _init {
 	else { 
 		$self->{ls} = $args->{-ls}; 
 	}	
-	
-	$self->{auto_redirect_tmp} = ''; 
-	
+		
 	return $self;
 
 }
@@ -357,7 +355,6 @@ sub auto_redirect_tag {
 	my $s    = shift; 
 	my $type = shift; 
 	
-	
 	eval { 
 		require URI::Find; 
 		require HTML::LinkExtor;
@@ -459,7 +456,7 @@ sub auto_redirect_tag {
 				
 			if(
 				$specific_url =~ m/mailto\:/ && 
-				$self->{ls}->param('tracker_auto_parse_mailto_links') != 1
+				$self->{ls}->param('tracker_auto_parse_mailto_links') == 0
 			){  
 			}
 			else { 
@@ -548,68 +545,75 @@ sub auto_redirect_tag {
 sub HTML_auto_redirect_w_link_ext { 
 	
 	my $self = shift; 
-	my $s    = shift; 
-	
-	 sub html_cb {
-	     my($tag, %attr) = @_;
+	my $s    = shift; 	
+	my $og      = $s; 
+	my @links_to_look_at = (); 
+	my $callback = sub {
+	     my($tag, %attr) = @_;     
 	     return if $tag ne 'a';  # we only look closer at <a ...>
 		 my $link =  $attr{href}; 
 		
-		warn '$link: ' . $link
-		 if $t; 
-		
-		# Skip links that are already tagged up!
-		if($link =~ m/(^(\<\!\-\-|\[|\<\?))|((\]|\-\-\>|\?\>)$)/){ 
+		if($link =~ m/^mailto\:/ && $self->{ls}->param('tracker_auto_parse_mailto_links') == 0) { 
+			warn "Skipping mailto: link, as settings dictate."
+				if $t;
+		}
+		elsif($link =~ m/(^(\<\!\-\-|\[|\<\?))|((\]|\-\-\>|\?\>)$)/){ 
 			warn '$link looks to contain tags? skipping.'
 			 if $t; 
-			return; 
-		}
-		elsif($link =~ m/^mailto\:/ && $self->{ls}->param('tracker_auto_parse_mailto_links') != 1) { 
-			warn '$link looks like it\'s an email address, and prefs are set to skip those.'; 
-			return;  
+			#return; 
 		}
 		else { 
-			# ... 
+			warn 'pushing: ' . $link if $t; 
+			push(@links_to_look_at, $link);	
 		}
-			
 		
-		my @links_to_look_at = ($link); 
 		if($link =~ m/\&/){ 
 			# There's some weird stuff happening in HTML::LinkExtor, 
 			# Which will change, "&amps;" back to, "&", probably due to 
 			# A well-reasoned... reason. But it still breaks shit. 
 			# So I look for both: 
-			
+
 			my $ampersand_link = $link; 
 			   $ampersand_link =~ s/\&/\&amp;/g;
 			push(@links_to_look_at, $ampersand_link); 
+
 		}
-		
-		foreach my $single_link(@links_to_look_at){ 
-			my $redirected_link = $self->redirect_tagify($single_link); 
-			warn '$redirected_link: ' . $redirected_link
-			 if $t; 
-		
-			my $qm_link         = quotemeta($single_link);
-			warn '$single_link: "' . $single_link . '"'
-				if $t; 
-			warn '$qm_link: "' . $qm_link . '"'
-				if $t; 
-		
-			warn '$redirected_link: "' . $redirected_link . '"' 
-				if $t; 
-			
-			# This line is suspect - it only works with double quotes, ONLY looks at the first (?) 
-			# double quote and doesn't use any sort of API from HTML::LinkExtor. 
-			# 	
-			$self->{auto_redirect_tmp} =~ s/(href(\s*)\=(\s*)(\"?|\'?))$qm_link/$1$redirected_link/;
-		}
+	};
+
+    my $p = HTML::LinkExtor->new( $callback );
+       $p->parse($s);
+	undef $p; 
+
+	if($t) { 
+		require Data::Dumper; 
+		warn 'Links Found:' . Data::Dumper::Dumper([@links_to_look_at]); 
 	}
-    $self->{auto_redirect_tmp} = $s;
-    my $p = HTML::LinkExtor->new( \&html_cb );
-    $p->parse($s);
-    $s  = $self->{auto_redirect_tmp};
-    $self->{auto_redirect_tmp} = '';
+	
+	foreach my $single_link(@links_to_look_at){ 
+		my $redirected_link = $self->redirect_tagify($single_link); 
+		warn '$redirected_link: ' . $redirected_link
+		 if $t; 
+	
+		my $qm_link         = quotemeta($single_link);
+		warn '$single_link: "' . $single_link . '"'
+			if $t; 
+		warn '$qm_link: "' . $qm_link . '"'
+			if $t; 
+		
+		# This line is suspect - it only works with double quotes, ONLY looks at the first (?) 
+		# double quote and doesn't use any sort of API from HTML::LinkExtor. 
+		# 
+		# Also see that we don't get rid of dupes in @links_to_look_at, and this regex is not global. 
+		# If you do one do the other, 
+		$og =~ s/(href(\s*)\=(\s*)(\"?|\'?))$qm_link/$1$redirected_link/;
+		
+	}
+
+    $s  = $og;
+
+	@links_to_look_at = (); 
+	$og = undef; 
+	
 	return $s; 
 }
 
