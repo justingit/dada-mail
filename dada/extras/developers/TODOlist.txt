@@ -13,6 +13,7 @@ Key:
 =======
 
 
+[ ] HTML::LinkExtor and image maps? 
 
 [ ]  Permission Reminders
 http://blog.sendgrid.com/permission-reminders-affect-email-deliverability/
