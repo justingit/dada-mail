@@ -13,6 +13,12 @@ Key:
 =======
 
 
+
+[ ] Fancy Template things: for Global User Template, have option to just use a "blank" page (or any page, really), and: 
+	[ ] Allow you to inject the needed default template in BOTH the head and body, 
+		[ ] I would need to rename a lot of the css stuff, so it doesn't get in the way with a page's already existing stuff, 
+			[ ] and perhaps even seprate out form, and presentation css (do people do this, anymore?) 
+
 [ ] HTML::LinkExtor and image maps? 
 
 [ ]  Permission Reminders
