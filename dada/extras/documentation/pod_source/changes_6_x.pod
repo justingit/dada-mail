@@ -1,5 +1,21 @@
 =pod
 
+=head1 6.7.2
+
+=head2 Summary 6.7.2
+
+This release is primarily a bugfix release.
+
+This release also brings back the option to enable/disable tracking clickthroughs for email address links (C<mailt:someone@example.com>), which was added in v6.3.0, and then mysteriously disappeared. 
+The default is to B<disable> clickthrough tracking for these types of links. 
+
+=head2 Bugfixes 6.7.2
+
+=head3 "Send a Message" screen shows errors when trying to save drafts, with default backend
+
+L<https://github.com/justingit/dada-mail/issues/410>
+
+
 =head1 6.7.1
 
 =head2 Summary 6.7.1
