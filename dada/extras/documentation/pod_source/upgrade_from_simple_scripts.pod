@@ -166,7 +166,7 @@ B<mojomarketplace> is our installation directory. If we peak inside this directo
 
 From here, all we need to do is follow the regular, B<Upgrade Dada Mail> directions, 
 
-L<http://dadamailproject.com/support/documentation-6_4_3/upgrade_dada_mail.pod.html>
+L<http://dadamailproject.com/d/upgrade_dada_mail.pod.html>
 
 Here's the basic steps: I<(See the full docs if you have more questions)>
 
