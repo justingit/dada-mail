@@ -2888,8 +2888,8 @@ $ATTACHMENT_TEMPFILE ||= 0;
 
 $MAIL_VERP_SEPARATOR ||= '-';
 
-$VERSION = 6.7.1;
-$VER     = '6.7.1 Stable 10/10/13';
+$VERSION = 6.7.2;
+$VER     = '6.7.2 Stable 11/08/13';
 #
 #
 #
