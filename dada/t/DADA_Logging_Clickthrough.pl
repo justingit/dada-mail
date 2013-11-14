@@ -573,9 +573,9 @@ undef $should_be;
 
 my $ar_str = q{
 	<p><a href='http://example.com/'>Example</a></p>
-
+	
 	<p><a href='http://example.com/'>Example</a></p><!-- Dupe Link -->
-
+	
 	<p><a href="http://google.com">Gooooogle</a></p>
 	
 	<p><a href="[redirect=http://gmail.com]">Gmail!</a></p>
@@ -603,14 +603,20 @@ my $ar_str = q{
 	<p><a href="http://example.com/amp.html?foo&bar">ampersan query string</a></p>
 	
 	<p><a href="http://example.com/escaped_amp.html?foo&amp;bar">escaped ampersan query string</a></p>
-
-}; 
+	
+	<map name="Map">
+	  <area shape="rect" coords="526,418,624,534" href="http://www.example.com">
+	  <area shape="rect" coords="625,415,666,508" href="http://www.twitter.com">
+	  <area shape="rect" coords="93,105,578,417" href="http://www.facebook.com">
+	</map>
+	
+};
 
 my $should_be = q{
 	<p><a href='<?dada redirect url="http://example.com/" ?>'>Example</a></p>
-
+	
 	<p><a href='<?dada redirect url="http://example.com/" ?>'>Example</a></p><!-- Dupe Link -->
-
+	
 	<p><a href="<?dada redirect url="http://google.com" ?>">Gooooogle</a></p>
 	
 	<p><a href="[redirect=http://gmail.com]">Gmail!</a></p>
@@ -638,7 +644,13 @@ my $should_be = q{
 	<p><a href="<?dada redirect url="http://example.com/amp.html?foo&bar" ?>">ampersan query string</a></p>
 	
 	<p><a href="<?dada redirect url="http://example.com/escaped_amp.html?foo&amp;bar" ?>">escaped ampersan query string</a></p>
-
+	
+	<map name="Map">
+	  <area shape="rect" coords="526,418,624,534" href="<?dada redirect url="http://www.example.com" ?>">
+	  <area shape="rect" coords="625,415,666,508" href="<?dada redirect url="http://www.twitter.com" ?>">
+	  <area shape="rect" coords="93,105,578,417" href="<?dada redirect url="http://www.facebook.com" ?>">
+	</map>
+	
 };
 
 $ar_str = $lc->auto_redirect_tag($ar_str, 'HTML');
@@ -657,8 +669,7 @@ diag '$ar_str ' . $ar_str;
 ok($test_email_link eq $ar_str, 'mailto: links are NOT redirected, by default.'); 
 #undef $test_email_link; 
 undef $ar_str; 
-
-diag "NEXT!"; 
+ 
 
 # OK, well, what if it is: 
 undef($lc); 
