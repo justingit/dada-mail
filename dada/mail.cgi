@@ -677,6 +677,7 @@ sub default {
     {
         eval { require AnyDBM_File; };
         if ($@) {
+			warn $@; 
             user_error(
                 {
                     -error         => 'no_dbm_package_installed',
@@ -712,6 +713,7 @@ sub default {
 
         eval { $dbi_handle->dbh_obj; };
         if ($@) {
+			warn $@; 
             user_error(
                 {
                     -error         => 'sql_connect_error',
