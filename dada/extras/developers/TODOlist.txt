@@ -12,7 +12,11 @@ Key:
 
 =======
 
+[ ] Seond step of add an address, "These addresses are already subcribed to your list" - should be tweaked for specific sublist 
 
+[ ] Bridge Global defaults - add option to enable open discussion lists, etc
+
+[ ] Make Moderators and Autorized senders to different sublists. 
 
 [ ] Fancy Template things: for Global User Template, have option to just use a "blank" page (or any page, really), and: 
 	[ ] Allow you to inject the needed default template in BOTH the head and body, 
