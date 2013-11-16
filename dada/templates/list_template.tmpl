@@ -1,33 +1,33 @@
 <!DOCTYPE html>
 <html>
  <head>
-  <!-- <!-- tmpl_var PROGRAM_NAME --> <!-- tmpl_var VER --> -->
+	<!-- <!-- tmpl_var PROGRAM_NAME --> <!-- tmpl_var VER --> -->
 
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	
+	<title><!-- tmpl_var title --></title>
+	
+	
+	<link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/dada_mail.css" type="text/css" media="screen" />
 
-  <title><!-- tmpl_var title --></title>
 
+	<!-- jQuery -->
+	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/jquery-1.8.2.min.js"></script>
+	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/jquery.validate.js"></script>
+	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/jquery.dadamail.js"></script>
+	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/dada_mail.user.js"></script>
 
-  <link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/dada_mail.css" type="text/css" media="screen" />
+	<!-- tmpl_if load_colorbox --> 
+		<link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/colorbox/colorbox.css">
+		<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/colorbox/jquery.colorbox-min.js"></script>
+	<!-- /tmpl_if -->
 
-
-<!-- jQuery -->
-<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/jquery-1.8.2.min.js"></script>
-<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/jquery.validate.js"></script>
-<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/jquery.dadamail.js"></script>
-<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/dada_mail.user.js"></script>
-
-<!-- tmpl_if load_colorbox --> 
-	<link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/colorbox/colorbox.css">
-	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/colorbox/jquery.colorbox-min.js"></script>
-<!-- /tmpl_if -->
-
-<!-- tmpl_if list_settings.show_archives --> 
-	<!-- tmpl_if list_settings.publish_archives_rss --> 
- 		<link rel="alternate" type="application/rss+xml"  title="RSS"  href="<!-- tmpl_var PROGRAM_URL -->/archive_rss/<!-- tmpl_var list_settings.list -->/" />
- 		<link rel="alternate" type="application/atom+xml" title="Atom" href="<!-- tmpl_var PROGRAM_URL -->/archive_atom/<!-- tmpl_var list_settings.list -->/" />
+	<!-- tmpl_if list_settings.show_archives --> 
+		<!-- tmpl_if list_settings.publish_archives_rss --> 
+	 		<link rel="alternate" type="application/rss+xml"  title="RSS"  href="<!-- tmpl_var PROGRAM_URL -->/archive_rss/<!-- tmpl_var list_settings.list -->/" />
+	 		<link rel="alternate" type="application/atom+xml" title="Atom" href="<!-- tmpl_var PROGRAM_URL -->/archive_atom/<!-- tmpl_var list_settings.list -->/" />
+		<!-- /tmpl_if --> 
 	<!-- /tmpl_if --> 
-<!-- /tmpl_if --> 
 
  </head>
  
@@ -75,6 +75,7 @@
 		
 		</div><!-- ends Content -->
 	</div> <!-- ends ContentWrapper -->
+
 </div><!-- ends id="PageWrapper" -->
 
 <div id="Footer">
