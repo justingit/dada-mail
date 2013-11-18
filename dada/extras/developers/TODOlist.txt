@@ -29,7 +29,7 @@ Key:
 		[ ] I would need to rename a lot of the css stuff, so it doesn't get in the way with a page's already existing stuff, 
 			[ ] and perhaps even seprate out form, and presentation css (do people do this, anymore?) 
 
-[ ] HTML::LinkExtor and image maps? 
+[x] HTML::LinkExtor and image maps? 
 
 [ ]  Permission Reminders
 http://blog.sendgrid.com/permission-reminders-affect-email-deliverability/

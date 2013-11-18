@@ -550,7 +550,10 @@ sub HTML_auto_redirect_w_link_ext {
 	my @links_to_look_at = (); 
 	my $callback = sub {
 	     my($tag, %attr) = @_;     
-	     return if $tag ne 'a';  # we only look closer at <a ...>
+		# Supported: <a href=""> and <aread href=""> 
+		return 
+			unless $tag eq 'a' || $tag eq 'area'; 
+			
 		 my $link =  $attr{href}; 
 		
 		if($link =~ m/^mailto\:/ && $self->{ls}->param('tracker_auto_parse_mailto_links') == 0) { 
