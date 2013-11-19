@@ -841,6 +841,15 @@ li.archive_badges_li {
 	font-style: italic;
 }
 
+#navcontainer ul ul a.menu_selected,
+#navcontainer ul ul a.menu_selected:link,
+#navcontainer ul ul a.menu_selected:visited,
+#navcontainer ul ul a.menu_selected:hover,
+#navcontainer ul ul a.menu_selected:active {
+	background-color: #F2F5A9;
+}
+
+
 .stripedtable {
 	/*border: 1px solid red;*/ /* for testing. */
 	border-collapse: collapse;

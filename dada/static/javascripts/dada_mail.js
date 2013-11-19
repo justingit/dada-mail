@@ -37,13 +37,20 @@ $(document).ready(function() {
 		admin_menu_callbacks.add(admin_menu_archive_count_notification());
 		admin_menu_callbacks.add(admin_menu_sending_preferences_notification());
 		admin_menu_callbacks.add(admin_menu_bounce_handler_notification());
-		
 		admin_menu_callbacks.fire();
+		
+		
+		if($("#screen_meta").length) { 
+			var highlight_scrn = $("#screen_meta").attr("data-menu_highlight");
+			$( "#admin_menu_" + highlight_scrn ).addClass( "menu_selected" );
+		}
+		else { 
+			alert("needs a highlight_scrn"); 
+		}
 	}
 
 	//Mail Sending >> Send a Message 
 	if ($("#send_email_screen").length || $("#send_url_email").length || $("#list_invite").length) {
-		
 		
 	  var msie6 = $.browser == 'msie' && $.browser.version < 7;
 	  if (!msie6) {
