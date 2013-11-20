@@ -680,6 +680,7 @@ sub validate_list_email {
     my @list_types = qw(
       list
       authorized_senders
+      moderators
     );
 
     # white_list
@@ -843,14 +844,28 @@ sub cgi_default {
       $lh->num_subscribers( { -type => 'authorized_senders' } );
     my $show_authorized_senders_table = 1;
     my $authorized_senders            = [];
-
-    if ( $auth_senders_count > 100 || $auth_senders_count == 0 ) {
+    if ( $auth_senders_count == 0 ) {
         $show_authorized_senders_table = 0;
     }
     else {
         $authorized_senders =
           $lh->subscription_list( { -type => 'authorized_senders' } );
     }
+
+    if ( $moderators_count == 0 ) {
+        $show_moderators_table = 0;
+    }
+    else {
+        $moderators =
+          $lh->subscription_list( { -type => 'moderators' } );
+    }
+    my $moderators_count =
+      $lh->num_subscribers( { -type => 'moderators' } );
+    my $show_moderators_table = 1;
+    my $moderators            = [];
+
+
+
 
     my $can_use_ssl = 1;
 	try { 
@@ -917,8 +932,12 @@ sub cgi_default {
                 curl_location                 => $curl_location,
                 can_use_ssl                   => $can_use_ssl,
                 done                          => $done,
+
                 authorized_senders            => $authorized_senders,
-                show_authorized_senders_table => $show_authorized_senders_table,
+				show_authorized_senders_table => $show_authorized_senders_table,
+
+                moderators                    => $moderators,
+				show_moderators_table => $show_moderators_table,
 
                 discussion_pop_password => $discussion_pop_password,
 
@@ -945,9 +964,15 @@ sub cgi_default {
                   $list_email_errors->{list_email_set_to_list_admin_email},
                 error_list_email_subscribed_to_list =>
                   $list_email_errors->{list_email_subscribed_to_list},
+
                 error_list_email_subscribed_to_authorized_senders =>
                   $list_email_errors
                   ->{list_email_subscribed_to_authorized_senders},
+
+
+                error_list_email_subscribed_to_moderators =>
+                  $list_email_errors
+                  ->{list_email_subscribed_to_moderators},
 
                 error_list_email_set_to_another_list_owner_email =>
                   $list_email_errors
@@ -957,9 +982,16 @@ sub cgi_default {
                   ->{list_email_set_to_another_list_admin_email},
                 error_list_email_subscribed_to_another_list =>
                   $list_email_errors->{list_email_subscribed_to_another_list},
+
                 error_list_email_subscribed_to_another_authorized_senders =>
                   $list_email_errors
                   ->{list_email_subscribed_to_another_authorized_senders},
+
+                error_list_email_subscribed_to_another_moderators =>
+                  $list_email_errors
+                  ->{list_email_subscribed_to_another_moderators},
+
+
 				 plugin_path => $FindBin::Bin, 
 			     plugin_filename => 'bridge.cgi', 
 
@@ -1813,13 +1845,6 @@ sub validate_msg {
             print "\t* Discussion List Support enabled...\n"
               if $verbose;
 
-#if($li->{enable_authorized_sending} && $errors->{msg_not_from_an_authorized_sender} == 0){
-#
-#	print "\t\tSubscription checked skipped - authorized sending enabled and address passed validation.\n"
-#	    if $verbose;
-#
-#}else{
-
             my ( $s_status, $s_errors ) =
               $lh->subscription_check( { -email => $from_address, } );
 
@@ -1849,8 +1874,6 @@ sub validate_msg {
                     $errors->{msg_not_from_subscriber} = 1;
                 }
             }
-
-            #}
 
         }
         else {
@@ -3675,19 +3698,19 @@ sub moderation_msg {
     #  create an array of recepients
     my @moderators;
     if ( $ls->param('moderate_discussion_lists_with') eq
-        'authorized_sender_email' )
+        'moderators' )
     {
         my $lh =
           DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
-        my $authorized_senders = [];
-        $authorized_senders =
-          $lh->subscription_list( { -type => 'authorized_senders' } );
-        for my $moderator (@$authorized_senders) {
+        my $moderators = [];
+        $moderators =
+          $lh->subscription_list( { -type => 'moderators' } );
+        for my $moderator (@$moderators) {
 
             if ( $moderator->{email} eq $args->{-from} ) {
 
                 # Well, we'll just pass that one right by...
-                # I don't think we want an authorized sender to
+                # I don't think we want an moderator to
                 # be able to moderate their own message!
             }
             else {
@@ -3695,7 +3718,7 @@ sub moderation_msg {
             }
         }
         print
-"\t* Message being sent to Authorized Senders and List Owner for moderation... \n"
+"\t* Message being sent to Moderators and List Owner for moderation... \n"
           if $verbose;
     }
     else {

@@ -88,6 +88,16 @@
 	</div> 
 <!-- /tmpl_if -->
 
+<!-- tmpl_if error_list_email_subscribed_to_moderators --> 
+	<div class="badweatherbox">
+		<p>
+			Your List Email is currently subscribed to your <strong>Moderators List</strong>. It needs to be set to a different address. 
+		</p>
+	</div> 
+<!-- /tmpl_if -->
+
+
+
 <!-- tmpl_if error_list_email_subscribed_to_another_list --> 
 	<div class="badweatherbox">
 		<p>
@@ -104,6 +114,15 @@
 	</div> 
 
 <!-- /tmpl_if -->
+<!-- tmpl_if error_list_email_subscribed_to_another_moderators --> 
+	<div class="badweatherbox">
+	<p>
+			Your List Email is currently subscribed to <strong>another mailing list's Moderators List</strong>. It needs to be set to a different address. 
+		</p>
+	</div> 
+
+<!-- /tmpl_if -->
+
 
 
 
@@ -363,53 +382,33 @@ General
    <td>
     <p>
      <label for="enable_authorized_sending">
-      Allow Messages Received From Authorized Senders
+      Allow Messages Sent By Authorized Senders
      </label>
      <br /> 
      
-       Authorized Senders may post to announce-only lists and discussions lists without being on the subscription list themselves. Once enabled, you may 
-     add Authorized Senders using the 
-     
+       Authorized Senders may post, without being a Subscriber themselves.
+	    On discussion lists, Authorized Senders will not require moderation.
+	
      <!-- tmpl_if list_settings.enable_authorized_sending --> 
-      <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list&type=authorized_senders">
+       - <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list&type=authorized_senders">
        View</a>/<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=add&type=authorized_senders">Add
-      </a>
-
-
-	<!-- tmpl_else --> 
-	View/Add 
-     <!--/tmpl_if-->
-
- list Administration Screens.
+      </a> Authorized Senders <!--/tmpl_if-->
     </p>
-	<!-- tmpl_if list_settings.enable_authorized_sending --> 
-	
-	
-	
-	
-     
-  		  <!-- tmpl_if show_authorized_senders_table --> 
-			<p><strong>Your Authorized Senders:</strong></p>
-			<div style="max-height: 200px; width:250px; overflow: auto; border:1px solid black">
-			 <table class="stripedtable">
-	
-				<!-- tmpl_loop authorized_senders --> 
-					  <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
-					 <td> 
-					 <p><!-- tmpl_var email --></p>
-					</td> 
-					</tr> 
-		
-				<!--/tmpl_loop-->
-				
-				</table> 
-				
-				</div> 
-				
-		<!-- /tmpl_if --> 	
-	
-	
-	<!--/tmpl_if-->
+ 		  <!-- tmpl_if show_authorized_senders_table --> 
+		<p><strong>Your Authorized Senders:</strong></p>
+		<div style="max-height: 200px; width:250px; overflow: auto; border:1px solid black">
+		 <table class="stripedtable">
+			<!-- tmpl_loop authorized_senders --> 
+				  <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
+				 <td> 
+				 <p><!-- tmpl_var email --></p>
+				</td> 
+				</tr> 
+			<!--/tmpl_loop-->
+			</table> 
+			</div> 
+			
+	<!-- /tmpl_if --> 	
 
     </td> 
    </tr> 
@@ -574,7 +573,31 @@ General
 
 
 <fieldset> 
- <legend>List Moderation Options</legend> 
+ <legend>Moderation</legend> 
+
+	  <!-- tmpl_if show_moderators_table --> 	
+			<p><strong>Moderators:</strong></p>
+			<div style="max-height: 300px; width:90%; overflow: auto; border:1px solid black">
+			 <div> 
+				<table class="stripedtable">
+				<!-- tmpl_loop moderators --> 
+					  <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
+					 <td> 
+					 <p>
+						<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=membership;email=<!-- tmpl_var email ESCAPE=URL -->">
+							<!-- tmpl_var email -->
+						</a>
+					</p>
+					</td> 
+					</tr> 
+				<!--/tmpl_loop-->
+			</table> 
+			</div >
+			
+			</div> 
+		<!-- /tmpl_if --> 
+		
+
   <table width="100%" cellspacing="0" cellpadding="5">    
   <tr> 
     <td width="20"> 
@@ -587,11 +610,29 @@ General
      </label>
      
      <!-- tmpl_if list_settings.enable_moderation --> 
-       - <a href="<!-- tmpl_var Plugin_URL -->?flavor=awaiting_msgs">View/Manage Messages Awaiting Moderation</a>.
-     <!--/tmpl_if-->
-     
-     <br />      
-          Messages sent to your discussion list will first have to be approved by: 
+
+ 	      <ul> 
+		<li> 
+			<p>
+			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list&type=moderators">
+	       		View</a> / <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=add&type=moderators">Add
+	      	</a> Moderators 
+	    	</p>
+		</li>
+		<li>
+	<p>
+		<a href="<!-- tmpl_var Plugin_URL -->?flavor=awaiting_msgs">View/Manage Messages Awaiting Moderation</a>.
+	</p>
+	</li>
+	</ul> 
+
+<!--/tmpl_if-->
+
+
+
+
+<p>
+	          Messages sent to your discussion list will first have to be approved by: 
       </p>
    	  <p>
  		<input type="radio" name="moderate_discussion_lists_with" value="list_owner_email" <!--tmpl_if expr="(list_settings.moderate_discussion_lists_with eq 'list_owner_email')" -->checked="checked" <!--/tmpl_if--> />
@@ -600,20 +641,13 @@ General
 		</label>
 		<br />
 
- 			<input type="radio" name="moderate_discussion_lists_with" value="authorized_sender_email" <!--tmpl_if expr="(list_settings.moderate_discussion_lists_with eq 'authorized_sender_email')" -->checked="checked"<!--/tmpl_if--><!-- tmpl_unless list_settings.enable_authorized_sending -->disabled="disabled"<!-- /tmpl_unless --> />
+ 			<input type="radio" name="moderate_discussion_lists_with" value="moderators" <!--tmpl_if expr="(list_settings.moderate_discussion_lists_with eq 'moderators')" -->checked="checked"<!--/tmpl_if--> />
 			<label for="">
-				List Owner or an Authorized Sender
+				List Owner or a Moderator
 			</label>
-			<!-- tmpl_unless list_settings.enable_authorized_sending --><span class="error">
-	             Disabled. Enable, &quot;Allow Messages Received From Authorized Senders &quot;, to enabled this option.
-	            </span>
-			<!-- /tmpl_unless -->
-		
 		</p>      
      <table  cellspacing="0" cellpadding="5">
 
-  <!-- tmpl_if list_settings.enable_authorized_sending -->  
-     <!-- tmpl_if list_settings.group_list -->          
       <tr>
        <td>
         <input name="authorized_sending_no_moderation" id="authorized_sending_no_moderation" type="checkbox" value="1" <!--tmpl_if list_settings.authorized_sending_no_moderation -->checked="checked"<!--/tmpl_if--> />
@@ -621,14 +655,11 @@ General
        <td>
         <p>
          <label for="authorized_sending_no_moderation">
-          Allow Authorized Senders to send messages to the entire list without moderation
-         </label><br /> 
-         If not checked, messages from Authorized Senders also require moderation.
+          Allow Authorized Senders to send messages to your Subsribers List without moderation
+         </label>
         </p>
        </td>
        </tr>     
-     <!--/tmpl_if-->
-   <!--/tmpl_if-->     
      	   
  <!-- tmpl_if list_settings.open_discussion_list -->       
    <!-- tmpl_if list_settings.group_list --> 

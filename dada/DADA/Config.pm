@@ -2732,13 +2732,14 @@ EOF
     rejected_spam_messages              => 'ignore_spam',
 
     enable_moderation              => 0,
-    moderate_discussion_lists_with => 'owner_email',
+    moderate_discussion_lists_with => 'list_owner_email',
     send_moderation_msg            => 0,
     send_moderation_accepted_msg   => 0,
     send_moderation_rejection_msg  => 0,
     send_msg_copy_address          => '',
 
     enable_authorized_sending        => 0,
+
     authorized_sending_no_moderation => 0,
     subscriber_sending_no_moderation => 0,
 

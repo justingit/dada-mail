@@ -12,6 +12,10 @@ Key:
 
 =======
 
+[ ] more flexibility with subject prefix for Bridge
+
+[ ] Different ways to call up the Subscripton Form - onload?
+
 [ ] Is there a way to highlight which list control panel you're on, in the left hand menu? Maybe by just using jQuery to change the class of the ul-y thingy?
 
 [ ] title breadcrumbs:  Message Archives » View Archive - has no subject and, "View Archive" is not a link. 
