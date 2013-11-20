@@ -831,6 +831,11 @@ li.archive_badges_li {
 	background-color: #ffe1af;
 	text-decoration: none;
 }
+#navcontainer ul ul a:active,
+#navcontainer ul ul a:focus {
+	color: #000;
+	background-color: #f4ffaf;
+}
 
 #navcontainer ul ul a.menu_disabled,
 #navcontainer ul ul a.menu_disabled:link,
@@ -846,7 +851,8 @@ li.archive_badges_li {
 #navcontainer ul ul a.menu_selected:visited,
 #navcontainer ul ul a.menu_selected:hover,
 #navcontainer ul ul a.menu_selected:active {
-	background-color: #F2F5A9;
+	color: #000;
+	background-color: #f4ffaf;
 }
 
 
