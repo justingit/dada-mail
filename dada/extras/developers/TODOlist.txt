@@ -15,6 +15,8 @@ Key:
 
 [ ] Amazon SES Bounce Notification
 
+[ ] p.p. mode for Amazon SES should probably also be done for Authorized Senders... 
+
 [ ] more flexibility with subject prefix for Bridge
 
 [ ] Different ways to call up the Subscripton Form - onload?
