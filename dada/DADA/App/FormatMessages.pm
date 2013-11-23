@@ -993,7 +993,9 @@ sub _encode_header {
     my $self      = shift;
     my $label     = shift;
     my $value     = shift;
+
     my $new_value = undef;
+
 
     return $value
       unless $self->im_encoding_headers;

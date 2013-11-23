@@ -12,6 +12,9 @@ Key:
 
 =======
 
+
+[ ] Amazon SES Bounce Notification
+
 [ ] more flexibility with subject prefix for Bridge
 
 [ ] Different ways to call up the Subscripton Form - onload?
