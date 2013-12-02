@@ -158,13 +158,13 @@ $list = dada_test_config::create_test_list;
 	    skip "Multiple Subscriber Profile Fields is not supported with this current backend." 
 	        if $lh->can_have_subscriber_fields == 0;
 	
-	    my $r = $lh->add_subscriber_field({-field => 'First_Name'});
+	    my $r = $lh->add_subscriber_field({-field => 'first_name'});
 	    ok($r == 1, "\$r = $r"); 
 	
 #diag "sleeping!";
 #sleep(400); 
 	
-	    ok($lh->add_subscriber_field({-field => 'Last_Name'})); 
+	    ok($lh->add_subscriber_field({-field => 'last_name'})); 
     
 	    my @test_files = qw(
 	    DOS.csv
@@ -213,8 +213,8 @@ $list = dada_test_config::create_test_list;
     
     
     
-	    ok($lh->remove_subscriber_field({-field => 'First_Name'})); 
-	    ok($lh->remove_subscriber_field({-field => 'Last_Name'})); 
+	    ok($lh->remove_subscriber_field({-field => 'first_name'})); 
+	    ok($lh->remove_subscriber_field({-field => 'last_name'})); 
 	
 } # Skip
 

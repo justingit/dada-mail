@@ -159,18 +159,18 @@ ok( $li->{black_list} == 0, "black list disabled." );
 my @good_addresses =
   ( 'user@example.com', 'another@here.com', 'blah@somewhere.co.uk' );
 for my $good_address (@good_addresses) {
-    my ( $status, $errors ) =
+    my ( $status, $details ) =
       $lh->subscription_check( { -email => $good_address, } );
     ok( $status == 1,                  "Status is 1" );
-    ok( $errors->{invalid_email} != 1, "Address seen as valid" );
+    ok( $details->{invalid_email} != 1, "Address seen as valid" );
 }
 
 my @bad_addresses = qw(These are all bad addresses yup);
 for my $bad_address (@bad_addresses) {
-    my ( $status, $errors ) =
+    my ( $status, $details ) =
       $lh->subscription_check( { -email => $bad_address, } );
     ok( $status == 0,                  "Status is 0" );
-    ok( $errors->{invalid_email} == 1, "Address seen as invalid" );
+    ok( $details->{invalid_email} == 1, "Address seen as invalid" );
 }
 
 ok(
@@ -515,14 +515,14 @@ SKIP: {
         '@WeirdCharacters+',
         "$dada_test_config::UTF8_STR",
     );
-    my $errors  = 0;
+    my $status  = 0;
     my $details = {};
 
     for my $bfn (@bad_field_names) {
-        ( $errors, $details ) =
+        ( $status, $details ) =
           $lh->validate_subscriber_field_name( { -field => $bfn } );
-        ok( $errors == 1, "Bad Field is reporting an error." );
-        undef($errors);
+        ok( $status == 0, "Bad Field is reporting an error." );
+        undef($status);
         undef($details);
     }
 
@@ -530,102 +530,102 @@ SKIP: {
     ok( eq_array( $lh->subscriber_fields, ['myfield'] ),
         'New field is being reported.' );
 
-    ( $errors, $details ) =
+    ( $status, $details ) =
       $lh->validate_subscriber_field_name( { -field => 'myfield' } );
-    ok( $errors == 1, "Error being reported by duplicate field" );
+    ok( $status == 0, "Error being reported by duplicate field" );
     ok( $details->{field_exists} == 1,
         "Error being report as, 'field_exists'" );
-    undef($errors);
+    undef($status);
     undef($details);
 
     my $s = $lh->remove_subscriber_field( { -field => 'myfield' } );
     ok( $s == 1, "removing a new field is successful" );
 
     # spaces
-    ( $errors, $details ) =
+    ( $status, $details ) =
       $lh->validate_subscriber_field_name( { -field => $bad_field_names[0] } );
-    ok( $errors == 1,            "Error being reported" );
+    ok( $status == 0,            "Error being reported" );
     ok( $details->{spaces} == 1, "Error being report as, 'spaces'" );
-    undef($errors);
+    undef($status);
     undef($details);
 
     # quotes
-    ( $errors, $details ) =
+    ( $status, $details ) =
       $lh->validate_subscriber_field_name( { -field => $bad_field_names[1] } );
-    ok( $errors == 1,            "Error being reported" );
+    ok( $status == 0,            "Error being reported" );
     ok( $details->{quotes} == 1, "Error being report as, 'quotes'" );
-    undef($errors);
+    undef($status);
     undef($details);
 
     # field_name_too_long
-    ( $errors, $details ) =
+    ( $status, $details ) =
       $lh->validate_subscriber_field_name( { -field => $bad_field_names[2] } );
-    ok( $errors == 1, "Error being reported" );
+    ok( $status == 0, "Error being reported" );
     ok(
         $details->{field_name_too_long} == 1,
         "Error being report as, 'field_name_too_long'"
     );
-    undef($errors);
+    undef($status);
     undef($details);
 
     # slashes_in_field_name
-    ( $errors, $details ) =
+    ( $status, $details ) =
       $lh->validate_subscriber_field_name( { -field => $bad_field_names[3] } );
-    ok( $errors == 1, "Error being reported" );
+    ok( $status == 0, "Error being reported" );
     ok(
         $details->{slashes_in_field_name} == 1,
         "Error being report as, 'slashes_in_field_name'"
     );
-    undef($errors);
+    undef($status);
     undef($details);
 
     # field_blank
-    ( $errors, $details ) =
+    ( $status, $details ) =
       $lh->validate_subscriber_field_name( { -field => $bad_field_names[4] } );
-    ok( $errors == 1,                 "Error being reported" );
+    ok( $status == 0,                 "Error being reported" );
     ok( $details->{field_blank} == 1, "Error being report as, 'field_blank'" );
-    undef($errors);
+    undef($status);
     undef($details);
 
     # weird_characters
-    ( $errors, $details ) =
+    ( $status, $details ) =
       $lh->validate_subscriber_field_name( { -field => $bad_field_names[5] } );
-    ok( $errors == 1, "Error being reported" );
+    ok( $status == 0, "Error being reported" );
     ok(
         $details->{weird_characters} == 1,
         "Error being report as, 'weird_characters'"
     );
-    undef($errors);
+    undef($status);
     undef($details);
 
     # UTF8/unicode
-    ( $errors, $details ) =
+    ( $status, $details ) =
       $lh->validate_subscriber_field_name( { -field => $bad_field_names[6] } );
-    ok( $errors == 1, "Error being reported" );
+    ok( $status == 0, "Error being reported" );
     ok(
         $details->{weird_characters} == 1,
         "Error being report as, 'weird_characters'"
     );
-    undef($errors);
+    undef($status);
     undef($details);
 
     for (qw(email_id email list list_type list_status)) {
-        ( $errors, $details ) =
+        ( $status, $details ) =
           $lh->validate_subscriber_field_name( { -field => $_ } );
-        ok( $errors == 1, "Error being reported" );
+        ok( $status == 0, "Error being reported" );
         ok(
             $details->{field_is_special_field} == 1,
             "Error being report as, 'field_is_special_field'"
         );
-        undef($errors);
+        undef($status);
         undef($details);
     }
 
-    eval { ( $errors, $details ) = $lh->validate_subscriber_field_name(); };
+    eval { ( $status, $details ) = $lh->validate_subscriber_field_name(); };
     ok( $@,
 "calling validate_subscriber_field_name without any parameters causes an error!: $@"
     );
-    undef($errors);
+    undef($status);
     undef($details);
 
     ###
@@ -1813,7 +1813,7 @@ $lh->remove_from_list( -Email_List => [$dupe_email] );
 ### Does a newline screw up thingies?
 my $withanewline_subscriber = 'withanewline@example.com' . "\n";
 
-my ( $status, $errors ) = $lh->subscription_check(
+my ( $status, $details ) = $lh->subscription_check(
     {
         -email => $withanewline_subscriber,
         -Type  => 'list',
@@ -2096,20 +2096,20 @@ for(1..1_000) {
 # Set a global quota: 
 $DADA::Config::SUBSCRIPTION_QUOTA = 1000; 
 
-my ( $status, $errors ) = $lh->subscription_check(
+my ( $status, $details ) = $lh->subscription_check(
     {
         -email => 'yetonemoresubscriber@example.com',
         -Type  => 'list',
     }
 );
 ok( $status == 0, "Status is 0 ($status)" );
-ok( $errors->{over_subscription_quota} == 1, "over_subscription_quota"); 
+ok( $details->{over_subscription_quota} == 1, "over_subscription_quota"); 
 
 
 
 # Disable the quota. Still works? 
 $DADA::Config::SUBSCRIPTION_QUOTA = undef;  
-my ( $status, $errors ) = $lh->subscription_check(
+my ( $status, $details ) = $lh->subscription_check(
     {
         -email => 'yetonemoresubscriber@example.com',
         -Type  => 'list',
@@ -2125,14 +2125,14 @@ $ls->save(
 		subscription_quota     => 1000, 
 	}	
 ); 
-my ( $status, $errors ) = $lh->subscription_check(
+my ( $status, $details ) = $lh->subscription_check(
     {
         -email => 'yetonemoresubscriber@example.com',
         -Type  => 'list',
     }
 );
 ok( $status == 0, "Status is 0 ($status)" );
-ok( $errors->{over_subscription_quota} == 1, "over_subscription_quota"); 
+ok( $details->{over_subscription_quota} == 1, "over_subscription_quota"); 
 
 # List-specific quota, bigger than Global Quota - global quota should be used:  
 $DADA::Config::SUBSCRIPTION_QUOTA = 1000; 
@@ -2142,14 +2142,14 @@ $ls->save(
 		subscription_quota     => 50000, 
 	}	
 ); 
-my ( $status, $errors ) = $lh->subscription_check(
+my ( $status, $details ) = $lh->subscription_check(
     {
         -email => 'yetonemoresubscriber@example.com',
         -Type  => 'list',
     }
 );
 ok( $status == 0, "Status is 0 ($status)" );
-ok( $errors->{over_subscription_quota} == 1, "over_subscription_quota"); 
+ok( $details->{over_subscription_quota} == 1, "over_subscription_quota"); 
 
 #undef($subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid); 
 my ($subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid)
