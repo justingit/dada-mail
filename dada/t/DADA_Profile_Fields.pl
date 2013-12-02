@@ -17,7 +17,7 @@ my $list = dada_test_config::create_test_list({-remove_existing_list => 1, -remo
 use DADA::Profile::Fields; 
 
 #
-my $pf = undef; 
+my $pf  = undef; 
 
 
 
@@ -484,8 +484,46 @@ SKIP: {
 	ok($pf->{manager}->remove_field({-field => 'three'}) == 1, "Removed field, two.");
 	ok($pf->{manager}->remove_field({-field => 'two'}) == 1, "Removed field, three.");
 	
-	
 }
+
+my $fs  = undef; 
+my $fed = {}; 
+	
+( $fs, $fed ) = $pf->{manager}->validate_field_name( { -field => undef } );
+ok($fs == 0); 
+ok($fed->{field_blank} == 1); 
+
+( $fs, $fed ) = $pf->{manager}->validate_field_name( { -field => "'name'" } );
+ok($fs == 0); 
+ok($fed->{quotes} == 1); 
+
+( $fs, $fed ) = $pf->{manager}->validate_field_name( { -field => "spaces spaces" } );
+ok($fs == 0); 
+ok($fed->{spaces} == 1); 
+
+( $fs, $fed ) = $pf->{manager}->validate_field_name( { -field => "toolongtoolongtoolongtoolongtoolongtoolongtoolongtoolongtoolongtoolongtoolongtoolongtoolong" } );
+ok($fs == 0); 
+ok($fed->{field_name_too_long} == 1); 
+
+( $fs, $fed ) = $pf->{manager}->validate_field_name( { -field => "%weirdcharacters" } );
+ok($fs == 0); 
+ok($fed->{weird_characters} == 1); 
+
+( $fs, $fed ) = $pf->{manager}->validate_field_name( { -field => "UpperCase" } );
+ok($fs == 0); 
+ok($fed->{upper_case} == 1); 
+
+$pf->{manager}->add_field({-field => 'thisone', }); 
+$fields = $pf->{manager}->fields; 
+( $fs, $fed ) = $pf->{manager}->validate_field_name( { -field => "thisone" } );
+ok($fs == 0); 
+ok($fed->{field_exists} == 1); 
+ok($pf->{manager}->remove_field({-field => 'thisone'}) == 1, "Removed field, thisone.");
+
+
+
+
+
 
 dada_test_config::remove_test_list;
 dada_test_config::wipe_out;

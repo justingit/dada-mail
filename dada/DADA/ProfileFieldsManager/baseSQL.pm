@@ -111,7 +111,8 @@ sub add_field {
     if ( !exists $args->{ -field } ) {
         croak "You must pass a value in the -field parameter!";
     }
-    $args->{ -field } = lc( $args->{ -field } );
+    # DEV: This is pretty suspect - why are we lower-casing the field name? 
+	# $args->{ -field } = lc( $args->{ -field } );
 
 
     if ( !exists( $args->{ -fallback_value } ) ) {
@@ -123,10 +124,10 @@ sub add_field {
     }
 
 
-    my ( $errors, $details ) =
+    my ( $status, $details ) =
       $self->validate_field_name( { -field => $args->{ -field } } );
 
-    if ($errors) {
+    if ($status == 0) {
 		my $err; 
         $err = "Something's wrong with the field name you're trying to pass ("
           . $args->{ -field }
@@ -316,7 +317,9 @@ sub remove_field {
     if ( !exists( $args->{ -field } ) ) {
         croak "You MUST pass a field name in, -field!";
     }
-    $args->{ -field } = lc( $args->{ -field } );
+
+	# DEV: This is pretty suspect - why are we lower-casing the field name? 
+    # $args->{ -field } = lc( $args->{ -field } );
 
     $self->validate_remove_field_name(
         {
@@ -392,8 +395,8 @@ sub field_exists {
     if ( !exists( $args->{ -field } ) ) {
         croak "You must pass a field name in, -field!";
     }
-
-    $args->{ -field } = lc( $args->{ -field } );
+	# DEV: This is pretty suspect - why are we lower-casing the field name? 
+    # $args->{ -field } = lc( $args->{ -field } );
 
     for ( @{ $self->fields } ) {
         if ( $_ eq $args->{ -field } ) {
@@ -418,10 +421,11 @@ sub validate_field_name {
         $args->{ -skip } = [];
     }
 
-    $args->{ -field } = lc( $args->{ -field } );
+	# DEV: This is pretty suspect - why are we lower-casing the field name? 
+    # $args->{ -field } = lc( $args->{ -field } );
 
     my $errors         = {};
-    my $thar_be_errors = 0;
+    my $status         = 1;
 
     if ( $args->{ -field } eq "" ) {
         $errors->{field_blank} = 1;
@@ -443,6 +447,15 @@ sub validate_field_name {
     else {
         $errors->{slashes_in_field_name} = 0;
     }
+
+	#                          [[:upper:]]
+    if ( $args->{ -field } =~ m/[A-Z]/ ) {
+        $errors->{upper_case} = 1;
+    }
+    else {
+        $errors->{upper_case} = 0;
+    }
+
 
     if ( $args->{ -field } =~ m/\s/ ) {
         $errors->{spaces} = 1;
@@ -512,12 +525,12 @@ sub validate_field_name {
         }
 
         if ( $errors->{$_} == 1 ) {
-            $thar_be_errors = 1;
+			$status = 0;
         }
 
     }
 
-    return ( $thar_be_errors, $errors );
+    return ( $status, $errors );
 
 }
 
@@ -534,7 +547,7 @@ sub validate_remove_field_name {
         $args->{ -die_for_me } = 0;
     }
 
-    my $thar_be_errors = 0;
+    my $status         = 1;
     my $errors         = {};
 
     my %omit_fields = (
@@ -585,11 +598,11 @@ sub validate_remove_field_name {
 
     for ( keys %$errors ) {
         if ( $errors->{$_} == 1 ) {
-            $thar_be_errors = 1;
+            $status = 0;
         }
     }
 
-    return ( $thar_be_errors, $errors );
+    return ( $status, $errors );
 
 }
 

@@ -7422,7 +7422,7 @@ sub profile_fields {
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get();
 
-    my $field_errors        = 0;
+    my $field_status           = 1;
     my $field_error_details = {
         field_blank            => 0,
         field_name_too_long    => 0,
@@ -7433,6 +7433,7 @@ sub profile_fields {
         spaces                 => 0,
         field_is_special_field => 0,
     };
+	my %flattened_field_errors = (); 
 
     my $edit_field = xss_filter( $q->param('edit_field') );
 
@@ -7485,9 +7486,9 @@ sub profile_fields {
     }
     elsif ( $process eq 'add_field' ) {
 
-        ( $field_errors, $field_error_details ) = $pfm->validate_field_name( { -field => $field } );
-
-        if ( $field_errors == 0 ) {
+        ( $field_status, $field_error_details ) = $pfm->validate_field_name( { -field => $field } );
+		
+        if ( $field_status == 1 ) {
 
             $pfm->add_field(
                 {
@@ -7510,7 +7511,10 @@ sub profile_fields {
         }
         else {
             # Else, I guess for now, we'll show the template and have the errors print out there...
-            $field_errors = 1;
+			for(%$field_error_details) { 
+				$flattened_field_errors{'field_error_' . $_} = $field_error_details->{$_}; 
+			}
+
         }
     }
     elsif ( $process eq 'edit_field' ) {
@@ -7519,13 +7523,13 @@ sub profile_fields {
 
         #old name			# new name
         if ( $orig_field eq $field ) {
-            ( $field_errors, $field_error_details ) =
+            ( $field_status, $field_error_details ) =
               $pfm->validate_field_name( { -field => $field, -skip => [qw(field_exists)] } );
         }
         else {
-            ( $field_errors, $field_error_details ) = $pfm->validate_field_name( { -field => $field } );
+            ( $field_status, $field_error_details ) = $pfm->validate_field_name( { -field => $field } );
         }
-        if ( $field_errors == 0 ) {
+        if ( $field_status == 1 ) {
 
             $pfm->remove_field_attributes( { -field => $orig_field } );
 
@@ -7556,9 +7560,12 @@ sub profile_fields {
         }
         else {
             # Else, I guess for now, we'll show the template and have the errors print out there...
-            $field_errors = 1;
             $edit_field   = 1;
             $field        = xss_filter( $q->param('orig_field') );
+
+			for(%$field_error_details) { 
+				$flattened_field_errors{'field_error_' . $_} = $field_error_details->{$_}; 
+			}
         }
     }
 
@@ -7596,16 +7603,7 @@ sub profile_fields {
                 edit_field => $edit_field,
                 fields     => $named_subscriber_fields,
 
-                field_errors                       => $field_errors,
-                field_error_field_blank            => $field_error_details->{field_blank},
-                field_error_field_name_too_long    => $field_error_details->{field_name_too_long},
-                field_error_slashes_in_field_name  => $field_error_details->{slashes_in_field_name},
-                field_error_weird_characters       => $field_error_details->{weird_characters},
-                field_error_quotes                 => $field_error_details->{quotes},
-                field_error_field_exists           => $field_error_details->{field_exists},
-                field_error_spaces                 => $field_error_details->{spaces},
-                field_error_field_is_special_field => $field_error_details->{field_is_special_field},
-
+                field_status         => $field_status,
                 field                => $field,
                 fallback_field_value => $fallback_field_value,
                 field_label          => $field_label,
@@ -7626,6 +7624,9 @@ sub profile_fields {
                 edited        => xss_filter( $q->param('edited') ),
 
                 can_move_columns => $can_move_columns,
+
+				%flattened_field_errors,
+
 
             },
         }

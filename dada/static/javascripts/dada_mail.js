@@ -425,11 +425,8 @@ $(document).ready(function() {
 			event.preventDefault();
 			amazon_verify_email();
 		});
-
-
-
-
 	}
+	
 
 	// Mail Sending >> Advanced Options
 	if ($("#adv_sending_preferences").length) {
@@ -523,7 +520,26 @@ $(document).ready(function() {
 		toggleManualBatchSettings();
 	});
 
-
+	if($("#profile_fields").length) { 
+		
+		var no_weird_characters_regex = /[^a-z0-9_]/; 
+		jQuery.validator.addMethod("no_weird_characters", function(value, element) {
+	    return this.optional(element) || !(no_weird_characters_regex.test(value));
+	    }, "Value can only contain lowercase alpha-numeric characters, and underscores");
+		
+		$("#add_edit_field").validate({
+			debug: false,
+			rules: {
+				field: {
+					required: true,
+					no_weird_characters: true,
+					maxlength: 64
+				}
+			}
+		});
+		
+	}
+	
 	// Version Check 
 	$('#check_version').live('click', function(event) {
 		event.preventDefault();

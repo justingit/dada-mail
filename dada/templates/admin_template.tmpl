@@ -34,9 +34,13 @@
 	</script>
 <!-- /tmpl_if -->
 
+<!-- tmpl_if load_jquery_validate --> 
+	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/jquery.validate.js"></script>
+<!-- /tmpl_if --> 
+
+
 <!-- Dada Mail's Admin Javascript -->
 <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/dada_mail.js"         type="text/javascript"></script>
-
 
 <!-- tmpl_if load_wysiwyg_editor --> 
 	<!-- WYSIWYG Editors --> 
@@ -58,8 +62,6 @@
 
 	<link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/select2.css">
 	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/select2.js"></script>
-
-
 
 </head>
  
