@@ -354,14 +354,14 @@ sub _remove_expired_tokens {
         $query =
             'DELETE FROM '
           . $self->{sql_params}->{confirmation_tokens_table}
-          . ' WHERE timestamp <= DATE_SUB(NOW(), INTERVAL 60 DAY)';
+          . ' WHERE timestamp <= DATE_SUB(NOW(), INTERVAL ' . $DADA::Config::CONFIRMATION_TOKEN_OPTIONS->{expires} . ' DAY)';
 
     }
     elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'Pg' ) {
         $query =
             'DELETE FROM '
           . $self->{sql_params}->{confirmation_tokens_table}
-          . " WHERE timestamp <= NOW() - INTERVAL '60 DAY'";
+          . " WHERE timestamp <= NOW() - INTERVAL '" . $DADA::Config::CONFIRMATION_TOKEN_OPTIONS->{expires} . " DAY'";
 
     }
 

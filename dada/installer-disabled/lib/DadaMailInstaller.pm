@@ -227,6 +227,7 @@ my $advanced_config_params = {
     show_global_mass_mailing_options    => 1,
     show_cache_options                  => 1,
     show_debugging_options              => 1,
+    show_confirmation_token_options     => 1,
     show_amazon_ses_options             => 1,
     show_annoying_whiny_pro_dada_notice => 0,
 };
@@ -1015,6 +1016,12 @@ sub grab_former_config_vals {
 		$local_q->param('mass_mailing_MULTIPLE_LIST_SENDING', $BootstrapConfig::MULTIPLE_LIST_SENDING);	
 		$local_q->param('mass_mailing_MAILOUT_STALE_AFTER',   $BootstrapConfig::MAILOUT_STALE_AFTER);		
 	}
+
+	# $CONFIRMATION_TOKEN_OPTIONS
+	if(keys %{$BootstrapConfig::CONFIRMATION_TOKEN_OPTIONS}) { 
+		$local_q->param('configure_confirmation_token', 1);
+		$local_q->param('confirmation_token_expires', $BootstrapConfig::CONFIRMATION_TOKEN_OPTIONS->{expires});
+	}		
 	
 	# $AMAZON_SES_OPTIONS
 	if(defined($BootstrapConfig::AMAZON_SES_OPTIONS->{AWSAccessKeyId})
@@ -1024,7 +1031,7 @@ sub grab_former_config_vals {
 		$local_q->param('amazon_ses_AWSAccessKeyId', $BootstrapConfig::AMAZON_SES_OPTIONS->{AWSAccessKeyId});
 		$local_q->param('amazon_ses_AWSSecretKey',   $BootstrapConfig::AMAZON_SES_OPTIONS->{AWSSecretKey});
 	}
-			
+
 	
 	return $local_q; 
 	
@@ -1682,6 +1689,13 @@ sub create_dada_config_file {
 		$mass_mailing_params->{mass_mailing_MULTIPLE_LIST_SENDING} = clean_up_var($q->param('mass_mailing_MULTIPLE_LIST_SENDING')); 
 		$mass_mailing_params->{mass_mailing_MAILOUT_STALE_AFTER}   = clean_up_var($q->param('mass_mailing_MAILOUT_STALE_AFTER')); 
 	}
+
+	my $confirmation_token_params = {}; 
+	if($q->param('configure_confirmation_token') == 1){ 
+		$confirmation_token_params->{configure_confirmation_token} = 1; 
+		$confirmation_token_params->{expires} = strip($q->param('confirmation_token_expires'));
+	}
+
 	
 	my $amazon_ses_params = {}; 
 	if($q->param('configure_amazon_ses') == 1){ 
@@ -1711,7 +1725,8 @@ sub create_dada_config_file {
 				%{$profiles_params},
 				%{$security_params},
 				%{$captcha_params}, 
-				%{$mass_mailing_params}, 
+				%{$mass_mailing_params},
+				%{$confirmation_token_params},  
 				%{$amazon_ses_params},
             }
         }

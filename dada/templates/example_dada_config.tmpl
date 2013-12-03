@@ -246,6 +246,19 @@ $MAILOUT_STALE_AFTER   = <!-- tmpl_var mass_mailing_MAILOUT_STALE_AFTER  default
 
 
 
+<!-- tmpl_if configure_confirmation_token --> 
+#---------------------------------------------------------------------#
+# Confirmation Token Options
+
+$CONFIRMATION_TOKEN_OPTIONS = { 
+	expires => <!-- tmpl_var confirmation_token_expires default="60" -->,
+};
+<!-- /tmpl_if -->
+
+
+
+
+
 <!-- tmpl_if configure_amazon_ses --> 
 #---------------------------------------------------------------------#
 # Amazon SES Options

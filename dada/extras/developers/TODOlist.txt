@@ -12,6 +12,19 @@ Key:
 
 =======
 
+
+[ ] Amazon SES Bounce/Complaints via SNS, instead of the Bounce Email address. 
+	Ability to log COMPLAINTS! Good! 
+		(*) Automatically unsubscribe complaints
+		( ) Alert list owner about complaints
+	Embed Message ID in From: header via VERP-ish behavior (listowner+MESSAGEIDHERE@example.com)
+	
+	Just need to figure out the subscribe stuff. 
+	Maybe the Appliation URL is something like: 
+		http://example.com/cgi-bin/dada/plugins/bounce_handler.cgi/sns/list_name
+	
+[x] Options to tweak the confirmation tokens - mostly how long you keep them valid, a way to pull that up
+
 [ ] Is there a way to highlight which list control panel you're on, in the left hand menu? Maybe by just using jQuery to change the class of the ul-y thingy?
 
 [ ] title breadcrumbs:  Message Archives » View Archive - has no subject and, "View Archive" is not a link. 

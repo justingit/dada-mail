@@ -324,6 +324,18 @@ A mailout may still be reloaded if this limit has been surpassed, but it must be
 
 B<Global Variable:> C<$MAILOUT_STALE_AFTER>
 
+=head2 Configure Confirmation Token Options
+
+Confirmation Tokens are the random letters and numbers you'll see at the end of confirmation URLs in subscription and unsubcription links (among other things). 
+
+The token corresponds to information in your database, information we don't necessarily want embedded in the URL itself. 
+
+Dada Mail keeps this information around for awhile, so that these confirmation links work. 
+But, this information can take up space in your database, so there is an expiration date associated with them. 
+By default, Dada Mail keeps the information around for 60 days, before removing them. 
+
+If you're running a public mailing list, we do not suggest setting this to be under 30 days, as the unsubscribe link that depends on these confirmation tokens is required by the CAN SPAM law to be operable for 30 days. 
+
 =head2 Configure Amazon SES 
 
 You may set up Dada Mail to send via Amazon's Simple Email Service. This is a third party email sending service, which may have a much higher daily email quota and sending rate than what may be allowed on your own hosting account. Amazon SES does charge a fairly low rate for their service (about $0.10 per thousand messages sent). For more information, see the Amazon SES own site (L<http://aws.amazon.com/ses/>) and Dada Mail's docs on Amazon SES (L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>)
