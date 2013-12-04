@@ -43,6 +43,8 @@ BEGIN {
 #---------------------------------------------------------------------#
 
 use CGI::Carp qw(fatalsToBrowser);
+use Carp qw(carp croak);
+$CARP::Verbose = 1; 
 
 #---------------------------------------------------------------------#
 
@@ -163,6 +165,7 @@ my %list_types = (
     white_list         => 'White Listed',            # White listed isn't working, no?
     authorized_senders => 'Authorized Senders',
     sub_request_list   => 'Subscription Requests',
+    unsub_request_list => 'Unsubscription Requests',
     bounced_list       => 'Bouncing Addresses',
 );
 
@@ -2329,6 +2332,7 @@ sub list_options {
             {
                 -associate => $q,
                 -settings  => {
+                    private_list                            => 0, 
                     hide_list                               => 0,
                     closed_list                             => 0,
                     invite_only_list                        => 0,
@@ -3414,13 +3418,13 @@ sub view_list {
 
                     flavor_is_view_list => 1,
 
-                    list_subscribers_num       => commify( $lh->num_subscribers( { -type => 'list' } ) ),
-                    black_list_subscribers_num => commify( $lh->num_subscribers( { -type => 'black_list' } ) ),
-                    white_list_subscribers_num => commify( $lh->num_subscribers( { -type => 'white_list' } ) ),
-                    authorized_senders_num     => commify( $lh->num_subscribers( { -type => 'authorized_senders' } ) ),
-                    sub_request_list_subscribers_num =>
-                      commify( $lh->num_subscribers( { -type => 'sub_request_list' } ) ),
-                    bounced_list_num => commify( $lh->num_subscribers( { -type => 'bounced_list' } ) ),
+                    list_subscribers_num               => commify( $lh->num_subscribers( { -type => 'list' } ) ),
+                    black_list_subscribers_num         => commify( $lh->num_subscribers( { -type => 'black_list' } ) ),
+                    white_list_subscribers_num         => commify( $lh->num_subscribers( { -type => 'white_list' } ) ),
+                    authorized_senders_num             => commify( $lh->num_subscribers( { -type => 'authorized_senders' } ) ),
+                    sub_request_list_subscribers_num   => commify( $lh->num_subscribers( { -type => 'sub_request_list' } ) ),
+                    unsub_request_list_subscribers_num => commify( $lh->num_subscribers( { -type => 'unsub_request_list' } ) ),
+                    bounced_list_num                   => commify( $lh->num_subscribers( { -type => 'bounced_list' } ) ),
                 },
                 -list_settings_vars_param => {
                     -list   => $list,
@@ -4089,6 +4093,7 @@ sub validate_update_email {
         authorized_senders => 'Authorized Senders',
         white_list         => 'White Listed',
         sub_request_list   => 'Subscription Requests',
+        unsub_request_list => 'Unsubscription Requests',
         bounced_list       => 'Bouncing Addresses',
     );
     my %error_title = (

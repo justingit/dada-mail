@@ -513,7 +513,7 @@ sub _format_text {
 				# Begin filtering done after the template is applied 
 				
 				
-				if($self->mass_mailing == 1){ 
+				if($self->mass_mailing == 1){
 					if($self->list_type eq 'just_unsubscribed'){ 
 						# ... well, nothing, really. 
 					}
@@ -524,13 +524,18 @@ sub _format_text {
 							}
 						);						
 					}
-					else { 						
-						$content = $self->unsubscriptionation(
-							{
-								-str => $content, 
-								-type => $entity->head->mime_type, 
-							}
-						);				
+					else {
+						if($self->{ls}->param('private_list') == 1) { 
+							#... 
+						}
+						else { 						
+							$content = $self->unsubscriptionation(
+								{
+									-str => $content, 
+									-type => $entity->head->mime_type, 
+								}
+							);
+						}
 					}
 				}
 				

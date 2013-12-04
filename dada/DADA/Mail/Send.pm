@@ -3106,13 +3106,17 @@ sub _make_token {
     }
     else {
 
+		my $token_type = 'unsub_confirm'; 
+#		if($self->{ls}->param('private_list') == 1) { 
+#			$token_type = 'unsub_request'; 
+#		}
         $token = $self->child_ct_obj->save(
             {
                 -email => $args->{-email},
                 -data  => {
                     list       => $args->{-list},
                     type       => 'list',
-                    flavor     => 'unsub_confirm',
+                    flavor     => $token_type,
                     mid        => $args->{-msg_id},
                     email_hint => DADA::App::Guts::anonystar_address_encode(
                         $args->{-email}

@@ -1,6 +1,10 @@
 <!-- begin list_unsubscribe.tmpl --> 
 
-<h1>Unsubscribe From <!-- tmpl_var list_settings.list_name --></h1>
+<!-- tmpl_if list_settings.private_list --> 
+	<h1>Request Unsubscription From <!-- tmpl_var list_settings.list_name --></h1>
+<!-- tmpl_else --> 
+	<h1>Unsubscribe From <!-- tmpl_var list_settings.list_name --></h1>
+<!-- /tmpl_if --> 
 
 <!-- tmpl_if list_exists --> 
 
@@ -35,7 +39,7 @@
 			<label for="email">
 				email address
 			</label>
-		that is currently subscribed, below:
+		that is currently Subscribed, below:
 	</p> 
 
 	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" /> 
@@ -43,7 +47,11 @@
 		<input type="hidden" id="token" name="token" value="<!-- tmpl_var token -->" /> 
 		<input type="hidden" id="process" name="process" value="1" /> 
 		<input type="text"   id="email" name="email" value="" />
-		<input type="submit" value="Unsubscribe" /> 
+		<!-- tmpl_if list_settings.private_list --> 
+			<input type="submit" value="Request Unsubscription" /> 
+		<!-- tmpl_else --> 
+			<input type="submit" value="Unsubscribe" /> 		
+		<!-- /tmpl_if -->
 	</form> 
 
 	</fieldset> 

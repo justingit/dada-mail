@@ -1319,25 +1319,15 @@ Would like to subscribe to:
 
 	<!-- tmpl_var list_settings.list_name -->
 	
-If you haven't yet, log into your list:
-
-<!-- tmpl_var S_PROGRAM_URL -->?f=sign_in&list=<!-- tmpl_var list_settings.list -->
-
------------------------------------------------------------------------------
-
 To approve this subscription, follow this link: 
 	
-	<!-- tmpl_var S_PROGRAM_URL -->?f=subscription_requests&process=approve&address=<!-- tmpl_var subscriber.email -->&list=<!-- tmpl_var list_settings.list -->
-
+	<!-- tmpl_var list_subscribe_request_approve_link --> 
+	
 To deny this subscription, follow this link: 
 
-	<!-- tmpl_var S_PROGRAM_URL -->?f=subscription_requests&process=deny&address=<!-- tmpl_var subscriber.email -->&list=<!-- tmpl_var list_settings.list -->
+	<!-- tmpl_var list_subscribe_request_deny_link --> 
 
-To view all addresses awaiting approval for subscription, please visit: 
-
-	<!-- tmpl_var S_PROGRAM_URL -->?f=view_list&type=sub_request_list&list=<!-- tmpl_var list_settings.list -->
-
--- <!-- tmpl_var PROGRAM_NAME -->		
+-- <!-- tmpl_var PROGRAM_NAME -->
 
 EOF
   ;
@@ -2383,6 +2373,7 @@ EOF
     closed_list      => 0,
     invite_only_list => 0,
     show_hidden      => 0,
+    private_list     => 0, 
     hide_list        => 0,
 
     email_your_subscribed_msg =>

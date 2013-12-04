@@ -230,6 +230,7 @@ sub log_line_report {
         authorized_senders => 'Authorized Senders',
         white_list         => 'White Listed',
         sub_request_list   => 'Subscription Requests',
+        unsub_request_list => 'Unsubscription Requests',
         bounced_list       => 'Bouncing Addresses',
 		invitelist         => 'List Invitations', 
     );

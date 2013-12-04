@@ -464,6 +464,7 @@ sub subscribed_to {
 			                  white_list         => 'White Listed', # White listed isn't working, no?
 			                  authorized_senders => 'Authorized Senders',
 			                  sub_request_list   => 'Subscription Requests',
+#			                  unsub_request_list => 'Unsubscription Requests',
 							  bounced_list       => 'Bouncing Addresses',
 			);
 			

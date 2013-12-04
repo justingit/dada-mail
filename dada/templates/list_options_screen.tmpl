@@ -25,7 +25,30 @@
 
  <table cellspacing="5">
 
-
+	 <tr>
+	   <td>
+	    <p>
+	     <input type="checkbox" name="private_list" id="private_list" value="1" <!-- tmpl_if list_settings.private_list -->checked="checked"<!--/tmpl_if--> />
+	    </p>
+	   </td>
+	   <td>
+	    <p>
+	     <label for="private_list">
+	      Private Mailing List
+	     </label>
+     	</p>
+	     <ul>
+		  <li>
+			Mailing List Unsubscriptions are managed <em>only</em> by the List Owner.<br />
+			(Subscription Options can be customized, below) 
+		  </li>
+		  <li>Unsubscription Links in mailing list messages are <em>optional</em></li>
+		  <li>Unsubscription Links work as requests to unsubscribe - List Owner will still have to approve of the unsubscription.</li>
+		 </ul>
+		 
+	   </td>
+	  </tr>
+	
 	 <tr>
 	   <td>
 	    <p>

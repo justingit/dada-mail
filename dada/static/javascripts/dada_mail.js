@@ -419,6 +419,7 @@ $(document).ready(function() {
 		$("body").on("click", ".test_sending_preferences", function(event) {
 			event.preventDefault();
 			test_sending_preferences();
+			admin_menu_notification('admin_menu_sending_preferences_notification', 'admin_menu_sending_preferences');	
 		});
 
 		$("body").on("click", ".amazon_verify_email", function(event) {

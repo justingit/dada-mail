@@ -115,8 +115,25 @@
 						</fieldset>
 					<!-- /tmpl_if -->
 				<!-- /tmpl_if -->
-
-
+				
+				<!-- tmpl_if list_settings.private_list -->
+					<!-- tmpl_if subscribed_to_unsub_request_list --> 
+						<fieldset>
+						<legend>Unsubscription Requests</legend>
+						<p><!-- tmpl_var email --> has requested to be Unsubscribed from your Mailing List.</p>
+						<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+							<input type="hidden" name="f"       value="unsubscription_requests" />
+							<input type="hidden" name="type" value="unsub_request_list" />
+							<input type="hidden" name="address" value="<!-- tmpl_var email -->" />
+							<input type="hidden" name="return_to" value="membership" />
+							<input type="hidden" name="return_address" value="<!-- tmpl_var email -->" />
+							<input type="submit" name="process"  class="processing" value="Approve Unsubscription Request" />
+							<input type="submit" name="process"  class="cautionary" value="Deny Unsubscription Request" />
+						</form>
+						</fieldset>
+					<!-- /tmpl_if -->
+				<!-- /tmpl_if -->
+				
 			<!-- tmpl_if add_to_num --> 
 
 				<fieldset>

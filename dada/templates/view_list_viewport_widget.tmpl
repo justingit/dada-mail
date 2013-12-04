@@ -151,6 +151,15 @@
 		 <input type="submit" name="process" class="small_button" value="Deny Checked Subscription Requests" />
 
 	<!-- /tmpl_if -->
+
+	<!-- tmpl_if EXPR="(type eq 'sub_request_list')" -->
+
+		 <input type="hidden" name="f"        value="unsubscription_requests" />
+		 <input type="hidden" name="type"     value="<!-- tmpl_var type -->" />
+		 <input type="submit" name="process" class="small_button" value="Approve Checked Unsubscription Requests" />
+		 <input type="submit" name="process" class="small_button" value="Deny Checked Unsubscription Requests" />
+
+	<!-- /tmpl_if -->
 	
 	<!-- tmpl_if EXPR="(type eq 'bounced_list')" -->
 	
