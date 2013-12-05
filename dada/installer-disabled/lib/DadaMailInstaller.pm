@@ -2679,11 +2679,13 @@ sub install_and_configure_core5_filemanager {
 		installer_chmod($DADA::Config::DIR_CHMOD, $core5_filemanager_connector_loc);
 		installer_chmod($DADA::Config::DIR_CHMOD, $core5_filemanager_config_loc);
 		
-		installer_rmdir(make_safer($install_path . '/core5_filemanager/connectors/php'));
+#		installer_rmdir(make_safer($install_path . '/core5_filemanager/connectors/php'));
+
 	}
-	elsif($q->param('core5_filemanager_connector') eq 'php') {
-		installer_rmdir(make_safer($install_path . '/core5_filemanager/connectors/pl'));		
-	}
+
+#	elsif($q->param('core5_filemanager_connector') eq 'php') {
+#		installer_rmdir(make_safer($install_path . '/core5_filemanager/connectors/pl'));		
+#	}
 	
 }
 
