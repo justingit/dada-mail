@@ -65,7 +65,12 @@ $(document).ready(function() {
 		
 		$("body").on("click", ".kcfinder_open", function(event) {
 			event.preventDefault();
-			openKCFinder(this); 
+			/*
+			openKCFinder(this);
+			*/
+			
+			BrowseServer(this); 
+			
 		});
 		
 		setup_attachment_fields(); 
@@ -2762,9 +2767,58 @@ function openKCFinder(field) {
         'resizable=1, scrollbars=0, width=800, height=600'
     );
 }
-
 function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+
+
+
+var urlobj;
+ function BrowseServer(obj)
+ {
+      urlobj = obj;
+      OpenServerBrowser(
+      'http://www.adventistfamilyministries.com/officedb/dada_mail_support_files/filemanager/index.html',
+      screen.width * 0.7,
+      screen.height * 0.7 ) ;
+ }
+
+var oWindow; 
+ function OpenServerBrowser( url, width, height )
+ {
+      var iLeft = (screen.width - width) / 2 ;
+      var iTop = (screen.height - height) / 2 ;
+      var sOptions = "toolbar=no,status=no,resizable=yes,dependent=yes" ;
+      sOptions += ",width=" + width ;
+      sOptions += ",height=" + height ;
+      sOptions += ",left=" + iLeft ;
+      sOptions += ",top=" + iTop ;
+      oWindow = window.open( url + '?type=all', "BrowseWindow", sOptions ) ;
+ }
+
+ function SetUrl( url, width, height, alt )
+ {
+	//	alert(url); 
+    //document.getElementById(urlobj).value = url ;
+    var upload_url = 'http://www.adventistfamilyministries.com/officedb/dada_mail_support_files/file_uploads';
+
+  var kcfinder_upload_url = escapeRegExp(upload_url + '/'); 
+  var re = new RegExp(kcfinder_upload_url,'g');
+  var new_val = url.replace(re, ''); 
+  
+
+  	console.log('new_val: ' + new_val);
+var field = urlobj; 
+
+
+
+   $(field).html('<img src="' + $("#SUPPORT_FILES_URL").val() + '/static/images/attachment_icon.gif" />' + new_val);
+	$("#" + $(field).attr("data-attachment")).val(new_val); 
+	$("#" + $(field).attr("data-attachment") + '_remove_button').show(); 			
+
+oWindow = null;
+
+
 }
 
 

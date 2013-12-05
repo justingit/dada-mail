@@ -288,32 +288,32 @@ var _FileBrowserExtension = _FileBrowserLanguage == 'perl' ? 'cgi' : _FileBrowse
 var _QuickUploadExtension = _QuickUploadLanguage == 'perl' ? 'cgi' : _QuickUploadLanguage ;
 
 FCKConfig.LinkBrowser = true ;
-FCKConfig.LinkBrowserURL            = '<!-- tmpl_var support_files_dir_url -->/<!-- tmpl_var Support_Files_Dir_Name -->/kcfinder/browse.php?type=files';
+FCKConfig.LinkBrowserURL            = '<!-- tmpl_var file_manager_browse_url -->?type=files';
 FCKConfig.LinkBrowserWindowWidth	= FCKConfig.ScreenWidth * 0.7 ;		// 70%
 FCKConfig.LinkBrowserWindowHeight	= FCKConfig.ScreenHeight * 0.7 ;	// 70%
 
 FCKConfig.ImageBrowser             = true ;
-FCKConfig.ImageBrowserURL          = '<!-- tmpl_var support_files_dir_url -->/<!-- tmpl_var Support_Files_Dir_Name -->/kcfinder/browse.php?type=images';
+FCKConfig.ImageBrowserURL          = '<!-- tmpl_var file_manager_browse_url -->?type=images';
 FCKConfig.ImageBrowserWindowWidth  = FCKConfig.ScreenWidth * 0.7 ;	// 70% ;
 FCKConfig.ImageBrowserWindowHeight = FCKConfig.ScreenHeight * 0.7 ;	// 70% ;
 
 FCKConfig.FlashBrowser             = true ;
-FCKConfig.FlashBrowserURL          = '<!-- tmpl_var support_files_dir_url -->/<!-- tmpl_var Support_Files_Dir_Name -->/kcfinder/browse.php?type=flash';
+FCKConfig.FlashBrowserURL          = '<!-- tmpl_var file_manager_browse_url -->?type=flash';
 FCKConfig.FlashBrowserWindowWidth  = FCKConfig.ScreenWidth * 0.7 ;	//70% ;
 FCKConfig.FlashBrowserWindowHeight = FCKConfig.ScreenHeight * 0.7 ;	//70% ;
 
 FCKConfig.LinkUpload                    = true ;
-FCKConfig.LinkUploadURL                 = '<!-- tmpl_var support_files_dir_url -->/<!-- tmpl_var Support_Files_Dir_Name -->/kcfinder/upload.php?type=files';
+FCKConfig.LinkUploadURL                 = '<!-- tmpl_var file_manager_upload_url -->?type=files';
 FCKConfig.LinkUploadAllowedExtensions	= ".(7z|aiff|asf|avi|bmp|csv|doc|fla|flv|gif|gz|gzip|jpeg|jpg|mid|mov|mp3|mp4|mpc|mpeg|mpg|ods|odt|pdf|png|ppt|pxd|qt|ram|rar|rm|rmi|rmvb|rtf|sdc|sitd|swf|sxc|sxw|tar|tgz|tif|tiff|txt|vsd|wav|wma|wmv|xls|xml|zip)$" ;			// empty for all
 FCKConfig.LinkUploadDeniedExtensions	= "" ;	// empty for no one
 
 FCKConfig.ImageUpload                   = true ;
-FCKConfig.ImageUploadURL                = '<!-- tmpl_var support_files_dir_url -->/<!-- tmpl_var Support_Files_Dir_Name -->/kcfinder/upload.php?type=images';
+FCKConfig.ImageUploadURL                = '<!-- tmpl_var file_manager_upload_url -->?type=images';
 FCKConfig.ImageUploadAllowedExtensions	= ".(jpg|gif|jpeg|png|bmp)$" ;		// empty for all
 FCKConfig.ImageUploadDeniedExtensions	= "" ;							// empty for no one
 
 FCKConfig.FlashUpload                   = true ;
-FCKConfig.FlashUploadURL                = '<!-- tmpl_var support_files_dir_url -->/<!-- tmpl_var Support_Files_Dir_Name -->/kcfinder/upload.php?type=flash';
+FCKConfig.FlashUploadURL                = '<!-- tmpl_var file_manager_upload_url -->?type=flash';
 FCKConfig.FlashUploadAllowedExtensions	= ".(swf|flv)$" ;		// empty for all
 FCKConfig.FlashUploadDeniedExtensions	= "" ;					// empty for no one
 
