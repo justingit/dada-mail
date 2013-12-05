@@ -2632,7 +2632,7 @@ sub install_and_configure_core5_filemanager {
     my $uploads_directory = $q->param('support_files_dir_path')  . '/' . $Support_Files_Dir_Name . '/' . 'file_uploads';
     my $url_path          = $uploads_directory;
     my $doc_root          = $ENV{DOCUMENT_ROOT}; 
-    $url_path             =~ s/^$doc_root\///; # We use $url_path for the js config, too. 
+    $url_path             =~ s/^$doc_root//; # We use $url_path for the js config, too. 
 	
 	my $core5_filemanager_config_pl = DADA::Template::Widgets::screen(
         {
