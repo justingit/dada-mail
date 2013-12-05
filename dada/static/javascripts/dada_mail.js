@@ -65,12 +65,15 @@ $(document).ready(function() {
 		
 		$("body").on("click", ".kcfinder_open", function(event) {
 			event.preventDefault();
-			/*
-			openKCFinder(this);
-			*/
 			
-			BrowseServer(this); 
-			
+			if($("#kcfinder_enabled").val() == 1) { 
+				openKCFinder(this);
+			}else if($("#core5_filemanager_enabled").val() == 1){ 
+				browsecore5FileManager(this);
+			}
+			else { 
+				alert("No File Browser set up!");
+			}
 		});
 		
 		setup_attachment_fields(); 
@@ -2753,7 +2756,7 @@ function removeSubscriberField(form_name) {
 function openKCFinder(field) {
     window.KCFinder = {
         callBack: function(url) {
-			var kcfinder_upload_url = escapeRegExp($("#kcfinder_upload_url").val() + '/'); 
+			var kcfinder_upload_url = escapeRegExp($("#kcfinder_upload_url").val() + '/'); 			
 			var re = new RegExp(kcfinder_upload_url,'g');
 			var new_val = url.replace(re, ''); 
             $(field).html('<img src="' + $("#SUPPORT_FILES_URL").val() + '/static/images/attachment_icon.gif" />' + new_val);			
@@ -2773,53 +2776,45 @@ function escapeRegExp(str) {
 
 
 
+/* core5 FileManager */
 var urlobj;
- function BrowseServer(obj)
- {
-      urlobj = obj;
-      OpenServerBrowser(
-      'http://www.adventistfamilyministries.com/officedb/dada_mail_support_files/filemanager/index.html',
-      screen.width * 0.7,
-      screen.height * 0.7 ) ;
- }
 
-var oWindow; 
- function OpenServerBrowser( url, width, height )
- {
-      var iLeft = (screen.width - width) / 2 ;
-      var iTop = (screen.height - height) / 2 ;
-      var sOptions = "toolbar=no,status=no,resizable=yes,dependent=yes" ;
-      sOptions += ",width=" + width ;
-      sOptions += ",height=" + height ;
-      sOptions += ",left=" + iLeft ;
-      sOptions += ",top=" + iTop ;
-      oWindow = window.open( url + '?type=all', "BrowseWindow", sOptions ) ;
- }
-
- function SetUrl( url, width, height, alt )
- {
-	//	alert(url); 
-    //document.getElementById(urlobj).value = url ;
-    var upload_url = 'http://www.adventistfamilyministries.com/officedb/dada_mail_support_files/file_uploads';
-
-  var kcfinder_upload_url = escapeRegExp(upload_url + '/'); 
-  var re = new RegExp(kcfinder_upload_url,'g');
-  var new_val = url.replace(re, ''); 
-  
-
-  	console.log('new_val: ' + new_val);
-var field = urlobj; 
-
-
-
-   $(field).html('<img src="' + $("#SUPPORT_FILES_URL").val() + '/static/images/attachment_icon.gif" />' + new_val);
-	$("#" + $(field).attr("data-attachment")).val(new_val); 
-	$("#" + $(field).attr("data-attachment") + '_remove_button').show(); 			
-
-oWindow = null;
-
-
+function browsecore5FileManager(obj) {
+	urlobj = obj;
+	var core5_filemanager_url = $("#core5_filemanager_url").val() + '/index.html';
+	opencore5FileManager(
+	core5_filemanager_url, screen.width * 0.7, screen.height * 0.7);
 }
+
+var oWindow;
+
+function opencore5FileManager(url, width, height) {
+	var iLeft = (screen.width - width) / 2;
+	var iTop = (screen.height - height) / 2;
+	var sOptions = "toolbar=no,status=no,resizable=yes,dependent=yes";
+	sOptions += ",width=" + width;
+	sOptions += ",height=" + height;
+	sOptions += ",left=" + iLeft;
+	sOptions += ",top=" + iTop;
+	oWindow = window.open(url, "BrowseWindow", sOptions);
+}
+
+function SetUrl(url, width, height, alt) {
+
+	var core5_filemanager_upload_url = escapeRegExp($("#core5_filemanager_upload_url").val() + '/');
+	core5_filemanager_upload_url + '/';
+	var re = new RegExp(core5_filemanager_upload_url, 'g');
+	var new_val = url.replace(re, '');
+	// console.log('new_val: ' + new_val);
+	var field = urlobj;
+
+	$(field).html('<img src="' + $("#SUPPORT_FILES_URL").val() + '/static/images/attachment_icon.gif" />' + new_val);
+	$("#" + $(field).attr("data-attachment")).val(new_val);
+	$("#" + $(field).attr("data-attachment") + '_remove_button').show();
+
+	oWindow = null;
+
+} /* core5 FileManager */
 
 
 Date.prototype.format = function(format) //author: meizz

@@ -2285,9 +2285,16 @@ sub install_wysiwyg_editors {
 		}	
 	}
 	elsif($q->param('file_browser_install') eq 'core5_filemanager'){
+		
 		install_and_configure_core5_filemanager($args); 
 		my $upload_dir = make_safer($support_files_dir_path . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir); 
 		$tmpl_vars{i_core5_filemanager_enabled} = 1; 
+		$tmpl_vars{i_core5_filemanager_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/core5_filemanager';
+
+		my $upload_dir = make_safer($support_files_dir_path . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir); 
+		$tmpl_vars{i_core5_filemanager_upload_dir} = $upload_dir; 
+		$tmpl_vars{i_core5_filemanager_upload_url} = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir;
+		
 		if(! -d  $upload_dir){ 
 			# No need to backup this.
 			installer_mkdir( $upload_dir, $DADA::Config::DIR_CHMOD );
@@ -2526,8 +2533,8 @@ sub install_and_configure_kcfinder {
 sub install_and_configure_core5_filemanager {
 	my ($args) = @_; 
 	my $install_path = $q->param('support_files_dir_path') . '/' . $Support_Files_Dir_Name; 
-	my $source_package = make_safer('../extras/packages/filemanager'); 
-	my $target_loc     = make_safer($install_path . '/filemanager');
+	my $source_package = make_safer('../extras/packages/core5_filemanager'); 
+	my $target_loc     = make_safer($install_path . '/core5_filemanager');
 	if(-d $target_loc){
 		backup_dir($target_loc);	
 	}
@@ -2540,8 +2547,8 @@ sub install_and_configure_core5_filemanager {
 	            -screen => 'fckconfig_js.tmpl',
 	            -vars   => {
 
-					file_manager_browse_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/filemanager/index.html', 
-					file_manager_upload_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/filemanager/index.html', 
+					file_manager_browse_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/core5_filemanager/index.html', 
+					file_manager_upload_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/core5_filemanager/index.html', 
 
 	            	support_files_dir_url  => $support_files_dir_url, 
 					Support_Files_Dir_Name => $Support_Files_Dir_Name, 
@@ -2572,8 +2579,8 @@ sub install_and_configure_core5_filemanager {
 	        {
 	            -screen => 'ckeditor_config_js.tmpl',
 	            -vars   => {
-					file_manager_browse_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/filemanager/index.html', 
-					file_manager_upload_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/filemanager/index.html', 
+					file_manager_browse_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/core5_filemanager/index.html', 
+					file_manager_upload_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/core5_filemanager/index.html', 
 	            	support_files_dir_url  => $support_files_dir_url, 
 					Support_Files_Dir_Name => $Support_Files_Dir_Name, 
 				}
@@ -2636,7 +2643,7 @@ sub install_and_configure_core5_filemanager {
 			}
         }
     );
-	my $core5_filemanager_config_loc = make_safer($install_path . '/filemanager/connectors/pl/filemanager_config.pl'); 
+	my $core5_filemanager_config_loc = make_safer($install_path . '/core5_filemanager/connectors/pl/filemanager_config.pl'); 
 	installer_chmod(0777, $core5_filemanager_config_loc); 
 	open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $core5_filemanager_config_loc or croak $!;
 	print $config_fh $core5_filemanager_config_pl or croak $!;
@@ -2654,7 +2661,7 @@ sub install_and_configure_core5_filemanager {
 			}
         }
     );
-	my $core5_filemanager_config_js_loc = make_safer($install_path . '/filemanager/scripts/filemanager.config.js'); 
+	my $core5_filemanager_config_js_loc = make_safer($install_path . '/core5_filemanager/scripts/filemanager.config.js'); 
 	installer_chmod(0777, $core5_filemanager_config_js_loc); 
 	open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $core5_filemanager_config_js_loc or croak $!;
 	print $config_fh $core5_filemanager_config_js or croak $!;
@@ -2664,7 +2671,7 @@ sub install_and_configure_core5_filemanager {
 	
 	# We actually have the change the permissions of those two files: 
 	
-	my $core5_filemanager_connector_loc = make_safer($install_path . '/filemanager/connectors/pl/filemanager.pl'); 
+	my $core5_filemanager_connector_loc = make_safer($install_path . '/core5_filemanager/connectors/pl/filemanager.pl'); 
 	
 	installer_chmod($DADA::Config::DIR_CHMOD, $core5_filemanager_connector_loc);
 	installer_chmod($DADA::Config::DIR_CHMOD, $core5_filemanager_config_loc);
