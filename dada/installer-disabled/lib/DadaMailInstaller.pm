@@ -867,6 +867,7 @@ sub grab_former_config_vals {
 	}
 	elsif($BootstrapConfig::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1){ 
 		$local_q->param('file_browser_install', 'core5_filemanager');
+		$local_q->param('core5_filemanager_connector', $BootstrapConfig::FILE_BROWSER_OPTIONS->{core5_filemanager}->{connector});
 	}
 	
 	# Profiles
@@ -2289,8 +2290,8 @@ sub install_wysiwyg_editors {
 		install_and_configure_core5_filemanager($args); 
 		my $upload_dir = make_safer($support_files_dir_path . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir); 
 		$tmpl_vars{i_core5_filemanager_enabled} = 1; 
-		$tmpl_vars{i_core5_filemanager_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/core5_filemanager';
-
+		$tmpl_vars{i_core5_filemanager_url}       = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/core5_filemanager';
+		$tmpl_vars{i_core5_filemanager_connector} = $q->param('core5_filemanager_connector'); 
 		my $upload_dir = make_safer($support_files_dir_path . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir); 
 		$tmpl_vars{i_core5_filemanager_upload_dir} = $upload_dir; 
 		$tmpl_vars{i_core5_filemanager_upload_url} = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir;
@@ -2658,6 +2659,7 @@ sub install_and_configure_core5_filemanager {
             -screen => 'core5_filemanager_config_js.tmpl',
             -vars   => {
 				fileRoot          => $url_path . '/', # slash on the end, there. 
+				lang              => $q->param('core5_filemanager_connector'), 
 			}
         }
     );
@@ -2669,12 +2671,19 @@ sub install_and_configure_core5_filemanager {
 	installer_chmod($DADA::Config::FILE_CHMOD, $core5_filemanager_config_js_loc);
 	undef $config_fh;
 	
-	# We actually have the change the permissions of those two files: 
+	if($q->param('core5_filemanager_connector') eq 'pl') { 
+		# We actually have the change the permissions of those two files: 
 	
-	my $core5_filemanager_connector_loc = make_safer($install_path . '/core5_filemanager/connectors/pl/filemanager.pl'); 
+		my $core5_filemanager_connector_loc = make_safer($install_path . '/core5_filemanager/connectors/pl/filemanager.pl'); 
 	
-	installer_chmod($DADA::Config::DIR_CHMOD, $core5_filemanager_connector_loc);
-	installer_chmod($DADA::Config::DIR_CHMOD, $core5_filemanager_config_loc);
+		installer_chmod($DADA::Config::DIR_CHMOD, $core5_filemanager_connector_loc);
+		installer_chmod($DADA::Config::DIR_CHMOD, $core5_filemanager_config_loc);
+		
+		installer_rmdir(make_safer($install_path . '/core5_filemanager/connectors/php'));
+	}
+	elsif($q->param('core5_filemanager_connector') eq 'php') {
+		installer_rmdir(make_safer($install_path . '/core5_filemanager/connectors/pl'));		
+	}
 	
 }
 
