@@ -526,7 +526,7 @@ sub create_index_nav {
 	
 		# next holds previous, previous holds next; 
 		if($back >= 0){		
-			$next_link = qq{$DADA::Config::PROGRAM_URL?flavor=$af;list=} . uriescape($self->{list}) . qq{;start=$back};
+			$next_link = qq{$DADA::Config::PROGRAM_URL?flavor=$af&list=} . uriescape($self->{list}) . qq{;&start=$back};
 		}else{
 			$next_link = undef; 
 		}
