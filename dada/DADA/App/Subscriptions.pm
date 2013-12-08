@@ -156,6 +156,18 @@ sub token {
 				}
 			); 
 		}
+		elsif( $data->{data}->{flavor} eq 'unsub_request_approve'
+		||     $data->{data}->{flavor} eq 'unsub_request_deny'
+		){ 
+			$q->param('token', $token); 
+			$self->complete_unsubscription_request(
+				{ 
+                    -html_output => $args->{-html_output},
+                    -cgi_obj     => $q,
+				}
+			); 
+		}
+
         else {
             return user_error(
                 {
@@ -1624,7 +1636,7 @@ sub unsubscribe {
 			my $ls = DADA::MailingList::Settings->new({-list => $data->{data}->{list}}); 
 
 			if($ls->param('private_list') == 1) {	
-				$self->complete_unsubscription_request($args); 
+				$self->unsubscription_request($args); 
 			}
 			else { 
 	            $self->complete_unsubscription($args);
@@ -1837,7 +1849,7 @@ sub complete_unsubscription {
 
 
 
-sub complete_unsubscription_request { 
+sub unsubscription_request { 
 
     my $self = shift;
     my ($args) = @_;
@@ -1899,6 +1911,97 @@ sub complete_unsubscription_request {
         return;
     }
 	else { # $status == 1
+		
+       my $worked = $lh->add_subscriber(
+            {
+                -email          => $email,
+				-list           => $list,
+				-type           => 'unsub_request_list',
+				-dupe_check => {
+                    -enable  => 1,
+                    -on_dupe => 'ignore_add',
+                },                
+            }
+        );
+
+		require DADA::App::Subscriptions::ConfirmationTokens;
+        my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
+
+		my $approve_token = $ct->save(
+            {
+                -email => $email,
+                -data  => {
+                    list        => $list,
+                    type        => 'list',
+                    flavor      => 'unsub_request_approve',
+                    remote_addr => $ENV{REMOTE_ADDR},
+                },
+                -remove_previous => 1,
+            }
+        );
+
+		my $deny_token = $ct->save(
+            {
+                -email => $email,
+                -data  => {
+                    list        => $list,
+                    type        => 'list',
+                    flavor      => 'unsub_request_deny',
+                    remote_addr => $ENV{REMOTE_ADDR},
+                },
+                -remove_previous => 1,
+            }
+        );
+
+	my $list_unsubscribe_request_approve_link = $DADA::Config::S_PROGRAM_URL . '/t/' . $approve_token . '/';
+	my $list_unsubscribe_request_deny_link    = $DADA::Config::S_PROGRAM_URL . '/t/' . $deny_token . '/';
+
+        require DADA::App::Messages;
+        DADA::App::Messages::send_generic_email(
+            {
+                -list    => $ls->param('list'),
+                -headers => {
+                    To => '"'
+                      . escape_for_sending( $ls->param('list_name') )
+                      . '" <'
+                      . $ls->param('list_owner_email') . '>',
+                    Subject => $ls->param(
+                        'unsubscription_approval_request_message_subject'),
+                },
+                -body =>
+                  $ls->param('unsubscription_approval_request_message'),
+                -tmpl_params => {
+                    -list_settings_vars_param =>
+                      { -list => $ls->param('list') },
+                    -subscriber_vars_param => {
+                        -list  => $ls->param('list'),
+                        -email => $email,
+                        -type  => 'unsub_request_list'
+                    },
+                    -vars => {
+		list_unsubscribe_request_approve_link => $list_unsubscribe_request_approve_link, 
+		list_unsubscribe_request_deny_link => $list_unsubscribe_request_deny_link, 	
+		},
+                },
+                -test => $self->test,
+            }
+        );
+		
+		
+		require DADA::Template::Widgets;
+        my $return = DADA::Template::Widgets::wrap_screen(
+            {
+                -screen                   => 'unsubscription_request_screen.tmpl',
+                -with                     => 'list',
+                -list_settings_vars_param => { -list => $ls->param('list') },
+                -dada_pseudo_tag_filter   => 1,
+                -subscriber_vars          => { 'subscriber.email' => $email },
+            }
+        );
+
+       # $ct->remove_by_token( $q->param('token') );
+
+        $self->test ? return $return : print $fh safely_encode($return) and return;
 
 =cut
 		
@@ -2017,6 +2120,195 @@ sub complete_unsubscription_request {
 			# Else, I dunno! There's no, -html_output argument, here!"; 
 		}
 	}
+}
+
+
+
+
+sub complete_unsubscription_request { 
+	
+	my $self = shift;
+    my ($args) = @_;
+
+    if ( !$args->{-cgi_obj} ) {
+        croak 'Error: No CGI Object passed in the -cgi_obj parameter.';
+    }
+
+    if ( !exists( $args->{-html_output} ) ) {
+        $args->{-html_output} = 1;
+    }
+    if ( !exists( $args->{-fh} ) ) {
+        $args->{-fh} = \*STDOUT;
+    }
+    my $fh    = $args->{-fh};
+    my $q     = $args->{-cgi_obj};
+    my $token = $q->param('token') || undef;
+
+    # If we don't have a token, things are very wrong:
+    if ( !defined($token) ) {
+        my $r =
+          $q->redirect( -uri => $DADA::Config::PROGRAM_URL
+              . '?flavor=outdated_subscription_urls&orig_flavor=u&list='
+              . xss_filter( strip( $q->param('list') ) )
+              . '&email='
+              . xss_filter( strip( $q->param('email') ) ) );
+        $self->test ? return $r : print $fh safely_encode($r) and return;
+    }
+
+    require DADA::App::Subscriptions::ConfirmationTokens;
+    my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
+    if ( !$ct->exists($token) ) {
+        return user_error(
+            {
+                -error => 'token_problem',
+                -test  => $self->test,
+            }
+        );
+    }
+
+    my $data = $ct->fetch($token);
+
+    # not sure how you got here, but, whatever:
+    if (   $data->{data}->{flavor} ne 'unsub_request_approve'
+        && $data->{data}->{flavor} ne 'unsub_request_deny' )
+    {
+        return user_error(
+            {
+                -error => 'token_problem',
+                -test  => $self->test,
+            }
+        );
+    }
+
+    my $flavor = $data->{data}->{flavor};
+    my $email  = $data->{email};
+    my $list   = $data->{data}->{list};
+
+    # And then, is never used?
+    my $list_exists = DADA::App::Guts::check_if_list_exists( -List => $list );
+
+    require DADA::MailingList::Settings;
+    require DADA::MailingList::Subscribers;
+    require DADA::App::Subscriptions::ConfirmationTokens;
+
+    my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+
+    if (
+        $lh->check_for_double_email(
+            -Email => $email,
+            -Type  => 'unsub_request_list'
+        ) == 0
+      )
+    {
+        $ct->remove_by_token($token);
+        return user_error(
+            {
+                -error => 'token_problem',
+                -test  => $self->test,
+            }
+        );
+    }
+    else {
+        $ct->remove_by_token($token);
+        if ( $flavor eq 'unsub_request_approve' ) {
+
+            $lh->remove_subscriber(
+                {
+                    -email => $email,
+                    -type  => 'unsub_request_list',
+                }
+            );
+
+
+            my $count = 1;
+
+			# This would just be a, "unsubscribe", 
+			# Along with all the yadda, yadda 
+
+
+
+            require DADA::App::Messages;
+            DADA::App::Messages::send_unsubscription_request_approved_message(
+                {
+                    -list   => $list,
+                    -email  => $email,
+                    -ls_obj => $ls,
+
+                    #-test   => $self->test,
+                }
+            );
+
+            require DADA::Template::Widgets;
+            my $r = DADA::Template::Widgets::wrap_screen(
+                {
+                    -screen                   => 'unsubscription_request_results.tmpl',
+                    -with                     => 'list',
+                    -list_settings_vars_param => { -list => $list, },
+                    -subscriber_vars_param    => {
+                        -list  => $list,
+                        -email => $email,
+                        -type  => 'list'
+                    },
+                    -dada_pseudo_tag_filter => 1,
+                    -vars                   => {
+                        email            => $email,
+                        subscriber_email => $email,
+                        approved         => 1,
+                    },
+
+                }
+            );
+            $self->test ? return $r : print $fh safely_encode($r) and return;
+
+        }
+        elsif ( $flavor eq 'unsub_request_deny' ) {
+	
+            $lh->remove_subscriber(
+                {
+                    -email => $email,
+                    -type  => 'unsub_request_list',
+                }
+            );
+            require DADA::App::Messages;
+            DADA::App::Messages::send_unsubscription_request_denied_message(
+                {
+                    -list   => $list,
+                    -email  => $email,
+                    -ls_obj => $ls,
+
+                    #-test   => $self->test,
+                }
+            );
+            my $count = 1;
+            require DADA::Template::Widgets;
+            my $r = DADA::Template::Widgets::wrap_screen(
+                {
+                    -screen                   => 'unsubscription_request_results.tmpl',
+                    -with                     => 'list',
+                    -list_settings_vars_param => { -list => $list, },
+                    -subscriber_vars_param    => {
+                        -list  => $list,
+                        -email => $email,
+                        -type  => 'list'
+                    },
+                    -dada_pseudo_tag_filter => 1,
+                    -vars                   => {
+                        email            => $email,
+                        subscriber_email => $email,
+                        approved         => 0,
+                    },
+
+                }
+            );
+            $self->test ? return $r : print $fh safely_encode($r) and return;
+        }
+        else {
+            die "unknown process!";
+        }
+    }
+    
 }
 
 sub subscription_requests {

@@ -915,34 +915,44 @@ sub sign_in {
 
     if ( $list_exists >= 1 ) {
 
-        my $auth_state;
-        if ( $DADA::Config::DISABLE_OUTSIDE_LOGINS == 1 ) {
-            require DADA::Security::SimpleAuthStringState;
-            my $sast = DADA::Security::SimpleAuthStringState->new;
-            $auth_state = $sast->make_state;
-        }
-
-        require DADA::MailingList::Settings;
-
-        my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-        my $li = $ls->get;
-
-        my $scrn = DADA::Template::Widgets::wrap_screen(
-            {
-                -screen => 'list_login_form.tmpl',
-                -with   => 'list',
-                -vars   => {
-                    flavor_sign_in => 1,
-                    auth_state     => $auth_state,
-                },
-                -list_settings_vars_param => {
-                    -list   => $list,
-                    -dot_it => 1,
-                },
-            }
+        my ( $admin_list, $root_login, $checksout ) = check_list_security(
+            -cgi_obj         => $q,
+            -Function        => 'sign_in',
+            -manual_override => 1,
         );
-        e_print($scrn);
+        if ( $checksout && $admin_list eq $list ) {
+            print $q->redirect( -uri => $DADA::Config::DEFAULT_ADMIN_SCREEN );
+            return;
+        }
+        else {
+            my $auth_state;
+            if ( $DADA::Config::DISABLE_OUTSIDE_LOGINS == 1 ) {
+                require DADA::Security::SimpleAuthStringState;
+                my $sast = DADA::Security::SimpleAuthStringState->new;
+                $auth_state = $sast->make_state;
+            }
 
+            require DADA::MailingList::Settings;
+
+            my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+            my $li = $ls->get;
+
+            my $scrn = DADA::Template::Widgets::wrap_screen(
+                {
+                    -screen => 'list_login_form.tmpl',
+                    -with   => 'list',
+                    -vars   => {
+                        flavor_sign_in => 1,
+                        auth_state     => $auth_state,
+                    },
+                    -list_settings_vars_param => {
+                        -list   => $list,
+                        -dot_it => 1,
+                    },
+                }
+            );
+            e_print($scrn);
+        }
     }
     else {
 

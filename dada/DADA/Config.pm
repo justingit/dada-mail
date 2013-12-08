@@ -13,10 +13,10 @@ package DADA::Config;
 require Exporter;
 our @ISA = qw(Exporter);
 use vars
-  qw($PROGRAM_ROOT_PASSWORD $MAILPROG $DIR $FILES $PROGRAM_URL $S_PROGRAM_URL $PLUGIN_CONFIGS $MAIL_SETTINGS $MASS_MAIL_SETTINGS $AMAZON_SES_OPTIONS $FIRST_SUB $SEC_SUB @C $SALT $FILE_CHMOD $DIR_CHMOD $GIVE_PROPS_IN_EMAIL $GIVE_PROPS_IN_HTML $GIVE_PROPS_IN_ADMIN $GIVE_PROPS_IN_SUBSCRIBE_FORM $SUBSCRIBED_MESSAGE $SUBSCRIBED_BY_LIST_OWNER_MESSAGE $UNSUBSCRIBED_BY_LIST_OWNER_MESSAGE $SUBSCRIPTION_APPROVAL_REQUEST_MESSAGE $SUBSCRIPTION_NOTICE_MESSAGE_TO_PHRASE $SUBSCRIPTION_NOTICE_MESSAGE_SUBJECT $SUBSCRIPTION_NOTICE_MESSAGE $UNSUBSCRIPTION_NOTICE_MESSAGE_SUBJECT $UNSUBSCRIPTION_NOTICE_MESSAGE $UNSUBSCRIBED_MESSAGE $CONFIRMATION_MESSAGE  $HTML_CONFIRMATION_MESSAGE $YOU_ARE_ALREADY_SUBSCRIBED_MESSAGE $YOU_ARE_NOT_SUBSCRIBED_MESSAGE  $HTML_SUBSCRIBED_MESSAGE $HTML_SUBSCRIPTION_REQUEST_MESSAGE $HTML_UNSUBSCRIBED_MESSAGE  $ARCHIVES $TEMPLATES $ALTERNATIVE_HTML_TEMPLATE_PATH $TMP $LOGS $BACKUPS %BACKUP_HISTORY $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION $ENFORCE_CLOSED_LOOP_OPT_IN $FCKEDITOR_URL $CKEDITOR_URL $SUPPORT_FILES $WYSIWYG_EDITOR_OPTIONS  $FILE_BROWSER_OPTIONS  $SCREEN_CACHE $DATA_CACHE $GLOBAL_BLACK_LIST $GLOBAL_UNSUBSCRIBE $MULTIPLE_LIST_SENDING $MULTIPLE_LIST_SENDING_TYPE $HIDDEN_SUBSCRIBER_FIELDS_PREFIX @PING_URLS $SUBSCRIPTION_SUCCESSFUL_COPY $MAILING_LIST_MESSAGE $MAILING_LIST_MESSAGE_HTML $MODERATION_MSG $AWAIT_MODERATION_MSG $ACCEPT_MSG $REJECTION_MSG $MSG_TOO_BIG_MSG $MSG_LABELED_AS_SPAM_MSG $NOT_ALLOWED_TO_POST_MSG $NOT_ALLOWED_TO_POST_NOTICE_MSG $MAILING_FINISHED_MESSAGE $MAILING_FINISHED_MESSAGE_SUBJECT $PIN_WORD $PIN_NUM $TEXT_CSV_PARAMS $ALLOW_ROOT_LOGIN $UNSUBSCRIPTION_REQUEST_MESSAGE  $UNSUBSCRIPTION_REQUEST_MESSAGE_SUBJECT $SUBSCRIPTION_REQUEST_APPROVED_MESSAGE $SUBSCRIPTION_REQUEST_DENIED_MESSAGE @CHARSETS @CONTENT_TYPES %LIST_SETUP_DEFAULTS %LIST_SETUP_INCLUDE %LIST_SETUP_OVERRIDES @LIST_SETUP_DONT_CLONE %PRIORITIES $ATTACHMENT_TEMPFILE $MAIL_VERP_SEPARATOR %MIME_TYPES $DEFAULT_MIME_TYPE $TEXT_INVITE_MESSAGE $PROFILE_ACTIVATION_MESSAGE_SUBJECT $PROFILE_ACTIVATION_MESSAGE $PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT $PROFILE_RESET_PASSWORD_MESSAGE $PROFILE_UPDATE_EMAIL_MESSAGE_SUBJECT $PROFILE_UPDATE_EMAIL_MESSAGE $PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE_SUBJECT $PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE $LIST_CONFIRM_PASSWORD_MESSAGE_SUBJECT $LIST_CONFIRM_PASSWORD_MESSAGE $LIST_RESET_PASSWORD_MESSAGE_SUBJECT $LIST_RESET_PASSWORD_MESSAGE $HTML_INVITE_MESSAGE $SENDING_PREFS_MESSAGE_SUBJECT $SENDING_PREFS_MESSAGE $MIME_PARANOID $MIME_HUSH $MIME_OPTIMIZE $NPH $PROGRAM_USAGE_LOG $ROOT_PASS_IS_ENCRYPTED @ALLOWED_IP_ADDRESSES $SHOW_ADMIN_LINK $ADMIN_FLAVOR_NAME $SIGN_IN_FLAVOR_NAME $DISABLE_OUTSIDE_LOGINS %LOG $DEBUG_TRACE %CPAN_DEBUG_SETTINGS $ADMIN_MENU $EMAIL_CASE @EMAIL_EXCEPTIONS $LIST_IN_ORDER $ADMIN_TEMPLATE $USER_TEMPLATE $BACKEND_DB_TYPE $SUBSCRIBER_DB_TYPE $ARCHIVE_DB_TYPE $SETTINGS_DB_TYPE $SESSION_DB_TYPE $BOUNCE_SCORECARD_DB_TYPE $CLICKTHROUGH_DB_TYPE %SQL_PARAMS $DBI_PARAMS $PROFILE_OPTIONS $PROGRAM_ERROR_LOG $SHOW_HELP_LINKS $HELP_LINKS_URL $VER $VERSION  $PROGRAM_NAME @CONTENT_TRANSFER_ENCODINGS $CONFIG_FILE $PROGRAM_CONFIG_FILE_DIR $OS $DEFAULT_ADMIN_SCREEN $DEFAULT_LOGOUT_SCREEN $DEFAULT_SCREEN $HTML_CHARSET $HTML_SEND_ARCHIVED_MESSAGE $SEND_ARCHIVED_MESSAGE $REFERER_CHECK $CAPTCHA_TYPE $RECAPTCHA_PARAMS $RECAPTHCA_MAILHIDE_PARAMS $GD_SECURITYIMAGE_PARAMS $LOGIN_COOKIE_NAME %COOKIE_PARAMS $HTML_TEXTTOHTML_OPTIONS $HTML_SCRUBBER_OPTIONS $TEMPLATE_SETTINGS $LOGIN_WIDGET $NULL_DEVICE $LIST_QUOTA $SUBSCRIPTION_QUOTA $MAILOUT_AT_ONCE_LIMIT $MAILOUT_STALE_AFTER %EMAIL_HEADERS @EMAIL_HEADERS_ORDER);
+  qw($PROGRAM_ROOT_PASSWORD $MAILPROG $DIR $FILES $PROGRAM_URL $S_PROGRAM_URL $PLUGIN_CONFIGS $MAIL_SETTINGS $MASS_MAIL_SETTINGS $AMAZON_SES_OPTIONS $FIRST_SUB $SEC_SUB @C $SALT $FILE_CHMOD $DIR_CHMOD $GIVE_PROPS_IN_EMAIL $GIVE_PROPS_IN_HTML $GIVE_PROPS_IN_ADMIN $GIVE_PROPS_IN_SUBSCRIBE_FORM $SUBSCRIBED_MESSAGE $SUBSCRIBED_BY_LIST_OWNER_MESSAGE $UNSUBSCRIBED_BY_LIST_OWNER_MESSAGE $SUBSCRIPTION_APPROVAL_REQUEST_MESSAGE $UNSUBSCRIPTION_APPROVAL_REQUEST_MESSAGE $SUBSCRIPTION_NOTICE_MESSAGE_TO_PHRASE $SUBSCRIPTION_NOTICE_MESSAGE_SUBJECT $SUBSCRIPTION_NOTICE_MESSAGE $UNSUBSCRIPTION_NOTICE_MESSAGE_SUBJECT $UNSUBSCRIPTION_NOTICE_MESSAGE $UNSUBSCRIBED_MESSAGE $CONFIRMATION_MESSAGE  $HTML_CONFIRMATION_MESSAGE $YOU_ARE_ALREADY_SUBSCRIBED_MESSAGE $YOU_ARE_NOT_SUBSCRIBED_MESSAGE  $HTML_SUBSCRIBED_MESSAGE $HTML_SUBSCRIPTION_REQUEST_MESSAGE $HTML_UNSUBSCRIBED_MESSAGE  $ARCHIVES $TEMPLATES $ALTERNATIVE_HTML_TEMPLATE_PATH $TMP $LOGS $BACKUPS %BACKUP_HISTORY $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION $ENFORCE_CLOSED_LOOP_OPT_IN $FCKEDITOR_URL $CKEDITOR_URL $SUPPORT_FILES $WYSIWYG_EDITOR_OPTIONS  $FILE_BROWSER_OPTIONS  $SCREEN_CACHE $DATA_CACHE $GLOBAL_BLACK_LIST $GLOBAL_UNSUBSCRIBE $MULTIPLE_LIST_SENDING $MULTIPLE_LIST_SENDING_TYPE $HIDDEN_SUBSCRIBER_FIELDS_PREFIX @PING_URLS $SUBSCRIPTION_SUCCESSFUL_COPY $MAILING_LIST_MESSAGE $MAILING_LIST_MESSAGE_HTML $MODERATION_MSG $AWAIT_MODERATION_MSG $ACCEPT_MSG $REJECTION_MSG $MSG_TOO_BIG_MSG $MSG_LABELED_AS_SPAM_MSG $NOT_ALLOWED_TO_POST_MSG $NOT_ALLOWED_TO_POST_NOTICE_MSG $MAILING_FINISHED_MESSAGE $MAILING_FINISHED_MESSAGE_SUBJECT $PIN_WORD $PIN_NUM $TEXT_CSV_PARAMS $ALLOW_ROOT_LOGIN $UNSUBSCRIPTION_REQUEST_MESSAGE  $UNSUBSCRIPTION_REQUEST_MESSAGE_SUBJECT $SUBSCRIPTION_REQUEST_APPROVED_MESSAGE $UNSUBSCRIPTION_REQUEST_APPROVED_MESSAGE $SUBSCRIPTION_REQUEST_DENIED_MESSAGE $UNSUBSCRIPTION_REQUEST_DENIED_MESSAGE @CHARSETS @CONTENT_TYPES %LIST_SETUP_DEFAULTS %LIST_SETUP_INCLUDE %LIST_SETUP_OVERRIDES @LIST_SETUP_DONT_CLONE %PRIORITIES $ATTACHMENT_TEMPFILE $MAIL_VERP_SEPARATOR %MIME_TYPES $DEFAULT_MIME_TYPE $TEXT_INVITE_MESSAGE $PROFILE_ACTIVATION_MESSAGE_SUBJECT $PROFILE_ACTIVATION_MESSAGE $PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT $PROFILE_RESET_PASSWORD_MESSAGE $PROFILE_UPDATE_EMAIL_MESSAGE_SUBJECT $PROFILE_UPDATE_EMAIL_MESSAGE $PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE_SUBJECT $PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE $LIST_CONFIRM_PASSWORD_MESSAGE_SUBJECT $LIST_CONFIRM_PASSWORD_MESSAGE $LIST_RESET_PASSWORD_MESSAGE_SUBJECT $LIST_RESET_PASSWORD_MESSAGE $HTML_INVITE_MESSAGE $SENDING_PREFS_MESSAGE_SUBJECT $SENDING_PREFS_MESSAGE $MIME_PARANOID $MIME_HUSH $MIME_OPTIMIZE $NPH $PROGRAM_USAGE_LOG $ROOT_PASS_IS_ENCRYPTED @ALLOWED_IP_ADDRESSES $SHOW_ADMIN_LINK $ADMIN_FLAVOR_NAME $SIGN_IN_FLAVOR_NAME $DISABLE_OUTSIDE_LOGINS %LOG $DEBUG_TRACE %CPAN_DEBUG_SETTINGS $ADMIN_MENU $EMAIL_CASE @EMAIL_EXCEPTIONS $LIST_IN_ORDER $ADMIN_TEMPLATE $USER_TEMPLATE $BACKEND_DB_TYPE $SUBSCRIBER_DB_TYPE $ARCHIVE_DB_TYPE $SETTINGS_DB_TYPE $SESSION_DB_TYPE $BOUNCE_SCORECARD_DB_TYPE $CLICKTHROUGH_DB_TYPE %SQL_PARAMS $DBI_PARAMS $PROFILE_OPTIONS $PROGRAM_ERROR_LOG $SHOW_HELP_LINKS $HELP_LINKS_URL $VER $VERSION  $PROGRAM_NAME @CONTENT_TRANSFER_ENCODINGS $CONFIG_FILE $PROGRAM_CONFIG_FILE_DIR $OS $DEFAULT_ADMIN_SCREEN $DEFAULT_LOGOUT_SCREEN $DEFAULT_SCREEN $HTML_CHARSET $HTML_SEND_ARCHIVED_MESSAGE $SEND_ARCHIVED_MESSAGE $REFERER_CHECK $CAPTCHA_TYPE $RECAPTCHA_PARAMS $RECAPTHCA_MAILHIDE_PARAMS $GD_SECURITYIMAGE_PARAMS $LOGIN_COOKIE_NAME %COOKIE_PARAMS $HTML_TEXTTOHTML_OPTIONS $HTML_SCRUBBER_OPTIONS $TEMPLATE_SETTINGS $LOGIN_WIDGET $NULL_DEVICE $LIST_QUOTA $SUBSCRIPTION_QUOTA $MAILOUT_AT_ONCE_LIMIT $MAILOUT_STALE_AFTER %EMAIL_HEADERS @EMAIL_HEADERS_ORDER);
 
 @EXPORT_OK =
-  qw($PROGRAM_ROOT_PASSWORD $MAILPROG $DIR $FILES $PROGRAM_URL $S_PROGRAM_URL $PLUGIN_CONFIGS $MAIL_SETTINGS $MASS_MAIL_SETTINGS $AMAZON_SES_OPTIONS $FIRST_SUB $SEC_SUB @C $SALT $FILE_CHMOD $DIR_CHMOD $GIVE_PROPS_IN_EMAIL $GIVE_PROPS_IN_HTML $GIVE_PROPS_IN_ADMIN $GIVE_PROPS_IN_SUBSCRIBE_FORM $SUBSCRIBED_MESSAGE $SUBSCRIBED_BY_LIST_OWNER_MESSAGE $UNSUBSCRIBED_BY_LIST_OWNER_MESSAGE $SUBSCRIPTION_APPROVAL_REQUEST_MESSAGE $SUBSCRIPTION_NOTICE_MESSAGE_TO_PHRASE $SUBSCRIPTION_NOTICE_MESSAGE_SUBJECT $SUBSCRIPTION_NOTICE_MESSAGE $UNSUBSCRIPTION_NOTICE_MESSAGE_SUBJECT $UNSUBSCRIPTION_NOTICE_MESSAGE $UNSUBSCRIBED_MESSAGE $CONFIRMATION_MESSAGE  $HTML_CONFIRMATION_MESSAGE $YOU_ARE_ALREADY_SUBSCRIBED_MESSAGE $YOU_ARE_NOT_SUBSCRIBED_MESSAGE $HTML_SUBSCRIBED_MESSAGE $HTML_SUBSCRIPTION_REQUEST_MESSAGE $HTML_UNSUBSCRIBED_MESSAGE  $ARCHIVES $TEMPLATES $ALTERNATIVE_HTML_TEMPLATE_PATH $TMP $LOGS $BACKUPS %BACKUP_HISTORY $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION $ENFORCE_CLOSED_LOOP_OPT_IN $FCKEDITOR_URL $CKEDITOR_URL $SUPPORT_FILES $WYSIWYG_EDITOR_OPTIONS $FILE_BROWSER_OPTIONS $SCREEN_CACHE $DATA_CACHE $GLOBAL_BLACK_LIST $GLOBAL_UNSUBSCRIBE $MULTIPLE_LIST_SENDING $MULTIPLE_LIST_SENDING_TYPE $HIDDEN_SUBSCRIBER_FIELDS_PREFIX @PING_URLS $SUBSCRIPTION_SUCCESSFUL_COPY $MAILING_LIST_MESSAGE $MAILING_LIST_MESSAGE_HTML  $MODERATION_MSG $AWAIT_MODERATION_MSG $ACCEPT_MSG $REJECTION_MSG $MSG_TOO_BIG_MSG $MSG_LABELED_AS_SPAM_MSG $NOT_ALLOWED_TO_POST_MSG $NOT_ALLOWED_TO_POST_NOTICE_MSG $MAILING_FINISHED_MESSAGE $MAILING_FINISHED_MESSAGE_SUBJECT $PIN_WORD $PIN_NUM $TEXT_CSV_PARAMS $ALLOW_ROOT_LOGIN $UNSUBSCRIPTION_REQUEST_MESSAGE $UNSUBSCRIPTION_REQUEST_MESSAGE_SUBJECT $SUBSCRIPTION_REQUEST_APPROVED_MESSAGE $SUBSCRIPTION_REQUEST_DENIED_MESSAGE @CHARSETS @CONTENT_TYPES %LIST_SETUP_DEFAULTS %LIST_SETUP_INCLUDE %LIST_SETUP_OVERRIDES @LIST_SETUP_DONT_CLONE %PRIORITIES $ATTACHMENT_TEMPFILE $MAIL_VERP_SEPARATOR %MIME_TYPES $DEFAULT_MIME_TYPE $TEXT_INVITE_MESSAGE $PROFILE_ACTIVATION_MESSAGE_SUBJECT $PROFILE_ACTIVATION_MESSAGE $PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT $PROFILE_RESET_PASSWORD_MESSAGE $PROFILE_UPDATE_EMAIL_MESSAGE_SUBJECT $PROFILE_UPDATE_EMAIL_MESSAGE $PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE_SUBJECT $PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE $LIST_CONFIRM_PASSWORD_MESSAGE_SUBJECT $LIST_CONFIRM_PASSWORD_MESSAGE $LIST_RESET_PASSWORD_MESSAGE_SUBJECT $LIST_RESET_PASSWORD_MESSAGE $HTML_INVITE_MESSAGE $SENDING_PREFS_MESSAGE_SUBJECT $SENDING_PREFS_MESSAGE $MIME_PARANOID $MIME_HUSH $MIME_OPTIMIZE $NPH $PROGRAM_USAGE_LOG $ROOT_PASS_IS_ENCRYPTED @ALLOWED_IP_ADDRESSES $SHOW_ADMIN_LINK $ADMIN_FLAVOR_NAME $SIGN_IN_FLAVOR_NAME $DISABLE_OUTSIDE_LOGINS %LOG $DEBUG_TRACE %CPAN_DEBUG_SETTINGS $ADMIN_MENU $EMAIL_CASE @EMAIL_EXCEPTIONS $LIST_IN_ORDER $ADMIN_TEMPLATE $USER_TEMPLATE $BACKEND_DB_TYPE $SUBSCRIBER_DB_TYPE $ARCHIVE_DB_TYPE $SETTINGS_DB_TYPE $SESSION_DB_TYPE $BOUNCE_SCORECARD_DB_TYPE $CLICKTHROUGH_DB_TYPE %SQL_PARAMS $DBI_PARAMS $PROFILE_OPTIONS $PROGRAM_ERROR_LOG $SHOW_HELP_LINKS $HELP_LINKS_URL $VER $VERSION  $PROGRAM_NAME @CONTENT_TRANSFER_ENCODINGS $CONFIG_FILE $PROGRAM_CONFIG_FILE_DIR $OS $DEFAULT_ADMIN_SCREEN $DEFAULT_LOGOUT_SCREEN $DEFAULT_SCREEN $HTML_CHARSET $HTML_SEND_ARCHIVED_MESSAGE $SEND_ARCHIVED_MESSAGE $REFERER_CHECK $CAPTCHA_TYPE $RECAPTCHA_PARAMS $RECAPTHCA_MAILHIDE_PARAMS $GD_SECURITYIMAGE_PARAMS $LOGIN_COOKIE_NAME %COOKIE_PARAMS $HTML_TEXTTOHTML_OPTIONS $HTML_SCRUBBER_OPTIONS $TEMPLATE_SETTINGS $LOGIN_WIDGET $NULL_DEVICE $LIST_QUOTA $SUBSCRIPTION_QUOTA $MAILOUT_AT_ONCE_LIMIT $MAILOUT_STALE_AFTER %EMAIL_HEADERS @EMAIL_HEADERS_ORDER);
+  qw($PROGRAM_ROOT_PASSWORD $MAILPROG $DIR $FILES $PROGRAM_URL $S_PROGRAM_URL $PLUGIN_CONFIGS $MAIL_SETTINGS $MASS_MAIL_SETTINGS $AMAZON_SES_OPTIONS $FIRST_SUB $SEC_SUB @C $SALT $FILE_CHMOD $DIR_CHMOD $GIVE_PROPS_IN_EMAIL $GIVE_PROPS_IN_HTML $GIVE_PROPS_IN_ADMIN $GIVE_PROPS_IN_SUBSCRIBE_FORM $SUBSCRIBED_MESSAGE $SUBSCRIBED_BY_LIST_OWNER_MESSAGE $UNSUBSCRIBED_BY_LIST_OWNER_MESSAGE $SUBSCRIPTION_APPROVAL_REQUEST_MESSAGE $UNSUBSCRIPTION_APPROVAL_REQUEST_MESSAGE $SUBSCRIPTION_NOTICE_MESSAGE_TO_PHRASE $SUBSCRIPTION_NOTICE_MESSAGE_SUBJECT $SUBSCRIPTION_NOTICE_MESSAGE $UNSUBSCRIPTION_NOTICE_MESSAGE_SUBJECT $UNSUBSCRIPTION_NOTICE_MESSAGE $UNSUBSCRIBED_MESSAGE $CONFIRMATION_MESSAGE  $HTML_CONFIRMATION_MESSAGE $YOU_ARE_ALREADY_SUBSCRIBED_MESSAGE $YOU_ARE_NOT_SUBSCRIBED_MESSAGE $HTML_SUBSCRIBED_MESSAGE $HTML_SUBSCRIPTION_REQUEST_MESSAGE $HTML_UNSUBSCRIBED_MESSAGE  $ARCHIVES $TEMPLATES $ALTERNATIVE_HTML_TEMPLATE_PATH $TMP $LOGS $BACKUPS %BACKUP_HISTORY $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION $ENFORCE_CLOSED_LOOP_OPT_IN $FCKEDITOR_URL $CKEDITOR_URL $SUPPORT_FILES $WYSIWYG_EDITOR_OPTIONS $FILE_BROWSER_OPTIONS $SCREEN_CACHE $DATA_CACHE $GLOBAL_BLACK_LIST $GLOBAL_UNSUBSCRIBE $MULTIPLE_LIST_SENDING $MULTIPLE_LIST_SENDING_TYPE $HIDDEN_SUBSCRIBER_FIELDS_PREFIX @PING_URLS $SUBSCRIPTION_SUCCESSFUL_COPY $MAILING_LIST_MESSAGE $MAILING_LIST_MESSAGE_HTML  $MODERATION_MSG $AWAIT_MODERATION_MSG $ACCEPT_MSG $REJECTION_MSG $MSG_TOO_BIG_MSG $MSG_LABELED_AS_SPAM_MSG $NOT_ALLOWED_TO_POST_MSG $NOT_ALLOWED_TO_POST_NOTICE_MSG $MAILING_FINISHED_MESSAGE $MAILING_FINISHED_MESSAGE_SUBJECT $PIN_WORD $PIN_NUM $TEXT_CSV_PARAMS $ALLOW_ROOT_LOGIN $UNSUBSCRIPTION_REQUEST_MESSAGE $UNSUBSCRIPTION_REQUEST_MESSAGE_SUBJECT $SUBSCRIPTION_REQUEST_APPROVED_MESSAGE $UNSUBSCRIPTION_REQUEST_APPROVED_MESSAGE $SUBSCRIPTION_REQUEST_DENIED_MESSAGE $UNSUBSCRIPTION_REQUEST_DENIED_MESSAGE @CHARSETS @CONTENT_TYPES %LIST_SETUP_DEFAULTS %LIST_SETUP_INCLUDE %LIST_SETUP_OVERRIDES @LIST_SETUP_DONT_CLONE %PRIORITIES $ATTACHMENT_TEMPFILE $MAIL_VERP_SEPARATOR %MIME_TYPES $DEFAULT_MIME_TYPE $TEXT_INVITE_MESSAGE $PROFILE_ACTIVATION_MESSAGE_SUBJECT $PROFILE_ACTIVATION_MESSAGE $PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT $PROFILE_RESET_PASSWORD_MESSAGE $PROFILE_UPDATE_EMAIL_MESSAGE_SUBJECT $PROFILE_UPDATE_EMAIL_MESSAGE $PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE_SUBJECT $PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE $LIST_CONFIRM_PASSWORD_MESSAGE_SUBJECT $LIST_CONFIRM_PASSWORD_MESSAGE $LIST_RESET_PASSWORD_MESSAGE_SUBJECT $LIST_RESET_PASSWORD_MESSAGE $HTML_INVITE_MESSAGE $SENDING_PREFS_MESSAGE_SUBJECT $SENDING_PREFS_MESSAGE $MIME_PARANOID $MIME_HUSH $MIME_OPTIMIZE $NPH $PROGRAM_USAGE_LOG $ROOT_PASS_IS_ENCRYPTED @ALLOWED_IP_ADDRESSES $SHOW_ADMIN_LINK $ADMIN_FLAVOR_NAME $SIGN_IN_FLAVOR_NAME $DISABLE_OUTSIDE_LOGINS %LOG $DEBUG_TRACE %CPAN_DEBUG_SETTINGS $ADMIN_MENU $EMAIL_CASE @EMAIL_EXCEPTIONS $LIST_IN_ORDER $ADMIN_TEMPLATE $USER_TEMPLATE $BACKEND_DB_TYPE $SUBSCRIBER_DB_TYPE $ARCHIVE_DB_TYPE $SETTINGS_DB_TYPE $SESSION_DB_TYPE $BOUNCE_SCORECARD_DB_TYPE $CLICKTHROUGH_DB_TYPE %SQL_PARAMS $DBI_PARAMS $PROFILE_OPTIONS $PROGRAM_ERROR_LOG $SHOW_HELP_LINKS $HELP_LINKS_URL $VER $VERSION  $PROGRAM_NAME @CONTENT_TRANSFER_ENCODINGS $CONFIG_FILE $PROGRAM_CONFIG_FILE_DIR $OS $DEFAULT_ADMIN_SCREEN $DEFAULT_LOGOUT_SCREEN $DEFAULT_SCREEN $HTML_CHARSET $HTML_SEND_ARCHIVED_MESSAGE $SEND_ARCHIVED_MESSAGE $REFERER_CHECK $CAPTCHA_TYPE $RECAPTCHA_PARAMS $RECAPTHCA_MAILHIDE_PARAMS $GD_SECURITYIMAGE_PARAMS $LOGIN_COOKIE_NAME %COOKIE_PARAMS $HTML_TEXTTOHTML_OPTIONS $HTML_SCRUBBER_OPTIONS $TEMPLATE_SETTINGS $LOGIN_WIDGET $NULL_DEVICE $LIST_QUOTA $SUBSCRIPTION_QUOTA $MAILOUT_AT_ONCE_LIMIT $MAILOUT_STALE_AFTER %EMAIL_HEADERS @EMAIL_HEADERS_ORDER);
 #
 #
 #
@@ -1330,7 +1330,33 @@ To deny this subscription, follow this link:
 -- <!-- tmpl_var PROGRAM_NAME -->
 
 EOF
-  ;
+;
+
+$UNSUBSCRIPTION_APPROVAL_REQUEST_MESSAGE ||= <<EOF
+
+Hello, 
+
+The following email address:
+
+	<!-- tmpl_var subscriber.email -->
+
+Would like to be REMOVED from: 
+
+	<!-- tmpl_var list_settings.list_name -->
+	
+To approve this subscription, follow this link: 
+	
+	<!-- tmpl_var list_unsubscribe_request_approve_link --> 
+	
+To deny this unsubscription, follow this link: 
+
+	<!-- tmpl_var list_unsubscribe_request_deny_link --> 
+
+-- <!-- tmpl_var PROGRAM_NAME -->
+
+EOF
+;
+
 
 $SUBSCRIPTION_NOTICE_MESSAGE_TO_PHRASE = undef;
 
@@ -1494,7 +1520,8 @@ The following physical address is associated with this mailing list:
 EOF
   ;
 
-$SUBSCRIPTION_REQUEST_APPROVED_MESSAGE ||= $SUBSCRIBED_MESSAGE;
+$SUBSCRIPTION_REQUEST_APPROVED_MESSAGE   ||= $SUBSCRIBED_MESSAGE;
+$UNSUBSCRIPTION_REQUEST_APPROVED_MESSAGE ||= $UNSUBSCRIBED_MESSAGE;
 
 
 $SUBSCRIPTION_REQUEST_DENIED_MESSAGE   ||= <<EOF
@@ -1509,7 +1536,23 @@ This subscription request has been denied by the List Owner.
 -- mailto:<!-- tmpl_var list_settings.list_owner_email --> 
 
 EOF
+;
+
+$UNSUBSCRIPTION_REQUEST_DENIED_MESSAGE   ||= <<EOF
+Hello! 
+
+You've recently have asked to be removed from: 
+
+	<!-- tmpl_var list_settings.list_name --> 
+	
+This unsubscription request has been denied by the List Owner. 
+
+-- mailto:<!-- tmpl_var list_settings.list_owner_email --> 
+
+EOF
   ;
+
+
 
 $MAILING_LIST_MESSAGE ||= <<EOF
 (Mailing list information, including how to remove yourself, is located at the end of this message.)
@@ -2360,10 +2403,10 @@ EOF
     cipher_key => undef,
     admin_menu => undef,
 
-	# Mass Mailing Options
-	mass_mailing_convert_plaintext_to_html => 0, 
-	mass_mailing_block_css_to_inline_css   => 0, 
-	
+    # Mass Mailing Options
+    mass_mailing_convert_plaintext_to_html => 0,
+    mass_mailing_block_css_to_inline_css   => 0,
+
     #quotas
     use_subscription_quota => 0,
     subscription_quota     => 0,
@@ -2373,28 +2416,27 @@ EOF
     closed_list      => 0,
     invite_only_list => 0,
     show_hidden      => 0,
-    private_list     => 0, 
+    private_list     => 0,
     hide_list        => 0,
 
-    email_your_subscribed_msg =>
-      1,    # Notice the incorrect, "your" instead of, "you're" - doh!
+    email_your_subscribed_msg        => 1,    # Notice the incorrect, "your" instead of, "you're" - doh!
     email_you_are_not_subscribed_msg => 0,
 
     send_unsub_success_email => 1,
     send_sub_success_email   => 1,
 
-    get_sub_notice                => 1,
-    send_subscription_notice_to   => 'list_owner',
+    get_sub_notice              => 1,
+    send_subscription_notice_to => 'list_owner',
 
-	unsub_show_email_hint         => 1, 
+    unsub_show_email_hint         => 1,
     get_unsub_notice              => 1,
     send_unsubscription_notice_to => 'list_owner',
 
-    enable_closed_loop_opt_in       => 1,    # Closed-Loop Opt-In
-    skip_sub_confirm_if_logged_in   => 0,
+    enable_closed_loop_opt_in     => 1,    # Closed-Loop Opt-In
+    skip_sub_confirm_if_logged_in => 0,
 
-    limit_sub_confirm                 => 1,
-    limit_sub_confirm_use_captcha     => 1,
+    limit_sub_confirm             => 1,
+    limit_sub_confirm_use_captcha => 1,
 
     use_alt_url_sub_confirm_success  => 0,
     alt_url_sub_confirm_success_w_qs => 0,
@@ -2416,15 +2458,12 @@ EOF
     alt_url_unsub_success_w_qs => 0,
     alt_url_unsub_success      => '',
 
-
-	use_alt_url_subscription_approval_step  => 0,
-	alt_url_subscription_approval_step      => '',
+    use_alt_url_subscription_approval_step  => 0,
+    alt_url_subscription_approval_step      => '',
     alt_url_subscription_approval_step_w_qs => 0,
-
 
     enable_subscription_approval_step => 0,
     captcha_sub                       => 0,
-
 
     send_subscribed_by_list_owner_message   => 0,
     send_unsubscribed_by_list_owner_message => 0,
@@ -2477,8 +2516,8 @@ EOF
     # Auto-Pickup Dropped List Message Mailings
     auto_pickup_dropped_mailings => 1,
 
-# Restart Mailings After Each Batch
-# TODO - this variable should really be called, "reload_mailings_after_each_batch"
+    # Restart Mailings After Each Batch
+    # TODO - this variable should really be called, "reload_mailings_after_each_batch"
     restart_mailings_after_each_batch => 0,
 
     # sendmail, smtp, amazon_ses
@@ -2600,72 +2639,77 @@ EOF
 
     # Email Templates
 
-    confirmation_message_subject =>
-'<!-- tmpl_var list_settings.list_name --> Mailing List Subscription Confirmation',
-    confirmation_message => $CONFIRMATION_MESSAGE,
+    confirmation_message_subject => '<!-- tmpl_var list_settings.list_name --> Mailing List Subscription Confirmation',
+    confirmation_message         => $CONFIRMATION_MESSAGE,
 
-    subscription_request_approved_message_subject =>
-      'Welcome to <!-- tmpl_var list_settings.list_name -->',
-    subscription_request_approved_message =>
-      $SUBSCRIPTION_REQUEST_APPROVED_MESSAGE,
 
-    subscription_request_denied_message_subject =>
-'<!-- tmpl_var list_settings.list_name --> Mailing List Subscription Request - Denied.',
-    subscription_request_denied_message => $SUBSCRIPTION_REQUEST_DENIED_MESSAGE,
-    subscription_approval_request_message_subject =>
-'<!-- tmpl_var subscriber.email --> would like to subscribe to: <!-- tmpl_var list_settings.list_name -->',
-    subscription_approval_request_message =>
-      $SUBSCRIPTION_APPROVAL_REQUEST_MESSAGE,
+	# Subscription Requests
+	# List Owner
 
-    subscribed_message_subject =>
-      'Welcome to <!-- tmpl_var list_settings.list_name -->',
-    subscribed_message => $SUBSCRIBED_MESSAGE,
+    subscription_approval_request_message_subject   => '<!-- tmpl_var subscriber.email --> would like to subscribe to: <!-- tmpl_var list_settings.list_name -->',
+    subscription_approval_request_message           => $SUBSCRIPTION_APPROVAL_REQUEST_MESSAGE,
+	
+	# Subscriber
+    subscription_request_approved_message_subject   => 'Welcome to <!-- tmpl_var list_settings.list_name -->',
+    subscription_request_approved_message           => $SUBSCRIPTION_REQUEST_APPROVED_MESSAGE,
 
-    subscribed_by_list_owner_message_subject =>
-      'Welcome to <!-- tmpl_var list_settings.list_name -->',
-    subscribed_by_list_owner_message => $SUBSCRIBED_BY_LIST_OWNER_MESSAGE,
+	# Subscriber  
+    subscription_request_denied_message_subject     => '<!-- tmpl_var list_settings.list_name --> Mailing List Subscription Request - Denied.',
+    subscription_request_denied_message             => $SUBSCRIPTION_REQUEST_DENIED_MESSAGE,
 
-    unsubscribed_by_list_owner_message_subject =>
-      'Unsubscribed from <!-- tmpl_var list_settings.list_name -->',
-    unsubscribed_by_list_owner_message => $UNSUBSCRIBED_BY_LIST_OWNER_MESSAGE,
 
-    unsubscribed_message_subject =>
-      'Farewell from <!-- tmpl_var list_settings.list_name -->',
-    unsubscribed_message => $UNSUBSCRIBED_MESSAGE,
+	# Unsubscription Requests
+	# List Owner
+    unsubscription_approval_request_message_subject => '<!-- tmpl_var subscriber.email --> would like to unsubscribe to: <!-- tmpl_var list_settings.list_name -->',
+	unsubscription_approval_request_message         => $UNSUBSCRIPTION_APPROVAL_REQUEST_MESSAGE,
 
-    mailing_list_message_from_phrase =>
-      '<!-- tmpl_var list_settings.list_name -->',
-    mailing_list_message_to_phrase =>
-      '<!-- tmpl_var list_settings.list_name --> Subscriber',
-    mailing_list_message_subject =>
-      '<!-- tmpl_var list_settings.list_name --> Message',
-    mailing_list_message      => $MAILING_LIST_MESSAGE,
-    mailing_list_message_html => $MAILING_LIST_MESSAGE_HTML,
+	# Subscriber
+    unsubscription_request_approved_message_subject => 'Farewell from <!-- tmpl_var list_settings.list_name -->',
+    unsubscription_request_approved_message         => $UNSUBSCRIPTION_REQUEST_APPROVED_MESSAGE,
 
-    send_archive_message_subject =>
-      '<!-- tmpl_var archived_message_subject --> (Archive)',
+	# Subscriber
+    unsubscription_request_denied_message_subject   => '<!-- tmpl_var list_settings.list_name --> Mailing List Unsubscription Request - Denied.',
+    subscription_request_denied_message             => $UNSUBSCRIPTION_REQUEST_DENIED_MESSAGE,
+
+    
+    subscribed_message_subject => 'Welcome to <!-- tmpl_var list_settings.list_name -->',
+    subscribed_message         => $SUBSCRIBED_MESSAGE,
+
+    subscribed_by_list_owner_message_subject => 'Welcome to <!-- tmpl_var list_settings.list_name -->',
+    subscribed_by_list_owner_message         => $SUBSCRIBED_BY_LIST_OWNER_MESSAGE,
+
+    unsubscribed_by_list_owner_message_subject => 'Unsubscribed from <!-- tmpl_var list_settings.list_name -->',
+    unsubscribed_by_list_owner_message         => $UNSUBSCRIBED_BY_LIST_OWNER_MESSAGE,
+
+    unsubscribed_message_subject => 'Farewell from <!-- tmpl_var list_settings.list_name -->',
+    unsubscribed_message         => $UNSUBSCRIBED_MESSAGE,
+
+    mailing_list_message_from_phrase => '<!-- tmpl_var list_settings.list_name -->',
+    mailing_list_message_to_phrase   => '<!-- tmpl_var list_settings.list_name --> Subscriber',
+    mailing_list_message_subject     => '<!-- tmpl_var list_settings.list_name --> Message',
+    mailing_list_message             => $MAILING_LIST_MESSAGE,
+    mailing_list_message_html        => $MAILING_LIST_MESSAGE_HTML,
+
+    send_archive_message_subject => '<!-- tmpl_var archived_message_subject --> (Archive)',
 
     you_are_already_subscribed_message_subject =>
       '<!-- tmpl_var list_settings.list_name --> - You Are Already Subscribed',
     you_are_already_subscribed_message => $YOU_ARE_ALREADY_SUBSCRIBED_MESSAGE,
 
-    you_are_not_subscribed_message => $YOU_ARE_NOT_SUBSCRIBED_MESSAGE,
-    you_are_not_subscribed_message_subject =>
-      '<!-- tmpl_var list_settings.list_name --> - You Are Not Subscribed',
+    you_are_not_subscribed_message         => $YOU_ARE_NOT_SUBSCRIBED_MESSAGE,
+    you_are_not_subscribed_message_subject => '<!-- tmpl_var list_settings.list_name --> - You Are Not Subscribed',
 
-    admin_subscription_notice_message_subject =>
-      'Subscribed <!-- tmpl_var subscriber.email -->',
-    admin_subscription_notice_message => $SUBSCRIPTION_NOTICE_MESSAGE,
+    admin_subscription_notice_message_subject => 'Subscribed <!-- tmpl_var subscriber.email -->',
+    admin_subscription_notice_message         => $SUBSCRIPTION_NOTICE_MESSAGE,
 
-    admin_unsubscription_notice_message_subject =>
-      'Unsubscribed <!-- tmpl_var subscriber.email -->',
-    admin_unsubscription_notice_message => $UNSUBSCRIPTION_NOTICE_MESSAGE,
+    admin_unsubscription_notice_message_subject => 'Unsubscribed <!-- tmpl_var subscriber.email -->',
+    admin_unsubscription_notice_message         => $UNSUBSCRIPTION_NOTICE_MESSAGE,
 
     enable_email_template_expr => 0,
 
     # HTML Screen Templates
 
-    html_confirmation_message       => $HTML_CONFIRMATION_MESSAGE,
+    html_confirmation_message => $HTML_CONFIRMATION_MESSAGE,
 
     html_subscribed_message   => $HTML_SUBSCRIBED_MESSAGE,
     html_unsubscribed_message => $HTML_UNSUBSCRIBED_MESSAGE,
@@ -2681,8 +2725,7 @@ EOF
     invite_message_to_phrase   => '<!-- tmpl_var list_settings.list_name -->',
     invite_message_text        => $TEXT_INVITE_MESSAGE,
     invite_message_html        => $HTML_INVITE_MESSAGE,
-    invite_message_subject =>
-'You\'ve been Invited to Subscribe to, "<!-- tmpl_var list_settings.list_name -->"',
+    invite_message_subject     => 'You\'ve been Invited to Subscribe to, "<!-- tmpl_var list_settings.list_name -->"',
 
     # Feature Set
 
@@ -2751,7 +2794,7 @@ EOF
     discussion_clean_up_replies  => 0,
 
     not_allowed_to_post_msg_subject =>
-'Not Allowed to Post On <!-- tmpl_var list_settings.list_name --> (your original message is attached)',
+      'Not Allowed to Post On <!-- tmpl_var list_settings.list_name --> (your original message is attached)',
     not_allowed_to_post_msg => $NOT_ALLOWED_TO_POST_MSG,
 
     invalid_msgs_to_owner_msg_subject =>
@@ -2759,7 +2802,7 @@ EOF
     invalid_msgs_to_owner_msg => $NOT_ALLOWED_TO_POST_NOTICE_MSG,
 
     moderation_msg_subject =>
-'Message on: <!-- tmpl_var list_settings.list_name --> needs to be moderated. (original message attached)',
+      'Message on: <!-- tmpl_var list_settings.list_name --> needs to be moderated. (original message attached)',
     moderation_msg => $MODERATION_MSG,
     await_moderation_msg_subject =>
 'Message to: <!-- tmpl_var list_settings.list_name --> w/ Subject: <!-- tmpl_var message_subject --> is awaiting approval.',
@@ -2768,23 +2811,23 @@ EOF
 'Message to: <!-- tmpl_var list_settings.list_name --> w/ Subject: <!-- tmpl_var message_subject --> has been accepted.',
     accept_msg => $ACCEPT_MSG,
     rejection_msg_subject =>
-'Message to: <!-- tmpl_var list_settings.list_name --> Subject: <!-- tmpl_var message_subject --> rejected.',
+      'Message to: <!-- tmpl_var list_settings.list_name --> Subject: <!-- tmpl_var message_subject --> rejected.',
     rejection_msg => $REJECTION_MSG,
     msg_too_big_msg_subject =>
-'Message to: <!-- tmpl_var list_settings.list_name -->  Subject: <!-- tmpl_var original_subject --> rejected',
+      'Message to: <!-- tmpl_var list_settings.list_name -->  Subject: <!-- tmpl_var original_subject --> rejected',
     msg_too_big_msg => $MSG_TOO_BIG_MSG,
     msg_labeled_as_spam_msg_subject =>
 'Message to: <!-- tmpl_var list_settings.list_name -->  Subject: <!-- tmpl_var original_subject --> Labeled as Spam',
     msg_labeled_as_spam_msg => $MSG_LABELED_AS_SPAM_MSG,
 
     # Tracker
-    tracker_record_view_count                       => 10,
+    tracker_record_view_count => 10,
 
-    tracker_auto_parse_links                        => 1,
-    tracker_auto_parse_mailto_links                 => 0, 
-    tracker_track_opens_method                      => 'directly',
+    tracker_auto_parse_links        => 1,
+    tracker_auto_parse_mailto_links => 0,
+    tracker_track_opens_method      => 'directly',
 
-    tracker_track_email                             => 1,
+    tracker_track_email => 1,
 
     tracker_clean_up_reports                        => 1,
     tracker_show_message_reports_in_mailing_monitor => 0,
@@ -2805,10 +2848,10 @@ EOF
     last_digest_sent => undef,
 
     # default messages
-    default_plaintext_message_content_src => 'default',    # default/url_or_path
+    default_plaintext_message_content_src             => 'default',    # default/url_or_path
     default_plaintext_message_content_src_url_or_path => undef,
-    default_html_message_content_src => 'default',         # default/url_or_path
-    default_html_message_content_src_url_or_path => undef,
+    default_html_message_content_src                  => 'default',    # default/url_or_path
+    default_html_message_content_src_url_or_path      => undef,
 
 ) unless keys %LIST_SETUP_DEFAULTS;
 

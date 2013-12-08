@@ -1,5 +1,26 @@
+<!-- begin subscription_request_results.tmpl --> 
+
+<!-- tmpl_set name="title" value="Subscription Approval Results" -->
+<!-- tmpl_set name="show_profile_widget" value="0" -->
+
 <!-- tmpl_if approved --> 
-	<h1>Approved!</h1>
+	<p>
+		The request for subscription by, <!-- tmpl_var email --> has been approved.
+	</p>
 <!-- tmpl_else --> 
-	<h1>Denied!</h1>
+	<p>
+		The request for subscription by, <!-- tmpl_var email --> has been denied.
+	</p>
 <!-- /tmpl_if -->
+
+<ul>
+	<li>
+		<p>
+			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=sign_in&list=<!-- tmpl_var list_settings.list escape="URL" -->">
+				Log into <!-- tmpl_var list_settings.list_name -->
+			</a>
+		</p>
+	</li>	
+</ul>
+
+<!-- end subscription_request_results.tmpl -->

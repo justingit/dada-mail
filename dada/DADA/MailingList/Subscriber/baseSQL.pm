@@ -12,7 +12,7 @@ my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_baseSQL};
 
 
 sub add {
-
+		
     my $class = shift;
     my ($args) = @_;
 	
