@@ -2034,15 +2034,15 @@ sub subscription_requests {
     if ( !exists( $args->{-fh} ) ) {
         $args->{-fh} = \*STDOUT;
     }
-    my $fh      = $args->{-fh};
-    my $q       = $args->{-cgi_obj};
-    my $token   = $q->param('token')   || undef;
+    my $fh    = $args->{-fh};
+    my $q     = $args->{-cgi_obj};
+    my $token = $q->param('token') || undef;
 
     # If we don't have a token, things are very wrong:
     if ( !defined($token) ) {
         my $r =
           $q->redirect( -uri => $DADA::Config::PROGRAM_URL
-              . '?flavor=outdated_subscription_urls&orig_flavor=u&list='
+              . '?flavor=outdated_subscription_urls&orig_flavor=s&list='
               . xss_filter( strip( $q->param('list') ) )
               . '&email='
               . xss_filter( strip( $q->param('email') ) ) );
@@ -2061,11 +2061,11 @@ sub subscription_requests {
     }
 
     my $data = $ct->fetch($token);
+
     # not sure how you got here, but, whatever:
-    if ( 
-		$data->{data}->{flavor} ne 'sub_request_approve' 
-	&&  $data->{data}->{flavor} ne 'sub_request_deny'
-	) {
+    if (   $data->{data}->{flavor} ne 'sub_request_approve'
+        && $data->{data}->{flavor} ne 'sub_request_deny' )
+    {
         return user_error(
             {
                 -error => 'token_problem',
@@ -2074,12 +2074,11 @@ sub subscription_requests {
         );
     }
 
+    my $flavor = $data->{data}->{flavor};
+    my $email  = $data->{email};
+    my $list   = $data->{data}->{list};
 
-	my $flavor = $data->{data}->{flavor}; 
-	my $email  = $data->{email}; 
-	my $list   = $data->{data}->{list}; 
-
-	# And then, is never used? 
+    # And then, is never used?
     my $list_exists = DADA::App::Guts::check_if_list_exists( -List => $list );
 
     require DADA::MailingList::Settings;
@@ -2088,139 +2087,143 @@ sub subscription_requests {
 
     my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );	
-	
-	if ($lh->check_for_double_email(
-      -Email => $email,
-      -Type  => 'sub_request_list'
-    ) == 0) { 
-		$ct->remove_by_token( $token );
-	    return user_error(
-	        {
-	            -error => 'token_problem',
-	            -test  => $self->test,
-	        }
-	    );
-	}
-	else { 
-		$ct->remove_by_token( $token );
-	    if ( $flavor eq 'sub_request_approve' ) {
-			 my $count = 1; 
-		
-			 $lh->move_subscriber(
-			     {
-			         -email     => $email,
-			         -from      => 'sub_request_list',
-			         -to        => 'list',
-			         -mode      => 'writeover',
-			         -confirmed => 1,
-			     }
-			 );
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
-			 my $new_pass    = '';
-			 my $new_profile = 0;
-			 if (   $DADA::Config::PROFILE_OPTIONS->{enabled} == 1
-			     && $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/ )
-			 {
+    if (
+        $lh->check_for_double_email(
+            -Email => $email,
+            -Type  => 'sub_request_list'
+        ) == 0
+      )
+    {
+        $ct->remove_by_token($token);
+        return user_error(
+            {
+                -error => 'token_problem',
+                -test  => $self->test,
+            }
+        );
+    }
+    else {
+        $ct->remove_by_token($token);
+        if ( $flavor eq 'sub_request_approve' ) {
+            my $count = 1;
 
-			     # Make a profile, if needed,
-			     require DADA::Profile;
-			     my $prof = DADA::Profile->new( { -email => $email } );
-			     if ( !$prof->exists ) {
-			         $new_profile = 1;
-			         $new_pass    = $prof->_rand_str(8);
-			         $prof->insert(
-			             {
-			                 -password  => $new_pass,
-			                 -activated => 1,
-			             }
-			         );
-			     }
+            $lh->move_subscriber(
+                {
+                    -email     => $email,
+                    -from      => 'sub_request_list',
+                    -to        => 'list',
+                    -mode      => 'writeover',
+                    -confirmed => 1,
+                }
+            );
 
-			     # / Make a profile, if needed,
-			 }
-			 require DADA::App::Messages;
-			 DADA::App::Messages::send_subscription_request_approved_message(
-			     {
-			         -list   => $list,
-			         -email  => $email,
-			         -ls_obj => $ls,
+            my $new_pass    = '';
+            my $new_profile = 0;
+            if (   $DADA::Config::PROFILE_OPTIONS->{enabled} == 1
+                && $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/ )
+            {
+                # Make a profile, if needed,
+                require DADA::Profile;
+                my $prof = DADA::Profile->new( { -email => $email } );
+                if ( !$prof->exists ) {
+                    $new_profile = 1;
+                    $new_pass    = $prof->_rand_str(8);
+                    $prof->insert(
+                        {
+                            -password  => $new_pass,
+                            -activated => 1,
+                        }
+                    );
+                }
 
-			         #-test   => $self->test,
-			         -vars => {
-			             new_profile        => $new_profile,
-			             'profile.email'    => $email,
-			             'profile.password' => $new_pass,
+                # / Make a profile, if needed,
+            }
+            require DADA::App::Messages;
+            DADA::App::Messages::send_subscription_request_approved_message(
+                {
+                    -list   => $list,
+                    -email  => $email,
+                    -ls_obj => $ls,
 
-			         }
-			     }
-			 );
+                    #-test   => $self->test,
+                    -vars => {
+                        new_profile        => $new_profile,
+                        'profile.email'    => $email,
+                        'profile.password' => $new_pass,
 
-			use CGI qw(:standard); 
-			print header(); 
-			print 'subscriber approved, dude!'; 
-		
-=cut
-	        my $flavor_to_return_to = 'view_list';
-	        if ( $return_to eq 'membership' ) {    # or, others...
-	            $flavor_to_return_to = $return_to;
-	        }
+                    }
+                }
+            );
 
-	        my $qs = 'f=' . $flavor_to_return_to . ';type=' . $q->param('type') . ';approved_count=' . $count;
+            require DADA::Template::Widgets;
+            my $r = DADA::Template::Widgets::wrap_screen(
+                {
+                    -screen                   => 'subscription_request_results.tmpl',
+                    -with                     => 'list',
+                    -list_settings_vars_param => { -list => $list, },
+                    -subscriber_vars_param    => {
+                        -list  => $list,
+                        -email => $email,
+                        -type  => 'list'
+                    },
+                    -dada_pseudo_tag_filter => 1,
+                    -vars                   => {
+                        email            => $email,
+                        subscriber_email => $email,
+                        approved         => 1,
+                    },
 
-	        if ( $return_to eq 'membership' ) {
-	            $qs .= ';email=' . $return_address;
-	        }
+                }
+            );
+            $self->test ? return $r : print $fh safely_encode($r) and return;
 
-	        print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL . '?' . $qs );
-=cut
+        }
+        elsif ( $flavor eq 'sub_request_deny' ) {
+            $lh->remove_subscriber(
+                {
+                    -email => $email,
+                    -type  => 'sub_request_list',
+                }
+            );
+            require DADA::App::Messages;
+            DADA::App::Messages::send_subscription_request_denied_message(
+                {
+                    -list   => $list,
+                    -email  => $email,
+                    -ls_obj => $ls,
 
-	    }
-	    elsif ( $flavor eq 'sub_request_deny' ) {
-		    $lh->remove_subscriber(
-		        {
-		            -email => $email,
-		            -type  => 'sub_request_list',
-		        }
-		    );
-		    require DADA::App::Messages;
-		    DADA::App::Messages::send_subscription_request_denied_message(
-		        {
-		            -list   => $list,
-		            -email  => $email,
-		            -ls_obj => $ls,
+                    #-test   => $self->test,
+                }
+            );
+            my $count = 1;
+            require DADA::Template::Widgets;
+            my $r = DADA::Template::Widgets::wrap_screen(
+                {
+                    -screen                   => 'subscription_request_results.tmpl',
+                    -with                     => 'list',
+                    -list_settings_vars_param => { -list => $list, },
+                    -subscriber_vars_param    => {
+                        -list  => $list,
+                        -email => $email,
+                        -type  => 'list'
+                    },
+                    -dada_pseudo_tag_filter => 1,
+                    -vars                   => {
+                        email            => $email,
+                        subscriber_email => $email,
+                        approved         => 0,
+                    },
 
-		            #-test   => $self->test,
-		        }
-		    );
-		    my $count = 1; 
-
-=cut
-
-	        my $flavor_to_return_to = 'view_list';
-	        if ( $return_to eq 'membership' ) {    # or, others...
-	            $flavor_to_return_to = $return_to;
-	        }
-
-	        my $qs = 'f=' . $flavor_to_return_to . ';type=' . $q->param('type') . ';denied_count=' . $count;
-
-	        if ( $return_to eq 'membership' ) {
-	            $qs .= ';email=' . $return_address;
-	        }
-	        print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL . '?' . $qs );
-=cut
-
-		use CGI qw(:standard); 
-		print header(); 
-		print 'subscriber denied, dude!'; 
-
-
-
-	    }
-	    else {
-	        die "unknown process!";
-	    }
-	}
+                }
+            );
+            $self->test ? return $r : print $fh safely_encode($r) and return;
+        }
+        else {
+            die "unknown process!";
+        }
+    }
 }
 
 
