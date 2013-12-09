@@ -78,9 +78,6 @@ sub get {
         while (my ($k, $v) = each(%$ls)){
             $new_ls->{'list_settings.' . $k} = $v; 
         }
-        # Will $ls undef every ref to it to?!
-        #undef($ls); 
-        
         return $new_ls; 
 
 	}
@@ -289,7 +286,6 @@ sub param {
 			croak "Cannot call param() on unknown setting, '$name'"; 
 		}
 		else { 
-				
 			$self->save({$name => $value});
 			$self->{local_li} = {};
 			return $value; # or... what should I return?
@@ -303,11 +299,58 @@ sub param {
 			croak "Cannot call param() on unknown setting, '$name'"; 
 		}
 	
-		return $self->{local_li}->{$name};
-		
+		if(exists($self->{local_li}->{$name})) { 
+			return $self->{local_li}->{$name};
+		}
+		elsif($self->_email_message_setting($name)){ 
+			$self->_fill_in_email_message_settings($name); 
+		}
+		else { 
+			return undef; 
+		}
 	}
+}
+
+sub _email_message_setting { 
+	my $self = shift;
+	my $name = shift; 
+	my $message_settings = {
+		mailing_list_message_from_phrase => 1, 
+		mailing_list_message_to_phrase   => 1, 
+		mailing_list_message_subject     => 1, 
+		mailing_list_message             => 1, 
+		mailing_list_message_html        => 1, 
+	}; 
 	
+	if(exists($message_settings->{$name})){ 
+		return 1; 
+	}
+	else { 
+		return 0; 
+	}
+}
+
+
+
+
+sub _fill_in_email_message_settings { 
+	my $self = shift;
+	my $name = shift; 
 	
+	my $message_settings = {
+		mailing_list_message_from_phrase => {-tmpl => 'mailing_list_message.eml', -part => 'from_phrase'}, 
+		mailing_list_message_to_phrase   => {-tmpl => 'mailing_list_message.eml', -part => 'to_phrase'}, 
+		mailing_list_message_subject     => {-tmpl => 'mailing_list_message.eml', -part => 'subject_phrase'}, 
+		mailing_list_message             => {-tmpl => 'mailing_list_message.eml', -part => 'plaintext_body'}, 
+		mailing_list_message_html        => {-tmpl => 'mailing_list_message.eml', -part => 'html_body'}, 
+	}; 
+	
+	if(exists($message_settings->{$name})) { 
+		my $f_settings = $self->get_message_settings($message_settings->{$name}->{'-tmpl'}); 
+	}
+	else { 
+		return undef; 
+	}
 }
 
 sub x_message_body_content { 
