@@ -222,7 +222,15 @@ sub switcheroo {
 				$filename = DADA::Security::Password::generate_rand_string() . '-' . $self->time_stamp . '-inline.' . $mime_types->{$type}; 
 			}
 			
-			my $img_dir   = make_safer($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir} . '/images/');  
+			my $filemanager = 'kcfinder'
+			if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1) { 
+				# ... 
+			}
+			elsif($DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1) { 
+				$filemanager = 'core5_filemanager';
+			}
+			
+			my $img_dir = make_safer($DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_dir} . '/images/');  
 			my $full_path = make_safer($img_dir . '/' . $filename); 
 			
 			if(! -d $img_dir){ 
@@ -239,7 +247,7 @@ sub switcheroo {
 				
 				my $search_src = quotemeta($src);
 				# $msg =~ s/$search_src/cid\:$filename/; 
-				my $full_url = $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_url} . '/images/' . $filename; 
+				my $full_url = $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_url} . '/images/' . $filename; 
 				$msg =~ s/$search_src/$full_url/; 
 				push(@$files_that_need_attaching, $filename); 
 			}

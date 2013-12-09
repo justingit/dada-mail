@@ -1450,6 +1450,13 @@ sub has_attachments {
     my ($args) = @_;
     my $q = $args->{-cgi_obj};
 
+	my $filemanager; 
+	if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1){ 
+		$filemanager = 'kcfinder'; 
+	}elsif($DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1){ 
+		$filemanager = 'core5_filemanager';
+	}
+
     my @ive_got = ();
 
     my $num = 5;
@@ -1462,11 +1469,11 @@ sub has_attachments {
             if ( $filename ne 'Select A File...' && length($filename) > 0 ) {
                 warn 'I\'ve got, ' . 'attachment' . $_
                   if $t;
-                if ( !-e $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir} . '/' . $filename ) {
+                if ( !-e $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_dir} . '/' . $filename ) {
                     my $new_filename = uriunescape($filename);
-                    if ( !-e $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir} . '/' . $new_filename ) {
+                    if ( !-e $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_dir} . '/' . $new_filename ) {
                         carp
-"I can't find attachment file: $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir} . '/' . $filename";
+'I can\'t find attachment file: ' . $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_dir} . '/' . $filename;
                     }
                     else {
                         push( @ive_got, $new_filename );
@@ -1483,11 +1490,20 @@ sub has_attachments {
 
 sub make_attachment {
 
+	require MIME::Lite;
+    
     my $self   = shift;
     my ($args) = @_;
     my $name   = $args->{-name};
 
-    require MIME::Lite;
+	my $filemanager; 
+	if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1){ 
+		$filemanager = 'kcfinder'; 
+	}elsif($DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1){ 
+		$filemanager = 'core5_filemanager';
+	}
+
+
 
     if ( !$name ) {
         warn '!$name';
@@ -1517,7 +1533,7 @@ sub make_attachment {
         Datestamp   => 0,
         Id          => $filename,
         Filename    => $filename,
-        Path        => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir} . '/' . $name,
+        Path        => $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_dir} . '/' . $name,
     );
 
     if ($t) {
