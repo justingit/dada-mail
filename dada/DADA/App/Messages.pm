@@ -453,6 +453,77 @@ sub send_unsubscribe_request_message {
  
 }
 
+sub subscription_approval_request_message { 
+	
+	my ($args) = @_;
+	my $ls = $args->{-ls_obj}; 
+	send_generic_email(
+        {
+            -list    => $ls->param('list'),
+            -headers => {
+                To => '"'
+                  . escape_for_sending( $ls->param('list_name') )
+                  . '" <'
+                  . $ls->param('list_owner_email') . '>',
+                Subject => $ls->param(
+                    'subscription_approval_request_message_subject'),
+            },
+            -body =>
+              $ls->param('subscription_approval_request_message'),
+            -tmpl_params => {
+                -list_settings_vars_param =>
+                  { -list => $ls->param('list') },
+                -subscriber_vars_param => {
+                    -list  => $ls->param('list'),
+                    -email => $args->{-email},
+                    -type  => 'sub_request_list'
+                },
+                -vars => {
+					%{$args->{-vars}},
+				},
+            },
+            -test => $args->{-test},
+        }
+    );
+}
+
+sub unsubscription_approval_request_message { 
+
+	my ($args) = @_;
+	my $ls = $args->{-ls_obj}; 
+	
+	send_generic_email(
+     {
+         -list    => $ls->param('list'),
+         -headers => {
+             To => '"'
+               . escape_for_sending( $ls->param('list_name') )
+               . '" <'
+               . $ls->param('list_owner_email') . '>',
+             Subject => $ls->param(
+                 'unsubscription_approval_request_message_subject'),
+         },
+         -body =>
+           $ls->param('unsubscription_approval_request_message'),
+         -tmpl_params => {
+             -list_settings_vars_param =>
+               { -list => $ls->param('list') },
+             -subscriber_vars_param => {
+                 -list  => $ls->param('list'),
+                 -email => $args->{-email},
+                 -type  => 'unsub_request_list'
+             },
+             -vars => {
+				%{$args->{-vars}},
+			},
+         },
+         -test => $args->{-test},
+     }
+ );
+	
+
+}
+
 
 
 

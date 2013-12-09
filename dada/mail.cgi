@@ -844,7 +844,6 @@ sub list_page {
     }
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $list_info = $ls->get;
 
     require DADA::Template::Widgets;
 
@@ -935,7 +934,6 @@ sub sign_in {
             require DADA::MailingList::Settings;
 
             my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-            my $li = $ls->get;
 
             my $scrn = DADA::Template::Widgets::wrap_screen(
                 {
@@ -2010,7 +2008,6 @@ sub change_info {
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     my $errors = 0;
     my $flags  = {};
@@ -2071,16 +2068,16 @@ sub change_info {
                     errors_ending => $errors_ending,
                     err_word      => $err_word,
                     list          => $list,
-                    list_name     => $list_name ? $list_name : $li->{list_name},
+                    list_name     => $list_name ? $list_name : $ls->param('list_name'),
                     list_owner_email => $list_owner_email ? $list_owner_email
-                    : $li->{list_owner_email},
+                    : $ls->param('list_owner_email'),
                     admin_email => $admin_email ? $admin_email
-                    : $li->{admin_email},
-                    info => $info ? $info : $li->{info},
+                    : $ls->param('admin_email'),
+                    info => $info ? $info : $ls->param('info'),
                     privacy_policy => $privacy_policy ? $privacy_policy
-                    : $li->{privacy_policy},
+                    : $ls->param('privacy_policy'),
                     physical_address => $physical_address ? $physical_address
-                    : $li->{physical_address},
+                    : $ls->param('physical_address'),
                     flags_list_name                => $flags_list_name,
                     flags_invalid_list_owner_email => $flags_invalid_list_owner_email,
                     flags_list_info                => $flags_list_info,
@@ -2127,7 +2124,6 @@ sub change_password {
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     if ( !$process ) {
         require DADA::Template::Widgets;
@@ -2156,7 +2152,7 @@ sub change_password {
         my $again_new_password = $q->param('again_new_password');
 
         if ( $root_login != 1 ) {
-            my $password_check = DADA::Security::Password::check_password( $li->{password}, $old_password );
+            my $password_check = DADA::Security::Password::check_password( $ls->param('password'), $old_password );
             if ( $password_check != 1 ) {
                 user_error(
                     {
@@ -2207,7 +2203,6 @@ sub delete_list {
     my $list = $admin_list;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     if ( !$process ) {
 
@@ -2269,7 +2264,6 @@ sub list_options {
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get();
 
     my $can_use_mx_lookup = 0;
 
@@ -2406,26 +2400,24 @@ sub sending_preferences {
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     if ( !$process ) {
 
         require DADA::MailingList::Settings;
 
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-        my $li = $ls->get;
 
         require DADA::Security::Password;
 
         my $decrypted_sasl_pass = '';
-        if ( $li->{sasl_smtp_password} ) {
+        if ( $ls->param('sasl_smtp_password') ) {
             $decrypted_sasl_pass =
-              DADA::Security::Password::cipher_decrypt( $li->{cipher_key}, $li->{sasl_smtp_password} );
+              DADA::Security::Password::cipher_decrypt( $ls->param('cipher_key'), $ls->param('sasl_smtp_password') );
         }
 
         my $decrypted_pop3_pass = '';
-        if ( $li->{pop3_password} ) {
-            $decrypted_pop3_pass = DADA::Security::Password::cipher_decrypt( $li->{cipher_key}, $li->{pop3_password} );
+        if ( $ls->param('pop3_password') ) {
+            $decrypted_pop3_pass = DADA::Security::Password::cipher_decrypt( $ls->param('cipher_key'), $ls->param('pop3_password') );
         }
 
         # DEV: This is really strange, since if Net::SMTP isn't available, SMTP sending is completely broken.
@@ -2453,7 +2445,7 @@ sub sending_preferences {
             $mechanism_popup = $q->popup_menu(
                 -name     => 'sasl_auth_mechanism',
                 -id       => 'sasl_auth_mechanism',
-                -default  => $li->{sasl_auth_mechanism},
+                -default  => $ls->param('sasl_auth_mechanism'),
                 '-values' => [qw(PLAIN LOGIN DIGEST-MD5 CRAM-MD5)],
             );
         }
@@ -2461,7 +2453,7 @@ sub sending_preferences {
         my $pop3_auth_mode_popup = $q->popup_menu(
             -name     => 'pop3_auth_mode',
             -id       => 'pop3_auth_mode',
-            -default  => $li->{pop3_auth_mode},
+            -default  => $ls->param('pop3_auth_mode'),
             '-values' => [qw(BEST PASS APOP CRAM-MD5)],
             -labels   => { BEST => 'Automatic' },
 
@@ -2472,8 +2464,8 @@ sub sending_preferences {
           if $< != $>;
 
         my $no_smtp_server_set = 0;
-        if (  !$li->{smtp_server}
-            && $li->{sending_method} eq "smtp" )
+        if (  !$ls->param('smtp_server')
+            && $ls->param('sending_method') eq "smtp" )
         {
             $no_smtp_server_set = 1;
         }
@@ -2495,21 +2487,21 @@ sub sending_preferences {
                     mechanism_popup               => $mechanism_popup,
                     can_use_ssl                   => $can_use_ssl,
                     can_use_smtp_ssl              => $can_use_smtp_ssl,
-                    'list_settings.pop3_username' => $li->{pop3_username},                                       # DEV ?
+                    'list_settings.pop3_username' => $ls->param('pop3_username'),                                       # DEV ?
                     decrypted_pop3_pass           => $decrypted_pop3_pass,
                     wrong_uid                     => $wrong_uid,
                     pop3_auth_mode_popup          => $pop3_auth_mode_popup,
                     can_use_ssl                   => $can_use_ssl,
-                    f_flag_settings               => $DADA::Config::MAIL_SETTINGS . ' -f' . $li->{admin_email},
+                    f_flag_settings               => $DADA::Config::MAIL_SETTINGS . ' -f' . $ls->param('admin_email'),
 
                     use_sasl_smtp_auth => $q->param('use_sasl_smtp_auth') ? $q->param('use_sasl_smtp_auth')
-                    : $li->{use_sasl_smtp_auth},
+                    : $ls->param('use_sasl_smtp_auth'),
                     decrypted_pop3_pass => $q->param('pop3_password') ? $q->param('pop3_password')
                     : $decrypted_pop3_pass,
                     sasl_auth_mechanism => $q->param('sasl_auth_mechanism') ? $q->param('sasl_auth_mechanism')
-                    : $li->{sasl_auth_mechanism},
+                    : $ls->param('sasl_auth_mechanism'),
                     sasl_smtp_username => $q->param('sasl_smtp_username') ? $q->param('sasl_smtp_username')
-                    : $li->{sasl_smtp_username},
+                    : $ls->param('sasl_smtp_username'),
                     sasl_smtp_password => $q->param('sasl_smtp_password') ? $q->param('sasl_smtp_password')
                     : $decrypted_sasl_pass,
 
@@ -2528,13 +2520,13 @@ sub sending_preferences {
 
         my $pop3_password = strip( $q->param('pop3_password') ) || undef;
         if ( defined($pop3_password) ) {
-            $q->param( 'pop3_password', DADA::Security::Password::cipher_encrypt( $li->{cipher_key}, $pop3_password ) );
+            $q->param( 'pop3_password', DADA::Security::Password::cipher_encrypt( $ls->param('cipher_key'), $pop3_password ) );
         }
         my $sasl_smtp_password = strip( $q->param('sasl_smtp_password') )
           || undef;
         if ( defined($sasl_smtp_password) ) {
             $q->param( 'sasl_smtp_password',
-                DADA::Security::Password::cipher_encrypt( $li->{cipher_key}, $sasl_smtp_password ) );
+                DADA::Security::Password::cipher_encrypt( $ls->param('cipher_key'), $sasl_smtp_password ) );
         }
 
         $ls->save_w_params(
@@ -2583,7 +2575,6 @@ sub mass_mailing_preferences {
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     if ( !$process ) {
 
@@ -2868,22 +2859,21 @@ sub adv_sending_preferences {
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     if ( !$process ) {
 
-        unshift( @DADA::Config::CHARSETS, $li->{charset} );
+        unshift( @DADA::Config::CHARSETS, $ls->param('charset') );
         my $precedence_popup_menu = $q->popup_menu(
             -name    => "precedence",
             -value   => [@DADA::Config::PRECEDENCES],
-            -default => $li->{precedence},
+            -default => $ls->param('precedence'),
         );
 
         my $priority_popup_menu = $q->popup_menu(
             -name    => "priority",
             -value   => [ keys %DADA::Config::PRIORITIES ],
             -labels  => \%DADA::Config::PRIORITIES,
-            -default => $li->{priority},
+            -default => $ls->param('priority'),
         );
 
         my $charset_popup_menu = $q->popup_menu(
@@ -2894,13 +2884,13 @@ sub adv_sending_preferences {
         my $plaintext_encoding_popup_menu = $q->popup_menu(
             -name    => 'plaintext_encoding',
             -value   => [@DADA::Config::CONTENT_TRANSFER_ENCODINGS],
-            -default => $li->{plaintext_encoding},
+            -default => $ls->param('plaintext_encoding'),
         );
 
         my $html_encoding_popup_menu = $q->popup_menu(
             -name    => 'html_encoding',
             -value   => [@DADA::Config::CONTENT_TRANSFER_ENCODINGS],
-            -default => $li->{html_encoding},
+            -default => $ls->param('html_encoding'),
         );
 
         my $can_mime_encode = 1;
@@ -2984,7 +2974,6 @@ sub sending_tuning_options {
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     if ( $process eq 'remove_all' ) {
 
@@ -2994,7 +2983,7 @@ sub sending_tuning_options {
     }
     elsif ( $process == 1 ) {
 
-        my $tunings = eval( $li->{domain_sending_tunings} );
+        my $tunings = eval( $ls->param('domain_sending_tunings') );
 
         #my $errors  = {};
 
@@ -3042,7 +3031,7 @@ sub sending_tuning_options {
 
         if ( $q->param('domain') ) {
 
-            my $saved_tunings = eval( $li->{domain_sending_tunings} );
+            my $saved_tunings = eval( $ls->param('domain_sending_tunings') );
             my $new_tunings   = [];
 
             for my $st (@$saved_tunings) {
@@ -3075,7 +3064,7 @@ sub sending_tuning_options {
 
         if ( $q->param('domain') ) {
 
-            my $saved_tunings = eval( $li->{domain_sending_tunings} );
+            my $saved_tunings = eval( $ls->param('domain_sending_tunings') );
             my $new_tunings   = [];
 
             for (@$saved_tunings) {
@@ -3098,9 +3087,7 @@ sub sending_tuning_options {
     }
     else {
 
-        my $li = $ls->get;
-
-        my $saved_tunings = eval( $li->{domain_sending_tunings} );
+        my $saved_tunings = eval( $ls->param('domain_sending_tunings') );
 
         # This is done because variables inside loops are local, not global, and global vars don't work in loops.
         my $c = 0;
@@ -3126,12 +3113,12 @@ sub sending_tuning_options {
                     edit    => ( $q->param('edit') ? 1 : 0 ),
                     remove  => ( $q->param('remove') ? 1 : 0 ),
 
-                    use_domain_sending_tunings => ( $li->{use_domain_sending_tunings} ? 1 : 0 ),
+                    use_domain_sending_tunings => ( $ls->param('use_domain_sending_tunings') ? 1 : 0 ),
 
                     # For pre-filling in the "new" forms
-                    list_add_sendmail_f_flag      => $li->{add_sendmail_f_flag},
-                    list_print_return_path_header => $li->{print_return_path_header},
-                    list_verp_return_path         => $li->{verp_return_path},
+                    list_add_sendmail_f_flag      => $ls->param('add_sendmail_f_flag'),
+                    list_print_return_path_header => $ls->param('print_return_path_header'),
+                    list_verp_return_path         => $ls->param('verp_return_path'),
 
                 },
             }
@@ -3160,7 +3147,6 @@ sub sending_preferences_test {
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $admin_list } );
-    my $li = $ls->get;
 
     my $mh = DADA::Mail::Send->new(
         {
@@ -3174,10 +3160,6 @@ sub sending_preferences_test {
     if ($@) {
         $results .= $@;
     }
-
-    #else {
-    #	# ...
-    #}
 
     $results =~ s/\</&lt;/g;
     $results =~ s/\>/&gt;/g;
@@ -3809,7 +3791,6 @@ sub filter_using_black_list {
 
         my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-        my $li = $ls->get;
 
         my $filtered = $lh->filter_list_through_blacklist;
         require DADA::Template::Widgets;
@@ -3860,7 +3841,6 @@ sub membership {
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
     if ($process) {
@@ -5356,8 +5336,6 @@ sub delete_email {
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
-
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
     if ( !$process ) {
@@ -5492,7 +5470,6 @@ sub subscription_options {
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     my @d_quota_values = qw(1 10 25 50 100 150 200 250 300 350 400 450 500 600
       700 800 900 1000 1500 2000 2500 3000 3500 4000 4500
@@ -5522,14 +5499,14 @@ sub subscription_options {
     }
 
     # Now that's a weird line (now)
-    unshift( @quota_values, $li->{subscription_quota} );
+    unshift( @quota_values, $ls->param('subscription_quota') );
 
     if ( !$process ) {
 
         my $subscription_quota_menu = $q->popup_menu(
             -name     => 'subscription_quota',
             '-values' => [@quota_values],
-            -default  => $li->{subscription_quota},
+            -default  => $ls->param('subscription_quota'),
         );
 
         my @list_amount = (
@@ -5540,7 +5517,7 @@ sub subscription_options {
         my $vlsn_menu = $q->popup_menu(
             -name    => 'view_list_subscriber_number',
             -values  => [@list_amount],
-            -default => $li->{view_list_subscriber_number}
+            -default => $ls->param('view_list_subscriber_number')
         );
 
         require DADA::Template::Widgets;
@@ -5606,7 +5583,6 @@ sub view_archive {
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $admin_list } );
-    my $li = $ls->get;
 
     # let's get some info on this archive, shall we?
     require DADA::MailingList::Archives;
@@ -5627,9 +5603,6 @@ sub view_archive {
         }
 
         my $ht_entries = [];
-
-        #reverse if need be
-        #@$entries = reverse(@$entries) if($li->{sort_archives_in_reverse} eq "1");
 
         my $th_entries = [];
 
@@ -5705,7 +5678,7 @@ sub view_archive {
                     screen     => 'view_archive',
                     title      => 'View Archive',
                     index_list => $ht_entries,
-                    list_name  => $li->{list_name},
+                    list_name  => $ls->param('list_name'),
                     index_nav  => $index_nav,
 
                 },
@@ -5741,7 +5714,7 @@ sub view_archive {
 
         my $nav_table = $archive->make_nav_table(
             -Id       => $id,
-            -List     => $li->{list},
+            -List     => $ls->param('list'),
             -Function => "admin"
         );
 
@@ -5787,7 +5760,6 @@ sub display_message_source {
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     require DADA::MailingList::Archives;
 
@@ -5833,7 +5805,6 @@ sub delete_archive {
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     require DADA::MailingList::Archives;
 
@@ -5877,7 +5848,6 @@ sub archive_options {
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     if ( !$process ) {
 
@@ -5951,14 +5921,13 @@ sub adv_archive_options {
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     require DADA::MailingList::Archives;
     my $la = DADA::MailingList::Archives->new( { -list => $list } );
 
     if ( !$process ) {
 
-        my @index_this = ( $li->{archive_index_count}, 1 .. 10, 15, 20, 25, 30, 40, 50, 75, 100 );
+        my @index_this = ( $ls->param('archive_index_count'), 1 .. 10, 15, 20, 25, 30, 40, 50, 75, 100 );
 
         my $archive_index_count_menu = $q->popup_menu(
             -name  => 'archive_index_count',
@@ -6056,15 +6025,15 @@ sub adv_archive_options {
                     gravatar_img_url           => $gravatar_img_url,
 
                     (
-                          ( $li->{archive_protect_email} eq 'none' ) ? ( archive_protect_email_none => 1, )
+                          ( $ls->param('archive_protect_email') eq 'none' ) ? ( archive_protect_email_none => 1, )
                         : ( archive_protect_email_none => 0, )
                     ),
                     (
-                        ( $li->{archive_protect_email} eq 'spam_me_not' ) ? ( archive_protect_email_spam_me_not => 1, )
+                        ( $ls->param('archive_protect_email') eq 'spam_me_not' ) ? ( archive_protect_email_spam_me_not => 1, )
                         : ( archive_protect_email_spam_me_not => 0, )
                     ),
                     (
-                          ( $li->{archive_protect_email} eq 'recaptcha_mailhide' )
+                          ( $ls->param('archive_protect_email') eq 'recaptcha_mailhide' )
                         ? ( archive_protect_email_recaptcha_mailhide => 1, )
                         : ( archive_protect_email_recaptcha_mailhide => 0, )
                     ),
@@ -6134,7 +6103,6 @@ sub edit_archived_msg {
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
-    my $li = $ls->get;
 
     my $mh = DADA::Mail::Send->new(
         {
@@ -6198,7 +6166,7 @@ sub edit_archived_msg {
         my $form_blob = '';
         make_skeleton($entity);
 
-        for ( split( ',', $li->{editable_headers} ) ) {
+        for ( split( ',', $ls->param('editable_headers') ) ) {
             $Headers_To_Edit{$_} = 1;
         }
 
@@ -6418,7 +6386,7 @@ sub edit_archived_msg {
         else {
 
             my %editable_headers;
-            $editable_headers{$_} = 1 for ( split( ',', $li->{editable_headers} ) );
+            $editable_headers{$_} = 1 for ( split( ',', $ls->param('editable_headers') ) );
 
             my $edit_headers_menu = [];
             for (@DADA::Config::EMAIL_HEADERS_ORDER) {
@@ -6525,7 +6493,7 @@ sub edit_archived_msg {
 
         if ( $name eq '0' ) {
 
-            for ( split( ',', $li->{editable_headers} ) ) {
+            for ( split( ',', $ls->param('editable_headers') ) ) {
                 $Headers_To_Edit{$_} = 1;
             }
 
@@ -6711,7 +6679,6 @@ sub edit_template {
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     require DADA::Template::Widgets;
     my $raw_template     = DADA::Template::HTML::default_template();
@@ -6738,15 +6705,15 @@ sub edit_template {
 
         my $get_template_data_from_default_template = 0;
         $get_template_data_from_default_template = 1
-          if $li->{get_template_data} eq 'from_default_template';
+          if $ls->param('get_template_data') eq 'from_default_template';
 
         my $get_template_data_from_template_file = 0;
         $get_template_data_from_template_file = 1
-          if $li->{get_template_data} eq 'from_template_file';
+          if $ls->param('get_template_data') eq 'from_template_file';
 
         my $get_template_data_from_url = 0;
         $get_template_data_from_url = 1
-          if $li->{get_template_data} eq 'from_url';
+          if $ls->param('get_template_data') eq 'from_url';
 
         my $can_use_lwp_simple;
         eval { require LWP::Simple; };
@@ -6763,8 +6730,8 @@ sub edit_template {
 
             if ( $can_use_lwp_simple == 1 ) {
                 eval { $LWP::Simple::ua->agent( 'Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')' ); };
-                if ( LWP::Simple::get( $li->{url_template} ) ) {
-                    my $tmp_tmpl = LWP::Simple::get( $li->{url_template} );
+                if ( LWP::Simple::get( $ls->param('url_template') ) ) {
+                    my $tmp_tmpl = LWP::Simple::get( $ls->param('url_template') );
                     if ( $tmp_tmpl =~ m/$content_tag/ ) {
                         $content_tag_found_in_url_template = 1;
                     }
@@ -6799,9 +6766,6 @@ sub edit_template {
                     content_tag_found_in_template           => $content_tag_found_in_template,
                     content_tag_found_in_url_template       => $content_tag_found_in_url_template,
                     content_tag_found_in_default_template   => $content_tag_found_in_default_template,
-
-                    # I don't think this is directly used:
-                    #get_template_data                       => $li->{get_template_data},
 
                 },
                 -list_settings_vars_param => {
@@ -6886,7 +6850,6 @@ sub back_link {
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     if ( !$process ) {
 
@@ -6941,7 +6904,6 @@ sub edit_type {
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     # Backwards Compatibility!
     for (
@@ -6962,9 +6924,9 @@ sub edit_type {
         )
       )
     {
-        my $m = $li->{$_};
+        my $m = $ls->param($_);
         DADA::Template::Widgets::dada_backwards_compatibility( \$m );
-        $li->{$_} = $m;
+        $ls->param($_) = $m;
     }
 
     require DADA::App::FormatMessages;
@@ -6987,27 +6949,27 @@ sub edit_type {
                     title  => 'Email Templates',
                     done   => $done,
 
-                    unsub_link_found_in_pt_mlm => $dfm->can_find_unsub_link( { -str => $li->{mailing_list_message} } ),
+                    unsub_link_found_in_pt_mlm => $dfm->can_find_unsub_link( { -str => $ls->param('mailing_list_message') } ),
                     unsub_link_found_in_html_mlm =>
-                      $dfm->can_find_unsub_link( { -str => $li->{mailing_list_message_html} } ),
+                      $dfm->can_find_unsub_link( { -str => $ls->param('mailing_list_message_html') } ),
 
                     message_body_tag_found_in_pt_mlm =>
-                      $dfm->can_find_message_body_tag( { -str => $li->{mailing_list_message} } ),
+                      $dfm->can_find_message_body_tag( { -str => $ls->param('mailing_list_message') } ),
                     message_body_tag_found_in_html_mlm =>
-                      $dfm->can_find_message_body_tag( { -str => $li->{mailing_list_message_html} } ),
+                      $dfm->can_find_message_body_tag( { -str => $ls->param('mailing_list_message_html') } ),
 
                     sub_confirm_link_found_in_confirmation_message =>
-                      $dfm->can_find_sub_confirm_link( { -str => $li->{confirmation_message} } ),
+                      $dfm->can_find_sub_confirm_link( { -str => $ls->param('confirmation_message') } ),
 
                     unsub_link_found_in_pt_subscribed_by_list_owner_msg =>
-                      $dfm->can_find_unsub_link( { -str => $li->{subscribed_by_list_owner_message} } ),
+                      $dfm->can_find_unsub_link( { -str => $ls->param('subscribed_by_list_owner_message') } ),
 
                     sub_confirm_link_found_in_pt_invite_msg =>
-                      $dfm->can_find_sub_confirm_link( { -str => $li->{invite_message_text} } ),
+                      $dfm->can_find_sub_confirm_link( { -str => $ls->param('invite_message_text') } ),
                     sub_confirm_link_found_in_html_invite_msg =>
-                      $dfm->can_find_sub_confirm_link( { -str => $li->{invite_message_html} } ),
+                      $dfm->can_find_sub_confirm_link( { -str => $ls->param('invite_message_html') } ),
                 },
-                -list_settings_vars       => $li,
+                -list_settings_vars       => $ls->get,
                 -list_settings_vars_param => { -dot_it => 1, },
             }
         );
@@ -7126,7 +7088,6 @@ sub edit_html_type {
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     # Backwards Compatibility!
     require DADA::Template::Widgets;
@@ -7140,9 +7101,9 @@ sub edit_html_type {
         )
       )
     {
-        my $m = $li->{$_};
+        my $m = $ls->param($_);
         DADA::Template::Widgets::dada_backwards_compatibility( \$m );
-        $li->{$_} = $m;
+        $ls->param($_) = $m;
     }
 
     if ( !$process ) {
@@ -7229,7 +7190,6 @@ sub manage_script {
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -7243,13 +7203,13 @@ sub manage_script {
             -list => $list,
             -vars => {
                 more_info          => $more_info,
-                smtp_server        => $li->{smtp_server},
+                smtp_server        => $ls->param('smtp_server'),
                 server_software    => $q->server_software(),
                 operating_system   => $^O,
                 perl_version       => $],
                 sendmail_locations => $sendmail_locations,
                 at_incs            => $at_incs,
-                list_owner_email   => $li->{list_owner_email},
+                list_owner_email   => $ls->param('list_owner_email'),
                 curl_location      => $curl_location,
                 wget_location      => $wget_location,
             },
@@ -7271,13 +7231,12 @@ sub feature_set {
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     require DADA::Template::Widgets::Admin_Menu;
 
     if ( !$process ) {
 
-        my $feature_set_menu = DADA::Template::Widgets::Admin_Menu::make_feature_menu($li);
+        my $feature_set_menu = DADA::Template::Widgets::Admin_Menu::make_feature_menu($ls->get);
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
@@ -7292,8 +7251,8 @@ sub feature_set {
                     screen                        => 'feature_set',
                     done                          => ( defined($done) ) ? 1 : 0,
                     feature_set_menu              => $feature_set_menu,
-                    disabled_screen_view_hide     => ( $li->{disabled_screen_view} eq 'hide' ) ? 1 : 0,
-                    disabled_screen_view_grey_out => ( $li->{disabled_screen_view} eq 'grey_out' ) ? 1 : 0,
+                    disabled_screen_view_hide     => ( $ls->param('disabled_screen_view') eq 'hide' ) ? 1 : 0,
+                    disabled_screen_view_grey_out => ( $ls->param('disabled_screen_view') eq 'grey_out' ) ? 1 : 0,
                 },
             }
         );
@@ -7335,7 +7294,6 @@ sub list_cp_options {
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     if ( !$process ) {
 
@@ -7368,7 +7326,7 @@ sub list_cp_options {
                     %wysiwyg_vars,
 
                 },
-                -list_settings_vars       => $li,
+                -list_settings_vars       => $ls->get,
                 -list_settings_vars_param => { -dot_it => 1 },
             }
         );
@@ -7435,7 +7393,6 @@ sub profile_fields {
     my $fields_attr = $pfm->get_all_field_attributes;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get();
 
     my $field_errors        = 0;
     my $field_error_details = {
@@ -8124,7 +8081,6 @@ sub text_list {
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
@@ -8407,9 +8363,7 @@ sub new_list {
                     "remote_host:$ENV{REMOTE_HOST}," . "ip_address:$ENV{REMOTE_ADDR}" );
             }
 
-            my $li = $ls->get;
-
-            my $escaped_list = uriescape( $li->{list} );
+            my $escaped_list = uriescape( $ls->param('list}') );
 
             my $auth_state;
 
@@ -8425,13 +8379,13 @@ sub new_list {
                     -screen => 'new_list_created_screen.tmpl',
                     -with   => 'list',
                     -vars   => {
-                        list_name        => $li->{list_name},
-                        list             => $li->{list},
+                        list_name        => $ls->param('list_name'),
+                        list             => $ls->param('list'),
                         escaped_list     => $escaped_list,
-                        list_owner_email => $li->{list_owner_email},
-                        info             => $li->{info},
-                        privacy_policy   => $li->{privacy_policy},
-                        physical_address => $li->{physical_address},
+                        list_owner_email => $ls->param('list_owner_email'),
+                        info             => $ls->param('info'),
+                        privacy_policy   => $ls->param('privacy_policy'),
+                        physical_address => $ls->param('physical_address'),
                         auth_state       => $auth_state,
                     },
                 }
@@ -8936,12 +8890,11 @@ sub archive_bare {
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     my $la = DADA::MailingList::Archives->new( { -list => $list } );
 
     if ( !$q->param('admin') ) {
-        if ( $li->{show_archives} == 0 ) {
+        if ( $ls->param('show_archives') == 0 ) {
             user_error( { -list => $list, -error => "no_show_archives" } );
             return;
         }
@@ -8979,9 +8932,8 @@ sub search_archive {
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
-    if ( $li->{show_archives} == 0 ) {
+    if ( $ls->param('show_archives') == 0 ) {
         user_error( { -list => $list, -error => "no_show_archives" } );
         return;
     }
@@ -9031,11 +8983,11 @@ sub search_archive {
             my ( $subject, $message, $format ) = $archive->get_archive_info($_);
             my $date = date_this(
                 -Packed_Date   => $_,
-                -Write_Month   => $li->{archive_show_month},
-                -Write_Day     => $li->{archive_show_day},
-                -Write_Year    => $li->{archive_show_year},
-                -Write_H_And_M => $li->{archive_show_hour_and_minute},
-                -Write_Second  => $li->{archive_show_second}
+                -Write_Month   => $ls->param('archive_show_month'),
+                -Write_Day     => $ls->param('archive_show_day'),
+                -Write_Year    => $ls->param('archive_show_year'),
+                -Write_H_And_M => $ls->param('archive_show_hour_and_minute'),
+                -Write_Second  => $ls->param('archive_show_second'),
             );
 
             push(
@@ -9054,12 +9006,12 @@ sub search_archive {
     }
 
     my $search_form = '';
-    if ( $li->{archive_search_form} == 1 ) {
-        $search_form = $archive->make_search_form( $li->{list} );
+    if ( $ls->param('archive_search_form') == 1 ) {
+        $search_form = $archive->make_search_form( $ls->param('list') );
     }
 
     my $archive_subscribe_form = '';
-    if ( $li->{hide_list} ne "1" ) {
+    if ( $ls->param('hide_list') ne "1" ) {
 
         # DEV: This takes the cake for worst hack I have found... today.
         my $info = '<!-- tmpl_var list_settings.info -->';
@@ -9071,12 +9023,12 @@ sub search_archive {
             }
         );
 
-        unless ( $li->{archive_subscribe_form} eq "0" ) {
+        unless ( $ls->param('archive_subscribe_form') == 0 ) {
             $archive_subscribe_form .= $info . "\n";
             require DADA::Template::Widgets;
             $archive_subscribe_form .= DADA::Template::Widgets::subscription_form(
                 {
-                    -list       => $li->{list},
+                    -list       => $ls->param('list'),
                     -email      => $email,
                     -give_props => 0,
                 }
@@ -9091,7 +9043,7 @@ sub search_archive {
             -screen => 'search_archive_screen.tmpl',
             -with   => 'list',
             -vars   => {
-                list_name              => $li->{list_name},
+                list_name              => $ls->param('list_name'),
                 uriescape_list         => uriescape($list),
                 list                   => $list,
                 count                  => $count,
@@ -9148,7 +9100,6 @@ sub send_archive {
     }
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     require DADA::Profile;
     my $prof = DADA::Profile->new( { -from_session => 1 } );
@@ -9174,7 +9125,7 @@ sub send_archive {
         $can_use_captcha = 0;
     };
 
-    if ( $li->{captcha_archive_send_form} == 1 && $can_use_captcha == 1 ) {
+    if ( $ls->param('captcha_archive_send_form') == 1 && $can_use_captcha == 1 ) {
         require DADA::Security::AuthenCAPTCHA;
         my $cap = DADA::Security::AuthenCAPTCHA->new;
 
@@ -9196,7 +9147,7 @@ sub send_archive {
         }
     }
 
-    if ( $li->{archive_send_form} != 1 ) {
+    if ( $ls->param('archive_send_form') != 1 ) {
         $errors++;
     }
 
@@ -9240,20 +9191,20 @@ sub send_archive {
         my $msg = MIME::Lite->new(
             From    => '"<!-- tmpl_var list_settings.list_name -->" <' . $from_email . '>',
             To      => '"<!-- tmpl_var list_settings.list_name -->" <' . $to_email . '>',
-            Subject => $li->{send_archive_message_subject},
+            Subject => $ls->param('send_archive_message_subject'),
             Type    => 'multipart/mixed',
         );
 
         my $pt = MIME::Lite->new(
             Type     => 'text/plain',
-            Data     => $li->{send_archive_message},
-            Encoding => $li->{plaintext_encoding}
+            Data     => $ls->param('send_archive_message'),
+            Encoding => $ls->param('plaintext_encoding')
         );
 
         my $html = MIME::Lite->new(
             Type     => 'text/html',
-            Data     => $li->{send_archive_message_html},
-            Encoding => $li->{html_encoding}
+            Data     => $ls->param('send_archive_message_html'),
+            Encoding => $ls->param('html_encoding'),
         );
 
         my $ma = MIME::Lite->new( Type => 'multipart/alternative' );
@@ -9354,9 +9305,8 @@ sub archive_rss {
         require DADA::MailingList::Settings;
 
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-        my $li = $ls->get;
 
-        if ( $li->{show_archives} == 0 ) {
+        if ( $ls->param('show_archives') == 0 ) {
 
         }
         else {
@@ -9372,7 +9322,7 @@ sub archive_rss {
                 return '';
             }
 
-            if ( $li->{publish_archives_rss} == 0 ) {
+            if ( $ls->param('publish_archives_rss') == 0 ) {
 
             }
             else {
@@ -9429,13 +9379,12 @@ sub email_password {
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     require DADA::Security::Password;
 
-    if (   ( $li->{pass_auth_id} ne "" )
-        && ( defined( $li->{pass_auth_id} ) )
-        && ( $q->param('pass_auth_id') eq $li->{pass_auth_id} ) )
+    if (   ( $ls->param('pass_auth_id') ne "" )
+        && ( defined( $ls->param('pass_auth_id') ) )
+        && ( $q->param('pass_auth_id') eq $ls->param('pass_auth_id') ) )
     {
 
         my $new_password = DADA::Security::Password::generate_password();
@@ -9453,10 +9402,10 @@ sub email_password {
             {
                 -list    => $list,
                 -headers => {
-                    From => '"' . escape_for_sending( $li->{list_name} ) . '" <' . $li->{list_owner_email} . '>',
+                    From => '"' . escape_for_sending( $ls->param('list_name') ) . '" <' . $ls->param('list_owner_email') . '>',
                     To   => '"List Owner for: '
-                      . escape_for_sending( $li->{list_name} ) . '" <'
-                      . $li->{list_owner_email} . '>',
+                      . escape_for_sending( $ls->param('list_name') ) . '" <'
+                      . $ls->param('list_owner_email') . '>',
                     Subject => $DADA::Config::LIST_RESET_PASSWORD_MESSAGE_SUBJECT,
                 },
                 -body        => $DADA::Config::LIST_RESET_PASSWORD_MESSAGE,
@@ -9497,10 +9446,10 @@ sub email_password {
             {
                 -list    => $list,
                 -headers => {
-                    From => '"' . escape_for_sending( $li->{list_name} ) . '" <' . $li->{list_owner_email} . '>',
+                    From => '"' . escape_for_sending( $ls->param('list_name') ) . '" <' . $ls->param('list_owner_email') . '>',
                     To   => '"List Owner for: '
-                      . escape_for_sending( $li->{list_name} ) . '" <'
-                      . $li->{list_owner_email} . '>',
+                      . escape_for_sending( $ls->param('list_name') ) . '" <'
+                      . $ls->param('list_owner_email') . '>',
                     Subject => $DADA::Config::LIST_CONFIRM_PASSWORD_MESSAGE_SUBJECT,
                 },
                 -body        => $DADA::Config::LIST_CONFIRM_PASSWORD_MESSAGE,
@@ -10477,7 +10426,6 @@ sub subscriber_help {
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -10486,8 +10434,8 @@ sub subscriber_help {
             -with   => 'list',
             -vars   => {
                 list             => $list,
-                list_name        => $li->{list_name},
-                list_owner_email => spam_me_not_encode( $li->{list_owner_email} ),
+                list_name        => $ls->param('list_name'),
+                list_owner_email => spam_me_not_encode( $ls->param('list_owner_email') ),
             }
         }
     );
@@ -10516,11 +10464,10 @@ sub file_attachment {
         require DADA::MailingList::Settings;
 
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-        my $li = $ls->get;
 
-        if ( $li->{show_archives} == 1 || $checksout == 1 ) {
+        if ( $ls->param('show_archives') == 1 || $checksout == 1 ) {
 
-            if ( $li->{display_attachments} == 1 || $checksout == 1 ) {
+            if ( $ls->param('display_attachments') == 1 || $checksout == 1 ) {
 
                 require DADA::MailingList::Archives;
 
@@ -11265,15 +11212,15 @@ sub profile {
 
                 require DADA::MailingList::Settings;
                 my $ls = DADA::MailingList::Settings->new( { -list => $i->{list} } );
-                my $li = $ls->get( -dotted => 1 );
 
                 # Ack, this is very awkward:
 
                 #  Ack, this is very awkward:
                 require DADA::Template::Widgets;
-                $li = DADA::Template::Widgets::webify_and_santize(
+            
+    			my $li = DADA::Template::Widgets::webify_and_santize(
                     {
-                        -vars => $li,
+                        -vars => $ls->get,
                         -to_sanitize =>
                           [ qw(list_settings.list_owner_email list_settings.info list_settings.privacy_policy ) ],
                     }
