@@ -148,6 +148,11 @@ $(document).ready(function() {
 			installer_checkbox_toggle_option_groups('configure_mass_mailing', 'mass_mailing_options');
 		});
 
+		$("body").on('click', "#configure_confirmation_token", function(event) {
+			installer_checkbox_toggle_option_groups('configure_confirmation_token', 'confirmation_token_options');
+		});
+
+
 		installer_dada_root_pass_options();
 		installer_toggleSQL_options();
 		installer_toggle_dada_files_dirOptions();
@@ -162,6 +167,7 @@ $(document).ready(function() {
 		installer_checkbox_toggle_option_groups('configure_security', 'security_options');
 		installer_checkbox_toggle_option_groups('configure_captcha', 'captcha_options');
 		installer_checkbox_toggle_option_groups('configure_mass_mailing', 'mass_mailing_options');
+		installer_checkbox_toggle_option_groups('configure_confirmation_token', 'confirmation_token_options');
 		installer_checkbox_toggle_option_groups('configure_cache', 'cache_options');
 		installer_checkbox_toggle_option_groups('configure_debugging', 'debugging_options');
 
