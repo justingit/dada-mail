@@ -1,5 +1,43 @@
 =pod
 
+=head1 6.8.0
+
+=head2 Features
+
+=head3 Core5 Labs FileManager Support
+
+Dada Mail now supports the Core5 FileManager, along with KCFinder. More information on FileManager: 
+
+L<http://labs.corefive.com/projects/filemanager/>
+
+WYSIWYG Editors and File Browsers in Dada Mail: 
+
+L<http://dadamailproject.com/d/features-wysiwyg_editors.pod.html>
+
+We've added FileManager support to Dada Mail, as people were having trouble with KCFinder's php code. FileManager's connector (that we ship) is written in Perl, so if you can run Dada Mail, using FileManager should work equally well. 
+
+=head3 Clickthrough Tracking: URLs in image maps tracked
+
+URLs for links in image maps weren't tracked by Dada Mail. These URLs should now be properly tracked. 
+
+=head3 Bridge: Moderators and Authorized Senders
+
+The job of the Authorized Senders sublist has been split into two sublists: 
+
+B<Authorized Senders> will continue to be the sublist of addresses, that may post to a mailing list, without having to be a member of the Subscribers. 
+
+B<Moderators> will now simply be a sublist of addresses that get sent out a confirmation email to approve or deny message postings
+
+=head3 Bridge: "On Behalf Of"; (p.p. mode) Support
+
+Discussion Messages may now be sent, "On Behalf Of" the original sender by the List Owner. This allows you to set up a discussion list with Amazon SES, which only allows messages from verified senders. You may now verify only your List Owner, and still have a discussion list. 
+
+=head2 Bugfixes 6.8.0
+
+=head3 Profile Fields, "Name" validation not validated for case-ness
+
+L<https://github.com/justingit/dada-mail/issues/416>
+
 =head1 6.7.2
 
 =head2 Summary 6.7.2
