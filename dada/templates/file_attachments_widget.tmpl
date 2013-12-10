@@ -1,12 +1,25 @@
 <!-- begin file_attachments_widget.tmpl --> 
 
-<!-- tmpl_if kcfinder_enabled --> 
+<!-- tmpl_if expr="((kcfinder_enabled == 1) || (core5_filemanager_enabled == 1))" -->
 
 	<div id="attachment_widgets"> 
 
-		<input type="hidden" id="kcfinder_url"        name="kcfinder_url"        value="<!-- tmpl_var kcfinder_url -->"        />
-		<input type="hidden" id="kcfinder_upload_dir" name="kcfinder_upload_dir" value="<!-- tmpl_var kcfinder_upload_dir -->" />
-		<input type="hidden" id="kcfinder_upload_url" name="kcfinder_upload_url" value="<!-- tmpl_var kcfinder_upload_url -->" />
+		<!-- tmpl_if kcfinder_enabled --> 
+			<input type="hidden" id="kcfinder_enabled"    name="kcfinder_enabled"    value="<!-- tmpl_var kcfinder_enabled -->"        />
+			<input type="hidden" id="kcfinder_url"        name="kcfinder_url"        value="<!-- tmpl_var kcfinder_url -->"        />
+			<input type="hidden" id="kcfinder_upload_dir" name="kcfinder_upload_dir" value="<!-- tmpl_var kcfinder_upload_dir -->" />
+			<input type="hidden" id="kcfinder_upload_url" name="kcfinder_upload_url" value="<!-- tmpl_var kcfinder_upload_url -->"          />
+		<!-- /tmpl_if --> 
+		
+		<!-- tmpl_if core5_filemanager_enabled --> 
+		
+		
+			<input type="hidden" id="core5_filemanager_enabled"    name="core5_filemanager_enabled"    value="<!-- tmpl_var core5_filemanager_enabled -->"        />
+			<input type="hidden" id="core5_filemanager_url"        name="core5_filemanager_url"        value="<!-- tmpl_var core5_filemanager_url -->"        />
+			<input type="hidden" id="core5_filemanager_upload_dir" name="core5_filemanager_upload_dir" value="<!-- tmpl_var core5_filemanager_upload_dir -->" />
+			<input type="hidden" id="core5_filemanager_upload_url" name="core5_filemanager_upload_url" value="<!-- tmpl_var core5_filemanager_upload_url -->"          />
+		<!-- /tmpl_if -->
+
 		<input type="hidden" id="SUPPORT_FILES_URL"   name="SUPPORT_FILES_URL"   value="<!-- tmpl_var SUPPORT_FILES_URL -->"   /> 
 
 		<p>
@@ -46,14 +59,14 @@
 
 	</div> 
 <!-- tmpL_else --> 
-	<div id="badweatherbox">
+	<div class="badweatherbox">
 		<p>
 			<strong>
 				Disabled.
 			</strong>
 		</p>
 		<p>
-			KCFinder needs to be enabled.
+			KCFinder or Core5 FileManager needs to be enabled, for attachments to work. 
 		</p>
 	</div> 
 

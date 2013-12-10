@@ -294,6 +294,10 @@ sub cl_run {
 
 	require Getopt::Long;
     my %h = ();
+
+	# This'll have to be updated: 
+	# 'file_browser_install_kcfinder!',
+
     Getopt::Long::GetOptions(
         \%h,
 		'upgrading!',
@@ -316,9 +320,10 @@ sub cl_run {
 		'wysiwyg_editor_install_ckeditor!',
 		'wysiwyg_editor_install_tiny_mce!',
 		'wysiwyg_editor_install_fckeditor!',
-		'file_browser_install_kcfinder!',
 		'help',
     );
+
+
 
 #	use Data::Dumper; 
 #	die Dumper({%h}); 
@@ -859,10 +864,11 @@ sub grab_former_config_vals {
 		}
 	}
 	if($BootstrapConfig::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1){ 
-		$local_q->param('file_browser_install_kcfinder', 1);
-	}	
-	else { 
-		$local_q->param('file_browser_install_kcfinder', 0);
+		$local_q->param('file_browser_install', 'kcfinder');
+	}
+	elsif($BootstrapConfig::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1){ 
+		$local_q->param('file_browser_install', 'core5_filemanager');
+		$local_q->param('core5_filemanager_connector', $BootstrapConfig::FILE_BROWSER_OPTIONS->{core5_filemanager}->{connector});
 	}
 	
 	# Profiles
@@ -2277,7 +2283,7 @@ sub install_wysiwyg_editors {
 		$tmpl_vars{i_tiny_mce_enabled} = 1; 
 		$tmpl_vars{i_tiny_mce_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name .'/tiny_mce';
 	}
-	if($q->param('file_browser_install_kcfinder') == 1){ 
+	if($q->param('file_browser_install') eq 'kcfinder'){ 
 		install_and_configure_kcfinder($args); 
 		$tmpl_vars{i_kcfinder_enabled} = 1; 
 		$tmpl_vars{i_kcfinder_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/kcfinder';
@@ -2290,8 +2296,25 @@ sub install_wysiwyg_editors {
 		
 		if(! -d  $upload_dir){ 
 			# No need to backup this.
+			instal
+			ler_mkdir( $upload_dir, $DADA::Config::DIR_CHMOD );
+		}	
+	}
+	elsif($q->param('file_browser_install') eq 'core5_filemanager'){
+		
+		install_and_configure_core5_filemanager($args); 
+		my $upload_dir = make_safer($support_files_dir_path . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir); 
+		$tmpl_vars{i_core5_filemanager_enabled} = 1; 
+		$tmpl_vars{i_core5_filemanager_url}       = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/core5_filemanager';
+		$tmpl_vars{i_core5_filemanager_connector} = $q->param('core5_filemanager_connector'); 
+		my $upload_dir = make_safer($support_files_dir_path . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir); 
+		$tmpl_vars{i_core5_filemanager_upload_dir} = $upload_dir; 
+		$tmpl_vars{i_core5_filemanager_upload_url} = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir;
+		
+		if(! -d  $upload_dir){ 
+			# No need to backup this.
 			installer_mkdir( $upload_dir, $DADA::Config::DIR_CHMOD );
-		}
+		}	
 		
 	}
 	
@@ -2408,13 +2431,19 @@ sub install_and_configure_kcfinder {
 	}
 	installer_dircopy($source_package, $target_loc); 	
 
+	my $support_files_dir_url = $q->param('support_files_dir_url'); 
+	
 	if($q->param('wysiwyg_editor_install_fckeditor') == 1){ 
 		my $fckeditor_config_js = DADA::Template::Widgets::screen(
 	        {
 	            -screen => 'fckconfig_js.tmpl',
 	            -vars   => {
-	            	support_files_dir_url  => $q->param('support_files_dir_url'), 
-					Support_Files_Dir_Name => $Support_Files_Dir_Name, 
+					
+					file_manager_browse_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/kcfinder/browse.php', 
+					file_manager_upload_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/kcfinder/upload.php', 
+										
+	            	support_files_dir_url   => $support_files_dir_url, 
+					Support_Files_Dir_Name  => $Support_Files_Dir_Name, 
 				}
 	        }
 	    );
@@ -2436,11 +2465,15 @@ sub install_and_configure_kcfinder {
 		# This method lets you avoid modifying the original distribution files in the CKEditor 
 		# installation folder, making the upgrade task easier. 
 		
+		my $support_files_dir_url = $q->param('support_files_dir_url'); 
+		
 		my $ckeditor_config_js = DADA::Template::Widgets::screen(
 	        {
 	            -screen => 'ckeditor_config_js.tmpl',
 	            -vars   => {
-	            	support_files_dir_url  => $q->param('support_files_dir_url'), 
+					file_manager_browse_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/ckeditor/browse.php', 
+					file_manager_upload_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/ckeditor/upload.php', 
+	            	support_files_dir_url  => $support_files_dir_url, 
 					Support_Files_Dir_Name => $Support_Files_Dir_Name, 
 				}
 	        }
@@ -2457,13 +2490,23 @@ sub install_and_configure_kcfinder {
 	
 	if($q->param('wysiwyg_editor_install_tiny_mce') == 1){ 
 		
+		my $kcfinder_enabled = 0;
+		 
+		$kcfinder_enabled = 1; # we're in a sub called, "isntall_and_configure_kcfinder", so... 
+		#if($q->param('file_browser_install') eq 'kcfinder') { 
+		#	$kcfinder_enabled = 1; 
+		#} 
+		
+		my $support_files_dir_url  = $q->param('support_files_dir_url');
+		
 		my $tiny_mce_config_js = DADA::Template::Widgets::screen(
 	        {
 	            -screen => 'tiny_mce_config_js.tmpl',
 	            -vars   => {
-	            	support_files_dir_url  => $q->param('support_files_dir_url'), 
+					file_manager_browse_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/kcfinder/browse.php', 
+	            	support_files_dir_url  => $support_files_dir_url, 
 					Support_Files_Dir_Name => $Support_Files_Dir_Name, 
-					kcfinder_enabled       => $q->param('file_browser_install_kcfinder'), 
+					kcfinder_enabled       => $kcfinder_enabled, 
 				}
 	        }
 	    );
@@ -2499,6 +2542,169 @@ sub install_and_configure_kcfinder {
 	undef $config_fh;
 	
 }
+
+
+
+
+sub install_and_configure_core5_filemanager {
+	my ($args) = @_; 
+	my $install_path = $q->param('support_files_dir_path') . '/' . $Support_Files_Dir_Name; 
+	my $source_package = make_safer('../extras/packages/core5_filemanager'); 
+	my $target_loc     = make_safer($install_path . '/core5_filemanager');
+	if(-d $target_loc){
+		backup_dir($target_loc);	
+	}
+	installer_dircopy($source_package, $target_loc); 	
+	my $support_files_dir_url = $q->param('support_files_dir_url'); 
+
+	if($q->param('wysiwyg_editor_install_fckeditor') == 1){ 
+		my $fckeditor_config_js = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'fckconfig_js.tmpl',
+	            -vars   => {
+
+					file_manager_browse_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/core5_filemanager/index.html', 
+					file_manager_upload_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/core5_filemanager/index.html', 
+
+	            	support_files_dir_url  => $support_files_dir_url, 
+					Support_Files_Dir_Name => $Support_Files_Dir_Name, 
+				}
+	        }
+	    );
+		my $fckeditor_config_loc = make_safer($install_path . '/fckeditor/dada_mail_config.js'); 
+		# Why 0777? 
+		installer_chmod(0777, $fckeditor_config_loc); 
+		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $fckeditor_config_loc or croak $!;
+		print $config_fh $fckeditor_config_js or croak $!;
+		close $config_fh or croak $!;
+		installer_chmod($DADA::Config::FILE_CHMOD, $fckeditor_config_loc);
+		undef $config_fh;
+	}
+	
+
+	if($q->param('wysiwyg_editor_install_ckeditor') == 1){ 
+		
+		# http://docs.cksource.com/CKEditor_3.x/Developers_Guide/Setting_Configurations
+		# The best way to set the CKEditor configuration is in-page, when creating editor instances. 
+		# This method lets you avoid modifying the original distribution files in the CKEditor 
+		# installation folder, making the upgrade task easier. 
+		
+		my $support_files_dir_url = $q->param('support_files_dir_url'); 
+		
+		my $ckeditor_config_js = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'ckeditor_config_js.tmpl',
+	            -vars   => {
+					file_manager_browse_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/core5_filemanager/index.html', 
+					file_manager_upload_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/core5_filemanager/index.html', 
+	            	support_files_dir_url  => $support_files_dir_url, 
+					Support_Files_Dir_Name => $Support_Files_Dir_Name, 
+				}
+	        }
+	    );
+		my $ckeditor_config_loc = make_safer($install_path . '/ckeditor/dada_mail_config.js'); 
+		installer_chmod(0777, $ckeditor_config_loc); 
+		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $ckeditor_config_loc or croak $!;
+		print $config_fh $ckeditor_config_js or croak $!;
+		close $config_fh or croak $!;
+		installer_chmod($DADA::Config::FILE_CHMOD, $ckeditor_config_loc);
+		undef $config_fh;
+		
+	}
+	
+	if($q->param('wysiwyg_editor_install_tiny_mce') == 1){ 
+
+
+		my $kcfinder_enabled = 0; 
+
+		my $support_files_dir_url  = $q->param('support_files_dir_url');
+		
+		my $tiny_mce_config_js = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'tiny_mce_config_js.tmpl',
+	            -vars   => {
+					file_manager_browse_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/kcfinder/browse.php', 
+	            	support_files_dir_url  => $support_files_dir_url, 
+					Support_Files_Dir_Name => $Support_Files_Dir_Name, 
+					kcfinder_enabled       => $kcfinder_enabled, 
+				}
+	        }
+	    );
+		my $tiny_mce_config_loc = make_safer($install_path . '/tiny_mce/dada_mail_config.js'); 
+		installer_chmod(0777, $tiny_mce_config_loc); 
+		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $tiny_mce_config_loc or croak $!;
+		print $config_fh $tiny_mce_config_js or croak $!;
+		close $config_fh or croak $!;
+		installer_chmod($DADA::Config::FILE_CHMOD, $tiny_mce_config_loc);
+		undef $config_fh;
+		
+	}
+	
+	# No Session Dir for Core5 Filemanager
+
+
+	# pl config: 
+	
+    my $uploads_directory = $q->param('support_files_dir_path')  . '/' . $Support_Files_Dir_Name . '/' . 'file_uploads';
+    my $url_path          = $uploads_directory;
+    my $doc_root          = $ENV{DOCUMENT_ROOT}; 
+    $url_path             =~ s/^$doc_root//; # We use $url_path for the js config, too. 
+	
+	my $core5_filemanager_config_pl = DADA::Template::Widgets::screen(
+        {
+            -screen => 'core5_filemanager_config_pl.tmpl',
+            -vars   => {
+				uploads_directory => $uploads_directory,
+				url_path          => $url_path,
+			}
+        }
+    );
+	my $core5_filemanager_config_loc = make_safer($install_path . '/core5_filemanager/connectors/pl/filemanager_config.pl'); 
+	installer_chmod(0777, $core5_filemanager_config_loc); 
+	open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $core5_filemanager_config_loc or croak $!;
+	print $config_fh $core5_filemanager_config_pl or croak $!;
+	close $config_fh or croak $!;
+	installer_chmod($DADA::Config::FILE_CHMOD, $core5_filemanager_config_loc);
+	undef $config_fh;
+
+	
+	# js config: 
+	my $core5_filemanager_config_js = DADA::Template::Widgets::screen(
+        {
+            -screen => 'core5_filemanager_config_js.tmpl',
+            -vars   => {
+				fileRoot          => $url_path . '/', # slash on the end, there. 
+				lang              => $q->param('core5_filemanager_connector'), 
+			}
+        }
+    );
+	my $core5_filemanager_config_js_loc = make_safer($install_path . '/core5_filemanager/scripts/filemanager.config.js'); 
+	installer_chmod(0777, $core5_filemanager_config_js_loc); 
+	open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $core5_filemanager_config_js_loc or croak $!;
+	print $config_fh $core5_filemanager_config_js or croak $!;
+	close $config_fh or croak $!;
+	installer_chmod($DADA::Config::FILE_CHMOD, $core5_filemanager_config_js_loc);
+	undef $config_fh;
+	
+	if($q->param('core5_filemanager_connector') eq 'pl') { 
+		# We actually have the change the permissions of those two files: 
+	
+		my $core5_filemanager_connector_loc = make_safer($install_path . '/core5_filemanager/connectors/pl/filemanager.pl'); 
+	
+		installer_chmod($DADA::Config::DIR_CHMOD, $core5_filemanager_connector_loc);
+		installer_chmod($DADA::Config::DIR_CHMOD, $core5_filemanager_config_loc);
+		
+#		installer_rmdir(make_safer($install_path . '/core5_filemanager/connectors/php'));
+
+	}
+
+#	elsif($q->param('core5_filemanager_connector') eq 'php') {
+#		installer_rmdir(make_safer($install_path . '/core5_filemanager/connectors/pl'));		
+#	}
+	
+}
+
+
 
 
 sub uncomment_admin_menu_entry { 

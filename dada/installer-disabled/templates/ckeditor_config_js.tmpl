@@ -4,12 +4,12 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 */
 
 CKEDITOR.editorConfig = function(config) {
-   config.filebrowserBrowseUrl      = '<!-- tmpl_var support_files_dir_url -->/<!-- tmpl_var Support_Files_Dir_Name -->/kcfinder/browse.php?type=files';
-   config.filebrowserImageBrowseUrl = '<!-- tmpl_var support_files_dir_url -->/<!-- tmpl_var Support_Files_Dir_Name -->/kcfinder/browse.php?type=images';
-   config.filebrowserFlashBrowseUrl = '<!-- tmpl_var support_files_dir_url -->/<!-- tmpl_var Support_Files_Dir_Name -->/kcfinder/browse.php?type=flash';
-   config.filebrowserUploadUrl      = '<!-- tmpl_var support_files_dir_url -->/<!-- tmpl_var Support_Files_Dir_Name -->/kcfinder/upload.php?type=files';
-   config.filebrowserImageUploadUrl = '<!-- tmpl_var support_files_dir_url -->/<!-- tmpl_var Support_Files_Dir_Name -->/kcfinder/upload.php?type=images';
-   config.filebrowserFlashUploadUrl = '<!-- tmpl_var support_files_dir_url -->/<!-- tmpl_var Support_Files_Dir_Name -->/kcfinder/upload.php?type=flash';
+   config.filebrowserBrowseUrl      = '<!-- tmpl_var file_manager_browse_url -->?type=files';
+   config.filebrowserImageBrowseUrl = '<!-- tmpl_var file_manager_browse_url -->?type=images';
+   config.filebrowserFlashBrowseUrl = '<!-- tmpl_var file_manager_browse_url -->?type=flash';
+   config.filebrowserUploadUrl      = '<!-- tmpl_var file_manager_upload_url -->?type=files';
+   config.filebrowserImageUploadUrl = '<!-- tmpl_var file_manager_upload_url -->?type=images';
+   config.filebrowserFlashUploadUrl = '<!-- tmpl_var file_manager_upload_url -->?type=flash';
 
 	config.toolbar_DadaMail_Admin =
 	[
