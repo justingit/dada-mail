@@ -476,7 +476,8 @@ $scrn .= '<div id="screentitle">
 	<div id="screentitlepadding">
 	 ' . '<a href="' . $Plugin_Config->{Plugin_URL} . '">' . $Plugin_Config->{Plugin_Name} . '</a> &#187 Add/Edit
 	</div> ' . $hlw . '</div>
-'; 
+'
+. '<div id="screen_meta" data-menu_highlight="scheduled_mailings"></div>';  
 
 
 	$scrn .=  $schedule_form; 
@@ -578,7 +579,8 @@ sub schedule_index {
 	$r .= '<div id="screentitle"> 
 		<div id="screentitlepadding">
 		 ' . '<a href="' . $Plugin_Config->{Plugin_URL} . '">' . $Plugin_Config->{Plugin_Name} . '</a> &#187 Add/Edit
-		</div>' . $hlw . '</div>';
+		</div>' . $hlw . '</div>'
+		. '<div id="screen_meta" data-menu_highlight="scheduled_mailings"></div>'; 
 	
 	
 	   $r .= "<p class=error>Scheduled Mailing Removed.</p>" if $q->param('message') eq 'r'; 

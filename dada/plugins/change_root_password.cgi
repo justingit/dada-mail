@@ -46,10 +46,9 @@ my $li = $ls->get;
 	               
 if(!$q->param('process')){ 
 
-    my $tmpl = default_screen(); 	                
 	my $scrn = DADA::Template::Widgets::wrap_screen(
 						{
-							-data => \$tmpl, 
+				            -screen         => 'plugins/change_root_password/default.tmpl',
 							-with           => 'admin', 
 							-wrapper_params => { 
 								-Root_Login => $root_login,
@@ -147,77 +146,6 @@ if(!$q->param('process')){
 
 
 
-
-
-
-sub default_screen { 
-
-return <<EOF
-
-<!-- tmpl_set name="title" value="Plugins &#187; Change Your <!-- tmpl_var PROGRAM_NAME --> Root Password" -->
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-		<!-- tmpl_var title --> 
-	</div>
-	<!-- tmpl_include help_link_widget.tmpl -->
-</div>
-
-<form method="post"> 
-
-<!--tmpl_if old_root_pass_incorrect --> 
-
-    <p class="error">
-     You did not type in the correct, current <!-- tmpl_var PROGRAM_NAME --> Root Password. Please try again.
-    </p>
-
-<!--/tmpl_if--> 
-
-
-<!-- tmpl_if new_pass_no_match --> 
-
-    <p class="error"> 
-        Your retyped new <!-- tmpl_var PROGRAM_NAME --> Root Password did not match!
-    </p>
-
-<!--/tmpl_if--> 
-
-	<p>
-	 Enter your old <!-- tmpl_var PROGRAM_NAME --> Root <label for="old_password">Password</label>:
-	 <br />
-	 <input type="password" id="old_password" name="old_password" maxlength="24" />
-	</p>
-	
-
-<p>
- <label for="new_password">
-  Enter your new <!-- tmpl_var PROGRAM_NAME --> Root Password</label>:
- <br />
- <input type="password" name="new_password" id="new_password" size="16" maxlength="24" />
-</p>
-
-<p>
- <label for="again_new_password">
-  Re-enter your new <!-- tmpl_var PROGRAM_NAME --> Root Password</label>:
- <br />
- <input type="password" name="again_new_password" id="again_new_password" size="16" maxlength="24" />
-</p>
-
-<div class="buttonfloat">
- <input type="reset"  class="cautionary" />
- <input type="submit" class="processing" value="Change <!-- tmpl_var PROGRAM_NAME --> Root Password" />
-</div>
-<div class="floatclear"></div>
-
-<input type="hidden" name="f"       value="change_password" />
-<input type="hidden" name="process" value="true" />
-
-
-</form> 
-
-EOF
-; 
-
-}
 
 sub self_url { 
 	my $self_url = $q->url; 

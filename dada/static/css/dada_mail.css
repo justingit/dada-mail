@@ -831,6 +831,11 @@ li.archive_badges_li {
 	background-color: #ffe1af;
 	text-decoration: none;
 }
+#navcontainer ul ul a:active,
+#navcontainer ul ul a:focus {
+	color: #000;
+	background-color: #f4ffaf;
+}
 
 #navcontainer ul ul a.menu_disabled,
 #navcontainer ul ul a.menu_disabled:link,
@@ -840,6 +845,16 @@ li.archive_badges_li {
 	color: #ccc;
 	font-style: italic;
 }
+
+#navcontainer ul ul a.menu_selected,
+#navcontainer ul ul a.menu_selected:link,
+#navcontainer ul ul a.menu_selected:visited,
+#navcontainer ul ul a.menu_selected:hover,
+#navcontainer ul ul a.menu_selected:active {
+	color: #000;
+	background-color: #f4ffaf;
+}
+
 
 .stripedtable {
 	/*border: 1px solid red;*/ /* for testing. */

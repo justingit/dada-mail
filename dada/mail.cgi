@@ -1949,7 +1949,7 @@ sub mass_mailing_options {
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
-                -screen         => 'mass_mailing_options.tmpl',
+                -screen         => 'mass_mailing_options_screen.tmpl',
                 -with           => 'admin',
                 -expr           => 1,
                 -wrapper_params => {
@@ -3507,7 +3507,7 @@ sub list_activity {
         DADA::Template::Widgets::wrap_screen(
             {
                 -list           => $list,
-                -screen         => 'list_activity.tmpl',
+                -screen         => 'list_activity_screen.tmpl',
                 -with           => 'admin',
                 -wrapper_params => {
                     -Root_Login => $root_login,
@@ -4018,7 +4018,7 @@ sub membership {
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
-                -screen         => 'membership.tmpl',
+                -screen         => 'membership_screen.tmpl',
                 -with           => 'admin',
                 -wrapper_params => {
                     -Root_Login => $root_login,
@@ -7330,7 +7330,7 @@ sub list_cp_options {
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
-                -screen         => 'list_cp_options.tmpl',
+                -screen         => 'list_cp_options_screen.tmpl',
                 -with           => 'admin',
                 -wrapper_params => {
                     -Root_Login => $root_login,
@@ -7396,7 +7396,7 @@ sub profile_fields {
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
-                -screen         => 'profile_fields.tmpl',
+                -screen         => 'profile_fields_screen.tmpl',
                 -with           => 'admin',
                 -wrapper_params => {
                     -Root_Login => $root_login,
@@ -7588,7 +7588,7 @@ sub profile_fields {
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
-            -screen         => 'profile_fields.tmpl',
+            -screen         => 'profile_fields_screen.tmpl',
             -with           => 'admin',
             -wrapper_params => {
                 -Root_Login => $root_login,
