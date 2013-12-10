@@ -122,6 +122,13 @@ $FILE_BROWSER_OPTIONS ||= {
         session_name => 'PHPSESSID',
         session_dir  => '/tmp',
     },
+	core5_filemanager  => { 
+		enabled      => 0, 
+		url          => '', 
+		upload_dir   => '', 
+		upload_url   => '',
+		connector    => '', 
+	},
 };
 
 

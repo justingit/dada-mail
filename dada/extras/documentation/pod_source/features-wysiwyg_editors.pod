@@ -2,9 +2,9 @@
 
 =head1 WYSIWYG Editors and File Browsers
 
-Dada Mail supports the use of third party WYSIWYG HTML editors to allow you to compose and edit HTML mailing list messages. This allows you to send rich text messages, right in Dada Mail's list control panel, without needing to know any HTML. If you know HTML, all the better! As these text editors also allow you to view the source of the messasge for fine-tuning. 
+Dada Mail supports the use of third party WYSIWYG HTML editors to allow you to compose and edit HTML mailing list messages. This allows you to send rich text messages right in Dada Mail's list control panel without needing to know any HTML. If you know HTML, all the better! These editors also allow you to view the source of the messasge for fine-tuning. 
 
-The HTML produced by these WYSIWYG editors is actually pretty good for the use of HTML emails, as most of the text formatting is done with I<inline css styles> and these editors also have the ability to make simple I<HTML tables for basic layouts>. Formatting rich text email messages is different than designing a contemporary web page - text formatting and layout is, on the whole, going to have to be much more simplified to work with the incredible spectrum of Things That Read Email (Web-based email services, Desktop-based mail readers, smart phones, toasters...).  
+The HTML produced by these WYSIWYG editors is pretty good for the use of HTML emails, as most of the text formatting is done with I<inline css styles> and these editors also have the ability to make simple I<HTML tables for basic layouts>. Formatting rich text email messages is different than designing a contemporary web page - text formatting and layout is, on the whole, going to have to be much more simplified to work with the incredible spectrum of Things That Read Email (Web-based email services, Desktop-based mail readers, smart phones, toasters...).  
 
 =head1 Supported Editors 
 
@@ -22,13 +22,29 @@ Dada Mail supports the following WYSIWYG HTML editors:
 
 FCKeditor is only supported for backwards compatibility with previous versions of Dada Mail, and is not what we recommend that you us. B<We will be removing support for FCKeditor in a future version of Dada Mail.> CKeditor is the natural heir to FCKeditor, so it shouldn't be a big deal.  
 
-=head2 Supported File Browsers - KCFinder
+=head2 Supported File Browsers
 
-As well as the core WYSIWYG functionality, Dada Mail also supports the B<KCFinder> File Browser, allowing you to browse a directory on the server itself, as well as upload new files. Images uploaded may then be inserted into your HTML messages. 
+As well as the core WYSIWYG functionality, Dada Mail also supports the File Browsers/Uploaders, allowing you to browse a directory on the server itself, as well as upload new files. Images uploaded may then be inserted into your HTML messages. This file browser/uploader is also used to browser and attach file attachments, to your message. 
 
-Dada Mail supports B<KCFinder> in all three WYSIWYG editors that it also supports. Dada Mail does I<not> ship with support for the B<CKFinder> file browser, which is developed by the same company that develops CKEditor, because it requires an additional commercial license. KCFinder is free software. 
+Two file browsers/uploaders are available for Dada Mail. Configurating which one is use happens during install time - you cannot switch between them, after installation/configuration. 
+
+=head3 KCFinder
+
+Dada Mail supports B<KCFinder> in all three WYSIWYG editors that it also supports. Dada Mail does I<not> ship with support for the B<CKFinder> file browser, which is developed by the same company that develops CKEditor, because it requires an additional commercial license. KCFinder is free software.
 
 Dada Mail also does not ship with FCKeditor's default file browser "connectors", as it they are difficult to set up correctly, buggy, unsupported, and they have a reputation for being very insecure. KCFinder uses sessioning to only allow file browsing and uploading, if you are logging into Dada Mail's list control panel. 
+
+=head3 Core5 FileManager
+
+Dada Mail also comes with, and supports Core5's creatively named, B<FileManager>, which does a very similar job to KCFinder. 
+
+One big difference between KCFinder and FileManager is the backend code used for the server-side duties. In KCFinder, it's written in php. In FileManager, although many different connectors are available, we're shipping with only the Perl connector available. We've made changes to the connector to add security, which is otherwise completely missing. Because no security is available in any of the shippedd connectors by default, we do not suggest using them. 
+
+You may want to use FileManager, rather than KCFinder, if you get problems with KCFinder, related to either php or because you get errors like the following: 
+
+ You don't have permissions to browse server.
+
+When attempting to upload a file.
 
 =head1 Mailing List Configuration
 
@@ -67,11 +83,16 @@ for FCKeditor
 
 =item * file_uploads
 
-for saving the files you upload, using KCFinder
+for saving the files you upload, using KCFinder/FileManager
 
 =item * kcfinder
 
 for KCFinder
+
+=item * core5_filemanager
+
+for FileManager
+
 
 =back
 
@@ -106,7 +127,10 @@ C<enabled> can be set to C<1> to enable the editor, or C<0> to disable. Disabled
 
 C<url> should hold the base URL for the editor itself - make sure to have a full URL, starting with, "C<http://>"
 
-Configuration for the KCFinder file browser to work with Dada Mail is done in the C<$FILE_BROWSER_OPTIONS> variable, which should look like this: 
+=head2 File Browser/Uploader
+
+
+Configuration for the file browser/upload for Dada Mail is done in the C<$FILE_BROWSER_OPTIONS> variable, which should look like this: 
 
 	$FILE_BROWSER_OPTIONS ||= { 
 		kcfinder  => { 
@@ -117,7 +141,16 @@ Configuration for the KCFinder file browser to work with Dada Mail is done in th
 			session_name => 'PHPSESSID', 
 			session_dir  => '/tmp',
 		},
+		core5_filemanager  => { 
+			enabled      => 0, 
+			url          => '', 
+			upload_dir   => '', 
+			upload_url   => '',
+			connector    => '', 
+		},
 	};
+
+=head3 KCFinder
 
 The, C<kcfinder> parameter has additional parameters to configure: 
 
@@ -150,6 +183,18 @@ I<dada/extras/packages>
 directory. We don't encourage you to either set the C<url> parameters to use editors/etc I<directly> from where they are, or even copy/move the editors/etc to a better location. 
 
 Rather, it's best to download them directly from the editors/etc. own site. The former probably won't work at all if you're installing Dada Mail inside your cgi-bin. 
+
+=head3 FileManager
+
+The, C<core5_filemanager> parameter has additional parameters to configure: 
+
+C<enabled> can be set to C<1> to enable FileManager, or C<0> to disable. 
+
+C<url>, C<upload_dir>, and C<upload_url> work the same as they do in KCFinder. 
+
+FileManager does not have, nor has a need for the following paramaters: C<session_name>, C<session_dir>. This is because we only use the Perl connector, an thus use Dada Mail's own sessioing system, written in Perl - no additional sessioning system is needed. 
+
+C<connector> is available as a parameter, but at the moment, the only valid value is, C<pl>, for the Perl connector.
 
 
 =head2 Additional Configuration Files
