@@ -10,9 +10,6 @@ Key:
 [*] Naw...
 [?] Someday
 
-=======
-# 
-
 [ ] Enable Private Mailing Lists 
 	[ ] No need for Unsubscription Links
 		[ ] or headers
@@ -54,6 +51,18 @@ Easier hooks/interface to Dada Mail subscribe
 
 
 [x] Is there a way to highlight which list control panel you're on, in the left hand menu? Maybe by just using jQuery to change the class of the ul-y thingy?
+=======
+
+[ ] Amazon SES Bounce Notification
+
+[ ] p.p. mode for Amazon SES should probably also be done for Authorized Senders... 
+
+[ ] more flexibility with subject prefix for Bridge
+
+[ ] Different ways to call up the Subscripton Form - onload?
+
+[ ] Is there a way to highlight which list control panel you're on, in the left hand menu? Maybe by just using jQuery to change the class of the ul-y thingy?
+
 
 [ ] title breadcrumbs:  Message Archives » View Archive - has no subject and, "View Archive" is not a link. 
 
@@ -144,9 +153,7 @@ http://blog.sendgrid.com/permission-reminders-affect-email-deliverability/
     http://search.cpan.org/~btrott/XML-Feed/
 
 
-=======
 [] Revist docs on Bridge - update. 
->>>>>>> features-email_tracking
 
 Now that I have some time, maybe the best thing to do is have such links bring the user to a screen that says something like, "link expired, try that all again, sorry about that: (show sub/unsub form)"
 
@@ -650,13 +657,11 @@ http://rt.cpan.org/Public/Bug/Display.html?id=36005
 
 
 
-========================================================================
 
 [x] "You may only change the Subscriber Profile Fields if you are logged in to an existing list using the Dada Mail Root Password."
 
 
 [x] "Use underscores, instead of spaces - no funny characters, and use lower case characters instead of uppercase.
-========================================================================
 
 
 Make the attachment limit somewhat flexible? 

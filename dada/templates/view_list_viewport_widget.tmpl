@@ -18,7 +18,7 @@
 		<p class="alert">
 		 There are currently no members of, <!-- tmpl_var type_title -->.
 	
-		    <!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list'))" -->
+		    <!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'moderators') || (type eq 'white_list'))" -->
 		
 				<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=add&amp;type=<!-- tmpl_var type -->">
 					<!-- tmpl_if EXPR="(type eq 'list')" -->
@@ -84,7 +84,7 @@
 	   </strong>
 
 	
-		<!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list'))" -->
+		<!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'moderators') || (type eq 'white_list'))" -->
 			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=add&amp;type=<!-- tmpl_var type -->">
 					<!-- tmpl_if EXPR="(type eq 'list')" -->
 						Invite
@@ -95,7 +95,7 @@
 						Add
 					<!-- /tmpl_if -->
 	    	</a>...
-	   	<!-- /tmpl_if -->
+		<!-- /tmpl_if -->
 
 	<!-- /tmpl_if -->
 	
@@ -130,7 +130,7 @@
 			<td>
 				
 	
-	<!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list'))" -->
+	<!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'moderators') || (type eq 'white_list'))" -->
 
 		 <input type="hidden" name="process" value="delete" />
 		 <input type="hidden" name="f"       value="remove_subscribers" />
@@ -163,7 +163,7 @@
 	<!-- /tmpl_if -->
 	
 	</form>
-	<!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'white_list'))" -->
+	<!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'moderators') || (type eq 'white_list'))" -->
 		<!-- tmpl_unless query -->
 			<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" style="display:inline;margin:0">
 			 <input type="hidden" name="f"       value="remove_all_subscribers" />

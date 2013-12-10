@@ -40,17 +40,17 @@ sub subscription_check {
     my $self = shift;
     my ($args) = @_;
 
-    if ( !exists( $args->{ -email } ) ) {
-        $args->{ -email } = '';
+    if ( !exists( $args->{-email} ) ) {
+        $args->{-email} = '';
     }
-    my $email = $args->{ -email };
+    my $email = $args->{-email};
 
-    if ( !exists( $args->{ -type } ) ) {
-        $args->{ -type } = 'list';
+    if ( !exists( $args->{-type} ) ) {
+        $args->{-type} = 'list';
     }
 
     my %skip;
-    $skip{$_} = 1 for @{ $args->{ -skip } };
+    $skip{$_} = 1 for @{ $args->{-skip} };
 
     my %errors = ();
     my $status = 1;
@@ -59,9 +59,7 @@ sub subscription_check {
     require DADA::MailingList::Settings;
 
     if ( !$skip{no_list} ) {
-        if ( DADA::App::Guts::check_if_list_exists( -List => $self->{list} ) ==
-            0 )
-        {
+        if ( DADA::App::Guts::check_if_list_exists( -List => $self->{list} ) == 0 ) {
             $errors{no_list} = 1;
             return ( 0, \%errors );
         }
@@ -69,34 +67,36 @@ sub subscription_check {
 
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
 
-    if ( $args->{ -type } ne 'black_list' &&  $args->{ -type } ne 'white_list') {
+    if ( $args->{-type} ne 'black_list' && $args->{-type} ne 'white_list' ) {
         if ( !$skip{invalid_email} ) {
             $errors{invalid_email} = 1
               if DADA::App::Guts::check_for_valid_email($email) == 1;
         }
     }
-	else { 
-		if(DADA::App::Guts::check_for_valid_email($email) == 1) { 
-			if($email !~ m/^\@|\@$/){ 
-				$errors{invalid_email} = 1;
-			}
-		}
-	}
+    else {
+        if ( DADA::App::Guts::check_for_valid_email($email) == 1 ) {
+            if ( $email !~ m/^\@|\@$/ ) {
+                $errors{invalid_email} = 1;
+            }
+        }
+    }
 
     if ( !$skip{subscribed} ) {
         $errors{subscribed} = 1
           if $self->{lh}->check_for_double_email(
             -Email => $email,
-            -Type  => $args->{ -type }
+            -Type  => $args->{-type}
           ) == 1;
     }
 
-    if (   $args->{ -type } ne 'black_list'
-        || $args->{ -type } ne 'authorized_senders' )
-		# uh... white listed?!
+    if (   $args->{-type} ne 'black_list'
+        || $args->{-type} ne 'authorized_senders'
+        || $args->{-type} ne 'moderators' )
+
+      # uh... white listed?!
     {
-	
-		if ( !$skip{invite_only_list} ) {
+
+        if ( !$skip{invite_only_list} ) {
             $errors{invite_only_list} = 1 if $ls->param('invite_only_list') == 1;
         }
 
@@ -105,7 +105,7 @@ sub subscription_check {
         }
     }
 
-    if ( $args->{ -type } ne 'black_list' ) {
+    if ( $args->{-type} ne 'black_list' ) {
         if ( !$skip{mx_lookup_failed} ) {
             if ( $ls->param('mx_check') == 1 ) {
                 require Email::Valid;
@@ -119,17 +119,17 @@ sub subscription_check {
                     {
                         $errors{mx_lookup_failed} = 1;
                     }
-					if( $@ ) { 
-                    	carp "warning: mx check didn't work: $@, for email, '$email' on list, '" . $self->{list} . "'";                       
-					}
+                    if ($@) {
+                        carp "warning: mx check didn't work: $@, for email, '$email' on list, '" . $self->{list} . "'";
+                    }
                 };
             }
         }
     }
 
-    if ( $args->{ -type } ne 'black_list' ) {
+    if ( $args->{-type} ne 'black_list' ) {
         if ( !$skip{black_listed} ) {
-            if ( $ls->param('black_list') == 1) {
+            if ( $ls->param('black_list') == 1 ) {
                 $errors{black_listed} = 1
                   if $self->{lh}->check_for_double_email(
                     -Email => $email,
@@ -139,7 +139,7 @@ sub subscription_check {
         }
     }
 
-    if ( $args->{ -type } ne 'white_list' ) {
+    if ( $args->{-type} ne 'white_list' ) {
         if ( !$skip{not_white_listed} ) {
 
             if ( $ls->param('enable_white_list') == 1 ) {
@@ -153,23 +153,22 @@ sub subscription_check {
         }
     }
 
-    if (   $args->{ -type } ne 'black_list'
-        || $args->{ -type } ne 'authorized_senders' )
+    if (   $args->{-type} ne 'black_list'
+        || $args->{-type} ne 'authorized_senders'
+        || $args->{-type} ne 'moderators' )
     {
         if ( !$skip{over_subscription_quota} ) {
-			my $num_subscribers = $self->{lh}->num_subscribers; 
+            my $num_subscribers = $self->{lh}->num_subscribers;
             if ( $ls->param('use_subscription_quota') == 1 ) {
-                if ( ( $num_subscribers + 1 ) >=
-                    $ls->param('subscription_quota') )
-                {
+                if ( ( $num_subscribers + 1 ) >= $ls->param('subscription_quota') ) {
                     $errors{over_subscription_quota} = 1;
                 }
             }
-			elsif(defined($DADA::Config::SUBSCRIPTION_QUOTA)
-				&& $DADA::Config::SUBSCRIPTION_QUOTA > 0
-				&& $num_subscribers + 1 >= $DADA::Config::SUBSCRIPTION_QUOTA
-			){			
-				$errors{over_subscription_quota} = 1;
+            elsif (defined($DADA::Config::SUBSCRIPTION_QUOTA)
+                && $DADA::Config::SUBSCRIPTION_QUOTA > 0
+                && $num_subscribers + 1 >= $DADA::Config::SUBSCRIPTION_QUOTA )
+            {
+                $errors{over_subscription_quota} = 1;
             }
         }
     }

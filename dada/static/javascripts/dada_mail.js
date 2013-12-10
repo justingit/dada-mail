@@ -589,14 +589,50 @@ $(document).ready(function() {
 			plugins_bridge_test_pop3();
 		});
 
+		$(".change_pop3_password").live("click", function(event) {
+			plugins_bridge_show_change_pop3_password_form();
+			event.preventDefault();
+		});
+		$(".cancel_change_pop3_password").live("click", function(event) {
+			plugins_bridge_hide_change_pop3_password_form();
+			event.preventDefault();
+		});
+
+		
+		
+		
+		
+
+
+
 		$("body").on("click", '.plugins_bridge_manually_check_messages', function(event) {
 			event.preventDefault();
 			plugins_bridge_manually_check_messages();
+			admin_menu_notification('admin_menu_mailing_monitor_notification', 'admin_menu_sending_monitor');
 		});
 
 		$("body").on("click", '.list_email_setup', function(event) {
 			bridge_setup_list_email_type_params();
 		});
+		
+		
+		$("body").on("click", ".view_authorized_senders", function(event) {
+			event.preventDefault();
+			window.location.href = $("#s_program_url").val() + '?f=view_list;type=authorized_senders';
+		});
+		$("body").on("click", ".add_authorized_senders", function(event) {
+			event.preventDefault();
+			window.location.href = $("#s_program_url").val() + '?f=add;type=authorized_senders';
+		});
+		$("body").on("click", ".view_moderators", function(event) {
+			event.preventDefault();
+			window.location.href = $("#s_program_url").val() + '?f=view_list;type=moderators';
+		});
+		$("body").on("click", ".add_moderators", function(event) {
+			event.preventDefault();
+			window.location.href = $("#s_program_url").val() + '?f=add;type=moderators';
+		});
+		
 
 
 
@@ -1754,6 +1790,21 @@ function plugins_bridge_manually_check_messages() {
 		}
 	});
 }
+
+function plugins_bridge_show_change_pop3_password_form() {
+	$("#change_pop3_password_button").hide('blind');
+	$("#change_pop3_password_field").show('blind');
+}
+
+function plugins_bridge_hide_change_pop3_password_form() {
+	$("#discussion_pop_password").val('');
+	$("#change_pop3_password_field").hide('blind');
+	$("#change_pop3_password_button").show('blind');
+	
+}
+
+
+
 
 // Plugins >> Mailing Monitor 
 

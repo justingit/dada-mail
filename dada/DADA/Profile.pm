@@ -463,6 +463,7 @@ sub subscribed_to {
 			                  black_list         => 'Black Listed',
 			                  white_list         => 'White Listed', # White listed isn't working, no?
 			                  authorized_senders => 'Authorized Senders',
+			                  moderators         => 'Moderators',
 			                  sub_request_list   => 'Subscription Requests',
 							  bounced_list       => 'Bouncing Addresses',
 			);

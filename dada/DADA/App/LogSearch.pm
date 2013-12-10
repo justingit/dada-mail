@@ -228,6 +228,7 @@ sub log_line_report {
         list               => 'Subscribers',
         black_list         => 'Black Listed',
         authorized_senders => 'Authorized Senders',
+        moderators         => 'Moderators',
         white_list         => 'White Listed',
         sub_request_list   => 'Subscription Requests',
         bounced_list       => 'Bouncing Addresses',

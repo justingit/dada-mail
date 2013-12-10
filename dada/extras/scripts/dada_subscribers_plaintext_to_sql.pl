@@ -59,8 +59,7 @@ for my $list(DADA::App::Guts::available_lists()){
 	
 	print "\tworking on list: '$list'...\n";
 	
-	#for my $sublist('list', 'black_list', 'authorized_senders'){
-	for my $sublist('list', 'black_list', 'white_list', 'authorized_senders'){
+	for my $sublist(qw(list black_list white_list authorized_senders moderators)){
 
 		my $sublist_filename = $DADA::Config::FILES . '/' . $list . '.' . $sublist; 
 		

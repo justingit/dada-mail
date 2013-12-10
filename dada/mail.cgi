@@ -162,6 +162,7 @@ my %list_types = (
     black_list         => 'Black Listed',
     white_list         => 'White Listed',            # White listed isn't working, no?
     authorized_senders => 'Authorized Senders',
+    moderators         => 'Moderators',
     sub_request_list   => 'Subscription Requests',
     bounced_list       => 'Bouncing Addresses',
 );
@@ -3418,7 +3419,8 @@ sub view_list {
                     black_list_subscribers_num => commify( $lh->num_subscribers( { -type => 'black_list' } ) ),
                     white_list_subscribers_num => commify( $lh->num_subscribers( { -type => 'white_list' } ) ),
                     authorized_senders_num     => commify( $lh->num_subscribers( { -type => 'authorized_senders' } ) ),
-                    sub_request_list_subscribers_num =>
+                    moderators_num             => commify( $lh->num_subscribers( { -type => 'moderators' } ) ),
+					sub_request_list_subscribers_num =>
                       commify( $lh->num_subscribers( { -type => 'sub_request_list' } ) ),
                     bounced_list_num => commify( $lh->num_subscribers( { -type => 'bounced_list' } ) ),
                 },
@@ -3910,6 +3912,7 @@ sub membership {
             black_list         => 1,
             white_list         => 1,
             authorized_senders => 1,
+            moderators         => 1,
         };
 
         # Except when, it's already a part of that sublist:
@@ -3940,8 +3943,14 @@ sub membership {
         }
         else {
             delete( $add_to->{authorized_senders} );
+        }
+        # if Moderators isn't active, well, let's not allow to be added:
+        if ( $ls->param('enable_moderation') == 1 ) {
 
-            #$add_list_types{authorized_senders} .= ' (Currently Disabled)';
+            #...
+        }
+        else {
+            delete( $add_to->{moderators} );
         }
 
         # Same with the white list
@@ -3981,7 +3990,7 @@ sub membership {
         my $member_of   = [];
         my $remove_from = [];
         foreach (%$subscribed_to_lt) {
-            if ( $_ =~ m/^(list|black_list|white_list|authorized_senders|bounced_list)$/ ) {
+            if ( $_ =~ m/^(list|black_list|white_list|authorized_senders|moderators|bounced_list)$/ ) {
                 push( @$member_of, { type => $_, type_title => $list_types{$_} } );
                 push( @$remove_from, $_ );
             }
@@ -4087,6 +4096,7 @@ sub validate_update_email {
         list               => 'Subscribers',
         black_list         => 'Black Listed',
         authorized_senders => 'Authorized Senders',
+        moderators         => 'Moderators',
         white_list         => 'White Listed',
         sub_request_list   => 'Subscription Requests',
         bounced_list       => 'Bouncing Addresses',
@@ -4142,7 +4152,7 @@ sub validate_update_email {
                     $lh->member_of(
                         {
                             -email => $email,
-                            -types => [ qw(list black_list white_list authorized_senders) ],
+                            -types => [ qw(list black_list white_list authorized_senders moderators) ],
                         }
                     )
                 }
@@ -4271,7 +4281,7 @@ sub also_member_of {
     my @also_subscribed_to = $lh->also_subscribed_to(
         {
             -email => $email,
-            -types => [qw(list black_list white_list authorized_senders)],
+            -types => [qw(list black_list white_list authorized_senders moderators)],
         }
     );
     if ( scalar @also_subscribed_to > 0 ) {
@@ -4307,7 +4317,7 @@ sub validate_remove_email {
             my @also_subscribed_to = $lh->also_subscribed_to(
                 {
                     -email => $email,
-                    -types => [qw(list black_list white_list authorized_senders)],
+                    -types => [qw(list black_list white_list authorized_senders moderators)],
                 }
             );
             @lists = ( @lists, @also_subscribed_to );
@@ -4325,7 +4335,7 @@ sub validate_remove_email {
                     $tmp_lh->member_of(
                         {
                             -email => $email,
-                            -types => [ qw(list black_list white_list authorized_senders) ],
+                            -types => [ qw(list black_list white_list authorized_senders moderators) ],
                         }
                     )
                 }
@@ -4860,6 +4870,7 @@ sub add {
                     black_list_subscribers_num => $lh->num_subscribers( { -type => 'black_list' } ),
                     white_list_subscribers_num => $lh->num_subscribers( { -type => 'white_list' } ),
                     authorized_senders_num     => $lh->num_subscribers( { -type => 'authorized_senders' } ),
+                    moderators_num             => $lh->num_subscribers( { -type => 'moderators' } ),
                     bounced_list_num           => $lh->num_subscribers( { -type => 'bounced_list' } ),
 
                     fields => $fields,
@@ -5365,7 +5376,8 @@ sub delete_email {
                     list_type_isa_black_list => ( $type eq 'black_list' ) ? 1
                     : 0,
                     list_type_isa_authorized_senders => ( $type eq 'authorized_senders' ) ? 1 : 0,
-                    list_type_isa_white_list => ( $type eq 'white_list' ) ? 1
+                    list_type_isa_moderators         => ( $type eq 'moderators' )         ? 1 : 0,
+                    list_type_isa_white_list         => ( $type eq 'white_list' )         ? 1
                     : 0,
                     type                       => $type,
                     type_title                 => $type_title,
@@ -5374,6 +5386,7 @@ sub delete_email {
                     black_list_subscribers_num => $lh->num_subscribers( { -type => 'black_list' } ),
                     white_list_subscribers_num => $lh->num_subscribers( { -type => 'white_list' } ),
                     authorized_senders_num     => $lh->num_subscribers( { -type => 'authorized_senders' } ),
+                    moderators_num             => $lh->num_subscribers( { -type => 'moderators' } ),
                 },
                 -list_settings_vars_param => {
                     -list   => $list,
