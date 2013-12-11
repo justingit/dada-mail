@@ -519,7 +519,7 @@ General
     </label>
     <br />
 	Discussion List messages will be sent as the List Owner, on behalf of List Members. 
-	This may help 
+	<!-- (huh?) This may help -->
    </td>
   </tr>
 
@@ -718,7 +718,7 @@ General
  </table> 
 
 	<div class="buttonfloat"> 
-	  <input type="button"  class="processing view_moderators" value="View Moderators (<!-- tmpl_var moderators_count -->)" <!-- tmpl_unless list_settings.enable_moderation -->disabled="disabled"<!-- /tmpl_unless --> />
+	  <input type="button"  class="processing view_moderators" value="View Moderators (<!-- tmpl_var moderators_count -->)"  />
 	  <input type="button" class="processing add_moderators" value="Add Moderatrs" <!-- tmpl_unless list_settings.enable_moderation -->disabled="disabled"<!-- /tmpl_unless --> />
 	 </div> 
 	 <div class="floatclear"></div> 
@@ -744,7 +744,7 @@ General
 		</p>
 
 			<div class="buttonfloat"> 
-			  <input type="button"  class="processing view_authorized_senders" value="View Authorized Senders (<!-- tmpl_var authorized_senders_count -->)" <!-- tmpl_unless list_settings.enable_authorized_sending -->disabled="disabled"<!-- /tmpl_unless --> />
+			  <input type="button"  class="processing view_authorized_senders" value="View Authorized Senders (<!-- tmpl_var authorized_senders_count -->)" disabled="disabled" />
 			  <input type="button" class="processing add_authorized_senders" value="Add Authorized Senders" <!-- tmpl_unless list_settings.enable_authorized_sending -->disabled="disabled"<!-- /tmpl_unless --> />
 			 </div> 
 			 <div class="floatclear"></div> 
