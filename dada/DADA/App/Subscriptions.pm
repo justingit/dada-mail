@@ -1883,8 +1883,8 @@ sub fancy_data {
 	}
 
 	if($args->{-type} eq 'json') { 
-		require JSON::PP;
-	    my $json = JSON::PP->new->allow_nonref;
+		require JSON;
+	    my $json = JSON->new->allow_nonref;
 	    my $data_back = $json->pretty->encode($return);
 	    return $data_back;
 	}

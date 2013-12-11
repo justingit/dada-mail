@@ -1057,8 +1057,8 @@ sub save_as_draft {
 
     # warn '$saved_draft_id:' . $saved_draft_id;
 
-    require JSON::PP;
-    my $json = JSON::PP->new->allow_nonref;
+    require JSON;
+    my $json = JSON->new->allow_nonref;
     my $return = { id => $saved_draft_id };
     print $q->header(
         '-Cache-Control' => 'no-cache, must-revalidate',

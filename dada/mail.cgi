@@ -3481,8 +3481,8 @@ sub search_list_auto_complete {
         push( @$r, { 'email' => $result->{email} } );
     }
 
-    require JSON::PP;
-    my $json = JSON::PP->new->allow_nonref;
+    require JSON;
+    my $json = JSON->new->allow_nonref;
     print $q->header('application/json');
     print $json->encode($r);
 
@@ -4287,8 +4287,8 @@ sub also_member_of {
     if ( scalar @also_subscribed_to > 0 ) {
         $mto = 1;
     }
-    require JSON::PP;
-    my $json = JSON::PP->new->allow_nonref;
+    require JSON;
+    my $json = JSON->new->allow_nonref;
     print $q->header('application/json');
     print $json->encode( { also_member_of => int($mto), } );
 
@@ -4893,8 +4893,8 @@ sub add {
 
 sub check_status {
 
-    require JSON::PP;
-    my $json = JSON::PP->new->allow_nonref;
+    require JSON;
+    my $json = JSON->new->allow_nonref;
 
     my $filename = $q->param('new_email_file');
     $filename =~ s{^(.*)\/}{};
@@ -4903,7 +4903,7 @@ sub check_status {
 
     if ( !-e $DADA::Config::TMP . '/' . $filename . '-meta.txt' ) {
         warn "no meta file at: " . $DADA::Config::TMP . '/' . $filename . '-meta.txt';
-        my $json = JSON::PP->new->allow_nonref;
+        my $json = JSON->new->allow_nonref;
         print $q->header('application/json');
         print $json->encode( { percent => 0, content_length => 0, bytes_read => 0 } );
     }
@@ -4920,7 +4920,7 @@ sub check_status {
         if ( $per == 99 ) { $per = 100 }
         close($META);
 
-        my $json = JSON::PP->new->allow_nonref;
+        my $json = JSON->new->allow_nonref;
         print $q->header('application/json');
         print $json->encode(
             {
@@ -7665,8 +7665,8 @@ sub subscribe {
 
 sub restful_subscribe {
 
-    require JSON::PP;
-    my $json = JSON::PP->new->allow_nonref;
+    require JSON;
+    my $json = JSON->new->allow_nonref;
     if ( !$q->content_type || $q->content_type =~ m/text\/html/ ) {
 
         # RTFM!
