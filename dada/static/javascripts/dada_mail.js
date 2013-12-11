@@ -832,7 +832,7 @@ function admin_menu_notification(flavor, target_class) {
 					$('.' + target_class + '_notification').remove();
 				}
 				//console.log('update! ' + target_class); 
-				$('.' + target_class).append('<span class="' + target_class + '_notification"> ' + content + '</span>');
+				$('#' + target_class).append('<span class="' + target_class + '_notification"> ' + content + '</span>');
 			});
 			if (no_loop != 1) {
 				setTimeout(
