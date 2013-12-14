@@ -831,11 +831,7 @@ sub send {
 				else { 
 					# This is against RFC
 					$fields{'Reply-To'} = $formatted_disc_email; 
-				}
-				
-				# rewriting the From: header...
-				$fields{From} = $self->_pp($fields{From}); 
-
+				}				
             }
            			
 			%fields = $self->_massage_fields_for_amazon_ses(
@@ -2968,32 +2964,7 @@ sub _verp {
         
 }
 
-sub _pp {
 
-    my $self = shift;
-    my $from = shift;
-
-    require Email::Address;
-    require MIME::EncWords;
-
-    my $a = ( Email::Address->parse($from) )[0]->address;
-    $a =~ s/\@/ _at_ /;
-    my $p = ( Email::Address->parse($from) )[0]->phrase;
-
-    my $new_from = Email::Address->new();
-
-    $new_from->address( $self->{ls}->param('list_owner_email') );
-    $new_from->phrase(
-        MIME::EncWords::encode_mimewords(
-            $p . ' p.p. ' . $self->{ls}->param('list_name'),
-            Encoding => 'Q',
-            Charset  => $self->{ls}->param('charset_value'),
-        )
-    );
-    $new_from->comment( '(' . $a . ')' );
-    return $new_from->format;
-
-}
 
 
 sub _mail_merge {

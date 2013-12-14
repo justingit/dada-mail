@@ -777,6 +777,8 @@ sub cgi_default {
     my %bridge_settings_defaults = (
         disable_discussion_sending                 => 0,
         group_list                                 => 0,
+		group_list_pp_mode                         => 0, 
+		group_list_pp_mode_from_phrase             => undef, 
         prefix_list_name_to_subject                => 0,
         no_prefix_list_name_to_subject_in_archives => 0,
         discussion_pop_email                       => undef,
@@ -826,7 +828,7 @@ sub cgi_default {
 
 		my $discussion_pop_password = $q->param('discussion_pop_password') || undef; 
 		
-		if(defined($discussion_pop_password)) { 	    	
+		if(defined($discussion_pop_password)) {
 			$q->param(
 			    'discussion_pop_password',
 			    DADA::Security::Password::cipher_encrypt(

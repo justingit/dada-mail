@@ -921,8 +921,23 @@ sub _format_headers {
         if ( $entity->head->count('Bcc') ) {
             $entity->head->delete('Bcc');
         }
+		
     }
-
+	
+	if (   $self->mass_mailing == 1
+        && $self->{ls}->param('group_list') == 1
+        && defined( $self->{ls}->param('discussion_pop_email') ) 
+        && $self->{ls}->param('group_list_pp_mode') == 1)
+    {
+		my $og_from = $entity->head->get('From', 0);
+		$entity->head->delete('From');
+        $entity->head->add( 'From', safely_encode($self->_pp($og_from)) );
+	}
+	else { 
+		"no pp mode!"; 
+	}
+	
+	
     $entity->head->delete('Message-ID');
 
     # If there ain't a TO: header, add one:
@@ -985,6 +1000,50 @@ sub _format_headers {
     return $entity;
 
 }
+
+
+sub _pp {
+
+    my $self = shift;
+    my $from = shift;
+
+    require Email::Address;
+    require MIME::EncWords;
+	require DADA::Template::Widgets;
+
+    my $a = ( Email::Address->parse($from) )[0]->address;
+    $a =~ s/\@/ _at_ /;
+    my $p = ( Email::Address->parse($from) )[0]->phrase;
+
+    my $d          = $self->{ls}->param('group_list_pp_mode_from_phrase');
+    my $new_phrase = DADA::Template::Widgets::screen(
+		{ 
+	        -data                     => \$d,
+	        -expr                     => 1,
+	        -vars                     => { original_from_phrase => $p, },
+	        -list_settings_vars_param => {
+	            -list   => $self->{ls}->param('list'),
+	            -dot_it => 1,
+	        },
+		}
+    );
+    my $new_from = Email::Address->new();
+
+    $new_from->address( $self->{ls}->param('list_owner_email') );
+    $new_from->phrase(
+        MIME::EncWords::encode_mimewords(
+            $new_phrase,
+            Encoding => 'Q',
+            Charset  => $self->{ls}->param('charset_value'),
+        )
+    );
+    $new_from->comment( '(' . $a . ')' );
+    return $new_from->format;
+
+}
+
+
+
 
 
 

@@ -514,12 +514,16 @@ General
     <input name="group_list_pp_mode" id="group_list_pp_mode" type="checkbox" value="1" <!--tmpl_if list_settings.group_list_pp_mode -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td>
-    <label for="discussion_template_defang">
+    <label for="group_list_pp_mode">
 	Send message, &quot;On Behalf Of&quot; (p.p. mode)
     </label>
     <br />
-	Discussion List messages will be sent as the List Owner, on behalf of List Members. 
-	<!-- (huh?) This may help -->
+		Discussion List messages will be sent as the List Owner, on behalf of List Members. 
+	</p>
+	<p>
+		<label for="group_list_pp_mode_from_phrase">From: header phrase:</label>
+		<input type="text" class="midi" name="group_list_pp_mode_from_phrase" id="group_list_pp_mode_from_phrase" value="<!-- tmpl_var list_settings.group_list_pp_mode_from_phrase -->" />
+	</p>
    </td>
   </tr>
 
