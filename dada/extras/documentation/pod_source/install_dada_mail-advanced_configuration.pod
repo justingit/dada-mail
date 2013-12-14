@@ -124,6 +124,14 @@ The Data Cache caches mostly JSON data created by Dada Mail for the graphs and c
 
 B<Config Variable:> C<$DATA_CACHE>
 
+=head2 Configure Debugging
+
+Dada Mail's log tracing and debugging options can be configured in this section. Tracing writes extra lines to your error log, in an attempt to provide extra information about the workings of Dada Mail, that you can then go through, to make sure the app is working as it's supposed to. 
+
+We don't suggest keeping any of these debugging settings enabled for production use, as your error log will grow fairly large in size.
+
+For more information on what each option enables, see the section on the, C<$DEBUG_TRACE> and C<%CPAN_DEBUG_SETTINGS> variables, in B<Advanced Error Logging and Reporting>: L<http://dadamailproject.com/d/FAQ-errors.pod.html#advanced_error_logging_and_reporting>
+
 =head2 Configure Global Template Options 
 
 Global Template Options allow you to set a B<Global>, user-facing template. That's the template that's shown for basically anything that's not the Admin List Control Panel. 
