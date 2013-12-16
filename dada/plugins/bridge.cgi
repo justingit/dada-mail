@@ -4254,7 +4254,7 @@ If they are present, remove them.
 You can then configure the plugin variables on these lines: 
 
 	Bridge => {
-
+	
 		Plugin_Name                         => undef,
 		Plugin_URL                          => undef,
 		Allow_Manual_Run                    => undef,
@@ -4267,7 +4267,7 @@ You can then configure the plugin variables on these lines:
 		Enable_POP3_File_Locking            => undef,
 		Check_List_Owner_Return_Path_Header => undef,
 		Check_Multiple_Return_Path_Headers  => undef,
-
+	
 	},
 
 =head2 Plugin_Name
