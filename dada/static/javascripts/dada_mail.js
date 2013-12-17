@@ -139,9 +139,12 @@ $(document).ready(function() {
 			var fid = 'mass_mailing';
 
 			if ($("#using_ckeditor").length) {
-				// Strange you have to do this, but, you do: 
 				CKEDITOR.instances['html_message_body'].updateElement();
 			}
+			else if($("#using_tinymce").length) { 
+				tinyMCE.triggerSave();
+			}
+			
 			var itsatest = $(this).hasClass("justatest");
 			if (sendMailingListMessage(fid, itsatest) === true) {
 				if($("#f").val() != 'list_invite') { 
@@ -864,6 +867,16 @@ function save_draft(async) {
 	var r = false; 
 	
     /* alert($("#mass_mailing").serialize() + '&process=save_as_draft'); */
+
+
+	if ($("#using_ckeditor").length) {
+		CKEDITOR.instances['html_message_body'].updateElement();
+	}
+	else if($("#using_tinymce").length) { 
+		tinyMCE.triggerSave();
+	}
+
+
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
 		type: "POST",
@@ -891,6 +904,14 @@ function auto_save_as_draft() {
 	if($("#draft_enabled").val() === 0){ 
 		return; 
 	}
+	
+	if ($("#using_ckeditor").length) {
+		CKEDITOR.instances['html_message_body'].updateElement();
+	}
+	else if($("#using_tinymce").length) { 
+		tinyMCE.triggerSave();
+	}
+	
 	var r = 60 * 1000; // Every 1 minute. 
 	var refresh_loop = function(no_loop) {
 		$('#draft_notice .alert').text('auto-saving...'); 
