@@ -319,7 +319,6 @@ sub cl_run {
 		'install_wysiwyg_editors!',
 		'wysiwyg_editor_install_ckeditor!',
 		'wysiwyg_editor_install_tiny_mce!',
-		'wysiwyg_editor_install_fckeditor!',
 		'help',
     );
 
@@ -844,8 +843,7 @@ sub grab_former_config_vals {
 	
 	# WYSIWYG Editors 
 	# Kinda gotta guess on this one, 
-	if($BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{fckeditor}->{enabled} == 1 
-	|| $BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{enabled} == 1 
+	if($BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{enabled} == 1 
 	|| $BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{enabled} == 1 
 	){ 
 		$local_q->param('install_wysiwyg_editors', 1); 
@@ -854,7 +852,7 @@ sub grab_former_config_vals {
 		$local_q->param('install_wysiwyg_editors', 0); 
 	}
 		
-	for my $editor(qw(ckeditor fckeditor tiny_mce)){ 
+	for my $editor(qw(ckeditor tiny_mce)){ 
 		# And then, individual: 
 		if($BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{$editor}->{enabled} == 1){ 
 			$local_q->param('wysiwyg_editor_install_' . $editor, 1); 
@@ -2251,9 +2249,6 @@ sub install_wysiwyg_editors {
 	}
 
 	my %tmpl_vars = (
-		fckeditor_enabled => 0, 
-		fckeditor_url     => '', 
-		
 		ckeditor_enabled  => 0, 
 		ckeditor_url      => '', 
 		
@@ -2268,11 +2263,6 @@ sub install_wysiwyg_editors {
 		installer_mkdir(make_safer($support_files_dir_path . '/' . $Support_Files_Dir_Name), $DADA::Config::DIR_CHMOD);
 	}
 	
-	if($q->param('wysiwyg_editor_install_fckeditor') == 1){ 
-		install_and_configure_fckeditor($args); 
-		$tmpl_vars{i_fckeditor_enabled} = 1; 
-		$tmpl_vars{i_fckeditor_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/fckeditor';
-	}
 	if($q->param('wysiwyg_editor_install_ckeditor') == 1){ 
 		install_and_configure_ckeditor($args); 
 		$tmpl_vars{i_ckeditor_enabled} = 1; 
@@ -2391,16 +2381,8 @@ sub install_missing_CPAN_modules {
 }
 
 
-sub install_and_configure_fckeditor { 
-	my ($args) = @_; 
-	my $install_path = $q->param('support_files_dir_path') . '/' . $Support_Files_Dir_Name; 
-	my $source_package = make_safer('../extras/packages/fckeditor'); 
-	my $target_loc     = make_safer($install_path . '/fckeditor');
-	if(-d $target_loc){
-		backup_dir($target_loc);	
-	}
-	installer_dircopy($source_package, $target_loc); 
-}
+
+
 sub install_and_configure_ckeditor { 
 	my ($args) = @_; 
 	my $install_path = $q->param('support_files_dir_path') . '/' . $Support_Files_Dir_Name; 
@@ -2433,31 +2415,6 @@ sub install_and_configure_kcfinder {
 
 	my $support_files_dir_url = $q->param('support_files_dir_url'); 
 	
-	if($q->param('wysiwyg_editor_install_fckeditor') == 1){ 
-		my $fckeditor_config_js = DADA::Template::Widgets::screen(
-	        {
-	            -screen => 'fckconfig_js.tmpl',
-	            -vars   => {
-					
-					file_manager_browse_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/kcfinder/browse.php', 
-					file_manager_upload_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/kcfinder/upload.php', 
-										
-	            	support_files_dir_url   => $support_files_dir_url, 
-					Support_Files_Dir_Name  => $Support_Files_Dir_Name, 
-				}
-	        }
-	    );
-		my $fckeditor_config_loc = make_safer($install_path . '/fckeditor/dada_mail_config.js'); 
-		# Why 0777? 
-		installer_chmod(0777, $fckeditor_config_loc); 
-		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $fckeditor_config_loc or croak $!;
-		print $config_fh $fckeditor_config_js or croak $!;
-		close $config_fh or croak $!;
-		installer_chmod($DADA::Config::FILE_CHMOD, $fckeditor_config_loc);
-		undef $config_fh;
-	}
-	
-
 	if($q->param('wysiwyg_editor_install_ckeditor') == 1){ 
 		
 		# http://docs.cksource.com/CKEditor_3.x/Developers_Guide/Setting_Configurations
@@ -2556,31 +2513,6 @@ sub install_and_configure_core5_filemanager {
 	}
 	installer_dircopy($source_package, $target_loc); 	
 	my $support_files_dir_url = $q->param('support_files_dir_url'); 
-
-	if($q->param('wysiwyg_editor_install_fckeditor') == 1){ 
-		my $fckeditor_config_js = DADA::Template::Widgets::screen(
-	        {
-	            -screen => 'fckconfig_js.tmpl',
-	            -vars   => {
-
-					file_manager_browse_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/core5_filemanager/index.html', 
-					file_manager_upload_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/core5_filemanager/index.html', 
-
-	            	support_files_dir_url  => $support_files_dir_url, 
-					Support_Files_Dir_Name => $Support_Files_Dir_Name, 
-				}
-	        }
-	    );
-		my $fckeditor_config_loc = make_safer($install_path . '/fckeditor/dada_mail_config.js'); 
-		# Why 0777? 
-		installer_chmod(0777, $fckeditor_config_loc); 
-		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $fckeditor_config_loc or croak $!;
-		print $config_fh $fckeditor_config_js or croak $!;
-		close $config_fh or croak $!;
-		installer_chmod($DADA::Config::FILE_CHMOD, $fckeditor_config_loc);
-		undef $config_fh;
-	}
-	
 
 	if($q->param('wysiwyg_editor_install_ckeditor') == 1){ 
 		

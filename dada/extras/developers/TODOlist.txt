@@ -148,7 +148,7 @@ http://blog.sendgrid.com/permission-reminders-affect-email-deliverability/
 [x] No, the old style confirmation links won't work. I wanted to truly get this upgrade out asap - so I had to make decisions on what exactly was critical to push out. 
 	Old Style Confirmation Links now have a realistic fallback
 
-[] Move to CKeditor 4, removal of FCKeditor
+[x] Move to CKeditor 4, removal of FCKeditor
 [] Add timestamp field to dada_subscribers
 [] Ability to SEE other sublists...
 [ ] Ability to see other sublists (already invited) (Subscription Confirmation...) 
@@ -535,20 +535,6 @@ Hope this helps!
 	When I look and see what's up in the DB all the fields are NULL except, "email". Strange?!
 	[x] I was using the wrong API in the code - this effects the master branch as well. Hopefully, when we merge, 
 	 the problem will magically, "go away" (fix in this branch) 
-
-[-] CKeditor
-To replace, FCKeditor" 
-I just haven't done it, yet. Looks actually *simpler* than FCKeditor, but things like docs do need to be updated. 
---
-Here's some issues: 
-No File Upload! It's currently a $59 add-on. Boo! 
---
-Some tricky bits to remember: 
-There's a check for a, "blank" message - which is actually the default HTML skeleton that FCKeditor makes, this'll have to be tweaked. 
-There's also the code for editing an archived message. That'll also have to be tweaked. Probably. 
-	[-] No tweak necessary? CKEditor actually returns a blank form field, if you didn't type anything. Yay CKeditor! 
---
-Other than that, it may behoove us to be able to run both FCKeditor and CKeditor at the same time, if needed...? 
 
 
 

@@ -156,12 +156,6 @@ Dada Bridge is really missing digest support. Digests should be able to be autom
 
 =head2 Mass Mailing Enhancements
 
-=head2 Bundle FCKeditor/CKEditor within Dada Mail
-
-B<FCKEDITOR, CKEDITOR and Tiny MCE are now bundled with Dada Mail.>
-
-It may be possible to somehow bundle FCKeditor within Dada Mail, for a installation-free support. FCKeditor will, "just be available" 
-
 =head2 Smart Groups/Save Partial Sending Options
 
 Being able to save a set of your subscribers, based on a saved query of your Subscriber Profile Fields would be incredibly helpful to help keep track of various activities of your mailing list. 

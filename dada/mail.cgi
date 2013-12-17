@@ -7358,9 +7358,6 @@ sub list_cp_options {
                     ckeditor_enabled => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{enabled},
                     ckeditor_url     => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{url},
 
-                    fckeditor_enabled => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{fckeditor}->{enabled},
-                    fckeditor_url     => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{fckeditor}->{url},
-
                     tiny_mce_enabled => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{enabled},
                     tiny_mce_url     => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{url},
                     %wysiwyg_vars,
@@ -7379,8 +7376,6 @@ sub list_cp_options {
             {
                 -associate => $q,
                 -settings  => {
-
-                    #enable_fckeditor                 => 0,
                     use_wysiwyg_editor => 'none',
                 }
             }

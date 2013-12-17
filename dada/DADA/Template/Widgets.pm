@@ -216,18 +216,11 @@ my %WYSIWYG_Vars = WYSIWG_Vars();
 
 sub WYSIWG_Vars { 
 	my %Vars = (
-		FCKEDITOR_URL => undef, 
 		CKEDITOR_URL  => undef, 
 		TINY_MCE_URL  => undef, 
 	); 
 	# And test that I can get to the URL - our that at least it's a valid URL... 
 	
-	if(    $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{fckeditor}->{enabled} == 1 
-		&& defined($DADA::Config::WYSIWYG_EDITOR_OPTIONS->{fckeditor}->{url}) 
-		&& isa_url($DADA::Config::WYSIWYG_EDITOR_OPTIONS->{fckeditor}->{url})
-	){ 
-		$Vars{FCKEDITOR_URL} = $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{fckeditor}->{url}; 
-	}
 	if($DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{enabled} == 1 
 		&& defined($DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{url})
 		&& isa_url($DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{url})
@@ -258,9 +251,6 @@ sub make_wysiwyg_vars {
 	 
 	if($ls->param('use_wysiwyg_editor') eq 'ckeditor' && defined($WYSIWG_Vars{CKEDITOR_URL})) { 
 		$vars{using_ckeditor} = 1; 
-	}
-	elsif($ls->param('use_wysiwyg_editor') eq 'fckeditor' && defined($WYSIWG_Vars{FCKEDITOR_URL})) { 
-		$vars{using_fckeditor} = 1; 		
 	}
 	elsif($ls->param('use_wysiwyg_editor') eq 'tiny_mce' && defined($WYSIWG_Vars{TINY_MCE_URL})) { 
 		$vars{using_tiny_mce} = 1; 		

@@ -350,7 +350,7 @@ Uncomment the lines, by taking off the, "#"'s:
 
 Save your C<.dada_config> file.
 
-=head1 Default Text and CKeditor/Tiny MCE/FCKeditor
+=head1 Default Text and CKeditor/TinyMCE
 
 Setting default text/copy for the HTML message will work when using one of the WYSIWYG editors that Dada Mail 
 supports. Some guidelines: 
@@ -381,7 +381,7 @@ Full HTML documents, like so:
 	 </body> 
 	</html> 
 
-May have everything, except the content in the body removed by CKeditor/Tiny MCE/FCKeditor. That may mean that any styles 
+May have everything, except the content in the body removed by CKeditor/TinyMCE. That may mean that any styles 
 that are saved in the head of the document will be lost. 
 
 =back

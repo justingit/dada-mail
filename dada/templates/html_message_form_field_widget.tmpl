@@ -1,19 +1,4 @@
 <!-- begin html_message_form_field_widget.tmpl --> 
-	<!-- tmpl_if using_fckeditor --> 
-			    <script type="text/javascript">   
-			    	<!--
-			        var oFCKeditor                                = new FCKeditor('html_message_body') ;
-					oFCKeditor.BasePath                           = "<!-- tmpl_var FCKEDITOR_URL -->/";
-				    oFCKeditor.Config['FullPage']                 = true;
-				    oFCKeditor.Height                             = 450;
-					oFCKeditor.Config["CustomConfigurationsPath"] = "<!-- tmpl_var FCKEDITOR_URL -->/dada_mail_config.js"; 
-					<!-- tmpl_if html_message_body_content_js_escaped --> 
-						oFCKeditor.Value                          = "<!-- tmpl_var html_message_body_content_js_escaped -->";
-					<!-- /tmpl_if --> 
-			        oFCKeditor.Create() ;
-			        //-->
-				</script> 
-	<!-- /tmpl_if --> 
 	<!-- tmpl_if using_ckeditor --> 
 		<div id="using_ckeditor"></div> 
     	<textarea name="html_message_body" cols="80" rows="30" id="html_message_body" class="html_message_body"><!-- tmpl_var html_message_body_content  escape="HTML" --></textarea>
@@ -23,6 +8,7 @@
 		<div id="using_tinymce"></div> 
 		<textarea name="html_message_body" cols="80" rows="30" id="html_message_body" class="html_message_body"><!-- tmpl_var html_message_body_content  escape="HTML" --></textarea>					
 	<!-- /tmpl_if --> 
+
 	<!-- tmpl_if using_no_wysiwyg_editor -->
 		<textarea name="html_message_body" cols="80" rows="30" id="html_message_body"><!-- tmpl_var html_message_body_content  escape="HTML" --></textarea>
 	<!-- /tmpl_if --> 

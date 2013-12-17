@@ -2475,62 +2475,39 @@ sub email_template {
 
 
 
-sub pre_process_msg_strings { 
-	my $text_ver = shift || undef; 
-	my $html_ver = shift || undef; 
-	
-	
-	if($text_ver){ 
-	    $text_ver =~ s/\r\n/\n/g;
-	}   
+sub pre_process_msg_strings {
 
-	if($html_ver){ 
-   		$html_ver    =~ s/\r\n/\n/g;
-	}               
+    my $text_ver = shift || undef;
+    my $html_ver = shift || undef;
 
-	if(defined($html_ver)){ 
-		$html_ver         =~ s/^\n+//o; 
-		my $orig_html_ver = $html_ver; 
-		
-		# DEV: Hmm. Make sure my indenting doesn't break this... 
-		my $fckeditor_blank = strip(q{<html dir="ltr">
-	    <head>
-	        <title></title>
-	    </head>
-	    <body>
-	        <p>&nbsp;</p>
-	    </body>
-	</html>});
+    if ($text_ver) {
+        $text_ver =~ s/\r\n/\n/g;
+    }
 
-		if($html_ver =~ m/$fckeditor_blank/){ 
-			undef $html_ver; 
-		}
-		else { 		
+    if ($html_ver) {
+        $html_ver =~ s/\r\n/\n/g;
+    }
 
-			$html_ver =~ s/(^\n<br \/>|^<br \/>|^<br \/>\n)//;
-			# convert_to_ascii is used here to simply strip out HTML tags, to
-			# see if anything is left, 
-			$html_ver = convert_to_ascii($html_ver); # what? what did I miss?
-			$html_ver = strip($html_ver); 
-			$html_ver =~ s/^\n+|\n+$//o;
+    if ( defined($html_ver) ) {
+        $html_ver =~ s/^\n+//o;
+        my $orig_html_ver = $html_ver;
 
-		}
-		if(length($html_ver) <= 1){ 
-			$html_ver = undef; 
-		}else{ 
-			$html_ver = $orig_html_ver;
-			undef $orig_html_ver; 
-		}
-	}
+        $html_ver =~ s/(^\n<br \/>|^<br \/>|^<br \/>\n)//;
 
-	if(! defined $html_ver && ! defined $text_ver) { 
-		# Got no text kludge...
-		#
-		# Why. Why why why?!
-		#$text_ver = "\n" 
-	}
-	
-	return($text_ver, $html_ver); 
+        # convert_to_ascii is used here to simply strip out HTML tags, to
+        # see if anything is left,
+        $html_ver = convert_to_ascii($html_ver);    # what? what did I miss?
+        $html_ver = strip($html_ver);
+        $html_ver =~ s/^\n+|\n+$//o;
+		if ( length($html_ver) <= 1 ) {
+	        $html_ver = undef;
+	    }
+	    else {
+	        $html_ver = $orig_html_ver;
+	        undef $orig_html_ver;
+	    }
+    }
+    return ( $text_ver, $html_ver );
 }
 
 sub DESTROY {
