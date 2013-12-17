@@ -1009,37 +1009,43 @@ sub _pp {
 
     require Email::Address;
     require MIME::EncWords;
-	require DADA::Template::Widgets;
+    require DADA::Template::Widgets;
 
     my $a = ( Email::Address->parse($from) )[0]->address;
-    $a =~ s/\@/ _at_ /;
-    my $p = ( Email::Address->parse($from) )[0]->phrase;
 
-    my $d          = $self->{ls}->param('group_list_pp_mode_from_phrase');
-    my $new_phrase = DADA::Template::Widgets::screen(
-		{ 
-	        -data                     => \$d,
-	        -expr                     => 1,
-	        -vars                     => { original_from_phrase => $p, },
-	        -list_settings_vars_param => {
-	            -list   => $self->{ls}->param('list'),
-	            -dot_it => 1,
-	        },
-		}
-    );
-    my $new_from = Email::Address->new();
+    if ( $a eq $self->{ls}->param('list_owner_email') ) {
 
-    $new_from->address( $self->{ls}->param('list_owner_email') );
-    $new_from->phrase(
-        MIME::EncWords::encode_mimewords(
-            $new_phrase,
-            Encoding => 'Q',
-            Charset  => $self->{ls}->param('charset_value'),
-        )
-    );
-    $new_from->comment( '(' . $a . ')' );
-    return $new_from->format;
+        # We don't have to "On Behalf Of" ourselves.
+        return $from;
+    }
+    else {
+        $a =~ s/\@/ _at_ /;
+        my $p          = ( Email::Address->parse($from) )[0]->phrase;
+        my $d          = $self->{ls}->param('group_list_pp_mode_from_phrase');
+        my $new_phrase = DADA::Template::Widgets::screen(
+            {
+                -data                     => \$d,
+                -expr                     => 1,
+                -vars                     => { original_from_phrase => $p, },
+                -list_settings_vars_param => {
+                    -list   => $self->{ls}->param('list'),
+                    -dot_it => 1,
+                },
+            }
+        );
 
+        my $new_from = Email::Address->new();
+        $new_from->address( $self->{ls}->param('list_owner_email') );
+        $new_from->phrase(
+            MIME::EncWords::encode_mimewords(
+                $new_phrase,
+                Encoding => 'Q',
+                Charset  => $self->{ls}->param('charset_value'),
+            )
+        );
+        $new_from->comment( '(' . $a . ')' );
+        return $new_from->format;
+    }
 }
 
 
