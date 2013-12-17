@@ -207,7 +207,7 @@ Copies of the default configuration files are stored in Dada Mail as HTML::Templ
 
 =item * Tiny MCE: 
 
-I<dada/installer-disabled/templates/tiny_mce_config_js.tmpl>
+I<dada/installer-disabled/templates/tinymce_config_js.tmpl>
 
 =item * CKEditor
 
