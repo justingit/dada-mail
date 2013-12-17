@@ -2281,7 +2281,7 @@ sub install_wysiwyg_editors {
 	if($q->param('wysiwyg_editor_install_tiny_mce') == 1){ 
 		install_and_configure_tiny_mce($args); 
 		$tmpl_vars{i_tiny_mce_enabled} = 1; 
-		$tmpl_vars{i_tiny_mce_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name .'/tiny_mce';
+		$tmpl_vars{i_tiny_mce_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name .'/tinymce';
 	}
 	if($q->param('file_browser_install') eq 'kcfinder'){ 
 		install_and_configure_kcfinder($args); 
@@ -2414,8 +2414,8 @@ sub install_and_configure_ckeditor {
 sub install_and_configure_tiny_mce { 
 	my ($args) = @_; 
 	my $install_path = $q->param('support_files_dir_path') . '/' . $Support_Files_Dir_Name; 
-	my $source_package = make_safer('../extras/packages/tiny_mce'); 
-	my $target_loc     = make_safer($install_path . '/tiny_mce');
+	my $source_package = make_safer('../extras/packages/tinymce'); 
+	my $target_loc     = make_safer($install_path . '/tinymce');
 	if(-d $target_loc){
 		backup_dir($target_loc);	
 	}
@@ -2499,9 +2499,9 @@ sub install_and_configure_kcfinder {
 		
 		my $support_files_dir_url  = $q->param('support_files_dir_url');
 		
-		my $tiny_mce_config_js = DADA::Template::Widgets::screen(
+		my $tinymce_config_js = DADA::Template::Widgets::screen(
 	        {
-	            -screen => 'tiny_mce_config_js.tmpl',
+	            -screen => 'tinymce_config_js.tmpl',
 	            -vars   => {
 					file_manager_browse_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/kcfinder/browse.php', 
 	            	support_files_dir_url  => $support_files_dir_url, 
@@ -2510,12 +2510,12 @@ sub install_and_configure_kcfinder {
 				}
 	        }
 	    );
-		my $tiny_mce_config_loc = make_safer($install_path . '/tiny_mce/dada_mail_config.js'); 
-		installer_chmod(0777, $tiny_mce_config_loc); 
-		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $tiny_mce_config_loc or croak $!;
-		print $config_fh $tiny_mce_config_js or croak $!;
+		my $tinymce_config_loc = make_safer($install_path . '/tinymce/dada_mail_config.js'); 
+		installer_chmod(0777, $tinymce_config_loc); 
+		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $tinymce_config_loc or croak $!;
+		print $config_fh $tinymce_config_js or croak $!;
 		close $config_fh or croak $!;
-		installer_chmod($DADA::Config::FILE_CHMOD, $tiny_mce_config_loc);
+		installer_chmod($DADA::Config::FILE_CHMOD, $tinymce_config_loc);
 		undef $config_fh;
 		
 	}
@@ -2528,7 +2528,7 @@ sub install_and_configure_kcfinder {
         {
             -screen => 'kcfinder_config_php.tmpl',
             -vars   => {
-				i_tinyMCEPath => $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/tiny_mce',
+				i_tinyMCEPath => $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/tinymce',
 				i_sessionDir  => $sess_dir,
 			}
         }
@@ -2619,9 +2619,9 @@ sub install_and_configure_core5_filemanager {
 
 		my $support_files_dir_url  = $q->param('support_files_dir_url');
 		
-		my $tiny_mce_config_js = DADA::Template::Widgets::screen(
+		my $tinymce_config_js = DADA::Template::Widgets::screen(
 	        {
-	            -screen => 'tiny_mce_config_js.tmpl',
+	            -screen => 'tinymce_config_js.tmpl',
 	            -vars   => {
 					file_manager_browse_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/kcfinder/browse.php', 
 	            	support_files_dir_url  => $support_files_dir_url, 
@@ -2630,12 +2630,12 @@ sub install_and_configure_core5_filemanager {
 				}
 	        }
 	    );
-		my $tiny_mce_config_loc = make_safer($install_path . '/tiny_mce/dada_mail_config.js'); 
-		installer_chmod(0777, $tiny_mce_config_loc); 
-		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $tiny_mce_config_loc or croak $!;
-		print $config_fh $tiny_mce_config_js or croak $!;
+		my $tinymce_config_loc = make_safer($install_path . '/tinymce/dada_mail_config.js'); 
+		installer_chmod(0777, $tinymce_config_loc); 
+		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $tinymce_config_loc or croak $!;
+		print $config_fh $tinymce_config_js or croak $!;
 		close $config_fh or croak $!;
-		installer_chmod($DADA::Config::FILE_CHMOD, $tiny_mce_config_loc);
+		installer_chmod($DADA::Config::FILE_CHMOD, $tinymce_config_loc);
 		undef $config_fh;
 		
 	}
