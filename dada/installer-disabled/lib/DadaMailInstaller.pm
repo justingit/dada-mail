@@ -843,8 +843,10 @@ sub grab_former_config_vals {
 	
 	# WYSIWYG Editors 
 	# Kinda gotta guess on this one, 
-	if($BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{enabled} == 1 
-	|| $BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{enabled} == 1 
+	if($BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{enabled}        == 1 
+	|| $BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{enabled}        == 1 
+	|| $BootstrapConfig::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled}          == 1 
+	|| $BootstrapConfig::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1 
 	){ 
 		$local_q->param('install_wysiwyg_editors', 1); 
 	}
