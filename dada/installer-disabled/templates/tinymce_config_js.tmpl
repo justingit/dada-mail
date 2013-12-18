@@ -17,7 +17,7 @@
 	}
 <!-- /tmpl_if --> 
 
-<!-- tmpl_if core5_filemanager --> 
+<!-- tmpl_if core5_filemanager_enabled --> 
 
 	function openCore5_filemanager(field_name, url, type, win) { 
     
@@ -52,7 +52,7 @@ tinymce.init({
 <!-- tmpl_if kcfinder_enabled --> 
 	file_browser_callback           : "openKCFinder",
 <!-- /tmpl_if -->
-<!-- tmpl_if core5_filemanager --> 
+<!-- tmpl_if core5_filemanager_enabled --> 
 	file_browser_callback           : "openCore5_filemanager",
 <!-- /tmpl_if -->
 

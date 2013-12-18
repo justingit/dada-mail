@@ -2248,17 +2248,8 @@ sub install_wysiwyg_editors {
 		croak "Can't install WYSIWYG Editors, Directory, '$support_files_dir_path' does not exist!"; 
 	}
 
-	my %tmpl_vars = (
-		ckeditor_enabled  => 0, 
-		ckeditor_url      => '', 
-		
-		tiny_mce_enabled  => 0, 
-		tiny_mce_url      => '', 
-		
-		kcfinder_enabled  => 0, 
-		kcfinder_url      => '', 
-
-	); 
+	my %tmpl_vars = ();
+	 
 	if(! -d $support_files_dir_path . '/' . $Support_Files_Dir_Name){ 
 		installer_mkdir(make_safer($support_files_dir_path . '/' . $Support_Files_Dir_Name), $DADA::Config::DIR_CHMOD);
 	}
@@ -2428,8 +2419,8 @@ sub install_and_configure_kcfinder {
 	        {
 	            -screen => 'ckeditor_config_js.tmpl',
 	            -vars   => {
-					file_manager_browse_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/ckeditor/browse.php', 
-					file_manager_upload_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/ckeditor/upload.php', 
+					file_manager_browse_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/kcfinder/browse.php', 
+					file_manager_upload_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/kcfinder/upload.php', 
 	            	support_files_dir_url  => $support_files_dir_url, 
 					Support_Files_Dir_Name => $Support_Files_Dir_Name, 
 				}
@@ -2529,8 +2520,8 @@ sub install_and_configure_core5_filemanager {
 	            -vars   => {
 					file_manager_browse_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/core5_filemanager/index.html', 
 					file_manager_upload_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/core5_filemanager/index.html', 
-	            	support_files_dir_url  => $support_files_dir_url, 
-					Support_Files_Dir_Name => $Support_Files_Dir_Name, 
+	            	support_files_dir_url   => $support_files_dir_url, 
+					Support_Files_Dir_Name  => $Support_Files_Dir_Name, 
 				}
 	        }
 	    );
@@ -2555,10 +2546,10 @@ sub install_and_configure_core5_filemanager {
 	        {
 	            -screen => 'tinymce_config_js.tmpl',
 	            -vars   => {
-					file_manager_browse_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/kcfinder/browse.php', 
-	            	support_files_dir_url  => $support_files_dir_url, 
-					Support_Files_Dir_Name => $Support_Files_Dir_Name, 
-					kcfinder_enabled       => $kcfinder_enabled, 
+					file_manager_browse_url   => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/core5_filemanager/index.html', 
+	            	support_files_dir_url     => $support_files_dir_url, 
+					Support_Files_Dir_Name    => $Support_Files_Dir_Name, 
+					core5_filemanager_enabled => 1, 
 				}
 	        }
 	    );
