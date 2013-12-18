@@ -2264,6 +2264,10 @@ sub install_wysiwyg_editors {
 		$tmpl_vars{i_tiny_mce_enabled} = 1; 
 		$tmpl_vars{i_tiny_mce_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name .'/tinymce';
 	}
+	
+	
+	
+	
 	if($q->param('file_browser_install') eq 'kcfinder'){ 
 		install_and_configure_kcfinder($args); 
 		$tmpl_vars{i_kcfinder_enabled} = 1; 
@@ -2277,8 +2281,7 @@ sub install_wysiwyg_editors {
 		
 		if(! -d  $upload_dir){ 
 			# No need to backup this.
-			instal
-			ler_mkdir( $upload_dir, $DADA::Config::DIR_CHMOD );
+			installer_mkdir( $upload_dir, $DADA::Config::DIR_CHMOD );
 		}	
 	}
 	elsif($q->param('file_browser_install') eq 'core5_filemanager'){
@@ -2299,6 +2302,10 @@ sub install_wysiwyg_editors {
 		
 	}
 	
+	
+	
+	
+	
 	my $wysiwyg_options_snippet = DADA::Template::Widgets::screen(
         {
             -screen => 'wysiwyg_options_snippet.tmpl',
@@ -2307,7 +2314,7 @@ sub install_wysiwyg_editors {
             }
         }
     );
-	
+
     my $sm = quotemeta('# start cut for WYSIWYG Editor Options'); 
     my $em = quotemeta('# end cut for WYSIWYG Editor Options');
  
