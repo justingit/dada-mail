@@ -74,7 +74,7 @@ $(document).ready(function() {
 			event.preventDefault();
 			
 			if($("#kcfinder_enabled").val() == 1) { 
-				openKCFinder(this);
+				attachments_openKCFinder(this);
 			}else if($("#core5_filemanager_enabled").val() == 1){ 
 				browsecore5FileManager(this);
 			}
@@ -2860,7 +2860,7 @@ function removeSubscriberField(form_name) {
 
 }
 
-function openKCFinder(field) {
+function attachments_openKCFinder(field) {
     window.KCFinder = {
         callBack: function(url) {
 			var kcfinder_upload_url = escapeRegExp($("#kcfinder_upload_url").val() + '/'); 			
@@ -2903,11 +2903,10 @@ function opencore5FileManager(url, width, height) {
 	sOptions += ",height=" + height;
 	sOptions += ",left=" + iLeft;
 	sOptions += ",top=" + iTop;
-	oWindow = window.open(url, "BrowseWindow", sOptions);
+	oWindow = window.open(url + '?custom_function=SetAttachmentUrl', "BrowseWindow", sOptions);
 }
 
-function SetUrl(url, width, height, alt) {
-
+function SetAttachmentUrl(url, width, height, alt) {
 	var core5_filemanager_upload_url = escapeRegExp($("#core5_filemanager_upload_url").val() + '/');
 	core5_filemanager_upload_url + '/';
 	var re = new RegExp(core5_filemanager_upload_url, 'g');
@@ -2918,12 +2917,15 @@ function SetUrl(url, width, height, alt) {
 	$(field).html('<img src="' + $("#SUPPORT_FILES_URL").val() + '/static/images/attachment_icon.gif" />' + new_val);
 	$("#" + $(field).attr("data-attachment")).val(new_val);
 	$("#" + $(field).attr("data-attachment") + '_remove_button').show();
-
 	oWindow = null;
-
 } /* core5 FileManager */
 
 
+/*
+function SetUrl() { 
+	alert('here? SetUrl');
+}
+*/
 Date.prototype.format = function(format) //author: meizz
 {
   var o = {
