@@ -1,6 +1,6 @@
 =pod
 
-=head1 6.8.0 Beta 1
+=head1 6.8.0 Beta 2
 
 =head2 Features
 
@@ -15,6 +15,10 @@ WYSIWYG Editors and File Browsers in Dada Mail:
 L<http://dadamailproject.com/d/features-wysiwyg_editors.pod.html>
 
 We've added FileManager support to Dada Mail, as people were having trouble with KCFinder's php code. FileManager's connector (that we ship) is written in Perl, so if you can run Dada Mail, using FileManager should work equally well. 
+
+=head3 CKEditor Upgraded to v4.3
+
+=head3 TinyMCE Upgraded to v4.0.11
 
 =head3 Clickthrough Tracking: URLs in image maps tracked
 
@@ -31,6 +35,12 @@ B<Moderators> will now simply be a sublist of addresses that get sent out a conf
 =head3 Bridge: "On Behalf Of"; (p.p. mode) Support
 
 Discussion Messages may now be sent, "On Behalf Of" the original sender by the List Owner. This allows you to set up a discussion list with Amazon SES, which only allows messages from verified senders. You may now verify only your List Owner, and still have a discussion list. 
+
+=head2 Change 6.8.0
+
+=head3 FCKeditor Support Dropped
+
+With the upgrade of CKeditor, we've now dropped support fully for FCKeditor. FCKeditor has been listed as, "Deprecated" for over a year and during that time, it has been not been advised to be installed at all. 
 
 =head2 Bugfixes 6.8.0
 
