@@ -30,7 +30,6 @@ $(document).ready(function() {
 	if ($("#navcontainer").length) {
 		
 		var admin_menu_callbacks = $.Callbacks();
-		
 		admin_menu_callbacks.add(admin_menu_drafts_notification());
 		admin_menu_callbacks.add(admin_menu_sending_monitor_notification());
 		admin_menu_callbacks.add(admin_menu_subscriber_count_notification());
@@ -39,15 +38,21 @@ $(document).ready(function() {
 		admin_menu_callbacks.add(admin_menu_bounce_handler_notification());
 		admin_menu_callbacks.fire();
 		
-		
 		if($("#screen_meta").length) { 
 			var highlight_scrn = $("#screen_meta").attr("data-menu_highlight");
 			$( "#admin_menu_" + highlight_scrn ).addClass( "menu_selected" );
 		}
 		else { 
-			alert("needs a highlight_scrn"); 
+			/* alert("needs a highlight_scrn"); */
 		}
+	
+		$("body").on("click", "#navcontainer", function(event) {
+			$( "a" ).removeClass( "menu_selected" );
+		});
+		
 	}
+	
+	
 
 	//Mail Sending >> Send a Message 
 	if ($("#send_email_screen").length || $("#send_url_email").length || $("#list_invite").length) {
