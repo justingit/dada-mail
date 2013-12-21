@@ -2343,12 +2343,6 @@ sub install_missing_CPAN_modules {
 	if($@) { 
 		$has_JSON = 0; 
 	}
-	eval { 
-		require JSON::PP; 
-	};
-	if($@) { 
-		$has_JSON = 0; 
-	}
 	
 	if($has_JSON == 0) {
 		my $JSON_pm  = make_safer('../DADA/perllib/JSON.pm-remove_to_install');  
