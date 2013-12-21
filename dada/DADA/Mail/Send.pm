@@ -1056,7 +1056,7 @@ sub sending_preferences_test {
 		
     }
 
-	unlink($filename) or warn $!; 
+#	unlink($filename) or warn $!; 
 
 	$smtp_msg = ''; 
  	foreach(@munged_l){ 
@@ -1404,15 +1404,10 @@ sub mass_send {
        return; 
     }
 
-	my ($batch_sending_enabled, $batch_size, $batch_wait)  = $mailout->batch_params();
 
 	# how many messages get sent between batches? 
-	my $letters = 1; 
-	warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' $batch_size has been set to: ' . $batch_size
+	warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id
 	    if $t; 
-	$mailout->log('$batch_size has been set to: ' . $batch_size); 
-	
-	$letters = $batch_size;  # why am I making this its own variable?! # And why wouldn't it be defined?
 	
 		# we need to create a new file that has the subscribers and their pin 
 		# number. Those two things will be separated with a '::' so we can split 
@@ -1534,6 +1529,9 @@ sub mass_send {
 		
 			$mailout->update_last_access;
 			
+			
+			my ($batch_sending_enabled, $batch_size, $batch_wait)  = $mailout->batch_params();
+			my $letters                                            = $batch_size;
 			
 			# this is annoyingly complicated											
 					
@@ -2029,7 +2027,6 @@ sub mass_send {
 	                            }
                         
 	                        }  
-                        
                         
 	                        # and figure out where we are in this batch. 
 	                        $n_letters+=$letters;

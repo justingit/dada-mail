@@ -195,11 +195,6 @@ sub _sanity_test {
 
 
 sub batch_params {
-
-	# DEV: Another idea would be to change the batch speed of 
-	# SES sending by finding what ($SentLast24Hours - $Max24HourSend) is
-	# and slowing down batch sending (more time between batches), when that limit gets closer. 
-	# Rather than a complete shutdown of sending. Hmm! 
 	
     my $self = shift;
     my ($args) = @_;
@@ -229,8 +224,18 @@ sub batch_params {
             && $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/ ))
         && $amazon_ses_auto_batch_settings == 1
       )
-    {        if ( exists( $self->{_cache}->{batch_params} ) ) {
-            return @{ $self->{_cache}->{batch_params} };
+    {        
+	
+		if ( exists( $self->{_cache}->{batch_params} ) ) {
+			if(exists($self->{_cache}->{batch_params}->{cached_at})) {
+				if(($self->{_cache}->{batch_params}->{cached_at} + 600) < time) { 
+					return (
+						$self->{_cache}->{batch_params}->{enable_bulk_batching}, 
+						$self->{_cache}->{batch_params}->{batch_size}, 
+						$self->{_cache}->{batch_params}->{batch_wait}
+					); 
+				}
+			}
         }
     }
 
@@ -252,31 +257,27 @@ sub batch_params {
 	    my ($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats; 
         #                  0          10_000             5
 
-        #		$Max24HourSend = 100_000;
-        #		$MaxSendRate   = 5;
-
-# I kind of wonder what it is I should do about when it goes over the max per day,
-# Perhpas:
         if ( $SentLast24Hours >= $Max24HourSend ) {
             return ( $enable_bulk_batching, 0, 300, );
         }
 
-        if ( $Max24HourSend < 86_400 ) {
+		   $batch_wait = 1; 
+		my $percent_used = ((100 * $SentLast24Hours) / $Max24HourSend) / 100;
 
-            $batch_size = 1;
-            $batch_size = $batch_size * $MaxSendRate;    # 5
+		 $batch_size = $MaxSendRate - ($MaxSendRate * $percent_used); 
 
-            $batch_wait = 86_400 / $Max24HourSend;             # 8.64
-            $batch_wait = $batch_wait * $MaxSendRate;          # 8.64 * 5 = 43.2
-            $batch_wait = $batch_wait + ( $batch_wait * .10 ); # 38.8
-        }
-        else {
+		if($batch_size < 1.125) { 
 
-            $batch_size = $MaxSendRate;                        # 5
-            $batch_wait =
-              $Max24HourSend / 86_400;    # 100_000 / 86_400 = 1.1574...
-            $batch_wait = $batch_wait + ( $batch_wait * .10 );    # 38.8
-        }
+			$batch_size = $MaxSendRate;
+	        $batch_wait = 86400 / $Max24HourSend;             # 8.64
+	        $batch_wait = $batch_wait * $MaxSendRate;          # 8.64 * 5 = 43.2
+	        $batch_wait = $batch_wait + ( $batch_wait * .10 ); # 38.8
+
+			if($batch_wait / $batch_size > 1) {                   # 38.8 / 5
+				$batch_wait = $batch_wait / $batch_size;		  # 7.76
+				$batch_size = 1; 								  # 1; 
+			}
+		}
 
 		# This slows the batch settings down, if there's > 1 mailout going on
 		# at one time. 
@@ -321,15 +322,19 @@ sub batch_params {
 				}				
 			}
 		}		
-			
+					
         require POSIX;
-        my @return = (
-            $enable_bulk_batching,
-            POSIX::floor($batch_size),
-            POSIX::ceil($batch_wait),
-        );
-        $self->{_cache}->{batch_params} = [@return];
-        return @return;
+		$batch_size = POSIX::floor($batch_size),
+        $batch_wait = POSIX::ceil($batch_wait),
+
+        $self->{_cache}->{batch_params} = { 
+			enable_bulk_batching => $enable_bulk_batching, 
+			batch_size           => $batch_size, 
+			batch_wait           => $batch_wait, 
+			cached_at            => time, 
+		};
+
+        return ($enable_bulk_batching, $batch_size, $batch_wait);
 
     }
     else {

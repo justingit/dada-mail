@@ -626,7 +626,7 @@ $(document).ready(function() {
 			admin_menu_notification('admin_menu_mailing_monitor_notification', 'admin_menu_sending_monitor');
 		});
 
-		$("body").on("click", '.list_email_setup', function(event) {
+		$("body").on("click", '.bridge_settings', function(event) {
 			bridge_setup_list_email_type_params();
 		});
 		
@@ -1795,6 +1795,35 @@ function bridge_setup_list_email_type_params() {
 			$('#bridge_mail_forward_pipe_params').hide('blind');
 		}
 	}
+	
+	if ($("#group_list_no").prop("checked") === true) {
+		if ($('#announce_list_params').is(':hidden')) {
+			$('#announce_list_params').show('blind');
+		}
+		if ($('#discussion_list_params').is(':visible')) {
+			$('#discussion_list_params').hide('blind');
+		}
+	}
+	if ($("#group_list_yes").prop("checked") === true) {
+		if ($('#announce_list_params').is(':visible')) {
+			$('#announce_list_params').hide('blind');
+		}
+		if ($('#discussion_list_params').is(':hidden')) {
+			$('#discussion_list_params').show('blind');
+		}
+	}
+	if ($("#enable_moderation").prop("checked") === true) {
+		if ($('#moderaton_params').is(':hidden')) {
+			$('#moderaton_params').show('blind');
+		}
+ 	}
+	else if ($('#enable_moderation').prop("checked") !== true) {
+		if ($('#moderaton_params').is(':visible')) {
+			$('#moderaton_params').hide('blind');
+		}
+	}
+
+
 }
 
 function plugins_bridge_test_pop3() {

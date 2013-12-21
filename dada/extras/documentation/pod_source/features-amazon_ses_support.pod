@@ -297,6 +297,12 @@ B<Automatically set batching speeds based on your Amazon SES limits>
 
 Your batch settings will now grow or shrink, depending on your current Amazon SES sending limits. If you do go over your total 24 hour quota, mass mailings will not be sent out, and batches will be set to wait for 5 minutes, before trying to be sent again. When your 24 hour quota is lifted, sending will once again take place. 
 
+For the most part, Dada Mail will attempt to aggressively keep your batch sending speeds high, until you start coming near your daily mail quota set by SES.
+
+When that happens, batch sending speeds will creep lower, to accomadate your limits. At no point should Dada Mail send either faster than it should, either by going over the limit per second limit, or the 24 hour limit. 
+
+Your SES sending limits themselves should creep up, as you use the service. Keeping the mass sending rates high will show the Amazon AWS system that you're utilizing the system, and they're most likely going to want to raise the limit for you. 
+
 =head2 Request Full Production Access
 
 Once you're done testing Amazon SES, you'll want to request full production access here: 
