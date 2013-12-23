@@ -222,7 +222,7 @@ sub switcheroo {
 				$filename = DADA::Security::Password::generate_rand_string() . '-' . $self->time_stamp . '-inline.' . $mime_types->{$type}; 
 			}
 			
-			my $filemanager = 'kcfinder'
+			my $filemanager = 'kcfinder';
 			if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1) { 
 				# ... 
 			}
