@@ -29,39 +29,10 @@ Public: Cannot have mass subscriptions via the list control panel - MUST use clo
 		make this painless
 		Added bonus! Ability to use outside sending APIs! Amazon SES,  PostMark, etc. 
 
-Easier hooks/interface to Dada Mail subscribe 
-	* Perl API that doesn't have a crap...API
-	* SOAP? Interface? 
-	* YAML? Interface? 
-	* Javascript...? Interface? (Ajax? - I dunno...) 
-		Basically, this just needs to put two steps together: 
-			* first is the email validation part
-			* if it's validated, then we go to the second step - the subscribe stuff
-			* The subscribe stuff has to be changed to easily give back a return status 
-			  that we can then later use - even, "1" and, "0" would be helpful
-			* Are there any instances where a screen is shown in the web browser, that
-			  we would have to replace with some sort of different status message? 
-			  (other than errors, which will be handled in the first step, hopefully) 
-			   and the congrats stuff?
-			 Tests: 
-				Valid List? 
-				Email address present? 
-				(all the other email validation stuff...) 
-				
-
-
-[x] Is there a way to highlight which list control panel you're on, in the left hand menu? Maybe by just using jQuery to change the class of the ul-y thingy?
-=======
-
-[ ] Amazon SES Bounce Notification
-
-[ ] p.p. mode for Amazon SES should probably also be done for Authorized Senders... 
-
 [ ] more flexibility with subject prefix for Bridge
 
-[ ] Different ways to call up the Subscripton Form - onload?
-=======
 
+[ ] Amazon SES Bounce Notification
 [ ] Amazon SES Bounce/Complaints via SNS, instead of the Bounce Email address. 
 	Ability to log COMPLAINTS! Good! 
 		(*) Automatically unsubscribe complaints
@@ -70,12 +41,8 @@ Easier hooks/interface to Dada Mail subscribe
 	
 	Just need to figure out the subscribe stuff. 
 	Maybe the Appliation URL is something like: 
-		http://example.com/cgi-bin/dada/plugins/bounce_handler.cgi/sns/list_name
+	http://example.com/cgi-bin/dada/plugins/bounce_handler.cgi/sns/list_name
 	
-[x] Options to tweak the confirmation tokens - mostly how long you keep them valid, a way to pull that up
-
-[ ] Is there a way to highlight which list control panel you're on, in the left hand menu? Maybe by just using jQuery to change the class of the ul-y thingy?
-
 
 [ ] title breadcrumbs:  Message Archives » View Archive - has no subject and, "View Archive" is not a link. 
 
