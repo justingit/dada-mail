@@ -2655,6 +2655,7 @@ sub mass_mailing_preferences {
                     smtp_connection_per_batch         => 0,
                     mass_mailing_send_to_list_owner   => 0,
                     amazon_ses_auto_batch_settings    => 0,
+                    mass_mailing_save_logs            => 0, 
                 }
             }
         );
@@ -6382,6 +6383,7 @@ sub edit_archived_msg {
                 },
 
                 -vars => {
+					subject => $subject, 
                     big_blob_of_form_widgets_to_edit_an_archived_message => $form_blob,
                     can_display_message_source                           => $ah->can_display_message_source,
                     id                                                   => $id,

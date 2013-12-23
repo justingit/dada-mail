@@ -95,7 +95,7 @@
 			Automatically set batching speeds based on your Amazon SES limits
 		</label>
 		<br />
-		Batch settings will automatically adjust, when your Amazon SES limits change. </p>
+		Batch settings will automatically adjust, based on your Amazon SES limits and number of messages sent in the last 24 hours. </p>
 		</td>
 	</tr>
 	<!-- /tmpl_if --> 
@@ -270,6 +270,32 @@ Since sending to your entire mailing list is usually a lengthy process (for most
 	</table> 
 
 </fieldset>
+
+
+<fieldset> 
+	<legend>Logging</legend>
+	
+<table> 
+	 <tr>
+	  <td>
+	   <input type="checkbox" name="mass_mailing_save_logs" id="mass_mailing_save_logs" value="1" <!-- tmpl_if list_settings.mass_mailing_save_logs -->checked="checked"<!--/tmpl_if--> />
+	  </td>
+	  <td>
+	   <p>
+	    <label for="mass_mailing_save_logs">
+			Save Mass Mailing Logs
+	    </label>
+	    <br />
+		View/Download mass mailing logs after a mass mailing has been completed. 
+	   </p>
+	  </td>
+	 </tr>
+	
+</table> 
+
+</fieldset>
+
+
 
 
 

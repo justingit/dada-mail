@@ -1314,7 +1314,7 @@ sub mass_send {
 	"Message-Id: "     . $mailout_id, 
 	"Subject: "        . $s_l_subject, 
 	"Started: "        . scalar(localtime($status->{first_access})), 
-	"Mailing Amount: " . $status->{num_total_recipients},
+	"Mailing Amount: " . $status->{total_sending_out_num},
 	);	
 	
 	if($DADA::Config::LOG{mass_mailings} == 1){ 
@@ -1324,6 +1324,8 @@ sub mass_send {
 			$mass_mail_starting_log
 		);
 	}
+	$mailout->log('Mass Mailing Starting: ' . $mass_mail_starting_log);
+	
 	# /Log the start of this mailing. 
 	#-------------------------------------------------------------------------#
 		
@@ -1386,15 +1388,7 @@ sub mass_send {
     warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' $status->{percent_done} is reporting '  . $status->{percent_done}
         if $t; 
 	$mailout->log('$status->{percent_done} is reporting '  . $status->{percent_done}); 
-#
-#
-#    warn '$status->{mailing_is_finished} is reporting ' . $status->{mailing_is_finished}; 
-#    if($status->{mailing_is_finished} == 1){ 
-#        carp "Mailing is Reported That It's finished?!"; 
-#        return; 
-#    }
-#
-
+	
     warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . '$status->{is_batch_locked} is reporting ' . $status->{is_batch_locked}
         if $t; 
         
@@ -1424,15 +1418,7 @@ sub mass_send {
 	
 	FORK: {
 		if ($pid = fork) {
-			
-			#$self->{mj_log}->mj_log(
-			#					
-			#					$self->{list}, 
-			#				    'Message pid: ' . $pid, 
-			#				    "Subject:".$fields{Subject}
-			#				   
-			#				   )   if $DADA::Config::LOG{mass_mailings};   
-			#
+
 			$mailout->log('Mass Mailing Starting.'); 
 							    
 
@@ -1512,8 +1498,7 @@ sub mass_send {
             
 
 			warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Fork successful. (From Child)'
-				if $t;
-				            
+				if $t;	            
                 
             if($DADA::Config::NULL_DEVICE){ 
                 open(STDIN,  ">>$DADA::Config::NULL_DEVICE") or carp "couldn't open '$DADA::Config::NULL_DEVICE' - $!"; 
@@ -1526,27 +1511,15 @@ sub mass_send {
             warn "($$) _clarify_dbi_stuff"
 				if $t; 
 			$mailout = $self->_clarify_dbi_stuff({-dmmo_obj => $mailout}); 
-		
 			$mailout->update_last_access;
 			
-			
-			my ($batch_sending_enabled, $batch_size, $batch_wait)  = $mailout->batch_params();
-			my $letters                                            = $batch_size;
-			
-			# this is annoyingly complicated											
-					
-			my $mailing; 
-			my $n_letters = $letters; 
-			my $n_people  = 0; 
-
-			my $mail_info;
-			my $list_pin;		
-			my $mailing_count; 									
-			my $stop_email;
-			my $mailing_amount;
+			my $batch_num_sent      = 0;  # num of addresses we've sent, per batch 
+			my $mass_mailing_count  = 0;  # num addresses we've sent, per mass mailing
+			my $stop_email          = ''; # address we've stopped on, in this batch;
 						
 			# Let's tell em we're in control: 
 			#
+			
 			$mailout->set_controlling_pid($$);
 			warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Setting the controlling PID to: "' . $$ . '"'
 		        if $t;
@@ -1554,6 +1527,7 @@ sub mass_send {
 			# 
 			
 
+			# Data is stored as a CSV File: 
 			require Text::CSV; 
 			my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
 			
@@ -1586,6 +1560,10 @@ sub mass_send {
 			#
 			##################################################################
 
+			##################################################################
+			# Are we started up this mass mailing at a particular # of addresses? 
+			#
+			
 			my $check_restart_state = 0; 
 			# only check the state IF we need to, otherwise, skip the check and save some cycles. 
 			if($self->restart_with){ 
@@ -1599,6 +1577,10 @@ sub mass_send {
             warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' locking batch' 
                 if $t; 
             $mailout->batch_lock;
+
+			# batch_params is cached in the object. 
+			my ( $batching_enabled, $batch_size, $batch_wait ) = $mailout->batch_params;
+				$mailout->log('Batching Enabled: ' . $batching_enabled . ', Batch Size: ' . $batch_size . ', Batch Sleep: ' . $batch_wait); 
 
 			my $batch_start_time = time; 
 			require DADA::App::FormatMessages; 
@@ -1627,12 +1609,9 @@ sub mass_send {
 			} 
 			
 			# while we have people on the list.. 
-			SUBSCRIBERLOOP: while(defined($mail_info = <MAILLIST>)){ 	
-				chomp($mail_info);	
-
-
-
-
+			my $subcriber_line; 
+			SUBSCRIBERLOOP: while(defined($subcriber_line = <MAILLIST>)){ 	
+				chomp($subcriber_line);	
 
 				##############################################################
 				# calling status() is resource-intensive, but calling 
@@ -1670,11 +1649,8 @@ sub mass_send {
 				##############################################################
 
 				
-				
-				
-
 				my @ml_info; 
-				if ($csv->parse($mail_info)) {
+				if ($csv->parse($subcriber_line)) {
 			     	@ml_info = $csv->fields;
 			    } else {
 			        carp $DADA::Config::PROGRAM_NAME . " Error: CSV parsing error: parse() failed on argument: ". $csv->error_input() . ' ' . $csv->error_diag ();
@@ -1682,10 +1658,10 @@ sub mass_send {
 					next SUBSCRIBERLOOP;
 				}
 
-				my $mailing      = $ml_info[0];
+				my $current_email = $ml_info[0];
 														
-				# keep count of how many people we have
-				$mailing_count++;
+				$mass_mailing_count++;
+
 				# only start sending at a point where we're supposed to...
 				# so wait - mailing count starts at 1?
 				
@@ -1693,17 +1669,15 @@ sub mass_send {
 				    if $t; 
 
 
-
-
-
-
     
 				##############################################################
 				# These are all checks to make sure we're starting the mailing
 				# at the right place in the list. 
 				#
+				
 				if($check_restart_state == 1){ 
                     if($self->restart_with){ 
+	
                         my $mo_counter_at = $mailout->counter_at; 
                         
                         	warn '[' . $self->{list} . '] Mass Mailing:' . 
@@ -1711,14 +1685,14 @@ sub mass_send {
                                  $mo_counter_at
                             	if $t; 
                         
-                        if($mo_counter_at > ($mailing_count - 1)){ 
+                        if($mo_counter_at > ($mass_mailing_count - 1)){ 
                         
                            warn '[' . $self->{list} . '] Mass Mailing:' . 
                                 $mailout_id . ' Skipping Mailing #' . 
-                                $mailing_count . 
-                                '( $mo_counter_at > ($mailing_count - 1 )'
+                                $mass_mailing_count . 
+                                '( $mo_counter_at > ($mass_mailing_count - 1 )'
                             if $t; 
-                            next; 
+                            next SUBSCRIBERLOOP; 
                         } else { 
                         	warn '[' . $self->{list} . '] Mass Mailing:' . 
                                  $mailout_id . 
@@ -1736,13 +1710,8 @@ sub mass_send {
 			    }
 				#
 				##############################################################
-
-
-
-
-			
 				
-				$stop_email = $mailing;
+				$stop_email = $current_email;
 								
  				my %nfields = $self->_mail_merge(
 				    {
@@ -1751,21 +1720,10 @@ sub mass_send {
 						-fm_obj => $fm, 
 				    }
 				);
-								
-#				# Debug Information, Always nice
-#                $nfields{Debug} = {
-#                    -Messages_Sent    => $n_people, 
-#                    -Last_Email       => $mailing,
-#                    -Message_Subject  => $fields{Subject},
-#                    -List_File        => $path_to_list,
-#                    -List_File_Size   => -s"$path_to_list",
-#                    -Sending_To       => $fields{To}, 
-#                };
-                
+								                
                 warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' sending mail'
                     if $t; 
 
-                
 				##############################################################
 				# Three strikes, and you're out: 
 				
@@ -1795,20 +1753,20 @@ sub mass_send {
 					elsif($send_return == -1 && $tries >= 3){ 
 						
 						# if we've already logged this guy
-						if($mailout->isa_problem_address({-address => $mailing})){ 
+						if($mailout->isa_problem_address({-address => $current_email})){ 
 							# Time to skip.
-							my $warning = '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Cannot send to, address: ' . $mailing . 'after 2 x 3 tries, skipping and logging address.';
+							my $warning = '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Cannot send to, address: ' . $current_email . 'after 2 x 3 tries, skipping and logging address.';
 							warn $warning; 
 							$mailout->log($warning);
 							$mailout->countsubscriber;
-							$self->_log_sending_error({-mid   => $mailout->_internal_message_id, -email => $mailing, -adjust_total_recipients => 1});
+							$self->_log_sending_error({-mid   => $mailout->_internal_message_id, -email => $current_email, -adjust_total_recipients => 1});
 							next SUBSCRIBERLOOP;
 						}
 						else {
 							my $warning = '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Bailing out of Mailing for now - last message to, ' . $nfields{To} . ' was unable to be sent! exit()ing!';
 							warn $warning;
 							$mailout->log($warning);
-							$mailout->log_problem_address({-address => $mailing}); 
+							$mailout->log_problem_address({-address => $current_email}); 
 							$mailout->update_last_access; 
 							$mailout->unlock_batch_lock;
 							exit(0);
@@ -1841,17 +1799,18 @@ sub mass_send {
                 	if $t; 
         
 				# And this almost never happens: 
-               if($mailing_count != $new_count){ 
-                    carp("Warning: \$mailing_count ($mailing_count) is not the same as \$new_count ($new_count) - problems are likely to happen..."); 
-					$mailout->log("\$mailing_count ($mailing_count) is not the same as \$new_count ($new_count) - problems are likely to happen..."); 
+               if($mass_mailing_count != $new_count){ 
+                    carp("Warning: \$mass_mailing_count ($mass_mailing_count) is not the same as \$new_count ($new_count) - problems are likely to happen..."); 
+					$mailout->log("\$mass_mailing_count ($mass_mailing_count) is not the same as \$new_count ($new_count) - problems are likely to happen..."); 
                }
                
-				$n_people++; 
+				$batch_num_sent++; 
 				
 				# /Count Subscriber
 				##############################################################
 				
-				
+				#$mailout->log('$self->mass_test ' . $self->mass_test); 
+				#$mailout->log('$batching_enabled ' . $batching_enabled); 
 				
 				
 				# I hate to wrap this in yet another If... state ment, but... 
@@ -1860,15 +1819,20 @@ sub mass_send {
 				}
 				else {
 				
-					if($self->{ls}->param('enable_bulk_batching') == 1){ 
-				         warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' enable_bulk_batching is set to 1'
+					if($batching_enabled == 1){ 
+				         warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' $batching_enabled is set to 1'
 				            if $t; 
 			            
-				    	if($n_people == $n_letters){ 
+						#$mailout->log('$batch_num_sent ' . $batch_num_sent); 
+						#$mailout->log('$batch_size ' . $batch_size); 
+						
+				    	if($batch_num_sent == $batch_size){ 
 			    	
-				    	     warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' reached the amount of messages for this batch (' . $n_letters . ')'
+				    	     warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' reached the amount of messages for this batch (' . $batch_num_sent . ')'
 				    	        if $t; 
-				
+							
+							$batch_num_sent = 0; 
+							
 							# Undefined after each batch, if it is defined
 							if(defined($self->net_smtp_obj)){
 
@@ -1900,6 +1864,7 @@ sub mass_send {
 							}
                          
                           	$mailout->log('Batch Successfully Completed: ' .  $batch_log_message);
+							# Reset the batch settings. 
 
 							if($batch_status->{queued_mailout} == 1){  
 								carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Mailing has been queued - exit()ing'; 
@@ -1921,6 +1886,20 @@ sub mass_send {
 								exit(0);
 							}
 						
+							# SES: explicitly reset the batch params cache after every 100 messages sent. 
+							if((($mass_mailing_count % (int($batch_wait) * 100))) == 0) { 
+								$mailout->log("Resetting Batch Params Cache"); 
+								$mailout->reset_batch_params_cache;
+								
+								( $batching_enabled, $batch_size, $batch_wait ) = $mailout->batch_params;
+								$mailout->log('Batching Enabled: ' . $batching_enabled . ', Batch Size: ' . $batch_size . ', Batch Sleep: ' . $batch_wait); 
+							}
+							else{ 
+								# Batch params also expire after 10 mins. 
+								( $batching_enabled, $batch_size, $batch_wait ) = $mailout->batch_params;
+							}
+							
+							
 	                        if($self->{ls}->param('restart_mailings_after_each_batch') != 1) { 
                           
 	                             warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' restart_mailings_after_each_batch is NOT enabled.'
@@ -2026,11 +2005,7 @@ sub mass_send {
 	                                exit(0); 
 	                            }
                         
-	                        }  
-                        
-	                        # and figure out where we are in this batch. 
-	                        $n_letters+=$letters;
-					  
+	                        }                          
 						}
 						else { 
 						    warn  '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' More messages to be sent in this batch ' 
@@ -2060,9 +2035,6 @@ sub mass_send {
 			}
 			my $ending_status = $mailout->status({-mail_fields => 0}); # most likely safe to called status() as much as I'd like...
 			
-			
-			# Old, crufty, complicated stuff...
-			$mailing_amount   = $mailing_count; 
 			my $unformatted_end_time = time; 
 			if( $self->{ls}->param('get_finished_notification')  == 1){ 			
 			    
@@ -2078,7 +2050,7 @@ sub mass_send {
                 ); 
                                                         
 			}
-			# End Old, Complicated, Crufty Stuff....
+
 			my $f_l_subject = $fields{Subject}; 
 			   $f_l_subject =~ s/\r|\n//g;
 			my $mass_mail_finished_log = join(
@@ -2087,7 +2059,7 @@ sub mass_send {
 				"Subject: "        . $f_l_subject, 
 				"Started: "        . scalar(localtime($ending_status->{first_access})), 
 				"Finished: "       . scalar(localtime($unformatted_end_time)), 
-				"Mailing Amount: " . $mailing_amount,
+				"Mailing Amount: " . $mass_mailing_count,
 			); 
 			
 			if($DADA::Config::LOG{mass_mailings} == 1){ 

@@ -2378,8 +2378,10 @@ EOF
     admin_menu => undef,
 
 	# Mass Mailing Options
+	
 	mass_mailing_convert_plaintext_to_html => 0, 
 	mass_mailing_block_css_to_inline_css   => 0, 
+	
 	
     #quotas
     use_subscription_quota => 0,
@@ -2502,6 +2504,7 @@ EOF
 
     # Send a copy to the List Owner
     mass_mailing_send_to_list_owner => 1,
+	mass_mailing_save_logs          => 0,
 
     amazon_ses_auto_batch_settings => 0,
 

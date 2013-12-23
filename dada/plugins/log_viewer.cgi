@@ -152,6 +152,7 @@ sub cgi_view {
         -id       => 'log_name',
         '-values' => [ keys %$logs ],
         -default  => $log_name,
+        style     => 'width:200px', 
     );
 	my $log_lines = []; 
 	for(100, 1,10,20,25,50,100,200,500,1000, 10000, 100000, 1000000){ 
@@ -461,7 +462,69 @@ sub get_logs {
 		'Clickthrough Log (raw)' => $DADA::Config::LOGS . '/' . $l_list . '-clickthrough.log', 
 		'Bounce Handler Log'     => $DADA::Config::LOGS . '/' . 'bounces.txt', 
 	);
+	
+	my $mass_mailing_logs = mass_mailing_logs($l_list); 
+	
+    
+    
+	if(keys %$mass_mailing_logs) { 
+	    %logs = (%logs, %{$mass_mailing_logs});
+	}
 	return %logs; 
+}
+
+sub mass_mailing_logs { 
+    my $list = shift; 
+    
+    my $dir  = $DADA::Config::LOGS;
+    my $file;
+    my @files;
+    $dir = DADA::App::Guts::make_safer($dir);
+    
+    opendir( DIR, $dir ) or die "$!";
+    while ( defined( $file = readdir DIR ) ) {
+        next if $file =~ /^\.\.?$/;
+        $file =~ s(^.*/)();
+        if ( -f $dir . '/' . $file ) {
+            if($file =~ m/sendout\-$list/) { 
+                push( @files, $file );
+            }
+        }
+
+    }
+    closedir(DIR);
+    # sendout-example-list-20131222202213.73210509_at_dadamailproject.com-log
+    
+    my $mass_mailing_logs = {}; 
+        
+    require DADA::MailingList::Archives; 
+    my $ma = DADA::MailingList::Archives->new({-list => $list});
+    foreach my $found_file(@files) { 
+        my ($throway, $list_shortname, $mailing_type, $mid) = split('-', $found_file, 4);       
+        $mid =~ s/\.(.*?)$//; 
+              
+        my $subject = 'Mass Mailing: ';       
+        if($mailing_type eq 'list'){ 
+            if ( $ma->check_if_entry_exists($mid) ) {
+                $subject .= $ma->get_archive_subject($mid);
+            }
+            else { 
+                $subject .= 'Unarchived Message #' . $mid; 
+            }
+        } 
+        else { 
+            $subject .= '(' . $mailing_type . ')' . ' Message # ' . $mid; 
+        }
+        
+        my $date = scalar(localtime($mid)); 
+        $subject .= ', ' . $date; 
+        $mass_mailing_logs->{$subject} = $DADA::Config::LOGS . '/' . $found_file;
+    }
+    
+    return $mass_mailing_logs; 
+    
+    #return @files;
+    
 }
 
 sub self_url { 
