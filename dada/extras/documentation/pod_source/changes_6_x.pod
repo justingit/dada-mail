@@ -22,6 +22,10 @@ FileManager's backend connector (that we ship) is written in Perl, so if you can
 
 CKEditor has been upgraded from v3.x to v4.3
 
+=head3 CKEditor: Template Tag Dropdown Menu
+
+The CKEditor now has a dropdown menu allowing you to easily access some the most useful and familiar email template tags, Subscriber Profile Fields, List Settings and control structions (loop, if, unless, etc). Select a tag to have it placed into your editing window. 
+
 =head3 TinyMCE Upgraded to v4.0.11
 
 TinyMCE has been upgraded from v3.x to v4.0.11
@@ -37,6 +41,10 @@ B<Moderators> will now simply be a sublist of addresses that get sent out a conf
 =head3 Bridge: "On Behalf Of"; (p.p. mode) Support
 
 Discussion Messages may now be sent, "On Behalf Of" the original sender by the List Owner. This allows you to set up a discussion list with Amazon SES, which only allows messages from verified senders. You may now verify only your List Owner, and still have a discussion list. 
+
+=head3 Mass Mailing Logs: Saveable, viewable in the Log Viewer Plugin
+
+Logs made for specific mass mailings used to be deleted, when a mass mailing was finished, they're now saved, so that you may view them at a later time, using the Log Viewer plugin. 
 
 =head2 Change 6.8.0
 
