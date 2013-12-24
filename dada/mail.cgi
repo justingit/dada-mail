@@ -551,6 +551,7 @@ sub run {
         'admin_menu_sending_preferences_notification' => \&admin_menu_sending_preferences_notification,
         'admin_menu_bounce_handler_notification'      => \&admin_menu_bounce_handler_notification,
         'send_email'                                  => \&send_email,
+        'ckeditor_template_tag_list'                  => \&ckeditor_template_tag_list, 
         'draft_saved_notification'                    => \&draft_saved_notification,
         'drafts'                                      => \&drafts,
         'delete_draft'                                => \&delete_draft,
@@ -1142,6 +1143,115 @@ sub send_email {
         }
     );
 }
+
+
+
+sub ckeditor_template_tag_list {
+
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'send_email'
+    );
+    $list = $admin_list;
+
+    require    JSON;
+    my $json = JSON->new->allow_nonref;
+    print $q->header('application/json');
+
+    my $strings = [];
+
+    require DADA::ProfileFieldsManager;
+    my $pfm         = DADA::ProfileFieldsManager->new;
+    my $fields_attr = $pfm->get_all_field_attributes;
+
+    push( @$strings, { name => 'Subscriber Profile Fields', } );
+    push(
+        @$strings,
+        {
+            name  => 'Email Address',
+            value => '<!-- tmpl_var subscriber.email -->',
+        }
+    );
+    push(
+        @$strings,
+        {
+            name  => 'Email Name',
+            value => '<!-- tmpl_var subscriber.email_name -->',
+        }
+    );
+
+    push(
+        @$strings,
+        {
+            name  => 'Email Domain',
+            value => '<!-- tmpl_var subscriber.email_domain -->',
+        }
+    );
+
+    foreach my $field ( @{ $pfm->fields } ) {
+        push(
+            @$strings,
+            {
+                name  => $fields_attr->{$field}->{label},
+                value => '<!-- tmpl_var subscriber.' . $field . ' -->',
+            }
+        );
+    }
+
+    my $settings = [
+        { 
+            name => 'List Settings'
+        },
+        {
+            name  => 'List Name',
+            value => '<!-- tmpl_var list_settings.list_name -->',
+        },
+        {
+            name  => 'List Owner Email Address',
+            value => '<!-- tmpl_var list_settings.list_owner_email -->',
+        },
+        {
+            name  => 'Mailing List Description',
+            value => '<!-- tmpl_var list_settings.info -->',
+        },
+        {
+            name  => 'Mailing List Privacy Policy',
+            value => '<!-- tmpl_var list_settings.privacy_policy -->',
+        },
+        {
+            name  => 'Physical Address',
+            value => '<!-- tmpl_var list_settings.physical_address -->',
+        },
+    ];
+    push( @$strings, @$settings );
+
+    push( @$strings, { name => 'Loops/Conditionals', } );
+    push(
+        @$strings,
+        {
+            name  => 'loop...',
+            value => '<!-- tmpl_loop field_name --><!-- /tmpl_loop -->',
+        }
+    );
+    push(
+        @$strings,
+        {
+            name  => 'if...',
+            value => '<!-- tmpl_if field_name --><!-- /tmpl_if -->',
+        }
+    );
+    push(
+        @$strings,
+        {
+            name  => 'unless...',
+            value => '<!-- tmpl_unless field_name --><!-- /tmpl_unless -->',
+        }
+    );
+
+    print $json->encode( { strings => $strings } );
+
+}
+
 
 sub draft_saved_notification {
     my ( $admin_list, $root_login ) = check_list_security(
