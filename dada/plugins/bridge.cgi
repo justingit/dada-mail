@@ -795,6 +795,7 @@ sub cgi_default {
         enable_authorized_sending                  => 0,
         authorized_sending_no_moderation           => 0,
         subscriber_sending_no_moderation           => 0,
+        send_received_msg                          => 0, 
         send_msgs_to_list                          => 0,
         send_msg_copy_to                           => 0,
         send_msg_copy_address                      => '',
@@ -1230,6 +1231,15 @@ sub start {
 
                 if ($status) {
 
+
+                    if($ls->param('send_received_msg') == 1 ) { 
+                        notify_of_delivery(
+                            {
+                                -ls        => $ls,
+                                -msg       => \$full_msg,
+                            }
+                        );
+                    }
                     process(
                         {
                             -ls  => $ls,
@@ -1430,6 +1440,12 @@ sub message_was_deleted_check {
     if ( $pop3_status == 1 ) {
 
         my $msg_count = $pop3_obj->Count;
+        
+        if($msg_count < 1) { 
+            e_print("\t\tNo messages to check.\n")
+              if $verbose;
+        }
+        
         my $msgnums   = {};
 
         for ( my $cntr = 1 ; $cntr <= $msg_count ; $cntr++ ) {
@@ -1439,7 +1455,7 @@ sub message_was_deleted_check {
 
         for my $msgnum ( sort { $a <=> $b } keys %$msgnums ) {
             my $msg = $pop3_obj->Retrieve($msgnum);
-
+            
             my $cs = create_checksum( \$msg );
 
             e_print("\t\tcs:             $cs\n")
@@ -1468,6 +1484,7 @@ sub message_was_deleted_check {
                 }
             }
         }
+        
         $pop3_obj->Close();
 
     }
@@ -2354,6 +2371,69 @@ sub send_msg_too_big {
     }
 
 }
+
+sub notify_of_delivery { 
+
+    my ($args) = @_;
+
+    if ( !exists( $args->{-ls} ) ) {
+        croak "You must pass a -ls parameter!";
+    }
+    if ( !exists( $args->{-msg} ) ) {
+        croak "You must pass a -msg parameter!";
+    }
+
+    my $test_mail = 0;
+    if ( exists( $args->{-test_mail} ) ) {
+        $test_mail = $args->{-test_mail};
+    }
+
+    my $ls = $args->{-ls};
+
+    # $msg is a scalarref
+    my $msg = $args->{-msg};
+    
+    my $entity = $parser->parse_data( $msg );
+
+    my $rough_from = $entity->head->get( 'From', 0 );
+    chomp($rough_from); 
+    my $from_address = undef; 
+    
+    my $from_address;
+    if ( defined($rough_from) ) {
+        eval {
+            $from_address = ( Email::Address->parse($rough_from) )[0]->address;
+        };
+    }
+    
+    my $original_subject = $entity->head->get( 'Subject', 0 ); 
+    chomp($original_subject);
+    
+    require DADA::App::Messages;
+    DADA::App::Messages::send_generic_email(
+        {
+            -list    => $ls->param('list'),
+            -headers => {
+                To      => $rough_from,
+                From    => $ls->param('list_owner_email'),
+                Subject => $ls->param('msg_received_msg_subject'),
+            },
+            -body        => $ls->param('msg_received_msg'),
+            -tmpl_params => {
+                -list_settings_vars       => $ls->params,
+                -list_settings_vars_param => { -dot_it => 1, },
+                -subscriber_vars =>
+                  { 'subscriber.email' => $from_address, },
+                -vars => {
+                    original_subject => $original_subject,
+                }
+            },
+        }
+    );
+}
+
+
+
 
 sub process {
 
@@ -3402,6 +3482,8 @@ sub cgi_edit_email_msgs {
             {
                 -associate => $q,
                 -settings  => {
+                    msg_received_msg                  => '',
+                    msg_received_msg_subject          => '',
                     not_allowed_to_post_msg_subject   => '',
                     not_allowed_to_post_msg           => '',
                     invalid_msgs_to_owner_msg_subject => '',
@@ -3471,6 +3553,17 @@ sub inject {
 
             ( $status, $errors ) = validate_msg( $ls, \$msg );
             if ($status) {
+                
+                
+                if($ls->param('send_received_msg') == 1 ) { 
+                    notify_of_delivery(
+                        {
+                            -ls        => $ls,
+                            -msg       => \$msg,
+                            -test_mail => $test_mail,
+                        }
+                    ); 
+                }
                 process(
                     {
                         -ls        => $ls,
@@ -4177,7 +4270,7 @@ Bridge is located in the, I<dada/plugins> directory of the Dada Mail distributio
 
 This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. Under, B<Plugins/Extensions>, check, B<Bridge>.
 
-Manually installation isn't recommended, but is outlined later in this doc. 
+Manual installation isn't recommended, but is outlined later in this doc. 
 
 =head1 Mailing List Configuration 
 
@@ -4197,9 +4290,9 @@ There's a few constraints you want to keep in mind when creating the List Email.
 
 The List Email can either be a normal POP3 email account, or a Mail Forward.
 
-A POP3 email account is fairly easy to set up, as its similar to setting up any mail reader - and Bridge basically acts as a mail reader, while checking messages sent to this account. It does require you to set up an additional cronjob (scheduled task), to check this account on a regular schedule; for example: every 5 minutes. 
+A B<POP3 account> is fairly easy to set up, as its similar to setting up any mail reader - and Bridge basically acts as a mail reader, while checking messages sent to this account. It does require you to set up an additional cronjob (scheduled task), to check this account on a regular schedule; for example: every 5 minutes. 
 
-A Mail Forward does not need this additional cronjob created, but may be slightly trickier to set up on the mail forward side of things. Before attempting, make sure that you can set up a mail forward that can B<Pipe to a Program>, and not simply forward to another email address.  
+A B<Mail Forward> does not need this additional cronjob created, but may be slightly trickier to set up on the mail forward side of things. Before attempting, make sure that you can set up a mail forward that can B<Pipe to a Program>, and not simply forward to another email address.  
 
 =head3 Setup As: POP3 Account 
 
