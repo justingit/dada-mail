@@ -500,8 +500,6 @@ sub SQL_subscriber_profile_join_statement {
         $query .= ' GROUP BY ' . $subscriber_table . '.email ';
     }
 
-	
-    #   if ( $DADA::Config::LIST_IN_ORDER == 1 ) {
     if ( $args->{-order_by} eq 'email' ) {
 
         $query .=
