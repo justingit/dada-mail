@@ -10,13 +10,15 @@ I<Amazon Simple Email Service (Amazon SES) is a highly scalable and cost-effecti
 
 Dada Mail supports Amazon SES, both by using the Amazon SES API (as well as using the Amazon SES SMTP Interface.)
 
-Amazon SES is on solution to the problem of trying to send too many messages too quickly on a hosting plan that may not support such numbers. It does this by allowing you to send out your messages with what could be a very generous quota, while also having good deliverability: users who abuse the service are disallowed future use. 
+Amazon SES is one solution to a problem faced by many people on shared hosting account: trying to send too many messages, too quickly. It also can help solve the problem found with people sending large mailings lists, even when they have the resources to send the messages themselves: problems with mail sending aren't a problem with just a few addresses, but with your entire mailing list. 
 
-Amazon SES costs around $0.10 per I<thousand> messages you send. See: 
+SES does this by allowing you to send out your messages with what could be a very generous quota, while also having good deliverability: users who abuse the service are disallowed future use. 
+
+B<Amazon SES costs around $0.10 per I<thousand> messages you send.> See:
 
 L<http://aws.amazon.com/ses/pricing/>
 
-for current pricing. Using the service in a testing, non-production mode is free. 
+for current pricing. Using the service in a testing, non-production mode is I<free>. 
 
 =head1 Use for Closed-List Opt-In Subscriptions Lists Only
 
@@ -331,9 +333,17 @@ L<http://docs.aws.amazon.com/ses/latest/DeveloperGuide/easy-dkim.html>
 
 Sending via Amazon SES is done with a persistent HTTP connection, so performance should be pretty good!. Expect around .3 seconds/message for I<just> passing the email message from Dada Mail to the Amazon SES service. 
 
-=head3 No Discussion List Support
+=head3 Discussion List Support
 
-Dada Mail preserves the C<From>: header address, when it sends out messages received from the mailing list's subscribers. This makes using Amazon SES for discussion lists unrealistic, as every subscriber of your mailing list would need to be verified through Amazon SES. 
+By default, Dada Mail preserves the C<From>: header address, when it sends out messages received from the mailing list's subscribers. 
+
+This makes using Amazon SES for discussion lists unrealistic, as every subscriber of your mailing list would need to be verified through Amazon SES. 
+
+You may try using Amazon SES for discussion lists, by checking the option in Bridge labeled, 
+
+B<Send messages, "On Behalf Of" (p.p. mode)>
+
+This will change Dada Mail's behavior to B<not> preserve the C<From>: header, but rather reset's this header to always be the List Owner's email address, which always should be verified with Amazon SES. This should allow you to conduct a discussion list with Dada Mail and Amazon SES. 
 
 =head3 Different email headers sent
 
