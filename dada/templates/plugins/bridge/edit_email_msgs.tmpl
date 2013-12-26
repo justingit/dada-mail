@@ -5,12 +5,16 @@
 
 <div id="screentitle"> 
 	<div id="screentitlepadding">
-		<!-- tmpl_var title --> 
+
+        <a href="<!-- tmpl_var Plugin_URL -->">
+            Bridge
+        </a> 
+        &#187; 
+        Customize Email Messages
+
 	</div>
 	<!-- tmpl_include help_link_widget.tmpl -->
 </div>
-
- 
 
 <!-- tmpl_if done -->
     <!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
@@ -20,6 +24,38 @@
 
 	<form method="post" action="<!-- tmpl_var Plugin_URL -->" accept-charet="<!-- tmpl_var HTML_CHARSET -->">
 	
+	
+		<fieldset>
+    		<legend>
+    			Message Received Message (Message Sender)
+    		</legend>
+
+    		<p class="alert">
+    		This message is sent out to a <strong>message sender</strong> when their message is received, but before the
+    		message is sent out to the entire mailing list. 
+    		</p>
+
+    		<!-- tmpl_if list_settings.send_received_msg --> 
+    			<p class="alert">
+    				Enabled.
+    			</p>
+    		<!-- tmpl_else --> 
+    			<p class="error">
+    				Sending out this message is currently Disabled.
+    			</p>		
+    		<!-- /tmpl_if --> 
+
+    		<p>
+    		 <label for="msg_received_msg_subject" class="label_by_5">Subject:</label><input type="text" name="msg_received_msg_subject" id="msg_received_msg_subject" value="<!-- tmpl_var list_settings.msg_received_msg_subject escape="HTML" -->" class="midi" />
+    		</p>
+    		<p>
+    		 <label for="msg_received_msg">PlainText Message:</label>
+    		 <textarea name="msg_received_msg" id="msg_received_msg" rows="10" cols="50" ><!-- tmpl_var list_settings.msg_received_msg escape="HTML" --></textarea> 
+    		</p>
+    	</fieldset>
+    
+    
+    
 	<fieldset>
 		<legend>
 			Not Allowed to Post Message (Message Sender)
