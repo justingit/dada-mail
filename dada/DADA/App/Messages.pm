@@ -12,186 +12,138 @@ require Exporter;
 @ISA = qw(Exporter); 
 
 @EXPORT = qw(
-send_generic_email
+  send_generic_email
+  send_confirmation_message
+  send_unsubscribed_message
+  send_subscribed_message
+  send_unsubscribe_request_message
+  send_owner_happenings
+  send_newest_archive
+  send_you_are_already_subscribed_message
+);
 
-send_confirmation_message
-
-send_unsubscribed_message
-send_subscribed_message
-
-send_unsubscribe_request_message
-
-send_owner_happenings
-send_newest_archive
-
-send_you_are_already_subscribed_message
-
-); 
 
 use strict; 
 use vars qw(@EXPORT); 
 
 
 
-sub send_generic_email { 
-	my ($args) = @_; 
-	
-	
-	if(! exists($args->{-test})){ 
-		$args->{-test} = 0;
-	}
-		
-	my $ls   = undef; 
-	my $li   = {}; 
+sub send_generic_email {
+    my ($args) = @_;
 
-	
-	if(exists($args->{-list})){ 		
-		if (! exists($args->{-ls_obj})){
-			require DADA::MailingList::Settings; 
-			$ls = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
-		}
-		else { 
-			$ls = $args->{-ls_obj};
-		}
-		$li = $ls->get;
-	}
-	
-	# We'll use this, later
-	require DADA::Mail::Send;  
-	my $mh = DADA::Mail::Send->new(
-				{
-					(
-						exists($args->{-list})
-					) ? ( 
-						-list   => $args->{-list}, 
-						-ls_obj => $ls,
-					) : 
-					(
-					), 
-				}
-			);
+    if ( !exists( $args->{-test} ) ) {
+        $args->{-test} = 0;
+    }
 
-	# /We'll use this, later			
-	
-	my $expr = 1; # Default it to 1, if there's no list. 
-	if(exists($args->{-list})){ 
-		if($ls->param('enable_email_template_expr') == 1){ 
-			$expr = 1; 
-		}
-		else { 
-			$expr = 0; 
-		}
-	}
+    my $ls = undef;
+    my $li = {};
 
-	
-	if(!exists($args->{-headers})){ 
-		$args->{-headers} = {}; 
-	}
-	if(!exists($args->{-headers}->{To})){ 
-		$args->{-headers}->{To} = $args->{-email};
-	}
-	
-	if(!exists($args->{-tmpl_params})){ 
-		if(exists($args->{-list})){ 
+    if ( exists( $args->{-list} ) ) {
+        if ( !exists( $args->{-ls_obj} ) ) {
+            require DADA::MailingList::Settings;
+            $ls = DADA::MailingList::Settings->new( { -list => $args->{-list} } );
+        }
+        else {
+            $ls = $args->{-ls_obj};
+        }
+        $li = $ls->get;
+    }
 
-			$args->{-tmpl_params} = 
-				{
-					-list_settings_vars_param => 
-						{
-							-list => $args->{-list}
-						}
-					}, # Dev: Probably could just pass $ls? 
-		}
-		else { 
-			$args->{-tmpl_params} = {};
-		}
-	}	
-	
-			
-			
-	my $data = { 
-					(
-						exists($args->{-list})
-					) ? ( 
-						$mh->list_headers,
-					) : 
-					(
-					),
-					%{$args->{-headers}},
-					Body => $args->{-body},
-			   }; 
-		
-	  	while ( my ($key, $value) = each %{$data} ) {
-			$data->{$key} = safely_encode( $value); 
-		}
-		
-	
-	require DADA::App::FormatMessages; 
-	my $fm = undef; 
-		
-		
-	if(exists($args->{-list})){ 
-		$fm = DADA::App::FormatMessages->new(-List => $args->{-list}); 
-   	}  
-	else { 
-		$fm = DADA::App::FormatMessages->new(-yeah_no_list => 1); 		
-	}
-	$fm->use_header_info(1);
-	$fm->use_email_templates(0);	
-	
-	# Some templates always uses HTML::Template::Expr, example, the sending
-	# preferences. This makes sure that the correct templating system is validated
-	# correctly. 
-	# As far as I know, this really is only needed for the sending prefs test. 
-	# 
-	if($args->{-tmpl_params}->{-expr} == 1){ 
-		$fm->override_validation_type('expr');
-	}
-	my ($email_str) = $fm->format_message(
-                            -msg => $fm->string_from_dada_style_args(
-                                        {
-                                            -fields => $data,
-                                        }
-                                    ), 
-                       );
-				 
-
-		
-#	warn '$email_str ' . $email_str; 
-	
- 
-	
-	$email_str = safely_decode($email_str); 
-#	warn '$email_str ' . $email_str; 
-
-my $entity = $fm->email_template(
+    # We'll use this, later
+    require DADA::Mail::Send;
+    my $mh = DADA::Mail::Send->new(
         {
-            -entity => $fm->get_entity(
-				{
-					-data => safely_encode($email_str),
-				}
-			),
-  			-expr   => $expr, 
-			%{$args->{-tmpl_params}}, # note: this may have -expr param. 
+            ( exists( $args->{-list} ) )
+            ? (
+                -list   => $args->{-list},
+                -ls_obj => $ls,
+              )
+            : (),
         }
     );
-    my $msg = $entity->as_string; 
-    my ($header_str, $body_str) = split("\n\n", $msg, 2);
 
+    # /We'll use this, later
 
-	
-	my $header_str = safely_decode($entity->head->as_string); 
-	my $body_str   = safely_decode($entity->body_as_string); 
-	
-				
-	if($args->{-test} == 1){ 
-		$mh->test(1);	
-	}
-	
-	$mh->send(
-	   $mh->return_headers($header_str), 
-	   Body => $body_str,
+    my $expr = 1;    # Default it to 1, if there's no list.
+    if ( exists( $args->{-list} ) ) {
+        if ( $ls->param('enable_email_template_expr') == 1 ) {
+            $expr = 1;
+        }
+        else {
+            $expr = 0;
+        }
+    }
+
+    if ( !exists( $args->{-headers} ) ) {
+        $args->{-headers} = {};
+    }
+    if ( !exists( $args->{-headers}->{To} ) ) {
+        $args->{-headers}->{To} = $args->{-email};
+    }
+
+    if ( !exists( $args->{-tmpl_params} ) ) {
+        if ( exists( $args->{-list} ) ) {
+
+            $args->{-tmpl_params} =
+              { -list_settings_vars_param => { -list => $args->{-list} } },    # Dev: Probably could just pass $ls?
+        }
+        else {
+            $args->{-tmpl_params} = {};
+        }
+    }
+
+    my $data = {
+          ( exists( $args->{-list} ) )
+        ? ( $mh->list_headers, )
+        : (), %{ $args->{-headers} }, Body => $args->{-body},
+    };
+
+    while ( my ( $key, $value ) = each %{$data} ) {
+        $data->{$key} = safely_encode($value);
+    }
+
+    require DADA::App::FormatMessages;
+    my $fm = undef;
+
+    if ( exists( $args->{-list} ) ) {
+        $fm = DADA::App::FormatMessages->new( -List => $args->{-list} );
+    }
+    else {
+        $fm = DADA::App::FormatMessages->new( -yeah_no_list => 1 );
+    }
+    $fm->use_header_info(1);
+    $fm->use_email_templates(0);
+
+    # Some templates always uses HTML::Template::Expr, example, the sending
+    # preferences. This makes sure that the correct templating system is validated
+    # correctly.
+    # As far as I know, this really is only needed for the sending prefs test.
+    #
+    if ( $args->{-tmpl_params}->{-expr} == 1 ) {
+        $fm->override_validation_type('expr');
+    }
+    my ($email_str) = $fm->format_message( -msg => $fm->string_from_dada_style_args( { -fields => $data, } ), );
+
+    $email_str = safely_decode($email_str);
+
+    my $entity = $fm->email_template(
+        {
+            -entity => $fm->get_entity( { -data => safely_encode($email_str), } ),
+            -expr   => $expr,
+            %{ $args->{-tmpl_params} },    # note: this may have -expr param.
+        }
     );
+    my $msg = $entity->as_string;
+    my ( $header_str, $body_str ) = split( "\n\n", $msg, 2 );
+
+    my $header_str = safely_decode( $entity->head->as_string );
+    my $body_str   = safely_decode( $entity->body_as_string );
+
+    if ( $args->{-test} == 1 ) {
+        $mh->test(1);
+    }
+
+    $mh->send( $mh->return_headers($header_str), Body => $body_str, );
 
 }
 
