@@ -265,7 +265,7 @@ sub batch_params {
 
             $batch_wait = 1;
             my $percent_used = ( ( 100 * $SentLast24Hours ) / $Max24HourSend ) / 100;
-            $batch_size = $MaxSendRate - ( $MaxSendRate * ( $percent_used * 10 ) );
+            $batch_size = $MaxSendRate - ( $MaxSendRate * ( $percent_used * 10 ) ); # * 10 is fudge factor,
 
             if ( $batch_size < 1.5 ) {
 
