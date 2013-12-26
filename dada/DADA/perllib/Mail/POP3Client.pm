@@ -1,10 +1,9 @@
 #******************************************************************************
-# $Id: POP3Client.pm,v 2.18 2008/02/27 03:03:21 ssd Exp $
 #
 # Description:  POP3Client module - acts as interface to POP3 server
 # Author:       Sean Dowd <pop3client@dowds.net>
 #
-# Copyright (c) 1999-2009  Sean Dowd.  All rights reserved.
+# Copyright (c) 1999-2008  Sean Dowd.  All rights reserved.
 # This module is free software; you can redistribute it and/or modify
 # it under the same terms as Perl itself.
 #
@@ -25,12 +24,9 @@ require Exporter;
 # Items to export into callers namespace by default. Note: do not export
 # names by default without a very good reason. Use EXPORT_OK instead.
 # Do not simply export all your public functions/methods/constants.
-@EXPORT = qw(
+@EXPORT = qw();
 
-);
-
-my $ID =q( $Id: POP3Client.pm,v 2.18 2008/02/27 03:03:21 ssd Exp $ );
-$VERSION = substr q$Revision: 2.18 $, 10;
+$VERSION = '2.19';
 
 
 # Preloaded methods go here.
@@ -1528,6 +1524,11 @@ CRAM-MD5 needs Digest::HMAC_MD5 and MIME::Base64.
 =head1 AUTHOR
 
 Sean Dowd <pop3client@dowds.net>
+
+=head1 COPYRIGHT
+
+This program is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself.
 
 =head1 CREDITS
 
