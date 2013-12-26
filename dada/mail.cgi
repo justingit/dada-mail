@@ -1150,8 +1150,8 @@ sub ckeditor_template_tag_list {
 
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'send_email'
     );
+
     $list = $admin_list;
 
     require    JSON;
@@ -1256,7 +1256,6 @@ sub ckeditor_template_tag_list {
 sub draft_saved_notification {
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'send_email'
     );
     require DADA::Template::Widgets;
     print $q->header();
@@ -1310,7 +1309,6 @@ sub delete_draft {
 
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'drafts'
     );
     $list = $admin_list;
 
@@ -1327,7 +1325,6 @@ sub delete_draft {
 sub message_body_help {
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'send_email'
     );
     require DADA::Template::Widgets;
     print $q->header();
@@ -1337,7 +1334,6 @@ sub message_body_help {
 sub url_message_body_help {
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'send_email'
     );
     require DADA::Template::Widgets;
     print $q->header();
@@ -1348,7 +1344,6 @@ sub preview_message_receivers {
 
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'send_email'
     );
 
     # This comes in a s a string, sep. by commas. Sigh.
