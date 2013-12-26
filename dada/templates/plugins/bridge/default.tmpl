@@ -24,7 +24,7 @@
 <!-- tmpl_if list_settings.disable_discussion_sending -->
 <div class="badweatherbox">
   <p><strong>
-   This Plugin is Currently Disabled for This List!
+   This Plugin is Currently Disabled for this Mailing List!
   </strong></p> 
 
 <p>
@@ -133,7 +133,7 @@
     </label>
    </td>
    <td>
-    <input name="discussion_pop_email" id="discussion_pop_email" type="text" value="<!-- tmpl_var list_settings.discussion_pop_email -->" class="full bigger_button" <!-- tmpl_unless list_email_status -->style="background:red;font-weight:bold;color:white;border:3px solid black"<!-- /tmpl_unless -->/>
+    <input name="discussion_pop_email" id="discussion_pop_email" type="text" value="<!-- tmpl_var list_settings.discussion_pop_email -->" class="full bigger_button" style="color:black" <!-- tmpl_unless list_email_status -->style="background:red;font-weight:bold;color:white;border:3px solid black"<!-- /tmpl_unless -->/>
 	
    </td>
   </tr>
@@ -337,7 +337,7 @@ General
     
     <p>
      <label for="disable_discussion_sending">
-      Disable sending using this method
+      Disable Bridge
      </label>
           <br /> 
       ALL e-mails sent to your List Email 
@@ -517,7 +517,7 @@ General
 	   </td>
 	   <td>
 	    <label for="group_list_pp_mode">
-		Send message, &quot;On Behalf Of&quot; (p.p. mode)
+		Send messages, &quot;On Behalf Of&quot; (p.p. mode)
 	    </label>
 	    <br />
 			Discussion List messages will be sent as the List Owner, on behalf of List Members. 
@@ -780,13 +780,28 @@ General
 	</label>
     </p>
     <table>
+
+        <tr>
+         <td> 
+          <input type="checkbox" name="send_received_msg" id="send_received_msg" value="1" <!-- tmpl_if list_settings.send_received_msg -->checked="checked"<!--/tmpl_if--> />
+         </td> 
+         <td>
+          <label for="send_received_msg">
+           Send a message to the original sender, letting them know their message was received
+          </label>
+          <br /> 
+          Mass Mailing can take a long time. A, &quot;message received!&quot; message sent to the original sender
+          can stop them from second-guessing if if their message was received. 
+         </td>
+        </tr> 
+
      <tr>
       <td> 
        <input type="checkbox" name="send_msgs_to_list" id="send_msgs_to_list" value="1" <!-- tmpl_if list_settings.send_msgs_to_list -->checked="checked"<!--/tmpl_if--> />
       </td> 
       <td>
        <label for="send_msgs_to_list">
-        send the messages to your Subscribers.
+        Send the message to your Subscribers.
        </label>
       </td>
      </tr> 
@@ -796,7 +811,7 @@ General
       </td>
       <td>
        <label for="send_msg_copy_to">
-        forward a copy to:</label>
+        Forward a copy to:</label>
        <p>
         <input type="text" name="send_msg_copy_address" id="send_msg_copy_address"value="<!-- tmpl_var list_settings.send_msg_copy_address -->" />
        </p>
@@ -837,7 +852,7 @@ General
       </td> 
       <td>
        <label for="send_invalid_msgs_to_owner">
-        send the List Owner a &quot;Not a Subscriber&quot; email message, with the original message attached.
+        Send the List Owner a &quot;Not a Subscriber&quot; email message, with the original message attached.
        </label>
       </td>
      </tr> 
@@ -848,7 +863,7 @@ General
        <input type="checkbox" />
       </td>
       <td>
-       be forwarded to the Authorized Senders (Authorized Sending must be turned on!).
+       Be forwarded to the Authorized Senders (Authorized Sending must be turned on!).
       </td> 
      </tr>
      --> 
@@ -859,7 +874,7 @@ General
       </td> 
       <td> 
        <label for="send_not_allowed_to_post_msg">
-        send back a &quot;Not Allowed to Post&quot; message.
+        Send back a &quot;Not Allowed to Post&quot; message.
        </label>
       </td>  
      </tr> 
