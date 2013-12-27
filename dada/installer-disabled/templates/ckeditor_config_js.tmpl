@@ -5,6 +5,7 @@ For licensing, see LICENSE.html or http://ckeditor.com/license
 
 
 CKEDITOR.editorConfig = function(config) {
+    
    config.filebrowserBrowseUrl      = '<!-- tmpl_var file_manager_browse_url -->?type=files';
    config.filebrowserImageBrowseUrl = '<!-- tmpl_var file_manager_browse_url -->?type=images';
    config.filebrowserFlashBrowseUrl = '<!-- tmpl_var file_manager_browse_url -->?type=flash';
@@ -12,15 +13,19 @@ CKEDITOR.editorConfig = function(config) {
    config.filebrowserImageUploadUrl = '<!-- tmpl_var file_manager_upload_url -->?type=images';
    config.filebrowserFlashUploadUrl = '<!-- tmpl_var file_manager_upload_url -->?type=flash';
 
-    config.height = '30em';
+   config.height                    = '30em';
 
-    config.startupOutlineBlocks = true;  
+   config.fullPage                  = true;
+   config.allowedContent            = true;
+
+   config.startupOutlineBlocks      = true;  
     
-    config.strinsert_button_label                                 = 'Tags';
-    config.strinsert_button_title = config.strinsert_button_voice = 'Tags';
-    config.extraPlugins                                           = 'strinsert';
+   config.strinsert_button_label    = 'Tags';
+   config.strinsert_button_title    = 'Tags';
+   config.strinsert_button_voice    = 'Tags';
+   config.extraPlugins              = 'strinsert';
 
-    config.toolbar_DadaMail_Admin =
+   config.toolbar_DadaMail_Admin    =
     [
         { name: 'basicstyles',    items : [ 'strinsert', 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
         { name: 'styles',         items : [ 'Styles','Format','Font','FontSize' ] },
