@@ -18,6 +18,7 @@ Key:
 	[ ] DateTime col. in subscribers table
 	
 	
+[ ] Track UserAgents to find browser/desktop/email or what type of device. (look at litmus)
 
 Lists will need to have two ways of opereation: 
 PRIVATE: allows mass subscriptions via the list control panel, and other non-closed-loop opt in stuff
