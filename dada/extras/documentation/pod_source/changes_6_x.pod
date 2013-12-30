@@ -6,7 +6,7 @@
 
 =head3 Rich Text Editors and Web-Based File Browsers
 
-Dada Mail supports multiple rich text editors, allowing you to easily author email messages with formatted text, images and simple layouts. Dada Mail also supports uploading images from your own computer, to your web server and placing those images into your mailing list message, using the included web-based file browsers. 
+Dada Mail supports multiple rich text editors, allowing you to easily author email messages with formatted text, images and simple layouts. Dada Mail also supports uploading images from your own computer, to your web server and placing those images into your mailing list messages, using one of the included web-based file browsers. 
 
 =head4 CKEditor Upgraded to v4.3, TinyMCE Upgraded to v4.0.11, FCKeditor retired
 
@@ -18,13 +18,17 @@ One of the features we really enjoy is allowing you to toggle between seeing vis
 
 Another feature that can prove useful and time-saving is the ability to simply drag an image into the rich text editor window to place the image into your message. Both CKEditor and TinyMCE support this. We've tested this with Firefox on the Mac, but other browser may also be supported.
 
+We've also set up these rich text editors to have full page support, meaning you can now edit both the body of the message, as well as the head. This is important, if you want to use more advanced HTML email authoring techniques, like responsive designs and images. 
+
 =head4 CKEditor: Template Tag Dropdown Menu
 
 Also look for the new Tags drop down menu in CKeditor (not currently available in TinyMCE). This drop down menu allows you to easily select and place one of Dada Mail's template tags. Template Tags are an advanced feature of Dada Mail, allowing to create dynamic messages based on subscriber profile information (First Name, Last Name, etc). 
 
 =head4 Core5 Labs FileManager Support
 
-We're also shipping an additional web-based file browser called, FileManager. These file browsers are what allows you to view files on your server to select an image to add to your message, or to select an attachment. Dada Mail has shipped with the KCFinder file browser (and still will), but some users have had problems with it working correctly. With the addition of FileManager, users of Dada Mail should now have a great alternative to utilize.
+We're also shipping an additional web-based file browser called, FileManager. These file browsers are what allows you to view files on your server to either select an image to add to your message, or to select an attachment to go along with your message.
+
+Dada Mail has shipped with the KCFinder file browser (and still will), but some users have had problems with it working correctly. With the addition of FileManager, we should now have a great alternative to utilize.
 
 More information on B<FileManager:>
 
@@ -38,24 +42,26 @@ L<http://dadamailproject.com/d/features-wysiwyg_editors.pod.html>
 
 The Bridge plugin transforms a Dada Mail mailing list from an announce-only mailing list, where you send message through Dada Mail's own List Control panel, to a full-blown discussion list, where members can send a message from their own mail reader (whichever one they'd like!) and have it sent to the entire mailing list, creating group discussions. Bridge can also be used for an announce-only mailing list, allowing the List Owner, and/or a seperate list of addresses, called Authorized Senders, to send messages to your mailing list, without allowing your Subscribers to do the same. 
 
-For more information on the Bridge plugin, see: 
+Read about the Bridge plugin: 
 L<http://dadamailproject.com/d/bridge.cgi.html>
 
 This version of Dada Mail supports many difference enhancements: 
 
 =head4 Moderators and Authorized Senders
 
-Moderators, A separate list of addresses from your Subscribers, can now be created, whose only job is to view incoming messages, and moderate them, choosing what gets allowed to be posted (or not!). This job used to be the job of the Authorized Senders sublist, but to make things easier and more flexible, we've made split this into two separate sublists. 
+Moderators, a separate list of addresses from your Subscribers, can now be created. They're only job is to view incoming messages, and moderate them:  choosing what gets allowed to be posted, and what doesn't. 
+
+This job used to be the job of the Authorized Senders sublist, but to make things easier and more flexible, we've made split these tasks into two separate sublists. 
 
 Authorized Senders are still around: a separate list of addresses who' members are allowed to send messages to a mailing list, without having to be a member of the Subscribers, themselves. Say you have an announce-only mailing list, where you'd like to give permission of just a few people in an organization to send messages to the mailing list. All you need to do is add them to your Authorized Senders and give them the List Address to send to. No need to give them login access to the List Control Panel. 
 
-In discussion lists, you also have the option to moderate incoming messages, except for those messages from an address that's a member of your Authorized Senders. 
+In discussion lists, you now also have the option to moderate incoming messages, except for those messages from an address that's a member of your Authorized Senders. 
 
 =head4 On Behalf Of (p.p. Mode)
 
-Bridge also has a new discussion list option called, On Behalf Of (p.p. Mode). We're big fans of the Amazon SES email sending service, but the service is set up to allow accept messages from addresses you've verified using their own system. This is fine for a few addresses, but can be unrealistic for an entire discussion list, whose members may number in the hundreds, or even thousands. When p.p. Mode is enabled, messages will be sent out on behalf of the List Owner, allowing you to set up a discussion list with Amazon SES.
+Bridge also has a new discussion list option called, B<On Behalf Of (p.p. Mode)>. We're big fans of the Amazon SES email sending service, but the service is set up to allow accept messages from addresses you've verified using their own system. This is fine for a few addresses, but can be unrealistic for an entire discussion list, whose members may number in the hundreds, or even thousands. When p.p. Mode is enabled, messages will be sent out on behalf of the List Owner, allowing you to set up a discussion list with Amazon SES.
 
-=head4 Message Received! Notification Message
+=head4 Message Received Notification Message
 
 Bridge also now allows you the option to send out a, "Message Received" message, telling the original poster that their message was delivered correctly, and will be sent out as soon as it can. 
 
@@ -65,9 +71,8 @@ Sometimes, large or busy mailing lists will have the scenario, where messages ta
 
 Dada Mail supports sending email using a variety of methods: one of these methods is using the Amazon Simple Email Service. Amazon SES allows you to a large amount of messages, fast, with great deliverability for a low cost. 
 
-For more information on Dada Mail and Amazon SES, see: 
+Read more about Dada Mail and Amazon SES, see: 
 L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>
-
 
 Dada Mail already self-adjusts its batch sending rates, to work with Amazon SES's set limits. As SES's limits grows, so will your sending speed. 
 
@@ -81,7 +86,7 @@ In this version of Dada Mail, that same mailing list of 500 members would send i
 
 This faster sending rate will also help signal Amazon SES's system that you're using your resources to their maximum allowed usage. This in turn will signal SES to actually give you more resources to use, raising your limit, and allowing your to send more messages/day with a higher per-second limit. All this will happen, automatically, as you send out your messages. 
 
-=head3 Mass Mailing Logs: save-able, viewable in the Log Viewer plugin
+=head3 Mass Mailing Logs: save-able and viewable in the Log Viewer plugin
 
 When sending out a mass mailing, Dada Mail creates a log of the activity of the mass mailing. This is a separate log for the usage log, and the error log, since it only pertains to one specific mass mailing, and also this log could be very, very large! 
 
@@ -90,7 +95,7 @@ In past versions of Dada Mail, this log was simply deleted, when a mass mailing 
 
 =head3 Highlighting in the list control panel's menu
 
-Dada Mail's List Control Panel let's you do a LOT of things, and there's many different screens to work with. To help you remember where you are, and what you've clicked on, we now highlight the screen you're on, on the left-hand menu. 
+Dada Mail's List Control Panel let's you do a LOT of things, and there's many different screens to work with. To help you remember where you are, and what you've clicked on, we now highlight the screen's title of where you're currently at, on the left-hand menu. 
 
 =head2 Change 6.8.0
 
