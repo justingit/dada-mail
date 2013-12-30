@@ -929,14 +929,15 @@ sub _format_headers {
         && defined( $self->{ls}->param('discussion_pop_email') ) 
         && $self->{ls}->param('group_list_pp_mode') == 1)
     {
-		my $og_from = $entity->head->get('From', 0);
-		$entity->head->delete('From');
-        $entity->head->add( 'From', safely_encode($self->_pp($og_from)) );
+        if ( $entity->head->count('From') ) {
+			my $og_from = $entity->head->get('From', 0);
+			$entity->head->delete('From');
+	        $entity->head->add( 'From', safely_encode($self->_pp($og_from)) );
+		}
 	}
 	else { 
-		"no pp mode!"; 
-	}
-	
+		# "no pp mode!"; 
+	}	
 	
     $entity->head->delete('Message-ID');
 
