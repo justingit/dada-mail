@@ -21,7 +21,7 @@ BEGIN {
 #
 # Support: http://dadamailproject.com/support
 #
-# How To Ask For Free Help:
+# Community Support:
 #    http://dadamailproject.com/support/documentation/getting_help.pod.html
 #
 #---------------------------------------------------------------------#
@@ -11739,7 +11739,7 @@ __END__
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2013 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2014 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

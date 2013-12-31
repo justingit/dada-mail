@@ -930,9 +930,20 @@ sub _format_headers {
         && $self->{ls}->param('group_list_pp_mode') == 1)
     {
         if ( $entity->head->count('From') ) {
-			my $og_from = $entity->head->get('From', 0);
+			my    $og_from = $entity->head->get('From', 0);
+			chomp($og_from);
+			
 			$entity->head->delete('From');
 	        $entity->head->add( 'From', safely_encode($self->_pp($og_from)) );
+			
+			if($self->{ls}->param('set_to_header_to_list_address') == 1) { 
+		        if ( $entity->head->count('Reply-To') ) {
+					$entity->head->delete('Reply-To');
+				}
+			
+				# How else are you to reply to the original sender?
+				$entity->head->add( 'Reply-To', $og_from );
+			}
 		}
 	}
 	else { 
@@ -2525,7 +2536,7 @@ sub DESTROY {
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2013 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2014 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
