@@ -20,7 +20,7 @@ L<http://dadamailproject.com/purchase/pro.html>
 
 =head1 Step #2 Upload the, "dada-6_8_0.tar.gz" distro into your cgi-bin
 
-Once you download the C<dada-6_8_0.tar.gz> distro (you will B<not> have to uncompress the distribution), upload it to your hosting account's I<cgi-bin>.
+Once you download the C<dada-6_8_0.tar.gz> distro, upload it to your hosting account's I<cgi-bin>. For Pro Dada users, this distro is named, C<pro_dada-6_8_0.tar.gz> - use that name for the rest of the directions, below. 
 
 =begin html
 
@@ -71,7 +71,7 @@ You may have to uncompress and prep Dada Mail manually.
 =end html
 
 
-=head1 Configuring Dada Mail with the, "install.cgi" Script 
+=head1 Configuring Dada Mail with the Dada Mail Installer
 
 The installer should be relatively straightforward on how it's used - just fill it out with the information it's asking for. Below, we'll walk through all the options: 
 
