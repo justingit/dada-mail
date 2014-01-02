@@ -19,7 +19,7 @@ Key:
 	
 	
 [ ] Track UserAgents to find browser/desktop/email or what type of device. (look at litmus)
-
+[ ] Voting widget (thumbs up/down) on newsletters
 Lists will need to have two ways of opereation: 
 PRIVATE: allows mass subscriptions via the list control panel, and other non-closed-loop opt in stuff
 		 Allows you to hide your list 
