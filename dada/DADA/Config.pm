@@ -449,7 +449,7 @@ $RECAPTHCA_MAILHIDE_PARAMS ||= {
 
 
 $SHOW_HELP_LINKS ||= 1;
-$HELP_LINKS_URL  ||= 'http://dadamailproject.com/pro_dada/6.7.0';
+$HELP_LINKS_URL  ||= 'http://dadamailproject.com/pro_dada/6.8.0';
 
 
 $LOGIN_COOKIE_NAME ||= 'dadalogin';
@@ -3140,9 +3140,6 @@ sub _config_import {
 
 }
 
-
-__END__
-
 =pod
 
 =head1 COPYRIGHT
@@ -3168,3 +3165,5 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 # Don't remove the '1'. It lives here at the bottom. It likes it there.
 
 1;
+
+__END__
