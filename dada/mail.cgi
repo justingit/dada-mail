@@ -21,7 +21,7 @@ BEGIN {
 #
 # Support: http://dadamailproject.com/support
 #
-# How To Ask For Free Help:
+# Community Support:
 #    http://dadamailproject.com/support/documentation/getting_help.pod.html
 #
 #---------------------------------------------------------------------#
@@ -164,6 +164,7 @@ my %list_types = (
     black_list         => 'Black Listed',
     white_list         => 'White Listed',            # White listed isn't working, no?
     authorized_senders => 'Authorized Senders',
+    moderators         => 'Moderators',
     sub_request_list   => 'Subscription Requests',
     unsub_request_list => 'Unsubscription Requests',
     bounced_list       => 'Bouncing Addresses',
@@ -553,6 +554,7 @@ sub run {
         'admin_menu_sending_preferences_notification' => \&admin_menu_sending_preferences_notification,
         'admin_menu_bounce_handler_notification'      => \&admin_menu_bounce_handler_notification,
         'send_email'                                  => \&send_email,
+        'ckeditor_template_tag_list'                  => \&ckeditor_template_tag_list, 
         'draft_saved_notification'                    => \&draft_saved_notification,
         'drafts'                                      => \&drafts,
         'delete_draft'                                => \&delete_draft,
@@ -1153,10 +1155,118 @@ sub send_email {
     );
 }
 
+
+
+sub ckeditor_template_tag_list {
+
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+    );
+
+    $list = $admin_list;
+
+    require    JSON;
+    my $json = JSON->new->allow_nonref;
+    print $q->header('application/json');
+
+    my $strings = [];
+
+    require DADA::ProfileFieldsManager;
+    my $pfm         = DADA::ProfileFieldsManager->new;
+    my $fields_attr = $pfm->get_all_field_attributes;
+
+    push( @$strings, { name => 'Subscriber Profile Fields', } );
+    push(
+        @$strings,
+        {
+            name  => 'Email Address',
+            value => '<!-- tmpl_var subscriber.email -->',
+        }
+    );
+    push(
+        @$strings,
+        {
+            name  => 'Email Name',
+            value => '<!-- tmpl_var subscriber.email_name -->',
+        }
+    );
+
+    push(
+        @$strings,
+        {
+            name  => 'Email Domain',
+            value => '<!-- tmpl_var subscriber.email_domain -->',
+        }
+    );
+
+    foreach my $field ( @{ $pfm->fields } ) {
+        push(
+            @$strings,
+            {
+                name  => $fields_attr->{$field}->{label},
+                value => '<!-- tmpl_var subscriber.' . $field . ' -->',
+            }
+        );
+    }
+
+    my $settings = [
+        { 
+            name => 'List Settings'
+        },
+        {
+            name  => 'List Name',
+            value => '<!-- tmpl_var list_settings.list_name -->',
+        },
+        {
+            name  => 'List Owner Email Address',
+            value => '<!-- tmpl_var list_settings.list_owner_email -->',
+        },
+        {
+            name  => 'Mailing List Description',
+            value => '<!-- tmpl_var list_settings.info -->',
+        },
+        {
+            name  => 'Mailing List Privacy Policy',
+            value => '<!-- tmpl_var list_settings.privacy_policy -->',
+        },
+        {
+            name  => 'Physical Address',
+            value => '<!-- tmpl_var list_settings.physical_address -->',
+        },
+    ];
+    push( @$strings, @$settings );
+
+    push( @$strings, { name => 'Loops/Conditionals', } );
+    push(
+        @$strings,
+        {
+            name  => 'loop...',
+            value => '<!-- tmpl_loop field_name --><!-- /tmpl_loop -->',
+        }
+    );
+    push(
+        @$strings,
+        {
+            name  => 'if...',
+            value => '<!-- tmpl_if field_name --><!-- /tmpl_if -->',
+        }
+    );
+    push(
+        @$strings,
+        {
+            name  => 'unless...',
+            value => '<!-- tmpl_unless field_name --><!-- /tmpl_unless -->',
+        }
+    );
+
+    print $json->encode( { strings => $strings } );
+
+}
+
+
 sub draft_saved_notification {
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'send_email'
     );
     require DADA::Template::Widgets;
     print $q->header();
@@ -1210,7 +1320,6 @@ sub delete_draft {
 
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'drafts'
     );
     $list = $admin_list;
 
@@ -1227,7 +1336,6 @@ sub delete_draft {
 sub message_body_help {
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'send_email'
     );
     require DADA::Template::Widgets;
     print $q->header();
@@ -1237,7 +1345,6 @@ sub message_body_help {
 sub url_message_body_help {
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'send_email'
     );
     require DADA::Template::Widgets;
     print $q->header();
@@ -1248,7 +1355,6 @@ sub preview_message_receivers {
 
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'send_email'
     );
 
     # This comes in a s a string, sep. by commas. Sigh.
@@ -1960,7 +2066,7 @@ sub mass_mailing_options {
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
-                -screen         => 'mass_mailing_options.tmpl',
+                -screen         => 'mass_mailing_options_screen.tmpl',
                 -with           => 'admin',
                 -expr           => 1,
                 -wrapper_params => {
@@ -2659,6 +2765,7 @@ sub mass_mailing_preferences {
                     smtp_connection_per_batch         => 0,
                     mass_mailing_send_to_list_owner   => 0,
                     amazon_ses_auto_batch_settings    => 0,
+                    mass_mailing_save_logs            => 0, 
                 }
             }
         );
@@ -3409,12 +3516,12 @@ sub view_list {
                     can_filter_subscribers_through_blacklist => $lh->can_filter_subscribers_through_blacklist,
 
                     flavor_is_view_list => 1,
-
                     list_subscribers_num               => commify( $lh->num_subscribers( { -type => 'list' } ) ),
                     black_list_subscribers_num         => commify( $lh->num_subscribers( { -type => 'black_list' } ) ),
                     white_list_subscribers_num         => commify( $lh->num_subscribers( { -type => 'white_list' } ) ),
                     authorized_senders_num             => commify( $lh->num_subscribers( { -type => 'authorized_senders' } ) ),
-                    sub_request_list_subscribers_num   => commify( $lh->num_subscribers( { -type => 'sub_request_list' } ) ),
+                    moderators_num                     => commify( $lh->num_subscribers( { -type => 'moderators' } ) ),
+					sub_request_list_subscribers_num   => commify( $lh->num_subscribers( { -type => 'sub_request_list' } ) ),
                     unsub_request_list_subscribers_num => commify( $lh->num_subscribers( { -type => 'unsub_request_list' } ) ),
                     bounced_list_num                   => commify( $lh->num_subscribers( { -type => 'bounced_list' } ) ),
                 },
@@ -3475,8 +3582,8 @@ sub search_list_auto_complete {
         push( @$r, { 'email' => $result->{email} } );
     }
 
-    require JSON::PP;
-    my $json = JSON::PP->new->allow_nonref;
+    require JSON;
+    my $json = JSON->new->allow_nonref;
     print $q->header('application/json');
     print $json->encode($r);
 
@@ -3503,7 +3610,7 @@ sub list_activity {
         DADA::Template::Widgets::wrap_screen(
             {
                 -list           => $list,
-                -screen         => 'list_activity.tmpl',
+                -screen         => 'list_activity_screen.tmpl',
                 -with           => 'admin',
                 -wrapper_params => {
                     -Root_Login => $root_login,
@@ -3904,6 +4011,7 @@ sub membership {
             black_list         => 1,
             white_list         => 1,
             authorized_senders => 1,
+            moderators         => 1,
         };
 
         # Except when, it's already a part of that sublist:
@@ -3934,8 +4042,14 @@ sub membership {
         }
         else {
             delete( $add_to->{authorized_senders} );
+        }
+        # if Moderators isn't active, well, let's not allow to be added:
+        if ( $ls->param('enable_moderation') == 1 ) {
 
-            #$add_list_types{authorized_senders} .= ' (Currently Disabled)';
+            #...
+        }
+        else {
+            delete( $add_to->{moderators} );
         }
 
         # Same with the white list
@@ -3975,7 +4089,7 @@ sub membership {
         my $member_of   = [];
         my $remove_from = [];
         foreach (%$subscribed_to_lt) {
-            if ( $_ =~ m/^(list|black_list|white_list|authorized_senders|bounced_list)$/ ) {
+            if ( $_ =~ m/^(list|black_list|white_list|authorized_senders|moderators|bounced_list)$/ ) {
                 push( @$member_of, { type => $_, type_title => $list_types{$_} } );
                 push( @$remove_from, $_ );
             }
@@ -4012,7 +4126,7 @@ sub membership {
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
-                -screen         => 'membership.tmpl',
+                -screen         => 'membership_screen.tmpl',
                 -with           => 'admin',
                 -wrapper_params => {
                     -Root_Login => $root_login,
@@ -4081,6 +4195,7 @@ sub validate_update_email {
         list               => 'Subscribers',
         black_list         => 'Black Listed',
         authorized_senders => 'Authorized Senders',
+        moderators         => 'Moderators',
         white_list         => 'White Listed',
         sub_request_list   => 'Subscription Requests',
         unsub_request_list => 'Unsubscription Requests',
@@ -4137,7 +4252,7 @@ sub validate_update_email {
                     $lh->member_of(
                         {
                             -email => $email,
-                            -types => [ qw(list black_list white_list authorized_senders) ],
+                            -types => [ qw(list black_list white_list authorized_senders moderators) ],
                         }
                     )
                 }
@@ -4266,14 +4381,14 @@ sub also_member_of {
     my @also_subscribed_to = $lh->also_subscribed_to(
         {
             -email => $email,
-            -types => [qw(list black_list white_list authorized_senders)],
+            -types => [qw(list black_list white_list authorized_senders moderators)],
         }
     );
     if ( scalar @also_subscribed_to > 0 ) {
         $mto = 1;
     }
-    require JSON::PP;
-    my $json = JSON::PP->new->allow_nonref;
+    require JSON;
+    my $json = JSON->new->allow_nonref;
     print $q->header('application/json');
     print $json->encode( { also_member_of => int($mto), } );
 
@@ -4302,7 +4417,7 @@ sub validate_remove_email {
             my @also_subscribed_to = $lh->also_subscribed_to(
                 {
                     -email => $email,
-                    -types => [qw(list black_list white_list authorized_senders)],
+                    -types => [qw(list black_list white_list authorized_senders moderators)],
                 }
             );
             @lists = ( @lists, @also_subscribed_to );
@@ -4320,7 +4435,7 @@ sub validate_remove_email {
                     $tmp_lh->member_of(
                         {
                             -email => $email,
-                            -types => [ qw(list black_list white_list authorized_senders) ],
+                            -types => [ qw(list black_list white_list authorized_senders moderators) ],
                         }
                     )
                 }
@@ -4855,6 +4970,7 @@ sub add {
                     black_list_subscribers_num => $lh->num_subscribers( { -type => 'black_list' } ),
                     white_list_subscribers_num => $lh->num_subscribers( { -type => 'white_list' } ),
                     authorized_senders_num     => $lh->num_subscribers( { -type => 'authorized_senders' } ),
+                    moderators_num             => $lh->num_subscribers( { -type => 'moderators' } ),
                     bounced_list_num           => $lh->num_subscribers( { -type => 'bounced_list' } ),
 
                     fields => $fields,
@@ -4877,8 +4993,8 @@ sub add {
 
 sub check_status {
 
-    require JSON::PP;
-    my $json = JSON::PP->new->allow_nonref;
+    require JSON;
+    my $json = JSON->new->allow_nonref;
 
     my $filename = $q->param('new_email_file');
     $filename =~ s{^(.*)\/}{};
@@ -4887,7 +5003,7 @@ sub check_status {
 
     if ( !-e $DADA::Config::TMP . '/' . $filename . '-meta.txt' ) {
         warn "no meta file at: " . $DADA::Config::TMP . '/' . $filename . '-meta.txt';
-        my $json = JSON::PP->new->allow_nonref;
+        my $json = JSON->new->allow_nonref;
         print $q->header('application/json');
         print $json->encode( { percent => 0, content_length => 0, bytes_read => 0 } );
     }
@@ -4904,7 +5020,7 @@ sub check_status {
         if ( $per == 99 ) { $per = 100 }
         close($META);
 
-        my $json = JSON::PP->new->allow_nonref;
+        my $json = JSON->new->allow_nonref;
         print $q->header('application/json');
         print $json->encode(
             {
@@ -5358,7 +5474,8 @@ sub delete_email {
                     list_type_isa_black_list => ( $type eq 'black_list' ) ? 1
                     : 0,
                     list_type_isa_authorized_senders => ( $type eq 'authorized_senders' ) ? 1 : 0,
-                    list_type_isa_white_list => ( $type eq 'white_list' ) ? 1
+                    list_type_isa_moderators         => ( $type eq 'moderators' )         ? 1 : 0,
+                    list_type_isa_white_list         => ( $type eq 'white_list' )         ? 1
                     : 0,
                     type                       => $type,
                     type_title                 => $type_title,
@@ -5367,6 +5484,7 @@ sub delete_email {
                     black_list_subscribers_num => $lh->num_subscribers( { -type => 'black_list' } ),
                     white_list_subscribers_num => $lh->num_subscribers( { -type => 'white_list' } ),
                     authorized_senders_num     => $lh->num_subscribers( { -type => 'authorized_senders' } ),
+                    moderators_num             => $lh->num_subscribers( { -type => 'moderators' } ),
                 },
                 -list_settings_vars_param => {
                     -list   => $list,
@@ -6352,6 +6470,7 @@ sub edit_archived_msg {
                 },
 
                 -vars => {
+					subject => $subject, 
                     big_blob_of_form_widgets_to_edit_an_archived_message => $form_blob,
                     can_display_message_source                           => $ah->can_display_message_source,
                     id                                                   => $id,
@@ -7303,7 +7422,7 @@ sub list_cp_options {
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
-                -screen         => 'list_cp_options.tmpl',
+                -screen         => 'list_cp_options_screen.tmpl',
                 -with           => 'admin',
                 -wrapper_params => {
                     -Root_Login => $root_login,
@@ -7317,9 +7436,6 @@ sub list_cp_options {
 
                     ckeditor_enabled => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{enabled},
                     ckeditor_url     => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{url},
-
-                    fckeditor_enabled => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{fckeditor}->{enabled},
-                    fckeditor_url     => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{fckeditor}->{url},
 
                     tiny_mce_enabled => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{enabled},
                     tiny_mce_url     => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{url},
@@ -7339,8 +7455,6 @@ sub list_cp_options {
             {
                 -associate => $q,
                 -settings  => {
-
-                    #enable_fckeditor                 => 0,
                     use_wysiwyg_editor => 'none',
                 }
             }
@@ -7369,7 +7483,7 @@ sub profile_fields {
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
-                -screen         => 'profile_fields.tmpl',
+                -screen         => 'profile_fields_screen.tmpl',
                 -with           => 'admin',
                 -wrapper_params => {
                     -Root_Login => $root_login,
@@ -7394,7 +7508,7 @@ sub profile_fields {
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
-    my $field_errors        = 0;
+    my $field_status           = 1;
     my $field_error_details = {
         field_blank            => 0,
         field_name_too_long    => 0,
@@ -7405,6 +7519,7 @@ sub profile_fields {
         spaces                 => 0,
         field_is_special_field => 0,
     };
+	my %flattened_field_errors = (); 
 
     my $edit_field = xss_filter( $q->param('edit_field') );
 
@@ -7457,9 +7572,9 @@ sub profile_fields {
     }
     elsif ( $process eq 'add_field' ) {
 
-        ( $field_errors, $field_error_details ) = $pfm->validate_field_name( { -field => $field } );
-
-        if ( $field_errors == 0 ) {
+        ( $field_status, $field_error_details ) = $pfm->validate_field_name( { -field => $field } );
+		
+        if ( $field_status == 1 ) {
 
             $pfm->add_field(
                 {
@@ -7482,7 +7597,10 @@ sub profile_fields {
         }
         else {
             # Else, I guess for now, we'll show the template and have the errors print out there...
-            $field_errors = 1;
+			for(%$field_error_details) { 
+				$flattened_field_errors{'field_error_' . $_} = $field_error_details->{$_}; 
+			}
+
         }
     }
     elsif ( $process eq 'edit_field' ) {
@@ -7491,13 +7609,13 @@ sub profile_fields {
 
         #old name			# new name
         if ( $orig_field eq $field ) {
-            ( $field_errors, $field_error_details ) =
+            ( $field_status, $field_error_details ) =
               $pfm->validate_field_name( { -field => $field, -skip => [qw(field_exists)] } );
         }
         else {
-            ( $field_errors, $field_error_details ) = $pfm->validate_field_name( { -field => $field } );
+            ( $field_status, $field_error_details ) = $pfm->validate_field_name( { -field => $field } );
         }
-        if ( $field_errors == 0 ) {
+        if ( $field_status == 1 ) {
 
             $pfm->remove_field_attributes( { -field => $orig_field } );
 
@@ -7528,9 +7646,12 @@ sub profile_fields {
         }
         else {
             # Else, I guess for now, we'll show the template and have the errors print out there...
-            $field_errors = 1;
             $edit_field   = 1;
             $field        = xss_filter( $q->param('orig_field') );
+
+			for(%$field_error_details) { 
+				$flattened_field_errors{'field_error_' . $_} = $field_error_details->{$_}; 
+			}
         }
     }
 
@@ -7553,7 +7674,7 @@ sub profile_fields {
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
-            -screen         => 'profile_fields.tmpl',
+            -screen         => 'profile_fields_screen.tmpl',
             -with           => 'admin',
             -wrapper_params => {
                 -Root_Login => $root_login,
@@ -7568,16 +7689,7 @@ sub profile_fields {
                 edit_field => $edit_field,
                 fields     => $named_subscriber_fields,
 
-                field_errors                       => $field_errors,
-                field_error_field_blank            => $field_error_details->{field_blank},
-                field_error_field_name_too_long    => $field_error_details->{field_name_too_long},
-                field_error_slashes_in_field_name  => $field_error_details->{slashes_in_field_name},
-                field_error_weird_characters       => $field_error_details->{weird_characters},
-                field_error_quotes                 => $field_error_details->{quotes},
-                field_error_field_exists           => $field_error_details->{field_exists},
-                field_error_spaces                 => $field_error_details->{spaces},
-                field_error_field_is_special_field => $field_error_details->{field_is_special_field},
-
+                field_status         => $field_status,
                 field                => $field,
                 fallback_field_value => $fallback_field_value,
                 field_label          => $field_label,
@@ -7598,6 +7710,9 @@ sub profile_fields {
                 edited        => xss_filter( $q->param('edited') ),
 
                 can_move_columns => $can_move_columns,
+
+				%flattened_field_errors,
+
 
             },
         }
@@ -7623,8 +7738,8 @@ sub subscribe {
 
 sub restful_subscribe {
 
-    require JSON::PP;
-    my $json = JSON::PP->new->allow_nonref;
+    require JSON;
+    my $json = JSON->new->allow_nonref;
     if ( !$q->content_type || $q->content_type =~ m/text\/html/ ) {
 
         # RTFM!
@@ -11585,7 +11700,7 @@ __END__
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2013 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2014 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

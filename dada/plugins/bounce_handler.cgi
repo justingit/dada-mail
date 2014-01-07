@@ -972,7 +972,7 @@ If they are present, remove them.
 You can then configure the plugin variables on these lines: 
 
 	Bounce_Handler => { 
-
+	
 	    Server                    			=> undef, 
 	    Username                  			=> undef, 
 	    Password                  			=> undef, 
@@ -982,7 +982,7 @@ You can then configure the plugin variables on these lines:
 For example: 
 
 Bounce_Handler => { 
-
+	
 		Server                    			=> 'mail.yourdomain.com', 
 		Username                  			=> 'bounces+yourdomain.com', 
 		Password                  			=> 'password', 
@@ -1412,7 +1412,7 @@ directory, which you can then customize with your own rules. When Dada Mail is u
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2013 Justin Simoni 
+Copyright (c) 1999 - 2014 Justin Simoni 
 http://justinsimoni.com 
 All rights reserved. 
 

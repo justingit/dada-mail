@@ -500,8 +500,6 @@ sub SQL_subscriber_profile_join_statement {
         $query .= ' GROUP BY ' . $subscriber_table . '.email ';
     }
 
-	
-    #   if ( $DADA::Config::LIST_IN_ORDER == 1 ) {
     if ( $args->{-order_by} eq 'email' ) {
 
         $query .=
@@ -1494,7 +1492,7 @@ sub can_have_subscriber_fields {
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2013 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2014 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

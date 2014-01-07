@@ -223,10 +223,11 @@ my $advanced_config_params = {
     show_profiles                       => 1,
     show_global_template_options        => 1,
     show_security_options               => 1,
-    show_captcha_options                => 1, 
+    show_captcha_options                => 1,
     show_global_mass_mailing_options    => 1,
     show_cache_options                  => 1,
     show_debugging_options              => 1,
+    show_confirmation_token_options     => 1,
     show_amazon_ses_options             => 1,
     show_annoying_whiny_pro_dada_notice => 0,
 };
@@ -293,6 +294,10 @@ sub cl_run {
 
 	require Getopt::Long;
     my %h = ();
+
+	# This'll have to be updated: 
+	# 'file_browser_install_kcfinder!',
+
     Getopt::Long::GetOptions(
         \%h,
 		'upgrading!',
@@ -314,10 +319,10 @@ sub cl_run {
 		'install_wysiwyg_editors!',
 		'wysiwyg_editor_install_ckeditor!',
 		'wysiwyg_editor_install_tiny_mce!',
-		'wysiwyg_editor_install_fckeditor!',
-		'file_browser_install_kcfinder!',
 		'help',
     );
+
+
 
 #	use Data::Dumper; 
 #	die Dumper({%h}); 
@@ -838,9 +843,10 @@ sub grab_former_config_vals {
 	
 	# WYSIWYG Editors 
 	# Kinda gotta guess on this one, 
-	if($BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{fckeditor}->{enabled} == 1 
-	|| $BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{enabled} == 1 
-	|| $BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{enabled} == 1 
+	if($BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{enabled}        == 1 
+	|| $BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{tiny_mce}->{enabled}        == 1 
+	|| $BootstrapConfig::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled}          == 1 
+	|| $BootstrapConfig::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1 
 	){ 
 		$local_q->param('install_wysiwyg_editors', 1); 
 	}
@@ -848,7 +854,7 @@ sub grab_former_config_vals {
 		$local_q->param('install_wysiwyg_editors', 0); 
 	}
 		
-	for my $editor(qw(ckeditor fckeditor tiny_mce)){ 
+	for my $editor(qw(ckeditor tiny_mce)){ 
 		# And then, individual: 
 		if($BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{$editor}->{enabled} == 1){ 
 			$local_q->param('wysiwyg_editor_install_' . $editor, 1); 
@@ -858,10 +864,11 @@ sub grab_former_config_vals {
 		}
 	}
 	if($BootstrapConfig::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1){ 
-		$local_q->param('file_browser_install_kcfinder', 1);
-	}	
-	else { 
-		$local_q->param('file_browser_install_kcfinder', 0);
+		$local_q->param('file_browser_install', 'kcfinder');
+	}
+	elsif($BootstrapConfig::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1){ 
+		$local_q->param('file_browser_install', 'core5_filemanager');
+		$local_q->param('core5_filemanager_connector', $BootstrapConfig::FILE_BROWSER_OPTIONS->{core5_filemanager}->{connector});
 	}
 	
 	# Profiles
@@ -1015,6 +1022,12 @@ sub grab_former_config_vals {
 		$local_q->param('mass_mailing_MULTIPLE_LIST_SENDING', $BootstrapConfig::MULTIPLE_LIST_SENDING);	
 		$local_q->param('mass_mailing_MAILOUT_STALE_AFTER',   $BootstrapConfig::MAILOUT_STALE_AFTER);		
 	}
+
+	# $CONFIRMATION_TOKEN_OPTIONS
+	if(keys %{$BootstrapConfig::CONFIRMATION_TOKEN_OPTIONS}) { 
+		$local_q->param('configure_confirmation_token', 1);
+		$local_q->param('confirmation_token_expires', $BootstrapConfig::CONFIRMATION_TOKEN_OPTIONS->{expires});
+	}		
 	
 	# $AMAZON_SES_OPTIONS
 	if(defined($BootstrapConfig::AMAZON_SES_OPTIONS->{AWSAccessKeyId})
@@ -1024,7 +1037,7 @@ sub grab_former_config_vals {
 		$local_q->param('amazon_ses_AWSAccessKeyId', $BootstrapConfig::AMAZON_SES_OPTIONS->{AWSAccessKeyId});
 		$local_q->param('amazon_ses_AWSSecretKey',   $BootstrapConfig::AMAZON_SES_OPTIONS->{AWSSecretKey});
 	}
-			
+
 	
 	return $local_q; 
 	
@@ -1682,6 +1695,13 @@ sub create_dada_config_file {
 		$mass_mailing_params->{mass_mailing_MULTIPLE_LIST_SENDING} = clean_up_var($q->param('mass_mailing_MULTIPLE_LIST_SENDING')); 
 		$mass_mailing_params->{mass_mailing_MAILOUT_STALE_AFTER}   = clean_up_var($q->param('mass_mailing_MAILOUT_STALE_AFTER')); 
 	}
+
+	my $confirmation_token_params = {}; 
+	if($q->param('configure_confirmation_token') == 1){ 
+		$confirmation_token_params->{configure_confirmation_token} = 1; 
+		$confirmation_token_params->{expires} = strip($q->param('confirmation_token_expires'));
+	}
+
 	
 	my $amazon_ses_params = {}; 
 	if($q->param('configure_amazon_ses') == 1){ 
@@ -1711,7 +1731,8 @@ sub create_dada_config_file {
 				%{$profiles_params},
 				%{$security_params},
 				%{$captcha_params}, 
-				%{$mass_mailing_params}, 
+				%{$mass_mailing_params},
+				%{$confirmation_token_params},  
 				%{$amazon_ses_params},
             }
         }
@@ -2229,29 +2250,12 @@ sub install_wysiwyg_editors {
 		croak "Can't install WYSIWYG Editors, Directory, '$support_files_dir_path' does not exist!"; 
 	}
 
-	my %tmpl_vars = (
-		fckeditor_enabled => 0, 
-		fckeditor_url     => '', 
-		
-		ckeditor_enabled  => 0, 
-		ckeditor_url      => '', 
-		
-		tiny_mce_enabled  => 0, 
-		tiny_mce_url      => '', 
-		
-		kcfinder_enabled  => 0, 
-		kcfinder_url      => '', 
-
-	); 
+	my %tmpl_vars = ();
+	 
 	if(! -d $support_files_dir_path . '/' . $Support_Files_Dir_Name){ 
 		installer_mkdir(make_safer($support_files_dir_path . '/' . $Support_Files_Dir_Name), $DADA::Config::DIR_CHMOD);
 	}
 	
-	if($q->param('wysiwyg_editor_install_fckeditor') == 1){ 
-		install_and_configure_fckeditor($args); 
-		$tmpl_vars{i_fckeditor_enabled} = 1; 
-		$tmpl_vars{i_fckeditor_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/fckeditor';
-	}
 	if($q->param('wysiwyg_editor_install_ckeditor') == 1){ 
 		install_and_configure_ckeditor($args); 
 		$tmpl_vars{i_ckeditor_enabled} = 1; 
@@ -2260,9 +2264,13 @@ sub install_wysiwyg_editors {
 	if($q->param('wysiwyg_editor_install_tiny_mce') == 1){ 
 		install_and_configure_tiny_mce($args); 
 		$tmpl_vars{i_tiny_mce_enabled} = 1; 
-		$tmpl_vars{i_tiny_mce_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name .'/tiny_mce';
+		$tmpl_vars{i_tiny_mce_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name .'/tinymce';
 	}
-	if($q->param('file_browser_install_kcfinder') == 1){ 
+	
+	
+	
+	
+	if($q->param('file_browser_install') eq 'kcfinder'){ 
 		install_and_configure_kcfinder($args); 
 		$tmpl_vars{i_kcfinder_enabled} = 1; 
 		$tmpl_vars{i_kcfinder_url}     = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/kcfinder';
@@ -2276,9 +2284,29 @@ sub install_wysiwyg_editors {
 		if(! -d  $upload_dir){ 
 			# No need to backup this.
 			installer_mkdir( $upload_dir, $DADA::Config::DIR_CHMOD );
-		}
+		}	
+	}
+	elsif($q->param('file_browser_install') eq 'core5_filemanager'){
+		
+		install_and_configure_core5_filemanager($args); 
+		my $upload_dir = make_safer($support_files_dir_path . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir); 
+		$tmpl_vars{i_core5_filemanager_enabled} = 1; 
+		$tmpl_vars{i_core5_filemanager_url}       = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/core5_filemanager';
+		$tmpl_vars{i_core5_filemanager_connector} = $q->param('core5_filemanager_connector'); 
+		my $upload_dir = make_safer($support_files_dir_path . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir); 
+		$tmpl_vars{i_core5_filemanager_upload_dir} = $upload_dir; 
+		$tmpl_vars{i_core5_filemanager_upload_url} = $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir;
+		
+		if(! -d  $upload_dir){ 
+			# No need to backup this.
+			installer_mkdir( $upload_dir, $DADA::Config::DIR_CHMOD );
+		}	
 		
 	}
+	
+	
+	
+	
 	
 	my $wysiwyg_options_snippet = DADA::Template::Widgets::screen(
         {
@@ -2288,7 +2316,7 @@ sub install_wysiwyg_editors {
             }
         }
     );
-	
+
     my $sm = quotemeta('# start cut for WYSIWYG Editor Options'); 
     my $em = quotemeta('# end cut for WYSIWYG Editor Options');
  
@@ -2311,12 +2339,6 @@ sub install_missing_CPAN_modules {
 	my $has_JSON = 1;
 	eval { 
 		require JSON; 
-	};
-	if($@) { 
-		$has_JSON = 0; 
-	}
-	eval { 
-		require JSON::PP; 
 	};
 	if($@) { 
 		$has_JSON = 0; 
@@ -2353,16 +2375,8 @@ sub install_missing_CPAN_modules {
 }
 
 
-sub install_and_configure_fckeditor { 
-	my ($args) = @_; 
-	my $install_path = $q->param('support_files_dir_path') . '/' . $Support_Files_Dir_Name; 
-	my $source_package = make_safer('../extras/packages/fckeditor'); 
-	my $target_loc     = make_safer($install_path . '/fckeditor');
-	if(-d $target_loc){
-		backup_dir($target_loc);	
-	}
-	installer_dircopy($source_package, $target_loc); 
-}
+
+
 sub install_and_configure_ckeditor { 
 	my ($args) = @_; 
 	my $install_path = $q->param('support_files_dir_path') . '/' . $Support_Files_Dir_Name; 
@@ -2376,8 +2390,8 @@ sub install_and_configure_ckeditor {
 sub install_and_configure_tiny_mce { 
 	my ($args) = @_; 
 	my $install_path = $q->param('support_files_dir_path') . '/' . $Support_Files_Dir_Name; 
-	my $source_package = make_safer('../extras/packages/tiny_mce'); 
-	my $target_loc     = make_safer($install_path . '/tiny_mce');
+	my $source_package = make_safer('../extras/packages/tinymce'); 
+	my $target_loc     = make_safer($install_path . '/tinymce');
 	if(-d $target_loc){
 		backup_dir($target_loc);	
 	}
@@ -2393,27 +2407,8 @@ sub install_and_configure_kcfinder {
 	}
 	installer_dircopy($source_package, $target_loc); 	
 
-	if($q->param('wysiwyg_editor_install_fckeditor') == 1){ 
-		my $fckeditor_config_js = DADA::Template::Widgets::screen(
-	        {
-	            -screen => 'fckconfig_js.tmpl',
-	            -vars   => {
-	            	support_files_dir_url  => $q->param('support_files_dir_url'), 
-					Support_Files_Dir_Name => $Support_Files_Dir_Name, 
-				}
-	        }
-	    );
-		my $fckeditor_config_loc = make_safer($install_path . '/fckeditor/dada_mail_config.js'); 
-		# Why 0777? 
-		installer_chmod(0777, $fckeditor_config_loc); 
-		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $fckeditor_config_loc or croak $!;
-		print $config_fh $fckeditor_config_js or croak $!;
-		close $config_fh or croak $!;
-		installer_chmod($DADA::Config::FILE_CHMOD, $fckeditor_config_loc);
-		undef $config_fh;
-	}
+	my $support_files_dir_url = $q->param('support_files_dir_url'); 
 	
-
 	if($q->param('wysiwyg_editor_install_ckeditor') == 1){ 
 		
 		# http://docs.cksource.com/CKEditor_3.x/Developers_Guide/Setting_Configurations
@@ -2421,11 +2416,15 @@ sub install_and_configure_kcfinder {
 		# This method lets you avoid modifying the original distribution files in the CKEditor 
 		# installation folder, making the upgrade task easier. 
 		
+		my $support_files_dir_url = $q->param('support_files_dir_url'); 
+		
 		my $ckeditor_config_js = DADA::Template::Widgets::screen(
 	        {
 	            -screen => 'ckeditor_config_js.tmpl',
 	            -vars   => {
-	            	support_files_dir_url  => $q->param('support_files_dir_url'), 
+					file_manager_browse_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/kcfinder/browse.php', 
+					file_manager_upload_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/kcfinder/upload.php', 
+	            	support_files_dir_url  => $support_files_dir_url, 
 					Support_Files_Dir_Name => $Support_Files_Dir_Name, 
 				}
 	        }
@@ -2442,22 +2441,32 @@ sub install_and_configure_kcfinder {
 	
 	if($q->param('wysiwyg_editor_install_tiny_mce') == 1){ 
 		
-		my $tiny_mce_config_js = DADA::Template::Widgets::screen(
+		my $kcfinder_enabled = 0;
+		 
+		$kcfinder_enabled = 1; # we're in a sub called, "isntall_and_configure_kcfinder", so... 
+		#if($q->param('file_browser_install') eq 'kcfinder') { 
+		#	$kcfinder_enabled = 1; 
+		#} 
+		
+		my $support_files_dir_url  = $q->param('support_files_dir_url');
+		
+		my $tinymce_config_js = DADA::Template::Widgets::screen(
 	        {
-	            -screen => 'tiny_mce_config_js.tmpl',
+	            -screen => 'tinymce_config_js.tmpl',
 	            -vars   => {
-	            	support_files_dir_url  => $q->param('support_files_dir_url'), 
+					file_manager_browse_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/kcfinder/browse.php', 
+	            	support_files_dir_url  => $support_files_dir_url, 
 					Support_Files_Dir_Name => $Support_Files_Dir_Name, 
-					kcfinder_enabled       => $q->param('file_browser_install_kcfinder'), 
+					kcfinder_enabled       => $kcfinder_enabled, 
 				}
 	        }
 	    );
-		my $tiny_mce_config_loc = make_safer($install_path . '/tiny_mce/dada_mail_config.js'); 
-		installer_chmod(0777, $tiny_mce_config_loc); 
-		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $tiny_mce_config_loc or croak $!;
-		print $config_fh $tiny_mce_config_js or croak $!;
+		my $tinymce_config_loc = make_safer($install_path . '/tinymce/dada_mail_config.js'); 
+		installer_chmod(0777, $tinymce_config_loc); 
+		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $tinymce_config_loc or croak $!;
+		print $config_fh $tinymce_config_js or croak $!;
 		close $config_fh or croak $!;
-		installer_chmod($DADA::Config::FILE_CHMOD, $tiny_mce_config_loc);
+		installer_chmod($DADA::Config::FILE_CHMOD, $tinymce_config_loc);
 		undef $config_fh;
 		
 	}
@@ -2470,7 +2479,7 @@ sub install_and_configure_kcfinder {
         {
             -screen => 'kcfinder_config_php.tmpl',
             -vars   => {
-				i_tinyMCEPath => $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/tiny_mce',
+				i_tinyMCEPath => $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/tinymce',
 				i_sessionDir  => $sess_dir,
 			}
         }
@@ -2484,6 +2493,144 @@ sub install_and_configure_kcfinder {
 	undef $config_fh;
 	
 }
+
+
+
+
+sub install_and_configure_core5_filemanager {
+	my ($args) = @_; 
+	my $install_path = $q->param('support_files_dir_path') . '/' . $Support_Files_Dir_Name; 
+	my $source_package = make_safer('../extras/packages/core5_filemanager'); 
+	my $target_loc     = make_safer($install_path . '/core5_filemanager');
+	if(-d $target_loc){
+		backup_dir($target_loc);	
+	}
+	installer_dircopy($source_package, $target_loc); 	
+	my $support_files_dir_url = $q->param('support_files_dir_url'); 
+
+	if($q->param('wysiwyg_editor_install_ckeditor') == 1){ 
+		
+		# http://docs.cksource.com/CKEditor_3.x/Developers_Guide/Setting_Configurations
+		# The best way to set the CKEditor configuration is in-page, when creating editor instances. 
+		# This method lets you avoid modifying the original distribution files in the CKEditor 
+		# installation folder, making the upgrade task easier. 
+		
+		my $support_files_dir_url = $q->param('support_files_dir_url'); 
+		
+		my $ckeditor_config_js = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'ckeditor_config_js.tmpl',
+	            -vars   => {
+					file_manager_browse_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/core5_filemanager/index.html', 
+					file_manager_upload_url => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/core5_filemanager/index.html', 
+	            	support_files_dir_url   => $support_files_dir_url, 
+					Support_Files_Dir_Name  => $Support_Files_Dir_Name, 
+				}
+	        }
+	    );
+		my $ckeditor_config_loc = make_safer($install_path . '/ckeditor/dada_mail_config.js'); 
+		installer_chmod(0777, $ckeditor_config_loc); 
+		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $ckeditor_config_loc or croak $!;
+		print $config_fh $ckeditor_config_js or croak $!;
+		close $config_fh or croak $!;
+		installer_chmod($DADA::Config::FILE_CHMOD, $ckeditor_config_loc);
+		undef $config_fh;
+		
+	}
+	
+	if($q->param('wysiwyg_editor_install_tiny_mce') == 1){ 
+
+
+		my $kcfinder_enabled = 0; 
+
+		my $support_files_dir_url  = $q->param('support_files_dir_url');
+		
+		my $tinymce_config_js = DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'tinymce_config_js.tmpl',
+	            -vars   => {
+					file_manager_browse_url   => $support_files_dir_url . '/' . $Support_Files_Dir_Name . '/core5_filemanager/index.html', 
+	            	support_files_dir_url     => $support_files_dir_url, 
+					Support_Files_Dir_Name    => $Support_Files_Dir_Name, 
+					core5_filemanager_enabled => 1, 
+				}
+	        }
+	    );
+		my $tinymce_config_loc = make_safer($install_path . '/tinymce/dada_mail_config.js'); 
+		installer_chmod(0777, $tinymce_config_loc); 
+		open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $tinymce_config_loc or croak $!;
+		print $config_fh $tinymce_config_js or croak $!;
+		close $config_fh or croak $!;
+		installer_chmod($DADA::Config::FILE_CHMOD, $tinymce_config_loc);
+		undef $config_fh;
+		
+	}
+	
+	# No Session Dir for Core5 Filemanager
+
+
+	# pl config: 
+	
+    my $uploads_directory = $q->param('support_files_dir_path')  . '/' . $Support_Files_Dir_Name . '/' . 'file_uploads';
+    my $url_path          = $uploads_directory;
+    my $doc_root          = $ENV{DOCUMENT_ROOT}; 
+    $url_path             =~ s/^$doc_root//; # We use $url_path for the js config, too. 
+	
+	my $core5_filemanager_config_pl = DADA::Template::Widgets::screen(
+        {
+            -screen => 'core5_filemanager_config_pl.tmpl',
+            -vars   => {
+				uploads_directory => $uploads_directory,
+				url_path          => $url_path,
+			}
+        }
+    );
+	my $core5_filemanager_config_loc = make_safer($install_path . '/core5_filemanager/connectors/pl/filemanager_config.pl'); 
+	installer_chmod(0777, $core5_filemanager_config_loc); 
+	open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $core5_filemanager_config_loc or croak $!;
+	print $config_fh $core5_filemanager_config_pl or croak $!;
+	close $config_fh or croak $!;
+	installer_chmod($DADA::Config::FILE_CHMOD, $core5_filemanager_config_loc);
+	undef $config_fh;
+
+	
+	# js config: 
+	my $core5_filemanager_config_js = DADA::Template::Widgets::screen(
+        {
+            -screen => 'core5_filemanager_config_js.tmpl',
+            -vars   => {
+				fileRoot          => $url_path . '/', # slash on the end, there. 
+				lang              => $q->param('core5_filemanager_connector'), 
+			}
+        }
+    );
+	my $core5_filemanager_config_js_loc = make_safer($install_path . '/core5_filemanager/scripts/filemanager.config.js'); 
+	installer_chmod(0777, $core5_filemanager_config_js_loc); 
+	open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $core5_filemanager_config_js_loc or croak $!;
+	print $config_fh $core5_filemanager_config_js or croak $!;
+	close $config_fh or croak $!;
+	installer_chmod($DADA::Config::FILE_CHMOD, $core5_filemanager_config_js_loc);
+	undef $config_fh;
+	
+	if($q->param('core5_filemanager_connector') eq 'pl') { 
+		# We actually have the change the permissions of those two files: 
+	
+		my $core5_filemanager_connector_loc = make_safer($install_path . '/core5_filemanager/connectors/pl/filemanager.pl'); 
+	
+		installer_chmod($DADA::Config::DIR_CHMOD, $core5_filemanager_connector_loc);
+		installer_chmod($DADA::Config::DIR_CHMOD, $core5_filemanager_config_loc);
+		
+#		installer_rmdir(make_safer($install_path . '/core5_filemanager/connectors/php'));
+
+	}
+
+#	elsif($q->param('core5_filemanager_connector') eq 'php') {
+#		installer_rmdir(make_safer($install_path . '/core5_filemanager/connectors/pl'));		
+#	}
+	
+}
+
+
 
 
 sub uncomment_admin_menu_entry { 

@@ -1,10 +1,17 @@
 <!-- begin view_archive_screen.tmpl --> 
 
 <!-- tmpl_set name="title" value="Message Archives &#187; View Archive" -->
+<div id="screen_meta" data-menu_highlight="view_archive"></div>
 
 <div id="screentitle"> 
 	<div id="screentitlepadding">
-		<!-- tmpl_var title --> 
+		Message Archives 
+		&#187; 
+		<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_archive">
+			View Archive
+		</a>
+		 &#187;
+		<!-- tmpl_var name="subject" ESCAPE="HTML" -->
 	</div> 
 	<!-- tmpl_include help_link_widget.tmpl -->
 </div>

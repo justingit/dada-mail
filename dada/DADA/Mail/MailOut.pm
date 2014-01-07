@@ -196,11 +196,6 @@ sub _sanity_test {
 
 sub batch_params {
 
-	# DEV: Another idea would be to change the batch speed of 
-	# SES sending by finding what ($SentLast24Hours - $Max24HourSend) is
-	# and slowing down batch sending (more time between batches), when that limit gets closer. 
-	# Rather than a complete shutdown of sending. Hmm! 
-	
     my $self = shift;
     my ($args) = @_;
 
@@ -210,11 +205,9 @@ sub batch_params {
         $sending_method = $args->{-sending_method};
     }
 
-    my $amazon_ses_auto_batch_settings =
-      $self->{ls}->param('amazon_ses_auto_batch_settings');
+    my $amazon_ses_auto_batch_settings = $self->{ls}->param('amazon_ses_auto_batch_settings');
     if ( exists( $args->{-amazon_ses_auto_batch_settings} ) ) {
-        $amazon_ses_auto_batch_settings =
-          $args->{-amazon_ses_auto_batch_settings};
+        $amazon_ses_auto_batch_settings = $args->{-amazon_ses_auto_batch_settings};
     }
 
     my $enable_bulk_batching = $self->{ls}->param('enable_bulk_batching');
@@ -224,13 +217,24 @@ sub batch_params {
 
     # Amazon SES:
     if (
-        ($sending_method eq 'amazon_ses'
-        || (   $self->{ls}->param('sending_method') eq 'smtp'
-            && $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/ ))
+        (
+            $sending_method eq 'amazon_ses' || ( $self->{ls}->param('sending_method') eq 'smtp'
+                && $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/ )
+        )
         && $amazon_ses_auto_batch_settings == 1
       )
-    {        if ( exists( $self->{_cache}->{batch_params} ) ) {
-            return @{ $self->{_cache}->{batch_params} };
+    {
+
+        if ( exists( $self->{_cache}->{batch_params} ) ) {
+            if ( exists( $self->{_cache}->{batch_params}->{cached_at} ) ) {
+                if ( ( $self->{_cache}->{batch_params}->{cached_at} + 600 ) < time ) {
+                    return (
+                        $self->{_cache}->{batch_params}->{enable_bulk_batching},
+                        $self->{_cache}->{batch_params}->{batch_size},
+                        $self->{_cache}->{batch_params}->{batch_wait}
+                    );
+                }
+            }
         }
     }
 
@@ -238,107 +242,113 @@ sub batch_params {
 
     # Amazon SES:
     if (
-       ( $sending_method eq 'amazon_ses'
-        || (   $self->{ls}->param('sending_method') eq 'smtp'
-            && $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/ ))
+        (
+            $sending_method eq 'amazon_ses' || ( $self->{ls}->param('sending_method') eq 'smtp'
+                && $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/ )
+        )
         && $amazon_ses_auto_batch_settings == 1
       )
     {
         my $batch_size = 0;
         my $batch_wait = 0;
 
-		require DADA::App::AmazonSES; 
-		my $ses = DADA::App::AmazonSES->new; 
-	    my ($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats; 
+        require DADA::App::AmazonSES;
+        my $ses = DADA::App::AmazonSES->new;
+        my ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats;
+
         #                  0          10_000             5
 
-        #		$Max24HourSend = 100_000;
-        #		$MaxSendRate   = 5;
-
-# I kind of wonder what it is I should do about when it goes over the max per day,
-# Perhpas:
         if ( $SentLast24Hours >= $Max24HourSend ) {
             return ( $enable_bulk_batching, 0, 300, );
         }
-
-        if ( $Max24HourSend < 86_400 ) {
-
-            $batch_size = 1;
-            $batch_size = $batch_size * $MaxSendRate;    # 5
-
-            $batch_wait = 86_400 / $Max24HourSend;             # 8.64
-            $batch_wait = $batch_wait * $MaxSendRate;          # 8.64 * 5 = 43.2
-            $batch_wait = $batch_wait + ( $batch_wait * .10 ); # 38.8
-        }
         else {
 
-            $batch_size = $MaxSendRate;                        # 5
-            $batch_wait =
-              $Max24HourSend / 86_400;    # 100_000 / 86_400 = 1.1574...
-            $batch_wait = $batch_wait + ( $batch_wait * .10 );    # 38.8
-        }
+            $batch_wait = 1;
+            my $percent_used = ( ( 100 * $SentLast24Hours ) / $Max24HourSend ) / 100;
+            $batch_size = $MaxSendRate - ( $MaxSendRate * ( $percent_used * 10 ) ); # * 10 is fudge factor,
 
-		# This slows the batch settings down, if there's > 1 mailout going on
-		# at one time. 
-		if($DADA::Config::MAILOUT_AT_ONCE_LIMIT > 1){ 
-			my (
-			$monitor_mailout_report, 
-			$total_mailouts, 
-			$active_mailouts, 
-			$paused_mailouts, 
-			$queued_mailouts,
-			$inactive_mailouts
-			) = monitor_mailout(
-				{
-					-verbose => 0, 
-					-action  => 0, 
-				}
-			);
-			
-			# If the batch size is larger than how many messages we have, 
-			# better to divide that up, rather than the span between messages
-			# Round DOWN just to be on the safe side of things. 
-			if($batch_size > $active_mailouts) { 
-				require POSIX;
-				if($active_mailouts > 1){ 
-					if($active_mailouts < $DADA::Config::MAILOUT_AT_ONCE_LIMIT){ 
-						$batch_size = POSIX::floor(($batch_size / $active_mailouts));
-					}
-					else { 
-						$batch_wait = POSIX::floor(($batch_size / $DADA::Config::MAILOUT_AT_ONCE_LIMIT));					
-					}
-				}								
-			}
-			else { 
-				# else, make the wait longer
-				if($active_mailouts > 1){ 
-					if($active_mailouts < $DADA::Config::MAILOUT_AT_ONCE_LIMIT){ 
-						$batch_wait = ($batch_wait * $active_mailouts);
-					}
-					else { 
-						$batch_wait = ($batch_wait * $DADA::Config::MAILOUT_AT_ONCE_LIMIT);					
-					}
-				}				
-			}
-		}		
-			
-        require POSIX;
-        my @return = (
-            $enable_bulk_batching,
-            POSIX::floor($batch_size),
-            POSIX::ceil($batch_wait),
-        );
-        $self->{_cache}->{batch_params} = [@return];
-        return @return;
+            if ( $batch_size < 1.5 ) {
+
+                $batch_size = $MaxSendRate;
+                $batch_wait = 86400 / $Max24HourSend;                 # 8.64
+                $batch_wait = $batch_wait * $MaxSendRate;             # 8.64 * 5 = 43.2
+                $batch_wait = $batch_wait + ( $batch_wait * .10 );    # 38.8
+
+                if ( $batch_wait / $batch_size > 1 ) {                # 38.8 / 5
+                    $batch_wait = $batch_wait / $batch_size;          # 7.76
+                    $batch_size = 1;                                  # 1;
+                }
+            }
+
+            # This slows the batch settings down, if there's > 1 mailout going on
+            # at one time.
+            if ( $DADA::Config::MAILOUT_AT_ONCE_LIMIT > 1 ) {
+                my (
+                    $monitor_mailout_report, $total_mailouts,  $active_mailouts,
+                    $paused_mailouts,        $queued_mailouts, $inactive_mailouts
+                  )
+                  = monitor_mailout(
+                    {
+                        -verbose => 0,
+                        -action  => 0,
+                    }
+                  );
+
+                # If the batch size is larger than how many messages we have,
+                # better to divide that up, rather than the span between messages
+                # Round DOWN just to be on the safe side of things.
+                if ( $batch_size > $active_mailouts ) {
+                    require POSIX;
+                    if ( $active_mailouts > 1 ) {
+                        if ( $active_mailouts < $DADA::Config::MAILOUT_AT_ONCE_LIMIT ) {
+                            $batch_size = POSIX::floor( ( $batch_size / $active_mailouts ) );
+                        }
+                        else {
+                            $batch_wait = POSIX::floor( ( $batch_size / $DADA::Config::MAILOUT_AT_ONCE_LIMIT ) );
+                        }
+                    }
+                }
+                else {
+                    # else, make the wait longer
+                    if ( $active_mailouts > 1 ) {
+                        if ( $active_mailouts < $DADA::Config::MAILOUT_AT_ONCE_LIMIT ) {
+                            $batch_wait = ( $batch_wait * $active_mailouts );
+                        }
+                        else {
+                            $batch_wait = ( $batch_wait * $DADA::Config::MAILOUT_AT_ONCE_LIMIT );
+                        }
+                    }
+                }
+            }
+
+            require POSIX;
+            $batch_size = POSIX::floor($batch_size), $batch_wait = POSIX::ceil($batch_wait),
+
+              $self->{_cache}->{batch_params} = {
+                enable_bulk_batching => $enable_bulk_batching,
+                batch_size           => $batch_size,
+                batch_wait           => $batch_wait,
+                cached_at            => time,
+              };
+
+            return ( $enable_bulk_batching, $batch_size, $batch_wait );
+        }
 
     }
     else {
-        return (
-            $enable_bulk_batching,
-            $self->{ls}->param('mass_send_amount'),
-            $self->{ls}->param('bulk_sleep_amount'),
-        );
+        return ( $enable_bulk_batching, $self->{ls}->param('mass_send_amount'),
+            $self->{ls}->param('bulk_sleep_amount'), );
     }
+}
+
+
+
+
+sub reset_batch_params_cache {
+    my $self = shift;
+    $self->{_cache}->{batch_params} = undef;
+    delete( $self->{_cache}->{batch_params} );
+    return 1;
 }
 
 
@@ -1982,15 +1992,45 @@ sub clean_up {
     croak "Make sure to call, 'associate' before calling cleanup!"
         if ! $self->dir; 
 
+	require File::Copy;
+	
+	##########################################################################
+	# Save that log: 
+	#	
+	if($self->{ls}->param('mass_mailing_save_logs') == 1) { 
+    	my $orig_log_file = $self->dir . '/' . $file_names->{log};
+           $orig_log_file = make_safer($orig_log_file);
+
+        my $letter_id   = $self->_internal_message_id;
+           $letter_id   =~ s/\@/_at_/g;
+           $letter_id   =~ s/\>|\<//g;
+
+    	my $save_log_file = make_safer(
+    		$DADA::Config::LOGS 
+    		. '/'
+    		. 'sendout-' 
+    		. $self->list 
+    		. '-' 
+    		. $self->mailout_type
+    		. '-'
+    		. $letter_id
+    		. '-' 
+    		. $file_names->{log}
+    		); 
+    	File::Copy::copy($orig_log_file, $save_log_file)
+    		or warn "could not move file from, '$orig_log_file', to, '$save_log_file': $!"; 
+    }
+	#
+	##########################################################################
+
 	my $orig_name = $self->dir; 
 		
 	# so, we rename things, to get them out of the way, right away:
 	my $tmp_name = $orig_name;
 	   $tmp_name =~ s/sendout/TMP_sendout/; 
 	
-	require File::Copy; 
 	File::Copy::move($orig_name, $tmp_name)
-		or warn "could not move file from, '$orig_name', to, '$tmp_name': $!"; 
+		or warn "could not move director from, '$orig_name', to, '$tmp_name': $!"; 
 		
 	$self->dir($tmp_name); 
 

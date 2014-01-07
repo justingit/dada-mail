@@ -1,6 +1,10 @@
-<!-- begin profile_fields.tmpl --> 
+<!-- begin profile_fields_screen.tmpl --> 
 
 <!-- tmpl_set name="title" value="Profiles &#187; Profile Fields" -->
+<!-- tmpl_set name="load_jquery_validate" value="1" -->
+
+<div id="screen_meta" data-menu_highlight="profile_fields"></div>
+
 <div id="screentitle"> 
 	<div id="screentitlepadding">
 		Profiles
@@ -17,6 +21,8 @@
 	</div> 
 	<!-- tmpl_include help_link_widget.tmpl -->
 </div>
+
+<div id="profile_fields"></div>
 
 <!-- tmpl_if field_changes --> 
 
@@ -47,19 +53,11 @@
 	</div> 
 <!-- /tmpl_if --> 
 
-
-
-
-
-
-
-
-
 <!-- tmpl_if can_have_subscriber_fields --> 
     
 	
     
-    <!-- tmpl_if field_errors --> 
+    <!-- tmpl_unless field_status --> 
     
 		<div class="badweatherbox"> 
 		
@@ -90,6 +88,14 @@
              <li>
               <p> 
                 The field name is too long - make sure it's less than 64 characters.
+              </p>
+              </li>
+         <!-- /tmpl_if --> 
+
+          <!-- tmpl_if field_error_upper_case -->
+             <li>
+              <p> 
+                The field name has upper case characters.
               </p>
               </li>
          <!-- /tmpl_if --> 
@@ -149,14 +155,15 @@
     
 	</div> 
 	
-    <!-- /tmpl_if --> 
+    <!-- /tmpl_unless --> 
     
-
+	<div class="clearskiesbox">
 	<p>
 	 Subscriber Profile Fields are Global and will affect all Mailing Lists. 
 	 You may only change the Subscriber Profile Fields if you are logged in with the <!-- tmpl_var PROGRAM_NAME --> 
 	  Root Password.
 	</p>
+	</div> 
 
 
 		    
@@ -341,7 +348,7 @@
 
     
     <!-- tmpl_if root_login --> 
-         <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+         <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="add_edit_field">
              <input type="hidden" name="f" value="profile_fields" /> 
 
 			<!-- tmpl_unless edit_field --> 
@@ -365,17 +372,14 @@
                  <p>
                   <input type="text" name="field"  id="field" value="<!-- tmpl_var field escape="HTML"  -->" class="full" <!-- tmpl_if using_SQLite --><!-- tmpl_if edit_field -->disabled="disabled"<!-- /tmpl_if --><!-- /tmpl_if --> /><br /> 
                   <em>
-					Use underscores, instead of spaces - no funny characters, and use lower case characters instead of uppercase.
+					(Use underscores, instead of spaces - no funny characters, and use lower case characters instead of uppercase.)
                   </em><br /> <br /> 
                   
-
 <!-- tmpl_if using_SQLite -->
 	<!-- tmpl_if edit_field -->
-	
 </p>
 	<p class="error">Disabled. SQLite backend currently doesn't support renaming fields.</p>
 	<p>
-		
 	<!-- /tmpl_if -->
 <!-- /tmpl_if -->
 
@@ -462,5 +466,5 @@
 
 
 
-<!-- end profile_fields.tmpl --> 
+<!-- end profile_fields_screen.tmpl --> 
 

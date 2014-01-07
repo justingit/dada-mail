@@ -2124,7 +2124,7 @@ sub create_probable_missing_tables {
 			};
 		}
 		else {
-			warn "no not need to create table, '$table_name'";
+			warn "no need to create table, '$table_name'";
 		}
 	} 
 
@@ -2830,7 +2830,7 @@ sub can_use_LWP_Simple {
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2013 Justin Simoni 
+Copyright (c) 1999 - 2014 Justin Simoni 
 
 http://justinsimoni.com 
 

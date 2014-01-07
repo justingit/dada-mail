@@ -596,6 +596,8 @@ my $ar_str = q{
 	
 	<p><a href = "http://example.com/randomspaces.html">Huh?</a></p>
 	
+	<p><a href="http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi/t/AaRIC3SphmbY5hKFagDo5hUensbXXoo3jMVxjSY8/">Unsubscribe Link!</a></p>
+	
 	<p><a href='http://example.com/single_quotes.html'>Single Quotes!</a></p>
 	
 	<p><a href=http://example.com/no_quotes.html>No Quotes!</a></p>
@@ -636,6 +638,8 @@ my $should_be = q{
 	<p><a href="<?dada redirect url="http://yahoo.com/blah.cgi?f=test" ?>">Yahoo QS Test</a></p>
 	
 	<p><a href = "<?dada redirect url="http://example.com/randomspaces.html" ?>">Huh?</a></p>
+	
+	<p><a href="http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi/t/AaRIC3SphmbY5hKFagDo5hUensbXXoo3jMVxjSY8/">Unsubscribe Link!</a></p>
 	
 	<p><a href='<?dada redirect url="http://example.com/single_quotes.html" ?>'>Single Quotes!</a></p>
 	

@@ -10,13 +10,15 @@ I<Amazon Simple Email Service (Amazon SES) is a highly scalable and cost-effecti
 
 Dada Mail supports Amazon SES, both by using the Amazon SES API (as well as using the Amazon SES SMTP Interface.)
 
-Amazon SES is on solution to the problem of trying to send too many messages too quickly on a hosting plan that may not support such numbers. It does this by allowing you to send out your messages with what could be a very generous quota, while also having good deliverability: users who abuse the service are disallowed future use. 
+Amazon SES is one solution to a problem faced by many people on shared hosting account: trying to send too many messages, too quickly. It also can help solve the problem found with people sending large mailings lists, even when they have the resources to send the messages themselves: problems with mail sending aren't a problem with just a few addresses, but with your entire mailing list. 
 
-Amazon SES costs around $0.10 per I<thousand> messages you send. See: 
+SES does this by allowing you to send out your messages with what could be a very generous quota, while also having good deliverability: users who abuse the service are disallowed future use. 
+
+B<Amazon SES costs around $0.10 per I<thousand> messages you send.> See:
 
 L<http://aws.amazon.com/ses/pricing/>
 
-for current pricing. Using the service in a testing, non-production mode is free. 
+for current pricing. Using the service in a testing, non-production mode is I<free>. 
 
 =head1 Use for Closed-List Opt-In Subscriptions Lists Only
 
@@ -297,6 +299,12 @@ B<Automatically set batching speeds based on your Amazon SES limits>
 
 Your batch settings will now grow or shrink, depending on your current Amazon SES sending limits. If you do go over your total 24 hour quota, mass mailings will not be sent out, and batches will be set to wait for 5 minutes, before trying to be sent again. When your 24 hour quota is lifted, sending will once again take place. 
 
+For the most part, Dada Mail will attempt to aggressively keep your batch sending speeds high, until you start coming near your daily mail quota set by SES.
+
+When that happens, batch sending speeds will creep lower, to accomadate your limits. At no point should Dada Mail send either faster than it should, either by going over the limit per second limit, or the 24 hour limit. 
+
+Your SES sending limits themselves should creep up, as you use the service. Keeping the mass sending rates high will show the Amazon AWS system that you're utilizing the system, and they're most likely going to want to raise the limit for you. 
+
 =head2 Request Full Production Access
 
 Once you're done testing Amazon SES, you'll want to request full production access here: 
@@ -325,9 +333,26 @@ L<http://docs.aws.amazon.com/ses/latest/DeveloperGuide/easy-dkim.html>
 
 Sending via Amazon SES is done with a persistent HTTP connection, so performance should be pretty good!. Expect around .3 seconds/message for I<just> passing the email message from Dada Mail to the Amazon SES service. 
 
-=head3 No Discussion List Support
+=head3 Discussion List Support
 
-Dada Mail preserves the C<From>: header address, when it sends out messages received from the mailing list's subscribers. This makes using Amazon SES for discussion lists unrealistic, as every subscriber of your mailing list would need to be verified through Amazon SES. 
+By default, Dada Mail preserves the C<From>: header address, when it sends out messages received from the mailing list's subscribers. 
+
+This makes using Amazon SES for discussion lists unrealistic, as every subscriber of your mailing list would need to be verified through Amazon SES. 
+
+You may try using Amazon SES for discussion lists, by checking the option in Bridge labeled, 
+
+B<Send messages, "On Behalf Of" (p.p. mode)>
+
+This will change Dada Mail's behavior to B<not> preserve the C<From>: header, but rather reset's this header to always be the List Owner's email address, which always should be verified with Amazon SES. This should allow you to conduct a discussion list with Dada Mail and Amazon SES. 
+
+Please note that when this option is set, replies to the mailing list will act a little differently, depending on which option you use. If you've set Bridge's prefs to: 
+
+I<Replies to messages should: B<be addressed to the sender>>
+
+Reply-All functionality (sending the reply to BOTH the mailing list and the original sender) will not work correctly - the reply will only go to the original sender, if you Reply, or Reply-All. 
+
+The, C<Reply-To> header will also be explicitly set to the original sender. We do that because the C<From:> header munging, using this method does not preserve the original email address in the C<From:> header, so unless we set the C<Reply-To:> header, there's no way to easily reply to the original sender.
+
 
 =head3 Different email headers sent
 

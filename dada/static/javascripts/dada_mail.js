@@ -30,20 +30,32 @@ $(document).ready(function() {
 	if ($("#navcontainer").length) {
 		
 		var admin_menu_callbacks = $.Callbacks();
-		
 		admin_menu_callbacks.add(admin_menu_drafts_notification());
 		admin_menu_callbacks.add(admin_menu_sending_monitor_notification());
 		admin_menu_callbacks.add(admin_menu_subscriber_count_notification());
 		admin_menu_callbacks.add(admin_menu_archive_count_notification());
 		admin_menu_callbacks.add(admin_menu_sending_preferences_notification());
 		admin_menu_callbacks.add(admin_menu_bounce_handler_notification());
-		
 		admin_menu_callbacks.fire();
+		
+		if($("#screen_meta").length) { 
+			var highlight_scrn = $("#screen_meta").attr("data-menu_highlight");
+			$( "#admin_menu_" + highlight_scrn ).addClass( "menu_selected" );
+		}
+		else { 
+			/* alert("needs a highlight_scrn"); */
+		}
+	
+		$("body").on("click", "#navcontainer", function(event) {
+			$( "a" ).removeClass( "menu_selected" );
+		});
+		
 	}
+	
+	
 
 	//Mail Sending >> Send a Message 
 	if ($("#send_email_screen").length || $("#send_url_email").length || $("#list_invite").length) {
-		
 		
 	  var msie6 = $.browser == 'msie' && $.browser.version < 7;
 	  if (!msie6) {
@@ -65,7 +77,15 @@ $(document).ready(function() {
 		
 		$("body").on("click", ".kcfinder_open", function(event) {
 			event.preventDefault();
-			openKCFinder(this); 
+			
+			if($("#kcfinder_enabled").val() == 1) { 
+				attachments_openKCFinder(this);
+			}else if($("#core5_filemanager_enabled").val() == 1){ 
+				browsecore5FileManager(this);
+			}
+			else { 
+				alert("No File Browser set up!");
+			}
 		});
 		
 		setup_attachment_fields(); 
@@ -124,9 +144,16 @@ $(document).ready(function() {
 			var fid = 'mass_mailing';
 
 			if ($("#using_ckeditor").length) {
-				// Strange you have to do this, but, you do: 
-				CKEDITOR.instances['html_message_body'].updateElement();
+				if(CKEDITOR.instances['html_message_body']) { 
+					CKEDITOR.instances['html_message_body'].updateElement();
+				}
 			}
+			else if($("#using_tinymce").length) { 
+				if($("#html_message_body_ifr").length) { 
+					tinyMCE.triggerSave();
+				}
+			}
+			
 			var itsatest = $(this).hasClass("justatest");
 			if (sendMailingListMessage(fid, itsatest) === true) {
 				if($("#f").val() != 'list_invite') { 
@@ -426,11 +453,8 @@ $(document).ready(function() {
 			event.preventDefault();
 			amazon_verify_email();
 		});
-
-
-
-
 	}
+	
 
 	// Mail Sending >> Advanced Options
 	if ($("#adv_sending_preferences").length) {
@@ -524,7 +548,26 @@ $(document).ready(function() {
 		toggleManualBatchSettings();
 	});
 
-
+	if($("#profile_fields").length) { 
+		
+		var no_weird_characters_regex = /[^a-z0-9_]/; 
+		jQuery.validator.addMethod("no_weird_characters", function(value, element) {
+	    return this.optional(element) || !(no_weird_characters_regex.test(value));
+	    }, "Value can only contain lowercase alpha-numeric characters, and underscores");
+		
+		$("#add_edit_field").validate({
+			debug: false,
+			rules: {
+				field: {
+					required: true,
+					no_weird_characters: true,
+					maxlength: 64
+				}
+			}
+		});
+		
+	}
+	
 	// Version Check 
 	$('#check_version').live('click', function(event) {
 		event.preventDefault();
@@ -567,14 +610,50 @@ $(document).ready(function() {
 			plugins_bridge_test_pop3();
 		});
 
+		$(".change_pop3_password").live("click", function(event) {
+			plugins_bridge_show_change_pop3_password_form();
+			event.preventDefault();
+		});
+		$(".cancel_change_pop3_password").live("click", function(event) {
+			plugins_bridge_hide_change_pop3_password_form();
+			event.preventDefault();
+		});
+
+		
+		
+		
+		
+
+
+
 		$("body").on("click", '.plugins_bridge_manually_check_messages', function(event) {
 			event.preventDefault();
 			plugins_bridge_manually_check_messages();
+			admin_menu_notification('admin_menu_mailing_monitor_notification', 'admin_menu_sending_monitor');
 		});
 
-		$("body").on("click", '.list_email_setup', function(event) {
+		$("body").on("click", '.bridge_settings', function(event) {
 			bridge_setup_list_email_type_params();
 		});
+		
+		
+		$("body").on("click", ".view_authorized_senders", function(event) {
+			event.preventDefault();
+			window.location.href = $("#s_program_url").val() + '?f=view_list;type=authorized_senders';
+		});
+		$("body").on("click", ".add_authorized_senders", function(event) {
+			event.preventDefault();
+			window.location.href = $("#s_program_url").val() + '?f=add;type=authorized_senders';
+		});
+		$("body").on("click", ".view_moderators", function(event) {
+			event.preventDefault();
+			window.location.href = $("#s_program_url").val() + '?f=view_list;type=moderators';
+		});
+		$("body").on("click", ".add_moderators", function(event) {
+			event.preventDefault();
+			window.location.href = $("#s_program_url").val() + '?f=add;type=moderators';
+		});
+		
 
 
 
@@ -766,7 +845,7 @@ function admin_menu_notification(flavor, target_class) {
 					$('.' + target_class + '_notification').remove();
 				}
 				//console.log('update! ' + target_class); 
-				$('.' + target_class).append('<span class="' + target_class + '_notification"> ' + content + '</span>');
+				$('#' + target_class).append('<span class="' + target_class + '_notification"> ' + content + '</span>');
 			});
 			if (no_loop != 1) {
 				setTimeout(
@@ -798,6 +877,20 @@ function save_draft(async) {
 	var r = false; 
 	
     /* alert($("#mass_mailing").serialize() + '&process=save_as_draft'); */
+
+
+	if ($("#using_ckeditor").length) {
+		if(CKEDITOR.instances['html_message_body']) { 
+			CKEDITOR.instances['html_message_body'].updateElement();
+		}
+	}
+	else if($("#using_tinymce").length) { 
+		if($("#html_message_body_ifr").length) { 
+			tinyMCE.triggerSave();
+		}
+	}
+
+
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
 		type: "POST",
@@ -825,6 +918,18 @@ function auto_save_as_draft() {
 	if($("#draft_enabled").val() === 0){ 
 		return; 
 	}
+	
+	if ($("#using_ckeditor").length) {
+		if(CKEDITOR.instances['html_message_body']) { 
+			CKEDITOR.instances['html_message_body'].updateElement();
+		}
+	}
+	else if($("#using_tinymce").length) {
+		if($("#html_message_body_ifr").length) { 
+			tinyMCE.triggerSave();
+		}
+	}
+	
 	var r = 60 * 1000; // Every 1 minute. 
 	var refresh_loop = function(no_loop) {
 		$('#draft_notice .alert').text('auto-saving...'); 
@@ -1696,6 +1801,35 @@ function bridge_setup_list_email_type_params() {
 			$('#bridge_mail_forward_pipe_params').hide('blind');
 		}
 	}
+	
+	if ($("#group_list_no").prop("checked") === true) {
+		if ($('#announce_list_params').is(':hidden')) {
+			$('#announce_list_params').show('blind');
+		}
+		if ($('#discussion_list_params').is(':visible')) {
+			$('#discussion_list_params').hide('blind');
+		}
+	}
+	if ($("#group_list_yes").prop("checked") === true) {
+		if ($('#announce_list_params').is(':visible')) {
+			$('#announce_list_params').hide('blind');
+		}
+		if ($('#discussion_list_params').is(':hidden')) {
+			$('#discussion_list_params').show('blind');
+		}
+	}
+	if ($("#enable_moderation").prop("checked") === true) {
+		if ($('#moderaton_params').is(':hidden')) {
+			$('#moderaton_params').show('blind');
+		}
+ 	}
+	else if ($('#enable_moderation').prop("checked") !== true) {
+		if ($('#moderaton_params').is(':visible')) {
+			$('#moderaton_params').hide('blind');
+		}
+	}
+
+
 }
 
 function plugins_bridge_test_pop3() {
@@ -1732,6 +1866,21 @@ function plugins_bridge_manually_check_messages() {
 		}
 	});
 }
+
+function plugins_bridge_show_change_pop3_password_form() {
+	$("#change_pop3_password_button").hide('blind');
+	$("#change_pop3_password_field").show('blind');
+}
+
+function plugins_bridge_hide_change_pop3_password_form() {
+	$("#discussion_pop_password").val('');
+	$("#change_pop3_password_field").hide('blind');
+	$("#change_pop3_password_button").show('blind');
+	
+}
+
+
+
 
 // Plugins >> Mailing Monitor 
 
@@ -2746,10 +2895,10 @@ function removeSubscriberField(form_name) {
 
 }
 
-function openKCFinder(field) {
+function attachments_openKCFinder(field) {
     window.KCFinder = {
         callBack: function(url) {
-			var kcfinder_upload_url = escapeRegExp($("#kcfinder_upload_url").val() + '/'); 
+			var kcfinder_upload_url = escapeRegExp($("#kcfinder_upload_url").val() + '/'); 			
 			var re = new RegExp(kcfinder_upload_url,'g');
 			var new_val = url.replace(re, ''); 
             $(field).html('<img src="' + $("#SUPPORT_FILES_URL").val() + '/static/images/attachment_icon.gif" />' + new_val);			
@@ -2763,12 +2912,55 @@ function openKCFinder(field) {
         'resizable=1, scrollbars=0, width=800, height=600'
     );
 }
-
 function escapeRegExp(str) {
   return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
 }
 
 
+
+/* core5 FileManager */
+var urlobj;
+
+function browsecore5FileManager(obj) {
+	urlobj = obj;
+	var core5_filemanager_url = $("#core5_filemanager_url").val() + '/index.html';
+	opencore5FileManager(
+	core5_filemanager_url, screen.width * 0.7, screen.height * 0.7);
+}
+
+var oWindow;
+
+function opencore5FileManager(url, width, height) {
+	var iLeft = (screen.width - width) / 2;
+	var iTop = (screen.height - height) / 2;
+	var sOptions = "toolbar=no,status=no,resizable=yes,dependent=yes";
+	sOptions += ",width=" + width;
+	sOptions += ",height=" + height;
+	sOptions += ",left=" + iLeft;
+	sOptions += ",top=" + iTop;
+	oWindow = window.open(url + '?custom_function=SetAttachmentUrl', "BrowseWindow", sOptions);
+}
+
+function SetAttachmentUrl(url, width, height, alt) {
+	var core5_filemanager_upload_url = escapeRegExp($("#core5_filemanager_upload_url").val() + '/');
+	core5_filemanager_upload_url + '/';
+	var re = new RegExp(core5_filemanager_upload_url, 'g');
+	var new_val = url.replace(re, '');
+	// console.log('new_val: ' + new_val);
+	var field = urlobj;
+
+	$(field).html('<img src="' + $("#SUPPORT_FILES_URL").val() + '/static/images/attachment_icon.gif" />' + new_val);
+	$("#" + $(field).attr("data-attachment")).val(new_val);
+	$("#" + $(field).attr("data-attachment") + '_remove_button').show();
+	oWindow = null;
+} /* core5 FileManager */
+
+
+/*
+function SetUrl() { 
+	alert('here? SetUrl');
+}
+*/
 Date.prototype.format = function(format) //author: meizz
 {
   var o = {

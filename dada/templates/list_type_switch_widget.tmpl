@@ -77,6 +77,21 @@
 				</li>
 			<!-- /tmpl_if -->
 			
+
+			<!-- tmpl_if list_settings.enable_moderation -->
+				<li <!-- tmpl_if EXPR="(type eq 'moderators')" --> class="active" <!-- /tmpl_if -->>
+				<!-- tmpl_if flavor_is_view_list --> 
+				  	<a href="#" class="change_type" data-type="moderators">
+				<!-- tmpl_else --> 
+					<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=<!-- tmpl_var flavor -->;type=moderators">
+				<!-- /tmpl_if -->
+				   <span>
+					Moderators (<!-- tmpl_var moderators_num -->)
+			   	  </span>
+			   </a>
+				</li>
+			<!-- /tmpl_if -->
+
 			
 			<!-- tmpl_if flavor_is_view_list --> 
 				<!-- tmpl_if show_bounced_list -->

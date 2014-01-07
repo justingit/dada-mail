@@ -116,8 +116,9 @@ use strict;
 use vars qw( @EXPORT );
 
 my %Global_Template_Variables = (
-SUPPORT_FILES_URL  => $DADA::Config::SUPPORT_FILES->{url}, 
-kcfinder_enabled   => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled}, 		
+SUPPORT_FILES_URL           => $DADA::Config::SUPPORT_FILES->{url}, 
+kcfinder_enabled            => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled},
+core5_filemanager_enabled   => $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled},
 		
 ROOT_PASS_IS_ENCRYPTED => $DADA::Config::ROOT_PASS_IS_ENCRYPTED, 
 PROGRAM_NAME           => $DADA::Config::PROGRAM_NAME, 
@@ -215,18 +216,11 @@ my %WYSIWYG_Vars = WYSIWG_Vars();
 
 sub WYSIWG_Vars { 
 	my %Vars = (
-		FCKEDITOR_URL => undef, 
 		CKEDITOR_URL  => undef, 
 		TINY_MCE_URL  => undef, 
 	); 
 	# And test that I can get to the URL - our that at least it's a valid URL... 
 	
-	if(    $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{fckeditor}->{enabled} == 1 
-		&& defined($DADA::Config::WYSIWYG_EDITOR_OPTIONS->{fckeditor}->{url}) 
-		&& isa_url($DADA::Config::WYSIWYG_EDITOR_OPTIONS->{fckeditor}->{url})
-	){ 
-		$Vars{FCKEDITOR_URL} = $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{fckeditor}->{url}; 
-	}
 	if($DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{enabled} == 1 
 		&& defined($DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{url})
 		&& isa_url($DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{url})
@@ -257,9 +251,6 @@ sub make_wysiwyg_vars {
 	 
 	if($ls->param('use_wysiwyg_editor') eq 'ckeditor' && defined($WYSIWG_Vars{CKEDITOR_URL})) { 
 		$vars{using_ckeditor} = 1; 
-	}
-	elsif($ls->param('use_wysiwyg_editor') eq 'fckeditor' && defined($WYSIWG_Vars{FCKEDITOR_URL})) { 
-		$vars{using_fckeditor} = 1; 		
 	}
 	elsif($ls->param('use_wysiwyg_editor') eq 'tiny_mce' && defined($WYSIWG_Vars{TINY_MCE_URL})) { 
 		$vars{using_tiny_mce} = 1; 		
@@ -2449,7 +2440,7 @@ sub wrap_screen {
 	my $vars = { 
 		content => $tmpl, 
 	};
-	for(qw(title show_profile_widget load_wysiwyg_editor load_google_viz load_colorbox SUPPORT_FILES_URL)){ 
+	for(qw(title show_profile_widget load_wysiwyg_editor load_google_viz load_colorbox load_jquery_validate SUPPORT_FILES_URL)){ 
 		if(exists($params->{$_})){ 
 			# variables within variables... 
 			$vars->{$_} = $params->{$_}; 
@@ -3118,7 +3109,7 @@ sub _slurp_raw {
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2013 Justin Simoni 
+Copyright (c) 1999 - 2014 Justin Simoni 
 http://justinsimoni.com 
 All rights reserved. 
 

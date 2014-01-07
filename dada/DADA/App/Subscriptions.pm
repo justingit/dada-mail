@@ -1771,6 +1771,7 @@ sub complete_unsubscription {
             # Else, I dunno! There's no, -html_output argument, here!";
         }
     }
+
 }
 
 sub pl_unsubscription_request {
@@ -2466,8 +2467,8 @@ sub fancy_data {
     }
 
     if ( $args->{-type} eq 'json' ) {
-        require JSON::PP;
-        my $json      = JSON::PP->new->allow_nonref;
+        require JSON;
+        my $json      = JSON->new->allow_nonref;
         my $data_back = $json->pretty->encode($return);
         return $data_back;
     }
@@ -2814,7 +2815,7 @@ Justin Simoni http://dadamailproject.com
 
 =head1 LICENCE AND COPYRIGHT
 
-Copyright (c) 1999 - 2013 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2014 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

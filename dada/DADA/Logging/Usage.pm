@@ -141,7 +141,7 @@ sub DESTROY{
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2013 Justin Simoni 
+Copyright (c) 1999 - 2014 Justin Simoni 
 http://justinsimoni.com 
 All rights reserved. 
 

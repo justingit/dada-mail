@@ -1,7 +1,5 @@
- <!-- tmpl_set name="title" value="Bridge" -->
-
-
-
+<!-- tmpl_set name="title" value="Bridge" -->
+<div id="screen_meta" data-menu_highlight="bridge"></div>
 
 
 <div id="screentitle"> 
@@ -19,14 +17,14 @@
 <!-- tmpl_unless list_email_status --><!--/tmpl_unless-->
 
 <form name="default_form" action="<!-- tmpl_var Plugin_URL --> "method="post">
-	 <input type="hidden" name="plugin_url"   id="plugin_url"   value="<!-- tmpl_var Plugin_Url -->" /> 
 
-
+	 <input type="hidden" name="plugin_url"    id="plugin_url"    value="<!-- tmpl_var Plugin_Url -->" /> 
+	 <input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" /> 
 
 <!-- tmpl_if list_settings.disable_discussion_sending -->
 <div class="badweatherbox">
   <p><strong>
-   This Plugin is Currently Disabled for This List!
+   This Plugin is Currently Disabled for this Mailing List!
   </strong></p> 
 
 <p>
@@ -88,6 +86,16 @@
 	</div> 
 <!-- /tmpl_if -->
 
+<!-- tmpl_if error_list_email_subscribed_to_moderators --> 
+	<div class="badweatherbox">
+		<p>
+			Your List Email is currently subscribed to your <strong>Moderators List</strong>. It needs to be set to a different address. 
+		</p>
+	</div> 
+<!-- /tmpl_if -->
+
+
+
 <!-- tmpl_if error_list_email_subscribed_to_another_list --> 
 	<div class="badweatherbox">
 		<p>
@@ -104,6 +112,15 @@
 	</div> 
 
 <!-- /tmpl_if -->
+<!-- tmpl_if error_list_email_subscribed_to_another_moderators --> 
+	<div class="badweatherbox">
+	<p>
+			Your List Email is currently subscribed to <strong>another mailing list's Moderators List</strong>. It needs to be set to a different address. 
+		</p>
+	</div> 
+
+<!-- /tmpl_if -->
+
 
 
 
@@ -116,7 +133,7 @@
     </label>
    </td>
    <td>
-    <input name="discussion_pop_email" id="discussion_pop_email" type="text" value="<!-- tmpl_var list_settings.discussion_pop_email -->" class="full bigger_button" <!-- tmpl_unless list_email_status -->style="background:red;font-weight:bold;color:white;border:3px solid black"<!-- /tmpl_unless -->/>
+    <input name="discussion_pop_email" id="discussion_pop_email" type="text" value="<!-- tmpl_var list_settings.discussion_pop_email -->" class="full bigger_button" style="color:black" <!-- tmpl_unless list_email_status -->style="background:red;font-weight:bold;color:white;border:3px solid black"<!-- /tmpl_unless -->/>
 	
    </td>
   </tr>
@@ -134,7 +151,7 @@
 		<tr> 
 			<td width="15">
 				<p>
-					<input type="radio" name="bridge_list_email_type" class="list_email_setup" id="mail_forward_pipe" value="mail_forward_pipe" <!-- tmpl_if expr="(list_settings.bridge_list_email_type eq 'mail_forward_pipe')" -->checked="checked"<!-- /tmpl_if -->>
+					<input type="radio" name="bridge_list_email_type" class="bridge_settings" id="mail_forward_pipe" value="mail_forward_pipe" <!-- tmpl_if expr="(list_settings.bridge_list_email_type eq 'mail_forward_pipe')" -->checked="checked"<!-- /tmpl_if -->>
 				</p>
 			</td>
 			<td>
@@ -153,7 +170,7 @@
 		<tr> 
 			<td align="right" width="15">
 				<p>
-					<input type="radio" name="bridge_list_email_type" class="list_email_setup" id="pop3_account" value="pop3_account" <!-- tmpl_if expr="(list_settings.bridge_list_email_type eq 'pop3_account')" -->checked="checked"<!-- /tmpl_if -->>
+					<input type="radio" name="bridge_list_email_type" class="bridge_settings" id="pop3_account" value="pop3_account" <!-- tmpl_if expr="(list_settings.bridge_list_email_type eq 'pop3_account')" -->checked="checked"<!-- /tmpl_if -->>
 				</p>
 			</td>
 			<td>
@@ -192,8 +209,19 @@
 					    </label>
 					   </td>
 					   <td>
-					    <input name="discussion_pop_password" id="discussion_pop_password" type="password" value="<!-- tmpl_var name=discussion_pop_password escape="HTML"-->" />
-					   </td>
+						<!-- tmpl_unless has_discussion_pop_password --> 
+					    	<input name="discussion_pop_password" id="discussion_pop_password" type="password" value="" />
+					   <!-- tmpl_else --> 
+							<div id="change_pop3_password_button">
+								<input type="button" value="Click to Change POP3 Password..." class="cautionary change_pop3_password" />
+							</div> 
+							<div id="change_pop3_password_field" style="display:none">
+								<input name="discussion_pop_password" id="discussion_pop_password" type="text" /><a href="#" class="cancel_change_pop3_password"> or cancel </a>
+							</div>
+						<!-- /tmpl_unless --> 
+						
+						
+						</td>
 					  </tr>
 
 
@@ -309,10 +337,14 @@ General
     
     <p>
      <label for="disable_discussion_sending">
-      Disable sending using this method
+      Disable Bridge
      </label>
           <br /> 
-      ALL e-mails received at (<strong><!-- tmpl_var list_settings.discussion_pop_email escape="HTML" --></strong>) will be deleted.     
+      ALL e-mails sent to your List Email 
+		<!-- tmpl_if list_settings.discussion_pop_email --> 
+			(<strong><!-- tmpl_var list_settings.discussion_pop_email escape="HTML" --></strong>)
+		<!-- /tmpl_if -->
+		will be deleted.     
     </p>
    
    
@@ -351,104 +383,69 @@ General
 	  </table> 
 	 </p>
 	</td>
-	</tr>
-
-
-
-
-  <tr> 
-   <td> 
-    <input name="enable_authorized_sending" id="enable_authorized_sending" type="checkbox" value="1" <!--tmpl_if list_settings.enable_authorized_sending -->checked="checked"<!--/tmpl_if--> /> 
-   </td>
-   <td>
-    <p>
-     <label for="enable_authorized_sending">
-      Allow Messages Received From Authorized Senders
-     </label>
-     <br /> 
-     
-       Authorized Senders may post to announce-only lists and discussions lists without being on the subscription list themselves. Once enabled, you may 
-     add Authorized Senders using the 
-     
-     <!-- tmpl_if list_settings.enable_authorized_sending --> 
-      <a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list&type=authorized_senders">
-       View</a>/<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=add&type=authorized_senders">Add
-      </a>
-
-
-	<!-- tmpl_else --> 
-	View/Add 
-     <!--/tmpl_if-->
-
- list Administration Screens.
-    </p>
-	<!-- tmpl_if list_settings.enable_authorized_sending --> 
-	
-	
-	
-	
-     
-  		  <!-- tmpl_if show_authorized_senders_table --> 
-			<p><strong>Your Authorized Senders:</strong></p>
-			<div style="max-height: 200px; width:250px; overflow: auto; border:1px solid black">
-			 <table class="stripedtable">
-	
-				<!-- tmpl_loop authorized_senders --> 
-					  <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
-					 <td> 
-					 <p><!-- tmpl_var email --></p>
-					</td> 
-					</tr> 
-		
-				<!--/tmpl_loop-->
-				
-				</table> 
-				
-				</div> 
-				
-		<!-- /tmpl_if --> 	
-	
-	
-	<!--/tmpl_if-->
-
-    </td> 
-   </tr> 
-   
+	</tr>   
    </table> 
-   
+
+
 </fieldset> 
 
 <fieldset> 
  <legend> 
- Announce Only List Options
+ Announce-Only List Options
  </legend> 
 
 
 
  <table width="100%" cellspacing="0" cellpadding="5">
   <tr> 
-   <td width="20">
-    <input name="rewrite_anounce_from_header" id="rewrite_anounce_from_header" type="checkbox" value="1" <!--tmpl_if list_settings.rewrite_anounce_from_header -->checked="checked"<!--/tmpl_if--> /> 
-   </td>
-   <td>
-    <p>
-     <label for="rewrite_anounce_from_header">
-      Rewrite the From: header on announce-only messages to the List Owner address 
-     </label>
-     <br /> 
-     
-     Outgoing announce-only mass mailings will have the From: header set to: <code><!-- tmpl_var mailing_list_message_from escape="HTML" --></code>
-     </p>
-    </td> 
-   </tr> 
-   
-   </table> 
-   
-</fieldset> 
-
-
-
-
+    <td width="20">
+	 <input name="group_list" id="group_list_no" type="radio" value="0" class="bridge_settings" <!--tmpl_unless list_settings.group_list -->checked="checked"<!--/tmpl_unless--> /> 
+	  </td>
+	   <td>
+				
+	    <p>
+	     <label for="group_list_no">
+	      This mailing list is an Announce-Only mailing list
+	     </label><br /> 
+		 Your List Owner (
+		<a href="mailto:<!-- tmpl_var list_settings.list_owner_email ESCAPE="URL" -->">
+		<!-- tmpl_var list_settings.list_owner_email ESCAPE="HTML" -->
+		</a>
+		) may send messages to your List Email 
+		
+		<!-- tmpl_if list_settings.discussion_pop_email --> 
+			(
+			<a href="mailto:<!-- tmpl_var list_settings.discussion_pop_email ESCAPE="URL" -->">
+			<!-- tmpl_var list_settings.discussion_pop_email ESCAPE="HTML" -->
+			</a>
+			),
+		<!-- /tmpl_if -->
+		
+		 which will then be sent to all your Subscribers. 
+		
+		<div id="announce_list_params"> 
+			
+		 <table width="100%" cellspacing="0" cellpadding="5">
+		  <tr> 
+	  		<td width="20">
+			    <input name="rewrite_anounce_from_header" id="rewrite_anounce_from_header" type="checkbox" value="1" <!--tmpl_if list_settings.rewrite_anounce_from_header -->checked="checked"<!--/tmpl_if--> /> 
+			   </td>
+			   <td>
+			    <p>
+			     <label for="rewrite_anounce_from_header">
+			      Rewrite the From: header on announce-only messages to the List Owner address 
+			     </label>
+			     <br /> 
+			     Outgoing announce-only mass mailings will have the From: header set to: <code><!-- tmpl_var mailing_list_message_from escape="HTML" --></code>
+			     </p>
+			    </td> 
+			   </tr> 
+			   </table> 
+		</div> 
+	   </td>
+	  </tr>
+	</table> 
+   </fieldset> 
 
 <fieldset> 
  <legend> 
@@ -459,80 +456,108 @@ General
  <table width="100%" cellspacing="0" cellpadding="5">
   <tr> 
  <td width="20">
-    <input name="group_list" id="group_list" type="checkbox" value="1" <!--tmpl_if list_settings.group_list -->checked="checked"<!--/tmpl_if--> /> 
+    <input name="group_list" id="group_list_yes" type="radio" value="1" class="bridge_settings" <!--tmpl_if list_settings.group_list -->checked="checked"<!--/tmpl_if--> /> 
    </td>
    <td>
     <p>
-     <label for="group_list">
-      Make this mailing list a Discussion List
+     <label for="group_list_yes">
+      This mailing list is a Discussion List
      </label>
      <br />
-     Everyone subscribed to your list may post messages for everyone else 
-     on your list by sending  messages to (<strong><!-- tmpl_var list_settings.discussion_pop_email escape="HTML" --></strong>).
+	 Your List Owner (
+	<a href="mailto:<!-- tmpl_var list_settings.list_owner_email ESCAPE="URL" -->">
+	<!-- tmpl_var list_settings.list_owner_email ESCAPE="HTML" -->
+	</a>
+	) or any Subscriber may send messages to your List Email 
+	
+	<!-- tmpl_if list_settings.discussion_pop_email --> 	
+		(
+		<a href="mailto:<!-- tmpl_var list_settings.discussion_pop_email ESCAPE="URL" -->">
+		<!-- tmpl_var list_settings.discussion_pop_email ESCAPE="HTML" -->
+		</a>
+		), 
+	<!-- /tmpl_if --> 
+	
+	which will then be sent to all your Subscribers. 
    </p>
-  	 <table width="100%" cellspacing="0" cellpadding="5">
-  </tr>
-   <tr> 
-   <td width="20">
-    <input name="mail_discussion_message_to_poster" id="mail_discussion_message_to_poster" type="checkbox" value="1" <!--tmpl_if list_settings.mail_discussion_message_to_poster -->checked="checked"<!--/tmpl_if--> />
-   </td>
-   <td>
-    <label for="mail_discussion_message_to_poster">
-     Send message posters a copy of the message they've sent the discussion list. 
-    </label>
-    <br />
-   </td>
-  </tr>
 
-     <tr> 
-   <td>
-    <input name="discussion_template_defang" id="discussion_template_defang" type="checkbox" value="1" <!--tmpl_if list_settings.discussion_template_defang -->checked="checked"<!--/tmpl_if--> />
-   </td>
-   <td>
-    <label for="discussion_template_defang">
-	DON'T parse templates in discussion messages
-    </label>
-    <br />
-	Parsing Template Tags could create formatting problems. 
-   </td>
-  </tr>
- </table> 
 
+	<div id="discussion_list_params">
+	
+	
+	<table width="100%" cellspacing="0" cellpadding="5">
+	   <tr> 
+	   <td width="20">
+	    <input name="mail_discussion_message_to_poster" id="mail_discussion_message_to_poster" type="checkbox" value="1" <!--tmpl_if list_settings.mail_discussion_message_to_poster -->checked="checked"<!--/tmpl_if--> />
+	   </td>
+	   <td>
+	    <label for="mail_discussion_message_to_poster">
+	     Send message posters a copy of the message they've sent the discussion list. 
+	    </label>
+	    <br />
+	   </td>
+	  </tr>
+
+	     <tr> 
+	   <td>
+	    <input name="discussion_template_defang" id="discussion_template_defang" type="checkbox" value="1" <!--tmpl_if list_settings.discussion_template_defang -->checked="checked"<!--/tmpl_if--> />
+	   </td>
+	   <td>
+	    <label for="discussion_template_defang">
+		DON'T parse templates in discussion messages
+	    </label>
+	    <br />
+		Parsing Template Tags could create formatting problems. 
+	   </td>
+	  </tr>
+
+	     <tr> 
+	   <td>
+	    <input name="group_list_pp_mode" id="group_list_pp_mode" type="checkbox" value="1" <!--tmpl_if list_settings.group_list_pp_mode -->checked="checked"<!--/tmpl_if--> />
+	   </td>
+	   <td>
+	    <label for="group_list_pp_mode">
+		Send messages, &quot;On Behalf Of&quot; (p.p. mode)
+	    </label>
+	    <br />
+			Discussion List messages will be sent as the List Owner, on behalf of List Members. 
+		</p>
+		<p>
+			<label for="group_list_pp_mode_from_phrase">From: header phrase:</label>
+			<input type="text" class="midi" name="group_list_pp_mode_from_phrase" id="group_list_pp_mode_from_phrase" value="<!-- tmpl_var list_settings.group_list_pp_mode_from_phrase -->" />
+		</p>
+	   </td>
+	  </tr>
+	 </table> 
 
 	<p><label>Replies to messages should:</label><br/> 
-	<table>
+
+	<table width="100%" cellspacing="0" cellpadding="5">
      <tr>
-      <td>
+       <td width="20">
 	<p>
-	 <input type="radio" name="set_to_header_to_list_address" value="1" <!--tmpl_if list_settings.set_to_header_to_list_address -->checked="checked"<!--/tmpl_if--> /></p>
-	  </td><td>
-	<p><label>be addressed to the sender</label><br />
+	  <input type="radio" name="set_to_header_to_list_address" id="set_to_header_to_list_address_1" value="1" <!--tmpl_if list_settings.set_to_header_to_list_address -->checked="checked"<!--/tmpl_if--> />
+	</p>
+	</td>
+	<td>
+	<p><label for="set_to_header_to_list_address_1">be addressed to the sender</label><br />
 	 <em>(you can still "Reply-All" to send the reply to the sender, as well as the mailing list)</em></p>
 	</td>
 	</tr> 
-
 	<tr> 
-	<td>
+   <td width="20">
 	<p>
-	 <input type="radio" name="set_to_header_to_list_address" value="0" <!--tmpl_unless list_settings.set_to_header_to_list_address -->checked="checked"<!--/tmpl_unless--> />
+	 <input type="radio" name="set_to_header_to_list_address" id="set_to_header_to_list_address_0" value="0" <!--tmpl_unless list_settings.set_to_header_to_list_address -->checked="checked"<!--/tmpl_unless--> />
 	</p></td> 
 	<td> 
-	<label>be addressed to the mailing list</label>
+	<label for="set_to_header_to_list_address_0">be addressed to the mailing list</label>
 </p> 
 </td> 
 </tr> 
-
-
- 
-
-
-
 </table>
 
 
-      </td>
-  </tr>
-
+<table width="100%" cellspacing="0" cellpadding="5">
 
 <!-- tmpl_if comment --> 
 
@@ -565,153 +590,185 @@ General
        </td>
       </tr>
  <!-- /tmpl_if -->
-
-
-
-
-
  </table> 
 
 
+
 <fieldset> 
- <legend>List Moderation Options</legend> 
+ <legend>Moderation</legend> 
+
   <table width="100%" cellspacing="0" cellpadding="5">    
   <tr> 
     <td width="20"> 
-    <input name="enable_moderation" id="enable_moderation" type="checkbox" value="1" <!--tmpl_if list_settings.enable_moderation -->checked="checked"<!--/tmpl_if--> /> 
+    <input name="enable_moderation" id="enable_moderation" type="checkbox" class="bridge_settings" value="1" <!--tmpl_if list_settings.enable_moderation -->checked="checked"<!--/tmpl_if--> /> 
    </td>
    <td>
     <p>
      <label for="enable_moderation">
       Use Moderation
      </label>
-     
-     <!-- tmpl_if list_settings.enable_moderation --> 
-       - <a href="<!-- tmpl_var Plugin_URL -->?flavor=awaiting_msgs">View/Manage Messages Awaiting Moderation</a>.
-     <!--/tmpl_if-->
-     
-     <br />      
-          Messages sent to your discussion list will first have to be approved by: 
-      </p>
-   	  <p>
- 		<input type="radio" name="moderate_discussion_lists_with" value="list_owner_email" <!--tmpl_if expr="(list_settings.moderate_discussion_lists_with eq 'list_owner_email')" -->checked="checked" <!--/tmpl_if--> />
-		<label for="">
-			List Owner
-		</label>
-		<br />
 
- 			<input type="radio" name="moderate_discussion_lists_with" value="authorized_sender_email" <!--tmpl_if expr="(list_settings.moderate_discussion_lists_with eq 'authorized_sender_email')" -->checked="checked"<!--/tmpl_if--><!-- tmpl_unless list_settings.enable_authorized_sending -->disabled="disabled"<!-- /tmpl_unless --> />
-			<label for="">
-				List Owner or an Authorized Sender
-			</label>
-			<!-- tmpl_unless list_settings.enable_authorized_sending --><span class="error">
-	             Disabled. Enable, &quot;Allow Messages Received From Authorized Senders &quot;, to enabled this option.
-	            </span>
-			<!-- /tmpl_unless -->
-		
-		</p>      
-     <table  cellspacing="0" cellpadding="5">
 
-  <!-- tmpl_if list_settings.enable_authorized_sending -->  
-     <!-- tmpl_if list_settings.group_list -->          
-      <tr>
-       <td>
-        <input name="authorized_sending_no_moderation" id="authorized_sending_no_moderation" type="checkbox" value="1" <!--tmpl_if list_settings.authorized_sending_no_moderation -->checked="checked"<!--/tmpl_if--> />
-       </td>
-       <td>
-        <p>
-         <label for="authorized_sending_no_moderation">
-          Allow Authorized Senders to send messages to the entire list without moderation
-         </label><br /> 
-         If not checked, messages from Authorized Senders also require moderation.
-        </p>
-       </td>
-       </tr>     
-     <!--/tmpl_if-->
-   <!--/tmpl_if-->     
-     	   
- <!-- tmpl_if list_settings.open_discussion_list -->       
-   <!-- tmpl_if list_settings.group_list --> 
-      <tr>
-       <td>
-        <input name="subscriber_sending_no_moderation" id="subscriber_sending_no_moderation" type="checkbox" value="1" <!--tmpl_if list_settings.subscriber_sending_no_moderation -->checked="checked"<!--/tmpl_if--> />
-       </td>
-       <td>
-        <p>
-         <label for="subscriber_sending_no_moderation">
-          Allow Subscribers to send messages to the entire list without moderation
-         </label><br /> 
-         If not checked, messages from Subscribers require moderation.
-        </p>
-       </td>
-       </tr> 
-   <!-- /tmpl_if --> 
- <!-- /tmpl_if --> 
-      
-     <table  cellspacing="0" cellpadding="5">
-           <tr>
-       <td>
-        <input name="send_moderation_msg" id="send_moderation_msg" type="checkbox" value="1" <!--tmpl_if list_settings.send_moderation_msg -->checked="checked"<!--/tmpl_if--> />
-       </td>
-       <td>
-        <p>
-         <label for="send_moderation_msg">
-          Send a &quot;Message Received, Awaiting Moderation&quot; Message
-         </label><br /> 
-         The original poster will receive a message stating that the message has been received, but requires moderation.
-        </p>
-       </td>
-       </tr>
-       
-       <tr>
-       <td>
-        <input name="send_moderation_accepted_msg" id="send_moderation_accepted_msg" type="checkbox" value="1" <!--tmpl_if list_settings.send_moderation_accepted_msg -->checked="checked"<!--/tmpl_if--> />
-       </td>
-       <td>
-        <p>
-         <label for="send_moderation_accepted_msg">
-          Send an &quot;Acceptance&quot; Message
-         </label><br /> 
-         The original poster will receive a message stating that the moderated message was accepted.
-        </p>
-       </td>  
-       </tr>
-       
-      <tr>
-       <td>
-        <input name="send_moderation_rejection_msg" id="send_moderation_rejection_msg" type="checkbox" value="1" <!--tmpl_if list_settings.send_moderation_rejection_msg -->checked="checked"<!--/tmpl_if--> />
-       </td>
-       <td>
-        <p>
-         <label for="send_moderation_rejection_msg">
-          Send a &quot;Rejection&quot; Message
-         </label><br /> 
-         The original poster will receive a message stating that the moderated message was rejected.
-        </p>
-       </td>
-      </tr>
-    </table> 
-    
-   </td>
-  </tr>
- 
-	</table>
-  
-  </td>
-  </tr>
-  
-  
-  
- </table> 
+<div id="moderaton_params"> 
+<p>
+			          Messages sent to your discussion list will first have to be approved by: 
+		      </p>
+		   	  <p>
+		 		<input type="radio" name="moderate_discussion_lists_with" value="list_owner_email" id="moderate_discussion_lists_with_list_owner_email" <!--tmpl_if expr="(list_settings.moderate_discussion_lists_with eq 'list_owner_email')" -->checked="checked" <!--/tmpl_if--> />
+				<label for="moderate_discussion_lists_with_list_owner_email">
+					List Owner
+				</label>
+				<br />
+
+		 			<input type="radio" name="moderate_discussion_lists_with" value="moderators" id="moderate_discussion_lists_with_moderators" <!--tmpl_if expr="(list_settings.moderate_discussion_lists_with eq 'moderators')" -->checked="checked"<!--/tmpl_if--> />
+					<label for="moderate_discussion_lists_with_moderators">
+						List Owner or a Moderator
+					</label>
+				</p>      
+
+
+				<div class="buttonfloat"> 
+				  <input type="button"  class="processing view_moderators" value="View Moderators (<!-- tmpl_var moderators_count -->)"  />
+				  <input type="button" class="processing add_moderators" value="Add Moderators" />
+				 </div> 
+				 <div class="floatclear"></div> 
+
+
+
+		     <table  cellspacing="0" cellpadding="5">
+		      <tr>
+		       <td>
+		        <input name="authorized_sending_no_moderation" id="authorized_sending_no_moderation" type="checkbox" value="1" <!--tmpl_if list_settings.authorized_sending_no_moderation -->checked="checked"<!--/tmpl_if--> />
+		       </td>
+		       <td>
+		        <p>
+		         <label for="authorized_sending_no_moderation">
+		          Allow Authorized Senders to send messages to your Subsribers List without moderation
+		         </label>
+		        </p>
+		       </td>
+		       </tr>     
+
+		 <!-- tmpl_if list_settings.open_discussion_list -->       
+		   <!-- tmpl_if list_settings.group_list --> 
+		      <tr>
+		       <td>
+		        <input name="subscriber_sending_no_moderation" id="subscriber_sending_no_moderation" type="checkbox" value="1" <!--tmpl_if list_settings.subscriber_sending_no_moderation -->checked="checked"<!--/tmpl_if--> />
+		       </td>
+		       <td>
+		        <p>
+		         <label for="subscriber_sending_no_moderation">
+		          Allow Subscribers to send messages to the entire list without moderation
+		         </label><br /> 
+		         If not checked, messages from Subscribers require moderation.
+		        </p>
+		       </td>
+		       </tr> 
+		   <!-- /tmpl_if --> 
+		 <!-- /tmpl_if --> 
+		</table>
+
+		<table  cellspacing="0" cellpadding="5">
+		        <tr>
+		    <td>
+		     <input name="send_moderation_msg" id="send_moderation_msg" type="checkbox" value="1" <!--tmpl_if list_settings.send_moderation_msg -->checked="checked"<!--/tmpl_if--> />
+		    </td>
+		    <td>
+		     <p>
+		      <label for="send_moderation_msg">
+		       Send a &quot;Message Received, Awaiting Moderation&quot; Message
+		      </label><br /> 
+		      The original poster will receive a message stating that the message has been received, but requires moderation.
+		     </p>
+		    </td>
+		    </tr>
+
+		    <tr>
+		    <td>
+		     <input name="send_moderation_accepted_msg" id="send_moderation_accepted_msg" type="checkbox" value="1" <!--tmpl_if list_settings.send_moderation_accepted_msg -->checked="checked"<!--/tmpl_if--> />
+		    </td>
+		    <td>
+		     <p>
+		      <label for="send_moderation_accepted_msg">
+		       Send an &quot;Acceptance&quot; Message
+		      </label><br /> 
+		      The original poster will receive a message stating that the moderated message was accepted.
+		     </p>
+		    </td>  
+		    </tr>
+
+		   <tr>
+		    <td>
+		     <input name="send_moderation_rejection_msg" id="send_moderation_rejection_msg" type="checkbox" value="1" <!--tmpl_if list_settings.send_moderation_rejection_msg -->checked="checked"<!--/tmpl_if--> />
+		    </td>
+		    <td>
+		     <p>
+		      <label for="send_moderation_rejection_msg">
+		       Send a &quot;Rejection&quot; Message
+		      </label><br /> 
+		      The original poster will receive a message stating that the moderated message was rejected.
+		     </p>
+
+		    </td>
+		   </tr>
+		 </table> 
+
+		  </td>
+		  </tr>
+		 </table> 
+
+
+</div> 
 
 
 </fieldset> 
 
 
+</div> 
+
+
+</td>
+</tr>
+</table> 
+
+
+
 </fieldset> 
+
+<fieldset> 
+	<legend>Authorized Senders</legend> 
+	
+	<table width="100%" cellspacing="0" cellpadding="5">
+		<tr> 
+		<td width="20">
+	    <input name="enable_authorized_sending" id="enable_authorized_sending" type="checkbox" value="1" <!--tmpl_if list_settings.enable_authorized_sending -->checked="checked"<!--/tmpl_if--> /> 
+	   </td>
+	   <td>
+	    <p>
+	     <label for="enable_authorized_sending">
+	      Allow Messages Sent By Authorized Senders
+	     </label>
+	     <br /> 
+	       Authorized Senders may send messages to your mailing list (announce-only, or discussion), without having to be a Subscriber themselves.
+		</p>
+
+			<div class="buttonfloat"> 
+			  <input type="button"  class="processing view_authorized_senders" value="View Authorized Senders (<!-- tmpl_var authorized_senders_count -->)" />
+			  <input type="button" class="processing add_authorized_senders" value="Add Authorized Senders" />
+			 </div> 
+			 <div class="floatclear"></div> 
+	    </td> 
+	   </tr> 
+	  </table> 	
+	</fieldset>
+
+
+
+
+
 <fieldset> 
  <legend> 
- Delivery
+ Message Delivery
  </legend> 
 
  <table width="100%" cellspacing="0" cellpadding="5">
@@ -723,13 +780,28 @@ General
 	</label>
     </p>
     <table>
+
+        <tr>
+         <td> 
+          <input type="checkbox" name="send_received_msg" id="send_received_msg" value="1" <!-- tmpl_if list_settings.send_received_msg -->checked="checked"<!--/tmpl_if--> />
+         </td> 
+         <td>
+          <label for="send_received_msg">
+           Send a message to the original sender, letting them know their message was received
+          </label>
+          <br /> 
+          Mass Mailing can take a long time. A, &quot;message received!&quot; message sent to the original sender
+          can stop them from second-guessing if if their message was received. 
+         </td>
+        </tr> 
+
      <tr>
       <td> 
        <input type="checkbox" name="send_msgs_to_list" id="send_msgs_to_list" value="1" <!-- tmpl_if list_settings.send_msgs_to_list -->checked="checked"<!--/tmpl_if--> />
       </td> 
       <td>
        <label for="send_msgs_to_list">
-        send the messages to the Subscription List.
+        Send the message to your Subscribers.
        </label>
       </td>
      </tr> 
@@ -739,7 +811,7 @@ General
       </td>
       <td>
        <label for="send_msg_copy_to">
-        forward a copy to:</label>
+        Forward a copy to:</label>
        <p>
         <input type="text" name="send_msg_copy_address" id="send_msg_copy_address"value="<!-- tmpl_var list_settings.send_msg_copy_address -->" />
        </p>
@@ -780,7 +852,7 @@ General
       </td> 
       <td>
        <label for="send_invalid_msgs_to_owner">
-        send the List Owner a &quot;Not a Subscriber&quot; email message, with the original message attached.
+        Send the List Owner a &quot;Not a Subscriber&quot; email message, with the original message attached.
        </label>
       </td>
      </tr> 
@@ -791,7 +863,7 @@ General
        <input type="checkbox" />
       </td>
       <td>
-       be forwarded to the Authorized Senders (Authorized Sending must be turned on!).
+       Be forwarded to the Authorized Senders (Authorized Sending must be turned on!).
       </td> 
      </tr>
      --> 
@@ -802,7 +874,7 @@ General
       </td> 
       <td> 
        <label for="send_not_allowed_to_post_msg">
-        send back a &quot;Not Allowed to Post&quot; message.
+        Send back a &quot;Not Allowed to Post&quot; message.
        </label>
       </td>  
      </tr> 

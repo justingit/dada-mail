@@ -1,10 +1,20 @@
 <!-- begin edit_archived_msg.tmpl --> 
 
 <!-- tmpl_set name="title" value="Edit Archived Message" -->
+<div id="screen_meta" data-menu_highlight="view_archive"></div>
+
 
 <div id="screentitle"> 
 	<div id="screentitlepadding">
-		<!-- tmpl_var title --> 
+		Message Archives 
+		&#187; 
+		<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_archive">
+			View Archive
+		</a>
+		 &#187;
+		<!-- tmpl_var name="subject" ESCAPE="HTML" -->
+		 &#187;
+		Edit
 	</div> 
 	<!-- tmpl_include help_link_widget.tmpl -->
 </div>

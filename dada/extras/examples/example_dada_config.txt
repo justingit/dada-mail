@@ -74,10 +74,6 @@ $BACKEND_DB_TYPE = 'SQL';
 =cut
 
 $WYSIWYG_EDITOR_OPTIONS = { 
-	fckeditor => { 
-		enabled => 0, 
-		url     => '', 
-	}, 
 	ckeditor    => { 
 		enabled => 0, 
 		url     => '', 

@@ -463,6 +463,7 @@ sub subscribed_to {
 			                  black_list         => 'Black Listed',
 			                  white_list         => 'White Listed', # White listed isn't working, no?
 			                  authorized_senders => 'Authorized Senders',
+			                  moderators         => 'Moderators',
 			                  sub_request_list   => 'Subscription Requests',
 #			                  unsub_request_list => 'Unsubscription Requests',
 							  bounced_list       => 'Bouncing Addresses',
@@ -1703,7 +1704,7 @@ Justin Simoni http://dadamailproject.com
 
 =head1 LICENCE AND COPYRIGHT
 
-Copyright (c) 1999 - 2013 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2014 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

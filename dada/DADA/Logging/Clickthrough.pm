@@ -400,9 +400,6 @@ sub auto_redirect_tag {
 			# This is probably a job for Parse::RecDescent, but I'm a dumb, dumb, person
 			# Whoa, let's hide any URLs that already have redirect tags around them!
 			
-			
-			
-			
 			# A few cases we'll look for... 
 			
 			
@@ -453,11 +450,18 @@ sub auto_redirect_tag {
 		for my $specific_url(@unique_uris){ 
 			warn '$specific_url ' . $specific_url
 				if $t; 
-				
 			if(
 				$specific_url =~ m/mailto\:/ && 
 				$self->{ls}->param('tracker_auto_parse_mailto_links') == 0
-			){  
+			){
+			    warn "skipping: $specific_url"
+			        if $t;
+			    # ... nothing.  
+			}
+			elsif($self->_ignore_this_url($specific_url) == 1) { 
+			    warn "skipping: $specific_url"
+			        if $t;
+			    # ... nothing.  
 			}
 			else { 
 				my $qm_link    = quotemeta($specific_url); 
@@ -474,11 +478,25 @@ sub auto_redirect_tag {
 			my $str = $out_of_the_way{$_}->{str}; 
 			$s =~ s/$_/$str/g; 
 		}
-			
-	
 		return $s; 
 	}
-	
+}
+
+
+
+
+sub _ignore_this_url { 
+    my $self = shift; 
+    my $url  = shift; 
+    
+#	warn '_ignore_this_url:' . $url; 
+   if($url =~ m/$DADA::Config::PROGRAM_URL\/t\/([a-zA-Z0-9_]*?)/){ 
+        # We don't wanna redirect a token link. Too much! 
+        return 1; 
+    }
+    else { 
+        return 0; 
+    }
 }
 
 
@@ -563,7 +581,11 @@ sub HTML_auto_redirect_w_link_ext {
 		elsif($link =~ m/(^(\<\!\-\-|\[|\<\?))|((\]|\-\-\>|\?\>)$)/){ 
 			warn '$link looks to contain tags? skipping.'
 			 if $t; 
-			#return; 
+		}
+		elsif($self->_ignore_this_url($link) == 1) { 
+		    warn "skipping: $link"
+		        if $t;
+		    # ... nothing.  
 		}
 		else { 
 			warn 'pushing: ' . $link if $t; 
@@ -991,7 +1013,7 @@ sub message_history_json {
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2013 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2014 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

@@ -59,8 +59,7 @@ for my $list(DADA::App::Guts::available_lists()){
 	
 	print "\tworking on list: '$list'...\n";
 	
-	#for my $sublist('list', 'black_list', 'authorized_senders'){
-	for my $sublist('list', 'black_list', 'white_list', 'authorized_senders'){
+	for my $sublist(qw(list black_list white_list authorized_senders moderators)){
 
 		my $sublist_filename = $DADA::Config::FILES . '/' . $list . '.' . $sublist; 
 		
@@ -157,7 +156,7 @@ Visit C<dada_subscribers_plaintext_to_sql.pl> in your web browser, or run the sc
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2013 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2014 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

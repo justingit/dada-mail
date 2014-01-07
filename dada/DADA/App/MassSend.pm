@@ -172,6 +172,12 @@ sub send_email {
                     kcfinder_url           => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{url},
                     kcfinder_upload_dir    => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir},
                     kcfinder_upload_url    => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_url},
+
+					core5_filemanager_url           => $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{url},
+					core5_filemanager_upload_dir    => $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{upload_dir},
+					core5_filemanager_upload_url    => $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{upload_url},
+
+
                     mailout_will_be_queued => $mailout_will_be_queued,
                     num_list_mailouts      => $num_list_mailouts,
                     num_total_mailouts     => $num_total_mailouts,
@@ -1051,8 +1057,8 @@ sub save_as_draft {
 
     # warn '$saved_draft_id:' . $saved_draft_id;
 
-    require JSON::PP;
-    my $json = JSON::PP->new->allow_nonref;
+    require JSON;
+    my $json = JSON->new->allow_nonref;
     my $return = { id => $saved_draft_id };
     print $q->header(
         '-Cache-Control' => 'no-cache, must-revalidate',
@@ -1069,7 +1075,6 @@ sub list_invite {
     my $q      = $args->{-cgi_obj};
 
     my $process = xss_filter( strip( $q->param('process') ) );
-    warn '$process ' . $process;
     my $flavor = xss_filter( strip( $q->param('flavor') ) );
 
     my ( $admin_list, $root_login ) = check_list_security(
@@ -1444,6 +1449,13 @@ sub has_attachments {
     my ($args) = @_;
     my $q = $args->{-cgi_obj};
 
+	my $filemanager; 
+	if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1){ 
+		$filemanager = 'kcfinder'; 
+	}elsif($DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1){ 
+		$filemanager = 'core5_filemanager';
+	}
+
     my @ive_got = ();
 
     my $num = 5;
@@ -1456,11 +1468,11 @@ sub has_attachments {
             if ( $filename ne 'Select A File...' && length($filename) > 0 ) {
                 warn 'I\'ve got, ' . 'attachment' . $_
                   if $t;
-                if ( !-e $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir} . '/' . $filename ) {
+                if ( !-e $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_dir} . '/' . $filename ) {
                     my $new_filename = uriunescape($filename);
-                    if ( !-e $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir} . '/' . $new_filename ) {
+                    if ( !-e $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_dir} . '/' . $new_filename ) {
                         carp
-"I can't find attachment file: $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir} . '/' . $filename";
+'I can\'t find attachment file: ' . $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_dir} . '/' . $filename;
                     }
                     else {
                         push( @ive_got, $new_filename );
@@ -1477,11 +1489,20 @@ sub has_attachments {
 
 sub make_attachment {
 
+	require MIME::Lite;
+    
     my $self   = shift;
     my ($args) = @_;
     my $name   = $args->{-name};
 
-    require MIME::Lite;
+	my $filemanager; 
+	if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1){ 
+		$filemanager = 'kcfinder'; 
+	}elsif($DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1){ 
+		$filemanager = 'core5_filemanager';
+	}
+
+
 
     if ( !$name ) {
         warn '!$name';
@@ -1511,7 +1532,7 @@ sub make_attachment {
         Datestamp   => 0,
         Id          => $filename,
         Filename    => $filename,
-        Path        => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir} . '/' . $name,
+        Path        => $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_dir} . '/' . $name,
     );
 
     if ($t) {

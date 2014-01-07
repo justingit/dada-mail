@@ -509,8 +509,8 @@ sub create_index_nav {
 	
 	$back = ($full_stop - ($iterate*2)); 	
 	
-	my $prev_link; 
-	my $next_link;
+	my $prev_link = ''; 
+	my $next_link = '';
 	
 	my $af;
 	
@@ -520,42 +520,25 @@ sub create_index_nav {
 		$af = 'archive'; 
 	}
 	
-	# yes, really sorry, this is sloppy and needs to be completely rewritten...
+	my $prev_link_start; 
+	my $next_link_start; 
 	
 	if($self->{ls}->param('sort_archives_in_reverse')){ 
-	
-		# next holds previous, previous holds next; 
 		if($back >= 0){		
-			$next_link = qq{$DADA::Config::PROGRAM_URL?flavor=$af;list=} . uriescape($self->{list}) . qq{;start=$back};
-		}else{
-			$next_link = undef; 
+			$next_link_start = $back; 
 		}
-		
 		if(($forward-1)  < $#{$entries}){
-		
-			$prev_link = qq{$DADA::Config::PROGRAM_URL?flavor=$af;list=} . uriescape($self->{list}) . qq{;start=$forward}; 
-		}else{
-			$prev_link = undef;
-		
+			$prev_link_start = $forward;
 		}
-	
-	
-	}else{ 
-	
-	
-		if($back >= 0){
-			$prev_link = qq{$DADA::Config::PROGRAM_URL?flavor=$af;list=} . uriescape($self->{list}) . qq{;start=$back}; 
-		}else{
-			$prev_link = undef; 
+	}
+	else { 
+		if($back >= 0){		
+			$prev_link_start = $back; 
 		}
-		
-		if($forward-1  < $#{$entries}){
-			$next_link = qq{$DADA::Config::PROGRAM_URL?flavor=$af;list=} . uriescape($self->{list}) . qq{;start=$forward}; 
-		}else{
-			$next_link = undef;
-		
-		}
-		
+				
+		if(($forward-1)  < $#{$entries}){
+			$next_link_start = $forward;
+		}		
 	}
 	
 	require DADA::Template::Widgets;
@@ -564,9 +547,9 @@ sub create_index_nav {
             -screen => 'archive_index_nav_table_widget.tmpl',
             -list   => $self->{name},
             -vars   => {
-				flavor_label => $af, 
-				prev_link    => $prev_link, 
-				next_link    => $next_link, 
+				flavor_label       => $af, 
+				prev_link_start    => $prev_link_start, 
+				next_link_start    => $next_link_start, 
             },
             -list_settings_vars       => $self->{ls}->params,
             -list_settings_vars_param => { -dot_it => 1 },
@@ -2653,7 +2636,7 @@ sub _decode_header {
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2013 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2014 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

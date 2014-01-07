@@ -8,7 +8,7 @@
     <strong>
 		<!-- tmpl_if prev_link --> 
 				&lt; &lt; 
-				<a href="<!-- tmpl_var prev_link -->">
+				<a href="<!-- tmpl_var url -->?flavor=<!-- tmpl_var flavor_label -->&list=<!-- tmpl_var list escape="URL" -->&start=<!-- tmpl_var prev_link_start -->">
 					Previous
 				</a>
 		<!-- tmpl_else --> 
@@ -34,7 +34,7 @@
    <p>
     <strong>
 		<!-- tmpl_if next_link --> 
-			<a href="<!-- tmpl_var next_link -->">
+		<a href="<!-- tmpl_var url -->?flavor=<!-- tmpl_var flavor_label -->&list=<!-- tmpl_var list escape="URL" -->&start=<!-- tmpl_var next_link_start -->">
 				Next
 			</a> &gt;&gt;
 		<!-- tmpl_else --> 

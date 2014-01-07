@@ -74,10 +74,6 @@ $BACKEND_DB_TYPE = 'SQL';
 =cut
 
 $WYSIWYG_EDITOR_OPTIONS = { 
-	fckeditor => { 
-		enabled => 0, 
-		url     => '', 
-	}, 
 	ckeditor    => { 
 		enabled => 0, 
 		url     => '', 
@@ -96,6 +92,9 @@ $FILE_BROWSER_OPTIONS = {
 		upload_url   => '',
 		session_name => 'PHPSESSID', 
 		session_dir  => '/tmp',
+	},
+	core5_filemanager  => { 
+		enabled      => 0, 
 	},
 };
 
@@ -240,6 +239,19 @@ $RECAPTHCA_MAILHIDE_PARAMS = {
 $MAILOUT_AT_ONCE_LIMIT = <!-- tmpl_var mass_mailing_MAILOUT_AT_ONCE_LIMIT default="1" -->; 
 $MULTIPLE_LIST_SENDING = <!-- tmpl_var mass_mailing_MULTIPLE_LIST_SENDING default="0" -->; 
 $MAILOUT_STALE_AFTER   = <!-- tmpl_var mass_mailing_MAILOUT_STALE_AFTER  default="86400" -->; 
+<!-- /tmpl_if -->
+
+
+
+
+
+<!-- tmpl_if configure_confirmation_token --> 
+#---------------------------------------------------------------------#
+# Confirmation Token Options
+
+$CONFIRMATION_TOKEN_OPTIONS = { 
+	expires => <!-- tmpl_var confirmation_token_expires default="60" -->,
+};
 <!-- /tmpl_if -->
 
 

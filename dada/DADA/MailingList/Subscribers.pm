@@ -518,13 +518,14 @@ sub add_to_email_list {
 
 
 
-sub get_list_types { 
+sub get_list_types {
 
 	my $self = shift; 
 	return { 
 		list                => 1,       
 		black_list          => 1, 
 		authorized_senders  => 1, 
+		moderators         => 1,
 		testers             => 1, 
 		white_list          => 1, 
 		sub_confirm_list    => 1, 
@@ -537,6 +538,7 @@ sub get_list_types {
 	};
 	
 }
+
 sub allowed_list_types { 
 
     my $self = shift; 
@@ -620,13 +622,6 @@ sub filter_subscribers {
             }
         }
 
-# I don't quote understand why these, and only these are exempt - 
-# Should basically only work with, "list" 
-#
-#        if (   $type ne 'black_list'
-#            || $type ne 'authorized_senders'
-#            || $type ne 'white_list' )
-#        {
 		 if($type eq 'list') { 
             if ( $li->{use_subscription_quota} == 1 ) {
                 if ( ( $num_subscribers + 1 ) >= $li->{subscription_quota} ) {
@@ -1188,6 +1183,11 @@ for verification.
 This is the sublist of addresses that can be allowed to post to a mailing list, from an email client, via the 
 B<Bridge> plugin, if this feature has been enabled. 
 
+=item * moderators
+
+This is the sublist of addresses that can be sent a moderation message, for discussion lists.
+
+
 =item * sub_confirm_list
 
 This is the sublist that keeps subscription information on potential subscribers, 
@@ -1594,6 +1594,8 @@ The current list of allowed sublist types are:
 =item * black_list
 
 =item * authorized_senders
+
+=item * moderators
 
 =item * testers
 
@@ -2197,7 +2199,7 @@ Justin Simoni http://dadamailproject.com
 
 =head1 LICENCE AND COPYRIGHT
 
-Copyright (c) 1999 - 2013 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2014 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

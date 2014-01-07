@@ -375,239 +375,236 @@ Given an MIME::Entity (may be multipart) will attempt to:
 
 =cut
 
-sub _format_text { 
+sub _format_text {
 
-	my $self   = shift; 
-	my $entity = shift; 
-	
-	
-	my @parts  = $entity->parts; 
-	
-	if(@parts){
-		my $i; 
-		for $i (0 .. $#parts) {
-			$parts[$i] = $self->_format_text($parts[$i]);	
-		}
-		$entity->sync_headers('Length'      =>  'COMPUTE',
-							  'Nonstandard' =>  'ERASE');
-	}else{ 		
-	
-		my $is_att = 0; 
-		if (defined($entity->head->mime_attr('content-disposition'))) { 
-			if($entity->head->mime_attr('content-disposition') =~ m/attachment/) { 
-				$is_att = 1; 
-			}
-		}
-			
-		if(
-		    (
-		    ($entity->head->mime_type eq 'text/plain') ||
-			($entity->head->mime_type eq 'text/html')  
-		  	) 
-		    && 
-		    ($is_att != 1)
-		  ) {
-			
-			my $body    = $entity->bodyhandle;
-			my $content = $entity->bodyhandle->as_string;
-			   $content = safely_decode($content);
-			#
-			# body_as_string gives you encoded version.
-			# Don't get it this way, unless you've got a great reason 
-			# my $content = $entity->body_as_string;
-			# Same thing - this means it could be in quoted/printable,etc.
-			
-			
-					   
-			# Begin filtering done before the template is applied 
-	
-			if($content){ # do I need this?
-				
-				if($entity->head->mime_type eq 'text/html') { 
+    my $self   = shift;
+    my $entity = shift;
 
-					if($self->{ls}->param('mass_mailing_block_css_to_inline_css') == 1){ 
-						try {
-							require DADA::App::FormatMessages::Filters::CSSInliner; 
-							my $css_inliner = DADA::App::FormatMessages::Filters::CSSInliner->new; 
-							$content = $css_inliner->filter({-html_msg => $content});
-						} catch {
-							carp "Problems with filter: $_";
-						};
-					}
-											
-					if($DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1) { 
-						try {
-							require DADA::App::FormatMessages::Filters::InlineEmbeddedImages; 
-							my $iei = DADA::App::FormatMessages::Filters::InlineEmbeddedImages->new; 
-							$content = $iei->filter({-html_msg => $content});
-						} catch {
-							carp "Problems with filter: $_";
-						};
-					}	
-					
-					if($self->{ls}->param('group_list') != 1){ 
-						try {
-							require DADA::App::FormatMessages::Filters::UnescapeTemplateTags; 
-							my $utt = DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new; 
-							$content = $utt->filter({-html_msg => $content});
-						} catch {
-							carp "Problems with filter: $_";
-						};
-					}
-				}
-				
-				# This means, we've got a discussion list:
-				if(
-					$self->no_list                                   != 1 &&
-					$self->mass_mailing                              == 1 &&
-					$self->list_type eq                            'list' &&
-					$self->{ls}->param('disable_discussion_sending') != 1 &&
-					$self->{ls}->param('group_list')                 == 1
-				) { 
+    my @parts = $entity->parts;
 
-					if($entity->head->mime_type eq 'text/html'){ 
-						try { 
-							$content = $self->_remove_opener_image({-data => $content});
-						} catch { 
-							carp "Problem removing existing opener images: $_"; 
-						}
-					}
-					
-					
-					# This attempts to strip any unsubscription links in messages
-					# (think: replying) 
-					try {
-						require DADA::App::FormatMessages::Filters::RemoveTokenLinks; 
-						my $rul = DADA::App::FormatMessages::Filters::RemoveTokenLinks->new; 
-						$content = $rul->filter({-data => $content});
-					} catch {
-						carp "Problems with filter: $_";
-					};
-					
-					if($self->{ls}->param('discussion_template_defang') == 1) { 
-						try {
-							$content = $self->template_defang({-data => $content});
-						} catch { 
-							carp "Problem defanging template: $_"; 
-						}
-					}
-					else { 
-						try {
-							require DADA::App::FormatMessages::Filters::UnescapeTemplateTags; 
-							my $utt = DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new; 
-							$content = $utt->filter({-html_msg => $content});
-						} catch {
-							carp "Problems with filter: $_";
-						};
-					}
-								
-				} #/ discussion lists
- 	
-				# End filtering done before the template is applied 
-								 
-				$content = $self->_apply_template(
-					-data => $content, 
-					-type => $entity->head->mime_type, 
-				);
-				
-				# Begin filtering done after the template is applied 
-				
-				
-				if($self->mass_mailing == 1){
-					if($self->list_type eq 'just_unsubscribed'){ 
-						# ... well, nothing, really. 
-					}
-					elsif($self->list_type eq 'invitelist'){ 
-						$content = $self->subscription_confirmationation(
-							{
-								-str => $content, 
-							}
-						);						
-					}
-					else {
-						if($self->{ls}->param('private_list') == 1) { 
-							#... 
-						}
-						else { 						
-							$content = $self->unsubscriptionation(
-								{
-									-str => $content, 
-									-type => $entity->head->mime_type, 
-								}
-							);
-						}
-					}
-				}
-				
-			  if($self->no_list != 1){
-			
-				   $content = $self->_expand_macro_tags(
-						-data => $content, 
-						-type => $entity->head->mime_type, 
-					);
-				}
+    if (@parts) {
+        my $i;
+        for $i ( 0 .. $#parts ) {
+            $parts[$i] = $self->_format_text( $parts[$i] );
+        }
+        $entity->sync_headers(
+            'Length'      => 'COMPUTE',
+            'Nonstandard' => 'ERASE'
+        );
+    }
+    else {
 
-			    if($DADA::Config::GIVE_PROPS_IN_EMAIL == 1){ 
-                    $content = $self->_give_props(
-                        -data => $content, 
-					    -type => $entity->head->mime_type, 
+        my $is_att = 0;
+        if ( defined( $entity->head->mime_attr('content-disposition') ) ) {
+            if ( $entity->head->mime_attr('content-disposition') =~ m/attachment/ ) {
+                $is_att = 1;
+            }
+        }
+
+        if (   ( ( $entity->head->mime_type eq 'text/plain' ) || ( $entity->head->mime_type eq 'text/html' ) )
+            && ( $is_att != 1 ) )
+        {
+
+            my $body    = $entity->bodyhandle;
+            my $content = $entity->bodyhandle->as_string;
+            $content = safely_decode($content);
+            #
+            # body_as_string gives you encoded version.
+            # Don't get it this way, unless you've got a great reason
+            # my $content = $entity->body_as_string;
+            # Same thing - this means it could be in quoted/printable,etc.
+
+            # Begin filtering done before the template is applied
+
+            if ($content) {    # do I need this?
+
+                if ( $entity->head->mime_type eq 'text/html' ) {
+
+                    if ( $self->{ls}->param('mass_mailing_block_css_to_inline_css') == 1 ) {
+                        try {
+                            require DADA::App::FormatMessages::Filters::CSSInliner;
+                            my $css_inliner = DADA::App::FormatMessages::Filters::CSSInliner->new;
+                            $content = $css_inliner->filter( { -html_msg => $content } );
+                        }
+                        catch {
+                            carp "Problems with filter: $_";
+                        };
+                    }
+
+                    if (   $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1
+                        || $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1 )
+                    {
+                        try {
+                            require DADA::App::FormatMessages::Filters::InlineEmbeddedImages;
+                            my $iei = DADA::App::FormatMessages::Filters::InlineEmbeddedImages->new;
+                            $content = $iei->filter( { -html_msg => $content } );
+                        }
+                        catch {
+                            carp "Problems with filter: $_";
+                        };
+                    }
+
+                    if ( $self->{ls}->param('group_list') != 1 ) {
+                        try {
+                            require DADA::App::FormatMessages::Filters::UnescapeTemplateTags;
+                            my $utt = DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new;
+                            $content = $utt->filter( { -html_msg => $content } );
+                        }
+                        catch {
+                            carp "Problems with filter: $_";
+                        };
+                    }
+                }
+
+                # This means, we've got a discussion list:
+                if (   $self->no_list != 1
+                    && $self->mass_mailing == 1
+                    && $self->list_type eq 'list'
+                    && $self->{ls}->param('disable_discussion_sending') != 1
+                    && $self->{ls}->param('group_list') == 1 )
+                {
+
+                    if ( $entity->head->mime_type eq 'text/html' ) {
+                        try {
+                            $content = $self->_remove_opener_image( { -data => $content } );
+                        }
+                        catch {
+                            carp "Problem removing existing opener images: $_";
+                        }
+                    }
+
+                    # This attempts to strip any unsubscription links in messages
+                    # (think: replying)
+                    try {
+                        require DADA::App::FormatMessages::Filters::RemoveTokenLinks;
+                        my $rul = DADA::App::FormatMessages::Filters::RemoveTokenLinks->new;
+                        $content = $rul->filter( { -data => $content } );
+                    }
+                    catch {
+                        carp "Problems with filter: $_";
+                    };
+
+                    if ( $self->{ls}->param('discussion_template_defang') == 1 ) {
+                        try {
+                            $content = $self->template_defang( { -data => $content } );
+                        }
+                        catch {
+                            carp "Problem defanging template: $_";
+                        }
+                    }
+                    else {
+                        try {
+                            require DADA::App::FormatMessages::Filters::UnescapeTemplateTags;
+                            my $utt = DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new;
+                            $content = $utt->filter( { -html_msg => $content } );
+                        }
+                        catch {
+                            carp "Problems with filter: $_";
+                        };
+                    }
+
+                }    #/ discussion lists
+
+                # End filtering done before the template is applied
+
+                $content = $self->_apply_template(
+                    -data => $content,
+                    -type => $entity->head->mime_type,
+                );
+
+                # Begin filtering done after the template is applied
+
+                if ( $self->mass_mailing == 1 ) {
+                    if ( $self->list_type eq 'just_unsubscribed' ) {
+
+                        # ... well, nothing, really.
+                    }
+                    elsif ( $self->list_type eq 'invitelist' ) {
+                        $content = $self->subscription_confirmationation( { -str => $content, } );
+                    }
+                    else {
+                        $content = $self->unsubscriptionation(
+                            {
+                                -str  => $content,
+                                -type => $entity->head->mime_type,
+                            }
+                        );
+                    }
+                }
+
+                if ( $self->no_list != 1 ) {
+
+                    $content = $self->_expand_macro_tags(
+                        -data => $content,
+                        -type => $entity->head->mime_type,
                     );
                 }
-                
-				if($self->no_list != 1) { 
-	      			if(defined($self->{list})){
-						if ($self->{ls}->param('tracker_track_opens_method') eq 'directly' && $entity->head->mime_type  eq 'text/html'){ 
-							$content = $self->_add_opener_image($content);
-						}
-					}
-				}
-				
-				# End filtering done after the template is applied 
-				
-				
-				# simple validation
-				require DADA::Template::Widgets; 
-				my ($valid, $errors);
-					
-				my $expr = 0; 
-				if($self->no_list == 1){ 
-					$expr = 1; 
-				}
-				elsif($self->override_validation_type eq 'expr'){ 
-					$expr = 1; 
-				}
-				else { 
-					$expr = $self->{ls}->param('enable_email_template_expr'); 
-				}
-				
-				($valid, $errors)  = DADA::Template::Widgets::validate_screen(
-					{
-						-data => \$content,
-						-expr => $expr, 
-					}
-				); 
-				if($valid == 0){ 
-					my $munge = quotemeta('/fake/path/for/non/file/template'); 
-					$errors =~ s/$munge/line/; 
-					croak "Problems with email message! Invalid template markup: '$errors' \n" . '-' x 72 . "\n" . $content ; 
-				}
-				# /simple validation
-				
-				
-				
-			  my $io = $body->open('w');
-			  $content = safely_encode($content); 
-			  $io->print( $content );				    
-			  $io->close;
-			  $entity->sync_headers('Length'      =>  'COMPUTE',
-								    'Nonstandard' =>  'ERASE');
-			}
 
-		}
-		return $entity; 
-	}
-	
-	return $entity; 
+                if ( $DADA::Config::GIVE_PROPS_IN_EMAIL == 1 ) {
+                    $content = $self->_give_props(
+                        -data => $content,
+                        -type => $entity->head->mime_type,
+                    );
+                }
+
+                if ( $self->no_list != 1 ) {
+                    if ( defined( $self->{list} ) ) {
+                        if (   $self->{ls}->param('tracker_track_opens_method') eq 'directly'
+                            && $entity->head->mime_type eq 'text/html' )
+                        {
+                            $content = $self->_add_opener_image($content);
+                        }
+                    }
+                }
+
+                # End filtering done after the template is applied
+
+                # simple validation
+                require DADA::Template::Widgets;
+                my ( $valid, $errors );
+
+                my $expr = 0;
+                if ( $self->no_list == 1 ) {
+                    $expr = 1;
+                }
+                elsif ( $self->override_validation_type eq 'expr' ) {
+                    $expr = 1;
+                }
+                else {
+                    $expr = $self->{ls}->param('enable_email_template_expr');
+                }
+
+                ( $valid, $errors ) = DADA::Template::Widgets::validate_screen(
+                    {
+                        -data => \$content,
+                        -expr => $expr,
+                    }
+                );
+                if ( $valid == 0 ) {
+                    my $munge = quotemeta('/fake/path/for/non/file/template');
+                    $errors =~ s/$munge/line/;
+                    croak "Problems with email message! Invalid template markup: '$errors' \n"
+                      . '-' x 72 . "\n"
+                      . $content;
+                }
+
+                # /simple validation
+
+                my $io = $body->open('w');
+                $content = safely_encode($content);
+                $io->print($content);
+                $io->close;
+                $entity->sync_headers(
+                    'Length'      => 'COMPUTE',
+                    'Nonstandard' => 'ERASE'
+                );
+            }
+
+        }
+        return $entity;
+    }
+
+    return $entity;
 }
 
 
@@ -924,8 +921,35 @@ sub _format_headers {
         if ( $entity->head->count('Bcc') ) {
             $entity->head->delete('Bcc');
         }
+		
     }
-
+	
+	if (   $self->mass_mailing == 1
+        && $self->{ls}->param('group_list') == 1
+        && defined( $self->{ls}->param('discussion_pop_email') ) 
+        && $self->{ls}->param('group_list_pp_mode') == 1)
+    {
+        if ( $entity->head->count('From') ) {
+			my    $og_from = $entity->head->get('From', 0);
+			chomp($og_from);
+			
+			$entity->head->delete('From');
+	        $entity->head->add( 'From', safely_encode($self->_pp($og_from)) );
+			
+			if($self->{ls}->param('set_to_header_to_list_address') == 1) { 
+		        if ( $entity->head->count('Reply-To') ) {
+					$entity->head->delete('Reply-To');
+				}
+			
+				# How else are you to reply to the original sender?
+				$entity->head->add( 'Reply-To', $og_from );
+			}
+		}
+	}
+	else { 
+		# "no pp mode!"; 
+	}	
+	
     $entity->head->delete('Message-ID');
 
     # If there ain't a TO: header, add one:
@@ -990,6 +1014,56 @@ sub _format_headers {
 }
 
 
+sub _pp {
+
+    my $self = shift;
+    my $from = shift;
+
+    require Email::Address;
+    require MIME::EncWords;
+    require DADA::Template::Widgets;
+
+    my $a = ( Email::Address->parse($from) )[0]->address;
+
+    if ( $a eq $self->{ls}->param('list_owner_email') ) {
+
+        # We don't have to "On Behalf Of" ourselves.
+        return $from;
+    }
+    else {
+        $a =~ s/\@/ _at_ /;
+        my $p          = ( Email::Address->parse($from) )[0]->phrase;
+        my $d          = $self->{ls}->param('group_list_pp_mode_from_phrase');
+        my $new_phrase = DADA::Template::Widgets::screen(
+            {
+                -data                     => \$d,
+                -expr                     => 1,
+                -vars                     => { original_from_phrase => $p, },
+                -list_settings_vars_param => {
+                    -list   => $self->{ls}->param('list'),
+                    -dot_it => 1,
+                },
+            }
+        );
+
+        my $new_from = Email::Address->new();
+        $new_from->address( $self->{ls}->param('list_owner_email') );
+        $new_from->phrase(
+            MIME::EncWords::encode_mimewords(
+                $new_phrase,
+                Encoding => 'Q',
+                Charset  => $self->{ls}->param('charset_value'),
+            )
+        );
+        $new_from->comment( '(' . $a . ')' );
+        return $new_from->format;
+    }
+}
+
+
+
+
+
 
 
 
@@ -998,7 +1072,9 @@ sub _encode_header {
     my $self      = shift;
     my $label     = shift;
     my $value     = shift;
+
     my $new_value = undef;
+
 
     return $value
       unless $self->im_encoding_headers;
@@ -2411,62 +2487,39 @@ sub email_template {
 
 
 
-sub pre_process_msg_strings { 
-	my $text_ver = shift || undef; 
-	my $html_ver = shift || undef; 
-	
-	
-	if($text_ver){ 
-	    $text_ver =~ s/\r\n/\n/g;
-	}   
+sub pre_process_msg_strings {
 
-	if($html_ver){ 
-   		$html_ver    =~ s/\r\n/\n/g;
-	}               
+    my $text_ver = shift || undef;
+    my $html_ver = shift || undef;
 
-	if(defined($html_ver)){ 
-		$html_ver         =~ s/^\n+//o; 
-		my $orig_html_ver = $html_ver; 
-		
-		# DEV: Hmm. Make sure my indenting doesn't break this... 
-		my $fckeditor_blank = strip(q{<html dir="ltr">
-	    <head>
-	        <title></title>
-	    </head>
-	    <body>
-	        <p>&nbsp;</p>
-	    </body>
-	</html>});
+    if ($text_ver) {
+        $text_ver =~ s/\r\n/\n/g;
+    }
 
-		if($html_ver =~ m/$fckeditor_blank/){ 
-			undef $html_ver; 
-		}
-		else { 		
+    if ($html_ver) {
+        $html_ver =~ s/\r\n/\n/g;
+    }
 
-			$html_ver =~ s/(^\n<br \/>|^<br \/>|^<br \/>\n)//;
-			# convert_to_ascii is used here to simply strip out HTML tags, to
-			# see if anything is left, 
-			$html_ver = convert_to_ascii($html_ver); # what? what did I miss?
-			$html_ver = strip($html_ver); 
-			$html_ver =~ s/^\n+|\n+$//o;
+    if ( defined($html_ver) ) {
+        $html_ver =~ s/^\n+//o;
+        my $orig_html_ver = $html_ver;
 
-		}
-		if(length($html_ver) <= 1){ 
-			$html_ver = undef; 
-		}else{ 
-			$html_ver = $orig_html_ver;
-			undef $orig_html_ver; 
-		}
-	}
+        $html_ver =~ s/(^\n<br \/>|^<br \/>|^<br \/>\n)//;
 
-	if(! defined $html_ver && ! defined $text_ver) { 
-		# Got no text kludge...
-		#
-		# Why. Why why why?!
-		#$text_ver = "\n" 
-	}
-	
-	return($text_ver, $html_ver); 
+        # convert_to_ascii is used here to simply strip out HTML tags, to
+        # see if anything is left,
+        $html_ver = convert_to_ascii($html_ver);    # what? what did I miss?
+        $html_ver = strip($html_ver);
+        $html_ver =~ s/^\n+|\n+$//o;
+		if ( length($html_ver) <= 1 ) {
+	        $html_ver = undef;
+	    }
+	    else {
+	        $html_ver = $orig_html_ver;
+	        undef $orig_html_ver;
+	    }
+    }
+    return ( $text_ver, $html_ver );
 }
 
 sub DESTROY {
@@ -2483,7 +2536,7 @@ sub DESTROY {
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2013 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2014 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

@@ -425,7 +425,7 @@ CPAN is the I<Comprehensive Perl Archive Network> - it's a great collection of r
 Installing these modules may be tricky for the uninitiated. We'll go over a few ways you can install these modules: 
 
 =head3 The cpan Shell
- 
+
 The, C<cpan> shell is how one usually installs CPAN modules. You'll need root access to your hosting account, usually, but you can install CPAN modules in your home directory. This topic is well over the 
 forté of this particular FAQ, but do see: 
 

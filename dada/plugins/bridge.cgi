@@ -325,14 +325,33 @@ sub cgi_manual_start {
 }
 
 sub cgi_test_pop3_ajax {
+	
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'bridge',
+    );
+    $list = $admin_list;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
+	my $password  = $q->param('password') || undef; 
+	if(!defined($password)) { 
+		if(defined($ls->param('cipher_key'))) { 
+			$password =
+		      DADA::Security::Password::cipher_decrypt( $ls->param('cipher_key'),
+		        $ls->param('discussion_pop_password') );
+	    }
+		else { 
+			$password = undef; 
+		}
+	}
+    
 	    require DADA::App::POP3Tools;
 	    my ( $pop3_obj, $pop3_status, $pop3_log ) =
 	      DADA::App::POP3Tools::mail_pop3client_login(
 	        {
 	            server    => $q->param('server'),
 	            username  => $q->param('username'),
-	            password  => $q->param('password'),
+	            password  => $password,
 #	            port      => $args->{Port},
 	            AUTH_MODE => $q->param('auth_mode'),
 	            USESSL    => ($q->param('auth_mode') eq 'true' ? 1 : 0),
@@ -680,6 +699,7 @@ sub validate_list_email {
     my @list_types = qw(
       list
       authorized_senders
+      moderators
     );
 
     # white_list
@@ -757,13 +777,14 @@ sub cgi_default {
     my %bridge_settings_defaults = (
         disable_discussion_sending                 => 0,
         group_list                                 => 0,
+		group_list_pp_mode                         => 0, 
+		group_list_pp_mode_from_phrase             => undef, 
         prefix_list_name_to_subject                => 0,
         no_prefix_list_name_to_subject_in_archives => 0,
         discussion_pop_email                       => undef,
         bridge_list_email_type                     => 'pop3_account', 
         discussion_pop_server                      => undef,
         discussion_pop_username                    => undef,
-        discussion_pop_password                    => undef,
         discussion_pop_auth_mode                   => undef,
         prefix_discussion_list_subjects_with       => '',
         enable_moderation                          => 0,
@@ -774,6 +795,7 @@ sub cgi_default {
         enable_authorized_sending                  => 0,
         authorized_sending_no_moderation           => 0,
         subscriber_sending_no_moderation           => 0,
+        send_received_msg                          => 0, 
         send_msgs_to_list                          => 0,
         send_msg_copy_to                           => 0,
         send_msg_copy_address                      => '',
@@ -798,9 +820,6 @@ sub cgi_default {
     my $list_email_status = 1;
     my $list_email_errors = {};
 
-    my $discussion_pop_password =
-      DADA::Security::Password::cipher_decrypt( $ls->param('cipher_key'),
-        $ls->param('discussion_pop_password') );
  
     if ( $q->param('process') eq 'edit' ) {
 	
@@ -808,13 +827,18 @@ sub cgi_default {
 		    $q->param( 'open_discussion_list', 0 );
 		}
 
-		$q->param(
-		    'discussion_pop_password',
-		    DADA::Security::Password::cipher_encrypt(
-		        $ls->param('cipher_key'),
-		        $q->param('discussion_pop_password')
-		    )
-		);
+		my $discussion_pop_password = $q->param('discussion_pop_password') || undef; 
+		
+		if(defined($discussion_pop_password)) {
+			$q->param(
+			    'discussion_pop_password',
+			    DADA::Security::Password::cipher_encrypt(
+			        $ls->param('cipher_key'),
+			        $q->param('discussion_pop_password')
+			    )
+			);
+			$bridge_settings_defaults{discussion_pop_password} = undef; 
+		}
 
 		$ls->save_w_params(
 		    {
@@ -841,17 +865,14 @@ sub cgi_default {
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
     my $auth_senders_count =
       $lh->num_subscribers( { -type => 'authorized_senders' } );
-    my $show_authorized_senders_table = 1;
-    my $authorized_senders            = [];
+    my $moderators_count =
+      $lh->num_subscribers( { -type => 'moderators' } );
 
-    if ( $auth_senders_count > 100 || $auth_senders_count == 0 ) {
-        $show_authorized_senders_table = 0;
-    }
-    else {
-        $authorized_senders =
-          $lh->subscription_list( { -type => 'authorized_senders' } );
-    }
-
+	my $has_discussion_pop_password = 0; 
+	if(defined($ls->param('discussion_pop_password'))){ 
+		$has_discussion_pop_password = 1; 
+	}
+	
     my $can_use_ssl = 1;
 	try { 
 		require IO::Socket::SSL; 
@@ -917,11 +938,10 @@ sub cgi_default {
                 curl_location                 => $curl_location,
                 can_use_ssl                   => $can_use_ssl,
                 done                          => $done,
-                authorized_senders            => $authorized_senders,
-                show_authorized_senders_table => $show_authorized_senders_table,
-
-                discussion_pop_password => $discussion_pop_password,
-
+				authorized_senders_count      => $auth_senders_count,
+				moderators_count              => $moderators_count,
+				
+				has_discussion_pop_password => $has_discussion_pop_password, 
                 discussion_pop_auth_mode_popup =>
                   $discussion_pop_auth_mode_popup,
                 can_use_spam_assassin => &can_use_spam_assassin(),
@@ -945,9 +965,15 @@ sub cgi_default {
                   $list_email_errors->{list_email_set_to_list_admin_email},
                 error_list_email_subscribed_to_list =>
                   $list_email_errors->{list_email_subscribed_to_list},
+
                 error_list_email_subscribed_to_authorized_senders =>
                   $list_email_errors
                   ->{list_email_subscribed_to_authorized_senders},
+
+
+                error_list_email_subscribed_to_moderators =>
+                  $list_email_errors
+                  ->{list_email_subscribed_to_moderators},
 
                 error_list_email_set_to_another_list_owner_email =>
                   $list_email_errors
@@ -957,9 +983,16 @@ sub cgi_default {
                   ->{list_email_set_to_another_list_admin_email},
                 error_list_email_subscribed_to_another_list =>
                   $list_email_errors->{list_email_subscribed_to_another_list},
+
                 error_list_email_subscribed_to_another_authorized_senders =>
                   $list_email_errors
                   ->{list_email_subscribed_to_another_authorized_senders},
+
+                error_list_email_subscribed_to_another_moderators =>
+                  $list_email_errors
+                  ->{list_email_subscribed_to_another_moderators},
+
+
 				 plugin_path => $FindBin::Bin, 
 			     plugin_filename => 'bridge.cgi', 
 
@@ -1058,8 +1091,8 @@ sub start {
             e_print("Currently, "
                   . ( $active_mailouts + $queued_mailouts )
                   . " Mass Mailing(s) running or queued. \n\n"
-                  . "That's below our limit ($DADA::Config::MAILOUT_AT_ONCE_LIMIT). \n"
-                  . "Checking awaiting  messages:\n\n" )
+                  . "That's below the limit ($DADA::Config::MAILOUT_AT_ONCE_LIMIT). \n"
+                  . "Checking awaiting  messages:\n" )
               if $verbose;
         }
     }
@@ -1082,8 +1115,8 @@ sub start {
 
         e_print("\n"
               . '-' x 72
-              . "\nList: "
-              . $ls->param('list_name') . '('
+              . "\nMailing List: "
+              . $ls->param('list_name') . ' ('
               . $list
               . ")\n" )
           if $verbose;
@@ -1103,7 +1136,7 @@ sub start {
           )
         {
             e_print(
-"\t\t***Warning!*** Misconfiguration of plugin! The list owner email cannot be the same address as the list email address!\n\t\tSkipping $list...\n"
+"\t\t***Warning!*** Misconfiguration of plugin! The List Owner email cannot be the same address as the list email address!\n\t\tSkipping $list...\n"
             ) if $verbose;
             next LIST_QUEUE;
         }
@@ -1159,10 +1192,11 @@ sub start {
             }
             $messages_viewed++;
 
-
-
             $local_msg_viewed++;
-            e_print( "\t* Message Size: " . $msgnums->{$msgnum} . "\n" )
+			print "\n"
+				if $verbose; 
+				
+            e_print( "Message Size: " . $msgnums->{$msgnum} . "\n" )
               if $verbose;
 
             if ( max_msg_test( { -size => $msgnums->{$msgnum} } ) == 0 ) {
@@ -1183,6 +1217,11 @@ sub start {
                 next MSG_QUEUE;
             }
 
+			e_print( "\t* Message Size is below both Soft and Hard Max Sizes.\n" )
+              if $verbose;
+            print "\n";
+
+
             eval {
 
                 # The below line is just for testing purposes...
@@ -1192,6 +1231,15 @@ sub start {
 
                 if ($status) {
 
+
+                    if($ls->param('send_received_msg') == 1 ) { 
+                        notify_of_delivery(
+                            {
+                                -ls        => $ls,
+                                -msg       => \$full_msg,
+                            }
+                        );
+                    }
                     process(
                         {
                             -ls  => $ls,
@@ -1203,7 +1251,7 @@ sub start {
                 else {
 
                     e_print(
-"\t* Message did not pass verification - handling issues...\n"
+"\tMessage did not pass verification.\n"
                     ) if $verbose;
 
                     handle_errors( $ls, $errors, $full_msg );
@@ -1392,6 +1440,12 @@ sub message_was_deleted_check {
     if ( $pop3_status == 1 ) {
 
         my $msg_count = $pop3_obj->Count;
+        
+        if($msg_count < 1) { 
+            e_print("\t\tNo messages to check.\n")
+              if $verbose;
+        }
+        
         my $msgnums   = {};
 
         for ( my $cntr = 1 ; $cntr <= $msg_count ; $cntr++ ) {
@@ -1401,7 +1455,7 @@ sub message_was_deleted_check {
 
         for my $msgnum ( sort { $a <=> $b } keys %$msgnums ) {
             my $msg = $pop3_obj->Retrieve($msgnum);
-
+            
             my $cs = create_checksum( \$msg );
 
             e_print("\t\tcs:             $cs\n")
@@ -1430,6 +1484,7 @@ sub message_was_deleted_check {
                 }
             }
         }
+        
         $pop3_obj->Close();
 
     }
@@ -1649,7 +1704,7 @@ sub validate_msg {
         lc_email( $ls->param('list_owner_email') ) )
     {
         print
-"\t\t***Warning!*** Misconfiguration of plugin! The list owner email cannot be the same address as the list email address!\n"
+"\t\t***Warning!*** Misconfiguration of plugin! The List Owner email cannot be the same address as the list email address!\n"
           if $verbose;
         $errors->{list_email_address_is_list_owner_address} = 1;
     }
@@ -1772,13 +1827,12 @@ sub validate_msg {
 
     $from_address = lc_email($from_address);
 
-    print "\t* Message is from: '" . $from_address . "'\n"
-      if $verbose;
+	print "* Checking Recipient: $from_address\n"
+		if $verbose; 
 
     if ( lc_email($from_address) eq lc_email( $ls->param('list_owner_email') ) )
     {
-        print "\t* From: address is the list owner address ("
-          . $ls->param('list_owner_email') . ")\n"
+        print "\t* From List Owner: Yes.\n"
           if $verbose;
 
         if ( $Plugin_Config->{Check_List_Owner_Return_Path_Header} ) {
@@ -1791,57 +1845,47 @@ sub validate_msg {
     }
     else {
 
-        print "\t* From address is NOT from list owner address\n"
+        print "\t* From List Owner: No.\n"
           if $verbose;
         $errors->{msg_not_from_list_owner} = 1;
 
         if ( $ls->param('enable_moderation') ) {
-            print "\t* Moderation enabled...\n"
+            print "\t* Moderation enabled.\n"
               if $verbose;
             $errors->{needs_moderation} = 1;
-
-            #}
-
         }
         else {
-            print "\t* Moderation disabled...\n"
+            print "\t* Moderation disabled.\n"
               if $verbose;
         }
 
         if ( $ls->param('group_list') == 1 ) {
 
-            print "\t* Discussion List Support enabled...\n"
+            print "\t* Discussion List Support is enabled.\n"
               if $verbose;
-
-#if($li->{enable_authorized_sending} && $errors->{msg_not_from_an_authorized_sender} == 0){
-#
-#	print "\t\tSubscription checked skipped - authorized sending enabled and address passed validation.\n"
-#	    if $verbose;
-#
-#}else{
 
             my ( $s_status, $s_errors ) =
               $lh->subscription_check( { -email => $from_address, } );
 
             if ( $s_errors->{subscribed} == 1 ) {
-                print "\t* Message *is* from a current subscriber.\n"
+                print "\t\t* From Subscriber: Yes.\n"
                   if $verbose;
                 $errors->{msg_not_from_list_owner} = 0;
                 if ( $ls->param('subscriber_sending_no_moderation') ) {
                     $errors->{needs_moderation} = 0;
                 }
                 elsif ( $errors->{needs_moderation} == 1 ) {
-                    print "\t* However, message still *requires* moderation!\n"
+                    print "\t\t* Moderation Required.\n"
                       if $verbose;
                 }
             }
             else {
-                print "\t* Message is NOT from a subscriber.\n"
+                print "\t\t* From Subscriber: No.\n"
                   if $verbose;
                 if (   $ls->param('open_discussion_list') == 1
                     && $Plugin_Config->{Allow_Open_Discussion_List} == 1 )
                 {
-                    print "\t* Postings from non-subscribers is enabled...\n"
+                    print "\t\t* Postings from non-Subscribers is enabled.\n"
                       if $verbose;
                     $errors->{msg_not_from_list_owner} = 0;
                 }
@@ -1850,11 +1894,9 @@ sub validate_msg {
                 }
             }
 
-            #}
-
         }
         else {
-            print "\t* Discussion Support disabled...\n"
+            print "\t* Discussion Support is disabled.\n"
               if $verbose;
         }
     }
@@ -1862,7 +1904,7 @@ sub validate_msg {
     if ( $ls->param('enable_authorized_sending') == 1 ) {
 
         # cancel out other errors???
-        print "\t* Authorized Senders List enabled...\n"
+        print "\t* Authorized Senders is enabled.\n"
           if $verbose;
         my ( $m_status, $m_errors ) = $lh->subscription_check(
             {
@@ -1871,37 +1913,38 @@ sub validate_msg {
             }
         );
         if ( $m_errors->{subscribed} == 1 ) {
-            print "\t * Message *is* from an Authorized Sender!\n"
+            print "\t\t* From Authorized Sender: Yes.\n"
               if $verbose;
             $errors->{msg_not_from_list_owner} = 0;
             $errors->{msg_not_from_subscriber} = 0;
             if ( $ls->param('authorized_sending_no_moderation') ) {
                 $errors->{needs_moderation} = 0;
+                print "\t\t* Moderation is not required for Authorized Senders.\n"
             }
             elsif ( $errors->{needs_moderation} == 1 ) {
-                print "\t * however Message still *requires* moderation!\n"
+                print "\t\t* Moderation required.\n"
                   if $verbose;
             }
         }
         else {
-            print "\t* Message is NOT from an Authorized Sender!\n"
+            print "\t\t* From Authorized Sender: No.\n"
               if $verbose;
         }
     }
     else {
-        print "\t* Authorized Senders List disabled...\n"
+        print "\t* Authorized Senders is disabled.\n"
           if $verbose;
     }
 
     if ( $ls->param('ignore_spam_messages') == 1 ) {
-        print "\t* SpamAssassin check enabled...\n"
+        print "\t* SpamAssassin check is enabled.\n"
           if $verbose;
 
         if ( $ls->param('find_spam_assassin_score_by') eq
             'calling_spamassassin_directly' )
         {
 
-            print "\t* Loading SpamAssassin directly...\n"
+            print "\t* Loading SpamAssassin directly.\n"
               if $verbose;
 
             eval { require Mail::SpamAssassin; };
@@ -2138,7 +2181,7 @@ sub validate_msg {
 
     }
     else {
-        print "\t* SpamAssassin check disabled...\n"
+        print "\t* SpamAssassin check is disabled.\n"
           if $verbose;
     }
 
@@ -2328,6 +2371,69 @@ sub send_msg_too_big {
     }
 
 }
+
+sub notify_of_delivery { 
+
+    my ($args) = @_;
+
+    if ( !exists( $args->{-ls} ) ) {
+        croak "You must pass a -ls parameter!";
+    }
+    if ( !exists( $args->{-msg} ) ) {
+        croak "You must pass a -msg parameter!";
+    }
+
+    my $test_mail = 0;
+    if ( exists( $args->{-test_mail} ) ) {
+        $test_mail = $args->{-test_mail};
+    }
+
+    my $ls = $args->{-ls};
+
+    # $msg is a scalarref
+    my $msg = $args->{-msg};
+    
+    my $entity = $parser->parse_data( $msg );
+
+    my $rough_from = $entity->head->get( 'From', 0 );
+    chomp($rough_from); 
+    my $from_address = undef; 
+    
+    my $from_address;
+    if ( defined($rough_from) ) {
+        eval {
+            $from_address = ( Email::Address->parse($rough_from) )[0]->address;
+        };
+    }
+    
+    my $original_subject = $entity->head->get( 'Subject', 0 ); 
+    chomp($original_subject);
+    
+    require DADA::App::Messages;
+    DADA::App::Messages::send_generic_email(
+        {
+            -list    => $ls->param('list'),
+            -headers => {
+                To      => $rough_from,
+                From    => $ls->param('list_owner_email'),
+                Subject => $ls->param('msg_received_msg_subject'),
+            },
+            -body        => $ls->param('msg_received_msg'),
+            -tmpl_params => {
+                -list_settings_vars       => $ls->params,
+                -list_settings_vars_param => { -dot_it => 1, },
+                -subscriber_vars =>
+                  { 'subscriber.email' => $from_address, },
+                -vars => {
+                    original_subject => $original_subject,
+                }
+            },
+        }
+    );
+}
+
+
+
 
 sub process {
 
@@ -3015,21 +3121,36 @@ sub handle_errors {
     warn
 "bridge.cgi rejecting sending of received message - \tFrom: $from\tSubject: $subject\tMessage-ID: $message_id\tReasons: $reasons";
 
-    print "\t* Error delivering message! Reasons:\n"
+    print "\tReasons:\n"
       if $verbose;
-    for ( keys %$errors ) {
-        print "\t\t* " . $_ . "\n"
-          if $errors->{$_} == 1 && $verbose;
-    }
+	
+	my %error_descriptions = (
+		needs_moderation => 'Messages need to be moderated', 
+		msg_not_from_subscriber => 'Message is not from a Subscriber',
+		msg_not_from_list_owner => 'Message is not from the List Owner', 
+	); 
+	
+	if($verbose) { 
+		for ( keys %$errors ) {
+			if ($errors->{$_} == 1) { 
+				if(exists($error_descriptions{$_})) { 
+					print "\t\t* " . $error_descriptions{$_} . "\n"; 
+				}
+				else { 
+					print "\t\t" . $_ . "\n";
+				}
+			}
+		}
+	}
 
     if ( $errors->{list_owner_return_path_set_funny} == 1 ) {
-
         print "\t\t* list_owner_return_path_set_funny\n"
           if $verbose;
-
         # and I'm not going to do anything...
-
     }
+	
+	print "\n"
+		if $verbose; 
 
     if ( $errors->{message_seen_as_spam} == 1 ) {
 
@@ -3074,14 +3195,14 @@ sub handle_errors {
 
         if ( $ls->param('send_not_allowed_to_post_msg') == 1 ) {
 
-            print "\t\t* msg_not_from_subscriber on its way!\n"
+            print "\t Sending out, 'Not Allowed to Post' message to poster\n"
               if $verbose;
             send_msg_not_from_subscriber( $ls, $full_msg );
 
         }
 
         if ( $ls->param('send_invalid_msgs_to_owner') == 1 ) {
-            print "\t\t* invalid_msgs_to_owner on its way!\n"
+            print "\t Sending out, 'Not a Subscriber' message to List Owner\n"
               if $verbose;
             send_invalid_msgs_to_owner( $ls, $full_msg );
 
@@ -3090,7 +3211,7 @@ sub handle_errors {
     }
     elsif ( $errors->{needs_moderation} ) {
 
-        print "\t\t* Message being saved for moderation by list owner...\n"
+        print "Message being saved for moderation by List Owner.\n"
           if $verbose;
 
         my $mod = SimpleModeration->new( { -List => $ls->param('list') } );
@@ -3171,6 +3292,9 @@ sub append_message_to_file {
       . '/bridge_received_msgs-'
       . $ls->param('list') . '.mbox';
 
+	print "\n"
+		if $verbose; 
+		
     print "Saving message at: '$file' \n"
       if $verbose;
 
@@ -3358,6 +3482,8 @@ sub cgi_edit_email_msgs {
             {
                 -associate => $q,
                 -settings  => {
+                    msg_received_msg                  => '',
+                    msg_received_msg_subject          => '',
                     not_allowed_to_post_msg_subject   => '',
                     not_allowed_to_post_msg           => '',
                     invalid_msgs_to_owner_msg_subject => '',
@@ -3427,6 +3553,17 @@ sub inject {
 
             ( $status, $errors ) = validate_msg( $ls, \$msg );
             if ($status) {
+                
+                
+                if($ls->param('send_received_msg') == 1 ) { 
+                    notify_of_delivery(
+                        {
+                            -ls        => $ls,
+                            -msg       => \$msg,
+                            -test_mail => $test_mail,
+                        }
+                    ); 
+                }
                 process(
                     {
                         -ls        => $ls,
@@ -3443,7 +3580,7 @@ sub inject {
             else {
 
                 print
-                  "\tMessage did not pass verification - handling issues...\n"
+                  "\tMessage did not pass verification.\n"
                   if $verbose;
 
                 handle_errors( $ls, $errors, $msg );
@@ -3675,19 +3812,19 @@ sub moderation_msg {
     #  create an array of recepients
     my @moderators;
     if ( $ls->param('moderate_discussion_lists_with') eq
-        'authorized_sender_email' )
+        'moderators' )
     {
         my $lh =
           DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
-        my $authorized_senders = [];
-        $authorized_senders =
-          $lh->subscription_list( { -type => 'authorized_senders' } );
-        for my $moderator (@$authorized_senders) {
+        my $moderators = [];
+        $moderators =
+          $lh->subscription_list( { -type => 'moderators' } );
+        for my $moderator (@$moderators) {
 
             if ( $moderator->{email} eq $args->{-from} ) {
 
                 # Well, we'll just pass that one right by...
-                # I don't think we want an authorized sender to
+                # I don't think we want an moderator to
                 # be able to moderate their own message!
             }
             else {
@@ -3695,11 +3832,11 @@ sub moderation_msg {
             }
         }
         print
-"\t* Message being sent to Authorized Senders and List Owner for moderation... \n"
+"\tMessage being sent to Moderators and List Owner for moderation.\n"
           if $verbose;
     }
     else {
-        print "\t* Message being sent to List Owner for moderation... \n"
+        print "\tMessage being sent to List Owner for moderation.\n"
           if $verbose;
     }
     push( @moderators, $ls->param('list_owner_email') );    # always addressed
@@ -4107,13 +4244,11 @@ sub mod_dir {
 
 =head1 Description 
 
-The Bridge plugin adds support to Dada Mail to accept messages sent from a mail reader to a specific email address, called the B<List Email>. That message can then be sent out in a mass mailing. 
+B<Bridge> is one of the most powerful plugins that comes with Dada Mail. Once installed and configured, Bridge allows you to both send Announce Only messages from your mail reader, as well as set up a Discussion Lists, where  all members of your mailing list can join in and start talking to each other via email. 
 
-This allows you to send announce-only messages from your mail reader, without having to log into your list's control panel. 
+Bridge also allows you to set up your mailing list as an email discussion list: Each member of your mailing list may send messages to the List Email, which will then be sent to the entire mailing list. 
 
-It also allows you to set up your mailing list as an email discussion list: Each member of your mailing list may send messages to the List Email, which will then be sent to the entire mailing list. 
-
-The B<List Email> will need to be set up manually for each mailing list you will want to use Bridge and can be either a regular B<POP3 email account>, which Bridge will log into on a schedule, or an B<Email Forward>, which will forward the message directly to the plugin itself. 
+Messages are received by sending to the B<List Email>. The List Email will need to be set up manually for each mailing list you will want to use Bridge and can be either a regular B<POP3 email account>, which Bridge will log into on a schedule, or an B<Email Forward>, which will forward the message directly to the plugin itself. 
 
 =head1 User Guide
 
@@ -4133,7 +4268,7 @@ Bridge is located in the, I<dada/plugins> directory of the Dada Mail distributio
 
 This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. Under, B<Plugins/Extensions>, check, B<Bridge>.
 
-Manually installation isn't recommended, but is outlined later in this doc. 
+Manual installation isn't recommended, but is outlined later in this doc. 
 
 =head1 Mailing List Configuration 
 
@@ -4153,9 +4288,9 @@ There's a few constraints you want to keep in mind when creating the List Email.
 
 The List Email can either be a normal POP3 email account, or a Mail Forward.
 
-A POP3 email account is fairly easy to set up, as its similar to setting up any mail reader - and Bridge basically acts as a mail reader, while checking messages sent to this account. It does require you to set up an additional cronjob (scheduled task), to check this account on a regular schedule; for example: every 5 minutes. 
+A B<POP3 account> is fairly easy to set up, as its similar to setting up any mail reader - and Bridge basically acts as a mail reader, while checking messages sent to this account. It does require you to set up an additional cronjob (scheduled task), to check this account on a regular schedule; for example: every 5 minutes. 
 
-A Mail Forward does not need this additional cronjob created, but may be slightly trickier to set up on the mail forward side of things. Before attempting, make sure that you can set up a mail forward that can B<Pipe to a Program>, and not simply forward to another email address.  
+A B<Mail Forward> does not need this additional cronjob created, but may be slightly trickier to set up on the mail forward side of things. Before attempting, make sure that you can set up a mail forward that can B<Pipe to a Program>, and not simply forward to another email address.  
 
 =head3 Setup As: POP3 Account 
 
@@ -4210,7 +4345,7 @@ If they are present, remove them.
 You can then configure the plugin variables on these lines: 
 
 	Bridge => {
-
+	
 		Plugin_Name                         => undef,
 		Plugin_URL                          => undef,
 		Allow_Manual_Run                    => undef,
@@ -4223,7 +4358,7 @@ You can then configure the plugin variables on these lines:
 		Enable_POP3_File_Locking            => undef,
 		Check_List_Owner_Return_Path_Header => undef,
 		Check_Multiple_Return_Path_Headers  => undef,
-
+	
 	},
 
 =head2 Plugin_Name
@@ -4472,7 +4607,7 @@ This could be the cause of mysterious occurences of messages never reaching the 
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2013 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2014 Justin Simoni All rights reserved. 
 
 =head1 LICENSE
 

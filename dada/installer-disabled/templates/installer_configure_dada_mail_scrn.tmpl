@@ -747,18 +747,27 @@ editors also have the ability to make simple HTML tables for basic layouts.
 		<input type="checkbox" name="wysiwyg_editor_install_tiny_mce" id="wysiwyg_editor_install_tiny_mce" value="1" checked="checked" />			
 	<label for="wysiwyg_editor_install_tiny_mce">Install Tiny MCE</label>
 	</p>
-
-	<p>
-		<input type="checkbox" name="wysiwyg_editor_install_fckeditor" id="wysiwyg_editor_install_fckeditor" value="1"/>			
-	<label for="wysiwyg_editor_install_fckeditor">Install FCKeditor (Not Recommended)</label>
-	</p>
 		
 	<h2>File Browsers/Uploaders</h2>
 
 	<p>
-		<input type="checkbox" name="file_browser_install_kcfinder" id="file_browser_install_kcfinder" value="1" checked="checked"/>			
+		<input type="radio" name="file_browser_install" id="file_browser_install_kcfinder" value="kcfinder" checked="checked"/>
 		<label for="file_browser_install_kcfinder">Install KCFinder</label>
 	</p>
+	<p>
+		<input type="radio" name="file_browser_install" id="file_browser_install_core5_filemanager" value="core5_filemanager"/>
+		<label for="file_browser_install_core5_filemanager">Install Core Five FileManager</label>
+	</p>
+	<input type="hidden" name="core5_filemanager_connector" value="pl" /> 
+<!-- 
+	<p><label style="width: 8em;float: left;text-align: right;margin-right: 0.5em;display: block" for="not_core5_filemanager_connector">Connector:</label>
+		<select name="not_core5_filemanager_connector" id="not_core5_filemanager_connector">
+			<option value="pl">Perl</option>
+			<option value="php">php</option>			
+		</select>
+	</p>
+-->
+
 		</fieldset> 
 </div> 
 
@@ -1268,6 +1277,10 @@ editors also have the ability to make simple HTML tables for basic layouts.
 				<option value="8">8</option> 
 				<option value="9">9</option> 
 				<option value="10">10</option> 
+				<option value="15">15</option> 
+				<option value="20">20</option> 
+				<option value="25">25</option> 
+				<option value="30">30</option> 
 			</select>
 		</p>
 
@@ -1291,6 +1304,47 @@ editors also have the ability to make simple HTML tables for basic layouts.
 	</fieldset> 	
 	</div> 
 <!-- /tmpl_if --> 
+
+
+
+
+
+<!-- tmpl_if show_confirmation_token_options --> 
+
+	<p>
+		<input type="checkbox" name="configure_confirmation_token" id="configure_confirmation_token" value="1" />			
+	<label for="configure_confirmation_token">Configure Confirmation Token Options</label>
+	</p>
+	<div id="confirmation_token_options">
+	<fieldset> 	
+		<p>
+			<label for="confirmation_token_expires">
+				Keep Confirmation Tokens For: 
+			</label>
+			<select name="confirmation_token_expires" id="confirmation_token_expires">
+				<option value="5">5</option>
+				<option value="10">10</option>
+				<option value="15">15</option>
+				<option value="20">20</option>
+				<option value="30">30</option> 
+				<option value="60" selected="selected">60</option> 
+				<option value="90">90</option>
+				<option value="180">180</option>
+				<option value="360">360</option>
+			</select>
+			Days
+		</p>
+	</fieldset> 	
+	</div> 
+<!-- /tmpl_if --> 
+
+
+
+
+
+
+
+
 
 <!-- tmpl_if show_amazon_ses_options --> 
 
