@@ -10,9 +10,14 @@
 
 	<!-- tmpl_if expr="((process == 1) && (is_valid == 0))" --> 
 	<div class="badweatherbox"> 
-	 <p><strong>Problems with Unsubscription</strong>
+	<!-- tmpl_if list_settings.private_list --> 
+    <p><strong>Problems with Unsubscription Request</strong>	
+	<!-- tmpl_else --> 
+	    <p><strong>Problems with Unsubscription</strong>
+	<!-- /tmpl_if --> 
+	
 		<p>
-			Please make sure you're entering the correct email address that was subscribed, below. 
+			Please make sure you're entering the correct email address that is subscribed, below. 
 		</p>
 	
 		<p>To be manually removed from this mailing list, please email the List Owner at:</p> 
@@ -44,9 +49,9 @@
 
 	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" /> 
 		<input type="hidden" id="flavor" name="flavor" value="u" />
-		<input type="hidden" id="token" name="token" value="<!-- tmpl_var token -->" /> 
+		<input type="hidden" id="token" name="token" value="<!-- tmpl_var token  escape="HTML" -->" /> 
 		<input type="hidden" id="process" name="process" value="1" /> 
-		<input type="text"   id="email" name="email" value="" />
+		<input type="text"   id="email" name="email" value="<!-- tmpl_var email escape="HTML" -->" />
 		<!-- tmpl_if list_settings.private_list --> 
 			<input type="submit" value="Request Unsubscription" /> 
 		<!-- tmpl_else --> 

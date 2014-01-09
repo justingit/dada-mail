@@ -1349,7 +1349,7 @@ Would like to be REMOVED from:
 
 	<!-- tmpl_var list_settings.list_name -->
 	
-To approve this subscription, follow this link: 
+To approve this unsubscription, follow this link: 
 	
 	<!-- tmpl_var list_unsubscribe_request_approve_link --> 
 	
@@ -2681,7 +2681,7 @@ EOF
 
 	# Unsubscription Requests
 	# List Owner
-    unsubscription_approval_request_message_subject => '<!-- tmpl_var subscriber.email --> would like to unsubscribe to: <!-- tmpl_var list_settings.list_name -->',
+    unsubscription_approval_request_message_subject => '<!-- tmpl_var subscriber.email --> would like to unsubscribe from: <!-- tmpl_var list_settings.list_name -->',
 	unsubscription_approval_request_message         => $UNSUBSCRIPTION_APPROVAL_REQUEST_MESSAGE,
 
 	# Subscriber

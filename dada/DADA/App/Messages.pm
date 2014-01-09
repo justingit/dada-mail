@@ -20,6 +20,7 @@ require Exporter;
   send_owner_happenings
   send_newest_archive
   send_you_are_already_subscribed_message
+  
 );
 
 
@@ -36,7 +37,6 @@ sub send_generic_email {
     }
 
     my $ls = undef;
-    my $li = {};
 
     if ( exists( $args->{-list} ) ) {
         if ( !exists( $args->{-ls_obj} ) ) {
@@ -46,7 +46,6 @@ sub send_generic_email {
         else {
             $ls = $args->{-ls_obj};
         }
-        $li = $ls->get;
     }
 
     # We'll use this, later
@@ -162,10 +161,9 @@ sub send_confirmation_message {
 			require DADA::MailingList::Settings; 
 			$ls = DADA::MailingList::Settings->new({-list => $args->{-list}});
 		}
-		my $li = $ls->get; 
 	####
 	
-	my $confirmation_msg = $li->{confirmation_message}; 
+	my $confirmation_msg = $ls->param('confirmation_message'); 
 	require DADA::App::FormatMessages; 
 	my $fm = DADA::App::FormatMessages->new(-List => $args->{-list}); 
 	   $confirmation_msg = $fm->subscription_confirmationation({-str => $confirmation_msg}); 
@@ -175,7 +173,7 @@ sub send_confirmation_message {
 			-list    => $args->{-list}, 
 			-headers => { 
 				To              => '"<!-- tmpl_var list_settings.list_name --> Subscriber" <' . $args->{-email} . '>',
-			    Subject         => $li->{confirmation_message_subject},
+			    Subject         => $ls->param('confirmation_message_subject'),
 			}, 
 			
 			-body => $confirmation_msg,
@@ -219,7 +217,6 @@ sub send_subscribed_message {
 	else { 
 		$ls = $args->{-ls_obj};
 	}
-	my $li    = $ls->get; 
 
 	require DADA::App::Subscriptions::Unsub; 
 	my $dasu = DADA::App::Subscriptions::Unsub->new({-list => $args->{-list}});
@@ -231,13 +228,13 @@ sub send_subscribed_message {
 		{
 			-list         => $args->{-list}, 
 			-headers      => {
-					To      => '"'. escape_for_sending($li->{list_name}) .' Subscriber" <'. $args->{-email} .'>',
-					Subject => $li->{subscribed_message_subject},
+					To      => '"'. escape_for_sending($ls->param('list_name')) .' Subscriber" <'. $args->{-email} .'>',
+					Subject => $ls->param('subscribed_message_subject'),
 			}, 
-			-body         => $li->{subscribed_message},
+			-body         => $ls->param('subscribed_message'),
 			-tmpl_params  => {		
-				-list_settings_vars_param => {-list => $li->{list},},
-				-subscriber_vars_param    => {-list => $li->{list}, -email => $args->{-email}, -type => 'list'},
+				-list_settings_vars_param => {-list => $ls->param('list'),},
+				-subscriber_vars_param    => {-list => $ls->param('list'), -email => $args->{-email}, -type => 'list'},
 				#-profile_vars_param       => {-email => $args->{-email}},
 				-vars => $args->{-vars}, 
 			},
@@ -263,7 +260,6 @@ sub send_subscription_request_approved_message {
 	else { 
 		$ls = $args->{-ls_obj};
 	}
-	my $li    = $ls->get; 
 
 	if(!exists($args->{-vars})){ 
 		$args->{-vars} = {};
@@ -278,13 +274,13 @@ sub send_subscription_request_approved_message {
 		{
 			-list         => $args->{-list}, 
 			-headers      => {
-					To      => '"'. escape_for_sending($li->{list_name}) .'" <'. $args->{-email} .'>',
-					Subject => $li->{subscription_request_approved_message_subject},
+					To      => '"'. escape_for_sending($ls->param('list_name')) .'" <'. $args->{-email} .'>',
+					Subject => $ls->param('subscription_request_approved_message_subject'),
 			}, 
-			-body         => $li->{subscription_request_approved_message},
+			-body         => $ls->param('subscription_request_approved_message'),
 			-tmpl_params  => {		
-				-list_settings_vars_param => {-list => $li->{list},},
-				-subscriber_vars_param    => {-list => $li->{list}, -email => $args->{-email}, -type => 'list'},
+				-list_settings_vars_param => {-list => $ls->param('list'),},
+				-subscriber_vars_param    => {-list => $ls->param('list'), -email => $args->{-email}, -type => 'list'},
 				#-profile_vars_param       => {-email => $args->{-email}},
 				-vars => $args->{-vars}, 
 			},
@@ -310,7 +306,6 @@ sub send_subscription_request_denied_message {
 	else { 
 		$ls = $args->{-ls_obj};
 	}
-	my $li    = $ls->get; 
 
 	if(!exists($args->{-vars})){ 
 		$args->{-vars} = {};
@@ -320,13 +315,13 @@ sub send_subscription_request_denied_message {
 		{
 			-list         => $args->{-list}, 
 			-headers      => {
-					To      => '"'. escape_for_sending($li->{list_name}) .'" <'. $args->{-email} .'>',
-					Subject => $li->{subscription_request_denied_message_subject},
+					To      => '"'. escape_for_sending($ls->param('list_name')) .'" <'. $args->{-email} .'>',
+					Subject => $ls->param('subscription_request_denied_message_subject'),
 			}, 
-			-body         => $li->{subscription_request_denied_message},
+			-body         => $ls->param('subscription_request_denied_message'),
 			-tmpl_params  => {		
-				-list_settings_vars_param => {-list => $li->{list},},
-				#-subscriber_vars_param    => {-list => $li->{list}, -email => $args->{-email}, -type => 'list'},
+				-list_settings_vars_param => {-list => $ls->param('list'),},
+				#-subscriber_vars_param    => {-list => $ls->param('list'), -email => $args->{-email}, -type => 'list'},
 				#-profile_vars_param       => {-email => $args->{-email}},
 				#-vars => $args->{-vars}, 
 				-vars => { 
@@ -343,7 +338,7 @@ sub send_subscription_request_denied_message {
 
 
 
-
+# this is used when the token system is whack, and you request to unsub, uh, "manually"
 sub send_unsubscribe_request_message { 
 	
 	my ($args) = @_;
@@ -357,7 +352,6 @@ sub send_unsubscribe_request_message {
 			require DADA::MailingList::Settings; 
 			$ls = DADA::MailingList::Settings->new({-list => $args->{-list}});
 		}
-		my $li = $ls->get; 
 	####
 	
 	my $unsubscription_request_message = $DADA::Config::UNSUBSCRIPTION_REQUEST_MESSAGE;
@@ -376,7 +370,7 @@ sub send_unsubscribe_request_message {
 		-ls_obj      => $ls,   
 		-headers     => 
 			{
-					 To      =>  '"'. escape_for_sending($li->{list_name}) .' Subscriber"  <' . $args->{-email} . '>',
+					 To      =>  '"'. escape_for_sending($ls->param('list_name')) .' Subscriber"  <' . $args->{-email} . '>',
 					 Subject =>  $DADA::Config::UNSUBSCRIPTION_REQUEST_MESSAGE_SUBJECT, 
 			},
 				
@@ -472,9 +466,9 @@ sub unsubscription_approval_request_message {
          -test => $args->{-test},
      }
  );
-	
-
 }
+
+
 
 
 
@@ -495,9 +489,6 @@ sub send_unsubscribed_message {
 	else { 
 		$ls = $args->{-ls_obj};
 	}
-	my $li    = $ls->get; 
-	
-	
 	
 	# This is a hack - if the subscriber has recently been removed, you 
 	# won't be able to get the subscriber fields - since there's no way to 
@@ -535,16 +526,16 @@ sub send_unsubscribed_message {
 			-email       => $args->{-email}, 
 			-headers => { 	
 				To           => '"<!-- tmpl_var list_settings.list_name -->" <' . $args->{-email} . '>',
-				Subject      => $li->{unsubscribed_message_subject}, 
+				Subject      => $ls->param('unsubscribed_message_subject'), 
 			},
-			-body    => $li->{unsubscribed_message},
+			-body    => $ls->param('unsubscribed_message'),
 
 			-test         => $args->{-test}, 
 			
 			-tmpl_params  => {	
-				-list_settings_vars       => $li, 
 				-list_settings_vars_param => 
 					{
+                        -list => $ls->param('list')
 						-dot_it => 1, 
 					}, 
 				#-subscriber_vars => {'subscriber.email' => $args->{-email}}, # DEV: This line right?
@@ -738,7 +729,6 @@ sub send_you_are_already_subscribed_message {
 	else { 
 		$ls = $args->{-ls_obj};
 	}
-	my $li    = $ls->get;
 		
 	send_generic_email(
 		{
@@ -747,15 +737,15 @@ sub send_you_are_already_subscribed_message {
         -ls_obj       => $ls, 
         
 		-headers => { 
-			To           => '"'. escape_for_sending($li->{list_name}) .' Subscriber" <'. $args->{-email} .'>',
-			Subject      => $li->{you_are_already_subscribed_message_subject}, 
+			To           => '"'. escape_for_sending($ls->param('list_name')) .' Subscriber" <'. $args->{-email} .'>',
+			Subject      => $ls->param('you_are_already_subscribed_message_subject'), 
 		},
 		
-		-body         => $li->{you_are_already_subscribed_message}, 
+		-body         => $ls->param('you_are_already_subscribed_message'), 
 		
 		-tmpl_params  => {		
-			-list_settings_vars_param => {-list => $li->{list},},
-			-subscriber_vars_param    => {-list => $li->{list}, -email => $args->{-email}, -type => 'list'},
+			-list_settings_vars_param => {-list => $ls->param('list'),},
+			-subscriber_vars_param    => {-list => $ls->param('list'), -email => $args->{-email}, -type => 'list'},
 		},
 		
 		-test         => $args->{-test}, 
@@ -779,7 +769,6 @@ sub send_not_subscribed_message {
 	else { 
 		$ls = $args->{-ls_obj};
 	}
-	my $li    = $ls->get;
 		
 	send_generic_email(
 		{
@@ -788,15 +777,15 @@ sub send_not_subscribed_message {
         -ls_obj       => $ls, 
         
 		-headers => { 
-			To           => '"'. escape_for_sending($li->{list_name}) .' Subscriber" <'. $args->{-email} .'>',
-			Subject      => $li->{you_are_not_subscribed_message_subject}, 
+			To           => '"'. escape_for_sending($ls->param('list_name')) .' Subscriber" <'. $args->{-email} .'>',
+			Subject      => $ls->param('you_are_not_subscribed_message_subject'), 
 		},
 		
-		-body         => $li->{you_are_not_subscribed_message}, 
+		-body         => $ls->param('you_are_not_subscribed_message'), 
 		
 		-tmpl_params  => {		
-			-list_settings_vars_param => {-list => $li->{list},},
-			-subscriber_vars_param    => {-list => $li->{list}, -email => $args->{-email}, -type => 'list'},
+			-list_settings_vars_param => {-list => $ls->param('list'),},
+			-subscriber_vars_param    => {-list => $ls->param('list'), -email => $args->{-email}, -type => 'list'},
 		},
 		-test         => $args->{-test}, 
 		}
@@ -829,7 +818,6 @@ sub send_newest_archive {
 			require DADA::MailingList::Settings; 
 			$ls = DADA::MailingList::Settings->new({-list => $args->{-list}});
 		}
-		my $li = $ls->get; 
 	####
 
 	####
@@ -887,14 +875,14 @@ sub send_newest_archive {
 
 			-headers => { 
 						 $mh->return_headers($head),  
-					  	 To             => '"'. escape_for_sending($li->{list_name}) .' Subscriber" <'. $args->{-email} .'>',
+					  	 To             => '"'. escape_for_sending($ls->param('list_name')) .' Subscriber" <'. $args->{-email} .'>',
 			},
 
 			-body         => $body, 
 
 			-tmpl_params  => {		
-				-list_settings_vars_param => {-list => $li->{list},},
-				-subscriber_vars_param    => {-list => $li->{list}, -email => $args->{-email}, -type => 'list'},
+				-list_settings_vars_param => {-list => $ls->param('list'),},
+				-subscriber_vars_param    => {-list => $ls->param('list'), -email => $args->{-email}, -type => 'list'},
 			},
 
 			-test         => $args->{-test}, 
@@ -927,7 +915,6 @@ sub send_not_allowed_to_post_msg {
 	else { 
 		$ls = $args->{-ls_obj};
 	}
-	my $li    = $ls->get;
 
 	my $attachment;
 	if(!exists($args->{-attachment})){ 
@@ -939,15 +926,15 @@ sub send_not_allowed_to_post_msg {
 	
 
 	my $reply = MIME::Entity->build(Type 	=> "multipart/mixed", 
-									Subject => $li->{not_allowed_to_post_msg_subject}, 									
+									Subject => $ls->param('not_allowed_to_post_msg_subject'),
 									%{$args->{-headers}},
-									To           => '"'. escape_for_sending($li->{list_name}) .'" <'. $args->{-email} .'>',
+									To           => '"'. escape_for_sending($ls->param('list_name')) .'" <'. $args->{-email} .'>',
 									);
 									
 	$reply->attach(
 				   Type     => 'text/plain', 
-				   Encoding => $li->{plaintext_encoding},
-				   Data     => $li->{not_allowed_to_post_msg}
+				   Encoding => $ls->param('plaintext_encoding'),
+				   Data     => $ls->param('not_allowed_to_post_msg'),
 				  ); 
 				
 	$reply->attach( Type        => 'message/rfc822', 
@@ -977,7 +964,7 @@ sub send_not_allowed_to_post_msg {
 		-body         => $body, 
 		-tmpl_params  => {		
 			-list_settings_vars_param => {-list => $args->{-list}},
-			#-subscriber_vars_param    => {-list => $li->{list}, -email => $args->{-email}, -type => 'list'},
+			#-subscriber_vars_param    => {-list => $ls->param('list'), -email => $args->{-email}, -type => 'list'},
 			-subscriber_vars => 
 				{
 					'subscriber.email' => $args->{-email}
@@ -989,6 +976,95 @@ sub send_not_allowed_to_post_msg {
 	);
 
 }
+
+sub send_unsubscription_request_approved_message { 
+
+	my ($args) = @_; 
+
+	my $ls; 
+	if(!exists($args->{-ls_obj})){ 
+		require DADA::MailingList::Settings; 
+		$ls = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
+	}
+	else { 
+		$ls = $args->{-ls_obj};
+	}
+
+	if(!exists($args->{-vars})){ 
+		$args->{-vars} = {};
+	}
+
+	send_generic_email (
+		{
+			-list         => $args->{-list}, 
+			-headers      => {
+					To      => '"'. escape_for_sending($ls->param('list_name')) .'" <'. $args->{-email} .'>',
+					Subject => $ls->param('unsubscription_request_approved_message_subject'),
+			}, 
+			-body         => $ls->param('unsubscription_request_approved_message'),
+			-tmpl_params  => {		
+				-list_settings_vars_param => {-list => $ls->param('list'),},
+                -subscriber_vars => 
+    				{
+    					'subscriber.email' => $args->{-email}
+    				},
+				# -subscriber_vars_param    => {-list => $ls->param('list'), -email => $args->{-email}, -type => 'list'},
+				# -profile_vars_param       => {-email => $args->{-email}},
+				# -vars => $args->{-vars}, 
+			},
+			# -test         => $args->{-test}, 
+		}
+	); 
+	# Logging?
+	
+}
+
+
+
+
+sub send_unsubscription_request_denied_message { 
+
+	my ($args) = @_; 
+
+	my $ls; 
+	if(!exists($args->{-ls_obj})){ 
+		require DADA::MailingList::Settings; 
+		$ls = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
+	}
+	else { 
+		$ls = $args->{-ls_obj};
+	}
+
+	if(!exists($args->{-vars})){ 
+		$args->{-vars} = {};
+	}
+
+	send_generic_email (
+		{
+			-list         => $args->{-list}, 
+			-headers      => {
+					To      => '"'. escape_for_sending($ls->param('list_name')) .'" <'. $args->{-email} .'>',
+					Subject => $ls->param('unsubscription_request_denied_message_subject'),
+			}, 
+			-body         => $ls->param('unsubscription_request_denied_message'),
+			-tmpl_params  => {		
+				-list_settings_vars_param => {-list => $ls->param('list'),},
+				-subscriber_vars => 
+    				{
+    					'subscriber.email' => $args->{-email}
+    				},
+				-vars => { 
+					'subscriber.email' => $args->{-email}, 
+					%{$args->{-vars}},
+				}
+			},
+			# -test         => $args->{-test}, 
+		}
+	); 
+	# Logging?
+	
+}
+
 
 
 
