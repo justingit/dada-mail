@@ -17,6 +17,7 @@ Key:
 	
 	[ ] DateTime col. in subscribers table
 	
+[ ] Tracker should put #'s in the tabs, on the per-mass mailing screens. That way, I don't have to click around, to see what's up. 
 	
 [ ] Track UserAgents to find browser/desktop/email or what type of device. (look at litmus)
 [ ] Voting widget (thumbs up/down) on newsletters
