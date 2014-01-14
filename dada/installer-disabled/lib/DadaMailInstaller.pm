@@ -2284,7 +2284,13 @@ sub install_wysiwyg_editors {
 		if(! -d  $upload_dir){ 
 			# No need to backup this.
 			installer_mkdir( $upload_dir, $DADA::Config::DIR_CHMOD );
-		}	
+			create_htaccess_no_script_execution($upload_dir); 
+		}
+		else { 
+		    if(! -e $upload_dir . '/.htaccess') { 
+		       	create_htaccess_no_script_execution($upload_dir);  
+		    }
+		}
 	}
 	elsif($q->param('file_browser_install') eq 'core5_filemanager'){
 		
@@ -2571,7 +2577,7 @@ sub install_and_configure_core5_filemanager {
 
 	# pl config: 
 	
-    my $uploads_directory = $q->param('support_files_dir_path')  . '/' . $Support_Files_Dir_Name . '/' . 'file_uploads';
+    my $uploads_directory = $q->param('support_files_dir_path')  . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir;
     my $url_path          = $uploads_directory;
     my $doc_root          = $ENV{DOCUMENT_ROOT}; 
     $url_path             =~ s/^$doc_root//; # We use $url_path for the js config, too. 
@@ -3563,6 +3569,25 @@ sub create_htaccess_deny_from_all_file {
 	close   $htaccess or croak $!;
 	installer_chmod(0644, $htaccess_file); 
 }
+
+
+
+
+sub create_htaccess_no_script_execution { 
+	my $loc = shift; 
+	my $htaccess_file = make_safer($loc . '/.htaccess');
+	open my $htaccess, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $htaccess_file or croak $!;
+	print   $htaccess 
+q|
+Options -ExecCGI
+AddType text/plain .php .phtml .php3 .pl .cgi
+
+| or croak $!;
+	close   $htaccess or croak $!;
+	installer_chmod(0644, $htaccess_file); 
+}
+
+
 
 sub guess_home_dir {
 	
