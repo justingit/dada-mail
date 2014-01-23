@@ -6,7 +6,7 @@
   <td valign="top" align="left" width="33%">
    <p>
     <strong>
-		<!-- tmpl_if prev_link --> 
+		<!-- tmpl_if prev_link_start --> 
 				&lt; &lt; 
 				<a href="<!-- tmpl_var url -->?flavor=<!-- tmpl_var flavor_label -->&list=<!-- tmpl_var list escape="URL" -->&start=<!-- tmpl_var prev_link_start -->">
 					Previous
@@ -33,7 +33,7 @@
   <td valign="top" align="right" width="33%"> 
    <p>
     <strong>
-		<!-- tmpl_if next_link --> 
+		<!-- tmpl_if next_link_start --> 
 		<a href="<!-- tmpl_var url -->?flavor=<!-- tmpl_var flavor_label -->&list=<!-- tmpl_var list escape="URL" -->&start=<!-- tmpl_var next_link_start -->">
 				Next
 			</a> &gt;&gt;
