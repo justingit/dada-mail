@@ -1,0 +1,54 @@
+Content-Type: multipart/alternative; boundary="----------=_1390623317-21390-0"
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+X-Mailer: MIME-tools 5.502 (Entity 5.502)
+To: user@example.com
+From: user@example.com
+Subject: Farewell from <!-- tmpl_var list_settings.list_name -->
+
+This is a multi-part message in MIME format...
+
+------------=_1390623317-21390-0
+Content-Type: text/plain
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+The removal of the email address:
+
+	<!-- tmpl_var subscriber.email -->
+	
+from the mailing list: 
+
+	<!-- tmpl_var list_settings.list_name --> 
+
+is complete.
+
+You may wish to save this email message for future reference.
+
+-----------------------------------------------------------------------
+
+Date of this removal: <!-- tmpl_var date --> 
+
+You may re-subscribe to this list at any time by 
+visiting the following URL:
+
+<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->
+
+If you're still having trouble, please contact the List Owner at: 
+
+	mailto:<!-- tmpl_var list_settings.list_owner_email -->
+
+The following physical address is associated with this mailing list: 
+
+<!-- tmpl_var list_settings.physical_address -->
+
+- mailto:<!-- tmpl_var list_settings.list_owner_email -->
+
+
+------------=_1390623317-21390-0
+Content-Type: text/html
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+------------=_1390623317-21390-0--

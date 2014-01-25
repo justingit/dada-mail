@@ -1,0 +1,75 @@
+Content-Type: multipart/alternative; boundary="----------=_1390621596-20749-0"
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+X-Mailer: MIME-tools 5.502 (Entity 5.502)
+To: user@example.com
+From: user@example.com
+Subject: <!-- tmpl_var list_settings.list_name --> Mailing List
+ Subscription Confirmation
+
+This is a multi-part message in MIME format...
+
+------------=_1390621596-20749-0
+Content-Type: text/plain
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+Hello! 
+
+This message has been sent to you as the final step to confirm your
+email list subscription for the following list: 
+
+<!-- tmpl_var list_settings.list_name -->
+
+To confirm this subscription, please follow the URL below:
+
+<!-- tmpl_var list_confirm_subscribe_link -->
+
+(Click the URL above, or copy and paste the URL into your browser. 
+Doing so will subscribe you to this list.)
+
+-----------------------------------------------------------------------
+
+The following is the description given for this list: 
+
+<!-- tmpl_var list_settings.info -->
+
+-----------------------------------------------------------------------
+
+This email is part of a Closed-Loop Opt-In system and was sent to protect 
+the privacy of the owner of this email address. Closed-Loop Opt-In confirmation 
+guarantees that only the owner of an email address can subscribe themselves
+to this mailing list.
+
+Furthermore, the following privacy policy is associated with this list: 
+
+<!-- tmpl_var list_settings.privacy_policy -->
+
+Please read and understand this privacy policy. Other mechanisms may 
+have been enacted to subscribe email addresses to this list, such as
+physical guestbook registrations, verbal agreements, etc.
+
+If you did not ask to be subscribed to this particular list, please
+do not visit the confirmation URL above. The confirmation for 
+subscription will not go through and no other action on your part 
+will be needed.
+
+To contact the owner of this email list, please use the address below: 
+
+mailto:<!-- tmpl_var list_settings.list_owner_email -->
+
+The following physical address is associated with this mailing list: 
+
+<!-- tmpl_var list_settings.physical_address -->
+
+- <!-- tmpl_var list_settings.list_owner_email -->
+
+
+
+------------=_1390621596-20749-0
+Content-Type: text/html
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+------------=_1390621596-20749-0--

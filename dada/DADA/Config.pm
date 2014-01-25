@@ -13,9 +13,9 @@ package DADA::Config;
 require Exporter;
 our @ISA = qw(Exporter);
 use vars
-qw($PROGRAM_ROOT_PASSWORD $MAILPROG $DIR $FILES $PROGRAM_URL $S_PROGRAM_URL $PLUGIN_CONFIGS $MAIL_SETTINGS $MASS_MAIL_SETTINGS $AMAZON_SES_OPTIONS $FIRST_SUB $SEC_SUB @C $SALT $FILE_CHMOD $DIR_CHMOD $GIVE_PROPS_IN_EMAIL $GIVE_PROPS_IN_HTML $GIVE_PROPS_IN_ADMIN $GIVE_PROPS_IN_SUBSCRIBE_FORM $SUBSCRIBED_MESSAGE $SUBSCRIBED_BY_LIST_OWNER_MESSAGE $UNSUBSCRIBED_BY_LIST_OWNER_MESSAGE $SUBSCRIPTION_APPROVAL_REQUEST_MESSAGE $UNSUBSCRIPTION_APPROVAL_REQUEST_MESSAGE $SUBSCRIPTION_NOTICE_MESSAGE_TO_PHRASE $SUBSCRIPTION_NOTICE_MESSAGE_SUBJECT $SUBSCRIPTION_NOTICE_MESSAGE $UNSUBSCRIPTION_NOTICE_MESSAGE_SUBJECT $UNSUBSCRIPTION_NOTICE_MESSAGE $UNSUBSCRIBED_MESSAGE $CONFIRMATION_MESSAGE  $HTML_CONFIRMATION_MESSAGE $YOU_ARE_ALREADY_SUBSCRIBED_MESSAGE $YOU_ARE_NOT_SUBSCRIBED_MESSAGE  $HTML_SUBSCRIBED_MESSAGE $HTML_SUBSCRIPTION_REQUEST_MESSAGE $HTML_UNSUBSCRIBED_MESSAGE  $ARCHIVES $TEMPLATES $ALTERNATIVE_HTML_TEMPLATE_PATH $TMP $LOGS $BACKUPS %BACKUP_HISTORY $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION $ENFORCE_CLOSED_LOOP_OPT_IN $CKEDITOR_URL $SUPPORT_FILES $WYSIWYG_EDITOR_OPTIONS  $FILE_BROWSER_OPTIONS  $SCREEN_CACHE $DATA_CACHE $GLOBAL_BLACK_LIST $GLOBAL_UNSUBSCRIBE $MULTIPLE_LIST_SENDING $MULTIPLE_LIST_SENDING_TYPE $HIDDEN_SUBSCRIBER_FIELDS_PREFIX @PING_URLS $CONFIRMATION_TOKEN_OPTIONS $SUBSCRIPTION_SUCCESSFUL_COPY $MAILING_LIST_MESSAGE $MAILING_LIST_MESSAGE_HTML $MODERATION_MSG $AWAIT_MODERATION_MSG $ACCEPT_MSG $REJECTION_MSG $MSG_TOO_BIG_MSG $MESSAGE_RECEIVED_MSG $MSG_LABELED_AS_SPAM_MSG $NOT_ALLOWED_TO_POST_MSG $NOT_ALLOWED_TO_POST_NOTICE_MSG $MAILING_FINISHED_MESSAGE $MAILING_FINISHED_MESSAGE_SUBJECT $PIN_WORD $PIN_NUM $TEXT_CSV_PARAMS $ALLOW_ROOT_LOGIN $UNSUBSCRIPTION_REQUEST_MESSAGE $UNSUBSCRIPTION_REQUEST_MESSAGE_SUBJECT $SUBSCRIPTION_REQUEST_APPROVED_MESSAGE $UNSUBSCRIPTION_REQUEST_APPROVED_MESSAGE $SUBSCRIPTION_REQUEST_DENIED_MESSAGE $UNSUBSCRIPTION_REQUEST_DENIED_MESSAGE @CHARSETS @CONTENT_TYPES %LIST_SETUP_DEFAULTS %LIST_SETUP_INCLUDE %LIST_SETUP_OVERRIDES @LIST_SETUP_DONT_CLONE %PRIORITIES $ATTACHMENT_TEMPFILE $MAIL_VERP_SEPARATOR %MIME_TYPES $DEFAULT_MIME_TYPE $TEXT_INVITE_MESSAGE $PROFILE_ACTIVATION_MESSAGE_SUBJECT $PROFILE_ACTIVATION_MESSAGE $PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT $PROFILE_RESET_PASSWORD_MESSAGE $PROFILE_UPDATE_EMAIL_MESSAGE_SUBJECT $PROFILE_UPDATE_EMAIL_MESSAGE $PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE_SUBJECT $PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE $LIST_CONFIRM_PASSWORD_MESSAGE_SUBJECT $LIST_CONFIRM_PASSWORD_MESSAGE $LIST_RESET_PASSWORD_MESSAGE_SUBJECT $LIST_RESET_PASSWORD_MESSAGE $HTML_INVITE_MESSAGE $SENDING_PREFS_MESSAGE_SUBJECT $SENDING_PREFS_MESSAGE $MIME_PARANOID $MIME_HUSH $MIME_OPTIMIZE $NPH $PROGRAM_USAGE_LOG $ROOT_PASS_IS_ENCRYPTED @ALLOWED_IP_ADDRESSES $SHOW_ADMIN_LINK $ADMIN_FLAVOR_NAME $SIGN_IN_FLAVOR_NAME $DISABLE_OUTSIDE_LOGINS %LOG $DEBUG_TRACE %CPAN_DEBUG_SETTINGS $ADMIN_MENU $EMAIL_CASE @EMAIL_EXCEPTIONS $LIST_IN_ORDER $ADMIN_TEMPLATE $USER_TEMPLATE $BACKEND_DB_TYPE $SUBSCRIBER_DB_TYPE $ARCHIVE_DB_TYPE $SETTINGS_DB_TYPE $SESSION_DB_TYPE $BOUNCE_SCORECARD_DB_TYPE $CLICKTHROUGH_DB_TYPE %SQL_PARAMS $DBI_PARAMS $PROFILE_OPTIONS $PROGRAM_ERROR_LOG $SHOW_HELP_LINKS $HELP_LINKS_URL $VER $VERSION  $PROGRAM_NAME @CONTENT_TRANSFER_ENCODINGS $CONFIG_FILE $PROGRAM_CONFIG_FILE_DIR $OS $DEFAULT_ADMIN_SCREEN $DEFAULT_LOGOUT_SCREEN $DEFAULT_SCREEN $HTML_CHARSET $HTML_SEND_ARCHIVED_MESSAGE $SEND_ARCHIVED_MESSAGE $REFERER_CHECK $CAPTCHA_TYPE $RECAPTCHA_PARAMS $RECAPTHCA_MAILHIDE_PARAMS $GD_SECURITYIMAGE_PARAMS $LOGIN_COOKIE_NAME %COOKIE_PARAMS $HTML_TEXTTOHTML_OPTIONS $HTML_SCRUBBER_OPTIONS $TEMPLATE_SETTINGS $LOGIN_WIDGET $NULL_DEVICE $LIST_QUOTA $SUBSCRIPTION_QUOTA $MAILOUT_AT_ONCE_LIMIT $MAILOUT_STALE_AFTER %EMAIL_HEADERS @EMAIL_HEADERS_ORDER);
+qw($PROGRAM_ROOT_PASSWORD $MAILPROG $DIR $FILES $PROGRAM_URL $S_PROGRAM_URL $PLUGIN_CONFIGS $MAIL_SETTINGS $MASS_MAIL_SETTINGS $AMAZON_SES_OPTIONS $FIRST_SUB $SEC_SUB @C $SALT $FILE_CHMOD $DIR_CHMOD $GIVE_PROPS_IN_EMAIL $GIVE_PROPS_IN_HTML $GIVE_PROPS_IN_ADMIN $GIVE_PROPS_IN_SUBSCRIBE_FORM $SUBSCRIBED_MESSAGE $SUBSCRIBED_BY_LIST_OWNER_MESSAGE $UNSUBSCRIBED_BY_LIST_OWNER_MESSAGE $SUBSCRIPTION_APPROVAL_REQUEST_MESSAGE $UNSUBSCRIPTION_APPROVAL_REQUEST_MESSAGE $SUBSCRIPTION_NOTICE_MESSAGE_TO_PHRASE $SUBSCRIPTION_NOTICE_MESSAGE_SUBJECT $SUBSCRIPTION_NOTICE_MESSAGE $UNSUBSCRIPTION_NOTICE_MESSAGE_SUBJECT $UNSUBSCRIPTION_NOTICE_MESSAGE  $HTML_CONFIRMATION_MESSAGE $YOU_ARE_ALREADY_SUBSCRIBED_MESSAGE $YOU_ARE_NOT_SUBSCRIBED_MESSAGE  $HTML_SUBSCRIBED_MESSAGE $HTML_SUBSCRIPTION_REQUEST_MESSAGE $HTML_UNSUBSCRIBED_MESSAGE  $ARCHIVES $TEMPLATES $ALTERNATIVE_HTML_TEMPLATE_PATH $TMP $LOGS $BACKUPS %BACKUP_HISTORY $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION $ENFORCE_CLOSED_LOOP_OPT_IN $CKEDITOR_URL $SUPPORT_FILES $WYSIWYG_EDITOR_OPTIONS  $FILE_BROWSER_OPTIONS  $SCREEN_CACHE $DATA_CACHE $GLOBAL_BLACK_LIST $GLOBAL_UNSUBSCRIBE $MULTIPLE_LIST_SENDING $MULTIPLE_LIST_SENDING_TYPE $HIDDEN_SUBSCRIBER_FIELDS_PREFIX @PING_URLS $CONFIRMATION_TOKEN_OPTIONS $SUBSCRIPTION_SUCCESSFUL_COPY $MODERATION_MSG $AWAIT_MODERATION_MSG $ACCEPT_MSG $REJECTION_MSG $MSG_TOO_BIG_MSG $MESSAGE_RECEIVED_MSG $MSG_LABELED_AS_SPAM_MSG $NOT_ALLOWED_TO_POST_MSG $NOT_ALLOWED_TO_POST_NOTICE_MSG $MAILING_FINISHED_MESSAGE $MAILING_FINISHED_MESSAGE_SUBJECT $PIN_WORD $PIN_NUM $TEXT_CSV_PARAMS $ALLOW_ROOT_LOGIN $UNSUBSCRIPTION_REQUEST_MESSAGE $UNSUBSCRIPTION_REQUEST_MESSAGE_SUBJECT $SUBSCRIPTION_REQUEST_APPROVED_MESSAGE $UNSUBSCRIPTION_REQUEST_APPROVED_MESSAGE $SUBSCRIPTION_REQUEST_DENIED_MESSAGE $UNSUBSCRIPTION_REQUEST_DENIED_MESSAGE @CHARSETS @CONTENT_TYPES %LIST_SETUP_DEFAULTS %LIST_SETUP_INCLUDE %LIST_SETUP_OVERRIDES @LIST_SETUP_DONT_CLONE %PRIORITIES $ATTACHMENT_TEMPFILE $MAIL_VERP_SEPARATOR %MIME_TYPES $DEFAULT_MIME_TYPE  $PROFILE_ACTIVATION_MESSAGE_SUBJECT $PROFILE_ACTIVATION_MESSAGE $PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT $PROFILE_RESET_PASSWORD_MESSAGE $PROFILE_UPDATE_EMAIL_MESSAGE_SUBJECT $PROFILE_UPDATE_EMAIL_MESSAGE $PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE_SUBJECT $PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE $LIST_CONFIRM_PASSWORD_MESSAGE_SUBJECT $LIST_CONFIRM_PASSWORD_MESSAGE $LIST_RESET_PASSWORD_MESSAGE_SUBJECT $LIST_RESET_PASSWORD_MESSAGE $SENDING_PREFS_MESSAGE_SUBJECT $SENDING_PREFS_MESSAGE $MIME_PARANOID $MIME_HUSH $MIME_OPTIMIZE $NPH $PROGRAM_USAGE_LOG $ROOT_PASS_IS_ENCRYPTED @ALLOWED_IP_ADDRESSES $SHOW_ADMIN_LINK $ADMIN_FLAVOR_NAME $SIGN_IN_FLAVOR_NAME $DISABLE_OUTSIDE_LOGINS %LOG $DEBUG_TRACE %CPAN_DEBUG_SETTINGS $ADMIN_MENU $EMAIL_CASE @EMAIL_EXCEPTIONS $LIST_IN_ORDER $ADMIN_TEMPLATE $USER_TEMPLATE $BACKEND_DB_TYPE $SUBSCRIBER_DB_TYPE $ARCHIVE_DB_TYPE $SETTINGS_DB_TYPE $SESSION_DB_TYPE $BOUNCE_SCORECARD_DB_TYPE $CLICKTHROUGH_DB_TYPE %SQL_PARAMS $DBI_PARAMS $PROFILE_OPTIONS $PROGRAM_ERROR_LOG $SHOW_HELP_LINKS $HELP_LINKS_URL $VER $VERSION  $PROGRAM_NAME @CONTENT_TRANSFER_ENCODINGS $CONFIG_FILE $PROGRAM_CONFIG_FILE_DIR $OS $DEFAULT_ADMIN_SCREEN $DEFAULT_LOGOUT_SCREEN $DEFAULT_SCREEN $HTML_CHARSET $HTML_SEND_ARCHIVED_MESSAGE $SEND_ARCHIVED_MESSAGE $REFERER_CHECK $CAPTCHA_TYPE $RECAPTCHA_PARAMS $RECAPTHCA_MAILHIDE_PARAMS $GD_SECURITYIMAGE_PARAMS $LOGIN_COOKIE_NAME %COOKIE_PARAMS $HTML_TEXTTOHTML_OPTIONS $HTML_SCRUBBER_OPTIONS $TEMPLATE_SETTINGS $LOGIN_WIDGET $NULL_DEVICE $LIST_QUOTA $SUBSCRIPTION_QUOTA $MAILOUT_AT_ONCE_LIMIT $MAILOUT_STALE_AFTER %EMAIL_HEADERS @EMAIL_HEADERS_ORDER);
 
-@EXPORT_OK = qw($PROGRAM_ROOT_PASSWORD $MAILPROG $DIR $FILES $PROGRAM_URL $S_PROGRAM_URL $PLUGIN_CONFIGS $MAIL_SETTINGS $MASS_MAIL_SETTINGS $AMAZON_SES_OPTIONS $FIRST_SUB $SEC_SUB @C $SALT $FILE_CHMOD $DIR_CHMOD $GIVE_PROPS_IN_EMAIL $GIVE_PROPS_IN_HTML $GIVE_PROPS_IN_ADMIN $GIVE_PROPS_IN_SUBSCRIBE_FORM $SUBSCRIBED_MESSAGE $SUBSCRIBED_BY_LIST_OWNER_MESSAGE $UNSUBSCRIBED_BY_LIST_OWNER_MESSAGE $SUBSCRIPTION_APPROVAL_REQUEST_MESSAGE $UNSUBSCRIPTION_APPROVAL_REQUEST_MESSAGE $SUBSCRIPTION_NOTICE_MESSAGE_TO_PHRASE $SUBSCRIPTION_NOTICE_MESSAGE_SUBJECT $SUBSCRIPTION_NOTICE_MESSAGE $UNSUBSCRIPTION_NOTICE_MESSAGE_SUBJECT $UNSUBSCRIPTION_NOTICE_MESSAGE $UNSUBSCRIBED_MESSAGE $CONFIRMATION_MESSAGE  $HTML_CONFIRMATION_MESSAGE $YOU_ARE_ALREADY_SUBSCRIBED_MESSAGE $YOU_ARE_NOT_SUBSCRIBED_MESSAGE $HTML_SUBSCRIBED_MESSAGE $HTML_SUBSCRIPTION_REQUEST_MESSAGE $HTML_UNSUBSCRIBED_MESSAGE  $ARCHIVES $TEMPLATES $ALTERNATIVE_HTML_TEMPLATE_PATH $TMP $LOGS $BACKUPS %BACKUP_HISTORY $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION $ENFORCE_CLOSED_LOOP_OPT_IN $CKEDITOR_URL $SUPPORT_FILES $WYSIWYG_EDITOR_OPTIONS $FILE_BROWSER_OPTIONS $SCREEN_CACHE $DATA_CACHE $GLOBAL_BLACK_LIST $GLOBAL_UNSUBSCRIBE $MULTIPLE_LIST_SENDING $MULTIPLE_LIST_SENDING_TYPE $HIDDEN_SUBSCRIBER_FIELDS_PREFIX @PING_URLS $CONFIRMATION_TOKEN_OPTIONS $SUBSCRIPTION_SUCCESSFUL_COPY $MAILING_LIST_MESSAGE $MAILING_LIST_MESSAGE_HTML  $MODERATION_MSG $AWAIT_MODERATION_MSG $ACCEPT_MSG $REJECTION_MSG $MSG_TOO_BIG_MSG $MESSAGE_RECEIVED_MSG $MSG_LABELED_AS_SPAM_MSG $NOT_ALLOWED_TO_POST_MSG $NOT_ALLOWED_TO_POST_NOTICE_MSG $MAILING_FINISHED_MESSAGE $MAILING_FINISHED_MESSAGE_SUBJECT $PIN_WORD $PIN_NUM $TEXT_CSV_PARAMS $ALLOW_ROOT_LOGIN $UNSUBSCRIPTION_REQUEST_MESSAGE $UNSUBSCRIPTION_REQUEST_MESSAGE_SUBJECT $SUBSCRIPTION_REQUEST_APPROVED_MESSAGE $UNSUBSCRIPTION_REQUEST_APPROVED_MESSAGE $SUBSCRIPTION_REQUEST_DENIED_MESSAGE $UNSUBSCRIPTION_REQUEST_DENIED_MESSAGE @CHARSETS @CONTENT_TYPES %LIST_SETUP_DEFAULTS %LIST_SETUP_INCLUDE %LIST_SETUP_OVERRIDES @LIST_SETUP_DONT_CLONE %PRIORITIES $ATTACHMENT_TEMPFILE $MAIL_VERP_SEPARATOR %MIME_TYPES $DEFAULT_MIME_TYPE $TEXT_INVITE_MESSAGE $PROFILE_ACTIVATION_MESSAGE_SUBJECT $PROFILE_ACTIVATION_MESSAGE $PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT $PROFILE_RESET_PASSWORD_MESSAGE $PROFILE_UPDATE_EMAIL_MESSAGE_SUBJECT $PROFILE_UPDATE_EMAIL_MESSAGE $PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE_SUBJECT $PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE $LIST_CONFIRM_PASSWORD_MESSAGE_SUBJECT $LIST_CONFIRM_PASSWORD_MESSAGE $LIST_RESET_PASSWORD_MESSAGE_SUBJECT $LIST_RESET_PASSWORD_MESSAGE $HTML_INVITE_MESSAGE $SENDING_PREFS_MESSAGE_SUBJECT $SENDING_PREFS_MESSAGE $MIME_PARANOID $MIME_HUSH $MIME_OPTIMIZE $NPH $PROGRAM_USAGE_LOG $ROOT_PASS_IS_ENCRYPTED @ALLOWED_IP_ADDRESSES $SHOW_ADMIN_LINK $ADMIN_FLAVOR_NAME $SIGN_IN_FLAVOR_NAME $DISABLE_OUTSIDE_LOGINS %LOG $DEBUG_TRACE %CPAN_DEBUG_SETTINGS $ADMIN_MENU $EMAIL_CASE @EMAIL_EXCEPTIONS $LIST_IN_ORDER $ADMIN_TEMPLATE $USER_TEMPLATE $BACKEND_DB_TYPE $SUBSCRIBER_DB_TYPE $ARCHIVE_DB_TYPE $SETTINGS_DB_TYPE $SESSION_DB_TYPE $BOUNCE_SCORECARD_DB_TYPE $CLICKTHROUGH_DB_TYPE %SQL_PARAMS $DBI_PARAMS $PROFILE_OPTIONS $PROGRAM_ERROR_LOG $SHOW_HELP_LINKS $HELP_LINKS_URL $VER $VERSION  $PROGRAM_NAME @CONTENT_TRANSFER_ENCODINGS $CONFIG_FILE $PROGRAM_CONFIG_FILE_DIR $OS $DEFAULT_ADMIN_SCREEN $DEFAULT_LOGOUT_SCREEN $DEFAULT_SCREEN $HTML_CHARSET $HTML_SEND_ARCHIVED_MESSAGE $SEND_ARCHIVED_MESSAGE $REFERER_CHECK $CAPTCHA_TYPE $RECAPTCHA_PARAMS $RECAPTHCA_MAILHIDE_PARAMS $GD_SECURITYIMAGE_PARAMS $LOGIN_COOKIE_NAME %COOKIE_PARAMS $HTML_TEXTTOHTML_OPTIONS $HTML_SCRUBBER_OPTIONS $TEMPLATE_SETTINGS $LOGIN_WIDGET $NULL_DEVICE $LIST_QUOTA $SUBSCRIPTION_QUOTA $MAILOUT_AT_ONCE_LIMIT $MAILOUT_STALE_AFTER %EMAIL_HEADERS @EMAIL_HEADERS_ORDER);#
+@EXPORT_OK = qw($PROGRAM_ROOT_PASSWORD $MAILPROG $DIR $FILES $PROGRAM_URL $S_PROGRAM_URL $PLUGIN_CONFIGS $MAIL_SETTINGS $MASS_MAIL_SETTINGS $AMAZON_SES_OPTIONS $FIRST_SUB $SEC_SUB @C $SALT $FILE_CHMOD $DIR_CHMOD $GIVE_PROPS_IN_EMAIL $GIVE_PROPS_IN_HTML $GIVE_PROPS_IN_ADMIN $GIVE_PROPS_IN_SUBSCRIBE_FORM $SUBSCRIBED_MESSAGE $SUBSCRIBED_BY_LIST_OWNER_MESSAGE $UNSUBSCRIBED_BY_LIST_OWNER_MESSAGE $SUBSCRIPTION_APPROVAL_REQUEST_MESSAGE $UNSUBSCRIPTION_APPROVAL_REQUEST_MESSAGE $SUBSCRIPTION_NOTICE_MESSAGE_TO_PHRASE $SUBSCRIPTION_NOTICE_MESSAGE_SUBJECT $SUBSCRIPTION_NOTICE_MESSAGE $UNSUBSCRIPTION_NOTICE_MESSAGE_SUBJECT $UNSUBSCRIPTION_NOTICE_MESSAGE $HTML_CONFIRMATION_MESSAGE $YOU_ARE_ALREADY_SUBSCRIBED_MESSAGE $YOU_ARE_NOT_SUBSCRIBED_MESSAGE $HTML_SUBSCRIBED_MESSAGE $HTML_SUBSCRIPTION_REQUEST_MESSAGE $HTML_UNSUBSCRIBED_MESSAGE  $ARCHIVES $TEMPLATES $ALTERNATIVE_HTML_TEMPLATE_PATH $TMP $LOGS $BACKUPS %BACKUP_HISTORY $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION $ENFORCE_CLOSED_LOOP_OPT_IN $CKEDITOR_URL $SUPPORT_FILES $WYSIWYG_EDITOR_OPTIONS $FILE_BROWSER_OPTIONS $SCREEN_CACHE $DATA_CACHE $GLOBAL_BLACK_LIST $GLOBAL_UNSUBSCRIBE $MULTIPLE_LIST_SENDING $MULTIPLE_LIST_SENDING_TYPE $HIDDEN_SUBSCRIBER_FIELDS_PREFIX @PING_URLS $CONFIRMATION_TOKEN_OPTIONS $SUBSCRIPTION_SUCCESSFUL_COPY  $MODERATION_MSG $AWAIT_MODERATION_MSG $ACCEPT_MSG $REJECTION_MSG $MSG_TOO_BIG_MSG $MESSAGE_RECEIVED_MSG $MSG_LABELED_AS_SPAM_MSG $NOT_ALLOWED_TO_POST_MSG $NOT_ALLOWED_TO_POST_NOTICE_MSG $MAILING_FINISHED_MESSAGE $MAILING_FINISHED_MESSAGE_SUBJECT $PIN_WORD $PIN_NUM $TEXT_CSV_PARAMS $ALLOW_ROOT_LOGIN $UNSUBSCRIPTION_REQUEST_MESSAGE $UNSUBSCRIPTION_REQUEST_MESSAGE_SUBJECT $SUBSCRIPTION_REQUEST_APPROVED_MESSAGE $UNSUBSCRIPTION_REQUEST_APPROVED_MESSAGE $SUBSCRIPTION_REQUEST_DENIED_MESSAGE $UNSUBSCRIPTION_REQUEST_DENIED_MESSAGE @CHARSETS @CONTENT_TYPES %LIST_SETUP_DEFAULTS %LIST_SETUP_INCLUDE %LIST_SETUP_OVERRIDES @LIST_SETUP_DONT_CLONE %PRIORITIES $ATTACHMENT_TEMPFILE $MAIL_VERP_SEPARATOR %MIME_TYPES $DEFAULT_MIME_TYPE $PROFILE_ACTIVATION_MESSAGE_SUBJECT $PROFILE_ACTIVATION_MESSAGE $PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT $PROFILE_RESET_PASSWORD_MESSAGE $PROFILE_UPDATE_EMAIL_MESSAGE_SUBJECT $PROFILE_UPDATE_EMAIL_MESSAGE $PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE_SUBJECT $PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE $LIST_CONFIRM_PASSWORD_MESSAGE_SUBJECT $LIST_CONFIRM_PASSWORD_MESSAGE $LIST_RESET_PASSWORD_MESSAGE_SUBJECT $LIST_RESET_PASSWORD_MESSAGE $SENDING_PREFS_MESSAGE_SUBJECT $SENDING_PREFS_MESSAGE $MIME_PARANOID $MIME_HUSH $MIME_OPTIMIZE $NPH $PROGRAM_USAGE_LOG $ROOT_PASS_IS_ENCRYPTED @ALLOWED_IP_ADDRESSES $SHOW_ADMIN_LINK $ADMIN_FLAVOR_NAME $SIGN_IN_FLAVOR_NAME $DISABLE_OUTSIDE_LOGINS %LOG $DEBUG_TRACE %CPAN_DEBUG_SETTINGS $ADMIN_MENU $EMAIL_CASE @EMAIL_EXCEPTIONS $LIST_IN_ORDER $ADMIN_TEMPLATE $USER_TEMPLATE $BACKEND_DB_TYPE $SUBSCRIBER_DB_TYPE $ARCHIVE_DB_TYPE $SETTINGS_DB_TYPE $SESSION_DB_TYPE $BOUNCE_SCORECARD_DB_TYPE $CLICKTHROUGH_DB_TYPE %SQL_PARAMS $DBI_PARAMS $PROFILE_OPTIONS $PROGRAM_ERROR_LOG $SHOW_HELP_LINKS $HELP_LINKS_URL $VER $VERSION  $PROGRAM_NAME @CONTENT_TRANSFER_ENCODINGS $CONFIG_FILE $PROGRAM_CONFIG_FILE_DIR $OS $DEFAULT_ADMIN_SCREEN $DEFAULT_LOGOUT_SCREEN $DEFAULT_SCREEN $HTML_CHARSET $HTML_SEND_ARCHIVED_MESSAGE $SEND_ARCHIVED_MESSAGE $REFERER_CHECK $CAPTCHA_TYPE $RECAPTCHA_PARAMS $RECAPTHCA_MAILHIDE_PARAMS $GD_SECURITYIMAGE_PARAMS $LOGIN_COOKIE_NAME %COOKIE_PARAMS $HTML_TEXTTOHTML_OPTIONS $HTML_SCRUBBER_OPTIONS $TEMPLATE_SETTINGS $LOGIN_WIDGET $NULL_DEVICE $LIST_QUOTA $SUBSCRIPTION_QUOTA $MAILOUT_AT_ONCE_LIMIT $MAILOUT_STALE_AFTER %EMAIL_HEADERS @EMAIL_HEADERS_ORDER);#
 #
 #
 #
@@ -1193,59 +1193,6 @@ $MIME_PARANOID     ||= 0;
 $MIME_HUSH         ||= 0;
 $MIME_OPTIMIZE     ||= 'no tmp files';
 
-$SUBSCRIBED_MESSAGE ||= <<EOF
-Hello!
-
-Your mailing list subscription for the address, 
-
-	<!-- tmpl_var subscriber.email -->
-	
-to the mailing list: 
-
-	<!-- tmpl_var list_settings.list_name -->
-
-is complete. Thanks for subscribing! 
-
-<!-- tmpl_if list_settings.group_list --> 
-* This mailing list is a group discussion list <!-- tmpl_if list_settings.enable_moderation -->(moderated)<!-- tmpl_else -->(unmoderated)<!-- /tmpl_if -->. You can start a new thread, by sending an email message to, <!-- tmpl_var list_settings.discussion_pop_email --> 
-<!-- tmpl_else --> 
-* This mailing list is an announce-only mailing list. 
-<!-- /tmpl_if -->
-
-Please save this email message for future reference. 
-
-* Date of this subscription: 
-<!-- tmpl_var date -->
-
-* Need Help? Contact: 
-<!-- tmpl_var list_settings.list_owner_email -->
-
-* Unsubscribe: 
-<!-- tmpl_var list_unsubscribe_link --> 
-
-Unsubscribe links (like this one) do expire, so look for the freshest
- unsubscribe links in the mailing list messages you receive. 
-
-<!-- tmpl_if PROFILE_ENABLED --><!-- tmpl_if new_profile --> 
-* Check out your Profile to update your subscription information: 
-
-	Profile Login: <!-- tmpl_var PROGRAM_URL -->/profile_login/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/
-	Username: <!-- tmpl_var profile.email --> 
-	Password: <!-- tmpl_var profile.password --> 
-<!-- /tmpl_if --><!-- /tmpl_if --> 
-
-* Privacy Policy: 
-<!-- tmpl_var list_settings.privacy_policy -->
-
-* Physical Address:
-<!-- tmpl_var list_settings.physical_address -->
-
-Thanks! 
-- <!-- tmpl_var list_settings.list_owner_email -->
-
-EOF
-  ;
-
 $SUBSCRIBED_BY_LIST_OWNER_MESSAGE ||= <<EOF
 Hello!
 
@@ -1406,95 +1353,6 @@ There are now a total of: <!-- tmpl_var num_subscribers --> subscribers.
 EOF
   ;
 
-$UNSUBSCRIBED_MESSAGE ||= <<EOF
-
-The removal of the email address:
-
-	<!-- tmpl_var subscriber.email -->
-	
-from the mailing list: 
-
-	<!-- tmpl_var list_settings.list_name --> 
-
-is complete.
-
-You may wish to save this email message for future reference.
-
------------------------------------------------------------------------
-
-Date of this removal: <!-- tmpl_var date --> 
-
-You may re-subscribe to this list at any time by 
-visiting the following URL:
-
-<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->
-
-If you're still having trouble, please contact the List Owner at: 
-
-	mailto:<!-- tmpl_var list_settings.list_owner_email -->
-
-The following physical address is associated with this mailing list: 
-
-<!-- tmpl_var list_settings.physical_address -->
-
-- mailto:<!-- tmpl_var list_settings.list_owner_email -->
-
-EOF
-  ;
-
-$CONFIRMATION_MESSAGE ||= <<EOF
-Hello! 
-
-This message has been sent to you as the final step to confirm your
-email list subscription for the following list: 
-
-<!-- tmpl_var list_settings.list_name -->
-
-To confirm this subscription, please follow the URL below:
-
-<!-- tmpl_var list_confirm_subscribe_link -->
-
-(Click the URL above, or copy and paste the URL into your browser. 
-Doing so will subscribe you to this list.)
-
------------------------------------------------------------------------
-
-The following is the description given for this list: 
-
-<!-- tmpl_var list_settings.info -->
-
------------------------------------------------------------------------
-
-This email is part of a Closed-Loop Opt-In system and was sent to protect 
-the privacy of the owner of this email address. Closed-Loop Opt-In confirmation 
-guarantees that only the owner of an email address can subscribe themselves
-to this mailing list.
-
-Furthermore, the following privacy policy is associated with this list: 
-
-<!-- tmpl_var list_settings.privacy_policy -->
-
-Please read and understand this privacy policy. Other mechanisms may 
-have been enacted to subscribe email addresses to this list, such as
-physical guestbook registrations, verbal agreements, etc.
-
-If you did not ask to be subscribed to this particular list, please
-do not visit the confirmation URL above. The confirmation for 
-subscription will not go through and no other action on your part 
-will be needed.
-
-To contact the owner of this email list, please use the address below: 
-
-mailto:<!-- tmpl_var list_settings.list_owner_email -->
-
-The following physical address is associated with this mailing list: 
-
-<!-- tmpl_var list_settings.physical_address -->
-
-- <!-- tmpl_var list_settings.list_owner_email -->
-
-EOF
-  ;
 $UNSUBSCRIPTION_REQUEST_MESSAGE_SUBJECT ||= 'Unsubscribe from: <!-- tmpl_var list_settings.list_name -->';
 $UNSUBSCRIPTION_REQUEST_MESSAGE ||= <<EOF
 Hello, 
@@ -1525,8 +1383,8 @@ The following physical address is associated with this mailing list:
 EOF
   ;
 
-$SUBSCRIPTION_REQUEST_APPROVED_MESSAGE   ||= $SUBSCRIBED_MESSAGE;
-$UNSUBSCRIPTION_REQUEST_APPROVED_MESSAGE ||= $UNSUBSCRIBED_MESSAGE;
+$SUBSCRIPTION_REQUEST_APPROVED_MESSAGE   ||= ''; # same as subscribed_message #
+$UNSUBSCRIPTION_REQUEST_APPROVED_MESSAGE ||= ''; # same as unsubscribed_message
 
 
 $SUBSCRIPTION_REQUEST_DENIED_MESSAGE   ||= <<EOF
@@ -1553,105 +1411,6 @@ You've recently have asked to be removed from:
 This unsubscription request has been denied by the List Owner. 
 
 -- mailto:<!-- tmpl_var list_settings.list_owner_email --> 
-
-EOF
-  ;
-
-
-
-$MAILING_LIST_MESSAGE ||= <<EOF
-(Mailing list information, including how to remove yourself, is located at the end of this message.)
-__ 
-
-<!-- tmpl_var message_body -->
-
--- 
-<!-- tmpl_if list_settings.show_archives --><!-- tmpl_if list_settings.archive_send_form --> 
-Forward this Message to a Friend:
-<!-- tmpl_var forward_to_a_friend_link -->
-<!-- /tmpl_if --><!-- /tmpl_if -->
-Subscription Reminder: You're Subscribed to, <!-- tmpl_var list_settings.list_name --> 
-Using the address: <!-- tmpl_var subscriber.email -->
-
-From: <!-- tmpl_var list_settings.list_owner_email -->
-<!-- tmpl_var list_settings.physical_address -->
-
-Unsubscribe Automatically:
-<!-- tmpl_var list_unsubscribe_link -->
-
-EOF
-  ;
-
-$MAILING_LIST_MESSAGE_HTML ||= <<EOF
-<!--opening-->
-<p style="font:.8em/1.6em Helvetica,Verdana,'Sans-serif'">
- <em>
-  (Mailing list information, including how to remove yourself, 
-is located at the end of this message.)
-  </em>
-</p>
-<!--/opening-->
-
-
-<!-- tmpl_var message_body -->
-
-
-<!--signature-->
-
-<!-- tmpl_if list_settings.show_archives --> 
-	<!-- tmpl_if list_settings.archive_send_form --> 
-	
-		<p style="font:.8em/1.6em Helvetica,Verdana,'Sans-serif'">
-		 <strong>
-		  <a href="<!-- tmpl_var forward_to_a_friend_link -->">
-		   Forward this Message to a Friend &#187;
-		  </a>
-		 </strong>
-		</p>
-		
-	<!-- /tmpl_if --> 
-<!-- /tmpl_if --> 
-
-<p style="font:.8em/1.6em Helvetica,Verdana,'Sans-serif'">
- <strong>
-  Subscription Reminder:</strong> You're Subscribed to:
- <strong>
-  <a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/"> 
-  <!-- tmpl_var list_settings.list_name -->
- </a>
- </strong> 
- using the address: 
- <strong>
-  <!-- tmpl_var subscriber.email --> 
- </strong>
-</p>
-
-<p style="font:.8em/1.6em Helvetica,Verdana,'Sans-serif'">
- From: 
- <strong>
-  <!-- tmpl_var list_settings.list_owner_email -->
- </strong>
-<br />
-<!-- tmpl_var list_settings.physical_address -->
-</p>
-
-<p style="font:.8em/1.6em Helvetica,Verdana,'Sans-serif'">
-
-<!-- tmpl_if PROFILE_ENABLED --> 
-<strong>
- <a href="<!-- tmpl_var PROGRAM_URL -->/profile_login/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/">Manage Your Subscription &#187;</a>
- </strong>
- 
- or, 
-<!-- /tmpl_if --> 
-
-<strong>
- <a href="<!-- tmpl_var list_unsubscribe_link -->">
-  Unsubscribe Automatically &#187;
- </a>
-</strong> </p> 
-
-<!--/signature-->
 
 EOF
   ;
@@ -1895,40 +1654,7 @@ A copy of the mailing list message has been attached.
 
 EOF
   ;
-
-$TEXT_INVITE_MESSAGE ||= <<EOF
-Hello!
-
-The List Owner of, "<!-- tmpl_var list_settings.list_name -->" (<!-- tmpl_var list_settings.list_owner_email -->) has invited you to Subscribe!
- 
-* Here's a brief description of this mailing list: 
-
-<!-- tmpl_var list_settings.info --> 
-
-* If you'd like to subscribe, just click the link below: 
-<!-- tmpl_var list_confirm_subscribe_link --> 
-
-<!-- tmpl_if list_settings.group_list --> 
-* This mailing list is a group discussion list <!-- tmpl_if list_settings.enable_moderation -->(moderated)<!-- tmpl_else -->(unmoderated)<!-- /tmpl_if -->. Once subscribed, you can start a new thread, by sending an email message to, <!-- tmpl_var list_settings.discussion_pop_email --> 
-<!-- tmpl_else --> 
-* This mailing list is an announce-only mailing list. 
-<!-- /tmpl_if --> 
-
-* Want more information? Visit:
-<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/
-
-* Privacy Policy: 
-<!-- tmpl_var list_settings.privacy_policy -->
-
-* Physical Address:
-<!-- tmpl_var list_settings.physical_address -->
-
-Thanks! 
-
-- <!-- tmpl_var list_settings.list_owner_email -->
-EOF
-;
-
+  
 $PROFILE_ACTIVATION_MESSAGE_SUBJECT ||=
   'Profile Authorization Code for, <!-- tmpl_var profile.email -->';
 $PROFILE_ACTIVATION_MESSAGE ||= <<EOF
@@ -2043,123 +1769,6 @@ password in the List Control Panel.
 Please be sure to delete this email for security reasons. 
 
 -<!-- tmpl_var PROGRAM_NAME --> 
-
-EOF
-  ;
-
-$HTML_INVITE_MESSAGE ||= <<EOF
-<p>
- Hello!
-</p>
-
-<p>
- The List Owner of, &quot;
-  <strong>
-   <!-- tmpl_var list_settings.list_name -->
-  </strong>
-  &quot; (
-  <a href="mailto:<!-- tmpl_var list_settings.list_owner_email -->">
-   <!-- tmpl_var list_settings.list_owner_email -->
-  </a>
- ) has invited you to Subscribe!
-</p>
-
-<ul> 
- <li>
-  <p>
-   Here's a brief description of this mailing list: 
-  </p>
-
-<blockquote> 
-<!-- tmpl_var list_settings.info --> 
-</blockquote> 
-
-</li> 
-
-<li> 
- <p>
-  <strong> 
-   If you'd like to subscribe, just click the link below: 
-  </strong>
- </p> 
- <p>
-  <strong> 
-   <a href="<!-- tmpl_var list_confirm_subscribe_link -->">
-    <!-- tmpl_var list_confirm_subscribe_link -->
-   </a>
-  </strong>
- </p>
-</li>
-
-<li>
-
-<!-- tmpl_if list_settings.group_list --> 
-
-	<p>
-	 This mailing list is a group discussion list 
-	<!-- tmpl_if list_settings.enable_moderation -->
-		(moderated)
-	<!-- tmpl_else -->
-		(unmoderated)
-	<!-- /tmpl_if -->.
-		Once subscribed, you can start a new thread, by sending an email message to,</p>
-		<ul> 
-		 <li> 
-		  <a href="mailto:<!-- tmpl_var list_settings.discussion_pop_email -->">
-		   <!-- tmpl_var list_settings.discussion_pop_email -->
-		  </a>
-		 </li>
-		</ul>
-<!-- tmpl_else -->
-	<p>This mailing list is an announce-only mailing list.</p>
-<!-- /tmpl_if --> 
-</li>
-
-<li>
- <p>
-  <strong>
-   Want more information? Visit:
-  </strong>
- </p>
-  <a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/">
-   <!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/
-  </a> 
- </p> 
-</li>
-
-<li>
- <p>
-  <strong>
-   Privacy Policy:
-  </strong>
- </p>
-
- <blockquote> 
-  <!-- tmpl_var list_settings.privacy_policy -->
- </blockquote> 
-</li>
-
-<li>
- <p>
-  <strong>
-   Physical Address:
-  </strong>
- </p>
- <blockquote> 
-  <!-- tmpl_var list_settings.physical_address -->
- </blockquote> 
-</li>
-
-</ul> 
-
-<p>
- <strong>
-  Thanks!
- </strong>
-</p>
-
-
-<p>-<a href="mailto:<!-- tmpl_var list_settings.list_owner_email -->"><!-- tmpl_var list_settings.list_owner_email --></a></p> 
 
 EOF
   ;
@@ -2660,8 +2269,9 @@ EOF
 
     # Email Templates
 
-    confirmation_message_subject => '<!-- tmpl_var list_settings.list_name --> Mailing List Subscription Confirmation',
-    confirmation_message         => $CONFIRMATION_MESSAGE,
+    confirmation_message_subject => undef,
+    confirmation_message         => undef,
+
 
 
 	# Subscription Requests
@@ -2690,11 +2300,11 @@ EOF
 
 	# Subscriber
     unsubscription_request_denied_message_subject   => '<!-- tmpl_var list_settings.list_name --> Mailing List Unsubscription Request - Denied.',
-    subscription_request_denied_message             => $UNSUBSCRIPTION_REQUEST_DENIED_MESSAGE,
+    unsubscription_request_denied_message           => $UNSUBSCRIPTION_REQUEST_DENIED_MESSAGE,
 
     
-    subscribed_message_subject => 'Welcome to <!-- tmpl_var list_settings.list_name -->',
-    subscribed_message         => $SUBSCRIBED_MESSAGE,
+    subscribed_message_subject => undef,
+    subscribed_message         => undef, 
 
     subscribed_by_list_owner_message_subject => 'Welcome to <!-- tmpl_var list_settings.list_name -->',
     subscribed_by_list_owner_message         => $SUBSCRIBED_BY_LIST_OWNER_MESSAGE,
@@ -2702,14 +2312,15 @@ EOF
     unsubscribed_by_list_owner_message_subject => 'Unsubscribed from <!-- tmpl_var list_settings.list_name -->',
     unsubscribed_by_list_owner_message         => $UNSUBSCRIBED_BY_LIST_OWNER_MESSAGE,
 
-    unsubscribed_message_subject => 'Farewell from <!-- tmpl_var list_settings.list_name -->',
-    unsubscribed_message         => $UNSUBSCRIBED_MESSAGE,
+    unsubscribed_message_subject => undef, 
+    unsubscribed_message         => undef,
 
-    mailing_list_message_from_phrase => '<!-- tmpl_var list_settings.list_name -->',
-    mailing_list_message_to_phrase   => '<!-- tmpl_var list_settings.list_name --> Subscriber',
-    mailing_list_message_subject     => '<!-- tmpl_var list_settings.list_name --> Message',
-    mailing_list_message             => $MAILING_LIST_MESSAGE,
-    mailing_list_message_html        => $MAILING_LIST_MESSAGE_HTML,
+
+    mailing_list_message_from_phrase => undef, 
+    mailing_list_message_to_phrase   => undef,
+    mailing_list_message_subject     => undef,
+    mailing_list_message             => undef,
+    mailing_list_message_html        => undef,
 
     send_archive_message_subject => '<!-- tmpl_var archived_message_subject --> (Archive)',
 
@@ -2742,11 +2353,11 @@ EOF
 
     # Send a List Invitation
 
-    invite_message_from_phrase => '<!-- tmpl_var list_settings.list_name -->',
-    invite_message_to_phrase   => '<!-- tmpl_var list_settings.list_name -->',
-    invite_message_text        => $TEXT_INVITE_MESSAGE,
-    invite_message_html        => $HTML_INVITE_MESSAGE,
-    invite_message_subject     => 'You\'ve been Invited to Subscribe to, "<!-- tmpl_var list_settings.list_name -->"',
+    invite_message_from_phrase => undef, 
+    invite_message_to_phrase   => undef,
+    invite_message_text        => undef,
+    invite_message_html        => undef,
+    invite_message_subject     => undef,
 
     # Feature Set
 

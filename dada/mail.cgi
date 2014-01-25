@@ -7024,6 +7024,8 @@ sub edit_type {
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
+=cut
+
     # Backwards Compatibility!
     for (
         qw(
@@ -7044,9 +7046,11 @@ sub edit_type {
       )
     {
         my $m = $ls->param($_);
-        DADA::Template::Widgets::dada_backwards_compatibility( \$m );
-        $ls->param($_) = $m;
+       #    DADA::Template::Widgets::dada_backwards_compatibility( \$m );
+       # $ls->param($_, $m);
     }
+
+=cut
 
     require DADA::App::FormatMessages;
     my $dfm = DADA::App::FormatMessages->new( -List => $list );
@@ -7081,7 +7085,11 @@ sub edit_type {
                       $dfm->can_find_sub_confirm_link( { -str => $ls->param('confirmation_message') } ),
 
                     unsub_link_found_in_pt_subscribed_by_list_owner_msg =>
-                      $dfm->can_find_unsub_link( { -str => $ls->param('subscribed_by_list_owner_message') } ),
+                      $dfm->can_find_unsub_link( 
+                          { 
+                              -str => $ls->param('subscribed_by_list_owner_message') 
+                         } 
+                    ),
 
                     sub_confirm_link_found_in_pt_invite_msg =>
                       $dfm->can_find_sub_confirm_link( { -str => $ls->param('invite_message_text') } ),
@@ -7142,7 +7150,7 @@ sub edit_type {
 
             # a very odd place to put this, but, hey,  easy enough.
             if ( $q->param('revert') ) {
-                $q->param( $_, '' );
+                $q->param( $_, undef );
             }
             else {
                 my $tmp_setting = $q->param($_);
@@ -7208,6 +7216,8 @@ sub edit_html_type {
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
+=cut
+
     # Backwards Compatibility!
     require DADA::Template::Widgets;
     for (
@@ -7221,9 +7231,11 @@ sub edit_html_type {
       )
     {
         my $m = $ls->param($_);
-        DADA::Template::Widgets::dada_backwards_compatibility( \$m );
-        $ls->param($_) = $m;
+       #    DADA::Template::Widgets::dada_backwards_compatibility( \$m );
+       # $ls->param($_, $m);
     }
+
+=cut
 
     if ( !$process ) {
 

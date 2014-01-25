@@ -177,10 +177,16 @@ sub post_process_get {
             }
         }
 
+        my $message_settings = $self->_message_settings; 
+        
         for ( keys %DADA::Config::LIST_SETUP_DEFAULTS ) {
-
             if ( !exists( $li->{$_} ) || length( $li->{$_} ) == 0 ) {
-                $li->{$_} = $DADA::Config::LIST_SETUP_DEFAULTS{$_};
+                if(exists($message_settings->{$_})) { 
+                    $li->{$_} = $self->_fill_in_email_message_settings($_); 
+                }
+                else { 
+                    $li->{$_} = $DADA::Config::LIST_SETUP_DEFAULTS{$_};
+                }
             }
         }
 
@@ -303,31 +309,52 @@ sub param {
 			return $self->{local_li}->{$name};
 		}
 		elsif($self->_email_message_setting($name)){ 
-			$self->_fill_in_email_message_settings($name); 
+			return $self->_fill_in_email_message_settings($name); 
 		}
 		else { 
+		    carp "Cannot fill in value for, '$name'";
 			return undef; 
 		}
 	}
 }
 
-sub _email_message_setting { 
-	my $self = shift;
-	my $name = shift; 
-	my $message_settings = {
-		mailing_list_message_from_phrase => 1, 
-		mailing_list_message_to_phrase   => 1, 
-		mailing_list_message_subject     => 1, 
-		mailing_list_message             => 1, 
-		mailing_list_message_html        => 1, 
-	}; 
-	
-	if(exists($message_settings->{$name})){ 
-		return 1; 
-	}
-	else { 
-		return 0; 
-	}
+sub _message_settings {
+    my $self = shift;
+    return {
+        mailing_list_message_from_phrase => 1,
+        mailing_list_message_to_phrase   => 1,
+        mailing_list_message_subject     => 1,
+        mailing_list_message             => 1,
+        mailing_list_message_html        => 1,
+        
+        confirmation_message_subject     => 1, 
+        confirmation_message             => 1, 
+        
+        subscribed_message_subject       => 1,
+        subscribed_message               => 1, 
+        
+        unsubscribed_message_subject     => 1,
+        unsubscribed_message             => 1, 
+        
+        invite_message_from_phrase       => 1, 
+        invite_message_to_phrase         => 1,
+        invite_message_text              => 1,
+        invite_message_html              => 1,
+        invite_message_subject           => 1,
+        
+    };
+}
+
+sub _email_message_setting {
+    my $self             = shift;
+    my $name             = shift;
+    my $message_settings = $self->_message_settings();
+    if ( exists( $message_settings->{$name} ) ) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
 }
 
 
@@ -340,17 +367,86 @@ sub _fill_in_email_message_settings {
 	my $message_settings = {
 		mailing_list_message_from_phrase => {-tmpl => 'mailing_list_message.eml', -part => 'from_phrase'}, 
 		mailing_list_message_to_phrase   => {-tmpl => 'mailing_list_message.eml', -part => 'to_phrase'}, 
-		mailing_list_message_subject     => {-tmpl => 'mailing_list_message.eml', -part => 'subject_phrase'}, 
+		mailing_list_message_subject     => {-tmpl => 'mailing_list_message.eml', -part => 'subject'}, 
 		mailing_list_message             => {-tmpl => 'mailing_list_message.eml', -part => 'plaintext_body'}, 
 		mailing_list_message_html        => {-tmpl => 'mailing_list_message.eml', -part => 'html_body'}, 
+		
+		confirmation_message_subject     => {-tmpl => 'confirmation_message.eml', -part => 'subject'},  
+        confirmation_message             => {-tmpl => 'confirmation_message.eml', -part => 'plaintext_body'},  
+        
+        subscribed_message_subject       => {-tmpl => 'subscribed_message.eml', -part => 'subject'},  
+        subscribed_message               => {-tmpl => 'subscribed_message.eml', -part => 'plaintext_body'},  
+
+        unsubscribed_message_subject       => {-tmpl => 'unsubscribed_message.eml', -part => 'subject'},  
+        unsubscribed_message               => {-tmpl => 'unsubscribed_message.eml', -part => 'plaintext_body'},  
+        
+        invite_message_from_phrase => {-tmpl => 'invite_message.eml', -part => 'from_phrase'}, 
+        invite_message_to_phrase   => {-tmpl => 'invite_message.eml', -part => 'to_phrase'}, 
+        invite_message_subject     => {-tmpl => 'invite_message.eml', -part => 'subject'}, 
+        invite_message_text        => {-tmpl => 'invite_message.eml', -part => 'plaintext_body'}, 
+        invite_message_html        => {-tmpl => 'invite_message.eml', -part => 'html_body'}, 
+        
 	}; 
 	
 	if(exists($message_settings->{$name})) { 
-		my $f_settings = $self->get_message_settings($message_settings->{$name}->{'-tmpl'}); 
+		my $f_settings = $self->_get_message_settings($message_settings->{$name}->{'-tmpl'}); 
+		warn '$f_settings->{$message_settings->{$name}->{-part}} ' . $f_settings->{$message_settings->{$name}->{-part}}; 
+		return $f_settings->{$message_settings->{$name}->{-part}};
 	}
 	else { 
 		return undef; 
 	}
+}
+
+
+
+sub _get_message_settings {
+
+    my $self = shift;
+    my $tmpl = shift;
+
+    require MIME::Parser;
+    my $parser = new MIME::Parser;
+    $parser = optimize_mime_parser($parser);
+
+    require DADA::Template::Widgets;
+
+    my $entity = undef;
+    my $eml = DADA::Template::Widgets::_raw_screen( { -screen => 'email/' . $tmpl } );
+
+    eval { $entity = $parser->parse_data($eml); };
+    if ($@) {
+        warn "Trouble parsing $tmpl: $@";
+        return {};
+    }
+
+    require Email::Address; 
+    
+    my $to_address = $entity->head->get( 'To', 0 );
+    chomp($to_address);
+    my $to_phrase = ( Email::Address->parse($to_address) )[0]->phrase;
+
+    my $from_address = $entity->head->get( 'From', 0 );
+    chomp($from_address);
+
+    my $from_phrase = ( Email::Address->parse($from_address) )[0]->phrase;
+
+    my $subject = $entity->head->get( 'Subject', 0 );
+    chomp($subject);
+
+    my @parts          = $entity->parts;
+    my $plaintext_body = $parts[0]->bodyhandle->as_string;
+
+    my $html_body = $parts[1]->bodyhandle->as_string;
+
+    return {
+        to_phrase      => $to_phrase,
+        from_phrase    => $from_phrase,
+        subject        => $subject,
+        plaintext_body => $plaintext_body,
+        html_body      => $html_body,
+    };
+
 }
 
 sub x_message_body_content { 

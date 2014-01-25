@@ -442,21 +442,22 @@ my $endif = quotemeta('[endif]');
 diag '$endif ' . $endif; 
 ok($t_msg =~ m/$endif/,'found the [endif] tag'); 
 
-# can_find_unsub_link
-ok(
-    $fm->can_find_unsub_link(
-        { -str => $DADA::Config::MAILING_LIST_MESSAGE }
-    ),
-    "found unsub link in text  mailing list message!"
-);
-
-# can_find_unsub_link
-ok(
-    $fm->can_find_unsub_link(
-        { -str => $DADA::Config::MAILING_LIST_MESSAGE_HTML }
-    ),
-    "found unsub link in html mailing list message!"
-);
+##
+## can_find_unsub_link
+#ok(
+#    $fm->can_find_unsub_link(
+#        { -str => $DADA::Config::MAILING_LIST_MESSAGE }
+#    ),
+#    "found unsub link in text  mailing list message!"
+#);
+#
+## can_find_unsub_link
+#ok(
+#    $fm->can_find_unsub_link(
+#        { -str => $DADA::Config::MAILING_LIST_MESSAGE_HTML }
+#    ),
+#    "found unsub link in html mailing list message!"
+#);
 ok(
     $fm->can_find_unsub_link(
         { -str => $DADA::Config::LIST_SETUP_DEFAULTS{mailing_list_message} }
@@ -487,25 +488,26 @@ ok(
 # can_find_sub_confirm_link
 # Should be in list invitation message and subscription confirmation message:
 
-ok(
-    $fm->can_find_sub_confirm_link(
-        { -str => $DADA::Config::TEXT_INVITE_MESSAGE, }
-    ),
-    "found sub confirm link in text invite message!"
-);
-
-ok(
-    $fm->can_find_sub_confirm_link(
-        { -str => $DADA::Config::HTML_INVITE_MESSAGE, }
-    ),
-    "found sub confirm link in html invite message!"
-);
-ok(
-    $fm->can_find_sub_confirm_link(
-        { -str => $DADA::Config::CONFIRMATION_MESSAGE, }
-    ),
-    "found sub confirm link in sub confirm message!"
-);
+#ok(
+#    $fm->can_find_sub_confirm_link(
+#        { -str => $DADA::Config::TEXT_INVITE_MESSAGE, }
+#    ),
+#    "found sub confirm link in text invite message!"
+#);
+#
+#ok(
+#    $fm->can_find_sub_confirm_link(
+#        { -str => $DADA::Config::HTML_INVITE_MESSAGE, }
+#    ),
+#    "found sub confirm link in html invite message!"
+#);
+#
+#ok(
+#    $fm->can_find_sub_confirm_link(
+#        { -str => $DADA::Config::CONFIRMATION_MESSAGE, }
+#    ),
+#    "found sub confirm link in sub confirm message!"
+#);
 
 ok(
     $fm->can_find_sub_confirm_link(
