@@ -5,156 +5,66 @@ use lib qw(/Users/justin/Documents/DadaMail/git/dada-mail/dada/DADA/perllib);
 
 use MIME::Parser; 
 
-my $subject = 'You\'ve been Invited to Subscribe to, "<!-- tmpl_var list_settings.list_name -->"'; 
+my $subject = '<!-- tmpl_var archived_message_subject --> (Archive)'; 
 my $pt = <<EOF
-Hello!
 
-The List Owner of, "<!-- tmpl_var list_settings.list_name -->" (<!-- tmpl_var list_settings.list_owner_email -->) has invited you to Subscribe!
- 
-* Here's a brief description of this mailing list: 
+Hello, 
 
-<!-- tmpl_var list_settings.info --> 
+On behalf of: <!-- tmpl_var from_email -->, the following archived message from: 
 
-* If you'd like to subscribe, just click the link below: 
-<!-- tmpl_var list_confirm_subscribe_link --> 
+<!-- tmpl_var list_settings.list_name --> 
 
-<!-- tmpl_if list_settings.group_list --> 
-* This mailing list is a group discussion list <!-- tmpl_if list_settings.enable_moderation -->(moderated)<!-- tmpl_else -->(unmoderated)<!-- /tmpl_if -->. Once subscribed, you can start a new thread, by sending an email message to, <!-- tmpl_var list_settings.discussion_pop_email --> 
-<!-- tmpl_else --> 
-* This mailing list is an announce-only mailing list. 
-<!-- /tmpl_if --> 
+has been sent to you. They wrote: 
 
-* Want more information? Visit:
-<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/
+<!-- tmpl_var note -->
 
-* Privacy Policy: 
-<!-- tmpl_var list_settings.privacy_policy -->
+The archived message is below. 
 
-* Physical Address:
-<!-- tmpl_var list_settings.physical_address -->
+You can subscribe to <!-- tmpl_var list_settings.list_name --> by following this link:
 
-Thanks! 
+<!-- tmpl_var list_subscribe_link -->
 
-- <!-- tmpl_var list_settings.list_owner_email -->
+If you cannot view the archived message, please visit: 
+
+<!-- tmpl_var archive_message_url -->
+
 EOF
 ;
 
 my $html = <<EOF
-<p>
- Hello!
-</p>
+
+<p>Hello,</p> 
+
+<p>On behalf of: <!-- tmpl_var from_email -->, the following archived message 
+from:</p>
+
+<p><!-- tmpl_var list_settings.list_name --></p>
+
+<p>has been sent to you. They wrote:</p> 
 
 <p>
- The List Owner of, &quot;
-  <strong>
-   <!-- tmpl_var list_settings.list_name -->
-  </strong>
-  &quot; (
-  <a href="mailto:<!-- tmpl_var list_settings.list_owner_email -->">
-   <!-- tmpl_var list_settings.list_owner_email -->
-  </a>
- ) has invited you to Subscribe!
+ <em> 
+  <!-- tmpl_var note -->
+ </em> 
 </p>
 
-<ul> 
- <li>
-  <p>
-   Here's a brief description of this mailing list: 
-  </p>
+<p>The archived message is below.</p> 
 
-<blockquote> 
-<!-- tmpl_var list_settings.info --> 
-</blockquote> 
-
-</li> 
-
-<li> 
- <p>
-  <strong> 
-   If you'd like to subscribe, just click the link below: 
-  </strong>
- </p> 
- <p>
-  <strong> 
-   <a href="<!-- tmpl_var list_confirm_subscribe_link -->">
-    <!-- tmpl_var list_confirm_subscribe_link -->
-   </a>
-  </strong>
- </p>
-</li>
-
-<li>
-
-<!-- tmpl_if list_settings.group_list --> 
-
-	<p>
-	 This mailing list is a group discussion list 
-	<!-- tmpl_if list_settings.enable_moderation -->
-		(moderated)
-	<!-- tmpl_else -->
-		(unmoderated)
-	<!-- /tmpl_if -->.
-		Once subscribed, you can start a new thread, by sending an email message to,</p>
-		<ul> 
-		 <li> 
-		  <a href="mailto:<!-- tmpl_var list_settings.discussion_pop_email -->">
-		   <!-- tmpl_var list_settings.discussion_pop_email -->
-		  </a>
-		 </li>
-		</ul>
-<!-- tmpl_else -->
-	<p>This mailing list is an announce-only mailing list.</p>
-<!-- /tmpl_if --> 
-</li>
-
-<li>
- <p>
-  <strong>
-   Want more information? Visit:
-  </strong>
- </p>
-  <a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/">
-   <!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/
-  </a> 
- </p> 
-</li>
-
-<li>
- <p>
-  <strong>
-   Privacy Policy:
-  </strong>
- </p>
-
- <blockquote> 
-  <!-- tmpl_var list_settings.privacy_policy -->
- </blockquote> 
-</li>
-
-<li>
- <p>
-  <strong>
-   Physical Address:
-  </strong>
- </p>
- <blockquote> 
-  <!-- tmpl_var list_settings.physical_address -->
- </blockquote> 
-</li>
-
-</ul> 
+<p>You can subscribe to <!-- tmpl_var list_settings.list_name --> by following this link:</p>
 
 <p>
- <strong>
-  Thanks!
- </strong>
+ <a href="<!-- tmpl_var list_subscribe_link -->">
+  <!-- tmpl_var list_subscribe_link -->
+ </a>.
 </p>
 
+<p>If you cannot view the archived message, please visit:</p>
 
-<p>-<a href="mailto:<!-- tmpl_var list_settings.list_owner_email -->"><!-- tmpl_var list_settings.list_owner_email --></a></p> 
+<p><a href="<!-- tmpl_var archive_message_url -->"><!-- tmpl_var archive_message_url --></a></p>
+
 
 EOF
-; 
+;
 
 use Email::Address; 
 

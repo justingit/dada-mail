@@ -1,0 +1,67 @@
+Content-Type: multipart/alternative; boundary="----------=_1390672593-800-0"
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+X-Mailer: MIME-tools 5.502 (Entity 5.502)
+To: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+From: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+Subject: Welcome to <!-- tmpl_var list_settings.list_name -->
+
+This is a multi-part message in MIME format...
+
+------------=_1390672593-800-0
+Content-Type: text/plain
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+Hello!
+
+Your email address
+
+	<!-- tmpl_var subscriber.email -->
+	
+has just been subscribed to the mailing list: 
+
+	<!-- tmpl_var list_settings.list_name -->
+
+<!-- tmpl_if list_settings.group_list --> 
+* This mailing list is a group discussion list <!-- tmpl_if list_settings.enable_moderation -->(moderated)<!-- tmpl_else -->(unmoderated)<!-- /tmpl_if -->. You can start a new thread, by sending an email message to, <!-- tmpl_var list_settings.discussion_pop_email --> 
+<!-- tmpl_else --> 
+* This mailing list is an announce-only mailing list. 
+<!-- /tmpl_if -->
+
+Please save this email message for future reference. 
+
+* Date of this subscription: 
+<!-- tmpl_var date -->
+
+* Need Help? Contact: 
+<!-- tmpl_var list_settings.list_owner_email -->
+
+<!-- tmpl_if PROFILE_ENABLED --><!-- tmpl_if new_profile --> 
+* Check out your Profile to update your subscription information: 
+
+	Profile Login: <!-- tmpl_var PROGRAM_URL -->/profile_login/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/
+<!-- /tmpl_if --><!-- /tmpl_if --> 
+
+* Unsubscribe: 
+<!-- tmpl_var list_unsubscribe_link --> 
+
+Unsubscribe links (like this one) do expire, so look for the freshest
+ unsubscribe links in the mailing list messages you receive. 
+
+* Privacy Policy: 
+<!-- tmpl_var list_settings.privacy_policy -->
+
+* Physical Address:
+<!-- tmpl_var list_settings.physical_address -->
+
+Thanks! 
+- <!-- tmpl_var list_settings.list_owner_email -->
+
+------------=_1390672593-800-0
+Content-Type: text/html
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+------------=_1390672593-800-0--

@@ -1,0 +1,75 @@
+Content-Type: multipart/alternative; boundary="----------=_1390674703-1031-0"
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+X-Mailer: MIME-tools 5.502 (Entity 5.502)
+To: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+From: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+Subject: <!-- tmpl_var archived_message_subject --> (Archive)
+
+This is a multi-part message in MIME format...
+
+------------=_1390674703-1031-0
+Content-Type: text/plain
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+Hello, 
+
+On behalf of: <!-- tmpl_var from_email -->, the following archived message from: 
+
+<!-- tmpl_var list_settings.list_name --> 
+
+has been sent to you. They wrote: 
+
+<!-- tmpl_var note -->
+
+The archived message is below. 
+
+You can subscribe to <!-- tmpl_var list_settings.list_name --> by following this link:
+
+<!-- tmpl_var list_subscribe_link -->
+
+If you cannot view the archived message, please visit: 
+
+<!-- tmpl_var archive_message_url -->
+
+
+------------=_1390674703-1031-0
+Content-Type: text/html
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+<p>Hello,</p> 
+
+<p>On behalf of: <!-- tmpl_var from_email -->, the following archived message 
+from:</p>
+
+<p><!-- tmpl_var list_settings.list_name --></p>
+
+<p>has been sent to you. They wrote:</p> 
+
+<p>
+ <em> 
+  <!-- tmpl_var note -->
+ </em> 
+</p>
+
+<p>The archived message is below.</p> 
+
+<p>You can subscribe to <!-- tmpl_var list_settings.list_name --> by following this link:</p>
+
+<p>
+ <a href="<!-- tmpl_var list_subscribe_link -->">
+  <!-- tmpl_var list_subscribe_link -->
+ </a>.
+</p>
+
+<p>If you cannot view the archived message, please visit:</p>
+
+<p><a href="<!-- tmpl_var archive_message_url -->"><!-- tmpl_var archive_message_url --></a></p>
+
+
+
+------------=_1390674703-1031-0--

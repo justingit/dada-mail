@@ -321,27 +321,40 @@ sub param {
 sub _message_settings {
     my $self = shift;
     return {
-        mailing_list_message_from_phrase => 1,
-        mailing_list_message_to_phrase   => 1,
-        mailing_list_message_subject     => 1,
-        mailing_list_message             => 1,
-        mailing_list_message_html        => 1,
+        mailing_list_message_from_phrase         => 1,
+        mailing_list_message_to_phrase           => 1,
+        mailing_list_message_subject             => 1,
+        mailing_list_message                     => 1,
+        mailing_list_message_html                => 1,
+ 
+        confirmation_message_subject             => 1,
+        confirmation_message                     => 1,
+ 
+        subscribed_message_subject               => 1,
+        subscribed_message                       => 1,
+ 
+        unsubscribed_message_subject             => 1,
+        unsubscribed_message                     => 1,
+ 
+        invite_message_from_phrase               => 1,
+        invite_message_to_phrase                 => 1,
+        invite_message_text                      => 1,
+        invite_message_html                      => 1,
+        invite_message_subject                   => 1,
         
-        confirmation_message_subject     => 1, 
-        confirmation_message             => 1, 
+        subscribed_by_list_owner_message         => 1,
+        subscribed_by_list_owner_message_subject => 1,
         
-        subscribed_message_subject       => 1,
-        subscribed_message               => 1, 
+        unsubscribed_by_list_owner_message_subject => 1,
+        unsubscribed_by_list_owner_message         => 1,
         
-        unsubscribed_message_subject     => 1,
-        unsubscribed_message             => 1, 
+        you_are_not_subscribed_message_subject     => 1,  
+        you_are_not_subscribed_message             => 1,  
         
-        invite_message_from_phrase       => 1, 
-        invite_message_to_phrase         => 1,
-        invite_message_text              => 1,
-        invite_message_html              => 1,
-        invite_message_subject           => 1,
-        
+        send_archive_message_subject               => 1,
+        send_archive_message                       => 1,
+        send_archive_message_html                  => 1,
+
     };
 }
 
@@ -365,27 +378,40 @@ sub _fill_in_email_message_settings {
 	my $name = shift; 
 	
 	my $message_settings = {
-		mailing_list_message_from_phrase => {-tmpl => 'mailing_list_message.eml', -part => 'from_phrase'}, 
-		mailing_list_message_to_phrase   => {-tmpl => 'mailing_list_message.eml', -part => 'to_phrase'}, 
-		mailing_list_message_subject     => {-tmpl => 'mailing_list_message.eml', -part => 'subject'}, 
-		mailing_list_message             => {-tmpl => 'mailing_list_message.eml', -part => 'plaintext_body'}, 
-		mailing_list_message_html        => {-tmpl => 'mailing_list_message.eml', -part => 'html_body'}, 
-		
-		confirmation_message_subject     => {-tmpl => 'confirmation_message.eml', -part => 'subject'},  
-        confirmation_message             => {-tmpl => 'confirmation_message.eml', -part => 'plaintext_body'},  
-        
-        subscribed_message_subject       => {-tmpl => 'subscribed_message.eml', -part => 'subject'},  
-        subscribed_message               => {-tmpl => 'subscribed_message.eml', -part => 'plaintext_body'},  
+		mailing_list_message_from_phrase           => {-tmpl => 'mailing_list_message.eml', -part => 'from_phrase'}, 
+		mailing_list_message_to_phrase             => {-tmpl => 'mailing_list_message.eml', -part => 'to_phrase'}, 
+		mailing_list_message_subject               => {-tmpl => 'mailing_list_message.eml', -part => 'subject'}, 
+		mailing_list_message                       => {-tmpl => 'mailing_list_message.eml', -part => 'plaintext_body'}, 
+		mailing_list_message_html                  => {-tmpl => 'mailing_list_message.eml', -part => 'html_body'}, 
 
-        unsubscribed_message_subject       => {-tmpl => 'unsubscribed_message.eml', -part => 'subject'},  
-        unsubscribed_message               => {-tmpl => 'unsubscribed_message.eml', -part => 'plaintext_body'},  
-        
-        invite_message_from_phrase => {-tmpl => 'invite_message.eml', -part => 'from_phrase'}, 
-        invite_message_to_phrase   => {-tmpl => 'invite_message.eml', -part => 'to_phrase'}, 
-        invite_message_subject     => {-tmpl => 'invite_message.eml', -part => 'subject'}, 
-        invite_message_text        => {-tmpl => 'invite_message.eml', -part => 'plaintext_body'}, 
-        invite_message_html        => {-tmpl => 'invite_message.eml', -part => 'html_body'}, 
-        
+		confirmation_message_subject               => {-tmpl => 'confirmation_message.eml', -part => 'subject'},  
+        confirmation_message                       => {-tmpl => 'confirmation_message.eml', -part => 'plaintext_body'},  
+
+        subscribed_message_subject                 => {-tmpl => 'subscribed_message.eml', -part => 'subject'},  
+        subscribed_message                         => {-tmpl => 'subscribed_message.eml', -part => 'plaintext_body'},  
+
+        unsubscribed_message_subject               => {-tmpl => 'unsubscribed_message.eml', -part => 'subject'},  
+        unsubscribed_message                       => {-tmpl => 'unsubscribed_message.eml', -part => 'plaintext_body'},  
+
+        invite_message_from_phrase                 => {-tmpl => 'invite_message.eml', -part => 'from_phrase'}, 
+        invite_message_to_phrase                   => {-tmpl => 'invite_message.eml', -part => 'to_phrase'}, 
+        invite_message_subject                     => {-tmpl => 'invite_message.eml', -part => 'subject'}, 
+        invite_message_text                        => {-tmpl => 'invite_message.eml', -part => 'plaintext_body'}, 
+        invite_message_html                        => {-tmpl => 'invite_message.eml', -part => 'html_body'}, 
+
+        subscribed_by_list_owner_message_subject   => {-tmpl => 'subscribed_by_list_owner_message.eml', -part => 'subject'},  
+        subscribed_by_list_owner_message           => {-tmpl => 'subscribed_by_list_owner_message.eml', -part => 'plaintext_body'},  
+
+        unsubscribed_by_list_owner_message_subject => {-tmpl => 'unsubscribed_by_list_owner_message.eml', -part => 'subject'},  
+        unsubscribed_by_list_owner_message         => {-tmpl => 'unsubscribed_by_list_owner_message.eml', -part => 'plaintext_body'},  
+
+        you_are_not_subscribed_message_subject     => {-tmpl => 'you_are_not_subscribed_message.eml', -part => 'subject'},  
+        you_are_not_subscribed_message             => {-tmpl => 'you_are_not_subscribed_message.eml', -part => 'plaintext_body'},  
+
+        send_archive_message_subject               => {-tmpl => 'send_archive_message.eml', -part => 'subject'},  
+        send_archive_message                       => {-tmpl => 'send_archive_message.eml', -part => 'plaintext_body'},  
+        send_archive_message_html                  => {-tmpl => 'send_archive_message.eml', -part => 'html_body'}, 
+
 	}; 
 	
 	if(exists($message_settings->{$name})) { 

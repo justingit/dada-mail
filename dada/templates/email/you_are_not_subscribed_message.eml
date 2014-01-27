@@ -1,0 +1,43 @@
+Content-Type: multipart/alternative; boundary="----------=_1390674044-948-0"
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+X-Mailer: MIME-tools 5.502 (Entity 5.502)
+To: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+From: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+Subject: <!-- tmpl_var list_settings.list_name --> - You Are Not Subscribed
+
+This is a multi-part message in MIME format...
+
+------------=_1390674044-948-0
+Content-Type: text/plain
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+Hello, 
+
+This message has been sent to you because a request to remove: 
+
+<!-- tmpl_var subscriber.email -->
+
+from the list: 
+
+<!-- tmpl_var list_settings.list_name -->
+
+was just made. This email address is actually not currently subscribed.
+
+This message has been sent to protect your privacy and only allow this information to be 
+available to you. 
+
+To contact the owner of this email list, please use the address below: 
+
+mailto:<!-- tmpl_var list_settings.list_owner_email -->
+
+
+------------=_1390674044-948-0
+Content-Type: text/html
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+------------=_1390674044-948-0--
