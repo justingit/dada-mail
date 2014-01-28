@@ -1,0 +1,43 @@
+Content-Type: multipart/alternative; boundary="----------=_1390864992-6150-0"
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+X-Mailer: MIME-tools 5.502 (Entity 5.502)
+To: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+From: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+Subject: Message to: <!-- tmpl_var list_settings.list_name -->  Subject:
+ <!-- tmpl_var original_subject --> rejected
+
+This is a multi-part message in MIME format...
+
+------------=_1390864992-6150-0
+Content-Type: text/plain
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+Hello, <!-- tmpl_var subscriber.email -->, 
+
+We've received a message from you with the Subject,
+
+	<!-- tmpl_var original_subject -->
+		
+but couldn't deliver it to the mailing list because the size of the message, 
+
+	<!-- tmpl_var size_of_original_message --> kilobytes
+
+is larger than the maximum allowed: 
+
+	<!-- tmpl_var Soft_Max_Size_Of_Any_Message --> kilobytes
+
+Please try to resend the message again, but within the maximum size allowed, 
+
+-- <!-- tmpl_var list_settings.list_owner_email -->
+
+
+------------=_1390864992-6150-0
+Content-Type: text/html
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+------------=_1390864992-6150-0--

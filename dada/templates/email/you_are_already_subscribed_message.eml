@@ -1,0 +1,46 @@
+Content-Type: multipart/alternative; boundary="----------=_1390861957-5671-0"
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+X-Mailer: MIME-tools 5.502 (Entity 5.502)
+To: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+From: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+Subject: <!-- tmpl_var list_settings.list_name --> - You Are Already
+ Subscribed
+
+This is a multi-part message in MIME format...
+
+------------=_1390861957-5671-0
+Content-Type: text/plain
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+Hello, 
+
+This message has been sent to you because a request to subscribe: 
+
+<!-- tmpl_var subscriber.email -->
+
+to the list: 
+
+<!-- tmpl_var list_settings.list_name -->
+
+was just made. This email address is actually already subscribed, 
+so you do not have to subscribe again. This message has been sent 
+to protect your privacy and only allow this information to be 
+available to you. 
+
+To contact the owner of this email list, please use the address below: 
+
+mailto:<!-- tmpl_var list_settings.list_owner_email -->
+
+
+- <!-- tmpl_var list_settings.list_owner_email -->
+
+------------=_1390861957-5671-0
+Content-Type: text/html
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+------------=_1390861957-5671-0--

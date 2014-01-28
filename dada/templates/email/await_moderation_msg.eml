@@ -1,0 +1,35 @@
+Content-Type: multipart/alternative; boundary="----------=_1390864609-6031-0"
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+X-Mailer: MIME-tools 5.502 (Entity 5.502)
+To: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+From: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+Subject: Message to: <!-- tmpl_var list_settings.list_name --> w/ Subject:
+ <!-- tmpl_var message_subject --> is awaiting approval.
+
+This is a multi-part message in MIME format...
+
+------------=_1390864609-6031-0
+Content-Type: text/plain
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+Hello, 
+
+Your recent message to <!-- tmpl_var list_settings.list_name --> with the subject of: 
+
+    <!-- tmpl_var message_subject --> 
+  
+is awaiting approval. 
+
+-- <!-- tmpl_var Plugin_Name -->
+
+
+------------=_1390864609-6031-0
+Content-Type: text/html
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+------------=_1390864609-6031-0--

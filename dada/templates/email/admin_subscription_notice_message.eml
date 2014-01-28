@@ -1,0 +1,43 @@
+Content-Type: multipart/alternative; boundary="----------=_1390862624-5750-0"
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+X-Mailer: MIME-tools 5.502 (Entity 5.502)
+To: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+From: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+Subject: Subscribed <!-- tmpl_var subscriber.email -->
+
+This is a multi-part message in MIME format...
+
+------------=_1390862624-5750-0
+Content-Type: text/plain
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+<!-- tmpl_var subscriber.email --> has subscribed to:
+
+	<!-- tmpl_var list_settings.list_name -->
+
+Server Time: <!-- tmpl_var date -->
+IP Logged:   <!-- tmpl_var REMOTE_ADDR -->
+<!-- tmpl_var note -->
+
+<!-- tmpl_if subscriber -->Extra Subscriber information: 
+-----------------------------
+<!-- tmpl_loop subscriber --> 
+<!-- tmpl_var name -->: <!-- tmpl_var value -->
+
+<!-- /tmpl_loop -->-----------------------------<!--/tmpl_if-->
+
+There are now a total of: <!-- tmpl_var num_subscribers --> subscribers.
+
+-<!-- tmpl_var PROGRAM_NAME -->
+
+
+------------=_1390862624-5750-0
+Content-Type: text/html
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+------------=_1390862624-5750-0--

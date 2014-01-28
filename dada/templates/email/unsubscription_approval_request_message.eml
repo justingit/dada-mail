@@ -1,0 +1,45 @@
+Content-Type: multipart/alternative; boundary="----------=_1390865855-6388-0"
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+X-Mailer: MIME-tools 5.502 (Entity 5.502)
+To: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+From: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+Subject: <!-- tmpl_var subscriber.email --> would like to unsubscribe
+ from: <!-- tmpl_var list_settings.list_name -->
+
+This is a multi-part message in MIME format...
+
+------------=_1390865855-6388-0
+Content-Type: text/plain
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+Hello, 
+
+The following email address:
+
+	<!-- tmpl_var subscriber.email -->
+
+Would like to be REMOVED from: 
+
+	<!-- tmpl_var list_settings.list_name -->
+	
+To approve this unsubscription, follow this link: 
+	
+	<!-- tmpl_var list_unsubscribe_request_approve_link --> 
+	
+To deny this unsubscription, follow this link: 
+
+	<!-- tmpl_var list_unsubscribe_request_deny_link --> 
+
+-- <!-- tmpl_var PROGRAM_NAME -->
+
+
+------------=_1390865855-6388-0
+Content-Type: text/html
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+------------=_1390865855-6388-0--

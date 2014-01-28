@@ -1,0 +1,52 @@
+Content-Type: multipart/alternative; boundary="----------=_1390863785-5879-0"
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+X-Mailer: MIME-tools 5.502 (Entity 5.502)
+To: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+From: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+Subject: Not Allowed to Post On <!-- tmpl_var list_settings.list_name -->
+ (your original message is attached)
+
+This is a multi-part message in MIME format...
+
+------------=_1390863785-5879-0
+Content-Type: text/plain
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+Hello, 
+
+You recently sent a message to, 
+
+	<!-- tmpl_var list_settings.list_name --> (<!-- tmpl_var list_settings.discussion_pop_email -->)
+	
+with the email address: 
+
+    <!-- tmpl_var subscriber.email -->
+
+But, it doesn't seem that you currently have permission to do so. 
+
+This may be because you have to first Subscribe to this Mailing List before
+sending messages to it.
+
+Please see: 
+
+	<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->
+
+for more information. 
+
+You may email the List Owner at: 
+
+	mailto:<!-- tmpl_var list_settings.list_owner_email -->
+
+	-- <!-- tmpl_var PROGRAM_NAME -->
+
+
+------------=_1390863785-5879-0
+Content-Type: text/html
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+------------=_1390863785-5879-0--

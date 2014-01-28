@@ -1,0 +1,34 @@
+Content-Type: multipart/alternative; boundary="----------=_1390864097-5929-0"
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+X-Mailer: MIME-tools 5.502 (Entity 5.502)
+To: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+From: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+Subject: <!-- tmpl_var PROGRAM_NAME --> Error - <!-- tmpl_var
+ subscriber.email --> Not Allowed to Post On <!-- tmpl_var list_settings.list_name
+ --> (original message attached)
+
+This is a multi-part message in MIME format...
+
+------------=_1390864097-5929-0
+Content-Type: text/plain
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+The attached message was sent to your Mailing List, 
+
+	<!-- tmpl_var list_settings.list_name -->
+	
+but was not sent from an address that has permission to do so. 
+
+-- <!-- tmpl_var PROGRAM_NAME -->
+
+
+------------=_1390864097-5929-0
+Content-Type: text/html
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+------------=_1390864097-5929-0--

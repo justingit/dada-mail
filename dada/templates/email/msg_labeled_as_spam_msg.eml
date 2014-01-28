@@ -1,0 +1,38 @@
+Content-Type: multipart/alternative; boundary="----------=_1390865278-6236-0"
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+X-Mailer: MIME-tools 5.502 (Entity 5.502)
+To: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+From: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+Subject: Message to: <!-- tmpl_var list_settings.list_name -->  Subject:
+ <!-- tmpl_var original_subject --> Labeled as Spam
+
+This is a multi-part message in MIME format...
+
+------------=_1390865278-6236-0
+Content-Type: text/plain
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+Hello, <!-- tmpl_var subscriber.email -->, 
+
+We've received a message from you with the Subject,
+
+	<!-- tmpl_var original_subject -->
+		
+but couldn't deliver it to the mailing list because it hit the spam filters and seems 
+suspicious. 
+
+If you did not send a message with this subject, please disregard this message. 
+
+-- <!-- tmpl_var list_settings.list_owner_email -->
+
+
+------------=_1390865278-6236-0
+Content-Type: text/html
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+------------=_1390865278-6236-0--

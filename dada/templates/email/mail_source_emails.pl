@@ -5,66 +5,24 @@ use lib qw(/Users/justin/Documents/DadaMail/git/dada-mail/dada/DADA/perllib);
 
 use MIME::Parser; 
 
-my $subject = '<!-- tmpl_var archived_message_subject --> (Archive)'; 
+my $subject = '<!-- tmpl_var list_settings.list_name --> Mailing List Unsubscription Request - Denied.'; 
 my $pt = <<EOF
 
-Hello, 
+Hello! 
 
-On behalf of: <!-- tmpl_var from_email -->, the following archived message from: 
+You've recently have asked to be removed from: 
 
-<!-- tmpl_var list_settings.list_name --> 
+	<!-- tmpl_var list_settings.list_name --> 
+	
+This unsubscription request has been denied by the List Owner. 
 
-has been sent to you. They wrote: 
-
-<!-- tmpl_var note -->
-
-The archived message is below. 
-
-You can subscribe to <!-- tmpl_var list_settings.list_name --> by following this link:
-
-<!-- tmpl_var list_subscribe_link -->
-
-If you cannot view the archived message, please visit: 
-
-<!-- tmpl_var archive_message_url -->
+-- mailto:<!-- tmpl_var list_settings.list_owner_email --> 
 
 EOF
 ;
 
-my $html = <<EOF
+my $html = '';
 
-<p>Hello,</p> 
-
-<p>On behalf of: <!-- tmpl_var from_email -->, the following archived message 
-from:</p>
-
-<p><!-- tmpl_var list_settings.list_name --></p>
-
-<p>has been sent to you. They wrote:</p> 
-
-<p>
- <em> 
-  <!-- tmpl_var note -->
- </em> 
-</p>
-
-<p>The archived message is below.</p> 
-
-<p>You can subscribe to <!-- tmpl_var list_settings.list_name --> by following this link:</p>
-
-<p>
- <a href="<!-- tmpl_var list_subscribe_link -->">
-  <!-- tmpl_var list_subscribe_link -->
- </a>.
-</p>
-
-<p>If you cannot view the archived message, please visit:</p>
-
-<p><a href="<!-- tmpl_var archive_message_url -->"><!-- tmpl_var archive_message_url --></a></p>
-
-
-EOF
-;
 
 use Email::Address; 
 
