@@ -354,7 +354,12 @@ sub send_unsubscribe_request_message {
 		}
 	####
 	
-	my $unsubscription_request_message = $DADA::Config::UNSUBSCRIPTION_REQUEST_MESSAGE;
+	require DADA::App::ReadMessages; 
+    my $rm = DADA::App::ReadMessages->new; 
+    my $msg_data = $rm->read_message('profiles_email_updated_notification_message.eml'); 
+	
+	
+	my $unsubscription_request_message = $msg_data->{plaintext_body};
 	require DADA::App::FormatMessages; 
 	my $fm = DADA::App::FormatMessages->new(-List => $args->{-list}); 
 	   $unsubscription_request_message = $fm->unsubscription_confirmationation({-str => $unsubscription_request_message}); 
@@ -371,7 +376,7 @@ sub send_unsubscribe_request_message {
 		-headers     => 
 			{
 					 To      =>  '"'. escape_for_sending($ls->param('list_name')) .' Subscriber"  <' . $args->{-email} . '>',
-					 Subject =>  $DADA::Config::UNSUBSCRIPTION_REQUEST_MESSAGE_SUBJECT, 
+					 Subject =>  $msg_data->{subject}, 
 			},
 				
 	    -body        => $unsubscription_request_message, 
@@ -490,6 +495,9 @@ sub send_unsubscribed_message {
 		$ls = $args->{-ls_obj};
 	}
 	
+	warn q{$ls->param('list')} . $ls->param('list');  
+	warn q{$args->{-list}} . $args->{-list}; 
+	
 	# This is a hack - if the subscriber has recently been removed, you 
 	# won't be able to get the subscriber fields - since there's no way to 
 	# get fields of a removed subscriber. 
@@ -535,11 +543,11 @@ sub send_unsubscribed_message {
 			-tmpl_params  => {	
 				-list_settings_vars_param => 
 					{
-                        -list => $ls->param('list')
+                        -list => $ls->param('list'),
 						-dot_it => 1, 
 					}, 
 				#-subscriber_vars => {'subscriber.email' => $args->{-email}}, # DEV: This line right?
-				-subscriber_vars          => $unsub_fields
+				-subscriber_vars          => $unsub_fields,
 			},
 		}
 	); 

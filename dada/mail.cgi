@@ -9524,6 +9524,11 @@ sub email_password {
             }
         );
 
+
+        require DADA::App::ReadMessages; 
+        my $rm = DADA::App::ReadMessages->new; 
+        my $msg_data = $rm->read_message('list_password_reset_message.eml'); 
+
         require DADA::App::Messages;
         DADA::App::Messages::send_generic_email(
             {
@@ -9533,9 +9538,9 @@ sub email_password {
                     To   => '"List Owner for: '
                       . escape_for_sending( $ls->param('list_name') ) . '" <'
                       . $ls->param('list_owner_email') . '>',
-                    Subject => $DADA::Config::LIST_RESET_PASSWORD_MESSAGE_SUBJECT,
+                    Subject => $msg_data->{subject},
                 },
-                -body        => $DADA::Config::LIST_RESET_PASSWORD_MESSAGE,
+                -body        => $msg_data->{plaintext_body},
                 -tmpl_params => {
                     -list_settings_vars_param => {
                         -list   => $list,
@@ -9568,6 +9573,12 @@ sub email_password {
 
         $ls->save( { pass_auth_id => $random_string, } );
 
+
+        require DADA::App::ReadMessages; 
+        my $rm = DADA::App::ReadMessages->new; 
+        my $msg_data = $rm->read_message('list_password_reset_confirmation_message.eml'); 
+    	
+        
         require DADA::App::Messages;
         DADA::App::Messages::send_generic_email(
             {
@@ -9577,9 +9588,9 @@ sub email_password {
                     To   => '"List Owner for: '
                       . escape_for_sending( $ls->param('list_name') ) . '" <'
                       . $ls->param('list_owner_email') . '>',
-                    Subject => $DADA::Config::LIST_CONFIRM_PASSWORD_MESSAGE_SUBJECT,
+                    Subject => $msg_data->{subject},
                 },
-                -body        => $DADA::Config::LIST_CONFIRM_PASSWORD_MESSAGE,
+                -body        => $msg_data->{plaintext_body},
                 -tmpl_params => {
                     -list_settings_vars_param => {
                         -list   => $list,

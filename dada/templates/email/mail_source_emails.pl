@@ -5,18 +5,28 @@ use lib qw(/Users/justin/Documents/DadaMail/git/dada-mail/dada/DADA/perllib);
 
 use MIME::Parser; 
 
-my $subject = '<!-- tmpl_var list_settings.list_name --> Mailing List Unsubscription Request - Denied.'; 
+my $subject = 'Sending Preference Test Email for, <!-- tmpl_var list_settings.list_name -->'; 
 my $pt = <<EOF
 
-Hello! 
+Hello, <!-- tmpl_var list_settings.list_owner_email -->, 
 
-You've recently have asked to be removed from: 
+This message was sent out by <!-- tmpl_var PROGRAM_NAME --> to test out mail sending for the mailing list, 
 
-	<!-- tmpl_var list_settings.list_name --> 
-	
-This unsubscription request has been denied by the List Owner. 
+		<!-- tmpl_var list_settings.list_name --> 
+		
+If you've received this message, it looks like mail sending is working. 
 
--- mailto:<!-- tmpl_var list_settings.list_owner_email --> 
+<!-- tmpl_if expr="(list_settings.sending_method eq 'sendmail')" --> 
+	* Mail is being sent via the sendmail command
+<!--/tmpl_if -->
+<!-- tmpl_if expr="(list_settings.sending_method eq 'smtp')" --> 
+	* Mail is being sent via SMTP
+<!--/tmpl_if --> 
+<!-- tmpl_if expr="(list_settings.sending_method eq 'amazon_ses')" --> 
+	* Mail is being sent via Amazon Simple Email Service
+<!--/tmpl_if -->
+
+-- <!-- tmpl_var PROGRAM_NAME -->
 
 EOF
 ;

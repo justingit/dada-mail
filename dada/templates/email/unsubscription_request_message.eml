@@ -1,0 +1,49 @@
+Content-Type: multipart/alternative; boundary="----------=_1390955533-8877-0"
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+X-Mailer: MIME-tools 5.502 (Entity 5.502)
+To: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+From: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+Subject: Unsubscribe from: <!-- tmpl_var list_settings.list_name -->
+
+This is a multi-part message in MIME format...
+
+------------=_1390955533-8877-0
+Content-Type: text/plain
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+Hello, 
+
+Please use this link:
+
+	<!-- tmpl_var list_unsubscribe_link -->
+
+to remove: 
+
+	<!-- tmpl_var subscriber.email -->
+
+ from the following list: 
+
+	<!-- tmpl_var list_settings.list_name -->
+
+To contact the owner of this email list, please use the address below: 
+
+mailto:<!-- tmpl_var list_settings.list_owner_email -->
+
+The following physical address is associated with this mailing list: 
+
+<!-- tmpl_var list_settings.physical_address -->
+
+
+- mailto:<!-- tmpl_var list_settings.list_owner_email -->
+
+
+------------=_1390955533-8877-0
+Content-Type: text/html
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+------------=_1390955533-8877-0--

@@ -34,7 +34,6 @@ my $fm = DADA::App::FormatMessages->new(-List => $list);
 
 my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
 my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-my $li = $ls->get; 
 my $mh = DADA::Mail::Send->new({-list => $list}); 
 
 my $email        = 'mytest@example.com'; 
@@ -85,7 +84,7 @@ my $msg_str = safely_decode($entity->bodyhandle->as_string);
 ok(
 	decode_header($entity->head->get('From', 0))
 	eq
-	"\"$li->{list_name}\" \<$lo_name\@$lo_domain\>", 
+	"\"" . $ls->param('list_name') . "\" \<$lo_name\@$lo_domain\>", 
 	"From: Set Correctly"
 	); 
 
@@ -98,10 +97,22 @@ like($msg, qr/To:(.*?)$email_name\@$email_domain/, "To: set correctly 1");
 my $confirm_url = quotemeta('/t/'. $fake_token . '/'); 
 diag $msg_str; 
 like($msg_str, qr/$confirm_url/, 'Confirmation link found and correct.'); 
-like($msg_str, qr/$li->{list_name}/, "List Name Found"); 
-like($msg_str, qr/$li->{privacy_policy}/, "Privacy Policy Found"); 
-like($msg_str, qr/$li->{physical_address}/, "Physical Address Found"); 
-like($msg_str, qr/$li->{list_owner_email}/, "List Owner ($li->{list_owner_email}) Found"); 
+my $list_name = $ls->param('list_name'); 
+like($msg_str, qr/$list_name/, "List Name Found"); 
+undef($list_name); 
+
+my $privacy_policy = $ls->param('privacy_policy');
+like($msg_str, qr/$privacy_policy/, "Privacy Policy Found"); 
+undef($privacy_policy); 
+
+my $physical_address = $ls->param('physical_address');
+like($msg_str, qr/$physical_address/, "Physical Address Found"); 
+undef($physical_address); 
+
+my $list_owner_email = $ls->param('list_owner_email'); 
+like($msg_str, qr/$list_owner_email/, "List Owner (" . $ls->param('list_owner_email') . ") Found"); 
+undef($list_owner_email); 
+
 ok(unlink($mh->test_send_file)); 
 undef $entity; 
 undef $msg; 
@@ -132,7 +143,7 @@ $msg_str = safely_decode($entity->bodyhandle->as_string);
 ok(
 	decode_header($entity->head->get('Subject', 0))
 	eq
-	"Email: mytest\@example.com List Name: $li->{list_name}", 
+	"Email: mytest\@example.com List Name: " . $ls->param('list_name'), 
 	"Subject: Set Correctly"
 ); 
 
@@ -141,11 +152,14 @@ ok(
 
 diag $msg_str; 
 
-like($msg_str, qr/List Name\: $li->{list_name}/, "Found: List Name"); 
+my $list_name = $ls->param('list_name'); 
+like($msg_str, qr/List Name\: $list_name/, "Found: List Name"); 
+undef($list_name); 
+
 like($msg_str, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
 like($msg_str, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
 like($msg_str, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
-like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
+like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name1"); 
 
 # Reset: 
 ok(
@@ -196,12 +210,10 @@ $msg = slurp($mh->test_send_file);
 $entity = $parser->parse_data(safely_encode($msg)); 
 $msg_str = safely_decode($entity->bodyhandle->as_string);
 
-#like($msg, qr/From: \"$li->{list_name}\" \<$lo_name\@$lo_domain\>/, "From: Set Correctly"); 
-
 ok(
 	decode_header($entity->head->get('From', 0))
 	eq
-	"\"$li->{list_name}\" \<$lo_name\@$lo_domain\>", 
+	"\"" . $ls->param('list_name') . "\" \<$lo_name\@$lo_domain\>", 
 	"From: Set Correctly"
 	); 
 like(
@@ -213,7 +225,7 @@ like(
 ok(
 	decode_header($entity->head->get('Subject', 0))
 	eq
-	"Welcome to $li->{list_name}", 
+	"Welcome to " . $ls->param('list_name'), 
 	"Subject: Set Correctly"
 );
 
@@ -222,8 +234,10 @@ ok(
 
 
 
+my $physical_address = $ls->param('physical_address'); 
+like($msg_str, qr/$physical_address/, "Physical Address Found"); 
+undef($physical_address); 
 
-like($msg_str, qr/$li->{physical_address}/, "Physical Address Found"); 
 like($msg_str, qr/$email_name\@$email_domain/, "The Subscriber Email Address is *somewhere* to be found..."); 
 ok(unlink($mh->test_send_file)); 
 undef $msg; 
@@ -256,18 +270,20 @@ $msg_str = safely_decode($entity->bodyhandle->as_string);
 ok(
 	decode_header($entity->head->get('Subject', 0))
 	eq
-	"Email: mytest\@example.com List Name: $li->{list_name}", 
+	"Email: mytest\@example.com List Name: " . $ls->param('list_name'), 
 	"Subject: Set Correctly"
 );
 	
 
+my $list_name = $ls->param('list_name'); 
+like($msg_str, qr/List Name\: $list_name/, "Found: List Name"); 
+undef($list_name); 
 
-like($msg_str, qr/List Name\: $li->{list_name}/, "Found: List Name"); 
 like($msg_str, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
 like($msg_str, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
 like($msg_str, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
 
-like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
+like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name2"); 
 
 # Reset: 
 ok(
@@ -302,14 +318,14 @@ $msg_str = safely_decode($entity->bodyhandle->as_string);
 ok(
 	decode_header($entity->head->get('From', 0))
 	eq
-	"\"$li->{list_name}\" \<$lo_name\@$lo_domain\>", 
+	"\"" . $ls->param('list_name') . "\" \<$lo_name\@$lo_domain\>", 
 	"From: Set Correctly"
 );
 diag q{decode_header($entity->head->get('To', 0))} . decode_header($entity->head->get('To', 0)); 
 ok(
 	decode_header($entity->head->get('To', 0))
 	eq
-	"\"$li->{list_name}\" \<$lo_name\@$lo_domain\>", 
+	"\"" . $ls->param('list_name') . "\" \<$lo_name\@$lo_domain\>", 
 	"To: Set Correctly 3"
 );
 my   $sub = $entity->head->get('Subject', 0); 
@@ -355,11 +371,11 @@ $msg_str = safely_decode($entity->bodyhandle->as_string);
 ok(
 	decode_header($entity->head->get('From', 0))
 	eq
-	"\"$li->{list_name}\" \<$lo_name\@$lo_domain\>", 
+	"\"" . $ls->param('list_name') . "\" \<$lo_name\@$lo_domain\>", 
 	"From: Set Correctly"
 );
 #diag "set to this: " . decode_header($entity->head->get('To', 0)); 
-#diag "look fo this: " . "\"$li->{list_name} Subscriber\" \<$email_name\@$email_domain\>";
+#diag "look fo this: " . "\"$ls->param('list_name') Subscriber\" \<$email_name\@$email_domain\>";
 
 #"Dada Test List¡™£¢∞§¶•ªº Subscriber" <mytest@example.com>
 
@@ -369,7 +385,7 @@ TODO: {
 	ok(
 		decode_header($entity->head->get('To', 0))
 		eq
-		"\"$li->{list_name} Subscriber\" \<$email_name\@$email_domain\>", 
+		"\"" . $ls->param('list_name') . " Subscriber\" \<$email_name\@$email_domain\>", 
 		"To: Set Correctly 4"
 	);
 
@@ -381,11 +397,11 @@ $sub = $entity->head->get('Subject', 0);
 chomp $sub;
  
 diag '"' . decode_header($sub) . '"'; 
-diag '"' . "$li->{list_name} - You Are Already Subscribed" . '"';
+diag '"' . $ls->param('list_name') . "- You Are Already Subscribed" . '"';
 ok(
 	decode_header($sub)
 	eq
-	"$li->{list_name} - You Are Already Subscribed", 
+	$ls->param('list_name') . " - You Are Already Subscribed", 
 	"Subject: Set Correctly"
 );
 
@@ -425,15 +441,18 @@ chomp $sub;
 ok(
 	decode_header($entity->head->get('Subject', 0))
 	eq
-	"Email: mytest\@example.com List Name: $li->{list_name}", 
+	"Email: mytest\@example.com List Name: " . $ls->param('list_name'), 
 	"Subject: Set Correctly"
 );
 
-like($msg_str, qr/List Name\: $li->{list_name}/, "Found: List Name"); 
+my $list_name = $ls->param('list_name'); 
+like($msg_str, qr/List Name\: $list_name/, "Found: List Name"); 
+undef($list_name); 
+
 like($msg_str, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
 like($msg_str, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
 like($msg_str, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
-like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
+like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name3"); 
 
 # Reset: 
 ok(
@@ -468,8 +487,16 @@ DADA::App::Messages::send_unsubscribed_message(
 	}	
 );
 
+diag "here."; 
+
 $msg     = slurp($mh->test_send_file); 
+
+diag "here."; 
+
 $entity  = $parser->parse_data(safely_encode($msg)); 
+
+diag "here."; 
+
 $msg_str = safely_decode($entity->bodyhandle->as_string);
 
 
@@ -477,24 +504,32 @@ $msg_str = safely_decode($entity->bodyhandle->as_string);
 ok(
 	decode_header($entity->head->get('From', 0))
 	eq
-	"\"$li->{list_name}\" \<$lo_name\@$lo_domain\>", 
+	"\"" . $ls->param('list_name') . "\" \<$lo_name\@$lo_domain\>", 
 	"From: Set Correctly"
 );
+
+diag "here."; 
+
 ok(
 	decode_header($entity->head->get('To', 0))
 	eq
-	"\"$li->{list_name}\" \<$email_name\@$email_domain\>", 
+	"\"" . $ls->param('list_name') . "\" \<$email_name\@$email_domain\>", 
 	"To: Set Correctly 6"
 );
+
+diag "here."; 
+
 
 diag "Subject: " . safely_encode(decode_header($entity->head->get('Subject', 0)));
  
 ok(
 	decode_header($entity->head->get('Subject', 0))
 	eq
-	"Farewell from $li->{list_name}", 
+	"Farewell from " . $ls->param('list_name'), 
 	"Subject: Set Correctly (1)"
 );
+
+diag "here."; 
 
 
 
@@ -533,15 +568,17 @@ $msg_str = safely_decode($entity->bodyhandle->as_string);
 ok(
 	decode_header($entity->head->get('Subject', 0))
 	eq
-	"Email: mytest\@example.com List Name: $li->{list_name}", 
+	"Email: mytest\@example.com List Name: " . $ls->param('list_name'), 
 	"Subject: Set Correctly"
 );
 
+my $list_name = $ls->param('list_name'); 
+like($msg_str, qr/List Name\: $list_name/, "Found: List Name"); 
+undef($list_name); 
 
-like($msg_str, qr/List Name\: $li->{list_name}/, "Found: List Name"); 
 like($msg_str, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
 like($msg_str, qr/Subscriber Email\: $email_name\@$email_domain/, "Found: Subscriber Email"); 
-like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
+like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name4"); 
 
 # Reset: 
 ok(
@@ -582,13 +619,13 @@ $msg_str = safely_decode($entity->bodyhandle->as_string);
 ok(
 	decode_header($entity->head->get('From', 0))
 	eq
-	"\"$li->{list_name}\" \<$lo_name\@$lo_domain\>", 
+	"\"" . $ls->param('list_name') . "\" \<$lo_name\@$lo_domain\>", 
 	"From: Set Correctly"
 );
 ok(
 	decode_header($entity->head->get('To', 0))
 	eq
-	"\"$li->{list_name}\" \<$lo_name\@$lo_domain\>", 
+	"\"" . $ls->param('list_name') . "\" \<$lo_name\@$lo_domain\>", 
 	"To: Set Correctly 7"
 );
 
@@ -687,11 +724,11 @@ $msg_str = safely_decode($entity->bodyhandle->as_string);
 ok(
 	decode_header($entity->head->get('From', 0))
 	eq
-	"\"$li->{list_name}\" \<$lo_name\@$lo_domain\>", 
+	"\"" . $ls->param('list_name') . "\" \<$lo_name\@$lo_domain\>", 
 	"From: Set Correctly"
 );
 diag 'first: "' .   decode_header($entity->head->get('To', 0)) . '"'; 
-diag 'second: "' . "\"$li->{list_name} Subscriber\" \<$email_name\@$email_domain\>" . '"'; 
+diag 'second: "' . "\"" . $ls->param('list_name') . " Subscriber\" \<$email_name\@$email_domain\>" . '"'; 
 diag "looks the same to me!"; 
 
 TODO: {
@@ -699,7 +736,7 @@ TODO: {
 	ok(
 		decode_header($entity->head->get('To', 0))
 		eq
-		"\"$li->{list_name} Subscriber\" \<$email_name\@$email_domain\>", 
+		"\"" . $ls->param('list_name') . " Subscriber\" \<$email_name\@$email_domain\>", 
 		"To: Set Correctly 8 "
 	);
 
@@ -859,7 +896,7 @@ TODO: {
 	ok(
 		decode_header($entity->head->get('From', 0))
 		eq
-		"\"$li->{list_name}\" \<$lo_name\@$lo_domain\>", 
+		"\"" . $ls->param('list_name') . "\" \<$lo_name\@$lo_domain\>", 
 		"From: Set Correctly"
 	);
 
@@ -870,7 +907,7 @@ TODO: {
 	ok(
 		decode_header($entity->head->get('To', 0))
 		eq
-		"\"$li->{list_name}\" \<$email_name\@$email_domain\>", 
+		"\"" . $ls->param('list_name') . "\" \<$email_name\@$email_domain\>", 
 		"To: Set Correctly 9"
 	);
 }
@@ -879,7 +916,7 @@ TODO: {
 ok(
 	decode_header($entity->head->get('Subject', 0))
 	eq
-	"Not Allowed to Post On $li->{list_name} (your original message is attached)", 
+	"Not Allowed to Post On " . $ls->param('list_name') . " (your original message is attached)", 
 	"Subject: Set Correctly"
 );
 
@@ -887,7 +924,12 @@ ok(
 my $natp_msg = quotemeta('But, it doesn\'t seem that you currently have permission to do so.'); 
 diag '$msg_str0' . $msg_str0; 
 like($msg_str0, qr/$natp_msg/, "Body Set Correctly");
-like($msg_str0, qr/$li->{list_name}/, "List Name Found"); 
+
+my $list_name = $ls->param('list_name'); 
+like($msg_str0, qr/$list_name/, "Found: List Name"); 
+undef($list_name); 
+
+
 
 like($msg_str1, qr/$q_fake_message_back/, "Original Message seems to be attached.");
 
@@ -933,13 +975,16 @@ TODO: {
 	ok(
 		decode_header($entity->head->get('Subject', 0))
 		eq
-		"Email: mytest\@example.com List Name: $li->{list_name}", 
+		"Email: mytest\@example.com List Name: " . $ls->param('list_name'), 
 		"Subject: Set Correctly"
 	);
 }
 
 
-like($msg_str, qr/List Name\: $li->{list_name}/, "Found: List Name"); 
+my $list_name = $ls->param('list_name'); 
+like($msg_str, qr/List Name\: $list_name/, "Found: List Name"); 
+undef($list_name); 
+
 like($msg_str, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
 
 TODO: {
@@ -955,7 +1000,7 @@ TODO: {
 		like($msg_str, qr/Subscriber Domain\: $email_domain/, "Found: Subscriber Domain"); 
 };
 
-like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
+like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name5"); 
 
 # Reset: 
 ok(
@@ -993,13 +1038,16 @@ TODO: {
 	ok(
 		decode_header($entity->head->get('Subject', 0))
 		eq
-		"Email: mytest\@example.com List Name: $li->{list_name}", 
+		"Email: mytest\@example.com List Name: " . $ls->param('list_name'), 
 		"Subject: Set Correctly"
 	);
 };
 
 
-like($msg_str, qr/List Name\: $li->{list_name}/, "Found: List Name"); 
+my $list_name = $ls->param('list_name'); 
+like($msg_str, qr/List Name\: $list_name/, "Found: List Name"); 
+undef($list_name); 
+
 TODO: {
 	    local $TODO = 'There is, I think a bug in the test itself, dealing with an encoding issue, but this needs to be double-checked.';
 		like($msg_str, qr/List Owner Email\: $lo_name\@$lo_domain/, "Found: List Owner Email"); 
@@ -1015,7 +1063,7 @@ TODO: {
 
 };
 
-like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name"); 
+like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program Name6"); 
 
 # Reset: 
 ok(

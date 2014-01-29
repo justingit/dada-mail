@@ -414,12 +414,21 @@ sub _message_settings {
 
 sub _email_message_setting {
     my $self             = shift;
+    
     my $name             = shift;
+    
+    
+    warn 'name: ' .  $name;
+    
     my $message_settings = $self->_message_settings();
     if ( exists( $message_settings->{$name} ) ) {
+        warn "it's there!"; 
         return 1;
     }
     else {
+        
+        warn "it's not there!"; 
+               
         return 0;
     }
 }
@@ -522,7 +531,7 @@ sub _fill_in_email_message_settings {
 	
 	if(exists($message_settings->{$name})) { 
 		my $f_settings = $self->_get_message_settings($message_settings->{$name}->{'-tmpl'}); 
-		warn '$f_settings->{$message_settings->{$name}->{-part}} ' . $f_settings->{$message_settings->{$name}->{-part}}; 
+		# warn '$f_settings->{$message_settings->{$name}->{-part}} ' . $f_settings->{$message_settings->{$name}->{-part}}; 
 		return $f_settings->{$message_settings->{$name}->{-part}};
 	}
 	else { 
@@ -537,47 +546,9 @@ sub _get_message_settings {
     my $self = shift;
     my $tmpl = shift;
 
-    require MIME::Parser;
-    my $parser = new MIME::Parser;
-    $parser = optimize_mime_parser($parser);
-
-    require DADA::Template::Widgets;
-
-    my $entity = undef;
-    my $eml = DADA::Template::Widgets::_raw_screen( { -screen => 'email/' . $tmpl } );
-
-    eval { $entity = $parser->parse_data($eml); };
-    if ($@) {
-        warn "Trouble parsing $tmpl: $@";
-        return {};
-    }
-
-    require Email::Address; 
-    
-    my $to_address = $entity->head->get( 'To', 0 );
-    chomp($to_address);
-    my $to_phrase = ( Email::Address->parse($to_address) )[0]->phrase;
-
-    my $from_address = $entity->head->get( 'From', 0 );
-    chomp($from_address);
-
-    my $from_phrase = ( Email::Address->parse($from_address) )[0]->phrase;
-
-    my $subject = $entity->head->get( 'Subject', 0 );
-    chomp($subject);
-
-    my @parts          = $entity->parts;
-    my $plaintext_body = $parts[0]->bodyhandle->as_string;
-
-    my $html_body = $parts[1]->bodyhandle->as_string;
-
-    return {
-        to_phrase      => $to_phrase,
-        from_phrase    => $from_phrase,
-        subject        => $subject,
-        plaintext_body => $plaintext_body,
-        html_body      => $html_body,
-    };
+    require DADA::App::ReadMessages; 
+    my $rm = DADA::App::ReadMessages->new; 
+    return $rm->read_message($tmpl); 
 
 }
 

@@ -999,16 +999,20 @@ sub send_profile_activation_email {
       . $auth_code 
       . '/';
 
+      require DADA::App::ReadMessages; 
+      my $rm = DADA::App::ReadMessages->new; 
+      my $msg_data = $rm->read_message('profiles_activation_message.eml'); 
+  
     require DADA::App::Messages;
     DADA::App::Messages::send_generic_email(
         {
             -email   => $self->{email},
             -headers => {
-                Subject => $DADA::Config::PROFILE_ACTIVATION_MESSAGE_SUBJECT,
+                Subject => $msg_data->{subject},
                 From    => $self->_config_profile_email(1),
                 To      => $self->{email},
             },
-            -body        => $DADA::Config::PROFILE_ACTIVATION_MESSAGE,
+            -body        => $msg_data->{plaintext_body},
             -tmpl_params => {
                 -vars => {
                     auth_code                    => $auth_code,
@@ -1042,17 +1046,23 @@ sub send_profile_reset_password_email {
     . '/'
     . $auth_code 
     . '/';
+    
+    require DADA::App::ReadMessages; 
+    my $rm = DADA::App::ReadMessages->new; 
+    my $msg_data = $rm->read_message('profiles_reset_password_message.eml'); 
+    
+    
     require DADA::App::Messages;
     DADA::App::Messages::send_generic_email(
         {
             -email   => $self->{email},
             -headers => {
                 Subject =>
-                  $DADA::Config::PROFILE_RESET_PASSWORD_MESSAGE_SUBJECT,
+                  $msg_data->{subject}, 
                 From => $self->_config_profile_email(1),
                 To   => $self->{email},
             },
-            -body        => $DADA::Config::PROFILE_RESET_PASSWORD_MESSAGE,
+            -body        => $msg_data->{plaintext_body},
             -tmpl_params => {
                 -vars => {
                     auth_code                             => $auth_code,
@@ -1123,17 +1133,22 @@ sub send_update_profile_email_email {
 	
 	my $info = $self->get({-dotted => 1}); 
 	
+	
+	require DADA::App::ReadMessages; 
+    my $rm = DADA::App::ReadMessages->new; 
+    my $msg_data = $rm->read_message('profiles_update_email_message.eml'); 
+    
 	require DADA::App::Messages;
     DADA::App::Messages::send_generic_email(
         {
             -email   => $args->{-updated_email},
             -headers => {
                 Subject =>
-                  $DADA::Config::PROFILE_UPDATE_EMAIL_MESSAGE_SUBJECT,
+                  $msg_data->{subject},
                 From => $self->_config_profile_email(1),
                 To   => $args->{-updated_email},
             },
-            -body        => $DADA::Config::PROFILE_UPDATE_EMAIL_MESSAGE,
+            -body        => $msg_data->{plaintext_body},
             -tmpl_params => {
                 -vars => {
                     'profile.update_email_auth_code' => $args->{-update_email_auth_code},
@@ -1170,15 +1185,20 @@ sub send_update_email_notification {
 	}
 	my $info = $self->get({-dotted => 1}); 
 	
+	require DADA::App::ReadMessages; 
+    my $rm = DADA::App::ReadMessages->new; 
+    my $msg_data = $rm->read_message('profiles_email_updated_notification_message.eml'); 
+    
+
 	require DADA::App::Messages;
     DADA::App::Messages::send_generic_email(
         {
             -headers => {
-                Subject => $DADA::Config::PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE_SUBJECT,
+                Subject => $msg_data->{subject},
                 From => $self->_config_profile_email(1),
                 To   => $self->_config_profile_email,
             },
-            -body        => $DADA::Config::PROFILE_EMAIL_UPDATED_NOTIFICATION_MESSAGE,,
+            -body        => $msg_data->{plaintext_body},
             -tmpl_params => {
                 -vars => {
 					'profile.prev_email'             => $args->{-prev_email}, 

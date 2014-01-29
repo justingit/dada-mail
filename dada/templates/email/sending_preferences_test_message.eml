@@ -1,0 +1,45 @@
+Content-Type: multipart/alternative; boundary="----------=_1390956260-9049-0"
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+X-Mailer: MIME-tools 5.502 (Entity 5.502)
+To: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+From: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+Subject: Sending Preference Test Email for, <!-- tmpl_var list_settings.list_name
+ -->
+
+This is a multi-part message in MIME format...
+
+------------=_1390956260-9049-0
+Content-Type: text/plain
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+Hello, <!-- tmpl_var list_settings.list_owner_email -->, 
+
+This message was sent out by <!-- tmpl_var PROGRAM_NAME --> to test out mail sending for the mailing list, 
+
+		<!-- tmpl_var list_settings.list_name --> 
+		
+If you've received this message, it looks like mail sending is working. 
+
+<!-- tmpl_if expr="(list_settings.sending_method eq 'sendmail')" --> 
+	* Mail is being sent via the sendmail command
+<!--/tmpl_if -->
+<!-- tmpl_if expr="(list_settings.sending_method eq 'smtp')" --> 
+	* Mail is being sent via SMTP
+<!--/tmpl_if --> 
+<!-- tmpl_if expr="(list_settings.sending_method eq 'amazon_ses')" --> 
+	* Mail is being sent via Amazon Simple Email Service
+<!--/tmpl_if -->
+
+-- <!-- tmpl_var PROGRAM_NAME -->
+
+
+------------=_1390956260-9049-0
+Content-Type: text/html
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+------------=_1390956260-9049-0--

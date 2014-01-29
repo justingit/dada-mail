@@ -1000,6 +1000,11 @@ sub sending_preferences_test {
     my $orig_debug_pop3                          = $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3}; 
     $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3} = 1; 
 
+    require DADA::App::ReadMessages; 
+    my $rm = DADA::App::ReadMessages->new; 
+    my $msg_data = $rm->read_message('sending_preferences_test_message.eml'); 
+	
+	
 	require DADA::App::Messages; 
 	DADA::App::Messages::send_generic_email(
 		{
@@ -1007,9 +1012,9 @@ sub sending_preferences_test {
 			-headers => { 
 				To              => $self->{ls}->param('list_owner_email'),
 				From            => $self->{ls}->param('list_owner_email'), 
-			    Subject         => $DADA::Config::SENDING_PREFS_MESSAGE_SUBJECT,
+			    Subject         => $msg_data->{subject},
 			}, 
-			-body => $DADA::Config::SENDING_PREFS_MESSAGE,
+			-body => $msg_data->{plaintext_body},
 			-tmpl_params => {
 				
 				-list_settings_vars_param => {
@@ -2824,19 +2829,26 @@ sub _email_batched_finished_notification {
 
     my $total_time =
       $self->_formatted_runtime( ( $args{-end_time} - $args{-start_time} ) );
+      
+      require DADA::App::ReadMessages; 
+      my $rm = DADA::App::ReadMessages->new; 
+      my $msg_data = $rm->read_message('mass_mailing_finished_notification.eml'); 
+  	
+  	
+
 
     require MIME::Entity;
     my $entity = MIME::Entity->build(
         Type => 'multipart/mixed',
         To   => safely_encode( $fm->format_phrase_address('List Owner For ' . $self->{ls}->param('list_name'), $self->{ls}->param('list_owner_email'))),
-        Subject  => safely_encode( $DADA::Config::MAILING_FINISHED_MESSAGE_SUBJECT),
+        Subject  => safely_encode( $msg_data->{subject}),
         Datestamp => 0,
 
     );
 
     $entity->attach(
         Type        => 'text/plain',
-        Data        =>  safely_encode( $DADA::Config::MAILING_FINISHED_MESSAGE),
+        Data        =>  safely_encode( $msg_data->{plaintext_body}),
         Encoding    => $self->{ls}->param('plaintext_encoding'),
         Disposition => 'inline',
 

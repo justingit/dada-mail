@@ -21,7 +21,7 @@ BEGIN {
 
 use CGI::Carp qw(fatalsToBrowser); 
 use Carp; 
-$Carp::Verbose = 1;
+#$Carp::Verbose = 1;
 use CGI qw(:standard); 
 use DADA::Config;
 use DADA::App::Guts; 

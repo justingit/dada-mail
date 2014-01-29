@@ -458,21 +458,21 @@ ok($t_msg =~ m/$endif/,'found the [endif] tag');
 #    ),
 #    "found unsub link in html mailing list message!"
 #);
-ok(
-    $fm->can_find_unsub_link(
-        { -str => $DADA::Config::LIST_SETUP_DEFAULTS{mailing_list_message} }
-    ),
-    "found unsub link in text  mailing list message(2)!"
-);
-ok(
-    $fm->can_find_unsub_link(
-        {
-            -str =>
-              $DADA::Config::LIST_SETUP_DEFAULTS{mailing_list_message_html}
-        }
-    ),
-    "found unsub link in html mailing list message(2)!"
-);
+#ok(
+#    $fm->can_find_unsub_link(
+#        { -str => $DADA::Config::LIST_SETUP_DEFAULTS{mailing_list_message} }
+#    ),
+#    "found unsub link in text  mailing list message(2)!"
+#);
+#ok(
+#    $fm->can_find_unsub_link(
+#        {
+#            -str =>
+#              $DADA::Config::LIST_SETUP_DEFAULTS{mailing_list_message_html}
+#        }
+#    ),
+#    "found unsub link in html mailing list message(2)!"
+#);
 ok( $fm->can_find_unsub_link( { -str => 'nothing', } ) == 0,
     "but not in a random string" );
 ok(
@@ -508,13 +508,13 @@ ok(
 #    ),
 #    "found sub confirm link in sub confirm message!"
 #);
-
-ok(
-    $fm->can_find_sub_confirm_link(
-        { -str => $DADA::Config::LIST_SETUP_DEFAULTS{confirmation_message}, }
-    ),
-    "found sub confirm link in sub confirm message(2)!"
-);
+#
+#ok(
+#    $fm->can_find_sub_confirm_link(
+#        { -str => $DADA::Config::LIST_SETUP_DEFAULTS{confirmation_message}, }
+#    ),
+#    "found sub confirm link in sub confirm message(2)!"
+#);
 
 ok( $fm->can_find_sub_confirm_link( { -str => 'nothin', } ) == 0,
     "did not find it in random string" );
@@ -529,13 +529,13 @@ ok(
     "but did find it, once string was run through the ation thing"
 );
 
-# unsub confirm email
-ok(
-    $fm->can_find_unsub_confirm_link(
-        { -str => $DADA::Config::UNSUBSCRIPTION_REQUEST_MESSAGE, }
-    ),
-    "found unsub confirm link in html mailing list message!"
-);
+## unsub confirm email
+#ok(
+#    $fm->can_find_unsub_confirm_link(
+#        { -str => $DADA::Config::UNSUBSCRIPTION_REQUEST_MESSAGE, }
+#    ),
+#    "found unsub confirm link in html mailing list message!"
+#);
 
 ok( $fm->can_find_unsub_confirm_link( { -str => 'nothing', } ) == 0,
     "but not in a random string" );

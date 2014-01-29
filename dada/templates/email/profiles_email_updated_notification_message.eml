@@ -1,0 +1,36 @@
+Content-Type: multipart/alternative; boundary="----------=_1390955141-8820-0"
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+X-Mailer: MIME-tools 5.502 (Entity 5.502)
+To: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+From: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+Subject: Profile Email Update Notification, From: <!-- tmpl_var
+ profile.prev_email -->, To: <!-- tmpl_var profile.email -->
+
+This is a multi-part message in MIME format...
+
+------------=_1390955141-8820-0
+Content-Type: text/plain
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+Hello, a Profile's address has been updated from: 
+
+	<!-- tmpl_var profile.prev_email -->
+	
+to: 
+
+	<!-- tmpl_var profile.email -->
+
+This change will have affected all mailing lists that this is allowed, 
+
+-- <!-- tmpl_var PROGRAM_NAME -->
+
+------------=_1390955141-8820-0
+Content-Type: text/html
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+------------=_1390955141-8820-0--

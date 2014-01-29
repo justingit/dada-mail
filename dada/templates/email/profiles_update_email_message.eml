@@ -1,0 +1,39 @@
+Content-Type: multipart/alternative; boundary="----------=_1390954955-8779-0"
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+X-Mailer: MIME-tools 5.502 (Entity 5.502)
+To: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+From: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+Subject: Profile Update Email Authorization Code for, <!-- tmpl_var
+ profile.email -->
+
+This is a multi-part message in MIME format...
+
+------------=_1390954955-8779-0
+Content-Type: text/plain
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+Hello, here's the authorization link to update your <!-- tmpl_var PROGRAM_NAME --> Profile email address from: 
+
+	<!-- tmpl_var profile.email --> 
+	
+to: 
+
+	<!-- tmpl_var profile.updated_email --> 
+	
+Please click the link below to make this update: 	
+
+<!-- tmpl_var app.profile_update_email_link -->
+
+-- <!-- tmpl_var PROGRAM_NAME -->
+
+
+------------=_1390954955-8779-0
+Content-Type: text/html
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+------------=_1390954955-8779-0--

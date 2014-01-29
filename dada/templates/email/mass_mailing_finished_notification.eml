@@ -1,0 +1,38 @@
+Content-Type: multipart/alternative; boundary="----------=_1390955753-8932-0"
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+X-Mailer: MIME-tools 5.502 (Entity 5.502)
+To: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+From: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
+Subject: <!-- tmpl_var list_settings.list_name -->  Mailing Complete -
+ <!-- tmpl_var message_subject -->
+
+This is a multi-part message in MIME format...
+
+------------=_1390955753-8932-0
+Content-Type: text/plain
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+Your mailing list's mass mailing has completed. 
+-----------------------------------------------------------------------
+This mass mailing has reached: <!-- tmpl_var addresses_sent_to --> e-mail address(es)
+
+Mailing Started:    <!-- tmpl_var mailing_start_time -->
+Mailing Ended:      <!-- tmpl_var mailing_finish_time -->
+Total Mailing Time: <!-- tmpl_var total_mailing_time -->
+Last Email Sent to: <!-- tmpl_var last_email_send_to -->
+
+A copy of the mailing list message has been attached.
+
+-<!-- tmpl_var PROGRAM_NAME -->
+
+
+------------=_1390955753-8932-0
+Content-Type: text/html
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+------------=_1390955753-8932-0--
