@@ -25,6 +25,10 @@ Key:
     		make this painless
     		Added bonus! Ability to use outside sending APIs! Amazon SES,  PostMark, etc. 
 
+[ ] Integration w/StopForumSpam
+    Here's some discussion:
+    http://dadamailproject.com/support/boards/viewtopic.php?f=9&t=4066&p=14868
+    http://stopforumspam.com
 
 [ ] SES: Get list of verified senders - warn! (somewhere if list owner/list admin is NOT a verified sender, 
 and perhaps have some sort of fallback, so that mail just doesn't stop. 
