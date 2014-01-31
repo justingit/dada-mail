@@ -236,9 +236,17 @@ The errror, B<already_sent_sub_confirmation> will have an associated C<error_des
 
 =head2 JSONP
 
-This API also supports sending a request using JSONP. If using JSONP, make sure to append the PATH INFO, with the query string, setting the name of your callback, like this: 
+This API also supports sending a request using JSONP. 
 
-    http://example.com/cgi-bin/dada/mail.cgi/json/subscribe?callback=mycustomcallback
+If using JSONP, make sure to append the PATH INFO, with the query string, setting the name of your callback, like this: 
+
+http://example.com/cgi-bin/dada/mail.cgi/json/subscribe?callback=mycustomcallback
+
+Sending data over via B<POST> is not supported in JSONP, in general, so you'll want to send over the fields you usually would send as a JSON payload, in the query string, as well. Along with the usual fields, C<list>, C<email>, etc, you'll want to send another field called, C<_method> with a value of, C<GET>. This is to tell Dada Mail you're sending a, B<JSONP> request. 
+
+The entire query string could look like this:
+
+http://example.com/cgi-bin/dada/mail.cgi/json/subscribe?callback=mycustomcallback&_method=GET&list=mylist&email=user@example.com
 
 The JSONP document will be returned, encapsulated by the callback function name: 
 
@@ -260,19 +268,18 @@ custom redirects, as well as any needed redirects for additional user input:
 
 	$.ajax({
 		url: 'http://example.com/cgi-bin/dada/mail.cgi/json/subscribe',
-		type: "POST",
+		type: "GET",
 		dataType: "jsonp",
 		cache: false,
-		data: JSON.stringify(
-			{ 
-				list:  'mylist',
-				email: 'test@example.com',
-				fields: { 
-					first_name: 'Jason', 
-					last_name: 'Example'
-				}
-			 }
-		),
+		data: {
+	        _method: 'GET', 
+			list:  'mylist',
+			email: 'test@example.com',
+			fields: { 
+				first_name: 'Jason', 
+				last_name: 'Example'
+			}
+		},
 	    contentType: "application/json; charset=UTF-8",
 		success: function(data) {
 			console.log('data:' + JSON.stringify(data)); 
@@ -412,7 +419,7 @@ The jQuery plugin has two "methods" you may use.
 		
 	}); 
 
-This will place a subscription form in a div with the id of, B<mydiv>
+B<CreateSubscribeForm> will place a subscription form in a div with the id of, B<mydiv>
 
 =head3 Initialization Paramaters
 
@@ -506,6 +513,28 @@ B<email> is the form field used by your user, to type in their email address in.
 =back
 
 The B<action> of the form also should be the URL to your Dada Mail (C<http://example.com/cgi-bin/dada/mail.cgi>). If done correctly, the form alone should make a successful request to your Dada Mail install, thus working even if JavaScript has been disabled. 
+
+=head3 Shared Optional Paramaters
+
+Both these two methods may pass these optional paramaters during initialization: 
+
+=over
+
+=item * mode
+
+B<mode> may be set to either, C<json> to send a json request, or C<jsonp> to send a jsonp request. By default, this paramater is set to, C<jsonp>. 
+
+jsonp will need to be used when you want to use a subscription for across different domains. 
+
+=item * LoadingMessage
+
+B<LoadingMessage> holds HTML text, that's then shown as a, "loading..." message, while the request is sent to Dada Mail. 
+
+=item * LoadingError
+
+B<LoadingError> holds HTML text, that's then shown if there's a communication problem with Dada Mail. 
+
+=back
 
 =head1 Perl API
 
