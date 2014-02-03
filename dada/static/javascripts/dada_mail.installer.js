@@ -272,8 +272,9 @@ function test_amazon_ses_configuration() {
 		cache: false,
 		data: {
 			f: 'cgi_test_amazon_ses_configuration',
-			amazon_ses_AWSAccessKeyId: $("#amazon_ses_AWSAccessKeyId").val(), 
-			amazon_ses_AWSSecretKey: $("#amazon_ses_AWSSecretKey").val()
+			amazon_ses_AWS_endpoint:   $("#amazon_ses_AWS_endpoint").val(), 
+			amazon_ses_AWSSecretKey:   $("#amazon_ses_AWSSecretKey").val(),
+			amazon_ses_AWSAccessKeyId: $("#amazon_ses_AWSAccessKeyId").val() 
 		},
 		dataType: "html"
 	});

@@ -34,7 +34,6 @@ use XML::LibXML;
 
 #use Time::HiRes qw(gettimeofday);
 
-my $endpoint          = 'https://email.us-east-1.amazonaws.com/';
 my $service_version   = '2010-12-01';
 my $tools_version     = '1.1';
 my $signature_version = 'HTTP';
@@ -51,6 +50,7 @@ my %allowed = (
     creds          => '',
 	AWSAccessKeyId => undef, 
 	AWSSecretKey   => undef, 
+	AWS_endpoint   => 'https://email.us-east-1.amazonaws.com/', 
     trace          => 0,
     encode_utf8    => 1,
 );
@@ -107,6 +107,12 @@ sub _init {
 	if(exists($args->{AWSSecretKey})) { 
 		$self->AWSSecretKey($args->{AWSSecretKey}); 
 	}
+	
+	if(exists($args->{AWS_endpoint})) { 
+		$self->AWS_endpoint($args->{AWS_endpoint}); 
+	}
+
+
     $self->creds( $args->{-creds} );
 }
 
@@ -129,7 +135,7 @@ sub verify_sender {
 	my ($args) = @_; 
 	
 	if(!exists($args->{-email})) { 
-		croak "You MUST pass the, '-email' parameter!"; 
+		croak "You MUST pass the, '-email' paramater!"; 
 	}
 	
 	my $params = {
@@ -182,7 +188,7 @@ sub get_stats {
 	my $params = {
         Action => 'GetSendQuota', 
 	};
-	
+
 	my ($response_code, $response_content) = $self->call_ses($params, {});
 		if ( $self->trace ) {
 			print $response_code . "\n"; 
@@ -427,7 +433,7 @@ sub get_signature_v2 {
     $params{'SignatureMethod'}  = 'HmacSHA256';
     $params{'SignatureVersion'} = '2';
 
-    my $endpoint_name = $endpoint;
+    my $endpoint_name = $self->AWS_endpoint;
     $endpoint_name =~ s!^https?://(.*?)/?$!$1!;
 
     my $data = '';
@@ -520,14 +526,14 @@ sub sign_http {
 
     my $request = shift;
 
-    my $endpoint_name = $endpoint;
+    my $endpoint_name = $self->AWS_endpoint;
     $endpoint_name =~ s!^https?://(.*?)/?$!$1!;
 
     $request->date(time);
     $request->header( 'Host', $endpoint_name );
 
     my $signature;
-    my $use_https = $endpoint =~ m!^https://!;
+    my $use_https = $self->AWS_endpoint =~ m!^https://!;
     if ($use_https) {
         $signature = $self->sign_https_request($request);
     }
@@ -567,10 +573,16 @@ sub call_ses {
 
     %opts   = %$opts;
     %params = %$params;
-
-    $endpoint = $opts{'e'} if defined( $opts{'e'} );
-    my $endpoint_name = $endpoint;
+    
+    if(defined( $opts{'e'} )) { 
+         $self->AWS_endpoint($opts{'e'});
+    }
+    
+    warn '$self->AWS_endpoint ' . $self->AWS_endpoint; 
+    
+    my $endpoint_name = $self->AWS_endpoint;
     $endpoint_name =~ s!^https?://(.*?)(:\d+)?/?$!$1!;
+	
 	if(! defined($self->AWSAccessKeyId ) || ! defined($self->AWSSecretKey)) { 
 		$self->read_credentials;
 	}
@@ -595,7 +607,7 @@ sub call_ses {
         $browser = $self->browser;
     }
 
-    my $request = new HTTP::Request 'POST', $endpoint;
+    my $request = new HTTP::Request 'POST', $self->AWS_endpoint;
     $request->header( "If-SSL-Cert-Subject" => "/CN=$endpoint_name" );
     $request->content($payload);
     $request->content_type('application/x-www-form-urlencoded');

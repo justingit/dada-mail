@@ -10,6 +10,9 @@ Key:
 [*] Naw...
 [?] Someday
 
+
+[ ] SES: endpoints need to now be selected. Sigh. 
+
 [ ] Enable Private Mailing Lists 
 	[ ] No need for Unsubscription Links
 		[ ] or headers
