@@ -66,11 +66,6 @@
 			
 			
 			event.preventDefault();
-			var fields = {};
-
-			$("#" + copythis._targetForm + " :input").each(function() {
-				fields[this.name] = this.value;
-			}); 
 					
 			$.colorbox({
 				html: copythis._loadingMsg,
@@ -91,12 +86,23 @@
 					_method: "GET",  
 					list:  $("#" + copythis._targetForm + " :input[name='list']").val(),
 					email: $("#" + copythis._targetForm + " :input[name='email']").val(),
-					fields: fields
 				};
 				
+				$("#" + copythis._targetForm + " :input").each(function() {
+					if(this.name != 'list' && this.name != 'email' && this.name != 'f') { 
+						using_data[this.name] = this.value;
+					}
+				}); 
 			}
 			else if(copythis._mode == 'json') { 
-				
+
+				var fields = {};
+				$("#" + copythis._targetForm + " :input").each(function() {
+					if(this.name != 'list' && this.name != 'email' && this.name != 'f') { 
+						fields[this.name] = this.value;
+					}
+				}); 
+								
 				using_data = JSON.stringify(
 					using_data = {
 						list:  $("#" + copythis._targetForm + " :input[name='list']").val(),
@@ -122,7 +128,7 @@
 					console.log('data:' + JSON.stringify(data)); 
 					var html = ''; 
 					if(data.status === 0){ 												
-						$.each(data.errors, function(index, value..) {
+						$.each(data.errors, function(index, value) {
 							console.log(index + ': ' + value);
 						});
 						$.each(data.error_descriptions, function(index, value) {

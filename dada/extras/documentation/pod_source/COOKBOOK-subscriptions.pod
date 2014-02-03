@@ -242,11 +242,13 @@ If using JSONP, make sure to append the PATH INFO, with the query string, settin
 
 http://example.com/cgi-bin/dada/mail.cgi/json/subscribe?callback=mycustomcallback
 
-Sending data over via B<POST> is not supported in JSONP, in general, so you'll want to send over the fields you usually would send as a JSON payload, in the query string, as well. Along with the usual fields, C<list>, C<email>, etc, you'll want to send another field called, C<_method> with a value of, C<GET>. This is to tell Dada Mail you're sending a, B<JSONP> request. 
+Sending data over via B<POST> is not supported in JSONP, in general, so you'll want to send over the fields you usually would send as a JSON payload, in the query string, as well. 
+
+Along with the usual fields, C<list>, C<email>, etc, you'll want to send another field called, C<_method> with a value of, C<GET>. This is to tell Dada Mail you're sending a, B<JSONP> request. 
 
 The entire query string could look like this:
 
-http://example.com/cgi-bin/dada/mail.cgi/json/subscribe?callback=mycustomcallback&_method=GET&list=mylist&email=user@example.com
+http://example.com/cgi-bin/dada/mail.cgi/json/subscribe?callback=mycustomcallback&_method=GET&list=mylist&email=user@example.com&first_name=Jason&last_name=Example
 
 The JSONP document will be returned, encapsulated by the callback function name: 
 
@@ -275,10 +277,8 @@ custom redirects, as well as any needed redirects for additional user input:
 	        _method: 'GET', 
 			list:  'mylist',
 			email: 'test@example.com',
-			fields: { 
-				first_name: 'Jason', 
-				last_name: 'Example'
-			}
+			first_name: 'Jason', 
+			last_name: 'Example'
 		},
 	    contentType: "application/json; charset=UTF-8",
 		success: function(data) {
