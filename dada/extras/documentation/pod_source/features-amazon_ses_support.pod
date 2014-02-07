@@ -35,7 +35,7 @@ Dada Mail's included Bounce Handler has rules specifically for Amazon SES, and w
 
 =head1 Configuration
 
-During installation of Dada Mail, you'll need to plug in your B<AWS Access Key ID> and B<AWS Secret Access Key>.
+During installation of Dada Mail, you'll need to plug in your B<AWS Access Key ID> and B<AWS Secret Access Key>. You may also choose a B<AWS Region/Endpoint>
 
 Getting this all set up is fairly easy in the Amazon AWS control panel, although the steps are a little more numbered than we'd like them to be. Amazon AWS covers a plethora of different services. 
 

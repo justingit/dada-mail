@@ -1,5 +1,75 @@
 =pod
 
+=head1 6.8.1
+
+=head2 Summary 6.8.1
+
+This is a bug-release focused release.
+
+=head2 Changes 6.8.1
+
+=head3 Dada Mail distro now hosted on Sourceforge
+
+We've moved the Dada Mail distro download from Google Code to Sourcefore, as Google Code does not allow new downloads to be created.
+
+=head3 json and jsonp clarifications
+
+Dada Mail's jQuery plugin for subscribing to a mailing list had a fairly big problem, if you wanted to use it in a cross domain setup. Since it was calling the RESTful API using jsonp and sending data via POST, the POST payload would not actually work, as jsonp only supports sending information via GET.
+
+We've adjusted the plugin and the RESTful API to work correctly when accessing it either with the json and jsonp method. See the docs on the jQuery plugin for more details on any modifications you may have to do to your own code: 
+
+L<http://dadamailproject.com/d/COOKBOOK-subscriptions.pod.html#jQuery-Plugin>
+
+=head3 Amazon SES New Endpoint/Region Support
+
+Amazon SES recently gave support to use the service with new regions, Dada Mail now supports the three new regions that now also support SES. 
+
+=head3 List-Unsubscribe Header
+
+We've changed the C<List-Unsubscribe> header to include both a mailto: link set to the List Owner's email address, as well as the full List-Unsubscribe URL. 
+
+Past versions only included the List-Unsubscribe URL. 
+
+=head3 Log Viewer: Timestamps/Labels Fixed for Mass Mailing Logs
+
+v6.8.0 introduced support to save the mass mailing logs Dada Mail creates, when sending out a mass mailing. Earlier versions just deleted this log, when the mass mailing was finished/canceled. Because this log could provide an interesting insight on how the mass mailing went, we made it an option to save the log to look at later, using the Log Viewer plugin that comes with Dada Mail. 
+
+Unfortunetly, we goofed on actually displaying the date the mass mailing was sent on, in the Log Viewer's pulldown menu - the date shown would probably be something completely random, making the job of figuring out which log went to what mass mailing difficult. 
+
+This should now be fixed. 
+
+=head3 .htaccess in file uploads directory
+
+We've changed the directives in the .htaccess file used to keep the file uploads directory secure. The old directives looked a little like this: 
+
+    <IfModule mod_php4.c>
+    php_value engine off
+    </IfModule>
+    <IfModule mod_php5.c>
+    php_value engine off
+    </IfModule>
+
+Which potentially won't do I<anything>. 
+
+It now looks more like this: 
+
+    +Options -ExecCGI
+    +AddType text/plain .php .phtml .php3 .pl .cgi
+
+=head3 Confirmation Dialog box when only archiving a message
+
+Past versions of Dada Mail would show a confirmation dialog box, asking if you want to, "Send Mass Mailing?" when you wanted to simply archive a message, and not send it out. Clicking, "OK" would still only archive the message, but the label on the dialog box was still incorrect. It now simply states, "Archive Message?" if all you are doing is archiving a message.
+
+=head2 Bugfixes 6.8.1
+
+=head3 Archive Index Previous/Next links not shown
+
+L<https://github.com/justingit/dada-mail/issues/419>
+
+=head3 Authorised senders get an error from bridge.cgi
+
+L<https://github.com/justingit/dada-mail/issues/420>
+
 =head1 6.8.0
 
 =head2 Features 6.8.0
