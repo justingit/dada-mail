@@ -7769,59 +7769,74 @@ sub restful_subscribe {
 
     require JSON;
     my $json = JSON->new->allow_nonref;
-    if ( !$q->content_type || $q->content_type =~ m/text\/html/ ) {
-
+    
+    my $using_jsonp = 0; 
+    
+    if($q->param('_method') eq 'GET' && $q->url_param('callback')) { 
+        # that's OK - it's a jsonp call.
+        $using_jsonp = 1; 
+    }
+    elsif ( $q->content_type =~ m/application\/json/ ) {
+        # That's OK too - we support getting the params you send us in POST
+    }
+    elsif ( !$q->content_type || $q->content_type =~ m/text\/html/ ) {
         # RTFM!
         my $api_doc_url = 'http://dadamailproject.com/d/COOKBOOK-subscriptions.pod.html#restful_api';
         print $q->header();
         print '<p>API Documentation: <a href="' . $api_doc_url . '"/>' . $api_doc_url . '</a></p>';
         return;
     }
-    elsif ( $q->content_type =~ m/application\/json/ ) {
-
-        # well. OK, then.
-    }
     else {
         die '425';
     }
-    my $post_data = $q->param('POSTDATA');
-
-    my $data = undef;
-    try {
-        $data = $json->decode($post_data);
-    }
-    catch {
-        die '400';
-    };
-
-    my $new_q = CGI->new;
-    $new_q->charset($DADA::Config::HTML_CHARSET);
-
-    $new_q->delete_all;
-
-    $new_q->param( 'list',   $data->{list} );
-    $new_q->param( 'email',  $data->{email} );
-    $new_q->param( 'f',      'subscribe' );
-    $new_q->param( 'flavor', 'subscribe' );
-
-    require DADA::ProfileFieldsManager;
-    my $pfm = DADA::ProfileFieldsManager->new;
-
-    # Profile Fields
-    for ( @{ $pfm->fields } ) {
-        if ( exists( $data->{fields}->{$_} ) ) {
-            $new_q->param( $_, $data->{fields}->{$_} );
+    
+    my $new_q = undef; 
+    if($using_jsonp == 0) { 
+        
+        my $post_data = $q->param('POSTDATA');
+        my $data = undef;
+        try {
+            $data = $json->decode($post_data);
         }
+        catch {
+            die '400';
+        };
+
+        $new_q = CGI->new;
+        $new_q->charset($DADA::Config::HTML_CHARSET);
+
+        $new_q->delete_all;
+
+        $new_q->param( 'list',   $data->{list} );
+        $new_q->param( 'email',  $data->{email} );
+        $new_q->param( 'f',      'subscribe' );
+        $new_q->param( 'flavor', 'subscribe' );
+        
+        require DADA::ProfileFieldsManager;
+        my $pfm = DADA::ProfileFieldsManager->new;
+
+        # Profile Fields
+        for ( @{ $pfm->fields } ) {
+            if ( exists( $data->{fields}->{$_} ) ) {
+                $new_q->param( $_, $data->{fields}->{$_} );
+            }
+        }
+    }
+    else { 
+        $new_q = $q; 
     }
 
     require DADA::App::Subscriptions;
     my $das = DADA::App::Subscriptions->new;
-
-    my $callback = xss_filter( strip( $q->url_param('callback') ) ) || undef;
-
+    
+    my $callback = undef; 
+    if($using_jsonp) { 
+        $callback = xss_filter( strip( $q->url_param('callback') ) );
+    }
+    
     my $header = undef;
 
-    if ($callback) {
+    if ($using_jsonp) {
         $header = $new_q->header(
             -type                          => 'application/javascript',
             'Access-Control-Allow-Origin'  => '*',
@@ -7852,14 +7867,11 @@ sub restful_subscribe {
 
     print $header;
 
-    if ($callback) {
+    if ($using_jsonp) {
         e_print( $callback . '(' . $json . ');' );
     }
     else {
         e_print( $json, "\n" );
-
-        # warn 'no callback: ' . $json, "\n";
-
     }
 
 }

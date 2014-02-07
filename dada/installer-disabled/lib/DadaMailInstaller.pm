@@ -1036,6 +1036,10 @@ sub grab_former_config_vals {
 		$local_q->param('configure_amazon_ses', 1);
 		$local_q->param('amazon_ses_AWSAccessKeyId', $BootstrapConfig::AMAZON_SES_OPTIONS->{AWSAccessKeyId});
 		$local_q->param('amazon_ses_AWSSecretKey',   $BootstrapConfig::AMAZON_SES_OPTIONS->{AWSSecretKey});
+		
+		if(exists($BootstrapConfig::AMAZON_SES_OPTIONS->{AWS_endpoint})) { 
+    		$local_q->param('amazon_ses_AWS_endpoint', $BootstrapConfig::AMAZON_SES_OPTIONS->{AWS_endpoint});
+		}
 	}
 
 	
@@ -1706,6 +1710,7 @@ sub create_dada_config_file {
 	my $amazon_ses_params = {}; 
 	if($q->param('configure_amazon_ses') == 1){ 
 		$amazon_ses_params->{configure_amazon_ses} = 1; 
+		$amazon_ses_params->{AWS_endpoint}   = strip($q->param('amazon_ses_AWS_endpoint'));		
 		$amazon_ses_params->{AWSAccessKeyId} = strip($q->param('amazon_ses_AWSAccessKeyId'));
 		$amazon_ses_params->{AWSSecretKey}   = strip($q->param('amazon_ses_AWSSecretKey')); 
 	}
@@ -3060,6 +3065,8 @@ sub cgi_test_amazon_ses_configuration {
 	
 	my $amazon_ses_AWSAccessKeyId = strip($q->param('amazon_ses_AWSAccessKeyId')); 
 	my $amazon_ses_AWSSecretKey   = strip($q->param('amazon_ses_AWSSecretKey')); 
+	my $amazon_ses_AWS_endpoint   = strip($q->param('amazon_ses_AWS_endpoint')); 
+     
 	my ($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ); 
 	
 	eval { 
@@ -3067,7 +3074,8 @@ sub cgi_test_amazon_ses_configuration {
 		my $ses = DADA::App::AmazonSES->new; 
 		($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats(
 			{ 
-				AWSAccessKeyId => $amazon_ses_AWSAccessKeyId, 
+			    AWS_endpoint    => $amazon_ses_AWS_endpoint, 
+				AWSAccessKeyId  => $amazon_ses_AWSAccessKeyId, 
 				AWSSecretKey    => $amazon_ses_AWSSecretKey, 
 			}
 		); 

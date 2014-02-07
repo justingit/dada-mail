@@ -1920,6 +1920,7 @@ sub validate_msg {
             if ( $ls->param('authorized_sending_no_moderation') ) {
                 $errors->{needs_moderation} = 0;
                 print "\t\t* Moderation is not required for Authorized Senders.\n"
+                    if $verbose; 
             }
             elsif ( $errors->{needs_moderation} == 1 ) {
                 print "\t\t* Moderation required.\n"

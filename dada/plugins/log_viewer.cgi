@@ -500,7 +500,8 @@ sub mass_mailing_logs {
     require DADA::MailingList::Archives; 
     my $ma = DADA::MailingList::Archives->new({-list => $list});
     foreach my $found_file(@files) { 
-        my ($throway, $list_shortname, $mailing_type, $mid) = split('-', $found_file, 4);       
+        my ($throway, $list_shortname, $mailing_type, $mid, $orig_fn) = split('-', $found_file, 5);   
+        
         $mid =~ s/\.(.*?)$//; 
               
         my $subject = 'Mass Mailing: ';       
@@ -516,8 +517,14 @@ sub mass_mailing_logs {
             $subject .= '(' . $mailing_type . ')' . ' Message # ' . $mid; 
         }
         
-        my $date = scalar(localtime($mid)); 
-        $subject .= ', ' . $date; 
+        #my $date = scalar(localtime($mid)); 
+        my $date = date_this(
+            -Packed_Date => $mid, 
+            -All         => 1
+        ); 
+        
+        $subject .= ', ' . $date;
+        
         $mass_mailing_logs->{$subject} = $DADA::Config::LOGS . '/' . $found_file;
     }
     

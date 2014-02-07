@@ -10,26 +10,39 @@ Key:
 [*] Naw...
 [?] Someday
 
+
+[ ] SES: endpoints need to now be selected. Sigh. 
+
 [ ] Enable Private Mailing Lists 
 	[ ] No need for Unsubscription Links
 		[ ] or headers
-	[ ] Request Removal
-	
+	[ ] Request Removal	
 	[ ] DateTime col. in subscribers table
 	
-[ ] Tracker should put #'s in the tabs, on the per-mass mailing screens. That way, I don't have to click around, to see what's up. 
-	
+
+    PRIVATE: allows mass subscriptions via the list control panel, and other non-closed-loop opt in stuff
+    		 Allows you to hide your list 
+    		 YOU ARE responsible for making sure you follow things. 
+    Public: Cannot have mass subscriptions via the list control panel - MUST use closed-loop opt in stuff
+    	    Cannot hide your list 
+    		Still responsible to make sure you follow the rules, but Dada Mail will do its best to 
+    		make this painless
+    		Added bonus! Ability to use outside sending APIs! Amazon SES,  PostMark, etc. 
+
+[ ] Integration w/StopForumSpam
+    Here's some discussion:
+    http://dadamailproject.com/support/boards/viewtopic.php?f=9&t=4066&p=14868
+    http://stopforumspam.com
+
+
+
 [ ] Track UserAgents to find browser/desktop/email or what type of device. (look at litmus)
 [ ] Voting widget (thumbs up/down) on newsletters
 Lists will need to have two ways of opereation: 
-PRIVATE: allows mass subscriptions via the list control panel, and other non-closed-loop opt in stuff
-		 Allows you to hide your list 
-		 YOU ARE responsible for making sure you follow things. 
-Public: Cannot have mass subscriptions via the list control panel - MUST use closed-loop opt in stuff
-	    Cannot hide your list 
-		Still responsible to make sure you follow the rules, but Dada Mail will do its best to 
-		make this painless
-		Added bonus! Ability to use outside sending APIs! Amazon SES,  PostMark, etc. 
+
+
+[ ] SES: Get list of verified senders - warn! (somewhere if list owner/list admin is NOT a verified sender, 
+and perhaps have some sort of fallback, so that mail just doesn't stop. 
 
 [ ] more flexibility with subject prefix for Bridge
 

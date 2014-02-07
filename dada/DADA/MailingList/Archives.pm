@@ -70,36 +70,38 @@ what the previous and next entry keys are.
 
 =cut
 
-sub get_neighbors { 
-	my $self    = shift; 
-	my $key     = shift;
-	   $key     = $self->_massaged_key($key); 
-	my $entries = $self->get_archive_entries(); 
-	
-	my $i = 0; 
-	my %lookup_hash; 
-	
-	for(@$entries){ 
-		$lookup_hash{$_} = $i;
-		$i++;  
-	}
+sub get_neighbors {
+    my $self = shift;
+    my $key  = shift;
+    $key = $self->_massaged_key($key);
+    my $entries = $self->get_archive_entries();
 
-	# oh, I get it - it's in reverse chrono...
-	my $index = $lookup_hash{$key}; 	
-	my $prev  = $entries->[$index-1]
-		if $entries->[$index-1] != $entries->[-1];
-	my $next  = $entries->[$index+1]
-		if $entries->[$index+1];
-		 # That wraparound stuff is stupid.
-	#my $next  = $entries -> [$index+1] || $entries->[0]; 
-	
-	if($self->{ls}->param('sort_archives_in_reverse')){ 
-		return ($next, $prev); 
-	}else{ 
-	
-		return ($prev, $next); 
-	
-	}
+    my $i = 0;
+    my %lookup_hash;
+
+    for (@$entries) {
+        $lookup_hash{$_} = $i;
+        $i++;
+    }
+
+    # oh, I get it - it's in reverse chrono...
+    my $index = $lookup_hash{$key};
+    my $prev  = $entries->[ $index - 1 ]
+      if $entries->[ $index - 1 ] != $entries->[-1];
+    my $next = $entries->[ $index + 1 ]
+      if $entries->[ $index + 1 ];
+
+    # That wraparound stuff is stupid.
+    #my $next  = $entries -> [$index+1] || $entries->[0];
+
+    if ( $self->{ls}->param('sort_archives_in_reverse') ) {
+        return ( $next, $prev );
+    }
+    else {
+
+        return ( $prev, $next );
+
+    }
 }
 
 
@@ -482,74 +484,79 @@ at the bottom of each archive index
 # This looks like it creates navigation for lists of archives, rather than for individual archives...
 # One day, this should be replaced with Data::Pageset
 
-sub create_index_nav { 
+sub create_index_nav {
 
-	my $self          = shift; 
-	my $stopped_at    = shift; 
-	my $admin         = shift || 0; 
-	
-	my $iterate       = $self->{ls}->param('archive_index_count') || 10;
-	my $entries       = $self->get_archive_entries(); 
-	my $forward       = $stopped_at;
-	my $back; 
-	
-	# let see if we're at some weird halfway between point
-	
-	
-	my $mod_check     = $stopped_at % $iterate; 
-	my $fixer; 
-	
-	my $full_stop     = $stopped_at; 
+    my $self       = shift;
+    my $stopped_at = shift;
+    my $admin      = shift || 0;
 
-	if($mod_check > 0){ 
-		# substract it from the iterate 
-		$fixer      = $iterate - $mod_check; 		
-		$full_stop +=  $fixer; 		
-	}
-	
-	$back = ($full_stop - ($iterate*2)); 	
-	
-	my $prev_link = ''; 
-	my $next_link = '';
-	
-	my $af;
-	
-	if($admin == 1){ 
-		$af = 'view_archive'; 
-	}else{ 
-		$af = 'archive'; 
-	}
-	
-	my $prev_link_start; 
-	my $next_link_start; 
-	
-	if($self->{ls}->param('sort_archives_in_reverse')){ 
-		if($back >= 0){		
-			$next_link_start = $back; 
-		}
-		if(($forward-1)  < $#{$entries}){
-			$prev_link_start = $forward;
-		}
-	}
-	else { 
-		if($back >= 0){		
-			$prev_link_start = $back; 
-		}
-				
-		if(($forward-1)  < $#{$entries}){
-			$next_link_start = $forward;
-		}		
-	}
-	
-	require DADA::Template::Widgets;
+    my $iterate = $self->{ls}->param('archive_index_count') || 10;
+    my $entries = $self->get_archive_entries();
+    my $forward = $stopped_at;
+    my $back;
+
+    # let see if we're at some weird halfway between point
+
+    my $mod_check = $stopped_at % $iterate;
+    my $fixer;
+
+    my $full_stop = $stopped_at;
+
+    my $url = $DADA::Config::PROGRAM_URL;
+
+    if ( $mod_check > 0 ) {
+
+        # substract it from the iterate
+        $fixer = $iterate - $mod_check;
+        $full_stop += $fixer;
+    }
+
+    $back = ( $full_stop - ( $iterate ) );
+
+    my $prev_link = '';
+    my $next_link = '';
+
+    my $af;
+
+    if ( $admin == 1 ) {
+        $af  = 'view_archive';
+        $url = $DADA::Config::S_PROGRAM_URL;
+    }
+    else {
+        $af = 'archive';
+    }
+
+    my $prev_link_start;
+    my $next_link_start;
+
+    if ( $self->{ls}->param('sort_archives_in_reverse') ) {
+        if ( $back >= 0 ) {
+            $next_link_start = $back;
+        }
+        if ( ( $forward - 1 ) < $#{$entries} ) {
+            $prev_link_start = $forward;
+        }
+    }
+    else {
+        if ( $back >= 0 ) {
+            $prev_link_start = $back;
+        }
+
+        if ( ( $forward - 1 ) < $#{$entries} ) {
+            $next_link_start = $forward;
+        }
+    }
+
+    require DADA::Template::Widgets;
     return DADA::Template::Widgets::screen(
         {
             -screen => 'archive_index_nav_table_widget.tmpl',
             -list   => $self->{name},
             -vars   => {
-				flavor_label       => $af, 
-				prev_link_start    => $prev_link_start, 
-				next_link_start    => $next_link_start, 
+                url             => $url,
+                flavor_label    => $af,
+                prev_link_start => $prev_link_start,
+                next_link_start => $next_link_start,
             },
             -list_settings_vars       => $self->{ls}->params,
             -list_settings_vars_param => { -dot_it => 1 },

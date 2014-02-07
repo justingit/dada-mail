@@ -17,15 +17,26 @@
 				list: undefined,
 				targetForm: undefined,
 				modal: 1,
-				LoadingMessage: '<h1>Sending Over Request...</h1><p>One second as we look over what you\'ve given us...</p>' 
-            },
+				mode: 'jsonp',
+				LoadingMessage: '<h1>Sending Over Request...</h1><p>One second as we look over what you\'ve given us...</p>',
+				LoadingError:   '<h1>Apologies,</h1><p>An error occurred while processing your request. Please try again in a few minutes.</p>'
+				
+			},
             options
         );
         
         /** #### PROPERTIES #### */
-        // this._testProp = 'testProp!';     // Private property declaration, underscore optional
+         this._testProp = 'testProp!';     // Private property declaration, underscore optional
 		
-        return this; 
+		 this._DadaMailURL     = this.options.DadaMailURL; 
+		 this._list            = this.options.list; 
+		 this._targetForm      = this.options.targetForm; 
+		 this._modal           = this.options.modal; 
+		 this._LoadingMessage  = this.options.LoadingMessage; 
+		 this._mode            = this.options.mode; 
+		 this._LoadingError    = this.options.LoadingError; 
+        
+		return this; 
 		
     }
 
@@ -35,47 +46,83 @@
     /** #### INITIALISER #### */
     Plugin.prototype._init = function ( target, options ) { };
 
-    Plugin.prototype.ControlTheForm = function (targetForm, loadingMsg)
+	// targetForm, loadingMsg
+    Plugin.prototype.ControlTheForm = function ()
     {	
 	
-			
+		/* I do not know why this is needed */
+		var copythis = this;
+		
+		
 		/* We're in control, now: */
-		$("submit", "#" + targetForm).bind("keypress", function (e) {
+		$("submit", "#" + copythis._targetForm).bind("keypress", function (e) {
 		    if (e.keyCode == 13) {
 		        return false;
 		    }
 		});	
 		
 		
-		$("body").on("submit", "#" + targetForm, function(event) {
+		$("body").on("submit", "#" + copythis._targetForm, function(event) {
 			
 			
 			event.preventDefault();
-			var fields = {};
-
-			$("#" + targetForm + " :input").each(function() {
-				fields[this.name] = this.value;
-			}); 
 					
 			$.colorbox({
-				html: loadingMsg,
+				html: copythis._loadingMsg,
 				maxHeight: 480,
 				maxWidth: 649,
 				opacity: 0.50
 			}); 
-					
-			$.ajax({
-				url: $("#" + targetForm).attr("action") + '/json/subscribe',
-				type: "POST",
-				dataType: "jsonp",
-				cache: false,
-				data: JSON.stringify(
-					{ 
-						list:  $("#" + targetForm + " :input[name='list']").val(),
-						email: $("#" + targetForm + " :input[name='email']").val(),
+			
+			var using_datatype     = 'json';
+			var using_content_type = 'POST'; 
+			var using_data; 
+						
+			if(copythis._mode == 'jsonp') { 
+				using_datatype = 'jsonp'; 
+				using_content_type = 'GET';
+				
+				using_data = {
+					_method: "GET",  
+					list:  $("#" + copythis._targetForm + " :input[name='list']").val(),
+					email: $("#" + copythis._targetForm + " :input[name='email']").val(),
+				};
+				
+				$("#" + copythis._targetForm + " :input").each(function() {
+					if(this.name != 'list' && this.name != 'email' && this.name != 'f') { 
+						using_data[this.name] = this.value;
+					}
+				}); 
+			}
+			else if(copythis._mode == 'json') { 
+
+				var fields = {};
+				$("#" + copythis._targetForm + " :input").each(function() {
+					if(this.name != 'list' && this.name != 'email' && this.name != 'f') { 
+						fields[this.name] = this.value;
+					}
+				}); 
+								
+				using_data = JSON.stringify(
+					using_data = {
+						list:  $("#" + copythis._targetForm + " :input[name='list']").val(),
+						email: $("#" + copythis._targetForm + " :input[name='email']").val(),
 						fields: fields
-					 }
-				),
+					}
+				);
+				
+			} 
+			else { 
+				console.log('unknown mode: ' + copythis._mode); 
+			}
+			
+						
+			$.ajax({
+				url: $("#" + copythis._targetForm).attr("action") + '/json/subscribe',
+				type: using_content_type,
+				dataType: using_datatype,
+				cache: false,
+				data: using_data, 
 			    contentType: "application/json; charset=UTF-8",
 				success: function(data) {
 					console.log('data:' + JSON.stringify(data)); 
@@ -119,7 +166,7 @@
 					console.log('status: ' + xhr.status);
 					console.log('thrownError:' + thrownError);
 					$.colorbox({
-						html: '<h1>Apologies,</h1><p>An error occured while processing your request. Please try again in a few minutes.</p>',
+						html: copythis._LoadingError,
 						opacity: 0.50
 					});
 				}
@@ -131,28 +178,30 @@
 	
     Plugin.prototype.Modal = function ()
     {	
-		this.options.DadaMailURL = $('#' + this.options.targetForm).attr("action"); // not really used. but... 
-		this.ControlTheForm(this.options.targetForm, this.options.LoadingMessage);
+		this._DadaMailURL = $('#' + this.options.targetForm).attr("action"); // not really used. but... 
+		this.ControlTheForm(); //this.options.targetForm, this.options.LoadingMessage
 	}
 
     Plugin.prototype.CreateSubscribeForm = function ()
     {
-		var thisCopy = this;
+		var copythis = this;
+		
 		var form_id = 'DM_Subscribe_Form_' + Math.random().toString(36).slice(2); 
 		$.ajax({
-			url: thisCopy.options.DadaMailURL,
+			url: copythis._DadaMailURL,
 			type: "POST",
 			dataType: "html",
 			data: {
 				flavor: 'subscription_form_html',
-				list:    thisCopy.options.list,
+				list:    copythis._list,
 				subscription_form_id: form_id
 			},
 			success: function(data) {
-				thisCopy.$T.html(data);	
-				//alert(thisCopy.options.Modal);
-				if(thisCopy.options.modal == 1) { 
-					thisCopy.ControlTheForm(form_id, thisCopy.options.LoadingMessage); 	
+				copythis.$T.html(data);
+				copythis._targetForm = form_id; 
+				//alert(copythis._modal);
+				if(copythis._modal == 1) { 
+					copythis.ControlTheForm(); 	
 				}				
 			},
 			error: function() {
