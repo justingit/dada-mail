@@ -189,6 +189,13 @@ make a digest list a sublist, allow subscribers to subscribe to either, "list" o
 digest members not allowed to post to list. For now. Cronjob can be same as Dada Bridge cron, just extra step - time to run the digest? 
 What messages get sent out? Make the digest (RFC of format? Different options?), send 'er out. 
 
+Or maybe not a sublist, but just a pref? That would make it easier went administrate. 
+So: 
+    Every Message
+    Every Day of Messages
+    No Messages...? 
+
+
 
 [ ] Always archive messages, but don't always show the archived message. 
 Meaning, there's a new field, Called, "visibility" (or, whatever), that you can set to 1 or 0 - 
