@@ -189,23 +189,28 @@
 		var form_id = 'DM_Subscribe_Form_' + Math.random().toString(36).slice(2); 
 		$.ajax({
 			url: copythis._DadaMailURL,
-			type: "POST",
-			dataType: "html",
+			type: "GET",
+			dataType: 'jsonp',
 			data: {
+				_method: 'GET', 
 				flavor: 'subscription_form_html',
 				list:    copythis._list,
 				subscription_form_id: form_id
 			},
 			success: function(data) {
-				copythis.$T.html(data);
+				
+				console.log('data:' + JSON.stringify(data)); 
+				
+				copythis.$T.html(data.subscription_form);
 				copythis._targetForm = form_id; 
 				//alert(copythis._modal);
 				if(copythis._modal == 1) { 
 					copythis.ControlTheForm(); 	
 				}				
 			},
-			error: function() {
-				console.log('something is wrong with, "CreateSubscribeForm"');
+			error: function(xhr, ajaxOptions, thrownError) {
+				console.log('status: ' + xhr.status);
+				console.log('thrownError:' + thrownError);
 			}
 		});
        // return this.$T;        // support jQuery chaining

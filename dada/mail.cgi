@@ -10549,8 +10549,27 @@ sub subscription_form_html {
             ( defined($list) ? ( -list => $list, ) : () )
         }
     );
-    print $q->header();
-    e_print($subscription_form);
+    if($q->param('_method') eq 'GET' && $q->param('callback')) { 
+
+        print $q->header(
+            -type                          => 'application/javascript',
+            'Access-Control-Allow-Origin'  => '*',
+            'Access-Control-Allow-Methods' => 'POST',
+            '-Cache-Control'               => 'no-cache, must-revalidate',
+            -expires                       => 'Mon, 26 Jul 1997 05:00:00 GMT',
+        );
+        
+        my $callback = xss_filter( strip( $q->url_param('callback') ) );
+        require JSON;
+        my $json = JSON->new->allow_nonref;
+        my $r =  $json->encode({subscription_form => $subscription_form});
+        e_print( $callback . '(' . $r . ');' );
+    }
+    else { 
+        
+        print $q->header();
+        e_print($subscription_form);
+    }
 }
 
 sub test_layout {
