@@ -354,8 +354,8 @@ sub send_unsubscribe_request_message {
 		}
 	####
 	
-	require DADA::App::ReadMessages; 
-    my $rm = DADA::App::ReadMessages->new; 
+	require DADA::App::ReadEmailMessages; 
+    my $rm = DADA::App::ReadEmailMessages->new; 
     my $msg_data = $rm->read_message('profiles_email_updated_notification_message.eml'); 
 	
 	

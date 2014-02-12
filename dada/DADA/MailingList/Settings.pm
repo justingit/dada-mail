@@ -177,18 +177,24 @@ sub post_process_get {
             }
         }
 
-        my $message_settings = $self->_message_settings; 
+        my $html_settings          = $self->_html_settings;
+        my $email_message_settings = $self->_email_message_settings; 
         
         for ( keys %DADA::Config::LIST_SETUP_DEFAULTS ) {
             if ( !exists( $li->{$_} ) || length( $li->{$_} ) == 0 ) {
-                if(exists($message_settings->{$_})) { 
+                if(exists($email_message_settings->{$_})) { 
                     $li->{$_} = $self->_fill_in_email_message_settings($_); 
+                }
+                elsif(exists($html_settings->{$_})) {
+                    $li->{$_} = $self->_fill_in_html_settings($_);                      
                 }
                 else { 
                     $li->{$_} = $DADA::Config::LIST_SETUP_DEFAULTS{$_};
                 }
             }
         }
+        
+        
 
 		# This says basically, make sure the list subscription quota is <= the global list sub quota. 
         $DADA::Config::SUBSCRIPTION_QUOTA ||= undef;
@@ -308,6 +314,9 @@ sub param {
 		if(exists($self->{local_li}->{$name})) { 
 			return $self->{local_li}->{$name};
 		}
+		elsif($self->_html_settings()->{$name}){ 
+			return $self->_fill_in_html_settings($name); 
+		}
 		elsif($self->_email_message_setting($name)){ 
 			return $self->_fill_in_email_message_settings($name); 
 		}
@@ -318,7 +327,36 @@ sub param {
 	}
 }
 
-sub _message_settings {
+sub _html_settings {
+    return {
+        html_confirmation_message         => 1,
+        html_subscribed_message           => 1,
+        html_unsubscribed_message         => 1,
+        html_subscription_request_message => 1,
+    };
+}
+
+sub _fill_in_html_settings { 
+    my $self = shift;
+	my $name = shift; 
+	
+	my $message_settings = { 
+        html_confirmation_message         => 'confirmation.tmpl',
+        html_subscribed_message           => 'subscribed.tmpl',
+        html_unsubscribed_message         => 'subscription_request.tmpl',
+        html_subscription_request_message => 'unsubscribed.tmpl',	    
+	}; 
+	
+    if(exists($message_settings->{$name})) { 
+        my $raw_screen = DADA::Template::Widgets::_raw_screen( { -screen => 'list/' . $message_settings->{$name} } );
+        return $raw_screen; 
+	}
+	else { 
+		return undef; 
+	}
+}
+
+sub _email_message_settings {
     my $self = shift;
     return {
         mailing_list_message_from_phrase => 1,
@@ -420,14 +458,14 @@ sub _email_message_setting {
     
     warn 'name: ' .  $name;
     
-    my $message_settings = $self->_message_settings();
+    my $message_settings = $self->_email_message_settings();
     if ( exists( $message_settings->{$name} ) ) {
-        warn "it's there!"; 
+        # warn "it's there!"; 
         return 1;
     }
     else {
         
-        warn "it's not there!"; 
+        # warn "it's not there!"; 
                
         return 0;
     }
@@ -530,7 +568,7 @@ sub _fill_in_email_message_settings {
 	}; 
 	
 	if(exists($message_settings->{$name})) { 
-		my $f_settings = $self->_get_message_settings($message_settings->{$name}->{'-tmpl'}); 
+		my $f_settings = $self->_get_email_message_settings($message_settings->{$name}->{'-tmpl'}); 
 		# warn '$f_settings->{$message_settings->{$name}->{-part}} ' . $f_settings->{$message_settings->{$name}->{-part}}; 
 		return $f_settings->{$message_settings->{$name}->{-part}};
 	}
@@ -541,13 +579,13 @@ sub _fill_in_email_message_settings {
 
 
 
-sub _get_message_settings {
+sub _get_email_message_settings {
 
     my $self = shift;
     my $tmpl = shift;
 
-    require DADA::App::ReadMessages; 
-    my $rm = DADA::App::ReadMessages->new; 
+    require DADA::App::ReadEmailMessages; 
+    my $rm = DADA::App::ReadEmailMessages->new; 
     return $rm->read_message($tmpl); 
 
 }

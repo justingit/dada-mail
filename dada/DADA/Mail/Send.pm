@@ -1000,8 +1000,8 @@ sub sending_preferences_test {
     my $orig_debug_pop3                          = $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3}; 
     $DADA::Config::CPAN_DEBUG_SETTINGS{NET_POP3} = 1; 
 
-    require DADA::App::ReadMessages; 
-    my $rm = DADA::App::ReadMessages->new; 
+    require DADA::App::ReadEmailMessages; 
+    my $rm = DADA::App::ReadEmailMessages->new; 
     my $msg_data = $rm->read_message('sending_preferences_test_message.eml'); 
 	
 	
@@ -2830,8 +2830,8 @@ sub _email_batched_finished_notification {
     my $total_time =
       $self->_formatted_runtime( ( $args{-end_time} - $args{-start_time} ) );
       
-      require DADA::App::ReadMessages; 
-      my $rm = DADA::App::ReadMessages->new; 
+      require DADA::App::ReadEmailMessages; 
+      my $rm = DADA::App::ReadEmailMessages->new; 
       my $msg_data = $rm->read_message('mass_mailing_finished_notification.eml'); 
   	
   	

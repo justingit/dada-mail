@@ -9537,8 +9537,8 @@ sub email_password {
         );
 
 
-        require DADA::App::ReadMessages; 
-        my $rm = DADA::App::ReadMessages->new; 
+        require DADA::App::ReadEmailMessages; 
+        my $rm = DADA::App::ReadEmailMessages->new; 
         my $msg_data = $rm->read_message('list_password_reset_message.eml'); 
 
         require DADA::App::Messages;
@@ -9586,8 +9586,8 @@ sub email_password {
         $ls->save( { pass_auth_id => $random_string, } );
 
 
-        require DADA::App::ReadMessages; 
-        my $rm = DADA::App::ReadMessages->new; 
+        require DADA::App::ReadEmailMessages; 
+        my $rm = DADA::App::ReadEmailMessages->new; 
         my $msg_data = $rm->read_message('list_password_reset_confirmation_message.eml'); 
     	
         

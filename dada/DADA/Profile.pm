@@ -999,8 +999,8 @@ sub send_profile_activation_email {
       . $auth_code 
       . '/';
 
-      require DADA::App::ReadMessages; 
-      my $rm = DADA::App::ReadMessages->new; 
+      require DADA::App::ReadEmailMessages; 
+      my $rm = DADA::App::ReadEmailMessages->new; 
       my $msg_data = $rm->read_message('profiles_activation_message.eml'); 
   
     require DADA::App::Messages;
@@ -1047,8 +1047,8 @@ sub send_profile_reset_password_email {
     . $auth_code 
     . '/';
     
-    require DADA::App::ReadMessages; 
-    my $rm = DADA::App::ReadMessages->new; 
+    require DADA::App::ReadEmailMessages; 
+    my $rm = DADA::App::ReadEmailMessages->new; 
     my $msg_data = $rm->read_message('profiles_reset_password_message.eml'); 
     
     
@@ -1134,8 +1134,8 @@ sub send_update_profile_email_email {
 	my $info = $self->get({-dotted => 1}); 
 	
 	
-	require DADA::App::ReadMessages; 
-    my $rm = DADA::App::ReadMessages->new; 
+	require DADA::App::ReadEmailMessages; 
+    my $rm = DADA::App::ReadEmailMessages->new; 
     my $msg_data = $rm->read_message('profiles_update_email_message.eml'); 
     
 	require DADA::App::Messages;
@@ -1185,8 +1185,8 @@ sub send_update_email_notification {
 	}
 	my $info = $self->get({-dotted => 1}); 
 	
-	require DADA::App::ReadMessages; 
-    my $rm = DADA::App::ReadMessages->new; 
+	require DADA::App::ReadEmailMessages; 
+    my $rm = DADA::App::ReadEmailMessages->new; 
     my $msg_data = $rm->read_message('profiles_email_updated_notification_message.eml'); 
     
 

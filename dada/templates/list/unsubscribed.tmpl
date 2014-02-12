@@ -1,0 +1,25 @@
+<!-- tmpl_set name="title" value="Unsubscription is Successful" --> 
+
+<p>The email address:</p>
+
+<ul>
+ <li>
+  <!-- tmpl_var subscriber.email -->
+ </li>
+</ul> 
+
+<p>
+ Is no longer a part of: 
+<p>
+
+<ul>
+ <li>
+  <a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/">
+	<!-- tmpl_var list_settings.list_name -->
+ </a>
+ </li>
+</ul> 
+
+<p>
+ Thanks for having been a subscriber.
+</p> 

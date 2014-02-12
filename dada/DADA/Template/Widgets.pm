@@ -3053,6 +3053,7 @@ sub _raw_screen {
 	}
 	else { 
 		carp "cannot find, $screen to open!"; 
+		return undef; 
 	}
 }
 

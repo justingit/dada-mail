@@ -1,6 +1,4 @@
-package DADA::App::ReadMessages; 
-
-
+package DADA::App::ReadEmailMessages;
 
 use lib qw(
   ../../.
@@ -13,15 +11,14 @@ use DADA::Template::Widgets;
 
 use Carp qw(carp croak);
 use Try::Tiny;
-use Email::Address; 
+use Email::Address;
 use MIME::Parser;
-
 
 use vars qw($AUTOLOAD);
 use strict;
-my $t = 0; # $DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions};
+my $t = 0;    # $DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions};
 
-my %allowed = ( );
+my %allowed = ();
 
 sub new {
 
@@ -38,13 +35,11 @@ sub new {
     my %args = (@_);
 
     $self->_init( \%args );
-    
-    
-     my $parser = new MIME::Parser;
-        $parser = optimize_mime_parser($parser);
-    
-    $self->{parser} = $parser; 
-    
+
+    my $parser = new MIME::Parser;
+    $parser = optimize_mime_parser($parser);
+
+    $self->{parser} = $parser;
 
     return $self;
 }
@@ -70,8 +65,6 @@ sub AUTOLOAD {
 
 sub _init { }
 
-
-
 sub read_message {
 
     my $self = shift;
@@ -80,12 +73,20 @@ sub read_message {
     my $entity = undef;
     my $eml = DADA::Template::Widgets::_raw_screen( { -screen => 'email/' . $tmpl } );
 
+    if(! defined $eml) { 
+        carp "can't find tmpl: 'email/$tmpl'!"; 
+        return {}; 
+    }
+    
     eval { $entity = $self->{parser}->parse_data($eml); };
     if ($@) {
         warn "Trouble parsing $tmpl: $@";
         return {};
     }
-    
+
+    # This is highly simplistic, once we support more things, we'll make this
+    # a little more sophisticated. 
+    # 
     my $to_address = $entity->head->get( 'To', 0 );
     chomp($to_address);
     my $to_phrase = ( Email::Address->parse($to_address) )[0]->phrase;
@@ -98,10 +99,12 @@ sub read_message {
     my $subject = $entity->head->get( 'Subject', 0 );
     chomp($subject);
 
+
+    # So, for example, we won't assume PT is the first part, and HTML is the second
+    
     my @parts          = $entity->parts;
     my $plaintext_body = $parts[0]->bodyhandle->as_string;
-
-    my $html_body = $parts[1]->bodyhandle->as_string;
+    my $html_body      = $parts[1]->bodyhandle->as_string;
 
     return {
         to_phrase      => $to_phrase,
@@ -113,5 +116,4 @@ sub read_message {
 
 }
 
-
-1; 
+1;
