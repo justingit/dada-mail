@@ -2625,7 +2625,7 @@ sub list_headers {
 			$lh{'List-Subscribe'}   =   '<<!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/>'; 
 		}
 
-		$lh{'List-Unsubscribe'} =   '<<!-- tmpl_var list_unsubscribe_link -->>'; 
+		$lh{'List-Unsubscribe'} =   '<mailto:<!-- tmpl_var list_settings.list_owner_email -->?Subject=Unsubscribe%20from%20<!-- tmpl_var list_settings.list_name escape="url" -->>, <<!-- tmpl_var list_unsubscribe_link -->>'; 
 
 		# List-Owner
 		$lh{'List-Owner'}       =   '<<!-- tmpl_var list_settings.list_owner_email -->>';

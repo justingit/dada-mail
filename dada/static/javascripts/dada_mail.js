@@ -2756,9 +2756,16 @@ function sendMailingListMessage(fid, itsatest) { /* This is for the Send a Webpa
 		}
 	}
 	else if(itsatest === false) { 
-		if (!confirm('Send Mass Mailing?')) {
-			return false;
-		}		
+		if ($("#archive_no_send").prop("checked") === true) {
+			if (!confirm('Archive Message?')) {
+				return false;
+			}				
+		}
+		else { 
+			if (!confirm('Send Mass Mailing?')) {
+				return false;
+			}		
+		}
 	}
 	return true;
 }

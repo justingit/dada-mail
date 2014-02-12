@@ -1036,6 +1036,10 @@ sub grab_former_config_vals {
 		$local_q->param('configure_amazon_ses', 1);
 		$local_q->param('amazon_ses_AWSAccessKeyId', $BootstrapConfig::AMAZON_SES_OPTIONS->{AWSAccessKeyId});
 		$local_q->param('amazon_ses_AWSSecretKey',   $BootstrapConfig::AMAZON_SES_OPTIONS->{AWSSecretKey});
+		
+		if(exists($BootstrapConfig::AMAZON_SES_OPTIONS->{AWS_endpoint})) { 
+    		$local_q->param('amazon_ses_AWS_endpoint', $BootstrapConfig::AMAZON_SES_OPTIONS->{AWS_endpoint});
+		}
 	}
 
 	
@@ -1706,6 +1710,7 @@ sub create_dada_config_file {
 	my $amazon_ses_params = {}; 
 	if($q->param('configure_amazon_ses') == 1){ 
 		$amazon_ses_params->{configure_amazon_ses} = 1; 
+		$amazon_ses_params->{AWS_endpoint}   = strip($q->param('amazon_ses_AWS_endpoint'));		
 		$amazon_ses_params->{AWSAccessKeyId} = strip($q->param('amazon_ses_AWSAccessKeyId'));
 		$amazon_ses_params->{AWSSecretKey}   = strip($q->param('amazon_ses_AWSSecretKey')); 
 	}
@@ -2284,7 +2289,13 @@ sub install_wysiwyg_editors {
 		if(! -d  $upload_dir){ 
 			# No need to backup this.
 			installer_mkdir( $upload_dir, $DADA::Config::DIR_CHMOD );
-		}	
+			create_htaccess_no_script_execution($upload_dir); 
+		}
+		else { 
+		    if(! -e $upload_dir . '/.htaccess') { 
+		       	create_htaccess_no_script_execution($upload_dir);  
+		    }
+		}
 	}
 	elsif($q->param('file_browser_install') eq 'core5_filemanager'){
 		
@@ -2571,7 +2582,7 @@ sub install_and_configure_core5_filemanager {
 
 	# pl config: 
 	
-    my $uploads_directory = $q->param('support_files_dir_path')  . '/' . $Support_Files_Dir_Name . '/' . 'file_uploads';
+    my $uploads_directory = $q->param('support_files_dir_path')  . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir;
     my $url_path          = $uploads_directory;
     my $doc_root          = $ENV{DOCUMENT_ROOT}; 
     $url_path             =~ s/^$doc_root//; # We use $url_path for the js config, too. 
@@ -3054,6 +3065,8 @@ sub cgi_test_amazon_ses_configuration {
 	
 	my $amazon_ses_AWSAccessKeyId = strip($q->param('amazon_ses_AWSAccessKeyId')); 
 	my $amazon_ses_AWSSecretKey   = strip($q->param('amazon_ses_AWSSecretKey')); 
+	my $amazon_ses_AWS_endpoint   = strip($q->param('amazon_ses_AWS_endpoint')); 
+     
 	my ($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ); 
 	
 	eval { 
@@ -3061,7 +3074,8 @@ sub cgi_test_amazon_ses_configuration {
 		my $ses = DADA::App::AmazonSES->new; 
 		($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats(
 			{ 
-				AWSAccessKeyId => $amazon_ses_AWSAccessKeyId, 
+			    AWS_endpoint    => $amazon_ses_AWS_endpoint, 
+				AWSAccessKeyId  => $amazon_ses_AWSAccessKeyId, 
 				AWSSecretKey    => $amazon_ses_AWSSecretKey, 
 			}
 		); 
@@ -3563,6 +3577,25 @@ sub create_htaccess_deny_from_all_file {
 	close   $htaccess or croak $!;
 	installer_chmod(0644, $htaccess_file); 
 }
+
+
+
+
+sub create_htaccess_no_script_execution { 
+	my $loc = shift; 
+	my $htaccess_file = make_safer($loc . '/.htaccess');
+	open my $htaccess, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $htaccess_file or croak $!;
+	print   $htaccess 
+q|
+Options -ExecCGI
+AddType text/plain .php .phtml .php3 .pl .cgi
+
+| or croak $!;
+	close   $htaccess or croak $!;
+	installer_chmod(0644, $htaccess_file); 
+}
+
+
 
 sub guess_home_dir {
 	

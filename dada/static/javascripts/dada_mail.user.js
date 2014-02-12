@@ -18,7 +18,7 @@ $(document).ready(function() {
 	}
 	
 	if($("#modal_subscribe_form").length) { 
-		$('#modal_subscribe_form').DadaMail({targetForm: 'subscription_form'});
+		$('#modal_subscribe_form').DadaMail({targetForm: 'subscription_form', mode: 'json'});
 		$('#modal_subscribe_form').DadaMail('Modal');
 	}
 	

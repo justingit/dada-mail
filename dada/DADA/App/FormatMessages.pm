@@ -2364,7 +2364,19 @@ sub email_template {
     }
     $screen_vars{-dada_pseudo_tag_filter} = 1; 
     
-	for my $header('Subject', 'From', 'To', 'Reply-To', 'Errors-To', 'Return-Path', 'List', 'List-URL', 'List-Owner', 'List-Subscribe', 'List-Unsubscribe'){ 
+	for my $header(
+	    'Subject', 
+	    'From', 
+	    'To', 
+	    'Reply-To', 
+	    'Errors-To', 
+	    'Return-Path', 
+	    'List', 
+	    'List-URL', 
+	    'List-Owner', 
+	    'List-Subscribe', 
+	    'List-Unsubscribe'
+	    ){ 
 		warn "looking at headers"
 			if $t;
 						
