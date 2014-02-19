@@ -17,6 +17,25 @@ $(document).ready(function() {
 		});
 	}
 	
+	if ($("#unsubscription_form").length) {
+		$("#unsubscription_form").validate({
+			debug: false,
+			rules: {
+				email: {
+					required: true,
+					email: true
+				}
+			},
+			messages: {
+				email: {
+					required: "Please type in your email address",
+					email:    "Please make sure the email address you have typed is valid."
+				}
+			}
+		});
+	}
+	
+	
 	if($("#modal_subscribe_form").length) { 
 		$('#modal_subscribe_form').DadaMail({targetForm: 'subscription_form', mode: 'json'});
 		$('#modal_subscribe_form').DadaMail('Modal');
