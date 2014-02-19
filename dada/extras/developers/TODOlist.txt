@@ -11,7 +11,9 @@ Key:
 [?] Someday
 
 
-[ ] SES: endpoints need to now be selected. Sigh. 
+
+
+[x] SES: endpoints need to now be selected. Sigh. 
 
 [ ] Enable Private Mailing Lists 
 	[ ] No need for Unsubscription Links
@@ -19,7 +21,10 @@ Key:
 	[ ] Request Removal	
 	[ ] DateTime col. in subscribers table
 	
+	[ ] Need ability to send complaints to list owner, log complaints, track complaints in tracker plugin
 
+    # I don't know about all this: 
+    # 
     PRIVATE: allows mass subscriptions via the list control panel, and other non-closed-loop opt in stuff
     		 Allows you to hide your list 
     		 YOU ARE responsible for making sure you follow things. 
@@ -65,7 +70,7 @@ and perhaps have some sort of fallback, so that mail just doesn't stop.
 
 [ ] Bridge Global defaults - add option to enable open discussion lists, etc
 
-[ ] Make Moderators and Autorized senders to different sublists. 
+[x] Make Moderators and Autorized senders to different sublists. 
 
 [ ] Fancy Template things: for Global User Template, have option to just use a "blank" page (or any page, really), and: 
 	[ ] Allow you to inject the needed default template in BOTH the head and body,
@@ -98,7 +103,7 @@ http://blog.sendgrid.com/permission-reminders-affect-email-deliverability/
 
 [ ]  bounce handler - weekly reports? 
 
-[ ] Move, "$HTML_SUBSCRIPTION_REQUEST_MESSAGE" and friends out of Config.pm file, into template files. 
+[x] Move, "$HTML_SUBSCRIPTION_REQUEST_MESSAGE" and friends out of Config.pm file, into template files. 
 
 [ ] ARF reports? 
 
