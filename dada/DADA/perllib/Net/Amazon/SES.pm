@@ -577,9 +577,7 @@ sub call_ses {
     if(defined( $opts{'e'} )) { 
          $self->AWS_endpoint($opts{'e'});
     }
-    
-    warn '$self->AWS_endpoint ' . $self->AWS_endpoint; 
-    
+        
     my $endpoint_name = $self->AWS_endpoint;
     $endpoint_name =~ s!^https?://(.*?)(:\d+)?/?$!$1!;
 	
