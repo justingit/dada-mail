@@ -766,7 +766,6 @@ sub _build_email {
 	my $record = $self->get_record($args{-key});
 	
 	require MIME::Lite; 
-	#$MIME::Lite::PARANOID = $DADA::Config::MIME_PARANOID;
 	MIME::Lite->quiet(1);
 	
 	my $send_flags = {}; 
