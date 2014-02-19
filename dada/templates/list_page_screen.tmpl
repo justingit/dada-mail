@@ -15,11 +15,9 @@
 	</div>
 <!--/tmpl_if--> 
 
-<!-- tmpl_unless list_settings.private_list --> 
 	<div id="modal_subscribe_form">
 		<!-- tmpl_var subscription_form --> 
 	</div> 
-<!-- /tmpl_unless --> 
 
 <div>
 	
@@ -28,19 +26,6 @@
 <ul> 
 	
 
-	<!-- tmpl_if list_settings.private_list --> 
-		<li>
-			<p>
-				This mailing list is <strong>private</strong>, only the List Owner can subscribe members.
-			</p>
-		</li>
-	<!-- tmpl_else --> 
-		<li>
-			<p>
-				This mailing list is <strong>public</strong>, anyone may join.
-			</p>
-		</li>
-	<!-- /tmpl_if --> 
 
 	
 	<!-- tmpl_if list_settings.enable_subscription_approval_step --> 
