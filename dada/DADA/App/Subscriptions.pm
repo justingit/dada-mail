@@ -1040,10 +1040,10 @@ sub confirm {
                     using =>
                       $ls->param('use_alt_url_subscription_approval_step'),
                     using_with_query =>
-                      $ls->param('alt_url_subscription_approval_step'),
-                    url =>
                       $ls->param('alt_url_subscription_approval_step_w_qs'),
-                    query => '',
+                    url =>
+                      $ls->param('alt_url_subscription_approval_step'),
+                    query => 'list=' . uriescape($list) . '&status=1&email=' . uriescape($email),,
                 }
             };
             my $qs = 'list='
@@ -1061,7 +1061,7 @@ sub confirm {
 	            }
             }
             else {
-                if ( $ls->param('use_alt_url_sub_success') == 1 ) {
+                if ( $ls->param('use_alt_url_subscription_approval_step') == 1 ) {
                     my $rd = $self->alt_redirect($r);
                     $self->test ? return $rd : print $fh safely_encode($rd)
                       and return;
