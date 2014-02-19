@@ -22,15 +22,49 @@
 <fieldset>
 
 <legend>
- General
+    Mailing List Type
 </legend>
 
+
+
+<p>
+    <strong>
+        This Mailing List is a:
+    </strong>
+</p> 
+
  <table cellspacing="5">
+	 <tr>
+	   <td>
+	    <p>
+	     <input type="radio" name="private_list" id="private_list_no" value="0" <!-- tmpl_unless list_settings.private_list -->checked="checked"<!--/tmpl_unless--> />
+	    </p>
+	   </td>
+	   <td>
+	    <p>
+	     <label for="private_list_no">
+	      Public Mailing List
+	     </label>
+	     <br /> 
+	     Used for marketing, public discussion lists, and mailing lists. 
+        </p>
+	    <p>
+	     <ul> 
+	         <li>
+	     	    Subscribers may remove themselves at any time, using the Unsubscribe Links in mailing list messages. 
+	         </li> 
+	         <li>
+	             Unsubscription Links in mailing list messages are mandatory
+	         </li>
+	        </ul> 
+	     </p>
+	   </td>
+	  </tr>
 
 	 <tr>
 	   <td>
 	    <p>
-	     <input type="checkbox" name="private_list" id="private_list" value="1" <!-- tmpl_if list_settings.private_list -->checked="checked"<!--/tmpl_if--> />
+	     <input type="radio" name="private_list" id="private_list" value="1" <!-- tmpl_if list_settings.private_list -->checked="checked"<!--/tmpl_if--> />
 	    </p>
 	   </td>
 	   <td>
@@ -38,19 +72,33 @@
 	     <label for="private_list">
 	      Private Mailing List
 	     </label>
-     	</p>
+ 	     <br /> 
+ 	     Used for internal mailing lists. 
+         </p>
+ 	    <p>
 	     <ul>
 		  <li>
 			Mailing List Unsubscriptions are managed <em>only</em> by the List Owner.<br />
 			(Subscription Options can be customized, below) 
 		  </li>
 		  <li>Unsubscription Links in mailing list messages are <em>optional</em></li>
-		  <li>Unsubscription Links work as requests to unsubscribe - List Owner will still have to approve of the unsubscription.</li>
+		  <li>Unsubscription Links work as Requests to Unsubscribe - the List Owner will be required to approve the unsubscription.</li>
 		 </ul>
 		 
 	   </td>
 	  </tr>
-	
+</table> 
+</fieldset> 
+
+
+<fieldset>
+
+<legend>
+ General
+</legend>
+
+
+<table cellpadding="5"> 
 	 <tr>
 	   <td>
 	    <p>
@@ -60,7 +108,7 @@
 	   <td>
 	    <p>
 	     <label for="invite_only_list">
-	      Invitation-Only List
+	      Invitation-Only
 	     </label>
      	</p>
 
@@ -81,7 +129,7 @@
    <td>
     <p>
      <label for="closed_list">
-      Closed List
+      Closed
      </label>
    </p>
 
@@ -105,7 +153,7 @@
    <td>
     <p>
      <label for="hide_list">
-      Hidden List
+      Hidden
      </label>
  </p>
 <ul> 
