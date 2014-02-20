@@ -3586,11 +3586,8 @@ sub create_htaccess_no_script_execution {
 	my $htaccess_file = make_safer($loc . '/.htaccess');
 	open my $htaccess, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $htaccess_file or croak $!;
 	print   $htaccess 
-q|
-Options -ExecCGI
-AddType text/plain .php .phtml .php3 .pl .cgi
-
-| or croak $!;
+q|Options -ExecCGI
+AddType text/plain .php .phtml .php3 .pl .cgi| or croak $!;
 	close   $htaccess or croak $!;
 	installer_chmod(0644, $htaccess_file); 
 }
