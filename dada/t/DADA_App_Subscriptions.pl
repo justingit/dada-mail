@@ -557,10 +557,49 @@ undef $r;
 $q->delete_all;
 $DADA::Config::SUBSCRIPTION_QUOTA = undef; 
 
+
+
+
+# Closed Loop Opt-in DISABLED
+$ls->save(
+    {
+        enable_closed_loop_opt_in         => 0,
+    }
+);
+
+$q->param('list',  $list); 
+$q->param('email', $email); 
+my $r = $das->subscribe(
+    {
+        -cgi_obj     => $q,
+        -html_output => 0,
+    	-return_json => 0, 
+	}
+);
+ok($r->{email} eq $email);
+ok($r->{list} eq $list);
+ok($r->{status} == 1);
+
+ok($r->{redirect}->{url}   eq 'http://example.com/alt_url_sub_success.html');
+ok($r->{redirect}->{query} eq 'list=dadatest&rm=sub&status=1&email=user%40example.com');
+ok($r->{redirect}->{using} == 1); 
+ok($r->{redirect}->{using_with_query} == 1);
+ok(exists($r->{success_message})); 
+
+$lh->remove_subscriber( { -email => $email, -type  => 'list', } );
+undef $r; 
+$q->delete_all;
+$ls->save(
+    {
+        enable_closed_loop_opt_in         => 1,
+    }
+);
+
+
+
+
 # Closed Loop Opt-in DISABLED
 # Subscription Requests ENABLED
-
-
 $ls->save(
     {
         enable_closed_loop_opt_in         => 0,

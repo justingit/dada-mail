@@ -3728,7 +3728,13 @@ sub subscription_requests {
                     -confirmed => 1,
                 }
             );
-
+            $lh->remove_subscriber(
+                {
+                    -email => $email,
+                    -type  => 'sub_confirm_list',
+                }
+            );
+            
             my $new_pass    = '';
             my $new_profile = 0;
             if (   $DADA::Config::PROFILE_OPTIONS->{enabled} == 1
@@ -3791,6 +3797,13 @@ sub subscription_requests {
                     -type  => 'sub_request_list',
                 }
             );
+            $lh->remove_subscriber(
+                {
+                    -email => $email,
+                    -type  => 'sub_confirm_list',
+                }
+            );
+            
             require DADA::App::Messages;
             DADA::App::Messages::send_subscription_request_denied_message(
                 {

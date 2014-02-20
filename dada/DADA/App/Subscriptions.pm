@@ -858,6 +858,9 @@ sub confirm {
             }
         }
     }
+    
+    warn '$mail_your_subscribed_msg: ' . $mail_your_subscribed_msg if $t; 
+    
 
 # DEV it would be *VERY* strange to fall into this, since we've already checked this...
     if ( $args->{-html_output} != 0 ) {
@@ -889,6 +892,8 @@ sub confirm {
         $status = 0;
         $errors->{not_on_sub_confirm_list} = 1;
     }
+
+    warn '$status: ' . $status if $t; 
 
     if ( $status == 0 ) {
         warn '>>>> status is 0'
@@ -964,18 +969,23 @@ sub confirm {
         }
     }
     elsif ( $status == 1 ) {
-
+        warn q{$ls->param('enable_subscription_approval_step')} . $ls->param('enable_subscription_approval_step') if $t;  
+        
         if ( $ls->param('enable_subscription_approval_step') == 1 ) {
+            
             
             return $self->subscription_approval_step(  
                 {               
-                    -email => $email, 
-                    -ls_obj => $ls, 
-                    -lh_obj => $lh, 
-                    -cgi_obj => $q, 
-                    -fh      => $fh, 
+                    -email => $email,
+                    -html_output => $args->{-html_output}, 
+                    -return_json => $args->{-return_json}, 
+                    -ls_obj      => $ls, 
+                    -lh_obj      => $lh, 
+                    -cgi_obj     => $q, 
+                    -fh          => $fh, 
                 }
-            ); 
+            );
+             
         }
         else {
 
@@ -1127,7 +1137,6 @@ sub confirm {
                 status         => 1,
                 list           => $list,
                 email          => $email,
-                needs_approval => 1,
                 redirect       => {
                     using            => $ls->param('use_alt_url_sub_success'),
                     using_with_query => $ls->param('alt_url_sub_success_w_qs'),
@@ -1137,7 +1146,7 @@ sub confirm {
             };
             my $qs = 'list='
               . $list
-              . '&rm=sub&needs_approval=1&status=1&email='
+              . '&rm=sub&status=1&email='
               . uriescape($email);
             $r->{redirect}->{query} = $qs;
 
@@ -1183,7 +1192,7 @@ sub confirm {
 sub subscription_approval_step {
     my $self = shift;
     my ($args) = @_;
-
+    
     # Yikes.
     my $email = $args->{-email};
     my $ls    = $args->{-ls_obj};
@@ -1203,6 +1212,31 @@ sub subscription_approval_step {
 
         }
     );
+    # keeping it on the sub_confirm_list is important to check if this user has 
+    # already requested a subscription
+    # Remember! In v6.9.0 to remove this subscriber, ala: 
+    #
+    #$lh->remove_subscriber(
+    #     {
+    #         -email => $email,
+    #         -type  => 'sub_confirm_list',
+    #     }
+    # );
+    # 
+    # when request is answered. 
+    
+    $lh->add_subscriber(
+        {
+            -email      => $email,
+            -type       => 'sub_confirm_list',
+            -confirmed  => 1,
+            -dupe_check => {
+                -enable  => 1,
+                -on_dupe => 'ignore_add',
+            },
+        }
+    );
+    
     require DADA::App::Subscriptions::ConfirmationTokens;
     my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
     $ct->remove_by_token( $q->param('token') );
