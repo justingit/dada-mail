@@ -299,20 +299,7 @@ sub subscribe {
 
  
 
-    if ( $status == 1 ) {
-
- 
-
-  # What would be more useful, is if more information on *how* you
-  # could finish this was given - like a way to point to a URL for this request,
-  # and a way to redirect to another screen, after the request.
-  #
-#		warn q{$ls->param('enable_closed_loop_opt_in')} . $ls->param('enable_closed_loop_opt_in');
-#		warn q{$ls->param('captcha_sub')} . $ls->param('captcha_sub'); 
-#		warn q{$ls->param('enable_subscription_approval_step')} . $ls->param('enable_subscription_approval_step'); 
-#		warn q{$args->{-html_output} } . $args->{-html_output}; 
-		
-		
+    if ( $status == 1 ) {		
         if (   $ls->param('enable_closed_loop_opt_in') == 0
             && $ls->param('captcha_sub') == 1
 			&& $ls->param('enable_subscription_approval_step') == 0
@@ -347,74 +334,71 @@ sub subscribe {
             }
         }
 
+
         my $skip_sub_confirm_if_logged_in = 0;
+        if ( $ls->param('skip_sub_confirm_if_logged_in') ) {
+            require DADA::Profile::Session;
+            my $sess = DADA::Profile::Session->new;
+            if ( $sess->is_logged_in ) {
+                my $sess_email = $sess->get;
+                if ( $sess_email eq $email ) {
+                    # something...
+                    $skip_sub_confirm_if_logged_in = 1;
+                }
+            }
+        }
+        	        
+        if (   $ls->param('enable_closed_loop_opt_in') == 0
+            || $skip_sub_confirm_if_logged_in == 1 )
+        {
 
-		# Not EVEN going to attempt: 
-		if($args->{-html_output} == 1) {  
-	        if ( $ls->param('skip_sub_confirm_if_logged_in') ) {
-	            require DADA::Profile::Session;
-	            my $sess = DADA::Profile::Session->new;
-	            if ( $sess->is_logged_in ) {
-	                my $sess_email = $sess->get;
-	                if ( $sess_email eq $email ) {
+            # I still have to make a confirmation token, the CAPTCHA step before
+            # confirmation step #1 still requires it.
+            require DADA::App::Subscriptions::ConfirmationTokens;
+            my $ct    = DADA::App::Subscriptions::ConfirmationTokens->new();
+            my $token = $ct->save(
+                {
+                    -email => $email,
+                    -data  => {
+                        list        => $list,
+                        type        => 'list',
+                        flavor      => 'sub_confirm',
+                        remote_addr => $ENV{REMOTE_ADDR},
+                    },
+                    -remove_previous => 1,
+                }
+            );
 
-	                    # something...
-	                    $skip_sub_confirm_if_logged_in = 1;
-	                }
-	            }
-	        }
-	        if (   $ls->param('enable_closed_loop_opt_in') == 0
-	            || $skip_sub_confirm_if_logged_in == 1 )
-	        {
+            # And then, we have to stick the token in the query,
+            $args->{-cgi_obj}->param( 'token', $token );
 
-	            # I still have to make a confirmation token, the CAPTCHA step before
-	            # confirmation step #1 still requires it.
-	            require DADA::App::Subscriptions::ConfirmationTokens;
-	            my $ct    = DADA::App::Subscriptions::ConfirmationTokens->new();
-	            my $token = $ct->save(
-	                {
-	                    -email => $email,
-	                    -data  => {
-	                        list        => $list,
-	                        type        => 'list',
-	                        flavor      => 'sub_confirm',
-	                        remote_addr => $ENV{REMOTE_ADDR},
-	                    },
-	                    -remove_previous => 1,
-	                }
-	            );
+            my $add_to_sub_confirm_list = $lh->add_subscriber(
+                {
+                    -email      => $email,
+                    -type       => 'sub_confirm_list',
+                    -fields     => $fields,
+                    -confirmed  => 0,
+                    -dupe_check => {
+                        -enable  => 1,
+                        -on_dupe => 'ignore_add',
+                    },
+                }
+            );
+            if ( !defined($add_to_sub_confirm_list) ) {
+                warn
+"address, $email, wasn't added to the sub_confirm_list correctly - is it already on there?";
+            }
 
-	            # And then, we have to stick the token in the query,
-	            $args->{-cgi_obj}->param( 'token', $token );
-
-	            my $add_to_sub_confirm_list = $lh->add_subscriber(
-	                {
-	                    -email      => $email,
-	                    -type       => 'sub_confirm_list',
-	                    -fields     => $fields,
-	                    -confirmed  => 0,
-	                    -dupe_check => {
-	                        -enable  => 1,
-	                        -on_dupe => 'ignore_add',
-	                    },
-	                }
-	            );
-	            if ( !defined($add_to_sub_confirm_list) ) {
-	                warn
-	"address, $email, wasn't added to the sub_confirm_list correctly - is it already on there?";
-	            }
-
-	            return $self->confirm(
-	                {
-	                    -return_json => $args->{-return_json},
-	                    -html_output => $args->{-html_output},
-	                    -cgi_obj     => $args->{-cgi_obj},
-	                },
-	            );
-	        }
-	    }
+            return $self->confirm(
+                {
+                    -return_json => $args->{-return_json},
+                    -html_output => $args->{-html_output},
+                    -cgi_obj     => $args->{-cgi_obj},
+                },
+            );
+        }
 	}
- 
+
 
     my $mail_your_subscribed_msg = 0;
 
@@ -439,7 +423,6 @@ sub subscribe {
         }
     }
 
- 
 
     if ( $status == 0 ) {
         my $r = {
@@ -525,7 +508,6 @@ sub subscribe {
     }
     elsif ( $status == 1 ) {
 
- 
 
 # The idea is, we'll save the information for the subscriber in the confirm list, and then
 # move the info to the actual subscription list,
@@ -984,103 +966,18 @@ sub confirm {
     elsif ( $status == 1 ) {
 
         if ( $ls->param('enable_subscription_approval_step') == 1 ) {
-
-            # we go HERE, if subscriptions need to be approved. Got that?
-            $lh->move_subscriber(
-                {
-                    -email          => $email,
-                    -from           => 'sub_confirm_list',
-                    -to             => 'sub_request_list',
-                    -mode           => 'writeover',
-                    -confirmed      => 1,
-                    -fields_options => { -mode => 'preserve_if_defined', },
-
+            
+            return $self->subscription_approval_step(  
+                {               
+                    -email => $email, 
+                    -ls_obj => $ls, 
+                    -lh_obj => $lh, 
+                    -cgi_obj => $q, 
+                    -fh      => $fh, 
                 }
-            );
-            require DADA::App::Subscriptions::ConfirmationTokens;
-            my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
-            $ct->remove_by_token( $q->param('token') );
-
-            require DADA::App::Messages;
-            DADA::App::Messages::send_generic_email(
-                {
-                    -list    => $ls->param('list'),
-                    -headers => {
-                        To => '"'
-                          . escape_for_sending( $ls->param('list_name') )
-                          . '" <'
-                          . $ls->param('list_owner_email') . '>',
-                        Subject => $ls->param(
-                            'subscription_approval_request_message_subject'),
-                    },
-                    -body =>
-                      $ls->param('subscription_approval_request_message'),
-                    -tmpl_params => {
-                        -list_settings_vars_param =>
-                          { -list => $ls->param('list') },
-                        -subscriber_vars_param => {
-                            -list  => $ls->param('list'),
-                            -email => $email,
-                            -type  => 'sub_request_list'
-                        },
-                        -vars => {},
-                    },
-                    -test => $self->test,
-                }
-            );
-
-          # There's no, "Well, hey! You've already done that!" check here. Sigh.
-            my $r = {
-                flavor         => 'subscription_requires_approval',
-                status         => 1,
-                list           => $list,
-                email          => $email,
-                needs_approval => 1,
-                redirect       => {
-                    using =>
-                      $ls->param('use_alt_url_subscription_approval_step'),
-                    using_with_query =>
-                      $ls->param('alt_url_subscription_approval_step_w_qs'),
-                    url =>
-                      $ls->param('alt_url_subscription_approval_step'),
-                    query => 'list=' . uriescape($list) . '&status=1&email=' . uriescape($email),,
-                }
-            };
-            my $qs = 'list='
-              . $list
-              . '&rm=sub&subscription_requires_approval=1&status=1&email='
-              . uriescape($email);
-            $r->{redirect}->{query} = $qs;
-
-            if ( $args->{-html_output} == 0 ) {
-	            if ( $args->{-return_json} == 1 ) {
-					return $self->fancy_data({-data => $r, -type => 'json'}); 
-	            }
-	            else {
-					return $self->fancy_data({-data => $r}); 			
-	            }
-            }
-            else {
-                if ( $ls->param('use_alt_url_subscription_approval_step') == 1 ) {
-                    my $rd = $self->alt_redirect($r);
-                    $self->test ? return $rd : print $fh safely_encode($rd)
-                      and return;
-                }
-                else {
-
-                    my $s = $self->_subscription_requires_approval_message(
-                        {
-                            -list   => $list,
-                            -email  => $email,
-                            -chrome => 1,
-                        }
-                    );
-                    $self->test ? return $s : print $fh safely_encode($s)
-                      and return;
-                }
-            }
+            ); 
         }
-        elsif ( $ls->param('enable_subscription_approval_step') != 1 ) {
+        else {
 
             my $new_pass    = '';
             my $new_profile = 0;
@@ -1280,6 +1177,108 @@ sub confirm {
         }
     }
 }
+
+
+
+sub subscription_approval_step {
+    my $self = shift;
+    my ($args) = @_;
+
+    # Yikes.
+    my $email = $args->{-email};
+    my $ls    = $args->{-ls_obj};
+    my $lh    = $args->{-lh_obj};
+    my $q     = $args->{-cgi_obj};
+    my $fh    = $args->{-fh};
+
+    # we go HERE, if subscriptions need to be approved. Got that?
+    $lh->move_subscriber(
+        {
+            -email          => $email,
+            -from           => 'sub_confirm_list',
+            -to             => 'sub_request_list',
+            -mode           => 'writeover',
+            -confirmed      => 1,
+            -fields_options => { -mode => 'preserve_if_defined', },
+
+        }
+    );
+    require DADA::App::Subscriptions::ConfirmationTokens;
+    my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
+    $ct->remove_by_token( $q->param('token') );
+
+    require DADA::App::Messages;
+    DADA::App::Messages::send_generic_email(
+        {
+            -list    => $ls->param('list'),
+            -headers => {
+                To => '"'
+                  . escape_for_sending( $ls->param('list_name') ) . '" <'
+                  . $ls->param('list_owner_email') . '>',
+                Subject => $ls->param('subscription_approval_request_message_subject'),
+            },
+            -body        => $ls->param('subscription_approval_request_message'),
+            -tmpl_params => {
+                -list_settings_vars_param => { -list => $ls->param('list') },
+                -subscriber_vars_param    => {
+                    -list  => $ls->param('list'),
+                    -email => $email,
+                    -type  => 'sub_request_list'
+                },
+                -vars => {},
+            },
+            -test => $self->test,
+        }
+    );
+
+    # There's no, "Well, hey! You've already done that!" check here. Sigh.
+    my $r = {
+        flavor         => 'subscription_requires_approval',
+        status         => 1,
+        list           => $ls->param('list'),
+        email          => $email,
+        needs_approval => 1,
+        redirect       => {
+            using            => $ls->param('use_alt_url_subscription_approval_step'),
+            using_with_query => $ls->param('alt_url_subscription_approval_step_w_qs'),
+            url              => $ls->param('alt_url_subscription_approval_step'),
+            query            => 'list=' . uriescape( $ls->param('list') ) . '&status=1&email=' . uriescape($email),
+            ,
+        }
+    };
+    my $qs =
+      'list=' . $ls->param('list') . '&rm=sub&subscription_requires_approval=1&status=1&email=' . uriescape($email);
+    $r->{redirect}->{query} = $qs;
+
+    if ( $args->{-html_output} == 0 ) {
+        if ( $args->{-return_json} == 1 ) {
+            return $self->fancy_data( { -data => $r, -type => 'json' } );
+        }
+        else {
+            return $self->fancy_data( { -data => $r } );
+        }
+    }
+    else {
+        if ( $ls->param('use_alt_url_subscription_approval_step') == 1 ) {
+            my $rd = $self->alt_redirect($r);
+            $self->test ? return $rd : print $fh safely_encode($rd)
+              and return;
+        }
+        else {
+
+            my $s = $self->_subscription_requires_approval_message(
+                {
+                    -list   => $ls->param('list'),
+                    -email  => $email,
+                    -chrome => 1,
+                }
+            );
+            $self->test ? return $s : print $fh safely_encode($s)
+              and return;
+        }
+    }
+}
+
 
 sub unsubscription_request {
 
