@@ -273,7 +273,7 @@ sub r_log {
         carp "Couldn't execute, '_recorded_open_recently', : $_";
     };
     if ( $recorded_open_recently <= 0 ) {
-        $self->o_log($args);
+        $self->open_log($args);
     }
 
     my $place_holder_string = '';
@@ -324,6 +324,203 @@ sub r_log {
     return 1;
 
 }
+
+
+
+
+
+
+sub logged_subscriber_count {
+    my $self = shift;
+    my ($args) = @_;
+    my $query =
+        'SELECT COUNT(*) from '
+      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+      . ' WHERE list = ? AND msg_id = ? AND event = ?';
+
+    warn 'Query: ' . $query
+      if $t;
+
+    my $sth = $self->{dbh}->prepare($query);
+       $sth->execute( $self->{name}, $args->{-mid}, 'num_subscribers')
+      	or carp "cannot do statement! $DBI::errstr\n";
+
+    my $count = $sth->fetchrow_array;
+
+    $sth->finish;
+
+    warn '$count is ' . $count
+      if $t;
+
+    if ( $count eq undef ) {
+        return 0;
+    }
+    else {
+        return $count;
+    }
+}
+
+sub open_log {
+    my $self                 = shift;
+    my ($args)               = @_;
+    $args->{-record_as_open} = 0; # Well, yeah
+    $args->{-event}          = 'open'; 
+    return $self->mass_mailing_event_log($args); 
+}
+sub num_subscribers_log {
+    my $self                 = shift;
+    my ($args)               = @_;
+    $args->{-record_as_open} = 0; 
+    $args->{-event}          = 'num_subscribers'; 
+    $args->{-details}        = $args->{-num};
+    return $self->mass_mailing_event_log($args); 
+}
+sub total_recipients_log {
+    my $self                 = shift;
+    my ($args)               = @_;
+    $args->{-record_as_open} = 0; 
+    $args->{-event}          = 'total_recipients'; 
+    $args->{-details}        = $args->{-num};
+    return $self->mass_mailing_event_log($args); 
+}
+sub forward_to_a_friend_log {
+    my $self                 = shift;
+    my ($args)               = @_;
+    $args->{-record_as_open} = 0; 
+    $args->{-event}          = 'forward_to_a_friend'; 
+    return $self->mass_mailing_event_log($args); 
+}
+sub view_archive_log {
+    my $self                 = shift;
+    my ($args)               = @_;
+    $args->{-record_as_open} = 0; 
+    $args->{-event}          = 'view_archive'; 
+    return $self->mass_mailing_event_log($args); 
+}
+sub bounce_log {
+    my $self                 = shift;
+    my ($args)               = @_;
+    my $bounce_type          = '';
+    if ( $args->{-type} eq 'hard' ) {
+        $bounce_type = 'hard_bounce';
+    }
+    else {
+        $bounce_type = 'soft_bounce';
+    }
+    $args->{-record_as_open} = 0; 
+    $args->{-event}          = $bounce_type; 
+    $args->{-details}        = $args->{-email}; # I know, it's weird. 
+    return $self->mass_mailing_event_log($args); 
+}
+sub error_sending_to_log {
+    my $self                 = shift; 
+    my ($args)               = @_;
+    $args->{-record_as_open} = 0; 
+    $args->{-event}          = 'errors_sending_to'; 
+    return $self->mass_mailing_event_log($args); 
+}
+sub unsubscribe_log { 
+	my $self                 = shift; 
+    my ($args)               = @_;
+    $args->{-record_as_open} = 1; 
+    $args->{-event}          = 'unsubscribe'; 
+    return $self->mass_mailing_event_log($args); 
+}
+sub abuse_log { 
+	my $self                 = shift; 
+    my ($args)               = @_;
+    $args->{-record_as_open} = 0; 
+    $args->{-event}          = 'abuse_report';
+    return $self->mass_mailing_event_log($args); 
+}
+
+
+
+
+sub mass_mailing_event_log {
+    my $self      = shift;
+    my ($args)    = @_;
+    
+    # timestamp
+    my $timestamp = undef;
+    if ( exists( $args->{-timestamp} ) ) {
+        $timestamp = $args->{-timestamp};
+    }
+    
+    # remote address
+    my $remote_address = undef;
+    if ( !exists( $args->{-remote_addr} ) ) {
+        $remote_address = $self->remote_addr;
+    }
+    else {
+        $remote_address = $args->{-remote_addr};
+    }
+    
+    # email
+    if ( !exists( $args->{-email} ) ) {
+        $args->{-email} = '';
+    }
+    
+    #event
+    if ( !exists( $args->{-event} ) ) {
+        croak "You need to pass an, '-event'"; 
+    }
+    my $event = $args->{-event};
+    
+    # details
+    if ( !exists( $args->{-details} ) ) {
+        $args->{-details} = undef; 
+    }
+    my $details = $args->{-details};
+    
+    
+    
+    # Record this as an open? 
+    if ( !exists( $args->{-record_as_open} ) ) {
+        $args->{-record_as_open} = 0; 
+    }
+    if($args->{-record_as_open} == 1) {     
+        my $recorded_open_recently = 1;
+        try {
+            $recorded_open_recently = $self->_recorded_open_recently($args);
+        }
+        catch {
+            carp "Couldn't execute, '_recorded_open_recently', : $_";
+        };
+        if ( $recorded_open_recently <= 0 ) {
+            $self->open_log($args);
+        }
+    }
+    
+    my $ts_snippet          = '';
+    my $place_holder_string = '';
+    
+    if ( defined($timestamp) ) {
+        $ts_snippet = 'timestamp,';
+        $place_holder_string .= ' ,?';
+    }
+    
+    my $query =
+        'INSERT INTO '
+      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
+      . '(list, '
+      . $ts_snippet
+      . 'remote_addr, msg_id, event, email, details) VALUES (?, ?, ?, ?, ?, ?'
+      . $place_holder_string . ')';
+
+    my $sth = $self->{dbh}->prepare($query);
+    
+    if ( defined($timestamp) ) {
+        $sth->execute( $self->{name}, $timestamp, $remote_address, $args->{-mid}, $event, $args->{-email}, $details);
+    }
+    else {
+        $sth->execute( $self->{name},             $remote_address, $args->{-mid}, $event, $args->{-email}, $details);
+    }
+    $sth->finish;
+    return 1;
+}
+
+
 
 
 sub _recorded_open_recently {
@@ -381,462 +578,7 @@ sub _recorded_open_recently {
 }
 
 
-sub o_log {
-    my $self      = shift;
-    my ($args)    = @_;
-    my $timestamp = undef;
-    if ( exists( $args->{-timestamp} ) ) {
-        $timestamp = $args->{-timestamp};
-    }
-    if ( !exists( $args->{-email} ) ) {
-        $args->{-email} = '';
-    }
 
-    my $ts_snippet          = '';
-    my $place_holder_string = '';
-
-    if ( defined($timestamp) ) {
-        $ts_snippet = 'timestamp,';
-        $place_holder_string .= ' ,?';
-    }
-    my $remote_address = undef;
-    if ( !exists( $args->{-remote_addr} ) ) {
-        $remote_address = $self->remote_addr;
-    }
-    else {
-        $remote_address = $args->{-remote_addr};
-    }
-
-    my $query =
-        'INSERT INTO '
-      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
-      . '(list, '
-      . $ts_snippet
-      . 'remote_addr, msg_id, event, email) VALUES (?, ?, ?, ?, ?'
-      . $place_holder_string . ')';
-
-    my $sth = $self->{dbh}->prepare($query);
-    if ( defined($timestamp) ) {
-        $sth->execute( $self->{name}, $timestamp, $remote_address,
-            $args->{-mid}, 'open', $args->{-email} );
-    }
-    else {
-        $sth->execute(
-            $self->{name}, $remote_address, $args->{-mid},
-            'open',        $args->{-email}
-        );
-    }
-    $sth->finish;
-    return 1;
-
-}
-
-sub sc_log {
-    my $self      = shift;
-    my ($args)    = @_;
-    my $timestamp = undef;
-    if ( exists( $args->{-timestamp} ) ) {
-        $timestamp = $args->{-timestamp};
-    }
-    my $ts_snippet          = '';
-    my $place_holder_string = '';
-
-    if ( defined($timestamp) ) {
-        $ts_snippet = 'timestamp,';
-        $place_holder_string .= ' ,?';
-    }
-
-    my $remote_address = undef;
-    if ( !exists( $args->{-remote_addr} ) ) {
-        $remote_address = $self->remote_addr;
-    }
-    else {
-        $remote_address = $args->{-remote_addr};
-    }
-
-    my $query =
-        'INSERT INTO '
-      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
-      . '(list, '
-      . $ts_snippet
-      . 'remote_addr, msg_id, event, details) VALUES (?, ?, ?, ?, ?'
-      . $place_holder_string . ')';
-
-    my $sth = $self->{dbh}->prepare($query);
-    if ( defined($timestamp) ) {
-        $sth->execute(
-            $self->{name}, $timestamp,        $remote_address,
-            $args->{-mid}, 'num_subscribers', $args->{-num}
-        ) or carp "cannot do statement! $DBI::errstr\n";
-    }
-    else {
-        $sth->execute(
-            $self->{name},     $remote_address, $args->{-mid},
-            'num_subscribers', $args->{-num}
-        ) or carp "cannot do statement! $DBI::errstr\n";
-    }
-    $sth->finish;
-
-    return 1;
-}
-
-
-
-sub total_recipients_log {
-    my $self      = shift;
-    my ($args)    = @_;
-    my $timestamp = undef;
-    if ( exists( $args->{-timestamp} ) ) {
-        $timestamp = $args->{-timestamp};
-    }
-    my $ts_snippet          = '';
-    my $place_holder_string = '';
-
-    if ( defined($timestamp) ) {
-        $ts_snippet = 'timestamp,';
-        $place_holder_string .= ' ,?';
-    }
-
-    my $remote_address = undef;
-    if ( !exists( $args->{-remote_addr} ) ) {
-        $remote_address = $self->remote_addr;
-    }
-    else {
-        $remote_address = $args->{-remote_addr};
-    }
-
-    my $query =
-        'INSERT INTO '
-      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
-      . '(list, '
-      . $ts_snippet
-      . 'remote_addr, msg_id, event, details) VALUES (?, ?, ?, ?, ?'
-      . $place_holder_string . ')';
-
-    my $sth = $self->{dbh}->prepare($query);
-    if ( defined($timestamp) ) {
-        $sth->execute(
-            $self->{name}, $timestamp,        $remote_address,
-            $args->{-mid}, 'total_recipients', $args->{-num}
-        ) or carp "cannot do statement! $DBI::errstr\n";
-    }
-    else {
-        $sth->execute(
-            $self->{name},     $remote_address, $args->{-mid},
-            'total_recipients', $args->{-num}
-        ) or carp "cannot do statement! $DBI::errstr\n";
-    }
-    $sth->finish;
-
-    return 1;
-}
-
-
-
-
-
-sub logged_sc {
-    my $self = shift;
-    my ($args) = @_;
-    my $query =
-        'SELECT COUNT(*) from '
-      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
-      . ' WHERE list = ? AND msg_id = ? AND event = ?';
-
-    warn 'Query: ' . $query
-      if $t;
-
-    my $sth = $self->{dbh}->prepare($query);
-       $sth->execute( $self->{name}, $args->{-mid}, 'num_subscribers')
-      	or carp "cannot do statement! $DBI::errstr\n";
-
-    my $count = $sth->fetchrow_array;
-
-    $sth->finish;
-
-    warn '$count is ' . $count
-      if $t;
-
-    if ( $count eq undef ) {
-        return 0;
-    }
-    else {
-        return $count;
-    }
-}
-
-
-
-
-
-
-sub forward_to_a_friend_log {
-
-	my $self      = shift; 
-    my ($args)    = @_;
-	my $timestamp = undef; 
-	if(exists($args->{-timestamp})){ 
-		$timestamp = $args->{-timestamp};
-	}
-	my $ts_snippet = ''; 
-	my $place_holder_string = ''; 
-	
-	if(defined($timestamp)){ 
-		$ts_snippet = 'timestamp,'; 
-		$place_holder_string .= ' ,?';
-	}
-
-	my $remote_address = undef; 
-	if(!exists($args->{-remote_addr})){ 
-		$remote_address = $self->remote_addr;
-	}
-	else { 
-		$remote_address = $args->{-remote_addr}; 
-	}
-	
-	
-	my $query =
-'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'remote_addr, msg_id, event) VALUES (?, ?, ?, ?' . $place_holder_string . ')';
-       
-	my $sth = $self->{dbh}->prepare($query);
-	if(defined($timestamp)){ 
-        $sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, 'forward_to_a_friend') 
-			or carp "cannot do statement! $DBI::errstr\n";
-	}
-	else { 
-        $sth->execute($self->{name}, $remote_address, $args->{-mid}, 'forward_to_a_friend') 
-			or carp "cannot do statement! $DBI::errstr\n";;			
-	}
-       $sth->finish;
-
-       return 1;
-   
-}
-
-
-
-
-sub view_archive_log { 
-	my $self      = shift; 
-    my ($args)    = @_;
-	my $timestamp = undef; 
-	if(exists($args->{-timestamp})){ 
-		$timestamp = $args->{-timestamp};
-	}
-	my $ts_snippet = ''; 
-	my $place_holder_string = ''; 
-
-	if(defined($timestamp)){ 
-		$ts_snippet = 'timestamp,'; 
-		$place_holder_string .= ' ,?';
-	}
-
-	my $remote_address = undef; 
-	if(!exists($args->{-remote_addr})){ 
-		$remote_address = $self->remote_addr;
-	}
-	else { 
-		$remote_address = $args->{-remote_addr}; 
-	}
-
-
-		my $query =
-'INSERT INTO ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .'(list, ' . $ts_snippet . 'remote_addr, msg_id, event) VALUES (?, ?, ?, ?' . $place_holder_string . ')';
-
-		my $sth = $self->{dbh}->prepare($query);
-		if(defined($timestamp)){ 
-	        $sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, 'view_archive') 
-				or carp "cannot do statement! $DBI::errstr\n";
-		}
-		else { 
-	        $sth->execute($self->{name}, $remote_address, $args->{-mid}, 'view_archive') 
-				or carp "cannot do statement! $DBI::errstr\n";;			
-		}
-        $sth->finish;
-
-        return 1;
-    
-}
-
-
-
-
-
-sub bounce_log {
-
-    # my ( $self, $type, $mid, $email ) = @_;
-
-    my $self      = shift;
-    my ($args)    = @_;
-    my $timestamp = undef;
-    if ( exists( $args->{-timestamp} ) ) {
-        $timestamp = $args->{-timestamp};
-    }
-    my $ts_snippet          = '';
-    my $place_holder_string = '';
-
-    if ( defined($timestamp) ) {
-        $ts_snippet = 'timestamp,';
-        $place_holder_string .= ' ,?';
-    }
-
-    my $remote_address = undef;
-    if ( !exists( $args->{-remote_addr} ) ) {
-        $remote_address = $self->remote_addr;
-    }
-    else {
-        $remote_address = $args->{-remote_addr};
-    }
-
-    my $bounce_type = '';
-    if ( $args->{-type} eq 'hard' ) {
-        $bounce_type = 'hard_bounce';
-    }
-    else {
-        $bounce_type = 'soft_bounce';
-    }
-    my $query =
-        'INSERT INTO '
-      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
-      . '(list, '
-      . $ts_snippet
-      . 'remote_addr, msg_id, event, details) VALUES (?, ?, ?, ?, ?'
-      . $place_holder_string . ')';
-    my $sth = $self->{dbh}->prepare($query);
-
-    if ( defined($timestamp) ) {
-        $sth->execute(
-            $self->{name}, $timestamp,   $remote_address,
-            $args->{-mid}, $bounce_type, $args->{-email}
-        );
-    }
-    else {
-        $sth->execute(
-            $self->{name}, $remote_address, $args->{-mid},
-            $bounce_type,  $args->{-email}
-        );
-
-    }
-    $sth->finish;
-    return 1;
-
-}
-
-
-
-sub error_sending_to_log {
-
-    # my ( $self, $type, $mid, $email ) = @_;
-
-    my $self      = shift;
-    my ($args)    = @_;
-    my $timestamp = undef;
-    if ( exists( $args->{-timestamp} ) ) {
-        $timestamp = $args->{-timestamp};
-    }
-    my $ts_snippet          = '';
-    my $place_holder_string = '';
-
-    if ( defined($timestamp) ) {
-        $ts_snippet = 'timestamp,';
-        $place_holder_string .= ' ,?';
-    }
-
-    my $remote_address = undef;
-    if ( !exists( $args->{-remote_addr} ) ) {
-        $remote_address = $self->remote_addr;
-    }
-    else {
-        $remote_address = $args->{-remote_addr};
-    }
-
-    my $query =
-        'INSERT INTO '
-      . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
-      . '(list, '
-      . $ts_snippet
-      . 'remote_addr, msg_id, event, email) VALUES (?, ?, ?, ?, ?'
-      . $place_holder_string . ')';
-    my $sth = $self->{dbh}->prepare($query);
-
-	my $event = 'errors_sending_to'; 
-    if ( defined($timestamp) ) {
-        $sth->execute(
-            $self->{name}, $timestamp,   $remote_address,
-            $args->{-mid}, $event, $args->{-email}
-        );
-    }
-    else {
-        $sth->execute(
-            $self->{name}, $remote_address, $args->{-mid},
-            $event,  $args->{-email}
-        );
-
-    }
-    $sth->finish;
-    return 1;
-
-}
-
-
-
-
-sub unsubscribe_log { 
-	my $self      = shift; 
-    my ($args)    = @_;
-	my $timestamp = undef; 
-	if(exists($args->{-timestamp})){ 
-		$timestamp = $args->{-timestamp};
-	}
-	if(!exists($args->{-email})){ 
-		$args->{-email} = '';
-	}
-	
-	
-		my $recorded_open_recently = 1; 
-		try {
-			$recorded_open_recently = $self->_recorded_open_recently($args);
-		} catch {
-			carp "Couldn't execute, '_recorded_open_recently', : $_";
-		};
-		if($recorded_open_recently <= 0) { 
-			$self->o_log($args); 
-		}
-		
-	my $ts_snippet = ''; 
-	my $place_holder_string = ''; 
-	
-	if(defined($timestamp)){ 
-		$ts_snippet = 'timestamp,'; 
-		$place_holder_string .= ' ,?';
-	}
-	my $remote_address = undef; 
-	if(!exists($args->{-remote_addr})){ 
-		$remote_address = $self->remote_addr;
-	}
-	else { 
-		$remote_address = $args->{-remote_addr}; 
-	}
-	
-        my $query = 'INSERT INTO ' 
-		. $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} 
-		.'(list, ' 
-		. $ts_snippet 
-		. 'remote_addr, msg_id, event, email) VALUES (?, ?, ?, ?, ?' 
-		. $place_holder_string 
-		.')';
-		
-        my $sth = $self->{dbh}->prepare($query);
-		if(defined($timestamp)){ 
-			$sth->execute($self->{name}, $timestamp, $remote_address, $args->{-mid}, 'unsubscribe', $args->{-email});
-		}
-		else { 
-			$sth->execute($self->{name}, $remote_address, $args->{-mid}, 'unsubscribe', $args->{-email});
-        }
-		$sth->finish;
-        return 1;
-		
-}
 
 sub unique_and_dupe {
     my $self  = shift;
