@@ -1518,7 +1518,6 @@ sub unsubscribe {
     my $q       = $args->{-cgi_obj};
     my $process = $q->param('process') || undef;
 
-    warn 'here.';
 
     if ( !defined( $q->param('token') ) ) {
         return $self->error_token_undefined(
@@ -1528,8 +1527,6 @@ sub unsubscribe {
             }
         );
     }
-
-    warn 'here.';
 
     my $token = $q->param('token') || undef;
 
@@ -1544,8 +1541,6 @@ sub unsubscribe {
         );
     }
 
-    warn 'here.';
-
     my $data = $ct->fetch($token);
 
     # not sure how you got here, but, whatever:
@@ -1558,17 +1553,10 @@ sub unsubscribe {
         );
     }
 
-    warn 'here.';
-
-    my $is_valid = 1;
-
+    my $is_valid    = 1;
     my $list_exists = DADA::App::Guts::check_if_list_exists( -List => $data->{data}->{list} );
 
-    warn 'here.';
-
     if ( $process == 1 ) {
-
-        warn 'here.';
 
         my $email = lc_email( strip( xss_filter( $q->param('email') ) ) );
         if ( $email eq $data->{email} ) {
@@ -1578,41 +1566,31 @@ sub unsubscribe {
             $is_valid = 0;
         }
 
-        warn 'here.';
-
         if ($is_valid) {
-            warn 'here.';
-
             $args->{-cgi_obj}  = $q;
             $args->{-list}     = $data->{data}->{list};             
             $args->{-email}    = $q->param('email');
             $args->{-mid}      = $q->param('mid'); # why WOULD the mid get passed, here? 
 
-            warn 'here.';
             require DADA::MailingList::Settings;
             my $ls = DADA::MailingList::Settings->new( { -list => $data->{data}->{list} } );
 
             if ( $ls->param('private_list') == 1 ) {
-                warn 'here: ' . __LINE__
-                  if $t;
                 $self->pl_unsubscription_request($args);
                 return;
             }
             else {
-                warn 'here: ' . __LINE__
-                  if $t;
                 $self->complete_unsubscription($args);
                 return;
             }
         }
-        #else { 
-        #    die "not valid!"; 
-        #}
     }
     else {
         # Process is 0. 
     }
-    warn 'here.';
+
+    my $report_abuse_token = $self->_create_report_abuse_token({-unsub_token => $token, -mid => $args->{-mid}}); 
+
     require DADA::Template::Widgets;
     my $r = DADA::Template::Widgets::wrap_screen(
         {
@@ -1620,11 +1598,12 @@ sub unsubscribe {
             -with   => 'list',
             -expr   => 1,
             -vars   => {
-                token       => $token,
-                process     => $process,
-                is_valid    => $is_valid,
-                list_exists => $list_exists,
-                email_hint  => $data->{data}->{email_hint},
+                token              => $token,
+                process            => $process,
+                is_valid           => $is_valid,
+                list_exists        => $list_exists,
+                email_hint         => $data->{data}->{email_hint},
+                report_abuse_token => $report_abuse_token, 
             },
             ( $list_exists == 1 )
             ? ( -list_settings_vars_param => { -list => $data->{data}->{list}, }, )
@@ -1632,6 +1611,45 @@ sub unsubscribe {
         }
     );
     $self->test ? return $r : print $fh safely_encode($r) and return;
+}
+
+
+
+sub _create_report_abuse_token { 
+
+    my $self = shift; 
+    my ($args) = @_; 
+    my $unsub_token = $args->{-unsub_token};
+    my $mid         = $args->{-mid}; 
+    
+    require DADA::App::Subscriptions::ConfirmationTokens;
+    my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
+    
+    if ( $ct->exists($unsub_token) ) {
+        my $data = $ct->fetch($unsub_token);
+        
+        my $email  = $data->{email};
+        my $list   = $data->{data}->{list};
+        
+        my $ra_token = $ct->save(
+            {
+                -email => $email,
+                -data  => {
+                    list        => $list,
+                    type        => 'list',
+                    flavor      => 'report_abuse',
+                    mid         => $mid, 
+                    remote_addr => $ENV{REMOTE_ADDR},
+                },
+                -remove_previous => 1,
+            }
+        );
+        return $ra_token; 
+        
+    }
+    else { 
+        return undef; 
+    }
 }
 
 sub complete_unsubscription {

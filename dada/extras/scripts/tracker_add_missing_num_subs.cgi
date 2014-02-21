@@ -69,7 +69,7 @@ for my $list(available_lists()){
 					print p("NO NUM_SUB_ENTRY"); 
 					my $num_entries = num_entries($list, $mid);
 					print p(b('ADD A NUM SUB ENTRY! - has ' . $num_entries . ' entries AND an Archive!')); 
-					$r->sc_log(
+					$r->num_subscribers_log(
 						{
 							-mid => $mid, 
 							-num => 0, 
@@ -84,7 +84,7 @@ for my $list(available_lists()){
 				my $num_entries = num_entries($list, $mid);
 				if($num_entries > $need_this_many_entries){ 
 					print p(b('ADD A NUM SUB ENTRY! - has ' . $num_entries . ' entries!')); 
-					$r->sc_log(
+					$r->num_subscribers_log(
 						{
 							-mid => $mid, 
 							-num => 0, 

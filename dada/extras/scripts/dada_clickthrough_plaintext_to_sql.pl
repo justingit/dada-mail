@@ -80,7 +80,7 @@ foreach my $list(@lists){
 				); 
             }
             elsif ( $url eq 'open' ) {
-                $dlc->o_log(
+                $dlc->open_log(
 					{
 						-timestamp   => convert_timestamp($t), 
 						-mid         => $mid, 
@@ -116,7 +116,7 @@ foreach my $list(@lists){
 
             }
             elsif ( $url eq 'num_subscribers' ) {				
-				$dlc->sc_log(
+				$dlc->num_subscribers_log(
 					{
 						-timestamp => convert_timestamp($t), 
 						-mid       => $mid, 

@@ -36,7 +36,9 @@
 	<fieldset> 
 		
 	<!-- tmpl_if list_settings.unsub_show_email_hint --> 
-		<h1>Address Hint: <!-- tmpl_var email_hint --></h1> 
+	    <div style="text-align:center">
+		    <h1>Address Hint: <!-- tmpl_var email_hint --></h1> 
+	    </div> 
 	<!-- /tmpl_if -->
 	
 	<p>
@@ -51,15 +53,25 @@
 		<input type="hidden" id="flavor" name="flavor" value="u" />
 		<input type="hidden" id="token" name="token" value="<!-- tmpl_var token  escape="HTML" -->" /> 
 		<input type="hidden" id="process" name="process" value="1" /> 
-		<input type="text"   id="email" name="email" value="<!-- tmpl_var email escape="HTML" -->" />
+		<input type="text"   id="email" name="email" value="<!-- tmpl_var email escape="HTML" -->" style="font-size:1.5em" />
 		<!-- tmpl_if list_settings.private_list --> 
-			<input type="submit" value="Request Unsubscription" /> 
+			<input type="submit" value="Request Unsubscription" class="processing" style="font-size:1.5em" /> 
 		<!-- tmpl_else --> 
-			<input type="submit" value="Unsubscribe" /> 		
+			<input type="submit" value="Unsubscribe" class="processing"  style="font-size:1.5em" />
 		<!-- /tmpl_if -->
 	</form> 
 
 	</fieldset> 
+	
+	
+    <div class="buttonfloat" style="margin-top:50px"> 
+        <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" id="report_abuse_form" /> 
+    		<input type="hidden" name="flavor" value="report_abuse" />
+    		<input type="hidden" id="report_abuse_token" name="report_abuse_token" value="<!-- tmpl_var report_abuse_token  escape="HTML" -->" /> 
+		or, <input type="submit" class="quiet" value="Report Abuse..."/>
+	    </form> 
+	</div>
+	<div class="floatclear"></div> 
 	
 <!-- tmpl_else --> 
 	

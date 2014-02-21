@@ -5,28 +5,24 @@ use lib qw(/Users/justin/Documents/DadaMail/git/dada-mail/dada/DADA/perllib);
 
 use MIME::Parser; 
 
-my $subject = 'Sending Preference Test Email for, <!-- tmpl_var list_settings.list_name -->'; 
+my $subject = 'Abuse Reported on <!-- list_settings.list_name --> (<!-- tmpl_var list_settings.list -->): <!-- tmpl_var subscriber.email -->'; 
 my $pt = <<EOF
 
 Hello, <!-- tmpl_var list_settings.list_owner_email -->, 
 
-This message was sent out by <!-- tmpl_var PROGRAM_NAME --> to test out mail sending for the mailing list, 
+The following address: 
 
-		<!-- tmpl_var list_settings.list_name --> 
-		
-If you've received this message, it looks like mail sending is working. 
+    <!-- tmpl_var subscriber.email --> 
+    
+has reported abuse pertaining to your mailing list: 
 
-<!-- tmpl_if expr="(list_settings.sending_method eq 'sendmail')" --> 
-	* Mail is being sent via the sendmail command
-<!--/tmpl_if -->
-<!-- tmpl_if expr="(list_settings.sending_method eq 'smtp')" --> 
-	* Mail is being sent via SMTP
-<!--/tmpl_if --> 
-<!-- tmpl_if expr="(list_settings.sending_method eq 'amazon_ses')" --> 
-	* Mail is being sent via Amazon Simple Email Service
-<!--/tmpl_if -->
+    <!-- list_settings.list_name --> (<!-- tmpl_var list_settings.list -->)
+    
+Their report is below: 
 
--- <!-- tmpl_var PROGRAM_NAME -->
+<!-- tmpl_var abuse_report_details -->
+
+- <!-- tmpl_var PROGRAM_NAME -->
 
 EOF
 ;
@@ -36,8 +32,8 @@ my $html = '';
 
 use Email::Address; 
 
-my $from_phrase = '<!-- tmpl_var list_settings.list_name -->';
-my $to_phrase   = '<!-- tmpl_var list_settings.list_name -->';
+my $from_phrase = '<!-- tmpl_var list_settings.list_name --> Owner';
+my $to_phrase   = '<!-- tmpl_var list_settings.list_name --> Subscriber';
 
 
 use MIME::Entity; 

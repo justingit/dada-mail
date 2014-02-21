@@ -466,6 +466,7 @@ input.plain,
 input.processing,
 input.cautionary,
 input.alertive,
+input.quiet,
 input.help,
 input.small_button {
 	margin: 3px;
@@ -504,6 +505,7 @@ input.small_button:hover,
 input.plain:hover,
 input.processing:hover,
 input.cautionary:hover,
+input.quiet:hover,
 input.alertive:hover,
 input.help:hover {
 	color: #333;
@@ -544,6 +546,13 @@ input.cautionary {
 	background-color: #ffc;
 	color: #333;
 }
+
+input.quiet {
+	background-color: #fff;
+	color: #666;
+	border:1px solid #333; 
+}
+
 
 input.alertive {
 	background-color: #f66;

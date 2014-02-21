@@ -515,6 +515,7 @@ sub run {
         'token'                                       => \&token,
         'unsubscribe'                                 => \&unsubscribe,
         'unsubscription_request'                      => \&unsubscription_request,
+        'report_abuse'                                => \&report_abuse, 
         'login'                                       => \&login,
         'logout'                                      => \&logout,
         'log_into_another_list'                       => \&log_into_another_list,
@@ -7958,6 +7959,98 @@ sub token {
     );
 }
 
+
+sub report_abuse { 
+    
+    my $report_abuse_token = $q->param('report_abuse_token'); 
+    my $process            = $q->param('process') || 0; 
+    
+    require DADA::App::Subscriptions::ConfirmationTokens;
+    my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
+    
+    if ( $ct->exists($report_abuse_token) ) {
+        my $data = $ct->fetch($report_abuse_token);
+        
+        if ( $data->{data}->{flavor} eq 'report_abuse' ) {
+
+            my $list = $data->{data}->{list};
+
+            require DADA::Template::Widgets; 
+
+            if($process != 1) { 
+                
+                my $scrn = DADA::Template::Widgets::wrap_screen(
+                    {
+                        -screen => 'report_abuse.tmpl',
+                        -with   => 'list',
+                        -vars   => {
+                            report_abuse_token => $report_abuse_token, 
+                        },
+                        -list_settings_vars_param => { -list => $list, -dot_it => 1 },
+                    }
+                );
+                e_print($scrn);
+            }
+            else {
+                
+                my $abuse_report_details = $q->param('abuse_report_details'); 
+                   $abuse_report_details =~ s/\r\n/\n/g;
+                
+                my $email = $data->{data}->{email}; 
+                
+                # Email the Abuse Report
+                require DADA::App::Messages; 
+                DADA::App::Messages::send_abuse_report(
+                    {
+                        -list                 => $list,
+                        -email                => $email,
+                        -abuse_report_details => $abuse_report_details,
+                    }
+                ); 
+                
+                # Log it for the Tracker
+                require DADA::Logging::Clickthrough;
+                my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
+                if ( $r->enabled ) {
+                    $r->abuse_log( 
+                        { 
+                            -email => $email,
+                            -mid   => $id,
+                             # details unique_id to some sort of report table... 
+                        } 
+                    );
+                }
+                return;
+                
+                # (log the actual report?)
+                # ... #
+                #
+                
+                
+                # Tell 'em it worked! 
+                my $scrn = DADA::Template::Widgets::wrap_screen(
+                    {
+                        -screen => 'report_abuse_complete.tmpl',
+                        -with   => 'list',
+                        -vars   => {
+                        },
+                        -list_settings_vars_param => { -list => $list, -dot_it => 1 },
+                    }
+                );
+                e_print($scrn);
+
+                
+            }
+        }
+        else { 
+            return user_error({-error => 'token_problem'});
+        }
+    }
+    else { 
+        return user_error({-error => 'token_problem'});
+    }
+}
+
 sub resend_conf {
 
     require DADA::MailingList::Settings;
@@ -10799,7 +10892,7 @@ sub m_o_c {
         if ( $r->enabled ) {
             if ( defined( $q->param('mid') ) ) {
 
-                $r->o_log(
+                $r->open_log(
                     {
                         -mid   => $q->param('mid'),
                         -email => $q->param('email'),

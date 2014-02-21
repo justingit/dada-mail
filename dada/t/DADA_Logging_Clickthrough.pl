@@ -285,22 +285,22 @@ ok(!exists($mids->[0]), "Reporting that we're not reporting anything! (2)");
 
 $test_mid = DADA::App::Guts::message_id();
 
-my $r = $lc->sc_log(
+my $r = $lc->num_subscribers_log(
 	{ 
 		-mid => $test_mid, 
 		-num => 5, 
 	}
 ); 
-ok($r == 1, "sc_log returns 1!"); 
+ok($r == 1, "num_subscribers_log returns 1!"); 
 
 $test_mid = $test_mid + 10; 
-$r = $lc->sc_log(
+$r = $lc->num_subscribers_log(
 	{ 
 		-mid => $test_mid, 
 		-num => 6, 
 	}
 );
-ok($r == 1, "sc_log returns 1!"); 
+ok($r == 1, "num_subscribers_log returns 1!"); 
 ($total, $mids) = $lc->get_all_mids(); 
 
 #diag "look!"; 
@@ -332,13 +332,13 @@ ok($lc->r_log(
 
 
 # Now, let's see if we can't track that clickthrough: 
-my $r = $lc->sc_log(
+my $r = $lc->num_subscribers_log(
 	{ 
 		-mid => 12345678901234, 
 		-num => 5, 
 	}
 ); 
-ok($r == 1, "sc_log returns 1!");
+ok($r == 1, "num_subscribers_log returns 1!");
 
 ($total, $mids) = $lc->get_all_mids(); 
 ok($total == 1, "total equals 1 ($total)"); 
@@ -373,13 +373,13 @@ $lc->bounce_log(
 	}
 );
 # Now, let's see if we can't track that clickthrough: 
-my $r = $lc->sc_log(
+my $r = $lc->num_subscribers_log(
 	{ 
 		-mid => 12345678901234, 
 		-num => 5, 
 	}
 ); 
-ok($r == 1, "sc_log returns 1!");
+ok($r == 1, "num_subscribers_log returns 1!");
 $report = $lc->report_by_message_index; 
 ok($report->[0]->{hard_bounce} == 1); 
 
@@ -397,7 +397,7 @@ ok($report->[0]->{soft_bounce} == 1);
 
 # o_log
 
-$lc->o_log(
+$lc->open_log(
 	{ 
 		-mid => 12345678901234,
 	}
@@ -407,7 +407,7 @@ ok($report->[0]->{open} == 1);
 
 # Don't believe me? 
 for(1 .. 100){ 
-	$lc->o_log(
+	$lc->open_log(
 		{ 
 			-mid => $mid, 
 		}

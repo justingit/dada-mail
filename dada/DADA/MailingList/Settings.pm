@@ -342,9 +342,9 @@ sub _fill_in_html_settings {
 	
 	my $message_settings = { 
         html_confirmation_message         => 'confirmation.tmpl',
+        html_subscription_request_message => 'subscription_request.tmpl',	    
         html_subscribed_message           => 'subscribed.tmpl',
-        html_unsubscribed_message         => 'subscription_request.tmpl',
-        html_subscription_request_message => 'unsubscribed.tmpl',	    
+        html_unsubscribed_message         => 'unsubscribed.tmpl',
 	}; 
 	
     if(exists($message_settings->{$name})) { 

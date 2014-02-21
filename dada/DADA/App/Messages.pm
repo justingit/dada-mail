@@ -147,6 +147,50 @@ sub send_generic_email {
 }
 
 
+sub send_abuse_email {
+    my ($args) = @_;
+
+    #    -list                 => $list,
+    #    -email                => $email,
+    #    -abuse_report_details => $abuse_report_details,
+    my $abuse_report_details = $args->{-abuse_report_details}; 
+    
+	require DADA::MailingList::Settings; 
+	my $ls = DADA::MailingList::Settings->new({-list => $args->{-list}});
+
+	require DADA::App::ReadEmailMessages; 
+    my $rm = DADA::App::ReadEmailMessages->new; 
+    my $msg_data = $rm->read_message('list_abuse_report_message.eml'); 
+
+    send_generic_email(
+        {
+            -list    => $args->{-list},
+            -headers => {
+                To      => '"' . $msg_data->{to_phrase} . '" <' . $ls->param('list_owner_email') . '>',
+                From    => '"' . $msg_data->{from_phrase} . '" <' . $args->{-email} . '>',
+                Subject => $msg_data->{subject},
+            },
+
+            -body => $msg_data->{plaintext_body},
+            -tmpl_params => {
+                -list_settings_vars_param => { -list => $args->{-list} },
+                -subscriber_vars_param    => {
+					-list  => $args->{-list}, 
+					-email => $args->{-email}, 
+					-type  => 'list'
+                },
+                -vars => {
+                    abuse_report_details => $abuse_report_details, 
+                },
+            },
+            -test => $args->{-test},
+        }
+    );
+
+}
+
+
+
 
 sub send_confirmation_message { 
 
@@ -191,8 +235,6 @@ sub send_confirmation_message {
 			},
 			
 			-test => $args->{-test},
-			
-			 
 		}
 	); 
 	

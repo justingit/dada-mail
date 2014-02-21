@@ -2297,7 +2297,7 @@ sub _log_sending_error {
 		require DADA::Logging::Clickthrough;
 	    $r = DADA::Logging::Clickthrough->new( { -list => $self->{ list } } );
 	    if ( $r->enabled ) {
-	        $r->error_sending_to_log(
+	        $r->error_sending_topen_log(
 	            {
 	                -mid   => $mid,
 	                -email => $args->{-email},
@@ -3250,12 +3250,12 @@ sub _log_sub_count {
     my $num_subscribers      = $args->{-num_subscribers};
 	my $num_total_recipients = $args->{-num_total_recipients}; 
 	
-    warn 'logged_sc is returning, "'
-      . $r->logged_sc( { -mid => $msg_id } ) . '"'
+    warn 'logged_subscriber_count is returning, "'
+      . $r->logged_subscriber_count( { -mid => $msg_id } ) . '"'
       if $t;
 
     if ( $self->restart_with ) {
-        if ( $r->logged_sc( { -mid => $msg_id } ) ) {
+        if ( $r->logged_subscriber_count( { -mid => $msg_id } ) ) {
             # We got it.
             $log_it = 0;
         }
@@ -3280,13 +3280,13 @@ sub _log_sub_count {
     }
 
     if ( $log_it == 1 ) {
-        $r->sc_log(
+        $r->num_subscribers_log(
             {
                 -mid => $msg_id,
                 -num => $num_subscribers
             }
         );
-        $r->sc_log(
+        $r->num_subscribers_log(
             {
                 -mid => $msg_id,
                 -num => $num_subscribers,
