@@ -1986,17 +1986,22 @@ function update_plugins_tracker_message_report() {
 	google.setOnLoadCallback(data_over_time_graph('opens', 'Opens', 'over_time_opens_graph'));
 	google.setOnLoadCallback(data_over_time_graph('view_archive', 'Archive Views', 'over_time_view_archive_graph'));
 	google.setOnLoadCallback(data_over_time_graph('forward_to_a_friend', 'Forwards', 'over_time_forwards_graph'));
+	google.setOnLoadCallback(data_over_time_graph('abuse_report', 'Abuse Reports', 'over_time_abuse_report_graph'));
+
 
 	google.setOnLoadCallback(email_breakdown_chart('unsubscribe', 'Unsubscribes', 'unsubscribe_graph'));
 	google.setOnLoadCallback(email_breakdown_chart('soft_bounce', 'Soft Bounces', 'soft_bounce_graph'));
 	google.setOnLoadCallback(email_breakdown_chart('hard_bounce', 'Hard Bounces', 'hard_bounce_graph'));
 	google.setOnLoadCallback(email_breakdown_chart('errors_sending_to', 'Sending Errors', 'errors_sending_to_graph'));
-
+	google.setOnLoadCallback(email_breakdown_chart('abuse_report', 'Abuse reports', 'abuse_report_graph'));
 
 	tracker_message_report_callback.add(message_email_report_table('unsubscribe',    'unsubscribe_table'));
 	tracker_message_report_callback.add(message_email_report_table('soft_bounce',    'soft_bounce_table'));
 	tracker_message_report_callback.add(message_email_report_table('hard_bounce',    'hard_bounce_table'));
 	tracker_message_report_callback.add(message_email_report_table('errors_sending_to', 'errors_sending_to_table'));
+
+	tracker_message_report_callback.add(message_email_report_table('abuse_report', 'abuse_report_table'));
+
 
 
 	tracker_message_report_callback.fire(); 

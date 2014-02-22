@@ -21,6 +21,9 @@ require Exporter;
   send_newest_archive
   send_you_are_already_subscribed_message
   
+  send_abuse_report
+  
+  
 );
 
 
@@ -147,7 +150,7 @@ sub send_generic_email {
 }
 
 
-sub send_abuse_email {
+sub send_abuse_report {
     my ($args) = @_;
 
     #    -list                 => $list,

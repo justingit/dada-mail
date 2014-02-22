@@ -477,11 +477,9 @@ my $privacy_policy   = $q->param('privacy_policy');
 my $physical_address = $q->param('physical_address');
 my $password         = $q->param('password');
 my $retype_password  = $q->param('retype_password');
-my $keyword          = $q->param('keyword');
 my @address          = $q->param('address');
 my $done             = $q->param('done');
-my $id               = $q->param('id');
-my $advanced         = $q->param('advanced') || 'no';
+# my $id               = $q->param('id');
 my $help             = $q->param('help');
 
 #---------------------------------------------------------------------#
@@ -494,8 +492,6 @@ if ($email) {
 $list    = xss_filter($list);
 $flavor  = xss_filter($flavor);
 $email   = xss_filter($email);
-$keyword = xss_filter($keyword);
-$id      = xss_filter($id);
 
 if ( $q->param('auth_state') ) {
     $q->param( 'auth_state', xss_filter( $q->param('auth_state') ) );
@@ -5723,6 +5719,9 @@ sub view_archive {
     my $entries = $archive->get_archive_entries();
 
     #if we don't have nothin, print the index,
+
+    my $id = $q->param('id') || undef; 
+    
     unless ( defined($id) ) {
 
         my $start = int( $q->param('start') ) || 0;
@@ -7996,8 +7995,11 @@ sub report_abuse {
                 my $abuse_report_details = $q->param('abuse_report_details'); 
                    $abuse_report_details =~ s/\r\n/\n/g;
                 
-                my $email = $data->{data}->{email}; 
-                
+                my $email  = $data->{email}; 
+
+                #use Data::Dumper; 
+                #warn Dumper($data);
+                 
                 # Email the Abuse Report
                 require DADA::App::Messages; 
                 DADA::App::Messages::send_abuse_report(
@@ -8007,6 +8009,10 @@ sub report_abuse {
                         -abuse_report_details => $abuse_report_details,
                     }
                 ); 
+
+                # (log the actual report?)
+                # ... #
+                #
                 
                 # Log it for the Tracker
                 require DADA::Logging::Clickthrough;
@@ -8015,17 +8021,13 @@ sub report_abuse {
                     $r->abuse_log( 
                         { 
                             -email => $email,
-                            -mid   => $id,
-                             # details unique_id to some sort of report table... 
+                            -mid   => $data->{data}->{mid},
+                             # -details => unique_id to some sort of report table... 
                         } 
                     );
-                }
-                return;
+                }                
                 
-                # (log the actual report?)
-                # ... #
-                #
-                
+                $ct->remove_by_token($report_abuse_token); 
                 
                 # Tell 'em it worked! 
                 my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -8643,6 +8645,7 @@ sub new_list {
 
 sub archive {
 
+
     # are we dealing with a real list?
     my $list_exists = check_if_list_exists( -List => $list, );
 
@@ -8654,6 +8657,8 @@ sub archive {
         );
         return;
     }
+
+    my $id = $q->param('id') || undef; 
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
@@ -9117,6 +9122,7 @@ sub archive {
 
 sub archive_bare {
 
+    
     if ( $q->param('admin') ) {
         my ( $admin_list, $root_login ) = check_list_security(
             -cgi_obj  => $q,
@@ -9125,6 +9131,8 @@ sub archive_bare {
         $list = $admin_list;
     }
 
+    my $id = $q->param('id') || undef; 
+    
     if ( $c->cached( 'archive_bare.' . $list . '.' . $id . '.' . $q->param('admin') . '.scrn' ) ) {
         $c->show( 'archive_bare.' . $list . '.' . $id . '.' . $q->param('admin') . '.scrn' );
         return;
@@ -9193,7 +9201,8 @@ sub search_archive {
         user_error( { -list => $list, -error => "not_allowed_to_view_archives" } );
         return;
     }
-
+    
+    my $keyword          = $q->param('keyword');
     $keyword = xss_filter($keyword);
 
     if ( $keyword =~ m/^[A-Za-z]+$/ ) {    # just words, basically.
@@ -10725,6 +10734,7 @@ sub show_img {
 
 sub file_attachment {
 
+    
     # Weird:
     my ( $admin_list, $root_login, $checksout ) = check_list_security(
         -cgi_obj         => $q,
@@ -10734,6 +10744,8 @@ sub file_attachment {
 
     my %args = ( -inline_image_mode => 0, @_ );
 
+    my $id = $q->param('id') || undef; 
+    
     if ( check_if_list_exists( -List => $list ) == 1 ) {
 
         require DADA::MailingList::Settings;

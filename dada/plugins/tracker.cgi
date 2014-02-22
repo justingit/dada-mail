@@ -368,7 +368,10 @@ sub export_subscribers {
 	
 	my $mid = xss_filter($q->param('mid')); 
 	my $type = xss_filter($q->param('type')); 
-	if($type ne 'clickthroughs' && $type ne 'opens'){ 
+	if($type ne 'clickthroughs' 
+	&& $type ne 'opens'
+	&& $type ne 'abuse_reports'
+	){ 
 		$type = 'clickthroughs'; 
 	}
 	
@@ -701,6 +704,10 @@ sub message_report {
   		
 		errors_sending_to        => commify($m_report->{'errors_sending_to'})      || 0,
 		errors_sending_to_percent => $m_report->{'errors_sending_to_percent'}      || 0, 
+		
+		abuse_report                => commify($m_report->{abuse_report})          || 0,
+#        abuse_report_percent        => $m_report->{abuse_report_to_percent}        || 0, 
+
         received                 => commify($m_report->{'received'})               || 0,
 		received_percent          => $m_report->{'received_percent'}               || 0,  
 		unique_bounces_percent      => $m_report->{'unique_bounces_percent'}       || 0, 
@@ -708,6 +715,8 @@ sub message_report {
 		forward_to_a_friend         => commify($m_report->{'forward_to_a_friend'}) || 0,
 		soft_bounce_report          => $m_report->{'soft_bounce_report'}           || [],
 		hard_bounce_report          => $m_report->{'hard_bounce_report'}           || [],
+
+
 		can_use_country_geoip_data  => $rd->can_use_country_geoip_data, 
 		Plugin_URL                  => $Plugin_Url,
 		Plugin_Name                 => $Plugin_Config->{Plugin_Name},

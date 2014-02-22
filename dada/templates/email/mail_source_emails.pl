@@ -5,7 +5,7 @@ use lib qw(/Users/justin/Documents/DadaMail/git/dada-mail/dada/DADA/perllib);
 
 use MIME::Parser; 
 
-my $subject = 'Abuse Reported on <!-- list_settings.list_name --> (<!-- tmpl_var list_settings.list -->): <!-- tmpl_var subscriber.email -->'; 
+my $subject = 'Abuse Reported on <!-- tmpl_var list_settings.list_name --> (<!-- tmpl_var list_settings.list -->): <!-- tmpl_var subscriber.email -->'; 
 my $pt = <<EOF
 
 Hello, <!-- tmpl_var list_settings.list_owner_email -->, 
@@ -16,7 +16,7 @@ The following address:
     
 has reported abuse pertaining to your mailing list: 
 
-    <!-- list_settings.list_name --> (<!-- tmpl_var list_settings.list -->)
+    <!-- tmpl_var list_settings.list_name --> (<!-- tmpl_var list_settings.list -->)
     
 Their report is below: 
 
@@ -32,8 +32,8 @@ my $html = '';
 
 use Email::Address; 
 
-my $from_phrase = '<!-- tmpl_var list_settings.list_name --> Owner';
-my $to_phrase   = '<!-- tmpl_var list_settings.list_name --> Subscriber';
+my $from_phrase = '<!-- tmpl_var list_settings.list_name --> Subscriber';
+my $to_phrase   = '<!-- tmpl_var list_settings.list_name --> Owner';
 
 
 use MIME::Entity; 

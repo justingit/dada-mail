@@ -1,3 +1,4 @@
+
 <!-- begin plugins/tracker/message_individual_email_activity_report_table.tmpl -->
 
 
@@ -31,7 +32,15 @@
 		<!-- tmpl_loop report --> 
 			<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
 				<td width="200"><p style="font-size:11px"><!-- tmpl_var ctime --></p></td>
-			 	<td width="100"><p style="font-size:11px"><!-- tmpl_var event_label --></p></td>
+			 	<td width="100"><p style="font-size:11px">
+			 	
+			 	<!-- tmpl_if event_label --> 
+			 	    <!-- tmpl_var event_label -->
+			 	<!-- tmpl_else --> 
+		 	    <!-- tmpl_var event -->
+			 	<!-- /tmpl_if --> 
+			 	
+			 	</p></td>
 				<td width="340">
 					
 					<!-- tmpl_if url --> 
@@ -53,5 +62,4 @@
 </div> 
 
 <!-- end plugins/tracker/message_individual_email_activity_report_table.tmpl -->
-
 

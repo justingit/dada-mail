@@ -1,15 +1,15 @@
-Content-Type: multipart/alternative; boundary="----------=_1393023805-35949-0"
+Content-Type: multipart/alternative; boundary="----------=_1393026483-38826-0"
 Content-Transfer-Encoding: binary
 MIME-Version: 1.0
 X-Mailer: MIME-tools 5.502 (Entity 5.502)
-To: "<!-- tmpl_var list_settings.list_name --> Subscriber" <user@example.com>
-From: "<!-- tmpl_var list_settings.list_name --> Owner" <user@example.com>
-Subject: Abuse Reported on <!-- list_settings.list_name --> (<!-- tmpl_var
- list_settings.list -->): <!-- tmpl_var subscriber.email -->
+To: "<!-- tmpl_var list_settings.list_name --> Owner" <user@example.com>
+From: "<!-- tmpl_var list_settings.list_name --> Subscriber" <user@example.com>
+Subject: Abuse Reported on <!-- tmpl_var list_settings.list_name --> (<!--
+ tmpl_var list_settings.list -->): <!-- tmpl_var subscriber.email -->
 
 This is a multi-part message in MIME format...
 
-------------=_1393023805-35949-0
+------------=_1393026483-38826-0
 Content-Type: text/plain
 Content-Disposition: inline
 Content-Transfer-Encoding: binary
@@ -23,7 +23,7 @@ The following address:
     
 has reported abuse pertaining to your mailing list: 
 
-    <!-- list_settings.list_name --> (<!-- tmpl_var list_settings.list -->)
+    <!-- tmpl_var list_settings.list_name --> (<!-- tmpl_var list_settings.list -->)
     
 Their report is below: 
 
@@ -32,10 +32,10 @@ Their report is below:
 - <!-- tmpl_var PROGRAM_NAME -->
 
 
-------------=_1393023805-35949-0
+------------=_1393026483-38826-0
 Content-Type: text/html
 Content-Disposition: inline
 Content-Transfer-Encoding: binary
 
 
-------------=_1393023805-35949-0--
+------------=_1393026483-38826-0--

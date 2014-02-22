@@ -244,6 +244,24 @@
 			 </p>
 			</td> 
 			</tr>
+			
+			<tr>
+			<td> 
+			 <p>
+			  <strong>
+			   	   <a href="#" class="to_abuse_reports">Abuse Reports</a>
+			  </strong> 
+			 </p> 
+			 </td> 
+			 <td> 
+			 <p style="text-align:right"> 
+     			  <a href="#" class="to_abuse_reports">
+     			      <strong><!-- tmpl_var abuse_report  default="0" --></strong> 
+     			</a>
+			 </p>
+			</td> 
+			</tr>
+			
 	
 	
 	
@@ -311,6 +329,12 @@
 			<li>
 			<a href="#forwards">
 			Forwards
+			</a>
+			</li>
+
+			<li>
+			<a href="#abuse_reports">
+			Abuse Reports
 			</a>
 			</li>
 			
@@ -587,6 +611,46 @@
 		   </tr>
 		</table>		
 	</div> 
+
+
+	<div id="abuse_reports"> 
+		
+		<h2>Abuse Reports</h2>
+		<table class="stripedtable">
+		 <tr> 
+		  <td> 
+				<div id="abuse_report_table_loading"></div> 
+				<div id="abuse_report_table" style="width:350px;height:400px"></div>
+			</td>
+			<td>
+				<div id="abuse_report_graph_loading"></div> 
+				<div id="abuse_report_graph" data-width="640" data-height="400" data-title="Abuse Reports"></div> 
+			</td>
+		   </tr>
+		</table>
+		
+		<h2>Abuse Reports Over Time</h2> 
+		<div id="over_time_abuse_report_graph_loading"></div> 
+		<div id="over_time_abuse_report_graph" data-width="720" data-height="400" style="width:720px;height:400px"></div>
+		
+		<fieldset> 
+			<div class="buttonfloat">
+			<form action="<!-- tmpl_var PluginURL -->" method="post"> 
+			<input type="hidden" name="f"    value="export_subscribers" /> 
+			<input type="hidden" name="type" value="abuse_reports" /> 
+			<input type="hidden" name="mid"  value="<!-- tmpl_var mid -->" />
+			<input type="submit" value="Export Subscribers Reporting Abuse for This Message" class="processing" /> 
+			</form>
+			</div> 
+			<div class="floatclear"></div>	
+		</fieldset>
+		
+		
+	</div> 
+
+
+
+
 </div> 
 
 

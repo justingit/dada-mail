@@ -19,7 +19,7 @@ use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;    # For now, my dear.
 use Try::Tiny; 
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_Logging_Clickthrough};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_Logging_Clickthrough};
 
 sub new {
 
@@ -765,9 +765,18 @@ sub msg_basic_event_count {
         hard_bounce         => 1,
         forward_to_a_friend => 1,
         view_archive        => 1,
-		unsubscribe         => 1, 
-		errors_sending_to   => 1, 
+		unsubscribe         => 1,
+		errors_sending_to   => 1,
+		abuse_report        => 1,
     );
+    
+    for(keys %ok_events){ 
+        if(!exists($basic_events->{$_})){ 
+            $basic_events->{$_} = 0; 
+        }
+        
+    }
+    
 	my $basic_count_query = 'SELECT msg_id, event, COUNT(*) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ? GROUP BY msg_id, event';
 	my $sth              = $self->{dbh}->prepare($basic_count_query);
        $sth->execute( $self->{name}, $msg_id);
@@ -779,16 +788,14 @@ sub msg_basic_event_count {
 	$sth->finish; 
 	undef $sth; 
 	
-	if(!exists($basic_events->{errors_sending_to})){ 
-		$basic_events->{errors_sending_to} = 0; 
-	}
-	
 	# num subscribers
  	my $num_sub_query = 'SELECT details FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND msg_id = ? AND event = ?';
 	$basic_events->{num_subscribers} = $self->{dbh}->selectcol_arrayref( $num_sub_query, { MaxRows => 1 }, $self->{name}, $msg_id, 'num_subscribers' )->[0];
+
 	# total recipients
- 	my $total_recipients_query = 'SELECT details FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND msg_id = ? AND event = ?';
+	my $total_recipients_query = 'SELECT details FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND msg_id = ? AND event = ?';
 	$basic_events->{total_recipients} = $self->{dbh}->selectcol_arrayref( $total_recipients_query, { MaxRows => 1 }, $self->{name}, $msg_id, 'total_recipients' )->[0];
+
 	# num subscribers
 	if(! defined($basic_events->{total_recipients}) || $basic_events->{total_recipients} eq ''){ 
 		$basic_events->{total_recipients} = $basic_events->{num_subscribers};
@@ -833,12 +840,13 @@ sub msg_basic_event_count {
 			$basic_events->{delivered_to}
 		); 
 	
+    # ...Bounces
 	$basic_events->{unique_soft_bounces_percent} = 
 		$self->percentage(
 			$basic_events->{soft_bounce}, 
 			$basic_events->{delivered_to}
 		); 
-	
+
 	$basic_events->{unique_hard_bounces_percent} = 
 		$self->percentage(
 			$basic_events->{hard_bounce}, 
@@ -862,7 +870,14 @@ sub msg_basic_event_count {
 			$basic_events->{errors_sending_to}, 
 			$basic_events->{total_recipients}
 	); 
-		
+
+#	# 
+#	$basic_events->{abuse_report_percent} = 
+#		$self->percentage(
+#			$basic_events->{abuse_report}, 
+#			$basic_events->{total_recipients}
+#	); 
+
 	return $basic_events;
 
 }
@@ -871,8 +886,6 @@ sub msg_basic_event_count {
 
 
 sub msg_basic_event_count_json { 
-	
-
 	
     my $self          = shift;
 	my ($args)        = @_;
@@ -1139,12 +1152,13 @@ sub export_by_email {
 	my $query; 
 	
 	if ( $args->{-type} eq 'clickthroughs' ) {
-#		print $fh 'clickthroughs'; 
 	    $query = 'SELECT DISTINCT(email) FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ?';
 	}
 	elsif ( $args->{-type} eq 'opens' ) { 
-#		print $fh 'opens'; 
 		$query = 'SELECT DISTINCT(email) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . " WHERE list = ? AND event = 'open'";
+	}
+	elsif ( $args->{-type} eq 'abuse_reports' ) {
+		$query = 'SELECT DISTINCT(email) FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . " WHERE list = ? AND event = 'abuse_report'";	
 	}
 	
 	if(defined($args->{-mid})){ 
@@ -1574,6 +1588,7 @@ sub individual_country_geoip_report {
 		clickthrough        => 'Clickthrough', 
 		view_archive 	    => 'Archive View',
 		forward_to_a_friend => 'Forward',  
+	    abuse_report        => 'Abuse Report', 
 	); 
 	
 	my $report = $self->individual_country_geoip($args);
@@ -1716,19 +1731,22 @@ sub data_over_time {
 	}
 	my $query; 
 	if($args->{-type} eq 'clickthroughs'){ 
-		$query = 'SELECT timestamp FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ? '; 	
+		$query = 'SELECT timestamp FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ? '; 
 	}
 	elsif($args->{-type} eq 'opens') { 
-		$query = 'SELECT timestamp FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'open\' AND list = ? '; 			
+		$query = 'SELECT timestamp FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'open\' AND list = ? ';
 	}
 	elsif($args->{-type} eq 'forward_to_a_friend') { 
-		$query = 'SELECT timestamp FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'forward_to_a_friend\' AND list = ? '; 					
+		$query = 'SELECT timestamp FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'forward_to_a_friend\' AND list = ? ';
 	}
 	elsif($args->{-type} eq 'view_archive') { 
-		$query = 'SELECT timestamp FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'view_archive\' AND list = ? '; 					
+		$query = 'SELECT timestamp FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'view_archive\' AND list = ? ';
 	}
 	elsif($args->{-type} eq 'unsubscribes') { 
-		$query = 'SELECT timestamp FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'unsubscribe\' AND list = ? '; 					
+		$query = 'SELECT timestamp FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'unsubscribe\' AND list = ? ';
+	}
+	elsif($args->{-type} eq 'abuse_report') { 
+		$query = 'SELECT timestamp FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'abuse_report\' AND list = ? ';
 	}
 	 
 	if($mid){ 
@@ -1858,11 +1876,8 @@ sub message_email_report {
 	if($type =~ m/bounce/) { 
 		$email_col = 'details'; 
 	}
-	elsif($type =~ m/unsubscribe/){ 
-		$email_col = 'email';
-	}
-	elsif($type =~ m/errors_sending_to/){ 
-		$email_col = 'email';
+	else { 
+		$email_col = 'email'; 	    
 	}
 	
     my $query =
@@ -1876,6 +1891,7 @@ sub message_email_report {
     my $sth = $self->{dbh}->prepare($query);
 
     $sth->execute( $self->{name}, $mid, $type );
+
     my @report = ();
     while ( my $row = $sth->fetchrow_hashref ) {
         my ( $name, $domain ) = split( '@', $row->{$email_col} );
@@ -1906,6 +1922,9 @@ sub message_email_report_table {
 	my $self   = shift; 
 	my ($args) = @_; 
 	my $html; 
+	
+	use Data::Dumper; 
+	warn 'args:' . Dumper($args); 
 	
 	# warn '$args->{-type} ' . $args->{-type}; 
 	if(! exists($args->{-type})){ 
@@ -1938,6 +1957,10 @@ sub message_email_report_table {
 			$title = 'Unsubscribes'; 
 		}
 		my $report = $self->message_email_report($args);
+		
+		use Data::Dumper; 
+		warn Dumper($report); 
+		
 		require DADA::Template::Widgets; 
 	    $html = DADA::Template::Widgets::screen(
 	        {
@@ -2287,7 +2310,8 @@ sub message_individual_email_activity_report {
 		unsubscribe         => 'Unsubcribe', 
 		soft_bounce         => 'Soft Bounce', 
 		hard_bounce         => 'Hard Bounce', 
-		errors_sending_to   => 'Sending Error', 
+		errors_sending_to   => 'Sending Error',
+		abuse_report        => 'Abuse Report',  
 	);
 	
 	my $return = []; 

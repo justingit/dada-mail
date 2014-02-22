@@ -1569,9 +1569,9 @@ sub unsubscribe {
         if ($is_valid) {
             $args->{-cgi_obj}  = $q;
             $args->{-list}     = $data->{data}->{list};             
-            $args->{-email}    = $q->param('email');
             $args->{-mid}      = $q->param('mid'); # why WOULD the mid get passed, here? 
-
+            $args->{-email}    = $q->param('email'); # or email, for that matter?
+            
             require DADA::MailingList::Settings;
             my $ls = DADA::MailingList::Settings->new( { -list => $data->{data}->{list} } );
 
@@ -1588,8 +1588,8 @@ sub unsubscribe {
     else {
         # Process is 0. 
     }
-
-    my $report_abuse_token = $self->_create_report_abuse_token({-unsub_token => $token, -mid => $args->{-mid}}); 
+    
+    my $report_abuse_token = $self->_create_report_abuse_token( { -unsub_token => $token } ); 
 
     require DADA::Template::Widgets;
     my $r = DADA::Template::Widgets::wrap_screen(
@@ -1620,7 +1620,6 @@ sub _create_report_abuse_token {
     my $self = shift; 
     my ($args) = @_; 
     my $unsub_token = $args->{-unsub_token};
-    my $mid         = $args->{-mid}; 
     
     require DADA::App::Subscriptions::ConfirmationTokens;
     my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
@@ -1630,6 +1629,7 @@ sub _create_report_abuse_token {
         
         my $email  = $data->{email};
         my $list   = $data->{data}->{list};
+        my $mid    = $data->{data}->{mid};
         
         my $ra_token = $ct->save(
             {
