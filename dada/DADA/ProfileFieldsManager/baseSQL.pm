@@ -146,7 +146,7 @@ sub add_field {
       'ALTER TABLE '
       . $self->{sql_params}->{profile_fields_table}
       . ' ADD COLUMN '
-      . $args->{ -field } . ' TEXT';
+      . $args->{ -field } . ' TEXT NOT NULL';
 
     my $sth = $self->{dbh}->prepare($query);
 
