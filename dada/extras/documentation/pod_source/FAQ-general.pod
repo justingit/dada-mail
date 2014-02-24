@@ -51,7 +51,15 @@ The trick is to simply tell the installer to use a different location. For examp
 
 =head2 Can I use one Dada Mail installation for multiple domains? 
 
-Currently, no. One Dada Mail installation will only work for one domain. 
+One installation of Dada Mail will work for one domain. This means, if you install Dada Mail at: 
+
+L<http://site.one.com/cgi-bin/dada/mail.cgi>
+
+You will not be able access this copy of Dada Mail at, 
+
+L<http://site.two.com/cgi-bin/dada/mail.cgi>
+
+even if you administrate both domains. This would require two installations of Dada Mail. 
 
 =head2 How Do I Create a New List? 
 
