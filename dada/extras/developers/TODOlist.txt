@@ -10,10 +10,17 @@ Key:
 [*] Naw...
 [?] Someday
 
+Todo for v6.9.0 
 
+[ ] New Cols in subscriber table
+    [ ] DateTime col. in subscribers table
+        [ ] Ability to search using field for at least mass mailing
+    [ ] col to describe how the subscriber was subscribed 
+        [ ] confirmed
+        [ ] unconfirmed
+        ?
 
-
-[x] SES: endpoints need to now be selected. Sigh. 
+[ ] At the very lest, Profile Field, "Required" option
 
 [ ] Enable Private Mailing Lists 
 	[ ] No need for Unsubscription Links
@@ -21,7 +28,53 @@ Key:
 	[ ] Request Removal	
 	[ ] DateTime col. in subscribers table
 	
-	[ ] Need ability to send complaints to list owner, log complaints, track complaints in tracker plugin
+	[-] Need ability to:
+	    [x] send complaints to list owner, 
+	    [ ] log complaints, 
+	    [x] track complaints in tracker plugin
+	    Need to finish: 
+	        [ ] Fleshing out copy for all the screens, emails
+	        [ ] logging complaints... todo for ver. after?
+	        
+	[ ] Simplify subscription options screen. 
+	    Steps with expanding/collapsing sections
+	    
+	    Make this a: 
+	    
+	    Private | Public list
+	    
+	    Subscribers can 
+	    
+	    [ ] Subscribe Themselves 
+	        [ ] Closed Loop Confirmation 
+	        [ ] (and/or) request 
+	        
+	    | Only be added by the List Owner 
+	
+	Subscription can be made by 
+	    a user, requesting a subscription
+    	    These requests Require: 
+    	        Confirmation (Highly Suggested!) 
+    	            Confirmation Options... 
+    	    the Subscriber purchasing(?) a subscription (not implemented) 	            
+    	        Approval
+	                * Options... 
+	        Successful Subscriptions: 
+	            Options... 
+	    The List Owner, in the List Control Panel 
+        Options 
+            Cannot be Blacklisted (View/Add/Edit)
+                Options...
+            Has to be WhiteListed (View/Add/Edit)
+                Options...
+	    
+	    Unsubscriptions Requests
+	        Show Email Hint  
+	        (Other options...) 
+	
+	
+	
+	
 
     # I don't know about all this: 
     # 
