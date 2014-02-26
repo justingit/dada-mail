@@ -570,7 +570,7 @@ sub _recorded_open_recently {
     my $sth = $self->{dbh}->prepare($query);
 
     $sth->execute( $self->{name}, $args->{-remote_addr}, $args->{-mid}, 'open' )
-      or croak "cannot do statment '$query'! $DBI::errstr\n";
+      or croak "cannot do statement '$query'! $DBI::errstr\n";
 
     my @row = $sth->fetchrow_array();
     $sth->finish;
@@ -2428,8 +2428,8 @@ sub purge_log {
 		my $query1 = 'DELETE FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ?'; 
 		my $query2 = 'DELETE FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ?'; 
 		
-		$self->{dbh}->do($query1, {}, ($self->{name})) or die "cannot do statment $DBI::errstr\n"; 
-		$self->{dbh}->do($query2, {}, ($self->{name})) or die "cannot do statment $DBI::errstr\n";
+		$self->{dbh}->do($query1, {}, ($self->{name})) or die "cannot do statement $DBI::errstr\n"; 
+		$self->{dbh}->do($query2, {}, ($self->{name})) or die "cannot do statement $DBI::errstr\n";
 
 		require DADA::App::DataCache; 
 		my $dc = DADA::App::DataCache->new;

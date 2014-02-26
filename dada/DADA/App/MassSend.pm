@@ -90,7 +90,8 @@ sub send_email {
     require DADA::MailingList::Subscribers;
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
-    my $fields = [];
+    my $naked_fields = $lh->subscriber_fields( { -dotted => 0 } ); 
+    my $fields       = [];
 
     # Extra, special one...
     push( @$fields, { name => 'subscriber.email' } );
@@ -105,7 +106,7 @@ sub send_email {
     require DADA::ProfileFieldsManager;
     my $pfm         = DADA::ProfileFieldsManager->new;
     my $fields_attr = $pfm->get_all_field_attributes;
-    for my $undotted_field ( @{ $lh->subscriber_fields( { -dotted => 0 } ) } ) {
+    for my $undotted_field ( @{ $naked_fields } ) {
         push(
             @$undotted_fields,
             {
@@ -398,26 +399,8 @@ sub send_email {
         $mh->test( $self->test );
 
         my %mailing = ( $mh->return_headers($final_header), Body => $final_body, );
-
-        ###### Blah blah blah, parital listing
-        my $partial_sending = {};
-        for my $field (@$undotted_fields) {
-            if ( $q->param( 'field_comparison_type_' . $field->{name} ) eq 'equal_to' ) {
-                $partial_sending->{ $field->{name} } = { equal_to => $q->param( 'field_value_' . $field->{name} ) };
-            }
-            elsif ( $q->param( 'field_comparison_type_' . $field->{name} ) eq 'like' ) {
-                $partial_sending->{ $field->{name} } = { like => $q->param( 'field_value_' . $field->{name} ) };
-            }
-            elsif ( $q->param( 'field_comparison_type_' . $field->{name} ) eq 'not_equal_to' ) {
-                $partial_sending->{ $field->{name} } = { not_equal_to => $q->param( 'field_value_' . $field->{name} ) };
-            }
-            elsif ( $q->param( 'field_comparison_type_' . $field->{name} ) eq 'not_like' ) {
-                $partial_sending->{ $field->{name} } = { not_like => $q->param( 'field_value_' . $field->{name} ) };
-            }
-
-        }
-
-        ######/ Blah blah blah, parital listing
+        
+        my $partial_sending = partial_sending_query_to_params($q, $naked_fields); 
 
         my $message_id;
         my $og_test_recipient = '';
@@ -563,8 +546,10 @@ sub send_url_email {
 
     }
 
-    my $fields = [];
-
+    my $fields       = [];
+    my $naked_fields = $lh->subscriber_fields( { -dotted => 0 } ); 
+    
+    
     # Extra, special one...
     push( @$fields, { name => 'subscriber.email' } );
     for my $field ( @{ $lh->subscriber_fields( { -dotted => 1 } ) } ) {
@@ -577,7 +562,7 @@ sub send_url_email {
     require DADA::ProfileFieldsManager;
     my $pfm         = DADA::ProfileFieldsManager->new;
     my $fields_attr = $pfm->get_all_field_attributes;
-    for my $undotted_field ( @{ $lh->subscriber_fields( { -dotted => 0 } ) } ) {
+    for my $undotted_field ( @{ $naked_fields } ) {
         push(
             @$undotted_fields,
             {
@@ -890,16 +875,8 @@ sub send_url_email {
 
                 my %mailing = ( $mh->return_headers($header_glob), Body => $template, );
 
-                my $partial_sending = {};
-                for my $field (@$undotted_fields) {
-                    if ( $q->param( 'field_comparison_type_' . $field->{name} ) eq 'equal_to' ) {
-                        $partial_sending->{ $field->{name} } =
-                          { equal_to => $q->param( 'field_value_' . $field->{name} ) };
-                    }
-                    elsif ( $q->param( 'field_comparison_type_' . $field->{name} ) eq 'like' ) {
-                        $partial_sending->{ $field->{name} } = { like => $q->param( 'field_value_' . $field->{name} ) };
-                    }
-                }
+                my $partial_sending = partial_sending_query_to_params($q, $naked_fields); 
+                
                 my $og_test_recipient = '';
                 if ( $q->param('archive_no_send') != 1 ) {
 

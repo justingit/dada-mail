@@ -95,12 +95,12 @@ sub save {
 
  		    my $sth_d = $self->{dbh}->prepare($d_query); 
  			   $sth_d->execute($self->{name}, $setting)
- 			   	or die "cannot do statment $DBI::errstr\n";   
+ 			   	or die "cannot do statement $DBI::errstr\n";   
 				$sth_d->finish;
 				
  			my $sth_a = $self->{dbh}->prepare($a_query);
  			   $sth_a->execute($self->{name}, $setting, $new_settings->{$setting})
- 			   	or die "cannot do statment $DBI::errstr\n"; 
+ 			   	or die "cannot do statement $DBI::errstr\n"; 
   			   $sth_a->finish;
  		}
 		
@@ -120,7 +120,7 @@ sub save {
 				
 				my $sth_am = $self->{dbh}->prepare($a_query);
 				   $sth_am->execute($self->{name}, 'admin_menu', DADA::Template::Widgets::Admin_Menu::create_save_set())
- 			   	   		or die "cannot do statment $DBI::errstr\n";   
+ 			   	   		or die "cannot do statement $DBI::errstr\n";   
 
 			}
 			
@@ -131,7 +131,7 @@ sub save {
  			    my $new_cipher_key = DADA::Security::Password::make_cipher_key(); 
  				my $sth_ck = $self->{dbh}->prepare($a_query);
 				   $sth_ck->execute($self->{name}, 'cipher_key', $new_cipher_key)
- 			   	   		or die "cannot do statment $DBI::errstr\n";   
+ 			   	   		or die "cannot do statement $DBI::errstr\n";   
  			   	   		
  			}
 			#/special cases:

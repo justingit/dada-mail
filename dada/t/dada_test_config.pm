@@ -248,7 +248,7 @@ my @statements = split(';', $sql);
         my $sth = $dbh->prepare($_) or croak $DBI::errstr; 
 
        $sth->execute
-			or croak "cannot do statment $DBI::errstr\n"; 
+			or croak "cannot do statement $DBI::errstr\n"; 
 			#sleep(1);
     }
 	# print "Sleepin!"; 

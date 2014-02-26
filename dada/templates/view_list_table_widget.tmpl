@@ -13,15 +13,42 @@
     		<p>&nbsp;</p>
    		</th>
 	<!-- /tmpl_unless --> 
-	
+
+    <!-- tmpl_if show_timestamp_column --> 
+    	<th>
+    	    <p>
+	     	<!-- tmpl_if expr="(order_by ne 'timestamp')" -->
+    			<a href="#" class="change_order" data-by="timestamp" data-dir="asc">
+    		<!-- /tmpl_if --> 
+
+    		<!-- tmpl_if expr="(order_by eq 'timestamp') && (order_dir eq 'asc')" -->
+    			<a href="#" class="change_order" data-by="timestamp" data-dir="desc">
+    		<!-- /tmpl_if --> 
+
+    		<!-- tmpl_if expr="(order_by eq 'timestamp') && (order_dir eq 'desc')" -->
+    			<a href="#" class="change_order" data-by="timestamp" data-dir="asc">
+    		<!-- /tmpl_if -->
+        	Subscription Date
+        	
+        	<!-- tmpl_if expr="(order_by eq 'timestamp') && (order_dir eq 'asc')" -->
+    			<sub>&#x25B2;</sub>
+    		<!-- /tmpl_if -->
+
+    		<!-- tmpl_if expr="(order_by eq 'timestamp') && (order_dir eq 'desc')" -->
+    			<sub>&#x25BC;</sub>
+    		<!-- /tmpl_if -->     
+	        </a> 
+    	    </p>
+    	</th>
+	<!-- /tmpl_if --> 
 	<!-- tmpl_if show_list_column --> 
-	<th>
-	    <p>
-	     <strong>
-	      List
-	     </strong>
-	    </p>
-	</th>
+    	<th>
+    	    <p>
+    	     <strong>
+    	      List
+    	     </strong>
+    	    </p>
+    	</th>
 	<!-- /tmpl_if --> 
 	
    <th>
@@ -34,8 +61,7 @@
 		<!-- tmpl_if expr="(order_by eq 'email') && (order_dir eq 'asc')" -->
 			<a href="#" class="change_order" data-by="email" data-dir="desc">
 		<!-- /tmpl_if --> 
-		
-		
+				
 		<!-- tmpl_if expr="(order_by eq 'email') && (order_dir eq 'desc')" -->
 			<a href="#" class="change_order" data-by="email" data-dir="asc">
 		<!-- /tmpl_if -->
@@ -99,19 +125,27 @@
 			<input type="checkbox" name="address" class="address" value="<!-- tmpl_var email escape="HTML" -->" />
 
 		</td>
-			    <!-- /tmpl_unless --> 
+		<!-- /tmpl_unless --> 
 	    
-			<!-- tmpl_if show_list_column --> 
-	
-				<td>
-				    <p>
-				     <strong>
-				      <!-- tmpl_var list --> 
-				     </strong>
-				    </p>
-				   </td>
-			
-			<!-- /tmpl_if --> 
+	    
+
+        <!-- tmpl_if show_timestamp_column --> 
+    		<td>
+    		    <p>
+    		      <!-- tmpl_var timestamp --> 
+    		    </p>
+    		</td>
+	    <!-- /tmpl_if --> 
+
+		<!-- tmpl_if show_list_column --> 
+			<td>
+			    <p>
+			     <strong>
+			      <!-- tmpl_var list --> 
+			     </strong>
+			    </p>
+			   </td>
+		<!-- /tmpl_if --> 
 				
 	<td>
 	     <p>

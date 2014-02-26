@@ -9,7 +9,8 @@ email_id INTEGER PRIMARY KEY AUTOINCREMENT,
 email varchar(80),
 list varchar(16),
 list_type varchar(64),
-list_status char(1)
+list_status char(1),
+timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
 CREATE TABLE IF NOT EXISTS dada_confirmation_tokens ( 

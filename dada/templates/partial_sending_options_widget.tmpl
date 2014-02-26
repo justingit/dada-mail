@@ -15,36 +15,78 @@
 	
     <!-- tmpl_loop undotted_fields --> 
         <tr> 
-         <td> 
+         <td align="right"> 
           <p>
-           <strong>
+           <label for="<!-- tmpl_var name -->.operator">
             <!-- tmpl_var label -->:
-           </strong> 
+           </label> 
           </p>
          </td> 
          <td>
           <p>
-           <select name="field_comparison_type_<!-- tmpl_var name -->" id="field_comparison_type_<!-- tmpl_var name -->">
-            
-			<!-- tmpl_if field_comparison_type --> 
-				<option value="<!-- tmpl_var field_comparison_type -->" selected="selected"><!-- tmpl_var field_comparison_type --></option>	
-			<!-- /tmpl_if --> 
-			
-			<option value="like">Is Like</option>
-            <option value="equal_to">Is Equal To</option> 
-			<option value="not_like">Is Not Like</option>
-            <option value="not_equal_to">Is Not Equal To</option> 
+           <select name="<!-- tmpl_var name -->.operator" id="<!-- tmpl_var name -->.operator">
+            <!-- broken now in Beatitude? -->
+			<option value="LIKE">Is Like</option>
+            <option value="=">Is Equal To</option> 
+			<option value="NOT LIKE">Is Not Like</option>
+            <option value="!=">Is Not Equal To</option> 
 
            </select> 
           </p>
          </td>
          <td>
           <p>
-           <input type="text" name="field_value_<!-- tmpl_var name -->" id="field_value_<!-- tmpl_var name -->" value="<!-- tmpl_var field_value -->"/>
+           <!-- Broken now, in Beatitude?! --> 
+           <!--  value="<!-- tmpl_var field_value -->" -->
+           
+           <input type="text" name="<!-- tmpl_var name -->.value" id="<!-- tmpl_var name -->.value" />
           </p>
          </td>
         </tr> 
     <!-- /tmpl_loop --> 
+    
+    <tr> 
+     <td align="right"> 
+      <p>
+       <label for="subscriber.timestamp.operator">
+        Subscription Date:
+       </label> 
+      </p>
+     </td> 
+     <td>
+      <p>
+       <select name="subscriber.timestamp.operator" id="subscriber.timestamp.operator">
+		<option value=">">Within</option>
+		<option value="<">After</option>
+       </select> the last:
+      </p>
+     </td>
+     <td>
+         <!-- tmpl_if comment --> 
+         my $q = CGI::Pretty->new; 
+         print $q->popup_menu(-name => 'foo', values => [1...10]);
+         <!-- /tmpl_if --> 
+         
+      <p> 
+          <select name="subscriber.timestamp.value" id="subscriber.timestamp.value">
+              <option value="">---</option>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+`          </select> 
+           Day(s) 
+      </p>
+     </td>
+    </tr> 
+    
+    
     
     </table> 
     </div> 

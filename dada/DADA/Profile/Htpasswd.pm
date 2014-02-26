@@ -299,7 +299,7 @@ sub remove {
     my $sth = $self->{dbh}->prepare($query);
 
 	my $rv = $sth->execute( $args->{ -id } )
-      or croak "cannot do statment (at remove)! $DBI::errstr\n";
+      or croak "cannot do statement (at remove)! $DBI::errstr\n";
 
     $sth->finish;
 
@@ -423,7 +423,7 @@ sub write_htpasswd {
 	
 	my $sth = $self->{dbh}->prepare($query);
     $sth->execute( $self->{list} )
-      or croak "cannot do statment! $DBI::errstr\n";
+      or croak "cannot do statement! $DBI::errstr\n";
 
 	 while ( my ( $email, $password ) = $sth->fetchrow_array ) {
 		

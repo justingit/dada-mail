@@ -83,7 +83,7 @@ sub tally_up_scores {
 
         my $sth = $self->{dbh}->prepare($query);
         $sth->execute( $email, $self->{list} )
-          or croak "cannot do statment '$query'! $DBI::errstr\n";
+          or croak "cannot do statement '$query'! $DBI::errstr\n";
 
         my @score = $sth->fetchrow_array();
 
@@ -100,7 +100,7 @@ sub tally_up_scores {
               . '(email, list, score) VALUES (?,?,?)';
             my $sth2 = $self->{dbh}->prepare($query2);
             $sth2->execute( $email, $self->{list}, $scores->{$email} )
-              or croak "cannot do statment '$query2'! $DBI::errstr\n";
+              or croak "cannot do statement '$query2'! $DBI::errstr\n";
             $give_back_scores->{$email} = $scores->{$email};
 
             $sth2->finish;
@@ -119,7 +119,7 @@ sub tally_up_scores {
               . ' SET score = ? WHERE email = ? AND list = ?';
             my $sth2 = $self->{dbh}->prepare($query2);
             $sth2->execute( $new_score, $email, $self->{list} )
-              or croak "cannot do statment '$query2'! $DBI::errstr\n";
+              or croak "cannot do statement '$query2'! $DBI::errstr\n";
 
             $give_back_scores->{$email} = $new_score;
 
@@ -161,7 +161,7 @@ sub decay_scorecard {
       . ' WHERE list = ? AND score <= ?';
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute( $self->{list}, 0 )
-      or croak "cannot do statment! $DBI::errstr\n";
+      or croak "cannot do statement! $DBI::errstr\n";
     $sth->finish;
 
 }
@@ -184,7 +184,7 @@ sub removal_list {
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute( $self->{list},
         $self->{ls}->param('bounce_handler_threshold_score') )
-      or croak "cannot do statment '$query'! $DBI::errstr\n";
+      or croak "cannot do statement '$query'! $DBI::errstr\n";
 
     while ( my ( $email, $score ) = $sth->fetchrow_array ) {
         warn "Found email, $email with score, $score"
@@ -207,7 +207,7 @@ sub flush_old_scores {
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute( $self->{list},
         $self->{ls}->param('bounce_handler_threshold_score') )
-      or croak "cannot do statment '$query'! $DBI::errstr\n";
+      or croak "cannot do statement '$query'! $DBI::errstr\n";
     $sth->finish;
 
 }
@@ -230,7 +230,7 @@ sub raw_scorecard {
       . ' WHERE list = ? ORDER BY email';
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute( $self->{list} )
-      or croak "cannot do statment '$query'! $DBI::errstr\n";
+      or croak "cannot do statement '$query'! $DBI::errstr\n";
 
     my $scorecard = [];
 
@@ -272,7 +272,7 @@ sub num_scorecard_rows {
       . ' WHERE list = ?';
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute( $self->{list} )
-      or croak "cannot do statment '$query'! $DBI::errstr\n";
+      or croak "cannot do statement '$query'! $DBI::errstr\n";
 
     my $count = $sth->fetchrow_array;
 
@@ -296,7 +296,7 @@ sub erase {
       . ' where list = ?';
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute( $self->{list} )
-      or croak "cannot do statment '$query'! $DBI::errstr\n";
+      or croak "cannot do statement '$query'! $DBI::errstr\n";
     $sth->finish;
     return 1;
 

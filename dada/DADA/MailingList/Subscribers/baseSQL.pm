@@ -66,7 +66,7 @@ sub inexact_match {
 		    $name . '@',
 		    '@' . $domain,
 		  )
-		  or croak "cannot do statment (inexact_match)! $DBI::errstr\n";
+		  or croak "cannot do statement (inexact_match)! $DBI::errstr\n";
 
     }
     else {
@@ -79,7 +79,7 @@ sub inexact_match {
 	    '@' . $domain,
 
 	  )
-	  or croak "cannot do statment (inexact_match)! $DBI::errstr\n";
+	  or croak "cannot do statement (inexact_match)! $DBI::errstr\n";
 	
     }
 
@@ -113,11 +113,16 @@ sub search_list {
 
     my $fields = $self->subscriber_fields;
     for (@$fields) {
-        $partial_listing->{$_} = { like => $args->{-query} };
+        $partial_listing->{$_} = {
+             -operator => 'like',
+             -value    => $args->{-query}, 
+        };
     }
-
     # Do I have to do this, explicitly?
-    $partial_listing->{email} = { like => $args->{-query} };
+    $partial_listing->{email} = {
+        -operator => 'like',
+        -value    => $args->{-query} 
+    };
 
     my $query = $self->SQL_subscriber_profile_join_statement(
         {
@@ -130,11 +135,12 @@ sub search_list {
 			#'-length'       => $args->{'-length'}, 
         }
     );
+    warn 'QUERY: ' . $query; 
 
     my $sth = $self->{dbh}->prepare($query);
 
     $sth->execute()
-      or croak "cannot do statment (for search_list)! $DBI::errstr\n";
+      or croak "cannot do statement (for search_list)! $DBI::errstr\n";
 
     my $row   = {};
     my $count = 0;
@@ -151,10 +157,13 @@ sub search_list {
         next if $count >  ( $args->{ -start } * $args->{ '-length' }) + ($args->{'-length'}) ;
 
         my $info = {};
-        $info->{email} = $row->{email};
-        $info->{type}  = $args->{-type};    # Whazza?!
+        
+        $info->{timestamp} = $row->{timestamp};
+        $info->{email}     = $row->{email};
+        $info->{type}     = $args->{-type};    # Whazza?!
 
-        delete( $row->{email} );
+        delete( $row->{email} ); #?
+        
         $info->{fields} = [];
 
         for (@$fields) {
@@ -316,7 +325,9 @@ sub SQL_subscriber_profile_join_statement {
         $query = 'SELECT ';
     }
 
-    $query .= $subscriber_table . '.email, ' . $subscriber_table . '.list';
+    $query .= $subscriber_table . '.timestamp, ';
+    $query .= $subscriber_table . '.email, ';
+    $query .= $subscriber_table . '.list';
     $query .= $merge_field_query;
 
 # And we need to match this with the info in $profile_fields_table - this fast/slow?
@@ -390,75 +401,99 @@ sub SQL_subscriber_profile_join_statement {
             # subscriber table - this stops us from not seeing an email
             # address that doesn't have a profile...
             my $table = $profile_fields_table;
+
             if ( $field eq 'email' ) {
                 $table = $subscriber_table;
             }
+            elsif ($field eq 'subscriber.timestamp') { 
+                $table = $subscriber_table;             
+            }
 
-            my $search_type   = undef;
+            next if ! exists($args->{-partial_listing}->{$field}->{-value});
+            next if ! defined($args->{-partial_listing}->{$field}->{-value});
+            next if $args->{-partial_listing}->{$field}->{-value} eq '';
+
             my $search_op     = undef;
             my $search_pre    = undef;
             my $search_app    = undef;
-			my $search_binder = undef; 
-            if ( exists( $args->{-partial_listing}->{$field}->{equal_to} ) ) {
-                if ( length( $args->{-partial_listing}->{$field}->{equal_to} ) > 0 )
-                {
-                    $search_type   = 'equal_to';
+            my $search_binder = undef; 
+
+            if($field ne 'subscriber.timestamp') { 
+                if ( $args->{-partial_listing}->{$field}->{-operator} eq '=' ) {
                     $search_op     = '=';
                     $search_pre    = '';
                     $search_app    = '';
                     $search_binder = 'OR';
-
                 }
-            }
-            elsif ( exists( $args->{-partial_listing}->{$field}->{like} ) ) {
-                if ( length( $args->{-partial_listing}->{$field}->{like} ) > 0 ) {
-                    $search_type   = 'like';
+                elsif ( $args->{-partial_listing}->{$field}->{-operator} eq 'LIKE' ) {
                     $search_op     = 'LIKE';
                     $search_pre    = '%';
                     $search_app    = '%';
                     $search_binder = 'OR';
-  
-              }
-            }
-            elsif ( exists( $args->{-partial_listing}->{$field}->{not_equal_to} ) ) {
-                if ( length( $args->{-partial_listing}->{$field}->{not_equal_to} ) > 0 ) {
-                    $search_type   = 'not_equal_to';
+                }
+                elsif ( $args->{-partial_listing}->{$field}->{-operator} eq '!=' ) {
                     $search_op     = '!=';
                     $search_pre    = '';
                     $search_app    = '';
                     $search_binder = 'AND';
-
                 }
-            }
-            elsif ( exists( $args->{-partial_listing}->{$field}->{not_like} ) ) {
-                if ( length( $args->{-partial_listing}->{$field}->{not_like} ) > 0 ) {
-                    $search_type   = 'not_like';
+                elsif ( $args->{-partial_listing}->{$field}->{-operator} eq 'NOT LIKE' ) {
                     $search_op     = 'NOT LIKE';
                     $search_pre    = '%';
                     $search_app    = '%';
                     $search_binder = 'AND';
-
                 }
-            }
 
-            next if $search_type eq undef;
-
-            my @terms = split(',', $args->{-partial_listing}->{$field}->{$search_type} );
-            foreach my $term(@terms) {
-				$term = strip($term); 
-                push(
-                    @s_snippets,
-                    $table . '.'
-                      . $field . ' '
-                      . $search_op . ' '
-                      . $self->{dbh}->quote(
-                            $search_pre
-                          . $term
-                          . $search_app
-                      )
-                );
-            }
-			 push( @add_q, '(' . join( ' ' . $search_binder . ' ', @s_snippets ) . ')' );
+                my @terms = split(',', $args->{-partial_listing}->{$field}->{-value} );
+                foreach my $term(@terms) {
+    				$term = strip($term); 
+                    push(
+                        @s_snippets,
+                        $table . '.'
+                          . $field . ' '
+                          . $search_op . ' '
+                          . $self->{dbh}->quote(
+                                $search_pre
+                              . $term
+                              . $search_app
+                          )
+                    );
+                }
+    			 push( @add_q, '(' . join( ' ' . $search_binder . ' ', @s_snippets ) . ')' );
+    		}
+    		elsif($field eq 'subscriber.timestamp') { 
+                if($args->{-partial_listing}->{$field}->{-operator} eq '<') { 
+                    $search_op = '<';
+                }
+                elsif($args->{-partial_listing}->{$field}->{-operator} eq '>') { 
+                    $search_op = '>';                    
+                }
+                else { 
+                    # ... 
+                }
+                my $timestamp_snippet = ''; 
+                
+                
+                if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
+                    $timestamp_snippet =   $table . '.timestamp ' 
+                                            . $search_op 
+                                            . ' DATE_SUB(NOW(), INTERVAL ' 
+                                            . $args->{-partial_listing}->{$field}->{-value} 
+                                            . ' DAY)';
+                }
+                else {
+                    # Pg 
+                    $timestamp_snippet =   $table . '.timestamp ' 
+                                            . $search_op 
+                                            . ' NOW() - INTERVAL ' 
+                                            . $args->{-partial_listing}->{$field}->{-value} 
+                                            . ' DAY';
+                }
+                push( @add_q, $timestamp_snippet );
+    		}
+    		else { 
+    		    # ... 
+    		}
         }
        
 
@@ -508,6 +543,14 @@ sub SQL_subscriber_profile_join_statement {
           . '.list, '
           . $subscriber_table
           . '.email';
+    }
+    elsif ( $args->{-order_by} eq 'timestamp' ) {
+        $query .=
+            ' ORDER BY '
+          . $subscriber_table
+          . '.list, '
+          . $subscriber_table
+          . '.timestamp';
     }
     else {
         $query .=
@@ -562,15 +605,20 @@ sub fancy_print_out_list {
 
 	my $show_list_column = 0; 
 	if(exists($args->{-show_list_column})){ 
-		$show_list_column = $args->{-show_list_column}; 
-		
+		$show_list_column = $args->{-show_list_column}; 	
 	}
+	my $show_timestamp_column = 0; 
+	if(exists($args->{-show_timestamp_column})){ 
+		$show_timestamp_column = $args->{-show_timestamp_column}; 	
+	}
+
 
     my $subscribers = $self->subscription_list($args);
     for (@$subscribers) {
-        $_->{no_email_links}   = 1;
-        $_->{no_checkboxes}    = 1;
-		$_->{show_list_column} = $show_list_column, 
+        $_->{no_email_links}        = 1;
+        $_->{no_checkboxes}         = 1;
+        $_->{show_timestamp_column} = $show_timestamp_column, 
+		$_->{show_list_column}      = $show_list_column, 
     }
 
     my $field_names = [];
@@ -583,12 +631,13 @@ sub fancy_print_out_list {
         {
             -screen => 'fancy_print_out_list_widget.tmpl',
             -vars   => {
-                field_names      => $field_names,
-                subscribers      => $subscribers,
-                no_checkboxes    => 1,
-                no_email_links   => 1,
-                show_list_column => $show_list_column, 
-                count            => scalar @{$subscribers},
+                field_names           => $field_names,
+                subscribers           => $subscribers,
+                no_checkboxes         => 1,
+                no_email_links        => 1,
+                show_list_column      => $show_list_column, 
+                show_timestamp_column => $show_timestamp_column, 
+                count                 => scalar @{$subscribers},
             }, 
 			-expr => 1, 
         }
@@ -656,7 +705,6 @@ sub print_out_list {
 	      $self->SQL_subscriber_profile_join_statement(
 	        { 
 				-type      => $args->{-type}, 
-
 			} 
 		);
 	}
@@ -664,7 +712,7 @@ sub print_out_list {
     my $sth = $self->{dbh}->prepare($query);
 
     $sth->execute()
-      or croak "cannot do statment (for print out list)! $DBI::errstr\n";
+      or croak "cannot do statement (for print out list)! $DBI::errstr\n";
 
     my $fields = $self->subscriber_fields;
 
@@ -673,7 +721,7 @@ sub print_out_list {
 
     my $hashref = {};
 
-    my @header = ('email');
+    my @header = ('timestamp', 'email');
     for (@$fields) {
         push ( @header, $_ );
     }
@@ -807,7 +855,7 @@ sub subscription_list {
     my $sth   = $self->{dbh}->prepare($query);
 
     $sth->execute()
-      or croak "cannot do statment (for subscription_list)! $DBI::errstr\n";
+      or croak "cannot do statement (for subscription_list)! $DBI::errstr\n";
 
     my $hashref;
     my %mf_lt = ();
@@ -874,14 +922,14 @@ sub filter_list_through_blacklist {
 
         $sth->execute()
           or croak
-          "cannot do statment (filter_list_through_blacklist)! $DBI::errstr\n";
+          "cannot do statement (filter_list_through_blacklist)! $DBI::errstr\n";
 
     }
     else {
 
         $sth->execute( $self->{list} )
           or croak
-          "cannot do statment (filter_list_through_blacklist)! $DBI::errstr\n";
+          "cannot do statement (filter_list_through_blacklist)! $DBI::errstr\n";
     }
 
     my $hashref;
@@ -902,7 +950,7 @@ sub filter_list_through_blacklist {
         my $sth2 = $self->{dbh}->prepare($query2);
         $sth2->execute( $self->{list}, '%' . $hashref->{email} . '%' )
           or croak
-          "cannot do statment (filter_list_through_blacklist)! $DBI::errstr\n";
+          "cannot do statement (filter_list_through_blacklist)! $DBI::errstr\n";
 
         while ( $hashref2 = $sth2->fetchrow_hashref ) {
             push ( @$list, $hashref2 );
@@ -981,7 +1029,7 @@ sub check_for_double_email {
                 $args{ -Status }
               )
               or croak
-              "cannot do statment (for check for double email)! $DBI::errstr\n";
+              "cannot do statement (for check for double email)! $DBI::errstr\n";
             while ( ( my $email ) = $sth->fetchrow_array ) {
                 push ( @list, $email );
             }

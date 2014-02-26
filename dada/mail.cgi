@@ -1375,41 +1375,26 @@ sub preview_message_receivers {
     for my $field ( @{ $lh->subscriber_fields( { -dotted => 1 } ) } ) {
         push( @$fields, { name => $field } );
     }
+    my $naked_fields = $lh->subscriber_fields( { -dotted => 0 } ); 
     my $undotted_fields = [];
 
     # Extra, special one...
     push( @$undotted_fields, { name => 'email', label => 'Email Address' } );
-    for my $undotted_field ( @{ $lh->subscriber_fields( { -dotted => 0 } ) } ) {
+    for my $undotted_field ( @{ $naked_fields } ) {
         push( @$undotted_fields, { name => $undotted_field } );
     }
-    my $partial_sending = {};
-    for my $field (@$undotted_fields) {
-        if ( $q->param( 'field_comparison_type_' . $field->{name} ) eq 'equal_to' ) {
-            $partial_sending->{ $field->{name} } = { equal_to => $q->param( 'field_value_' . $field->{name} ) };
-        }
-        elsif ( $q->param( 'field_comparison_type_' . $field->{name} ) eq 'like' ) {
-            $partial_sending->{ $field->{name} } = { like => $q->param( 'field_value_' . $field->{name} ) };
-        }
-        elsif ( $q->param( 'field_comparison_type_' . $field->{name} ) eq 'not_equal_to' ) {
-            $partial_sending->{ $field->{name} } = { not_equal_to => $q->param( 'field_value_' . $field->{name} ) };
-        }
-        elsif ( $q->param( 'field_comparison_type_' . $field->{name} ) eq 'not_like' ) {
-            $partial_sending->{ $field->{name} } = { not_like => $q->param( 'field_value_' . $field->{name} ) };
-        }
-
-    }
-
-    #	use Data::Dumper;
-    #	die Dumper($partial_sending);
+    
+    my $partial_sending = partial_sending_query_to_params($q, $naked_fields); 
 
     if ( keys %$partial_sending ) {
         if ( $DADA::Config::MULTIPLE_LIST_SENDING_TYPE eq 'merged' ) {
             $lh->fancy_print_out_list(
                 {
-                    -partial_listing  => $partial_sending,
-                    -type             => 'list',
-                    -include_from     => [@alternative_list],
-                    -show_list_column => 1,
+                    -partial_listing       => $partial_sending,
+                    -type                  => 'list',
+                    -include_from          => [@alternative_list],
+                    -show_list_column      => 1,
+                    -show_timestamp_column => 1, 
                 }
             );
         }
@@ -1418,8 +1403,10 @@ sub preview_message_receivers {
 
             $lh->fancy_print_out_list(
                 {
-                    -partial_listing => $partial_sending,
-                    -type            => 'list',
+                    -partial_listing       => $partial_sending,
+                    -type                  => 'list',
+                    -show_timestamp_column => 1, 
+                     
                 }
             );
 
@@ -3423,13 +3410,13 @@ sub view_list {
 
             $subscribers = $lh->subscription_list(
                 {
-                    -type => $type,
-
-# this really should be just, $page, but subscription_list() would have to be updated, which will break a lot of things...
-                    -start     => ( $page - 1 ),
-                    '-length'  => $ls->param('view_list_subscriber_number'),
-                    -order_by  => $order_by,
-                    -order_dir => $order_dir,
+                    -type                  => $type,
+                    -start                 => ( $page - 1 ), # this really should be just, $page, but subscription_list() would have to be updated, which will break a lot of things...
+                    '-length'              => $ls->param('view_list_subscriber_number'),
+                    -order_by              => $order_by,
+                    -order_dir             => $order_dir,
+                    #-show_list_column      => 0,
+                    #-show_timestamp_column => 0, 
                 }
             );
             $total_num = $num_subscribers;
@@ -3490,7 +3477,8 @@ sub view_list {
                     next_page        => $page_info->next_page,
                     previous_page    => $page_info->previous_page,
                     page             => $page_info->current_page,
-                    show_list_column => 0,
+                    show_list_column       => 0,
+                    show_timestamp_column=> 1,
                     field_names      => $field_names,
 
                     pages_in_set        => $pages_in_set,

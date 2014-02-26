@@ -197,7 +197,7 @@ sub remove {
     my $sth = $self->{dbh}->prepare($query);
 
 	my $rv = $sth->execute( $self->{ email } )
-      or croak "cannot do statment (at remove)! $DBI::errstr\n";
+      or croak "cannot do statement (at remove)! $DBI::errstr\n";
 
     $sth->finish;
 
@@ -379,7 +379,7 @@ sub remove {
     warn 'QUERY: ' . $query . ' (' . $self->{email} . ')'
       if $t;
     my $rv = $sth->execute( $self->{email} )
-      or croak "cannot do statment (at remove)! $DBI::errstr\n";
+      or croak "cannot do statement (at remove)! $DBI::errstr\n";
     $sth->finish;
     return $rv;
 }
@@ -689,7 +689,7 @@ sub activate {
       if $t;
 
     my $rv = $sth->execute( $args->{ -activate }, $self->{email} )
-      or croak "cannot do statment (at activate)! $DBI::errstr\n";
+      or croak "cannot do statement (at activate)! $DBI::errstr\n";
     $sth->finish;
     return 1;
 }
@@ -1253,7 +1253,7 @@ sub set_auth_code {
         warn 'QUERY: ' . $query
           if $t;
         my $rv = $sth->execute( $auth_code, $self->{email} )
-          or croak "cannot do statment (at set_auth_code)! $DBI::errstr\n";
+          or croak "cannot do statement (at set_auth_code)! $DBI::errstr\n";
         $sth->finish;
         return $auth_code;
     }

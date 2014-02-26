@@ -9,7 +9,8 @@ email_id                         serial,
 email                            varchar(80),
 list                             varchar(16),
 list_type                        varchar(64),
-list_status                      char(1)
+list_status                      char(1),
+timestamp TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE dada_confirmation_tokens ( 

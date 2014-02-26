@@ -30,6 +30,7 @@ require Exporter;
   check_for_valid_email
   strip
   pretty
+  partial_sending_query_to_params
   make_pin
   check_email_pin
   make_template
@@ -228,6 +229,51 @@ sub pretty {
 
 }
 
+
+
+
+sub partial_sending_query_to_params {
+    my $q               = shift;
+    my $fields          = shift || undef;
+    my $partial_sending = {};
+
+    if ( !defined($fields) ) {
+        require DADA::ProfileFieldsManager;
+        $fields = DADA::ProfileFieldsManager->new->fields;
+    }
+    unshift( @$fields, 'email' );
+
+    for my $field (@$fields) {
+        my $op = $q->param( $field . '.operator' );
+        my $v  = $q->param( $field . '.value' );
+        my $n  = $field;
+        if ( $op =~ m/^(\=|\!\=|LIKE|NOT LIKE)$/ ) {
+            $partial_sending->{$n} = {
+                -operator => $op,
+                -value    => $v,
+            };
+        }
+    }
+
+    if ( defined( $q->param('subscriber.timestamp.value') ) ) {
+        if ( $q->param('subscriber.timestamp.value') ne '' ) {
+            my $op = $q->param('subscriber.timestamp.operator');
+            my $v  = $q->param('subscriber.timestamp.value');
+            if ( $op =~ m/^(\<|\>)$/ ) {
+                $partial_sending->{'subscriber.timestamp'} = {
+                    -operator => $op,
+                    -value    => $v,
+                };
+            }
+        }
+    }
+
+    return $partial_sending;
+}
+
+
+
+
 =pod
 
 =head2 make_pin 
@@ -245,6 +291,8 @@ although if you create your own $DADA::Config::PIN_NUM  and $DADA::Config::PIN_W
 6230 from justin@example.com 
 
 =cut
+
+
 
 
 sub make_pin {
@@ -2117,7 +2165,7 @@ sub create_probable_missing_tables {
 				my $sth = $dbh->prepare($create_table)
 					or croak $DBI::errstr; 
 				$sth->execute
-					or croak "cannot do statment $DBI::errstr\n"; 
+					or croak "cannot do statement $DBI::errstr\n"; 
 			}
 			catch { 
 				carp "Couldn't create necessary SQL table, '$table_name' with query, '$create_table' - you may have to do this, manually: $_";

@@ -98,7 +98,8 @@ $sl = $lh->subscription_list(
 		-partial_listing => {
 								email => 
 									{
-										like => 'example',
+										-operator => 'LIKE',
+										-value    => 'example',
 									}
 							},
 	}
@@ -119,7 +120,8 @@ $sl = $lh->subscription_list(
 		-partial_listing => {
 								email => 
 									{
-										like => 'fubar.com',
+									    -operator => 'LIKE',
+										-value    => 'fubar.com',
 									}
 							},
 	}
@@ -134,8 +136,10 @@ $sl = $lh->subscription_list(
 		-exclude_from    => [$list3],
 		-partial_listing => {
 								email => 
+								
 									{
-										like => 'fubar.com',
+							            -operator => 'LIKE',
+										-value    => 'fubar.com',
 									}
 							},
 	}
@@ -185,7 +189,8 @@ $sl = $lh->subscription_list(
 		-partial_listing => {
 								one => 
 									{
-										like => 'ONE',
+									    -operator => 'LIKE',
+										-value    => 'ONE',
 									}
 							},
 	}
@@ -203,7 +208,8 @@ $sl = $lh->subscription_list(
 		-partial_listing => {
 								one => 
 									{
-										like => 'ONE',
+									    -operator => 'LIKE',
+										-value    => 'ONE',
 									}
 							},
 	}
@@ -335,7 +341,8 @@ $sl = $lh->subscription_list(
 		-partial_listing => {
 								one => 
 									{
-										like => 'ONE',
+									    -operator => 'LIKE',
+										-value    => 'ONE',
 									}
 							},
 	}
@@ -401,7 +408,8 @@ $sl = $lh->subscription_list(
 		-partial_listing => {
 								one => 
 									{
-										not_equal_to => 'Seattle',
+									    -operator => '!=',
+										-value    => 'Seattle',
 									}
 							},
 	}
@@ -413,11 +421,13 @@ $sl = $lh->subscription_list(
 		-partial_listing => {
 								one => 
 									{
-										not_equal_to => 'Seattle',
+									    -operator => '!=',
+										-value    => 'Seattle',
 									},
 								three => 
 									{
-										not_equal_to => 'red,green',
+									    -operator => '!=',
+										-value    => 'red,green',
 									}
 
 

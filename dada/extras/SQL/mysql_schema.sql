@@ -11,7 +11,8 @@ email_id			            int4 not null primary key auto_increment,
 email                            varchar(80),
 list                             varchar(16),
 list_type                        varchar(64),
-list_status                      char(1)
+list_status                      char(1),
+timestamp                       TIMESTAMP DEFAULT NOW()
 ) CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE INDEX dada_subscribers_all_index ON dada_subscribers (email(80), list, list_type, list_status);

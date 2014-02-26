@@ -279,7 +279,7 @@ sub remove {
 
     #my $rv = $sth->execute( $args->{ -email } )
 	my $rv = $sth->execute( $self->{ email } )
-      or croak "cannot do statment (at remove)! $DBI::errstr\n";
+      or croak "cannot do statement (at remove)! $DBI::errstr\n";
     $sth->finish;
     return $rv;
 

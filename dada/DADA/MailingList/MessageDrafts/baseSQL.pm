@@ -73,7 +73,7 @@ sub id_exists {
 
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute( $self->{list}, $id )
-      or croak "cannot do statment '$query'! $DBI::errstr\n";
+      or croak "cannot do statement '$query'! $DBI::errstr\n";
 
     warn 'QUERY: ' . $query
       if $t;
@@ -144,7 +144,7 @@ sub save {
         my $sth = $self->{dbh}->prepare($query);
 
         $sth->execute( $self->{list}, $args->{-screen}, $args->{-role}, $draft )
-          or croak "cannot do statment '$query'! $DBI::errstr\n";
+          or croak "cannot do statement '$query'! $DBI::errstr\n";
 
         $sth->finish;
 
@@ -182,7 +182,7 @@ sub save {
         my $sth = $self->{dbh}->prepare($query);
         $sth->execute( $args->{-screen}, $args->{-role}, $draft,
             $self->{list}, $args->{-id} )
-          or croak "cannot do statment '$query'! $DBI::errstr\n";
+          or croak "cannot do statement '$query'! $DBI::errstr\n";
         $sth->finish;
         return $id;
     }
@@ -214,7 +214,7 @@ sub has_draft {
 
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute( $self->{list}, $args->{-screen}, $args->{-role} )
-      or croak "cannot do statment '$query'! $DBI::errstr\n";
+      or croak "cannot do statement '$query'! $DBI::errstr\n";
 
     my $count = $sth->fetchrow_array;
 
@@ -251,7 +251,7 @@ sub latest_draft_id {
     my $sth = $self->{dbh}->prepare($query);
 
     $sth->execute( $self->{list}, $args->{-screen}, $args->{-role} )
-      or croak "cannot do statment '$query'! $DBI::errstr\n";
+      or croak "cannot do statement '$query'! $DBI::errstr\n";
     my $hashref;
 
   FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
@@ -305,11 +305,11 @@ sub fetch {
 
     if ( !$id ) {
         $sth->execute( $self->{list}, $args->{-screen}, 'draft' )
-          or croak "cannot do statment '$query'! $DBI::errstr\n";
+          or croak "cannot do statement '$query'! $DBI::errstr\n";
     }
     else {
         $sth->execute( $self->{list}, $args->{-screen}, 'draft', $id )
-          or croak "cannot do statment '$query'! $DBI::errstr\n";
+          or croak "cannot do statement '$query'! $DBI::errstr\n";
     }
     my $hashref;
 
@@ -388,7 +388,7 @@ sub draft_index {
     my $sth = $self->{dbh}->prepare($query);
 
     $sth->execute( $self->{list}, 'draft' )
-      or croak "cannot do statment '$query'! $DBI::errstr\n";
+      or croak "cannot do statement '$query'! $DBI::errstr\n";
     my $hashref;
 
   FETCH: while ( $hashref = $sth->fetchrow_hashref ) {

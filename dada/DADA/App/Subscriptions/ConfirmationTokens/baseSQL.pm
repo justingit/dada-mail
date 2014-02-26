@@ -278,7 +278,7 @@ sub num_tokens {
 
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute()
-      or croak "cannot do statment '$query'! $DBI::errstr\n";
+      or croak "cannot do statement '$query'! $DBI::errstr\n";
 
     my $count = $sth->fetchrow_array;
 

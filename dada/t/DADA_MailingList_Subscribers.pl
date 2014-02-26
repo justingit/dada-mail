@@ -276,7 +276,7 @@ ok(
     )
 );
 
-diag "Justin! there are, " . $lh->num_subscribers . "on this list."; 
+#diag "Justin! there are, " . $lh->num_subscribers . "on this list."; 
 
 # So, add_subscriber actually doesn't have a dupe check by default, so it is possible to 
 # add the same address multiple times. Most of the app knows this, and takes pains to make sure dupe check is enabled, 
@@ -1163,6 +1163,9 @@ SKIP: {
       'email: mike.kelley@example.com, First Name: Mike, Last Name: Kelley';
     my $l2 = 'MikeMikeMikeMikeMikeMike';
     my $l3 = 'KelleyKelleyKelleyKelleyKelleyKelleyKelley';
+    
+    diag '$contents ' . $contents; 
+    
     like( $contents, qr/$l/ );
     like( $contents, qr/$l2/ );
     like( $contents, qr/$l3/ );
@@ -1221,7 +1224,14 @@ SKIP: {
     my $mh = DADA::Mail::Send->new( { -list => $list } );
     $mh->test_send_file( $DADA::Config::TMP . '/mail.txt' );
     $mh->test(1);
-    $mh->partial_sending( { 'first_name' => { 'equal_to' => 'Raymond' } } );
+    $mh->partial_sending( 
+        { 
+            first_name => {
+                -operator => '=',  
+                -value => 'Raymond', 
+            } 
+        } 
+    );
     my $mess_id = '<'
       . DADA::App::Guts::message_id() . '.'
       . DADA::Security::Password::generate_rand_string('1234567890') . '@'
@@ -1274,16 +1284,16 @@ SKIP: {
     my $contents = do { local $/; <$TMP_MAIL_FILE> };
     close $TMP_MAIL_FILE or die $!;
 
-    my $l = quotemeta(
-        'email: mike.kelley@example.com, First Name: Mike, Last Name: Kelley');
+    diag '$contents: ' . $contents;
+
+
+    my $l = quotemeta('email: mike.kelley@example.com, First Name: Mike, Last Name: Kelley');
     my $l2 = quotemeta('MikeMikeMikeMikeMikeMike');
     my $l3 = quotemeta('KelleyKelleyKelleyKelleyKelleyKelleyKelley');
 
-    #diag '$contents: ' . $contents;
-
-    ok( $contents !~ m/$l/ );
-    ok( $contents !~ m/$l2/ );
-    ok( $contents !~ m/$l3/ );
+    ok( $contents !~ m/$l/,  "Found: '$l'");
+    ok( $contents !~ m/$l2/, "Found: '$l2'");
+    ok( $contents !~ m/$l3/, "Found: '$l3'");
     undef $l;
     undef $l2;
     undef $l2;
@@ -1301,13 +1311,12 @@ SKIP: {
     undef $l2;
     undef $l2;
 
-    my $l =
-      quotemeta('email: man.ray@example.com, First Name: Man, Last Name: Ray');
+    my $l =  quotemeta('email: man.ray@example.com, First Name: Man, Last Name: Ray');
     my $l2 = quotemeta('ManManManManManMan');
     my $l3 = quotemeta('RayRayRayRayRayRayRay');
-    ok( $contents !~ m/$l/ );
-    ok( $contents !~ m/$l2/ );
-    ok( $contents !~ m/$l3/, 'DID NOT FIND: RayRayRayRayRayRayRay' );
+    ok( $contents !~ m/$l/,  "Did not find: $l");
+    ok( $contents !~ m/$l2/, "Did not find: $l2");
+    ok( $contents !~ m/$l3/, "Did not find: $l3"); 
     undef $l;
     undef $l2;
     undef $l2;
@@ -1321,9 +1330,7 @@ SKIP: {
       $lh->create_mass_sending_file(
         -ID   => DADA::App::Guts::message_id(),    #argh. That's messy.
         -Type => 'list'
-
-          #-partial_sending => $args->{-partial_sending},
-      );
+     );
 
     ok( ($lh->num_subscribers + 1) == $total_sending_out_num,
         "This file is to send to " . $total_sending_out_num . 'subscribers' );
@@ -1366,7 +1373,12 @@ SKIP: {
       $lh->create_mass_sending_file(
         -ID   => DADA::App::Guts::message_id(),    #argh. That's messy.
         -Type => 'list',
-        -partial_sending => { 'first_name' => { 'equal_to' => 'Raymond' } },
+        -partial_sending => { 
+            'first_name' => { 
+                -operator => '=',
+                -value => 'Raymond', 
+            } 
+        },
       );
 
     ok(
@@ -1387,7 +1399,12 @@ SKIP: {
       $lh->create_mass_sending_file(
         -ID   => DADA::App::Guts::message_id(),    #argh. That's messy.
         -Type => 'list',
-        -partial_sending => { 'first_name' => { 'like' => 'a' } },
+        -partial_sending => { 
+            'first_name' => { 
+                -operator => 'LIKE', 
+                -value    => 'a'
+            } 
+        },
       );
 
     ok(
@@ -1404,7 +1421,7 @@ SKIP: {
       $lh->create_mass_sending_file(
         -ID   => DADA::App::Guts::message_id(),    #argh. That's messy.
         -Type => 'list',
-        -partial_sending => { 'last_name' => { 'like' => 'a' } },
+        -partial_sending => { 'last_name' => { -operator => 'LIKE', -value => 'a' } },
       );
 
     #diag "file, '$path_to_list': \n" . slurp($path_to_list);
@@ -1423,7 +1440,12 @@ SKIP: {
       $lh->create_mass_sending_file(
         -ID   => DADA::App::Guts::message_id(),    #argh. That's messy.
         -Type => 'list',
-        -partial_sending => { 'last_name' => { 'equal_to' => 'Duchamp' } },
+        -partial_sending => { 
+            last_name => { 
+                -operator => '=', 
+                -value    => 'Duchamp', 
+            } 
+        },
       );
 
     ok(
@@ -1440,7 +1462,7 @@ SKIP: {
       $lh->create_mass_sending_file(
         -ID   => DADA::App::Guts::message_id(),    #argh. That's messy.
         -Type => 'list',
-        -partial_sending => { 'first_name' => { 'like' => 'Ma' } },
+        -partial_sending => { 'first_name' => { -operator => 'LIKE', -value => 'Ma' } },
       );
 
     ok(
@@ -1470,7 +1492,7 @@ SKIP: {
       $lh->create_mass_sending_file(
         -ID   => DADA::App::Guts::message_id(),    #argh. That's messy.
         -Type => 'list',
-        -partial_sending => { 'first_name' => { 'equal_to' => 'Raymond' } },
+        -partial_sending => { 'first_name' => { -operator => '=', -value => 'Raymond' } },
       );
 
     ok(
@@ -1614,8 +1636,9 @@ my $results     = 0;
 
 ( $num_results, $results ) = $lh->search_list(
     {
-        -query => 'example',
-        -type  => 'list',
+        -operator => '=',
+        -value    => 'example',
+        -type     => 'list',
     }
 );
 
@@ -1679,8 +1702,9 @@ SKIP: {
 
     ( $num_results, $results ) = $lh->search_list(
         {
-            -query => 'example',
-            -type  => 'list',
+            -operator => '=', 
+            -value   => 'example',
+            -type    => 'list',
         }
     );
 
@@ -1696,8 +1720,8 @@ SKIP: {
 
     ( $num_results, $results ) = $lh->search_list(
         {
-            -query => 'Jones',
-            -type  => 'list',
+            -query    => 'Jones',
+            -type     => 'list',
         }
     );
 
@@ -1710,8 +1734,8 @@ SKIP: {
 
     ( $num_results, $results ) = $lh->search_list(
         {
-            -query => 'Wes',
-            -type  => 'list',
+            -query    => 'Wes',
+            -type     => 'list',
         }
     );
 
@@ -1720,8 +1744,8 @@ SKIP: {
 
     ( $num_results, $results ) = $lh->search_list(
         {
-            -query => 'Wes',
-            -type  => 'list',
+            -query    => 'Wes',
+            -type     => 'list',
         }
     );
     ok( $results->[0],  "Found 1 result" );
