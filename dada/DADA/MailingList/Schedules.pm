@@ -94,10 +94,7 @@ sub schedule_schema {
 
 							 },
 			attachments            => [],
-			partial_sending_params => [ 
-											# { field_name => '', field_comparison_type => '', field_value => '' }, 
-								  	  ], 
-
+			partial_sending_params => [], 
 		);
 		
 		return %d_form_vals; 
@@ -238,20 +235,19 @@ sub save_from_params {
 	
 	$fields = $lh->subscriber_fields; 
 	push(@$fields, 'email'); 
+	push(@$fields, 'subscriber.timestamp'); 
+	
 	for my $field(@$fields){ 
-			
-		if(defined($q->param('field_comparison_type_' . $field))){ 
+		if(defined($q->param($field . '.value'))){ 
 				push(@$saved_pso, {
-				
-								field_name 			  => $field,
-								field_comparison_type => $q->param('field_comparison_type_' . $field), 
-								field_value           => $q->param('field_value_' . $field),  
-							}
+    				field_name     => $field,
+    				field_operator => $q->param($field . '.operator'), 
+    				field_value    => $q->param($field . '.value'),  
+				}
 			); 
-			
 		}
 	}
-		
+	
 	$form_vals{partial_sending_params} = $saved_pso; 
 	
 	#use Data::Dumper; 
@@ -668,18 +664,13 @@ sub send_scheduled_mailing {
 				my $record                 = $self->get_record($args{-key});
 				my $partial_sending_params = $record->{partial_sending_params}; 
 				my $partial_sending = {}; 
-
-
+    			
 				for my $field(@$partial_sending_params){ 
-
-					if($field->{field_comparison_type} eq 'equal_to'){ 
-						$partial_sending->{$field->{field_name}} = {equal_to => $field->{field_value}}; 
-					}
-					elsif($field->{field_comparison_type} eq 'like'){ 
-						$partial_sending->{$field->{field_name}} = {like => $field->{field_value}}; 
-					}   
-				}
-
+					$partial_sending->{$field->{field_name}} = {
+					    -operator => $field->{field_operator},
+					    -value    => $field->{field_value},
+				    };
+				} 
 				if(keys %$partial_sending){ 
 					$mh->partial_sending($partial_sending); 
 				}

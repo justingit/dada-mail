@@ -499,17 +499,18 @@ sub params_to_save {
 
     };
 
-    $params->{field_comparison_type_email} = 1;
-    $params->{field_value_email}           = 1;
-
     require DADA::ProfileFieldsManager;
     my $pfm               = DADA::ProfileFieldsManager->new;
     my $subscriber_fields = $pfm->fields;
     foreach (@$subscriber_fields) {
-        $params->{ 'field_comparison_type_' . $_ } = 1;
-        $params->{ 'field_value_' . $_ }           = 1;
-    }
-
+            $params->{ $_ . '.operator' } = 1;
+            $params->{ $_ . '.value' }    = 1;
+        }  
+        for ('email', 'subscriber.timestamp') { 
+            $params->{ $_ . '.operator' } = 1;
+            $params->{ $_ . '.value' }    = 1;
+        }
+         
     if ( $args->{-screen} eq 'send_email' ) {
 
         $params->{attachment1} = 1;

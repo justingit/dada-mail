@@ -3293,6 +3293,9 @@ sub view_list {
     );
     $list = $admin_list;
 
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+
+
     my $add_email_count = xss_filter( $q->param('add_email_count') ) || 0;
     my $skipped_email_count = xss_filter( $q->param('skipped_email_count') )
       || 0;
@@ -3304,8 +3307,8 @@ sub view_list {
     my $bounced_list_removed_from_list   = xss_filter( $q->param('bounced_list_removed_from_list') )   || 0;
     my $type                             = xss_filter( $q->param('type') )                             || 'list';
     my $query                            = xss_filter( $q->param('query') )                            || undef;
-    my $order_by                         = xss_filter( $q->param('order_by') )                         || 'email';
-    my $order_dir                        = xss_filter( $q->param('order_dir') )                        || 'asc';
+    my $order_by  =  $q->param('order_by')  ||   $ls->param('view_list_order_by');
+    my $order_dir =  $q->param('order_dir') || lc($ls->param('view_list_order_by_direction'));
     my $mode                             = xss_filter( $q->param('mode') )                             || 'view';
     my $page                             = xss_filter( $q->param('page') )                             || 1;
 
@@ -3478,8 +3481,8 @@ sub view_list {
                     previous_page    => $page_info->previous_page,
                     page             => $page_info->current_page,
                     show_list_column       => 0,
-                    show_timestamp_column=> 1,
-                    field_names      => $field_names,
+                    show_timestamp_column=> $ls->param('view_list_show_timestamp_col'),
+                    field_names       => $field_names,
 
                     pages_in_set        => $pages_in_set,
                     num_subscribers     => commify($num_subscribers),
@@ -3929,13 +3932,23 @@ sub membership {
         -Function => 'membership'
     );
 
+
     $list = $admin_list;
+
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+
+
     my $query     = xss_filter( $q->param('query') )     || undef;
     my $page      = xss_filter( $q->param('page') )      || 1;
     my $type      = xss_filter( $q->param('type') );
-    my $order_by  = xss_filter( $q->param('order_by') )  || 'email';
-    my $order_dir = xss_filter( $q->param('order_dir') ) || 'asc';
 
+
+    my $order_by  =  $q->param('order_by')  ||   $ls->param('view_list_order_by');
+    my $order_dir =  $q->param('order_dir') || lc($ls->param('view_list_order_by_direction'));
+
+    
     my $add_email_count                  = $q->param('add_email_count') || 0;
     my $delete_email_count               = $q->param('delete_email_count');
     my $black_list_add                   = $q->param('black_list_add') || 0;
@@ -3944,9 +3957,6 @@ sub membership {
     my $bounced_list_moved_to_list_count = $q->param('bounced_list_moved_to_list_count') || 0;
     my $bounced_list_removed_from_list   = $q->param('bounced_list_removed_from_list') || 0;
 
-    require DADA::MailingList::Settings;
-    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
     if ($process) {
         if ( !$root_login ) {
@@ -5619,8 +5629,41 @@ sub subscription_options {
 
     if ( !$process ) {
 
+
+        require DADA::ProfileFieldsManager;  
+        my $dpfm = DADA::ProfileFieldsManager->new; 
+        my $field_atts = $dpfm->get_all_field_attributes; 
+        my $pf_field_labels = {}; 
+        for(keys %{$field_atts}){ 
+           $pf_field_labels->{$_} = $field_atts->{$_}->{label}; 
+        }
+        my $field_values = $dpfm->fields; 
+        unshift(@$field_values, 'timestamp'); 
+         unshift(@$field_values, 'email'); 
+
+         $pf_field_labels->{timestamp} = 'Subscription Date';          
+        $pf_field_labels->{email} = 'Email Address'; 
+        
+        
+        
+        my $view_list_order_by_menu = $q->popup_menu(
+            -name     => 'view_list_order_by', 
+            -id       => 'view_list_order_by', 
+            '-values' => $field_values, 
+            -labels   => $pf_field_labels, 
+            -default  => $ls->param('view_list_order_by'), 
+        );          
+        my $view_list_order_by_direction_menu = $q->popup_menu(
+            -name     => 'view_list_order_by_direction', 
+            -id       => 'view_list_order_by_direction', 
+            '-values' => ['ASC', 'DESC'],
+            -labels   => {ASC => 'Ascending', DESC => 'Descending'},
+            -default  => $ls->param('view_list_order_by_direction'), 
+        );          
+        
         my $subscription_quota_menu = $q->popup_menu(
             -name     => 'subscription_quota',
+            -id       => 'subscription_quota',
             '-values' => [@quota_values],
             -default  => $ls->param('subscription_quota'),
         );
@@ -5652,6 +5695,8 @@ sub subscription_options {
                     done                         => $done,
                     subscription_quota_menu      => $subscription_quota_menu,
                     vlsn_menu                    => $vlsn_menu,
+                    view_list_order_by_menu      => $view_list_order_by_menu, 
+                    view_list_order_by_direction_menu => $view_list_order_by_direction_menu, 
                     SUBSCRIPTION_QUOTA           => $DADA::Config::SUBSCRIPTION_QUOTA,
                     commified_subscription_quota => commify( int($DADA::Config::SUBSCRIPTION_QUOTA) ),
                 },
@@ -5670,6 +5715,9 @@ sub subscription_options {
                 -associate => $q,
                 -settings  => {
                     view_list_subscriber_number          => undef,
+                    view_list_show_timestamp_col         => 0, 
+                    view_list_order_by                   => undef, 
+                    view_list_order_by_direction         => undef, 
                     use_subscription_quota               => 0,
                     subscription_quota                   => undef,
                     black_list                           => 0,
@@ -8309,15 +8357,16 @@ sub text_list {
     );
 
     $list = $admin_list;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+
     my $type      = $q->param('type')                || 'list';
     my $query     = xss_filter( $q->param('query') ) || undef;
-    my $order_by  = $q->param('order_by')            || 'email';
-    my $order_dir = $q->param('order_dir')           || 'asc';
 
-    require DADA::MailingList::Settings;
-    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    
+    my $order_by  =  $q->param('order_by')  ||   $ls->param('view_list_order_by');
+    my $order_dir =  $q->param('order_dir') || lc($ls->param('view_list_order_by_direction'));
 
-    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
     my $email;
 

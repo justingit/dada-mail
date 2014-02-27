@@ -10,11 +10,14 @@ Key:
 [*] Naw...
 [?] Someday
 
+[ ] Provide a space to enter in the Profile Password
+[ ] Provide a, "rewrite/preserve" option for profile information 
+
 Todo for v6.9.0 
 
 [ ] New Cols in subscriber table
-    [ ] DateTime col. in subscribers table
-        [ ] Ability to search using field for at least mass mailing
+    [x] DateTime col. in subscribers table
+        [x] Ability to search using field for at least mass mailing
     [ ] col to describe how the subscriber was subscribed 
         [ ] confirmed
         [ ] unconfirmed

@@ -1365,8 +1365,11 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
 
     # view list prefs
 
-    view_list_subscriber_number => 100,
-
+    view_list_subscriber_number  => 100,
+    view_list_show_timestamp_col => 1, 
+    view_list_order_by           => 'email', 
+    view_list_order_by_direction => 'ASC', 
+    
     # archive prefs
 
     archive_messages                       => 1,

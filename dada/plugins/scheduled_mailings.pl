@@ -944,22 +944,32 @@ my $fields_attr = $pfm->get_all_field_attributes;
 
 
 my $partial_saved = $form_vals{partial_sending_params};
-my $edited_fields = []; 
 
-for my $p_field(@$undotted_fields){ 
-	for my $partial_saved_entry(@$partial_saved){ 
-		# Did you catch that?
-		if($partial_saved_entry->{field_name} eq $p_field->{name}){ 	
-			$p_field->{field_comparison_type} = $partial_saved_entry->{field_comparison_type};
-			$p_field->{field_value}           = $partial_saved_entry->{field_value};
-			 
-		}
-	}
-	
-	push(@$edited_fields, $p_field); 
+my $partial_q = CGI->new; 
+   $partial_q->delete_all(); 
+   	for my $saved(@$partial_saved){ 
+	    $partial_q->param($saved->{field_name}  . '.operator', $saved->{field_operator}); 
+	    $partial_q->param($saved->{field_name}  . '.value',    $saved->{field_value}); 
+    }
+    my $undotted_fields = [];
+    
+    my $naked_fields = $lh->subscriber_fields( { -dotted => 0 } ); 
 
-}
-
+    
+    # Extra, special one...
+    push( @$undotted_fields, { name => 'email', label => 'Email Address' } );
+    require DADA::ProfileFieldsManager;
+    my $pfm         = DADA::ProfileFieldsManager->new;
+    my $fields_attr = $pfm->get_all_field_attributes;
+    for my $undotted_field ( @{ $naked_fields } ) {
+        push(
+            @$undotted_fields,
+            {
+                name  => $undotted_field,
+                label => $fields_attr->{$undotted_field}->{label}
+            }
+        );
+    }
 
 $f .= '<fieldset>
  <legend>
@@ -974,16 +984,23 @@ $f .= '<fieldset>
 '; 
  
 require DADA::Template::Widgets; 
-$f .= DADA::Template::Widgets::screen({
+my $partial_send_widget = DADA::Template::Widgets::screen({
 	-screen => 'partial_sending_options_widget.tmpl',
 	-vars => { 	                                                                  
-	    fields                      => $edited_fields,
-		undotted_fields 			=> $undotted_fields, 
+	    undotted_fields             => $undotted_fields,
 	    can_have_subscriber_fields  => $lh->can_have_subscriber_fields, 
     
 	}, 
 	}
 ); 
+
+# This is getting desperate... 
+require HTML::FillInForm::Lite;
+my $h       = HTML::FillInForm::Lite->new();
+$partial_send_widget = $h->fill( \$partial_send_widget, $partial_q,);
+
+$f .= $partial_send_widget; 
+
 
 $f .= ' </div> 
 </fieldset>'; 
@@ -1006,7 +1023,7 @@ $f .= $q->p('&nbsp;') . $q->p($q->a({-href => $Plugin_Config->{Plugin_URL}}, '<-
 
 if($q->param('debug')){ 
 	require Data::Dumper; 
-	$f .= $q->hr . '<pre>' . Data::Dumper::Dumper(%form_vals) . '</pre>'; 
+	$f .= $q->hr . '<pre>' . Data::Dumper::Dumper({%form_vals}) . '</pre>'; 
 }
 
 

@@ -114,13 +114,13 @@ sub search_list {
     my $fields = $self->subscriber_fields;
     for (@$fields) {
         $partial_listing->{$_} = {
-             -operator => 'like',
+             -operator => 'LIKE',
              -value    => $args->{-query}, 
         };
     }
     # Do I have to do this, explicitly?
     $partial_listing->{email} = {
-        -operator => 'like',
+        -operator => 'LIKE',
         -value    => $args->{-query} 
     };
 
@@ -413,10 +413,10 @@ sub SQL_subscriber_profile_join_statement {
             next if ! defined($args->{-partial_listing}->{$field}->{-value});
             next if $args->{-partial_listing}->{$field}->{-value} eq '';
 
-            my $search_op     = undef;
-            my $search_pre    = undef;
-            my $search_app    = undef;
-            my $search_binder = undef; 
+            my $search_op        = '';
+            my $search_pre       = '';
+            my $search_app       = '';
+            my $search_binder    = '';
 
             if($field ne 'subscriber.timestamp') { 
                 if ( $args->{-partial_listing}->{$field}->{-operator} eq '=' ) {
