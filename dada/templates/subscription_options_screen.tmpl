@@ -26,29 +26,34 @@
 	 Show <!-- tmpl_var vlsn_menu --> addresses at a time.
 	</p>
 	
-	<table cellpadding="5">
-      <tr>
-       <td width="25">
-        <p>
-         <input type="checkbox" name="view_list_show_timestamp_col" id="view_list_show_timestamp_col" value="1" <!-- tmpl_if list_settings.view_list_show_timestamp_col -->checked="checked"<!--/tmpl_if--> />
-        </p>
-       </td>
-       <td>
-        <p>
-         <label for="view_list_show_timestamp_col">
-          Show, &quot;Subscription Date&quot; Column
-         </label>
-        </p>
-       </td>
-      </tr>
-     </table>
+	
+	<!-- tmpl_if can_have_subscriber_fields --> 
+	
+    	<table cellpadding="5">
+          <tr>
+           <td width="25">
+            <p>
+             <input type="checkbox" name="view_list_show_timestamp_col" id="view_list_show_timestamp_col" value="1" <!-- tmpl_if list_settings.view_list_show_timestamp_col -->checked="checked"<!--/tmpl_if--> />
+            </p>
+           </td>
+           <td>
+            <p>
+             <label for="view_list_show_timestamp_col">
+              Show, &quot;Subscription Date&quot; Column
+             </label>
+            </p>
+           </td>
+          </tr>
+         </table>
 
 
- 	<p>
- 	 <label for="view_list_order_by">Order by:</label>
- 	 <!-- tmpl_var view_list_order_by_menu --> 
- 	 <!-- tmpl_var view_list_order_by_direction_menu -->
- 	</p>
+     	<p>
+     	 <label for="view_list_order_by">Order by:</label>
+     	 <!-- tmpl_var view_list_order_by_menu --> 
+     	 <!-- tmpl_var view_list_order_by_direction_menu -->
+     	</p>
+
+    <!-- /tmpl_if --> 
 
 
 </fieldset>

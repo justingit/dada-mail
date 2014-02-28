@@ -5629,38 +5629,43 @@ sub subscription_options {
 
     if ( !$process ) {
 
+        require DADA::ProfileFieldsManager;
+        my $dpfm = DADA::ProfileFieldsManager->new;
+        require DADA::Profile::Fields;
+        my $dpf = DADA::Profile::Fields->new;
 
-        require DADA::ProfileFieldsManager;  
-        my $dpfm = DADA::ProfileFieldsManager->new; 
-        my $field_atts = $dpfm->get_all_field_attributes; 
-        my $pf_field_labels = {}; 
-        for(keys %{$field_atts}){ 
-           $pf_field_labels->{$_} = $field_atts->{$_}->{label}; 
+        my $view_list_order_by_menu           = '';
+        my $view_list_order_by_direction_menu = '';
+
+        if ( $dpf->can_have_subscriber_fields ) {
+
+            my $field_atts      = $dpfm->get_all_field_attributes;
+            my $pf_field_labels = {};
+            for ( keys %{$field_atts} ) {
+                $pf_field_labels->{$_} = $field_atts->{$_}->{label};
+            }
+            my $field_values = $dpfm->fields;
+            unshift( @$field_values, 'timestamp' );
+            unshift( @$field_values, 'email' );
+
+            $pf_field_labels->{timestamp} = 'Subscription Date';
+            $pf_field_labels->{email}     = 'Email Address';
+
+            $view_list_order_by_menu = $q->popup_menu(
+                -name     => 'view_list_order_by',
+                -id       => 'view_list_order_by',
+                '-values' => $field_values,
+                -labels   => $pf_field_labels,
+                -default  => $ls->param('view_list_order_by'),
+            );
+            $view_list_order_by_direction_menu = $q->popup_menu(
+                -name     => 'view_list_order_by_direction',
+                -id       => 'view_list_order_by_direction',
+                '-values' => [ 'ASC', 'DESC' ],
+                -labels   => { ASC => 'Ascending', DESC => 'Descending' },
+                -default  => $ls->param('view_list_order_by_direction'),
+            );
         }
-        my $field_values = $dpfm->fields; 
-        unshift(@$field_values, 'timestamp'); 
-         unshift(@$field_values, 'email'); 
-
-         $pf_field_labels->{timestamp} = 'Subscription Date';          
-        $pf_field_labels->{email} = 'Email Address'; 
-        
-        
-        
-        my $view_list_order_by_menu = $q->popup_menu(
-            -name     => 'view_list_order_by', 
-            -id       => 'view_list_order_by', 
-            '-values' => $field_values, 
-            -labels   => $pf_field_labels, 
-            -default  => $ls->param('view_list_order_by'), 
-        );          
-        my $view_list_order_by_direction_menu = $q->popup_menu(
-            -name     => 'view_list_order_by_direction', 
-            -id       => 'view_list_order_by_direction', 
-            '-values' => ['ASC', 'DESC'],
-            -labels   => {ASC => 'Ascending', DESC => 'Descending'},
-            -default  => $ls->param('view_list_order_by_direction'), 
-        );          
-        
         my $subscription_quota_menu = $q->popup_menu(
             -name     => 'subscription_quota',
             -id       => 'subscription_quota',
@@ -5690,15 +5695,16 @@ sub subscription_options {
                 },
 
                 -vars => {
-                    screen                       => 'subscription_options',
-                    title                        => 'Subscriber Options',
-                    done                         => $done,
-                    subscription_quota_menu      => $subscription_quota_menu,
-                    vlsn_menu                    => $vlsn_menu,
-                    view_list_order_by_menu      => $view_list_order_by_menu, 
-                    view_list_order_by_direction_menu => $view_list_order_by_direction_menu, 
-                    SUBSCRIPTION_QUOTA           => $DADA::Config::SUBSCRIPTION_QUOTA,
-                    commified_subscription_quota => commify( int($DADA::Config::SUBSCRIPTION_QUOTA) ),
+                    screen                            => 'subscription_options',
+                    title                             => 'Subscriber Options',
+                    done                              => $done,
+                    subscription_quota_menu           => $subscription_quota_menu,
+                    can_have_subscriber_fields        => $dpf->can_have_subscriber_fields,
+                    vlsn_menu                         => $vlsn_menu,
+                    view_list_order_by_menu           => $view_list_order_by_menu,
+                    view_list_order_by_direction_menu => $view_list_order_by_direction_menu,
+                    SUBSCRIPTION_QUOTA                => $DADA::Config::SUBSCRIPTION_QUOTA,
+                    commified_subscription_quota      => commify( int($DADA::Config::SUBSCRIPTION_QUOTA) ),
                 },
                 -list_settings_vars_param => {
                     -list   => $list,
@@ -5715,9 +5721,9 @@ sub subscription_options {
                 -associate => $q,
                 -settings  => {
                     view_list_subscriber_number          => undef,
-                    view_list_show_timestamp_col         => 0, 
-                    view_list_order_by                   => undef, 
-                    view_list_order_by_direction         => undef, 
+                    view_list_show_timestamp_col         => 0,
+                    view_list_order_by                   => undef,
+                    view_list_order_by_direction         => undef,
                     use_subscription_quota               => 0,
                     subscription_quota                   => undef,
                     black_list                           => 0,
