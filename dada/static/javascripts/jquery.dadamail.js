@@ -127,10 +127,8 @@
 				success: function(data) {
 					console.log('data:' + JSON.stringify(data)); 
 					var html = ''; 
-					if(data.status === 0){ 												
-						$.each(data.errors, function(index, value) {
-							console.log(index + ': ' + value);
-						});
+					if(data.status === 0){
+						consold.log('Errors: ' + JSON.stringify(errors)); 
 						$.each(data.error_descriptions, function(index, value) {
 							html += value;
 						});

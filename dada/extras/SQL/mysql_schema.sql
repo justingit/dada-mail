@@ -7,7 +7,7 @@ value                            text
 CREATE INDEX dada_settings_list_index ON dada_settings (list);
 
 CREATE TABLE IF NOT EXISTS dada_subscribers (
-email_id			            int4 not null primary key auto_increment,
+email_id                        int4 not null primary key auto_increment,
 email                            varchar(80),
 list                             varchar(16),
 list_type                        varchar(64),
@@ -45,17 +45,17 @@ CONSTRAINT UNIQUE (email)
 ) CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE IF NOT EXISTS dada_profile_fields_attributes (
-	attribute_id int4 not null primary key auto_increment,
-	field                       varchar(80),
-	label                       varchar(80),
-	fallback_value              text,
+attribute_id int4 not null primary key auto_increment,
+field                       varchar(80),
+label                       varchar(80),
+fallback_value              text,
+required                    char(1) DEFAULT 0 NOT NULL,
 -- I haven't made the following, but it seems like a pretty good idea... 
 -- sql_col_type              text(16),
 -- default                   mediumtext,
 -- html_form_widget          varchar(80),
--- required                  char(1),
 -- public                    char(1),
-	CONSTRAINT UNIQUE (field)
+    CONSTRAINT UNIQUE (field)
 ) CHARACTER SET utf8 COLLATE utf8_bin;
 
 CREATE TABLE IF NOT EXISTS dada_archives (

@@ -34,7 +34,6 @@ sub inexact_match {
     my ( $name, $domain ) = split ( '@', $email );
 
     my $query .= 'SELECT COUNT(*) ';
-
     $query .= ' FROM ' . $self->{sql_params}->{subscriber_table} . ' WHERE ';
     $query .= ' list_type = ? AND';
     $query .= ' list_status = ' . $self->{dbh}->quote(1);
@@ -47,7 +46,6 @@ sub inexact_match {
     else {
         $query .= ' AND list = ?';
     }
-    #$query .= ' AND (email = ? OR email LIKE ? OR email LIKE ?)';
 	$query .= ' AND (email = ? OR email = ? OR email = ?)';
 
     warn 'Query: ' . $query
@@ -58,8 +56,6 @@ sub inexact_match {
     if (   $args->{ -against } eq 'black_list'
         && $DADA::Config::GLOBAL_BLACK_LIST == 1 )
     {
-
-
 		$sth->execute(
 		    $args->{ -against },
 		    $email,
@@ -1426,17 +1422,19 @@ sub unique_and_duplicate {
     my $address_ref = $args{ -New_List };
 
     if ($address_ref) {
-
-        for (@$address_ref) { $lookup_table{$_} = 0 }
+        
+        for (@$address_ref) { 
+            $lookup_table{$_} = 0 
+        }
 
         my $email;
 
         my $sth = $self->{dbh}->prepare(
             "SELECT email FROM "
               . $self->{sql_params}->{subscriber_table}
-              . " WHERE list = ? 
-	                                      AND list_type = ?
-	                                      AND  list_status   = '1'"
+              . " WHERE list         = ? 
+                  AND list_type      = ?
+                  AND  list_status   = '1'"
         );
         $sth->execute( $self->{list}, $args{ -Type } )
           or croak
@@ -1444,7 +1442,6 @@ sub unique_and_duplicate {
         while ( ( my $email ) = $sth->fetchrow_array ) {
             chomp($email);
             $lookup_table{$email} = 1 if ( exists( $lookup_table{$email} ) );
-
             #nabbed it,
         }
         $sth->finish;

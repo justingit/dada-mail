@@ -178,7 +178,7 @@ the following D::M::S methods that need to be moved into D::M::S::F:
 
 	subscriber_fields
 	add_subscriber_field
-	edit_subscriber_field
+	edit_subscriber_field_name
 	remove_subscriber_field
 	subscriber_field_exists
 	validate_subscriber_field_name

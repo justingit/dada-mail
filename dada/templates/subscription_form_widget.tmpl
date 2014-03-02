@@ -51,7 +51,7 @@ Email&nbsp;Address:
 	<span style="padding:5px;border:1px solid black"><em><!-- tmpl_var email escape=HTML --></em></span>
 	<input type="hidden" name="email" id="email" value="<!-- tmpl_var email escape=HTML -->" />
 <!-- tmpl_else --> 
-	<input type="text" name="email" id="email" value="<!-- tmpl_var email escape=HTML -->" /> <span class="error">* Required</span>
+	<input type="email" name="email" id="email" value="<!-- tmpl_var email escape=HTML -->" required /><span class="error">* Required</span>
 <!-- /tmpl_if --> 
 
 </p>
@@ -70,7 +70,14 @@ Email&nbsp;Address:
 				<!-- tmpl_var name escape=HTML -->: 
 			<!-- /tmpl_if --> 
 			</label>
+<!-- 
+<!-- tmpl_if required -->required<!-- /tmpl_if -->
+--> 
+
 	        <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" class="subscriber_field" value="<!-- tmpl_var given_value escape=HTML -->"  />
+	        <!-- tmpl_if required --> 
+	            <span class="error">* Requiredd</span>
+	        <!-- /tmpl_if --> 
 	        </p>
 	    <!-- /tmpl_loop --> 
 	<!-- /tmpl_if --> 

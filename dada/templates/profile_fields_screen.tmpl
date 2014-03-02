@@ -28,27 +28,26 @@
 
 	<div class="clearskiesbox" id="changes_saved_dialog_box">
 	
-	<!-- tmpl_if deletion --> 
-		<p>
-			The Profile Field, "<!-- tmpl_var working_field -->"  has been deleted.
-		</p>
-	<!-- /tmpl_if --> 
+    	<!-- tmpl_if deletion --> 
+    		<p>
+    			The Profile Field, &quot;<!-- tmpl_var working_field -->&quot;  has been deleted.
+    		</p>
+    	<!-- /tmpl_if --> 
 
-	<!-- tmpl_if addition --> 
-		<p>
-			The Profile Field, "<!-- tmpl_var working_field -->"  has been added.
-		</p>
-	<!-- /tmpl_if --> 
+    	<!-- tmpl_if addition --> 
+    		<p>
+    			The Profile Field, &quot;<!-- tmpl_var working_field -->&quot;  has been added.
+    		</p>
+    	<!-- /tmpl_if --> 
 
-	<!-- tmpl_if edited --> 
-		<p>
-			The Profile Field, "<!-- tmpl_var working_field -->"  has been edited.
-		</p>
-	<!-- /tmpl_if --> 
-	
-	<div style="text-align: center;">
-	<input type="button" class="small_button fade_me" value="Ok!" />
-	</div>
+    	<!-- tmpl_if edited --> 
+    		<p>
+    			The Profile Field, &quot;<!-- tmpl_var working_field -->&quot;  has been edited.
+    		</p>
+    	<!-- /tmpl_if --> 
+    	<div style="text-align:center;">
+    	    <input type="button" class="small_button fade_me" value="Ok!" />
+    	</div>
 
 	</div> 
 <!-- /tmpl_if --> 
@@ -180,7 +179,6 @@
 	<div style="max-height: 200px; overflow: auto; border:1px solid black">
 
 	 <table class="stripedtable">
-		  
          <tr> 
                    <!-- tmpl_if root_login --> 
 			 <td> 
@@ -216,6 +214,15 @@
             </strong> 
            </p> 
           </td> 
+
+            <td> 
+           <p>
+            <strong>
+                Required 
+            </strong> 
+           </p> 
+          </td> 
+
           
            <!-- tmpl_if root_login --> 
            
@@ -292,6 +299,12 @@
            <!-- tmpl_var fallback_value --> 
           </p>
          </td> 
+
+         <td> 
+          <p>
+           <!-- tmpl_var required --> 
+          </p>
+         </td> 
          
          
          <!-- tmpl_if root_login --> 
@@ -361,11 +374,11 @@
         	
     		<!-- /tmpl_unless -->
 
-            <table cellpadding="5"> 
+            <table cellpadding="5" cellspacing="0" width="100%"> 
              <tr> 
-				<td> 
+				<td align="right"> 
                 <p>
-                <label for="field">Field Name</label> 
+                <label for="field">Field Name:</label> 
                </p>
                </td> 
                <td> 
@@ -375,14 +388,13 @@
 					(Use underscores, instead of spaces - no funny characters, and use lower case characters instead of uppercase.)
                   </em><br /> <br /> 
                   
-<!-- tmpl_if using_SQLite -->
-	<!-- tmpl_if edit_field -->
-</p>
-	<p class="error">Disabled. SQLite backend currently doesn't support renaming fields.</p>
-	<p>
-	<!-- /tmpl_if -->
-<!-- /tmpl_if -->
-
+                  <!-- tmpl_if using_SQLite -->
+                    <!-- tmpl_if edit_field -->
+                        </p>
+                        	<p class="error">Disabled. SQLite backend currently doesn't support renaming fields.</p>
+                        <p>
+                    <!-- /tmpl_if -->
+                  <!-- /tmpl_if -->
 
                   <em>Field Names prefixed with, &quot;<!-- tmpl_var HIDDEN_SUBSCRIBER_FIELDS_PREFIX escape="HTML" -->&quot; will not be displayed on public subscription forms.</em>
                   
@@ -391,53 +403,57 @@
             </tr> 
 
             <tr> 
-             <td> 
-             
+             <td  align="right"> 
                 <p>
-                 <label for="label">Label</label> 
+                  <label for="field_label">Label:</label> 
                 </p>
                </td> 
                <td> 
                 <p>
-                    <input type="text" name="field_label" id="field_label"  value="<!-- tmpl_var field_label escape="HTML" -->" class="full" /><br />
-                    <em>This label will be used on public subscription forms</em>
+                 <input type="text" name="field_label" id="field_label"  value="<!-- tmpl_var field_label escape="HTML" -->" class="full" /><br />
+                  <em>This label will be used on public subscription forms</em>
                 </p>
-            
             </td>
-              </tr>
-
+            </tr>
 
             <tr> 
-             <td> 
-             
+             <td  align="right"> 
                 <p>
-                 <label for="fallback_field_value">Fallback Value</label> 
+                 <label for="fallback_field_value">Fallback Value:</label> 
                 </p>
                </td> 
                <td> 
                 <p>
-                    <input type="text" name="fallback_field_value" id="fallback_field_value"  value="<!-- tmpl_var fallback_field_value escape="HTML" -->" class="full" /><br />
+                    <input type="text" name="fallback_field_value" id="fallback_field_value"  value="<!-- tmpl_var fallback_field_value escape="HTML" -->" class="full" />
+                    <br />
                     <em>This value is used in things like mail merging, when there's no information saved for the subscriber. </em>
                 </p>
+             </td>
+            </tr>
             
+            <tr> 
+             <td  align="right"> 
+                <p>
+                  <label for="field_required">Required:</label> 
+                </p>
+               </td> 
+               <td> 
+                <p>
+                 <input type="checkbox" name="field_required" id="field_required"  value="1" <!-- tmpl_if field_required -->checked="checked"<!-- /tmpl_if --> />
+                </p>
             </td>
-              </tr> 
-              </table> 
-                
-                
+            </tr>
             
             
+            
+           </table> 
             
             <div class="buttonfloat">
                 
 				<!-- tmpl_unless edit_field --> 
-
                 	<input type="submit" value="Add Field" class="processing" /> 
-            
 				<!-- tmpl_else --> 
-            	
 					<input type="submit" value="Edit Field, &quot;<!-- tmpl_var field -->&quot;" class="processing" /> 
-				
 				<!-- /tmpl_unless --> 
 				</div>
             <div class="floatclear"></div>

@@ -111,19 +111,16 @@ sub add_field {
     if ( !exists $args->{ -field } ) {
         croak "You must pass a value in the -field parameter!";
     }
-    # DEV: This is pretty suspect - why are we lower-casing the field name? 
-	# $args->{ -field } = lc( $args->{ -field } );
-
-
     if ( !exists( $args->{ -fallback_value } ) ) {
         $args->{ -fallback_value } = '';
     }
-
     if ( !exists( $args->{ -label } ) ) {
         $args->{ -label } = '';
     }
-
-
+    if ( !exists( $args->{ -required } ) ) {
+        $args->{ -required } = 0; 
+    }
+    
     my ( $status, $details ) =
       $self->validate_field_name( { -field => $args->{ -field } } );
 
@@ -137,7 +134,6 @@ sub add_field {
                 $err .= $args->{ -field } . ' Field Error: ' . $_;
             }
         }
-		
 		carp $err; 
         return undef;
     }
@@ -147,10 +143,8 @@ sub add_field {
       . $self->{sql_params}->{profile_fields_table}
       . ' ADD COLUMN '
       . $args->{ -field } . ' TEXT NOT NULL';
-
     my $sth = $self->{dbh}->prepare($query);
 
-		
     my $rv = $sth->execute()
       or croak "cannot do statement (at add_field)! $DBI::errstr\n";
 
@@ -159,68 +153,62 @@ sub add_field {
             -field          => $args->{ -field },
             -label          => $args->{ -label },
             -fallback_value => $args->{ -fallback_value },
+            -required       => $args->{ -required },
         }
     );
 
-
     $self->clear_cache;
-
-	$self->_clear_screen_cache; 
+    $self->_clear_screen_cache; 
 
     return 1;
 }
 
 sub save_field_attributes {
+    
     my $self = shift;
     my ($args) = @_;
 
+    if ( !exists $args->{-field} ) {
+        croak "You must pass a value in the -field parameter!";
+    }
+    if ( !exists( $args->{-fallback_value} ) ) {
+        $args->{-fallback_value} = '';
+    }
+    if ( !exists( $args->{-label} ) ) {
+        $args->{-label} = '';
+    }
+    if ( !exists( $args->{-required} ) ) {
+        $args->{-required} = 0;
+    }
+
     my $query = '';
 
-    if ( $self->_field_attributes_exist( { -field => $args->{ -field } } ) ) {
-        $query = 'UPDATE '
+    if ( $self->_field_attributes_exist( { -field => $args->{-field} } ) ) {
+        $query =
+            'UPDATE '
           . $DADA::Config::SQL_PARAMS{profile_fields_attributes_table}
-          . ' SET label = ? WHERE field = ?';
+          . ' SET label = ?, fallback_value = ?, required = ? WHERE field = ?';
 
-		 my $sth = $self->{dbh}->prepare($query);
+        my $sth = $self->{dbh}->prepare($query);
+        my $rv = $sth->execute( $args->{-label}, $args->{-fallback_value}, $args->{-required}, $args->{-field}, )
+          or croak "cannot do statement (at save_field_attributes)! $DBI::errstr\n";
 
-		my $rv = $sth->execute(
-			$args->{ -label },
-			$args->{ -field }
-		)
-		or croak "cannot do statement (at save_field_attributes)! $DBI::errstr\n";
-		
-		undef $sth; 
-		undef $rv; 
-		
-		$query = 'UPDATE '
-          . $DADA::Config::SQL_PARAMS{profile_fields_attributes_table}
-          . ' SET fallback_value = ? WHERE field = ?';
-		 
-		 $sth = $self->{dbh}->prepare($query);
-
-		$rv = $sth->execute(
-			$args->{ -fallback_value },
-			$args->{ -field }
-		)
-		or croak "cannot do statement (at save_field_attributes)! $DBI::errstr\n";
+        undef $sth;
+        undef $rv;
     }
     else {
         $query =
-          'INSERT INTO '
+            'INSERT INTO '
           . $DADA::Config::SQL_PARAMS{profile_fields_attributes_table}
-          . ' (label, fallback_value, field) values(?,?,?)';
-   
-		 my $sth = $self->{dbh}->prepare($query);
+          . ' (field, label, fallback_value, required) values(?,?,?,?)';
 
-		    my $rv = $sth->execute(
-		        $args->{ -label },
-		        $args->{ -fallback_value },
-		        $args->{ -field }
-		      )
-		      or croak "cannot do statement (at save_field_attributes)! $DBI::errstr\n";
- 	}
+        my $sth = $self->{dbh}->prepare($query);
 
-	return 1; 
+        my $rv = $sth->execute( $args->{-field}, $args->{-label}, $args->{-fallback_value}, $args->{-required}, )
+          or croak "cannot do statement (at save_field_attributes)! $DBI::errstr\n";
+    }
+
+    return 1;
 
 }
 
@@ -249,7 +237,7 @@ sub _field_attributes_exist {
 
 }
 
-sub edit_field {
+sub edit_field_name {
 
     my $self = shift;
     my ($args) = @_;
@@ -298,7 +286,7 @@ sub edit_field {
     #	die '$query ' . $query;
     $self->{dbh}->do($query)
       or croak
-      "cannot do statement (at: edit_field)! $DBI::errstr\n";
+      "cannot do statement (at: edit_field_name)! $DBI::errstr\n";
 
     $self->clear_cache;
 	$self->_clear_screen_cache; 

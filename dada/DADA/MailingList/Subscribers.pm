@@ -460,9 +460,9 @@ sub add_subscriber_field {
 	my $self = shift; 
 	return $self->{fields}->{manager}->add_field(@_);
 }
-sub edit_subscriber_field { 
+sub edit_subscriber_field_name { 
 	my $self = shift; 
-	return $self->{fields}->{manager}->edit_subscriber_field(@_);
+	return $self->{fields}->{manager}->edit_subscriber_field_name(@_);
 }
 sub remove_subscriber_field { 
 	my $self = shift; 
@@ -578,91 +578,84 @@ sub filter_subscribers {
     my $self = shift;
     my ($args) = @_;
 
-    my $new_addresses = $args->{ -emails };
+    my $new_addresses = $args->{-emails};
 
-    if ( !exists( $args->{ -type } ) ) {
-        $args->{ -type } = 'list';
+    if ( !exists( $args->{-type} ) ) {
+        $args->{-type} = 'list';
     }
-    my $type = $args->{ -type };
+    my $type = $args->{-type};
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
-    my $li = $ls->get;
 
-
+    my $num_subscribers = $self->num_subscribers;
 
     my @good_emails = ();
     my @bad_emails  = ();
-
-    my $invalid_email;
-
-    my $num_subscribers = $self->num_subscribers;
 
     for my $check_this_address (@$new_addresses) {
 
         my $errors = {};
         my $status = 1;
 
+        # It's weird, because Black List and White List still have some sort of
+        # format they have to follow. 
+        # 
         if ( $type eq 'black_list' ) {
-
             # Yeah... nothing...
         }
         elsif ( $type eq 'white_list' ) {
-
             # Yeah... nothing...
         }
         else {
-            if ( check_for_valid_email($check_this_address) ==
-                1 )
-            {
+            if ( check_for_valid_email($check_this_address) == 1 ) {
                 $errors->{invalid_email} = 1;
+                $status = 0;
             }
             else {
                 $errors->{invalid_email} = 0;
             }
         }
-
-		 if($type eq 'list') { 
-            if ( $li->{use_subscription_quota} == 1 ) {
-                if ( ( $num_subscribers + 1 ) >= $li->{subscription_quota} ) {
+        
+        if ( $type eq 'list' ) {
+            if ( $ls->param('use_subscription_quota') == 1 ) {
+                if ( ( $num_subscribers + 1 ) >= $ls->param('subscription_quota') ) {
                     $errors->{over_subscription_quota} = 1;
+                    $status = 0;
                 }
             }
-			elsif(defined($DADA::Config::SUBSCRIPTION_QUOTA)
-				&& $DADA::Config::SUBSCRIPTION_QUOTA > 0
-				&& $num_subscribers + 1 >= $DADA::Config::SUBSCRIPTION_QUOTA
-			){			
-			    $errors->{over_subscription_quota} = 1;	
-			}
+            elsif (defined($DADA::Config::SUBSCRIPTION_QUOTA)
+                && $DADA::Config::SUBSCRIPTION_QUOTA > 0
+                && $num_subscribers + 1 >= $DADA::Config::SUBSCRIPTION_QUOTA )
+            {
+                $errors->{over_subscription_quota} = 1;
+                $status = 0;
+            }
         }
-
-        if (   $errors->{invalid_email} == 1
-            || $errors->{over_subscription_quota} == 1 )
-        {
-            $status = 0;
-        }
-
         if ( $status != 1 ) {
-            push ( @bad_emails, $check_this_address );
+            push( @bad_emails, $check_this_address );
         }
         else {
-            $check_this_address =
-              lc_email($check_this_address);
-            push ( @good_emails, $check_this_address );
+            $check_this_address = lc_email($check_this_address);
+            push( @good_emails, $check_this_address );
         }
     }
 
-    my %seen               = ();
+    # I've gotta do this twice, why not just once, before looking for validity? 
+    #
+    my %seen = ();
     my @unique_good_emails = grep { !$seen{$_}++ } @good_emails;
 
     %seen = ();
     my @unique_bad_emails = grep { !$seen{$_}++ } @bad_emails;
 
-	# Why the sort?
+    # And then, sorting? 
     @unique_good_emails = sort(@unique_good_emails);
     @unique_bad_emails  = sort(@unique_bad_emails);
 
-# figure out what unique emails we have from the new list when compared to the old list
+    # figure out what unique emails we have from the new list when compared to the old list
+    # We do this, rather than "check_for_double_email" - I guess that's a optimization... 
+    #
     my ( $unique_ref, $not_unique_ref ) = $self->unique_and_duplicate(
         -New_List => \@unique_good_emails,
         -Type     => $type,
@@ -670,73 +663,65 @@ sub filter_subscribers {
 
     #initialize
     my @black_list;
-    my $found_black_list_ref;
-    my $clean_list_ref;
-    my $black_listed_ref = [];
-    my $black_list_ref   = [];
+    my $found_black_list_ref   = [];
+    my $clean_list_ref         = [];
+    my $black_listed_ref       = [];
+    my $black_list_ref         = [];
+    my $white_listed           = [];
+    my $not_white_listed       = [];
+    
+    # This is basically, "Are you blacklisted...", 
+    # check_for_double_email will also do an inexact match, you tell it to, 
+    # 
+    #
+    if ( $ls->param('black_list') == 1 && $type eq 'list' ) {
+        for my $b_email (@$unique_ref) {
+            my $is_black_listed = $self->inexact_match(
+                {
+                    -email   => $b_email,
+                    -against => 'black_list',
+                }
+            );
+            if ( $is_black_listed == 1 ) {
+                push( @$found_black_list_ref, $b_email );
+            }
+        }
 
-	my $white_listed     = [];
-	my $not_white_listed = [];
-    if ( $li->{black_list} == 1 && $type eq 'list' ) {
-
-		my $found_black_list_ref = [];
-		for my $b_email(@$unique_ref) { 
-			my $is_black_listed = $self->inexact_match(
-										{
-											-email   => $b_email, 
-											-against => 'black_list',
-										}
-										);
-			if($is_black_listed == 1){ 
-				push(@$found_black_list_ref, $b_email); 
-			}
-		}
-		
-        ( $clean_list_ref, $black_listed_ref ) =
-          $self->find_unique_elements( $unique_ref, $found_black_list_ref );
+        ( $clean_list_ref, $black_listed_ref ) = $self->find_unique_elements( $unique_ref, $found_black_list_ref );
 
     }
     else {
-
         $clean_list_ref = $unique_ref;
-
     }
 
     # The entire white list stuff is pure messed.
+    # This is basically, "Are you white listed...", 
+    # check_for_double_email will also do an inexact match, you tell it to, 
+    
+    if ( $ls->param('enable_white_list') == 1 && $type eq 'list' ) {
+        for my $w_email (@$clean_list_ref) {
+            my $is_white_listed = $self->inexact_match(
+                {
+                    -email   => $w_email,
+                    -against => 'white_list',
+                }
+            );
+            if ( $is_white_listed == 1 ) {
+                push( @$white_listed, $w_email );
+            }
 
-    if ( $li->{enable_white_list} == 1 && $type eq 'list' ) {
-
-
-		for my $w_email(@$clean_list_ref) { 
-			my $is_white_listed = $self->inexact_match(
-										{
-											-email   => $w_email, 
-											-against => 'white_list',
-										}
-										);
-			if($is_white_listed == 1){ 
-				push(@$white_listed, $w_email); 	
-			}
-			
-		}
-		
-		
-       (
-		 $not_white_listed,
-		 $clean_list_ref,
-		) = 
-         $self->find_unique_elements($clean_list_ref, $white_listed); # It probably doesn't matter what order I give these things in is
-
+        }
+        ( $not_white_listed, $clean_list_ref, ) =
+          $self->find_unique_elements( $clean_list_ref, $white_listed )
+          ;    # It probably doesn't matter what order I give these things in is
     }
     else {
-
         # nothing, really.
         $not_white_listed = [];
-
     }
 
-		     # $subscribed,         $not_subscribed,   $black_listed,    $not_white_listed,     $invalid
-    return ( $not_unique_ref,       $clean_list_ref,   $black_listed_ref, $not_white_listed, \@unique_bad_emails);
+    # $subscribed,         $not_subscribed,   $black_listed,    $not_white_listed,     $invalid
+    return ( $not_unique_ref, $clean_list_ref, $black_listed_ref, $not_white_listed, \@unique_bad_emails );
 
 }
 
@@ -792,7 +777,6 @@ sub filter_subscribers_w_meta {
     }
     
     for(@$not_subscribed){ 
-
 		###
 		my $flattened_info = []; 
 		push(@$flattened_info, $lt->{$_}->{email}); 
@@ -813,11 +797,8 @@ sub filter_subscribers_w_meta {
        
 		push(@$not_subscribed_info, $lt->{$_});
  	   ###/
-
    }
-    
-    for(@$black_listed){
-    
+   for(@$black_listed){
 		###
 		my $flattened_info = []; 
 		push(@$flattened_info, $lt->{$_}->{email}); 
@@ -888,7 +869,6 @@ sub filter_subscribers_w_meta {
 	 	   ###/
     }
     
-
     # WHEW!
     
     return ($subscribed_info, $not_subscribed_info, $black_listed_info, $not_white_listed_info, $invalid_info); 
@@ -1909,9 +1889,9 @@ Internally (and privately), it does accept the, C<-dotted> parameter. This will 
 
 None that I can think of. 
 
-=head2 edit_subscriber_field
+=head2 edit_subscriber_field_name
 
- $lh->edit_subscriber_field(
+ $lh->edit_subscriber_field_name(
  	{ 
 		-old_name => 'old', 
 		-new_name => 'new', 
@@ -2149,6 +2129,7 @@ Take no arguments.
 		{
 			-field          => $field, 
 			-fallback_value => $fallback_field_value, 
+			-fallback_value => $fallback_value, 
 		}
  );
 

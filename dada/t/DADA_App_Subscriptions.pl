@@ -740,17 +740,7 @@ $ls->save(
 ); 
 $q->param('list',  $list); 
 $q->param('email', $email); 
-#my $r = $das->subscribe(
-#    {
-#        -cgi_obj     => $q,
-#        -html_output => 1,
-#    	-return_json => 0, 
-#	}
-#);
-#diag $r; 
-#
-#
-#undef $r;
+
 my $r = $das->subscribe(
     {
         -cgi_obj     => $q,
@@ -765,19 +755,59 @@ ok($r->{redirect}->{url}   eq 'http://localhost?f=subscribe&email=user%40example
 ok($r->{redirect_required} eq 'subscription_requires_captcha'); 
 ok($r->{success_message} eq 'use redirect'); 
 undef $r; 
-
-#my $r = $das->subscribe(
-#    {
-#        -cgi_obj     => $q,
-#        -html_output => 0,
-#    	-return_json => 1, 
-#	}
-#);
-#
-#diag $r; 
-
-
 $q->delete_all;
+
+
+
+# Profile Fields
+
+require DADA::ProfileFieldsManager;
+my $pfm = DADA::ProfileFieldsManager->new;
+$pfm->add_field(
+    {
+        -field          => 'first_name',
+        -required       => 1,
+    }
+);
+$pfm->add_field(
+    {
+        -field          => 'last_name',
+        -required       => 0,
+    }
+);
+
+$q->param('list',  $list); 
+$q->param('email', $email); 
+my $r = $das->subscribe(
+    {
+        -cgi_obj     => $q,
+        -html_output => 0,
+    	-return_json => 0, 
+	}
+);
+#diag Dumper($r);
+
+ok($r->{email} eq $email);
+ok($r->{list} eq $list);
+ok($r->{status} == 0);
+
+#ok($r->{redirect}->{url}   eq '');
+#ok($r->{redirect}->{query} eq 'list=dadatest&rm=sub&subscription_requires_approval=1&status=1&email=user%40example.com');
+#ok($r->{redirect}->{using} == 0); 
+#ok($r->{redirect}->{using_with_query} == 0);
+ok(exists($r->{error_descriptions}->{invalid_profile_fields})); 
+ok($r->{profile_errors}->{first_name}->{required} == 1); 
+
+
+
+
+
+undef $r; 
+$q->delete_all;
+
+
+
+
 
 
 dada_test_config::remove_test_list;

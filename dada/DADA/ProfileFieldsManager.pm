@@ -158,16 +158,16 @@ This method will return C<undef> if there's a problem with the parameters passed
 Similar to C<add_field()>, C<save_field_attributes()> saves the fallback value and label for a field. It will not create a new field, 
 but will error if you attempt to save a field attribute to a field that does not exist. 
 
-=head2 edit_field
+=head2 edit_subscriber_field_name
 
-   	$pfm->edit_field(
+   	$pfm->edit_subscriber_field(
 		{
 			-old_name => 'myfield' ,
 			-new_name => 'mynewname',
 		}
 	);	
 	
-C<edit_subscriber_field()> is used to rename a subscriber field. Usually, this means that a column is renamed in table. 
+C<edit_subscriber_field_name()> is used to rename a subscriber field. Usually, this means that a column is renamed in table. 
 Various SQL backends do this differently and this method should provide the necessary magic. 
 
 C<-old_name> and C<-new_name> are required parameters and the method will croak if you do not 

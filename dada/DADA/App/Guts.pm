@@ -1880,15 +1880,22 @@ sub user_error {
 	}
 
 #    my $fh    = $args->{-fh};
-    my $test  = $args->{-test};
+use Data::Dumper; 
+carp Dumper($args); 
 
+    my $test  = $args->{-test};
+    my $invalid_profile_fields = {}; 
+    if(exists($args->{-invalid_profile_fields})){ 
+       $invalid_profile_fields =  $args->{-invalid_profile_fields};
+    }
     require DADA::App::Error;
     my $error_msg = DADA::App::Error::cgi_user_error(
 		{
-        -list          => $list,
-        -error         => $error,
-        -email         => $email,
-		-vars          => $args->{-vars},
+        -list                   => $list,
+        -error                  => $error,
+        -email                  => $email,
+		-vars                   => $args->{-vars},
+		-invalid_profile_fields => $invalid_profile_fields, 
     	}
 	);
 

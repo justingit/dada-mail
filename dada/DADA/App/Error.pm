@@ -93,6 +93,31 @@ sub cgi_user_error {
         $args->{-vars}->{captcha_auth} = 1;
     }
 
+
+#    if(!exists($args->{-error})) { 
+#        carp "no error was passed!"; 
+# #       $args->{-error} = 'undefined'; 
+#    }
+# 
+#    if(!defined($args->{-error})){ 
+#            carp "no error was passed!"; 
+#        }
+#
+    my $profile_fields_report = []; 
+    
+    # Something Something, add Name/Label of Field... 
+    if(exists($args->{-invalid_profile_fields})){ 
+        
+        require DADA::ProfileFieldsManager; 
+        my $attrs = DADA::ProfileFieldsManager->new->get_all_field_attributes;
+        foreach my $field_error(keys %{$args->{-invalid_profile_fields}}){ 
+            push(@$profile_fields_report, { 
+                    field => $field_error,
+                    label => $attrs->{$field_error}->{label},
+                    error => 'required', # punking out on this, for now
+            });
+        }
+    }
     if ( $args->{-error} !~ /unreadable_db_files|sql_connect_error|bad_setup/ )
     {
         $list_exists =
@@ -260,7 +285,7 @@ sub cgi_user_error {
 
     my $screen = '';
     my $r      = '';
-
+    
     eval {
         if ( $args->{-chrome} == 1 )
         {
@@ -282,15 +307,16 @@ sub cgi_user_error {
                     ),
                     -vars => {
                         %{ $args->{-vars} },
-                        subscription_form   => $subscription_form,
-                        unsubscription_form => $unsubscription_form,
-                        list_login_form     => $list_login_form,
-                        email               => $args->{-email},
-                        auth_code           => $auth_code,
-                        unknown_dirs        => $unknown_dirs,
-                        PROGRAM_URL         => $DADA::Config::PROGRAM_URL,
-                        S_PROGRAM_URL       => $DADA::Config::S_PROGRAM_URL,
-                        error_message       => $args->{-error_message},
+                        subscription_form     => $subscription_form,
+                        unsubscription_form   => $unsubscription_form,
+                        list_login_form       => $list_login_form,
+                        email                 => $args->{-email},
+                        profile_fields_report => $profile_fields_report, 
+                        auth_code             => $auth_code,
+                        unknown_dirs          => $unknown_dirs,
+                        PROGRAM_URL           => $DADA::Config::PROGRAM_URL,
+                        S_PROGRAM_URL         => $DADA::Config::S_PROGRAM_URL,
+                        error_message         => $args->{-error_message},
                     },
 
                     -list_settings_vars       => $li,
@@ -310,6 +336,7 @@ sub cgi_user_error {
                         unsubscription_form => $unsubscription_form,
                         list_login_form     => $list_login_form,
                         email               => $args->{-email},
+                        profile_fields_report => $profile_fields_report, 
                         auth_code           => $auth_code,
                         unknown_dirs        => $unknown_dirs,
                         PROGRAM_URL         => $DADA::Config::PROGRAM_URL,

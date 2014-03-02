@@ -7570,8 +7570,7 @@ sub profile_fields {
 
     # But, if we do....
     my $subscriber_fields = $pfm->fields;
-
-    my $fields_attr = $pfm->get_all_field_attributes;
+    my $fields_attr       = $pfm->get_all_field_attributes;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
@@ -7593,22 +7592,28 @@ sub profile_fields {
     my $field                = '';
     my $fallback_field_value = '';
     my $field_label          = '';
-
+    my $field_required       = 0; 
+    
     if ( $edit_field == 1 ) {
         $field                = xss_filter( $q->param('field') );
         $fallback_field_value = $fields_attr->{$field}->{fallback_value};
         $field_label          = $fields_attr->{$field}->{label};
+        $field_required       = $fields_attr->{$field}->{required};
     }
     else {
         $field                = xss_filter( $q->param('field') );
         $fallback_field_value = xss_filter( $q->param('fallback_field_value') );
         $field_label          = xss_filter( $q->param('field_label') );
+        $field_required       = $q->param('field_required') || 0; 
+        if($field_required ne "1" && $field_required ne "0"){ 
+            die "field_required needs to be either 1, or 0!"; 
+            $field_required = 0; 
+        }
     }
-
+    
     if ( !$root_login && defined($process) ) {
         die "You need to log into the list with the root pass to do that!";
     }
-
     if ( $process eq 'edit_field_order' ) {
         my $dir = $q->param('direction') || 'down';
         $pfm->change_field_order(
@@ -7623,7 +7628,6 @@ sub profile_fields {
 
     }
     if ( $process eq 'delete_field' ) {
-
         ###
         $pfm->remove_field( { -field => $field } );
         $c->flush;
@@ -7642,12 +7646,12 @@ sub profile_fields {
         ( $field_status, $field_error_details ) = $pfm->validate_field_name( { -field => $field } );
 		
         if ( $field_status == 1 ) {
-
             $pfm->add_field(
                 {
                     -field          => $field,
                     -fallback_value => $fallback_field_value,
                     -label          => $field_label,
+                    -required       => $field_required,
                 }
             );
 
@@ -7687,17 +7691,17 @@ sub profile_fields {
             $pfm->remove_field_attributes( { -field => $orig_field } );
 
             if ( $orig_field eq $field ) {
-
                 # ...
             }
             else {
-                $pfm->edit_field( { -old_name => $orig_field, -new_name => $field } );
+                $pfm->edit_field_name( { -old_name => $orig_field, -new_name => $field } );
             }
             $pfm->save_field_attributes(
                 {
                     -field          => $field,
                     -fallback_value => $fallback_field_value,
                     -label          => $field_label,
+                    -required       => $field_required,
                 }
             );
             $c->flush;
@@ -7733,6 +7737,7 @@ sub profile_fields {
                 field            => $_,
                 fallback_value   => $fields_attr->{$_}->{fallback_value},
                 label            => $fields_attr->{$_}->{label},
+                required         => $fields_attr->{$_}->{required},
                 root_login       => $root_login,
                 can_move_columns => $can_move_columns,
             }
@@ -7760,6 +7765,7 @@ sub profile_fields {
                 field                => $field,
                 fallback_field_value => $fallback_field_value,
                 field_label          => $field_label,
+                field_required       => $field_required,
 
                 can_have_subscriber_fields => $dpf->can_have_subscriber_fields,
 
@@ -7778,9 +7784,7 @@ sub profile_fields {
 
                 can_move_columns => $can_move_columns,
 
-				%flattened_field_errors,
-
-
+                %flattened_field_errors,
             },
         }
     );

@@ -60,9 +60,10 @@ a_session TEXT NOT NULL
 
 CREATE TABLE IF NOT EXISTS dada_profile_fields_attributes (
 attribute_id INTEGER PRIMARY KEY AUTOINCREMENT,
-field varchar(80) not null UNIQUE,	
+field varchar(80) NOT NULL UNIQUE,	
 label varchar(80),
-fallback_value varchar(80)
+fallback_value varchar(80),
+required char(1) DEFAULT 0 NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS dada_clickthrough_urls (

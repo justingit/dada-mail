@@ -295,16 +295,16 @@ undef $f_des;
 # Skipping... 
 
 ###############################################################################
-# edit_subscriber_field
+# edit_subscriber_field_name
 
 
 
 SKIP: {
 
-    skip "edit_subscriber_field note supported for SQLite" 
+    skip "edit_subscriber_field_name note supported for SQLite" 
         if $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite'; 
 
-	#C<edit_subscriber_field()> is used to rename a subscriber field. Usually, this means that a column is renamed in table. 
+	#C<edit_subscriber_field_name()> is used to rename a subscriber field. Usually, this means that a column is renamed in table. 
 	#Various SQL backends do this differently and this method should provide the necessary magic. 
 
 	$pf->{manager}->add_field(
@@ -316,12 +316,12 @@ SKIP: {
 	ok($pf->{manager}->field_exists({-field => 'renamedfield' }) == 0, "Renamed field doesn't exist."); 
 
 	ok( 
-	$pf->{manager}->edit_field(
+	$pf->{manager}->edit_field_name(
 		{ 
 			-old_name => 'myfield', 
 			-new_name => 'renamedfield', 
 		}
-	) == 1, "edit_subscriber_field returned, '1'"); 
+	) == 1, "edit_field_name returned, '1'"); 
 
 	ok($pf->{manager}->field_exists({-field => 'renamedfield' }) == 1, "Renamed field exists."); 
 	ok($pf->{manager}->field_exists({-field => 'myfield' }) == 0, "original field doesn't exist.");
@@ -330,9 +330,9 @@ SKIP: {
 	#C<-old_name> and C<-new_name> are required parameters and the method will croak if you do not 
 	#pass both. 
 
-	eval{$pf->{manager}->edit_subscriber_field;};
+	eval{$pf->{manager}->edit_subscriber_field_name;};
 	ok(defined($@), "unrecoverable error returned(1)"); 
-	eval{$pf->{manager}->edit_subscriber_field({-old_name => 'myfield',-new_name => 'renamedfield'});};
+	eval{$pf->{manager}->edit_subscriber_field_name({-old_name => 'myfield',-new_name => 'renamedfield'});};
 	ok(defined($@), "unrecoverable error returned(2)"); 
 
 	#This method will also croak if either the C<-old_name> does not exist, or the C<-new_name> exists. 
@@ -383,7 +383,7 @@ SKIP: {
 	
 	
 	#This method is not available for the SQLite or PostgreSQL backend. 
-    skip "edit_subscriber_field note supported for SQLite or PostgreSQL" 
+    skip "edit_subscriber_field_name note supported for SQLite or PostgreSQL" 
         if $DADA::Config::SQL_PARAMS{dbtype} =~ m/SQLite|Pg/;
 		
 	ok($pf->{manager}->add_field({-field => 'one'}) == 1, "Created new field, one.");

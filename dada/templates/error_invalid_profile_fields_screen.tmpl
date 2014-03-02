@@ -1,0 +1,27 @@
+<!-- begin error_invalid_profile_fields_screen.tmpl --> 
+
+<!-- tmpl_set name="title" value="Missing Profile Fields" -->
+<!-- tmpl_set name="show_profile_widget" value="0" -->
+
+<!-- tmpl_unless chrome --> 
+	<h1><!-- tmpl_var title --></h1>
+<!-- /tmpl_unless --> 
+
+Please double-check the information you've submitted - you may not have filled out all the required fields:
+
+<ul>
+<!-- tmpl_loop profile_fields_report --> 
+    <li>
+        <p>
+            <strong>
+                <!-- tmpl_var label -->
+            </strong>
+        </p>
+    </li>
+<!-- /tmpl_loop --> 
+</ul>
+
+<!-- tmpl_include error_footer_widget.tmpl -->
+
+<!-- end error_invalid_profile_fields_screen.tmpl --> 
+

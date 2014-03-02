@@ -495,31 +495,31 @@ sub subscribe {
                   not_white_listed
                   settings_possibly_corrupted
                   already_sent_sub_confirmation
+                  invalid_profile_fields
+                  undefined
                 );
 
                 for (@list_of_errors) {
-                    if ( $errors->{$_} == 1 ) {
+                    if ( exists($errors->{$_}) ) {
+                        my $invalid_profile_fields = {}; 
+                        if($_ eq 'invalid_profile_fields'){ 
+                            $invalid_profile_fields = $errors->{$_}; 
+                        }  
+                        else { 
+                            # ... 
+                        }
                         return user_error(
                             {
-                                -list  => $list,
-                                -error => $_,
-                                -email => $email,
-                                -fh    => $args->{-fh},
-                                -test  => $self->test,
+                                -list                   => $list,
+                                -email                  => $email,                  
+                                -invalid_profile_fields => $invalid_profile_fields, 
+                                -error                  => $_,
+                                -fh                     => $args->{-fh},
+                                -test                   => $self->test,
                             }
                         );
                     }
                 }
-
-                # Fallback
-                return user_error(
-                    {
-                        -list  => $list,
-                        -email => $email,
-                        -fh    => $args->{-fh},
-                        -test  => $self->test,
-                    }
-                );
             }
         }
     }
@@ -810,18 +810,16 @@ sub confirm {
         {
             -email => $email,
             ( $ls->param('allow_blacklisted_to_subscribe') == 1 )
-            ? ( -skip => [ 'black_listed', 'already_sent_sub_confirmation', 'invite_only_list' ], )
-            : ( -skip => [ 'already_sent_sub_confirmation', 'invite_only_list' ], ),
+            ? ( -skip => [ 'black_listed', 'already_sent_sub_confirmation', 'invite_only_list', 'profile_fields' ], )
+            : ( -skip => [ 'already_sent_sub_confirmation', 'invite_only_list', 'profile_fields' ], ),
         }
     );
 
     warn 'subscription check gave back status of: ' . $status
       if $t;
     if ($t) {
-        for ( keys %$errors ) {
-            warn '>>>> >>>> ERROR: ' . $_ . ' => ' . $errors->{$_}
-              if $t;
-        }
+        require Data::Dumper; 
+        warn Data::Dumper($errors); 
     }
 
     my $mail_your_subscribed_msg = 0;
@@ -932,10 +930,11 @@ sub confirm {
                   black_listed
                   not_white_listed
                   not_on_sub_confirm_list
+                  undefined
                 );
 
                 for (@list_of_errors) {
-                    if ( $errors->{$_} == 1 ) {
+                    if ( exists($errors->{$_}) ) {
                         return user_error(
                             {
                                 -list  => $list,
@@ -947,16 +946,6 @@ sub confirm {
                         );
                     }
                 }
-
-                # Fallback.
-                return user_error(
-                    {
-                        -list  => $list,
-                        -email => $email,
-                        -fh    => $args->{-fh},
-                        -test  => $self->test,
-                    }
-                );
             }
         }
     }
@@ -1392,9 +1381,10 @@ sub unsubscription_request {
               not_subscribed
               settings_possibly_corrupted
               already_sent_unsub_confirmation
+              undefined
             );
             for (@list_of_errors) {
-                if ( $errors->{$_} == 1 ) {
+                if ( exists($errors->{$_}) ) {
 
                     # Special Case.
                     $_ = 'unsub_invalid_email'
@@ -1412,16 +1402,6 @@ sub unsubscription_request {
                     );
                 }
             }
-
-            # Fallback
-            return user_error(
-                {
-                    -list  => $list,
-                    -email => $email,
-                    -fh    => $args->{-fh},
-                    -test  => $self->test,
-                }
-            );
         }
 
     }
@@ -2461,15 +2441,33 @@ sub fancy_data {
     my $data = $args->{-data};
     my $type = $args->{-type},
 
-      my $return = {
+    my $return = {
         list     => $data->{list},
         email    => $data->{email},
         status   => $data->{status},
         redirect => $data->{redirect},
-      };
+    };
 
     my $error_descriptions = {};
 
+    # Do a little bit of rearranging... 
+    my $invalid_profile_fields = {};
+    if(exists($data->{errors}->{invalid_profile_fields})){ 
+       $invalid_profile_fields                   =  $data->{errors}->{invalid_profile_fields}; 
+       $data->{errors}->{invalid_profile_fields} = 1; 
+       $data->{profile_errors}                   = $invalid_profile_fields; 
+       
+       # I wanna do something like this, too... 
+       if(exists($data->{redirect}->{query})){ 
+           my @extra_qs = (); 
+           foreach(keys %{$invalid_profile_fields}){ 
+               push(@extra_qs, $_); 
+           }
+           $data->{redirect}->{query} .= join('&profile_fields_required[]=', @extra_qs); 
+       }
+       
+    }
+        
     for ( keys %{ $data->{errors} } ) {
         if ( $_ eq 'already_sent_sub_confirmation' ) {
             $return->{error_descriptions}->{already_sent_sub_confirmation} = 'use redirect';
@@ -2487,13 +2485,13 @@ sub fancy_data {
             $return->{redirect_required} = 'invalid_list';
         }
         else {
-
             $return->{error_descriptions}->{$_} = $self->_user_error_msg(
                 {
-                    -list   => $data->{list},
-                    -email  => $data->{email},
-                    -chrome => 0,
-                    -error  => $_,
+                    -list                   => $data->{list},
+                    -email                  => $data->{email},
+                    -chrome                 => 0,
+                    -error                  => $_,
+                    -invalid_profile_fields => $invalid_profile_fields, 
                 }
             );
         }
@@ -2501,6 +2499,9 @@ sub fancy_data {
 
     if ( keys %{ $data->{errors} } ) {
         $return->{errors} = $data->{errors};
+        if(keys %{ $data->{profile_errors} }) { 
+            $return->{profile_errors} = $data->{profile_errors}; 
+        }
     }
     else {
         if ( $data->{flavor} eq 'subscription_confirmation' ) {
@@ -2740,11 +2741,12 @@ sub _user_error_msg {
     require DADA::App::Error;
     my $s = DADA::App::Error::cgi_user_error(
         {
-            -list   => $args->{-list},
-            -error  => $args->{-error},
-            -email  => $args->{-email},
-            -vars   => $args->{-vars},
-            -chrome => $args->{-chrome},
+            -list                   => $args->{-list},
+            -email                  => $args->{-email},
+            -invalid_profile_fields => $args->{-invalid_profile_fields}, 
+            -error                  => $args->{-error},
+            -vars                   => $args->{-vars},
+            -chrome                 => $args->{-chrome},
         }
     );
     return $s;

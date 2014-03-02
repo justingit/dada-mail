@@ -42,12 +42,13 @@ CREATE TABLE dada_profile_fields_attributes (
 attribute_id 				serial,
 field                       varchar(80) UNIQUE,
 label                       varchar(80),
-fallback_value              text
+fallback_value              text,
+required char(1) DEFAULT 0 NOT NULL
+
 -- I haven't made the following, but it seems like a pretty good idea... 
 -- sql_col_type              text(16),
 -- default                   mediumtext,
 -- html_form_widget          varchar(320),
--- required                  char(1),
 -- public                    char(1),
 );
 

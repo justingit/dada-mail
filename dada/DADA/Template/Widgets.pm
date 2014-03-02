@@ -2851,11 +2851,11 @@ sub subscription_form {
 				{
 					name        => $_, 
 					pretty_name => $field_attrs->{$_}->{label},
-					label 		=> $field_attrs->{$_}->{label},
+					label       => $field_attrs->{$_}->{label},
+					required    => $field_attrs->{$_}->{required},
 				}
 			)
 	}
-	
 	
 	if(! exists ($args->{-ignore_cgi}) && $args->{-ignore_cgi} != 1){ 
    
