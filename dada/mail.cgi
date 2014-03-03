@@ -5178,8 +5178,8 @@ sub add_email {
             e_print($scrn);
             return;
         };
-
-        my ( $filtered_addresses ) =
+        
+        my $filtered_addresses  =
           $lh->filter_subscribers_w_meta(
             {
                 -emails => $new_emails,
@@ -5187,6 +5187,14 @@ sub add_email {
             }
           );
 
+          #use Data::Dumper; 
+          #die Dumper($filtered_addresses); 
+        
+        
+        
+        # I kinda have to put the error "flags" inline of the col. So, "invalid_email" would be w/email, etc. 
+        
+          
         my $num_subscribers = $lh->num_subscribers;
 
         # and for some reason, this is its own subroutine...
@@ -5215,6 +5223,7 @@ sub add_email {
         }
 
         my $going_over_quota = 0;
+=cut
         if ( $type eq 'list' ) {
             if ( $ls->param('use_subscription_quota') == 1
                 && ( $num_subscribers + scalar(@$not_subscribed) ) > $ls->param('subscription_quota') )
@@ -5228,10 +5237,12 @@ sub add_email {
                 $going_over_quota = 1;
             }
         }
-
+=cut
         my $addresses_to_add = 0;
+=cut
         $addresses_to_add = 1
           if ( defined( @$not_subscribed[0] ) );
+=cut
 
         my $field_names = [];
         for (@$subscriber_fields) {
@@ -5250,9 +5261,9 @@ sub add_email {
         if (   $ls->param('black_list') == 1
             && $ls->param('allow_admin_to_subscribe_blacklisted') == 1 )
         {
-            for (@$black_listed) {
-                $_->{'list_settings.allow_admin_to_subscribe_blacklisted'} = 1;
-            }
+#            for (@$black_listed) {
+ #               $_->{'list_settings.allow_admin_to_subscribe_blacklisted'} = 1;
+  #          }
         }
 
         my %vars = (

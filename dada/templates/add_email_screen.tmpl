@@ -112,10 +112,9 @@
 
 <fieldset> 
  <legend>
-  All Addresses!
+  Good Addresses!
  </legend>
-
-
+ 
  <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
 
  <table class="stripedtable">
@@ -144,47 +143,112 @@
 
   </tr>
  
- 
+
     <!-- tmpl_loop filtered_addresses -->
-
-  	<tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>     
-  		<td width="25">
-        <input type="checkbox" name="address" value="<!-- tmpl_var csv_info escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" checked="checked" />
-       </td>
-       <td>
-        <p>
-  <label for="<!-- tmpl_var email  escape="HTML" -->">
-         <!-- tmpl_var email  escape="HTML" -->
-  </label>
-        </p>
-       </td>
-
-       <!-- tmpl_loop name="fields" --> 
-
-          <td>
-           <p>
-            <!-- tmpl_var value default="&nbsp;" escape="HTML"  -->
-           </p>
-          </td>
-      <!-- /tmpl_loop --> 
-    </tr>
-
-    <!-- tmpl_if __last__ --> 
-
+    
+        <!-- tmpl_if status --> 
+        
+      	<tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>     
+      		<td width="25">
+            <input type="checkbox" name="address" value="<!-- tmpl_var csv_info escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" checked="checked" />
+           </td>
+           <td>
+            <p>
+                <label for="<!-- tmpl_var email  escape="HTML" -->">
+                    <!-- tmpl_var email  escape="HTML" -->
+                </label>
+            </p>
+           </td>
+            <!-- tmpl_loop name="fields" --> 
+               <td>
+                <p>
+                 <!-- tmpl_var value default="&nbsp;" escape="HTML"  -->
+                </p>
+               </td>
+           <!-- /tmpl_loop --> 
+        </tr>
+         <!-- /tmpl_if -->
+    <!-- /tmpl_loop -->
     </table>
-    <p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var __counter__ -->&nbsp;</p> 
-
-    <!-- /tmpl_if --> 
-
-  <!-- /tmpl_loop -->
-
-
+    <p style="text-align:right"><strong>Total:</strong>Something Something</p> 
+  
   <p>&nbsp;</p>
   <p>&nbsp;</p>
   </div>
  
  
  
+ 
+ 
+  <fieldset> 
+   <legend>
+    Baaaad Addresses!
+   </legend>
+
+   <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
+
+   <table class="stripedtable">
+    <tr>
+     <td width="25">
+      <p>&nbsp;</p>
+     </td>
+     <td>
+     <p>
+      <strong>
+       Email
+     </strong>
+    </p>
+   </td>
+
+  <!-- tmpl_loop name="field_names" --> 
+
+      <td>
+       <p>
+        <strong>
+         <!-- tmpl_var name --> 
+        </strong>
+       </p>
+      </td> 
+  <!--/tmpl_loop --> 
+
+    </tr>
+
+
+      <!-- tmpl_loop filtered_addresses -->
+      
+          <!-- tmpl_unless status --> 
+
+        	<tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>     
+        		<td width="25">
+              <input type="checkbox" name="address" value="<!-- tmpl_var csv_info escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" checked="checked" />
+             </td>
+             <td <!-- tmpl_if error_invalid_email --> style="background-color:#ff0000" <!-- /tmpl_if -->>
+              <p>
+                  <label for="<!-- tmpl_var email  escape="HTML" -->">
+                      <!-- tmpl_var email  escape="HTML" -->
+                  </label>
+              </p>
+             </td>
+             <!-- tmpl_loop name="fields" --> 
+                <td>
+                 <p>
+                  <!-- tmpl_var value default="&nbsp;" escape="HTML"  -->
+                 </p>
+                </td>
+            <!-- /tmpl_loop --> 
+          </tr>
+      <!-- /tmpl_unless -->
+    <!-- /tmpl_loop -->
+</table>
+<p style="text-align:right"><strong>Total:</strong>Something, Something</p> 
+    <p>&nbsp;</p>
+    <p>&nbsp;</p>
+    </div>
+ 
+ 
+ 
+  <!-- /tmpl_if -->
+
 	 <div class="buttonfloat">
 
 	<!-- tmpl_if chrome --> 

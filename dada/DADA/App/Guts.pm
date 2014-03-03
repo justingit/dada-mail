@@ -2716,19 +2716,7 @@ sub csv_subscriber_parse {
             # This probably means we have encountered a blank line.
         }
         else {
-
-            my $info = {};
-
-            $info->{email} = $pre_info->{email};
-
-            my $new_fields = [];
-            my $i          = 0;
-            for (@$subscriber_fields) {
-                push( @$new_fields, { name => $_, value => $pre_info->{fields}->{$_} } );
-                $i++;
-            }
-            $info->{fields} = $new_fields;
-            push( @$addresses, { email => $info->{email}, fields => $info } );
+            push( @$addresses, { email => $pre_info->{email}, fields => $pre_info->{fields} } );
         }
     }
 

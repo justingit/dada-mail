@@ -749,7 +749,7 @@ sub filter_subscribers_w_meta {
 	require   Text::CSV; 
 	my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
 
-    for my $n_address(@{$emails}){ 
+    for my $n_address(@{$info}){ 
 
         if(exists($dupe_check->{$n_address->{email}})){
             carp "already looked at: '"  . $dupe_check->{$n_address->{email}} . "' - will not process twice!"; 
@@ -758,7 +758,7 @@ sub filter_subscribers_w_meta {
 
         my ($status, $errors) = $self->subscription_check(
             {
-                -email => $n_address->{email},
+                -email  => $n_address->{email},
                 -fields => $n_address->{fields},
                 -skip   => [qw(
                     mx_lookup_failed
@@ -778,14 +778,41 @@ sub filter_subscribers_w_meta {
 		    carp "well, that didn't work."; 
 		}		
 		
+		my $ht_fields = []; 
+		for(@$fields){ 
+		    push(@$ht_fields, {
+	            name  => $_, 
+	            value => $n_address->{fields}->{$_}
+		    });
+		}
+		my $ht_errors = []; 
+		for(keys %$errors){ 
+		    push(@$ht_errors, {
+	            name  => $_, 
+	            value => 1,
+		    });
+		}
+        
+        my $ht_errors = {};
+        # I don't like htis, 
+        foreach(keys %$errors){ 
+            if($errors->{$_} == 1) { 
+                $ht_errors->{'error_' . $_} = 1; 
+            }
+        }
+        
         push(@$emails, {
-                email   => $n_address->{email}, 
-                status  => $status, 
-                errors  => $errors, 
-                csv_str => $csv_str, 
+                email    => $n_address->{email}, 
+               # fields  => $n_address->{fields}, 
+                fields   => $ht_fields, 
+                status   => $status, 
+                errors   => $ht_errors, 
+                csv_str  => $csv_str, 
+                %$ht_errors, 
             }
         ); 
     }
+    return $emails; 
 }
 
 
