@@ -76,7 +76,13 @@ sub subscription_check {
         }
     }
 
-    my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
+    my $ls = undef;
+    if(exists($args->{-ls_obj})){ 
+           $ls = $args->{-ls_obj};
+    }
+    else{ 
+        $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
+    } 
     
     if ( $args->{-type} ne 'black_list' && $args->{-type} ne 'white_list' ) {
         if ( !$skip{invalid_email} ) {

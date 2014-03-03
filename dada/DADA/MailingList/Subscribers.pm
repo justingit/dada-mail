@@ -725,10 +725,73 @@ sub filter_subscribers {
 
 }
 
-
-
-
 sub filter_subscribers_w_meta { 
+
+    # So, what are we doing about dupes? 
+
+	my $self   = shift; 
+	my ($args) = @_; 
+
+	my $info = $args->{-emails}; 
+
+	if(! exists($args->{-type})){ 
+		$args->{-type} = 'list'; 
+	}
+	my $type = $args->{-type}; 
+
+    my $dupe_check = {};
+
+	my $emails = [];
+
+	my $fields = $self->subscriber_fields(); 
+#	unshift('email', @$fields); 
+
+	require   Text::CSV; 
+	my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
+
+    for my $n_address(@{$emails}){ 
+
+        if(exists($dupe_check->{$n_address->{email}})){
+            carp "already looked at: '"  . $dupe_check->{$n_address->{email}} . "' - will not process twice!"; 
+        }
+        $dupe_check->{$n_address->{email}} = 1; 
+
+        my ($status, $errors) = $self->subscription_check(
+            {
+                -email => $n_address->{email},
+                -fields => $n_address->{fields},
+                -skip   => [qw(
+                    mx_lookup_failed
+                    already_sent_unsub_confirmation
+                    profile_fields
+                    over_subscription_quota)],
+            }
+        );
+        my $csv_str = ''; 
+        my $csv_fields = [$n_address->{email}]; 
+        foreach(@$fields){ 
+            push(@$csv_fields, $n_address->{fields}->{$_}); 
+        }
+        if ($csv->combine(@$csv_fields)) {
+	        $csv_str = $csv->string;
+	    } else {
+		    carp "well, that didn't work."; 
+		}		
+		
+        push(@$emails, {
+                email   => $n_address->{email}, 
+                status  => $status, 
+                errors  => $errors, 
+                csv_str => $csv_str, 
+            }
+        ); 
+    }
+}
+
+
+=cut
+
+sub filter_subscribers_w_meta_old { 
 
 	my $self   = shift; 
 	my ($args) = @_; 
@@ -777,6 +840,7 @@ sub filter_subscribers_w_meta {
     }
     
     for(@$not_subscribed){ 
+
 		###
 		my $flattened_info = []; 
 		push(@$flattened_info, $lt->{$_}->{email}); 
@@ -797,8 +861,11 @@ sub filter_subscribers_w_meta {
        
 		push(@$not_subscribed_info, $lt->{$_});
  	   ###/
+
    }
-   for(@$black_listed){
+    
+    for(@$black_listed){
+    
 		###
 		my $flattened_info = []; 
 		push(@$flattened_info, $lt->{$_}->{email}); 
@@ -869,11 +936,13 @@ sub filter_subscribers_w_meta {
 	 	   ###/
     }
     
+
     # WHEW!
     
     return ($subscribed_info, $not_subscribed_info, $black_listed_info, $not_white_listed_info, $invalid_info); 
     
 }
+=cut
 
 
 

@@ -5154,7 +5154,7 @@ sub add_email {
         my $new_info   = [];
 
         try {
-            ( $new_emails, $new_info ) = DADA::App::Guts::csv_subscriber_parse( $admin_list, $new_emails_fn );
+            ( $new_emails ) = DADA::App::Guts::csv_subscriber_parse( $admin_list, $new_emails_fn );
         }
         catch {
             my $error = $_;
@@ -5179,10 +5179,10 @@ sub add_email {
             return;
         };
 
-        my ( $subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid ) =
+        my ( $filtered_addresses ) =
           $lh->filter_subscribers_w_meta(
             {
-                -emails => $new_info,
+                -emails => $new_emails,
                 -type   => $type
             }
           );
@@ -5259,17 +5259,18 @@ sub add_email {
             can_have_subscriber_fields => $lh->can_have_subscriber_fields,
             going_over_quota           => $going_over_quota,
             field_names                => $field_names,
-            subscribed                 => $subscribed,
-            not_subscribed             => $not_subscribed,
-            black_listed               => $black_listed,
-            not_white_listed           => $not_white_listed,
-            invalid                    => $invalid,
-            type                       => $type,
-            type_title                 => $type_title,
-            root_login                 => $root_login,
-            return_to                  => $return_to,
-            return_address             => $return_address,
-            chrome                     => $chrome,
+#            subscribed                 => $subscribed,
+#            not_subscribed             => $not_subscribed,
+#            black_listed               => $black_listed,
+#            not_white_listed           => $not_white_listed,
+#            invalid                    => $invalid,
+            filtered_addresses          => $filtered_addresses,
+            type                        => $type,
+            type_title                  => $type_title,
+            root_login                  => $root_login,
+            return_to                   => $return_to,
+            return_address              => $return_address,
+            chrome                      => $chrome,
         );
 
         require DADA::Template::Widgets;
