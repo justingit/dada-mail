@@ -10,6 +10,13 @@ Key:
 [*] Naw...
 [?] Someday
 
+Timestamp - pick two dates BETWEEN X AND Y
+also keeep x days ago, but it's the same as between except Y is always, "Today", whatevr, "Today" is. 
+
+Also work on advanced search, and saving advanced search, pickable inview screen, as well as partial sending, so you can save an advanced search and a draft, w/partial sending w/that advanced search, which will be dynamica. Hooyh. 
+
+
+
 [ ] Provide a space to enter in the Profile Password
 [ ] Provide a, "rewrite/preserve" option for profile information 
 
