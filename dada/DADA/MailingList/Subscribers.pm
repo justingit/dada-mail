@@ -744,7 +744,6 @@ sub filter_subscribers_w_meta {
 	my $emails = [];
 
 	my $fields = $self->subscriber_fields(); 
-#	unshift('email', @$fields); 
 
 	require   Text::CSV; 
 	my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
@@ -778,41 +777,117 @@ sub filter_subscribers_w_meta {
 		    carp "well, that didn't work."; 
 		}		
 		
+		
+		# I don't like this type of stuff at all - I'm compensating for H::T's 
+		# shortcomings, and making the return values more complex and less usable, 
+		# for anything else. 
+		# Instead, this should be its own method. 
+		#
+		
+		# Then figure out how I wanna organize this on the screen. Like before, or now, different? 
+		# Maybe the same way for now, except for the profile fields, where I can highlight which field is missing? 
+		# That would PROBABLY be the shortest way to finish things 
+		
+		# Put in the import limit, and check that before anything else.
+		# Put in the pref's to enable/disable tests, like blacklist, whitelist, missing profile fields, etc
+		
+		# Ability to set Profile Password...
+		
+		# MAYBE put in pref - what to do with addresses that are already subscribed - update instead? 
+		# "These addresses are already subscribed (check for Profile Fields if so...:) Update thier profiles? (Root Login only) 
+		# 
+		
+
+        push(@$emails, {
+                email    => $n_address->{email}, 
+                fields   => $n_address->{fields}, 
+                status   => $status, 
+                errors   => $errors, 
+                csv_str  => $csv_str, 
+                #%$ht_errors, 
+            }
+        ); 
+    }
+    return $emails; 
+}
+
+
+sub filter_subscribers_massaged_for_ht { 
+    my $self   = shift; 
+    my ($args) = @_;
+    
+    my $emails = $self->filter_subscribers_w_meta($args); 
+    
+    my $new_emails = []; 	
+    my $fields = $self->subscriber_fields(); 
+	
+    for my $address(@$emails) { 
+	
 		my $ht_fields = []; 
 		for(@$fields){ 
 		    push(@$ht_fields, {
 	            name  => $_, 
-	            value => $n_address->{fields}->{$_}
+	            value => $address->{fields}->{$_}
 		    });
 		}
 		my $ht_errors = []; 
-		for(keys %$errors){ 
+		for(keys %{$address->{errors}}){ 
 		    push(@$ht_errors, {
 	            name  => $_, 
 	            value => 1,
 		    });
 		}
-        
-        my $ht_errors = {};
-        # I don't like htis, 
-        foreach(keys %$errors){ 
-            if($errors->{$_} == 1) { 
-                $ht_errors->{'error_' . $_} = 1; 
-            }
-        }
-        
-        push(@$emails, {
-                email    => $n_address->{email}, 
-               # fields  => $n_address->{fields}, 
-                fields   => $ht_fields, 
-                status   => $status, 
-                errors   => $ht_errors, 
-                csv_str  => $csv_str, 
-                %$ht_errors, 
+#        my $ht_errors = {};
+#        # I don't like htis, 
+#        foreach(keys %$errors){ 
+#            if($errors->{$_} == 1) { 
+#                $ht_errors->{'error_' . $_} = 1; 
+#            }
+#        }
+	    push(@$new_emails, {
+                email     => $address->{email}, 
+                fields    => $ht_fields, 
+                status    => $address->{status}, 
+                og_errors => $address->{errors}, 
+                errors    => $ht_errors, 
+                csv_str   => $address->{csv_str}, 
+                # %$ht_errors, 
             }
         ); 
-    }
-    return $emails; 
+	}
+	undef($emails); 
+	
+	my $not_members      = []; 
+	my $black_listed     = [];
+	my $not_white_listed = []; 
+	my $subscribed       = []; 
+	my $invalid_email    = []; 
+	
+	for my $address(@$new_emails){ 
+	   if($address->{status} == 1){ 
+	        push(@$not_members, $address); 
+	   }
+	   elsif($address->{og_errors}->{invalid_email} == 1) { 
+	        push(@$invalid_email, $address);    
+	   }
+	   elsif($address->{og_errors}->{subscribed} == 1) { 
+	        push(@$subscribed, $address);    
+	   }
+	   elsif($address->{og_errors}->{black_listed} == 1) { 
+	       push(@$black_listed, $address);    
+	   }
+	   elsif($address->{og_errors}->{not_white_listed} == 1) { 
+	       push(@$not_white_listed, $address);    
+	   }
+	}
+	
+	return (
+	    $not_members, 
+	    $invalid_email,
+	    $subscribed,
+	    $black_listed, 
+	    $not_white_listed, 
+	); 
 }
 
 

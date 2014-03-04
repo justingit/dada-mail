@@ -5179,22 +5179,25 @@ sub add_email {
             return;
         };
         
-        my $filtered_addresses  =
-          $lh->filter_subscribers_w_meta(
-            {
-                -emails => $new_emails,
-                -type   => $type
-            }
-          );
 
-          #use Data::Dumper; 
-          #die Dumper($filtered_addresses); 
+        my ($not_members, 
+            $invalid_email,  
+            $subscribed,
+            $black_listed,    
+            $not_white_listed,
+            ) = $lh->filter_subscribers_massaged_for_ht(
+                        {
+                            -emails => $new_emails,
+                            -type   => $type
+                        }
+            ); 
+        
+        #$not_members = []; 
+        #$not_members = [{email => 'foo@bar.com'}];       
+        #use Data::Dumper; 
+        #die Dumper($not_members); 
         
         
-        
-        # I kinda have to put the error "flags" inline of the col. So, "invalid_email" would be w/email, etc. 
-        
-          
         my $num_subscribers = $lh->num_subscribers;
 
         # and for some reason, this is its own subroutine...
@@ -5223,27 +5226,25 @@ sub add_email {
         }
 
         my $going_over_quota = 0;
-=cut
         if ( $type eq 'list' ) {
             if ( $ls->param('use_subscription_quota') == 1
-                && ( $num_subscribers + scalar(@$not_subscribed) ) > $ls->param('subscription_quota') )
+                && ( $num_subscribers + scalar(@$not_members) ) > $ls->param('subscription_quota') )
             {
                 $going_over_quota = 1;
             }
             elsif (defined($DADA::Config::SUBSCRIPTION_QUOTA)
                 && $DADA::Config::SUBSCRIPTION_QUOTA > 0
-                && ( $num_subscribers + scalar(@$not_subscribed) ) > $DADA::Config::SUBSCRIPTION_QUOTA )
+                && ( $num_subscribers + scalar(@$not_members) ) > $DADA::Config::SUBSCRIPTION_QUOTA )
             {
                 $going_over_quota = 1;
             }
         }
-=cut
-        my $addresses_to_add = 0;
-=cut
-        $addresses_to_add = 1
-          if ( defined( @$not_subscribed[0] ) );
-=cut
 
+        my $addresses_to_add = 0;
+        if ( defined( @$not_members[0] ) ) { 
+            $addresses_to_add = 1;
+        }
+          
         my $field_names = [];
         for (@$subscriber_fields) {
             push( @$field_names, { name => $_ } );
@@ -5261,27 +5262,26 @@ sub add_email {
         if (   $ls->param('black_list') == 1
             && $ls->param('allow_admin_to_subscribe_blacklisted') == 1 )
         {
-#            for (@$black_listed) {
- #               $_->{'list_settings.allow_admin_to_subscribe_blacklisted'} = 1;
-  #          }
+            for (@$black_listed) {
+               $_->{'list_settings.allow_admin_to_subscribe_blacklisted'} = 1;
+            }
         }
 
         my %vars = (
             can_have_subscriber_fields => $lh->can_have_subscriber_fields,
             going_over_quota           => $going_over_quota,
             field_names                => $field_names,
-#            subscribed                 => $subscribed,
-#            not_subscribed             => $not_subscribed,
-#            black_listed               => $black_listed,
-#            not_white_listed           => $not_white_listed,
-#            invalid                    => $invalid,
-            filtered_addresses          => $filtered_addresses,
-            type                        => $type,
-            type_title                  => $type_title,
-            root_login                  => $root_login,
-            return_to                   => $return_to,
-            return_address              => $return_address,
-            chrome                      => $chrome,
+            subscribed                 => $subscribed,
+            not_members                => $not_members,
+            black_listed               => $black_listed,
+            not_white_listed           => $not_white_listed,
+            invalid_email              => $invalid_email,
+            type                       => $type,
+            type_title                 => $type_title,
+            root_login                 => $root_login,
+            return_to                  => $return_to,
+            return_address             => $return_address,
+            chrome                     => $chrome,
         );
 
         require DADA::Template::Widgets;

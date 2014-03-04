@@ -106,15 +106,15 @@
  <input type="hidden" name="type"           value="<!-- tmpl_var type -->" />
  <input type="hidden" name="return_to"      value="<!-- tmpl_var return_to -->" />
  <input type="hidden" name="return_address" value="<!-- tmpl_var return_address -->" />
- 
 
-<!-- tmpl_if filtered_addresses -->
+<!-- tmpl_if not_members -->
 
 <fieldset> 
  <legend>
-  Good Addresses!
+  Verified Addresses
  </legend>
- 
+
+
  <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
 
  <table class="stripedtable">
@@ -130,7 +130,7 @@
   </p>
  </td>
 
-<!-- tmpl_loop name="field_names" --> 
+<!-- tmpl_loop field_names --> 
     
     <td>
      <p>
@@ -142,112 +142,459 @@
 <!--/tmpl_loop --> 
 
   </tr>
- 
-
-    <!-- tmpl_loop filtered_addresses -->
-    
-        <!-- tmpl_if status --> 
-        
-      	<tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>     
-      		<td width="25">
-            <input type="checkbox" name="address" value="<!-- tmpl_var csv_info escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" checked="checked" />
-           </td>
-           <td>
-            <p>
-                <label for="<!-- tmpl_var email  escape="HTML" -->">
-                    <!-- tmpl_var email  escape="HTML" -->
-                </label>
-            </p>
-           </td>
-            <!-- tmpl_loop name="fields" --> 
-               <td>
-                <p>
-                 <!-- tmpl_var value default="&nbsp;" escape="HTML"  -->
-                </p>
-               </td>
-           <!-- /tmpl_loop --> 
-        </tr>
-         <!-- /tmpl_if -->
-    <!-- /tmpl_loop -->
-    </table>
-    <p style="text-align:right"><strong>Total:</strong>Something Something</p> 
   
-  <p>&nbsp;</p>
-  <p>&nbsp;</p>
-  </div>
- 
- 
- 
- 
- 
-  <fieldset> 
-   <legend>
-    Baaaad Addresses!
-   </legend>
+  <!-- tmpl_loop not_members -->
 
-   <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
-
-   <table class="stripedtable">
-    <tr>
-     <td width="25">
-      <p>&nbsp;</p>
+	<tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>     
+		<td width="25">
+      <input type="checkbox" name="address" value="<!-- tmpl_var csv_info escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" checked="checked" />
      </td>
      <td>
+      <p>
+<label for="<!-- tmpl_var email  escape="HTML" -->">
+       <!-- tmpl_var email  escape="HTML" -->
+</label>
+      </p>
+     </td>
+
+     <!-- tmpl_loop fields --> 
+        
+        <td>
+         <p>
+          <!-- tmpl_var value default="&nbsp;" escape="HTML"  -->
+         </p>
+        </td>
+    <!-- /tmpl_loop --> 
+  </tr>
+  
+  <!-- tmpl_if __last__ --> 
+  
+  </table>
+  <p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var __counter__ -->&nbsp;</p> 
+  
+  
+  
+  <!-- /tmpl_if --> 
+  
+<!-- /tmpl_loop -->
+
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</div>
+
+
+</fieldset> 
+<!--/tmpl_if-->
+ 
+
+<!-- tmpl_if list_settings.black_list -->
+	 
+	<!-- tmpl_if black_listed -->
+
+
+<fieldset> 
+ <legend>
+  Black Listed Addresses
+ </legend>
+ 
+ 
+		 <p>
+		  These addresses are 
+		  <strong>
+		   black listed.
+		  </strong>
+		
+		<!-- tmpl_if list_settings.allow_admin_to_subscribe_blacklisted --> 
+		  	They will not be added/invited unless they are manually checked:
+		
+		<!-- tmpl_else --> 
+		
+		They will not be added/invited. 
+	  	
+		
+		<!-- /tmpl_if --> 
+		
+		 </p>
+	
+		  
+		  
+<div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
+
+ <table class="stripedtable">
+  <tr>
+   <td width="25">
+    <p>&nbsp;</p>
+   </td>
+   <td>
+   <p>
+    <strong>
+     Email
+   </strong>
+  </p>
+ </td>
+
+<!-- tmpl_loop field_names --> 
+    
+    <td>
      <p>
       <strong>
-       Email
-     </strong>
-    </p>
+       <!-- tmpl_var name --> 
+      </strong>
+     </p>
+    </td> 
+<!--/tmpl_loop --> 
+
+  </tr>
+  
+  <!-- tmpl_loop black_listed -->
+
+    <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
+     <td width="25">
+      <!-- tmpl_if list_settings.allow_admin_to_subscribe_blacklisted --> 
+		<input type="checkbox" name="address" value="<!-- tmpl_var csv_info escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" />
+		<!-- tmpl_else --> 
+		&nbsp;
+		<!-- /tmpl_if --> 
+     </td>
+     <td>
+      <p>
+<label for="<!-- tmpl_var email escape="HTML" -->">
+       <!-- tmpl_var email escape="HTML" -->
+</label>
+      </p>
+     </td>
+
+     <!-- tmpl_loop fields --> 
+        
+        <td>
+         <p>
+          <!-- tmpl_var value default="&nbsp;" escape="HTML" -->
+         </p>
+        </td>
+    <!-- /tmpl_loop --> 
+  </tr>
+ 
+ 
+   <!-- tmpl_if __last__ --> 
+  
+  </table>
+  <p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var __counter__ -->&nbsp;</p> 
+  
+  <!-- /tmpl_if --> 
+  
+  
+<!-- /tmpl_loop -->
+
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</div>
+
+</fieldset> 
+
+<!--/tmpl_if-->
+	
+<!--/tmpl_if-->
+
+
+
+<!-- tmpl_if list_settings.enable_white_list --> 
+
+<!-- 
+	<p> White list is enabled.</p> 
+--> 
+
+    <!-- tmpl_if not_white_listed --> 
+
+<!-- 
+	<p>There's un-white listed subscribers to show </p> 
+--> 
+
+<fieldset> 
+ <legend>
+ Not White Listed Addresses
+ </legend>
+ 
+ 
+    <p>These addresses are not included on your 
+		  <strong>
+		   white list.
+		  </strong>
+		  They will not be added/invited unless they are manually checked:
+		 </p>    
+
+
+<div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
+
+ <table class="stripedtable">
+  <tr>
+   <td width="25">
+    <p>&nbsp;</p>
    </td>
+   <td>
+   <p>
+    <strong>
+     Email
+   </strong>
+  </p>
+ </td>
 
-  <!-- tmpl_loop name="field_names" --> 
+<!-- tmpl_loop field_names --> 
+    
+    <td>
+     <p>
+      <strong>
+       <!-- tmpl_var name --> 
+      </strong>
+     </p>
+    </td> 
+<!--/tmpl_loop --> 
 
-      <td>
-       <p>
-        <strong>
-         <!-- tmpl_var name --> 
-        </strong>
-       </p>
-      </td> 
-  <!--/tmpl_loop --> 
+  </tr>
+  
+  <!-- tmpl_loop not_white_listed -->
 
-    </tr>
+    <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
+     <td width="25">
+      <input type="checkbox" name="address" value="<!-- tmpl_var csv_info escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" />
+     </td>
+     <td>
+      <p>
+<label for="<!-- tmpl_var email escape="HTML" -->">
+       <!-- tmpl_var email escape="HTML" -->
+</label>
+      </p>
+     </td>
+
+     <!-- tmpl_loop fields --> 
+        
+        <td>
+         <p>
+          <!-- tmpl_var value escape="HTML" default="&nbsp;"  -->
+         </p>
+        </td>
+    <!-- /tmpl_loop --> 
+  </tr>
+
+  <!-- tmpl_if __last__ --> 
+  
+  </table>
+  <p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var __counter__ -->&nbsp;</p> 
+  
 
 
-      <!-- tmpl_loop filtered_addresses -->
-      
-          <!-- tmpl_unless status --> 
 
-        	<tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>     
-        		<td width="25">
-              <input type="checkbox" name="address" value="<!-- tmpl_var csv_info escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" checked="checked" />
-             </td>
-             <td <!-- tmpl_if error_invalid_email --> style="background-color:#ff0000" <!-- /tmpl_if -->>
-              <p>
-                  <label for="<!-- tmpl_var email  escape="HTML" -->">
-                      <!-- tmpl_var email  escape="HTML" -->
-                  </label>
-              </p>
-             </td>
-             <!-- tmpl_loop name="fields" --> 
-                <td>
-                 <p>
-                  <!-- tmpl_var value default="&nbsp;" escape="HTML"  -->
-                 </p>
-                </td>
-            <!-- /tmpl_loop --> 
-          </tr>
-      <!-- /tmpl_unless -->
-    <!-- /tmpl_loop -->
-</table>
-<p style="text-align:right"><strong>Total:</strong>Something, Something</p> 
+
+  <!-- /tmpl_if --> 
+  
+<!-- /tmpl_loop -->
+
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</div>
+
+
+</fieldset> 
+
+<!-- tmpl_else --> 
+
+	<!--
+		<p>There's NO un-white listed subscribers to show </p> 
+	--> 
+
+<!--/tmpl_if--> 
+
+
+<!-- tmpl_else --> 
+
+	<!-- 
+		<p> White list is NOT enabled.</p>
+	--> 
+
+<!--/tmpl_if-->
+
+
+
+
+
+<!-- tmpl_if subscribed -->
+	
+	
+	<fieldset> 
+	 <legend>
+		Subscribed Already
+	</legend> 
+	 
+	<p>
+	 These addresses are already subscribed to your list. They will not be added/invited again:
+	</p>
+	
+
+
+<div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
+
+ <table class="stripedtable">
+  <tr>
+   <td width="25">
     <p>&nbsp;</p>
+   </td>
+   <td>
+   <p>
+    <strong>
+     Email
+   </strong>
+  </p>
+ </td>
+
+<!-- tmpl_loop field_names --> 
+    
+    <td>
+     <p>
+      <strong>
+       <!-- tmpl_var name --> 
+      </strong>
+     </p>
+    </td> 
+<!--/tmpl_loop --> 
+
+  </tr>
+  
+  <!-- tmpl_loop subscribed -->
+
+    <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
+     <td width="25">
+      &nbsp;
+     </td>
+     <td>
+      <p>
+<label for="<!-- tmpl_var email escape="HTML" -->">
+       <!-- tmpl_var email escape="HTML" -->
+</label>
+      </p>
+     </td>
+
+     <!-- tmpl_loop fields --> 
+        
+        <td>
+         <p>
+          <!-- tmpl_var value default="&nbsp;" escape="HTML"  -->
+         </p>
+        </td>
+    <!-- /tmpl_loop --> 
+  </tr>
+
+  <!-- tmpl_if __last__ --> 
+  
+  </table>
+  <p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var __counter__ -->&nbsp;</p> 
+  
+  <!-- /tmpl_if --> 
+  
+<!-- /tmpl_loop -->
+
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</div>
+
+</fieldset> 
+	
+<!--/tmpl_if-->
+
+
+<!-- tmpl_if invalid_email -->
+
+
+<fieldset> 
+ <legend>
+Invalid Email Addresses
+ </legend>
+ 
+ 
+	<p>
+	 These addresses did not go through validation successfully. They will not be added/invited. 
+	 </p>
+	
+	<div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
+
+ <table class="stripedtable">
+  <tr>
+   <td width="25">
     <p>&nbsp;</p>
-    </div>
- 
- 
- 
-  <!-- /tmpl_if -->
+   </td>
+   <td>
+   <p>
+    <strong>
+     Email
+   </strong>
+  </p>
+ </td>
+
+<!-- tmpl_loop field_names --> 
+    
+    <td>
+     <p>
+      <strong>
+       <!-- tmpl_var name --> 
+      </strong>
+     </p>
+    </td> 
+<!--/tmpl_loop --> 
+
+  </tr>
+  
+  <!-- tmpl_loop invalid_email -->
+
+    <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
+     <td width="25">
+&nbsp;     </td>
+     <td>
+      <p>
+<label for="<!-- tmpl_var email escape="HTML" -->">
+       <!-- tmpl_var email escape="HTML" -->
+</label>
+      </p>
+     </td>
+
+     <!-- tmpl_loop fields --> 
+        
+        <td>
+         <p>
+          <!-- tmpl_var value default="&nbsp;" escape="HTML"  -->
+         </p>
+        </td>
+    <!-- /tmpl_loop --> 
+  </tr>
+
+  <!-- tmpl_if __last__ --> 
+  
+  </table>
+  <p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var __counter__ -->&nbsp;</p> 
+  
+  <!-- /tmpl_if --> 
+  
+<!-- /tmpl_loop -->
+
+
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+</div>
+
+</fieldset> 
+
+<!-- /tmpl_if --> 
+
+<!-- tmpl_if not_members --> 
+	<!-- ... -->
+<!-- tmpl_else --> 
+	<div class="badweatherbox">
+	<p> 
+		No addresses have passed verification. 
+	</p> 
+</div>
+<!-- /tmpl_if -->
 
 	 <div class="buttonfloat">
 
@@ -270,6 +617,9 @@
 	<!-- /tmpl_if -->
 	 </div>
 	 <div class="floatclear"></div>
+
+	
+
 
 
  </form>
