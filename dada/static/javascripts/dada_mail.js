@@ -389,6 +389,17 @@ $(document).ready(function() {
 		$("body").on("submit", "#confirm_add", function(event) {
 			event.preventDefault();
 		});
+		
+		$("body").on("click", ".uncheck_all_in_div", function(event) {
+			alert($(this).attr("data-target")); 
+			$("#" + $(this).attr("data-target") + " input:checkbox").prop("checked",false);
+		}); 
+		$("body").on("click", ".check_all_in_div", function(event) {
+			alert($(this).attr("data-target")); 
+			$("#" + $(this).attr("data-target") + " input:checkbox").prop("checked",true);
+		}); 
+		
+		
 		$("body").on("click", ".addingemail", function(event) {
 			if ($(this).hasClass("warnAboutMassSubscription")) {
 				if (warnAboutMassSubscription() === true) {

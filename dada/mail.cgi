@@ -5185,6 +5185,7 @@ sub add_email {
             $subscribed,
             $black_listed,    
             $not_white_listed,
+            $invalid_profile_fields, 
             ) = $lh->filter_subscribers_massaged_for_ht(
                         {
                             -emails => $new_emails,
@@ -5192,10 +5193,11 @@ sub add_email {
                         }
             ); 
         
+        
         #$not_members = []; 
         #$not_members = [{email => 'foo@bar.com'}];       
-        #use Data::Dumper; 
-        #die Dumper($not_members); 
+     #   use Data::Dumper; 
+     #   die Dumper($invalid_profile_fields); 
         
         
         my $num_subscribers = $lh->num_subscribers;
@@ -5276,6 +5278,7 @@ sub add_email {
             black_listed               => $black_listed,
             not_white_listed           => $not_white_listed,
             invalid_email              => $invalid_email,
+            invalid_profile_fields     => $invalid_profile_fields, 
             type                       => $type,
             type_title                 => $type_title,
             root_login                 => $root_login,
