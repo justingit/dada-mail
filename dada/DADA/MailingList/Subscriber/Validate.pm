@@ -206,47 +206,72 @@ sub subscription_check {
         }
     }
     
-    # Profile Fields
-    if(!$skip{profile_fields}) { 
+    if ( $args->{-type} eq 'list') {
+        # Profile Fields
+        if(!$skip{profile_fields}) { 
         
-        require DADA::ProfileFieldsManager; 
-        my $dpfm = DADA::ProfileFieldsManager->new; 
-        my $dpf_att = $dpfm->get_all_field_attributes;        
-        my $fields = $dpfm->fields; 
+            
+            require DADA::ProfileFieldsManager; 
+            my $dpfm = DADA::ProfileFieldsManager->new; 
+            my $dpf_att = $dpfm->get_all_field_attributes;        
+            my $fields = $dpfm->fields; 
         
-        for my $field_name(@{$fields}) {     
-            my $field_name_status = 1; 
-            if($dpf_att->{$field_name}->{required} == 1){ 
-                if(exists($args->{-fields}->{$field_name})){ 
-                    if(defined($args->{-fields}->{$field_name}) && $args->{-fields}->{$field_name} ne ""){ 
-                        #... 
+            for my $field_name(@{$fields}) {     
+                my $field_name_status = 1; 
+                if($dpf_att->{$field_name}->{required} == 1){ 
+                    if(exists($args->{-fields}->{$field_name})){ 
+                        if(defined($args->{-fields}->{$field_name}) && $args->{-fields}->{$field_name} ne ""){ 
+                            #... 
+                        }
+                        else { 
+                            $field_name_status = 0; 
+                        }
                     }
                     else { 
                         $field_name_status = 0; 
                     }
                 }
-                else { 
-                    $field_name_status = 0; 
+                if($field_name_status == 0){ 
+                    # We do this, so when we add things like "type checking" we don't
+                    # have to redo everything again.
+                    $errors->{invalid_profile_fields}->{$field_name}->{required} = 1; 
                 }
             }
-            if($field_name_status == 0){ 
-                # We do this, so when we add things like "type checking" we don't
-                # have to redo everything again.
-                $errors->{invalid_profile_fields}->{$field_name}->{required} = 1; 
+            
+            if(exists($errors->{invalid_profile_fields})){ 
+                # This is going to be more expensive, than just seeing if some value is passed, 
+                # But I guess the policy is, if the profile already exists, then it doens't matter if these fields are empty 
+                # as they were already empty! 
+                # I'd rather this look at Profile, rather than the fields of Profiles, which can easily be 
+                # orphans, if Fields are saved, but profiles aren't, (say, when you're subscribing via the list control panel - d'oh!) 
+                #
+                #
+                if(! exists($errors->{invalid_email})){ 
+                    require    DADA::Profile::Fields; 
+                    my $dpf = DADA::Profile::Fields->new({
+    					-dpfm_obj => $dpfm, 
+    				});
+                    if($dpf->exists({-email => $email})){ 
+                        # Nevermind. 
+                        delete($errors->{invalid_profile_fields}); 
+                        undef($dpf); 
+                    } 
+                }
             }
         }
     }
     
     for my $error_name( keys %{$errors} ) {
-        if($error_name ne 'invalid_profile_fields') { 
+        if($error_name ne 'invalid_profile_fields') {
             if ($errors->{$error_name} == 1) { 
                 $status = 0;
                 last;
             }
         }
         elsif(keys %{$errors->{$error_name}} ) { # invalid_profile_fields
-            $status = 0; 
+            $status = 0;             
             last;
+            
         }
     }
     

@@ -960,7 +960,6 @@ sub update {
     }
 
     $self->remove();
-	
     $self->insert($new);
 
 }

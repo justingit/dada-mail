@@ -7,7 +7,7 @@
 		 Membership (<!-- tmpl_var type_title -->)
 		&#187;
 		 <strong>
-			<!-- tmpl_if EXPR="(type eq 'list')" -->
+			<!-- tmpl_if expr="(type eq 'list')" -->
 				Invite
 				<!-- tmpl_if list_settings.enable_mass_subscribe -->
 					/ Subscribe
@@ -19,7 +19,7 @@
 		&#187;
 		 Verify
 		&#187;
-		<!-- tmpl_if EXPR="(type eq 'list')" -->
+		<!-- tmpl_if expr="(type eq 'list')" -->
 			Send Invitation
 			<!-- tmpl_if list_settings.enable_mass_subscribe -->
 				/ Subscribe
@@ -39,8 +39,7 @@
 </form> 
 
 
-<!-- tmpl_if EXPR="(type eq 'list')" -->
-	
+<!-- tmpl_if expr="(type eq 'list')" -->
 	
 	<!-- tmpl_if subscription_quota_reached -->
 		<div class="badweatherbox">
@@ -114,7 +113,7 @@
 			 <a href="#" class="toggleDivs" data-target="add_one">
 			+/- 
 		</a>
-		<!-- tmpl_if EXPR="(type eq 'list')" -->
+		<!-- tmpl_if expr="(type eq 'list')" -->
 			Invite
 			<!-- tmpl_if list_settings.enable_mass_subscribe -->
 				/ Subscribe
@@ -152,8 +151,14 @@
 		    <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->"  />
 		    </p>
 		<!--/tmpl_loop-->
-
-
+		
+	    <p>
+	     <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
+	      Profile Password: 
+	     </label>
+	    <input type="text" name="profile_password" id="profile_password" value=""  />
+	    </p>
+	    
 		 <div class="buttonfloat">
 		  <input type="reset"  class="cautionary" value="Clear Changes" />
 		  <input type="submit"                    value="Verify Address..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing"<!-- /tmpl_if -->/>
@@ -170,7 +175,7 @@
 	<fieldset style="background:#e6e6e6">
 		<legend>
 		
-			<!-- tmpl_if EXPR="(type eq 'list')" -->
+			<!-- tmpl_if expr="(type eq 'list')" -->
 				Invite
 				<!-- tmpl_if list_settings.enable_mass_subscribe -->
 					/ Subscribe
@@ -187,7 +192,7 @@
 	     </label> 
 	     new subscribers (one subscriber per line) in the following <strong>CSV format</strong>: </p> 
      
-	     <p><code>Email Address<!-- tmpl_loop fields -->, <!-- tmpl_var name --><!-- /tmpl_loop --></code></p>
+	     <p><code>Email Address<!-- tmpl_loop fields -->, <!-- tmpl_var name --><!-- /tmpl_loop --><!-- tmpl_if expr="(type eq 'list')" -->, Profile Password<!-- /tmpl_if --></code></p>
 
 
 

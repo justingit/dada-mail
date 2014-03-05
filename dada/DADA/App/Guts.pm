@@ -2716,7 +2716,11 @@ sub csv_subscriber_parse {
             # This probably means we have encountered a blank line.
         }
         else {
-            push( @$addresses, { email => $pre_info->{email}, fields => $pre_info->{fields} } );
+            push( @$addresses, { 
+                email   => $pre_info->{email},
+                fields  => $pre_info->{fields},
+                profile => $pre_info->{profile},
+            });
         }
     }
 
@@ -2744,134 +2748,6 @@ sub csv_subscriber_parse {
 
 }
 
-
-
-sub csv_subscriber_parse_old { 
-
-    my $list     = shift; 
-    my $filename = shift; 
-
-    # DEV: Remember! Error checking!!!
-    
-	my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
-	my $subscriber_fields = $lh->subscriber_fields;
-
-    my $addresses         = [];
-    my $address_fields    = [];
-
-
-    $filename =  uriescape($filename);
-    $filename =~ s/\s/%20/g;
-	if(length($filename) <= 0 || $filename eq '') { 
-		return ([], []);
-	}
-	
-	if(! -r $DADA::Config::TMP || ! -w $DADA::Config::TMP || ! -x $DADA::Config::TMP) { 
-		chmod($DADA::Config::DIR_CHMOD , $DADA::Config::TMP)			
-	}
-	else { 
-		# good.
-	}
-
-	if(! -f $DADA::Config::TMP . '/' . $filename) { 
-		return ([], []);
-	}
-	
-	
-	# Line translation. 
-	# Don't like it. 
-	# Notes: 
-	# http://use.perl.org/comments.pl?sid=33475&cid=55956
-	# http://search.cpan.org/~rgarcia/perl-5.10.0/lib/PerlIO.pm
-	
-	# Reading
-	open my $NE, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $DADA::Config::TMP . '/' . $filename 
-		or die "Can't open: " . $DADA::Config::TMP . '/' . $filename . ' because: '  . $!;
-
-	# Writing
-	open my $NE2, '>:encoding('. $DADA::Config::HTML_CHARSET . ')', make_safer($DADA::Config::TMP . '/' . $filename . '.translated') 
-		or die "Can't open: " . make_safer($DADA::Config::TMP . '/' . $filename . '.translated') . ' because: '  . $!;
-
-	my $c = 0; 
-	my $line; 
-	while(defined($line = <$NE>)){ 
-		$c++; 
-		 # this line can break when weird, 
-		 # non-utf-8 stuff is attempted to be read. 
-		 $line =~ s{\r\n|\r}{\n}g;
-		 print $NE2 $line
-			or warn "cannot translate line #" . $c . 'because: ' . $!; 
-	}
-	
-	close ($NE) or die $!;
-	undef ($NE); 
-
-	close $NE2 or die $!; 
-	undef ($NE2); 
-	# /Done line ending translation.
-	undef ($c);  
-
-    open my $NE3, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $DADA::Config::TMP . '/' . $filename . '.translated'
-        or die "Can't open: " . $DADA::Config::TMP . '/' . $filename . '.translated' . ' because: '  . $!;
-         
-    while(defined($line = <$NE3>)){ 
-
-		my $pre_info = $lh->csv_to_cds($line);
-		
-		#require Data::Dumper; 
-		#warn '$pre_info' . Data::Dumper::Dumper($pre_info); 
-		
-		# All this is basically doing is re-designing the complex data structure for HTML::Template stuff, 
-		# as well as embedding the original csv stuff
-		# DEV: So... are we using it for HTML::Template? 
-		# Erm. Kinda - still gets passed to filter_subscription_list_meta thingy. 
-		
-		if($pre_info->{email} eq ''){ 
-			# This probably means we have encountered a blank line. 
-		}
-		else { 
-		
-	        my $info = {}; 
-    	
-			$info->{email} = $pre_info->{email}; 
-
-			my $new_fields = [];
-			my $i = 0; 
-			for(@$subscriber_fields){
-				push(@$new_fields, {name => $_, value => $pre_info->{fields}->{$_} }); 
-				$i++;
-			}
-			$info->{fields} = $new_fields; 
-
-			push(@$address_fields, $info);
-			push(@$addresses, $info->{email}); 
-    	}
-	}
-
-    close ($NE3);
-
-    # And all this is to simply remove the file...    
-    my $full_path_to_filename = $DADA::Config::TMP . '/' . $filename;
-    
-
-    my $chmod_check = chmod($DADA::Config::FILE_CHMOD, make_safer($full_path_to_filename)); 
-    if($chmod_check != 1){ 
-        warn "could not chmod '$full_path_to_filename' correctly."; 
-    }
-    
-    my $unlink_check = unlink(make_safer($full_path_to_filename));
-    if($unlink_check != 1){ 
-        warn "couldn't remove tmp file: " . $full_path_to_filename; 
-    }
- 
-	my $unlink_check2 = unlink(make_safer($full_path_to_filename . '.translated'));
-    if($unlink_check2 != 1){ 
-        warn "couldn't remove tmp file: " . $full_path_to_filename . '.translated'; 
-    }
-
-    return ($addresses, $address_fields); 
-
-}
 
 
 

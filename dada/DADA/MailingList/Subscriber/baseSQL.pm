@@ -16,6 +16,9 @@ sub add {
     my $class = shift;
     my ($args) = @_;
 	
+#	use Data::Dumper; 
+#	warn 'add args! ' . Dumper($args); 
+	
 	if(!exists($args->{-log_it})){ 
 		$args->{-log_it} = 1; 
 	}
@@ -124,6 +127,35 @@ sub add {
 			}
 		); 
 	}
+	if ( exists $args->{ -profile } && keys %{$args->{ -profile }}) {
+	    if($args->{ -profile }->{-password}) { 
+    	    require DADA::Profile; 
+    	    my $prof = DADA::Profile->new({-email => $args->{-email}});
+    		if($prof){
+    			if(
+    			    $prof->exists 
+    			&&  $args->{ -fields_options }->{-mode} ne 'preserve_if_defined'
+    			){
+    			    # Or, update, I guess. 
+                    $prof->remove();  
+                    $prof->insert(
+                        {
+                            -password  => $args->{ -profile }->{ -password },
+                            -activated => 1,
+                        }
+                    );              
+    			}  
+    			else { 
+                    $prof->insert(
+                        {
+                            -password  => $args->{ -profile }->{ -password },
+                            -activated => 1,
+                        }
+                    );                  			    
+    			}
+    		}
+    	}
+    }
     my $added = DADA::MailingList::Subscriber->new(
         {
             -list  => $args->{ -list },

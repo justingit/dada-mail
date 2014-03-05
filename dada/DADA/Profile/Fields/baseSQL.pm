@@ -6,6 +6,9 @@ use lib qw(
 use strict; 
 
 use Carp qw(carp croak confess);
+
+#$Carp::Verbose = 1; 
+
 use DADA::App::Guts;
 
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_Profile_Fields};

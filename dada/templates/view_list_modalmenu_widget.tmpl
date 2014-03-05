@@ -1,6 +1,6 @@
 <!-- begin view_list_modalmenu_widget.tmpl --> 
 
-<!-- tmpl_if expr="((add_email_count > 0) || (delete_email_count  > 0) || (black_list_add > 0) || (approved_count  > 0) || (denied_count  > 0) || (bounced_list_moved_to_list_count  > 0) || (bounced_list_removed_from_list > 0) )" --> 
+<!-- tmpl_if expr="((add_email_count > 0) || (update_email_count > 0)  || (delete_email_count  > 0) || (black_list_add > 0) || (approved_count  > 0) || (denied_count  > 0) || (bounced_list_moved_to_list_count  > 0) || (bounced_list_removed_from_list > 0) )" --> 
 
 <div class="clearskiesbox" id="alertbox">
 	
@@ -10,11 +10,20 @@
 	<!-- tmpl_if email --> 
 		<!-- tmpl_var email --> has been
 	<!-- tmpl_else --> 
-		<!-- tmpl_var name="add_email_count" --> address(es) have been 
+		<!-- tmpl_var add_email_count --> address(es) have been 
 	<!-- /tmpl_if --> 
 	added to <!-- tmpl_var type_title -->.
 	</p>
 <!-- /tmpl_if -->
+
+
+<!-- tmpl_if update_email_count -->	
+	<p>
+		<!-- tmpl_var update_email_count --> address(es) have been updated.
+	</p>
+<!-- /tmpl_if -->
+
+
 
 
 <!-- tmpl_if skipped_email_count -->
@@ -22,7 +31,7 @@
 		<!-- tmpl_if email --> 
 			<!-- tmpl_var email --> 
 		<!-- tmpl_else --> 
-			<!-- tmpl_var name="skipped_email_count" --> address(es) 
+			<!-- tmpl_var skipped_email_count --> address(es) 
 		<!-- /tmpl_if --> 	
 			could not be added to <!-- tmpl_var type_title -->.
 	</p>	
@@ -46,7 +55,7 @@
 		<!-- tmpl_if email --> 
 			<!-- tmpl_var email --> has been 
 		<!-- tmpl_else --> 
-			<!-- tmpl_var name="approved_count" --> address(es) have been 
+			<!-- tmpl_var approved_count --> address(es) have been 
 		<!-- /tmpl_if --> 	
 			approved for subscription.
 	</p>
@@ -57,7 +66,7 @@
 		<!-- tmpl_if email --> 
 			<!-- tmpl_var email --> has been 
 		<!-- tmpl_else --> 
-			<!-- tmpl_var name="denied_count" --> address(es) have been 
+			<!-- tmpl_var denied_count --> address(es) have been 
 		<!-- /tmpl_if --> 
 		denied a subscription.
 	</p>
@@ -68,7 +77,7 @@
 		<!-- tmpl_if email --> 
 			<!-- tmpl_var email --> has been 
 		<!-- tmpl_else --> 
-			<!-- tmpl_var name="bounced_list_moved_to_list_count" --> address(es) have been 
+			<!-- tmpl_var bounced_list_moved_to_list_count --> address(es) have been 
 		<!-- /tmpl_if -- >
 			moved back to Subscription List.
 	</p>
@@ -80,7 +89,7 @@
 	<!-- tmpl_if email --> 
 		<!-- tmpl_var email --> has been 
 	<!-- tmpl_else --> 
-		<!-- tmpl_var name="bounced_list_removed_from_list" --> bouncing address(es) have been 
+		<!-- tmpl_var bounced_list_removed_from_list --> bouncing address(es) have been 
 	<!-- /tmpl_if -->
 	permanently removed from you Subscribers.
 	</p>

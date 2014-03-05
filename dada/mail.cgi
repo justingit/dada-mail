@@ -3296,7 +3296,8 @@ sub view_list {
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
 
-    my $add_email_count = xss_filter( $q->param('add_email_count') ) || 0;
+    my $add_email_count     = xss_filter( $q->param('add_email_count') ) || 0;
+    my $update_email_count   = xss_filter( $q->param('update_email_count') ) || 0;
     my $skipped_email_count = xss_filter( $q->param('skipped_email_count') )
       || 0;
     my $delete_email_count               = xss_filter( $q->param('delete_email_count') )               || 0;
@@ -3334,6 +3335,7 @@ sub view_list {
                     order_dir => $order_dir,
 
                     add_email_count                  => $add_email_count,
+                    update_email_count               => $update_email_count, 
                     skipped_email_count              => $skipped_email_count,
                     delete_email_count               => $delete_email_count,
                     black_list_add                   => $black_list_add,
@@ -4824,8 +4826,11 @@ sub add {
             for ( @{ $lh->subscriber_fields() } ) {
                 push( @columns, xss_filter( $q->param($_) ) );
             }
+            if($type eq 'list' && $lh->can_have_subscriber_fields){ 
+                push( @columns, xss_filter( $q->param('profile_password') ) );
+            }
+            
             require Text::CSV;
-
             my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
 
             my $status = $csv->combine(@columns);    # combine columns into a string
@@ -4879,7 +4884,6 @@ sub add {
                   . $return_address
                   . '&chrome='
                   . $chrome );
-
         }
         else {
 
@@ -4900,7 +4904,6 @@ sub add {
         }
     }
     else {
-
         require DADA::MailingList::Settings;
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
@@ -4971,22 +4974,16 @@ sub add {
                     type                       => $type,
                     type_title                 => $type_title,
                     flavor                     => 'add',
-
-                    rand_string => $rand_string,
-
+                    rand_string                => $rand_string,
                     list_subscribers_num       => $lh->num_subscribers( { -type => 'list' } ),
                     black_list_subscribers_num => $lh->num_subscribers( { -type => 'black_list' } ),
                     white_list_subscribers_num => $lh->num_subscribers( { -type => 'white_list' } ),
                     authorized_senders_num     => $lh->num_subscribers( { -type => 'authorized_senders' } ),
                     moderators_num             => $lh->num_subscribers( { -type => 'moderators' } ),
                     bounced_list_num           => $lh->num_subscribers( { -type => 'bounced_list' } ),
-
-                    fields => $fields,
-
+                    fields                     => $fields,
                     can_have_subscriber_fields => $lh->can_have_subscriber_fields,
-
-                    list_is_closed => $list_is_closed,
-
+                    list_is_closed             => $list_is_closed,
                 },
                 -list_settings_vars_param => {
                     -list   => $list,
@@ -5192,14 +5189,7 @@ sub add_email {
                             -type   => $type
                         }
             ); 
-        
-        
-        #$not_members = []; 
-        #$not_members = [{email => 'foo@bar.com'}];       
-     #   use Data::Dumper; 
-     #   die Dumper($invalid_profile_fields); 
-        
-        
+
         my $num_subscribers = $lh->num_subscribers;
 
         # and for some reason, this is its own subroutine...
@@ -5268,7 +5258,7 @@ sub add_email {
                $_->{'list_settings.allow_admin_to_subscribe_blacklisted'} = 1;
             }
         }
-
+         
         my %vars = (
             can_have_subscriber_fields => $lh->can_have_subscriber_fields,
             going_over_quota           => $going_over_quota,
@@ -5349,18 +5339,49 @@ sub add_email {
                 die "Mass Subscribing via the List Control Panel has been disabled.";
             }
 
-            my @address             = $q->param("address");
-            my $new_email_count     = 0;
-            my $skipped_email_count = 0;
-            my $num_subscribers     = $lh->num_subscribers;
-            my $new_total           = $num_subscribers;
+            my @address               = $q->param("address");
+            my @update_fields_address = $q->param("update_fields_address"); 
+            my $new_email_count       = 0;
+            my $skipped_email_count   = 0;
+            my $num_subscribers       = $lh->num_subscribers;
+            my $new_total             = $num_subscribers;
 
+            my $update_email_count = 0; 
+            require DADA::Profile::Fields;  
+            require DADA::Profile;           
+            for my $ua (@update_fields_address) {
+                my $ua_info = $lh->csv_to_cds($ua);
+                my $dpf = DADA::Profile::Fields->new({-email => $ua_info->{email}});
+                $dpf->insert( 
+                    { 
+                        -fields => $ua_info->{fields}, 
+                        -mode   => 'writeover', 
+                    } 
+                );
+                if(defined($ua_info->{profile}->{password}) && $ua_info->{profile}->{password} ne ''){ 
+                    my $prof = DADA::Profile->new({-email => $ua_info->{email}});
+                    if($prof){ 
+                        if($prof->exists){ 
+                            $prof->update({-password => $ua_info->{profile}->{password}}); 
+                        }
+                        else { 
+                            $prof->insert(
+                                {
+                                    -password  => $ua_info->{ profile }->{ password },
+                                    -activated => 1,
+                                }
+                            );
+                        }
+                    }
+                }
+                $update_email_count++; 
+            }
+            
+            
             # Each Address is a CSV line...
             for my $a (@address) {
-
                 my $info = undef;
                 my $dmls = undef;
-
                 if (   $type eq 'list'
                     && defined($quota_limit)
                     && $new_total >= $quota_limit )
@@ -5368,17 +5389,19 @@ sub add_email {
                     $skipped_email_count++;
                 }
                 else {
-
-                    my $fields_options_mode = $q->param('fields_options_mode')
-                      || 'preserve_if_defined';
+                    my $fields_options_mode = $q->param('fields_options_mode') || 'preserve_if_defined';
                     $info = $lh->csv_to_cds($a);
                     $dmls = $lh->add_subscriber(
                         {
-                            -email          => $info->{email},
-                            -fields         => $info->{fields},
-                            -type           => $type,
-                            -fields_options => { -mode => $fields_options_mode, },
-                            -dupe_check     => {
+                            -email             => $info->{email},
+                            -fields            => $info->{fields},
+                            -profile           => { 
+                                -password => $info->{profile}->{password}, 
+                                -mode     => $fields_options_mode, 
+                            },
+                            -type              => $type,
+                            -fields_options    => { -mode => $fields_options_mode, },
+                            -dupe_check        => {
                                 -enable  => 1,
                                 -on_dupe => 'ignore_add',
                             },
@@ -5393,7 +5416,6 @@ sub add_email {
                     }
                 }
             }
-
             if ( $type eq 'list' ) {
                 if ( $ls->param('send_subscribed_by_list_owner_message') == 1 ) {
                     require DADA::App::MassSend;
@@ -5451,6 +5473,8 @@ sub add_email {
               . $new_email_count
               . ';skipped_email_count='
               . $skipped_email_count
+              . ';update_email_count='
+              . $update_email_count
               . ';type='
               . $type;
 
@@ -11350,8 +11374,8 @@ sub profile {
         require DADA::Profile::Fields;
         require DADA::Profile;
 
-        my $prof = DADA::Profile->new( { -email => $email } );
-        my $dpf = DADA::Profile::Fields->new( { -email => $email } );
+        my $prof              = DADA::Profile->new( { -email => $email } );
+        my $dpf               = DADA::Profile::Fields->new( { -email => $email } );
         my $subscriber_fields = $dpf->{manager}->fields( { -show_hidden_fields => 0, } );
         my $field_attr        = $dpf->{manager}->get_all_field_attributes;
         my $email_fields      = $dpf->get;

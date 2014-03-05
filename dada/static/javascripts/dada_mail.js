@@ -390,15 +390,14 @@ $(document).ready(function() {
 			event.preventDefault();
 		});
 		
-		$("body").on("click", ".uncheck_all_in_div", function(event) {
-			alert($(this).attr("data-target")); 
-			$("#" + $(this).attr("data-target") + " input:checkbox").prop("checked",false);
-		}); 
 		$("body").on("click", ".check_all_in_div", function(event) {
-			alert($(this).attr("data-target")); 
-			$("#" + $(this).attr("data-target") + " input:checkbox").prop("checked",true);
+			if($(this).prop("checked") === true){ 
+				$("#" + $(this).attr("data-target") + " input:checkbox").prop("checked",true);
+			}
+			else { 
+				$("#" + $(this).attr("data-target") + " input:checkbox").prop("checked",false);
+			}
 		}); 
-		
 		
 		$("body").on("click", ".addingemail", function(event) {
 			if ($(this).hasClass("warnAboutMassSubscription")) {

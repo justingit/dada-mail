@@ -748,6 +748,10 @@ sub filter_subscribers_w_meta {
 	require   Text::CSV; 
 	my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
 
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
+
+
     for my $n_address(@{$info}){ 
 
         if(exists($dupe_check->{$n_address->{email}})){
@@ -758,11 +762,13 @@ sub filter_subscribers_w_meta {
         my ($status, $errors) = $self->subscription_check(
             {
                 -email  => $n_address->{email},
+                -type   => $type, 
                 -fields => $n_address->{fields},
                 -skip   => [qw(
                     mx_lookup_failed
                     already_sent_unsub_confirmation
                     over_subscription_quota)],
+                -ls_obj => $ls, 
             }
         );
         my $csv_str = ''; 
@@ -770,12 +776,13 @@ sub filter_subscribers_w_meta {
         foreach(@$fields){ 
             push(@$csv_fields, $n_address->{fields}->{$_}); 
         }
+        push(@$csv_fields, $n_address->{profile}->{password}); 
+        
         if ($csv->combine(@$csv_fields)) {
 	        $csv_str = $csv->string;
 	    } else {
 		    carp "well, that didn't work."; 
 		}		
-		
 		
 		# Put in the import limit, and check that before anything else.
 		# Put in the pref's to enable/disable tests, like blacklist, whitelist, missing profile fields, etc
@@ -790,6 +797,7 @@ sub filter_subscribers_w_meta {
         push(@$emails, {
                 email    => $n_address->{email}, 
                 fields   => $n_address->{fields}, 
+                profile  => $n_address->{profile}, 
                 status   => $status, 
                 errors   => $errors, 
                 csv_str  => $csv_str, 
@@ -802,7 +810,7 @@ sub filter_subscribers_w_meta {
 
 
 sub filter_subscribers_massaged_for_ht {
-    my $self = shift;
+    my $self   = shift;
     my ($args) = @_;
 
     my $emails = $self->filter_subscribers_w_meta($args);
@@ -856,13 +864,13 @@ sub filter_subscribers_massaged_for_ht {
         push(
             @$new_emails,
             {
-                email     => $address->{email},
-                fields    => $ht_fields,
-                status    => $address->{status},
-                og_errors => $address->{errors},
-                errors    => $ht_errors,
-                csv_str   => $address->{csv_str},
-
+                email              => $address->{email},
+                fields             => $ht_fields,
+                profile_password   => $address->{profile}->{password},
+                status             => $address->{status},
+                og_errors          => $address->{errors},
+                errors             => $ht_errors,
+                csv_str            => $address->{csv_str},
                 # %$ht_errors,
             }
         );
@@ -900,163 +908,6 @@ sub filter_subscribers_massaged_for_ht {
 
     return ( $not_members, $invalid_email, $subscribed, $black_listed, $not_white_listed, $invalid_profile_fields );
 }
-
-
-
-=cut
-
-sub filter_subscribers_w_meta_old { 
-
-	my $self   = shift; 
-	my ($args) = @_; 
-
-	if(! exists($args->{-type})){ 
-		$args->{-type} = 'list'; 
-	}
-	my $type = $args->{-type}; 
-
-	
-	my $emails = [];
-	my $lt     = {};
-	
-	my $info = $args->{-emails}; 
-
-	my $fields = $self->subscriber_fields(); 
-	
-	require   Text::CSV; 
-	my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
-    
-	# What's this for, again?
-	for my $sub(@$info){
-        push(@$emails, $sub->{email});        
-        $lt->{$sub->{email}} = $sub; 
-    }	
-	# These only include the email address. 
-    my ($subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid) 
-		= $self->filter_subscribers(
-			{
-				-emails => $emails, 
-				-type   => $type
-			}
-		);
-    
-    # So... now they're sorted... we gotta...
-    
-    my $subscribed_info       = [];
-    my $not_subscribed_info   = [];
-    my $black_listed_info     = [];
-    my $not_white_listed_info = [];
-    my $invalid_info          = [];
-    
-	# This is tmp copy of ALL the passed subscribers. 
-    for(@$subscribed){    
-        push(@$subscribed_info, $lt->{$_});
-    }
-    
-    for(@$not_subscribed){ 
-
-		###
-		my $flattened_info = []; 
-		push(@$flattened_info, $lt->{$_}->{email}); 
-		
-		my $tmp_info = {}; 
-		for my $d(@{$lt->{$_}->{fields}}){ 
-            $tmp_info->{$d->{name}} = $d->{value};
-        }
-		for my $f(@$fields){ 
-			push(@$flattened_info, $tmp_info->{$f}); 
-		}	
-		
-		if ($csv->combine(@$flattened_info)) {
-	        $lt->{$_}->{csv_info} = $csv->string;
-	    } else {
-	        carp "combine() failed on argument: ", $csv->error_input;
-	    }
-       
-		push(@$not_subscribed_info, $lt->{$_});
- 	   ###/
-
-   }
-    
-    for(@$black_listed){
-    
-		###
-		my $flattened_info = []; 
-		push(@$flattened_info, $lt->{$_}->{email}); 
-
-		my $tmp_info = {}; 
-		for my $d(@{$lt->{$_}->{fields}}){ 
-            $tmp_info->{$d->{name}} = $d->{value};
-        }
-		for my $f(@$fields){ 
-			push(@$flattened_info, $tmp_info->{$f}); 
-		}	
-
-		if ($csv->combine(@$flattened_info)) {
-	        $lt->{$_}->{csv_info} = $csv->string;
-	    } else {
-	        carp "combine() failed on argument: ", $csv->error_input;
-	    }
-
-		push(@$black_listed_info, $lt->{$_});
- 	   ###/
-    }
-    
-    for(@$not_white_listed){ 
-    
-        	###
-			my $flattened_info = []; 
-			push(@$flattened_info, $lt->{$_}->{email}); 
-
-			my $tmp_info = {}; 
-			for my $d(@{$lt->{$_}->{fields}}){ 
-	            $tmp_info->{$d->{name}} = $d->{value};
-	        }
-			for my $f(@$fields){ 
-				push(@$flattened_info, $tmp_info->{$f}); 
-			}	
-
-			if ($csv->combine(@$flattened_info)) {
-		        $lt->{$_}->{csv_info} = $csv->string;
-		    } else {
-		        carp "combine() failed on argument: ", $csv->error_input;
-		    }
-
-			push(@$not_white_listed_info, $lt->{$_});
-	 	   ###/
-    }    
-    
-    for(@$invalid){ 
-        
-			###
-			my $flattened_info = []; 
-			push(@$flattened_info, $lt->{$_}->{email}); 
-
-			my $tmp_info = {}; 
-			for my $d(@{$lt->{$_}->{fields}}){ 
-	            $tmp_info->{$d->{name}} = $d->{value};
-	        }
-			for my $f(@$fields){ 
-				push(@$flattened_info, $tmp_info->{$f}); 
-			}	
-
-			if ($csv->combine(@$flattened_info)) {
-		        $lt->{$_}->{csv_info} = $csv->string;
-		    } else {
-		        carp "combine() failed on argument: ", $csv->error_input;
-		    }
-
-			push(@$invalid_info, $lt->{$_});
-	 	   ###/
-    }
-    
-
-    # WHEW!
-    
-    return ($subscribed_info, $not_subscribed_info, $black_listed_info, $not_white_listed_info, $invalid_info); 
-    
-}
-=cut
 
 
 
@@ -1151,7 +1002,8 @@ sub csv_to_cds {
 			$cds->{fields}->{$_} = $fields[$i];
 			$i++; 
 		}
-       
+		# $i, huh. OK: 
+		$cds->{profile}->{password} = $fields[$i];
     } else {
         carp $DADA::Config::PROGRAM_NAME . " Error: CSV parsing error: parse() failed on argument: ". $csv->error_input() . ' ' . $csv->error_diag();         
 		$cds->{email} = $csv_line; 
