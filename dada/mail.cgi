@@ -5341,6 +5341,7 @@ sub add_email {
 
             my @address               = $q->param("address");
             my @update_fields_address = $q->param("update_fields_address"); 
+            my $fields_options_mode   = $q->param('fields_options_mode') || 'preserve_if_defined'
             my $new_email_count       = 0;
             my $skipped_email_count   = 0;
             my $num_subscribers       = $lh->num_subscribers;
@@ -5389,7 +5390,9 @@ sub add_email {
                     $skipped_email_count++;
                 }
                 else {
-                    my $fields_options_mode = $q->param('fields_options_mode') || 'preserve_if_defined';
+                    # profile/fields set should really only be for
+                    # when you import subscribers... 
+                    # 
                     $info = $lh->csv_to_cds($a);
                     $dmls = $lh->add_subscriber(
                         {
@@ -5416,6 +5419,7 @@ sub add_email {
                     }
                 }
             }
+            
             if ( $type eq 'list' ) {
                 if ( $ls->param('send_subscribed_by_list_owner_message') == 1 ) {
                     require DADA::App::MassSend;

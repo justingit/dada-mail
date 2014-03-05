@@ -240,10 +240,12 @@ sub subscription_check {
             
             if(exists($errors->{invalid_profile_fields})){ 
                 # This is going to be more expensive, than just seeing if some value is passed, 
-                # But I guess the policy is, if the profile already exists, then it doens't matter if these fields are empty 
-                # as they were already empty! 
+                # But I guess the policy is, if the profile already exists, then it doens't matter 
+                # if these fields are empty  as they were already empty! 
+                #
                 # I'd rather this look at Profile, rather than the fields of Profiles, which can easily be 
-                # orphans, if Fields are saved, but profiles aren't, (say, when you're subscribing via the list control panel - d'oh!) 
+                # orphans, if Fields are saved, but profiles aren't, (say, when you're subscribing via the 
+                # list control panel - d'oh!) 
                 #
                 #
                 if(! exists($errors->{invalid_email})){ 

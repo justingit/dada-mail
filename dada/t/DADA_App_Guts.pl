@@ -180,32 +180,24 @@ $list = dada_test_config::create_test_list;
 	        `cp t/corpus/csv/$test_file $DADA::Config::TMP/$test_file`;
         
 			
-	        my ($new_emails, $new_info) = DADA::App::Guts::csv_subscriber_parse($list, $test_file);
+	        my ($new_emails) = DADA::App::Guts::csv_subscriber_parse($list, $test_file);
+	        
 	        
 			use Data::Dumper; 
-			diag Data::Dumper::Dumper($new_emails, $new_info); 
-			ok($new_emails->[0] eq 'example1@example.com', 'example1@example.com');
-	        ok($new_emails->[1] eq 'example2@example.com', 'example2@example.com');
-	        ok($new_emails->[2] eq 'example3@example.com', 'example3@example.com');
-        
-	        ok($new_info->[0]->{email} eq 'example1@example.com',      'example1@example.com');
-	        ok($new_info->[0]->{fields}->[0]->{name}  eq 'first_name', "first_name");
-	        ok($new_info->[0]->{fields}->[0]->{value} eq 'Example',    "Example");
-	        ok($new_info->[0]->{fields}->[1]->{name}  eq 'last_name',  "last_name");
-	        ok($new_info->[0]->{fields}->[1]->{value} eq 'One',         "One");
+			diag Data::Dumper::Dumper($new_emails);
+			diag("wahoo!"); 
+			 
+	        ok($new_emails->[0]->{email} eq 'example1@example.com',      'example1@example.com');
+	        ok($new_emails->[0]->{fields}->{first_name}  eq 'Example', "Example");
+	        ok($new_emails->[0]->{fields}->{last_name}  eq 'One',  "One");
     
-	        ok($new_info->[1]->{email} eq 'example2@example.com');
-	        ok($new_info->[1]->{fields}->[0]->{name}  eq 'first_name');
-	        ok($new_info->[1]->{fields}->[0]->{value} eq 'Example');
-	        ok($new_info->[1]->{fields}->[1]->{name}  eq 'last_name');
-	        ok($new_info->[1]->{fields}->[1]->{value} eq 'Two');
-    
-	        ok($new_info->[2]->{email} eq 'example3@example.com');
-	        ok($new_info->[2]->{fields}->[0]->{name}  eq 'first_name');
-	        ok($new_info->[2]->{fields}->[0]->{value} eq 'Example');
-	        ok($new_info->[2]->{fields}->[1]->{name}  eq 'last_name');
-	        ok($new_info->[2]->{fields}->[1]->{value} eq 'Three');
-        
+	        ok($new_emails->[1]->{email} eq 'example2@example.com');
+	        ok($new_emails->[1]->{fields}->{first_name}  eq 'Example', "Example");
+	        ok($new_emails->[1]->{fields}->{last_name}  eq 'Two',  "Two");
+
+	        ok($new_emails->[2]->{email} eq 'example3@example.com');
+	        ok($new_emails->[2]->{fields}->{first_name}  eq 'Example', "Example");
+	        ok($new_emails->[2]->{fields}->{last_name}  eq 'Three',  "Three");
         
 	        # It's kina weird this subroutine removes the file but... ok!
 	        ok(! -e $DADA::Config::TMP . '/$test_file'); 
