@@ -202,9 +202,6 @@ $list = dada_test_config::create_test_list;
 	        # It's kina weird this subroutine removes the file but... ok!
 	        ok(! -e $DADA::Config::TMP . '/$test_file'); 
 	    }
-    
-    
-    
 	    ok($lh->remove_subscriber_field({-field => 'first_name'})); 
 	    ok($lh->remove_subscriber_field({-field => 'last_name'})); 
 	

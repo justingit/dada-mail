@@ -59,10 +59,7 @@ sub subscription_check {
     for(@{ $args->{-skip} }) { 
         $skip{$_} = 1;
     }
-#    if(! exists($skip{profile_fields})) { 
-#        $skip{profile_fields} => 1; 
-#    }
-
+    
     my $errors = {};
     my $status = 1;
 
@@ -192,11 +189,9 @@ sub subscription_check {
 
     if ( !$skip{already_sent_sub_confirmation} ) {
         if ( $ls->param('limit_sub_confirm') == 1 ) {
-            $errors->{already_sent_sub_confirmation} = 1
-              if $self->{lh}->check_for_double_email(
-                -Email => $email,
-                -Type  => 'sub_confirm_list'
-              ) == 1;
+            if( $self->{lh}->check_for_double_email(-Email => $email, -Type  => 'sub_confirm_list') == 1) { 
+                  $errors->{already_sent_sub_confirmation} = 1;
+              }
         }
     }
 

@@ -5314,7 +5314,50 @@ sub add_email {
         e_print($scrn);
     }
     else {
+        
+        my $update_email_count = 0;
+        
+        if ( $type eq 'list' ) {
+            if($process =~ m/subscribe|invit/i){ 
 
+                # This is what updates already existing profile fields and profile passwords; 
+                # 
+                my @update_fields_address = $q->param("update_fields_address"); 
+                my $update_email_count = 0;
+                require DADA::Profile::Fields;
+                require DADA::Profile;
+                for my $ua (@update_fields_address) {
+                    my $ua_info = $lh->csv_to_cds($ua);
+                    my $dpf = DADA::Profile::Fields->new( { -email => $ua_info->{email} } );
+                    $dpf->insert(
+                        {
+                            -fields => $ua_info->{fields},
+                            -mode   => 'writeover',
+                        }
+                    );
+                    if ( defined( $ua_info->{profile}->{password} ) && $ua_info->{profile}->{password} ne '' ) {
+                        my $prof = DADA::Profile->new( { -email => $ua_info->{email} } );
+                        if ($prof) {
+                            if ( $prof->exists ) {
+                                $prof->update( { -password => $ua_info->{profile}->{password} } );
+                            }
+                            else {
+                                $prof->insert(
+                                    {
+                                        -password  => $ua_info->{profile}->{password},
+                                        -activated => 1,
+                                    }
+                                );
+                            }
+                        }
+                    }
+                    $update_email_count++;
+                }
+                ##################################################################
+            }
+        }
+        
+        
         if ( $process =~ /invit/i ) {
             &list_invite;
             return;
@@ -5340,44 +5383,13 @@ sub add_email {
             }
 
             my @address               = $q->param("address");
-            my @update_fields_address = $q->param("update_fields_address"); 
-            my $fields_options_mode   = $q->param('fields_options_mode') || 'preserve_if_defined'
+            my $fields_options_mode   = $q->param('fields_options_mode') || 'preserve_if_defined';
             my $new_email_count       = 0;
             my $skipped_email_count   = 0;
             my $num_subscribers       = $lh->num_subscribers;
             my $new_total             = $num_subscribers;
 
-            my $update_email_count = 0; 
-            require DADA::Profile::Fields;  
-            require DADA::Profile;           
-            for my $ua (@update_fields_address) {
-                my $ua_info = $lh->csv_to_cds($ua);
-                my $dpf = DADA::Profile::Fields->new({-email => $ua_info->{email}});
-                $dpf->insert( 
-                    { 
-                        -fields => $ua_info->{fields}, 
-                        -mode   => 'writeover', 
-                    } 
-                );
-                if(defined($ua_info->{profile}->{password}) && $ua_info->{profile}->{password} ne ''){ 
-                    my $prof = DADA::Profile->new({-email => $ua_info->{email}});
-                    if($prof){ 
-                        if($prof->exists){ 
-                            $prof->update({-password => $ua_info->{profile}->{password}}); 
-                        }
-                        else { 
-                            $prof->insert(
-                                {
-                                    -password  => $ua_info->{ profile }->{ password },
-                                    -activated => 1,
-                                }
-                            );
-                        }
-                    }
-                }
-                $update_email_count++; 
-            }
-            
+
             
             # Each Address is a CSV line...
             for my $a (@address) {
@@ -5394,6 +5406,10 @@ sub add_email {
                     # when you import subscribers... 
                     # 
                     $info = $lh->csv_to_cds($a);
+                    
+                    # This will combine creation of the subscription, profile
+                    # and fields in one method. 
+                    #
                     $dmls = $lh->add_subscriber(
                         {
                             -email             => $info->{email},
@@ -5409,7 +5425,7 @@ sub add_email {
                                 -on_dupe => 'ignore_add',
                             },
                         }
-                    );
+                    );                         
                     $new_total++;
                     if ( defined($dmls) ) {    # undef means it wasn't added.
                         $new_email_count++;
@@ -5424,6 +5440,10 @@ sub add_email {
                 if ( $ls->param('send_subscribed_by_list_owner_message') == 1 ) {
                     require DADA::App::MassSend;
                     eval {
+                        
+                        # DEV: 
+                        # This needs to send the Profile Password, if it's known. 
+                        #
                         DADA::App::MassSend::just_subscribed_mass_mailing(
                             {
                                 -list      => $list,

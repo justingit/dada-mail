@@ -258,6 +258,7 @@ my $r = $das->subscribe(
     	-return_json => 0, 
 	}
 );
+diag(Dumper($r)); 
 ok($r->{email} eq 'user@example.com');
 ok($r->{errors}->{already_sent_sub_confirmation} == 1);
 ok($r->{redirect}->{query} eq 'list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=already_sent_sub_confirmation');
@@ -576,6 +577,8 @@ my $r = $das->subscribe(
     	-return_json => 0, 
 	}
 );
+#diag(Dumper($r)); 
+
 ok($r->{email} eq $email);
 ok($r->{list} eq $list);
 ok($r->{status} == 1);

@@ -15,14 +15,10 @@ sub add {
 		
     my $class = shift;
     my ($args) = @_;
-	
-#	use Data::Dumper; 
-#	warn 'add args! ' . Dumper($args); 
-	
+		
 	if(!exists($args->{-log_it})){ 
 		$args->{-log_it} = 1; 
 	}
-	
 	
 	my $lh = undef; 
 	
@@ -38,8 +34,7 @@ sub add {
 	}
 	else { 
 		$lh =
-	      DADA::MailingList::Subscribers->new( { -list => $args->{ -list } } );
-	 	
+	      DADA::MailingList::Subscribers->new( { -list => $args->{ -list } } );	
 	}
 
     if ( !exists $args->{ -type } ) {
@@ -51,18 +46,18 @@ sub add {
     if ( length( strip( $args->{ -email } ) ) <= 0 ) {
         croak("You MUST supply an email address in the -email parameter!");
     }
-
+    
 	if(!exists($args->{ -confirmed } )){ 
 		$args->{ -confirmed } = 1; 
 	}
 	
-	# DEV: BAD: This code is copy/pasted in PlainText.pm
 	if(!exists($args->{ -dupe_check }->{-enable} )) { 
 			$args->{ -dupe_check }->{-enable} = 0;
 	}
 	if(!exists($args->{ -dupe_check }->{-on_dupe} )) { 
 			$args->{ -dupe_check }->{-on_dupe} = 'ignore_add';
 	}
+
 	if($args->{ -dupe_check }->{-enable} == 1){ 
 		if($lh->check_for_double_email(
 	        -Email => $args->{ -email },
@@ -82,8 +77,6 @@ sub add {
 			#... 
 		}
 	}
-	# else: 
-	
     my $query =
       'INSERT INTO '
       . $DADA::Config::SQL_PARAMS{subscriber_table}
@@ -105,57 +98,73 @@ sub add {
 	or croak "cannot do statement (at add_subscriber)! $DBI::errstr\n";
 	$sth->finish;
 	
-	if ( exists $args->{ -fields } && keys %{$args->{ -fields }}) {
-		my $fields = undef; 
+	if($args->{ -type } eq 'list') { 
+	    
+    	##################
+    	# Profile Fields #
+    	##########################################################################
+    	if ( exists $args->{ -fields } && keys %{$args->{ -fields }}) {
+    		my $fields = undef; 
 		
-		if(exists($args->{-dpfm_obj})){ 
-			$fields = DADA::Profile::Fields->new(
-				{
-					-dpfm_obj => $args->{-dpfm_obj}, 
-				}
-			);
-		}
-		else {
-			$fields = DADA::Profile::Fields->new;
-		}		
-		$fields->insert(
-			{
-				-email     => $args->{  -email },
-				-fields    => $args->{  -fields },
-				-confirmed => $args->{ -confirmed },
-				-mode      => $args->{ -fields_options }->{-mode}, 
-			}
-		); 
-	}
-	if ( exists $args->{ -profile } && keys %{$args->{ -profile }}) {
-	    if($args->{ -profile }->{-password}) { 
-    	    require DADA::Profile; 
-    	    my $prof = DADA::Profile->new({-email => $args->{-email}});
-    		if($prof){
-    			if(
-    			    $prof->exists 
-    			&&  $args->{ -fields_options }->{-mode} ne 'preserve_if_defined'
-    			){
-    			    # Or, update, I guess. 
-                    $prof->remove();  
-                    $prof->insert(
-                        {
-                            -password  => $args->{ -profile }->{ -password },
-                            -activated => 1,
-                        }
-                    );              
-    			}  
-    			else { 
-                    $prof->insert(
-                        {
-                            -password  => $args->{ -profile }->{ -password },
-                            -activated => 1,
-                        }
-                    );                  			    
-    			}
+    		if(exists($args->{-dpfm_obj})){ 
+    			$fields = DADA::Profile::Fields->new(
+    				{
+    					-dpfm_obj => $args->{-dpfm_obj}, 
+    				}
+    			);
     		}
+    		else {
+    			$fields = DADA::Profile::Fields->new;
+    		}		
+    		$fields->insert(
+    			{
+    				-email     => $args->{  -email },
+    				-fields    => $args->{  -fields },
+    				-confirmed => $args->{ -confirmed },
+    				-mode      => $args->{ -fields_options }->{-mode}, 
+    			}
+    		); 
     	}
+    	##########################################################################
+	
+    	###########
+    	# Profile #
+    	##########################################################################
+    	# We only do this, if a -profile param is sent. 
+    	if ( exists( $args->{ -profile } ) && keys ( %{$args->{ -profile }}) ) {
+    	    # And ONLY if we get a password: 
+    	    if($args->{ -profile }->{-password}) { 
+        	    require DADA::Profile; 
+        	    my $prof = DADA::Profile->new({-email => $args->{-email}});
+        		if($prof){
+        			if(
+        			    $prof->exists 
+        			&&  $args->{ -profile }->{-mode} eq 'writeover'
+        			){
+        			    # Or, update, I guess. 
+                        $prof->remove();  
+                        $prof->insert(
+                            {
+                                -password  => $args->{ -profile }->{ -password },
+                                -activated => 1,
+                            }
+                        );              
+        			}  
+        			else { 
+                        $prof->insert(
+                            {
+                                -password  => $args->{ -profile }->{ -password },
+                                -activated => 1,
+                            }
+                        );                  			    
+        			}
+        		}
+        	}
+        }
+     	##########################################################################   
+    
     }
+
     my $added = DADA::MailingList::Subscriber->new(
         {
             -list  => $args->{ -list },
@@ -170,7 +179,6 @@ sub add {
 			)
         }
     );
-
 	if($args->{-log_it} == 1) { 
 	    if ( $DADA::Config::LOG{subscriptions} == 1 ) {
 	        $added->{'log'}->mj_log( 
@@ -180,6 +188,9 @@ sub add {
 			);
 	    }
 	}
+
+
+	
     return $added;
 
 }
