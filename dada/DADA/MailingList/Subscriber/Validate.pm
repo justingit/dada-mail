@@ -250,6 +250,7 @@ sub subscription_check {
     				});
                     if($dpf->exists({-email => $email})){ 
                         # Nevermind. 
+                        $errors->{invalid_profile_fields} = undef;
                         delete($errors->{invalid_profile_fields}); 
                         undef($dpf); 
                     } 

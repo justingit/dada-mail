@@ -58,10 +58,10 @@ ok($lh3->num_subscribers == 2, "Two in #3");
 # Now, let's remove someone from ONE list: 
 # Note as well this is the old API: 
 
-$lh2->remove_from_list(
-	-Email_List =>['user2@example.com'], 
-    -Type       => 'list',
-);
+$lh2->remove_subscriber({
+	-email => 'user2@example.com', 
+    -type       => 'list',
+});
 
 
 ok($lh->num_subscribers == 1,  "One in #1"); 

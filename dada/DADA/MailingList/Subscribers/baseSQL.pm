@@ -131,7 +131,8 @@ sub search_list {
 			#'-length'       => $args->{'-length'}, 
         }
     );
-    warn 'QUERY: ' . $query; 
+    warn 'QUERY: ' . $query
+     if $t; 
 
     my $sth = $self->{dbh}->prepare($query);
 
@@ -1076,40 +1077,8 @@ $sth->execute();
 
 }
 
-sub remove_from_list {
 
-    my $self = shift;
 
-    carp
-"This method (DADA::MailingList::Subscribers::baseSQL::remove_from_list) is deprecated. Please use, remove_subscriber() instead.";
-
-    my %args = (
-        -Email_List => [],
-        -Type       => "list",
-        @_
-    );
-    my $addresses = $args{ -Email_List };
-
-    my $count = 0;
-    require DADA::MailingList::Subscriber;
-    for my $sub (@$addresses) {
-        chomp($sub);    #?
-        my $s = DADA::MailingList::Subscriber->new(
-            {
-                -list  => $self->{list},
-                -email => $sub,
-                -type  => $args{ -Type },
-            }
-        );
-
-        my $remove = $s->remove;
-
-        if ( $remove == 1 ) {
-            $count = $count + 1;
-        }
-    }
-    return $count;
-}
 
 sub remove_all_subscribers {
 

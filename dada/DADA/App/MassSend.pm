@@ -1102,7 +1102,7 @@ sub list_invite {
             $info->{fields} = $new_fields;
 
             #And... Then this!
-            $info->{csv_info} = $a;
+            $info->{csv_str} = $a;
             $info->{'list_settings.invites_prohibit_reinvites'} = $ls->param('invites_prohibit_reinvites');
             if ( $ls->param('invites_check_for_already_invited') == 1 ) {
 
@@ -1183,14 +1183,14 @@ sub list_invite {
             $lh->add_subscriber(
                 {
                     -email  => $info->{email},
-                    -fields => $info->{fields},
+                    # -fields => $info->{fields},
                     -type   => 'invitelist',
                 }
             );
             $lh->add_subscriber(
                 {
                     -email      => $info->{email},
-                    -fields     => $info->{fields},
+                   # -fields     => $info->{fields},
                     -type       => 'sub_confirm_list',
                     -dupe_check => {
                         -enable  => 1,

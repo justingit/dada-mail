@@ -100,6 +100,11 @@ sub add {
 	
 	if($args->{ -type } eq 'list') { 
 	    
+	    # Erm, invitelist, as well? 
+	    # So, confirmed would e set to, "0", rather than take the default (1) 
+	    # and activated would be, "0"? 
+	    # "preserve" setting should only be available for List Owners? 
+	    
     	##################
     	# Profile Fields #
     	##########################################################################
@@ -137,18 +142,20 @@ sub add {
         	    require DADA::Profile; 
         	    my $prof = DADA::Profile->new({-email => $args->{-email}});
         		if($prof){
-        			if(
-        			    $prof->exists 
-        			&&  $args->{ -profile }->{-mode} eq 'writeover'
-        			){
-        			    # Or, update, I guess. 
-                        $prof->remove();  
-                        $prof->insert(
-                            {
-                                -password  => $args->{ -profile }->{ -password },
-                                -activated => 1,
-                            }
-                        );              
+        			if($prof->exists){
+        			    if($args->{ -profile }->{-mode} eq 'writeover') { 
+            			    # Or, update, I guess. 
+                            $prof->remove();  
+                            $prof->insert(
+                                {
+                                    -password  => $args->{ -profile }->{ -password },
+                                    -activated => 1,
+                                }
+                            );              
+                        }
+                        else { 
+                            # ... 
+                        }
         			}  
         			else { 
                         $prof->insert(
@@ -156,7 +163,7 @@ sub add {
                                 -password  => $args->{ -profile }->{ -password },
                                 -activated => 1,
                             }
-                        );                  			    
+                        );
         			}
         		}
         	}

@@ -20,140 +20,22 @@ my $list = dada_test_config::create_test_list(
     { -remove_existing_list => 1, -remove_subscriber_fields => 1 } );
 
 use DADA::MailingList::Subscribers;
+my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
-# Filter stuff
+use DADA::MailingList::Settings;
+my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
-my @email_list = qw(
-
-  user@example.com
-  user
-  example.com
-  @example.com
-
-);
 
 chmod( 0777, $DADA::Config::TMP . '/mail.txt' );
-
-my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
 ok(
     $lh->{ls}->isa('DADA::MailingList::Settings'),
     "looks like there's a Settings obj in ->{ls}, good!"
 );
 
-my ( $subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid )
-  = $lh->filter_subscribers( { -emails => [@email_list], } );
-
-ok( eq_array( $subscribed, [] ) == 1, "Subscribed" );
-ok( eq_array( $not_subscribed, ['user@example.com'] ) == 1,
-    "Not Subscribed (user\@example.com)" );
-ok( eq_array( $black_listed,     [] ) == 1, "Black Listed" );
-ok( eq_array( $not_white_listed, [] ) == 1, "Not White Listed" );
-ok(
-    eq_array( [ sort(@$invalid) ],
-        [ sort( 'user', 'example.com', '@example.com' ) ] ) == 1,
-    "Invalid"
-);
-
-undef($subscribed);
-undef($not_subscribed);
-undef($black_listed);
-undef($not_white_listed);
-undef($invalid);
-
-#diag '$lh->num_subscribers ' . $lh->num_subscribers;
-
-my $count = $lh->add_to_email_list(
-    -Email_Ref => [
-        qw(
-          user@example.com
-          )
-    ],
-    -Type => 'list',
-);
-
-ok( $count == 1, "added one address" );
-undef($count);
-
-my ( $subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid )
-  = $lh->filter_subscribers( { -emails => [@email_list], } );
-
-ok( eq_array( $subscribed, ['user@example.com'] ) == 1, "Subscribed" );
-ok( eq_array( $not_subscribed,   [] ) == 1, "Not Subscribed ()" );
-ok( eq_array( $black_listed,     [] ) == 1, "Black Listed" );
-ok( eq_array( $not_white_listed, [] ) == 1, "Not White Listed" );
-ok(
-    eq_array( [ sort(@$invalid) ],
-        [ sort( 'user', 'example.com', '@example.com' ) ] ) == 1,
-    "Invalid"
-);
-
-undef($subscribed);
-undef($not_subscribed);
-undef($black_listed);
-undef($not_white_listed);
-undef($invalid);
-
-#diag '$lh->num_subscribers ' . $lh->num_subscribers;
-
-my $r_count = $lh->remove_from_list( -Email_List => ['user@example.com'] );
-ok( $r_count == 1, "removed one address (user\@example.com)" );
-undef($r_count);
-
-use DADA::MailingList::Settings;
-my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-$ls->save( { black_list => 1 } );
-my $li = $ls->get();
-ok( $li->{black_list} == 1, "black list enabled." );
-
-# 'user@', '@example.com', '@' , 'u'
-
-for my $blacklist_this ( 'user@', '@example.com', 'user@example.com' ) {
-
-    #diag '$blacklist_this - ' . $blacklist_this;
-
-    my $count = $lh->add_to_email_list(
-        -Email_Ref => [ $blacklist_this ],
-        -Type      => 'black_list',
-    );
-
-    ok( $count == 1, "added one address" );
-    undef($count);
-
-    my (
-        $subscribed,       $not_subscribed, $black_listed,
-        $not_white_listed, $invalid
-    ) = $lh->filter_subscribers( { -emails => [@email_list], } );
-
-    ok( eq_array( $subscribed,     [] ) == 1, "Subscribed" );
-    ok( eq_array( $not_subscribed, [] ) == 1, "Not Subscribed ()" );
-    ok( eq_array( $black_listed, ['user@example.com'] ) == 1,
-        "Black Listed (user\@example.com)" );
-    ok( eq_array( $not_white_listed, [] ) == 1, "Not White Listed" );
-    ok(
-        eq_array( [ sort(@$invalid) ],
-            [ sort( 'user', 'example.com', '@example.com' ) ] ) == 1,
-        "Invalid"
-    );
-
-    undef($subscribed);
-    undef($not_subscribed);
-    undef($black_listed);
-    undef($not_white_listed);
-    undef($invalid);
-
-    my $r_count = $lh->remove_from_list(
-        -Email_List => [$blacklist_this],
-        -Type       => 'black_list'
-    );
-    ok( $r_count == 1, "removed one address from blacklist ($blacklist_this)" );
-    undef($r_count);
-
-}
 
 $ls->save( { black_list => 0 } );
-$li = $ls->get();
-ok( $li->{black_list} == 0, "black list disabled." );
+ok( $ls->param('black_list') == 0, "black list disabled." );
 
 # Oh geez. This should have a million tests.
 my @good_addresses =
@@ -264,16 +146,16 @@ ok( $@,
 );
 
 ok(
-    $lh->remove_from_list(
-        -Email_List => ['mytest@example.com'],
-        -Type       => 'list'
-    )
+    $lh->remove_subscriber({ 
+        -email => 'mytest@example.com',
+        -type       => 'list'
+    })
 );
 ok(
-    $lh->remove_from_list(
-        -Email_List => ['mytest@example.com'],
-        -Type       => 'black_list'
-    )
+    $lh->remove_subscriber({
+        -email => 'mytest@example.com',
+        -type       => 'black_list',
+    })
 );
 
 #diag "Justin! there are, " . $lh->num_subscribers . "on this list."; 
@@ -460,17 +342,17 @@ ok(
     "Calling copy_subscriber with correct parameters works!"
 );
 ok(
-    $lh->remove_from_list(
-        -Email_List => ['mytest@example.com'],
-        -Type       => 'list'
-    ),
+    $lh->remove_subscriber({
+        -email => 'mytest@example.com',
+        -type  => 'list',
+    }),
     'removed mytest@example.com list'
 );
 ok(
-    $lh->remove_from_list(
-        -Email_List => ['mytest@example.com'],
-        -Type       => 'black_list'
-    ),
+    $lh->remove_subscriber({
+        -email => 'mytest@example.com',
+        -type       => 'black_list'
+    }),
     'removed mytest@example.com black_list'
 );
 
@@ -826,17 +708,17 @@ SKIP: {
     undef $one_info;
 
     ok(
-        $lh->remove_from_list(
-            -Email_List => ['one@example.com'],
-            -Type       => 'list'
-        ),
+        $lh->remove_subscriber({
+            -email => 'one@example.com',
+            -type       => 'list'
+        }),
         'removed one@example.com from list'
     );
     ok(
-        $lh->remove_from_list(
-            -Email_List => ['one@example.com'],
-            -Type       => 'black_list'
-        ),
+        $lh->remove_subscriber({
+            -email => 'one@example.com',
+            -Type  => 'black_list'
+        }),
         'removed one@example.com from black_list'
     );
 
@@ -1504,7 +1386,7 @@ SKIP: {
     undef($total_sending_out_num);
 
     my $r_count =
-      $lh->remove_from_list( -Email_List => ['raymond.lame@example.com'] );
+      $lh->remove_subscriber({ -email => 'raymond.lame@example.com' });
     ok( $r_count == 1, "removed one address (raymond.lame\@example.com)" );
     undef($r_count);
 
@@ -1559,38 +1441,38 @@ SKIP: {
     chmod( 0777, $DADA::Config::TMP . '/mail.txt' );
 
     ok(
-        $lh->remove_from_list(
-            -Email_List => ['mike.kelley@example.com'],
-            -Type       => 'list'
-        ),
+        $lh->remove_subscriber({
+            -email => 'mike.kelley@example.com',
+            -type       => 'list'
+        }),
         "removed: " . 'mike.kelley@example.com'
     );
     ok(
-        $lh->remove_from_list(
-            -Email_List => ['raymond.pettibon@example.com'],
-            -Type       => 'list'
-        ),
+        $lh->remove_subscriber({
+            -email => 'raymond.pettibon@example.com',
+            -type       => 'list'
+        }),
         "removed: " . 'raymond.pettibon@example.com'
     );
     ok(
-        $lh->remove_from_list(
-            -Email_List => ['marcel.duchamp@example.com'],
-            -Type       => 'list'
-        ),
+        $lh->remove_subscriber({
+            -email => 'marcel.duchamp@example.com',
+            -type       => 'list'
+        }),
         "removed: " . 'marcel.duchamp@example.com'
     );
     ok(
-        $lh->remove_from_list(
-            -Email_List => ['man.ray@example.com'],
-            -Type       => 'list'
-        ),
+        $lh->remove_subscriber({
+            -email => 'man.ray@example.com',
+            -type       => 'list'
+        }),
         "removed: " . 'man.ray@example.com'
     );
     ok(
-        $lh->remove_from_list(
-            -Email_List => ['no.one@example.com'],
-            -Type       => 'list'
-        ),
+        $lh->remove_subscriber({
+            -email => 'no.one@example.com',
+            -type       => 'list'
+        }),
         "removed: " . 'no.one@example.com'
     );
 
@@ -1642,7 +1524,7 @@ my $results     = 0;
     }
 );
 
-ok( $results->[9],   "Have 10 results (scalar @$results)" );
+ok( $results->[9],   "Have 10 results (" . scalar(@$results) . ")" );
 ok( !$results->[10], "Do NOT have 11 results." );
 ok($num_results == 10, "num results = 10 ($num_results)"); 
 
@@ -1653,10 +1535,10 @@ for (@$results) {
 $i = 0;
 for ( $i = 0 ; $i < 10 ; $i++ ) {
     ok(
-        $lh->remove_from_list(
-            -Email_List => [ 'example' . $i . '@example.com' ],
-            -Type       => 'list'
-          ) == 1,
+        $lh->remove_subscriber({
+            -email =>  'example' . $i . '@example.com' ,
+            -type       => 'list'
+          }) == 1,
         "removed: " . 'example' . $i . '@example.com'
     );
 }
@@ -1760,10 +1642,10 @@ SKIP: {
 
     for (@$subscribers) {
         ok(
-            $lh->remove_from_list(
-                -Email_List => [ $_->[0] ],
-                -Type       => 'list'
-            ),
+            $lh->remove_subscriber({
+                -email =>  $_->[0] ,
+                -type       => 'list'
+            }),
             "removed: " . $_->[0]
         );
     }
@@ -1830,7 +1712,7 @@ eval {
 ok( defined($@), "dupe check worked! died!" );
 like( $@, qr/unknown option/, "and the error message seems comprehensible!" );
 
-$lh->remove_from_list( -Email_List => [$dupe_email] );
+$lh->remove_subscriber({ -email => $dupe_email });
 
 ### /search_list
 
@@ -2176,14 +2058,14 @@ ok( $status == 0, "Status is 0 ($status)" );
 ok( $details->{over_subscription_quota} == 1, "over_subscription_quota"); 
 
 #undef($subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid); 
-my ($subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid)
-	= $lh->filter_subscribers(
+my $f_emails
+	= $lh->filter_subscribers_w_meta(
 		{
-			-emails => ['yetonemoresubscriber@example.com'],
+			-emails => [{-email => 'yetonemoresubscriber@example.com'}],
 			-type   => 'list',
 		}
 	);
-ok($invalid->[0] eq 'yetonemoresubscriber@example.com'); 	
+#ok($invalid->[0] eq 'yetonemoresubscriber@example.com'); 	
 
 ok($lh->remove_all_subscribers( { -type => 'list' } ) == 1000);
 

@@ -562,7 +562,7 @@ sub remove_all_subscribers {
     }
     close(LIST);
 
-    $self->remove_from_list(
+    $self->_remove_from_list(
         -Email_List => $cache,
         -Type       => $args->{ -type },
     );
@@ -593,7 +593,7 @@ sub remove_all_subscribers {
 #
 #http://www.cit.gu.edu.au/~anthony/info/perl/lock.hints
 
-sub remove_from_list { 
+sub _remove_from_list { 
 
 	my $self = shift; 
 	
@@ -774,7 +774,7 @@ sub remove_from_list {
 		
 	}else{ 
 	
-		carp('$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: No list information given at Plain_Text.pm for remove_from_list()');
+		carp('$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: No list information given at Plain_Text.pm for _remove_from_list()');
 		return ('no list');
 	} 			 
 }

@@ -227,7 +227,7 @@ sub remove {
 	}
 	
 	# Notice, for the PlainText backend, we're still going with this old chestnut -
-	$self->{lh}->remove_from_list(
+	$self->{lh}->_remove_from_list(
 		-Email_List =>[$self->email], 
 		-Type       => $self->type,
 		-log_it     => $args->{-log_it}, 

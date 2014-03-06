@@ -441,6 +441,9 @@ sub remove_subscriber {
 	if(exists($self->{-dpfm_obj})){ 
 		$args->{-dpfm_obj} = $self->{-dpfm_obj}; 
 	}
+    if ( !exists( $args->{-type} ) ) {
+        $args->{-type} = 'list';
+    }
 		
     my $dmls =
       DADA::MailingList::Subscriber->new( { %{$args}, -list => $self->{list} } );
@@ -480,40 +483,6 @@ sub get_all_field_attributes {
 	my $self = shift; 
 	return $self->{fields}->{manager}->get_all_field_attributes(@_);
 }
-
-
-
-
-sub add_to_email_list {
-
-    my $self = shift;
-
-    carp
-"This method (add_to_email_list) is deprecated. Please use, add_subscriber() instead.";
-
-    my %args = (
-        -Email_Ref => [],
-        -Type      => "list",
-        @_
-    );
-    my $addresses = $args{ -Email_Ref };
-
-    my $count = 0;
-    require DADA::MailingList::Subscriber;
-    for my $sub (@$addresses) {
-        chomp($sub);    #?
-        DADA::MailingList::Subscriber->add(
-            {
-                -list  => $self->{list},
-                -email => $sub,
-                -type  => $args{ -Type },
-            }
-        );
-        $count++;
-    }
-    return $count;
-}
-
 
 
 
@@ -819,58 +788,85 @@ sub filter_subscribers_massaged_for_ht {
     my $fields     = $self->subscriber_fields();
 
     for my $address (@$emails) {
-
+        
         my $ht_fields = [];
-        for (@$fields) {
-            if ( exists( $address->{errors}->{invalid_profile_fields}->{$_}->{required} ) ) {
-                push(
-                    @$ht_fields,
-                    {
-                        name                  => $_,
-                        value                 => $address->{fields}->{$_},
-                        invalid_profile_field => 1,
-                    }
-                );
-            }
-            else {
-                push(
-                    @$ht_fields,
-                    {
-                        name  => $_,
-                        value => $address->{fields}->{$_}
-                    }
-                );
-            }
-        }
         my $ht_errors = [];
-        for ( keys %{ $address->{errors} } ) {
-            push(
-                @$ht_errors,
-                {
-                    name  => $_,
-                    value => 1,
+        
+        if(exists($address->{errors}->{invalid_profile_fields})) { 
+            for my $field(@$fields) {
+                if ( 
+                    exists($address->{errors})
+                 && exists($address->{errors}->{invalid_profile_fields}->{$field}) 
+                 && exists( $address->{errors}->{invalid_profile_fields}->{$field}->{required} ) 
+                 ) {
+                    push(
+                        @$ht_fields,
+                        {
+                            name                  => $field,
+                            value                 => $address->{fields}->{$field},
+                            invalid_profile_field => 1,
+                        }
+                    );
                 }
-            );
+                else {                
+                    push(
+                        @$ht_fields,
+                        {
+                            name  => $field,
+                            value => $address->{fields}->{$field}
+                        }
+                    );
+                }
+            }
         }
-
-        #        my $ht_errors = {};
-        #        # I don't like htis,
-        #        foreach(keys %$errors){
-        #            if($errors->{$_} == 1) {
-        #                $ht_errors->{'error_' . $_} = 1;
-        #            }
-        #        }
-
+        else { 
+            for my $field(@$fields) {
+                push(
+                    @$ht_fields,
+                    {
+                        name  => $field,
+                        value => $address->{fields}->{$field}
+                    }
+                );
+            }
+            
+        }
+        
+        if(exists($address->{errors})){ 
+            if(keys %{$address->{errors}}) { 
+                for my $error( keys %{ $address->{errors} } ) {
+                    push(
+                        @$ht_errors,
+                        {
+                            name  => $error,
+                            value => 1,
+                        }
+                    );
+                }
+            }
+        }
+        
+       # if(exists( $address->{errors}->{invalid_profile_fields} )){ 
+       #        if(!keys %{$address->{errors}->{invalid_profile_fields}}){ 
+       #            undef($address->{errors}->{invalid_profile_fields}); 
+       #            delete($address->{errors}->{invalid_profile_fields}); 
+        #    }
+    #    }
+        
+        
+        
         push(
             @$new_emails,
             {
                 email              => $address->{email},
-                fields             => $ht_fields,
                 profile_password   => $address->{profile}->{password},
                 status             => $address->{status},
                 og_errors          => $address->{errors},
-                errors             => $ht_errors,
                 csv_str            => $address->{csv_str},
+                
+                errors             => $ht_errors,
+                fields             => $ht_fields,
+                
                 # %$ht_errors,
             }
         );

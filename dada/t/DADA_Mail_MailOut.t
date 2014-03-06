@@ -110,14 +110,21 @@ undef $mailout;
 
 require DADA::MailingList::Subscribers; 
 my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
-my $count = $lh->add_to_email_list(-Email_Ref => [qw(
-                                        email1@example.com
-                                        email2@example.com
-                                        email3@example.com
-                                        email4@example.com
-                                        )], 
-                            -Type     => 'list',
-                          );
+my $count = 0; 
+for(qw(
+    email1@example.com
+    email2@example.com
+    email3@example.com
+    email4@example.com
+    )){ 
+    $lh->add_subscriber(
+        {
+            -email => $_, 
+            -type  => 'list', 
+        }
+    ); 
+    $count++; 
+}
 ok($count == 4, "added four, told me I added four. Smashing.");                           
 
 

@@ -72,7 +72,7 @@ SKIP: {
     undef $errors; 
     
 
-    my $r_count = $lh->remove_from_list(-Email_List => ['test@'], -Type => 'black_list'); 
+    my $r_count = $lh->remove_subscriber({-email => 'test@', -type => 'black_list'}); 
     ok($r_count == 1, "removed one address");                           
     undef($r_count); 
 

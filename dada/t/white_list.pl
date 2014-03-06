@@ -56,56 +56,52 @@ undef($count);
 ok($lh->inexact_match({-against => 'white_list', -email => 'test@example.com'}) == 1, 'we have an inexact match between test@example.com and test@ - good!'); 
 
 
-my ($subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid) 
-    = $lh->filter_subscribers(
-		{
-        	-emails => ['test@example.com'],
-   		}
-	);        
+my ($not_members, 
+$invalid_email,  
+$subscribed,
+$black_listed,    
+$not_white_listed,
+$invalid_profile_fields,
+) = $lh->filter_subscribers_massaged_for_ht( { -emails => [{email => 'test@example.com'}], } );
+
 use Data::Dumper; 
 
-ok(eq_array($subscribed,         []                  ) == 1, "No one subscribed when testing test\@example.com"); 
-ok(eq_array($not_subscribed,     ['test@example.com']) == 1, "test\@example.com is Not Subscribed"); 
-
-
-
-ok(eq_array($not_white_listed,   []                  ) == 1, "NOT White Listed when testing test\@example.com");
-
-
-
- 
-ok(eq_array($black_listed,       []                  ) == 1, "Black Listed when testing test\@example.com"); 
-ok(eq_array([],                  []                  ) == 1, "Invalid when testing test\@example.com");
+ok(eq_array($subscribed,                   []                  ) == 1, "No one subscribed when testing test\@example.com"); 
+ok(eq_array(just_the_emails($not_members), ['test@example.com']) == 1, "test\@example.com is Not Subscribed"); 
+ok(eq_array($not_white_listed,             []                  ) == 1, "NOT White Listed when testing test\@example.com");
+ok(eq_array($black_listed,                 []                  ) == 1, "Black Listed when testing test\@example.com"); 
+ok(eq_array([],                            []                  ) == 1, "Invalid when testing test\@example.com");
 
 undef($subscribed);
-undef($not_subscribed);
+undef($not_members);
 undef($black_listed);
 undef($not_white_listed);
-undef($invalid);
+undef($invalid_email);
 
 
 ok($lh->inexact_match({-against => 'white_list', -email => 'user@example.com'}) == 0, 'we DO NOT have an inexact match between user@example.com and test@ - good!'); 
 
-my ($subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid) 
-    = $lh->filter_subscribers(
-		{
-        	-emails => ['user@example.com'],
-		}
-	);
+
+($not_members, 
+$invalid_email,  
+$subscribed,
+$black_listed,    
+$not_white_listed,
+$invalid_profile_fields,
+) = $lh->filter_subscribers_massaged_for_ht( { -emails => [{email => 'user@example.com'}], } );
 
 
 #diag(Data::Dumper::Dumper($subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid)); 
 	
 	   
-ok(eq_array($subscribed,         []                  ) == 1, "Subscribed when testing user\@example.com"); 
-ok(eq_array($not_subscribed,     []                  ) == 1, "Not Subscribed when testing user\@example.com"); 
-ok(eq_array($not_white_listed,   ['user@example.com']) == 1, "NOT White Listed when testing user\@example.com"); 
+ok(eq_array($not_members,         []                  ) == 1, "Subscribed when testing user\@example.com"); 
+ok(eq_array($not_members,     []                  ) == 1, "not_members when testing user\@example.com"); 
+ok(eq_array(just_the_emails($not_white_listed),   ['user@example.com']) == 1, "NOT White Listed when testing user\@example.com"); 
 ok(eq_array($black_listed,       []                  ) == 1, "Black Listed when testing user\@example.com"); 
-ok(eq_array([],                  []                  ) == 1, "Invalid when testing user\@example.com"); 
+ok(eq_array($invalid_profile_fields,                  []                  ) == 1, "Invalid when testing user\@example.com"); 
 
 
-
-my $r_count = $lh->remove_from_list(-Email_List => [qw(test@)], -Type => 'white_list'); 
+my $r_count = $lh->remove_subscriber({-email => 'test@', -type => 'white_list'}); 
 ok($r_count == 1, "removed one address from white list");                           
 undef($r_count);
 
@@ -135,7 +131,7 @@ for my $not_white_listed_addresses(@not_white_listed_addresseses){
     ok($errors->{not_white_listed} == 1, "Address was not_white_listed");
 }
 
-my $r_count = $lh->remove_from_list(-Email_List => [qw(test@)], -Type => 'white_list'); 
+my $r_count = $lh->remove_subscriber({-email => 'test@', -type => 'white_list'}); 
 ok($r_count == 1, "removed one address from white list");                           
 undef($r_count);
 
@@ -167,7 +163,7 @@ for my $white_listed_addresses(@white_listed_addresses){
     ok($errors->{not_white_listed} == 0, "Address ($white_listed_addresses) was White Listed");
 }
 
-my $r_count = $lh->remove_from_list(-Email_List => [qw(@example.com)], -Type => 'white_list'); 
+my $r_count = $lh->remove_subscriber({-email => '@example.com', -type => 'white_list'}); 
 ok($r_count == 1, "removed one address from white list");                           
 undef($r_count);
 
@@ -226,7 +222,7 @@ my ($status, $errors) = $lh->subscription_check(
     ok($errors->{black_listed} == 1, "Address is black listed.");
 
 
-my $r_count = $lh->remove_from_list(-Email_List => [qw(@example.com)], -Type => 'black_list'); 
+my $r_count = $lh->remove_subscriber({-email => '@example.com', -type => 'black_list'}); 
 ok($r_count == 1, "removed one address from black list");                           
 undef($r_count);
 
@@ -249,7 +245,7 @@ my ($status, $errors) = $lh->subscription_check(
 
 
 
-my $r_count = $lh->remove_from_list(-Email_List => [qw(@example.com)], -Type => 'white_list'); 
+my $r_count = $lh->remove_subscriber({-email => '@example.com', -type => 'white_list'}); 
 ok($r_count == 1, "removed one address from white list");                           
 undef($r_count);
 
@@ -271,5 +267,12 @@ ok($lh->inexact_match({-against => 'white_list', -email => 'somewherefaraway@adi
 dada_test_config::remove_test_list;
 dada_test_config::wipe_out;
 
-
+sub just_the_emails {
+    my $a_ref = shift || []; 
+    my $emails = []; 
+    for(@$a_ref){ 
+        push(@$emails, $_->{email}); 
+    }
+    return $emails; 
+}
 
