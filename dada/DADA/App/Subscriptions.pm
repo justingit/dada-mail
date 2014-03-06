@@ -377,6 +377,14 @@ sub subscribe {
 
             # I still have to make a confirmation token, the CAPTCHA step before
             # confirmation step #1 still requires it.
+            #
+            # I basically have to write out this entire ruleset, so I myself don't get confused. 
+            # and... bascially treat invites like you would someone confirming a subscription. 
+            
+            overwrite, 
+            overwrite, preserve profile pass, 
+            overwrite, reset profile pass 
+            
             require DADA::App::Subscriptions::ConfirmationTokens;
             my $ct    = DADA::App::Subscriptions::ConfirmationTokens->new();
             my $token = $ct->save(
