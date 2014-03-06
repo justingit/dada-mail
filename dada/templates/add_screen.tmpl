@@ -142,22 +142,25 @@
 		    <input type="text" name="email" id="email" value=""  />
 		    </p>
 	
+		<!-- tmpl_if expr="(type eq 'list')" -->
 		
-		<!-- tmpl_loop fields --> 
-		    <p>
-		     <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
-		      <!-- tmpl_var label escape="HTML" --> (<!-- tmpl_var name escape="HTML" -->): 
-		     </label>
-		    <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->"  />
-		    </p>
-		<!--/tmpl_loop-->
+    		<!-- tmpl_loop fields --> 
+    		    <p>
+    		     <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
+    		      <!-- tmpl_var label escape="HTML" --> (<!-- tmpl_var name escape="HTML" -->): 
+    		     </label>
+    		    <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->"  />
+    		    </p>
+    		<!--/tmpl_loop-->
 		
-	    <p>
-	     <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
-	      Profile Password: 
-	     </label>
-	    <input type="text" name="profile_password" id="profile_password" value=""  />
-	    </p>
+    	    <p>
+    	     <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
+    	      Profile Password: 
+    	     </label>
+    	    <input type="text" name="profile_password" id="profile_password" value=""  />
+    	    </p>
+	    
+	    <!-- /tmpl_if --> 
 	    
 		 <div class="buttonfloat">
 		  <input type="reset"  class="cautionary" value="Clear Changes" />
@@ -186,14 +189,22 @@
 		
 			 a Bunch of Addresses</legend>
 
-	    <p>
-	      <label for="new_emails">
-	            Enter
-	     </label> 
-	     new subscribers (one subscriber per line) in the following <strong>CSV format</strong>: </p> 
+        <!-- tmpl_if expr="(type eq 'list')" -->
+        
+	        <p>
+    	      <label for="new_emails">
+    	            Enter
+    	     </label> 
+    	     new subscribers (one address + fields per line) in the following <strong>CSV format</strong>: </p> 
      
-	     <p><code>Email Address<!-- tmpl_loop fields -->, <!-- tmpl_var name --><!-- /tmpl_loop --><!-- tmpl_if expr="(type eq 'list')" -->, Profile Password<!-- /tmpl_if --></code></p>
-
+    	     <p><code>Email Address<!-- tmpl_loop fields -->, <!-- tmpl_var name --><!-- /tmpl_loop --><!-- tmpl_if expr="(type eq 'list')" -->, Profile Password<!-- /tmpl_if --></code></p>
+        <!-- tmpl_else --> 
+            <p>
+    	        <label for="new_emails">
+    	                Enter
+    	        </label> addresses, (one address per line)
+	        </p>
+        <!-- /tmpl_if --> 
 
 
 	<fieldset> 
@@ -229,12 +240,6 @@
 
 
 
-
-
-
-
-
-
 		<style>
 		.ui-progressbar .ui-progressbar-value { background-image: url(<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/jquery.ui/pbar-ani.gif); }
 		</style>
@@ -250,11 +255,8 @@
 	  <label for="new_email_file">
 	   upload
 	  </label>
-	  a text file (<strong><!-- tmpl_var HTML_CHARSET --> encoded</strong>) in the same <strong>CSV format</strong> mentioned above.
+	  a text file<!-- tmpl_if expr="(type eq 'list')" --> (<strong><!-- tmpl_var HTML_CHARSET --> encoded</strong>) in the same <strong>CSV format</strong> mentioned above<!-- /tmpl_if -->.
 	 </p>
-
-
-
 
 
 	<form id="fileupload" enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">

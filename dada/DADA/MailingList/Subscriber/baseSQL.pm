@@ -153,11 +153,12 @@ sub add {
                                 }
                             );              
                         }
-                        else { 
-                            # ... 
+                        elsif($args->{ -profile }->{-mode} eq 'preserve_if_defined') { 
+                            # ... then, nothin'
                         }
         			}  
         			else { 
+        			    # Then, we make a new one up! 
                         $prof->insert(
                             {
                                 -password  => $args->{ -profile }->{ -password },

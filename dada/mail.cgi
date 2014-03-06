@@ -5238,10 +5238,12 @@ sub add_email {
         }
           
         my $field_names = [];
-        for (@$subscriber_fields) {
-            push( @$field_names, { name => $_ } );
-        }
-
+       # if($type eq 'list') { 
+            for (@$subscriber_fields) {
+                push( @$field_names, { name => $_ } );
+            }
+    #    }
+        
         if (   $type eq 'list'
             && $ls->param('closed_list') == 1 )
         {
@@ -5323,6 +5325,13 @@ sub add_email {
                 # This is what updates already existing profile fields and profile passwords; 
                 # 
                 my @update_fields_address = $q->param("update_fields_address"); 
+                my $subscribed_fields_options_mode = $q->param('subscribed_fields_options_mode') || 'writeover_inc_password';
+
+                my $spass_om = 'writeover';                 
+                if($subscribed_fields_options_mode eq 'writeover_ex_password'){ 
+                    $spass_om = 'preserve_if_defined'; 
+                }
+                
                 my $update_email_count = 0;
                 require DADA::Profile::Fields;
                 require DADA::Profile;
@@ -5339,7 +5348,12 @@ sub add_email {
                         my $prof = DADA::Profile->new( { -email => $ua_info->{email} } );
                         if ($prof) {
                             if ( $prof->exists ) {
-                                $prof->update( { -password => $ua_info->{profile}->{password} } );
+                                if($spass_om eq 'writeover') { 
+                                    $prof->update( { -password => $ua_info->{profile}->{password} } );
+                                }
+                                elsif($spass_om eq 'preserve_if_defined'){ 
+                                    #.... 
+                                }
                             }
                             else {
                                 $prof->insert(
@@ -5382,12 +5396,12 @@ sub add_email {
                 die "Mass Subscribing via the List Control Panel has been disabled.";
             }
 
-            my @address               = $q->param("address");
-            my $fields_options_mode   = $q->param('fields_options_mode') || 'preserve_if_defined';
-            my $new_email_count       = 0;
-            my $skipped_email_count   = 0;
-            my $num_subscribers       = $lh->num_subscribers;
-            my $new_total             = $num_subscribers;
+            my @address                         = $q->param("address");
+            my $not_members_fields_options_mode = $q->param('not_members_fields_options_mode') || 'preserve_if_defined';
+            my $new_email_count                 = 0;
+            my $skipped_email_count             = 0;
+            my $num_subscribers                 = $lh->num_subscribers;
+            my $new_total                       = $num_subscribers;
 
 
             
@@ -5410,16 +5424,27 @@ sub add_email {
                     # This will combine creation of the subscription, profile
                     # and fields in one method. 
                     #
+                    my $pf_om   = 'preserve_if_defined'; 
+                    my $pass_om = 'preserve_if_defined'; 
+                    if($not_members_fields_options_mode eq 'writeover_ex_password'){ 
+                        $pf_om   = 'writeover'; 
+                        $pass_om = 'preserve_if_defined'; 
+                    }
+                    elsif($not_members_fields_options_mode eq 'writeover_inc_password'){ 
+                        $pf_om   = 'writeover'; 
+                        $pass_om = 'writeover'; 
+                    }
+                    
                     $dmls = $lh->add_subscriber(
                         {
                             -email             => $info->{email},
                             -fields            => $info->{fields},
                             -profile           => { 
                                 -password => $info->{profile}->{password}, 
-                                -mode     => $fields_options_mode, 
+                                -mode     => $not_members_fields_options_mode, 
                             },
                             -type              => $type,
-                            -fields_options    => { -mode => $fields_options_mode, },
+                            -fields_options    => { -mode => $not_members_fields_options_mode, },
                             -dupe_check        => {
                                 -enable  => 1,
                                 -on_dupe => 'ignore_add',

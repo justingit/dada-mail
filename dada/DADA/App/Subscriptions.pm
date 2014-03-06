@@ -381,10 +381,6 @@ sub subscribe {
             # I basically have to write out this entire ruleset, so I myself don't get confused. 
             # and... bascially treat invites like you would someone confirming a subscription. 
             
-            overwrite, 
-            overwrite, preserve profile pass, 
-            overwrite, reset profile pass 
-            
             require DADA::App::Subscriptions::ConfirmationTokens;
             my $ct    = DADA::App::Subscriptions::ConfirmationTokens->new();
             my $token = $ct->save(
