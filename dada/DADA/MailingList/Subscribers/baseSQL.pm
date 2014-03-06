@@ -265,9 +265,14 @@ sub SQL_subscriber_profile_join_statement {
     }
 
     if ( !exists( $args->{-order_by}) || !defined($args->{-order_by}) ) {
-        $args->{-order_by} = 'email';
+        # Well, if we have a search for date, why not sort by default by date? 
+        #if(exists($args->{-partial_listing}->{subscriber.timestamp}->{-value})) { 
+        #    
+        #}
+        #else { 
+            $args->{-order_by} = 'email';
+        #}
     }
-
     if ( !exists( $args->{-order_dir} ) ) {
         $args->{-order_dir} = 'asc';
     }
@@ -399,6 +404,7 @@ sub SQL_subscriber_profile_join_statement {
             # address that doesn't have a profile...
             my $table = $profile_fields_table;
 
+            
             if ( $field eq 'email' ) {
                 $table = $subscriber_table;
             }
@@ -408,6 +414,13 @@ sub SQL_subscriber_profile_join_statement {
 
             next if ! exists($args->{-partial_listing}->{$field}->{-value});
             next if ! defined($args->{-partial_listing}->{$field}->{-value});
+#            if(
+#                ! defined($args->{-partial_listing}->{$field}->{-rangestart})
+#            &&  ! defined($args->{-partial_listing}->{$field}->{-rangeend})
+#            ){ 
+#                next; 
+#            }
+            
             next if $args->{-partial_listing}->{$field}->{-value} eq '';
 
             my $search_op        = '';
@@ -459,17 +472,32 @@ sub SQL_subscriber_profile_join_statement {
     			 push( @add_q, '(' . join( ' ' . $search_binder . ' ', @s_snippets ) . ')' );
     		}
     		elsif($field eq 'subscriber.timestamp') { 
-                if($args->{-partial_listing}->{$field}->{-operator} eq '<') { 
-                    $search_op = '<';
-                }
-                elsif($args->{-partial_listing}->{$field}->{-operator} eq '>') { 
-                    $search_op = '>';                    
-                }
-                else { 
-                    # ... 
-                }
+#                if($args->{-partial_listing}->{$field}->{-operator} eq '<') { 
+#                    $search_op = '<';
+#                }
+#                elsif($args->{-partial_listing}->{$field}->{-operator} eq '>') { 
+#                    $search_op = '>';                    
+#                }
+#                else { 
+#                    # ... 
+#                }
+
                 my $timestamp_snippet = ''; 
                 
+                $timestamp_snippet = $table . '.timestamp >= ' 
+                . $self->{dbh}->quote(
+                        $args->{-partial_listing}->{$field}->{-rangestart}
+                    )
+                . ' AND '
+                . $table . '.timestamp <= ' 
+                . $self->{dbh}->quote(
+                    $args->{-partial_listing}->{$field}->{-rangeend}
+                ); 
+                
+
+#                where date >= [start date] and date <= [end date]
+                
+=cut
                 
                 if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
                     $timestamp_snippet =   $table . '.timestamp ' 
@@ -486,6 +514,9 @@ sub SQL_subscriber_profile_join_statement {
                                             . $args->{-partial_listing}->{$field}->{-value} 
                                             . ' DAY';
                 }
+=cut
+
+                warn 'pushing timestamp snippit: ' . $timestamp_snippet; 
                 push( @add_q, $timestamp_snippet );
     		}
     		else { 
@@ -572,8 +603,8 @@ sub SQL_subscriber_profile_join_statement {
 		$query .= ($args->{ -start } * $args->{ '-length' });		
 	}
 	
-    warn 'QUERY: ' . $query
-      if $t;
+    warn 'QUERY: ' . $query; 
+#      if $t;
 
     return $query;
 }

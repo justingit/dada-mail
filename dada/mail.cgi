@@ -1386,6 +1386,13 @@ sub preview_message_receivers {
     
     my $partial_sending = partial_sending_query_to_params($q, $naked_fields); 
 
+    my $order_by = 'email'; 
+    my $order_dir = 'desc'; 
+    
+    if(exists($partial_sending->{'subscriber.timestamp'}->{-value})) { 
+        $order_by => 'timestamp';
+        $order_dir => 'desc'; 
+    }
     if ( keys %$partial_sending ) {
         if ( $DADA::Config::MULTIPLE_LIST_SENDING_TYPE eq 'merged' ) {
             $lh->fancy_print_out_list(
@@ -1395,6 +1402,8 @@ sub preview_message_receivers {
                     -include_from          => [@alternative_list],
                     -show_list_column      => 1,
                     -show_timestamp_column => 1, 
+                    -order_by              => $order_by, 
+                    -order_dir             => $order_dir, 
                 }
             );
         }
@@ -1406,7 +1415,6 @@ sub preview_message_receivers {
                     -partial_listing       => $partial_sending,
                     -type                  => 'list',
                     -show_timestamp_column => 1, 
-                     
                 }
             );
 

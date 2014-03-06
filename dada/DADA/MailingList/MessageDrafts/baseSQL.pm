@@ -506,11 +506,15 @@ sub params_to_save {
             $params->{ $_ . '.operator' } = 1;
             $params->{ $_ . '.value' }    = 1;
         }  
-        for ('email', 'subscriber.timestamp') { 
+        for ('email') { 
             $params->{ $_ . '.operator' } = 1;
             $params->{ $_ . '.value' }    = 1;
         }
-         
+        
+        for ('subscriber.timestamp') { 
+            $params->{ $_ . '.rangestart' } = 1;
+            $params->{ $_ . '.rangeend' }    = 1;
+        }
     if ( $args->{-screen} eq 'send_email' ) {
 
         $params->{attachment1} = 1;

@@ -41,50 +41,36 @@
         </tr> 
     <!-- /tmpl_loop --> 
     
-    <tr> 
-     <td align="right"> 
-      <p>
-       <label for="subscriber.timestamp.operator">
-        Subscription Date:
-       </label> 
-      </p>
-     </td> 
-     <td>
-      <p>
-       <select name="subscriber.timestamp.operator" id="subscriber.timestamp.operator">
-		<option value=">">Within</option>
-		<option value="<">After</option>
-       </select> the last:
-      </p>
-     </td>
-     <td>
-         <!-- tmpl_if comment --> 
-         my $q = CGI::Pretty->new; 
-         print $q->popup_menu(-name => 'foo', values => [1...10]);
-         <!-- /tmpl_if --> 
-         
-      <p> 
-          <select name="subscriber.timestamp.value" id="subscriber.timestamp.value">
-              <option value="">---</option>
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="3">3</option>
-              <option value="4">4</option>
-              <option value="5">5</option>
-              <option value="6">6</option>
-              <option value="7">7</option>
-              <option value="8">8</option>
-              <option value="9">9</option>
-              <option value="10">10</option>
-`          </select> 
-           Day(s) 
-      </p>
-     </td>
-    </tr> 
-    
-    
-    
+
+
+        <tr> 
+         <td align="right"> 
+          <p>
+           <label for="subscriber_timestamp_rangestart">
+                Subscription Date:
+           </label> 
+          </p>
+         </td> 
+         <td>
+             <p>
+                 <label for="subscriber_timestamp_rangestart">Between:</label>
+                 <br> 
+                 <input id="subscriber_timestamp_rangestart" name="subscriber.timestamp.rangestart" type="text" >
+            </p>
+        </td>
+        <td>
+            
+                <p><label for="subscriber_timestamp_rangeend">
+                 And:
+                </label>
+                <br/>
+                <input id="subscriber_timestamp_rangeend" name="subscriber.timestamp.rangeend" type="text" >
+             </p> 
+         </td>
+        </tr>
     </table> 
+    
+    
     </div> 
 	
     <div class="buttonfloat">

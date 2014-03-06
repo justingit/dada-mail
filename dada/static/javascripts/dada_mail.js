@@ -88,6 +88,8 @@ $(document).ready(function() {
 			}
 		});
 		
+		datetimesetupstuff(); 
+		
 		setup_attachment_fields(); 
 		$("body").on("click", ".remove_attachment", function(event) {
 			if(confirm("Remove Attachment?")) { 
@@ -2720,7 +2722,7 @@ function preview_message_receivers() {
 		fixed: true,
 		initialHeight: 50,
 		maxHeight: 480,
-		maxWidth: 649,
+		maxWidth: 700,
 		opacity: 0.50,
 		href: $("#s_program_url").val(),
 		data: f_params
@@ -3002,6 +3004,27 @@ Date.prototype.format = function(format) //author: meizz
       RegExp.$1.length==1 ? o[k] :
         ("00"+ o[k]).substr((""+ o[k]).length));
   return format;
+}
+
+
+
+function datetimesetupstuff() {	
+ $('#subscriber_timestamp_rangestart').datetimepicker({
+  format:'Y-m-d H:i:s',
+  onShow:function( ct ){
+   this.setOptions({
+    maxDate:$('#subscriber_timestamp_rangeend').val()?$('#subscriber_timestamp.rangeend').val():false
+   })
+  }
+ });
+ $('#subscriber_timestamp_rangeend').datetimepicker({
+  format:'Y-m-d H:i:s',
+  onShow:function( ct ){
+   this.setOptions({
+    minDate:$('#subscriber_timestamp_rangestart').val()?$('#subscriber_timestamp_rangestart').val():false
+   })
+  }
+ });
 }
 
 

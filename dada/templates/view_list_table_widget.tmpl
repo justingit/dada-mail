@@ -28,8 +28,15 @@
     		<!-- tmpl_if expr="(order_by eq 'timestamp') && (order_dir eq 'desc')" -->
     			<a href="#" class="change_order" data-by="timestamp" data-dir="asc">
     		<!-- /tmpl_if -->
-        	Subscription Date
         	
+        	 <!-- tmpl_if expr="(type eq 'list')" -->
+                 Subscription Date:
+            <!-- tmpl_else --> 
+                 Addition Date:
+            <!-- /tmpl_if --> 
+            
+            
+            
         	<!-- tmpl_if expr="(order_by eq 'timestamp') && (order_dir eq 'asc')" -->
     			<sub>&#x25B2;</sub>
     		<!-- /tmpl_if -->

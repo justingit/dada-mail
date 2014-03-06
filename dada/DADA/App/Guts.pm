@@ -255,19 +255,24 @@ sub partial_sending_query_to_params {
         }
     }
 
-    if ( defined( $q->param('subscriber.timestamp.value') ) ) {
-        if ( $q->param('subscriber.timestamp.value') ne '' ) {
-            my $op = $q->param('subscriber.timestamp.operator');
-            my $v  = $q->param('subscriber.timestamp.value');
-            if ( $op =~ m/^(\<|\>)$/ ) {
+    if ( defined( $q->param('subscriber.timestamp.rangestart') ) 
+      || defined ($q->param('subscriber.timestamp.rangeend') ) ) {
+        if ( $q->param('subscriber.timestamp.rangestart') ne '' ) {
+            my $s  = $q->param('subscriber.timestamp.rangestart');
+            my $e  = $q->param('subscriber.timestamp.rangeend');
+            # if(yup, looks like a date, to me!) { 
                 $partial_sending->{'subscriber.timestamp'} = {
-                    -operator => $op,
-                    -value    => $v,
+                    -rangestart  => $s,
+                    -rangeend    => $e,
+                    -value       => 'dummy value', 
                 };
-            }
+            #}
         }
     }
 
+    use Data::Dumper; 
+    warn Dumper($partial_sending); 
+    
     return $partial_sending;
 }
 
