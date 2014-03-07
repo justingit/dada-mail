@@ -908,31 +908,6 @@ sub filter_subscribers_massaged_for_ht {
 
 
 
-sub write_plaintext_list { 
-	
-	my $self = shift; 
-	
-	# DEV: Needs ot be changed to hashref file parameter passing
-	my %args = (-Type => 'list', 
-	            @_); 
-	my $type     = $args{-Type};
-	my $path     = $DADA::Config::TMP ; 
-	my $tmp_id   = message_id();
-	my $ln       = $self->{list}; 
-	my $tmp_file = make_safer($path . '/' . $ln . '.' . $type . '.' . $tmp_id); 
-	
-	# DEV: needs to be changed to an anonymous file handle. 
-	open(TMP_LIST, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $tmp_file) or croak $!;		  
-		$self->print_out_list(-Type => $args{-Type}, 
-							  -FH   => \*TMP_LIST);
-	close(TMP_LIST); 
-	return $tmp_file;
-
-}
-
-
-
-
 sub find_unique_elements { 
 
 	my $self = shift; 

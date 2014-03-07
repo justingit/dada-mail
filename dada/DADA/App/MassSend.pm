@@ -1586,17 +1586,20 @@ sub backdated_msg_id {
     my $self          = shift;
     my ($args)        = @_;
     my $q             = $args->{-cgi_obj};
-    my $backdate_hour = $q->param('backdate_hour');
-    $backdate_hour = int($backdate_hour) + 12
-      if $q->param('backdate_hour_label') =~ /p/;    # as in, p.m.
-
-    my $message_id = sprintf(
-        "%02d%02d%02d%02d%02d%02d",
-        $q->param('backdate_year'), $q->param('backdate_month'),  $q->param('backdate_day'),
-        $backdate_hour,             $q->param('backdate_minute'), $q->param('backdate_second')
-    );
-    return $message_id;
-
+    my $backdate_datetime = $q->param('backdate_datetime');
+    
+    require Time::Local; 
+    my ($date, $time)            = split(' ', $backdate_datetime); 
+    my ($year, $month, $day)     = split('-', $date); 
+    my ($hour, $minute, $second) = split(':', $time); 
+    $second                      = int($second - 0.5) ; # no idea. 
+    my $time = return Time::Local::timelocal( $second, $minute, $hour, $day, $month-1, $year );
+    
+    my ($sec, $min, $hour, $day, $month, $year) = (localtime($time))[0,1,2,3,4,5];
+    my $message_id = sprintf("%02d%02d%02d%02d%02d%02d", $year+1900, $month+1, $day,  $hour, $min, $sec);
+    
+    return $message_id; 
+    
 }
 
 sub mass_mailout_info {

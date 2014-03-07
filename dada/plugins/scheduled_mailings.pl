@@ -459,6 +459,7 @@ sub edit  {
 						-Root_Login => $yeah_root_login,
 						-vars => { 
 							#load_wysiwyg_editor => 1, 
+							load_datetimepicker => 1,
 						}
 						);
 
@@ -948,8 +949,14 @@ my $partial_saved = $form_vals{partial_sending_params};
 my $partial_q = CGI->new; 
    $partial_q->delete_all(); 
    	for my $saved(@$partial_saved){ 
-	    $partial_q->param($saved->{field_name}  . '.operator', $saved->{field_operator}); 
-	    $partial_q->param($saved->{field_name}  . '.value',    $saved->{field_value}); 
+   	    if($saved->{field_name} eq 'timestamp') { 
+       	    $partial_q->param($saved->{field_name}  . '.range', $saved->{field_operator}); 
+    	    $partial_q->param($saved->{field_name}  . '.value', $saved->{field_value});  
+        }
+        else { 
+       	    $partial_q->param($saved->{field_name}  . '.rangestart',  $saved->{field_rangestart}); 
+    	    $partial_q->param($saved->{field_name}  . '.rangeend',    $saved->{field_rangeend}); 
+        }
     }
     my $undotted_fields = [];
     

@@ -691,9 +691,9 @@ sub print_out_list {
 	if(! exists($args->{-query})){ 
 		$args->{-query} = undef; 
 	}	
-#	if(! exists($args->{-order_by})){ 
-#		$args->{-order_by} = undef; 
-#	}	
+	if(! exists($args->{-show_timestamp_column})){ 
+		$args->{-show_timestamp_column} = 0; 
+	}	
 	if(! exists($args->{-order_dir})){ 
 		$args->{-order_dir} = undef; 
 	}
@@ -719,12 +719,14 @@ sub print_out_list {
 	
 		$query = $self->SQL_subscriber_profile_join_statement(  
 			{ 
-		    -partial_listing => $partial_listing,
-	        -search_type     => 'any',
-			-type            => $args->{-type},
-			-query           => $args->{-query},
-			-order_by        => $args->{-order_by},
-			-order_dir       => $args->{-order_dir},
+		    -partial_listing       => $partial_listing,
+	        -search_type           => 'any',
+			-type                  => $args->{-type},
+			-query                 => $args->{-query},
+			-order_by              => $args->{-order_by},
+			-order_dir             => $args->{-order_dir},
+			-show_timestamp_column => $args->{-show_timestamp_column}, 
+            
 			}
 		);  
 	}
@@ -732,7 +734,8 @@ sub print_out_list {
 	    $query =
 	      $self->SQL_subscriber_profile_join_statement(
 	        { 
-				-type      => $args->{-type}, 
+				-type                  => $args->{-type}, 
+				-show_timestamp_column => $args->{-show_timestamp_column},
 			} 
 		);
 	}
@@ -749,7 +752,13 @@ sub print_out_list {
 
     my $hashref = {};
 
-    my @header = ('timestamp', 'email');
+
+    my @header = ('email');
+    if($args->{-show_timestamp_column} == 1){ 
+        unshift(@header, 'timestamp'); 
+    }
+    
+    
     for (@$fields) {
         push ( @header, $_ );
     }
@@ -770,7 +779,11 @@ sub print_out_list {
     while ( $hashref = $sth->fetchrow_hashref ) {
 
         my @info = ( $hashref->{email} );
-
+        
+        if($args->{-show_timestamp_column} == 1){ 
+            unshift(@info, $hashref->{timestamp}); 
+        }
+        
         for (@$fields) {
 
 # DEV: Do we remove newlines here? Huh?

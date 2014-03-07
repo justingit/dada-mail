@@ -238,14 +238,25 @@ sub save_from_params {
 	push(@$fields, 'subscriber.timestamp'); 
 	
 	for my $field(@$fields){ 
-		if(defined($q->param($field . '.value'))){ 
-				push(@$saved_pso, {
+	    if($field eq 'subscriber.timestamp') { 
+	        if(defined($q->param($field . '.value'))){ 
+    		    push(@$saved_pso, {
     				field_name     => $field,
-    				field_operator => $q->param($field . '.operator'), 
-    				field_value    => $q->param($field . '.value'),  
+    				field_rangestart  => $q->param($field . '.rangestart'), 
+    				field_rangeend    => $q->param($field . '.rangeend'),  
 				}
-			); 
-		}
+    		}
+	    }
+	    else { 	    
+    		if(defined($q->param($field . '.value'))){ 
+    				push(@$saved_pso, {
+        				field_name     => $field,
+        				field_operator => $q->param($field . '.operator'), 
+        				field_value    => $q->param($field . '.value'),  
+    				}
+    			); 
+    		}
+        }
 	}
 	
 	$form_vals{partial_sending_params} = $saved_pso; 
@@ -666,10 +677,18 @@ sub send_scheduled_mailing {
 				my $partial_sending = {}; 
     			
 				for my $field(@$partial_sending_params){ 
-					$partial_sending->{$field->{field_name}} = {
-					    -operator => $field->{field_operator},
-					    -value    => $field->{field_value},
-				    };
+				    if($field->{field_name} eq 'subscriber.timestamp') { 
+				        $partial_sending->{$field->{field_name}} = {
+                            -rangestart  => $field->{field_rangestart}, 
+            				-rangeend    => $field->{field_rangeend}, 
+    				    };
+				    }
+				    else { 
+    					$partial_sending->{$field->{field_name}} = {
+    					    -operator => $field->{field_operator},
+    					    -value    => $field->{field_value},
+    				    };
+                    }
 				} 
 				if(keys %$partial_sending){ 
 					$mh->partial_sending($partial_sending); 

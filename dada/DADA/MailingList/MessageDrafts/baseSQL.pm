@@ -485,16 +485,9 @@ sub params_to_save {
         archive_message     => 1,
         archive_no_send     => 1,
         back_date           => 1,
-        backdate_month      => 1,
-        backdate_day        => 1,
-        backdate_year       => 1,
-        backdate_hour       => 1,
-        backdate_minute     => 1,
-        backdate_second     => 1,
-        backdate_hour_label => 1,
-
-        test_recipient => 1,
-
+        backdate_datetime   => 1, 
+        test_recipient      => 1,
+        
         Subject => 1,
 
     };

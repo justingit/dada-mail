@@ -8498,10 +8498,11 @@ sub text_list {
 
     $lh->print_out_list(
         {
-            -type      => $type,
-            -query     => $query,
-            -order_by  => $order_by,
-            -order_dir => $order_dir,
+            -type                  => $type,
+            -query                 => $query,
+            -order_by              => $order_by,
+            -order_dir             => $order_dir,
+            -show_timestamp_column => 1, 
         }
     );
 }

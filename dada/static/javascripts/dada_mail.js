@@ -89,6 +89,7 @@ $(document).ready(function() {
 		});
 		
 		datetimesetupstuff(); 
+		$('#backdate_datetime').datetimepicker({maxDate: 0, format:'Y-m-d H:i:s'});
 		
 		setup_attachment_fields(); 
 		$("body").on("click", ".remove_attachment", function(event) {
