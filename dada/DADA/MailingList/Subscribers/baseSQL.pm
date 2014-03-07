@@ -108,18 +108,23 @@ sub search_list {
     my $partial_listing = {};
 
     my $fields = $self->subscriber_fields;
-    for (@$fields) {
-        $partial_listing->{$_} = {
-             -operator => 'LIKE',
-             -value    => $args->{-query}, 
+    if(! exists($args->{-query}) && exists($args->{-partial_listing})){ 
+        $partial_listing = $args->{-partial_listing}; 
+    }
+    else { 
+        for (@$fields) {
+            $partial_listing->{$_} = {
+                 -operator => 'LIKE',
+                 -value    => $args->{-query}, 
+            };
+        }
+        # Do I have to do this, explicitly?
+        $partial_listing->{email} = {
+            -operator => 'LIKE',
+            -value    => $args->{-query} 
         };
     }
-    # Do I have to do this, explicitly?
-    $partial_listing->{email} = {
-        -operator => 'LIKE',
-        -value    => $args->{-query} 
-    };
-
+    
     my $query = $self->SQL_subscriber_profile_join_statement(
         {
             -type            => $args->{-type},
