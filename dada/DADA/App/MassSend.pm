@@ -98,9 +98,8 @@ sub send_email {
     for my $field ( @{ $lh->subscriber_fields( { -dotted => 1 } ) } ) {
         push( @$fields, { name => $field } );
     }
-
+    
     my $undotted_fields = [];
-
     # Extra, special one...
     push( @$undotted_fields, { name => 'email', label => 'Email Address' } );
     require DADA::ProfileFieldsManager;

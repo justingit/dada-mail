@@ -3320,6 +3320,8 @@ sub view_list {
     my $order_dir =  $q->param('order_dir') || lc($ls->param('view_list_order_by_direction'));
     my $mode                             = xss_filter( $q->param('mode') )                             || 'view';
     my $page                             = xss_filter( $q->param('page') )                             || 1;
+    my $advanced_search = $q->param('advanced_search') || 0; 
+    my $advanced_query  = $q->param('advanced_query')  || undef; 
 
     require DADA::Template::Widgets;
     if ( $mode ne 'viewport' ) {
@@ -3341,6 +3343,8 @@ sub view_list {
                     query     => $query,
                     order_by  => $order_by,
                     order_dir => $order_dir,
+                    advanced_search => $advanced_search, 
+                    advanced_query => $advanced_query, 
 
                     add_email_count                  => $add_email_count,
                     update_email_count               => $update_email_count, 
@@ -3395,19 +3399,44 @@ sub view_list {
         my $page_info    = undef;
         my $pages_in_set = [];
         my $total_num    = 0;
-        if ($query) {
-            ( $total_num, $subscribers ) = $lh->search_list(
-                {
-                    -query     => $query,
-                    -type      => $type,
-                    -start     => ( $page - 1 ),
-                    '-length'  => $ls->param('view_list_subscriber_number'),
-                    -order_by  => $order_by,
-                    -order_dir => $order_dir,
+        
+        warn '$query ' . $query; 
+        warn '$advanced_query ' . $advanced_query; 
+        warn ' $advanced_search' . $advanced_search; 
+        
+        if ($query || $advanced_query) {
+                        
+            if($advanced_search == 1){ 
+                open my $fh, '<', \$advanced_query || die $!;
+                my $new_q = CGI->new($fh);
+                my $partial_sending = partial_sending_query_to_params($new_q); 
+                                
+                ( $total_num, $subscribers ) = $lh->search_list(
+                    {
+                        -partial_listing  => $partial_sending,
+                        -type             => $type,
+                        -start            => ( $page - 1 ),
+                        '-length'         => $ls->param('view_list_subscriber_number'),
+                        -order_by         => $order_by,
+                        -order_dir        => $order_dir,
 
-                }
-            );
+                    }
+                );
+            }
+            else { 
+                
+                ( $total_num, $subscribers ) = $lh->search_list(
+                    {
+                        -query     => $query,
+                        -type      => $type,
+                        -start     => ( $page - 1 ),
+                        '-length'  => $ls->param('view_list_subscriber_number'),
+                        -order_by  => $order_by,
+                        -order_dir => $order_dir,
 
+                    }
+                );
+            }
             $page_info = Data::Pageset->new(
                 {
                     total_entries    => $total_num,
@@ -3420,7 +3449,6 @@ sub view_list {
 
         }
         else {
-
             $subscribers = $lh->subscription_list(
                 {
                     -type                  => $type,
@@ -3458,7 +3486,8 @@ sub view_list {
         my $pfm         = DADA::ProfileFieldsManager->new;
         my $fields_attr = $pfm->get_all_field_attributes;
 
-        my $field_names = [];
+        my $field_names     = [];
+        my $undotted_fields = [ { name => 'email', label => 'Email Address' } ]; 
         for ( @{ $lh->subscriber_fields } ) {
             push(
                 @$field_names,
@@ -3466,9 +3495,19 @@ sub view_list {
                     name          => $_,
                     label         => $fields_attr->{$_}->{label},
                     S_PROGRAM_URL => $DADA::Config::S_PROGRAM_URL
-                }
+                },
             );
+            push(
+               @$undotted_fields, 
+               {
+                   name          => $_,
+                   label         => $fields_attr->{$_}->{label},
+                   S_PROGRAM_URL => $DADA::Config::S_PROGRAM_URL
+               },                
+            ); 
         }
+        
+
 
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::screen(
@@ -3477,7 +3516,7 @@ sub view_list {
                 -screen => 'view_list_viewport_widget.tmpl',
                 -expr   => 1,
                 -vars   => {
-
+                    can_have_subscriber_fields => 1, 
                     screen     => 'view_list',
                     flavor     => 'view_list',
                     type       => $type,
@@ -3493,6 +3532,7 @@ sub view_list {
                     show_list_column       => 0,
                     show_timestamp_column=> $ls->param('view_list_show_timestamp_col'),
                     field_names       => $field_names,
+                    undotted_fields   => $undotted_fields, 
 
                     pages_in_set        => $pages_in_set,
                     num_subscribers     => commify($num_subscribers),
@@ -3500,6 +3540,8 @@ sub view_list {
                     total_num_commified => commify($total_num),
                     subscribers         => $subscribers,
                     query               => $query,
+                    advanced_search     => $advanced_search, 
+                    advanced_query      => $advanced_query, 
                     order_by            => $order_by,
                     order_dir           => $order_dir,
 
@@ -8479,15 +8521,31 @@ sub text_list {
     $list = $admin_list;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
-
-    my $type      = $q->param('type')                || 'list';
-    my $query     = xss_filter( $q->param('query') ) || undef;
-
     
-    my $order_by  =  $q->param('order_by')  ||   $ls->param('view_list_order_by');
-    my $order_dir =  $q->param('order_dir') || lc($ls->param('view_list_order_by_direction'));
+    my $type            = $q->param('type')                          || 'list';
+    my $query           = xss_filter( $q->param('query') )           || undef;
+    my $advanced_search = xss_filter( $q->param('advanced_search') ) || 0;
+    my $advanced_query  = xss_filter( $q->param('advanced_query') )  || undef;
+    my $order_by        = $q->param('order_by')                      || $ls->param('view_list_order_by');
+    my $order_dir = $q->param('order_dir') || lc( $ls->param('view_list_order_by_direction') );
 
+    my $partial_listing = {};
+        warn '$advanced_query ' . $advanced_query; 
+         
+    if ($advanced_query) {
+        
+        warn ' $advanced_search ' . $advanced_search; 
+        
+        if($advanced_search == 1){ 
+            open my $fh, '<', \$advanced_query || die $!;
+            my $new_q = CGI->new($fh);
+            $partial_listing = partial_sending_query_to_params($new_q); 
+        }
+    }
 
+    use Data::Dumper; 
+    warn 'partial_listing ' . Dumper($partial_listing); 
+    
     my $email;
 
     my $header = $q->header(
@@ -8496,15 +8554,29 @@ sub text_list {
     );
     print $header;
 
-    $lh->print_out_list(
-        {
-            -type                  => $type,
-            -query                 => $query,
-            -order_by              => $order_by,
-            -order_dir             => $order_dir,
-            -show_timestamp_column => 1, 
-        }
-    );
+    if($advanced_query) { 
+        warn 'yup, advanced query';         
+        $lh->print_out_list(
+            {
+                -type                  => $type,
+                -order_by              => $order_by,
+                -order_dir             => $order_dir,
+                -partial_listing       => $partial_listing, 
+                -show_timestamp_column => 1, 
+            }
+        );
+    }
+    else { 
+        $lh->print_out_list(
+            {
+                -type                  => $type,
+                -query                 => $query,
+                -order_by              => $order_by,
+                -order_dir             => $order_dir,
+                -show_timestamp_column => 1, 
+            }
+        );        
+    }
 }
 
 sub preview_form {

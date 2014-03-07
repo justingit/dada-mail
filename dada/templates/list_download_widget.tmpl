@@ -5,9 +5,12 @@
     <input type="hidden" name="f"    value="text_list" />
     <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
 
-	<!-- tmpl_if query --> 
+	<!-- tmpl_if expr="defined(query) || defined(advanced_query)" --> 
 		
-		<input type="hidden" name="query" value="<!-- tmpl_var query -->" />
+		<input type="hidden" name="query"           value="<!-- tmpl_var query -->" />
+		<input type="hidden" name="advanced_search" value="<!-- tmpl_var advanced_search -->" />
+		<input type="hidden" name="advanced_query"  value="<!-- tmpl_var advanced_query -->" />
+		
 		<input type="hidden" name="order_by" value="<!-- tmpl_var order_by -->" />
 		<input type="hidden" name="order_dir" value="<!-- tmpl_var order_dir -->" />
 		<input type="submit" class="small_button" value="&#8595; Export Search Results (.csv)" />

@@ -487,6 +487,7 @@ $(document).ready(function() {
 
 
 	// Membership >> View List
+		
 	$(".change_type").live("click", function(event) {
 		change_type($(this).attr("data-type"));
 		event.preventDefault();
@@ -503,6 +504,19 @@ $(document).ready(function() {
 		search_list();
 		event.preventDefault();
 	});
+	$(".advanced_search_list").live("click", function(event) {
+		advanced_search_list();
+		event.preventDefault();
+	});
+	$(".close_advanced_search_list").live("click", function(event) {
+		close_advanced_search_list();
+		event.preventDefault();
+	});
+	
+	
+	
+	
+	
 	$("#search_form").live("submit", function(event) {
 		search_list();
 		event.preventDefault();
@@ -511,6 +525,21 @@ $(document).ready(function() {
 		clear_search();
 		event.preventDefault();
 	});
+	$(".clear_advanced_search_list").live("click", function(event) {
+		clear_advanced_search();
+		event.preventDefault();
+	});
+	
+/*
+
+	$("#show_advanced_list_search_form").live("click", function(event) {
+		alert("yup, here I am"); 
+		show_advanced_list_search_form(); 
+		event.preventDefault();
+	});
+
+*/
+	
 	$('#search_query').live('keydown', function() {
 		$("#search_query").autocomplete({
 			source: function(request, response) {
@@ -1092,6 +1121,9 @@ function update_status_bar() {
 /* Membership >> View List */
 
 function view_list_viewport(initial) {
+	//alert('$("#advanced_search").val() ' + $("#advanced_search").val()); 
+	//alert(' $("#advanced_query").val() ' +  $("#advanced_query").val()); 
+	
 	$("#view_list_viewport_loading").html('<p class="alert">Loading...</p>');
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
@@ -1103,6 +1135,8 @@ function view_list_viewport(initial) {
 			type: $("#type").val(),
 			page: $("#page").val(),
 			query: $("#query").val(),
+			advanced_search: $("#advanced_search").val(),
+			advanced_query: $("#advanced_query").val(),
 			order_by: $("#order_by").val(),
 			order_dir: $("#order_dir").val()
 		},
@@ -1112,16 +1146,51 @@ function view_list_viewport(initial) {
 
 		if (initial == 1) {
 			$("#view_list_viewport").hide();
-			$("#view_list_viewport").html(content);
+			$("#view_list_viewport").html(content);		
+			
 			$("#view_list_viewport").show('fade');
 		} else {
 			$("#view_list_viewport").html(content);
 		}
 
 		$("#view_list_viewport_loading").html('<p class="alert">&nbsp;</p>');
+		datetimesetupstuff(); 
+		set_up_advanced_search_form(); 
+		
 
+	// Does not work well w/advanced search. 
+	
+	//alert('advanced_search: "' + $("#advanced_search").val() + '"'); 
+	var blah = $("#advanced_search").val(); 
+	//alert('blah"' + blah + '"'); 
+	
+	if(blah == 1){ 
+		//alert("so, we're gonna hide..."); 
+		$("#domain_break_down").hide(); 
+	}
+	else { 
+		//alert("Not gonna hide."); 
+		$("#domain_break_down").show(); 
 		google.setOnLoadCallback(drawTrackerDomainBreakdownChart());
+	}
+
+	//	alert('advanced_search ' + $("#advanced_search").val()); 
+	  
+	// Doesn't work? 
+	// if($("#advanced_search").val() === 1){
+		
+		
+		
 	});
+}
+
+function set_up_advanced_search_form(){ 
+	console.log('set_up_advanced_search_form ' ); 
+	console.log('advanced_query looks like: ' + $("#advanced_query").val());
+	//alert($("#advanced_query").length); 
+	if($("#advanced_query").length  > 1) { 
+		$("#advanced_list_search_form").unserialize($("#advanced_query").val());
+	 }
 }
 
 function turn_page(page_to_turn_to) {
@@ -1135,9 +1204,24 @@ function change_type(type_to_go_to) {
 	view_list_viewport();
 }
 
+
 function search_list() {
 	$("#page").val(1);
 	$("#query").val($("#search_query").val());
+	view_list_viewport();
+}
+
+function advanced_search_list(){ 
+	//alert($("#advanced_list_search_form").serialize())
+	$("#page").val(1);	
+	$("#advanced_search").val(1); 
+	$("#advanced_query").val($("#advanced_list_search_form").serialize());
+	view_list_viewport();
+}
+function close_advanced_search_list(){ 
+	$("#page").val(1);	
+	$("#advanced_search").val(0); 
+	$("#advanced_query").val();
 	view_list_viewport();
 }
 
@@ -1146,6 +1230,12 @@ function clear_search() {
 	$("#page").val(1);
 	view_list_viewport();
 }
+function clear_advanced_search() { 
+	$("#advanced_query").val('');
+	$("#page").val(1);
+	view_list_viewport();
+
+}
 
 function change_order(order_by, order_dir) {
 	$("#order_by").val(order_by);
@@ -1153,6 +1243,13 @@ function change_order(order_by, order_dir) {
 	$("#page").val(1);
 	view_list_viewport();
 }
+
+/*
+function show_advanced_list_search_form() { 
+	$("#basic_list_search_form").hide('fade');
+	$("#advanced_list_search_form").show('blind');
+}
+*/
 
 var domain_breakdown_chart; // you've got to be serious... 
 var domain_breakdown_chart_data;
@@ -3009,7 +3106,9 @@ Date.prototype.format = function(format) //author: meizz
 
 
 
-function datetimesetupstuff() {	
+function datetimesetupstuff() {
+	console.log('datetimesetupstuff'); 
+	
  $('#subscriber_timestamp_rangestart').datetimepicker({
   format:'Y-m-d H:i:s',
   onShow:function( ct ){

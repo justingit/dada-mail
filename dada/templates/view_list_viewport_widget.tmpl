@@ -2,17 +2,18 @@
 
 <!-- tmpl_include list_type_switch_widget.tmpl -->
 
+<!-- tmpl_if advanced_search --> 
+    <p>&nbsp;</p>
+    <!-- tmpl_include advanced_list_search_form.tmpl --> 
+<!-- /tmpl_if --> 
+
 <!-- tmpl_unless total_num -->
-	
 	<!-- tmpl_if query --> 
 			<p class="alert">
 				No Results were found.
 			</p>
 			<p><label for="query">Search Again:</label></p> 
-			<!-- tmpl_include list_search_form_widget.tmpl -->
-			
-			
-			
+			<!-- tmpl_include list_search_form_widget.tmpl -->	
 	<!-- tmpl_else --> 
 	
 		<p class="alert">
@@ -48,9 +49,9 @@
 	  <td>
 
 
-	<!-- tmpl_if query --> 
+  	<!-- tmpl_if expr="(defined(query)) || (defined(advanced_query))" --> 
+
  		Search Results 
-	
 			<strong>
 		     <!-- tmpl_var first -->
 		    </strong>
@@ -62,11 +63,9 @@
 			<strong>
 				<!-- tmpl_var total_num_commified --> 
 		   </strong>
-		
-		  for, <em><!-- tmpl_var query escape=HTML --></em>
-		
-
-
+		  <!-- tmpl_unless advanced_search --> 
+		    for, <em><!-- tmpl_var query escape=HTML --></em>
+		 <!-- /tmpl_unless --> 
 
 	<!-- tmpl_else --> 
 	
@@ -108,8 +107,14 @@
 	</td>
 
 	
+	
 	<td style="text-align:right">
-		<!-- tmpl_include list_search_form_widget.tmpl --> 
+	
+	    <!-- tmpl_unless advanced_search --> 
+		    <!-- tmpl_include list_search_form_widget.tmpl --> 
+		<!-- tmpl_else --> 
+		   <p> &nbsp; </p>
+	    <!-- /tmpl_unless --> 
 	</td> 
 	
 	 </tr>
@@ -173,7 +178,9 @@
 	
 	</form>
 	<!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'moderators') || (type eq 'white_list'))" -->
+		
 		<!-- tmpl_unless query -->
+		
 			<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" style="display:inline;margin:0">
 			 <input type="hidden" name="f"       value="remove_all_subscribers" />
 			 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />

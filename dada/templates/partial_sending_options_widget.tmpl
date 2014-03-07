@@ -10,69 +10,8 @@
      Send your Mailing List Message  to your Subscribers where their:
     </p> 
     
-	<div id="field_comparisons"> 
-    <table> 
-	
-    <!-- tmpl_loop undotted_fields --> 
-        <tr> 
-         <td align="right"> 
-          <p>
-           <label for="<!-- tmpl_var name -->.operator">
-            <!-- tmpl_var label -->:
-           </label> 
-          </p>
-         </td> 
-         <td>
-          <p>
-           <select name="<!-- tmpl_var name -->.operator" id="<!-- tmpl_var name -->.operator">
-			<option value="LIKE">Is Like</option>
-            <option value="=">Is Equal To</option> 
-			<option value="NOT LIKE">Is Not Like</option>
-            <option value="!=">Is Not Equal To</option> 
+        <!-- tmpl_include field_comparisons_widget.tmpl -->
 
-           </select> 
-          </p>
-         </td>
-         <td>
-          <p>           
-           <input type="text" name="<!-- tmpl_var name -->.value" id="<!-- tmpl_var name -->.value" />
-          </p>
-         </td>
-        </tr> 
-    <!-- /tmpl_loop --> 
-    
-
-
-        <tr> 
-         <td align="right"> 
-          <p>
-           <label for="subscriber_timestamp_rangestart">
-                Subscription Date:
-           </label> 
-          </p>
-         </td> 
-         <td>
-             <p>
-                 <label for="subscriber_timestamp_rangestart">Between:</label>
-                 <br> 
-                 <input id="subscriber_timestamp_rangestart" name="subscriber.timestamp.rangestart" type="text" >
-            </p>
-        </td>
-        <td>
-            
-                <p><label for="subscriber_timestamp_rangeend">
-                 And:
-                </label>
-                <br/>
-                <input id="subscriber_timestamp_rangeend" name="subscriber.timestamp.rangeend" type="text" >
-             </p> 
-         </td>
-        </tr>
-    </table> 
-    
-    
-    </div> 
-	
     <div class="buttonfloat">
      <input type="button" value="Preview Who's Getting This Message..." class="cautionary preview_message_receivers" />  
     </div>

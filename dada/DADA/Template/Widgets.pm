@@ -2440,7 +2440,7 @@ sub wrap_screen {
 	my $vars = { 
 		content => $tmpl, 
 	};
-	for(qw(title show_profile_widget load_wysiwyg_editor load_google_viz load_colorbox load_jquery_validate SUPPORT_FILES_URL)){ 
+	for(qw(title show_profile_widget load_wysiwyg_editor load_google_viz load_colorbox load_jquery_validate load_datetimepicker SUPPORT_FILES_URL)){ 
 		if(exists($params->{$_})){ 
 			# variables within variables... 
 			$vars->{$_} = $params->{$_}; 

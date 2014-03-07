@@ -106,10 +106,12 @@ sub search_list {
     my $r = [];
 
     my $partial_listing = {};
-
+    my $search_type = 'any'; 
+    
     my $fields = $self->subscriber_fields;
     if(! exists($args->{-query}) && exists($args->{-partial_listing})){ 
         $partial_listing = $args->{-partial_listing}; 
+        $search_type = 'all'; 
     }
     else { 
         for (@$fields) {
@@ -129,7 +131,7 @@ sub search_list {
         {
             -type            => $args->{-type},
             -partial_listing => $partial_listing,
-            -search_type     => 'any',
+            -search_type     => $search_type,
             -order_by        => $args->{-order_by},
             -order_dir       => $args->{-order_dir},
 			#-start          => $args->{ -start }, 
@@ -686,6 +688,9 @@ sub print_out_list {
     my $self = shift;
 	my ($args) = @_; 
 	
+	use Data::Dumper; 
+	warn 'args!' . Dumper($args); 
+	
 	if(! exists($args->{-fh})){ 
 			$args->{-fh} =  \*STDOUT;
 	}
@@ -696,6 +701,11 @@ sub print_out_list {
 	if(! exists($args->{-query})){ 
 		$args->{-query} = undef; 
 	}	
+
+	#if(! exists($args->{-partial_listing})){ 
+	#	$args->{-partial_listing} = {}; 
+	#}	
+
 	if(! exists($args->{-show_timestamp_column})){ 
 		$args->{-show_timestamp_column} = 0; 
 	}	
@@ -711,10 +721,27 @@ sub print_out_list {
     my $count;
 	my $query = ''; 
 
-	if(defined($args->{-query})){
-	 
+    if(exists($args->{-partial_listing})){ 
+        
+        warn 'if(exists($args->{-partial_listing})){ '; 
+        
+        $query = $self->SQL_subscriber_profile_join_statement(  
+			{ 
+		    -partial_listing       => $args->{-partial_listing},
+	        -search_type           => 'all',
+			-type                  => $args->{-type},
+			-order_by              => $args->{-order_by},
+			-order_dir             => $args->{-order_dir},
+			-show_timestamp_column => $args->{-show_timestamp_column}, 
+			}
+		);  
+		
+    }
+	elsif(defined($args->{-query})){
+	    
+	    warn 'elsif(defined($args->{-query})){'; 
+	    
 		my $partial_listing = {};
-
 	    my $fields = $self->subscriber_fields;
 	    for (@$fields) {
 	        $partial_listing->{$_} = { like => $args->{ -query } };
@@ -736,6 +763,7 @@ sub print_out_list {
 		);  
 	}
 	else { 
+        warn "else { "; 
 	    $query =
 	      $self->SQL_subscriber_profile_join_statement(
 	        { 
