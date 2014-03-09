@@ -244,7 +244,7 @@ sub save_from_params {
     				field_name     => $field,
     				field_rangestart  => $q->param($field . '.rangestart'), 
     				field_rangeend    => $q->param($field . '.rangeend'),  
-				}
+				}); 
     		}
 	    }
 	    else { 	    
