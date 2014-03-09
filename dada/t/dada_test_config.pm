@@ -1,11 +1,11 @@
 package dada_test_config;
 
-use __Test_Config_Vars; 
 use Carp qw(croak carp); 
 #$Carp::Verbose = 1; 
-
+use lib '/Users/justin/Documents/DadaMail/git/dada-mail/dada/t'; 
 
 BEGIN { 
+    
     use FindBin '$Bin';
     use lib "$Bin/../ $Bin/";
 	use DADA::Config; 
@@ -32,6 +32,7 @@ $DADA::Config::PROGRAM_USAGE_LOG        = $DADA::Config::FILES . '/dada.txt';
 
 }
 
+use __Test_Config_Vars; 
 
 use lib "$Bin/../DADA/perllib";
 use Params::Validate ':all';
@@ -557,4 +558,4 @@ sub slurp {
 }
 
 
-
+1;
