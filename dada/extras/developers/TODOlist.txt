@@ -17,8 +17,8 @@ Also work on advanced search, and saving advanced search, pickable inview screen
 
 
 
-[ ] Provide a space to enter in the Profile Password
-[ ] Provide a, "rewrite/preserve" option for profile information 
+[x] Provide a space to enter in the Profile Password
+[x] Provide a, "rewrite/preserve" option for profile information 
 
 Todo for v6.9.0 
 
@@ -29,8 +29,6 @@ Todo for v6.9.0
         [ ] confirmed
         [ ] unconfirmed
         ?
-
-[ ] At the very lest, Profile Field, "Required" option
 
 [ ] Enable Private Mailing Lists 
 	[ ] No need for Unsubscription Links
