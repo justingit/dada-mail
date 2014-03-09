@@ -2193,47 +2193,112 @@ sub create_probable_missing_tables {
 }
 
 
-sub upgrade_tables { 
-	my $dbi_obj     = undef; 
-	my $dbh         = undef;
+sub upgrade_tables {
+    my $dbi_obj = undef;
+    my $dbh     = undef;
+
+    try {
+        require DADA::App::DBIHandle;
+        $dbi_obj = DADA::App::DBIHandle->new;
+        $dbh     = $dbi_obj->dbh_obj;
+    }
+    catch {
+        carp "error attempting to create dbi object: $_";
+        return 0;
+    };
+
+    foreach my $tablename (qw(clickthrough_url_log_table mass_mailing_event_log_table)) {
+
+        my $table_cols = table_cols( $dbh, $tablename );
+        if ( exists( $table_cols->{email} ) ) {
+
+            # good to go.
+        }
+        else {
+            my $query;
+            if ( $tablename eq 'clickthrough_url_log_table' ) {
+                $query = 'ALTER TABLE ' . $DADA::Config::SQL_PARAMS{$tablename} . ' ADD email VARCHAR(80)';
+            }
+            elsif ( $tablename eq 'mass_mailing_event_log_table' ) {
+                $query = 'ALTER TABLE ' . $DADA::Config::SQL_PARAMS{$tablename} . ' ADD email VARCHAR(80)';
+            }
+            else {
+                croak "unknown error!";
+            }
+            # warn 'Query: ' . $query;
+            my $sth = $dbh->do($query)
+              or croak $dbh->errstr;
+            undef $query;
+            undef $sth;
+        }
+    }
+
+    # dada_profile_fields_attributes
+    my $table_cols = table_cols( $dbh, 'profile_fields_attributes_table' );
+    if ( exists( $table_cols->{required} ) ) {
+
+        # good to go.
+    }
+    else {
+        my $query =
+            'ALTER TABLE '
+          . $DADA::Config::SQL_PARAMS{profile_fields_attributes_table}
+          . ' ADD required char(1) DEFAULT 0 NOT NULL';
+        my $sth = $dbh->do($query)
+          or croak $dbh->errstr;
+        undef $query;
+        undef $sth;
+    }
+    $table_cols;
+
+    # dada_subscribers
+    my $table_cols = table_cols( $dbh, 'subscriber_table' );
+    if ( exists( $table_cols->{timestamp} ) ) {
+
+        # good to go.
+    }
+    else {
+        my $query;
+        if (   $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql'
+            || $DADA::Config::SQL_PARAMS{dbtype} eq 'Pg' )
+        {
+            $query =
+                'ALTER TABLE '
+              . $DADA::Config::SQL_PARAMS{profile_fields_attributes_table}
+              . ' ADD timestamp TIMESTAMP DEFAULT NOW()';
+        }
+        elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
+            $query =
+                'ALTER TABLE '
+              . $DADA::Config::SQL_PARAMS{profile_fields_attributes_table}
+              . ' ADD timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP';
+        }
+        my $sth = $dbh->do($query)
+          or croak $dbh->errstr;
+        undef $query;
+        undef $sth;
+    }
+
+    return 1;
+}
+
+
+
+sub table_cols { 
+    my $dbh   = shift; 
+    my $table = shift; 
+    
+    my $sth = $dbh->prepare("SELECT * FROM " .  $DADA::Config::SQL_PARAMS{$table} ." WHERE 1=0");
+    $sth->execute();
+    my $fields = $sth->{NAME};
+    $sth->finish;
+    my $n_fields = {};
+    foreach(@$fields){
+    $n_fields->{$_} = 1;
+    }
 	
-	try { 
-		require DADA::App::DBIHandle; 
-		$dbi_obj = DADA::App::DBIHandle->new; 
-		$dbh = $dbi_obj->dbh_obj;
-	} catch { 
-		carp "error attempting to create dbi object: $_"; 
-		return 0; 
-	};
+	return $n_fields; 
 	
-	foreach my $tablename(qw(clickthrough_url_log_table mass_mailing_event_log_table)){ 
-		my $sth = $dbh->prepare("SELECT * FROM " .  $DADA::Config::SQL_PARAMS{$tablename} ." WHERE 1=0");
-	       $sth->execute();
-	   my $fields = $sth->{NAME};
-	   $sth->finish;
-	   my $n_fields = {};
-	   foreach(@$fields){
-		   $n_fields->{$_} = 1;
-	   }
-	   if(exists($n_fields->{email})) { 
-			# good to go. 
-	   }
-		else { 
-			my $query; 
-			if($tablename eq 'clickthrough_url_log_table') { 
-				$query = 'ALTER TABLE ' . $DADA::Config::SQL_PARAMS{$tablename} . ' ADD email VARCHAR(80)';
-			}
-			elsif($tablename eq 'mass_mailing_event_log_table'){ 
-				$query = 'ALTER TABLE ' . $DADA::Config::SQL_PARAMS{$tablename} . ' ADD email VARCHAR(80)'; 
-			}
-			else { 
-				croak "unknown error!"; 
-			} 
-			warn 'Query: ' . $query; 
-			my $sth2 = $dbh->do($query)
-				or croak $dbh->errstr; 	
-		}
-	}
 }
 
 =pod
