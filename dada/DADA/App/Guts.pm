@@ -2264,7 +2264,7 @@ sub upgrade_tables {
         {
             $query =
                 'ALTER TABLE '
-              . $DADA::Config::SQL_PARAMS{profile_fields_attributes_table}
+              . $DADA::Config::SQL_PARAMS{subscriber_table}
               . ' ADD timestamp TIMESTAMP DEFAULT NOW()';
         }
         elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
