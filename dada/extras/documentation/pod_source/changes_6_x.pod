@@ -24,11 +24,15 @@ Options on how a mailing list is operated are already complex, and this feature 
 
 =head3 Subscriber Timestamp
 
-Subscriber information now includes the B<Timestamp> of when a subscription was made.
+Subscriber information now includes the B<Timestamp> of when a subscription was made. 
 
 =head4 To Do
 
 Since the date of subscription wasn't recorded before support was added, any subscriber added before this release will not have this data available. There's currently no easy way to add in this data, except to edit the SQL table directly. (Question is then, is there an easy way to add this type of information in bulk?)
+
+=head3 Default order for Membership >> View Screen, Show/Hide Timestamp Column
+
+New options in the, B<Membership >> View> screen in the list control panel allow you to set which column to sort subscribers by default, as well as if the Subscription Date/timestamp column should be shown. 
 
 =head3 Advanced Search/Partial Sending List Options 
 
@@ -69,6 +73,28 @@ Dada Mail now has the option to allow you to mass update the Profile Fields data
 Along with Profile Fields, Dada Mail can now allow you to set a Profile Password, when importing subscribers. This Profile Password allows your user to log into their own Profile, and make changes to their mailing list subscriptions. Profiles are only made, if a Profile Password is created.
 
 =head2 Changes 7.0.0
+
+=head3 Config.pm default variables with HTML have been removed, templated out
+
+HTML that can be edited in the B<Appearance and Templates » HTML Screen Templates> list control panel had their default values stored in the Config.pm file. 
+
+This hinders customization and internationalization, testing, as well as adding extra bulk to the already-too large Config.pm file. The values of these variables have now been templated out into their own files                        located in the, I<dada/templates/list> directory
+
+=head4 TODO
+
+Create a way to edit the default, global templates, as well as a way to keep these changes between versions. 
+
+=head3 Config.pm default variables of email messages have been removed, templated out
+
+Email messages, that can be edited in the, B<Appearance and Templates >> Email Message Templates> screen (as well as other email messages, that can be customized in various other places) had their default values stored in the Config.pm file. 
+
+This hinders customization and internationalization, testing, as well as adding extra bulk to the already-too large Config.pm file. The values of these variables have now been templated out into their own files located in the, I<dada/templates/email> directory. 
+
+The removal of these variables (as well as HTML screens) has removed over 1,100 lines from the Config.pm file. 
+
+=head4 TODO
+
+Create a way to edit the default, global templates, as well as a way to keep these changes between versions. 
 
 =head3 Database Schema Changes
 
