@@ -6,15 +6,15 @@
 
 =head3 Private Mailing Lists
 
+Previous versions of Dada Mail were specifically designed to run B<Public> Mailing Lists: mailing lists where usually anyone can subscribe to, and most I<definitely> everyone can remove themselves from (unsubscribe). 
+
+For public mailing lists and marketing purposes, this works just great, but many users want to utilize the app for a different purpose: utilizing Dada Mail's mailing list organizational and mass mailing features for a private list of contacts: a group of colleagues, or an internal company mailing list. In this role, Dada Mail hasn't fared very well, as List Owners are frustrated, having to constantly deal with list member removing themselves (often by accident). The tools to run a private mailing list just weren't there. 
+
 Dada Mail now has support for B<Private Mailing Lists>. A private mailing list 
 is a mailing list used in a closed, internal setting; not one used publically 
 for marketing purposes. 
 
-B<Example:> a group of colleagues that want to discuss a matter, and do not want this discussion to be public. 
-
-An example of a B<public mailing list> would be a mailing list that anyone is free to subscribe to (and unsubscribe from), used for marketing purposes. 
-
-When a mailing list is set to, B<Private>, unsubscription links are not required (as they are in a public mailing list), but any unsubscription links will be turned into a link to B<Request an Unsubscription>. This request will go to the List Owner, who will have the final say on who is removed from the mailing list. 
+When a mailing list is set to, B<Private>, unsubscription links are not required (as they are in a public mailing list), but any unsubscription links will be turned into a link to B<Request Removal>. This request will go to the List Owner, who will have the final say on who is removed from the mailing list. 
 
 All other options for a mailing list are still available for a Private List.
 
@@ -22,9 +22,13 @@ All other options for a mailing list are still available for a Private List.
 
 Options on how a mailing list is operated are already complex, and this feature just makes things I<more> complex. Options need to be organized better, and more self-explanitory, or users will get confused and ultimately use the features incorreclty. 
 
-=head3 Subscriber Timestamp
+=head3 Abuse Reporting
 
-Subscriber information now includes the B<Timestamp> of when a subscription was made. 
+Dada Mail now has the ability to allow users to report abuse of your mailing list. These abuse reports will be emailed to the List Owner, logged, and reported through the Tracker plugin. 
+
+=head3 Subscriber Subscription Date saved in a Timestamp
+
+Subscriber information now includes the Date of Subscription in a the B<Timestamp> column. 
 
 =head4 To Do
 
@@ -36,7 +40,7 @@ New options in the, B<Membership >> View> screen in the list control panel allow
 
 =head3 Advanced Search/Partial Sending List Options 
 
-The B<View List> screen in Dada Mail's list control panel already has a simple search, to find what you're looking for in your Subscribers, but now also includes an, B<Advanced Search>, allowing you to search more specifically for exactly what you're looking for. You may now search by email address, any profile field independently, as well as between subscription date ranges. 
+The B<View List> screen in Dada Mail's list control panel already has a simple search to find what you're looking for withing your various mailing list members. This releae of Dada Mail also includes an B<Advanced Search>, allowing you to search more specifically for exactly what you're looking for. You may now search by email address, any profile field independently, as well as between subscription date ranges. 
 
 Parital sending works the same way and the ability to send to members who have been subscribed between a range of two dates is also available. 
 
@@ -44,9 +48,6 @@ Parital sending works the same way and the ability to send to members who have b
 
 There should be an easy way to go from searching through your subscribers, to sending a mass mailing out to the results of your search. Searching should also be saveable, basically creating dynamic lists. 
 
-=head3 Abuse Reporting
-
-Dada Mail now has the ability to allow users to report abuse of your mailing list. These abuse reports will be emailed to the List Owner, logged, and reported through the Tracker plugin. 
 
 =head3 Required Profile Fields
 
@@ -76,7 +77,7 @@ Along with Profile Fields, Dada Mail can now allow you to set a Profile Password
 
 =head3 Config.pm default variables with HTML have been removed, templated out
 
-HTML that can be edited in the B<Appearance and Templates » HTML Screen Templates> list control panel had their default values stored in the Config.pm file. 
+HTML that can be edited in the B<Appearance and Templates >> HTML Screen Templates> list control panel had their default values stored in the Config.pm file. 
 
 This hinders customization and internationalization, testing, as well as adding extra bulk to the already-too large Config.pm file. The values of these variables have now been templated out into their own files                        located in the, I<dada/templates/list> directory
 
@@ -98,7 +99,7 @@ Create a way to edit the default, global templates, as well as a way to keep the
 
 =head3 Database Schema Changes
 
-There are slight changes to the database schema for Dada Mail. Both the, C<dada_subscribers> and, C<dada_profile_fields_attributes> have new columns. Dada Mail should be able to modify your tables to the correct schema, but we do suggest backing up your database, before upgrading. 
+There are slight changes to the database schema for Dada Mail. Both the, C<dada_subscribers> and, C<dada_profile_fields_attributes> have new columns. Dada Mail should be able to modify your tables to the correct schema, but we do suggest backing up your database before upgrading. 
 
 =head3 PlainText Backend Removed (Probably)
 
