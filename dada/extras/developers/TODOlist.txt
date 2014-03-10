@@ -17,6 +17,10 @@ Also work on advanced search, and saving advanced search, pickable inview screen
 
 
 
+[ ] All the (new) stuff in the view list screen needs to have the ability to be turned on/off by root for the List...
+[ ] It would be nice to be able to have a custom error message ready, for when the field is left blank. 
+[ ] Explain that hidden fields that are required, are not required by users, who have no way to fill them out! 
+
 [x] Provide a space to enter in the Profile Password
 [x] Provide a, "rewrite/preserve" option for profile information 
 

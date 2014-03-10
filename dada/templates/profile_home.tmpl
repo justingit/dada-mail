@@ -138,7 +138,7 @@ function confirm_profile_removal(form_name) {
 		<legend>
 			Subscriber Profile Fields
 		</legend> 
-			<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+			<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="membership_profile_fields"> 
 				<input type="hidden" name="f"        value="profile" /> 
 				<input type="hidden" name="process"  value="edit_subscriber_fields" /> 
 
@@ -155,7 +155,12 @@ function confirm_profile_removal(form_name) {
 				<!-- /tmpl_if -->
 		
 		        </label>
-		        <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->"  />
+		        <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->" <!-- tmpl_if required -->required<!-- /tmpl_if --> />
+		        <!-- tmpl_if required -->
+		            <span class="error">
+		                * Required
+		            </span>
+		        <!-- /tmpl_if -->
 		        </p>
 
 		    <!-- /tmpl_loop -->

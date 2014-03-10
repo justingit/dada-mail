@@ -123,7 +123,6 @@ $(document).ready(function() {
 		}
 
 		if ($("#profile_login").length) {
-		
 			$("#profile_register").validate({
 				debug: false, 
 				rules: {
@@ -155,7 +154,6 @@ $(document).ready(function() {
 		}
 	
 		if ($("#profile_reset_password").length) {
-	
 			$("#profile_reset_password").validate({
 				debug: false, 
 				rules: {
@@ -172,6 +170,10 @@ $(document).ready(function() {
 				}
 			}); 
 		}
+	}
+
+	if ($("#membership_profile_fields").length) {
+		$("#membership_profile_fields").validate(); 
 	}
 
 });

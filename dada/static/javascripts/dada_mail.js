@@ -576,8 +576,16 @@ $(document).ready(function() {
 	});
 
 	// Membership >> user@example.com
+	
+	if($("#membership_profile_fields").length) { 
+		$("#membership_profile_fields").validate();
+	}
 	$(".change_profile_password").live("click", function(event) {
 		show_change_profile_password_form();
+		event.preventDefault();
+	});
+	$(".cancel_change_profile_password").live("click", function(event) {
+		cancel_change_profile_password();
 		event.preventDefault();
 	});
 
@@ -1187,10 +1195,14 @@ function view_list_viewport(initial) {
 function set_up_advanced_search_form(){ 
 	console.log('set_up_advanced_search_form ' ); 
 	console.log('advanced_query looks like: ' + $("#advanced_query").val());
-	//alert($("#advanced_query").length); 
-	if($("#advanced_query").length  > 1) { 
+	console.log('advanced_query length' + $("#advanced_query").length); 
+	if($("#advanced_query").length) { 
+		console.log("looks like we've got an advanced query. Time to unserialize!"); 
 		$("#advanced_list_search_form").unserialize($("#advanced_query").val());
 	 }
+	 //else { 
+	//	console.log("No advanced search form?!"); 	
+	//}
 }
 
 function turn_page(page_to_turn_to) {
@@ -1558,6 +1570,11 @@ function show_change_profile_password_form() {
 	$("#change_profile_password_button").hide('blind');
 	$("#change_profile_password_form").show('blind');
 }
+function cancel_change_profile_password() {
+	$("#change_profile_password_form").hide('blind');
+	$("#change_profile_password_button").show('blind');
+}
+
 
 // Membership >> Invite 
 

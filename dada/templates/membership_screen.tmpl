@@ -306,7 +306,7 @@
 
 				<!-- /tmpl_unless -->
 
-				<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+				<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="membership_profile_fields">
 
 				<!-- tmpl_if root_login --> 
 					 <input type="hidden" name="email"   value="<!-- tmpl_var email escape="HTML" -->" />
@@ -333,10 +333,15 @@
 					</p>
 					<!-- tmpl_loop fields --> 
 					    <p>
-					     <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
-					      <!-- tmpl_var label escape=HTML --> (<!-- tmpl_var name escape=HTML -->): 
-					     </label>
-					    <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->" />
+    					     <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
+    					      <!-- tmpl_var label escape=HTML --> (<!-- tmpl_var name escape=HTML -->): 
+    					     </label>
+    					    <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->" <!-- tmpl_if required -->required<!-- /tmpl_if -->/>
+					        <!-- tmpl_if required -->
+					        <span class="error">
+					            * Required
+					        </span>
+					    <!-- /tmpl_if -->
 					    </p>
 					<!--/tmpl_loop-->
 
@@ -361,7 +366,7 @@
 					<!-- tmpl_if root_login --> 
 
 						<div id="change_profile_password_button">
-							<input type="button" value="Click to Change Profile Password..." class="cautionary change_profile_password" />
+							<input type="button" value="Click to Change Profile Password..." class="cautionary change_profile_password" /> 
 						</div> 
 						<div id="change_profile_password_form" style="display:none">
 							<form name="change_profile_password" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
@@ -372,6 +377,8 @@
 								<p>
 									<input type="password" name="profile_password" value="" />
 									<input type="submit" value="Change Profile Password" />
+									or <a href="#" class="cancel_change_profile_password">cancel</a>
+        							
 							</form> 
 						</div>	
 					</fieldset> 

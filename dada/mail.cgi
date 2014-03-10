@@ -4052,9 +4052,10 @@ sub membership {
             push(
                 @$fields,
                 {
-                    name  => $field,
-                    value => $subscriber_info->{$field},
-                    label => $fields_attr->{$field}->{label},
+                    name     => $field,
+                    value    => $subscriber_info->{$field},
+                    label    => $fields_attr->{$field}->{label},
+                    required => $fields_attr->{$field}->{required},
                 }
             );
         }
@@ -5183,7 +5184,8 @@ sub add_email {
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     require DADA::ProfileFieldsManager;
-    my $pfm = DADA::ProfileFieldsManager->new;
+    my $pfm        = DADA::ProfileFieldsManager->new;
+    my $field_atts = $pfm->get_all_field_attributes;
 
     my $lh = DADA::MailingList::Subscribers->new(
         {
@@ -5290,7 +5292,12 @@ sub add_email {
         my $field_names = [];
        # if($type eq 'list') { 
             for (@$subscriber_fields) {
-                push( @$field_names, { name => $_ } );
+                push( @$field_names, 
+                    
+                    { 
+                        name => $_,
+                        label => $field_atts->{$_}->{label},
+                    } );
             }
     #    }
         
@@ -11709,9 +11716,10 @@ sub profile {
                 push(
                     @$fields,
                     {
-                        name  => $field,
-                        label => $field_attr->{$field}->{label},
-                        value => $email_fields->{$field},
+                        name     => $field,
+                        label    => $field_attr->{$field}->{label},
+                        value    => $email_fields->{$field},
+                        required => $field_attr->{$field}->{required},
                     }
                 );
             }

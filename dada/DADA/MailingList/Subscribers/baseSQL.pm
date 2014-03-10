@@ -610,8 +610,8 @@ sub SQL_subscriber_profile_join_statement {
 		$query .= ($args->{ -start } * $args->{ '-length' });		
 	}
 	
-    warn 'QUERY: ' . $query; 
-#      if $t;
+    warn 'QUERY: ' . $query
+        if $t;
 
     return $query;
 }
