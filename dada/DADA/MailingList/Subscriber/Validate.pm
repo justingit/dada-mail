@@ -55,6 +55,10 @@ sub subscription_check {
     if(! exists($args->{-skip})) { 
         $args->{-skip} = [];
     }
+    if(! exists($args->{-mode})) { 
+        $args->{-mode} = 'user';
+    }
+    
     my %skip;
     for(@{ $args->{-skip} }) { 
         $skip{$_} = 1;
@@ -216,14 +220,24 @@ sub subscription_check {
                 if($dpf_att->{$field_name}->{required} == 1){ 
                     if(exists($args->{-fields}->{$field_name})){ 
                         if(defined($args->{-fields}->{$field_name}) && $args->{-fields}->{$field_name} ne ""){ 
-                            #... 
+                            #... Well, that's good! 
+                        }
+                        else { 
+                            if ($args->{-mode} eq 'user' &&  $field_name =~ m/^$DADA::Config::HIDDEN_SUBSCRIBER_FIELDS_PREFIX/) {
+                                # Well, then that's OK too: users can't fill in hidden fields
+                            }
+                            else { 
+                                $field_name_status = 0; 
+                            }
+                        }
+                    }
+                    else { 
+                        if ($args->{-mode} eq 'user' &&  $field_name =~ m/^$DADA::Config::HIDDEN_SUBSCRIBER_FIELDS_PREFIX/) {
+                            # Well, then that's OK too: users can't fill in hidden fields
                         }
                         else { 
                             $field_name_status = 0; 
                         }
-                    }
-                    else { 
-                        $field_name_status = 0; 
                     }
                 }
                 if($field_name_status == 0){ 

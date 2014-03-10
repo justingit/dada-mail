@@ -2071,6 +2071,56 @@ ok($lh->remove_all_subscribers( { -type => 'list' } ) == 1000);
 
 
 
+SKIP: {
+
+    skip
+"Multiple Subscriber Profile Fields is not supported with this current backend."
+      if $lh->can_have_subscriber_fields == 0;
+      
+      
+      my $shh = $lh->add_subscriber_field( 
+          { 
+              -field    => '_new_field', 
+              -label    => "sssssssh!!!!",
+              -required => 1,
+          } 
+        );
+        ok( $shh == 1, "adding a new field is successful" );
+        
+        undef $lh; 
+        my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+        
+        my $good_address = 'ssh.user@example.com'; 
+        # no -mode
+        ( $status, $details ) =  $lh->subscription_check( { -email => $good_address, } );
+        ok( $status == 1,                  "Status is 1" );
+        ok( $details->{invalid_email} != 1, "Address seen as valid" );
+        
+        # explicit -mode, 'user'
+        ( $status, $details ) =  $lh->subscription_check( { -email => $good_address, -mode => 'user'} );
+        ok( $status == 1,                  "Status is 1" );
+        ok( $details->{invalid_email} != 1, "Address seen as valid" );
+
+        # explicit -mode, 'admin'
+        ( $status, $details ) =  $lh->subscription_check( { -email => $good_address, -mode => 'admin'} );
+        
+        #use Data::Dumper; 
+        #diag Dumper([$status, $details]); 
+        ok( $status == 0,                  "Status is 0" );
+        ok( $details->{invalid_profile_fields}->{_new_field}->{required} == 1, "Didn't pass validation!" );
+        undef($good_address); 
+      
+      
+}; 
+
+
+
+
+
+
+
+
+
 dada_test_config::remove_test_list;
 dada_test_config::wipe_out;
 
