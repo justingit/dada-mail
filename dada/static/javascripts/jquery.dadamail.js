@@ -128,7 +128,7 @@
 					console.log('data:' + JSON.stringify(data)); 
 					var html = ''; 
 					if(data.status === 0){
-						consold.log('Errors: ' + JSON.stringify(errors)); 
+						console.log('Errors: ' + JSON.stringify(data.errors)); 
 						$.each(data.error_descriptions, function(index, value) {
 							html += value;
 						});
