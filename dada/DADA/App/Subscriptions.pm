@@ -1204,30 +1204,49 @@ sub subscription_approval_step {
     require DADA::App::Subscriptions::ConfirmationTokens;
     my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
     $ct->remove_by_token( $q->param('token') );
+     
 
-    require DADA::App::Messages;
-    DADA::App::Messages::send_generic_email(
+    my $approve_token = $ct->save(
         {
-            -list    => $ls->param('list'),
-            -headers => {
-                To => '"'
-                  . escape_for_sending( $ls->param('list_name') ) . '" <'
-                  . $ls->param('list_owner_email') . '>',
-                Subject => $ls->param('subscription_approval_request_message_subject'),
+            -email => $email,
+            -data  => {
+                list        =>  $ls->param('list'),
+                type        => 'list',
+                flavor      => 'sub_request_approve',
+                remote_addr => $ENV{REMOTE_ADDR},
             },
-            -body        => $ls->param('subscription_approval_request_message'),
-            -tmpl_params => {
-                -list_settings_vars_param => { -list => $ls->param('list') },
-                -subscriber_vars_param    => {
-                    -list  => $ls->param('list'),
-                    -email => $email,
-                    -type  => 'sub_request_list'
-                },
-                -vars => {},
-            },
-            -test => $self->test,
+            -remove_previous => 1,
         }
     );
+
+    my $deny_token = $ct->save(
+        {
+            -email => $email,
+            -data  => {
+                list        => $ls->param('list'),
+                type        => 'list',
+                flavor      => 'sub_request_deny',
+                remote_addr => $ENV{REMOTE_ADDR},
+            },
+            -remove_previous => 1,
+        }
+    );
+
+    
+    require DADA::App::Messages;
+    DADA::App::Messages::subscription_approval_request_message(
+        {
+            -email => $email,
+            -ls_obj => $ls,
+            -test                               => $self->test,
+            -vars   => { 
+                list_subscribe_request_approve_link => $DADA::Config::S_PROGRAM_URL . '/t/' . $approve_token . '/',
+                list_subscribe_request_deny_link    => $DADA::Config::S_PROGRAM_URL . '/t/' . $deny_token . '/',
+            }, 
+            
+        }
+    );
+ 
 
     # There's no, "Well, hey! You've already done that!" check here. Sigh.
     my $r = {
