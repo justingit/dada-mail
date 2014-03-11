@@ -38,7 +38,8 @@ require Exporter;
   delete_list_info
   check_if_list_exists
   available_lists
- fisher_yates_shuffle
+  num_file_lines
+  fisher_yates_shuffle
   archive_message
   js_enc
   setup_list
@@ -891,6 +892,19 @@ sub available_lists {
 		}		
 	}
 }
+
+
+sub num_file_lines { 
+    my $filename = shift; 
+    my $count = 0;
+    open my($fh), '<:raw', $filename or die "Can't open $filename: $!";
+    while( <$fh> ) { $count++; }
+    close($filename); 
+    return $count; 
+}
+
+
+
 
 sub fisher_yates_shuffle {
     my $array = shift;

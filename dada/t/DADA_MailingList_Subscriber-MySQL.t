@@ -28,7 +28,7 @@ SKIP: {
     
     require DADA::Config;
     
-    open(FILE, "t/DADA_MailingList_Subscribers.pl") or die $!; 
+    open(FILE, "t/DADA_MailingList_Subscriber.pl") or die $!; 
     
     {
         local $/ = undef; 

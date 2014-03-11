@@ -6,16 +6,25 @@ use Carp qw(carp croak);
 use DADA::Config;
 use DADA::App::Guts;
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_baseSQL};
+my $t = 1; # $DADA::Config::DEBUG_TRACE->{DADA_MailingList_baseSQL};
 
 
 
 
 sub add {
+	
+	$t = 1; 
 		
     my $class = shift;
     my ($args) = @_;
 		
+	if($t){ 
+	    
+	    warn "Method: add()"; 
+	    require Data::Dumper; 
+	    warn "args: " . Data::Dumper::Dumper($args); 
+	}
+	
 	if(!exists($args->{-log_it})){ 
 		$args->{-log_it} = 1; 
 	}
@@ -23,6 +32,8 @@ sub add {
 	my $lh = undef; 
 	
 	if(exists($args->{-dpfm_obj})){ 
+		warn "reusing dpfm_obj for lh obj"
+		    if $t;
 		$lh =
 	      DADA::MailingList::Subscribers->new( 
 			{ 
@@ -30,9 +41,11 @@ sub add {
 				-dpfm_obj => $args->{-dpfm_obj},
 			} 
 		);
-		
+	
 	}
 	else { 
+	    warn "creating new lh obj"
+	     if $t; 
 		$lh =
 	      DADA::MailingList::Subscribers->new( { -list => $args->{ -list } } );	
 	}
@@ -58,7 +71,14 @@ sub add {
 			$args->{ -dupe_check }->{-on_dupe} = 'ignore_add';
 	}
 
+
+    if($t){ 
+        warn "args after processing: " . Data::Dumper::Dumper($args);    
+    }
 	if($args->{ -dupe_check }->{-enable} == 1){ 
+	    warn '$args->{ -dupe_check }->{-enable}:' . $args->{ -dupe_check }->{-enable}
+	     if $t; 
+	    
 		if($lh->check_for_double_email(
 	        -Email => $args->{ -email },
 	        -Type  => $args->{ -type }
@@ -67,6 +87,7 @@ sub add {
 				croak 'attempt to to add: "' . $args->{ -email } . '" to list: "' . $args->{ -list } . '.' . $args->{ -type } . '" (email already subcribed)'; 
 			}
 			elsif($args->{ -dupe_check }->{-on_dupe} eq 'ignore_add'){ 
+				carp 'attempt to to add: "' . $args->{ -email } . '" to list: "' . $args->{ -list } . '.' . $args->{ -type } . '" (email already subcribed) - ignoring.'; 
 				return undef; 
 			}
 			else { 
@@ -84,6 +105,7 @@ sub add {
 
     warn 'Query: ' . $query
       if $t;
+      
 	require DADA::App::DBIHandle;
 	my $dbi_obj = DADA::App::DBIHandle->new;
 	my $dbh     = $dbi_obj->dbh_obj;
@@ -108,6 +130,8 @@ sub add {
     	##################
     	# Profile Fields #
     	##########################################################################
+    	warn 'Profile Fields' 
+    	    if $t; 
     	if ( exists $args->{ -fields } && keys %{$args->{ -fields }}) {
     		my $fields = undef; 
 		
@@ -120,38 +144,57 @@ sub add {
     		}
     		else {
     			$fields = DADA::Profile::Fields->new;
-    		}		
-    		$fields->insert(
-    			{
-    				-email     => $args->{  -email },
-    				-fields    => $args->{  -fields },
-    				-confirmed => $args->{ -confirmed },
-    				-mode      => $args->{ -fields_options }->{-mode}, 
-    			}
-    		); 
+    		}
+    		my $insert_args = {
+    		    -email     => $args->{  -email },
+				-fields    => $args->{  -fields },
+				-confirmed => $args->{ -confirmed },
+				-mode      => $args->{ -fields_options }->{-mode}, 
+    		};
+    		warn 'Inserting fields with args: ' . Data::Dumper::Dumper($insert_args)
+    		    if $t;  
+    		$fields->insert($insert_args); 
+    	}
+    	else { 
+    	    warn 'Not doing anything w/Profile Fields'
+    	        if $t;
     	}
     	##########################################################################
 	
     	###########
     	# Profile #
     	##########################################################################
+    	warn 'Profiles'
+    	    if $t; 
     	# We only do this, if a -profile param is sent. 
     	if ( exists( $args->{ -profile } ) && keys ( %{$args->{ -profile }}) ) {
     	    # And ONLY if we get a password: 
     	    if($args->{ -profile }->{-password}) { 
+    	        warn 'A Profile Password has been passed'
+    	         if $t; 
         	    require DADA::Profile; 
         	    my $prof = DADA::Profile->new({-email => $args->{-email}});
         		if($prof){
+        		    warn '$prof is defined'
+        		        if $t; 
         			if($prof->exists){
+                        warn 'Profile for ' . $args->{-email} . ' exists'
+            		        if $t; 
+            		    warn '$args->{ -profile }->{-mode}: ' . $args->{ -profile }->{-mode}
+            		        if $t; 
+            		        
         			    if($args->{ -profile }->{-mode} eq 'writeover') { 
             			    # Or, update, I guess. 
-                            $prof->remove();  
-                            $prof->insert(
-                                {
-                                    -password  => $args->{ -profile }->{ -password },
-                                    -activated => 1,
-                                }
-                            );              
+            			    warn 'removing Profile' 
+            			        if $t; 
+                            $prof->remove();
+                            my $insert_profile_args = {
+                                -password  => $args->{ -profile }->{ -password },
+                                -activated => 1,
+                            };
+                            warn 'inserting new Profile with args:' . Data::Dumper::Dumper($insert_profile_args)
+                             if $t; 
+                            $prof->insert($insert_profile_args);              
                         }
                         elsif($args->{ -profile }->{-mode} eq 'preserve_if_defined') { 
                             # ... then, nothin'
@@ -159,12 +202,12 @@ sub add {
         			}  
         			else { 
         			    # Then, we make a new one up! 
-                        $prof->insert(
-                            {
-                                -password  => $args->{ -profile }->{ -password },
-                                -activated => 1,
-                            }
-                        );
+        			    my $insert_profile_args = {
+                            -password  => $args->{ -profile }->{ -password },
+                            -activated => 1,
+        			    }; 
+        			    warn 'creating a new Profile: ' . Data::Dumper::Dumper($insert_profile_args); 
+                        $prof->insert($insert_profile_args);
         			}
         		}
         	}
@@ -173,20 +216,19 @@ sub add {
     
     }
 
-    my $added = DADA::MailingList::Subscriber->new(
-        {
-            -list  => $args->{ -list },
-            -email => $args->{ -email },
-            -type  => $args->{ -type },
-			(
-				exists($args->{-dpfm_obj})
-			) ? (
-				-dpfm_obj => $args->{-dpfm_obj},
-			) : 
-			(
-			)
-        }
-    );
+    my $added_args = { 
+        -list  => $args->{ -list },
+        -email => $args->{ -email },
+        -type  => $args->{ -type },
+    };
+    if(exists($args->{-dpfm_obj})) {
+		$added_args->{-dpfm_obj} = $args->{-dpfm_obj};
+	}
+
+    warn 'Subscriber add args: ' . Data::Dumper::Dumper($added_args)
+     if $t; 
+    
+    my $added = DADA::MailingList::Subscriber->new($added_args);
 	if($args->{-log_it} == 1) { 
 	    if ( $DADA::Config::LOG{subscriptions} == 1 ) {
 	        $added->{'log'}->mj_log( 
@@ -196,8 +238,8 @@ sub add {
 			);
 	    }
 	}
-
-
+	
+	$t = 0; 
 	
     return $added;
 

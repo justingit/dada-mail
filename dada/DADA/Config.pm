@@ -1369,6 +1369,11 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
     view_list_show_timestamp_col => 1, 
     view_list_order_by           => 'email', 
     view_list_order_by_direction => 'ASC', 
+
+    # add list prefs
+    use_add_list_import_limit               => 1, 
+    add_list_import_limit                   => 1000, 
+    add_verify_show_advanced_import_options => 0, 
     
     # archive prefs
 

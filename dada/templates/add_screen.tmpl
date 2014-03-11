@@ -2,6 +2,9 @@
 
 <!-- tmpl_set name="title" value="Membership &#187; Invite/Add" -->
 
+<!-- tmpl_set name="load_linedtextarea" value="1" --> 
+
+
 <div id="screentitle"> 
 	<div id="screentitlepadding">
 		 Membership (<!-- tmpl_var type_title -->)
@@ -98,6 +101,32 @@
 <!-- /tmpl_if --> 
 
 
+<!-- tmpl_if list_settings.use_add_list_import_limit --> 
+    <div class="clearskiesbox">
+        <p>
+            There is a set limit of 
+            <strong>
+                <!-- tmpl_var list_settings.add_list_import_limit -->
+            </strong>
+            addresses you may import at one time.
+        </p>
+    </div> 
+<!-- /tmpl_if --> 
+
+<!-- tmpl_if expr="(type eq 'list')" -->
+    <!-- tmpl_unless list_settings.enable_mass_subscribe -->
+        <div class="clearskiesbox">
+            <p>
+                Adding Subscribers via the List Control Panel has been <strong>disabled.</strong>
+            </p>
+            <p>
+                You may still Invite Subscribers to join. 
+            </p>
+        </div> 
+    <!-- /tmpl_unless --> 
+<!-- /tmpl_if -->
+
+
 
 	<!-- tmpl_include list_type_switch_widget.tmpl -->
 	
@@ -107,12 +136,112 @@
 
 
 
+
+<!-- tmpl_if expr="(type eq 'list')" -->
+    <p><strong>CSV Format to use for Import:</strong></p>
+    <p><code>Email Address<!-- tmpl_loop fields -->, <!-- tmpl_var name --><!-- /tmpl_loop --><!-- tmpl_if expr="(type eq 'list')" -->, Profile Password<!-- /tmpl_if --></code></p>
+<!-- /tmpl_if --> 
+
+
+
+
+	<fieldset> 
+		<legend>Upload Your Addresses:</legend>
+
+
+        <p>	    
+         <label for="new_email_file">
+         Upload
+         </label>
+         a text file <!-- tmpl_if expr="(type eq 'list')" --> (<strong><!-- tmpl_var HTML_CHARSET --> encoded</strong>) in the <strong>CSV format</strong> mentioned above<!-- /tmpl_if -->.
+        </p>
+
+
+
+		<style>
+		.ui-progressbar .ui-progressbar-value { background-image: url(<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/jquery.ui/pbar-ani.gif); }
+		</style>
+		<div id="show_progress" class="clearskiesbox">
+			<div id="progressbarWrapper" style="width:500px;height:22px;margin-left:auto;margin-right:auto" class="ui-widget-default">
+			<div id="progressbar" style="height:100%;"></div>
+			</div>
+			<div id="upload_status"></div>
+		</div>
+
+
+	<form id="fileupload" enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+		
+
+
+	<input type="hidden" name="f"    id="f" value="add" />
+	<input type="hidden" name="type" value="<!-- tmpl_var type -->" />
+	<input type="file"   name="new_email_file" id="new_email_file" />
+	<input type="hidden" name="process" value="1" />
+	<input type="hidden" name="rand_string" id="rand_string" value="<!-- tmpl_var rand_string -->" />
+	<input type="hidden" name="method" value="via_file_upload" /> 
+	
+
+	
+	
+	 <div class="buttonfloat">
+	  <input type="reset"  class="cautionary" value="Clear Changes" />
+	  <input type="submit" value="Verify Addresses..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing"<!-- /tmpl_if --> />
+	 </div>
+	 <div class="floatclear"></div>
+	</form>
+
+
+	</fieldset> 
+	
+
+
+
+
+	<fieldset> 
+		<legend>Paste Your Addresses Below:</legend>
+
+
+
+        <!-- tmpl_if expr="(type eq 'list')" -->        
+	        <p>Or, 
+    	            Enter addresses
+    	      <!-- tmpl_if expr="(type eq 'list')" --> (<strong><!-- tmpl_var HTML_CHARSET --> encoded</strong>) in the <strong>CSV format</strong> mentioned above<!-- /tmpl_if -->.
+    	  </p> 
+        <!-- tmpl_else --> 
+            <p>
+    	        <label for="new_emails">
+    	                Enter
+    	        </label> addresses, (one address per line)
+	        </p>
+        <!-- /tmpl_if --> 
+
+
+	<form name="paste_addresses"  action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+	 <input type="hidden" name="f"    id="f" value="add" />
+	 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
+	 <input type="hidden" name="process" value="1" />
+	 <input type="hidden" name="rand_string" id="rand_string" value="<!-- tmpl_var rand_string -->" />
+	 <input type="hidden" name="method" value="via_textarea" /> 
+
+<p>
+ <textarea name="new_emails" id="new_emails" rows="10" cols="40" style="padding:0;width:90%"></textarea>
+</p>
+
+
+
+	 <div class="buttonfloat">
+	  <input type="reset"  class="cautionary" value="Clear Changes" />
+	  <input type="submit"                    value="Verify Addresses..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing"<!-- /tmpl_if -->/>
+	 </div>
+	 <div class="floatclear"></div>
+	</form>
+
+	</fieldset> 
+    
+    
 	<fieldset> 
 	
 		<legend>
-			 <a href="#" class="toggleDivs" data-target="add_one">
-			+/- 
-		</a>
 		<!-- tmpl_if expr="(type eq 'list')" -->
 			Invite
 			<!-- tmpl_if list_settings.enable_mass_subscribe -->
@@ -122,8 +251,17 @@
 			Add
 		<!-- /tmpl_if -->
 	
-		 Just One Address
+		 Just One Address:
 		</legend>
+		
+		
+		<p>
+            Or, just <strong>enter</strong> one address, below:
+        </p>
+
+        
+        
+        
 	<div id="add_one"> 
 	
 		<form name="via_add_one"  action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
@@ -174,120 +312,6 @@
 	</div> 
 
 	</fieldset> 
-
-	<fieldset style="background:#e6e6e6">
-		<legend>
-		
-			<!-- tmpl_if expr="(type eq 'list')" -->
-				Invite
-				<!-- tmpl_if list_settings.enable_mass_subscribe -->
-					/ Subscribe
-				<!-- /tmpl_if -->
-			<!-- tmpl_else --> 
-				Add
-			<!-- /tmpl_if -->
-		
-			 a Bunch of Addresses</legend>
-
-        <!-- tmpl_if expr="(type eq 'list')" -->
-        
-	        <p>
-    	      <label for="new_emails">
-    	            Enter
-    	     </label> 
-    	     new subscribers (one member address and Profile Fields, Profile Password per line) in the following <strong>CSV format</strong>: </p> 
-     
-    	     <p><code>Email Address<!-- tmpl_loop fields -->, <!-- tmpl_var name --><!-- /tmpl_loop --><!-- tmpl_if expr="(type eq 'list')" -->, Profile Password<!-- /tmpl_if --></code></p>
-        <!-- tmpl_else --> 
-            <p>
-    	        <label for="new_emails">
-    	                Enter
-    	        </label> addresses, (one address per line)
-	        </p>
-        <!-- /tmpl_if --> 
-
-
-	<fieldset> 
-		<legend>Paste Addresses Below:</legend>
-
-	<form name="paste_addresses"  action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-	 <input type="hidden" name="f"    id="f" value="add" />
-	 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
-	 <input type="hidden" name="process" value="1" />
-	 <input type="hidden" name="rand_string" id="rand_string" value="<!-- tmpl_var rand_string -->" />
-	 <input type="hidden" name="method" value="via_textarea" /> 
-
-	<p>
-	  <textarea name="new_emails" id="new_emails" rows="5" cols="40"></textarea>
-	 </p>
-
-
-	 <div class="buttonfloat">
-	  <input type="reset"  class="cautionary" value="Clear Changes" />
-	  <input type="submit"                    value="Verify Addresses..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing"<!-- /tmpl_if -->/>
-	 </div>
-	 <div class="floatclear"></div>
-	</form>
-
-
-
-
-	</fieldset> 
-
-
-	<fieldset> 
-		<legend>Upload From File</legend>
-
-
-
-		<style>
-		.ui-progressbar .ui-progressbar-value { background-image: url(<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/jquery.ui/pbar-ani.gif); }
-		</style>
-		<div id="show_progress" class="clearskiesbox">
-			<div id="progressbarWrapper" style="width:500px;height:22px;margin-left:auto;margin-right:auto" class="ui-widget-default">
-			<div id="progressbar" style="height:100%;"></div>
-			</div>
-			<div id="upload_status"></div>
-		</div>
-
-	 <p>
-	  Alternatively,  
-	  <label for="new_email_file">
-	   upload
-	  </label>
-	  a text file<!-- tmpl_if expr="(type eq 'list')" --> (<strong><!-- tmpl_var HTML_CHARSET --> encoded</strong>) in the same <strong>CSV format</strong> mentioned above<!-- /tmpl_if -->.
-	 </p>
-
-
-	<form id="fileupload" enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-		
-
-
-	<input type="hidden" name="f"    id="f" value="add" />
-	<input type="hidden" name="type" value="<!-- tmpl_var type -->" />
-	<input type="file"   name="new_email_file" id="new_email_file" />
-	<input type="hidden" name="process" value="1" />
-	<input type="hidden" name="rand_string" id="rand_string" value="<!-- tmpl_var rand_string -->" />
-	<input type="hidden" name="method" value="via_file_upload" /> 
-	
-
-	
-	
-	 <div class="buttonfloat">
-	  <input type="reset"  class="cautionary" value="Clear Changes" />
-	  <input type="submit" value="Verify Addresses..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing"<!-- /tmpl_if --> />
-	 </div>
-	 <div class="floatclear"></div>
-	</form>
-
-
-	</fieldset> 
-	
-
-    
-
-
-	 </fieldset>
 
 <!-- /tmpl_if -->
 

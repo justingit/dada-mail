@@ -379,11 +379,12 @@ $(document).ready(function() {
 
 	// Membership >> Invite/Add
 	if ($("#add").length) {
-		$("#add_one").hide();
 		$("#show_progress").hide();
 		$("#fileupload").live("submit", function(event) {
 			check_status();
 		});
+		
+	 	$("#new_emails").linedtextarea();
 	}
 
 

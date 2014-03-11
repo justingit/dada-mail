@@ -4,7 +4,16 @@
 
 <p>Import was not successful. Details:</p> 
 
-<pre><!-- tmpl_var error --></pre> 
+<!-- tmpl_if expr="(error eq 'over_add_list_import_limit')" --> 
 
+    <p>
+        You've tried to import more addresses, than the current limit is set to. 
+    </p> 
+
+<!-- tmpl_else --> 
+    
+    <pre><!-- tmpl_var error --></pre> 
+
+<!-- /tmpl_if --> 
 
 <!-- end add_email_error_screen.tmpl --> 

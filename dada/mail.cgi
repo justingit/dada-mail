@@ -5054,8 +5054,8 @@ sub check_status {
 
     my $filename = $q->param('new_email_file');
     $filename =~ s{^(.*)\/}{};
-
     $filename = uriescape($filename);
+
 
     if ( !-e $DADA::Config::TMP . '/' . $filename . '-meta.txt' ) {
         warn "no meta file at: " . $DADA::Config::TMP . '/' . $filename . '-meta.txt';
@@ -5202,6 +5202,34 @@ sub add_email {
         my $new_emails = [];
         my $new_info   = [];
 
+        if($ls->param('use_add_list_import_limit') == 1) { 
+            my $num_file_lines = DADA::App::Guts::num_file_lines(make_safer( $DADA::Config::TMP . '/' . $new_emails_fn)); 
+            if($num_file_lines > $ls->param('add_list_import_limit')){ 
+                my $error = 'over_add_list_import_limit';
+                require DADA::Template::Widgets;
+                my $scrn = DADA::Template::Widgets::wrap_screen(
+                    {
+                        -screen         => 'add_email_error_screen.tmpl',
+                        -with           => 'admin',
+                        -wrapper_params => {
+                            -Root_Login => $root_login,
+                            -List       => $list,
+                        },
+                        -expr                     => 1,
+                        -vars                     => { error => $error },
+                        -list_settings_vars_param => {
+                            -list   => $list,
+                            -dot_it => 1,
+                        },
+                    }
+                );
+                e_print($scrn);
+                return;
+            }
+        }
+        else { 
+            # ... 
+        }
         try {
             ( $new_emails ) = DADA::App::Guts::csv_subscriber_parse( $admin_list, $new_emails_fn );
         }
@@ -5317,7 +5345,7 @@ sub add_email {
                $_->{'list_settings.allow_admin_to_subscribe_blacklisted'} = 1;
             }
         }
-         
+        
         my %vars = (
             can_have_subscriber_fields => $lh->can_have_subscriber_fields,
             going_over_quota           => $going_over_quota,
@@ -5840,8 +5868,14 @@ sub subscription_options {
         my $vlsn_menu = $q->popup_menu(
             -name    => 'view_list_subscriber_number',
             -values  => [@list_amount],
-            -default => $ls->param('view_list_subscriber_number')
+            -default => $ls->param('view_list_subscriber_number'),
         );
+        
+        my $add_list_import_limit_menu = $q->popup_menu(
+            -name    => 'add_list_import_limit', 
+            -values  => [qw(100 200 300 400 500 600 750 1000 1500 2000 2500 3000 5000 7500 10000)],
+            -default => $ls->param('add_list_import_limit'),
+        ); 
 
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -5862,6 +5896,7 @@ sub subscription_options {
                     vlsn_menu                         => $vlsn_menu,
                     view_list_order_by_menu           => $view_list_order_by_menu,
                     view_list_order_by_direction_menu => $view_list_order_by_direction_menu,
+                    add_list_import_limit_menu        => $add_list_import_limit_menu,
                     SUBSCRIPTION_QUOTA                => $DADA::Config::SUBSCRIPTION_QUOTA,
                     commified_subscription_quota      => commify( int($DADA::Config::SUBSCRIPTION_QUOTA) ),
                 },
@@ -5879,19 +5914,22 @@ sub subscription_options {
             {
                 -associate => $q,
                 -settings  => {
-                    view_list_subscriber_number          => undef,
-                    view_list_show_timestamp_col         => 0,
-                    view_list_order_by                   => undef,
-                    view_list_order_by_direction         => undef,
-                    use_subscription_quota               => 0,
-                    subscription_quota                   => undef,
-                    black_list                           => 0,
-                    add_unsubs_to_black_list             => 0,
-                    allow_blacklisted_to_subscribe       => 0,
-                    allow_admin_to_subscribe_blacklisted => 0,
-                    enable_white_list                    => 0,
-                    invites_check_for_already_invited    => 0,
-                    invites_prohibit_reinvites           => 0,
+                    view_list_subscriber_number             => undef,
+                    view_list_show_timestamp_col            => 0,
+                    view_list_order_by                      => undef,
+                    view_list_order_by_direction            => undef,
+                    use_add_list_import_limit               => 0,
+                    add_list_import_limit                   => undef, 
+                    add_verify_show_advanced_import_options => 0, 
+                    use_subscription_quota                  => 0,
+                    subscription_quota                      => undef,
+                    black_list                              => 0,
+                    add_unsubs_to_black_list                => 0,
+                    allow_blacklisted_to_subscribe          => 0,
+                    allow_admin_to_subscribe_blacklisted    => 0,
+                    enable_white_list                       => 0,
+                    invites_check_for_already_invited       => 0,
+                    invites_prohibit_reinvites              => 0,
                 }
             }
         );

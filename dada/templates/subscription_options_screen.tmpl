@@ -57,6 +57,84 @@
 
 
 </fieldset>
+
+
+<fieldset> 
+	<legend>
+	Membership &#187; Invite/Subscribe/Add
+	</legend>
+    
+    
+    <table width="100%">
+     <tr>
+      <td width="20">
+       <p>
+        <input type="checkbox" name="use_add_list_import_limit" id="use_add_list_import_limit" <!-- tmpl_if list_settings.use_add_list_import_limit -->checked="checked"<!-- /tmpl_if --> value="1" />
+       </p>
+      </td> 
+      <td>
+        <p>
+        <label for="use_add_list_import_limit"> 
+        Limit the number of addresses to Invite/Subscribe/Add at a time to: 
+        </label>
+        <!-- tmpl_var add_list_import_limit_menu -->
+        <br /> 
+        <em>(The larger the number, the slower the process)</em>
+        </p>
+      </td> 
+    </tr> 
+    
+  </table> 
+
+</fieldset> 
+
+
+<fieldset>
+	<legend>Membership &#187; Invite/Subscribe/Add &#187; Verify</legend>
+
+    <table width="100%">
+
+     <tr>
+      <td width="20">
+       <p>
+        <input type="checkbox" name="add_verify_show_advanced_import_options" id="add_verify_show_advanced_import_options" <!-- tmpl_if list_settings.add_verify_show_advanced_import_options -->checked="checked"<!-- /tmpl_if -->   value="1" />
+       </p>
+      </td> 
+      <td>
+        <p>
+        <label for="add_verify_show_advanced_import_options"> 
+        Show Advanced Options
+        </label>
+        </p> 
+        <p> 
+            Advanced options include:
+            <ul> 
+                <li>Preserving or Updating Profile information, for new Subscribers</li> 
+                <li>Importing Subscribers with missing and required Profile Fields</li> 
+                <li>Updating Profile Information] for Subscribers that are already members</li> 
+            </ul> 
+        </p>
+            
+            <p>
+                When disabled, the original data will always be <strong>preserved</strong>. 
+        </p>
+        
+        <p>
+            <em> 
+                Advanced Options will still be available when logged in with the 
+                <strong>
+                <!-- tmpl_var PROGRAM_NAME --> Root Password. 
+            </strong> 
+        </em>
+        </p>
+      </td> 
+    </tr> 
+</table> 
+
+
+</fieldset> 
+
+
 	
 	
 <fieldset>

@@ -111,26 +111,26 @@
          <fieldset> 
           <legend>Verified Addresses</legend>
 
+          <!-- tmpl_if expr="(root_login == 1) || (list_settings.add_verify_show_advanced_import_options == 1)" -->           
+              <!-- tmpl_if expr="(type eq 'list')" -->
+                  <div class="clearskiesbox">
+                      <p>
+                          Some of the <strong>Verified Addresses</strong> below may already have profile information saved.
+                      </p>        
+                      <p>
+                          <input type="radio" name="not_members_fields_options_mode" id="not_members_fields_options_mode_preserve_if_defined" value="preserve_if_defined" checked="checked" /> 
+                          <label for="not_members_fields_options_mode_preserve_if_defined">Preserve any current profile data, but save profile data that's new.</label>
+                          <br />
+                          <input type="radio" name="not_members_fields_options_mode" id="not_members_fields_options_mode_writeover_inc_password" value="writeover_ex_password" /> 
+                          <label for="not_members_fields_options_mode_writeover_inc_password">Update the profile data, excluding the Profile Password</label> 
+                          <br />
+                          <input type="radio" name="not_members_fields_options_mode" id="not_members_fields_options_mode_writeover_ex_password" value="writeover_inc_password" /> 
+                          <label for="not_members_fields_options_mode_writeover_ex_password">Update the profile data, including the Profile Password</label> 
 
-          <!-- tmpl_if expr="(type eq 'list')" -->
-              <div class="clearskiesbox">
-                  <p>
-                      Some of the <strong>Verified Addresses</strong> below may already have profile information saved.
-                  </p>        
-                  <p>
-                      <input type="radio" name="not_members_fields_options_mode" id="not_members_fields_options_mode_preserve_if_defined" value="preserve_if_defined" checked="checked" /> 
-                      <label for="not_members_fields_options_mode_preserve_if_defined">Preserve any current profile data, but save profile data that's new.</label>
-                      <br />
-                      <input type="radio" name="not_members_fields_options_mode" id="not_members_fields_options_mode_writeover_inc_password" value="writeover_ex_password" /> 
-                      <label for="not_members_fields_options_mode_writeover_inc_password">Update the profile data, excluding the Profile Password</label> 
-                      <br />
-                      <input type="radio" name="not_members_fields_options_mode" id="not_members_fields_options_mode_writeover_ex_password" value="writeover_inc_password" /> 
-                      <label for="not_members_fields_options_mode_writeover_ex_password">Update the profile data, including the Profile Password</label> 
-
-                  </p>    
-              </div>
-          <!-- /tmpl_if --> 
-
+                      </p>    
+                  </div>
+              <!-- /tmpl_if --> 
+        <!-- /tmpl_if --> 
 
 
           <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
@@ -229,30 +229,28 @@
          <fieldset> 
           <legend>Subscribed Already</legend> 
 
-         <!-- tmpl_if expr="(type eq 'list')" --> 
-             <div class="clearskiesbox">
-                 <p>
-                  These addresses are <strong>already members</strong> of your Subscribers. They will not be subscribed/added/invited again. 
-                 </p>
-                 <p>
-                     You may update the profile fields (<em><!-- tmpl_loop field_names --><!-- tmpl_var name default="&nbsp;" escape="HTML"  -->, <!-- /tmpl_loop --></em>) associated with these addresses.  
-                 </p>
-
-                 <p>
-                     <input type="radio" name="subscribed_fields_options_mode" id="subscribed_fields_options_mode_writeover_inc_password" value="writeover_ex_password" checked="checked" /> 
-                     <label for="subscribed_fields_options_mode_writeover_inc_password">Update the profile data, excluding the Profile Password</label> 
-                     <br />
-                     <input type="radio" name="subscribed_fields_options_mode" id="subscribed_fields_options_mode_writeover_ex_password" value="writeover_inc_password" /> 
-                     <label for="subscribed_fields_options_mode_writeover_ex_password">Update the profile data, including the Profile Password</label> 
-                 </p>
-
-                 <p>
-                     <strong>Check</strong> the addresses below that you would like to <strong>update</strong>:
-                 </p> 
-
-
-             </div> 
-         <!-- /tmpl_if --> 
+         <!-- tmpl_if expr="(root_login == 1) || (list_settings.add_verify_show_advanced_import_options == 1)" --> 
+             <!-- tmpl_if expr="(type eq 'list')" --> 
+                 <div class="clearskiesbox">
+                     <p>
+                      These addresses are <strong>already members</strong> of your Subscribers. They will not be subscribed/added/invited again. 
+                     </p>
+                     <p>
+                         But, you may update the Profile Fields and Profile Password of these addresses.  
+                     </p>
+                      <p>
+                         <input type="radio" name="subscribed_fields_options_mode" id="subscribed_fields_options_mode_writeover_inc_password" value="writeover_ex_password" checked="checked" /> 
+                         <label for="subscribed_fields_options_mode_writeover_inc_password">Update the profile data, excluding the Profile Password</label> 
+                         <br />
+                         <input type="radio" name="subscribed_fields_options_mode" id="subscribed_fields_options_mode_writeover_ex_password" value="writeover_inc_password" /> 
+                         <label for="subscribed_fields_options_mode_writeover_ex_password">Update the profile data, including the Profile Password</label> 
+                     </p>                 
+                     <p>
+                         <strong>Check</strong> the addresses below that you would like to <strong>update</strong>:
+                     </p> 
+                 </div> 
+             <!-- /tmpl_if --> 
+        <!-- /tmpl_if -->
 
      <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
       <table class="stripedtable">
@@ -296,10 +294,11 @@
          <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
           <td width="25">
 
-              <!-- tmpl_if expr="(type eq 'list')" --> 
-                 <input type="checkbox" name="update_fields_address" value="<!-- tmpl_var csv_str escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" />
-             <!-- /tmpl_if -->
-
+              <!-- tmpl_if expr="(root_login == 1) || (list_settings.add_verify_show_advanced_import_options == 1)" --> 
+                  <!-- tmpl_if expr="(type eq 'list')" --> 
+                     <input type="checkbox" name="update_fields_address" value="<!-- tmpl_var csv_str escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" />
+                 <!-- /tmpl_if -->
+              <!-- /tmpl_if --> 
           </td>
           <td>
            <p>
@@ -335,12 +334,17 @@
      <p>&nbsp;</p>
      <p>&nbsp;</p>
      </div>
-     <p>
-     <input type="checkbox" id="checkbox_for_subscribed_addresses" class="check_all_in_div" data-target="subscribed_addresses">
-         <label for="checkbox_for_subscribed_addresses">
-             check all
-         </label>
-     </p>
+     
+     <!-- tmpl_if expr="(root_login == 1) || (list_settings.add_verify_show_advanced_import_options == 1)" --> 
+         <!-- tmpl_if expr="(type eq 'list')" --> 
+             <p>
+             <input type="checkbox" id="checkbox_for_subscribed_addresses" class="check_all_in_div" data-target="subscribed_addresses">
+                 <label for="checkbox_for_subscribed_addresses">
+                     check all
+                 </label>
+             </p>
+        <!-- /tmpl_if -->
+    <!-- /tmpl_if -->
      </fieldset> 
      </div> 
  <!--/tmpl_if-->
@@ -604,9 +608,12 @@
          <p>
           These addresses have missing profile fields that have been set as being required.
          </p>
-         <p>
-             If you would still like to subscribe them, <strong>check</strong> those addresses below: 
-         </p>
+         <!-- tmpl_if expr="(root_login == 1) || (list_settings.add_verify_show_advanced_import_options == 1)" -->                          
+             <p>
+                 If you would still like to subscribe them, <strong>check</strong> those addresses below: 
+             </p>
+        <!-- /tmpl_if --> 
+        
      </div> 
  
      <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
@@ -652,7 +659,11 @@
        <!-- tmpl_loop invalid_profile_fields -->
          <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
           <td width="25">
-              <input type="checkbox" name="address" value="<!-- tmpl_var csv_str escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" />
+              
+              <!-- tmpl_if expr="(root_login == 1) || (list_settings.add_verify_show_advanced_import_options == 1)" -->           
+                <input type="checkbox" name="address" value="<!-- tmpl_var csv_str escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" />
+              <!-- /tmpl_if --> 
+                
           </td>
           <td>
            <p>
@@ -686,12 +697,14 @@
      <p>&nbsp;</p>
      <p>&nbsp;</p>
      </div>
-     <p>
-     <input type="checkbox" id="checkbox_for_invalid_profile_fields_addresses" class="check_all_in_div" data-target="invalid_profile_fields_addresses">
-         <label for="checkbox_for_invalid_profile_fields_addresses">
-             check all
-         </label>
-     </p>
+     <!-- tmpl_if expr="(root_login == 1) || (list_settings.add_verify_show_advanced_import_options == 1)" --> 
+         <p>
+         <input type="checkbox" id="checkbox_for_invalid_profile_fields_addresses" class="check_all_in_div" data-target="invalid_profile_fields_addresses">
+             <label for="checkbox_for_invalid_profile_fields_addresses">
+                 check all
+             </label>
+         </p>
+     <!-- /tmpl_if -->
      </fieldset> 
  </div> 
  <!-- /tmpl_if --> 
