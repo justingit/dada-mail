@@ -1,26 +1,24 @@
-
-<div style="max-height: 900px; overflow: auto;">
-    <div id="advanced_list_search">
+<div id="advanced_list_search">
+    <p>&nbsp;</p>
+    <div style="max-height: 900px; overflow: auto;">
         <form id="advanced_list_search_form">
             <fieldset> 
-                <legend>Advanced Search <a href="#" class="close_advanced_search_list">[x]</a></legend>
-                <div class="clearskiesbox"> 
-                    <p>(Results are listed below)</p>
-        	    </div> 
-        	
-            	
-        <table align="center">
-            <tr>
-                <td>
-                    <!-- tmpl_include field_comparisons_widget.tmpl -->
-                    <div class="buttonfloat"> 
-                    <input type="button" class="advanced_search_list" value="Search"> 
-                    <input type="reset"  value="Clear" class="clear_advanced_search_list">
-                    </div>  
-                    <div class="floatclear"></div> 
-                </td>
-                </tr>
-            </table> 
+                <legend>Advanced Search</legend>
+                <!-- <a href="#" class="close_advanced_search_list">[x]</a> --> 
+            <table align="center">
+                <tr>
+                    <td>
+                        <!-- tmpl_include field_comparisons_widget.tmpl -->
+                        <div class="buttonfloat"> 
+                        <input type="button" class="advanced_search_list processing" value="Search"> 
+                       <!--  <input type="reset"  value="Clear"  class="clear_advanced_search_list"> -->
+                        <input type="reset"  value="Cancel" class="close_advanced_search_list cautionary">
+
+                        </div>  
+                        <div class="floatclear"></div> 
+                    </td>
+                    </tr>
+                </table> 
         </fieldset>
         </form> 
     </div> 

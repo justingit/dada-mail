@@ -1,11 +1,22 @@
 <!-- begin view_list_viewport_widget.tmpl -->
 
 <!-- tmpl_include list_type_switch_widget.tmpl -->
-
-<!-- tmpl_if advanced_search --> 
-    <p>&nbsp;</p>
+    
     <!-- tmpl_include advanced_list_search_form.tmpl --> 
-<!-- /tmpl_if --> 
+    
+    
+    <!-- tmpl_if expr="defined(advanced_query) && (total_num > 0)" --> 
+        <div style="text-align:center">
+            <input type="button" class="show_update_profile_form processing bigger_button" value="Update Search Results...">
+        </div> 
+    <!-- /tmpl_if --> 
+    
+    <div id="hidden_mass_update_profile_form" style="display:none"> 
+        <!-- tmpl_include mass_update_profile_form.tmpl --> 
+    </div> 
+
+
+
 
 <!-- tmpl_unless total_num -->
 	<!-- tmpl_if query --> 
@@ -13,24 +24,32 @@
 				No Results were found.
 			</p>
 			<p><label for="query">Search Again:</label></p> 
-			<!-- tmpl_include list_search_form_widget.tmpl -->	
+			<!-- tmpl_include list_search_form_widget.tmpl -->
 	<!-- tmpl_else --> 
 	
-		<p class="alert">
-		 There are currently no members of, <!-- tmpl_var type_title -->.
 	
-		    <!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'moderators') || (type eq 'white_list'))" -->
+	    <!-- tmpl_if advanced_query --> 
+    		<p class="alert">
+    			No Results were found.
+    		</p>	        
+	    <!-- tmpl_else -- >
+	        
+    		<p class="alert">
+    		 There are currently no members of, <!-- tmpl_var type_title -->.
+	
+    		    <!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'moderators') || (type eq 'white_list'))" -->
 		
-				<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=add&amp;type=<!-- tmpl_var type -->">
-					<!-- tmpl_if EXPR="(type eq 'list')" -->
-							Invite
-							<!-- tmpl_if list_settings.enable_mass_subscribe -->
-					/ Add
-							<!-- /tmpl_if -->
-						<!-- tmpl_else --> 
-							Add
-						<!-- /tmpl_if -->
-		    	</a>
+    				<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=add&amp;type=<!-- tmpl_var type -->">
+    					<!-- tmpl_if EXPR="(type eq 'list')" -->
+    							Invite
+    							<!-- tmpl_if list_settings.enable_mass_subscribe -->
+    					/ Add
+    							<!-- /tmpl_if -->
+    						<!-- tmpl_else --> 
+    							Add
+    						<!-- /tmpl_if -->
+    		    	</a>
+    		    <!-- /tmpl_if --> 
 		   	<!-- /tmpl_if -->
 		</p>
 	

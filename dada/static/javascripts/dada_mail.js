@@ -1,5 +1,15 @@
-$(document).ready(function() {
+var plainOverlayOptions = {
+		opacity: 0.1,  
+		color: '#666', 
+		progress: function() { 
+			return $('<div class="spinner_bg"></div>'); 
+		}
+};
 
+$(document).ready(function() {
+	
+
+				
 	$("a.modalbox").live("click", function(event) {
 		event.preventDefault();
 		$.colorbox({
@@ -306,6 +316,18 @@ $(document).ready(function() {
 	// Membership >> View List	
 	if ($("#view_list_viewport").length) {
 		view_list_viewport(1);
+		
+	//	$("body").on("submit", "#mass_update_profiles", function(event) {
+			//event.preventDefault();
+			// fill that all in,  
+			//alert($("#mass_update_advanced_query").val()); 
+	//	});
+		
+		$("body").on("click", ".show_update_profile_form", function(event) {
+			show_update_profile_form();
+		});	
+		
+		
 	}
 
 	// Membership >> List Activity
@@ -505,10 +527,17 @@ $(document).ready(function() {
 		search_list();
 		event.preventDefault();
 	});
+	$(".show_advanced_search_list").live("click", function(event) {
+		//alert('Calling show_advanced_search_list()');  
+		show_advanced_search_list();
+		event.preventDefault();
+	});
 	$(".advanced_search_list").live("click", function(event) {
 		advanced_search_list();
 		event.preventDefault();
 	});
+
+
 	$(".close_advanced_search_list").live("click", function(event) {
 		close_advanced_search_list();
 		event.preventDefault();
@@ -530,17 +559,7 @@ $(document).ready(function() {
 		clear_advanced_search();
 		event.preventDefault();
 	});
-	
-/*
-
-	$("#show_advanced_list_search_form").live("click", function(event) {
-		alert("yup, here I am"); 
-		show_advanced_list_search_form(); 
-		event.preventDefault();
-	});
-
-*/
-	
+		
 	$('#search_query').live('keydown', function() {
 		$("#search_query").autocomplete({
 			source: function(request, response) {
@@ -815,6 +834,12 @@ $(document).ready(function() {
 
 
 	/* Global */
+	
+	$(".clear_field").live("click", function(event) {
+		event.preventDefault();
+		$("#" + $(this).attr("data-target")).val(''); 
+	});
+
 	$(".previous").live("click", function(event) {
 		event.preventDefault();
 		history.back();
@@ -1133,7 +1158,9 @@ function view_list_viewport(initial) {
 	//alert('$("#advanced_search").val() ' + $("#advanced_search").val()); 
 	//alert(' $("#advanced_query").val() ' +  $("#advanced_query").val()); 
 	
-	$("#view_list_viewport_loading").html('<p class="alert">Loading...</p>');
+	//$("#view_list_viewport_loading").html('<p class="alert">Loading...</p>');
+	$("#view_list_viewport").plainOverlay('show', plainOverlayOptions);
+	
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
 		type: "POST",
@@ -1154,56 +1181,86 @@ function view_list_viewport(initial) {
 	request.done(function(content) {
 
 		if (initial == 1) {
-			$("#view_list_viewport").hide();
-			$("#view_list_viewport").html(content);		
+			$("#view_list_viewport").hide()
+			$("#view_list_viewport").plainOverlay('hide')
+			$("#view_list_viewport").html(content);
+			
+			
+			if($("#advanced_search").val() == 1){ 
+				console.log('not hiding advanced search form'); 
+			}
+			else {
+				console.log('Hiding advanced search form');
+				$("#advanced_list_search").hide(); 
+			}
 			
 			$("#view_list_viewport").show('fade');
 		} else {
+			
 			$("#view_list_viewport").html(content);
+			if($("#advanced_search").val() != 1){
+				$("#advanced_list_search").hide(); 
+			}
+			$("#view_list_viewport").plainOverlay('hide')
+			
 		}
 
-		$("#view_list_viewport_loading").html('<p class="alert">&nbsp;</p>');
+		//$("#view_list_viewport_loading").html('<p class="alert">&nbsp;</p>');
+		
 		datetimesetupstuff(); 
 		set_up_advanced_search_form(); 
+			
+		console.log('#advanced_search ' + $("#advanced_search").val()) ; 
 		
+		if($("#advanced_search").val() == 1){ // === is not working, here. 
+			$("#domain_break_down").hide(); 
+		}
+		else { 
+			$("#domain_break_down").show(); 
+			google.setOnLoadCallback(drawTrackerDomainBreakdownChart());
+		}
+	}); 
 
-	// Does not work well w/advanced search. 
-	
-	//alert('advanced_search: "' + $("#advanced_search").val() + '"'); 
-	var blah = $("#advanced_search").val(); 
-	//alert('blah"' + blah + '"'); 
-	
-	if(blah == 1){ 
-		//alert("so, we're gonna hide..."); 
-		$("#domain_break_down").hide(); 
-	}
-	else { 
-		//alert("Not gonna hide."); 
-		$("#domain_break_down").show(); 
-		google.setOnLoadCallback(drawTrackerDomainBreakdownChart());
-	}
-
-	//	alert('advanced_search ' + $("#advanced_search").val()); 
-	  
-	// Doesn't work? 
-	// if($("#advanced_search").val() === 1){
-		
-		
-		
-	});
 }
 
-function set_up_advanced_search_form(){ 
+function set_up_advanced_search_form() { 
+	
 	console.log('set_up_advanced_search_form ' ); 
 	console.log('advanced_query looks like: ' + $("#advanced_query").val());
 	console.log('advanced_query length' + $("#advanced_query").length); 
-	if($("#advanced_query").length) { 
-		console.log("looks like we've got an advanced query. Time to unserialize!"); 
+	
+	var q = $("#advanced_query").val(); 
+	
+	if($("#advanced_search").val() === 1 || q.length > 0) { 
+		console.log("Unserializing, and filling out form:"); 
 		$("#advanced_list_search_form").unserialize($("#advanced_query").val());
+		
 	 }
-	 //else { 
-	//	console.log("No advanced search form?!"); 	
-	//}
+	 else { 
+	console.log("No advanced search form."); 	
+	}
+}
+
+function show_update_profile_form(){ 
+	
+	var $form = $("#mass_updates");
+	
+	$.colorbox({
+		inline:true, 
+		href:$form,
+		top: 0,
+		fixed: true,
+		initialHeight: 50,
+		maxHeight: 480,
+		maxWidth: 649,
+		opacity: 0.50,
+		
+		onComplete: function(){
+			//alert("fill it in!" + $("#advanced_query").val()); 
+			$("#mass_update_advanced_query").val($("#advanced_query").val());
+		}	
+	});
+	
 }
 
 function turn_page(page_to_turn_to) {
@@ -1224,6 +1281,14 @@ function search_list() {
 	view_list_viewport();
 }
 
+function show_advanced_search_list(){ 
+//	alert('show_advanced_search_list called.'); 
+	
+	$("#domain_break_down").hide('blind'); 
+	$("#advanced_search").val(1); 
+	$("#advanced_list_search").show('blind'); 
+} 
+
 function advanced_search_list(){ 
 	//alert($("#advanced_list_search_form").serialize())
 	$("#page").val(1);	
@@ -1232,10 +1297,13 @@ function advanced_search_list(){
 	view_list_viewport();
 }
 function close_advanced_search_list(){ 
+
+	$("#advanced_list_search").hide('blind'); 
+
 	$("#page").val(1);	
 	$("#advanced_search").val(0); 
-	$("#advanced_query").val();
-	view_list_viewport();
+	$("#advanced_query").val('');
+	view_list_viewport(1);
 }
 
 function clear_search() {
@@ -1257,12 +1325,6 @@ function change_order(order_by, order_dir) {
 	view_list_viewport();
 }
 
-/*
-function show_advanced_list_search_form() { 
-	$("#basic_list_search_form").hide('fade');
-	$("#advanced_list_search_form").show('blind');
-}
-*/
 
 var domain_breakdown_chart; // you've got to be serious... 
 var domain_breakdown_chart_data;

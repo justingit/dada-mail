@@ -141,6 +141,10 @@ sub search_list {
     warn 'QUERY: ' . $query
      if $t; 
 
+     warn 'ok, and now Im just going to do the profile update statement to see what that looks like: '; 
+     warn 'NEW QUERY: ' . $self->SQL_subscriber_update_profiles_statement($args); 
+
+
     my $sth = $self->{dbh}->prepare($query);
 
     $sth->execute()
@@ -272,16 +276,13 @@ sub SQL_subscriber_profile_join_statement {
     }
 
     if ( !exists( $args->{-order_by}) || !defined($args->{-order_by}) ) {
-        # Well, if we have a search for date, why not sort by default by date? 
-        #if(exists($args->{-partial_listing}->{subscriber.timestamp}->{-value})) { 
-        #    
-        #}
-        #else { 
             $args->{-order_by} = 'email';
-        #}
     }
     if ( !exists( $args->{-order_dir} ) ) {
         $args->{-order_dir} = 'asc';
+    }
+    if(!exists($args->{-user_order_by})){ 
+        $args->{-user_order_by} = 1; 
     }
 
 
@@ -309,18 +310,13 @@ sub SQL_subscriber_profile_join_statement {
     if ( $args->{-search_type} eq 'any' ) {
         $query_type = 'OR';
     }
+    
+    if(!exists($args->{-select_fields})){ 
+        $args->{-select_fields}->{':all'} = 1; 
+    }
 
     my $subscriber_table     = $self->{sql_params}->{subscriber_table};
     my $profile_fields_table = $self->{sql_params}->{profile_fields_table};
-
-    # This is to select which Subscriber Profile Fields to return with our query
-    my @merge_fields      = @{ $self->subscriber_fields };
-    my $merge_field_query = '';
-    for (@merge_fields) {
-        $merge_field_query .= ', ' . $profile_fields_table . '.' . $_;
-    }
-
-   #/ This is to select which Subscriber Profile Fields to return with our query
 
     # We need the email and list from $subscriber_table
     my $query;
@@ -334,10 +330,24 @@ sub SQL_subscriber_profile_join_statement {
         $query = 'SELECT ';
     }
 
-    $query .= $subscriber_table . '.timestamp, ';
-    $query .= $subscriber_table . '.email, ';
-    $query .= $subscriber_table . '.list';
-    $query .= $merge_field_query;
+    # This is to select which Subscriber Profile Fields to return with our query
+    my @merge_fields = (); 
+    if($args->{-select_fields}->{'subscriber.timestamp'} == 1 || $args->{-select_fields}->{':all'} == 1){ 
+        push(@merge_fields, $subscriber_table . '.timestamp');
+    }
+    if($args->{-select_fields}->{'subscriber.email'} == 1 || $args->{-select_fields}->{':all'} == 1){
+        push(@merge_fields, $subscriber_table . '.email'); 
+    }
+    if($args->{-select_fields}->{'subscriber.list'} == 1 || $args->{-select_fields}->{':all'} == 1){ 
+        push(@merge_fields, $subscriber_table . '.list'); 
+    }
+    foreach(@{ $self->subscriber_fields }) { 
+        if($args->{-select_fields}->{'profile.' . $_} == 1 || $args->{-select_fields}->{':all'} == 1){
+            push(@merge_fields, $profile_fields_table . '.' . $_)
+        }
+    }
+
+    $query .= join(', ', @merge_fields); 
 
 # And we need to match this with the info in $profile_fields_table - this fast/slow?
     $query .=
@@ -570,39 +580,40 @@ sub SQL_subscriber_profile_join_statement {
         $query .= ' GROUP BY ' . $subscriber_table . '.email ';
     }
 
-    if ( $args->{-order_by} eq 'email' ) {
+    if($args->{-user_order_by} == 1){ 
+        if ( $args->{-order_by} eq 'email' ) {
 
-        $query .=
-            ' ORDER BY '
-          . $subscriber_table
-          . '.list, '
-          . $subscriber_table
-          . '.email';
-    }
-    elsif ( $args->{-order_by} eq 'timestamp' ) {
-        $query .=
-            ' ORDER BY '
-          . $subscriber_table
-          . '.list, '
-          . $subscriber_table
-          . '.timestamp';
-    }
-    else {
-        $query .=
-            ' ORDER BY '
-          . $subscriber_table
-          . '.list, '
-          . $profile_fields_table . '.'
-          . $args->{-order_by};
+            $query .=
+                ' ORDER BY '
+              . $subscriber_table
+              . '.list, '
+              . $subscriber_table
+              . '.email';
+        }
+        elsif ( $args->{-order_by} eq 'timestamp' ) {
+            $query .=
+                ' ORDER BY '
+              . $subscriber_table
+              . '.list, '
+              . $subscriber_table
+              . '.timestamp';
+        }
+        else {
+            $query .=
+                ' ORDER BY '
+              . $subscriber_table
+              . '.list, '
+              . $profile_fields_table . '.'
+              . $args->{-order_by};
 
-    }
-	if($args->{-order_dir} eq 'desc'){ 
-		$query .= ' DESC'; 
+        }
+    	if($args->{-order_dir} eq 'desc'){ 
+    		$query .= ' DESC'; 
+    	}
+    	else { 
+    		$query .= ' ASC'; 
+    	}
 	}
-	else { 
-		$query .= ' ASC'; 
-	}
-	
 	if(exists($args->{ -start }) && exists($args->{ '-length' })) { 
 		$query .= ' LIMIT '; 
 		$query .=  $args->{'-length'};
@@ -612,10 +623,62 @@ sub SQL_subscriber_profile_join_statement {
 	
     warn 'QUERY: ' . $query
         if $t;
-
+    
     return $query;
 }
 
+
+
+sub SQL_subscriber_update_profiles_statement {
+    
+    my $self = shift; 
+    my ($args) = @_; 
+
+    my $u = $args->{-update_fields};
+    
+    # This should help things not be crazy slow. 
+    $args->{-select_fields}->{'subscriber.email'} = 1; 
+    $args->{-user_order_by} = 0; 
+    $args->{-search_type}   = 'any'; 
+    
+    my $subscriber_table     = $self->{sql_params}->{subscriber_table};
+    my $profile_fields_table = $self->{sql_params}->{profile_fields_table};
+    
+    my $inner_query = $self->SQL_subscriber_profile_join_statement($args); 
+    
+    my $query = 'UPDATE ' . $profile_fields_table . '  SET '; 
+
+    foreach (keys %$u ){ 
+        $query .= $_ . ' = ' . $self->{dbh}->quote($u->{$_}) . ','; 
+    }
+    # Remove that last comma, we should do the above, with a join() 
+    # or a map() or something 
+    
+     
+    $query  =~ s/\,$//; 
+    $query .= ' where email IN ( SELECT * FROM (';
+    $query .= $inner_query;
+    $query .= ') AS X)';     
+        
+    return $query; 
+    
+} 
+
+
+sub update_profiles { 
+    
+    my $self = shift; 
+    my ($args) = @_; 
+    my $query = $self->SQL_subscriber_update_profiles_statement($args); 
+    
+    my $sth = $self->{dbh}->prepare($query);
+
+    my $rv = $sth->execute()
+      or croak "cannot do statement (for profile_update)! $DBI::errstr\n";
+    
+      return $rv; 
+
+}
 
 sub fancy_print_out_list {
 

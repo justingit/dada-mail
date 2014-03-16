@@ -1,6 +1,6 @@
 <!-- begin view_list_modalmenu_widget.tmpl --> 
 
-<!-- tmpl_if expr="((add_email_count > 0) || (update_email_count > 0)  || (delete_email_count  > 0) || (black_list_add > 0) || (approved_count  > 0) || (denied_count  > 0) || (bounced_list_moved_to_list_count  > 0) || (bounced_list_removed_from_list > 0) )" --> 
+<!-- tmpl_if expr="((add_email_count > 0) || (update_email_count > 0)  || (delete_email_count  > 0) || (black_list_add > 0) || (approved_count  > 0) || (denied_count  > 0) || (bounced_list_moved_to_list_count  > 0) || (bounced_list_removed_from_list > 0)  || (updated_addresses > 0) )" --> 
 
 <div class="clearskiesbox" id="alertbox">
 	
@@ -106,6 +106,16 @@
 		 added to Black List. 
 	</p>
 <!-- /tmpl_if -->
+
+<!-- tmpl_if updated_addresses --> 
+	<p>
+	    <strong>
+	        <!-- tmpl_var updated_addresses -->
+	    </strong>
+	     address(es) have been updated.
+	</p>
+<!-- /tmpl_if -->
+
 
 		
 	<div style="text-align: center;">

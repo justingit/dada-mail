@@ -522,6 +522,7 @@ sub run {
         'admin_help'                                  => \&admin_help,
         'delete_list'                                 => \&delete_list,
         'view_list'                                   => \&view_list,
+        'mass_update_profiles'                        => \&mass_update_profiles, 
         'domain_breakdown_json'                       => \&domain_breakdown_json,
         'search_list_auto_complete'                   => \&search_list_auto_complete,
         'list_activity'                               => \&list_activity,
@@ -3314,14 +3315,15 @@ sub view_list {
     my $denied_count                     = xss_filter( $q->param('denied_count') )                     || 0;
     my $bounced_list_moved_to_list_count = xss_filter( $q->param('bounced_list_moved_to_list_count') ) || 0;
     my $bounced_list_removed_from_list   = xss_filter( $q->param('bounced_list_removed_from_list') )   || 0;
+    my $updated_addresses                = xss_filter( $q->param('updated_addresses') )   || 0;
     my $type                             = xss_filter( $q->param('type') )                             || 'list';
     my $query                            = xss_filter( $q->param('query') )                            || undef;
     my $order_by  =  $q->param('order_by')  ||   $ls->param('view_list_order_by');
     my $order_dir =  $q->param('order_dir') || lc($ls->param('view_list_order_by_direction'));
     my $mode                             = xss_filter( $q->param('mode') )                             || 'view';
     my $page                             = xss_filter( $q->param('page') )                             || 1;
-    my $advanced_search = $q->param('advanced_search') || 0; 
-    my $advanced_query  = $q->param('advanced_query')  || undef; 
+    my $advanced_search                  = $q->param('advanced_search') || 0; 
+    my $advanced_query                = $q->param('advanced_query')  || undef; 
 
     require DADA::Template::Widgets;
     if ( $mode ne 'viewport' ) {
@@ -3355,6 +3357,7 @@ sub view_list {
                     denied_count                     => $denied_count,
                     bounced_list_moved_to_list_count => $bounced_list_moved_to_list_count,
                     bounced_list_removed_from_list   => $bounced_list_removed_from_list,
+                    updated_addresses                => $updated_addresses, 
 
                     type_title => $type_title,
 
@@ -3400,9 +3403,9 @@ sub view_list {
         my $pages_in_set = [];
         my $total_num    = 0;
         
-        warn '$query ' . $query; 
-        warn '$advanced_query ' . $advanced_query; 
-        warn ' $advanced_search' . $advanced_search; 
+       # warn '$query ' . $query; 
+       # warn '$advanced_query ' . $advanced_query; 
+       # warn ' $advanced_search' . $advanced_search; 
         
         if ($query || $advanced_query) {
                         
@@ -3575,6 +3578,83 @@ sub view_list {
         e_print($scrn);
     }
 }
+
+
+
+
+sub mass_update_profiles { 
+
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'view_list'
+    );
+    $list = $admin_list;
+
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+    my $update_fields = {}; 
+        
+    for my $field ( @{ $lh->subscriber_fields() } ) {
+        if($q->param('update.' . $field) == 1){ 
+            $update_fields->{$field} = $q->param($field);
+       }
+    }
+    
+    my $advanced_query  = xss_filter( $q->param('advanced_query') )  || undef;
+    open my $fh, '<', \$advanced_query || die $!;
+    my $new_q = CGI->new($fh);
+    my $partial_listing = partial_sending_query_to_params($new_q); 
+ 
+    my $updated = $lh->update_profiles(
+       {
+           
+           -update_fields   => $update_fields, 
+           -partial_listing => $partial_listing, 
+           
+       } 
+    ); 
+ 
+# 
+#    print $q->header('text/plain');  
+#    print 'advanced query: ' . "\n" . $advanced_query . "\n\n"; 
+#    use Data::Dumper; 
+#    print Dumper($partial_listing); 
+#    print $lh->SQL_subscriber_update_profiles_statement(
+#       {
+#           
+#           -update_fields   => $update_fields, 
+#           -partial_listing => $partial_listing, 
+#       } 
+#    ); 
+
+# And then, we're return with a search query, to show the results: 
+    $q->param('updated_addresses', $updated); 
+    $q->param('advanced_search', 1); 
+    $q->param('done', 1); 
+    
+    undef($new_q); 
+    $new_q = CGI->new;
+    $new_q->charset($DADA::Config::HTML_CHARSET);
+    $new_q->delete_all;
+    
+    
+#    $new_q->param('favorite_color.operator', '='); 
+#    $new_q->param('favorite_color.value', 'mauve'); 
+ 
+    for my $field(%$update_fields) { 
+        $new_q->param($field . '.operator', '='); 
+        $new_q->param($field . '.value', $update_fields->{$field}); 
+    }
+    
+    my $new_advanced_search_query = $new_q->query_string(); 
+       $new_advanced_search_query =~ s/\;/\&/g; 
+       
+    $q->param('advanced_query', $new_advanced_search_query); 
+    
+    &view_list; 
+}
+
+
 
 sub domain_breakdown_json {
 
@@ -8588,8 +8668,8 @@ sub text_list {
         }
     }
 
-    use Data::Dumper; 
-    warn 'partial_listing ' . Dumper($partial_listing); 
+    #use Data::Dumper; 
+    #warn 'partial_listing ' . Dumper($partial_listing); 
     
     my $email;
 
@@ -8600,7 +8680,7 @@ sub text_list {
     print $header;
 
     if($advanced_query) { 
-        warn 'yup, advanced query';         
+       # warn 'yup, advanced query';         
         $lh->print_out_list(
             {
                 -type                  => $type,

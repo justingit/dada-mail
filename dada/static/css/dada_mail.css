@@ -423,6 +423,11 @@ textarea,
 	font-style: italic;
 	
 }
+.spinner_bg { 
+    min-width:50px; 
+    min-height:50px;
+    background: transparent url('../images/spinner.gif') 50% 0 no-repeat;
+}
 #Header select { 
 	font-size: .8em;
 	font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;

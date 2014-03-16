@@ -6,15 +6,16 @@
 
 =head3 Private Mailing Lists
 
-Previous versions of Dada Mail were specifically designed to run B<Public> Mailing Lists: mailing lists where usually anyone can subscribe to, and most I<definitely> everyone can remove themselves from (unsubscribe). 
+Previous versions of Dada Mail were specifically designed to run B<Public> Mailing Lists: mailing lists where usually anyone can subscribe to using a subscription form, and most I<definitely> everyone can remove themselves from (unsubscribe). 
 
-For public mailing lists and marketing purposes, this works just great, but many users want to utilize the app for a different purpose: utilizing Dada Mail's mailing list organizational and mass mailing features for a private list of contacts: a group of colleagues, or an internal company mailing list. In this role, Dada Mail hasn't fared very well, as List Owners are frustrated, having to constantly deal with list member removing themselves (often by accident). The tools to run a private mailing list just weren't there. 
+For public mailing lists and marketing purposes, this works just great, but many users want to utilize the app for a different purpose: utilizing Dada Mail's mailing list organizational and mass mailing features for a I<private> list of contacts: a group of colleagues, or an internal company mailing list.
+
+In this role that Dada Mail wasn't designed for, it hasn't fared very well, as List Owners become frustrated, having to constantly deal with list member removing themselves (often by accident). The tools to run a private mailing list just weren't there, also solutions to this problem feel very hacky.  
 
 Dada Mail now has support for B<Private Mailing Lists>. A private mailing list 
-is a mailing list used in a closed, internal setting; not one used publically 
-for marketing purposes. 
+is a mailing list used in a closed, internal setting; not for a mailing list  used publically for marketing purposes. 
 
-When a mailing list is set to, B<Private>, unsubscription links are not required (as they are in a public mailing list), but any unsubscription links will be turned into a link to B<Request Removal>. This request will go to the List Owner, who will have the final say on who is removed from the mailing list. 
+When a mailing list is set to, B<Private>, unsubscription links are not required (as they are in a public mailing list), but any unsubscription links found in a mass mailing message will be turned into a link to B<Request Removal>. This request will be sent to the List Owner, who will have the final say on who is removed from the mailing list. 
 
 All other options for a mailing list are still available for a Private List.
 
@@ -40,7 +41,11 @@ New options in the, B<Membership >> View> screen in the list control panel allow
 
 =head3 Advanced Search/Partial Sending List Options 
 
-The B<View List> screen in Dada Mail's list control panel already has a simple search to find what you're looking for withing your various mailing list members. This releae of Dada Mail also includes an B<Advanced Search>, allowing you to search more specifically for exactly what you're looking for. You may now search by email address, any profile field independently, as well as between subscription date ranges. 
+The B<View List> screen in Dada Mail's list control panel already has a simple search to find what you're looking for withing your various mailing list members.
+
+This search is simple to use, but sometimes you really need to drill down to specifically what you're looking for. 
+
+This release of Dada Mail also includes an B<Advanced Search>, allowing you to search more specifically for exactly what you're looking for. You may now search by email address, any profile field independently, as well as between subscription date ranges. 
 
 Parital sending works the same way and the ability to send to members who have been subscribed between a range of two dates is also available. 
 
