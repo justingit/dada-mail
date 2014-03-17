@@ -31,10 +31,6 @@ Dada Mail now has the ability to allow users to report abuse of your mailing lis
 
 Subscriber information now includes the Date of Subscription in a the B<Timestamp> column. 
 
-=head4 To Do
-
-Since the date of subscription wasn't recorded before support was added, any subscriber added before this release will not have this data available. There's currently no easy way to add in this data, except to edit the SQL table directly. (Question is then, is there an easy way to add this type of information in bulk?)
-
 =head3 Default order for Membership >> View Screen, Show/Hide Timestamp Column
 
 New options in the, B<Membership >> View> screen in the list control panel allow you to set which column to sort subscribers by default, as well as if the Subscription Date/timestamp column should be shown. 
@@ -48,11 +44,6 @@ This search is simple to use, but sometimes you really need to drill down to spe
 This release of Dada Mail also includes an B<Advanced Search>, allowing you to search more specifically for exactly what you're looking for. You may now search by email address, any profile field independently, as well as between subscription date ranges. 
 
 Parital sending works the same way and the ability to send to members who have been subscribed between a range of two dates is also available. 
-
-=head4 Todo 
-
-There should be an easy way to go from searching through your subscribers, to sending a mass mailing out to the results of your search. Searching should also be saveable, basically creating dynamic lists. 
-
 
 =head3 Required Profile Fields
 
