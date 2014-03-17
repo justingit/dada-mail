@@ -11,15 +11,14 @@ Key:
 [?] Someday
 
 
-[ ] Mass Update - can I reuse the query to search, ala: 
+[X] Mass Update - can I reuse the query to search, ala: 
     update dada_profiles set some_field = value where (select ...? etc, etc, etc) 
     http://dev.mysql.com/doc/refman/5.0/en/update.html
     I guess the subquery just has to evaluate to true. That's nice to know. 
     
 
 [x] Timestamp - pick two dates BETWEEN X AND Y
-[ ] also keep x days ago, but it's the same as between except Y is always, "Today", whatevr, "Today" is. 
-[ ] Tests - what happens if one of the dates is not filled out? 
+    [ ] Tests - what happens if one of the dates is not filled out? 
 
 [ ] Also work on advanced search, and saving advanced search, pickable inview screen,
  as well as partial sending, so you can save an advanced search and a draft, 
