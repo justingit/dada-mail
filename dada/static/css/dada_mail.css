@@ -606,6 +606,30 @@ table.tagchart td {
 	padding: 5px;
 }
 
+table.options_tb { 
+    width:   100%; 
+    margin:  0px;   
+    border:  0px;   
+}
+table.options_tb td { 
+    padding-right: 0px; 
+    padding-left: 0px; 
+/*    padding-top:5px; */ 
+	padding-bottom:5px; 
+    
+}
+td.checkbox_container { 
+ width:20px;
+}
+
+
+table.options_tb input[type="checkbox"], 
+table.options_tb input[type="radio"], 
+ { 
+    vertical-align: middle; 
+    margin: 0px;
+}
+
 /* ----- BREAKS ----- */
 
 hr {
