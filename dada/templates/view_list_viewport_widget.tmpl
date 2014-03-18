@@ -6,9 +6,11 @@
     
     
     <!-- tmpl_if expr="defined(advanced_query) && (total_num > 0)" --> 
-        <div style="text-align:center">
-            <input type="button" class="show_update_profile_form processing bigger_button" value="Update Search Results...">
-        </div> 
+        <!-- tmpl_if expr="((root_login == 1) || (list_settings.allow_profile_editing == 1))" --> 
+            <div style="text-align:center">
+                <input type="button" class="show_update_profile_form processing bigger_button" value="Update Search Results...">
+            </div> 
+        <!-- /tmpl_if --> 
     <!-- /tmpl_if --> 
     
     <div id="hidden_mass_update_profile_form" style="display:none"> 

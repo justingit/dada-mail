@@ -1,50 +1,52 @@
 <div id="mass_updates"> 
 
 
+<!-- tmpl_if expr="((root_login == 1) || (list_settings.allow_profile_editing == 1))" --> 
 
-<fieldset> 
+    <fieldset> 
 
-<legend>Mass Update Search Results</legend>
+    <legend>Mass Update Search Results</legend>
 
-<p><strong>Check</strong> the fields that you would like to update, and set the new field value, below:</p> 
+    <p><strong>Check</strong> the fields that you would like to update, and set the new field value, below:</p> 
 
-    <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" id="mass_update_profiles">
+        <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" id="mass_update_profiles">
         
-        <input type="hidden" name="f" value="mass_update_profiles" /> 
+            <input type="hidden" name="f" value="mass_update_profiles" /> 
         
-        <input type="hidden" id="mass_update_advanced_query" name="advanced_query" value="" /> 
+            <input type="hidden" id="mass_update_advanced_query" name="advanced_query" value="" /> 
         
-    <table> 
-    <!-- tmpl_loop undotted_fields --> 
-        <!-- tmpl_unless expr="(name eq 'email')" --> 
+        <table> 
+        <!-- tmpl_loop undotted_fields --> 
+            <!-- tmpl_unless expr="(name eq 'email')" --> 
         
-            <tr> 
-            <td width="20"> 
-                <input type="checkbox" id="update_<!-- tmpl_var name -->"  name="update.<!-- tmpl_var name -->" value="1" for="">
-            </td> 
-             <td align="right"> 
-              <p>
-               <label for="update_<!-- tmpl_var name -->" >
-                <!-- tmpl_var label -->:
-               </label> 
-              </p>
-             </td> 
-             <td>
-              <p>           
-               <input type="text" name="<!-- tmpl_var name -->" />
-              </p>
-             </td>
-            </tr>
-        <!-- /tmpl_unless -->  
-    <!-- /tmpl_loop --> 
-    </table> 
-    <div class="buttonfloat"> 
-        <input type="Submit" value="Mass Update" class="processing" />
-    </div> 
-     <div class="floatclear"></div>
-	
-    
-</form>
+                <tr> 
+                <td width="20"> 
+                    <input type="checkbox" id="update_<!-- tmpl_var name -->"  name="update.<!-- tmpl_var name -->" value="1" for="">
+                </td> 
+                 <td align="right"> 
+                  <p>
+                   <label for="update_<!-- tmpl_var name -->" >
+                    <!-- tmpl_var label -->:
+                   </label> 
+                  </p>
+                 </td> 
+                 <td>
+                  <p>           
+                   <input type="text" name="<!-- tmpl_var name -->" />
+                  </p>
+                 </td>
+                </tr>
+            <!-- /tmpl_unless -->  
+        <!-- /tmpl_loop --> 
+        </table> 
+        <div class="buttonfloat"> 
+            <input type="Submit" value="Mass Update" class="processing" />
+        </div> 
+         <div class="floatclear"></div>
 
-</fieldset> 
+    </form>
+    </fieldset> 
+
+<!-- /tmpl_if --> 
+
 </div> 
