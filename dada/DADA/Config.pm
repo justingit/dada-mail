@@ -690,7 +690,7 @@ $ADMIN_MENU ||= [
                 -Title     => 'Options',
                 -Title_URL => "$S_PROGRAM_URL?f=list_options",
                 -Function  => 'list_options',
-                -Activated => 1,
+                -Activated => 0,
             },
 
             {
