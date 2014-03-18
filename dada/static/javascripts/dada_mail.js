@@ -491,6 +491,89 @@ $(document).ready(function() {
 		});
 	}
 	
+	
+	// Your Mailing List >> Options 
+	
+	if ($("#list_options").length) {
+		toggle_anyone_can_subscribe(); 
+		toggle_closed_list(); 
+		toggle_private_list(); 
+		
+		$('#anyone_can_subscribe').live('click', function(event) {
+			toggle_anyone_can_subscribe(); 
+		});
+		
+		$('#closed_list').live('click', function(event) {
+			toggle_closed_list(); 
+		});	
+
+
+		$('#private_list_no').live('click', function(event) {
+			toggle_private_list(); 
+		});	
+		$('#private_list').live('click', function(event) {
+			toggle_private_list(); 
+		});	
+			
+	}
+	
+	function toggle_anyone_can_subscribe() { 
+		if ($("#anyone_can_subscribe").prop("checked") === true) {
+			if($("#anyone_can_subscribe_options").is(':hidden')) {
+				$("#anyone_can_subscribe_options").show('blind'); 
+			}
+			if($("#not_anyone_can_subscribe_options").is(':visible')) {
+				$("#not_anyone_can_subscribe_options").hide('blind'); 
+			}			
+		}
+		else { 
+			if($("#anyone_can_subscribe_options").is(':visible')) {
+				$("#anyone_can_subscribe_options").hide('blind'); 
+			}
+			if($("#not_anyone_can_subscribe_options").is(':hidden')) {
+				$("#not_anyone_can_subscribe_options").show('blind'); 
+			}
+		
+		}
+	}
+	
+	function toggle_closed_list() { 
+		if ($("#closed_list").prop("checked") === true) {
+			if($("#closed_list_notice").is(':hidden')) {
+				$("#closed_list_notice").show('blind'); 
+			}
+			if($("#opened_list_options").is(':visible')) {
+				$("#opened_list_options").hide('blind'); 
+			}			
+		}
+		else { 
+			if($("#closed_list_notice").is(':visible')) {
+				$("#closed_list_notice").hide('blind'); 
+			}
+			if($("#opened_list_options").is(':hidden')) {
+				$("#opened_list_options").show('blind'); 
+			}
+		
+		}
+	}
+	
+	function toggle_private_list() { 
+		if ($("#private_list").prop("checked") === true) {
+			if($("#private_list_notice").is(':hidden')) {
+				$("#private_list_notice").show('blind'); 
+			}
+		}
+		else { 
+			if($("#private_list_notice").is(':visible')) {
+				$("#private_list_notice").hide('blind'); 
+			}
+		}
+		
+	}
+	
+	
+	
+	
 
 	// Mail Sending >> Advanced Options
 	if ($("#adv_sending_preferences").length) {
