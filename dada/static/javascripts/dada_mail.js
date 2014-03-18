@@ -573,8 +573,23 @@ $(document).ready(function() {
 	
 	
 	
+	if ($("#change_password").length) {
+		$("#change_password_form").validate({
+			debug: false,
+			rules: {
+				new_password: {
+					required: true,
+					minlength: 4
+				},
+				again_new_password: {
+					required: true,
+					minlength: 4,
+					equalTo: "#new_password"
+				},
+			}
+		});
+	}
 	
-
 	// Mail Sending >> Advanced Options
 	if ($("#adv_sending_preferences").length) {
 		$("#misc_options").hide();
