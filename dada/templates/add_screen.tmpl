@@ -12,7 +12,7 @@
 		 <strong>
 			<!-- tmpl_if expr="(type eq 'list')" -->
 				Invite
-				<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && (root_login == 1 || list_settings.enable_mass_subscribe_only_w_root_login != 1))" --> 
+				<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
 					/ Subscribe
  			    <!-- /tmpl_if -->
 			<!-- tmpl_else --> 
@@ -24,7 +24,7 @@
 		&#187;
 		<!-- tmpl_if expr="(type eq 'list')" -->
 			Send Invitation
-			<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && (root_login == 1 || list_settings.enable_mass_subscribe_only_w_root_login != 1))" --> 
+			<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
 				/ Subscribe
 			<!-- /tmpl_if -->
 		<!-- tmpl_else --> 
@@ -114,7 +114,7 @@
 <!-- /tmpl_if --> 
 
 <!-- tmpl_if expr="(type eq 'list')" -->
-    <!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && (root_login == 1 || list_settings.enable_mass_subscribe_only_w_root_login != 1))" --> 
+    <!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
     <!-- tmpl_else --> 
         <div class="clearskiesbox">
             <p>
@@ -245,7 +245,7 @@
 		<legend>
 		<!-- tmpl_if expr="(type eq 'list')" -->
 			Invite
-			<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && (root_login == 1 || list_settings.enable_mass_subscribe_only_w_root_login != 1))" --> 
+			<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
 				/ Subscribe
 			<!-- /tmpl_if -->
 		<!-- tmpl_else --> 

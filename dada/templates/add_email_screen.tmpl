@@ -7,7 +7,7 @@
     &#187; 
     <!-- tmpl_if expr="(type eq 'list')" --> 
         Invite
-        <!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && (root_login == 1 || list_settings.enable_mass_subscribe_only_w_root_login != 1))" -->             
+        <!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" -->             
         / Subscribe
         <!-- /tmpl_if -->
     <!-- tmpl_else --> 
@@ -19,7 +19,7 @@
     
     <!-- tmpl_if expr="(type eq 'list')" --> 
         Send Invitation
-        <!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && (root_login == 1 || list_settings.enable_mass_subscribe_only_w_root_login != 1))" --> 
+        <!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
             / Subscribe
         <!-- /tmpl_if -->
     <!-- tmpl_else --> 
@@ -33,9 +33,6 @@
 <div id="screen_meta" data-menu_highlight="add"></div>
 
 <!-- tmpl_if expr="(type eq 'list')" --> 
-    <!-- tmpl_if ENFORCE_CLOSED_LOOP_OPT_IN -->
-        <!-- ... -->
-    <!-- tmpl_else --> 
         <!-- tmpl_if list_settings.send_subscribed_by_list_owner_message --> 
             <div class="clearskiesbox">
                 <ul> 
@@ -57,9 +54,7 @@
             </li>
             </ul>    
             </div>
-            <!-- /tmpl_if -->     
-        
-    <!-- /tmpl_if --> 
+        <!-- /tmpl_if -->             
 <!-- /tmpl_if -->
 
 <!-- tmpl_if expr="(type eq 'list')" --> 
@@ -75,7 +70,7 @@
 
 <!-- tmpl_if expr="(type eq 'list')" --> 
     <!-- tmpl_if list_settings.closed_list -->
-        <!-- tmpl_unless expr="((list_settings.enable_mass_subscribe == 1) && (root_login == 1 || list_settings.enable_mass_subscribe_only_w_root_login != 1))" --> 
+        <!-- tmpl_unless expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
          <div class="clearskiesbox">
          <p><strong>Warning!</strong></p> 
          <p>
@@ -87,6 +82,20 @@
         <!-- /tmpl_unless --> 
     <!-- /tmpl_if -->
 <!-- /tmpl_if -->
+
+<!-- tmpl_if expr="(type eq 'list')" --> 
+    <!-- tmpl_unless list_settings.allow_profile_editing -->
+        <div class="clearskiesbox">
+            <p>
+                Profile Field Editing is <strong>Disabled.</strong>
+            </p>
+        </div> 
+    <!-- /tmpl_unless --> 
+<!-- /tmpl_if --> 
+
+
+
+
 
 <!-- tmpl_if expr="(type eq 'list')" --> 
     <div class="clearskiesbox">
@@ -843,12 +852,24 @@
       <input type="submit"  name="process" value="Send Invitation... &rArr;" <!-- tmpl_if list_settings.closed_list -->disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing addingemail"<!-- /tmpl_if --> />
     <!-- /tmpl_if -->
     
-    <!-- tmpl_if expr="(type eq 'list')" --> 
-        <!-- tmpl_if ENFORCE_CLOSED_LOOP_OPT_IN --> 
-            <!-- ... --> 
+    <!-- tmpl_if expr="(type eq 'list')" -->         
+        
+        
+        
+        <!-- tmpl_unless not_members --> 
+            <!-- tmpl_if subscribed -->             
+                <!-- tmpl_if expr="(root_login == 1 || list_settings.allow_profile_editing == 1)" --> 
+                    <input type="submit" class="processing addingemail"name="process"  value="Update Checked Addresses &rArr;" />            
+                <!-- /tmpl_if --> 
+            <!-- /tmpl_if --> 
         <!-- tmpl_else --> 
-            <input type="submit" <!-- tmpl_unless expr="((list_settings.enable_mass_subscribe == 1) && (root_login == 1 || list_settings.enable_mass_subscribe_only_w_root_login != 1))" --> disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing addingemail warnAboutMassSubscription"<!-- /tmpl_unless -->  name="process"  value="Subscribe/Update Checked Addresses &rArr;" />    
-        <!-- /tmpl_if --> 
+        
+            <input type="submit" <!-- tmpl_unless expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing addingemail warnAboutMassSubscription"<!-- /tmpl_unless -->  name="process"  value="Subscribe/Update Checked Addresses &rArr;" />            
+            
+        <!-- /tmpl_unless --> 
+        
+        
+        
     <!-- tmpl_else --> 
         <input type="submit" class="processing addingemail" name="process"  value="Add Checked Addresses to <!-- tmpl_var type_title --> &rArr;" />
     <!-- /tmpl_if -->

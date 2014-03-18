@@ -2100,6 +2100,10 @@ sub screen {
 	}
 	elsif($engine eq 'html_template_expr'){ 
 		require HTML::Template::MyExpr;
+	 	        #HTML::Template::MyExpr->register_function(
+	 	        #    not_defined => \&not_defined
+	 	        #);
+		
 		if($args->{-screen}){ 
 			$template = HTML::Template::MyExpr->new(
 				%Global_Template_Options, 
@@ -2579,7 +2583,19 @@ sub dada_backwards_compatibility {
 
 
 
-
+sub not_defined { 
+    my $ref = shift;
+#    use Data::Dumper; 
+#    warn Dumper($ref); 
+    
+    if(ref($ref) eq 'ARRAY'){
+        return 1 if defined($ref->[0]); 
+    }
+    else { 
+        return 1 if ! defined($ref); 
+    }
+    return 0;
+}
 sub dada_pseudo_tag_filter { 
 
     my $text_ref = shift;

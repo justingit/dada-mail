@@ -646,7 +646,7 @@ $ADMIN_MENU ||= [
             },
 
             {
-                -Title => 'Invite<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && (root_login == 1 || list_settings.enable_mass_subscribe_only_w_root_login != 1))" --> /Subscribe<!-- /tmpl_if -->/Add',
+                -Title => 'Invite<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> /Subscribe<!-- /tmpl_if -->/Add',
                 -Title_URL => "$S_PROGRAM_URL?f=add",
                 -Function  => 'add',
                 -Activated => 1,

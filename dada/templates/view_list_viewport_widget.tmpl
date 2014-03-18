@@ -42,7 +42,7 @@
     				<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=add&amp;type=<!-- tmpl_var type -->">
     					<!-- tmpl_if EXPR="(type eq 'list')" -->
     							Invite
-    							<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && (root_login == 1 || list_settings.enable_mass_subscribe_only_w_root_login != 1))" -->
+    							<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" -->
     					/ Add
     							<!-- /tmpl_if -->
     						<!-- tmpl_else --> 
@@ -106,7 +106,7 @@
 			<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=add&amp;type=<!-- tmpl_var type -->">
 					<!-- tmpl_if EXPR="(type eq 'list')" -->
 						Invite
-						<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && (root_login == 1 || list_settings.enable_mass_subscribe_only_w_root_login != 1))" -->
+						<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" -->
 						/ Subscribe
 						<!-- /tmpl_if -->
 					<!-- tmpl_else --> 
