@@ -84,7 +84,7 @@
 <!-- /tmpl_if -->
 
 <!-- tmpl_if expr="(type eq 'list')" --> 
-    <!-- tmpl_unless list_settings.allow_profile_editing -->
+    <!-- tmpl_unless "((list_settings.allow_profile_editing == 1) || (root_login == 1))"-->
         <div class="clearskiesbox">
             <p>
                 Profile Field Editing is <strong>Disabled.</strong>
