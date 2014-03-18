@@ -90,24 +90,25 @@
 
 
 <fieldset>
-	<legend>Membership &#187; Invite/Subscribe/Add &#187; Verify</legend>
+	<legend>Subscriber Profiles</legend>
 
     <table width="100%">
 
      <tr>
       <td width="20">
        <p>
-        <input type="checkbox" name="add_verify_show_advanced_import_options" id="add_verify_show_advanced_import_options" <!-- tmpl_if list_settings.add_verify_show_advanced_import_options -->checked="checked"<!-- /tmpl_if -->   value="1" />
+        <input type="checkbox" name="allow_profile_editing" id="allow_profile_editing" <!-- tmpl_if list_settings.allow_profile_editing -->checked="checked"<!-- /tmpl_if -->   value="1" />
        </p>
       </td> 
       <td>
         <p>
-        <label for="add_verify_show_advanced_import_options"> 
-        Show Advanced Options
-        </label>
+        <label for="allow_profile_editing"> 
+        Allow Profile Field Editing
+        </label><br /> 
+        <em>When logged into the mailing list with the <strong>List Password</strong></em>
         </p> 
-        <p> 
-            Advanced options include:
+            
+        <p><strong>Advanced Profile Options</strong> will also be available during mass subscribing, including: </p>
             <ul> 
                 <li>Preserving or Updating Profile information, for new Subscribers</li> 
                 <li>Importing Subscribers with missing and required Profile Fields</li> 
@@ -121,7 +122,7 @@
         
         <p>
             <em> 
-                Advanced Options will still be available when logged in with the 
+                All these options will be available when logged in with the 
                 <strong>
                 <!-- tmpl_var PROGRAM_NAME --> Root Password. 
             </strong> 

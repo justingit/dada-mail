@@ -10,7 +10,7 @@
 		 Membership (Subscribers) 
 		<!-- tmpl_if list_type_isa_list -->
 			Invite
-			<!-- tmpl_if list_settings.enable_mass_subscribe -->
+			<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && (root_login == 1 || list_settings.enable_mass_subscribe_only_w_root_login != 1))" -->
 				/ Add
 			<!-- /tmpl_if -->
 		<!-- tmpl_else --> 
@@ -21,7 +21,7 @@
 		&#187;
 		<!-- tmpl_if list_type_isa_list -->
 			<strong>Send Invitation</strong>
-			<!-- tmpl_if list_settings.enable_mass_subscribe -->
+			<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && (root_login == 1 || list_settings.enable_mass_subscribe_only_w_root_login != 1))" -->
 				/ Subscribe
 			<!-- /tmpl_if -->
 		<!-- tmpl_else --> 

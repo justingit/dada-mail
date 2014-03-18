@@ -646,8 +646,7 @@ $ADMIN_MENU ||= [
             },
 
             {
-                -Title =>
-'Invite<!-- tmpl_if list_settings.enable_mass_subscribe -->/Subscribe<!-- /tmpl_if -->/Add',
+                -Title => 'Invite<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && (root_login == 1 || list_settings.enable_mass_subscribe_only_w_root_login != 1))" --> /Subscribe<!-- /tmpl_if -->/Add',
                 -Title_URL => "$S_PROGRAM_URL?f=add",
                 -Function  => 'add',
                 -Activated => 1,
@@ -1373,7 +1372,7 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
     # add list prefs
     use_add_list_import_limit               => 1, 
     add_list_import_limit                   => 1000, 
-    add_verify_show_advanced_import_options => 0, 
+    allow_profile_editing => 0, 
     
     # archive prefs
 
@@ -1549,8 +1548,9 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
 
     # List CP -> Options
 
-    use_wysiwyg_editor    => 'ckeditor',
-    enable_mass_subscribe => 0,
+    use_wysiwyg_editor                      => 'ckeditor',
+    enable_mass_subscribe                   => 1,
+    enable_mass_subscribe_only_w_root_login => 1,
 
     # Send me the list password.
     pass_auth_id => undef,

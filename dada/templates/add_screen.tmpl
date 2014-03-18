@@ -12,9 +12,9 @@
 		 <strong>
 			<!-- tmpl_if expr="(type eq 'list')" -->
 				Invite
-				<!-- tmpl_if list_settings.enable_mass_subscribe -->
+				<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && (root_login == 1 || list_settings.enable_mass_subscribe_only_w_root_login != 1))" --> 
 					/ Subscribe
-				<!-- /tmpl_if -->
+ 			    <!-- /tmpl_if -->
 			<!-- tmpl_else --> 
 				Add
 			<!-- /tmpl_if --> 
@@ -24,7 +24,7 @@
 		&#187;
 		<!-- tmpl_if expr="(type eq 'list')" -->
 			Send Invitation
-			<!-- tmpl_if list_settings.enable_mass_subscribe -->
+			<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && (root_login == 1 || list_settings.enable_mass_subscribe_only_w_root_login != 1))" --> 
 				/ Subscribe
 			<!-- /tmpl_if -->
 		<!-- tmpl_else --> 
@@ -114,7 +114,8 @@
 <!-- /tmpl_if --> 
 
 <!-- tmpl_if expr="(type eq 'list')" -->
-    <!-- tmpl_unless list_settings.enable_mass_subscribe -->
+    <!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && (root_login == 1 || list_settings.enable_mass_subscribe_only_w_root_login != 1))" --> 
+    <!-- tmpl_else --> 
         <div class="clearskiesbox">
             <p>
                 Adding Subscribers via the List Control Panel has been <strong>disabled.</strong>
@@ -123,7 +124,7 @@
                 You may still Invite Subscribers to join. 
             </p>
         </div> 
-    <!-- /tmpl_unless --> 
+    <!-- /tmpl_if --> 
 <!-- /tmpl_if -->
 
 
@@ -244,7 +245,7 @@
 		<legend>
 		<!-- tmpl_if expr="(type eq 'list')" -->
 			Invite
-			<!-- tmpl_if list_settings.enable_mass_subscribe -->
+			<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && (root_login == 1 || list_settings.enable_mass_subscribe_only_w_root_login != 1))" --> 
 				/ Subscribe
 			<!-- /tmpl_if -->
 		<!-- tmpl_else --> 

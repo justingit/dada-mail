@@ -7,8 +7,8 @@
     &#187; 
     <!-- tmpl_if expr="(type eq 'list')" --> 
         Invite
-        <!-- tmpl_if list_settings.enable_mass_subscribe -->
-            / Subscribe
+        <!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && (root_login == 1 || list_settings.enable_mass_subscribe_only_w_root_login != 1))" -->             
+        / Subscribe
         <!-- /tmpl_if -->
     <!-- tmpl_else --> 
         Add
@@ -19,7 +19,7 @@
     
     <!-- tmpl_if expr="(type eq 'list')" --> 
         Send Invitation
-        <!-- tmpl_if list_settings.enable_mass_subscribe -->
+        <!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && (root_login == 1 || list_settings.enable_mass_subscribe_only_w_root_login != 1))" --> 
             / Subscribe
         <!-- /tmpl_if -->
     <!-- tmpl_else --> 
@@ -75,7 +75,7 @@
 
 <!-- tmpl_if expr="(type eq 'list')" --> 
     <!-- tmpl_if list_settings.closed_list -->
-        <!-- tmpl_unless list_settings.enable_mass_subscribe -->
+        <!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && (root_login == 1 || list_settings.enable_mass_subscribe_only_w_root_login != 1))" --> 
          <div class="clearskiesbox">
          <p><strong>Warning!</strong></p> 
          <p>
@@ -111,7 +111,7 @@
          <fieldset> 
           <legend>Verified Addresses</legend>
 
-          <!-- tmpl_if expr="(root_login == 1) || (list_settings.add_verify_show_advanced_import_options == 1)" -->           
+          <!-- tmpl_if expr="(root_login == 1) || (list_settings.allow_profile_editing == 1)" -->           
               <!-- tmpl_if expr="(type eq 'list')" -->
                   <div class="clearskiesbox">
                       <p>
@@ -227,7 +227,7 @@
          <fieldset> 
           <legend>Subscribed Already</legend> 
 
-         <!-- tmpl_if expr="(root_login == 1) || (list_settings.add_verify_show_advanced_import_options == 1)" --> 
+         <!-- tmpl_if expr="(root_login == 1) || (list_settings.allow_profile_editing == 1)" --> 
              <!-- tmpl_if expr="(type eq 'list')" --> 
                  <div class="clearskiesbox">
                      <p>
@@ -292,7 +292,7 @@
          <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
           <td width="25">
 
-              <!-- tmpl_if expr="(root_login == 1) || (list_settings.add_verify_show_advanced_import_options == 1)" --> 
+              <!-- tmpl_if expr="(root_login == 1) || (list_settings.allow_profile_editing == 1)" --> 
                   <!-- tmpl_if expr="(type eq 'list')" --> 
                      <input type="checkbox" name="update_fields_address" value="<!-- tmpl_var csv_str escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" />
                  <!-- /tmpl_if -->
@@ -333,7 +333,7 @@
      <p>&nbsp;</p>
      </div>
      
-     <!-- tmpl_if expr="(root_login == 1) || (list_settings.add_verify_show_advanced_import_options == 1)" --> 
+     <!-- tmpl_if expr="(root_login == 1) || (list_settings.allow_profile_editing == 1)" --> 
          <!-- tmpl_if expr="(type eq 'list')" --> 
              <p>
              <input type="checkbox" id="checkbox_for_subscribed_addresses" class="check_all_in_div" data-target="subscribed_addresses">
@@ -606,7 +606,7 @@
          <p>
           These addresses have missing profile fields that have been set as being required.
          </p>
-         <!-- tmpl_if expr="(root_login == 1) || (list_settings.add_verify_show_advanced_import_options == 1)" -->                          
+         <!-- tmpl_if expr="(root_login == 1) || (list_settings.allow_profile_editing == 1)" -->                          
              <p>
                  If you would still like to subscribe them, <strong>check</strong> those addresses below: 
              </p>
@@ -658,7 +658,7 @@
          <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
           <td width="25">
               
-              <!-- tmpl_if expr="(root_login == 1) || (list_settings.add_verify_show_advanced_import_options == 1)" -->           
+              <!-- tmpl_if expr="(root_login == 1) || (list_settings.allow_profile_editing == 1)" -->           
                 <input type="checkbox" name="address" value="<!-- tmpl_var csv_str escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" />
               <!-- /tmpl_if --> 
                 
@@ -695,7 +695,7 @@
      <p>&nbsp;</p>
      <p>&nbsp;</p>
      </div>
-     <!-- tmpl_if expr="(root_login == 1) || (list_settings.add_verify_show_advanced_import_options == 1)" --> 
+     <!-- tmpl_if expr="(root_login == 1) || (list_settings.allow_profile_editing == 1)" --> 
          <p>
          <input type="checkbox" id="checkbox_for_invalid_profile_fields_addresses" class="check_all_in_div" data-target="invalid_profile_fields_addresses">
              <label for="checkbox_for_invalid_profile_fields_addresses">
@@ -847,7 +847,7 @@
         <!-- tmpl_if ENFORCE_CLOSED_LOOP_OPT_IN --> 
             <!-- ... --> 
         <!-- tmpl_else --> 
-            <input type="submit" <!-- tmpl_unless list_settings.enable_mass_subscribe -->disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing addingemail warnAboutMassSubscription"<!-- /tmpl_unless -->  name="process"  value="Subscribe/Update Checked Addresses &rArr;" />    
+            <input type="submit" <!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && (root_login == 1 || list_settings.enable_mass_subscribe_only_w_root_login != 1))" --> disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing addingemail warnAboutMassSubscription"<!-- /tmpl_unless -->  name="process"  value="Subscribe/Update Checked Addresses &rArr;" />    
         <!-- /tmpl_if --> 
     <!-- tmpl_else --> 
         <input type="submit" class="processing addingemail" name="process"  value="Add Checked Addresses to <!-- tmpl_var type_title --> &rArr;" />

@@ -2473,6 +2473,7 @@ sub list_options {
                     unsub_show_email_hint                   => 0,
                     enable_subscription_approval_step       => 0,
                     enable_mass_subscribe                   => 0,
+                    enable_mass_subscribe_only_w_root_login => 0,
                     send_subscribed_by_list_owner_message   => 0,
                     send_unsubscribed_by_list_owner_message => 0,
                     send_last_archived_msg_mass_mailing     => 0,
@@ -5555,12 +5556,14 @@ sub add_email {
                 }
             }
 
-            if (   $ls->param('enable_mass_subscribe') != 1
-                && $type eq 'list' )
-            {
-                die "Mass Subscribing via the List Control Panel has been disabled.";
+            if($type eq 'list') { 
+                unless($ls->param('enable_mass_subscribe')
+                    && ($root_login == 1 || $ls->param('enable_mass_subscribe_only_w_root_login') != 1)){
+                {
+                    die "Mass Subscribing via the List Control Panel has been disabled.";
+                }
             }
-
+            
             my @address                         = $q->param("address");
             my $not_members_fields_options_mode = $q->param('not_members_fields_options_mode') || 'preserve_if_defined';
             my $new_email_count                 = 0;
@@ -6000,7 +6003,7 @@ sub subscription_options {
                     view_list_order_by_direction            => undef,
                     use_add_list_import_limit               => 0,
                     add_list_import_limit                   => undef, 
-                    add_verify_show_advanced_import_options => 0, 
+                    allow_profile_editing => 0, 
                     use_subscription_quota                  => 0,
                     subscription_quota                      => undef,
                     black_list                              => 0,
