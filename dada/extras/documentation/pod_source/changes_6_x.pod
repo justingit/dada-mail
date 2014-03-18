@@ -45,6 +45,10 @@ This release of Dada Mail also includes an B<Advanced Search>, allowing you to s
 
 Parital sending works the same way and the ability to send to members who have been subscribed between a range of two dates is also available. 
 
+=head3 Mass Update of Subscriber Profile Fields, based on Advanced Search
+
+Once you've done an advanced search on your subscribers, you will now have the ability to update any of the Profile Fields of your search results, en mass. 
+
 =head3 Required Profile Fields
 
 Profile Fields can now be marked as, B<Required>. Form field validation is done on the subscription form,  both client and server side. The experimental JSON web service API also supports required Profile Fields. 
