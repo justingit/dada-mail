@@ -848,8 +848,10 @@
          <input type="button" class="cautionary previous" value="<< Re-Enter Addresses" />
     <!-- /tmpl_if --> 
     
-    <!-- tmpl_if expr="(type eq 'list')" --> 
-      <input type="submit"  name="process" value="Send Invitation... &rArr;" <!-- tmpl_if list_settings.closed_list -->disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing addingemail"<!-- /tmpl_if --> />
+    <!-- tmpl_if expr="(type eq 'list')" -->
+        <!-- tmpl_if not_members --> 
+            <input type="submit"  name="process" value="Send Invitation... &rArr;" <!-- tmpl_if list_settings.closed_list -->disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing addingemail"<!-- /tmpl_if --> />
+        <!-- /tmpl_if --> 
     <!-- /tmpl_if -->
     
     <!-- tmpl_if expr="(type eq 'list')" -->         
