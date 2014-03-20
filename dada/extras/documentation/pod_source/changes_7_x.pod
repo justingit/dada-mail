@@ -1,0 +1,108 @@
+=pod
+
+=head1 7.0.0 Alpha 1
+
+=head2 Features
+
+=head3 Private Mailing Lists
+
+Previous versions of Dada Mail were specifically designed to run B<Public Mailing Lists>: mailing lists where anyone can subscribe to using the subscription form, and most I<definitely> everyone can remove themselves from (unsubscribe). 
+
+For public mailing lists and marketing purposes, this works just great, but many users want to work with the app for a different purpose: utilizing Dada Mail's mailing list organizational and mass mailing features for a I<private> mailing list of contacts: a group of colleagues, or an internal company mailing list.
+
+Sicne this wasn't a role that Dada Mail was designed for, it hasn't fared very well, as List Owners become frustrated, having to constantly deal with list members removing themselves (often by accident). The tools to run a private mailing list just weren't there and solutions to this problem feel very hacky.  
+
+Dada Mail now has support for B<Private Mailing Lists>. A private mailing list 
+is a mailing list used in a closed, internal setting; not for a mailing list  used publically for marketing purposes. 
+
+When a mailing list's mode is set to, B<Private>, unsubscription links are not required (as they are in a public mailing list), but any unsubscription links found in a mass mailing message will be turned into a link to B<Request Removal>. This request will be sent to the List Owner, who will have the final say on who is removed from the mailing list. 
+
+All other options for a mailing list are still available for a Private List, allowing you to tailor your mailing list to exactly what you need.
+
+More information about Private and Public Mailing Lists:
+
+L<http://dadamailproject.com/d/features-private_and_public_lists.pod>
+
+=head3 Abuse Reporting
+
+Dada Mail now has the ability to allow users to report abuse on your mailing list. These abuse reports will be emailed to the List Owner, logged, and reported through the Tracker plugin. 
+
+=head3 Subscriber Subscription Date saved in a Timestamp
+
+Subscriber information now includes the Date of Subscription in a the B<Timestamp> column. 
+
+=head3 Default order for Membership >> View Screen, Show/Hide Timestamp Column
+
+New options in the, B<Membership >> View> screen in the list control panel allow you to set which column to sort subscribers by default, as well as if the Subscription Date/timestamp column should be shown. 
+
+=head3 Advanced Search/Partial Sending List Options 
+
+The B<View List> screen in Dada Mail's list control panel already has a simple search to find what you're looking for withing your various mailing list members.
+
+This search is simple to use, but sometimes you really need to drill down to specifically what you're looking for. 
+
+This release of Dada Mail includes an B<Advanced Search>, allowing you to search more specifically for exactly what you're looking for. You may now search by email address, any profile field independently, as well as between subscription date ranges. 
+
+Parital sending works the same way and the ability to send to members who have been subscribed between a range of two dates is also available. 
+
+=head3 Mass Update of Subscriber Profile Fields, based on Advanced Search
+
+Once you've done an advanced search on your subscribers, you will now have the ability to update any of the Profile Fields of your search results, en mass.
+
+=head3 Required Profile Fields
+
+Profile Fields can now be marked as, B<Required>. Form field validation is done on the subscription form,  both client and server side. The experimental JSON web service API also supports required Profile Fields. 
+
+=head3 More Powerful List Control Panel Address Importing, Mass Updating
+
+The List Control Panel Add/Subscribe/Invite screen now comes with a ton of new, and useful options and utilities:
+
+=head4 Preserve or Update Profile Field Information
+
+In previous versions of Dada Mail, any Profile field information you try to import could potentially be discarded, if the address you're importing already has profile field information. This is because profile field information is shared between mailing lists, and importing a subscriber into a mailing list, may inadvertantly wipe out already saved information. 
+
+Dada Mail now has the option to either preserve any already-existing profile field information, or update information that already exists - this choice on what to do can be made during the Verification step. 
+
+=head4 Profile Field data validation
+
+Since Profile fields can now be required, Dada Mail also checks for any required Profile Fields and will present the List Owner with the addresses that are missing these Profile Fields, in the verification step. There is now the option to subscribe addresses that are missing the required Profile Fields.
+
+Dada Mail now has the option to allow you to mass update the Profile Fields data of subscribers who are already subscribed, stopping you from needing to fully remove subscribers, just to reimport them. 
+
+=head4 Profiles and Profile Passwords
+
+Along with Profile Fields, Dada Mail can now allow you to set a Profile Password, when importing subscribers. This Profile Password allows your user to log into their own Profile, and make changes to their mailing list subscriptions. Profiles are only made, if a Profile Password is created.
+
+=head2 Changes 7.0.0
+
+=head3 Config.pm default variables with HTML have been removed, templated out
+
+HTML that can be edited in the B<Appearance and Templates >> HTML Screen Templates> list control panel had their default values stored in the Config.pm file. 
+
+This hinders customization and internationalization, testing, as well as adding extra bulk to the already-too large Config.pm file. The values of these variables have now been templated out into their own files                        located in the, I<dada/templates/list> directory
+
+=head3 Config.pm default variables of email messages have been removed, templated out
+
+Email messages, that can be edited in the, B<Appearance and Templates >> Email Message Templates> screen (as well as other email messages, that can be customized in various other places) had their default values stored in the Config.pm file. 
+
+This hinders customization and internationalization, testing, as well as adding extra bulk to the already-too large Config.pm file. The values of these variables have now been templated out into their own files located in the, I<dada/templates/email> directory. 
+
+The removal of these variables (as well as HTML screens) has removed over 1,100 lines from the Config.pm file. 
+
+=head3 Database Schema Changes
+
+There are slight changes to the database schema for Dada Mail. Both the, C<dada_subscribers> and, C<dada_profile_fields_attributes> have new columns. Dada Mail should be able to modify your tables to the correct schema, but we do suggest backing up your database before upgrading. 
+
+=head3 PlainText Backend - DEPRECATED
+
+The stable release of v7.0.0 has the PlainText backend marked as DEPRECATED and will be fully removed at a later date. 
+
+This will help make the app more streamlined by removing a good chunk of the codebase that's rarely used. Most new features of Dada Mail cannot be utilized when using the PlainText backend anyways, which leads to confusion with users, as well as complicating the codebase, as checks have to make on what exactly the backend supports. 
+
+=head3 New Deprecated Plugins/Extensions
+
+None! 
+
+Even Beatitude (Scheduled Mailer) will still be around for v7.0.0, and should be able to support the new partial mailing list features (timestamp date range!) Beatitude is still listed as B<deprecated>, but will not be removed (or rewritten), until its features (or similar) are available in another form.
+
+=cut

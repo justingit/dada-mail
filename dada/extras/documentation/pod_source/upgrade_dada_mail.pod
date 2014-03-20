@@ -98,4 +98,4 @@ The rest of the installer form will be hidden, as no extra configuration is need
 
 It's a B<I<very very>> good idea to look at the changelog and note B<any> incompatibilities between versions. It's possible that incompatibilities could break your installation, when you upgrade. 
 
-Changelog: L<http://dadamailproject.com/d/changes_6_x.pod.html>
+Changelog: L<http://dadamailproject.com/d/changes_7_x.pod.html>

@@ -489,16 +489,6 @@ sub SQL_subscriber_profile_join_statement {
     			 push( @add_q, '(' . join( ' ' . $search_binder . ' ', @s_snippets ) . ')' );
     		}
     		elsif($field eq 'subscriber.timestamp') { 
-#                if($args->{-partial_listing}->{$field}->{-operator} eq '<') { 
-#                    $search_op = '<';
-#                }
-#                elsif($args->{-partial_listing}->{$field}->{-operator} eq '>') { 
-#                    $search_op = '>';                    
-#                }
-#                else { 
-#                    # ... 
-#                }
-
                 my $timestamp_snippet = ''; 
                 
                 $timestamp_snippet = $table . '.timestamp >= ' 
@@ -510,30 +500,8 @@ sub SQL_subscriber_profile_join_statement {
                 . $self->{dbh}->quote(
                     $args->{-partial_listing}->{$field}->{-rangeend}
                 ); 
-                
-
-#                where date >= [start date] and date <= [end date]
-                
-=cut
-                
-                if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
-                    $timestamp_snippet =   $table . '.timestamp ' 
-                                            . $search_op 
-                                            . ' DATE_SUB(NOW(), INTERVAL ' 
-                                            . $args->{-partial_listing}->{$field}->{-value} 
-                                            . ' DAY)';
-                }
-                else {
-                    # Pg 
-                    $timestamp_snippet =   $table . '.timestamp ' 
-                                            . $search_op 
-                                            . ' NOW() - INTERVAL ' 
-                                            . $args->{-partial_listing}->{$field}->{-value} 
-                                            . ' DAY';
-                }
-=cut
-
-                warn 'pushing timestamp snippit: ' . $timestamp_snippet; 
+                warn 'pushing timestamp snippit: ' . $timestamp_snippet
+                    if $t;
                 push( @add_q, $timestamp_snippet );
     		}
     		else { 
