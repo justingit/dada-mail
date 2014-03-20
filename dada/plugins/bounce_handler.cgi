@@ -64,37 +64,6 @@ my $Plugin_Config = {
     Plugin_Name              => 'Bounce Handler',
 };
 
-$Plugin_Config->{Email_Unsubscribed_Because_Of_Bouncing_Subject} =
-"Unsubscribed from: <!-- tmpl_var list_settings.list_name --> because of excessive bouncing";
-$Plugin_Config->{Email_Unsubscribed_Because_Of_Bouncing_Message} = qq{
-Hello, This is <!-- tmpl_var Plugin_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME -->
-
-This is a notice that your email address:
-
-    <!-- tmpl_var subscriber.email -->
-    
-has been unsubscribed from:
-
-    <!-- tmpl_var list_settings.list_name -->
-    
-Because your email address has been bouncing messages sent to it, 
-originating from this list.
-
-If this is in error, please re-subscribe to this list, by following 
-this link: 
-
-    <!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list -->
-
-If you have any questions, please email the list owner of this list at: 
-
-    <!-- tmpl_var list_settings.list_owner_email -->
-    
-for more information. 
-
-- <!-- tmpl_var PROGRAM_NAME -->
-
-};
-
 #---------------------------------------------------------------------#
 # Nothing else to be configured.                                      #
 
