@@ -4090,9 +4090,13 @@ sub membership {
     my $bounced_list_moved_to_list_count = $q->param('bounced_list_moved_to_list_count') || 0;
     my $bounced_list_removed_from_list   = $q->param('bounced_list_removed_from_list') || 0;
 
+    my $profile_exists = 0; 
+    require DADA::Profile; 
+    my $prof = DADA::Profile->new({ -email => $email } ); 
+    $profile_exists = $prof->exists; 
 
     if ($process) {
-        if ( !$root_login ) {
+        if ($root_login != 1 || $ls->param('list_settings.allow_profile_editing') != 1) {
             die
 "You must be logged in with the Dada Mail Root Password to be able to edit a Subscriber's Profile Fields.";
         }
@@ -4286,6 +4290,7 @@ sub membership {
                     type_title                     => $type_title,
                     fields                         => $fields,
                     root_login                     => $root_login,
+                    profile_exists                 => $profile_exists, 
                     add_to_popup_menu              => $add_to_popup_menu,
                     update_address_popup_menu      => $update_address_popup_menu,
                     remove_from_popup_menu         => $remove_from_popup_menu,
@@ -5557,8 +5562,9 @@ sub add_email {
             }
 
             if($type eq 'list') { 
-                unless($ls->param('enable_mass_subscribe')
-                    && ($root_login == 1 || $ls->param('enable_mass_subscribe_only_w_root_login') != 1)){
+                unless(
+                        $ls->param('enable_mass_subscribe') == 1
+                    && ($root_login == 1 || $ls->param('enable_mass_subscribe_only_w_root_login') != 1))
                 {
                     die "Mass Subscribing via the List Control Panel has been disabled.";
                 }
@@ -11957,7 +11963,8 @@ sub profile_logout {
 
     $prof_sess->logout;
     my $redirect_to = $DADA::Config::PROGRAM_URL . '?f=profile_login&logged_out=1';
-    if ( $q->referer() ) {
+    
+    if ( $q->referer() && $q->referer() !~ m/\/profile\//) {
         $redirect_to = $q->referer();
     }
     print $q->header(

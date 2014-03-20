@@ -379,13 +379,12 @@ sub list_popup_menu {
 	# This needs its own method...
 		foreach my $list( @lists ){
 			my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-			my $li = $ls->get; 
-			next if $args{-show_hidden} == 0 && $li->{hide_list} == 1; 
+			next if $args{-show_hidden} == 0 && ($ls->param('hide_list') == 1 && $ls->param('private_list') == 1); 
 			if($args{-show_list_shortname} == 1){ 
-				$labels->{$list} = $li->{list_name} . ' (' . $list . ')';
+				$labels->{$list} = $ls->param('list_name') . ' (' . $list . ')';
 			}
 			else { 
-				$labels->{$list} = $li->{list_name};				
+				$labels->{$list} = $ls->param('list_name');
 			}
 			$l_count++;
 		}
@@ -503,8 +502,7 @@ sub global_list_sending_checkbox_widget {
 					-list => $_,
 				}
 			); 
-		my $li = $ls->get; 
-		$list_names{$_} = $_ . ' (' . $li->{list_name} . ')';
+		$list_names{$_} = $_ . ' (' . $ls->param('list_name') . ')';
 	}
 	
 	
@@ -560,9 +558,8 @@ sub default_screen {
         # /This is a weird placement...
 
         my $ls = DADA::MailingList::Settings->new( { -list => $l } );
-        my $li = $ls->get;
-        next if $li->{hide_list} == 1;
-        $labels->{$l} = $li->{list_name};
+        next if $ls->param('hide_list') == 1 && $ls->param('private_list') == 1;
+        $labels->{$l} = $ls->param('list_name');
         $l_count++;
     }
     my @list_in_list_name_order =
@@ -655,7 +652,6 @@ sub list_page {
 	require DADA::MailingList::Settings; 
 	
 	my $ls = DADA::MailingList::Settings->new({-list => $args{-list}}); 
-	my $li= $ls->get; 
 
 	# allowed_to_view_archives
     my $html_archive_list = html_archive_list($args{-list}); 
@@ -668,7 +664,7 @@ sub list_page {
         -expr                     => 1, 
 		-with                     => 'list', 
         -screen                   => 'list_page_screen.tmpl',
-        -list_settings_vars       => $li,
+        -list_settings_vars       => $ls->get(),
         -list_settings_vars_param => {
 			-dot_it => 1
 			-list   => $args{-list}, # this is redundant, but important for email protection.
@@ -794,9 +790,8 @@ sub _show_other_link {
         
     foreach my $list(available_lists(-Dont_Die => 1) ){
         my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-        my $li = $ls->get; 
         return 1
-            if $li->{hide_list} == 1; 
+            if $ls->param('hide_list') == 1  && $ls->param('private_list') == 1; 
 	}
 			
     return 0; 
@@ -816,9 +811,8 @@ sub show_login_list_textbox {
     
     foreach my $list(available_lists(-Dont_Die => 1) ){
         my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-        my $li = $ls->get; 
         return 0
-            if $li->{hide_list} == 0; 
+            if $ls->param('hide_list') == 1  && $ls->param('private_list') == 1; 
 	}
 			
     return 1;
@@ -840,7 +834,6 @@ sub html_archive_list {
 
 	
 	my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-	my $li = $ls->get; 
 	
 	require DADA::Profile; 
 	my $prof = DADA::Profile->new(
@@ -891,11 +884,11 @@ sub html_archive_list {
 	                    $subject = DADA::Template::Widgets::screen(
 	                        {
 	                        -data                    => \$subject, 
-	                        -vars                     => $li, 
-	                        -list_settings_vars       => $li, 
+	                        -vars                     => $ls->get(), 
+	                        -list_settings_vars       => $ls->get(), 
 	                        -list_settings_vars_param => {-dot_it => 1},                    
 	                        -dada_pseudo_tag_filter   => 1, 
-							-subscriber_vars_param    => {-use_fallback_vars => 1, -list => $li->{list}},
+							-subscriber_vars_param    => {-use_fallback_vars => 1, -list => $ls->param('list')},
 
 	                        }
 	                    ); 
@@ -903,12 +896,14 @@ sub html_archive_list {
                 
                 
 	                # this is so atrocious.
-	                my $date = date_this(-Packed_Date   => $entries->[$i],
-	                -Write_Month   => $li->{archive_show_month},
-	                -Write_Day     => $li->{archive_show_day},
-	                -Write_Year    => $li->{archive_show_year},
-	                -Write_H_And_M => $li->{archive_show_hour_and_minute},
-	                -Write_Second  => $li->{archive_show_second});
+	                my $date = date_this(
+	                -Packed_Date   => $entries->[$i],
+	                -Write_Month   => $ls->param('archive_show_month'),
+	                -Write_Day     => $ls->param('archive_show_day'),
+	                -Write_Year    => $ls->param('archive_show_year'),
+	                -Write_H_And_M => $ls->param('archive_show_hour_and_minute'),
+	                -Write_Second  => $ls->param('archive_show_second')
+	                );
 					
 					my $header_from      = undef;
 	                my $orig_header_from = undef;
@@ -989,7 +984,7 @@ sub html_archive_list {
             
 	            #fix if we're doing reverse chronologic 
 	            $bullet = (($#{$entries}+1) - ($archive_nums[$ii]) +1) 
-	                if($li->{sort_archives_in_reverse} == 1);
+	                if($ls->param('sort_archives_in_reverse') == 1);
     
 	            # yeah, whatever. 
 	            $th_entries->[$ii]->{bullet} = $bullet; 
@@ -1002,10 +997,10 @@ sub html_archive_list {
                      -vars => {
                                 entries              => $th_entries,
                                 list                 => $list, 
-                                list_name            => $li->{list_name}, 
-                                publish_archives_rss => ($li->{publish_archives_rss}) ? 1: 0, 
+                                list_name            => $ls->param('list_name'), 
+                                publish_archives_rss => ($ls->param('publish_archives_rss')) ? 1: 0, 
                                 index_nav            => $archive->create_index_nav($stopped_at), 
-                                search_form          => ( ($li->{archive_search_form} eq "1") && (defined($entries->[0])) ) ? $archive->make_search_form($li->{list}) : ' ', 
+                                search_form          => ( ($ls->param('archive_search_form') == 1) && (defined($entries->[0])) ) ? $archive->make_search_form($ls->param('list')) : ' ', 
                                allowed_to_view_archives => 1, 
 							}
                     });  
@@ -1017,7 +1012,7 @@ sub html_archive_list {
                      -vars => {
                                 entries              => [],
                                 list                 => $list, 
-                                list_name            => $li->{list_name}, 
+                                list_name            => $ls->param('list_name'), 
                                 publish_archives_rss => 0,
                                 index_nav            => '', 
                                 search_form          => '', 
@@ -1063,8 +1058,7 @@ sub login_switch_widget {
 	
 	foreach my $list( @lists ){
 			my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-			my $li = $ls->get; 
-			$label{$list} = $li->{list_name} . ' (' . $list . ')'; 
+			$label{$list} = $ls->param('list_name') . ' (' . $list . ')'; 
 			
 	}
 	
@@ -2842,7 +2836,6 @@ sub subscription_form {
 	}
 
     
-    my $li;
     my @available_lists = available_lists(-Dont_Die => 1); 
     if(! $available_lists[0]){ 
         return ''; 

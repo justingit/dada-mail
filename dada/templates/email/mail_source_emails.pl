@@ -5,22 +5,32 @@ use lib qw(/Users/justin/Documents/DadaMail/git/dada-mail/dada/DADA/perllib);
 
 use MIME::Parser; 
 
-my $subject = 'Abuse Reported on <!-- tmpl_var list_settings.list_name --> (<!-- tmpl_var list_settings.list -->): <!-- tmpl_var subscriber.email -->'; 
+my $subject = 'Unsubscribed from: <!-- tmpl_var list_settings.list_name --> because of excessive bouncing'; 
 my $pt = <<EOF
 
-Hello, <!-- tmpl_var list_settings.list_owner_email -->, 
+Hello, This is <!-- tmpl_var Plugin_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME -->
 
-The following address: 
+This is a notice that your email address:
 
-    <!-- tmpl_var subscriber.email --> 
+    <!-- tmpl_var subscriber.email -->
     
-has reported abuse pertaining to your mailing list: 
+has been unsubscribed from:
 
-    <!-- tmpl_var list_settings.list_name --> (<!-- tmpl_var list_settings.list -->)
+    <!-- tmpl_var list_settings.list_name -->
     
-Their report is below: 
+Because your email address has been bouncing messages sent to it, 
+originating from this list.
 
-<!-- tmpl_var abuse_report_details -->
+If this is in error, please re-subscribe to this list, by following 
+this link: 
+
+    <!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list -->
+
+If you have any questions, please email the list owner of this list at: 
+
+    <!-- tmpl_var list_settings.list_owner_email -->
+    
+for more information. 
 
 - <!-- tmpl_var PROGRAM_NAME -->
 

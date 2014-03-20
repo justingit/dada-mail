@@ -299,10 +299,10 @@
 				<legend>Profile Fields</legend>
 
 
-				<!-- tmpl_unless root_login --> 
+    			<!-- tmpl_unless expr="(root_login == 1 || list_settings.allow_profile_editing == 1)" --> 
 					<div class="clearskiesbox">
 						<p>
-							You must be logged in with the <!-- tmpl_var PROGRAM_NAME --> Root Password to be able to edit a Subscriber's Profile Fields. 
+							Editing Subscriber Profile Fields is <strong>disabled</strong>. 
 						</p>
 					</div>
 
@@ -310,7 +310,7 @@
 
 				<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="membership_profile_fields">
 
-				<!-- tmpl_if root_login --> 
+    			<!-- tmpl_if expr="(root_login == 1 || list_settings.allow_profile_editing == 1)" --> 
 					 <input type="hidden" name="email"   value="<!-- tmpl_var email escape="HTML" -->" />
 					 <input type="hidden" name="f"       value="membership" />
 					 <input type="hidden" name="process" value="1" />
@@ -367,8 +367,13 @@
 
 					<!-- tmpl_if expr="(root_login == 1 || list_settings.allow_profile_editing == 1)" --> 
 
+                    
 						<div id="change_profile_password_button">
 							<input type="button" value="Click to Change Profile Password..." class="cautionary change_profile_password" /> 
+						    <br> 
+						    <!-- tmpl_unless profile_exists --> 
+						        <p>This address does not currently have a Profile Password set.</p>
+						    <!-- /tmpl_unless --> 
 						</div> 
 						<div id="change_profile_password_form" style="display:none">
 							<form name="change_profile_password" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
@@ -389,7 +394,7 @@
 					<!-- tmpl_else -->
 					<div class="clearskiesbox">
 						<p>
-							You must be logged in with the <!-- tmpl_var PROGRAM_NAME --> Root Password to be able to change an address's Profile Password. 
+							Editing the Profile Password is <strong>disabled</strong>. 
 						</p>
 					</div>
 					<!-- /tmpl_if --> 
