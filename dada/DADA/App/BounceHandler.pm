@@ -909,17 +909,19 @@ sub remove_bounces {
                 }
             );
 
+        	require DADA::App::ReadEmailMessages; 
+            my $rm = DADA::App::ReadEmailMessages->new; 
+            my $msg_data = $rm->read_message('unsubscribed_because_of_bouncing.eml'); 
+
             DADA::App::Messages::send_generic_email(
                 {
                     -list    => $list,
                     -email   => $d_email,
                     -ls_obj  => $ls,
                     -headers => {
-                        Subject => $self->config
-                          ->{Email_Unsubscribed_Because_Of_Bouncing_Subject},
+                        Subject => $msg_data->{subject},
                     },
-                    -body => $self->config
-                      ->{Email_Unsubscribed_Because_Of_Bouncing_Message},
+                    -body => $msg_data->{plaintext_body},
                     -tmpl_params => {
                         -list_settings_vars_param => { -list => $list, },
                         -subscriber_vars => { 'subscriber.email' => $d_email, },
