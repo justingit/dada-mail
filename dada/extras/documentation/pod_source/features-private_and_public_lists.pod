@@ -1,0 +1,65 @@
+=pod
+
+=head1 Private and Public Mailing List Support
+
+With the release of v7, Dada Mail supports both B<Public Mailing Lists>, and B<Private Mailing Lists>. 
+
+=head3 Public Mailing Lists
+
+Public Mailing Lists are mailing lists that anyone could potentially subscribe to, but B<everyone who is subscribed, no matter what, (there's no exceptions to the rule!) can unsubscribe/remove themselves from>. 
+
+That point cannot be emphasized enough. 
+
+A public mailing list is a mailing list you would use for promotional marketing. When you see a form on a site, with a tag line of, "I<Subscribe to my mailing list, to learn about my widgets and get special widget deals!>" that's a public mailing list. 
+
+A public mailing list can also be used for general announcements - say for a church, or a club, or a group of people meeting up to do something. If you don't want to receive this information anymore, it's easy to leave the group yourself, without any help. It's not something you're obligated to be a member of. 
+
+A public mailing list can also be a discussion list you may join or leave at any time - same ideas as above. 
+
+Subscribing to a Public Mailing Lists needs to be confirmed using a method awkwardly called, B<Closed-Loop Opt-in>. That means that someone that wants to join the mailing list just needs to click a confirmation link in an email sent to them, when they request a subsription. 
+
+That's a big part of what Dada Mail provides in functionality: a closed-loop opt-in system. Following that confirmation URL is your newly subscried member's way of basically saying, "Yup, I really do want to subscribe to this mailing list, lemme on!". Without that confirmation, you have no concrete ide if the person wants on, or not. Our recommendation in this scenario is to never, ever subscribe someone, thinking that they'd want to be on your mailing list - send them an invitation instead, and allow them to make up their own mind. 
+
+Unsubscribing/Removing oneself from a public mailing list is something that's required to be easy for the user to do on their own, without any confirmation email sent to them, or anything they need to log in to, to do. This isn't some arbitrary thing we've made up for Dada Mail - this is what the B<CAN-SPAM> act states needs to be done: 
+
+L<http://www.business.ftc.gov/documents/bus61-can-spam-act-compliance-guide-business>
+
+Dada Mail provides an easy to use unsubscription link, that's used in every single mass mailing email message it sends. All a user has to do to remove themselves from a mailing list is click that unsubscription link, fill in their email address in the form provided, and submit the form.
+
+As long as you provide this B<closed-loop opt in> system to sign up, and this easy way for someone to remove themselves, you'll be running a public mailing list in the best way possible - it couldn't be easier. 
+
+=head1 Private Mailing Lists
+
+There's many situations where you want to run a mailing list, but privately. Some examples: 
+
+You have a private, internal, company mailing list where yout talk about private matters that I<is> compulsory - if you work in the company, you also need to be on the mailing list. 
+
+Another example would be a private list, made up of a group of professionals that want to discuss matters without publically having these discussion available. 
+
+Membership to the list may require joining a private association that has its own payment in the form of dues, etc. In other words: someone's on the mailing list, because they paid for it, and the contents of messages sent on the mailing list aren't for everyone. It's not open to the public and everyone on the list understands that. 
+
+In these types of scenarios, having subscribers required to confirm their own subscription makes little sense and could lead to all sorts of complications ("Hey! I paid for this, why do I have to do extra work?!"), while having the List Owner import the subscribers makes I<complete> sense. 
+
+Futhermore, it would make little sense to have an easy way to have the subscribers I<remove> themselves from the mailing list, if the subscription is compulsory! Having this type of functionality makes running the list a nightmare, as members will invariably remove themselves, "by accident".  
+
+=head1 Differences in administrating a Public and Private Mailing List
+
+Dada Mail allows you to set the B<Mode> of your mailing list: either B<public> or, B<private>. The only difference between either is that a B<private> mailing list does not require to you to have the unsubscription link available in your mailing list message - you may remove it. 
+
+Furthermore, any unsubscription link that is in your mailing list messages will only send a notification to the List Owner that you have requested removal from the mailing list, but will not remove them outright. 
+
+This gives the List Owner total control on who is subscribed to the mailing list, and is in contrast to a public mailing list, where it's the subscribers choice, if they're on the mailing list, or not. A request to subscribe may come from a member who's left the company, but is still on the mailing list, without any real need. The request could be used as a friendly reminder that since they're not in the company anymore, they shouldn't be getting emails like the ones they're getting. 
+
+Options of how someone may subscribe to a private mailing list is up to the List Owner - if they would like, they could set up their private mailing list so that everyone can subscribe, or that subscriptions are made only by invitations, or after being approved by the List Owner, or even that the only way someone may subscribe is for the List Owner adding the addresses themselves - it's up to the List Owner to set up things they way that they'd like, depending on the situation. Dada Mail gives you a massive amount of flexibility. 
+
+Private Mailing Lists may also be B<hidden>, meaning they're not listed anywhere within Dada Mail's public interface. Public mailing lists cannot be hidden (this is a change from past versions, where public mailing lists may also be hidden).
+ 
+Public Mailing Lists will always have the option for members to unsubscribe, and there's no way to disable this - doing so will potentially have you running a mailing list that doesn't follow what you're legally obligated to provide. 
+
+It should be very obvious that if you're running a public mailing list, but have its  mode set as a private mailing list, you'll get in trouble faster than you can probably even realize - so whatever you do: don't do that. A thousand times: don't do that. 
+
+Dada Mail has the ability to report abuse on private mailing lists. When a report is made, a notification email is sent to the List Owner, with the abuse report, and the abuse is logged. 
+
+
+=cut
+
