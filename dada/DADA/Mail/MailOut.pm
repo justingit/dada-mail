@@ -336,8 +336,21 @@ sub batch_params {
 
     }
     else {
-        return ( $enable_bulk_batching, $self->{ls}->param('mass_send_amount'),
-            $self->{ls}->param('bulk_sleep_amount'), );
+        
+        my $mass_send_amount  = $self->{ls}->param('mass_send_amount');
+        my $bulk_sleep_amount = $self->{ls}->param('bulk_sleep_amount');
+        
+        if($bulk_sleep_amount < 1){ 
+           warn 'why is $bulk_sleep_amount < 1?!'; 
+           $bulk_sleep_amount = 1;  
+        }
+        return ( 
+            $enable_bulk_batching, 
+            $mass_send_amount,
+            $bulk_sleep_amount, 
+        );
+            
+            
     }
 }
 
