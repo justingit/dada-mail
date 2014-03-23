@@ -14,7 +14,7 @@ use Try::Tiny;
 
 use vars qw($AUTOLOAD);
 use strict;
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions};
 
 my %allowed = ( test => 0, );
 
@@ -82,9 +82,6 @@ sub token {
           if $t;
 
         my $data = $ct->fetch($token);
-
-        #		use Data::Dumper;
-        #		die Dumper($data);
 
         if ( !exists( $data->{data}->{invite} ) ) {
             $data->{data}->{invite} = 0;
@@ -304,6 +301,7 @@ sub subscribe {
     # I really wish this was done, after we look and see if the confirmation
     # step is even needed, just so we don't have to do this, twice. It would
     # clarify a bunch of things, I think.
+    
     my ( $status, $errors ) = $lh->subscription_check(
         {
             -email => $email,
@@ -823,7 +821,7 @@ sub confirm {
       if $t;
     if ($t) {
         require Data::Dumper; 
-        warn Data::Dumper($errors); 
+        warn '$errors: ' . Data::Dumper::Dumper($errors); 
     }
 
     my $mail_your_subscribed_msg = 0;
@@ -1572,8 +1570,8 @@ sub unsubscribe {
         if ($is_valid) {
             $args->{-cgi_obj}  = $q;
             $args->{-list}     = $data->{data}->{list};             
-            $args->{-mid}      = $q->param('mid'); # why WOULD the mid get passed, here? 
-            $args->{-email}    = $q->param('email'); # or email, for that matter?
+            $args->{-mid}      = $data->{data}->{mid};
+            $args->{-email}    = $data->{email};
             
             require DADA::MailingList::Settings;
             my $ls = DADA::MailingList::Settings->new( { -list => $data->{data}->{list} } );
@@ -1788,17 +1786,28 @@ sub complete_unsubscription {
             }
         }
 
+		
         require DADA::Logging::Clickthrough;
+		
+		
         my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
+		
+		
         if ( $r->enabled ) {
-            $r->unsubscribe_log(
+			
+        
+		    $r->unsubscribe_log(
                 {
                     -mid   => $mid,
                     -email => $email,
                 }
             );
-        }
+			
+        
+		}
 
+		
+		
         # We end things here, for private lists.
         return if $ls->param('private_list') == 1;
 
@@ -2075,10 +2084,10 @@ sub complete_pl_unsubscription_request {
         );
     }
 
-    my $flavor = $data->{data}->{flavor};
     my $email  = $data->{email};
     my $list   = $data->{data}->{list};
-
+    my $flavor = $data->{data}->{flavor};
+    my $mid    = $data->{data}->{mid};
     # And then, is never used?
     my $list_exists = DADA::App::Guts::check_if_list_exists( -List => $list );
 
@@ -2113,7 +2122,7 @@ sub complete_pl_unsubscription_request {
             
             $args->{-list}     = $list;             
             $args->{-email}    = $email;
-            $args->{-mid}      = $q->param('mid'); #? 
+            $args->{-mid}      = $mid; 
             
             $self->complete_unsubscription($args);
             
@@ -2261,9 +2270,9 @@ sub subscription_requests {
         );
     }
 
-    my $flavor = $data->{data}->{flavor};
     my $email  = $data->{email};
     my $list   = $data->{data}->{list};
+    my $flavor = $data->{data}->{flavor};
 
     # And then, is never used?
     my $list_exists = DADA::App::Guts::check_if_list_exists( -List => $list );
@@ -2465,8 +2474,8 @@ sub fancy_data {
     my $type = $args->{-type},
 
     my $return = {
-        list     => $data->{list},
         email    => $data->{email},
+        list     => $data->{list},
         status   => $data->{status},
         redirect => $data->{redirect},
     };
