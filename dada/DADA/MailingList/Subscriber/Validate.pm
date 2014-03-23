@@ -144,7 +144,11 @@ sub subscription_check {
             }
         }
     }
-
+    
+    
+    # When -usermode is set to, this is where, "allow_blacklisted_to_subscribe" should be checked 
+    # similar for admin
+    #
     if ( $args->{-type} ne 'black_list' ) {
         if ( !$skip{black_listed} ) {
             if ( $ls->param('black_list') == 1 ) {
