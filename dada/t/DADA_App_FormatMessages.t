@@ -20,7 +20,6 @@ use DADA::MailingList::Settings;
 
 my $list = dada_test_config::create_test_list;
 my $ls   = DADA::MailingList::Settings->new({-list => $list}); 
-my $li   = $ls->get;
 my $fm = DADA::App::FormatMessages->new(-yeah_no_list => 1); 
 
 
@@ -473,6 +472,9 @@ ok($t_msg =~ m/$endif/,'found the [endif] tag');
 #    ),
 #    "found unsub link in html mailing list message(2)!"
 #);
+undef($fm); 
+$fm = DADA::App::FormatMessages->new(-List => $list);
+
 ok( $fm->can_find_unsub_link( { -str => 'nothing', } ) == 0,
     "but not in a random string" );
 ok(
@@ -484,6 +486,22 @@ ok(
     ),
     "except when checked and placed in, if it's missing"
 );
+
+$ls->param('private_list', 1); 
+undef($fm); 
+$fm = DADA::App::FormatMessages->new(-List => $list);
+
+
+ok(
+    $fm->can_find_unsub_link(
+        {
+            -str =>
+              $fm->unsubscriptionation( { -str => 'nothin', -type => 'text' } ),
+        }
+    )  ==  0,
+    "except when checked and placed in, if it's missing"
+);
+
 
 # can_find_sub_confirm_link
 # Should be in list invitation message and subscription confirmation message:

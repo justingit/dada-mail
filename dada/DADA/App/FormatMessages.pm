@@ -522,7 +522,7 @@ sub _format_text {
                     elsif ( $self->list_type eq 'invitelist' ) {
                         $content = $self->subscription_confirmationation( { -str => $content, } );
                     }
-                    else {
+                    else { 
                         $content = $self->unsubscriptionation(
                             {
                                 -str  => $content,
@@ -1868,7 +1868,10 @@ sub unsubscriptionation {
     die "no -str! $!" if !exists( $args->{-str} );
     die "no -type! $!" if !exists( $args->{-type} );
 
-    if ( $self->can_find_unsub_link( { -str => $args->{-str} } ) ) {
+    if($self->{ls}->param('private_list') == 1){ 
+        return $args->{-str};
+    }
+    elsif ( $self->can_find_unsub_link( { -str => $args->{-str} } ) ) {
         # ...
     }
     else {
