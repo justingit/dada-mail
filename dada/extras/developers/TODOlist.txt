@@ -10,6 +10,14 @@ Key:
 [*] Naw...
 [?] Someday
 
+[ ] Also on a related subject, Trying to restore the Defaults doesn't appear to work.
+
+
+
+
+
+
+
 
 [X] Mass Update - can I reuse the query to search, ala: 
     update dada_profiles set some_field = value where (select ...? etc, etc, etc) 
