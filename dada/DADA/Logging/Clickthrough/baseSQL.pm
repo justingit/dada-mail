@@ -19,7 +19,7 @@ use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;    # For now, my dear.
 use Try::Tiny; 
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_Logging_Clickthrough};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_Logging_Clickthrough};
 
 sub new {
 
@@ -441,6 +441,13 @@ sub mass_mailing_event_log {
     my $self      = shift;
     my ($args)    = @_;
     
+
+    if ( $t == 1 ) {
+        warn 'sent over Vars:';
+        require Data::Dumper;
+		warn '$args:' . Data::Dumper::Dumper($args);
+	}
+	
     # timestamp
     my $timestamp = undef;
     if ( exists( $args->{-timestamp} ) ) {
@@ -508,15 +515,30 @@ sub mass_mailing_event_log {
       . 'remote_addr, msg_id, event, email, details) VALUES (?, ?, ?, ?, ?, ?'
       . $place_holder_string . ')';
 
+	  warn '$query:' . $query; 
+	  
     my $sth = $self->{dbh}->prepare($query);
     
+	my @execute_args = (); 
     if ( defined($timestamp) ) {
-        $sth->execute( $self->{name}, $timestamp, $remote_address, $args->{-mid}, $event, $args->{-email}, $details);
+		warn 'timestamp!';
+		@execute_args = ($self->{name}, $timestamp, $remote_address, $args->{-mid}, $event, $args->{-email}, $details);
+        $sth->execute(@execute_args);
     }
     else {
-        $sth->execute( $self->{name},             $remote_address, $args->{-mid}, $event, $args->{-email}, $details);
-    }
-    $sth->finish;
+		@execute_args = ($self->{name},             $remote_address, $args->{-mid}, $event, $args->{-email}, $details);
+		
+        $sth->execute(@execute_args);
+    	warn 'no timestamp';
+	}
+    if ( $t == 1 ) {
+        require Data::Dumper;
+		warn 'excute_args:' . Data::Dumper::Dumper([@execute_args]);
+	}
+	
+	
+	
+	$sth->finish;
     return 1;
 }
 
