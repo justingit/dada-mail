@@ -3382,31 +3382,6 @@ sub cgi_edit_email_msgs {
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get;
 
-    # Backwards Compatibility!
-    for (
-        qw(
-        not_allowed_to_post_msg_subject
-        not_allowed_to_post_msg
-        moderation_msg_subject
-        moderation_msg
-        await_moderation_msg_subject
-        await_moderation_msg
-        accept_msg_subject
-        accept_msg
-        rejection_msg_subject
-        rejection_msg
-        msg_too_big_msg_subject
-        msg_too_big_msg
-        msg_labeled_as_spam_msg_subject
-        msg_labeled_as_spam_msg
-        )
-      )
-    {
-        my $m = $li->{$_};
-        DADA::Template::Widgets::dada_backwards_compatibility( \$m );
-        $li->{$_} = $m;
-    }
-
     require DADA::App::FormatMessages;
     my $dfm = DADA::App::FormatMessages->new( -List => $list );
 

@@ -878,10 +878,10 @@ SKIP: {
 
     my $body = q{ 
     
-    email: [subscriber.email], First Name: [subscriber.first_name], Last Name: [subscriber.last_name]
-    
-    [subscriber.first_name][subscriber.first_name][subscriber.first_name][subscriber.first_name][subscriber.first_name][subscriber.first_name]
-    [subscriber.last_name][subscriber.last_name][subscriber.last_name][subscriber.last_name][subscriber.last_name][subscriber.last_name][subscriber.last_name]
+    email: <!-- tmpl_var subscriber.email -->, First Name: <!-- tmpl_var subscriber.first_name -->, Last Name: <!-- tmpl_var subscriber.last_name -->
+
+    <!-- tmpl_var subscriber.first_name --><!-- tmpl_var subscriber.first_name --><!-- tmpl_var subscriber.first_name --><!-- tmpl_var subscriber.first_name --><!-- tmpl_var subscriber.first_name --><!-- tmpl_var subscriber.first_name -->
+    <!-- tmpl_var subscriber.last_name --><!-- tmpl_var subscriber.last_name --><!-- tmpl_var subscriber.last_name --><!-- tmpl_var subscriber.last_name --><!-- tmpl_var subscriber.last_name --><!-- tmpl_var subscriber.last_name --><!-- tmpl_var subscriber.last_name -->
     
     };
 
@@ -2114,14 +2114,6 @@ SKIP: {
       
       
 }; 
-
-
-
-
-
-
-
-
 
 dada_test_config::remove_test_list;
 dada_test_config::wipe_out;

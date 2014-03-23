@@ -858,21 +858,6 @@ files are saved.
 
 =head3 $TEMPLATE_SETTINGS
 
-=head4 oldstyle_backwards_compatibility
-
-Setting this parameter to, C<1> will allow you to use the old-style tags that 
-Dada Mail originaly used. An old-style tag looks like this: 
-
- [tag]
-
-New-style tags look like this: 
-
- <!-- tmpl_var tag --> 
-
-And are nothing but HTML::Template-style tags. We'd like to move away from the 
-old-style tags, but still 100% support them, for the time being. Setting this 
-parameter to, C<0> is B<very> much experimental. 
-
 =head4 engine
 
 B<engine> May be changed to one of the following:

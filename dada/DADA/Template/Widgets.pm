@@ -264,16 +264,6 @@ sub make_wysiwyg_vars {
 	return %vars; 
 
 }
-
-
-if($DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} == 1) { 
-	$Global_Template_Variables{template_oldstyle_backwards_compatibility} = 1; 
-}
-else { 
-
-	$Global_Template_Variables{template_oldstyle_backwards_compatibility} = 0; 
-}
-
 if($Global_Template_Variables{PROGRAM_URL} eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'){ 
 	require CGI;
 	my $q = CGI->new;  
@@ -2046,12 +2036,6 @@ sub screen {
 	if($args->{-dada_pseudo_tag_filter} == 1){ 
 		push(@$filters, 
 		{ 
-			sub    => \&dada_backwards_compatibility,
-			format => 'scalar' 
-		}
-		); 
-		push(@$filters, 
-		{ 
 			sub    => \&dada_pseudo_tag_filter,
 			format => 'scalar' 
 		}
@@ -2529,51 +2513,6 @@ sub decode_str {
  	   ${$ref} = safely_decode(${$ref}); 
 }
 
-sub dada_backwards_compatibility { 
-
-    my $sref = shift; 
-
-	if($DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} != 1) { 
-		return;
-	}
-    
-	if(!defined($$sref)){ 
-		return; 
-	}
-		
-	$$sref =~ s{\[plain_list_confirm_subscribe_link\]}{[PROGRAM_URL]/n/[list_settings.list]/[subscriber.email_name]/[subscriber.email_domain]/[subscriber.pin]/}g;
-	$$sref =~ s{\[plain_list_confirm_unsubscribe_link\]}{[PROGRAM_URL]/u/[list_settings.list]/[subscriber.email_name]/[subscriber.email_domain]/[subscriber.pin]/}g;
-	
-	
-    $$sref =~ s{\[list_privacy_policy\]}{[privacy_policy]}g;
-    $$sref =~ s{\[list_info\]}{[info]}g;
-    $$sref =~ s{\[subscriber_email\]}{[email]}g;
-
-    $$sref =~ s{\[program_url\]}{[PROGRAM_URL]}g;
-
-    foreach (qw(
-        email
-        email_name
-        email_domain
-        pin
-    )){ 
-        $$sref =~ s{\[$_\]}{[subscriber.$_]}g; 
-    }
-    
-    foreach (qw(
-        list
-        list_name                             
-        info    
-        physical_address
-        privacy_policy                 
-        list_owner_email                      
-        admin_email
-    )){ 
-        $$sref =~ s{\[$_\]}{[list_settings.$_]}g; 
-    }
-    
-    
-}
 
 
 
@@ -2594,10 +2533,6 @@ sub dada_pseudo_tag_filter {
 
     my $text_ref = shift;
     
-	if($DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} != 1) { 
-		return;
-	}
-
 	if(!defined($$text_ref)){ return; }
 
 	$$text_ref =~ s{\[tmpl_else\]}{<!-- tmpl_else -->}g;

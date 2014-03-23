@@ -533,7 +533,6 @@ $ADMIN_TEMPLATE                 ||= '';
 $USER_TEMPLATE                  ||= '';
 $ALTERNATIVE_HTML_TEMPLATE_PATH ||= undef;
 $TEMPLATE_SETTINGS              ||= {
-    oldstyle_backwards_compatibility => 1,
     engine                           => 'Best',
 };
 

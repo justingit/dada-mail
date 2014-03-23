@@ -1340,19 +1340,10 @@ sub _expand_macro_tags {
      
 ### this is messy. 
 
-	if($DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} == 1) { 
-		$data =~ s/\[plain_list_subscribe_link\]/$s_link/g;	
-		$data =~ s/\[plain_list_unsubscribe_link\]/$us_link/g;
-	}
 	
 	$data =~ s/\<\!\-\- tmpl_var plain_list_subscribe_link \-\-\>/$s_link/g;	
 	$data =~ s/\<\!\-\- tmpl_var plain_list_unsubscribe_link \-\-\>/$us_link/g;
 
-
-	if($DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} == 1) { 
-		$data =~ s/\[list_subscribe_link\]/$s_link/g;	
-		$data =~ s/\[list_unsubscribe_link\]/$us_link/g;
-	}
 	
 	$data =~ s/\<\!\-\- tmpl_var list_subscribe_link \-\-\>/$s_link/g;	
 #	$data =~ s/\<\!\-\- tmpl_var list_unsubscribe_link \-\-\>/$us_link/g;
@@ -1362,10 +1353,6 @@ sub _expand_macro_tags {
     my $cs_link  = $self->_macro_tags(-type => 'confirm_subscribe'); 
     my $cus_link = $self->_macro_tags(-type => 'confirm_unsubscribe'); 
 
-	if($DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} == 1) { 
-		$data =~ s/\[list_confirm_subscribe_link\]/$cs_link/g;	
-		$data =~ s/\[list_confirm_unsubscribe_link\]/$cus_link/g;
-	}
 
 	$data =~ s/\<\!\-\- tmpl_var list_confirm_subscribe_link \-\-\>/$cs_link/g;	
 	$data =~ s/\<\!\-\- tmpl_var list_confirm_unsubscribe_link \-\-\>/$cus_link/g;
@@ -1378,9 +1365,7 @@ sub _expand_macro_tags {
 # This is kinda out of place...
     if($self->originating_message_url){ 
         my $omu = $self->originating_message_url; 
-        if($DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} == 1) { 
-			$data =~ s/\[originating_message_url\]/$omu/g;
-		}
+
         $data =~ s/\<\!\-\- tmpl_var originating_message_url \-\-\>/$omu/g;
     }
 
@@ -1411,12 +1396,6 @@ sub template_defang {
 	$str =~ s{$b1(\s*/tmpl_(.*?)\s*)($e1|$e2)}{\<!-- tmpl_var LT_CHAR -->!-- /tmpl_$2\-\-\<!-- tmpl_var GT_CHAR -->}gi;
 	$str =~ s{$b2(\s*/tmpl_(.*?)\s*)($e1|$e2)}{\<!-- tmpl_var LT_CHAR -->/tmpl_$2<!-- tmpl_var GT_CHAR -->}gi;
 
-
-    if ( $DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} ==
-        1 )
-    {
-		$str =~ s{$b3(.*?)$e3}{\<tmpl_var LEFT_BRACKET\>$1\<tmpl_var RIGHT_BRACKET\>}gi;
-    }
     return $str;
 
 }
@@ -1620,9 +1599,6 @@ sub _apply_template {
 				
 				# FAKING HTML::Template tags - note! 
 				$new_data =~ s/\<\!\-\- tmpl_var message_body \-\-\>/$new_bodycontent/;
-				if($DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} == 1) { 
-					$new_data =~ s/\[message_body\]/$new_bodycontent/;
-				}
 				my $safe_bodycontent = quotemeta($bodycontent);
 				
 				$data     =~ s/$safe_bodycontent/$new_data/;			
@@ -1630,16 +1606,10 @@ sub _apply_template {
 				
 			}else{ 			
 					$new_data =~ s/\<\!\-\- tmpl_var message_body \-\-\>/$data/;
-					if($DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} == 1) { 
-						$new_data =~ s/\[message_body\]/$data/g;
-					}
 			}
 			
 		}else{ 
 				$new_data =~ s/\<\!\-\- tmpl_var message_body \-\-\>/$data/;
-				if($DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} == 1) { 
-					$new_data =~ s/\[message_body\]/$data/g;	
-				}
 		}
 	}else{ 
 	
@@ -1722,13 +1692,6 @@ sub can_find_sub_confirm_link {
 			'<!-- tmpl_var PROGRAM_URL -->/t/<!-- tmpl_var list.confirmation_token -->',
 	        '<!-- tmpl_var list_confirm_subscribe_link -->',
 	  	);
-	    if ( $DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} ==
-	        1 )
-	    {
-	        push( @sub_confirm_urls, '[list_confirm_subscribe_link]' );
-		    push( @sub_confirm_urls, '[plain_list_confirm_subscribe_link]' );
-			
-	    }
 	
 	    for my $url (@sub_confirm_urls) {
 	        $url = quotemeta($url);
@@ -1816,11 +1779,6 @@ sub can_find_message_body_tag {
     my @message_body_tags = (
 		'<!-- tmpl_var message_body -->',
 	);
-    if ( $DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} ==
-        1 )
-    {
-        push( @message_body_tags, '[message_body]' );
-    }
 
     for my $message_body_tag (@message_body_tags) {
         $message_body_tag = quotemeta($message_body_tag);

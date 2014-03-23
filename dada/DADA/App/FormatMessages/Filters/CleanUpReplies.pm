@@ -230,13 +230,6 @@ sub _tags_to_placeholders {
 	$str =~ s{$b1(\s*/tmpl_(.*?)\s*)($e1|$e2)}{$ph}gi;
 	$str =~ s{$b2(\s*/tmpl_(.*?)\s*)($e1|$e2)}{$ph}gi;
 
-
-    if ( $DADA::Config::TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} ==
-        1 )
-    {
-		$str =~ s{$b3(.*?)$e3}{$ph}gi;
-    }
-  
 	return $str; 
 	
 }

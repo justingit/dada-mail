@@ -7365,34 +7365,6 @@ sub edit_type {
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
-=cut
-
-    # Backwards Compatibility!
-    for (
-        qw(
-        confirmation_message
-        subscribed_message
-        unsubscribed_message
-        mailing_list_message
-        mailing_list_message_html
-        send_archive_message
-        send_archive_message_html
-        you_are_already_subscribed_message
-        email_your_subscribed_msg
-
-        admin_subscription_notice_message
-        admin_unsubscription_notice_message
-
-        )
-      )
-    {
-        my $m = $ls->param($_);
-       #    DADA::Template::Widgets::dada_backwards_compatibility( \$m );
-       # $ls->param($_, $m);
-    }
-
-=cut
-
     require DADA::App::FormatMessages;
     my $dfm = DADA::App::FormatMessages->new( -List => $list );
 
@@ -7413,29 +7385,14 @@ sub edit_type {
                     title  => 'Email Templates',
                     done   => $done,
 
-                    unsub_link_found_in_pt_mlm => $dfm->can_find_unsub_link( { -str => $ls->param('mailing_list_message') } ),
-                    unsub_link_found_in_html_mlm =>
-                      $dfm->can_find_unsub_link( { -str => $ls->param('mailing_list_message_html') } ),
-
-                    message_body_tag_found_in_pt_mlm =>
-                      $dfm->can_find_message_body_tag( { -str => $ls->param('mailing_list_message') } ),
-                    message_body_tag_found_in_html_mlm =>
-                      $dfm->can_find_message_body_tag( { -str => $ls->param('mailing_list_message_html') } ),
-
-                    sub_confirm_link_found_in_confirmation_message =>
-                      $dfm->can_find_sub_confirm_link( { -str => $ls->param('confirmation_message') } ),
-
-                    unsub_link_found_in_pt_subscribed_by_list_owner_msg =>
-                      $dfm->can_find_unsub_link( 
-                          { 
-                              -str => $ls->param('subscribed_by_list_owner_message') 
-                         } 
-                    ),
-
-                    sub_confirm_link_found_in_pt_invite_msg =>
-                      $dfm->can_find_sub_confirm_link( { -str => $ls->param('invite_message_text') } ),
-                    sub_confirm_link_found_in_html_invite_msg =>
-                      $dfm->can_find_sub_confirm_link( { -str => $ls->param('invite_message_html') } ),
+                    unsub_link_found_in_pt_mlm                          => $dfm->can_find_unsub_link( { -str => $ls->param('mailing_list_message') } ),
+                    unsub_link_found_in_html_mlm                        => $dfm->can_find_unsub_link( { -str => $ls->param('mailing_list_message_html') } ),
+                    message_body_tag_found_in_pt_mlm                    => $dfm->can_find_message_body_tag( { -str => $ls->param('mailing_list_message') } ),
+                    message_body_tag_found_in_html_mlm                  => $dfm->can_find_message_body_tag( { -str => $ls->param('mailing_list_message_html') } ),
+                    sub_confirm_link_found_in_confirmation_message      => $dfm->can_find_sub_confirm_link( { -str => $ls->param('confirmation_message') } ),
+                    unsub_link_found_in_pt_subscribed_by_list_owner_msg => $dfm->can_find_unsub_link({ -str => $ls->param('subscribed_by_list_owner_message') }),
+                    sub_confirm_link_found_in_pt_invite_msg             => $dfm->can_find_sub_confirm_link( { -str => $ls->param('invite_message_text') } ),
+                    sub_confirm_link_found_in_html_invite_msg           => $dfm->can_find_sub_confirm_link( { -str => $ls->param('invite_message_html') } ),
                 },
                 -list_settings_vars       => $ls->get,
                 -list_settings_vars_param => { -dot_it => 1, },
@@ -7491,7 +7448,7 @@ sub edit_type {
 
             # a very odd place to put this, but, hey,  easy enough.
             if ( $q->param('revert') ) {
-                $q->param( $_, undef );
+                $q->delete($_);
             }
             else {
                 my $tmp_setting = $q->param($_);
@@ -7499,6 +7456,7 @@ sub edit_type {
                 $q->param( $_, $tmp_setting );
             }
         }
+
 
         $ls->save_w_params(
             {
@@ -7556,27 +7514,6 @@ sub edit_html_type {
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-
-=cut
-
-    # Backwards Compatibility!
-    require DADA::Template::Widgets;
-    for (
-        qw(
-        html_confirmation_message
-        html_subscribed_message
-        html_subscription_request_message
-        html_unsubscribed_message
-
-        )
-      )
-    {
-        my $m = $ls->param($_);
-       #    DADA::Template::Widgets::dada_backwards_compatibility( \$m );
-       # $ls->param($_, $m);
-    }
-
-=cut
 
     if ( !$process ) {
 

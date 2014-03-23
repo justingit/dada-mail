@@ -141,10 +141,6 @@ sub search_list {
     warn 'QUERY: ' . $query
      if $t; 
 
-     warn 'ok, and now Im just going to do the profile update statement to see what that looks like: '; 
-     warn 'NEW QUERY: ' . $self->SQL_subscriber_update_profiles_statement($args); 
-
-
     my $sth = $self->{dbh}->prepare($query);
 
     $sth->execute()
@@ -624,7 +620,7 @@ sub SQL_subscriber_update_profiles_statement {
     
      
     $query  =~ s/\,$//; 
-    $query .= ' where email IN ( SELECT * FROM (';
+    $query .= ' WHERE email IN ( SELECT * FROM (';
     $query .= $inner_query;
     $query .= ') AS X)';     
         

@@ -1,0 +1,52 @@
+=pod
+
+=head1 Dada Mail 5 to Dada Mail 6 Upgrade Guide
+
+=head1 PlainText Backend: Deprecated
+
+We've decided to C<deprecate> the PlainText backend. We suggest moving to one of the SQL backends as soon as possible. 
+
+=head1 Database Schema
+
+Small changes have been made to the database schema, from v6 to v7, all of which should 
+be changed by Dada Mail, on the first run, after an installation. The following should 
+describe these changes, if you would like to apply them maually (always make a backup)
+
+The C<dada_subscribers> table has a new C<timestamp> column. 
+
+MySQL/PostgreSQL: 
+
+    ALTER TABLE dada_subscribers ADD timestamp TIMESTAMP DEFAULT NOW();
+
+SQLIte: 
+
+    ALTER TABLE dada_subscribers ADD timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP';
+
+The C<dada_profile_fields_attributes> table has a new, C<required> column: 
+
+    ALTER TABLE dada_profile_fields_attributes ADD required char(1) DEFAULT 0 NOT NULL
+
+=head1 Template Changes
+
+=head2 Oldstyle Template Tag Support: Dropped
+
+Oldstyle template tags looked like this: 
+
+    [tag]
+    
+Support for this style has been dropped. Please use any style that's supported by C<HTML::Template> (the underlying template engine used by Dada Mail), like htis: 
+
+    <!-- tmpl_var tag -->
+    
+=head2 Config.pm HTML and Email Templates: moved to separate files
+
+Quite a few HTML and email templates were embedded in the Config.pm, making customization of these templates somewhat difficult, especially if you ever upgraded. 
+
+HTML templates have been removed, and separated into separate files, located in the, I<dada/templates/list> directory. 
+
+Eamil templates have been removed, and separated into separate files, located in the, I<dada/template/email> directory. Email messages are saved in MIME format, which supports saving the email headers and multipart messages. 
+
+
+
+
+=cut

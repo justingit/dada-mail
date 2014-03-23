@@ -25,13 +25,6 @@
 	uses template tags to represent data that may change regularly. Use the template tags to represent information like subscription/unsubscription links, or your list name. The entire list of available tags is shown at the end of this page. 
 </p>
 
-<!-- tmpl_if list_settings.template_oldstyle_backwards_compatibility --> 
-	<p class="alert">Old Style template tag support is enabled.</p>
-<!-- tmpl_else --> 
-	<p class="alert">Old Style template tag support has been disabled.</p>
-<!-- /tmpl_if -->
-
-
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 
 
@@ -40,9 +33,6 @@
 		<legend>
 			Mailing List Message
 		</legend>
-		<p>
-			Make sure to place the <code>&lt;!-- tmpl_var message_body --&gt;</code> tag in the body of this email message!
-		</p>
 
 		<fieldset>
 			<legend>
@@ -63,61 +53,100 @@
 	</fieldset> 
 
 
+	<p>
+		Make sure to place the <code>&lt;!-- tmpl_var message_body --&gt;</code> tag in the body of this email message!
+	</p>
+
 		<fieldset>
 			<legend>
 				PlainText Message: 
 			</legend>
-
-
+			
 		<p>
-			This is the mailing list message (text version). The bottom of the email should, at minimum, provide how to unsubscribe from the mailing list. 
+			This is the mailing list message (text version). 
 		</p>
-		<!-- tmpl_if unsub_link_found_in_pt_mlm --> 
-			<p class="positive">
-				Unsubscribe Link found in Template. Good!
-			</p>
-		<!-- tmpl_else --> 
-			<p class="error">
-				Yikes! Couldn't find an Unsubscribe Link (<code>&lt;!-- tmpl_var list_unsubscribe_link --&gt;</code>) in your template! If your mailing is sent out without one, somewhere, an unsubscribe link will be automatically appended to the top of your message. 
-			</p>
-		<!-- /tmpl_if --> 
-		<!-- tmpl_if message_body_tag_found_in_pt_mlm --> 
-		<!-- tmpl_else --> 
-		<p class="error">
-			Yikes! Couldn't find the <code>&lt;!-- tmpl_var message_body --&gt;</code> tag in your template! Please place this tag in your template, to ensure proper formatting.  
-		</p>			
-		<!-- /tmpl_if --> 
+		
+		<!-- tmpl_unless private_list -->
+    		<p>
+    		    This template should contain simple instructions on unsubscribing 
+    		    from the mailing list.
+    		</p>
+		<!-- /tmpl_unless -->
+		
+		<!-- tmpl_unless private_list -->
+    		<!-- tmpl_if unsub_link_found_in_pt_mlm --> 
+    			<div class="clearskiesbox"> 
+        			<p>
+        				Unsubscribe Link found in template.
+        			</p>
+    		    </div> 		
+    		<!-- tmpl_else --> 
+    		<div class="badweatherbox"> 
+    			<p>
+    				Couldn't find an <strong>Unsubscribe Link</strong> 
+    				(<code>&lt;!-- tmpl_var list_unsubscribe_link --&gt;</code>) in your template. 
+    				If your mailing is sent out with this tag present, an unsubscribe link 
+    				will be automatically prepended to the top of your message. 
+    			</p>
+    		<!-- /tmpl_if --> 
+    	<!-- /tmpl_unless --> 
+		
+		
+		<!-- tmpl_unless message_body_tag_found_in_pt_mlm --> 
+    		<div class="badweatherbox"> 
+        		<p>
+        			 Couldn't find the <code>&lt;!-- tmpl_var message_body --&gt;</code>
+        			tag in your template! Please place this tag in your template, to ensure proper formatting.  
+        		</p>			
+            </div> 
+		<!-- /tmpl_unless --> 
 		
 		
 		<p>
-	<textarea name="mailing_list_message" id="mailing_list_message" rows="10" cols="50" ><!-- tmpl_var list_settings.mailing_list_message escape=HTML --></textarea> 
+	        <textarea name="mailing_list_message" id="mailing_list_message" rows="10" cols="50" ><!-- tmpl_var list_settings.mailing_list_message escape=HTML --></textarea> 
 		</p>
 
-			</fieldset> 
+	</fieldset> 
 
-			<fieldset>
-				<legend>
-					HTML Message:
-				</legend>
+	<fieldset>
+		<legend>
+			HTML Message:
+		</legend>
 		<p>
-			This is the mailing list message (HTML version). The bottom of the email should, at minimum, provide how to unsubscribe from the mailing list. 
+		    This is the mailing list message (HTML version). 
 		</p>
-		
-		<!-- tmpl_if unsub_link_found_in_html_mlm --> 
-			<p class="positive">
-				Unsubscribe Link found in Template. Good!
-			</p>
-		<!-- tmpl_else --> 
-			<p class="error">
-				Yikes! Couldn't find an Unsubscribe Link (<code>&lt;!-- tmpl_var list_unsubscribe_link --&gt;</code>) in your template! If your mailing is sent out without one, somewhere, an unsubscribe link will be automatically appended to the top of your message. 
-			</p>
-		<!-- /tmpl_if -->
-		<!-- tmpl_if message_body_tag_found_in_html_mlm --> 
-		<!-- tmpl_else --> 
-		<p class="error">
-			Yikes! Couldn't find the <code>&lt;!-- tmpl_var message_body --&gt;</code> tag in your template! Please place this tag in your template, to ensure proper formatting.  
-		</p>			
-		<!-- /tmpl_if --> 
+
+		<!-- tmpl_unless private_list -->		
+    		</p> 	
+        	    This template should contain simple instructions on unsubscribing from the mailing list.
+    		</p>
+        <!-- /tmpl_unless --> 
+        
+		<!-- tmpl_unless private_list -->	
+    		<!-- tmpl_if unsub_link_found_in_html_mlm --> 
+        		<div class="clearskiesbox"> 
+        			<p>
+        				Unsubscribe Link found in template.
+        			</p>
+        	    </div> 		
+    		<!-- tmpl_else --> 
+        		<div class="badweatherbox"> 
+            		<p>
+            			 Couldn't find the <code>&lt;!-- tmpl_var message_body --&gt;</code>
+            			tag in your template! Please place this tag in your template, to ensure proper formatting.  
+            		</p>			
+                </div> 
+    		<!-- /tmpl_if -->
+        <!-- /tmpl_unless --> 
+        
+		<!-- tmpl_unless message_body_tag_found_in_html_mlm --> 
+    		<div class="badweatherbox"> 
+        		<p>
+        			Couldn't find the <code>&lt;!-- tmpl_var message_body --&gt;</code>
+        			tag in your template! Please place this tag in your template, to ensure proper formatting.  
+        		</p>			
+            </div> 
+		<!-- /tmpl_unless --> 
 		
 		
 		<p>
@@ -125,7 +154,7 @@
 		</p>
 	</fieldset> 
 
-	</fieldset>
+</fieldset>
 
 
 
@@ -134,7 +163,7 @@
 		Subscription Confirmation Email 
 	</legend>
 	<p>
-		This email message is sent when someone requests to be subscribed to your list. 
+		This email message is sent when someone requests to be subscribed to your mailing list. 
 	</p>
 	<p>
 		Make sure to place the <code>&lt;!-- tmpl_var list_confirm_subscribe_link --&gt;</code> tag in the body of this email message!
@@ -148,11 +177,11 @@
 	
 	<!-- tmpl_if sub_confirm_link_found_in_confirmation_message --> 
 		<p class="positive">
-			Subscription Confirmation Link found in Template. Good!
+			Subscription Confirmation Link found in Template.
 		</p>
 	<!-- tmpl_else --> 
 		<p class="error">
-			Yikes! Couldn't find a Subscription Confirmation Link (<code>&lt;!-- tmpl_var list_confirm_subscribe_link --&gt;</code>) in your template! If your mailing is sent out without one, a subscription confirmation link will be automatically prepended to the top of your message. 
+		    Couldn't find a Subscription Confirmation Link (<code>&lt;!-- tmpl_var list_confirm_subscribe_link --&gt;</code>) in your template! If your mailing is sent out without one, a subscription confirmation link will be automatically prepended to the top of your message. 
 		</p>
 	<!-- /tmpl_if -->
 	
@@ -253,11 +282,11 @@
 	
 		<!-- tmpl_if sub_confirm_link_found_in_pt_invite_msg --> 
 			<p class="positive">
-				Subscription Confirmation Link found in Template. Good!
+				Subscription Confirmation Link found in Template. 
 			</p>
 		<!-- tmpl_else --> 
 			<p class="error">
-				Yikes! Couldn't find a Subscription Confirmation Link (<code>&lt;!-- tmpl_var list_confirm_subscribe_link --&gt;</code>) in your template! If your mailing is sent out without one, a subscription confirmation link will be automatically prepended to the top of your message. 
+				 Couldn't find a Subscription Confirmation Link (<code>&lt;!-- tmpl_var list_confirm_subscribe_link --&gt;</code>) in your template! If your mailing is sent out without one, a subscription confirmation link will be automatically prepended to the top of your message. 
 			</p>
 		<!-- /tmpl_if -->
 	
@@ -276,11 +305,11 @@
 
 		<!-- tmpl_if sub_confirm_link_found_in_html_invite_msg --> 
 			<p class="positive">
-				Subscription Confirmation Link found in Template. Good!
+				Subscription Confirmation Link found in Template. 
 			</p>
 		<!-- tmpl_else --> 
 			<p class="error">
-				Yikes! Couldn't find a Subscription Confirmation Link (<code>&lt;!-- tmpl_var list_confirm_subscribe_link --&gt;</code>) in your template! If your mailing is sent out without one, a subscription confirmation link will be automatically prepended to the top of your message. 
+				 Couldn't find a Subscription Confirmation Link (<code>&lt;!-- tmpl_var list_confirm_subscribe_link --&gt;</code>) in your template! If your mailing is sent out without one, a subscription confirmation link will be automatically prepended to the top of your message. 
 			</p>
 		<!-- /tmpl_if -->
 		
@@ -332,24 +361,21 @@
 		<legend>
 			PlainText Message: 
 		</legend>
-
-		<!-- tmpl_if unsub_link_found_in_pt_subscribed_by_list_owner_msg --> 
-			<p class="positive">
-				Unsubscribe Link found in Template. Good!
-			</p>
-		<!-- tmpl_else --> 
-			<p class="error">
-				Yikes! Couldn't find an Unsubscribe Link (<code>&lt;!-- tmpl_var list_unsubscribe_link --&gt;</code>) in your template! If your mailing is sent out without one, somewhere, an unsubscribe link will be automatically appended to the top of your message. 
-			</p>
-		<!-- /tmpl_if -->
-
-	
-	
-	<p>
-<textarea name="subscribed_by_list_owner_message" id="subscribed_by_list_owner_message" rows="10" cols="50" ><!-- tmpl_var list_settings.subscribed_by_list_owner_message escape=HTML --></textarea> 
-	</p>
-</fieldset> 
-
+        <!-- tmpl_unless private_list -->
+    		<!-- tmpl_if unsub_link_found_in_pt_subscribed_by_list_owner_msg --> 
+    			<p class="positive">
+    				Unsubscribe Link found in Template.
+    			</p>
+    		<!-- tmpl_else --> 
+    			<p class="error">
+    				 Couldn't find an Unsubscribe Link (<code>&lt;!-- tmpl_var list_unsubscribe_link --&gt;</code>) in your template! If your mailing is sent out without one, somewhere, an unsubscribe link will be automatically appended to the top of your message. 
+    			</p>
+    		<!-- /tmpl_if -->
+        <!-- /tmpl_unless -->
+    	<p>
+    	    <textarea name="subscribed_by_list_owner_message" id="subscribed_by_list_owner_message" rows="10" cols="50" ><!-- tmpl_var list_settings.subscribed_by_list_owner_message escape=HTML --></textarea> 
+    	</p>
+    </fieldset> 
 </fieldset>
 
 
@@ -375,25 +401,18 @@
 		<legend>
 			Headers: 
 		</legend>
-  
-    <p>
-     <label for="unsubscribed_by_list_owner_message_subject" class="label_by_5">Subject:</label> <input type="text" name="unsubscribed_by_list_owner_message_subject" id="unsubscribed_by_list_owner_message_subject" value="<!-- tmpl_var list_settings.unsubscribed_by_list_owner_message_subject escape=HTML -->" class="midi" />
-    </p>
-    
-	
-	
+        <p>
+         <label for="unsubscribed_by_list_owner_message_subject" class="label_by_5">Subject:</label> <input type="text" name="unsubscribed_by_list_owner_message_subject" id="unsubscribed_by_list_owner_message_subject" value="<!-- tmpl_var list_settings.unsubscribed_by_list_owner_message_subject escape=HTML -->" class="midi" />
+        </p>
 	</fieldset>
-
 	<fieldset>
 		<legend>
 			PlainText Message: 
 		</legend>
-	
 	<p>
-<textarea name="unsubscribed_by_list_owner_message" id="unsubscribed_by_list_owner_message" rows="10" cols="50" ><!-- tmpl_var list_settings.unsubscribed_by_list_owner_message escape=HTML --></textarea> 
-	</p>
-</fieldset> 
-
+        <textarea name="unsubscribed_by_list_owner_message" id="unsubscribed_by_list_owner_message" rows="10" cols="50" ><!-- tmpl_var list_settings.unsubscribed_by_list_owner_message escape=HTML --></textarea> 
+    </p>
+    </fieldset> 
 </fieldset>
 
 

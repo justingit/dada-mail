@@ -53,64 +53,29 @@ undef $r;
 undef $scalar; 
 
 
-# There is one small B<HTML::Template> filter that turns the very B<very> simple (oldstyle) Dada 
-# Mail template-like files into something B<HTML::Template> can use. In the beginning (gather 'round, kids)
-# Dada Mail didn't have a Templating system (really) at all, and just used regex search and replace - 
-# sort of like everyone did, before they knew better. Old style Dada Mail variables looked like this: 
-# 
-#  [var1]
-# 
-# These oldstyle variables will still work, but do remember to pass the, C<-dada_pseudo_tag_filter>
-# with a value of, C<1> to enable this filter: 
-# 
-#  my $scalar = 'I wanted to say: [var1]'; 
-#  print DADA::Template::Widgets::screen(
-#     {
-#         -data                   => \$scalar,
-#         -vars                   => {var1 => "This!"}, 
-#         -dada_pseudo_tag_filter => 1, 
-#     }
-#  );
-
-
-$scalar = 'I wanted to say: [var1]'; 
-   $r = DADA::Template::Widgets::screen(
-   {
-       -data                   => \$scalar,
-       -vars                   => {var1 => "This!"}, 
-       -dada_pseudo_tag_filter => 1, 
-   }
-);
-ok($r eq 'I wanted to say: This!'); 
-undef $r;
-undef $scalar; 
-
-
-
-
 # My suggestion is to try not to mix the two dialects and note that we'll I<probably> be moving to 
 # using the B<H::T> default template conventions, so as to make geeks and nerds more comfortable with 
 # the program. Saying that, you I<can> mix the two dialects and everything should work. This may be 
 # interesting in a pinch, where you want to say something like: 
 # 
-#  Welcome to [boring_name]
+#  Welcome to <!-- tmpl_var boring_name -->
 #  
 #  <!-- tmpl_if boring_description --> 
 #   Mription --> y boring description: 
 #   
-#     [boring_description]
+#     <!-- tmpl_var boring_description -->
 #     
 #  <!--/tmpl_if--> 
 #  
 
 
 $scalar = q{
-Welcome to [boring_name]
+Welcome to <!-- tmpl_var boring_name -->
 
 <!-- tmpl_if boring_description --> 
     My boring description: 
  
-   [boring_description]
+   <!-- tmpl_var boring_description -->
    
 <!--/tmpl_if--> 
 
@@ -158,9 +123,9 @@ my $lh = DADA::MailingList::Subscribers->new({-list => $list});
 
 my $d = q{ 
 
-Subscriber Address: [subscriber.email]
-Subscriber Name: [subscriber.email_name]
-Subscriber Domain: [subscriber.email_domain]
+Subscriber Address: <!-- tmpl_var subscriber.email -->
+Subscriber Name: <!-- tmpl_var subscriber.email_name -->
+Subscriber Domain: <!-- tmpl_var subscriber.email_domain -->
 
 }; 
 
@@ -364,10 +329,10 @@ undef($d);
 #  
 
 $d = q{ 
-list: [list_settings.list]
-list name: [list_settings.list_name]
-list owner: [list_settings.list_owner_email]
-info: [list_settings.info]
+list: <!-- tmpl_var list_settings.list -->
+list name: <!-- tmpl_var list_settings.list_name -->
+list owner: <!-- tmpl_var list_settings.list_owner_email -->
+info: <!-- tmpl_var list_settings.info -->
 }; 
 
 $r =  DADA::Template::Widgets::screen(
@@ -411,10 +376,10 @@ undef($d);
 
 
 $d = q{ 
-list: [list_settings.list]
-list name: [list_settings.list_name]
-list owner: [list_settings.list_owner_email]
-info: [list_settings.info]
+list: <!-- tmpl_var list_settings.list -->
+list name: <!-- tmpl_var list_settings.list_name -->
+list owner: <!-- tmpl_var list_settings.list_owner_email -->
+info: <!-- tmpl_var list_settings.info -->
 }; 
 
 my $list_settings = $ls->get(
@@ -507,80 +472,21 @@ for(@expr_tmpls){
 # /validate_screen
 
 
-
-
-
-### dada_backwards_compatibility
-my $string = q{
-[subscriber_email]
-[list_info]
-[subscriber_email]
-[email]
-[email_name]
-[email_domain]
-[pin]
-[list]
-[list_name]
-[info]
-[physical_address]
-[privacy_policy]
-[list_owner_email]
-[admin_email]
-};
-
-DADA::Template::Widgets::dada_backwards_compatibility(\$string);
-
-like($string, qr/\[subscriber.email\]/);
-like($string, qr/\[subscriber.email_name\]/);
-like($string, qr/\[subscriber.email_domain\]/);
-like($string, qr/\[subscriber.pin\]/);
-
-like($string, qr/\[list_settings.info\]/);
-like($string, qr/\[list_settings.list\]/);
-like($string, qr/\[list_settings.list_name\]/);
-like($string, qr/\[list_settings.physical_address\]/);
-like($string, qr/\[list_settings.privacy_policy\]/);
-like($string, qr/\[list_settings.list_owner_email\]/);
-like($string, qr/\[list_settings.admin_email\]/);
-
-unlike($string, qr/\[subscriber_email\]/);
-unlike($string, qr/\[list_info\]/);
-unlike($string, qr/\[subscriber_email\]/);
-unlike($string, qr/\[email\]/);
-unlike($string, qr/\[email_name\]/);
-unlike($string, qr/\[email_domain\]/);
-unlike($string, qr/\[pin\]/);
-unlike($string, qr/\[list\]/);
-unlike($string, qr/\[list_name\]/);
-unlike($string, qr/\[info\]/);
-unlike($string, qr/\[physical_address\]/);
-unlike($string, qr/\[privacy_policy\]/);
-unlike($string, qr/\[list_owner_email\]/);
-unlike($string, qr/\[admin_email\]/);
-
-undef $string; 
-	
-
-
-
-### /dada_backwards_compatibility
-
-
-# Bug: [ 2460735 ] 3.0.1 - simple [tmpl_if ...] usage breaks sending
+# Bug: <!-- tmpl_var  2460735  --> 3.0.1 - simple <!-- tmpl_var tmpl_if ... --> usage breaks sending
 # https://sourceforge.net/tracker/index.php?func=detail&atid=113002&aid=2460735&group_id=13002
 
 $d = q{ 
 	
 
-	[tmpl_if subscriber.first_name]
+	<!-- tmpl_if subscriber.first_name -->
 
-	Dear [subscriber.first_name]
+	Dear <!-- tmpl_var subscriber.first_name -->
 
-	[tmpl_else]
+	<!-- tmpl_else -->
 
-	Dear [subscriber.email]
+	Dear <!-- tmpl_var subscriber.email -->
 
-	[/tmpl_if]
+	<!-- /tmpl_if -->
 
 };
 
@@ -1008,7 +914,7 @@ $scalar = '<!-- tmpl_strftime %% -->';
 $r = DADA::Template::Widgets::screen({-data => \$scalar, -time => $time, });	
 ok($r eq '%');
 
-#/ <!-- tmpl_strftime [...] -->
+#/ <!-- tmpl_strftime <!-- tmpl_var ... --> -->
 
 
 

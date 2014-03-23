@@ -10,7 +10,6 @@ Key:
 [*] Naw...
 [?] Someday
 
-[ ] Also on a related subject, Trying to restore the Defaults doesn't appear to work.
 
 
 

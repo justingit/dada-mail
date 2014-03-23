@@ -841,67 +841,6 @@ If you're trying to send a webpage with an image, javascript library or styleshe
 
 The, "Send a Webpage" function of Dada Mail most likely won't understand what to do with this and most likely will ignore and remove the script, image or stylesheet.
 
-=head1 Dada Mail Templates
-
-=head2 The Bracket Problem
-
-Dada Mail's original templating system uses tags that looked a lot like this, 
-
- [tag]
-
-A string, with no white space, surrounded by brackets. Dada Mail still supports these types of tags, but you can run into problems, particularly with email messages, where a part of your message may I<look> like a tag in Dada Mail and will be templated out - essentially to nothing. This has the problem of removing content from your message. 
-
-There's a few things you can do: 
-
-=over
-
-=item * Set, $TEMPLATE_SETTINGS->{oldstyle_backwards_compatibility} to, 0
-
-If you're using version 4 or higher of Dada Mail, in the config, find the $TEMPLATE_SETTINGS hashref: 
-
- $TEMPLATE_SETTINGS ||= { 
- 	oldstyle_backwards_compatibility => 1, 
- };
-
-change, 1 to 0: 
-
- $TEMPLATE_SETTINGS ||= { 
- 	oldstyle_backwards_compatibility => 0, 
-} ;
-
-and no more problems. 
-
-It's suggested you I<only> do this if you are installing from scratch and not upgrading. If you are upgrading, make dead-sure you do not have any templates of any kind, since they will magically not work anymore. 
-
-See also: 
-
-http://dadamailproject.com/support/documentation-4_0_2/global_variables.pod.html#_template_settings
-
-=item * Don't use square brackets this way
-
-This advice is horrible advice, since you're having to deal with a deficiency of the program. We apologize. 
-
-=item * Use, <!-- tmpl_var LEFT_BRACKET ---> and, <!-- tmpl_var RIGHT_BRACKET --> 
-
-There's two template tags you can use in your email messages: 
-
- <!-- tmpl_var LEFT_BRACKET --> 
-
-and, 
-
- <!-- tmpl_var RIGHT_BRACKET --> 
-
-If you need to have a string in your message that looks like this: 
-
- [looks_like_a_tag]
-
-you can write it out, like this: 
-
- <!-- tmpl_var LEFT_BRACKET -->looks_like_a_tag<!-- tmpl_var RIGHT_BRACKET --> 
-
-And Dada Mail will replace those template tags, with left and right brackets, doing what you want to do. 
-
-
 
 =cut
 
