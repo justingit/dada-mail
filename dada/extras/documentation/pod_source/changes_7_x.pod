@@ -6,11 +6,11 @@
 
 =head3 Private Mailing Lists
 
-Previous versions of Dada Mail were specifically designed to run B<Public Mailing Lists>: mailing lists where anyone can subscribe to using the subscription form, and most I<definitely> everyone can remove themselves from (unsubscribe). 
+Previous versions of Dada Mail were specifically designed to run B<Public Mailing Lists>: mailing lists where anyone can subscribe to using the mailinglist's subscription form, and most I<definitely> everyone can remove themselves (unsubscribe). 
 
 For public mailing lists and marketing purposes, this works just great, but many users want to work with the app for a different purpose: utilizing Dada Mail's mailing list organizational and mass mailing features for a I<private> mailing list of contacts: a group of colleagues, or an internal company mailing list.
 
-Sicne this wasn't a role that Dada Mail was designed for, it hasn't fared very well, as List Owners become frustrated, having to constantly deal with list members removing themselves (often by accident). The tools to run a private mailing list just weren't there and solutions to this problem feel very hacky.  
+Sicne this wasn't a role that Dada Mail was designed for, it hasn't fared very well, as List Owners became frustrate having to constantly deal with list members removing themselves (often by accident). The tools to run a private mailing list just weren't there and solutions to this problem felt very hacky.  
 
 Dada Mail now has support for B<Private Mailing Lists>. A private mailing list 
 is a mailing list used in a closed, internal setting; not for a mailing list  used publically for marketing purposes. 
@@ -27,7 +27,7 @@ L<http://dadamailproject.com/d/features-private_and_public_lists.pod>
 
 Dada Mail now has the ability to allow users to report abuse on your mailing list. These abuse reports will be emailed to the List Owner, logged, and reported through the Tracker plugin. 
 
-=head3 Subscriber Subscription Date saved in a Timestamp
+=head3 Subscriber Subscription Date saved as a Timestamp
 
 Subscriber information now includes the Date of Subscription in a the B<Timestamp> column. 
 
@@ -49,7 +49,7 @@ Parital sending works the same way and the ability to send to members who have b
 
 Once you've done an advanced search on your subscribers, you will now have the ability to update any of the Profile Fields of your search results, en mass.
 
-=head3 Required Profile Fields
+=head3 Support for Required Profile Fields
 
 Profile Fields can now be marked as, B<Required>. Form field validation is done on the subscription form,  both client and server side. The experimental JSON web service API also supports required Profile Fields. 
 
@@ -63,9 +63,9 @@ In previous versions of Dada Mail, any Profile field information you try to impo
 
 Dada Mail now has the option to either preserve any already-existing profile field information, or update information that already exists - this choice on what to do can be made during the Verification step. 
 
-=head4 Profile Field data validation
+=head4 Profile Field Data Validation
 
-Since Profile fields can now be required, Dada Mail also checks for any required Profile Fields and will present the List Owner with the addresses that are missing these Profile Fields, in the verification step. There is now the option to subscribe addresses that are missing the required Profile Fields.
+Since Profile fields can now be required, Dada Mail also checks for any required Profile Fields and will present you with the addresses that are missing these Profile Fields, in the verification step. There is now the option to subscribe addresses that are missing the required Profile Fields.
 
 Dada Mail now has the option to allow you to mass update the Profile Fields data of subscribers who are already subscribed, stopping you from needing to fully remove subscribers, just to reimport them. 
 
