@@ -528,9 +528,9 @@ sub _fill_in_email_message_settings {
         not_allowed_to_post_msg_subject             => {-tmpl => 'not_allowed_to_post_msg.eml', -part => 'subject'},
         not_allowed_to_post_msg                     => {-tmpl => 'not_allowed_to_post_msg.eml', -part => 'plaintext_body'}, 
 
-        invalid_msgs_to_owner_msg_subject           => {-tmpl => 'not_allowed_to_post_msg.eml', -part => 'subject'},   
-        invalid_msgs_to_owner_msg                   => {-tmpl => 'not_allowed_to_post_msg.eml', -part => 'plaintext_body'}, 
-
+        invalid_msgs_to_owner_msg_subject           => {-tmpl => 'invalid_msgs_to_owner_msg.eml', -part => 'subject'},   
+        invalid_msgs_to_owner_msg                   => {-tmpl => 'invalid_msgs_to_owner_msg.eml', -part => 'plaintext_body'}, 
+        
         moderation_msg_subject                      => {-tmpl => 'moderation_msg.eml', -part => 'subject'},    
         moderation_msg                              => {-tmpl => 'moderation_msg.eml', -part => 'plaintext_body'},  
 
