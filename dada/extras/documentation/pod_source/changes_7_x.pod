@@ -21,7 +21,7 @@ All other options for a mailing list are still available for a Private List, all
 
 More information about Private and Public Mailing Lists:
 
-L<http://dadamailproject.com/d/features-private_and_public_lists.pod>
+L<http://dadamailproject.com/d/features-public_and_private_lists.pod>
 
 =head3 Abuse Reporting
 
@@ -45,7 +45,7 @@ This release of Dada Mail includes an B<Advanced Search>, allowing you to search
 
 Parital sending works the same way and the ability to send to members who have been subscribed between a range of two dates is also available. 
 
-=head3 Mass Update of Subscriber Profile Fields, based on Advanced Search
+=head3 Mass Update of Profile Fields, based on Advanced Search
 
 Once you've done an advanced search on your subscribers, you will now have the ability to update any of the Profile Fields of your search results, en mass.
 

@@ -557,7 +557,7 @@ sub default_screen {
 
     foreach my $list (@list_in_list_name_order) {
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-        my $all_list_info        = $ls->get();
+        my $all_list_info        = $ls->get;
         my $all_list_info_dotted = $ls->get( -dotted => 1 );
 
         my $ah = DADA::MailingList::Archives->new(
@@ -654,7 +654,7 @@ sub list_page {
         -expr                     => 1, 
 		-with                     => 'list', 
         -screen                   => 'list_page_screen.tmpl',
-        -list_settings_vars       => $ls->get(),
+        -list_settings_vars       => $ls->get,
         -list_settings_vars_param => {
 			-dot_it => 1
 			-list   => $args{-list}, # this is redundant, but important for email protection.
@@ -745,7 +745,7 @@ sub admin {
         if($checksout == 1){ 
             require DADA::MailingList::Settings; 
             my $l_ls             = DADA::MailingList::Settings->new({-list => $admin_list}); 
-            my $l_li             = $l_ls->get(); 
+            my $l_li             = $l_ls->get; 
             $logged_in_list_name = $l_li->{list_name};
         }
 
@@ -874,8 +874,8 @@ sub html_archive_list {
 	                    $subject = DADA::Template::Widgets::screen(
 	                        {
 	                        -data                    => \$subject, 
-	                        -vars                     => $ls->get(), 
-	                        -list_settings_vars       => $ls->get(), 
+	                        -vars                     => $ls->get, 
+	                        -list_settings_vars       => $ls->get, 
 	                        -list_settings_vars_param => {-dot_it => 1},                    
 	                        -dada_pseudo_tag_filter   => 1, 
 							-subscriber_vars_param    => {-use_fallback_vars => 1, -list => $ls->param('list')},
@@ -1477,9 +1477,9 @@ fields. So, this'll allow you to do something like this:
  
  <!--/tmpl_loop-->
 
-and this will loop over your Subscriber Profile Fields. 
+and this will loop over your Profile Fields. 
 
-If you'd like, you can also pass the Subscriber Profile Fields information yourself - this may be useful if
+If you'd like, you can also pass the Profile Fields information yourself - this may be useful if
 you're in some sort of recursive subroutine, or if you already have the information on hand. You may
 do so by passing the, C<-subscriber_vars> parameter, I<instead> of the C<-subscriber_vars_param>
 parameter, like so: 
@@ -1627,9 +1627,7 @@ sub screen {
                              	-list => $args->{-list_settings_vars_param}->{-list},
                          	}
 						); 
-                $args->{-list_settings_vars} = $ls->get(-dotted => 1);
-                
-                
+                $args->{-list_settings_vars} = $ls->get(-dotted => 1);                
                 #foreach(keys %{$args->{-list_settings_vars}}){ 
                 #    warn $_ . ' => ' . $args->{-list_settings_vars}->{$_};
                 #}

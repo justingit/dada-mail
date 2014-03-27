@@ -20,18 +20,9 @@ Complete installation docs are located at:
 
 L<http://dadamailproject.com/d/install_dada_mail.pod.html>
 
-=head3 Install Dada Mail via Simple Scripts
+=head3 Install Dada Mail via a Third Party Services
 
-Simple Scripts, also has a installer for Dada Mail, which we think is great: 
-
-L<https://www.simplescripts.com/page/id:8-pCU3Jz0E>
-
-Double check the version they are offering to install, as it sometimes lags behind the official, stable release. 
-
-=head4 cPanel
-
-If you have a cPanel-based hosting account (Bluehost, Hostmonster and many others), see if Simple Scripts is
-built right into your cPanel - it'll allow you to install Dada Mail with just a few clicks. We think that's pretty cool, as well. 
+Many different third party services that are available through different hosting accounts also have Dada Mail available as a one-ish click install, 
 
 =head3 Paid Installation
 
@@ -47,7 +38,11 @@ Yes.
 
 The Dada Mail Installer usually picks your home directory as the location for the C<.dada_files> directory. If you choose to install another copy of Dada Mail, the installer will then want to use this same (and currently in-use) location. 
 
-The trick is to simply tell the installer to use a different location. For example, create a new directory in your home directory (call it something like C<dada_files_for_xyz> and then point the installer to that directory (use the I<Manual> location, instead of I<Automatic>) and you're done!. 
+The trick is to simply tell the installer to use a different location.
+
+For example, create a new directory in your home directory (call it something like C<dada_files_for_xyz> and then point the installer to that directory (use the I<Manual> location, instead of I<Automatic>). 
+
+You'll also want to use a seperate SQL database for each install of Dada Mail. 
 
 =head2 Can I use one Dada Mail installation for multiple domains? 
 
@@ -73,13 +68,19 @@ Enter your Dada Mail Root Password in the form entitled, B<Create a New Mailing 
 
 =head2 How Do I Log Into an Already Existing List? 
 
-You can log into an already existing list by visiting the administration screen. A link should be on the bottom of the default screen of Dada Mail, if it's not visible, point your browser to this location:
+You can log into an already existing list by visiting the administration screen. 
+
+
+
+A link should be on the bottom of the default screen of Dada Mail, if it's not visible, point your browser to this location:
 
 L<http://example.com/cgi-bin/dada/mail.cgi/admin>
 
 Replacing, I<http://example.com/cgi-bin/dada/mail.cgi> with the URL of your own Dada Mail. 
 
-Select your list from the popup menu and enter either your B<List Password>, or the B<Dada Mail Root Password> in the form entitled, B<Enter Your List Control Panel>.
+If you are brought to the list control panel of mailing list, but not the one you want to be in, just log out and you'll be sent to the admin screen. 
+
+Select your mailing list from the popup menu and enter either your B<List Password>, or the B<Dada Mail Root Password> in the form entitled, B<Enter Your List Control Panel>.
 
 The, B<Dada Mail Root Password> can be used to log into any list being administrated by Dada Mail, as well as allowing you to access any adminsitration screens that are not allowed to be accessed when logging in using the B<List Password>. 
 
@@ -97,7 +98,7 @@ In the left-hand menu, go to B<Your Mailing List -E<gt> Delete This Mailing List
 
 =head2 Can I rename the mail.cgi file?
 
-Yes. You can rename the, B<mail.cgi> file to any other valid filename, like I<newsletter.cgi> or I<craaaaazyname.cgi>. You'll most likely have to keep the file ending either, B<.cgi> or B<.pl>
+Yes. You may rename the, B<mail.cgi> file to any other valid filename, like I<newsletter.cgi> or I<craaaaazyname.cgi>. You'll most likely have to keep the file ending either, B<.cgi> or B<.pl>
 
 The only place that this variable is hardcoded is in the, C<$PROGRAM_URL> variable - so make sure to change this variable as well to reflect the file name changes.
 
@@ -175,13 +176,13 @@ The first way is by having the list owner log into the List Control Panel and in
 
 The second way is to provide a subscription form available to visitors of your website. 
 
-=item * API
-
-The third is to modify an already exisiting program to use Dada Mail's API either directory or indirectly. 
-
 The first two ways are walked through in this screen cast: 
 
 L<http://www.youtube.com/watch?v=kUENzRN2EPA&hd=1>
+
+=item * RESTful API
+
+L<http://dadamailproject.com/d/COOKBOOK-subscriptions.pod.html#RESTful-API>
 
 =back
 
@@ -189,9 +190,9 @@ L<http://www.youtube.com/watch?v=kUENzRN2EPA&hd=1>
 
 Once logged in, the list owner will want to visit the, B<Manage Subscribers - Invite> screen. 
 
-New subscribers should be prepared in CSV format, with the email address being first and any other Subscriber Profile Fields coming afterwards. The actual order will be listed on this screen. 
+New subscribers should be prepared in CSV format, with the email address being first and any other Profile Fields coming afterwards. The actual order will be listed on this screen. 
 
-If you do not have any Subscriber Profile Fields, the format needed to give Dada Mail is just, one email address and a newline. 
+If you do not have any Profile Fields, the format needed to give Dada Mail is just, one email address and a newline. 
 
 Click the, B<Verify Addresses...> button. When the screen refreshes, Dada Mail will give a break down of the addresses that can be invited and also the addresses that cannot be invited for reasons that include: already being subscribed, being an invalid address, or that the address is currently banned from subsribing. 
 
@@ -213,42 +214,25 @@ There's also a Dada Mail Extension that'll allow someone to subscribe to more th
 
 L<http://dadamailproject.com/support/documentation/multiple_subscribe.cgi.html> 
 
-=head3 Using the Dada Mail API to subscribe new addresses
-
-See the following docs that pertain to using the Dada Mail API directly or indirectly to use its subscription capabilities: 
-
-L<http://dadamailproject.com/support/documentation/COOKBOOK-subscriptions.pod.html>
-
-L<http://dadamailproject.com/support/documentation/COOKBOOK-integration.pod.html>
-
-This will be a more advanced topic. 
-
 =head2 Mass Subscribing Email Addresses via the List Control Panel
 
 I<Is there a way to Mass-Subscribe email addresses from the list control panel?>
 
+Log into your mailing list with the Dada Root Password and go to: B<Your Mailing List - Options>
 
-Log into your mailing list and go to: B<Your Mailing List - Options>
-
-Under the heading, B<List Control Panel Subscriptions> check the option, B<Enable Adding Subscribers from within the List Control Panel> 
-
-You can then go to: B<Your Subscribers - Invite/Add> and mass-subscribe 
-addresses. 
+Under, B<Advanced Options - Subcriptions> check the option, B< Allow Subscriptions in the List Control Panel, Without Confirmation > and optionally, B< Only Allow when logged in with the Pro Dada Root Password > 
 
 =head1 Unsubscriptions 
 
-=head2 How do I turn off, "one-click" unsubscription links?
+=head2 How do I turn off, "one-click" unsubscription links? in Public Lists
 
-B<Short Answer> You can't. 
+Running a public list requires you to have a way to unsubcribe from your mailing list and Dada Mail requires that every message you send in a mass mailing contain a unsubscription link - including discussion messages. 
 
-Dada Mail requires that every message you send in a mass mailing contain a unsubscription link - including discussion messages. 
-
-The following tag is required to be present in every message sent in a mass mailing: 
+The following tag is required to be present in every message sent in a mass mailing in a public mailing list:
 
  <!-- tmpl_var list_unsubscribe_link --> 
 
-This tag will be replaced by an unsubcription link that will be unique to the user's email address, mailing list, and mass mailing that it's sent in. When it's clicked, 
-the user will need to simply retype their email address and submit the form presented to them. Once they do that, the user will be removed from the mailing list. 
+This tag will be replaced by an unsubcription link that will be unique to the user's email address, mailing list, and mass mailing that it's sent in. When it's clicked, the user will need to simply retype their email address and submit the form presented to them. Once they do that, the user will be removed from the mailing list. 
 
 There is an option in the List Control Panel to provide an email address hint in, I<Your Mailing List Options>, under I<Unsubscriptions>: B<Show Email Hint> 
 
@@ -264,6 +248,12 @@ in your mailing list message, Dada Mail will simply add one to the top of the me
 The following tag is required in your mailing list message: 
 
 	<!-- tmpl_var list_unsubscribe_link -->
+
+=head2 What's the difference between a public mailing list and a private mailing list
+
+See the docs on Public and Private Mailing Lists: 
+
+L<http://dadamailproject.com/d/features-public_and_private_lists.pod.html>
 
 =head1 Hosting
 
@@ -308,7 +298,6 @@ Dada Mail can also be set up to allow discussion lists, you'll have to also inst
 http://dadamailproject.com/support/documentation/bridge.cgi.html
 
 The Bridge Plugin can also be set up to provide announce-only message sending from your mail reader - 
-
 
 =head2 Does Dada Mail handle bounced messages? 
 

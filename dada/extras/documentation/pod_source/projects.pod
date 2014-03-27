@@ -92,7 +92,7 @@ There's currently no way to preview a mailing list message, before you send it.
 
 We'd like to add one that works really well and is incredibly easy to use. 
 
-We'd like this previewer to allow you work well with the Subscriber Profile Fields and the advanced Dada Mail templating language, so you can see exactly and instantaneously what your advanced if/unless/loop blocks do to the customized message you're creating. 
+We'd like this previewer to allow you work well with the Profile Fields and the advanced Dada Mail templating language, so you can see exactly and instantaneously what your advanced if/unless/loop blocks do to the customized message you're creating. 
 
 =head2 Dada Bridge: Rules
 
@@ -158,7 +158,7 @@ Dada Bridge is really missing digest support. Digests should be able to be autom
 
 =head2 Smart Groups/Save Partial Sending Options
 
-Being able to save a set of your subscribers, based on a saved query of your Subscriber Profile Fields would be incredibly helpful to help keep track of various activities of your mailing list. 
+Being able to save a set of your subscribers, based on a saved query of your Profile Fields would be incredibly helpful to help keep track of various activities of your mailing list. 
 
 Smart Groups can be created/edited/delete and Smart Groups can be used to view a specific part of your mailing list. 
 

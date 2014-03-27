@@ -45,9 +45,9 @@ But it would also be nice to have a separate table that only has one instance of
 
 This is probably the best way forward, as it will be easiest for people to upgrade and I can do a simple check to see if the table is there - and if not, ask for it to be created.
 
-I'm still going to run into the problem of the Subscriber Profile Fields data is going to be possibly duplicated and *different* per list - I may, in fact fake this for now, and just have one point of edit for subscriber information, and save that information in multiple places. 
+I'm still going to run into the problem of the Profile Fields data is going to be possibly duplicated and *different* per list - I may, in fact fake this for now, and just have one point of edit for subscriber information, and save that information in multiple places. 
 
-The only other alternative - and it would be best to take care of this sooner, rather than later, is to move the Subscriber Profile Fields somewhere else - 
+The only other alternative - and it would be best to take care of this sooner, rather than later, is to move the Profile Fields somewhere else - 
 
 
 	dada_subscriber_fields
@@ -244,7 +244,7 @@ at least for,
 	delete 
 	perhaps...add?
 
-	$sh->subscriber->get();
+	$sh->subscriber->get;
 
 Well, actually, everthing except like, num_subscribers. heh... 
 
@@ -349,7 +349,7 @@ The main trick to this, is that there needs to be a general MIME message viewer 
 	total mess. That's going to have to be on my own time though, so I guess 
 	It's not the highest priority. 
 	
-The other trick is that we need to have testing Subscriber Profile Fields available to be filled out, so that you can test specific values in them and see what type of effect they have on your message. 
+The other trick is that we need to have testing Profile Fields available to be filled out, so that you can test specific values in them and see what type of effect they have on your message. 
 
 The other nice thing *may* be to have the message, once you've previewed it, then sent to either a test address or the list owner, for a final, once-over that everything looks good. 
 

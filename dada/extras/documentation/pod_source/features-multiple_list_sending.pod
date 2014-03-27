@@ -11,7 +11,7 @@ Mailing List at one time.
 Multiple Mailing List Sending has the idea of a host mailing list, which is just 
 whatever mailing list you're currently logged into. 
 
-Partial mailing list sending, using Dada Mail's Subscriber Profile Fields is supported. 
+Partial mailing list sending, using Dada Mail's Profile Fields is supported. 
 
 =head1 Using Multiple Mailing List Sending
 

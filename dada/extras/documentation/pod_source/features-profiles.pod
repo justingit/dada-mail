@@ -8,7 +8,7 @@ Profiles allow your users to:
 
 =over
 
-=item * Keep their Subscriber Profile Fields fresh
+=item * Keep their Profile Fields fresh
 
 =item * Update their Profile, as well as all their Mailing List Subscriptions
 
@@ -24,7 +24,7 @@ L<http://dadamailproject.com/d/password_protect_directories.cgi.html>
 
 =back
 
-=head1 Logging into your Dada Mail Profile
+=head1 Logging into a  Dada Mail Profile
 
 Your users can log into their Profile, by clicking the, B<[Profile Register/Log In] > link, on the top right of most screens of Dada Mail. 
 
@@ -37,7 +37,7 @@ Once logged in, your users can:
 
 =over
 
-=item * Update their Subscriber Profile Fields 
+=item * Update their Profile Fields 
 
 =item * View their Your Mailing List Subscriptions 
 
@@ -199,7 +199,6 @@ To set your own list of checks to skip, you may change the, C<subscription_check
 				over_subscription_quota
 				already_sent_sub_confirmation
 				no_list
-				
 				invite_only_list
 				
 			)],
@@ -232,7 +231,7 @@ C<password_reset> controls whether the, B<Forgot Your Profile Password?> form is
 
 =item * profile_fields
 
-C<profile_fields> controls whether the user may edit their own Subscriber Profile Fields in their own Profile (once logged in). If disabled, a user's Subscriber Profile Fields can still be edited by a List Owner, if logged in with the Dada Mail Root Password. 
+C<profile_fields> controls whether the user may edit their own Profile Fields in their own Profile (once logged in). If disabled, a user's Profile Fields can still be edited by a List Owner, if logged in with the Dada Mail Root Password. 
 
 =item * mailing_list_subscriptions
 

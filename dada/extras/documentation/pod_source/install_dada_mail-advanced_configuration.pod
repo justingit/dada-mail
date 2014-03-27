@@ -86,7 +86,7 @@ Controls whether the, B<Forgot Your Profile Password?> form is shown or not. If 
 
 =head4 Profile Fields
 
-Controls whether the user may edit their own Subscriber Profile Fields in their own Profile (once logged in). If disabled, a user's Subscriber Profile Fields can still be edited by a List Owner, if they're logged in with the Dada Mail Root Password. 
+Controls whether the user may edit their own Profile Fields in their own Profile (once logged in). If disabled, a user's Profile Fields can still be edited by a List Owner, if they're logged in with the Dada Mail Root Password. 
 
 =head4 Mailing List Subscriptions
 

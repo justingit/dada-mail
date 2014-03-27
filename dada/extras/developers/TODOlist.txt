@@ -621,10 +621,10 @@ Hope this helps!
 
 [x] I need to perhaps make an option to that you cannot edit profile info, if you're not Dada Root. (no option, just... YOU CAN'T.)
 [x] Or make it clear that editing the information will deal with all lists. and/or have a way to know that a subscriber is on more than one list (and perhaps which lists?) (or a way to see a "public" profile? (turn on/off) 
-[-] I need some basic form validation for the Subscriber Profile Fields. 
+[-] I need some basic form validation for the Profile Fields. 
 	Right now, all I have is length. The SQL stuff is properly quoted... 
 	What else?!
-[x] I need to change all instances of, "Subscriber Fields" to, "Subscriber Profile Fields" 
+[x] I need to change all instances of, "Subscriber Fields" to, "Profile Fields" 
 [x] I need to make that SQL table upgrade thingy
 	Something like: 
 	
@@ -649,7 +649,7 @@ Hope this helps!
 	
 [ ] perhaps make a note about global unsubs in the profile? 
 [x] You need to change the profile fields when they're listed_like_this, to be Listed Like This! 
-[-] Subscriber Profile Fields widget - is it in places where we don't want it? 
+[-] Profile Fields widget - is it in places where we don't want it? 
 [ ] Some more live testing... 
 
 
@@ -657,7 +657,7 @@ Hope this helps!
 	[ ]A master, "Unsubscribe me AND delete this profile" Thingy? 
 	
 	
-[x] I need to merge all of the code that creates the query for the Subscriber Profile Fields into ONE method, because it's getting 
+[x] I need to merge all of the code that creates the query for the Profile Fields into ONE method, because it's getting 
  	complicated, it's being used in more than one place, AND people want to change it. A tall order, but probably, well worth it! 
 
 [-] The, "Your subscriptions" thingy in the Profile thingy has to let you know, if you aren't actually subscribed to any lists. Right now, if you're not, it just looks broken. 
@@ -681,7 +681,7 @@ Hope this helps!
 
 (3.1)
 	
-	[x] I need to make an option to says, "Hey that need Subscriber Profile Fields info? Replace what my be there with, 
+	[x] I need to make an option to says, "Hey that need Profile Fields info? Replace what my be there with, 
 		THIS, or, use what's there, if there's already something there, 
 		Probably per import, for now,
 	[x] Gravatar bells and whistles in the profile screen
@@ -732,7 +732,7 @@ http://rt.cpan.org/Public/Bug/Display.html?id=36005
 
 
 
-[x] "You may only change the Subscriber Profile Fields if you are logged in to an existing list using the Dada Mail Root Password."
+[x] "You may only change the Profile Fields if you are logged in to an existing list using the Dada Mail Root Password."
 
 
 [x] "Use underscores, instead of spaces - no funny characters, and use lower case characters instead of uppercase.
