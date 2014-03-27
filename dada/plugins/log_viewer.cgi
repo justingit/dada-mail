@@ -117,7 +117,7 @@ sub cgi_main {
 	$logs = find_logs();
 	
 	my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-	my $li = $ls->get();
+	my $li = $ls->get;
 
 	my $flavor = $q->param('flavor') || 'cgi_view';
 
@@ -464,11 +464,15 @@ sub get_logs {
 	);
 	
 	my $mass_mailing_logs = mass_mailing_logs($l_list); 
+	my $bridge_received_msgs = bridge_received_msgs($l_list); 
 	
     
     
 	if(keys %$mass_mailing_logs) { 
 	    %logs = (%logs, %{$mass_mailing_logs});
+	}
+	if(keys %$bridge_received_msgs) { 
+	    %logs = (%logs, %{$bridge_received_msgs}); 
 	}
 	return %logs; 
 }
@@ -533,6 +537,27 @@ sub mass_mailing_logs {
     #return @files;
     
 }
+
+
+
+sub bridge_received_msgs { 
+    my $list = shift; 
+    
+    my $dir  = $DADA::Config::TMP;
+    my $file;
+    my @files;
+    my $mbox = {}; 
+        
+    $dir = DADA::App::Guts::make_safer($dir);
+    my $file = $dir . '/' . 'bridge_received_msgs-' . $list . '.mbox'; 
+    warn 'file:' . $file; 
+    
+    if(-f $file){ 
+        $mbox->{'Bridge Received Messages (mbox)'} = $file;
+        return $mbox; 
+    }
+}
+
 
 sub self_url { 
 	my $self_url = $q->url; 
