@@ -1173,7 +1173,7 @@ sub ckeditor_template_tag_list {
     my $pfm         = DADA::ProfileFieldsManager->new;
     my $fields_attr = $pfm->get_all_field_attributes;
 
-    push( @$strings, { name => 'Subscriber Profile Fields', } );
+    push( @$strings, { name => 'Profile Fields', } );
     push(
         @$strings,
         {
@@ -3339,15 +3339,16 @@ sub view_list {
                 },
                 -expr => 1,
                 -vars => {
-                    screen    => 'view_list',
-                    flavor    => 'view_list',
-                    type      => $type,
-                    page      => $page,
-                    query     => $query,
-                    order_by  => $order_by,
-                    order_dir => $order_dir,
+                    screen          => 'view_list',
+                    flavor          => 'view_list',
+                    root_login      => $root_login, 
+                    type            => $type,
+                    page            => $page,
+                    query           => $query,
+                    order_by        => $order_by,
+                    order_dir       => $order_dir,
                     advanced_search => $advanced_search, 
-                    advanced_query => $advanced_query, 
+                    advanced_query  => $advanced_query, 
 
                     add_email_count                  => $add_email_count,
                     update_email_count               => $update_email_count, 
@@ -3523,6 +3524,8 @@ sub view_list {
                     can_have_subscriber_fields => 1, 
                     screen     => 'view_list',
                     flavor     => 'view_list',
+                    root_login => $root_login, 
+                    
                     type       => $type,
                     type_title => $type_title,
 
@@ -5105,6 +5108,7 @@ sub add {
                 -expr => 1,
                 -vars => {
                     screen                     => 'add',
+                    root_login                 => $root_login, 
                     subscription_quota_reached => $subscription_quota_reached,
                     num_subscribers            => $num_subscribers,
                     SUBSCRIPTION_QUOTA         => $DADA::Config::SUBSCRIPTION_QUOTA,
@@ -5432,7 +5436,43 @@ sub add_email {
             }
         }
         
+        my $show_invitation_button = 0; 
+        my $show_update_button     = 0; 
+        my $show_add_button        = 0; 
+        
+        
+        warn '$not_members- ' . scalar(@$not_members);
+        warn '$black_listed ' . scalar(@$black_listed); 
+        warn '$ls->param(\'allow_admin_to_subscribe_blacklisted\')' . $ls->param('allow_admin_to_subscribe_blacklisted'); 
+        warn '$subscribed' . scalar(@$subscribed); 
+        
+        if ($type eq 'list') {         
+            if(
+                scalar(@$not_members) > 0 
+            || (scalar(@$black_listed) > 0 && $ls->param('allow_admin_to_subscribe_blacklisted') == 1)) { 
+               $show_invitation_button = 1;  
+            }
+        
+            if(
+                scalar(@$not_members < 1) 
+            && (scalar(@$black_listed) < 1  && $ls->param('allow_admin_to_subscribe_blacklisted') == 1) 
+            && scalar(@$subscribed) > 1 
+            && ($root_login == 1 || $ls->param('allow_profile_editing') == 1)
+            ) { 
+               $show_update_button = 1; 
+            }
+            else { 
+                $show_add_button = 1;  
+            }
+        }
+
         my %vars = (
+            
+            show_invitation_button => $show_invitation_button,  
+            show_update_button     => $show_update_button,  
+            show_add_button        => $show_add_button, 
+            
+            
             can_have_subscriber_fields => $lh->can_have_subscriber_fields,
             going_over_quota           => $going_over_quota,
             field_names                => $field_names,
@@ -7394,7 +7434,7 @@ sub edit_type {
                     sub_confirm_link_found_in_pt_invite_msg             => $dfm->can_find_sub_confirm_link( { -str => $ls->param('invite_message_text') } ),
                     sub_confirm_link_found_in_html_invite_msg           => $dfm->can_find_sub_confirm_link( { -str => $ls->param('invite_message_html') } ),
                 },
-                -list_settings_vars       => $ls->get,
+                -list_settings_vars       => $ls->get(-all_settings => 1),
                 -list_settings_vars_param => { -dot_it => 1, },
             }
         );
@@ -7517,6 +7557,9 @@ sub edit_html_type {
 
     if ( !$process ) {
 
+        #use Data::Dumper; 
+        #die Dumper($ls->get(-dotted => 1, -all_settings => 1)); 
+        
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
@@ -7527,12 +7570,12 @@ sub edit_html_type {
                     -List       => $list,
                 },
                 -list => $list,
-                -list => $list,
                 -vars => {
                     screen => 'edit_html_type',
                     title  => 'HTML Screen Templates',
                     done   => $done,
                 },
+                -list_settings_vars       => $ls->get(-all_settings => 1),
                 -list_settings_vars_param => {
                     -list   => $list,
                     -dot_it => 1,
@@ -8911,7 +8954,7 @@ sub new_list {
                     "remote_host:$ENV{REMOTE_HOST}," . "ip_address:$ENV{REMOTE_ADDR}" );
             }
 
-            my $escaped_list = uriescape( $ls->param('list}') );
+            my $escaped_list = uriescape( $ls->param('list') );
 
             my $auth_state;
 
@@ -11522,7 +11565,7 @@ sub profile_activate {
 
         if ( $status == 1 ) {
             $prof->activate;
-            my $profile = $prof->get();
+            my $profile = $prof->get;
             $q->param( 'welcome', 1 );
             profile_login();
         }
@@ -11809,7 +11852,7 @@ sub profile {
             
     			my $li = DADA::Template::Widgets::webify_and_santize(
                     {
-                        -vars => $ls->get,
+                        -vars => $ls->get(-dotted => 1),
                         -to_sanitize =>
                           [ qw(list_settings.list_owner_email list_settings.info list_settings.privacy_policy ) ],
                     }
@@ -11836,6 +11879,7 @@ sub profile {
                     }
                 );
             }
+
 
             my $scrn = '';
             require DADA::Template::Widgets;
