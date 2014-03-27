@@ -1,18 +1,18 @@
-=head1 Frequently Asked Questions
+=head2 Frequently Asked Questions
 
-=head1 Errors
+=head2 Errors
 
 See the Error FAQ: 
 
 L<http://dadamailproject.com/support/documentation/FAQ-errors.pod.html>
 
-=head1 Support
+=head2 Support
 
 See the support page on the Dada Mail website: 
 
 L<http://dadamailproject.com/support>
 
-=head1 Using Dada Mail
+=head2 Using Dada Mail
 
 =head2 How Do I Install Dada Mail? 
 
@@ -162,7 +162,7 @@ That will allow you to change the Dada Mail Root Password. You will first have t
 
 Yes. In the list control panel, click on, "Monitor Your Mailings", click on the mailing you want to stop and when on that specific message screen, click the, B<STOP Mailing> button.
 
-=head1 Subscriptions
+=head2 Subscriptions
 
 =head2 How are new subscriptions made? 
 
@@ -222,7 +222,7 @@ Log into your mailing list with the Dada Root Password and go to: B<Your Mailing
 
 Under, B<Advanced Options - Subcriptions> check the option, B< Allow Subscriptions in the List Control Panel, Without Confirmation > and optionally, B< Only Allow when logged in with the Pro Dada Root Password > 
 
-=head1 Unsubscriptions 
+=head2 Unsubscriptions 
 
 =head2 How do I turn off, "one-click" unsubscription links? in Public Lists
 
@@ -255,7 +255,7 @@ See the docs on Public and Private Mailing Lists:
 
 L<http://dadamailproject.com/d/features-public_and_private_lists.pod.html>
 
-=head1 Hosting
+=head2 Hosting
 
 =head2 Do you host Dada Mail or do I host Dada Mail? 
 
@@ -275,7 +275,7 @@ Yes:
 
 http://dadamailproject.com/installation/request.html
 
-=head1 Upgrading
+=head2 Upgrading
 
 =head2 How do you upgrade Dada Mail? 
 
@@ -287,7 +287,7 @@ L<http://dadamailproject.com/support/documentation/upgrade_dada_mail.pod.html>
 
 Please, yes. 
 
-=head1 Features
+=head2 Features
 
 =head2 Does Dada Mail handle announce-only lists? Discussion Lists? 
 
@@ -442,7 +442,7 @@ If all this talk of shells and commands and CPANs has you confused, you're in lu
 
 Your Cpanel may have a Perl Module Installer - in your cPanel look for, I<Perl Module Installer>. Once in this screen, just enter the module you'd like to install, like, C<Gravatar::URL>. and it'll handle on the hard stuff for you, similar to how its down above. 
 
-=head1 The List Confirmation Process
+=head2 The List Confirmation Process
 
 =head2 Can you explain some of the terminology of the confirmation process? 
 
@@ -458,7 +458,7 @@ Saying that, Dada Mail is completely compatible with this methodology. In Dada M
 
 =back
 
-=head1 Errors
+=head2 Errors
 
 Running the Program Generates a 500 Server Error Message when I do, "x"
 
@@ -466,7 +466,7 @@ See the error FAQ:
 
 http://dadamailproject.com/support/documentation/FAQ-errors.pod.html
 
-=head1 Dada Mail and HTML Templates
+=head2 Dada Mail and HTML Templates
 
 =head2 How do you change the Dada Mail Logo? 
 
@@ -679,7 +679,7 @@ You may want to make sure your list template does B<not> also have the character
 
 One thing to note about email messages are character I<encoding>: currently, Dada Mail does not support anything but Latin 1 in the message B<headers>, anything else is going to look like gobble-de-gook. We hope to render this problem soon.  
 
-=head1 SQL and Dada Mail
+=head2 SQL and Dada Mail
 
 =head2 Does Dada Mail need an SQL server to run? 
 
@@ -783,7 +783,7 @@ See:
 http://dadamailproject.com/support/documentation/FAQ-default_to_SQL_backend.pod.html
 
 
-=head1 Mailing List Messages
+=head2 Mailing List Messages
 
 =head2 I want to edit the unsubscribe footer of my Mailing List Message - how?
 
@@ -812,7 +812,7 @@ If you remove it from your mailing list message template, it will be re-added, b
 
 Yes. 
 
-=head1 List Subscribers
+=head2 List Subscribers
 
 =head2 How many subscribers can Dada Mail handle? 
 
@@ -849,7 +849,7 @@ One email address per line, followed immediately by a newline. The end of the fi
 
 Be very careful when editing the file manually, as unexpected things may happen if the format is broken. 
 
-=head1 Performance
+=head2 Performance
 
 =head2 Tuning Dada Mail to Send Mass Mailings Faster 
 
@@ -907,13 +907,13 @@ limit, you can certainly bump up the batch settings to accomodate the resources 
 =back
 
 
-=head1 Mail Sending
+=head2 Mail Sending
 
 See the Mail Sending FAQ at: 
 
 L<http://dadamailproject.com/support/documentation/FAQ-email_sending.pod.html>
 
-=head1 Archiving
+=head2 Archiving
 
 =head2 Is there a way to add a message to the archive, without sending the message?
 
@@ -971,7 +971,7 @@ and go through the process of restoring your lists. Heed the warning of making r
 Told you it was a hack. 
 
 
-=head1 Glossary Terms
+=head2 Glossary Terms
 
 What the heck is...
 
@@ -997,7 +997,7 @@ See also:
 
 http://www.computerhope.com/jargon/a/absopath.htm
 
-=head1 System Requirements 
+=head2 System Requirements 
 
 =head2 What do I need to run Dada Mail? 
 
@@ -1011,7 +1011,7 @@ Currently, this is done by copying a local perllib into the, I<dada/DADA/perllib
 
 If you'd like to have the CPAN modules required installed in your site-wide perl library, a Dada Mail-specific CPAN Bundle is located in the: I<dada/DADA/extras/developers/DadaMail.pm> file. 
 
-=head1 What is Dada Mail?
+=head2 What is Dada Mail?
 
 =head2 Is Dada Mail a Server? A Daemon? 
 

@@ -2,7 +2,7 @@
 
 =head1 Subscription Approval System for Dada Mail!
 
-=head1 Introduction
+=head2 Introduction
 
 Subscription Approval allows the list owner of a mailing list to make the final 
 decision of if a would-be subscriber is allowed to join a mailing list. 
@@ -15,7 +15,7 @@ this allows you to have another, alternative and direct confirmation process, wi
 giving up too much security. 
 
 
-=head1 Enabling
+=head2 Enabling
 
 This feature can be enabled per list, in the list control panel under, 
 
@@ -31,7 +31,7 @@ I<Enable Subscription Requests Approving/Denying  >
 
 All set! 
 
-=head1 Using 
+=head2 Using 
 
 When a would-be subscriber completes the subscription confirmation process, they'll be 
 told that their subscription is being held until the list owner approves it. 
@@ -62,11 +62,11 @@ I<Deny Checked Subscription Requests>
 
 to deny requests. 
 
-=head1 Feedback
+=head2 Feedback
 
 This is a new, experimental feature and we'd like feedback on how it's working for everyone. Let us know!
 
-=head1 Shortcomings 
+=head2 Shortcomings 
 
 =head2 "Subscription" Options disabled 
 

@@ -28,7 +28,7 @@
 
 =end html
 
-=head1 Books
+=head2 Books
 
 =begin html
 
@@ -44,7 +44,7 @@
 
 =end html
 
-=head1 Testing
+=head2 Testing
 
 =begin html 
 

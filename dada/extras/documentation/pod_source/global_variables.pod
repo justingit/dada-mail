@@ -1,6 +1,6 @@
-=head1 Dada Mail Global Variables Configuration Guide 
+=head2 Dada Mail Global Variables Configuration Guide 
 
-=head1 DESCRIPTION 
+=head2 DESCRIPTION 
 
 This doc. guides you through all the global configuration variables available to you in Dada Mail. 
 
@@ -111,7 +111,7 @@ If you need to set a variable in the outside config file to '0', it
 may not work. Instead, try setting it to '2'. This is a known - and embarrassing, 
 issue. 
 
-=head1 $PROGRAM_CONFIG_FILE_DIR
+=head2 $PROGRAM_CONFIG_FILE_DIR
 
 C<$PROGRAM_CONFIG_FILE_DIR> holds the absolute path to the B<directory> that the outside 
 config file, C<.dada_config> can be found. 
@@ -134,7 +134,7 @@ You may also want to read the README for this example, located at:
 I<dada/extras/examplees/example_dada_config-README.txt>
 
 
-=head1 $PROGRAM_ERROR_LOG
+=head2 $PROGRAM_ERROR_LOG
 
 C<$PROGRAM_ERROR_LOG> should hold the absolute server path to the error log for Dada Mail. Example: 
 
@@ -142,7 +142,7 @@ C<$PROGRAM_ERROR_LOG> should hold the absolute server path to the error log for 
 
 The file itself (in this example, C<errors.txt>) does not need to be created. 
 
-=head1 $DIR
+=head2 $DIR
 
 C<$DIR> needs to hold the absolute server path to your C<.dada_files> directory. For example: 
 
@@ -170,7 +170,7 @@ These variables will be set to the following:
 We will not be covering these variables in much detail, except to say that each directory is used to store a specific type of file 
 in Dada Mail. C<$ARCHIVES> and C<$BACKUPS> are not used in the SQL backend. 
 
-=head1 $PROGRAM_URL
+=head2 $PROGRAM_URL
 
 C<$PROGRAM_URL> holds the URL of Dada Mail. Example, 
 
@@ -187,7 +187,7 @@ and access to the List Control Panel on a secure connection:
 
 	$S_PROGRAM_URL = 'https://example.com/cgi-bin/dada/mail.cgi
 
-=head1 $SUPPORT_FILES
+=head2 $SUPPORT_FILES
 
 C<$SUPPORT_FILES> holds a hashref, with the following format: 
 
@@ -203,7 +203,7 @@ C<url> holds the URL to this same directory.
 The B<dada_mail_support_files> directory holds static files (images, css, javascript files, etc), as well as 
 third part WYSIWYG editors used by Dada Mail. It should be set up for you, but the Dada Mail installer. 
 
-=head1 $PROGRAM_ROOT_PASSWORD
+=head2 $PROGRAM_ROOT_PASSWORD
 
 C<$PROGRAM_ROOT_PASSWORD> holds the main (or, "Root") password for Dada Mail. This password 
 is used both to B<create new mailing lists>, as well as B<log into any mailing list>. It should 
@@ -246,7 +246,7 @@ Copy that encrypted password set it as your C<$PROGRAM_ROOT_PASSWORD> variable.
 
 =back
 
-=head1 $BACKEND_DB_TYPE
+=head2 $BACKEND_DB_TYPE
 
 C<$BACKEND_DB_TYPE> sets the type of backend that Dada Mail will use, and can either be set to, 
 C<SQL> for an SQL-type of backend, or C<Default> for a filesytem-based backend. 
@@ -311,21 +311,21 @@ L<http://search.cpan.org/~timb/DBI/DBI.pm#ATTRIBUTES_COMMON_TO_ALL_HANDLES>
 
 
 
-=head1 $WYSIWYG_EDITOR_OPTIONS, $FILE_BROWSER_OPTIONS
+=head2 $WYSIWYG_EDITOR_OPTIONS, $FILE_BROWSER_OPTIONS
 
 C<$WYSIWYG_EDITOR_OPTIONS> and C<$FILE_BROWSER_OPTIONS> variables are covered in the following doc: 
 
 L<http://dadamailproject.com/d/features-wysiwyg_editors.pod.html>
 
-=head1 $PROFILE_OPTIONS
+=head2 $PROFILE_OPTIONS
 
 C<$PROFILE_OPTIONS> is covered in the following doc: 
 
 L<http://dadamailproject.com/d/features-profiles.pod.html>
 
-=head1 Mailing List Settings
+=head2 Mailing List Settings
 
-=head1 %LIST_SETUP_DEFAULTS
+=head2 %LIST_SETUP_DEFAULTS
 
 These defaults will be used when B<creating> a new mailing list. These defaults 
 will also be used for existing lists if there isn't a variable 
@@ -353,7 +353,7 @@ Since there's so many list settings, it's usually easier to just change the sett
 This can be done using the, C<%LIST_SETUP_INCLUDE> variable - 
 
 
-=head1 %LIST_SETUP_INCLUDE
+=head2 %LIST_SETUP_INCLUDE
 
 Similar to, C<%LIST_SETUP_DEFAULTS>, C<%LIST_SETUP_INCLUDE> holds defaults values for lists. 
 
@@ -374,20 +374,20 @@ you could set %LIST_SETUP_INCLUDE to have these values:
 
 And all new lists would automatically be hooked up to the bounce handler. 
 
-=head1 %LIST_SETUP_OVERRIDES
+=head2 %LIST_SETUP_OVERRIDES
 
 B<%LIST_SETUP_OVERRIDES> will override any setting that's in the 
 B<%LIST_SETUP_DEFAULTS> hash and whatever is set in any of the mailing list 
 preferences. 
 
-=head1 @LIST_SETUP_DONT_CLONE
+=head2 @LIST_SETUP_DONT_CLONE
 
 B<@LIST_SETUP_DONT_CLONE> is a list of settings you'd rather not have allowed to be cloned, 
 in the little feature in the, B<Create a New List> screen, 
 entitled, B<Clone settings from this list:>
 
 
-=head1 $PLUGIN_CONFIGS
+=head2 $PLUGIN_CONFIGS
 
 C<$PLUGIN_CONFIGS> holds default settings to various Dada Mail plugins and extensions. 
 
@@ -412,7 +412,7 @@ C<.dada_config file>, the value in the C<.dada_config> file will be used.
 Refer to the plugin/extension itself to know what the various plugin/extension 
 configuration names and values are and do. 
 
-=head1 $ADMIN_MENU
+=head2 $ADMIN_MENU
 
 C<$ADMIN_MENU> holds a complex data structure that represents the left hand menu, 
 you see when logged into Dada Mail's List Control Panel. 
@@ -460,14 +460,14 @@ into a mailing list with the B<Dada Mail Root Password> and navigate to, B<Your 
 
 All Items and Sections are always available to someone logged into a mailing list using the B<Dada Mail Root Password>. 
 
-=head1 $FILES
+=head2 $FILES
 
 $FILES holds the directory you want your mailing list subscribers, schedules and a few
 obscure files to be saved in. 
 
 
 
-=head1 $MAILPROG
+=head2 $MAILPROG
 
 C<$MAILPROG> holds the Absolute Path of your sendmail-like command. 
 
@@ -477,7 +477,7 @@ By default, it is set to,
 
 
 
-=head1 $MAIL_SETTINGS
+=head2 $MAIL_SETTINGS
 
 C<$MAIL_SETTINGS> holds the path to your sendmail-like command, as well as any 
 flags to be sent to the command. This variable is used for all email sending by 
@@ -498,12 +498,12 @@ for testing and debugging. For example:
 Will append all non-mass mailing message the file at, C</home/example/test_mail.txt>, 
 instead of sending the message out. 
 
-=head1 $MASS_MAIL_SETTINGS
+=head2 $MASS_MAIL_SETTINGS
 
 C<$MASS_MAIL_SETTINGS> serves the same purpose as, C<$MAIL_SETTINGS>, but is used only
 for mass mailings. By default, it's set the same as, C<$MAIL_SETTINGS>. 
 
-=head1 $AMAZON_SES_OPTIONS
+=head2 $AMAZON_SES_OPTIONS
 
 C<$AMAZON_SES_OPTIONS> sets options for use of the Amazon SES third party email web service. 
 
@@ -511,10 +511,10 @@ This variable is covered in detail:
 
 L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>
 
-=head1 Security 
+=head2 Security 
 
 
-=head1 $SHOW_ADMIN_LINK
+=head2 $SHOW_ADMIN_LINK
 
 C<$SHOW_ADMIN_LINK> holds a boolean value. Set to, C<0> will remove the B<Administration>
  link that you see on the Dada Mail default screen (Set to, C<2>, if being used in your C<.dada_config> file).
@@ -528,7 +528,7 @@ This is a small security measure but may just stop people from
 snooping further. 
 
 
-=head1 $ADMIN_FLAVOR_NAME
+=head2 $ADMIN_FLAVOR_NAME
 
 Complementary to the C<$SHOW_ADMIN_LINK> variable, C<$ADMIN_FLAVOR_NAME> allows you
  to set the URL needed to access the screen that has the form to log into all the 
@@ -612,7 +612,7 @@ No checks will be made to make sure you don't have this value set to something a
 =back
 
 
-=head1 $SIGN_IN_FLAVOR_NAME
+=head2 $SIGN_IN_FLAVOR_NAME
 
 Similar to C<$ADMIN_FLAVOR_NAME>, C<$SIGN_IN_FLAVOR_NAME> holds the URL that allows you to log into a particular list (usually), although it is sometimes used to re-login into any of your lists - very similar to the administration screen, but does not give you the form to create a new list. 
 
@@ -630,7 +630,7 @@ etc.
 
 
 
-=head1 $DISABLE_OUTSIDE_LOGINS
+=head2 $DISABLE_OUTSIDE_LOGINS
 
 If set to, B<1>, The only forms that will allow you to log into a Dada Mail list will be by 
 a form supplied by Dada Mail itself. This means, you can't create a different form, outside
@@ -640,7 +640,7 @@ More so than any other option, this variable attempts to stop attempts of loggin
 by automated means. 
 
  
-=head1 $LOGIN_WIDGET
+=head2 $LOGIN_WIDGET
 
 By default on the list login screen, Dada Mail presents its user 
 with a popup menu with the names of all the lists, hidden or not, that 
@@ -652,7 +652,7 @@ If you want to only have a text box for someone to type in the
 list Short Name in, set B<$LOGIN_WIDGET> to 'text_box'.
 
 
-=head1 $ALLOW_ROOT_LOGIN
+=head2 $ALLOW_ROOT_LOGIN
 
 B<Allow the Root Password to Log In to All Lists>
 
@@ -665,7 +665,7 @@ can be accessed with the same password and that password is
 written plainly in this file, unless! you encrypt it (see below).
 
 
-=head1 @ALLOWED_IP_ADDRESSES
+=head2 @ALLOWED_IP_ADDRESSES
 
 You can block anyone from using any list control panel by 
 specifying exactly what IP addresses are allowed. Leave the 
@@ -688,7 +688,7 @@ coming from, and dial-up accounts and connections using DHCP may
 not have the same IP address per session.  
 
 
-=head1 $REFERER_CHECK
+=head2 $REFERER_CHECK
 
 Setting $REFERER_CHECK to '1' will only allow you to access admin
 screens if the referer in your web browser is whatever is set in 
@@ -698,7 +698,7 @@ Yahoo! and come back to the list control panel by typing in its URL.
 
 
 
-=head1 CAPTCHA in Dada Mail
+=head2 CAPTCHA in Dada Mail
 
 CAPTCH and Dada Mail is covered in the following doc: 
 
@@ -706,7 +706,7 @@ L<http://dadamailproject.com/d/features-CAPTCHA.pod.html>
 
 
 
-=head1 $SHOW_HELP_LINKS						
+=head2 $SHOW_HELP_LINKS						
 
 Most all the list administration screens have direct links to the Dada Mail Manual at
 the bottom of the screen. Set this variable to, C<1> to have them shown or, C<0> 
@@ -717,7 +717,7 @@ The Dada Mail Manual is a paid service, more information about it can be found a
 L<http://dadamailproject.com/purchase/pro.html>
 
 
-=head1 $HELP_LINKS_URL
+=head2 $HELP_LINKS_URL
 
 The Dada Mail Manual is available online, and also to download. You may use your 
 own copy of the Dada Mail Manual (just somehow password protect it) and set this
@@ -728,20 +728,20 @@ The default setting is the online version that we provide - but it is a paid ser
 
 
 
-=head1 Cookies
+=head2 Cookies
 
 Dada Mail uses cookies only for its login mechanism. 
 Subscribers are not given a cookie. 
 
 
-=head1 $LOGIN_COOKIE_NAME
+=head2 $LOGIN_COOKIE_NAME
 
 B<$LOGIN_COOKIE_NAME> holds the name of the cookie passed to 
 the person's browser that will be accessing the list control 
 panel. 
 
 
-=head1 Cookie Parameters 
+=head2 Cookie Parameters 
 
 Some browsers/servers funkify Dada Mail's cookies. I don't know why.
 You can set additional attributes that are written for Dada Mail 
@@ -750,12 +750,12 @@ cookies by tweaking the %COOKIE_PARAMS hash, as outlined:
 http://search.cpan.org/author/JHI/perl-5.8.0/lib/CGI.pm#HTTP_COOKIES
 
 
-=head1 Windows-Specific Settings
+=head2 Windows-Specific Settings
 
 Dada Mail does not really support Windows Servers. 
 
 
-=head1 $NPH
+=head2 $NPH
 
 NPH stands for No Parse Headers. I don't know what that means either, 
 but Microsoft servers like it, and I've found that cookies don't get 
@@ -769,7 +769,7 @@ that require scripts to use NPH.
 
 
 
-=head1 Logging
+=head2 Logging
 
 =head2 $LOGS
 
@@ -819,12 +819,12 @@ This variable is covered in the Error FAQ:
 
 L<http://dadamailproject.com/d/FAQ-errors.pod.html#tracing_cpan_modules_with__cpan_debug_settings>
 
-=head1 Templating
+=head2 Templating
 
 You may change the look and feel of Dada Mail B<globally> by specifying a
 different template files to use.
 
-=head1 $ADMIN_TEMPLATE
+=head2 $ADMIN_TEMPLATE
 
 C<$ADMIN_TEMPLATE> should hold an absolute server path to the template used for the List Control Panel. 
 
@@ -835,7 +835,7 @@ I<dada/templates/admin_template.tmpl>
 By default, this variable is C<undef>. 
 
 
-=head1 $USER_TEMPLATE
+=head2 $USER_TEMPLATE
 
 $USER_TEMPLATE should hold the absolute server path to the template used for everything
 other than the List Control Panel. 
@@ -850,7 +850,7 @@ C<$ALTERNATIVE_HTML_TEMPLATE_PATH> can hold an alternative location of the, I<da
 directory, if Dada Mail itself cannot find this directory automatically, or you would like to 
 have your own, custom template file collection, and do not want to edit the original files. 
 
-=head1 %BACKUP_HISTORY 
+=head2 %BACKUP_HISTORY 
 
 C<%BACKUP_HISTORY> sets how many different revisions of various list 
 files are saved. 
@@ -885,9 +885,9 @@ Dada Mail will automatically use it, if it is available.
 If you do not want to use C<HTML::Template::Pro> at all, just set C<engine> 
 to, B<HTML Template>. 
 
-=head1 Program Behavior
+=head2 Program Behavior
 
-=head1 $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION 
+=head2 $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION 
 
 If set to, B<1>, Dada Mail's mailing monitor will automatically be called. See:
 
@@ -908,7 +908,7 @@ or,
 And you have a mailing monitor running, without any extra scripts to installed. It may also be convenient, if you want the mailing monitor that the C<auto_pick.pl> extension provides, but you don't have access to, or don't know how to set a cronjob. 
 
 
-=head1 $ENFORCE_CLOSED_LOOP_OPT_IN
+=head2 $ENFORCE_CLOSED_LOOP_OPT_IN
 
 C<$ENFORCE_CLOSED_LOOP_OPT_IN> enables the Closed-Loop Opt-In System in Dada Mail and disables other features in Dada Mail that work around being 100% in conformance to Dada Mail's Closed-Loop Opt-In System. 
 
@@ -919,7 +919,7 @@ It's B<highly> suggested to set this C<$ENFORCE_CLOSED_LOOP_OPT_IN> set to, C<1>
 L<http://dadamailproject.com/installation/using_dada_mail.html>
 
 
-=head1 Multiple Mailing List Sending
+=head2 Multiple Mailing List Sending
 
 =head3 MULTIPLE_LIST_SENDING
 
@@ -937,7 +937,7 @@ See:
 
 L<http://dadamailproject.com/support/documentation/features-multiple_list_sending.pod.html>
 
-=head1 $SCREEN_CACHE - Caching HTML Screens
+=head2 $SCREEN_CACHE - Caching HTML Screens
 
 Setting B<SCREEN_CACHE> to, 1 will save rendered HTML screens for 
 future use, instead of having the program recreate them each and 
@@ -950,7 +950,7 @@ More information:
 
 L<http://dadamailproject.com/d/FAQ-general.pod.html.html#is_there_a_way_to_speed_up_screen_rendering__how_to_use_the_screen_cache_>
 
-=head1 $GLOBAL_BLACK_LIST
+=head2 $GLOBAL_BLACK_LIST
 
 A global black list means that all lists being run under Dada Mail 
 use the same black list. Change the value to, "1" to enable.
@@ -958,7 +958,7 @@ use the same black list. Change the value to, "1" to enable.
 This feature is only available using the SQL Subscriber backend.
 
 
-=head1 $GLOBAL_UNSUBSCRIBE
+=head2 $GLOBAL_UNSUBSCRIBE
 
 Global Unsubscribe means that when a person unsubscribes from one list, they're 
 unsusbcribed from every list under Dada Mail. Change the value to, "1" to enable.
@@ -970,13 +970,13 @@ List Sending feature.
 
 
 
-=head1 $HIDDEN_SUBSCRIBER_FIELDS_PREFIX
+=head2 $HIDDEN_SUBSCRIBER_FIELDS_PREFIX
 
 There may be a situation where you'd like to have a field about a subscriber that isn't publically available for a subscriber 
 to fill out. If this is the case, when naming the field, create the field with the name prefixed with what is saved in the, 
 C<$HIDDEN_SUBSCRIBER_FIELDS_PREFIX> variable. By default, this is set to, C<_> (underscore) 
 
-=head1 @PING_URLS
+=head2 @PING_URLS
 
 @PING_URLS holds the URLS that should be sent an XML-RPC message 
 when you add a new message to your archive.
@@ -989,7 +989,7 @@ You'll need the XMLRPC::Lite Perl module installed:
 
 L<http://search.cpan.org/~rjray/RPC-XML-0.57/>
 
-=head1 $DEFAULT_SCREEN
+=head2 $DEFAULT_SCREEN
 
 If no parameters are passed to the mail.cgi script, you will see the
 default or main Dada Mail page. You can override that by setting any 
@@ -1002,20 +1002,20 @@ some way to at least unsubscribe to every one of your lists.
 
 
 
-=head1 $DEFAULT_ADMIN_SCREEN
+=head2 $DEFAULT_ADMIN_SCREEN
 
 By default, when you log into the administration area you are shown
 the "Send a Message" screen. You can specify a different URL to 
 go to by changing the $DEFAULT_ADMIN_SCREEN variable.
 
 
-=head1 $DEFAULT_LOGOUT_SCREEN
+=head2 $DEFAULT_LOGOUT_SCREEN
 
 When a user clicks the, "Logout" link on left hand menu of the control panel, they'll 
 be redirected to the URL located in the, B<$DEFAULT_LOGOUT_SCREEN> variable. By default, 
 this is set to the, B<$PROGRAM_URL> variable. 
 
-=head1 $LIST_QUOTA
+=head2 $LIST_QUOTA
 
 $LIST_QUOTA, when set to anything other than B<undef>, can be used 
 to set the maximum number of lists a Dada Mail install can have at 
@@ -1025,7 +1025,7 @@ one time.
 If set in an outside config file, you may also use the value, B<'undef'> 
 to mean, "no quota"
 
-=head1 $SUBSCRIPTION_QUOTA
+=head2 $SUBSCRIPTION_QUOTA
 
 $SUBSCRIPTION_QUOTA, when set to anything other than B<undef>, can be used 
 to set the maximum number of subscribers in a Dada Mail list. 
@@ -1038,7 +1038,7 @@ If set in an outside config file, you may also use the value, B<'undef'>
 to mean, "no quota"
 
 
-=head1 $MAILOUT_AT_ONCE_LIMIT
+=head2 $MAILOUT_AT_ONCE_LIMIT
 
 This variable sets how many different mailouts may go out from an 
 installation of Dada Mail at one time. Conservatively, this is set to, B<1> 
@@ -1051,7 +1051,7 @@ you are allowed to go out in a specific period of time.
 Another reason is that sending out too many messages at once may cause the server
 your running to be overloaded. 
 
-=head1 $MAILOUT_STALE_AFTER
+=head2 $MAILOUT_STALE_AFTER
 
 B<$MAILOUT_STALE_AFTER> sets, in seconds, how long a mailout can go with no mailing activity 
 until Dada Mail itself won't automatically reload it, from the point it stopped. The default, B<86400> seconds is one full day. 
@@ -1129,9 +1129,9 @@ created with Dada Mail.
 C<$HTML_CHARSET> holds the character sets used for HTML screens. It's suggested
 to only use, C<UTF-8>. 
 
-=head1 List Control Panel
+=head2 List Control Panel
 
-=head1 Email Messages and Headers
+=head2 Email Messages and Headers
 
 
 =head2 @CHARSETS
@@ -1162,7 +1162,7 @@ C<@CONTENT_TRANSFER_ENCODINGS> holds the supported transfer encodings Dada Mail 
 We suggest only using, C<8bit> or, C<quoted-printable>. 
 
 
-=head1 Formatting
+=head2 Formatting
 
 
 =head2 Plain Text to HTML Encoding
@@ -1184,7 +1184,7 @@ when creating a new C<HTML::Scrubber> object.
 
 
 
-=head1 MIME Settings
+=head2 MIME Settings
 
 
 =head2 %MIME_TYPES
@@ -1230,7 +1230,7 @@ L<http://search.cpan.org/~dskoll/MIME-tools-5.502/lib/MIME/Parser.pm#OPTIMIZING_
 
 $MIME_OPTIMIZE ||= 'no tmp files'; 
 
-=head1 Additional Settings
+=head2 Additional Settings
 
 (advanced hacker stuff)
 
@@ -1370,7 +1370,7 @@ when Dada Mail creates an email message.
 
 
 
-=head1 SUPPORT
+=head2 SUPPORT
 
 If you need further support for this script, please do not email 
 me directly, but use one of the following channels: 
@@ -1392,11 +1392,11 @@ L<http://dadamailproject.com/support/customize.html>
 =back
 
 
-=head1 CONTACT
+=head2 CONTACT
 
 My name is Justin Simoni
 
-=head1 COPYRIGHT 
+=head2 COPYRIGHT 
 
 Copyright (c) 1999 - 2014 Justin Simoni All rights reserved. 
 
@@ -1416,7 +1416,7 @@ Foundation, Inc., 59 Temple Place - Suite 330,
 Boston, MA  02111-1307, USA.
 
 
-=head1 Last Words
+=head2 Last Words
 
 To riding bicycles.
 

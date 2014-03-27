@@ -2,7 +2,7 @@
 
 =head1 Forward to a Friend
 
-=head1 Introduction
+=head2 Introduction
 
 Dada Mail's B<Forward to a Friend> system is a very simple mechanism to allow your
 readers and visitors to send a copy of a mailing list message out to someone else. 
@@ -10,7 +10,7 @@ readers and visitors to send a copy of a mailing list message out to someone els
 Your readers do not have to even be subscribed to your mailing list to forward 
 a message to a friend. 
 
-=head1 How Forward to a Friend Works
+=head2 How Forward to a Friend Works
 
 The B<Forward to a Friend> form is located at the bottom of any archived message. If you 
 do not see it, make sure to enable the option in the list control panel under, 
@@ -36,7 +36,7 @@ B<CAPTCHA in Dada Mail:>
 
 L<http://dadamailproject.com/d/global_variables.pod.html#captcha_in_dada_mail>
 
-=head1 Adding a "Forward to a Friend" link to your outgoing mailing list messages
+=head2 Adding a "Forward to a Friend" link to your outgoing mailing list messages
 
 You may add a, B<Forward to a Friend> link to your outgoing mailing list message, 
 by using the following tag: 

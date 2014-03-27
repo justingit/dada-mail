@@ -28,7 +28,7 @@ Dada Mail provides an easy to use unsubscription link, that's used in every sing
 
 As long as you provide this B<closed-loop opt in> system to sign up, and this easy way for someone to remove themselves, you'll be running a public mailing list in the best way possible.
 
-=head1 Private Mailing Lists
+=head2 Private Mailing Lists
 
 There's many situations where you want to run a mailing list, but privately. Some examples: 
 
@@ -42,7 +42,7 @@ In these types of scenarios, having subscribers required to confirm their own su
 
 Futhermore, it would make little sense to have an easy way to have the subscribers I<remove> themselves from the mailing list, if the subscription is compulsory! Having this type of functionality makes running the list a nightmare, as members will invariably remove themselves, "by accident".  
 
-=head1 Differences in administrating a Public and Private Mailing List
+=head2 Differences in administrating a Public and Private Mailing List
 
 Dada Mail allows you to set the B<Mode> of your mailing list: either B<public> or, B<private>. The only difference between either is that a B<private> mailing list does not require you to have the unsubscription link available in your mailing list message - you may remove it. 
 

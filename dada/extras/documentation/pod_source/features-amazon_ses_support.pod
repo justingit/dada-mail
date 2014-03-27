@@ -2,7 +2,7 @@
 
 =head1 Amazon SES Support
 
-=head1 Introduction
+=head2 Introduction
 
 B<From, L<http://aws.amazon.com/ses/>>:
 
@@ -20,7 +20,7 @@ L<http://aws.amazon.com/ses/pricing/>
 
 for current pricing. Using the service in a testing, non-production mode is I<free>. 
 
-=head1 Use for Closed-List Opt-In Subscriptions Lists Only
+=head2 Use for Closed-List Opt-In Subscriptions Lists Only
 
 Since Amazon SES is an outside, third party sending service, you'll need to use a mailing list that's B<100% confirmed opt-in>. If you don't, complaints of abuse sent to Amazon will most likely disallow you from continuing to use  their service. 
 
@@ -33,7 +33,7 @@ When you use Dada Mail with SES, Dada Mail I<will> set the C<Return-Path> header
 
 Dada Mail's included Bounce Handler has rules specifically for Amazon SES, and we do suggest using it, if you use Amazon SES.  
 
-=head1 Configuration
+=head2 Configuration
 
 During installation of Dada Mail, you'll need to plug in your B<AWS Access Key ID> and B<AWS Secret Access Key>. You may also choose a B<AWS Region/Endpoint>
 
@@ -313,19 +313,19 @@ L<http://aws.amazon.com/ses/fullaccessrequest>
 
 I<Without> full production access, you'll only be able to send messages to addresses that have manually been verified.
 
-=head1 Setting up SPF Records
+=head2 Setting up SPF Records
 
 Setting up SPF Records to work with Amazon SES for your entire domain is covered at: 
 
 L<http://docs.aws.amazon.com/ses/latest/DeveloperGuide/spf.html>
 
-=head1 Setting up DKIM in AWS (Easy DKIM)
+=head2 Setting up DKIM in AWS (Easy DKIM)
 
 Dada Mail does not support sending messages with a DKIM signature, but Amazon SES does - thus, if you send messages with Dada Mail, through Amazon SES and set up Easy DKIM, your messages will be signed. Here's how to do that:
 
 L<http://docs.aws.amazon.com/ses/latest/DeveloperGuide/easy-dkim.html>
 
-=head1 Limitations
+=head2 Limitations
 
 =head2 Amazon SES API
 
@@ -376,7 +376,7 @@ Amazon SES starts out with a small sending quota - 10,000 messages you may send 
 
 L<http://docs.amazonwebservices.com/ses/latest/DeveloperGuide/index.html?ManagingActivity.PlanningAhead.html>
 
-=head1 Dependencies
+=head2 Dependencies
 
 Amazon SES requires a few more CPAN Perl modules than the base Dada Mail install requires. Make sure you already have, or can install the following CPAN Perl modules: 
 
@@ -402,7 +402,7 @@ See also the FAQ, B<How do you install, "CPAN Perl Modules">
 
 L<http://dadamailproject.com/d/FAQ-general.pod.html#how_do_you_install__cpan_perl_modules>
 
-=head1 Related Projects
+=head2 Related Projects
 
 We've seperated out the work we've done with Amazon and using a persistent HTTP connection. That project is located at: 
 

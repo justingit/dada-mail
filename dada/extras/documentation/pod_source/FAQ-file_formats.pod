@@ -1,8 +1,8 @@
-=head1 Dada Mail Specific File Formats
+=head2 Dada Mail Specific File Formats
 
 The File Formats for much of Dada Mail's list settings, archives, etc are very basic. Having other programs read the information and use it should be relatively easy. 
 
-=head1 List Subscribers
+=head2 List Subscribers
 
 Currently, Dada Mail is shipped with support for three different types of backends for the subscription list. They are: 
 
@@ -94,7 +94,7 @@ L<http://dadamailproject.com/support/documentation/MailingList_Subscribers_Postg
 =back
 
 
-=head1 List Settings
+=head2 List Settings
 
 Currently, Dada Mail is shipped with support for three different types of backends for the List Settings. They are: 
 
@@ -184,7 +184,7 @@ L<http://dadamailproject.com/support/documentation/MailingList_Settings_MySQL.pm
 
 =back
 
-=head1 Message Archives
+=head2 Message Archives
 
 Currently, Dada Mail is shipped with support for three different types of backends for the message archives. They are: 
 
@@ -352,7 +352,7 @@ L<http://dadamailproject.com/support/documentation/MailingList_Archives_PostgreS
 
 =back
 
-=head1 Scheduled Mailings
+=head2 Scheduled Mailings
 
 Currently, Dada Mail supports only one type of backend for its scheduled mailings. Scheduled Mailings itself are created using the B<Beatitude> plugin. 
 
@@ -407,7 +407,7 @@ http://dadamailproject.com/support/documentation/MailingList_Schedules_MLDb.pm.h
 
 =back
 
-=head1 Backups
+=head2 Backups
 
 By default, automated backups are created for the List Settings, Archives and Schedules backends.
 
@@ -448,7 +448,7 @@ You can set how many copies of backups you'd like to save in the Config.pm varia
 http://dadamailproject.com/support/documentation/global_variables.pod.html#_backup_history
 
 
-=head1 Usage Logs
+=head2 Usage Logs
 
 The Dada Mail usage logs are saved wherever you've set the Config.pm variable, B<$PROGRAM_USAGE_LOG>
 
@@ -474,13 +474,13 @@ For more information:
 
 L<http://dadamailproject.com/support/documentation/Logging_Usage.pm.html>
 
-=head1 Error Logs
+=head2 Error Logs
 
 The Dada Mail error logs are saved whereer you've set the Config.pm variable, B<$PROGRAM_ERROR_LOG>. 
 
 The format is fairly free-form, but usualy has a Apache-style date stamp, followed by the error/warning reported by the program. 
 
-=head1 Session Information
+=head2 Session Information
 
 Dada Mail has two methods it can use to keep state for administrative control panel sessions. 
 

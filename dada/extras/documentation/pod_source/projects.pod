@@ -239,7 +239,7 @@ In the name of performance and stability, we'd love to port this to an SQL backe
 mod_perl runs a web application, like Dada Mail in a completely persistent environment, which can dramatically increase performance of the web application in a busy server environment. 
 
 
-=head1 See Also
+=head2 See Also
 
 There's a file in the distro at, 
 

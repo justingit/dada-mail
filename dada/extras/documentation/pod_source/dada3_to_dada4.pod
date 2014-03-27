@@ -2,7 +2,7 @@
 
 =head1 Dada Mail 3 to Dada Mail 4 Upgrade Guide
 
-=head1 Changes to the Installation Process
+=head2 Changes to the Installation Process
 
 There's no change to the installation process. Hurray! (Hopefully). 
 
@@ -12,7 +12,7 @@ in installing Dada Mail 3.x, you'll be comfortable in installing Dada Mail 4.x.
 Various configuration variables HAVE changed, so if you have your own custom C<.dada_config> 
 file you like to use for multiple clients, you'll want to revise that, to be updated for 4.x. 
 
-=head1 Upgrading Dada Mail 3.x to Dada Mail 4.x 
+=head2 Upgrading Dada Mail 3.x to Dada Mail 4.x 
 
 =head2 Default Backend
 

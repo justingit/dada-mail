@@ -1,8 +1,8 @@
 
-=head1 Dada Mail Changelog for version 2.x
+=head2 Dada Mail Changelog for version 2.x
 
 
-=head1 2.11 Alpha 10
+=head2 2.11 Alpha 10
 
 =head2 Download 2.11 Alpha 10
 
@@ -43,7 +43,7 @@ Beatitude now bears a resemblence to the rest of Dada Mail's list sending screen
 
 =back
 
-=head2 =head1 2.11 Alpha 10 Changes
+=head2 =head2 2.11 Alpha 10 Changes
 
 =head3 Default Mail Settings
 
@@ -53,7 +53,7 @@ I'm in sort of a tough spot, since these flags don't always work, but having the
 
 I think I'm siding on the mail server in this case. 
 
-=head1 2.11 Alpha 9 
+=head2 2.11 Alpha 9 
 
 =head2 Download 2.11 Alpha 9
 
@@ -162,7 +162,7 @@ If you don't set an error log, one will now be made for you, automatically. The 
 =head2  2.11 Alpha 9 Bug Fixes
 
 
-=head1 2.11 Alpha 8
+=head2 2.11 Alpha 8
 
 =head2 Download 2.11 Alpha 8
 
@@ -301,7 +301,7 @@ Added:
 
 
 
-=head1 2.11 Alpha 7 - Released 9/25/07
+=head2 2.11 Alpha 7 - Released 9/25/07
 
 =head2 Download 2.11 Alpha 7
 
@@ -352,7 +352,7 @@ If you were testing the SQLite backend, note that the entire schema is probably 
 In the popup menus in the Restore Lists screen, you can now see how many entries are available for each saved backup. 
 
 
-=head1 2.11 Alpha 6 - Released 6/25/07
+=head2 2.11 Alpha 6 - Released 6/25/07
 
 =head2 Download 2.11 Alpha 6
 
@@ -578,7 +578,7 @@ Used specifically in the, "Send a Webpage" screen, using this tag in the message
 B<DADA::App::POP3Tools> Holds all the stuff needed for POP3 connections and replaces the various, independent schemes in bounce_handler.cgi, dada_bridge.pl and the DADA::Mail::Send module. 
 
 
-=head1 2.10.14 Stable - Released 5/9/07
+=head2 2.10.14 Stable - Released 5/9/07
 
 =head2 Download 2.10.14
 
@@ -692,7 +692,7 @@ https://sourceforge.net/tracker/index.php?func=detail&aid=1684126&group_id=13002
 
 
 
-=head1 2.10.14 Beta 1 - Released 4/20/07
+=head2 2.10.14 Beta 1 - Released 4/20/07
 
 =head2 Download 2.10.14 Beta 1
 
@@ -770,7 +770,7 @@ https://sourceforge.net/tracker/index.php?func=detail&aid=1684126&group_id=13002
 
  
 
-=head1 2.11 Alpha 5 - Released 05/09/07
+=head2 2.11 Alpha 5 - Released 05/09/07
 
 This is a features-only release and doesn't contain bug fixes. For a bugfix-only development release, do see 2.10.14 beta 1,
 
@@ -792,7 +792,7 @@ http://downloads.sourceforge.net/mojomail/dada-2_11-alpha_5.zip?download
 
 See the New Feature in 2.11 Alpha 4 - it's basically the same. 
 
-=head1 2.11 Alpha 4 - Released 4/21/07
+=head2 2.11 Alpha 4 - Released 4/21/07
 
 This is a features-only release and doesn't contain bug fixes. For a bugfix-only development release, do see 2.10.14 beta 1,
 
@@ -855,9 +855,9 @@ http://dadamailproject.com/support/documentation-2_11-alpha4/FAQ-mailing_list_se
 for a brief overview on how pausing and queueing work in Dada Mail. 
 
 
-=head1 2.10.13 Stable - Released 3/7/07
+=head2 2.10.13 Stable - Released 3/7/07
 
-=head1 Download 2.10.13
+=head2 Download 2.10.13
 
 tar.gz distro: 
 
@@ -868,9 +868,9 @@ zip distro:
 http://downloads.sourceforge.net/mojomail/dada-2_10_13.zip?download
 
 
-=head1 2.10.13 RC1 - Released 3/4/07
+=head2 2.10.13 RC1 - Released 3/4/07
 
-=head1 Download 2.10.13 RC 1
+=head2 Download 2.10.13 RC 1
 
 tar.gz distro: 
 
@@ -881,15 +881,15 @@ zip distro:
 http://downloads.sourceforge.net/mojomail/dada-2_10_13-rc1.zip?download
 
 
-=head1 Bug Fixes
+=head2 Bug Fixes
 
 =head2  1673762  	  2.10.12 - alt. Charsets not set correctly.
 
 https://sourceforge.net/tracker/index.php?func=detail&aid=1673762&group_id=13002&atid=113002
 
-=head1 2.10.13 Beta 1 - Released 2/5/07
+=head2 2.10.13 Beta 1 - Released 2/5/07
 
-=head1 Download 2.10.13 Beta 1
+=head2 Download 2.10.13 Beta 1
 
 tar.gz distro: 
 
@@ -899,7 +899,7 @@ zip distro:
 
 http://downloads.sourceforge.net/mojomail/dada-2_10_13_beta1.zip?download
 
-=head1 New Features
+=head2 New Features
 
 =head2 New Plugin: multi_admin_subscribers.cgi
 
@@ -911,7 +911,7 @@ More information:
 
 http://dadamailproject.com/support/documentation/multi_admin_subscribers.cgi.html
 
-=head1 Bug Fixes
+=head2 Bug Fixes
 
 =head2  1673762  	  2.10.12 - alt. Charsets not set correctly.
 
@@ -941,15 +941,15 @@ https://sourceforge.net/tracker/index.php?func=detail&aid=1648447&group_id=13002
 
 https://sourceforge.net/tracker/index.php?func=detail&aid=1647628&group_id=13002&atid=113002
 
-=head1 2.10.13 Alpha 1 - Released 1/21/07
+=head2 2.10.13 Alpha 1 - Released 1/21/07
 
-=head1 Download
+=head2 Download
 
 http://downloads.sourceforge.net/mojomail/dada-2_10_13_alpha1.tar.gz?download
 
 http://downloads.sourceforge.net/mojomail/dada-2_10_13_alpha1.zip?download
 
-=head1 New Features
+=head2 New Features
 
 =head2 FAQ Added - Email Sending
 
@@ -998,7 +998,7 @@ L<http://dadamailproject.com/support/documentation/dada_tester.cgi.html>
 
 
 
-=head1 Bug Fixes
+=head2 Bug Fixes
 
 
 =head2 Beatitude (scheduled_mailings.pl)
@@ -1059,7 +1059,7 @@ https://sourceforge.net/tracker/index.php?func=detail&aid=1641124&group_id=13002
 
 
 
-=head1 2.10.12 - Released 12/15/06
+=head2 2.10.12 - Released 12/15/06
 
 =head2 New Features
 
@@ -1235,7 +1235,7 @@ http://sourceforge.net/tracker/index.php?func=detail&aid=1608202&group_id=13002&
 
 
 
-=head1 2.10.11b
+=head2 2.10.11b
 
 A few small, yet quite annoying bugs were found in the 2.10.11 distribution - 2.10.11 has just a few notable bug fixes: 
 
@@ -1264,7 +1264,7 @@ http://sourceforge.net/tracker/index.php?func=detail&aid=1606468&group_id=13002&
 =back
 
 
-=head1 2.10.11
+=head2 2.10.11
 
 Do see the changes for the 2.11 alpha series - all changes made in 2.11 alpha will also be for 2.10.11. 
 
@@ -1350,7 +1350,7 @@ http://search.cpan.org/~rjbs/Mail-DeliveryStatus-BounceParser/lib/Mail/DeliveryS
 
 
 
-=head1 2.11 alpha 1
+=head2 2.11 alpha 1
 
 There are MANY changes between this version and the 2.10 series. Please see: 
 
@@ -1362,7 +1362,7 @@ See the, "NOTES" for various things concerning this specific version of Dada Mai
 
 Being a alpha release, there are known bugs and some unknown bugs. If you do use this version, makes sure to understand that it will be a rocky way. 
 
-=head1 2.10.10
+=head2 2.10.10
 
 =head2 SECURITY 
 
@@ -1982,7 +1982,7 @@ http://sourceforge.net/tracker/index.php?func=detail&aid=1533640&group_id=13002&
 
 =back
 
-=head1 2.10.9
+=head2 2.10.9
 
 =head2 Changes/New Features
 
@@ -2094,7 +2094,7 @@ http://sourceforge.net/tracker/index.php?func=detail&aid=1516061&group_id=13002&
 
 =back
 
-=head1 2.10.8
+=head2 2.10.8
 
 =head2 Changes/New Features
 
@@ -2159,7 +2159,7 @@ http://sourceforge.net/tracker/index.php?func=detail&aid=1472653&group_id=13002&
 
 
 
-=head1 2.10.7
+=head2 2.10.7
 
 =head2 Changes/New Features
 
@@ -2302,7 +2302,7 @@ https://sourceforge.net/tracker/index.php?func=detail&aid=1433133&group_id=13002
 =back
 
 
-=head1 2.10.6
+=head2 2.10.6
 
 =head2 Features
 
@@ -2353,7 +2353,7 @@ Bugs Fixed:
 =back
 
 
-=head1 2.10.5
+=head2 2.10.5
 
 =head2 Features
 
@@ -2385,13 +2385,13 @@ HTMLArea has been replaced with FCKeditor. HTML WYSIWYG editing is now available
 
 =back
 
-=head1 2.10.4
+=head2 2.10.4
 
 =head2 Features
 
 RSS feeds are now 2.0, up from .91; Atom feeds are now 1.0, up from .03.
 
-=head1 2.10.3
+=head2 2.10.3
 
 =head2 Bugfixes
 
@@ -2415,7 +2415,7 @@ RSS feeds are now 2.0, up from .91; Atom feeds are now 1.0, up from .03.
 
 =back
 
-=head1 2.10.2
+=head2 2.10.2
 
 =head2 Bugfixes
 
@@ -2453,7 +2453,7 @@ There's a new archive editor in plugin form, called B<archive_editor.cgi> For mo
 
 http://dadamailproject.com/support/documentation/archive_editor.cgi.html
 
-=head1 2.10.1
+=head2 2.10.1
 
 =head2 Bugfixes.
 
@@ -2505,7 +2505,7 @@ The SQL tables for the archives have changed - there is now a different one for 
 
 added a dada_subscribers_plaintext2sql.pl script in I<dada/extras/scripts>
 
-=head1 2.10
+=head2 2.10
 
 =head2 Bugfixes.
 
@@ -2634,7 +2634,7 @@ The %STYLE hash in Config.pm has been completely removed.
 checklist() javascript function removed. 
 
 
-=head1 2.9.2
+=head2 2.9.2
 
 =head2 Bug Fixes
 
@@ -2672,7 +2672,7 @@ checklist() javascript function removed.
 
 =back
 
-=head1 2.9.1
+=head2 2.9.1
 
 =head2 Bug Fixes: 
 
@@ -2706,7 +2706,7 @@ http://sourceforge.net/tracker/index.php?func=detail&aid=1200210&group_id=13002&
 =back
 
 
-=head1 2.9.0
+=head2 2.9.0
 
 =head2 Changes Bug Fixes for Dada Mail 2.9 RC 1
 
@@ -3579,9 +3579,9 @@ Removed completely.
 
 
 
-=head1 2.8.14
+=head2 2.8.14
 
-=head1 Bug Fixes: 
+=head2 Bug Fixes: 
 
 
 =over 
@@ -3730,7 +3730,7 @@ This bug seems to be resolved, but needs more testing.
 
 =back
 
-=head1 2.8.13
+=head2 2.8.13
 
 =head2 Bug Fixes
 
@@ -3805,7 +3805,7 @@ can be turned on by going to I<Sending Options - Advanced>
 =back
 
 
-=head1 2.8.12b
+=head2 2.8.12b
 
 =head2 Bug Fixes
 
@@ -3815,7 +3815,7 @@ can be turned on by going to I<Sending Options - Advanced>
 
 =back
 
-=head1 2.8.12
+=head2 2.8.12
 
 =head2 Bug Fixes
 
@@ -3876,7 +3876,7 @@ can be turned on by going to I<Sending Options - Advanced>
 =back
 
 
-=head1 2.8.11
+=head2 2.8.11
 
 =head2 Bug Fixes
 
@@ -3938,7 +3938,7 @@ http://sourceforge.net/tracker/index.php?func=detail&aid=849205&group_id=13002&a
 
 
 
-=head1 2.8.10
+=head2 2.8.10
 
 =head2 Bug Fixes
 
@@ -3980,7 +3980,7 @@ http://sourceforge.net/tracker/index.php?func=detail&aid=812865&group_id=13002&a
 
 
 
-=head1 2.8.10 beta3
+=head2 2.8.10 beta3
 
 =head2 Name Changes
 
@@ -4019,7 +4019,7 @@ The Program has been renamed, "Dada Mail". The following test has also been chan
 =for html <p>For More Information, please see <a href="mojo2_to_dada2.pod.html">Upgrading Dada Mail from Mojo Mail 2.8.9 and below
 
 
-=head1 2.8.10 beta 2
+=head2 2.8.10 beta 2
 
 =head2 New Features
 
@@ -4045,7 +4045,7 @@ You can set the maximum number of lists allowed to be created by tweaking the $L
 
 =back
 
-=head1 2.8.10 beta 1
+=head2 2.8.10 beta 1
 
 =over
 
@@ -4069,7 +4069,7 @@ This is sort of experimental. If it proves popular, I'll build up this feature.
 
 =back
 
-=head1 2.8.9
+=head2 2.8.9
 
 =over
 

@@ -4,7 +4,7 @@
 
 About Extension Scripts
 
-=head1 DESCRIPTION
+=head2 DESCRIPTION
 
 B<Extension Scripts> are scripts created to extend the capabilities of 
 Dada Mail. Each extension script has to be installed and each script 

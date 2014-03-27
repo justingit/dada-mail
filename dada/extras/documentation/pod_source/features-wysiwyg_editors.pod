@@ -6,7 +6,7 @@ Dada Mail supports the use of third party WYSIWYG HTML editors to allow you to c
 
 The HTML produced by these WYSIWYG editors is pretty good for the use of HTML emails, as most of the text formatting is done with I<inline css styles> and these editors also have the ability to make simple I<HTML tables for basic layouts>. Formatting rich text email messages is different than designing a contemporary web page - text formatting and layout is, on the whole, going to have to be much more simplified to work with the incredible spectrum of Things That Read Email (Web-based email services, Desktop-based mail readers, smart phones, toasters...).  
 
-=head1 Supported Editors 
+=head2 Supported Editors 
 
 Dada Mail supports the following WYSIWYG HTML editors: 
 
@@ -40,12 +40,12 @@ You may want to use FileManager, rather than KCFinder, if you get problems with 
 
 When attempting to upload a file.
 
-=head1 Mailing List Configuration
+=head2 Mailing List Configuration
 
 You choose which WYSIWYG editor you would like to use (or to use no editor at all) in the list control panel under, 
 B<Your List Control Panel - Options>
 
-=head1 Installing and Configurating - use the Dada Mail Installer
+=head2 Installing and Configurating - use the Dada Mail Installer
 
 By far the easiest way to install and configure any of the WYSIWYG editors/file browser that Dada Mail supports is to use the included Dada Mail Installer and configure the WYSIWYG editors during install/upgrade. 
 
@@ -90,7 +90,7 @@ If you B<upgrade> Dada Mail, and tell Dada Mail to B<create a new .dada_config f
 
 If you upgrade Dada Mail, and select, B<Use the current .dada_config file>, nothing in your B<dada_mail_support_files> directory will be touched, nor will your C<.dada_config> file. 
 
-=head1 Manual Installation and Configuration
+=head2 Manual Installation and Configuration
 
 To install any of the editors/file browser, see their individual documentation. If you already have a preferred and working installation of any of these editors, it's also a simple task of just replacing what's potentially already set for the editor installation you already have. 
 
@@ -239,7 +239,7 @@ When using a supported browser, Dada Mail supports dragging and dropping  images
 
 Image data is embedded in the HTML source of the message you write. Dada Mail will convert this embedded data into a file that will be saved in the KCFinder  image/file upload directory. The image will then be available  by browsing your upload directory, using the file browser/uploader itself. 
 
-=head1 See Also
+=head2 See Also
 
 =head2 WYSIWYG editors and Clickthrough Tracker URLS
 

@@ -2,7 +2,7 @@
 
 =head1 Basic Installation to a Contemporary Installation
 
-=head1 Terminology Changes
+=head2 Terminology Changes
 
 Since v4.2.0 of Dada Mail, we no longer suggest - or support doing a B<Basic> Installation of Dada Mail. 
 
@@ -12,7 +12,7 @@ Dada Mail v4.2.0 and above ships with the Dada Mail Installer to help automate t
 
 The method that the Dada Mail Installer sets things up will be the same as how our Manual Installation instructions work - it just automates it all.  
 
-=head1 Introduction
+=head2 Introduction
 
 If you initially installed Dada Mail using our Basic Installation instructions, you'll need to change configuration to use the more contemporary 
 configuration. The Basic Installation instructions are not currently supported. 

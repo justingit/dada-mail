@@ -3,11 +3,11 @@
 
 =head1 The Dada Mail Email Template Syntax
 
-=head1 Audience
+=head2 Audience
 
 This guide is meant to be read by everyone who would like to use the template features in Dada Mail's email messages. 
 
-=head1 The Basics
+=head2 The Basics
 
 =head2 Tags
 
@@ -312,7 +312,7 @@ You can also access the subscriber's saved field values. For example, if you hav
 
  <!-- tmpl_var subscriber.first_name -->
 
-=head1 Using Tags in Email Messages
+=head2 Using Tags in Email Messages
 
 Once you understand how these tags are made, it's simple to use them in your message. For example, we can great our subscriber as such: 
 
@@ -374,7 +374,7 @@ Similarily, you can do this with the List Attributes:
  	<!-- tmpl_var name -->: <!-- tmpl_var value --> 
  <!-- /tmpl_loop -->
 
-=head1 Advanced Templating Syntax
+=head2 Advanced Templating Syntax
 
 Under the hood, Dada Mail's email templating system is powered by B<HTML::Template>. Everything that can be done with it, 
 can probably be done with Dada Mail. 

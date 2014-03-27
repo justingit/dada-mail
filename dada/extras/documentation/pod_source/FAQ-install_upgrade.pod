@@ -4,7 +4,7 @@
 
 This FAQ is to help answer questions about installation and upgrading Dada Mail that is not covered in any of the other installation/upgrade docs. To keep those docs clean and simple, some topics are covered here, instead of in the main docs. 
 
-=head1 Prepping Dada Mail Manually
+=head2 Prepping Dada Mail Manually
 
 If the, C<uncompress_dada.cgi> script fails to uncompress the Dada Mail distro, you may have to complete a few steps, yourself. This usually is because the C<gunzip> utility just isn't available to whatever is running the C<uncompress_dada.cgi> script. Shucks. 
 
@@ -38,7 +38,7 @@ You can now jump back to the installation instructions at, <a href="./install_da
 
 =end html
 
-=head1 Installing Dada Mail in a directory other than in your, "cgi-bin"
+=head2 Installing Dada Mail in a directory other than in your, "cgi-bin"
 
 It used to be common practice that CGI scripts could only be installed in a hosting account that had a, I<cgi-bin> directory which itself had the correct server configuration to allow the execution for CGI scripts, like Dada Mail. 
 
@@ -89,7 +89,7 @@ or a directory in your public html directory:
 
  /home/youraccount/public_html/ml
 
-=head1 .dada_files Directory Location
+=head2 .dada_files Directory Location
 
 The C<.dada_files> directory really needs to be created in a secure location, so if at all possible, have it created somewhere outside of your public html directory, so as to not be accessable easily via a web browser. 
 
@@ -103,7 +103,7 @@ If those directories do not exist, see if you cannot create your own new directo
 
 Change this new directory's permissions to, C<777>, give the Dada Mail Installer the full, absolute path to this new directory and see if its accepted. We suggest that you reset the permissions to the new directory you created to, C<755>, to be less of a security problem, once the installation is complete. 
 
-=head1 Upgrading Dada Mail From Different Installation Types
+=head2 Upgrading Dada Mail From Different Installation Types
 
 Before upgrading Dada Mail, find out how you installed and configured Dada Mail before. If you don't know or aren't sure, don't upgrade Dada Mail: you will run into major headaches. 
 

@@ -4,7 +4,7 @@
 
 This FAQ attempts to answer questions specifically to sending out email from Dada Mail. 
 
-=head1 Related FAQ's
+=head2 Related FAQ's
 
 =over
 
@@ -22,7 +22,7 @@ http://dadamailproject.com/support/documentation/FAQ-general.pod.html.html
 
 =back
 
-=head1 General
+=head2 General
 
 =head2 What's the difference between the Sendmail Command and SMTP? 
 
@@ -48,7 +48,7 @@ Some reasons you may want to use SMTP sending:
 
 =back
 
-=head1 SMTP Sending 
+=head2 SMTP Sending 
 
 =head2 What does Dada Mail use for its SMTP Sending? 
 
@@ -66,7 +66,7 @@ http://search.cpan.org/~jimt/Mail-Bulkmail/Bulkmail.pm
 
 Net::SMTP_auth is a little more flexible than Net::SMTP when it comes to setting the authentication schemes to use and Mail::Bulkmail does not support SASL authentication at all, has some mysterious bugs we couldn't figure out and Dada Mail does much of the rest of the utilities that it packs. 
 
-=head1 SMTP Authentication
+=head2 SMTP Authentication
 
 One of the main disadvantages of using the, I<Send via SMTP> feature in Dada Mail is actually, setting up a mailing list to use it. Not that you have to jump through flaming hoops to do so, it should be very similar to how you'd set up a desktop mail reader to send messages. But, if you haven't done that, it can be slightly intimidating. 
 
@@ -76,7 +76,7 @@ B<Note:> Be very wary if your SMTP server requires no authentication. This is al
 
 Only use an SMTP server that does not require authentication when the server has some other way of being selective on who connects to it. For example, your SMTP server may just be, B<localhost> and will only accept B<local> connections. In this setup, it would be OK to use SMTP sending without authentication.
 
-=head1 SASL Authentication.
+=head2 SASL Authentication.
 
 The first SMTP authentication scheme is called, B<SASL Authentication>. 
 
@@ -102,7 +102,7 @@ Usually, I check the option in B<Mail Sending: Options>, I<Set the Sender of SMT
 
 Usually, the documentation provided by your hosting company will tell you if you need to use SASL authentication. If you do not need to use SASL authentication, you'll most likely need to use B<POP-before-SMTP> authentication. 
 
-=head1 POP-before-SMTP Authentication
+=head2 POP-before-SMTP Authentication
 
 B<POP-before-SMTP Authentication> is slightly different than SASL Auth. Instead of the SMTP mail server requesting the appropriate username and password to log into the SMTP mail server, you'll instead have to  first, successfully log into the POP mail server. 
 
@@ -160,7 +160,7 @@ You'll need a few things, none of which we can really bundle with Dada Mail (unf
 
 If you were hoping that you can just use SSL connections with Dada Mail - you can, but you'll need a few things already available on your server. The upshot is that these things may already be available. The downshot is, if they're not, it can be difficult to install, if you are not well-versed in administrating your own webserver. But, the support in Dada Mail is there. 
 
-=head1 Bounces
+=head2 Bounces
 
 =head2 Is there a bounce handler for Dada Mail? 
 
@@ -242,7 +242,7 @@ Now that you know how to set the B<Return-Path> header, put it to some good use!
 
 http://dadamailproject.com/support/documentation/bounce_handler.cgi.html
 
-=head1 Dada Mail and Google Apps for Domains
+=head2 Dada Mail and Google Apps for Domains
 
 Many people use Google Apps alongside their other resources available with their hosting company. 
 
@@ -328,7 +328,7 @@ Just like with Bridge, another option would be just to set up a new subdomain, w
 
 
 
-=head1 Problems
+=head2 Problems
 
 =head2 Write an HTML message, receive it as PlainText
 
@@ -354,7 +354,7 @@ In rare occassions, the mail server will actually strip out the HTML version of 
 
 If you have root access to your own server and NO mail is being sent with any email utility, try rebooting your server. If that doesn't work, sincerely look for professional help, to solve the problem. 
 
-=head1 Debugging Sendmail
+=head2 Debugging Sendmail
 
 =head2 Set your $MAILPROG to a file, instead of piping to sendmail
 

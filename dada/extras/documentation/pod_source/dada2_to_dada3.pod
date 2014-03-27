@@ -2,7 +2,7 @@
 
 =head1 Dada Mail 2 to Dada Mail 3 Guide
 
-=head1 Introduction
+=head2 Introduction
 
 This guide is to help you transition between Dada Mail 2.x to Dada Mail 3.x. It's not a list of new features, but rather a list of old features that have been removed and replaced and new ways of doing the same old thing. 
 
@@ -10,7 +10,7 @@ The hope for transitioning between Dada Mail 2.x and Dada Mail 3.x is to be quit
 
 We still would like to hear your accounts on upgrading and any feedback you'd like to give us, using the usual channels. 
 
-=head1 Differences
+=head2 Differences
 
 =head2 SQL Schema
 
@@ -255,7 +255,7 @@ This extension currently doesn't know about Subscriber Profile Fields, so it's s
 
 This extension will be removed from future versions of Dada Mail, if favor of folding similar functionality into the core of Dada Mail, or into a plugin for Dada Mail. Editing of subscription information by the subscriber should be a larger view to take when replacing this plugin and currently isn't something that can be done in Dada Mail. 
 
-=head1 See Also
+=head2 See Also
 
 =head2 The UPGRADE FAQ
 

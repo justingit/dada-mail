@@ -2,7 +2,7 @@
 
 =head1 The Dada Mail Error FAQ
 
-=head1 In-Browser Error Messages
+=head2 In-Browser Error Messages
 
 B<In-Browser Error Messages> are error messages that you may receive in your  browser window when interacting with Dada Mail. 
 
@@ -145,7 +145,7 @@ L<http://github.com/justingit/dada-mail/issues>
 
 =back
 
-=head1 Advanced Error Logging and Reporting
+=head2 Advanced Error Logging and Reporting
 
 The following advice is for advanced users of Dada Mail: 
 
@@ -210,7 +210,7 @@ Send email messages, including mass mailings.
 
 =back 
 
-=head1 General Problems
+=head2 General Problems
 
 =head2 Mass Mailing Messages Are Not Delivered or Are Delivered to Junk/Spam Folder
 
@@ -374,7 +374,7 @@ See the doc on the Screen Cache feature for more information:
 L<http://dadamailproject.com/support/documentation/features-screen_cache.pod.html>
 
 
-=head1 Diagnosing Error Messages
+=head2 Diagnosing Error Messages
 
 =head2 cannot do statement (at add_subscriber)! Duplicate entry '0' for key 1
 
@@ -703,7 +703,7 @@ L<http://example.com/cgi-bin/dada/mail.cgi?f=restore_lists>
 
 You will only need to restore your mailing list Schedules. 
 
-=head1 Hosting Company-Specific Problems
+=head2 Hosting Company-Specific Problems
 
 =head2 Frontpage Extensions-enabled accounts
 
@@ -805,7 +805,7 @@ This script goes through every single directory, looking for directories named, 
 
 You should feel very nervous about running a program that delete massive amounts of files/directories. Don't use this script unless you fully understand that fact, since the possibility - however small, is there that this script could delete a file you didn't want removed. 
 
-=head1 Send a Webpage Problems
+=head2 Send a Webpage Problems
 
 =head2 Can't locate object method "redirects" via package "HTTP::Headers"
 

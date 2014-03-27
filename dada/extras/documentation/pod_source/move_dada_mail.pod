@@ -2,7 +2,7 @@
 
 =head1 Moving Dada Mail Between Servers
 
-=head1 Introduction
+=head2 Introduction
 
 Moving Dada Mail between servers will basically require you to move two sets of Stuff: 
 
@@ -19,7 +19,7 @@ Moving Dada Mail between servers will basically require you to move two sets of 
 Once you've moved over the Stuff, you will need to reconfigure Dada Mail for
 the new environment. 
 
-=head1 Gathering Information
+=head2 Gathering Information
 
 =head2 "Basic", or, "Contemporary" Installation? 
 
@@ -123,7 +123,7 @@ If this group of variables looks like this and is B<not> commented out:
 
 You are using the SQL backend of Dada Mail. The details of where your database is located will then be in the, C<%SQL_PARAMS> variable. If that variable seems to be missing information, double-check that you are actually using the SQL backend. 
 
-=head1 Old Server: Download Stuff 
+=head2 Old Server: Download Stuff 
 
 Once you've gathered the above information:
 
@@ -165,7 +165,7 @@ Download the directory, I</home/youraccount/.dada_files>
 
 B<If> you're using the SQL backend, you'll also want to export the entire SQL database. The domain, database name, username and password should be in that, C<%SQL_PARAMS> variable. 
 
-=head1 New Server: Upload Stuff
+=head2 New Server: Upload Stuff
 
 Now, you basically just have to upload everything you just downloaded. 
 
@@ -181,7 +181,7 @@ We suggest placing this directory in your home directory.
 
 B<If> you're using the SQL backend, you'll want to now import the SQL database. 
 
-=head1 New Server: Reconfigure Stuff
+=head2 New Server: Reconfigure Stuff
 
 Once everything is in place, you'll need to now reconfigure Dada Mail to work in your new environment. 
 
@@ -205,7 +205,7 @@ B<If> you are using the SQL backend, you will also have to update the login info
 
 The last thing you will need to do is change the permissions of the C<mail.cgi> script to, C<755>. If you've followed and completed all the above steps, correctly, you're Dada Mail should be back up in the new location! 
 
-=head1 Last Things to Do
+=head2 Last Things to Do
 
 If you've installed any additional plugins/extensions, make sure they are also configured correctly and have their permissions changed. 
 

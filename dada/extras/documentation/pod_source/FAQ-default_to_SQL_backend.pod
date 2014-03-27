@@ -2,13 +2,13 @@
 
 =head1 Default Backend to an SQL Backend Mailing List Conversion
 
-=head1 Introduction
+=head2 Introduction
 
 By default, Dada Mail does not use an SQL backend, but rather uses a simpler method of using a PlainText file for your mailing list subscribers (the format is one email per line) and using what's called, B<dbm> files for everything else: list settings, archives, schedules, etc. Most likely, you're using the B<Berekeley DB File> format. 
 
 Although easier to set up, the Default backend for Dada Mail does not have as many features as the B<SQL> backend alternative. These include Profile Fields, Partial Mailing List Sending, Multiple Mailing List Sending and some other neat things. For this reason, we highly suggest to set up Dada Mail using the SQL backend, using either B<MySQL> or B<PostgreSQL>
 
-=head1 A Contempory Installation
+=head2 A Contempory Installation
 
 We highly suggest that you use the SQL Backend with a Contemporary Installation setup and NOT the Basic Installation setup. If you're not currently using a Contemporary Installation Method, switch beforehand: 
 
@@ -16,7 +16,7 @@ L<http://dadamailproject.com/support/documentation/basic_to_contemporary_install
 
 If you've installed Dada Mail using the included Dada Mail installer, you are already running a Contemporary Installation of Dada Mail. 
 
-=head1 Upgrade via the Dada Mail Installer
+=head2 Upgrade via the Dada Mail Installer
 
 You can reconfigure your Dada Mail to use the SQL backend by using the Dada Mail installer. 
 
@@ -39,7 +39,7 @@ The installer should:
 Once completed, your previous mailing lists will not be available, until after you run the Migration Scripts
 
 
-=head1 Running the Migration Scripts
+=head2 Running the Migration Scripts
 
 There are separate migration scripts to migrate your Default Backend files to the SQL backend. 
 

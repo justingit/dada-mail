@@ -2,11 +2,11 @@
 
 =head1 Dada Mail 5 to Dada Mail 6 Upgrade Guide
 
-=head1 PlainText Backend: Deprecated
+=head2 PlainText Backend: Deprecated
 
 We've decided to C<deprecate> the PlainText backend. We suggest moving to one of the SQL backends as soon as possible. 
 
-=head1 Database Schema
+=head2 Database Schema
 
 Small changes have been made to the database schema, from v6 to v7, all of which should 
 be changed by Dada Mail, on the first run, after an installation. The following should 
@@ -26,7 +26,7 @@ The C<dada_profile_fields_attributes> table has a new, C<required> column:
 
     ALTER TABLE dada_profile_fields_attributes ADD required char(1) DEFAULT 0 NOT NULL
 
-=head1 Template Changes
+=head2 Template Changes
 
 =head2 Oldstyle Template Tag Support: Dropped
 

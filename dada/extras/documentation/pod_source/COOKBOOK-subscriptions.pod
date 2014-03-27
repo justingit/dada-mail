@@ -2,11 +2,11 @@
 
 =head1 Subscription Cookbook
 
-=head1 How to Subscribe an Email Address to a Mailing List
+=head2 How to Subscribe an Email Address to a Mailing List
 
 A challenge people face is trying to tie Dada Mail's subscription system with another system, like a checkout part of a shopping cart, boards/forum, blog or CMS software.
 
-=head1 RESTful API
+=head2 RESTful API
 
 Dada Mail has an, B<EXPERIMENTAL> RESTful API. 
 
@@ -379,7 +379,7 @@ If you can, please contribute an example!
 
 If you can, please contribute an example!
 
-=head1 jQuery Plugin 
+=head2 jQuery Plugin 
 
 Dada Mail comes with a jQuery Plugin, that can be used to create a subscription form on a webpage, handle the request and show the results in a modal window, only redirecting the user if additional steps are required. The plugin uses the RESTful API, described above.
 
@@ -536,13 +536,13 @@ B<LoadingError> holds HTML text, that's then shown if there's a communication pr
 
 =back
 
-=head1 Perl API
+=head2 Perl API
 
 You may use Dada Mail's own modules in your own app, see: 
 
 L<http://dadamailproject.com/d/App_Subscriptions.pm.html>
 
-=head1 Command Line Utility - subscribe_email.pl
+=head2 Command Line Utility - subscribe_email.pl
 
 Find a copy of C<subscribe_email.pl> in the Dada Mail distro at: 
 

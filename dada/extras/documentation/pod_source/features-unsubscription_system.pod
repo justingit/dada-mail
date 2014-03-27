@@ -2,11 +2,11 @@
 
 =head1 Dada Mail's Unsubscription System
 
-=head1 Introduction
+=head2 Introduction
 
 Having a reliable, easy-to-use Unsubscription/Removal system is essential for any healthy mailing list system. Dada Mail's unsubscription system should prove to be both
 
-=head1 Essential Things You Need to Know
+=head2 Essential Things You Need to Know
 
 =head2 ALWAYS Have an Unsubscription Link Present in Your Mailing List Messages
 

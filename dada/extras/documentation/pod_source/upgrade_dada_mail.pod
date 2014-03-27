@@ -2,7 +2,7 @@
 
 =head1 Upgrading Dada Mail
 
-=head1 Introduction
+=head2 Introduction
 
 These docs will guide you through an installation of Dada Mail, originally installed and configured with the included Dada Mail Installer. 
 
@@ -14,7 +14,7 @@ These docs will guide you through an installation of Dada Mail, originally insta
 
 =end html
 
-=head1 Step #1 Rename the, "dada" Directory
+=head2 Step #1 Rename the, "dada" Directory
 
 Dada Mail, "The Program" is the collection of files and directories that are in the directory called, C<dada>. 
 

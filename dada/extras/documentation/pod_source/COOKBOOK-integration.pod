@@ -2,13 +2,13 @@
 
 =head1 Integrating Dada Mail with other programs
 
-=head1 Introduction
+=head2 Introduction
 
 These below ideas are all over the board, so don't expect one, simplified, normalized way of accessing the stuff that Dada Mail does. 
 
 This, hopefully, will be something created in the future, but! Until then, here are a few ideas to get you started to solve some of the most common ways you may want to hook Dada Mail into another program. 
 
-=head1 Automatic Logging into the list control panel
+=head2 Automatic Logging into the list control panel
 
 The login/session system of Dada Mail is based on some sort of session information that's saved on the server side and a cookie that resides on the client's web browser. 
 
@@ -166,7 +166,7 @@ Add something like this to your script that keeps all this info sync'd up:
        		}
 		); 
 
-=head1 Subscription/Unsubscription
+=head2 Subscription/Unsubscription
 
 There's already a few ways to access Dada Mail's subscription/unsubscription API outside of the program. See: 
 
@@ -183,7 +183,7 @@ Creating a subscription form in Flash - this uses the main mail.cgi to receive a
 
 =back
 
-=head1 Sending Mailing List Messages
+=head2 Sending Mailing List Messages
 
 =head2 send_dada_mail.pl
 
@@ -323,7 +323,7 @@ http://us.php.net/curl
 
 The idea is the same, but instead of creating an HTML form you manually submit, you pass the variables needed to the curl session and post them to the outside script. 
 
-=head1 Joomla Integration
+=head2 Joomla Integration
 
 See Bruce Scherzinger's Dada Mail Subscriptions Community Builder Plug: 
 
@@ -339,7 +339,7 @@ I<I will eventually release a Dada Mail archive browser component for Joomla. Th
 
 Looks Promising!
 
-=head1 Other Examples
+=head2 Other Examples
 
 Dada Mail comes with a few classic Form-to-Email scripts in the, B<extensions> directory of the distribution that are slightly tweaked to allow integration of Dada Mail. They are: 
 
@@ -351,7 +351,7 @@ L<http://dadamailproject.com/support/documentation/Dada-ized_FormMail_README.pod
 
 L<http://dadamailproject.com/support/documentation/Dada-ized_TFMail_README.pod.html>
 
-=head1 See Also
+=head2 See Also
 
 =over
 

@@ -37,7 +37,7 @@ CAPTCHA protection is available for Dada Mail Profile Registrations.
 CAPTCHA for Profile Registrations is enabled by default. If you'd like to I<disable> CAPTCHA, you can do so in the config variable, C<$PROFILE_OPTIONS>
 
 
-=head1 CAPTCHA Configuration
+=head2 CAPTCHA Configuration
 
 =head2 $CAPTCHA_TYPE
 
@@ -143,7 +143,7 @@ Each key in the C<$GD_SECURITYIMAGE_PARAMS> hashref corresponds to the different
 
 =back
 
-=head1 reCAPTCHA Mailhide
+=head2 reCAPTCHA Mailhide
 
 If you're using the reCAPTCHA service, you an also take advantage of reCAPTCHA Mailhide. In Dada Mail, this is used to protect individual email addresses in mailing list archives. Before an email address can be viewed, a CAPTCHA has to be solved. 
 

@@ -2,13 +2,13 @@
 
 =head1 Manually Installing Dada Mail
 
-=head1 First, a Word
+=head2 First, a Word
 
 Unless you like to or need to, it's much easier now to use the Dada Mail Installer - both these instructions and the Dada Mail installer will install and Configure Dada Mail in basically the same way. 
 
 In these directions, I'll be giving examples of shell commands you may issue to complete each step. They may need to be slightly modify to work with your particular environment. Noting too tricky, though. 
 
-=head1 Command Line Installer
+=head2 Command Line Installer
 
 To help disuade you even I<further> with installing Dada Mail "Manually", consider that the Installer has a command line interface! No need to re-invent the wheel: 
 

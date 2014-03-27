@@ -2,7 +2,7 @@
 
 =head1 Multiple Mailing List Sending FAQ
 
-=head1 Introduction
+=head2 Introduction
 
 Multiple Mailing List Sending in Dada Mail allows you to create one message in 
 Dada Mail's, "Send a Message", or "Send a Webpage" screens to more than one 
@@ -13,7 +13,7 @@ whatever mailing list you're currently logged into.
 
 Partial mailing list sending, using Dada Mail's Profile Fields is supported. 
 
-=head1 Using Multiple Mailing List Sending
+=head2 Using Multiple Mailing List Sending
 
 Multiple Mailing List Sending is currently available in the, B<Send a Message> and B<Send a Webpage> screens. 
 If it's enabled and supported, you'll see  a field set labled, "+/- Multiple Mailing List Sending". 
@@ -24,11 +24,11 @@ one or more other mailing lists to send your message to. The host mailing list w
 If you do not see this field set, you either do not have the feature configured to be enabled, or do not have an installation 
 that supports this feature. 
 
-=head1 Requirements 
+=head2 Requirements 
 
 You'll need to be running Dada Mail with an SQL Subscriber backend. Any of them (MySQL, PostgreSQL, SQLite) will do. 
 
-=head1 Configuration
+=head2 Configuration
 
 Multiple List Sending is NOT enabled by default. To enable Multiple Mailing List Sending, add the following to your C<.dada_config> file: 
 

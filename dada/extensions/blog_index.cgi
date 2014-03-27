@@ -272,6 +272,8 @@ sub find_from_whom {
     return $from_address;
 }
 
+=pod
+
 =head1 NAME
 
 blog_index.cgi - A simple blog-style view of your list's archived messages

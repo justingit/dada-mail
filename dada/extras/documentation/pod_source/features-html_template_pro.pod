@@ -2,7 +2,7 @@
 
 =head1 HTML::Template::Pro support in Dada Mail
 
-=head1 Introduction
+=head2 Introduction
 
 Dada Mail has been using the C<HTML::Template> CPAN module for rendering its HTML screens, 
 as well as providing the templating engine for its email messages. It works really great. 
@@ -13,14 +13,14 @@ C<HTML::Template> in Dada Mail. It features faster rendering speeds (up to 10x f
 Since it is used for the email templates in Dada Mail, using C<HTML::Template::Pro> instead of 
 the included C<HTML::Template> can significantly speed up mail sending.
 
-=head1 Installing HTML::Template::Pro
+=head2 Installing HTML::Template::Pro
 
 If you do not already have the C<HTML::Template::Pro> module installed, you may 
 grab it via CPAN. See our FAQ on how to install CPAN Perl Modules: 
 
 L<http://dadamailproject.com/d/FAQ-general.pod.html#how_do_you_install__cpan_perl_modules>
 
-=head1 Configuring Dada Mail to use HTML::Template::Pro
+=head2 Configuring Dada Mail to use HTML::Template::Pro
 
 Once C<HTML::Template::Pro> is installed, there's nothing else you need to do, to start using C<HTML::Template::Pro> with Dada Mail. 
 

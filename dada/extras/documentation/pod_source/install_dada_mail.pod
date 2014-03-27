@@ -2,7 +2,7 @@
 
 =head1 Installing and Configuring Dada Mail
 
-=head1 Step #1: Download Dada Mail
+=head2 Step #1: Download Dada Mail
 
 Here's the direct download to Dada Mail v7.0.0:
 
@@ -18,7 +18,7 @@ Here's more information about B<Pro Dada>:
 
 L<http://dadamailproject.com/purchase/pro.html> 
 
-=head1 Step #2 Upload the, "dada-7_0_0-beta2.tar.gz" distro into your cgi-bin
+=head2 Step #2 Upload the, "dada-7_0_0-beta2.tar.gz" distro into your cgi-bin
 
 Once you download the C<dada-7_0_0-beta2.tar.gz> distro, upload it to your hosting account's I<cgi-bin>. For Pro Dada users, this distro is named, C<pro_dada-7_0_0-beta2.tar.gz> - use that name for the rest of the directions, below. 
 
@@ -32,7 +32,7 @@ Once you download the C<dada-7_0_0-beta2.tar.gz> distro, upload it to your hosti
 
 =end html
 
-=head1 Step #3 Upload the, "uncompress_dada.cgi" script into your cgi-bin
+=head2 Step #3 Upload the, "uncompress_dada.cgi" script into your cgi-bin
 
 Download the, C<uncompress_dada.cgi> script from here: 
 
@@ -45,9 +45,9 @@ Download the, C<uncompress_dada.cgi> script from here:
 
 and upload this script (PlainTest/ASCII mode - NOT binary!) to your hosting account's I<cgi-bin> directory - right alongside the I<dada-7_0_0-beta2.tar.gz> distro you just put up. 
 
-=head1 Step #4 Change permissions of the, "uncompress_dada.cgi" file to, "755"
+=head2 Step #4 Change permissions of the, "uncompress_dada.cgi" file to, "755"
 
-=head1 Step #5 Visit the, "uncompress_dada.cgi" script in your web browser. 
+=head2 Step #5 Visit the, "uncompress_dada.cgi" script in your web browser. 
 
 The, C<uncompress_dada.cgi> should attempt to uncompress the I<dada-7_0_0-beta2.tar.gz> distro, change the necessary permissions of various files and prep the actual installer for you to use. 
 
@@ -71,7 +71,7 @@ You may have to uncompress and prep Dada Mail manually.
 =end html
 
 
-=head1 Configuring Dada Mail with the Dada Mail Installer
+=head2 Configuring Dada Mail with the Dada Mail Installer
 
 The installer should be relatively straightforward on how it's used - just fill it out with the information it's asking for. Below, we'll walk through all the options: 
 
@@ -309,7 +309,7 @@ Once you've gotten the, C<dada/DADA/Config.pm> file edited (if needed) and moved
 
 Good Luck! 
 
-=head1 Making Additional Global Configuration Changes using the Dada Mail Installer
+=head2 Making Additional Global Configuration Changes using the Dada Mail Installer
 
 Along with Installing Dada Mail, the Dada Mail Installer can also help reconfigure the global configuration of Dada Mail, at any time in the future, after your installation. 
 
@@ -333,7 +333,7 @@ When asked if you want to B<Install> or, B<Upgrade> your Dada Mail, choose, B<Up
 
 Once you've completed your configuration changes, click the B<Configure Dada Mail!> button as before, and follow the same directions you did during the installation, for the next screen. 
 
-=head1 Screencast
+=head2 Screencast
 
 This screencast goes step by step, slowly through the entire process of installing Dada Mail, on your own website. 
 
@@ -343,7 +343,7 @@ This screencast goes step by step, slowly through the entire process of installi
 
 =end html
 
-=head1 Command Line Interface
+=head2 Command Line Interface
 
 An alternative, command line interface is available, instructions can be 
 found on how to use it, by invoking the script with the, C<--help> flag, 
@@ -354,7 +354,7 @@ L<http://dadamailproject.com/support/documentation/install_dada-command_line.pod
 
 most of the options available on the web-based interface are available in the command line interface, except the installation of the plugins/extensions. 
 
-=head1 Manual Installation
+=head2 Manual Installation
 
 We suggest using the Dada Mail Installer, but you can still install Dada Mail manually: 
 

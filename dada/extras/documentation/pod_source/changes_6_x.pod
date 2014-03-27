@@ -70,7 +70,7 @@ L<https://github.com/justingit/dada-mail/issues/419>
 
 L<https://github.com/justingit/dada-mail/issues/420>
 
-=head1 6.8.0
+=head2 6.8.0
 
 =head2 Features 6.8.0
 
@@ -179,7 +179,7 @@ URLs for links in image maps weren't tracked by Dada Mail. These URLs should now
 
 L<https://github.com/justingit/dada-mail/issues/416>
 
-=head1 6.7.2
+=head2 6.7.2
 
 =head2 Summary 6.7.2
 
@@ -195,7 +195,7 @@ The default is to B<disable> clickthrough tracking for these types of links.
 L<https://github.com/justingit/dada-mail/issues/410>
 
 
-=head1 6.7.1
+=head2 6.7.1
 
 =head2 Summary 6.7.1
 
@@ -215,7 +215,7 @@ L<https://github.com/justingit/dada-mail/issues/407>
 
 L<https://github.com/justingit/dada-mail/issues/408>
 
-=head1 6.7.0
+=head2 6.7.0
 
 =head2 Features 6.7.0
 
@@ -291,7 +291,7 @@ The RESTful API for mailing list subscriptions has been expanded to include supp
 
 A Javascript/jQuery example is also provided, that supports all these new fancy bells and whistles. 
 
-=head1 6.6.1
+=head2 6.6.1
 
 =head2 Summary 6.6.1
 
@@ -315,7 +315,7 @@ We ran into a few problems with the subscription process, which recently had a l
 
 L<https://github.com/justingit/dada-mail/issues/402>
 
-=head1 6.6.0
+=head2 6.6.0
 
 =head2 Summary 6.6.0
 
@@ -523,7 +523,7 @@ https://github.com/justingit/dada-mail/issues/395
 
 L<https://github.com/justingit/dada-mail/issues/399>
 
-=head1 6.5.2
+=head2 6.5.2
 
 =head2 Summary 6.5.2
 
@@ -561,7 +561,7 @@ L<https://github.com/justingit/dada-mail/issues/394>
 
 L<https://github.com/justingit/dada-mail/issues/393>
 
-=head1 6.5.1
+=head2 6.5.1
 
 =head2 Summary 6.5.1
 
@@ -575,7 +575,7 @@ Users of Dada Mail have reported that many of the screens in Dada Mail's list co
 
 L<https://github.com/justingit/dada-mail/issues/391>
 
-=head1 6.5.0
+=head2 6.5.0
 
 =head2 Summary 6.5.0
 
@@ -741,7 +741,7 @@ L<https://github.com/justingit/dada-mail/issues/387>
 
 L<https://github.com/justingit/dada-mail/issues/385>
 
-=head1 6.4.3
+=head2 6.4.3
 
 =head2 Summary 6.4.3
 
@@ -753,7 +753,7 @@ This version is primarilly a bug-fix release.
 
 L<https://github.com/justingit/dada-mail/issues/382>
 
-=head1 6.4.2
+=head2 6.4.2
 
 =head2 Summary 6.4.2
 
@@ -769,7 +769,7 @@ L<https://github.com/justingit/dada-mail/issues/380>
 
 L<https://github.com/justingit/dada-mail/issues/381>
 
-=head1 6.4.1
+=head2 6.4.1
 
 =head2 Summary 6.4.1
 
@@ -799,7 +799,7 @@ This bugfix may also help the problem with Mass Mailings that I<finish> correctl
 
 L<https://github.com/justingit/dada-mail/issues/379>
 
-=head1 6.4.0
+=head2 6.4.0
 
 =head2 Summary 6.4.0
 
@@ -865,7 +865,7 @@ You may now search for more than one term, per field, at one time - example: a F
 
 L<https://github.com/justingit/dada-mail/issues/322>
 
-=head1 6.3.1
+=head2 6.3.1
 
 =head2 Summary 6.3.1
 
@@ -880,7 +880,7 @@ L<https://github.com/justingit/dada-mail/issues/369>
 
 L<https://github.com/justingit/dada-mail/issues/368>
 
-=head1 6.3.0
+=head2 6.3.0
 
 =head2 Summary 6.3.0 
 
@@ -967,7 +967,7 @@ L<https://github.com/justingit/dada-mail/issues/367>
 
 L<https://github.com/justingit/dada-mail/issues/366>
 
-=head1 6.2.2
+=head2 6.2.2
 
 =head2 Summary 6.2.2
 
@@ -1002,7 +1002,7 @@ L<https://github.com/justingit/dada-mail/issues/361>
 
 There was a mis-labeling of v6.2.0 as v6.1.2, which never had a release. v6.2.1 is released simply to fix this bobble. 
 
-=head1 6.2.0
+=head2 6.2.0
 
 =head2 Summary 6.2.0
 
@@ -1027,7 +1027,7 @@ L<https://github.com/justingit/dada-mail/issues/358>
 
 L<https://github.com/justingit/dada-mail/issues/357>
 
-=head1 6.1.1
+=head2 6.1.1
 
 =head2 Summary 6.1.1
 
@@ -1150,7 +1150,7 @@ https://github.com/justingit/dada-mail/issues/334
 https://github.com/justingit/dada-mail/issues/333
 
 
-=head1 6.0.1
+=head2 6.0.1
 
 =head2 Summary 6.0.1
 
@@ -1168,7 +1168,7 @@ L<https://github.com/justingit/dada-mail/blob/8547605c588d6ed5ee59d08698863e6986
 
 L<https://github.com/justingit/dada-mail/issues/332>
 
-=head1 6.0.0
+=head2 6.0.0
 
 =head2 Summary 6.0.0
 
@@ -1178,7 +1178,7 @@ L<http://dadamailproject.com/d/dada5_to_dada6.pod.html>
 
 When upgrading from I<any> previous version of Dada Mail, make sure to create a new C<.dada_config> file, as old C<.dada_config> files will not work with v6 of Dada Mail. 
 
-=head1 6.0.0 Release Candiate 2
+=head2 6.0.0 Release Candiate 2
 
 =head2 Summary 6.0.0 Release Candidate 2
 

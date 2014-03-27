@@ -1,6 +1,6 @@
-=head1 Upgrading Dada Mail from Mojo Mail 2.8.9 and below
+=head2 Upgrading Dada Mail from Mojo Mail 2.8.9 and below
 
-=head1 The Really Really Good News
+=head2 The Really Really Good News
 
 2.8.10 of Dada Mail is backwards compatible with all versions below, most of the name changes are superficial (ie, the B<name> was changed, nothing else). This document is to get you familiar with this tweaked interface, both inside and out. It's not too too scary, but is hopefully exhausting. 
 

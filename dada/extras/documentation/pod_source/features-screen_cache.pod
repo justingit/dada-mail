@@ -14,16 +14,16 @@ a lot of archives on busy websites. Caching helps in limiting how much the backe
 database is hit - the less the database is queried, the less load there is on 
 your hosting account. Everybody wins! 
 
-=head1 with Profiles
+=head2 with Profiles
 
 Users who are logged in via their Dada Mail Profile will still see custom screens
 on certain assets of Dada Mail, since these screens will be different for each user. 
 
-=head1 with an UTF-8 configuration
+=head2 with an UTF-8 configuration
 
 Dada Mail Screen Caches should be 100% comptable with unicode/UTF-8. 
 
-=head1 Location of Cache Screens
+=head2 Location of Cache Screens
 
 Cached Screens are located in a directory called, C<_screen_cache>, inside wherever
 your Dada Mail .tmp directory (C<(.dada_files/.tmp/_screen_cache)>) is set up. 
@@ -51,7 +51,7 @@ Removing this directory is safe to do. If enabled, the cache will be re-created.
 =back
 
 
-=head1 Managing the Screen Cache
+=head2 Managing the Screen Cache
 
 Usually, there's nothing you'll need to do, to keep your cache working just fine. 
 When you make any changes to any Mailing List's settings or archives, the cache will

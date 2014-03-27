@@ -2,7 +2,7 @@
 
 =head1 Dada Mail Changelog for version 3.x.x
 
-=head1 3.0.5
+=head2 3.0.5
 
 =head2 Download
 
@@ -35,7 +35,7 @@ http://sourceforge.net/tracker/index.php?func=detail&aid=2858250&group_id=13002&
 =back 
 
 
-=head1 3.0.4
+=head2 3.0.4
 
 =head2 Download 3.0.4
 
@@ -168,7 +168,7 @@ http://sourceforge.net/tracker/?func=detail&aid=2790606&group_id=13002&atid=1130
 
 =back
 
-=head1 3.0.3
+=head2 3.0.3
 
 =head2 Download 3.0.3
 
@@ -234,7 +234,7 @@ https://sourceforge.net/tracker2/?func=detail&aid=2481213&group_id=13002&atid=11
 
 =back
 
-=head1 3.0.2
+=head2 3.0.2
 
 =head2 Download 3.0.2
 
@@ -308,7 +308,7 @@ https://sourceforge.net/tracker2/?func=detail&aid=2415194&group_id=13002&atid=11
 
 
 
-=head1 3.0.1
+=head2 3.0.1
 
 =head2 Download 3.0.1
 
@@ -443,7 +443,7 @@ http://sourceforge.net/tracker/index.php?func=detail&aid=2120407&group_id=13002&
 
 
 
-=head1 3.0.0
+=head2 3.0.0
 
 =head2 Download 3.0.0
 
@@ -478,7 +478,7 @@ http://sourceforge.net/tracker/index.php?func=detail&aid=1999560&group_id=13002&
 
 =back
 
-=head1 3.0.0 - RC 1
+=head2 3.0.0 - RC 1
 
 
 =head2 Download 3.0.0 RC 1
@@ -566,7 +566,7 @@ http://sourceforge.net/tracker/index.php?func=detail&aid=1993418&group_id=13002&
 
 =back
 
-=head1 3.0 Beta 3
+=head2 3.0 Beta 3
 
 =head2 Download 3.0 Beta 3
 
@@ -702,7 +702,7 @@ This bug has been added to the, "KNOWN ISSUES" list, as no workaround can be fou
 
 =back
 
-=head1 3.0 Beta 2
+=head2 3.0 Beta 2
 
 =head2 Download 3.0 Beta 2
 

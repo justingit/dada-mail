@@ -2,7 +2,7 @@
 
 =head1 Dada Mail 4 to Dada Mail 5 Upgrade Guide
 
-=head1 Database Schema
+=head2 Database Schema
 
 There are B<no> changes in any of the database schemas between Dada Mail 4 and Dada Mail 5. 
 
@@ -11,7 +11,7 @@ Upgrading is fairly straightforward, with no need for any Dada Mail 4 to Dada Ma
 Users upgrading from Dada Mail v2 or v3 will still need to use the, C<dada3_to_dada4_sql.pl> upgrade script, 
 but I<won't> have to first upgrade to Dada Mail v4 and then, v5. 
 
-=head1 Template Changes
+=head2 Template Changes
 
 There has been considerable changes in the Dada Mail Templates (files that live in, I<dada/DADA/Template/templates>)
 
@@ -37,7 +37,7 @@ Javascript files Dada Mail uses are now in, I<dada/DADA/Template/templates/js>
 
 image files Dada Mail uses are now in, I<dada/DADA/Template/templates/img>
 
-=head1 List Control Panel Changes
+=head2 List Control Panel Changes
 
 The List Control Panel has been redesigned, but most things are where they were in v4. 
 
@@ -88,7 +88,7 @@ It contains B<Configuration>, renamed from B<Dada Mail Setup Info>, and, B<About
 The link to your Mailing List's List Page, the Logout Link and the Mailing List Switch form have moved to the 
 header of the Admin Template. 
 
-=head1 REMOVED plugins/extensions
+=head2 REMOVED plugins/extensions
 
 The following plugins/extensions have been removed from the main Dada Mail distribution. The have been marked as, B<deprecated> in 
 previous versions of Dada Mail, or removed to provide a cleaner distribution: 
@@ -117,7 +117,7 @@ Replaced by the, <mailing_monitor.cgi> plugin
 
 =back
 
-=head1 DEPRECATED plugins/extensions
+=head2 DEPRECATED plugins/extensions
 
 =over
 

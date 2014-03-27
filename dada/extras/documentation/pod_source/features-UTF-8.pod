@@ -2,7 +2,7 @@
 
 =head1 The Dada Mail and UTF-8 FAQ
 
-=head1 Introduction
+=head2 Introduction
 
 Dada Mail can speak UTF-8 and almost expects that everything else around it does, too. 
 
@@ -16,7 +16,7 @@ That means:
 
 =back
 
-=head1 How To Have a Pleasant Experience
+=head2 How To Have a Pleasant Experience
 
 If you're installing Dada Mail for the first time, there's nothing you'll need to do, 
 but below are some guidelines on how to keep your lists configured, so you
@@ -156,7 +156,7 @@ but Dada Mail will convert messages it receives to its internal format, before i
 
 This means the encoding of your choice (8bit or quoted-printable) and the charset of your choice (as long as your charset is, UTF-8)
 
-=head1 Upgrading
+=head2 Upgrading
 
 You are potentially going to have problems. 
 
@@ -241,7 +241,7 @@ when Dada Mail accesses and uses the information. More information:
 L<http://www.mysqlperformanceblog.com/2009/03/17/converting-character-sets/>
 
 
-=head1 Other Problems?
+=head2 Other Problems?
 
 Please let us know via the Support Boards: 
 
@@ -255,7 +255,7 @@ We would love to help you out.
 
 Thanks! 
 
-=head1 See Also: 
+=head2 See Also: 
 
 =over
 

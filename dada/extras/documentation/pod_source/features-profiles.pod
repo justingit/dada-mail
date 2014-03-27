@@ -24,7 +24,7 @@ L<http://dadamailproject.com/d/password_protect_directories.cgi.html>
 
 =back
 
-=head1 Logging into a  Dada Mail Profile
+=head2 Logging into a  Dada Mail Profile
 
 Your users can log into their Profile, by clicking the, B<[Profile Register/Log In] > link, on the top right of most screens of Dada Mail. 
 
@@ -60,7 +60,7 @@ Once logged in,  your users can also navigate through Dada Mail and view their l
 
 All subscription forms in Dada Mail will be pre-filled out with the user's  email address and the Subscriber Profile form fields will be hidden (so as not to have the user have to re-type the same information twice) 
 
-=head1 List Administration and New Options with Dada Mail Profiles
+=head2 List Administration and New Options with Dada Mail Profiles
 
 Since users can now log into Dada Mail, several options are now available for the List Owner. 
 
@@ -72,7 +72,7 @@ List Owners can opt to have access to archived messages only available to logged
 
 List owners can also opt to have the first step of the  closed-loop opt-in system skipped for logged in users, as their email address has already been verified. 
 
-=head1 Configurating and Customizing Profiles
+=head2 Configurating and Customizing Profiles
 
 Dada Mail Profile options can be globally configured in your C<.dada_config> file. If you used the Dada Mail Installer to install Dada Mail, the necessary lines in your C<.dada_config> should already be present. They should look similar to this: 
 

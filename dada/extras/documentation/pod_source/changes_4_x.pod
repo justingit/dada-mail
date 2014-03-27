@@ -2,7 +2,7 @@
 
 =head1 Dada Mail Changelog for version 4.x.x
 
-=head1 4.9.1
+=head2 4.9.1
 
 =head2 Summary 4.9.1
 
@@ -47,7 +47,7 @@ https://github.com/justingit/dada-mail/issues/242
 https://github.com/justingit/dada-mail/issues/241
 
 
-=head1 4.9.0
+=head2 4.9.0
 
 =head2 Summary 4.9.0
 
@@ -198,7 +198,7 @@ This upgrade to MIME::Tools has a very positive improvement on sending speed.
 
 https://github.com/justingit/dada-mail/issues/240
 
-=head1 4.8.4
+=head2 4.8.4
 
 =head2 Summary 4.8.4
 
@@ -258,7 +258,7 @@ https://github.com/justingit/dada-mail/issues/237
 
 https://github.com/justingit/dada-mail/issues/239
 
-=head1 4.8.3
+=head2 4.8.3
 
 =head2 Summary 4.8.3
 
@@ -282,7 +282,7 @@ https://github.com/justingit/dada-mail/issues/173
 
 https://github.com/justingit/dada-mail/issues/224
 
-=head1 4.8.2
+=head2 4.8.2
 
 =head2 Summary 4.8.2
 
@@ -311,7 +311,7 @@ https://github.com/justingit/dada-mail/issues/223
 https://github.com/justingit/dada-mail/issues/227
 
 
-=head1 4.8.1
+=head2 4.8.1
 
 =head2 Summary 4.8.1
 
@@ -339,7 +339,7 @@ https://github.com/justingit/dada-mail/issues/217
 
 https://github.com/justingit/dada-mail/issues/218
 
-=head1 4.8.0
+=head2 4.8.0
 
 =head2 Summary 4.8.0
 
@@ -438,7 +438,7 @@ https://github.com/justingit/dada-mail/issues/211
 
 https://github.com/justingit/dada-mail/issues/212
 
-=head1 4.7.2
+=head2 4.7.2
 
 =head2 Summary 4.7.2
 
@@ -457,7 +457,7 @@ https://github.com/justingit/dada-mail/issues/205
 
 See Issue #205
 
-=head1 4.7.1
+=head2 4.7.1
 
 =head2 Summary 4.7.1
 
@@ -513,7 +513,7 @@ https://github.com/justingit/dada-mail/issues/201
 
 https://github.com/justingit/dada-mail/issues/200
 
-=head1 4.7.0
+=head2 4.7.0
 
 =head2 Summary 4.7.0
 
@@ -622,7 +622,7 @@ https://github.com/justingit/dada-mail/issues/185
 
 https://github.com/justingit/dada-mail/issues/186
 
-=head1 4.6.1
+=head2 4.6.1
 
 =head2 Summary 4.6.1
 
@@ -677,7 +677,7 @@ https://github.com/justingit/dada-mail/issues/181
 
 
 
-=head1 4.6.0
+=head2 4.6.0
 
 =head2 Summary 4.6.0
 
@@ -780,7 +780,7 @@ L<http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/>
 
 https://github.com/justingit/dada-mail/issues/164
 
-=head1 4.5.2
+=head2 4.5.2
 
 =head2 Summary 4.5.2
 
@@ -801,7 +801,7 @@ https://github.com/justingit/dada-mail/issues/169
 
 =head3 Tracker: Messages Clickthroughs Over Time
 
-=head1 4.5.1
+=head2 4.5.1
 
 =head2 Summary 4.5.1
 
@@ -825,7 +825,7 @@ https://github.com/justingit/dada-mail/issues/167
 
 https://github.com/justingit/dada-mail/issues/168
 
-=head1 4.5.0
+=head2 4.5.0
 
 =head2 Features 4.5.0
 
@@ -891,7 +891,7 @@ https://github.com/justingit/dada-mail/issues/163
 
 
 
-=head1 4.4.3
+=head2 4.4.3
 
 =head2 Changes 4.4.3
 
@@ -1025,7 +1025,7 @@ https://github.com/justingit/dada-mail/issues/152
 
 https://github.com/justingit/dada-mail/issues/153
 
-=head1 4.4.2
+=head2 4.4.2
 
 =head2 Changes 4.4.
 
@@ -1083,7 +1083,7 @@ https://github.com/justingit/dada-mail/issues/137
 
 https://github.com/justingit/dada-mail/issues/139
 
-=head1 4.4.1
+=head2 4.4.1
 
 =head2 Changes 4.4.1
 
@@ -1109,7 +1109,7 @@ https://github.com/justingit/dada-mail/issues/115
 
 https://github.com/justingit/dada-mail/issues/119
 
-=head1 4.4.0
+=head2 4.4.0
 
 =head2 Changes 4.4.0
 
@@ -1286,7 +1286,7 @@ https://github.com/justingit/dada-mail/issues/issue/109
 
 https://github.com/justingit/dada-mail/issues/issue/96
 
-=head1 4.3.2
+=head2 4.3.2
 
 This release is a bugfix-only release: 
 
@@ -1307,7 +1307,7 @@ Installation of Dada Mail:
 
 L<http://dadamailproject.com/d/upgrade_from_simple_scripts.pod.html> 
 
-=head1 4.3.1
+=head2 4.3.1
 
 =head2 Changes 4.3.1
 
@@ -1423,7 +1423,7 @@ https://github.com/justingit/dada-mail/issues/closed#issue/97
 
 https://github.com/justingit/dada-mail/issues/closed#issue/99
 
-=head1 4.3.0
+=head2 4.3.0
 
 Installation instructions for 4.3.0 are the same as they were for 4.2.0. 
 
@@ -1626,7 +1626,7 @@ https://github.com/justingit/dada-mail/issues/issue/66/#comment_546769
 
 https://github.com/justingit/dada-mail/issues/issue/65/#comment_546770
 
-=head1 4.2.1
+=head2 4.2.1
 
 =head2 Changes 4.2.1
 
@@ -1668,7 +1668,7 @@ legally go after unauthorized use of their copyright material. The new system
 requires different headers to be present, which Dada Mail does not currently 
 support. We'll see about supporting them, in the future. 
 
-=head1 4.2.0
+=head2 4.2.0
 
 =head2 Changes 4.2.0
 
@@ -1744,7 +1744,7 @@ http://github.com/justingit/dada-mail/issues#issue/60
 http://github.com/justingit/dada-mail/issues/issue/61
 
 
-=head1 4.1.0
+=head2 4.1.0
 
 =head2 Changes 4.1.0
 
@@ -1814,7 +1814,7 @@ http://github.com/justingit/dada-mail/issues/closed#issue/48
 
 http://github.com/justingit/dada-mail/issues/closed#issue/49
 
-=head1 4.0.5
+=head2 4.0.5
 
 =head2 Changes 4.0.5
 
@@ -1891,7 +1891,7 @@ http://github.com/justingit/dada-mail/issues/closed#issue/13
 This bug wasn't actually closed with this release, but from a previous release. It has
 though, been confirmed to be closed with this release. 
 
-=head1 4.0.4
+=head2 4.0.4
 
 =head2 Changes 4.0.4
 
@@ -1980,7 +1980,7 @@ renaming them back to their original name will make them, "active"
 =back
 
 
-=head1 4.0.3
+=head2 4.0.3
 
 =head2 Changes 4.0.3
 
@@ -2141,7 +2141,7 @@ http://github.com/justingit/dada-mail/issues/issue/18
 
 http://github.com/justingit/dada-mail/issues/issue/15
 
-=head1 4.0.2
+=head2 4.0.2
 
 =head2 Changes 4.0.2
 
@@ -2212,7 +2212,7 @@ http://github.com/justingit/dada-mail/issues/closed#issue/14
 
 
 
-=head1 4.0.1
+=head2 4.0.1
 
 =head2 Changes 4.0.1
 
@@ -2288,7 +2288,7 @@ http://github.com/justingit/dada-mail/issues/closed#issue/8
 
 http://github.com/justingit/dada-mail/issues/closed#issue/9
 
-=head1 4.0.0
+=head2 4.0.0
 
 =head2 Changes 4.0.0
 
@@ -2419,7 +2419,7 @@ feature. And then some.
 
 =back
 
-=head1 CPAN Perl Libraries 
+=head2 CPAN Perl Libraries 
 
 The CPAN Perl Libraries needed for Dada Mail are now being saved within the 
 Git Repository of Dada Mail. We don't know if this is the greatest idea, since we don't 
@@ -2427,7 +2427,7 @@ really plan on making changes to this modules. But, we're doing it. If any probl
 occur, please report!
 
 
-=head1 API
+=head2 API
 
 There are many new modules in Dada Mail's backend, including: 
 

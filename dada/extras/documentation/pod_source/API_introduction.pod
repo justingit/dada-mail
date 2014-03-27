@@ -2,14 +2,14 @@
 
 =head1 The Dada Mail Libraries API
 
-=head1 Introduction
+=head2 Introduction
 
 Dada Mail's API and library design/structure has been created extremely piecemeal through it's almost ten year history of being a program. Dada Mail started out as a 90k single CGI perl script, but is now composed of more than 200 different libraries and many, many CPAN dependencies. As features were added, so has the API been enlarged. A, "Grand Scheme" has never been made of how Dada Mail was to be designed, but the growth of the API is much more akin to a city, or other organic organism. 
 
 This doc is to help give you a birds eye view of the API  and describe which  modules do what. We understand that not all modules may be covered. 
 
 
-=head1 DADA::App
+=head2 DADA::App
 
 The C<DADA::App> namespace holds a mish-mash of modules that make up the program's behaviour, which doesn't fit in anywhere else. Very quickly: 
 
@@ -73,11 +73,11 @@ Session/State management for access to the list control panel. See, C<DADA::Prof
 
 Holds extremely high level subroutines to work directly with Dada Mail's subscription and unsubscription system. Extremely useful. API is a little tricky. 
 
-=head1 DADA::Config
+=head2 DADA::Config
 
 Holds the default configuration of Dada Mail. Must be customized when Dada Mail is installed, but hopefully minimally. It's better to save customizations in an installation in an outside configuration file. In Dada Mail, this is the, C<.dada_config> file. 
 
-=head1 DADA::Mail
+=head2 DADA::Mail
 
 =head2 DADA::Mail::Send
 
@@ -89,11 +89,11 @@ It's main job is to send mail, as the name suggests. For messages to an entire m
 
 C<DADA::Mail::MailOut> is used to manage and monitor sending a Mailing List Message. A Mailing List Message goes to (primarily) an entire mailing list full of subscribers. When a Mailing List Message is sent out a ton of meta information is created about the actual sending of the message, everything from a copy of the original message, to information about where the sending process is, how long its taken, if the message has been paused, etc. It's fairly well documented, but still very complicated on the inside. It's not very complicated to use, though. Bugs in this module are very hard to fix. 
 
-=head1 DADA::MailingList.pm
+=head2 DADA::MailingList.pm
 
 Although it sounds lofty, C<DADA::MailingList.pm> is mostly used to create and remove mailing lists. Most of the API for actual mailing lists is in the DADA::MailingList namespace. 
 
-=head1 DADA::MailingList
+=head2 DADA::MailingList
 
 This namespace maps out various major components that make up a, "Mailing List" It's one of the oldest namespaces in Dada Mail and also one of the most fractured, given what it has to do. There's no one "mailing list" object to use - each part of a mailing list has to be used separately. This may change, in the future. 
 
@@ -124,7 +124,7 @@ C<DADA::MailingList::Subscribers> is generally used when you want to work with a
 
 Its methods also have indirect access to Dada Mail Profile information, as well as a backwards-compatibility with the new C<DADA::MailingList::Subscriber> namespace, as most of the code of Dada Mail deosn't actually work with C<DADA::MailingList::Subscriber> directly yet. 
 
-=head1 DADA::Profile:: 
+=head2 DADA::Profile:: 
 
 The modules that comprise the C<DADA::Profile> namespace are some of the newest in the API. They comprise the API for Dada's, "Profiles", which are very much separate from Mailing Lists. 
 
@@ -138,11 +138,11 @@ Dada Mail Profile Fields, once called, "Profile Fields" holds free-form informat
 
 C<DADA::Profile::Session> is a wrapper (basically) around C<CGI::Session> and handles the web-based profile control panel session/state handling for profile users themselves to manage their own profiles. 
 
-=head1 DADA::ProfileFieldsManager
+=head2 DADA::ProfileFieldsManager
 
 C<DADA::ProfileFieldsManager> is the API to change the design of the Profile Fields that Dada Mail can manage. As well as the fields themselves, it also provides the API for the meta information about the various fields. This meta information is currently very bare-bones, but may be developed further, in the future. 
 
-=head1 DADA::Template
+=head2 DADA::Template
 
 The DADA::Template namespace holds objects for generation of HTML and email messages via (mostly) templates. It's another very old API that's in need of a revision
 

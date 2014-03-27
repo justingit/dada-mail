@@ -6,7 +6,7 @@ Requirements needed to run Dada Mail
 
 Dada Mail is designed to be fairly flexible in the type of environment you run it in, so long as that environment is Unix/Linux-like, you have access to Perl v5.8.1 or later and your web server can execute CGI scripts. 
 
-=head1 Environment
+=head2 Environment
 
 For the most part, Dada Mail is a web application; you interact with it via a web browser and it lives on top of a web server. Dada Mail is a simple CGI app for the most part, it does not currently support C<mod_perl> or even C<Fast CGI>, so those are not prerequisites. 
 
@@ -14,7 +14,7 @@ Dada Mail is not a desktop application.
 
 When we talk about what operating system, version of Perl, etc that's needed for Dada Mail to run - we're talking about what's needed on the I<server> end. All you need to use Dada Mail is a modern web browser (we suggest Mozilla Firefox)  and because of this, any operating system that can run a modern web browser can be used.
 
-=head1 Supported Operating Systems
+=head2 Supported Operating Systems
 
 Linux, Free BSD and Mac OS X should all work well. 
 
@@ -28,7 +28,7 @@ One major stumbling block is Perl for Windows lack of support for the C<fork()> 
 
 You'll also want to use the SQL backend if you ever attempt to run Dada Mail on a Windows-based server
 
-=head1 Perl 5.8.1
+=head2 Perl 5.8.1
 
 Since Dada Mail is a CGI app, you'll need support for Perl CGI scripts within your web server environment. 
 
@@ -50,11 +50,11 @@ For more information.
 
 To utilize this version of Perl, you'll need to change the shebang line (first line of the scripts, bundled with Dada Mail) to this path, rather than what Dada Mail ships with (C</usr/bin/perl>) 
 
-=head1 Mail Transport Agent
+=head2 Mail Transport Agent
 
 Dada Mail can pass messages to send to a sendmail-like command that applications like sendmail, qmail, postfix, exim, etc come with, or it can pass messages using the SMTP protocol. Amazon SES support is also avaiable. You will need one of these. Dada Mail is not an SMTP server itself. 
 
-=head1 Backend Options
+=head2 Backend Options
 
 =head2 SQL Backend
 
@@ -90,11 +90,11 @@ If these modules are not available, you'll need to install them using the operat
 
 L<http://dadamailproject.com/support/documentation-6_8_1/FAQ-general.pod.html#How-do-you-install-CPAN-Perl-Modules>
 
-=head1 Configuration
+=head2 Configuration
 
 Dada Mail is shipped with an installer. It can also upgrade your Dada Mail. 
 
-=head1 Guide to Hosting Companies
+=head2 Guide to Hosting Companies
 
 This: 
 

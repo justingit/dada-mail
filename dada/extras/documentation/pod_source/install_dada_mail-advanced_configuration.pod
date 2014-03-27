@@ -8,7 +8,7 @@ If you're looking for general instructions on how to use the Dada Mail Installer
 
 L<http://dadamailproject.com/support/documentation/install_dada_mail.pod.html>
 
-=head1 Introduction
+=head2 Introduction
 
 Dada Mail's global configuration is saved in a file called, C<.dada_config>, which itself is saved in the, C<.dada_files/.configs> directory. The file is plain text, but is a valid Perl script, so be I<very, very> careful if/when you edit it by hand. The installer is generally provided to you so don't have to do this, but many, many global configuration options exist, that aren't supported by the Dada Mail Installer. For a rundown of what's fully available, see: 
 

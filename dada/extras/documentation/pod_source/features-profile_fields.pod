@@ -86,7 +86,7 @@ You can edit an individual's address data in the list control. Under, B<Your Sub
 You'll be presented with a table of your subscribers Clicking on the email address of the subscriber will bring you to a screen for this particular subscriber. Click the, B<Profile> tab to view/edit Profile data. 
 
 
-=head1 See Also
+=head2 See Also
 
 =head2 Technical Documentation 
 

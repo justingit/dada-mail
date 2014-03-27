@@ -12,7 +12,7 @@ Where, C<http://example.com/cgi-bin/dada/mail.cgi> is the URL to own Dada Mail.
 
 This screen will have two forms, one form to log into an existing mailing list, and another form to create a new mailing list. You'll want to use the first form. 
 
-=head1 General Concepts
+=head2 General Concepts
 
 Generally, you'll want to think of a Dada Mail install as a collection of related, but separate mailing lists with members that may be on one or more mailing lists, which have profile field information that's shared between these mailing lists. If you have need for totally separate mailing lists, with totally separate applications, you may want instead to multiple installations of Dada Mail. 
 

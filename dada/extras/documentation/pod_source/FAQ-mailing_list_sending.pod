@@ -62,7 +62,7 @@ Read below on how to set up a cronjob (scheduled task) to monitor your mailing f
 
 =back
 
-=head1 Sending Messages in Batches
+=head2 Sending Messages in Batches
 
 =head2 What's "Batch Sending" 
 
@@ -157,7 +157,7 @@ So have a heart, batch at something that's realistic. If you're on a shared serv
 =back
 
 
-=head1 Auto Pickup Options
+=head2 Auto Pickup Options
 
 
 Once enabled, this feature will help make sure the process of sending out a mailing will succeed to completion. 
@@ -250,7 +250,7 @@ See: L<http://dadamailproject.com/support/documentation/Mail_MailOut.pm.html>
 
 in Dada Mail itself, see the B<Mailing Monitor> plugin noted above, or the C<sending_monitor()> subroutine in the mail.cgi file. 
 
-=head1 Multiple Mass Mailings at the Same Time
+=head2 Multiple Mass Mailings at the Same Time
 
 Multiple Mass Mailings can go on at one time. 
 
@@ -283,7 +283,7 @@ Mass Mailings can become B<stale>, meaning, they've been inactive in mail sendin
 By default, mailouts that haven't sent anything in a day are considered stale. 
 You may change this time in the Config.pm variable, C<$MAILOUT_STALE_AFTER>, which expresses this time in B<seconds>. 
 
-=head1 Reference: Various Hosting Companies and Email Sending Quotas
+=head2 Reference: Various Hosting Companies and Email Sending Quotas
 
 If you can help in fleshing this list out, it would be really helpful to me - contact us via the boards: L<http://dadamailproject.com/support/boards> or the mailing list: L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/> and let us know! 
 

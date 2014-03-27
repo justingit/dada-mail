@@ -2,7 +2,7 @@
 
 =head1 Upgrade Dada Mail from a Mojo Marketplace/Simple Scripts Installation
 
-=head1 Before Going Forward: 
+=head2 Before Going Forward: 
 
 Simple Scripts/Mojo Marketplace (henceforth, only reffered to as, "B<Mojo Marketplace>") is a great way to get started with Dada Mail, as their easy installer  makes it painless to begin using Dada Mail. 
 
@@ -14,7 +14,7 @@ Mojo Marketplace has, in its history of offering Dada Mail, sometimes changed th
 
 These docs were written on 7/12/13, and go over installing v6.4.1 of Dada Mail, and upgrading to v6.5.0 of Pro Dada. 
 
-=head1 Installing Dada Mail on the Mojo Marketplace. 
+=head2 Installing Dada Mail on the Mojo Marketplace. 
 
 Before we upgrade, we're going to quickly go over how we've installed Dada Mail, using Mojo Marketplace. This demo is on a cPanel-based hosting account on Bluehost. 
 
@@ -98,7 +98,7 @@ The installer takes a few seconds to do its job, but should come back with a scr
 
 All set! And that's how you install Dada Mail using Mojo Marketplace. 
 
-=head1 Upgrading your Mojo Marketplace to a Self-Installed Dada Mail-Pro Dada
+=head2 Upgrading your Mojo Marketplace to a Self-Installed Dada Mail-Pro Dada
 
 =head2 Decouple your Dada Mail install from Mojo Marketplace
 
