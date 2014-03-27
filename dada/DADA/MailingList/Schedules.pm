@@ -219,7 +219,7 @@ sub save_from_params {
 
 	} 
 	
-	# Subscriber Profile Fields
+	# Profile Fields
 	# First, let's figure out what they may be...
 	
 	require DADA::MailingList::Subscribers; 
@@ -648,10 +648,8 @@ sub send_scheduled_mailing {
 	
 		my $ls = DADA::MailingList::Settings->new({-list => $self->{name}}); 
 
-		my $list_info = $ls->get(); 
 		
 		require DADA::Mail::Send; 
-
 		my $mh = DADA::Mail::Send->new(
 					{
 						-list   => $self->{name}, 
@@ -807,8 +805,6 @@ sub _build_email {
 	
 	
 	my $ls = DADA::MailingList::Settings->new({-list => $self->{name}}); 
-	my $list_info = $ls->get(); 
-
 	# So... then we have to first check if we have an HTML ver *AND* we need to pull it from a URL
 	# (Actually, first I have to figure out how to add attachments to a MIME::Lite::HTML thingy...) 
 
@@ -1329,8 +1325,7 @@ sub _archive_message {
 
 	require DADA::MailingList::Archives; 		
 	my $ls        = DADA::MailingList::Settings->new({-list => $self->{name}}); 
-	my $list_info = $ls->get();
-		
+
 	my $la = DADA::MailingList::Archives->new({-list => $self->{name}});  
 		
 	my $raw_msg; 
