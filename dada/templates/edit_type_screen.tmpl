@@ -66,14 +66,14 @@
 			This is the mailing list message (text version). 
 		</p>
 		
-		<!-- tmpl_unless private_list -->
+		<!-- tmpl_unless list_settings.private_list -->
     		<p>
     		    This template should contain simple instructions on unsubscribing 
     		    from the mailing list.
     		</p>
 		<!-- /tmpl_unless -->
 		
-		<!-- tmpl_unless private_list -->
+		<!-- tmpl_unless list_settings.private_list -->
     		<!-- tmpl_if unsub_link_found_in_pt_mlm --> 
     			<div class="clearskiesbox"> 
         			<p>
@@ -81,13 +81,14 @@
         			</p>
     		    </div> 		
     		<!-- tmpl_else --> 
-    		<div class="badweatherbox"> 
-    			<p>
-    				Couldn't find an <strong>Unsubscribe Link</strong> 
-    				(<code>&lt;!-- tmpl_var list_unsubscribe_link --&gt;</code>) in your template. 
-    				If your mailing is sent out with this tag present, an unsubscribe link 
-    				will be automatically prepended to the top of your message. 
-    			</p>
+        		<div class="badweatherbox"> 
+        			<p>
+        				Couldn't find an <strong>Unsubscribe Link</strong> 
+        				(<code>&lt;!-- tmpl_var list_unsubscribe_link --&gt;</code>) in your template. 
+        				If your mailing is sent out with this tag present, an unsubscribe link 
+        				will be automatically prepended to the top of your message. 
+        			</p>
+        		</div> 
     		<!-- /tmpl_if --> 
     	<!-- /tmpl_unless --> 
 		
@@ -116,13 +117,13 @@
 		    This is the mailing list message (HTML version). 
 		</p>
 
-		<!-- tmpl_unless private_list -->		
+		<!-- tmpl_unless list_settings.private_list -->		
     		</p> 	
         	    This template should contain simple instructions on unsubscribing from the mailing list.
     		</p>
         <!-- /tmpl_unless --> 
         
-		<!-- tmpl_unless private_list -->	
+		<!-- tmpl_unless list_settings.private_list -->	
     		<!-- tmpl_if unsub_link_found_in_html_mlm --> 
         		<div class="clearskiesbox"> 
         			<p>
@@ -132,8 +133,7 @@
     		<!-- tmpl_else --> 
         		<div class="badweatherbox"> 
             		<p>
-            			 Couldn't find the <code>&lt;!-- tmpl_var message_body --&gt;</code>
-            			tag in your template! Please place this tag in your template, to ensure proper formatting.  
+       				    Couldn't find an Unsubscribe Link (<code>&lt;!-- tmpl_var list_unsubscribe_link --&gt;</code>) in your template! If your mailing is sent out without one, somewhere, an unsubscribe link will be automatically appended to the top of your message. 
             		</p>			
                 </div> 
     		<!-- /tmpl_if -->
@@ -205,9 +205,9 @@
 	</p>
 	
 	<!-- tmpl_if list_settings.send_sub_success_email --> 
-			<p class="positive">Send Subscription Successful Emails  is Enabled.</p>
+			<p class="positive">Send Subscription Successful Email Notifications  is Enabled.</p>
 	<!-- tmpl_else --> 
-		<p class="error">Send Subscription Successful Emails  is Disabled.</p>
+		<p class="error">Send Subscription Successful Email Notifications  is Disabled.</p>
 	<!-- /tmpl_if --> 
 	
 	<p>
@@ -229,9 +229,9 @@
 	</p>
 	
 	<!-- tmpl_if list_settings.send_unsub_success_email --> 
-			<p class="positive">Send Unsubscription Successful Emails  is Enabled.</p>
+			<p class="positive">Send Unsubscription Successful Email Notifications  is Enabled.</p>
 	<!-- tmpl_else --> 
-		<p class="error">Send Unsubscription Successful Emails  is Disabled.</p>
+		<p class="error">Send Unsubscription Successful Email Notifications  is Disabled.</p>
 	<!-- /tmpl_if --> 
 	
 	
@@ -361,7 +361,7 @@
 		<legend>
 			PlainText Message: 
 		</legend>
-        <!-- tmpl_unless private_list -->
+        <!-- tmpl_unless list_settings.private_list -->
     		<!-- tmpl_if unsub_link_found_in_pt_subscribed_by_list_owner_msg --> 
     			<p class="positive">
     				Unsubscribe Link found in Template.

@@ -114,37 +114,33 @@
 <!-- /tmpl_if --> 
 
 <!-- tmpl_if expr="(type eq 'list')" -->
-    <!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
-    <!-- tmpl_else --> 
-        <div class="clearskiesbox">
-            <p>
-                Adding Subscribers via the List Control Panel has been <strong>disabled.</strong>
-            </p>
-            <p>
-                You may still Invite Subscribers to join. 
-            </p>
-        </div> 
-    <!-- /tmpl_if --> 
+    <!-- tmpl_unless list_is_closed -->
+        <!-- tmpl_unless expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
+            <div class="clearskiesbox">
+                <p>
+                    Importing Subscribers via the List Control Panel has been <strong>disabled.</strong>
+                </p>
+                <p>
+                    You may still <strong>Invite</strong> Subscribers to join. 
+                </p>
+            </div> 
+        <!-- /tmpl_unless --> 
+    <!-- /tmpl_unless --> 
 <!-- /tmpl_if -->
 
 
 
-	<!-- tmpl_include list_type_switch_widget.tmpl -->
+<!-- tmpl_include list_type_switch_widget.tmpl -->
 	
 <!-- tmpl_if list_is_closed -->
 
 <!-- tmpl_else --> 
 
 
-
-
 <!-- tmpl_if expr="(type eq 'list')" -->
     <p><strong>CSV Format to use for Import:</strong></p>
     <p><code>Email Address<!-- tmpl_loop fields -->, <!-- tmpl_var name --><!-- /tmpl_loop --><!-- tmpl_if expr="(type eq 'list')" -->, Profile Password<!-- /tmpl_if --></code></p>
 <!-- /tmpl_if --> 
-
-
-
 
 	<fieldset> 
 		<legend>Upload Your Addresses:</legend>

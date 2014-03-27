@@ -231,7 +231,7 @@
                     		 <td>
                     		  <p>
                     		   <label for="skip_sub_confirm_if_logged_in">
-                    		    Skip Subscription Confirmation Process if the subscriber already has a <!-- tmpl_var PROGRAM_NAME --> profile
+                    		    Skip Subscription Confirmation Process if the subscriber already has a <!-- tmpl_var PROGRAM_NAME --> Profile
                     		   </label>
                     		   <br /> 
 
@@ -482,10 +482,10 @@
                   <td width="99%">
                    <p>
                     <label for="get_sub_notice">
-                     Send Subscription Notices
+                     Send Subscription Notifications
                     </label>
                     <br />
-                    Send Subscription Notices to: <!-- tmpl_var send_subscription_notice_to_popup_menu -->
+                    Send Subscription Notifications to: <!-- tmpl_var send_subscription_notice_to_popup_menu -->
                	    </p>
                   </td>
                  </tr>
@@ -496,7 +496,7 @@
                   <td width="99%">
                    <p>
                     <label for="send_sub_success_email">
-                     Send Subscription Successful Emails
+                     Send Subscription Successful Email Notifications
                     </label>
                     <br />
                     After a person subscribes, an email will be sent to them 
@@ -705,96 +705,107 @@
     </strong> 
 </p> 
 
-
- <table class="options_tb">
-	<tr>
-    <td class="checkbox_container">
-    <input type="checkbox" name="unsub_show_email_hint" id="unsub_show_email_hint" value="1" <!-- tmpl_if list_settings.unsub_show_email_hint -->checked="checked"<!--/tmpl_if --> />
-   </td>
-   <td>
-    <p>
-     <label for="unsub_show_email_hint"> 
-      Show Email Hint
-     </label>
-     <br />
-     The Unsubscription Form will have the user's email address partially shown to help users fill out the form, with the correct email address. 	
-    </p>
-	<blockquote> 
-	<p>
-		<strong>
-			 Example:
-		</strong>
+<fieldset><legend>Completing the Unsubscription</legend>
+    
+     <table class="options_tb">
+    	<tr>
+        <td class="checkbox_container">
+        <input type="checkbox" name="unsub_show_email_hint" id="unsub_show_email_hint" value="1" <!-- tmpl_if list_settings.unsub_show_email_hint -->checked="checked"<!--/tmpl_if --> />
+       </td>
+       <td>
+        <p>
+         <label for="unsub_show_email_hint"> 
+          Show Email Hint
+         </label>
+         <br />
+         The Unsubscription Form will have the user's email address partially shown to help users fill out the form, with the correct email address. 	
+        </p>
+    	<blockquote> 
+    	<p>
+    		<strong>
+    			 Example:
+    		</strong>
 		
-		<em>
-			<!-- tmpl_var list_settings.list_owner_email -->
-		</em>	
-		 will be shown as,
-		<em>
-			<!-- tmpl_var list_owner_email_anonystar_address -->
-		</em>
-	</p>
-	</blockquote> 
+    		<em>
+    			<!-- tmpl_var list_settings.list_owner_email -->
+    		</em>	
+    		 will be shown as,
+    		<em>
+    			<!-- tmpl_var list_owner_email_anonystar_address -->
+    		</em>
+    	</p>
+    	</blockquote> 
 	
-   </td>
-  </tr>
+       </td>
+      </tr>
+     </table> 
+    </fieldset><!-- Completing the Unsubscription --> 
+    
+    
+<fieldset><legend>After the Unsubscription</legend>
+
+    <table class="options_tb">
+      <tr>
+       <td>
+        <input type="checkbox" name="get_unsub_notice" id="get_unsub_notice" value="1" <!-- tmpl_if list_settings.get_unsub_notice -->checked="checked"<!--/tmpl_if --> />
+       </td>
+       <td>
+        <p>
+         <label for="get_unsub_notice"> 
+          Send Unsubscription Notifications
+         </label>
+         <br />
+         Send Unsubscription Notifications to: <!-- tmpl_var send_unsubscription_notice_to_popup_menu -->
+        </p>
+       </td>
+      </tr>
+      <tr>
+        <td class="checkbox_container">
+        <input type="checkbox" name="send_unsub_success_email" id="send_unsub_success_email" value="1" <!-- tmpl_if list_settings.send_unsub_success_email -->checked="checked"<!--/tmpl_if--> />
+       </td>
+       <td>
+        <p>
+         <label for="send_unsub_success_email">
+          Send Unsubscription Successful Email Notifications
+         </label>
+         <br />
+         After a person unsubscribes, an email will be sent to them 
+         to announce the unsubscription.
+        </p>
+       </td>
+      </tr>
+      <tr>
+        <td class="checkbox_container">
+        <input type="checkbox" name="use_alt_url_unsub_success" id="use_alt_url_unsub_success" value="1" <!-- tmpl_if list_settings.use_alt_url_unsub_success -->checked="checked"<!--/tmpl_if--> />
+       </td>
+       <td>
+        <p>
+         <label for="use_alt_url_unsub_success">
+          If an unsubscription is successful, redirect to this URL:
+         </label>
+         </p>
+
+            <table class="options_tb">
+             <tr> 
+              <td> 
+               <input type="text" name="alt_url_unsub_success" value="<!-- tmpl_var list_settings.alt_url_unsub_success escape="HTML" -->" class="full" />
+              </td>
+             </tr> 
+             <tr> 
+               <td class="checkbox_container">
+               <input type="checkbox" name="alt_url_unsub_success_w_qs" id="alt_url_unsub_success_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_unsub_success_w_qs -->checked="checked"<!--/tmpl_if--> />
+               <label for="alt_url_unsub_success_w_qs">Redirect with query string</label>
+              </td> 
+             </tr> 
+            </table>       
+       </td>
+      </tr>
+    </table> 
 
 
-  <tr>
-   <td>
-    <input type="checkbox" name="get_unsub_notice" id="get_unsub_notice" value="1" <!-- tmpl_if list_settings.get_unsub_notice -->checked="checked"<!--/tmpl_if --> />
-   </td>
-   <td>
-    <p>
-     <label for="get_unsub_notice"> 
-      Send Unsubscription Notices
-     </label>
-     <br />
-     Send Unsubscription Notices to: <!-- tmpl_var send_unsubscription_notice_to_popup_menu -->
-    </p>
-   </td>
-  </tr>
-  <tr>
-    <td class="checkbox_container">
-    <input type="checkbox" name="send_unsub_success_email" id="send_unsub_success_email" value="1" <!-- tmpl_if list_settings.send_unsub_success_email -->checked="checked"<!--/tmpl_if--> />
-   </td>
-   <td>
-    <p>
-     <label for="send_unsub_success_email">
-      Send Unsubscription Successful Emails
-     </label>
-     <br />
-     After a person unsubscribes, an email will be sent to them 
-     to announce the unsubscription.
-    </p>
-   </td>
-  </tr>
-  <tr>
-    <td class="checkbox_container">
-    <input type="checkbox" name="use_alt_url_unsub_success" id="use_alt_url_unsub_success" value="1" <!-- tmpl_if list_settings.use_alt_url_unsub_success -->checked="checked"<!--/tmpl_if--> />
-   </td>
-   <td>
-    <p>
-     <label for="use_alt_url_unsub_success">
-      If an unsubscription is successful, redirect to this URL:
-     </label>
-     </p>
 
-        <table class="options_tb">
-         <tr> 
-          <td> 
-           <input type="text" name="alt_url_unsub_success" value="<!-- tmpl_var list_settings.alt_url_unsub_success escape="HTML" -->" class="full" />
-          </td>
-         </tr> 
-         <tr> 
-           <td class="checkbox_container">
-           <input type="checkbox" name="alt_url_unsub_success_w_qs" id="alt_url_unsub_success_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_unsub_success_w_qs -->checked="checked"<!--/tmpl_if--> />
-           <label for="alt_url_unsub_success_w_qs">Redirect with query string</label>
-          </td> 
-         </tr> 
-        </table>       
-   </td>
-  </tr>
-</table> 
+</fieldset><!-- After the Unsubscription --> 
+
 </fieldset><!-- By Users: --> 
 
 <fieldset><!-- In the List Control Panel: --> 
@@ -824,6 +835,43 @@
     </table>
 </fieldset><!-- In the List Control Panel: --> 
 
+
+    <!-- tmpl_if list_settings.black_list --> 
+        <div class="clearskiesbox">  
+            <p>
+                <strong>
+                    Black List is Enabled.
+                </strong>
+            </p> 
+            <ul> 
+                <!-- tmpl_if list_settings.add_unsubs_to_black_list --> 
+                    <li>
+                        Addresses Unsubscribed will be moved over to the Black List.
+                    </li>
+                <!-- /tmpl_if --> 
+                <!-- tmpl_if list_settings.allow_blacklisted_to_subscribe --> 
+                    <li>
+                        Users may still Subscribe themselves to your mailing list
+                    </li>
+                <!-- tmpl_else -->
+                    <li>
+                        Users may not Subscribe themselves to your mailing list
+                    </li>                
+                <!-- /tmpl_if --> 
+                <!-- tmpl_if list_settings.allow_admin_to_subscribe_blacklisted --> 
+                    <li>
+                        You will still be allowed to Subscribe a Black Listed address in the list control panel.                         
+                    </li>
+                <!-- tmpl_else -->
+                    <li>
+                        You will not be allowed to Subscribe a Black Listed address in the list control panel. 
+                    </li>                
+                <!-- /tmpl_if --> 
+            </ul> 
+        </div> 
+    <!-- /tmpl_if -->
+    
+    
 </fieldset><!-- Unsubscriptions --> 
 
 

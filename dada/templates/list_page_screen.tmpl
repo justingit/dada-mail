@@ -26,7 +26,20 @@
 <ul> 
 	
 
-
+	<!-- tmpl_if list_settings.private_list --> 
+        <li>
+			<p>
+				This mailing list is a private mailing list. There may be additional steps in order to join, 
+				and the List Owner controls who may leave the mailing list. 
+			</p>
+		</li>
+	<!-- tmpl_else --> 
+        <li>
+    		<p>
+    			This mailing list is a public mailing list - anyone may join or leave, at any time.
+    		</p>
+    	</li>		
+    <!-- /tmpl_if -->
 	
 	<!-- tmpl_if list_settings.enable_subscription_approval_step --> 
 		<li>
