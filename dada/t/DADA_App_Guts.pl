@@ -155,7 +155,7 @@ $list = dada_test_config::create_test_list;
 
 	SKIP: {
 
-	    skip "Multiple Subscriber Profile Fields is not supported with this current backend." 
+	    skip "Multiple Profile Fields is not supported with this current backend." 
 	        if $lh->can_have_subscriber_fields == 0;
 	
 	    my $r = $lh->add_subscriber_field({-field => 'first_name'});
