@@ -98,7 +98,7 @@ Dada Mail is shipped with an installer. It can also upgrade your Dada Mail.
 
 This: 
 
-http://dadamailproject.com/support/hosting.html
+L<http://dadamailproject.com/support/hosting.html>
 
 is a very B<incomplete> list of hosting companies that seem to work well with Dada Mail. 
 

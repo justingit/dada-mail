@@ -162,7 +162,7 @@ Dada Mail usually shows a simple link to the administration login screen, on the
 
 You may always get to  the administration page by pointing your browser to an address like this: 
 
-	http://mysite.com/cgi-bin/dada/mail.cgi/admin
+L<http://mysite.com/cgi-bin/dada/mail.cgi/admin>
 
 This is a small security measure but may just stop people from 
 snooping further. 

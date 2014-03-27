@@ -230,9 +230,9 @@ Here are the steps to do it manually:
 
 =item 1
 
-Visit Dada Mail (http://example.com/cgi-bin/dada/mail.cgi), with the following query string: 
+Visit Dada Mail (L<http://example.com/cgi-bin/dada/mail.cgi>), with the following query string: 
 
-	http://example.com/cgi-bin/dada/mail.cgi?f=pass_gen
+L<http://example.com/cgi-bin/dada/mail.cgi?f=pass_gen>
 
 =item 2
 
@@ -544,7 +544,7 @@ If you set C<$ADMIN_FLAVOR_NAME> to something like, B<kookoo>:
 
 You'd then access this screen via the following URLS; 
 
-http://example.com/cgi-bin/dada/mail.cgi/kookoo
+L<http://example.com/cgi-bin/dada/mail.cgi/kookoo>
 
 Works best if you have, B<$SHOW_ADMIN_LINK> set to something other than, B<1>. 
 
@@ -948,7 +948,7 @@ want to use this option.
 
 More information: 
 
-http://dadamailproject.com/d/FAQ-general.pod.html.html#is_there_a_way_to_speed_up_screen_rendering__how_to_use_the_screen_cache_
+L<http://dadamailproject.com/d/FAQ-general.pod.html.html#is_there_a_way_to_speed_up_screen_rendering__how_to_use_the_screen_cache_>
 
 =head1 $GLOBAL_BLACK_LIST
 
@@ -983,11 +983,11 @@ when you add a new message to your archive.
 
 Here's more information: 
 
-http://www.xmlrpc.com/weblogsCom
+L<http://www.xmlrpc.com/weblogsCom>
 
 You'll need the XMLRPC::Lite Perl module installed: 
 
-http://search.cpan.org/~rjray/RPC-XML-0.57/
+L<http://search.cpan.org/~rjray/RPC-XML-0.57/>
 
 =head1 $DEFAULT_SCREEN
 
@@ -1172,7 +1172,7 @@ to HTML when showing plain text in archives and things like that.
 You can change the behavior of this formatting by changing what 
 arguments get passed to the HTML::TextToHTML module, as described here: 
 
-http://search.cpan.org/~rubykat/txt2html/lib/HTML/TextToHTML.pm#OPTIONS
+L<http://search.cpan.org/~rubykat/txt2html/lib/HTML/TextToHTML.pm#OPTIONS>
 
 =head2 $HTML_SCRUBBER_OPTIONS
 
@@ -1225,190 +1225,10 @@ this module.
 Set to: 'faster', 'less memory', or 'no tmp files'. This controls how 
 the MIME::Parser works. For more information: 
 
-http://search.cpan.org/~dskoll/MIME-tools-5.502/lib/MIME/Parser.pm#OPTIMIZING_YOUR_PARSER
+L<http://search.cpan.org/~dskoll/MIME-tools-5.502/lib/MIME/Parser.pm#OPTIMIZING_YOUR_PARSER>
 
 
 $MIME_OPTIMIZE ||= 'no tmp files'; 
-
-
-=head1 Default Email Message Templates
-
-The global default Email Message Templates are saved in the Config.pm file. 
-
-Many of these email tempaltes are list-centric and can be edited list by list in the list 
-control panel under, B<Manage Copy - Email Templates>. If what you desire is to edit an email template 
-for just one list, the place to do that is in the list control panel. 
-
-If you desire to set the default email template for all your lists, you'd want to do this in the 
-global configuration (right here, or in the outside configuration file) 
-
-
-=head2 $SUBSCRIBED_MESSAGE
-
-I<(List-centric, editable per list)> 
-
-This is the default "subscription successful!" email message. 
-This message can be customized for each list in the list's Control Panel.
-
-=head2 $SUBSCRIPTION_NOTICE_MESSAGE
-
-This email message is sent to the List Owner, when a new subscription has been made by a subscriber. 
-
-=head2 $UNSUBSCRIBED_MESSAGE
-
-I<(List-centric, editable per list)> 
-
-This is the default "unsubscription successful!" email message. 
-This message can be customized for each list in the list's Control Panel.
-
-
-
-=head2 $CONFIRMATION_MESSAGE
-
-I<(List-centric, editable per list)> 
-
-This is the default "subscription confirmation" email message. 
-This message can be customized for each list in the list's Control Panel.
-
-
-
-=head2 $UNSUBSCRIPTION_REQUEST_MESSAGE
-
-I<(List-centric, editable per list)> 
-
-This is the default "subscription confirmation" email message. 
-This message can be customized for each list in the list's Control Panel.
-
-
-
-=head2 $MAILING_LIST_MESSAGE
-
-I<(List-centric, editable per list)> 
-
-This is the default "Mailing List!" email message. 
-This message can be customized for each list in the list's Control Panel.
-
-
-
-=head2 $MAILING_LIST_MESSAGE_HTML
-
-I<(List-centric, editable per list)> 
-
-Similar to $MAILING_LIST_MESSAGE, but used specifically for HTML messages. 
-
-
-
-=head2 $NOT_ALLOWED_TO_POST_MSG
-
-I<(List-centric, editable per list)> 
-
-This message is sent to someone who is not allowed to post to your 
-list using Bridge plugin. If you do not use the 
-Bridge plugin, this won't be of any use to you! This message 
-can be customized for each list in the list's Control Panel.
-
-
-
-=head2 $NOT_ALLOWED_TO_POST_NOTICE_MSG
-
-This message is sent to the List Owner, usually in a discussion list setup, when a message is sent to the list from an email address
-who does not have access to do so. 
-
-
-
-=head2 $YOU_ARE_ALREADY_SUBSCRIBED_MESSAGE
-
-I<(List-centric, editable per list)> 
-
-This message is sent out only if someone that's already currently subscribed to a list tries to subscribe again and 
-you've set the preferences to send an email out, instead of giving this message in the web browser.
-
-
-
-
-=head2 $YOU_ARE_NOT_SUBSCRIBED_MESSAGE
-
-I<(List-centric, editable per list)> 
-
-This message is sent out only if someone that's not currently subscribed to a list tries to unsubscribe and
-you've set the preferences to send an email out, instead of giving this message in the web browser.
-
-
-
-
-=head2 $MAILING_FINISHED_MESSAGE
-
-This email message is sent to the List Owner, when a mass mailing has finished. 
-
-
-
-=head2 $TEXT_INVITE_MESSAGE
-
-The text version of the list invitation message.
-
-
-
-=head2 $HTML_INVITE_MESSAGE
-
-The HTML version of the list invitation message.
-
-
-
-=head2 $SEND_ARCHIVED_MESSAGE
-
-I<(List-centric, editable per list)> 
-
-The text version of the message sent when an archived message is sent 
-to a friend.
-
-
-
-=head2 $HTML_SEND_ARCHIVED_MESSAGE
-
-The HTML version of the message sent when an archived message is sent 
-to a friend.
-
-
-
-=head1 Default HTML Screen Templates
-
-The global default HTML Screen Templates are saved in the Config.pm file. 
-
-Many of these HTML screen templates are list-centric and can be edited list by list in the list 
-control panel under, B<Manage Copy -  HTML Screen Templates>. If what you desire is to edit an HTML screen template 
-for just one list, the place to do that is in the list control panel. 
-
-If you desire to set the default HTML screen template for all your lists, you'd want to do this in the 
-global configuration (right here, or in the outside configuration file) 
-
-
-=head2 $HTML_CONFIRMATION_MESSAGE
-
-I<(List-centric, editable per list)> 
-
-Shown when a request to subscribe is successful.
-
-
-
-=head2 $HTML_SUBSCRIBED_MESSAGE
-
-I<(List-centric, editable per list)> 
-
-Shown when a subscription is successful.
-
-=head2 $HTML_SUBSCRIPTION_REQUEST_MESSAGE
-
-I<(List-centric, editable per list)> 
-
-
-
-=head2 $HTML_UNSUBSCRIBED_MESSAGE
-
-I<(List-centric, editable per list)> 
-
-Shown when an unsubscription is successful.
-
-
 
 =head1 Additional Settings
 
@@ -1513,7 +1333,7 @@ unless you want to play around with it.
 
 =head2 $MAIL_VERP_SEPARATOR
 
-See: http://search.cpan.org/~gyepi/Mail-Verp-0.05/Verp.pm
+See: L<http://search.cpan.org/~gyepi/Mail-Verp-0.05/Verp.pm>
 
 =head2  $VER
 
@@ -1559,15 +1379,15 @@ me directly, but use one of the following channels:
 
 =item * Dada Mail Support Site
 
-http://dadamailproject.com
+L<http://dadamailproject.com>
 
 =item * The Dada Mailers Discussion List
 
-http://dadamailproject.com/cgi-bin/dada/mail.cgi/dadadev/
+L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/dadadev/>
 
 =item * Consultation for Dada Mail
 
-http://dadamailproject.com/support/customize.html
+L<http://dadamailproject.com/support/customize.html>
 
 =back
 

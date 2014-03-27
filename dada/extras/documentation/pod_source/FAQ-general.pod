@@ -626,64 +626,6 @@ The information about the Default List Template also follows for the Default Adm
 
 You may also be interested in the B<admin_menu_widget.tmpl>, which is used to created the left hand menu. It's written using the HTML::Template templating system. 
 
-
-=item * Error Messages
-
-Most Error Messages in Dada Mail live in the B<dada/DADA/App/Errors.pm> Perl module. They're not templated out into individual files, since we've just haven't gotten around to it. Be careful when editing, since the file is a Perl program and follows the conventions and syntax requirements of Perl itseld. 
-
-=item * Email Messages
-
-The default email messages that are easily editable are located in the Config.pm file itself. The variables are called: 
-
-=over
-
-=item * $SUBSCRIBED_MESSAGE
-
-=item * $UNSUBSCRIBED_MESSAGE
-
-=item * $CONFIRMATION_MESSAGE
-
-=item * $UNSUBSCRIPTION_REQUEST_MESSAGE
-
-=item * $MAILING_LIST_MESSAGE
-
-=item * $MAILING_LIST_MESSAGE_HTML
-
-=item * $NOT_ALLOWED_TO_POST_MESSAGE
-
-=item * $TEXT_INVITE_MESSAGE
-
-=item * $HTML_INVITE_MESSAGE
-
-=item * $SEND_ARCHIVED_MESSAGE
-
-=back
-
-Again, we just haven't gotten to placing these in separate template files. 
-
-You can edit these messages separately for each list under: B<Manage Copy - Email Messages>. To reset these messages to their default, select all the text in the textarea you want to reset, delete the text and click, B<Save all Changes>
-
-
-=item * List HTML Screens
-
-List HTML screens are used for the operation of a mailing list. The screens that are easily editable are in the Config.pm file itself. The variables are called: 
-
-=over
-
-=item * $HTML_SEND_ARCHIVED_MESSAGE
-
-=item * $HTML_CONFIRMATION_MESSAGE
-
-=item * $HTML_SUBSCRIBED_MESSAGE
-
-=item * $HTML_UNSUBSCRIBED_MESSAGE
-
-=back
-
-You can edit these HTML screens separately for each list under: B<Manage Copy - HTML Messages>. 
-
-=back
-
 =item * Misc. HTML
 
 Some HTML/Email Messages created by Dada Mail are done within the Perl code itself. This amount is now strikingly a minority, but it's still present. It comes in a variety of flavors, that don't really makes sense. But, here's some pointers: 

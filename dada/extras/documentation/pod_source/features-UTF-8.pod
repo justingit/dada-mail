@@ -261,15 +261,15 @@ Thanks!
 
 =item * The Absolute Minimum Every Software Developer Absolutely, Positively Must Know About Unicode and Character Sets (No Excuses!)
 
-http://www.joelonsoftware.com/articles/Unicode.html
+L<http://www.joelonsoftware.com/articles/Unicode.html>
 
 =item * perlunitut - Perl Unicode Tutorial
 
-http://perldoc.perl.org/perlunitut.html
+L<http://perldoc.perl.org/perlunitut.html>
 
 =item * perlunifaq - Perl Unicode FAQ
 
-http://perldoc.perl.org/perlunifaq.html
+L<http://perldoc.perl.org/perlunifaq.html>
 
 =cut
 
