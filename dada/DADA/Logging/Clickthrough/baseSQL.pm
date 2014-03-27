@@ -486,7 +486,7 @@ sub mass_mailing_event_log {
     if ( !exists( $args->{-record_as_open} ) ) {
         $args->{-record_as_open} = 0; 
     }
-    if($args->{-record_as_open} == 1) {     
+    if($args->{-record_as_open} == 1) {    
         my $recorded_open_recently = 1;
         try {
             $recorded_open_recently = $self->_recorded_open_recently($args);
@@ -494,7 +494,15 @@ sub mass_mailing_event_log {
         catch {
             carp "Couldn't execute, '_recorded_open_recently', : $_";
         };
-        if ( $recorded_open_recently <= 0 ) {
+        if($t == 1){ 
+            if(defined($args->{-mid})) { 
+                warn 'mid is defined - we\'ll count this'; 
+            }
+            else { 
+                warn 'mid is NOT defined - we\'re not counting this open'; 
+            }
+        }
+        if ( $recorded_open_recently <= 0 && defined($args->{-mid})) {
             $self->open_log($args);
         }
     }
