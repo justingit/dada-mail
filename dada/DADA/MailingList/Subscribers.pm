@@ -1194,12 +1194,12 @@ It's only used internally and is removed shortly after sending out a list invita
 
 =back
 
-=head3 A Subscription List can have Subscriber Profile Fields
+=head3 A Subscription List can have Profile Fields
 
-The Subscriber Profile Fields are information that's separate than the email address of a subscriber. 
+The Profile Fields are information that's separate than the email address of a subscriber. 
 Their values are arbitrary and can be set to most anything you'd like. 
 
-Internally, the Subscriber Profile Fields are mapped almost exactly to SQL columns - adding a subscriber 
+Internally, the Profile Fields are mapped almost exactly to SQL columns - adding a subscriber 
 field will add a column in an SQL table. Removing a field will remove a column.
 
 =head3 Restrictions are enforced by Dada Mail to only allow correct information to be saved in the Subscription List
@@ -1223,7 +1223,7 @@ The Subscription List can either be saved as a series of PlainText files (one fi
 or as an SQL table. 
 
 Each type of backend has different features that are available. The most notable feature is that the SQL 
-backend supports arbitrary Subscriber Profile Fields and the PlainText backend does not. 
+backend supports arbitrary Profile Fields and the PlainText backend does not. 
 
 Currently, the following SQL flavors are supported: 
 
@@ -1277,7 +1277,7 @@ C<-type> holds the sublist you want to subscribe the address to, if no sublist i
 
 C<-fields> holds the subscription fields you'd like associated with the subscription, passed as a hashref. 
 
-For example, if you have two fields, B<first_name> and, B<last_name>, you would pass the Subscriber Profile Fields like this: 
+For example, if you have two fields, B<first_name> and, B<last_name>, you would pass the Profile Fields like this: 
 
  $lh->add_subscriber(
 	{
@@ -1352,7 +1352,7 @@ B<returns> a DADA::MailingList::Subscriber object on success, C<undef> or croaks
 		}
 	);
 
-Returns the Subscriber Profile Fields information in the form of a hashref. 
+Returns the Profile Fields information in the form of a hashref. 
 
 C<-email> is required and should hold a valid email address in form of: C<user@example.com>. The address should also be subscribed
 and no check is done if the address you passed isn't. 
@@ -1400,7 +1400,7 @@ C<-type> holds the sublist you want to subscribe the address to, if no sublist i
 
 C<-fields> holds the subscription fields you'd like associated with the subscription, passed as a hashref. 
 
-For example, if you have two fields, B<first_name> and, B<last_name>, you would pass the Subscriber Profile Fields like this: 
+For example, if you have two fields, B<first_name> and, B<last_name>, you would pass the Profile Fields like this: 
 
  $lh->edit_subscriber(
 	{
@@ -1752,7 +1752,7 @@ Again, any of these tests can be skipped using the -skp argument.
 
 =head2 Add/Get/Edit/Remove a Subscription Field
 
-As noted, Subscriber Profile Fields are only available in the SQL backends.
+As noted, Profile Fields are only available in the SQL backends.
 
 It should be also noted that future revisions of Dada Mail may see these types of methods in their own object, ie: 
 
@@ -1833,7 +1833,7 @@ The, C<-email> parameter should hold an arrayref of hashrefs, instead of just an
 	}
  }
 
-No validation is done on the Subscriber Profile Fields - they're simply passed through and returned. 
+No validation is done on the Profile Fields - they're simply passed through and returned. 
 
 Returns a 5 element array of hashrefs, in the same format as what's passed.
 
@@ -1886,7 +1886,7 @@ Something went wrong in the SQL side of things.
   # ...	
  }
 
-Returns the Subscriber Profile Fields in the Subscription List, in the form of an array ref. 
+Returns the Profile Fields in the Subscription List, in the form of an array ref. 
 
 Takes no arguments... usually. 
 
@@ -2005,7 +2005,7 @@ C<-skip> is an optional parameter and is used to list the errors you're not so i
 
 =head3 Subscriber Validation Requirements
 
-Subscriber Profile Fields are validated mostly to make sure they're also valid SQL column names for all the SQL backends that are 
+Profile Fields are validated mostly to make sure they're also valid SQL column names for all the SQL backends that are 
 supported and also that the fields are not already used for internal SQL fields used by the program for other purposes. 
 Validation is also done sparingly for reserved words. 
 

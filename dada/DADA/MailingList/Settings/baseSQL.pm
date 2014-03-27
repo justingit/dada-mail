@@ -7,6 +7,9 @@ use lib qw(./ ../ ../../ ../../../ ./../../DADA ../../perllib);
 use DADA::Config qw(!:DEFAULT);  
 use DADA::App::Guts;  # For now, my dear. 
 
+my $t = 0; 
+
+
 my $dbi_obj = undef; 
 
 use Carp qw(croak carp); 
@@ -74,16 +77,22 @@ sub _sql_init  {
 sub save { 
  	my ($self, $new_settings) = @_;
 
-    
+    if($t == 1){ 
+        require Data::Dumper; 
+        warn '$new_settings: ' . Data::Dumper::Dumper($new_settings); 
+    }
 	unless($self->{new_list}){  
 		if(exists($new_settings->{list})){ 
 			croak "don't pass list to save()!";
 		}
 	}
 
+
 	my $d_query = 'DELETE FROM ' . $self->{sql_params}->{settings_table} .' where list = ? and setting = ?'; 
 	my $a_query = 'INSERT INTO ' . $self->{sql_params}->{settings_table} .' values(?,?,?)';
-
+    
+    warn '$d_query ' . $d_query if $t;; 
+    warn '$a_query ' . $a_query if $t; 
     if(! $self->{RAW_DB_HASH}){
         $self->_raw_db_hash;
     }
@@ -91,6 +100,7 @@ sub save {
 	if($new_settings){  
 
  		$self->_existence_check($new_settings); 	    
+
   		for my $setting(keys %$new_settings){ 
 
  		    my $sth_d = $self->{dbh}->prepare($d_query); 
@@ -140,7 +150,7 @@ sub save {
 				unless $self->{new_list}; 
 		}
 		
-		$self->{local_li} = undef; 
+		$self->{cached_settings} = undef; 
 		
 		require DADA::App::ScreenCache; 
 		my $c = DADA::App::ScreenCache->new; 

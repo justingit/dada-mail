@@ -24,7 +24,7 @@ DADA::MailingList::Settings::Db
 			}
 		); 
   
- my $list_info = $ls->get(); 
+ my $list_info = $ls->get; 
  
  $ls->save({key => 'value'});
 
@@ -100,7 +100,7 @@ sub new {
 
 =head2 get
 
- my $list_info = $ls->get();
+ my $list_info = $ls->get;
 
 returns a hasref of the list settings. Keys are the name of the setting, value is the 
 value of the setting.
@@ -202,7 +202,7 @@ sub save {
 		
 		$self->_close_db; 
 		
-		$self->{local_li} = undef; 
+		$self->{cached_settings} = undef; 
 		
 		$self->backupToDir;
 		

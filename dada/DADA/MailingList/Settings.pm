@@ -2,6 +2,9 @@ package DADA::MailingList::Settings;
 use strict;
 use lib qw(./ ../ ../../ ../../DADA ../perllib); 
 
+
+my $t = 0; 
+
 use Carp qw(croak carp); 
 
 my $type; 
@@ -40,19 +43,12 @@ sub _init  {
     if($args->{-new_list} == 1){ 
 	
 		$self->{name} = $args->{-list};
-		# $self->{local_li} = $self->get;
-		# warn 'in init: $args->{-list} ' . $args->{-list}; 	
 	}else{ 
 		
 		if($self->_list_name_check($args->{-list}) == 0) { 
     		croak('BAD List name "' . $args->{-list} . '" ' . $!);
 		}
-		else { 
-			#$self->{local_li} = $self->get; 
-		}		
-		
 	}
-
 }
 
 
@@ -96,6 +92,11 @@ sub post_process_get {
     my $li   = shift;
     my $args = shift;
 
+    if(! exists($args->{-all_settings})){ 
+        $args->{-all_settings} = 0; 
+    }
+   #  warn '$args->{-all_settings} ' . $args->{-all_settings}; 
+    
     carp "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! List "
       . $self->{function}
       . " db empty!  List setting DB Possibly corrupted!"
@@ -177,25 +178,32 @@ sub post_process_get {
             }
         }
 
-        my $html_settings          = $self->_html_settings;
-        my $email_message_settings = $self->_email_message_settings; 
+        if($args->{-all_settings} == 1) { 
+            my $start_time = time; 
+            my $html_settings          = $self->_html_settings;
+            my $email_message_settings = $self->_email_message_settings; 
         
-        for ( keys %DADA::Config::LIST_SETUP_DEFAULTS ) {
-            if ( !exists( $li->{$_} ) || length( $li->{$_} ) == 0 ) {
-                if(exists($email_message_settings->{$_})) { 
-                    $li->{$_} = $self->_fill_in_email_message_settings($_); 
-                }
-                elsif(exists($html_settings->{$_})) {
-                    $li->{$_} = $self->_fill_in_html_settings($_);                      
-                }
-                else { 
-                    $li->{$_} = $DADA::Config::LIST_SETUP_DEFAULTS{$_};
+            for ( keys %DADA::Config::LIST_SETUP_DEFAULTS ) {
+                if ( !exists( $li->{$_} ) || length( $li->{$_} ) == 0 ) {
+                    if(exists($email_message_settings->{$_})) { 
+                        $li->{$_} = $self->_fill_in_email_message_settings($_); 
+                    }
+                    elsif(exists($html_settings->{$_})) {
+                        $li->{$_} = $self->_fill_in_html_settings($_);                      
+                    }
+                    else { 
+                        $li->{$_} = $DADA::Config::LIST_SETUP_DEFAULTS{$_};
+                    }
                 }
             }
         }
-        
-        
-
+        else { 
+            for ( keys %DADA::Config::LIST_SETUP_DEFAULTS ) {
+                if ( !exists( $li->{$_} ) || length( $li->{$_} ) == 0 ) {
+                    $li->{$_} = $DADA::Config::LIST_SETUP_DEFAULTS{$_};               
+                }
+            }
+        }
 		# This says basically, make sure the list subscription quota is <= the global list sub quota. 
         $DADA::Config::SUBSCRIPTION_QUOTA ||= undef;
 
@@ -261,14 +269,14 @@ sub params {
 	
 	my $self = shift; 
 	
-	if(keys %{$self->{local_li}}){ 
+	if(keys %{$self->{cached_settings}}){ 
 		#... 
 	}
 	else { 
-		$self->{local_li} = $self->get; 
+		$self->{cached_settings} = $self->get; 
 	}
 	
-	return $self->{local_li};
+	return $self->{cached_settings};
 	
 }
 
@@ -284,46 +292,67 @@ sub param {
 		croak "You MUST pass a name as the first argument!"; 
 	}
 	
-	if(keys %{$self->{local_li}}){ 
-		#warn "$name is cached, using cached stuff." ;
-		#... 
-	}
-	else { 
-		#warn "$name is NOT cached, fetching new stuff" ;
-		$self->{local_li} = $self->get; 
+	if(!exists($DADA::Config::LIST_SETUP_DEFAULTS{$name})){ 
+		croak "Cannot call param() on unknown setting, '$name'"; 
 	}
 	
-	if(defined($value)){ 
-		
-		if(!exists($DADA::Config::LIST_SETUP_DEFAULTS{$name})){ 
-			croak "Cannot call param() on unknown setting, '$name'"; 
-		}
-		else { 
-			$self->save({$name => $value});
-			$self->{local_li} = {};
-			return $value; # or... what should I return?
-		}
+	
+	if(keys %{$self->{cached_settings}}){ 
+		warn "$name is cached, using cached stuff." if $t;  
+	}
+	else { 
+		warn "$name is NOT cached, fetching new stuff" if $t; 
+		$self->{cached_settings} = $self->get; 
+	}
+	
+	if(defined($value)){  
+		$self->save({$name => $value});
+		$self->{cached_settings} = {};
+		return $value; # or... what should I return?
 	}
 	else { 
 	
-		# Why wasn't this here before?
-		#
-		if(!exists($DADA::Config::LIST_SETUP_DEFAULTS{$name})){ 
-			croak "Cannot call param() on unknown setting, '$name'"; 
-		}
-	
-		if(exists($self->{local_li}->{$name})) { 
-			return $self->{local_li}->{$name};
+		if(exists($self->{cached_settings}->{$name}) && defined($self->{cached_settings}->{$name})) { 
+		    warn 'setting is cached and defined.' if $t; 
+			return $self->{cached_settings}->{$name};
 		}
 		elsif($self->_html_settings()->{$name}){ 
-			return $self->_fill_in_html_settings($name); 
+		    warn 'setting isa _html_settings. ' if $t; 
+		    
+            if($self->{cached_settings}->{_cached_all_settings} == 1) {
+                warn 'all settings are cached, but the saved value seems to be blank!' if $t;  
+                # Guess it's... blank. 
+                return ''; 
+		    }
+		    else { 
+		        warn 'removing cache' if $t; 
+                $self->{cached_settings} = {}; 
+                warn 'creating cache, with all vals' if $t;     
+                $self->{cached_settings} = $self->get(-all_settings => 1); 
+                warn 'setting that cache has all vals' if $t; 
+                $self->{_cached_all_settings} = 1; 
+                warn 'returning val for, ' . $name if $t; 
+                return $self->{cached_settings}->{$name}; 
+		    }
 		}
 		elsif($self->_email_message_setting($name)){ 
-			return $self->_fill_in_email_message_settings($name); 
+            if($self->{cached_settings}->{_cached_all_settings} == 1) {
+                # Guess it's... blank. 
+                return ''; 
+		    }
+		    else { 
+                $self->{cached_settings} = {}; 
+                $self->{cached_settings} = $self->get(-all_settings => 1); 
+                $self->{_cached_all_settings} = 1; 
+                return $self->{cached_settings}->{$name}; 
+		    }
 		}
-		else { 
+		elsif(! exists($self->{cached_settings}->{$name}) ) { 
 		    carp "Cannot fill in value for, '$name'";
 			return undef; 
+		}
+		else { 
+		    return ''; 
 		}
 	}
 }
@@ -453,21 +482,14 @@ sub _email_message_settings {
 
 sub _email_message_setting {
     my $self             = shift;
-    
-    my $name             = shift;
-    
-    
-    warn 'name: ' .  $name;
-    
+    my $name             = shift;    
     my $message_settings = $self->_email_message_settings();
     if ( exists( $message_settings->{$name} ) ) {
         # warn "it's there!"; 
         return 1;
     }
     else {
-        
-        # warn "it's not there!"; 
-               
+        # warn "it's not there!";      
         return 0;
     }
 }
@@ -534,6 +556,9 @@ sub _fill_in_email_message_settings {
         moderation_msg_subject                      => {-tmpl => 'moderation_msg.eml', -part => 'subject'},    
         moderation_msg                              => {-tmpl => 'moderation_msg.eml', -part => 'plaintext_body'},  
 
+        await_moderation_msg_subject                =>   {-tmpl => 'await_moderation_msg.eml', -part => 'subject'},    
+        await_moderation_msg                        =>   {-tmpl => 'await_moderation_msg.eml', -part => 'plaintext_body'},  
+        
         accept_msg_subject                          => {-tmpl => 'accept_msg.eml', -part => 'subject'},    
         accept_msg                                  => {-tmpl => 'accept_msg.eml', -part => 'plaintext_body'},    
 
@@ -718,20 +743,11 @@ sub _existence_check {
 
     my $self = shift; 
     my $li   = shift; 
-    
     for(keys %$li){ 
-        #next if $_ eq 'list';
-        
-        if(!exists($DADA::Config::LIST_SETUP_DEFAULTS{$_})){ 
-        
+        if(!exists($DADA::Config::LIST_SETUP_DEFAULTS{$_})){         
             croak("Attempt to save a unregistered setting - $_"); 
-        
         }
-           
     }
-
-
-
 }
 
 
