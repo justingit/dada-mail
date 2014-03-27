@@ -469,32 +469,6 @@ sub DESTROY {
 
 
 
-# Probably only need to convert this if I want to do a backup thingy.
-#sub get { 
-#	my $self = shift;
-#	return $self->{DB_HASH}; 
-#}
-
-
-
-# Probably only need to convert this if I want to do a backup thingy.
-#sub save { 
-#	my $self     = shift; 
-#	my $new_vals = shift; 
-#	
-#	$self->_close_db;
-#	
-#	# hack. fix later. 
-#	my %tmp; 
-#	chmod($DADA::Config::FILE_CHMOD , $self->_db_filename)
-#		if -e $self->_db_filename; 
-#	tie %tmp, "AnyDBM_File", $self->_db_filename,  O_RDWR|O_CREAT, $DADA::Config::FILE_CHMOD   
-#	or croak 'couldn\'t tie '. $self->_db_filename . ' for reading: ' . $! .  '; If your server recently upgraded software or moved your lists to a different server, you may need to restore your list ' . $self->{function} . '. Visit ' . 
-#			$DADA::Config::PROGRAM_URL . '?f=restore_lists '; 
-#	%tmp = %$new_vals; 
-#	untie %tmp; 
-#	$self->_open_db;
-#}
 
 
 1;
