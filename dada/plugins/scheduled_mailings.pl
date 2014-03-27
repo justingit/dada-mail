@@ -70,8 +70,8 @@ $Plugin_Config->{Manual_Run_Passcode} = undef;
 $Plugin_Config->{Plugin_Name} = 'Beatitude'; 
 
 my $mss; 
-my $list; 
-my $li; 
+my $list;
+my $ls;  
 my $Have_Log = 0; 
 my $yeah_root_login = 0; 
 
@@ -304,14 +304,10 @@ sub cgi_main {
     
           $list = $admin_list; 
           $yeah_root_login = $root_login; 
-    
+              
           require  DADA::MailingList::Settings; 
-          my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-             $li = $ls->get; 
-          
+          $ls = DADA::MailingList::Settings->new({-list => $list});           
                                       
-        
-        
         #---------------------------------------------------------------------#
         
         $mss = DADA::MailingList::Schedules->new({-list => $list}); 
@@ -401,7 +397,7 @@ sub default {
 
     $scrn .= admin_template_footer(
           -Form => 0,
-          -List => $li->{list},
+          -List => $ls->param('list'),
     );
     e_print($scrn);
 
@@ -454,7 +450,7 @@ sub edit  {
 	
 	$scrn .=  admin_template_header(
 						-Title      => "Scheduled Mailings - Edit",
-						-List       => $li->{list},
+						-List       => $ls->param('list'),
 						-Form       => 0,
 						-Root_Login => $yeah_root_login,
 						-vars => { 
@@ -483,7 +479,7 @@ $scrn .= '<div id="screentitle">
 
 	$scrn .=  $schedule_form; 
 	$scrn .=  admin_template_footer(-Form    => 0, 
-						    -List    => $li->{list},
+						    -List    => $ls->param('list'),
 						); 
 			
 	e_print($scrn); 
@@ -518,7 +514,7 @@ sub run_all_handler {
     my $scrn = '';
     $scrn .= admin_template_header(
         -Title      => "Manually Running Schedules",
-        -List       => $li->{list},
+        -List       => $ls->param('list'),
         -Form       => 0,
         -Root_Login => $yeah_root_login
       ); 
@@ -542,7 +538,7 @@ sub run_all_handler {
 
     $scrn .= admin_template_footer(
           -Form => 0,
-          -List => $li->{list},
+          -List => $ls->param('list'),
     );
     print $scrn;
 }
@@ -839,13 +835,13 @@ $f .= DADA::Template::Widgets::screen(
 		-screen                        => 'message_headers_fieldset_widget.tmpl', 
 		-vars                          => 
 			{ 
-				priority_popup_menu    => DADA::Template::Widgets::priority_popup_menu($li,    $form_vals{headers}->{'X-Priority'}),
+				priority_popup_menu    => DADA::Template::Widgets::priority_popup_menu($ls->get ,    $form_vals{headers}->{'X-Priority'}),
 				'Reply-To'             => $form_vals{headers}->{'Reply-To'}, 
 				'Errors-To'			   => $form_vals{headers}->{'Errors-To'},
 				'Return-Path'          => $form_vals{headers}->{'Return-Path'},
 				Subject                => $form_vals{headers}->{Subject}, 
 			},
-		-list_settings_vars       => $li, # Uh, ok - $li is global. That's stupid. 
+		-list_settings_vars       => $ls->get,
 		-list_settings_vars_param => 
 			{
 					-dot_it => 1, 
@@ -1508,7 +1504,7 @@ sub from_text_widget {
 					#%wysiwyg_vars,
 				},
 				-expr => 1, 
-				-list_settings_vars       => $li, # Uh, ok - $li is global. That's stupid. 
+				-list_settings_vars       => $ls->get,
 				-list_settings_vars_param => 
 					{
 							-dot_it => 1, 
@@ -1961,7 +1957,7 @@ my $r = DADA::Template::Widgets::screen(
 			-vars => { 
 				key => $key,
 			},
-			-list_settings_vars       => $li, # Uh, ok - $li is global. That's stupid. 
+			-list_settings_vars       => $ls->get,
 			-list_settings_vars_param => 
 				{
 						-dot_it => 1, 
