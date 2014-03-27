@@ -1,6 +1,28 @@
 =pod
 
-=head1 7.0.0 Alpha 1
+=head1 7.0.0 Beta 2
+
+=head2 Changes between Beta 1 and Beta 2
+
+=over
+
+=item * Unsubscription Link is no longer looked for, and placed in mass mailing messages, if you're running a Private List
+
+=item * Unsubscribers from mass mailing are now (again) logged
+
+=item * The time between batches is checked to make sure it's at least a second. If it's not, all sorts of things fail
+
+=item * The, "Not Allowed to Post" (admin) email message wasn't sent correctly, but rather the message destined for the original sender was sent instead. 
+
+=item * Old-Style Template tags using square brackets has been totally dropped. Use HTML::Template valid tags instead
+
+=item * List Settings code has been optimized, to NOT retrieve HTML and email messages saved in outside files, if they aren't needed
+
+=item * The Log Viewer plugin now can show the .mbox files created by the Bridge plugin. This file holds the messages received from the List Email account/alias
+
+=back
+
+=head1 7.0.0 Beta 1
 
 =head2 Features
 
