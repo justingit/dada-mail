@@ -201,6 +201,7 @@ sub self_url {
 }
 
 
+=pod
 
 =head1 Mailing Monitor Plugin
 
