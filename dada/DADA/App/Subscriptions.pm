@@ -59,8 +59,7 @@ sub _init { }
 
 sub token {
 
-    warn 'token'
-      if $t;
+    warn 'at, ' . ( caller(0) )[3] if $t;
 
     my $self = shift;
     my ($args) = @_;
@@ -163,7 +162,6 @@ sub token {
                 }
             );
         }
-
         else {
             return user_error(
                 {
@@ -285,7 +283,7 @@ sub subscribe {
 
     #/ !$list_exists
 
-    # Do a little Subscriber Profile Fields Work...
+    # Do a little Profile Fields Work...
     require DADA::MailingList::Subscribers;
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
@@ -296,7 +294,7 @@ sub subscribe {
         }
     }
 
-    #/ Do a little Subscriber Profile Fields Work...
+    #/ Do a little Profile Fields Work...
 
     # I really wish this was done, after we look and see if the confirmation
     # step is even needed, just so we don't have to do this, twice. It would
@@ -1499,8 +1497,7 @@ sub unsubscription_request {
 
 sub unsubscribe {
 
-    warn 'at, ' . ( caller(0) )[3]
-      if $t;
+    warn 'at, ' . ( caller(0) )[3] if $t;
 
     my $self = shift;
     my ($args) = @_;
@@ -1655,8 +1652,15 @@ sub _create_report_abuse_token {
 
 sub complete_unsubscription {
 
+    warn 'at, ' . ( caller(0) )[3] if $t;
+    
     my $self = shift;
     my ($args) = @_;
+
+    if($t == 1) { 
+        require Data::Dumper; 
+        warn 'passed args: ' . Data::Dumper::Dumper($args); 
+    }
 
     for ('-cgi_obj') {
         if ( !exists( $args->{$_} ) ) {
@@ -1704,7 +1708,6 @@ sub complete_unsubscription {
 
     # Hmm, so we're not subscribed?
     if ( $status == 0 ) {
-
         return user_error(
             {
                 -list  => $list,
@@ -1714,9 +1717,6 @@ sub complete_unsubscription {
                 -test  => $self->test,
             }
         );
-        return;
-
-        # Two returns?
     }
     else {
 
@@ -1788,76 +1788,74 @@ sub complete_unsubscription {
 
 		
         require DADA::Logging::Clickthrough;
-		
-		
         my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
-		
-		
         if ( $r->enabled ) {
-			
-        
 		    $r->unsubscribe_log(
                 {
                     -mid   => $mid,
                     -email => $email,
                 }
             );
-			
-        
 		}
 
 		
 		
         # We end things here, for private lists.
-        return if $ls->param('private_list') == 1;
+        if($ls->param('private_list') == 1) { 
+            warn 'private list: we\'re done!'; 
+            return;
+        }
+        else {    
+            # Public list?
+            require DADA::App::Subscriptions::ConfirmationTokens;
+            my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
+            $ct->remove_by_token( $q->param('token') );
 
-        # Public list?
-        require DADA::App::Subscriptions::ConfirmationTokens;
-        my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
-        $ct->remove_by_token( $q->param('token') );
+            my $r = {
+                flavor   => 'unsubscription',
+                status   => 1,
+                list     => $list,
+                email    => $email,
+                redirect => {
+                    using            => $ls->param('use_alt_url_unsub_success'),
+                    using_with_query => $ls->param('alt_url_unsub_success_w_qs'),
+                    url              => $ls->param('alt_url_unsub_success'),
+                    query            => 'list=' . uriescape($list) . '&rm=unsub&status=1&email=' . uriescape($email),
+                }
+            };
 
-        my $r = {
-            flavor   => 'unsubscription',
-            status   => 1,
-            list     => $list,
-            email    => $email,
-            redirect => {
-                using            => $ls->param('use_alt_url_unsub_success'),
-                using_with_query => $ls->param('alt_url_unsub_success_w_qs'),
-                url              => $ls->param('alt_url_unsub_success'),
-                query            => 'list=' . uriescape($list) . '&rm=unsub&status=1&email=' . uriescape($email),
-            }
-        };
-
-        if ( $args->{-html_output} == 1 ) {
-            if ( $ls->param('use_alt_url_unsub_success') == 1 ) {
-                my $rd = $self->alt_redirect($r);
-                $self->test ? return $rd : print $fh safely_encode($rd) and return;
+            if ( $args->{-html_output} == 1 ) {
+                if ( $ls->param('use_alt_url_unsub_success') == 1 ) {
+                    my $rd = $self->alt_redirect($r);
+                    $self->test ? return $rd : print $fh safely_encode($rd) and return;
+                }
+                else {
+                    my $s = $ls->param('html_unsubscribed_message');
+                    require DADA::Template::Widgets;
+                    my $return = DADA::Template::Widgets::wrap_screen(
+                        {
+                            -data                     => \$s,
+                            -with                     => 'list',
+                            -list_settings_vars_param => { -list => $ls->param('list') },
+                            -dada_pseudo_tag_filter   => 1,
+                            -subscriber_vars          => { 'subscriber.email' => $email },
+                        }
+                    );
+                    $self->test ? return $return : print $fh safely_encode($return) and return;
+                }
             }
             else {
-                my $s = $ls->param('html_unsubscribed_message');
-                require DADA::Template::Widgets;
-                my $return = DADA::Template::Widgets::wrap_screen(
-                    {
-                        -data                     => \$s,
-                        -with                     => 'list',
-                        -list_settings_vars_param => { -list => $ls->param('list') },
-                        -dada_pseudo_tag_filter   => 1,
-                        -subscriber_vars          => { 'subscriber.email' => $email },
-                    }
-                );
-                $self->test ? return $return : print $fh safely_encode($return) and return;
+                # Else, I dunno! There's no, -html_output argument, here!";
             }
         }
-        else {
-            # Else, I dunno! There's no, -html_output argument, here!";
-        }
     }
-
 }
 
 sub pl_unsubscription_request {
-
+    
+    # pl == private list
+    #
+    
     warn 'at, ' . (caller(0))[3] 
         if $t; 
     
@@ -1944,6 +1942,7 @@ sub pl_unsubscription_request {
                 -data  => {
                     list        => $list,
                     type        => 'list',
+                    mid         => $mid, 
                     flavor      => 'unsub_request_approve',
                     remote_addr => $ENV{REMOTE_ADDR},
                 },
@@ -1957,6 +1956,7 @@ sub pl_unsubscription_request {
                 -data  => {
                     list        => $list,
                     type        => 'list',
+                    mid         => $mid, 
                     flavor      => 'unsub_request_deny',
                     remote_addr => $ENV{REMOTE_ADDR},
                 },
@@ -2032,9 +2032,19 @@ sub pl_unsubscription_request {
 
 sub complete_pl_unsubscription_request {
 
+    # pl == private list 
+    #
+    
+    warn 'at, ' . ( caller(0) )[3] if $t;
+    
     my $self = shift;
     my ($args) = @_;
 
+    if($t == 1) { 
+        require Data::Dumper; 
+        warn 'passed args: ' . Data::Dumper::Dumper($args); 
+    }
+    
     if ( !$args->{-cgi_obj} ) {
         croak 'Error: No CGI Object passed in the -cgi_obj parameter.';
     }
@@ -2071,7 +2081,11 @@ sub complete_pl_unsubscription_request {
     }
 
     my $data = $ct->fetch($token);
-
+    if($t == 1){ 
+        require Data::Dumper; 
+        warn 'Token data: ' . Data::Dumper::Dumper($data); 
+    }
+    
     # not sure how you got here, but, whatever:
     if (   $data->{data}->{flavor} ne 'unsub_request_approve'
         && $data->{data}->{flavor} ne 'unsub_request_deny' )
@@ -2084,24 +2098,20 @@ sub complete_pl_unsubscription_request {
         );
     }
 
-    my $email  = $data->{email};
-    my $list   = $data->{data}->{list};
-    my $flavor = $data->{data}->{flavor};
-    my $mid    = $data->{data}->{mid};
     # And then, is never used?
-    my $list_exists = DADA::App::Guts::check_if_list_exists( -List => $list );
+    my $list_exists = DADA::App::Guts::check_if_list_exists( -List => $data->{data}->{list} );
 
     require DADA::MailingList::Settings;
     require DADA::MailingList::Subscribers;
     require DADA::App::Subscriptions::ConfirmationTokens;
 
     my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
-    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+    my $ls = DADA::MailingList::Settings->new( { -list => $data->{data}->{list} } );
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $data->{data}->{list} } );
 
     if (
         $lh->check_for_double_email(
-            -Email => $email,
+            -Email => $data->{email},
             -Type  => 'unsub_request_list'
         ) == 0
       )
@@ -2118,49 +2128,54 @@ sub complete_pl_unsubscription_request {
         # this is done by remove_subscriber
         #
         # $ct->remove_by_token($token);
-        if ( $flavor eq 'unsub_request_approve' ) {
+        if ( $data->{data}->{flavor} eq 'unsub_request_approve' ) {
             
-            $args->{-list}     = $list;             
-            $args->{-email}    = $email;
-            $args->{-mid}      = $mid; 
+            warn 'request approved.'; 
             
+            $args->{-list}     = $data->{data}->{list};             
+            $args->{-email}    = $data->{email};
+            $args->{-mid}      = $data->{data}->{mid}; 
+            
+            warn 'complete_unsubscription' if $t; 
             $self->complete_unsubscription($args);
             
             $lh->remove_subscriber(
                 {
-                    -email => $email,
+                    -email => $data->{email},
                     -type  => 'unsub_request_list',
                 }
             );
 
             my $count = 1;
 
+            warn 'send_unsubscription_request_approved_message'; 
             require DADA::App::Messages;
             DADA::App::Messages::send_unsubscription_request_approved_message(
                 {
-                    -list   => $list,
-                    -email  => $email,
+                    -list   => $data->{data}->{list},
+                    -email  => $data->{email},
                     -ls_obj => $ls,
 
                     #-test   => $self->test,
                 }
             );
-
+            
+            warn 'showing unsubscription_request_results.tmpl' if $t; 
             require DADA::Template::Widgets;
             my $r = DADA::Template::Widgets::wrap_screen(
                 {
                     -screen                   => 'unsubscription_request_results.tmpl',
                     -with                     => 'list',
-                    -list_settings_vars_param => { -list => $list, },
+                    -list_settings_vars_param => { -list => $data->{data}->{list}, },
                     -subscriber_vars_param    => {
-                        -list  => $list,
-                        -email => $email,
+                        -list  => $data->{data}->{list},
+                        -email => $data->{email},
                         -type  => 'list'
                     },
                     -dada_pseudo_tag_filter => 1,
                     -vars                   => {
-                        email            => $email,
-                        subscriber_email => $email,
+                        email            => $data->{email},
+                        subscriber_email => $data->{email},
                         approved         => 1,
                     },
 
@@ -2169,19 +2184,19 @@ sub complete_pl_unsubscription_request {
             $self->test ? return $r : print $fh safely_encode($r) and return;
 
         }
-        elsif ( $flavor eq 'unsub_request_deny' ) {
+        elsif ( $data->{data}->{flavor} eq 'unsub_request_deny' ) {
 
             $lh->remove_subscriber(
                 {
-                    -email => $email,
+                    -email => $data->{email},
                     -type  => 'unsub_request_list',
                 }
             );
             require DADA::App::Messages;
             DADA::App::Messages::send_unsubscription_request_denied_message(
                 {
-                    -list   => $list,
-                    -email  => $email,
+                    -list   => $data->{data}->{list},
+                    -email  => $data->{email},
                     -ls_obj => $ls,
 
                     #-test   => $self->test,
@@ -2193,16 +2208,16 @@ sub complete_pl_unsubscription_request {
                 {
                     -screen                   => 'unsubscription_request_results.tmpl',
                     -with                     => 'list',
-                    -list_settings_vars_param => { -list => $list, },
+                    -list_settings_vars_param => { -list => $data->{data}->{list}, },
                     -subscriber_vars_param    => {
-                        -list  => $list,
-                        -email => $email,
+                        -list  => $data->{data}->{list},
+                        -email => $data->{email},
                         -type  => 'list'
                     },
                     -dada_pseudo_tag_filter => 1,
                     -vars                   => {
-                        email            => $email,
-                        subscriber_email => $email,
+                        email            => $data->{email},
+                        subscriber_email => $data->{email},
                         approved         => 0,
                     },
 
