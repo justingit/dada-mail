@@ -48,7 +48,7 @@ my $ls = DADA::MailingList::Create(
 
 #my $ls = DADA::MailingList::Settings->new({-list => $list});
 
-my $li = $ls->get();
+my $li = $ls->get;
 
 use Data::Dumper; 
 use Encode;
@@ -71,7 +71,7 @@ $ls->save( { list_name => "New List Name" } );
 
 undef $li;
 
-$li = $ls->get();
+$li = $ls->get;
 
 ok( $li->{list_name} eq 'New List Name', "New List Name was saved." );
 ok(
@@ -124,18 +124,19 @@ my $lsd_pass = 'sneaky';
 
 for my $setting (@password_settings) {
 
+    
     # for now, we'll just make sure that's clear out:
     $ls->save( { $setting => undef } );
+    
     $DADA::Config::LIST_SETUP_DEFAULTS{$setting} = $lsd_pass;
 
-    ok( $DADA::Config::LIST_SETUP_DEFAULTS{$setting} eq $lsd_pass );
+    ok( $DADA::Config::LIST_SETUP_DEFAULTS{$setting} eq $lsd_pass, 'setting: ' . $setting . ' = ' . $lsd_pass);
 
     # and then, see if it gets returned, automatically:
 
     $li = $ls->get;
-
+        
     ok(
-
         (
             DADA::Security::Password::cipher_decrypt(
                 $li->{cipher_key}, $li->{$setting}
@@ -262,6 +263,55 @@ $ls->save_w_params(
 }
 );
 ok($ls->param('list_name') eq 'list name from param'); 
+
+
+
+foreach my $html_setting(keys %{$ls->_html_settings}){ 
+    $li = $ls->get(-all_settings => 0);
+    ok(! defined($li->{$html_setting}), $html_setting . ' is not defined - that\'s OK');
+    #diag $li->{$html_setting}; 
+}
+foreach my $html_setting(keys %{$ls->_html_settings}){ 
+    $li = $ls->get(-all_settings => 1);
+    ok(defined($li->{$html_setting}), $html_setting . ' is defined - weve explicitly asked for it');
+}
+undef($ls); 
+my $ls = DADA::MailingList::Settings->new({-list => $list});
+foreach my $html_setting(keys %{$ls->_html_settings}){ 
+    ok(defined($ls->param($html_setting)), $html_setting . ' is defined');  
+}
+
+
+
+undef($ls); 
+my $ls = DADA::MailingList::Settings->new({-list => $list});
+foreach my $html_setting(keys %{$ls->_email_message_settings}){ 
+    $li = $ls->get(-all_settings => 0);
+    ok(! defined($li->{$html_setting}), $html_setting . ' is not defined - that\'s OK');
+    #diag $li->{$html_setting}; 
+}
+foreach my $html_setting(keys %{$ls->_email_message_settings}){ 
+    $li = $ls->get(-all_settings => 1);
+    ok(defined($li->{$html_setting}), $html_setting . ' is defined - weve explicitly asked for it');
+}
+undef($ls); 
+my $ls = DADA::MailingList::Settings->new({-list => $list});
+foreach my $html_setting(keys %{$ls->_email_message_settings}){ 
+    ok(defined($ls->param($html_setting)), $html_setting . ' is defined');  
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
