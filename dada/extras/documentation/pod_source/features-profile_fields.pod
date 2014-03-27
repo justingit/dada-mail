@@ -1,0 +1,127 @@
+=pod
+
+=head1 Profile Fields
+
+Profile Fields are additional data that's associated with the email address of a Subscriber. These fields can generally hold anything you'd like, and can be used to search through a subscription list, to create dynamic email messages (mail merging), and to be utilized when you only want to send to just part of a mailing list (partial sending).
+
+Profile Fields can be edited individually or enmass in the list control panel, or by the addressee themselves, when logged into their own Profile.
+
+=head2 Profile Fields are Shared Between Mailing Lists. 
+
+One important general concept to understand is that Profile Field data is shared between mailing lists. 
+
+If you create a new field called, C<first_name> all your mailing lists will have this field, and any data associated with an address will show up for any mailing list that this address is a member of. 
+
+Likewise, if you edit the Profile Field data, this new information will be reflected in all mailing lists. 
+
+=head2 Adding a New Profile Field
+
+Log into the list control panel B<with the Dada Mail Root Password> (very important) to any currently created mailing list. On the left hand menu, under, B<Profiles>, click, B<Profile Fields>
+
+This screen will allow you to add/remove Profile Fields. This screen will also let you set a fallback value. The fallback value is used in mail merging and is used as the value fo the field tag when no value is present. You may also set if the Profile Field is required or optional.
+
+Remember that profile fields are shared: removing any Profile Fields will permanently delete all data in all mailing lists. 
+
+=head2 Mail Merging
+
+Mail Merging in Dada Mail in mailing list messages using  Profile Fields is done using template tags. 
+
+For example, say you have a field named, C<first_name>. To use the value of the saved field in an email message, you'd write the field as a tag, like this: 
+
+    <!-- tmpl_var subscriber.first_name -->
+    
+Here's how you'd use it, when placing this tag in part of a message: 
+
+ Hello, <!-- tmpl_var subscriber.first_name -->
+ 
+      It's really nice to talk to you!
+      
+  -- Me.
+
+=head3 More Information: 
+
+For more information, see the docs on B<The Dada Mail Email Template Syntax>: 
+L<http://dadamailproject.com/d/features-email_template_syntax.pod.html>
+
+=head2 Partial List Sending
+
+You can search you Subscribers and send a mass mailing to part of this mailing list. For example, if you have a field named, C<city>, you can tell Dada Mail, "only send to people whose C<city>  value is set to, B<Denver>.  
+
+This can be done in the, B<Send a Message> and, B<Send a Webpage> screens. Click the, B<Partial Mailing List Sending> tab. This tab is located below where you author your mailing list message. 
+
+You'll be presented with a form that allows you to make simple queries and give you the option to preview  who's going to receive the message. This form also allows you to search for subscribers between two subscription dates. 
+
+Unlike profile data, this information is tied to individual subscriptions to each mailing list. 
+
+=head2 Subscriptions
+
+Dada Mail's mailing list subscription form allows visitors to your site to enter their email address, as well as Profile Fields. 
+
+All Profile Fields will be shown, except (by default), Profile Fields that are prefixed with an underscore ("_"). For example, the field, 
+
+ first_name
+
+Will be shown! The field, 
+
+ _secret_field
+
+Will not. Consult the Config.pm file for how to set the special prefix. 
+
+Profile Fields can be marked as, B<Required>. 
+
+You may acquire the HTML code needed to embed the subscription form in a webpage in the usual location: Under B<Appearance and Templates >, click on, B<Subscription Form HTML>. 
+
+=head2 Importing Subscribers
+
+You may mass-import Subscribers to your mailing lists in the list control panel, under: B<Membership - Add/Invite/Subscribe>. Make sure you've I<enabled> mass-import in B<Your Mailing List - Options>, under: 
+
+B<Advanced Options - Subscriptions> Check, B< Allow Subscriptions in the List Control Panel, Without Confirmation> and optionally, B<Only Allow when logged in with the Pro Dada Root Password>
+
+Dada Mail accepts importing subscribers via a C<.csv> file - something a spreadsheet app should be able to export for you, easily. The column order will be shown to you, at the top of this screen. 
+
+=head2 Editing Individual Address's Profile Data
+
+You can edit an individual's address data in the list control. Under, B<Your Subscribers>, click on, B<View>. 
+
+You'll be presented with a table of your subscribers Clicking on the email address of the subscriber will bring you to a screen for this particular subscriber. Click the, B<Profile> tab to view/edit Profile data. 
+
+
+=head1 See Also
+
+=head2 Technical Documentation 
+
+=head3 Subscriber Backend
+
+=head4 DADA::MailingList::Subscribers
+
+L<http://dadamailproject.com/support/documentation/MailingList_Subscribers.pm.html>
+
+=head3 Profiles 
+
+=head4 Dada::Profile
+
+L<http://dadamailproject.com/support/documentation/Profile.pm.html>
+
+=head4 DADA::Profile::Fields
+
+L<http://dadamailproject.com/support/documentation/Profile_Fields.pm.html>
+
+=head4 DADA::Profile::Session
+
+L<http://dadamailproject.com/support/documentation/Profile_Session.pm.html>
+
+=head4 DADA::ProfileFieldsManager
+
+L<http://dadamailproject.com/support/documentation/ProfileFieldsManager.pm.html>
+
+=head3 Templating System
+
+The HTML Screen and Email Template parts of Dada Mail all use the same system. See: 
+
+L<http://dadamailproject.com/support/documentation/Template_Widgets.pm.html#screen>
+
+And also: 
+
+L<http://dadamailproject.com/support/documentation/App_FormatMessages.pm.html#email_template>
+
+=cut

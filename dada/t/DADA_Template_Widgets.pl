@@ -193,7 +193,7 @@ undef($d);
 #  
 #  <!--/tmpl_loop-->
 # 
-# and this will loop over your Subscriber Profile Fields. 
+# and this will loop over your Profile Fields. 
 
 $d = q{ 
 
@@ -226,7 +226,7 @@ undef($r);
 undef($d);
 
 
-# If you'd like, you can also pass the Subscriber Profile Fields information yourself - this may be useful if
+# If you'd like, you can also pass the Profile Fields information yourself - this may be useful if
 # you're in some sort of recursive subroutine, or if you already have the information on hand. You may
 # do so by passing the, C<-subscriber_vars> parameter, I<instead> of the C<-subscriber_vars_param>
 # parameter, like so: 
@@ -525,7 +525,7 @@ like($r, qr/Dear/);
 
 SKIP: {
 
-		    skip "Multiple Subscriber Profile Fields is not supported with this current backend." 
+		    skip "Multiple Profile Fields is not supported with this current backend." 
 		        if $lh->can_have_subscriber_fields == 0; 
 
 			require DADA::ProfileFieldsManager;

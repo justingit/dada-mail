@@ -30,7 +30,7 @@ B<email> holds the email address you would like the subscription for
 
 =item * fields
 
-B<Optional>: B<fields> holds the Subscriber Profile Fields you would like to pass. 
+B<Optional>: B<fields> holds the Profile Fields you would like to pass. 
 
 =back
 
@@ -41,7 +41,7 @@ Here's an example of data in JSON to subscribe, B<user@example.com> to a list, B
 	   "list" : "mylist"
 	}
 
-Here's an example, with two Subscriber Profile Fields, C<first_name> and C<last_name>: 
+Here's an example, with two Profile Fields, C<first_name> and C<last_name>: 
 
 	{
 	   "email" : "user@example.com",

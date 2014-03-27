@@ -576,7 +576,7 @@ sub validate_remove_field_name {
         $errors->{number_of_fields_limit_reached} = 1;
         if ( $args->{ -die_for_me } == 1 ) {
             croak
-'You\ve reached the limit of how many Subscriber Profile Fields are supported! (100)';
+'You\ve reached the limit of how many Profile Fields are supported! (100)';
         }
     }
     else {

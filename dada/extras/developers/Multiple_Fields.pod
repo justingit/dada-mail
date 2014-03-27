@@ -2,7 +2,7 @@
 
 =head1 History of the document
 
-This document served as the blue print for the Arbitrary Subscriber Profile Fields feature. 
+This document served as the blue print for the Arbitrary Profile Fields feature. 
 
 
 It is currently outdated, but is still in the documentation for B<historical purposes>. Do not use it as a guide 
@@ -25,7 +25,7 @@ This isn't to say there will B<never> be a PlainText backend for subscribers aga
 
 Because of this, the many limitations that the PlainText backend currently has (ahem: no multiple fields for one!) won't have to be addressed by limiting what can happen with the SQL backend. Currently, the features of each backend, PlainText, MySQL and Postgres are essentially the same. 
 
-=head2 SQL representation of Subscriber Profile Fields
+=head2 SQL representation of Profile Fields
 
 I propose that there be two tables associated with the subscription backend, one table holding the basic information about the subscriber, the second holding the various user-defined fields for each subscriber. 
 

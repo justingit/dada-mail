@@ -131,7 +131,7 @@ sub create_test_list {
 	); 
    
     if($args{-remove_subscriber_fields} == 1){ 
-        #carp 'Removing extraneous Subscriber Profile Fields....'; 
+        #carp 'Removing extraneous Profile Fields....'; 
         require DADA::MailingList::Subscribers; 
         my $lh = DADA::MailingList::Subscribers->new({-list => $list_name}); 
         my $fields = $lh->subscriber_fields;

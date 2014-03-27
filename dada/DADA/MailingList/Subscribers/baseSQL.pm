@@ -326,7 +326,7 @@ sub SQL_subscriber_profile_join_statement {
         $query = 'SELECT ';
     }
 
-    # This is to select which Subscriber Profile Fields to return with our query
+    # This is to select which Profile Fields to return with our query
     my @merge_fields = (); 
     if($args->{-select_fields}->{'subscriber.timestamp'} == 1 || $args->{-select_fields}->{':all'} == 1){ 
         push(@merge_fields, $subscriber_table . '.timestamp');

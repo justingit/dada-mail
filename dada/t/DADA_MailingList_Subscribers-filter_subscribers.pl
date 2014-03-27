@@ -130,7 +130,7 @@ for my $blacklist_this ( 'user@', '@example.com', 'user@example.com' ) {
 SKIP: {
 
     skip
-"Multiple Subscriber Profile Fields is not supported with this current backend."
+"Multiple Profile Fields is not supported with this current backend."
       if $lh->can_have_subscriber_fields == 0;
 
 

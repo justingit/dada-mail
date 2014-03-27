@@ -147,7 +147,7 @@ $sl = $lh->subscription_list(
 ok(scalar @$sl == 1, "OK! We have ONE subscriber, unique to this one list"); 
 undef $sl;
 
-# Time for some Subscriber Profile Fields, I guess: 
+# Time for some Profile Fields, I guess: 
 require DADA::Profile::Fields;
 my $pf = DADA::Profile::Fields->new; 
 $pf->{manager}->add_field(

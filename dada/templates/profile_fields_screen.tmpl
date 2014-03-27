@@ -158,8 +158,8 @@
     
 	<div class="clearskiesbox">
 	<p>
-	 Subscriber Profile Fields are Global and will affect all Mailing Lists. 
-	 You may only change the Subscriber Profile Fields if you are logged in with the <!-- tmpl_var PROGRAM_NAME --> 
+	 Profile Fields are Global and will affect all Mailing Lists. 
+	 You may only change the Profile Fields if you are logged in with the <!-- tmpl_var PROGRAM_NAME --> 
 	  Root Password.
 	</p>
 	</div> 
@@ -169,7 +169,7 @@
   <!-- tmpl_unless edit_field -->   
 
 	<fieldset> 
-		<legend>Subscriber Profile Fields</legend>
+		<legend>Profile Fields</legend>
 		
     <!-- tmpl_if fields --> 
 
@@ -332,7 +332,7 @@
     <!-- tmpl_else --> 
     
     <p class="error"> 
-     Currently, there are no Subscriber Profile Fields.
+     Currently, there are no Profile Fields.
     </p>
     
     
@@ -473,7 +473,7 @@
     
     
         <p class="error"> 
-         Your current subscription backend does not support Subscriber Profile Fields. You will need to use the MySQL, PostgreSQL or SQLite backend.  
+         Your current subscription backend does not support Profile Fields. You will need to use the MySQL, PostgreSQL or SQLite backend.  
         </p> 
 
 <!-- /tmpl_if --> 

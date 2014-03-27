@@ -132,7 +132,7 @@ A Profile in Dada Mail holds meta information about an email address, which may 
 
 =head2 DADA:Profile::Fields
 
-Dada Mail Subscriber Profile Fields, once called, "Subscriber Profile Fields" holds free-form information tied to a Profile. This information can be anything that's been set by the list owners - things like, Name, Age, City, State - whatever information a list owner may want to capture, other than the email address, when an email address is subscribed to a list. 
+Dada Mail Profile Fields, once called, "Profile Fields" holds free-form information tied to a Profile. This information can be anything that's been set by the list owners - things like, Name, Age, City, State - whatever information a list owner may want to capture, other than the email address, when an email address is subscribed to a list. 
 
 =head2 DADA::Profile::Session 
 
@@ -140,7 +140,7 @@ C<DADA::Profile::Session> is a wrapper (basically) around C<CGI::Session> and ha
 
 =head1 DADA::ProfileFieldsManager
 
-C<DADA::ProfileFieldsManager> is the API to change the design of the Subscriber Profile Fields that Dada Mail can manage. As well as the fields themselves, it also provides the API for the meta information about the various fields. This meta information is currently very bare-bones, but may be developed further, in the future. 
+C<DADA::ProfileFieldsManager> is the API to change the design of the Profile Fields that Dada Mail can manage. As well as the fields themselves, it also provides the API for the meta information about the various fields. This meta information is currently very bare-bones, but may be developed further, in the future. 
 
 =head1 DADA::Template
 

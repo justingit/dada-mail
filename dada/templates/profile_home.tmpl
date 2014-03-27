@@ -136,7 +136,7 @@ function confirm_profile_removal(form_name) {
 		<fieldset> 
 	
 		<legend>
-			Subscriber Profile Fields
+			Profile Fields
 		</legend> 
 			<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="membership_profile_fields"> 
 				<input type="hidden" name="f"        value="profile" /> 
@@ -203,15 +203,28 @@ function confirm_profile_removal(form_name) {
 				</a>
 			</h2>
 	
-	
-		<div style="max-height: 200px; overflow: auto;background:#fff; padding:5px;border:1px solid black">
-			<p>
-				<!-- tmpl_var list_settings.info -->
-		</p>
-	</div> 
-
+	    <blockquote> 
+    		<p>
+    			<!-- tmpl_var list_settings.info -->
+    		</p>
+        </blockquote> 
 
 	<ul> 
+	    <!-- tmpl_if list_settings.private_list --> 
+	        <li> 
+	            <p>
+	                Private Mailing List
+	            </p>
+	        </li>
+	    <!-- tmpl_else --> 
+        <li> 
+            <p>
+                Public Mailing List
+            </p>
+        </li>
+	
+	    <!-- /tmpl_if --> 
+	    
 	    <!-- tmpl_if list_settings.group_list --> 
 			<li>
 				<p>Discussion List</p> 
@@ -249,10 +262,14 @@ function confirm_profile_removal(form_name) {
 	</li>
 	<li>
 		<p>
-		<a href="<!-- tmpl_var list_unsubscribe_link -->">
-			Unsubscribe from this list
-		</a>
-	</p>
+    		<a href="<!-- tmpl_var list_unsubscribe_link -->">
+                <!-- tmpl_if list_settings.private_list -->
+  			        Request to be removed from <!-- tmpl_var list_settings.list_name -->                  
+                <!-- tmpl_else --> 
+    			    Unsubscribe from <!-- tmpl_var list_settings.list_name -->
+    		    <!-- /tmpl_if -->
+    		</a>
+	    </p>
 </li>	
 </ul>
 

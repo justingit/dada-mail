@@ -6,7 +6,7 @@
 
 By default, Dada Mail does not use an SQL backend, but rather uses a simpler method of using a PlainText file for your mailing list subscribers (the format is one email per line) and using what's called, B<dbm> files for everything else: list settings, archives, schedules, etc. Most likely, you're using the B<Berekeley DB File> format. 
 
-Although easier to set up, the Default backend for Dada Mail does not have as many features as the B<SQL> backend alternative. These include Subscriber Profile Fields, Partial Mailing List Sending, Multiple Mailing List Sending and some other neat things. For this reason, we highly suggest to set up Dada Mail using the SQL backend, using either B<MySQL> or B<PostgreSQL>
+Although easier to set up, the Default backend for Dada Mail does not have as many features as the B<SQL> backend alternative. These include Profile Fields, Partial Mailing List Sending, Multiple Mailing List Sending and some other neat things. For this reason, we highly suggest to set up Dada Mail using the SQL backend, using either B<MySQL> or B<PostgreSQL>
 
 =head1 A Contempory Installation
 

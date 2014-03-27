@@ -115,7 +115,7 @@ A C<DADA::ProfileFieldsManager> object will be returned.
 
  my $fields = $pfm->fields; 
 
-C<fields> returns an array ref of the names of the columns that represent the Subscriber Profile Fields currently created. 
+C<fields> returns an array ref of the names of the columns that represent the Profile Fields currently created. 
 
 C<fields> returns the fields in the order they are usually stored in the SQL table. 
 
@@ -141,7 +141,7 @@ Not passing a name for your field in the C<-field> parameter will cause the an u
 
 C<-fallback_value> is an optional parameter, it's a more free form value, used when the profile does not have a value for this profile field. This is usually used in templating
 
-C<-label> is an optional parameter and is used in forms that capture Subscriber Profile Fields information as a, "friendlier" version of the field name. 
+C<-label> is an optional parameter and is used in forms that capture Profile Fields information as a, "friendlier" version of the field name. 
 
 This method will return C<undef> if there's a problem with the parameters passed. See also the, C<validate_subscriber_field_name()> method. 
 
@@ -196,7 +196,7 @@ C<-field> must exist, or the method will croak.
 	}
  );
 
-C<change_field_order> is used to change the ordering of the Subscriber Profile Fields. Subscriber Profile Fields
+C<change_field_order> is used to change the ordering of the Profile Fields. Profile Fields
 are usually in the order as they are stored in the SQL table and this method actually changes that 
 order itself. 
 

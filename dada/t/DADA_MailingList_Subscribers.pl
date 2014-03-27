@@ -363,7 +363,7 @@ ok(
 SKIP: {
 
     skip
-"Multiple Subscriber Profile Fields is not supported with this current backend."
+"Multiple Profile Fields is not supported with this current backend."
       if $lh->can_have_subscriber_fields == 0;
 
     ok( eq_array( $lh->subscriber_fields, [] ),
@@ -634,7 +634,7 @@ SKIP: {
 
     ###
 
-    #### copy_subscriber w/Subscriber Profile Fields
+    #### copy_subscriber w/Profile Fields
     # the idea is that the subscriber field information
     # should be copied over correctly as well.
 
@@ -1549,7 +1549,7 @@ undef $i;
 SKIP: {
 
     skip
-"Multiple Subscriber Profile Fields is not supported with this current backend."
+"Multiple Profile Fields is not supported with this current backend."
       if $lh->can_have_subscriber_fields == 0;
 
     for (qw(1 2)) {
@@ -2076,7 +2076,7 @@ ok($lh->remove_all_subscribers( { -type => 'list' } ) == 1000);
 SKIP: {
 
     skip
-"Multiple Subscriber Profile Fields is not supported with this current backend."
+"Multiple Profile Fields is not supported with this current backend."
       if $lh->can_have_subscriber_fields == 0;
       
       
