@@ -458,7 +458,6 @@ Saying that, Dada Mail is completely compatible with this methodology. In Dada M
 
 =back
 
-
 =head1 Errors
 
 Running the Program Generates a 500 Server Error Message when I do, "x"
@@ -588,6 +587,8 @@ Dada Mail will actually look for any of the template that are located in the def
 in whichever directory you set the B<$TEMPLATES> Config.pm variable to. If you did not set this variable, it defaults to whatever you set the $FILES variable to. Making changes to this copy will override the copy in the dada/templates location. 
 
 The above information is valid for any of the templates located in the dada/templates directory. 
+
+=back
 
 =back
 
