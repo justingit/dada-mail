@@ -724,7 +724,7 @@ sub filter_subscribers_w_meta {
     for my $n_address(@{$info}){ 
 
         if(exists($dupe_check->{$n_address->{email}})){
-            carp "already looked at: '"  . $dupe_check->{$n_address->{email}} . "' - will not process twice!"; 
+            carp "already looked at: '"  . $n_address->{email} . "' - will not process twice!"; 
         }
         $dupe_check->{$n_address->{email}} = 1; 
 
