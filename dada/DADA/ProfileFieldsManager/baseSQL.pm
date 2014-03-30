@@ -336,6 +336,17 @@ sub remove_field {
 
 }
 
+
+sub remove_all_fields { 
+    my $self = shift; 
+    my $count = 0; 
+    foreach(@{$self->fields}) { 
+        $self->remove_field({ -field => $_},); 
+        $count++; 
+    }
+    return $count; 
+}
+
 sub get_all_field_attributes {
 
     my $self = shift;
