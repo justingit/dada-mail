@@ -5293,7 +5293,7 @@ sub add_email {
         my $new_info   = [];
 
         if($ls->param('use_add_list_import_limit') == 1) { 
-            my $num_file_lines = DADA::App::Guts::num_file_lines(make_safer( $DADA::Config::TMP . '/' . $new_emails_fn)); 
+            my $num_file_lines = DADA::App::Guts::num_file_lines($new_emails_fn); 
             if($num_file_lines > $ls->param('add_list_import_limit')){ 
                 my $error = 'over_add_list_import_limit';
                 require DADA::Template::Widgets;
