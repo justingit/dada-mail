@@ -641,6 +641,12 @@ sub generic_delivery_status_parse {
 	}
     $email = $remail;
 
+    #
+	# Or, use Email::Address
+	if($email =~ m/(.*?)\<(.*?)\>/) { 
+		$email = $2; 
+	}
+
     for ( keys %$diag ) {
         $diag->{$_} = strip( $diag->{$_} );
     }
