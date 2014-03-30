@@ -896,8 +896,15 @@ sub available_lists {
 
 sub num_file_lines { 
     my $filename = shift; 
+
+    $filename = uriescape($filename);
+    $filename =~ s/\s/%20/g;
+
+
     my $count = 0;
-    open my($fh), '<:raw', $filename or die "Can't open $filename: $!";
+
+
+    open my($fh), '<:raw', make_safer($DADA::Config::TMP . '/' . $filename) or die "Can't open $filename: $!";
     while( <$fh> ) { $count++; }
     close($filename); 
     return $count; 
