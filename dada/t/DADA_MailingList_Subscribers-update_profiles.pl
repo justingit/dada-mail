@@ -289,7 +289,7 @@ for my $subs(@$subscribers){
     }
 }
 
-
+ok($lh->print_out_list({-query => 'John'}), "Surprise! print_out_list correctly returns 10"); 
 
 
 

@@ -249,16 +249,15 @@ sub domain_stats {
 
 sub SQL_subscriber_profile_join_statement {
 
+    warn 'at, ' . ( caller(0) )[3] if $t;
+    
     my $self = shift;
     my ($args) = @_;
 
-    # Args
-    # -partial_listing
-    # -type
-    # -search_type (any/all)
-    # -list
-    #
-
+    if($t == 1){ 
+        require Data::Dumper; 
+        warn 'passed args:' . Data::Dumper::Dumper($args); 
+    }
     # init vars:
 
     # type list black_List, white_listed, etc
@@ -292,9 +291,6 @@ sub SQL_subscriber_profile_join_statement {
             delete( $args->{-include_from} );
         }
     }
-
-# Right now, we can either have an any/all boolean type of thing. "OR" is used for
-# searches, I'm not sure if this would be helpful for the Partial List Sending stuff.
 
     my $query_type = 'AND';
     if ( !$args->{-search_type} ) {
@@ -402,6 +398,7 @@ sub SQL_subscriber_profile_join_statement {
 
     if ( keys %{ $args->{-partial_listing} } ) {
 
+        warn q|keys %{ $args->{-partial_listing} }| if $t; 
         # This *really* needs its own method, as well...
         # It's somewhat strange, as this relies on the email address in the
         # profile (I think?) to work, if we're looking for email addresses...
@@ -410,14 +407,15 @@ sub SQL_subscriber_profile_join_statement {
 
         for my $field( keys %{ $args->{-partial_listing} } ) {
 			
+			warn '$field ' . $field
+			 if $t; 
+			
 			my @s_snippets = ();
 			
             # This is to make sure we're always using the email from the
             # subscriber table - this stops us from not seeing an email
             # address that doesn't have a profile...
             my $table = $profile_fields_table;
-
-            
             if ( $field eq 'email' ) {
                 $table = $subscriber_table;
             }
@@ -427,15 +425,9 @@ sub SQL_subscriber_profile_join_statement {
 
             next if ! exists($args->{-partial_listing}->{$field}->{-value});
             next if ! defined($args->{-partial_listing}->{$field}->{-value});
-#            if(
-#                ! defined($args->{-partial_listing}->{$field}->{-rangestart})
-#            &&  ! defined($args->{-partial_listing}->{$field}->{-rangeend})
-#            ){ 
-#                next; 
-#            }
-            
-            next if $args->{-partial_listing}->{$field}->{-value} eq '';
+            next if           $args->{-partial_listing}->{$field}->{-value} eq '';
 
+            
             my $search_op        = '';
             my $search_pre       = '';
             my $search_app       = '';
@@ -511,6 +503,10 @@ sub SQL_subscriber_profile_join_statement {
 	        $query_pl = ' AND ( ' . join( ' ' . $query_type . ' ', @add_q ) . ') ';
 	        $query .= $query_pl;
 	    }
+	}
+	else { 
+	    warn 'no -partial_listing' 
+	        if $t; 
 	}
 
    # -exclude_from is to return results from subscribers who *aren't* subscribed
@@ -717,8 +713,8 @@ sub print_out_list {
     my $self = shift;
 	my ($args) = @_; 
 	
-	use Data::Dumper; 
-	warn 'args!' . Dumper($args); 
+#	use Data::Dumper; 
+#	warn 'args!' . Dumper($args); 
 	
 	if(! exists($args->{-fh})){ 
 			$args->{-fh} =  \*STDOUT;
@@ -730,10 +726,6 @@ sub print_out_list {
 	if(! exists($args->{-query})){ 
 		$args->{-query} = undef; 
 	}	
-
-	#if(! exists($args->{-partial_listing})){ 
-	#	$args->{-partial_listing} = {}; 
-	#}	
 
 	if(! exists($args->{-show_timestamp_column})){ 
 		$args->{-show_timestamp_column} = 0; 
@@ -751,9 +743,7 @@ sub print_out_list {
 	my $query = ''; 
 
     if(exists($args->{-partial_listing})){ 
-        
-        warn 'if(exists($args->{-partial_listing})){ '; 
-        
+                
         $query = $self->SQL_subscriber_profile_join_statement(  
 			{ 
 		    -partial_listing       => $args->{-partial_listing},
@@ -766,18 +756,21 @@ sub print_out_list {
 		);  
 		
     }
-	elsif(defined($args->{-query})){
-	    
-	    warn 'elsif(defined($args->{-query})){'; 
-	    
+	elsif(defined($args->{-query})){    
 		my $partial_listing = {};
 	    my $fields = $self->subscriber_fields;
 	    for (@$fields) {
-	        $partial_listing->{$_} = { like => $args->{ -query } };
+	        $partial_listing->{$_} = { 
+	            -operator => 'LIKE',
+                -value    => $args->{ -query },
+	            };
 	    }
 	    # Do I have to do this, explicitly?
-	    $partial_listing->{email} = { like => $args->{ -query } };
-	
+	    $partial_listing->{email} = { 
+	        -operator => 'LIKE',
+            -value    => $args->{ -query },
+	    };
+
 		$query = $self->SQL_subscriber_profile_join_statement(  
 			{ 
 		    -partial_listing       => $partial_listing,
@@ -789,10 +782,9 @@ sub print_out_list {
 			-show_timestamp_column => $args->{-show_timestamp_column}, 
             
 			}
-		);  
+		);
 	}
 	else { 
-        warn "else { "; 
 	    $query =
 	      $self->SQL_subscriber_profile_join_statement(
 	        { 
@@ -839,9 +831,7 @@ sub print_out_list {
     }
 
     while ( $hashref = $sth->fetchrow_hashref ) {
-
         my @info = ( $hashref->{email} );
-        
         if($args->{-show_timestamp_column} == 1){ 
             unshift(@info, $hashref->{timestamp}); 
         }
@@ -853,7 +843,6 @@ sub print_out_list {
 # https://sourceforge.net/tracker/index.php?func=detail&aid=2147102&group_id=13002&atid=113002
             $hashref->{$_} =~ s/\n|\r/ /gi;
             push ( @info, $hashref->{$_} );
-
         }
 
         if ( $csv->combine(@info) ) {
@@ -862,12 +851,10 @@ sub print_out_list {
         }
         else {
             my $err = $csv->error_input;
-
-            # carp "combine() failed on argument: ", $err, "\n";
-
             carp "combine() failed on argument: "
               . $csv->error_input
               . " attempting to encode values and try again...";
+              
             require CGI;
 
             my @new_info = ();
@@ -877,22 +864,18 @@ sub print_out_list {
             if ( $csv->combine(@new_info) ) {
                 my $hstring2 = $csv->string;
                 print $fh $hstring2, "\n";
-               # carp "that worked.";
             }
             else {
                 carp "combine() failed on argument: "
                   . $csv->error_input;
-
             }
-
         }
-
         $count++;
     }
 
     $sth->finish;
     return $count;
-
+    
 }
 
 sub clone {

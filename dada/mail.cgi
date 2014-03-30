@@ -8643,13 +8643,8 @@ sub text_list {
     my $order_by        = $q->param('order_by')                      || $ls->param('view_list_order_by');
     my $order_dir = $q->param('order_dir') || lc( $ls->param('view_list_order_by_direction') );
 
-    my $partial_listing = {};
-        warn '$advanced_query ' . $advanced_query; 
-         
+    my $partial_listing = {};         
     if ($advanced_query) {
-        
-        warn ' $advanced_search ' . $advanced_search; 
-        
         if($advanced_search == 1){ 
             open my $fh, '<', \$advanced_query || die $!;
             my $new_q = CGI->new($fh);
@@ -8657,9 +8652,6 @@ sub text_list {
         }
     }
 
-    #use Data::Dumper; 
-    #warn 'partial_listing ' . Dumper($partial_listing); 
-    
     my $email;
 
     my $header = $q->header(
@@ -8669,7 +8661,6 @@ sub text_list {
     print $header;
 
     if($advanced_query) { 
-       # warn 'yup, advanced query';         
         $lh->print_out_list(
             {
                 -type                  => $type,
