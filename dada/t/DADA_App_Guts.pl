@@ -183,9 +183,9 @@ $list = dada_test_config::create_test_list;
 	        my ($new_emails) = DADA::App::Guts::csv_subscriber_parse($list, $test_file);
 	        
 	        
-			use Data::Dumper; 
-			diag Data::Dumper::Dumper($new_emails);
-			diag("wahoo!"); 
+			#use Data::Dumper; 
+			#diag Data::Dumper::Dumper($new_emails);
+			#diag("wahoo!"); 
 			 
 	        ok($new_emails->[0]->{email} eq 'example1@example.com',      'example1@example.com');
 	        ok($new_emails->[0]->{fields}->{first_name}  eq 'Example', "Example");
