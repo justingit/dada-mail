@@ -5,11 +5,14 @@
           <input type="hidden" name="f"    value="view_list" />
           <input type="hidden" name="type" value="<!-- tmpl_var type default="list" -->" />
           <input type="button" class="small_button search_list" value="Search <!-- tmpl_var type_title escape="HTML" -->" />
-          <input type="button" class="small_button show_advanced_search_list" value="Advanced..." />
+
+          <!-- tmpl_if query --> 
+     		<input type="button" class="small_button clear_search" value="Clear" />
+     	    <br /> 
+     	 <!-- /tmpl_if --> 
+     	  
+        <input type="button" class="small_button show_advanced_search_list" value="Advanced..." />
           <p>
-    	  <!-- tmpl_if query --> 
-    		<input type="button" class="small_button clear_search" value="Clear" />
-    	 <!-- /tmpl_if --> 
         </form>
     </div> 
 <!-- end list_search_form_widget.tmpl --> 
