@@ -99,8 +99,9 @@ $(document).ready(function() {
 		});
 		
 		datetimesetupstuff(); 
-		$('#backdate_datetime').datetimepicker({maxDate: 0, format:'Y-m-d H:i:s'});
-		
+		if($('#backdate_datetime').length) { 
+			$('#backdate_datetime').datetimepicker({maxDate: 0, format:'Y-m-d H:i:s'});
+		}
 		setup_attachment_fields(); 
 		$("body").on("click", ".remove_attachment", function(event) {
 			if(confirm("Remove Attachment?")) { 
@@ -3285,24 +3286,28 @@ Date.prototype.format = function(format) //author: meizz
 
 
 function datetimesetupstuff() {
-	console.log('datetimesetupstuff'); 
-	
- $('#subscriber_timestamp_rangestart').datetimepicker({
-  format:'Y-m-d H:i:s',
-  onShow:function( ct ){
-   this.setOptions({
-    maxDate:$('#subscriber_timestamp_rangeend').val()?$('#subscriber_timestamp.rangeend').val():false
-   })
-  }
- });
- $('#subscriber_timestamp_rangeend').datetimepicker({
-  format:'Y-m-d H:i:s',
-  onShow:function( ct ){
-   this.setOptions({
-    minDate:$('#subscriber_timestamp_rangestart').val()?$('#subscriber_timestamp_rangestart').val():false
-   })
-  }
- });
+	// console.log('datetimesetupstuff'); 
+	if($('#subscriber_timestamp_rangestart').length) { 
+	 $('#subscriber_timestamp_rangestart').datetimepicker({
+	  format:'Y-m-d H:i:s',
+	  onShow:function( ct ){
+	   this.setOptions({
+	    maxDate:$('#subscriber_timestamp_rangeend').val()?$('#subscriber_timestamp.rangeend').val():false
+	   })
+	  }
+	 });
+	}
+
+	if($('#subscriber_timestamp_rangeend').length) { 
+	 $('#subscriber_timestamp_rangeend').datetimepicker({
+	  format:'Y-m-d H:i:s',
+	  onShow:function( ct ){
+	   this.setOptions({
+	    minDate:$('#subscriber_timestamp_rangestart').val()?$('#subscriber_timestamp_rangestart').val():false
+	   })
+	  }
+	 });
+	}
 }
 
 
