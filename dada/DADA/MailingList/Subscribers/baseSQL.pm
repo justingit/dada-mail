@@ -603,7 +603,7 @@ sub SQL_subscriber_update_profiles_statement {
     # This should help things not be crazy slow. 
     $args->{-select_fields}->{'subscriber.email'} = 1; 
     $args->{-user_order_by} = 0; 
-    $args->{-search_type}   = 'any'; 
+    $args->{-search_type}   = 'all'; 
     
     my $subscriber_table     = $self->{sql_params}->{subscriber_table};
     my $profile_fields_table = $self->{sql_params}->{profile_fields_table};
@@ -634,6 +634,8 @@ sub update_profiles {
     my $self = shift; 
     my ($args) = @_; 
     my $query = $self->SQL_subscriber_update_profiles_statement($args); 
+    
+    # die 'query: ' . $query; 
     
     my $sth = $self->{dbh}->prepare($query);
 

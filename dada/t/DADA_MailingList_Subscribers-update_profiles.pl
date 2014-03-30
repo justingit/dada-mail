@@ -180,7 +180,131 @@ ok($updates == 2, "two subs updated!");
 
 
 
+# Alright, let's stop this kid's stuff: 
+ok( $lh->remove_all_subscribers == 3, "Removed all the subscribers!" );
+ok($lh->num_subscribers == 0,         "there are now one subscriber on list"); 
+ok( $pf->{manager}->remove_all_fields == 3, "removed all fields"); 
 
+
+my $test_file = 'address_w_fields_pass.csv'; 
+`cp t/corpus/csv/$test_file $DADA::Config::TMP/$test_file`;
+
+undef $lh; 
+my    $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+
+my @fields = qw(
+first_name
+last_name
+city
+state
+favorite_color
+_secret
+); 
+
+for(@fields){ 
+    $pf->{manager}->add_field({ -field => $_,  }); 
+}
+
+my ($new_emails) = DADA::App::Guts::csv_subscriber_parse($list, $test_file);
+
+
+my $s_time = time; 
+my ($addresses)
+  = $lh->filter_subscribers_w_meta( { -emails => $new_emails, } );
+diag 'filter_subscribers_w_meta took: ' . (time - $s_time) . ' seconds';
+undef $s_time; 
+
+my $s_time = time; 
+foreach (@$addresses) { 
+    next if $_->{status} != 1; 
+    
+    $lh->add_subscriber(
+       { 
+           -email  => $_->{email}, 
+           -fields => $_->{fields}, 
+           
+       } 
+    ); 
+}
+diag 'adding subscribers took: ' . (time - $s_time) . ' seconds';
+undef $s_time; 
+
+# Right - now let's try some searches: 
+
+$partial_listing = { 
+    'state' => {
+        -operator => '=',
+        -value    => 'VT',
+    }, 
+    'favorite_color' => {
+        -operator => '=',
+        -value    => 'green',
+    }, 
+    
+};  
+( $total_num, $subscribers ) = $lh->search_list(
+    {
+        -partial_listing  => $partial_listing, 
+    }
+);
+ok($total_num == 4, "four results!"); 
+my $updates = $lh->update_profiles({ 
+    -update_fields   => { 
+        _secret => "Xanadu",
+    }, 
+    -partial_listing => $partial_listing,
+}); 
+ok($updates == 4, "four updates!"); 
+
+
+$partial_listing = { 
+    '_secret' => {
+        -operator => '=',
+        -value    => 'Xanadu',
+    }, 
+};  
+( $total_num, $subscribers ) = $lh->search_list(
+    {
+        -partial_listing  => $partial_listing, 
+    }
+);
+ok($total_num == 4, "four new results!"); 
+
+
+use Data::Dumper; 
+diag Dumper($subscribers); 
+
+for my $subs(@$subscribers){ 
+   for my $f(@{$subs->{fields}}){ 
+       if($f->{name} eq 'state'){ 
+           ok($f->{value} eq 'VT', "Vermont!"); 
+        }
+        elsif($f->{name} eq 'favorite_color'){ 
+            ok($f->{value} eq 'green', "green!"); 
+        }
+        elsif($f->{name} eq '_secret'){ 
+            ok($f->{value} eq 'Xanadu', "Xanadu!"); 
+            
+        }
+    }
+}
+
+
+
+
+
+
+#use Data::Dumper; 
+#diag Dumper([$total_num, $subscribers ]); 
+
+#ok($total_num == 2, "two results!");  
+
+
+
+
+
+
+# diag $lh->num_subscribers; 
 
 
 
