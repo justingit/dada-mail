@@ -6315,7 +6315,7 @@ sub delete_archive {
 }
 
 sub purge_all_archives {
-
+    
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'purge_all_archives'
@@ -7081,6 +7081,15 @@ sub edit_archived_msg {
                     my $io   = $body->open('w');
                     $io->print($content);
                     $io->close;
+                }
+                else { 
+                    my $body = $entity->bodyhandle;
+                    my $io   = $body->open('w');
+                    $io->print('!!!DELETE PART!!!');
+                    $io->close;
+                    
+                    # This is what should do the actual deleting. 
+                    $q->param( 'delete_' . $name, 1);
                 }
 
                 my $cid;
