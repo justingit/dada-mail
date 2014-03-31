@@ -2,6 +2,7 @@
 
 <!-- tmpl_set name="title" value="Message Archives &#187; View Archive" -->
 <div id="screen_meta" data-menu_highlight="view_archive"></div>
+<div id="view_archive"></div> 
 
 
 <div id="screentitle"> 
@@ -100,7 +101,7 @@
 
 		<form action="<!-- tmpl_var S_PROGRAM_URL -->" style="display:inline;margin:0">  
 		   <input type="hidden" name="f" value="purge_all_archives" />  
-		   <input type="submit" class="small_button" value="Purge All Archive Messages" onclick="return removeAllArchives(this.form);" />
+		   <input type="submit" class="small_button purge_archives" value="Purge All Archive Messages" />
 	   </form> 
 
 	 </td>

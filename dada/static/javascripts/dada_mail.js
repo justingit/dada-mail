@@ -492,6 +492,19 @@ $(document).ready(function() {
 		});
 	}
 	
+	if ($("#view_archive").length) {
+		
+		$("body").on("click", ".purge_archives", function(event) {		
+			var confirm_msg = "Are you sure you want to purge all your mailing list archives?";
+			if (!confirm(confirm_msg)) {
+				alert("Archives not purged.");
+				return false;
+			} else {
+				return true;
+			}
+		}); 
+	}; 
+	
 	
 	// Your Mailing List >> Options 
 	
@@ -3107,17 +3120,8 @@ function unsubscribeAllSubscribers(form_name, type) {
 
 }
 
-function removeAllArchives(form_name) {
 
-	var confirm_msg = "Are you sure you want to purge all your mailing list archives?";
-	if (!confirm(confirm_msg)) {
-		alert("Archives not purged.");
-		return false;
-	} else {
-		return true;
-	}
 
-}
 
 function revertEditType(form_name) {
 
