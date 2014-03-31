@@ -411,15 +411,20 @@ sub delete_archive {
 
 
 sub delete_all_archive_entries {
-
+    
 	my $self  = shift; 
 	my $query =  'DELETE FROM ' . $self->{sql_params}->{archives_table} . ' WHERE list = ?';
 	
 	my $sth   = $self->{dbh}->prepare($query); 
     
-    $sth->execute($self->{name}); 
+    $sth->execute($self->{name}) 
+        or croak "cannot do statement! $DBI::errstr\n";   
     $sth->finish;
-    
+
+	require DADA::App::ScreenCache; 
+	my $c = DADA::App::ScreenCache->new; 
+       $c->flush;
+
 	return 1;	
 
 }
