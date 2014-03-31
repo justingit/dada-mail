@@ -20,6 +20,18 @@
 
 =item * The Log Viewer plugin now can show the .mbox files created by the Bridge plugin. This file holds the messages received from the List Email account/alias
 
+=item * Bounces, particularily from Amazon SES would not get email addresses parsed out correctly, leaving the phrase with the email address - this should be fixed. 
+
+=item * Importing a file with spaces in the name was  failing [fixed]
+
+=item * mass update of profile fields, after an advanced search was using the search paramaters in a, OR operator mode, rather than AND - meaning that any search terms found (rather than all search term needed to be found) would have the profile updated. [fixed]
+
+=item * csv export in the Membership >> View was not working on basic search results [fixed]
+
+=item * purging archives would not reflect changes on administration screen - cache was never removed [fixed]
+
+=item * a blank HTML version of an archived messages, witha  PlainText message will show the HTML version in archives [fixed]
+
 =back
 
 =head2 7.0.0 Beta 1
