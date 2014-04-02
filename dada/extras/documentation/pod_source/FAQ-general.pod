@@ -56,7 +56,7 @@ L<http://site.two.com/cgi-bin/dada/mail.cgi>
 
 even if you administrate both domains. This would require two installations of Dada Mail. 
 
-=head2 How Do I Create a New List? 
+=head2 How Do I Create a New Mailing List? 
 
 You can create a new list by visiting the administration screen. A link should be on the bottom of the default screen of Dada Mail, if it's not visible, point your browser to this location:
 
@@ -66,11 +66,9 @@ Replacing, I<http://example.com/cgi-bin/dada/mail.cgi> with the URL of your own 
 
 Enter your Dada Mail Root Password in the form entitled, B<Create a New Mailing List>
 
-=head2 How Do I Log Into an Already Existing List? 
+=head2 How Do I Log Into an Already Existing Mailing List? 
 
 You can log into an already existing list by visiting the administration screen. 
-
-
 
 A link should be on the bottom of the default screen of Dada Mail, if it's not visible, point your browser to this location:
 
@@ -90,7 +88,7 @@ When the screen is refreshed, the popup menu will be replaced by a text box. You
 
 If you do not remember the B<list short name> of the list you want to log into, you can also simply log into any list with your Dada Mail Root Password and once logged in, switch which list you want to work on, by selecting the list you want to work inthe popup menu on the upper left hand side of the List Control Panel. All lists available will be listed in this popup menu. 
 
-=head2 How Do I Delete a List? 
+=head2 How Do I Delete a Mailing List? 
 
 Log into your mailing list using the B<Dada Mail Root Password>.
 
@@ -226,11 +224,11 @@ Under, B<Advanced Options - Subcriptions> check the option, B< Allow Subscriptio
 
 =head2 How do I turn off, "one-click" unsubscription links? in Public Lists
 
-Running a public list requires you to have a way to unsubcribe from your mailing list and Dada Mail requires that every message you send in a mass mailing contain a unsubscription link - including discussion messages. 
+Running a public mailing list requires you to have a way to unsubcribe from your mailing list and Dada Mail requires that every message sent in a mass mailing contain a unsubscription link - including discussion messages. 
 
 The following tag is required to be present in every message sent in a mass mailing in a public mailing list:
 
- <!-- tmpl_var list_unsubscribe_link --> 
+    <!-- tmpl_var list_unsubscribe_link --> 
 
 This tag will be replaced by an unsubcription link that will be unique to the user's email address, mailing list, and mass mailing that it's sent in. When it's clicked, the user will need to simply retype their email address and submit the form presented to them. Once they do that, the user will be removed from the mailing list. 
 
@@ -242,8 +240,7 @@ This problem should be mitigated, as members will need to use their own unsubscr
 
 =head2 Unsubscription links are placed on top of my mailing list messages, why? 
 
-Dada Mail has an in-program policy of requiring the unsubscription link to be prsent  in all messages sent in a mass mailing. This is to stop blatant abuse of the program, but we also  do sincerely suggest this as a best practice when using the program. If an unsubscribe link is not found 
-in your mailing list message, Dada Mail will simply add one to the top of the message. 
+Dada Mail has an in-program policy of requiring the unsubscription link to be prsent  in all messages sent in a mass mailing for public mailing lists. This is to stop blatant abuse of the program, but we also  do sincerely suggest this as a best practice when using the program. If an unsubscribe link is not found in your mailing list message, Dada Mail will simply add one to the top of the message. 
 
 The following tag is required in your mailing list message: 
 
@@ -468,6 +465,12 @@ http://dadamailproject.com/support/documentation/FAQ-errors.pod.html
 
 =head2 Dada Mail and HTML Templates
 
+=head2 How do I translate Dada Mail? 
+
+Dada Mail currently does not ship in any language, other than English. To translate the application, you will need to edit the text in Dada Mail's templates. 
+
+These template files are located in the, I<dada/templates> directory of Dada Mail. 
+
 =head2 How do you change the Dada Mail Logo? 
 
 Create a new image around 125 x 50 px (if you want to match the size of what's currently be used). Save it as, "dada_mail_logo.png"
@@ -486,55 +489,21 @@ Where, B<My Program> is the new name you'd like to use.
 
 =head2 How do I change the default look of Dada Mail? 
 
-B<Short Answer:> 
+=head3 css 
 
-If all you want to do is tweak the CSS styles of Dada Mail, the global CSS file is located at: 
+If you wan to modify the css of Dada Mail, the global css file is located at: 
 
  dada_mail_support_files/statis/css/dada_mail.css
 
-You will never see this file directly in use in Dada Mail, but you can view it in your web browser by adding I</css> to the end of the URL to Dada Mail: 
+=head3 Templates
 
-http://example.com/cgi-bin/dada/mail.cgi/css
-
-If you're comfortable with CSS, a I<lot> can be changed with this file alone, from fonts and colors to the overall page layouts.
-Everything is nicely organized in there, and the few hacks used are thoroughly commented - it may be all you need.
-
-
-B<Really Long Answer:>
-
-Going even beyond the considerable CSS control outlined above, Dada Mail is extremely flexible in this respect. Extremely. 
-
-B<First: Clarification.>
-
-Dada Mail uses different templating systems depending on what needs to be done, but there's basically two types: 
-
-=over 
-
-=item * The Internal Templating System (HTML::Template)
-
-Most of the HTML that Dada Mail produces is stored in templates in the: 
-
- dada/templates
-
-directory.
+Most of the HTML that Dada Mail produces is stored in templates in the, I<dada/templates> directory.
 
 The templates themselves are written in a templating language called HTML::Template. More info here: 
 
-http://search.cpan.org/~samtregar/HTML-Template-2.7/Template.pm
+L<http://search.cpan.org/~samtregar/HTML-Template-2.7/Template.pm>
 
-A description of the templating language, by the author, is: 
-
-I<just a normal HTML file with a few extra tags, the simplest being C< E<lt>  TMPL_VAR E<gt> >>
-
-meaning, if you read the HTML::Template docs, you should have a pretty firm understanding on how to play with these templates.
-
-These templates control many of the administration screens. You'll want to play around with these templates if there are some layout/formatting/content output changes you want to do to the program itself. 
-
-B<Note:> that by design, these templates have almost no programatic logic to them - they are almost strictly layout only, so don't expect to change the I<behavior> of the program by editing the template files. 
-
-To find the correct template to modify: visit the screen you'd like to modify, view its source code ("view source" in your 
-browser options), find the section in the source code that you'd like to change, and then continue reading down until 
-you see a comment,
+To find the correct template to modify: visit the screen you'd like to modify, view its source code, find the section in the source code that you'd like to change, and then continue reading down until you see a comment,
 
  <!-- end template_name.tmpl -->
 
@@ -548,23 +517,13 @@ Or if you prefer, just have a look at the screen's URL - usually, the template w
 responded to it (the "flavor" parameter, sometimes shortened to "f", will tell you the name of the function), and usually, the template 
 name matches that function name.
 
-For example, the, "Send a Message" screen, has a flavor parameter query string of, I<send_email>. The template that creates this screen is called, I<send_email_screen.tmpl> Easy enough. 
+For example, the, B<Send a Message> screen, has a flavor parameter query string of, I<send_email>. The template that creates this screen is called, I<send_email_screen.tmpl>. 
 
-=item * Dada Mail Templating System
-
-This now has its own FAQ: 
-
-http://dadamailproject.com/support/documentation/features-email_template_syntax.pod.html
-
-Some of the places this system is used are as follows: 
-
-=over
-
-=item * The Default List Template
+=head4 Default List Template
 
 Sometimes called the User Template, the default template lives at: 
 
- dada/templates/list_template.tmpl
+I<dada/templates/list_template.tmpl> 
 
 You may edit this file directly, although you most likely do not want to, since your changes will be lost when you upgrade the program. 
 
@@ -574,7 +533,7 @@ There are a few ways to make changes to this template, without changing this cop
 
 =item * Use the $USER_TEMPLATE Config.pm variable
 
-This is the preferred method. Simply make a copy of the list_template.tmpl file, save it in a another location on your server and set the Config.pm variable, B<$USER_TEMPLATE> to the absolute path of its location. 
+This is the preferred method. Simply make a copy of the I<dada/templates/list_template.tmpl> file, save it in a another location on your server and set the Config.pm variable, B<$USER_TEMPLATE> to the absolute path of its location. 
 
 You can also set B<$USER_TEMPLATE> to a URL - if your server supports that. There's more overhead involved with Dada Mail fetching the program this way, but it does allow you to preprocess the Template before it's seen by Dada Mail. For example, you want to have PHP calls in the template itself, or generate any sort of dynamic content. 
 
@@ -590,11 +549,9 @@ The above information is valid for any of the templates located in the dada/temp
 
 =back
 
-=back
+B<NOTE:> The List/User Template can be overridden by any of your mailing lists;  each mailing list has its own copy of the list template that it can changed. This can be of some confusion if you're trying to edit the main template, and you don't see the changes taking effect for one of your lists, or, you make a change to the list template, and it's not affecting the default screen you see in Dada Mail. 
 
-B<NOTE:> The List/User Template can be overridden by any of the lists; meaning, each list has its own copy of the list template that it can change. This can be of some confusion if you're trying to edit the main template, and you don't see the changes taking effect for one of your lists, or, you make a change to the list template, and it's not affecting the default screen you see in Dada Mail. 
-
-If you want to have all your lists use the default List/User Template: 
+If you want to have all your mailing lists use the default List/User Template: 
 
 =over
 
@@ -608,7 +565,7 @@ Either, don't edit the individual copy of the list template in the admin control
 
  get_template_data                => 'from_default_template',
 
-Information on the %LIST_SETUP_OVERRIDES hash can be found at: 
+Information on the C<%LIST_SETUP_OVERRIDES> hash can be found at: 
 
 http://dadamailproject.com/support/documentation/global_variables.pod.html#list_setting_defaults
 
@@ -617,51 +574,13 @@ http://dadamailproject.com/support/documentation/global_variables.pod.html#list_
 Again, any list screen that does not have a single list associated with it, will be given the default list template look. 
 
 
-=item * The Default Admin Template
+=head4 The Default Admin Template
 
-The Default Admin Template lives at: 
+The Default Admin Template lives at, I<dada/templates/admin_template.tmpl>
 
- admin_template.tmpl
+The information about the Default List Template also follows for the Default Admin Template. The Config.pm variable for it is: B<$ADMIN_TEMPLATE>
 
-The information about the Default List Template also follows for the Default Admin Template. The Config.pm variable for it is: B<$admin_template>
-
-You may also be interested in the B<admin_menu_widget.tmpl>, which is used to created the left hand menu. It's written using the HTML::Template templating system. 
-
-=item * Misc. HTML
-
-Some HTML/Email Messages created by Dada Mail are done within the Perl code itself. This amount is now strikingly a minority, but it's still present. It comes in a variety of flavors, that don't really makes sense. But, here's some pointers: 
-
-=over
-
-=item * The CGI.pm module
-
-Lots of the inline HTML is created using the venerable CGI.pm module. Here's the docs: 
-
-http://search.cpan.org/dist/CGI.pm/CGI.pm
-
-to spot it in the code, you'll want to look for Perl subroutines/functions that are named similar to HTML tags. 
-
-=back
-
-=back
-
-=head2 Are there any official translations of Dada Mail?
-
-At the moment, no, but check: 
-
-http://sourceforge.net/project/showfiles.php?group_id=13002
-
-For translations provided by Dada Mail users. For example: 
-
-http://prdownloads.sourceforge.net/mojomail/dada-2_10_2de.tar.gz?download
-
-Is Dada Mail, version 2.10.2 translated into German. A more user-friendly list of translations is probably located at the main download page at: 
-
-http://dadamailproject.com/download
-
-=head2 How do you translate Dada Mail? 
-
-Basically, follow the instructions used to customize the Dada Mail templates (above)
+You may also be interested in the I<dada/templates/admin_menu_widget.tmpl>, which is used to created the left hand menu. It's written using the HTML::Template templating system. 
 
 =head2 How do you change the character set/encoding of Dada Mail?
 
@@ -671,7 +590,7 @@ HTML screens are control by the Config.pm variable, C<$HTML_CHARSET>. You can ch
 
  $HTML_CHARSET ||= 'UTF-8'; 
 
-Email messages are controlled per list. In the list control, go to: B<Mail Settings - Advanced Options> and select the charset you'd like to use under, B<Default Character Set of Mailings>
+Email messages are controlled per mailing list. In the list control, go to: B<Mail Sending - Advanced Options> and select the charset you'd like to use under, B<Default Character Set of Mailings>
 
 If you do not see the charset you want to set Dada Mail to use, you can add the charset in the Config.pm array, C<@CHARSETS>
 
@@ -812,7 +731,7 @@ If you remove it from your mailing list message template, it will be re-added, b
 
 Yes. 
 
-=head2 List Subscribers
+=head2 Mailing List Subscribers
 
 =head2 How many subscribers can Dada Mail handle? 
 
