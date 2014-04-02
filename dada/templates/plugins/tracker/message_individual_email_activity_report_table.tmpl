@@ -1,4 +1,5 @@
 
+
 <!-- begin plugins/tracker/message_individual_email_activity_report_table.tmpl -->
 
 
@@ -12,7 +13,11 @@
 				<p>
 					<strong> 
 						<!-- tmpl_var email -->
+						<a href="<!-- tmpl_var PLUGIN_URL -->?f=message_individual_email_activity_csv&mid=<!-- tmpl_var mid -->&email=<!-- tmpl_var email escape="URL" -->" style="color:#FFFFFF"> 
+						    (export .csv)
+						</a>
 					</strong> 
+
 				</p>
 			</th>
 		 </tr> 

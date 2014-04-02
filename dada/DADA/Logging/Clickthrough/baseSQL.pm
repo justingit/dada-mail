@@ -19,7 +19,7 @@ use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;    # For now, my dear.
 use Try::Tiny; 
 
-my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_Logging_Clickthrough};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_Logging_Clickthrough};
 
 sub new {
 
@@ -2327,6 +2327,54 @@ sub message_email_activity_listing_table {
 	
 }
 
+
+
+
+sub message_individual_email_activity_csv { 
+    
+	my $self   = shift; 
+	my ($args) = @_; 
+	
+	if(!exists($args->{-fh})){ 
+		$args->{-fh} = \*STDOUT;
+	}
+	my $fh = $args->{-fh}; 
+	
+	my $report = $self->message_individual_email_activity_report($args);
+
+    require Text::CSV;
+    my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
+
+    my @title_fields = qw(
+        timestamp
+        remote_addr   
+        event 
+        url 
+    ); 
+
+    my @fields = qw(
+        ctime
+        ip   
+        event 
+        url 
+    ); 
+    
+    my $title_status = $csv->print($fh, [@title_fields]);
+    print $fh "\n";
+    
+    foreach my $ir(@$report) { 
+        my $row = []; 
+        foreach(@fields){ 
+            push(@$row, $ir->{$_}); 
+        }
+        my $status = $csv->print( $fh, $row );
+        print $fh "\n";
+    }
+    
+}
+
+
+
 sub message_individual_email_activity_report {
 	my $self   = shift; 
 	my ($args) = @_; 
@@ -2401,9 +2449,7 @@ sub message_individual_email_activity_report {
 sub message_individual_email_activity_report_table { 
 	my $self   = shift; 
 	my ($args) = @_;
-	
 
-	
 	my $html;
 		
 	require DADA::App::DataCache; 
@@ -2426,6 +2472,7 @@ sub message_individual_email_activity_report_table {
 				-expr => 1, 
 	            -vars => {
 					email         => $args->{-email}, 
+					mid           => $args->{-mid},
 					report        => $report, 
 
 	            },

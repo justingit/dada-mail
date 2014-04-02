@@ -109,10 +109,10 @@ sub run {
 		'clear_message_data_cache'        => \&clear_message_data_cache, 
 		'export_subscribers'              => \&export_subscribers, 
 		
-		'message_email_activity_listing_table'  => \&message_email_activity_listing_table, 
+		'message_email_activity_listing_table'           => \&message_email_activity_listing_table, 
 		'message_individual_email_activity_report_table' => \&message_individual_email_activity_report_table, 
-		
-		'the_basics_piechart_json'       => \&the_basics_piechart_json, 
+		'message_individual_email_activity_csv'             => \&message_individual_email_activity_csv, 
+		'the_basics_piechart_json'                       => \&the_basics_piechart_json, 
 	);
 	if ($f) {
 	    if ( exists( $Mode{$f} ) ) {
@@ -422,6 +422,25 @@ sub message_individual_email_activity_report_table {
 			-mid    => $mid, 
 			-email  => $email, 
 
+		}
+	);
+}
+
+
+sub message_individual_email_activity_csv { 
+	my $mid   = xss_filter($q->param('mid')); 
+	my $email = xss_filter($q->param('email')); 
+	my $fn_email = $email; 
+	   $fn_email =~ s/\@/_at_/; 
+	my $header  = 'Content-disposition: attachement; filename=' . $list . '-message_individual_email_activity-' . $fn_email . '-' . $mid . '.csv' .  "\n"; 
+	   $header .= 'Content-type: text/csv' . "\n\n";
+    print $header;
+
+	print $rd->message_individual_email_activity_csv(
+		{
+			-mid    => $mid, 
+			-email  => $email, 
+			-fh   => \*STDOUT, 
 		}
 	);
 }
@@ -906,7 +925,7 @@ sub commify {
 
 =head1 Tracker - tracker.cgi
 
-The Tracker plugin creates fancy analytic reports of activity of your mass mailings. You can think of a mass mailing being a "campaign" if you'd like. 
+The Tracker plugin creates analytic reports of activity of your mass mailings. You can think of a mass mailing being a B<campaign> if you'd like and the Tracker plugin being what presents data on your campaign.  
 
 The activities that are logged and reported include: 
 
@@ -924,9 +943,19 @@ The activities that are logged and reported include:
 
 =back
 
+=head1 User Guide
+
+For a guide on using Tracker, see the B<Dada Mail Manual>: 
+
+L<http://dadamailproject.com/pro_dada/using_tracker.html>
+
+For more information on Pro Dada/Dada Mail Manual: 
+
+L<http://dadamailproject.com/purchase/pro.html>
+
 =head2 Birds-Eye View
 
-These fancy reports include the above information in tabular data, as well 
+These reports include the above information in tabular data, as well 
 as in a line graph, for past mass mailings to help you spot general trends. 
 This information can also be exported into .csv files, giving you more flexibility, specific to your needs. 
 
@@ -955,17 +984,6 @@ If you suddenly get a ton of bounced messages for a mailing from addresses you k
 =back
 
 All this message-specific data can also be exported via .csv files that may be downloaded. 
-
-=head1 User Guide
-
-For a guide on using Tracker, see the Dada Mail Manual: 
-
-L<http://dadamailproject.com/pro_dada/using_tracker.html>
-
-For more information on Pro Dada/Dada Mail Manual: 
-
-L<http://dadamailproject.com/purchase/pro.html>
-
 
 What's below will go into installing the plugin and advanced configuration.
 
