@@ -761,7 +761,7 @@ sub send {
 
                 unless(open(MAIL,$live_mailing_settings)) { 
 					warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error: can't pipe to mail program using settings: $DADA::Config::MAIL_SETTINGS or $DADA::Config::MASS_MAIL_SETTINGS: $!";
-					return -1; 
+					return; 
 				}
 			}
 
@@ -796,7 +796,7 @@ sub send {
             	warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Warning: 
                          didn't close pipe to '$live_mailing_settings' while 
                          attempting to send a message to: '" . $fields{To} ." because:' $!";
-				return -1;  
+				return;  
 			}
 		
         }
