@@ -803,13 +803,17 @@ sub self_url {
 
 =head1 Name
 
-Bounce Handler For Dada Mail
+Bounce Handler for Dada Mail
 
 =head1 User Guide
 
-The below documentation goes into detail on how to install and configure Bounce Handler. A user guide for Bounce Handler is available in the Dada Mail Manual chapter, B<Using the Dada Bounce Handler>: 
+For a guide on using Bounce Handler, see the B<Dada Mail Manual>: 
 
 L<http://dadamailproject.com/pro_dada/using_bounce_handler.html>
+
+For more information on Pro Dada/Dada Mail Manual: 
+
+L<http://dadamailproject.com/purchase/pro.html>
 
 =head1 Description
 
@@ -911,11 +915,11 @@ B<Your Mailing List -  Change List Information>
 
 =head2 Part 1 
 
-=for html <object width="640" height="510"><param name="movie" value="http://www.youtube.com/v/tvdIj1s19Vo?fs=1&amp;hl=en_US&amp;rel=0&amp;hd=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/tvdIj1s19Vo?fs=1&amp;hl=en_US&amp;rel=0&amp;hd=1" type="application/x-shockwave-flash" width="640" height="510" allowscriptaccess="always" allowfullscreen="true"></embed></object>
+L<https://www.youtube.com/watch?v=tvdIj1s19Vo>
 
 =head2 Part 2
 
-=for html <object width="640" height="510"><param name="movie" value="http://www.youtube.com/v/CnsM994xa7A?fs=1&amp;hl=en_US&amp;rel=0&amp;hd=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/CnsM994xa7A?fs=1&amp;hl=en_US&amp;rel=0&amp;hd=1" type="application/x-shockwave-flash" width="640" height="510" allowscriptaccess="always" allowfullscreen="true"></embed></object>
+L<https://www.youtube.com/watch?v=CnsM994xa7A>
 
 =head1 Configuration
 

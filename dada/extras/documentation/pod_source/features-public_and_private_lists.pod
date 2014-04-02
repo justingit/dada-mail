@@ -4,7 +4,17 @@
 
 With the release of v7, Dada Mail supports both B<Public Mailing Lists>, and B<Private Mailing Lists>. 
 
-=head3 Public Mailing Lists
+=head2 User Guide
+
+To learn more about how to set up both Public and Private Mailing List, see the Dada Mail Manual Chapter on Mailing List Options, 
+
+L<http://dadamailproject.com/pro_dada/list_options.html>
+
+For more information on Pro Dada/Dada Mail Manual: 
+
+L<http://dadamailproject.com/purchase/pro.html>
+
+=head2 Public Mailing Lists
 
 Public Mailing Lists are mailing lists that anyone could potentially subscribe to, but B<everyone who is subscribed, no matter what, unsubscribe/remove themselves from>. There's no exceptions to this rule and that cannot be emphasized enough. 
 

@@ -335,13 +335,10 @@ Once you've completed your configuration changes, click the B<Configure Dada Mai
 
 =head2 Screencast
 
-This screencast goes step by step, slowly through the entire process of installing Dada Mail, on your own website. 
+This screencast goes step by step, slowly through the entire process of installing Dada Mail, on your own website: 
 
-=begin html
+L<https://www.youtube.com/watch?v=x7PRauNDKA4> 
 
-<iframe width="853" height="480" src="http://www.youtube.com/embed/x7PRauNDKA4" frameborder="0" allowfullscreen></iframe>
-
-=end html
 
 =head2 Command Line Interface
 
