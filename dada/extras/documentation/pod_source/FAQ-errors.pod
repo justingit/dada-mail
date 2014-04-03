@@ -16,7 +16,7 @@ If you do get an in-browser error message, please find the lines in the error lo
 
 Dada Mail's, C<mail.cgi> script, as well as all of its plugins and extensions that you are utilizing will need to have their file permissions changed so that they can be executed, when you visit them in your web browser. This usually means changing the file permissions to, B<755>. 
 
-The directories that the C<mail.cgi> script lives in (I<dada>), as well as Dada Mail's plugins/extensions (I<dada/plugins>,I<dada/extensions>>)should also be set to B<755>. 
+The directories that the C<mail.cgi> script lives in (I<dada>), as well as Dada Mail's plugins/extensions (I<dada/plugins>,I<dada/extensions>>) should also be set to B<755>. 
 
 You may receive one of the following messages in your browser window if the permissions are not set correctly:
 
@@ -25,9 +25,9 @@ You may receive one of the following messages in your browser window if the perm
 =head3 Internal Server Error
 
 	The server encountered an internal error or misconfiguration and was unable to complete your request.
-
+    
 	Please contact the server administrator, you@example.com and inform them of the time the error occurred, and anything you might have done that may have caused the error.
-
+    
 	More information about this error may be available in the server error log.
 
 Generally, when you receive the above errors, it is B<not> a problem with Dada Mail itself, but rather simply incorrect file permissions. 

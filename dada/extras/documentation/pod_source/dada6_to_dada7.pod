@@ -2,9 +2,11 @@
 
 =head1 Dada Mail 5 to Dada Mail 6 Upgrade Guide
 
-=head2 PlainText Backend: Deprecated
+=head2 PlainText Backend - DEPRECATED
 
-We've decided to C<deprecate> the PlainText backend. We suggest moving to one of the SQL backends as soon as possible. 
+The stable release of v7.0.0 has the PlainText backend marked as DEPRECATED and will be fully removed at a later date. 
+
+This will help make the app more streamlined by removing a good chunk of the codebase that's rarely used. Most new features of Dada Mail cannot be utilized when using the PlainText backend anyways, which leads to confusion with users, as well as complicating the codebase, as checks have to make on what exactly the backend supports. 
 
 =head2 Database Schema
 
@@ -38,15 +40,22 @@ Support for this style has been dropped. Please use any style that's supported b
 
     <!-- tmpl_var tag -->
     
-=head2 Config.pm HTML and Email Templates: moved to separate files
+    HTML that can be edited in the B<Appearance and Templates >> HTML Screen Templates> list control panel had their default values stored in the Config.pm file. 
 
-Quite a few HTML and email templates were embedded in the Config.pm, making customization of these templates somewhat difficult, especially if you ever upgraded. 
+    This hinders customization and internationalization, testing, as well as adding extra bulk to the already-too large Config.pm file. The values of these variables have now been templated out into their own files                        located in the, I<dada/templates/list> directory
 
-HTML templates have been removed, and separated into separate files, located in the, I<dada/templates/list> directory. 
+=head2 Config.pm default variables of email messages have been removed, templated out
 
-Eamil templates have been removed, and separated into separate files, located in the, I<dada/template/email> directory. Email messages are saved in MIME format, which supports saving the email headers and multipart messages. 
+Email messages, that can be edited in the, B<Appearance and Templates >> Email Message Templates> screen (as well as other email messages, that can be customized in various other places) had their default values stored in the Config.pm file. 
 
+This hinders customization and internationalization, testing, as well as adding extra bulk to the already-too large Config.pm file. The values of these variables have now been templated out into their own files located in the, I<dada/templates/email> directory. 
 
+The removal of these variables (as well as HTML screens) has removed over 1,100 lines from the Config.pm file. 
 
+=head2 New Deprecated Plugins/Extensions
+
+None! 
+
+Even Beatitude (Scheduled Mailer) will still be around for v7.0.0, and should be able to support the new partial mailing list features (timestamp date range!) Beatitude is still listed as B<deprecated>, but will not be removed (or rewritten), until its features (or similar) are available in another form.
 
 =cut
