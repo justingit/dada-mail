@@ -1,6 +1,6 @@
-=head2 Dada Mail Global Variables Configuration Guide 
+=head1 Dada Mail Global Variables Configuration Guide 
 
-=head2 DESCRIPTION 
+=head2 Description 
 
 This doc. guides you through all the global configuration variables available to you in Dada Mail. 
 
@@ -1368,34 +1368,6 @@ in the program.
 C<@EMAIL_HEADERS_ORDER> sets the order at which email headers are written in, 
 when Dada Mail creates an email message. 
 
-
-
-=head2 SUPPORT
-
-If you need further support for this script, please do not email 
-me directly, but use one of the following channels: 
-
-=over
-
-=item * Dada Mail Support Site
-
-L<http://dadamailproject.com>
-
-=item * The Dada Mailers Discussion List
-
-L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/dadadev/>
-
-=item * Consultation for Dada Mail
-
-L<http://dadamailproject.com/support/customize.html>
-
-=back
-
-
-=head2 CONTACT
-
-My name is Justin Simoni
-
 =head2 COPYRIGHT 
 
 Copyright (c) 1999 - 2014 Justin Simoni All rights reserved. 
@@ -1414,9 +1386,4 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 59 Temple Place - Suite 330, 
 Boston, MA  02111-1307, USA.
-
-
-=head2 Last Words
-
-To riding bicycles.
 
