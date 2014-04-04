@@ -897,7 +897,7 @@ If you do install this way, note that you still have to create the create the Bo
 
 Set this email address as our "List Administrator Address" in the list control panel, under,
 
-B<Your Mailing List -  Change List Information> 
+B<Your Mailing List - List Information> 
 
 =item * Configure the plugin in your .dada_config file
 
@@ -1038,7 +1038,7 @@ You're going to have to tell Dada Mail explicitly that you want
 bounces to go to the bounce handler. The first step is to set the 
 B<Dada List Administrator> to your bounce email address. You'll set this per mailing list in the each mailing list's control panel, under 
 
-B<Your Mailing List -  Change List Information>
+B<Your Mailing List -  List Information>
 
 After that, you'll need to configure outgoing email messages to set the B<Dada List Administrator> address in the C<Return-Path> header. Sounds scary, but it's easy enough.  
 
