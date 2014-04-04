@@ -62,10 +62,6 @@ I<Deny Checked Subscription Requests>
 
 to deny requests. 
 
-=head2 Feedback
-
-This is a new, experimental feature and we'd like feedback on how it's working for everyone. Let us know!
-
 =head2 Shortcomings 
 
 =head2 "Subscription" Options disabled 

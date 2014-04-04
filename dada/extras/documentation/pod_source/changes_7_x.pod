@@ -6,11 +6,13 @@
 
 =head3 Private Mailing Lists
 
+Private Mailing Lists allow you to run a mailing list for a closed off group of participants. 
+
 Previous versions of Dada Mail were specifically designed to run B<Public Mailing Lists>: mailing lists where anyone can subscribe to using the mailing list's subscription form, and most I<definitely> everyone can remove themselves (unsubscribe). 
 
 For public mailing lists and marketing purposes, this works just great, but many users want to work with the app for a different purpose: utilizing Dada Mail's mailing list organizational and mass mailing features for a I<private> mailing list of contacts: a group of colleagues, or an internal company mailing list.
 
-Sicne this wasn't a role that Dada Mail was designed for, it hasn't fared very well, as List Owners became frustrated, having to constantly deal with list members removing themselves (often by accident). The tools to run a private mailing list just weren't there and solutions to this problem felt very hacky.  
+Since this wasn't a role that Dada Mail was designed for, it hasn't fared very well, as List Owners became frustrated, having to constantly deal with list members removing themselves (often by accident). The tools to run a private mailing list just weren't there and solutions to this problem felt very hacky.  
 
 Dada Mail now has support for B<Private Mailing Lists>. A private mailing list 
 is a mailing list used in a closed, internal setting; not for a mailing list  used publically for marketing purposes. 
@@ -25,6 +27,8 @@ L<http://dadamailproject.com/d/features-public_and_private_lists.pod>
 
 =head3 Abuse Reporting
 
+Abuse Reporting let's you know if there's problems happening on your mailing list. 
+
 Dada Mail now has the ability to allow users to report abuse on your mailing list. These abuse reports will be emailed to the List Owner, logged, and reported through the Tracker plugin. 
 
 =head3 Subscriber Subscription Date saved as a Timestamp
@@ -33,7 +37,7 @@ Subscriber information now includes the Date of Subscription in a the B<Timestam
 
 =head3 Default order for Membership >> View Screen, Show/Hide Timestamp Column
 
-New options in the, B<Membership >> View> screen in the list control panel allow you to set which column to sort subscribers by default, as well as if the Subscription Date/timestamp column should be shown. 
+New options in the, B<Membership - View> screen in the list control panel allow you to set which column to sort subscribers by default, as well as if the Subscription Date/timestamp column should be shown. 
 
 =head3 Advanced Search/Partial Sending List Options 
 
@@ -47,19 +51,20 @@ Partial sending works the same way and the ability to send to members who have b
 
 =head3 Mass Update of Profile Fields, based on Advanced Search
 
+
 Once you've done an advanced search on your subscribers, you now have the ability to update any of the Profile Fields of your search results, en mass.
 
 =head3 Support for Required Profile Fields
 
-Profile Fields can now be marked as, B<Required>. Form field validation is done on the subscription form,  both client and server side. The experimental JSON web service API also supports required Profile Fields. 
+Profile Fields can now be marked as, B<Required>. Form field validation is done on the subscription form,  both client and server side. The JSON web service API also supports required Profile Fields. 
 
 =head3 More Powerful List Control Panel Address Importing, Mass Updating
 
 The List Control Panel Add/Subscribe/Invite screen now comes with a ton of new, and useful options and utilities:
 
-=head4 Preserve or Update Profile Field Information
+=head4 Preserve or Update Profile Field Data
 
-In previous versions of Dada Mail, any Profile field information you try to import could potentially be discarded, if the address you're importing already has profile field data saved. This is because profile field data is shared between mailing lists, and importing a subscriber into a mailing list, may inadvertantly wipe out already saved information you wanted to keep.
+In previous versions of Dada Mail, any Profile Field data you try to import could potentially be discarded, if the address you're importing already has profile field data saved. This is because profile field data is shared between mailing lists, and importing a subscriber into a mailing list, may inadvertantly wipe out already saved information you wanted to keep.
 
 Dada Mail now has the option to either preserve any already-existing profile field data, or update this data that already exists. This choice on what to do can be made during the Verification step. 
 

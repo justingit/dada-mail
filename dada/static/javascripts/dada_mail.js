@@ -619,7 +619,11 @@ $(document).ready(function() {
 		}
 		toggleManualBatchSettings();
 	}
-
+	
+	if ($("#html_code").length) {
+		$("#tabs").tabs();
+	}
+	
 
 	// Membership >> View List
 		

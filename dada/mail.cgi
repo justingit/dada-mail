@@ -519,6 +519,7 @@ sub run {
         'new_list'                                    => \&new_list,
         'change_info'                                 => \&change_info,
         'html_code'                                   => \&html_code,
+        'preview_jquery_plugin_subscription_form'    => \&preview_jquery_plugin_subscription_form, 
         'admin_help'                                  => \&admin_help,
         'delete_list'                                 => \&delete_list,
         'view_list'                                   => \&view_list,
@@ -7144,8 +7145,34 @@ sub html_code {
         -Function => 'html_code'
     );
     $list = $admin_list;
-
+    
     require DADA::Template::Widgets;
+    
+    
+    my $jquery_head_code = DADA::Template::Widgets::screen( 
+        { 
+            -screen => 'jquery_subscription_form_head.tmpl',
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+        }
+    ); 
+    my $jquery_body_code = DADA::Template::Widgets::screen(
+        { 
+            -screen => 'jquery_subscription_form_body.tmpl', 
+            -vars   => { 
+                subscription_form => DADA::Template::Widgets::subscription_form( 
+                    { 
+                        -list                 => $list, 
+                        -ignore_cgi           => 1, 
+                        -show_fieldset        => 0,
+                        -subscription_form_id => 'dada_mail_modal_subscription_form'
+                     })
+                }
+        }
+    );  
+
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen         => 'html_code_screen.tmpl',
@@ -7157,7 +7184,9 @@ sub html_code {
             -vars => {
                 screen            => 'html_code',
                 list              => $list,
-                subscription_form => DADA::Template::Widgets::subscription_form( { -list => $list, -ignore_cgi => 1 } ),
+                jquery_head_code  => $jquery_head_code, 
+                jquery_body_code  => $jquery_body_code, 
+                subscription_form => DADA::Template::Widgets::subscription_form( { -list => $list, -ignore_cgi => 1, -show_fieldset => 0 } ),
                 minimal_subscription_form => DADA::Template::Widgets::screen(
                     {
                         -screen                   => 'minimal_subscription_form.tmpl',
@@ -7176,6 +7205,60 @@ sub html_code {
     );
     e_print($scrn);
 
+}
+
+
+
+sub preview_jquery_plugin_subscription_form { 
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'html_code'
+    );
+    $list = $admin_list;
+    
+    require DADA::Template::Widgets;
+    
+    my $jquery_subscription_form_body = DADA::Template::Widgets::screen(
+        { 
+            -screen => 'jquery_subscription_form_body.tmpl', 
+            -vars   => { 
+                subscription_form => DADA::Template::Widgets::subscription_form( 
+                    { 
+                        -list                 => $list, 
+                        -ignore_cgi           => 1, 
+                        -show_fieldset        => 0,
+                        -subscription_form_id => 'dada_mail_modal_subscription_form'
+                     })
+                }
+        }
+    );  
+    
+    my $jquery_subscription_form_head = DADA::Template::Widgets::screen(
+        { 
+            -screen => 'jquery_subscription_form_head.tmpl', 
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+        }
+    ); 
+    
+    my $scrn = DADA::Template::Widgets::screen(
+        {
+            -screen         => 'preview_jquery_plugin_subscription_form.tmpl',
+            -vars => {
+                jquery_subscription_form_head => $jquery_subscription_form_head, 
+                jquery_subscription_form_body => $jquery_subscription_form_body, 
+            },
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+        }
+    );
+    print $q->header(); 
+    e_print($scrn);
+    
 }
 
 sub edit_template {

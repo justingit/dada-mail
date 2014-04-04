@@ -2942,7 +2942,7 @@ It's quite apparrent that the API of this method is not very well thought-out. T
 started as a subroutine in the main, C<mail.cgi> script itself that overgrown its bounds considerably, but didn't 
 receive a re-design of its API. Also, returning, C<undef> on success is also not very helpful. 
 
-Rather, you may want to look into Dada Mail's Experimental JSON API: 
+Rather, you may want to look into Dada Mail's JSON API: 
 
 L<http://dadamailproject.com/d/COOKBOOK-subscriptions.pod.html>
 
