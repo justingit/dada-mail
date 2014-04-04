@@ -895,7 +895,7 @@ If you do install this way, note that you still have to create the create the Bo
 
 =item * Configure your mailing list to use this email address for its, "List Administrator Address"
 
-Set this email address as our "List Administrator Adress" in the list control panel, under,
+Set this email address as our "List Administrator Address" in the list control panel, under,
 
 B<Your Mailing List -  Change List Information> 
 
