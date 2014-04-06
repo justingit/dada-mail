@@ -285,6 +285,11 @@
     		      <!-- tmpl_var label escape="HTML" --> (<!-- tmpl_var name escape="HTML" -->): 
     		     </label>
     		    <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->"  />
+    		    <!-- tmpl_if required -->
+		        <span class="error">
+		            * Required
+		        </span>
+		    <!-- /tmpl_if -->
     		    </p>
     		<!--/tmpl_loop-->
 		
