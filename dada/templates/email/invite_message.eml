@@ -84,11 +84,9 @@ Content-Transfer-Encoding: binary
   </strong>
  </p> 
  <p>
-  <strong> 
    <a href="<!-- tmpl_var list_confirm_subscribe_link -->">
     <!-- tmpl_var list_confirm_subscribe_link -->
    </a>
-  </strong>
  </p>
 </li>
 
