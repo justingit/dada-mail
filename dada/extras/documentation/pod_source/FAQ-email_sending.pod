@@ -379,7 +379,7 @@ Adding the following lines to your C<.dada_config> file:
 
 (where, C</home/account/.dada_files> is the path to your own C<.dada_files> directory) 
 
-When your mailing list preferences are set to use B<sendmail to send out messages, messaages will instead just be appended to the file, in the location above. You can then manually inspect the output of what Dada Mail is creating to spot any problems.
+When your mailing list preferences are set to use B<sendmail> to send out messages, messaages will instead just be appended to the file, in the location above. You can then manually inspect the output of what Dada Mail is creating to spot any problems.
 
 =cut
 
