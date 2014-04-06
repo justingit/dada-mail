@@ -8,7 +8,7 @@ This FAQ attempts to answer questions specifically to sending out email from Dad
 
 =over
 
-=item * Mailing List Sending FAQ
+=item * Mass Mailing Sending FAQ
 
 http://dadamailproject.com/support/documentation/FAQ-mailing_list_sending.pod.html
 
@@ -28,9 +28,9 @@ http://dadamailproject.com/support/documentation/FAQ-general.pod.html.html
 
 Both SMTP sending and using the sendmail command do the same thing - they send email. 
 
-The SMTP engine will connection directly to an SMTP server. 
+The SMTP engine will connect directly to an SMTP server. 
 
-The sendmail command will pass an email message to a server utility, which will then connect to the SMTP server. 
+The sendmail command will pass an email message to a server utility, which will then connect to the outgoing mail server. 
 
 =head2 Which one should I use, the sendmail command or SMTP? 
 
@@ -56,15 +56,7 @@ Currently, Dada Mail uses the B<Net::SMTP_auth> CPAN module to send email via SM
 
 L<http://search.cpan.org/~apleiner/Net-SMTP_auth>
 
-In versions prior, it has used the B<Net::SMTP> CPAN module: 
-
-http://search.cpan.org/~gbarr/libnet/Net/SMTP.pm
-
-And the B<Mail::Bulkmail> CPAN module: 
-
-http://search.cpan.org/~jimt/Mail-Bulkmail/Bulkmail.pm
-
-Net::SMTP_auth is a little more flexible than Net::SMTP when it comes to setting the authentication schemes to use and Mail::Bulkmail does not support SASL authentication at all, has some mysterious bugs we couldn't figure out and Dada Mail does much of the rest of the utilities that it packs. 
+C<Net::SMTP_auth> is a little more flexible than C<Net::SMTP> when it comes to setting the authentication schemes to use and Mail::Bulkmail does not support SASL authentication at all, has some mysterious bugs we couldn't figure out and Dada Mail does much of the rest of the utilities that it packs. 
 
 =head2 SMTP Authentication
 
@@ -352,22 +344,42 @@ In rare occassions, the mail server will actually strip out the HTML version of 
 
 =head2 No Mail is Sending at All. 
 
-If you have root access to your own server and NO mail is being sent with any email utility, try rebooting your server. If that doesn't work, sincerely look for professional help, to solve the problem. 
+=head3 List Owner/List Administrator set up Correctly? 
 
-=head2 Debugging Sendmail
+One common problem we see is that someone will set up the List Owner, or List Administrator to an address that the mail server will not accept mail from. 
+
+Usually, this happens when the List Owner/Administrator address isn't from an address that's hosted on the account. So, for example if my site is, C<mysite.com>, setting the List Owner/Administrator to an address from my account, example: C<owner@mysite.com> should work fine, provided: 
+
+=over
+
+=item * That account exists
+
+Make sure the account you're using already exists. Mail systems that accept mail sometimes look up email accounts that exist. If the account for your List Owner/Admin does not, your message may not be accepted. 
+
+=item * That account is not a mail forward
+
+Sometimes, the mail system's check to see if an email account exist doesn't cover mail forwards that are valid and do exist, so even if you use a valid mail forward as your List Owner/Admin, things still won't work correctly. 
+
+=item * That account is not disabled in some way
+
+Sometimes valid email accounts have mail sending disabled because of a variety of reasons: too many messages being sent, too may bounces being sent back, over an disk quota, etc. Make sure these issues are cleared up and always check the List Owner address and if you're using a separate List Administrator address, have it properly set up with Bounce Handler. 
+
+=back
+
+Using an email address from a third party email service, like Hotmail, Gmail, Yahoo! Mail, etc is B<not advised>. 
+
+=head3 Debugging Sendmail
 
 =head2 Set your $MAILPROG to a file, instead of piping to sendmail
 
 Adding the following lines to your C<.dada_config> file: 
 
-	$MAIL_SETTINGS      = '>>' . $DIR . '/.tmp/mail.txt';
-	$MASS_MAIL_SETTINGS = '>>' . $DIR . '/.tmp/mail.txt';
+	$MAIL_SETTINGS      = '>> /home/account/.dada_files/.tmp/mail.txt';
+	$MASS_MAIL_SETTINGS = '>> /home/account/.dada_files/.tmp/mail.txt';
 
-Will simply write out all email messages sent from all mailing lists (that are set up to use sendmail to send out messages) into a file in the C<.dada_files/.tmp> directory called, C<mail.txt>
+(where, C</home/account/.dada_files> is the path to your own C<.dada_files> directory) 
 
-You can then manually inspect the output of what Dada Mail is creating to spot any problems. 
-
- 
+When your mailing list preferences are set to use B<sendmail to send out messages, messaages will instead just be appended to the file, in the location above. You can then manually inspect the output of what Dada Mail is creating to spot any problems.
 
 =cut
 

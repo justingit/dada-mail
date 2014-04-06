@@ -1320,7 +1320,7 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
     # and then wait: [x] seconds, before the next
     bulk_sleep_amount => 8,
 
-    # Auto-Pickup Dropped List Message Mailings
+    # Auto-Pickup Dropped Mass Mailings
     auto_pickup_dropped_mailings => 1,
 
     # Restart Mailings After Each Batch
