@@ -258,18 +258,20 @@ sub send_email {
 
         # /Are we archiving this message?
 
-        require MIME::Lite;
-        $MIME::Lite::PARANOID = $DADA::Config::MIME_PARANOID;
+        require MIME::Entity;
 
-        my $email_format = $q->param('email_format');
-        my $attachment   = $q->param('attachment');
-
+        my $email_format      = $q->param('email_format');
+        my $attachment        = $q->param('attachment');
         my $text_message_body = $q->param('text_message_body') || undef;
         my $html_message_body = $q->param('html_message_body') || undef;
-
+        
+        my @attachments       = $self->has_attachments( { -cgi_obj => $q } );
+        my $num_attachments = scalar(@attachments); 
+        
         ( $text_message_body, $html_message_body ) =
           DADA::App::FormatMessages::pre_process_msg_strings( $text_message_body, $html_message_body );
-        my $msg;
+        
+        my $entity;
 
         if ( $html_message_body && $text_message_body ) {
 
@@ -281,60 +283,52 @@ sub send_email {
             return undef
               if redirect_tag_check( $html_message_body, $list, $root_login ) eq undef;
 
-            $msg = MIME::Lite->new(
+            $entity = MIME::Entity->build(
                 Type      => 'multipart/alternative',
-                Datestamp => 0,
-                %headers,
+                Charset   => $li->{charset_value},
+                (($num_attachments < 1) ? (%headers) : ()), 
             );
-            $msg->attr( 'content-type.charset' => $li->{charset_value} );
-
-            my $pt_part = MIME::Lite->new(
-                Type     => 'text/plain',
-                Data     => $text_message_body,
-                Encoding => $li->{plaintext_encoding},
+            $entity->attach(
+                Type      => 'text/plain',
+                Data      => $text_message_body,
+                Encoding  => $li->{plaintext_encoding},
+                Charset   => $li->{charset_value},
             );
-            $pt_part->attr( 'content-type.charset' => $li->{charset_value} );
-
-            $msg->attach($pt_part);
-            my $html_part = MIME::Lite->new(
+            $entity->attach(
                 Type     => 'text/html',
                 Data     => $html_message_body,
                 Encoding => $li->{html_encoding},
+                Charset  => $li->{charset_value},        
             );
-            $html_part->attr( 'content-type.charset' => $li->{charset_value} );
-
-            $msg->attach($html_part);
 
         }
         elsif ($html_message_body) {
-
+            
             $html_message_body = safely_encode($html_message_body);
-
+            
             return undef
               if redirect_tag_check( $html_message_body, $list, $root_login ) eq undef;
-
-            $msg = MIME::Lite->new(
-                Type      => 'text/html',
-                Data      => $html_message_body,
-                Encoding  => $li->{html_encoding},
-                Datestamp => 0,
-                %headers
+              
+            $entity = MIME::Entity->build(
+                Type       => 'text/html',
+                Data       => $html_message_body,
+                Encoding   => $li->{html_encoding},
+                Charset    => $li->{charset_value},
+                (($num_attachments < 1) ? (%headers) : ()),         
             );
-            $msg->attr( 'content-type.charset' => $li->{charset_value} );
         }
         elsif ($text_message_body) {
 
             $text_message_body = safely_encode($text_message_body);
             return undef
               if redirect_tag_check( $text_message_body, $list, $root_login ) eq undef;
-            $msg = MIME::Lite->new(
-                Type      => 'TEXT',
-                Data      => $text_message_body,
-                Encoding  => $li->{plaintext_encoding},
-                Datestamp => 0,
-                %headers,
+            $entity = MIME::Entity->build(
+                Type       => 'text/plain',
+                Data       => $text_message_body,
+                Encoding   => $li->{plaintext_encoding},
+                Charset    => $li->{charset_value},      
+                (($num_attachments < 1) ? (%headers) : ()),   
             );
-            $msg->attr( 'content-type.charset' => $li->{charset_value} );
         }
         else {
             report_mass_mail_errors( "There's no text in either the PlainText or HTML version of your email message!",
@@ -342,38 +336,34 @@ sub send_email {
             return;
         }
 
-        my @attachments = $self->has_attachments( { -cgi_obj => $q } );
-
-        my @compl_att = ();
-
+        my @compl_att   = ();
         if (@attachments) {
             my @compl_att = ();
-
             for (@attachments) {
-
-                #carp '$_ ' . $_;
-
-                my ($msg_att) = $self->make_attachment( { -name => $_, -cgi_obj => $q } );
-                push( @compl_att, $msg_att )
-                  if $msg_att;
+                my ($attach_entity) = $self->make_attachment( { -name => $_, -cgi_obj => $q } );
+                push( @compl_att, $attach_entity )
+                  if $attach_entity;
             }
-
             if ( $compl_att[0] ) {
-                my $mpm_msg = MIME::Lite->new(
-                    Type      => 'multipart/mixed',
-                    Datestamp => 0,
+                my $mpm_entity = MIME::Entity->build(
+                    Type => 'multipart/mixed', 
+                    %headers
                 );
-                $mpm_msg->attach($msg);
+                $mpm_entity->add_part($entity); 
                 for (@compl_att) {
-                    $mpm_msg->attach($_);
+                  #  warn 'add part
+                    $mpm_entity->add_part($_);
                 }
-                $msg = $mpm_msg;
+                $entity = $mpm_entity; 
             }
         }
 
-        my $msg_as_string = ( defined($msg) ) ? $msg->as_string : undef;
-        $msg_as_string = safely_decode($msg_as_string);
 
+
+        my $msg_as_string = ( defined($entity) ) ? $entity->as_string : undef;        
+           $msg_as_string = safely_decode($msg_as_string);
+         warn '$msg_as_string ' . $msg_as_string; 
+         
         $fm->Subject( $headers{Subject} );
 
         my ( $final_header, $final_body );
@@ -1087,10 +1077,10 @@ sub list_invite {
         for my $a (@addresses) {
             my $pre_info = $lh->csv_to_cds($a);
             my $info     = {};
-
+                
             # DEV: Here I got again:
             $info->{email} = $pre_info->{email};
-
+            
             my $new_fields = [];
             my $i          = 0;
             for (@$subscriber_fields) {
@@ -1251,9 +1241,8 @@ sub list_invite {
         ( $text_message_body, $html_message_body ) =
           DADA::App::FormatMessages::pre_process_msg_strings( $text_message_body, $html_message_body );
 
-        require MIME::Lite;
-        $MIME::Lite::PARANOID = $DADA::Config::MIME_PARANOID;
-        my $msg;
+        require MIME::Entity;
+        my $entity;
 
         if ( $text_message_body and $html_message_body ) {
 
@@ -1265,29 +1254,23 @@ sub list_invite {
             return undef
               if redirect_tag_check( $html_message_body, $list, $root_login ) eq undef;
 
-            $msg = MIME::Lite->new(
+            $entity = MIME::Entity->build(
                 Type      => 'multipart/alternative',
-                Datestamp => 0,
+                Charset   => $li->{charset_value},  
                 %headers,
             );
-            $msg->attr( 'content-type.charset' => $li->{charset_value} );
-
-            my $pt_part = MIME::Lite->new(
-                Type     => 'TEXT',
-                Data     => $text_message_body,
-                Encoding => $li->{plaintext_encoding},
+            $entity->attach(
+                Type      => 'text/plain',
+                Data      => $text_message_body,
+                Encoding  => $li->{plaintext_encoding},
+                Charset   => $li->{charset_value},  
             );
-            $pt_part->attr( 'content-type.charset' => $li->{charset_value} );
-            $msg->attach($pt_part);
-
-            my $html_part = MIME::Lite->new(
-                Type     => 'text/html',
-                Data     => $html_message_body,
-                Encoding => $li->{html_encoding},
+            $entity->attach(
+                Type      => 'text/html',
+                Data      => $html_message_body,
+                Encoding  => $li->{html_encoding},
+                Charset   => $li->{charset_value},
             );
-            $html_part->attr( 'content-type.charset' => $li->{charset_value} );
-            $msg->attach($html_part);
-
         }
         elsif ($html_message_body) {
 
@@ -1296,29 +1279,26 @@ sub list_invite {
             return undef
               if redirect_tag_check( $html_message_body, $list, $root_login ) eq undef;
 
-            $msg = MIME::Lite->new(
+            $entity = MIME::Entity->build(
                 Type      => 'text/html',
                 Data      => $html_message_body,
                 Encoding  => $li->{html_encoding},
-                Datestamp => 0,
+                Charset   => $li->{charset_value},
                 %headers,
             );
-            $msg->attr( 'content-type.charset' => $li->{charset_value} );
-
         }
         elsif ($text_message_body) {
             $text_message_body = safely_encode($text_message_body);
 
             return undef
               if redirect_tag_check( $text_message_body, $list, $root_login ) eq undef;
-            $msg = MIME::Lite->new(
+            $entity = MIME::Entity->build(
                 Type      => 'text/plain',
                 Data      => $text_message_body,
-                Datestamp => 0,
                 Encoding  => $li->{plaintext_encoding},
+                Charset   => $li->{charset_value},
                 %headers,
             );
-            $msg->attr( 'content-type.charset' => $li->{charset_value} );
         }
         else {
 
@@ -1327,21 +1307,18 @@ sub list_invite {
 
             return undef
               if redirect_tag_check( $ls->param('invite_message_text'), $list, $root_login ) eq undef;
-            $msg = MIME::Lite->new(
-                Type      => 'TEXT',
+            $entity = MIME::Entity->build(
+                Type      => 'text/plain',
                 Data      => safely_encode( $ls->param('invite_message_text') ),
-                Datestamp => 0,
                 Encoding  => $li->{plaintext_encoding},
+                Charset   => $li->{charset_value},
                 %headers,
             );
-            $msg->attr( 'content-type.charset' => $li->{charset_value} );
 
         }
 
-        $msg->replace( 'X-Mailer' => "" );
-
-        my $msg_as_string = ( defined($msg) ) ? $msg->as_string : undef;
-        $msg_as_string = safely_encode($msg_as_string);
+        my $msg_as_string = ( defined($entity) ) ? $entity->as_string : undef;
+           $msg_as_string = safely_encode($msg_as_string);
 
         require DADA::App::FormatMessages;
         my $fm = DADA::App::FormatMessages->new( -List => $list );
@@ -1358,7 +1335,6 @@ sub list_invite {
         }
 
         require DADA::Mail::Send;
-
         my $mh = DADA::Mail::Send->new(
             {
                 -list   => $list,
@@ -1465,7 +1441,7 @@ sub has_attachments {
 
 sub make_attachment {
 
-	require MIME::Lite;
+	require MIME::Entity;
     
     my $self   = shift;
     my ($args) = @_;
@@ -1503,23 +1479,26 @@ sub make_attachment {
     $filename =~ s/\s/%20/g;
 
     my %mime_args = (
-        Type        => $a_type,
-        Disposition => $self->make_a_disposition($a_type),
-        Datestamp   => 0,
-        Id          => $filename,
-        Filename    => $filename,
-        Path        => $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_dir} . '/' . $name,
+        Type               => $a_type,
+        Disposition        => $self->make_a_disposition($a_type),
+      #  Datestamp         => 0,
+        Id                 => $filename,
+        Filename           => $filename,
+        'Content-Location' => $filename, 
+        Path               => $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_dir} . '/' . $name,
     );
 
     if ($t) {
         require Data::Dumper;
         warn '%mime_args' . Data::Dumper::Dumper( {%mime_args} );
     }
+    
+    warn 'building at make_attachment - start'; 
+    my $entity = MIME::Entity->build(%mime_args);
+    warn 'building at make_attachment - done'; 
 
-    my $msg_att = MIME::Lite->new(%mime_args);
-    $msg_att->attr( 'Content-Location' => $filename );
-
-    return $msg_att;
+    warn 'returning!'; 
+    return $entity;
 
 }
 
