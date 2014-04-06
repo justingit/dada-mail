@@ -5085,8 +5085,9 @@ sub add {
             push(
                 @$fields,
                 {
-                    name  => $field,
-                    label => $fields_attr->{$field}->{label},
+                    name     => $field,
+                    label    => $fields_attr->{$field}->{label},
+                    required => $fields_attr->{$field}->{required},
                 }
             );
         }
@@ -5448,10 +5449,20 @@ sub add_email {
         warn '$subscribed' . scalar(@$subscribed); 
         
         if ($type eq 'list') {         
-            if(
-                scalar(@$not_members) > 0 
-            || (scalar(@$black_listed) > 0 && $ls->param('allow_admin_to_subscribe_blacklisted') == 1)) { 
+            if(scalar(@$not_members) > 0) { 
+                 $show_invitation_button = 1;  
+            }
+            elsif(
+                scalar(@$black_listed) > 0 
+             && $ls->param('allow_admin_to_subscribe_blacklisted') == 1
+             ) { 
                $show_invitation_button = 1;  
+            }
+            elsif(
+                scalar($invalid_profile_fields) > 0
+                && ($root_login == 1 || $ls->param('allow_profile_editing') == 1)
+            ){ 
+                $show_invitation_button = 1;  
             }
         
             if(
