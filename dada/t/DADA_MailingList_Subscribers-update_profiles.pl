@@ -271,8 +271,8 @@ $partial_listing = {
 ok($total_num == 4, "four new results!"); 
 
 
-use Data::Dumper; 
-diag Dumper($subscribers); 
+#use Data::Dumper; 
+#diag Dumper($subscribers); 
 
 for my $subs(@$subscribers){ 
    for my $f(@{$subs->{fields}}){ 

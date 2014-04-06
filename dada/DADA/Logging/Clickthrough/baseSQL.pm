@@ -523,13 +523,15 @@ sub mass_mailing_event_log {
       . 'remote_addr, msg_id, event, email, details) VALUES (?, ?, ?, ?, ?, ?'
       . $place_holder_string . ')';
 
-	  warn '$query:' . $query; 
+	  warn '$query:' . $query
+	    if $t;
 	  
     my $sth = $self->{dbh}->prepare($query);
     
 	my @execute_args = (); 
     if ( defined($timestamp) ) {
-		warn 'timestamp!';
+		warn 'timestamp!'
+		    if $t; 
 		@execute_args = ($self->{name}, $timestamp, $remote_address, $args->{-mid}, $event, $args->{-email}, $details);
         $sth->execute(@execute_args);
     }
@@ -537,7 +539,8 @@ sub mass_mailing_event_log {
 		@execute_args = ($self->{name},             $remote_address, $args->{-mid}, $event, $args->{-email}, $details);
 		
         $sth->execute(@execute_args);
-    	warn 'no timestamp';
+    	warn 'no timestamp' 
+    	    if $t; 
 	}
     if ( $t == 1 ) {
         require Data::Dumper;

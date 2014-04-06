@@ -1048,7 +1048,7 @@ SKIP: {
     my $l2 = 'MikeMikeMikeMikeMikeMike';
     my $l3 = 'KelleyKelleyKelleyKelleyKelleyKelleyKelley';
     
-    diag '$contents ' . $contents; 
+    # diag '$contents ' . $contents; 
     
     like( $contents, qr/$l/ );
     like( $contents, qr/$l2/ );

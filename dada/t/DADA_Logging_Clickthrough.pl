@@ -82,8 +82,8 @@ my $reuse2 = $lc->reuse_key( 12345678901234, 'http://someotherurl.com' );
 
 ok( $reuse2 eq undef, 'reuse_key is undef.' );
 
-diag '$test_url:'. $test_url; 
-diag '$test_mid:' . $test_mid; 
+#diag '$test_url:'. $test_url; 
+#diag '$test_mid:' . $test_mid; 
 my $coded = $lc->redirect_encode( $test_mid, $lc->redirect_tagify($test_url) );
 my $looks_like = $DADA::Config::PROGRAM_URL . '/r/' . $list . '/' . $key . '/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/';
 warn '$coded:'.$coded;
@@ -110,14 +110,14 @@ for ( $i = 0 ; $i < 50 ; $i++ ) {
     $existing->{$test_r_url} = 1;
 }
 
-diag '$test_url ' . $test_url; 
+#diag '$test_url ' . $test_url; 
 
 my $s = '[redirect=' . $test_url . ']';
 
 my $ps = $lc->parse_string( $test_mid, $s );
 
-diag '$ps ' . $ps;
-diag '$coded ' . $coded; 
+#diag '$ps ' . $ps;
+#diag '$coded ' . $coded; 
 
 # It's the same as before, you see?
 ok( $ps eq $coded, "same as before?" );
