@@ -1091,7 +1091,7 @@ sub list_invite {
             $info->{fields} = $new_fields;
 
             #And... Then this!
-            $info->{csv_str} = $a;
+            $info->{csv_info} = $a;
             $info->{'list_settings.invites_prohibit_reinvites'} = $ls->param('invites_prohibit_reinvites');
             if ( $ls->param('invites_check_for_already_invited') == 1 ) {
 
