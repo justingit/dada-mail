@@ -5441,13 +5441,7 @@ sub add_email {
         my $show_invitation_button = 0; 
         my $show_update_button     = 0; 
         my $show_add_button        = 0; 
-        
-        
-        warn '$not_members- ' . scalar(@$not_members);
-        warn '$black_listed ' . scalar(@$black_listed); 
-        warn '$ls->param(\'allow_admin_to_subscribe_blacklisted\')' . $ls->param('allow_admin_to_subscribe_blacklisted'); 
-        warn '$subscribed' . scalar(@$subscribed); 
-        
+                
         if ($type eq 'list') {         
             if(scalar(@$not_members) > 0) { 
                  $show_invitation_button = 1;  

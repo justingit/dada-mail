@@ -550,7 +550,6 @@ sub bridge_received_msgs {
         
     $dir = DADA::App::Guts::make_safer($dir);
     my $file = $dir . '/' . 'bridge_received_msgs-' . $list . '.mbox'; 
-    warn 'file:' . $file; 
     
     if(-f $file){ 
         $mbox->{'Bridge Received Messages (mbox)'} = $file;

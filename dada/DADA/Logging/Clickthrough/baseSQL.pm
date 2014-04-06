@@ -695,8 +695,6 @@ sub get_all_mids {
 
 sub report_by_message_index {
 
-	# warn 'report_by_message_index'; 
-	#my $t = time; 
 
     my $self          = shift;
 	my ($args)        = @_; 
@@ -1956,10 +1954,6 @@ sub message_email_report_table {
 	my ($args) = @_; 
 	my $html; 
 	
-	use Data::Dumper; 
-	warn 'args:' . Dumper($args); 
-	
-	# warn '$args->{-type} ' . $args->{-type}; 
 	if(! exists($args->{-type})){ 
 		croak 'you MUST pass -type!'; 
 	}
