@@ -85,7 +85,7 @@ sub send_email {
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
+    my $li = $ls->get(-all_settings => 1);
 
     require DADA::MailingList::Subscribers;
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
@@ -189,7 +189,7 @@ sub send_email {
                     html_message_body_content_js_escaped => js_enc( $ls->html_message_body_content ),
                     %wysiwyg_vars,
                 },
-                -list_settings_vars       => $ls->params,
+                -list_settings_vars       => $li,
                 -list_settings_vars_param => { -dot_it => 1, },
             }
         );
@@ -507,7 +507,7 @@ sub send_url_email {
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
+    my $li = $ls->get(-all_settings => 1);
 
     require DADA::MailingList::Archives;
 
