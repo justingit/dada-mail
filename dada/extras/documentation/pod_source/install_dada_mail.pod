@@ -135,7 +135,7 @@ By default, a I<pretty good guess> is made for the location to set both the Serv
 
 If the default location looks fine, keep it as-is. If you'd like to customize/fix where this directory should live, you may do so. 
 
-The Installer will create the, <dada_mail_support_files> and under the directory you set, as well as copy over a few directories holding the required resources. 
+The Installer will create the, C<dada_mail_support_files> under the directory you set, as well as copy over a few directories holding the required resources. 
 
 B<Make sure> That this URL and the Program URL either B<both> domain name, or are located on the same subdomain. The following examples will work great: 
 
@@ -313,7 +313,7 @@ Good Luck!
 
 Along with Installing Dada Mail, the Dada Mail Installer can also help reconfigure the global configuration of Dada Mail, at any time in the future, after your installation. 
 
-Dada Mail comes with a plugin called, B<Global Configuration> to make this easy. It itself can be installer using the Dada Mail installer. Once installed, it can be accessed in the List Control Panel, under, "Plugins". Make sure you have logged into a mailing list, with the Dada Mail Root Pass, as it's not available, if you log in with the List Password. 
+Dada Mail comes with a plugin called, B<Global Configuration> to make this easy. It itself can be installed using the Dada Mail installer. Once installed, it can be accessed in the List Control Panel, under, "Plugins". Make sure you have logged into a mailing list, with the Dada Mail Root Pass, as it's not available, if you log in with the List Password. 
 
 You can also re-enable the Dada Mail Installer Manually. 
 
