@@ -5537,7 +5537,7 @@ sub add_email {
         my $update_email_count = 0;
         
         if ( $type eq 'list' ) {
-            if($process =~ m/subscribe|invit/i){ 
+            if($process =~ m/subscribe|invit|update/i){ 
 
                 # This is what updates already existing profile fields and profile passwords; 
                 # 
