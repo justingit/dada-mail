@@ -3901,10 +3901,10 @@ sub subscription_requests {
             $flavor_to_return_to = $return_to;
         }
 
-        my $qs = 'f=' . $flavor_to_return_to . ';type=' . $q->param('type') . ';approved_count=' . $count;
+        my $qs = 'f=' . $flavor_to_return_to . '&type=' . $q->param('type') . '&approved_count=' . $count;
 
         if ( $return_to eq 'membership' ) {
-            $qs .= ';email=' . $return_address;
+            $qs .= '&email=' . $return_address;
         }
 
         print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL . '?' . $qs );
@@ -3942,10 +3942,10 @@ sub subscription_requests {
             $flavor_to_return_to = $return_to;
         }
 
-        my $qs = 'f=' . $flavor_to_return_to . ';type=' . $q->param('type') . ';denied_count=' . $count;
+        my $qs = 'f=' . $flavor_to_return_to . '&type=' . $q->param('type') . '&denied_count=' . $count;
 
         if ( $return_to eq 'membership' ) {
-            $qs .= ';email=' . $return_address;
+            $qs .= '&email=' . $return_address;
         }
 
         print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL . '?' . $qs );
@@ -4120,7 +4120,7 @@ sub membership {
         );
 
         print $q->redirect(
-            -uri => $DADA::Config::S_PROGRAM_URL . '?f=membership;email=' . $email . ';type=' . $type . ';done=1' );
+            -uri => $DADA::Config::S_PROGRAM_URL . '?f=membership&email=' . $email . '&type=' . $type . '&done=1' );
         return;
     }
     else {
@@ -4504,10 +4504,10 @@ sub validate_update_email {
         my $return_to      = 'membership';
         my $return_address = $updated_email;
 
-        my $qs = 'flavor=' . $return_to . ';update_email_count=' . $total_u_count;
+        my $qs = 'flavor=' . $return_to . '&update_email_count=' . $total_u_count;
 
         if ( $return_to eq 'membership' ) {
-            $qs .= ';email=' . $return_address;
+            $qs .= '&email=' . $return_address;
         }
 
         print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL . '?' . $qs );
@@ -4657,14 +4657,14 @@ sub validate_remove_email {
         my $qs =
             'flavor='
           . $return_to
-          . ';delete_email_count='
+          . '&delete_email_count='
           . $full_d_count
-          . ';type=' . ''
-          . ';black_list_add='
+          . '&type=' . ''
+          . '&black_list_add='
           . $full_bl_count;
 
         if ( $return_to eq 'membership' ) {
-            $qs .= ';email=' . $return_address;
+            $qs .= '&email=' . $return_address;
         }
 
         print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL . '?' . $qs );
@@ -4933,7 +4933,7 @@ sub admin_change_profile_password {
     #
 
     print $q->redirect(
-        -uri => $DADA::Config::S_PROGRAM_URL . '?f=membership;email=' . $email . ';type=' . $type . ';done=1' );
+        -uri => $DADA::Config::S_PROGRAM_URL . '?f=membership&email=' . $email . '&type=' . $type . '&done=1' );
     return;
 }
 
@@ -5738,19 +5738,19 @@ sub add_email {
             my $qs =
                 'flavor='
               . $flavor_to_return_to
-              . ';add_email_count='
+              . '&add_email_count='
               . $new_email_count
-              . ';skipped_email_count='
+              . '&skipped_email_count='
               . $skipped_email_count
-              . ';update_email_count='
+              . '&update_email_count='
               . $update_email_count
-              . ';type='
+              . '&type='
               . $type;
 
             if ( $return_to eq 'membership' ) {
-                $qs .= ';email=' . $return_address;
+                $qs .= '&email=' . $return_address;
             }
-
+            
             print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL . '?' . $qs );
         }
     }
@@ -10463,15 +10463,15 @@ sub remove_subscribers {
 
       'flavor='
       . $flavor_to_return_to
-      . ';delete_email_count='
+      . '&delete_email_count='
       . $d_count
-      . ';type='
+      . '&type='
       . $type
-      . ';black_list_add='
+      . '&black_list_add='
       . $bl_count;
 
     if ( $return_to eq 'membership' ) {
-        $qs .= ';email=' . $return_address;
+        $qs .= '&email=' . $return_address;
     }
 
     print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL . '?' . $qs );
