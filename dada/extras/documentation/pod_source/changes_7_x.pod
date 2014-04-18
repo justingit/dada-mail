@@ -1,5 +1,18 @@
 =pod
 
+=head1 Dada Mail Changelog for v7.x
+
+=head2 7.0.1
+
+=head2 Summary 7.0.1
+
+This is primarily a bugfix release - no new features are present in this release, when compared to v7.0.0. The bugs found and resolved are relatively small, and do not include anything related to security or data loss/corruption. Still, we suggest the upgrade to anyone running v7.0.0
+
+=head2 Bugfixes 7.0.1
+
+=head3 
+
+
 =head2 7.0.0
 
 =head2 Features
