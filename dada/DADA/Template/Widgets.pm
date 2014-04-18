@@ -548,9 +548,13 @@ sub default_screen {
         # /This is a weird placement...
 
         my $ls = DADA::MailingList::Settings->new( { -list => $l } );
-        next if $ls->param('hide_list') == 1 && $ls->param('private_list') == 1;
-        $labels->{$l} = $ls->param('list_name');
-        $l_count++;
+        if($ls->param('hide_list') == 1 && $ls->param('private_list') == 1){ 
+            next; 
+        }
+        else {
+            $labels->{$l} = $ls->param('list_name');
+            $l_count++;
+        }
     }
     my @list_in_list_name_order =
       sort { uc( $labels->{$a} ) cmp uc( $labels->{$b} ) } keys %$labels;
@@ -567,9 +571,7 @@ sub default_screen {
             }
         );
 
-        if ( $all_list_info->{hide_list} != 1 )
-        {    # should we do this here, or in the template?
-
+        unless($ls->param('hide_list') == 1 && $ls->param('private_list') == 1){ 
             $l_count++;
 
             # This is strange...
