@@ -10,8 +10,21 @@ This is primarily a bugfix release - no new features are present in this release
 
 =head2 Bugfixes 7.0.1
 
-=head3 
+=head3 Subscribers that have tried to subscribe themselves, and then later are imported in the list control panel, may not show up in the verification stage
 
+L<https://github.com/justingit/dada-mail/issues/431>
+
+=head3 semicolons used to separate paramaters in query strings sometimes causes problems
+
+L<https://github.com/justingit/dada-mail/issues/430>
+
+=head3 Just "Updating" profile fields of addresses without any new Subscribers will not work.
+
+L<https://github.com/justingit/dada-mail/issues/428>
+
+=head3 Default subjects not coming up in Send a Message or Send a URL screens
+
+L<https://github.com/justingit/dada-mail/issues/427>
 
 =head2 7.0.0
 
