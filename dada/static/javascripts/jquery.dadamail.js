@@ -9,7 +9,7 @@
         this._init( target, options ); 
 		
         /** #### OPTIONS #### */
-       this.options= $.extend(
+       this.options = $.extend(
             true,               // deep extend
             {
                 DEBUG: false,

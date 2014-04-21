@@ -2141,14 +2141,15 @@ sub dada_mail_subscribe {
 	if((defined($list)) && (defined($dm_email))){	
 		my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
 		if(($dada_mail_subscribe_email eq "1") || ($dada_mail_subscribe_email eq "yes")){ 
-			my ($status, $errors) = $lh->subscription_check({-email => $dm_email}); 
+		    
+		    my $fields = {}; 
+			foreach(@{$lh->subscriber_fields}){ 
+				$fields->{$_} = $self->{Form}{$_}; 
+		    }
+			
+			my ($status, $errors) = $lh->subscription_check({-email => $dm_email, -fields => $fields, }); 
 			if($status == 1){ 
-				
-				my $fields = {}; 
-				foreach(@{$lh->subscriber_fields}){ 
-					$fields->{$_} = $self->{Form}{$_}; 
-			    }
-				$lh->add_subscriber(
+								$lh->add_subscriber(
 				                {
 				                        -email  => $dm_email, 
 										-fields => $fields, 

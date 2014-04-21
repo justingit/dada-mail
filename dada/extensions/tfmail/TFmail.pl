@@ -856,8 +856,15 @@ sub dada_mail_subscribe {
 	        if (   ( $dada_mail_subscribe_email eq "1" )
 	            || ( $dada_mail_subscribe_email eq "yes" ) )
 	        {
+	            
+	            my $fields = {};
+	            foreach ( @{ $lh->subscriber_fields } ) {
+                    $local_q->param( $_, $treq->param($_) );
+                    $fields->{$_} = $treq->param($_);
+                }
+                
 	            my ( $status, $errors ) =
-	              $lh->subscription_check( { -email => $dm_email } );
+	              $lh->subscription_check( { -email => $dm_email, -fields => $fields } );
 	            if ( $status == 1 ) {
 
 	                require CGI;
@@ -867,9 +874,6 @@ sub dada_mail_subscribe {
 	                $local_q->param( 'email', $dm_email );
 	                $local_q->param( 'f',     's' );
 
-	                foreach ( @{ $lh->subscriber_fields } ) {
-	                    $local_q->param( $_, $treq->param($_) );
-	                }
 
 	                require DADA::App::Subscriptions;
 	                my $das = DADA::App::Subscriptions->new;

@@ -81,6 +81,7 @@ sub run {
  	my ($sc_status, $sc_errors) = $lh->subscription_check(
 								{
 									-email => $email,
+									-fields => $fields, 
 									-skip  => $skip_tests, 
 								}
 							);

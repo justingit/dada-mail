@@ -4421,6 +4421,7 @@ sub validate_update_email {
                             'over_subscription_quota',
                             'already_sent_sub_confirmation',
                             'invite_only_list',
+                            'profile_fields', 
                             ( $ls->param('allow_admin_to_subscribe_blacklisted') == 1 ) ? ( 'black_listed', ) : (),
                         ],
                     }

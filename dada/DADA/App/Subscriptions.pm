@@ -302,9 +302,9 @@ sub subscribe {
     
     my ( $status, $errors ) = $lh->subscription_check(
         {
-            -email => $email,
-            -type  => 'list',
-
+            -email  => $email,
+            -type   => 'list',
+            -fields => $fields, 
             ( $ls->param('allow_blacklisted_to_subscribe') == 1 )
             ? ( -skip => ['black_listed'], )
             : (),

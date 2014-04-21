@@ -90,6 +90,7 @@ for my $list(DADA::App::Guts::available_lists()){
 																black_listed 
 																over_subscription_quota 
 																already_sent_sub_confirmation
+																profile_fields
 															)],
 												}
 											); 
