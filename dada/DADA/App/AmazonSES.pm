@@ -113,4 +113,10 @@ sub get_stats {
 	}
 }
 
+
+sub allowed_sending_quota_percentage {
+    my $self = shift; 
+    return int($AMAZON_SES_OPTIONS->{Allowed_Sending_Quota_Percentage}); 
+}
+
 1;

@@ -263,9 +263,10 @@ $CONFIRMATION_TOKEN_OPTIONS = {
 # Amazon SES Options
 
 $AMAZON_SES_OPTIONS = { 
-    AWS_endpoint   => '<!-- tmpl_var AWS_endpoint -->', 
-	AWSAccessKeyId => '<!-- tmpl_var AWSAccessKeyId -->', 
-	AWSSecretKey   => '<!-- tmpl_var AWSSecretKey -->', 
+    AWS_endpoint                     => '<!-- tmpl_var AWS_endpoint -->', 
+	AWSAccessKeyId                   => '<!-- tmpl_var AWSAccessKeyId -->', 
+	AWSSecretKey                     => '<!-- tmpl_var AWSSecretKey -->', 
+	Allowed_Sending_Quota_Percentage => '<!-- tmpl_var Allowed_Sending_Quota_Percentage -->',
 };
 <!-- /tmpl_if -->
 

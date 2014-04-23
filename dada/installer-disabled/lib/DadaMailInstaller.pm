@@ -597,70 +597,64 @@ sub scrn_configure_dada_mail {
 	$q->param('install_type', $install_type); 
 	$q->param('current_dada_files_parent_location', $current_dada_files_parent_location); 
 	
+	my $amazon_ses_Allowed_Sending_Quota_Percentage_popup_menu = $q->popup_menu(
+	    -name    => 'amazon_ses_Allowed_Sending_Quota_Percentage', 
+	    -id      => 'amazon_ses_Allowed_Sending_Quota_Percentage', 
+	    -values => [qw(100 .. 1)],
+	); 
+	
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen => 'installer_configure_dada_mail_scrn.tmpl',
-			-with   => 'list', 
-			-expr   => 1, 
-            -vars => {
-	
-				%$advanced_config_params, 
-				
-				# These are tricky.... 
-				SUPPORT_FILES_URL               => $Self_URL . '?f=screen&screen=',
-				
-				install_type                => $install_type, 
-				current_dada_files_parent_location => $current_dada_files_parent_location, 
-				
-                program_url_guess              => program_url_guess(),
-                can_use_DBI                    => test_can_use_DBI(),
-				can_use_MySQL                  => test_can_use_MySQL(), 
-				can_use_Pg                     => test_can_use_Pg(), 
-				can_use_SQLite                 => test_can_use_SQLite(), 
-				can_use_GD                     => test_can_use_GD(), 	
-				can_use_CAPTCHA_reCAPTCHA      => test_can_use_CAPTCHA_reCAPTCHA(), 							
-				can_use_CAPTCHA_reCAPTCHA_Mailhide => test_can_use_CAPTCHA_reCAPTCHA_Mailhide(), 							
+            -with   => 'list',
+            -expr   => 1,
+            -vars   => {
+                %$advanced_config_params,
 
-                error_cant_read_config_dot_pm  => test_can_read_config_dot_pm(),
-                error_cant_write_config_dot_pm => test_can_write_config_dot_pm(),
-				home_dir_guess                 => guess_home_dir(),
-				install_dada_files_dir_at      => install_dada_files_dir_at_from_params(),
-			    test_complete_dada_files_dir_structure_exists 
-											   => test_complete_dada_files_dir_structure_exists(install_dada_files_dir_at_from_params()), 
-				dada_files_dir_setup           => $q->param('dada_files_dir_setup') || '', 
-                dada_files_loc                 => $q->param('dada_files_loc') || '',
-				error_create_dada_mail_support_files_dir  
-											   => $q->param('error_create_dada_mail_support_files_dir') || 0,
-                error_root_pass_is_blank       => $q->param('error_root_pass_is_blank')|| 0,
-                error_pass_no_match            => $q->param('error_pass_no_match') || 0,
-                error_program_url_is_blank     => $q->param('error_program_url_is_blank') || 0,
-                error_create_dada_files_dir    => $q->param('error_create_dada_files_dir')  || 0,
-                error_dada_files_dir_exists    => $q->param('error_dada_files_dir_exists') || 0,
-                error_sql_connection           => $q->param('error_sql_connection') || 0,
-                error_sql_table_populated      => $q->param('error_sql_table_populated') || 0,
-                skip_configure_SQL             => $q->param('skip_configure_SQL') || 0, 
-                errors                         => $q->param('errors') || [],
-                PROGRAM_URL                    => program_url_guess(),
-                S_PROGRAM_URL                  => program_url_guess(),
-                Dada_Files_Dir_Name            => $Dada_Files_Dir_Name,
-				#lists_available                => $lists_available, 
-				configured_dada_config_file    => $configured_dada_config_file,
-				configured_dada_files_loc      => $configured_dada_files_loc, 
-				DOC_VER                        => $DOC_VER, 
-				DOC_URL                        => 'http://dadamailproject.com/support/documentation-' . $DOC_VER, 
-				
-				original_dada_root_pass        => $original_dada_root_pass, 
-				
-				support_files_dir_path         => support_files_dir_path_guess(),
-				support_files_dir_url         => support_files_dir_url_guess(),
-				Support_Files_Dir_Name        => $Support_Files_Dir_Name,
-				
-				amazon_ses_requirements_widget => DADA::Template::Widgets::amazon_ses_requirements_widget(), 
-				
-				Big_Pile_Of_Errors             => $Big_Pile_Of_Errors,
-				Trace                          => $Trace, 
-				
-
+                # These are tricky....
+                SUPPORT_FILES_URL                  => $Self_URL . '?f=screen&screen=',
+                install_type                       => $install_type,
+                current_dada_files_parent_location => $current_dada_files_parent_location,
+                program_url_guess                  => program_url_guess(),
+                can_use_DBI                        => test_can_use_DBI(),
+                can_use_MySQL                      => test_can_use_MySQL(),
+                can_use_Pg                         => test_can_use_Pg(),
+                can_use_SQLite                     => test_can_use_SQLite(),
+                can_use_GD                         => test_can_use_GD(),
+                can_use_CAPTCHA_reCAPTCHA          => test_can_use_CAPTCHA_reCAPTCHA(),
+                can_use_CAPTCHA_reCAPTCHA_Mailhide => test_can_use_CAPTCHA_reCAPTCHA_Mailhide(),
+                error_cant_read_config_dot_pm      => test_can_read_config_dot_pm(),
+                error_cant_write_config_dot_pm     => test_can_write_config_dot_pm(),
+                home_dir_guess                     => guess_home_dir(),
+                install_dada_files_dir_at          => install_dada_files_dir_at_from_params(),
+                test_complete_dada_files_dir_structure_exists =>
+                  test_complete_dada_files_dir_structure_exists( install_dada_files_dir_at_from_params() ),
+                dada_files_dir_setup                     => $q->param('dada_files_dir_setup')                     || '',
+                dada_files_loc                           => $q->param('dada_files_loc')                           || '',
+                error_create_dada_mail_support_files_dir => $q->param('error_create_dada_mail_support_files_dir') || 0,
+                error_root_pass_is_blank                 => $q->param('error_root_pass_is_blank')                 || 0,
+                error_pass_no_match                      => $q->param('error_pass_no_match')                      || 0,
+                error_program_url_is_blank               => $q->param('error_program_url_is_blank')               || 0,
+                error_create_dada_files_dir              => $q->param('error_create_dada_files_dir')              || 0,
+                error_dada_files_dir_exists              => $q->param('error_dada_files_dir_exists')              || 0,
+                error_sql_connection                     => $q->param('error_sql_connection')                     || 0,
+                error_sql_table_populated                => $q->param('error_sql_table_populated')                || 0,
+                skip_configure_SQL                       => $q->param('skip_configure_SQL')                       || 0,
+                errors                                   => $q->param('errors')                                   || [],
+                PROGRAM_URL                              => program_url_guess(),
+                S_PROGRAM_URL                            => program_url_guess(),
+                Dada_Files_Dir_Name                      => $Dada_Files_Dir_Name,
+                configured_dada_config_file              => $configured_dada_config_file,
+                configured_dada_files_loc                => $configured_dada_files_loc,
+                DOC_VER                                  => $DOC_VER,
+                DOC_URL                        => 'http://dadamailproject.com/support/documentation-' . $DOC_VER,
+                original_dada_root_pass        => $original_dada_root_pass,
+                support_files_dir_path         => support_files_dir_path_guess(),
+                support_files_dir_url          => support_files_dir_url_guess(),
+                Support_Files_Dir_Name         => $Support_Files_Dir_Name,
+                amazon_ses_requirements_widget => DADA::Template::Widgets::amazon_ses_requirements_widget(),
+                Big_Pile_Of_Errors             => $Big_Pile_Of_Errors,
+                Trace                          => $Trace,
             },
         }
     );
@@ -1040,6 +1034,12 @@ sub grab_former_config_vals {
 		if(exists($BootstrapConfig::AMAZON_SES_OPTIONS->{AWS_endpoint})) { 
     		$local_q->param('amazon_ses_AWS_endpoint', $BootstrapConfig::AMAZON_SES_OPTIONS->{AWS_endpoint});
 		}
+		
+		if(exists($BootstrapConfig::AMAZON_SES_OPTIONS->{Allowed_Sending_Quota_Percentage})) { 
+    		$local_q->param('amazon_ses_Allowed_Sending_Quota_Percentage', $BootstrapConfig::AMAZON_SES_OPTIONS->{Allowed_Sending_Quota_Percentage});
+		}
+		
+		
 	}
 
 	
@@ -1709,10 +1709,13 @@ sub create_dada_config_file {
 	
 	my $amazon_ses_params = {}; 
 	if($q->param('configure_amazon_ses') == 1){ 
-		$amazon_ses_params->{configure_amazon_ses} = 1; 
-		$amazon_ses_params->{AWS_endpoint}   = strip($q->param('amazon_ses_AWS_endpoint'));		
-		$amazon_ses_params->{AWSAccessKeyId} = strip($q->param('amazon_ses_AWSAccessKeyId'));
-		$amazon_ses_params->{AWSSecretKey}   = strip($q->param('amazon_ses_AWSSecretKey')); 
+		$amazon_ses_params->{configure_amazon_ses}             = 1; 
+		$amazon_ses_params->{AWS_endpoint}                     = strip($q->param('amazon_ses_AWS_endpoint'));		
+		$amazon_ses_params->{AWSAccessKeyId}                   = strip($q->param('amazon_ses_AWSAccessKeyId'));
+		$amazon_ses_params->{AWSSecretKey}                     = strip($q->param('amazon_ses_AWSSecretKey')); 
+        $amazon_ses_params->{Allowed_Sending_Quota_Percentage} = strip($q->param('amazon_ses_Allowed_Sending_Quota_Percentage')); 
+		
+
 	}
 	
 	
@@ -3063,10 +3066,11 @@ sub cgi_test_user_template {
 
 sub cgi_test_amazon_ses_configuration { 
 	
-	my $amazon_ses_AWSAccessKeyId = strip($q->param('amazon_ses_AWSAccessKeyId')); 
-	my $amazon_ses_AWSSecretKey   = strip($q->param('amazon_ses_AWSSecretKey')); 
-	my $amazon_ses_AWS_endpoint   = strip($q->param('amazon_ses_AWS_endpoint')); 
-     
+	my $amazon_ses_AWSAccessKeyId                   = strip($q->param('amazon_ses_AWSAccessKeyId')); 
+	my $amazon_ses_AWSSecretKey                     = strip($q->param('amazon_ses_AWSSecretKey')); 
+	my $amazon_ses_AWS_endpoint                     = strip($q->param('amazon_ses_AWS_endpoint')); 
+    my $amazon_ses_Allowed_Sending_Quota_Percentage = strip($q->param('amazon_ses_Allowed_Sending_Quota_Percentage')); 
+    
 	my ($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ); 
 	
 	eval { 
@@ -3074,9 +3078,10 @@ sub cgi_test_amazon_ses_configuration {
 		my $ses = DADA::App::AmazonSES->new; 
 		($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats(
 			{ 
-			    AWS_endpoint    => $amazon_ses_AWS_endpoint, 
-				AWSAccessKeyId  => $amazon_ses_AWSAccessKeyId, 
-				AWSSecretKey    => $amazon_ses_AWSSecretKey, 
+			    AWS_endpoint                     => $amazon_ses_AWS_endpoint, 
+				AWSAccessKeyId                   => $amazon_ses_AWSAccessKeyId, 
+				AWSSecretKey                     => $amazon_ses_AWSSecretKey, 
+				Allowed_Sending_Quota_Percentage => $amazon_ses_Allowed_Sending_Quota_Percentage, 
 			}
 		); 
 	};

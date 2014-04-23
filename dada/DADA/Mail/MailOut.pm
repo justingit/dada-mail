@@ -258,19 +258,24 @@ sub batch_params {
 
         #                  0          10_000             5
 
-        if ( $SentLast24Hours >= $Max24HourSend ) {
+        my $quota_Max24HourSend = ($Max24HourSend * $ses->allowed_sending_quota_percentage) / 100;
+        $quota_Max24HourSend =  sprintf ("%.1f", $Max24HourSend); 
+        
+        if ( $SentLast24Hours     >= $Max24HourSend 
+          || $quota_Max24HourSend >= $Max24HourSend) {
+            # Yikes! We're over our limit! 
             return ( $enable_bulk_batching, 0, 300, );
         }
         else {
 
             $batch_wait = 1;
-            my $percent_used = ( ( 100 * $SentLast24Hours ) / $Max24HourSend ) / 100;
+            my $percent_used = ( ( 100 * $SentLast24Hours ) / $quota_Max24HourSend ) / 100;
             $batch_size = $MaxSendRate - ( $MaxSendRate * ( $percent_used * 10 ) ); # * 10 is fudge factor,
 
             if ( $batch_size < 1.5 ) {
 
                 $batch_size = $MaxSendRate;
-                $batch_wait = 86400 / $Max24HourSend;                 # 8.64
+                $batch_wait = 86400 / $quota_Max24HourSend;                 # 8.64
                 $batch_wait = $batch_wait * $MaxSendRate;             # 8.64 * 5 = 43.2
                 $batch_wait = $batch_wait + ( $batch_wait * .10 );    # 38.8
 

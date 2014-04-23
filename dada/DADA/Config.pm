@@ -384,12 +384,13 @@ $MAILPROG           ||= '/usr/sbin/sendmail';
 $MAIL_SETTINGS      ||= "|$MAILPROG -t";
 $MASS_MAIL_SETTINGS ||= "|$MAILPROG -t";
 
+
 $AMAZON_SES_OPTIONS ||= { 
-	AWSAccessKeyId => undef, 
-	AWSSecretKey   => undef, 
+    AWS_endpoint                     => undef,
+	AWSAccessKeyId                   => undef,
+	AWSSecretKey                     => undef,
+	Allowed_Sending_Quota_Percentage => 90,
 };
-
-
 
 $SHOW_ADMIN_LINK        ||= 1;
 $ADMIN_FLAVOR_NAME      ||= 'admin';

@@ -1379,6 +1379,13 @@ editors also have the ability to make simple HTML tables for basic layouts.
 			</label> 
 			<input type="text" name="amazon_ses_AWSSecretKey" id="amazon_ses_AWSSecretKey" value=""  class="midi" />
 		</p>
+		
+		<p><label  style="width: 18em;float: left;text-align: right;margin-right: 0.5em;display: block" for="amazon_ses_Allowed_Sending_Quota_Percentage">
+		    Allow <!-- tmpl_var PROGRAM_NAME --> to utilize:
+		</label> 
+            <!-- tmpl_var amazon_ses_Allowed_Sending_Quota_Percentage_popup_menu -->% of the Total Amazon SES Sending Quota. 
+        </p>
+        
 		<div class="buttonfloat"> 
 		<p>
 			<input type="button" class="processing test_amazon_ses_configuration" value="Test Your AWS Credentials"/>
