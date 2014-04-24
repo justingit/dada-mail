@@ -1253,6 +1253,46 @@ editors also have the ability to make simple HTML tables for basic layouts.
 <!-- /tmpl_if --> 
 
 
+
+
+
+
+<!-- tmpl_if show_global_mailing_list_options --> 
+
+	<p>
+		<input type="checkbox" name="configure_global_mailing_list_options" id="configure_global_mailing_list_options" value="1" />			
+	<label for="configure_global_mailing_list_options">Configure Global Mailing List Options</label>
+	</p>
+	<div id="global_mailing_list_options">
+	<fieldset> 
+	    <p>
+		<input type="checkbox" name="global_mailing_list_options_GLOBAL_UNSUBSCRIBE" id="global_mailing_list_options_GLOBAL_UNSUBSCRIBE" value="1"  />
+		<label for="global_mailing_list_options_GLOBAL_UNSUBSCRIBE">Enable Global Unsubscribe</label>
+		</p>
+
+	    <p>
+		<input type="checkbox" name="global_mailing_list_options_GLOBAL_BLACK_LIST" id="global_mailing_list_options_GLOBAL_BLACK_LIST" value="1" />
+		<label for="global_mailing_list_options_GLOBAL_BLACK_LIST">Enable Global Black List</label>
+		</p>
+
+	</fieldset> 	
+	</div> 
+<!-- /tmpl_if --> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 <!-- tmpl_if show_global_mass_mailing_options --> 
 
 	<p>
@@ -1381,7 +1421,7 @@ editors also have the ability to make simple HTML tables for basic layouts.
 		</p>
 		
 		<p><label  style="width: 18em;float: left;text-align: right;margin-right: 0.5em;display: block" for="amazon_ses_Allowed_Sending_Quota_Percentage">
-		    Allow <!-- tmpl_var PROGRAM_NAME --> to utilize:
+		    Allow <!-- tmpl_var PROGRAM_NAME --> to Utilize:
 		</label> 
             <!-- tmpl_var amazon_ses_Allowed_Sending_Quota_Percentage_popup_menu -->% of the Total Amazon SES Sending Quota. 
         </p>

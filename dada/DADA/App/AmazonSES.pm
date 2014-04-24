@@ -88,6 +88,7 @@ sub get_stats {
 		$args = $DADA::Config::AMAZON_SES_OPTIONS, 
 	}
 	
+	 
 	my $ses_obj  = undef; 
 	my $status   = undef; 
 	my $result   = undef; 
@@ -97,7 +98,7 @@ sub get_stats {
 		($status, $result) = $ses_obj->get_stats();
 	}
 	catch { 
-		carp $_; 
+		die $_; 
 		return (undef, undef, undef, undef); 
 	};
 	
@@ -116,7 +117,7 @@ sub get_stats {
 
 sub allowed_sending_quota_percentage {
     my $self = shift; 
-    return int($AMAZON_SES_OPTIONS->{Allowed_Sending_Quota_Percentage}); 
+    return int($DADA::Config::AMAZON_SES_OPTIONS->{Allowed_Sending_Quota_Percentage}); 
 }
 
 1;

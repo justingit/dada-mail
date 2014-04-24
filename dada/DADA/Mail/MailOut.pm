@@ -249,20 +249,20 @@ sub batch_params {
         && $amazon_ses_auto_batch_settings == 1
       )
     {
+        
         my $batch_size = 0;
         my $batch_wait = 0;
 
         require DADA::App::AmazonSES;
         my $ses = DADA::App::AmazonSES->new;
         my ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats;
-
         #                  0          10_000             5
 
         my $quota_Max24HourSend = ($Max24HourSend * $ses->allowed_sending_quota_percentage) / 100;
         $quota_Max24HourSend =  sprintf ("%.1f", $Max24HourSend); 
         
         if ( $SentLast24Hours     >= $Max24HourSend 
-          || $quota_Max24HourSend >= $Max24HourSend) {
+          || $SentLast24Hours     >= $quota_Max24HourSend) {
             # Yikes! We're over our limit! 
             return ( $enable_bulk_batching, 0, 300, );
         }

@@ -1493,11 +1493,11 @@ sub make_attachment {
         warn '%mime_args' . Data::Dumper::Dumper( {%mime_args} );
     }
     
-    warn 'building at make_attachment - start'; 
+    # warn 'building at make_attachment - start'; 
     my $entity = MIME::Entity->build(%mime_args);
-    warn 'building at make_attachment - done'; 
+    # warn 'building at make_attachment - done'; 
 
-    warn 'returning!'; 
+    # warn 'returning!'; 
     return $entity;
 
 }

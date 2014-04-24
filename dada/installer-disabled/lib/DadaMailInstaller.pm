@@ -224,6 +224,7 @@ my $advanced_config_params = {
     show_global_template_options        => 1,
     show_security_options               => 1,
     show_captcha_options                => 1,
+    show_global_mailing_list_options    => 1, 
     show_global_mass_mailing_options    => 1,
     show_cache_options                  => 1,
     show_debugging_options              => 1,
@@ -600,7 +601,8 @@ sub scrn_configure_dada_mail {
 	my $amazon_ses_Allowed_Sending_Quota_Percentage_popup_menu = $q->popup_menu(
 	    -name    => 'amazon_ses_Allowed_Sending_Quota_Percentage', 
 	    -id      => 'amazon_ses_Allowed_Sending_Quota_Percentage', 
-	    -values => [qw(100 .. 1)],
+	    -values  => [reverse((1..100))],
+	    -default => $DADA::Config::AMAZON_SES_OPTIONS->{Allowed_Sending_Quota_Percentage},
 	); 
 	
     my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -653,6 +655,7 @@ sub scrn_configure_dada_mail {
                 support_files_dir_url          => support_files_dir_url_guess(),
                 Support_Files_Dir_Name         => $Support_Files_Dir_Name,
                 amazon_ses_requirements_widget => DADA::Template::Widgets::amazon_ses_requirements_widget(),
+                amazon_ses_Allowed_Sending_Quota_Percentage_popup_menu => $amazon_ses_Allowed_Sending_Quota_Percentage_popup_menu, 
                 Big_Pile_Of_Errors             => $Big_Pile_Of_Errors,
                 Trace                          => $Trace,
             },
@@ -1003,7 +1006,20 @@ sub grab_former_config_vals {
 	}
 
 	
-	
+	# Global Mailing List Options 	
+	if(
+		defined($BootstrapConfig::GLOBAL_UNSUBSCRIBE)
+	||  defined($BootstrapConfig::GLOBAL_BLACK_LIST)
+	){ 
+	    $local_q->param('configure_global_mailing_list_options', 1); 
+    	if(defined($BootstrapConfig::GLOBAL_UNSUBSCRIBE)){ 
+    	    $local_q->param('global_mailing_list_options_GLOBAL_UNSUBSCRIBE', $BootstrapConfig::GLOBAL_UNSUBSCRIBE);
+    	}
+    	if(defined($BootstrapConfig::GLOBAL_BLACK_LIST)){ 
+    	    $local_q->param('global_mailing_list_options_GLOBAL_BLACK_LIST', $BootstrapConfig::GLOBAL_BLACK_LIST);
+    	}
+	}
+		
 	# Mass Mailing Options
 	if(
 		defined($BootstrapConfig::MAILOUT_AT_ONCE_LIMIT)
@@ -1690,7 +1706,13 @@ sub create_dada_config_file {
 		$captcha_params->{captcha_reCAPTCHA_Mailhide_private_key} = clean_up_var($q->param('captcha_reCAPTCHA_Mailhide_private_key')); 
 	}
 	
-	
+
+	my $global_mailing_list_options = {}; 
+	if($q->param('configure_global_mailing_list_options') == 1){ 
+	    $global_mailing_list_options->{configure_global_mailing_list_options} = 1; 
+		$global_mailing_list_options->{global_mailing_list_options_GLOBAL_UNSUBSCRIBE} = strip($q->param('global_mailing_list_options_GLOBAL_UNSUBSCRIBE')); 
+		$global_mailing_list_options->{global_mailing_list_options_GLOBAL_BLACK_LIST}  = strip($q->param('global_mailing_list_options_GLOBAL_BLACK_LIST')); 
+	}
 	
 	my $mass_mailing_params = {}; 
 	if($q->param('configure_mass_mailing') == 1){ 
@@ -1714,8 +1736,6 @@ sub create_dada_config_file {
 		$amazon_ses_params->{AWSAccessKeyId}                   = strip($q->param('amazon_ses_AWSAccessKeyId'));
 		$amazon_ses_params->{AWSSecretKey}                     = strip($q->param('amazon_ses_AWSSecretKey')); 
         $amazon_ses_params->{Allowed_Sending_Quota_Percentage} = strip($q->param('amazon_ses_Allowed_Sending_Quota_Percentage')); 
-		
-
 	}
 	
 	
@@ -1739,8 +1759,9 @@ sub create_dada_config_file {
 				%{$profiles_params},
 				%{$security_params},
 				%{$captcha_params}, 
+				%{$global_mailing_list_options},
 				%{$mass_mailing_params},
-				%{$confirmation_token_params},  
+				%{$confirmation_token_params},
 				%{$amazon_ses_params},
             }
         }
@@ -3085,6 +3106,7 @@ sub cgi_test_amazon_ses_configuration {
 			}
 		); 
 	};
+	
 	print $q->header(); 
 	require DADA::Template::Widgets;
 	e_print(DADA::Template::Widgets::screen(
@@ -3092,11 +3114,13 @@ sub cgi_test_amazon_ses_configuration {
 			-screen => 'amazon_ses_get_stats_widget.tmpl',
 			-expr   => 1, 
 			-vars   => {
-				has_ses_options            => 1, 
-				status                     => $status,
-				MaxSendRate                => $MaxSendRate,
-				Max24HourSend              => $Max24HourSend,
-				SentLast24Hours            => $SentLast24Hours,
+				has_ses_options                  => 1, 
+				status                           => $status,
+				MaxSendRate                      => $MaxSendRate,
+				Max24HourSend                    => $Max24HourSend,
+				SentLast24Hours                  => $SentLast24Hours,
+				allowed_sending_quota_percentage => $amazon_ses_Allowed_Sending_Quota_Percentage,
+                
 			}
 		}
 	));

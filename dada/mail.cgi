@@ -2832,15 +2832,18 @@ sub amazon_ses_get_stats {
       )
     {
 
-        my $status          = undef;
-        my $SentLast24Hours = undef;
-        my $Max24HourSend   = undef;
-        my $MaxSendRate     = undef;
+    my $status                           = undef;
+    my $SentLast24Hours                  = undef;
+    my $Max24HourSend                    = undef;
+    my $MaxSendRate                      = undef;
+    my $allowed_sending_quota_percentage = undef;
 
         if ( $has_ses_options == 1 ) {
             require DADA::App::AmazonSES;
             my $ses = DADA::App::AmazonSES->new;
             ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats;
+            $allowed_sending_quota_percentage = $ses->allowed_sending_quota_percentage; 
+            
         }
         print $q->header();
         require DADA::Template::Widgets;
@@ -2850,11 +2853,12 @@ sub amazon_ses_get_stats {
                     -screen => 'amazon_ses_get_stats_widget.tmpl',
                     -expr   => 1,
                     -vars   => {
-                        status          => $status,
-                        has_ses_options => $has_ses_options,
-                        MaxSendRate     => commify($MaxSendRate),
-                        Max24HourSend   => commify($Max24HourSend),
-                        SentLast24Hours => commify($SentLast24Hours),
+                        status                           => $status,
+                        has_ses_options                  => $has_ses_options,
+                        MaxSendRate                      => commify($MaxSendRate),
+                        Max24HourSend                    => commify($Max24HourSend),
+                        SentLast24Hours                  => commify($SentLast24Hours),
+                        allowed_sending_quota_percentage => $allowed_sending_quota_percentage,
                     }
                 }
             )

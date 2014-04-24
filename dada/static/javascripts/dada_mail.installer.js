@@ -143,6 +143,9 @@ $(document).ready(function() {
 			installer_checkbox_toggle_option_groups('configure_captcha', 'captcha_options'); 
 		});
 		
+		$("body").on('click', "#configure_global_mailing_list_options", function(event) {
+			installer_checkbox_toggle_option_groups('configure_global_mailing_list_options', 'global_mailing_list_options');
+		});
 
 		$("body").on('click', "#configure_mass_mailing", function(event) {
 			installer_checkbox_toggle_option_groups('configure_mass_mailing', 'mass_mailing_options');
@@ -166,6 +169,7 @@ $(document).ready(function() {
 		installer_checkbox_toggle_option_groups('configure_templates', 'template_options');
 		installer_checkbox_toggle_option_groups('configure_security', 'security_options');
 		installer_checkbox_toggle_option_groups('configure_captcha', 'captcha_options');
+		installer_checkbox_toggle_option_groups('configure_global_mailing_list_options', 'global_mailing_list_options');
 		installer_checkbox_toggle_option_groups('configure_mass_mailing', 'mass_mailing_options');
 		installer_checkbox_toggle_option_groups('configure_confirmation_token', 'confirmation_token_options');
 		installer_checkbox_toggle_option_groups('configure_cache', 'cache_options');
