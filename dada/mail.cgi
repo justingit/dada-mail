@@ -5845,16 +5845,6 @@ sub delete_email {
         my $new_info   = [];
         ( $new_emails, $new_info ) = DADA::App::Guts::csv_subscriber_parse( $admin_list, $outfile_filename );
 
-# subscribed should give a darn if your blacklisted, or white listed, white list and blacklist only looks at unsubs. Right. Right?
-      
-       # my ( $subscribed, $not_subscribed, $black_listed, $not_white_listed, $invalid ) = $lh->filter_subscribers(
-       #            {
-    #            #-emails => [@delete_addresses],
-     #           -emails => $new_emails,
-      #          -type   => $type,
-       #     }
-        #);
-
         my ($not_members, 
             $invalid_email,  
             $subscribed,
@@ -5873,17 +5863,17 @@ sub delete_email {
           if $subscribed->[0];
 
         my $addresses_to_remove = [];
-        push( @$addresses_to_remove, { email => $_ } ) for @$subscribed;
+        push( @$addresses_to_remove, { email => $_->{email} } ) for @$subscribed;
 
         my $not_subscribed_addresses = [];
-        push( @$not_subscribed_addresses, { email => $_ } ) for @$not_members;
+        push( @$not_subscribed_addresses, { email => $_->{email} } ) for @$not_members;
 
         my $have_invalid_addresses = 0;
         $have_invalid_addresses = 1
           if $invalid_email->[0];
 
         my $invalid_addresses = [];
-        push( @$invalid_addresses, { email => $_ } ) for @$invalid_email;
+        push( @$invalid_addresses, { email => $_->{email} } ) for @$invalid_email;
 
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
