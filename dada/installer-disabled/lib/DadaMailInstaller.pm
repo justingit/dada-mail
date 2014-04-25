@@ -505,7 +505,14 @@ sub check_install_or_upgrade {
 		return;
 	}
 	else { 
-		my $current_dada_files_parent_location = $q->param('current_dada_files_parent_location'); 	
+		my $current_dada_files_parent_location = ''; 
+		if($q->param('current_dada_files_parent_location') eq 'auto') { 
+		    $current_dada_files_parent_location = auto_dada_files_dir(); 
+		    $q->param('current_dada_files_parent_location', $current_dada_files_parent_location); 
+		}
+		else { 
+		    $current_dada_files_parent_location = $q->param('current_dada_files_parent_location');
+		}
 		if(test_complete_dada_files_dir_structure_exists($current_dada_files_parent_location) == 1){ 
 			&scrn_configure_dada_mail; 
 			return;
