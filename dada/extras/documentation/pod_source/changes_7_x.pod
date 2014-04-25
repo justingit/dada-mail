@@ -2,6 +2,16 @@
 
 =head1 Dada Mail Changelog for v7.x
 
+=head2 7.0.2
+
+=head2 Summary 7.0.2
+
+This is primarily a bugfix release, we have added a few new options available in the included Dada Mail Installer under, B<Advanced Configuration (Optional)> including enabled Global Blacklist and Global Unsubscribe support.
+
+=head2 Bugfixes 7.0.2
+
+=head3 
+
 =head2 7.0.1
 
 =head2 Summary 7.0.1
