@@ -877,7 +877,11 @@ sub send {
 					-msg => $msg, 
 				}
 			);
-			if($response_code != 200){
+			if($response_code == 200){ 				
+				my($sesMessageId, $sesRequestId) = split("\n", $response_content);
+				#do something here about the message id
+			}
+			else { 
 				return -1; 
 			}
 		}
