@@ -877,10 +877,7 @@ sub send {
 					-msg => $msg, 
 				}
 			);
-			if($response_code == 200){ 
-				return 1; 
-			}
-			else { 
+			if($response_code != 200){
 				return -1; 
 			}
 		}
@@ -890,7 +887,7 @@ sub send {
         
        
 		$self->{mj_log}->mj_log($local_li->{list}, 'Mail Sent', "Recipient:$recipient_for_log, Subject:$fields{Subject}") 
-			if $DADA::Config::LOG{mailings};     
+			if $DADA::Config::LOG{mailings};
 
 		$local_li = {};
 			
