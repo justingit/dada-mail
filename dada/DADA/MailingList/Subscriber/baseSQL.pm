@@ -520,9 +520,9 @@ sub remove {
 	}
    	$rv = $sth->execute( $self->email, $self->type )
 		or croak "cannot do statement (at: remove from list)! $DBI::errstr\n";
-
-   #warn '$rv ' . $rv; 
     $sth->finish;
+
+    # TODO: I'm just bummed that when GLOBAL UNSUB is enabled, this only logs the unsub for this list. 
 	if($args->{-log_it} == 1) { 
 		if ($DADA::Config::LOG{subscriptions}) { 
 		    $self->{'log'}->mj_log( 
