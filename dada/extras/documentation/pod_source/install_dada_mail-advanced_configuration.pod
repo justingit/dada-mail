@@ -293,6 +293,16 @@ reCAPTCHA Mailhide is also supported, and also needs a Public and Private API ke
 
 You may use the, B<Test reCAPTCHA Mailhide Configuration> button to make sure the Mailhide system is working. Results should be shown below the button, as well as an example of a protected email address. If the example does not show, double-check that the information you've added is correct.
 
+=head2 Configure Global Mailing List Options 
+
+=head3 Enable Global Unsubscribe
+
+When enabled, B<Global Unsubscribe> will remove a member from all mailing lists, when they're removed from one mailing list. 
+
+=head3 Enable Global Black List
+
+When enabled, members of all mailing list's Black Lists will be pooled together, when addresses are verified for subscription.
+
 =head2  Configure Global Mass Mailing Options 
 
 Some mass mailing options are set globally, as sending limitations may be account-wide, rather than mailing list-wide. Mailing List-specific Mass Mailing Options are found in the List Control Panel, under: B<Mail Sending - Mass Mailing Options>
