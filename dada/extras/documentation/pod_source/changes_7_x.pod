@@ -6,7 +6,25 @@
 
 =head2 Summary 7.0.2
 
-This is primarily a bugfix release, we have added a few new options available in the included Dada Mail Installer under, B<Advanced Configuration (Optional)> including enabled Global Blacklist and Global Unsubscribe support, as well as the ability to set the percentage of your sending quota that you allow Dada Mail to use, for Amazon SES sending.
+This is primarily a bugfix release, although, we've have added a few new Advanced Installation Configuration Options, available to your via The Dada Mail Installer. Here's information on the Advanced Installation Configuration Options available: 
+
+L<http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html>
+
+Including, 
+
+=over
+
+=item * Enabling/Disabling Global Blacklist
+
+=item * Enabling/Disabling Global Unsubscribe 
+
+=item * Setting the percentage of your total Amazon SES Quota
+
+=back
+
+We've also enabled, B<On Behalf Of (p.p. Mode)> for discussion lists by default, as it seems to be the way to go with things, considering the Yahoo/DMARC Fiasco. B<On Behalf Of (p.p. Mode)> made its debut in v6.8.0 of Dada Mail. 
+
+Finally, we've added some new Bounce Handler rules to handle some of the more usual bounces causes by hitting the DMARC issue. 
 
 =head2 Bugfixes 7.0.2
 
