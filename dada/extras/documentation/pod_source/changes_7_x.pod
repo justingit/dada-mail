@@ -6,9 +6,17 @@
 
 =head2 Summary 7.0.2
 
-This is primarily a bugfix release, we have added a few new options available in the included Dada Mail Installer under, B<Advanced Configuration (Optional)> including enabled Global Blacklist and Global Unsubscribe support.
+This is primarily a bugfix release, we have added a few new options available in the included Dada Mail Installer under, B<Advanced Configuration (Optional)> including enabled Global Blacklist and Global Unsubscribe support, as well as the ability to set the percentage of your sending quota that you allow Dada Mail to use, for Amazon SES sending.
 
 =head2 Bugfixes 7.0.2
+
+=head3  Verify screen of Membership » Remove doesn't correctly show email addresses to remove 
+
+L<https://github.com/justingit/dada-mail/issues/434>
+
+=head3 Subscription Requests with Required Profile Fields always cause, "Missing Profile Field" Errors
+
+L<https://github.com/justingit/dada-mail/issues/433>
 
 =head3 
 
