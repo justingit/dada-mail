@@ -330,6 +330,63 @@ qr/552|quota exceeded|exceeded storage allocation|over quota|storage full|mailbo
             }
         }
     },
+  
+    {
+        yahoo_dmarc => {
+            Examine => {
+                Message_Fields => {
+                    'Notification_regex' =>
+                      [ (qr/5\.7\.9 Message not accepted for policy reasons/)],
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                add_to_score => 'softbounce_score',
+            }
+        }
+    },
+    {
+        google_dmarc => {
+            Examine => {
+                Message_Fields => {
+                    'Notification_regex' =>
+                      [ (qr/DMARC policy/)],
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                add_to_score => 'softbounce_score',
+            }
+        }
+    },
+    {
+         hotmail_dmarc => {
+            Examine => {
+                Message_Fields => {
+                    'Notification_regex' =>
+                      [ (qr/domain owner policy restrictions/)],
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+
+                add_to_score => 'softbounce_score',
+            }
+        }
+    },
+    
+
 
     {
         qmail_over_quota => {
