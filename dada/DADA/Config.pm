@@ -1560,7 +1560,7 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
     # Bridge Plugin:
 
     group_list                     => 0,
-	group_list_pp_mode             => 0, 
+	group_list_pp_mode             => 1, 
 	group_list_pp_mode_from_phrase => '<!-- tmpl_var original_from_phrase --> p.p. <!-- tmpl_var list_settings.list_name -->',  
 	
     open_discussion_list => 0,
