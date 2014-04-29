@@ -22,7 +22,7 @@ use warnings;
 our $VERSION = '1.00';
 use base 'Exporter';
 our @EXPORT = qw();
-use Switch;
+#use Switch;
 use Digest::SHA qw (hmac_sha1_base64 hmac_sha256_base64 sha256);
 use URI::Escape qw (uri_escape_utf8);
 use LWP 6;
@@ -384,11 +384,16 @@ sub read_credentials {
         $line =~ /^\s*(.*?)=(.*?)\s*$/
           or die "Cannot parse credentials entry <$line> in <$file>.";
         my ( $key, $value ) = ( $1, $2 );
-        switch ($key) {
-            case 'AWSAccessKeyId' { $self->AWSAccessKeyId($value) }
-            case 'AWSSecretKey'   { $self->AWSSecretKey($value) }
-            else { die "Unrecognized credential <$key> in <$file>."; }
+        if ($key eq 'AWSAccessKeyId') {
+            $self->AWSAccessKeyId($value);
         }
+        elsif($key eq 'AWSSecretKey') { 
+            $self->AWSSecretKey($value) 
+        }
+        else { 
+            die "Unrecognized credential <$key> in <$file>."; 
+        }
+
     }
     close(FILE);
 }
@@ -587,11 +592,15 @@ sub call_ses {
 	
     $self->prepare_aws_params;
 
-    switch ($signature_version) {
-        case 'V1'   { $self->sign_v1; }
-        case 'V2'   { $self->sign_v2; }
-        case 'HTTP' { }
-        else { die "Unrecognized signature version <$signature_version>."; }
+    if($signature_version eq 'V1') {
+         $self->sign_v1; 
+    }elsif($signature_version eq 'V2') { 
+        $self->sign_v2; 
+    }elsif($signature_version eq 'HTTP') { 
+        # ... 
+    }
+    else {
+        die "Unrecognized signature version <$signature_version>.";
     }
 
     my $payload = $self->build_payload;
