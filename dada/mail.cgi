@@ -2430,6 +2430,13 @@ sub list_options {
     }
     else {
 
+        if($q->param('anyone_can_subscribe') == 1){ 
+            $q->param('invite_only_list', 0); 
+        }
+        else { 
+            $q->param('invite_only_list', 1);         
+        }
+
         $list = $admin_list;
         $ls->save_w_params(
             {

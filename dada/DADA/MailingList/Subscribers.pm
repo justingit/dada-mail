@@ -739,6 +739,7 @@ sub filter_subscribers_w_meta {
                     already_sent_sub_confirmation
                     already_sent_unsub_confirmation
                     over_subscription_quota
+                    invite_only_list
                     )],
                 -ls_obj => $ls, 
             }
