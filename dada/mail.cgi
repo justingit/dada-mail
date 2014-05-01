@@ -2352,6 +2352,8 @@ sub delete_list {
     }
 }
 
+
+
 sub list_options {
 
     my ( $admin_list, $root_login ) = check_list_security(
@@ -10414,6 +10416,10 @@ sub change_login {
     $location =~ s/(\;|\&)done\=1$//;
     $location =~ s/(\;|\&)delete_email_count\=(.*?)$//;
     $location =~ s/(\;|\&)email_count\=(.*?)$//;
+
+    $location =~ s/f\=add_email\&fn\=(.*?)(\&)/f\=add\2/;
+
+
 
     my $new_cookie = $dada_session->change_login( -cgi_obj => $q, -list => $change_to_list );
 

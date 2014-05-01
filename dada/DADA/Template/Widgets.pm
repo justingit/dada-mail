@@ -25,7 +25,7 @@ BEGIN {
 
 
 use DADA::App::Guts; 
-use CGI; 
+use CGI qw(-oldstyle_urls); 
 my $q = new CGI; 
    $q->charset($DADA::Config::HTML_CHARSET);
    $q = decode_cgi_obj($q); 
