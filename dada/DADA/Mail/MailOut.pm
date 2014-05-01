@@ -227,13 +227,23 @@ sub batch_params {
 
         if ( exists( $self->{_cache}->{batch_params} ) ) {
             if ( exists( $self->{_cache}->{batch_params}->{cached_at} ) ) {
-                if ( ( $self->{_cache}->{batch_params}->{cached_at} + 600 ) < time ) {
+                if ( ( int($self->{_cache}->{batch_params}->{cached_at}) + 600 ) < time ) {
+                    carp 'batch settings (cached): Enabled: ' 
+                    . $self->{_cache}->{batch_params}->{enable_bulk_batching}
+                    . ' Batch Size: ' . $self->{_cache}->{batch_params}->{batch_size}
+                    . ' Batch Wait: ' . $self->{_cache}->{batch_params}->{batch_wait}
+                        if $t;
+                    
                     return (
                         $self->{_cache}->{batch_params}->{enable_bulk_batching},
                         $self->{_cache}->{batch_params}->{batch_size},
                         $self->{_cache}->{batch_params}->{batch_wait}
                     );
                 }
+            }
+            else { 
+                carp 'Love to use the batch settings cache, but it\'s too old by: ' . int($self->{_cache}->{batch_params}->{cached_at}) + 600  - time
+                    if $t;
             }
         }
     }
@@ -264,6 +274,12 @@ sub batch_params {
         if ( $SentLast24Hours     >= $Max24HourSend 
           || $SentLast24Hours     >= $quota_Max24HourSend) {
             # Yikes! We're over our limit! 
+            carp 'batch settings (OVER OUR LIMIT!): Enabled: ' 
+             . $enable_bulk_batching
+             . ' Batch Size: ' . 0
+             . ' Batch Wait: ' . 300
+                if $t;
+             
             return ( $enable_bulk_batching, 0, 300, );
         }
         else {
@@ -336,6 +352,12 @@ sub batch_params {
                 cached_at            => time,
               };
 
+               carp 'batch settings (Fresh, SES): Enabled: ' 
+                . $enable_bulk_batching
+                . ' Batch Size: ' . $batch_size
+                . ' Batch Wait: ' . $batch_wait
+                    if $t;
+            
             return ( $enable_bulk_batching, $batch_size, $batch_wait );
         }
 
@@ -349,6 +371,14 @@ sub batch_params {
            warn 'why is $bulk_sleep_amount < 1?!'; 
            $bulk_sleep_amount = 1;  
         }
+        
+        carp 'batch settings (bulk_sleep_amount set weird): Enabled: ' 
+         . $enable_bulk_batching
+         . ' Batch Size: ' . $mass_send_amount
+         . ' Batch Wait: ' . $bulk_sleep_amount
+            if $t;
+        
+        
         return ( 
             $enable_bulk_batching, 
             $mass_send_amount,

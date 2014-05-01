@@ -1363,9 +1363,9 @@ sub mass_send {
 	            return $fields{'Message-ID'};
 	        }
 	        else { 
-	            warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . 'This message is below the mailout limit and shouldn\'t have delays in sending.'
+	            warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' This message is below the mass mailing limit and shouldn\'t have delays in sending.'
 	                if $t; 
-				$mailout->log('This message is below the mailout limit and shouldn\'t have delays in sending.'); 
+				$mailout->log('This message is below the mass mailing limit and shouldn\'t have delays in sending.'); 
 				
 			}
 		}
@@ -1553,15 +1553,6 @@ sub mass_send {
 			    if $t; 
 			$mailout->log('opened MAILLIST'); 
 
-			my $somethings_wrong = 0;
-            flock(MAILLIST, LOCK_EX) 
-				or $somethings_wrong = 1; 
-            if($somethings_wrong == 1){ 
-                carp "temporary sending file is locked - another process sending the message?! exiting sending process..."; 
-				$mailout->log('Warning: temporary sending file is locked - another process sending the message?! exiting sending process...'); 
-                exit(0); 
-            }
-
 			#
 			##################################################################
 
@@ -1624,7 +1615,7 @@ sub mass_send {
 				# paused, so we don't have to go through the entire batch on a 
 				# paused() mailing. "queue" requires finding information about 
 				# ALL mailings, so it is quite resource-intensive.
-				# Is mailout paused? 
+				# Is mass mailing paused? 
 				#
 				my $is_mailout_paused = $mailout->paused; 
 				warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . 
@@ -1650,7 +1641,7 @@ sub mass_send {
 					$mailout->pause;
 					exit(0); 
 				}
-				# / Is mailout paused? 
+				# / Is mass mailing paused? 
 				##############################################################
 
 				
@@ -1749,7 +1740,7 @@ sub mass_send {
 						my $warning = '[' . $self->{list} . '] Mass Mailing:' . $mailout_id 
 						. ' Problems sending to, ' . $nfields{To} 
 						. ', waiting: ' . $batch_wait . ' seconds to try again. '
-						. 'Try # ' . $tries;
+						. '(on try #' . $tries . ')';
 						 warn $warning; 
 						$mailout->log($warning);
 						sleep($batch_wait); 
@@ -1824,16 +1815,17 @@ sub mass_send {
 				}
 				else {
 				
+				    warn 'Batching settings: $batching_enabled: ' . $batching_enabled . ' $batch_size ' . $batch_size . ' $batch_wait ' . $batch_wait; 
+				    
 					if($batching_enabled == 1){ 
+					    
 				         warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' $batching_enabled is set to 1'
 				            if $t; 
 			            
-						#$mailout->log('$batch_num_sent ' . $batch_num_sent); 
-						#$mailout->log('$batch_size ' . $batch_size); 
 						
 				    	if($batch_num_sent == $batch_size){ 
 			    	
-				    	     warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' reached the amount of messages for this batch (' . $batch_num_sent . ')'
+				    	     warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' reached the amount of messages for this batch:' . $batch_num_sent . ', sleeping (estimate):' . $batch_wait
 				    	        if $t; 
 							
 							$batch_num_sent = 0; 
@@ -1854,6 +1846,8 @@ sub mass_send {
 							}
 
 							if(defined($self->ses_obj)){ 
+							    warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' undef\'ing ses_obj'
+							        if $t; 
 								$self->ses_obj(undef);
 							}
 							
@@ -1869,6 +1863,9 @@ sub mass_send {
 							}
                          
                           	$mailout->log('Batch Successfully Completed: ' .  $batch_log_message);
+                          	warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Batch Successfully Completed: ' .  $batch_log_message
+                          	    if $t; 
+                          	
 							# Reset the batch settings. 
 
 							if($batch_status->{queued_mailout} == 1){  
@@ -1921,16 +1918,19 @@ sub mass_send {
 									if($batch_time_took > 0){ 
 										#warn "SLEEP: This batch took: $batch_time_took seconds"; 
 										if($batch_time_took >= $batch_wait){ 
-											#warn "SLEEP: batch time took MORE time than $batch_wait - skipping sleeping"; 
+											warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' SLEEP: batch time took MORE time than $batch_wait - skipping sleeping'
+											    if $t; 
 											$sleep_for_this_amount = 0;
 										}
 										else {
 											$sleep_for_this_amount = ( $sleep_for_this_amount - $batch_time_took ); 
-											#warn "SLEEP: setting sleep time to: $sleep_for_this_amount seconds"; 
+											warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' SLEEP: setting sleep time to: ' . $sleep_for_this_amount . ' seconds. Sweet Dreams'
+											    if $t; 
 										}	
 									}
 									else { 
-										#warn "SLEEP: batch was basically instantaneous - no need to tweak sleep time..."; 
+										warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' SLEEP: batch was basically instantaneous - no need to tweak sleep time...'
+										    if $t; 
 									}
 								}
 								#
@@ -1941,16 +1941,14 @@ sub mass_send {
 								warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Sleeping for ' . $sleep_for_this_amount . ' seconds. See you in the morning. Time: ' . $before_sleep_time
 									if $t; 
 							
-								#
-								#
-								#
 								if($sleep_for_this_amount > 0){ 
-									sleep $sleep_for_this_amount; 
+								    warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' sleeping for: ' . $sleep_for_this_amount . ', time:' . time
+								        if $t; 
+									sleep($sleep_for_this_amount); 
+									warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Good morning!, time:' . time
+									    if $t; 
 								}
-								#
-								#
-								#
-							
+
 								warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' I\'m awake! from sleep()ing, Time: ' . time . ', Slept for: ' . (time - $before_sleep_time) . ' seconds. '
 									if $t; 
 								

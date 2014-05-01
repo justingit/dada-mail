@@ -1577,7 +1577,7 @@ sub sending_monitor {
     $list = $admin_list;
 
     my $mo = DADA::Mail::MailOut->new( { -list => $list } );
-    my ( $batching_enabled, $batch_size, $batch_wait ) = $mo->batch_params;
+    
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
@@ -1601,9 +1601,9 @@ sub sending_monitor {
     # to read the actual screen.
 
     my $refresh_after = 10;
-    if ( $refresh_after < $batch_wait ) {
-        $refresh_after = $batch_wait;
-    }
+#    if ( $refresh_after < $batch_wait ) {
+#        $refresh_after = $batch_wait;
+#    }
 
     # Type ala, list, invitation list, etc
     my $type = $q->param('type');
@@ -1657,9 +1657,7 @@ sub sending_monitor {
 
         }
         else {
-
-            die "mailout does NOT exists! What's going on?!";
-
+            die "mass mailing does NOT exists! What's going on?!";
         }
 
     }
@@ -1680,7 +1678,7 @@ sub sending_monitor {
         }
         else {
 
-            die "mailout does NOT exists! What's going on?!";
+            die "mass mailing does NOT exists! What's going on?!";
 
         }
 
@@ -1697,7 +1695,6 @@ sub sending_monitor {
             my $mailout = DADA::Mail::MailOut->new( { -list => $list } );
             $mailout->associate( $id, $type );
             $should_be_restarted = $mailout->should_be_restarted;
-
             if ( $should_be_restarted == 1 ) {
                 $mh->restart_mass_send( $id, $type );
                 sleep(5);
@@ -1746,11 +1743,12 @@ sub sending_monitor {
         }
 
         if ( $should_be_restarted == 1 ) {
-
             # Provide a link in case browser redirect is working
+            warn 'Reloading Message from Mailing Monitor';            
             print '<a href="' . $refresh_url . '">Reloading Mailing...</a>';
         }
         else {
+            warn 'Refreshing Screen from Mailing Monitor'; 
             print '<a href="' . $refresh_url . '">Refreshing Screen....</a>';
         }
         print "
@@ -1801,12 +1799,12 @@ sub sending_monitor {
             }
           );
 
-        #warn '$status->{should_be_restarted} ' . $status->{should_be_restarted};
-        #warn q{$ls->param('auto_pickup_dropped_mailings') }
-        #  . $ls->param('auto_pickup_dropped_mailings');
-        #warn '$restart_count' . $restart_count;
-        #warn '$status->{mailout_stale}' . $status->{mailout_stale};
-        #warn '$active_mailouts' . $active_mailouts;
+                        #warn '$status->{should_be_restarted} ' . $status->{should_be_restarted};
+                        #warn q{$ls->param('auto_pickup_dropped_mailings') }
+                        #  . $ls->param('auto_pickup_dropped_mailings');
+                        #warn '$restart_count' . $restart_count;
+                        #warn '$status->{mailout_stale}' . $status->{mailout_stale};
+                        #warn '$active_mailouts' . $active_mailouts;
 
         if (
             $status->{should_be_restarted} == 1 &&    # It's dead in the water.
@@ -1855,8 +1853,9 @@ sub sending_monitor {
         # let's say a mailing will be automatically started in... time since last - wait time.
 
         my $will_restart_in = undef;
-        if ( time - $status->{last_access} > ( $batch_wait * 1.5 ) ) {
-            my $tardy_threshold = $batch_wait * 3;
+        # $batch_wait
+        if ( time - $status->{last_access} > ( 10 * 1.5 ) ) {
+            my $tardy_threshold = 10 * 3;
             if ( $tardy_threshold < 60 ) {
                 $tardy_threshold = 60;
             }
@@ -2682,6 +2681,7 @@ sub mass_mailing_preferences {
         require DADA::Mail::MailOut;
         my $mo = DADA::Mail::MailOut->new( { -list => $list } );
         my ( $batch_sending_enabled, $batch_size, $batch_wait ) = $mo->batch_params();
+
 
         my $show_amazon_ses_options = 0;
         if (
