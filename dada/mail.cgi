@@ -4104,7 +4104,7 @@ sub membership {
     $profile_exists = $prof->exists; 
 
     if ($process) {
-        if ($root_login != 1 || $ls->param('list_settings.allow_profile_editing') != 1) {
+        if ($root_login != 1 && $ls->param('allow_profile_editing') != 1) {
             die
 "You must be logged in with the Dada Mail Root Password to be able to edit a Subscriber's Profile Fields.";
         }
