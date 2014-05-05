@@ -362,8 +362,19 @@ sub send_msg {
         'Action'          => 'SendRawEmail'
     };
 
-    return $self->call_ses( $params, {} );
+	my ($response_code, $response_content) = $self->call_ses($params, {});
+		if ( $self->trace ) {
+			print $response_code . "\n"; 
+			print $response_content . "\n"; 
+		}	
 
+
+	if($response_code eq '200') { 
+		return ($response_code, $self->get_send_response($response_content));
+	}
+	else { 
+		return ($response_code, $response_content);
+	}
 }
 
 # Read the credentials from $AWS_CREDENTIALS_FILE file.
@@ -624,7 +635,6 @@ sub call_ses {
     my $response = $browser->request($request);
 
     if ( $self->trace ) {
-
         #	carp $response->content;
     }
 
@@ -643,7 +653,29 @@ sub call_ses {
 
     #my $t1 = gettimeofday();
     #carp "mailing time: " . ($t1 - $t0);
-    return ( $response->code, $response->content );
+	
+	return ($response->code, $response->content);
+}
+
+# Gets response sent by amazon
+sub get_send_response {
+	my $self = shift;
+    my $response_content = shift;
+
+    my $parser = XML::LibXML->new();
+    my $dom = $parser->parse_string($response_content);
+    my $xpath = XML::LibXML::XPathContext->new($dom);
+    $xpath->registerNs('ns', $aws_email_ns);
+	
+    my $messageId = $xpath->find('/ns:SendRawEmailResponse' .
+	                             '/ns:SendRawEmailResult' .
+								 '/ns:MessageId');
+
+    my $requestId = $xpath->find('/ns:SendRawEmailResponse' .
+	                             '/ns:ResponseMetadata' .
+	                             '/ns:RequestId');
+
+	return $messageId . "\n" . $requestId;
 }
 
 # Prints tha data returned by the service call.
