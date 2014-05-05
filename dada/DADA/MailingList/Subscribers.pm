@@ -1069,7 +1069,7 @@ DADA::MailingList::Subscribers - API for the Dada Mailing List Subscribers
 =head1 SYNOPSIS
 
  # Import
- use Dada::MailingList::Subscribers; 
+ use DADA::MailingList::Subscribers; 
   
  # Create a new object
  my $lh = DADA::MailingList::Subscribers->new({-list => 'mylist'}); 
@@ -1300,21 +1300,21 @@ Fields that are not actual fields that are being passed will be ignored.
 C<-dupe_check> can also be optionally passed. It should contain a hashref with other 
 options. For example: 
 
-$lh->add_subscriber(
-	{
-		-email  => 'user@example.com', 
-		-type   => 'list',
-		-fields => {
-					first_name => "John", 
-					last_name  => "Doe", 
-				   },
-	}, 
-	-dupe_check    => {
-		-enable  => 1,
-		-on_dupe => 'ignore_add',
-	},
+    $lh->add_subscriber(
+    	{
+    		-email  => 'user@example.com', 
+    		-type   => 'list',
+    		-fields => {
+    					first_name => "John", 
+    					last_name  => "Doe", 
+    				   },
+    	}, 
+    	-dupe_check    => {
+    		-enable  => 1,
+    		-on_dupe => 'ignore_add',
+    	},
 	
-);
+    );
 
 C<-enable> can either be set to, C<1> or, C<0>. C<1> enables the check for dupes, right 
 before subscribing an address. C<0> ignores the dupe check, so don't set it to C<0> 
@@ -1705,23 +1705,6 @@ The errors, which are fairly self-explainitory are as follows:
 =back
 
 Unless you have a special case, always use this method to validate an email subscription. 
-
-=head2 subscription_check_xml
-
-	my ($xml, $status, $errors) =  $lh->subscription_check_xml({-email => $email}); 
-
-Same as B<subscription_check> but also returns an simplified XML-esque document describing the same 
-thing.This was initially used to talk to Adobe Flash Apps. It hasn't been updated in a while. 
-
-The XML-esque doc is as so: 
-
- <subscription>
-  <email>some@where.com</email>
-  <status>1</status>
-  <errors>
-   <error>no_list</error>
-  </errors>
- </subscription>
 
 =head2 unsubscription_check
 
