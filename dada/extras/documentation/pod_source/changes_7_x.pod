@@ -2,6 +2,29 @@
 
 =head1 Dada Mail Changelog for v7.x
 
+=head2 7.0.3
+
+=head2 Summary 7.0.3
+
+This is primarily a bugfix release, although some of issues fixed are fairly important things, 
+if you are utilizing Profile Fields.
+
+Some work was also done relating to sending with Amazon SES, mostly to provide additional feedback about mail sending, 
+as well as retiring unneeded code. Thanks to github user, B<Yunheng> for the code contributions!
+
+Work has also been done with mass mailing, both to provide additional feedback when setting up debugging traces, 
+as well as simplifying some of the file locking done during a mass mailing. We hope things will flow smoother for 
+people who have had problems with mass mailing in Dada Mail - we're suspecting some stale file locking issues, 
+which we've tried to address. 
+
+=head3 Profile Fields cannot be edited in the List Control Panel Under, Membership >> View >> (subscriber's email address)
+
+L<https://github.com/justingit/dada-mail/issues/436>
+
+=head3 Profile Field Information not saved when user Requests a Subscription
+
+L<https://github.com/justingit/dada-mail/issues/437>
+
 =head2 7.0.2
 
 =head2 Summary 7.0.2
