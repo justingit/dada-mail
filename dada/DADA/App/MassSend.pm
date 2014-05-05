@@ -1176,6 +1176,8 @@ sub list_invite {
                     -type   => 'invitelist',
                 }
             );
+            
+            # There's a good reason we're not passing anything in -fields... right? 
             $lh->add_subscriber(
                 {
                     -email      => $info->{email},
