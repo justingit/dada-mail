@@ -1815,7 +1815,8 @@ sub mass_send {
 				}
 				else {
 				
-				    warn 'Batching settings: $batching_enabled: ' . $batching_enabled . ' $batch_size ' . $batch_size . ' $batch_wait ' . $batch_wait; 
+				    warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Batching settings: $batching_enabled: ' . $batching_enabled . ' $batch_size ' . $batch_size . ' $batch_wait ' . $batch_wait
+				        if $t; 
 				    
 					if($batching_enabled == 1){ 
 					    
