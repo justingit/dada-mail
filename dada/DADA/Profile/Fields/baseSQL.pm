@@ -7,8 +7,6 @@ use strict;
 
 use Carp qw(carp croak confess);
 
-#$Carp::Verbose = 1; 
-
 use DADA::App::Guts;
 
 my $t = $DADA::Config::DEBUG_TRACE->{DADA_Profile_Fields};
@@ -104,7 +102,12 @@ sub insert {
         for my $field (@order) {
             $sql_str .= ',' . $field;
             $place_holder_string .= ',?';
-            push ( @values, $args->{ -fields }->{$field} );
+            if(exists($args->{ -fields }->{$field})){ 
+                push ( @values, $args->{ -fields }->{$field} );
+            }
+            else { 
+                push ( @values, '' );               
+            }
         }
     }
     $sql_str =~ s/,$//;
