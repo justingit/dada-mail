@@ -525,7 +525,7 @@ like($r, qr/Dear/);
 
 SKIP: {
 
-		    skip "Multiple Profile Fields is not supported with this current backend." 
+		    skip "Profile Fields is not supported with this current backend." 
 		        if $lh->can_have_subscriber_fields == 0; 
 
 			require DADA::ProfileFieldsManager;

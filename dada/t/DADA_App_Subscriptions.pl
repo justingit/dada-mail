@@ -762,101 +762,106 @@ $q->delete_all;
 
 
 
-# Profile Fields
+SKIP: {
+    skip "Profile Fields is not supported with this current backend." 
+    if $lh->can_have_subscriber_fields == 0; 
 
-require DADA::ProfileFieldsManager;
-my $pfm = DADA::ProfileFieldsManager->new;
-$pfm->add_field(
-    {
-        -field          => 'first_name',
-        -required       => 1,
-    }
-);
-$pfm->add_field(
-    {
-        -field          => 'last_name',
-        -required       => 0,
-    }
-);
+    # Profile Fields
 
-$q->param('list',  $list); 
-$q->param('email', $email); 
-my $r = $das->subscribe(
-    {
-        -cgi_obj     => $q,
-        -html_output => 0,
-    	-return_json => 0, 
-	}
-);
-#diag Dumper($r);
-ok($r->{email} eq $email);
-ok($r->{list} eq $list);
-ok($r->{status} == 0);
-#ok($r->{redirect}->{url}   eq '');
-#ok($r->{redirect}->{query} eq 'list=dadatest&rm=sub&subscription_requires_approval=1&status=1&email=user%40example.com');
-#ok($r->{redirect}->{using} == 0); 
-#ok($r->{redirect}->{using_with_query} == 0);
-ok(exists($r->{error_descriptions}->{invalid_profile_fields})); 
-ok($r->{profile_errors}->{first_name}->{required} == 1); 
-undef $r;
-$q->delete_all;
-$lh->remove_subscriber(
-    {
-        -email => $email,
-        -type  => 'sub_confirm_list',
-    }
-);
-$ct->remove_all_tokens; 
+    require DADA::ProfileFieldsManager;
+    my $pfm = DADA::ProfileFieldsManager->new;
+    $pfm->add_field(
+        {
+            -field          => 'first_name',
+            -required       => 1,
+        }
+    );
+    $pfm->add_field(
+        {
+            -field          => 'last_name',
+            -required       => 0,
+        }
+    );
+
+    $q->param('list',  $list); 
+    $q->param('email', $email); 
+    my $r = $das->subscribe(
+        {
+            -cgi_obj     => $q,
+            -html_output => 0,
+        	-return_json => 0, 
+    	}
+    );
+    #diag Dumper($r);
+    ok($r->{email} eq $email);
+    ok($r->{list} eq $list);
+    ok($r->{status} == 0);
+    #ok($r->{redirect}->{url}   eq '');
+    #ok($r->{redirect}->{query} eq 'list=dadatest&rm=sub&subscription_requires_approval=1&status=1&email=user%40example.com');
+    #ok($r->{redirect}->{using} == 0); 
+    #ok($r->{redirect}->{using_with_query} == 0);
+    ok(exists($r->{error_descriptions}->{invalid_profile_fields})); 
+    ok($r->{profile_errors}->{first_name}->{required} == 1); 
+    undef $r;
+    $q->delete_all;
+    $lh->remove_subscriber(
+        {
+            -email => $email,
+            -type  => 'sub_confirm_list',
+        }
+    );
+    $ct->remove_all_tokens; 
 
 
 
-# This one, we just make sure it works, with profile fields, and those FIELDS ARE SAVED!!! 
-undef $lh; 
-my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
+    # This one, we just make sure it works, with profile fields, and those FIELDS ARE SAVED!!! 
+    undef $lh; 
+    my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
 
-$ls->save(
-	{ 
-		enable_closed_loop_opt_in         => 1, 
-		captcha_sub                       => 0, 
-		enable_subscription_approval_step => 0, 		
-	}
-); 
+    $ls->save(
+    	{ 
+    		enable_closed_loop_opt_in         => 1, 
+    		captcha_sub                       => 0, 
+    		enable_subscription_approval_step => 0, 		
+    	}
+    ); 
 
-$q->param('list',  $list); 
-$q->param('email', $email); 
-$q->param('first_name', 'First Name!'); 
-$q->param('last_name', 'Last Name!'); 
+    $q->param('list',  $list); 
+    $q->param('email', $email); 
+    $q->param('first_name', 'First Name!'); 
+    $q->param('last_name', 'Last Name!'); 
 
-my $r = $das->subscribe(
-    {
-        -cgi_obj     => $q,
-        -html_output => 0,
-    	-return_json => 0, 
-	}
-);
-#diag Dumper($r);
-ok($r->{email} eq $email);
-ok($r->{list} eq $list);
-ok($r->{status} == 1);
-#ok($r->{redirect}->{url}   eq '');
-#ok($r->{redirect}->{query} eq 'list=dadatest&rm=sub&subscription_requires_approval=1&status=1&email=user%40example.com');
-#ok($r->{redirect}->{using} == 0); 
-#ok($r->{redirect}->{using_with_query} == 0);
+    my $r = $das->subscribe(
+        {
+            -cgi_obj     => $q,
+            -html_output => 0,
+        	-return_json => 0, 
+    	}
+    );
+    #diag Dumper($r);
+    ok($r->{email} eq $email);
+    ok($r->{list} eq $list);
+    ok($r->{status} == 1);
+    #ok($r->{redirect}->{url}   eq '');
+    #ok($r->{redirect}->{query} eq 'list=dadatest&rm=sub&subscription_requires_approval=1&status=1&email=user%40example.com');
+    #ok($r->{redirect}->{using} == 0); 
+    #ok($r->{redirect}->{using_with_query} == 0);
 
-#sleep(30); 
+    #sleep(30); 
 
-my $sub_info = $lh->get_subscriber(
-		{
-			-email => '*' . $email, 
-			-type  => 'sub_confirm_list', 
-		}
-	);
-ok($sub_info->{'first_name'} eq 'First Name!');
-ok($sub_info->{'last_name'}  eq 'Last Name!');
+    my $sub_info = $lh->get_subscriber(
+    		{
+    			-email => '*' . $email, 
+    			-type  => 'sub_confirm_list', 
+    		}
+    	);
+    ok($sub_info->{'first_name'} eq 'First Name!');
+    ok($sub_info->{'last_name'}  eq 'Last Name!');
 
-undef $r; 
-$q->delete_all;
+    undef $r; 
+    $q->delete_all;
 
+};
 
 
 
