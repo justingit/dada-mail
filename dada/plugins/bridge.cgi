@@ -1948,9 +1948,10 @@ sub validate_msg {
             print "\t* Loading SpamAssassin directly.\n"
               if $verbose;
 
-            eval { require Mail::SpamAssassin; };
-            if ( !$@ ) {
-
+            eval { 
+                
+                require Mail::SpamAssassin;
+                
                 if ( $Mail::SpamAssassin::VERSION <= 2.60 && $Mail::SpamAssassin::VERSION >= 2 ) {
                     require Mail::SpamAssassin::NoMailAudit;
 
@@ -2051,8 +2052,7 @@ sub validate_msg {
                     my $report = $spam_status->get_report();
 
                     if ( $score eq undef && $score != 0 ) {
-                        print
-"\t* Trouble parsing scoring information - letting message pass...\n"
+                        print "\t* Trouble parsing scoring information - letting message pass...\n"
                           if $verbose;
                     }
                     else {
@@ -2065,8 +2065,7 @@ sub validate_msg {
                             || $spam_status->is_spam()
                           )
                         {
-                            print
-"\t* Message has *failed* Spam Test (Score of: $score, "
+                            print "\t* Message has *failed* Spam Test (Score of: $score, "
                               . $ls->param(
                                 'ignore_spam_messages_with_status_of')
                               . " needed.) - ignoring message.\n"
@@ -2080,8 +2079,7 @@ sub validate_msg {
                         else {
                             $errors->{message_seen_as_spam} = 0;
 
-                            print
-"\t* Message passed! Spam Test (Score of: $score, "
+                            print "\t* Message passed! Spam Test (Score of: $score, "
                               . $ls->param(
                                 'ignore_spam_messages_with_status_of')
                               . " needed.)\n"
@@ -2096,18 +2094,15 @@ sub validate_msg {
                     undef $report;
                 }
                 else {
-                    print
-"\t* SpamAssassin 2.x and 3.x are currently supported, you have version $Mail::SpamAssassin::VERSION, skipping test\n"
+                    print   "\t* SpamAssassin 2.x and 3.x are currently supported, you have version $Mail::SpamAssassin::VERSION, skipping test\n"
                       if $verbose;
                 }
-
-            }
-            else {
-                print
-"\t* SpamAssassin doesn't seem to be available. Skipping test.\n"
+            };
+            
+            if ( !$@ ) {   
+                "\t* SpamAssassin doesn't seem to be available. Skipping test - option should be disabled!\n"
                   if $verbose;
             }
-
         }
         elsif ( $ls->param('find_spam_assassin_score_by') eq
             'looking_for_embedded_headers' )
