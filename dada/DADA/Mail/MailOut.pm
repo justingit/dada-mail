@@ -259,7 +259,8 @@ sub batch_params {
         && $amazon_ses_auto_batch_settings == 1
       )
     {
-        
+     	
+		require POSIX;
         my $batch_size = 0;
         my $batch_wait = 0;
 
@@ -268,9 +269,22 @@ sub batch_params {
         my ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats;
         #                  0          10_000             5
 
-        my $quota_Max24HourSend = ($Max24HourSend * $ses->allowed_sending_quota_percentage) / 100;
-        $quota_Max24HourSend =  sprintf ("%.1f", $Max24HourSend); 
+#		if($t) {
+#			 warn '$status ' . $status; 
+#			 warn '$SentLast24Hours' . $SentLast24Hours; 
+#			 warn '$Max24HourSend' . $Max24HourSend; 
+#			 warn '$MaxSendRate' . $MaxSendRate
+#	 	}
+		
+		my $quota_Max24HourSend = ($Max24HourSend * $ses->allowed_sending_quota_percentage) / 100;
+		
+#		warn '$quota_Max24HourSend bef' , $quota_Max24HourSend; 
+		
+        $quota_Max24HourSend =  POSIX::floor($quota_Max24HourSend);
         
+#		warn '$quota_Max24HourSend' . $quota_Max24HourSend
+#			if $t; 
+		
         if ( $SentLast24Hours     >= $Max24HourSend 
           || $SentLast24Hours     >= $quota_Max24HourSend) {
             # Yikes! We're over our limit! 
@@ -284,22 +298,47 @@ sub batch_params {
         }
         else {
 
-            $batch_wait = 1;
-            my $percent_used = ( ( 100 * $SentLast24Hours ) / $quota_Max24HourSend ) / 100;
-            $batch_size = $MaxSendRate - ( $MaxSendRate * ( $percent_used * 10 ) ); # * 10 is fudge factor,
+#
+#			
+#            $batch_wait = 1;
+#            my $percent_used = ( ( 100 * $SentLast24Hours ) / $quota_Max24HourSend ) / 100;
+#			
+#			warn '$percent_used' . $percent_used
+#				if $t; 
+#			
+#            $batch_size = $MaxSendRate - ( $MaxSendRate * ( $percent_used * 10 ) ); # * 10 is fudge factor,
+#
+#            if ( $batch_size < 1.5 ) {
+#
+#                $batch_size = $MaxSendRate;
+#                $batch_wait = 86400 / $quota_Max24HourSend;                 # 8.64
+#                $batch_wait = $batch_wait * $MaxSendRate;             # 8.64 * 5 = 43.2
+#                $batch_wait = $batch_wait + ( $batch_wait * .10 );    # 38.8
+#
+#                if ( $batch_wait / $batch_size > 1 ) {                # 38.8 / 5
+#                    $batch_wait = $batch_wait / $batch_size;          # 7.76
+#                    $batch_size = 1;                                  # 1;
+#                }
+#            }
+#
 
-            if ( $batch_size < 1.5 ) {
+	        if ( $quota_Max24HourSend < 86_400 ) {
+	            $batch_size = 1;
+	            $batch_size = $batch_size * $MaxSendRate;    # 5
 
-                $batch_size = $MaxSendRate;
-                $batch_wait = 86400 / $quota_Max24HourSend;                 # 8.64
-                $batch_wait = $batch_wait * $MaxSendRate;             # 8.64 * 5 = 43.2
-                $batch_wait = $batch_wait + ( $batch_wait * .10 );    # 38.8
+	            $batch_wait = 86_400 / $quota_Max24HourSend;             # 8.64
+	            $batch_wait = $batch_wait * $MaxSendRate;          # 8.64 * 5 = 43.2
+	            $batch_wait = $batch_wait + ( $batch_wait * .10 ); # 38.8
+	        }
+	        else {
+	            $batch_size = $MaxSendRate;                        # 5
+	            $batch_wait =
+	              $quota_Max24HourSend / 86_400;    # 100_000 / 86_400 = 1.1574...
+	            $batch_wait = $batch_wait + ( $batch_wait * .10 );    # 38.8
+	        }
 
-                if ( $batch_wait / $batch_size > 1 ) {                # 38.8 / 5
-                    $batch_wait = $batch_wait / $batch_size;          # 7.76
-                    $batch_size = 1;                                  # 1;
-                }
-            }
+			
+			
 
             # This slows the batch settings down, if there's > 1 mailout going on
             # at one time.
@@ -319,7 +358,10 @@ sub batch_params {
                 # better to divide that up, rather than the span between messages
                 # Round DOWN just to be on the safe side of things.
                 if ( $batch_size > $active_mailouts ) {
-                    require POSIX;
+#					warn '$batch_size > $active_mailouts'
+#						if $t; 
+					
+                    
                     if ( $active_mailouts > 1 ) {
                         if ( $active_mailouts < $DADA::Config::MAILOUT_AT_ONCE_LIMIT ) {
                             $batch_size = POSIX::floor( ( $batch_size / $active_mailouts ) );
@@ -341,9 +383,9 @@ sub batch_params {
                     }
                 }
             }
-
-            require POSIX;
-            $batch_size = POSIX::floor($batch_size), $batch_wait = POSIX::ceil($batch_wait),
+			
+            $batch_size = POSIX::floor($batch_size);
+			$batch_wait = POSIX::ceil($batch_wait);
 
               $self->{_cache}->{batch_params} = {
                 enable_bulk_batching => $enable_bulk_batching,

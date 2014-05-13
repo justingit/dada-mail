@@ -1577,7 +1577,7 @@ sub sending_monitor {
     $list = $admin_list;
 
     my $mo = DADA::Mail::MailOut->new( { -list => $list } );
-    
+    my ( $batching_enabled, $batch_size, $batch_wait ) = $mo->batch_params;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
@@ -1601,9 +1601,9 @@ sub sending_monitor {
     # to read the actual screen.
 
     my $refresh_after = 10;
-#    if ( $refresh_after < $batch_wait ) {
-#        $refresh_after = $batch_wait;
-#    }
+    if ( $refresh_after < $batch_wait ) {
+        $refresh_after = $batch_wait;
+    }
 
     # Type ala, list, invitation list, etc
     my $type = $q->param('type');
@@ -1854,8 +1854,9 @@ sub sending_monitor {
 
         my $will_restart_in = undef;
         # $batch_wait
-        if ( time - $status->{last_access} > ( 10 * 1.5 ) ) {
-            my $tardy_threshold = 10 * 3;
+        if ( time - $status->{last_access} > ( $batch_wait * 1.5 ) ) {
+            my $tardy_threshold = $batch_wait * 3;
+                        
             if ( $tardy_threshold < 60 ) {
                 $tardy_threshold = 60;
             }

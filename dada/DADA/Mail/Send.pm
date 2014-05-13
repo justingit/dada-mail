@@ -859,6 +859,7 @@ sub send {
 				$self->ses_obj($ses_obj); 
 			}		
 			my $msg = ''; 
+						
             for my $field (@default_headers){			
 				if(
  					exists($fields{$field})                  && 
@@ -1027,6 +1028,9 @@ sub sending_preferences_test {
 
 sub restart_mass_send { 
 
+	warn 'restart_mass_send'
+		if $t; 
+	
     my $self = shift; 
     my $id   = shift; 
     my $type = shift; 
@@ -1049,6 +1053,7 @@ sub restart_mass_send {
  	    
     
     
+		warn 'restart_with set to: ' . $id; 
     $self->restart_with($id); 
     $self->mass_send(); 
 
@@ -1167,10 +1172,8 @@ sub mass_send {
    
 	
     if($self->restart_with){ 
-        
-        warn '[' . $self->{list} . '] restart_with is defined.'
+        warn '[' . $self->{list} . '] restart_with is defined: ' . $self->restart_with
             if $t; 
-    
         # Shazzam!
         $mailout->associate(
 			$self->restart_with, 
@@ -1602,7 +1605,7 @@ sub mass_send {
 				}
 
 				my $current_email = $ml_info[0];
-														
+				
 				$mass_mailing_count++;
 
 				# only start sending at a point where we're supposed to...
@@ -1620,7 +1623,6 @@ sub mass_send {
 				
 				if($check_restart_state == 1){ 
                     if($self->restart_with){ 
-	
                         my $mo_counter_at = $mailout->counter_at; 
                         
                         	warn '[' . $self->{list} . '] Mass Mailing:' . 
@@ -1629,25 +1631,35 @@ sub mass_send {
                             	if $t; 
                         
                         if($mo_counter_at > ($mass_mailing_count - 1)){ 
-                        
                            warn '[' . $self->{list} . '] Mass Mailing:' . 
                                 $mailout_id . ' Skipping Mailing #' . 
                                 $mass_mailing_count . 
                                 '( $mo_counter_at > ($mass_mailing_count - 1 )'
                             if $t; 
                             next SUBSCRIBERLOOP; 
-                        } else { 
-                        	warn '[' . $self->{list} . '] Mass Mailing:' . 
+                        }
+                        elsif($mo_counter_at == ($mass_mailing_count - 1)){ 
+                            	warn '[' . $self->{list} . '] Mass Mailing:' . 
                                  $mailout_id . 
                                  ' setting check_restart_state to 0'
                                 if $t; 
                             $check_restart_state = 0;
                         }
+                        elsif($mo_counter_at < ($mass_mailing_count - 1)){ 
+                            warn '[' . $self->{list} . '] Mass Mailing:' . 
+                                 $mailout_id . 'Problems!' 
+                             . '( $mo_counter_at < ($mass_mailing_count - 1 )'
+                             . ' how did counter_at get behind $mass_mailing_count?!' 
+                             if $t; 
+                             $mailout->update_last_access; 
+ 							 $mailout->unlock_batch_lock;
+ 							 exit(0);
+                        }
                     
                     }
                     else { 
                         warn '[' . $self->{list} . '] Mass Mailing:' . 
-                              $mailout_id . ' restart_with reports, 0'
+                              $mailout_id . ' $check_restart_state set to:' . $check_restart_state
                             if $t; 
                     }
 			    }
@@ -1719,41 +1731,32 @@ sub mass_send {
 						
 						warn 'That try seemed to work!'
 							if $t; 
+							##############################################################
+             				# Count Subscriber
+             				#
+                             warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' counting subscriber.'
+                                 if $t; 
+                             my $new_count = $mailout->countsubscriber; 
 
+             				$mailout->log($nfields{To} . ' sent message #' . $new_count);
+             				
+                             warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' $new_count set to, ' . $new_count
+                             	if $t; 
+
+             				# And this almost never happens: 
+                            if($mass_mailing_count != $new_count){ 
+                                 carp("Warning: \$mass_mailing_count ($mass_mailing_count) is not the same as \$new_count ($new_count) - problems are likely to happen..."); 
+             					$mailout->log("\$mass_mailing_count ($mass_mailing_count) is not the same as \$new_count ($new_count) - problems are likely to happen..."); 
+                            }
+             				$batch_num_sent++; 
+             				# /Count Subscriber
+             				##############################################################
 						last TRIES; 
 					}
 				}
 				
 				# / Three strikes, and you're out: 
 				##############################################################				
-				
-				##############################################################
-				# Count Subscriber
-				#
-				
-                warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' counting subscriber.'
-                    if $t; 
-
-                my $new_count = $mailout->countsubscriber; 
-                 
-				$mailout->log($nfields{To} . ' sent message #' . $new_count);
-
-                warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' $new_count set to, ' . $new_count
-                	if $t; 
-        
-				# And this almost never happens: 
-               if($mass_mailing_count != $new_count){ 
-                    carp("Warning: \$mass_mailing_count ($mass_mailing_count) is not the same as \$new_count ($new_count) - problems are likely to happen..."); 
-					$mailout->log("\$mass_mailing_count ($mass_mailing_count) is not the same as \$new_count ($new_count) - problems are likely to happen..."); 
-               }
-               
-				$batch_num_sent++; 
-				
-				# /Count Subscriber
-				##############################################################
-				
-				#$mailout->log('$self->mass_test ' . $self->mass_test); 
-				#$mailout->log('$batching_enabled ' . $batching_enabled); 
 				
 				
 				# I hate to wrap this in yet another If... state ment, but... 
