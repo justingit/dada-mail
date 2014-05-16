@@ -1108,6 +1108,27 @@ qr/551 not our customer|User unknown|ecipient no longer/
             },
         }
     },
+    
+    {
+        axigen_permanent_failure_notice => {
+            Examine => {
+                Message_Fields => {
+
+                    Bounce_Subject_regex => [qr/Permanent failure notice/],
+                },
+                Data => {
+                    Email => 'is_valid',
+                    List  => 'is_valid',
+                }
+            },
+            Action => {
+                add_to_score => 'hardbounce_score',
+            },
+        }
+    },
+    
+    
+    
 
     {
         unknown_domain => {
