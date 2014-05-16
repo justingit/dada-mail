@@ -378,7 +378,7 @@ sub generic_parse {
 	}
 
     $list = DADA::App::Guts::strip($list) if $list;
-
+    
     return ( $list, $email, \%return );
 
 }
@@ -694,11 +694,17 @@ sub generic_body_parse_for_email {
 		
 	    return undef if !defined($body);
 
+        
 	    if ( $IO = $body->open("r") ) {    # "r" for reading.
-	        while ( defined( $_ = $IO->getline ) ) {
+	        while ( defined( $_ = $IO->getline ) ) {	            
 	            chomp($_);
 				if($_ =~ m/Your message to \<(.*?)\> was automatically rejected/){ 
 					return $1; 
+				}
+				elsif($_ =~ m/Recipient a(d{1,2})ress\: (.*?)$/i) {    
+                    my $email = $2; 
+                    $email =~ s/\=20$//; 
+				    return $email; 
 				}
 			}
 		}
