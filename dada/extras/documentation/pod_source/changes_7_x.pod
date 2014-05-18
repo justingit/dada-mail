@@ -2,6 +2,23 @@
 
 =head1 Dada Mail Changelog for v7.x
 
+=head2 7.0.4
+
+=head2 Summary 7.0.4
+
+This is primarily a bugfix release, and in particular, bugs found when using Amazon SES for mail sending. The option, B<Automatically set batching speeds based on your Amazon SES limits>
+was causing problems, as the speed it was setting was too high. This is because the SES service does not report back the exact amount of messages sent in a 24 hour period (as it actually should), resulting in Dada Mail making its batch setting speeds using incorrect data. 
+
+We've reverted Dada Mail's auto-batch sending speeds to use the original, more conservative method, and have had great results in our tests of getting this issue to resolve. 
+
+Because of that, anyone that's using Dada Mail v7.0.0 or higher and Amazon SES should most definetly upgrade to this new release. If there are any additional problems, please report them! 
+
+=head2 Bugfixes 7.0.1
+
+=head3 Amazon SES: " Automatically set batching speeds based on your Amazon SES limits " causing mass mailing problems
+
+L<https://github.com/justingit/dada-mail/issues/439>
+
 =head2 7.0.3
 
 =head2 Summary 7.0.3
