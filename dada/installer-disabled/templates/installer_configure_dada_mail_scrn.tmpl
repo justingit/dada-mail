@@ -602,8 +602,76 @@ for it to work correctly. For help on setting the cronjob, see the
 				<option value="10485760">10 Megabytes</option> 
 			</select>
 		</p>
+		
+		
+		
+		<fieldset>
+			<legend>
+				<a href="#" class="toggleDivs" data-target="additional_bridge_configuration">
+				+/-
+				</a> Additional Configuration Options
+			</legend>
+
+    		<div id="additional_bridge_configuration"> 
+		
+		
+        
+        
+        		<p>
+        		    <label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bridge_Plugin_URL">Plugin URL:</label> 
+        		    <input type="text" name="bridge_Plugin_URL" id="bridge_Plugin_URL" value="" />
+        		</p>
+
+		
+		
+		
+        		<p>
+        			<label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bridge_Allow_Manual_Run">
+        			    Allow Manual Run
+        			</label>
+        			<input type="checkbox" name="bridge_Allow_Manual_Run" id="bridge_Allow_Manual_Run" value="1" />
+        		</p>
+        		
+        		<p>
+        		    <label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bridge_Manual_Run_Passcode">
+        		        Manual Run Passcode:
+        		    </label> 
+        		    <input type="text" name="bridge_Manual_Run_Passcode" id="bridge_Manual_Run_Passcode" value="" />
+        		</p>
+        		
+        		
+        		<p>
+        			<label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bridge_Enable_POP3_File_Locking">
+        			    Enable POP3 File Locking:
+        			</label>
+        			<input type="checkbox" name="bridge_Enable_POP3_File_Locking" id="bridge_Enable_POP3_File_Locking" value="1" />
+        		</p>
+        		
+		
+        		<p>
+        			<label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bridge_Room_For_One_More_Check">
+        			    Room For One More Check:
+        			</label>
+        			<input type="checkbox" name="bridge_Room_For_One_More_Check" id="bridge_Room_For_One_More_Check" value="1" />
+        		</p>
 
 
+        		<p>
+        			<label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bridge_Check_List_Owner_Return_Path_Header">
+        			    Check List Owner <br />Return-Path Header:
+        			</label>
+        			<input type="checkbox" name="bridge_Check_List_Owner_Return_Path_Header" id="bridge_Check_List_Owner_Return_Path_Header" value="1" />
+        		</p>
+
+        		<p><br />
+        			<label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bridge_Check_Multiple_Return_Path_Headers">
+        			    Check for Multiple <br />Return-Path Headers:
+        			</label>
+        			<input type="checkbox" name="bridge_Check_Multiple_Return_Path_Headers" id="bridge_Check_Multiple_Return_Path_Headers" value="1" />
+        		</p>
+            </div> 
+        </fieldset> 
+    
 	</fieldset>
 </div> 
 
@@ -624,13 +692,10 @@ for it to work correctly. For help on setting the cronjob, see the
 				</p> 
 		</div> 
 	
-		<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_address">Bounce Handler Email Address:</label> <input type="text" name="bounce_handler_address" id="bounce_handler_address" value="" /></p>
-
-		<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_server">Mail Server:</label> <input type="text" name="bounce_handler_server" id="bounce_handler_server" value="" /></p>
-
-		<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_username">Username:</label> <input type="text" name="bounce_handler_username" id="bounce_handler_username" value="" /></p>
-
-		<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_password">Password:</label> <input type="text" name="bounce_handler_password" id="bounce_handler_password" value="" /></p>
+		<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_Address">Bounce Handler Email Address:</label> <input type="text" name="bounce_handler_Address" id="bounce_handler_Address" value="" /></p>
+		<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_Server">Mail Server:</label> <input type="text" name="bounce_handler_Server" id="bounce_handler_Server" value="" /></p>
+		<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_Username">Username:</label> <input type="text" name="bounce_handler_Username" id="bounce_handler_Username" value="" /></p>
+		<p><label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_Password">Password:</label> <input type="text" name="bounce_handler_Password" id="bounce_handler_Password" value="" /></p>
 	 	
 		<fieldset>
 			<legend>
@@ -658,7 +723,12 @@ for it to work correctly. For help on setting the cronjob, see the
 					<option value="CRAM-MD5">CRAM-MD5</option> 
 				</select> 
 			</p>
-
+			
+			<p>
+    		    <label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_Port">Port:</label> 
+    		    <input type="text" name="bounce_handler_Port" id="bounce_handler_Port" value="" />
+    		</p>
+			
 			<p>
 				<label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_MessagesAtOnce">
 					# Messages to Check at Once
@@ -673,9 +743,39 @@ for it to work correctly. For help on setting the cronjob, see the
 					<option value="150">150</option> 
 					<option value="200">200</option> 
 				</select> 
-				
-			
 			</p>
+			
+			
+			
+			<p>
+    		    <label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_Plugin_URL">Plugin URL:</label> 
+    		    <input type="text" name="bounce_handler_Plugin_URL" id="bounce_handler_Plugin_URL" value="" />
+    		</p>
+    		
+    		
+    		
+			<p>
+            	<label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_Allow_Manual_Run">
+            	    Allow Manual Run
+            	</label>
+            	<input type="checkbox" name="bounce_handler_Allow_Manual_Run" id="bounce_handler_Allow_Manual_Run" value="1" />
+            </p>
+
+            <p>
+                <label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_Manual_Run_Passcode">
+                    Manual Run Passcode:
+                </label> 
+                <input type="text" name="bounce_handler_Manual_Run_Passcode" id="bounce_handler_Manual_Run_Passcode" value="" />
+            </p>
+
+
+            <p>
+            	<label style="width: 16em;float: left;text-align: right;margin-right: 0.5em;display: block" for="bounce_handler_Enable_POP3_File_Locking">
+            	    Enable POP3 File Locking:
+            	</label>
+            	<input type="checkbox" name="bounce_handler_Enable_POP3_File_Locking" id="bounce_handler_Enable_POP3_File_Locking" value="1" />
+            </p>
+            
 		
 		</div> 
 		</fieldset> 

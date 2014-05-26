@@ -289,27 +289,30 @@ for my $subs(@$subscribers){
     }
 }
 
-ok($lh->print_out_list({-query => 'John'}), "Surprise! print_out_list correctly returns 10"); 
+ok($lh->print_out_list({-query => 'John'}), "print_out_list correctly returns 10"); 
 
 
+##############################################################################
+# This is a weird test, to make sure that a new field, which should have 
+# any value in it, returns when you search for something it isn't. 
+#
+$pf->{manager}->add_field({ -field => 'new_field',  }); 
 
-
-#use Data::Dumper; 
-#diag Dumper([$total_num, $subscribers ]); 
-
-#ok($total_num == 2, "two results!");  
-
-
-
-
-
-
-# diag $lh->num_subscribers; 
-
-
-
-
-
+$partial_listing = { 
+    'new_field' => {
+        -operator => '!=',
+        -value    => 'something',
+    }, 
+};  
+undef $lh; 
+my    $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+my ( $total_num, $subscribers ) = $lh->search_list(
+    {
+        -partial_listing  => $partial_listing, 
+    }
+);
+ok($total_num == $lh->num_subscribers, "everyone is returned!"); 
+##############################################################################
 
 
 

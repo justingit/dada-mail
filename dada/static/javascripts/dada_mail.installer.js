@@ -184,6 +184,7 @@ $(document).ready(function() {
 		$("#plugins_extensions_help").hide();
 		$("#bounce_handler_configuration_help").hide();
 		$("#additional_bounce_handler_configuration").hide();
+		$("#additional_bridge_configuration").hide();
 		$("#wysiwyg_editor_help").hide();
 		$("#test_sql_connection_results").hide();
 		$("#test_bounce_handler_pop3_connection_results").hide();

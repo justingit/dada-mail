@@ -795,53 +795,71 @@ sub grab_former_config_vals {
 		$local_q->param('install_tracker', 1); 
 	}
 	
-	# Bridge
-	if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bridge})) { 
-		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{MessagesAtOnce})){ 
-			$local_q->param('bridge_MessagesAtOnce', $BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{MessagesAtOnce}); 
-		}
-		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{Soft_Max_Size_Of_Any_Message})){ 
-			$local_q->param('bridge_Soft_Max_Size_Of_Any_Message', $BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{Soft_Max_Size_Of_Any_Message}); 
-		}
-		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{Max_Size_Of_Any_Message})){ 
-			$local_q->param('bridge_Max_Size_Of_Any_Message', $BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{Max_Size_Of_Any_Message}); 
-		}
-	}
+    # Bridge
+    if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bridge})) { 
+    	my %bridge_plugin_configs = (
+    		MessagesAtOnce                      => 1, 
+    		Soft_Max_Size_Of_Any_Message        => 1048576,
+    		Max_Size_Of_Any_Message             => 2621440, 
+    		Plugin_URL                          => '', 
+    		Allow_Manual_Run                    => 1, 
+    		Manual_Run_Passcode                 => '', 
+    		Room_For_One_More_Check             => 1,
+    		Enable_POP3_File_Locking            => 1, 
+    		Check_List_Owner_Return_Path_Header => 1, 
+    		Check_Multiple_Return_Path_Headers  => 0,
+    	); 
+    	for my $config(keys %bridge_plugin_configs) { 
+    	    if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{$config})){ 
+    		    $local_q->param('bridge_' . $config, $BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{$config}); 
+    		}
+    		else {     		    
+    		    $local_q->param('bridge_' . $config, $bridge_plugin_configs{$config});    		    
+    		}
+    	}
+    }
 	
 	# Bounce Handler
 	if(exists($BootstrapConfig::LIST_SETUP_INCLUDE{admin_email})){ 
-		$local_q->param('bounce_handler_address', $BootstrapConfig::LIST_SETUP_INCLUDE{admin_email});
+		$local_q->param('bounce_handler_Address', $BootstrapConfig::LIST_SETUP_INCLUDE{admin_email});
 	}
 	if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler})) { 
-		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Server})){ 
-			$local_q->param('bounce_handler_server', $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Server}); 
-		}
-		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Username})){ 
-			$local_q->param('bounce_handler_username', $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Username}); 
-		}
-		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Password})){ 
-			$local_q->param('bounce_handler_password', $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{Password}); 
-		}
-		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{USESSL})){ 
-			$local_q->param('bounce_handler_USESSL', $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{USESSL}); 
-		}
-		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{AUTH_MODE})){ 
-			$local_q->param('bounce_handler_AUTH_MODE', $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{AUTH_MODE}); 
-		}
-		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{MessagesAtOnce})){ 
-			$local_q->param('bounce_handler_MessagesAtOnce', $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{MessagesAtOnce}); 
-		}
+	    
+	    my %bounce_handler_plugin_configs = (
+            Server                   => '', 
+            Username                 => '', 
+            Password                 => '', 
+            
+            Port                     => 'AUTO',
+            USESSL                   => '0', 
+            AUTH_MODE                => 'BEST', 
+            MessagesAtOnce           => '100',
+            
+            Plugin_URL               => '',
+            Allow_Manual_Run         => 1,
+            Manual_Run_Passcode      => '',
+            Enable_POP3_File_Locking => 1, 
+    	); 
+    	
+    	for my $config(keys %bounce_handler_plugin_configs) { 
+    	    if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{$config})){ 
+    		    $local_q->param('bounce_handler_' . $config, $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{$config}); 
+    		}
+    		else {     		    
+    		    $local_q->param('bounce_handler_' . $config, $bounce_handler_plugin_configs{$config});    		    
+    		}
+    	}
 	}
 	# "Bounce_Handler" could also be, "Mystery_Girl" (change made in v4.9.0)
 	elsif(exists($BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl})) { 
 		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl}->{Server})){ 
-			$local_q->param('bounce_handler_server', $BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl}->{Server}); 
+			$local_q->param('bounce_handler_Server', $BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl}->{Server}); 
 		}
 		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl}->{Username})){ 
-			$local_q->param('bounce_handler_username', $BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl}->{Username}); 
+			$local_q->param('bounce_handler_Username', $BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl}->{Username}); 
 		}
 		if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl}->{Password})){ 
-			$local_q->param('bounce_handler_password', $BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl}->{Password}); 
+			$local_q->param('bounce_handler_Password', $BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl}->{Password}); 
 		}		
 	}
 	
@@ -1065,6 +1083,8 @@ sub grab_former_config_vals {
 		
 	}
 
+	#use Data::Dumper; 
+	#die Dumper($local_q); 
 	
 	return $local_q; 
 	
@@ -2120,24 +2140,34 @@ q|	Bridge => {
 |);
 						my $bridge_MessagesAtOnce               = clean_up_var($q->param('bridge_MessagesAtOnce')); 
 						my $bridge_Soft_Max_Size_Of_Any_Message = clean_up_var($q->param('bridge_Soft_Max_Size_Of_Any_Message')); 
-						my $bridge_Max_Size_Of_Any_Message = clean_up_var($q->param('bridge_Max_Size_Of_Any_Message')); 
-
-
+						my $bridge_Max_Size_Of_Any_Message      = clean_up_var($q->param('bridge_Max_Size_Of_Any_Message')); 
+						
+						
+						my $bridge_Plugin_URL                          = clean_up_var($q->param('bridge_Plugin_URL')); 
+                        my $bridge_Allow_Manual_Run                    = clean_up_var($q->param('bridge_Allow_Manual_Run'));
+                        my $bridge_Manual_Run_Passcode                 = clean_up_var($q->param('bridge_Manual_Run_Passcode'));
+                        my $bridge_Room_For_One_More_Check             = clean_up_var($q->param('bridge_Room_For_One_More_Check'));
+                        my $bridge_Enable_POP3_File_Locking            = clean_up_var($q->param('bridge_Enable_POP3_File_Locking'));
+                        my $bridge_Check_List_Owner_Return_Path_Header = clean_up_var($q->param('bridge_Check_List_Owner_Return_Path_Header')); 
+                        my $bridge_Check_Multiple_Return_Path_Headers  = clean_up_var($q->param('bridge_Check_Multiple_Return_Path_Headers'));
+                        
+                        
+                        
 						my $plugins_config_bridge_replace_with = 
 "	Bridge => {
 
 		Plugin_Name                         => undef,
-		Plugin_URL                          => undef,
-		Allow_Manual_Run                    => undef,
-		Manual_Run_Passcode                 => undef,
+		Plugin_URL                          => '$bridge_Plugin_URL',
+		Allow_Manual_Run                    => '$bridge_Allow_Manual_Run',
+		Manual_Run_Passcode                 => '$bridge_Manual_Run_Passcode',
 		MessagesAtOnce                      => '$bridge_MessagesAtOnce',
 		Soft_Max_Size_Of_Any_Message        => '$bridge_Soft_Max_Size_Of_Any_Message',
 		Max_Size_Of_Any_Message             => '$bridge_Max_Size_Of_Any_Message',
 		Allow_Open_Discussion_List          => undef,
-		Room_For_One_More_Check             => undef,
-		Enable_POP3_File_Locking            => undef,
-		Check_List_Owner_Return_Path_Header => undef,
-		Check_Multiple_Return_Path_Headers  => undef,
+		Room_For_One_More_Check             => '$bridge_Room_For_One_More_Check',
+		Enable_POP3_File_Locking            => '$bridge_Enable_POP3_File_Locking',
+		Check_List_Owner_Return_Path_Header => '$bridge_Check_List_Owner_Return_Path_Header',
+		Check_Multiple_Return_Path_Headers  => '$bridge_Check_Multiple_Return_Path_Headers',
 ";
 						$config_file =~ s/$plugins_config_bridge_orig/$plugins_config_bridge_replace_with/; 
 						 
@@ -2168,10 +2198,10 @@ q|	Bounce_Handler => {
 		Max_Size_Of_Any_Message     => undef,
 		Rules                       => undef,|
 					);
-					my $bounce_handler_address        = clean_up_var($q->param('bounce_handler_address')); 
-					my $bounce_handler_server         = clean_up_var($q->param('bounce_handler_server'));
-					my $bounce_handler_username       = clean_up_var($q->param('bounce_handler_username')); 
-					my $bounce_handler_password       = clean_up_var($q->param('bounce_handler_password')); 
+					my $bounce_handler_address        = clean_up_var($q->param('bounce_handler_Address')); 
+					my $bounce_handler_server         = clean_up_var($q->param('bounce_handler_Server'));
+					my $bounce_handler_username       = clean_up_var($q->param('bounce_handler_Username')); 
+					my $bounce_handler_password       = clean_up_var($q->param('bounce_handler_Password')); 
 					my $bounce_handler_USESSL         = clean_up_var($q->param('bounce_handler_USESSL')); 
 					my $bounce_handler_AUTH_MODE      = clean_up_var($q->param('bounce_handler_AUTH_MODE')); 
 					my $bounce_handler_MessagesAtOnce = clean_up_var($q->param('bounce_handler_MessagesAtOnce')); 
@@ -3026,9 +3056,11 @@ sub cgi_test_sql_connection {
 }
 sub cgi_test_pop3_connection { 
 	
-	my $bounce_handler_server         = $q->param('bounce_handler_server'); 
-	my $bounce_handler_username       = $q->param('bounce_handler_username'); 
-	my $bounce_handler_password       = $q->param('bounce_handler_password'); 
+	die $q->param('bounce_handler_Server'); 
+	
+	my $bounce_handler_server         = $q->param('bounce_handler_Server'); 
+	my $bounce_handler_username       = $q->param('bounce_handler_Username'); 
+	my $bounce_handler_password       = $q->param('bounce_handler_Password'); 
 	my $bounce_handler_USESSL         = $q->param('bounce_handler_USESSL') || 0; 
 	my $bounce_handler_AUTH_MODE      = $q->param('bounce_handler_AUTH_MODE') || 'BEST'; 
 #	my $bounce_handler_MessagesAtOnce = $q->param('bounce_handler_MessagesAtOnce') || 100; 
