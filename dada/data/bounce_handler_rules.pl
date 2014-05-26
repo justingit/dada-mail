@@ -1252,7 +1252,7 @@ qr/551 not our customer|User unknown|ecipient no longer/
                     List  => 'is_valid',
                 }
             },
-            Action => { add_to_score => 'softbounce_score', }
+            Action => { add_to_score => 'hardbounce_score', }
         }
     },
 
