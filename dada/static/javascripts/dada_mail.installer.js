@@ -249,11 +249,13 @@ function installer_test_pop3_connection() {
 		cache: false,
 		data: {
 			f: 'cgi_test_pop3_connection',
-			bounce_handler_server:    $("#bounce_handler_server").val(),
-			bounce_handler_username:  $("#bounce_handler_username").val(),
-			bounce_handler_password:  $("#bounce_handler_password").val(),
+			bounce_handler_Server:    $("#bounce_handler_Server").val(),
+			bounce_handler_Username:  $("#bounce_handler_Username").val(),
+			bounce_handler_Password:  $("#bounce_handler_Password").val(),
 			bounce_handler_USESSL:    bounce_handler_USESSL,
-			bounce_handler_AUTH_MODE: $("#bounce_handler_AUTH_MODE").val()
+			bounce_handler_AUTH_MODE: $("#bounce_handler_AUTH_MODE").val(),
+			bounce_handler_Port:      $("#bounce_handler_Port").val()
+
 		},
 		dataType: "html"
 	});

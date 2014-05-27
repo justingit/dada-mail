@@ -65,30 +65,12 @@ my $Trace               = 0;
 # These are strings we look for in the example_dada_config.tmpl file which 
 # we need to remove. 
 
-my $plugins_config_begin_cut = quotemeta(
-q{# start cut for plugin configs
-=cut}
-); 
-	my $plugins_config_end_cut = quotemeta(
-q{=cut
-# end cut for plugin configs}
-); 
-
 my $admin_menu_begin_cut = quotemeta(
 q{# start cut for list control panel menu
 =cut}); 
 my $admin_menu_end_cut = quotemeta(
 q{=cut
 # end cut for list control panel menu}	
-); 
-
-my $list_settings_defaults_begin_cut = quotemeta(
-q{# start cut for list settings defaults
-=cut}
-);
-my $list_settings_defaults_end_cut = quotemeta(
-q{=cut
-# end cut for list settings defaults}
 ); 
 
 
@@ -232,6 +214,34 @@ my $advanced_config_params = {
     show_amazon_ses_options             => 1,
     show_annoying_whiny_pro_dada_notice => 0,
 };
+
+my %bounce_handler_plugin_configs = (
+    Server                   => {default => '', if_blank => ''}, 
+    Username                 => {default => '', if_blank => ''}, 
+    Password                 => {default => '', if_blank => ''}, 
+    Port                     => {default => 'AUTO', if_blank => 'AUTO'},
+    USESSL                   => {default => '0', if_blank => '0'}, 
+    AUTH_MODE                => {default => 'BEST', if_blank => 'BEST'},
+    MessagesAtOnce           => {default => '100', if_blank => '100'},
+    Plugin_URL               => {default => '', if_blank => ''}, 
+    Allow_Manual_Run         => {default => '1', if_blank => '0'},
+    Manual_Run_Passcode      => {default => '', if_blank => ''},
+    Enable_POP3_File_Locking => {default => '1', if_blank => '0'},
+); 
+
+my %bridge_plugin_configs = (
+	MessagesAtOnce                      => {default => 1, if_blank => 1}, # Don't want, "0", you know? 
+	Soft_Max_Size_Of_Any_Message        => {default => 1048576, if_blank => 1048576},
+	Max_Size_Of_Any_Message             => {default => 2621440, if_blank => 2621440},
+	Plugin_URL                          => {default => '', if_blank => ''}, 
+	Allow_Manual_Run                    => {default => 1, if_blank => 0}, 
+	Manual_Run_Passcode                 => {default => '', if_blank => ''},  
+	Room_For_One_More_Check             => {default => 1, if_blank => 0},
+	Enable_POP3_File_Locking            => {default => 1, if_blank => 0}, 
+	Check_List_Owner_Return_Path_Header => {default => 1, if_blank => 0}, 
+	Check_Multiple_Return_Path_Headers  => {default => 0, if_blank => 0},
+);
+
 
 # An unconfigured Dada Mail won't have these exactly handy to use. 
 $DADA::Config::PROGRAM_URL   = program_url_guess();
@@ -797,24 +807,12 @@ sub grab_former_config_vals {
 	
     # Bridge
     if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bridge})) { 
-    	my %bridge_plugin_configs = (
-    		MessagesAtOnce                      => 1, 
-    		Soft_Max_Size_Of_Any_Message        => 1048576,
-    		Max_Size_Of_Any_Message             => 2621440, 
-    		Plugin_URL                          => '', 
-    		Allow_Manual_Run                    => 1, 
-    		Manual_Run_Passcode                 => '', 
-    		Room_For_One_More_Check             => 1,
-    		Enable_POP3_File_Locking            => 1, 
-    		Check_List_Owner_Return_Path_Header => 1, 
-    		Check_Multiple_Return_Path_Headers  => 0,
-    	); 
     	for my $config(keys %bridge_plugin_configs) { 
     	    if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{$config})){ 
     		    $local_q->param('bridge_' . $config, $BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{$config}); 
     		}
     		else {     		    
-    		    $local_q->param('bridge_' . $config, $bridge_plugin_configs{$config});    		    
+    		    $local_q->param('bridge_' . $config, $bridge_plugin_configs{$config}->{default});
     		}
     	}
     }
@@ -823,30 +821,13 @@ sub grab_former_config_vals {
 	if(exists($BootstrapConfig::LIST_SETUP_INCLUDE{admin_email})){ 
 		$local_q->param('bounce_handler_Address', $BootstrapConfig::LIST_SETUP_INCLUDE{admin_email});
 	}
-	if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler})) { 
-	    
-	    my %bounce_handler_plugin_configs = (
-            Server                   => '', 
-            Username                 => '', 
-            Password                 => '', 
-            
-            Port                     => 'AUTO',
-            USESSL                   => '0', 
-            AUTH_MODE                => 'BEST', 
-            MessagesAtOnce           => '100',
-            
-            Plugin_URL               => '',
-            Allow_Manual_Run         => 1,
-            Manual_Run_Passcode      => '',
-            Enable_POP3_File_Locking => 1, 
-    	); 
-    	
+	if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler})) {	
     	for my $config(keys %bounce_handler_plugin_configs) { 
     	    if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{$config})){ 
     		    $local_q->param('bounce_handler_' . $config, $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{$config}); 
     		}
     		else {     		    
-    		    $local_q->param('bounce_handler_' . $config, $bounce_handler_plugin_configs{$config});    		    
+    		    $local_q->param('bounce_handler_' . $config, $bounce_handler_plugin_configs{$config}->{default});    		    
     		}
     	}
 	}
@@ -1648,6 +1629,11 @@ sub create_dada_config_file {
 		}
 	}
 	
+	my $cut_tag_params = {
+	    cut_list_settings_default => 1, 
+	    cut_plugin_configs        => 1, 
+	};
+	
 	my $template_options_params = {};
 	if($q->param('configure_templates') == 1 &&  $q->param('configure_user_template') == 1){ 
 		$template_options_params->{template_options_USER_TEMPLATE} = clean_up_var($q->param('template_options_USER_TEMPLATE'));	
@@ -1671,9 +1657,7 @@ sub create_dada_config_file {
 		}
 	}
 	
-	
-	
-	
+
 	my $debugging_options_params = {};
 	if($q->param('configure_debugging') == 1){ 
 		$debugging_options_params->{configure_debugging} = 1;
@@ -1688,13 +1672,11 @@ sub create_dada_config_file {
 			DADA_Mail_Send
 			DADA_App_BounceHandler_ScoreKeeper
 			DADA_MailingList_baseSQL
-
 			DBI
 			HTML_TEMPLATE
 			MIME_LITE_HTML
 			MAIL_POP3CLIENT
 			NET_SMTP
-
 		);
 
 		for my $debug_option(@debug_options) { 
@@ -1764,7 +1746,45 @@ sub create_dada_config_file {
 		$amazon_ses_params->{AWSSecretKey}                     = strip($q->param('amazon_ses_AWSSecretKey')); 
         $amazon_ses_params->{Allowed_Sending_Quota_Percentage} = strip($q->param('amazon_ses_Allowed_Sending_Quota_Percentage')); 
 	}
+
+    my $bounce_handler_params = {}; 
+    if($q->param('install_bounce_handler') == 1){ 
+        
+        $cut_tag_params->{cut_list_settings_default} = 0; 
+        $cut_tag_params->{cut_plugin_configs}        = 0;
+    	
+        $bounce_handler_params->{install_bridge} = 1; 
+        foreach my $config(keys %bounce_handler_plugin_configs) { 
+            if(defined($q->param('bounce_handler_' . $config))) { 
+                $bounce_handler_params->{'bounce_handler_' . $config} = strip($q->param('bounce_handler_' . $config));
+            }
+            else { 
+                $bounce_handler_params->{'bounce_handler_' . $config} = $bounce_handler_plugin_configs{$config}->{if_blank};   
+            }
+        }
+        
+        # This one's special: 
+        $bounce_handler_params->{'bounce_handler_Address'} = strip($q->param('bounce_handler_Address')); 
+        
+    }
+	my $bridge_params = {}; 
+	if($q->param('install_bridge') == 1){ 
+	    
+	    $cut_tag_params->{cut_plugin_configs}        = 0;
+        
+        $bridge_params->{install_bridge} = 1; 
+        foreach my $config(keys %bridge_plugin_configs) { 
+            if(defined($q->param('bridge_' . $config))) { 
+                $bridge_params->{'bridge_' . $config} = strip($q->param('bridge_' . $config));
+            }
+            else { 
+                $bridge_params->{'bridge_' . $config} = $bridge_plugin_configs{$config}->{if_blank};   
+            }
+        }
+    }
 	
+	#use Data::Dumper; 
+	#die Dumper($bridge_params); 
 	
     my $outside_config_file = DADA::Template::Widgets::screen(
         {
@@ -1790,6 +1810,8 @@ sub create_dada_config_file {
 				%{$mass_mailing_params},
 				%{$confirmation_token_params},
 				%{$amazon_ses_params},
+				%{$bounce_handler_params},
+				%{$bridge_params},
             }
         }
     );	
@@ -2113,140 +2135,6 @@ sub edit_config_file_for_plugins {
 					my $uncommented_code = uncomment_admin_menu_entry($orig_code);
 			 		$orig_code = quotemeta($orig_code); 
 					$config_file =~ s/$orig_code/$uncommented_code/;
-
-					# Fancy stuff for Bridge, 
-					if($plugins_data eq 'bridge'){ 
-						# uncomment the plugins config, 
-						$config_file =~ s/$plugins_config_begin_cut//; 
-						$config_file =~ s/$plugins_config_end_cut//; 
-					 	# then, we have to fill in all the stuff in.
-					 	# Not a fav. tecnique!
-
-						my $plugins_config_bridge_orig = quotemeta(
-q|	Bridge => {
-
-		Plugin_Name                         => undef,
-		Plugin_URL                          => undef,
-		Allow_Manual_Run                    => undef,
-		Manual_Run_Passcode                 => undef,
-		MessagesAtOnce                      => undef,
-		Soft_Max_Size_Of_Any_Message        => undef,
-		Max_Size_Of_Any_Message             => undef,
-		Allow_Open_Discussion_List          => undef,
-		Room_For_One_More_Check             => undef,
-		Enable_POP3_File_Locking            => undef,
-		Check_List_Owner_Return_Path_Header => undef,
-		Check_Multiple_Return_Path_Headers  => undef,
-|);
-						my $bridge_MessagesAtOnce               = clean_up_var($q->param('bridge_MessagesAtOnce')); 
-						my $bridge_Soft_Max_Size_Of_Any_Message = clean_up_var($q->param('bridge_Soft_Max_Size_Of_Any_Message')); 
-						my $bridge_Max_Size_Of_Any_Message      = clean_up_var($q->param('bridge_Max_Size_Of_Any_Message')); 
-						
-						
-						my $bridge_Plugin_URL                          = clean_up_var($q->param('bridge_Plugin_URL')); 
-                        my $bridge_Allow_Manual_Run                    = clean_up_var($q->param('bridge_Allow_Manual_Run'));
-                        my $bridge_Manual_Run_Passcode                 = clean_up_var($q->param('bridge_Manual_Run_Passcode'));
-                        my $bridge_Room_For_One_More_Check             = clean_up_var($q->param('bridge_Room_For_One_More_Check'));
-                        my $bridge_Enable_POP3_File_Locking            = clean_up_var($q->param('bridge_Enable_POP3_File_Locking'));
-                        my $bridge_Check_List_Owner_Return_Path_Header = clean_up_var($q->param('bridge_Check_List_Owner_Return_Path_Header')); 
-                        my $bridge_Check_Multiple_Return_Path_Headers  = clean_up_var($q->param('bridge_Check_Multiple_Return_Path_Headers'));
-                        
-                        
-                        
-						my $plugins_config_bridge_replace_with = 
-"	Bridge => {
-
-		Plugin_Name                         => undef,
-		Plugin_URL                          => '$bridge_Plugin_URL',
-		Allow_Manual_Run                    => '$bridge_Allow_Manual_Run',
-		Manual_Run_Passcode                 => '$bridge_Manual_Run_Passcode',
-		MessagesAtOnce                      => '$bridge_MessagesAtOnce',
-		Soft_Max_Size_Of_Any_Message        => '$bridge_Soft_Max_Size_Of_Any_Message',
-		Max_Size_Of_Any_Message             => '$bridge_Max_Size_Of_Any_Message',
-		Allow_Open_Discussion_List          => undef,
-		Room_For_One_More_Check             => '$bridge_Room_For_One_More_Check',
-		Enable_POP3_File_Locking            => '$bridge_Enable_POP3_File_Locking',
-		Check_List_Owner_Return_Path_Header => '$bridge_Check_List_Owner_Return_Path_Header',
-		Check_Multiple_Return_Path_Headers  => '$bridge_Check_Multiple_Return_Path_Headers',
-";
-						$config_file =~ s/$plugins_config_bridge_orig/$plugins_config_bridge_replace_with/; 
-						 
-					}
-
-					# Fancy stuff for Bounce Handler, 
-					if($plugins_data eq 'bounce_handler'){ 
-						# uncomment the plugins config, 
-						$config_file =~ s/$plugins_config_begin_cut//; 
-						$config_file =~ s/$plugins_config_end_cut//; 
-					 	# then, we have to fill in all the stuff in.
-					 	# Not a fav. tecnique!
-					my $plugins_config_bounce_handler_orig = quotemeta(
-q|	Bounce_Handler => {
-		Server                      => undef,
-		Username                    => undef,
-		Password                    => undef,
-		Port                        => undef,
-		USESSL                      => undef,
-		AUTH_MODE                   => undef,
-		Plugin_Name                 => undef,
-		Plugin_URL                  => undef,
-		Allow_Manual_Run            => undef,
-		Manual_Run_Passcode         => undef,
-		Enable_POP3_File_Locking    => undef, 
-		Log                         => undef,
-		MessagesAtOnce              => undef,
-		Max_Size_Of_Any_Message     => undef,
-		Rules                       => undef,|
-					);
-					my $bounce_handler_address        = clean_up_var($q->param('bounce_handler_Address')); 
-					my $bounce_handler_server         = clean_up_var($q->param('bounce_handler_Server'));
-					my $bounce_handler_username       = clean_up_var($q->param('bounce_handler_Username')); 
-					my $bounce_handler_password       = clean_up_var($q->param('bounce_handler_Password')); 
-					my $bounce_handler_USESSL         = clean_up_var($q->param('bounce_handler_USESSL')); 
-					my $bounce_handler_AUTH_MODE      = clean_up_var($q->param('bounce_handler_AUTH_MODE')); 
-					my $bounce_handler_MessagesAtOnce = clean_up_var($q->param('bounce_handler_MessagesAtOnce')); 
-
-
-					my $plugins_config_bounce_handler_replace_with = 
-"	Bounce_Handler => {
-		Server                      => '$bounce_handler_server',
-		Username                    => '$bounce_handler_username',
-		Password                    => '$bounce_handler_password',
-		Port                        => undef,
-		USESSL                      => '$bounce_handler_USESSL',
-		AUTH_MODE                   => '$bounce_handler_AUTH_MODE',
-		Plugin_Name                 => undef,
-		Plugin_URL                  => undef,
-		Allow_Manual_Run            => undef,
-		Manual_Run_Passcode         => undef,
-		Enable_POP3_File_Locking    => undef, 
-		Log                         => undef,
-		MessagesAtOnce              => '$bounce_handler_MessagesAtOnce',
-		Max_Size_Of_Any_Message     => undef,
-		Rules                       => undef,";
-
-					$config_file =~ s/$plugins_config_bounce_handler_orig/$plugins_config_bounce_handler_replace_with/; 
-					# Now, do the same for list settings defaults: 
-					$config_file =~ s/$list_settings_defaults_begin_cut//; 
-					$config_file =~ s/$list_settings_defaults_end_cut//; 
-
-					# Now replace out the default code, with the config'd code: 
-					my $plugins_config_list_settings_default_orig = quotemeta(
-q|%LIST_SETUP_INCLUDE = (
-	set_smtp_sender              => 1, # For SMTP
-	add_sendmail_f_flag          => 1, # For Sendmail Command
-	admin_email                  => 'bounces@example.com',
-);|
-					); 
-					# Now replace out the default code, with the config'd code: 
-					my $plugins_config_list_settings_default_replace_with =
-qq|\%LIST_SETUP_INCLUDE = (
-	set_smtp_sender              => 1, # For SMTP
-	add_sendmail_f_flag          => 1, # For Sendmail Command
-	admin_email                  => '$bounce_handler_address',
-);|; 
-						$config_file =~ s/$plugins_config_list_settings_default_orig/$plugins_config_list_settings_default_replace_with/;
-					}
 					my $installer_successful = installer_chmod($DADA::Config::DIR_CHMOD, make_safer($plugins_extensions->{$plugins_data}->{loc}));
 				}
 			}
@@ -2254,7 +2142,7 @@ qq|\%LIST_SETUP_INCLUDE = (
 	}
 	
 	if($args->{-if_dada_files_already_exists} eq 'skip_configure_dada_files') { 
-
+        # ...
 	}
 	else { 
 		# write it back? 
@@ -2267,8 +2155,9 @@ qq|\%LIST_SETUP_INCLUDE = (
 	}
 	return 1; 
 	
-
 }
+
+
 
 
 sub setup_support_files_dir { 
@@ -3055,14 +2944,14 @@ sub cgi_test_sql_connection {
 		
 }
 sub cgi_test_pop3_connection { 
-	
-	die $q->param('bounce_handler_Server'); 
-	
+		
 	my $bounce_handler_server         = $q->param('bounce_handler_Server'); 
 	my $bounce_handler_username       = $q->param('bounce_handler_Username'); 
 	my $bounce_handler_password       = $q->param('bounce_handler_Password'); 
 	my $bounce_handler_USESSL         = $q->param('bounce_handler_USESSL') || 0; 
 	my $bounce_handler_AUTH_MODE      = $q->param('bounce_handler_AUTH_MODE') || 'BEST'; 
+	my $bounce_handler_Port           = $q->param('bounce_handler_Port')      || 'AUTO'; 
+	
 #	my $bounce_handler_MessagesAtOnce = $q->param('bounce_handler_MessagesAtOnce') || 100; 
 	
 	$bounce_handler_server   = make_safer($bounce_handler_server); 
@@ -3075,6 +2964,7 @@ sub cgi_test_pop3_connection {
         Password  => $bounce_handler_password,
 		USESSL    => $bounce_handler_USESSL,
 		AUTH_MODE => $bounce_handler_AUTH_MODE,
+		Port      => $bounce_handler_Port, 
 	}); 
 	#use Data::Dumper; 
 	#print $q->header('text/plain');
@@ -3280,7 +3170,7 @@ sub test_pop3_connection {
 	            server    => $args->{Server},
 	            username  => $args->{Username},
 	            password  => $args->{Password},
-#	            port      => $args->{Port},
+	            port      => $args->{Port},
 	            USESSL    => $args->{USESSL},
 	            AUTH_MODE => $args->{AUTH_MODE},
 	        }

@@ -11,19 +11,6 @@ Key:
 [?] Someday
 
 
-
-
-
-
-
-
-
-[X] Mass Update - can I reuse the query to search, ala: 
-    update dada_profiles set some_field = value where (select ...? etc, etc, etc) 
-    http://dev.mysql.com/doc/refman/5.0/en/update.html
-    I guess the subquery just has to evaluate to true. That's nice to know. 
-    
-
 [x] Timestamp - pick two dates BETWEEN X AND Y
     [ ] Tests - what happens if one of the dates is not filled out? 
 
@@ -31,30 +18,18 @@ Key:
  as well as partial sending, so you can save an advanced search and a draft, 
  w/partial sending w/that advanced search, which will be dynamica. Hooyh. 
 
-
-
 [ ] All the (new) stuff in the view list screen needs to have the ability to be turned on/off by root for the List...
 [ ] It would be nice to be able to have a custom error message ready, for when the field is left blank. 
 [ ] Explain that hidden fields that are required, are not required by users, who have no way to fill them out! 
 
-[x] Provide a space to enter in the Profile Password
-[x] Provide a, "rewrite/preserve" option for profile information 
-
-Todo for v6.9.0 
 
 [ ] New Cols in subscriber table
-    [x] DateTime col. in subscribers table
-        [x] Ability to search using field for at least mass mailing
     [ ] col to describe how the subscriber was subscribed 
         [ ] confirmed
         [ ] unconfirmed
-        ?
-
-[ ] Enable Private Mailing Lists 
-	[ ] No need for Unsubscription Links
-		[ ] or headers
-	[ ] Request Removal	
-	[ ] DateTime col. in subscribers table
+            [ ] Perhaps this is an entirely new table, describing the type of subscription
+            [ ] UID, IP, timestamp, by whom (role), and subscription table just has relation to UID in the current subscription
+                [ ] Oh, boy another table to update when a subscription is made. 
 	
 	[-] Need ability to:
 	    [x] send complaints to list owner, 
@@ -64,56 +39,6 @@ Todo for v6.9.0
 	        [ ] Fleshing out copy for all the screens, emails
 	        [ ] logging complaints... todo for ver. after?
 	        
-	[ ] Simplify subscription options screen. 
-	    Steps with expanding/collapsing sections
-	    
-	    Make this a: 
-	    
-	    Private | Public list
-	    
-	    Subscribers can 
-	    
-	    [ ] Subscribe Themselves 
-	        [ ] Closed Loop Confirmation 
-	        [ ] (and/or) request 
-	        
-	    | Only be added by the List Owner 
-	
-	Subscription can be made by 
-	    a user, requesting a subscription
-    	    These requests Require: 
-    	        Confirmation (Highly Suggested!) 
-    	            Confirmation Options... 
-    	    the Subscriber purchasing(?) a subscription (not implemented) 	            
-    	        Approval
-	                * Options... 
-	        Successful Subscriptions: 
-	            Options... 
-	    The List Owner, in the List Control Panel 
-        Options 
-            Cannot be Blacklisted (View/Add/Edit)
-                Options...
-            Has to be WhiteListed (View/Add/Edit)
-                Options...
-	    
-	    Unsubscriptions Requests
-	        Show Email Hint  
-	        (Other options...) 
-	
-	
-	
-	
-
-    # I don't know about all this: 
-    # 
-    PRIVATE: allows mass subscriptions via the list control panel, and other non-closed-loop opt in stuff
-    		 Allows you to hide your list 
-    		 YOU ARE responsible for making sure you follow things. 
-    Public: Cannot have mass subscriptions via the list control panel - MUST use closed-loop opt in stuff
-    	    Cannot hide your list 
-    		Still responsible to make sure you follow the rules, but Dada Mail will do its best to 
-    		make this painless
-    		Added bonus! Ability to use outside sending APIs! Amazon SES,  PostMark, etc. 
 
 [ ] Integration w/StopForumSpam
     Here's some discussion:
@@ -184,8 +109,6 @@ http://blog.sendgrid.com/permission-reminders-affect-email-deliverability/
 
 [ ]  bounce handler - weekly reports? 
 
-[x] Move, "$HTML_SUBSCRIPTION_REQUEST_MESSAGE" and friends out of Config.pm file, into template files. 
-
 [ ] ARF reports? 
 
 [ ] Complaint Tracking?
@@ -193,13 +116,6 @@ http://blog.sendgrid.com/permission-reminders-affect-email-deliverability/
 [ ] Bounce Handler - ability to substract x from all scored addresses
 	[ ] Ability to act upon all addresses in scorecard
 
-[x] Time to simplify the unsubscription system.                  
-	Need a better error page, if you don't type in the correct address
-	[x] Error page for when you click on an outdated unsub link, or a "REMOVED" unsub link
-	[x] Way to send you that unsub link, if you didn't receive one, via email
-	[x] Docs on new email unsub system, describe system, how it works, changes from previous system, etc. 
-	
-	
 [ ] Perhaps another email protection scheme - just break the email address. 
 	[ ] Also: The act says, “Recipients of commercial electronic mail have a right to decline to receive additional commercial electronic mail from the same source.”
 	So, unsub link is one-click w/embedded address, but encoded somehow. 
@@ -211,20 +127,10 @@ http://blog.sendgrid.com/permission-reminders-affect-email-deliverability/
 					Don’t remember signing up? If a friend forwarded you the email from The John D'oh Corporation, you were never on the mailing list. 
 					If you no longer wish to receive these emails, make sure to tell your friend to stop forwarding them to you.
 	
-	
-	
-[x] No, the old style confirmation links won't work. I wanted to truly get this upgrade out asap - so I had to make decisions on what exactly was critical to push out. 
-	Old Style Confirmation Links now have a realistic fallback
-
-[x] Move to CKeditor 4, removal of FCKeditor
-[] Add timestamp field to dada_subscribers
 [] Ability to SEE other sublists...
 [ ] Ability to see other sublists (already invited) (Subscription Confirmation...) 
 
-[x] Bridge needs a fancier change password thingy for the POP3 account thing. 
 [ ] Screencast on how to install CPAN modules you may just need. 
-[x] Mailhide configuration in installer
-[x] SES configuration in installer
 [ ] Docs on moving from "Basic Mailing List" to Dada Mail
 
 !!!
