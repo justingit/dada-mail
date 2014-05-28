@@ -1584,6 +1584,17 @@ sub create_dada_config_file {
 	my $SQL_params = {};
     if ( $args->{-backend} ne 'default' && $args->{-backend} ne '' ) {
 		$SQL_params->{configure_SQL} = 1; 
+		
+		for(qw(
+			-sql_server
+			-sql_port
+			-sql_database
+			-sql_username
+			-sql_password
+		)) { 
+		   	$args->{$_}= strip(xss_filter($args->{$_}));
+		}
+		
 		$SQL_params->{backend}       = $args->{-backend};
         $SQL_params->{sql_server}    = $args->{-sql_server};
         $SQL_params->{sql_database}  = clean_up_var($args->{-sql_database});
@@ -1858,6 +1869,14 @@ sub create_sql_tables {
     my $database = $args->{-sql_database};
     my $user     = $args->{-sql_username};
     my $pass     = $args->{-sql_password};
+	
+    $dbtype   = strip(xss_filter($dbtype));
+    $dbserver = strip(xss_filter($dbserver));
+    $port     = strip(xss_filter($port));
+    $database = strip(xss_filter($database));
+    $user     = strip(xss_filter($user));
+    $pass     = strip(xss_filter($pass));
+	
 	
 	my $data_source = ''; 
 	my $dbh         = undef; 
@@ -3192,6 +3211,13 @@ sub test_sql_connection {
     my $database = shift;
     my $user     = shift;
     my $pass     = shift;
+
+    my $dbtype   = strip(xss_filter($q->param('backend')));
+    my $dbserver = strip(xss_filter($q->param('sql_server')));
+    my $port     = strip(xss_filter($q->param('sql_port')));
+    my $database = strip(xss_filter($q->param('sql_database')));
+    my $user     = strip(xss_filter($q->param('sql_username')));
+    my $pass     = strip(xss_filter($q->param('sql_password')));
 
     if ( $port eq 'auto' ) {
         if ( $dbtype =~ /mysql/i ) {
