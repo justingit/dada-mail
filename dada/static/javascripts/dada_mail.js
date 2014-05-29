@@ -101,7 +101,34 @@ $(document).ready(function() {
 		datetimesetupstuff(); 
 		if($('#backdate_datetime').length) { 
 			$('#backdate_datetime').datetimepicker({maxDate: 0, format:'Y-m-d H:i:s'});
+			
+			if($('#backdate_datetime').val() == ""){ 
+				var d       = new Date();
+				var year    = d.getFullYear();
+				var month   = d.getMonth() + 1;
+				var day     = d.getDate();
+				var hours   = d.getHours();
+				var minutes = d.getMinutes();
+				var seconds = d.getSeconds();
+				if(month < 10) { 
+						month = "0" + month; 
+				}
+				if(day < 10) { 
+						day = "0" + day; 
+				}
+				if(hours < 10) { 
+						hours = "0" + hours; 
+				}
+				if(minutes < 10) { 
+						minutes = "0" + minutes; 
+				}
+				if(seconds < 10) { 
+					seconds = "0" + seconds; 
+				}
+				$("#backdate_datetime").val(year + "-" + month + "-" + day + " " + hours + ":" + minutes + ":" + seconds); 
+			}
 		}
+		
 		setup_attachment_fields(); 
 		$("body").on("click", ".remove_attachment", function(event) {
 			if(confirm("Remove Attachment?")) { 

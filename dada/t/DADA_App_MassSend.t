@@ -177,10 +177,11 @@ ok(
 undef $parser; 
 undef $entity; 
 undef @parts; 
-
-
-
 ok(unlink($mh->test_send_file));
+
+
+# backdated_msg_id 
+ok($ms->backdated_msg_id('2014-04-29 10:32:58') eq '20140429103257', 'backdated_msg_id'); 
 
 
 dada_test_config::remove_test_list;

@@ -244,7 +244,7 @@ sub send_email {
         if ( defined( $q->param('local_archive_options_present') ) ) {
             if ( $q->param('local_archive_options_present') == 1 ) {
                 if ( $q->param('archive_message') != 1 ) {
-                    $q->param( -name => 'archive_message', -value => 0 );
+                    $q->param('archive_message', 0);
                 }
             }
         }
@@ -427,23 +427,21 @@ sub send_email {
 
             # This is currently similar code as what's in the DADA::Mail::Send::_mail_general_headers method...
 
-            my $msg_id = DADA::App::Guts::message_id();
-
             if ( $q->param('back_date') == 1 ) {
-                $msg_id = $self->backdated_msg_id( { -cgi_obj => $q } );
+                $message_id = $self->backdated_msg_id( $q->param('backdate_datetime') );
+            }
+            else { 
+                $message_id = DADA::App::Guts::message_id();
             }
 
             %mailing = $mh->clean_headers(%mailing);
-
             %mailing = ( %mailing, $mh->_make_general_headers, $mh->list_headers );
 
             require DADA::Security::Password;
             my $ran_number = DADA::Security::Password::generate_rand_string('1234567890');
-            $mailing{'Message-ID'} = '<' . $msg_id . '.' . $ran_number . '.' . $li->{list_owner_email} . '>';
-            $message_id = $msg_id;
-
+            $mailing{'Message-ID'} = '<' . $message_id . '.' . $ran_number . '.' . $li->{list_owner_email} . '>';
             $mh->saved_message( $mh->_massaged_for_archive( \%mailing ) );
-
+            
         }
 
         if ($message_id) {
@@ -475,7 +473,14 @@ sub send_email {
                         $d->remove($draft_id);
                     }
                 }
-                my $uri = $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&type=list&id=' . $message_id;
+                my $uri; 
+                
+                if($q->param('archive_no_send') == 1 && $archive_m == 1){ 
+                    $uri = $DADA::Config::S_PROGRAM_URL . '?f=view_archive&id=' . $message_id;
+                }
+                else { 
+                    $uri = $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&type=list&id=' . $message_id;
+                }
                 print $q->redirect( -uri => $uri );
             }
         }
@@ -905,10 +910,12 @@ sub send_url_email {
 
                     # This is currently similar code as what's in the DADA::Mail::Send::_mail_general_headers method...
 
-                    my $msg_id = DADA::App::Guts::message_id();
 
                     if ( $q->param('back_date') == 1 ) {
-                        $msg_id = $self->backdated_msg_id( { -cgi_obj => $q } );
+                        $message_id = $self->backdated_msg_id( $q->param('backdate_datetime') );
+                    }
+                    else { 
+                        $message_id = DADA::App::Guts::message_id();
                     }
 
                     # time  + random number + sender, woot!
@@ -916,13 +923,9 @@ sub send_url_email {
                     my $ran_number = DADA::Security::Password::generate_rand_string('1234567890');
 
                     %mailing = $mh->clean_headers(%mailing);
-
                     %mailing = ( %mailing, $mh->_make_general_headers, $mh->list_headers );
-
-                    $mailing{'Message-ID'} = '<' . $msg_id . '.' . $ran_number . '.' . $li->{list_owner_email} . '>';
-
-                    $message_id = $msg_id;
-
+                    
+                    $mailing{'Message-ID'} = '<' . $message_id . '.' . $ran_number . '.' . $li->{list_owner_email} . '>';
                     $mh->saved_message( $mh->_massaged_for_archive( \%mailing ) );
 
                 }
@@ -949,8 +952,16 @@ sub send_url_email {
                     if ( $d->enabled ) {
                         $d->remove($draft_id);
                     }
-                    my $uri = $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&type=list&id=' . $message_id;
+
+                    my $uri; 
+                    if($q->param('archive_no_send') == 1 && $archive_m == 1){ 
+                        $uri = $DADA::Config::S_PROGRAM_URL . '?f=view_archive&id=' . $message_id;
+                    }
+                    else { 
+                        $uri = $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&type=list&id=' . $message_id;
+                    }
                     print $q->redirect( -uri => $uri );
+                    
                 }
             }
             else {
@@ -1563,17 +1574,14 @@ sub find_attachment_type {
 
 sub backdated_msg_id {
 
-    my $self          = shift;
-    my ($args)        = @_;
-    my $q             = $args->{-cgi_obj};
-    my $backdate_datetime = $q->param('backdate_datetime');
-    
+    my $self              = shift;
+    my $backdate_datetime = shift;        
     require Time::Local; 
     my ($date, $time)            = split(' ', $backdate_datetime); 
     my ($year, $month, $day)     = split('-', $date); 
     my ($hour, $minute, $second) = split(':', $time); 
     $second                      = int($second - 0.5) ; # no idea. 
-    my $time = return Time::Local::timelocal( $second, $minute, $hour, $day, $month-1, $year );
+    my $time = Time::Local::timelocal( $second, $minute, $hour, $day, $month-1, $year );
     
     my ($sec, $min, $hour, $day, $month, $year) = (localtime($time))[0,1,2,3,4,5];
     my $message_id = sprintf("%02d%02d%02d%02d%02d%02d", $year+1900, $month+1, $day,  $hour, $min, $sec);
