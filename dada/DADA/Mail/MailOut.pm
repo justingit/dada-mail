@@ -380,6 +380,10 @@ sub batch_params {
 				$batch_size  = $self->{ls}->param('mass_send_amount');
 				$batch_wait = $self->{ls}->param('bulk_sleep_amount');
 				
+				if ( $batch_size > $MaxSendRate ) {
+				   $batch_size = $MaxSendRate;  
+				}
+				
 				if($batch_wait < 1){ 
 				   warn 'why is $bulk_sleep_amount < 1?!'; 
 				   $batch_wait = 1;  
