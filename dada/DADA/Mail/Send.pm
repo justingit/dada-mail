@@ -501,10 +501,6 @@ sub send {
 	                        $self->_cipher_decrypt($local_li->{sasl_smtp_password})
 	                     ) or carp 'Problems sending SASL authorization to SMTP server, make sure your credentials (username, password) are correct.'; 
 	                 }
-                 
-
-
-
 	              }else { 
 	                 require Net::SMTP_auth; 
 	                 $mailer = new Net::SMTP_auth(%mailer_params);
@@ -525,8 +521,7 @@ sub send {
 	                        $local_li->{sasl_smtp_username}, 
 	                        $self->_cipher_decrypt($local_li->{sasl_smtp_password})
 	                     ) or carp 'Problems sending SASL authorization to SMTP server, make sure your credentials (username, password) are correct.'; 
-	                 }
-                 
+	                 }                 
 	          	}
             }
 					warn 'Saving Net::SMTP Object for re-use'
@@ -1666,92 +1661,94 @@ sub mass_send {
 				#
 				##############################################################
 				
-				$stop_email = $current_email;
-								
- 				my %nfields = $self->_mail_merge(
-				    {
-				        -entity => $entity->dup,
-				        -data   => \@ml_info, 
-						-fm_obj => $fm, 
-				    }
-				);
-								                
-                warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' sending mail'
-                    if $t; 
+				if ( $batch_size > 0 ) {
+					$stop_email = $current_email;
+									
+					my %nfields = $self->_mail_merge(
+						{
+							-entity => $entity->dup,
+							-data   => \@ml_info, 
+							-fm_obj => $fm, 
+						}
+					);
+													
+					warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' sending mail'
+						if $t; 
 
-				##############################################################
-				# Three strikes, and you're out: 
-				
-				
-				my $tries = 0; 
-				TRIES: while($tries <= 3){ 	
-					$tries++;
+					##############################################################
+					# Three strikes, and you're out: 
 					
-					warn 'sending to: ' . $nfields{To}
-						if $t; 
-					warn 'Try #' . $tries 
-						if $t; 
-					my $send_return = $self->send(%nfields, from_mass_send => 1); # The from_mass_send is a hack. 
-					warn '$send_return:"'.$send_return.'"'
-						if $t; 
 					
-					if($send_return == -1 && $tries < 3){
-						my $warning = '[' . $self->{list} . '] Mass Mailing:' . $mailout_id 
-						. ' Problems sending to, ' . $nfields{To} 
-						. ', waiting: ' . $batch_wait . ' seconds to try again. '
-						. '(on try #' . $tries . ')';
-						 warn $warning; 
-						$mailout->log($warning);
-						sleep($batch_wait); 
-						$mailout->update_last_access; 
-					}
-					elsif($send_return == -1 && $tries >= 3){ 
+					my $tries = 0; 
+					TRIES: while($tries <= 3){ 	
+						$tries++;
 						
-						# if we've already logged this guy
-						if($mailout->isa_problem_address({-address => $current_email})){ 
-							# Time to skip.
-							my $warning = '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Cannot send to, address: ' . $current_email . 'after 2 x 3 tries, skipping and logging address.';
-							warn $warning; 
-							$mailout->log($warning);
-							$mailout->countsubscriber;
-							$self->_log_sending_error({-mid   => $mailout->_internal_message_id, -email => $current_email, -adjust_total_recipients => 1});
-							next SUBSCRIBERLOOP;
-						}
-						else {
-							my $warning = '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Bailing out of Mailing for now - last message to, ' . $nfields{To} . ' was unable to be sent! exit()ing!';
-							warn $warning;
-							$mailout->log($warning);
-							$mailout->log_problem_address({-address => $current_email}); 
-							$mailout->update_last_access; 
-							$mailout->unlock_batch_lock;
-							exit(0);
-						}
-					}
-					else { 
-						
-						warn 'That try seemed to work!'
+						warn 'sending to: ' . $nfields{To}
 							if $t; 
-							##############################################################
-             				# Count Subscriber
-             				#
-                             warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' counting subscriber.'
-                                 if $t; 
-                             my $new_count = $mailout->countsubscriber; 
+						warn 'Try #' . $tries 
+							if $t; 
+						my $send_return = $self->send(%nfields, from_mass_send => 1); # The from_mass_send is a hack. 
+						warn '$send_return:"'.$send_return.'"'
+							if $t; 
+						
+						if($send_return == -1 && $tries < 3){
+							my $warning = '[' . $self->{list} . '] Mass Mailing:' . $mailout_id 
+							. ' Problems sending to, ' . $nfields{To} 
+							. ', waiting: ' . $batch_wait . ' seconds to try again. '
+							. '(on try #' . $tries . ')';
+							 warn $warning; 
+							$mailout->log($warning);
+							sleep($batch_wait); 
+							$mailout->update_last_access; 
+						}
+						elsif($send_return == -1 && $tries >= 3){ 
+							
+							# if we've already logged this guy
+							if($mailout->isa_problem_address({-address => $current_email})){ 
+								# Time to skip.
+								my $warning = '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Cannot send to, address: ' . $current_email . 'after 2 x 3 tries, skipping and logging address.';
+								warn $warning; 
+								$mailout->log($warning);
+								$mailout->countsubscriber;
+								$self->_log_sending_error({-mid   => $mailout->_internal_message_id, -email => $current_email, -adjust_total_recipients => 1});
+								next SUBSCRIBERLOOP;
+							}
+							else {
+								my $warning = '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Bailing out of Mailing for now - last message to, ' . $nfields{To} . ' was unable to be sent! exit()ing!';
+								warn $warning;
+								$mailout->log($warning);
+								$mailout->log_problem_address({-address => $current_email}); 
+								$mailout->update_last_access; 
+								$mailout->unlock_batch_lock;
+								exit(0);
+							}
+						}
+						else { 
+							
+							warn 'That try seemed to work!'
+								if $t; 
+								##############################################################
+								# Count Subscriber
+								#
+								 warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' counting subscriber.'
+									 if $t; 
+								 my $new_count = $mailout->countsubscriber; 
 
-             				$mailout->log($nfields{To} . ' sent message #' . $new_count);
-             				
-                             warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' $new_count set to, ' . $new_count
-                             	if $t; 
+								$mailout->log($nfields{To} . ' sent message #' . $new_count);
+								
+								 warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' $new_count set to, ' . $new_count
+									if $t; 
 
-             				# And this almost never happens: 
-                            if($mass_mailing_count != $new_count){ 
-                                 carp("Warning: \$mass_mailing_count ($mass_mailing_count) is not the same as \$new_count ($new_count) - problems are likely to happen..."); 
-             					$mailout->log("\$mass_mailing_count ($mass_mailing_count) is not the same as \$new_count ($new_count) - problems are likely to happen..."); 
-                            }
-             				$batch_num_sent++; 
-             				# /Count Subscriber
-             				##############################################################
-						last TRIES; 
+								# And this almost never happens: 
+								if($mass_mailing_count != $new_count){ 
+									 carp("Warning: \$mass_mailing_count ($mass_mailing_count) is not the same as \$new_count ($new_count) - problems are likely to happen..."); 
+									$mailout->log("\$mass_mailing_count ($mass_mailing_count) is not the same as \$new_count ($new_count) - problems are likely to happen..."); 
+								}
+								$batch_num_sent++; 
+								# /Count Subscriber
+								##############################################################
+							last TRIES; 
+						}
 					}
 				}
 				
