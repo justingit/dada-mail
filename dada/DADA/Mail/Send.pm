@@ -1551,7 +1551,7 @@ sub mass_send {
 			
 			# while we have people on the list.. 
 			my $subcriber_line; 
-			SUBSCRIBERLOOP: while(defined($subcriber_line = <MAILLIST>)) {
+			SUBSCRIBERLOOP: while(defined($subcriber_line = <MAILLIST>)){ 	
 				chomp($subcriber_line);	
 
 				##############################################################
@@ -1589,78 +1589,79 @@ sub mass_send {
 				# / Is mass mailing paused? 
 				##############################################################
 
+				
+				my @ml_info; 
+				if ($csv->parse($subcriber_line)) {
+			     	@ml_info = $csv->fields;
+			    } else {
+			        carp $DADA::Config::PROGRAM_NAME . " Error: CSV parsing error: parse() failed on argument: ". $csv->error_input() . ' ' . $csv->error_diag ();
+			    	undef(@ml_info);
+					next SUBSCRIBERLOOP;
+				}
+
+				my $current_email = $ml_info[0];
+				
+				$mass_mailing_count++;
+
+				# only start sending at a point where we're supposed to...
+				# so wait - mailing count starts at 1?
+				
+				warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' $check_restart_state set to ' . $check_restart_state
+				    if $t; 
+
+
+    
+				##############################################################
+				# These are all checks to make sure we're starting the mailing
+				# at the right place in the list. 
+				#
+				
+				if($check_restart_state == 1){ 
+                    if($self->restart_with){ 
+                        my $mo_counter_at = $mailout->counter_at; 
+                        
+                        	warn '[' . $self->{list} . '] Mass Mailing:' . 
+                                 $mailout_id . ' $mailout->counter_at ' . 
+                                 $mo_counter_at
+                            	if $t; 
+                        
+                        if($mo_counter_at > ($mass_mailing_count - 1)){ 
+                           warn '[' . $self->{list} . '] Mass Mailing:' . 
+                                $mailout_id . ' Skipping Mailing #' . 
+                                $mass_mailing_count . 
+                                '( $mo_counter_at > ($mass_mailing_count - 1 )'
+                            if $t; 
+                            next SUBSCRIBERLOOP; 
+                        }
+                        elsif($mo_counter_at == ($mass_mailing_count - 1)){ 
+                            	warn '[' . $self->{list} . '] Mass Mailing:' . 
+                                 $mailout_id . 
+                                 ' setting check_restart_state to 0'
+                                if $t; 
+                            $check_restart_state = 0;
+                        }
+                        elsif($mo_counter_at < ($mass_mailing_count - 1)){ 
+                            warn '[' . $self->{list} . '] Mass Mailing:' . 
+                                 $mailout_id . 'Problems!' 
+                             . '( $mo_counter_at < ($mass_mailing_count - 1 )'
+                             . ' how did counter_at get behind $mass_mailing_count?!' 
+                             if $t; 
+                             $mailout->update_last_access; 
+ 							 $mailout->unlock_batch_lock;
+ 							 exit(0);
+                        }
+                    
+                    }
+                    else { 
+                        warn '[' . $self->{list} . '] Mass Mailing:' . 
+                              $mailout_id . ' $check_restart_state set to:' . $check_restart_state
+                            if $t; 
+                    }
+			    }
+				#
+				##############################################################
+				
 				if ( $batch_size > 0 ) {
-					my @ml_info; 
-					if ($csv->parse($subcriber_line)) {
-						@ml_info = $csv->fields;
-					} else {
-						carp $DADA::Config::PROGRAM_NAME . " Error: CSV parsing error: parse() failed on argument: ". $csv->error_input() . ' ' . $csv->error_diag ();
-						undef(@ml_info);
-						next SUBSCRIBERLOOP;
-					}
-
-					my $current_email = $ml_info[0];
-					
-					$mass_mailing_count++;
-
-					# only start sending at a point where we're supposed to...
-					# so wait - mailing count starts at 1?
-					
-					warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' $check_restart_state set to ' . $check_restart_state
-						if $t; 
-
-
-		
-					##############################################################
-					# These are all checks to make sure we're starting the mailing
-					# at the right place in the list. 
-					#
-					
-					if($check_restart_state == 1){ 
-						if($self->restart_with){ 
-							my $mo_counter_at = $mailout->counter_at; 
-							
-								warn '[' . $self->{list} . '] Mass Mailing:' . 
-									 $mailout_id . ' $mailout->counter_at ' . 
-									 $mo_counter_at
-									if $t; 
-							
-							if($mo_counter_at > ($mass_mailing_count - 1)){ 
-							   warn '[' . $self->{list} . '] Mass Mailing:' . 
-									$mailout_id . ' Skipping Mailing #' . 
-									$mass_mailing_count . 
-									'( $mo_counter_at > ($mass_mailing_count - 1 )'
-								if $t; 
-								next SUBSCRIBERLOOP; 
-							}
-							elsif($mo_counter_at == ($mass_mailing_count - 1)){ 
-									warn '[' . $self->{list} . '] Mass Mailing:' . 
-									 $mailout_id . 
-									 ' setting check_restart_state to 0'
-									if $t; 
-								$check_restart_state = 0;
-							}
-							elsif($mo_counter_at < ($mass_mailing_count - 1)){ 
-								warn '[' . $self->{list} . '] Mass Mailing:' . 
-									 $mailout_id . 'Problems!' 
-								 . '( $mo_counter_at < ($mass_mailing_count - 1 )'
-								 . ' how did counter_at get behind $mass_mailing_count?!' 
-								 if $t; 
-								 $mailout->update_last_access; 
-								 $mailout->unlock_batch_lock;
-								 exit(0);
-							}
-						
-						}
-						else { 
-							warn '[' . $self->{list} . '] Mass Mailing:' . 
-								  $mailout_id . ' $check_restart_state set to:' . $check_restart_state
-								if $t; 
-						}
-					}
-					#
-					##############################################################
-					
 					$stop_email = $current_email;
 									
 					my %nfields = $self->_mail_merge(
