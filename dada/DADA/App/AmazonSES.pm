@@ -5,6 +5,8 @@ use lib qw(
 	../../DADA/perllib
 );
 
+use DADA::App::Guts; 
+
 use vars qw($AUTOLOAD); 
 use Carp qw(croak carp);
 use Try::Tiny; 
@@ -120,4 +122,48 @@ sub allowed_sending_quota_percentage {
     return int($DADA::Config::AMAZON_SES_OPTIONS->{Allowed_Sending_Quota_Percentage}); 
 }
 
+
+sub _saved_ses_stats_fn { 
+    my $self = shift; 
+    return make_safer( $DADA::Config::TMP . '/_data_cache/ses_stats.txt' );
+}
+sub _should_get_saved_ses_stats { 
+
+    my $self = shift; 
+    my $stats_file = $self->_saved_ses_stats_fn; 
+    
+    if(! -e $stats_file || ! -r _){ 
+        return 0; 
+    }
+    else { 
+        my (
+            $dev,  $ino,   $mode,  $nlink, $uid,     $gid, $rdev,
+            $size, $atime, $mtime, $ctime, $blksize, $blocks
+        ) = stat( $stats_file );
+        
+        if((int($mtime) + (60 * 5)) < time){ 
+            return 0; 
+        }
+        else { 
+            return 1; 
+        }
+    }
+}
+sub _get_saved_ses_stats { 
+   my $self = shift; 
+   my $stats_file = $self->_saved_ses_stats_fn; 
+
+   my $contents = slurp( $stats_file ); 
+   my  ($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = split(',', $contents); 
+   return ($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate );
+}
+sub _save_ses_stats { 
+    my $self = shift; 
+    my ($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate) = @_; 
+    my $stats_file = $self->_saved_ses_stats_fn; 
+    
+    open my $fh, '>', $stats_file or die $!;
+    print $fh join(',', $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate); 
+    close $fh or die $!; 
+}
 1;

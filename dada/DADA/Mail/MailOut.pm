@@ -259,9 +259,18 @@ sub batch_params {
 
         require DADA::App::AmazonSES;
         my $ses = DADA::App::AmazonSES->new;
-        my ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats;
+        
+        # Save stats, between executions: 
+        my ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ); 
+        if($ses->_should_get_saved_ses_stats == 1) { 
+            ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->_get_saved_ses_stats;            
+        }
+        else { 
+            ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats;
         #                  0          10_000             5
-
+            $ses->_save_ses_stats($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate);
+        }
+    
 #		if($t) {
 #			 warn '$status ' . $status; 
 #			 warn '$SentLast24Hours' . $SentLast24Hours; 
@@ -293,30 +302,7 @@ sub batch_params {
 			if ( $amazon_ses_auto_batch_settings == 1 )
 			{
 				# dada automatically manages batch settings
-	#
-	#			
-	#            $batch_wait = 1;
-	#            my $percent_used = ( ( 100 * $SentLast24Hours ) / $quota_Max24HourSend ) / 100;
-	#			
-	#			warn '$percent_used' . $percent_used
-	#				if $t; 
-	#			
-	#            $batch_size = $MaxSendRate - ( $MaxSendRate * ( $percent_used * 10 ) ); # * 10 is fudge factor,
-	#
-	#            if ( $batch_size < 1.5 ) {
-	#
-	#                $batch_size = $MaxSendRate;
-	#                $batch_wait = 86400 / $quota_Max24HourSend;                 # 8.64
-	#                $batch_wait = $batch_wait * $MaxSendRate;             # 8.64 * 5 = 43.2
-	#                $batch_wait = $batch_wait + ( $batch_wait * .10 );    # 38.8
-	#
-	#                if ( $batch_wait / $batch_size > 1 ) {                # 38.8 / 5
-	#                    $batch_wait = $batch_wait / $batch_size;          # 7.76
-	#                    $batch_size = 1;                                  # 1;
-	#                }
-	#            }
-	#
-
+				
 				if ( $quota_Max24HourSend < 86_400 ) {
 					$batch_size = 1;
 					$batch_size = $batch_size * $MaxSendRate;    # 5

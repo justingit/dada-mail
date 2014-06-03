@@ -878,7 +878,15 @@ sub send {
 					-msg => $msg, 
 				}
 			);
-			if($response_code == 200){ 				
+            require Data::Dumper; 
+            carp Data::Dumper::Dumper(
+               { 
+                   reponse_code     =>  $response_code,
+                   response_content => $response_content,
+               } 
+            ); 
+			
+			if($response_code == 200){
 				my($sesMessageId, $sesRequestId) = split("\n", $response_content);
 				#do something here about the message id
 			}

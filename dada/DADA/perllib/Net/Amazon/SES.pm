@@ -368,13 +368,14 @@ sub send_msg {
 			print $response_content . "\n"; 
 		}	
 
+	return ($response_code, $response_content);
 
-	if($response_code eq '200') { 
-		return ($response_code, $self->get_send_response($response_content));
-	}
-	else { 
-		return ($response_code, $response_content);
-	}
+#	if($response_code eq '200') { 
+#		return ($response_code, $self->get_send_response($response_content));
+#	}
+#	else { 
+#		return ($response_code, $response_content);
+#	}
 }
 
 # Read the credentials from $AWS_CREDENTIALS_FILE file.
