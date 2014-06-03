@@ -814,6 +814,11 @@ $(document).ready(function() {
 			bounce_handler_manually_enter_bounces();
 		});
 	}
+	
+	// Plugins >> Beatitude 
+	if ($("#plugins_beatitude_schedule_form").length) {
+		datetimesetupstuff();
+	}
 
 	// Plugins >> Bridge
 	if ($("#plugins_bridge_default").length) {

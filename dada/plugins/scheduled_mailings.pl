@@ -945,13 +945,13 @@ my $partial_saved = $form_vals{partial_sending_params};
 my $partial_q = CGI->new; 
    $partial_q->delete_all(); 
    	for my $saved(@$partial_saved){ 
-   	    if($saved->{field_name} eq 'timestamp') { 
-       	    $partial_q->param($saved->{field_name}  . '.range', $saved->{field_operator}); 
-    	    $partial_q->param($saved->{field_name}  . '.value', $saved->{field_value});  
-        }
-        else { 
+   	    if($saved->{field_name} eq 'subscriber.timestamp') { 
        	    $partial_q->param($saved->{field_name}  . '.rangestart',  $saved->{field_rangestart}); 
     	    $partial_q->param($saved->{field_name}  . '.rangeend',    $saved->{field_rangeend}); 
+        }
+        else { 
+            $partial_q->param($saved->{field_name}  . '.operator', $saved->{field_operator}); 
+    	    $partial_q->param($saved->{field_name}  . '.value', $saved->{field_value});  
         }
     }
     my $undotted_fields = [];

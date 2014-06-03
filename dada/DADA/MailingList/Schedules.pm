@@ -239,13 +239,13 @@ sub save_from_params {
 	
 	for my $field(@$fields){ 
 	    if($field eq 'subscriber.timestamp') { 
-	        if(defined($q->param($field . '.value'))){ 
+	        #if(defined($q->param($field . '.value'))){ 
     		    push(@$saved_pso, {
     				field_name     => $field,
     				field_rangestart  => $q->param($field . '.rangestart'), 
     				field_rangeend    => $q->param($field . '.rangeend'),  
 				}); 
-    		}
+    		#}
 	    }
 	    else { 	    
     		if(defined($q->param($field . '.value'))){ 
