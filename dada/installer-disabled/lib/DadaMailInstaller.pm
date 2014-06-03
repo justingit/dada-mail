@@ -216,30 +216,30 @@ my $advanced_config_params = {
 };
 
 my %bounce_handler_plugin_configs = (
-    Server                   => {default => '', if_blank => ''}, 
-    Username                 => {default => '', if_blank => ''}, 
-    Password                 => {default => '', if_blank => ''}, 
+    Server                   => {default => '',     if_blank => 'undef'}, 
+    Username                 => {default => '',     if_blank => 'undef'}, 
+    Password                 => {default => '',     if_blank => 'undef'}, 
     Port                     => {default => 'AUTO', if_blank => 'AUTO'},
-    USESSL                   => {default => '0', if_blank => '0'}, 
+    USESSL                   => {default => '0',    if_blank => 0}, 
     AUTH_MODE                => {default => 'BEST', if_blank => 'BEST'},
-    MessagesAtOnce           => {default => '100', if_blank => '100'},
-    Plugin_URL               => {default => '', if_blank => ''}, 
-    Allow_Manual_Run         => {default => '1', if_blank => '0'},
-    Manual_Run_Passcode      => {default => '', if_blank => ''},
-    Enable_POP3_File_Locking => {default => '1', if_blank => '0'},
+    MessagesAtOnce           => {default => '100',  if_blank => '100'},
+    Plugin_URL               => {default => '',     if_blank => 'undef'}, 
+    Allow_Manual_Run         => {default => '1',    if_blank => 0},
+    Manual_Run_Passcode      => {default => '',     if_blank => 0},
+    Enable_POP3_File_Locking => {default => '1',    if_blank => 0},
 ); 
 
 my %bridge_plugin_configs = (
-	MessagesAtOnce                      => {default => 1, if_blank => 1}, # Don't want, "0", you know? 
+	MessagesAtOnce                      => {default => 1,       if_blank => 1}, # Don't want, "0", you know? 
 	Soft_Max_Size_Of_Any_Message        => {default => 1048576, if_blank => 1048576},
 	Max_Size_Of_Any_Message             => {default => 2621440, if_blank => 2621440},
-	Plugin_URL                          => {default => '', if_blank => ''}, 
-	Allow_Manual_Run                    => {default => 1, if_blank => 0}, 
-	Manual_Run_Passcode                 => {default => '', if_blank => ''},  
-	Room_For_One_More_Check             => {default => 1, if_blank => 0},
-	Enable_POP3_File_Locking            => {default => 1, if_blank => 0}, 
-	Check_List_Owner_Return_Path_Header => {default => 1, if_blank => 0}, 
-	Check_Multiple_Return_Path_Headers  => {default => 0, if_blank => 0},
+	Plugin_URL                          => {default => '',      if_blank => 'undef'}, 
+	Allow_Manual_Run                    => {default => 1,       if_blank => 'undef'}, 
+	Manual_Run_Passcode                 => {default => '',      if_blank => 'undef'},  
+	Room_For_One_More_Check             => {default => 1,       if_blank => 0},
+	Enable_POP3_File_Locking            => {default => 1,       if_blank => 0}, 
+	Check_List_Owner_Return_Path_Header => {default => 1,       if_blank => 0}, 
+	Check_Multiple_Return_Path_Headers  => {default => 0,       if_blank => 0},
 );
 
 
@@ -1556,7 +1556,7 @@ sub create_dada_config_file {
 
     my $loc = $args->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name;
 
-     eval {
+    # eval {
     if ( !-e $loc . '/.configs' ) {
         croak "'" . $loc . '/.configs' . "' does not exist! Stopping!";
     }
@@ -1766,11 +1766,11 @@ sub create_dada_config_file {
     	
         $bounce_handler_params->{install_bridge} = 1; 
         foreach my $config(keys %bounce_handler_plugin_configs) { 
-            if(defined($q->param('bounce_handler_' . $config))) { 
-                $bounce_handler_params->{'bounce_handler_' . $config} = strip($q->param('bounce_handler_' . $config));
+            if(defined($q->param('bounce_handler_' . $config)) && ($q->param('bounce_handler_' . $config) ne '')) { 
+                $bounce_handler_params->{'bounce_handler_' . $config} = _sq(strip($q->param('bounce_handler_' . $config)));
             }
             else { 
-                $bounce_handler_params->{'bounce_handler_' . $config} = $bounce_handler_plugin_configs{$config}->{if_blank};   
+                $bounce_handler_params->{'bounce_handler_' . $config} = _sq($bounce_handler_plugin_configs{$config}->{if_blank});   
             }
         }
         
@@ -1785,11 +1785,11 @@ sub create_dada_config_file {
         
         $bridge_params->{install_bridge} = 1; 
         foreach my $config(keys %bridge_plugin_configs) { 
-            if(defined($q->param('bridge_' . $config))) { 
-                $bridge_params->{'bridge_' . $config} = strip($q->param('bridge_' . $config));
+            if(defined($q->param('bridge_' . $config))  && ($q->param('bounce_handler_' . $config) ne '')) { 
+                $bridge_params->{'bridge_' . $config} = _sq(strip($q->param('bridge_' . $config)));
             }
             else { 
-                $bridge_params->{'bridge_' . $config} = $bridge_plugin_configs{$config}->{if_blank};   
+                $bridge_params->{'bridge_' . $config} = _sq($bridge_plugin_configs{$config}->{if_blank});   
             }
         }
     }
@@ -1833,15 +1833,15 @@ sub create_dada_config_file {
     close $dada_config_fh or croak $!;
 
 	
-     };
-     if ($@) {
-		carp $@; 
-        $Big_Pile_Of_Errors .= $Big_Pile_Of_Errors; 
-		return 0;
-    }
-    else {
-        return 1;
-    }
+    # };
+    # if ($@) {
+	#	carp $@; 
+     #   $Big_Pile_Of_Errors .= $Big_Pile_Of_Errors; 
+#		return 0;
+#    }
+ #   else {
+ #       return 1;
+ #   }
 
 }
 
@@ -3640,6 +3640,17 @@ sub clean_up_var {
 	return $var; 
 }
 
+sub _sq { 
+    my $str = shift; 
+    return if $str eq 'undef'; # literally, "undef"; 
+    return if $str eq '0'; 
+    return if $str eq '1'; 
+    
+    $str =~ s/\'/\\\'./g;
+    return "'" . $str . "'"; 
+}
+
+
 package BootstrapConfig;
 no strict; 
 
@@ -3722,6 +3733,7 @@ sub guess_config_file {
 	
 	return $CONFIG_FILE; 
 }
+
 
 
 
