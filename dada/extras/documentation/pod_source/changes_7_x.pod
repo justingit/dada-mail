@@ -1,5 +1,19 @@
 =pod
 
+=head2 7.0.4
+
+=head2 Summary 7.0.4
+
+=head2 Bugfixes 7.0.4
+
+=head3 Backdating archived messages in Send a Message screen does not create a valid date, when archive is saved
+
+L<https://github.com/justingit/dada-mail/issues/441>
+
+=head3 "On behalf of" template placeholder not properly sanitised in bridge config page
+
+L<https://github.com/justingit/dada-mail/issues/440>
+
 =head1 Dada Mail Changelog for v7.x
 
 =head2 7.0.4
@@ -13,7 +27,7 @@ We've reverted Dada Mail's auto-batch sending speeds to use the original, more c
 
 Because of that, anyone that's using Dada Mail v7.0.0 or higher and Amazon SES should most definetly upgrade to this new release. If there are any additional problems, please report them! 
 
-=head2 Bugfixes 7.0.1
+=head2 Bugfixes 7.0.4
 
 =head3 Amazon SES: " Automatically set batching speeds based on your Amazon SES limits " causing mass mailing problems
 

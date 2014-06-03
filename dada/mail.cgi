@@ -8529,7 +8529,14 @@ sub resend_conf_captcha {
                     -email => $email,
                     -type  => 'sub_confirm_list',
                 }
-            );
+            );       
+            for(keys %{$sub_info}) { 
+                next if $_ eq 'email'; 
+                next if $_ eq 'email_name'; 
+                next if $_ eq 'email_domain'; 
+                $q->param($_, $sub_info->{$_}); 
+            }
+            
             my $rm_status = $lh->remove_subscriber(
                 {
                     -email => $email,

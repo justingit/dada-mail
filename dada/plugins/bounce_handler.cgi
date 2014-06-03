@@ -116,20 +116,9 @@ sub init_vars {
 # DEV: This NEEDS to be in its own module - perhaps DADA::App::PluginHelper or something?
 
     while ( my $key = each %$Plugin_Config ) {
-
-        if ( exists( $DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{$key} ) )
-        {
-
-            if (
-                defined(
-                    $DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{$key}
-                )
-              )
-            {
-
-                $Plugin_Config->{$key} =
-                  $DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{$key};
-
+        if ( exists( $DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{$key} ) ) {
+            if (defined($DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{$key})){
+                $Plugin_Config->{$key} = $DADA::Config::PLUGIN_CONFIGS->{Bounce_Handler}->{$key};
             }
         }
     }
