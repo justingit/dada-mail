@@ -878,9 +878,17 @@ sub send {
 					-msg => $msg, 
 				}
 			);
-			if($response_code == 200){ 				
-				my($sesMessageId, $sesRequestId) = split("\n", $response_content);
-				#do something here about the message id
+#            require Data::Dumper; 
+#           carp Data::Dumper::Dumper(
+#               { 
+#                   reponse_code     =>  $response_code,
+#                   response_content => $response_content,
+#               } 
+#            ); 
+			
+			if($response_code == 200){
+				# my($sesMessageId, $sesRequestId) = split("\n", $response_content);
+				# do something here about the message id
 			}
 			else { 
 				return -1; 
@@ -1774,7 +1782,7 @@ sub mass_send {
 				            if $t; 
 			            
 						
-				    	if($batch_num_sent == $batch_size){ 
+				    	if($batch_num_sent >= $batch_size){ 
 			    	
 				    	     warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' reached the amount of messages for this batch:' . $batch_num_sent . ', sleeping (estimate):' . $batch_wait
 				    	        if $t; 
