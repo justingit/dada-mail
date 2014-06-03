@@ -204,8 +204,10 @@ Scorecard Preferences
 </tr>
 <tr>
 <td>
-	 <p><input type="radio" name="bounce_handler_when_threshold_reached" value="unsub_subscriber" <!-- tmpl_if expr="(list_settings.bounce_handler_when_threshold_reached eq 'unsub_subscriber')" -->checked="checked"<!-- /tmpl_if --> /><label>Be Unsubscribed Right Away</label><br />
-	 <input type="radio" name="bounce_handler_when_threshold_reached"  value="move_to_bounced_sublist" <!-- tmpl_if expr="(list_settings.bounce_handler_when_threshold_reached eq 'move_to_bounced_sublist')" -->checked="checked"<!-- /tmpl_if --> /><label>Be Moved to the, "Bounced Addresses" Sublist</label>
+	 <p><input type="radio" name="bounce_handler_when_threshold_reached" id="bounce_handler_when_threshold_reached_unsub_subscriber" value="unsub_subscriber" <!-- tmpl_if expr="(list_settings.bounce_handler_when_threshold_reached eq 'unsub_subscriber')" -->checked="checked"<!-- /tmpl_if --> /><label for="bounce_handler_when_threshold_reached_unsub_subscriber">Be Unsubscribed Right Away</label><br />
+	     
+	     
+	 <input type="radio" name="bounce_handler_when_threshold_reached" id="bounce_handler_when_threshold_reached_move_to_bounced_sublist"  value="move_to_bounced_sublist" <!-- tmpl_if expr="(list_settings.bounce_handler_when_threshold_reached eq 'move_to_bounced_sublist')" -->checked="checked"<!-- /tmpl_if --> /><label for="bounce_handler_when_threshold_reached_move_to_bounced_sublist">Be Moved to the, "Bounced Addresses" Sublist</label>
 </p> 
 
 </td>
