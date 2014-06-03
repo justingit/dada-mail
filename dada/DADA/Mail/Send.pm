@@ -1774,7 +1774,7 @@ sub mass_send {
 				            if $t; 
 			            
 						
-				    	if($batch_num_sent == $batch_size){ 
+				    	if($batch_num_sent >= $batch_size){ 
 			    	
 				    	     warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' reached the amount of messages for this batch:' . $batch_num_sent . ', sleeping (estimate):' . $batch_wait
 				    	        if $t; 
