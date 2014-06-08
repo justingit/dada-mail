@@ -225,7 +225,7 @@ my %bounce_handler_plugin_configs = (
     MessagesAtOnce           => {default => '100',  if_blank => '100'},
     Plugin_URL               => {default => '',     if_blank => 'undef'}, 
     Allow_Manual_Run         => {default => '1',    if_blank => 0},
-    Manual_Run_Passcode      => {default => '',     if_blank => 0},
+    Manual_Run_Passcode      => {default => '',     if_blank => 'undef'},
     Enable_POP3_File_Locking => {default => '1',    if_blank => 0},
 ); 
 
