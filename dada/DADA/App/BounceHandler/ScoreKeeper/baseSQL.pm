@@ -10,7 +10,7 @@ use lib qw(
 use DADA::Config;
 use DADA::App::Guts;
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_BounceHandler_ScoreKeeper};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_BounceHandler};
 
 my $dbi_obj;
 
@@ -260,6 +260,42 @@ sub raw_scorecard {
 
     return ($scorecard);
 
+}
+
+sub print_csv_scorecard { 
+    my $self = shift;
+    my ($args) = @_;
+
+	if(!exists($args->{-fh})){ 
+		$args->{-fh} = \*STDOUT;
+	}
+	my $fh = $args->{-fh}; 
+
+    my $query =
+        'SELECT email, score FROM '
+      . $self->{sql_params}->{bounce_scores_table}
+      . ' WHERE list = ? ORDER BY email';
+    my $sth = $self->{dbh}->prepare($query);
+    $sth->execute( $self->{list} )
+      or croak "cannot do statement '$query'! $DBI::errstr\n";
+
+    my $scorecard = [];
+
+    require Text::CSV;
+    my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
+
+
+	my $title_status = $csv->print ($fh, [qw(email score)]);
+	print $fh "\n";
+
+
+    while ( my ( $email, $score ) = $sth->fetchrow_array ) {
+        my $status = $csv->print( $fh,[$email, $score]);
+        print $fh "\n";
+    }
+
+    $sth->finish;
+    
 }
 
 sub num_scorecard_rows {

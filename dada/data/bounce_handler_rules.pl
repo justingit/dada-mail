@@ -161,11 +161,10 @@ qr/not been delivered to the recipient's BlackBerry Handheld/
     },
 
     {
-        yelling_mailbox_is_full => {
+        little_details_mailbox_is_full => {
             Examine => {
                 Message_Fields => {
-                    'Notification_regex' => [qr/INBOX IS FULL/],
-                    Action               => [qw(failed)],
+                    'Notification_regex' => [qr/INBOX IS FULL|mailfolder is full/],
                 },
 
                 Data => {

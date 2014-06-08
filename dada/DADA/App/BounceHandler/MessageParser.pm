@@ -12,7 +12,7 @@ use Try::Tiny;
 use Carp qw(croak carp);
 use vars qw($AUTOLOAD);
 
-my $t = 0; 
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_BounceHandler};
 
 if($t == 1){ 
 	require Data::Dumper;
@@ -137,8 +137,16 @@ sub run_all_parses {
 	        %{$diagnostics} = ( %{$diagnostics}, %{$ss_diagnostics} )
 	          if $ss_diagnostics;
 	}
-	else { 		
-		
+	else {
+	    # ... 
+	}	
+	if(!defined($list) || !defined($email)){ 
+#	    use Data::Dumper; 
+#	    die Dumper(
+#	        [
+#	            $list, $email, $diagnostics
+#	        ]
+#	    ); 
 		warn "generic_parse"
 			if $t; 
 		
@@ -1032,7 +1040,8 @@ sub parse_for_qmail {
     my $state    = 0;
     my $pattern  = 'Hi. This is the';
     my $pattern2 = 'Your message has been enqueued by';
-
+    my $pattern3 = 'Customer Support at 480-624-2500.'; # This is lame - Customer Support at 480-624-2500.
+     
     my $end_pattern  = '--- Undelivered message follows ---';
     my $end_pattern2 = '--- Below this line is a copy of the message.';
     my $end_pattern3 = '--- Enclosed is a copy of the message.';
@@ -1050,7 +1059,7 @@ sub parse_for_qmail {
                 while ( defined( $_ = $IO->getline ) ) {
 
                     my $data = $_;
-                    $state = 1 if $data =~ /$pattern|$pattern2/;
+                    $state = 1 if $data =~ /$pattern|$pattern2|$pattern3/;
                     $state = 0
                       if $data =~ /$end_pattern|$end_pattern2|$end_pattern3/;
 
@@ -1171,6 +1180,7 @@ sub parse_for_qmail {
 #				}
 #			}
             $list ||= $self->generic_body_parse_for_list($entity);
+            
             return ( $list, $email, $diag );
         }
         else {
