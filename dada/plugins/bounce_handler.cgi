@@ -186,6 +186,7 @@ sub cgi_main {
             'cgi_default'                => \&cgi_default,
             'cgi_parse_bounce'           => \&cgi_parse_bounce,
             'cgi_scorecard'              => \&cgi_scorecard,
+            'export_scorecard_csv'       => \&export_scorecard_csv, 
             'cgi_bounce_score_search'    => \&cgi_bounce_score_search,
             'cgi_show_plugin_config'     => \&cgi_show_plugin_config,
             'ajax_parse_bounces_results' => \&ajax_parse_bounces_results,
@@ -492,6 +493,25 @@ sub cgi_scorecard {
     e_print($scrn);
 
 }
+
+
+
+
+sub export_scorecard_csv {
+    require DADA::App::BounceHandler::ScoreKeeper;
+    my $bsk = DADA::App::BounceHandler::ScoreKeeper->new( { -list => $list } );
+    
+    my $header = $q->header(
+		-attachment => 'bounce_scorecard-' . $list . '-' . time . '.csv',
+		-type       => 'text/csv', 
+	);
+	print $header;
+	
+    $bsk->print_csv_scorecard;
+}
+
+
+
 
 sub cgi_erase_scorecard {
 
