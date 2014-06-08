@@ -567,6 +567,14 @@ ok(
     "except when checked and placed in, if it's missing"
 );
 
+# _pp mode work for MIME Words encoded stuff? 
+my $From_header = '=?UTF-8?Q?=C3=9F=E2=80=A0=C2=AE=C3=B1g=C3=A9_=C3=9F=C3=BCb=C3=9F=C2=AE=C3=AEb=C3=A9=C2=AE?= <weird.subscriber@example.com>'; 
+my $From_header_ppd = 
+q{"=?UTF-8?Q?=C3=9F=E2=80=A0=C2=AE=C3=B1g=C3=A9_=C3=9F=C3=BCb=C3=9F=C2=AE?=
+ =?UTF-8?Q?=C3=AEb=C3=A9=C2=AE?= p.p. Dada Test =?UTF-8?Q?List=C2=A1?=
+ =?UTF-8?Q?=E2=84=A2=C2=A3=C2=A2=E2=88=9E=C2=A7=C2=B6=E2=80=A2=C2=AA=C2=BA?=" <test@example.com> (weird.subscriber _at_ example.com)}; 
+#diag "'" . $fm->_pp($From_header) . "'"; 
+ok($fm->_pp($From_header) eq $From_header_ppd); 
 
 
 

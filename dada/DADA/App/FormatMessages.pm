@@ -1026,13 +1026,13 @@ sub _pp {
     my $a = ( Email::Address->parse($from) )[0]->address;
 
     if ( $a eq $self->{ls}->param('list_owner_email') ) {
-
         # We don't have to "On Behalf Of" ourselves.
         return $from;
     }
     else {
         $a =~ s/\@/ _at_ /;
         my $p          = ( Email::Address->parse($from) )[0]->phrase;
+           $p          = $self->_decode_header($p); 
         my $d          = $self->{ls}->param('group_list_pp_mode_from_phrase');
         my $new_phrase = DADA::Template::Widgets::screen(
             {
