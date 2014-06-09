@@ -18,7 +18,7 @@ use Try::Tiny;
 use Carp qw(croak carp); 
 use vars qw($AUTOLOAD); 
 
-my $t = 0; 
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_FormatMessages};
 
 
 =pod
@@ -282,6 +282,8 @@ sub format_headers_and_body {
 		}
 	}
 	
+=cut
+
 	if($entity->head->get('Subject', 0)){ 
 		$self->Subject($entity->head->get('Subject', 0));
 	}
@@ -290,6 +292,10 @@ sub format_headers_and_body {
 			$entity->head->add(   'Subject', safely_encode($self->Subject));#?
 		}
 	}
+
+=cut
+
+
 	$entity     = $self->_format_headers($entity); #  Bridge stuff. 
 	
 	if(defined($self->{list})){
@@ -1132,13 +1138,25 @@ sub _encode_header {
 
 
 sub _decode_header { 
+    warn 'at _decode_header' 
+        if $t; 
+        
 	my $self   = shift; 
 	my $header = shift; 
-	return $header 
-	 	unless $self->im_encoding_headers;
-	require MIME::EncWords; 
-	my $dec = MIME::EncWords::decode_mimewords($header, Charset => '_UNICODE_'); 
-	return $dec; 
+	
+	warn '$header before:' . safely_encode($header)
+	 if $t; 
+	
+	unless ($self->im_encoding_headers) { 
+	    return $header;
+    }
+    else { 
+    	require MIME::EncWords; 
+    	my $dec = MIME::EncWords::decode_mimewords($header, Charset => '_UNICODE_'); 
+    	warn 'safely_encode($dec) after: ' . safely_encode($dec)
+    	    if $t; 
+    	return $dec; 
+    }
 }
 
 
@@ -2338,11 +2356,11 @@ sub email_template {
 	    'List-Subscribe', 
 	    'List-Unsubscribe'
 	    ){ 
-		warn "looking at headers"
-			if $t;
 						
 	    if($args->{-entity}->head->get($header, 0)){ 
-						
+			warn "looking at header:" . $header
+    			if $t;
+    		
             if($header =~ m/From|To|Reply\-To|Return\-Path|Errors\-To/){ 
 
 	
@@ -2414,9 +2432,16 @@ sub email_template {
 					if $t; 
 				# Get
 			    my $header_value = $args->{-entity}->head->get($header, 0);# 
-				warn 'get:' . safely_encode( $header_value)	
+			    
+
+				warn 'get() returned:' . safely_encode( $header_value)	
 				 if $t; 
-				
+
+			       # this shouldn't be required, but headers are sometimes saved un-MIME Words encoded. 
+			     #  $header_value = safely_decode($header_value); 
+                 #warn 'safely_decode(get()) returned:' . safely_encode( $header_value)	
+   				 #if $t; 
+   								
 				# I'm a little weirded by this, but if, some reason
 				# UTF-8 (decoded) stuff gets through, this does help it. 
 				# Uneeded, if there is no UTF-8 stuff is in the header (which should be the 
@@ -2425,8 +2450,8 @@ sub email_template {
 								
 				# Decode EncWords
 				$header_value = $self->_decode_header($header_value);
-                warn 'decode EncWords:' . safely_encode( $header_value)
-					if $t; 
+				warn '$header_value ' . safely_encode( $header_value)
+				    if $t; 
 				
 				if($header_value =~ m/\[|\</){ # has a template? (optimization)
 					$header_value = DADA::Template::Widgets::screen(

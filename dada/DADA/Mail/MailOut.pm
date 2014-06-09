@@ -1231,7 +1231,7 @@ sub create_raw_message {
     for (@DADA::Config::EMAIL_HEADERS_ORDER) {
         next if $_ eq 'Body';
         next if $_ eq 'Message';    # Do I need this?!
-        print MESSAGE $_ . ': ' . $fields->{$_} . "\n"
+        print MESSAGE $_ . ': ' . safely_encode($fields->{$_}) . "\n"
             if ( ( defined $fields->{$_} ) && ( $fields->{$_} ne "" ) );
     }
 
@@ -2108,6 +2108,7 @@ sub clean_up {
 	File::Copy::move($orig_name, $tmp_name)
 		or warn "could not move director from, '$orig_name', to, '$tmp_name': $!"; 
 		
+	# return 1; warn 'change back when shipping!'; 
 	$self->dir($tmp_name); 
 
 	my $lock = $self->lock_file($self->mailout_directory_name({-tmp => 1})); 

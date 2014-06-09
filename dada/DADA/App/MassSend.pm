@@ -234,7 +234,14 @@ sub send_email {
           )
         {
             if ( defined( $q->param($h) ) ) {
-                $headers{$h} = strip( $q->param($h) );
+                
+                # I do not like how we treat Subject differently, but I don't have a better idea on what to do. 
+                if($h eq 'Subject'){ 
+                    $headers{$h} = $fm->_encode_header('Subject', $q->param($h)); 
+                }
+                else { 
+                    $headers{$h} = strip( $q->param($h) );
+                }
             }
         }
 

@@ -481,6 +481,7 @@ $DEBUG_TRACE ||= {
 
     DADA_App_BounceHandler             => 0,
     DADA_App_DBIHandle                 => 0,
+    DADA_App_FormatMessages            => 0,
     DADA_App_Subscriptions             => 0,
     DADA_Logging_Clickthrough          => 0,
     DADA_Profile                       => 0,

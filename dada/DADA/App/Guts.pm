@@ -1408,7 +1408,9 @@ sub oldschool_decode_entities {
 # or something, and then have an option to encode the output? 
 # 
 sub e_print { # be nice to prototype this. 
-	print encode($DADA::Config::HTML_CHARSET, $_[0]); 
+	#print encode($DADA::Config::HTML_CHARSET, $_[0]); 
+	
+	print safely_encode($_[0]); 
 }
 
 
@@ -2842,36 +2844,41 @@ sub csv_subscriber_parse {
 
 
 
-sub decode_cgi_obj { 
-	#use Data::Dumper; 
-	my $query = shift; 
-#	return $query; 
-	
-	my $form_input = {};  
-	for my $name ( $query->param ) {
-	  
-	  # Don't decode image uploads that are binary. 
-	  next 
-		if $name =~ m/file|picture|attachment(.*?)$/; 
-	
-	  my @val = $query ->param( $name );
-	  for ( @val ) {
-	    #$_ = Encode::decode($DADA::Config::HTML_CHARSET, $_ );
-		$_ = safely_decode($_); 
-	  }
-	  #$name = Encode::decode($DADA::Config::HTML_CHARSET, $name );
-	   $name = safely_decode($name); 
-      if ( scalar @val == 1 ) {   
-	    #$form_input ->{$name} = $val[0];
-		$query->param($name, $val[0]); 
-		#warn 'CGI param: ' . $name . ' ' . Data::Dumper::Dumper($val[0]);
-	  } else {      
-		$query->param($name, @val);                 
-	    #$form_input ->{$name} = \@val;  # save value as an array ref
-	  }
-	}
-	return $query; 
-	
+sub decode_cgi_obj {
+
+    #use Data::Dumper;
+    my $query = shift;
+    # return $query; # debug.
+
+    for my $name ( $query->param ) {
+
+        # Don't decode image uploads that are binary.
+        if ( $name =~ m/file|picture|attachment(.*?)$/ ) {
+            next;
+        }
+
+        my @val     = $query->param($name);
+        my @new_val = ();
+
+        # are we really using UTF-8 encoded *names*?!
+        
+        $name = safely_decode($name);
+
+        for my $each_val (@val) {
+            push( @new_val, safely_decode($each_val) );
+        }
+
+        if ( scalar @val == 1 ) {
+            $query->delete($name); 
+            $query->param( $name, $new_val[0] );
+        }
+        else {
+            $query->delete($name); 
+            $query->param( $name, @new_val );
+        }
+    }
+    return $query;
+
 }
 
 
