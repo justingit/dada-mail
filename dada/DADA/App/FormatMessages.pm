@@ -282,8 +282,6 @@ sub format_headers_and_body {
 		}
 	}
 	
-=cut
-
 	if($entity->head->get('Subject', 0)){ 
 		$self->Subject($entity->head->get('Subject', 0));
 	}
@@ -292,9 +290,6 @@ sub format_headers_and_body {
 			$entity->head->add(   'Subject', safely_encode($self->Subject));#?
 		}
 	}
-
-=cut
-
 
 	$entity     = $self->_format_headers($entity); #  Bridge stuff. 
 	
