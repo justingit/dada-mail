@@ -125,7 +125,9 @@ sub allowed_sending_quota_percentage {
 
 sub _saved_ses_stats_fn { 
     my $self = shift; 
-    return make_safer( $DADA::Config::TMP . '/_data_cache/ses_stats.txt' );
+    require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new;
+    return make_safer( $dc->cache_dir . '/ses_stats.txt' );
 }
 sub _should_get_saved_ses_stats { 
 
@@ -162,7 +164,7 @@ sub _save_ses_stats {
     my ($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate) = @_; 
     my $stats_file = $self->_saved_ses_stats_fn; 
     
-    open my $fh, '>', $stats_file or die $!;
+    open my $fh, '>', $stats_file or die $! . ' - ' . $stats_file;
     print $fh join(',', $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate); 
     close $fh or die $!; 
 }
