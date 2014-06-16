@@ -9089,7 +9089,6 @@ sub new_list {
 
 sub archive {
 
-
     # are we dealing with a real list?
     my $list_exists = check_if_list_exists( -List => $list, );
 
@@ -9102,7 +9101,7 @@ sub archive {
         return;
     }
 
-    my $id = $q->param('id') || undef; 
+    my $id = $q->param('id') || undef;
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
@@ -9216,6 +9215,7 @@ sub archive {
                 my ( $subject, $message, $format, $raw_msg ) = $archive->get_archive_info( $entries->[$i] );
 
                 # DEV: This is stupid, and I don't think it's a great idea.
+                # $subject = safely_decode($subject); 
                 $subject = DADA::Template::Widgets::screen(
                     {
                         -data                     => \$subject,
@@ -9515,8 +9515,8 @@ sub archive {
                     header_subject => $header_subject,
                     subject        => $subject,
 
-                    js_enc_subject      => js_enc($subject),
-                    uri_encoded_subject => uriescape($subject),
+                    js_enc_subject      => js_enc($header_subject),
+                    uri_encoded_subject => uriescape($header_subject),
                     uri_encoded_url  => uriescape( $DADA::Config::PROGRAM_URL . '/archive/' . $list . '/' . $id . '/' ),
                     archived_msg_url => $DADA::Config::PROGRAM_NAME . '/archive/' . $list . '/' . $id . '/',
                     massaged_msg_for_display => $massaged_message_for_display,

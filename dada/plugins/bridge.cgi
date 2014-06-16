@@ -622,29 +622,10 @@ sub cgi_mod {
             print "<p>Message has been denied and being removed!</p>";
             if ( $ls->param('send_moderation_rejection_msg') == 1 ) {
                 print "<p>Sending rejection message!</p>";
-
-				# This is simply to get the Subject: header - 
-				my $subject; 
-				my $entity; 
-				eval {
-		            $entity = $parser->parse_data(
-		                safely_encode( 
-							$mod->get_msg( { -msg_id => $msg_id } ) 
-						)
-					);
-		        };
-		        if ( !$entity ) {
-		            croak "no entity found!";
-		        }
-				else { 
-				    $subject = $entity->head->get( 'Subject', 0 );
-				}
-
                 $mod->send_reject_msg(
                     {
                         -msg_id  => $msg_id,
                         -parser  => $parser,
-                        -subject => $subject,
                     }
                 );
 
@@ -2326,6 +2307,13 @@ sub send_msg_too_big {
           ( Email::Address->parse( $entity->head->get( 'From', 0 ) ) )[0]
           ->address;
 
+          require DADA::App::FormatMessages; 
+          my $dfm = DADA::App::FormatMessages->new( -List => $ls->param('list') );
+
+          my $subject = $entity->head->get( 'Subject', 0 );
+             $subject =~ s/\n//g;
+             $subject = $dfm->_decode_header($subject);
+
         require DADA::App::Messages;
         DADA::App::Messages::send_generic_email(
             {
@@ -2342,7 +2330,7 @@ sub send_msg_too_big {
                     -subscriber_vars =>
                       { 'subscriber.email' => $from_address, },
                     -vars => {
-                        original_subject => $entity->head->get( 'Subject', 0 ),
+                        original_subject => $subject,
                         size_of_original_message =>
                           sprintf( "%.1f", ( $size / 1024 ) ),
                         Soft_Max_Size_Of_Any_Message => sprintf(
@@ -2523,7 +2511,7 @@ sub dm_format {
     }
 
     require DADA::App::FormatMessages;
-
+    
     my $fm = DADA::App::FormatMessages->new( -List => $ls->param('list') );
     $fm->mass_mailing(1);
 
@@ -3218,7 +3206,6 @@ sub handle_errors {
             {
                 -msg     => $full_msg,
                 -msg_id  => $message_id,
-                -subject => $subject,
                 -from    => $from,
                 -parser  => $parser
             }
@@ -3231,7 +3218,6 @@ sub handle_errors {
                 {
                     -msg_id  => $message_id,
                     -parser  => $parser,
-                    -subject => $subject
                 }
             );
         }
@@ -3767,6 +3753,13 @@ sub moderation_msg {
     my $entity =
       $parser->parse_data( DADA::App::Guts::safely_encode( $args->{-msg} ) );
 
+      require DADA::App::FormatMessages; 
+      my $dfm = DADA::App::FormatMessages->new( -List => $self->{list} );
+
+      my $subject = $entity->head->get( 'Subject', 0 );
+         $subject =~ s/\n//g;
+         $subject = $dfm->_decode_header($subject);
+
     my $confirmation_link =
         $Plugin_Config->{Plugin_URL}
       . '?flavor=mod&list='
@@ -3858,7 +3851,7 @@ sub moderation_msg {
                     -vars => {
                         moderation_confirmation_link => $confirmation_link,
                         moderation_deny_link         => $deny_link,
-                        message_subject              => $args->{-subject},
+                        message_subject              => $subject,
                         msg_id                       => $args->{-msg_id},
                         'subscriber.email'           => $args->{-from},
                     }
@@ -3900,9 +3893,13 @@ sub send_moderation_msg {
     if ( !$entity ) {
         croak "no entity found! die'ing!";
     }
-
+    require DADA::App::FormatMessages; 
+    my $dfm = DADA::App::FormatMessages->new( -List => $self->{list} );
+    
     my $subject = $entity->head->get( 'Subject', 0 );
-    $subject =~ s/\n//g;
+       $subject =~ s/\n//g;
+       $subject = $dfm->_decode_header($subject);
+
     my $from = $entity->head->get( 'From', 0 );
     $from =~ s/\n//g;
 
@@ -3934,7 +3931,7 @@ sub send_moderation_msg {
                 -subscriber_vars => { 'subscriber.email' => $args->{-from}, },
                 -vars            => {
 
-                    message_subject => $args->{-subject},
+                    message_subject => $subject,
                     message_from    => $args->{-from},
                     msg_id          => $args->{-msg_id},
                     Plugin_Name     => $Plugin_Config->{Plugin_Name},
@@ -3977,9 +3974,14 @@ sub send_accept_msg {
         croak "no entity found! die'ing!";
 
     }
+    
+    require DADA::App::FormatMessages; 
+    my $dfm = DADA::App::FormatMessages->new( -List => $self->{list} );
 
     my $subject = $entity->head->get( 'Subject', 0 );
-    $subject =~ s/\n//g;
+       $subject =~ s/\n//g;
+       $subject = $dfm->_decode_header($subject);
+       
     my $from = $entity->head->get( 'From', 0 );
     $from =~ s/\n//g;
 
@@ -4052,8 +4054,12 @@ sub send_reject_msg {
         croak "no entity found! die'ing!";
     }
 
+    require DADA::App::FormatMessages; 
+    my         $dfm = DADA::App::FormatMessages->new( -List => $self->{list} );
     my $subject = $entity->head->get( 'Subject', 0 );
-    $subject =~ s/\n//g;
+       $subject =~ s/\n//g;
+       $subject = $dfm->_decode_header($subject);
+    
     my $from = $entity->head->get( 'From', 0 );
     $from =~ s/\n//g;
 
@@ -4087,7 +4093,7 @@ sub send_reject_msg {
                 },
                 -vars => {
 
-                    message_subject => $args->{-subject},
+                    message_subject => $subject,
                     message_from    => $args->{-from},
                     msg_id          => $args->{-msg_id},
                     Plugin_Name     => $Plugin_Config->{Plugin_Name},

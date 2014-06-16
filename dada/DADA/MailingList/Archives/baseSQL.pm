@@ -220,6 +220,8 @@ sub get_archive_info {
 			$self->{msg_cache}->{$key} = [$a_entry->{subject}, $a_entry->{message},$a_entry->{'format'}, $a_entry->{raw_msg}]; 
 		}
 		
+		$a_entry->{subject} = $self->_decode_header($a_entry->{subject}); 
+		# $a_entry->{subject} = safely_decode($a_entry->{subject}); 
 		
 		$a_entry->{subject} = $self->strip_subjects_appended_list_name($a_entry->{subject})
 			if $self->{ls}->param('no_prefix_list_name_to_subject_in_archives') == 1; 
@@ -228,7 +230,6 @@ sub get_archive_info {
 		    $a_entry->{subject} = $DADA::Config::EMAIL_HEADERS{Subject}; 
 		}
 		
-		$a_entry->{subject} = $self->_decode_header($a_entry->{subject}); 
 		return ($a_entry->{subject}, $a_entry->{message},$a_entry->{'format'}, $a_entry->{raw_msg}); 
 
 	}
