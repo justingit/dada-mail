@@ -1475,9 +1475,12 @@ sub mass_send {
 				if $t; 
 			$mailout = $self->_clarify_dbi_stuff({-dmmo_obj => $mailout}); 
 			$mailout->update_last_access;
+
+
+			# Subscriber # we are currently working with (index starts at #1)
+			my $mass_mailing_count  = 0;  
 			
 			my $batch_num_sent      = 0;  # num of addresses we've sent, per batch 
-			my $mass_mailing_count  = 0;  # num addresses we've sent, per mass mailing
 			my $stop_email          = ''; # address we've stopped on, in this batch;
 						
 			# Let's tell em we're in control: 
@@ -1607,14 +1610,19 @@ sub mass_send {
 				if ($csv->parse($subcriber_line)) {
 			     	@ml_info = $csv->fields;
 			    } else {
-			        carp $DADA::Config::PROGRAM_NAME . " Error: CSV parsing error: parse() failed on argument: ". $csv->error_input() . ' ' . $csv->error_diag ();
+			        my $w =  '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . " Error: CSV parsing error: parse() failed on argument: ". $csv->error_input() . ' ' . $csv->error_diag ();
+			        $mailout->log($w);
+			        carp($w); 
+			        undef ($w); 
 			    	undef(@ml_info);
 					next SUBSCRIBERLOOP;
 				}
-
+                # incremented:
+                $mass_mailing_count++;
+				
+				
 				my $current_email = $ml_info[0];
 				
-				$mass_mailing_count++;
 
 				# only start sending at a point where we're supposed to...
 				# so wait - mailing count starts at 1?
@@ -1744,6 +1752,7 @@ sub mass_send {
              				#
                              warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' counting subscriber.'
                                  if $t; 
+                             
                              my $new_count = $mailout->countsubscriber; 
 
              				$mailout->log($nfields{To} . ' sent message #' . $new_count);
@@ -1753,8 +1762,20 @@ sub mass_send {
 
              				# And this almost never happens: 
                             if($mass_mailing_count != $new_count){ 
-                                 carp("Warning: \$mass_mailing_count ($mass_mailing_count) is not the same as \$new_count ($new_count) - problems are likely to happen..."); 
-             					$mailout->log("\$mass_mailing_count ($mass_mailing_count) is not the same as \$new_count ($new_count) - problems are likely to happen..."); 
+
+                                my $w = '[' 
+                                . $self->{list} 
+                                . '] Mass Mailing:' 
+                                . $mailout_id 
+                                . ' Warning: $mass_mailing_count: '
+                                . $mass_mailing_count 
+                                . ' is not the same as  $new_count: ' 
+                                . $new_count
+                                . ' - exit()ing to reset mass mailing.'; 
+                                carp $w; 
+								$mailout->log($w); 
+								$mailout->unlock_batch_lock;
+								exit(0); 
                             }
              				$batch_num_sent++; 
              				# /Count Subscriber

@@ -968,46 +968,39 @@ sub create_batch_lock {
 
 sub countsubscriber {
 
-	# DEV: 
-	# It would be nice to be able to check to make sure the number we just added is the number, +1, 
-	# Somehow. Somewhere. 
-	
+    # DEV:
+    # It would be nice to be able to check to make sure the number we just added is the number, +1,
+    # Somehow. Somewhere.
+
     my $self = shift;
+    my $num  = _poll( $self->dir . '/' . $file_names->{counter} );
+    my $file = make_safer( $self->dir . '/' . $file_names->{counter} );
+    my $lock = $self->lock_file($file);
 
-    my $num = _poll( $self->dir . '/' . $file_names->{counter} );
- 
-	my $file = make_safer($self->dir . '/' . $file_names->{counter});
-	
-	
-	my $lock = $self->lock_file($file);
-	
-    sysopen( FH, $file, O_RDWR | O_CREAT, $DADA::Config::FILE_CHMOD)
-        or croak "can't open '$file' because: $!";
+    sysopen( FH, $file, O_RDWR | O_CREAT, $DADA::Config::FILE_CHMOD )
+      or croak "can't open '$file' because: $!";
 
-	if($^O =~ /solaris/g){ 
-	     flock( FH, LOCK_SH ) 
-		        or croak "can't flock '$file' because: $!";
-	}
-	else { 
-		flock( FH, LOCK_EX ) 
-			or croak "can't flock '$file' because: $!";	
-	}
+    if ( $^O =~ /solaris/g ) {
+        flock( FH, LOCK_SH )
+          or croak "can't flock '$file' because: $!";
+    }
+    else {
+        flock( FH, LOCK_EX )
+          or croak "can't flock '$file' because: $!";
+    }
 
+    seek( FH, 0, 0 )          or croak "can't rewind counter: $!";
+    truncate( FH, 0 )         or croak "can't truncate counter: $!";
+    
+    my $new_count = int($num) + 1;
+    
+    print FH $new_count, "\n" or croak "can't write counter: $!";
+    close FH                  or croak "can't close counter: $!";
 
+    $self->unlock_file($lock);
+    $self->update_last_access();
 
-   
-
-    seek( FH, 0, 0 )            or croak "can't rewind counter: $!";
-    truncate( FH, 0 )           or croak "can't truncate counter: $!";
-    my $new_count = $num + 1; 
-    print FH $new_count, "\n"   or croak "can't write counter: $!";
-    close FH                    or croak "can't close counter: $!";
-
-	$self->unlock_file($lock);
-	
-	$self->update_last_access(); 
-
-   return $new_count; 
+    return $new_count;
 
 }
 
