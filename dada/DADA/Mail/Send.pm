@@ -1842,7 +1842,7 @@ sub mass_send {
 								$batch_log_message .= ' ' . $_ . ': ' . $batch_status->{$_}; 
 							}
                          
-                          	$mailout->log('Batch Successfully Completed: ' .  $batch_log_message);
+                          	$mailout->log('Batch successfully completed.');
                           	warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Batch Successfully Completed: ' .  $batch_log_message
                           	    if $t; 
                           	
