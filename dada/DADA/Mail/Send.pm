@@ -2275,7 +2275,7 @@ sub _log_sending_error {
 		require DADA::Logging::Clickthrough;
 	    $r = DADA::Logging::Clickthrough->new( { -list => $self->{ list } } );
 	    if ( $r->enabled ) {
-	        $r->error_sending_topen_log(
+	        $r->error_sending_to_log(
 	            {
 	                -mid   => $mid,
 	                -email => $args->{-email},
