@@ -6,7 +6,7 @@ use Carp qw(carp croak);
 use DADA::Config;
 use DADA::App::Guts;
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_baseSQL};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList};
 
 
 

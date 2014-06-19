@@ -484,13 +484,13 @@ $DEBUG_TRACE ||= {
     DADA_App_FormatMessages            => 0,
     DADA_App_Subscriptions             => 0,
     DADA_Logging_Clickthrough          => 0,
+    DADA_Mail_MailOut                  => 0,
+    DADA_Mail_Send                     => 0,
+    DADA_MailingList                   => 0,
+	DADA_MailingList_MessageDrafts     => 0, 
     DADA_Profile                       => 0,
     DADA_Profile_Fields                => 0,
     DADA_Profile_Session               => 0,
-    DADA_Mail_MailOut                  => 0,
-    DADA_Mail_Send                     => 0,
-    DADA_MailingList_baseSQL           => 0,
-	DADA_MailingList_MessageDrafts     => 0, 
 
 };
 

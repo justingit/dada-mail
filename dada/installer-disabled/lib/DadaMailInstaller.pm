@@ -1673,21 +1673,23 @@ sub create_dada_config_file {
 	if($q->param('configure_debugging') == 1){ 
 		$debugging_options_params->{configure_debugging} = 1;
 		my @debug_options = qw(
-			DADA_App_DBIHandle
-			DADA_App_Subscriptions
-			DADA_Logging_Clickthrough
-			DADA_Profile
-			DADA_Profile_Fields
-			DADA_Profile_Session
-			DADA_Mail_MailOut
-			DADA_Mail_Send
-			DADA_App_BounceHandler_ScoreKeeper
-			DADA_MailingList_baseSQL
-			DBI
-			HTML_TEMPLATE
-			MIME_LITE_HTML
-			MAIL_POP3CLIENT
-			NET_SMTP
+            DADA_App_BounceHandler          
+            DADA_App_DBIHandle              
+            DADA_App_FormatMessages         
+            DADA_App_Subscriptions          
+            DADA_Logging_Clickthrough       
+            DADA_Mail_MailOut               
+            DADA_Mail_Send                  
+            DADA_MailingList                
+            DADA_MailingList_MessageDrafts  
+            DADA_Profile                    
+            DADA_Profile_Fields             
+            DADA_Profile_Session            
+            DBI
+            HTML_TEMPLATE
+            MIME_LITE_HTML
+            MAIL_POP3CLIENT
+            NET_SMTP
 		);
 
 		for my $debug_option(@debug_options) { 

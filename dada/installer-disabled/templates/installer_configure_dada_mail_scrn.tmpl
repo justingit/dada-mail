@@ -1016,6 +1016,13 @@ editors also have the ability to make simple HTML tables for basic layouts.
 
 <div id="debugging_options">
 <fieldset> 
+    
+	<p>
+		<input type="checkbox" name="debugging_options_DADA_App_BounceHandler" id="debugging_options_DADA_App_BounceHandler" value="1"  />			
+		<label for="debugging_options_DADA_App_BounceHandler">
+			DADA::App::BounceHandler
+		</label>
+	</p>
 	
 	<p>
 		<input type="checkbox" name="debugging_options_DADA_App_DBIHandle" id="debugging_options_DADA_App_DBIHandle" value="1"  />			
@@ -1023,6 +1030,15 @@ editors also have the ability to make simple HTML tables for basic layouts.
 			DADA::App::DBIHandle
 		</label>
 	</p>
+
+	<p>
+		<input type="checkbox" name="debugging_options_DADA_App_FormatMessages" id="debugging_options_DADA_App_FormatMessages" value="1"  />			
+		<label for="debugging_options_DADA_App_FormatMessages">
+			DADA::App::FormatMessages
+		</label>
+	</p>
+
+
 
 	<p>
 		<input type="checkbox" name="debugging_options_DADA_App_Subscriptions" id="debugging_options_DADA_App_Subscriptions" value="1"  />			
@@ -1044,21 +1060,7 @@ editors also have the ability to make simple HTML tables for basic layouts.
 			DADA::Profile
 		</label>
 	</p>
-
-	<p>
-		<input type="checkbox" name="debugging_options_DADA_Profile_Fields" id="debugging_options_DADA_Profile_Fields" value="1"  />			
-		<label for="debugging_options_DADA_Profile_Fields">
-			DADA::Profile::Fields
-		</label>
-	</p>
-
-	<p>
-		<input type="checkbox" name="debugging_options_DADA_Profile_Session" id="debugging_options_DADA_Profile_Session" value="1"  />			
-		<label for="debugging_options_DADA_Profile_Session">
-			DADA::Profile::Session
-		</label>
-	</p>
-
+	
 	<p>
 		<input type="checkbox" name="debugging_options_DADA_Mail_MailOut" id="debugging_options_DADA_Mail_MailOut" value="1"  />			
 		<label for="debugging_options_DADA_Mail_MailOut">
@@ -1074,15 +1076,8 @@ editors also have the ability to make simple HTML tables for basic layouts.
 	</p>
 
 	<p>
-		<input type="checkbox" name="debugging_options_DADA_App_BounceHandler_ScoreKeeper" id="debugging_options_DADA_App_BounceHandler_ScoreKeeper" value="1"  />			
-		<label for="debugging_options_DADA_App_BounceHandler_ScoreKeeper">
-			DADA::App::BounceHandler::ScoreKeeper
-		</label>
-	</p>
-
-	<p>
-		<input type="checkbox" name="debugging_options_DADA_MailingList_baseSQL" id="debugging_options_DADA_MailingList_baseSQL" value="1"  />			
-		<label for="debugging_options_DADA_MailingList_baseSQL">
+		<input type="checkbox" name="debugging_options_DADA_MailingList" id="debugging_options_DADA_MailingList" value="1"  />			
+		<label for="debugging_options_DADA_MailingList">
 			DADA::MailingList::baseSQL
 		</label>
 	</p>
@@ -1093,6 +1088,29 @@ editors also have the ability to make simple HTML tables for basic layouts.
 			DADA::MailingList::MessageDrafts
 		</label>
 	</p>
+
+	<p>
+		<input type="checkbox" name="debugging_options_DADA_Profile" id="debugging_options_DADA_Profile" value="1"  />			
+		<label for="debugging_options_DADA_Profile">
+			DADA::Profile
+		</label>
+	</p>
+
+
+	<p>
+		<input type="checkbox" name="debugging_options_DADA_Profile_Fields" id="debugging_options_DADA_Profile_Fields" value="1"  />			
+		<label for="debugging_options_DADA_Profile_Fields">
+			DADA::Profile::Fields
+		</label>
+	</p>
+
+	<p>
+		<input type="checkbox" name="debugging_options_DADA_Profile_Session" id="debugging_options_DADA_Profile_Session" value="1"  />			
+		<label for="debugging_options_DADA_Profile_Session">
+			DADA::Profile::Session
+		</label>
+	</p>
+
 
 	<p>
 		<input type="checkbox" name="debugging_options_DBI" id="debugging_options_DBI" value="1"  />			
