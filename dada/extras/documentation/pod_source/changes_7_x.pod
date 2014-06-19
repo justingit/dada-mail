@@ -1,5 +1,39 @@
 =pod
 
+=head2 7.0.5
+
+=head2 Summary 7.0.5
+
+This bugfix release focuses on a few different parts of Dada Mail, to make thingks work soother: 
+
+=over
+
+=item * The Installer was given some TLC, with code being cleaned up, and a few extra options added - look 
+for new advanced configuration options for Bridge and Bounce Handler, as well as some of the Debug Trace options. 
+
+=item * The Bounce Handler parsing engine has seen some improvements, to work on some recently submitted bounce messages, that it was 
+otherwise not parsing correctly. It's ultimately a work in progress, but we're very happy with how things are continually shaping up
+
+=item * We've work with Bridge, and making sure some of the emails it creates shows message Subjects encoded correctly. There 
+was some issues with UTF-8 strings showing either the original encoded, or being double-encoded. 
+
+=item * The, "Backdate" option or archving in the Send a Message (and friends) screen should default to the current date
+
+=back
+
+Also the bugs fixed below: 
+
+=head2 Bugfixes 7.0.5
+
+=head3 Partial list sending settings not saving in Scheduled Mailer
+
+L<https://github.com/justingit/dada-mail/issues/443>
+
+=head3 On Behalf Of (p.p. Mode) can corrupt MIME Words-encoded header phrases.
+
+L<https://github.com/justingit/dada-mail/issues/444>
+
+
 =head2 7.0.4
 
 =head2 Summary 7.0.4
