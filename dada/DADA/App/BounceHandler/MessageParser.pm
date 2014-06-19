@@ -90,9 +90,8 @@ sub run_all_parses {
 			warn "diagnostics: \n" . Data::Dumper::Dumper($ses_diagnostics)
 				if $t; 
 			
-	        %{$diagnostics} = ( %{$diagnostics}, %{$ses_diagnostics} )
-	          if $ses_diagnostics;
-	}
+			$diagnostics = $self->_fold_in_diagnostics($diagnostics, $ses_diagnostics); 
+		}
 	elsif($self->isa_rfc6522_bounce($entity)) { 
 		warn "isa_rfc6522_bounce"
 			if $t; 
@@ -109,19 +108,26 @@ sub run_all_parses {
 			
 		warn "diagnostics: \n" . Data::Dumper::Dumper($rfc6522_diagnostics)
 			if $t; 
-		
-        %{$diagnostics} = ( %{$diagnostics}, %{$rfc6522_diagnostics} )
-          if $rfc6522_diagnostics;
+			
+          $diagnostics = $self->_fold_in_diagnostics($diagnostics, $rfc6522_diagnostics); 
+          
 	} 
-	elsif($self->bounce_from_secureserver_dot_net($entity)){ 
-		
+	else { 
+	    
+	}
+	
+	if(defined($email) && length($email) < 1) { undef($email); }
+    if(defined($list) && length($list) < 1) { undef($list);}
+    
+    if ( ( !defined($list) ) || ( !defined($email) ) || !keys %{$diagnostics} ) {
+
 		warn "bounce_from_secureserver_dot_net"
 			if $t; 
-		
-		
+
+
 		  my ( $ss_list, $ss_email, $ss_diagnostics ) =
 	          $self->parse_for_secureserver_dot_net($entity);
-	
+
 			warn "list: $ss_list" 
 				if $t; 
 			warn "email: $ss_email" 
@@ -129,24 +135,18 @@ sub run_all_parses {
 
 			warn "diagnostics: \n" . Data::Dumper::Dumper($ss_diagnostics)
 				if $t; 
-	
+
 	        $list  ||= $ss_list;
 	        $email ||= $ss_email;
+
+	        $diagnostics = $self->_fold_in_diagnostics($diagnostics, $ss_diagnostics); 
+
 	
-	
-	        %{$diagnostics} = ( %{$diagnostics}, %{$ss_diagnostics} )
-	          if $ss_diagnostics;
-	}
-	else {
-	    # ... 
-	}	
-	if(!defined($list) || !defined($email)){ 
-#	    use Data::Dumper; 
-#	    die Dumper(
-#	        [
-#	            $list, $email, $diagnostics
-#	        ]
-#	    ); 
+	if(defined($email) && length($email) < 1) { undef($email); }
+    if(defined($list) && length($list) < 1) { undef($list);}
+    
+    if ( ( !defined($list) ) || ( !defined($email) ) || !keys %{$diagnostics} ) {
+
 		warn "generic_parse"
 			if $t; 
 		
@@ -165,14 +165,17 @@ sub run_all_parses {
 		if(!$email){ 
 	    	$email = $gp_email;
 	    }
-	    %{$diagnostics} = ( %{$diagnostics}, %{$gp_diagnostics} )
-			if $gp_diagnostics;
+	    
+	    $diagnostics = $self->_fold_in_diagnostics($diagnostics, $gp_diagnostics); 
 
 		# This should really do the same thing, first look for tell-tale signs
 		# that the bounce is a qmail-like bounce, before parsing it out. 
 		# (and along down the line...)
-
-	    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
+    
+    }
+        if(defined($email) && length($email) < 1) { undef($email); }
+        if(defined($list) && length($list) < 1) { undef($list);}
+	    if ( ( !defined($list) ) || ( !defined($email) ) || !keys %{$diagnostics} ) {
 		
 			warn "parse_for_qmail"
 				if $t; 
@@ -189,12 +192,14 @@ sub run_all_parses {
 	
 	        $list  ||= $qmail_list;
 	        $email ||= $qmail_email;
-	        %{$diagnostics} = (%{$qmail_diagnostics}, %{$diagnostics})
-	          if $qmail_diagnostics;
+	        $diagnostics = $self->_fold_in_diagnostics($diagnostics, $qmail_diagnostics); 
 	    }
 
-	    if ( ( !$list ) || ( !$email ) || !keys %$diagnostics ) {
-
+        if(defined($email) && length($email) < 1) { undef($email); }
+        if(defined($list) && length($list) < 1) { undef($list);}
+	    
+	    if ( ( !defined($list) ) || ( !defined($email) ) || !keys %{$diagnostics} ) {
+	        
 			warn "parse_for_exim"
 				if $t; 
 
@@ -210,17 +215,15 @@ sub run_all_parses {
 				
 				$list  ||= $exim_list;
 	        	$email ||= $exim_email;				
-			if(!keys %$diagnostics) { 
-				$diagnostics = $exim_diagnostics; 
-			}
-			elsif(keys %$exim_diagnostics) { 
-				%{$diagnostics} = (%{$exim_diagnostics}, %{$diagnostics} );
-			}
-			
+	        	
+			$diagnostics = $self->_fold_in_diagnostics($diagnostics, $exim_diagnostics); 
+
 	    }
 
-	    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
-
+        if(defined($email) && length($email) < 1) { undef($email); }
+        if(defined($list) && length($list) < 1) { undef($list);}
+        
+	    if ( ( !defined($list) ) || ( !defined($email) ) || !keys %{$diagnostics} ) {
 			warn "parse_for_f__king_exchange"
 				if $t; 
 				
@@ -236,11 +239,14 @@ sub run_all_parses {
 	
 	        $list  ||= $ms_list;
 	        $email ||= $ms_email;
-	        %{$diagnostics} = (%{$ms_diagnostics},  %{$diagnostics} )
-	          if $ms_diagnostics;
+	        
+	        $diagnostics = $self->_fold_in_diagnostics($diagnostics, $ms_diagnostics); 
+			
 	    }
-	    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
 
+        if(defined($email) && length($email) < 1) { undef($email); }
+        if(defined($list) && length($list) < 1) { undef($list);}
+	    if ( ( !defined($list) ) || ( !defined($email) ) || !keys %{$diagnostics} ) {
 			warn "parse_for_novell"
 				if $t; 
 				
@@ -257,48 +263,63 @@ sub run_all_parses {
 	
 	        $list  ||= $nv_list;
 	        $email ||= $nv_email;
-	        %{$diagnostics} = (  %{$nv_diagnostics}, %{$diagnostics} )
-	          if $nv_diagnostics;
+            $diagnostics = $self->_fold_in_diagnostics($diagnostics, $nv_diagnostics); 
+  	        
+  	        
 	    }
 
-	    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
-
+        if(defined($email) && length($email) < 1) { undef($email); }
+        if(defined($list) && length($list) < 1) { undef($list);}
+        
+	    if ( ( !defined($list) ) || ( !defined($email) ) || !keys %{$diagnostics} ) {
+	        
 	        my ( $g_list, $g_email, $g_diagnostics ) =
 	          $self->parse_for_gordano($entity);
 	        $list  ||= $g_list;
 	        $email ||= $g_email;
-	        %{$diagnostics} = (%{$g_diagnostics}, %{$diagnostics})
-	          if $g_diagnostics;
+	        $diagnostics = $self->_fold_in_diagnostics($diagnostics, $g_diagnostics); 
+              
+              
 	    }
 
-	    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
-
+        if(defined($email) && length($email) < 1) { undef($email); }
+        if(defined($list) && length($list) < 1) { undef($list);}
+        
+	    if ( ( !defined($list) ) || ( !defined($email) ) || !keys %{$diagnostics} ) {
+	        
 	        my ( $y_list, $y_email, $y_diagnostics ) =
 	          $self->parse_for_overquota_yahoo($entity);
 	        $list  ||= $y_list;
 	        $email ||= $y_email;
-	        %{$diagnostics} = (%{$y_diagnostics} ,%{$diagnostics} )
-	          if $y_diagnostics;
+
+	        $diagnostics = $self->_fold_in_diagnostics($diagnostics, $y_diagnostics); 
+  	        
 	    }
 
-	    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
-
+        if(defined($email) && length($email) < 1) { undef($email); }
+        if(defined($list) && length($list) < 1) { undef($list);}
+        
+	    if ( ( !defined($list) ) || ( !defined($email) ) || !keys %{$diagnostics} ) {
 	        my ( $el_list, $el_email, $el_diagnostics ) =
 	          $self->parse_for_earthlink($entity);
 	        $list  ||= $el_list;
 	        $email ||= $el_email;
-	        %{$diagnostics} = (%{$el_diagnostics}, %{$diagnostics} )
-	          if $el_diagnostics;
+	        
+	        $diagnostics = $self->_fold_in_diagnostics($diagnostics, $el_diagnostics); 
+
 	    }
 
-	    if ( ( !$list ) || ( !$email ) || !keys %{$diagnostics} ) {
-	        my ( $wl_list, $wl_email, $wl_diagnostics ) =
+        if(defined($email) && length($email) < 1) { undef($email); }
+        if(defined($list) && length($list) < 1) { undef($list);}
+        
+	    if ( ( !defined($list) ) || ( !defined($email) ) || !keys %{$diagnostics} ) {	        my ( $wl_list, $wl_email, $wl_diagnostics ) =
 	          $self->parse_for_windows_live($entity);
 
 	        $list  ||= $wl_list;
 	        $email ||= $wl_email;
-	        %{$diagnostics} = (%{$wl_diagnostics}, %{$diagnostics} )
-	          if $wl_diagnostics;
+	        
+	        $diagnostics = $self->_fold_in_diagnostics($diagnostics, $wl_diagnostics); 
+
 	    }
 
 	    # This is a special case - since this outside module adds pseudo diagonistic
@@ -343,6 +364,38 @@ sub run_all_parses {
 	
     return ( $email, $list, $diagnostics );
 }
+
+sub _fold_in_diagnostics {
+    
+    my $self   = shift; 
+    my $orig_d = shift || {}; 
+    my $new_d  = shift || {}; 
+        
+    foreach my $key2 ( keys %{$new_d} )
+        {
+        if( exists $orig_d->{$key2} )
+            {
+          #  warn "Key [$key2] is in both hashes!";
+            
+                if(length($new_d->{$key2}) > 0){ 
+                    $orig_d->{$key2} = $new_d->{$key2};
+                }
+                else { 
+                   # warn "keeping old value."; 
+                }
+            }
+        else
+            {
+            $orig_d->{$key2} = $new_d->{$key2};
+            }
+        }
+        
+    use Data::Dumper; 
+    warn 'diag now looks like this: ' . Dumper($orig_d); 
+    return $orig_d; 
+        
+}
+
 
 sub find_verp {
 
@@ -898,6 +951,9 @@ sub parse_for_secureserver_dot_net {
 	
 	# This seems to be qmail. Sometimes. 
 	
+	warn 'parse_for_secureserver_dot_net ' 
+	    if $t; 
+	    
 	my $self   = shift; 
 	my $entity = shift; 
 	
@@ -908,8 +964,7 @@ sub parse_for_secureserver_dot_net {
 	# <subscriber@example.com>:
 	# child status 100...The e-mail message could not be delivered because the user's mailfolder is full.
 	
-	
-	
+
 	my @parts = $entity->parts; 
 	if(scalar @parts == 0){ 
 		my $body =  $entity->bodyhandle; 
@@ -1010,7 +1065,7 @@ sub parse_for_secureserver_dot_net {
 #		my ( $gp_list, $gp_email, $gp_diagnostics ) = $self->generic_parse($copy_entity);
 
 		my $gp_list   = $self->list_in_list_headers($copy_entity);
-
+        warn '$gp_list ' . $gp_list; 
 
 	    $list  ||= $gp_list;
 #		$email ||= $gp_email; 
