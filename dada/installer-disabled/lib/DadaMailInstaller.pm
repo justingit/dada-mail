@@ -1,5 +1,8 @@
 package DadaMailInstaller; 
 
+
+
+
 BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1;}
 #FindBin
 use lib qw(
@@ -220,13 +223,13 @@ my %bounce_handler_plugin_configs = (
     Username                 => {default => '',     if_blank => 'undef'}, 
     Password                 => {default => '',     if_blank => 'undef'}, 
     Port                     => {default => 'AUTO', if_blank => 'AUTO'},
-    USESSL                   => {default => '0',    if_blank => 0}, 
+    USESSL                   => {default => 0,    if_blank => 0}, 
     AUTH_MODE                => {default => 'BEST', if_blank => 'BEST'},
     MessagesAtOnce           => {default => '100',  if_blank => '100'},
     Plugin_URL               => {default => '',     if_blank => 'undef'}, 
-    Allow_Manual_Run         => {default => '1',    if_blank => 0},
+    Allow_Manual_Run         => {default => 1,    if_blank => 0},
     Manual_Run_Passcode      => {default => '',     if_blank => 'undef'},
-    Enable_POP3_File_Locking => {default => '1',    if_blank => 0},
+    Enable_POP3_File_Locking => {default => 1,    if_blank => 0},
 ); 
 
 my %bridge_plugin_configs = (
@@ -808,10 +811,17 @@ sub grab_former_config_vals {
     # Bridge
     if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bridge})) { 
     	for my $config(keys %bridge_plugin_configs) { 
-    	    if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{$config})){ 
-    		    $local_q->param('bridge_' . $config, $BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{$config}); 
+    	    if(
+    	       exists($BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{$config})
+    	     ){ 
+    	        if(defined($BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{$config})) {          	    
+    		        $local_q->param('bridge_' . $config, $BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{$config}); 
+    		    }
+    		    else { 
+    		        $local_q->param('bridge_' . $config, undef); 
+    		    }
     		}
-    		else {     		    
+    		else {
     		    $local_q->param('bridge_' . $config, $bridge_plugin_configs{$config}->{default});
     		}
     	}
@@ -823,8 +833,16 @@ sub grab_former_config_vals {
 	}
 	if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler})) {	
     	for my $config(keys %bounce_handler_plugin_configs) { 
-    	    if(exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{$config})){ 
-    		    $local_q->param('bounce_handler_' . $config, $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{$config}); 
+    	    if(
+    	            exists($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{$config})
+    	    ){ 
+    	        if(defined($BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{$config})) { 
+    		        $local_q->param('bounce_handler_' . $config, $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{$config}); 
+    		    }
+    		    else { 
+    		        $local_q->param('bounce_handler_' . $config, undef); 
+    		        
+    		    }
     		}
     		else {     		    
     		    $local_q->param('bounce_handler_' . $config, $bounce_handler_plugin_configs{$config}->{default});    		    
@@ -1760,13 +1778,13 @@ sub create_dada_config_file {
         $amazon_ses_params->{Allowed_Sending_Quota_Percentage} = strip($q->param('amazon_ses_Allowed_Sending_Quota_Percentage')); 
 	}
 
-    my $bounce_handler_params = {}; 
+    my $bounce_handler_params = {};         
     if($q->param('install_bounce_handler') == 1){ 
         
         $cut_tag_params->{cut_list_settings_default} = 0; 
         $cut_tag_params->{cut_plugin_configs}        = 0;
     	
-        $bounce_handler_params->{install_bridge} = 1; 
+        $bounce_handler_params->{install_bounce_handler} = 1; 
         foreach my $config(keys %bounce_handler_plugin_configs) { 
             if(defined($q->param('bounce_handler_' . $config)) && ($q->param('bounce_handler_' . $config) ne '')) { 
                 $bounce_handler_params->{'bounce_handler_' . $config} = _sq(strip($q->param('bounce_handler_' . $config)));
@@ -1779,7 +1797,7 @@ sub create_dada_config_file {
         # This one's special: 
         $bounce_handler_params->{'bounce_handler_Address'} = strip($q->param('bounce_handler_Address')); 
         
-    }
+    }    
 	my $bridge_params = {}; 
 	if($q->param('install_bridge') == 1){ 
 	    
@@ -1787,7 +1805,7 @@ sub create_dada_config_file {
         
         $bridge_params->{install_bridge} = 1; 
         foreach my $config(keys %bridge_plugin_configs) { 
-            if(defined($q->param('bridge_' . $config))  && ($q->param('bounce_handler_' . $config) ne '')) { 
+            if(defined($q->param('bridge_' . $config))  && ($q->param('bridge_' . $config) ne '')) { 
                 $bridge_params->{'bridge_' . $config} = _sq(strip($q->param('bridge_' . $config)));
             }
             else { 
@@ -3645,8 +3663,10 @@ sub clean_up_var {
 sub _sq { 
     my $str = shift; 
     return if $str eq 'undef'; # literally, "undef"; 
-    return if $str eq '0'; 
-    return if $str eq '1'; 
+#    return if $str == 0; 
+#    return if $str == 1; 
+    return $str if $str eq '0'; 
+    return $str if $str eq '1'; 
     
     $str =~ s/\'/\\\'./g;
     return "'" . $str . "'"; 
