@@ -212,12 +212,12 @@
            <table border="0">
              <tr> 
              <td>     
-                 <input type="checkbox">
+                 <input type="checkbox" name="tracker_update_profiles_w_geo_ip_data" id="tracker_update_profiles_w_geo_ip_data" value="1" <!-- tmpl_if list_settings.tracker_update_profiles_w_geo_ip_data -->checked="checked"<!-- /tmpl_if --> />
             </td>
             <td>    
                <p>
-                   <label>
-                       Update Profiles, after opens/clickthroughs
+                   <label for="tracker_update_profiles_w_geo_ip_data">
+                       Update Profiles, after Opens/Clickthroughs
                    </label> 
                </p>
               </td>
@@ -230,7 +230,16 @@
                 		    <!-- tmpl_loop field_names --> 
                             <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>     
                 		        <td width="25">
-                                    <input type="checkbox" id="<!-- tmpl_var name escape="HTML" -->.enabled" class="field_checkbox" data-target="<!-- tmpl_var name escape="HTML" -->_popup_menu">
+                                    <input type="checkbox" 
+                                          id="<!-- tmpl_var name escape="HTML" -->.enabled" 
+                                        name="<!-- tmpl_var name escape="HTML" -->.enabled" 
+                                        class="field_checkbox" 
+                                        data-target="<!-- tmpl_var name escape="HTML" -->_popup_menu" 
+                                        value="1" 
+                                        <!-- tmpl_if enabled -->
+                                            checked="checked"
+                                        <!-- /tmpl_if --> 
+                                    >
                                 </td> 
                                 <td> 
                                     <label for="<!-- tmpl_var name escape="HTML" -->.enabled"><!-- tmpl_var label  escape="HTML" --> (<!-- tmpl_var name escape="HTML" -->):

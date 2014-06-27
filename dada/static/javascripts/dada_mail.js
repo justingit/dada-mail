@@ -959,8 +959,10 @@ $(document).ready(function() {
 		
 		var field_name_group_selected = [];
 		$('div#field_name_group input[type=checkbox]').each(function() {
-		   if ($(this).checked) {
-				/* well, you know: nothing */
+		   if ($(this).prop("checked") === true) {
+				if ($('#' + dt).is(':hidden')) {
+					$('#' + dt).show('fade');
+				}
 		   }
 		   else {
 				var dt = $(this).attr("data-target");

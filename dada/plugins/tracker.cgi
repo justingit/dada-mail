@@ -153,22 +153,21 @@ sub default {
 		$can_use_auto_redirect_tag = 0; 
 	}	
 	
-	
+	require DADA::ProfileFieldsManager; 
 	my $dpfm               = DADA::ProfileFieldsManager->new;
     my $field_attr         = $dpfm->get_all_field_attributes;
     my $geo_ip_fields      = [];
     
     # thawed_geo_ip_profile_field_settings
-    #my $thawed_gip = $ls->_dd_thaw($ls->param('thawed_geo_ip_profile_field_settings')); 
-    #{ 
-    #   enabled => 0, 
-    #   fields  => {
-    #        field_name_1 => {
-    #            geo_data => 'city', 
-    #        }
-    #   }
-    #}
+#    warn '$ls->param(\'tracker_update_profile_fields_ip_dada_meta\') ' . $ls->param('tracker_update_profile_fields_ip_dada_meta');
+
+    my $thawed_gip = {}; 
+
+    my $meta = $ls->param('tracker_update_profile_fields_ip_dada_meta'); 
     
+    if(length($meta) > 4){ 
+        $thawed_gip = $ls->_dd_thaw($meta); 
+    }
     require Geo::IP::PurePerl;
     my $gi = Geo::IP::PurePerl->new($Plugin_Config->{GeoLiteCity_Db});
     my ($country_code,$country_code3,$country_name,$region,
@@ -176,6 +175,7 @@ sub default {
         $metro_code,$area_code ) = $gi->get_city_record($ENV{REMOTE_ADDR});
         
     my $geo_ip_data_order = [qw(
+        ip_address
         country_code 
         country_code3 
         country_name   
@@ -189,29 +189,31 @@ sub default {
     )]; 
     
     my $geo_ip_data_types = {
-        'country_code'   => 'Country Code 2 (' . $country_code  .')', 
-        'country_code3'  => 'Country Code 3 (' . $country_code3 .')',
-        'country_name'   => 'Country Name   (' . $country_name  .')',
-        'region'         => 'Region         (' . $region        .')',
-        'city'           => 'City           (' . $city          .')',
-        'postal_code'    => 'Postal Code    (' . $postal_code   .')',
-        'latitude'       => 'Latitude       (' . $latitude      .')',
-        'longitude'      => 'Longitude      (' . $longitude     .')',
-        'metro_code'     => 'Metro Code     (' . $metro_code    .')',
-        'area_code'      => 'Area Code      (' . $area_code     .')',
+        'ip_address'     => 'IP Address     (' . $ENV{REMOTE_ADDR} . ')',
+        'country_code'   => 'Country Code 2 (' . $country_code     .')', 
+        'country_code3'  => 'Country Code 3 (' . $country_code3    .')',
+        'country_name'   => 'Country Name   (' . $country_name     .')',
+        'region'         => 'Region         (' . $region           .')',
+        'city'           => 'City           (' . $city             .')',
+        'postal_code'    => 'Postal Code    (' . $postal_code      .')',
+        'latitude'       => 'Latitude       (' . $latitude         .')',
+        'longitude'      => 'Longitude      (' . $longitude        .')',
+        'metro_code'     => 'Metro Code     (' . $metro_code       .')',
+        'area_code'      => 'Area Code      (' . $area_code        .')',
     }; 
     my $field_names = [];
-    for (@{$dpfm->fields( { -show_hidden_fields => 0, } )}) {
+    for (@{$dpfm->fields( { -show_hidden_fields => 1, } )}) {
         push( @$field_names,        
             { 
-                name => $_,
-                label => $field_attr->{$_}->{label},
+                name        => $_,
+                label       => $field_attr->{$_}->{label},
+                enabled     => $thawed_gip->{$_}->{enabled},  
                 popup_menu  => $q->popup_menu(
-                    -default => 'none', 
-                    -name   => $_ . '.geoip_data', 
-                    -id   => $_   . '.geoip_data', 
-                    -values =>$geo_ip_data_order, 
-                    -labels => $geo_ip_data_types, 
+                    -default => $thawed_gip->{$_}->{geoip_data_type}, 
+                    -name    => $_ . '.geoip_data_type', 
+                    -id      => $_   . '.geoip_data_type', 
+                    -values  =>$geo_ip_data_order, 
+                    -labels  => $geo_ip_data_types, 
                 ) 
             } );
     }
@@ -720,9 +722,32 @@ sub edit_prefs {
                 tracker_track_email                             => 0,
                 tracker_clean_up_reports                        => 0,
                 tracker_show_message_reports_in_mailing_monitor => 0,
+                
+                tracker_update_profiles_w_geo_ip_data           => 0, 
+                
             }
         }
     );
+    
+    
+    my $tracker_update_profiles_geo_ip_data = {};     
+    require DADA::ProfileFieldsManager; 
+	my $dpfm               = DADA::ProfileFieldsManager->new;
+    for (@{$dpfm->fields( { -show_hidden_fields => 1, } )}) {
+        my $enabled       = $q->param($_ . '.enabled')       || 0; 
+        my $geoip_data_type = $q->param($_ . '.geoip_data_type') || ''; 
+        $tracker_update_profiles_geo_ip_data->{$_} = {
+            enabled          => $enabled, 
+            geoip_data_type  => $geoip_data_type, 
+        };
+    }
+    warn '$ls->_dd_freeze($tracker_update_profiles_geo_ip_data)' . $ls->_dd_freeze($tracker_update_profiles_geo_ip_data); 
+    $ls->save(
+        {
+            tracker_update_profile_fields_ip_dada_meta => $ls->_dd_freeze($tracker_update_profiles_geo_ip_data)
+        }
+    ); 
+    
     require DADA::App::DataCache;
     my $dc = DADA::App::DataCache->new;
     $dc->flush( { -list => $list } );

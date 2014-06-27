@@ -822,10 +822,11 @@ sub _dd_thaw {
     my $data = shift;
 
     # To make -T happy
-    my ($safe_string) = $data =~ m/^(.*)$/s;
+    my ($safe_string) =  $data =~ m/^(.*)$/s;
+    $safe_string = 'my ' . $safe_string; 
     my $rv = eval($safe_string);
     if ($@) {
-        croak "couldn't thaw data!";
+        croak "couldn't thaw data! - $@\n" . $data;
     }
     return $rv;
 }
