@@ -202,6 +202,55 @@
 		Message Clickthroughs, and Opens will also track the subscriber's email address. Tracking data with the user's email address allows
 		more refined email analytics and reports. 
    </p>
+   
+   <div id="tracker_track_email_options"> 
+       
+       <fieldset> 
+           <legend>Profile Updates</legend>
+       
+       
+           <table border="0">
+             <tr> 
+             <td>     
+                 <input type="checkbox">
+            </td>
+            <td>    
+               <p>
+                   <label>
+                       Update Profiles, after opens/clickthroughs
+                   </label> 
+               </p>
+              </td>
+          </tr>
+          <td>&nbsp;</td> 
+          
+              <td>
+                   <div id="field_name_group">                
+                		<table class="stripedtable" style="width:auto">
+                		    <!-- tmpl_loop field_names --> 
+                            <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>     
+                		        <td width="25">
+                                    <input type="checkbox" id="<!-- tmpl_var name escape="HTML" -->.enabled" class="field_checkbox" data-target="<!-- tmpl_var name escape="HTML" -->_popup_menu">
+                                </td> 
+                                <td> 
+                                    <label for="<!-- tmpl_var name escape="HTML" -->.enabled"><!-- tmpl_var label  escape="HTML" --> (<!-- tmpl_var name escape="HTML" -->):
+                                </td>
+                                <td> 
+                                    <div id="<!-- tmpl_var name escape="HTML" -->_popup_menu">
+                                        <!-- tmpl_var popup_menu -->
+                                    </div>
+                               </td>
+                           </tr> 
+                           <!-- /tmpl_loop --> 
+                        </table> 
+                    </div> 
+                </td> 
+            </tr> 
+        </table> 
+        
+       </fieldset> 
+   </div> 
+   
   </td>
   </tr> 
 
@@ -255,6 +304,9 @@
 <div class="floatclear"></div>
 </form> 
 </fieldset> 
+
+
+
 
 
 <!-- end plugins/tracker/default.tmpl -->

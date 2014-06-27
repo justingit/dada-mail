@@ -152,7 +152,70 @@ sub default {
 	if($@){ 
 		$can_use_auto_redirect_tag = 0; 
 	}	
-		 	 
+	
+	
+	my $dpfm               = DADA::ProfileFieldsManager->new;
+    my $field_attr         = $dpfm->get_all_field_attributes;
+    my $geo_ip_fields      = [];
+    
+    # thawed_geo_ip_profile_field_settings
+    #my $thawed_gip = $ls->_dd_thaw($ls->param('thawed_geo_ip_profile_field_settings')); 
+    #{ 
+    #   enabled => 0, 
+    #   fields  => {
+    #        field_name_1 => {
+    #            geo_data => 'city', 
+    #        }
+    #   }
+    #}
+    
+    require Geo::IP::PurePerl;
+    my $gi = Geo::IP::PurePerl->new($Plugin_Config->{GeoLiteCity_Db});
+    my ($country_code,$country_code3,$country_name,$region,
+        $city,$postal_code,$latitude,$longitude,
+        $metro_code,$area_code ) = $gi->get_city_record($ENV{REMOTE_ADDR});
+        
+    my $geo_ip_data_order = [qw(
+        country_code 
+        country_code3 
+        country_name   
+        region         
+        city           
+        postal_code   
+        latitude       
+        longitude      
+        metro_code     
+        area_code      
+    )]; 
+    
+    my $geo_ip_data_types = {
+        'country_code'   => 'Country Code 2 (' . $country_code  .')', 
+        'country_code3'  => 'Country Code 3 (' . $country_code3 .')',
+        'country_name'   => 'Country Name   (' . $country_name  .')',
+        'region'         => 'Region         (' . $region        .')',
+        'city'           => 'City           (' . $city          .')',
+        'postal_code'    => 'Postal Code    (' . $postal_code   .')',
+        'latitude'       => 'Latitude       (' . $latitude      .')',
+        'longitude'      => 'Longitude      (' . $longitude     .')',
+        'metro_code'     => 'Metro Code     (' . $metro_code    .')',
+        'area_code'      => 'Area Code      (' . $area_code     .')',
+    }; 
+    my $field_names = [];
+    for (@{$dpfm->fields( { -show_hidden_fields => 0, } )}) {
+        push( @$field_names,        
+            { 
+                name => $_,
+                label => $field_attr->{$_}->{label},
+                popup_menu  => $q->popup_menu(
+                    -default => 'none', 
+                    -name   => $_ . '.geoip_data', 
+                    -id   => $_   . '.geoip_data', 
+                    -values =>$geo_ip_data_order, 
+                    -labels => $geo_ip_data_types, 
+                ) 
+            } );
+    }
+    
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
@@ -170,6 +233,7 @@ sub default {
 				tracker_record_view_count_widget => $tracker_record_view_count_widget, 
 				can_use_auto_redirect_tag        => $can_use_auto_redirect_tag, 
 				num_subscribers                  => commify($lh->num_subscribers), 
+				field_names                      => $field_names, 
             },
             -list_settings_vars_param => {
                 -list   => $list,
@@ -650,7 +714,6 @@ sub edit_prefs {
         {
             -associate => $q,
             -settings  => {
-
                 tracker_auto_parse_links                        => 0,
                 tracker_auto_parse_mailto_links                 => 0,
                 tracker_track_opens_method                      => undef,
