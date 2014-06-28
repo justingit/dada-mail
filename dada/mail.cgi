@@ -8063,6 +8063,13 @@ sub profile_fields {
             }
             else {
                 $pfm->edit_field_name( { -old_name => $orig_field, -new_name => $field } );
+                my $meta = $ls->param('tracker_update_profile_fields_ip_dada_meta'); 
+                if(length($meta) > 4){ 
+                    my $thawed_gip = $ls->_dd_thaw($meta); 
+                       $thawed_gip->{$field} = $thawed_gip->{$orig_field}; 
+                    delete($thawed_gip->{$orig_field}); 
+                    $ls->save({tracker_update_profile_fields_ip_dada_meta => $ls->_dd_freeze($thawed_gip)}); 
+                }
             }
             $pfm->save_field_attributes(
                 {
