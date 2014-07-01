@@ -2171,6 +2171,11 @@ function bridge_setup_list_email_type_params() {
 }
 
 function plugins_bridge_test_pop3() {
+	
+	var use_ssl = 0;
+	if($("#discussion_pop_use_ssl").prop("checked") === true){ 
+		use_ssl = 1; 
+	}
 	$.colorbox({
 		top: 0,
 		fixed: true,
@@ -2185,7 +2190,7 @@ function plugins_bridge_test_pop3() {
 			username: $("#discussion_pop_username").val(),
 			password: $("#discussion_pop_password").val(),
 			auth_mode: $("#discussion_pop_auth_mode option:selected").val(),
-			use_ssl: $("#discussion_pop_use_ssl").prop("checked")
+			use_ssl: use_ssl
 		}
 	});
 }
