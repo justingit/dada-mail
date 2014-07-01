@@ -172,7 +172,7 @@ sub default {
     my $gi = Geo::IP::PurePerl->new($Plugin_Config->{GeoLiteCity_Db});
     my ($country_code,$country_code3,$country_name,$region,
         $city,$postal_code,$latitude,$longitude,
-        $metro_code,$area_code ) = $gi->get_city_record($ENV{REMOTE_ADDR});
+        $metro_code,$area_code ) = $gi->get_city_record($rd->remote_addr);
         
     my $geo_ip_data_order = [qw(
         ip_address
@@ -189,7 +189,7 @@ sub default {
     )]; 
     
     my $geo_ip_data_types = {
-        'ip_address'     => 'IP Address     (' . $ENV{REMOTE_ADDR} . ')',
+        'ip_address'     => 'IP Address     (' . $rd->remote_addr . ')',
         'country_code'   => 'Country Code 2 (' . $country_code     .')', 
         'country_code3'  => 'Country Code 3 (' . $country_code3    .')',
         'country_name'   => 'Country Name   (' . $country_name     .')',

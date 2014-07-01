@@ -2674,7 +2674,14 @@ sub purge_log {
 
 
 sub remote_addr {
-    return $ENV{'REMOTE_ADDR'} || '127.0.0.1';
+    if(exists($ENV{HTTP_X_FORWARDED_FOR})){ 
+        # http://en.wikipedia.org/wiki/X-Forwarded-For
+        my ($client, $proxies) = split(',', $ENV{HTTP_X_FORWARDED_FOR}, 2); 
+        return $client; 
+    }
+    else { 
+        return $ENV{'REMOTE_ADDR'} || '127.0.0.1';
+    }
 }
 
 
