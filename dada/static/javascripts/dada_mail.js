@@ -7,8 +7,6 @@ var plainOverlayOptions = {
 };
 
 $(document).ready(function() {
-	
-
 				
 	$("a.modalbox").live("click", function(event) {
 		event.preventDefault();
@@ -151,29 +149,61 @@ $(document).ready(function() {
 			
 			$("body").on("click", ".savedraft", function(event) {
 				$("#button_action_notice").html('Working...');
+				var role = $(this).attr("data-role");
+				$("#draft_role").val(role);
 				var ds = save_draft(false); 
 				admin_menu_drafts_notification();
+				if($("#draft_role").val() == 'draft') { 
+					if($("#save_as_draft_button").val() == 'Save as: Draft') { 
+						$("#save_as_draft_button").val('Save Draft')
+					}
+					
+				}
 				$("#button_action_notice").html('&nbsp;');	
 				if(ds === true) { 
-					$.colorbox({
-						top: 0,
-						fixed: true,
-						initialHeight: 50,
-						maxHeight: 480,
-						maxWidth: 849,
-						width: 700,
-						opacity: 0.50,
-						href: $("#s_program_url").val(),
-						data: {
-							flavor: 'draft_saved_notification',
-							'screen': $("#f").val()
-						}
-					});
+					if($("#draft_role").val() == 'draft') {
+						$.colorbox({
+							top: 0,
+							fixed: true,
+							initialHeight: 50,
+							maxHeight: 480,
+							maxWidth: 849,
+							width: 700,
+							opacity: 0.50,
+							href: $("#s_program_url").val(),
+							data: {
+								flavor: 'draft_saved_notification',
+								'screen': $("#f").val(),
+								role: role
+							}
+						});
+					}
+					if($("#draft_role").val() == 'stationary') {
+						window.location.replace($("#s_program_url").val() + '?f=' + $("#f").val() + '&draft_id=' + $("#draft_id").val() + '&restore_from_draft=true&draft_role=stationary&done=1');
+
+					}
 				}
 				else if(ds === false) { 
 					//alert('Error Saving Draft: '); 
 				}
 			});
+			
+			$("body").on("click", ".create_from_stationary", function(event) {
+				$("#button_action_notice").html('Working...');
+				var role = $(this).attr("data-role");
+				$("#draft_role").val(role); // should be, "stationary", but... 
+				var ds = save_draft(false); 
+				if(ds === true) { 
+					create_from_stationary(); 
+				}
+				else if(ds === false) { 
+					//alert('Error Saving Draft: '); 
+				}
+			}); 
+			
+			
+			
+			
 		}
 			
 			
@@ -254,7 +284,14 @@ $(document).ready(function() {
 		$("body").on("click", ".cancel_message", function(event) {
 			$("#button_action_notice").html('Working...');
 			save_draft(false)
-			var confirm_msg = "Delete Draft Message?";
+			
+			var confirm_msg = '';
+			if($("#draft_role").val() == 'stationary') {
+				confirm_msg = "Delete Stationary Message?";
+			}
+			else { 		
+				confirm_msg = "Delete Draft Message?";
+			}
 			if (confirm(confirm_msg)) {
 				window.location.replace($("#s_program_url").val() + '?f=delete_draft&id=' + $("#draft_id").val());
 			 }
@@ -281,8 +318,8 @@ $(document).ready(function() {
 			$("#" + $(this).attr("data-target")).submit();
 		}); 
 		
-		$("body").on("submit", "#delete_draft_form", function(event) {
-			if (confirm('Delete Draft?')) {
+		$("body").on("submit", ".delete_draft_form", function(event) {
+			if (confirm('Delete ' + $(this).attr('data-draft_role') + '?')) {
 				return true; 
 			}
 			else { 
@@ -1113,29 +1150,31 @@ function save_draft(async) {
 			tinyMCE.triggerSave();
 		}
 	}
-
-
 	var request = $.ajax({
-		url: $("#s_program_url").val(),
-		type: "POST",
+		url:       $("#s_program_url").val(),
+		type:      "POST",
 		dataType: "json",
-		cache: false,
-		async: async,
+		cache:     false,
+		async:     async,
 		data: $("#mass_mailing").serialize() + '&process=save_as_draft',
 		success: function(content) {
 			//alert('content.id ' + content.id); 
 			$("#draft_id").val(content.id); 
-			$('#draft_notice .alert').text('Draft Saved: ' + new Date().format("yyyy-MM-dd h:mm:ss")); 
+			$('#draft_notice .alert').text($("#draft_role").val() + ' saved: ' + new Date().format("yyyy-MM-dd h:mm:ss")); 
 			r = true; 
 		},
 		error: function(xhr, ajaxOptions, thrownError) {
-			alert('Error Saving Draft: ' + thrownError); 
+			alert('Error Saving ' + $("#draft_role").val() + ': ' + thrownError); 
 			console.log('status: ' + xhr.status);
 			console.log('thrownError:' + thrownError);
 			r = false; 
 		}, 
 	});
 	return r; 
+}
+
+function create_from_stationary() { 
+	window.location.replace($("#s_program_url").val() + '?f=create_from_stationary&draft_id=' + $("#draft_id").val() + '&screen=' + $("#f").val());
 }
 
 function auto_save_as_draft() {

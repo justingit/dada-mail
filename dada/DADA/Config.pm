@@ -605,7 +605,7 @@ $ADMIN_MENU ||= [
             },
 
             {
-                -Title     => 'Drafts',
+                -Title     => 'Drafts and Stationary',
                 -Title_URL => "$S_PROGRAM_URL?f=drafts",
                 -Function  => 'drafts',
                 -Activated => 1,

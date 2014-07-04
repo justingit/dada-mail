@@ -10,6 +10,8 @@ use DADA::App::Guts;
 use DADA::Template::HTML;
 
 use Carp qw(carp croak);
+# $Carp::Verbose = 1; 
+
 
 use strict;
 use vars qw($AUTOLOAD);
@@ -70,7 +72,8 @@ sub send_email {
     my $restore_from_draft = xss_filter( strip( $q->param('restore_from_draft') ) ) || 'true';
     my $test_sent          = xss_filter( strip( $q->param('test_sent') ) ) || 0;
     my $test_recipient     = xss_filter( strip( $q->param('test_recipient') ) );
-
+    my $done               = xss_filter( strip( $q->param('done') ) ) || 0;
+    
     if ( !exists( $args->{-list} ) ) {
         croak "You must pass the -list parameter!";
     }
@@ -120,24 +123,42 @@ sub send_email {
           $self->mass_mailout_info($list);
 
         my $draft_id = undef;
-			
+        
+        # default: draft, also could be: stationary
+        my $draft_role = $q->param('draft_role') || 'draft';
+        
         require DADA::MailingList::MessageDrafts;
         my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
         if ( $d->enabled ) {
-
+            # $restore_from_draft defaults to, "true" if no param is passed. 
             if (   $restore_from_draft ne 'true'
-                && $d->has_draft( { -screen => 'send_email' } ) )
+                && $d->has_draft( { -screen => 'send_email', -role => $draft_role } ) )
             {
                 $draft_id = undef;
             }
-            elsif ($restore_from_draft eq 'true'
-                && $d->has_draft( { -screen => 'send_email' } ) )
-            {
+            elsif (
+                $restore_from_draft eq 'true'
+             && $d->has_draft( { -screen => 'send_email', -role => 'draft' } ) 
+             && $draft_role eq 'draft'
+             ) {  # so, only drafts (not stationary),
                 if ( defined( $q->param('draft_id') ) ) {
                     $draft_id = $q->param('draft_id');
                 }
                 else {
-                    $draft_id = $d->latest_draft_id( { -screen => 'send_email' } );
+                    $draft_id = $d->latest_draft_id( { -screen => 'send_email', -role => 'draft' } );
+                }
+            }
+            elsif(
+               $restore_from_draft eq 'true'
+            && $d->has_draft( { -screen => 'send_email', -role => 'stationary' } ) 
+            && $draft_role eq 'stationary'
+            ) { 
+                if ( defined( $q->param('draft_id') ) ) {
+                    $draft_id = $q->param('draft_id');
+                }
+                else {
+                    # $draft_id = $d->latest_draft_id( { -screen => 'send_email', -role => 'draft' } );
+                    # we don't want to load up the most recent stationary, since that's not how stationary... work. 
                 }
             }
         }
@@ -157,8 +178,13 @@ sub send_email {
                 -vars => {
                     screen                     => 'send_email',
                     flavor                     => $flavor,
+                    
                     draft_id                   => $draft_id,
                     draft_enabled              => $d->enabled,
+                    draft_role                 => $draft_role,
+                    restore_from_draft         => $restore_from_draft, 
+                    done                       => $done, 
+                    
                     test_sent                  => $test_sent,
                     test_recipient             => $test_recipient,
                     priority_popup_menu        => DADA::Template::Widgets::priority_popup_menu($li),
@@ -201,6 +227,7 @@ sub send_email {
                     -screen   => 'send_email',
                     -str      => $scrn,
                     -draft_id => $draft_id,
+                    -role     => $draft_role,
 
                 }
             );
@@ -469,7 +496,14 @@ sub send_email {
                 print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL . '?f='
                       . $flavor
                       . '&test_sent=1&test_recipient='
-                      . $og_test_recipient );
+                      . $og_test_recipient
+                      . '&draft_id='
+                      . $q->param('draft_id')
+                      . '&restore_from_draft='
+                      . $q->param('restore_from_draft')
+                      . '&draft_role='
+                      . $q->param('draft_role')
+                );
             }
             else {
 
@@ -508,6 +542,7 @@ sub send_url_email {
     my $restore_from_draft = $q->param('restore_from_draft')               || 'true';
     my $test_sent          = xss_filter( strip( $q->param('test_sent') ) ) || 0;
     my $test_recipient     = $q->param('test_recipient');
+    my $done               = xss_filter( strip( $q->param('done') ) ) || 0;
 
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
@@ -580,22 +615,41 @@ sub send_url_email {
 
         my $draft_id = undef;
 
+        # default: draft, also could be: stationary
+        my $draft_role = $q->param('draft_role') || 'draft';
+
         require DADA::MailingList::MessageDrafts;
         my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
         if ( $d->enabled ) {
+            # $restore_from_draft defaults to, "true" if no param is passed. 
             if (   $restore_from_draft ne 'true'
-                && $d->has_draft( { -screen => 'send_url_email' } ) )
+                && $d->has_draft( { -screen => 'send_url_email', -role => $draft_role } ) )
             {
                 $draft_id = undef;
             }
-            elsif ($restore_from_draft eq 'true'
-                && $d->has_draft( { -screen => 'send_url_email' } ) )
-            {
+            elsif (
+                $restore_from_draft eq 'true'
+             && $d->has_draft( { -screen => 'send_url_email', -role => 'draft' } ) 
+             && $draft_role eq 'draft'
+             ) {  # so, only drafts (not stationary),
                 if ( defined( $q->param('draft_id') ) ) {
                     $draft_id = $q->param('draft_id');
                 }
                 else {
-                    $draft_id = $d->latest_draft_id( { -screen => 'send_url_email' } );
+                    $draft_id = $d->latest_draft_id( { -screen => 'send_url_email', -role => 'draft' } );
+                }
+            }
+            elsif(
+               $restore_from_draft eq 'true'
+            && $d->has_draft( { -screen => 'send_url_email', -role => 'stationary' } ) 
+            && $draft_role eq 'stationary'
+            ) { 
+                if ( defined( $q->param('draft_id') ) ) {
+                    $draft_id = $q->param('draft_id');
+                }
+                else {
+                    # $draft_id = $d->latest_draft_id( { -screen => 'send_url_email', -role => 'draft' } );
+                    # we don't want to load up the most recent stationary, since that's not how stationary... work. 
                 }
             }
         }
@@ -615,8 +669,12 @@ sub send_url_email {
 
                     screen => 'send_url_email',
 
-                    draft_id       => $draft_id,
-                    draft_enabled  => $d->enabled,
+                    draft_id                   => $draft_id,
+                    draft_enabled              => $d->enabled,
+                    draft_role                 => $draft_role,
+                    restore_from_draft         => $restore_from_draft, 
+                    done                       => $done, 
+
                     test_sent      => $test_sent,
                     test_recipient => $test_recipient,
 
@@ -657,6 +715,7 @@ sub send_url_email {
                     -screen   => 'send_url_email',
                     -str      => $scrn,
                     -draft_id => $draft_id,
+                    -role     => $draft_role,
                 }
             );
         }
@@ -951,7 +1010,14 @@ sub send_url_email {
                     print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL . '?f='
                           . $flavor
                           . '&test_sent=1&test_recipient='
-                          . $og_test_recipient );
+                          . $og_test_recipient
+                          . '&draft_id='
+                          . $q->param('draft_id')
+                          . '&restore_from_draft='
+                          . $q->param('restore_from_draft')
+                          . '&draft_role='
+                          . $q->param('draft_role')
+                    );
                 }
                 else {
                     require DADA::MailingList::MessageDrafts;
@@ -1028,13 +1094,15 @@ sub save_as_draft {
 
     return unless $d->enabled;
 
-    my $draft_id = $q->param('draft_id') || undef;
+    my $draft_id   = $q->param('draft_id')   || undef;
+    my $draft_role = $q->param('draft_role') || undef;
 
     # warn '$draft_id:' . $draft_id;
     my $saved_draft_id = $d->save(
         {
             -cgi_obj => $q,
             -id      => $draft_id,
+            -role    => $draft_role,
             -screen  => $q->param('f'),
         }
     );
@@ -1390,7 +1458,7 @@ sub fill_in_draft_msg {
     my $self = shift;
     my ($args) = @_;
 
-    for ( '-list', '-screen', '-str', '-draft_id' ) {
+    for ( '-list', '-screen', '-str', '-draft_id', '-role') {
         if ( !exists( $args->{$_} ) ) {
             croak "You MUST pass the, '$_' parameter!";
         }
@@ -1399,10 +1467,30 @@ sub fill_in_draft_msg {
 
     require DADA::MailingList::MessageDrafts;
     my $d = DADA::MailingList::MessageDrafts->new( { -list => $args->{-list} } );
+
     return $args->{-str}
       unless ( $d->enabled );
-    if ( $d->has_draft( { -screen => $args->{-screen} } ) ) {
-        my $q_draft = $d->fetch( { -id => $args->{-draft_id}, -screen => $args->{-screen} } );
+      
+    if ( $d->has_draft( 
+        { 
+            -screen => $args->{-screen}, 
+            -role   => $args->{-role},
+        } 
+        ) ) {
+        warn 'has draft'; 
+        
+        my $q_draft = $d->fetch( 
+            { 
+                -id     => $args->{-draft_id}, 
+                -screen => $args->{-screen},
+                -role   => $args->{-role},
+            } 
+        );
+        
+        use Data::Dumper;
+        warn 'and here it is:'; 
+        warn Dumper($q_draft); 
+        
         require HTML::FillInForm::Lite;
         my $h       = HTML::FillInForm::Lite->new();
         my $tmp_str = $args->{-str};

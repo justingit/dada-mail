@@ -7,7 +7,17 @@
 
 <div id="screentitle"> 
 	<div id="screentitlepadding">
-	 	<!-- tmpl_var title --> 
+	 	Mass Mailing 
+	 	    &#187; 
+	 	    Send a Message
+	 	    <!-- tmpl_if draft_id --> 
+	 	        &#187; 
+	 	        <!-- tmpl_if expr="(draft_role ne 'stationary')" --> 
+	 	             Draft
+	 	        <!-- tmpl_else -->
+	 	            Stationary
+	 	        <!-- /tmpl_if -->
+	 	    <!-- /tmpl_if -->
 	</div>
 	<!-- tmpl_include help_link_widget.tmpl -->
 </div>
@@ -42,11 +52,18 @@
 <!-- /tmpl_unless -->
 
 <!-- tmpl_if draft_id --> 
-	<div class="clearskiesbox">
-		<p>
-			Draft message restored below:
-		</p>
-	</div> 
+    <!-- tmpl_if expr="(draft_role eq 'draft')" --> 
+    	<div class="clearskiesbox">
+    		<p>
+    			Draft message restored below:
+    		</p>
+    	</div> 
+    <!-- /tmpl_if -->
+    <!-- tmpl_if expr="(draft_role eq 'stationary')" --> 
+        <!-- tmpl_if done --> 
+            <!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
+        <!-- /tmpl_if -->
+    <!-- /tmpl_if -->     
 <!-- /tmpl_If --> 
 
 
@@ -56,9 +73,14 @@
 
 <input type="hidden" id="f"            name="f"  value="send_email" />
 
-<input type="hidden" id="draft_alert"  name="draft_alert"  value="<!-- tmpl_var draft_alert default="0" -->" />
-<input type="hidden" id="draft_id"     name="draft_id"     value="<!-- tmpl_var draft_id -->" /> 
-<input type="hidden" id="draft_enabled" name="draft_enabled" value="<!-- tmpl_var draft_enabled -->" />
+<input type="hidden" id="draft_alert"        name="draft_alert"           value="<!-- tmpl_var draft_alert default="0" -->" />
+<input type="hidden" id="draft_id"           name="draft_id"              value="<!-- tmpl_var draft_id -->"                /> 
+<input type="hidden" id="draft_enabled"      name="draft_enabled"         value="<!-- tmpl_var draft_enabled -->"           />
+<input type="hidden" id="draft_role"         name="draft_role"            value="<!-- tmpl_var draft_role -->"              />
+<input type="hidden" id="restore_from_draft" name="restore_from_draft"    value="<!-- tmpl_var restore_from_draft -->"      />
+
+
+
 <!-- tmpl_include draft_notice_widget.tmpl --> 
 
 <!-- tmpl_include message_headers_fieldset_widget.tmpl --> 

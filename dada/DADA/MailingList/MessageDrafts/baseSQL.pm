@@ -9,7 +9,7 @@ use lib qw(
 use Carp qw(croak carp);
 use DADA::Config qw(!:DEFAULT);
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_MessageDrafts};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_MailingList_MessageDrafts};
 
 sub new {
 
@@ -211,13 +211,18 @@ sub has_draft {
 
     warn 'QUERY: ' . $query
       if $t;
-
+    
+    use Data::Dumper; 
+    warn 'params' . Dumper([$self->{list}, $args->{-screen}, $args->{-role}]); 
+    
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute( $self->{list}, $args->{-screen}, $args->{-role} )
       or croak "cannot do statement '$query'! $DBI::errstr\n";
 
     my $count = $sth->fetchrow_array;
 
+    warn '$count ' . $count; 
+    
     $sth->finish;
 
     if ( $count eq undef ) {
@@ -304,11 +309,20 @@ sub fetch {
     my $saved = '';
 
     if ( !$id ) {
-        $sth->execute( $self->{list}, $args->{-screen}, 'draft' )
+        
+        use Data::Dumper; 
+        warn 'params (no id)' . Dumper([$self->{list}, $args->{-screen}, $args->{-role}]); 
+        
+        
+        $sth->execute( $self->{list}, $args->{-screen}, $args->{-role} )
           or croak "cannot do statement '$query'! $DBI::errstr\n";
     }
     else {
-        $sth->execute( $self->{list}, $args->{-screen}, 'draft', $id )
+     
+        use Data::Dumper; 
+        warn 'params (id!)' . Dumper([$self->{list}, $args->{-screen}, $args->{-role}]); 
+        
+        $sth->execute( $self->{list}, $args->{-screen}, $args->{-role}, $id )
           or croak "cannot do statement '$query'! $DBI::errstr\n";
     }
     my $hashref;
@@ -325,19 +339,48 @@ sub fetch {
 
 }
 
+
+
+
+sub create_from_stationary { 
+    my $self = shift; 
+    my ($args) = @_; 
+    my $q_draft = $self->fetch( 
+        { 
+            -id     => $args->{-id}, 
+            -screen => $args->{-screen},
+            -role   => 'stationary',
+        } 
+    );
+    
+    my $saved_draft_id = $self->save(
+        {
+            -cgi_obj => $q_draft,
+            -role    => 'draft',
+            -screen  => $args->{-screen},
+        }
+    );
+    return($saved_draft_id);
+}
+
 sub count {
     my $self = shift;
     my ($args) = @_;
+    
+    if ( !exists( $args->{-role} ) ) {
+        $args->{-role} = 'draft';
+    }
+    
     my @row;
     my $query =
         'SELECT COUNT(*) FROM '
       . $self->{sql_params}->{message_drafts_table}
-      . ' WHERE list = ?';
+      . ' WHERE list = ? AND role = ?';
 
     warn 'QUERY: ' . $query
       if $t;
 
-    my $count = $self->{dbh}->selectrow_array( $query, undef, $self->{list} );
+    my $count = $self->{dbh}->selectrow_array( $query, undef, $self->{list}, $args->{-role} );
     return $count;
 }
 
@@ -374,20 +417,36 @@ sub decode_draft {
 }
 
 sub draft_index {
-    my $self = shift;
+    my $self   = shift;
+    my ($args) = @_; 
+    
+    if ( !exists( $args->{-role} ) ) {
+        $args->{-role} = 'draft';
+    }
+    
+    
     my $r    = [];
 
-    my $query =
+    my $query; 
+    
+    $query =
         'SELECT * FROM '
       . $self->{sql_params}->{message_drafts_table}
       . ' WHERE list = ? AND role = ? ORDER BY last_modified_timestamp DESC';
+      
+    if($args->{-role} eq 'draft'){ # a little backwards compat. 
+        $query =
+            'SELECT * FROM '
+          . $self->{sql_params}->{message_drafts_table}
+          . ' WHERE list = ? AND (role = ? OR role IS NULL) ORDER BY last_modified_timestamp DESC';
+    }
 
     warn 'QUERY: ' . $query
       if $t;
 
     my $sth = $self->{dbh}->prepare($query);
 
-    $sth->execute( $self->{list}, 'draft' )
+    $sth->execute( $self->{list}, $args->{-role} )
       or croak "cannot do statement '$query'! $DBI::errstr\n";
     my $hashref;
 
@@ -396,13 +455,13 @@ sub draft_index {
         push(
             @$r,
             {
-                id                     => $hashref->{id},
-                list                   => $hashref->{list},
-                created_timestamp      => $hashref->{created_timestamp},
+                id                      => $hashref->{id},
+                list                    => $hashref->{list},
+                created_timestamp       => $hashref->{created_timestamp},
                 last_modified_timestamp => $hashref->{last_modified_timestamp},
-                screen                 => $hashref->{screen},
-                role                   => $hashref->{role},
-                Subject                => $q->param('Subject'),
+                screen                  => $hashref->{screen},
+                role                    => $hashref->{role},
+                Subject                 => $q->param('Subject'),
             }
         );
     }

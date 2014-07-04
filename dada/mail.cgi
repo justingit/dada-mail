@@ -44,7 +44,7 @@ BEGIN {
 
 use CGI::Carp qw(fatalsToBrowser);
 use Carp qw(carp croak);
-$CARP::Verbose = 1; 
+#$CARP::Verbose = 1; 
 
 #---------------------------------------------------------------------#
 
@@ -557,6 +557,7 @@ sub run {
         'draft_saved_notification'                    => \&draft_saved_notification,
         'drafts'                                      => \&drafts,
         'delete_draft'                                => \&delete_draft,
+        'create_from_stationary'                      => \&create_from_stationary, 
         'message_body_help'                           => \&message_body_help,
         'url_message_body_help'                       => \&url_message_body_help,
         'preview_message_receivers'                   => \&preview_message_receivers,
@@ -984,9 +985,11 @@ sub admin_menu_drafts_notification {
 
             my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
             if ( $d->enabled ) {
-                my $num = $d->count;
-                if ( $num > 0 ) {
-                    e_print( '(' . commify($num) . ')' );
+                my $num_drafts     = $d->count({-role => 'draft'});
+                my $num_stationary = $d->count({-role => 'stationary'});
+                
+                if ( $num_drafts > 0 || $num_stationary > 0) {
+                    e_print( '(' . commify($num_drafts) . ','  . commify($num_stationary) . ')' );
                 }
             }
         }
@@ -1267,9 +1270,20 @@ sub draft_saved_notification {
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
     );
+    my $role = $q->param('role'); 
+    
     require DADA::Template::Widgets;
     print $q->header();
-    e_print( DADA::Template::Widgets::screen( { -screen => 'draft_saved_notification_widget.tmpl', } ) );
+    e_print( DADA::Template::Widgets::screen( 
+        { 
+            -screen => 'draft_saved_notification_widget.tmpl', 
+            -expr => 1, 
+            -vars => {
+                role => $role, 
+            }
+         } 
+        ) 
+    );
 }
 
 sub drafts {
@@ -1286,10 +1300,13 @@ sub drafts {
     my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
 
     my $di = [];
-
+    my $si = [];
     if ( $d->enabled ) {
-        $di = $d->draft_index;
+        $di = $d->draft_index({-role => 'draft'});
+        $si = $d->draft_index({-role => 'stationary'});
+        
     }
+    
     my $enabled = $d->enabled;
     my $scrn    = DADA::Template::Widgets::wrap_screen(
         {
@@ -1301,10 +1318,11 @@ sub drafts {
             },
             -expr => 1,
             -vars => {
-                screen       => 'drafts',
-                delete_draft => $delete_draft,
-                draft_index  => $di,
-                enabled      => $enabled,
+                screen           => 'drafts',
+                delete_draft     => $delete_draft,
+                draft_index      => $di,
+                stationary_index => $si, 
+                enabled          => $enabled,
             },
             -list_settings_vars_param => {
                 -list   => $list,
@@ -1330,6 +1348,28 @@ sub delete_draft {
     $d->remove($id);
     print $q->redirect( -url => $DADA::Config::S_PROGRAM_URL . '?f=drafts&delete_draft=1' );
 
+}
+
+
+
+sub create_from_stationary {
+     
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+    );
+    $list = $admin_list;
+    my $id     = $q->param('id');
+    my $screen = $q->param('screen');
+
+    require DADA::MailingList::MessageDrafts;
+    my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
+    die "not enabled! " unless $d->enabled;
+    
+
+    my $new_id = $d->create_from_stationary({-id => $id, -screen => $screen});
+        
+    print $q->redirect( -url => $DADA::Config::S_PROGRAM_URL . '?f=' . $screen . '&restore_from_draft=true&draft_id=' . $new_id);
+    
 }
 
 sub message_body_help {

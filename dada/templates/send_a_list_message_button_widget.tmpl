@@ -1,20 +1,37 @@
 <!-- begin send_a_list_message_button_widget.tmpl -->
 
+
 <!-- tmpl_if draft_enabled -->
 	<!-- tmpl_unless expr="(mass_mailing_type eq 'invite')" -->
-		<input type="button" class="processing savedraft bigger_button"  name="process" id="submit_draft" value="Save Draft"/>
-		or <a href="#"       class="cancel_message">Cancel Message</a>
-	<!-- /tmpl_unless -->
-<!-- /tmpl_if -->
+    	<!-- tmpl_if expr="(draft_role eq 'stationary')" -->
+    		<input type="button" class="processing savedraft" name="process" value="Save Stationary"  data-role="stationary" id="save_stationary_button" />
+            <input type="button" class="processing create_from_stationary" name="process" value="+ Create New Message From Stationary"  data-role="stationary" />
+            or <a href="#"       class="cancel_message" id="delete_stationary_link">Delete Stationary</a>
+        <!-- tmpl_else --> 
+        	<!-- tmpl_if draft_id --> 
+        	    <input type="button" class="processing savedraft" name="process" value="Save Draft"       data-role="draft" id="save_draft_button" />
+        	<!-- tmpl_else --> 
+    	        <input type="button" class="processing savedraft" name="process" value="Save as: Draft"       data-role="draft" id="save_as_draft_button" />       	
+        	<!-- /tmpl_if --> 
+        	<input type="button" class="processing savedraft" name="process" value="Save as: Stationary"  data-role="stationary" id="save_as_stationary_button" />
+            or <a href="#"       class="cancel_message" id="cancel_message_link">Cancel Message</a>
+        <!-- /tmpl_if --> 
+    <!-- /tmpl_unless -->
+<!-- /tmpl_if --> 
 
 
-<input type="submit" class="processing sendmassmailing justatest bigger_button"  name="process" id="submit_test_mailing" value="<!-- tmpl_if expr="(mass_mailing_type eq 'invite')" -->Send Test Invitation<!-- tmpl_else -->Send Test Message<!-- /tmpl_if -->" />
-<input type="submit" class="cautionary sendmassmailing bigger_button"            name="process" id="submit_mass_mailing" value="<!-- tmpl_if expr="(mass_mailing_type eq 'invite')" -->Send Invitations<!-- tmpl_else -->Send Mass Mailing<!-- /tmpl_if -->" />
-<input type="hidden" id="default_mass_mailing_button_label" name="default_mass_mailing_button_label" value="<!-- tmpl_if expr="(mass_mailing_type eq 'invite')" -->Send Invitations<!-- tmpl_else -->Send Mass Mailing<!-- /tmpl_if -->" />
+
+    <input type="submit" class="processing sendmassmailing justatest"  name="process" id="submit_test_mailing" value="<!-- tmpl_if expr="(mass_mailing_type eq 'invite')" -->Send: Test Invitation<!-- tmpl_else -->Send: Test Message<!-- /tmpl_if -->" />    
+<!-- tmpl_if expr="(draft_role ne 'stationary')" -->
+        <input type="submit" class="cautionary sendmassmailing"            name="process" id="submit_mass_mailing" value="<!-- tmpl_if expr="(mass_mailing_type eq 'invite')" -->Send: Invitations<!-- tmpl_else -->Send: Mass Mailing<!-- /tmpl_if -->" />
+        <input type="hidden" id="default_mass_mailing_button_label" name="default_mass_mailing_button_label" value="<!-- tmpl_if expr="(mass_mailing_type eq 'invite')" -->Send: Invitations<!-- tmpl_else -->Send: Mass Mailing<!-- /tmpl_if -->" />
+<!-- /tmpl_if --> 
 
 	<span id="button_action_notice" class="alert">
 		&nbsp;
 	</span>
-
-
 <!-- end send_a_list_message_button_widget.tmpl -->
+
+
+
+
