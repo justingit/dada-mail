@@ -354,7 +354,7 @@ sub cgi_test_pop3_ajax {
 	            password  => $password,
 #	            port      => $args->{Port},
 	            AUTH_MODE => $q->param('auth_mode'),
-	            USESSL    => ($q->param('auth_mode') eq 'true' ? 1 : 0),
+	            USESSL    => $q->param('use_ssl'),
 	        }
 	      );
 	    if ( defined($pop3_obj) ) {
