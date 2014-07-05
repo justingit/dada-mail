@@ -1,4 +1,4 @@
-<!-- tmpl_set name="title" value="Mass Mailing &#187; Message Drafts" -->
+<!-- tmpl_set name="title" value="Mass Mailing &#187; Drafts and Stationary" -->
 
 <div id="screentitle"> 
 	<div id="screentitlepadding">
@@ -14,297 +14,301 @@
 <!-- tmpl_if delete_draft --> 
 	<div class="clearskiesbox" id="alertbox">
 		<p>
-			Message Draft Deleted. 
+			Message Deleted. 
 		</p>
 		<div style="text-align: center;">
-
 		<input type="button" class="small_button fade_me" value="Thanks!" />
 		</div>
-		
 	</div> 
 <!-- /tmpl_if --> 
 
 
-<h1>Drafts</h1> 
-
-<p class="alert">
-    <strong>
-    Drafts
-    </strong> 
-    are unfinished messages, that haven't been sent out. 
-    Once a drafted message is sent out as a mass mailing, the draft message will also
-    be removed.
-</p>
-
-<!-- tmpl_if draft_index --> 
-
-	<table class="stripedtable">
-		
-		<tr>
-			<td>
-				<p>&nbsp;</p>
-			</td>
-
-			<!-- 
-				<td>
-					<p>ID</p>
-				</td>
-			--> 
-			
-			<td>
-				<p>
-					<strong>
-						Subject
-					</strong>
-				</p> 
-			</td>
-			<td>
-				<p>
-					<strong>
-						Last Modified
-					</strong>
-				</p> 
-			</td>
-			<td>
-				<p>
-					<strong>
-						Screen
-					</strong>
-				</p> 
-			</td>
-			<td>
-				<p>&nbsp;</p>
-				</p> 
-			</td>
-			
-		</tr> 
-		
-		
- 	<!-- tmpl_loop draft_index --> 
-		<tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
-			<td>
-					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" id="restore_form_<!-- tmpl_var id -->">
-						<input type="hidden" name="flavor" value="<!-- tmpl_var screen -->" /> 
-						<input type="hidden" name="restore_from_draft" value="true" /> 
-						<input type="hidden" name="draft_id" value="<!-- tmpl_var id -->" />
-						
-						
-						
-						
-						<input type="submit" name="" value="Edit" class="processing" />  
-					</form> 
-				</p> 
-			</td>
-			
-			<!-- 
-				<td>
-					<p><!-- tmpl_var id --></p>
-				</td>
-			--> 
-			
-			<td>
-				<p>
-					<strong>
-						<a href="#" class="restore_from_draft_link" data-target="restore_form_<!-- tmpl_var id -->">
-							<!-- tmpl_var Subject escape="HTML" -->
-						</a>
-					</strong>
-				</p> 
-			</td>
-			<td>
-				<p>
-					<a href="#" class="restore_from_draft_link" data-target="restore_form_<!-- tmpl_var id -->">
-						<!-- tmpl_var last_modified_timestamp --> 
-					</a>
-				</p> 
-				<td>
-					<p>
-						<!-- tmpl_if expr="(screen eq 'send_email')" --> 
-							Send a Message
-						<!-- /tmpl_if --> 
-						<!-- tmpl_if expr="(screen eq 'send_url_email')" --> 
-							Send a Webpage
-						<!-- /tmpl_if --> 
-						
-					</p> 
-
-			</td>
-			<td>
-					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="POST" class="delete_draft_form"  data-draft_role='Draft'>
-						<input type="hidden" name="id" value="<!-- tmpl_var id -->" />
-						<input type="hidden" name="flavor" value="delete_draft" /> 
-							<input type="submit" name="" value="&#8855;" class="alertive" />  		
-					</form> 
-				</p> 
-			</td>
-			
-		</tr> 
-	<!-- /tmpl_loop -->
-	</table>  
-<!-- tmpl_else -->
-	<div class="clearskiesbox">
-		<p>
-			There are currently no saved message drafts. 
-		</p>
-	</div> 
+<div id="tabs"> 
     
-<!-- /tmpl_if --> 
+    <ul> 
+		<li>
+			<a href="#drafts">
+				Drafts (<!-- tmpl_var num_drafts default="0" -->)
+			</a>
+		</li>
+		<li>
+			<a href="#stationary">
+				Stationary (<!-- tmpl_var num_stationary default="0" -->)
+			</a>
+		</li>
+	</ul> 
+	<div id="drafts">
+	    <p class="alert">
+            <strong>
+            Drafts
+            </strong> 
+            are unfinished messages, that haven't been sent out. 
+            Once a drafted message is sent out as a mass mailing, the draft message will also
+            be removed.
+        </p>
 
-<!-- tmpl_if commnent -->
+        <!-- tmpl_if draft_index --> 
 
-    <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get">
-    	<input type="hidden" name="flavor"             value="send_url_email" /> 
-    	<input type="hidden" name="restore_from_draft" value="false" /> 
-    <div class="buttonfloat"> 	
-    	<input type="submit" class="processing" value="+ Send a Webpage" />
-    </div> 
-    </form>
-    <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get">
-    	<input type="hidden" name="flavor"             value="send_email" /> 
-    	<input type="hidden" name="restore_from_draft" value="false" /> 
-    <div class="buttonfloat"> 	
-    	<input type="submit" class="processing" value="+ Send a Message" />
-    </div> 
-    </form>
-<!-- /tmpl_if -->
+        	<table class="stripedtable">
 
-<h1>Stationary</h1> 
+        		<tr>
+        			<td>
+        				<p>&nbsp;</p>
+        			</td>
 
-<p class="alert">
-    <strong>
-    Stationary
-    </strong> 
-    are messages that you can use to begin writing new mailing list messages with. They'll 
-    stay around, so that you'll be able to continue to use them as many times as you would like.
-</p>
+        			<!-- 
+        				<td>
+        					<p>ID</p>
+        				</td>
+        			--> 
 
-    <p>
-     Once you create a new message from the stationary, it will itself be saved as a draft, 
-    that you may continue to edit, separate from the original stationary.
-</p>
+        			<td>
+        				<p>
+        					<strong>
+        						Subject
+        					</strong>
+        				</p> 
+        			</td>
+        			<td>
+        				<p>
+        					<strong>
+        						Last Modified
+        					</strong>
+        				</p> 
+        			</td>
+        			<td>
+        				<p>
+        					<strong>
+        						Screen
+        					</strong>
+        				</p> 
+        			</td>
+        			<td>
+        				<p>&nbsp;</p>
+        				</p> 
+        			</td>
+
+        		</tr> 
 
 
-<!-- tmpl_if stationary_index --> 
+         	<!-- tmpl_loop draft_index --> 
+        		<tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
+        			<td>
+        					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" id="restore_form_<!-- tmpl_var id -->">
+        						<input type="hidden" name="flavor" value="<!-- tmpl_var screen -->" /> 
+        						<input type="hidden" name="restore_from_draft" value="true" /> 
+        						<input type="hidden" name="draft_id" value="<!-- tmpl_var id -->" />
 
-	<table class="stripedtable">
-		
-		<tr>
-			<td>
-				<p>&nbsp;</p>
-			</td>
 
-			<!-- 
-				<td>
-					<p>ID</p>
-				</td>
-			--> 
-			
-			<td>
-				<p>
-					<strong>
-						Subject
-					</strong>
-				</p> 
-			</td>
-			<td>
-				<p>
-					<strong>
-						Last Modified
-					</strong>
-				</p> 
-			</td>
-			<td>
-				<p>
-					<strong>
-						Screen
-					</strong>
-				</p> 
-			</td>
-			<td>
-				<p>&nbsp;</p>
-				</p> 
-			</td>
-			
-		</tr> 
-		
-		
- 	<!-- tmpl_loop stationary_index --> 
-		<tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
-			<td>
-					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" id="restore_form_<!-- tmpl_var id -->">
-						<input type="hidden" name="flavor" value="<!-- tmpl_var screen -->" /> 
-						<input type="hidden" name="restore_from_draft" value="true" /> 
-						<input type="hidden" name="draft_id" value="<!-- tmpl_var id -->" />
-						
-						<input type="hidden" name="draft_role" value="stationary" --> <!-- not doing this for drafts above -->
-						
-						
-						
-						<input type="submit" name="" value="Edit" class="processing" />  
-					</form> 
-				</p> 
-			</td>
-			
-			<!-- 
-				<td>
-					<p><!-- tmpl_var id --></p>
-				</td>
-			--> 
-			
-			<td>
-				<p>
-					<strong>
-						<a href="#" class="restore_from_draft_link" data-target="restore_form_<!-- tmpl_var id -->">
-							<!-- tmpl_var Subject escape="HTML" -->
-						</a>
-					</strong>
-				</p> 
-			</td>
-			<td>
-				<p>
-					<a href="#" class="restore_from_draft_link" data-target="restore_form_<!-- tmpl_var id -->">
-						<!-- tmpl_var last_modified_timestamp --> 
-					</a>
-				</p> 
-				<td>
-					<p>
-						<!-- tmpl_if expr="(screen eq 'send_email')" --> 
-							Send a Message
-						<!-- /tmpl_if --> 
-						<!-- tmpl_if expr="(screen eq 'send_url_email')" --> 
-							Send a Webpage
-						<!-- /tmpl_if --> 
-						
-					</p> 
 
-			</td>
-			<td>
-					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="POST" class="delete_draft_form" data-draft_role='Stationary'>
-						<input type="hidden" name="id" value="<!-- tmpl_var id -->" />
-						<input type="hidden" name="flavor" value="delete_draft" /> 
-						<input type="hidden" name="draft_role" value="stationary" -->
-						<input type="submit" name="" value="&#8855;" class="alertive" />  		
-					</form> 
-				</p> 
-			</td>
-			
-		</tr> 
-	<!-- /tmpl_loop -->
-	</table>  
-<!-- tmpl_else -->
-	<div class="clearskiesbox">
-		<p>
-			There are currently no saved stationary. 
-		</p>
+
+        						<input type="submit" name="" value="Edit..." class="processing" />  
+        					</form> 
+        				</p> 
+        			</td>
+
+        			<!-- 
+        				<td>
+        					<p><!-- tmpl_var id --></p>
+        				</td>
+        			--> 
+
+        			<td>
+        				<p>
+        					<strong>
+        						<a href="#" class="restore_from_draft_link" data-target="restore_form_<!-- tmpl_var id -->">
+        							<!-- tmpl_var Subject escape="HTML" -->
+        						</a>
+        					</strong>
+        				</p> 
+        			</td>
+        			<td>
+        				<p>
+        					<a href="#" class="restore_from_draft_link" data-target="restore_form_<!-- tmpl_var id -->">
+        						<!-- tmpl_var last_modified_timestamp --> 
+        					</a>
+        				</p> 
+        				<td>
+        					<p>
+        						<!-- tmpl_if expr="(screen eq 'send_email')" --> 
+        							Send a Message
+        						<!-- /tmpl_if --> 
+        						<!-- tmpl_if expr="(screen eq 'send_url_email')" --> 
+        							Send a Webpage
+        						<!-- /tmpl_if --> 
+
+        					</p> 
+
+        			</td>
+        			<td>
+        					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="POST" class="delete_draft_form"  data-draft_role='Draft'>
+        						<input type="hidden" name="id" value="<!-- tmpl_var id -->" />
+        						<input type="hidden" name="flavor" value="delete_draft" /> 
+        							<input type="submit" name="" value="[x]" class="alertive" />  		
+        					</form> 
+        				</p> 
+        			</td>
+
+        		</tr> 
+        	<!-- /tmpl_loop -->
+        	</table>  
+        <!-- tmpl_else -->
+        	<div class="clearskiesbox">
+        		<p>
+        			There are currently no saved message drafts. 
+        		</p>
+        	</div> 
+        <!-- /tmpl_if --> 
+        
 	</div> 
-<!-- /tmpl_if --> 
+	
+	<div id="stationary">
+	    <p class="alert">
+            <strong>
+            Stationary
+            </strong> 
+            are messages that you can use to begin writing new mailing list messages with. They'll 
+            stay around, so that you'll be able to continue to use them as many times as you would like.
+        </p>
+
+        <p class="alert">
+             Once you create a new message from the stationary, it will itself be saved as a draft, 
+            that you may continue to edit, separate from the original stationary.
+        </p>
+
+        <!-- tmpl_if stationary_index --> 
+
+        	<table class="stripedtable">
+
+        		<tr>
+        			<td>
+        				<p>&nbsp;</p>
+        			</td>
+
+        					<td>
+                				<p>&nbsp;</p>
+                			</td>
+
+
+        			<!-- 
+        				<td>
+        					<p>ID</p>
+        				</td>
+        			--> 
+
+        			<td>
+        				<p>
+        					<strong>
+        						Subject
+        					</strong>
+        				</p> 
+        			</td>
+        			<td>
+        				<p>
+        					<strong>
+        						Last Modified
+        					</strong>
+        				</p> 
+        			</td>
+        			<td>
+        				<p>
+        					<strong>
+        						Screen
+        					</strong>
+        				</p> 
+        			</td>
+        			<td>
+        				<p>&nbsp;</p>
+        				</p> 
+        			</td>
+
+        		</tr> 
+
+
+         	<!-- tmpl_loop stationary_index --> 
+        		<tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
+
+
+        			<td>			    
+        			    <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" id="restore_form_<!-- tmpl_var id -->">
+        					<input type="hidden" name="f" value="create_from_stationary" /> 
+        					<input type="hidden" name="screen" value="<!-- tmpl_var screen -->" /> 
+        					<input type="hidden" name="draft_id" value="<!-- tmpl_var id -->" />	
+        			        <input type="submit" class="processing create_from_stationary" name="process" value="+ Create New Message From Stationary"  data-role="stationary" />
+                        </form>
+                    </td>
+                    
+                    <td>
+        					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" id="restore_form_<!-- tmpl_var id -->">
+        						<input type="hidden" name="flavor" value="<!-- tmpl_var screen -->" /> 
+        						<input type="hidden" name="restore_from_draft" value="true" /> 
+        						<input type="hidden" name="draft_id" value="<!-- tmpl_var id -->" />
+
+        						<input type="hidden" name="draft_role" value="stationary" --> <!-- not doing this for drafts above -->
+        						<input type="submit" name="" value="Edit..." class="processing" />  
+        					</form> 
+        				</p> 
+        			</td>
+
+        			<!-- 
+        				<td>
+        					<p><!-- tmpl_var id --></p>
+        				</td>
+        			--> 
+
+        			<td>
+        				<p>
+        					<strong>
+        						<a href="#" class="restore_from_draft_link" data-target="restore_form_<!-- tmpl_var id -->">
+        							<!-- tmpl_var Subject escape="HTML" -->
+        						</a>
+        					</strong>
+        				</p> 
+        			</td>
+        			<td>
+        				<p>
+        					<a href="#" class="restore_from_draft_link" data-target="restore_form_<!-- tmpl_var id -->">
+        						<!-- tmpl_var last_modified_timestamp --> 
+        					</a>
+        				</p> 
+        				<td>
+        					<p>
+        						<!-- tmpl_if expr="(screen eq 'send_email')" --> 
+        							Send a Message
+        						<!-- /tmpl_if --> 
+        						<!-- tmpl_if expr="(screen eq 'send_url_email')" --> 
+        							Send a Webpage
+        						<!-- /tmpl_if --> 
+
+        					</p> 
+
+        			</td>
+        			<td>
+        					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="POST" class="delete_draft_form" data-draft_role='Stationary'>
+        						<input type="hidden" name="id" value="<!-- tmpl_var id -->" />
+        						<input type="hidden" name="flavor" value="delete_draft" /> 
+        						<input type="hidden" name="draft_role" value="stationary" -->
+        						<input type="submit" name="" value="[x]" class="alertive" />  		
+        					</form> 
+        				</p> 
+        			</td>
+
+        		</tr> 
+        	<!-- /tmpl_loop -->
+        	</table>  
+        <!-- tmpl_else -->
+        	<div class="clearskiesbox">
+        		<p>
+        			There are currently no saved stationary. 
+        		</p>
+        	</div> 
+        <!-- /tmpl_if --> 
+	</div>
+</div> 
 
 
 
 
-
-
-<div class="floatclear"></div> 
 
 
 

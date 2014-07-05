@@ -1287,6 +1287,7 @@ sub draft_saved_notification {
 }
 
 sub drafts {
+    
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'drafts'
@@ -1323,6 +1324,9 @@ sub drafts {
                 draft_index      => $di,
                 stationary_index => $si, 
                 enabled          => $enabled,
+                num_drafts       => scalar(@$di),
+                num_stationary   => scalar(@$si), 
+                
             },
             -list_settings_vars_param => {
                 -list   => $list,

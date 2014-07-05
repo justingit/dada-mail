@@ -313,6 +313,9 @@ $(document).ready(function() {
 	}
 
 	if ($("#drafts_screen").length) {
+		
+		$("#tabs").tabs();
+		
 		$("body").on("click", ".restore_from_draft_link", function(event) {
 			event.preventDefault();
 			$("#" + $(this).attr("data-target")).submit();

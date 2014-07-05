@@ -1,5 +1,17 @@
 =pod
 
+=head2 7.1.0
+
+=head2 Summary 7.1.0
+
+=head2 Features 7.1.0
+
+=head3 Stationary
+
+Draft Messages were introduced in Dada Mail recently, allowing one to save an unfinished message, to be sent at a later time. Many users also wanted the ability to have a message design they could use to start additional messages, and be kept around, until it was no longer needed (draft would be removed, once the message was sent out)
+
+Similar to Message Drafts, Dada Mail now supports B<Stationary>. Stationary are messages you can use as a starter for mailing list messages you would like to send out. Unlike a draft message, Stationary will be saved to be reused for as many times as you'd like. 
+
 =head2 7.0.5
 
 =head2 Summary 7.0.5
