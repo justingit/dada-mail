@@ -798,6 +798,43 @@ sub _trim {
 
 
 
+sub _dd_freeze {
+    my $self = shift;
+    my $data = shift;
+
+    require Data::Dumper;
+    my $d = new Data::Dumper( [$data], ["D"] );
+    $d->Indent(0);
+    $d->Purity(1);
+    $d->Useqq(0);
+    $d->Deepcopy(0);
+    $d->Quotekeys(1);
+    $d->Terse(0);
+
+    # ;$D added to make certain we get our data structure back when we thaw
+    return $d->Dump() . ';$D';
+
+}
+
+sub _dd_thaw {
+
+    my $self = shift;
+    my $data = shift;
+
+    # To make -T happy
+    my ($safe_string) =  $data =~ m/^(.*)$/s;
+    $safe_string = 'my ' . $safe_string; 
+    my $rv = eval($safe_string);
+    if ($@) {
+        croak "couldn't thaw data! - $@\n" . $data;
+    }
+    return $rv;
+}
+
+
+
+
+
 
 
 1; 

@@ -19,7 +19,7 @@ use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;    # For now, my dear.
 use Try::Tiny; 
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_Logging_Clickthrough};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_Logging_Clickthrough};
 
 sub new {
 
@@ -265,6 +265,10 @@ sub r_log {
         $args->{-email} = '';
     }
 
+    if(!exists($args->{-update_fields} )) { 
+        $args->{-update_fields}; 
+    }
+    
     my $recorded_open_recently = 1;
     try {
         $recorded_open_recently = $self->_recorded_open_recently($args);
@@ -320,14 +324,156 @@ sub r_log {
         );
     }
     $sth->finish;
-
+    
+    if($self->{ls}->param('tracker_track_email') == 1 
+    && $self->{ls}->param('tracker_update_profiles_w_geo_ip_data') == 1
+    && $args->{-email} ne '') { 
+        try { 
+            warn '$args->{-email}' . $args->{-email} if $t; 
+            warn '$remote_address'  . $remote_address if $t; 
+            $self->_update_profile_fields(
+                {
+                    -email      => $args->{-email},
+                    -ip_address => $remote_address, 
+                }
+            ); 
+        } catch { 
+            carp "problems updating fields with geo ip data: $_"; 
+        };
+    }
     return 1;
-
 }
 
 
 
+sub _update_profile_fields {
+    
+    warn '_update_profile_fields' 
+        if $t; 
+        
+    my $self = shift;
+    my ($args) = @_;
 
+    if ( !exists( $args->{-email} ) ) {
+        warn 'need to pass an -email!';
+        return undef;
+    } 
+    else { 
+        if ( DADA::App::Guts::check_for_valid_email($args->{-email}) == 0 ) {
+    
+        }
+        else { 
+            warn 'invalid email: ' . $args->{-email}; 
+            return undef; 
+        }
+    }
+    if (! exists( $args->{-ip_address} ) ) {
+        warn 'need to pass an -ip_address!';
+        return undef;
+    }
+
+    my $geoip_db        = undef;
+    my @loc_of_geoip_db = (
+        '../../../../data/GeoLiteCity.dat', '../../../data/GeoLiteCity.dat',
+        '../../data/GeoLiteCity.dat',       '../data/GeoLiteCity.dat',
+        './data/GeoLiteCity.dat',
+    );
+
+    for (@loc_of_geoip_db) {
+        if ( -e $_ ) {
+            $geoip_db = $_;
+            last;
+        }
+    }
+    if ( !defined($geoip_db) ) {
+        croak "Can not find GEO IP DN! at any of these locations: " . join( ', ', @loc_of_geoip_db );
+    }
+    else { 
+        warn '$geoip_db at: ' . $geoip_db
+            if $t;
+    }
+
+    my $thawed_gip = $self->{ls}->_dd_thaw( $self->{ls}->param('tracker_update_profile_fields_ip_dada_meta') );
+    #warn '$thawed_gip:' . $thawed_gip; 
+    
+    require Geo::IP::PurePerl;
+    my $gi = Geo::IP::PurePerl->new($geoip_db);
+    my (
+        $country_code, $country_code3, $country_name, $region,     $city,
+        $postal_code,  $latitude,      $longitude,    $metro_code, $area_code
+    ) = $gi->get_city_record( $args->{-ip_address} );
+
+    my $named_vals = {
+        ip_address    => $args->{-ip_address},
+        country_code  => $country_code,
+        country_code3 => $country_code3,
+        country_name  => $country_name,
+        region        => $region,
+        city          => $city,
+        postal_code   => $postal_code,
+        latitude      => $latitude,
+        longitude     => $longitude,
+        metro_code    => $metro_code,
+        area_code     => $area_code,
+    };
+
+    require DADA::ProfileFieldsManager;
+    my $dpfm = DADA::ProfileFieldsManager->new;
+
+    require DADA::Profile;
+    my $prof = DADA::Profile->new( { -email => $args->{-email} } );
+    if ($prof) {
+        if ( !$prof->exists ) {
+            warn 'no $prof.'
+                if $t; 
+            # create a new one.
+            $prof->insert(
+                {
+                    -password  => $prof->_rand_str(8),
+                    -activated => 1,
+                }
+            );
+        }
+        else { 
+            warn '$prof exists.'
+                if $t; 
+        }
+        # done with $prof.
+        undef($prof);
+
+        my $new_vals = {};
+        my $old_vals = {};
+
+        require DADA::Profile::Fields;
+        my $dpf = DADA::Profile::Fields->new( { -email => $args->{-email} } );
+        if ( $dpf->exists( { -email => $args->{-email} } ) ) {
+            $old_vals = $dpf->get;
+            delete( $old_vals->{email} );
+            delete( $old_vals->{email_name} );
+            delete( $old_vals->{email_domain} );
+        }
+        for my $uf ( @{ $dpfm->fields( { -show_hidden_fields => 1 } ) } ) {
+            if ( $thawed_gip->{$uf}->{enabled} == 1 ) {
+                $new_vals->{$uf} = $named_vals->{ $thawed_gip->{$uf}->{geoip_data_type} };
+            }
+            else {
+                if(defined($old_vals->{$uf})) { 
+                    $new_vals->{$uf} = $old_vals->{$uf};
+                }
+                else {
+                    $new_vals->{$uf} = ''; 
+                }
+            }
+        }
+        if($t){ 
+            require Data::Dumper; 
+            warn 'inserting: ' . Data::Dumper::Dumper($new_vals); 
+        }
+        $dpf->insert( { -fields => $new_vals, } );
+    }
+    return 1;
+
+}
 
 
 sub logged_subscriber_count {
@@ -365,6 +511,7 @@ sub open_log {
     my ($args)               = @_;
     $args->{-record_as_open} = 0; # Well, yeah
     $args->{-event}          = 'open'; 
+    $args->{-update_fields}  = 1; 
     return $self->mass_mailing_event_log($args); 
 }
 sub num_subscribers_log {
@@ -373,6 +520,7 @@ sub num_subscribers_log {
     $args->{-record_as_open} = 0; 
     $args->{-event}          = 'num_subscribers'; 
     $args->{-details}        = $args->{-num};
+    $args->{-update_fields}  = 0; 
     return $self->mass_mailing_event_log($args); 
 }
 sub total_recipients_log {
@@ -381,6 +529,7 @@ sub total_recipients_log {
     $args->{-record_as_open} = 0; 
     $args->{-event}          = 'total_recipients'; 
     $args->{-details}        = $args->{-num};
+    $args->{-update_fields}  = 0; 
     return $self->mass_mailing_event_log($args); 
 }
 sub forward_to_a_friend_log {
@@ -388,12 +537,14 @@ sub forward_to_a_friend_log {
     my ($args)               = @_;
     $args->{-record_as_open} = 0; 
     $args->{-event}          = 'forward_to_a_friend'; 
+    $args->{-update_fields}  = 0; # I guess we could...  
     return $self->mass_mailing_event_log($args); 
 }
 sub view_archive_log {
     my $self                 = shift;
     my ($args)               = @_;
     $args->{-record_as_open} = 0; 
+    $args->{-update_fields}  = 0;
     $args->{-event}          = 'view_archive'; 
     return $self->mass_mailing_event_log($args); 
 }
@@ -410,6 +561,7 @@ sub bounce_log {
     $args->{-record_as_open} = 0; 
     $args->{-event}          = $bounce_type; 
     $args->{-details}        = $args->{-email}; # I know, it's weird. 
+    $args->{-update_fields}  = 0; 
     return $self->mass_mailing_event_log($args); 
 }
 sub error_sending_to_log {
@@ -417,6 +569,7 @@ sub error_sending_to_log {
     my ($args)               = @_;
     $args->{-record_as_open} = 0; 
     $args->{-event}          = 'errors_sending_to'; 
+    $args->{-update_fields}  = 0; 
     return $self->mass_mailing_event_log($args); 
 }
 sub unsubscribe_log { 
@@ -424,6 +577,7 @@ sub unsubscribe_log {
     my ($args)               = @_;
     $args->{-record_as_open} = 1; 
     $args->{-event}          = 'unsubscribe'; 
+    $args->{-update_fields}  = 0; 
     return $self->mass_mailing_event_log($args); 
 }
 sub abuse_log { 
@@ -431,6 +585,7 @@ sub abuse_log {
     my ($args)               = @_;
     $args->{-record_as_open} = 0; 
     $args->{-event}          = 'abuse_report';
+    $args->{-update_fields}  = 0; 
     return $self->mass_mailing_event_log($args); 
 }
 
@@ -2519,7 +2674,14 @@ sub purge_log {
 
 
 sub remote_addr {
-    return $ENV{'REMOTE_ADDR'} || '127.0.0.1';
+    if(exists($ENV{HTTP_X_FORWARDED_FOR})){ 
+        # http://en.wikipedia.org/wiki/X-Forwarded-For
+        my ($client, $proxies) = split(',', $ENV{HTTP_X_FORWARDED_FOR}, 2); 
+        return $client; 
+    }
+    else { 
+        return $ENV{'REMOTE_ADDR'} || '127.0.0.1';
+    }
 }
 
 

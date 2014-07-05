@@ -1642,16 +1642,18 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
     msg_labeled_as_spam_msg => undef,
 
     # Tracker
-    tracker_record_view_count => 10,
-
-    tracker_auto_parse_links        => 1,
-    tracker_auto_parse_mailto_links => 0,
-    tracker_track_opens_method      => 'directly',
-
-    tracker_track_email => 1,
+    tracker_record_view_count                       => 10,
+    tracker_auto_parse_links                        => 1,
+    tracker_auto_parse_mailto_links                 => 0,
+    tracker_track_opens_method                      => 'directly',
+    tracker_track_email                             => 1,
 
     tracker_clean_up_reports                        => 1,
     tracker_show_message_reports_in_mailing_monitor => 0,
+
+    tracker_update_profiles_w_geo_ip_data            => 0,
+    tracker_update_profile_fields_ip_dada_meta       => undef, 
+
 
     #	tracker_enable_data_cache                           => 1,
     #	tracker_dada_cache_expires                          => 1, # in hours

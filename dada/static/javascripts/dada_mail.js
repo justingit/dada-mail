@@ -972,7 +972,8 @@ $(document).ready(function() {
 
 	if ($("#plugins_tracker_default").length) {
 		tracker_parse_links_setup();
-		
+		tracker_toggle_tracker_track_email_options(); 
+	
 		message_history_html();
 		$("body").on("change", '#tracker_record_view_count', function(event) {
 			tracker_change_record_view();
@@ -990,9 +991,43 @@ $(document).ready(function() {
 		$("body").on("click", '.tracker_parse_links_setup', function(event) {
 			tracker_parse_links_setup();
 		});
-
-
-
+		
+		$("body").on("click", '#tracker_track_email', function(event) {
+			tracker_toggle_tracker_track_email_options();
+		});
+		
+		
+		var field_name_group_selected = [];
+		$('div#field_name_group input[type=checkbox]').each(function() {
+		   if ($(this).prop("checked") === true) {
+				if ($('#' + dt).is(':hidden')) {
+					$('#' + dt).show('fade');
+				}
+		   }
+		   else {
+				var dt = $(this).attr("data-target");
+				if ($('#' + dt).is(':visible')) {
+					$('#' + dt).hide('fade');
+				}
+		   }
+		});
+		
+		$("body").on("click", '.field_checkbox', function(event) {
+			var dt = $(this).attr("data-target");
+			if($(this).prop("checked") === true){ 
+				if ($('#' + dt).is(':hidden')) {
+					$('#' + dt).show('fade');
+				}
+			}
+			else { 
+				if ($('#' + dt).is(':visible')) {
+					$('#' + dt).hide('fade');
+				}
+			}
+		});
+		
+		
+		
 	}
 	// Plugins >> Password Protect Directories
 	if ($("#plugins_password_protect_directories_default").length) {
@@ -2789,6 +2824,19 @@ function tracker_parse_links_setup() {
 		}
 		if ($('#tracker_auto_parse_links_info').is(':visible')) {
 			$('#tracker_auto_parse_links_info').hide('blind');
+		}
+	}
+}
+
+function tracker_toggle_tracker_track_email_options() { 
+	if ($("#tracker_track_email").prop("checked") === true) {
+		if ($('#tracker_track_email_options').is(':hidden')) {
+			$('#tracker_track_email_options').show('blind');
+		}
+	}
+	else { 
+		if ($('#tracker_track_email_options').is(':visible')) {
+			$('#tracker_track_email_options').hide('blind');
 		}
 	}
 }
