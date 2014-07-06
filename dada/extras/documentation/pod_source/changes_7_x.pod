@@ -8,9 +8,51 @@
 
 =head3 Stationary
 
-Draft Messages were introduced in Dada Mail recently, allowing one to save an unfinished message, to be sent at a later time. Many users also wanted the ability to have a message design they could use to start additional messages, and be kept around, until it was no longer needed (draft would be removed, once the message was sent out)
+Draft Messages were introduced in Dada Mail recently, allowing one to save an unfinished message to be sent at a later time. 
+Many users also wanted the ability to have a message design they could use to start additional messages, and be kept around, until it was no longer needed (a draft would be removed, once the message was sent out).
 
-Similar to Message Drafts, Dada Mail now supports B<Stationary>. Stationary are messages you can use as a starter for mailing list messages you would like to send out. Unlike a draft message, Stationary will be saved to be reused for as many times as you'd like. 
+Similar to Message Drafts, Dada Mail now supports B<Stationary>. 
+Stationary are messages you can use as a starter for mailing list messages you would like to send out. 
+Unlike a draft message, Stationary will be saved to be reused for as many times as you'd like. 
+
+=head3 Tracker: Update Profiles w/Geo IP information 
+
+There's now an option to update a subscriber's profile fields w/information gathered using the IP address of an open/clickthrough. Any profile field may be updated, and the following information can be recorded: 
+
+=over
+
+=item * IP Address
+
+=item * Two-letter Country Code (example: US)
+
+=item * Three-letter Country Code (example: USA)
+
+=item * Country Name
+
+=item * Region/State
+
+=item * Postal Code
+
+=item * Latitude (Signed degrees format)
+
+=item * Longitude (Signed degrees format)
+
+=item * Metro Code
+
+=item * Area Code
+
+=back
+
+This information can then be used to search your Subscribers and send a partial message out. 
+
+I<This product includes GeoLite data created by MaxMind, available from L<http://www.maxmind.com/>>
+
+
+=head2 Bugfixes 7.1.0 
+
+=head3 Bridge: POP3 Test ignores "Use SSL" Pref
+
+L<https://github.com/justingit/dada-mail/issues/449>
 
 =head2 7.0.5
 
