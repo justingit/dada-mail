@@ -237,7 +237,7 @@ my %bridge_plugin_configs = (
 	Soft_Max_Size_Of_Any_Message        => {default => 1048576, if_blank => 1048576},
 	Max_Size_Of_Any_Message             => {default => 2621440, if_blank => 2621440},
 	Plugin_URL                          => {default => '',      if_blank => 'undef'}, 
-	Allow_Manual_Run                    => {default => 1,       if_blank => 'undef'}, 
+	Allow_Manual_Run                    => {default => 1,       if_blank => 0}, 
 	Manual_Run_Passcode                 => {default => '',      if_blank => 'undef'},  
 	Room_For_One_More_Check             => {default => 1,       if_blank => 0},
 	Enable_POP3_File_Locking            => {default => 1,       if_blank => 0}, 
