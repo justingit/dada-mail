@@ -4155,8 +4155,9 @@ sub membership {
     my $profile_exists = 0; 
     require DADA::Profile; 
     my $prof = DADA::Profile->new({ -email => $email } ); 
-    $profile_exists = $prof->exists; 
-
+	if($prof) {
+		$profile_exists = $prof->exists; 
+	}
     if ($process) {
         if ($root_login != 1 && $ls->param('allow_profile_editing') != 1) {
             die
