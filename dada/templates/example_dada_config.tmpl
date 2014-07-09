@@ -276,6 +276,17 @@ $AMAZON_SES_OPTIONS = {
 };
 <!-- /tmpl_if -->
 
+<!-- tmpl_if configure_mandrill --> 
+#---------------------------------------------------------------------#
+# Mandrill Options
+
+$MANDRILL_OPTIONS = { 
+    api_url                          => 'https://mandrillapp.com/api/1.0/users/info.json', 
+    api_key                          => '<!-- tmpl_var mandrill_api_key -->', 
+	Allowed_Sending_Quota_Percentage => '<!-- tmpl_var mandrill_Allowed_Sending_Quota_Percentage -->',
+};
+<!-- /tmpl_if -->
+
 
 
 <!-- tmpl_if cut_list_settings_default -->
@@ -412,6 +423,11 @@ $PLUGIN_CONFIGS = {
 <!-- /tmpl_if -->
 
 
+<!-- tmpl_if configure_program_name -->
+#---------------------------------------------------------------------#
+# Program Name Options
+$PROGRAM_NAME = '<!-- tmpl_var program_name_PROGRAM_NAME default="Dada Mail" -->'; 
+<!-- /tmpl_if -->
 
 
 # start cut for list control panel menu

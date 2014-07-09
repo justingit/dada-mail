@@ -251,24 +251,78 @@ sub batch_params {
     #/ We can override things, for previewing:
 
     # Amazon SES:
-    if	( $sending_method eq 'amazon_ses' || ( $self->{ls}->param('sending_method') eq 'smtp' && $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/ ) )
-    { 
-		require POSIX;
-        my $batch_size = 0;
-        my $batch_wait = 0;
-
-        require DADA::App::AmazonSES;
-        my $ses = DADA::App::AmazonSES->new;
+    my $using_amazon_ses = 0; 
+    my $using_mandrill   = 0;
+    
+    if(
+        $sending_method eq 'amazon_ses' 
+        && $amazon_ses_auto_batch_settings == 1
+    || ( 
+           $self->{ls}->param('sending_method') eq 'smtp' 
+        && $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/
+        && $amazon_ses_auto_batch_settings == 1
+       )
+    ) {
+        $using_amazon_ses = 1; 
+    }
+    elsif(
+        $self->{ls}->param('sending_method') eq 'smtp' 
+        && $self->{ls}->param('smtp_server') =~ m/smtp\.mandrillapp\.com/ 
+        && $amazon_ses_auto_batch_settings == 1
+        ){ 
+        $using_mandrill = 1; 
+    }
+    
+    require POSIX;
+    my $batch_size = 0;
+    my $batch_wait = 0;
+	
+    
+    if	($using_amazon_ses == 1 
+        || $using_mandrill == 1) { 
+            
+        my $status = undef; 
+        my $SentLast24Hours = undef; 
+        my $Max24HourSend = undef; 
+        my $MaxSendRate = undef; 
+        my $quota_Max24HourSend = undef; 
         
-        # Save stats, between executions: 
-        my ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ); 
-        if($ses->_should_get_saved_ses_stats == 1) { 
-            ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->_get_saved_ses_stats;            
+        if($using_amazon_ses == 1) { 
+            require DADA::App::AmazonSES;
+            my $ses = DADA::App::AmazonSES->new;
+            # Save stats, between executions: 
+            ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ); 
+            if($ses->_should_get_saved_ses_stats == 1) { 
+                ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->_get_saved_ses_stats;            
+            }
+            else { 
+                ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats;
+            #                  0          10_000             5
+                $ses->_save_ses_stats($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate);
+            }
+            $quota_Max24HourSend = ($Max24HourSend * $ses->allowed_sending_quota_percentage) / 100;
+    		
+        }
+        elsif($using_mandrill == 1){ 
+            require DADA::App::Mandrill;
+            my $man = DADA::App::Mandrill->new;
+            # Save stats, between executions: 
+            ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ); 
+            if($man->_should_get_saved_man_stats == 1) { 
+                ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $man->_get_saved_man_stats; 
+            }
+            else { 
+                ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $man->get_stats;
+            #                  0          10_000             5
+                use Data::Dumper; 
+                warn Dumper([( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate )]); 
+            
+                 $man->_save_man_stats($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate);
+            }    
+            $quota_Max24HourSend = ($Max24HourSend * $man->allowed_sending_quota_percentage) / 100;
         }
         else { 
-            ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats;
-        #                  0          10_000             5
-            $ses->_save_ses_stats($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate);
+            die "what?"; 
         }
     
 #		if($t) {
@@ -278,7 +332,6 @@ sub batch_params {
 #			 warn '$MaxSendRate' . $MaxSendRate
 #	 	}
 		
-		my $quota_Max24HourSend = ($Max24HourSend * $ses->allowed_sending_quota_percentage) / 100;
 		
 #		warn '$quota_Max24HourSend bef' , $quota_Max24HourSend; 
 		

@@ -92,10 +92,18 @@
 		</td>
 		<td>
 		<p><label for="amazon_ses_auto_batch_settings">
-			Automatically set batching speeds based on your Amazon SES limits
+		    <!-- tmpl_if expr="(type_of_service eq 'mandrill')" --> 
+			    Automatically set batching speeds based on your Mandrill limits
+            <!-- tmpl_else --> 
+                Automatically set batching speeds based on your Amazon SES limits
+		    <!-- /tmpl_if -->
 		</label>
 		<br />
-		Batch settings will automatically adjust, based on your Amazon SES limits and number of messages sent in the last 24 hours. </p>
+		<!-- tmpl_if expr="(type_of_service eq 'mandrill')" --> 
+	        Batch settings will automatically adjust, based on your Mandrill limits and number of messages sent in the last 24 hours. </p>		
+		<!-- tmpl_else -->
+		    Batch settings will automatically adjust, based on your Amazon SES limits and number of messages sent in the last 24 hours. </p>
+		<!-- /tmpl_if --> 
 		</td>
 	</tr>
 	<!-- /tmpl_if --> 

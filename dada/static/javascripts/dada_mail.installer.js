@@ -115,9 +115,19 @@ $(document).ready(function() {
 		$("body").on('click', "#install_wysiwyg_editors", function(event) {
 			installer_checkbox_toggle_option_groups('install_wysiwyg_editors', 'install_wysiwyg_editors_options');
 		});
+
+		$("body").on('click', "#configure_program_name", function(event) {
+			installer_checkbox_toggle_option_groups('configure_program_name', 'configure_program_name_options'); 
+		});
+
 		$("body").on('click', "#configure_amazon_ses", function(event) {
 			installer_checkbox_toggle_option_groups('configure_amazon_ses', 'amazon_ses_options'); 
 		});
+
+		$("body").on('click', "#configure_mandrill", function(event) {
+			installer_checkbox_toggle_option_groups('configure_mandrill', 'mandrill_options'); 
+		});
+
 
 		$("body").on('click', "#configure_profiles", function(event) {
 			installer_checkbox_toggle_option_groups('configure_profiles', 'profiles_options');
@@ -161,19 +171,21 @@ $(document).ready(function() {
 		installer_toggle_dada_files_dirOptions();
 		installer_toggle_captcha_type_options();
 
-		installer_checkbox_toggle_option_groups('install_bridge', 'bridge_configuration');  
-		installer_checkbox_toggle_option_groups('install_bounce_handler', 'bounce_handler_configuration');  
-		installer_checkbox_toggle_option_groups('install_wysiwyg_editors', 'install_wysiwyg_editors_options');
-		installer_checkbox_toggle_option_groups('configure_amazon_ses', 'amazon_ses_options'); 
-		installer_checkbox_toggle_option_groups('configure_profiles', 'profiles_options');
-		installer_checkbox_toggle_option_groups('configure_templates', 'template_options');
-		installer_checkbox_toggle_option_groups('configure_security', 'security_options');
-		installer_checkbox_toggle_option_groups('configure_captcha', 'captcha_options');
+		installer_checkbox_toggle_option_groups('install_bridge',                        'bridge_configuration');  
+		installer_checkbox_toggle_option_groups('install_bounce_handler',                'bounce_handler_configuration');  
+		installer_checkbox_toggle_option_groups('install_wysiwyg_editors',               'install_wysiwyg_editors_options');
+		installer_checkbox_toggle_option_groups('configure_program_name',                'configure_program_name_options');
+		installer_checkbox_toggle_option_groups('configure_amazon_ses',                  'amazon_ses_options'); 
+		installer_checkbox_toggle_option_groups('configure_mandrill',                    'mandrill_options'); 
+		installer_checkbox_toggle_option_groups('configure_profiles',                    'profiles_options');
+		installer_checkbox_toggle_option_groups('configure_templates',                   'template_options');
+		installer_checkbox_toggle_option_groups('configure_security',                    'security_options');
+		installer_checkbox_toggle_option_groups('configure_captcha',                     'captcha_options');
 		installer_checkbox_toggle_option_groups('configure_global_mailing_list_options', 'global_mailing_list_options');
-		installer_checkbox_toggle_option_groups('configure_mass_mailing', 'mass_mailing_options');
-		installer_checkbox_toggle_option_groups('configure_confirmation_token', 'confirmation_token_options');
-		installer_checkbox_toggle_option_groups('configure_cache', 'cache_options');
-		installer_checkbox_toggle_option_groups('configure_debugging', 'debugging_options');
+		installer_checkbox_toggle_option_groups('configure_mass_mailing',                'mass_mailing_options');
+		installer_checkbox_toggle_option_groups('configure_confirmation_token',          'confirmation_token_options');
+		installer_checkbox_toggle_option_groups('configure_cache',                       'cache_options');
+		installer_checkbox_toggle_option_groups('configure_debugging',                   'debugging_options');
 
 
 		$("#dada_files_help").hide();

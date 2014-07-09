@@ -1488,14 +1488,28 @@ editors also have the ability to make simple HTML tables for basic layouts.
 		</p>
 	</fieldset> 	
 	</div> 
+<!-- /tmpl_if -->
+
+
+
+
+<!-- tmpl_if show_program_name_options --> 
+
+	<p>
+		<input type="checkbox" name="configure_program_name" id="configure_program_name" value="1" />			
+	<label for="configure_program_name">Configure Program Name</label>
+	</p>
+	<div id="configure_program_name_options">
+	<fieldset>
+		<p>
+			<label for="program_name_PROGRAM_NAME">
+				Program Name: 
+			</label>
+			<input type="text" name="program_name_PROGRAM_NAME" id="program_name_PROGRAM_NAME" value="<!-- tmpl_var PROGRAM_NAME -->" class="midi" />
+		</p>
+	</fieldset>
+	</div> 
 <!-- /tmpl_if --> 
-
-
-
-
-
-
-
 
 
 <!-- tmpl_if show_amazon_ses_options --> 
@@ -1553,6 +1567,36 @@ editors also have the ability to make simple HTML tables for basic layouts.
 	</fieldset> 	
 	</div> 
 <!-- /tmpl_if --> 
+
+
+<!-- tmpl_if show_mandrill_options --> 
+
+	<p>
+		<input type="checkbox" name="configure_mandrill" id="configure_mandrill" value="1" />			
+	<label for="configure_mandrill">Configure Mandrill</label>
+	</p>
+	<div id="mandrill_options">
+	<fieldset> 
+    
+		<p>
+			<label style="width: 18em;float: left;text-align: right;margin-right: 0.5em;display: block" for="mandrill_api_key">
+				API Key:
+			</label> 
+			<input type="text" name="mandrill_api_key" id="mandrill_api_key" value="" class="midi" />
+		</p>
+
+		
+		<p><label  style="width: 18em;float: left;text-align: right;margin-right: 0.5em;display: block" for="amazon_ses_Allowed_Sending_Quota_Percentage">
+		    Allow <!-- tmpl_var PROGRAM_NAME --> to Utilize:
+		</label> 
+            <!-- tmpl_var mandrill_Allowed_Sending_Quota_Percentage_popup_menu -->% of the Total Mandrill Sending Quota. 
+        </p>
+        
+	</fieldset> 	
+	</div> 
+	
+<!-- /tmpl_if --> 
+
 
 </fieldset> 
 

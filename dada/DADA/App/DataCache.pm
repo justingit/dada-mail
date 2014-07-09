@@ -75,7 +75,7 @@ sub _init {
 sub cache_dir {
 
     my $self = shift;
-    return if $DADA::Config::DATA_CACHE  ne '1';
+    # return if $DADA::Config::DATA_CACHE  ne '1';
     return DADA::App::Guts::make_safer( $DADA::Config::TMP . '/_data_cache' );
 
 }

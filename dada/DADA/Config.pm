@@ -391,6 +391,11 @@ $AMAZON_SES_OPTIONS ||= {
 	AWSSecretKey                     => undef,
 	Allowed_Sending_Quota_Percentage => 90,
 };
+$MANDRILL_OPTIONS ||= { 
+    api_url => 'https://mandrillapp.com/api/1.0/users/info.json', 
+    api_key => undef, 
+    Allowed_Sending_Quota_Percentage => 90,
+};
 
 $SHOW_ADMIN_LINK        ||= 1;
 $ADMIN_FLAVOR_NAME      ||= 'admin';

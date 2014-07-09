@@ -2738,13 +2738,26 @@ sub mass_mailing_preferences {
 
 
         my $show_amazon_ses_options = 0;
+        my $type_of_service         = 'ses'; 
+        
         if (
-            $ls->param('sending_method') eq 'amazon_ses'
+            
+            ($ls->param('sending_method') eq 'amazon_ses'
             || (   $ls->param('sending_method') eq 'smtp'
                 && $ls->param('smtp_server') =~ m/amazonaws\.com/ )
+            ) || 
+            (
+                (   $ls->param('sending_method') eq 'smtp'
+                && $ls->param('smtp_server') =~ m/smtp\.mandrillapp\.com/  )
+            )
           )
         {
             $show_amazon_ses_options = 1;
+            if( 
+               $ls->param('sending_method') eq 'smtp'
+            && $ls->param('smtp_server') =~ m/smtp\.mandrillapp\.com/  ) { 
+                $type_of_service = 'mandrill'; 
+            }
         }
 
         my @message_amount = ( 1 .. 180 );
@@ -2789,6 +2802,7 @@ sub mass_mailing_preferences {
                     batch_size              => $batch_size,
                     batch_wait              => $batch_wait,
                     show_amazon_ses_options => $show_amazon_ses_options,
+                    type_of_service         => $type_of_service, 
                 },
                 -list_settings_vars_param => {
                     -list   => $list,
@@ -2883,6 +2897,8 @@ sub amazon_ses_get_stats {
         $ls->param('sending_method') eq 'amazon_ses'
         || (   $ls->param('sending_method') eq 'smtp'
             && $ls->param('smtp_server') =~ m/amazonaws\.com/ )
+        || (   $ls->param('sending_method') eq 'smtp'
+            && $ls->param('smtp_server') =~ m/smtp\.mandrillapp\.com/  )
       )
     {
 
@@ -2892,17 +2908,35 @@ sub amazon_ses_get_stats {
     my $MaxSendRate                      = undef;
     my $allowed_sending_quota_percentage = undef;
 
-        if ( $has_ses_options == 1 ) {
-            require DADA::App::AmazonSES;
-            my $ses = DADA::App::AmazonSES->new;
-            ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats;
-            $allowed_sending_quota_percentage = $ses->allowed_sending_quota_percentage; 
-            
-        }
-        print $q->header();
-        require DADA::Template::Widgets;
-        e_print(
-            DADA::Template::Widgets::screen(
+    my $using_ses = 0; 
+    my $using_man = 0; 
+    
+    if (
+        $ls->param('sending_method') eq 'amazon_ses'
+        || (   $ls->param('sending_method') eq 'smtp' && $ls->param('smtp_server') =~ m/amazonaws\.com/ )
+            && $has_ses_options == 1 
+        ) {    
+        require DADA::App::AmazonSES;
+        my $ses = DADA::App::AmazonSES->new;
+        ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats;
+        $allowed_sending_quota_percentage = $ses->allowed_sending_quota_percentage; 
+        $using_ses = 1; 
+        
+    }
+    elsif(
+        $ls->param('sending_method') eq 'smtp'
+        && $ls->param('smtp_server') =~ m/smtp\.mandrillapp\.com/  ){ 
+        require DADA::App::Mandrill;
+        my $man = DADA::App::Mandrill->new;
+        ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $man->get_stats;
+        $allowed_sending_quota_percentage = 100; 
+        $using_man = 1; 
+        
+    }
+    print $q->header();
+    require DADA::Template::Widgets;
+    e_print(
+        DADA::Template::Widgets::screen(
                 {
                     -screen => 'amazon_ses_get_stats_widget.tmpl',
                     -expr   => 1,
@@ -2913,6 +2947,8 @@ sub amazon_ses_get_stats {
                         Max24HourSend                    => commify($Max24HourSend),
                         SentLast24Hours                  => commify($SentLast24Hours),
                         allowed_sending_quota_percentage => $allowed_sending_quota_percentage,
+                        using_ses => $using_ses, 
+                        using_man => $using_man, 
                     }
                 }
             )
@@ -2953,10 +2989,14 @@ sub previewBatchSendingSpeed {
             require DADA::Mail::MailOut;
             my $mo = DADA::Mail::MailOut->new( { -list => $list } );
             my $enabled;
-            ( $enabled, $mass_send_amount, $bulk_sleep_amount, ) =
+            ( $enabled, $mass_send_amount, $bulk_sleep_amount ) =
               $mo->batch_params( { -amazon_ses_auto_batch_settings => 1 } );
-        }
 
+              use Data::Dumper; 
+              warn Dumper([$enabled, $mass_send_amount, $bulk_sleep_amount]); 
+          }
+
+        
         if ( $bulk_sleep_amount > 0 && $mass_send_amount > 0 ) {
 
             my $per_sec = $mass_send_amount / $bulk_sleep_amount;

@@ -215,6 +215,8 @@ my $advanced_config_params = {
     show_debugging_options              => 1,
     show_confirmation_token_options     => 1,
     show_amazon_ses_options             => 1,
+    show_mandrill_options               => 1,
+    show_program_name_options           => 1,
     show_annoying_whiny_pro_dada_notice => 0,
 };
 
@@ -624,6 +626,12 @@ sub scrn_configure_dada_mail {
 	    -values  => [reverse((1..100))],
 	    -default => $DADA::Config::AMAZON_SES_OPTIONS->{Allowed_Sending_Quota_Percentage},
 	); 
+	my $mandrill_Allowed_Sending_Quota_Percentage_popup_menu = $q->popup_menu(
+	    -name    => 'mandrill_Allowed_Sending_Quota_Percentage', 
+	    -id      => 'mandrill_Allowed_Sending_Quota_Percentage', 
+	    -values  => [reverse((1..100))],
+	    -default => $DADA::Config::MADRILL->{Allowed_Sending_Quota_Percentage},
+	); 
 	
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
@@ -675,7 +683,9 @@ sub scrn_configure_dada_mail {
                 support_files_dir_url          => support_files_dir_url_guess(),
                 Support_Files_Dir_Name         => $Support_Files_Dir_Name,
                 amazon_ses_requirements_widget => DADA::Template::Widgets::amazon_ses_requirements_widget(),
+                
                 amazon_ses_Allowed_Sending_Quota_Percentage_popup_menu => $amazon_ses_Allowed_Sending_Quota_Percentage_popup_menu, 
+                mandrill_Allowed_Sending_Quota_Percentage_popup_menu   => $mandrill_Allowed_Sending_Quota_Percentage_popup_menu, 
                 Big_Pile_Of_Errors             => $Big_Pile_Of_Errors,
                 Trace                          => $Trace,
             },
@@ -1061,7 +1071,15 @@ sub grab_former_config_vals {
 	if(keys %{$BootstrapConfig::CONFIRMATION_TOKEN_OPTIONS}) { 
 		$local_q->param('configure_confirmation_token', 1);
 		$local_q->param('confirmation_token_expires', $BootstrapConfig::CONFIRMATION_TOKEN_OPTIONS->{expires});
-	}		
+	}	
+	
+	
+	# PROGRAM NAME 
+	if(defined($BootstrapConfig::MAILOUT_AT_ONCE_LIMIT)) { 
+	    $local_q->param('configure_program_name', 1);
+	    $local_q->param('program_name_PROGRAM_NAME',   $BootstrapConfig::PROGRAM_NAME);
+	}
+		
 	
 	# $AMAZON_SES_OPTIONS
 	if(defined($BootstrapConfig::AMAZON_SES_OPTIONS->{AWSAccessKeyId})
@@ -1078,8 +1096,12 @@ sub grab_former_config_vals {
 		if(exists($BootstrapConfig::AMAZON_SES_OPTIONS->{Allowed_Sending_Quota_Percentage})) { 
     		$local_q->param('amazon_ses_Allowed_Sending_Quota_Percentage', $BootstrapConfig::AMAZON_SES_OPTIONS->{Allowed_Sending_Quota_Percentage});
 		}
-		
-		
+	}
+	
+	# Mandrill
+	if(keys %$BootstrapConfig::MANDRILL_OPTIONS) { 
+        $local_q->param('configure_mandrill', 1);
+        $local_q->param('mandrill_api_key',   1);
 	}
 
 	#use Data::Dumper; 
@@ -1768,7 +1790,12 @@ sub create_dada_config_file {
 		$confirmation_token_params->{expires} = strip($q->param('confirmation_token_expires'));
 	}
 
-	
+    my $program_name_params = {}; 
+    if($q->param('configure_program_name') == 1){ 
+        $program_name_params->{configure_program_name}    = 1; 
+        $program_name_params->{program_name_PROGRAM_NAME} = clean_up_var(strip($q->param('program_name_PROGRAM_NAME'))); 
+    }
+    
 	my $amazon_ses_params = {}; 
 	if($q->param('configure_amazon_ses') == 1){ 
 		$amazon_ses_params->{configure_amazon_ses}             = 1; 
@@ -1776,6 +1803,12 @@ sub create_dada_config_file {
 		$amazon_ses_params->{AWSAccessKeyId}                   = strip($q->param('amazon_ses_AWSAccessKeyId'));
 		$amazon_ses_params->{AWSSecretKey}                     = strip($q->param('amazon_ses_AWSSecretKey')); 
         $amazon_ses_params->{Allowed_Sending_Quota_Percentage} = strip($q->param('amazon_ses_Allowed_Sending_Quota_Percentage')); 
+	}
+	my $mandrill_params = {}; 
+	if($q->param('configure_mandrill') == 1){ 
+		$mandrill_params->{configure_mandrill}                        = 1; 
+		$mandrill_params->{mandrill_api_key}                          = clean_up_var(strip($q->param('mandrill_api_key'))); 
+        $mandrill_params->{mandrill_Allowed_Sending_Quota_Percentage} =strip($q->param('mandrill_Allowed_Sending_Quota_Percentage')); 
 	}
 
     my $bounce_handler_params = {};         
@@ -1840,7 +1873,9 @@ sub create_dada_config_file {
 				%{$global_mailing_list_options},
 				%{$mass_mailing_params},
 				%{$confirmation_token_params},
+				%{$program_name_params},
 				%{$amazon_ses_params},
+				%{$mandrill_params},
 				%{$bounce_handler_params},
 				%{$bridge_params},
             }
