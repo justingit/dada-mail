@@ -241,7 +241,7 @@ my %bridge_plugin_configs = (
 	Manual_Run_Passcode                 => {default => '',      if_blank => 'undef'},  
 	Room_For_One_More_Check             => {default => 1,       if_blank => 0},
 	Enable_POP3_File_Locking            => {default => 1,       if_blank => 0}, 
-	Check_List_Owner_Return_Path_Header => {default => 1,       if_blank => 0}, 
+	Check_List_Owner_Return_Path_Header => {default => 0,       if_blank => 0}, 
 	Check_Multiple_Return_Path_Headers  => {default => 0,       if_blank => 0},
 );
 
@@ -568,7 +568,31 @@ sub scrn_configure_dada_mail {
 		$q->param('install_blog_index', 1); 
 		$q->param('install_default_mass_mailing_messages', 1); 
 		$q->param('install_change_list_shortname', 1); 
-		$q->param('global_config', 0); 		
+		$q->param('global_config', 0);
+		
+		for my $d(qw(
+		    MessagesAtOnce
+		    Soft_Max_Size_Of_Any_Message
+		    Max_Size_Of_Any_Message
+		    Allow_Manual_Run
+		    Room_For_One_More_Check
+		    Enable_POP3_File_Locking
+		    Check_List_Owner_Return_Path_Header
+            )
+        ) {  
+            $q->param('bridge_' . $d, $bridge_plugin_configs{$d}->{default});
+        }
+        for my $d(qw(
+            Port                    
+            AUTH_MODE               
+            MessagesAtOnce          
+            Allow_Manual_Run        
+            Enable_POP3_File_Locking
+            )
+        ) {  
+            $q->param('bounce_handler_' . $d, $bounce_handler_plugin_configs{$d}->{default});
+        }
+		
 	}
 
 =cut	
@@ -818,7 +842,7 @@ sub grab_former_config_vals {
     		        $local_q->param('bridge_' . $config, $BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{$config}); 
     		    }
     		    else { 
-	    		    $local_q->param('bridge_' . $config, $bounce_handler_plugin_configs{$config}->{default});    		        		        
+	    		    $local_q->param('bridge_' . $config, $bridge_plugin_configs{$config}->{default});    		        		        
     		    }
     		}
     		else {
