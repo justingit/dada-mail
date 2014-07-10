@@ -818,7 +818,7 @@ sub grab_former_config_vals {
     		        $local_q->param('bridge_' . $config, $BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{$config}); 
     		    }
     		    else { 
-    		        $local_q->param('bridge_' . $config, undef); 
+	    		    $local_q->param('bridge_' . $config, $bounce_handler_plugin_configs{$config}->{default});    		        		        
     		    }
     		}
     		else {
@@ -840,8 +840,7 @@ sub grab_former_config_vals {
     		        $local_q->param('bounce_handler_' . $config, $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{$config}); 
     		    }
     		    else { 
-    		        $local_q->param('bounce_handler_' . $config, undef); 
-    		        
+	    		    $local_q->param('bounce_handler_' . $config, $bounce_handler_plugin_configs{$config}->{default});    		        		        
     		    }
     		}
     		else {     		    
