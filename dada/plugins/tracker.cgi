@@ -487,6 +487,7 @@ sub message_individual_email_activity_report_table {
 		{
 			-mid    => $mid, 
 			-email  => $email, 
+			-plugin_url => $Plugin_Config->{Plugin_URL}, 
 
 		}
 	);

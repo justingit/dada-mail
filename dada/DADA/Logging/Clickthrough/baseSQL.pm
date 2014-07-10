@@ -2626,6 +2626,7 @@ sub message_individual_email_activity_report_table {
 					email         => $args->{-email}, 
 					mid           => $args->{-mid},
 					report        => $report, 
+					Plugin_URL    => $args->{-plugin_url}, 
 
 	            },
 	        }

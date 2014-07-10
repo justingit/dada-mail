@@ -4848,11 +4848,13 @@ sub membership_activity {
         my $activity_tables = [];
         my ( $total, $mids ) = $rd->get_all_mids;
         foreach my $mid (@$mids) {
-
+            my $plugin_url = $DADA::Config::S_PROGRAM_URL; 
+               $plugin_url =~ s/mail\.cgi$/plugins\/tracker.cgi/; 
             my $activity_table = $rd->message_individual_email_activity_report_table(
                 {
-                    -mid   => $mid,
-                    -email => $email,
+                    -mid        => $mid,
+                    -email      => $email,
+                    -plugin_url => $plugin_url,
 
                 }
             );
