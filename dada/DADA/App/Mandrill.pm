@@ -124,7 +124,7 @@ sub _get_raw_stats {
         #warn Dumper([200, $data->{today}->{sent}, ( int( $data->{hourly_quota} ) * 24 ), 5 ]); 
         
         # I made up, "5"
-        return ( 200, $data->{today}->{sent}, ( int( $data->{hourly_quota} ) * 24 ), 5 );
+        return ( 200, $data->{today}->{sent}, ( int( $data->{hourly_quota} ) * 24 ), 2 );
     }
     else {
         #warn 'no!'; 
