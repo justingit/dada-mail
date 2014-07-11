@@ -1241,7 +1241,7 @@ sub list_invite {
         e_print($scrn);
 
     }
-    elsif ( $process =~ m/send test invitation|send a test invitation|send invitations/i )
+    elsif ( $process =~ m/send test invitation|send a test invitation|send invitations|send\: invit|send\: test invit/i )
     {    # $process is dependent on the label of the button - which is not a good idea
 
         my @address                 = $q->param('address');
@@ -1450,7 +1450,7 @@ sub list_invite {
 
     }
     else {
-        die "unknown process type? Whazah?!";
+        die "unknown process type: " . $process;
     }
 }
 
