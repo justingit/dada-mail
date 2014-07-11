@@ -1,5 +1,13 @@
 =pod
 
+=head2 7.1.1
+
+=head2 Bugfixes 7.1.1
+
+=head3  Send: Invitation broken in v7.1.0
+
+L<https://github.com/justingit/dada-mail/issues/451>
+
 =head2 7.1.0
 
 =head2 Summary 7.1.0
