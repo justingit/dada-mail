@@ -1025,11 +1025,13 @@ sub _pp {
     require DADA::Template::Widgets;
 
     my $a = ( Email::Address->parse($from) )[0]->address;
+    my ($e_name, $e_domain) = split('@', $a, 2); 
 
     if ( $a eq $self->{ls}->param('list_owner_email') ) {
         # We don't have to "On Behalf Of" ourselves.
         return $from;
     }
+    
     else {
         $a =~ s/\@/ _at_ /;
         my $p          = ( Email::Address->parse($from) )[0]->phrase;
@@ -1039,7 +1041,12 @@ sub _pp {
             {
                 -data                     => \$d,
                 -expr                     => 1,
-                -vars                     => { original_from_phrase => $p, },
+                -vars   => { 
+                    original_from_phrase      => $p, 
+                    'subscriber.email'        => $a, 
+                    'subscriber.email_name'   => $e_name, 
+                    'subscriber.email_domain' => $e_name, 
+                },
                 -list_settings_vars_param => {
                     -list   => $self->{ls}->param('list'),
                     -dot_it => 1,
