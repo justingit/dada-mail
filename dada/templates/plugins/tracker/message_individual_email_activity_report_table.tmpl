@@ -13,9 +13,11 @@
 				<p>
 					<strong> 
 						<!-- tmpl_var email -->
-						<a href="<!-- tmpl_var PLUGIN_URL -->?f=message_individual_email_activity_csv&mid=<!-- tmpl_var mid -->&email=<!-- tmpl_var email escape="URL" -->" style="color:#FFFFFF"> 
-						    (export .csv)
-						</a>
+						<!-- tmpl_if report --> 
+						    <a href="<!-- tmpl_var PLUGIN_URL -->?f=message_individual_email_activity_csv&mid=<!-- tmpl_var mid -->&email=<!-- tmpl_var email escape="URL" -->" style="color:#FFFFFF"> 
+						        (export .csv)
+						    </a>
+						<!-- /tmpl_if -->
 					</strong> 
 
 				</p>

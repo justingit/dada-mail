@@ -107,7 +107,7 @@ $Plugin_Config->{Room_For_One_More_Check} = 1;
 
 $Plugin_Config->{Enable_POP3_File_Locking} = 1;
 
-$Plugin_Config->{Check_List_Owner_Return_Path_Header} = 1;
+$Plugin_Config->{Check_List_Owner_Return_Path_Header} = 0;
 
 # Gmail seems to have problems with this...
 $Plugin_Config->{Check_Multiple_Return_Path_Headers} = 0;

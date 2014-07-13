@@ -308,6 +308,11 @@ loaded with dummy/placeholder text to be used as a starting point for a new mail
 
 This copy can reside outside of the program at a different file location or URL, or can be inputted directly into the plugin itself.
 
+=head1 Deprecation Notice
+
+Since Dada Mail now supports Stationary, this plugin is now  listed as B<deprecated>,
+ and will be removed in a later version of Dada Mail, as soon as v7.2.0. 
+
 =head1 Installation 
 
 This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. The below installation instructions go through how to install the plugin manually.

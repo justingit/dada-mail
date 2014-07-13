@@ -19,7 +19,7 @@ use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;    # For now, my dear.
 use Try::Tiny; 
 
-my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_Logging_Clickthrough};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_Logging_Clickthrough};
 
 sub new {
 
@@ -2626,6 +2626,7 @@ sub message_individual_email_activity_report_table {
 					email         => $args->{-email}, 
 					mid           => $args->{-mid},
 					report        => $report, 
+					Plugin_URL    => $args->{-plugin_url}, 
 
 	            },
 	        }

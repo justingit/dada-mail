@@ -1,5 +1,13 @@
 =pod
 
+=head2 7.1.1
+
+=head2 Bugfixes 7.1.1
+
+=head3  Send: Invitation broken in v7.1.0
+
+L<https://github.com/justingit/dada-mail/issues/451>
+
 =head2 7.1.0
 
 =head2 Summary 7.1.0
@@ -47,12 +55,18 @@ This information can then be used to search your Subscribers and send a partial 
 
 I<This product includes GeoLite data created by MaxMind, available from L<http://www.maxmind.com/>>
 
-
 =head2 Bugfixes 7.1.0 
 
 =head3 Bridge: POP3 Test ignores "Use SSL" Pref
 
 L<https://github.com/justingit/dada-mail/issues/449>
+
+=head3 Deprecation Notice
+
+=head4 default_mass_mailing_messages.cgi
+
+The B<default_mass_mailing_messages.cgi> plugin has similar features to the Stationary feature. 
+As such, the plugin will be deprecated in a future version of Dada Mail, but not before the B<v7.2.0> release. 
 
 =head2 7.0.5
 
@@ -71,7 +85,7 @@ otherwise not parsing correctly. It's ultimately a work in progress, but we're v
 =item * We've work with Bridge, and making sure some of the emails it creates shows message Subjects encoded correctly. There 
 was some issues with UTF-8 strings showing either the original encoded, or being double-encoded. 
 
-=item * The, "Backdate" option or archving in the Send a Message (and friends) screen should default to the current date
+=item * The, "Backdate" option or archiving in the Send a Message (and friends) screen should default to the current date
 
 =back
 
