@@ -1098,7 +1098,7 @@ sub grab_former_config_vals {
 	
 	
 	# PROGRAM NAME 
-	if(defined($BootstrapConfig::MAILOUT_AT_ONCE_LIMIT)) { 
+	if(defined($BootstrapConfig::PROGRAM_NAME)) { 	
 	    $local_q->param('configure_program_name', 1);
 	    $local_q->param('program_name_PROGRAM_NAME',   $BootstrapConfig::PROGRAM_NAME);
 	}
@@ -3736,8 +3736,7 @@ no strict;
 
 BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1;}
 use DADA::Config; 
-
-my $PROGRAM_NAME; 
+ 
 my $VER; 
 my $PROGRAM_CONFIG_FILE_DIR = 'auto'; 
 my $OS = $^O;
