@@ -77,7 +77,7 @@ sub get_stats {
 	my $MaxSendRate = undef; 
 	
 	try { 
-        ($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate) = $self->_get_raw_stats; 
+        ($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate) = $self->_get_raw_stats($args); 
 	}
 	catch { 
 		return (undef, undef, undef, undef); 
@@ -94,6 +94,16 @@ sub get_stats {
 
 sub _get_raw_stats {
     my $self = shift;
+    my ($args) = @_;
+
+    if ( !exists( $args->{api_key} ) ) {
+        $args = $DADA::Config::MANDRILL_OPTIONS;
+    }
+    for(qw(api_url)){ 
+        if(!exists($args->{$_})){ 
+            $args->{$_} = $DADA::Config::MANDRILL_OPTIONS->{$_}; 
+        }
+    }
     require LWP::UserAgent;
     require URI::Escape;
     require JSON;
@@ -105,32 +115,39 @@ sub _get_raw_stats {
     );
 
     # Create a request
-    my $req = HTTP::Request->new( POST => $DADA::Config::MANDRILL_OPTIONS->{api_url} );
+    my $req = HTTP::Request->new( POST => $args->{api_url} );
     $req->content_type('application/json');
-    $req->content( $json->encode( { key => $DADA::Config::MANDRILL_OPTIONS->{api_key} } ) );
+    $req->content( $json->encode( { key => $args->{api_key} } ) );
 
     my $res = $ua->request($req);
-    
-    if ( $res->is_success ) {        
+
+    if ( $res->is_success ) {
         my $post_data = $res->content;
-        $data = $json->decode($post_data);
-        #use Data::Dumper; 
-        #warn Dumper($data); 
+        $data = $json->decode($post_data) or warn "that didn't work.";
+
         
-        if(! exists($data->{today}->{sent})) { 
-            $data->{today}->{sent} = 1; 
+        #use Data::Dumper;
+        #warn Dumper($data);
+
+        if ( !exists( $data->{today}->{sent} ) ) {
+            $data->{today}->{sent} = 0;
         }
-        #use Data::Dumper; 
-        #warn Dumper([200, $data->{today}->{sent}, ( int( $data->{hourly_quota} ) * 24 ), 5 ]); 
-        
-        # I made up, "5"
-        return ( 200, $data->{today}->{sent}, ( int( $data->{hourly_quota} ) * 24 ), 2 );
+
+        #use Data::Dumper;
+        #warn Dumper([200, $data->{today}->{sent}, ( int( $data->{hourly_quota} ) * 24 ), 5 ]);
+#        if($data->{status} eq 'error'){ 
+#            return (0, undef, undef, undef); 
+#        }
+#        else { 
+            # I made up, "2"
+            return ( 200, $data->{today}->{sent}, ( int( $data->{hourly_quota} ) * 24 ), 2 );
+ #       }
     }
     else {
-        #warn 'no!'; 
-        warn $res->status_line; 
+        #warn 'no!';
+        warn $res->status_line;
         warn $res->content;
-        return ( 0, undef, undef, undef);
+        return ( 0, undef, undef, undef );
     }
 
 }

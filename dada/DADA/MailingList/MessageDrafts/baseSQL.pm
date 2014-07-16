@@ -221,7 +221,7 @@ sub has_draft {
 
     my $count = $sth->fetchrow_array;
 
-    warn '$count ' . $count; 
+#    warn '$count ' . $count; 
     
     $sth->finish;
 
@@ -309,18 +309,16 @@ sub fetch {
     my $saved = '';
 
     if ( !$id ) {
-        
-        use Data::Dumper; 
-        warn 'params (no id)' . Dumper([$self->{list}, $args->{-screen}, $args->{-role}]); 
-        
+        #use Data::Dumper; 
+        #warn 'params (no id)' . Dumper([$self->{list}, $args->{-screen}, $args->{-role}]); 
         
         $sth->execute( $self->{list}, $args->{-screen}, $args->{-role} )
           or croak "cannot do statement '$query'! $DBI::errstr\n";
     }
     else {
      
-        use Data::Dumper; 
-        warn 'params (id!)' . Dumper([$self->{list}, $args->{-screen}, $args->{-role}]); 
+        #use Data::Dumper; 
+        #warn 'params (id!)' . Dumper([$self->{list}, $args->{-screen}, $args->{-role}]); 
         
         $sth->execute( $self->{list}, $args->{-screen}, $args->{-role}, $id )
           or croak "cannot do statement '$query'! $DBI::errstr\n";

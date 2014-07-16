@@ -272,23 +272,22 @@ sub run {
 
         # Old-school switcheroo
         my %Mode = (
-
-            install_or_upgrade       => \&install_or_upgrade,
-            check_install_or_upgrade => \&check_install_or_upgrade,
-            install_dada             => \&install_dada,
-            scrn_configure_dada_mail => \&scrn_configure_dada_mail,
-            check                    => \&check,
-            move_installer_dir_ajax  => \&move_installer_dir_ajax,
-            show_current_dada_config => \&show_current_dada_config,
-            screen                   => \&screen,
-            cgi_test_sql_connection  => \&cgi_test_sql_connection,
-            cgi_test_pop3_connection => \&cgi_test_pop3_connection,
-			cgi_test_user_template   => \&cgi_test_user_template, 
-            cgi_test_amazon_ses_configuration =>
-              \&cgi_test_amazon_ses_configuration,
-			cgi_test_CAPTCHA_reCAPTCHA => \&cgi_test_CAPTCHA_reCAPTCHA,
-			#cgi_test_CAPTCHA_reCAPTCHA_iframe => \&cgi_test_CAPTCHA_reCAPTCHA_iframe, 
-			cgi_test_default_CAPTCHA => \&cgi_test_default_CAPTCHA, 
+            install_or_upgrade                  => \&install_or_upgrade,
+            check_install_or_upgrade            => \&check_install_or_upgrade,
+            install_dada                        => \&install_dada,
+            scrn_configure_dada_mail            => \&scrn_configure_dada_mail,
+            check                               => \&check,
+            move_installer_dir_ajax             => \&move_installer_dir_ajax,
+            show_current_dada_config            => \&show_current_dada_config,
+            screen                              => \&screen,
+            cgi_test_sql_connection             => \&cgi_test_sql_connection,
+            cgi_test_pop3_connection            => \&cgi_test_pop3_connection,
+			cgi_test_user_template              => \&cgi_test_user_template, 
+            cgi_test_amazon_ses_configuration   =>  \&cgi_test_amazon_ses_configuration,
+            cgi_test_mandrill_configuration     => \&cgi_test_mandrill_configuration, 
+			cgi_test_CAPTCHA_reCAPTCHA          => \&cgi_test_CAPTCHA_reCAPTCHA,
+			#cgi_test_CAPTCHA_reCAPTCHA_iframe  => \&cgi_test_CAPTCHA_reCAPTCHA_iframe, 
+			cgi_test_default_CAPTCHA            => \&cgi_test_default_CAPTCHA, 
 			cgi_test_captcha_reCAPTCHA_Mailhide => \&cgi_test_captcha_reCAPTCHA_Mailhide,  
         );
         my $flavor = $q->param('f');
@@ -3112,7 +3111,6 @@ sub cgi_test_user_template {
 }
 
 sub cgi_test_amazon_ses_configuration { 
-	
 	my $amazon_ses_AWSAccessKeyId                   = strip($q->param('amazon_ses_AWSAccessKeyId')); 
 	my $amazon_ses_AWSSecretKey                     = strip($q->param('amazon_ses_AWSSecretKey')); 
 	my $amazon_ses_AWS_endpoint                     = strip($q->param('amazon_ses_AWS_endpoint')); 
@@ -3132,14 +3130,16 @@ sub cgi_test_amazon_ses_configuration {
 			}
 		); 
 	};
-	
+
 	print $q->header(); 
+	
 	require DADA::Template::Widgets;
 	e_print(DADA::Template::Widgets::screen(
 		{
 			-screen => 'amazon_ses_get_stats_widget.tmpl',
 			-expr   => 1, 
 			-vars   => {
+			    using_ses                        => 1,
 				has_ses_options                  => 1, 
 				status                           => $status,
 				MaxSendRate                      => $MaxSendRate,
@@ -3151,6 +3151,46 @@ sub cgi_test_amazon_ses_configuration {
 		}
 	));
 }
+
+
+
+sub cgi_test_mandrill_configuration { 
+	my $mandrill_api_key                          = strip($q->param('mandrill_api_key')); 
+    my $mandrill_Allowed_Sending_Quota_Percentage = strip($q->param('mandrill_Allowed_Sending_Quota_Percentage')); 
+    
+	my ($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ); 
+	
+	eval { 
+		require DADA::App::Mandrill; 
+		my $man = DADA::App::Mandrill->new; 
+		($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $man->get_stats(
+			{ 
+                api_key =>                          $mandrill_api_key, 
+                Allowed_Sending_Quota_Percentage => $mandrill_Allowed_Sending_Quota_Percentage, 
+			}
+		); 
+	};
+
+	print $q->header(); 
+	
+	require DADA::Template::Widgets;
+	e_print(DADA::Template::Widgets::screen(
+		{
+			-screen => 'amazon_ses_get_stats_widget.tmpl',
+			-expr   => 1, 
+			-vars   => {
+			    using_man                        => 1,
+				status                           => $status,
+				MaxSendRate                      => $MaxSendRate,
+				Max24HourSend                    => $Max24HourSend,
+				SentLast24Hours                  => $SentLast24Hours,
+				allowed_sending_quota_percentage => $mandrill_Allowed_Sending_Quota_Percentage,
+                
+			}
+		}
+	));
+}
+
 
 
 sub cgi_test_default_CAPTCHA { 
