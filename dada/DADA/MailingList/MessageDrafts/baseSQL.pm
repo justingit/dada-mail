@@ -212,8 +212,8 @@ sub has_draft {
     warn 'QUERY: ' . $query
       if $t;
     
-    use Data::Dumper; 
-    warn 'params' . Dumper([$self->{list}, $args->{-screen}, $args->{-role}]); 
+#    use Data::Dumper; 
+#    warn 'params' . Dumper([$self->{list}, $args->{-screen}, $args->{-role}]); 
     
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute( $self->{list}, $args->{-screen}, $args->{-role} )
