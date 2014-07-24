@@ -1477,7 +1477,7 @@ sub fill_in_draft_msg {
             -role   => $args->{-role},
         } 
         ) ) {
-        warn 'has draft'; 
+        # warn 'has draft'; 
         
         my $q_draft = $d->fetch( 
             { 
