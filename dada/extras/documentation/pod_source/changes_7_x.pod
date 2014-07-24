@@ -1,5 +1,26 @@
 =pod
 
+
+=head2 7.2.0
+
+=head2 Features 7.2.0
+
+=head3 Set Program Name in Installer
+
+The Installer now has the option to set an alternative name for the app! 
+
+=head3 Experiemental Mandril Support for Automatic Batch Settings
+
+Much like Amazon SES, Mandril has a hourly quota that can dynamically change. 
+
+Dada Mail now has support to use Mandril's web server to retrieve the hourly quota you're given. 
+
+The Dada Mail Installer now allows you to specific the API Key for your Mandril account. 
+
+You can then use Mandrill's SMTP service to send messages, using Dada Mail. Once SMTP is set up, 
+the option to automaticaly adjust your batch settings to match your quota in Mandrill will appear in the 
+I<Mail Sending - Mass Mailing Options> screen.
+
 =head2 7.1.1
 
 =head2 Bugfixes 7.1.1
