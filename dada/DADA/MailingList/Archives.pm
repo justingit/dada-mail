@@ -503,7 +503,10 @@ sub create_index_nav {
     my $full_stop = $stopped_at;
 
     my $url = $DADA::Config::PROGRAM_URL;
-
+    if($admin == 1){ 
+        $url = $DADA::Config::S_PROGRAM_URL;
+    }
+    
     if ( $mod_check > 0 ) {
 
         # substract it from the iterate
@@ -511,7 +514,7 @@ sub create_index_nav {
         $full_stop += $fixer;
     }
 
-    $back = ( $full_stop - ( $iterate ) );
+    $back = ( $full_stop - ( $iterate * 2 ) );
 
     my $prev_link = '';
     my $next_link = '';
@@ -546,12 +549,14 @@ sub create_index_nav {
             $next_link_start = $forward;
         }
     }
+    
 
     require DADA::Template::Widgets;
     return DADA::Template::Widgets::screen(
         {
             -screen => 'archive_index_nav_table_widget.tmpl',
             -list   => $self->{name},
+            -expr   => 1, 
             -vars   => {
                 url             => $url,
                 flavor_label    => $af,
