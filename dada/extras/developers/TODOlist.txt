@@ -9,6 +9,10 @@ Key:
 [x] Done. 
 [*] Naw...
 [?] Someday
+[ ] A way to set an alternative path to perl
+
+
+[ ] write about caching - no one really understands
 
 [ ] It may be nice to have a preview of what the header will look like, for p.p. mode, as the default is a little complicated. 
 

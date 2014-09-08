@@ -1157,7 +1157,8 @@ sub _from_url {
 	require LWP::UserAgent;
 	my $ua = LWP::UserAgent->new;
 	   $ua->agent('Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')'); 
-
+       # http://stackoverflow.com/questions/1285305/how-can-i-accept-gzip-compressed-content-using-lwpuseragent
+       
 	if(defined($record->{$type . '_ver'}->{proxy})){ 
 		$ua->proxy(
 			['http', 'ftp'], 
@@ -1169,6 +1170,13 @@ sub _from_url {
 	my $req = HTTP::Request->new(
 				GET => $url
 			);
+			
+			#my $can_accept = HTTP::Message::decodable();
+        	#my $res = $ua->get($url, 
+        	#    'Accept-Encoding' => $can_accept,
+        	#);
+        	
+        	
 	# Pass request to the user agent and get a response back
 	my $res = $ua->request($req);
 	if(
@@ -1182,7 +1190,8 @@ sub _from_url {
 	}
 	# Check the outcome of the response
 	if ($res->is_success) {
-	    return $res->content;
+	    # return $res->decoded_content; #things should be already decoded, here. 
+	    return safely_decode($res->content);
 	}
 	else {
 	    carp "Problem fetching webpage, '$url':" . $res->status_line;

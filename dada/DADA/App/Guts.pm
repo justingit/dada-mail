@@ -2935,19 +2935,63 @@ sub slurp {
 
 }
 
-sub grab_url { 
-	my $url = shift; 
-	eval { require LWP::Simple };
-	if($@){
-		carp "LWP::Simple not installed! $!"; 
-		return undef;
-	}else{ 
-		eval { $LWP::Simple::ua->agent('Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')'); };
-		my $tmp = undef; 
-		   $tmp = LWP::Simple::get($url);
-		   $tmp = safely_decode($tmp); 
-		   return $tmp; 
-	}
+sub grab_url {
+
+    my $url = shift;
+
+    try {
+        require LWP;
+    }
+    catch {
+        carp "LWP not installed! $!";
+        return undef;
+
+    };
+
+    require LWP;
+    require LWP::UserAgent;
+    require HTTP::Message;
+
+    my $ua = LWP::UserAgent->new;
+       $ua->agent( 'Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')' );
+
+    if ( can_use_compress_zlib() == 1 ) {
+        my $can_accept = HTTP::Message::decodable();
+        my $res = $ua->get( $url, 
+            'Accept-Encoding' => $can_accept, 
+        );
+        if ($res->is_success) {
+    	    return $res->decoded_content;
+    	}
+    	else { 
+    	    carp "Problem fetching webpage, '$url':" . $res->status_line;
+    		return undef; 
+    	}
+    }
+    else {
+        my $res = $ua->get($url);
+        if ($res->is_success) {
+            return safely_decode( $res->content );
+        }
+    	else { 
+    	    carp "Problem fetching webpage, '$url':" . $res->status_line;
+    		return undef; 
+    	}
+    	
+    }
+}
+
+
+
+sub can_use_compress_zlib { 
+    	my $can_use_compress_zlib = 1; 
+    	try { 
+    		require Compress::Zlib ;
+    	}
+    	catch { 
+    		$can_use_compress_zlib = 0; 	
+    	};
+    	return $can_use_compress_zlib;
 }
 
 sub can_use_LWP_Simple { 
