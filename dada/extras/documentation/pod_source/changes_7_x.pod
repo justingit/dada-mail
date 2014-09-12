@@ -1,5 +1,20 @@
 =pod
 
+=head1 Dada Mail Changelog for v7.x
+
+=head2 7.2.1
+
+=head2 Changes 7.2.1
+
+=head3 Membership - View - (individual address) - Profile
+
+We've changed the wording on the button to Update the Profile from, B<Edit Information> to, B<Update Information> (per request)
+
+=head2 Bugfixes 7.2.1
+
+=head3  Message Archives - View Archive 
+
+L<https://github.com/justingit/dada-mail/issues/453>
 
 =head2 7.2.0
 
@@ -137,7 +152,6 @@ L<https://github.com/justingit/dada-mail/issues/441>
 
 L<https://github.com/justingit/dada-mail/issues/440>
 
-=head1 Dada Mail Changelog for v7.x
 
 =head2 7.0.4
 
