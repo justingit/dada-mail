@@ -5772,7 +5772,7 @@ sub add_email {
                                 -on_dupe => 'ignore_add',
                             },
                         }
-                    );                         
+                    );
                     $new_total++;
                     if ( defined($dmls) ) {    # undef means it wasn't added.
                         $new_email_count++;
@@ -5791,6 +5791,8 @@ sub add_email {
                         # DEV: 
                         # This needs to send the Profile Password, if it's known. 
                         #
+                        # Well, that's wrong, isn't it? Since @address may hold
+                        # addresses we've skipped. 
                         DADA::App::MassSend::just_subscribed_mass_mailing(
                             {
                                 -list      => $list,

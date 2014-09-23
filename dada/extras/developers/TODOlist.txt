@@ -11,6 +11,7 @@ Key:
 [?] Someday
 [ ] A way to set an alternative path to perl
 
+[ ] Upgrade KCFinder, we're a few years out of date. 
 
 [ ] write about caching - no one really understands
 

@@ -136,7 +136,11 @@ sub add {
         ##########################################################################
         warn 'Profile Fields'
           if $t;
-        if ( exists $args->{-fields} && keys %{ $args->{-fields} } ) {
+         if (! exists $args->{-fields} ) {    
+             $args->{-fields}  = {};
+         }   
+                
+        if (keys %{ $args->{-fields} }) { 
             my $fields = undef;
 
             if ( exists( $args->{-dpfm_obj} ) ) {

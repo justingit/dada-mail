@@ -849,16 +849,7 @@ sub filter_subscribers_massaged_for_ht {
                 }
             }
         }
-        
-       # if(exists( $address->{errors}->{invalid_profile_fields} )){ 
-       #        if(!keys %{$address->{errors}->{invalid_profile_fields}}){ 
-       #            undef($address->{errors}->{invalid_profile_fields}); 
-       #            delete($address->{errors}->{invalid_profile_fields}); 
-        #    }
-    #    }
-        
-        
-        
+                
         push(
             @$new_emails,
             {
