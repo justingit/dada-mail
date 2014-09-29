@@ -3390,7 +3390,7 @@ function SetAttachmentUrl(url, width, height, alt) {
 	$("#" + $(field).attr("data-attachment")).val(new_val);
 	$("#" + $(field).attr("data-attachment") + '_remove_button').show();
 	oWindow = null;
-} /* core5 FileManager */
+}
 */
 
 
