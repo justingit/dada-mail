@@ -136,6 +136,13 @@ $(document).ready(function() {
 			}
 		});
 		
+		$("body").on("click", ".amazon_verify_email_in_warning", function(event) {
+			event.preventDefault();
+			amazon_verify_email($(this).attr("data-email"));
+		});
+		
+		
+		
 		$("body").on("submit", "#mass_mailing", function(event) {
 			event.preventDefault();
 		});
@@ -523,6 +530,12 @@ $(document).ready(function() {
 		if ($("#has_needed_cpan_modules").length) {
 			amazon_ses_get_stats();
 		}
+		
+		$("body").on("click", ".amazon_verify_email_in_warning", function(event) {
+			event.preventDefault();
+			amazon_verify_email($(this).attr("data-email"));
+		});
+	
 
 		sending_prefs_setup();
 		toggle_SASL_options();
@@ -555,7 +568,7 @@ $(document).ready(function() {
 
 		$("body").on("click", ".amazon_verify_email", function(event) {
 			event.preventDefault();
-			amazon_verify_email();
+			amazon_verify_email($("#amazon_ses_verify_email").val());
 		});
 	}
 	
@@ -1991,7 +2004,7 @@ function test_sending_preferences() {
 
 
 
-function amazon_verify_email() {
+function amazon_verify_email(email) {
 	
 	$.colorbox({
 		top: 0,
@@ -2003,7 +2016,7 @@ function amazon_verify_email() {
 		href: $("#s_program_url").val(),
 		data: {
 			f: 'amazon_ses_verify_email',
-			amazon_ses_verify_email: $("#amazon_ses_verify_email").val()
+			amazon_ses_verify_email: email
 		}
 	});
 	

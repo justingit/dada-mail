@@ -1,0 +1,18 @@
+<!-- tmpl_if expr="(using_ses eq '1') && (list_owner_ses_verified ne '1')" --> 
+    <div class="badweatherbox">
+	    <p>
+	        Your current <strong>List Owner</strong>, <!-- tmpl_var list_settings.list_owner_email escape="HTML" --> is not verified through <strong>Amazon SES</strong>.
+	        Sending email will not function correctly, until this address is verified.  
+	        <a href="" data-email="<!-- tmpl_var list_settings.list_owner_email escape="HTML" -->" class="amazon_verify_email_in_warning">Click to Verify</a>
+	        </p>
+	</div>
+<!-- /tmpl_if --> 
+<!-- tmpl_if expr="(using_ses eq '1') && (list_admin_ses_verified ne '1')" --> 
+    <div class="badweatherbox">
+	    <p>
+	        Your current <strong>List Administrator</strong>, <!-- tmpl_var list_settings.admin_email escape="HTML" --> is not verified through <strong>Amazon SES</strong>.
+	        Sending email will not function correctly, until this address is verified. 
+	        <a href="" data-email="<!-- tmpl_var list_settings.admin_email escape="HTML" -->" class="amazon_verify_email_in_warning">Click to Verify</a>
+	    </p>
+	</div>
+<!-- /tmpl_if -->
