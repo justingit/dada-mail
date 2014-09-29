@@ -11,6 +11,7 @@ Key:
 [?] Someday
 [ ] A way to set an alternative path to perl
 
+[] Are strange attachment names still working? 
 
 [ ] Bounce Handler should know about vacation messages, and forward them to the list owner, if it receives one. __cfduid
 
