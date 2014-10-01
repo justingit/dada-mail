@@ -429,6 +429,24 @@ if ( $ENV{PATH_INFO} ) {
         $q->param( 'auth_code', $pi_auth_code )
           if $pi_auth_code;
     }
+    elsif ( $info =~ m/^api/ ) {
+
+        my ($pi_flavor, $pi_list, $pi_service, $public_key, $pi_digest) = split( '/', $info );
+
+        require DADA::App::WebServices; 
+          my $ws = DADA::App::WebServices->new; 
+          my $r = $ws->request(
+              {
+                  -list       => $pi_list, 
+                  -service    => $pi_service, 
+                  -public_key => $public_key,
+                  -digest     => $pi_digest, 
+                  -cgi_obj    => $q, 
+              }
+           ); 
+           print $r;
+           $q->param('flavor', 'api'); 
+    }
     else {
         if ($info) {
             warn "Path Info present - but not valid? - '" . $ENV{PATH_INFO} . '" - filtered: "' . $info . '"'
@@ -508,6 +526,7 @@ sub run {
         'default'                                     => \&default,
         'subscribe'                                   => \&subscribe,
         'restful_subscribe'                           => \&restful_subscribe,
+        'api'                                         => \&api, 
         'token'                                       => \&token,
         'unsubscribe'                                 => \&unsubscribe,
         'unsubscription_request'                      => \&unsubscription_request,
@@ -585,6 +604,8 @@ sub run {
         'edit_type'                                   => \&edit_type,
         'edit_html_type'                              => \&edit_html_type,
         'list_options'                                => \&list_options,
+        'web_services'                                => \&web_services, 
+        'api'                                         => \&api, 
         'sending_preferences'                         => \&sending_preferences,
         'amazon_ses_verify_email'                     => \&amazon_ses_verify_email,
         'amazon_ses_get_stats'                        => \&amazon_ses_get_stats,
@@ -2407,8 +2428,8 @@ sub list_options {
     );
 
     $list = $admin_list;
+    
     require DADA::MailingList::Settings;
-
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
     my $can_use_mx_lookup = 0;
@@ -2541,6 +2562,57 @@ sub list_options {
 
         print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL . '?flavor=list_options&done=1' );
     }
+}
+
+
+
+sub api{};
+    
+sub web_services { 
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'web_services'
+    );
+
+    $list = $admin_list;
+    
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    
+    if(length($ls->param('public_api_key')) <= 0){ 
+        require DADA::Security::Password; 
+        $ls->save({public_api_key => DADA::Security::Password::generate_rand_string(undef, 21)}); 
+        undef $ls; 
+        $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    }
+    if(length($ls->param('private_api_key'))  <= 0) { 
+        require DADA::Security::Password; 
+        $ls->save({private_api_key => DADA::Security::Password::generate_rand_string(undef, 41)}); 
+        undef $ls; 
+        $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    }
+    
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+        {
+            -screen         => 'web_services.tmpl',
+            -with           => 'admin',
+            -expr           => 1,
+            -wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
+            -vars => {}
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+        }
+    );
+    e_print($scrn);
+    
+    
+        
 }
 
 sub sending_preferences {
@@ -5643,50 +5715,22 @@ sub add_email {
 
                 # This is what updates already existing profile fields and profile passwords; 
                 # 
-                my @update_fields_address = $q->param("update_fields_address"); 
+                my @update_fields_address          = $q->param("update_fields_address"); 
                 my $subscribed_fields_options_mode = $q->param('subscribed_fields_options_mode') || 'writeover_inc_password';
 
                 my $spass_om = 'writeover';                 
                 if($subscribed_fields_options_mode eq 'writeover_ex_password'){ 
                     $spass_om = 'preserve_if_defined'; 
                 }
-                
                 my $update_email_count = 0;
-                require DADA::Profile::Fields;
-                require DADA::Profile;
+                
+                
+                my @munged_update_addresses = (); 
                 for my $ua (@update_fields_address) {
-                    my $ua_info = $lh->csv_to_cds($ua);
-                    my $dpf = DADA::Profile::Fields->new( { -email => $ua_info->{email} } );
-                    $dpf->insert(
-                        {
-                            -fields => $ua_info->{fields},
-                            -mode   => 'writeover',
-                        }
-                    );
-                    if ( defined( $ua_info->{profile}->{password} ) && $ua_info->{profile}->{password} ne '' ) {
-                        my $prof = DADA::Profile->new( { -email => $ua_info->{email} } );
-                        if ($prof) {
-                            if ( $prof->exists ) {
-                                if($spass_om eq 'writeover') { 
-                                    $prof->update( { -password => $ua_info->{profile}->{password} } );
-                                }
-                                elsif($spass_om eq 'preserve_if_defined'){ 
-                                    #.... 
-                                }
-                            }
-                            else {
-                                $prof->insert(
-                                    {
-                                        -password  => $ua_info->{profile}->{password},
-                                        -activated => 1,
-                                    }
-                                );
-                            }
-                        }
-                    }
-                    $update_email_count++;
+                    push(@munged_update_addresses, $lh->csv_to_cds($ua));        
                 }
-                ##################################################################
+                                
+                # Insert Here. 
             }
         }
         

@@ -964,6 +964,47 @@ sub update {
 
 }
 
+sub update_multiple { 
+   my $self   = shift; 
+   my ($args) = @_;
+   
+   require DADA::Profile::Fields;
+
+   for my $ua_info (@munged_update_addresses) {
+       my $dpf = DADA::Profile::Fields->new( { -email => $ua_info->{email} } );
+       $dpf->insert(
+           {
+               -fields => $ua_info->{fields},
+               -mode   => 'writeover',
+           }
+       );
+       if ( defined( $ua_info->{profile}->{password} ) && $ua_info->{profile}->{password} ne '' ) {
+           my $prof = DADA::Profile->new( { -email => $ua_info->{email} } );
+           if ($prof) {
+               if ( $prof->exists ) {
+                   if($spass_om eq 'writeover') { 
+                       $prof->update( { -password => $ua_info->{profile}->{password} } );
+                   }
+                   elsif($spass_om eq 'preserve_if_defined'){ 
+                       #.... 
+                   }
+               }
+               else {
+                   $prof->insert(
+                       {
+                           -password  => $ua_info->{profile}->{password},
+                           -activated => 1,
+                       }
+                   );
+               }
+           }
+       }
+       $update_email_count++;
+   }
+   
+   
+}
+
 sub setup_profile {
     my $self = shift;
     my ($args) = @_;

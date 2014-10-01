@@ -1,0 +1,32 @@
+<!-- begin web_services.tmpl --> 
+
+<!-- tmpl_set name="title" value="Your Mailing List &#187; Web Services" -->
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		<!-- tmpl_var title -->
+	</div>
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
+
+
+<form> 
+    
+<fieldset> 
+    
+<p><strong>Public API Key:</strong></p> 
+
+<p>
+    <input type="text"  class="full" value="<!-- tmpl_var list_settings.public_api_key escape="HTML" -->" >
+</p> 
+
+<p><strong>Private API Key:</strong></p> 
+
+<p>
+<input type="text" class="full" value="<!-- tmpl_var list_settings.private_api_key escape="HTML" -->" >
+</p>
+
+</fieldset> 
+
+</form> 
+
+<!-- end web_services.tmpl --> 

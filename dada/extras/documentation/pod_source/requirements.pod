@@ -44,7 +44,7 @@ L</usr/local/cpanel/3rdparty/perl/514/bin/perl>
 
 See: 
 
-L<http://docs.cpanel.net/twiki/bin/vief/AllDocumentation/AllFAQ/PerlFAQ>
+L<https://documentation.cpanel.net/display/SDK/_PerlEnvironments>
 
 For more information. 
 

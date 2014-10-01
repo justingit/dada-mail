@@ -141,7 +141,7 @@ sub post_process_get {
                 last;
             }
         }
-
+        
         for ( 'sasl_smtp_password', 'pop3_password',
             'discussion_pop_password' )
         {
@@ -170,9 +170,7 @@ sub post_process_get {
 
         for ( keys %$li ) {
             if ( exists( $li->{$_} ) ) {
-
                 if ( !defined( $li->{$_} ) ) {
-
                     delete( $li->{$_} );
                 }
             }
