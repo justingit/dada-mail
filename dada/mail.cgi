@@ -430,23 +430,23 @@ if ( $ENV{PATH_INFO} ) {
           if $pi_auth_code;
     }
     elsif ( $info =~ m/^api/ ) {
-
-        my ($pi_flavor, $pi_list, $pi_service, $public_key, $pi_digest) = split( '/', $info );
-
-#        use Data::Dumper; 
-#        die Dumper(
-#           [
-#           $pi_flavor, $pi_list, $pi_service, $public_key, $pi_digest
-#           ] 
-#        ); 
-
+        
+        my ($pi_flavor, $pi_list, $pi_service, $pi_public_key, $pi_digest) = split( '/', $info );
+        # HTTP_AUTHORIZATION
+        if(!defined($pi_public_key) && !defined($pi_digest)){ 
+            my %incoming_headers = map { $_ => $q->http($_) } $q->http();
+            my $auth_h = $incoming_headers{HTTP_AUTHORIZATION};
+               $auth_h =~ s/^hmac //; 
+            ($pi_public_key, $pi_digest) = split(':', $auth_h); 
+        }
+        
         require DADA::App::WebServices; 
           my $ws = DADA::App::WebServices->new; 
           my $r = $ws->request(
               {
                   -list       => $pi_list, 
                   -service    => $pi_service, 
-                  -public_key => $public_key,
+                  -public_key => $pi_public_key,
                   -digest     => $pi_digest, 
                   -cgi_obj    => $q, 
               }
@@ -2576,6 +2576,7 @@ sub list_options {
 sub api{};
     
 sub web_services { 
+    
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'web_services'
@@ -2609,7 +2610,7 @@ sub web_services {
                 -Root_Login => $root_login,
                 -List       => $list,
             },
-            -vars => {}
+            -vars => {},
             -list_settings_vars_param => {
                 -list   => $list,
                 -dot_it => 1,

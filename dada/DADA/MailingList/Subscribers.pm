@@ -144,6 +144,10 @@ sub add_subscribers {
     my ($args) = @_; 
     
     my $addresses           = $args->{-addresses};
+    use Data::Dumper; 
+    print Dumper($addresses); 
+    
+    
     my $added_addresses     = []; 
     my $type                = $args->{-type}; 
     if(!exists($args->{-fields_options_mode})){ 
@@ -159,7 +163,6 @@ sub add_subscribers {
     # Each Address is a CSV line...
     for my $info (@$addresses) {
 
-        my $info = undef;
         my $dmls = undef;
 
         if (   $type eq 'list'
@@ -260,6 +263,8 @@ sub add_subscribers {
             warn "Problem updated Password Protected Directories: $@";
         }
     }
+    
+    return ($new_email_count, $skipped_email_count); 
     
 }
 
@@ -866,7 +871,6 @@ sub filter_subscribers_w_meta {
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
-
 
     for my $n_address(@{$info}){ 
 

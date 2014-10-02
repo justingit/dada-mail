@@ -1,5 +1,5 @@
 package DADA::App::WebServices;
-use strict; 
+use strict;
 
 use lib qw(
   ../../
@@ -8,16 +8,16 @@ use lib qw(
 
 use DADA::Config qw(!:DEFAULT);
 use JSON;
-use DADA::Config; 
+use DADA::Config;
 use DADA::App::Guts;
 use DADA::MailingList::Subscribers;
 use DADA::MailingList::Settings;
 use Digest::SHA qw(hmac_sha256_base64);
 use Carp qw(carp croak);
-use CGI (qw/:oldstyle_urls/);
-my $calculated_digest = undef; 
+#$Carp::Verbose = 1;
 
-$Carp::Verbose = 1; 
+use CGI (qw/:oldstyle_urls/);
+my $calculated_digest = undef;
 
 
 use vars qw($AUTOLOAD);
@@ -27,7 +27,7 @@ my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_WebServices};
 my %allowed = ( test => 0, );
 
 sub new {
-    warn 'hit!'; 
+    warn 'hit!';
     my $that = shift;
     my $class = ref($that) || $that;
 
@@ -64,236 +64,240 @@ sub AUTOLOAD {
 }
 
 sub _init {
-    my $self   = shift; 
-    $self->{q}  = CGI->new;
+    my $self = shift;
+    $self->{q} = CGI->new;
 }
 
-sub request { 
-    my $self   = shift; 
-    my $status = 1; 
+sub request {
+    my $self   = shift;
+    my $status = 1;
     my $errors = {};
-    my ($args) = @_; 
-    for(
-    '-list',       
-    '-service',    
-    '-public_key', 
-    '-digest',     
-    '-cgi_obj'){ 
-        
-        my $param = $_; 
-          $param =~ s/^\-//; 
-        
-        if(!exists($args->{$_})){ 
-            #croak "You MUST pass the, '" . $_ . "' paramater!"; 
-            $status = 0; 
-            $errors->{'missing_' . $param}
+    my ($args) = @_;
+    for ( '-list', '-service', '-public_key', '-digest', '-cgi_obj' ) {
+
+        my $param = $_;
+        $param =~ s/^\-//;
+
+        if ( !exists( $args->{$_} ) ) {
+
+            #croak "You MUST pass the, '" . $_ . "' paramater!";
+            $status = 0;
+            $errors->{ 'missing_' . $param };
         }
-        else { 
-            $self->{$param} = $args->{$_}; 
+        else {
+            $self->{$param} = $args->{$_};
         }
     }
 
-    $self->{ls} = DADA::MailingList::Settings->new({-list => $self->{list}}); 
-    
-    
-    
-    if($status == 1){ 
+    if ( $self->check_list() == 0 ) {
+        $status = 0;
+        $errors->{'invalid_list'};
+    }
+
+    if ( $status == 1 ) {
+        $self->{ls} = DADA::MailingList::Settings->new( { -list => $self->{list} } );
         ( $status, $errors ) = $self->check_request();
     }
-    
-    my $r = {}; 
 
-    if($status == 1){ 
-        
-    	if($self->{service} eq 'validate_subscription'){
-    		$r->{results} = $self->validate_subscription();
-    		$r->{status}  = 1; 
-    	}
-    	elsif($self->{service} eq 'subscription'){
-    		$r->{results} = $self->subscription();
-    		$r->{status}  = 1; 
-    	}
-    	elsif($self->{service} eq 'mass_email'){ 
-    		$r->{results} = $self->mass_email();
-    		$r->{status}  = 1; 
-    	}
-    	else { 
-    		$r = {
-    			status => 0, 
-    			errors => {invalid_request => 1}
-    		};
-    	}
+    my $r = {};
+
+    if ( $status == 1 ) {
+
+        if ( $self->{service} eq 'validate_subscription' ) {
+            $r->{results} = $self->validate_subscription();
+            $r->{status}  = 1;
+        }
+        elsif ( $self->{service} eq 'subscription' ) {
+            $r->{results} = $self->subscription();
+            $r->{status}  = 1;
+        }
+        elsif ( $self->{service} eq 'mass_email' ) {
+            $r->{results} = $self->mass_email();
+            $r->{status}  = 1;
+        }
+        else {
+            $r = {
+                status => 0,
+                errors => { invalid_request => 1 }
+            };
+        }
     }
-    else { 
-    	$r = {
-    		status        => 0, 
-    		errors        => $errors,
-    		#og_path_info  => $ENV{PATH_INFO},
-    		og_service    => $self->{service}, 
-    		og_query      => $self->{cgi_obj}->query_string(),
-    		og_digest     => $self->{digest}, 
-    		calculated_digest => $calculated_digest, 
-    	    public_api_key    => $self->{ls}->param('public_api_key'), 
-    	    private_api_key    => $self->{ls}->param('private_api_key'), 
-            
-    	};
+    else {
+        $r = {
+            status => 0,
+            errors => $errors,
+
+            #og_path_info  => $ENV{PATH_INFO},
+            og_service        => $self->{service},
+            og_query          => $self->{cgi_obj}->query_string(),
+            og_digest         => $self->{digest},
+            calculated_digest => $calculated_digest,
+
+            #public_api_key    => $self->{ls}->param('public_api_key'),
+            #private_api_key    => $self->{ls}->param('private_api_key'),
+        };
+        if ( exists( $self->{ls} ) ) {
+            $r->{public_api_key}  = $self->{ls}->param('public_api_key');
+            $r->{private_api_key} = $self->{ls}->param('private_api_key');
+        }
     }
-    
+
     my $d = $self->{q}->header(
         -type            => 'application/json',
         '-Cache-Control' => 'no-cache, must-revalidate',
         -expires         => 'Mon, 26 Jul 1997 05:00:00 GMT',
     );
 
-    my $json      = JSON->new->allow_nonref;
+    my $json = JSON->new->allow_nonref;
     $d .= $json->pretty->encode($r);
-    warn $d; 
+    warn $d;
     return $d;
-    
+
 }
 
+sub validate_subscription {
+    my $self      = shift;
+    my $addresses = $self->{cgi_obj}->param('addresses');
 
-sub validate_subscription { 
-	my $self              = shift; 
-	my $addresses         = $self->{cgi_obj}->param('addresses');
-	my $lh                = DADA::MailingList::Subscribers->new({-list => $self->{list}}); 
-	my $json              = JSON->new; 
-    my $decoded_addresses = $json->decode($addresses);	
-	
-    my $addresses = $lh->filter_subscribers_w_meta(
-    		{
-    			-emails => $decoded_addresses, 
-    			-type   => 'list',
-    		}
+    my $lh                = DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
+    my $json              = JSON->new;
+    my $decoded_addresses = $json->decode($addresses);
+
+    my $f_addresses = $lh->filter_subscribers_w_meta(
+        {
+            -emails => $decoded_addresses,
+            -type   => 'list',
+        }
     );
-	return $addresses;
+    return $f_addresses;
 }
-
 
 sub subscription {
-	
-	my $self              = shift; 
-	my $addresses         = $self->{cgi_obj}->param('addresses');
-	my $lh                = DADA::MailingList::Subscribers->new({-list => $self->{list}}); 
-	my $json              = JSON->new; 
-    my $decoded_addresses = $json->decode($addresses);	
-	
-	my $not_members_fields_options_mode = 'preserve_if_defined';
-	
-	my $addresses = $lh->filter_subscribers_w_meta(
-    		{
-    			-emails => $decoded_addresses, 
-    			-type   => 'list',
-    		}
+
+    my $self              = shift;
+    my $addresses         = $self->{cgi_obj}->param('addresses');
+    my $lh                = DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
+    my $json              = JSON->new;
+    my $decoded_addresses = $json->decode($addresses);
+
+    my $not_members_fields_options_mode = 'preserve_if_defined';
+
+    my $f_addresses = $lh->filter_subscribers_w_meta(
+        {
+            -emails => $decoded_addresses,
+            -type   => 'list',
+        }
     );
     my $subscribe_these = [];
-    my $filtered_out    = 0; 
-    
-    for(@$addresses) { 
-        if($_->{status} == 1){ 
-            push(@$subscribe_these, $_); 
+    my $filtered_out    = 0;
+
+    for (@$f_addresses) {
+        if ( $_->{status} == 1 ) {
+            push( @$subscribe_these, $_ );
         }
-        else { 
-            $filtered_out++; 
+        else {
+            $filtered_out++;
         }
     }
-	my ($new_email_count, $skipped_email_count) = $lh->add_subscribers(
-        { 
-            -addresses => $subscribe_these, 
-            -type      => 'list', 
-            #-fields_options_mode => undef, 
+
+    my ( $new_email_count, $skipped_email_count ) = $lh->add_subscribers(
+        {
+            -addresses => $subscribe_these,
+            -type      => 'list',
+
+            #-fields_options_mode => undef,
         }
-	);
-	
-	$skipped_email_count = $skipped_email_count + $filtered_out; 
-	
-	return {  
-		new_email_count     => $new_email_count, 
-		skipped_email_count => $skipped_email_count,
-	}
-	
+    );
+
+    $skipped_email_count = $skipped_email_count + $filtered_out;
+
+    return {
+        new_email_count     => $new_email_count,
+        skipped_email_count => $skipped_email_count,
+      }
+
 }
 
-sub mass_email { 
+sub mass_email {
 
-    my $self     = shift; 
-    my $subject  = $self->{cgi_obj}->param('subject');
-    my $format   = $self->{cgi_obj}->param('format');
-    my $message  = $self->{cgi_obj}->param('message');
-    
-    require  DADA::App::FormatMessages;
+    my $self    = shift;
+    my $subject = $self->{cgi_obj}->param('subject');
+    my $format  = $self->{cgi_obj}->param('format');
+    my $message = $self->{cgi_obj}->param('message');
+
+    require DADA::App::FormatMessages;
     my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
-       $fm->mass_mailing(1);
-       
-    my %headers = (); 
-       $headers{Subject} = $fm->_encode_header('Subject', $subject);
-            
-     my $type = 'text/plain'; 
-     if($format =~ m/html/i){ 
-         $type = 'text/html'; 
-     }
-     
-     require MIME::Entity; 
-     my $entity = MIME::Entity->build(
-         Type      => $type,
-         Charset   => $self->{ls}->param('charset_value'),
-         Data      => safely_encode($message), 
-    ); 
-    
-    my $msg_as_string = ( defined($entity) ) ? $entity->as_string : undef;        
-       $msg_as_string = safely_decode($msg_as_string);
-      
+    $fm->mass_mailing(1);
+
+    my %headers = ();
+    $headers{Subject} = $fm->_encode_header( 'Subject', $subject );
+
+    my $type = 'text/plain';
+    if ( $format =~ m/html/i ) {
+        $type = 'text/html';
+    }
+
+    require MIME::Entity;
+    my $entity = MIME::Entity->build(
+        Type    => $type,
+        Charset => $self->{ls}->param('charset_value'),
+        Data    => safely_encode($message),
+    );
+
+    my $msg_as_string = ( defined($entity) ) ? $entity->as_string : undef;
+    $msg_as_string = safely_decode($msg_as_string);
+
     $fm->Subject( $headers{Subject} );
 
     my ( $final_header, $final_body );
     eval { ( $final_header, $final_body ) = $fm->format_headers_and_body( -msg => $msg_as_string ); };
     if ($@) {
-        carp "problems! " . $@; 
+        carp "problems! " . $@;
         return;
     }
     require DADA::Mail::Send;
     my $mh = DADA::Mail::Send->new(
         {
             -list   => $self->{list},
-            -ls_obj => $self->{ls}, 
+            -ls_obj => $self->{ls},
         }
     );
 
-#    $mh->test( $self->test );
+    #    $mh->test( $self->test );
     my %mailing = ( $mh->return_headers($final_header), Body => $final_body, );
-    
+
     my $message_id = $mh->mass_send(
-            {
-                -msg             => {%mailing},
-            }
-        );
-        
+        {
+            -msg => {%mailing},
+        }
+    );
+
     if ($message_id) {
-        if($self->{ls}->param('archive_messages') == 1) { 
+        if ( $self->{ls}->param('archive_messages') == 1 ) {
             require DADA::MailingList::Archives;
             my $archive = DADA::MailingList::Archives->new( { -list => $self->{list} } );
-               $archive->set_archive_info( $message_id, $headers{Subject}, undef, undef, $mh->saved_message );
+            $archive->set_archive_info( $message_id, $headers{Subject}, undef, undef, $mh->saved_message );
         }
     }
-    
-    return { 
-        subject => $subject, 
-        message => $message, 
-        format  => $format, 
-    }
-    
+
+    return {
+        subject => $subject,
+        message => $message,
+        format  => $format,
+      }
+
 }
 
 sub check_request {
 
-    my $self    = shift; 
+    my $self = shift;
 
-    my $status  = 1;
-    my $errors  = {};
+    my $status = 1;
+    my $errors = {};
 
-    if ( $self->check_timestamp() == 0 ) {
+    if ( $self->check_nonce() == 0 ) {
         $status = 0;
-        $errors->{invalid_timestamp} = 1;
+        $errors->{invalid_nonce} = 1;
     }
     if ( $self->check_public_key() == 0 ) {
         $status = 0;
@@ -303,13 +307,20 @@ sub check_request {
         $status = 0;
         $errors->{invalid_digest} = 1;
     }
+    if ( $self->check_list() == 0 ) {
+        $status = 0;
+        $errors->{invalid_list} = 1;
+    }
 
-    return ($status, $errors);
+    return ( $status, $errors );
 }
 
-sub check_timestamp {
-    my $self = shift; 
-    if ( ( int($self->{cgi_obj}->param('timestamp')) + ( 60 * 5 ) ) < int(time) ) {
+sub check_nonce {
+    my $self = shift;
+    my ( $timestamp, $nonce ) = split( ':', $self->{cgi_obj}->param('nonce') );
+
+    # for now, we throw away $nonce, but we should probably save it for x amount of time
+    if ( ( int($timestamp) + ( 60 * 5 ) ) < int(time) ) {
         return 0;
     }
     else {
@@ -318,52 +329,59 @@ sub check_timestamp {
 }
 
 sub check_public_key {
-    
-    my $self = shift; 
+
+    my $self = shift;
     if ( $self->{ls}->param('public_api_key') ne $self->{ls}->param('public_api_key') ) {
-		return 0; 
+        return 0;
     }
-	else { 
-		return 1; 
-	}
+    else {
+        return 1;
+    }
 }
 
 sub check_digest {
-    
-    my $self = shift; 
-    my $addresses   = $self->{cgi_obj}->param('addresses');
-    
-	my $qq = CGI->new();
-	   $qq->delete_all(); 
-	
-	if($self->{service} eq 'mass_email'){ 
 
-        $qq->param('format',    $self->{cgi_obj}->param('format'));
-        $qq->param('message',   $self->{cgi_obj}->param('message'));
-        $qq->param('subject',   $self->{cgi_obj}->param('subject'));   
-        $qq->param('timestamp', $self->{cgi_obj}->param('timestamp'));
+    my $self      = shift;
+    my $addresses = $self->{cgi_obj}->param('addresses');
 
-    }
-    else { 
-        $qq->param('addresses', $self->{cgi_obj}->param('addresses'));
-        $qq->param('timestamp', $self->{cgi_obj}->param('timestamp'));
+    my $qq = CGI->new();
+    $qq->delete_all();
+
+    if ( $self->{service} eq 'mass_email' ) {
+
+        $qq->param( 'format',  $self->{cgi_obj}->param('format') );
+        $qq->param( 'message', $self->{cgi_obj}->param('message') );
+        $qq->param( 'nonce',   $self->{cgi_obj}->param('nonce') );
+        $qq->param( 'subject', $self->{cgi_obj}->param('subject') );
 
     }
+    else {
+        $qq->param( 'addresses', $self->{cgi_obj}->param('addresses') );
+        $qq->param( 'nonce',     $self->{cgi_obj}->param('nonce') );
 
-    my $n_digest = $self->digest($qq->query_string() );
-	$calculated_digest = $n_digest; 
+    }
+
+    print $self->{q}->header(); 
+    print 'query_string ' . $qq->query_string(); 
+    print "\n";
+    print 'Post Data: '   . $self->{q}->param( 'POSTDATA' );
+    print "\n";
+    
+    
+    my $n_digest = $self->digest( $qq->query_string() );
+    $calculated_digest = $n_digest;
     if ( $self->{digest} ne $n_digest ) {
         return 0;
     }
-	else { 
-		return 1;
-	}
+    else {
+        return 1;
+    }
 }
 
 sub digest {
 
-    my $self        = shift; 
-    my $message     = shift;
+    my $self     = shift;
+    my $message  = shift;
     my $n_digest = hmac_sha256_base64( $message, $self->{ls}->param('private_api_key') );
     while ( length($n_digest) % 4 ) {
         $n_digest .= '=';
@@ -371,5 +389,15 @@ sub digest {
     return $n_digest;
 }
 
+sub check_list {
+    my $self = shift;
+    if ( DADA::App::Guts::list_exists( -List => $self->{list} ) ) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+
+}
 
 1;

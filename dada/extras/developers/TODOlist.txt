@@ -11,6 +11,8 @@ Key:
 [?] Someday
 [ ] A way to set an alternative path to perl
 
+[ ] Keep tmp subscriber list fresh in mass mailing metadata. That basically means 
+make the tmp subscribe list right before sending, as mass mailings get queued. 
 
 [ ] write about caching - no one really understands
 

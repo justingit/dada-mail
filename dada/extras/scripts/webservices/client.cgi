@@ -55,10 +55,10 @@ my $my_params = {
     message => 'my message', 
 }; 
 
-my $results  = $ws->request( $list, 'mass_email', $my_params);
+#my $results  = $ws->request( $list, 'mass_email', $my_params);
 
 
-#my $results = $ws->request( $list, $flavor, {addresses => $addresses} );
+my $results = $ws->request( $list, $flavor, {addresses => $addresses} );
 
 
 print '<pre>' . encode_entities( Dumper($results) ) . '</pre>';
@@ -107,25 +107,27 @@ sub request {
 
     my $q     = CGI->new();
     my $query = {}; 
+    my $nonce = time . ':' . $self->nonce() ;
+    
     if($flavor eq 'mass_email'){ 
         $query = {
             format    => $params->{format},
             message   => $params->{message},
             subject   => $params->{subject},
-            timestamp => time,
+            nonce     => $nonce,
         };
     	$q->param('format',    $query->{format});
     	$q->param('message',   $query->{message});
     	$q->param('subject',   $query->{subject});
-    	$q->param('timestamp', $query->{timestamp});
+    	$q->param('nonce',     $query->{nonce});
     }
     else {
         $query = {
             addresses => $self->{json_obj}->utf8->encode($params->{addresses}),
-            timestamp => time,
+            nonce     => $nonce,
         };
     	$q->param('addresses', $query->{addresses});
-    	$q->param('timestamp', $query->{timestamp});
+    	$q->param('nonce', $query->{nonce});
 	}
 	
     my $qs     = $self->the_query_string( $query );
@@ -134,23 +136,22 @@ sub request {
     my $server = 'http://secret.dadademo.com/cgi-bin/dada/mail.cgi';
 
     my $ua = LWP::UserAgent->new;
-	   $ua->agent('Mozilla/5.0 (compatible;'); 
+	   $ua->agent('Mozilla/5.0 (compatible);'); 
 
     
-	my $server_w_path_info = $server . '/api/' . uri_escape($list) . '/' . uri_escape($flavor) . '/'. uri_escape($self->{public_key}) . '/' . uri_escape($digest) . '/'; 
+	my $server_w_path_info = $server . '/api/' . uri_escape($list) . '/' . uri_escape($flavor) . '/'; 
 	# print '$server_w_path_info ' . $server_w_path_info; 
 	my $response; 
 	
+	            $ua->default_header('Authorization' => 'hmac ' .  ' ' . $self->{public_key} . ':' . $digest); 
     $response = $ua->request(POST $server_w_path_info, content => $query);      
     my $tries = 0; 
-    #print "\n" . '$response->status_line"' . $response->status_line . '"'; 
-    while($response->status_line =~ m/^404/ && $tries <= 3) {
-        #print "trying...\n"; 
-        #print '$response->status_line"' . $response->status_line . '"'; 
-        $tries++; 
-        sleep(1); 
+
+#    while($response->status_line =~ m/^404/ && $tries <= 3) {
+#        $tries++; 
+#        sleep(1); 
         $response = $ua->request(POST $server_w_path_info, content => $query);
-    }
+#    }
 
     if ( $response->is_success ) { 
         return $self->{json_obj}->utf8->decode( $response->decoded_content );
@@ -169,6 +170,18 @@ sub the_query_string {
     }
     my $qs = $new_q->query_string();
     return $qs;
+}
+
+sub nonce() {
+    my $self = shift; 
+    my @chars = (0..9, 'a'..'z', 'A'..'Z'); 
+    my $num   = 8;
+
+    my $nonce;
+    for(1..$num){
+        $nonce .= $chars[rand @chars];
+    }
+    return $nonce; 
 }
 
 sub digest {
