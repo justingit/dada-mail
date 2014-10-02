@@ -44,7 +44,7 @@ BEGIN {
 
 use CGI::Carp qw(fatalsToBrowser);
 use Carp qw(carp croak);
-#$CARP::Verbose = 1; 
+$CARP::Verbose = 1; 
 
 #---------------------------------------------------------------------#
 
@@ -432,6 +432,13 @@ if ( $ENV{PATH_INFO} ) {
     elsif ( $info =~ m/^api/ ) {
 
         my ($pi_flavor, $pi_list, $pi_service, $public_key, $pi_digest) = split( '/', $info );
+
+#        use Data::Dumper; 
+#        die Dumper(
+#           [
+#           $pi_flavor, $pi_list, $pi_service, $public_key, $pi_digest
+#           ] 
+#        ); 
 
         require DADA::App::WebServices; 
           my $ws = DADA::App::WebServices->new; 
@@ -5716,24 +5723,32 @@ sub add_email {
                 # This is what updates already existing profile fields and profile passwords; 
                 # 
                 my @update_fields_address          = $q->param("update_fields_address"); 
+                
+                # This is a lot of code, to set one thing: 
                 my $subscribed_fields_options_mode = $q->param('subscribed_fields_options_mode') || 'writeover_inc_password';
-
                 my $spass_om = 'writeover';                 
                 if($subscribed_fields_options_mode eq 'writeover_ex_password'){ 
                     $spass_om = 'preserve_if_defined'; 
                 }
+                #/
+                
                 my $update_email_count = 0;
-                
-                
+                # Change from csv to a complex data structure. 
                 my @munged_update_addresses = (); 
                 for my $ua (@update_fields_address) {
                     push(@munged_update_addresses, $lh->csv_to_cds($ua));        
                 }
                                 
-                # Insert Here. 
+                require DADA::Profiles; 
+                my $dp = DADA::Profiles->new; 
+                my $update_email_count = $dp->update(
+                   { 
+                        -addresses       => [@munged_update_addresses],
+                        -password_policy => $spass_om,
+                   } 
+                ); 
             }
         }
-        
         
         if ( $process =~ /invit/i ) {
             &list_invite;
@@ -5741,17 +5756,6 @@ sub add_email {
         }
         else {
 
-            my $quota_limit = undef;
-            if ( $type eq 'list' ) {
-                if ( $ls->param('use_subscription_quota') == 1 ) {
-                    $quota_limit = $ls->param('subscription_quota');
-                }
-                elsif ( defined($DADA::Config::SUBSCRIPTION_QUOTA)
-                    && $DADA::Config::SUBSCRIPTION_QUOTA > 0 )
-                {
-                    $quota_limit = $DADA::Config::SUBSCRIPTION_QUOTA;
-                }
-            }
 
             if($type eq 'list') { 
                 unless(
@@ -5763,124 +5767,28 @@ sub add_email {
             }
             
             my @address                         = $q->param("address");
-            my $not_members_fields_options_mode = $q->param('not_members_fields_options_mode') || 'preserve_if_defined';
-            my $new_email_count                 = 0;
-            my $skipped_email_count             = 0;
-            my $num_subscribers                 = $lh->num_subscribers;
-            my $new_total                       = $num_subscribers;
-
-
             
-            # Each Address is a CSV line...
+            my @munged_add_addresses = (); 
             for my $a (@address) {
-                my $info = undef;
-                my $dmls = undef;
-                if (   $type eq 'list'
-                    && defined($quota_limit)
-                    && $new_total >= $quota_limit )
-                {
-                    $skipped_email_count++;
-                }
-                else {
-                    # profile/fields set should really only be for
-                    # when you import subscribers... 
-                    # 
-                    $info = $lh->csv_to_cds($a);
-                    
-                    # This will combine creation of the subscription, profile
-                    # and fields in one method. 
-                    #
-                    my $pf_om   = 'preserve_if_defined'; 
-                    my $pass_om = 'preserve_if_defined'; 
-                    if($not_members_fields_options_mode eq 'writeover_ex_password'){ 
-                        $pf_om   = 'writeover'; 
-                        $pass_om = 'preserve_if_defined'; 
-                    }
-                    elsif($not_members_fields_options_mode eq 'writeover_inc_password'){ 
-                        $pf_om   = 'writeover'; 
-                        $pass_om = 'writeover'; 
-                    }
-                    
-                    $dmls = $lh->add_subscriber(
-                        {
-                            -email             => $info->{email},
-                            -fields            => $info->{fields},
-                            -profile           => { 
-                                -password => $info->{profile}->{password}, 
-                                -mode     => $not_members_fields_options_mode, 
-                            },
-                            -type              => $type,
-                            -fields_options    => { -mode => $not_members_fields_options_mode, },
-                            -dupe_check        => {
-                                -enable  => 1,
-                                -on_dupe => 'ignore_add',
-                            },
-                        }
-                    );                         
-                    $new_total++;
-                    if ( defined($dmls) ) {    # undef means it wasn't added.
-                        $new_email_count++;
-                    }
-                    else {
-                        $skipped_email_count++;
-                    }
-                }
+                push(@munged_add_addresses, $lh->csv_to_cds($a));        
             }
+            undef(@address); 
             
-            if ( $type eq 'list' ) {
-                if ( $ls->param('send_subscribed_by_list_owner_message') == 1 ) {
-                    require DADA::App::MassSend;
-                    eval {
-                        
-                        # DEV: 
-                        # This needs to send the Profile Password, if it's known. 
-                        #
-                        DADA::App::MassSend::just_subscribed_mass_mailing(
-                            {
-                                -list      => $list,
-                                -addresses => [@address],
-                            }
-                        );
-                    };
-                    if ($@) {
-                        carp $@;
-                    }
-                }
-                if ( $ls->param('send_last_archived_msg_mass_mailing') == 1 ) {
-                    eval {
-                        DADA::App::MassSend::send_last_archived_msg_mass_mailing(
-                            {
-                                -list      => $list,
-                                -addresses => [@address],
-                            }
-                        );
-                    };
-                    if ($@) {
-                        carp $@;
-                    }
-                }
-            }
+            my $not_members_fields_options_mode = $q->param('not_members_fields_options_mode');
+            
 
-            if (   $DADA::Config::PROFILE_OPTIONS->{enabled} == 1
-                && $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/ )
-            {
-                eval {
-                    require DADA::Profile::Htpasswd;
-                    my $htp = DADA::Profile::Htpasswd->new( { -list => $list } );
-                    for my $id ( @{ $htp->get_all_ids } ) {
-                        $htp->setup_directory( { -id => $id } );
+            my($new_email_count, $skipped_email_count) = $lh->add_subscribers(
+                    { 
+                        -addresses           => [@munged_add_addresses],
+                        -fields_options_mode => $not_members_fields_options_mode,
                     }
-                };
-                if ($@) {
-                    warn "Problem updated Password Protected Directories: $@";
-                }
-            }
-
+            ); 
+                
             my $flavor_to_return_to = 'view_list';
             if ( $return_to eq 'membership' ) {    # or, others...
                 $flavor_to_return_to = $return_to;
             }
-
+            
             my $qs =
                 'flavor='
               . $flavor_to_return_to

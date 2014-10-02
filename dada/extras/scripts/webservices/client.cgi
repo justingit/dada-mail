@@ -44,25 +44,25 @@ my $ws = WebService->new(
     }
 );
 
+
 print $q->header();
 print '<pre>'; 
-my $results = $ws->request( $list, $flavor, $addresses );
-#
-#print '<pre> TEST: ' . raw_digest('addresses=%5B%7B%22email%22%3A%22test%40example.com%22%2C%22fields%22%3A%5B%5D%7D%5D&timetamp=1410969815', $private_key);
+
+
+my $my_params = {
+    subject => 'my subject!', 
+    format  => 'text', 
+    message => 'my message', 
+}; 
+
+my $results  = $ws->request( $list, 'mass_email', $my_params);
+
+
+#my $results = $ws->request( $list, $flavor, {addresses => $addresses} );
+
+
 print '<pre>' . encode_entities( Dumper($results) ) . '</pre>';
 
-
-sub raw_digest { 
-
-    my $message = shift;
-
-    use Digest::SHA qw(hmac_sha256_base64);
-    my $digest = hmac_sha256_base64( $message, $private_key );
-    while ( length($digest) % 4 ) {
-        $digest .= '=';
-    }
-    return $digest;
-}
 
 
 
@@ -102,15 +102,31 @@ sub init {
 sub request {
     my $self = shift;
 
-    my ( $list, $flavor, $addresses ) = @_;
+    my ( $list, $flavor, $params ) = @_;
+
 
     my $q     = CGI->new();
-    my $query = {
-        addresses => $self->{json_obj}->utf8->encode($addresses),
-        timestamp => time,
-    };
-	$q->param('addresses', $query->{addresses});
-	$q->param('timestamp', $query->{timestamp});
+    my $query = {}; 
+    if($flavor eq 'mass_email'){ 
+        $query = {
+            format    => $params->{format},
+            message   => $params->{message},
+            subject   => $params->{subject},
+            timestamp => time,
+        };
+    	$q->param('format',    $query->{format});
+    	$q->param('message',   $query->{message});
+    	$q->param('subject',   $query->{subject});
+    	$q->param('timestamp', $query->{timestamp});
+    }
+    else {
+        $query = {
+            addresses => $self->{json_obj}->utf8->encode($params->{addresses}),
+            timestamp => time,
+        };
+    	$q->param('addresses', $query->{addresses});
+    	$q->param('timestamp', $query->{timestamp});
+	}
 	
     my $qs     = $self->the_query_string( $query );
     my $digest = $self->digest($qs);
