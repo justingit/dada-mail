@@ -6,6 +6,10 @@ use lib qw(
   ../../DADA/perllib
 );
 
+use Carp qw(carp croak);
+    $Carp::Verbose = 1;
+
+
 use DADA::Config qw(!:DEFAULT);
 use JSON;
 use DADA::Config;
@@ -13,8 +17,6 @@ use DADA::App::Guts;
 use DADA::MailingList::Subscribers;
 use DADA::MailingList::Settings;
 use Digest::SHA qw(hmac_sha256_base64);
-use Carp qw(carp croak);
-#$Carp::Verbose = 1;
 
 use CGI (qw/:oldstyle_urls/);
 my $calculated_digest = undef;
@@ -27,7 +29,6 @@ my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_WebServices};
 my %allowed = ( test => 0, );
 
 sub new {
-    warn 'hit!';
     my $that = shift;
     my $class = ref($that) || $that;
 
@@ -108,6 +109,7 @@ sub request {
             $r->{status}  = 1;
         }
         elsif ( $self->{service} eq 'subscription' ) {
+            warn 'subscription!'; 
             $r->{results} = $self->subscription();
             $r->{status}  = 1;
         }
@@ -150,7 +152,6 @@ sub request {
 
     my $json = JSON->new->allow_nonref;
     $d .= $json->pretty->encode($r);
-    warn $d;
     return $d;
 
 }
@@ -169,16 +170,24 @@ sub validate_subscription {
             -type   => 'list',
         }
     );
+    
+    for(@$f_addresses){ 
+        # We don't need these: 
+        delete($_->{csv_str}); 
+    }
     return $f_addresses;
 }
 
 sub subscription {
 
-    my $self              = shift;
-    my $addresses         = $self->{cgi_obj}->param('addresses');
-    my $lh                = DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
-    my $json              = JSON->new;
-    my $decoded_addresses = $json->decode($addresses);
+    my $self                = shift;
+    my $addresses           = $self->{cgi_obj}->param('addresses');
+    my $lh                  = DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
+    my $json                = JSON->new;
+    my $decoded_addresses   = $json->decode($addresses);
+    my $new_email_count     = 0; 
+    my $skipped_email_count = 0; 
+         
 
     my $not_members_fields_options_mode = 'preserve_if_defined';
 
@@ -188,6 +197,8 @@ sub subscription {
             -type   => 'list',
         }
     );
+    
+
     my $subscribe_these = [];
     my $filtered_out    = 0;
 
@@ -199,22 +210,24 @@ sub subscription {
             $filtered_out++;
         }
     }
-
-    my ( $new_email_count, $skipped_email_count ) = $lh->add_subscribers(
-        {
-            -addresses => $subscribe_these,
-            -type      => 'list',
-
-            #-fields_options_mode => undef,
-        }
-    );
-
+    
+    if(scalar(@$subscribe_these) > 0){     
+        ( $new_email_count, $skipped_email_count ) = $lh->add_subscribers(
+            {
+                -addresses => $subscribe_these,
+                -type      => 'list',
+            }
+        );
+    }
+    
+    #-fields_options_mode => undef,
     $skipped_email_count = $skipped_email_count + $filtered_out;
+    
 
     return {
-        new_email_count     => $new_email_count,
-        skipped_email_count => $skipped_email_count,
-      }
+        subscribed_addresses     => $new_email_count,
+        skipped_addresses        => $skipped_email_count,
+      };
 
 }
 
@@ -281,10 +294,8 @@ sub mass_email {
     }
 
     return {
-        subject => $subject,
-        message => $message,
-        format  => $format,
-      }
+        message_id => $message_id,
+    }
 
 }
 
@@ -360,13 +371,6 @@ sub check_digest {
         $qq->param( 'nonce',     $self->{cgi_obj}->param('nonce') );
 
     }
-
-    print $self->{q}->header(); 
-    print 'query_string ' . $qq->query_string(); 
-    print "\n";
-    print 'Post Data: '   . $self->{q}->param( 'POSTDATA' );
-    print "\n";
-    
     
     my $n_digest = $self->digest( $qq->query_string() );
     $calculated_digest = $n_digest;
