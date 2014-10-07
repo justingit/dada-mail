@@ -4,16 +4,17 @@ Class DadaMailWebService {
 
 	public $public_key; 
 	public $private_key; 
+	public $server; 
 	
-	public function __construct($public_key, $private_key) { 
+	public function __construct($server, $public_key, $private_key) { 
+        $this->server      = $server; 
 		$this->public_key  = $public_key; 
 		$this->private_key = $private_key; 
 	}
 	
 	public function the_query_string($post_data){
 		$raw_post_data  = http_build_query($post_data, null, "&", PHP_QUERY_RFC3986);
-	    echo '$raw_post_data from client' . $raw_post_data . "\n"; 
-		return $raw_post_data;
+	   	return $raw_post_data;
 	}
 	
 	public function digest($message) { 
@@ -63,49 +64,30 @@ Class DadaMailWebService {
     		);
     	}
         
-		$rpd    =  $this->the_query_string($query_params);
-		$digest =  $this->digest($rpd); 
+		$rpd                 =  $this->the_query_string($query_params);
+		$digest              =  $this->digest($rpd); 
+		$request_method      = 'POST';
+		$request_w_path_info = $this->server . '/api/' . urlencode($list) . '/' . urlencode($flavor) . '/'; 
 		
-		$request_method = 'POST';
-	    $server = 'http://secret.dadademo.com/cgi-bin/dada/mail.cgi';
-	    
-		$request_w_path_info = $server . '/api/' . urlencode($list) . '/' . urlencode($flavor) . '/'; 
-		
-		//'. urlencode($this->public_key) . '/' . urlencode($digest) . '/
-		
-		
-		// $http_host      = parse_url ($request_w_path_info, PHP_URL_HOST);
-		// $request_uri    = parse_url ($request_w_path_info, PHP_URL_PATH);
-		//$post_data      = $query_params;
-		//$raw_post_data  = http_build_query ($post_data);
-
 		// make the request using curl
-		$ch = curl_init ();
+		$ch = curl_init();
 		
-		curl_setopt(
-	    $ch,
-	    CURLOPT_HTTPHEADER, 
-	    array(
+		curl_setopt($ch, CURLOPT_HTTPHEADER, 
+		array(
             'Authorization: hmac ' .  ' ' . $this->public_key . ':' . $digest,
             )
         );
-            
-		curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, 10); 
-		curl_setopt ($ch, CURLOPT_URL, $request_w_path_info);
-		curl_setopt ($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); 
+		curl_setopt($ch, CURLOPT_URL, $request_w_path_info);
+		curl_setopt($ch, CURLOPT_POST, 1);
+		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($query_params, null, "&", PHP_QUERY_RFC3986));
+		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		
-		$query = http_build_query($query_params);
+		$response = curl_exec($ch);
 		
-		curl_setopt ($ch, CURLOPT_POSTFIELDS, $query);
-		curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
-		$response = curl_exec ($ch);
-		curl_close ($ch);
+		curl_close($ch);
 
 		return $response; 
-		
-		//echo 'response' . $response; 
-		//$res = json_decode ($response);
-		//return $res; 
 	}
 }
 

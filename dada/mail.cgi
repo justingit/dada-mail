@@ -2587,17 +2587,21 @@ sub web_services {
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     
-    if(length($ls->param('public_api_key')) <= 0){ 
+    if(length($ls->param('public_api_key')) <= 0 || $process eq 'reset_keys'){ 
         require DADA::Security::Password; 
         $ls->save({public_api_key => DADA::Security::Password::generate_rand_string(undef, 21)}); 
         undef $ls; 
         $ls = DADA::MailingList::Settings->new( { -list => $list } );
     }
-    if(length($ls->param('private_api_key'))  <= 0) { 
+    if(length($ls->param('private_api_key'))  <= 0 || $process eq 'reset_keys') { 
         require DADA::Security::Password; 
         $ls->save({private_api_key => DADA::Security::Password::generate_rand_string(undef, 41)}); 
         undef $ls; 
         $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    }
+    my $keys_reset = 0; 
+    if($process eq 'reset_keys'){ 
+       $keys_reset = 1; 
     }
     
     require DADA::Template::Widgets;
@@ -2610,7 +2614,9 @@ sub web_services {
                 -Root_Login => $root_login,
                 -List       => $list,
             },
-            -vars => {},
+            -vars => {
+                keys_reset => $keys_reset, 
+            },
             -list_settings_vars_param => {
                 -list   => $list,
                 -dot_it => 1,

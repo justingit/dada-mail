@@ -9,6 +9,10 @@ Key:
 [x] Done. 
 [*] Naw...
 [?] Someday
+
+
+[] ability to share stationary messages. 
+
 [ ] A way to set an alternative path to perl
 
 [ ] Keep tmp subscriber list fresh in mass mailing metadata. That basically means 
