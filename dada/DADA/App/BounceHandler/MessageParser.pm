@@ -85,8 +85,7 @@ sub run_all_parses {
 			warn "list: $list" 
 				if $t; 
 			warn "email: $email" 
-				if $t; 
-				
+				if $t; 	
 			warn "diagnostics: \n" . Data::Dumper::Dumper($ses_diagnostics)
 				if $t; 
 			
@@ -105,7 +104,6 @@ sub run_all_parses {
 			if $t; 
 		warn "email: $rfc6522_email" 
 			if $t; 
-			
 		warn "diagnostics: \n" . Data::Dumper::Dumper($rfc6522_diagnostics)
 			if $t; 
 			
@@ -132,7 +130,6 @@ sub run_all_parses {
 				if $t; 
 			warn "email: $ss_email" 
 				if $t; 
-
 			warn "diagnostics: \n" . Data::Dumper::Dumper($ss_diagnostics)
 				if $t; 
 
@@ -391,7 +388,7 @@ sub _fold_in_diagnostics {
         }
         
     use Data::Dumper; 
-    warn 'diag now looks like this: ' . Dumper($orig_d); 
+    # warn 'diag now looks like this: ' . Dumper($orig_d); 
     return $orig_d; 
         
 }
@@ -1065,7 +1062,7 @@ sub parse_for_secureserver_dot_net {
 #		my ( $gp_list, $gp_email, $gp_diagnostics ) = $self->generic_parse($copy_entity);
 
 		my $gp_list   = $self->list_in_list_headers($copy_entity);
-        warn '$gp_list ' . $gp_list; 
+        # warn '$gp_list ' . $gp_list; 
 
 	    $list  ||= $gp_list;
 #		$email ||= $gp_email; 
