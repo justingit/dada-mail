@@ -1,28 +1,26 @@
 package DADA::Mail::MailOut;
 
-
-
 use lib qw(../../ ../../DADA ../../perllib);
 
 use CGI::Carp qw(croak carp);
 
 use Fcntl qw(
 
-    :DEFAULT
-    :flock
-    LOCK_SH
-	
-    O_RDONLY
-    O_CREAT
-    O_WRONLY
-    O_TRUNC
+  :DEFAULT
+  :flock
+  LOCK_SH
+
+  O_RDONLY
+  O_CREAT
+  O_WRONLY
+  O_TRUNC
 
 );
 
 my $dbi_obj;
 
 use DADA::Config qw(!:DEFAULT);
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_Mail_MailOut}; 
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_Mail_MailOut};
 
 use DADA::App::Guts;
 use DADA::Logging::Usage;
@@ -41,15 +39,15 @@ my $file_names = {
 
     batchlock               => 'batchlock.txt',
     tmp_subscriber_list     => 'tmp_subscriber_list.txt',
-    problem_subscriber_list => 'problem_subscriber_list.txt',  
+    problem_subscriber_list => 'problem_subscriber_list.txt',
     num_sending_to          => 'num_sending_to.txt',
     counter                 => 'counter.txt',
-    first_access            => 'first_access.txt', 
+    first_access            => 'first_access.txt',
     last_access             => 'last_access.txt',
     raw_message             => 'raw_message.txt',
     pause                   => 'paused.txt',
-    pid                     => 'pid.txt', 
-    'log'                   => 'log.txt', 
+    pid                     => 'pid.txt',
+    'log'                   => 'log.txt',
 
 };
 
@@ -66,8 +64,8 @@ my %allowed = (
 
     #auto_pickup_status   => 0,
 
-	use_semaphore_locking => 0, 
-	_cache                => {},
+    use_semaphore_locking => 0,
+    _cache                => {},
 
 );
 
@@ -87,21 +85,20 @@ sub new {
 
     if ( !$args->{-list} ) {
 
-        carp
-            "You need to supply a list ->new({-list => your_list}) in the constructor.";
+        carp "You need to supply a list ->new({-list => your_list}) in the constructor.";
         return undef;
 
     }
 
     if ( $self->_init($args) ) {
-        warn 'MailOut object created successfully.' 
-            if $t; 		
-		
+        warn 'MailOut object created successfully.'
+          if $t;
+
         return $self;
     }
     else {
-        warn 'MailOut object was NOT created successfully.' 
-            if $t; 
+        warn 'MailOut object was NOT created successfully.'
+          if $t;
 
         return undef;
     }
@@ -110,7 +107,7 @@ sub new {
 sub AUTOLOAD {
     my $self = shift;
     my $type = ref($self)
-        or croak "$self is not an object";
+      or croak "$self is not an object";
 
     my $name = $AUTOLOAD;
     $name =~ s/.*://;    #strip fully qualifies portion
@@ -133,52 +130,52 @@ sub _init {
 
     if ( !$self->_sanity_test($args) ) {
 
-        carp
-            "sanity test failed - something's wrong with the parameters you passed.";
+        carp "sanity test failed - something's wrong with the parameters you passed.";
         return undef;
 
     }
     else {
 
-		my $ls = undef; 
-		if(exists($args->{-ls_obj})){ 
-			$ls = $args->{-ls_obj}; 
-		}
-		else { 
-			# Or... I could just *pass* $li somehow... 
-		    require DADA::App::DBIHandle; 
-			$self->{dbi_handle} = DADA::App::DBIHandle->new; 
-			require DADA::MailingList::Settings;
-		    $ls = DADA::MailingList::Settings->new({-list => $args->{-list}});
-		
-		}
+        my $ls = undef;
+        if ( exists( $args->{-ls_obj} ) ) {
+            $ls = $args->{-ls_obj};
+        }
+        else {
+            # Or... I could just *pass* $li somehow...
+            require DADA::App::DBIHandle;
+            $self->{dbi_handle} = DADA::App::DBIHandle->new;
+            require DADA::MailingList::Settings;
+            $ls = DADA::MailingList::Settings->new( { -list => $args->{-list} } );
 
-	    my $li = $ls->get();
+        }
 
-	    $self->list( $args->{-list} );
-	    $self->{ls} = $ls;
-		
-		$self->_dir_setup(); 
-		
-		return 1; 
-	}
+        my $li = $ls->get();
 
+        $self->list( $args->{-list} );
+        $self->{ls} = $ls;
+
+        $self->_dir_setup();
+
+        return 1;
+    }
 
 }
 
-sub _dir_setup { 
-	my $self = shift; 
-	# Directory?
-	if(-d $DADA::Config::TMP){ 
-		# Write to it? 
-		if(! -r $DADA::Config::TMP || ! -w $DADA::Config::TMP || ! -x $DADA::Config::TMP) { 
-			carp "Can't write into, '" . $DADA::Config::TMP . "', will try to change directory permissions..."; 
-			chmod($DADA::Config::DIR_CHMOD , $DADA::Config::TMP)			 
-		}
-		else {
-			# good.
-		}
-	}
+sub _dir_setup {
+    my $self = shift;
+
+    # Directory?
+    if ( -d $DADA::Config::TMP ) {
+
+        # Write to it?
+        if ( !-r $DADA::Config::TMP || !-w $DADA::Config::TMP || !-x $DADA::Config::TMP ) {
+            carp "Can't write into, '" . $DADA::Config::TMP . "', will try to change directory permissions...";
+            chmod( $DADA::Config::DIR_CHMOD, $DADA::Config::TMP );
+        }
+        else {
+            # good.
+        }
+    }
 }
 
 sub _sanity_test {
@@ -191,8 +188,6 @@ sub _sanity_test {
     return $self->_list_name_check( $args->{-list} );
 
 }
-
-
 
 sub batch_params {
 
@@ -227,13 +222,15 @@ sub batch_params {
 
         if ( exists( $self->{_cache}->{batch_params} ) ) {
             if ( exists( $self->{_cache}->{batch_params}->{cached_at} ) ) {
-                if ( ( int($self->{_cache}->{batch_params}->{cached_at}) + 600 ) < time ) {
-                    carp 'batch settings (cached): Enabled: ' 
-                    . $self->{_cache}->{batch_params}->{enable_bulk_batching}
-                    . ' Batch Size: ' . $self->{_cache}->{batch_params}->{batch_size}
-                    . ' Batch Wait: ' . $self->{_cache}->{batch_params}->{batch_wait}
-                        if $t;
-                    
+                if ( ( int( $self->{_cache}->{batch_params}->{cached_at} ) + 600 ) < time ) {
+                    carp 'batch settings (cached): Enabled: '
+                      . $self->{_cache}->{batch_params}->{enable_bulk_batching}
+                      . ' Batch Size: '
+                      . $self->{_cache}->{batch_params}->{batch_size}
+                      . ' Batch Wait: '
+                      . $self->{_cache}->{batch_params}->{batch_wait}
+                      if $t;
+
                     return (
                         $self->{_cache}->{batch_params}->{enable_bulk_batching},
                         $self->{_cache}->{batch_params}->{batch_size},
@@ -241,9 +238,10 @@ sub batch_params {
                     );
                 }
             }
-            else { 
-                carp 'Love to use the batch settings cache, but it\'s too old by: ' . int($self->{_cache}->{batch_params}->{cached_at}) + 600  - time
-                    if $t;
+            else {
+                carp 'Love to use the batch settings cache, but it\'s too old by: '
+                  . int( $self->{_cache}->{batch_params}->{cached_at} ) + 600 - time
+                  if $t;
             }
         }
     }
@@ -251,227 +249,230 @@ sub batch_params {
     #/ We can override things, for previewing:
 
     # Amazon SES:
-    my $using_amazon_ses = 0; 
+    my $using_amazon_ses = 0;
     my $using_mandrill   = 0;
-    
-    if(
-        $sending_method eq 'amazon_ses' 
-        && $amazon_ses_auto_batch_settings == 1
-    || ( 
-           $self->{ls}->param('sending_method') eq 'smtp' 
-        && $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/
-        && $amazon_ses_auto_batch_settings == 1
-       )
-    ) {
-        $using_amazon_ses = 1; 
+
+    if (
+        $sending_method eq 'amazon_ses' && $amazon_ses_auto_batch_settings == 1
+        || (   $self->{ls}->param('sending_method') eq 'smtp'
+            && $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/
+            && $amazon_ses_auto_batch_settings == 1 )
+      )
+    {
+        $using_amazon_ses = 1;
     }
-    elsif(
-        $self->{ls}->param('sending_method') eq 'smtp' 
-        && $self->{ls}->param('smtp_server') =~ m/smtp\.mandrillapp\.com/ 
-        && $amazon_ses_auto_batch_settings == 1
-        ){ 
-        $using_mandrill = 1; 
+    elsif ($self->{ls}->param('sending_method') eq 'smtp'
+        && $self->{ls}->param('smtp_server') =~ m/smtp\.mandrillapp\.com/
+        && $amazon_ses_auto_batch_settings == 1 )
+    {
+        $using_mandrill = 1;
     }
-    
+
     require POSIX;
     my $batch_size = 0;
     my $batch_wait = 0;
-	
-    
-    if	($using_amazon_ses == 1 
-        || $using_mandrill == 1) { 
-            
-        my $status = undef; 
-        my $SentLast24Hours = undef; 
-        my $Max24HourSend = undef; 
-        my $MaxSendRate = undef; 
-        my $quota_Max24HourSend = undef; 
-        
-        if($using_amazon_ses == 1) { 
+
+    if (   $using_amazon_ses == 1
+        || $using_mandrill == 1 )
+    {
+
+        my $status              = undef;
+        my $SentLast24Hours     = undef;
+        my $Max24HourSend       = undef;
+        my $MaxSendRate         = undef;
+        my $quota_Max24HourSend = undef;
+
+        if ( $using_amazon_ses == 1 ) {
             require DADA::App::AmazonSES;
             my $ses = DADA::App::AmazonSES->new;
-            # Save stats, between executions: 
-            ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ); 
-            if($ses->_should_get_saved_ses_stats == 1) { 
-                ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->_get_saved_ses_stats;            
+
+            # Save stats, between executions:
+            ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate );
+            if ( $ses->_should_get_saved_ses_stats == 1 ) {
+                ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->_get_saved_ses_stats;
             }
-            else { 
+            else {
                 ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $ses->get_stats;
-            #                  0          10_000             5
-                $ses->_save_ses_stats($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate);
+
+                #                  0          10_000             5
+                $ses->_save_ses_stats( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate );
             }
-            $quota_Max24HourSend = ($Max24HourSend * $ses->allowed_sending_quota_percentage) / 100;
-    		
+            $quota_Max24HourSend = ( $Max24HourSend * $ses->allowed_sending_quota_percentage ) / 100;
+
         }
-        elsif($using_mandrill == 1){ 
+        elsif ( $using_mandrill == 1 ) {
             require DADA::App::Mandrill;
             my $man = DADA::App::Mandrill->new;
-            # Save stats, between executions: 
-            ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ); 
-            if($man->_should_get_saved_man_stats == 1) { 
-                ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $man->_get_saved_man_stats; 
+
+            # Save stats, between executions:
+            ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate );
+            if ( $man->_should_get_saved_man_stats == 1 ) {
+                ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $man->_get_saved_man_stats;
             }
-            else { 
+            else {
                 ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $man->get_stats;
-            #                  0          10_000             5
-                use Data::Dumper; 
-                warn Dumper([( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate )]); 
-            
-                 $man->_save_man_stats($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate);
-            }    
-            $quota_Max24HourSend = ($Max24HourSend * $man->allowed_sending_quota_percentage) / 100;
+
+                #                  0          10_000             5
+                use Data::Dumper;
+                warn Dumper( [ ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) ] );
+
+                $man->_save_man_stats( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate );
+            }
+            $quota_Max24HourSend = ( $Max24HourSend * $man->allowed_sending_quota_percentage ) / 100;
         }
-        else { 
-            die "what?"; 
+        else {
+            die "what?";
         }
-    
-#		if($t) {
-#			 warn '$status ' . $status; 
-#			 warn '$SentLast24Hours' . $SentLast24Hours; 
-#			 warn '$Max24HourSend' . $Max24HourSend; 
-#			 warn '$MaxSendRate' . $MaxSendRate
-#	 	}
-		
-		
-#		warn '$quota_Max24HourSend bef' , $quota_Max24HourSend; 
-		
-        $quota_Max24HourSend =  POSIX::floor($quota_Max24HourSend);
-        
-#		warn '$quota_Max24HourSend' . $quota_Max24HourSend
-#			if $t; 
-		
-        if ( $SentLast24Hours     >= $Max24HourSend 
-          || $SentLast24Hours     >= $quota_Max24HourSend) {
-            # Yikes! We're over our limit! 
-            carp 'batch settings (OVER OUR LIMIT!): Enabled: ' 
-             . $enable_bulk_batching
-             . ' Batch Size: ' . 0
-             . ' Batch Wait: ' . 300
-                if $t;
-             
+
+        #		if($t) {
+        #			 warn '$status ' . $status;
+        #			 warn '$SentLast24Hours' . $SentLast24Hours;
+        #			 warn '$Max24HourSend' . $Max24HourSend;
+        #			 warn '$MaxSendRate' . $MaxSendRate
+        #	 	}
+
+        #		warn '$quota_Max24HourSend bef' , $quota_Max24HourSend;
+
+        $quota_Max24HourSend = POSIX::floor($quota_Max24HourSend);
+
+        #		warn '$quota_Max24HourSend' . $quota_Max24HourSend
+        #			if $t;
+
+        if (   $SentLast24Hours >= $Max24HourSend
+            || $SentLast24Hours >= $quota_Max24HourSend )
+        {
+            # Yikes! We're over our limit!
+            carp 'batch settings (OVER OUR LIMIT!): Enabled: '
+              . $enable_bulk_batching
+              . ' Batch Size: '
+              . 0
+              . ' Batch Wait: '
+              . 300
+              if $t;
+
             return ( $enable_bulk_batching, 0, 300, );
         }
         else {
-			if ( $amazon_ses_auto_batch_settings == 1 )
-			{
-				# dada automatically manages batch settings
-				
-				if ( $quota_Max24HourSend < 86_400 ) {
-					$batch_size = 1;
-					$batch_size = $batch_size * $MaxSendRate;    # 5
+            if ( $amazon_ses_auto_batch_settings == 1 ) {
 
-					$batch_wait = 86_400 / $quota_Max24HourSend;             # 8.64
-					$batch_wait = $batch_wait * $MaxSendRate;          # 8.64 * 5 = 43.2
-					$batch_wait = $batch_wait + ( $batch_wait * .10 ); # 38.8
-				}
-				else {
-					$batch_size = $MaxSendRate;                        # 5
-					$batch_wait =
-					  $quota_Max24HourSend / 86_400;    # 100_000 / 86_400 = 1.1574...
-					$batch_wait = $batch_wait + ( $batch_wait * .10 );    # 38.8
-				}
-				
-				# This slows the batch settings down, if there's > 1 mailout going on
-				# at one time.
-				if ( $DADA::Config::MAILOUT_AT_ONCE_LIMIT > 1 ) {
-					my (
-						$monitor_mailout_report, $total_mailouts,  $active_mailouts,
-						$paused_mailouts,        $queued_mailouts, $inactive_mailouts
-					  )
-					  = monitor_mailout(
-						{
-							-verbose => 0,
-							-action  => 0,
-						}
-					  );
+                # dada automatically manages batch settings
 
-					# If the batch size is larger than how many messages we have,
-					# better to divide that up, rather than the span between messages
-					# Round DOWN just to be on the safe side of things.
-					if ( $batch_size > $active_mailouts ) {
-	#					warn '$batch_size > $active_mailouts'
-	#						if $t; 
-						
-						
-						if ( $active_mailouts > 1 ) {
-							if ( $active_mailouts < $DADA::Config::MAILOUT_AT_ONCE_LIMIT ) {
-								$batch_size = POSIX::floor( ( $batch_size / $active_mailouts ) );
-							}
-							else {
-								$batch_wait = POSIX::floor( ( $batch_size / $DADA::Config::MAILOUT_AT_ONCE_LIMIT ) );
-							}
-						}
-					}
-					else {
-						# else, make the wait longer
-						if ( $active_mailouts > 1 ) {
-							if ( $active_mailouts < $DADA::Config::MAILOUT_AT_ONCE_LIMIT ) {
-								$batch_wait = ( $batch_wait * $active_mailouts );
-							}
-							else {
-								$batch_wait = ( $batch_wait * $DADA::Config::MAILOUT_AT_ONCE_LIMIT );
-							}
-						}
-					}
-				}
-			} else {
-				# we manage our own batch settings
-				$batch_size  = $self->{ls}->param('mass_send_amount');
-				$batch_wait = $self->{ls}->param('bulk_sleep_amount');
-				
-				if ( $batch_size > $MaxSendRate ) {
-				   $batch_size = $MaxSendRate;  
-				}
-				
-				if($batch_wait < 1){ 
-				   warn 'why is $bulk_sleep_amount < 1?!'; 
-				   $batch_wait = 1;  
-				}
-			}
-			
+                if ( $quota_Max24HourSend < 86_400 ) {
+                    $batch_size = 1;
+                    $batch_size = $batch_size * $MaxSendRate;    # 5
+
+                    $batch_wait = 86_400 / $quota_Max24HourSend;          # 8.64
+                    $batch_wait = $batch_wait * $MaxSendRate;             # 8.64 * 5 = 43.2
+                    $batch_wait = $batch_wait + ( $batch_wait * .10 );    # 38.8
+                }
+                else {
+                    $batch_size = $MaxSendRate;                           # 5
+                    $batch_wait = $quota_Max24HourSend / 86_400;          # 100_000 / 86_400 = 1.1574...
+                    $batch_wait = $batch_wait + ( $batch_wait * .10 );    # 38.8
+                }
+
+                # This slows the batch settings down, if there's > 1 mailout going on
+                # at one time.
+                if ( $DADA::Config::MAILOUT_AT_ONCE_LIMIT > 1 ) {
+                    my (
+                        $monitor_mailout_report, $total_mailouts,  $active_mailouts,
+                        $paused_mailouts,        $queued_mailouts, $inactive_mailouts
+                      )
+                      = monitor_mailout(
+                        {
+                            -verbose => 0,
+                            -action  => 0,
+                        }
+                      );
+
+                    # If the batch size is larger than how many messages we have,
+                    # better to divide that up, rather than the span between messages
+                    # Round DOWN just to be on the safe side of things.
+                    if ( $batch_size > $active_mailouts ) {
+
+                        #					warn '$batch_size > $active_mailouts'
+                        #						if $t;
+
+                        if ( $active_mailouts > 1 ) {
+                            if ( $active_mailouts < $DADA::Config::MAILOUT_AT_ONCE_LIMIT ) {
+                                $batch_size = POSIX::floor( ( $batch_size / $active_mailouts ) );
+                            }
+                            else {
+                                $batch_wait = POSIX::floor( ( $batch_size / $DADA::Config::MAILOUT_AT_ONCE_LIMIT ) );
+                            }
+                        }
+                    }
+                    else {
+                        # else, make the wait longer
+                        if ( $active_mailouts > 1 ) {
+                            if ( $active_mailouts < $DADA::Config::MAILOUT_AT_ONCE_LIMIT ) {
+                                $batch_wait = ( $batch_wait * $active_mailouts );
+                            }
+                            else {
+                                $batch_wait = ( $batch_wait * $DADA::Config::MAILOUT_AT_ONCE_LIMIT );
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+                # we manage our own batch settings
+                $batch_size = $self->{ls}->param('mass_send_amount');
+                $batch_wait = $self->{ls}->param('bulk_sleep_amount');
+
+                if ( $batch_size > $MaxSendRate ) {
+                    $batch_size = $MaxSendRate;
+                }
+
+                if ( $batch_wait < 1 ) {
+                    warn 'why is $bulk_sleep_amount < 1?!';
+                    $batch_wait = 1;
+                }
+            }
+
             $batch_size = POSIX::floor($batch_size);
-			$batch_wait = POSIX::ceil($batch_wait);
+            $batch_wait = POSIX::ceil($batch_wait);
 
-			$self->{_cache}->{batch_params} = {
-				enable_bulk_batching => $enable_bulk_batching,
-				batch_size           => $batch_size,
-				batch_wait           => $batch_wait,
-				cached_at            => time,
-			};
+            $self->{_cache}->{batch_params} = {
+                enable_bulk_batching => $enable_bulk_batching,
+                batch_size           => $batch_size,
+                batch_wait           => $batch_wait,
+                cached_at            => time,
+            };
 
-			carp 'batch settings (Fresh, SES): Enabled: ' 
-                . $enable_bulk_batching
-                . ' Batch Size: ' . $batch_size
-                . ' Batch Wait: ' . $batch_wait
-                    if $t;
-            
+            carp 'batch settings (Fresh, SES): Enabled: '
+              . $enable_bulk_batching
+              . ' Batch Size: '
+              . $batch_size
+              . ' Batch Wait: '
+              . $batch_wait
+              if $t;
+
             return ( $enable_bulk_batching, $batch_size, $batch_wait, );
         }
 
     }
     else {
-        
+
         my $mass_send_amount  = $self->{ls}->param('mass_send_amount');
         my $bulk_sleep_amount = $self->{ls}->param('bulk_sleep_amount');
-        
-        if($bulk_sleep_amount < 1){ 
-           warn 'why is $bulk_sleep_amount < 1?!'; 
-           $bulk_sleep_amount = 1;  
+
+        if ( $bulk_sleep_amount < 1 ) {
+            warn 'why is $bulk_sleep_amount < 1?!';
+            $bulk_sleep_amount = 1;
         }
-        
-        carp 'batch settings (bulk_sleep_amount set weird): Enabled: ' 
-         . $enable_bulk_batching
-         . ' Batch Size: ' . $mass_send_amount
-         . ' Batch Wait: ' . $bulk_sleep_amount
-            if $t;
-        
-        
+
+        carp 'batch settings (bulk_sleep_amount set weird): Enabled: '
+          . $enable_bulk_batching
+          . ' Batch Size: '
+          . $mass_send_amount
+          . ' Batch Wait: '
+          . $bulk_sleep_amount
+          if $t;
+
         return ( $enable_bulk_batching, $mass_send_amount, $bulk_sleep_amount, );
     }
 }
-
-
-
 
 sub reset_batch_params_cache {
     my $self = shift;
@@ -480,75 +481,69 @@ sub reset_batch_params_cache {
     return 1;
 }
 
-
-
-
 sub create {
 
-
-    
     my $self = shift;
 
     my ($args) = @_;
 
     # = ( -fields => {}, -mh_obj => {}, -list_type => 'list', @_ );
-    
+
     croak "You did not supply a list type! (list, black_list, invite_list, etc)"
-        if !exists(  $args->{-list_type} );
+      if !exists( $args->{-list_type} );
 
     croak "The Actual Message Fields have not been passed. "
-        if !keys %{ $args->{-fields} };
+      if !keys %{ $args->{-fields} };
 
     croak "The Message ID has not been passed. "
-        if !exists( $args->{-fields}->{'Message-ID'} );
+      if !exists( $args->{-fields}->{'Message-ID'} );
 
     croak "The DADA::Mail::Send object has not been passed "
-        if !exists( $args->{-mh_obj} );
+      if !exists( $args->{-mh_obj} );
 
-    croak
-        "The DADA::Mail::Send object has been passed, but it's not isa DADA::Mail::Send! "
-        unless $args->{-mh_obj}->isa('DADA::Mail::Send');
+    croak "The DADA::Mail::Send object has been passed, but it's not isa DADA::Mail::Send! "
+      unless $args->{-mh_obj}->isa('DADA::Mail::Send');
 
     # default:
     my $list_type = $args->{-list_type};
-    
-    
+
     $self->_internal_message_id( $args->{-fields}->{'Message-ID'} );
-    
-    warn '_internal_message_id set to ' . $self->_internal_message_id . ' from original value: ' . $args->{-fields}->{'Message-ID'}
-        if $t; 
-        
-    
+
+    warn '_internal_message_id set to '
+      . $self->_internal_message_id
+      . ' from original value: '
+      . $args->{-fields}->{'Message-ID'}
+      if $t;
 
     $self->mailout_type($list_type);
-    warn  'mailout_type set to ' . $self->mailout_type . ' from original value: ' . $list_type
-        if $t; 
+    warn 'mailout_type set to ' . $self->mailout_type . ' from original value: ' . $list_type
+      if $t;
 
     $self->message( $args->{-fields} );
 
-	# dir should now be set to the TMP_ directory
+    # dir should now be set to the TMP_ directory
     $self->_create_initial_directory();
 
     # The Temporary Subscriber List
-    $self->create_subscriber_list( 
-		{ 
-			-mh_obj          => $args->{-mh_obj}, 
-			-partial_sending => $args->{-partial_sending},
-			-exclude_from    => $args->{-exclude_from}, 
-		 } 
-	);
+    $self->create_subscriber_list(
+        {
+            -mh_obj          => $args->{-mh_obj},
+            -partial_sending => $args->{-partial_sending},
+            -exclude_from    => $args->{-exclude_from},
+        }
+    );
 
     #The Total Amount of Recipients Amount
     $self->create_total_sending_out_num();
 
-	# Log File
-	$self->create_log_file();
+    # Log File
+    $self->create_log_file();
 
     #The Amount Sent Counter
     $self->create_counter();
-    
+
     # Create "First Accessed", File
-    $self->create_first_accessed_file(); 
+    $self->create_first_accessed_file();
 
     # The, "Last Accessed", File
     $self->create_last_accessed_file();
@@ -556,75 +551,69 @@ sub create {
     # A Copy of the Message Being Sent Out
     $self->create_raw_message();
 
-	# Problem List! 
-	$self->problem_subscriber_list_file(); 
-	
-	# Everything made? OK, let's change the dir name, save that name, and move on, 
-	my $orig_name = $self->dir; 
-	my $live_name = $orig_name; 
-       $live_name =~ s/TMP_sendout/sendout/; 
-	$live_name = make_safer($live_name); 
-	
-	warn "moving directory from: '$orig_name', to: '$live_name'..."
-		if $t;
-		
-	require File::Copy; 
-	File::Copy::move($orig_name, $live_name)
-		or warn "could not move file from, '$orig_name', to, '$live_name': $!"; 
-	
-	$self->dir($live_name); 
+    # Problem List!
+    $self->problem_subscriber_list_file();
 
-	# I have to reset this to, as it's set in, create_subscriber_list(); 
-	# For whatever reason. 
-	
-    $self->subscriber_list(
-        $self->dir . '/' . $file_names->{tmp_subscriber_list} );
+    # Everything made? OK, let's change the dir name, save that name, and move on,
+    my $orig_name = $self->dir;
+    my $live_name = $orig_name;
+    $live_name =~ s/TMP_sendout/sendout/;
+    $live_name = make_safer($live_name);
 
+    warn "moving directory from: '$orig_name', to: '$live_name'..."
+      if $t;
+
+    require File::Copy;
+    File::Copy::move( $orig_name, $live_name )
+      or warn "could not move file from, '$orig_name', to, '$live_name': $!";
+
+    $self->dir($live_name);
+
+    # I have to reset this to, as it's set in, create_subscriber_list();
+    # For whatever reason.
+
+    $self->subscriber_list( $self->dir . '/' . $file_names->{tmp_subscriber_list} );
 
     #well, I guess I'll return 1 for success...
     return 1;
 
 }
 
-
-
-
 sub associate {
 
     my $self = shift;
     my $id   = shift;
-    my $type = shift; 
-    
+    my $type = shift;
+
     croak "Object already associated with: "
-        . $self->_internal_message_id
-        . "This can only be set once and is read-only via (_internal_message_id) after that."
-        if $self->_internal_message_id;
+      . $self->_internal_message_id
+      . "This can only be set once and is read-only via (_internal_message_id) after that."
+      if $self->_internal_message_id;
 
     $id =~ s/\@/_at_/g;
     $id =~ s/\>|\<//g;
 
-	# This kinda sucks: 
+    # This kinda sucks:
     $self->_internal_message_id($id);
 
-
-    if($self->mailout_type){ 
-        croak "Why is mailout_type already set?!"; 
+    if ( $self->mailout_type ) {
+        croak "Why is mailout_type already set?!";
     }
-    if(!$type){
+    if ( !$type ) {
         croak "You didn't supply a list mailing type (list, black_list invitelist, etc)";
     }
-        
-    # BUGFIX: 
+
+    # BUGFIX:
     # 2219972  	 3.0.0 - Mailout.pm - associate method broken
     # https://sourceforge.net/tracker2/?func=detail&aid=2219972&group_id=13002&atid=113002
-    
+
     $self->mailout_type($type);
 
     $self->dir( $self->mailout_directory_name );
 
     $self->total_sending_out_num( _poll( $self->dir . '/' . $file_names->{num_sending_to} ) );
 
-    $self->subscriber_list($self->dir . '/' . $file_names->{tmp_subscriber_list} );
+    $self->subscriber_list( $self->dir . '/' . $file_names->{tmp_subscriber_list} );
 
     #/BUGFIX
 
@@ -638,9 +627,9 @@ sub batch_lock {
 
     $self->create_batch_lock();
 
-    warn 'created batch lock ' 
-        if $t; 
-        
+    warn 'created batch lock '
+      if $t;
+
     return 1;
 
 }
@@ -650,36 +639,34 @@ sub unlock_batch_lock {
     my $self = shift;
 
     my $file = $self->dir . '/' . $file_names->{batchlock};
-       $file = make_safer($file); 
-       
-    if ( ! -e $file ) {
- 
-		warn "Batch lock at '$file' doesn't exist to unlock?!"
-			if $t; 
+    $file = make_safer($file);
+
+    if ( !-e $file ) {
+
+        warn "Batch lock at '$file' doesn't exist to unlock?!"
+          if $t;
     }
     else {
 
         my $worked = unlink($file);
 
         if ( $worked == 1 ) {
-            warn 'Unlocking Batch Lock successfully. ' 
-                if $t; 
-            
+            warn 'Unlocking Batch Lock successfully. '
+              if $t;
+
             return 1;
 
         }
         else {
 
             warn "Batch lock at, '$file' could not be unlinked (deleted). Reasons:" . $!
-				if $t; 
+              if $t;
 
             if ( -e $file ) {
-                carp
-                    "File exists check turns up a positive - the batch lock file is *really really* there.";
+                carp "File exists check turns up a positive - the batch lock file is *really really* there.";
             }
             else {
-                carp
-                    "Strange, unlinking didn't work, but the batch lock doesn't seem to be around anymore.";
+                carp "Strange, unlinking didn't work, but the batch lock doesn't seem to be around anymore.";
             }
 
             return 0;
@@ -695,17 +682,17 @@ sub is_batch_locked {
     if ( -e $self->dir . '/' . $file_names->{batchlock} ) {
 
         warn 'Returning that the batch is locked.'
-            if $t; 
-            
+          if $t;
+
         return 1;
 
     }
     else {
-    
-        warn 'Returning that the batch is NOT locked.'
-            if 
 
-        return 0;
+        warn 'Returning that the batch is NOT locked.'
+          if
+
+          return 0;
     }
 }
 
@@ -713,66 +700,57 @@ sub _create_initial_directory {
 
     my $self = shift;
 
-	my $tmp_dir_name = make_safer($self->mailout_directory_name({-tmp => 1}));
-    if ( -d  $tmp_dir_name) {
-        croak "Mass Mailing directory, '"
-            . $tmp_dir_name
-            . "' already exists?!";
+    my $tmp_dir_name = make_safer( $self->mailout_directory_name( { -tmp => 1 } ) );
+    if ( -d $tmp_dir_name ) {
+        croak "Mass Mailing directory, '" . $tmp_dir_name . "' already exists?!";
     }
 
     if ( !-d $tmp_dir_name ) {
-        croak
-            "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! Could not create, '" . $tmp_dir_name . "'- $!"
-            unless mkdir( $tmp_dir_name, $DADA::Config::DIR_CHMOD  );
-        chmod( $DADA::Config::DIR_CHMOD , $tmp_dir_name )
-            if -d $tmp_dir_name;
+        croak "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! Could not create, '" . $tmp_dir_name . "'- $!"
+          unless mkdir( $tmp_dir_name, $DADA::Config::DIR_CHMOD );
+        chmod( $DADA::Config::DIR_CHMOD, $tmp_dir_name )
+          if -d $tmp_dir_name;
     }
 
     if ( !-d $tmp_dir_name ) {
-        croak "Mass Mailing Directory never created at: '"
-            . $tmp_dir_name . "'";
+        croak "Mass Mailing Directory never created at: '" . $tmp_dir_name . "'";
     }
 
-    $self->dir( $tmp_dir_name );
-    
+    $self->dir($tmp_dir_name);
+
     warn 'Directory created at: ' . $tmp_dir_name . ' saved in $self->dir as: ' . $self->dir
-        if $t; 
-        
-    return 1; 
+      if $t;
+
+    return 1;
 
 }
 
 sub mailout_directory_name {
 
     my $self = shift;
-    my ($args) = @_;  
-    if(!exists($args->{-tmp})){ 
-		$args->{-tmp} = 0; 
-	}
-    my $tmp  = $self->_internal_message_id;
+    my ($args) = @_;
+    if ( !exists( $args->{-tmp} ) ) {
+        $args->{-tmp} = 0;
+    }
+    my $tmp = $self->_internal_message_id;
 
     my $letter_id = $tmp;
     $letter_id =~ s/\@/_at_/g;
     $letter_id =~ s/\>|\<//g;
 
     $letter_id = DADA::App::Guts::strip($letter_id);
-	
-	my $prepend = ''; 
-	if($args->{-tmp} == 1){ 
-		$prepend = 'TMP_'; 
-	}
-	
-    return make_safer(
-        $DADA::Config::TMP 
-        . '/' 
-		. $prepend
-		. 'sendout-'
-        . $self->{list} 
-        . '-'
-        . $self->mailout_type 
-        . '-'
-        . $letter_id
-    );
+
+    my $prepend = '';
+    if ( $args->{-tmp} == 1 ) {
+        $prepend = 'TMP_';
+    }
+
+    return make_safer( $DADA::Config::TMP . '/'
+          . $prepend
+          . 'sendout-'
+          . $self->{list} . '-'
+          . $self->mailout_type . '-'
+          . $letter_id );
 }
 
 sub create_subscriber_list {
@@ -781,64 +759,68 @@ sub create_subscriber_list {
 
     my ($args) = @_;
 
-	 unless ($args->{-mh_obj}->isa('DADA::Mail::Send')){ 
-    	croak "The DADA::Mail::Send object has been passed, but it's not isa DADA::Mail::Send! ";
-	}
-
-
-	# That's gonna be harder....
-    require DADA::MailingList::Subscribers; 
-    my $lh = DADA::MailingList::Subscribers->new({-list =>  $self->list });
-
-	my $file = $self->dir . '/' . $file_names->{tmp_subscriber_list}; 
-	my $lock = $self->lock_file($file); 
-	
-	my %cmf_args = (
-			-ID              => $self->_internal_message_id,
-        	-Type            => $self->mailout_type,
-        	-Save_At         => $self->dir . '/' . $file_names->{tmp_subscriber_list},
-        	-Bulk_Test       => $args->{-mh_obj}->{mass_test},
-        	-Test_Recipient  => $args->{-mh_obj}->mass_test_recipient,
-	        -Ban             => $args->{-mh_obj}->{do_not_send_to},
-			
-			-Create_Tokens   => ($args->{-mh_obj}->list_type eq 'invitelist' || $args->{-mh_obj}->list_type eq 'list') ? 1 : 0,
-			
-	        # -Sending_Lists   => $args->{-mh_obj}->also_send_to,
-			# I'm pretty scoobied why these are passed as params, and the above are just 
-			# culled from the $mh object. Like, what? 
-	        
-			-partial_sending => $args->{-partial_sending},
-	); 
-	if($DADA::Config::MULTIPLE_LIST_SENDING == 1){ 
-		if ($DADA::Config::MULTIPLE_LIST_SENDING_TYPE eq 'merged') { 
-			$cmf_args{-include_from} = $args->{-mh_obj}->also_send_to;
-		}
-		else { 
-			$cmf_args{-exclude_from} = $args->{-exclude_from};  # Individual
-		}
-	}
-	
-    my ( $path_to_list, $total_sending_out_num) = $lh->create_mass_sending_file( %cmf_args );
-	$self->unlock_file($lock); 
-    if ( !-e $self->dir . '/' . $file_names->{tmp_subscriber_list} ) {
-        croak "Temporary Sending List was never created at: '"
-            . $self->dir . '/'
-            . $file_names->{tmp_subscriber_list} . "'";
+    unless ( $args->{-mh_obj}->isa('DADA::Mail::Send') ) {
+        croak "The DADA::Mail::Send object has been passed, but it's not isa DADA::Mail::Send! ";
     }
 
-    $self->subscriber_list(
-        $self->dir . '/' . $file_names->{tmp_subscriber_list} );
+    # That's gonna be harder....
+    require DADA::MailingList::Subscribers;
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $self->list } );
+
+    my $file = $self->dir . '/' . $file_names->{tmp_subscriber_list};
+    my $lock = $self->lock_file($file);
+
+    my %cmf_args = (
+        -ID             => $self->_internal_message_id,
+        -Type           => $self->mailout_type,
+        -Save_At        => $self->dir . '/' . $file_names->{tmp_subscriber_list},
+        -Bulk_Test      => $args->{-mh_obj}->{mass_test},
+        -Test_Recipient => $args->{-mh_obj}->mass_test_recipient,
+        -Ban            => $args->{-mh_obj}->{do_not_send_to},
+
+        -Create_Tokens => ( $args->{-mh_obj}->list_type eq 'invitelist' || $args->{-mh_obj}->list_type eq 'list' )
+        ? 1
+        : 0,
+
+        # -Sending_Lists   => $args->{-mh_obj}->also_send_to,
+        # I'm pretty scoobied why these are passed as params, and the above are just
+        # culled from the $mh object. Like, what?
+
+        -partial_sending => $args->{-partial_sending},
+    );
+    if ( $DADA::Config::MULTIPLE_LIST_SENDING == 1 ) {
+        if ( $DADA::Config::MULTIPLE_LIST_SENDING_TYPE eq 'merged' ) {
+            $cmf_args{-include_from} = $args->{-mh_obj}->also_send_to;
+        }
+        else {
+            $cmf_args{-exclude_from} = $args->{-exclude_from};    # Individual
+        }
+    }
+
+    my ( $path_to_list, $total_sending_out_num ) = $lh->create_mass_sending_file(%cmf_args);
+    $self->unlock_file($lock);
+    if ( !-e $self->dir . '/' . $file_names->{tmp_subscriber_list} ) {
+        croak "Temporary Sending List was never created at: '"
+          . $self->dir . '/'
+          . $file_names->{tmp_subscriber_list} . "'";
+    }
+
+    $self->subscriber_list( $self->dir . '/' . $file_names->{tmp_subscriber_list} );
     $self->total_sending_out_num($total_sending_out_num);
 
-    chmod($DADA::Config::FILE_CHMOD, $self->subscriber_list);
+    chmod( $DADA::Config::FILE_CHMOD, $self->subscriber_list );
 
-    warn 'create_subscriber_list successful, subscriber_list set to: ' . $self->dir . '/' . $file_names->{tmp_subscriber_list} . 'total sending out set to: ' . $total_sending_out_num
-        if $t;
-    
-	undef $lh; 
-	
-    return 1; 
-    
+    warn 'create_subscriber_list successful, subscriber_list set to: '
+      . $self->dir . '/'
+      . $file_names->{tmp_subscriber_list}
+      . 'total sending out set to: '
+      . $total_sending_out_num
+      if $t;
+
+    undef $lh;
+
+    return 1;
+
 }
 
 sub create_total_sending_out_num {
@@ -846,177 +828,157 @@ sub create_total_sending_out_num {
     my $self = shift;
 
     my $file = $self->dir . '/' . $file_names->{num_sending_to};
-       $file = make_safer($file); 
-    
-	my $lock = $self->lock_file($file);
+    $file = make_safer($file);
 
-    sysopen( COUNTER, $file, O_WRONLY | O_TRUNC | O_CREAT, $DADA::Config::FILE_CHMOD  )
-        or croak
-        "Couldn't create the counter of how many subscribers I need to send to at: '$file' because: $!";
+    my $lock = $self->lock_file($file);
+
+    sysopen( COUNTER, $file, O_WRONLY | O_TRUNC | O_CREAT, $DADA::Config::FILE_CHMOD )
+      or croak "Couldn't create the counter of how many subscribers I need to send to at: '$file' because: $!";
     print COUNTER $self->total_sending_out_num
-        or croak "Couldn't write to: '" . $file . "' because: " . $!;
+      or croak "Couldn't write to: '" . $file . "' because: " . $!;
     close(COUNTER)
-        or croak "'" . $file . "' didn't close poperly because: " . $!;
-		
-	$self->unlock_file($lock);
+      or croak "'" . $file . "' didn't close poperly because: " . $!;
 
-    chmod($DADA::Config::FILE_CHMOD, $file);    
+    $self->unlock_file($lock);
+
+    chmod( $DADA::Config::FILE_CHMOD, $file );
     warn 'num_sending_to file created at ' . $file . ' and given value of: ' . $self->total_sending_out_num
-        if $t; 
-    
-    return 1; 
-    
+      if $t;
+
+    return 1;
+
 }
-
-
-
 
 sub create_log_file {
 
     my $self = shift;
 
     my $file = $self->dir . '/' . $file_names->{'log'};
-       $file = make_safer($file); 
-    
-    open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $file  )
-        or croak
-        "Couldn't create the log file at: '"
-        . $file
-        . " 'because: "
-        . $!;
-  
+    $file = make_safer($file);
+
+    open( LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file )
+      or croak "Couldn't create the log file at: '" . $file . " 'because: " . $!;
+
     close(LOG)
-        or croak " didn't close '$file' poperly because: " . $!;
-    chmod($DADA::Config::FILE_CHMOD, $file);    
+      or croak " didn't close '$file' poperly because: " . $!;
+    chmod( $DADA::Config::FILE_CHMOD, $file );
     warn 'log file created at ' . $file
-        if $t; 
-    
-    return 1; 
-    
+      if $t;
+
+    return 1;
+
 }
 
-sub problem_subscriber_list_file { 
-	
+sub problem_subscriber_list_file {
+
     my $self = shift;
 
     my $file = $self->dir . '/' . $file_names->{'problem_subscriber_list'};
-       $file = make_safer($file); 
-    
-    open(LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $file  )
-        or croak
-        "Couldn't create the problem_subscriber_list file at: '"
-        . $file
-        . " 'because: "
-        . $!;
-  
+    $file = make_safer($file);
+
+    open( LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file )
+      or croak "Couldn't create the problem_subscriber_list file at: '" . $file . " 'because: " . $!;
+
     close(LOG)
-        or croak " didn't close '$file' poperly because: " . $!;
-    chmod($DADA::Config::FILE_CHMOD, $file);    
+      or croak " didn't close '$file' poperly because: " . $!;
+    chmod( $DADA::Config::FILE_CHMOD, $file );
     warn 'problem_subscriber_list file created at ' . $file
-        if $t; 
-    
-    return 1; 
+      if $t;
+
+    return 1;
 
 }
-
 
 sub create_counter {
 
     my $self = shift;
 
     my $file = $self->dir . '/' . $file_names->{counter};
-       $file = make_safer($file);
+    $file = make_safer($file);
 
-	my $lock = $self->lock_file($file);
-	
-    sysopen( COUNTER, $file, O_WRONLY | O_TRUNC | O_CREAT, $DADA::Config::FILE_CHMOD  )
-        or croak "couldn't open counter at: '$file' because: $!";
+    my $lock = $self->lock_file($file);
+
+    sysopen( COUNTER, $file, O_WRONLY | O_TRUNC | O_CREAT, $DADA::Config::FILE_CHMOD )
+      or croak "couldn't open counter at: '$file' because: $!";
     print COUNTER '0';
     close(COUNTER)
-       or croak "couldn't close counter at: '$file' because: $!";
+      or croak "couldn't close counter at: '$file' because: $!";
 
-	$self->unlock_file($lock);
+    $self->unlock_file($lock);
 
-    chmod($DADA::Config::FILE_CHMOD, $file);     
+    chmod( $DADA::Config::FILE_CHMOD, $file );
     warn 'counter created at ' . $file
-        if $t; 
-        
-    
-    return 1; 
+      if $t;
+
+    return 1;
 
 }
-
-
-
 
 sub create_first_accessed_file {
 
     my $self = shift;
     my $file = $self->dir . '/' . $file_names->{first_access};
-       $file = make_safer($file);
+    $file = make_safer($file);
 
-	my $lock = $self->lock_file($file);
+    my $lock = $self->lock_file($file);
 
-    sysopen( ACCESS, $file, O_WRONLY | O_TRUNC | O_CREAT, $DADA::Config::FILE_CHMOD  )
-        or croak "Couldn't open '$file' because: " . $!;
+    sysopen( ACCESS, $file, O_WRONLY | O_TRUNC | O_CREAT, $DADA::Config::FILE_CHMOD )
+      or croak "Couldn't open '$file' because: " . $!;
     print ACCESS time;
     close(ACCESS)
-        or croak "Couldn't close '$file' because: " . $!;
+      or croak "Couldn't close '$file' because: " . $!;
 
-	$self->unlock_file($lock);
-	
-    chmod($DADA::Config::FILE_CHMOD, $file);     
+    $self->unlock_file($lock);
+
+    chmod( $DADA::Config::FILE_CHMOD, $file );
     warn 'create_first_accessed_file created at ' . $file
-        if $t; 
+      if $t;
 
 }
-
-
-
 
 sub create_last_accessed_file {
 
     my $self = shift;
     my $file = $self->dir . '/' . $file_names->{last_access};
-       $file = make_safer($file);
+    $file = make_safer($file);
 
-	my $lock = $self->lock_file($file);
+    my $lock = $self->lock_file($file);
 
-    sysopen( ACCESS, $file, O_WRONLY | O_TRUNC | O_CREAT, $DADA::Config::FILE_CHMOD  )
-        or croak "Couldn't open '$file' because: " . $!;
+    sysopen( ACCESS, $file, O_WRONLY | O_TRUNC | O_CREAT, $DADA::Config::FILE_CHMOD )
+      or croak "Couldn't open '$file' because: " . $!;
     print ACCESS time;
     close(ACCESS)
-        or croak "Couldn't close '$file' because: " . $!;
+      or croak "Couldn't close '$file' because: " . $!;
 
-	$self->unlock_file($lock);
+    $self->unlock_file($lock);
 
-	chmod($DADA::Config::FILE_CHMOD, $file); 
+    chmod( $DADA::Config::FILE_CHMOD, $file );
     warn 'create_last_accessed_file created at ' . $file
-        if $t; 
-    return 1; 
+      if $t;
+    return 1;
 }
 
 sub create_batch_lock {
 
     my $self = shift;
     my $file = $self->dir . '/' . $file_names->{batchlock};
-       $file = make_safer($file);
-	
-	my $lock = $self->lock_file($file);
-	
-    sysopen( BATCHLOCK, $file, O_WRONLY | O_TRUNC | O_CREAT, $DADA::Config::FILE_CHMOD  )
-        or croak "Couldn't open, '$file' because: " . $!;
+    $file = make_safer($file);
+
+    my $lock = $self->lock_file($file);
+
+    sysopen( BATCHLOCK, $file, O_WRONLY | O_TRUNC | O_CREAT, $DADA::Config::FILE_CHMOD )
+      or croak "Couldn't open, '$file' because: " . $!;
     print BATCHLOCK time;
     close(BATCHLOCK)
-        or croak "Couldn't close, '$file' because: " . $!;
-	
-	$self->unlock_file($lock);
-	
-	chmod($DADA::Config::FILE_CHMOD, $file); 
-	warn 'create_batch_lock created at ' . $file
-        if $t; 
-    return 1; 
-    
+      or croak "Couldn't close, '$file' because: " . $!;
+
+    $self->unlock_file($lock);
+
+    chmod( $DADA::Config::FILE_CHMOD, $file );
+    warn 'create_batch_lock created at ' . $file
+      if $t;
+    return 1;
+
 }
 
 sub countsubscriber {
@@ -1042,13 +1004,13 @@ sub countsubscriber {
           or croak "can't flock '$file' because: $!";
     }
 
-    seek( FH, 0, 0 )          or croak "can't rewind counter: $!";
-    truncate( FH, 0 )         or croak "can't truncate counter: $!";
-    
+    seek( FH, 0, 0 ) or croak "can't rewind counter: $!";
+    truncate( FH, 0 ) or croak "can't truncate counter: $!";
+
     my $new_count = int($num) + 1;
-    
+
     print FH $new_count, "\n" or croak "can't write counter: $!";
-    close FH                  or croak "can't close counter: $!";
+    close FH or croak "can't close counter: $!";
 
     $self->unlock_file($lock);
     $self->update_last_access();
@@ -1057,207 +1019,174 @@ sub countsubscriber {
 
 }
 
+sub update_last_access {
 
+    warn "update_last_access"
+      if $t;
 
+    my $self = shift;
 
-    
-sub update_last_access { 
+    my $file = make_safer( $self->dir . '/' . $file_names->{last_access} );
 
-	warn "update_last_access"
-		if $t; 
+    my $lock = $self->lock_file($file);
 
-	my $self = shift; 
-	
-	my $file = make_safer($self->dir . '/' . $file_names->{last_access});
-	
-	my $lock = $self->lock_file($file);
-	
-    sysopen( FH,
-        $file,
-        O_RDWR | O_CREAT, 
-		$DADA::Config::FILE_CHMOD
-    ) or croak "can't open '$file' because: $!";
- 
+    sysopen( FH, $file, O_RDWR | O_CREAT, $DADA::Config::FILE_CHMOD ) or croak "can't open '$file' because: $!";
 
-	flock( FH, LOCK_EX )
-	  or croak "can't flock '$file'  because: $!";
-
+    flock( FH, LOCK_EX )
+      or croak "can't flock '$file'  because: $!";
 
     seek( FH, 0, 0 ) or croak "can't rewind counter: $!";
     truncate( FH, 0 ) or croak "can't truncate counter: $!";
     ( print FH time, "\n" ) or croak "can't write counter: $!";
-    close FH                or croak "can't close counter: $!";
+    close FH or croak "can't close counter: $!";
 
-	$self->unlock_file($lock);
-	
+    $self->unlock_file($lock);
+
 }
 
+sub pause {
 
-
-
-sub pause { 
-
-    my $self = shift; 
+    my $self = shift;
     my $set  = shift;
-    
 
-    if($self->paused){ 
-        carp "Mass Mailing is already paused."; 
-    
-        return undef; 
+    if ( $self->paused ) {
+        carp "Mass Mailing is already paused.";
+
+        return undef;
     }
-    else { 
-    	my $file = $self->dir . '/' . $file_names->{pause}; 
+    else {
+        my $file = $self->dir . '/' . $file_names->{pause};
 
-		my $lock = $self->lock_file($file);
-		
-        sysopen( FH,
-            $file,
-            O_RDWR | O_CREAT, 
-			$DADA::Config::FILE_CHMOD
-        ) or croak "can't open '$file' because: $!";
-		
-		if($^O =~ /solaris/g){ 
-			flock( FH, LOCK_SH )    
-				or croak "can't flock '$file' because: $!";		
-		}
-		else { 
-			flock( FH, LOCK_EX )
-				or croak "can't flock '$file' because: $!";	
-		}
-        
-    
-        seek( FH, 0, 0 )        or croak "can't rewind pause: $!";
-        truncate( FH, 0 )       or croak "can't truncate pause: $!";
+        my $lock = $self->lock_file($file);
+
+        sysopen( FH, $file, O_RDWR | O_CREAT, $DADA::Config::FILE_CHMOD ) or croak "can't open '$file' because: $!";
+
+        if ( $^O =~ /solaris/g ) {
+            flock( FH, LOCK_SH )
+              or croak "can't flock '$file' because: $!";
+        }
+        else {
+            flock( FH, LOCK_EX )
+              or croak "can't flock '$file' because: $!";
+        }
+
+        seek( FH, 0, 0 ) or croak "can't rewind pause: $!";
+        truncate( FH, 0 ) or croak "can't truncate pause: $!";
         ( print FH time, "\n" ) or croak "can't write pause: $!";
         close FH;
 
-		$self->unlock_file($lock);
-		
-		chmod($DADA::Config::FILE_CHMOD, $file);   
-        
-		$self->log('Mailing Paused.'); 
-		
+        $self->unlock_file($lock);
+
+        chmod( $DADA::Config::FILE_CHMOD, $file );
+
+        $self->log('Mailing Paused.');
+
         warn 'successfully paused mailout.'
-            if $t; 
-        
-        return 1; 
-    
+          if $t;
+
+        return 1;
+
     }
 }
 
+sub set_controlling_pid {
 
+    my $self = shift;
+    my $pid = shift || die "You MUST pass the current pid!";
 
+    my $file = make_safer( $self->dir . '/' . $file_names->{pid} );
 
-sub set_controlling_pid { 
+    my $old_pid = undef;
 
- 	my $self = shift;
-	my $pid  = shift || die "You MUST pass the current pid!";
-	
-	my $file = make_safer($self->dir . '/' . $file_names->{pid});
-		
-	my $old_pid = undef; 
-	
-	if(-e $self->dir . '/' . $file_names->{pid} ){ 
-		$old_pid = _poll($file);
-	}
-	else { 
-	#	carp "No pid file, yet"; 
-	}
+    if ( -e $self->dir . '/' . $file_names->{pid} ) {
+        $old_pid = _poll($file);
+    }
+    else {
+        #	carp "No pid file, yet";
+    }
 
+    my $lock = $self->lock_file($file);
 
-	my $lock = $self->lock_file($file);
+    warn "Switching controlling pid from: $old_pid to: $pid"
+      if $t;
 
-	warn "Switching controlling pid from: $old_pid to: $pid"
-		if $t;
+    open my $pid_fh, '>', $file
+      or croak "can't open '$file' because: $!";
 
-	open my $pid_fh, '>', $file
-		or croak "can't open '$file' because: $!";
-		
-	if($^O !~ /solaris/g){ 	# as far as I can, shared locks are probably pretty useless, anyways... 
-		flock( $pid_fh, LOCK_SH ) 
-	        	or croak "can't flock '$file' because: $!";
-	}
-		
-	print $pid_fh $pid;
-	close $pid_fh                    
-		or croak "can't close file '$file' because $!";
-		
-	$self->unlock_file($lock);
+    if ( $^O !~ /solaris/g ) {    # as far as I can, shared locks are probably pretty useless, anyways...
+        flock( $pid_fh, LOCK_SH )
+          or croak "can't flock '$file' because: $!";
+    }
 
-	chmod($DADA::Config::FILE_CHMOD, $file); 
-	
-	return $pid; 
+    print $pid_fh $pid;
+    close $pid_fh
+      or croak "can't close file '$file' because $!";
+
+    $self->unlock_file($lock);
+
+    chmod( $DADA::Config::FILE_CHMOD, $file );
+
+    return $pid;
 
 }
 
+sub resume {
 
-
-
-sub resume { 
-
-    my $self = shift; 
+    my $self = shift;
 
     warn 'Attempting to resume mailing...'
-		if $t; 
-    
+      if $t;
 
-    if(-e $self->dir . '/' . $file_names->{pause}){ 
+    if ( -e $self->dir . '/' . $file_names->{pause} ) {
 
         warn $self->dir . '/' . $file_names->{pause} . "exists."
- 			if $t; 
-                    
-        my $r = unlink($self->dir . '/' . $file_names->{pause}); 
-        if($r != 1){ 
-            carp("Problem resuming mailing!");  
-            return undef; 
+          if $t;
+
+        my $r = unlink( $self->dir . '/' . $file_names->{pause} );
+        if ( $r != 1 ) {
+            carp("Problem resuming mailing!");
+            return undef;
         }
-        else { 
-            
-            # I wanna say I have to do this: 
-            #if($self->batch_lock){ 
+        else {
+
+            # I wanna say I have to do this:
+            #if($self->batch_lock){
             #     $self->unlock_batch_lock();
             #}
             # I also want to say I want to do... this!
-            # $self->reload(); 
-             
-            # carp "no problems removing that file..."; 
-            warn 'no problems reloading?'
-                if $t; 
+            # $self->reload();
 
-			$self->log('Mailing Resumed.'); 
-			
-            return 1; 
+            # carp "no problems removing that file...";
+            warn 'no problems reloading?'
+              if $t;
+
+            $self->log('Mailing Resumed.');
+
+            return 1;
         }
-          
-            
+
     }
-    else{ 
-    
+    else {
+
         carp "mailing WAS NOT paused...?";
-        undef; 
-    
+        undef;
+
     }
-    
+
 }
 
+sub paused {
 
+    my $self = shift;
 
+    if ( -e $self->dir . '/' . $file_names->{pause} ) {
 
-sub paused { 
-
-    my $self = shift; 
-    
-    if(-e $self->dir . '/' . $file_names->{pause}){ 
-    
         return _poll( $self->dir . '/' . $file_names->{pause} );
     }
-    else { 
-        return 0; 
+    else {
+        return 0;
     }
 }
-
-
 
 sub create_raw_message {
 
@@ -1265,253 +1194,248 @@ sub create_raw_message {
     my $fields = $self->message;
 
     my $file = $self->dir . '/' . $file_names->{raw_message};
-       $file = make_safer($file);
+    $file = make_safer($file);
 
     my $msg;
 
-	my $lock = $self->lock_file($file);
-	
+    my $lock = $self->lock_file($file);
+
     open( MESSAGE, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file )
-        or croak "couldn't open: '$file' because: $!";
+      or croak "couldn't open: '$file' because: $!";
 
     for (@DADA::Config::EMAIL_HEADERS_ORDER) {
         next if $_ eq 'Body';
         next if $_ eq 'Message';    # Do I need this?!
-        print MESSAGE $_ . ': ' . safely_encode($fields->{$_}) . "\n"
-            if ( ( defined $fields->{$_} ) && ( $fields->{$_} ne "" ) );
+        print MESSAGE $_ . ': ' . safely_encode( $fields->{$_} ) . "\n"
+          if ( ( defined $fields->{$_} ) && ( $fields->{$_} ne "" ) );
     }
 
     print MESSAGE "\n" . $fields->{Body};
 
     close MESSAGE
-        or die "Couldn't close: " . $file . "because: " . $!;
+      or die "Couldn't close: " . $file . "because: " . $!;
 
-	$self->unlock_file($lock);
-	
-	
-    chmod($DADA::Config::FILE_CHMOD, $file); 
+    $self->unlock_file($lock);
+
+    chmod( $DADA::Config::FILE_CHMOD, $file );
 
     warn 'create_raw_message  at ' . $file
-        if $t; 
+      if $t;
 
-    return 1; 
-    
+    return 1;
+
 }
 
+sub _integrity_check {
 
+    my $self = shift;
 
+    if ( !$self->mailout_type ) {
 
-sub _integrity_check { 
-
-
-    my $self = shift; 
-    
-    if(!$self->mailout_type){ 
-        
         carp "Integrity warning: no list_type set? How is that?";
-        return undef; 
-        
+        return undef;
+
     }
-    
-    for my $file_check(keys %$file_names){
-    
-        next if $file_check eq 'batchlock'; # batchlock can come and go, I guess...
-        next if $file_check eq 'pause';    
-		next if $file_check eq 'pid';   
-        if(! -e $self->dir . '/' . $file_names->{$file_check}){ 
-           
-            carp "Integrity warning: " . $self->dir . '/' . $file_names->{$file_check} . " ($file_check) is not present!"; 
+
+    for my $file_check ( keys %$file_names ) {
+
+        next if $file_check eq 'batchlock';    # batchlock can come and go, I guess...
+        next if $file_check eq 'pause';
+        next if $file_check eq 'pid';
+        if ( !-e $self->dir . '/' . $file_names->{$file_check} ) {
+
+            carp "Integrity warning: "
+              . $self->dir . '/'
+              . $file_names->{$file_check}
+              . " ($file_check) is not present!";
             return undef;
         }
-    
+
     }
-    
-    
+
     # Special Case: If the counter is returning... well, NOT a number, we're in trouble...
-     my $test_counter = _poll( $self->dir . '/' . $file_names->{counter} );
-    if(
-		! defined($test_counter) 
-#		!defined($test_counter) || 
-	#	$test_counter eq undef  ||
-#		$test_counter eq ''     
-	){ 
-        	carp "Polling, '" . $self->dir . '/' . $file_names->{counter} . "' gave back an undefined value!.";
-        	return undef; 
+    my $test_counter = _poll( $self->dir . '/' . $file_names->{counter} );
+    if (
+        !defined($test_counter)
+
+        #		!defined($test_counter) ||
+        #	$test_counter eq undef  ||
+        #		$test_counter eq ''
+      )
+    {
+        carp "Polling, '" . $self->dir . '/' . $file_names->{counter} . "' gave back an undefined value!.";
+        return undef;
     }
-   
-    return 1; 
+
+    return 1;
 
 }
 
 sub status {
 
-    my $self = shift; 
-    my ($args) = @_; 
-	if(!exists($args->{-mail_fields})){ 
-		$args->{-mail_fields} = 1; 
-	}
+    my $self = shift;
+    my ($args) = @_;
+    if ( !exists( $args->{-mail_fields} ) ) {
+        $args->{-mail_fields} = 1;
+    }
 
-	my $lock = $self->lock_file($self->mailout_directory_name); 
+    my $lock = $self->lock_file( $self->mailout_directory_name );
 
-    warn 'Checking status ' 
-        if $t; 
-        
+    warn 'Checking status '
+      if $t;
+
     $self->dir( $self->mailout_directory_name );
 
     my $status = {};
 
-
     # DEV: For some reason, I want this explicitly set... so as not to cause any confusion...
     $status->{should_be_restarted} = 0;
-    #	warn 'should_be_restarted set to, 0'
-    #	    if $t; 
-     
-     $status->{id} = $self->_internal_message_id;
 
-    if(! defined($self->_integrity_check)){ 
-        $status->{integrity_check} = 0; 
+    #	warn 'should_be_restarted set to, 0'
+    #	    if $t;
+
+    $status->{id} = $self->_internal_message_id;
+
+    if ( !defined( $self->_integrity_check ) ) {
+        $status->{integrity_check} = 0;
 
         # Note: DO NOT RESTART A MAILING THAT DOES NOT PASS THE INTEGRITY CHECK - OK COWBOY?!
-       # return $status;    
-    } else { 
+        # return $status;
+    }
+    else {
         $status->{integrity_check} = 1;
     }
 
-   
-    $status->{total_sending_out_num}
-        = _poll( $self->dir . '/' . $file_names->{num_sending_to} );
+    $status->{total_sending_out_num} =
+      _poll( $self->dir . '/' . $file_names->{num_sending_to} );
 
-    $status->{total_sent_out}
-        = _poll( $self->dir . '/' . $file_names->{counter} );
+    $status->{total_sent_out} =
+      _poll( $self->dir . '/' . $file_names->{counter} );
 
-    $status->{last_access}
-        = _poll( $self->dir . '/' . $file_names->{last_access} );
-	$status->{last_access_formatted}
-		= scalar(localtime($status->{last_access})); 	
-		
-	$status->{last_sent} = (stat ( $self->dir . '/' . $file_names->{counter} ))[9];
-	$status->{last_sent_formatted}
-		= scalar(localtime($status->{last_sent})); 	
-		
-   $status->{first_access}
-        = _poll( $self->dir . '/' . $file_names->{first_access} );
-	$status->{first_access_formatted}
-		= scalar(localtime($status->{first_access})); 	
-	
-	$status->{mailing_time} 
-		= $status->{last_access} - $status->{first_access};
-	$status->{mailing_time_formatted}
-		= _formatted_runtime($status->{mailing_time}); 
+    $status->{last_access} =
+      _poll( $self->dir . '/' . $file_names->{last_access} );
+    $status->{last_access_formatted} =
+      scalar( localtime( $status->{last_access} ) );
 
-	if($args->{-mail_fields} == 1){ 
-    	$status->{email_fields} = $self->mail_fields_from_raw_message();
-	}
-	else { 
-		$status->{email_fields} = {}; 
-	}
+    $status->{last_sent} = ( stat( $self->dir . '/' . $file_names->{counter} ) )[9];
+    $status->{last_sent_formatted} =
+      scalar( localtime( $status->{last_sent} ) );
+
+    $status->{first_access} =
+      _poll( $self->dir . '/' . $file_names->{first_access} );
+    $status->{first_access_formatted} =
+      scalar( localtime( $status->{first_access} ) );
+
+    $status->{mailing_time} =
+      $status->{last_access} - $status->{first_access};
+    $status->{mailing_time_formatted} =
+      _formatted_runtime( $status->{mailing_time} );
+
+    if ( $args->{-mail_fields} == 1 ) {
+        $status->{email_fields} = $self->mail_fields_from_raw_message();
+    }
+    else {
+        $status->{email_fields} = {};
+    }
 
     $status->{type} = $self->mailout_type;
 
     $status->{is_batch_locked} = ( $self->is_batch_locked == 1 ) ? 1 : 0;
 
-
     $status->{paused} = $self->paused();
 
-	if(-e $self->dir . '/' . $file_names->{pid}){ 
-		$status->{controlling_pid} 
-			= _poll($self->dir . '/' . $file_names->{pid}); 
+    if ( -e $self->dir . '/' . $file_names->{pid} ) {
+        $status->{controlling_pid} =
+          _poll( $self->dir . '/' . $file_names->{pid} );
     }
-	else { 
-		$status->{controlling_pid}  = '';
-	}
+    else {
+        $status->{controlling_pid} = '';
+    }
 
     warn '>>>> MAILOUT_AT_ONCE_LIMIT set to: ' . $DADA::Config::MAILOUT_AT_ONCE_LIMIT
-        if $t; 
-            
-    if($DADA::Config::MAILOUT_AT_ONCE_LIMIT > 0){ 
-        
+      if $t;
 
-        
-        $status->{queue} = 1; 
-        my ($place, $total)            = $self->line_in_queue; 
-        
+    if ( $DADA::Config::MAILOUT_AT_ONCE_LIMIT > 0 ) {
+
+        $status->{queue} = 1;
+        my ( $place, $total ) = $self->line_in_queue;
+
         warn '>>>> >>>> Line in queue: ' . $place . ' in a total of: ' . $total
-            if $t; 
-        
-        $status->{queue_place}         = $place; 
-        $status->{queue_total}         = $total; 
-       
+          if $t;
+
+        $status->{queue_place} = $place;
+        $status->{queue_total} = $total;
+
         # $place starts at, "0" ,
-        # $DADA::Config::MAILOUT_AT_ONCE_LIMIT starts at, "1".        
-        
-#        carp '$place: ' . $place . ', $DADA::Config::MAILOUT_AT_ONCE_LIMIT - 1 ' . $DADA::Config::MAILOUT_AT_ONCE_LIMIT - 1; 
-        
-        
-        if($place > ($DADA::Config::MAILOUT_AT_ONCE_LIMIT - 1)){ 
-            
+        # $DADA::Config::MAILOUT_AT_ONCE_LIMIT starts at, "1".
+
+#        carp '$place: ' . $place . ', $DADA::Config::MAILOUT_AT_ONCE_LIMIT - 1 ' . $DADA::Config::MAILOUT_AT_ONCE_LIMIT - 1;
+
+        if ( $place > ( $DADA::Config::MAILOUT_AT_ONCE_LIMIT - 1 ) ) {
+
             warn '>>>> >>>> >>>> Place in queue higher than MAILOUT_AT_ONCE_LIMIT'
-                if $t; 
-            
+              if $t;
+
             warn '>>>> >>>> >>>> should_be_restarted set to, 0'
-                if $t; 
+              if $t;
+
             # No, a queued mailing should not have to be restarted. Duh.
-            $status->{should_be_restarted} = 0; 
+            $status->{should_be_restarted} = 0;
             warn '>>>> >>>> >>>> should_be_restarted set to, 0'
-                if $t;             
-            # This keeps the logic in here, and I don't have to repeat the 
+              if $t;
+
+            # This keeps the logic in here, and I don't have to repeat the
             # above, "if..." line a billion times...
-            
-            $status->{queued_mailout}      = 1; 
-            
+
+            $status->{queued_mailout} = 1;
+
             warn '>>>> >>>> >>>> queued_mailout set to, 1'
-                if $t; 
-            
-        } else { 
-        
-             # Meaning, we ARE, in fact, queueing, but this mailout is
-             # inside how many mailouts are allowed at one time. 
-        
-             $status->{should_be_restarted} = $self->should_be_restarted;
-             warn '>>>> >>>> >>>> $status->{should_be_restarted} set to: ' . $status->{should_be_restarted}
-                if $t; 
-             
-             $status->{queued_mailout}      = 0; 
-             warn '>>>> >>>> >>>> queued_mailout set to, 0'
-                if $t; 
+              if $t;
+
         }
-        
+        else {
+
+            # Meaning, we ARE, in fact, queueing, but this mailout is
+            # inside how many mailouts are allowed at one time.
+
+            $status->{should_be_restarted} = $self->should_be_restarted;
+            warn '>>>> >>>> >>>> $status->{should_be_restarted} set to: ' . $status->{should_be_restarted}
+              if $t;
+
+            $status->{queued_mailout} = 0;
+            warn '>>>> >>>> >>>> queued_mailout set to, 0'
+              if $t;
+        }
+
     }
-    else { 
-    
-        $status->{queue}               = 0; 
-        $status->{queue_place}         = undef; 
-        $status->{queue_total}         = undef;
-        
+    else {
+
+        $status->{queue}       = 0;
+        $status->{queue_place} = undef;
+        $status->{queue_total} = undef;
+
         # Meaning, we're not queueing, so tell me if we need to restart
         # using this expensive method...
-        
+
         $status->{should_be_restarted} = $self->should_be_restarted;
         warn '>>>> >>>> should_be_restarted set to ' . $status->{should_be_restarted}
-            if $t; 
-            
-        $status->{queued_mailout}      = 0; 
+          if $t;
+
+        $status->{queued_mailout} = 0;
         warn '>>>> >>>> queued_mailout set to, 0'
-            if $t; 
+          if $t;
     }
-    
-    
-    
+
     # should be like a + .05 somewhere in here...
     if ( $status->{total_sent_out} > 0 ) {
-        
-        eval { 
-        
-        $status->{percent_done} = int(
-            int( $status->{total_sent_out} ) /
-                int( $status->{total_sending_out_num} ) * 100 );
+
+        eval {
+
+            $status->{percent_done} =
+              int( int( $status->{total_sent_out} ) / int( $status->{total_sending_out_num} ) * 100 );
         };
-        
-        if($@){ 
+
+        if ($@) {
             $status->{percent_done} = 0;
         }
     }
@@ -1529,268 +1453,253 @@ sub status {
     #
     # instead of the other...
 
-    
     # I've put this above, so as not to call, "status()" twice...
     # $status->{should_be_restarted} = $self->should_be_restarted;
 
     my $process_has_stalled = $self->process_has_stalled;
 
     $status->{process_has_stalled} = $process_has_stalled;
-    warn '>>>> process_has_stalled set to, ' .  $status->{process_has_stalled}
-        if $t; 
-        
+    warn '>>>> process_has_stalled set to, ' . $status->{process_has_stalled}
+      if $t;
+
     # Test for a stalled process -
-	# DEV: I'm weirded out at the reason why status() is doing something like
-	# thing. Huh?!
+    # DEV: I'm weirded out at the reason why status() is doing something like
+    # thing. Huh?!
     if ( $process_has_stalled == 1 ) {
-		
-		if($self->is_batch_locked == 1){ 
-	        warn 
-	            "Process has stalled. Unlocking batchlock, so it may start again!"
-					if $t; 
-		}
-		else { 
-	        warn 
-	            "Process has stalled. Batch is not locked."
-					if $t; 			
-		}
-		
+
+        if ( $self->is_batch_locked == 1 ) {
+            warn "Process has stalled. Unlocking batchlock, so it may start again!"
+              if $t;
+        }
+        else {
+            warn "Process has stalled. Batch is not locked."
+              if $t;
+        }
+
         if ( $status->{total_sent_out} == $status->{total_sending_out_num} ) {
             warn
-                "Well, wait, the amount to send out equals the number we have to send out - I think we're done, will unlock anyways, to get around niggly stuff, but expect warnings..."
-					if $t; 
-       
+"Well, wait, the amount to send out equals the number we have to send out - I think we're done, will unlock anyways, to get around niggly stuff, but expect warnings..."
+              if $t;
+
             warn '$status->{total_sent_out} == $status->{total_sending_out_num} ?!?!'
-                if $t; 
-       }
+              if $t;
+        }
 
         $self->unlock_batch_lock();
         $status->{is_batch_locked} = 0;
 
     }
 
+    # A stale mailout means that the time since the last email sent is more
+    # than some sort of number.
+    # A stale mailout isn't something you want to restart automatically,
+    # since it may be something *too* old to really bother with...
 
-    # A stale mailout means that the time since the last email sent is more 
-	# than some sort of number. 
-    # A stale mailout isn't something you want to restart automatically, 
-	# since it may be something *too* old to really bother with...
-   
-	if(
-		$status->{last_access}          > 0       && 
-		$status->{should_be_restarted} =~ m/1|0/
-	){ 
-    	$status->{mailout_stale} 
-			= $self->is_mailout_stale(
-						$status->{last_access}, 
-						#$status->{should_be_restarted}
-					); 
-	}
-	else { 
-  		#warn "Skipping stale check?"
-		#	if $t; 
-  		$status->{mailout_stale} = undef; 		
-	}
+    if (   $status->{last_access} > 0
+        && $status->{should_be_restarted} =~ m/1|0/ )
+    {
+        $status->{mailout_stale} = $self->is_mailout_stale(
+            $status->{last_access},
 
-	$self->unlock_file($lock); 
-	
+            #$status->{should_be_restarted}
+        );
+    }
+    else {
+        #warn "Skipping stale check?"
+        #	if $t;
+        $status->{mailout_stale} = undef;
+    }
+
+    $self->unlock_file($lock);
+
     return $status;
 
 }
 
+sub is_mailout_stale {
 
+    my $self = shift;
+    my $last_access = shift || croak "at the moment, you have to pass the, last_access time manually (hey sorry!)";
 
+    if ( ( int(time) - $last_access ) > $DADA::Config::MAILOUT_STALE_AFTER ) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
 
-sub is_mailout_stale { 
-    
-    my $self                = shift; 
-    my $last_access         = shift || croak "at the moment, you have to pass the, last_access time manually (hey sorry!)"; 
-
-        if((int(time) - $last_access) > $DADA::Config::MAILOUT_STALE_AFTER){ 
-            return 1;
-        } 
-        else { 
-            return 0; 
-        }
-        # 86,400 seconds in an hour. 
+    # 86,400 seconds in an hour.
 }
-
-
-
 
 sub should_be_restarted {
 
     warn 'Start test of, "should_be_restarted"'
-        if $t; 
+      if $t;
 
     my $self = shift;
 
-
-    if($self->paused){
+    if ( $self->paused ) {
 
         warn '>>>>mailing is paused, should not be restarted.'
-            if $t; 
-            
+          if $t;
+
         # mailing is paused - no need to see if it needs to be restarted quite yet...
-        return 0; 
-    
+        return 0;
+
     }
-    else { 
-    
- 
-        my $last_access
-            = _poll( $self->dir . '/' . $file_names->{last_access} );
-    
+    else {
+
+        my $last_access = _poll( $self->dir . '/' . $file_names->{last_access} );
+
         if ( $self->{ls}->param('restart_mailings_after_each_batch') == 1 ) {
-    
+
             # Basically, if the sending process isn't locked, we wait the amount
             # of time we'd usually sleep() and if we're over that time, it's time
             # to send again!
-    
+
             warn '>>>>restart_mailings_after_each_batch set to, "1"'
-                if $t; 
-                
+              if $t;
+
             my $sleep_amount = $self->{ls}->param('bulk_sleep_amount');
-    
+
             if ( ( $last_access + $sleep_amount ) <= time ) {
-            
+
                 warn '>>>> >>>>Looks like we\'ve overslept. (($last_access + $sleep_amount ) <= time)'
-                    if $t; 
-                    
+                  if $t;
+
                 # last access is in the past,
                 # sleep amount is in seconds.
                 # if *now* is more than the last access time,
                 # plus we're supposed to sleep for,
                 # we've overslept...
-    
+
                 # Time to restart, as long as the lock isn't there...
-    
+
                 if ( $self->is_batch_locked ) {
-                
+
                     warn '>>>> >>>> >>>> batch is locked.'
-                        if $t;
-    
+                      if $t;
+
                     # Well, OK, it's there,
                     # but I mean, is it a *stale* lock?!
-    
+
                     if ( $self->process_has_stalled ) {
-                    
-                    
+
                         warn '>>>> >>>> >>>> >>>>process has stalled.'
-                            if $t; 
-    
+                          if $t;
+
                         # Process has stalled
                         # And it's time to restart?
                         # let's do it:
-                        
+
                         warn '>>>> >>>> >>>> >>>>Yes. The mailing SHOULD be restarted. (' . $$ . ')'
-                            if $t; 
-                            
+                          if $t;
+
                         return 1;
-    
+
                     }
                     else {
-    
+
                         # Let's wager on the side of being conservative
                         # and wait till the lock is officially stale
                         # Before we do anything *rash*
-                       
+
                         warn '>>>> >>>> >>>> >>>>process has NOT stalled.'
-                            if $t; 
-                        
+                          if $t;
+
                         warn '>>>> >>>> >>>> >>>>No. The mailing SHOULD NOT be restarted. (' . $$ . ')'
-                            if $t; 
-                            
+                          if $t;
+
                         return 0;
                     }
-    
+
                 }
                 else {
-    
+
                     # Sending process is *not* locked?
                     # And it's time to restart, let's do it.
-                    
+
                     warn '>>>> >>>> >>>> batch is NOT locked.'
-                        if $t;
-                    
+                      if $t;
+
                     warn '>>>> >>>> >>>> Yes. The mailing SHOULD be restarted. (' . $$ . ')'
-                        if $t;
-                        
+                      if $t;
+
                     return 1;
-    
+
                 }
-    
+
             }
             else {
-    
-                 warn '>>>> >>>>Mailing is either sleeping or hasn\'t been inactive for enough time.'
-                    if $t; 
-                    
+
+                warn '>>>> >>>>Mailing is either sleeping or hasn\'t been inactive for enough time.'
+                  if $t;
+
                 warn '>>>> >>>>No. The mailing SHOULD NOT be restarted. (' . $$ . ')'
-                    if $t; 
-                    
+                  if $t;
+
                 # not time yet...
                 return 0;
             }
-    
+
         }
         else {
-        
+
             warn '>>>>restart_mailings_after_each_batch set to, "0"'
-                if $t; 
-    
+              if $t;
+
             if ( $self->is_batch_locked ) {
                 warn '>>>> >>>> batch is locked.'
-                    if $t;
-                        
+                  if $t;
+
                 # Batch is locked.
                 # Is the batch stale?
-    
+
                 if ( $self->process_has_stalled ) {
                     warn '>>>> >>>> >>>> process has stalled.'
-                        if $t;
-                        
+                      if $t;
+
                     warn '>>>> >>>> >>>> Yes. The mailing SHOULD be restarted. (' . $$ . ')'
-                        if  $t;   
+                      if $t;
+
                     # Yes? Let's restart.
-    
+
                     return 1;
                 }
                 else {
                     warn '>>>> >>>> >>>> process has NOT stalled.'
-                        if $t;
-                        
-    
+                      if $t;
+
                     # No? Hold off.
-    
+
                     return 0;
                 }
             }
             else {
-            
-                warn '>>>> >>>> batch is NOT locked.'
-                    if $t; 
-    
-                if ( $self->process_has_stalled ) {
-                
-                    warn '>>>> >>>> >>>> process has stalled.'
-                        if $t;
-                  
-                    warn '>>>> >>>> >>>> Yes. The mailing SHOULD be restarted. (' . $$ . ')'
-                        if  $t;
-                        
-                  # carp "Batch ain't locked. process is stalled."; 
-                
-                   # batch ain't locked, huh? Restart!
-                   return 1;
-            
-                } 
-                else { 
-                    warn '>>>> >>>> >>>> process has NOT stalled.'
-                        if $t; 
-                    warn '>>>> >>>> >>>> No. The mailing SHOULD Not be restarted. (' . $$ . ')'
-                        if  $t;
-                    return 0; 
 
+                warn '>>>> >>>> batch is NOT locked.'
+                  if $t;
+
+                if ( $self->process_has_stalled ) {
+
+                    warn '>>>> >>>> >>>> process has stalled.'
+                      if $t;
+
+                    warn '>>>> >>>> >>>> Yes. The mailing SHOULD be restarted. (' . $$ . ')'
+                      if $t;
+
+                    # carp "Batch ain't locked. process is stalled.";
+
+                    # batch ain't locked, huh? Restart!
+                    return 1;
+
+                }
+                else {
+                    warn '>>>> >>>> >>>> process has NOT stalled.'
+                      if $t;
+                    warn '>>>> >>>> >>>> No. The mailing SHOULD Not be restarted. (' . $$ . ')'
+                      if $t;
+                    return 0;
 
                 }
             }
@@ -1798,275 +1707,243 @@ sub should_be_restarted {
 
     }
 }
-
-
-
 
 sub process_has_stalled {
 
     my $self = shift;
 
     warn 'Checking process_has_stalled'
-        if $t; 
-
-
+      if $t;
 
     #    carp '$self->process_stalled_after ' . $self->process_stalled_after;
 
     if ( $self->process_stalled_after <= 0 ) {
-    
+
         warn '>>>> process_stalled_after <= 0'
-            if $t; 
+          if $t;
         warn '>>>> reporting that process_has_stalled = 1'
-            if $t; 
+          if $t;
 
         return 1;
     }
     else {
-    
+
         warn '>>>> process_stalled_after > 1'
-        if $t; 
+          if $t;
         warn '>>>> reporting that process_has_stalled = 0'
-            if $t; 
-            
+          if $t;
+
         return 0;
     }
 }
-
-
-
 
 sub process_stalled_after {
 
     my $self = shift;
 
     warn 'Checking process_stalled_after.'
-        if $t; 
-        
-    my $last_access
-        = _poll( $self->dir . '/' . $file_names->{last_access} );
+      if $t;
+
+    my $last_access = _poll( $self->dir . '/' . $file_names->{last_access} );
 
     warn '>>>> $last_access: ' . $last_access
-        if $t; 
-    
-    my ($e, $batch_size, $batch_wait) = $self->batch_params;
+      if $t;
+
+    my ( $e, $batch_size, $batch_wait ) = $self->batch_params;
 
     warn '>>>> $batch_wait: ' . $batch_wait
-        if $t; 
-    
-	# I'm thinking it's really dangerous to have a countdown < 60, 
-	# Since we just may have a slow SMTP server on our hands... 
-	    
-	my $tardy_threshold = ( $batch_wait * 3 ); 
-	if($tardy_threshold < 60){ 
-		$tardy_threshold = 60;
-	}
-	
+      if $t;
+
+    # I'm thinking it's really dangerous to have a countdown < 60,
+    # Since we just may have a slow SMTP server on our hands...
+
+    my $tardy_threshold = ( $batch_wait * 3 );
+    if ( $tardy_threshold < 60 ) {
+        $tardy_threshold = 60;
+    }
+
     my $countdown = $tardy_threshold - ( time - $last_access );
 
     warn '>>>> $tardy_threshold ' . $tardy_threshold
-        if $t; 
+      if $t;
 
-    warn '>>>> ( time - $last_access ) '      . ( time - $last_access ) 
-        if $t; 
+    warn '>>>> ( time - $last_access ) ' . ( time - $last_access )
+      if $t;
 
     warn '>>>> $countdown ' . $countdown
-        if $t; 
-        
+      if $t;
+
     return $countdown;
 
 }
 
+sub still_around {
 
+    my $self = shift;
 
-sub still_around { 
-	
-	my $self = shift; 
-	
-	
-	if(! -e $self->dir) { 
-		carp  '[' . $self->list . ']   Mass Mailing:"' . $self->_internal_message_id .
-		' attempting to send a mass mailing that doesn\'t exist anymore? Failed "still_around" test '; 
-		  return undef;  
-	}
-	else { 
-		return 1;
-	}
+    if ( !-e $self->dir ) {
+        carp '['
+          . $self->list
+          . ']   Mass Mailing:"'
+          . $self->_internal_message_id
+          . ' attempting to send a mass mailing that doesn\'t exist anymore? Failed "still_around" test ';
+        return undef;
+    }
+    else {
+        return 1;
+    }
 
 }
 
-
-
 sub mail_fields_from_raw_message {
-	my $self = shift;
-    
+    my $self = shift;
+
     my $raw_msg = $self->message_for_mail_send;
 
-	require DADA::App::FormatMessages; 
-	my $fm = DADA::App::FormatMessages->new(-List => $self->{list}); 
+    require DADA::App::FormatMessages;
+    my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
 
-   my ( $raw_header, $raw_body ) = split( /\n\n/, $raw_msg, 2 );
-   my $headers = {};
-   my @logical_lines = split /\n(?!\s)/, $raw_header;
+    my ( $raw_header, $raw_body ) = split( /\n\n/, $raw_msg, 2 );
+    my $headers = {};
+    my @logical_lines = split /\n(?!\s)/, $raw_header;
 
     # make the hash
     for my $line (@logical_lines) {
-       my ( $label, $value ) = split( /:\s*/, $line, 2 );
-	   $value = $fm->_decode_header( $value);
-		$headers->{$label} =  $value;
-	}
-	undef $fm; 
-	return $headers; 
+        my ( $label, $value ) = split( /:\s*/, $line, 2 );
+        $value = $fm->_decode_header($value);
+        $headers->{$label} = $value;
+    }
+    undef $fm;
+    return $headers;
 }
 
+sub _decode_header {
 
+    my $self   = shift;
+    my $header = shift;
 
-
-sub _decode_header { 
-	
-	my $self   = shift; 	 
-	my $header = shift;
-
-	require DADA::App::FormatMessages; 
-	my $fm = DADA::App::FormatMessages->new(-List => $self->{list}); 
-	return $fm->_decode_header( $header); 
+    require DADA::App::FormatMessages;
+    my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
+    return $fm->_decode_header($header);
 
 }
-
-
-
 
 sub _poll {
 
     my $file = shift;
 
     croak "No file passed to poll."
-        if !$file;
-    
-    $file = make_safer($file); 
-    
+      if !$file;
+
+    $file = make_safer($file);
+
     # Question: What happens if the file does not exist?
 
     if ( !-e $file ) {
         carp "The file, '" . $file . "'does not exist to poll.";
-		return undef; 
+        return undef;
     }
 
-    sysopen( FH, $file, O_RDWR | O_CREAT, $DADA::Config::FILE_CHMOD ) 
-		or die "can't open counter: $!";
-    flock( FH, LOCK_SH ) 
-		or die "can't flock counter: $!";
-		
-   #my $num = <FH>;
-   # readline alone is 10x faster?!
-	my  $num = readline(*FH);
- 	
-	#chomp($num); 
+    sysopen( FH, $file, O_RDWR | O_CREAT, $DADA::Config::FILE_CHMOD )
+      or die "can't open counter: $!";
+    flock( FH, LOCK_SH )
+      or die "can't flock counter: $!";
 
-    close FH 
-		or die "can't close counter: $!";
-	chmod($DADA::Config::FILE_CHMOD, $file); 
-	
-	# chomp() is not necessary with these guys. 	
+    #my $num = <FH>;
+    # readline alone is 10x faster?!
+    my $num = readline(*FH);
+
+    #chomp($num);
+
+    close FH
+      or die "can't close counter: $!";
+    chmod( $DADA::Config::FILE_CHMOD, $file );
+
+    # chomp() is not necessary with these guys.
     $num =~ s/^\s+//o;
     $num =~ s/\s+$//o;
 
     return $num;
 }
 
-
-
-
-
 sub reload {
 
-	warn "reload called ($$)"
-		if $t; 
-		
+    warn "reload called ($$)"
+      if $t;
+
     my $self = shift;
 
+    my $lock = $self->lock_file( $self->mailout_directory_name );
 
-	my $lock = $self->lock_file($self->mailout_directory_name); 
-	
     # Note: I'm not sure why either pause() or the queueing stuff doesn't make an appearance here...
     # hmm...
     # It really should....?
 
     my @args = @_;
     croak "reload() takes no arguments"
-        if $args[0];
-    
+      if $args[0];
+
     # This is also listed in associate - why?
     $self->dir( $self->mailout_directory_name() );
 
-    $self->total_sending_out_num(
-        _poll( $self->dir . '/' . $file_names->{num_sending_to} ) );
+    $self->total_sending_out_num( _poll( $self->dir . '/' . $file_names->{num_sending_to} ) );
 
-    $self->subscriber_list(
-        $self->dir . '/' . $file_names->{tmp_subscriber_list} );
+    $self->subscriber_list( $self->dir . '/' . $file_names->{tmp_subscriber_list} );
 
     if ( $self->is_batch_locked ) {
 
-		# DEV: Well, if there error message says, "Hey, you have to call
-		# status() if the batch lock is still around, and you're calling reload
-		# why don't I do that for myself, if the process seems stalled. Huh. Huh?!
-		#
-		#
-		# The only other thing I can think of doing is checking the pid to make 
-		# sure it's myself - but not here - perhaps in DADA::Mail::Send?
-		# 
-		
-		if($self->process_stalled_after < 0){ 
-			$self->status;
-			carp "Reloading message... ($$)"; 
-		}
-		else {
-        
-	        my $msg
-	            = "Cannot reload! Sending process is locked! Another process may"
-	            . " be underway, or, the lock is stale. If so, will remove"
-	            . " the stale lock in:  "
-	            . $self->process_stalled_after
-	            . "  seconds"
-	            . "( Call status() to remove the stale lock.)";
-	        croak($msg);
-		}
-   }
+        # DEV: Well, if there error message says, "Hey, you have to call
+        # status() if the batch lock is still around, and you're calling reload
+        # why don't I do that for myself, if the process seems stalled. Huh. Huh?!
+        #
+        #
+        # The only other thing I can think of doing is checking the pid to make
+        # sure it's myself - but not here - perhaps in DADA::Mail::Send?
+        #
+
+        if ( $self->process_stalled_after < 0 ) {
+            $self->status;
+            carp "Reloading message... ($$)";
+        }
+        else {
+
+            my $msg =
+                "Cannot reload! Sending process is locked! Another process may"
+              . " be underway, or, the lock is stale. If so, will remove"
+              . " the stale lock in:  "
+              . $self->process_stalled_after
+              . "  seconds"
+              . "( Call status() to remove the stale lock.)";
+            croak($msg);
+        }
+    }
     else {
-        
-        carp "Reloading message... ($$)";  
+
+        carp "Reloading message... ($$)";
 
     }
 
-	
-	$self->unlock_file($lock);
-	
+    $self->unlock_file($lock);
+
     return $self->message_for_mail_send;
 
 }
-
-
-
 
 sub counter_at {
     my $self  = shift;
     my $count = _poll( $self->dir . '/' . $file_names->{counter} );
 
-    croak(
-        "counter is more than the total number that we're sending out!\n counter: "
-            . $count
-            . "\n total:"
-            . $self->total_sending_out_num )
-        if $count > $self->total_sending_out_num;
+    croak(  "counter is more than the total number that we're sending out!\n counter: "
+          . $count
+          . "\n total:"
+          . $self->total_sending_out_num )
+      if $count > $self->total_sending_out_num;
 
     warn 'counter at: ' . $count
- 		if $t; 
-    
+      if $t;
+
     return $count;
 }
-
-
-
 
 sub message_for_mail_send {
 
@@ -2076,106 +1953,97 @@ sub message_for_mail_send {
 
     if ( !-e $file ) {
         warn "Raw Message that should be saved at: " . $file . "isn't there.";
-    	return undef; 
-	}
-	
+        return undef;
+    }
+
     open my $MSG_FILE, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file
-        or die "Cannot read saved raw message at: '" . $file
-        . "' because: "
-        . $!;
+      or die "Cannot read saved raw message at: '" . $file . "' because: " . $!;
 
     my $msg = do { local $/; <$MSG_FILE> };
     close $MSG_FILE
-        or die "Didn't close: '" . $file . "'properly because: " . $!;
+      or die "Didn't close: '" . $file . "'properly because: " . $!;
 
     if ( !$msg ) {
         carp "message is blank.";
     }
 
-    warn 'Mail message saved at: ' . $file 
-        if $t; 
-        
+    warn 'Mail message saved at: ' . $file
+      if $t;
+
     return $msg;
 }
-
-
 
 sub clean_up {
 
     my $self = shift;
-	my ($args) = @_; 
-    
-	if(!exists($args->{-force})){ 
-		$args->{-force} = 1; 
-	}
-	warn 'clean_up called '
-        if $t; 
+    my ($args) = @_;
+
+    if ( !exists( $args->{-force} ) ) {
+        $args->{-force} = 1;
+    }
+    warn 'clean_up called '
+      if $t;
 
     croak "Make sure to call, 'associate' before calling cleanup!"
-        if ! $self->dir; 
+      if !$self->dir;
 
-	require File::Copy;
-	
-	##########################################################################
-	# Save that log: 
-	#	
-	if($self->{ls}->param('mass_mailing_save_logs') == 1) { 
-    	my $orig_log_file = $self->dir . '/' . $file_names->{log};
-           $orig_log_file = make_safer($orig_log_file);
+    require File::Copy;
 
-        my $letter_id   = $self->_internal_message_id;
-           $letter_id   =~ s/\@/_at_/g;
-           $letter_id   =~ s/\>|\<//g;
+    ##########################################################################
+    # Save that log:
+    #
+    if ( $self->{ls}->param('mass_mailing_save_logs') == 1 ) {
+        my $orig_log_file = $self->dir . '/' . $file_names->{log};
+        $orig_log_file = make_safer($orig_log_file);
 
-    	my $save_log_file = make_safer(
-    		$DADA::Config::LOGS 
-    		. '/'
-    		. 'sendout-' 
-    		. $self->list 
-    		. '-' 
-    		. $self->mailout_type
-    		. '-'
-    		. $letter_id
-    		. '-' 
-    		. $file_names->{log}
-    		); 
-    	File::Copy::copy($orig_log_file, $save_log_file)
-    		or warn "could not move file from, '$orig_log_file', to, '$save_log_file': $!"; 
+        my $letter_id = $self->_internal_message_id;
+        $letter_id =~ s/\@/_at_/g;
+        $letter_id =~ s/\>|\<//g;
+
+        my $save_log_file =
+          make_safer( $DADA::Config::LOGS . '/'
+              . 'sendout-'
+              . $self->list . '-'
+              . $self->mailout_type . '-'
+              . $letter_id . '-'
+              . $file_names->{log} );
+        File::Copy::copy( $orig_log_file, $save_log_file )
+          or warn "could not move file from, '$orig_log_file', to, '$save_log_file': $!";
     }
-	#
-	##########################################################################
+    #
+    ##########################################################################
 
-	my $orig_name = $self->dir; 
-		
-	# so, we rename things, to get them out of the way, right away:
-	my $tmp_name = $orig_name;
-	   $tmp_name =~ s/sendout/TMP_sendout/; 
-	
-	File::Copy::move($orig_name, $tmp_name)
-		or warn "could not move director from, '$orig_name', to, '$tmp_name': $!"; 
-		
-	# return 1; warn 'change back when shipping!'; 
-	$self->dir($tmp_name); 
+    my $orig_name = $self->dir;
 
-	my $lock = $self->lock_file($self->mailout_directory_name({-tmp => 1})); 
-    
+    # so, we rename things, to get them out of the way, right away:
+    my $tmp_name = $orig_name;
+    $tmp_name =~ s/sendout/TMP_sendout/;
+
+    File::Copy::move( $orig_name, $tmp_name )
+      or warn "could not move director from, '$orig_name', to, '$tmp_name': $!";
+
+    # return 1; warn 'change back when shipping!';
+    $self->dir($tmp_name);
+
+    my $lock = $self->lock_file( $self->mailout_directory_name( { -tmp => 1 } ) );
+
     my @deep_six_list;
 
     for my $fn ( keys %$file_names ) {
 
-     # basically, iterate through the type of files that, *may* be in there...
-        if ( -e make_safer($self->dir . '/' . $file_names->{$fn}) ) {
-            push( @deep_six_list, make_safer($self->dir . '/' . $file_names->{$fn}) );
-        } else { 
+        # basically, iterate through the type of files that, *may* be in there...
+        if ( -e make_safer( $self->dir . '/' . $file_names->{$fn} ) ) {
+            push( @deep_six_list, make_safer( $self->dir . '/' . $file_names->{$fn} ) );
+        }
+        else {
             # most annoying error...
-            # carp "not attempting removing: " . $self->dir . '/' . $file_names->{$fn} . '. Reason: not present.(?)'; 
+            # carp "not attempting removing: " . $self->dir . '/' . $file_names->{$fn} . '. Reason: not present.(?)';
         }
 
-		# And, lock files: 
-		if(-e make_safer($self->dir . '/' . $file_names->{$fn} . '.lock')){ 
-			push( @deep_six_list, make_safer($self->dir . '/' . $file_names->{$fn} . '.lock') );
-		}
-
+        # And, lock files:
+        if ( -e make_safer( $self->dir . '/' . $file_names->{$fn} . '.lock' ) ) {
+            push( @deep_six_list, make_safer( $self->dir . '/' . $file_names->{$fn} . '.lock' ) );
+        }
 
     }
 
@@ -2183,282 +2051,257 @@ sub clean_up {
 
     unless ( $d6_count == $#deep_six_list + 1 ) {
         carp "something didn't get removed! ($d6_count)";
-        return 0; 
+        return 0;
     }
 
-    if ( rmdir( make_safer($self->dir) ) ) {
+    if ( rmdir( make_safer( $self->dir ) ) ) {
 
         # good to go.
-		$self->unlock_file($lock); 
-		unlink($self->mailout_directory_name({-tmp => 1}) . '.lock'); 
+        $self->unlock_file($lock);
+        unlink( $self->mailout_directory_name( { -tmp => 1 } ) . '.lock' );
 
     }
     else {
-		if($args->{-force} == 1){ 
-			eval { 
-				require File::Path; 
-				File::Path::remove_tree( $self->dir) ;
-			};
-			if($@){ 
-				# I'm not fooling around... 
-				system('rm','-r', '-f', $self->dir);
-			}		
-			if(-e $self->dir){ 
-				carp "couldn't remove the sending directory! at " . $self->dir;
-				return 0;
-			}
-		}
-		else { 
-			carp "couldn't remove the sending directory! at " . $self->dir;
-			return 0;
-		}
-		
-		
+        if ( $args->{-force} == 1 ) {
+            eval {
+                require File::Path;
+                File::Path::remove_tree( $self->dir );
+            };
+            if ($@) {
+
+                # I'm not fooling around...
+                system( 'rm', '-r', '-f', $self->dir );
+            }
+            if ( -e $self->dir ) {
+                carp "couldn't remove the sending directory! at " . $self->dir;
+                return 0;
+            }
+        }
+        else {
+            carp "couldn't remove the sending directory! at " . $self->dir;
+            return 0;
+        }
+
     }
 
-    warn 'clean_up seemed successful. ' 
-        if $t; 
-        
+    warn 'clean_up seemed successful. '
+      if $t;
+
     return 1;
 
 }
 
-
-
 sub lock_file {
-	
 
-	
-	# DEV: TODO: 
-	# It would be nice to extend the API for this method to allow you to 
-	# spec the, "Highlander" mode, as well as how many seconds before croak'ing
-	# And/OR if you croak, or it just gives back and warning and an undef (or 
-	# something like that) 
-  my $i = 0; 
+    # DEV: TODO:
+    # It would be nice to extend the API for this method to allow you to
+    # spec the, "Highlander" mode, as well as how many seconds before croak'ing
+    # And/OR if you croak, or it just gives back and warning and an undef (or
+    # something like that)
+    my $i = 0;
 
-  my $self = shift; 
+    my $self = shift;
 
-	if($self->use_semaphore_locking == 0){ 
-		return undef; 
-	}
-	
- 
- my $file = shift || croak "You must pass a file to lock!"; 
- my $countdown = shift || 0; 
+    if ( $self->use_semaphore_locking == 0 ) {
+        return undef;
+    }
 
-  my $lockfile = make_safer($file . '.lock'); 
+    my $file      = shift || croak "You must pass a file to lock!";
+    my $countdown = shift || 0;
 
-  open my $fh, ">", $lockfile
-	or croak "Can't open semaphore file '$lockfile' because: $!";
-	
-	
-  chmod $DADA::Config::FILE_CHMOD, $lockfile; 
+    my $lockfile = make_safer( $file . '.lock' );
 
-	{
+    open my $fh, ">", $lockfile
+      or croak "Can't open semaphore file '$lockfile' because: $!";
 
-	# Two potentially non-obvious but traditional flock semantics are that it 
-	# waits indefinitely until the lock is granted, and that its locks merely 
-	# advisory.
-	# DEV: Ah, NB: Non blocking - that's what we need...
-	
-		my $count = 0;
-		{
-	
-		flock $fh, LOCK_EX | LOCK_NB and last; 
-		
-		
-		sleep 1; 
-		redo if ++$count < $countdown;
-				
-		croak  "Couldn't lock semaphore file '$lockfile' for '$file' because: '$!', exiting with error to avoid file corruption!";
-	
-		}
-	}
+    chmod $DADA::Config::FILE_CHMOD, $lockfile;
 
- return $fh;
+    {
+
+        # Two potentially non-obvious but traditional flock semantics are that it
+        # waits indefinitely until the lock is granted, and that its locks merely
+        # advisory.
+        # DEV: Ah, NB: Non blocking - that's what we need...
+
+        my $count = 0;
+        {
+
+            flock $fh, LOCK_EX | LOCK_NB and last;
+
+            sleep 1;
+            redo if ++$count < $countdown;
+
+            croak
+"Couldn't lock semaphore file '$lockfile' for '$file' because: '$!', exiting with error to avoid file corruption!";
+
+        }
+    }
+
+    return $fh;
 
 }
 
+sub unlock_file {
 
+    my $self = shift;
 
+    if ( $self->use_semaphore_locking == 0 ) {
+        return 1;
+    }
 
-sub unlock_file { 
-	
-	my $self = shift; 
-		
-	if($self->use_semaphore_locking == 0){ 
-		return 1; 
-	}
-	
-	
+    my $file = shift || croak "You must pass a filehandle to unlock!";
+    close($file) or croak q{Couldn't unlock semaphore file for, } . $file . ' ' . $!;
 
-    my $file = shift || croak "You must pass a filehandle to unlock!"; 
-    close($file) or 	croak  q{Couldn't unlock semaphore file for, } . $file . ' ' .  $!;
-	
-	return 1; 
-	
+    return 1;
+
 }
-
-
-
 
 sub current_mailouts {
 
-	my ($args) = @_; 
-	my $default_list = undef; 
+    my ($args) = @_;
+    my $default_list = undef;
 
-	if(exists($args->{-list})){ 
-		$default_list = $args->{-list}; 
-	} 
+    if ( exists( $args->{-list} ) ) {
+        $default_list = $args->{-list};
+    }
 
-	if(!exists($args->{-order_by})){ 
-		$args->{-order_by} = 'sending_queue'; # creation?
-	}
-	
+    if ( !exists( $args->{-order_by} ) ) {
+        $args->{-order_by} = 'sending_queue';    # creation?
+    }
+
     my @mailouts = ();
 
-    my $dir; # DEV: why is the variable called, "$file", yet we're looking for directories?!?!?!
+    my $dir;    # DEV: why is the variable called, "$file", yet we're looking for directories?!?!?!
 
-    if(! -e $DADA::Config::TMP){ 
-		croak '$DADA::Config::TMP (' . $DADA::Config::TMP . ') doesn\'t exist?!'; 
-	}
-    opendir( FILES, $DADA::Config::TMP  )
-        or croak "$DADA::Config::PROGRAM_NAME $DADA::Config::VER error, can't open '$DADA::Config::TMP'  to read because: $!";
+    if ( !-e $DADA::Config::TMP ) {
+        croak '$DADA::Config::TMP (' . $DADA::Config::TMP . ') doesn\'t exist?!';
+    }
+    opendir( FILES, $DADA::Config::TMP )
+      or croak
+      "$DADA::Config::PROGRAM_NAME $DADA::Config::VER error, can't open '$DADA::Config::TMP'  to read because: $!";
 
     while ( defined( $dir = readdir FILES ) ) {
 
         #don't read '.' or '..'
         next if $dir =~ /^\.\.?$/;
 
-
-		# Why is this commented out? 
-		# Right? This thing has to be a directory, no?
-		#next if ! -d $dir; 
-		# Answer: Tests sort of freak out - I don't know why... 
-
+        # Why is this commented out?
+        # Right? This thing has to be a directory, no?
+        #next if ! -d $dir;
+        # Answer: Tests sort of freak out - I don't know why...
 
         $dir =~ s(^.*/)();
-		
-		# ends in, ".lock" - that means this is actually a lock file and not our 
-		# actual mailout.  
-		
-		next if $dir =~ /\.lock$/;
-        
-        if($default_list){ 
-            my $s_default_list = quotemeta($default_list); 
+
+        # ends in, ".lock" - that means this is actually a lock file and not our
+        # actual mailout.
+
+        next if $dir =~ /\.lock$/;
+
+        if ($default_list) {
+            my $s_default_list = quotemeta($default_list);
             next if $dir !~ /^sendout\-$s_default_list\-.*$/;
         }
-        else { 
-                              # Hope that's enough to match...
+        else {
+            # Hope that's enough to match...
             next if $dir !~ /^sendout\-.*$/;
         }
-        
-        my ( 
-			$junk, 
-			$list, 
-			$listtype, 
-			$id 
-			) 
-			= split( '-', $dir, 4); #limit of, "4"
-    
-    
-    # Need to sort by, "Date" 
-    # Date is embedded in message-id
-    # Message-ID has all sorts of crud in it. 
-    # $gh{'Message-ID'} = '<' .  DADA::App::Guts::message_id() . '.'. $ran_number . '@' . $From_obj->host . '>'; 
-    # This is what the file looks like: 
-    # sendout-j-list-20070320181623.91081883_at_skazat.com
-    #  $junk   $list $listtype $id 
-    #
-    #So, I got this: 
-    #   20070320181623.91081883_at_skazat.com
-    # So just 
-    # 
-    
-	   if(DADA::App::Guts::check_if_list_exists( -List => $list, -Dont_Die => 1 ) == 0){ 
-			carp "There's a mailout from a list that doesn't exist ($list)"; 
-			next; 
-	   }
-       my $expanded_time = $id; 
-       # all I want is the string before the first dot.
-       $expanded_time =~ s/\.(.*)$//;      
-        push( 
-			@mailouts, 
-				{
-					list          => $list,  
-					type          => $listtype, 
-					id            => $id, 
-					expanded_time => $expanded_time, 
-					sendout_dir   => $dir 
-				}
-			 );
+
+        my ( $junk, $list, $listtype, $id ) = split( '-', $dir, 4 );    #limit of, "4"
+
+        # Need to sort by, "Date"
+        # Date is embedded in message-id
+        # Message-ID has all sorts of crud in it.
+        # $gh{'Message-ID'} = '<' .  DADA::App::Guts::message_id() . '.'. $ran_number . '@' . $From_obj->host . '>';
+        # This is what the file looks like:
+        # sendout-j-list-20070320181623.91081883_at_skazat.com
+        #  $junk   $list $listtype $id
+        #
+        #So, I got this:
+        #   20070320181623.91081883_at_skazat.com
+        # So just
+        #
+
+        if ( DADA::App::Guts::check_if_list_exists( -List => $list, -Dont_Die => 1 ) == 0 ) {
+            carp "There's a mailout from a list that doesn't exist ($list)";
+            next;
+        }
+        my $expanded_time = $id;
+
+        # all I want is the string before the first dot.
+        $expanded_time =~ s/\.(.*)$//;
+        push(
+            @mailouts,
+            {
+                list          => $list,
+                type          => $listtype,
+                id            => $id,
+                expanded_time => $expanded_time,
+                sendout_dir   => $dir
+            }
+        );
     }
 
     closedir(FILES);
 
-    # Now, we have to sort them, based on the expanded time. 
+    # Now, we have to sort them, based on the expanded time.
 
     @mailouts = map { $_->[1] }
-               sort {  $a->[0] <=> $b->[0] }
-                map { [$_->{expanded_time}, $_] } @mailouts;
-    
+      sort { $a->[0] <=> $b->[0] }
+      map { [ $_->{expanded_time}, $_ ] } @mailouts;
 
-	if($args->{-order_by} eq 'sending_queue') { 
- 	   # And now, we have to split THAT up, so that unpaused messages are at the TOP, paused messages are at the bottom: 
-    
-	    my @unpaused = (); 
-	    my @paused   = (); 
-		my @stale    = (); 
-    
-	    for my $test_m(@mailouts){
-    
-	        # croak 'sendout_dir ' . $test_m->{sendout_dir}; 
-	        # This is an optimization - we just look to see if the paused file exists - if so, we say it's paused, 
-	        # this makes it so we don't have to call, "status", since that's pretty resource-intensive
-    
-	        if(-e $DADA::Config::TMP . '/' . $test_m->{sendout_dir} . '/' . $file_names->{pause}){ 
-	            push(@paused, $test_m);
-	        }
-	        else { 
-		
-				# DEV: 2203220  	 3.0.0 - Stale Mass Mailing can still clog up mail queue
-				# https://sourceforge.net/tracker2/?func=detail&aid=2203220&group_id=13002&atid=113002
-				# The trick is just to move stale mailouts to the bottom of the queue
-				# The other option is to pause stale mailouts, which isn't the worst thing, 
-				# But I then have to re-check if a stale mailout is paused, every time we call, status(), right? 
-				my $last_access_file = $DADA::Config::TMP . '/' . $test_m->{sendout_dir} . '/' . $file_names->{last_access}; 
-				if(-e $last_access_file){ 
-					
-					my $last_access = _poll($last_access_file); 
-					
-					if((int(time) - $last_access) >= $DADA::Config::MAILOUT_STALE_AFTER){ 
-						push(@stale, $test_m);			        	
-					}
-					else { 
-						push(@unpaused, $test_m);
-					}
-				}
-				else{ 
-					push(@unpaused, $test_m);
-				}	
-	        }
-	    }
+    if ( $args->{-order_by} eq 'sending_queue' ) {
 
+       # And now, we have to split THAT up, so that unpaused messages are at the TOP, paused messages are at the bottom:
 
+        my @unpaused = ();
+        my @paused   = ();
+        my @stale    = ();
 
-	    # Now, put it back together: 
-	   # @mailouts = (@unpaused, @paused, @stale);
-		 @mailouts = (@unpaused, @paused, @stale);
+        for my $test_m (@mailouts) {
+
+            # croak 'sendout_dir ' . $test_m->{sendout_dir};
+            # This is an optimization - we just look to see if the paused file exists - if so, we say it's paused,
+            # this makes it so we don't have to call, "status", since that's pretty resource-intensive
+
+            if ( -e $DADA::Config::TMP . '/' . $test_m->{sendout_dir} . '/' . $file_names->{pause} ) {
+                push( @paused, $test_m );
+            }
+            else {
+
+                # DEV: 2203220  	 3.0.0 - Stale Mass Mailing can still clog up mail queue
+                # https://sourceforge.net/tracker2/?func=detail&aid=2203220&group_id=13002&atid=113002
+                # The trick is just to move stale mailouts to the bottom of the queue
+                # The other option is to pause stale mailouts, which isn't the worst thing,
+                # But I then have to re-check if a stale mailout is paused, every time we call, status(), right?
+                my $last_access_file =
+                  $DADA::Config::TMP . '/' . $test_m->{sendout_dir} . '/' . $file_names->{last_access};
+                if ( -e $last_access_file ) {
+
+                    my $last_access = _poll($last_access_file);
+
+                    if ( ( int(time) - $last_access ) >= $DADA::Config::MAILOUT_STALE_AFTER ) {
+                        push( @stale, $test_m );
+                    }
+                    else {
+                        push( @unpaused, $test_m );
+                    }
+                }
+                else {
+                    push( @unpaused, $test_m );
+                }
+            }
+        }
+
+        # Now, put it back together:
+        # @mailouts = (@unpaused, @paused, @stale);
+        @mailouts = ( @unpaused, @paused, @stale );
     }
 
     # And done.
-    
+
     return @mailouts;
 
 }
-
-
-
 
 sub mailout_exists {
 
@@ -2470,17 +2313,17 @@ sub mailout_exists {
     $id =~ s/\>|\<//g;
 
     croak "You did not supply a list!"
-        if !$list;
+      if !$list;
     croak "You did not supply an id! "
-        if !$id;
+      if !$id;
     croak "You did not supply a type!"
-        if !$type;
+      if !$type;
 
-    my @mailouts = current_mailouts({-list => $list });
+    my @mailouts = current_mailouts( { -list => $list } );
 
     for my $mo (@mailouts) {
 
-        if ( $mo->{id} eq $id && $mo->{type} eq $type && $mo->{list} eq $list) {
+        if ( $mo->{id} eq $id && $mo->{type} eq $type && $mo->{list} eq $list ) {
 
             return 1;
 
@@ -2491,55 +2334,48 @@ sub mailout_exists {
 
 }
 
+sub log {
 
+    my $self = shift;
+    my $log  = shift;
+    my $time = scalar( localtime() );
 
+    my $file = $self->dir . '/' . $file_names->{log};
+    $file = make_safer($file);
 
-sub log { 
-	
-	my $self = shift; 
-	my $log  = shift; 
-	my $time = scalar(localtime());
-	
-	my $file = $self->dir . '/' . $file_names->{log};
-       $file = make_safer($file);
+    open( MO_LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file )
+      or carp $!;
+    flock( MO_LOG, LOCK_SH );
+    print MO_LOG "[$time]\t$log\n";
+    close(MO_LOG);
 
-	open(MO_LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file) 
-		or carp $!; 
-	flock(MO_LOG, LOCK_SH);
-	print MO_LOG "[$time]\t$log\n";
-	close(MO_LOG);  
-	
 }
 
-sub log_problem_address { 
-	
-	my $self   = shift; 
-	my ($args) = @_; 
-	
-	my $file = $self->dir . '/' . $file_names->{problem_subscriber_list};
-       $file = make_safer($file);
+sub log_problem_address {
 
-	open(PROBLEMS, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file) 
-		or carp $!; 
-	flock(PROBLEMS, LOCK_SH);
-	print PROBLEMS $args->{-address} . "\n";
-	close(PROBLEMS);  
-	
+    my $self = shift;
+    my ($args) = @_;
+
+    my $file = $self->dir . '/' . $file_names->{problem_subscriber_list};
+    $file = make_safer($file);
+
+    open( PROBLEMS, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file )
+      or carp $!;
+    flock( PROBLEMS, LOCK_SH );
+    print PROBLEMS $args->{-address} . "\n";
+    close(PROBLEMS);
+
 }
-
-
 
 sub isa_problem_address {
-	
-	my $self   = shift; 
-	my ($args) = @_; 
-	
-	
-	my $file = $self->dir . '/' . $file_names->{problem_subscriber_list};
-       $file = make_safer($file);
 
-    sysopen( LIST, $file, O_RDWR | O_CREAT,
-        $DADA::Config::FILE_CHMOD )
+    my $self = shift;
+    my ($args) = @_;
+
+    my $file = $self->dir . '/' . $file_names->{problem_subscriber_list};
+    $file = make_safer($file);
+
+    sysopen( LIST, $file, O_RDWR | O_CREAT, $DADA::Config::FILE_CHMOD )
       or croak "couldn't open '$file' for reading: $!\n";
 
     flock( LIST, LOCK_SH );
@@ -2552,7 +2388,7 @@ sub isa_problem_address {
 
         chomp($check_this);
 
-        if ( cased($check_this) eq cased($args->{-address}) ) {
+        if ( cased($check_this) eq cased( $args->{-address} ) ) {
             $in_list = 1;
             last;
         }
@@ -2562,89 +2398,74 @@ sub isa_problem_address {
 
     return $in_list;
 
+}
+
+sub print_log {
+
+    my $self = shift;
+
+    my $file = $self->dir . '/' . $file_names->{log};
+    $file = make_safer($file);
+
+    open( MO_LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file )
+      or carp $!;
+
+    while (<MO_LOG>) {
+        print $_;
+    }
+
+    close(MO_LOG);
+    return 1;
 
 }
 
+sub line_in_queue {
 
-
-
-
-
-sub print_log { 
-	
-	my $self = shift; 
-	
-	my $file = $self->dir . '/' . $file_names->{log};
-       $file = make_safer($file);
-
-	open(MO_LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file) 
-		or carp $!; 
-
-	while (<MO_LOG>) {
-		print $_; 
-	}
-
-	close(MO_LOG);  
-	return 1; 
-	
-}
-
-
-
-
-sub line_in_queue { 
-
-    my $self = shift; 
+    my $self = shift;
 
     my $internal_id = $self->_internal_message_id;
 
-    my @mailouts = current_mailouts(); 
-        
-    my $counter = 0;          # start with 0; 
-    my $total   = $#mailouts; # Starts with 0, too!
-    
-    for my $mailout(@mailouts){ 
-    
-        my $check_id = $mailout->{id};
-        
-        # carp '$check_id ' . $check_id; 
-        # carp '$internal_id ' . $internal_id; 
-        
-            # These transformations happen for the internal ID too. 
-            # They really need their own method, since this is 
-            # getting messy...
-            
-           $check_id =~ s/\@/_at_/g;
-           $check_id =~ s/\>|\<//g;
+    my @mailouts = current_mailouts();
 
-            
-           # and hell, do it for our internal id, since i don't trust it...
-           $internal_id =~ s/\@/_at_/g;
-           $internal_id =~ s/\>|\<//g;
-           
-        
-        # carp '$check_id after transformation ' . $check_id; 
-        # carp '$internal_id after transformation ' . $internal_id; 
-        
-        if($check_id eq $internal_id){ 
-        
-           # carp ("returning $counter and $total"); 
-            
-            return ($counter, $total); 
+    my $counter = 0;             # start with 0;
+    my $total   = $#mailouts;    # Starts with 0, too!
+
+    for my $mailout (@mailouts) {
+
+        my $check_id = $mailout->{id};
+
+        # carp '$check_id ' . $check_id;
+        # carp '$internal_id ' . $internal_id;
+
+        # These transformations happen for the internal ID too.
+        # They really need their own method, since this is
+        # getting messy...
+
+        $check_id =~ s/\@/_at_/g;
+        $check_id =~ s/\>|\<//g;
+
+        # and hell, do it for our internal id, since i don't trust it...
+        $internal_id =~ s/\@/_at_/g;
+        $internal_id =~ s/\>|\<//g;
+
+        # carp '$check_id after transformation ' . $check_id;
+        # carp '$internal_id after transformation ' . $internal_id;
+
+        if ( $check_id eq $internal_id ) {
+
+            # carp ("returning $counter and $total");
+
+            return ( $counter, $total );
         }
-        else { 
+        else {
             $counter++;
         }
     }
 
     carp("Could not find mailout in the current queue?!");
-    return (undef, undef); 
+    return ( undef, undef );
 
 }
-
-
-
-
 
 sub _list_name_check {
 
@@ -2660,391 +2481,366 @@ sub _list_exists {
     return DADA::App::Guts::check_if_list_exists( -List => $n );
 }
 
+sub monitor_mailout {
 
+    my ($args) = @_;
 
-sub monitor_mailout { 
+    my $v = 0;
+    if ( exists( $args->{-verbose} ) ) {
+        $v = $args->{-verbose};
+    }
+    my $d_list = undef;
+    if ( exists( $args->{-list} ) ) {
+        $d_list = $args->{-list};
+    }
 
+    if ( !exists( $args->{-action} ) ) {
+        $args->{-action} = 1;
+    }
 
- my ($args) = @_;
+    my $r = '';
 
-    my $v  = 0;
-	if(exists($args->{-verbose})){ 
-		$v = $args->{-verbose};
-	}	
-    my $d_list  = undef; 
-	if(exists($args->{-list})){ 
-		$d_list = $args->{-list}; 
-	}
-
-	if(! exists($args->{-action})){ 
-		$args->{-action} = 1; 
-	}
-
-
-    my $r = ''; 
-
-    my @available_lists = DADA::App::Guts::available_lists(); 
+    my @available_lists = DADA::App::Guts::available_lists();
 
     require DADA::Mail::Send;
-    require DADA::MailingList::Settings; 
-    
-    # CHANGES - 
-    # I need to basically call status() on every single mailout first (cache for later, of course) 
+    require DADA::MailingList::Settings;
 
-    my $active_mailouts   = 0; 
-    my $inactive_mailouts = 0; 
-    my $paused_mailouts   = 0; 
+    # CHANGES -
+    # I need to basically call status() on every single mailout first (cache for later, of course)
+
+    my $active_mailouts   = 0;
+    my $inactive_mailouts = 0;
+    my $paused_mailouts   = 0;
     my $queued_mailouts   = 0;
-    my $total_mailouts    = 0; 
-    
+    my $total_mailouts    = 0;
+
     # Note! Not cached, now, is it?!
-    my @mailouts  = current_mailouts();  
+    my @mailouts = current_mailouts();
 
-	my $mailout_obj_cache    = {}; 
-    my $mailout_status_cache = {}; 
-    for my $mailing(@mailouts){ 
+    my $mailout_obj_cache    = {};
+    my $mailout_status_cache = {};
+    for my $mailing (@mailouts) {
 
-		if(DADA::App::Guts::check_if_list_exists( -List => $mailing->{list} ) == 0){ 
-			carp "Attempting to monitor a mailout for a list (" . $mailing->{list} . ") that does not exist!"; 
-			next; 
-		}
-		# *Would(* there be a reason, $mailing->{list} would be blank!?
-		
-        if($mailing->{list}){ 
-        
-            my $mailout = DADA::Mail::MailOut->new({ -list => $mailing->{list} }); 
-               $mailout->associate(
-					$mailing->{id}, 
-					$mailing->{type}
-				); 
+        if ( DADA::App::Guts::check_if_list_exists( -List => $mailing->{list} ) == 0 ) {
+            carp "Attempting to monitor a mailout for a list (" . $mailing->{list} . ") that does not exist!";
+            next;
+        }
 
-			$mailout_obj_cache->{$mailing->{list}}->{$mailing->{id}}->{$mailing->{type}} = $mailout; 
-			
-            my $status = $mailout->status(); 
+        # *Would(* there be a reason, $mailing->{list} would be blank!?
 
-            $mailout_status_cache->{$mailing->{list}}->{$mailing->{id}}->{$mailing->{type}} = $status; 
+        if ( $mailing->{list} ) {
+
+            my $mailout = DADA::Mail::MailOut->new( { -list => $mailing->{list} } );
+            $mailout->associate( $mailing->{id}, $mailing->{type} );
+
+            $mailout_obj_cache->{ $mailing->{list} }->{ $mailing->{id} }->{ $mailing->{type} } = $mailout;
+
+            my $status = $mailout->status();
+
+            $mailout_status_cache->{ $mailing->{list} }->{ $mailing->{id} }->{ $mailing->{type} } = $status;
 
             # Well, if it's not currently cached, we don't have to save it .
-            # push(@mailouts, $status); 
-			# Hmm. Wonder why the above is commented out? 
-            
-                    
-            # and then make a list of: 
+            # push(@mailouts, $status);
+            # Hmm. Wonder why the above is commented out?
+
+            # and then make a list of:
             # Current *Active* mailouts
             # Current *Inactive* mailouts
             # Current *paused* mailouts
-            # and then (and only then) 
-            
-            if(
-			   $status->{paused}               || 
-	           $status->{queued_mailout} == 1
-			){ 
-                              
-               if($status->{paused}){ 
+            # and then (and only then)
+
+            if (   $status->{paused}
+                || $status->{queued_mailout} == 1 )
+            {
+
+                if ( $status->{paused} ) {
                     $paused_mailouts++;
                 }
-                elsif($status->{queued_mailout}){ 
+                elsif ( $status->{queued_mailout} ) {
                     $queued_mailouts++;
                 }
             }
-            elsif($status->{should_be_restarted} == 1) { 
-                $inactive_mailouts++; # renamed to... hmmm
+            elsif ( $status->{should_be_restarted} == 1 ) {
+                $inactive_mailouts++;    # renamed to... hmmm
             }
-            else { 
+            else {
                 $active_mailouts++;
             }
-    
-            $total_mailouts++; 
+
+            $total_mailouts++;
         }
-        else { 
-        
-			# Again, not sure how we'd end up here...
-            my $weird_report = ''; 
-            for(keys %$mailing){ 
-                $weird_report .= $_ . ' => ' . $mailing->{$_} . ",\t"; 
+        else {
+
+            # Again, not sure how we'd end up here...
+            my $weird_report = '';
+            for ( keys %$mailing ) {
+                $weird_report .= $_ . ' => ' . $mailing->{$_} . ",\t";
             }
-            carp "Mass Mailing malformed? $weird_report"; 
-        
+            carp "Mass Mailing malformed? $weird_report";
+
         }
     }
-    
 
-    $r .= "Total Mass Mailings: $total_mailouts, Active Mass Mailings: $active_mailouts, Paused Mass Mailings: $paused_mailouts, Queued Mass Mailings: $queued_mailouts, Inactive Mass Mailings: $inactive_mailouts\n\n";
-   
-	my $active_mailouts_num = $active_mailouts; 
+    $r .=
+"Total Mass Mailings: $total_mailouts, Active Mass Mailings: $active_mailouts, Paused Mass Mailings: $paused_mailouts, Queued Mass Mailings: $queued_mailouts, Inactive Mass Mailings: $inactive_mailouts\n\n";
 
-	if($args->{-action} == 0){ 
-		return ($r, $total_mailouts, $active_mailouts, $paused_mailouts, $queued_mailouts, $inactive_mailouts); 
-	}
-	
-	# DEV: This subroutine needs to be split. RIGHT HERE
-    for my $list(@available_lists) { 
-    
-        
-		if (
-			($d_list) && 
-			($d_list ne $list)
-		) { 
-			next;
-		}
-      
-		$r .=  "\nList: " . $list . "\n";
-            
-        my @mailouts  = current_mailouts(
-							{
-								-list => $list 
-							}
-						);  
-    
-        if(! $mailouts[0]){ 
-            $r .=  "\t*No current mailouts for $list\n";
-               
+    my $active_mailouts_num = $active_mailouts;
+
+    if ( $args->{-action} == 0 ) {
+        return ( $r, $total_mailouts, $active_mailouts, $paused_mailouts, $queued_mailouts, $inactive_mailouts );
+    }
+
+    # DEV: This subroutine needs to be split. RIGHT HERE
+    for my $list (@available_lists) {
+
+        if (   ($d_list)
+            && ( $d_list ne $list ) )
+        {
+            next;
         }
-        for my $mailing(@mailouts){ 
-        
-           $r .=  "\n\tmailout: " . $mailing->{id} . "\n";
-                
-           $r .= "\ttype:    " . $mailing->{type} . "\n";
-                            
-            my $mailout = undef; 
-			my $status  = undef; 
-			
-			
-			if(exists($mailout_obj_cache->{$list}->{$mailing->{id}}->{$mailing->{type}})){
-				# Some optimization via caching... 
-				warn "Using a cached DADA::Mail::mailout obj and status return"
-					if $t; 
-				$mailout = $mailout_obj_cache   ->{$list}->{$mailing->{id}}->{$mailing->{type}}; 
-				$status  = $mailout_status_cache->{$list}->{$mailing->{id}}->{$mailing->{type}}; 
-			}
-			else { 
-				$mailout = DADA::Mail::MailOut->new({ -list => $list }); 
-				$mailout->associate(
-							$mailing->{id}, 
-							$mailing->{type}
-						); 
-				$status = $mailout->status();
-           }
- 
-            $r .=  "\n\t\tStatus:\n\n";
-    
-            for(sort keys %$status){ 
-                if($_ eq 'email_fields'){ 
-                    $r .=  "\t\t" . _pad_str('* Subject: ') . $status->{$_}->{Subject} . "\n";
-                       
-                }else { 
-                
-                    $r .= "\t\t" . _pad_str('* '  . $_ . ' ') . $status->{$_} . "\n";
-                        
+
+        $r .= "\nList: " . $list . "\n";
+
+        my @mailouts = current_mailouts(
+            {
+                -list => $list
+            }
+        );
+
+        if ( !$mailouts[0] ) {
+            $r .= "\t*No current mailouts for $list\n";
+
+        }
+        for my $mailing (@mailouts) {
+
+            $r .= "\n\tmailout: " . $mailing->{id} . "\n";
+
+            $r .= "\ttype:    " . $mailing->{type} . "\n";
+
+            my $mailout = undef;
+            my $status  = undef;
+
+            if ( exists( $mailout_obj_cache->{$list}->{ $mailing->{id} }->{ $mailing->{type} } ) ) {
+
+                # Some optimization via caching...
+                warn "Using a cached DADA::Mail::mailout obj and status return"
+                  if $t;
+                $mailout = $mailout_obj_cache->{$list}->{ $mailing->{id} }->{ $mailing->{type} };
+                $status  = $mailout_status_cache->{$list}->{ $mailing->{id} }->{ $mailing->{type} };
+            }
+            else {
+                $mailout = DADA::Mail::MailOut->new( { -list => $list } );
+                $mailout->associate( $mailing->{id}, $mailing->{type} );
+                $status = $mailout->status();
+            }
+
+            $r .= "\n\t\tStatus:\n\n";
+
+            for ( sort keys %$status ) {
+                if ( $_ eq 'email_fields' ) {
+                    $r .= "\t\t" . _pad_str('* Subject: ') . $status->{$_}->{Subject} . "\n";
+
+                }
+                else {
+
+                    $r .= "\t\t" . _pad_str( '* ' . $_ . ' ' ) . $status->{$_} . "\n";
+
                 }
             }
-            
+
             $r .= "\t\t\n";
-            
-    		# Kind of a pre-check: 
-			if($status->{integrity_check} == 0){
-				$r .= "\t\t\tWARNING! Integrity Check is returning 0! Something may be wrong with this mailing! Pausing and exiting.\n"; 
-					
-				   if($status->{paused} != 1){ 
-              	   		$mailout->pause; 
-				   }
-				   $status = $mailout->status; 
-				   #print $r
-				   #		if $v == 1; 
-				   #return $r; 
-			} 
-			else { 
-				$r .= "\t\t\tMass Mailing appears to be in good health.\n"; 
-			}
-				
-                     
-            if( 
-                exists($status->{total_sent_out})        && 
-                exists($status->{total_sending_out_num}) &&
-                (
-                    $status->{total_sent_out} < $status->{total_sending_out_num}
-                )
-            ) { 
-                 my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-                 
-                 my $li = $ls->get; 
-                      
-                      
-                $r .=  "\t\t\tMass Mailing is not finished...\n";
-                   
-            
-                if($status->{should_be_restarted} == 1){ 
-                
+
+            # Kind of a pre-check:
+            if ( $status->{integrity_check} == 0 ) {
+                $r .=
+"\t\t\tWARNING! Integrity Check is returning 0! Something may be wrong with this mailing! Pausing and exiting.\n";
+
+                if ( $status->{paused} != 1 ) {
+                    $mailout->pause;
+                }
+                $status = $mailout->status;
+
+                #print $r
+                #		if $v == 1;
+                #return $r;
+            }
+            else {
+                $r .= "\t\t\tMass Mailing appears to be in good health.\n";
+            }
+
+            if (   exists( $status->{total_sent_out} )
+                && exists( $status->{total_sending_out_num} )
+                && ( $status->{total_sent_out} < $status->{total_sending_out_num} ) )
+            {
+                my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+
+                my $li = $ls->get;
+
+                $r .= "\t\t\tMass Mailing is not finished...\n";
+
+                if ( $status->{should_be_restarted} == 1 ) {
+
                     $r .= "\t\t\t\tMass Mailing looks like it should be restarted...\n";
-                       
-            
-                    if($li->{auto_pickup_dropped_mailings} == 1){ 
-            
+
+                    if ( $li->{auto_pickup_dropped_mailings} == 1 ) {
+
                         $r .= "\t\t\t\t\tauto pickup is ON\n";
-                        
-                         if($status->{mailout_stale}){ 
-                         
-                            $r .= "\t\t\t\t\tMass Mailing seems too stale to automatically be reloaded - Not restarting automatically.\n";
-                            $r .="\t\t\t\t\tTo restart, visit this mailout's individual sending monitor screen.\n";
-                        
-                         }
-                         else {
-                         
-                         
-                            # restart a mailout if there isn't too many *active* mailouts (system wide) already
-                            # That *should* solve my, "mailouts start that shouldn't" problem
-                            # the only thing is, will this be whacky with the queueing/pausing features that are already there? 
-                            # Probably not, since the queue knows about paused messages.
-                            
-                            if($active_mailouts_num >= $DADA::Config::MAILOUT_AT_ONCE_LIMIT){ 
-                                 
-                                 $r .= "\t\t\t\t\tCan't restart mailing, since the amount of current, active mailouts ($active_mailouts_num) is more than, or equal to the set limit ( " . $DADA::Config::MAILOUT_AT_ONCE_LIMIT . ")\n";
-                                 
-                            }else { 
-                            
-								 # This check may never get tripped, if we keep pausing broken mailouts... 
-								 if($status->{integrity_check} == 1){ 
-									
-	                                 $r .= "\t\t\t\t\tRestarting mailing NOW!\n";
-	                                 my $mh = DADA::Mail::Send->new(
-										      		{
-														-list   => $list, 
-														-ls_obj => $ls,
-													}
-												); 
-	                                 $mh->restart_mass_send(
-											$mailing->{id}, 
-											$mailing->{type}
-										); 
-         
-									 $active_mailouts_num++; 
-	                                 $r .=  "\t\t\t\t\tMailing Restarted Successfully.\n";
-                                    
-									# DEV: Why would I exit, after restarting (and after checking if I can restart) when there may be other things to 
-									# report? That makes no sense: 
-									
-	                                # print $r 
-									#	if $v == 1; 
-	                                #   return ($r, $total_mailouts, $active_mailouts, $paused_mailouts, $queued_mailouts, $inactive_mailouts); 
-								}
-								else { 
-									
-									$r .= "\t\t\t\t\tCan\'t restart Mass Mailing - integrity check is returning 0!\n";
-									$r .= "\t\t\t\t\tMass Mailing is most likely broken and should be manually removed.\n";
-								
-								}
-                           
-                           }
-                            
+
+                        if ( $status->{mailout_stale} ) {
+
+                            $r .=
+"\t\t\t\t\tMass Mailing seems too stale to automatically be reloaded - Not restarting automatically.\n";
+                            $r .= "\t\t\t\t\tTo restart, visit this mailout's individual sending monitor screen.\n";
+
                         }
-                        
-                        
-                    }else { 
-                    
-                        $r .=  "\t\t\t\tauto pickup is OFF - not restarting Mass Mailing.\n";
-                          
+                        else {
+
+                     # restart a mailout if there isn't too many *active* mailouts (system wide) already
+                     # That *should* solve my, "mailouts start that shouldn't" problem
+                     # the only thing is, will this be whacky with the queueing/pausing features that are already there?
+                     # Probably not, since the queue knows about paused messages.
+
+                            if ( $active_mailouts_num >= $DADA::Config::MAILOUT_AT_ONCE_LIMIT ) {
+
+                                $r .=
+"\t\t\t\t\tCan't restart mailing, since the amount of current, active mailouts ($active_mailouts_num) is more than, or equal to the set limit ( "
+                                  . $DADA::Config::MAILOUT_AT_ONCE_LIMIT . ")\n";
+
+                            }
+                            else {
+
+                                # This check may never get tripped, if we keep pausing broken mailouts...
+                                if ( $status->{integrity_check} == 1 ) {
+
+                                    $r .= "\t\t\t\t\tRestarting mailing NOW!\n";
+                                    my $mh = DADA::Mail::Send->new(
+                                        {
+                                            -list   => $list,
+                                            -ls_obj => $ls,
+                                        }
+                                    );
+                                    $mh->restart_mass_send( $mailing->{id}, $mailing->{type} );
+
+                                    $active_mailouts_num++;
+                                    $r .= "\t\t\t\t\tMailing Restarted Successfully.\n";
+
+       # DEV: Why would I exit, after restarting (and after checking if I can restart) when there may be other things to
+       # report? That makes no sense:
+
+             # print $r
+             #	if $v == 1;
+             #   return ($r, $total_mailouts, $active_mailouts, $paused_mailouts, $queued_mailouts, $inactive_mailouts);
+                                }
+                                else {
+
+                                    $r .= "\t\t\t\t\tCan\'t restart Mass Mailing - integrity check is returning 0!\n";
+                                    $r .=
+                                      "\t\t\t\t\tMass Mailing is most likely broken and should be manually removed.\n";
+
+                                }
+
+                            }
+
+                        }
+
                     }
-                }else { 
-                        $r .=  "\t\t\tMass Mailing appears to be still going...\n";
+                    else {
+
+                        $r .= "\t\t\t\tauto pickup is OFF - not restarting Mass Mailing.\n";
+
+                    }
                 }
-                
-                if($status->{paused}){ 
-                    $r .=  "\t\t\tMass Mailing has been paused.\n";
-                        
+                else {
+                    $r .= "\t\t\tMass Mailing appears to be still going...\n";
                 }
-                
-                if($status->{queued_mailout}){ 
-                    $r .=  "\t\t\tMass Mailing is queued for future sending.\n";
-                       
-                    $r .=  "\t\t\tMass Mailing is #" .  ($status->{queue_place} + 1) . " of: " . ($status->{queue_total}+1) . " Mass Mailingss.\n";
-                        
+
+                if ( $status->{paused} ) {
+                    $r .= "\t\t\tMass Mailing has been paused.\n";
+
                 }
-                        
-            } elsif($status->{integrity_check} == 0){ 
-       
-                $r .=  "\t\t*Problems with the Mass Mailing* - Integrity check is returning, '0'\n";
-                
-            } 
-            else { 
+
+                if ( $status->{queued_mailout} ) {
+                    $r .= "\t\t\tMass Mailing is queued for future sending.\n";
+
+                    $r .=
+                        "\t\t\tMass Mailing is #"
+                      . ( $status->{queue_place} + 1 ) . " of: "
+                      . ( $status->{queue_total} + 1 )
+                      . " Mass Mailingss.\n";
+
+                }
+
+            }
+            elsif ( $status->{integrity_check} == 0 ) {
+
+                $r .= "\t\t*Problems with the Mass Mailing* - Integrity check is returning, '0'\n";
+
+            }
+            else {
                 $r .= "\t\tMass Mailing is finished.\n";
             }
-       }
-   }
-   
-   print $r if $v == 1; 
-   
-   return ($r, $total_mailouts, $active_mailouts, $paused_mailouts, $queued_mailouts, $inactive_mailouts); 
-   
+        }
+    }
+
+    print $r if $v == 1;
+
+    return ( $r, $total_mailouts, $active_mailouts, $paused_mailouts, $queued_mailouts, $inactive_mailouts );
+
 }
 
+sub _pad_str {
 
+    # DEV: I'd had to rewrite this type of sub, since it's going to be buggy,
+    # and there's a million different ones, but, here goes:
 
+    my $str = shift;
+    my $padding = shift || 25;
 
-sub _pad_str { 
-	
-	# DEV: I'd had to rewrite this type of sub, since it's going to be buggy, 
-	# and there's a million different ones, but, here goes: 
-	
-	my $str     = shift; 
-	my $padding = shift || 25; 
-	
-	if(length($str) > 0 && length($str) < 25){ 
-		$padding = $padding - length($str); 
-		return $str . ' ' x $padding; 
-	}
-	else { 
-		return $str; 
-	}
+    if ( length($str) > 0 && length($str) < 25 ) {
+        $padding = $padding - length($str);
+        return $str . ' ' x $padding;
+    }
+    else {
+        return $str;
+    }
 }
 
+sub _formatted_runtime {
 
+    my $d = shift || 0;
 
-
-sub _formatted_runtime { 
-	
-	my $d    = shift || 0; 
-	
-	my @int = (
-        [ 'second', 1                ],
-        [ 'minute', 60               ],
-        [ 'hour',   60*60            ],
-        [ 'day',    60*60*24         ],
-        [ 'week',   60*60*24*7       ],
-        [ 'month',  60*60*24*30.5    ],
-        [ 'year',   60*60*24*30.5*12 ]
+    my @int = (
+        [ 'second', 1 ],
+        [ 'minute', 60 ],
+        [ 'hour',   60 * 60 ],
+        [ 'day',    60 * 60 * 24 ],
+        [ 'week',   60 * 60 * 24 * 7 ],
+        [ 'month',  60 * 60 * 24 * 30.5 ],
+        [ 'year',   60 * 60 * 24 * 30.5 * 12 ]
     );
     my $i = $#int;
     my @r;
-    while ( ($i>=0) && ($d) )
-    {
-        if ($d / $int[$i] -> [1] >= 1)
-        {
-            push @r, sprintf "%d %s%s",
-                         $d / $int[$i] -> [1],
-                         $int[$i]->[0],
-                         ( sprintf "%d", $d / $int[$i] -> [1] ) > 1
-                             ? 's'
-                             : '';
+    while ( ( $i >= 0 ) && ($d) ) {
+        if ( $d / $int[$i]->[1] >= 1 ) {
+            push @r, sprintf "%d %s%s", $d / $int[$i]->[1],
+              $int[$i]->[0], ( sprintf "%d", $d / $int[$i]->[1] ) > 1
+              ? 's'
+              : '';
         }
-        $d %= $int[$i] -> [1];
+        $d %= $int[$i]->[1];
         $i--;
     }
 
     my $runtime;
     if (@r) {
         $runtime = join ", ", @r;
-    } else {
+    }
+    else {
         $runtime = '0 seconds';
-    }  
-  
-    return $runtime; 
+    }
+
+    return $runtime;
 }
-
-
-
-
-
-
 
 sub DESTROY {
 
