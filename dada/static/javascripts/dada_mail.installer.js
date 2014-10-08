@@ -41,8 +41,6 @@ $(document).ready(function() {
 			test_captcha_reCAPTCHA_Mailhide_configuration();
 		});
 		
-		
-		
 		$("body").on("click", '.test_amazon_ses_configuration', function(event) {
 			test_amazon_ses_configuration();
 		});
@@ -116,98 +114,70 @@ $(document).ready(function() {
 			}					
 		});
 
+
 		$("body").on('click', "#install_wysiwyg_editors", function(event) {
 			installer_checkbox_toggle_option_groups('install_wysiwyg_editors', 'install_wysiwyg_editors_options');
 		});
 
-		$("body").on('click', "#configure_program_name", function(event) {
-			installer_checkbox_toggle_option_groups('configure_program_name', 'configure_program_name_options'); 
-		});
-
-		$("body").on('click', "#configure_amazon_ses", function(event) {
-			installer_checkbox_toggle_option_groups('configure_amazon_ses', 'amazon_ses_options'); 
-		});
-
-		$("body").on('click', "#configure_mandrill", function(event) {
-			installer_checkbox_toggle_option_groups('configure_mandrill', 'mandrill_options'); 
-		});
-
-
-		$("body").on('click', "#configure_profiles", function(event) {
-			installer_checkbox_toggle_option_groups('configure_profiles', 'profiles_options');
-		});
-		$("body").on('click', "#configure_templates", function(event) {
-			installer_checkbox_toggle_option_groups('configure_templates', 'template_options');
-		});
-
-		$("body").on('click', "#configure_cache", function(event) {
-			installer_checkbox_toggle_option_groups('configure_cache', 'cache_options');
-		});
-
-		$("body").on('click', "#configure_debugging", function(event) {
-			installer_checkbox_toggle_option_groups('configure_debugging', 'debugging_options');
-		});
+		var o = [
+			"s_program_url", 
+			"program_name", 
+			"amazon_ses", 
+			"mandrill", 
+			"profiles",
+			"templates", 
+			"cache",
+			"debugging", 
+			"security", 
+			"captcha", 
+			"global_mailing_list", 
+			"mass_mailing", 
+			"confirmation_token", 
+		];
+		$.each(o, function(index, value) {
+			$("body").on('click', "#configure_" + value, function(event) {
+				installer_checkbox_toggle_option_groups('configure_' + value, value +'_options');			
+			});
+			installer_checkbox_toggle_option_groups('configure_' + value, value +'_options');		
+		}); 
+		var oo = [
+		"bridge", 
+		"bounce_handler", 
+		"wysiwyg_editors", 
+		];
+		$.each(oo, function(index, value) {
+			$("body").on('click', "#install_" + value, function(event) {
+				installer_checkbox_toggle_option_groups('install_' + value, value +'_options');			
+			});
+			installer_checkbox_toggle_option_groups('install_' + value, value +'_options');		
+		}); 
 		
-		
-		$("body").on('click', "#configure_security", function(event) {
-			installer_checkbox_toggle_option_groups('configure_security', 'security_options'); 
-		});
-		
-		$("body").on('click', "#configure_captcha", function(event) {
-			installer_checkbox_toggle_option_groups('configure_captcha', 'captcha_options'); 
-		});
-		
-		$("body").on('click', "#configure_global_mailing_list_options", function(event) {
-			installer_checkbox_toggle_option_groups('configure_global_mailing_list_options', 'global_mailing_list_options');
-		});
-
-		$("body").on('click', "#configure_mass_mailing", function(event) {
-			installer_checkbox_toggle_option_groups('configure_mass_mailing', 'mass_mailing_options');
-		});
-
-		$("body").on('click', "#configure_confirmation_token", function(event) {
-			installer_checkbox_toggle_option_groups('configure_confirmation_token', 'confirmation_token_options');
-		});
-
-
 		installer_dada_root_pass_options();
 		installer_toggleSQL_options();
 		installer_toggle_dada_files_dirOptions();
 		installer_toggle_captcha_type_options();
 
-		installer_checkbox_toggle_option_groups('install_bridge',                        'bridge_configuration');  
-		installer_checkbox_toggle_option_groups('install_bounce_handler',                'bounce_handler_configuration');  
-		installer_checkbox_toggle_option_groups('install_wysiwyg_editors',               'install_wysiwyg_editors_options');
-		installer_checkbox_toggle_option_groups('configure_program_name',                'configure_program_name_options');
-		installer_checkbox_toggle_option_groups('configure_amazon_ses',                  'amazon_ses_options'); 
-		installer_checkbox_toggle_option_groups('configure_mandrill',                    'mandrill_options'); 
-		installer_checkbox_toggle_option_groups('configure_profiles',                    'profiles_options');
-		installer_checkbox_toggle_option_groups('configure_templates',                   'template_options');
-		installer_checkbox_toggle_option_groups('configure_security',                    'security_options');
-		installer_checkbox_toggle_option_groups('configure_captcha',                     'captcha_options');
-		installer_checkbox_toggle_option_groups('configure_global_mailing_list_options', 'global_mailing_list_options');
-		installer_checkbox_toggle_option_groups('configure_mass_mailing',                'mass_mailing_options');
-		installer_checkbox_toggle_option_groups('configure_confirmation_token',          'confirmation_token_options');
-		installer_checkbox_toggle_option_groups('configure_cache',                       'cache_options');
-		installer_checkbox_toggle_option_groups('configure_debugging',                   'debugging_options');
-
-
-		$("#dada_files_help").hide();
-		$("#program_url_help").hide();
-		$("#root_pass_help").hide();
-		$("#support_files_help").hide();
-		$("#backend_help").hide();
-		$("#plugins_extensions_help").hide();
-		$("#bounce_handler_configuration_help").hide();
-		$("#additional_bounce_handler_configuration").hide();
-		$("#additional_bridge_configuration").hide();
-		$("#wysiwyg_editor_help").hide();
-		$("#test_sql_connection_results").hide();
-		$("#test_bounce_handler_pop3_connection_results").hide();
-		$("#test_user_template_results").hide(); 
-		$("#test_CAPTCHA_configuration_results").hide(); 
-		$("#test_amazon_ses_configuration_results").hide();
-		$("#test_mandrill_configuration_results").hide();
+		var hiding = [
+		"dada_files_help", 
+		"program_url_help", 
+		"root_pass_help", 
+		"support_files_help", 
+		"backend_help", 
+		"plugins_extensions_help", 
+		"bounce_handler_configuration_help", 
+		"additional_bounce_handler_configuration",
+		"additional_bridge_configuration",
+		"wysiwyg_editor_help",
+		"test_sql_connection_results",
+		"test_bounce_handler_pop3_connection_results",
+		"test_user_template_results",
+		"test_CAPTCHA_configuration_results",
+		"test_amazon_ses_configuration_results",
+		"test_mandrill_configuration_results",
+       ];
+		$.each(hiding, function(index, value) {
+			$("#" + value).hide(); 
+		}); 
 
 	}
 	if ($("#installer_install_dada_mail").length) {
@@ -454,16 +424,20 @@ function test_captcha_reCAPTCHA_Mailhide_configuration() {
 }
 
 function installer_checkbox_toggle_option_groups(checkbox_id, target_id){ 
-	if ($("#" + checkbox_id).length) {	
+	if ($("#" + checkbox_id).length) {
 		if ($("#" + checkbox_id).prop("checked") === true) {
 			if ($('#' + target_id).is(':hidden')) {
 				$('#' + target_id).show('blind');
 			}
 		} else {
-			if ($('#' + checkbox_id).is(':visible')) {
+			if ($('#' + target_id).is(':visible')) {
 				$('#' + target_id).hide('blind');
 			}
-		}
+			else { 
+			}
+		}		
+	}
+	else { 
 	}
 }
 

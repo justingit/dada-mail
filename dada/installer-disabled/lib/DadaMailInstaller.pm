@@ -65,7 +65,7 @@ my $Big_Pile_Of_Errors  = undef;
 #
 my $Trace               = 0; 
 
-# These are strings we look for in the example_dada_config.tmpl file which 
+# These are strings we look for in the dada_config.tmpl file which 
 # we need to remove. 
 
 my $admin_menu_begin_cut = quotemeta(
@@ -217,6 +217,7 @@ my $advanced_config_params = {
     show_amazon_ses_options             => 1,
     show_mandrill_options               => 1,
     show_program_name_options           => 1,
+    show_s_program_url_options          => 1, 
     show_annoying_whiny_pro_dada_notice => 0,
 };
 
@@ -1095,6 +1096,14 @@ sub grab_former_config_vals {
 		$local_q->param('confirmation_token_expires', $BootstrapConfig::CONFIRMATION_TOKEN_OPTIONS->{expires});
 	}	
 	
+	# S_PROGRAM URL 
+	if(defined($BootstrapConfig::S_PROGRAM_URL)) {
+	    if($BootstrapConfig::S_PROGRAM_URL ne $BootstrapConfig::PROGRAM_URL) { 
+    	    $local_q->param('configure_s_program_url', 1);
+    	    $local_q->param('s_program_url_S_PROGRAM_URL',   $BootstrapConfig::S_PROGRAM_URL);
+        }
+	}
+
 	
 	# PROGRAM NAME 
 	if(defined($BootstrapConfig::PROGRAM_NAME)) { 	
@@ -1812,6 +1821,12 @@ sub create_dada_config_file {
 		$confirmation_token_params->{expires} = strip($q->param('confirmation_token_expires'));
 	}
 
+    my $s_program_url_params = {}; 
+    if($q->param('configure_s_program_url') == 1){ 
+        $s_program_url_params->{configure_s_program_url}    = 1; 
+        $s_program_url_params->{s_program_url_S_PROGRAM_URL} = clean_up_var(strip($q->param('s_program_url_S_PROGRAM_URL'))); 
+    }
+
     my $program_name_params = {}; 
     if($q->param('configure_program_name') == 1){ 
         $program_name_params->{configure_program_name}    = 1; 
@@ -1874,7 +1889,7 @@ sub create_dada_config_file {
 	
     my $outside_config_file = DADA::Template::Widgets::screen(
         {
-            -screen => 'example_dada_config.tmpl',
+            -screen => 'dada_config.tmpl',
             -vars   => {
 
                 PROGRAM_URL            => $args->{-program_url},
@@ -1895,6 +1910,7 @@ sub create_dada_config_file {
 				%{$global_mailing_list_options},
 				%{$mass_mailing_params},
 				%{$confirmation_token_params},
+				%{$s_program_url_params},
 				%{$program_name_params},
 				%{$amazon_ses_params},
 				%{$mandrill_params},

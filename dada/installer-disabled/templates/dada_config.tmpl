@@ -13,8 +13,10 @@ $DIR = '<!-- tmpl_var dada_files_dir -->';
 #---------------------------------------------------------------------#
 # The URL to access Dada Mail:
 #
-$PROGRAM_URL = '<!-- tmpl_var PROGRAM_URL -->';
-
+$PROGRAM_URL   = '<!-- tmpl_var PROGRAM_URL -->';
+<!-- tmpl_if configure_s_program_url --> 
+$S_PROGRAM_URL = '<!-- tmpl_var s_program_url_S_PROGRAM_URL -->';
+<!-- /tmpl_if -->
 #---------------------------------------------------------------------#
 # The location (server path + URL) of static, support files
 #
