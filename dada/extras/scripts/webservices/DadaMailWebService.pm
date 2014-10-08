@@ -115,3 +115,5 @@ sub digest {
     }
     return $digest;
 }
+
+1; 

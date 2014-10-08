@@ -109,7 +109,6 @@ sub request {
             $r->{status}  = 1;
         }
         elsif ( $self->{service} eq 'subscription' ) {
-            warn 'subscription!'; 
             $r->{results} = $self->subscription();
             $r->{status}  = 1;
         }
@@ -130,18 +129,18 @@ sub request {
             errors => $errors,
 
             #og_path_info  => $ENV{PATH_INFO},
-            og_service        => $self->{service},
-            og_query          => $self->{cgi_obj}->query_string(),
-            og_digest         => $self->{digest},
-            calculated_digest => $calculated_digest,
-
+            #og_service        => $self->{service},
+            #og_query          => $self->{cgi_obj}->query_string(),
+            #og_digest         => $self->{digest},
+            #calculated_digest => $calculated_digest,
             #public_api_key    => $self->{ls}->param('public_api_key'),
             #private_api_key    => $self->{ls}->param('private_api_key'),
         };
-        if ( exists( $self->{ls} ) ) {
-            $r->{public_api_key}  = $self->{ls}->param('public_api_key');
-            $r->{private_api_key} = $self->{ls}->param('private_api_key');
-        }
+        
+        #if ( exists( $self->{ls} ) ) {
+        #    $r->{public_api_key}  = $self->{ls}->param('public_api_key');
+        #    $r->{private_api_key} = $self->{ls}->param('private_api_key');
+        #}
     }
 
     my $d = $self->{q}->header(
@@ -198,7 +197,6 @@ sub subscription {
         }
     );
     
-
     my $subscribe_these = [];
     my $filtered_out    = 0;
 
@@ -293,8 +291,9 @@ sub mass_email {
         }
     }
 
+    
     return {
-        message_id => $message_id,
+        message_id => $self->_massaged_key($message_id),
     }
 
 }
@@ -403,5 +402,28 @@ sub check_list {
     }
 
 }
+
+
+sub _massaged_key { 
+
+
+	my $self = shift; 
+	my $key  = shift; 
+	$key    =~ s/^\<|\>$//g
+		if $key;
+		
+    $key =~ s/^\%3C|\%3E$//g
+        if $key;
+        
+	$key =~ s/^\&lt\;|\&gt\;$//g
+	    if $key;
+	
+	$key    =~ s/\.(.*)//
+		if $key; #greedy
+	
+	return $key; 
+
+}
+
 
 1;

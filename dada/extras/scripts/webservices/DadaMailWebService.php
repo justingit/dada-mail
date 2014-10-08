@@ -57,7 +57,6 @@ Class DadaMailWebService {
         }
         else {
     		$encoded_addresses = json_encode($params['addresses']);
-    		echo '$encoded_addresses' . $encoded_addresses . "\n"; 
     		$query_params = array(
     			'addresses' => $encoded_addresses,
     			'nonce'     => $nonce, 

@@ -144,10 +144,6 @@ sub add_subscribers {
     my ($args) = @_; 
     
     my $addresses           = $args->{-addresses};
-    use Data::Dumper; 
-    print Dumper($addresses); 
-    
-    
     my $added_addresses     = []; 
     my $type                = $args->{-type}; 
     if(!exists($args->{-fields_options_mode})){ 

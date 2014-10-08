@@ -22,7 +22,7 @@ access the services available remotely.
 
 =head2 Public and Private Keys
 
-Both the public, and private key for your mailing list can be accessed in the mailing list's control panel under, 
+Both the public and private keys for your mailing list can be accessed in the mailing list's control panel under, 
 
 I<Your Mailing List - Web Services API>
 
@@ -33,40 +33,47 @@ You may also reset your keys. Doing so will invalidate any other key pairs for t
 The Perl Client is called, C<DadaMailWebService.pm> and is located at I<dada/extras/scripts/webservices/DadaMailWebService.pm>.
 
 =head4 Synopsis
+    
+    #!/usr/bin/perl 
 
     # Change this to path of the following module: 
-    use lib qw(/path/to/webservices/module); 
+    use lib qw(./); 
     use DadaMailWebService;
-    
+
+    use CGI qw(:standard);
+    print header(); 
+
     use Data::Dumper; 
 
     my $server      = 'https://example.com/cgi-bin/dada/mail.cgi'; 
     my $list        = 'example';
-    my $public_key  = 'aaOKqoeobNoaJPyAMYHo';                        
-    my $private_key = 'bju7EF35jHua5aYvdiEyboipDcBQo3eeRqCNfc4E';
+    my $public_key  = 'QvDYfEfsyV2IsxITFFFQ2';                        
+    my $private_key = 'oED89yPgN6DCAYPt6vAZ7YB5OKymHEANIjeE6fF6n';
 
     my $ws = DadaMailWebService->new(
         $server, 
         $public_key, 
         $private_key,
     );
-
-    # Validate Addresses for Subscription
-    $results  = $ws->request(
-        $list, 
-        'validate_subscription', 
-        [
+    my $params = {  
+            addresses => [
             {
-                email  => 'test@example.com',
+                email  => 'test9@example.com',
                 fields => {
-                    first_name => "John", 
-                    last_name  => "Smith", 
+                    favorite_color => "red", 
                 },
                 profile => {
                     password => 'secret'
                 }
             },
         ]
+    };
+
+    # Validate Addresses for Subscription
+    $results  = $ws->request(
+        $list, 
+        'validate_subscription', 
+        $params, 
     );
     print Dumper($results); 
 
@@ -74,32 +81,22 @@ The Perl Client is called, C<DadaMailWebService.pm> and is located at I<dada/ext
     $results  = $ws->request(
         $list, 
         'subscription', 
-        {
-            addresses => [
-                {
-                    email  => 'test@example.com',
-                    fields => {
-                        first_name => "John", 
-                        last_name  => "Smith", 
-                    },
-                    profile => {
-                        password => 'secret'
-                    }
-                },
-            ]
-        }
+        $params,
     );
     print Dumper($results); 
 
+
+
+    $params = {
+        subject => "My Subject!", 
+        format  => "Text",
+        message => "Here's my message!", 
+    };
     # Send a Mass Mailing: 
     $results  = $ws->request(
         $list, 
         'mass_email', 
-        {
-            subject => "My Subject!", 
-            format  => "Text",
-            message => "Here's my message!", 
-        }
+        $params,
     );
     print Dumper($results); 
 
@@ -139,67 +136,65 @@ The php Client is called, C<DadaMailWebService.php> and is located at I<dada/ext
 
 =head4 Synopsis: 
     
-    require_once('DadaMailWebService.php'); 
+    <?php 
 
-    $server      = 'https://example.com/cgi-bin/dada/mail.cgi'; 
-    $list        = 'example';
-    $public_key  = 'aaOKqoeobNoaJPyAMYHo';                        
-    $private_key = 'bju7EF35jHua5aYvdiEyboipDcBQo3eeRqCNfc4E';
+        require_once('DadaMailWebService.php'); 
 
-    $ws = DadaMailWebService->new(
-        $server,
-        $public_key,
-        $private_key
-    );
+        $server      = 'https://example.com/cgi-bin/dada/mail.cgi'; 
+        $list        = 'example';
+        $public_key  = 'QvDYfEfsyV2IsxITFFFQ2';                        
+        $private_key = 'oED89yPgN6DCAYPt6vAZ7YB5OKymHEANIjeE6fF6n';
 
-    # Validate Addresses for Subscription
-    $results  = $ws->request(
-        $list, 
-        'validate_subscription', 
-         [
+        echo '<pre>'; 
+
+        $ws = new DadaMailWebService(
+            $server,
+            $public_key,
+            $private_key
+        );
+
+        $params = [
             'addresses' => array(
                 [
-                    'email'  => 'test@example.com',
+                    'email'  => 'test4@example.com',
                     'fields' => [
                         'favorite_color' => 'red', 
-                    ],
-                ],
-            ) 
-        ]
-    );
-    print_r($results); 
-
-    # Subscribe Addresses: 
-    $results  = $ws->request(
-        $list, 
-        'subscription', 
-        {
-         [
-            'addresses' => array(
-                [
-                    'email'  => 'test@example.com',
-                    'fields' => [
-                        'favorite_color' => 'red', 
-                    ],
-                ],
+                    ]
+                ]
             ) 
         ];
-        }
-    );
-    print_r($results); 
 
-    # Send a Mass Mailing: 
-    $results  = $ws->request(
-        $list, 
-        'mass_email', 
-        [
+        // Validate Addresses for Subscription
+        $results  = $ws->request(
+            $list, 
+            'validate_subscription', 
+             $params
+        );
+        print_r($results) . "\n\n\n"; 
+
+        // Subscribe Addresses: 
+        $results  = $ws->request(
+            $list, 
+            'subscription', 
+            $params
+        );
+        print_r($results) . "\n\n\n"; 
+
+        $params = [
             'subject' => "My Subject!", 
             'format'  => "Text",
-            'message' => "Here's my message!", 
-        ]
-    );
-    print_r($results); 
+            'message' => "Here's my message!"
+        ];
+        // Send a Mass Mailing: 
+        $results  = $ws->request(
+            $list, 
+            'mass_email', 
+            $params
+        );
+        print_r($results) . "\n\n\n"; 
 
+    ?>
+    
 =head4 new
 
 Initialize a new DadaMailWebService object with the C<new> method, which takes three arguments: 
