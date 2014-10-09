@@ -1410,7 +1410,10 @@ sub oldschool_decode_entities {
 sub e_print { # be nice to prototype this. 
 	#print encode($DADA::Config::HTML_CHARSET, $_[0]); 
 	
-	print safely_encode($_[0]); 
+	my $str = shift; 
+	my $fh  = shift || \*STDOUT;  
+
+	print $fh safely_encode($str); 
 }
 
 

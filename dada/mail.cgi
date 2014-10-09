@@ -3513,6 +3513,7 @@ sub view_list {
             if($advanced_search == 1){ 
                 open my $fh, '<', \$advanced_query || die $!;
                 my $new_q = CGI->new($fh);
+                   $new_q = decode_cgi_obj($new_q);
                 my $partial_sending = partial_sending_query_to_params($new_q); 
                                 
                 ( $total_num, $subscribers ) = $lh->search_list(
@@ -3706,6 +3707,7 @@ sub mass_update_profiles {
     my $advanced_query  = xss_filter( $q->param('advanced_query') )  || undef;
     open my $fh, '<', \$advanced_query || die $!;
     my $new_q = CGI->new($fh);
+       $new_q = decode_cgi_obj($new_q);
     my $partial_listing = partial_sending_query_to_params($new_q); 
  
     my $updated = $lh->update_profiles(
@@ -8853,6 +8855,7 @@ sub text_list {
         if($advanced_search == 1){ 
             open my $fh, '<', \$advanced_query || die $!;
             my $new_q = CGI->new($fh);
+               $new_q = decode_cgi_obj($new_q);
             $partial_listing = partial_sending_query_to_params($new_q); 
         }
     }
