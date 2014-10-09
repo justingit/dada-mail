@@ -43,16 +43,22 @@ sub request {
     my $nonce = time . ':' . $self->nonce();
 
     if ( $flavor eq 'mass_email' ) {
+        if(!exists($params->{test})){ 
+           $params->{test} = 0;  
+        }
         $query = {
             format  => $params->{format},
             message => $params->{message},
             subject => $params->{subject},
             nonce   => $nonce,
+            test    => $params->{test}, 
         };
         $q->param( 'format',  $query->{format} );
         $q->param( 'message', $query->{message} );
-        $q->param( 'subject', $query->{subject} );
         $q->param( 'nonce',   $query->{nonce} );
+        $q->param( 'subject', $query->{subject} );
+        $q->param( 'test',    $query->{test} );
+
     }
     else {
 

@@ -48,11 +48,16 @@ Class DadaMailWebService {
 	    $nonce = time() . ':' . $this->nonce() ;
 
         if($flavor == 'mass_email'){ 
+            
+            if(!isset($params['test'])){ 
+                $params['test'] = 0; 
+            }
             $query_params = array(
                 'format'    => $params['format'],
                 'message'   => $params['message'],
                 'nonce'     => $nonce,
                 'subject'   => $params['subject'],
+                'test'      => $params['test'],
             ); 
         }
         else {

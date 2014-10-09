@@ -7,8 +7,8 @@ use lib qw(
 );
 
 use Carp qw(carp croak);
-    $Carp::Verbose = 1;
-
+#    $Carp::Verbose = 1;
+my $t = 0; 
 
 use DADA::Config qw(!:DEFAULT);
 use JSON;
@@ -112,6 +112,10 @@ sub request {
             $r->{results} = $self->subscription();
             $r->{status}  = 1;
         }
+        elsif ( $self->{service} eq 'unsubscription' ) {
+            $r->{results} = $self->unsubscription();
+            $r->{status}  = 1;
+        }
         elsif ( $self->{service} eq 'mass_email' ) {
             $r->{results} = $self->mass_email();
             $r->{status}  = 1;
@@ -199,10 +203,18 @@ sub subscription {
     
     my $subscribe_these = [];
     my $filtered_out    = 0;
+#    my $overridden_tests = { 
+#        black_listed    => 0, 
+#        not_whitelisted => 0, 
+#        profile_fields  => 0,    
+#    }
 
     for (@$f_addresses) {
         if ( $_->{status} == 1 ) {
             push( @$subscribe_these, $_ );
+#        }
+#        elsif(1 == 0){ # are there tests we're skippin'? 
+#            push( @$subscribe_these, $_ );          
         }
         else {
             $filtered_out++;
@@ -229,12 +241,63 @@ sub subscription {
 
 }
 
+sub unsubscription { 
+    
+        my $self                = shift;
+        my $addresses           = $self->{cgi_obj}->param('addresses');
+        my $lh                  = DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
+        my $json                = JSON->new;
+        my $decoded_addresses   = $json->decode($addresses);
+        my $removed_email_count    = 0; 
+        my $skipped_email_count    = 0; 
+        my $blacklisted_count      = 0; 
+
+        my $f_addresses = $lh->filter_subscribers_w_meta(
+            {
+                -emails => $decoded_addresses,
+                -type   => 'list',
+            }
+        );
+
+        my $unsubscribe_these = [];
+        my $filtered_out      = 0;
+
+        for (@$f_addresses) {
+            if ( $_->{status} == 0 && $_->{errors}->{subscribed} == 1) {
+                push( @$unsubscribe_these, $_->{email} );
+            }
+            else {
+                $filtered_out++;
+            }
+        }
+        
+        if(scalar(@$unsubscribe_these) > 0){     
+            ( $removed_email_count, $blacklisted_count ) = $lh->admin_remove_subscribers(
+                {
+                    -addresses => $unsubscribe_these,
+                    -type      => 'list',
+                }
+            );
+        }
+
+        $skipped_email_count = $skipped_email_count + $filtered_out;
+
+        return {
+            unsubscribed_addresses   => $removed_email_count,
+            skipped_addresses        => $skipped_email_count,
+          };
+    
+}
+
+
 sub mass_email {
 
     my $self    = shift;
     my $subject = $self->{cgi_obj}->param('subject');
     my $format  = $self->{cgi_obj}->param('format');
     my $message = $self->{cgi_obj}->param('message');
+    my $test    = $self->{cgi_obj}->param('test') || 0;
+
 
     require DADA::App::FormatMessages;
     my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
@@ -279,7 +342,8 @@ sub mass_email {
 
     my $message_id = $mh->mass_send(
         {
-            -msg => {%mailing},
+            -msg       => {%mailing},
+            -mass_test => $test, 
         }
     );
 
@@ -363,7 +427,10 @@ sub check_digest {
         $qq->param( 'message', $self->{cgi_obj}->param('message') );
         $qq->param( 'nonce',   $self->{cgi_obj}->param('nonce') );
         $qq->param( 'subject', $self->{cgi_obj}->param('subject') );
-
+        # optional
+        if(defined($self->{cgi_obj}->param('test'))){ 
+            $qq->param( 'test', $self->{cgi_obj}->param('test') );
+        }
     }
     else {
         $qq->param( 'addresses', $self->{cgi_obj}->param('addresses') );
@@ -371,6 +438,9 @@ sub check_digest {
 
     }
     
+#    warn '$qq->query_string()' . $qq->query_string()
+#        if $t; 
+        
     my $n_digest = $self->digest( $qq->query_string() );
     $calculated_digest = $n_digest;
     if ( $self->{digest} ne $n_digest ) {
@@ -385,10 +455,18 @@ sub digest {
 
     my $self     = shift;
     my $message  = shift;
+    
+    warn '$message ' . $message 
+        if $t; 
+        
     my $n_digest = hmac_sha256_base64( $message, $self->{ls}->param('private_api_key') );
     while ( length($n_digest) % 4 ) {
         $n_digest .= '=';
     }
+    
+    warn '$n_digest:' . $n_digest
+        if $t; 
+        
     return $n_digest;
 }
 

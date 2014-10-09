@@ -30,7 +30,9 @@ You may also reset your keys. Doing so will invalidate any other key pairs for t
 
 =head3 Perl Client
 
-The Perl Client is called, C<DadaMailWebService.pm> and is located at I<dada/extras/scripts/webservices/DadaMailWebService.pm>.
+The Perl Client is called, C<DadaMailWebService> and is located at I<dada/extras/scripts/webservices/DadaMailWebService.pm>. 
+
+You'll want to copy this module to the client side server you want to utilize the below API with. 
 
 =head4 Synopsis
     
@@ -85,12 +87,20 @@ The Perl Client is called, C<DadaMailWebService.pm> and is located at I<dada/ext
     );
     print Dumper($results); 
 
+    # UNSubscribe Addresses: 
+    $results  = $ws->request(
+        $list, 
+        'unsubscription', 
+        $params,
+    );
+    print Dumper($results); 
 
 
     $params = {
         subject => "My Subject!", 
         format  => "Text",
         message => "Here's my message!", 
+        test    => 0
     };
     # Send a Mass Mailing: 
     $results  = $ws->request(
@@ -133,6 +143,8 @@ C<request> returns the results of the request.
 =head3 php Client
 
 The php Client is called, C<DadaMailWebService.php> and is located at I<dada/extras/scripts/webservices/DadaMailWebService.php>. 
+
+You'll want to copy this file to the client side server you want to utilize the below API with.
 
 =head4 Synopsis: 
     
@@ -180,10 +192,21 @@ The php Client is called, C<DadaMailWebService.php> and is located at I<dada/ext
         );
         print_r($results) . "\n\n\n"; 
 
+
+        // UNSubscribe Addresses: 
+        $results  = $ws->request(
+            $list, 
+            'unsubscription', 
+            $params
+        );
+        print_r($results) . "\n\n\n"; 
+
+
         $params = [
             'subject' => "My Subject!", 
             'format'  => "Text",
-            'message' => "Here's my message!"
+            'message' => "Here's my message!",
+            'test'    => 0
         ];
         // Send a Mass Mailing: 
         $results  = $ws->request(
@@ -421,6 +444,8 @@ Errors returned back are the same for the following method:
 
 L<http://dadamailproject.com/d/MailingList_Subscribers.pm.html#subscription_check>
 
+
+
 =head4 subscription
 
 C<subscription> takes a list of addresses (and associated metadata) and subscribes the addresses passed. Validation is done beforehand, and only addresses that passed validation will be subscribed. 
@@ -450,6 +475,48 @@ B<skipped_addresses> will return the number of addresses that were not subscribe
 This service does not tell you I<why> an address was not subscribed, 
 so it's highly suggested you validate the subscription, beforehand. 
 
+=head4 unsubscription
+
+C<unsubscription> takes a list of addresses (no metadata need be added) and removes the addresses passed. 
+Validation is done beforehand, and only addresses that passed validation will be unsubscribed. 
+
+The following paramaters are required to be passed:
+
+B<addresses> - same as C<validate_subscription>, except only the, C<email> paramater is needed, like this: 
+
+[
+   {
+      "email" : "test@example.com",
+   },
+   {
+      "email" : "test2@example.com",
+   }
+   {
+      "email" : "test3@example.com",
+   }
+]
+
+
+B<nonce> - same as C<validate_subscription>
+
+Returned will be a JSON doc, 
+
+    {
+       "status" : 1,
+       "results" : {
+          "skipped_addresses" : n,
+          "unsubscribed_addresses" : nn
+       }
+    }
+
+B<status> again will be set to, C<1> if the request itself was successful (C<0>, otherwise). B<results> will hold two paramaters:  
+
+B<unsubscribed_addresses> will return the number of addresses removed.
+
+B<skipped_addresses> will return the number of addresses that were not subscribed. 
+
+This service does not tell you I<why> an address was not unsubscribed.
+
 =head4 mass_email
 
 I<This service is a proof of concept, and only provides a very simple mass mailing service>
@@ -463,6 +530,8 @@ B<subject> - The subject of your message
 B<format> - The format of your message; either text or HTML
 
 B<message> - Your message. 
+
+B<test> - can be set to either C<1> or, C<0>. If set to C<1>, the message you send out will only be set to the List Owner, rather than the entire mailing list.  
 
 Returned will be a JSON doc: 
 
