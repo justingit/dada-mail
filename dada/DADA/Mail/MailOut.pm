@@ -314,8 +314,8 @@ sub batch_params {
             else { 
                 ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $man->get_stats;
             #                  0          10_000             5
-                use Data::Dumper; 
-                warn Dumper([( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate )]); 
+                #use Data::Dumper; 
+                #warn Dumper([( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate )]); 
             
                  $man->_save_man_stats($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate);
             }    
@@ -356,6 +356,13 @@ sub batch_params {
 			{
 				# dada automatically manages batch settings
 				
+				# Dada fudges teh $MaxSendRate of Mandrill, as their limits aren't daily, 
+				# They're hourly. 
+				# It would probably be better if we use hours, rat,her than days, too 
+				# So for Amaz SES, just take, 
+				# quota_Max24HourSend and divide it by 24, then do hour calculations, 
+				# since we ALSO show batch settings per hour 
+				
 				if ( $quota_Max24HourSend < 86_400 ) {
 					$batch_size = 1;
 					$batch_size = $batch_size * $MaxSendRate;    # 5
@@ -366,6 +373,7 @@ sub batch_params {
 				}
 				else {
 					$batch_size = $MaxSendRate;                        # 5
+					
 					$batch_wait =
 					  $quota_Max24HourSend / 86_400;    # 100_000 / 86_400 = 1.1574...
 					$batch_wait = $batch_wait + ( $batch_wait * .10 );    # 38.8
