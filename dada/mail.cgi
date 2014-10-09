@@ -5788,6 +5788,7 @@ sub add_email {
                     { 
                         -addresses           => [@munged_add_addresses],
                         -fields_options_mode => $not_members_fields_options_mode,
+                        -type                => $type, 
                     }
             ); 
                 
