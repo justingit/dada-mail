@@ -8,7 +8,6 @@ use lib qw(
 
 use Carp qw(carp croak);
 
-my $t = 1;
 
 use DADA::Config qw(!:DEFAULT);
 use JSON;
@@ -24,7 +23,7 @@ my $calculated_digest = undef;
 
 use vars qw($AUTOLOAD);
 
-my $t = 1;    #$DADA::Config::DEBUG_TRACE->{DADA_App_WebServices};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_WebServices};
 
 my %allowed = ( test => 0, );
 
@@ -445,8 +444,8 @@ sub check_request {
 
 sub check_nonce {
     my $self = shift;
-    my ( $timestamp, $nonce ) = split( ':', $self->{cgi_obj}->param('nonce') );
-
+    my ( $timestamp, $nonce ) = split( ':', $self->{cgi_obj}->param('nonce'));
+    
     my $r = 0;
 
     # for now, we throw away $nonce, but we should probably save it for x amount of time
@@ -458,6 +457,8 @@ sub check_nonce {
     }
     warn 'check_nonce: ' . $r
       if $t;
+      
+   return $r; 
 }
 
 sub check_public_key {
@@ -473,6 +474,8 @@ sub check_public_key {
     }
     warn 'check_public_key ' . $r
       if $t;
+      
+     return $r; 
 }
 
 sub check_digest {
