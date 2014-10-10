@@ -36,13 +36,15 @@ sub init {
 
 sub request {
     my $self = shift;
-    my ( $list, $flavor, $params ) = @_;
+    my ( $list, $service, $params) = @_;
 
-    my $q     = CGI->new();
-    my $query = {};
-    my $nonce = time . ':' . $self->nonce();
-
-    if ( $flavor eq 'mass_email' ) {
+    my $q      = CGI->new();
+    my $query  = {};
+    my $nonce  = time . ':' . $self->nonce();
+    my $qs     = undef; 
+    my $digest = undef; 
+    
+    if ( $service eq 'mass_email' ) {
         if(!exists($params->{test})){ 
            $params->{test} = 0;  
         }
@@ -59,27 +61,58 @@ sub request {
         $q->param( 'subject', $query->{subject} );
         $q->param( 'test',    $query->{test} );
 
+        $qs     = $self->the_query_string($query);
+        $digest = $self->digest($qs);
+        
+    }
+    elsif($service eq 'update_settings') { 
+        $query = {
+            nonce    => $nonce,
+            settings => $self->{json_obj}->utf8->encode( $params->{settings} ),
+        };
+        $q->param( 'nonce',    $query->{nonce} );
+        $q->param( 'settings', $query->{settings} );
+        
+        $qs     = $self->the_query_string($query);
+        $digest = $self->digest($qs);        
+    }
+    elsif($service eq 'settings'){ 
+        $digest = $self->digest($nonce); 
     }
     else {
-
         $query = {
             addresses => $self->{json_obj}->utf8->encode( $params->{addresses} ),
             nonce     => $nonce,
         };
         $q->param( 'addresses', $query->{addresses} );
         $q->param( 'nonce',     $query->{nonce} );
+        
+        $qs     = $self->the_query_string($query);
+        $digest = $self->digest($qs);        
     }
 
-    my $qs     = $self->the_query_string($query);
-    my $digest = $self->digest($qs);
 
     my $ua = LWP::UserAgent->new;
     $ua->agent('Mozilla/5.0 (compatible);');
-    $ua->default_header( 'Authorization' => 'hmac ' . ' ' . $self->{public_key} . ':' . $digest );
-
-    my $server_w_path_info = $self->{server} . '/api/' . uri_escape($list) . '/' . uri_escape($flavor) . '/';
-
-    my $response = $ua->request( POST $server_w_path_info, content => $query );
+    
+    if($service eq 'settings'){ 
+        $ua->default_header( 
+            'Authorization' => 'hmac ' . ' ' . $self->{public_key} . ':' . $digest,
+            'X-DADA-NONCE'  => $nonce, 
+         );
+    }
+    else { 
+        $ua->default_header( 'Authorization' => 'hmac ' . ' ' . $self->{public_key} . ':' . $digest );
+    }
+    my $server_w_path_info = $self->{server} . '/api/' . uri_escape($list) . '/' . uri_escape($service) . '/';
+    my $response; 
+    
+    if($service eq 'settings'){ 
+        $response = $ua->request( GET $server_w_path_info)   
+    }
+    else { 
+        $response = $ua->request( POST $server_w_path_info, content => $query );
+    }
     if ( $response->is_success ) {
         return $self->{json_obj}->utf8->decode( $response->decoded_content );
     }

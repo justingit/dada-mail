@@ -43,12 +43,11 @@ Class DadaMailWebService {
         return $nonce;
 	}
 	
-	public function request($list, $flavor, $params){ 
+	public function request($list, $service, $params = false){ 
 	    
 	    $nonce = time() . ':' . $this->nonce() ;
 
-        if($flavor == 'mass_email'){ 
-            
+        if($service == 'mass_email'){ 
             if(!isset($params['test'])){ 
                 $params['test'] = 0; 
             }
@@ -59,6 +58,20 @@ Class DadaMailWebService {
                 'subject'   => $params['subject'],
                 'test'      => $params['test'],
             ); 
+            $rpd                 =  $this->the_query_string($query_params);
+    		$digest              =  $this->digest($rpd); 
+        }
+        elseif($service == 'update_settings') { 
+            $encoded_settings = json_encode($params['settings']);
+    		$query_params = array(
+    			'nonce'    => $nonce, 
+    			'settings' => $encoded_settings,
+    		);
+    		$rpd                 =  $this->the_query_string($query_params);
+    		$digest              =  $this->digest($rpd); 
+        }
+        elseif($service == 'settings') { 
+            $digest = $this->digest($nonce); 
         }
         else {
     		$encoded_addresses = json_encode($params['addresses']);
@@ -66,25 +79,38 @@ Class DadaMailWebService {
     			'addresses' => $encoded_addresses,
     			'nonce'     => $nonce, 
     		);
+    		$rpd                 =  $this->the_query_string($query_params);
+    		$digest              =  $this->digest($rpd); 
     	}
         
-		$rpd                 =  $this->the_query_string($query_params);
-		$digest              =  $this->digest($rpd); 
-		$request_method      = 'POST';
-		$request_w_path_info = $this->server . '/api/' . urlencode($list) . '/' . urlencode($flavor) . '/'; 
-		
-		// make the request using curl
+        // make the request using curl
 		$ch = curl_init();
 		
-		curl_setopt($ch, CURLOPT_HTTPHEADER, 
-		array(
-            'Authorization: hmac ' .  ' ' . $this->public_key . ':' . $digest,
-            )
-        );
+		
+        if($service == 'settings') { 
+            $request_method      = 'GET';
+            curl_setopt($ch, CURLOPT_HTTPHEADER,
+                array(
+                    'Authorization: hmac ' .  ' ' . $this->public_key . ':' . $digest,
+                    'X-DADA-NONCE: ' . $nonce
+                )
+            );
+        }
+        else { 
+            $request_method      = 'POST';
+            curl_setopt($ch, CURLOPT_HTTPHEADER,
+                array(
+                    'Authorization: hmac ' .  ' ' . $this->public_key . ':' . $digest,
+                )
+            );
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($query_params, null, "&", PHP_QUERY_RFC3986));
+        }
+        
+		$request_w_path_info = $this->server . '/api/' . urlencode($list) . '/' . urlencode($service) . '/'; 
+		
 		curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10); 
 		curl_setopt($ch, CURLOPT_URL, $request_w_path_info);
-		curl_setopt($ch, CURLOPT_POST, 1);
-		curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($query_params, null, "&", PHP_QUERY_RFC3986));
 		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
 		
 		$response = curl_exec($ch);

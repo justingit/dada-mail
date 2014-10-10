@@ -7,8 +7,8 @@ use lib qw(
 );
 
 use Carp qw(carp croak);
-#    $Carp::Verbose = 1;
-my $t = 0; 
+
+my $t = 1;
 
 use DADA::Config qw(!:DEFAULT);
 use JSON;
@@ -17,14 +17,14 @@ use DADA::App::Guts;
 use DADA::MailingList::Subscribers;
 use DADA::MailingList::Settings;
 use Digest::SHA qw(hmac_sha256_base64);
+use Try::Tiny; 
 
 use CGI (qw/:oldstyle_urls/);
 my $calculated_digest = undef;
 
-
 use vars qw($AUTOLOAD);
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_WebServices};
+my $t = 1;    #$DADA::Config::DEBUG_TRACE->{DADA_App_WebServices};
 
 my %allowed = ( test => 0, );
 
@@ -80,10 +80,10 @@ sub request {
         $param =~ s/^\-//;
 
         if ( !exists( $args->{$_} ) ) {
-
-            #croak "You MUST pass the, '" . $_ . "' paramater!";
             $status = 0;
             $errors->{ 'missing_' . $param };
+            warn 'passed param: ' . $_ . ' => ' . $param
+              if $t;
         }
         else {
             $self->{$param} = $args->{$_};
@@ -103,22 +103,23 @@ sub request {
     my $r = {};
 
     if ( $status == 1 ) {
-
         if ( $self->{service} eq 'validate_subscription' ) {
-            $r->{results} = $self->validate_subscription();
-            $r->{status}  = 1;
+            $r = $self->validate_subscription();
         }
         elsif ( $self->{service} eq 'subscription' ) {
-            $r->{results} = $self->subscription();
-            $r->{status}  = 1;
+            $r = $self->subscription();
         }
         elsif ( $self->{service} eq 'unsubscription' ) {
-            $r->{results} = $self->unsubscription();
-            $r->{status}  = 1;
+            $r = $self->unsubscription();
         }
         elsif ( $self->{service} eq 'mass_email' ) {
-            $r->{results} = $self->mass_email();
-            $r->{status}  = 1;
+            $r = $self->mass_email();
+        }
+        elsif ( $self->{service} eq 'settings' ) {
+            $r = $self->settings();
+        }
+        elsif( $self->{service} eq 'update_settings') { 
+            $r = $self->update_settings();            
         }
         else {
             $r = {
@@ -131,20 +132,21 @@ sub request {
         $r = {
             status => 0,
             errors => $errors,
-
-            #og_path_info  => $ENV{PATH_INFO},
-            #og_service        => $self->{service},
-            #og_query          => $self->{cgi_obj}->query_string(),
-            #og_digest         => $self->{digest},
-            #calculated_digest => $calculated_digest,
-            #public_api_key    => $self->{ls}->param('public_api_key'),
-            #private_api_key    => $self->{ls}->param('private_api_key'),
         };
-        
-        #if ( exists( $self->{ls} ) ) {
-        #    $r->{public_api_key}  = $self->{ls}->param('public_api_key');
-        #    $r->{private_api_key} = $self->{ls}->param('private_api_key');
-        #}
+    }
+
+    if ($t) {
+        $r->{og_path_info}      = $ENV{PATH_INFO};
+        $r->{og_service}        = $self->{service};
+        $r->{og_query}          = $self->{cgi_obj}->query_string();
+        $r->{og_digest}         = $self->{digest};
+        $r->{calculated_digest} = $calculated_digest;
+        $r->{public_api_key}    = $self->{ls}->param('public_api_key');
+        $r->{private_api_key}   = $self->{ls}->param('private_api_key');
+        if ( exists( $self->{ls} ) ) {
+            $r->{public_api_key}  = $self->{ls}->param('public_api_key');
+            $r->{private_api_key} = $self->{ls}->param('private_api_key');
+        }
     }
 
     my $d = $self->{q}->header(
@@ -173,12 +175,16 @@ sub validate_subscription {
             -type   => 'list',
         }
     );
-    
-    for(@$f_addresses){ 
-        # We don't need these: 
-        delete($_->{csv_str}); 
+
+    for (@$f_addresses) {
+
+        # We don't need these:
+        delete( $_->{csv_str} );
     }
-    return $f_addresses;
+    return {
+        status  => 1, 
+        results => $f_addresses
+    }
 }
 
 sub subscription {
@@ -188,9 +194,8 @@ sub subscription {
     my $lh                  = DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
     my $json                = JSON->new;
     my $decoded_addresses   = $json->decode($addresses);
-    my $new_email_count     = 0; 
-    my $skipped_email_count = 0; 
-         
+    my $new_email_count     = 0;
+    my $skipped_email_count = 0;
 
     my $not_members_fields_options_mode = 'preserve_if_defined';
 
@@ -200,28 +205,30 @@ sub subscription {
             -type   => 'list',
         }
     );
-    
+
     my $subscribe_these = [];
     my $filtered_out    = 0;
-#    my $overridden_tests = { 
-#        black_listed    => 0, 
-#        not_whitelisted => 0, 
-#        profile_fields  => 0,    
-#    }
+
+    #    my $overridden_tests = {
+    #        black_listed    => 0,
+    #        not_whitelisted => 0,
+    #        profile_fields  => 0,
+    #    }
 
     for (@$f_addresses) {
         if ( $_->{status} == 1 ) {
             push( @$subscribe_these, $_ );
-#        }
-#        elsif(1 == 0){ # are there tests we're skippin'? 
-#            push( @$subscribe_these, $_ );          
+
+            #        }
+            #        elsif(1 == 0){ # are there tests we're skippin'?
+            #            push( @$subscribe_these, $_ );
         }
         else {
             $filtered_out++;
         }
     }
-    
-    if(scalar(@$subscribe_these) > 0){     
+
+    if ( scalar(@$subscribe_these) > 0 ) {
         ( $new_email_count, $skipped_email_count ) = $lh->add_subscribers(
             {
                 -addresses => $subscribe_these,
@@ -229,66 +236,69 @@ sub subscription {
             }
         );
     }
-    
+
     #-fields_options_mode => undef,
     $skipped_email_count = $skipped_email_count + $filtered_out;
-    
 
     return {
-        subscribed_addresses     => $new_email_count,
-        skipped_addresses        => $skipped_email_count,
-      };
+        status  => 1,
+        results =>  {
+            subscribed_addresses => $new_email_count,
+            skipped_addresses    => $skipped_email_count,
+        }
+    };
 
 }
 
-sub unsubscription { 
-    
-        my $self                = shift;
-        my $addresses           = $self->{cgi_obj}->param('addresses');
-        my $lh                  = DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
-        my $json                = JSON->new;
-        my $decoded_addresses   = $json->decode($addresses);
-        my $removed_email_count    = 0; 
-        my $skipped_email_count    = 0; 
-        my $blacklisted_count      = 0; 
+sub unsubscription {
 
-        my $f_addresses = $lh->filter_subscribers_w_meta(
+    my $self                = shift;
+    my $addresses           = $self->{cgi_obj}->param('addresses');
+    my $lh                  = DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
+    my $json                = JSON->new;
+    my $decoded_addresses   = $json->decode($addresses);
+    my $removed_email_count = 0;
+    my $skipped_email_count = 0;
+    my $blacklisted_count   = 0;
+
+    my $f_addresses = $lh->filter_subscribers_w_meta(
+        {
+            -emails => $decoded_addresses,
+            -type   => 'list',
+        }
+    );
+
+    my $unsubscribe_these = [];
+    my $filtered_out      = 0;
+
+    for (@$f_addresses) {
+        if ( $_->{status} == 0 && $_->{errors}->{subscribed} == 1 ) {
+            push( @$unsubscribe_these, $_->{email} );
+        }
+        else {
+            $filtered_out++;
+        }
+    }
+
+    if ( scalar(@$unsubscribe_these) > 0 ) {
+        ( $removed_email_count, $blacklisted_count ) = $lh->admin_remove_subscribers(
             {
-                -emails => $decoded_addresses,
-                -type   => 'list',
+                -addresses => $unsubscribe_these,
+                -type      => 'list',
             }
         );
+    }
 
-        my $unsubscribe_these = [];
-        my $filtered_out      = 0;
+    $skipped_email_count = $skipped_email_count + $filtered_out;
 
-        for (@$f_addresses) {
-            if ( $_->{status} == 0 && $_->{errors}->{subscribed} == 1) {
-                push( @$unsubscribe_these, $_->{email} );
-            }
-            else {
-                $filtered_out++;
-            }
+    return {
+        status  => 1,
+        results =>  {
+            unsubscribed_addresses => $removed_email_count,
+            skipped_addresses      => $skipped_email_count,
         }
-        
-        if(scalar(@$unsubscribe_these) > 0){     
-            ( $removed_email_count, $blacklisted_count ) = $lh->admin_remove_subscribers(
-                {
-                    -addresses => $unsubscribe_these,
-                    -type      => 'list',
-                }
-            );
-        }
-
-        $skipped_email_count = $skipped_email_count + $filtered_out;
-
-        return {
-            unsubscribed_addresses   => $removed_email_count,
-            skipped_addresses        => $skipped_email_count,
-          };
-    
+    };
 }
-
 
 sub mass_email {
 
@@ -297,7 +307,6 @@ sub mass_email {
     my $format  = $self->{cgi_obj}->param('format');
     my $message = $self->{cgi_obj}->param('message');
     my $test    = $self->{cgi_obj}->param('test') || 0;
-
 
     require DADA::App::FormatMessages;
     my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
@@ -343,7 +352,7 @@ sub mass_email {
     my $message_id = $mh->mass_send(
         {
             -msg       => {%mailing},
-            -mass_test => $test, 
+            -mass_test => $test,
         }
     );
 
@@ -355,11 +364,52 @@ sub mass_email {
         }
     }
 
-    
     return {
-        message_id => $self->_massaged_key($message_id),
-    }
+        status  => 1,
+        results =>  {
+            message_id => $self->_massaged_key($message_id), 
+        }
+    };
+}
 
+sub settings {
+    my $self = shift; 
+    warn 'settings called'
+      if $t;
+     
+      return {
+          status  => 1,
+          results =>  {
+              settings => $self->{ls}->get()
+        }
+    };
+}
+
+sub update_settings { 
+
+    my $self = shift; 
+
+
+    my $json = JSON->new->allow_nonref;
+    my $r = {}; 
+        
+    my $settings = $self->{cgi_obj}->param('settings');
+       $settings = $json->decode($settings);
+        
+    try {
+        $self->{ls}->save($settings);  
+        $r = {
+            status  => 1,
+            results => {saved => 1},
+        };
+    } catch {
+      $r = {
+          status => 0,
+          errors => $_        
+        };
+    };
+    
+    return $r; 
 }
 
 sub check_request {
@@ -386,6 +436,10 @@ sub check_request {
         $errors->{invalid_list} = 1;
     }
 
+    if ($t) {
+        require Data::Dumper;
+        warn 'check_request: ' . Data::Dumper::Dumper( { status => $status, errors => $errors } );
+    }
     return ( $status, $errors );
 }
 
@@ -393,36 +447,46 @@ sub check_nonce {
     my $self = shift;
     my ( $timestamp, $nonce ) = split( ':', $self->{cgi_obj}->param('nonce') );
 
+    my $r = 0;
+
     # for now, we throw away $nonce, but we should probably save it for x amount of time
     if ( ( int($timestamp) + ( 60 * 5 ) ) < int(time) ) {
-        return 0;
+        $r = 0;
     }
     else {
-        return 1;
+        $r = 1;
     }
+    warn 'check_nonce: ' . $r
+      if $t;
 }
 
 sub check_public_key {
 
     my $self = shift;
+    my $r    = 0;
+
     if ( $self->{ls}->param('public_api_key') ne $self->{ls}->param('public_api_key') ) {
-        return 0;
+        $r = 0;
     }
     else {
-        return 1;
+        $r = 1;
     }
+    warn 'check_public_key ' . $r
+      if $t;
 }
 
 sub check_digest {
 
-    my $self      = shift;
-    my $addresses = $self->{cgi_obj}->param('addresses');
+    my $self = shift;
+    my $r    = 0;
 
     my $qq = CGI->new();
-    $qq->delete_all();
+       $qq->delete_all();
+
+    my $n_digest = undef; 
+
 
     if ( $self->{service} eq 'mass_email' ) {
-
         $qq->param( 'format',  $self->{cgi_obj}->param('format') );
         $qq->param( 'message', $self->{cgi_obj}->param('message') );
         $qq->param( 'nonce',   $self->{cgi_obj}->param('nonce') );
@@ -431,18 +495,25 @@ sub check_digest {
         if(defined($self->{cgi_obj}->param('test'))){ 
             $qq->param( 'test', $self->{cgi_obj}->param('test') );
         }
+        $n_digest = $self->digest( $qq->query_string() );
     }
-    else {
+    elsif ( $self->{service} eq 'update_settings' ) {
+        $qq->param( 'nonce',     $self->{cgi_obj}->param('nonce') );
+        $qq->param( 'settings',  $self->{cgi_obj}->param('settings') );
+        $n_digest = $self->digest( $qq->query_string() );    
+    }
+    elsif($self->{service} eq 'settings' ){ 
+        $n_digest = $self->digest($self->{cgi_obj}->param('nonce'));
+    }else {
         $qq->param( 'addresses', $self->{cgi_obj}->param('addresses') );
         $qq->param( 'nonce',     $self->{cgi_obj}->param('nonce') );
-
-    }
-    
-#    warn '$qq->query_string()' . $qq->query_string()
-#        if $t; 
+        $n_digest = $self->digest( $qq->query_string() );
         
-    my $n_digest = $self->digest( $qq->query_string() );
+    }
+    # debug'n
+    
     $calculated_digest = $n_digest;
+
     if ( $self->{digest} ne $n_digest ) {
         return 0;
     }

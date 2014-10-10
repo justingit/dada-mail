@@ -44,7 +44,7 @@ BEGIN {
 
 use CGI::Carp qw(fatalsToBrowser);
 use Carp qw(carp croak);
-$CARP::Verbose = 1; 
+#$CARP::Verbose = 1; 
 
 #---------------------------------------------------------------------#
 
@@ -433,11 +433,17 @@ if ( $ENV{PATH_INFO} ) {
         
         my ($pi_flavor, $pi_list, $pi_service, $pi_public_key, $pi_digest) = split( '/', $info );
         # HTTP_AUTHORIZATION
+        my %incoming_headers = map { $_ => $q->http($_) } $q->http();
+        use Data::Dumper; 
+        warn Dumper({%incoming_headers}); 
+        
         if(!defined($pi_public_key) && !defined($pi_digest)){ 
-            my %incoming_headers = map { $_ => $q->http($_) } $q->http();
             my $auth_h = $incoming_headers{HTTP_AUTHORIZATION};
                $auth_h =~ s/^hmac //; 
             ($pi_public_key, $pi_digest) = split(':', $auth_h); 
+        }
+        if(!defined($q->param('nonce')) && $ENV{REQUEST_METHOD} eq 'GET'){ 
+            $q->param('nonce', $incoming_headers{'HTTP_X_DADA_NONCE'}); 
         }
         
         require DADA::App::WebServices; 
