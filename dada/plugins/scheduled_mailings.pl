@@ -622,10 +622,10 @@ sub schedule_index {
 	   
 	$r .= ($q->p({-align => 'right'}, '<div class="buttonfloat">', 
 	
-		  $q->startform(-action => $Plugin_Config->{Plugin_URL}, -method => 'GET'), 
+		  $q->start_form(-action => $Plugin_Config->{Plugin_URL}, -method => 'GET'), 
 		  $q->hidden('flavor', 'edit'), 
 		  $q->submit(-class => 'processing', -value => "Add Scheduled Mailing... "), 
-		  $q->endform() , '</div>' 
+		  $q->end_form() , '</div>' 
 		  )); 
 		  
 $r .= '</fieldset>'; 
