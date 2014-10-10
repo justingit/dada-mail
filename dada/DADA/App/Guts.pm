@@ -83,6 +83,8 @@ require Exporter;
   slurp
   grab_url
   can_use_LWP_Simple
+  can_use_CAPTCHA
+  
 );
 
 
@@ -3006,6 +3008,18 @@ sub can_use_LWP_Simple {
 		$can_use_lwp_simple = 0; 	
 	};
 	return $can_use_lwp_simple;
+}
+sub can_use_AuthenCAPTCHA { 
+	my $can_use_captcha = 1; 
+    try {
+        require DADA::Security::AuthenCAPTCHA;
+        $can_use_captcha = 1;
+    }
+    catch {
+        carp "CAPTCHA Not working correctly?: $_";
+        $can_use_captcha = 0;
+    };
+	return $can_use_captcha;
 }
 
 

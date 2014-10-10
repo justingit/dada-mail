@@ -2418,14 +2418,7 @@ sub list_options {
         $can_use_mx_lookup = 1;
     }
 
-    my $can_use_captcha = 1;
-    try {
-        require DADA::Security::AuthenCAPTCHA;
-    }
-    catch {
-        carp "CAPTCHA Not working correctly?: $_";
-        $can_use_captcha = 0;
-    };
+    my $can_use_captcha = can_use_AuthenCAPTCHA();
 
     if ( !$process ) {
 
@@ -6452,14 +6445,7 @@ sub archive_options {
 
     if ( !$process ) {
 
-        my $can_use_captcha = 1;
-        try {
-            require DADA::Security::AuthenCAPTCHA;
-        }
-        catch {
-            carp "CAPTCHA Not working correctly?: $_";
-            $can_use_captcha = 0;
-        };
+        my $can_use_captcha = can_use_AuthenCAPTCHA();
 
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -8573,16 +8559,8 @@ sub resend_conf {
     my $can_use_captcha = 0;
 
     if ( $ls->param('limit_sub_confirm_use_captcha') == 1 ) {
-
-        try {
-            require DADA::Security::AuthenCAPTCHA;
-            $can_use_captcha = 1;
-        }
-        catch {
-            carp "CAPTCHA Not working correctly?: $_";
-            $can_use_captcha = 0;
-        };
-    }
+        $can_use_captcha = can_use_AuthenCAPTCHA();
+     }
     if ( $can_use_captcha == 1 ) {
         &resend_conf_captcha;
     }
@@ -9913,14 +9891,7 @@ sub send_archive {
     # CAPTCHA STUFF
 
     my $captcha_fail    = 0;
-    my $can_use_captcha = 1;
-    try {
-        require DADA::Security::AuthenCAPTCHA;
-    }
-    catch {
-        carp "CAPTCHA Not working correctly?: $_";
-        $can_use_captcha = 0;
-    };
+    my $can_use_captcha = can_use_AuthenCAPTCHA();
 
     if ( $ls->param('captcha_archive_send_form') == 1 && $can_use_captcha == 1 ) {
         require DADA::Security::AuthenCAPTCHA;
@@ -11572,15 +11543,7 @@ sub profile_login {
             my $CAPTCHA_string  = '';
             my $cap             = undef;
             if ( $DADA::Config::PROFILE_OPTIONS->{enable_captcha} == 1 ) {
-                try {
-                    require DADA::Security::AuthenCAPTCHA;
-                    $cap             = DADA::Security::AuthenCAPTCHA->new;
-                    $can_use_captcha = 1;
-                }
-                catch {
-                    carp "CAPTCHA Not working correctly?: $_";
-                };
-
+                $can_use_captcha = can_use_AuthenCAPTCHA(); 
             }
 
             if ( $can_use_captcha == 1 ) {

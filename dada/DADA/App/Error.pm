@@ -233,15 +233,7 @@ sub cgi_user_error {
         my $can_use_captcha = 0;
 
         if ( $ls->param('limit_sub_confirm_use_captcha') == 1 ) {
-
-            try {
-                require DADA::Security::AuthenCAPTCHA;
-                $can_use_captcha = 1;
-            }
-            catch {
-                carp "CAPTCHA Not working correctly?: $_";
-                $can_use_captcha = 0;
-            };
+            $can_use_captcha = can_use_AuthenCAPTCHA();
         }
 
         if ( $can_use_captcha == 1 ) {
