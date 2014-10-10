@@ -44,6 +44,7 @@ You'll want to copy this module to the client side server you want to utilize th
 
     use CGI qw(:standard);
     print header(); 
+    print '<pre>'; 
 
     use Data::Dumper; 
 
@@ -110,6 +111,28 @@ You'll want to copy this module to the client side server you want to utilize th
     );
     print Dumper($results); 
 
+    # Get the List Settings: 
+    $results  = $ws->request(
+        $list, 
+        'settings'
+    ); # No params.
+    print Dumper($results); 
+
+    my $params = {  
+        settings => {
+    			'list_name' => 'New List Name',
+    			'info'      => 'New List Description!'
+        } 
+    };
+    # Set List Settings: 
+    $results  = $ws->request(
+        $list, 
+        'update_settings', 
+        $params
+    ); 
+    print Dumper($results); 
+    
+
 =head4 new
 
 Initialize a new DadaMailWebService object with the C<new> method, which takes three arguments: 
@@ -135,6 +158,10 @@ The C<request> method will make the request for the service you want, see the Sy
 =item * subscription
 
 =item * mass_email
+
+=item * settings
+
+=item * update_settings
 
 =back
 
@@ -192,7 +219,6 @@ You'll want to copy this file to the client side server you want to utilize the 
         );
         print_r($results) . "\n\n\n"; 
 
-
         // UNSubscribe Addresses: 
         $results  = $ws->request(
             $list, 
@@ -216,7 +242,31 @@ You'll want to copy this file to the client side server you want to utilize the 
         );
         print_r($results) . "\n\n\n"; 
 
+
+        // Get the List Settings: 
+        $results  = $ws->request(
+            $list, 
+            'settings'
+        ); # No params.
+        print_r($results) . "\n\n\n"; 
+
+        $params = [
+            'settings' => array(
+        			'list_name' => 'New List Name',
+        			'info'      => 'New List Description!'
+            ) 
+        ];
+
+        // Set List Settings: 
+        $results  = $ws->request(
+            $list, 
+            'update_settings', 
+            $params
+        ); 
+        print_r($results) . "\n\n\n"; 
+
     ?>
+
     
 =head4 new
 
@@ -243,6 +293,10 @@ The C<request> method will make the request for the service you want, see the Sy
 =item * subscription
 
 =item * mass_email
+
+=item * settings
+
+=item * update_settings
 
 =back
 
@@ -307,13 +361,17 @@ The C<public key> and C<digest> are separated by a colon. This is the setup we d
 
 =head3 Payload
 
-Depending on the web service called, the payload is just HTTP POST variables - all web services for Dada Mail only support using the POST method. The paramaters in the Payload must be in alphabetical order, so that the digest created on both the client and server match. 
+Depending on the web service called, the payload is just HTTP POST variables. 
+
+All web services, except, C<settings> for Dada Mail only support using the POST method. The paramaters in the Payload must be in alphabetical order, so that the digest created on both the client and server match. 
+
+C<settings> has no paramaters to pass, so is send using B<GET>. The C<nonce> (explained below), still needes to be passed, but is don so, in a http header named, C<X-DADA-NONCE> header. 
 
 =head3 Services
 
 =head4 validate_subscription
 
-C<validate_subscription> takes a list of addresses (and associated metadata) and validates the subscription, but does not subscribe any of the addresses. 
+C<validate_subscription> takes a list of addresses (and associated metadata) and validates the subscription, but B<does not subscribe any of the addresses>. 
 
 The following paramaters are required to be passed:
 
@@ -444,8 +502,6 @@ Errors returned back are the same for the following method:
 
 L<http://dadamailproject.com/d/MailingList_Subscribers.pm.html#subscription_check>
 
-
-
 =head4 subscription
 
 C<subscription> takes a list of addresses (and associated metadata) and subscribes the addresses passed. Validation is done beforehand, and only addresses that passed validation will be subscribed. 
@@ -482,20 +538,19 @@ Validation is done beforehand, and only addresses that passed validation will be
 
 The following paramaters are required to be passed:
 
-B<addresses> - same as C<validate_subscription>, except only the, C<email> paramater is needed, like this: 
+B<addresses> - same as C<validate_subscription>, except only the, C<email> paramater is required, like this: 
 
-[
-   {
-      "email" : "test@example.com",
-   },
-   {
-      "email" : "test2@example.com",
-   }
-   {
-      "email" : "test3@example.com",
-   }
-]
-
+    [
+       {
+          "email" : "test@example.com",
+       },
+       {
+          "email" : "test2@example.com",
+       }
+       {
+          "email" : "test3@example.com",
+       }
+    ]
 
 B<nonce> - same as C<validate_subscription>
 
@@ -516,6 +571,50 @@ B<unsubscribed_addresses> will return the number of addresses removed.
 B<skipped_addresses> will return the number of addresses that were not subscribed. 
 
 This service does not tell you I<why> an address was not unsubscribed.
+
+=head4 settings
+
+C<settings> returns the mailing list settings (list, list_name, info, etc). No paramaters need to be passed, and unlike the other services presented here, you'll need to make the request via C<GET> and put the C<nonce> in the, C<X-DADA-NONCE> header. 
+
+Returned will be a JSON doc, 
+
+    {
+       "status" : 1,
+       "results" : {
+           "settings" : {
+              "list" :'listshortname',
+              "list_name" : 'My list's name'
+              etc, etc,  
+           }
+        }
+    }
+
+B<status> again will be set to, C<1> if the request itself was successful (C<0>, otherwise).
+
+B<settings> - a key/value list of all settings for this mailing list.  
+
+=head4 update_settings
+
+B<update_settings> allows you to update your mailing list settings. The following paramaters are required to be passed:
+
+B<settings> - a key/value hash of the settings you would like to change.  This data is passed as a JSON encoded string: 
+
+    {
+       "list_name" : "my list name ",
+       "list" : "list"
+    }
+
+Returned will be a JSON doc, 
+
+    {
+       "status" : 1,
+       "results" : {
+            "saved" : 1
+           }
+        }
+    }
+
+B<nonce> - same as C<validate_subscription>
 
 =head4 mass_email
 
