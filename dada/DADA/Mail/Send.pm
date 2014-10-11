@@ -562,7 +562,7 @@ sub send {
 
                     # This is what we're going to say we are...
                     $fields{To} = $formatted_disc_email;
-
+                    
 					if($local_li->{set_to_header_to_list_address} == 1){ 
 						# Nothin' needed. 
 					}

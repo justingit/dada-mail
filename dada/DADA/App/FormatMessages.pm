@@ -925,6 +925,11 @@ sub _format_headers {
 		
     }
 	
+	#warn '$self->mass_mailing ' . $self->mass_mailing; 
+	#warn q|$self->{ls}->param('group_list')| . $self->{ls}->param('group_list'); 
+	#warn q|$self->{ls}->param('discussion_pop_email')| . $self->{ls}->param('discussion_pop_email'); 
+	#warn q|$self->{ls}->param('group_list_pp_mode')| . $self->{ls}->param('group_list_pp_mode'); 
+	
 	if (   $self->mass_mailing == 1
         && $self->{ls}->param('group_list') == 1
         && defined( $self->{ls}->param('discussion_pop_email') ) 
@@ -933,6 +938,7 @@ sub _format_headers {
         if ( $entity->head->count('From') ) {
 			my    $og_from = $entity->head->get('From', 0);
 			chomp($og_from);
+			#warn '$og_from ' . $og_from; 
 			
 			$entity->head->delete('From');
 	        $entity->head->add( 'From', safely_encode($self->_pp($og_from)) );
@@ -941,8 +947,6 @@ sub _format_headers {
 		        if ( $entity->head->count('Reply-To') ) {
 					$entity->head->delete('Reply-To');
 				}
-			
-				# How else are you to reply to the original sender?
 				$entity->head->add( 'Reply-To', $og_from );
 			}
 		}
@@ -1027,13 +1031,13 @@ sub _pp {
     my $a = ( Email::Address->parse($from) )[0]->address;
     my ($e_name, $e_domain) = split('@', $a, 2); 
 
-    if ( $a eq $self->{ls}->param('list_owner_email') ) {
-        # We don't have to "On Behalf Of" ourselves.
-        return $from;
-    }
-    
-    else {
-        $a =~ s/\@/ _at_ /;
+    #if ( $a eq $self->{ls}->param('list_owner_email') ) {
+    #    # We don't have to "On Behalf Of" ourselves.
+    #    return $from;
+    #}
+    #else {
+        # $a =~ s/\@/ _at_ /;
+        
         my $p          = ( Email::Address->parse($from) )[0]->phrase;
            $p          = $self->_decode_header($p); 
         my $d          = $self->{ls}->param('group_list_pp_mode_from_phrase');
@@ -1055,7 +1059,7 @@ sub _pp {
         );
 
         my $new_from = Email::Address->new();
-        $new_from->address( $self->{ls}->param('list_owner_email') );
+        $new_from->address( $self->{ls}->param('discussion_pop_email') );
         $new_from->phrase(
             MIME::EncWords::encode_mimewords(
                 $new_phrase,
@@ -1063,9 +1067,9 @@ sub _pp {
                 Charset  => $self->{ls}->param('charset_value'),
             )
         );
-        $new_from->comment( '(' . $a . ')' );
-        return $new_from->format;
-    }
+       #  $new_from->comment( '(' . $a . ')' );
+          return $new_from->format;
+    # }
 }
 
 
