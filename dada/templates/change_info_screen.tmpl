@@ -86,6 +86,17 @@
 	
 <!--/tmpl_if-->
 
+
+<!-- tmpl_if expr="(using_ses eq '1') && (list_owner_ses_verified ne '1')" --> 
+    <div class="badweatherbox">
+	    <p>
+	        Your current <strong>List Owner</strong>, <!-- tmpl_var list_owner_email escape="HTML" --> is not verified through <strong>Amazon SES</strong>.
+	    </p>
+	</div>
+<!-- /tmpl_if --> 
+
+
+
 <p>
  <label for="list_owner_email">
   List Owner Address
@@ -108,6 +119,16 @@
  </em>
 This address is where Bounced Messages go.
 </p>
+
+<!-- tmpl_if expr="(using_ses eq '1') && (list_admin_ses_verified ne '1')" --> 
+    <div class="badweatherbox">
+	    <p>
+	        Your current <strong>List Administrator</strong>, <!-- tmpl_var admin_email escape="HTML" --> is not verified through <strong>Amazon SES</strong>.
+	    </p>
+	</div>
+<!-- /tmpl_if --> 
+
+
 <p>
  <input type="text" name="admin_email" id="admin_email" value="<!-- tmpl_var admin_email escape="HTML" -->" class="full" />
 </p>

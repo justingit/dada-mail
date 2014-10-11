@@ -136,6 +136,13 @@ $(document).ready(function() {
 			}
 		});
 		
+		$("body").on("click", ".amazon_verify_email_in_warning", function(event) {
+			event.preventDefault();
+			amazon_verify_email($(this).attr("data-email"));
+		});
+		
+		
+		
 		$("body").on("submit", "#mass_mailing", function(event) {
 			event.preventDefault();
 		});
@@ -523,6 +530,12 @@ $(document).ready(function() {
 		if ($("#has_needed_cpan_modules").length) {
 			amazon_ses_get_stats();
 		}
+		
+		$("body").on("click", ".amazon_verify_email_in_warning", function(event) {
+			event.preventDefault();
+			amazon_verify_email($(this).attr("data-email"));
+		});
+	
 
 		sending_prefs_setup();
 		toggle_SASL_options();
@@ -555,7 +568,7 @@ $(document).ready(function() {
 
 		$("body").on("click", ".amazon_verify_email", function(event) {
 			event.preventDefault();
-			amazon_verify_email();
+			amazon_verify_email($("#amazon_ses_verify_email").val());
 		});
 	}
 	
@@ -1991,7 +2004,7 @@ function test_sending_preferences() {
 
 
 
-function amazon_verify_email() {
+function amazon_verify_email(email) {
 	
 	$.colorbox({
 		top: 0,
@@ -2003,7 +2016,7 @@ function amazon_verify_email() {
 		href: $("#s_program_url").val(),
 		data: {
 			f: 'amazon_ses_verify_email',
-			amazon_ses_verify_email: $("#amazon_ses_verify_email").val()
+			amazon_ses_verify_email: email
 		}
 	});
 	
@@ -3377,6 +3390,7 @@ function opencore5FileManager(url, width, height) {
 	oWindow = window.open(url + '?custom_function=SetAttachmentUrl', "BrowseWindow", sOptions);
 }
 
+/* Seems like with the new ver of core5 FileManager, this needs to be called, SetUrl. Aww, well? 
 function SetAttachmentUrl(url, width, height, alt) {
 	var core5_filemanager_upload_url = escapeRegExp($("#core5_filemanager_upload_url").val() + '/');
 	core5_filemanager_upload_url + '/';
@@ -3389,14 +3403,27 @@ function SetAttachmentUrl(url, width, height, alt) {
 	$("#" + $(field).attr("data-attachment")).val(new_val);
 	$("#" + $(field).attr("data-attachment") + '_remove_button').show();
 	oWindow = null;
-} /* core5 FileManager */
-
-
-/*
-function SetUrl() { 
-	alert('here? SetUrl');
 }
 */
+
+
+function SetUrl(url, width, height, alt) {
+	var core5_filemanager_upload_url = escapeRegExp($("#core5_filemanager_upload_url").val() + '/');
+	core5_filemanager_upload_url + '/';
+	var re = new RegExp(core5_filemanager_upload_url, 'g');
+	var new_val = url.replace(re, '');
+	// console.log('new_val: ' + new_val);
+	var field = urlobj;
+
+	$(field).html('<img src="' + $("#SUPPORT_FILES_URL").val() + '/static/images/attachment_icon.gif" />' + new_val);
+	$("#" + $(field).attr("data-attachment")).val(new_val);
+	$("#" + $(field).attr("data-attachment") + '_remove_button').show();
+	oWindow = null;
+}
+
+
+
+
 Date.prototype.format = function(format) //author: meizz
 {
   var o = {

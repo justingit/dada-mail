@@ -459,6 +459,9 @@
 
 			<!-- tmpl_var amazon_ses_requirements_widget -->
 			<!-- tmpl_if expr="(list_settings.sending_method eq 'amazon_ses')" -->
+			    <!-- tmpl_include ses_email_verification_widget.tmpl -->
+
+
 				<div class="clearskiesbox">
 					<div id="amazon_ses_get_stats"></div> 
 				</div> 
@@ -471,6 +474,10 @@
 			<p>
 			<input type="text" name="amazon_ses_verify_email" id="amazon_ses_verify_email" value="<!-- tmpl_var list_settings.list_owner_email -->" /> 
 			<input type="button" class="amazon_verify_email" value="Verify Address for Sending" /> 
+			</p>
+			
+			<p class="alert">Both the List Owner and List Administration email addresses will need to be verified, before you can
+			send messages through Amazon SES. 
 			</p> 
 		</fieldset> 
 

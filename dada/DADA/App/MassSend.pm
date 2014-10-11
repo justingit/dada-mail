@@ -118,6 +118,17 @@ sub send_email {
         );
     }
 
+    my $ses_params = {}; 
+    if ($ls->param('sending_method') eq 'amazon_ses'
+        || (   $ls->param('sending_method') eq 'smtp' && $ls->param('smtp_server') =~ m/amazonaws\.com/ )
+        ) { 
+            $ses_params->{using_ses} = 1;    
+            require   DADA::App::AmazonSES;
+            my $ses = DADA::App::AmazonSES->new;
+            $ses_params->{list_owner_ses_verified} = $ses->sender_verified($ls->param('list_owner_email'));  
+            $ses_params->{list_admin_ses_verified} = $ses->sender_verified($ls->param('admin_email'));  
+    }
+
     if ( !$process ) {
         my ( $num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued ) =
           $self->mass_mailout_info($list);
@@ -214,6 +225,7 @@ sub send_email {
                     html_message_body_content            => $ls->html_message_body_content,
                     html_message_body_content_js_escaped => js_enc( $ls->html_message_body_content ),
                     %wysiwyg_vars,
+                    %$ses_params, 
                 },
                 -list_settings_vars       => $li,
                 -list_settings_vars_param => { -dot_it => 1, },
@@ -607,6 +619,19 @@ sub send_url_email {
             }
         );
     }
+    
+    my $ses_params = {}; 
+    if ($ls->param('sending_method') eq 'amazon_ses'
+        || (   $ls->param('sending_method') eq 'smtp' && $ls->param('smtp_server') =~ m/amazonaws\.com/ )
+        ) { 
+            $ses_params->{using_ses} = 1;    
+            require   DADA::App::AmazonSES;
+            my $ses = DADA::App::AmazonSES->new;
+            $ses_params->{list_owner_ses_verified} = $ses->sender_verified($ls->param('list_owner_email'));  
+            $ses_params->{list_admin_ses_verified} = $ses->sender_verified($ls->param('admin_email'));  
+    }
+    
+    
 
     if ( !$process ) {
 
@@ -702,6 +727,7 @@ sub send_url_email {
                     html_message_body_content            => $ls->html_message_body_content,
                     html_message_body_content_js_escaped => js_enc( $ls->html_message_body_content ),
                     %wysiwyg_vars,
+                    %$ses_params, 
 
                 },
                 -list_settings_vars       => $ls->params,
