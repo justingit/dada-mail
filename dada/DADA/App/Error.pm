@@ -29,7 +29,8 @@ my %error;
 
 use Try::Tiny;
 use Carp qw(carp croak);
-#$Carp::Verbose = 1; 
+
+#$Carp::Verbose = 1;
 
 require CGI;
 my $q = CGI->new;
@@ -38,21 +39,15 @@ $q = decode_cgi_obj($q);
 
 my $Referer = uriescape( $q->referer );
 
-if (
-    ( $DADA::Config::PROGRAM_URL eq "" )
-    || ( $DADA::Config::PROGRAM_URL eq
-        'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi' )
-  )
+if (   ( $DADA::Config::PROGRAM_URL eq "" )
+    || ( $DADA::Config::PROGRAM_URL eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi' ) )
 {
     $DADA::Config::PROGRAM_URL = $ENV{SCRIPT_URI} || $q->url();
 
 }
 
-if (
-    ( $DADA::Config::S_PROGRAM_URL eq "" )
-    || ( $DADA::Config::S_PROGRAM_URL eq
-        'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi' )
-  )
+if (   ( $DADA::Config::S_PROGRAM_URL eq "" )
+    || ( $DADA::Config::S_PROGRAM_URL eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi' ) )
 {
     $DADA::Config::S_PROGRAM_URL = $ENV{SCRIPT_URI} || $q->url();
 }
@@ -93,35 +88,35 @@ sub cgi_user_error {
         $args->{-vars}->{captcha_auth} = 1;
     }
 
+    #    if(!exists($args->{-error})) {
+    #        carp "no error was passed!";
+    # #       $args->{-error} = 'undefined';
+    #    }
+    #
+    #    if(!defined($args->{-error})){
+    #            carp "no error was passed!";
+    #        }
+    #
+    my $profile_fields_report = [];
 
-#    if(!exists($args->{-error})) { 
-#        carp "no error was passed!"; 
-# #       $args->{-error} = 'undefined'; 
-#    }
-# 
-#    if(!defined($args->{-error})){ 
-#            carp "no error was passed!"; 
-#        }
-#
-    my $profile_fields_report = []; 
-    
-    # Something Something, add Name/Label of Field... 
-    if(exists($args->{-invalid_profile_fields})){ 
-        
-        require DADA::ProfileFieldsManager; 
+    # Something Something, add Name/Label of Field...
+    if ( exists( $args->{-invalid_profile_fields} ) ) {
+
+        require DADA::ProfileFieldsManager;
         my $attrs = DADA::ProfileFieldsManager->new->get_all_field_attributes;
-        foreach my $field_error(keys %{$args->{-invalid_profile_fields}}){ 
-            push(@$profile_fields_report, { 
+        foreach my $field_error ( keys %{ $args->{-invalid_profile_fields} } ) {
+            push(
+                @$profile_fields_report,
+                {
                     field => $field_error,
                     label => $attrs->{$field_error}->{label},
-                    error => 'required', # punking out on this, for now
-            });
+                    error => 'required',                        # punking out on this, for now
+                }
+            );
         }
     }
-    if ( $args->{-error} !~ /unreadable_db_files|sql_connect_error|bad_setup/ )
-    {
-        $list_exists =
-          check_if_list_exists( -List => $args->{-list}, -Dont_Die => 1 ) || 0;
+    if ( $args->{-error} !~ /unreadable_db_files|sql_connect_error|bad_setup/ ) {
+        $list_exists = check_if_list_exists( -List => $args->{-list}, -Dont_Die => 1 ) || 0;
     }
 
     if ( $list_exists > 0 ) {
@@ -139,14 +134,12 @@ sub cgi_user_error {
         -List  => $args->{-list},
     );
 
-    if ( $args->{-error} !~ /unreadable_db_files|sql_connect_error|bad_setup/ )
-    {
+    if ( $args->{-error} !~ /unreadable_db_files|sql_connect_error|bad_setup/ ) {
         if ( $DADA::Config::LOGIN_WIDGET eq 'popup_menu' ) {
             $list_login_form = DADA::Template::Widgets::list_popup_login_form();
         }
         elsif ( $DADA::Config::LOGIN_WIDGET eq 'text_box' ) {
-            $list_login_form = DADA::Template::Widgets::screen(
-                { -screen => 'text_box_login_form.tmpl', -expr => 1 } );
+            $list_login_form = DADA::Template::Widgets::screen( { -screen => 'text_box_login_form.tmpl', -expr => 1 } );
         }
         else {
             warn "'$DADA::Config::LOGIN_WIDGET' misconfigured!";
@@ -156,10 +149,7 @@ sub cgi_user_error {
     my $subscription_form;
     my $unsubscription_form;
 
-    if ( $args->{-error} !~
-/unreadable_db_files|sql_connect_error|bad_setup|bad_SQL_setup|install_dir_still_around/
-      )
-    {
+    if ( $args->{-error} !~ /unreadable_db_files|sql_connect_error|bad_setup|bad_SQL_setup|install_dir_still_around/ ) {
         if ( $args->{-list} ) {
             $subscription_form = DADA::Template::Widgets::subscription_form(
                 {
@@ -169,24 +159,22 @@ sub cgi_user_error {
                 }
             );
             if ( $list_exists > 0 ) {
-                $unsubscription_form =
-                  DADA::Template::Widgets::unsubscription_form(
+                $unsubscription_form = DADA::Template::Widgets::unsubscription_form(
                     {
                         -list       => $args->{-list},
                         -email      => $args->{-email},
                         -give_props => 0
                     }
-                  );
+                );
             }
         }
         else {
-            $subscription_form = DADA::Template::Widgets::subscription_form(
-                { -email => $args->{-email}, -give_props => 0 } )
+            $subscription_form =
+              DADA::Template::Widgets::subscription_form( { -email => $args->{-email}, -give_props => 0 } )
               ;    # -show_hidden =>1 ?!?!?!
             if ( $list_exists > 0 ) {
                 $unsubscription_form =
-                  DADA::Template::Widgets::unsubscription_form(
-                    { -email => $args->{-email}, -give_props => 0 } )
+                  DADA::Template::Widgets::unsubscription_form( { -email => $args->{-email}, -give_props => 0 } )
                   ;    # -show_hidden => 1?!?!?!
             }
         }
@@ -194,8 +182,7 @@ sub cgi_user_error {
 
     my $unknown_dirs = [];
     if ( $args->{-error} eq 'bad_setup' ) {
-        my @tests = ( $DADA::Config::FILES, $DADA::Config::TEMPLATES,
-            $DADA::Config::TMP );
+        my @tests = ( $DADA::Config::FILES, $DADA::Config::TEMPLATES, $DADA::Config::TMP );
 
         my %sift;
         for (@tests) { $sift{$_}++ }
@@ -237,19 +224,17 @@ sub cgi_user_error {
         }
 
         if ( $can_use_captcha == 1 ) {
-            my $cap = DADA::Security::AuthenCAPTCHA->new;
-            my $CAPTCHA_string =
-              $cap->get_html( $DADA::Config::RECAPTCHA_PARAMS->{public_key} );
+            my $cap            = DADA::Security::AuthenCAPTCHA->new;
+            my $CAPTCHA_string = $cap->get_html( $DADA::Config::RECAPTCHA_PARAMS->{public_key} );
 
             require DADA::Template::Widgets;
             my $r = DADA::Template::Widgets::wrap_screen(
                 {
-                    -screen => 'resend_conf_captcha_step.tmpl',
-                    -with   => 'list',
-                    -expr   => 1,
-                    -list_settings_vars_param =>
-                      { -list => $ls->param('list') },
-                    -subscriber_vars_param => {
+                    -screen                   => 'resend_conf_captcha_step.tmpl',
+                    -with                     => 'list',
+                    -expr                     => 1,
+                    -list_settings_vars_param => { -list => $ls->param('list') },
+                    -subscriber_vars_param    => {
                         -list  => $list,
                         -email => $email,
                         -type  => 'sub_confirm_list'
@@ -272,15 +257,29 @@ sub cgi_user_error {
             # Well, nothing,
             # Continue below:
         }
+    }
+    
+    if($args->{-error} eq 'invalid_password'){ 
 
+        my $can_use_captcha = 0;
+        my $CAPTCHA_string  = '';
+        my $cap; 
+        if ( can_use_AuthenCAPTCHA() == 1 ) {
+            require DADA::Security::AuthenCAPTCHA;
+            $cap    = DADA::Security::AuthenCAPTCHA->new;
+            $CAPTCHA_string = $cap->get_html( $DADA::Config::RECAPTCHA_PARAMS->{public_key} );
+            # It's a weird place for this, I admit: 
+            $args->{-vars}->{captcha_string}  = $CAPTCHA_string;
+            $args->{-vars}->{can_use_captcha} = 1;
+            
+        }
     }
 
     my $screen = '';
     my $r      = '';
-    
+
     eval {
-        if ( $args->{-chrome} == 1 )
-        {
+        if ( $args->{-chrome} == 1 ) {
             $screen = DADA::Template::Widgets::wrap_screen(
                 {
                     -screen => 'error_' . $args->{-error} . '_screen.tmpl',
@@ -303,7 +302,7 @@ sub cgi_user_error {
                         unsubscription_form   => $unsubscription_form,
                         list_login_form       => $list_login_form,
                         email                 => $args->{-email},
-                        profile_fields_report => $profile_fields_report, 
+                        profile_fields_report => $profile_fields_report,
                         auth_code             => $auth_code,
                         unknown_dirs          => $unknown_dirs,
                         PROGRAM_URL           => $DADA::Config::PROGRAM_URL,
@@ -313,8 +312,7 @@ sub cgi_user_error {
 
                     -list_settings_vars       => $li,
                     -list_settings_vars_param => { -dot_it => 1 },
-                    -subscriber_vars =>
-                      { 'subscriber.email' => $args->{-email} },
+                    -subscriber_vars          => { 'subscriber.email' => $args->{-email} },
                 }
             );
         }
@@ -324,21 +322,20 @@ sub cgi_user_error {
                     -screen => 'error_' . $args->{-error} . '_screen.tmpl',
                     -vars   => {
                         %{ $args->{-vars} },
-                        subscription_form   => $subscription_form,
-                        unsubscription_form => $unsubscription_form,
-                        list_login_form     => $list_login_form,
-                        email               => $args->{-email},
-                        profile_fields_report => $profile_fields_report, 
-                        auth_code           => $auth_code,
-                        unknown_dirs        => $unknown_dirs,
-                        PROGRAM_URL         => $DADA::Config::PROGRAM_URL,
-                        S_PROGRAM_URL       => $DADA::Config::S_PROGRAM_URL,
-                        error_message       => $args->{-error_message},
+                        subscription_form     => $subscription_form,
+                        unsubscription_form   => $unsubscription_form,
+                        list_login_form       => $list_login_form,
+                        email                 => $args->{-email},
+                        profile_fields_report => $profile_fields_report,
+                        auth_code             => $auth_code,
+                        unknown_dirs          => $unknown_dirs,
+                        PROGRAM_URL           => $DADA::Config::PROGRAM_URL,
+                        S_PROGRAM_URL         => $DADA::Config::S_PROGRAM_URL,
+                        error_message         => $args->{-error_message},
                     },
                     -list_settings_vars       => $li,
                     -list_settings_vars_param => { -dot_it => 1 },
-                    -subscriber_vars =>
-                      { 'subscriber.email' => $args->{-email} },
+                    -subscriber_vars          => { 'subscriber.email' => $args->{-email} },
                 }
             );
         }
@@ -348,9 +345,7 @@ sub cgi_user_error {
     if ($@) {
         if ( defined( $args->{-error_message} ) ) {
 
-            die
-"Problems showing error message? - $@, \n\n\nOriginal error message: "
-              . $args->{-error_message};
+            die "Problems showing error message? - $@, \n\n\nOriginal error message: " . $args->{-error_message};
         }
         else {
             die "Problems showing error message? - $@";

@@ -10224,6 +10224,40 @@ sub email_password {
     }
     else {
 
+        if(can_use_AuthenCAPTCHA()){ 
+            require DADA::Security::AuthenCAPTCHA;
+            my $cap = DADA::Security::AuthenCAPTCHA->new;
+            
+            my $captcha_worked;
+            
+            my $result = $cap->check_answer(
+                $DADA::Config::RECAPTCHA_PARAMS->{private_key},
+                $DADA::Config::RECAPTCHA_PARAMS->{'remote_address'},
+                $q->param('recaptcha_challenge_field'),
+                $q->param('recaptcha_response_field')
+            );
+            if ( $result->{is_valid} == 1 ) {
+                $captcha_worked = 1;
+            }
+            else {
+                $captcha_worked = 0;
+            }
+            
+            if($captcha_worked == 0){ 
+                user_error(
+                    {
+                        -list  => $list,
+                        -error => 'invalid_password',
+                        -vars  => {
+                            invalid_captcha => 1, 
+                        }                     
+                    }
+                );
+                return;
+            }
+        }
+        
+        
         require DADA::Mail::Send;
         my $mh = DADA::Mail::Send->new(
             {
@@ -10275,8 +10309,6 @@ sub email_password {
             'Sent Password Change Confirmation',
             "remote_host:$ENV{REMOTE_HOST}, ip_address:$ENV{REMOTE_ADDR}"
         ) if $DADA::Config::LOG{list_lives};
-
-        sleep(10);
 
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -11567,9 +11599,7 @@ sub profile_login {
             if ( $DADA::Config::PROFILE_OPTIONS->{enable_captcha} == 1 ) {
                 $can_use_captcha = can_use_AuthenCAPTCHA(); 
             }
-
             if ( $can_use_captcha == 1 ) {
-
                 $CAPTCHA_string = $cap->get_html( $DADA::Config::RECAPTCHA_PARAMS->{public_key} );
             }
 

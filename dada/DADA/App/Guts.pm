@@ -83,8 +83,7 @@ require Exporter;
   slurp
   grab_url
   can_use_LWP_Simple
-  can_use_CAPTCHA
-  
+  can_use_AuthenCAPTCHA
 );
 
 
