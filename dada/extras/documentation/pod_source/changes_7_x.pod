@@ -2,11 +2,35 @@
 
 =head1 Dada Mail Changelog for v7.x
 
-=head2 7.2.2
+=head2 7.3.0
 
-=head2 Changes 7.2.2
+=head2 Features 7.3.0
+
+=head3 Experimental Web Services API
+
+Here's the full docs of our new Experimental Web Services API: 
+
+L<http://dadamailproject.com/d/features-restful_web_services.pod.html>
+
+In a nutshell, these new webservices give you administrative power to validate and subscribe addresses, unsubscribe addresses get and set list settings and send out mass mailings. 
+
+=head3 Amazon SES: Abuse Reports Handled Automatically
+
+Dada Mail has had support for submitting and logging abuse complaints, but up to now, it's something the subscriber would have to do manually. 
+
+If you're using Amazon SES for sending, abuse complaints received through this service will be sent to Dada Mail as a bounced message. Dada Mail is now able to read this complaint reports correctly, and automatically log the complaint. (Before, these complaints were simply ignored - yikes!)
+
+This complaint can be seen in the Tracker plugin's report, and an email will be sent to the List Owner, allowing them to know about the complaint, as well as giving them an easy way to remove the address for their mailing list. 
+
+=head3 Amazon SES: Warnings about Unverified Senders
+
+One of the problems of Amazon SES sending is that if the List Owner, and List Administrator are not verified manually to send via Amazon SES, whole mass mailings can fail.
+
+Dada Mail now does a much better job alerting the List Owner about such problems, showing warnings about such misconfigurations in the list control panel, as well as given them an easy way to verify these addresses. 
 
 =head3 Rich Text Editor Upgrades
+
+The Rich Text Editor upgrades make sure Dada Mail is running the latest versions of these third-party add-ons, with the latest features, bugfixes and  resolved security issues. 
 
 =over
 
@@ -16,7 +40,9 @@
 
 =back
 
-=head3 File Browser/Uploaders Upgrades
+=head3 File Browser/Uploader Upgrades
+
+The File Browser/Uploader upgrades make sure Dada Mail is running the latest versions of these third-party add-ons, with the latest features, bugfixes and  resolved security issues. 
 
 =over
 
@@ -25,6 +51,34 @@ KCFinder upgraded to B<v3.12>
 Core5 Filemanger upgraded to B<v1.4.0>
 
 =back
+
+=head3 Installer: Support for Secure Program URL
+
+=head3 CAPTCHA support for List Password Reset
+
+Many users have told us that the List Password reset form is being used to send List Owner's an email message to reset the List Password. Although useful for the List Owner, it's not so useful is someone or something happens to use the form. 
+
+Now, a CAPTCHA is in place, to help stop automated bots from submitting the form. 
+
+=head2 Changes 7.3.0
+
+=head3 Bridge: On Behalf Of (p.p. mode)
+
+Bridge's default From: header phrase is now vastly simplified, and no header comment is added anymore. 
+
+The From: header is now set to the List Email, rather than the List Owner
+
+The List Owner's address will also undergo the header rewriting (before it did not).
+
+=head2 Bugfixes 7.3.0
+
+=head3 Advanced Search and Partial Sending shows incorrect results with non-Latin characters 
+
+L<https://github.com/justingit/dada-mail/issues/463>
+
+=head3 CGI.pm (version 4.04) latest
+
+L<https://github.com/justingit/dada-mail/issues/461>
 
 =head2 7.2.1
 
