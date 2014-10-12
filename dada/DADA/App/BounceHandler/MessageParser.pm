@@ -91,6 +91,19 @@ sub run_all_parses {
 			
 			$diagnostics = $self->_fold_in_diagnostics($diagnostics, $ses_diagnostics); 
 		}
+	elsif($self->bounce_is_amazon_ses_abuse_report($entity)){ 
+	    
+        warn "bounce_is_amazon_ses_abuse_report"
+			if $t; 
+		  my ( $sesa_list, $sesa_email, $sesa_diagnostics ) =
+  	          $self->parse_for_ses_abuse_report($entity);
+  	        
+  	          $list  ||= $sesa_list;
+              $email ||= $sesa_email;
+              
+  	          $diagnostics = $self->_fold_in_diagnostics($diagnostics, $sesa_diagnostics); 
+  	          
+    }
 	elsif($self->isa_rfc6522_bounce($entity)) { 
 		warn "isa_rfc6522_bounce"
 			if $t; 
@@ -509,7 +522,7 @@ sub find_list_in_list_headers {
 	
     if ( $entity->head->mime_type eq 'message/rfc822') {
         $orig_msg_copy = $parts[0];
-		$list = $self->list_in_list_headers($orig_msg_copy);         
+		$list = $self->list_in_list_headers($orig_msg_copy);      
     }
 	elsif($entity->head->mime_type eq 'text/rfc822-headers'){ 
 
@@ -543,6 +556,7 @@ sub list_in_list_headers {
     my $entity = shift;
     my $list   = undef;	
     my $list_header = $entity->head->get( 'List', 0 ) || undef;
+    
     if(defined($list_header)){ 
 		if($list_header !~ /\:/) { 
 			$list = $list_header;
@@ -576,15 +590,14 @@ sub find_message_id_in_headers {
     my $entity = shift;
     my @parts  = $entity->parts;
     my $mid;
+    
     if ( $entity->head->mime_type eq 'message/rfc822' || $entity->head->mime_type eq 'text/rfc822-headers') {
         my $orig_msg_copy = ''; 
+		require MIME::Parser;
+        my $parser = new MIME::Parser;
+        $parser = optimize_mime_parser($parser);
 
-		if($entity->head->mime_type eq 'text/rfc822-headers') { 
-			
-			require MIME::Parser;
-            my $parser = new MIME::Parser;
-            $parser = optimize_mime_parser($parser);
-			
+		if($entity->head->mime_type eq 'text/rfc822-headers') { 			
 			eval { $orig_msg_copy = $parser->parse_data($entity->bodyhandle->as_string) };
 			if ( $@ ) {
 				warn "Trouble parsing text/rfc822-headers message. $@"; 
@@ -593,18 +606,28 @@ sub find_message_id_in_headers {
 			}
 		}
 		else { 
- 			$orig_msg_copy = $parts[0];
+            
+		   $orig_msg_copy = $parts[0]; 
+           my $munge = $orig_msg_copy->as_string; 
+           if($munge =~ m/^\n/) { # you've got to be kidding me...
+                $munge =~ s/^\n//; 
+                $orig_msg_copy = $parser->parse_data($munge);
+            }
+            
+            undef $munge; 
 		}
+		
 	
 		# Amazon SES finds this in the, "X-Message-ID" header: 
 		# Amazon SES will also set its own Message-ID. Maddening!
-		if($orig_msg_copy->head->get( 'X-Message-ID', 0 )){ 
+        
+		if($orig_msg_copy->head->get( 'X-Message-ID', 0 )){ 		    
 			$mid = $orig_msg_copy->head->get( 'X-Message-ID', 0 );
 		}
 		else { 
         	$mid = $orig_msg_copy->head->get( 'Message-ID', 0 );
         }
-
+        
 		$mid = strip($mid);
         chomp($mid);
         return $mid;
@@ -697,6 +720,14 @@ sub generic_delivery_status_parse {
 	    	$remail = undef; 
 		}
 	}
+	elsif(exists($diag->{'Original-Rcpt-To'})){ 
+	    $remail = $diag->{'Original-Rcpt-To'}; 
+	}
+	# Seeeeeriously:
+	elsif(exists($diag->{'Original-Rcpt-to'})){ 
+	    $remail = $diag->{'Original-Rcpt-to'}; 
+	}
+
     $email = $remail;
 
     #
@@ -845,6 +876,21 @@ sub bounce_from_ses {
 	}
 }
 
+sub bounce_is_amazon_ses_abuse_report { 
+    my $self = shift; 
+	my $entity = shift; 
+	# As far as I know, it's all from: 
+	my $amazon_ses_from1 = 'complaints@email-abuse.amazonses.com'; 
+	my $qm_ses1 = quotemeta($amazon_ses_from1); 
+	
+	if($entity->head->get( 'From', 0 ) =~ m/$qm_ses1/){ 
+		return 1; 
+	}
+	else { 
+		return 0; 
+	}
+}
+
 sub isa_rfc6522_bounce {
     my $self   = shift;
     my $entity = shift;
@@ -928,6 +974,57 @@ sub parse_for_rfc6522 {
 	$email = strip($email); 
 	return ( $list, $email, $diag );
 	
+}
+
+
+sub parse_for_ses_abuse_report { 
+
+	my $self   = shift; 
+	my $entity = shift; 
+	
+	my $diag = {};
+	my $email; 
+	my $list; 
+	
+	my @parts = $entity->parts; 
+	
+	# Human readable 
+	my $notification = ''; 
+	if($parts[0]){ 
+		 $notification = $self->generic_human_readable_parse($parts[0]);
+	}
+	if($parts[1]){ 
+		my $mds_entity = $parts[1];
+		if ( $mds_entity->head->mime_type eq 'message/feedback-report' ) {
+	    	( $email, $diag ) = $self->generic_delivery_status_parse($mds_entity);
+		}
+	}
+
+# This is NOT working correctly: 
+    if($parts[2]){ 
+		my $orig_msg_entity = $parts[2];
+        $diag->{'Message-Id'} = $self->find_message_id_in_headers($orig_msg_entity);
+        
+
+
+#		if ( $orig_msg_entity->head->mime_type eq 'message/rfc822'
+#		||  $orig_msg_entity->head->mime_type eq 'text/rfc822-headers'
+#		 ) {		    
+#   	    $list = $self->find_list_in_list_headers($orig_msg_entity);	
+#			$diag->{'Message-Id'} = $self->find_message_id_in_headers($orig_msg_entity);
+#		    warn 'checking if these do anythig...'; 
+#		    warn '$list ' . $list; 
+#		    warn q|$diag->{'Message-Id'} | . $diag->{'Message-Id'}; 
+#		    
+#		}
+	}
+	$diag->{Notification} = $notification
+		if defined $notification;
+	$diag->{parsed_by} .= 'parse_for_ses_abuse_report'; 
+    $email =~ s/\<|\>//g; 
+	$email = strip($email); 
+	return ( $list, $email, $diag );
+
 }
 
 
