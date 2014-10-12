@@ -37,7 +37,7 @@ Feedback-Type: abuse
 User-Agent: Yahoo!-Mail-Feedback/1.0
 Version: 0.1
 Original-Mail-From: <0000014723b5c45b-77b1e254-5d17-4817-8d0f-543383f450eb-000000@amazonses.com>
-Original-Rcpt-To: user@example.com
+Original-Rcpt-To: subscriber@example.com
 Received-Date: Fri, 11 Jul 2014 04:37:02 UTC
 Source-IP: 54.240.8.88
 
@@ -48,7 +48,7 @@ Content-Type: message/rfc822
 
 
 From Mailing List Name Thu Jul 10 21:37:00 2014
-X-Apparently-To: user@example.com via 98.137.10.103; Fri, 11 Jul 2014 04:37:02 +0000
+X-Apparently-To: subscriber@example.com via 98.137.10.103; Fri, 11 Jul 2014 04:37:02 +0000
 Return-Path: <0000014723b5c45b-77b1e254-5d17-4817-8d0f-543383f450eb-000000@amazonses.com>
 Received-SPF: pass (domain of amazonses.com designates 54.240.8.88 as permitted sender)
 X-YMailISG: mjfYYwcWLDt8pRu5jK1S7crVTTkpm6OCu_O.mFCozo5Q3hRc
@@ -85,7 +85,7 @@ Received: from 127.0.0.1  (EHLO a8-88.smtp-out.amazonses.com) (54.240.8.88)
   by mta1046.mail.bf1.example.com with SMTPS; Fri, 11 Jul 2014 04:37:01 +0000
 Date: Fri, 11 Jul 2014 04:37:00 +0000
 From: "Mailing List Name" <listowner@example.com.com>
-To: "Mailing List Name Subscriber" <user@example.com>
+To: "Mailing List Name Subscriber" <subscriber@example.com>
 X-Priority: 3
 Precedence: list
 List: dadatest

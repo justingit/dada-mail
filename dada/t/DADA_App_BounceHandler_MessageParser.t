@@ -381,7 +381,19 @@ undef $diag;
 undef $entity;
 
 
-
+# diag "looking at: bounce_secureserver.net-mail_quota_exceeded.eml"; 
+$msg    = dada_test_config::slurp('t/corpus/email_messages/bounces_amazon_ses_abuse_report.eml'); 
+$entity = $parser->parse_data($msg);
+( $email, $found_list, $diag ) = $bhmp->run_all_parses($entity);
+ok($email eq 'subscriber@example.com'); 
+ok($found_list eq 'dadatest', 'found list');
+$rule = $bhr->find_rule_to_use( $found_list, $email, $diag );
+ok($rule eq 'amazon_ses_abuse_report', "rule is: $rule"); 
+undef $msg; 
+undef $email; 
+undef $found_list; 
+undef $diag; 
+undef $entity;
 
 
 
