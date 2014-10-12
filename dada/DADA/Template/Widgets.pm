@@ -1100,14 +1100,7 @@ sub archive_send_form {
     # ?!?!
     $captcha_fail = defined $captcha_fail ? $captcha_fail : 0;
 
-	my $can_use_captcha = 1; 
-	try { 
-		require DADA::Security::AuthenCAPTCHA; 
-	} catch {
-		carp "CAPTCHA Not working correctly?: $_";  
-		$can_use_captcha = 0;
-	};
-
+    my $can_use_captcha = can_use_AuthenCAPTCHA(); 
 	
     if($captcha_archive_send_form == 1 && $can_use_captcha == 1){ 
             my $captcha_worked = 0; 

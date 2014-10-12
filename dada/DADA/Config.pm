@@ -1578,8 +1578,8 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
 
     group_list                     => 0,
 	group_list_pp_mode             => 1, 
-	group_list_pp_mode_from_phrase => '<!-- tmpl_var original_from_phrase default="Subscriber" --> p.p. <!-- tmpl_var list_settings.list_name -->',  
-	
+	group_list_pp_mode_from_phrase => '<!-- tmpl_var original_from_phrase default="Subscriber" --> subscriber.email_name@subscriber.email_domain [<!-- tmpl_var list_settings.list_name -->]',  
+	                                    
     open_discussion_list => 0,
 
     discussion_template_defang   => 1,

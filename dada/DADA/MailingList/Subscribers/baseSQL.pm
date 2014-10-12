@@ -702,7 +702,7 @@ sub fancy_print_out_list {
 			-expr => 1, 
         }
     );
-	print $fh $scrn; 
+	e_print($scrn, $fh); 
 
     return scalar @{$subscribers};
 

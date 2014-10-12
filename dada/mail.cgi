@@ -2461,14 +2461,7 @@ sub list_options {
         $can_use_mx_lookup = 1;
     }
 
-    my $can_use_captcha = 1;
-    try {
-        require DADA::Security::AuthenCAPTCHA;
-    }
-    catch {
-        carp "CAPTCHA Not working correctly?: $_";
-        $can_use_captcha = 0;
-    };
+    my $can_use_captcha = can_use_AuthenCAPTCHA();
 
     if ( !$process ) {
 
@@ -3627,6 +3620,7 @@ sub view_list {
             if($advanced_search == 1){ 
                 open my $fh, '<', \$advanced_query || die $!;
                 my $new_q = CGI->new($fh);
+                   $new_q = decode_cgi_obj($new_q);
                 my $partial_sending = partial_sending_query_to_params($new_q); 
                                 
                 ( $total_num, $subscribers ) = $lh->search_list(
@@ -3820,6 +3814,7 @@ sub mass_update_profiles {
     my $advanced_query  = xss_filter( $q->param('advanced_query') )  || undef;
     open my $fh, '<', \$advanced_query || die $!;
     my $new_q = CGI->new($fh);
+       $new_q = decode_cgi_obj($new_q);
     my $partial_listing = partial_sending_query_to_params($new_q); 
  
     my $updated = $lh->update_profiles(
@@ -6437,14 +6432,7 @@ sub archive_options {
 
     if ( !$process ) {
 
-        my $can_use_captcha = 1;
-        try {
-            require DADA::Security::AuthenCAPTCHA;
-        }
-        catch {
-            carp "CAPTCHA Not working correctly?: $_";
-            $can_use_captcha = 0;
-        };
+        my $can_use_captcha = can_use_AuthenCAPTCHA();
 
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -8558,16 +8546,8 @@ sub resend_conf {
     my $can_use_captcha = 0;
 
     if ( $ls->param('limit_sub_confirm_use_captcha') == 1 ) {
-
-        try {
-            require DADA::Security::AuthenCAPTCHA;
-            $can_use_captcha = 1;
-        }
-        catch {
-            carp "CAPTCHA Not working correctly?: $_";
-            $can_use_captcha = 0;
-        };
-    }
+        $can_use_captcha = can_use_AuthenCAPTCHA();
+     }
     if ( $can_use_captcha == 1 ) {
         &resend_conf_captcha;
     }
@@ -8840,6 +8820,7 @@ sub text_list {
         if($advanced_search == 1){ 
             open my $fh, '<', \$advanced_query || die $!;
             my $new_q = CGI->new($fh);
+               $new_q = decode_cgi_obj($new_q);
             $partial_listing = partial_sending_query_to_params($new_q); 
         }
     }
@@ -9897,14 +9878,7 @@ sub send_archive {
     # CAPTCHA STUFF
 
     my $captcha_fail    = 0;
-    my $can_use_captcha = 1;
-    try {
-        require DADA::Security::AuthenCAPTCHA;
-    }
-    catch {
-        carp "CAPTCHA Not working correctly?: $_";
-        $can_use_captcha = 0;
-    };
+    my $can_use_captcha = can_use_AuthenCAPTCHA();
 
     if ( $ls->param('captcha_archive_send_form') == 1 && $can_use_captcha == 1 ) {
         require DADA::Security::AuthenCAPTCHA;
@@ -10215,6 +10189,40 @@ sub email_password {
     }
     else {
 
+        if(can_use_AuthenCAPTCHA()){ 
+            require DADA::Security::AuthenCAPTCHA;
+            my $cap = DADA::Security::AuthenCAPTCHA->new;
+            
+            my $captcha_worked;
+            
+            my $result = $cap->check_answer(
+                $DADA::Config::RECAPTCHA_PARAMS->{private_key},
+                $DADA::Config::RECAPTCHA_PARAMS->{'remote_address'},
+                $q->param('recaptcha_challenge_field'),
+                $q->param('recaptcha_response_field')
+            );
+            if ( $result->{is_valid} == 1 ) {
+                $captcha_worked = 1;
+            }
+            else {
+                $captcha_worked = 0;
+            }
+            
+            if($captcha_worked == 0){ 
+                user_error(
+                    {
+                        -list  => $list,
+                        -error => 'invalid_password',
+                        -vars  => {
+                            invalid_captcha => 1, 
+                        }                     
+                    }
+                );
+                return;
+            }
+        }
+        
+        
         require DADA::Mail::Send;
         my $mh = DADA::Mail::Send->new(
             {
@@ -10266,8 +10274,6 @@ sub email_password {
             'Sent Password Change Confirmation',
             "remote_host:$ENV{REMOTE_HOST}, ip_address:$ENV{REMOTE_ADDR}"
         ) if $DADA::Config::LOG{list_lives};
-
-        sleep(10);
 
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -11556,19 +11562,9 @@ sub profile_login {
             my $CAPTCHA_string  = '';
             my $cap             = undef;
             if ( $DADA::Config::PROFILE_OPTIONS->{enable_captcha} == 1 ) {
-                try {
-                    require DADA::Security::AuthenCAPTCHA;
-                    $cap             = DADA::Security::AuthenCAPTCHA->new;
-                    $can_use_captcha = 1;
-                }
-                catch {
-                    carp "CAPTCHA Not working correctly?: $_";
-                };
-
+                $can_use_captcha = can_use_AuthenCAPTCHA(); 
             }
-
             if ( $can_use_captcha == 1 ) {
-
                 $CAPTCHA_string = $cap->get_html( $DADA::Config::RECAPTCHA_PARAMS->{public_key} );
             }
 

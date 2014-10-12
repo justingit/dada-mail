@@ -825,16 +825,9 @@ sub is_valid_registration {
     }
 
     my $cap             = undef;
-	my $can_use_captcha = 1; 
 
 	if($DADA::Config::PROFILE_OPTIONS->{enable_captcha} == 1){
-		try { 
-			require DADA::Security::AuthenCAPTCHA; 
-		} catch {
-			carp "CAPTCHA Not working correctly?: $_";  
-			$can_use_captcha = 0;
-		};	
-	    if ( $can_use_captcha == 1 ) {
+	    if ( can_use_AuthenCAPTCHA() == 1 ) {
 	        $cap = DADA::Security::AuthenCAPTCHA->new;
 	        my $result = $cap->check_answer(
 	            $DADA::Config::RECAPTCHA_PARAMS->{private_key},

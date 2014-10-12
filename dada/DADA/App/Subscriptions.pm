@@ -723,15 +723,7 @@ sub confirm {
     warn 'captcha_sub set to: ' . $ls->param('captcha_sub')
       if $t;
     if ( $ls->param('captcha_sub') == 1 ) {
-        my $can_use_captcha = 1;
-        try {
-            require DADA::Security::AuthenCAPTCHA;
-        }
-        catch {
-            carp "CAPTCHA Not working correctly?: $_";
-            $can_use_captcha = 0;
-        };
-        if ( $can_use_captcha == 1 ) {
+        if ( can_use_AuthenCAPTCHA() == 1 ) {
             warn '>>>> Captcha step is enabled...'
               if $t;
             my $captcha_worked = 0;
