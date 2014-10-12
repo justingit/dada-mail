@@ -2557,7 +2557,7 @@ sub install_and_configure_kcfinder {
 			}
         }
     );
-	my $kcfinder_config_loc = make_safer($install_path . '/kcfinder/config.php'); 
+	my $kcfinder_config_loc = make_safer($install_path . '/kcfinder/conf/config.php'); 
 	installer_chmod(0777, $kcfinder_config_loc); 
 	open my $config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $kcfinder_config_loc or croak $!;
 	print $config_fh $kcfinder_config_php or croak $!;

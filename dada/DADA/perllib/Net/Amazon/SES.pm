@@ -130,6 +130,100 @@ sub reset_browser {
 
 }
 
+
+=cut 
+
+useless. 
+
+sub list_identities {  
+    my $self   = shift; 
+	my ($args) = @_; 
+	
+	my $params = {
+	    Action       => 'ListIdentities', 
+	};
+	my ($response_code, $response_content) = $self->call_ses($params, {});
+
+        use Data::Dumper; 
+        print '$response_content ' . Dumper($response_content); 
+        
+	if ( $self->trace ) {
+		print $response_code . "\n"; 
+        print $response_content . "\n"; 
+	}
+
+	if($response_code eq '200') { 
+		#if ( $self->trace ) {
+		#	$self->print_response($response_content);
+    	#}    
+	#	return ($response_code, $self->get_response($response_content));
+#	    return ($response_code, $response_content); 
+        my $r; 
+        my $parser = XML::LibXML->new();
+        my $dom = $parser->parse_string($response_content);
+        my $xpath = XML::LibXML::XPathContext->new($dom);
+        $xpath->registerNs('ns', $aws_email_ns);
+
+        my @nodes = $xpath->findnodes('/ns:ListIdentitiesResponse' . '/ns:ListIdentitiesResult'  . '/ns:Identities');
+        my @a = (); 
+        foreach my $node (@nodes) {
+            my $text = $node->textContent();
+        	push(@a, $text);
+        }
+		return ($response_code, \@a);
+	}
+	else { 
+		return ($response_code, $response_content);
+	}
+}
+
+=cut
+
+sub sender_verified { 
+
+    my $self  = shift; 
+    my $email = shift; 
+    
+    	my $params = {
+    	    Action                   => 'GetIdentityVerificationAttributes', 
+    	    'Identities.member.1'    => $email, 
+    	};
+    	my ($response_code, $response_content) = $self->call_ses($params, {});
+    	if ( $self->trace ) {
+    		print $response_code . "\n"; 
+            print $response_content . "\n"; 
+    	}
+
+    	if($response_code eq '200') { 
+    	    
+    	    #return ($response_code, $response_content); 
+
+            my $r; 
+            my $parser = XML::LibXML->new();
+            my $dom = $parser->parse_string($response_content);
+            my $xpath = XML::LibXML::XPathContext->new($dom);
+            $xpath->registerNs('ns', $aws_email_ns);
+            my @nodes = $xpath->findnodes(
+                '/ns:GetIdentityVerificationAttributesResponse' . 
+                '/ns:GetIdentityVerificationAttributesResult' .
+                '/ns:VerificationAttributes' . 
+                '/ns:entry' . 
+                '/ns:value' . 
+                '/ns:VerificationStatus'
+                );
+            my @a = (); 
+           # print scalar(@nodes) . 'nodes!' ; 
+            foreach my $node (@nodes) {
+                my $text = $node->textContent();
+            	push(@a, $text);
+            }
+            sleep(1); 
+    		return ($response_code, $a[0]);
+    	}
+    	else { 
+    		return ($response_code, $response_content);
+    	}
+}
 sub verify_sender { 
 	my $self   = shift; 
 	my ($args) = @_; 

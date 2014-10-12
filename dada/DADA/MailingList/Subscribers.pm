@@ -996,7 +996,6 @@ sub filter_subscribers_massaged_for_ht {
                 }
             }
         }
-        
         push(
             @$new_emails,
             {

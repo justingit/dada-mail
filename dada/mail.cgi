@@ -2183,15 +2183,23 @@ sub change_info {
 
     $list = $admin_list;
 
-    require DADA::MailingList::Settings;
-
+    require  DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
+    my $ses_params = {}; 
+    if ($ls->param('sending_method') eq 'amazon_ses'
+        || (   $ls->param('sending_method') eq 'smtp' && $ls->param('smtp_server') =~ m/amazonaws\.com/ )
+        ) { 
+            $ses_params->{using_ses} = 1;    
+            require   DADA::App::AmazonSES;
+            my $ses = DADA::App::AmazonSES->new;
+            $ses_params->{list_owner_ses_verified} = $ses->sender_verified($ls->param('list_owner_email'));  
+            $ses_params->{list_admin_ses_verified} = $ses->sender_verified($ls->param('admin_email'));  
+    }
     my $errors = 0;
     my $flags  = {};
 
     if ($process) {
-
         ( $errors, $flags ) = check_list_setup(
             -fields => {
                 list             => $list,
@@ -2239,6 +2247,7 @@ sub change_info {
                     -Root_Login => $root_login,
                     -List       => $list,
                 },
+                -expr           => 1, 
                 -vars => {
                     screen        => 'change_info',
                     done          => $done,
@@ -2262,6 +2271,7 @@ sub change_info {
                     flags_privacy_policy           => $flags_privacy_policy,
                     flags_physical_address         => $flags_physical_address,
                     flags_list_name_bad_characters => $flags_list_name_bad_characters,
+                    %$ses_params,
                 },
             }
         );
@@ -2280,7 +2290,6 @@ sub change_info {
                 info             => $info,
                 privacy_policy   => $privacy_policy,
                 physical_address => $physical_address,
-
             }
         );
 
@@ -2647,6 +2656,18 @@ sub sending_preferences {
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
+    my $ses_params = {}; 
+    if ($ls->param('sending_method') eq 'amazon_ses'
+        || (   $ls->param('sending_method') eq 'smtp' && $ls->param('smtp_server') =~ m/amazonaws\.com/ )
+        ) { 
+            $ses_params->{using_ses} = 1;    
+            require   DADA::App::AmazonSES;
+            my $ses = DADA::App::AmazonSES->new;
+            $ses_params->{list_owner_ses_verified} = $ses->sender_verified($ls->param('list_owner_email'));  
+            $ses_params->{list_admin_ses_verified} = $ses->sender_verified($ls->param('admin_email'));  
+    }
+    
+    
     if ( !$process ) {
 
         require DADA::MailingList::Settings;
@@ -2752,6 +2773,7 @@ sub sending_preferences {
                     : $decrypted_sasl_pass,
 
                     amazon_ses_requirements_widget => DADA::Template::Widgets::amazon_ses_requirements_widget(),
+                    %$ses_params, 
 
                 },
                 -list_settings_vars_param => {
@@ -5823,6 +5845,7 @@ sub add_email {
         }
     }
 }
+
 
 sub delete_email {
 
