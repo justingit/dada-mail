@@ -8,11 +8,11 @@
 
 =head3 Experimental Web Services API
 
-Here's the full docs of our new Experimental Web Services API: 
+Here's the full docs on our new Experimental Web Services API: 
 
 L<http://dadamailproject.com/d/features-restful_web_services.pod.html>
 
-In a nutshell, these new webservices give you administrative power to validate and subscribe addresses, unsubscribe addresses get and set list settings and send out mass mailings. 
+In a nutshell, these new webservices give you administrative power to validate and subscribe addresses, unsubscribe addresses get and set list settings and send out mass mailings from another application, easily and securely.
 
 =head3 Amazon SES: Abuse Reports Handled Automatically
 
@@ -20,11 +20,13 @@ Dada Mail has had support for submitting and logging abuse complaints, but up to
 
 If you're using Amazon SES for sending, abuse complaints received through this service will be sent to Dada Mail as a bounced message. Dada Mail is now able to read this complaint reports correctly, and automatically log the complaint. (Before, these complaints were simply ignored - yikes!)
 
-This complaint can be seen in the Tracker plugin's report, and an email will be sent to the List Owner, allowing them to know about the complaint, as well as giving them an easy way to remove the address for their mailing list. 
+When a complaint is received to the Bounce Handler as a bounce message, Bounce Handler will log it and this complaint will be viewable from within the Tracker plugin's message reports. An email will also be sent to the List Owner, giving details about the complaint and allowing the List Owner to easily remove the Subscriber's email address from the mailing list, by simply clicking a link.
+
+To take full advantage of all this, you will need to be sending with Amazon SE and have both the Bounce Handler and Tracker plugins installed. 
 
 =head3 Amazon SES: Warnings about Unverified Senders
 
-One of the problems of Amazon SES sending is that if the List Owner, and List Administrator are not verified manually to send via Amazon SES, whole mass mailings can fail.
+If you're using Amazon SES with Dada Mail, you know that you need to verify the List Owner and List Administror of your mailing list, or your messages won't be sent out, properly. This is sometimes an easy thing to forget to do. If you do forget to this, whole mass mailings can fail.
 
 Dada Mail now does a much better job alerting the List Owner about such problems, showing warnings about such misconfigurations in the list control panel, as well as given them an easy way to verify these addresses. 
 
