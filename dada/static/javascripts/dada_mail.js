@@ -2358,6 +2358,9 @@ function update_plugins_tracker_message_report() {
 	$('body').on('click', '.to_forwards', function(event) {
 		$tabs.tabs('select', 7); return false;
 	});
+	$('body').on('click', '.to_abuse_reports', function(event) {
+		$tabs.tabs('select', 8); return false;
+	});
 
 	$("body").on("click", '.message_individual_email_activity', function(event) {
 		event.preventDefault();
