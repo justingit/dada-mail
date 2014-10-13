@@ -12,7 +12,7 @@ Here's the full docs on our new Experimental Web Services API:
 
 L<http://dadamailproject.com/d/features-restful_web_services.pod.html>
 
-In a nutshell, these new webservices give you administrative power to validate and subscribe addresses, unsubscribe addresses get and set list settings and send out mass mailings from another application, easily and securely.
+In a nutshell, these new webservices give you administrative power to validate and subscribe addresses, unsubscribe addresses get and set list settings and send out mass mailings from another application easily and securely. 
 
 =head3 Amazon SES: Abuse Reports Handled Automatically
 
@@ -24,7 +24,13 @@ When a complaint is received to the Bounce Handler as a bounce message, Bounce H
 
 To take full advantage of all this, you will need to be sending with Amazon SE and have both the Bounce Handler and Tracker plugins installed. 
 
+Dealing with complaints is important, especially when using a third party email service provider, like Amazon SES. We hope this enhancement will help make running a mailing list with Amazon SES a little smoother sailing.
+
 =head3 Amazon SES: Warnings about Unverified Senders
+
+Here's an overview on using Dada Mail with Amazon SES: 
+
+L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>
 
 If you're using Amazon SES with Dada Mail, you know that you need to verify the List Owner and List Administror of your mailing list, or your messages won't be sent out, properly. This is sometimes an easy thing to forget to do. If you do forget to this, whole mass mailings can fail.
 
@@ -71,6 +77,14 @@ Bridge's default From: header phrase is now vastly simplified, and no header com
 The From: header is now set to the List Email, rather than the List Owner
 
 The List Owner's address will also undergo the header rewriting (before it did not).
+
+=head3 Update Geo IP Databases
+
+Dada Mail uses Geo IP databases to bring you wonderful maps, plotting the data culled by the Tracker plugin. This release has updated Dada Mail's included databases to the most up to date version. 
+
+This product includes GeoLite data created by MaxMind, available from
+L<http://www.maxmind.com>.
+
 
 =head2 Bugfixes 7.3.0
 
