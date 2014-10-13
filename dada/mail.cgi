@@ -8352,7 +8352,7 @@ sub restful_subscribe {
         e_print( $callback . '(' . $json . ');' );
     }
     else {
-        e_print( $json, "\n" );
+        e_print( $json );
     }
 
 }
