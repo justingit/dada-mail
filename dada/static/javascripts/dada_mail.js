@@ -136,13 +136,6 @@ $(document).ready(function() {
 			}
 		});
 		
-		$("body").on("click", ".amazon_verify_email_in_warning", function(event) {
-			event.preventDefault();
-			amazon_verify_email($(this).attr("data-email"));
-		});
-		
-		
-		
 		$("body").on("submit", "#mass_mailing", function(event) {
 			event.preventDefault();
 		});
@@ -531,12 +524,6 @@ $(document).ready(function() {
 			amazon_ses_get_stats();
 		}
 		
-		$("body").on("click", ".amazon_verify_email_in_warning", function(event) {
-			event.preventDefault();
-			amazon_verify_email($(this).attr("data-email"));
-		});
-	
-
 		sending_prefs_setup();
 		toggle_SASL_options();
 		toggle_pop_before_SMTP_options();
@@ -1106,6 +1093,11 @@ $(document).ready(function() {
 	});
 	$('.radio_toggleDivs').live("click", function(event) {
 		toggleDisplay($(this).attr("data-target"));
+	});
+	
+	$("body").on("click", ".amazon_verify_email_in_warning", function(event) {
+		event.preventDefault();
+		amazon_verify_email($(this).attr("data-email"));
 	});
 
 });

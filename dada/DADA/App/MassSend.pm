@@ -125,10 +125,10 @@ sub send_email {
             $ses_params->{using_ses} = 1;    
             require   DADA::App::AmazonSES;
             my $ses = DADA::App::AmazonSES->new;
-            $ses_params->{list_owner_ses_verified} = $ses->sender_verified($ls->param('list_owner_email'));  
-            $ses_params->{list_admin_ses_verified} = $ses->sender_verified($ls->param('admin_email'));  
+            $ses_params->{list_owner_ses_verified}     = $ses->sender_verified($ls->param('list_owner_email'));  
+            $ses_params->{list_admin_ses_verified}     = $ses->sender_verified($ls->param('admin_email'));  
+            $ses_params->{discussion_pop_ses_verified} = $ses->sender_verified($ls->param('discussion_pop_email'));  
     }
-
     if ( !$process ) {
         my ( $num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued ) =
           $self->mass_mailout_info($list);
@@ -627,14 +627,11 @@ sub send_url_email {
             $ses_params->{using_ses} = 1;    
             require   DADA::App::AmazonSES;
             my $ses = DADA::App::AmazonSES->new;
-            $ses_params->{list_owner_ses_verified} = $ses->sender_verified($ls->param('list_owner_email'));  
-            $ses_params->{list_admin_ses_verified} = $ses->sender_verified($ls->param('admin_email'));  
+            $ses_params->{list_owner_ses_verified}     = $ses->sender_verified($ls->param('list_owner_email'));  
+            $ses_params->{list_admin_ses_verified}     = $ses->sender_verified($ls->param('admin_email'));  
+            $ses_params->{discussion_pop_ses_verified} = $ses->sender_verified($ls->param('discussion_pop_email'));  
     }
-    
-    
-
     if ( !$process ) {
-
         my ( $num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued ) =
           $self->mass_mailout_info($list);
 

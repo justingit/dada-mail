@@ -335,24 +335,11 @@ Sending via Amazon SES is done with a persistent HTTP connection, so performance
 
 =head3 Discussion List Support
 
-By default, Dada Mail preserves the C<From>: header address, when it sends out messages received from the mailing list's subscribers. 
+Along with the List Owner and List Administration address, be sure to verify the, B<List Email> address with Amazon SES. 
 
-This makes using Amazon SES for discussion lists unrealistic, as every subscriber of your mailing list would need to be verified through Amazon SES. 
-
-You may try using Amazon SES for discussion lists, by checking the option in Bridge labeled, 
+And always keep this option checked: 
 
 B<Send messages, "On Behalf Of" (p.p. mode)>
-
-This will change Dada Mail's behavior to B<not> preserve the C<From>: header, but rather reset's this header to always be the List Owner's email address, which always should be verified with Amazon SES. This should allow you to conduct a discussion list with Dada Mail and Amazon SES. 
-
-Please note that when this option is set, replies to the mailing list will act a little differently, depending on which option you use. If you've set Bridge's prefs to: 
-
-I<Replies to messages should: B<be addressed to the sender>>
-
-Reply-All functionality (sending the reply to BOTH the mailing list and the original sender) will not work correctly - the reply will only go to the original sender, if you Reply, or Reply-All. 
-
-The, C<Reply-To> header will also be explicitly set to the original sender. We do that because the C<From:> header munging, using this method does not preserve the original email address in the C<From:> header, so unless we set the C<Reply-To:> header, there's no way to easily reply to the original sender.
-
 
 =head3 Different email headers sent
 

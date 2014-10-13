@@ -896,6 +896,20 @@ sub cgi_default {
         $ls->param('list_owner_email') )->format();
 
     my $done = $q->param('done') || 0;
+
+    my $ses_params = {}; 
+    if ($ls->param('sending_method') eq 'amazon_ses'
+        || (   $ls->param('sending_method') eq 'smtp' && $ls->param('smtp_server') =~ m/amazonaws\.com/ )
+        ) { 
+            $ses_params->{using_ses} = 1;    
+            require   DADA::App::AmazonSES;
+            my $ses = DADA::App::AmazonSES->new;
+            $ses_params->{list_owner_ses_verified}     = $ses->sender_verified($ls->param('list_owner_email'));  
+            $ses_params->{list_admin_ses_verified}     = $ses->sender_verified($ls->param('admin_email'));  
+            $ses_params->{discussion_pop_ses_verified} = $ses->sender_verified($ls->param('discussion_pop_email'));  
+    }
+    
+
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -expr           => 1,
@@ -973,7 +987,7 @@ sub cgi_default {
                   $list_email_errors
                   ->{list_email_subscribed_to_another_moderators},
 
-
+                 %$ses_params,
 				 plugin_path => $FindBin::Bin, 
 			     plugin_filename => 'bridge.cgi', 
 

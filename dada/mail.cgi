@@ -2193,8 +2193,9 @@ sub change_info {
             $ses_params->{using_ses} = 1;    
             require   DADA::App::AmazonSES;
             my $ses = DADA::App::AmazonSES->new;
-            $ses_params->{list_owner_ses_verified} = $ses->sender_verified($ls->param('list_owner_email'));  
-            $ses_params->{list_admin_ses_verified} = $ses->sender_verified($ls->param('admin_email'));  
+            $ses_params->{list_owner_ses_verified}     = $ses->sender_verified($ls->param('list_owner_email'));  
+            $ses_params->{list_admin_ses_verified}     = $ses->sender_verified($ls->param('admin_email'));  
+            $ses_params->{discussion_pop_ses_verified} = $ses->sender_verified($ls->param('discussion_pop_email'));  
     }
     my $errors = 0;
     my $flags  = {};
@@ -2656,11 +2657,10 @@ sub sending_preferences {
             $ses_params->{using_ses} = 1;    
             require   DADA::App::AmazonSES;
             my $ses = DADA::App::AmazonSES->new;
-            $ses_params->{list_owner_ses_verified} = $ses->sender_verified($ls->param('list_owner_email'));  
-            $ses_params->{list_admin_ses_verified} = $ses->sender_verified($ls->param('admin_email'));  
+            $ses_params->{list_owner_ses_verified}     = $ses->sender_verified($ls->param('list_owner_email'));  
+            $ses_params->{list_admin_ses_verified}     = $ses->sender_verified($ls->param('admin_email'));  
+            $ses_params->{discussion_pop_ses_verified} = $ses->sender_verified($ls->param('discussion_pop_email'));  
     }
-    
-    
     if ( !$process ) {
 
         require DADA::MailingList::Settings;
