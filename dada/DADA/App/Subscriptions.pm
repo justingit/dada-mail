@@ -2466,7 +2466,7 @@ sub error_token_undefined {
     my $self = shift;
     my ($args) = @_;
 
-    my $q = $args->{cgi_obj};
+    my $q = $args->{-cgi_obj};
 
     if ( !exists( $args->{-fh} ) ) {
         $args->{-fh} = \*STDOUT;
