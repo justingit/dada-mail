@@ -11565,6 +11565,8 @@ sub profile_login {
                 $can_use_captcha = can_use_AuthenCAPTCHA(); 
             }
             if ( $can_use_captcha == 1 ) {
+                require DADA::Security::AuthenCAPTCHA;
+                my $cap = DADA::Security::AuthenCAPTCHA->new; 
                 $CAPTCHA_string = $cap->get_html( $DADA::Config::RECAPTCHA_PARAMS->{public_key} );
             }
 
@@ -11601,6 +11603,7 @@ sub profile_login {
                         removal                      => $q->param('removal')                      || '',
                         %{ DADA::Profile::feature_enabled() }
                     },
+
                 }
             );
             e_print($scrn);
