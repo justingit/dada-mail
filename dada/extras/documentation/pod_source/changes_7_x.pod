@@ -2,6 +2,19 @@
 
 =head1 Dada Mail Changelog for v7.x
 
+=head2 7.3.1
+
+=head2 Changes 7.3.1
+
+=head3 Web Services API missing from List Control Panel
+
+The fancy new Web Services API support: 
+
+L<http://dadamailproject.com/d/features-restful_web_services.pod.html>
+
+Although a part of Dada Mail, didn't have the control panel screen available, to actuall use, 
+this release fixes that little problem. 
+
 =head2 7.3.0
 
 =head2 Features 7.3.0
