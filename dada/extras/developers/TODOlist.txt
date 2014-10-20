@@ -11,6 +11,8 @@ Key:
 [?] Someday
 
 
+[ ] Add, "Frequency of email messages" 
+
 [] ability to share stationary messages. 
 
 [ ] A way to set an alternative path to perl
