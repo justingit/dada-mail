@@ -12,7 +12,7 @@ The fancy new Web Services API support:
 
 L<http://dadamailproject.com/d/features-restful_web_services.pod.html>
 
-Although a part of Dada Mail, didn't have the control panel screen available, to actuall use, 
+Although a part of Dada Mail, didn't have the control panel screen available, to actually use, 
 this release fixes that little problem. 
 
 =head2 7.3.0
