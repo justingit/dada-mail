@@ -1779,7 +1779,6 @@ sub complete_unsubscription {
         );
 
         if ( $ls->param('send_unsub_success_email') == 1 ) {
-
             # I guess I don't have to send this, either!
             if ( $ls->param('private_list') == 1 ) {
                 # ... 

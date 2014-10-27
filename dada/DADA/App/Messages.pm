@@ -124,6 +124,7 @@ sub send_generic_email {
     if ( $args->{-tmpl_params}->{-expr} == 1 ) {
         $fm->override_validation_type('expr');
     }
+    
     my ($email_str) = $fm->format_message( -msg => $fm->string_from_dada_style_args( { -fields => $data, } ), );
 
     $email_str = safely_decode($email_str);
@@ -581,9 +582,6 @@ sub send_unsubscribed_message {
 		$ls = $args->{-ls_obj};
 	}
 	
-	warn q{$ls->param('list')} . $ls->param('list');  
-	warn q{$args->{-list}} . $args->{-list}; 
-	
 	# This is a hack - if the subscriber has recently been removed, you 
 	# won't be able to get the subscriber fields - since there's no way to 
 	# get fields of a removed subscriber. 
@@ -718,7 +716,6 @@ sub send_owner_happenings {
         $msg_template->{subject} =
           $ls->param('admin_subscription_notice_message_subject');
         $msg_template->{msg} = $ls->param('admin_subscription_notice_message');
-
     }
     elsif ( $status eq "unsubscribed" ) {
         $msg_template->{subject} =
@@ -760,14 +757,6 @@ sub send_owner_happenings {
     my $fm = DADA::App::FormatMessages->new( -List => $args->{-list} );
     $fm->use_email_templates(0);
 
-    my $formatted_from = $fm->_encode_header(
-        'From',
-        $fm->format_phrase_address(
-            $ls->param('list_name'),
-            $ls->param('list_owner_email'),
-        )
-    );
-
     my $send_to = 'list_owner';
     if ( $status eq "subscribed" ) {
         $send_to = $ls->param('send_subscription_notice_to');
@@ -775,8 +764,18 @@ sub send_owner_happenings {
     else {
         $send_to = $ls->param('send_unsubscription_notice_to');
     }
-
-    if ( $send_to eq 'list' ) {
+    
+    my $from_address = $ls->param('list_owner_email');
+    my $formatted_from = $fm->_encode_header(
+        'From',
+        $fm->format_phrase_address(
+            $ls->param('list_name'),
+            $from_address,
+        )
+    );
+    
+    
+    if ( $send_to eq 'list') {
         $fm->mass_mailing(1);
         require DADA::Mail::Send;
         my $mh = DADA::Mail::Send->new( { -list => $args->{-list} } );
@@ -792,13 +791,20 @@ sub send_owner_happenings {
         );
 
     }
-    else {
+    elsif($send_to eq 'list_owner' || $send_to eq 'alt') {  
+        my $to = $formatted_from;
+        if($send_to eq 'alt' && $status eq "subscribed" && check_for_valid_email($ls->param('alt_send_subscription_notice_to')) == 0) { 
+            $to = $ls->param('alt_send_subscription_notice_to'); 
+        }
+        if($send_to eq 'alt' && $status eq "unsubscribed" && check_for_valid_email($ls->param('alt_send_unsubscription_notice_to')) == 0) { 
+            $to = $ls->param('alt_send_unsubscription_notice_to'); 
+        } 
         send_generic_email(
             {
                 -list    => $args->{-list},
                 -headers => {
+                    To      => $to,
                     From    => $formatted_from,
-                    To      => $formatted_from,
                     Subject => $msg_template->{subject},
                 },
                 -body => $msg_template->{msg},
@@ -807,6 +813,9 @@ sub send_owner_happenings {
 
         );
     }
+    else { 
+        die "who am I sending to?!"; 
+    }   
 }
 
 

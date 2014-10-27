@@ -1250,12 +1250,14 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
     send_unsub_success_email => 1,
     send_sub_success_email   => 1,
 
-    get_sub_notice              => 1,
-    send_subscription_notice_to => 'list_owner',
-
-    unsub_show_email_hint         => 1,
-    get_unsub_notice              => 1,
-    send_unsubscription_notice_to => 'list_owner',
+    get_sub_notice                  => 1,
+    send_subscription_notice_to     => 'list_owner',
+    alt_send_subscription_notice_to => '' ,
+    
+    unsub_show_email_hint             => 1,
+    get_unsub_notice                  => 1,
+    send_unsubscription_notice_to     => 'list_owner',
+    alt_send_unsubscription_notice_to => '', 
 
     enable_closed_loop_opt_in     => 1,    # Closed-Loop Opt-In
     skip_sub_confirm_if_logged_in => 0,

@@ -2470,15 +2470,15 @@ sub list_options {
             -name     => 'send_subscription_notice_to',
             -id       => 'send_subscription_notice_to',
             -default  => $ls->param('send_subscription_notice_to'),
-            -labels   => { list => 'Your Subscribers', 'list_owner' => 'The List Owner' },
-            '-values' => [qw(list list_owner)],
+            -labels   => { list => 'Your Subscribers', 'list_owner' => 'The List Owner', 'alt' => 'Other:'},
+            '-values' => [qw(list list_owner alt)],
         );
         my $send_unsubscription_notice_to_popup_menu = $q->popup_menu(
             -name     => 'send_unsubscription_notice_to',
             -id       => 'send_unsubscription_notice_to',
             -default  => $ls->param('send_unsubscription_notice_to'),
-            -labels   => { list => 'Your Subscribers', 'list_owner' => 'The List Owner' },
-            '-values' => [qw(list list_owner)],
+            -labels   => { list => 'Your Subscribers', 'list_owner' => 'The List Owner', 'alt' => 'Other:' },
+            '-values' => [qw(list list_owner alt)],
         );
 
         require DADA::Template::Widgets;
@@ -2569,9 +2569,10 @@ sub list_options {
                     send_unsubscribed_by_list_owner_message => 0,
                     send_last_archived_msg_mass_mailing     => 0,
                     captcha_sub                             => 0,
-
-                    send_subscription_notice_to   => undef,
-                    send_unsubscription_notice_to => undef,
+                    send_subscription_notice_to             => undef,
+                    alt_send_subscription_notice_to         => undef,
+                    send_unsubscription_notice_to           => undef,
+                    alt_send_unsubscription_notice_to       => undef, 
                 }
             }
         );
