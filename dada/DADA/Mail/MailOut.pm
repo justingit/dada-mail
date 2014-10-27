@@ -2581,6 +2581,7 @@ sub monitor_mailout {
         }
     }
 
+    $r .= 'Server Time: ' . scalar(localtime(time)) . "\n";
     $r .=
 "Total Mass Mailings: $total_mailouts, Active Mass Mailings: $active_mailouts, Paused Mass Mailings: $paused_mailouts, Queued Mass Mailings: $queued_mailouts, Inactive Mass Mailings: $inactive_mailouts\n\n";
 

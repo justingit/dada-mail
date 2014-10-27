@@ -1683,7 +1683,7 @@ sub find_attachment_type {
         }
     }
     if ( !$a_type ) {
-        warn "attachment MIME Type never figured out, letting MIME::Lite handle this...";
+        warn "attachment MIME Type never figured out, letting MIME::Entity handle this...";
         $a_type = 'AUTO';
     }
 

@@ -74,23 +74,6 @@ The fields in the schema play the same role as what's described for Postgres, al
 
 L<http://dadamailproject.com/support/documentation/MailingList_Subscribers.pm.html>
 
-=item * DADA::MailingList::Subscribers::PlainText
-
-L<http://dadamailproject.com/support/documentation/MailingList_Subscribers_PlainText.pm.html>
-
-=item * DADA::MailingList::Subscribers::baseSQL
-
-L<http://dadamailproject.com/support/documentation/MailingList_Subscribers_baseSQL.pm.html>
-
-=item * DADA::MailingList::Subscribers::MySQL
-
-L<http://dadamailproject.com/support/documentation/MailingList_Subscribers_MySQL.pm.html>
-
-
-=item * DADA::MailingList::Subscribers::PostgreSQL
-
-L<http://dadamailproject.com/support/documentation/MailingList_Subscribers_PostgreSQL.pm.html>
-
 =back
 
 

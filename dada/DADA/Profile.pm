@@ -601,6 +601,7 @@ sub profile_update_email_report {
 	
 }
 
+# Is this used... anywhere? 
 sub update_email { 
 	my $self = shift; 
 	my $old_fields = $self->{fields}->get;

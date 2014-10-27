@@ -297,7 +297,6 @@ sub parse_all_bounces {
 	my $isa_test = 0; 
 	
     my $log  = '';
-
     if ( exists( $args->{-list} ) ) {
         $list = $args->{-list};
     }
