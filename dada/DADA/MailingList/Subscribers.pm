@@ -411,7 +411,7 @@ sub admin_remove_subscribers {
 
     if ( $args->{-type} eq 'list' ) {
 
-        warn 'list';
+        #warn 'list';
 
         require DADA::MailingList::Settings;
         my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
@@ -422,7 +422,7 @@ sub admin_remove_subscribers {
             my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
             $fm->use_email_templates(0);
 
-            warn 'send_admin_unsubscription_notice 1';
+            #warn 'send_admin_unsubscription_notice 1';
 
             require DADA::App::ReadEmailMessages;
             my $rm       = DADA::App::ReadEmailMessages->new;
@@ -432,7 +432,9 @@ sub admin_remove_subscribers {
             foreach (@$unsubscribed) {
                 push( @$tmpl_addresses, { email => $_ } );
             }
-            my $msg = $msg_data->{msg};
+            #warn q|$msg_data->{msg}| . $msg_data->{msg}; 
+            
+            my $msg = $msg_data->{plaintext_body};
             
             require DADA::Template::Widgets;
             $msg = DADA::Template::Widgets::screen(
@@ -450,15 +452,15 @@ sub admin_remove_subscribers {
 
             my $to =
               $fm->_encode_header( 'From', $fm->format_phrase_address( $msg_data->{to_phrase}, $ls->param('list_owner_email'), ) );
-            warn '$to: ' . $to; 
+            # warn '$to: ' . $to; 
             
             if ( $ls->param('send_admin_unsubscription_notice_to') eq 'list' ) {
 
-                warn 'send_admin_unsubscription_notice_to list';
+                # warn 'send_admin_unsubscription_notice_to list';
 
                 $fm->mass_mailing(1);
                 require DADA::Mail::Send;
-                my $mh = DADA::Mail::Send->new( { -list => $args->{-list} } );
+                my $mh = DADA::Mail::Send->new( { -list => $self->{list} } );
                 $mh->list_type('list');
                 my $message_id = $mh->mass_send(
                     {
@@ -471,7 +473,7 @@ sub admin_remove_subscribers {
                     }
                 );
 
-                warn 'done.';
+                # warn 'done.';
 
             }
             else {
@@ -480,21 +482,21 @@ sub admin_remove_subscribers {
                 {
                     $to = $ls->param('alt_send_admin_unsubscription_notice_to');
 
-                    warn 'send_admin_unsubscription_notice_to alt';
-                    warn '$to: ' . $to;
+                    # warn 'send_admin_unsubscription_notice_to alt';
+                    # warn '$to: ' . $to;
 
                 }
-                else {
-                    warn q|$ls->param('send_admin_unsubscription_notice_to')|
-                      . $ls->param('send_admin_unsubscription_notice_to');
-                }
+                # else {
+                    # warn q|$ls->param('send_admin_unsubscription_notice_to')|
+                    #  . $ls->param('send_admin_unsubscription_notice_to');
+                # }
 
                 require DADA::App::Messages;
                 DADA::App::Messages::send_generic_email(
                     {
                         -list    => $self->{list},
                         -headers => {
-                            To      => '"' . $msg_data->{to_phrase} . '" <' . $ls->param('list_owner_email') . '>',
+                            To      => $to,
                             From    => '"' . $msg_data->{to_phrase} . '" <' . $ls->param('list_owner_email') . '>',
                             Subject => $msg_data->{subject},
                         },
