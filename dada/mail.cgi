@@ -2480,6 +2480,13 @@ sub list_options {
             -labels   => { list => 'Your Subscribers', 'list_owner' => 'The List Owner', 'alt' => 'Other:' },
             '-values' => [qw(list list_owner alt)],
         );
+        my $send_admin_unsubscription_notice_to_popup_menu = $q->popup_menu(
+            -name     => 'send_admin_unsubscription_notice_to',
+            -id       => 'send_admin_unsubscription_notice_to',
+            -default  => $ls->param('send_admin_unsubscription_notice_to'),
+            -labels   => { list => 'Your Subscribers', 'list_owner' => 'The List Owner', 'alt' => 'Other:' },
+            '-values' => [qw(list list_owner alt)],
+        );
 
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -2493,14 +2500,15 @@ sub list_options {
                 -expr => 1,
                 -list => $list,
                 -vars => {
-                    screen                                   => 'list_options',
-                    title                                    => 'Optons',
-                    done                                     => $done,
-                    CAPTCHA_TYPE                             => $DADA::Config::CAPTCHA_TYPE,
-                    can_use_mx_lookup                        => $can_use_mx_lookup,
-                    can_use_captcha                          => $can_use_captcha,
-                    send_subscription_notice_to_popup_menu   => $send_subscription_notice_to_popup_menu,
-                    send_unsubscription_notice_to_popup_menu => $send_unsubscription_notice_to_popup_menu,
+                    screen                                         => 'list_options',
+                    title                                          => 'Options',
+                    done                                           => $done,
+                    CAPTCHA_TYPE                                   => $DADA::Config::CAPTCHA_TYPE,
+                    can_use_mx_lookup                              => $can_use_mx_lookup,
+                    can_use_captcha                                => $can_use_captcha,
+                    send_subscription_notice_to_popup_menu         => $send_subscription_notice_to_popup_menu,
+                    send_unsubscription_notice_to_popup_menu       => $send_unsubscription_notice_to_popup_menu,
+                    send_admin_unsubscription_notice_to_popup_menu => $send_admin_unsubscription_notice_to_popup_menu, 
                     list_owner_email_anonystar_address =>
                       DADA::App::Guts::anonystar_address_encode( $ls->param('list_owner_email') ),
                 },
@@ -2573,6 +2581,12 @@ sub list_options {
                     alt_send_subscription_notice_to         => undef,
                     send_unsubscription_notice_to           => undef,
                     alt_send_unsubscription_notice_to       => undef, 
+                    
+                    send_admin_unsubscription_notice        => 0, 
+                    send_admin_unsubscription_notice_to     => undef, 
+                    alt_send_admin_unsubscription_notice_to => undef, 
+                    
+                    
                 }
             }
         );

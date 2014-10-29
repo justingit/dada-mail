@@ -485,10 +485,9 @@
                   <td width="99%">
                    <p>
                     <label for="get_sub_notice">
-                     Send Subscription Notifications
+                     Send Subscription Notifications to:
                     </label>
-                    <br />
-                    Send Subscription Notifications to: <!-- tmpl_var send_subscription_notice_to_popup_menu -->
+                    <!-- tmpl_var send_subscription_notice_to_popup_menu -->
                	    <input type="text" name="alt_send_subscription_notice_to" id="alt_send_subscription_notice_to" value="<!-- tmpl_var list_settings.alt_send_subscription_notice_to -->" />
                     
                     
@@ -758,10 +757,8 @@
        <td>
         <p>
          <label for="get_unsub_notice"> 
-          Send Unsubscription Notifications
-         </label>
-         <br />
-         Send Unsubscription Notifications to: <!-- tmpl_var send_unsubscription_notice_to_popup_menu -->
+          Send Unsubscription Notifications to:
+         </label><!-- tmpl_var send_unsubscription_notice_to_popup_menu -->
          <input type="text" name="alt_send_unsubscription_notice_to" id="alt_send_unsubscription_notice_to" value="<!-- tmpl_var list_settings.alt_send_unsubscription_notice_to -->" />
         </p>
        </td>
@@ -822,6 +819,7 @@
         </strong>
     </p>
     		<table class="options_tb">
+    		    
     			<tr> 
     				 <td class="checkbox_container">
     					<p>
@@ -833,14 +831,29 @@
     						<label for="send_unsubscribed_by_list_owner_message">
     							Send a "Farewell" Message to Addresses Unsubscribed in the List Control Panel
     						</label><br /> 
-
     					</p>
-
-
     				</td>
     			</tr>
+    			<tr> 
+    				 <td class="checkbox_container">
+    					<p>
+    						<input type="checkbox" name="send_admin_unsubscription_notice" id="send_admin_unsubscription_notice" <!-- tmpl_if list_settings.send_admin_unsubscription_notice -->checked="checked"<!-- /tmpl_if --> value="1" /> 	
+    					</p>
+    				</td>
+    				<td>
+    					<p>
+    						<label for="send_unsubscribed_by_list_owner_message">
+    							Send Email Notification to:
+    						</label>
+    						<!-- tmpl_var send_admin_unsubscription_notice_to_popup_menu -->
+    					    <input type="text" name="alt_send_admin_unsubscription_notice_to" id="alt_send_admin_unsubscription_notice_to" value="<!-- tmpl_var list_settings.alt_send_admin_unsubscription_notice_to -->" />
+                           	    
+    					</p>
+    				</td>
+    			</tr>
+
     </table>
-</fieldset><!-- In the List Control Panel: --> 
+</fieldset><!-- /In the List Control Panel: --> 
 
 
     <!-- tmpl_if list_settings.black_list --> 

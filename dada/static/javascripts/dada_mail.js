@@ -626,11 +626,27 @@ $(document).ready(function() {
 							}
 						}
 					}
+				},
+				alt_send_admin_unsubscription_notice_to: {
+					email:    true,
+					required: {
+						depends:  function(element) { 
+							if($("#send_admin_unsubscription_notice_to option:selected").val() == "alt" ){ 
+								return true; 
+							}
+							else {
+								return false; 
+							}
+						}
+					}
 				}
+				
 			}
 		});
 		toggle_sub_notice_to();
 		toggle_unsub_notice_to();
+		toggle_admin_unsub_notice_to(); 
+		
 		$("#send_subscription_notice_to").on("change", function(event) {
 			validator.resetForm();
 			toggle_sub_notice_to(); 
@@ -639,6 +655,11 @@ $(document).ready(function() {
 			validator.resetForm();
 			toggle_unsub_notice_to(); 
 		});  	
+		$("#send_admin_unsubscription_notice_to").on("change", function(event) {
+			validator.resetForm();
+			toggle_admin_unsub_notice_to(); 
+		});  	
+
 	}
 	
 	function toggle_sub_notice_to(){ 
@@ -665,8 +686,18 @@ $(document).ready(function() {
 			}
 		}
 	}
-
-
+	function toggle_admin_unsub_notice_to(){ 
+		if($("#send_admin_unsubscription_notice_to option:selected").val() == "alt"){ 
+			if($("#alt_send_admin_unsubscription_notice_to").is(':hidden')) {
+				$("#alt_send_admin_unsubscription_notice_to").show(); 
+			}
+		}
+		else { 
+			if($("#alt_send_admin_unsubscription_notice_to").is(':visible')) {
+				$("#alt_send_admin_unsubscription_notice_to").hide(); 
+			}
+		}
+	}
 	function toggle_anyone_can_subscribe() { 
 		if ($("#anyone_can_subscribe").prop("checked") === true) {
 			if($("#anyone_can_subscribe_options").is(':hidden')) {

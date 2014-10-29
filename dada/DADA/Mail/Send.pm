@@ -1726,7 +1726,7 @@ sub mass_send {
 						# if we've already logged this guy
 						if($mailout->isa_problem_address({-address => $current_email})){ 
 							# Time to skip.
-							my $warning = '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Cannot send to, address: ' . $current_email . 'after 2 x 3 tries, skipping and logging address.';
+							my $warning = '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Cannot send to, address: ' . $current_email . ' after 2 x 3 tries, skipping and logging address.';
 							warn $warning; 
 							$mailout->log($warning);
 							$mailout->countsubscriber;
