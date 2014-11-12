@@ -40,7 +40,7 @@ Saying that, v5.8.1 is freakin' old - released on September of 2003, and we don'
 
 For example, cPanel-powered hosting environments, which run a good majority of shared hosting accounts usually have vendor supplied copy of Perl of v5.8.1, v5.8.8 or v5.10. All these will work with Dada Mail, but they may also have a copy of v5.14 of Perl available at the following path: 
 
-L</usr/local/cpanel/3rdparty/perl/514/bin/perl>
+    /usr/local/cpanel/3rdparty/perl/514/bin/perl
 
 See: 
 

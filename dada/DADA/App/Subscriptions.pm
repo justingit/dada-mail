@@ -1498,7 +1498,7 @@ sub unsubscription_request {
                     },
                     -dada_pseudo_tag_filter => 1,
                     -vars                   => { email => $email, subscriber_email => $email },
-
+#                    -profile_vars_param     => {-email => $email},
                 }
             );
             $self->test ? return $r : print $fh safely_encode($r) and return;

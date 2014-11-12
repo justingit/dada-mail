@@ -327,8 +327,7 @@ sub send_subscribed_message {
 			},
 			-test         => $args->{-test}, 
 		}
-	); 
-	
+	);
 	# Logging?
 	
 }

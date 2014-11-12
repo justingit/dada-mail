@@ -1873,14 +1873,20 @@ sub screen {
 							}
 						);
 						if($prof->exists){ 
-			             $args->{-profile_vars} = $prof->get(
-							{
-								-dotted => 1,
-							}
-						);
+    			             $args->{-profile_vars} = $prof->get(
+    							{
+    								-dotted => 1,
+    							}
+    						);
+    						$args->{-profile_vars}->{'profile._profile_exists'} = 1;
 			        	}
 						else { 
-							$args->{-profile_vars} = {};
+						    # So, you know, if you try to use, and there's no profile, 
+						    # at least there's a fallback. 
+    						$args->{-profile_vars} = {
+    						        'profile._profile_exists' => 1,
+    						        'profile.email'           => $args->{-profile_vars_param}->{-email},
+    					    };
 						}
 			         }
 				}
@@ -1888,7 +1894,6 @@ sub screen {
     
 
 		   if(!exists($args->{-vars}->{profile})){
-     
 		         $args->{-vars}->{profile} = [];
 		         foreach(keys %{$args->{-profile_vars}}){ 
 		             my $nk = $_; 
@@ -1914,7 +1919,12 @@ sub screen {
 
     
      my $template_vars = {}; 
-        %$template_vars = (%{$args->{-list_settings_vars}}, %{$args->{-subscriber_vars}}, %{$args->{-profile_vars}}, %{$args->{-vars}}); 
+        %$template_vars = (
+            %{$args->{-list_settings_vars}}, 
+            %{$args->{-subscriber_vars}}, 
+            %{$args->{-profile_vars}}, 
+            %{$args->{-vars}},
+        ); 
 
 	
 			
@@ -2579,6 +2589,9 @@ sub filter_time_piece {
     
 	my @taglist = (); 
 	@taglist = $$text_ref =~ m/$match/gi;
+    
+    use Data::Dumper; 
+    warn Dumper([@taglist]); 
     
 	my $can_use_time_piece = 1;
 	my $can_use_posix      = 1; ; 

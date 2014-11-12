@@ -19,6 +19,9 @@ The following addresses have been Unsubscribed from, <!-- tmpl_var list_settings
 
 <!-- tmpl_loop addresses -->
 <!-- tmpl_var email -->
+    <!-- tmpl_loop profile -->
+        
+    <!-- /tmpl_loop -->
 <!-- /tmpl_loop -->
 
 - <!-- tmpl_var PROGRAM_NAME -->

@@ -415,12 +415,13 @@ sub admin_remove_subscribers {
 
         require DADA::MailingList::Settings;
         my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
-
+        
         if ( $ls->param('send_admin_unsubscription_notice') == 1 ) {
 
             require DADA::App::FormatMessages;
             my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
             $fm->use_email_templates(0);
+            #my $profile_email = $ls->param('list_owner_email');
 
             #warn 'send_admin_unsubscription_notice 1';
 
@@ -429,12 +430,36 @@ sub admin_remove_subscribers {
             my $msg_data = $rm->read_message('admin_unsubscription_notice.eml');
             
             my $tmpl_addresses = [];
+            require DADA::Profile;
             foreach (@$unsubscribed) {
-                push( @$tmpl_addresses, { email => $_ } );
+                require DADA::Profile::Fields;
+                my $dpf = DADA::Profile::Fields->new( { -email => $_ } );
+                my $profile_vals = {}; 
+                if ( $dpf->exists( { -email => $_ } ) ) {
+                    # -dotted_with may not work actually, use subscriber.
+                    $profile_vals = $dpf->get(
+                        {
+                            -dotted => 1, 
+                            -dotted_with => 'profile',
+                        }
+                    );
+                }   
+                push( @$tmpl_addresses, { 
+                    %$profile_vals, 
+                    email => $_,
+                }
+                );
+                
             }
             #warn q|$msg_data->{msg}| . $msg_data->{msg}; 
             
             my $msg = $msg_data->{plaintext_body};
+            
+#            if ( $ls->param('send_admin_unsubscription_notice_to') eq 'alt'
+#                && check_for_valid_email( $ls->param('alt_send_admin_unsubscription_notice_to') ) == 0 )
+#            {
+#                $profile_email = $ls->param('alt_send_admin_unsubscription_notice_to');
+#            }
             
             require DADA::Template::Widgets;
             $msg = DADA::Template::Widgets::screen(
@@ -447,6 +472,9 @@ sub admin_remove_subscribers {
                     -list_settings_vars_param => {
                         -list => $self->{list},
                     },
+                    #-profile_vars_param => {
+                    #    -email => $profile_email,
+                    #},
                 }
             );
 

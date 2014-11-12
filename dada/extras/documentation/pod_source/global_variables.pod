@@ -905,7 +905,7 @@ or,
 
  */5 * * * * cd /home/youraccount/cgi-bin/dada/ /usr/bin/perl ./mail.cgi > /dev/null
 
-And you have a mailing monitor running, without any extra scripts to installed. It may also be convenient, if you want the mailing monitor that the C<auto_pick.pl> extension provides, but you don't have access to, or don't know how to set a cronjob. 
+And you have a mailing monitor running, without any extra scripts to installed. It may also be convenient, if you want the mailing monitor that the C<mailing_monitor.cgi> plugin provides, but you don't have access to, or don't know how to set a cronjob. 
 
 
 =head2 $ENFORCE_CLOSED_LOOP_OPT_IN
