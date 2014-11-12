@@ -18,9 +18,9 @@ Content-Transfer-Encoding: binary
 The following addresses have been Unsubscribed from, <!-- tmpl_var list_settings.list_name -->:
 
 <!-- tmpl_loop addresses -->
-<!-- tmpl_var email -->
-    <!-- tmpl_loop profile -->
-        
+	<!-- tmpl_var subscriber.email --> 
+    <!-- tmpl_loop subscriber -->
+		* <!-- tmpl_var name -->: <!-- tmpl_var value -->
     <!-- /tmpl_loop -->
 <!-- /tmpl_loop -->
 

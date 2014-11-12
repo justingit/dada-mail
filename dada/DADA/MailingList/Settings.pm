@@ -427,8 +427,12 @@ sub _email_message_settings {
         admin_subscription_notice_message_subject => 1,
         admin_subscription_notice_message         => 1,
 
+        unsubscription_notice_message         => 1, 
+        unsubscription_notice_message_subject => 1, 
+
         admin_unsubscription_notice_message_subject => 1,
         admin_unsubscription_notice_message         => 1,
+        
 
         not_allowed_to_post_msg_subject => 1,
         not_allowed_to_post_msg         => 1,
@@ -541,6 +545,8 @@ sub _fill_in_email_message_settings {
         admin_subscription_notice_message_subject   => {-tmpl => 'admin_subscription_notice_message.eml', -part => 'subject'},
         admin_subscription_notice_message           => {-tmpl => 'admin_subscription_notice_message.eml', -part => 'plaintext_body'}, 
 
+        unsubscription_notice_message_subject       => {-tmpl => 'unsubscription_notice_message.eml', -part => 'subject'},
+        unsubscription_notice_message               => {-tmpl => 'unsubscription_notice_message.eml', -part => 'plaintext_body'}, 
 
         admin_unsubscription_notice_message_subject => {-tmpl => 'admin_unsubscription_notice_message.eml', -part => 'subject'},
         admin_unsubscription_notice_message         => {-tmpl => 'admin_unsubscription_notice_message.eml', -part => 'plaintext_body'}, 

@@ -7600,6 +7600,7 @@ sub edit_type {
                     -Root_Login => $root_login,
                     -List       => $list,
                 },
+                -expr => 1,
                 -list => $list,
                 -vars => {
                     screen => 'edit_type',
@@ -7662,6 +7663,10 @@ sub edit_type {
 
             admin_unsubscription_notice_message
             admin_unsubscription_notice_message_subject
+            
+            unsubscription_notice_message_subject
+            unsubscription_notice_message
+            
 
             )
           )
@@ -7714,6 +7719,9 @@ sub edit_type {
                     admin_subscription_notice_message_subject   => undef,
                     admin_unsubscription_notice_message         => undef,
                     admin_unsubscription_notice_message_subject => undef,
+                    unsubscription_notice_message_subject       => undef, 
+                    unsubscription_notice_message               => undef, 
+                    
 
                     enable_email_template_expr => 0,
                 }

@@ -1545,6 +1545,9 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
     admin_subscription_notice_message_subject => undef,
     admin_subscription_notice_message         => undef,
 
+    unsubscription_notice_message_subject => undef,
+    unsubscription_notice_message         => undef,
+
     admin_unsubscription_notice_message_subject => undef,
     admin_unsubscription_notice_message         => undef,
 

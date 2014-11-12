@@ -425,35 +425,44 @@ sub admin_remove_subscribers {
 
             #warn 'send_admin_unsubscription_notice 1';
 
-            require DADA::App::ReadEmailMessages;
-            my $rm       = DADA::App::ReadEmailMessages->new;
-            my $msg_data = $rm->read_message('admin_unsubscription_notice.eml');
+            
             
             my $tmpl_addresses = [];
             require DADA::Profile;
-            foreach (@$unsubscribed) {
+            # Ugly!
+            foreach my $un(@$unsubscribed) {
                 require DADA::Profile::Fields;
-                my $dpf = DADA::Profile::Fields->new( { -email => $_ } );
+                my $dpf = DADA::Profile::Fields->new( { -email => $un } );
                 my $profile_vals = {}; 
-                if ( $dpf->exists( { -email => $_ } ) ) {
-                    # -dotted_with may not work actually, use subscriber.
+                if ( $dpf->exists( { -email => $un } ) ) {
                     $profile_vals = $dpf->get(
                         {
                             -dotted => 1, 
-                            -dotted_with => 'profile',
+                            -dotted_with => 'profile', # -dotted_with does not work actually (just an idea), use subscriber.
                         }
                     );
                 }   
-                push( @$tmpl_addresses, { 
-                    %$profile_vals, 
-                    email => $_,
+                my $subscriber_loop = []; 
+               
+                foreach(sort keys %{$profile_vals}){ 
+                    my $nk = $_; 
+                    $nk =~ s/subscriber\.//; 
+                    push( @$subscriber_loop, {name => $nk, value => $profile_vals->{$_}});
                 }
-                );
                 
+                
+                push( @$tmpl_addresses, { 
+                        subscriber => $subscriber_loop, 
+                        %$profile_vals, 
+                        email => $_,
+                    }    
+                );
+
             }
-            #warn q|$msg_data->{msg}| . $msg_data->{msg}; 
+            # /ugly
             
-            my $msg = $msg_data->{plaintext_body};
+            
+            my $msg = $ls->param('unsubscription_notice_message');
             
 #            if ( $ls->param('send_admin_unsubscription_notice_to') eq 'alt'
 #                && check_for_valid_email( $ls->param('alt_send_admin_unsubscription_notice_to') ) == 0 )
@@ -478,9 +487,7 @@ sub admin_remove_subscribers {
                 }
             );
 
-            my $to =
-              $fm->_encode_header( 'From', $fm->format_phrase_address( $msg_data->{to_phrase}, $ls->param('list_owner_email'), ) );
-            # warn '$to: ' . $to; 
+            my $to = $ls->param('list_owner_email');
             
             if ( $ls->param('send_admin_unsubscription_notice_to') eq 'list' ) {
 
@@ -493,16 +500,11 @@ sub admin_remove_subscribers {
                 my $message_id = $mh->mass_send(
                     {
                         -msg => {
-
-                            #                        From    => $formatted_from,
-                            Subject => $msg_data->{subject},
+                            Subject => $ls->param('unsubscription_notice_message_subject'),
                             Body    => $msg,
                         },
                     }
                 );
-
-                # warn 'done.';
-
             }
             else {
                 if ( $ls->param('send_admin_unsubscription_notice_to') eq 'alt'
@@ -525,8 +527,8 @@ sub admin_remove_subscribers {
                         -list    => $self->{list},
                         -headers => {
                             To      => $to,
-                            From    => '"' . $msg_data->{to_phrase} . '" <' . $ls->param('list_owner_email') . '>',
-                            Subject => $msg_data->{subject},
+                            From    => $ls->param('list_owner_email'),
+                            Subject => $ls->param('unsubscription_notice_message_subject'),
                         },
                         -body => $msg,
                     }
