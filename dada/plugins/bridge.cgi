@@ -3375,7 +3375,6 @@ sub cgi_edit_email_msgs {
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
 
     require DADA::App::FormatMessages;
     my $dfm = DADA::App::FormatMessages->new( -List => $list );
@@ -3409,7 +3408,7 @@ sub cgi_edit_email_msgs {
                         ( $Plugin_Config->{Max_Size_Of_Any_Message} / 1024 ) ),
 
                 },
-                -list_settings_vars       => $li,
+                -list_settings_vars       => $ls->get(-all_settings => 1),
                 -list_settings_vars_param => { -dot_it => 1, },
             }
         );
