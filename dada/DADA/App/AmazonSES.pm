@@ -81,48 +81,6 @@ sub verify_sender {
 
 
 
-=cut
-useless
-sub list_identities { 
-	my $self = shift; 
-	my ($args) = @_; 
-	
-	my $status = undef; 
-	my $result = undef; 
-	
-	try { 
-		require Net::Amazon::SES; 
-		my $ses_obj = Net::Amazon::SES->new( $DADA::Config::AMAZON_SES_OPTIONS ); 
-		($status, $result) = $ses_obj->list_identities();
-	}
-	catch { 
-		carp $_; 
-	};
-	return ($status, $result);
-}
-=cut
-
-
-=cut
-sub email_verified { 
-    my $self  = shift; 
-    my $email = shift; 
-    my ($rc, $i) = $self->list_identities; 
-    for my $idenity(@$i){ 
-#        if($idenity !~ m/\@/){ 
- #           if($email =~ m/^(.*?)\@$idenity/){ 
-  #              return 1;
-   #         }
-    #    }
-     #   elsif($email eq $identity) { 
-      
-        if($email eq $identity) {
-            return 1; 
-        }
-    }
-    return 0; 
-}
-=cut
 
 sub sender_verified { 
     	my $self  = shift; 

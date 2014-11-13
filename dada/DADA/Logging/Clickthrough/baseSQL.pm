@@ -329,8 +329,10 @@ sub r_log {
     && $self->{ls}->param('tracker_update_profiles_w_geo_ip_data') == 1
     && $args->{-email} ne '') { 
         try { 
-            warn '$args->{-email}' . $args->{-email} if $t; 
-            warn '$remote_address'  . $remote_address if $t; 
+            warn '$args->{-email}' . $args->{-email} 
+                if $t; 
+            warn '$remote_address'  . $remote_address 
+                if $t; 
             $self->_update_profile_fields(
                 {
                     -email      => $args->{-email},
@@ -2140,8 +2142,8 @@ sub message_email_report_table {
 		}
 		my $report = $self->message_email_report($args);
 		
-		use Data::Dumper; 
-		warn Dumper($report); 
+#		use Data::Dumper; 
+#		warn Dumper($report); 
 		
 		require DADA::Template::Widgets; 
 	    $html = DADA::Template::Widgets::screen(

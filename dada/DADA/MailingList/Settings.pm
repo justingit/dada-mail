@@ -141,7 +141,7 @@ sub post_process_get {
                 last;
             }
         }
-
+        
         for ( 'sasl_smtp_password', 'pop3_password',
             'discussion_pop_password' )
         {
@@ -170,9 +170,7 @@ sub post_process_get {
 
         for ( keys %$li ) {
             if ( exists( $li->{$_} ) ) {
-
                 if ( !defined( $li->{$_} ) ) {
-
                     delete( $li->{$_} );
                 }
             }
@@ -745,7 +743,7 @@ sub _existence_check {
     my $li   = shift; 
     for(keys %$li){ 
         if(!exists($DADA::Config::LIST_SETUP_DEFAULTS{$_})){         
-            croak("Attempt to save a unregistered setting - $_"); 
+            croak("Attempt to save a unregistered setting: '$_'"); 
         }
     }
 }

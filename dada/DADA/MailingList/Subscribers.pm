@@ -117,8 +117,156 @@ sub add_subscriber {
 		$args->{-dpfm_obj} = $self->{-dpfm_obj}; 
 	}
     return DADA::MailingList::Subscriber->add( $args );
-
 }
+
+
+
+sub quota_limit { 
+    my $self = shift; 
+    my $quota_limit = undef;
+    if ( $type eq 'list' ) {
+        if ( $self->{ls}->param('use_subscription_quota') == 1 ) {
+            $quota_limit = $self->{ls}->param('subscription_quota');
+        }
+        elsif ( defined($DADA::Config::SUBSCRIPTION_QUOTA)
+            && $DADA::Config::SUBSCRIPTION_QUOTA > 0 )
+        {
+            $quota_limit = $DADA::Config::SUBSCRIPTION_QUOTA;
+        }
+    }
+    return $quota_limit; 
+    
+}
+
+sub add_subscribers { 
+    
+    my $self   = shift; 
+    my ($args) = @_; 
+    
+    my $addresses           = $args->{-addresses};
+    my $added_addresses     = []; 
+    my $type                = $args->{-type}; 
+    if(!exists($args->{-fields_options_mode})){ 
+        $args->{-fields_options_mode} = 'preserve_if_defined';
+    }
+    
+    my $num_subscribers     = $self->num_subscribers;
+    my $new_total           = $num_subscribers; 
+    my $quota_limit         = $self->quota_limit; 
+    my $new_email_count     = 0; 
+    my $skipped_email_count = 0; 
+    
+    # Each Address is a CSV line...
+    for my $info (@$addresses) {
+
+        my $dmls = undef;
+
+        if (   $type eq 'list'
+            && defined($quota_limit)
+            && $new_total >= $quota_limit )
+        {
+            $skipped_email_count++;
+        }
+        else {
+            my $pf_om   = 'preserve_if_defined'; 
+            my $pass_om = 'preserve_if_defined'; 
+
+            if($args->{-fields_options_mode} eq 'writeover_ex_password'){ 
+                $pf_om   = 'writeover'; 
+                $pass_om = 'preserve_if_defined'; 
+            }
+            elsif($args->{-fields_options_mode} eq 'writeover_inc_password'){ 
+                $pf_om   = 'writeover'; 
+                $pass_om = 'writeover'; 
+            }
+            
+            $dmls = $self->add_subscriber(
+                {
+                    -email             => $info->{email},
+                    -fields            => $info->{fields},
+                    -profile           => { 
+                        -password => $info->{profile}->{password}, 
+                        -mode     => $args->{-fields_options_mode}, 
+                    },
+                    -type              => $type,
+                    -fields_options    => { -mode => $args->{-fields_options_mode}, },
+                    -dupe_check        => {
+                        -enable  => 1,
+                        -on_dupe => 'ignore_add',
+                    },
+                }
+            );                         
+            $new_total++;
+            if ( defined($dmls) ) {    # undef means it wasn't added.
+                $new_email_count++;
+                push(@$added_addresses, $info); 
+            }
+            else {
+                $skipped_email_count++;
+            }
+        }
+    }
+    
+    undef($addresses); 
+    
+    if ( $type eq 'list' ) {
+        if ( $self->{ls}->param('send_subscribed_by_list_owner_message') == 1 ) {
+            require DADA::App::MassSend;
+            eval {
+                
+                # DEV: 
+                # This needs to send the Profile Password, if it's known. 
+                #
+                require DADA::App::MassSend;
+                DADA::App::MassSend::just_subscribed_mass_mailing(
+                    {
+                        -list      => $self->{list},
+                        -addresses => $added_addresses,
+                    }
+                );
+            };
+            if ($@) {
+                carp $@;
+            }
+        }
+        if ( $self->{ls}->param('send_last_archived_msg_mass_mailing') == 1 ) {
+            eval {
+                require DADA::App::MassSend;
+                DADA::App::MassSend::send_last_archived_msg_mass_mailing(
+                    {
+                        -list      => $self->{list},
+                        -addresses => $added_addresses,
+                    }
+                );
+            };
+            if ($@) {
+                carp $@;
+            }
+        }
+    }
+
+    if (   $DADA::Config::PROFILE_OPTIONS->{enabled} == 1
+        && $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/ )
+    {
+        eval {
+            require DADA::Profile::Htpasswd;
+            my $htp = DADA::Profile::Htpasswd->new( { -list =>$self->{list} } );
+            for my $id ( @{ $htp->get_all_ids } ) {
+                $htp->setup_directory( { -id => $id } );
+            }
+        };
+        if ($@) {
+            warn "Problem updated Password Protected Directories: $@";
+        }
+    }
+    
+    return ($new_email_count, $skipped_email_count); 
+    
+}
+
+
+
+
 
 sub get_subscriber {
     my $self   = shift;
@@ -720,7 +868,6 @@ sub filter_subscribers_w_meta {
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
 
-
     for my $n_address(@{$info}){ 
 
         if(exists($dupe_check->{$n_address->{email}})){
@@ -849,7 +996,6 @@ sub filter_subscribers_massaged_for_ht {
                 }
             }
         }
-                
         push(
             @$new_emails,
             {

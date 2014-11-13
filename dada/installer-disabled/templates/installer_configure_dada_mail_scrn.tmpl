@@ -546,7 +546,7 @@ for it to work correctly. For help on setting the cronjob, see the
 	</label>
 	<span class="alert">Requires Additional Configuration (cronjob)</span>	
 </p> 
-<div id="bridge_configuration">
+<div id="bridge_options">
 	<fieldset> 
 		<legend>Bridge Configuration</legend>
 
@@ -679,7 +679,7 @@ for it to work correctly. For help on setting the cronjob, see the
 	<input type="checkbox" name="install_bounce_handler" id="install_bounce_handler" value="1" class="radio_toggleDivs" data-target="bounce_handler_configuration" />
 	<label for="install_bounce_handler">Bounce Handler</label> <span class="alert">Requires Additional Configuration (cronjob)</span></p>
 
-<div id="bounce_handler_configuration">
+<div id="bounce_handler_options">
 	<fieldset> 
 		<legend>Bounce Handler Configuration [
 			<a href="#" class="toggleDivs" data-target="bounce_handler_configuration_help">
@@ -836,7 +836,7 @@ editors also have the ability to make simple HTML tables for basic layouts.
 
 
 	
-<div id="install_wysiwyg_editors_options">
+<div id="wysiwyg_editors_options">
 <fieldset> 
 	<p>
 		<input type="checkbox" name="wysiwyg_editor_install_ckeditor" id="wysiwyg_editor_install_ckeditor" value="1" checked="checked" />			
@@ -985,8 +985,6 @@ editors also have the ability to make simple HTML tables for basic layouts.
 	<input type="checkbox" name="configure_cache" id="configure_cache" value="1" />			
 <label for="configure_cache">Configure Caching</label>
 </p>
-
-
 <div id="cache_options">
 <fieldset> 
 	<p>
@@ -1156,7 +1154,7 @@ editors also have the ability to make simple HTML tables for basic layouts.
 	</p>
 
 
-	<div id="template_options">
+	<div id="templates_options">
 	<fieldset> 
 		<p>
 			<input type="checkbox" name="configure_user_template" id="configure_user_template" value="1" />			
@@ -1372,8 +1370,8 @@ editors also have the ability to make simple HTML tables for basic layouts.
 <!-- tmpl_if show_global_mailing_list_options --> 
 
 	<p>
-		<input type="checkbox" name="configure_global_mailing_list_options" id="configure_global_mailing_list_options" value="1" />			
-	<label for="configure_global_mailing_list_options">Configure Global Mailing List Options</label>
+		<input type="checkbox" name="configure_global_mailing_list" id="configure_global_mailing_list" value="1" />			
+	<label for="configure_global_mailing_list">Configure Global Mailing List Options</label>
 	</p>
 	<div id="global_mailing_list_options">
 	<fieldset> 
@@ -1499,17 +1497,38 @@ editors also have the ability to make simple HTML tables for basic layouts.
 		<input type="checkbox" name="configure_program_name" id="configure_program_name" value="1" />			
 	<label for="configure_program_name">Configure Program Name</label>
 	</p>
-	<div id="configure_program_name_options">
+	<div id="program_name_options">
 	<fieldset>
 		<p>
 			<label for="program_name_PROGRAM_NAME">
 				Program Name: 
 			</label>
-			<input type="text" name="program_name_PROGRAM_NAME" id="program_name_PROGRAM_NAME" value="<!-- tmpl_var PROGRAM_NAME -->" class="midi" />
+			<input type="text" name="program_name_PROGRAM_NAME" id="program_name_PROGRAM_NAME" value="<!-- tmpl_var program_name_PROGRAM_NAME -->" class="midi" />
 		</p>
 	</fieldset>
 	</div> 
 <!-- /tmpl_if --> 
+
+
+<!-- tmpl_if show_s_program_url_options --> 
+
+	<p>
+		<input type="checkbox" name="configure_s_program_url" id="configure_s_program_url" value="1" />			
+	<label for="configure_s_program_url">Configure Secure Program URL</label>
+	</p>
+	<div id="s_program_url_options">
+	<fieldset>
+		<p>
+			<label for="s_program_url_S_PROGRAM_URL">
+				Secure Program URL: 
+			</label>
+			<input type="text" name="s_program_url_S_PROGRAM_URL" id="s_program_url_S_PROGRAM_URL" value="<!-- tmpl_var s_program_url_S_PROGRAM_URL -->" class="midi" />
+		</p>
+	</fieldset>
+	</div> 
+<!-- /tmpl_if --> 
+
+
 
 
 <!-- tmpl_if show_amazon_ses_options --> 

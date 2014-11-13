@@ -429,6 +429,37 @@ if ( $ENV{PATH_INFO} ) {
         $q->param( 'auth_code', $pi_auth_code )
           if $pi_auth_code;
     }
+    elsif ( $info =~ m/^api/ ) {
+        
+        my ($pi_flavor, $pi_list, $pi_service, $pi_public_key, $pi_digest) = split( '/', $info );
+        # HTTP_AUTHORIZATION
+        my %incoming_headers = map { $_ => $q->http($_) } $q->http();
+        use Data::Dumper; 
+        warn Dumper({%incoming_headers}); 
+        
+        if(!defined($pi_public_key) && !defined($pi_digest)){ 
+            my $auth_h = $incoming_headers{HTTP_AUTHORIZATION};
+               $auth_h =~ s/^hmac //; 
+            ($pi_public_key, $pi_digest) = split(':', $auth_h); 
+        }
+        if(!defined($q->param('nonce')) && $ENV{REQUEST_METHOD} eq 'GET'){ 
+            $q->param('nonce', $incoming_headers{'HTTP_X_DADA_NONCE'}); 
+        }
+        
+        require DADA::App::WebServices; 
+          my $ws = DADA::App::WebServices->new; 
+          my $r = $ws->request(
+              {
+                  -list       => $pi_list, 
+                  -service    => $pi_service, 
+                  -public_key => $pi_public_key,
+                  -digest     => $pi_digest, 
+                  -cgi_obj    => $q, 
+              }
+           ); 
+           print $r;
+           $q->param('flavor', 'api'); 
+    }
     else {
         if ($info) {
             warn "Path Info present - but not valid? - '" . $ENV{PATH_INFO} . '" - filtered: "' . $info . '"'
@@ -508,6 +539,7 @@ sub run {
         'default'                                     => \&default,
         'subscribe'                                   => \&subscribe,
         'restful_subscribe'                           => \&restful_subscribe,
+        'api'                                         => \&api, 
         'token'                                       => \&token,
         'unsubscribe'                                 => \&unsubscribe,
         'unsubscription_request'                      => \&unsubscription_request,
@@ -585,6 +617,8 @@ sub run {
         'edit_type'                                   => \&edit_type,
         'edit_html_type'                              => \&edit_html_type,
         'list_options'                                => \&list_options,
+        'web_services'                                => \&web_services, 
+        'api'                                         => \&api, 
         'sending_preferences'                         => \&sending_preferences,
         'amazon_ses_verify_email'                     => \&amazon_ses_verify_email,
         'amazon_ses_get_stats'                        => \&amazon_ses_get_stats,
@@ -2159,8 +2193,9 @@ sub change_info {
             $ses_params->{using_ses} = 1;    
             require   DADA::App::AmazonSES;
             my $ses = DADA::App::AmazonSES->new;
-            $ses_params->{list_owner_ses_verified} = $ses->sender_verified($ls->param('list_owner_email'));  
-            $ses_params->{list_admin_ses_verified} = $ses->sender_verified($ls->param('admin_email'));  
+            $ses_params->{list_owner_ses_verified}     = $ses->sender_verified($ls->param('list_owner_email'));  
+            $ses_params->{list_admin_ses_verified}     = $ses->sender_verified($ls->param('admin_email'));  
+            $ses_params->{discussion_pop_ses_verified} = $ses->sender_verified($ls->param('discussion_pop_email'));  
     }
     my $errors = 0;
     my $flags  = {};
@@ -2416,8 +2451,8 @@ sub list_options {
     );
 
     $list = $admin_list;
+    
     require DADA::MailingList::Settings;
-
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
     my $can_use_mx_lookup = 0;
@@ -2545,6 +2580,64 @@ sub list_options {
     }
 }
 
+
+
+sub api{};
+    
+sub web_services { 
+    
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'web_services'
+    );
+
+    $list = $admin_list;
+    
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    
+    if(length($ls->param('public_api_key')) <= 0 || $process eq 'reset_keys'){ 
+        require DADA::Security::Password; 
+        $ls->save({public_api_key => DADA::Security::Password::generate_rand_string(undef, 21)}); 
+        undef $ls; 
+        $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    }
+    if(length($ls->param('private_api_key'))  <= 0 || $process eq 'reset_keys') { 
+        require DADA::Security::Password; 
+        $ls->save({private_api_key => DADA::Security::Password::generate_rand_string(undef, 41)}); 
+        undef $ls; 
+        $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    }
+    my $keys_reset = 0; 
+    if($process eq 'reset_keys'){ 
+       $keys_reset = 1; 
+    }
+    
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+        {
+            -screen         => 'web_services.tmpl',
+            -with           => 'admin',
+            -expr           => 1,
+            -wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
+            -vars => {
+                keys_reset => $keys_reset, 
+            },
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+        }
+    );
+    e_print($scrn);
+    
+    
+        
+}
+
 sub sending_preferences {
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
@@ -2564,11 +2657,10 @@ sub sending_preferences {
             $ses_params->{using_ses} = 1;    
             require   DADA::App::AmazonSES;
             my $ses = DADA::App::AmazonSES->new;
-            $ses_params->{list_owner_ses_verified} = $ses->sender_verified($ls->param('list_owner_email'));  
-            $ses_params->{list_admin_ses_verified} = $ses->sender_verified($ls->param('admin_email'));  
+            $ses_params->{list_owner_ses_verified}     = $ses->sender_verified($ls->param('list_owner_email'));  
+            $ses_params->{list_admin_ses_verified}     = $ses->sender_verified($ls->param('admin_email'));  
+            $ses_params->{discussion_pop_ses_verified} = $ses->sender_verified($ls->param('discussion_pop_email'));  
     }
-    
-    
     if ( !$process ) {
 
         require DADA::MailingList::Settings;
@@ -5660,53 +5752,33 @@ sub add_email {
 
                 # This is what updates already existing profile fields and profile passwords; 
                 # 
-                my @update_fields_address = $q->param("update_fields_address"); 
+                my @update_fields_address          = $q->param("update_fields_address"); 
+                
+                # This is a lot of code, to set one thing: 
                 my $subscribed_fields_options_mode = $q->param('subscribed_fields_options_mode') || 'writeover_inc_password';
-
                 my $spass_om = 'writeover';                 
                 if($subscribed_fields_options_mode eq 'writeover_ex_password'){ 
                     $spass_om = 'preserve_if_defined'; 
                 }
+                #/
                 
                 my $update_email_count = 0;
-                require DADA::Profile::Fields;
-                require DADA::Profile;
+                # Change from csv to a complex data structure. 
+                my @munged_update_addresses = (); 
                 for my $ua (@update_fields_address) {
-                    my $ua_info = $lh->csv_to_cds($ua);
-                    my $dpf = DADA::Profile::Fields->new( { -email => $ua_info->{email} } );
-                    $dpf->insert(
-                        {
-                            -fields => $ua_info->{fields},
-                            -mode   => 'writeover',
-                        }
-                    );
-                    if ( defined( $ua_info->{profile}->{password} ) && $ua_info->{profile}->{password} ne '' ) {
-                        my $prof = DADA::Profile->new( { -email => $ua_info->{email} } );
-                        if ($prof) {
-                            if ( $prof->exists ) {
-                                if($spass_om eq 'writeover') { 
-                                    $prof->update( { -password => $ua_info->{profile}->{password} } );
-                                }
-                                elsif($spass_om eq 'preserve_if_defined'){ 
-                                    #.... 
-                                }
-                            }
-                            else {
-                                $prof->insert(
-                                    {
-                                        -password  => $ua_info->{profile}->{password},
-                                        -activated => 1,
-                                    }
-                                );
-                            }
-                        }
-                    }
-                    $update_email_count++;
+                    push(@munged_update_addresses, $lh->csv_to_cds($ua));        
                 }
-                ##################################################################
+                                
+                require DADA::Profiles; 
+                my $dp = DADA::Profiles->new; 
+                my $update_email_count = $dp->update(
+                   { 
+                        -addresses       => [@munged_update_addresses],
+                        -password_policy => $spass_om,
+                   } 
+                ); 
             }
         }
-        
         
         if ( $process =~ /invit/i ) {
             &list_invite;
@@ -5714,17 +5786,6 @@ sub add_email {
         }
         else {
 
-            my $quota_limit = undef;
-            if ( $type eq 'list' ) {
-                if ( $ls->param('use_subscription_quota') == 1 ) {
-                    $quota_limit = $ls->param('subscription_quota');
-                }
-                elsif ( defined($DADA::Config::SUBSCRIPTION_QUOTA)
-                    && $DADA::Config::SUBSCRIPTION_QUOTA > 0 )
-                {
-                    $quota_limit = $DADA::Config::SUBSCRIPTION_QUOTA;
-                }
-            }
 
             if($type eq 'list') { 
                 unless(
@@ -5736,126 +5797,29 @@ sub add_email {
             }
             
             my @address                         = $q->param("address");
-            my $not_members_fields_options_mode = $q->param('not_members_fields_options_mode') || 'preserve_if_defined';
-            my $new_email_count                 = 0;
-            my $skipped_email_count             = 0;
-            my $num_subscribers                 = $lh->num_subscribers;
-            my $new_total                       = $num_subscribers;
-
-
             
-            # Each Address is a CSV line...
+            my @munged_add_addresses = (); 
             for my $a (@address) {
-                my $info = undef;
-                my $dmls = undef;
-                if (   $type eq 'list'
-                    && defined($quota_limit)
-                    && $new_total >= $quota_limit )
-                {
-                    $skipped_email_count++;
-                }
-                else {
-                    # profile/fields set should really only be for
-                    # when you import subscribers... 
-                    # 
-                    $info = $lh->csv_to_cds($a);
-                    
-                    # This will combine creation of the subscription, profile
-                    # and fields in one method. 
-                    #
-                    my $pf_om   = 'preserve_if_defined'; 
-                    my $pass_om = 'preserve_if_defined'; 
-                    if($not_members_fields_options_mode eq 'writeover_ex_password'){ 
-                        $pf_om   = 'writeover'; 
-                        $pass_om = 'preserve_if_defined'; 
-                    }
-                    elsif($not_members_fields_options_mode eq 'writeover_inc_password'){ 
-                        $pf_om   = 'writeover'; 
-                        $pass_om = 'writeover'; 
-                    }
-                    
-                    $dmls = $lh->add_subscriber(
-                        {
-                            -email             => $info->{email},
-                            -fields            => $info->{fields},
-                            -profile           => { 
-                                -password => $info->{profile}->{password}, 
-                                -mode     => $not_members_fields_options_mode, 
-                            },
-                            -type              => $type,
-                            -fields_options    => { -mode => $not_members_fields_options_mode, },
-                            -dupe_check        => {
-                                -enable  => 1,
-                                -on_dupe => 'ignore_add',
-                            },
-                        }
-                    );
-                    $new_total++;
-                    if ( defined($dmls) ) {    # undef means it wasn't added.
-                        $new_email_count++;
-                    }
-                    else {
-                        $skipped_email_count++;
-                    }
-                }
+                push(@munged_add_addresses, $lh->csv_to_cds($a));        
             }
+            undef(@address); 
             
-            if ( $type eq 'list' ) {
-                if ( $ls->param('send_subscribed_by_list_owner_message') == 1 ) {
-                    require DADA::App::MassSend;
-                    eval {
-                        
-                        # DEV: 
-                        # This needs to send the Profile Password, if it's known. 
-                        #
-                        # Well, that's wrong, isn't it? Since @address may hold
-                        # addresses we've skipped. 
-                        DADA::App::MassSend::just_subscribed_mass_mailing(
-                            {
-                                -list      => $list,
-                                -addresses => [@address],
-                            }
-                        );
-                    };
-                    if ($@) {
-                        carp $@;
-                    }
-                }
-                if ( $ls->param('send_last_archived_msg_mass_mailing') == 1 ) {
-                    eval {
-                        DADA::App::MassSend::send_last_archived_msg_mass_mailing(
-                            {
-                                -list      => $list,
-                                -addresses => [@address],
-                            }
-                        );
-                    };
-                    if ($@) {
-                        carp $@;
-                    }
-                }
-            }
+            my $not_members_fields_options_mode = $q->param('not_members_fields_options_mode');
+            
 
-            if (   $DADA::Config::PROFILE_OPTIONS->{enabled} == 1
-                && $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/ )
-            {
-                eval {
-                    require DADA::Profile::Htpasswd;
-                    my $htp = DADA::Profile::Htpasswd->new( { -list => $list } );
-                    for my $id ( @{ $htp->get_all_ids } ) {
-                        $htp->setup_directory( { -id => $id } );
+            my($new_email_count, $skipped_email_count) = $lh->add_subscribers(
+                    { 
+                        -addresses           => [@munged_add_addresses],
+                        -fields_options_mode => $not_members_fields_options_mode,
+                        -type                => $type, 
                     }
-                };
-                if ($@) {
-                    warn "Problem updated Password Protected Directories: $@";
-                }
-            }
-
+            ); 
+                
             my $flavor_to_return_to = 'view_list';
             if ( $return_to eq 'membership' ) {    # or, others...
                 $flavor_to_return_to = $return_to;
             }
-
+            
             my $qs =
                 'flavor='
               . $flavor_to_return_to
@@ -5876,6 +5840,7 @@ sub add_email {
         }
     }
 }
+
 
 sub delete_email {
 
@@ -8387,7 +8352,7 @@ sub restful_subscribe {
         e_print( $callback . '(' . $json . ');' );
     }
     else {
-        e_print( $json, "\n" );
+        e_print( $json );
     }
 
 }
@@ -11600,6 +11565,8 @@ sub profile_login {
                 $can_use_captcha = can_use_AuthenCAPTCHA(); 
             }
             if ( $can_use_captcha == 1 ) {
+                require DADA::Security::AuthenCAPTCHA;
+                my $cap = DADA::Security::AuthenCAPTCHA->new; 
                 $CAPTCHA_string = $cap->get_html( $DADA::Config::RECAPTCHA_PARAMS->{public_key} );
             }
 
@@ -11636,6 +11603,7 @@ sub profile_login {
                         removal                      => $q->param('removal')                      || '',
                         %{ DADA::Profile::feature_enabled() }
                     },
+
                 }
             );
             e_print($scrn);

@@ -700,6 +700,14 @@ $ADMIN_MENU ||= [
             },
 
             {
+                -Title     => 'Web Services API',
+                -Title_URL => "$S_PROGRAM_URL?f=web_services",
+                -Function  => 'web_services',
+                -Activated => 1,
+            },
+
+
+            {
                 -Title     => 'Delete This Mailing List',
                 -Title_URL => "$S_PROGRAM_URL?f=delete_list",
                 -Function  => 'delete_list',
@@ -1199,23 +1207,33 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
 
 %LIST_SETUP_DEFAULTS = (
 
-    list => '',    # don't default...
-    info => '',
-
-    # (Dummy)
-    list_info => undef,
-
-    admin_email      => undef,
-    list_owner_email => '',
-    privacy_policy   => '',
+    # Your Mailing List >> List Information
+    
+    list             => '',    # don't default...
     list_name        => '',
+    list_owner_email => '',
+    admin_email      => undef,
+    info             => '',    
+    privacy_policy   => '',
     physical_address => '',
+        # (Dummy)
+        list_info => undef,
+
+    # Your Mailing List >> List Password
     password         => '',      # you'll need to encrypt it to use this...
+    cipher_key       => undef,
 
-    # Misc...
-
-    cipher_key => undef,
-    admin_menu => undef,
+    # Your Mailing List >> Options
+    private_list     => 0,
+    
+    #mailing list options
+    mx_check         => 0,
+    closed_list      => 0,
+    invite_only_list => 0,
+    show_hidden      => 0,
+    hide_list        => 0,
+    
+    
 
     # Mass Mailing Options
     mass_mailing_convert_plaintext_to_html => 0,
@@ -1225,14 +1243,7 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
     use_subscription_quota => 0,
     subscription_quota     => 0,
 
-    #mailing list options
-    mx_check         => 0,
-    closed_list      => 0,
-    invite_only_list => 0,
-    show_hidden      => 0,
-    private_list     => 0,
-    hide_list        => 0,
-
+    
     email_your_subscribed_msg        => 1,    # Notice the incorrect, "your" instead of, "you're" - doh!
     email_you_are_not_subscribed_msg => 0,
 
@@ -1549,7 +1560,7 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
     invite_message_subject     => undef,
 
     # Feature Set
-
+    admin_menu           => undef,
     disabled_screen_view => 'grey_out',
 
     # List CP -> Options
@@ -1567,7 +1578,7 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
 
     group_list                     => 0,
 	group_list_pp_mode             => 1, 
-	group_list_pp_mode_from_phrase => '<!-- tmpl_var original_from_phrase default="Subscriber" --> subscriber.email_name@subscriber.email_domain [<!-- tmpl_var list_settings.list_name -->]',  
+	group_list_pp_mode_from_phrase => '<!-- tmpl_var original_from_phrase default="Subscriber" --> <!-- tmpl_var subscriber.email --> [<!-- tmpl_var list_settings.list_name -->]',  
 	                                    
     open_discussion_list => 0,
 
@@ -1680,6 +1691,9 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
     default_plaintext_message_content_src_url_or_path => undef,
     default_html_message_content_src                  => 'default',    # default/url_or_path
     default_html_message_content_src_url_or_path      => undef,
+    
+    public_api_key   =>  undef, 
+    private_api_key  => undef, 
 
 ) unless keys %LIST_SETUP_DEFAULTS;
 
@@ -1750,8 +1764,8 @@ $ATTACHMENT_TEMPFILE ||= 0;
 
 $MAIL_VERP_SEPARATOR ||= '-';
 
-$VERSION = 7.2.1;
-$VER     = '7.2.1 Stable 09/12/14';
+$VERSION = 7.3.1;
+$VER     = '7.3.1 Stable 10/20/14';
 
 #
 #

@@ -136,15 +136,11 @@ sub _init {
 	$self->{lh} = $lh;
 
 
-	##############################################################################
-	# This is the new stuff, I guess:
 	if(exists($args->{-type})){ 
 		if($self->{lh}->allowed_list_types($args->{-type}) != 1){ 
 	        croak "list_type passed in, -type (" . $args->{ -type } . ") is not valid 3";
 	    }	
 	}
-	#/This is the new stuff, I guess: 
-	##############################################################################	
 
 }
 # This is a weird one, since it's not going to be filled with anything, when you 

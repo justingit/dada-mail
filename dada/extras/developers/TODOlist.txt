@@ -13,14 +13,47 @@ Key:
 
 [ ] I know Justin isn't around, but I'm wondering if anyone can tell me if there is a template tag for the original sender's address in Bridge. I would like to put a footer in the emails that has the original sender's email address since P.P. mode converts the address to the list owner's address. The only tag I have found is the subscriber's email address (<!-- tmpl_var subscriber.email -->) but it seems like there should be one for the sender as well.
 
+[] remove MIME::Lite completely 
 
+[ ] Digests 
+    [ ] New Table dada_profile_settings
+        CREATE TABLE IF NOT EXISTS dada_profile_settings (
+        id int4 not null primary key auto_increment,
+        email                            varchar(80),
+        list                             varchar(16),
+        setting                          varchar(64),
+        value                            text
+        ) CHARACTER SET utf8 COLLATE utf8_bin;
+    
+    Add to SQL statement:      
+     
+     AND EXISTS (
+                 SELECT * FROM dada_profiles_settings WHERE 
+                     dada_subscribers.email = dada_profiles_settings.email
+                     AND dada_profiles_settings.setting = 'digest'
+                     AND dada_profiles_settings.value = 1
+             )
+    
+    Have to update all other associated tables
+    
+    New Module DADA::Profile::Settings
+    
+    Change dada_archives
+    add visibility/public..? column 1/0
+    
+    new template for digest - both text and HTML
+
+
+[ ] Add, "Frequency of email messages" 
+
+[] ability to share stationary messages. 
 
 [ ] A way to set an alternative path to perl
 
+[ ] Keep tmp subscriber list fresh in mass mailing metadata. That basically means 
+make the tmp subscribe list right before sending, as mass mailings get queued. 
 [] Are strange attachment names still working? 
-
 [ ] Bounce Handler should know about vacation messages, and forward them to the list owner, if it receives one. __cfduid
-
 [ ] Upgrade KCFinder, we're a few years out of date. 
 
 [ ] write about caching - no one really understands
@@ -206,6 +239,14 @@ So:
 
 
 
+    AND EXISTS (
+                SELECT * FROM dada_profiles_settings WHERE 
+                    dada_subscribers.email = dada_profiles_settings.email
+                    AND dada_profiles_settings.setting = 'digest'
+                    AND dada_profiles_settings.value = 1
+            )
+            
+            
 [ ] Always archive messages, but don't always show the archived message. 
 Meaning, there's a new field, Called, "visibility" (or, whatever), that you can set to 1 or 0 - 
 If it's 1, it's shown, if it's 0, it's not. 
@@ -246,29 +287,7 @@ If so, Dada Mail just goes through the usual DADA::App::Subscriptions::subscribe
 except, anything that needs a HTML screen is handled by email - if it can be. (That feature has to be fleshed out - not too much more to go) 
 
 Also, this is an optional feature - can be disabled. This can also - randomly be a way to work with Dada Mail's subscription process for outside scripts. Uh, maybe good idea? 
-	
 
-
-[x] Going to change the, "Add" stuff in the list control panel to, "Invite", make control panel subscriptions even more buried, 
-probably with a Config.pm-level variable to turn on/off even the ability to Subscribe outright in the list control panel. 
-	[x] probably a good idea to make the list invitation verbiage a lot nicer and more social-network-ey
-	[ ] Also, see if I can't make profiles a little nicer, and linked into as many things as possible
-		[ ] While I'm at it, get discussion list stuff less on-the-fringe, and more on top of stuff
-			for example, there's no mention of the List Email in the, "You are now subscribed!" Message, etc
-
-Things I want to remove support for (or disable, globally for the time being) 
-	Turning off closed-loop-opt-in subscribing (removing, I'll give people the choice) 
-		Turning off, also stops anyone from subscribing anyone - that's basically 
-		a security problem, right there. 
-	Mass-Subscribing via the List Control Panel. Invitations Only! 
-	Turning off the black list - or just maybe editing? Not sure yet.
-
-$DISABLED_FEATURES ||= { 
-	control_panel_subscribing  => 0, 
-	subscribing_without_opt_in => 0, 
-	editable_blacklist         => 0, 
-	(even) viewable_blacklist  => 0, 
-};
 
 List Invitation Verbiage Sucks, maybe something more like,
 
@@ -329,11 +348,6 @@ Feedback Form Upon Unsubscribing -
 	to the list owner, and let the just-removed subscriber feel that they're doing something
 	How to stave off abuse of this feature? Email/Pin thing... maybe? CAPTCHA? 
 
-
-
-[ ] A neat SMTP test tool, 
-	http://jetmore.org/john/code/swaks/
-	
 	
 [ ] Move the perllib directory? 
 	It's kind of in a funky spot, currently. Would be better a little more out of the way
@@ -341,10 +355,10 @@ Feedback Form Upon Unsubscribing -
 
 
 
-	[ ] This could also be a GREAT place, esp. with unsubs to have a form, for "write a message to hte list owner about why you're ditchin't he list" 
-	 	or options to, "unsub me from all lists on this domain" 
-	    or, whatever. 
-	[ ] Sub would be nice to have a, "Subscribe" or a, "Subscriber and login into my profile" type of thing. 
+[ ] This could also be a GREAT place, esp. with unsubs to have a form, for "write a message to hte list owner about why you're ditchin't he list" 
+ 	or options to, "unsub me from all lists on this domain" 
+    or, whatever. 
+[ ] Sub would be nice to have a, "Subscribe" or a, "Subscriber and login into my profile" type of thing. 
 	
 
 
@@ -429,11 +443,6 @@ Would be nice if this kind of functionality can become part of the official dada
 [ ] Language files
 To make it easier to translate at least the public part of dada. If we can can agree about how to do this I am willing to do the coding like putting the english texts into language file(s) and replace them with variables. So when somebody wants to use a different language he "only" needs to translate these language files, besides the (public) templates of course. Currently we have to translate inside the Perl source code in main.cgi, error.pm etc. 
 
-[ ]  Timestamps
-
-Add time stamps when somebody (un)subscribes and when the subscription is confirmed, to make it possible to clean up the list automatically. E.g. to remove email addresses who are subscribed but not confirmed after xx days.
-
-
 [x] 1. Installer
 
 It would be great to have it more like Wordpress or Piwik where it will
@@ -492,19 +501,12 @@ Hope this helps!
 
 
 
-[x] Moving to new-style tags
-	[x] all the list subscription confirmation tags - eek!
-	[x] message body - eek eek!
 
 [ ] How about a, "Download" subscribers button?, instead of, "Open it in a new window!" Wouldn't that be easier?
-[ ] Clickthrough Tracker - track UNIQUE opens. How?
 
-[ ] 1. Installation on my own machine running MacOS X (Leopard) with MySQL 5.1 was fairly straightforward, but when I installed it on my ISP's server which runs a back-level version of Mysql (4.I) I had to reduce the string lengths from 320 to 255 to get it to accept the SQL. Also had to change the CREATE INDEX statements to ALTER DATABASE... ADD INDEX... statements as I got a "Not authorized" error on the CREATE statements, but I expect that's just my ISP. Not sure if reducing the string lengths will have any significant effect, haven't noticed any so far.
-	[x] Erm, I left a note - I'm not sure if I want to hassle around with this... 
 	
 [x]2. The migration tool worked fine, but had to use it without instructions as the link to the documentation page gives me a "Forbidden" error. It's pretty much self-explantatory though so wasn't a problem.
 
-[x] 4. Profile Fields which begin with an underscore are showing on public pages, where they should be hidden.
 
 [ ] 5. In the HTML Message template, the <!-- tmpl_var list_settings.physical_address --> is getting wrapped with <p>...</p> tags which are spoiling my footing layout. This doesn't happen with 3.0.x.
 	[ ] I've removed the line actually wraps lines in paragraphs and removed the option in HTML::FromText that says, "hey treat things as lines" - although the, "hey treat these as paragraph oriented" was also enabled... I may have to revert this problem. 
@@ -1033,13 +1035,8 @@ Send a Message/Send a webpage, etc need the same options, "open in a new window,
 	Something like, DADA::App::BuildMessages...
 		(I guess, although MIME::Lite is pretty close...)
 
-[*] Your Mailing List Template - UI really not very UI friendly? 
-	Yeah, good Justin, just.... take it out!
 
 
-[*] Add Javascript to disable sending? - on buttons, on buttons...
-	Naw...
-	
 [x] clickthrough: 
 		http://dadamailproject.com/cgi-bin/yabb/YaBB.cgi?board=everything_else;action=display;num=1111320574;start=0#3
 
@@ -1089,24 +1086,7 @@ Change the Browser Sig for fetfching.... stuff.
 [-]remove Perl Modules that get d/l'd but, still aren't used?  (working on this...) 
 
 
-todo: http://dadamailproject.com/cgi-bin/yabb/YaBB.cgi?board=everything_else;action=display;num=1109103844;start=0#1
 
-
-I have to tab out the discussion lists options in bridge.cgi - perhaps rename the, "discussion lists" link to be more general, 
-like email address setup? 
-
-" Some good information on the bridge.cgi and elaborate more on templates and customizing dadamail to mimick the rest of your website style.
- 
-The latest magicbook I have is 2.8.12. so maybe this is already in there......
-but I found the templates chapter a bit slim. "
-
-Have to make Mystery Girl a Plugin of Dada Mail w/ admin screen
-
-Work on restore lists functionality - just delete the mj- file, create another one with the "list" 
-setting already in there, and *then* replace it. Easy as pie. 
-
-
-http://dadamailproject.com/cgi-bin/yabb/YaBB.cgi?board=everything_else;action=display;num=1109605324;start=0#4
 
 
 delete list should have to use a password too?
@@ -1135,11 +1115,4 @@ delete list should have to use a password too?
 
 
 Why isn't File::Spec a part of the perllib?!
-
-
-New Mail System: 
-
-Limit # of queued, or awaiting, messages - 1,000 is the absolute max, let's say... 100! 
-We can then just fill until we've met the queue and let a queue runner... run!
-
 

@@ -381,6 +381,13 @@ $ADMIN_MENU = [
 					-Activated  => 1,
 					},
 
+                    {
+                        -Title     => 'Web Services API',
+                        -Title_URL => "$S_PROGRAM_URL?f=web_services",
+                        -Function  => 'web_services',
+                        -Activated => 1,
+                    },
+
 					{
 					-Title      => 'Delete This Mailing List',
 					-Title_URL  => "$S_PROGRAM_URL?f=delete_list",

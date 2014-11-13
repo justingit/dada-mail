@@ -1,0 +1,120 @@
+Return-path: <bounces@example.com.com>
+Envelope-to: listowner@example.com.com
+Delivery-date: Sun, 13 Jul 2014 00:00:04 +0000
+Received: from simoni by cpanel.evohost.ca with local (Exim 4.82)
+	(envelope-from <bounces@example.com.com>)
+	id 1X67D2-000627-Q3
+	for listowner@example.com.com; Sun, 13 Jul 2014 00:00:04 +0000
+Date: Sun, 13 Jul 2014 00:00:04 +0000
+From: complaints@email-abuse.amazonses.com
+To: listowner@example.com.com
+Precedence: list
+X-BeenThere: "Bounce Handler" <bounces@example.com.com>
+Message-ID: <000001472c119b4d-83416636-09fb-11e4-9baf-b78ce873ce4b-000000@email.amazonses.com>
+X-Mailer: MIME::Lite 3.028 (F2.82; A2.11; B3.13; Q3.13)
+Content-type: multipart/report; boundary="_----------=_14051936561394712"; report-type="feedback-report"; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+Subject: This is the Subject Line
+
+This is a multi-part message in MIME format.
+--_----------=_14051936561394712
+MIME-Version: 1.0
+Content-Disposition: inline
+Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="US-ASCII"
+X-Mailer: MIME::Lite 3.028 (F2.82; A2.11; B3.13; Q3.13)
+Date: Sat, 12 Jul 2014 19:34:16 +0000
+
+This is an email abuse report for an email message received from 54.240.8.88  on Fri, 11 Jul 2014 04:37:02 UTC
+
+--_----------=_14051936561394712
+Content-Disposition: inline
+Content-Transfer-Encoding: 7bit
+Content-Type: message/feedback-report
+
+Feedback-Type: abuse
+User-Agent: Yahoo!-Mail-Feedback/1.0
+Version: 0.1
+Original-Mail-From: <0000014723b5c45b-77b1e254-5d17-4817-8d0f-543383f450eb-000000@amazonses.com>
+Original-Rcpt-To: subscriber@example.com
+Received-Date: Fri, 11 Jul 2014 04:37:02 UTC
+Source-IP: 54.240.8.88
+
+--_----------=_14051936561394712
+Content-Disposition: inline
+Content-Transfer-Encoding: 7bit
+Content-Type: message/rfc822
+
+
+From Mailing List Name Thu Jul 10 21:37:00 2014
+X-Apparently-To: subscriber@example.com via 98.137.10.103; Fri, 11 Jul 2014 04:37:02 +0000
+Return-Path: <0000014723b5c45b-77b1e254-5d17-4817-8d0f-543383f450eb-000000@amazonses.com>
+Received-SPF: pass (domain of amazonses.com designates 54.240.8.88 as permitted sender)
+X-YMailISG: mjfYYwcWLDt8pRu5jK1S7crVTTkpm6OCu_O.mFCozo5Q3hRc
+ vEVl4a3hWpe53C02xSu4tvPSUM_whp2zbEWK1UZttlhO2HTuZmURU4svmwBc
+ 83c6k6rSOfbGi4.0XaFS59A0ctWwpOVIqt7bnpotfqA2ytroWtC2PRKp99eo
+ 3c8H6DRIJkI.aBTrIaxiv8.UhJzWam_Kc6evtpKx9XV2.OEWCLSu17AV.s6K
+ n8fWSil35FBkAt9dvhONsuQk_aIToCy1LpHa2LWFg8wpNPNjIV2VnpQAQup1
+ 6hyKbrLnJQXwqfB3xlJVumiQrYPxNuCuPZ2iaHr6W.TQNnbsrI_I9q82nSpE
+ R2K3TB_.0RQK_rZCDJkXuPsc6.w_oH9qv6zIa1Atpb8HPhlqqmIS64ImT5ty
+ 4f6zbbm27KTrivApIbnUbye.K5Pd9TqGmXtet4XxXoOpw24OK._5sRnUnBXc
+ fElu8SvhLcltBbrDcz7vs8QxDKDZZ9sUvw6wczkleG6eAG5XA4KRWj8vJ0Ku
+ 4.f2sN8cXB6rIiLzA8PsHrlGyAlUhloweK0YDyYiANY7n2QnI.jBCDgOgn9_
+ BXQ9d7OpQbnEkQYKwID_CPT54wSRuzxe7EO17zpaa0lMieuRrvAYcT85ZbNj
+ q9J2GyX8q6jfthg5c4oeu7G4ye6mN9pqYLNjaxucgtu.zd9hIrgXEVdjUSek
+ PmOFHAJ2.fKPNFzm3lKjTVhPhGOl1GrZE30kGbGnYd5yOKE7Ay6FLcqNCAw_
+ Fky42B50CwRrC1Hsrstnjjrou9HvCXgZJg1b1tkqg5BaDeKgkQOnA8WnNQn_
+ h_CJV.7rv7pLKFPtl2DWLcqGWWiHIHyjmjGY1NNholynnVboQK9tybz8lOYF
+ _Zm6eoy_Ap7caCqM4cu2E7Z8cKNUFtTkfWO..npINkwpuaclgDfAbLRjYQLw
+ qmzMfBcTAXgVRMKdaa.Bm.ntx62YQ7HOCFlL2U.eahm8ajx2r64EpmrysLAP
+ 1zqn1h5uSUH2RMpeUyq8eOxzPVFYd2lCGY9T7P3ht.xzZeIXU.MWlZ5nT1z9
+ TMdZLvUMTGMspGWhZI6aj.Rm73PF_49.qHfgkFzxl7EwtofI9yFivtfuUgE_
+ uasSCOXrDtounSSvgWC_qwXozegmlowY5LCft5QKOEla9FOOO_SxZ2WbN76h
+ M1WbV9Fo3fKJItW1G2QfqVJ4QrFo.M.HBvJGS7vE08QFeBxWPfm53kDlKlgp
+ m5lQIDHAm62ivOX1Jtz9vwg1c22RphzG8DvaGP41pWDcHD9ff8hktRymZfQs
+ uG5DSloYlbaJm4r87w14pDOmJPJQmuGMD_NGugcAEjFVUmgFcoG72GsEa7PO
+ CabZcQecCKNDmCE0HXIu.1pGABHKqG_W8TZCxqCuq_Myc8qL3EEtrIiVegmu
+ xRZQA1LxIZLx41Rxa1Mjgcox4oWouc4252Hvm102s_9nU1pzaBXk3qCld4Z_
+ VdfBqpoRYbnnUcdRSogJYfnqBQipK94qp4MMBBcvJdtRbsyxiIwOwiODt6T7
+ 7d1H5ze.8JVa5on2jor05UuzxrgJUZlcz6t3FtZyRATK9yemBcycFABDlsD7
+ X8w0Wbn6WvnKEg--
+X-Originating-IP: [54.240.8.88]
+Authentication-Results: mta1046.mail.bf1.example.com  from=example.com.com; domainkeys=neutral (no sig);  from=example.com.com; dkim=neutral (no sig)
+Received: from 127.0.0.1  (EHLO a8-88.smtp-out.amazonses.com) (54.240.8.88)
+  by mta1046.mail.bf1.example.com with SMTPS; Fri, 11 Jul 2014 04:37:01 +0000
+Date: Fri, 11 Jul 2014 04:37:00 +0000
+From: "Mailing List Name" <listowner@example.com.com>
+To: "Mailing List Name Subscriber" <subscriber@example.com>
+X-Priority: 3
+Precedence: list
+List: dadatest
+List-Archive: <http://example.com.com/cgi-bin/dada/mail.cgi/archive/dadatest/>
+List-ID: <dadatest.cpanel.evohost.ca>
+List-Owner: <listowner@example.com.com>
+List-Post: NO
+List-Subscribe: <http://example.com.com/cgi-bin/dada/mail.cgi/s/dadatest/user/example.com/>
+List-Unsubscribe: <mailto:listowner@example.com.com?Subject=Unsubscribe%20from%20Dada%20Mail%20Announcement%20List>, <http://example.com.com/cgi-bin/dada/mail.cgi/t/rAEzPdEeQBbTPSPu4yheQeic3GZMOeraA8dvJSY5/>
+List-URL: <http://example.com.com/cgi-bin/dada/mail.cgi/list/dadatest/>
+X-Message-ID: <20140710230127.29736036@example.com.com>
+Message-ID: <0000014723b5c45b-77b1e254-5d17-4817-8d0f-543383f450eb-000000@email.amazonses.com>
+X-Mailer: Pro Dada 7.1.0 Stable 07/10/14 
+Content-type: multipart/alternative; boundary="_----------=_1405033287226450"; charset=UTF-8
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+Subject: This is the Subject Line
+X-SES-Outgoing: 2014.07.11-54.240.8.88
+Content-Length: 19094
+
+
+This is a multi-part message in MIME format.
+
+--_----------=_1405033287226450
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Date: Thu, 10 Jul 2014 23:01:27 +0000
+
+Text
+--_----------=_1405033287226450--
+--_----------=_14051936561394712--

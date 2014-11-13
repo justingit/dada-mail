@@ -297,7 +297,6 @@ sub parse_all_bounces {
 	my $isa_test = 0; 
 	
     my $log  = '';
-
     if ( exists( $args->{-list} ) ) {
         $list = $args->{-list};
     }
@@ -1020,6 +1019,9 @@ sub carry_out_rule {
               $self->unsubscribe_bounced_email( $list, $email, $diagnostics,
                 $actions->{$action} );
         }
+        elsif( $action eq 'abuse_report' ){ 
+            $self->abuse_report( $list, $email, $diagnostics, $actions->{$action} );            
+        }
         elsif ( $action eq 'append_message_to_file' ) {
             $report .=
               $self->append_message_to_file( $list, $email, $diagnostics,
@@ -1033,55 +1035,57 @@ sub carry_out_rule {
         else {
             warn "unknown rule trying to be carried out, ignoring";
         }
-
-            if ( exists( $diagnostics->{'Simplified-Message-Id'} ) ) {
-                $report .= "\nSaving bounced email report in tracker\n";
-                require DADA::Logging::Clickthrough;
-                my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
-				if($r->enabled) { 
-	                my $hard_bounce = 0;
-					my $soft_bounce = 0; 
-	                if (   $action eq 'add_to_score'
-	                    && $actions->{$action} eq 'hardbounce_score' )
-	                {
-	                    $hard_bounce = 1;
-	                }
-					elsif (   $action eq 'add_to_score'
-	                    && $actions->{$action} eq 'softbounce_score' ){ 
-						$soft_bounce = 1; 
-	                }
-	                elsif ( $action ne 'add_to_score' ) {
-	                    #$hard_bounce = 1;
-	                }
-	                else {
-						# ... 
-	                }
-	                if ( $hard_bounce == 1 ) {
-	                    $r->bounce_log(
-	                        {
-	                            -type  => 'hard',
-	                            -mid   => $diagnostics->{'Simplified-Message-Id'},
-	                            -email => $email,
-								# -rule  => $title, 
-	                        }
-	                    );
-	                }
-	                else {
-	                    $r->bounce_log(
-	                        {
-	                            -type  => 'soft',
-	                            -mid   => $diagnostics->{'Simplified-Message-Id'},
-	                            -email => $email,
-								# -rule  => $title, 
-	                        }
-	                    );
-	                }
-				}
-            }
-            else {
+        
+        if ( exists( $diagnostics->{'Simplified-Message-Id'} ) && $action ne 'abuse_report' ) {
+            $report .= "\nSaving bounced email report in tracker\n";
+            require DADA::Logging::Clickthrough;
+            my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
+			if($r->enabled) { 
+                my $hard_bounce = 0;
+				my $soft_bounce = 0; 
+                if (   $action eq 'add_to_score'
+                    && $actions->{$action} eq 'hardbounce_score' )
+                {
+                    $hard_bounce = 1;
+                }
+				elsif (   $action eq 'add_to_score'
+                    && $actions->{$action} eq 'softbounce_score' ){ 
+					$soft_bounce = 1; 
+                }
+                elsif ( $action ne 'add_to_score' ) {
+                    #$hard_bounce = 1;
+                }
+                else {
+					# ... 
+                }
+                if ( $hard_bounce == 1 ) {
+                    $r->bounce_log(
+                        {
+                            -type  => 'hard',
+                            -mid   => $diagnostics->{'Simplified-Message-Id'},
+                            -email => $email,
+							# -rule  => $title, 
+                        }
+                    );
+                }
+                else {
+                    $r->bounce_log(
+                        {
+                            -type  => 'soft',
+                            -mid   => $diagnostics->{'Simplified-Message-Id'},
+                            -email => $email,
+							# -rule  => $title, 
+                        }
+                    );
+                }
+			}
+        }
+        else {
+            if($action ne 'abuse_report') { 
                 warn
-"cannot log bounced email from, '$email' for, '$list' in tracker log - no Simplified-Message-Id found. Ignoring!";
-            }
+    "cannot log bounced email from, '$email' for, '$list' in tracker log - no Simplified-Message-Id found. Ignoring!";
+        }
+        }
         
 
 		# I'm putting the rule used in $diagnostics, for now: 
@@ -1166,6 +1170,37 @@ sub unsubscribe_bounced_email {
 
     return $report;
 
+}
+
+
+sub abuse_report { 
+    my $self = shift;
+    my ( $list, $email, $diagnostics, $action ) = @_;
+    
+    my $abuse_report_details; 
+    for(keys %$diagnostics){ 
+        $abuse_report_details .= $_ . ": " . $diagnostics->{$_} . "\n"; 
+    }
+    require DADA::App::Messages; 
+    DADA::App::Messages::send_abuse_report(
+        {
+            -list                 => $list,
+            -email                => $email,
+            -abuse_report_details => $abuse_report_details,
+            -mid                  => $diagnostics->{'Simplified-Message-Id'},
+        }
+    ); 
+    
+    require DADA::Logging::Clickthrough;
+    my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
+    if ( $r->enabled ) {
+        $r->abuse_log( 
+            { 
+                -email => $email,
+                -mid   => $diagnostics->{'Simplified-Message-Id'},
+            } 
+        );
+    }                
 }
 
 

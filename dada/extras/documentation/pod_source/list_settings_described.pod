@@ -1,0 +1,532 @@
+=pod
+
+=head1 Your Mailing List
+
+=head2 List Information
+    
+=head3 list
+
+List Short Name of your Mailing List. Don't change directly, as its referened in the database tables everywhere. Rather, 
+use the, C<change_list_shortname> plugin
+
+=head4 list_name
+
+The name of your mailing list. 
+
+=head4 list_owner_email
+
+The email address for the List Owner. 
+
+=head4 admin_email 
+
+The email address for the List Administrator. The List Administrator is basically the email address where bounced messages go. Email messages sent out using Dada Mail will have the C<Return-Path> set to this setting. 
+
+=head4 info
+
+Your Mailing List's Description. 
+
+=head4 privacy_policy
+
+The Privacy Policy for your mailing list. 
+
+=head4 physical_address
+
+The Physical Address associated with your mailing list. 
+
+=head2 List Password
+
+=head4 password 
+
+The Password for your mailing list. This is saved in an encrypted form (CipherSaber). 
+
+=head4 cipher_key
+
+The cipher key for CipherSaber encryption. Can be reset (albeit, there' usually no need to) by going to, 
+
+L<http://example.com/cgi-bin/dada/mail.cgi?f=reset_cipher_keys> 
+
+Doing so will invalidate any passwords created with the previous key. 
+
+=head2 Options
+
+=head4 private_list
+
+C<1|0> - Setting to C<1> enables a private list: 
+
+L<http://dadamailproject.com/d/features-public_and_private_lists.pod.html>
+
+
+
+
+
+    
+
+    # Mass Mailing Options
+    mass_mailing_convert_plaintext_to_html => 0,
+    mass_mailing_block_css_to_inline_css   => 0,
+
+    #quotas
+    use_subscription_quota => 0,
+    subscription_quota     => 0,
+
+    #mailing list options
+    mx_check         => 0,
+    closed_list      => 0,
+    invite_only_list => 0,
+    show_hidden      => 0,
+    private_list     => 0,
+    hide_list        => 0,
+
+    email_your_subscribed_msg        => 1,    # Notice the incorrect, "your" instead of, "you're" - doh!
+    email_you_are_not_subscribed_msg => 0,
+
+    send_unsub_success_email => 1,
+    send_sub_success_email   => 1,
+
+    get_sub_notice              => 1,
+    send_subscription_notice_to => 'list_owner',
+
+    unsub_show_email_hint         => 1,
+    get_unsub_notice              => 1,
+    send_unsubscription_notice_to => 'list_owner',
+
+    enable_closed_loop_opt_in     => 1,    # Closed-Loop Opt-In
+    skip_sub_confirm_if_logged_in => 0,
+
+    limit_sub_confirm             => 1,
+    limit_sub_confirm_use_captcha => 1,
+
+    use_alt_url_sub_confirm_success  => 0,
+    alt_url_sub_confirm_success_w_qs => 0,
+    alt_url_sub_confirm_success      => '',
+
+    use_alt_url_sub_confirm_failed  => 0,
+    alt_url_sub_confirm_failed_w_qs => 0,
+    alt_url_sub_confirm_failed      => '',
+
+    use_alt_url_sub_success  => 0,
+    alt_url_sub_success_w_qs => 0,
+    alt_url_sub_success      => '',
+
+    use_alt_url_sub_failed  => 0,
+    alt_url_sub_failed_w_qs => 0,
+    alt_url_sub_failed      => '',
+
+    use_alt_url_unsub_success  => 0,
+    alt_url_unsub_success_w_qs => 0,
+    alt_url_unsub_success      => '',
+
+    use_alt_url_subscription_approval_step  => 0,
+    alt_url_subscription_approval_step      => '',
+    alt_url_subscription_approval_step_w_qs => 0,
+
+    enable_subscription_approval_step => 0,
+    captcha_sub                       => 0,
+
+    send_subscribed_by_list_owner_message   => 0,
+    send_unsubscribed_by_list_owner_message => 0,
+
+    send_last_archived_msg_mass_mailing => 0,
+
+    # SMTP Options
+
+    smtp_server => undef,
+    smtp_port   => 25,
+
+    use_smtp_ssl        => 0,
+    use_pop_before_smtp => 0,
+
+    pop3_server   => undef,
+    pop3_username => undef,
+    pop3_password => undef,
+    pop3_use_ssl  => undef,
+
+    # Can be set to,
+    # BEST, PASS, APOP, or CRAM-MD5
+    pop3_auth_mode => 'BEST',
+
+    set_smtp_sender => 1,
+
+    use_sasl_smtp_auth  => 0,
+    sasl_auth_mechanism => 'PLAIN',
+    sasl_smtp_username  => undef,
+    sasl_smtp_password  => undef,
+
+    smtp_max_messages_per_connection => undef,
+
+    # Sending Options
+
+    # Enable Batch Sending
+    enable_bulk_batching => 1,
+
+    # adjust_batch_sleep_time
+    adjust_batch_sleep_time => 1,
+
+    # Receive Finishing Message
+    get_finished_notification => 1,
+
+    # Send: [x] message(s) per batch
+    mass_send_amount => 1,
+
+    # and then wait: [x] seconds, before the next
+    bulk_sleep_amount => 8,
+
+    # Auto-Pickup Dropped Mass Mailings
+    auto_pickup_dropped_mailings => 1,
+
+    # Restart Mailings After Each Batch
+    # TODO - this variable should really be called, "reload_mailings_after_each_batch"
+    restart_mailings_after_each_batch => 0,
+
+    # sendmail, smtp, amazon_ses
+    sending_method => 'sendmail',
+
+    # Send a copy to the List Owner
+    mass_mailing_send_to_list_owner => 1,
+	mass_mailing_save_logs          => 0,
+
+    amazon_ses_auto_batch_settings => 0,
+
+    # For mass mailings, connect only once per batch?
+    # 0 = no
+    # 1 = yes!
+    smtp_connection_per_batch => 0,
+
+    # adv sending options
+
+    precedence => undef,
+    charset    => 'UTF-8	UTF-8',
+
+    # (Dummy)
+    charset_value => 'UTF-8',
+    priority      => 3,
+
+    print_errors_to_header       => 0,
+    print_return_path_header     => 0,
+    plaintext_encoding           => 'quoted-printable',
+    html_encoding                => 'quoted-printable',
+    strip_message_headers        => 0,
+    add_sendmail_f_flag          => 1,
+    verp_return_path             => 0,
+    use_domain_sending_tunings   => 0,
+    domain_sending_tunings       => undef,
+    mime_encode_words_in_headers => 1,
+
+    # view list prefs
+
+    view_list_subscriber_number  => 100,
+    view_list_show_timestamp_col => 1, 
+    view_list_order_by           => 'email', 
+    view_list_order_by_direction => 'ASC', 
+
+    # add list prefs
+    use_add_list_import_limit               => 1, 
+    add_list_import_limit                   => 1000, 
+    allow_profile_editing => 0, 
+    
+    # archive prefs
+
+    archive_messages                       => 1,
+    show_archives                          => 1,
+    archives_available_only_to_subscribers => 0,
+    archive_subscribe_form                 => 1,
+    archive_search_form                    => 1,
+    captcha_archive_send_form              => 0,
+    archive_send_form                      => 0,
+    send_newest_archive                    => 0,
+
+    archive_show_second          => 0,
+    archive_show_hour_and_minute => 0,
+    archive_show_month           => 1,
+    archive_show_day             => 1,
+    archive_show_year            => 1,
+    archive_index_count          => 10,
+
+    sort_archives_in_reverse    => 1,
+    disable_archive_js          => 1,
+    style_quoted_archive_text   => 1,
+    stop_message_at_sig         => 1,
+    publish_archives_rss        => 1,
+    ping_archives_rss           => 0,
+    html_archives_in_iframe     => 0,
+    display_attachments         => 1,
+    add_subscribe_form_to_feeds => 1,
+
+    add_social_bookmarking_badges => 1,
+
+    # Can be set to, "none", "spam_me_not", or, "recaptcha_mailhide"
+    archive_protect_email => 'spam_me_not',
+
+    enable_gravatars     => 0,
+    default_gravatar_url => undef,
+
+    # archive editing prefs
+
+    editable_headers => 'Subject',
+
+    #blacklist
+    black_list                           => 1,
+    add_unsubs_to_black_list             => 1,
+    allow_blacklisted_to_subscribe       => 1,
+    allow_admin_to_subscribe_blacklisted => 0,
+
+    # White List Prefs
+
+    # white list
+    enable_white_list => 0,
+
+    # List Invite Prefs
+
+    invites_check_for_already_invited => 1,
+    invites_prohibit_reinvites        => 1,
+
+    # Your Mailing List Template Prefs
+
+    get_template_data => 'from_default_template',
+    url_template      => '',
+
+    # Create a Back Link prefs
+
+    website_name => '',
+    website_url  => '',
+
+    #SQL stuff
+
+    # I don't think this is honored...
+    # Don't change.
+    subscription_table => 'dada_subscribers',
+
+    # Not used?
+    hard_remove => 1,
+
+    # Not used?
+    merge_fields => '',
+
+    fallback_field_values => '',
+
+    # Email Templates
+
+    confirmation_message_subject => undef,
+    confirmation_message         => undef,
+
+
+
+	# Subscription Requests
+	# List Owner
+
+    subscription_approval_request_message_subject   => undef,
+    subscription_approval_request_message           => undef,
+	
+	# Subscriber
+    subscription_request_approved_message_subject   => undef,
+    subscription_request_approved_message           => undef,
+
+	# Subscriber  
+    subscription_request_denied_message_subject     => undef,
+    subscription_request_denied_message             => undef,
+
+
+	# Unsubscription Requests
+	# List Owner
+    unsubscription_approval_request_message_subject => undef,
+	unsubscription_approval_request_message         => undef,
+
+	# Subscriber
+    unsubscription_request_approved_message_subject => undef,
+    unsubscription_request_approved_message         => undef,
+
+	# Subscriber
+    unsubscription_request_denied_message_subject   => undef,
+    unsubscription_request_denied_message           => undef,
+
+    
+    subscribed_message_subject => undef,
+    subscribed_message         => undef, 
+
+    subscribed_by_list_owner_message_subject => undef,
+    subscribed_by_list_owner_message         => undef,
+
+    unsubscribed_by_list_owner_message_subject => undef,
+    unsubscribed_by_list_owner_message         => undef,
+
+    unsubscribed_message_subject => undef, 
+    unsubscribed_message         => undef,
+
+
+    mailing_list_message_from_phrase => undef, 
+    mailing_list_message_to_phrase   => undef,
+    mailing_list_message_subject     => undef,
+    mailing_list_message             => undef,
+    mailing_list_message_html        => undef,
+
+    send_archive_message_subject     => undef,
+    send_archive_message             => undef,
+    send_archive_message_html        => undef,
+
+    you_are_already_subscribed_message_subject => undef, 
+    you_are_already_subscribed_message => undef,
+
+    you_are_not_subscribed_message         => undef,
+    you_are_not_subscribed_message_subject => undef,
+
+    admin_subscription_notice_message_subject => undef,
+    admin_subscription_notice_message         => undef,
+
+    admin_unsubscription_notice_message_subject => undef,
+    admin_unsubscription_notice_message         => undef,
+
+    enable_email_template_expr                  => 0,
+
+    # HTML Screen Templates
+
+    html_confirmation_message         => undef,
+    html_subscribed_message           => undef,
+    html_unsubscribed_message         => undef,
+    html_subscription_request_message => undef,
+
+    # Send a List Invitation
+
+    invite_message_from_phrase => undef, 
+    invite_message_to_phrase   => undef,
+    invite_message_text        => undef,
+    invite_message_html        => undef,
+    invite_message_subject     => undef,
+
+    # Feature Set
+
+    disabled_screen_view => 'grey_out',
+
+    # List CP -> Options
+
+    use_wysiwyg_editor                      => 'ckeditor',
+    enable_mass_subscribe                   => 1,
+    enable_mass_subscribe_only_w_root_login => 1,
+
+    # Send me the list password.
+    pass_auth_id => undef,
+
+### Plugins
+
+    # Bridge Plugin:
+
+    group_list                     => 0,
+	group_list_pp_mode             => 1, 
+	group_list_pp_mode_from_phrase => '<!-- tmpl_var original_from_phrase default="Subscriber" --> p.p. <!-- tmpl_var list_settings.list_name -->',  
+	
+    open_discussion_list => 0,
+
+    discussion_template_defang   => 1,
+    only_allow_group_plain_text  => 0,
+    mail_group_message_to_poster => 1,
+    prefix_list_name_to_subject  => 1,
+
+    no_prefix_list_name_to_subject_in_archives => 1,
+
+    set_to_header_to_list_address        => 0,
+    prefix_discussion_list_subjects_with => 'list_shortname',
+    send_received_msg                    => 1, 
+    send_msgs_to_list                    => 1,
+    disable_discussion_sending           => 1,
+    mail_discussion_message_to_poster    => 1,
+
+    ignore_spam_messages                => 0,
+    find_spam_assassin_score_by         => 'looking_for_embedded_headers',
+    ignore_spam_messages_with_status_of => 6,
+    rejected_spam_messages              => 'ignore_spam',
+
+    enable_moderation              => 0,
+    moderate_discussion_lists_with => 'list_owner_email',
+    send_moderation_msg            => 0,
+    send_moderation_accepted_msg   => 0,
+    send_moderation_rejection_msg  => 0,
+    send_msg_copy_address          => '',
+
+    enable_authorized_sending        => 0,
+
+    authorized_sending_no_moderation => 0,
+    subscriber_sending_no_moderation => 0,
+
+    strip_file_attachments    => 0,
+    file_attachments_to_strip => '',
+    discussion_pop_server     => '',
+    discussion_pop_username   => '',
+    discussion_pop_email      => '',
+    bridge_list_email_type    => 'pop3_account',
+    discussion_pop_password   => '',
+
+    discussion_pop_auth_mode => 'BEST',
+    discussion_pop_use_ssl   => 0,
+
+    send_not_allowed_to_post_msg => 0,
+    send_invalid_msgs_to_owner   => 0,
+    send_msg_copy_to             => 0,
+    rewrite_anounce_from_header  => 1,
+    discussion_clean_up_replies  => 0,
+
+    not_allowed_to_post_msg_subject => undef, ,
+    not_allowed_to_post_msg         => undef,
+
+    invalid_msgs_to_owner_msg_subject => undef,
+    invalid_msgs_to_owner_msg => undef,
+
+    moderation_msg_subject => undef, 
+    moderation_msg => undef,
+    
+    await_moderation_msg_subject => undef,
+    await_moderation_msg => undef,
+    
+    accept_msg_subject => undef,
+    accept_msg => undef,
+    
+    rejection_msg_subject => undef,
+    rejection_msg => undef,
+    
+    msg_too_big_msg_subject => undef,
+    msg_too_big_msg         => undef,
+    
+    msg_received_msg_subject => undef, 
+    msg_received_msg         => undef, 
+    
+    msg_labeled_as_spam_msg_subject => undef,
+    msg_labeled_as_spam_msg => undef,
+
+    # Tracker
+    tracker_record_view_count                       => 10,
+    tracker_auto_parse_links                        => 1,
+    tracker_auto_parse_mailto_links                 => 0,
+    tracker_track_opens_method                      => 'directly',
+    tracker_track_email                             => 1,
+
+    tracker_clean_up_reports                        => 1,
+    tracker_show_message_reports_in_mailing_monitor => 0,
+
+    tracker_update_profiles_w_geo_ip_data            => 0,
+    tracker_update_profile_fields_ip_dada_meta       => undef, 
+
+
+    #	tracker_enable_data_cache                           => 1,
+    #	tracker_dada_cache_expires                          => 1, # in hours
+
+    # Bounce Handler
+
+    bounce_handler_threshold_score            => 10,
+    bounce_handler_hardbounce_score           => 4,
+    bounce_handler_softbounce_score           => 1,
+    bounce_handler_decay_score                => 1,
+    bounce_handler_forward_msgs_to_list_owner => 0,
+    bounce_handler_when_threshold_reached     => 'move_to_bounced_sublist',
+
+    # dada_digest.pl
+    last_digest_sent => undef,
+
+    # default messages
+    default_plaintext_message_content_src             => 'default',    # default/url_or_path
+    default_plaintext_message_content_src_url_or_path => undef,
+    default_html_message_content_src                  => 'default',    # default/url_or_path
+    default_html_message_content_src_url_or_path      => undef,
+    
+    public_api_key   =>  undef, 
+    private_api_key  => undef, 
+
+
+=cut

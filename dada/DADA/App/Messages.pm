@@ -156,6 +156,7 @@ sub send_abuse_report {
     #    -list                 => $list,
     #    -email                => $email,
     #    -abuse_report_details => $abuse_report_details,
+    #     -mid => $diagnostics->{'Simplified-Message-Id'},
     my $abuse_report_details = $args->{-abuse_report_details}; 
     
 	require DADA::MailingList::Settings; 
@@ -165,12 +166,50 @@ sub send_abuse_report {
     my $rm = DADA::App::ReadEmailMessages->new; 
     my $msg_data = $rm->read_message('list_abuse_report_message.eml'); 
 
+    if(!exists($args->{-mid})){ 
+        $args->{-mid} = '00000000000000'; 
+    }
+    
+    require  DADA::MailingList::Subscribers;
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $args->{-list} } );
+    
+    my $worked = $lh->add_subscriber(
+        {
+            -email      => $args->{-email},
+            -list       => $args->{-list},
+            -type       => 'unsub_request_list',
+            -dupe_check => {
+                -enable  => 1,
+                -on_dupe => 'ignore_add',
+            },
+        }
+    );
+    
+    require DADA::App::Subscriptions::ConfirmationTokens;
+    my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
+    my $approve_token = $ct->save(
+        {
+            -email => $args->{-email},
+            -data  => {
+                list        => $args->{-list},
+                type        => 'list',
+                mid         => $args->{-mid}, 
+                flavor      => 'unsub_request_approve',
+                remote_addr => $ENV{REMOTE_ADDR},
+            },
+            -remove_previous => 0,
+        }
+    );    
+    
     send_generic_email(
         {
             -list    => $args->{-list},
             -headers => {
                 To      => '"' . $msg_data->{to_phrase} . '" <' . $ls->param('list_owner_email') . '>',
-                From    => '"' . $msg_data->{from_phrase} . '" <' . $args->{-email} . '>',
+                From    => '"' . $msg_data->{to_phrase} . '" <' . $ls->param('list_owner_email') . '>',
+# Amazon SES doesn't like that: 
+#                From    => '"' . $msg_data->{from_phrase} . '" <' . $args->{-email} . '>',
+
                 Subject => $msg_data->{subject},
             },
 
@@ -183,7 +222,9 @@ sub send_abuse_report {
 					-type  => 'list'
                 },
                 -vars => {
-                    abuse_report_details => $abuse_report_details, 
+                    abuse_report_details                  => $abuse_report_details, 
+                    list_unsubscribe_request_approve_link => $DADA::Config::S_PROGRAM_URL . '/t/' . $approve_token . '/',
+                    
                 },
             },
             -test => $args->{-test},
@@ -401,7 +442,7 @@ sub send_unsubscribe_request_message {
 	
 	require DADA::App::ReadEmailMessages; 
     my $rm = DADA::App::ReadEmailMessages->new; 
-    my $msg_data = $rm->read_message('profiles_email_updated_notification_message.eml'); 
+    my $msg_data = $rm->read_message('unsubscription_request_message.eml'); 
 	
 	
 	my $unsubscription_request_message = $msg_data->{plaintext_body};

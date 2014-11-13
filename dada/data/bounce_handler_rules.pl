@@ -53,7 +53,19 @@ $Rules = [
             Action => { add_to_score => 'softbounce_score', }
         }
     },
-
+	
+	{
+		amazon_ses_abuse_report   => {
+	               Examine => {
+	                   Message_Fields => {
+						   Bounce_From => ['complaints@email-abuse.amazonses.com'],
+	                   },
+	                   Data => {
+	                   }
+	               },
+	               Action => { abuse_report => 'abuse_report', }
+	           }
+		   },
     {
         gmail_disabled_account => {
             Examine => {

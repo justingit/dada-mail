@@ -311,14 +311,14 @@ sub batch_params {
             }
             else {
                 ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) = $man->get_stats;
+            #                  0          10_000             5
+                #use Data::Dumper; 
+                #warn Dumper([( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate )]); 
+            
+                 $man->_save_man_stats($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate);
+            }    
+            $quota_Max24HourSend = ($Max24HourSend * $man->allowed_sending_quota_percentage) / 100;
 
-                #                  0          10_000             5
-                use Data::Dumper;
-                warn Dumper( [ ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate ) ] );
-
-                $man->_save_man_stats( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate );
-            }
-            $quota_Max24HourSend = ( $Max24HourSend * $man->allowed_sending_quota_percentage ) / 100;
         }
         else {
             die "what?";
@@ -2581,6 +2581,7 @@ sub monitor_mailout {
         }
     }
 
+    $r .= 'Server Time: ' . scalar(localtime(time)) . "\n";
     $r .=
 "Total Mass Mailings: $total_mailouts, Active Mass Mailings: $active_mailouts, Paused Mass Mailings: $paused_mailouts, Queued Mass Mailings: $queued_mailouts, Inactive Mass Mailings: $inactive_mailouts\n\n";
 

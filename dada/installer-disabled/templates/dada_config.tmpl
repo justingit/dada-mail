@@ -13,8 +13,10 @@ $DIR = '<!-- tmpl_var dada_files_dir -->';
 #---------------------------------------------------------------------#
 # The URL to access Dada Mail:
 #
-$PROGRAM_URL = '<!-- tmpl_var PROGRAM_URL -->';
-
+$PROGRAM_URL   = '<!-- tmpl_var PROGRAM_URL -->';
+<!-- tmpl_if configure_s_program_url --> 
+$S_PROGRAM_URL = '<!-- tmpl_var s_program_url_S_PROGRAM_URL -->';
+<!-- /tmpl_if -->
 #---------------------------------------------------------------------#
 # The location (server path + URL) of static, support files
 #
@@ -547,7 +549,14 @@ $ADMIN_MENU = [
 					-Function   => 'list_options',
 					-Activated  => 1,
 					},
-
+					
+				    {
+                        -Title     => 'Web Services API',
+                        -Title_URL => "$S_PROGRAM_URL?f=web_services",
+                        -Function  => 'web_services',
+                        -Activated => 1,
+                    },
+                
 					{
 					-Title      => 'Delete This Mailing List',
 					-Title_URL  => "$S_PROGRAM_URL?f=delete_list",

@@ -1282,6 +1282,17 @@ Since Dada Mail understands the differences between B<Hard Bounces> and B<Soft B
 
 Once the email address's B<Bounce Score> reaches the B<Threshold>, the email address is then removed from the list. 
 
+=head1 Special Debugging Mode
+ 
+=head2 manually_enter_bounces
+
+Visit the plugin with the following query string, 
+
+L<http://example.com/cgi-bin/dada/plugins/bounce_handler.cgi?flavor=manually_enter_bounces>
+
+(C<manually_enter_bounces>) to enter a special debugging mode, where you can just paste in the source of a bounce message, 
+and see how Bounce Handler will handle it, without actually processing the message. 
+
 =head1 FAQs
 
 =head2 Bounce Email Address
@@ -1325,7 +1336,6 @@ B<Status> entry holds a list of status codes. The ones in shown there
 all correspond to hard bounces; the mailbox probably doesn't exist. 
 
 B<Message_Fields> also hold a, B<Guessed_MTA> entry - it's explicitly looking for a bounce back from the, I<Exim> mail server. 
-
 
 B<Examine> also holds a B<Data> entry, which holds the B<Email> or B<List> 
 entries, or both. Their values are either 'is_valid', or 'is_invalid'. 

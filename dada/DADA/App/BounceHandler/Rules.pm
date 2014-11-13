@@ -206,7 +206,9 @@ sub rules {
 		croak "Can not find Bounce Handler Rules at any of these locations: " . join(', ', @loc_for_rules); 
 	}
 	
-	open(BOUNCE_RULES, '<:encoding(UTF-8)',  $actual_rules_loc) 
+#    For whatever reason, this was fairly, hard. 
+#	open(BOUNCE_RULES, '<:encoding(UTF-8)',  $actual_rules_loc) 
+    open(BOUNCE_RULES, '<',  $actual_rules_loc) 
 		or croak "could not open Bounce Rules: $!"; 
 	my $rules;
 	   $rules = do{ local $/; <BOUNCE_RULES> }; 

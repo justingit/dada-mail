@@ -14,7 +14,6 @@ Content-Type: text/plain
 Content-Disposition: inline
 Content-Transfer-Encoding: binary
 
-
 Hello, <!-- tmpl_var list_settings.list_owner_email -->, 
 
 The following address: 
@@ -24,6 +23,10 @@ The following address:
 has reported abuse pertaining to your mailing list: 
 
     <!-- tmpl_var list_settings.list_name --> (<!-- tmpl_var list_settings.list -->)
+    
+Remove this address: 
+
+    <!-- tmpl_var list_unsubscribe_request_approve_link -->
     
 Their report is below: 
 

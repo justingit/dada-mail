@@ -1,4 +1,6 @@
 <!-- tmpl_set name="title" value="Bridge" -->
+<!-- tmpl_set name="load_colorbox" value="1" -->
+
 <div id="screen_meta" data-menu_highlight="bridge"></div>
 
 
@@ -39,6 +41,8 @@
 <fieldset> 
 
 <legend>List Email Configuration</legend>
+
+
 
 <!-- tmpl_if error_list_email_set_to_list_owner_email -->
  	<div class="badweatherbox">
@@ -94,8 +98,6 @@
 	</div> 
 <!-- /tmpl_if -->
 
-
-
 <!-- tmpl_if error_list_email_subscribed_to_another_list --> 
 	<div class="badweatherbox">
 		<p>
@@ -118,8 +120,9 @@
 			Your List Email is currently subscribed to <strong>another mailing list's Moderators List</strong>. It needs to be set to a different address. 
 		</p>
 	</div> 
-
 <!-- /tmpl_if -->
+
+<!-- tmpl_include ses_email_verification_widget.tmpl -->
 
 
 

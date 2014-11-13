@@ -1,0 +1,51 @@
+<!-- begin web_services.tmpl --> 
+
+<!-- tmpl_set name="title" value="Your Mailing List &#187; Web Services" -->
+<div id="screentitle"> 
+	<div id="screentitlepadding">
+		<!-- tmpl_var title -->
+	</div>
+	<!-- tmpl_include help_link_widget.tmpl -->
+</div>
+
+<!-- tmpl_if keys_reset --> 
+    	<div class="clearskiesbox" id="alertbox">
+        <p>
+         Public and Private Keys have been reset.
+        </p>
+		<div style="text-align: center;">
+		<input type="button" class="small_button fade_me" value="Thanks!" />
+		</div>
+	</div>
+<!-- /tmpl_if -->
+
+
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
+    <input type="hidden" name="flavor"  value="web_services" />
+    <input type="hidden" name="process" value="reset_keys" />
+<fieldset> 
+    
+<p><strong>Public API Key:</strong></p> 
+
+<p>
+    <input type="text"  class="full" value="<!-- tmpl_var list_settings.public_api_key escape="HTML" -->" >
+</p> 
+
+<p><strong>Private API Key:</strong></p> 
+
+<p>
+<input type="text" class="full" value="<!-- tmpl_var list_settings.private_api_key escape="HTML" -->" >
+</p>
+
+<div class="buttonfloat">
+ <input type="submit" class="processing" value="Reset Keys" />
+</div>
+<div class="floatclear"></div>
+</form> 
+
+
+</fieldset> 
+
+</form> 
+
+<!-- end web_services.tmpl --> 

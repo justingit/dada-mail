@@ -136,13 +136,6 @@ $(document).ready(function() {
 			}
 		});
 		
-		$("body").on("click", ".amazon_verify_email_in_warning", function(event) {
-			event.preventDefault();
-			amazon_verify_email($(this).attr("data-email"));
-		});
-		
-		
-		
 		$("body").on("submit", "#mass_mailing", function(event) {
 			event.preventDefault();
 		});
@@ -531,12 +524,6 @@ $(document).ready(function() {
 			amazon_ses_get_stats();
 		}
 		
-		$("body").on("click", ".amazon_verify_email_in_warning", function(event) {
-			event.preventDefault();
-			amazon_verify_email($(this).attr("data-email"));
-		});
-	
-
 		sending_prefs_setup();
 		toggle_SASL_options();
 		toggle_pop_before_SMTP_options();
@@ -1106,6 +1093,11 @@ $(document).ready(function() {
 	});
 	$('.radio_toggleDivs').live("click", function(event) {
 		toggleDisplay($(this).attr("data-target"));
+	});
+	
+	$("body").on("click", ".amazon_verify_email_in_warning", function(event) {
+		event.preventDefault();
+		amazon_verify_email($(this).attr("data-email"));
 	});
 
 });
@@ -2366,6 +2358,9 @@ function update_plugins_tracker_message_report() {
 	$('body').on('click', '.to_forwards', function(event) {
 		$tabs.tabs('select', 7); return false;
 	});
+	$('body').on('click', '.to_abuse_reports', function(event) {
+		$tabs.tabs('select', 8); return false;
+	});
 
 	$("body").on("click", '.message_individual_email_activity', function(event) {
 		event.preventDefault();
@@ -3346,17 +3341,17 @@ function removeSubscriberField(form_name) {
 
 function attachments_openKCFinder(field) {
     window.KCFinder = {
-        callBack: function(url) {
+    	callBack: function(url) {
 			var kcfinder_upload_url = escapeRegExp($("#kcfinder_upload_url").val() + '/'); 			
 			var re = new RegExp(kcfinder_upload_url,'g');
 			var new_val = url.replace(re, ''); 
-            $(field).html('<img src="' + $("#SUPPORT_FILES_URL").val() + '/static/images/attachment_icon.gif" />' + new_val);			
+	        $(field).html('<img src="' + $("#SUPPORT_FILES_URL").val() + '/static/images/attachment_icon.gif" />' + new_val);			
 			$("#" + $(field).attr("data-attachment")).val(new_val); 
 			$("#" + $(field).attr("data-attachment") + '_remove_button').show(); 			
-            window.KCFinder = null;
-        }
+			window.KCFinder = null;
+		}
     };
-    window.open($("#kcfinder_url").val() + '/browse.php', 'kcfinder_textbox',
+    window.open($("#kcfinder_url").val() + '/browse.php?type=files&opener=custom', 'kcfinder_single',
         'status=0, toolbar=0, location=0, menubar=0, directories=0, ' +
         'resizable=1, scrollbars=0, width=800, height=600'
     );

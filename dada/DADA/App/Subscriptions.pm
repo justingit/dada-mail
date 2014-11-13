@@ -154,13 +154,32 @@ sub token {
         elsif ($data->{data}->{flavor} eq 'unsub_request_approve'
             || $data->{data}->{flavor} eq 'unsub_request_deny' )
         {
+
+            # This is for complete_subscription - I don't like it!
+            require DADA::MailingList::Settings; 
+            my $ls = DADA::MailingList::Settings->new({-list => $data->{data}->{list}}); 
+            
+            
             $q->param( 'token', $token );
-            $self->complete_pl_unsubscription_request(
-                {
-                    -html_output => $args->{-html_output},
-                    -cgi_obj     => $q,
-                }
-            );
+            if($ls->param('private_list') == 1){      
+                $self->complete_pl_unsubscription_request(
+                    {
+                        -html_output => $args->{-html_output},
+                        -cgi_obj     => $q,
+                    }
+                );
+            }
+            else { 
+                $self->complete_unsubscription(
+                    {
+                        -html_output => $args->{-html_output},
+                        -cgi_obj     => $q,
+                        -list        => $data->{data}->{list},
+                        -email       => $data->{email},
+                        -mid         => $data->{data}->{mid},
+                    }                
+                );
+            }
         }
         else {
             return user_error(
@@ -2447,7 +2466,7 @@ sub error_token_undefined {
     my $self = shift;
     my ($args) = @_;
 
-    my $q = $args->{cgi_obj};
+    my $q = $args->{-cgi_obj};
 
     if ( !exists( $args->{-fh} ) ) {
         $args->{-fh} = \*STDOUT;
