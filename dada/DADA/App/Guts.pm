@@ -2102,122 +2102,125 @@ sub check_setup {
 
 
 sub SQL_check_setup {
-	
-	my $dbi_obj     = undef; 
-	my $dbh         = undef; ; 
-	try { 
-		require DADA::App::DBIHandle; 
-		$dbi_obj = DADA::App::DBIHandle->new; 
-		$dbh = $dbi_obj->dbh_obj;
-	} catch { 
-		carp "error attempting to create dbi object: $_"; 
-		return 0; 
-	};
-	
-	my %tables_to_create = (); 
-	foreach(keys %DADA::Config::SQL_PARAMS){ 
-		if($_ =~ m/table/){ 
-			$tables_to_create{$DADA::Config::SQL_PARAMS{$_}} = 0;
-		}
-	}
 
-	foreach my $table_name(keys %tables_to_create){ 
-		try { 
-			my $query = 'SELECT * FROM ' . $table_name . ' WHERE 1 = 0';
-		    # * If an error is raised, the table does not exist.
-		    $dbh->do($query)
-				or croak "cannot do statement: '$query': $DBI::errstr\n";
-		} catch { 
-			$tables_to_create{$table_name} = 1; 
-		};
-	}
-	
-	my $need_to_create = 0; 
-	foreach(keys %tables_to_create){ 
-		if($tables_to_create{$_} == 1) {
-			$need_to_create++; 
-		}
-	}
-	
-	if($need_to_create >= 1) { 
-		
-		my $r = create_probable_missing_tables(\%tables_to_create); 
-		if( $r == 0){ 
-			return 0; 
-		}
-		else { 
-			# ...
-		}
-	}
+    my $dbi_obj = undef;
+    my $dbh     = undef;
+    try {
+        require DADA::App::DBIHandle;
+        $dbi_obj = DADA::App::DBIHandle->new;
+        $dbh     = $dbi_obj->dbh_obj;
+    }
+    catch {
+        carp "error attempting to create dbi object: $_";
+        return 0;
+    };
 
-	# v6.3.0 changed the schema of the, 
-		# * dada_mass_mailing_event_log
-		# * dada_clickthrough_url_log
-	# adding an, "email" column - let's make sure that's there. 
-	upgrade_tables(); 
-	
-	return 1; 
+    my %tables_to_create = ();
+    foreach ( keys %DADA::Config::SQL_PARAMS ) {
+        if ( $_ =~ m/table/ ) {
+            $tables_to_create{ $DADA::Config::SQL_PARAMS{$_} } = 0;
+        }
+    }
+
+    foreach my $table_name ( keys %tables_to_create ) {
+        try {
+            my $query = 'SELECT * FROM ' . $table_name . ' WHERE 1 = 0';
+
+            # * If an error is raised, the table does not exist.
+            $dbh->do($query)
+              or croak "cannot do statement: '$query': $DBI::errstr\n";
+        }
+        catch {
+            $tables_to_create{$table_name} = 1;
+        };
+    }
+
+    my $need_to_create = 0;
+    foreach ( keys %tables_to_create ) {
+        if ( $tables_to_create{$_} == 1 ) {
+            $need_to_create++;
+        }
+    }
+
+    if ( $need_to_create >= 1 ) {
+        my $r = create_probable_missing_tables( \%tables_to_create );
+        if ( $r == 0 ) {
+            return 0;
+        }
+        else {
+            # ...
+        }
+    }
+
+    # v6.3.0 changed the schema of the,
+    # * dada_mass_mailing_event_log
+    # * dada_clickthrough_url_log
+    # adding an, "email" column - let's make sure that's there.
+    upgrade_tables();
+
+    return 1;
 
 }
 
-sub create_probable_missing_tables { 
-	
-	my ($tables_to_create) = @_; 
-	
-	my $db_type = $DADA::Config::SQL_PARAMS{dbtype}; 
-	
-	my $sql_file = '';
-    if ($db_type eq 'mysql' ) {
+sub create_probable_missing_tables {
+
+    my ($tables_to_create) = @_;
+
+    my $db_type = $DADA::Config::SQL_PARAMS{dbtype};
+
+    my $sql_file = '';
+    if ( $db_type eq 'mysql' ) {
         $sql_file = 'mysql_schema.sql';
     }
     elsif ( $db_type eq 'Pg' ) {
-        $sql_file = 'postgres_schema.sql';			
-	}
-	elsif ( $db_type eq 'SQLite' ) {
+        $sql_file = 'postgres_schema.sql';
+    }
+    elsif ( $db_type eq 'SQLite' ) {
         $sql_file = 'sqlite_schema.sql';
     }
-	my $schema = slurp( make_safer( 'extras/SQL/' . $sql_file ) );
+    my $schema = slurp( make_safer( 'extras/SQL/' . $sql_file ) );
     my @statements = split( ';', $schema );
-    
-	require DADA::App::DBIHandle; 
-	my $dbi_obj = DADA::App::DBIHandle->new; 
-	my $dbh = $dbi_obj->dbh_obj;
 
-	for my $create_table(@statements){
-		
-		my $table_name = undef; 		
-		if($db_type eq 'Pg'){ 
-			   $table_name = $create_table; 
-			   $table_name =~ m/CREATE TABLE (.*?) \(/;
-			   $table_name = $1;
-		}
-		else {
-		   $table_name = $create_table; 
-		   $table_name =~ m/CREATE TABLE IF NOT EXISTS (.*?) \(/;
-		   $table_name = $1;
-		}
-				
-		if($tables_to_create->{$table_name} == 1){ 
-			warn "need to create table, '$table_name'";
-			
-			try { 
-				my $sth = $dbh->prepare($create_table)
-					or croak $DBI::errstr; 
-				$sth->execute
-					or croak "cannot do statement $DBI::errstr\n"; 
-			}
-			catch { 
-				carp "Couldn't create necessary SQL table, '$table_name' with query, '$create_table' - you may have to do this, manually: $_";
-			};
-		}
-		else {
-			warn "no need to create table, '$table_name'";
-		}
-	} 
+    require DADA::App::DBIHandle;
+    my $dbi_obj = DADA::App::DBIHandle->new;
+    my $dbh     = $dbi_obj->dbh_obj;
 
-	return 1; 
+    for my $create_table (@statements) {
+        my $table_name = undef;
+        if ( $db_type eq 'Pg' ) {
+            $table_name = $create_table;
+            $table_name =~ m/CREATE TABLE (.*?) \(/;
+            $table_name = $1;
+        }
+        else {
+            $table_name = $create_table;
+            $table_name =~ m/CREATE TABLE IF NOT EXISTS (.*?) \(/;
+            $table_name = $1;
+        }
+
+        if ( $tables_to_create->{$table_name} == 1 ) {
+            warn "need to create table, '$table_name'";
+
+            try {
+                my $sth = $dbh->prepare($create_table)
+                  or croak $DBI::errstr;
+                $sth->execute
+                  or croak "cannot do statement $DBI::errstr\n";
+            }
+            catch {
+                carp
+"Couldn't create necessary SQL table, '$table_name' with query, '$create_table' - you may have to do this, manually: $_";
+            };
+        }
+        else {
+            warn "no need to create table, '$table_name'";
+        }
+    }
+
+    return 1;
 
 }
+
 
 
 sub upgrade_tables {

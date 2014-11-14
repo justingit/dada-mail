@@ -795,6 +795,9 @@ sub cgi_default {
         discussion_pop_use_ssl                     => 0,
         discussion_template_defang                 => 0,
         discussion_clean_up_replies                => 0,
+        
+        digest_enable => 0, 
+        digest_schedule => 86400, 
     );
 
     # Validation, basically.
@@ -874,6 +877,22 @@ sub cgi_default {
         -default  => $ls->param('ignore_spam_messages_with_status_of'),
         -name     => 'ignore_spam_messages_with_status_of',
     );
+    my $digest_labels = {
+      3600   => 'Hour',
+      10800  => '3 Hours',
+      21600  => '6 Hours',
+      43200  => '12 Hours',
+      86400  => 'Day',
+      259200 => '3 Days',
+      604800 => 'Week',
+    };
+    my $digest_schedule_popup_menu = $q->popup_menu(
+        '-values' => [sort {$a <=> $b} keys %$digest_labels],
+        -labels   => $digest_labels,
+        -default  => $ls->param('digest_schedule'),
+        -name     => 'digest_schedule',  
+        -id       => 'digest_schedule',      
+    ); 
 
     my $curl_location = `which curl`;
     $curl_location = strip( make_safer($curl_location) );
@@ -920,77 +939,48 @@ sub cgi_default {
                 -List       => $list,
             },
             -vars => {
-
-                screen      => 'using_bridge',
-                Plugin_URL  => $Plugin_Config->{Plugin_URL},
-                Plugin_Name => $Plugin_Config->{Plugin_Name},
-                Allow_Open_Discussion_List =>
-                  $Plugin_Config->{Allow_Open_Discussion_List},
-                Allow_Manual_Run    => $Plugin_Config->{Allow_Manual_Run},
-                Plugin_URL          => $Plugin_Config->{Plugin_URL},
-                Manual_Run_Passcode => $Plugin_Config->{Manual_Run_Passcode},
-
-                curl_location                 => $curl_location,
-                can_use_ssl                   => $can_use_ssl,
-                done                          => $done,
-				authorized_senders_count      => $auth_senders_count,
-				moderators_count              => $moderators_count,
-				
-				has_discussion_pop_password => $has_discussion_pop_password, 
-                discussion_pop_auth_mode_popup =>
-                  $discussion_pop_auth_mode_popup,
-                can_use_spam_assassin => &can_use_spam_assassin(),
-                spam_level_popup_menu => $spam_level_popup_menu,
-
-                find_spam_assassin_score_by_calling_spamassassin_directly => (
-                    $ls->param('find_spam_assassin_score_by') eq
-                      'calling_spamassassin_directly'
-                  ) ? 1 : 0,
-                find_spam_assassin_score_by_looking_for_embedded_headers => (
-                    $ls->param('find_spam_assassin_score_by') eq
-                      'looking_for_embedded_headers'
-                  ) ? 1 : 0,
-
-                list_email_status         => $list_email_status,
-                mailing_list_message_from => $mailing_list_message_from,
-
-                error_list_email_set_to_list_owner_email =>
-                  $list_email_errors->{list_email_set_to_list_owner_email},
-                error_list_email_set_to_list_admin_email =>
-                  $list_email_errors->{list_email_set_to_list_admin_email},
-                error_list_email_subscribed_to_list =>
-                  $list_email_errors->{list_email_subscribed_to_list},
-
+                screen                         => 'using_bridge',
+                Plugin_URL                     => $Plugin_Config->{Plugin_URL},
+                Plugin_Name                    => $Plugin_Config->{Plugin_Name},
+                Allow_Open_Discussion_List     => $Plugin_Config->{Allow_Open_Discussion_List},
+                Allow_Manual_Run               => $Plugin_Config->{Allow_Manual_Run},
+                Plugin_URL                     => $Plugin_Config->{Plugin_URL},
+                Manual_Run_Passcode            => $Plugin_Config->{Manual_Run_Passcode},
+                curl_location                  => $curl_location,
+                can_use_ssl                    => $can_use_ssl,
+                done                           => $done,
+                authorized_senders_count       => $auth_senders_count,
+                moderators_count               => $moderators_count,
+                has_discussion_pop_password    => $has_discussion_pop_password,
+                discussion_pop_auth_mode_popup => $discussion_pop_auth_mode_popup,
+                can_use_spam_assassin          => &can_use_spam_assassin(),
+                spam_level_popup_menu          => $spam_level_popup_menu,
+                find_spam_assassin_score_by_calling_spamassassin_directly =>
+                  ( $ls->param('find_spam_assassin_score_by') eq 'calling_spamassassin_directly' ) ? 1 : 0,
+                find_spam_assassin_score_by_looking_for_embedded_headers =>
+                  ( $ls->param('find_spam_assassin_score_by') eq 'looking_for_embedded_headers' ) ? 1 : 0,
+                list_email_status                        => $list_email_status,
+                mailing_list_message_from                => $mailing_list_message_from,
+                digest_schedule_popup_menu               => $digest_schedule_popup_menu,
+                error_list_email_set_to_list_owner_email => $list_email_errors->{list_email_set_to_list_owner_email},
+                error_list_email_set_to_list_admin_email => $list_email_errors->{list_email_set_to_list_admin_email},
+                error_list_email_subscribed_to_list      => $list_email_errors->{list_email_subscribed_to_list},
                 error_list_email_subscribed_to_authorized_senders =>
-                  $list_email_errors
-                  ->{list_email_subscribed_to_authorized_senders},
-
-
-                error_list_email_subscribed_to_moderators =>
-                  $list_email_errors
-                  ->{list_email_subscribed_to_moderators},
-
+                  $list_email_errors->{list_email_subscribed_to_authorized_senders},
+                error_list_email_subscribed_to_moderators => $list_email_errors->{list_email_subscribed_to_moderators},
                 error_list_email_set_to_another_list_owner_email =>
-                  $list_email_errors
-                  ->{list_email_set_to_another_list_owner_email},
+                  $list_email_errors->{list_email_set_to_another_list_owner_email},
                 error_list_email_set_to_another_list_admin_email =>
-                  $list_email_errors
-                  ->{list_email_set_to_another_list_admin_email},
+                  $list_email_errors->{list_email_set_to_another_list_admin_email},
                 error_list_email_subscribed_to_another_list =>
                   $list_email_errors->{list_email_subscribed_to_another_list},
-
                 error_list_email_subscribed_to_another_authorized_senders =>
-                  $list_email_errors
-                  ->{list_email_subscribed_to_another_authorized_senders},
-
+                  $list_email_errors->{list_email_subscribed_to_another_authorized_senders},
                 error_list_email_subscribed_to_another_moderators =>
-                  $list_email_errors
-                  ->{list_email_subscribed_to_another_moderators},
-
-                 %$ses_params,
-				 plugin_path => $FindBin::Bin, 
-			     plugin_filename => 'bridge.cgi', 
-
+                  $list_email_errors->{list_email_subscribed_to_another_moderators},
+                %$ses_params,
+                plugin_path     => $FindBin::Bin,
+                plugin_filename => 'bridge.cgi',
             },
             -list_settings_vars_param => {
                 -list                 => $list,
@@ -1305,6 +1295,32 @@ sub start {
             }
         }
     }    # LIST_QUEUE?
+    
+    e_print("\t* Digests!\n")
+      if $verbose;
+      
+    DIGEST_QUEUE: for my $list (@lists) {
+        my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+        
+        if ( $ls->param('disable_discussion_sending') == 1 ) {
+            e_print("\t* Bridge is not enabled for, $list \n") 
+				if $verbose;
+            next DIGEST_QUEUE;
+        }
+        if ( $ls->param('digest_enable') == 1 ) {
+            e_print("\t* Digests are not enabled for, $list \n") 
+				if $verbose;
+            next DIGEST_QUEUE;
+        }
+        
+        require DADA::App::Digests; 
+        my $digest = DADA::App::Digests->new({-list => $list});
+        print $digest->send_digests(); 
+           
+        e_print("\t* Processing Digests! \n") 
+            if $verbose;
+            
+    } # DIGEST_QUEUE
 
 }
 

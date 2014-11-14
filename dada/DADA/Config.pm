@@ -1657,6 +1657,10 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
     msg_labeled_as_spam_msg_subject => undef,
     msg_labeled_as_spam_msg => undef,
 
+    digest_enable     => 0, 
+    digest_schedule   => 86400, 
+    digest_last_sentt => undef, 
+
     # Tracker
     tracker_record_view_count                       => 10,
     tracker_auto_parse_links                        => 1,
@@ -1683,8 +1687,6 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
     bounce_handler_forward_msgs_to_list_owner => 0,
     bounce_handler_when_threshold_reached     => 'move_to_bounced_sublist',
 
-    # dada_digest.pl
-    last_digest_sent => undef,
 
     # default messages
     default_plaintext_message_content_src             => 'default',    # default/url_or_path
@@ -1963,6 +1965,7 @@ sub _config_import {
         profile_table                      => 'dada_profiles',
         profile_fields_table               => 'dada_profile_fields',
         profile_fields_attributes_table    => 'dada_profile_fields_attributes',
+        profile_settings_table             => 'dada_profile_settings',
         archives_table                     => 'dada_archives',
         settings_table                     => 'dada_settings',
         session_table                      => 'dada_sessions',

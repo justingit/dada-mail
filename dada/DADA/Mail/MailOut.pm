@@ -771,13 +771,13 @@ sub create_subscriber_list {
     my $lock = $self->lock_file($file);
 
     my %cmf_args = (
-        -ID             => $self->_internal_message_id,
-        -Type           => $self->mailout_type,
-        -Save_At        => $self->dir . '/' . $file_names->{tmp_subscriber_list},
-        -Bulk_Test      => $args->{-mh_obj}->{mass_test},
-        -Test_Recipient => $args->{-mh_obj}->mass_test_recipient,
-        -Ban            => $args->{-mh_obj}->{do_not_send_to},
-
+        -ID               => $self->_internal_message_id,
+        -Type             => $self->mailout_type,
+        -for_mass_mailing => 1, 
+        -Save_At          => $self->dir . '/' . $file_names->{tmp_subscriber_list},
+        -Bulk_Test        => $args->{-mh_obj}->{mass_test},
+        -Test_Recipient   => $args->{-mh_obj}->mass_test_recipient,
+        -Ban              => $args->{-mh_obj}->{do_not_send_to},
         -Create_Tokens => ( $args->{-mh_obj}->list_type eq 'invitelist' || $args->{-mh_obj}->list_type eq 'list' )
         ? 1
         : 0,

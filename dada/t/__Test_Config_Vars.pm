@@ -23,6 +23,7 @@ $TEST_SQL_PARAMS = {
 		profile_table                      => 'test_dada_profiles', 
 		profile_fields_table 	           => 'test_dada_profile_fields', 
 		profile_fields_attributes_table    => 'test_dada_profile_fields_attributes',
+		profile_settings_table             => 'test_dada_profile_settings', 
 	    archives_table   				   => 'test_dada_archives', 
 	    settings_table   				   => 'test_dada_settings', 
 	    session_table    				   => 'test_dada_sessions',
@@ -33,6 +34,7 @@ $TEST_SQL_PARAMS = {
 		password_protect_directories_table => 'test_dada_password_protect_directories', 
 		confirmation_tokens_table          => 'test_dada_confirmation_tokens',
 		message_drafts_table               => 'test_dada_message_drafts',
+		
 		
 	}, 
 
@@ -49,6 +51,7 @@ $TEST_SQL_PARAMS = {
 		profile_table           => 'test_dada_profiles', 
 		profile_fields_table 	=> 'test_dada_profile_fields', 
 		profile_fields_attributes_table => 'test_dada_profile_fields_attributes',
+		profile_settings_table             => 'test_dada_profile_settings', 
 	    archives_table   		=> 'test_dada_archives', 
 	    settings_table   		=> 'test_dada_settings', 
 	    session_table    		=> 'test_dada_sessions',
@@ -74,6 +77,7 @@ $TEST_SQL_PARAMS = {
 		profile_table                   => 'test_dada_profiles', 
 		profile_fields_table 	        => 'test_dada_profile_fields', 
 		profile_fields_attributes_table => 'test_dada_profile_fields_attributes',
+		profile_settings_table          => 'test_dada_profile_settings', 
 	    archives_table   		        => 'test_dada_archives', 
 	    settings_table   		        => 'test_dada_settings', 
 	    session_table    		        => 'test_dada_sessions',
