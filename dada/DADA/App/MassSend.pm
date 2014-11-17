@@ -408,8 +408,7 @@ sub send_email {
 
         my $msg_as_string = ( defined($entity) ) ? $entity->as_string : undef;        
            $msg_as_string = safely_decode($msg_as_string);
-          
-                  
+                 
         $fm->Subject( $headers{Subject} );
 
         my ( $final_header, $final_body );

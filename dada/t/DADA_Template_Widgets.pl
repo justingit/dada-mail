@@ -120,6 +120,20 @@ my $lh = DADA::MailingList::Subscribers->new({-list => $list});
         }
     );
     
+#my ($sv, $slv) = DADA::Template::Widgets::subscriber_vars(
+#    { 
+#        -subscriber_vars_param  => 
+#            {
+#                -list  => $list, 
+#                -email => 'this@example.com', 
+#                -type  => 'list',
+#            },
+#    }
+#);
+#use Data::Dumper; 
+#diag "kaboom!"; 
+#diag(Dumper($sv)); 
+#diag(Dumper($slv));    
 
 my $d = q{ 
 

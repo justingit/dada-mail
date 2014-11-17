@@ -1525,6 +1525,11 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
     mailing_list_message_subject     => undef,
     mailing_list_message             => undef,
     mailing_list_message_html        => undef,
+    
+    digest_message_subject           => undef, 
+    digest_message                   => undef, 
+    digest_message_html              => undef, 
+    
 
     send_archive_message_subject     => undef,
     send_archive_message             => undef,
@@ -1657,9 +1662,9 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
     msg_labeled_as_spam_msg_subject => undef,
     msg_labeled_as_spam_msg => undef,
 
-    digest_enable     => 0, 
-    digest_schedule   => 86400, 
-    digest_last_sentt => undef, 
+    digest_enable               => 0, 
+    digest_schedule             => 86400, 
+    digest_last_archive_id_sent => undef, 
 
     # Tracker
     tracker_record_view_count                       => 10,
@@ -1783,6 +1788,7 @@ $PROGRAM_NAME ||= "Dada Mail";
     To            => undef,
     Cc            => undef,
     Bcc           => undef,
+    Sender        => undef,
     'Return-Path' => undef,
     'Reply-To'    => undef,
     'In-Reply-To' => undef,
@@ -1807,7 +1813,6 @@ $PROGRAM_NAME ||= "Dada Mail";
     'Precedence' => 'list',
     'X-Mailer'   => "$PROGRAM_NAME $VER ",
 
-    Sender                      => undef,
     'Content-type'              => undef,
     'Content-Transfer-Encoding' => undef,
 
@@ -1829,6 +1834,7 @@ $PROGRAM_NAME ||= "Dada Mail";
   To
   Cc
   Bcc
+  Sender
   Return-Path
   Reply-To
   In-Reply-To
@@ -1855,7 +1861,6 @@ $PROGRAM_NAME ||= "Dada Mail";
 
   X-Mailer
 
-  Sender
   Content-type
   Content-Transfer-Encoding
   Content-Disposition

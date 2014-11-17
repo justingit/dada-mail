@@ -1,6 +1,8 @@
 #!/usr/bin/perl 
 
-my $large_num = 1000; 
+my $time = 1416181791;
+
+
 use Data::Dumper; 
 
 use lib
@@ -16,7 +18,7 @@ use       DADA::MailingList::Subscribers;
 use       DADA::MailingList::Settings; 
 use       DADA::Profile::Settings; 
 use       DADA::App::Digests; 
-
+use       DADA::App::Guts; 
 
 my $lh  = DADA::MailingList::Subscribers->new({-list => $list}); 
 my $ls  = DADA::MailingList::Settings->new({-list => $list}); 
@@ -82,7 +84,6 @@ my $s = $lh->subscription_list(
     }
 ); 
 ok(scalar(@$s) == 2); 
-#diag Dumper($s); 
 undef($s); 
 
 $ls->save({
@@ -127,15 +128,56 @@ my $n = scalar(@$s);
 ok($n == 2); 
 
 
-my $digest = DADA::App::Digests->new(
-    {
-        -list  => $list,
-        '-time' => 1416003468, 
-    }
-); 
+my $digest = digest_obj(); 
 
 
+ok($digest->should_send_digest == 0, "no archives, so nothing to send!"); 
 
+require   DADA::MailingList::Archives; 
+my $dma = DADA::MailingList::Archives->new({-list => $list}); 
+
+my $i    = 0;  
+for(0..2){ 
+    $i += 1800; # 1/2 hour
+    $dma->set_archive_info(
+        message_id(($time - $i)),
+        undef, 
+        undef, 
+        undef, 
+        q{Content-type: text/plain
+From: no.digest@example.com
+Subject: this is the subject!
+
+This is the message!},
+    ); 
+}
+my $keys       = $dma->get_archive_entries('normal');
+diag scalar(@$keys) . ' archives.'; 
+
+undef($digest); # this is to reload the D::M::Settings; 
+my $digest = digest_obj(); 
+
+# Haven't sent a digest, but most recent digest is out of scope! (too far in the future!); 
+ok($digest->should_send_digest == 1); 
+
+my $ids = $digest->archive_ids_for_digest; 
+ok(scalar(@$ids) == 3, "three archives for digest!");  
+
+sub digest_obj { 
+    my $digest = DADA::App::Digests->new(
+        {
+            -list   => $list,
+            -ctime  => $time, 
+        }
+    ); 
+    
+    return $digest;
+}
+
+diag $digest->create_digest_msg_entity->as_string();
+
+#diag $ls->param('digest_message'); 
+#diag Dumper($digest->digest_ht_vars); 
 
 
 

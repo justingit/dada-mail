@@ -294,17 +294,12 @@ sub get_header {
 				); 
 
 	my ($subject, $message, $format, $raw_msg) = $self->get_archive_info($args{-key}, 1); 
-	
-	my $entity = $self->_entity_from_raw_msg($raw_msg); 
-			
+	my $entity = $self->_entity_from_raw_msg($raw_msg); 			
 	my $header = $entity->head->get($args{-header}, 0); 
 
-
 	# DEV: Decode Header!
-	if($args{-header} =~ m/Reply\-To|To|From|Subject|Cc/){ 
-		
+	if($args{-header} =~ m/Reply\-To|To|From|Subject|Cc|Sender/){ 
 		$header = $self->_decode_header($header); 
-#		die $header; 
 	}
 
 	#Special Case. 
@@ -312,11 +307,39 @@ sub get_header {
 		$header = $self->strip_subjects_appended_list_name($header)
 			if $self->{ls}->param('no_prefix_list_name_to_subject_in_archives') == 1; 
 	}
-
-	
-	
 	return $header; 
 	
+}
+
+sub sender_address {
+
+    my $self = shift; 
+    my ($args) = @_; 
+    my $id = $args->{-id};
+    my $header = $args->{-header}; 
+    
+    require Email::Address;
+    
+    my $e = $self->get_header(
+        -key    => $id,
+        -header => 'Sender', 
+    );
+    if(!defined($e) || length($e) < 1){ 
+        $e = $self->get_header(
+            -key    => $id,
+            -header => 'From', 
+        );
+    }
+    my $a; 
+    
+    if(defined($e) && length($e) > 0){ 
+        $a = ( Email::Address->parse($e) )[0]->address;
+    }
+    else { 
+        warn 'no sender address found.'; 
+    }
+    return $a; 
+    
 }
 
 
@@ -1473,9 +1496,12 @@ sub make_search_summary {
 		
 		if (! $message){ 
 			$message = $raw_msg;
-			$message = $self->massaged_msg_for_display(-key        => $key, 
-													   -plain_text => 1,
-													 );
+			$message = $self->massaged_msg_for_display(
+			    { 
+			        -key        => $key, 
+					-plain_text => 1,
+				}
+			);
 		}else{ 
 			$message = html_to_plaintext({-str => $message}); 
 		}
@@ -1566,8 +1592,10 @@ sub message_blurb {
 		if !$args{-key}; 
 		
 	my $msg = $self->massaged_msg_for_display(
-		-key        => $args{-key}, 
-		-plain_text => 1,
+	    {
+    		-key        => $args{-key}, 
+    		-plain_text => 1,
+    	}	
 	);
 					
 	# We'll want to, actually, escape out the entities - I don't know
@@ -1746,20 +1774,22 @@ document.
 sub massaged_msg_for_display {
 
     my $self = shift;
-
-    my %args = (
-        -key            => undef,
-        -body_only      => 0,
-        -plain_text     => 0,
-        -entity_protect => 1,
-
-        @_
-    );
+    my ($args) = @_;
+    
+    if(!exists($args->{-body_only})){ 
+        $args->{-body_only} = 0;         
+    } 
+    if(!exists($args->{-plain_text})){ 
+        $args->{-plain_text} = 0;         
+    } 
+    if(!exists($args->{-entity_protect})){ 
+        $args->{-entity_protect} = 1;         
+    } 
 
     my $content_type = 'text/html';
 
     my ( $subject, $message, $format, $raw_msg ) =
-      $self->get_archive_info( $args{-key} );
+      $self->get_archive_info( $args->{-key} );
 
     if ( !$raw_msg ) {
         $raw_msg = $self->_bs_raw_msg( $subject, $message, $format );
@@ -1804,13 +1834,13 @@ sub massaged_msg_for_display {
         $body = $self->_parse_in_list_info(
             -data => $body,
             (
-                  ( $args{-plain_text} == 1 )
+                  ( $args->{-plain_text} == 1 )
                 ? ( -type => 'text/plain' )
                 : ( -type => 'text/html' )
             ),
         );
 
-        if ( $args{-plain_text} == 1 ) {
+        if ( $args->{-plain_text} == 1 ) {
 
             # ...
         }
@@ -1820,7 +1850,7 @@ sub massaged_msg_for_display {
 
         if ( $self->{ls}->param('style_quoted_archive_text') == 1 ) {
             $body = $self->_highlight_quoted_text($body)
-              unless $args{-plain_text} == 1;
+              unless $args->{-plain_text} == 1;
         }
         $content_type = 'text/plain';
 
@@ -1831,7 +1861,7 @@ sub massaged_msg_for_display {
 		$body = safely_decode($body); 
 		
         $body = $self->_rearrange_cid_img_tags(
-            -key  => $args{-key},
+            -key  => $args->{-key},
             -body => $body,
         );		
         if ( $self->{ls}->param('stop_message_at_sig') == 1 ) {
@@ -1842,7 +1872,7 @@ sub massaged_msg_for_display {
         $body = $self->_parse_in_list_info(
             -data => $body,
             (
-                  ( $args{-plain_text} == 1 )
+                  ( $args->{-plain_text} == 1 )
                 ? ( -type => 'text/plain' )
                 : ( -type => 'text/html' )
             ),
@@ -1852,7 +1882,7 @@ sub massaged_msg_for_display {
         warn "I don't know how to work with what I have! mime_type: "
           . $b_entity->head->mime_type
           . ', key: '
-          . $args{-key}
+          . $args->{-key}
           . ', list: '
           . $self->{list_info}->{list};
     }
@@ -1863,13 +1893,13 @@ sub massaged_msg_for_display {
       if $self->{ls}->param('disable_archive_js') == 1;
 
     $body = $self->_email_protect( $b_entity, $body )
-      if $args{-entity_protect};
+      if $args->{-entity_protect};
 
-    if ( $args{-body_only} == 1 ) {
+    if ( $args->{-body_only} == 1 ) {
         $body = $self->_chomp_off_body($body);
     }
     else {
-        if ( $args{-plain_text} == 1 ) {
+        if ( $args->{-plain_text} == 1 ) {
 
             # ...
         }
@@ -1878,7 +1908,7 @@ sub massaged_msg_for_display {
         }
     }
 
-    if ( $args{-plain_text} == 1 ) {
+    if ( $args->{-plain_text} == 1 ) {
 		# happens when you have a HTML body and need it back in plaintext
 		# From what I can figure out, this'll only happen in the 
 		# message blurbs?
@@ -2358,9 +2388,12 @@ sub atom_index {
 
 		my ($subject, $message, $format) = $self->get_archive_info($entries->[$i]);
 		
-		$message = $self->massaged_msg_for_display(-key       => $entries->[$i], 
-										           -body_only => 1
-										         );	
+		$message = $self->massaged_msg_for_display(
+		    { 
+		        -key       => $entries->[$i], 
+				-body_only => 1,
+			}
+		);
         
         $message = HTML::Entities::Numbered::name2decimal($message); 
         
@@ -2481,11 +2514,12 @@ sub rss_index {
 		
 		my ($subject, $message, $format, $raw_msg) = $self->get_archive_info($entries->[$i]);
 		
-			$message = $self->massaged_msg_for_display(-key       => $entries->[$i], 
-												       -body_only => 1
-											          );	
-											          
-			
+			$message = $self->massaged_msg_for_display(
+			    {
+			        -key       => $entries->[$i], 
+					-body_only => 1
+				}
+			);	
 			   
 			$message =~ s/&/\&amp;/g;  
 			$message =~ s/>/\&gt;/g;

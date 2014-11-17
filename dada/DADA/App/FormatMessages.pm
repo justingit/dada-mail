@@ -925,7 +925,24 @@ sub _format_headers {
 		
     }
 	
-	#warn '$self->mass_mailing ' . $self->mass_mailing; 
+	# Set Sender: header, 
+	if ( $entity->head->count('Sender') ) {
+    
+    }
+    else { 
+        $entity->head->delete('Sender');
+		my    $og_from = $entity->head->get('From', 0);
+		chomp($og_from);
+      
+      if($og_from) { 
+          require Email::Address; 
+    	   my $a = ( Email::Address->parse($og_from) )[0]->address;
+            $entity->head->add('Sender', $a);
+            undef $og_from; 
+        }
+    }
+    
+    #warn '$self->mass_mailing ' . $self->mass_mailing; 
 	#warn q|$self->{ls}->param('group_list')| . $self->{ls}->param('group_list'); 
 	#warn q|$self->{ls}->param('discussion_pop_email')| . $self->{ls}->param('discussion_pop_email'); 
 	#warn q|$self->{ls}->param('group_list_pp_mode')| . $self->{ls}->param('group_list_pp_mode'); 

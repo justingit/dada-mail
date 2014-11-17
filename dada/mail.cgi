@@ -9471,7 +9471,7 @@ sub archive {
         # That. Sucked.
 
         my ( $massaged_message_for_display, $content_type ) =
-          $archive->massaged_msg_for_display( -key => $id, -body_only => 1 );
+          $archive->massaged_msg_for_display({ -key => $id, -body_only => 1 });
 
         my $show_iframe = $ls->param('html_archives_in_iframe') || 0;
         if ( $content_type eq 'text/plain' ) {
@@ -9677,7 +9677,7 @@ sub archive_bare {
     }
 
     my $scrn = $q->header();
-    $scrn .= $la->massaged_msg_for_display( -key => $id );
+    $scrn .= $la->massaged_msg_for_display({-key => $id });
     e_print($scrn);
 
     $c->cache( 'archive_bare.' . $list . '.' . $id . '.' . $q->param('admin') . '.scrn', \$scrn );

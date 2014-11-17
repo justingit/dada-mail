@@ -22,7 +22,7 @@ use Try::Tiny;
 
 use vars qw($AUTOLOAD);
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_Digests};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_Digests};
 
 my %allowed = ( test => 0, );
 
@@ -37,9 +37,9 @@ sub new {
 
     bless $self, $class;
 
-    my %args = (@_);
+    my ($args) = @_;
 
-    $self->_init( \%args );
+    $self->_init( $args );
     return $self;
 }
 
@@ -64,60 +64,147 @@ sub AUTOLOAD {
 
 sub _init {
     my $self = shift;
-    my ($args) = @_;
+    my ($args) = @_;    
     $self->{list}   = $args->{-list};
     $self->{ls_obj} = DADA::MailingList::Settings->new( { -list => $self->{list} } );
+    
+    if ( exists( $args->{-ctime} ) ) {
+        warn 'passed -ctime: ' . $args->{-ctime};
+        $self->{ctime} = $args->{-ctime}
+            if $t;
+    }
+    else { 
+        warn 'no passed -ctime'
+            if $t;
+        $self->{ctime} = time;        
+    }
+    warn 'ctime set to, ' . $self->{ctime}
+     if $t; 
+    
+    if(!defined($self->{ls_obj}->param('digest_last_archive_id_sent'))
+    || $self->{ls_obj}->param('digest_last_archive_id_sent') <= 0
+    ){
+        warn 'no current digest_last_archive_id_sent'
+            if $t; 
+        warn q{$self->{ctime}:} . $self->{ctime}
+            if $t; 
+        warn q{$self->{ls_obj}->param('digest_schedule'):} . $self->{ls_obj}->param('digest_schedule')
+            if $t;
+        warn 'ctime_2_archive_time:' .  $self->ctime_2_archive_time(int($self->{ctime}) - int($self->{ls_obj}->param('digest_schedule')))
+            if $t; 
+        $self->{ls_obj}->save(
+            { 
+               digest_last_archive_id_sent 
+                => $self->ctime_2_archive_time(int($self->{ctime}) - int($self->{ls_obj}->param('digest_schedule')))
+            }
+        ); 
+        undef($self->{ls_obj}); 
+        $self->{ls_obj} = DADA::MailingList::Settings->new( { -list => $self->{list} } );
+    }
+    
     $self->{a_obj}  = DADA::MailingList::Archives->new( { -list => $self->{list} } );
+        
+}
 
-    if ( !exists( $args->{'-time'} ) ) {
-        $self->{time} = time;
+sub should_send_digest { 
+    my $self = shift; 
+    if(scalar @{$self->archive_ids_for_digest}){ 
+        return 1; 
+    }
+    else { 
+        return 0; 
     }
 }
+sub archive_ids_for_digest {
 
-=cut
-sub archive_id_time_lt_table { 
-   my $self = shift;
-   my $keys       = $self->{a_obj}->get_archive_entries('normal');
-   $lt = {}; 
-   for(@$keys
-}
-=cut
-
-sub should_send_digests { 
     my $self = shift; 
-    
     my $keys       = $self->{a_obj}->get_archive_entries('normal');
+    my $ids = [];
     
     my $digest_last_archive_id_sent = $self->{ls_obj}->param('digest_last_archive_id_sent') || undef; 
     
     # no archives available? no digest.   
     if(scalar(@{$keys}) == 0) { 
-        return 0; 
+        return []; 
     }
     
-    # Well, is the last archive id we sent the newest archive? 
-    # (or the an archive newer was deleted?)
-    # Basically are there archives availabel but beyond our scope, in the future? 
-    if($self->{ls_obj}->param('digest_last_archive_id_sent') >= $keys->[0]){ 
-        return 0; 
+    for(@$keys){ 
+        if(
+            $_ > $digest_last_archive_id_sent 
+         && $_ < $self->ctime_2_archive_time($self->{ctime})){ 
+             push(@$ids, $_); 
+        } 
     }
-    
-    # in our scope: 
-    # Now: 
-    my $top_margin = $self->ctime_2_archive_time($self->{-time});
-    if($keys->[0] < $top_margin && $keys->[0] > $self->{ls_obj}->param('digest_last_archive_id_sent')){ 
-        return 1; 
+    if($t){ 
+        warn 'ids to make digest: ';
+        for(@$ids){ 
+            warn "$_\n"; 
+        }
     }
-    else { 
-        return 0; 
-    }        
+    return $ids; 
 }
-sub send_digests {
+sub send_digest {
     my $self = shift;
     my $r = "sending out digests! Here we go!\n";
 
-    if($self->should_send_digests){ 
-        $r .= "woo! digests to send!"; 
+    require DADA::App::FormatMessages;
+    my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
+    $fm->mass_mailing(1);
+
+    if($self->should_send_digest){ 
+
+        my $entity = $self->create_digest_msg_entity();
+        
+        my $msg_as_string = ( defined($entity) ) ? $entity->as_string : undef;        
+           $msg_as_string = safely_decode($msg_as_string);
+       
+       # $fm->Subject( $headers{Subject} );
+
+        my ( $final_header, $final_body );
+        eval { ( $final_header, $final_body ) = $fm->format_headers_and_body( -msg => $msg_as_string ); };
+#        if ($@) {
+#            report_mass_mail_errors( $@, $list, $root_login );
+#            return;
+#        }
+
+        require DADA::Mail::Send;
+
+        my $mh = DADA::Mail::Send->new(
+            {
+                -list   => $self->{list},
+                -ls_obj => $self->{ls_obj},
+            }
+        );
+
+#
+#
+#
+        $mh->test( $self->test );
+#
+#
+#
+        my %mailing = ( $mh->return_headers($final_header), Body => $final_body, );
+        
+
+        my $message_id;
+
+
+        $message_id = $mh->mass_send(
+            {
+                -msg                 => {%mailing},
+                -mass_mailing_params => {
+                    -sending_to => 'digest'
+                }
+#                    -partial_sending => $partial_sending,
+#                    ( $process =~ m/test/i )
+#                    ? (
+#                        -mass_test      => 1,
+#                        -test_recipient => $og_test_recipient,
+#                      )
+#                    : ( -mass_test => 0, )
+#
+            }
+        );         
     }
     else { 
         $r .= "whoa! No digests should be sent out!"; 
@@ -125,37 +212,13 @@ sub send_digests {
     return $r; 
 }
 
-sub time_limit {
-    my $self  = shift;
-    my $limit = int($self->{time}) - int( $self->{ls_object}->param('digest_schedule') );
-    return $limit;
-}
-
-sub archive_ids_for_digest {
-    my $self = shift;
-    my ($args) = @_;
-
-    my $time_limit = $self->time_limit();
-    my $keys       = $self->{a_obj}->get_archive_entries('normal');
-    my @digest_keys;
-    
-    foreach my $a_key (@$keys) {
-        my $c_time = archive_time_2_ctime($a_key );
-        if ( $c_time > $time_limit ) {
-            push(@digest_keys);
-        }
-        else {
-            last;
-        }
-    }
-    return \@digest_keys;
-}
-
 sub archive_time_2_ctime {
 
     my $self  = shift;
-    
     my $p_num = shift;
+    
+    warn '$p_num: ' . $p_num 
+        if $t; 
 
     my $year   = int( substr( $p_num, 0,  4 ) ) || 0;
     my $month  = int( substr( $p_num, 4,  2 ) ) || 0;
@@ -167,14 +230,140 @@ sub archive_time_2_ctime {
     $month -= 1;
 
     my $c_time = timelocal( $sec, $minute, $hour, $day, $month, $year );
-
+    
     return $c_time;
     
 }
 sub ctime_2_archive_time { 
-    my $self = shift;
-    my ($args) = @_; 
-    return message_id($args->{-ctime}); 
+    my $self  = shift;
+    my $ctime = shift; 
+    return message_id($ctime); 
 }
+
+sub create_digest_msg_entity {
+
+    my $self = shift; 
+    my $vars = $self->digest_ht_vars; 
+    require DADA::Template::Widgets; 
+
+    my $subject_tmpl   = $self->{ls_obj}->param('digest_message_subject'); 
+    my $pt_tmpl        = $self->{ls_obj}->param('digest_message'); 
+    my $html_tmpl      = $self->{ls_obj}->param('digest_message_html'); 
+    
+    my $subject_scr = DADA::Template::Widgets::screen(
+        {
+            -data => \$subject_tmpl,
+            -expr => 1,  
+            -vars => $vars, 
+            -list_settings_vars_param => { -list => $self->{list} },
+        }
+    ); 
+    my $pt_scrn = DADA::Template::Widgets::screen(
+        {
+            -data => \$pt_tmpl,
+            -expr => 1,  
+            -vars => $vars, 
+            -list_settings_vars_param => { -list => $self->{list} },
+        }
+    ); 
+    my $html_scrn = DADA::Template::Widgets::screen(
+        {
+            -data => \$html_tmpl,
+            -expr => 1,  
+            -vars => $vars, 
+            -list_settings_vars_param => { -list => $self->{list} },
+        }
+    );
+    require MIME::Entity; 
+    my $entity = MIME::Entity->build(
+        Type      => 'multipart/alternative',
+        Charset   => $self->{ls_obj}->param('charset_value'),
+        Subject   => $subject_scr,
+    );
+    $entity->attach(
+        Type      => 'text/plain',
+        Data      => $pt_scrn,
+        Encoding  => $self->{ls_obj}->param('plaintext_encoding'),
+        Charset   => $self->{ls_obj}->param('charset_value'),
+    );
+    $entity->attach(
+        Type     => 'text/html',
+        Data     => $html_scrn,
+        Encoding => $self->{ls_obj}->param('html_encoding'),
+        Charset  => $self->{ls_obj}->param('charset_value'),        
+    );
+    
+    return $entity->as_string();
+    
+}
+
+sub digest_ht_vars { 
+
+   my $self = shift; 
+   
+   require DADA::Template::Widgets; 
+   
+   
+   my $ids = $self->archive_ids_for_digest; 
+   
+   my $digest_messages = [];
+   
+   foreach my $id(@$ids){ 
+       my $pt = $self->{a_obj}->massaged_msg_for_display(
+           { 
+               -key            => $id, 
+               -body_only      => 1,
+               -entity_protect => 1,
+               -plain_text     => 1, 
+           }
+        );
+        my $html = $self->{a_obj}->massaged_msg_for_display(
+            { 
+                -key            => $id, 
+                -body_only      => 1,
+                -entity_protect => 1,
+                -plain_text     => 0, 
+            }
+         );
+         my $sender_address = $self->{a_obj}->sender_address(
+             { 
+                 -id => $id, 
+              }
+        );
+        
+        my ($subscriber_vars, $subscriber_loop_vars) = DADA::Template::Widgets::subscriber_vars(
+            { 
+                -subscriber_vars_param => { 
+                    -list              => $self->{list},
+                    -email             => $sender_address,
+                    -type              => 'list', 
+                    -use_fallback_vars => 1, 
+                }
+            }
+        ); 
+        
+        my %date_params = DADA::Template::Widgets::date_params($self->archive_time_2_ctime($id)); 
+        
+        push(
+          @$digest_messages, 
+          {
+             plaintext_message => $pt, 
+             html_message      => $html,
+             subject           => $self->{a_obj}->get_header(-key => $id, -header => 'Subject'),
+             subscriber        => $subscriber_loop_vars, 
+             %$subscriber_vars, 
+             %date_params,
+          }  
+        );
+   }
+   
+   return { 
+       num_messages      => scalar(@$ids), 
+       digest_messages   => $digest_messages, 
+   }
+
+}
+
+
 
 1;

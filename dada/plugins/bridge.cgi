@@ -1315,7 +1315,7 @@ sub start {
         
         require DADA::App::Digests; 
         my $digest = DADA::App::Digests->new({-list => $list});
-        print $digest->send_digests(); 
+        print $digest->send_digess(); 
            
         e_print("\t* Processing Digests! \n") 
             if $verbose;

@@ -157,7 +157,7 @@ sub main {
             my $content_type;
 
             ( $massaged_message_for_display, $content_type ) =
-              $ah->massaged_msg_for_display( -key => $entry, -body_only => 1 );
+              $ah->massaged_msg_for_display({ -key => $entry, -body_only => 1 });
 
         }
         else {

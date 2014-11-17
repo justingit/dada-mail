@@ -2030,7 +2030,8 @@ returns an id, based on the date.
 
 sub message_id { 
 
-	my ($sec, $min, $hour, $day, $month, $year) = (localtime)[0,1,2,3,4,5];
+    my $ctime = shift || time; 
+	my ($sec, $min, $hour, $day, $month, $year) = (localtime($ctime))[0,1,2,3,4,5];
 	my $message_id = sprintf("%02d%02d%02d%02d%02d%02d", $year+1900, $month+1, $day,  $hour, $min, $sec);
 	return $message_id; 
 

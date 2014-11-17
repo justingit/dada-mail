@@ -393,6 +393,10 @@ sub _email_message_settings {
         mailing_list_message             => 1,
         mailing_list_message_html        => 1,
 
+        digest_message_subject           => 1, 
+        digest_message                   => 1, 
+        digest_message_html              => 1, 
+        
         confirmation_message_subject => 1,
         confirmation_message         => 1,
 
@@ -506,6 +510,10 @@ sub _fill_in_email_message_settings {
 		mailing_list_message_subject                => {-tmpl => 'mailing_list_message.eml', -part => 'subject'}, 
 		mailing_list_message                        => {-tmpl => 'mailing_list_message.eml', -part => 'plaintext_body'}, 
 		mailing_list_message_html                   => {-tmpl => 'mailing_list_message.eml', -part => 'html_body'}, 
+
+        digest_message_subject                      => {-tmpl => 'digest_message.eml', -part => 'subject'}, 
+        digest_message                              => {-tmpl => 'digest_message.eml', -part => 'plaintext_body'}, 
+        digest_message_html                         => {-tmpl => 'digest_message.eml', -part => 'html_body'}, 
 
 		confirmation_message_subject                => {-tmpl => 'confirmation_message.eml', -part => 'subject'},  
         confirmation_message                        => {-tmpl => 'confirmation_message.eml', -part => 'plaintext_body'},  

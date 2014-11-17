@@ -5,39 +5,58 @@ use lib qw(/Users/justin/Documents/DadaMail/git/dada-mail/dada/DADA/perllib);
 
 use MIME::Parser; 
 
-my $subject = 'Unsubscribed from: <!-- tmpl_var list_settings.list_name --> because of excessive bouncing'; 
+my $subject = 'Digest Message!'; 
 my $pt = <<EOF
 
-Hello, This is <!-- tmpl_var Plugin_Name -->, the bounce handler for <!-- tmpl_var PROGRAM_NAME -->
+This comes before the digest messages
+Number of messages: <!-- tmpl_var num_messages -->
 
-This is a notice that your email address:
+<!-- tmpl_loop digest_messages -->
+* <!-- tmpl_var subject --> by, <!-- tmpl_var subscriber.email --> (<!-- tmpl_var date -->)<!-- /tmpl_loop -->
 
-    <!-- tmpl_var subscriber.email -->
-    
-has been unsubscribed from:
+<!-- tmpl_loop digest_messages -->
 
-    <!-- tmpl_var list_settings.list_name -->
-    
-Because your email address has been bouncing messages sent to it, 
-originating from this list.
+Date: <!-- tmpl_var date -->
+From: <!-- tmpl_var subscriber.email -->
+Subject: <!-- tmpl_var subject -->
+---------------------------------------
+<!-- tmpl_var plaintext_message -->
+==============================================================================
 
-If this is in error, please re-subscribe to this list, by following 
-this link: 
+<!-- /tmpl_loop -->
 
-    <!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list -->
-
-If you have any questions, please email the list owner of this list at: 
-
-    <!-- tmpl_var list_settings.list_owner_email -->
-    
-for more information. 
-
-- <!-- tmpl_var PROGRAM_NAME -->
+This comes after the digest messages
 
 EOF
 ;
 
-my $html = '';
+my $html = <<EOF
+
+<p>This comes before the digest messages
+<p>Number of messages: <!-- tmpl_var num_messages -->
+
+<ul>
+<!-- tmpl_loop digest_messages -->
+<li><!-- tmpl_var subject --> by, <!-- tmpl_var subscriber.email --> (<!-- tmpl_var date -->)<!-- /tmpl_loop --></li>
+
+<!-- tmpl_loop digest_messages -->
+</ul>
+
+<p>
+Date: <!-- tmpl_var date --><br />
+From: <!-- tmpl_var subscriber.email --><br />
+Subject: <!-- tmpl_var subject --><br />
+---------------------------------------</p>
+<!-- tmpl_var plaintext_message -->
+==============================================================================
+
+<!-- /tmpl_loop -->
+
+<p>This comes after the digest messages</p>
+
+
+EOF
+;
 
 
 use Email::Address; 
