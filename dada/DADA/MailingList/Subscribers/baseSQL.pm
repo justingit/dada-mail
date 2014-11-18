@@ -283,9 +283,11 @@ sub SQL_subscriber_profile_join_statement {
     }
     
     if(!exists($args->{-mass_mailing_params})) { 
+        
+        warn 'nope, doesn\'t exist.'; 
         $args->{-mass_mailing_params} = 
         {
-            -sending_to => 'all', # individ, digest, all
+            -delivery_preferences => 'all', # individ, digest, all
         }; 
     }
 
@@ -539,8 +541,9 @@ sub SQL_subscriber_profile_join_statement {
         }
     }    
     
-    # send to digest! 
-    my $digest_subq = 'SELECT * FROM ' . 
+
+    
+    my $digest_subq = 'AND EXISTS (SELECT * FROM ' . 
     $profile_settings_table . 
     ' WHERE ' . 
     $subscriber_table . 
@@ -548,20 +551,37 @@ sub SQL_subscriber_profile_join_statement {
     $profile_settings_table . 
     '.email AND ' .
     $profile_settings_table . 
-    '.setting = \'digest\' AND ' .
+    '.setting = \'delivery_prefs\' AND ' .
     $profile_settings_table . 
-    '.value = 1 '; 
-        
-    if($args->{-mass_mailing_params}->{-sending_to} eq 'digest'
+    '.value = "digest")'; 
+    
+    # so, individual, or NULL
+    my $individual_subq = 'AND NOT EXISTS (SELECT * FROM ' . 
+    $profile_settings_table . 
+    ' WHERE ' . 
+    $subscriber_table . 
+    '.email = ' . 
+    $profile_settings_table . 
+    '.email AND ' .
+    $profile_settings_table . 
+    '.setting = \'delivery_prefs\' AND (' .
+    $profile_settings_table . 
+    '.value = "hold" OR ' . 
+    $profile_settings_table . 
+    '.value = "digest"))'; 
+    
+    if($args->{-mass_mailing_params}->{-delivery_preferences} eq 'digest'
         && $ls->param('digest_enable') == 1
     ){         
-            $query .= 'AND EXISTS (' . $digest_subq . ')'; 
+        $query .= $digest_subq; 
     }
-    elsif($args->{-mass_mailing_params}->{-sending_to} eq 'indiv'
+    elsif($args->{-mass_mailing_params}->{-delivery_preferences} eq 'individual'
         && $ls->param('digest_enable') == 1
     ){
-        $query .= 'AND NOT EXISTS (' . $digest_subq . ')'; 
+        $query .= $individual_subq; 
     }
+
+
 
     if ( exists( $args->{-include_from} )
         && $self->{sql_params}->{dbtype} =~ m/^mysql$|^SQLite$/ )
@@ -1289,15 +1309,16 @@ sub create_mass_sending_file {
     my $self = shift;
 
     my %args = (
-        -Type            => 'list',
-        -Pin             => 1,
-        -ID              => undef,
-        -Ban             => undef,
-        -Bulk_Test       => 0,
-        -Save_At         => undef,
-        -Test_Recipient  => undef,
-        -partial_sending => {},
-        -exclude_from    => [],
+        -Type                => 'list',
+        -Pin                 => 1,
+        -ID                  => undef,
+        -Ban                 => undef,
+        -Bulk_Test           => 0,
+        -Save_At             => undef,
+        -Test_Recipient      => undef,
+        -partial_sending     => {},
+        -mass_mailing_params => {},
+        -exclude_from        => [],
         @_
     );
 
@@ -1424,10 +1445,11 @@ sub create_mass_sending_file {
 		
         my $query = $self->SQL_subscriber_profile_join_statement(
             {
-                -type            => $args{-Type},
-                -partial_listing => $args{-partial_sending},
-                -exclude_from    => $args{-exclude_from},
-                -include_from    => $args{-include_from},
+                -type                => $args{-Type},
+                -partial_listing     => $args{-partial_sending},
+                -mass_mailing_params => $args{-mass_mailing_params},
+                -exclude_from        => $args{-exclude_from},
+                -include_from        => $args{-include_from},
             }
         );
 

@@ -567,6 +567,7 @@ sub run {
         'membership'                                  => \&membership,
         'also_member_of'                              => \&also_member_of,
         'admin_change_profile_password'               => \&admin_change_profile_password,
+        'admin_profile_delivery_preferences'          => \&admin_profile_delivery_preferences, 
         'validate_update_email'                       => \&validate_update_email,
         'validate_remove_email'                       => \&validate_remove_email,
         'mailing_list_history'                        => \&mailing_list_history,
@@ -4480,6 +4481,20 @@ sub membership {
             $subscribed_to_sub_request_list = 1;
 
         }
+        
+        require DADA::Profile::Settings; 
+        my $dpa = DADA::Profile::Settings->new; 
+        my $s = $dpa->fetch(
+            { 
+                -list  => $list, 
+                -email => $email, 
+            }
+        ); 
+        my $delivery_prefs = $s->{delivery_prefs} || 'individual';
+        my $digest_timeframe = _formatted_runtime(
+            $ls->param('digest_schedule')
+        ); 
+        
 
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -4523,7 +4538,10 @@ sub membership {
                     bounced_list_moved_to_list_count => $bounced_list_moved_to_list_count,
                     bounced_list_removed_from_list   => $bounced_list_removed_from_list,
 
-                    can_have_subscriber_fields => $lh->can_have_subscriber_fields,
+                    can_have_subscriber_fields       => $lh->can_have_subscriber_fields,
+                    
+                    delivery_prefs                   => $delivery_prefs, 
+                    digest_timeframe                 => $digest_timeframe, 
 
                 },
                 -list_settings_vars_param => {
@@ -5146,6 +5164,33 @@ sub admin_change_profile_password {
     print $q->redirect(
         -uri => $DADA::Config::S_PROGRAM_URL . '?f=membership&email=' . $email . '&type=' . $type . '&done=1' );
     return;
+}
+
+sub admin_profile_delivery_preferences { 
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'membership'
+    );
+
+    my $email          = xss_filter( $q->param('email') );
+    my $list           = xss_filter( $q->param('list') );
+    my $delivery_prefs = xss_filter( $q->param('delivery_prefs') );
+    my $type           = xss_filter( $q->param('type') );
+    
+    require DADA::Profile::Settings;
+    my $dps = DADA::Profile::Settings->new; 
+    my $r = $dps->save(
+        {
+            -email   => $email, 
+            -list    => $list, 
+            -setting => 'delivery_prefs', 
+            -value   => $delivery_prefs,
+        }   
+    );
+    print $q->redirect(
+        -uri => $DADA::Config::S_PROGRAM_URL . '?f=membership&email=' . $email . '&type=' . $type . '&done=1' );
+    return;
+ 
 }
 
 sub add {
@@ -12002,6 +12047,22 @@ sub profile {
             return;
 
         }
+        elsif ( $q->param('process') eq 'profile_delivery_preferences' ) {
+            my $list           = xss_filter( $q->param('list') );
+            my $delivery_prefs = xss_filter( $q->param('delivery_prefs') );
+            
+            require DADA::Profile::Settings;
+            my $dps = DADA::Profile::Settings->new; 
+            my $r = $dps->save(
+                {
+                    -email   => $email, 
+                    -list    => $list, 
+                    -setting => 'delivery_prefs', 
+                    -value   => $delivery_prefs,
+                }   
+            );
+            print $q->redirect( { -uri => $DADA::Config::PROGRAM_URL . '?f=profile&edit=1' } );           
+        }
         else {
 
             my $fields = [];
@@ -12054,7 +12115,20 @@ sub profile {
                 require DADA::App::Subscriptions::Unsub;
                 my $dasu = DADA::App::Subscriptions::Unsub->new( { -list => $i->{list} } );
                 my $unsub_link = $dasu->unsub_link( { -email => $email, -mid => '00000000000000' } );
-
+                
+                my $digest_timeframe = _formatted_runtime(
+                    $ls->param('digest_schedule')
+                ); 
+                
+                require DADA::Profile::Settings; 
+                my $dpa = DADA::Profile::Settings->new; 
+                my $s = $dpa->fetch(
+                    { 
+                        -list  => $i->{list}, 
+                        -email => $email, 
+                    }
+                ); 
+                my $delivery_prefs = $s->{delivery_prefs} || 'individual';
                 push(
                     @$filled,
                     {
@@ -12062,10 +12136,11 @@ sub profile {
                         %{$li},
                         PROGRAM_URL           => $DADA::Config::PROGRAM_URL,
                         list_unsubscribe_link => $unsub_link,
+                        digest_timeframe      => $digest_timeframe,
+                        delivery_prefs        => $delivery_prefs,
                     }
                 );
             }
-
 
             my $scrn = '';
             require DADA::Template::Widgets;

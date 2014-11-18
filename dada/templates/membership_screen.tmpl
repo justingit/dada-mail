@@ -61,9 +61,13 @@
 			</li>
 		<!-- /tmpl_if --> 
 		
-		
-		
-		
+		<!-- tmpl_if list_settings.digest_enable --> 
+			<li> 
+				<a href="#delivery_preferences_tab">
+					Delivery Preferences
+				</a>
+			</li>
+		<!-- /tmpl_if --> 
 	</ul>
 
 	<div id="membership_tab"> 
@@ -403,7 +407,47 @@
 		
 		</div> 
 	<!-- /tmpl_if --> 
-	 
+	
+	
+	<!-- tmpl_if list_settings.digest_enable --> 
+	<div id="delivery_preferences_tab">
+
+        <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
+            
+            <input type="hidden" name="f"        value="admin_profile_delivery_preferences" /> 
+            <input type="hidden" name="list"     value="<!-- tmpl_var list_settings.list -->" /> 
+            <input type="hidden" name="email"    value="<!-- tmpl_var email -->" /> 
+
+            <input type="hidden" name="type"     value="<!-- tmpl_var type -->" />
+			
+            <p>
+                <input type="radio" name="delivery_prefs" value="individual" id="delivery_prefs_individual" <!-- tmpl_if expr="delivery_prefs eq 'individual'" -->checked="checked"<!-- /tmpl_if --> />
+                    <label for="delivery_prefs_individual">
+                        Receive All Messages
+                    </label>
+                    <br />
+                <input type="radio" name="delivery_prefs" value="digest" id="delivery_prefs_digest" <!-- tmpl_if expr="delivery_prefs eq 'digest'" -->checked="checked"<!-- /tmpl_if --> >
+                    <label for="delivery_prefs_digest">
+                        Receive Messages in a Digest
+                    </label> (<!-- tmpl_var digest_timeframe -->)
+                    <br />
+                <input type="radio" name="delivery_prefs" value="hold" id="delivery_prefs_hold" <!-- tmpl_if expr="delivery_prefs eq 'hold'" -->checked="checked"<!-- /tmpl_if --> >
+                    <label for="delivery_prefs_hold">
+                        Hold Mailings
+                    </label> (vacation, etc)     
+                    
+                    <div class="buttonfloat">    
+                    <input type="submit" value="Save Delivery Preferences" class="processing" /> 
+                    </div>
+                    <div class="floatclear"></div>                       
+            </p>
+            
+        </form>
+        
+
+
+	</div>
+	<!-- /tmpl_if -->  
 </div> 
 
 

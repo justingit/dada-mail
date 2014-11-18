@@ -144,19 +144,26 @@ sub archive_ids_for_digest {
     return $ids; 
 }
 sub send_digest {
+    
     my $self = shift;
     my $r = "sending out digests! Here we go!\n";
-
-    require DADA::App::FormatMessages;
-    my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
-    $fm->mass_mailing(1);
+    $r .= '$self->should_send_digest:' . $self->should_send_digest; 
+    
 
     if($self->should_send_digest){ 
+        
 
+        require DADA::App::FormatMessages;
+        my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
+           $fm->mass_mailing(1);
+        
+        
         my $entity = $self->create_digest_msg_entity();
         
         my $msg_as_string = ( defined($entity) ) ? $entity->as_string : undef;        
            $msg_as_string = safely_decode($msg_as_string);
+      
+      $r .= '$msg_as_string:' . $msg_as_string; 
        
        # $fm->Subject( $headers{Subject} );
 
@@ -184,7 +191,6 @@ sub send_digest {
 #
 #
         my %mailing = ( $mh->return_headers($final_header), Body => $final_body, );
-        
 
         my $message_id;
 
@@ -193,8 +199,8 @@ sub send_digest {
             {
                 -msg                 => {%mailing},
                 -mass_mailing_params => {
-                    -sending_to => 'digest'
-                }
+                    -delivery_preferences => 'digest',
+                },
 #                    -partial_sending => $partial_sending,
 #                    ( $process =~ m/test/i )
 #                    ? (
@@ -205,6 +211,16 @@ sub send_digest {
 #
             }
         );         
+        
+    # Then, reset the digest, where we left off, 
+    
+    my $keys = $self->archive_ids_for_digest(); 
+    
+    $self->{ls_obj}->save(
+        {
+            digest_last_archive_id_sent => $keys->[0],
+        }
+    ); 
     }
     else { 
         $r .= "whoa! No digests should be sent out!"; 
@@ -293,7 +309,7 @@ sub create_digest_msg_entity {
         Charset  => $self->{ls_obj}->param('charset_value'),        
     );
     
-    return $entity->as_string();
+    return $entity;
     
 }
 

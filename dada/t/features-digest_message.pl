@@ -56,8 +56,8 @@ my $r = $dps->save(
     {
         -email   => 'yes.digest@example.com', 
         -list    => $list, 
-        -setting => 'digest', 
-        -value   => 1,
+        -setting => 'delivery_prefs', 
+        -value   => 'digest',
     }   
 );
 ok($r == 1); 
@@ -79,7 +79,7 @@ ok($psettings->{digest} == 1);
 my $s = $lh->subscription_list(
     {
         -mass_mailing_params => {
-            -sending_to => 'digest' # individ, digest, all
+            -delivery_preferences => 'digest' # individ, digest, all
         },
     }
 ); 
@@ -94,7 +94,7 @@ $ls->save({
 my $s = $lh->subscription_list(
     {
         -mass_mailing_params => {
-            -sending_to => 'digest' # individ, digest, all
+            -delivery_preferences => 'digest' # individ, digest, all
         },
     }
 ); 
@@ -109,7 +109,7 @@ undef($s);
 my $s = $lh->subscription_list(
     {
         -mass_mailing_params => {
-            -sending_to => 'individ' # individ, digest, all
+            -delivery_preferences => 'individual' # individ, digest, all
         },
     }
 ); 
@@ -120,7 +120,7 @@ ok($s->[0]->{email} eq 'no.digest@example.com');
 my $s = $lh->subscription_list(
     {
         -mass_mailing_params => {
-            -sending_to => 'all' # individ, digest, all
+            -delivery_preferences => 'all' # individ, digest, all
         },
     }
 ); 
@@ -174,7 +174,7 @@ sub digest_obj {
     return $digest;
 }
 
-diag $digest->create_digest_msg_entity->as_string();
+#diag $digest->create_digest_msg_entity->as_string();
 
 #diag $ls->param('digest_message'); 
 #diag Dumper($digest->digest_ht_vars); 

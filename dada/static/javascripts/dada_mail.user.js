@@ -175,6 +175,10 @@ $(document).ready(function() {
 	if ($("#membership_profile_fields").length) {
 		$("#membership_profile_fields").validate(); 
 	}
-
+	
+	if ($("#profile_home").length) {
+		$("#tabs").tabs();
+	}
+	
 });
 

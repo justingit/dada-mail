@@ -3,26 +3,28 @@
 <!-- tmpl_set name="title" value="Profile" --> 
 <!-- tmpl_set name="show_profile_widget" value="0" -->
 
+<div id="profile_home"></div>
+
 <p style="text-align:right"> 
-	[ <a href="<!-- tmpl_var PROGRAM_URL -->/profile_logout/">Logout</a>]
+    [ <a href="<!-- tmpl_var PROGRAM_URL -->/profile_logout/">Logout</a>]
 </p>
 
 <div class="clearskiesbox">
-	<h1>
-		
-		<!-- tmpl_if gravators_enabled --> 
-			<!-- tmpl_if gravatar_img_url --> 
-			
-					<a href="http://gravatar.com/" target="_blank">
-						<img src="<!-- tmpl_var gravatar_img_url -->" style="float:left; padding:5px;padding-top:0px;border:0px" />
-					</a>
-		
-			<!-- /tmpl_if -->
-		<!-- /tmpl_if -->
-				
-		Hello, <!-- tmpl_var profile.email -->!
-		
-	</h1> 
+    <h1>
+        
+        <!-- tmpl_if gravators_enabled --> 
+            <!-- tmpl_if gravatar_img_url --> 
+            
+                    <a href="http://gravatar.com/" target="_blank">
+                        <img src="<!-- tmpl_var gravatar_img_url -->" style="float:left; padding:5px;padding-top:0px;border:0px" />
+                    </a>
+        
+            <!-- /tmpl_if -->
+        <!-- /tmpl_if -->
+                
+        Hello, <!-- tmpl_var profile.email -->!
+        
+    </h1> 
 
 <div class="floatclear"></div>
 
@@ -32,15 +34,15 @@
 <script type="text/javascript">
  
 function confirm_profile_removal(form_name) {
-		
-	
-	var confirm_msg =  "Are you sure you want to ";
-	    confirm_msg += " remove this profile?";
-	    confirm_msg += " This profile removal cannot be undone.";
-	if(!confirm(confirm_msg)){
-		alert('Profile not removed.');
-		return false;
-	}	
+        
+    
+    var confirm_msg =  "Are you sure you want to ";
+        confirm_msg += " remove this profile?";
+        confirm_msg += " This profile removal cannot be undone.";
+    if(!confirm(confirm_msg)){
+        alert('Profile not removed.');
+        return false;
+    }    
 }
 
 
@@ -51,430 +53,416 @@ function confirm_profile_removal(form_name) {
 
 
 <!-- tmpl_if welcome --> 
-	<div class="clearskiesbox">
-	<p>
-	 Welcome to your profile home. From here, you may subscribe/unsubscribe 
-	 to the available mailing lists, as well as update your subscription 
-	information.
-	</p> 
-	</div> 
+    <div class="clearskiesbox">
+    <p>
+     Welcome to your profile home. From here, you may subscribe/unsubscribe 
+     to the available mailing lists, as well as update your subscription 
+    information.
+    </p> 
+    </div> 
 <!-- /tmpl_if --> 
 <!-- tmpl_if edit --> 
-	<div class="clearskiesbox">
-	<p>
-		Your changes have been saved!
-	</p> 
-	</div>
+    <div class="clearskiesbox">
+    <p>
+        Your changes have been saved!
+    </p> 
+    </div>
 <!-- /tmpl_if --> 
-
-
-
-
 
 
 <!-- tmpl_if errors --> 
-	<div class="badweatherbox">
-	<p> 
-		<strong>There was an error with your last request:</strong>
-	</p> 
+    <div class="badweatherbox">
+    <p> 
+        <strong>There was an error with your last request:</strong>
+    </p> 
 
-	<!-- tmpl_if errors_change_password --> 
-		<p>Your Password:</p>
-		<ul> 
-			<li>
-			<p>
-				Make sure that you re-typed your password correctly. 
-			</p>
-		</li> 
-		</ul> 
+    <!-- tmpl_if errors_change_password --> 
+        <p>Your Password:</p>
+        <ul> 
+            <li>
+            <p>
+                Make sure that you re-typed your password correctly. 
+            </p>
+        </li> 
+        </ul> 
 
-	<!-- /tmpl_if -->
+    <!-- /tmpl_if -->
 
 
 
-	<!-- tmpl_if errors_update_email --> 
-	
-		<p>
-			Update Your Profile Email: 
-		</p>
-		<ul> 
-		<!-- tmpl_if error_invalid_email --> 
-			<li>
-				<p> 
-				The email address you submitted is not valid.
-			</p>
-			</li> 
-		 
-		<!-- /tmpl_if --> 
-	
-		<!-- tmpl_if error_profile_exists --> 
-			<li>
-			
-			 <p> 
-			 	A Profile already exists for the email address, <!-- tmpl_var updated_email -->.
-			 </p>
-			</li> 
-		
-		<!-- /tmpl_if --> 
-		</ul> 
-
-	<!-- /tmpl_if --> 
-
+    <!-- tmpl_if errors_update_email --> 
+        <p>
+            Update Your Profile Email: 
+        </p>
+        <ul> 
+        <!-- tmpl_if error_invalid_email --> 
+            <li>
+                <p> 
+                The email address you submitted is not valid.
+            </p>
+            </li> 
+        <!-- /tmpl_if --> 
+    
+        <!-- tmpl_if error_profile_exists --> 
+            <li>
+                 <p> 
+                     A Profile already exists for the email address, <!-- tmpl_var updated_email -->.
+                 </p>
+            </li> 
+        <!-- /tmpl_if --> 
+        </ul> 
+    <!-- /tmpl_if --> 
 </div>
 
 <!-- /tmpl_if --> 
 
 
 
+<div id="tabs"> 
+    <ul>
 
-
-
-
-<!-- tmpl_if expr="profile_feature_profile_fields == 1" -->
-
-	<!-- tmpl_if subscriber_fields --> 
-		<fieldset> 
-	
-		<legend>
-			Profile Fields
-		</legend> 
-			<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="membership_profile_fields"> 
-				<input type="hidden" name="f"        value="profile" /> 
-				<input type="hidden" name="process"  value="edit_subscriber_fields" /> 
-
-		
-		    <!-- tmpl_loop subscriber_fields --> 
-    
-		        <p>
-		        <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
+        <!-- tmpl_if expr="profile_feature_mailing_list_subscriptions == 1" -->
+            <li>    
+                <a href="#mailing_list_subscriptions">
+                    Mailing List Subscriptions
+                </a>
+            </li>        
+        <!-- /tmpl_if --> 
         
-		        <!-- tmpl_if label --> 
-					<!-- tmpl_var label escape=HTML -->: 
-		        <!-- tmpl_else --> 
-					<!-- tmpl_var name escape=HTML -->: 
-				<!-- /tmpl_if -->
-		
-		        </label>
-		        <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->" <!-- tmpl_if required -->required<!-- /tmpl_if --> />
-		        <!-- tmpl_if required -->
-		            <span class="error">
-		                * Required
-		            </span>
-		        <!-- /tmpl_if -->
-		        </p>
-
-		    <!-- /tmpl_loop -->
-		
-			<div class="buttonfloat">	
-		    <input type="submit" value="Update Information" class="processing" /> 
-			</div>
-			<div class="floatclear"></div>
-			</form>
-		</fieldset> 
-	<!-- /tmpl_if --> 
-<!-- /tmpl_if--> 
-
-<!-- tmpl_if expr="profile_feature_mailing_list_subscriptions == 1" -->
-
-
-	<fieldset> 
-	
-		<legend>
-			Your Mailing List Subscriptions
-		</legend> 
-
-		<!-- tmpl_if has_subscriptions --> 
-
-		<!-- tmpl_else --> 
-			<p class="alert">
-				You are not currently subscribed to any mailing list.
-			</p>
-		<!-- /tmpl_if --> 
-
-	<!-- tmpl_loop subscriptions --> 
-
-	
-
-		<!-- tmpl_if subscribed --> 
-	
-			<h2>
-				<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->">
-					<!-- tmpl_var list_settings.list_name --> 
-				</a>
-			</h2>
-	
-	    <blockquote> 
-    		<p>
-    			<!-- tmpl_var list_settings.info -->
-    		</p>
-        </blockquote> 
-
-	<ul> 
-	    <!-- tmpl_if list_settings.private_list --> 
-	        <li> 
-	            <p>
-	                Private Mailing List
-	            </p>
-	        </li>
-	    <!-- tmpl_else --> 
-        <li> 
-            <p>
-                Public Mailing List
-            </p>
-        </li>
-	
-	    <!-- /tmpl_if --> 
-	    
-	    <!-- tmpl_if list_settings.group_list --> 
-			<li>
-				<p>Discussion List</p> 
-				<ul> 
-					<li> 
-						 
-							Start a new thread, email: 
-							<a href="mailto:<!-- tmpl_var list_settings.discussion_pop_email -->">	
-								<!-- tmpl_var list_settings.discussion_pop_email -->
-							</a>
-					</li> 
-	            <!-- tmpl_if list_settings.enable_moderation --> 
-	               <li>Moderated List</li> 
-	            <!-- tmpl_else -->
-	                   <li>Unmoderated List</li> 
-	            <!-- /tmpl_if --> 
-			</ul> 
-			
-	        </li>
-	    <!-- tmpl_else --> 
-
-	        <li>
-	         Announce-only list.
-	        </li>
-
-	     <!-- /tmpl_if --> 
-	</ul>
-	
-<ul>
-		<li>
-				<p><a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list_settings.list -->">
-			View Archives
-		</a>
-		</p>
-	</li>
-	<li>
-		<p>
-    		<a href="<!-- tmpl_var list_unsubscribe_link -->">
-                <!-- tmpl_if list_settings.private_list -->
-  			        Request to be removed from <!-- tmpl_var list_settings.list_name -->                  
+        <!-- tmpl_if expr="profile_feature_profile_fields == 1" -->
+            <li>    
+                <a href="#profile_fields">
+                    Profile Fields
+                </a>
+            </li>
+        <!-- /tmpl_if -->
+        
+        <!-- tmpl_if protected_directories --> 
+            <!-- tmpl_if expr="profile_feature_protected_directories == 1" -->    
+                <li>    
+                    <a href="#protected_directories">
+                        <p>Access these directories with your Profile Username/Password.
+                        <ul>        
+                            <!-- tmpl_loop protected_directories --> 
+                                <p>
+                                    <li>
+                                        <strong>
+                                            <a href="<!-- tmpl_var url -->" target="_blank"><!-- tmpl_var name --></a>
+                                        </strong> 
+                                    </li>
+                                </p>
+                            <!-- /tmpl_loop --> 
+                        </ul>
+                    </a>
+                </li>
+            <!-- /tmpl_if --> 
+        <!-- /tmpl_if -->
+        
+        
+        <!-- tmpl_if expr="profile_feature_update_email_address == 1" -->
+            <li>    
+                <a href="#update_email_address">
+                    Update Your Profile Email Address
+                </a>
+            </li>        
+        <!-- /tmpl_if -->
+        
+        
+        <!-- tmpl_if expr="profile_feature_change_password == 1" -->
+            <li>    
+                <a href="#change_password">
+                    Change Your Profile Password
+                </a>
+            </li>
+        <!-- /tmpl_if -->
+        
+        
+        <!-- tmpl_if expr="profile_feature_delete_profile == 1" -->
+            <li>    
+                <a href="#delete_profile">
+                    Delete This Profile
+                </a>
+            </li>
+        <!-- /tmpl_if -->
+    </ul>
+    
+    <!-- tmpl_if expr="profile_feature_mailing_list_subscriptions == 1" -->
+        <div id="mailing_list_subscriptions">
+                <!-- tmpl_if has_subscriptions --> 
+                    <!-- ... -->
                 <!-- tmpl_else --> 
-    			    Unsubscribe from <!-- tmpl_var list_settings.list_name -->
-    		    <!-- /tmpl_if -->
-    		</a>
-	    </p>
-</li>	
-</ul>
+                    <p class="alert">
+                        You are not currently subscribed to any mailing list.
+                    </p>
+                <!-- /tmpl_if --> 
+
+                <!-- tmpl_loop subscriptions --> 
+                    <!-- tmpl_if subscribed --> 
+                        <h1>
+                            <a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->">
+                                <!-- tmpl_var list_settings.list_name --> 
+                            </a>
+                        </h1>
+                                                                        
+                        <blockquote> 
+                            <p>
+                                <!-- tmpl_var list_settings.info -->
+                            </p>
+                        </blockquote> 
+                        <ul> 
+                        <!-- tmpl_if list_settings.private_list --> 
+                            <li> 
+                                <p>
+                                    Private Mailing List
+                                </p>
+                            </li>
+                        <!-- tmpl_else --> 
+                        <li> 
+                            <p>
+                                Public Mailing List
+                            </p>
+                        </li>
+                        <!-- /tmpl_if --> 
+
+                        <!-- tmpl_if list_settings.group_list --> 
+                            <li>
+                                <p>Discussion List</p> 
+                                <ul> 
+                                    <li> 
+                                        Start a new thread, email: 
+                                        <a href="mailto:<!-- tmpl_var list_settings.discussion_pop_email -->">    
+                                            <!-- tmpl_var list_settings.discussion_pop_email -->
+                                        </a>
+                                    </li> 
+                                <!-- tmpl_if list_settings.enable_moderation --> 
+                                   <li>Moderated List</li> 
+                                <!-- tmpl_else -->
+                                       <li>Unmoderated List</li> 
+                                <!-- /tmpl_if --> 
+                            </ul> 
+                            </li>
+                        <!-- tmpl_else --> 
+                            <li>
+                             Announce-only list.
+                            </li>
+                         <!-- /tmpl_if --> 
+                        </ul>
+                        
+                        
+                        
+                        <ul>
+                        <li>
+                            <p>
+                                <a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list_settings.list -->">
+                                    View Archives
+                                </a>
+                            </p>
+                        </li>
+                        <li>
+                            <p>
+                                <a href="<!-- tmpl_var list_unsubscribe_link -->">
+                                    <!-- tmpl_if list_settings.private_list -->
+                                          Request to be removed from <!-- tmpl_var list_settings.list_name -->                  
+                                    <!-- tmpl_else --> 
+                                        Unsubscribe from <!-- tmpl_var list_settings.list_name -->
+                                    <!-- /tmpl_if -->
+                                </a>
+                            </p>
+                        </li>    
+                    </ul>
+                    
+                    
+                    <!-- tmpl_if list_settings.digest_enable -->
+                        <fieldset>
+                            <legend>Delivery Preferences:</legend>
+                            <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
+                                
+                                <input type="hidden" name="f"        value="profile" /> 
+                                <input type="hidden" name="process"  value="profile_delivery_preferences" /> 
+                                <input type="hidden" name="list"     value="<!-- tmpl_var list_settings.list -->" /> 
+                                
+                                <p>
+                                    <input type="radio" name="delivery_prefs" value="individual" id="delivery_prefs_individual" <!-- tmpl_if expr="delivery_prefs eq 'individual'" -->checked="checked"<!-- /tmpl_if --> />
+                                        <label for="delivery_prefs_individual">
+                                            Receive All Messages
+                                        </label>
+                                        <br />
+                                    <input type="radio" name="delivery_prefs" value="digest" id="delivery_prefs_digest" <!-- tmpl_if expr="delivery_prefs eq 'digest'" -->checked="checked"<!-- /tmpl_if --> >
+                                        <label for="delivery_prefs_digest">
+                                            Receive Messages in a Digest
+                                        </label> (<!-- tmpl_var digest_timeframe -->)
+                                        <br />
+                                    <input type="radio" name="delivery_prefs" value="hold" id="delivery_prefs_hold" <!-- tmpl_if expr="delivery_prefs eq 'hold'" -->checked="checked"<!-- /tmpl_if --> >
+                                        <label for="delivery_prefs_hold">
+                                            Hold Mailings
+                                        </label> (vacation, etc)     
+                                        
+                                        <div class="buttonfloat">    
+                                        <input type="submit" value="Save Delivery Preferences" class="processing" /> 
+                                        </div>
+                                        <div class="floatclear"></div>                       
+                                </p>
+                                
+                            </form>
+                        </fieldset>
+                    <!-- /tmpl_if --> 
+                    
+                    
+                    <!-- tmpl_if comment --> 
+                        <!-- tmpl_if list_owner --> 
+                            <p class="alert"> 
+                                You are the List Owner. 
+                                <a href="<!-- tmpl_var S_PROGRAM_URL -->/sign_in/<!-- tmpl_var list_settings.list -->/"> 
+                                    Login...
+                                </a>  
+                            </p>
+                        <!-- /tmpl_if -->
+                     <!-- /tmpl_if -->
+                <!-- /tmpl_if --> 
+            <!-- /tmpl_loop -->
+        </div>
+    <!-- /tmpl_if --><!-- profile_feature_mailing_list_subscriptions -->
+    
+    
+    <!-- tmpl_if expr="profile_feature_profile_fields == 1" -->
+        <div id="profile_fields">
+            <!-- tmpl_if subscriber_fields --> 
+                <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="membership_profile_fields"> 
+                    <input type="hidden" name="f"        value="profile" /> 
+                    <input type="hidden" name="process"  value="edit_subscriber_fields" /> 
+                    <!-- tmpl_loop subscriber_fields --> 
+                        <p>
+                        <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
+                        <!-- tmpl_if label --> 
+                            <!-- tmpl_var label escape=HTML -->: 
+                        <!-- tmpl_else --> 
+                            <!-- tmpl_var name escape=HTML -->: 
+                        <!-- /tmpl_if -->
+                        </label>
+                        <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->" <!-- tmpl_if required -->required<!-- /tmpl_if --> />
+                        <!-- tmpl_if required -->
+                            <span class="error">
+                                * Required
+                            </span>
+                        <!-- /tmpl_if -->
+                        </p>
+                    <!-- /tmpl_loop -->
+                    <div class="buttonfloat">    
+                    <input type="submit" value="Update Information" class="processing" /> 
+                    </div>
+                    <div class="floatclear"></div>
+                </form>
+            <!-- /tmpl_if --> 
+            
+        </div>
+    <!-- /tmpl_if--><!-- profile_feature_profile_fields -->
+    
+   
+    <!-- tmpl_if protected_directories --> 
+        <!-- tmpl_if expr="profile_feature_protected_directories == 1" -->    
+            <div id="protected_directories">> 
+                protected_directories
+            </div>
+        <!-- /tmpl_if -->
+    <!-- /tmpl_if --> <!-- protected_directories -->
 
 
 
-	
-	<!-- tmpl_if comment --> 
-	
-		<!-- tmpl_if list_owner --> 
-		<p class="alert"> 
-			You are the List Owner. 
-			<a href="<!-- tmpl_var S_PROGRAM_URL -->/sign_in/<!-- tmpl_var list_settings.list -->/"> 
-				Login...
-			</a>  
-		</p>
-		<!-- /tmpl_if -->
-	
-	<!-- /tmpl_if -->
-	
-	
-	
-	
+    <!-- tmpl_if expr="profile_feature_update_email_address == 1" -->
+        <div id="update_email_address">
+            <p class="alert">
+                The Profile Email Address and Subscriptions using your current email address (<!-- tmpl_var profile.email -->) 
+                will be replaced with this new email address, where it's allowed: 
+            </p>
+            <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+                <input type="hidden" name="f"        value="profile" /> 
+                <input type="hidden" name="process"  value="update_email" />
+                    <!-- tmpl_if errors_update_email --> 
+                        <!-- tmpl_if error_invalid_email --> 
+                            <p class="error"> 
+                                * The email address you submitted is not valid.
+                            </p> 
+                        <!-- /tmpl_if --> 
 
-	<!-- /tmpl_if --> 
-	
-<!-- /tmpl_loop -->
+                        <!-- tmpl_if error_profile_exists --> 
+                            <p class="error"> 
+                                * A Profile already exists for the email address, <!-- tmpl_var updated_email -->.
+                            </p> 
+                        <!-- /tmpl_if --> 
+                    <!-- tmpl_else --> 
+                    <!-- /tmpl_if -->
+                  <p>
+                    <label for="updated_email" class="label_profile_fields">
+                    Your New Profile Email Address: 
+                    </label>
+                    <input type="text" name="updated_email" id="updated_email" value=""  />
+                    </p>
 
-</fieldset> 
-<!-- /tmpl_if --> 
-
-
-<!-- tmpl_if protected_directories --> 
-	<!-- tmpl_if expr="profile_feature_protected_directories == 1" -->	
-	<fieldset> 
-		
-			<legend>Protected Directories</legend>
-				<p>Access these directories with your Profile Username/Password.
-			<ul>		
-				<!-- tmpl_loop protected_directories --> 
-					<p>
-						<li>
-							<strong>
-								<a href="<!-- tmpl_var url -->" target="_blank"><!-- tmpl_var name --></a>
-							</strong> 
-						</li>
-					</p>
-				<!-- /tmpl_loop --> 
-			</ul>
-		</fieldset> 
-	
-	<!-- /tmpl_if -->
-
-<!-- /tmpl_if --> 
-
-
-
-<!-- tmpl_if expr="profile_feature_update_email_address == 1" -->
-
-	<fieldset> 
-		<legend> 
-		   Update Your Profile Email Address
-		   </legend>
-
-	 
-		<div id="update_profile_email">
-
-	<p class="alert">
-		The Profile Email Address and Subscriptions using your current email address (<!-- tmpl_var profile.email -->) 
-		will be replaced with this new email address, where it's allowed: 
-	</p>
-
-
-
-	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
-		<input type="hidden" name="f"        value="profile" /> 
-		<input type="hidden" name="process"  value="update_email" />
-	
-
-			<!-- tmpl_if errors_update_email --> 
-				<!-- tmpl_if error_invalid_email --> 
-					<p class="error"> 
-						* The email address you submitted is not valid.
-					</p> 
-				<!-- /tmpl_if --> 
-
-				<!-- tmpl_if error_profile_exists --> 
-
-					<p class="error"> 
-						* A Profile already exists for the email address, <!-- tmpl_var updated_email -->.
-					</p> 
-
-				<!-- /tmpl_if --> 
-
-
-			<!-- tmpl_else --> 
-
-			<!-- /tmpl_if -->
-		  <p>
-	        <label for="updated_email" class="label_profile_fields">
-	        Your New Profile Email Address: 
-	        </label>
-	        <input type="text" name="updated_email" id="updated_email" value=""  />
-	        </p>
-
-		<div class="buttonfloat">	
-	    <input type="submit"  class="processing" value="Confirm and Update Your New Profile Email Address" /> 
-		</div>
-		<div class="floatclear"></div>
-
-
-	</form>
-	</div> 
-
-	</fieldset>
-	
-<!-- /tmpl_if -->
+                <div class="buttonfloat">    
+                    <input type="submit"  class="processing" value="Confirm and Update Your New Profile Email Address" /> 
+                </div>
+                <div class="floatclear"></div>
+            </form>
+            
+        </div>     
+    <!-- /tmpl_if --><!-- profile_feature_update_email_address -->
 
 
 
 
-<!-- tmpl_if expr="profile_feature_change_password == 1" -->
+    <!-- tmpl_if expr="profile_feature_change_password == 1" -->
+        <div id="change_password">
+            <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+                <input type="hidden" name="f"        value="profile" /> 
+                <input type="hidden" name="process"  value="change_password" />
 
-	<fieldset> 
-	
-	<legend> 
-	  Change Your Profile Password
-	   </legend>
-     
-		
-	<div id="change_profile_password">
+                <!-- tmpl_if errors_change_password --> 
+                        <p class="error">
+                            Make sure that you re-typed your password correctly. 
+                        </p>
+                <!-- /tmpl_if -->
+                  <p>
+                    <label for="password" class="label_profile_fields">
+                    New Password: 
+                    </label>
+                    <input type="password" name="password" id="password" value=""  />
+                  </p>
+                  <p>
+                    <label for="again_password" class="label_profile_fields">
+                    New Password Again: 
+                    </label>
+                    <input type="password" name="again_password" id="again_password" value=""  />
+                   </p>
 
-	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
-		<input type="hidden" name="f"        value="profile" /> 
-		<input type="hidden" name="process"  value="change_password" />
-	
-		<!-- tmpl_if errors_change_password --> 
-				<p class="error">
-					Make sure that you re-typed your password correctly. 
-				</p>
-		<!-- /tmpl_if -->
-	
-	
-		  <p>
-	        <label for="password" class="label_profile_fields">
-	        New Password: 
-	        </label>
-	        <input type="password" name="password" id="password" value=""  />
-	        </p>
-
-		  <p>
-	        <label for="again_password" class="label_profile_fields">
-	        New Password Again: 
-	        </label>
-	        <input type="password" name="again_password" id="again_password" value=""  />
-	       </p>
-
-		<div class="buttonfloat">	
-	    <input type="submit"   class="processing"  value="Change Password" /> 
-		</div>
-		<div class="floatclear"></div>
-
-
-	</form>
-
-	</div> 
-
-	</fieldset> 
-
-<!-- /tmpl_if --> 
-
-
-
-<!-- tmpl_if expr="profile_feature_delete_profile == 1" -->
-
-
-	<fieldset> 
-	   <legend>
-	 	Delete This Profile
-	   </legend>
-     
-		
-	<div id="delete_profile">
-	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
-		<input type="hidden" name="f"        value="profile" /> 
-		<input type="hidden" name="process"  value="delete_profile" />
-	
-		<p>
-			Deleting your profile will remove all your profile information, but 
-			all your subscriptions to subscribed mailing lists will remain.
-		</p> 
-	
-		<div class="buttonfloat">	
-	    <input type="submit" value="Delete Your Profile" class="alertive" onclick="return confirm_profile_removal(this.form);" /> 
-		</div>
-		<div class="floatclear"></div>
-	</form>
-
-	</div> 
-	
-	</fieldset>
-
-<!-- /tmpl_if --> 
+                <div class="buttonfloat">    
+                <input type="submit"   class="processing"  value="Change Password" /> 
+                </div>
+                <div class="floatclear"></div>
+            </form>
+            
+        </div> 
+    <!-- /tmpl_if --><!-- profile_feature_change_password --> 
 
 
 
 
+    <!-- tmpl_if expr="profile_feature_delete_profile == 1" -->
+        <div id="delete_profile">
+            <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+                <input type="hidden" name="f"        value="profile" /> 
+                <input type="hidden" name="process"  value="delete_profile" />
+                <p>
+                    Deleting your profile will remove all your profile information, but 
+                    all your subscriptions to subscribed mailing lists will remain.
+                </p> 
+
+                <div class="buttonfloat">    
+                <input type="submit" value="Delete Your Profile" class="alertive" onclick="return confirm_profile_removal(this.form);" /> 
+                </div>
+                <div class="floatclear"></div>
+            </form>
+        </div> 
+    <!-- /tmpl_if --> 
+    
+</div>
 <!-- end profile_home.tmpl --> 
-

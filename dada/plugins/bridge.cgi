@@ -1307,7 +1307,7 @@ sub start {
 				if $verbose;
             next DIGEST_QUEUE;
         }
-        if ( $ls->param('digest_enable') == 1 ) {
+        if ( $ls->param('digest_enable') != 1 ) {
             e_print("\t* Digests are not enabled for, $list \n") 
 				if $verbose;
             next DIGEST_QUEUE;
@@ -1315,7 +1315,7 @@ sub start {
         
         require DADA::App::Digests; 
         my $digest = DADA::App::Digests->new({-list => $list});
-        print $digest->send_digess(); 
+        print $digest->send_digest(); 
            
         e_print("\t* Processing Digests! \n") 
             if $verbose;
@@ -3486,6 +3486,11 @@ sub cgi_edit_email_msgs {
                     msg_too_big_msg                   => '',
                     msg_labeled_as_spam_msg_subject   => '',
                     msg_labeled_as_spam_msg           => '',
+                    
+                    digest_message_subject            => '',
+                    digest_message                    => '',
+                    digest_message_html               => '',
+                    
                 }
             }
         );
