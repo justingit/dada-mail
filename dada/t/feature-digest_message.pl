@@ -37,18 +37,20 @@ $lh->add_subscriber(
 );
 $lh->add_subscriber(
 	{ 
-		-email => 'nono.digest@example.com', 
+		-email => 'no.digest@example.com', 
+	},
+);
+$lh->add_subscriber(
+	{ 
+		-email => 'hold.digest@example.com', 
 	},
 );
 
 
 
 my $s = $lh->subscription_list(); 
-ok(scalar(@$s) == 2); 
+ok(scalar(@$s) == 3); 
 undef($s); 
-
-
-
 
 # Digest hasn't been enabled, yet. 
 my $r = $dps->save(
@@ -79,7 +81,7 @@ my $s = $lh->subscription_list(
         },
     }
 ); 
-ok(scalar(@$s) == 2); 
+ok(scalar(@$s) == 3); 
 undef($s);
 
 my $s = $lh->subscription_list(
@@ -89,7 +91,7 @@ my $s = $lh->subscription_list(
         },
     }
 ); 
-ok(scalar(@$s) == 2); 
+ok(scalar(@$s) == 3); 
 undef($s); 
 
 
@@ -97,7 +99,7 @@ undef($s);
 
 
 
-
+# OK, OK, enough being funny about it:
 # Enable Digests:
 $ls->save({
     digest_enable => 1, 
@@ -121,7 +123,7 @@ undef($s);
 
 
 
-# And on the flip side (everyone else):
+# And on the flip side:
 my $s = $lh->subscription_list(
     {
         -mass_mailing_params => {
@@ -130,17 +132,13 @@ my $s = $lh->subscription_list(
     }
 ); 
 diag Data::Dumper::Dumper($s); 
-ok($s->[0]->{email} eq 'nono.digest@example.com', 'individuals'); 
+# We haven't explicitly told this address wants to hold: 
+ok($s->[0]->{email} eq 'hold.digest@example.com', 'individuals'); 
+ok($s->[1]->{email} eq 'no.digest@example.com',   'individuals'); 
 undef($s); 
 
 
-
-
-
-
-
-
-# This should give back BOTH subscribers, 
+# This should give back ALL subscribers, 
 my $s = $lh->subscription_list(
     {
         -mass_mailing_params => {
@@ -149,14 +147,14 @@ my $s = $lh->subscription_list(
     }
 ); 
 my $n = scalar(@$s); 
-ok($n == 2); 
+ok($n == 3); 
 
 
-# Let's explicitly set something for, nono.digest:
+# Let's explicitly set something for, no.digest:
 my $digest = digest_obj(); 
 my $r = $dps->save(
     {
-        -email   => 'nono.digest@example.com', 
+        -email   => 'no.digest@example.com', 
         -list    => $list, 
         -setting => 'delivery_prefs', 
         -value   => 'individual',
@@ -172,22 +170,22 @@ my $s = $lh->subscription_list(
     }
 ); 
 my $n = scalar(@$s); 
-ok($n == 1, '$n = ' . scalar(@$s)); 
-ok($s->[0]->{email} eq 'nono.digest@example.com'); 
-#diag Data::Dumper::Dumper($s); 
+ok($n == 2, '$n = ' . scalar(@$s)); 
+diag Data::Dumper::Dumper($s); 
 
-
+ok($s->[0]->{email} eq 'hold.digest@example.com'); 
+ok($s->[1]->{email} eq 'no.digest@example.com'); 
 
 # Alright, so what happens if we set this to, "hold"
 my $r = $dps->save(
     {
-        -email   => 'nono.digest@example.com', 
+        -email   => 'hold.digest@example.com', 
         -list    => $list, 
         -setting => 'delivery_prefs', 
         -value   => 'hold',
     }   
 );
-ok($r == 1, "what?"); 
+ok($r == 1, "hold"); 
 my $s = $lh->subscription_list(
     {
         -mass_mailing_params => {
@@ -196,11 +194,63 @@ my $s = $lh->subscription_list(
     }
 ); 
 my $n = scalar(@$s); 
-ok($n == 0); 
+ok($n == 1); 
 
 
+my $c = $dps->count(
+   {
+       -list    => $list, 
+       -setting => 'delivery_prefs', 
+       -value   => 'individual',
+   } 
+); 
+ok($c == 1, "1 'individual' saved"); 
+undef ($c); 
+my $c = $dps->count(
+   {
+       -list    => $list, 
+       -setting => 'delivery_prefs', 
+       -value   => 'digest',
+   } 
+); 
+ok($c == 1, "1 'digest' saved"); 
+undef ($c); 
+my $c = $dps->count(
+   {
+       -list    => $list, 
+       -setting => 'delivery_prefs', 
+       -value   => 'hold',
+   } 
+); 
+ok($c == 1, "1 'hold' saved"); 
+undef ($c); 
 
-
+my $c = $dps->count(
+   {
+       -list    => $list, 
+       -setting => 'delivery_prefs', 
+       -value   => 'madeup',
+   } 
+); 
+ok($c == 0, "0 'madeup' saved "); 
+undef ($c); 
+my $r = $dps->save(
+    {
+        -email   => 'hold.digest@example.com', 
+        -list    => $list, 
+        -setting => 'delivery_prefs', 
+        -value   => 'digest',
+    }   
+);
+my $c = $dps->count(
+   {
+       -list    => $list, 
+       -setting => 'delivery_prefs', 
+       -value   => 'digest',
+   } 
+); 
+ok($c == 2, "2 'digest' saved"); 
+undef ($c);
 
 
 
@@ -220,14 +270,14 @@ for(0..2){
         undef, 
         undef, 
         q{Content-type: text/plain
-From: nono.digest@example.com
+From: no.digest@example.com
 Subject: this is the subject!
 
 This is the message!},
     ); 
 }
 my $keys       = $dma->get_archive_entries('normal');
-diag scalar(@$keys) . ' archives.'; 
+#diag scalar(@$keys) . ' archives.'; 
 
 undef($digest); # this is to reload the D::M::Settings; 
 my $digest = digest_obj(); 

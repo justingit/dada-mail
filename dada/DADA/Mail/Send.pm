@@ -1106,8 +1106,8 @@ sub mass_send {
 		}
 
 		if(exists($args->{-mass_mailing_params})){
-		    use Data::Dumper;  
-		    carp 'mass_mailing_params 1:' . Dumper($args->{-mass_mailing_params}); 
+		    #use Data::Dumper;  
+		    #carp 'mass_mailing_params 1:' . Dumper($args->{-mass_mailing_params}); 
 			$self->mass_mailing_params($args->{-mass_mailing_params}); 
 		}
 		

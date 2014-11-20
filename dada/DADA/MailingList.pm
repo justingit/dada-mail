@@ -56,12 +56,10 @@ sub Create {
 			for(%$flags){ 
 				$e .= $_ . ', ' if $flags->{$_} == 1; 
 			}
-
 			croak "Problems creating list: " . $e; 
 		} 
 	}
 	# /One last check.... 	
-
 
     require DADA::MailingList::Settings;
 

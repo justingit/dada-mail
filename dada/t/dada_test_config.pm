@@ -222,6 +222,7 @@ my @statements = split(';', $sql);
 		my $profile_table            		    = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{profile_table};  
 		my $profile_fields_table                = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{profile_fields_table};
 		my $profile_fields_attributes_table     = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{profile_fields_attributes_table};
+		my $profile_settings_table              = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{profile_settings_table};
 		my $clickthrough_urls_table             = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{clickthrough_urls_table};
 		my $clickthrough_url_log_table          = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{clickthrough_url_log_table};
 		my $mass_mailing_event_log_table        = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{mass_mailing_event_log_table};
@@ -238,6 +239,7 @@ my @statements = split(';', $sql);
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profiles}{CREATE TABLE IF NOT EXISTS $profile_table};
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profile_fields}{CREATE TABLE IF NOT EXISTS $profile_fields_table};
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profile_fields_attributes}{CREATE TABLE IF NOT EXISTS $profile_fields_attributes_table};
+		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_profile_settings}{CREATE TABLE $profile_settings_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_clickthrough_urls}{CREATE TABLE IF NOT EXISTS $clickthrough_urls_table};
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_clickthrough_url_log}{CREATE TABLE IF NOT EXISTS $clickthrough_url_log_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_mass_mailing_event_log}{CREATE TABLE IF NOT EXISTS $mass_mailing_event_log_table};	
@@ -384,6 +386,7 @@ sub destroy_MySQL_db {
 		bounce_scores_table
 		profile_table
 		profile_fields_table
+		profile_settings_table
 		profile_fields_attributes_table
 		clickthrough_urls_table
 		clickthrough_url_log_table
@@ -445,14 +448,15 @@ my @statements = split(';', $sql);
     for(@statements){ 
    
 
-	   	my $settings_table                   = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{settings_table}; 
-		my $subscribers_table    	         = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{subscriber_table}; 
-		my $archives_table          		 = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{archives_table}; 
-		my $session_table           		 = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{session_table};
-		my $bounce_scores_table     		 = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{bounce_scores_table};
-		my $profile_table            		 = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_table};  
+	   	my $settings_table                      = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{settings_table}; 
+		my $subscribers_table    	            = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{subscriber_table}; 
+		my $archives_table          		    = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{archives_table}; 
+		my $session_table                       = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{session_table};
+		my $bounce_scores_table     		    = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{bounce_scores_table};
+		my $profile_table            		    = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_table};  
 		my $profile_fields_table                = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_fields_table};
 		my $profile_fields_attributes_table     = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_fields_attributes_table};
+	    my $profile_settings_table              = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{profile_settings_table};
 		my $clickthrough_urls_table             = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{clickthrough_urls_table};
 		my $clickthrough_url_log_table          = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{clickthrough_url_log_table};
 		my $mass_mailing_event_log_table        = $__Test_Config_Vars::TEST_SQL_PARAMS->{PostgreSQL}->{mass_mailing_event_log_table};
@@ -471,6 +475,7 @@ my @statements = split(';', $sql);
 		$_ =~ s{CREATE TABLE dada_profiles}{CREATE TABLE $profile_table};
 		$_ =~ s{CREATE TABLE dada_profile_fields}{CREATE TABLE $profile_fields_table};
 		$_ =~ s{CREATE TABLE dada_profile_fields_attributes}{CREATE TABLE $profile_fields_attributes_table};
+		$_ =~ s{CREATE TABLE dada_profile_settings}{CREATE TABLE $profile_settings_table};	
 		$_ =~ s{CREATE TABLE dada_clickthrough_urls}{CREATE TABLE $clickthrough_urls_table};	
 		$_ =~ s{CREATE TABLE dada_clickthrough_url_log}{CREATE TABLE $clickthrough_url_log_table};	
 		$_ =~ s{CREATE TABLE dada_mass_mailing_event_log}{CREATE TABLE $mass_mailing_event_log_table};	
@@ -478,7 +483,7 @@ my @statements = split(';', $sql);
 		$_ =~ s{CREATE TABLE dada_confirmation_tokens}{CREATE TABLE IF NOT EXISTS $confirmation_tokens_table};	
 		$_ =~ s{CREATE TABLE dada_message_drafts}{CREATE TABLE IF NOT EXISTS $message_drafts_table};	
 
-#		print "query: $_"; 
+		print "query: $_"; 
 
 
 	    my $sth = $dbh->prepare($_); #  or croak $DBI::errstr; 
@@ -505,6 +510,7 @@ sub destroy_PostgreSQL_db {
 		profile_table
 		profile_fields_table
 		profile_fields_attributes_table
+		profile_settings_table
 		clickthrough_urls_table
 		clickthrough_url_log_table
 		mass_mailing_event_log_table
