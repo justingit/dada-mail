@@ -5,10 +5,11 @@ use lib qw(/Users/justin/Documents/DadaMail/git/dada-mail/dada/DADA/perllib);
 
 use MIME::Parser; 
 
-my $subject = 'Digest Message!'; 
+my $subject = '<!-- tmpl_var list_settings.list_name --> Digest'; 
 my $pt = <<EOF
 
-This comes before the digest messages
+Begin Digest
+
 Number of messages: <!-- tmpl_var num_messages -->
 
 <!-- tmpl_loop digest_messages -->
@@ -25,24 +26,31 @@ Subject: <!-- tmpl_var subject -->
 
 <!-- /tmpl_loop -->
 
-This comes after the digest messages
+End Digest
 
 EOF
 ;
 
 my $html = <<EOF
 
-<p>This comes before the digest messages
+<p>Begin Digest
 <p>Number of messages: <!-- tmpl_var num_messages -->
 
 <ul>
 <!-- tmpl_loop digest_messages -->
-<li><!-- tmpl_var subject --> by, <!-- tmpl_var subscriber.email --> (<!-- tmpl_var date -->)<!-- /tmpl_loop --></li>
+
+<li>
+    <a href="#archive_id">
+        <!-- tmpl_var subject -->
+    </a>
+    by, <!-- tmpl_var subscriber.email --> (<!-- tmpl_var date -->)<!-- /tmpl_loop -->
+</li>
 
 <!-- tmpl_loop digest_messages -->
 </ul>
 
 <p>
+<a name="<!-- tmpl_var archive_id -->"></a>
 Date: <!-- tmpl_var date --><br />
 From: <!-- tmpl_var subscriber.email --><br />
 Subject: <!-- tmpl_var subject --><br />
@@ -52,7 +60,7 @@ Subject: <!-- tmpl_var subject --><br />
 
 <!-- /tmpl_loop -->
 
-<p>This comes after the digest messages</p>
+<p>End Digest</p>
 
 
 EOF

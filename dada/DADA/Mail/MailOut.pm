@@ -777,7 +777,6 @@ sub create_subscriber_list {
     my %cmf_args = (
         -ID                  => $self->_internal_message_id,
         -Type                => $self->mailout_type,
-        -for_mass_mailing    => 1, 
         -Save_At             => $self->dir . '/' . $file_names->{tmp_subscriber_list},
         -Bulk_Test           => $args->{-mh_obj}->{mass_test},
         -Test_Recipient      => $args->{-mh_obj}->mass_test_recipient,

@@ -12441,12 +12441,19 @@ sub profile_update_email {
         # DEV: Currently there is no description of what the error is, just
         # that, "there is one". Perhaps change that?
         #
+        
+        my $ht_errors = []; 
+        for(keys %$errors){ 
+            push(@$ht_errors, {name => $_, value => $errors->{$_}}); 
+        }
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'profile_update_email_error.tmpl',
                 -with   => 'list',
-                -vars   => {},
+                -vars   => {
+                    errors => $ht_errors, 
+                },
             }
         );
         e_print($scrn);

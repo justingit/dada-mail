@@ -363,6 +363,7 @@ sub digest_ht_vars {
         push(
           @$digest_messages, 
           {
+             archive_id        => $id, 
              plaintext_message => $pt, 
              html_message      => $html,
              subject           => $self->{a_obj}->get_header(-key => $id, -header => 'Subject'),

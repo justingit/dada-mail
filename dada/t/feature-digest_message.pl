@@ -24,21 +24,24 @@ my $lh  = DADA::MailingList::Subscribers->new({-list => $list});
 my $ls  = DADA::MailingList::Settings->new({-list => $list}); 
 my $dps = DADA::Profile::Settings->new(); 
 
-ok(1 == 1); 
-my $s = $lh->subscription_list(); 
+my $s = $lh->subscription_list();
 ok(scalar(@$s) == 0); 
 undef $s; 
 
-$lh->add_subscriber(
-	{ 
-		-email => 'no.digest@example.com', 
-	},
-);
+
+
 $lh->add_subscriber(
 	{ 
 		-email => 'yes.digest@example.com', 
 	},
 );
+$lh->add_subscriber(
+	{ 
+		-email => 'nono.digest@example.com', 
+	},
+);
+
+
 
 my $s = $lh->subscription_list(); 
 ok(scalar(@$s) == 2); 
@@ -46,12 +49,8 @@ undef($s);
 
 
 
-my $s = $lh->subscription_list({-for_mass_mailing => 1}); 
-#diag Dumper($s); 
-ok(scalar(@$s) == 2); 
-undef($s); 
 
-
+# Digest hasn't been enabled, yet. 
 my $r = $dps->save(
     {
         -email   => 'yes.digest@example.com', 
@@ -61,6 +60,7 @@ my $r = $dps->save(
     }   
 );
 ok($r == 1); 
+undef($r); 
 
 
 
@@ -70,57 +70,81 @@ my $psettings = $dps->fetch(
        -list    => $list, 
    }
 );
+ok($psettings->{delivery_prefs} eq 'digest'); 
 
-ok($psettings->{digest} == 1); 
-
-
-
-# Actually, this is a trick - we haven't enabled digests! 
 my $s = $lh->subscription_list(
     {
         -mass_mailing_params => {
-            -delivery_preferences => 'digest' # individ, digest, all
+            -delivery_preferences => 'digest' # individual, digest, all
+        },
+    }
+); 
+ok(scalar(@$s) == 2); 
+undef($s);
+
+my $s = $lh->subscription_list(
+    {
+        -mass_mailing_params => {
+            -delivery_preferences => 'individual' # individual, digest, all
         },
     }
 ); 
 ok(scalar(@$s) == 2); 
 undef($s); 
 
+
+
+
+
+
+
+# Enable Digests:
 $ls->save({
     digest_enable => 1, 
 }); 
 
-# this should give us 1 back, now: 
+
+
+
+# This should give us 1 back, now: 
 my $s = $lh->subscription_list(
     {
         -mass_mailing_params => {
-            -delivery_preferences => 'digest' # individ, digest, all
+            -delivery_preferences => 'digest' # individual, digest, all
         },
     }
 ); 
 my $n = scalar(@$s); 
 ok($n == 1, "should be 1: $n"); 
-
-
 ok($s->[0]->{email} eq 'yes.digest@example.com'); 
 undef($s); 
 
-# This should give one back to, but not the one that wants the digest!
+
+
+# And on the flip side (everyone else):
 my $s = $lh->subscription_list(
     {
         -mass_mailing_params => {
-            -delivery_preferences => 'individual' # individ, digest, all
+            -delivery_preferences => 'individual',
         },
     }
 ); 
-ok($s->[0]->{email} eq 'no.digest@example.com'); 
+diag Data::Dumper::Dumper($s); 
+ok($s->[0]->{email} eq 'nono.digest@example.com', 'individuals'); 
+undef($s); 
+
+
+
+
+
+
 
 
 # This should give back BOTH subscribers, 
 my $s = $lh->subscription_list(
     {
         -mass_mailing_params => {
-            -delivery_preferences => 'all' # individ, digest, all
+            -delivery_preferences => 'all', # individual, digest, all
         },
     }
 ); 
@@ -128,7 +152,58 @@ my $n = scalar(@$s);
 ok($n == 2); 
 
 
+# Let's explicitly set something for, nono.digest:
 my $digest = digest_obj(); 
+my $r = $dps->save(
+    {
+        -email   => 'nono.digest@example.com', 
+        -list    => $list, 
+        -setting => 'delivery_prefs', 
+        -value   => 'individual',
+    }   
+);
+ok($r == 1); 
+
+my $s = $lh->subscription_list(
+    {
+        -mass_mailing_params => {
+            -delivery_preferences => 'individual'
+        },
+    }
+); 
+my $n = scalar(@$s); 
+ok($n == 1, '$n = ' . scalar(@$s)); 
+ok($s->[0]->{email} eq 'nono.digest@example.com'); 
+#diag Data::Dumper::Dumper($s); 
+
+
+
+# Alright, so what happens if we set this to, "hold"
+my $r = $dps->save(
+    {
+        -email   => 'nono.digest@example.com', 
+        -list    => $list, 
+        -setting => 'delivery_prefs', 
+        -value   => 'hold',
+    }   
+);
+ok($r == 1, "what?"); 
+my $s = $lh->subscription_list(
+    {
+        -mass_mailing_params => {
+            -delivery_preferences => 'individual'
+        },
+    }
+); 
+my $n = scalar(@$s); 
+ok($n == 0); 
+
+
+
+
+
+
+
 
 
 ok($digest->should_send_digest == 0, "no archives, so nothing to send!"); 
@@ -145,7 +220,7 @@ for(0..2){
         undef, 
         undef, 
         q{Content-type: text/plain
-From: no.digest@example.com
+From: nono.digest@example.com
 Subject: this is the subject!
 
 This is the message!},
@@ -163,6 +238,10 @@ ok($digest->should_send_digest == 1);
 my $ids = $digest->archive_ids_for_digest; 
 ok(scalar(@$ids) == 3, "three archives for digest!");  
 
+
+
+
+
 sub digest_obj { 
     my $digest = DADA::App::Digests->new(
         {
@@ -175,7 +254,6 @@ sub digest_obj {
 }
 
 #diag $digest->create_digest_msg_entity->as_string();
-
 #diag $ls->param('digest_message'); 
 #diag Dumper($digest->digest_ht_vars); 
 

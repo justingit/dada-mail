@@ -42,7 +42,7 @@ my %allowed = (
 	ls                            => undef, 
 	list_type                     => 'list',
 	
-	mass_mailing_params           => {-delivery_preferences => 'blah blah blah'},
+	mass_mailing_params           => {-delivery_preferences => 'individual'},
 	
 	mass_test                     => 0,
 	

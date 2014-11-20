@@ -1,20 +1,21 @@
-Content-Type: multipart/alternative; boundary="----------=_1416255577-89702-0"
+Content-Type: multipart/alternative; boundary="----------=_1416446103-7048-0"
 Content-Transfer-Encoding: binary
 MIME-Version: 1.0
 X-Mailer: MIME-tools 5.502 (Entity 5.502)
 To: "<!-- tmpl_var list_settings.list_name --> Owner" <user@example.com>
 From: "<!-- tmpl_var list_settings.list_name --> Subscriber" <user@example.com>
-Subject: Digest Message!
+Subject: <!-- tmpl_var list_settings.list_name --> Digest
 
 This is a multi-part message in MIME format...
 
-------------=_1416255577-89702-0
+------------=_1416446103-7048-0
 Content-Type: text/plain
 Content-Disposition: inline
 Content-Transfer-Encoding: binary
 
 
-This comes before the digest messages
+Begin Digest
+
 Number of messages: <!-- tmpl_var num_messages -->
 
 <!-- tmpl_loop digest_messages -->
@@ -31,37 +32,44 @@ Subject: <!-- tmpl_var subject -->
 
 <!-- /tmpl_loop -->
 
-This comes after the digest messages
+End Digest
 
 
-------------=_1416255577-89702-0
+------------=_1416446103-7048-0
 Content-Type: text/html
 Content-Disposition: inline
 Content-Transfer-Encoding: binary
 
 
-<p>This comes before the digest messages
+<p>Begin Digest
 <p>Number of messages: <!-- tmpl_var num_messages -->
 
 <ul>
 <!-- tmpl_loop digest_messages -->
-<li><!-- tmpl_var subject --> by, <!-- tmpl_var subscriber.email --> (<!-- tmpl_var date -->)<!-- /tmpl_loop --></li>
+
+<li>
+    <a href="#archive_id">
+        <!-- tmpl_var subject -->
+    </a>
+    by, <!-- tmpl_var subscriber.email --> (<!-- tmpl_var date -->)<!-- /tmpl_loop -->
+</li>
 
 <!-- tmpl_loop digest_messages -->
 </ul>
 
 <p>
+<a name="<!-- tmpl_var archive_id -->"></a>
 Date: <!-- tmpl_var date --><br />
 From: <!-- tmpl_var subscriber.email --><br />
 Subject: <!-- tmpl_var subject --><br />
 ---------------------------------------</p>
-<!-- tmpl_var html_message -->
+<!-- tmpl_var plaintext_message -->
 ==============================================================================
 
 <!-- /tmpl_loop -->
 
-<p>This comes after the digest messages</p>
+<p>End Digest</p>
 
 
 
-------------=_1416255577-89702-0--
+------------=_1416446103-7048-0--

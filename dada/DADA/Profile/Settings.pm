@@ -164,4 +164,29 @@ sub remove {
     $sth->finish;
 
 }
+
+
+
+sub update { 
+    my $self = shift;
+
+    my ($args) = @_;
+
+    my $query  =
+        "UPDATE "
+      . $self->{sql_params}->{profile_settings_table}
+      . " SET email = ? WHERE email = ?";
+    my $sth = $self->{dbh}->prepare($query);
+    
+    $sth->execute( 
+        $args->{-to}, 
+        $args->{-from}, 
+    ) or croak "cannot do statement $DBI::errstr\n";
+    $sth->finish;
+    
+    return 1; 
+    
+}
+
+
 1;

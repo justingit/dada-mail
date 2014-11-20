@@ -16,31 +16,23 @@ else {
    plan 'no_plan'; 
 }
 
-
 SKIP: {
         eval { require DBD::mysql };
         skip "DBD::mysql not installed", 2 if $@;
 
     my $file; 
     dada_test_config::create_MySQL_db(); 
-    
     require DADA::Config;
-    
-    open(FILE, "t/features-digest_message.pl") or die $!; 
+    open(FILE, "t/feature-digest_message.pl") or die $!; 
     
     {
         local $/ = undef; 
         $file = <FILE>; 
     }
     close(FILE); 
-    
     eval $file;
-    
     if ($@){ 
         diag $@; 
     } 
-    
     dada_test_config::destroy_MySQL_db();
-
-
 }

@@ -283,11 +283,9 @@ sub SQL_subscriber_profile_join_statement {
     }
     
     if(!exists($args->{-mass_mailing_params})) { 
-        
-        warn 'nope, doesn\'t exist.'; 
         $args->{-mass_mailing_params} = 
         {
-            -delivery_preferences => 'all', # individ, digest, all
+            -delivery_preferences => 'all', # individual, digest, all
         }; 
     }
 
@@ -542,21 +540,25 @@ sub SQL_subscriber_profile_join_statement {
     }    
     
 
+    require Data::Dumper; 
+    warn '$args->{-mass_mailing_params}' . Data::Dumper::Dumper($args->{-mass_mailing_params}); 
     
-    my $digest_subq = 'AND EXISTS (SELECT * FROM ' . 
+    my $digest_subq = ' AND EXISTS (SELECT * FROM ' . 
     $profile_settings_table . 
     ' WHERE ' . 
     $subscriber_table . 
     '.email = ' . 
     $profile_settings_table . 
     '.email AND ' .
+    $profile_settings_table . 
+    '.list = ' . $self->{dbh}->quote( $self->{list}). 
+    ' AND ' . 
     $profile_settings_table . 
     '.setting = \'delivery_prefs\' AND ' .
     $profile_settings_table . 
-    '.value = "digest")'; 
+    '.value = "digest") '; 
     
-    # so, individual, or NULL
-    my $individual_subq = 'AND NOT EXISTS (SELECT * FROM ' . 
+    my $individual_subq = ' AND NOT EXISTS (SELECT * FROM ' . 
     $profile_settings_table . 
     ' WHERE ' . 
     $subscriber_table . 
@@ -564,12 +566,16 @@ sub SQL_subscriber_profile_join_statement {
     $profile_settings_table . 
     '.email AND ' .
     $profile_settings_table . 
+    '.list = ' . $self->{dbh}->quote( $self->{list}). 
+    ' AND ' . 
+    $profile_settings_table . 
     '.setting = \'delivery_prefs\' AND (' .
     $profile_settings_table . 
-    '.value = "hold" OR ' . 
-    $profile_settings_table . 
-    '.value = "digest"))'; 
+    '.value = "digest" OR ' . $profile_settings_table . 
+    '.value = "hold" ) ) ';
     
+    
+        
     if($args->{-mass_mailing_params}->{-delivery_preferences} eq 'digest'
         && $ls->param('digest_enable') == 1
     ){         
@@ -577,7 +583,7 @@ sub SQL_subscriber_profile_join_statement {
     }
     elsif($args->{-mass_mailing_params}->{-delivery_preferences} eq 'individual'
         && $ls->param('digest_enable') == 1
-    ){
+    ){        
         $query .= $individual_subq; 
     }
 
@@ -630,8 +636,8 @@ sub SQL_subscriber_profile_join_statement {
 		$query .= ($args->{ -start } * $args->{ '-length' });		
 	}
 	
-    warn 'QUERY: ' . $query
-        if $t;
+    warn 'QUERY: ' . $query; 
+#         if $t;
     
     return $query;
 }
