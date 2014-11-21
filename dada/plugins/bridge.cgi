@@ -1300,6 +1300,7 @@ sub start {
       if $verbose;
       
     DIGEST_QUEUE: for my $list (@lists) {
+
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
         
         if ( $ls->param('disable_discussion_sending') == 1 ) {
@@ -1312,13 +1313,15 @@ sub start {
 				if $verbose;
             next DIGEST_QUEUE;
         }
-        
+
+        e_print("\n\t* Processing Digests! \n") 
+            if $verbose;
+                    
         require DADA::App::Digests; 
         my $digest = DADA::App::Digests->new({-list => $list});
-        print $digest->send_digest(); 
-           
-        e_print("\t* Processing Digests! \n") 
+        print $digest->send_digest()
             if $verbose;
+            
             
     } # DIGEST_QUEUE
 

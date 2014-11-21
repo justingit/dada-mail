@@ -146,13 +146,10 @@ sub archive_ids_for_digest {
 sub send_digest {
     
     my $self = shift;
-    my $r = "sending out digests! Here we go!\n";
-    $r .= '$self->should_send_digest:' . $self->should_send_digest; 
+    my $r .= "\n\t*$self->should_send_digest:" . $self->should_send_digest . "\n"; 
     
-
     if($self->should_send_digest){ 
-        
-
+    
         require DADA::App::FormatMessages;
         my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
            $fm->mass_mailing(1);
@@ -162,11 +159,7 @@ sub send_digest {
         
         my $msg_as_string = ( defined($entity) ) ? $entity->as_string : undef;        
            $msg_as_string = safely_decode($msg_as_string);
-      
-      $r .= '$msg_as_string:' . $msg_as_string; 
-       
-       # $fm->Subject( $headers{Subject} );
-
+             
         my ( $final_header, $final_body );
         eval { ( $final_header, $final_body ) = $fm->format_headers_and_body( -msg => $msg_as_string ); };
 #        if ($@) {
@@ -175,7 +168,6 @@ sub send_digest {
 #        }
 
         require DADA::Mail::Send;
-
         my $mh = DADA::Mail::Send->new(
             {
                 -list   => $self->{list},
@@ -193,7 +185,6 @@ sub send_digest {
         my %mailing = ( $mh->return_headers($final_header), Body => $final_body, );
 
         my $message_id;
-
 
         $message_id = $mh->mass_send(
             {
@@ -223,7 +214,7 @@ sub send_digest {
     ); 
     }
     else { 
-        $r .= "whoa! No digests should be sent out!"; 
+        $r .= "\t* No need to send out a digest message."; 
     }
     return $r; 
 }
