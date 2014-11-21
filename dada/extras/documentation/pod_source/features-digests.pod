@@ -4,11 +4,24 @@
 
 =head2 Enabling
 
-Digests can be enabled in the Bridge plugin. Under, B<Digest>, check the option, B<Enable Digests> and save your settings. 
+Digests can be enabled in the Bridge plugin. Under, B<Digest>, check the option, B<Enable Digests> and save your settings.
+
 
 =head2 Setting Frequency of Digests
 
 Under the, B<Enable Digests> setting, you may set the frequency of the messages sent out. Digest messges will not be sent out, if there are no messages sent between the last digest sent out, and whenever Dada Mail checks for new digests to be sent out. 
+
+=head2 Setting Delivery Preferences
+
+Delivery Preferences can be set by both the List Owner, and individual subscribers. Each mailing list has separate delivery preferences. 
+
+=head3 List Owner
+
+In the List Control Panel navigate to, Membership - View and click on the address you would like to work with. Click the, B<Delivery Preferences> tab and choose among the three options for delivery: B<Receive All Messages>, B< Receive Messages in a Digest>, or, B<Hold Mailings>.
+
+=head3 Subscriber
+
+A subscriber may log into their Profile (L<http://example.com/cgi-bin/dada/mail.cgi/profile>, for example). Every mailing list that has digest enabled will have a similar for to choose their delivery preferences.
 
 =head2 Digest Email Template
 
@@ -69,6 +82,5 @@ Holds the PlainText version of the message originally sent out.
 =head3 html_message
 
 Holds the HTML version of the message originally sent out
-
 
 =cut

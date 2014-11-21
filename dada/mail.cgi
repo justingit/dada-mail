@@ -5188,7 +5188,7 @@ sub admin_profile_delivery_preferences {
         }   
     );
     print $q->redirect(
-        -uri => $DADA::Config::S_PROGRAM_URL . '?f=membership&email=' . $email . '&type=' . $type . '&done=1' );
+        -uri => $DADA::Config::S_PROGRAM_URL . '?f=membership&email=' . uriescape($email) . '&type=' . $type . '&done=1' );
     return;
  
 }
