@@ -445,7 +445,7 @@ sub _format_text {
                         };
                     }
 
-                    if ( $self->{ls}->param('group_list') != 1 ) {
+                    #if ( $self->{ls}->param('group_list') != 1 ) {
                         try {
                             require DADA::App::FormatMessages::Filters::UnescapeTemplateTags;
                             my $utt = DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new;
@@ -454,7 +454,7 @@ sub _format_text {
                         catch {
                             carp "Problems with filter: $_";
                         };
-                    }
+                    #}
                 }
 
                 # This means, we've got a discussion list:
@@ -485,6 +485,15 @@ sub _format_text {
                         carp "Problems with filter: $_";
                     };
 
+                    try {
+                        require DADA::App::FormatMessages::Filters::UnescapeTemplateTags;
+                        my $utt = DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new;
+                        $content = $utt->filter( { -html_msg => $content } );
+                    }
+                    catch {
+                        carp "Problems with filter: $_";
+                    };
+                    
                     if ( $self->{ls}->param('discussion_template_defang') == 1 ) {
                         try {
                             $content = $self->template_defang( { -data => $content } );
@@ -493,16 +502,8 @@ sub _format_text {
                             carp "Problem defanging template: $_";
                         }
                     }
-                    else {
-                        try {
-                            require DADA::App::FormatMessages::Filters::UnescapeTemplateTags;
-                            my $utt = DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new;
-                            $content = $utt->filter( { -html_msg => $content } );
-                        }
-                        catch {
-                            carp "Problems with filter: $_";
-                        };
-                    }
+                    #else {
+                    #}
 
                 }    #/ discussion lists
 
@@ -1689,6 +1690,7 @@ $new_data
 	
 }
 
+#dumb.
 sub _depersonalize_mlm_template { 
 	
 	my $self = shift; 
@@ -1707,8 +1709,8 @@ sub _depersonalize_mlm_template {
 #			re => '<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->', 
 #		}, 
 		{
-			og => '<!-- tmpl_var PROGRAM_URL -->/profile_login/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/', 
-			re => '<!-- tmpl_var PROGRAM_URL -->/profile_login/', 
+#			og => '<!-- tmpl_var PROGRAM_URL -->/profile_login/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/', 
+#			re => '<!-- tmpl_var PROGRAM_URL -->/profile_login/', 
 		},
 #		{
 #			og => 'Using the address: <!-- tmpl_var subscriber.email -->', 

@@ -415,7 +415,6 @@ if ( $ENV{PATH_INFO} ) {
     elsif ( $info =~ m/^profile/ ) {
 
         # profile_login
-        # profile_help
         # profile_activate
 
         # email is used just to pre-fill in the login form.
@@ -663,7 +662,6 @@ sub run {
         'profile_update_email'                        => \&profile_update_email,
         'profile_login'                               => \&profile_login,
         'profile_logout'                              => \&profile_logout,
-        'profile_help'                                => \&profile_help,
         'profile'                                     => \&profile,
 
         # These handled the oldstyle confirmation. For some backwards compat, I've changed
@@ -5162,7 +5160,7 @@ sub admin_change_profile_password {
     #
 
     print $q->redirect(
-        -uri => $DADA::Config::S_PROGRAM_URL . '?f=membership&email=' . $email . '&type=' . $type . '&done=1' );
+        -uri => $DADA::Config::S_PROGRAM_URL . '?f=membership&email=' . uriescape($email) . '&type=' . $type . '&done=1' );
     return;
 }
 
@@ -11819,31 +11817,7 @@ sub profile_activate {
     }
 }
 
-sub profile_help {
 
-    if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1
-        || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
-    {
-        default();
-        return;
-    }
-
-    require DADA::Profile;
-    if ( !DADA::Profile::feature_enabled('help') == 1 ) {
-        default();
-        return;
-    }
-
-    require DADA::Template::Widgets;
-    my $scrn = DADA::Template::Widgets::wrap_screen(
-        {
-            -with   => 'list',
-            -screen => 'profile_help.tmpl',
-            -vars   => {}
-        }
-    );
-    e_print($scrn);
-}
 
 sub profile {
 

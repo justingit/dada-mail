@@ -101,6 +101,9 @@ $(document).ready(function() {
 	
 	}	
 	if ($("#profile_login_registration").length) {
+		
+		$("#tabs").tabs({ heightStyle: "auto" });
+		
 		if ($("#profile_login").length) {
 			$("#profile_login").validate({
 				debug: false, 
@@ -177,7 +180,7 @@ $(document).ready(function() {
 	}
 	
 	if ($("#profile_home").length) {
-		$("#tabs").tabs();
+		$("#tabs").tabs({ heightStyle: "auto" });
 	}
 	
 });

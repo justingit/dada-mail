@@ -265,8 +265,8 @@ $(document).ready(function() {
 		});
 
 		ChangeMassMailingButtonLabel();
-		$("#tabs").tabs();
-		$("#tabs_mass_mailing_options").tabs();
+		$("#tabs").tabs({ heightStyle: "auto" });
+		$("#tabs_mass_mailing_options").tabs({ heightStyle: "auto" });
 
 		$("body").on("click", ".preview_message_receivers", function(event) {
 			event.preventDefault();
@@ -314,7 +314,7 @@ $(document).ready(function() {
 
 	if ($("#drafts_screen").length) {
 		
-		$("#tabs").tabs();
+		$("#tabs").tabs({ heightStyle: "auto" });
 		
 		$("body").on("click", ".restore_from_draft_link", function(event) {
 			event.preventDefault();
@@ -406,7 +406,7 @@ $(document).ready(function() {
 	
 	if($("#membership").length) {
 
-		$("#tabs").tabs();
+		$("#tabs").tabs(); //{ heightStyle: "auto" }
 		
 		if ($("#mailing_list_history").length) {
 			mailing_list_history();
@@ -688,7 +688,7 @@ $(document).ready(function() {
 	}
 	
 	if ($("#html_code").length) {
-		$("#tabs").tabs();
+		$("#tabs").tabs({ heightStyle: "auto" });
 	}
 	
 
@@ -2330,7 +2330,7 @@ function plugins_mailing_monitor() {
 
 function update_plugins_tracker_message_report() {
 
-	var $tabs = $("#tabs").tabs();
+	var $tabs = $("#tabs").tabs({ heightStyle: "auto" });
 
 	$('body').on('click', '.to_subscriber_activity', function(event) {
 		$tabs.tabs('select', 0); return false;

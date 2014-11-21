@@ -938,7 +938,6 @@ sub grab_former_config_vals {
 		# Features 
 		
 		for(qw(
-			help                      
 			login                     
 			register                  
 			password_reset            
