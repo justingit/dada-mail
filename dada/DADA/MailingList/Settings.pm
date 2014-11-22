@@ -614,6 +614,7 @@ sub _get_email_message_settings {
 
 }
 
+# This has got to go! 
 sub x_message_body_content { 
 	my $self = shift; 
 	my $type = shift || undef; 

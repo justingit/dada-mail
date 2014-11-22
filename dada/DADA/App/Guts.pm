@@ -1450,10 +1450,10 @@ sub uriunescape {
      }else {
          die "URI::Escape was expected to be found but is missing. It should be bundled with the Dada mail distribution";
      }
-} 
+}
 
-   
-   
+
+
 sub js_enc {
 
 	my $str = shift || '';

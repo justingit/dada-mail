@@ -213,11 +213,10 @@ If the C<send_dada_mail.pl> script isn't up your alley, you can make a very smal
 	if($q->param('process')) { 
  
 	use DADA::App::MassSend; 
-	my $ms = DADA::App::MassSend->new; 
+    my $ms = DADA::App::MassSend->new({-list => $list});
 	   $ms->send_email(
 			{
 				-cgi_obj     => $q, 
-				-list        => $list, 
 				-html_output => 0, 
 			}
 		); 	
@@ -305,7 +304,7 @@ Hopefully, if you're a seasoned Perl programmer, you can edit the above idea to 
 	$q->param('text_message_body', "This is my PlainText version!"); 
 	# etc....
 	use DADA::App::MassSend; 
-	my $ms = DADA::App::MassSend->new; 
+    my $ms = DADA::App::MassSend->new({-list => $q->param('list')});
 	   $ms->send_email(
 			{
 				-cgi_obj     => $q, 

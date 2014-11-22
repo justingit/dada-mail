@@ -34,7 +34,7 @@ ok($ls->param('get_finished_notification') == 0, "set get_finished_notification 
 
 my $mh = DADA::Mail::Send->new({-list => $list}); 
 
-my $ms = DADA::App::MassSend->new; 
+my $ms = DADA::App::MassSend->new({-list => $list});
 ok($ms->isa('DADA::App::MassSend'), 'We have the right type of object!'); 
 
 use CGI; 

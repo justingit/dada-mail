@@ -1180,12 +1180,12 @@ sub send_email {
         -cgi_obj  => $q,
         -Function => 'send_email'
     );
+    my $list = $admin_list; 
     require DADA::App::MassSend;
-    my $ms = DADA::App::MassSend->new;
+    my $ms = DADA::App::MassSend->new({-list => $list});
     $ms->send_email(
         {
             -cgi_obj    => $q,
-            -list       => $admin_list,
             -root_login => $root_login,
         }
     );
@@ -2106,14 +2106,14 @@ sub _formatted_runtime {
 sub send_url_email {
 
     require DADA::App::MassSend;
-    my $ms = DADA::App::MassSend->new;
+    my $ms = DADA::App::MassSend->new({-list => $list});
     $ms->send_url_email( { -cgi_obj => $q, } );
 }
 
 sub list_invite {
 
     require DADA::App::MassSend;
-    my $ms = DADA::App::MassSend->new;
+    my $ms = DADA::App::MassSend->new({-list => $list});
     $ms->list_invite( { -cgi_obj => $q, } );
 }
 
@@ -4193,8 +4193,8 @@ sub remove_all_subscribers {
         if ( $ls->param('send_unsubscribed_by_list_owner_message') == 1 ) {
             require DADA::App::MassSend;
             eval {
-
-                DADA::App::MassSend::just_unsubscribed_mass_mailing(
+                my $dam = DADA::App::MassSend->new({-list => $list}); 
+                $dam->just_unsubscribed_mass_mailing(
                     {
                         -list              => $list,
                         -send_to_everybody => 1,
