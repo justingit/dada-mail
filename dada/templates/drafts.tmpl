@@ -1,3 +1,5 @@
+<!-- begin drafts.tmpl -->
+
 <!-- tmpl_set name="title" value="Mass Mailing &#187; Drafts and Stationary" -->
 
 <div id="screentitle"> 
@@ -36,6 +38,13 @@
 				Stationary (<!-- tmpl_var num_stationary default="0" -->)
 			</a>
 		</li>
+		<li>
+			<a href="#schedules">
+				Schedules (<!-- tmpl_var num_schedules default="0" -->)
+			</a>
+		</li>
+
+
 	</ul> 
 	<div id="drafts">
 	    <p class="alert">
@@ -234,7 +243,7 @@
         					<input type="hidden" name="f" value="create_from_stationary" /> 
         					<input type="hidden" name="screen" value="<!-- tmpl_var screen -->" /> 
         					<input type="hidden" name="draft_id" value="<!-- tmpl_var id -->" />	
-        			        <input type="submit" class="processing create_from_stationary" name="process" value="+ Create New Message From Stationary"  data-role="stationary" />
+        			        <input type="submit" class="processing create_from_stationary" name="process" value="New Draft From Stationary"  data-role="stationary" />
                         </form>
                     </td>
                     
@@ -304,12 +313,129 @@
         	</div> 
         <!-- /tmpl_if --> 
 	</div>
+	
+	
+	<div id="schedules">
+
+        <!-- tmpl_if schedule_index --> 
+
+        	<table class="stripedtable">
+
+        		<tr>
+        			<td>
+        				<p>&nbsp;</p>
+        			</td>
+
+        			<!-- 
+        				<td>
+        					<p>ID</p>
+        				</td>
+        			--> 
+
+                    <td> 
+                        schedule_localtime
+                    </td>
+                    
+        			<td>
+        				<p>
+        					<strong>
+        						Subject
+        					</strong>
+        				</p> 
+        			</td>
+        			<td>
+        				<p>
+        					<strong>
+        						Last Modified
+        					</strong>
+        				</p> 
+        			</td>
+        			<td>
+        				<p>
+        					<strong>
+        						Screen
+        					</strong>
+        				</p> 
+        			</td>
+        			<td>
+        				<p>&nbsp;</p>
+        				</p> 
+        			</td>
+
+        		</tr> 
+
+
+         	<!-- tmpl_loop schedule_index --> 
+        		<tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
+        			<td>
+        					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" id="restore_form_<!-- tmpl_var id -->">
+        						<input type="hidden" name="flavor" value="<!-- tmpl_var screen -->" /> 
+        						<input type="hidden" name="restore_from_draft" value="true" /> 
+        						<input type="hidden" name="draft_id" value="<!-- tmpl_var id -->" />
+        						<input type="hidden" name="draft_role" value="schedule" --> <!-- not doing this for drafts above -->
+        						<input type="submit" name="" value="Edit..." class="processing" />  
+        					</form> 
+        				</p> 
+        			</td>
+
+        			<!-- 
+        				<td>
+        					<p><!-- tmpl_var id --></p>
+        				</td>
+        			--> 
+        			
+        			<td>
+        			    <!-- tmpl_var schedule_localtime -->
+        			</td>
+
+        			<td>
+        				<p>
+        					<strong>
+        						<a href="#" class="restore_from_draft_link" data-target="restore_form_<!-- tmpl_var id -->">
+        							<!-- tmpl_var Subject escape="HTML" -->
+        						</a>
+        					</strong>
+        				</p> 
+        			</td>
+        			<td>
+        				<p>
+        					<a href="#" class="restore_from_draft_link" data-target="restore_form_<!-- tmpl_var id -->">
+        						<!-- tmpl_var last_modified_timestamp --> 
+        					</a>
+        				</p> 
+        				<td>
+        					<p>
+        						<!-- tmpl_if expr="(screen eq 'send_email')" --> 
+        							Send a Message
+        						<!-- /tmpl_if --> 
+        						<!-- tmpl_if expr="(screen eq 'send_url_email')" --> 
+        							Send a Webpage
+        						<!-- /tmpl_if --> 
+
+        					</p> 
+
+        			</td>
+        			<td>
+        					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="POST" class="delete_draft_form"  data-draft_role='Schedule'>
+        						<input type="hidden" name="id" value="<!-- tmpl_var id -->" />
+        						<input type="hidden" name="flavor" value="delete_draft" /> 
+        							<input type="submit" name="" value="[x]" class="alertive" />  		
+        					</form> 
+        				</p> 
+        			</td>
+
+        		</tr> 
+        	<!-- /tmpl_loop -->
+        	</table>  
+        <!-- tmpl_else -->
+        	<div class="clearskiesbox">
+        		<p>
+        			There are currently no saved message Schedules. 
+        		</p>
+        	</div> 
+        <!-- /tmpl_if --> 
+
+    </div> 
 </div> 
 
-
-
-
-
-
-
-
+<!-- end drafts.tmpl -->

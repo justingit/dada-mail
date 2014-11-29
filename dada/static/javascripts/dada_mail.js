@@ -97,6 +97,20 @@ $(document).ready(function() {
 		});
 		
 		datetimesetupstuff(); 
+		
+		if($('#schedule_datetime').length) { 
+			$('#schedule_datetime').datetimepicker(
+				{
+					minDate: 0, 
+					inline:false, 
+					format:'Y-m-d H:i:s'
+				}
+			);
+		}
+		
+		
+		
+		
 		if($('#backdate_datetime').length) { 
 			$('#backdate_datetime').datetimepicker({maxDate: 0, format:'Y-m-d H:i:s'});
 			
@@ -136,6 +150,13 @@ $(document).ready(function() {
 			}
 		});
 		
+		$("body").on("click", "#scheduled_mailing", function(event) {
+			
+		}); 
+		
+		
+		
+		
 		$("body").on("submit", "#mass_mailing", function(event) {
 			event.preventDefault();
 		});
@@ -154,8 +175,8 @@ $(document).ready(function() {
 				var ds = save_draft(false); 
 				admin_menu_drafts_notification();
 				if($("#draft_role").val() == 'draft') { 
-					if($("#save_as_draft_button").val() == 'Save as: Draft') { 
-						$("#save_as_draft_button").val('Save Draft')
+					if($("#save_draft_button").val() == 'Save as: Draft') { 
+						$("#save_draft_button").val('Save Draft')
 					}
 					
 				}
@@ -200,10 +221,6 @@ $(document).ready(function() {
 					//alert('Error Saving Draft: '); 
 				}
 			}); 
-			
-			
-			
-			
 		}
 			
 			
@@ -260,6 +277,17 @@ $(document).ready(function() {
 				}
 			}
 		});
+		
+		$("body").on("click", ".schedulemassmailing", function(event) {
+			alert('click!');
+			$("#button_action_notice").html('Working...');
+			$("#draft_role").val('schedule');
+			save_draft(false);
+			window.location.replace($("#s_program_url").val() + '?f=' + $("#f").val() + '&draft_id=' + $("#draft_id").val() + '&restore_from_draft=true&draft_role=schedule&done=1');
+		}); 
+		
+		
+		
 		$("body").on("click", ".ChangeMassMailingButtonLabel", function(event) {
 			ChangeMassMailingButtonLabel();
 		});
@@ -289,7 +317,10 @@ $(document).ready(function() {
 			if($("#draft_role").val() == 'stationary') {
 				confirm_msg = "Delete Stationary Message?";
 			}
-			else { 		
+			else if($("#draft_role").val() == 'schedule') {
+				confirm_msg = "Remove Schedule?";
+			}	
+			else {
 				confirm_msg = "Delete Draft Message?";
 			}
 			if (confirm(confirm_msg)) {
@@ -3160,14 +3191,33 @@ function preview_message_receivers() {
 }
 
 function ChangeMassMailingButtonLabel() {
-	if ($("#archive_message").prop("checked") === true && $("#archive_no_send").prop("checked") === true) {
-		$("#submit_mass_mailing").prop('value', 'Archive Message');
-		$('#submit_test_mailing').hide('fade');
-		$('#send_test_messages_to').hide('fade');
-	} else {
-		$("#submit_mass_mailing").prop('value', $("#default_mass_mailing_button_label").val());
-		$('#submit_test_mailing').show('fade');
-		$('#send_test_messages_to').show('fade');
+	
+	if($("#scheduled_mailing").prop("checked")){ 
+		
+		// This should work, as you can't set this, while as a stationary. 
+		$('#submit_mass_mailing').hide('fade');
+		$('#save_draft_button').val('Save Schedule');
+		$("#save_draft_button").attr("data-role", 'schedule'); 
+	
+		$('#save_as_stationary_button').hide('fade');
+	}
+	else { 
+		
+		$('#submit_mass_mailing').show();
+		$('#save_draft_button').show();
+		$('#save_as_stationary_button').show();
+		
+		$('#save_draft_button').val($("#default_save_draft_button_label").val());
+		
+		
+		$("#save_draft_button").attr("data-role", 'draft'); 
+
+		
+		if ($("#archive_message").prop("checked") === true && $("#archive_no_send").prop("checked") === true) {
+			$("#submit_mass_mailing").prop('value', 'Archive Message');
+		} else {
+			$("#submit_mass_mailing").prop('value', $("#default_mass_mailing_button_label").val());
+		}
 	}
 }
 

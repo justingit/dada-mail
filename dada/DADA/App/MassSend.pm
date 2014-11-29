@@ -18,7 +18,7 @@ use Carp qw(carp croak);
 use strict;
 use vars qw($AUTOLOAD);
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_MassSend};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_MassSend};
 
 my %allowed = ( test => 0, );
 
@@ -63,6 +63,12 @@ sub _init {
 
     my $self = shift;
     my ($args) = @_;
+    
+    use Data::Dumper; 
+    warn Dumper($args); 
+    
+    
+    
     if ( !exists( $args->{-list} ) ) {
         croak "You must pass the -list parameter!";
     }
@@ -73,6 +79,7 @@ sub _init {
     $self->{ls_obj} = DADA::MailingList::Settings->new( { -list => $self->{list} } );
     $self->{lh_obj} = DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
 
+    
 }
 
 sub send_email {
@@ -141,15 +148,19 @@ sub send_email {
 
     if ( !$process ) {
 
+        warn '!$process'
+            if $t; 
+            
         my ( $num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued ) =
           $self->mass_mailout_info;
 
         my $draft_id = undef;
-
+        
+        # TODO - remove-into-method
+        # Get $draft_id based on if an id is passed, and role: 
         require DADA::MailingList::MessageDrafts;
         my $d = DADA::MailingList::MessageDrafts->new( { -list => $self->{list} } );
         if ( $d->enabled ) {
-
             # $restore_from_draft defaults to, "true" if no param is passed.
             if (   $restore_from_draft ne 'true'
                 && $d->has_draft( { -screen => 'send_email', -role => $draft_role } ) )
@@ -179,7 +190,19 @@ sub send_email {
                     # we don't want to load up the most recent stationary, since that's not how stationary... work.
                 }
             }
+            elsif ($restore_from_draft eq 'true'
+                && $d->has_draft( { -screen => 'send_email', -role => 'schedule' } )
+                && $draft_role eq 'schedule' )
+            {
+                if ( defined( $q->param('draft_id') ) ) {
+                    $draft_id = $q->param('draft_id');
+                }
+                else {
+                    # we don't want to load up the most recent schedule, since that's not how schedules... work.
+                }
+            }
         }
+        #/ Get $draft_id based on if an id is passed, and role: 
 
         require DADA::Template::Widgets;
         my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars( $self->{list} );
@@ -276,9 +299,9 @@ sub send_email {
             {
                 -cgi_obj => $q,
                 -list    => $self->{list},
+                -json    => 0, 
             }
         );
-
         # to fetch a draft, I need id, list and role (lame)
         my ($status, $errors, $message_id) = $self->construct_and_send(
             {
@@ -338,8 +361,16 @@ sub send_email {
 
 sub construct_and_send {
 
+    warn 'construct_and_send' 
+        if $t; 
+        
     my $self = shift;
     my ($args) = @_;
+
+    if($t == 1){ 
+        require Data::Dumper; 
+        warn 'args:' . Data::Dumper::Dumper($args); 
+    }
 
     my $draft_q    = $self->q_obj_from_draft($args);
     my $process    = $args->{-process};
@@ -1158,9 +1189,16 @@ sub wait_for_it {
 
 sub save_as_draft {
 
+    warn 'save_as_draft' 
+        if $t; 
+        
     my $self = shift;
     my ($args) = @_;
-
+    if($t == 1){ 
+        require Data::Dumper; 
+        warn 'args:' . Data::Dumper::Dumper($args); 
+    }
+    
     my $q = $args->{-cgi_obj};
 
     if ( !exists( $args->{-json} ) ) {
@@ -1183,6 +1221,7 @@ sub save_as_draft {
             -screen  => $q->param('f'),
         }
     );
+    warn '$saved_draft_id: ' . $saved_draft_id; 
 
 
     if ( $args->{-json} == 1 ) {
@@ -1194,10 +1233,13 @@ sub save_as_draft {
             -expires         => 'Mon, 26 Jul 1997 05:00:00 GMT',
             -type            => 'application/json',
         );
+        warn '$json->pretty->encode($return) ' . $json->pretty->encode($return)
+            if $t; 
         print $json->pretty->encode($return);
     }
-    
-    return $saved_draft_id;
+    else { 
+        return $saved_draft_id;
+    }
 }
 
 sub list_invite {
@@ -1536,17 +1578,25 @@ sub list_invite {
 
 sub q_obj_from_draft {
 
+    warn 'q_obj_from_draft'
+        if $t; 
+        
     my $self = shift;
     my ($args) = @_;
 
-    for ( '-list', '-screen', '-draft_id', '-role' ) {
+    if($t == 1){ 
+        require Data::Dumper; 
+        warn 'args:' . Data::Dumper::Dumper($args); 
+    }
+    
+    for ( '-screen', '-draft_id', '-role' ) {
         if ( !exists( $args->{$_} ) ) {
             croak "You MUST pass the, '$_' parameter!";
         }
     }
 
     require DADA::MailingList::MessageDrafts;
-    my $d = DADA::MailingList::MessageDrafts->new( { -list => $args->{-list} } );
+    my $d = DADA::MailingList::MessageDrafts->new( { -list => $self->{list} } );
 
     return $args->{-str}
       unless ( $d->enabled );
@@ -1634,7 +1684,7 @@ sub has_attachments {
                 if ( !-e $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_dir} . '/' . $filename ) {
                     my $new_filename = uriunescape($filename);
                     if ( !-e $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_dir} . '/' . $new_filename ) {
-                        carp 'I can\'t find attachment file: '
+                        warn 'I can\'t find attachment file: '
                           . $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_dir} . '/'
                           . $filename;
                     }
@@ -1772,20 +1822,36 @@ sub find_attachment_type {
     return $a_type;
 }
 
-sub backdated_msg_id {
 
-    my $self              = shift;
-    my $backdate_datetime = shift;
+
+sub datetime_to_ctime { 
+    my $self     = shift; 
+    my $datetime = shift; 
+    
     require Time::Local;
-    my ( $date, $time ) = split( ' ', $backdate_datetime );
+    my ( $date, $time ) = split( ' ', $datetime );
     my ( $year, $month,  $day )    = split( '-', $date );
     my ( $hour, $minute, $second ) = split( ':', $time );
     $second = int( $second - 0.5 );    # no idea.
     my $time = Time::Local::timelocal( $second, $minute, $hour, $day, $month - 1, $year );
+    
+    return $time; 
+}
 
+sub datetime_to_localtime { 
+    my $self     = shift; 
+    my $datetime = shift; 
+    my $time = $self->datetime_to_ctime($datetime); 
+    return scalar(localtime($time))
+}
+
+sub backdated_msg_id {
+
+    my $self              = shift;
+    my $datetime          = shift;
+    my $time = $self->datetime_to_ctime($datetime); 
     my ( $sec, $min, $hour, $day, $month, $year ) = ( localtime($time) )[ 0, 1, 2, 3, 4, 5 ];
     my $message_id = sprintf( "%02d%02d%02d%02d%02d%02d", $year + 1900, $month + 1, $day, $hour, $min, $sec );
-
     return $message_id;
 
 }

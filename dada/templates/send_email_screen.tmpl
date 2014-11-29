@@ -29,6 +29,14 @@
 <div id="entire_form">
   <div id="form_widgets">
 
+<!-- tmpl_if expr="(draft_role eq 'schedule')" -->
+    <fieldset>
+    <!-- tmpl_include send_email_schedule_options_widget.tmpl -->
+    </fieldset>
+<!-- /tmpl_if -->
+
+
+
 <!-- tmpl_include test_sent_notice_widget.tmpl --> 
 <!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
 <!-- tmpl_include ses_email_verification_widget.tmpl -->
@@ -102,13 +110,24 @@
 					PlainText Version
 				</a>
 			</li>
+			<li>
+    			<a href="#file_attachments">
+     				 File Attachments
+    			</a>
+    		</li>
+    		
 		</ul>
 	<div id="html_message" style="display: block; border-width: 0; padding: 0em 0em; background: none;"> 
-	<!-- tmpl_include html_message_form_field_widget.tmpl --> 
+	    <!-- tmpl_include html_message_form_field_widget.tmpl --> 
 	</div>	
 	<div id="plaintext_message" style="display: block; border-width: 0; padding: 0em 0em; background: none;"> 
-	<!-- tmpl_include plaintext_message_form_field_widget.tmpl -->
+	    <!-- tmpl_include plaintext_message_form_field_widget.tmpl -->
 	</div>
+	<div id="file_attachments">		
+	    <!-- tmpl_include file_attachments_widget.tmpl -->
+	</div> 
+	
+	
 </div> 
  
 
@@ -126,8 +145,16 @@
  				Archiving
 			</a>
 		</li>
-		<!-- tmpl_if MULTIPLE_LIST_SENDING --> 
 		
+		<!-- 
+		<li>
+			<a href="#send_email_schedule_options">
+ 				Schedule
+			</a>
+		</li>
+		-->
+		
+		<!-- tmpl_if MULTIPLE_LIST_SENDING --> 
 			<li>
 				<a href="#multiple_list_sending">
 	 				Multiple List Sending
@@ -141,11 +168,6 @@
 				</a>
 			</li>
 		<!-- /tmpl_if --> 
-		<li>
-			<a href="#file_attachments">
- 				 File Attachments
-			</a>
-		</li>
 		<!-- tmpl_if can_have_subscriber_fields --> 
 		<li>
 			<a href="#subscriber_field_tags_listing">
@@ -165,6 +187,13 @@
 	<div id="send_email_archive_options">		
 	<!-- tmpl_include send_email_archive_options_widget.tmpl -->
 	</div> 
+	
+	<!-- tmpl_if comment -->
+    <div id="send_email_schedule_options">
+       	<!-- tmpl_include send_email_schedule_options_widget.tmpl -->
+    </div>
+    <!-- /tmpl_if -->
+	
 	<!-- tmpl_if MULTIPLE_LIST_SENDING --> 
 		<div id="multiple_list_sending">		
 		<!-- tmpl_include multiple_list_sending_widget.tmpl --> 
@@ -177,9 +206,6 @@
 		</div> 
 	<!-- /tmpl_if --> 
 	
-	<div id="file_attachments">		
-	<!-- tmpl_include file_attachments_widget.tmpl -->
-	</div> 
 
 	<!-- tmpl_if can_have_subscriber_fields --> 
 		<div id="subscriber_field_tags_listing">		

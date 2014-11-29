@@ -1334,12 +1334,14 @@ sub drafts {
     require DADA::MailingList::MessageDrafts;
     my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
 
-    my $di = [];
-    my $si = [];
+    my $di  = [];
+    my $si  = [];
+    my $sci = [];
+
     if ( $d->enabled ) {
-        $di = $d->draft_index({-role => 'draft'});
-        $si = $d->draft_index({-role => 'stationary'});
-        
+        $di  = $d->draft_index({-role  => 'draft'});
+        $si  = $d->draft_index({-role  => 'stationary'});
+        $sci = $d->draft_index({-role => 'schedule'});
     }
     
     my $enabled = $d->enabled;
@@ -1357,10 +1359,11 @@ sub drafts {
                 delete_draft     => $delete_draft,
                 draft_index      => $di,
                 stationary_index => $si, 
+                schedule_index   => $sci,
                 enabled          => $enabled,
                 num_drafts       => scalar(@$di),
                 num_stationary   => scalar(@$si), 
-                
+                num_schedules    => scalar(@$sci), 
             },
             -list_settings_vars_param => {
                 -list   => $list,

@@ -9,7 +9,7 @@ use lib qw(
 use Carp qw(croak carp);
 use DADA::Config qw(!:DEFAULT);
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_MessageDrafts};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_MailingList_MessageDrafts};
 
 sub new {
 
@@ -334,7 +334,7 @@ sub fetch {
     my $q = $self->decode_draft($saved);
 
     return $q;
-
+    
 }
 
 
@@ -450,18 +450,22 @@ sub draft_index {
 
   FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
         my $q = $self->decode_draft( $hashref->{draft} );
-        push(
-            @$r,
-            {
-                id                      => $hashref->{id},
-                list                    => $hashref->{list},
-                created_timestamp       => $hashref->{created_timestamp},
-                last_modified_timestamp => $hashref->{last_modified_timestamp},
-                screen                  => $hashref->{screen},
-                role                    => $hashref->{role},
-                Subject                 => $q->param('Subject'),
-            }
-        );
+        
+        my $params = {
+            id                      => $hashref->{id},
+            list                    => $hashref->{list},
+            created_timestamp       => $hashref->{created_timestamp},
+            last_modified_timestamp => $hashref->{last_modified_timestamp},
+            screen                  => $hashref->{screen},
+            role                    => $hashref->{role},
+            Subject                 => $q->param('Subject'),
+            schedule_datetime       => $q->param('schedule_datetime'), 
+        };
+        
+        if($args->{-role} eq 'schedule' && length($params->{schedule_datetime}) > 0){ 
+            $params->{schedule_localtime} = $self->datetime_to_localtime($q->param('schedule_datetime'));
+        }
+        push(@$r, $params);
     }
     $sth->finish;
     return $r;
@@ -545,7 +549,10 @@ sub params_to_save {
         backdate_datetime   => 1, 
         test_recipient      => 1,
         
-        Subject => 1,
+        Subject             => 1,
+        
+        scheduled_mailing   => 1, 
+        schedule_datetime   => 1, 
 
     };
 
@@ -591,6 +598,37 @@ sub params_to_save {
     return $params;
 
 }
+
+
+
+sub datetime_to_ctime { 
+    my $self     = shift; 
+    my $datetime = shift; 
+    warn '$datetime ' . $datetime
+        if $t; 
+    require Time::Local;
+    my ( $date, $time ) = split( ' ', $datetime );
+    my ( $year, $month,  $day )    = split( '-', $date );
+    my ( $hour, $minute, $second ) = split( ':', $time );
+    $second = int( $second - 0.5 );    # no idea.
+    my $time = Time::Local::timelocal( $second, $minute, $hour, $day, $month - 1, $year );
+    
+    return $time; 
+}
+
+sub datetime_to_localtime { 
+    my $self     = shift; 
+    my $datetime = shift; 
+
+    warn '$datetime ' . $datetime 
+        if $t; 
+
+    my $time = $self->datetime_to_ctime($datetime); 
+    return scalar(localtime($time));
+}
+
+
+
 
 sub enabled {
     return 1;
