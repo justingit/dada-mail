@@ -1314,6 +1314,10 @@ sub list_invite {
 
         }
 
+        require DADA::App::FormatMessages;
+        my $fm = DADA::App::FormatMessages->new( -List => $list );
+           $fm->mass_mailing(1);
+
         # DEV: Headers.  Ugh, remember this is in, "Send a Webpage" as well.
         my %headers = ();
         for my $h (
@@ -1327,7 +1331,12 @@ sub list_invite {
           )
         {
             if ( defined( $q->param($h) ) ) {
-                $headers{$h} = strip( $q->param($h) );
+                if($h eq 'Subject'){ 
+                    $headers{$h} = $fm->_encode_header('Subject', $q->param($h)); 
+                }
+                else { 
+                    $headers{$h} = strip( $q->param($h) );
+                }
             }
         }
 
@@ -1431,10 +1440,7 @@ sub list_invite {
         my $msg_as_string = ( defined($entity) ) ? $entity->as_string : undef;
            $msg_as_string = safely_encode($msg_as_string);
 
-        require DADA::App::FormatMessages;
-        my $fm = DADA::App::FormatMessages->new( -List => $list );
         $fm->Subject( $headers{Subject} );
-        $fm->mass_mailing(1);
         $fm->use_email_templates(0);
         $fm->list_type('invitelist');
         my ( $header_glob, $message_string );
