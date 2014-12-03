@@ -1,3 +1,5 @@
+<!-- begin list/subscribed.tmpl -->
+
 <!-- tmpl_set name="title" value="Your Mailing List Subscription is Successful" -->
 
 <p>You are now subscribed to the following mailing list:</p>
@@ -15,7 +17,23 @@
 <blockquote>  
  <p>
   <strong>
-  <!-- tmpl_var subscriber.email -->
+   <!-- tmpl_var subscriber.email -->
   </strong>
  </p>
 </blockquote> 
+
+<!-- tmpl_if PROFILE_ENABLED -->
+
+    <form action="<!-- tmpl_var PROGRAM_URL -->" method="get">
+        <input type="hidden" name="f" value="profile" />
+        <p style="text-align:center">
+         <input type="submit" value="Visit Your Profle" class="processing bigger_button" /> 
+<br />
+to view all your subscriptions, and change your delivery preferences.
+
+</p>
+    </form>
+<!-- /tmpl_if -->
+    
+<!-- end list/subscribed.tmpl -->
+
