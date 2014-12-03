@@ -120,7 +120,6 @@ function confirm_profile_removal(form_name) {
 
 <div id="tabs"> 
     <ul>
-
         <!-- tmpl_if expr="profile_feature_mailing_list_subscriptions == 1" -->
             <li>    
                 <a href="#mailing_list_subscriptions">
@@ -284,7 +283,7 @@ function confirm_profile_removal(form_name) {
                                 <p>
                                     <input type="radio" name="delivery_prefs" value="individual" id="delivery_prefs_individual" <!-- tmpl_if expr="delivery_prefs eq 'individual'" -->checked="checked"<!-- /tmpl_if --> />
                                         <label for="delivery_prefs_individual">
-                                            Receive All Messages
+                                            Receive Individual Messages
                                         </label>
                                         <br />
                                     <input type="radio" name="delivery_prefs" value="digest" id="delivery_prefs_digest" <!-- tmpl_if expr="delivery_prefs eq 'digest'" -->checked="checked"<!-- /tmpl_if --> >
@@ -296,13 +295,11 @@ function confirm_profile_removal(form_name) {
                                         <label for="delivery_prefs_hold">
                                             Hold Mailings
                                         </label> (vacation, etc)     
-                                        
                                         <div class="buttonfloat">    
                                         <input type="submit" value="Save Delivery Preferences" class="processing" /> 
                                         </div>
                                         <div class="floatclear"></div>                       
                                 </p>
-                                
                             </form>
                         </fieldset>
                     <!-- /tmpl_if --> 

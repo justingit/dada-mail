@@ -17,7 +17,7 @@ Delivery Preferences can be set by both the List Owner, and individual subscribe
 
 =head3 List Owner
 
-In the List Control Panel navigate to, Membership - View and click on the address you would like to work with. Click the, B<Delivery Preferences> tab and choose among the three options for delivery: B<Receive All Messages>, B< Receive Messages in a Digest>, or, B<Hold Mailings>.
+In the List Control Panel navigate to, Membership - View and click on the address you would like to work with. Click the, B<Delivery Preferences> tab and choose among the three options for delivery: B<Receive Individual Messages>, B< Receive Messages in a Digest>, or, B<Hold Mailings>.
 
 =head3 Subscriber
 
