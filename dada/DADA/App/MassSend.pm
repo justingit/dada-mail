@@ -10,6 +10,7 @@ use DADA::App::Guts;
 use DADA::Template::HTML;
 use DADA::MailingList::Settings;
 use DADA::MailingList::Subscribers;
+use DADA::MailingList::MessageDrafts;
 
 use Carp qw(carp croak);
 
@@ -76,9 +77,10 @@ sub _init {
         $self->{list} = $args->{-list};
     }
 
-    $self->{ls_obj} = DADA::MailingList::Settings->new( { -list => $self->{list} } );
-    $self->{lh_obj} = DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
-
+    $self->{ls_obj} = DADA::MailingList::Settings->new(      { -list => $self->{list} } );
+    $self->{lh_obj} = DADA::MailingList::Subscribers->new(   { -list => $self->{list} } );
+    $self->{ah_obj} = DADA::MailingList::Archives->new(      { -list => $self->{list} } );
+    $self->{md_obj} = DADA::MailingList::MessageDrafts->new( { -list => $self->{list} } );
     
 }
 
@@ -131,17 +133,7 @@ sub send_email {
         );
     }
 
-    my $ses_params = {};
-    if ( $self->{ls_obj}->param('sending_method') eq 'amazon_ses'
-        || ( $self->{ls_obj}->param('sending_method') eq 'smtp' && $self->{ls_obj}->param('smtp_server') =~ m/amazonaws\.com/ ) )
-    {
-        $ses_params->{using_ses} = 1;
-        require DADA::App::AmazonSES;
-        my $ses = DADA::App::AmazonSES->new;
-        $ses_params->{list_owner_ses_verified}     = $ses->sender_verified( $self->{ls_obj}->param('list_owner_email') );
-        $ses_params->{list_admin_ses_verified}     = $ses->sender_verified( $self->{ls_obj}->param('admin_email') );
-        $ses_params->{discussion_pop_ses_verified} = $ses->sender_verified( $self->{ls_obj}->param('discussion_pop_email') );
-    }
+    my $ses_params = $self->ses_params; 
 
     # default: draft, also could be: stationary
     my $draft_role = $q->param('draft_role') || 'draft';
@@ -154,56 +146,12 @@ sub send_email {
         my ( $num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued ) =
           $self->mass_mailout_info;
 
-        my $draft_id = undef;
+        my $draft_id = $self->find_draft_id(
+            -screen  => 'send_email',
+            -role    => $draft_role,
+            -cgi_obj => $q, 
+        );
         
-        # TODO - remove-into-method
-        # Get $draft_id based on if an id is passed, and role: 
-        require DADA::MailingList::MessageDrafts;
-        my $d = DADA::MailingList::MessageDrafts->new( { -list => $self->{list} } );
-        if ( $d->enabled ) {
-            # $restore_from_draft defaults to, "true" if no param is passed.
-            if (   $restore_from_draft ne 'true'
-                && $d->has_draft( { -screen => 'send_email', -role => $draft_role } ) )
-            {
-                $draft_id = undef;
-            }
-            elsif ($restore_from_draft eq 'true'
-                && $d->has_draft( { -screen => 'send_email', -role => 'draft' } )
-                && $draft_role eq 'draft' )
-            {    # so, only drafts (not stationary),
-                if ( defined( $q->param('draft_id') ) ) {
-                    $draft_id = $q->param('draft_id');
-                }
-                else {
-                    $draft_id = $d->latest_draft_id( { -screen => 'send_email', -role => 'draft' } );
-                }
-            }
-            elsif ($restore_from_draft eq 'true'
-                && $d->has_draft( { -screen => 'send_email', -role => 'stationary' } )
-                && $draft_role eq 'stationary' )
-            {
-                if ( defined( $q->param('draft_id') ) ) {
-                    $draft_id = $q->param('draft_id');
-                }
-                else {
-                    # $draft_id = $d->latest_draft_id( { -screen => 'send_email', -role => 'draft' } );
-                    # we don't want to load up the most recent stationary, since that's not how stationary... work.
-                }
-            }
-            elsif ($restore_from_draft eq 'true'
-                && $d->has_draft( { -screen => 'send_email', -role => 'schedule' } )
-                && $draft_role eq 'schedule' )
-            {
-                if ( defined( $q->param('draft_id') ) ) {
-                    $draft_id = $q->param('draft_id');
-                }
-                else {
-                    # we don't want to load up the most recent schedule, since that's not how schedules... work.
-                }
-            }
-        }
-        #/ Get $draft_id based on if an id is passed, and role: 
-
         require DADA::Template::Widgets;
         my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars( $self->{list} );
 
@@ -221,7 +169,7 @@ sub send_email {
                     flavor => $flavor,
 
                     draft_id           => $draft_id,
-                    draft_enabled      => $d->enabled,
+                    draft_enabled      => $self->{md_obj}->enabled,
                     draft_role         => $draft_role,
                     restore_from_draft => $restore_from_draft,
                     done               => $done,
@@ -332,11 +280,9 @@ sub send_email {
                           . $q->param('draft_role') );
                 }
                 else {
-                    require DADA::MailingList::MessageDrafts;
-                    my $d = DADA::MailingList::MessageDrafts->new( { -list => $self->{list} } );
-                    if ( $d->enabled ) {
+                    if ( $self->{md_obj}->enabled ) {
                         if ( defined($draft_id) ) {
-                            $d->remove($draft_id);
+                            $self->{md_obj}->remove($draft_id);
                         }
                     }
                     my $uri;
@@ -641,31 +587,17 @@ sub construct_and_send {
 
 sub send_url_email {
 
-    my $self = shift;
-    my ($args) = @_;
-
-    my $q       = $args->{-cgi_obj};
-    my $process = xss_filter( strip( $q->param('process') ) );
-    my $flavor  = xss_filter( strip( $q->param('flavor') ) );
-
-    my $restore_from_draft = $q->param('restore_from_draft')               || 'true';
+    my $self               = shift;
+    my ($args)             = @_;
+    my $q                  = $args->{-cgi_obj};
+    my $root_login         = $args->{-root_login};
+    my $process            = xss_filter( strip( $q->param('process') ) );
+    my $flavor             = xss_filter( strip( $q->param('flavor') ) );
+    my $restore_from_draft = $q->param('restore_from_draft') || 'true';
     my $test_sent          = xss_filter( strip( $q->param('test_sent') ) ) || 0;
     my $test_recipient     = $q->param('test_recipient');
-    my $done               = xss_filter( strip( $q->param('done') ) )      || 0;
+    my $done               = xss_filter( strip( $q->param('done') ) ) || 0;
 
-    my ( $admin_list, $root_login ) = check_list_security(
-        -cgi_obj  => $q,
-        -Function => 'send_url_email'
-    );
-
-    require DADA::MailingList::Settings;
-
-    my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
-    my $li = $ls->get( -all_settings => 1 );
-
-    require DADA::MailingList::Archives;
-
-    my $la = DADA::MailingList::Archives->new( { -list => $self->{list} } );
 
     my $can_use_mime_lite_html = 0;
     my $mime_lite_html_error   = undef;
@@ -685,19 +617,16 @@ sub send_url_email {
     }
     else {
         $lwp_simple_error = $@;
-
     }
 
     my $fields = [];
     my $naked_fields = $self->{lh_obj}->subscriber_fields( { -dotted => 0 } );
-
     # Extra, special one...
     push( @$fields, { name => 'subscriber.email' } );
     for my $field ( @{ $self->{lh_obj}->subscriber_fields( { -dotted => 1 } ) } ) {
         push( @$fields, { name => $field } );
     }
     my $undotted_fields = [];
-
     # Extra, special one...
     push( @$undotted_fields, { name => 'email', label => 'Email Address' } );
     require DADA::ProfileFieldsManager;
@@ -713,60 +642,20 @@ sub send_url_email {
         );
     }
 
-    my $ses_params = {};
-    if ( $ls->param('sending_method') eq 'amazon_ses'
-        || ( $ls->param('sending_method') eq 'smtp' && $ls->param('smtp_server') =~ m/amazonaws\.com/ ) )
-    {
-        $ses_params->{using_ses} = 1;
-        require DADA::App::AmazonSES;
-        my $ses = DADA::App::AmazonSES->new;
-        $ses_params->{list_owner_ses_verified}     = $ses->sender_verified( $ls->param('list_owner_email') );
-        $ses_params->{list_admin_ses_verified}     = $ses->sender_verified( $ls->param('admin_email') );
-        $ses_params->{discussion_pop_ses_verified} = $ses->sender_verified( $ls->param('discussion_pop_email') );
-    }
+    my $ses_params = $self->ses_params; 
+    
     if ( !$process ) {
         my ( $num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued ) =
           $self->mass_mailout_info;
+    
+    my $draft_role = $q->param('draft_role') || 'draft';
 
-        my $draft_id = undef;
+    my $draft_id = $self->find_draft_id(
+        -screen  => 'send_email',
+        -role    => $draft_role,
+        -cgi_obj => $q,
+    );
 
-        # default: draft, also could be: stationary
-        my $draft_role = $q->param('draft_role') || 'draft';
-
-        require DADA::MailingList::MessageDrafts;
-        my $d = DADA::MailingList::MessageDrafts->new( { -list => $self->{list} } );
-        if ( $d->enabled ) {
-
-            # $restore_from_draft defaults to, "true" if no param is passed.
-            if (   $restore_from_draft ne 'true'
-                && $d->has_draft( { -screen => 'send_url_email', -role => $draft_role } ) )
-            {
-                $draft_id = undef;
-            }
-            elsif ($restore_from_draft eq 'true'
-                && $d->has_draft( { -screen => 'send_url_email', -role => 'draft' } )
-                && $draft_role eq 'draft' )
-            {    # so, only drafts (not stationary),
-                if ( defined( $q->param('draft_id') ) ) {
-                    $draft_id = $q->param('draft_id');
-                }
-                else {
-                    $draft_id = $d->latest_draft_id( { -screen => 'send_url_email', -role => 'draft' } );
-                }
-            }
-            elsif ($restore_from_draft eq 'true'
-                && $d->has_draft( { -screen => 'send_url_email', -role => 'stationary' } )
-                && $draft_role eq 'stationary' )
-            {
-                if ( defined( $q->param('draft_id') ) ) {
-                    $draft_id = $q->param('draft_id');
-                }
-                else {
-                    # $draft_id = $d->latest_draft_id( { -screen => 'send_url_email', -role => 'draft' } );
-                    # we don't want to load up the most recent stationary, since that's not how stationary... work.
-                }
-            }
-        }
         require DADA::Template::Widgets;
         my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars( $self->{list} );
 
@@ -784,7 +673,7 @@ sub send_url_email {
                     screen => 'send_url_email',
 
                     draft_id           => $draft_id,
-                    draft_enabled      => $d->enabled,
+                    draft_enabled      => $self->{md_obj}->enabled,
                     draft_role         => $draft_role,
                     restore_from_draft => $restore_from_draft,
                     done               => $done,
@@ -796,12 +685,12 @@ sub send_url_email {
                     mime_lite_html_error       => $mime_lite_html_error,
                     can_use_lwp_simple         => $can_use_lwp_simple,
                     lwp_simple_error           => $lwp_simple_error,
-                    can_display_attachments    => $la->can_display_attachments,
+                    can_display_attachments    => $self->{aj}->can_display_attachments,
                     fields                     => $fields,
                     undotted_fields            => $undotted_fields,
                     can_have_subscriber_fields => $self->{lh_obj}->can_have_subscriber_fields,
                     SERVER_ADMIN               => $ENV{SERVER_ADMIN},
-                    priority_popup_menu        => DADA::Template::Widgets::priority_popup_menu($li),
+                    priority_popup_menu        => DADA::Template::Widgets::priority_popup_menu($self->{ls_obj}->get),
 
                     global_list_sending_checkbox_widget =>
                       DADA::Template::Widgets::global_list_sending_checkbox_widget( $self->{list} ),
@@ -812,14 +701,14 @@ sub send_url_email {
                     num_total_mailouts     => $num_total_mailouts,
                     active_mailouts        => $active_mailouts,
 
-                    plaintext_message_body_content       => $ls->plaintext_message_body_content,
-                    html_message_body_content            => $ls->html_message_body_content,
-                    html_message_body_content_js_escaped => js_enc( $ls->html_message_body_content ),
+                    plaintext_message_body_content       => $self->{ls_obj}->plaintext_message_body_content,
+                    html_message_body_content            => $self->{ls_obj}->html_message_body_content,
+                    html_message_body_content_js_escaped => js_enc( $self->{ls_obj}->html_message_body_content ),
                     %wysiwyg_vars,
                     %$ses_params,
 
                 },
-                -list_settings_vars       => $ls->params,
+                -list_settings_vars       => $self->{ls_obj}->params,
                 -list_settings_vars_param => { -dot_it => 1, },
             }
         );
@@ -884,11 +773,11 @@ sub send_url_email {
                 remove_jscript => $remove_javascript,
 
                 'IncludeType' => $url_options,
-                'TextCharset' => $li->{charset_value},
-                'HTMLCharset' => $li->{charset_value},
+                'TextCharset' => $self->{ls_obj}->param('charset_value'),
+                'HTMLCharset' => $self->{ls_obj}->param('charset_value'),
 
-                HTMLEncoding => $li->{html_encoding},
-                TextEncoding => $li->{plaintext_encoding},
+                HTMLEncoding => $self->{ls_obj}->param('html_encoding'),
+                TextEncoding => $self->{ls_obj}->param('plaintext_encoding'),
 
                 ( ($proxy)         ? ( Proxy        => $proxy, )         : () ),
                 ( ($login_details) ? ( LoginDetails => $login_details, ) : () ),
@@ -927,7 +816,7 @@ sub send_url_email {
                     $t = html_to_plaintext( { -str => $q->param('html_message_body') } );
                 }
             }
-            
+
             return undef
               if $self->redirect_tag_check( $t, $root_login ) eq undef;
 
@@ -1017,7 +906,7 @@ sub send_url_email {
                     $q->param( -name => 'archive_message', -value => 0 );
                 }
             }
-            my $archive_m = $li->{archive_messages} || 0;
+            my $archive_m = $self->{ls_obj}->param('archive_messages') || 0;
             if (   $q->param('archive_message') == 1
                 || $q->param('archive_message') == 0 )
             {
@@ -1044,7 +933,7 @@ sub send_url_email {
                 $mh = DADA::Mail::Send->new(
                     {
                         -list   => $self->{list},
-                        -ls_obj => $ls,
+                        -ls_obj => $self->{ls_obj},
                     }
                 );
 
@@ -1106,7 +995,7 @@ sub send_url_email {
                     %mailing = ( %mailing, $mh->_make_general_headers, $mh->list_headers );
 
                     $mailing{'Message-ID'} =
-                      '<' . $message_id . '.' . $ran_number . '.' . $li->{list_owner_email} . '>';
+                      '<' . $message_id . '.' . $ran_number . '.' . $self->{ls_obj}->param('list_owner_email') . '>';
                     $mh->saved_message( $mh->_massaged_for_archive( \%mailing ) );
 
                 }
@@ -1134,10 +1023,8 @@ sub send_url_email {
                           . $q->param('draft_role') );
                 }
                 else {
-                    require DADA::MailingList::MessageDrafts;
-                    my $d = DADA::MailingList::MessageDrafts->new( { -list => $self->{list} } );
-                    if ( $d->enabled ) {
-                        $d->remove($draft_id);
+                    if ( $self->{md_obj}->enabled ) {
+                        $self->{md_obj}->remove($draft_id);
                     }
 
                     my $uri;
@@ -1163,6 +1050,88 @@ sub send_url_email {
         }
     }
 }
+
+sub find_draft_id {
+    
+    my $self   = shift; 
+    my ($args) = @_; 
+
+    my $q                  = $args->{-cgi_obj};    
+    my $restore_from_draft = $q->param('restore_from_draft') || 'true';
+    
+    my $draft_id           = undef;
+    
+    # Get $draft_id based on if an id is passed, and role: 
+    
+    if ( $self->{md_obj}->enabled ) {
+        # $restore_from_draft defaults to, "true" if no param is passed.
+        if (   $restore_from_draft ne 'true'
+            && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => $args->{-role} } ) )
+        {
+            $draft_id = undef;
+        }
+        elsif ($restore_from_draft eq 'true'
+            && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'draft' } )
+            && $args->{-role} eq 'draft' )
+        {    # so, only drafts (not stationary),
+            if ( defined( $q->param('draft_id') ) ) {
+                $draft_id = $q->param('draft_id');
+            }
+            else {
+                $draft_id = $self->{md_obj}->latest_draft_id( { -screen => $args->{-screen}, -role => 'draft' } );
+            }
+        }
+        elsif ($restore_from_draft eq 'true'
+            && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'stationary' } )
+            && $args->{-role} eq 'stationary' )
+        {
+            if ( defined( $q->param('draft_id') ) ) {
+                $draft_id = $q->param('draft_id');
+            }
+            else {
+                # $draft_id = $self->{md_obj}->latest_draft_id( { -screen => 'send_email', -role => 'draft' } );
+                # we don't want to load up the most recent stationary, since that's not how stationary... work.
+            }
+        }
+        elsif ($restore_from_draft eq 'true'
+            && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'schedule' } )
+            && $args->{-role} eq 'schedule' )
+        {
+            if ( defined( $q->param('draft_id') ) ) {
+                $draft_id = $q->param('draft_id');
+            }
+            else {
+                # we don't want to load up the most recent schedule, since that's not how schedules... work.
+            }
+        }
+    }
+    #/ Get $draft_id based on if an id is passed, and role: 
+    return $draft_id; 
+
+}
+
+sub ses_params {
+
+    my $self = shift;
+    my ($args) = @_;
+
+    my $ses_params = {};
+    if (
+        $self->{ls_obj}->param('sending_method') eq 'amazon_ses'
+        || (   $self->{ls_obj}->param('sending_method') eq 'smtp'
+            && $self->{ls_obj}->param('smtp_server') =~ m/amazonaws\.com/ )
+      )
+    {
+        $ses_params->{using_ses} = 1;
+        require DADA::App::AmazonSES;
+        my $ses = DADA::App::AmazonSES->new;
+        $ses_params->{list_owner_ses_verified} = $ses->sender_verified( $self->{ls_obj}->param('list_owner_email') );
+        $ses_params->{list_admin_ses_verified} = $ses->sender_verified( $self->{ls_obj}->param('admin_email') );
+        $ses_params->{discussion_pop_ses_verified} =
+          $ses->sender_verified( $self->{ls_obj}->param('discussion_pop_email') );
+    }
+}
+
 
 sub wait_for_it {
     my $self       = shift;
@@ -1205,15 +1174,13 @@ sub save_as_draft {
         $args->{-json} = 0;
     }
 
-    require DADA::MailingList::MessageDrafts;
-    my $d = DADA::MailingList::MessageDrafts->new( { -list => $self->{list} } );
 
-    return unless $d->enabled;
+    return unless $self->{md_obj}->enabled;
 
     my $draft_id   = $q->param('draft_id')   || undef;
     my $draft_role = $q->param('draft_role') || undef;
 
-    my $saved_draft_id = $d->save(
+    my $saved_draft_id = $self->{md_obj}->save(
         {
             -cgi_obj => $q,
             -id      => $draft_id,
@@ -1222,7 +1189,6 @@ sub save_as_draft {
         }
     );
     warn '$saved_draft_id: ' . $saved_draft_id; 
-
 
     if ( $args->{-json} == 1 ) {
         require JSON;
@@ -1595,14 +1561,11 @@ sub q_obj_from_draft {
         }
     }
 
-    require DADA::MailingList::MessageDrafts;
-    my $d = DADA::MailingList::MessageDrafts->new( { -list => $self->{list} } );
-
     return $args->{-str}
-      unless ( $d->enabled );
+      unless ( $self->{md_obj}->enabled );
 
     if (
-        $d->has_draft(
+        $self->{md_obj}->has_draft(
             {
                 -screen => $args->{-screen},
                 -role   => $args->{-role},
@@ -1612,7 +1575,7 @@ sub q_obj_from_draft {
     {
         # warn 'has draft';
 
-        my $q_draft = $d->fetch(
+        my $q_draft = $self->{md_obj}->fetch(
             {
                 -id     => $args->{-draft_id},
                 -screen => $args->{-screen},

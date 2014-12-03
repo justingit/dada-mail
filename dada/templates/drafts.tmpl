@@ -1,6 +1,6 @@
 <!-- begin drafts.tmpl -->
 
-<!-- tmpl_set name="title" value="Mass Mailing &#187; Drafts and Stationary" -->
+<!-- tmpl_set name="title" value="Mass Mailing &#187; Drafts/Stationary/Schedules" -->
 
 <div id="screentitle"> 
 	<div id="screentitlepadding">
@@ -335,6 +335,9 @@
                     <td> 
                         schedule_localtime
                     </td>
+                    <td> 
+                        Activated?
+                    </td>
                     
         			<td>
         				<p>
@@ -387,6 +390,12 @@
         			<td>
         			    <!-- tmpl_var schedule_localtime -->
         			</td>
+        			<td>
+        			    <!-- tmpl_if schedule_activated -->
+        			        X
+        			    <!-- /tmpl_if -->
+        			</td>
+
 
         			<td>
         				<p>

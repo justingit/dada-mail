@@ -452,14 +452,15 @@ sub draft_index {
         my $q = $self->decode_draft( $hashref->{draft} );
         
         my $params = {
-            id                      => $hashref->{id},
-            list                    => $hashref->{list},
-            created_timestamp       => $hashref->{created_timestamp},
-            last_modified_timestamp => $hashref->{last_modified_timestamp},
-            screen                  => $hashref->{screen},
-            role                    => $hashref->{role},
-            Subject                 => $q->param('Subject'),
-            schedule_datetime       => $q->param('schedule_datetime'), 
+            id                       => $hashref->{id},
+            list                     => $hashref->{list},
+            created_timestamp        => $hashref->{created_timestamp},
+            last_modified_timestamp  => $hashref->{last_modified_timestamp},
+            screen                   => $hashref->{screen},
+            role                     => $hashref->{role},
+            Subject                  => $q->param('Subject'),
+            schedule_datetime        => $q->param('schedule_datetime'), 
+            schedule_activated       => $q->param('schedule_activated'), 
         };
         
         if($args->{-role} eq 'schedule' && length($params->{schedule_datetime}) > 0){ 
@@ -543,16 +544,16 @@ sub params_to_save {
         html_message_body => 1,
         text_message_body => 1,
 
-        archive_message     => 1,
-        archive_no_send     => 1,
-        back_date           => 1,
-        backdate_datetime   => 1, 
-        test_recipient      => 1,
+        archive_message       => 1,
+        archive_no_send       => 1,
+        back_date             => 1,
+        backdate_datetime     => 1, 
+        test_recipient        => 1,
         
-        Subject             => 1,
+        Subject               => 1,
         
-        scheduled_mailing   => 1, 
-        schedule_datetime   => 1, 
+        schedule_activated   => 1, 
+        schedule_datetime     => 1, 
 
     };
 

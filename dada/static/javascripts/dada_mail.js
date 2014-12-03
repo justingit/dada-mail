@@ -150,12 +150,7 @@ $(document).ready(function() {
 			}
 		});
 		
-		$("body").on("click", "#scheduled_mailing", function(event) {
-			
-		}); 
-		
-		
-		
+		//$("body").on("click", "#scheduled_mailing", function(event) {}); 
 		
 		$("body").on("submit", "#mass_mailing", function(event) {
 			event.preventDefault();
@@ -178,7 +173,6 @@ $(document).ready(function() {
 					if($("#save_draft_button").val() == 'Save as: Draft') { 
 						$("#save_draft_button").val('Save Draft')
 					}
-					
 				}
 				$("#button_action_notice").html('&nbsp;');	
 				if(ds === true) { 
@@ -199,10 +193,13 @@ $(document).ready(function() {
 							}
 						});
 					}
-					if($("#draft_role").val() == 'stationary') {
+					else if($("#draft_role").val() == 'stationary') {
 						window.location.replace($("#s_program_url").val() + '?f=' + $("#f").val() + '&draft_id=' + $("#draft_id").val() + '&restore_from_draft=true&draft_role=stationary&done=1');
-
 					}
+					else if($("#draft_role").val() == 'schedule') {
+						window.location.replace($("#s_program_url").val() + '?f=' + $("#f").val() + '&draft_id=' + $("#draft_id").val() + '&restore_from_draft=true&draft_role=schedule&done=1');
+					}
+
 				}
 				else if(ds === false) { 
 					//alert('Error Saving Draft: '); 
@@ -279,14 +276,14 @@ $(document).ready(function() {
 		});
 		
 		$("body").on("click", ".schedulemassmailing", function(event) {
-			alert('click!');
+			alert('schedulemassmailing'); 
+/*
 			$("#button_action_notice").html('Working...');
 			$("#draft_role").val('schedule');
 			save_draft(false);
 			window.location.replace($("#s_program_url").val() + '?f=' + $("#f").val() + '&draft_id=' + $("#draft_id").val() + '&restore_from_draft=true&draft_role=schedule&done=1');
+*/
 		}); 
-		
-		
 		
 		$("body").on("click", ".ChangeMassMailingButtonLabel", function(event) {
 			ChangeMassMailingButtonLabel();
@@ -3191,9 +3188,8 @@ function preview_message_receivers() {
 }
 
 function ChangeMassMailingButtonLabel() {
-	
+/*	
 	if($("#scheduled_mailing").prop("checked")){ 
-		
 		// This should work, as you can't set this, while as a stationary. 
 		$('#submit_mass_mailing').hide('fade');
 		$('#save_draft_button').val('Save Schedule');
@@ -3202,7 +3198,7 @@ function ChangeMassMailingButtonLabel() {
 		$('#save_as_stationary_button').hide('fade');
 	}
 	else { 
-		
+*/		
 		$('#submit_mass_mailing').show();
 		$('#save_draft_button').show();
 		$('#save_as_stationary_button').show();
@@ -3218,7 +3214,10 @@ function ChangeMassMailingButtonLabel() {
 		} else {
 			$("#submit_mass_mailing").prop('value', $("#default_mass_mailing_button_label").val());
 		}
+/*
 	}
+*/
+
 }
 
 

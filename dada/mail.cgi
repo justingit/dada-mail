@@ -2108,10 +2108,23 @@ sub _formatted_runtime {
 
 sub send_url_email {
 
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'send_url_email'
+    );
+    $list = $admin_list; 
+    
     require DADA::App::MassSend;
     my $ms = DADA::App::MassSend->new({-list => $list});
-    $ms->send_url_email( { -cgi_obj => $q, } );
+    $ms->send_url_email( 
+        { 
+            -cgi_obj    => $q, 
+            -root_login => $root_login,
+        } 
+    );
 }
+
+
 
 sub list_invite {
 
