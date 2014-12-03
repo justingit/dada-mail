@@ -8,13 +8,13 @@ use lib qw(
 use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;
 use DADA::Template::HTML;
+use DADA::MailingList::Archives; 
 use DADA::MailingList::Settings;
 use DADA::MailingList::Subscribers;
 use DADA::MailingList::MessageDrafts;
 
 use Carp qw(carp croak);
-
-# $Carp::Verbose = 1;
+ $Carp::Verbose = 1;
 
 use strict;
 use vars qw($AUTOLOAD);
@@ -85,7 +85,9 @@ sub _init {
 }
 
 sub send_email {
-
+    warn 'send_email'
+        if $t; 
+        
     my $self       = shift;
     my ($args)     = @_;
     my $q          = $args->{-cgi_obj};
@@ -140,15 +142,15 @@ sub send_email {
         my ( $num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued ) =
           $self->mass_mailout_info;
 
-        my $draft_id = $self->find_draft_id(
+        my $draft_id = $self->find_draft_id({
             -screen  => 'send_email',
             -role    => $draft_role,
             -cgi_obj => $q, 
-        );
+        });
         
         require            DADA::Template::Widgets;
         my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars( $self->{list} );
-
+        my $scrn = 'hello!'; 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'send_email_screen.tmpl',
@@ -161,13 +163,11 @@ sub send_email {
                 -vars => {
                     screen => 'send_email',
                     flavor => $flavor,
-
                     draft_id           => $draft_id,
                     draft_enabled      => $self->{md_obj}->enabled,
                     draft_role         => $draft_role,
                     restore_from_draft => $restore_from_draft,
                     done               => $done,
-
                     test_sent                  => $test_sent,
                     test_recipient             => $test_recipient,
                     priority_popup_menu        => DADA::Template::Widgets::priority_popup_menu($li),
@@ -175,19 +175,16 @@ sub send_email {
                     fields                     => $fields,
                     undotted_fields            => $undotted_fields,
                     can_have_subscriber_fields => $self->{lh_obj}->can_have_subscriber_fields,
-
                     # I don't really have this right now...
                     MAILOUT_AT_ONCE_LIMIT => $DADA::Config::MAILOUT_AT_ONCE_LIMIT,
                     kcfinder_url          => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{url},
                     kcfinder_upload_dir   => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir},
                     kcfinder_upload_url   => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_url},
-
                     core5_filemanager_url => $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{url},
                     core5_filemanager_upload_dir =>
                       $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{upload_dir},
                     core5_filemanager_upload_url =>
                       $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{upload_url},
-
                     mailout_will_be_queued => $mailout_will_be_queued,
                     num_list_mailouts      => $num_list_mailouts,
                     num_total_mailouts     => $num_total_mailouts,
@@ -204,7 +201,6 @@ sub send_email {
                 -list_settings_vars_param => { -dot_it => 1, },
             }
         );
-
         if ( $restore_from_draft eq 'true' ) {
             $scrn = $self->fill_in_draft_msg(
                 {
@@ -217,6 +213,7 @@ sub send_email {
                 }
             );
         }
+        e_print($scrn); 
     }
     elsif ( $process eq 'save_as_draft' ) {
         # Utterly out of place
@@ -246,6 +243,7 @@ sub send_email {
                 -draft_id   => $draft_id,
                 -screen     => 'send_email',
                 -role       => $draft_role,
+                -process    => $process, 
             }
         );
         if($status == 0){ 
@@ -256,6 +254,9 @@ sub send_email {
         }
 
         if ( $process =~ m/test/i ) {
+            warn 'test sending'
+                if $t; 
+                
             $self->wait_for_it($message_id);
             print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL . '?f='
                   . $flavor
@@ -313,7 +314,7 @@ sub construct_and_send {
 
     if($t == 1){ 
         require Data::Dumper; 
-        warn 'args:' . Data::Dumper::Dumper($args); 
+        #warn 'args:' . Data::Dumper::Dumper($args); 
     }
 
     my $draft_q    = $self->q_obj_from_draft($args);
@@ -328,11 +329,15 @@ sub construct_and_send {
     if($args->{-screen} eq 'send_email'){ 
         ($status, $errors, $entity, $fm) = $self->construct_from_text($draft_q);
     }
-    elsif(1 == 1){ 
-        ($status, $errors, $entity, $fm) = $self->construct_from_text($draft_q);       
+    elsif($args->{-screen} eq 'send_url_email'){ 
+        ($status, $errors, $entity, $fm) = $self->construct_from_url($draft_q);       
     }
     else { 
         croak "unknown screen: " . $args->{-screen}; 
+    }
+    
+    if($status == 0 && $t == 1){ 
+        warn '$errors: ' . $errors; 
     }
     if($status == 0){ 
         return (0, $errors, undef); 
@@ -364,6 +369,9 @@ sub construct_and_send {
     }
 
     $mh->test( $self->test );
+    
+    warn q{$draft_q->param('test_recipient')} . $draft_q->param('test_recipient')
+        if $t; 
 
     my %mailing = ( $mh->return_headers($final_header), Body => $final_body, );
 
@@ -372,7 +380,7 @@ sub construct_and_send {
 
     if ( $draft_q->param('archive_no_send') != 1 ) {
         my @alternative_list = ();
-        @alternative_list = $draft_q->param('alternative_list');
+           @alternative_list = $draft_q->param('alternative_list');
         $mh->mass_test_recipient($draft_q->param('test_recipient')); 
         my $multi_list_send_no_dupes = $draft_q->param('multi_list_send_no_dupes')
           || 0;
@@ -427,7 +435,9 @@ sub construct_and_send {
 
 
 sub construct_from_text {
-
+    warn 'construct_from_text'
+        if $t; 
+        
     my $self    = shift; 
     my $draft_q = shift; 
     
@@ -865,11 +875,11 @@ sub send_url_email {
     if ( !$process ) {
         my ( $num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued ) =
           $self->mass_mailout_info;
-          my $draft_id = $self->find_draft_id(
+          my $draft_id = $self->find_draft_id({
             -screen  => 'send_email',
             -role    => $draft_role,
             -cgi_obj => $q,
-        );
+        });
 
         require DADA::Template::Widgets;
         my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars( $self->{list} );
@@ -900,7 +910,7 @@ sub send_url_email {
                     mime_lite_html_error       => $mime_lite_html_error,
                     can_use_lwp_simple         => $can_use_lwp_simple,
                     lwp_simple_error           => $lwp_simple_error,
-                    can_display_attachments    => $self->{aj}->can_display_attachments,
+                    can_display_attachments    => $self->{ah_obj}->can_display_attachments,
                     fields                     => $fields,
                     undotted_fields            => $undotted_fields,
                     can_have_subscriber_fields => $self->{lh_obj}->can_have_subscriber_fields,
@@ -966,6 +976,7 @@ sub send_url_email {
                 -draft_id   => $draft_id,
                 -screen     => 'send_url_email',
                 -role       => $draft_role,
+                -process    => $process, 
             }
         );
         
@@ -1085,10 +1096,16 @@ sub ses_params {
         $ses_params->{discussion_pop_ses_verified} =
           $ses->sender_verified( $self->{ls_obj}->param('discussion_pop_email') );
     }
+    
+    return $ses_params;
 }
 
 
 sub wait_for_it {
+    
+    warn 'wait_for_it'
+        if $t; 
+        
     my $self       = shift;
     my $message_id = shift;
 

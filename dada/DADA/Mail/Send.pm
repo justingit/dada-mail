@@ -3290,20 +3290,28 @@ sub _log_sub_count {
 
 sub mass_test_recipient { 
 
+    warn 'mass_test_recipient'
+        if $t; 
+    
     my $self           = shift; 
     my $test_recipient = shift; 
         
+    warn '$test_recipient ' . $test_recipient
+     if $t; 
+    
     if(! $test_recipient){ 
         
         if(! $self->{test_recipient}){ 
         
             return $self->{ls}->param('list_owner_email');
             
-            # warn "sending over the list owner as the test recipient..";
+             warn "sending over the list owner as the test recipient.."
+                if $t; 
         
         }else{ 
         
-            #warn "sending over " . $self->{test_recipient};
+            warn "sending over " . $self->{test_recipient}
+                if $t; 
             return $self->{test_recipient}; 
         
         }
@@ -3315,7 +3323,8 @@ sub mass_test_recipient {
             $self->{test_recipient} = $test_recipient;
             
         }else{
-            # warn "Test Recipient, '$test_recipient' is not a valid email address!";
+             warn "Test Recipient, '$test_recipient' is not a valid email address!"
+                if $t; 
        }
     }
 }

@@ -13,7 +13,7 @@ my $email_id = $DADA::Config::SQL_PARAMS{id_column} || 'email_id';
 
 $DADA::Config::SQL_PARAMS{id_column} ||= 'email_id';
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_MailingList};
 
 use Fcntl qw(
   O_WRONLY
@@ -1344,14 +1344,23 @@ sub create_mass_sending_file {
     my $csv   = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
     my $total = 0;
 
+    warn '$args{-Test_Recipient} ' . $args{-Test_Recipient}
+            if $t; 
+    warn '$args{-Bulk_Test}' . $args{-Bulk_Test}
+        if $t; 
+            
 	if($have_first_recipient == 1){ 
 	    my $first_email = $self->{ls}->param('list_owner_email');
 	    if ( 
-			$args{'-Bulk_Test'} == 1 
+			$args{-Bulk_Test} == 1 
 		 && $args{-Test_Recipient} 
 		) {
 	        $first_email = $args{-Test_Recipient};
 	    }
+	    
+	    warn '$first_email ' . $first_email
+            if $t; 
+            
 	    my ( $lo_e_name, $lo_e_domain ) = split( '@', $first_email );
 
 	    my @lo  = (
