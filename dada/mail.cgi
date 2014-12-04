@@ -589,6 +589,7 @@ sub run {
         'draft_saved_notification'                    => \&draft_saved_notification,
         'drafts'                                      => \&drafts,
         'delete_draft'                                => \&delete_draft,
+        'run_schedules'                               => \&run_schedules, 
         'create_from_stationary'                      => \&create_from_stationary, 
         'message_body_help'                           => \&message_body_help,
         'url_message_body_help'                       => \&url_message_body_help,
@@ -1021,9 +1022,21 @@ sub admin_menu_drafts_notification {
             if ( $d->enabled ) {
                 my $num_drafts     = $d->count({-role => 'draft'});
                 my $num_stationary = $d->count({-role => 'stationary'});
+                my $num_shedules   = $d->count({-role => 'schedule'});
                 
-                if ( $num_drafts > 0 || $num_stationary > 0) {
-                    e_print( '(' . commify($num_drafts) . ','  . commify($num_stationary) . ')' );
+                if ( $num_drafts > 0 
+                  || $num_stationary > 0 
+                  || $num_shedules > 0
+                ) {
+                    e_print( 
+                        '(' . 
+                        commify($num_drafts) . 
+                        ','  . 
+                        commify($num_stationary) .  
+                        ','  . 
+                        commify($num_shedules) . 
+                        ')' 
+                    );
                 }
             }
         }
@@ -1389,6 +1402,21 @@ sub delete_draft {
     $d->remove($id);
     print $q->redirect( -url => $DADA::Config::S_PROGRAM_URL . '?f=drafts&delete_draft=1' );
 
+}
+
+
+sub run_schedules { 
+    
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+    );
+    $list = $admin_list;
+    require DADA::MailingList::Schedules; 
+    my $s = DADA::MailingList::Schedules->new({-list => $list});
+    print $q->header(); 
+    print '<pre>'; 
+    print $s->run_schedules; 
+    
 }
 
 
@@ -10961,7 +10989,7 @@ sub restore_lists {
 
         require DADA::MailingList::Archives;
 
-        require DADA::MailingList::Schedules;
+        require DADA::MailingList::SchedulesDeprecated;
 
         # No SQL veresion, so don't worry about handing over the dbi handle...
 
@@ -10996,7 +11024,7 @@ sub restore_lists {
                 if (   $q->param( 'restore_' . $r_list . '_schedules' )
                     && $q->param( 'restore_' . $r_list . '_schedules' ) == 1 )
                 {
-                    my $mss = DADA::MailingList::Schedules->new( { -list => $r_list, -ignore_open_db_error => 1 } );
+                    my $mss = DADA::MailingList::SchedulesDeprecated->new( { -list => $r_list, -ignore_open_db_error => 1 } );
                     $mss->{ignore_open_db_error} = 1;
                     $report .= $mss->restoreFromFile( $q->param( 'schedules_' . $r_list . '_version' ) );
                 }
@@ -11021,7 +11049,7 @@ sub restore_lists {
                   DADA::MailingList::Archives->new( { -list => $l, -ignore_open_db_error => 1 } )
                   ;    #yeah, it's diff from MailingList::Settings - I'm stupid.
 
-                my $mss = DADA::MailingList::Schedules->new( { -list => $l, -ignore_open_db_error => 1 } );
+                my $mss = DADA::MailingList::SchedulesDeprecated->new( { -list => $l, -ignore_open_db_error => 1 } );
 
                 $backup_hist->{$l}->{settings} = $ls->backupDirs
                   if $ls->uses_backupDirs;

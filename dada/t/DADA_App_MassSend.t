@@ -58,8 +58,8 @@ $q->param('text_message_body',     'This is the text message body!');
 
 $ms->send_email(
 	{
-		-cgi_obj => $q, 
-		-list    => $list, 
+        -cgi_obj    => $q,
+        -root_login => 1, # I mean, sure. 
 	}
 ); 
 

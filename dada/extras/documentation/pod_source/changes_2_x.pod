@@ -3368,7 +3368,7 @@ Given the above setup, mailing list message will be sent after about a ten minut
 
 Note! That scheduled mailings created via Dada Mail will remove themselves once they're done sending. This is normal. 
 
-I was going to make a whole, complicated system to queue up messages, and send at appropriate times, but I realized I already had a whole complicated system that sort of does what I need in DADA::MailingList::Schedules 
+I was going to make a whole, complicated system to queue up messages, and send at appropriate times, but I realized I already had a whole complicated system that sort of does what I need in DADA::MailingList::SchedulesDeprecated 
 
 Note! that this option doesn't at all make Beatitude obsolete - you can't edit this schedule, once you've made it, nor, can you view it, set the time - yadda yadda. It's sort of a specific schedule, for a specific task. 
 

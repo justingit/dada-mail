@@ -96,10 +96,10 @@ SKIP: {
 
 
 BEGIN{ use_ok('DADA::MailingList::Archives'); }
-BEGIN{ use_ok('DADA::MailingList::Schedules::MLDb'); }
+BEGIN{ use_ok('DADA::MailingList::SchedulesDeprecated::MLDb'); }
 
 
-BEGIN{ use_ok('DADA::MailingList::Schedules'); }
+BEGIN{ use_ok('DADA::MailingList::SchedulesDeprecated'); }
 
 
 SKIP: {

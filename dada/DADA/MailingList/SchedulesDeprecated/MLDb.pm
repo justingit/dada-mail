@@ -1,4 +1,4 @@
-package DADA::MailingList::Schedules::MLDb; 
+package DADA::MailingList::SchedulesDeprecated::MLDb; 
 
 use base "DADA::App::GenericDBFile";
 
@@ -40,11 +40,11 @@ use DADA::App::Guts;  # For now, my dear.
 
 =pod
 
-=head1 NAME DADA::MailingList::Schedules::MLDb
+=head1 NAME DADA::MailingList::SchedulesDeprecated::MLDb
 
 =head1 SYNOPSIS
 
- my $mss = DADA::MailingList::Schedules->new({-list => 'listshortname'}); 
+ my $mss = DADA::MailingList::SchedulesDeprecated->new({-list => 'listshortname'}); 
 
 =head1 Description
 
@@ -56,7 +56,7 @@ MLDBM module to save complex data structures to disk.
 
 =head2 new
 
-  my $mss = DADA::MailingList::Schedules->new({-list => 'listshortname'}); 
+  my $mss = DADA::MailingList::SchedulesDeprecated->new({-list => 'listshortname'}); 
 
 B<-List> has to be a valid listshortname.
 

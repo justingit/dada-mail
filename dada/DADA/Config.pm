@@ -1694,6 +1694,9 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
     
     public_api_key   =>  undef, 
     private_api_key  => undef, 
+    
+    
+    schedule_last_checked_time => undef, 
 
 ) unless keys %LIST_SETUP_DEFAULTS;
 

@@ -14,10 +14,14 @@
 	 	    Send a Webpage
 	 	    <!-- tmpl_if draft_id --> 
 	 	        &#187; 
-	 	        <!-- tmpl_if expr="(draft_role ne 'stationary')" --> 
+	 	        <!-- tmpl_if expr="(draft_role eq 'draft')" --> 
 	 	             Draft
-	 	        <!-- tmpl_else -->
+	 	        <!-- /tmpl_if -->
+	 	        <!-- tmpl_if expr="(draft_role eq 'stationary')" --> 
 	 	            Stationary
+	 	        <!-- /tmpl_if -->
+	 	        <!-- tmpl_if expr="(draft_role eq 'schedule')" --> 
+	 	            Schedule
 	 	        <!-- /tmpl_if -->
 	 	    <!-- /tmpl_if -->
 	</div>
@@ -30,6 +34,14 @@
 
 	<div id="entire_form">
 	  <div id="form_widgets">
+	      
+	      <!-- tmpl_if expr="(draft_role eq 'schedule')" -->
+              <fieldset>
+                  <legend>Scheduling Options</legend>
+              <!-- tmpl_include send_email_schedule_options_widget.tmpl -->
+              </fieldset>
+          <!-- /tmpl_if -->
+          
 
 	<!-- tmpl_include test_sent_notice_widget.tmpl --> 
 	<!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 

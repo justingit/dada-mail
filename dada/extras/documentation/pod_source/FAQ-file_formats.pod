@@ -380,11 +380,11 @@ See Also:
 
 http://dadamailproject.com/support/documentation/scheduled_mailings.pl.html
 
-=item * DADA::MailingList::Schedules
+=item * DADA::MailingList::SchedulesDeprecated
 
 http:///dadamailproject.com/support/documentation/MailingList_Schedules.pm.html
 
-=item *  DADA::MailingList::Schedules::MLDb
+=item *  DADA::MailingList::SchedulesDeprecated::MLDb
 
 http://dadamailproject.com/support/documentation/MailingList_Schedules_MLDb.pm.html
 

@@ -101,7 +101,7 @@ This namespace maps out various major components that make up a, "Mailing List" 
 
 C<DADA::MailingList::Archives> handles adding/editing/removing archived messages - messages sent by a mailing list, that are later saved. It also handles searching and various HTML formatting, including RSS/atom feeds. The one module is very monolithic and is due for being chopped up into much more manageable pieces. 
 
-=head2 DADA::MailingList::Schedules
+=head2 DADA::MailingList::SchedulesDeprecated
 
 Mailing List schedules are messages that are saved to be sent in the future. This module takes care of adding/editing/removing them, as well as the scheduling part of actually sending them out. 
 

@@ -12,10 +12,14 @@
 	 	    Send a Message
 	 	    <!-- tmpl_if draft_id --> 
 	 	        &#187; 
-	 	        <!-- tmpl_if expr="(draft_role ne 'stationary')" --> 
+	 	        <!-- tmpl_if expr="(draft_role eq 'draft')" --> 
 	 	             Draft
-	 	        <!-- tmpl_else -->
+	 	        <!-- /tmpl_if -->
+	 	        <!-- tmpl_if expr="(draft_role eq 'stationary')" --> 
 	 	            Stationary
+	 	        <!-- /tmpl_if -->
+	 	        <!-- tmpl_if expr="(draft_role eq 'schedule')" --> 
+	 	            Schedule
 	 	        <!-- /tmpl_if -->
 	 	    <!-- /tmpl_if -->
 	</div>

@@ -17,20 +17,20 @@ use DADA::Config;
 use DADA::App::Guts; 
 use DADA::MailingList::Subscribers; 
 use DADA::MailingList::Settings; 
-use DADA::MailingList::Schedules; 
+use DADA::MailingList::SchedulesDeprecated; 
 use CGI; 
 
 my $list = dada_test_config::create_test_list;
 
-my $mss = DADA::MailingList::Schedules->new(
+my $mss = DADA::MailingList::SchedulesDeprecated->new(
 			{ 
 				-list => $list,
 			}
 			); 
 
-ok($mss->isa('DADA::MailingList::Schedules')); 
+ok($mss->isa('DADA::MailingList::SchedulesDeprecated')); 
 
-my %schema = DADA::MailingList::Schedules::schedule_schema();
+my %schema = DADA::MailingList::SchedulesDeprecated::schedule_schema();
 
 # I'm guessing if we have this, we have all the rest too; 
 ok($schema{message_name} eq 'scheduled mailing');

@@ -1,5 +1,4 @@
-package DADA::MailingList::MessageDrafts::baseSQL;
-use strict;
+    use strict;
 
 use lib qw(
   ../../../
@@ -63,10 +62,7 @@ sub id_exists {
     if ( !defined($id) || $id eq '' ) {
         return 0;
     }
-    my $query =
-        'SELECT COUNT(*) FROM '
-      . $self->{sql_params}->{message_drafts_table}
-      . ' WHERE list = ? AND id = ?';
+    my $query = 'SELECT COUNT(*) FROM ' . $self->{sql_params}->{message_drafts_table} . ' WHERE list = ? AND id = ?';
 
     warn 'QUERY: ' . $query
       if $t;
@@ -106,8 +102,7 @@ sub save {
     }
 
     if ( !exists( $args->{-screen} ) ) {
-        croak
-          "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
+        croak "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
     }
     if ( !exists( $args->{-role} ) ) {
         $args->{-role} = 'draft';
@@ -119,9 +114,7 @@ sub save {
 
     #	warn '$id:' . $id;
 
-    my $draft =
-      $self->stringify_cgi_params(
-        { -cgi_obj => $args->{-cgi_obj}, -screen => $args->{-screen} } );
+    my $draft = $self->stringify_cgi_params( { -cgi_obj => $args->{-cgi_obj}, -screen => $args->{-screen} } );
 
     if ( !defined($id) ) {
 
@@ -154,8 +147,7 @@ sub save {
         }
         else {
             my $last_insert_id =
-              $self->{dbh}->last_insert_id( undef, undef,
-                $self->{sql_params}->{message_drafts_table}, undef );
+              $self->{dbh}->last_insert_id( undef, undef, $self->{sql_params}->{message_drafts_table}, undef );
             warn '$last_insert_id:' . $last_insert_id
               if $t;
 
@@ -180,8 +172,7 @@ sub save {
           if $t;
 
         my $sth = $self->{dbh}->prepare($query);
-        $sth->execute( $args->{-screen}, $args->{-role}, $draft,
-            $self->{list}, $args->{-id} )
+        $sth->execute( $args->{-screen}, $args->{-role}, $draft, $self->{list}, $args->{-id} )
           or croak "cannot do statement '$query'! $DBI::errstr\n";
         $sth->finish;
         return $id;
@@ -200,8 +191,7 @@ sub has_draft {
         $args->{-role} = 'draft';
     }
     if ( !exists( $args->{-screen} ) ) {
-        croak
-          "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
+        croak "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
     }
 
     my $query =
@@ -211,18 +201,18 @@ sub has_draft {
 
     warn 'QUERY: ' . $query
       if $t;
-    
-#    use Data::Dumper; 
-#    warn 'params' . Dumper([$self->{list}, $args->{-screen}, $args->{-role}]); 
-    
+
+    #    use Data::Dumper;
+    #    warn 'params' . Dumper([$self->{list}, $args->{-screen}, $args->{-role}]);
+
     my $sth = $self->{dbh}->prepare($query);
     $sth->execute( $self->{list}, $args->{-screen}, $args->{-role} )
       or croak "cannot do statement '$query'! $DBI::errstr\n";
 
     my $count = $sth->fetchrow_array;
 
-#    warn '$count ' . $count; 
-    
+    #    warn '$count ' . $count;
+
     $sth->finish;
 
     if ( $count eq undef ) {
@@ -241,8 +231,7 @@ sub latest_draft_id {
         $args->{-role} = 'draft';
     }
     if ( !exists( $args->{-screen} ) ) {
-        croak
-          "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
+        croak "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
     }
 
     my $query =
@@ -273,8 +262,7 @@ sub fetch {
         $args->{-role} = 'draft';
     }
     if ( !exists( $args->{-screen} ) ) {
-        die
-          "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
+        die "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
     }
     my $id = undef;
     if ( exists( $args->{-id} ) ) {
@@ -309,17 +297,18 @@ sub fetch {
     my $saved = '';
 
     if ( !$id ) {
-        #use Data::Dumper; 
-        #warn 'params (no id)' . Dumper([$self->{list}, $args->{-screen}, $args->{-role}]); 
-        
+
+        #use Data::Dumper;
+        #warn 'params (no id)' . Dumper([$self->{list}, $args->{-screen}, $args->{-role}]);
+
         $sth->execute( $self->{list}, $args->{-screen}, $args->{-role} )
           or croak "cannot do statement '$query'! $DBI::errstr\n";
     }
     else {
-     
-        #use Data::Dumper; 
-        #warn 'params (id!)' . Dumper([$self->{list}, $args->{-screen}, $args->{-role}]); 
-        
+
+        #use Data::Dumper;
+        #warn 'params (id!)' . Dumper([$self->{list}, $args->{-screen}, $args->{-role}]);
+
         $sth->execute( $self->{list}, $args->{-screen}, $args->{-role}, $id )
           or croak "cannot do statement '$query'! $DBI::errstr\n";
     }
@@ -334,23 +323,20 @@ sub fetch {
     my $q = $self->decode_draft($saved);
 
     return $q;
-    
+
 }
 
-
-
-
-sub create_from_stationary { 
-    my $self = shift; 
-    my ($args) = @_; 
-    my $q_draft = $self->fetch( 
-        { 
-            -id     => $args->{-id}, 
+sub create_from_stationary {
+    my $self    = shift;
+    my ($args)  = @_;
+    my $q_draft = $self->fetch(
+        {
+            -id     => $args->{-id},
             -screen => $args->{-screen},
             -role   => 'stationary',
-        } 
+        }
     );
-    
+
     my $saved_draft_id = $self->save(
         {
             -cgi_obj => $q_draft,
@@ -358,22 +344,19 @@ sub create_from_stationary {
             -screen  => $args->{-screen},
         }
     );
-    return($saved_draft_id);
+    return ($saved_draft_id);
 }
 
 sub count {
     my $self = shift;
     my ($args) = @_;
-    
+
     if ( !exists( $args->{-role} ) ) {
         $args->{-role} = 'draft';
     }
-    
+
     my @row;
-    my $query =
-        'SELECT COUNT(*) FROM '
-      . $self->{sql_params}->{message_drafts_table}
-      . ' WHERE list = ? AND role = ?';
+    my $query = 'SELECT COUNT(*) FROM ' . $self->{sql_params}->{message_drafts_table} . ' WHERE list = ? AND role = ?';
 
     warn 'QUERY: ' . $query
       if $t;
@@ -391,10 +374,7 @@ sub remove {
         return -1;
     }
 
-    my $query =
-        'DELETE FROM '
-      . $self->{sql_params}->{message_drafts_table}
-      . ' WHERE id = ? AND list = ?';
+    my $query = 'DELETE FROM ' . $self->{sql_params}->{message_drafts_table} . ' WHERE id = ? AND list = ?';
 
     warn 'QUERY: ' . $query
       if $t;
@@ -415,24 +395,23 @@ sub decode_draft {
 }
 
 sub draft_index {
-    my $self   = shift;
-    my ($args) = @_; 
-    
+    my $self = shift;
+    my ($args) = @_;
+
     if ( !exists( $args->{-role} ) ) {
         $args->{-role} = 'draft';
     }
-    
-    
-    my $r    = [];
 
-    my $query; 
-    
+    my $r = [];
+
+    my $query;
+
     $query =
         'SELECT * FROM '
       . $self->{sql_params}->{message_drafts_table}
       . ' WHERE list = ? AND role = ? ORDER BY last_modified_timestamp DESC';
-      
-    if($args->{-role} eq 'draft'){ # a little backwards compat. 
+
+    if ( $args->{-role} eq 'draft' ) {    # a little backwards compat.
         $query =
             'SELECT * FROM '
           . $self->{sql_params}->{message_drafts_table}
@@ -450,26 +429,47 @@ sub draft_index {
 
   FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
         my $q = $self->decode_draft( $hashref->{draft} );
-        
+
         my $params = {
-            id                       => $hashref->{id},
-            list                     => $hashref->{list},
-            created_timestamp        => $hashref->{created_timestamp},
-            last_modified_timestamp  => $hashref->{last_modified_timestamp},
-            screen                   => $hashref->{screen},
-            role                     => $hashref->{role},
-            Subject                  => $q->param('Subject'),
-            schedule_datetime        => $q->param('schedule_datetime'), 
-            schedule_activated       => $q->param('schedule_activated'), 
+            id                      => $hashref->{id},
+            list                    => $hashref->{list},
+            created_timestamp       => $hashref->{created_timestamp},
+            last_modified_timestamp => $hashref->{last_modified_timestamp},
+            screen                  => $hashref->{screen},
+            role                    => $hashref->{role},
+            Subject                 => $q->param('Subject'),
+            schedule_datetime       => $q->param('schedule_datetime'),
+            schedule_activated      => $q->param('schedule_activated'),
         };
-        
-        if($args->{-role} eq 'schedule' && length($params->{schedule_datetime}) > 0){ 
-            $params->{schedule_localtime} = $self->datetime_to_localtime($q->param('schedule_datetime'));
+
+        if (   $args->{-role} eq 'schedule'
+            && length( $params->{schedule_datetime} ) > 0
+            && $params->{schedule_datetime} > 0 )
+        {
+            $params->{schedule_localtime} = $self->datetime_to_localtime( $q->param('schedule_datetime') );
+            $params->{schedule_time}      = $self->datetime_to_ctime(     $q->param('schedule_datetime') );
         }
-        push(@$r, $params);
+        push( @$r, $params );        
     }
     $sth->finish;
+    
+    if($args->{-role} eq 'schedule'){ 
+        $r = $self->sort_by_schedule($r); 
+    }
+    
+    
     return $r;
+}
+
+sub sort_by_schedule { 
+    my $self = shift; 
+    my $r    = shift; 
+    my $s    = []; 
+    
+    foreach my $row (sort { $a->{schedule_datetime} <=> $b->{schedule_datetime} } @$r ) {
+        push(@$s, $row);
+    }
+    return $s; 
 }
 
 sub stringify_cgi_params {
@@ -481,8 +481,7 @@ sub stringify_cgi_params {
         croak "You MUST pass a, '-cgi_obj' parameter!";
     }
     if ( !exists( $args->{-screen} ) ) {
-        die
-          "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
+        die "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
     }
 
     my $q = $args->{-cgi_obj};
@@ -507,8 +506,7 @@ sub remove_unwanted_params {
         croak "You MUST pass a, '-cgi_obj' parameter!";
     }
     if ( !exists( $args->{-screen} ) ) {
-        die
-          "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
+        die "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
     }
 
     require CGI;
@@ -533,8 +531,7 @@ sub params_to_save {
     my ($args) = @_;
 
     if ( !exists( $args->{-screen} ) ) {
-        die
-          "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
+        die "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
     }
 
     my $params = {
@@ -544,16 +541,16 @@ sub params_to_save {
         html_message_body => 1,
         text_message_body => 1,
 
-        archive_message       => 1,
-        archive_no_send       => 1,
-        back_date             => 1,
-        backdate_datetime     => 1, 
-        test_recipient        => 1,
-        
-        Subject               => 1,
-        
-        schedule_activated   => 1, 
-        schedule_datetime     => 1, 
+        archive_message   => 1,
+        archive_no_send   => 1,
+        back_date         => 1,
+        backdate_datetime => 1,
+        test_recipient    => 1,
+
+        Subject => 1,
+
+        schedule_activated => 1,
+        schedule_datetime  => 1,
 
     };
 
@@ -561,18 +558,18 @@ sub params_to_save {
     my $pfm               = DADA::ProfileFieldsManager->new;
     my $subscriber_fields = $pfm->fields;
     foreach (@$subscriber_fields) {
-            $params->{ $_ . '.operator' } = 1;
-            $params->{ $_ . '.value' }    = 1;
-        }  
-        for ('email') { 
-            $params->{ $_ . '.operator' } = 1;
-            $params->{ $_ . '.value' }    = 1;
-        }
-        
-        for ('subscriber.timestamp') { 
-            $params->{ $_ . '.rangestart' } = 1;
-            $params->{ $_ . '.rangeend' }    = 1;
-        }
+        $params->{ $_ . '.operator' } = 1;
+        $params->{ $_ . '.value' }    = 1;
+    }
+    for ('email') {
+        $params->{ $_ . '.operator' } = 1;
+        $params->{ $_ . '.value' }    = 1;
+    }
+
+    for ('subscriber.timestamp') {
+        $params->{ $_ . '.rangestart' } = 1;
+        $params->{ $_ . '.rangeend' }   = 1;
+    }
     if ( $args->{-screen} eq 'send_email' ) {
 
         $params->{attachment1} = 1;
@@ -600,36 +597,36 @@ sub params_to_save {
 
 }
 
-
-
-sub datetime_to_ctime { 
-    my $self     = shift; 
-    my $datetime = shift; 
+sub datetime_to_ctime {
+    my $self     = shift;
+    my $datetime = shift;
     warn '$datetime ' . $datetime
-        if $t; 
+      if $t;
     require Time::Local;
     my ( $date, $time ) = split( ' ', $datetime );
     my ( $year, $month,  $day )    = split( '-', $date );
     my ( $hour, $minute, $second ) = split( ':', $time );
     $second = int( $second - 0.5 );    # no idea.
     my $time = Time::Local::timelocal( $second, $minute, $hour, $day, $month - 1, $year );
-    
-    return $time; 
+
+    return $time;
 }
 
-sub datetime_to_localtime { 
-    my $self     = shift; 
-    my $datetime = shift; 
+sub datetime_to_localtime {
+    my $self     = shift;
+    my $datetime = shift;
 
-    warn '$datetime ' . $datetime 
-        if $t; 
-
-    my $time = $self->datetime_to_ctime($datetime); 
-    return scalar(localtime($time));
+    warn '$datetime ' . $datetime
+      if $t;
+    if ( defined($datetime) && $datetime > 0 ) {
+        my $time = $self->datetime_to_ctime($datetime);
+        return scalar( localtime($time) );
+    }
+    else {
+        warn 'something wrong with $datetime!:' . $datetime;
+        return 0;
+    }
 }
-
-
-
 
 sub enabled {
     return 1;

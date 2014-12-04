@@ -35,7 +35,7 @@ use CGI::Carp qw(fatalsToBrowser);
 use DADA::Config 5.0.0 qw(!:DEFAULT);
 use DADA::Template::HTML; 
 use DADA::App::Guts;
-use DADA::MailingList::Schedules;
+use DADA::MailingList::SchedulesDeprecated;
 
 use CGI; 
 my $q = new CGI;
@@ -176,7 +176,7 @@ my %repeat_label_values = (
 );
 
 
-my %d_form_vals = DADA::MailingList::Schedules::schedule_schema();
+my %d_form_vals = DADA::MailingList::SchedulesDeprecated::schedule_schema();
 
 
 &init_vars(); 
@@ -271,7 +271,7 @@ sub cl_run_schedules {
 	$args{-run_list} ? ($lists_to_run[0] = $args{-run_list}) : (@lists_to_run = DADA::App::Guts::available_lists()); 
 	
 	for(@lists_to_run){ 
-		my $mss = DADA::MailingList::Schedules->new({-list => $_}); 
+		my $mss = DADA::MailingList::SchedulesDeprecated->new({-list => $_}); 
 		   my $report = $mss->run_schedules(-test    => $args{-test});
 		   					  				
 	
@@ -310,7 +310,7 @@ sub cgi_main {
                                       
         #---------------------------------------------------------------------#
         
-        $mss = DADA::MailingList::Schedules->new({-list => $list}); 
+        $mss = DADA::MailingList::SchedulesDeprecated->new({-list => $list}); 
         my $flavor = $q->param('flavor') || 'default';
         my %Mode = ( 
         'default' => \&default, 

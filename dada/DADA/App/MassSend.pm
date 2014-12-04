@@ -19,7 +19,7 @@ use Carp qw(carp croak);
 use strict;
 use vars qw($AUTOLOAD);
 
-my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_MassSend};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_MassSend};
 
 my %allowed = ( test => 0, );
 
@@ -90,6 +90,7 @@ sub send_email {
         
     my $self       = shift;
     my ($args)     = @_;
+    
     my $q          = $args->{-cgi_obj};
     my $root_login = $args->{-root_login};
 
@@ -876,7 +877,7 @@ sub send_url_email {
         my ( $num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued ) =
           $self->mass_mailout_info;
           my $draft_id = $self->find_draft_id({
-            -screen  => 'send_email',
+            -screen  => 'send_url_email',
             -role    => $draft_role,
             -cgi_obj => $q,
         });
