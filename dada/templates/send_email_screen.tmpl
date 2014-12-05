@@ -33,14 +33,27 @@
 <div id="entire_form">
   <div id="form_widgets">
 
-<!-- tmpl_if expr="(draft_role eq 'schedule')" -->
-    <fieldset>
-        <legend>Scheduling Options</legend>
-    <!-- tmpl_include send_email_schedule_options_widget.tmpl -->
-    </fieldset>
-<!-- /tmpl_if -->
 
+      <!-- tmpl_if draft_id --> 
+          <!-- tmpl_if expr="(draft_role eq 'draft')" --> 
+          	<div class="clearskiesbox">
+          		<p>
+          			Draft message restored below:
+          		</p>
+          	</div> 
+          <!-- /tmpl_if -->
+          <!-- tmpl_if expr="(draft_role eq 'stationary')" --> 
+              <!-- tmpl_if done --> 
+                  <!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
+              <!-- /tmpl_if -->
+          <!-- /tmpl_if -->     
+          <!-- tmpl_if expr="(draft_role eq 'schedule')" --> 
+              <!-- tmpl_if done --> 
+                  <!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
+              <!-- /tmpl_if -->
+          <!-- /tmpl_if -->     
 
+      <!-- /tmpl_If --> 
 
 <!-- tmpl_include test_sent_notice_widget.tmpl --> 
 <!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
@@ -52,7 +65,6 @@
 			Discussion List Support is enabled and Discussion List preferences will be honored.
 		</p>
 	</div> 
-	
 <!--/tmpl_if--> 
 
 <!-- tmpl_unless list_settings.smtp_server -->	
@@ -65,21 +77,10 @@
 	<!-- /tmpl_if -->
 <!-- /tmpl_unless -->
 
-<!-- tmpl_if draft_id --> 
-    <!-- tmpl_if expr="(draft_role eq 'draft')" --> 
-    	<div class="clearskiesbox">
-    		<p>
-    			Draft message restored below:
-    		</p>
-    	</div> 
-    <!-- /tmpl_if -->
-    <!-- tmpl_if expr="(draft_role eq 'stationary')" --> 
-        <!-- tmpl_if done --> 
-            <!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
-        <!-- /tmpl_if -->
-    <!-- /tmpl_if -->     
-<!-- /tmpl_If --> 
 
+<!-- tmpl_include draft_notice_widget.tmpl --> 
+
+<!-- tmpl_include send_email_schedule_options_widget.tmpl -->
 
  <input type="hidden" name="s_program_url"     id="s_program_url"     value="<!-- tmpl_var S_PROGRAM_URL -->" />
  <input type="hidden" name="support_files_url" id="support_files_url" value="<!-- tmpl_var SUPPORT_FILES_URL -->" />
@@ -95,7 +96,6 @@
 
 
 
-<!-- tmpl_include draft_notice_widget.tmpl --> 
 
 <!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
 

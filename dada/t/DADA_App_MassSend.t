@@ -65,6 +65,7 @@ $ms->send_email(
 
 sleep(1); 
 $msg = slurp($mh->test_send_file); 
+diag $msg; 
 like($msg, qr/Subject\: \(no subject\)/, "no subject set correctly!"); 
 undef $msg; 
 

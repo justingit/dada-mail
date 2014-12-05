@@ -1,18 +1,54 @@
 <!-- begin send_email_schedule_options_widget.tmpl -->
 
+<!-- tmpl_if expr="(draft_role eq 'schedule')" -->
+        <fieldset>
+            <legend>Scheduling Options</legend>
 
-    <p>
-        <input type="checkbox" name="schedule_activated" id="schedule_activated" value="1" class="" />
-        <label for="schedule_activated">
-            Activate
-        </label></p>
-        
         <p>
-            <label for="schedule_datetime">
-                Schedule For:
-            </label><br />
-        <input type="text" name="schedule_datetime" id="schedule_datetime" />
-    </p>
+            <input type="checkbox" name="schedule_activated" id="schedule_activated" value="1" class="" />
+            <label for="schedule_activated">
+                Activate
+            </label></p>
+        
+            <p>
+                <label for="schedule_datetime">
+                    Schedule For:
+                </label><br />
+            <input type="text" name="schedule_datetime" id="schedule_datetime" />
+        </p>
+    </fieldset> 
+<!-- tmpl_else --> 
+    <input type="hidden" name="schedule_datetime" id="schedule_datetime" />
+    <input type="hidden" name="schedule_activated" id="schedule_activated" />
+    
+    <div id="hidden_wrapper" style="display:none"> 
+        <div id="start_a_schedule">
+            <h1>
+                Scheduling Options
+            </h1>
+            <p>
+                <input type="checkbox" name="popup_schedule_activated" id="popup_schedule_activated" value="1" class="" />
+                <label for="popup_schedule_activated">
+                    Activate
+                </label></p>
+
+                <p>
+                    <label for="popup_schedule_datetime">
+                        Schedule For:
+                    </label><br />
+                <input type="text" name="popup_schedule_datetime" id="popup_schedule_datetime" />
+            </p>
+            <div class="buttonfloat">
+               <input type="button" id="cancel_create_schedule" class="cautionary" value="Cancel" /> 
+               <input type="button" id="create_schedule"        class="processing" value="Create Schedule" /> 
+           </div> 
+           <div class="floatclear"></div>
+           
+        </div>
+    </div>
+    
+<!-- /tmpl_if -->
+
 
 
 

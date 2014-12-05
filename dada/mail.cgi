@@ -1414,8 +1414,12 @@ sub run_schedules {
     require DADA::MailingList::Schedules; 
     my $s = DADA::MailingList::Schedules->new({-list => $list});
     print $q->header(); 
-    print '<pre>'; 
-    print $s->run_schedules; 
+
+    if($s->enabled) { 
+        print '<pre>'; 
+        e_print($s->run_schedules); 
+        print '</pre>';
+    }
     
 }
 

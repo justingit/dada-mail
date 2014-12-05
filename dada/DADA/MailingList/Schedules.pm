@@ -10,9 +10,13 @@ use Carp qw(croak carp);
 use DADA::Config qw(!:DEFAULT);
 
 my $t = 0; #$DADA::Config::DEBUG_TRACE->{DADA_MailingList_MessageDrafts};
+
 use DADA::MailingList::MessageDrafts;
 use DADA::MailingList::Settings; 
 use DADA::App::MassSend; 
+
+
+
 
 sub new {
 
@@ -26,6 +30,9 @@ sub new {
     return $self;
 
 }
+
+
+
 
 sub _init {
     my $self = shift;
@@ -45,28 +52,45 @@ sub _init {
         $self->{ls_obj} =  DADA::MailingList::Settings->new( { -list => $self->{list}  } );
     }
     
+    
 }
+
+sub enabled { 
+    my $self = shift; 
+    return $self->{d_obj}->enabled; 
+};
+
+
+
 
 sub run_schedules { 
 
-    my $self = shift; 
+    my $self   = shift; 
+
+    my ($args) = @_; 
+    
+    if(!exists($args->{-verbose})){ 
+        $args->{-verbose} = 0; 
+    }
     my $t    = time; 
-    my $r = 'Current Server Time: ' . scalar(localtime($t)) . "\n";  
-       $r .= 'Running Schedules for, ' . $self->{list} . "\n";
+    
+    my $r = 'Running Schedules for, ' . $self->{list} . "\n";
+       $r .= '-' x 72 . "\n";
+       $r .= 'Current Server Time: ' . scalar(localtime($t)) . "\n";  
        $r .= 'Schedules Last Run: ' . scalar(localtime($self->{ls_obj}->param('schedule_last_checked_time'))) . "\n"; 
+
     my $count = $self->{d_obj}->count({-role => 'schedule'});
 
     if($count <= 0){ 
-        $r = "No Schedules currently saved\n";
-        return $r;
+        $r .= "No Schedules currently saved\n";
     }     
-    
-    $r .= "$count Schedules\n";
-    
+    else { 
+        $r .= "$count Schedules\n";
+    }
     my $index = $self->{d_obj}->draft_index({-role => 'schedule'});
     SCHEDULES: for my $sched(@$index){ 
-        $r .= "\nSubject: " . $sched->{Subject} . "\n"; 
-        $r .= '-' x 72 . "\n"; 
+        $r .= "\n\nSubject: " . $sched->{Subject} . "\n"; 
+        #$r .= '-' x 72 . "\n"; 
         
         if($sched->{schedule_activated} != 1){ 
             $r .= "Scheduled NOT Activated\n"; 
@@ -124,14 +148,15 @@ sub run_schedules {
         }
     }
     
-    
-#    use Data::Dumper; 
-#    $r .= Dumper($index); 
-    
     $self->{ls_obj}->save({schedule_last_checked_time => time});
+    
+    if($args->{-verbose} == 1){ 
+        print $r; 
+    }
     return $r; 
     
 }
+
 
 
 

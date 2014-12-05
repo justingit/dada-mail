@@ -8,13 +8,13 @@ use lib qw(
 use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;
 use DADA::Template::HTML;
-use DADA::MailingList::Archives; 
+use DADA::MailingList::Archives;
 use DADA::MailingList::Settings;
 use DADA::MailingList::Subscribers;
 use DADA::MailingList::MessageDrafts;
 
 use Carp qw(carp croak);
- $Carp::Verbose = 1;
+$Carp::Verbose = 1;
 
 use strict;
 use vars qw($AUTOLOAD);
@@ -64,33 +64,28 @@ sub _init {
 
     my $self = shift;
     my ($args) = @_;
-    
-    use Data::Dumper; 
-    warn Dumper($args); 
-    
-    
-    
+
     if ( !exists( $args->{-list} ) ) {
         croak "You must pass the -list parameter!";
     }
     else {
         $self->{list} = $args->{-list};
     }
-
-    $self->{ls_obj} = DADA::MailingList::Settings->new(      { -list => $self->{list} } );
-    $self->{lh_obj} = DADA::MailingList::Subscribers->new(   { -list => $self->{list} } );
-    $self->{ah_obj} = DADA::MailingList::Archives->new(      { -list => $self->{list} } );
-    $self->{md_obj} = DADA::MailingList::MessageDrafts->new( { -list => $self->{list} } );
     
+    $self->{ls_obj} = DADA::MailingList::Settings->new( { -list => $self->{list} } );
+    $self->{lh_obj} = DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
+    $self->{ah_obj} = DADA::MailingList::Archives->new( { -list => $self->{list} } );
+    $self->{md_obj} = DADA::MailingList::MessageDrafts->new( { -list => $self->{list} } );
+
 }
 
 sub send_email {
     warn 'send_email'
-        if $t; 
-        
-    my $self       = shift;
-    my ($args)     = @_;
-    
+      if $t;
+
+    my $self = shift;
+    my ($args) = @_;
+
     my $q          = $args->{-cgi_obj};
     my $root_login = $args->{-root_login};
 
@@ -101,16 +96,14 @@ sub send_email {
     my $test_recipient     = xss_filter( strip( $q->param('test_recipient') ) );
     my $done               = xss_filter( strip( $q->param('done') ) ) || 0;
     my $draft_role         = $q->param('draft_role') || 'draft';
-    my $ses_params         = $self->ses_params; 
-
+    my $ses_params         = $self->ses_params;
 
     if ( !exists( $args->{-html_output} ) ) {
         $args->{-html_output} = 1;
     }
 
     my $li = $self->{ls_obj}->get( -all_settings => 1 );
-    
-    
+
     my $naked_fields = $self->{lh_obj}->subscriber_fields( { -dotted => 0 } );
     my $fields = [];
 
@@ -120,6 +113,7 @@ sub send_email {
         push( @$fields, { name => $field } );
     }
     my $undotted_fields = [];
+
     # Extra, special one...
     push( @$undotted_fields, { name => 'email', label => 'Email Address' } );
     require DADA::ProfileFieldsManager;
@@ -138,21 +132,23 @@ sub send_email {
     if ( !$process ) {
 
         warn '!$process'
-            if $t; 
-            
+          if $t;
+
         my ( $num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued ) =
           $self->mass_mailout_info;
 
-        my $draft_id = $self->find_draft_id({
-            -screen  => 'send_email',
-            -role    => $draft_role,
-            -cgi_obj => $q, 
-        });
-        
-        require            DADA::Template::Widgets;
+        my $draft_id = $self->find_draft_id(
+            {
+                -screen  => 'send_email',
+                -role    => $draft_role,
+                -cgi_obj => $q,
+            }
+        );
+
+        require DADA::Template::Widgets;
         my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars( $self->{list} );
-        my $scrn = 'hello!'; 
-        my $scrn = DADA::Template::Widgets::wrap_screen(
+        my $scrn         = 'hello!';
+        my $scrn         = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'send_email_screen.tmpl',
                 -with           => 'admin',
@@ -162,13 +158,13 @@ sub send_email {
                     -List       => $self->{list},
                 },
                 -vars => {
-                    screen => 'send_email',
-                    flavor => $flavor,
-                    draft_id           => $draft_id,
-                    draft_enabled      => $self->{md_obj}->enabled,
-                    draft_role         => $draft_role,
-                    restore_from_draft => $restore_from_draft,
-                    done               => $done,
+                    screen                     => 'send_email',
+                    flavor                     => $flavor,
+                    draft_id                   => $draft_id,
+                    draft_enabled              => $self->{md_obj}->enabled,
+                    draft_role                 => $draft_role,
+                    restore_from_draft         => $restore_from_draft,
+                    done                       => $done,
                     test_sent                  => $test_sent,
                     test_recipient             => $test_recipient,
                     priority_popup_menu        => DADA::Template::Widgets::priority_popup_menu($li),
@@ -176,6 +172,7 @@ sub send_email {
                     fields                     => $fields,
                     undotted_fields            => $undotted_fields,
                     can_have_subscriber_fields => $self->{lh_obj}->can_have_subscriber_fields,
+
                     # I don't really have this right now...
                     MAILOUT_AT_ONCE_LIMIT => $DADA::Config::MAILOUT_AT_ONCE_LIMIT,
                     kcfinder_url          => $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{url},
@@ -214,50 +211,69 @@ sub send_email {
                 }
             );
         }
-        e_print($scrn); 
+        e_print($scrn);
     }
     elsif ( $process eq 'save_as_draft' ) {
+
         # Utterly out of place
         # save_as_draft called via js
-        my $draft_id = $self->save_as_draft( 
-            { 
-                -cgi_obj => $q, 
-                -list    => $self->{list}, 
-                -json    => 1, 
-            } 
+        my $draft_id = $self->save_as_draft(
+            {
+                -cgi_obj => $q,
+                -list    => $self->{list},
+                -json    => 1,
+            }
         );
         return;
     }
     else {
         # Draft now has all our form params
         # draft_id and role will be saved in $q
-        my $draft_id = $self->save_as_draft(
-            {
-                -cgi_obj => $q,
-                -list    => $self->{list},
-                -json    => 0, 
-            }
-        );
-        # to fetch a draft, I need id, list and role (lame)
-        my ($status, $errors, $message_id) = $self->construct_and_send(
-            {
-                -draft_id   => $draft_id,
-                -screen     => 'send_email',
-                -role       => $draft_role,
-                -process    => $process, 
-            }
-        );
-        if($status == 0){ 
-            $self->report_mass_mail_errors(
-                    $errors, $root_login
-                ); 
+
+        my $draft_id   = undef;
+        my $status     = undef;
+        my $errors     = undef;
+        my $message_id = undef;
+
+        if ( $self->{md_obj}->enabled ) {
+            $draft_id = $self->save_as_draft(
+                {
+                    -cgi_obj => $q,
+                    -list    => $self->{list},
+                    -json    => 0,
+                }
+            );
+
+            # to fetch a draft, I need id, list and role (lame)
+            ( $status, $errors, $message_id ) = $self->construct_and_send(
+                {
+                    -draft_id => $draft_id,
+                    -screen   => 'send_email',
+                    -role     => $draft_role,
+                    -process  => $process,
+                }
+            );
+        }
+        else {
+            ( $status, $errors, $message_id ) = $self->construct_and_send(
+                {
+                    # -draft_id   => $draft_id,
+                    -screen  => 'send_email',
+                    -role    => $draft_role,
+                    -process => $process,
+                    -cgi_obj => $q,
+                }
+            );
+        }
+        if ( $status == 0 ) {
+            $self->report_mass_mail_errors( $errors, $root_login );
             return;
         }
 
         if ( $process =~ m/test/i ) {
             warn 'test sending'
-                if $t; 
-                
+              if $t;
+
             $self->wait_for_it($message_id);
             print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL . '?f='
                   . $flavor
@@ -276,7 +292,7 @@ sub send_email {
                     $self->{md_obj}->remove($draft_id);
                 }
             }
-            my $uri;                    
+            my $uri;
             if ( $q->param('archive_no_send') == 1 && $q->param('archive_message') == 1 ) {
                 $uri = $DADA::Config::S_PROGRAM_URL . '?f=view_archive&id=' . $message_id;
             }
@@ -288,75 +304,81 @@ sub send_email {
     }
 }
 
-sub are_we_archiving_based_on_params { 
-    my $self  = shift; 
-    my $q     = shift; 
-    
+sub are_we_archiving_based_on_params {
+
+    my $self = shift;
+    my $q    = shift;
+
     if ( defined( $q->param('local_archive_options_present') ) ) {
         if ( $q->param('local_archive_options_present') == 1 ) {
             if ( $q->param('archive_message') != 1 ) {
                 $q->param( 'archive_message', 0 );
-                return 0; 
+                return 0;
             }
         }
     }
-    else { 
+    else {
         return $self->{ls_obj}->param('archive_messages');
     }
-    
+
 }
 
 sub construct_and_send {
-    warn 'construct_and_send' 
-        if $t; 
-        
+    warn 'construct_and_send'
+      if $t;
+
     my $self = shift;
     my ($args) = @_;
 
-    if($t == 1){ 
-        require Data::Dumper; 
-        #warn 'args:' . Data::Dumper::Dumper($args); 
+    #if($t == 1){
+    #require Data::Dumper;
+    #warn 'args:' . Data::Dumper::Dumper($args);
+    #}
+
+    my $draft_q = undef;
+    if ( $self->{md_obj}->enabled ) {
+        $draft_q = $self->q_obj_from_draft($args);
+    }
+    else {
+        $draft_q = $args->{-cgi_obj};
     }
 
-    my $draft_q    = $self->q_obj_from_draft($args);
     my $process    = $args->{-process};
-    my $status     = 0; 
+    my $status     = 0;
     my $errors     = undef;
     my $message_id = undef;
+    my $entity     = undef;
+    my $fm         = undef;
 
-    my $entity = undef;
-    my $fm     = undef; 
-    
-    if($args->{-screen} eq 'send_email'){ 
-        ($status, $errors, $entity, $fm) = $self->construct_from_text($draft_q);
+    if ( $args->{-screen} eq 'send_email' ) {
+        ( $status, $errors, $entity, $fm ) = $self->construct_from_text($draft_q);
     }
-    elsif($args->{-screen} eq 'send_url_email'){ 
-        ($status, $errors, $entity, $fm) = $self->construct_from_url($draft_q);       
+    elsif ( $args->{-screen} eq 'send_url_email' ) {
+        ( $status, $errors, $entity, $fm ) = $self->construct_from_url($draft_q);
     }
-    else { 
-        croak "unknown screen: " . $args->{-screen}; 
+    else {
+        croak "unknown screen: " . $args->{-screen};
     }
-    
-    if($status == 0 && $t == 1){ 
-        warn '$errors: ' . $errors; 
+
+    if ( $status == 0 && $t == 1 ) {
+        warn '$errors: ' . $errors;
     }
-    if($status == 0){ 
-        return (0, $errors, undef); 
+    if ( $status == 0 ) {
+        return ( 0, $errors, undef );
     }
-    
+
     # Good? Alright.
     my $msg_as_string = ( defined($entity) ) ? $entity->as_string : undef;
-       $msg_as_string = safely_decode($msg_as_string);
+    $msg_as_string = safely_decode($msg_as_string);
 
-#    $fm->Subject( $headers{Subject} );
+    #    $fm->Subject( $headers{Subject} );
 
     my ( $final_header, $final_body );
     eval { ( $final_header, $final_body ) = $fm->format_headers_and_body( -msg => $msg_as_string ); };
     if ($@) {
-        return (0,  $@, undef); 
+        return ( 0, $@, undef );
     }
-    
-    
+
     require DADA::Mail::Send;
     my $mh = DADA::Mail::Send->new(
         {
@@ -364,15 +386,12 @@ sub construct_and_send {
             -ls_obj => $self->{ls_obj},
         }
     );
-    
+
     unless ( $mh->isa('DADA::Mail::Send') ) {
-        return(0, "DADA::Mail::Send object wasn't created correctly?", undef);
+        return ( 0, "DADA::Mail::Send object wasn't created correctly?", undef );
     }
 
     $mh->test( $self->test );
-    
-    warn q{$draft_q->param('test_recipient')} . $draft_q->param('test_recipient')
-        if $t; 
 
     my %mailing = ( $mh->return_headers($final_header), Body => $final_body, );
 
@@ -381,8 +400,8 @@ sub construct_and_send {
 
     if ( $draft_q->param('archive_no_send') != 1 ) {
         my @alternative_list = ();
-           @alternative_list = $draft_q->param('alternative_list');
-        $mh->mass_test_recipient($draft_q->param('test_recipient')); 
+        @alternative_list = $draft_q->param('alternative_list');
+        $mh->mass_test_recipient( $draft_q->param('test_recipient') );
         my $multi_list_send_no_dupes = $draft_q->param('multi_list_send_no_dupes')
           || 0;
 
@@ -424,27 +443,24 @@ sub construct_and_send {
         $mh->saved_message( $mh->_massaged_for_archive( \%mailing ) );
 
     }
-    
+
     if ( ( $self->are_we_archiving_based_on_params($draft_q) == 1 ) && ( $process !~ m/test/i ) ) {
         $self->{ah_obj}->set_archive_info( $message_id, $mailing{Subject}, undef, undef, $mh->saved_message );
     }
 
-    return (1, undef, $message_id);
+    return ( 1, undef, $message_id );
 }
-
-
-
 
 sub construct_from_text {
     warn 'construct_from_text'
-        if $t; 
-        
-    my $self    = shift; 
-    my $draft_q = shift; 
-    
+      if $t;
+
+    my $self    = shift;
+    my $draft_q = shift;
+
     require DADA::App::FormatMessages;
     my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
-       $fm->mass_mailing(1);
+    $fm->mass_mailing(1);
 
     my %headers = ();
     for my $h (
@@ -458,6 +474,7 @@ sub construct_from_text {
       )
     {
         if ( defined( $draft_q->param($h) ) ) {
+
             # I do not like how we treat Subject differently, but I don't have a better idea on what to do.
             if ( $h eq 'Subject' ) {
                 $headers{$h} = $fm->_encode_header( 'Subject', $draft_q->param($h) );
@@ -467,6 +484,7 @@ sub construct_from_text {
             }
         }
     }
+
     #/Headers
 
     require MIME::Entity;
@@ -475,9 +493,9 @@ sub construct_from_text {
     my $attachment        = $draft_q->param('attachment');
     my $text_message_body = $draft_q->param('text_message_body') || undef;
     my $html_message_body = $draft_q->param('html_message_body') || undef;
-    
-    my @attachments       = $self->has_attachments( { -cgi_obj => $draft_q } );
-    my $num_attachments   = scalar(@attachments);
+
+    my @attachments = $self->has_attachments( { -cgi_obj => $draft_q } );
+    my $num_attachments = scalar(@attachments);
 
     ( $text_message_body, $html_message_body ) =
       DADA::App::FormatMessages::pre_process_msg_strings( $text_message_body, $html_message_body );
@@ -489,20 +507,20 @@ sub construct_from_text {
         $text_message_body = safely_encode($text_message_body);
         $html_message_body = safely_encode($html_message_body);
 
-        my ($status, $errors) = $self->redirect_tag_check( $text_message_body ); 
-        if($status == 0){ 
-            return($status, $errors, undef, undef); 
+        my ( $status, $errors ) = $self->redirect_tag_check($text_message_body);
+        if ( $status == 0 ) {
+            return ( $status, $errors, undef, undef );
         }
-        undef($status); 
-        undef($errors); 
-        
-        my ($status, $errors) = $self->redirect_tag_check( $html_message_body ); 
-        if($status == 0){ 
-            return($status, $errors, undef, undef); 
+        undef($status);
+        undef($errors);
+
+        my ( $status, $errors ) = $self->redirect_tag_check($html_message_body);
+        if ( $status == 0 ) {
+            return ( $status, $errors, undef, undef );
         }
-        undef($status); 
-        undef($errors); 
-        
+        undef($status);
+        undef($errors);
+
         $entity = MIME::Entity->build(
             Type    => 'multipart/alternative',
             Charset => $self->{ls_obj}->param('charset_value'),
@@ -525,14 +543,14 @@ sub construct_from_text {
     elsif ($html_message_body) {
 
         $html_message_body = safely_encode($html_message_body);
-        
-        my ($status, $errors) = $self->redirect_tag_check( $html_message_body ); 
-        if($status == 0){ 
-            return($status, $errors, undef, undef); 
+
+        my ( $status, $errors ) = $self->redirect_tag_check($html_message_body);
+        if ( $status == 0 ) {
+            return ( $status, $errors, undef, undef );
         }
-        undef($status); 
-        undef($errors); 
-        
+        undef($status);
+        undef($errors);
+
         $entity = MIME::Entity->build(
             Type     => 'text/html',
             Data     => $html_message_body,
@@ -544,14 +562,14 @@ sub construct_from_text {
     elsif ($text_message_body) {
 
         $text_message_body = safely_encode($text_message_body);
-        
-        my ($status, $errors) = $self->redirect_tag_check( $text_message_body ); 
-        if($status == 0){ 
-            return($status, $errors, undef, undef); 
+
+        my ( $status, $errors ) = $self->redirect_tag_check($text_message_body);
+        if ( $status == 0 ) {
+            return ( $status, $errors, undef, undef );
         }
-        undef($status); 
-        undef($errors); 
-        
+        undef($status);
+        undef($errors);
+
         $entity = MIME::Entity->build(
             Type     => 'text/plain',
             Data     => $text_message_body,
@@ -561,7 +579,7 @@ sub construct_from_text {
         );
     }
     else {
-        return(0, "There's no text in either the PlainText or HTML version of your email message!", undef, undef);
+        return ( 0, "There's no text in either the PlainText or HTML version of your email message!", undef, undef );
     }
 
     my @compl_att = ();
@@ -586,190 +604,182 @@ sub construct_from_text {
             $entity = $mpm_entity;
         }
     }
-    return (1, undef, $entity, $fm); 
+    return ( 1, undef, $entity, $fm );
 }
 
 sub construct_from_url {
 
-    my $self    = shift; 
-    my $draft_q = shift; 
-    
+    my $self    = shift;
+    my $draft_q = shift;
+
     require DADA::App::FormatMessages;
     my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
-       $fm->mass_mailing(1);
-        
-        my $can_use_mime_lite_html = 0;
-        my $mime_lite_html_error   = undef;
-        eval { require DADA::App::MyMIMELiteHTML };
-        if ( !$@ ) {
-            $can_use_mime_lite_html = 1;
-        }
-        else {
-            $mime_lite_html_error = $@;
-        }
-            
-        if (!$can_use_mime_lite_html) {
-            return(0, $@, undef, undef); 
-        }
-        
-        my $url               = strip( $draft_q->param('url') );
-        my $url_options       = $draft_q->param('url_options')       || undef;
-        my $remove_javascript = $draft_q->param('remove_javascript') || 0;
-        my $login_details;
-        if (   defined( $draft_q->param('url_username') )
-            && defined( $draft_q->param('url_password') ) )
-        {
-            $login_details = $draft_q->param('url_username') . ':' . $draft_q->param('url_password');
-        }
+    $fm->mass_mailing(1);
 
-        my $proxy = undef;
-        if(defined( $draft_q->param('proxy') )) { 
-             $draft_q->param('proxy');
+    my $can_use_mime_lite_html = 0;
+    my $mime_lite_html_error   = undef;
+    eval { require DADA::App::MyMIMELiteHTML };
+    if ( !$@ ) {
+        $can_use_mime_lite_html = 1;
+    }
+    else {
+        $mime_lite_html_error = $@;
+    }
+
+    if ( !$can_use_mime_lite_html ) {
+        return ( 0, $@, undef, undef );
+    }
+
+    my $url               = strip( $draft_q->param('url') );
+    my $url_options       = $draft_q->param('url_options') || undef;
+    my $remove_javascript = $draft_q->param('remove_javascript') || 0;
+    my $login_details;
+    if (   defined( $draft_q->param('url_username') )
+        && defined( $draft_q->param('url_password') ) )
+    {
+        $login_details = $draft_q->param('url_username') . ':' . $draft_q->param('url_password');
+    }
+
+    my $proxy = undef;
+    if ( defined( $draft_q->param('proxy') ) ) {
+        $draft_q->param('proxy');
+    }
+
+    my %headers = ();
+    for my $h (
+        qw(
+        Reply-To
+        Errors-To
+        Return-Path
+        X-Priority
+        Subject
+        )
+      )
+    {
+        if ( defined( $draft_q->param($h) ) ) {
+            $headers{$h} = strip( $draft_q->param($h) );
         }
-
-
-       my %headers = ();
-       for my $h (
-           qw(
-           Reply-To
-           Errors-To
-           Return-Path
-           X-Priority
-           Subject
-           )
-         )
-       {
-           if ( defined( $draft_q->param($h) ) ) {
-               $headers{$h} = strip( $draft_q->param($h) );
-           }
-       }
+    }
 
     my $mailHTML = new DADA::App::MyMIMELiteHTML(
-    remove_jscript => $remove_javascript,
-    'IncludeType'  => $url_options,
-    'TextCharset'  => $self->{ls_obj}->param('charset_value'),
-    'HTMLCharset'  => $self->{ls_obj}->param('charset_value'),
-    HTMLEncoding  => $self->{ls_obj}->param('html_encoding'),
-    TextEncoding => $self->{ls_obj}->param('plaintext_encoding'),
-    ( ($proxy)         ? ( Proxy        => $proxy, )         : () ),
-    ( ($login_details) ? ( LoginDetails => $login_details, ) : () ),
-    (
-    ( $DADA::Config::CPAN_DEBUG_SETTINGS{MIME_LITE_HTML} == 1 )
-    ? ( Debug => 1, )
-    : ()
-    ),
-    %headers,
+        remove_jscript => $remove_javascript,
+        'IncludeType'  => $url_options,
+        'TextCharset'  => $self->{ls_obj}->param('charset_value'),
+        'HTMLCharset'  => $self->{ls_obj}->param('charset_value'),
+        HTMLEncoding   => $self->{ls_obj}->param('html_encoding'),
+        TextEncoding   => $self->{ls_obj}->param('plaintext_encoding'),
+        ( ($proxy)         ? ( Proxy        => $proxy, )         : () ),
+        ( ($login_details) ? ( LoginDetails => $login_details, ) : () ),
+        (
+              ( $DADA::Config::CPAN_DEBUG_SETTINGS{MIME_LITE_HTML} == 1 )
+            ? ( Debug => 1, )
+            : ()
+        ),
+        %headers,
     );
 
-    my $text_message = undef; 
-    if($draft_q->param('text_message_body')){ 
-       $text_message = $draft_q->param('text_message_body');
+    my $text_message = undef;
+    if ( $draft_q->param('text_message_body') ) {
+        $text_message = $draft_q->param('text_message_body');
     }
-    else { 
-       $text_message =  'This email message requires that your mail reader support HTML';
+    else {
+        $text_message = 'This email message requires that your mail reader support HTML';
     }
 
     if ( $draft_q->param('auto_create_plaintext') == 1 ) {
-       if ( $draft_q->param('content_from') eq 'url' ) {
-           if ( length($url) <= 0 ) {
-               croak "You did not fill in a URL!";
-           }
-           require LWP::Simple;
-           eval { $LWP::Simple::ua->agent( 'Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')' ); };
-           my $good_try = LWP::Simple::get($url);
-           $text_message = html_to_plaintext(
-               {
-                   -str              => $good_try,
-                   -formatter_params => {
-                       base        => $url,
-                       before_link => '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET -->',
-                       footnote    => '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET --> %l',
-                   }
-               }
-           );
-       }
-       else {
-           $text_message = html_to_plaintext( 
-               { 
-                   -str => $draft_q->param('html_message_body')
-               } 
-           );
-       }
+        if ( $draft_q->param('content_from') eq 'url' ) {
+            if ( length($url) <= 0 ) {
+                croak "You did not fill in a URL!";
+            }
+            require LWP::Simple;
+            eval { $LWP::Simple::ua->agent( 'Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')' ); };
+            my $good_try = LWP::Simple::get($url);
+            $text_message = html_to_plaintext(
+                {
+                    -str              => $good_try,
+                    -formatter_params => {
+                        base        => $url,
+                        before_link => '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET -->',
+                        footnote    => '<!-- tmpl_var LEFT_BRACKET -->%n<!-- tmpl_var RIGHT_BRACKET --> %l',
+                    }
+                }
+            );
+        }
+        else {
+            $text_message = html_to_plaintext(
+                {
+                    -str => $draft_q->param('html_message_body')
+                }
+            );
+        }
     }
 
-    my ($status, $errors) = $self->redirect_tag_check( $text_message);
-    if($status == 0){ 
-       return($status, $errors, undef, undef); 
+    my ( $status, $errors ) = $self->redirect_tag_check($text_message);
+    if ( $status == 0 ) {
+        return ( $status, $errors, undef, undef );
     }
-    undef($status); 
-    undef($errors); 
+    undef($status);
+    undef($errors);
 
     my $MIMELiteObj;
 
     if ( $draft_q->param('content_from') eq 'url' ) {
 
-       # AWKWARD.
-       # Redirect tag check
-       require LWP::Simple;
-       eval { $LWP::Simple::ua->agent( 'Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')' ); };
-       my $rtc = LWP::Simple::get($url);
-       my ($status, $errors) = $self->redirect_tag_check( $rtc );
-       if($status == 0){ 
-           return($status, $errors, undef, undef); 
-       }
-       undef($status); 
-       undef($errors); 
+        # AWKWARD.
         # Redirect tag check
-    
-       my $errors = undef;
-       eval { 
-           $MIMELiteObj = $mailHTML->parse( $url, safely_encode($t) ); 
-       };
+        require LWP::Simple;
+        eval { $LWP::Simple::ua->agent( 'Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')' ); };
+        my $rtc = LWP::Simple::get($url);
+        my ( $status, $errors ) = $self->redirect_tag_check($rtc);
+        if ( $status == 0 ) {
+            return ( $status, $errors, undef, undef );
+        }
+        undef($status);
+        undef($errors);
 
-       # DEV: It would be a lot nicer, if this was just printed in our control panel, instead of an error:
-       if ($@) {
-           $errors .=
-             "Problems with sending a webpage! Make sure you've correctly entered the URL to your webpage!\n";
-           $errors .= "* Returned Error: $@";
-           eval { $LWP::Simple::ua->agent( 'Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')' ); };
-           my $can_fetch = LWP::Simple::get($url);
-           if ($can_fetch) {
-               $errors .= "* Can successfully fetch, " . $url . "\n";
-           }
-           else {
-               $errors .= "* Cannot fetch, " . $url . " using LWP::Simple::get()\n";
-           }
-           return(0, $errors, undef, undef); 
-       }
+        # Redirect tag check
+
+        my $errors = undef;
+        eval { $MIMELiteObj = $mailHTML->parse( $url, safely_encode($t) ); };
+
+        # DEV: It would be a lot nicer, if this was just printed in our control panel, instead of an error:
+        if ($@) {
+            $errors .= "Problems with sending a webpage! Make sure you've correctly entered the URL to your webpage!\n";
+            $errors .= "* Returned Error: $@";
+            eval { $LWP::Simple::ua->agent( 'Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')' ); };
+            my $can_fetch = LWP::Simple::get($url);
+            if ($can_fetch) {
+                $errors .= "* Can successfully fetch, " . $url . "\n";
+            }
+            else {
+                $errors .= "* Cannot fetch, " . $url . " using LWP::Simple::get()\n";
+            }
+            return ( 0, $errors, undef, undef );
+        }
     }
     else {
-       my $html_message = $draft_q->param('html_message_body');
-       my $text_message = undef;
-       ( $text_message, $html_message ) =
-         DADA::App::FormatMessages::pre_process_msg_strings( $text_message, $html_message );
+        my $html_message = $draft_q->param('html_message_body');
+        my $text_message = undef;
+        ( $text_message, $html_message ) =
+          DADA::App::FormatMessages::pre_process_msg_strings( $text_message, $html_message );
 
-         my ($status, $errors) = $self->redirect_tag_check( $html_message );
-         if($status == 0){ 
-             return($status, $errors, undef, undef); 
-         }
-         undef($status); 
-         undef($errors); 
-     
-       eval { 
-           $MIMELiteObj = $mailHTML->parse( 
-               safely_encode($html_message), 
-               safely_encode($text_message) 
-              ); 
-        };
-       if ($@) {
-           my $errors = "Problems sending HTML! \n
+        my ( $status, $errors ) = $self->redirect_tag_check($html_message);
+        if ( $status == 0 ) {
+            return ( $status, $errors, undef, undef );
+        }
+        undef($status);
+        undef($errors);
+
+        eval { $MIMELiteObj = $mailHTML->parse( safely_encode($html_message), safely_encode($text_message) ); };
+        if ($@) {
+            my $errors = "Problems sending HTML! \n
     * Are you trying to send a webpage via URL instead?
     * Have you entered anything in the, HTML Version?
     * Returned Error: $@
     ";
-            return(0, $errors, undef, undef); 
+            return ( 0, $errors, undef, undef );
 
-       }
+        }
     }
 
     my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
@@ -777,55 +787,52 @@ sub construct_from_url {
     $fm->originating_message_url($url);
     $fm->Subject( $headers{Subject} );
 
-    # This looks like it just checks for errors, with converting this to a string? 
-    # Alright. 
+    # This looks like it just checks for errors, with converting this to a string?
+    # Alright.
     my $status           = 1;
     my $errors           = '';
     my $source           = '';
     my @MIME_HTML_errors = ();
 
-    eval { 
-       $source = $MIMELiteObj->as_string; 
-    };
+    eval { $source = $MIMELiteObj->as_string; };
     if ($@) {
-       warn
-         "$DADA::Config::PROGRAM_NAME $DADA::Config::VER - Send a Webpage isn't functioning correctly? - $@";
-       $status = 0;
-       $errors       = $@;
-       @MIME_HTML_errors = $mailHTML->errstr;
-       for (@MIME_HTML_errors) {
-           $errors .= $_;
-       }
-       return(0, $errors, undef, undef); 
+        warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER - Send a Webpage isn't functioning correctly? - $@";
+        $status           = 0;
+        $errors           = $@;
+        @MIME_HTML_errors = $mailHTML->errstr;
+        for (@MIME_HTML_errors) {
+            $errors .= $_;
+        }
+        return ( 0, $errors, undef, undef );
     }
-    # / convert for string check. 
-                    
+
+    # / convert for string check.
+
     use MIME::Parser;
     my $parser = new MIME::Parser;
-       $parser = optimize_mime_parser($parser);
-       
-    my $entity = $parser->parse_data( $source );
-    
-    return (1, undef, $entity, $fm); 
-    
-}
+    $parser = optimize_mime_parser($parser);
 
+    my $entity = $parser->parse_data($source);
+
+    return ( 1, undef, $entity, $fm );
+
+}
 
 sub send_url_email {
 
-    my $self               = shift;
-    my ($args)             = @_;
-    
-    my $q                  = $args->{-cgi_obj};
-    my $root_login         = $args->{-root_login};
-    
+    my $self = shift;
+    my ($args) = @_;
+
+    my $q          = $args->{-cgi_obj};
+    my $root_login = $args->{-root_login};
+
     my $process            = xss_filter( strip( $q->param('process') ) );
     my $flavor             = xss_filter( strip( $q->param('flavor') ) );
     my $test_sent          = xss_filter( strip( $q->param('test_sent') ) ) || 0;
     my $done               = xss_filter( strip( $q->param('done') ) ) || 0;
     my $test_recipient     = $q->param('test_recipient');
     my $restore_from_draft = $q->param('restore_from_draft') || 'true';
-    my $ses_params         = $self->ses_params; 
+    my $ses_params         = $self->ses_params;
     my $draft_role         = $q->param('draft_role') || 'draft';
 
     my $can_use_mime_lite_html = 0;
@@ -850,12 +857,14 @@ sub send_url_email {
 
     my $fields = [];
     my $naked_fields = $self->{lh_obj}->subscriber_fields( { -dotted => 0 } );
+
     # Extra, special one...
     push( @$fields, { name => 'subscriber.email' } );
     for my $field ( @{ $self->{lh_obj}->subscriber_fields( { -dotted => 1 } ) } ) {
         push( @$fields, { name => $field } );
     }
     my $undotted_fields = [];
+
     # Extra, special one...
     push( @$undotted_fields, { name => 'email', label => 'Email Address' } );
     require DADA::ProfileFieldsManager;
@@ -871,16 +880,16 @@ sub send_url_email {
         );
     }
 
-
-
     if ( !$process ) {
         my ( $num_list_mailouts, $num_total_mailouts, $active_mailouts, $mailout_will_be_queued ) =
           $self->mass_mailout_info;
-          my $draft_id = $self->find_draft_id({
-            -screen  => 'send_url_email',
-            -role    => $draft_role,
-            -cgi_obj => $q,
-        });
+        my $draft_id = $self->find_draft_id(
+            {
+                -screen  => 'send_url_email',
+                -role    => $draft_role,
+                -cgi_obj => $q,
+            }
+        );
 
         require DADA::Template::Widgets;
         my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars( $self->{list} );
@@ -916,7 +925,7 @@ sub send_url_email {
                     undotted_fields            => $undotted_fields,
                     can_have_subscriber_fields => $self->{lh_obj}->can_have_subscriber_fields,
                     SERVER_ADMIN               => $ENV{SERVER_ADMIN},
-                    priority_popup_menu        => DADA::Template::Widgets::priority_popup_menu($self->{ls_obj}->get),
+                    priority_popup_menu        => DADA::Template::Widgets::priority_popup_menu( $self->{ls_obj}->get ),
 
                     global_list_sending_checkbox_widget =>
                       DADA::Template::Widgets::global_list_sending_checkbox_widget( $self->{list} ),
@@ -952,39 +961,38 @@ sub send_url_email {
 
     }
     elsif ( $process eq 'save_as_draft' ) {
-        $self->save_as_draft( 
+        $self->save_as_draft(
             {
                 -cgi_obj => $q,
-                -list    => $self->{list}, 
-                -json    => 1, 
+                -list    => $self->{list},
+                -json    => 1,
             }
         );
     }
     else {
-        
+
         # Draft now has all our form params
         # draft_id and role will be saved in $q
         my $draft_id = $self->save_as_draft(
             {
                 -cgi_obj => $q,
                 -list    => $self->{list},
-                -json    => 0, 
+                -json    => 0,
             }
         );
+
         # to fetch a draft, I need id, list and role (lame)
-        my ($status, $errors, $message_id) = $self->construct_and_send(
+        my ( $status, $errors, $message_id ) = $self->construct_and_send(
             {
-                -draft_id   => $draft_id,
-                -screen     => 'send_url_email',
-                -role       => $draft_role,
-                -process    => $process, 
+                -draft_id => $draft_id,
+                -screen   => 'send_url_email',
+                -role     => $draft_role,
+                -process  => $process,
             }
         );
-        
-        if($status == 0){ 
-            $self->report_mass_mail_errors(
-                    $errors, $root_login
-                ); 
+
+        if ( $status == 0 ) {
+            $self->report_mass_mail_errors( $errors, $root_login );
             return;
         }
         if ( $process =~ m/test/i ) {
@@ -1006,7 +1014,7 @@ sub send_url_email {
                     $self->{md_obj}->remove($draft_id);
                 }
             }
-            my $uri;                    
+            my $uri;
             if ( $q->param('archive_no_send') == 1 && $q->param('archive_message') == 1 ) {
                 $uri = $DADA::Config::S_PROGRAM_URL . '?f=view_archive&id=' . $message_id;
             }
@@ -1019,18 +1027,19 @@ sub send_url_email {
 }
 
 sub find_draft_id {
-    
-    my $self   = shift; 
-    my ($args) = @_; 
 
-    my $q                  = $args->{-cgi_obj};    
+    my $self = shift;
+    my ($args) = @_;
+
+    my $q = $args->{-cgi_obj};
     my $restore_from_draft = $q->param('restore_from_draft') || 'true';
-    
-    my $draft_id           = undef;
-    
-    # Get $draft_id based on if an id is passed, and role: 
-    
+
+    my $draft_id = undef;
+
+    # Get $draft_id based on if an id is passed, and role:
+
     if ( $self->{md_obj}->enabled ) {
+
         # $restore_from_draft defaults to, "true" if no param is passed.
         if (   $restore_from_draft ne 'true'
             && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => $args->{-role} } ) )
@@ -1072,8 +1081,9 @@ sub find_draft_id {
             }
         }
     }
-    #/ Get $draft_id based on if an id is passed, and role: 
-    return $draft_id; 
+
+    #/ Get $draft_id based on if an id is passed, and role:
+    return $draft_id;
 
 }
 
@@ -1097,16 +1107,15 @@ sub ses_params {
         $ses_params->{discussion_pop_ses_verified} =
           $ses->sender_verified( $self->{ls_obj}->param('discussion_pop_email') );
     }
-    
+
     return $ses_params;
 }
 
-
 sub wait_for_it {
-    
+
     warn 'wait_for_it'
-        if $t; 
-        
+      if $t;
+
     my $self       = shift;
     my $message_id = shift;
 
@@ -1131,22 +1140,21 @@ sub wait_for_it {
 
 sub save_as_draft {
 
-    warn 'save_as_draft' 
-        if $t; 
-        
+    warn 'save_as_draft'
+      if $t;
+
     my $self = shift;
     my ($args) = @_;
-    if($t == 1){ 
-        require Data::Dumper; 
-        warn 'args:' . Data::Dumper::Dumper($args); 
+    if ( $t == 1 ) {
+        require Data::Dumper;
+        warn 'args:' . Data::Dumper::Dumper($args);
     }
-    
+
     my $q = $args->{-cgi_obj};
 
     if ( !exists( $args->{-json} ) ) {
         $args->{-json} = 0;
     }
-
 
     return unless $self->{md_obj}->enabled;
 
@@ -1161,7 +1169,7 @@ sub save_as_draft {
             -screen  => $q->param('f'),
         }
     );
-    warn '$saved_draft_id: ' . $saved_draft_id; 
+    warn '$saved_draft_id: ' . $saved_draft_id;
 
     if ( $args->{-json} == 1 ) {
         require JSON;
@@ -1173,10 +1181,10 @@ sub save_as_draft {
             -type            => 'application/json',
         );
         warn '$json->pretty->encode($return) ' . $json->pretty->encode($return)
-            if $t; 
+          if $t;
         print $json->pretty->encode($return);
     }
-    else { 
+    else {
         return $saved_draft_id;
     }
 }
@@ -1518,16 +1526,16 @@ sub list_invite {
 sub q_obj_from_draft {
 
     warn 'q_obj_from_draft'
-        if $t; 
-        
+      if $t;
+
     my $self = shift;
     my ($args) = @_;
 
-    if($t == 1){ 
-        require Data::Dumper; 
-        warn 'args:' . Data::Dumper::Dumper($args); 
+    if ( $t == 1 ) {
+        require Data::Dumper;
+        warn 'args:' . Data::Dumper::Dumper($args);
     }
-    
+
     for ( '-screen', '-draft_id', '-role' ) {
         if ( !exists( $args->{$_} ) ) {
             croak "You MUST pass the, '$_' parameter!";
@@ -1758,34 +1766,32 @@ sub find_attachment_type {
     return $a_type;
 }
 
+sub datetime_to_ctime {
+    my $self     = shift;
+    my $datetime = shift;
 
-
-sub datetime_to_ctime { 
-    my $self     = shift; 
-    my $datetime = shift; 
-    
     require Time::Local;
     my ( $date, $time ) = split( ' ', $datetime );
     my ( $year, $month,  $day )    = split( '-', $date );
     my ( $hour, $minute, $second ) = split( ':', $time );
     $second = int( $second - 0.5 );    # no idea.
     my $time = Time::Local::timelocal( $second, $minute, $hour, $day, $month - 1, $year );
-    
-    return $time; 
+
+    return $time;
 }
 
-sub datetime_to_localtime { 
-    my $self     = shift; 
-    my $datetime = shift; 
-    my $time = $self->datetime_to_ctime($datetime); 
-    return scalar(localtime($time))
+sub datetime_to_localtime {
+    my $self     = shift;
+    my $datetime = shift;
+    my $time     = $self->datetime_to_ctime($datetime);
+    return scalar( localtime($time) );
 }
 
 sub backdated_msg_id {
 
-    my $self              = shift;
-    my $datetime          = shift;
-    my $time = $self->datetime_to_ctime($datetime); 
+    my $self     = shift;
+    my $datetime = shift;
+    my $time     = $self->datetime_to_ctime($datetime);
     my ( $sec, $min, $hour, $day, $month, $year ) = ( localtime($time) )[ 0, 1, 2, 3, 4, 5 ];
     my $message_id = sprintf( "%02d%02d%02d%02d%02d%02d", $year + 1900, $month + 1, $day, $hour, $min, $sec );
     return $message_id;
@@ -1842,8 +1848,8 @@ sub mass_mailout_info {
 sub redirect_tag_check {
 
     my $self   = shift;
-    my $errors = undef; 
-     
+    my $errors = undef;
+
     my ( $str, $root_login ) = @_;
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
@@ -1855,14 +1861,14 @@ sub redirect_tag_check {
         }
     );
     if ( !$ct->enabled ) {
-        return (1, undef);
+        return ( 1, undef );
     }
     eval { $ct->check_redirect_urls( { -str => $str, -raise_error => 1, } ); };
     if ($@) {
-        return(0, $@);
+        return ( 0, $@ );
     }
     else {
-        return (1, undef);
+        return ( 1, undef );
     }
 
 }
@@ -1945,7 +1951,7 @@ sub just_subscribed_mass_mailing {
 
 sub just_unsubscribed_mass_mailing {
 
-    my $self = shift; 
+    my $self = shift;
     my ($args) = @_;
     if ( !exists( $args->{-list} ) ) {
         croak "You MUST pass a list in the, '-list' parameter!";
@@ -2008,7 +2014,7 @@ sub just_unsubscribed_mass_mailing {
 
 sub send_last_archived_msg_mass_mailing {
 
-    my $self = shift; 
+    my $self = shift;
     my ($args) = @_;
     if ( !exists( $args->{-list} ) ) {
         croak "You MUST pass a list in the, '-list' parameter!";

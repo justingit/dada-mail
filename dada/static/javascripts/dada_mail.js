@@ -163,6 +163,57 @@ $(document).ready(function() {
 			else { 
 			}
 			
+			$("body").on("click", ".start_a_schedule", function(event) {
+					$('#popup_schedule_datetime').datetimepicker(
+						{
+							minDate: 0, 
+							inline:false, 
+							format:'Y-m-d H:i:s'
+						}
+					);
+				$.colorbox(
+					{
+						top: 0,
+						fixed: true,
+						initialHeight: 50,
+						maxHeight: 480,
+						maxWidth: 849,
+						width: 700,
+						opacity: 0.50,
+						inline:true,
+						href:"#start_a_schedule"
+					}
+				);
+			}); 
+			$("body").on("click", "#cancel_create_schedule", function(event) {
+				$('#popup_schedule_activated').prop('checked', false);
+				$("#popup_schedule_datetime").val('');
+				$.colorbox.close();
+			}); 
+			$("body").on("click", "#create_schedule", function(event) {
+				
+				$("#schedule_datetime").val(
+					$("#popup_schedule_datetime").val()
+				);
+				if($('#popup_schedule_activated').prop('checked') === true){ 
+					$('#schedule_activated').val(1); // It's not a checkbox, it's a hidden field. 
+				}
+				$("#button_action_notice").html('Working...');
+				$("#draft_role").val('schedule');
+				var ds = save_draft(false); 
+				admin_menu_drafts_notification();
+				$("#button_action_notice").html('&nbsp;');	
+				if(ds === true) { 
+					window.location.replace($("#s_program_url").val() + '?f=' + $("#f").val() + '&draft_id=' + $("#draft_id").val() + '&restore_from_draft=true&draft_role=schedule&done=1');
+				}
+				else { 
+					alert("Error Saving Schedule."); 
+				}
+				
+			}); 
+			
+			
+			
 			$("body").on("click", ".savedraft", function(event) {
 				$("#button_action_notice").html('Working...');
 				var role = $(this).attr("data-role");
@@ -196,10 +247,6 @@ $(document).ready(function() {
 					else if($("#draft_role").val() == 'stationary') {
 						window.location.replace($("#s_program_url").val() + '?f=' + $("#f").val() + '&draft_id=' + $("#draft_id").val() + '&restore_from_draft=true&draft_role=stationary&done=1');
 					}
-					else if($("#draft_role").val() == 'schedule') {
-						window.location.replace($("#s_program_url").val() + '?f=' + $("#f").val() + '&draft_id=' + $("#draft_id").val() + '&restore_from_draft=true&draft_role=schedule&done=1');
-					}
-
 				}
 				else if(ds === false) { 
 					//alert('Error Saving Draft: '); 
