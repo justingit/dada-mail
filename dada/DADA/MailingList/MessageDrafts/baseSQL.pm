@@ -1,3 +1,5 @@
+package DADA::MailingList::MessageDrafts::baseSQL; 
+
     use strict;
 
 use lib qw(
@@ -629,6 +631,7 @@ sub datetime_to_localtime {
 }
 
 sub enabled {
+    my $self = shift; 
     return 1;
 }
 
