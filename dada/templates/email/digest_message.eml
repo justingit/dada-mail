@@ -41,34 +41,36 @@ Content-Disposition: inline
 Content-Transfer-Encoding: binary
 
 
-<p>Begin Digest
-<p>Number of messages: <!-- tmpl_var num_messages -->
+<p>Begin Digest:</p>
+<p>Number of messages: <!-- tmpl_var num_messages --></p>
 
 <ul>
 <!-- tmpl_loop digest_messages -->
-
 <li>
-    <a href="#archive_id">
+    <a href="#diget_<!-- tmpl_var archive_id -->">
         <!-- tmpl_var subject -->
     </a>
-    by, <!-- tmpl_var subscriber.email --> (<!-- tmpl_var date -->)<!-- /tmpl_loop -->
+    by, 
+    <!-- tmpl_var subscriber.email --> 
+    (<!-- tmpl_var date -->)
+<!-- /tmpl_loop -->
 </li>
-
 <!-- tmpl_loop digest_messages -->
 </ul>
 
 <p>
-<a name="<!-- tmpl_var archive_id -->"></a>
-Date: <!-- tmpl_var date --><br />
-From: <!-- tmpl_var subscriber.email --><br />
-Subject: <!-- tmpl_var subject --><br />
----------------------------------------</p>
-<!-- tmpl_var plaintext_message -->
-==============================================================================
+<a name="diget_<!-- tmpl_var archive_id -->"></a>
+<strong>Date:</strong> <!-- tmpl_var date --><br />
+<strong>From:</strong> <!-- tmpl_var subscriber.email --><br />
+<strong>Subject:</strong> <!-- tmpl_var subject --></p>
+<p>
+<!-- tmpl_var html_message -->
+</p>
+<hr />
 
 <!-- /tmpl_loop -->
 
-<p>End Digest</p>
+<p>End Digest.</p>
 
 
 
