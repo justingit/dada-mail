@@ -11595,7 +11595,7 @@ sub profile_login {
 
     if ( $q->param('process') != 1 ) {
 
-        if ( $prof_sess->is_logged_in( { -cgi_obj => $q } ) ) {
+        if ( $prof_sess->is_logged_in( { -cgi_obj => $q } ) && $q->param('logged_out') != 1) {
             print $q->redirect( { -uri => $DADA::Config::PROGRAM_URL . '/profile/', } );
             return;
         }
