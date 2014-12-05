@@ -84,6 +84,8 @@ require Exporter;
   grab_url
   can_use_LWP_Simple
   can_use_AuthenCAPTCHA
+  formatted_runtime
+  
 );
 
 
@@ -3020,6 +3022,44 @@ sub can_use_AuthenCAPTCHA {
     };
 	return $can_use_captcha;
 }
+
+sub formatted_runtime {
+
+    my $d = shift || 0;
+
+    my @int = (
+        [ 'second', 1 ],
+        [ 'minute', 60 ],
+        [ 'hour',   60 * 60 ],
+        [ 'day',    60 * 60 * 24 ],
+        [ 'week',   60 * 60 * 24 * 7 ],
+        [ 'month',  60 * 60 * 24 * 30.5 ],
+        [ 'year',   60 * 60 * 24 * 30.5 * 12 ]
+    );
+    my $i = $#int;
+    my @r;
+    while ( ( $i >= 0 ) && ($d) ) {
+        if ( $d / $int[$i]->[1] >= 1 ) {
+            push @r, sprintf "%d %s%s", $d / $int[$i]->[1],
+              $int[$i]->[0], ( sprintf "%d", $d / $int[$i]->[1] ) > 1
+              ? 's'
+              : '';
+        }
+        $d %= $int[$i]->[1];
+        $i--;
+    }
+
+    my $runtime;
+    if (@r) {
+        $runtime = join ", ", @r;
+    }
+    else {
+        $runtime = '0 seconds';
+    }
+
+    return $runtime;
+}
+
 
 
 

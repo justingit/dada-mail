@@ -1329,7 +1329,7 @@ sub status {
     $status->{mailing_time} =
       $status->{last_access} - $status->{first_access};
     $status->{mailing_time_formatted} =
-      _formatted_runtime( $status->{mailing_time} );
+      formatted_runtime( $status->{mailing_time} );
 
     if ( $args->{-mail_fields} == 1 ) {
         $status->{email_fields} = $self->mail_fields_from_raw_message();
@@ -2806,42 +2806,6 @@ sub _pad_str {
     }
 }
 
-sub _formatted_runtime {
-
-    my $d = shift || 0;
-
-    my @int = (
-        [ 'second', 1 ],
-        [ 'minute', 60 ],
-        [ 'hour',   60 * 60 ],
-        [ 'day',    60 * 60 * 24 ],
-        [ 'week',   60 * 60 * 24 * 7 ],
-        [ 'month',  60 * 60 * 24 * 30.5 ],
-        [ 'year',   60 * 60 * 24 * 30.5 * 12 ]
-    );
-    my $i = $#int;
-    my @r;
-    while ( ( $i >= 0 ) && ($d) ) {
-        if ( $d / $int[$i]->[1] >= 1 ) {
-            push @r, sprintf "%d %s%s", $d / $int[$i]->[1],
-              $int[$i]->[0], ( sprintf "%d", $d / $int[$i]->[1] ) > 1
-              ? 's'
-              : '';
-        }
-        $d %= $int[$i]->[1];
-        $i--;
-    }
-
-    my $runtime;
-    if (@r) {
-        $runtime = join ", ", @r;
-    }
-    else {
-        $runtime = '0 seconds';
-    }
-
-    return $runtime;
-}
 
 sub DESTROY {
 

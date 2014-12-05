@@ -14,7 +14,7 @@ my $t = 0; #$DADA::Config::DEBUG_TRACE->{DADA_MailingList_MessageDrafts};
 use DADA::MailingList::MessageDrafts;
 use DADA::MailingList::Settings; 
 use DADA::App::MassSend; 
-
+use DADA::App::Guts; 
 
 
 
@@ -103,7 +103,7 @@ sub run_schedules {
         my $last_checked = $self->{ls_obj}->param('schedule_last_checked_time'); 
                 
         if($sched->{schedule_time} > $t){ 
-            $r .= "Schedule is to run in the future.\n";
+            $r .= "Schedule is to run in the future. (" . formatted_runtime($sched->{schedule_time} - $t)   ." from now)\n";
             next SCHEDULES; 
         }
         

@@ -1976,7 +1976,7 @@ sub sending_monitor {
 
             $will_restart_in = $tardy_threshold - ( time - $status->{last_access} );
             if ( $will_restart_in >= 1 ) {
-                $will_restart_in = _formatted_runtime($will_restart_in);
+                $will_restart_in = formatted_runtime($will_restart_in);
             }
             else {
                 $will_restart_in = undef;
@@ -2021,7 +2021,7 @@ sub sending_monitor {
                     status_bar_width          => int( $status->{percent_done} ) * 5,
                     negative_status_bar_width => 500 - ( int( $status->{percent_done} ) * 5 ),
                     need_to_send_out          => ( $status->{total_sending_out_num} - $status->{total_sent_out} ),
-                    time_since_last_sendout   => _formatted_runtime( ( time - int( $status->{last_sent} ) ) ),
+                    time_since_last_sendout   => formatted_runtime( ( time - int( $status->{last_sent} ) ) ),
                     its_killed                => $status->{should_be_restarted},
                     header_subject            => safely_decode( $status->{email_fields}->{Subject}, 1 ),
                     header_subject_label      => ( length($header_subject_label) > 50 )
@@ -2101,42 +2101,7 @@ sub print_mass_mailing_log {
     $mailout->print_log;
 }
 
-sub _formatted_runtime {
 
-    my $d = shift || 0;
-
-    my @int = (
-        [ 'second', 1 ],
-        [ 'minute', 60 ],
-        [ 'hour',   60 * 60 ],
-        [ 'day',    60 * 60 * 24 ],
-        [ 'week',   60 * 60 * 24 * 7 ],
-        [ 'month',  60 * 60 * 24 * 30.5 ],
-        [ 'year',   60 * 60 * 24 * 30.5 * 12 ]
-    );
-    my $i = $#int;
-    my @r;
-    while ( ( $i >= 0 ) && ($d) ) {
-        if ( $d / $int[$i]->[1] >= 1 ) {
-            push @r, sprintf "%d %s%s", $d / $int[$i]->[1],
-              $int[$i]->[0], ( sprintf "%d", $d / $int[$i]->[1] ) > 1
-              ? 's'
-              : '';
-        }
-        $d %= $int[$i]->[1];
-        $i--;
-    }
-
-    my $runtime;
-    if (@r) {
-        $runtime = join ", ", @r;
-    }
-    else {
-        $runtime = '0 seconds';
-    }
-
-    return $runtime;
-}
 
 sub send_url_email {
 
@@ -3167,7 +3132,7 @@ sub previewBatchSendingSpeed {
             $per_hour = commify($per_hour);
             $num_subs = commify($num_subs);
 
-            $time_to_send = _formatted_runtime( $total_hours * 60 * 60 );
+            $time_to_send = formatted_runtime( $total_hours * 60 * 60 );
 
         }
         else {

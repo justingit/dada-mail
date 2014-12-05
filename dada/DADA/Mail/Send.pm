@@ -2806,7 +2806,7 @@ sub _email_batched_finished_notification {
     }
 
     my $total_time =
-      $self->_formatted_runtime( ( $args{-end_time} - $args{-start_time} ) );
+      formatted_runtime( ( $args{-end_time} - $args{-start_time} ) );
       
       require DADA::App::ReadEmailMessages; 
       my $rm = DADA::App::ReadEmailMessages->new; 
@@ -3121,45 +3121,6 @@ sub _make_token {
 
     return $token;
 }
-
-
-
-
-sub _formatted_runtime { 
-	
-	my $self = shift;
-	my $d    = shift; 
-	
-	my @int = (
-        [ 'second', 1                ],
-        [ 'minute', 60               ],
-        [ 'hour',   60*60            ],
-        [ 'day',    60*60*24         ],
-        [ 'week',   60*60*24*7       ],
-        [ 'month',  60*60*24*30.5    ],
-        [ 'year',   60*60*24*30.5*12 ]
-    );
-    my $i = $#int;
-    my @r;
-    while ( ($i>=0) && ($d) )
-    {
-        if ($d / $int[$i] -> [1] >= 1)
-        {
-            push @r, sprintf "%d %s%s",
-                         $d / $int[$i] -> [1],
-                         $int[$i]->[0],
-                         ( sprintf "%d", $d / $int[$i] -> [1] ) > 1
-                             ? 's'
-                             : '';
-        }
-        $d %= $int[$i] -> [1];
-        $i--;
-    }
-
-    my $runtime = join ", ", @r if @r;
-    return $runtime; 
-}
-
 
 
 
