@@ -494,6 +494,7 @@ sub construct_from_text {
     my $text_message_body = $draft_q->param('text_message_body') || undef;
     my $html_message_body = $draft_q->param('html_message_body') || undef;
 
+    
     my @attachments = $self->has_attachments( { -cgi_obj => $draft_q } );
     my $num_attachments = scalar(@attachments);
 
@@ -1161,6 +1162,7 @@ sub save_as_draft {
     my $draft_id   = $q->param('draft_id')   || undef;
     my $draft_role = $q->param('draft_role') || undef;
 
+
     my $saved_draft_id = $self->{md_obj}->save(
         {
             -cgi_obj => $q,
@@ -1169,7 +1171,7 @@ sub save_as_draft {
             -screen  => $q->param('f'),
         }
     );
-    warn '$saved_draft_id: ' . $saved_draft_id;
+   # warn '$saved_draft_id: ' . $saved_draft_id;
 
     if ( $args->{-json} == 1 ) {
         require JSON;

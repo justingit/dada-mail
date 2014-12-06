@@ -164,13 +164,15 @@ $(document).ready(function() {
 			}
 			
 			$("body").on("click", ".start_a_schedule", function(event) {
-					$('#popup_schedule_datetime').datetimepicker(
-						{
-							minDate: 0, 
-							inline:false, 
-							format:'Y-m-d H:i:s'
-						}
-					);
+				
+				$('#popup_schedule_datetime').datetimepicker(
+					{
+						minDate: 0, 
+						inline:true, 
+						format:'Y-m-d H:i:s'
+					}
+				);
+				
 				$.colorbox(
 					{
 						top: 0,

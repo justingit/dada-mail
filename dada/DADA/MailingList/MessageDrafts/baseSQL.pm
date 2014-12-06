@@ -431,7 +431,6 @@ sub draft_index {
 
   FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
         my $q = $self->decode_draft( $hashref->{draft} );
-
         my $params = {
             id                      => $hashref->{id},
             list                    => $hashref->{list},

@@ -589,7 +589,6 @@ sub run {
         'draft_saved_notification'                    => \&draft_saved_notification,
         'drafts'                                      => \&drafts,
         'delete_draft'                                => \&delete_draft,
-        'run_schedules'                               => \&run_schedules, 
         'create_from_stationary'                      => \&create_from_stationary, 
         'message_body_help'                           => \&message_body_help,
         'url_message_body_help'                       => \&url_message_body_help,
@@ -1404,24 +1403,6 @@ sub delete_draft {
 
 }
 
-
-sub run_schedules { 
-    
-    my ( $admin_list, $root_login ) = check_list_security(
-        -cgi_obj  => $q,
-    );
-    $list = $admin_list;
-    require DADA::MailingList::Schedules; 
-    my $s = DADA::MailingList::Schedules->new({-list => $list});
-    print $q->header(); 
-
-    if($s->enabled) { 
-        print '<pre>'; 
-        e_print($s->run_schedules); 
-        print '</pre>';
-    }
-    
-}
 
 
 

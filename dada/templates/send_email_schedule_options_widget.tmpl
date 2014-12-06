@@ -3,7 +3,10 @@
 <!-- tmpl_if expr="(draft_role eq 'schedule')" -->
         <fieldset>
             <legend>Scheduling Options</legend>
-
+            
+            <p class="alert"> 
+                Current Server Time: <!-- tmpl_var date -->
+            </p>
         <p>
             <input type="checkbox" name="schedule_activated" id="schedule_activated" value="1" class="" />
             <label for="schedule_activated">
@@ -26,6 +29,10 @@
             <h1>
                 Scheduling Options
             </h1>
+            
+            <p class="alert"> 
+                Current Server Time: <!-- tmpl_var date -->
+            </p>
             <p>
                 <input type="checkbox" name="popup_schedule_activated" id="popup_schedule_activated" value="1" class="" />
                 <label for="popup_schedule_activated">

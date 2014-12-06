@@ -307,68 +307,66 @@ sub mass_email {
     my $message = $self->{cgi_obj}->param('message');
     my $test    = $self->{cgi_obj}->param('test') || 0;
 
-    require DADA::App::FormatMessages;
-    my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
-    $fm->mass_mailing(1);
-
-    my %headers = ();
-    $headers{Subject} = $fm->_encode_header( 'Subject', $subject );
-
     my $type = 'text/plain';
     if ( $format =~ m/html/i ) {
         $type = 'text/html';
     }
-
-    require MIME::Entity;
-    my $entity = MIME::Entity->build(
-        Type    => $type,
-        Charset => $self->{ls}->param('charset_value'),
-        Data    => safely_encode($message),
-    );
-
-    my $msg_as_string = ( defined($entity) ) ? $entity->as_string : undef;
-    $msg_as_string = safely_decode($msg_as_string);
-
-    $fm->Subject( $headers{Subject} );
-
-    my ( $final_header, $final_body );
-    eval { ( $final_header, $final_body ) = $fm->format_headers_and_body( -msg => $msg_as_string ); };
-    if ($@) {
-        carp "problems! " . $@;
-        return;
+    my $qq = CGI->new();
+       $qq->delete_all();
+        
+        $qq->param('Subject', $subject); 
+        if($type eq 'text/html'){ 
+            $qq->param('html_message_body', $message); 
+        }
+        else { 
+            $qq->param('text_message_body', $message); 
+        }
+        $qq->param('f', 'send_email');
+        $qq->param('draft_role', 'draft'); 
+    
+        require DADA::App::MassSend; 
+        my $dap = DADA::App::MassSend->new({-list => $self->{list}}); 
+        my $draft_id = $dap->save_as_draft(
+            {
+                -cgi_obj => $qq,
+                -list    => $self->{list},
+                -json    => 0,
+                
+            }
+        );
+        
+        my $process; 
+        if($test == 1){ 
+            $process = 'test'; 
+        }
+        else { 
+            $process = 1; 
+        }
+        # to fetch a draft, I need id, list and role (lame)
+        my ( $status, $errors, $message_id ) = $dap->construct_and_send(
+            {
+                -draft_id => $draft_id,
+                -screen   => 'send_email',
+                -role     => 'draft',
+                -process  => $process,
+            }
+        );
+    if ( $status == 0 ) {
+       return {
+           status => 0,
+           results =>  {
+               error => $errors        
+            }
+         };
     }
-    require DADA::Mail::Send;
-    my $mh = DADA::Mail::Send->new(
-        {
-            -list   => $self->{list},
-            -ls_obj => $self->{ls},
-        }
-    );
-
-    #    $mh->test( $self->test );
-    my %mailing = ( $mh->return_headers($final_header), Body => $final_body, );
-
-    my $message_id = $mh->mass_send(
-        {
-            -msg       => {%mailing},
-            -mass_test => $test,
-        }
-    );
-
-    if ($message_id) {
-        if ( $self->{ls}->param('archive_messages') == 1 ) {
-            require DADA::MailingList::Archives;
-            my $archive = DADA::MailingList::Archives->new( { -list => $self->{list} } );
-            $archive->set_archive_info( $message_id, $headers{Subject}, undef, undef, $mh->saved_message );
-        }
+    else { 
+        return {
+            status  => 1,
+            results =>  {
+                message_id => $self->_massaged_key($message_id), 
+            }
+        };
     }
-
-    return {
-        status  => 1,
-        results =>  {
-            message_id => $self->_massaged_key($message_id), 
-        }
-    };
 }
 
 sub settings {
