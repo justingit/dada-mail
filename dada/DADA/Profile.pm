@@ -1025,6 +1025,7 @@ sub send_profile_activation_email {
     require DADA::App::Messages;
     DADA::App::Messages::send_generic_email(
         {
+            -list    => $self->_config_profile_host_list,
             -email   => $self->{email},
             -headers => {
                 Subject => $msg_data->{subject},
@@ -1074,6 +1075,7 @@ sub send_profile_reset_password_email {
     require DADA::App::Messages;
     DADA::App::Messages::send_generic_email(
         {
+            -list    => $self->_config_profile_host_list, 
             -email   => $self->{email},
             -headers => {
                 Subject =>
@@ -1160,6 +1162,7 @@ sub send_update_profile_email_email {
 	require DADA::App::Messages;
     DADA::App::Messages::send_generic_email(
         {
+            -list    => $self->_config_profile_host_list, 
             -email   => $args->{-updated_email},
             -headers => {
                 Subject =>
@@ -1212,6 +1215,7 @@ sub send_update_email_notification {
 	require DADA::App::Messages;
     DADA::App::Messages::send_generic_email(
         {
+            -list    => $self->_config_profile_host_list, 
             -headers => {
                 Subject => $msg_data->{subject},
                 From => $self->_config_profile_email(1),
@@ -1296,7 +1300,6 @@ sub _config_profile_email {
     my $self = shift;
 	my $n    = shift || undef; 
  
-	
     if ( length($DADA::Config::PROFILE_OPTIONS->{profile_email}) > 0) {
 		my @good_addresses = (); 
 		require Email::Address;
@@ -1335,15 +1338,39 @@ sub _config_profile_email {
     }
 }
 
+sub _config_profile_host_list { 
+    my $self = shift; 
+    if ( length($DADA::Config::PROFILE_OPTIONS->{profile_host_list}) > 0) {
+        if(check_if_list_exists(-List => $DADA::Config::PROFILE_OPTIONS->{profile_host_list}) == 1){ 
+            return $DADA::Config::PROFILE_OPTIONS->{profile_host_list};
+        }
+        else { 
+            warn 'list, ' . $DADA::Config::PROFILE_OPTIONS->{profile_host_list} . ' does not exist.'; 
+            return undef; 
+        }
+    }
+    else { 
+        return undef; 
+    }
+}
+
 sub _magic_config_profile_email { 
 	my $self = shift; 
 	
-    # magically.
-    require DADA::App::Guts;
-    my @l = DADA::App::Guts::available_lists();
-    require DADA::MailingList::Settings;
-    my $ls = DADA::MailingList::Settings->new( { -list => $l[0] } );
-    return $ls->param('list_owner_email');
+	if(defined($self->_config_profile_host_list)){ 
+        require DADA::MailingList::Settings;
+	    my $ls = DADA::MailingList::Settings->new( { -list => $self->_config_profile_host_list } );
+        return $ls->param('list_owner_email');
+	}
+	else { 
+	    
+        # magically.
+        require DADA::App::Guts;
+        my @l = DADA::App::Guts::available_lists();
+        require DADA::MailingList::Settings;
+        my $ls = DADA::MailingList::Settings->new( { -list => $l[0] } );
+        return $ls->param('list_owner_email');
+    }
 }
 
 sub _is_integer {
