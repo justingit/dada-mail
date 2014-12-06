@@ -325,8 +325,8 @@ sub mass_email {
         $qq->param('draft_role', 'draft'); 
     
         require DADA::App::MassSend; 
-        my $dap = DADA::App::MassSend->new({-list => $self->{list}}); 
-        my $draft_id = $dap->save_as_draft(
+        my $dam = DADA::App::MassSend->new({-list => $self->{list}}); 
+        my $draft_id = $dam->save_as_draft(
             {
                 -cgi_obj => $qq,
                 -list    => $self->{list},
@@ -343,7 +343,7 @@ sub mass_email {
             $process = 1; 
         }
         # to fetch a draft, I need id, list and role (lame)
-        my ( $status, $errors, $message_id ) = $dap->construct_and_send(
+        my ( $status, $errors, $message_id ) = $dam->construct_and_send(
             {
                 -draft_id => $draft_id,
                 -screen   => 'send_email',
@@ -351,6 +351,8 @@ sub mass_email {
                 -process  => $process,
             }
         );
+        $dam->delete_draft($draft_id); 
+        
     if ( $status == 0 ) {
        return {
            status => 0,

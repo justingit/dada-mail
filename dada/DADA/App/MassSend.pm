@@ -1088,6 +1088,15 @@ sub find_draft_id {
 
 }
 
+sub delete_draft { 
+    my $self = shift; 
+    my $id   = shift; 
+    if ( $self->{md_obj}->enabled ) {
+        $self->{md_obj}->remove($id); 
+    }
+}
+
+
 sub ses_params {
 
     my $self = shift;
@@ -1208,6 +1217,10 @@ sub list_invite {
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
     my $li = $ls->get;
+        
+    require DADA::App::FormatMessages;
+    my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
+
 
     if ( $process =~ m/send invitation\.\.\./i )
     {    # $process is dependent on the label of the button - which is not a good idea
@@ -1374,14 +1387,17 @@ sub list_invite {
             )
           )
         {
+             
             if ( defined( $q->param($h) ) ) {
-                $headers{$h} = strip( $q->param($h) );
+                if ( $h eq 'Subject' ) {
+                    $headers{$h} = $fm->_encode_header( 'Subject', $q->param($h) );
+                }
+                else { 
+                    $headers{$h} = strip( $q->param($h) );
+                }
             }
         }
-
         #/Headers
-
-        require DADA::App::FormatMessages;
 
         my $text_message_body = $q->param('text_message_body') || undef;
         if ( $q->param('use_text_message') != 1 ) {
@@ -1408,11 +1424,22 @@ sub list_invite {
             $text_message_body = safely_encode($text_message_body);
             $html_message_body = safely_encode($html_message_body);
 
-            return undef
-              if $self->redirect_tag_check( $text_message_body, $root_login ) eq undef;
-            return undef
-              if $self->redirect_tag_check( $html_message_body, $root_login ) eq undef;
-
+            my ( $status, $errors ) = $self->redirect_tag_check($text_message_body);
+            if ( $status == 0 ) {
+                $self->report_mass_mail_errors( $errors, $root_login );
+                return;
+            }
+            undef($status);
+            undef($errors);
+            
+            my ( $status, $errors ) = $self->redirect_tag_check($html_message_body);
+            if ( $status == 0 ) {
+              $self->report_mass_mail_errors( $errors, $root_login );
+              return;
+            }
+            undef($status);
+            undef($errors);
+              
             $entity = MIME::Entity->build(
                 Type    => 'multipart/alternative',
                 Charset => $li->{charset_value},
@@ -1435,8 +1462,14 @@ sub list_invite {
 
             $html_message_body = safely_encode($html_message_body);
 
-            return undef
-              if $self->redirect_tag_check( $html_message_body, $root_login ) eq undef;
+            my ( $status, $errors ) = $self->redirect_tag_check($html_message_body);
+            if ( $status == 0 ) {
+                $self->report_mass_mail_errors( $errors, $root_login );
+                return;
+            }
+            undef($status);
+            undef($errors);
+
 
             $entity = MIME::Entity->build(
                 Type     => 'text/html',
@@ -1449,8 +1482,14 @@ sub list_invite {
         elsif ($text_message_body) {
             $text_message_body = safely_encode($text_message_body);
 
-            return undef
-              if $self->redirect_tag_check( $text_message_body, $root_login ) eq undef;
+            my ( $status, $errors ) = $self->redirect_tag_check($text_message_body);
+            if ( $status == 0 ) {
+                $self->report_mass_mail_errors( $errors, $root_login );
+                return;
+            }
+            undef($status);
+            undef($errors);
+
             $entity = MIME::Entity->build(
                 Type     => 'text/plain',
                 Data     => $text_message_body,
@@ -1462,10 +1501,18 @@ sub list_invite {
         else {
 
             warn
-"$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning: both text and html versions of invitation message blank?!";
-
-            return undef
-              if $self->redirect_tag_check( $ls->param('invite_message_text'), $root_login ) eq undef;
+"$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning: both text and html versions of invitation message blank?!";              
+              
+              my ( $status, $errors ) = $self->redirect_tag_check($ls->param('invite_message_text'));
+              if ( $status == 0 ) {
+                  $self->report_mass_mail_errors( $errors, $root_login );
+                  return;
+              }
+              undef($status);
+              undef($errors);
+              
+              
+              
             $entity = MIME::Entity->build(
                 Type     => 'text/plain',
                 Data     => safely_encode( $ls->param('invite_message_text') ),
@@ -1478,9 +1525,6 @@ sub list_invite {
 
         my $msg_as_string = ( defined($entity) ) ? $entity->as_string : undef;
         $msg_as_string = safely_encode($msg_as_string);
-
-        require DADA::App::FormatMessages;
-        my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
         $fm->Subject( $headers{Subject} );
         $fm->mass_mailing(1);
         $fm->use_email_templates(0);

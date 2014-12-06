@@ -2106,6 +2106,12 @@ sub send_url_email {
 
 sub list_invite {
 
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'mass_mailing_options'
+    );
+    $list = $admin_list;
+
     require DADA::App::MassSend;
     my $ms = DADA::App::MassSend->new({-list => $list});
     $ms->list_invite( { -cgi_obj => $q, } );
