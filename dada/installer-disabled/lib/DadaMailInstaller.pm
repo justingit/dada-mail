@@ -930,7 +930,7 @@ sub grab_former_config_vals {
 		
 		$local_q->param('configure_profiles', 1);
 		
-		for(qw(enabled profile_email enable_captcha enable_magic_subscription_forms)){ 
+		for(qw(enabled profile_email profile_host_list enable_captcha enable_magic_subscription_forms)){ 
 			if(exists($BootstrapConfig::PROFILE_OPTIONS->{$_})){ 
 				$local_q->param('profiles_' . $_, $BootstrapConfig::PROFILE_OPTIONS->{$_}); 
 			}
@@ -1687,6 +1687,7 @@ sub create_dada_config_file {
 		for(qw(
 			enabled
 			profile_email
+			profile_host_list
 			enable_captcha	
 			enable_magic_subscription_forms			
 			help                      			
@@ -1700,7 +1701,8 @@ sub create_dada_config_file {
 			change_password           			
 			delete_profile            					
 			)){ 
-				if($_ ne 'profile_email'){ 
+			    if($_ ne 'profile_email' 
+				&& $_ ne 'profile_host_list'){ 
 					$profiles_params->{'profiles_' . $_} = $q->param('profiles_' . $_) || 0;
 				}
 				else { 

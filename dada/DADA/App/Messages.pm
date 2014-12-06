@@ -41,6 +41,11 @@ sub send_generic_email {
 
     my $ls = undef;
 
+    if( exists( $args->{-list})){ 
+        if(! defined($args->{-list})){ 
+            delete($args->{-list}); 
+        }
+    }
     if ( exists( $args->{-list} ) ) {
         if ( !exists( $args->{-ls_obj} ) ) {
             require DADA::MailingList::Settings;
