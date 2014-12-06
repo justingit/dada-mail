@@ -415,7 +415,6 @@ if ( $ENV{PATH_INFO} ) {
     elsif ( $info =~ m/^profile/ ) {
 
         # profile_login
-        # profile_help
         # profile_activate
 
         # email is used just to pre-fill in the login form.
@@ -567,6 +566,7 @@ sub run {
         'membership'                                  => \&membership,
         'also_member_of'                              => \&also_member_of,
         'admin_change_profile_password'               => \&admin_change_profile_password,
+        'admin_profile_delivery_preferences'          => \&admin_profile_delivery_preferences, 
         'validate_update_email'                       => \&validate_update_email,
         'validate_remove_email'                       => \&validate_remove_email,
         'mailing_list_history'                        => \&mailing_list_history,
@@ -662,7 +662,6 @@ sub run {
         'profile_update_email'                        => \&profile_update_email,
         'profile_login'                               => \&profile_login,
         'profile_logout'                              => \&profile_logout,
-        'profile_help'                                => \&profile_help,
         'profile'                                     => \&profile,
 
         # These handled the oldstyle confirmation. For some backwards compat, I've changed
@@ -4480,6 +4479,20 @@ sub membership {
             $subscribed_to_sub_request_list = 1;
 
         }
+        
+        require DADA::Profile::Settings; 
+        my $dpa = DADA::Profile::Settings->new; 
+        my $s = $dpa->fetch(
+            { 
+                -list  => $list, 
+                -email => $email, 
+            }
+        ); 
+        my $delivery_prefs = $s->{delivery_prefs} || 'individual';
+        my $digest_timeframe = _formatted_runtime(
+            $ls->param('digest_schedule')
+        ); 
+        
 
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -4523,7 +4536,10 @@ sub membership {
                     bounced_list_moved_to_list_count => $bounced_list_moved_to_list_count,
                     bounced_list_removed_from_list   => $bounced_list_removed_from_list,
 
-                    can_have_subscriber_fields => $lh->can_have_subscriber_fields,
+                    can_have_subscriber_fields       => $lh->can_have_subscriber_fields,
+                    
+                    delivery_prefs                   => $delivery_prefs, 
+                    digest_timeframe                 => $digest_timeframe, 
 
                 },
                 -list_settings_vars_param => {
@@ -5144,8 +5160,35 @@ sub admin_change_profile_password {
     #
 
     print $q->redirect(
-        -uri => $DADA::Config::S_PROGRAM_URL . '?f=membership&email=' . $email . '&type=' . $type . '&done=1' );
+        -uri => $DADA::Config::S_PROGRAM_URL . '?f=membership&email=' . uriescape($email) . '&type=' . $type . '&done=1' );
     return;
+}
+
+sub admin_profile_delivery_preferences { 
+    my ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'membership'
+    );
+
+    my $email          = xss_filter( $q->param('email') );
+    my $list           = xss_filter( $q->param('list') );
+    my $delivery_prefs = xss_filter( $q->param('delivery_prefs') );
+    my $type           = xss_filter( $q->param('type') );
+    
+    require DADA::Profile::Settings;
+    my $dps = DADA::Profile::Settings->new; 
+    my $r = $dps->save(
+        {
+            -email   => $email, 
+            -list    => $list, 
+            -setting => 'delivery_prefs', 
+            -value   => $delivery_prefs,
+        }   
+    );
+    print $q->redirect(
+        -uri => $DADA::Config::S_PROGRAM_URL . '?f=membership&email=' . uriescape($email) . '&type=' . $type . '&done=1' );
+    return;
+ 
 }
 
 sub add {
@@ -9471,7 +9514,7 @@ sub archive {
         # That. Sucked.
 
         my ( $massaged_message_for_display, $content_type ) =
-          $archive->massaged_msg_for_display( -key => $id, -body_only => 1 );
+          $archive->massaged_msg_for_display({ -key => $id, -body_only => 1 });
 
         my $show_iframe = $ls->param('html_archives_in_iframe') || 0;
         if ( $content_type eq 'text/plain' ) {
@@ -9677,7 +9720,7 @@ sub archive_bare {
     }
 
     my $scrn = $q->header();
-    $scrn .= $la->massaged_msg_for_display( -key => $id );
+    $scrn .= $la->massaged_msg_for_display({-key => $id });
     e_print($scrn);
 
     $c->cache( 'archive_bare.' . $list . '.' . $id . '.' . $q->param('admin') . '.scrn', \$scrn );
@@ -11552,7 +11595,7 @@ sub profile_login {
 
     if ( $q->param('process') != 1 ) {
 
-        if ( $prof_sess->is_logged_in( { -cgi_obj => $q } ) ) {
+        if ( $prof_sess->is_logged_in( { -cgi_obj => $q } ) && $q->param('logged_out') != 1) {
             print $q->redirect( { -uri => $DADA::Config::PROGRAM_URL . '/profile/', } );
             return;
         }
@@ -11774,31 +11817,7 @@ sub profile_activate {
     }
 }
 
-sub profile_help {
 
-    if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1
-        || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
-    {
-        default();
-        return;
-    }
-
-    require DADA::Profile;
-    if ( !DADA::Profile::feature_enabled('help') == 1 ) {
-        default();
-        return;
-    }
-
-    require DADA::Template::Widgets;
-    my $scrn = DADA::Template::Widgets::wrap_screen(
-        {
-            -with   => 'list',
-            -screen => 'profile_help.tmpl',
-            -vars   => {}
-        }
-    );
-    e_print($scrn);
-}
 
 sub profile {
 
@@ -12002,6 +12021,22 @@ sub profile {
             return;
 
         }
+        elsif ( $q->param('process') eq 'profile_delivery_preferences' ) {
+            my $list           = xss_filter( $q->param('list') );
+            my $delivery_prefs = xss_filter( $q->param('delivery_prefs') );
+            
+            require DADA::Profile::Settings;
+            my $dps = DADA::Profile::Settings->new; 
+            my $r = $dps->save(
+                {
+                    -email   => $email, 
+                    -list    => $list, 
+                    -setting => 'delivery_prefs', 
+                    -value   => $delivery_prefs,
+                }   
+            );
+            print $q->redirect( { -uri => $DADA::Config::PROGRAM_URL . '?f=profile&edit=1' } );           
+        }
         else {
 
             my $fields = [];
@@ -12054,7 +12089,20 @@ sub profile {
                 require DADA::App::Subscriptions::Unsub;
                 my $dasu = DADA::App::Subscriptions::Unsub->new( { -list => $i->{list} } );
                 my $unsub_link = $dasu->unsub_link( { -email => $email, -mid => '00000000000000' } );
-
+                
+                my $digest_timeframe = _formatted_runtime(
+                    $ls->param('digest_schedule')
+                ); 
+                
+                require DADA::Profile::Settings; 
+                my $dpa = DADA::Profile::Settings->new; 
+                my $s = $dpa->fetch(
+                    { 
+                        -list  => $i->{list}, 
+                        -email => $email, 
+                    }
+                ); 
+                my $delivery_prefs = $s->{delivery_prefs} || 'individual';
                 push(
                     @$filled,
                     {
@@ -12062,10 +12110,11 @@ sub profile {
                         %{$li},
                         PROGRAM_URL           => $DADA::Config::PROGRAM_URL,
                         list_unsubscribe_link => $unsub_link,
+                        digest_timeframe      => $digest_timeframe,
+                        delivery_prefs        => $delivery_prefs,
                     }
                 );
             }
-
 
             my $scrn = '';
             require DADA::Template::Widgets;
@@ -12366,12 +12415,19 @@ sub profile_update_email {
         # DEV: Currently there is no description of what the error is, just
         # that, "there is one". Perhaps change that?
         #
+        
+        my $ht_errors = []; 
+        for(keys %$errors){ 
+            push(@$ht_errors, {name => $_, value => $errors->{$_}}); 
+        }
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'profile_update_email_error.tmpl',
                 -with   => 'list',
-                -vars   => {},
+                -vars   => {
+                    errors => $ht_errors, 
+                },
             }
         );
         e_print($scrn);

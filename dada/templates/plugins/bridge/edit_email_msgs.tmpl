@@ -299,6 +299,56 @@
 	
 	
 	
+    	<fieldset>
+    		<legend>
+    			Digest Message
+    		</legend>
+
+    		<fieldset>
+    			<legend>
+    				Headers
+    			</legend>
+
+<!-- tmpl_if comment --> 
+    	    <p>
+    	     <label for="mailing_list_message_from_phrase" class="label_by_5" >From:</label> <input type="text" name="mailing_list_message_from_phrase" id="mailing_list_message_from_phrase" value="<!-- tmpl_var list_settings.mailing_list_message_from_phrase escape=HTML -->" class="midi" /> &lt;<!-- tmpl_var list_settings.list_owner_email -->&gt;
+    	    </p>
+
+    	    <p>
+    	     <label for="mailing_list_message_to_phrase" class="label_by_5" >To:</label> <input type="text" name="mailing_list_message_to_phrase" id="mailing_list_message_to_phrase" value="<!-- tmpl_var list_settings.mailing_list_message_to_phrase escape=HTML -->" class="midi" /> &lt;<code>&lt;!-- tmpl_var subscriber.email --&gt;</code>&gt;
+    	    </p>
+<!-- /tmpl_if --> 
+
+
+    	    <p>
+    	     <label for="digest_message_subject" class="label_by_5" >Subject:</label> <input type="text" name="digest_message_subject" id="digest_message_subject" value="<!-- tmpl_var list_settings.digest_message_subject escape=HTML -->" class="midi" />
+    	    </p>
+
+    	</fieldset> 
+
+
+     		<fieldset>
+    			<legend>
+    				PlainText Message: 
+    			</legend>
+    		<p>
+    	        <textarea name="digest_message" id="digest_message" rows="10" cols="50" ><!-- tmpl_var list_settings.digest_message escape=HTML --></textarea> 
+    		</p>
+
+    	</fieldset> 
+
+    	<fieldset>
+    		<legend>
+    			HTML Message:
+    		</legend>
+    		<p>
+    	<textarea name="digest_message_html" id="digest_message_html" rows="10" cols="50" ><!-- tmpl_var list_settings.digest_message_html escape=HTML --></textarea> 
+    		</p>
+    	</fieldset> 
+
+    </fieldset>
+
+	
 	<input type="hidden" name="process" value="1" />
 	<input type="hidden" name="flavor" value="edit_email_msgs" />
 	<div class="buttonfloat">

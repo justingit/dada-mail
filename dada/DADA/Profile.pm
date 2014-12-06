@@ -135,16 +135,17 @@ sub exists {
 
     $sth->execute($self->{email} )
       or croak "cannot do statement (at exists)! $DBI::errstr\n";
-    my @row = $sth->fetchrow_array();
+
+      my $count = $sth->fetchrow_array;
+
     $sth->finish;
 
-	# autoviv?
-    if($row[0]){ 
-		return 1; 
-	}
-	else { 
-		return 0; 
-	}
+    if ( $count eq undef ) {
+        return 0;
+    }
+    else {
+        return $count;
+    }
 
 }
 
@@ -581,9 +582,14 @@ sub profile_update_email_report {
                     'over_subscription_quota',
                     'already_sent_sub_confirmation',
                     'no_list',
+                    'profile_fields',
                 ],
             }
         );
+        # warn 'email: ' . $info->{update_email}; 
+        # warn 'status: ' . $sub_status;
+        # warn 'errors:' . Data::Dumper::Dumper($sub_errors); 
+        
         require DADA::MailingList::Settings;
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
         push (
@@ -601,38 +607,56 @@ sub profile_update_email_report {
 	
 }
 
-# Is this used... anywhere? 
-sub update_email { 
-	my $self = shift; 
-	my $old_fields = $self->{fields}->get;
-	my $info = $self->get; 
-	# Probably some check here, just to be thorough...
+
+
+
+sub update_email {
+
+    my $self       = shift;
+    my $old_fields = $self->{fields}->get;
+    my $info       = $self->get;
+
+    # Probably some check here, just to be thorough...
+
+    # This updates the profile
+    $self->update(
+        {
+            -activated              => 1,
+            -email                  => $info->{update_email},
+            -update_email           => '',
+            -update_email_auth_code => '',
+        }
+    );
+
+    # THis updates its fields
+    my $new_prof_fields = DADA::Profile::Fields->new( { -email => $info->{update_email} } );
+    $new_prof_fields->insert(
+        {
+            -fields    => $old_fields,
+            -confirmed => 1,
+            -mode      => 'writeover',
+        }
+    );
+
+    # Why isn't the old profile fields stuff not removed?
+    my $old_prof_fields = DADA::Profile::Fields->new( { -email => $info->{email} } );
+    $old_prof_fields->remove;
+    undef($old_prof_fields);
+    
+    # This updates the DADA::Profile::Settings; 
+    require DADA::Profile::Settings;
+    my $dps = DADA::Profile::Settings->new; 
+       $dps->update(
+           { 
+               -from => $self->{email},
+               -to   => $info->{update_email},
+           }
+    ); 
 	
-	# This updates the profile 
-	$self->update(
-		{
-			-activated 			   => 1, 
-			-email		           => $info->{update_email}, 
-			-update_email           => '', 
-			-update_email_auth_code => '', 			
-		}	
-	); 
-	
-	# THis updates its fields
-	my $new_prof_fields = DADA::Profile::Fields->new({-email => $info->{update_email}}); 
-	$new_prof_fields->insert(
-		{
-			-fields    => $old_fields,
-			-confirmed => 1, 
-			-mode      => 'writeover', 
-		}
-	); 
-	# Why isn't the old profile fields stuff not removed? 
-	my $old_prof_fields = DADA::Profile::Fields->new({-email => $info->{email}}); 
-	   $old_prof_fields->remove;
-		undef($old_prof_fields); 
-	$self->{email} = $info->{update_email};
-	return 1; 
+    $self->{email} = $info->{update_email};
+    
+    
+    return 1;
 }
 
 
@@ -891,22 +915,23 @@ sub is_valid_update_profile_activation {
 		invalid_auth_code => 0, 
   	}; 
 
-
-	if($self->exists){ 
+	if($self->exists == 1){ 
 		# ... 
 	}
 	else { 
         $errors->{profile_no_exists} = 1;
         $status = 0;		
+        return ($status, $errors);
 	}
-	my $new_prof = DADA::Profile->new({-email => $args->{ -updated_email }}); 
-    
-    if ( $new_prof->exists ) {
+	
+	my $profile = $self->get;
+	
+	my $new_prof = DADA::Profile->new({-email => $profile->{ update_email }}); 
+    if ( $new_prof->exists == 1 ) {
         $errors->{profile_exists} = 1;
         $status = 0;
     }
-
-	my $profile = $self->get;
+    undef($new_prof); 
 
 	if ( check_for_valid_email( $profile->{ update_email } ) == 0 ) {
         # ...

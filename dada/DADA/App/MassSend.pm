@@ -493,8 +493,6 @@ sub construct_from_text {
     my $attachment        = $draft_q->param('attachment');
     my $text_message_body = $draft_q->param('text_message_body') || undef;
     my $html_message_body = $draft_q->param('html_message_body') || undef;
-
-    
     my @attachments = $self->has_attachments( { -cgi_obj => $draft_q } );
     my $num_attachments = scalar(@attachments);
 

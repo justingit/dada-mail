@@ -41,6 +41,9 @@ my %allowed = (
 	list_info                     => {},
 	ls                            => undef, 
 	list_type                     => 'list',
+	
+	mass_mailing_params           => {-delivery_preferences => 'individual'},
+	
 	mass_test                     => 0,
 	
 	# used anymore? 
@@ -1101,6 +1104,12 @@ sub mass_send {
 		if(exists($args->{-multi_list_send})){ 
 			$self->multi_list_send($args->{-multi_list_send}); 		
 		}
+
+		if(exists($args->{-mass_mailing_params})){
+		    #use Data::Dumper;  
+		    #carp 'mass_mailing_params 1:' . Dumper($args->{-mass_mailing_params}); 
+			$self->mass_mailing_params($args->{-mass_mailing_params}); 
+		}
 		
 		# This is also confusing - what's it for? - it is in the test
 		# Why isn't it in the, "-partial_sending" param? 
@@ -1213,11 +1222,12 @@ sub mass_send {
             if $t; 
 
 		$mailout->create({
-                        -fields          => {%fields},
-                        -list_type       => $self->list_type,
-                        -mh_obj          => $self,  
-                        -partial_sending => $self->partial_sending, 
-						-exclude_from    => $self->exclude_from, 
+                        -fields              => {%fields},
+                        -list_type           => $self->list_type,
+                        -mass_mailing_params => $self->mass_mailing_params, 
+                        -mh_obj              => $self,  
+                        -partial_sending     => $self->partial_sending, 
+						-exclude_from        => $self->exclude_from, 
                    }); 
 
 

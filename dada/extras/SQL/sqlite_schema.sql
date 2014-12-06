@@ -46,6 +46,14 @@ format text,
 raw_msg mediumtext
 );
 
+CREATE TABLE IF NOT EXISTS dada_profile_settings (
+id INTEGER PRIMARY KEY AUTOINCREMENT,
+email varchar(80),
+list varchar(16),
+setting varchar(64),
+value text
+);
+
 CREATE TABLE IF NOT EXISTS dada_bounce_scores (
 id INTEGER PRIMARY KEY AUTOINCREMENT,
 email text, 

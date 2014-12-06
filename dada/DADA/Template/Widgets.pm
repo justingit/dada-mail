@@ -1688,158 +1688,15 @@ sub screen {
         $args->{-list_settings_vars_param} = {};
     }
     
-    
-    
-    
     if(
         exists($args->{-subscriber_vars})       || 
         exists($args->{-subscriber_vars_param})
     ){ 
-
-   
-        if(!exists($args->{-subscriber_vars_param})){ 
-            $args->{-subscriber_vars_param} = {}; 
-        }
-        else { 
-      
-            if(
-                !exists($args->{-subscriber_vars})       &&  # Don't write over something that's already there. 
-                 exists($args->{-subscriber_vars_param})     # This is a rehash of the last if() statement, but it's here, for clarity...
-            ){       
-
-
-	      		if(
-					exists($args->{-subscriber_vars_param}->{-email}) &&
-					exists($args->{-subscriber_vars_param}->{-type})
-				){ 
-  					
-            	    require  DADA::MailingList::Subscribers;     
-                
-	                my $lh = DADA::MailingList::Subscribers->new(
-								{
-	                            	-list => $args->{-subscriber_vars_param}->{-list},
-	                         	}
-							); 
-              		
-					# What happens if we pass an email address that's not valid? 
-					eval { 
-		                $args->{-subscriber_vars} = $lh->get_subscriber(
-		                                                {
-		                                                    -email  => $args->{-subscriber_vars_param}->{-email}, 
-		                                                    -type   => $args->{-subscriber_vars_param}->{-type},
-		                                                    -dotted => 1, 
-		                                                }
-		                                            ); 
-					};
-					if($@){ 
-						$args->{-subscriber_vars} = {};
-						carp $@; 
-					}
-                }
-
-            } #if(!exists($args->{-subscriber_vars})){ 
-	
-				if(exists($args->{-subscriber_vars_param}->{-use_fallback_vars})){ 
-					if($args->{-subscriber_vars_param}->{-use_fallback_vars} == 1){ 
-						
-						require DADA::MailingList::Subscribers;
-					  	my $lh = DADA::MailingList::Subscribers->new(
-									{
-		                            	-list => $args->{-subscriber_vars_param}->{-list},
-		                         	}
-								);
-		
-								my $field_attrs = $lh->get_all_field_attributes; 
-								my $fallback_vars = {}; 
-								foreach(keys %$field_attrs){ 
-									$fallback_vars->{'subscriber.' . $_} = $field_attrs->{$_}->{fallback_value};
-								}
-						# This is sort of an odd placement for this, but I'm not sure 
-						# Where I want this yet...  (perhaps $lh->get_fallback_values ?)
-						
-							if(!exists($args->{-subscriber_vars}->{'subscriber.email'})){ 
-								$fallback_vars->{'subscriber.email'} = 'example@example.com'; 
-							}
-							my ($name, $domain) = split('@', $fallback_vars->{'subscriber.email'}, 2); 
-							$fallback_vars->{'subscriber.email_name'}   = $name; 
-							$fallback_vars->{'subscriber.email_domain'} = $domain; 
-						### /
-
-						foreach(keys %$fallback_vars){ 
-							if(! exists($args->{-subscriber_vars}->{$_})){ 	
-								#warn "I'm putting in a fallback field $_ that equals: " . $fallback_vars->{$_}; 
-								$args->{-subscriber_vars}->{$_} = $fallback_vars->{$_};
-							}	
-							else  { 
-								#warn "no need for the fallback var! We're good with: " . $args->{-subscriber_vars}->{$_}; 
-							}
-						}
-
-					}	
-					
-				}#if(exists($args->{-subscriber_vars_param}->{-use_fallback_vars}){
-					
-
-			if(exists($args->{-subscriber_vars_param}->{-use_fallback_vars})){ 
-				if($args->{-subscriber_vars_param}->{-use_fallback_vars} == 1){ 
-					# DEV: This is a really really REALLY good place to put an optimization - 
-					# No caching is currently done, either by this module, or another. 
-					# That's no good! 
-					# At the very least, we could put caching in 
-					# DADA::ProfileFieldsManager and just keep that around... 
-					# Ugh. 
-					# 
-					# Updated: At least in the mass mailing stuff, -use_fallback_vars param is not called, 
-					# The fallback field stuff is done with a cached copy of DADA::ProfileFieldsManager
-					# That's a good thing.
-					
-					require DADA::MailingList::Subscribers;
-				  	my $lh = DADA::MailingList::Subscribers->new(
-								{
-	                            	-list => $args->{-subscriber_vars_param}->{-list},
-	                         	}
-							);
-
-							my $fallback_vars = $lh->get_all_field_attributes; 
-
-					# This is sort of an odd placement for this, but I'm not sure 
-					# Where I want this yet...  (perhaps $lh->get_fallback_values ?)
-						$fallback_vars->{'subscriber.email'}        = 'example@example.com'; 
-					    $fallback_vars->{'subscriber.email_name'}   = 'example'; 
-					    $fallback_vars->{'subscriber.email_domain'} = 'example.com';    
-					### /
-
-					foreach(keys %$fallback_vars){ 
-						if(! exists($args->{-subscriber_vars}->{$_})){ 
-							$args->{-subscriber_vars}->{$_} = $fallback_vars->{$_};
-						}	
-					}
-				}	
-
-			}#if(exists($args->{-subscriber_vars_param}->{-use_fallback_vars}){
         
-        } #if(!exists($args->{-subscriber_vars_param})){ 
-
-      
-        if( !exists($args->{-vars}->{subscriber}) ){
+        my ($subscriber_vars, $subscriber_loop_vars) = subscriber_vars($args); 
+        $args->{-subscriber_vars}    = $subscriber_vars; 
+        $args->{-vars}->{subscriber} = $subscriber_loop_vars;  
         
-            $args->{-vars}->{subscriber} = [];
-          
-            if(exists($args->{-subscriber_vars_param}->{-in_order})){ 
-                foreach(sort %{$args->{-subscriber_vars}}){ 
-                    my $nk = $_; 
-                    $nk =~ s/subscriber\.//; 
-                    push( @{$args->{-vars}->{subscriber}}, {name => $nk, value => $args->{-subscriber_vars}->{$_}});
-                }
-            }
-            else { 
-                foreach(keys %{$args->{-subscriber_vars}}){ 
-                    my $nk = $_; 
-                       $nk =~ s/subscriber\.//; 
-                    push( @{$args->{-vars}->{subscriber}}, {name => $nk, value => $args->{-subscriber_vars}->{$_}});
-                }
-            } #if(exists($args->{-subscriber_vars_param}->{-in_order})){ 
-        } #if( !exists($args->{-vars}->{subscriber}) ){
     } # exists($args->{-subscriber_vars}) || exists($args->{-subscriber_vars_param})
     else { 
         $args->{-subscriber_vars}       = {};
@@ -2188,6 +2045,159 @@ sub screen {
 	}
 }
 
+
+
+sub subscriber_vars {
+    
+    my ($args) = @_;
+     
+    if(!exists($args->{-subscriber_vars_param})){ 
+        $args->{-subscriber_vars_param} = {}; 
+    }
+    else { 
+
+        if(
+            !exists($args->{-subscriber_vars})       &&  # Don't write over something that's already there. 
+             exists($args->{-subscriber_vars_param})     # This is a rehash of the last if() statement, but it's here, for clarity...
+        ){       
+
+
+      		if(
+    			exists($args->{-subscriber_vars_param}->{-email}) &&
+    			exists($args->{-subscriber_vars_param}->{-type})
+    		){ 
+
+        	    require  DADA::MailingList::Subscribers;     
+
+                my $lh = DADA::MailingList::Subscribers->new(
+    						{
+                            	-list => $args->{-subscriber_vars_param}->{-list},
+                         	}
+    					); 
+
+    			# What happens if we pass an email address that's not valid? 
+    			eval { 
+                    $args->{-subscriber_vars} = $lh->get_subscriber(
+                                                    {
+                                                        -email  => $args->{-subscriber_vars_param}->{-email}, 
+                                                        -type   => $args->{-subscriber_vars_param}->{-type},
+                                                        -dotted => 1, 
+                                                    }
+                                                ); 
+    			};
+    			if($@){ 
+    				$args->{-subscriber_vars} = {};
+    				carp $@; 
+    			}
+            }
+
+        } #if(!exists($args->{-subscriber_vars})){ 
+
+    		if(exists($args->{-subscriber_vars_param}->{-use_fallback_vars})){ 
+    			if($args->{-subscriber_vars_param}->{-use_fallback_vars} == 1){ 
+
+    				require DADA::MailingList::Subscribers;
+    			  	my $lh = DADA::MailingList::Subscribers->new(
+    							{
+                                	-list => $args->{-subscriber_vars_param}->{-list},
+                             	}
+    						);
+
+    						my $field_attrs = $lh->get_all_field_attributes; 
+    						my $fallback_vars = {}; 
+    						foreach(keys %$field_attrs){ 
+    							$fallback_vars->{'subscriber.' . $_} = $field_attrs->{$_}->{fallback_value};
+    						}
+    				# This is sort of an odd placement for this, but I'm not sure 
+    				# Where I want this yet...  (perhaps $lh->get_fallback_values ?)
+
+    					if(!exists($args->{-subscriber_vars}->{'subscriber.email'})){ 
+    						$fallback_vars->{'subscriber.email'} = 'example@example.com'; 
+    					}
+    					my ($name, $domain) = split('@', $fallback_vars->{'subscriber.email'}, 2); 
+    					$fallback_vars->{'subscriber.email_name'}   = $name; 
+    					$fallback_vars->{'subscriber.email_domain'} = $domain; 
+    				### /
+
+    				foreach(keys %$fallback_vars){ 
+    					if(! exists($args->{-subscriber_vars}->{$_})){ 	
+    						#warn "I'm putting in a fallback field $_ that equals: " . $fallback_vars->{$_}; 
+    						$args->{-subscriber_vars}->{$_} = $fallback_vars->{$_};
+    					}	
+    					else  { 
+    						#warn "no need for the fallback var! We're good with: " . $args->{-subscriber_vars}->{$_}; 
+    					}
+    				}
+
+    			}	
+
+    		}#if(exists($args->{-subscriber_vars_param}->{-use_fallback_vars}){
+
+
+    	if(exists($args->{-subscriber_vars_param}->{-use_fallback_vars})){ 
+    		if($args->{-subscriber_vars_param}->{-use_fallback_vars} == 1){ 
+    			# DEV: This is a really really REALLY good place to put an optimization - 
+    			# No caching is currently done, either by this module, or another. 
+    			# That's no good! 
+    			# At the very least, we could put caching in 
+    			# DADA::ProfileFieldsManager and just keep that around... 
+    			# Ugh. 
+    			# 
+    			# Updated: At least in the mass mailing stuff, -use_fallback_vars param is not called, 
+    			# The fallback field stuff is done with a cached copy of DADA::ProfileFieldsManager
+    			# That's a good thing.
+
+    			require DADA::MailingList::Subscribers;
+    		  	my $lh = DADA::MailingList::Subscribers->new(
+    						{
+                            	-list => $args->{-subscriber_vars_param}->{-list},
+                         	}
+    					);
+
+    					my $fallback_vars = $lh->get_all_field_attributes; 
+
+    			# This is sort of an odd placement for this, but I'm not sure 
+    			# Where I want this yet...  (perhaps $lh->get_fallback_values ?)
+    				$fallback_vars->{'subscriber.email'}        = 'example@example.com'; 
+    			    $fallback_vars->{'subscriber.email_name'}   = 'example'; 
+    			    $fallback_vars->{'subscriber.email_domain'} = 'example.com';    
+    			### /
+
+    			foreach(keys %$fallback_vars){ 
+    				if(! exists($args->{-subscriber_vars}->{$_})){ 
+    					$args->{-subscriber_vars}->{$_} = $fallback_vars->{$_};
+    				}	
+    			}
+    		}	
+
+    	}#if(exists($args->{-subscriber_vars_param}->{-use_fallback_vars}){
+
+    } #if(!exists($args->{-subscriber_vars_param})){ 
+
+
+    if( !exists($args->{-vars}->{subscriber}) ){
+
+        $args->{-vars}->{subscriber} = [];
+
+        if(exists($args->{-subscriber_vars_param}->{-in_order})){ 
+            foreach(sort %{$args->{-subscriber_vars}}){ 
+                my $nk = $_; 
+                $nk =~ s/subscriber\.//; 
+                push( @{$args->{-vars}->{subscriber}}, {name => $nk, value => $args->{-subscriber_vars}->{$_}});
+            }
+        }
+        else { 
+            foreach(keys %{$args->{-subscriber_vars}}){ 
+                my $nk = $_; 
+                   $nk =~ s/subscriber\.//; 
+                push( @{$args->{-vars}->{subscriber}}, {name => $nk, value => $args->{-subscriber_vars}->{$_}});
+            }
+        } #if(exists($args->{-subscriber_vars_param}->{-in_order})){ 
+    } #if( !exists($args->{-vars}->{subscriber}) ){
+
+    return ($args->{-subscriber_vars}, $args->{-vars}->{subscriber}); 
+
+}
 
 sub date_params { 
 	

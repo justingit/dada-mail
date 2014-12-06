@@ -260,6 +260,8 @@ sub SQL_subscriber_profile_join_statement {
     }
     # init vars:
 
+    my $ls = DADA::MailingList::Settings->new({-list => $self->{list}}); 
+
     # type list black_List, white_listed, etc
     if ( !$args->{-type} ) {
         $args->{-type} = 'list';
@@ -279,8 +281,13 @@ sub SQL_subscriber_profile_join_statement {
     if(!exists($args->{-user_order_by})){ 
         $args->{-user_order_by} = 1; 
     }
-
-
+    
+    if(!exists($args->{-mass_mailing_params})) { 
+        $args->{-mass_mailing_params} = 
+        {
+            -delivery_preferences => 'all', # individual, digest, all
+        }; 
+    }
 
     if ( exists( $args->{-include_from} ) ) {
         if ( exists( $args->{-include_from}->[0] ) ) {
@@ -307,9 +314,9 @@ sub SQL_subscriber_profile_join_statement {
         $args->{-select_fields}->{':all'} = 1; 
     }
 
-    my $subscriber_table     = $self->{sql_params}->{subscriber_table};
-    my $profile_fields_table = $self->{sql_params}->{profile_fields_table};
-
+    my $subscriber_table       = $self->{sql_params}->{subscriber_table};
+    my $profile_fields_table   = $self->{sql_params}->{profile_fields_table};
+    my $profile_settings_table = $self->{sql_params}->{profile_settings_table};
     # We need the email and list from $subscriber_table
     my $query;
 
@@ -391,7 +398,7 @@ sub SQL_subscriber_profile_join_statement {
       . $subscriber_table
       . '.list_status = '
       . $self->{dbh}->quote('1') . ' ';
-
+      
     # This is all to query the $dada_profile_fields_table
     # The main thing, is that we only want the SQL statement to hold
     # fields that we're actually looking for.
@@ -530,9 +537,55 @@ sub SQL_subscriber_profile_join_statement {
               . '.email = b.email) ';
             $query .= $ex_from_query;
         }
+    }    
+    
+
+#    require Data::Dumper; 
+#    warn '$args->{-mass_mailing_params}' . Data::Dumper::Dumper($args->{-mass_mailing_params}); 
+    
+    my $digest_subq = ' AND EXISTS (SELECT * FROM ' . 
+    $profile_settings_table . 
+    ' WHERE ' . 
+    $subscriber_table . 
+    '.email = ' . 
+    $profile_settings_table . 
+    '.email AND ' .
+    $profile_settings_table . 
+    '.list = ' . $self->{dbh}->quote( $self->{list}). 
+    ' AND ' . 
+    $profile_settings_table . 
+    '.setting = \'delivery_prefs\' AND ' .
+    $profile_settings_table . 
+    '.value = \'digest\') '; 
+    
+    my $individual_subq = ' AND NOT EXISTS (SELECT * FROM ' . 
+    $profile_settings_table . 
+    ' WHERE ' . 
+    $subscriber_table . 
+    '.email = ' . 
+    $profile_settings_table . 
+    '.email AND ' .
+    $profile_settings_table . 
+    '.list = ' . $self->{dbh}->quote( $self->{list}). 
+    ' AND ' . 
+    $profile_settings_table . 
+    '.setting = \'delivery_prefs\' AND (' .
+    $profile_settings_table . 
+    '.value = ' . $self->{dbh}->quote("digest") . ' OR ' . $profile_settings_table . 
+    '.value = ' . $self->{dbh}->quote("hold") .' ) ) ';
+        
+    if($args->{-mass_mailing_params}->{-delivery_preferences} eq 'digest'
+        && $ls->param('digest_enable') == 1
+    ){         
+        $query .= $digest_subq; 
+    }
+    elsif($args->{-mass_mailing_params}->{-delivery_preferences} eq 'individual'
+        && $ls->param('digest_enable') == 1
+    ){        
+        $query .= $individual_subq; 
     }
 
-    # /
+
 
     if ( exists( $args->{-include_from} )
         && $self->{sql_params}->{dbtype} =~ m/^mysql$|^SQLite$/ )
@@ -582,7 +635,7 @@ sub SQL_subscriber_profile_join_statement {
 	}
 	
     warn 'QUERY: ' . $query
-        if $t;
+             if $t;
     
     return $query;
 }
@@ -1260,15 +1313,16 @@ sub create_mass_sending_file {
     my $self = shift;
 
     my %args = (
-        -Type            => 'list',
-        -Pin             => 1,
-        -ID              => undef,
-        -Ban             => undef,
-        -Bulk_Test       => 0,
-        -Save_At         => undef,
-        -Test_Recipient  => undef,
-        -partial_sending => {},
-        -exclude_from    => [],
+        -Type                => 'list',
+        -Pin                 => 1,
+        -ID                  => undef,
+        -Ban                 => undef,
+        -Bulk_Test           => 0,
+        -Save_At             => undef,
+        -Test_Recipient      => undef,
+        -partial_sending     => {},
+        -mass_mailing_params => {},
+        -exclude_from        => [],
         @_
     );
 
@@ -1287,6 +1341,7 @@ sub create_mass_sending_file {
     }
 
     $list =~ s/ /_/g;    # really...
+
 
     my ( $sec, $min, $hour, $day, $month, $year ) =
       (localtime)[ 0, 1, 2, 3, 4, 5 ];
@@ -1403,10 +1458,11 @@ sub create_mass_sending_file {
 		
         my $query = $self->SQL_subscriber_profile_join_statement(
             {
-                -type            => $args{-Type},
-                -partial_listing => $args{-partial_sending},
-                -exclude_from    => $args{-exclude_from},
-                -include_from    => $args{-include_from},
+                -type                => $args{-Type},
+                -partial_listing     => $args{-partial_sending},
+                -mass_mailing_params => $args{-mass_mailing_params},
+                -exclude_from        => $args{-exclude_from},
+                -include_from        => $args{-include_from},
             }
         );
 

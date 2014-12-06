@@ -58,6 +58,14 @@ required                    char(1) DEFAULT 0 NOT NULL,
     CONSTRAINT UNIQUE (field)
 ) CHARACTER SET utf8 COLLATE utf8_bin;
 
+CREATE TABLE IF NOT EXISTS dada_profile_settings (
+id int4 not null primary key auto_increment,
+email                            varchar(80),
+list                             varchar(16),
+setting                          varchar(64),
+value                            text
+) CHARACTER SET utf8 COLLATE utf8_bin;
+
 CREATE TABLE IF NOT EXISTS dada_archives (
 list                          varchar(16),
 archive_id                    varchar(32),

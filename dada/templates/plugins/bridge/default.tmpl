@@ -891,6 +891,44 @@ General
 
 
 <fieldset> 
+  <legend> 
+      Digests
+  </legend> 
+  <table class="options_tb"> 
+   <tr>
+    <td class="checkbox_container"> 
+        <p>
+            <input type="checkbox" name="digest_enable" id="digest_enable" value="1" <!-- tmpl_if list_settings.digest_enable --> checked="checked"<!-- /tmpl_if --> />
+        </p>
+    </td> 
+    <td>
+        <p>
+            <label for="digest_enable"> 
+                Enable Digests
+            </label> 
+        </p>
+        <table class="options_tb"> 
+         <tr>
+          <td>
+              <p>
+                  <label for="digest_schedule"> 
+                      Send Digests Every: 
+                  </label>
+                  <!-- tmpl_var digest_schedule_popup_menu -->
+              </p>
+            </td> 
+           </tr>
+          </table>
+          
+      </td> 
+     </tr>
+    </table> 
+  
+  
+</fieldset> 
+
+
+<fieldset> 
  <legend> 
 Mailing List Security
 </legend> 

@@ -66,6 +66,10 @@ ok($p->exists == 1, "Profile now exists(1).");
 $p->remove; 
 ok($p->exists == 0, "Profile does not exist, anymore."); 
 
+my ( $status, $errors ) = $p->is_valid_update_profile_activation;
+require Data::Dumper; 
+diag $status; 
+diag Data::Dumper::Dumper($errors); 
 
 
 

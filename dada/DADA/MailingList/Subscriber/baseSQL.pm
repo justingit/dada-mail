@@ -218,7 +218,8 @@ sub add {
                             -password  => $args->{-profile}->{-password},
                             -activated => 1,
                         };
-                        warn 'creating a new Profile: ' . Data::Dumper::Dumper($insert_profile_args);
+                        warn 'creating a new Profile: ' . Data::Dumper::Dumper($insert_profile_args)
+                            if $t; 
                         $prof->insert($insert_profile_args);
                     }
                 }

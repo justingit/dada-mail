@@ -318,7 +318,7 @@ a {
 }
 
 a:link {
-	color: #339;
+	color: #339; 
 }
 
 a:visited {
@@ -330,6 +330,9 @@ a:hover {
 }
 
 a:active {
+}
+.ui-widget-content a {
+	color: #339; 
 }
 
 /* ----- FORMS ----- */

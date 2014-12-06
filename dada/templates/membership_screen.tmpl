@@ -11,7 +11,7 @@
 		<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_list">
 			Membership
 		</a>
-		 &#187; <!-- tmpl_var email -->
+		 &#187; <!-- tmpl_var email escape="HTML" -->
 	</div>
 	<!-- tmpl_include help_link_widget.tmpl -->
 </div>
@@ -30,7 +30,7 @@
 
 <form> 
 	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" /> 
-	<input type="hidden" id="email"         name="email"         value="<!-- tmpl_var email -->" /> 
+	<input type="hidden" id="email"         name="email"         value="<!-- tmpl_var email escape="HTML" -->" /> 
 </form> 
 
 
@@ -61,15 +61,18 @@
 			</li>
 		<!-- /tmpl_if --> 
 		
-		
-		
-		
+			<li> 
+				<a href="#delivery_preferences_tab">
+					Delivery Preferences
+				</a>
+			</li>
+
 	</ul>
 
 	<div id="membership_tab"> 
 
 		<!-- tmpl_if is_bouncing_address --> 
-			<h1><!-- tmpl_var email --> is Bouncing Back Messages.</h1> 
+			<h1><!-- tmpl_var email escape="HTML" --> is Bouncing Back Messages.</h1> 
 			
 			<p>
 				Choose to either reinstate the address back on to your Subscribers,
@@ -85,7 +88,7 @@
 				<!-- tmpl_unless member_of_num --> 
 					<div class="clearskiesbox">
 						<p>
-							<!-- tmpl_var email --> isn't a part of your Mailing List.
+							<!-- tmpl_var email escape="HTML" --> isn't a part of your Mailing List.
 						</p>
 					</div>
 				<!-- tmpl_else --> 
@@ -106,13 +109,13 @@
 					<!-- tmpl_if subscribed_to_sub_request_list --> 
 						<fieldset>
 						<legend>Subscription Requests</legend>
-						<p><!-- tmpl_var email --> has requested to be Subscribed to your Mailing List.</p>
+						<p><!-- tmpl_var email escape="HTML" --> has requested to be Subscribed to your Mailing List.</p>
 						<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
 							<input type="hidden" name="f"       value="subscription_requests" />
 							<input type="hidden" name="type" value="sub_request_list" />
-							<input type="hidden" name="address" value="<!-- tmpl_var email -->" />
+							<input type="hidden" name="address" value="<!-- tmpl_var email escape="HTML" -->" />
 							<input type="hidden" name="return_to" value="membership" />
-							<input type="hidden" name="return_address" value="<!-- tmpl_var email -->" />
+							<input type="hidden" name="return_address" value="<!-- tmpl_var email escape="HTML" -->" />
 							<input type="submit" name="process"  class="processing" value="Approve Subscription Request" />
 							<input type="submit" name="process"  class="cautionary" value="Deny Subscription Request" />
 						</form>
@@ -124,13 +127,13 @@
 					<!-- tmpl_if subscribed_to_unsub_request_list --> 
 						<fieldset>
 						<legend>Unsubscription Requests</legend>
-						<p><!-- tmpl_var email --> has requested to be Unsubscribed from your Mailing List.</p>
+						<p><!-- tmpl_var email escape="HTML" --> has requested to be Unsubscribed from your Mailing List.</p>
 						<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
 							<input type="hidden" name="f"       value="unsubscription_requests" />
 							<input type="hidden" name="type" value="unsub_request_list" />
-							<input type="hidden" name="address" value="<!-- tmpl_var email -->" />
+							<input type="hidden" name="address" value="<!-- tmpl_var email escape="HTML" -->" />
 							<input type="hidden" name="return_to" value="membership" />
-							<input type="hidden" name="return_address" value="<!-- tmpl_var email -->" />
+							<input type="hidden" name="return_address" value="<!-- tmpl_var email escape="HTML" -->" />
 							<input type="submit" name="process"  class="processing" value="Approve Unsubscription Request" />
 							<input type="submit" name="process"  class="cautionary" value="Deny Unsubscription Request" />
 						</form>
@@ -144,12 +147,12 @@
 				<legend>Add</legend>
 
 					<form  action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" id="add_email_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-						<input type="hidden" name="email" value="<!-- tmpl_var email -->" id="add_email" />
+						<input type="hidden" name="email" value="<!-- tmpl_var email escape="HTML" -->" id="add_email" />
 						<input type="hidden" name="process" value="1" id="add_process"/>
 						<input type="hidden" name="rand_string" id="add_rand_string" value="<!-- tmpl_var rand_string -->" />
 						<input type="hidden" name="method" value="via_add_one" id="add_method" />
 						<input type="hidden" name="return_to" value="membership" id="add_return_to" />
-						<input type="hidden" name="return_address" value="<!-- tmpl_var email -->" id="add_return_address" />
+						<input type="hidden" name="return_address" value="<!-- tmpl_var email escape="HTML" -->" id="add_return_address" />
 						<p>
 							<label for="type_add">
 								&#8594; Add
@@ -168,13 +171,13 @@
 				<!-- tmpl_if member_of_num --> 
 
 				<form action="<!-- tmpl_var S_PROGRAM_URL -->" id="update_email_form" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-					<input type="hidden" name="original_email" id="original_email" value="<!-- tmpl_var email -->" />
+					<input type="hidden" name="original_email" id="original_email" value="<!-- tmpl_var email escape="HTML" -->" />
 				<p>
 					<label for="updated_email">
 						&#8596; Update
 					</label> address to:
 
-					<input type="text" id="updated_email" name="updated_email" value="<!-- tmpl_var email -->" />
+					<input type="text" id="updated_email" name="updated_email" value="<!-- tmpl_var email escape="HTML" -->" />
 					<input type="button" value="Update..." class="cautionary" id="validate_update_email" />
 
 					<!-- tmpl_if root_login -->
@@ -218,10 +221,10 @@
 					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="remove_email_form">
 					<input type="hidden" name="process" value="delete" />
 
-					<input type="hidden" name="address" value="<!-- tmpl_var email -->" />
+					<input type="hidden" name="address" value="<!-- tmpl_var email escape="HTML" -->" />
 					<input type="hidden" name="f"       value="remove_subscribers" />	
 					<input type="hidden" name="return_to" value="membership" />
-					<input type="hidden" name="return_address" value="<!-- tmpl_var email -->" />
+					<input type="hidden" name="return_address" value="<!-- tmpl_var email escape="HTML" -->" />
 					<p>
 						<label for="type_remove">&#8592;  Remove</label> address:
 						<input type="button" id="validate_remove_email" value="Remove..." class="cautionary"  />
@@ -244,7 +247,7 @@
 				
 				<input type="hidden" name="flavor" value="mailing_list_history" /> 
 				<input type="hidden" name="mode" value="export_csv" /> 				
-				<input type="hidden" name="email" value="<!-- tmpl_var email -->" /> 
+				<input type="hidden" name="email" value="<!-- tmpl_var email escape="HTML" -->" /> 
 				
 				<p>
 				<input type="radio" id="membership_history_this_list" name="membership_history" value="this_list" class="radio_toggle_membership_history" checked="checked" />
@@ -277,7 +280,7 @@
 
 		<input type="hidden" name="flavor" value="membership_activity" /> 
 		<input type="hidden" name="mode" value="export_csv" /> 				
-		<input type="hidden" name="email" value="<!-- tmpl_var email -->" /> 
+		<input type="hidden" name="email" value="<!-- tmpl_var email escape="HTML" -->" /> 
 	
 		<div class="buttonfloat"> 
 			<input type="submit" value="Export Mailing List Activity (csv)" class="processing" />
@@ -378,7 +381,7 @@
 						<div id="change_profile_password_form" style="display:none">
 							<form name="change_profile_password" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 								<input type="hidden" name="f" value="admin_change_profile_password" /> 
-								<input type="hidden" name="email" value="<!-- tmpl_var email -->" />
+								<input type="hidden" name="email" value="<!-- tmpl_var email escape="HTML" -->" />
 								<input type="hidden" name="type" value="<!-- tmpl_var type -->" />
 
 								<p>
@@ -403,7 +406,51 @@
 		
 		</div> 
 	<!-- /tmpl_if --> 
-	 
+	
+	
+	<div id="delivery_preferences_tab">
+
+        <!-- tmpl_unless list_settings.digest_enable --> 
+    	    <div class="clearskiesbox">
+    	        <p>Digests are currently disable, and these settings are not used.</p>
+    	    </div> 
+    	<!-- /tmpl_unless -->
+    	
+        <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
+            
+            <input type="hidden" name="f"        value="admin_profile_delivery_preferences" /> 
+            <input type="hidden" name="list"     value="<!-- tmpl_var list_settings.list -->" /> 
+            <input type="hidden" name="email"    value="<!-- tmpl_var email escape="HTML" -->" /> 
+
+            <input type="hidden" name="type"     value="<!-- tmpl_var type -->" />
+			
+            <p>
+                <input type="radio" name="delivery_prefs" value="individual" id="delivery_prefs_individual" <!-- tmpl_if expr="delivery_prefs eq 'individual'" -->checked="checked"<!-- /tmpl_if --> />
+                    <label for="delivery_prefs_individual">
+                        Receive Individual Messages
+                    </label>
+                    <br />
+                <input type="radio" name="delivery_prefs" value="digest" id="delivery_prefs_digest" <!-- tmpl_if expr="delivery_prefs eq 'digest'" -->checked="checked"<!-- /tmpl_if --> >
+                    <label for="delivery_prefs_digest">
+                        Receive Messages in a Digest
+                    </label> (<!-- tmpl_var digest_timeframe -->)
+                    <br />
+                <input type="radio" name="delivery_prefs" value="hold" id="delivery_prefs_hold" <!-- tmpl_if expr="delivery_prefs eq 'hold'" -->checked="checked"<!-- /tmpl_if --> >
+                    <label for="delivery_prefs_hold">
+                        Hold Mailings
+                    </label> (vacation, etc)     
+                    
+                    <div class="buttonfloat">    
+                    <input type="submit" value="Save Delivery Preferences" class="processing" /> 
+                    </div>
+                    <div class="floatclear"></div>                       
+            </p>
+            
+        </form>
+        
+
+
+	</div>
 </div> 
 
 

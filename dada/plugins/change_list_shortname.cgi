@@ -255,14 +255,15 @@ my %p = %DADA::Config::SQL_PARAMS;
 
 
 my $query_string = 
-"UPDATE  $p{subscriber_table} SET list = ? WHERE list = ?;
-UPDATE  $p{archives_table} SET list = ? WHERE list = ?; 	
-UPDATE  $p{settings_table} SET list = ? WHERE list = ?; 
-UPDATE  $p{settings_table} SET value = ? WHERE value = ? and setting = 'list';
-UPDATE  $p{bounce_scores_table} SET list = ? WHERE list = ?; 
-UPDATE  $p{clickthrough_url_log_table} SET list = ? WHERE list = ?; 
-UPDATE  $p{mass_mailing_event_log_table} SET list = ? WHERE list = ?; 
-UPDATE  $p{password_protect_directories_table} SET list = ? WHERE list = ?";
+"UPDATE  $p{subscriber_table}                   SET list = ?  WHERE list = ?;
+ UPDATE  $p{archives_table}                     SET list = ?  WHERE list = ?;
+ UPDATE  $p{bounce_scores_table}                SET list = ?  WHERE list = ?;
+ UPDATE  $p{clickthrough_url_log_table}         SET list = ?  WHERE list = ?;
+ UPDATE  $p{mass_mailing_event_log_table}       SET list = ?  WHERE list = ?;
+ UPDATE  $p{password_protect_directories_table} SET list = ?  WHERE list = ?;
+ UPDATE  $p{profile_settings_table}             SET list = ?  WHERE list = ?;
+ UPDATE  $p{settings_table}                     SET list = ?  WHERE list = ?;
+ UPDATE  $p{settings_table}                     SET value = ? WHERE value = ? and setting = 'list';";
 
 my @queries = split("\n", $query_string); 
 

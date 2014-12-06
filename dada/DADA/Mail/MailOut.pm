@@ -527,9 +527,10 @@ sub create {
     # The Temporary Subscriber List
     $self->create_subscriber_list(
         {
-            -mh_obj          => $args->{-mh_obj},
-            -partial_sending => $args->{-partial_sending},
-            -exclude_from    => $args->{-exclude_from},
+            -mh_obj              => $args->{-mh_obj},
+            -partial_sending     => $args->{-partial_sending},
+            -exclude_from        => $args->{-exclude_from},
+            -mass_mailing_params => $args->{-mass_mailing_params},
         }
     );
 
@@ -758,7 +759,10 @@ sub create_subscriber_list {
     my $self = shift;
 
     my ($args) = @_;
-
+    
+    use Data::Dumper; 
+    carp 'mass_mailing_params 2:' . Dumper($args); 
+    
     unless ( $args->{-mh_obj}->isa('DADA::Mail::Send') ) {
         croak "The DADA::Mail::Send object has been passed, but it's not isa DADA::Mail::Send! ";
     }
@@ -771,13 +775,12 @@ sub create_subscriber_list {
     my $lock = $self->lock_file($file);
 
     my %cmf_args = (
-        -ID             => $self->_internal_message_id,
-        -Type           => $self->mailout_type,
-        -Save_At        => $self->dir . '/' . $file_names->{tmp_subscriber_list},
-        -Bulk_Test      => $args->{-mh_obj}->{mass_test},
-        -Test_Recipient => $args->{-mh_obj}->mass_test_recipient,
-        -Ban            => $args->{-mh_obj}->{do_not_send_to},
-
+        -ID                  => $self->_internal_message_id,
+        -Type                => $self->mailout_type,
+        -Save_At             => $self->dir . '/' . $file_names->{tmp_subscriber_list},
+        -Bulk_Test           => $args->{-mh_obj}->{mass_test},
+        -Test_Recipient      => $args->{-mh_obj}->mass_test_recipient,
+        -Ban                 => $args->{-mh_obj}->{do_not_send_to},
         -Create_Tokens => ( $args->{-mh_obj}->list_type eq 'invitelist' || $args->{-mh_obj}->list_type eq 'list' )
         ? 1
         : 0,
@@ -786,7 +789,9 @@ sub create_subscriber_list {
         # I'm pretty scoobied why these are passed as params, and the above are just
         # culled from the $mh object. Like, what?
 
-        -partial_sending => $args->{-partial_sending},
+        -partial_sending     => $args->{-partial_sending},
+        -mass_mailing_params => $args->{-mass_mailing_params},
+        
     );
     if ( $DADA::Config::MULTIPLE_LIST_SENDING == 1 ) {
         if ( $DADA::Config::MULTIPLE_LIST_SENDING_TYPE eq 'merged' ) {

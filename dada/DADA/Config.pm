@@ -233,7 +233,6 @@ $PROFILE_OPTIONS ||= {
     update_email_options => {
         send_notification_to_profile_email => 0,
         subscription_check_skip            => 'auto',
-
     },
 
     gravatar_options => {
@@ -242,7 +241,6 @@ $PROFILE_OPTIONS ||= {
     },
 
     features => {
-        help                       => 1,
         login                      => 1,
         register                   => 1,
         password_reset             => 1,
@@ -251,7 +249,7 @@ $PROFILE_OPTIONS ||= {
         protected_directories      => 1,
         update_email_address       => 1,
         change_password            => 1,
-        delete_profile             => 1,
+        delete_profile             => 0,
     },
     cookie_params => {
         -name    => 'dada_profile',
@@ -486,6 +484,7 @@ $DEBUG_TRACE ||= {
 
     DADA_App_BounceHandler             => 0,
     DADA_App_DBIHandle                 => 0,
+    DADA_App_Digests                   => 0, 
     DADA_App_FormatMessages            => 0,
     DADA_App_Subscriptions             => 0,
     DADA_Logging_Clickthrough          => 0,
@@ -1525,6 +1524,11 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
     mailing_list_message_subject     => undef,
     mailing_list_message             => undef,
     mailing_list_message_html        => undef,
+    
+    digest_message_subject           => undef, 
+    digest_message                   => undef, 
+    digest_message_html              => undef, 
+    
 
     send_archive_message_subject     => undef,
     send_archive_message             => undef,
@@ -1657,6 +1661,10 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
     msg_labeled_as_spam_msg_subject => undef,
     msg_labeled_as_spam_msg => undef,
 
+    digest_enable               => 0, 
+    digest_schedule             => 86400, 
+    digest_last_archive_id_sent => undef, 
+
     # Tracker
     tracker_record_view_count                       => 10,
     tracker_auto_parse_links                        => 1,
@@ -1683,8 +1691,6 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
     bounce_handler_forward_msgs_to_list_owner => 0,
     bounce_handler_when_threshold_reached     => 'move_to_bounced_sublist',
 
-    # dada_digest.pl
-    last_digest_sent => undef,
 
     # default messages
     default_plaintext_message_content_src             => 'default',    # default/url_or_path
@@ -1784,6 +1790,7 @@ $PROGRAM_NAME ||= "Dada Mail";
     To            => undef,
     Cc            => undef,
     Bcc           => undef,
+    Sender        => undef,
     'Return-Path' => undef,
     'Reply-To'    => undef,
     'In-Reply-To' => undef,
@@ -1808,7 +1815,6 @@ $PROGRAM_NAME ||= "Dada Mail";
     'Precedence' => 'list',
     'X-Mailer'   => "$PROGRAM_NAME $VER ",
 
-    Sender                      => undef,
     'Content-type'              => undef,
     'Content-Transfer-Encoding' => undef,
 
@@ -1830,6 +1836,7 @@ $PROGRAM_NAME ||= "Dada Mail";
   To
   Cc
   Bcc
+  Sender
   Return-Path
   Reply-To
   In-Reply-To
@@ -1856,7 +1863,6 @@ $PROGRAM_NAME ||= "Dada Mail";
 
   X-Mailer
 
-  Sender
   Content-type
   Content-Transfer-Encoding
   Content-Disposition
@@ -1966,6 +1972,7 @@ sub _config_import {
         profile_table                      => 'dada_profiles',
         profile_fields_table               => 'dada_profile_fields',
         profile_fields_attributes_table    => 'dada_profile_fields_attributes',
+        profile_settings_table             => 'dada_profile_settings',
         archives_table                     => 'dada_archives',
         settings_table                     => 'dada_settings',
         session_table                      => 'dada_sessions',

@@ -1,0 +1,77 @@
+Content-Type: multipart/alternative; boundary="----------=_1416446103-7048-0"
+Content-Transfer-Encoding: binary
+MIME-Version: 1.0
+X-Mailer: MIME-tools 5.502 (Entity 5.502)
+To: "<!-- tmpl_var list_settings.list_name --> Owner" <user@example.com>
+From: "<!-- tmpl_var list_settings.list_name --> Subscriber" <user@example.com>
+Subject: <!-- tmpl_var list_settings.list_name --> Digest
+
+This is a multi-part message in MIME format...
+
+------------=_1416446103-7048-0
+Content-Type: text/plain
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+Begin Digest
+
+Number of messages: <!-- tmpl_var num_messages -->
+
+<!-- tmpl_loop digest_messages -->
+* <!-- tmpl_var subject --> by, <!-- tmpl_var subscriber.email --> (<!-- tmpl_var date -->)<!-- /tmpl_loop -->
+
+<!-- tmpl_loop digest_messages -->
+
+Date: <!-- tmpl_var date -->
+From: <!-- tmpl_var subscriber.email -->
+Subject: <!-- tmpl_var subject -->
+---------------------------------------
+<!-- tmpl_var plaintext_message -->
+==============================================================================
+
+<!-- /tmpl_loop -->
+
+End Digest
+
+
+------------=_1416446103-7048-0
+Content-Type: text/html
+Content-Disposition: inline
+Content-Transfer-Encoding: binary
+
+
+<p>Begin Digest:</p>
+<p>Number of messages: <!-- tmpl_var num_messages --></p>
+
+<ul>
+<!-- tmpl_loop digest_messages -->
+<li>
+    <a href="#diget_<!-- tmpl_var archive_id -->">
+        <!-- tmpl_var subject -->
+    </a>
+    by, 
+    <!-- tmpl_var subscriber.email --> 
+    (<!-- tmpl_var date -->)
+<!-- /tmpl_loop -->
+</li>
+<!-- tmpl_loop digest_messages -->
+</ul>
+
+<p>
+<a name="diget_<!-- tmpl_var archive_id -->"></a>
+<strong>Date:</strong> <!-- tmpl_var date --><br />
+<strong>From:</strong> <!-- tmpl_var subscriber.email --><br />
+<strong>Subject:</strong> <!-- tmpl_var subject --></p>
+<p>
+<!-- tmpl_var html_message -->
+</p>
+<hr />
+
+<!-- /tmpl_loop -->
+
+<p>End Digest.</p>
+
+
+
+------------=_1416446103-7048-0--

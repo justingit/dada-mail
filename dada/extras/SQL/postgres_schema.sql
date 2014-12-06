@@ -39,7 +39,7 @@ CREATE TABLE dada_profile_fields (
 
 CREATE TABLE dada_profile_fields_attributes ( 
 
-attribute_id 				serial,
+attribute_id                serial,
 field                       varchar(80) UNIQUE,
 label                       varchar(80),
 fallback_value              text,
@@ -50,6 +50,15 @@ required char(1) DEFAULT 0 NOT NULL
 -- default                   mediumtext,
 -- html_form_widget          varchar(320),
 -- public                    char(1),
+);
+
+
+CREATE TABLE dada_profile_settings (
+id                               serial,
+email                            varchar(80),
+list                             varchar(16),
+setting                          varchar(64),
+value                            text
 );
 
 
