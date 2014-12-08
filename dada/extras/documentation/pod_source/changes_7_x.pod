@@ -2,6 +2,36 @@
 
 =head1 Dada Mail Changelog for v7.x
 
+=head2 7.4.0 
+
+=head2 Features 7.4.0
+
+=head3 Digests
+
+Digest messages are messages that are created by taking the content of many messages sent in a timespan. See the feature overview of Digests, here: 
+
+L<http://dadamailproject.com/d/features-digest.pod.html>
+
+Subscribers can now have the option of having individual messages delivered, a digest message delivered, or having message held from delivery.
+
+The digest message sent out (Subject, PlainText version and HTML version)  can be fully customized. 
+
+Way back in the day, Dada Mail had Digest support - it totall sucked. This new support totally doesn't.
+
+=head3 Scheduled Mass Mailings
+
+Dada Mail has had support for scheduled mailings since the inception of the Beatitude Plugin. That plugin has been marked as B<deprecated>, and we've taken one giant step in integrating scheduling of mass mailings into the core of Dada Mail with this release. 
+
+Now, any draft message can be scheduled to be sent at a later time, from within the Send a Message or Send a Webpage screens. There's no need to switch to the plugin to schedule a mailing.
+
+We'll still ship with the Beatitude plugin, but it's days are numbered. 
+
+To create a new Schedule, first go to the Send a Message, or Send a Webpage screen. Write your message! Click the, "Schedule..." button. Tick, "Activate" and set the time in the future you would like your message to go out. Click, "Create Schedule" and, you're done!
+
+Make sure the Mailing Monitor's cronob is also set up. (I<It should already be to make sure mass mailings go smoothly.>)
+
+Once a message has been scheduled, you can edit the schedule (and even reuse the schedule, if you would like!). In the list control panel, Go to: i<Mass Mailing - Drafts/Stationary/Schedules>. Click the B<Schedules> tab to view all your schedules. 
+
 =head2 7.3.1
 
 =head2 Changes 7.3.1

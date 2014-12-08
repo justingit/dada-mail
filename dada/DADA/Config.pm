@@ -1773,8 +1773,8 @@ $ATTACHMENT_TEMPFILE ||= 0;
 
 $MAIL_VERP_SEPARATOR ||= '-';
 
-$VERSION = 7.3.1;
-$VER     = '7.3.1 Stable 10/20/14';
+$VERSION = 7.4.0;
+$VER     = '7.4.0 Beta 1 12/08/14';
 
 #
 #
