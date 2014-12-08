@@ -2961,7 +2961,7 @@ L<http://dadamailproject.com/d/COOKBOOK-subscriptions.pod.html>
 
 Justin Simoni http://dadamailproject.com
 
-=head1 LICENCE AND COPYRIGHT
+=head1 LICENSE AND COPYRIGHT
 
 Copyright (c) 1999 - 2014 Justin Simoni All rights reserved. 
 

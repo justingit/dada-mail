@@ -974,19 +974,19 @@ $(document).ready(function() {
 		
 		$("body").on("click", ".view_authorized_senders", function(event) {
 			event.preventDefault();
-			window.location.href = $("#s_program_url").val() + '?f=view_list;type=authorized_senders';
+			window.location.href = $("#s_program_url").val() + '?f=view_list&type=authorized_senders';
 		});
 		$("body").on("click", ".add_authorized_senders", function(event) {
 			event.preventDefault();
-			window.location.href = $("#s_program_url").val() + '?f=add;type=authorized_senders';
+			window.location.href = $("#s_program_url").val() + '?f=add&type=authorized_senders';
 		});
 		$("body").on("click", ".view_moderators", function(event) {
 			event.preventDefault();
-			window.location.href = $("#s_program_url").val() + '?f=view_list;type=moderators';
+			window.location.href = $("#s_program_url").val() + '?f=view_list&type=moderators';
 		});
 		$("body").on("click", ".add_moderators", function(event) {
 			event.preventDefault();
-			window.location.href = $("#s_program_url").val() + '?f=add;type=moderators';
+			window.location.href = $("#s_program_url").val() + '?f=add&type=moderators';
 		});
 		
 

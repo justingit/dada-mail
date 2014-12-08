@@ -20,7 +20,7 @@ package CGI::Session::ExpireSessions;
 #	Ron Savage <ron@savage.net.au>
 #	Home page: http://savage.net.au/index.html
 #
-# Licence:
+# LICENSE:
 #	Australian copyright (c) 2004 Ron Savage.
 #
 #	All Programs of mine are 'OSI Certified Open Source Software';

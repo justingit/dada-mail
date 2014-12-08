@@ -5692,7 +5692,7 @@ L<txt2html>.
 
 based on txt2html by Seth Golub
 
-=head1 COPYRIGHT AND LICENCE
+=head1 COPYRIGHT AND LICENSE
 
 Original txt2html script copyright (c) 1994-2000 Seth Golub <seth AT aigeek.com>
 

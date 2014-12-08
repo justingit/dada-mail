@@ -26,8 +26,6 @@ BEGIN {
 use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;
 use DADA::Mail::MailOut;
-use DADA::MailingList::Schedules; 
-
 use CGI;
 my $q = new CGI;
    $q->charset($DADA::Config::HTML_CHARSET);
@@ -78,16 +76,10 @@ sub init_vars {
 sub run {
 
     if ( !$ENV{GATEWAY_INTERFACE} ) {
-	    # this (hopefully) means we're running on the cl...
-    
+	
 		DADA::Mail::MailOut::monitor_mailout( { -verbose => $verbose } );
-		
-        for(available_lists()){ 
-            my $sched = DADA::MailingList::Schedules->new({-list => $_});
-            if($sched->enabled) {
-                $sched->run_schedules({ -verbose => $verbose });  
-            }
-        }
+        # this (hopefully) means we're running on the cl...
+
     }
     else {
 
@@ -101,25 +93,13 @@ sub run {
 			if(defined($q->param('verbose'))){ 
 				$verbose = $q->param('verbose'); 
 			}
-			
-			print '<pre>' 
-			    if $verbose == 1; 
-			DADA::Mail::MailOut::monitor_mailout( { -verbose => $verbose } );
-            print '</pre>'
-			    if $verbose == 1; 
-        			
-			foreach(available_lists()){ 	
-                my $sched = DADA::MailingList::Schedules->new({-list => $_});
-                if($sched->enabled) {
-                    print '<pre>'
-                    	if $verbose == 1;  
-    			    $sched->run_schedules({ -verbose => $verbose });  
-    				print '</pre>'
-    				    if $verbose == 1; 
-                }
-            }
-            
-            
+			if($verbose == 1){ 
+				print '<pre>'; 
+				DADA::Mail::MailOut::monitor_mailout( { -verbose => $verbose } );
+	            print '</pre>';		
+			}
+		
+
         }
         else {
 
@@ -193,15 +173,6 @@ sub mailing_monitor_results {
 		print '<pre>'; 
 		e_print($r); 
 		print '</pre>';
-		
-		foreach(available_lists()){ 			    
-            my $sched = DADA::MailingList::Schedules->new({-list => $_});
-            if($sched->enabled) {
-                print '<pre>'; 
-    		   e_print($sched->run_schedules({ -verbose => 0 }));  
-    			print '</pre>';
-            }
-        }
 	} 
 	else { 
 		my (
@@ -213,17 +184,9 @@ sub mailing_monitor_results {
 			$inactive_mailouts
 		) = DADA::Mail::MailOut::monitor_mailout( { -verbose => 0, -list => $list } );		
 		print $q->header(); 
-		
 		print '<pre>'; 
 		e_print($r); 
 		print '</pre>';
-		
-        my $sched = DADA::MailingList::Schedules->new({-list => $_});
-        if($sched->enabled) {
-            print '<pre>'; 
-    	    e_print($sched->run_schedules());  
-    		print '</pre>';
-		}
 	}
 
 
@@ -336,7 +299,7 @@ Justin Simoni
 
 See: http://dadamailproject.com/contact
 
-=head1 LICENCE AND COPYRIGHT
+=head1 LICENSE AND COPYRIGHT
 
 Copyright (c) 1999 - 2014 Justin Simoni All rights reserved. 
 

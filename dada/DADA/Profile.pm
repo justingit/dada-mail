@@ -1768,7 +1768,7 @@ This method will croak if the profile you're trying to set an authorization code
 
 Justin Simoni http://dadamailproject.com
 
-=head1 LICENCE AND COPYRIGHT
+=head1 LICENSE AND COPYRIGHT
 
 Copyright (c) 1999 - 2014 Justin Simoni All rights reserved. 
 

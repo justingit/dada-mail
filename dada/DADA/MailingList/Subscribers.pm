@@ -218,8 +218,7 @@ sub add_subscribers {
                 # This needs to send the Profile Password, if it's known. 
                 #
                 require DADA::App::MassSend;
-                my $dam = DADA::App::MassSend->new({-list => $self->{list}}); 
-                   $dam->just_subscribed_mass_mailing(
+                DADA::App::MassSend::just_subscribed_mass_mailing(
                     {
                         -list      => $self->{list},
                         -addresses => $added_addresses,
@@ -233,8 +232,7 @@ sub add_subscribers {
         if ( $self->{ls}->param('send_last_archived_msg_mass_mailing') == 1 ) {
             eval {
                 require DADA::App::MassSend;
-                my $dam = DADA::App::MassSend->new({-list => $self->{list}});  
-                $dam->send_last_archived_msg_mass_mailing(
+                DADA::App::MassSend::send_last_archived_msg_mass_mailing(
                     {
                         -list      => $self->{list},
                         -addresses => $added_addresses,
@@ -416,8 +414,7 @@ sub admin_remove_subscribers {
 		if($self->{ls}->param('send_unsubscribed_by_list_owner_message') == 1){
 			require DADA::App::MassSend; 
 			eval { 
-			    my $dam = DADA::App::MassSend->new({-list => $self->{list}}); 
-				$dam->just_unsubscribed_mass_mailing(
+				DADA::App::MassSend::just_unsubscribed_mass_mailing(
 					{ 
 						-list      => $self->{list}, 
 						-addresses => $addresses, 
@@ -2311,7 +2308,7 @@ Used to remove a fallback field value. Used internally.
 
 Justin Simoni http://dadamailproject.com
 
-=head1 LICENCE AND COPYRIGHT
+=head1 LICENSE AND COPYRIGHT
 
 Copyright (c) 1999 - 2014 Justin Simoni All rights reserved. 
 
