@@ -1296,9 +1296,10 @@ sub start {
         }
     }    # LIST_QUEUE?
     
-    e_print("\t* Digests!\n")
-      if $verbose;
       
+    e_print("\n\tProcessing Digests:\n" . '-' x 72) 
+         if $verbose;
+     
     DIGEST_QUEUE: for my $list (@lists) {
 
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
@@ -1314,8 +1315,6 @@ sub start {
             next DIGEST_QUEUE;
         }
 
-        e_print("\n\t* Processing Digests! \n") 
-            if $verbose;
                     
         require DADA::App::Digests; 
         my $digest = DADA::App::Digests->new({-list => $list});
