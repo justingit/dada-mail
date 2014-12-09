@@ -146,7 +146,8 @@ sub archive_ids_for_digest {
 sub send_digest {
     
     my $self = shift;
-    my $r .= "\n\t*$self->should_send_digest:" . $self->should_send_digest . "\n"; 
+    
+    my $r; 
     
     if($self->should_send_digest){ 
     
