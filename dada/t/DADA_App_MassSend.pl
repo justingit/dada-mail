@@ -11,7 +11,7 @@ BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
 
 
 use dada_test_config; 
-use Test::More qw(no_plan);  
+#use Test::More qw(no_plan);  
 
 use DADA::Config;
 use DADA::App::Guts; 

@@ -30,8 +30,9 @@ delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 #---------------------------------------------------------------------#
 
 use CGI::Carp qw(fatalsToBrowser);
+use Carp::Always;
 
-use DADA::Config 6.0.0;
+use DADA::Config 7.0.0;
 
 use CGI;
     CGI->nph(1) if $DADA::Config::NPH == 1;

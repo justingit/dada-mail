@@ -316,3 +316,5 @@ Unless rewritten, it will be removed in a future version of Dada Mail.
 =head2 Extensions
 
 =head2 dada_digest.pl - REMOVED
+
+=cut

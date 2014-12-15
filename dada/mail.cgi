@@ -62,7 +62,7 @@ use Carp qw(carp croak);
 
 $|++;
 
-use DADA::Config 6.0.0;
+use DADA::Config 7.0.0;
 
 $ENV{PATH} = "/bin:/usr/bin";
 delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
@@ -1332,7 +1332,7 @@ sub draft_saved_notification {
 }
 
 sub drafts {
-    
+
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'drafts'
@@ -1350,11 +1350,22 @@ sub drafts {
     my $sci = [];
 
     if ( $d->enabled ) {
-        $di  = $d->draft_index({-role  => 'draft'});
-        $si  = $d->draft_index({-role  => 'stationary'});
-        $sci = $d->draft_index({-role => 'schedule'});
+        $di  = $d->draft_index( { -role => 'draft' } );
+        $si  = $d->draft_index( { -role => 'stationary' } );
+        $sci = $d->draft_index( { -role => 'schedule' } );
     }
-    
+
+    my $sci_active   = [];
+    my $sci_inactive = [];
+    for (@$sci) {
+        if ( $_->{schedule_activated} == 1 ) {
+            push( @$sci_active, $_ );
+        }
+        else {
+            push( @$sci_inactive, $_ );
+        }
+    }
+
     my $enabled = $d->enabled;
     my $scrn    = DADA::Template::Widgets::wrap_screen(
         {
@@ -1366,15 +1377,16 @@ sub drafts {
             },
             -expr => 1,
             -vars => {
-                screen           => 'drafts',
-                delete_draft     => $delete_draft,
-                draft_index      => $di,
-                stationary_index => $si, 
-                schedule_index   => $sci,
-                enabled          => $enabled,
-                num_drafts       => scalar(@$di),
-                num_stationary   => scalar(@$si), 
-                num_schedules    => scalar(@$sci), 
+                screen                  => 'drafts',
+                delete_draft            => $delete_draft,
+                draft_index             => $di,
+                stationary_index        => $si,
+                active_schedule_index   => $sci_active,
+                inactive_schedule_index => $sci_inactive,
+                enabled                 => $enabled,
+                num_drafts              => scalar(@$di),
+                num_stationary          => scalar(@$si),
+                num_schedules           => scalar(@$sci),
             },
             -list_settings_vars_param => {
                 -list   => $list,

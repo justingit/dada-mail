@@ -5210,9 +5210,6 @@ Mailing your lost password works again! yes yes yes, I have no no no idea what w
 also, having the passwords saved as rot13 encrypted didn't go over when you wanted to allow the root password to log into lists, 
 but this is now fixed. Thanks everyone who yelled at me. 
 
-
-
-
 =item B<04/08/01> 
 
 I started making a the list subscribe url a bit smaller, without totally 
@@ -5562,3 +5559,5 @@ in mojo_send.pl
 			Send a Message to an unknown list 
 			($email_list) by means of mojo_send.pl"); 
 	231 exit;
+
+=back

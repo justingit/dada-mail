@@ -147,7 +147,9 @@ sub send_email {
 
         require DADA::Template::Widgets;
         my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars( $self->{list} );
-        my $scrn         = 'hello!';
+        my $scrn         = 'send_email';
+        
+        
         my $scrn         = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'send_email_screen.tmpl',
@@ -192,6 +194,7 @@ sub send_email {
                     plaintext_message_body_content       => $self->{ls_obj}->plaintext_message_body_content,
                     html_message_body_content            => $self->{ls_obj}->html_message_body_content,
                     html_message_body_content_js_escaped => js_enc( $self->{ls_obj}->html_message_body_content ),
+                    schedule_last_checked_time_localtime => scalar(localtime($self->{ls_obj}->param('schedule_last_checked_time'))),
                     %wysiwyg_vars,
                     %$ses_params,
                 },
@@ -336,8 +339,12 @@ sub construct_and_send {
     #}
 
     my $draft_q = undef;
+    warn '$self->{md_obj}->enabled  ' . $self->{md_obj}->enabled ; 
+    
     if ( $self->{md_obj}->enabled ) {
         $draft_q = $self->q_obj_from_draft($args);
+        use Data::Dumper; 
+        warn Dumper($draft_q); 
     }
     else {
         $draft_q = $args->{-cgi_obj};
@@ -1148,6 +1155,7 @@ sub wait_for_it {
 
 sub save_as_draft {
 
+    $t = 1; 
     warn 'save_as_draft'
       if $t;
 
@@ -1167,15 +1175,15 @@ sub save_as_draft {
     return unless $self->{md_obj}->enabled;
 
     my $draft_id   = $q->param('draft_id')   || undef;
-    my $draft_role = $q->param('draft_role') || undef;
-
+    my $draft_role = $q->param('draft_role') || 'draft';
+    my $screen     = $q->param('f')          || 'send_email'; 
 
     my $saved_draft_id = $self->{md_obj}->save(
         {
             -cgi_obj => $q,
             -id      => $draft_id,
             -role    => $draft_role,
-            -screen  => $q->param('f'),
+            -screen  => $screen,
         }
     );
    # warn '$saved_draft_id: ' . $saved_draft_id;
@@ -1569,6 +1577,7 @@ sub list_invite {
 
 sub q_obj_from_draft {
 
+    $t = 1; 
     warn 'q_obj_from_draft'
       if $t;
 
@@ -1598,7 +1607,8 @@ sub q_obj_from_draft {
         )
       )
     {
-        # warn 'has draft';
+         warn 'has draft' 
+            if $t;
 
         my $q_draft = $self->{md_obj}->fetch(
             {
@@ -1610,6 +1620,7 @@ sub q_obj_from_draft {
         return $q_draft;
     }
     else {
+        warn 'doesnt have a draft!';
         return undef;
     }
 

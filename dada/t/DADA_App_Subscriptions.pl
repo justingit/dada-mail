@@ -1,17 +1,11 @@
 #!/usr/bin/perl
 use strict; 
 
-
- use Data::Dumper; 
-
-
-
+use Data::Dumper; 
 use lib qw(./t ./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib 
-	
+
 	/Users/justin/Documents/DadaMail/build/bundle/perllib
-	
-	
-	); 
+); 
 BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
 use dada_test_config; 
 

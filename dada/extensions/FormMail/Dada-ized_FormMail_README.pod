@@ -64,7 +64,7 @@ The change history of these files
 
 List of files
 
-=item * Dada-ized_FormMail_README.pod
+=item Dada-ized_FormMail_README.pod
 
 The Dada-ized FormMail README. Instructions on how to install the Dada-ized FroMMail. 
 

@@ -253,7 +253,7 @@ my %bridge_plugin_configs = (
 $DADA::Config::PROGRAM_URL   = program_url_guess();
 $DADA::Config::S_PROGRAM_URL = program_url_guess();
 
-use DADA::Config 6.0.0;
+use DADA::Config 7.0.0;
 
 
     # $DADA::Config::USER_TEMPLATE = '';

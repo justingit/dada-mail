@@ -1,5 +1,7 @@
 =pod
 
+=encoding utf-8
+
 =head1 6.8.1
 
 =head2 Summary 6.8.1

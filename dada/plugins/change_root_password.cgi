@@ -12,7 +12,7 @@ BEGIN {
 use CGI::Carp qw(fatalsToBrowser);
 
 # use some of those Modules
-use DADA::Config 6.0.0;
+use DADA::Config 7.0.0;
 use DADA::Template::HTML; 
 use DADA::Template::Widgets; 
 use DADA::App::Guts;

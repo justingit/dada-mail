@@ -3,7 +3,7 @@ use strict;
 use lib qw(../../../ ../../../DADA/perllib); 
 
 
-use DADA::Config 6.0.0;
+use DADA::Config 7.0.0;
 
 if(
 	!defined($DADA::Config::RECAPTCHA_PARAMS->{remote_address}) ||

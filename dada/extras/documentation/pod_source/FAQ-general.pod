@@ -1,3 +1,7 @@
+=pod 
+
+=encoding utf-8
+
 =head2 Frequently Asked Questions
 
 =head2 Errors
@@ -663,7 +667,7 @@ These include:
 
 =over
 
-=item Archiving:
+=item * Archiving:
 
 =over
 
@@ -1007,3 +1011,4 @@ Yes.
 
 L<http://github.com/justingit/dada-mail>
 
+=cut

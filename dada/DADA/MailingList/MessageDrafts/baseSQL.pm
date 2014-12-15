@@ -93,6 +93,8 @@ sub id_exists {
 
 sub save {
 
+    $t = 1; 
+    
     warn 'save'
       if $t;
 
@@ -137,7 +139,10 @@ sub save {
           if $t;
 
         my $sth = $self->{dbh}->prepare($query);
-
+        if($t == 1) { 
+            require Data::Dumper; 
+            warn 'execute params: ' . Data::Dumper::Dumper([$self->{list}, $args->{-screen}, $args->{-role}, $draft]); 
+        }
         $sth->execute( $self->{list}, $args->{-screen}, $args->{-role}, $draft )
           or croak "cannot do statement '$query'! $DBI::errstr\n";
 

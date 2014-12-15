@@ -98,7 +98,22 @@ sub run_schedules {
             $r .= "Scheduled is Activated\n"; 
         }
         
-        $r .= 'Schedule to run at: ' . $sched->{schedule_localtime} . "\n"; 
+        if($sched->{schedule_time} < ($t - 86400)) { # was this supposed to be sent a day ago? 
+            $r .= 'Schedule is too late to run - should have ran ' . formatted_runtime($t - $sched->{schedule_time}) . ' ago.' . "\n"; 
+            $r .= "Deactivating Schedule\n"; 
+            $self->deactivate_schedule(
+                {
+                    -id     => $sched->{id},
+                    -role   => $sched->{role},
+                    -screen => $sched->{screen},
+                }
+            );
+            next SCHEDULES;
+        }
+        else {     
+            $r .= 'Schedule to run at: ' . $sched->{schedule_localtime} . "\n"; 
+        }
+        
         
         my $last_checked = $self->{ls_obj}->param('schedule_last_checked_time'); 
                 
