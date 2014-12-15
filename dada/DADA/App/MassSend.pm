@@ -71,7 +71,7 @@ sub _init {
     else {
         $self->{list} = $args->{-list};
     }
-    
+
     $self->{ls_obj} = DADA::MailingList::Settings->new( { -list => $self->{list} } );
     $self->{lh_obj} = DADA::MailingList::Subscribers->new( { -list => $self->{list} } );
     $self->{ah_obj} = DADA::MailingList::Archives->new( { -list => $self->{list} } );
@@ -148,9 +148,8 @@ sub send_email {
         require DADA::Template::Widgets;
         my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars( $self->{list} );
         my $scrn         = 'send_email';
-        
-        
-        my $scrn         = DADA::Template::Widgets::wrap_screen(
+
+        my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'send_email_screen.tmpl',
                 -with           => 'admin',
@@ -194,7 +193,8 @@ sub send_email {
                     plaintext_message_body_content       => $self->{ls_obj}->plaintext_message_body_content,
                     html_message_body_content            => $self->{ls_obj}->html_message_body_content,
                     html_message_body_content_js_escaped => js_enc( $self->{ls_obj}->html_message_body_content ),
-                    schedule_last_checked_time_localtime => scalar(localtime($self->{ls_obj}->param('schedule_last_checked_time'))),
+                    schedule_last_checked_time_localtime =>
+                      scalar( localtime( $self->{ls_obj}->param('schedule_last_checked_time') ) ),
                     %wysiwyg_vars,
                     %$ses_params,
                 },
@@ -310,20 +310,26 @@ sub send_email {
 sub are_we_archiving_based_on_params {
 
     my $self = shift;
-    my $q    = shift;
-
-    if ( defined( $q->param('local_archive_options_present') ) ) {
-        if ( $q->param('local_archive_options_present') == 1 ) {
-            if ( $q->param('archive_message') != 1 ) {
-                $q->param( 'archive_message', 0 );
-                return 0;
+    my $q = shift || undef;
+    if ( defined($q) ) {
+        if ( defined( $q->param('local_archive_options_present') ) ) {
+            if ( $q->param('local_archive_options_present') == 1 ) {
+                if ( $q->param('archive_message') != 1 ) {
+                    $q->param( 'archive_message', 0 );
+                    return 0;
+                }
+                else {
+                    return 1;
+                }
             }
+        }
+        else {
+            return $self->{ls_obj}->param('archive_messages');
         }
     }
     else {
         return $self->{ls_obj}->param('archive_messages');
     }
-
 }
 
 sub construct_and_send {
@@ -339,12 +345,12 @@ sub construct_and_send {
     #}
 
     my $draft_q = undef;
-    warn '$self->{md_obj}->enabled  ' . $self->{md_obj}->enabled ; 
-    
+    warn '$self->{md_obj}->enabled  ' . $self->{md_obj}->enabled;
+
     if ( $self->{md_obj}->enabled ) {
         $draft_q = $self->q_obj_from_draft($args);
-        use Data::Dumper; 
-        warn Dumper($draft_q); 
+        use Data::Dumper;
+        warn Dumper($draft_q);
     }
     else {
         $draft_q = $args->{-cgi_obj};
@@ -500,8 +506,8 @@ sub construct_from_text {
     my $attachment        = $draft_q->param('attachment');
     my $text_message_body = $draft_q->param('text_message_body') || undef;
     my $html_message_body = $draft_q->param('html_message_body') || undef;
-    my @attachments = $self->has_attachments( { -cgi_obj => $draft_q } );
-    my $num_attachments = scalar(@attachments);
+    my @attachments       = $self->has_attachments( { -cgi_obj => $draft_q } );
+    my $num_attachments   = scalar(@attachments);
 
     ( $text_message_body, $html_message_body ) =
       DADA::App::FormatMessages::pre_process_msg_strings( $text_message_body, $html_message_body );
@@ -1093,14 +1099,13 @@ sub find_draft_id {
 
 }
 
-sub delete_draft { 
-    my $self = shift; 
-    my $id   = shift; 
+sub delete_draft {
+    my $self = shift;
+    my $id   = shift;
     if ( $self->{md_obj}->enabled ) {
-        $self->{md_obj}->remove($id); 
+        $self->{md_obj}->remove($id);
     }
 }
-
 
 sub ses_params {
 
@@ -1155,7 +1160,6 @@ sub wait_for_it {
 
 sub save_as_draft {
 
-    $t = 1; 
     warn 'save_as_draft'
       if $t;
 
@@ -1176,7 +1180,7 @@ sub save_as_draft {
 
     my $draft_id   = $q->param('draft_id')   || undef;
     my $draft_role = $q->param('draft_role') || 'draft';
-    my $screen     = $q->param('f')          || 'send_email'; 
+    my $screen     = $q->param('f')          || 'send_email';
 
     my $saved_draft_id = $self->{md_obj}->save(
         {
@@ -1186,7 +1190,8 @@ sub save_as_draft {
             -screen  => $screen,
         }
     );
-   # warn '$saved_draft_id: ' . $saved_draft_id;
+
+    # warn '$saved_draft_id: ' . $saved_draft_id;
 
     if ( $args->{-json} == 1 ) {
         require JSON;
@@ -1223,10 +1228,9 @@ sub list_invite {
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
     my $li = $ls->get;
-        
+
     require DADA::App::FormatMessages;
     my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
-
 
     if ( $process =~ m/send invitation\.\.\./i )
     {    # $process is dependent on the label of the button - which is not a good idea
@@ -1393,16 +1397,17 @@ sub list_invite {
             )
           )
         {
-             
+
             if ( defined( $q->param($h) ) ) {
                 if ( $h eq 'Subject' ) {
                     $headers{$h} = $fm->_encode_header( 'Subject', $q->param($h) );
                 }
-                else { 
+                else {
                     $headers{$h} = strip( $q->param($h) );
                 }
             }
         }
+
         #/Headers
 
         my $text_message_body = $q->param('text_message_body') || undef;
@@ -1437,15 +1442,15 @@ sub list_invite {
             }
             undef($status);
             undef($errors);
-            
+
             my ( $status, $errors ) = $self->redirect_tag_check($html_message_body);
             if ( $status == 0 ) {
-              $self->report_mass_mail_errors( $errors, $root_login );
-              return;
+                $self->report_mass_mail_errors( $errors, $root_login );
+                return;
             }
             undef($status);
             undef($errors);
-              
+
             $entity = MIME::Entity->build(
                 Type    => 'multipart/alternative',
                 Charset => $li->{charset_value},
@@ -1475,7 +1480,6 @@ sub list_invite {
             }
             undef($status);
             undef($errors);
-
 
             $entity = MIME::Entity->build(
                 Type     => 'text/html',
@@ -1507,18 +1511,16 @@ sub list_invite {
         else {
 
             warn
-"$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning: both text and html versions of invitation message blank?!";              
-              
-              my ( $status, $errors ) = $self->redirect_tag_check($ls->param('invite_message_text'));
-              if ( $status == 0 ) {
-                  $self->report_mass_mail_errors( $errors, $root_login );
-                  return;
-              }
-              undef($status);
-              undef($errors);
-              
-              
-              
+"$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning: both text and html versions of invitation message blank?!";
+
+            my ( $status, $errors ) = $self->redirect_tag_check( $ls->param('invite_message_text') );
+            if ( $status == 0 ) {
+                $self->report_mass_mail_errors( $errors, $root_login );
+                return;
+            }
+            undef($status);
+            undef($errors);
+
             $entity = MIME::Entity->build(
                 Type     => 'text/plain',
                 Data     => safely_encode( $ls->param('invite_message_text') ),
@@ -1577,7 +1579,6 @@ sub list_invite {
 
 sub q_obj_from_draft {
 
-    $t = 1; 
     warn 'q_obj_from_draft'
       if $t;
 
@@ -1607,8 +1608,8 @@ sub q_obj_from_draft {
         )
       )
     {
-         warn 'has draft' 
-            if $t;
+        warn 'has draft'
+          if $t;
 
         my $q_draft = $self->{md_obj}->fetch(
             {

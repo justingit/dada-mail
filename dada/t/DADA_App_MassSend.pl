@@ -188,6 +188,17 @@ ok($ms->backdated_msg_id('2014-04-29 10:32:58') eq '20140429103257', 'backdated_
 dada_test_config::remove_test_list;
 dada_test_config::wipe_out;
 
+undef $q; 
+$q = new CGI; 
+ok($ms->are_we_archiving_based_on_params() == 1); 
+$q->param('local_archive_options_present', 1);
+ok($ms->are_we_archiving_based_on_params($q) == 0); 
+$q->param('archive_message', 1);
+ok($ms->are_we_archiving_based_on_params($q) == 1); 
+$q->param('archive_message', 0); # that's not gonna happen. 
+ok($ms->are_we_archiving_based_on_params($q) == 0); 
+
+
 
 sub slurp { 
 	

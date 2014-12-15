@@ -93,8 +93,6 @@ sub id_exists {
 
 sub save {
 
-    $t = 1; 
-    
     warn 'save'
       if $t;
 
