@@ -783,13 +783,15 @@ sub save_scores {
 
     my $m = '';
 
+    require DADA::App::BounceHandler::ScoreKeeper;
+    my $bsk =
+      DADA::App::BounceHandler::ScoreKeeper->new( { -list => $list } );
+
+
     if ( keys %{ $self->{tmp_scorecard} }) {
 
         $m .= "\nWorking on list: $list\n";
 
-        require DADA::App::BounceHandler::ScoreKeeper;
-        my $bsk =
-          DADA::App::BounceHandler::ScoreKeeper->new( { -list => $list } );
 
         my $list_scores = $self->{tmp_scorecard}->{$list};
 
@@ -824,27 +826,26 @@ sub save_scores {
 		
 		$m.= "\n";
 		
-        my $removal_list = $bsk->removal_list();
+		}
+		else { 
+			$m .= "No Subscribers need to be removed.\n"; 
+		}
 		
+		my $removal_list = $bsk->removal_list();
 		if(scalar(@$removal_list) > 0){ 
 	        $m .= "Subscribers to be removed:\n" . '-' x 72 . "\n";
 	        for my $bad_email (@$removal_list) {
 	            $self->{tmp_remove_list}->{$list}->{$bad_email} = 1;
 	            $m .= "* $bad_email\n";
 	        }
-		}
-		else { 
-			$m .= "No Subscribers need to be removed.\n"; 
-		}
+        
         $m .= "\nFlushing old scores\n";
         $bsk->flush_old_scores();
-
     }
     else {
-
         $m .= "No scores to tally.\n";
-
     }
+    
     return $m;
 }
 
