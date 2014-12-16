@@ -39,7 +39,7 @@ sub new {
 
     my ($args) = @_;
 
-    $self->_init( $args );
+    $self->_init($args);
     return $self;
 }
 
@@ -64,109 +64,113 @@ sub AUTOLOAD {
 
 sub _init {
     my $self = shift;
-    my ($args) = @_;    
-    $self->{list}   = $args->{-list};
+    my ($args) = @_;
+    $self->{list} = $args->{-list};
     $self->{ls_obj} = DADA::MailingList::Settings->new( { -list => $self->{list} } );
-    
+
     if ( exists( $args->{-ctime} ) ) {
         warn 'passed -ctime: ' . $args->{-ctime};
         $self->{ctime} = $args->{-ctime}
-            if $t;
+          if $t;
     }
-    else { 
+    else {
         warn 'no passed -ctime'
-            if $t;
-        $self->{ctime} = time;        
+          if $t;
+        $self->{ctime} = time;
     }
     warn 'ctime set to, ' . $self->{ctime}
-     if $t; 
-    
-    if(!defined($self->{ls_obj}->param('digest_last_archive_id_sent'))
-    || $self->{ls_obj}->param('digest_last_archive_id_sent') <= 0
-    ){
+      if $t;
+
+    if ( !defined( $self->{ls_obj}->param('digest_last_archive_id_sent') )
+        || $self->{ls_obj}->param('digest_last_archive_id_sent') <= 0 )
+    {
         warn 'no current digest_last_archive_id_sent'
-            if $t; 
+          if $t;
         warn q{$self->{ctime}:} . $self->{ctime}
-            if $t; 
+          if $t;
         warn q{$self->{ls_obj}->param('digest_schedule'):} . $self->{ls_obj}->param('digest_schedule')
-            if $t;
-        warn 'ctime_2_archive_time:' .  $self->ctime_2_archive_time(int($self->{ctime}) - int($self->{ls_obj}->param('digest_schedule')))
-            if $t; 
+          if $t;
+        warn 'ctime_2_archive_time:'
+          . $self->ctime_2_archive_time( int( $self->{ctime} ) - int( $self->{ls_obj}->param('digest_schedule') ) )
+          if $t;
         $self->{ls_obj}->save(
-            { 
-               digest_last_archive_id_sent 
-                => $self->ctime_2_archive_time(int($self->{ctime}) - int($self->{ls_obj}->param('digest_schedule')))
+            {
+                digest_last_archive_id_sent => $self->ctime_2_archive_time(
+                    int( $self->{ctime} ) - int( $self->{ls_obj}->param('digest_schedule') )
+                )
             }
-        ); 
-        undef($self->{ls_obj}); 
+        );
+        undef( $self->{ls_obj} );
         $self->{ls_obj} = DADA::MailingList::Settings->new( { -list => $self->{list} } );
     }
-    
-    $self->{a_obj}  = DADA::MailingList::Archives->new( { -list => $self->{list} } );
-        
+
+    $self->{a_obj} = DADA::MailingList::Archives->new( { -list => $self->{list} } );
+
 }
 
-sub should_send_digest { 
-    my $self = shift; 
-    if(scalar @{$self->archive_ids_for_digest}){ 
-        return 1; 
+sub should_send_digest {
+    my $self = shift;
+    if ( scalar @{ $self->archive_ids_for_digest } ) {
+        return 1;
     }
-    else { 
-        return 0; 
+    else {
+        return 0;
     }
 }
+
 sub archive_ids_for_digest {
 
-    my $self = shift; 
-    my $keys       = $self->{a_obj}->get_archive_entries('normal');
-    my $ids = [];
-    
-    my $digest_last_archive_id_sent = $self->{ls_obj}->param('digest_last_archive_id_sent') || undef; 
-    
-    # no archives available? no digest.   
-    if(scalar(@{$keys}) == 0) { 
-        return []; 
+    my $self = shift;
+    my $keys = $self->{a_obj}->get_archive_entries('normal');
+    my $ids  = [];
+
+    my $digest_last_archive_id_sent = $self->{ls_obj}->param('digest_last_archive_id_sent') || undef;
+
+    # no archives available? no digest.
+    if ( scalar( @{$keys} ) == 0 ) {
+        return [];
     }
-    
-    for(@$keys){ 
-        if(
-            $_ > $digest_last_archive_id_sent 
-         && $_ < $self->ctime_2_archive_time($self->{ctime})){ 
-             push(@$ids, $_); 
-        } 
-    }
-    if($t){ 
-        warn 'ids to make digest: ';
-        for(@$ids){ 
-            warn "$_\n"; 
+
+    for (@$keys) {
+        if (   $_ > $digest_last_archive_id_sent
+            && $_ < $self->ctime_2_archive_time( $self->{ctime} ) )
+        {
+            push( @$ids, $_ );
         }
     }
-    return $ids; 
+    if ($t) {
+        warn 'ids to make digest: ';
+        for (@$ids) {
+            warn "$_\n";
+        }
+    }
+    return $ids;
 }
+
 sub send_digest {
-    
+
     my $self = shift;
-    
-    my $r; 
-    
-    if($self->should_send_digest){ 
-    
+
+    my $r;
+
+    if ( $self->should_send_digest ) {
+
         require DADA::App::FormatMessages;
         my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
-           $fm->mass_mailing(1);
-        
-        
+        $fm->mass_mailing(1);
+
         my $entity = $self->create_digest_msg_entity();
-        
-        my $msg_as_string = ( defined($entity) ) ? $entity->as_string : undef;        
-           $msg_as_string = safely_decode($msg_as_string);
-             
+
+        my $msg_as_string = ( defined($entity) ) ? $entity->as_string : undef;
+        $msg_as_string = safely_decode($msg_as_string);
+
         my ( $final_header, $final_body );
         eval { ( $final_header, $final_body ) = $fm->format_headers_and_body( -msg => $msg_as_string ); };
-#        if ($@) {
-#            report_mass_mail_errors( $@, $list, $root_login );
-#            return;
-#        }
+
+        #        if ($@) {
+        #            report_mass_mail_errors( $@, $list, $root_login );
+        #            return;
+        #        }
 
         require DADA::Mail::Send;
         my $mh = DADA::Mail::Send->new(
@@ -176,13 +180,13 @@ sub send_digest {
             }
         );
 
-#
-#
-#
+        #
+        #
+        #
         $mh->test( $self->test );
-#
-#
-#
+        #
+        #
+        #
         my %mailing = ( $mh->return_headers($final_header), Body => $final_body, );
 
         my $message_id;
@@ -193,40 +197,41 @@ sub send_digest {
                 -mass_mailing_params => {
                     -delivery_preferences => 'digest',
                 },
-#                    -partial_sending => $partial_sending,
-#                    ( $process =~ m/test/i )
-#                    ? (
-#                        -mass_test      => 1,
-#                        -test_recipient => $og_test_recipient,
-#                      )
-#                    : ( -mass_test => 0, )
-#
+
+                #                    -partial_sending => $partial_sending,
+                #                    ( $process =~ m/test/i )
+                #                    ? (
+                #                        -mass_test      => 1,
+                #                        -test_recipient => $og_test_recipient,
+                #                      )
+                #                    : ( -mass_test => 0, )
+                #
             }
-        );         
-        
-    # Then, reset the digest, where we left off, 
-    
-    my $keys = $self->archive_ids_for_digest(); 
-    
-    $self->{ls_obj}->save(
-        {
-            digest_last_archive_id_sent => $keys->[0],
-        }
-    ); 
+        );
+
+        # Then, reset the digest, where we left off,
+
+        my $keys = $self->archive_ids_for_digest();
+
+        $self->{ls_obj}->save(
+            {
+                digest_last_archive_id_sent => $keys->[0],
+            }
+        );
     }
-    else { 
-        $r .= "\t* No need to send out a digest message."; 
+    else {
+        $r .= "\t* No new messages to create a digest message";
     }
-    return $r; 
+    return $r;
 }
 
 sub archive_time_2_ctime {
 
     my $self  = shift;
     my $p_num = shift;
-    
-    warn '$p_num: ' . $p_num 
-        if $t; 
+
+    warn '$p_num: ' . $p_num
+      if $t;
 
     my $year   = int( substr( $p_num, 0,  4 ) ) || 0;
     my $month  = int( substr( $p_num, 4,  2 ) ) || 0;
@@ -238,143 +243,141 @@ sub archive_time_2_ctime {
     $month -= 1;
 
     my $c_time = timelocal( $sec, $minute, $hour, $day, $month, $year );
-    
+
     return $c_time;
-    
+
 }
-sub ctime_2_archive_time { 
+
+sub ctime_2_archive_time {
     my $self  = shift;
-    my $ctime = shift; 
-    return message_id($ctime); 
+    my $ctime = shift;
+    return message_id($ctime);
 }
 
 sub create_digest_msg_entity {
 
-    my $self = shift; 
-    my $vars = $self->digest_ht_vars; 
-    require DADA::Template::Widgets; 
+    my $self = shift;
+    my $vars = $self->digest_ht_vars;
+    require DADA::Template::Widgets;
 
-    my $subject_tmpl   = $self->{ls_obj}->param('digest_message_subject'); 
-    my $pt_tmpl        = $self->{ls_obj}->param('digest_message'); 
-    my $html_tmpl      = $self->{ls_obj}->param('digest_message_html'); 
-    
+    my $subject_tmpl = $self->{ls_obj}->param('digest_message_subject');
+    my $pt_tmpl      = $self->{ls_obj}->param('digest_message');
+    my $html_tmpl    = $self->{ls_obj}->param('digest_message_html');
+
     my $subject_scr = DADA::Template::Widgets::screen(
         {
-            -data => \$subject_tmpl,
-            -expr => 1,  
-            -vars => $vars, 
+            -data                     => \$subject_tmpl,
+            -expr                     => 1,
+            -vars                     => $vars,
             -list_settings_vars_param => { -list => $self->{list} },
         }
-    ); 
+    );
     my $pt_scrn = DADA::Template::Widgets::screen(
         {
-            -data => \$pt_tmpl,
-            -expr => 1,  
-            -vars => $vars, 
+            -data                     => \$pt_tmpl,
+            -expr                     => 1,
+            -vars                     => $vars,
             -list_settings_vars_param => { -list => $self->{list} },
         }
-    ); 
+    );
     my $html_scrn = DADA::Template::Widgets::screen(
         {
-            -data => \$html_tmpl,
-            -expr => 1,  
-            -vars => $vars, 
+            -data                     => \$html_tmpl,
+            -expr                     => 1,
+            -vars                     => $vars,
             -list_settings_vars_param => { -list => $self->{list} },
         }
     );
-    require MIME::Entity; 
+    require MIME::Entity;
     my $entity = MIME::Entity->build(
-        Type      => 'multipart/alternative',
-        Charset   => $self->{ls_obj}->param('charset_value'),
-        Subject   => $subject_scr,
+        Type    => 'multipart/alternative',
+        Charset => $self->{ls_obj}->param('charset_value'),
+        Subject => $subject_scr,
     );
     $entity->attach(
-        Type      => 'text/plain',
-        Data      => $pt_scrn,
-        Encoding  => $self->{ls_obj}->param('plaintext_encoding'),
-        Charset   => $self->{ls_obj}->param('charset_value'),
+        Type     => 'text/plain',
+        Data     => $pt_scrn,
+        Encoding => $self->{ls_obj}->param('plaintext_encoding'),
+        Charset  => $self->{ls_obj}->param('charset_value'),
     );
     $entity->attach(
         Type     => 'text/html',
         Data     => $html_scrn,
         Encoding => $self->{ls_obj}->param('html_encoding'),
-        Charset  => $self->{ls_obj}->param('charset_value'),        
+        Charset  => $self->{ls_obj}->param('charset_value'),
     );
-    
+
     return $entity;
-    
+
 }
 
-sub digest_ht_vars { 
+sub digest_ht_vars {
 
-   my $self = shift; 
-   
-   require DADA::Template::Widgets; 
-   
-   
-   my $ids = $self->archive_ids_for_digest; 
-   
-   my $digest_messages = [];
-   
-   foreach my $id(@$ids){ 
-       my $pt = $self->{a_obj}->massaged_msg_for_display(
-           { 
-               -key            => $id, 
-               -body_only      => 1,
-               -entity_protect => 1,
-               -plain_text     => 1, 
-           }
-        );
-        my $html = $self->{a_obj}->massaged_msg_for_display(
-            { 
-                -key            => $id, 
+    my $self = shift;
+
+    require DADA::Template::Widgets;
+
+    my $ids = $self->archive_ids_for_digest;
+
+    my $digest_messages = [];
+
+    foreach my $id (@$ids) {
+        my $pt = $self->{a_obj}->massaged_msg_for_display(
+            {
+                -key            => $id,
                 -body_only      => 1,
                 -entity_protect => 1,
-                -plain_text     => 0, 
+                -plain_text     => 1,
             }
-         );
-         my $sender_address = $self->{a_obj}->sender_address(
-             { 
-                 -id => $id, 
-              }
         );
-        
-        my ($subscriber_vars, $subscriber_loop_vars) = DADA::Template::Widgets::subscriber_vars(
-            { 
-                -subscriber_vars_param => { 
+        my $html = $self->{a_obj}->massaged_msg_for_display(
+            {
+                -key            => $id,
+                -body_only      => 1,
+                -entity_protect => 1,
+                -plain_text     => 0,
+            }
+        );
+        my $sender_address = $self->{a_obj}->sender_address(
+            {
+                -id => $id,
+            }
+        );
+
+        my ( $subscriber_vars, $subscriber_loop_vars ) = DADA::Template::Widgets::subscriber_vars(
+            {
+                -subscriber_vars_param => {
                     -list              => $self->{list},
                     -email             => $sender_address,
-                    -type              => 'list', 
-                    -use_fallback_vars => 1, 
+                    -type              => 'list',
+                    -use_fallback_vars => 1,
                 }
             }
-        ); 
-        
-        my %date_params = DADA::Template::Widgets::date_params($self->archive_time_2_ctime($id)); 
-        my $message_blurb = $self->{a_obj}->message_blurb( -key => $id );
-        
-        push(
-          @$digest_messages, 
-          {
-             archive_id        => $id, 
-             message_blurb     => $message_blurb,
-             plaintext_message => $pt, 
-             html_message      => $html,
-             subject           => $self->{a_obj}->get_header(-key => $id, -header => 'Subject'),
-             subscriber        => $subscriber_loop_vars, 
-             %$subscriber_vars, 
-             %date_params,
-          }  
         );
-   }
-   
-   return { 
-       num_messages      => scalar(@$ids), 
-       digest_messages   => $digest_messages, 
-   }
+
+        my %date_params = DADA::Template::Widgets::date_params( $self->archive_time_2_ctime($id) );
+        my $message_blurb = $self->{a_obj}->message_blurb( -key => $id );
+
+        push(
+            @$digest_messages,
+            {
+                archive_id        => $id,
+                message_blurb     => $message_blurb,
+                plaintext_message => $pt,
+                html_message      => $html,
+                subject           => $self->{a_obj}->get_header( -key => $id, -header => 'Subject' ),
+                subscriber        => $subscriber_loop_vars,
+                %$subscriber_vars,
+                %date_params,
+            }
+        );
+    }
+
+    return {
+        num_messages    => scalar(@$ids),
+        digest_messages => $digest_messages,
+      }
 
 }
-
-
 
 1;

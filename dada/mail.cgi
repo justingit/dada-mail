@@ -4501,7 +4501,7 @@ sub membership {
             }
         ); 
         my $delivery_prefs = $s->{delivery_prefs} || 'individual';
-        my $digest_timeframe = _formatted_runtime(
+        my $digest_timeframe = formatted_runtime(
             $ls->param('digest_schedule')
         ); 
         
@@ -12102,7 +12102,7 @@ sub profile {
                 my $dasu = DADA::App::Subscriptions::Unsub->new( { -list => $i->{list} } );
                 my $unsub_link = $dasu->unsub_link( { -email => $email, -mid => '00000000000000' } );
                 
-                my $digest_timeframe = _formatted_runtime(
+                my $digest_timeframe = formatted_runtime(
                     $ls->param('digest_schedule')
                 ); 
                 

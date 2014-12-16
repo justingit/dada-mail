@@ -1296,7 +1296,7 @@ sub start {
     }    # LIST_QUEUE?
     
       
-    e_print("\n\tProcessing Digests:\n" . '-' x 72) 
+    e_print("\n\tProcessing Digests:\n" . '-' x 72 . "\n") 
          if $verbose;
      
     DIGEST_QUEUE: for my $list (@lists) {

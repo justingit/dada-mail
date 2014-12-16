@@ -2101,6 +2101,12 @@ sub self_url {
 
 Beatitude - A Scheduled Mailer for Dada Mail 
 
+=head2 DEPRECATED
+
+This plugin has been marked as B<deprecated>, and we've taken one giant step in integrating scheduling of mass mailings into the core of Dada Mail with this release. 
+
+The new system and Beatitude do not share any code, and each system's method of scheduling a mailing are separate, which is going to lead to confusion. 
+
 =head1 Obtaining The Plugin
 
 Beatitude is located in the, I<dada/plugins> directory of the Dada Mail distribution, under the name: I<scheduled_mailings.pl>

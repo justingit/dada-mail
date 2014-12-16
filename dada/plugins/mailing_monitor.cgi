@@ -104,21 +104,18 @@ sub run {
 			
 			print '<pre>' 
 			    if $verbose == 1; 
+			    
 			DADA::Mail::MailOut::monitor_mailout( { -verbose => $verbose } );
-            print '</pre>'
-			    if $verbose == 1; 
         			
 			foreach(available_lists()){ 	
                 my $sched = DADA::MailingList::Schedules->new({-list => $_});
                 if($sched->enabled) {
-                    print '<pre>'
-                    	if $verbose == 1;  
     			    $sched->run_schedules({ -verbose => $verbose });  
-    				print '</pre>'
-    				    if $verbose == 1; 
                 }
             }
             
+            print '</pre>'
+			    if $verbose == 1; 
             
         }
         else {
@@ -216,14 +213,14 @@ sub mailing_monitor_results {
 		
 		print '<pre>'; 
 		e_print($r); 
-		print '</pre>';
 		
         my $sched = DADA::MailingList::Schedules->new({-list => $_});
         if($sched->enabled) {
-            print '<pre>'; 
     	    e_print($sched->run_schedules());  
-    		print '</pre>';
 		}
+		
+        print '</pre>';
+		
 	}
 
 
@@ -244,9 +241,13 @@ sub self_url {
 
 The Mailing Monitor plugin is used to monitor the health of mass mailings as they go out. Since mass mailings take a potentially a long time to finish, this plugin can help monitor a mass mailing, but more importantly, can help in restarting a mailing that has been, "B<dropped>". 
 
-Mass Mailings can also be monitored in Dada Mail's list control panel under, B<Mass Mailing - Monitor Your Mailings> and done so in a much more  interactive way, so the power of this plugin is when it's run as a cron job, "behind the scenes". This also allows you to not have your list control panel open in a browser, until your mass mailing is finished. 
+Mass Mailings can also be monitored in Dada Mail's list control panel under, B<Mass Mailing - Monitor Your Mailings> and done so in a much more  interactive way, so the power of this plugin is when it's run as a cronjob, "behind the scenes". This also allows you to not have your list control panel open in a browser, until your mass mailing is finished. 
 
 Mass Mailings B<drop> because a mass mailing process may need to run longer than is allowed by your hosting environment - especially if you are on a shared hosting environment with limited and shared resources. 
+
+=head2 Schedules
+
+The Mailing Monitor plugin I<also> checks the awaiting schedules for messages scheduled in the B<Send a Message> and B<Send a Webpage> screens. Setting up the cronjob is required to ensure these scheduled mailings go out!
 
 =head1 Installation 
 

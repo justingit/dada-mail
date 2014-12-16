@@ -193,8 +193,8 @@ sub send_email {
                     plaintext_message_body_content       => $self->{ls_obj}->plaintext_message_body_content,
                     html_message_body_content            => $self->{ls_obj}->html_message_body_content,
                     html_message_body_content_js_escaped => js_enc( $self->{ls_obj}->html_message_body_content ),
-                    schedule_last_checked_time_localtime =>
-                      scalar( localtime( $self->{ls_obj}->param('schedule_last_checked_time') ) ),
+                    schedule_last_checked_frt =>
+                      formatted_runtime( time - $self->{ls_obj}->param('schedule_last_checked_time') ),
                     %wysiwyg_vars,
                     %$ses_params,
                 },
@@ -951,6 +951,8 @@ sub send_url_email {
                     plaintext_message_body_content       => $self->{ls_obj}->plaintext_message_body_content,
                     html_message_body_content            => $self->{ls_obj}->html_message_body_content,
                     html_message_body_content_js_escaped => js_enc( $self->{ls_obj}->html_message_body_content ),
+                    schedule_last_checked_frt => formatted_runtime( time - $self->{ls_obj}->param('schedule_last_checked_time') ),
+                    
                     %wysiwyg_vars,
                     %$ses_params,
 
