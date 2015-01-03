@@ -10,8 +10,14 @@ Key:
 [*] Naw...
 [?] Someday
 
+Tracker graphs by rate, rather than number (Normalize via subscription count) 
+
+http://dadamailproject.com/support/boards/viewtopic.php?t=4374&p=16228#p16228
 
 [ ] I know Justin isn't around, but I'm wondering if anyone can tell me if there is a template tag for the original sender's address in Bridge. I would like to put a footer in the emails that has the original sender's email address since P.P. mode converts the address to the list owner's address. The only tag I have found is the subscriber's email address (<!-- tmpl_var subscriber.email -->) but it seems like there should be one for the sender as well.
+
+
+[]  list-specific upload directories, rather than a shared one 
 
 [] remove MIME::Lite completely 
 
