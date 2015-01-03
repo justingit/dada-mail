@@ -1076,6 +1076,16 @@ $(document).ready(function() {
 		});
 		
 		
+		$("body").on("click", '.tracker_delete_msg_id_data', function(event) {
+			mid = $(this).attr("data-mid"); 
+			tracker_delete_msg_id_data(mid);
+		});
+		
+		
+		
+		
+		
+		
 		var field_name_group_selected = [];
 		$('div#field_name_group input[type=checkbox]').each(function() {
 		   if ($(this).prop("checked") === true) {
@@ -2931,6 +2941,29 @@ function tracker_toggle_tracker_track_email_options() {
 			$('#tracker_track_email_options').hide('blind');
 		}
 	}
+}
+
+
+function tracker_delete_msg_id_data(message_id){ 	
+	var confirm_msg = "Are you sure you want to delete data for this mass mailing? ";
+	if (confirm(confirm_msg)) {
+		var request = $.ajax({
+			url: $("#plugin_url").val(),
+			type: "POST",
+			cache: false,
+			data: {
+				f: 'delete_msg_id_data',
+				mid: message_id
+			},
+			dataType: "html"
+		});
+		request.done(function(content) {
+			message_history_html();
+		});
+	} else {
+		alert('Deletion cancelled.');
+	}
+
 }
 
 

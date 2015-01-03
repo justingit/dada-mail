@@ -2675,6 +2675,33 @@ sub purge_log {
 }
 
 
+sub delete_msg_id_data { 
+
+    my $self   = shift; 
+    my ($args) = @_; 
+    my $mid = $args->{-mid}; 
+    
+    warn 'mid: ' . $mid; 
+    
+	my $query1 = 'DELETE FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table}   . ' WHERE list = ? AND msg_id = ?'; 
+	my $query2 = 'DELETE FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ? AND msg_id = ?';
+
+	$self->{dbh}->do($query1, {}, ($self->{name}, $mid)) or die "cannot do statement $DBI::errstr\n"; 
+	$self->{dbh}->do($query2, {}, ($self->{name}, $mid)) or die "cannot do statement $DBI::errstr\n";
+
+	require DADA::App::DataCache; 
+	my $dc = DADA::App::DataCache->new;
+	$dc->flush(
+		{
+			-list => $self->{name}
+		}
+	);
+	
+    return 1; 
+
+}
+
+
 
 sub remote_addr {
     if(exists($ENV{HTTP_X_FORWARDED_FOR})){ 

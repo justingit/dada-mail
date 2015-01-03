@@ -95,6 +95,7 @@ sub run {
 	    'ajax_delete_log'                 => \&ajax_delete_log,
 		'message_history_html'            => \&message_history_html, 
 		'message_history_json'            => \&message_history_json, 
+		'delete_msg_id_data'              => \&delete_msg_id_data, 
 		'download_clickthrough_logs'      => \&download_clickthrough_logs, 
 		'download_activity_logs'          => \&download_activity_logs, 
 		'country_geoip_table'             => \&country_geoip_table, 
@@ -306,6 +307,19 @@ sub message_history_json {
 
 }
 
+
+sub delete_msg_id_data { 
+        
+   my $mid = $q->param('mid');
+
+   	$rd->delete_msg_id_data(
+		{
+			-mid      => $mid,
+		}
+	); 
+
+	print $q->header(); 
+}
 
 
 
