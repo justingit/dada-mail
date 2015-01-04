@@ -14,8 +14,7 @@ Content-Type: text/plain
 Content-Disposition: inline
 Content-Transfer-Encoding: binary
 
-
-Your mailing list's mass mailing has completed. 
+Your mailing list's mass mailing has completed. Hurray!
 -----------------------------------------------------------------------
 This mass mailing has reached: <!-- tmpl_var addresses_sent_to --> e-mail address(es)
 
@@ -24,7 +23,17 @@ Mailing Ended:      <!-- tmpl_var mailing_finish_time -->
 Total Mailing Time: <!-- tmpl_var total_mailing_time -->
 Last Email Sent to: <!-- tmpl_var last_email_send_to -->
 
-A copy of the mailing list message has been attached.
+<!-- tmpl_if clickthrough_tracking_enabled -->
+Here's some stats about who's been opening, reading, and interacting with your message, 
+from when you started sending, to when sending finished:
+
+Unique Opens:    <!-- tmpl_var unique_open --> (<!-- tmpl_var unique_opens_percent -->%)
+Clickthroughs:   <!-- tmpl_var clickthroughs -->
+Unsubscriptions: <!-- tmpl_var unsubscribe --> (<!-- tmpl_var unique_unsubscribes_percent -->%)
+
+See the up-to-date stats for this message in the Tracker plugin.<!-- /tmpl_if --> 
+
+Keep up the good work! 
 
 -<!-- tmpl_var PROGRAM_NAME -->
 
