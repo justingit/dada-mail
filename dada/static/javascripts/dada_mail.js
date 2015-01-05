@@ -1055,8 +1055,11 @@ $(document).ready(function() {
 	
 		message_history_html();
 		$("body").on("change", '#tracker_record_view_count', function(event) {
-			tracker_change_record_view();
+			message_history_html();
 		});
+		
+		
+		
 
 		$("body").on("click", '.tracker_turn_page', function(event) {
 			tracker_turn_page($(this).attr("data-page"));
@@ -1067,6 +1070,13 @@ $(document).ready(function() {
 			event.preventDefault();
 		});
 
+
+		$("body").on("change", '#subscriber_history_type', function(event) {
+			message_history_html();
+		});
+		
+
+
 		$("body").on("click", '.tracker_parse_links_setup', function(event) {
 			tracker_parse_links_setup();
 		});
@@ -1074,6 +1084,16 @@ $(document).ready(function() {
 		$("body").on("click", '#tracker_track_email', function(event) {
 			tracker_toggle_tracker_track_email_options();
 		});
+		
+		
+		$("body").on("click", '.tracker_delete_msg_id_data', function(event) {
+			mid = $(this).attr("data-mid"); 
+			tracker_delete_msg_id_data(mid);
+		});
+		
+		
+		
+		
 		
 		
 		var field_name_group_selected = [];
@@ -2934,6 +2954,29 @@ function tracker_toggle_tracker_track_email_options() {
 }
 
 
+function tracker_delete_msg_id_data(message_id){ 	
+	var confirm_msg = "Are you sure you want to delete data for this mass mailing? ";
+	if (confirm(confirm_msg)) {
+		var request = $.ajax({
+			url: $("#plugin_url").val(),
+			type: "POST",
+			cache: false,
+			data: {
+				f: 'delete_msg_id_data',
+				mid: message_id
+			},
+			dataType: "html"
+		});
+		request.done(function(content) {
+			message_history_html();
+		});
+	} else {
+		alert('Deletion cancelled.');
+	}
+
+}
+
+
 // Plugins >> Log Viewer
 
 function view_logs_results() {
@@ -3014,12 +3057,19 @@ function drawSubscriberHistoryChart() {
 	
 	//console.log('runnning drawSubscriberHistoryChart'); 
 	
+	if($("#subscriber_history_type").length) { 
+		history_type = $("#subscriber_history_type option:selected").val(); 
+	}
+	else { 
+		history_type = 'number'; 
+	}
 	$("#subscriber_history_chart_loading").html('<p class="alert">Loading...</p>');
 	var request = $.ajax({
 		url: $("#plugin_url").val(),
 		data: {
 			f: 'message_history_json',
-			page: $("#tracker_page").val()
+			page: $("#tracker_page").val(), 
+			type: history_type
 		},
 		cache: false,
 		dataType: "json",

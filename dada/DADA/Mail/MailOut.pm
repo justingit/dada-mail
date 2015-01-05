@@ -759,7 +759,7 @@ sub create_subscriber_list {
     my $self = shift;
 
     my ($args) = @_;
-        
+
     unless ( $args->{-mh_obj}->isa('DADA::Mail::Send') ) {
         croak "The DADA::Mail::Send object has been passed, but it's not isa DADA::Mail::Send! ";
     }

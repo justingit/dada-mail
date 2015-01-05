@@ -145,6 +145,11 @@
 			  </strong> 
 			 </p>
 			</td>
+
+		    <td> 
+			 <p>&nbsp;</p>
+			</td>
+			
 			</tr> 
 
 			<!-- tmpl_loop report_by_message_index --> 
@@ -250,6 +255,14 @@
 			   </a> 
 		      </p>
 			 </td> 
+			 
+			 <td>
+			     <form action="<!-- tmpl_var Plugin_URL -->">
+					<input type="button" name="" value="[x]" class="alertive tracker_delete_msg_id_data" data-mid="<!-- tmpl_var mid -->" />  		
+				</form> 
+			</td>
+			
+			
 		  </tr> 
 
 		<!-- /tmpl_loop --> 

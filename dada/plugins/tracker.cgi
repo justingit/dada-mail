@@ -17,7 +17,7 @@ BEGIN {
 
 use CGI::Carp qw(fatalsToBrowser);
 
-use DADA::Config 5.0.0 qw(!:DEFAULT);
+use DADA::Config 7.0.0 qw(!:DEFAULT);
 use DADA::Template::HTML;
 use DADA::App::Guts;
 use DADA::MailingList::Settings;
@@ -95,6 +95,7 @@ sub run {
 	    'ajax_delete_log'                 => \&ajax_delete_log,
 		'message_history_html'            => \&message_history_html, 
 		'message_history_json'            => \&message_history_json, 
+		'delete_msg_id_data'              => \&delete_msg_id_data, 
 		'download_clickthrough_logs'      => \&download_clickthrough_logs, 
 		'download_activity_logs'          => \&download_activity_logs, 
 		'country_geoip_table'             => \&country_geoip_table, 
@@ -295,10 +296,12 @@ sub percent {
 sub message_history_json { 
 	
 	my $page = $q->param('page') || 1; 
+	my $type = $q->param('type') || 'number'; 
 	
 	$rd->message_history_json(
 		{
 			-page     => $page, 
+			-type     => $type,
 			-printout => 1
 		}
 	);
@@ -306,6 +309,19 @@ sub message_history_json {
 
 }
 
+
+sub delete_msg_id_data { 
+        
+   my $mid = $q->param('mid');
+
+   	$rd->delete_msg_id_data(
+		{
+			-mid      => $mid,
+		}
+	); 
+
+	print $q->header(); 
+}
 
 
 
@@ -805,6 +821,10 @@ sub message_report {
         unique_opens                => commify($m_report->{'unique_open'})         || 0, 
         unique_opens_percent        => $m_report->{'unique_opens_percent'}         || 0, 
         clickthroughs               => commify($m_report->{'clickthroughs'})       || 0, 
+        
+        unique_clickthroughs => $m_report->{'unique_clickthroughs'} || 0,
+        unique_clickthroughs_percent => $m_report->{'unique_clickthroughs_percent'} || 0,
+        
 		unsubscribes                => commify($m_report->{'unsubscribe'})         || 0, 
 		unique_unsubscribes_percent => $m_report->{'unique_unsubscribes_percent'}  || 0, 
 		soft_bounce                 => commify($m_report->{'soft_bounce'})         || 0,

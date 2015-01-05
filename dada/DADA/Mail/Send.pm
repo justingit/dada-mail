@@ -2039,6 +2039,7 @@ sub mass_send {
                     -end_time     => $unformatted_end_time,
                     -emails_sent  => $ending_status->{total_sent_out},
                     -last_email   => $stop_email,
+                    -msg_id       => $mailout->_internal_message_id, 
                     -fields       => \%fields, 
                 ); 
                                                         
@@ -2775,6 +2776,7 @@ sub _email_batched_finished_notification {
         -end_time    => undef,
         -emails_sent => undef,
         -last_email  => undef,
+        -msg_id      => undef,
         @_
     );
 
@@ -2821,9 +2823,24 @@ sub _email_batched_finished_notification {
       require DADA::App::ReadEmailMessages; 
       my $rm = DADA::App::ReadEmailMessages->new; 
       my $msg_data = $rm->read_message('mass_mailing_finished_notification.eml'); 
-  	
-  	
 
+    my $m_report = {}; 
+    require DADA::Logging::Clickthrough; 
+    my $r = DADA::Logging::Clickthrough->new({-list => $self->{list}}); 
+    
+    $args{-msg_id} =~ s/\.(.*)$//; # remove everything after the first dot.
+    
+    if($r->enabled) { 
+        $m_report = $r->report_by_message( $args{-msg_id} );
+        $m_report->{clickthrough_tracking_enabled} = 1;
+    }
+    else { 
+        $m_report->{clickthrough_tracking_enabled} = 0;       
+    }
+
+    require Data::Dumper; 
+    warn '$args{-msg_id}' . $args{-msg_id}; 
+    warn Data::Dumper::Dumper($m_report); 
 
     require MIME::Entity;
     my $entity = MIME::Entity->build(
@@ -2885,6 +2902,7 @@ sub _email_batched_finished_notification {
                 total_mailing_time  => $total_time,
                 last_email_send_to  => $args{-last_email},
                 message_subject     => safely_encode( $fm->_decode_header($fields->{Subject} )),
+                %$m_report,
             }, 
 			-expr => $expr, 
         }
