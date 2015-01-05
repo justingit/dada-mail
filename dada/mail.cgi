@@ -89,7 +89,6 @@ use Try::Tiny;
 use CGI;
 CGI->nph(1)
   if $DADA::Config::NPH == 1;
-
 my $q;
 
 # DEV
@@ -114,9 +113,7 @@ if ( $ENV{QUERY_STRING} =~ m/^\?/ ) {
 
 }
 else {
-
     $q = CGI->new( \&hook );
-
 }
 
 # PROGRAM_URL has a, "?"
@@ -151,10 +148,6 @@ $q->charset($DADA::Config::HTML_CHARSET);
 
 use DADA::Template::HTML;
 
-# Bad - global variable for the archive editor
-# - I'll have to figure this out later.
-my $skel = [];
-
 #---------------------------------------------------------------------#
 # DEV - This is NOT the best place to put this,
 # but I guess we'll leave it here for now...
@@ -178,299 +171,19 @@ if ( defined($type) ) {
 
 #---------------------------------------------------------------------#
 
-if ( $ENV{PATH_INFO} ) {
-
-    my $dp = $q->url || $DADA::Config::PROGRAM_URL;
-    $dp =~ s/^(http:\/\/|https:\/\/)(.*?)\//\//;
-
-    my $info = $ENV{PATH_INFO};
-
-    $info =~ s/^$dp//;
-
-    # script name should be something like:
-    # /cgi-bin/dada/mail.cgi
-    $info =~ s/^$ENV{SCRIPT_NAME}//i;
-    $info =~ s/(^\/|\/$)//g;            #get rid of fore and aft slashes
-
-    # seriously, this shouldn't be needed:
-    $info =~ s/^dada\/mail\.cgi//;
-
-    if ( !$info && $ENV{QUERY_STRING} && $ENV{QUERY_STRING} =~ m/^\// ) {
-
-        # DEV Workaround for servers that give a bad PATH_INFO:
-        # Set the $DADA::Config::PROGRAM_URL to have, "?" at the end of the URL
-        # to change any PATH_INFO's into Query Strings.
-        # The below two lines change query strings that look like PATH_INFO's
-        # into PATH_INFO's
-        $info = $ENV{QUERY_STRING};
-        $info =~ s/(^\/|\/$)//g;    #get rid of fore and aft slashes
-    }
-
-    if ( $info =~ m/^$DADA::Config::SIGN_IN_FLAVOR_NAME$/ ) {
-
-        my ( $sifn, $pi_list ) = split( '/', $info, 2 );
-
-        $q->param( 'f',    $DADA::Config::SIGN_IN_FLAVOR_NAME );
-        $q->param( 'list', $pi_list );
-
-    }
-    elsif ( $info =~ m/^$DADA::Config::ADMIN_FLAVOR_NAME$/ ) {
-
-        $q->param( 'f', $DADA::Config::ADMIN_FLAVOR_NAME );
-
-    }
-    elsif ( $info =~ m/^archive/ ) {
-
-        # archive, archive_rss and archive_atom
-        # form:
-        #/archive/justin/20050422012839/
-
-        my ( $pi_flavor, $pi_list, $pi_id, $extran ) = split( '/', $info );
-
-        $q->param( 'flavor', $pi_flavor )
-          if $pi_flavor;
-        $q->param( 'list', $pi_list )
-          if $pi_list;
-        $q->param( 'id', $pi_id )
-          if $pi_id;
-        $q->param( 'extran', $extran );
-
-    }
-    elsif ( $info =~ /^smtm/ ) {
-
-        $q->param('what_is_dada_mail');
-
-    }
-    elsif ( $info =~ /^spacer_image/ ) {
-
-        # spacer_image/list/mid/spacer.png';
-        # Or
-        # spacer_image/list/mid/email_name/email_domain/spacer.png';
-
-        $q->param( 'flavor', 'm_o_c' );
-
-        my @data = split( '/', $info );
-
-        $q->param( 'list', $data[1] );
-        $q->param( 'mid',  $data[2] );
-
-        if (   $data[3] ne 'spacer_image.png'
-            && $data[4]
-            && $data[5]
-            && $data[5] eq 'spacer.png' )
-        {
-            $q->param( 'email', $data[3] . '@' . $data[4] );
-        }
-
-    }
-    elsif ( $info =~ /^img/ ) {
-
-        my ( $pi_flavor, $img_name, $extran ) = split( '/', $info );
-
-        $q->param( 'flavor', 'img' );
-
-        $q->param( 'img_name', $img_name )
-          if $img_name;
-
-    }
-    elsif ( $info =~ /^json\/subscribe/ ) {
-        $q->param( 'flavor', 'restful_subscribe' );
-    }
-    elsif ( $info =~ /^js/ ) {
-
-        my ( $pi_flavor, $js_lib, $extran ) = split( '/', $info );
-
-        $q->param( 'flavor', 'js' );
-
-        $q->param( 'js_lib', $js_lib )
-          if $js_lib;
-
-    }
-    elsif ( $info =~ /^css/ ) {
-
-        my ( $pi_flavor, $css_file, $extran ) = split( '/', $info );
-
-        $q->param( 'flavor', 'css' );
-
-        if ($css_file) {
-            $q->param( 'css_file', $css_file );
-        }
-        else {
-            # this is backwards compat.
-            $q->param( 'css_file', 'dada_mail.css' );
-        }
-
-    }
-    elsif ( $info =~ /^captcha_img/ ) {
-
-        my ( $pi_flavor, $pi_img_string, $extran ) = split( '/', $info );
-
-        $q->param( 'flavor', 'captcha_img' );
-
-        $q->param( 'img_string', $pi_img_string )
-          if $pi_img_string;
-
-    }
-    elsif ( $info =~ /^(s|n|u|ur)/ ) {
-
-        # s is sort of weird.
-        # u is an old unsub link - unsub confirmation as well?
-        # ur is the alternative form of the unsub link, that gives you a form
-        # n is the old sub confirmation
-        my ( $pi_flavor, $pi_list, $pi_email, $pi_domain, $pi_pin ) =
-          split( '/', $info, 5 );
-
-        if ($pi_email) {
-            if ( $pi_email !~ m/\@/ ) {
-                $pi_email = $pi_email . '@' . $pi_domain
-                  if $pi_domain;
-                if ( $pi_email =~ m/\=$/ ) {
-                    $pi_email =~ s/\=$//;
-                }
-
-            }
-            else {
-                $pi_pin = $pi_domain
-                  if !$pi_pin;
-            }
-        }
-
-        if ( $pi_pin eq '=' ) {
-            undef $pi_pin;
-        }
-        if ($pi_list) {
-            if ( $pi_list =~ m/\=$/ ) {
-                $pi_list =~ s/\=$//;
-            }
-        }
-
-        if (   ( $pi_flavor eq 'n' )
-            || ( $pi_flavor eq 'u' )
-            || ( $pi_flavor eq 'ur' ) )
-        {
-            $q->param( 'flavor',      'outdated_subscription_urls' );
-            $q->param( 'orig_flavor', $pi_flavor )
-              if $pi_flavor;
-            $q->param( 'orig_flavor', 'u' )
-              if $pi_flavor eq 'ur';
-        }
-        else {
-
-            $q->param( 'flavor', $pi_flavor )
-              if $pi_flavor;
-        }
-
-        $q->param( 'list', $pi_list )
-          if $pi_list;
-        $q->param( 'email', $pi_email )
-          if $pi_email;
-
-        # pin?
-        $q->param( 'pin', $pi_pin )
-          if $pi_pin;
-
-    }
-    elsif ( $info =~ /^t\// ) {
-
-        my ( $pi_flavor, $pi_token, $etc ) = split( '/', $info, 3 );
-
-        $q->param( 'flavor', 'token' );
-        $q->param( 'token',  $pi_token );
-
-    }
-    elsif ( $info =~ /^subscriber_help|^list/ ) {
-
-        my ( $pi_flavor, $pi_list ) = split( '/', $info );
-
-        $q->param( 'flavor', $pi_flavor )
-          if $pi_flavor;
-        $q->param( 'list', $pi_list )
-          if $pi_list;
-
-    }
-    elsif ( $info =~ /^r/ ) {
-
-        # my ($pi_flavor, $pi_list, $pi_k, $pi_mid, @pi_url) = split('/', $info);
-        my ( $pi_flavor, $pi_list, $pi_key, $pi_email_name, $pi_email_domain, ) = split( '/', $info, 5 );
-        my $pi_url;
-
-        $q->param( 'flavor', $pi_flavor )
-          if $pi_flavor;
-
-        $q->param( 'list', $pi_list )
-          if $pi_list;
-
-        $q->param( 'key', $pi_key )
-          if $pi_key;
-        my $pi_email = $pi_email_name . '@' . $pi_email_domain
-          if $pi_email_name && $pi_email_domain;
-        $q->param( 'email', $pi_email )
-          if $pi_email;
-
-    }
-    elsif ( $info =~ /^what_is_dada_mail$/ ) {
-
-        $q->param( 'flavor', 'what_is_dada_mail' );
-    }
-    elsif ( $info =~ m/^profile/ ) {
-
-        # profile_login
-        # profile_activate
-
-        # email is used just to pre-fill in the login form.
-
-        my ( $pi_flavor, $pi_user, $pi_domain, $pi_auth_code ) =
-          split( '/', $info, 4 );
-        $q->param( 'flavor', $pi_flavor )
-          if $pi_flavor;
-        $q->param( 'email', $pi_user . '@' . $pi_domain )
-          if $pi_user && $pi_domain;
-        $q->param( 'auth_code', $pi_auth_code )
-          if $pi_auth_code;
-    }
-    elsif ( $info =~ m/^api/ ) {
-        
-        my ($pi_flavor, $pi_list, $pi_service, $pi_public_key, $pi_digest) = split( '/', $info );
-        # HTTP_AUTHORIZATION
-        my %incoming_headers = map { $_ => $q->http($_) } $q->http();
-        use Data::Dumper; 
-        warn Dumper({%incoming_headers}); 
-        
-        if(!defined($pi_public_key) && !defined($pi_digest)){ 
-            my $auth_h = $incoming_headers{HTTP_AUTHORIZATION};
-               $auth_h =~ s/^hmac //; 
-            ($pi_public_key, $pi_digest) = split(':', $auth_h); 
-        }
-        if(!defined($q->param('nonce')) && $ENV{REQUEST_METHOD} eq 'GET'){ 
-            $q->param('nonce', $incoming_headers{'HTTP_X_DADA_NONCE'}); 
-        }
-        
-        require DADA::App::WebServices; 
-          my $ws = DADA::App::WebServices->new; 
-          my $r = $ws->request(
-              {
-                  -list       => $pi_list, 
-                  -service    => $pi_service, 
-                  -public_key => $pi_public_key,
-                  -digest     => $pi_digest, 
-                  -cgi_obj    => $q, 
-              }
-           ); 
-           print $r;
-           $q->param('flavor', 'api'); 
-    }
-    else {
-        if ($info) {
-            warn "Path Info present - but not valid? - '" . $ENV{PATH_INFO} . '" - filtered: "' . $info . '"'
-              unless $info =~ m/^\x61\x72\x74/;
-        }
-    }
-}
+use DADA::App::Dispatch; 
+my $d = DADA::App::Dispatch->new(); 
+# This basially just fills $q with things from the PATH_INFO
+$q = $d->translate({
+    -cgi_obj      => $q ,
+    -env          => \%ENV,
+}); 
 $q = decode_cgi_obj($q);
 
 #---------------------------------------------------------------------#
 
-# I don't like this at all:
+
+# This is all very very weird. 
 my $flavor = undef;
 if ( $q->param('flavor') ) {
     $flavor = $q->param('flavor');
@@ -509,7 +222,6 @@ my $password         = $q->param('password');
 my $retype_password  = $q->param('retype_password');
 my @address          = $q->param('address');
 my $done             = $q->param('done');
-# my $id               = $q->param('id');
 my $help             = $q->param('help');
 
 #---------------------------------------------------------------------#
@@ -531,7 +243,7 @@ __PACKAGE__->run()
   unless caller();
 
 sub run {
-
+    
     #external (mostly..) functions called from the web browser)
     # a few things this program  can do.... :)
     my %Mode = (
@@ -618,7 +330,6 @@ sub run {
         'edit_html_type'                              => \&edit_html_type,
         'list_options'                                => \&list_options,
         'web_services'                                => \&web_services, 
-        'api'                                         => \&api, 
         'sending_preferences'                         => \&sending_preferences,
         'amazon_ses_verify_email'                     => \&amazon_ses_verify_email,
         'amazon_ses_get_stats'                        => \&amazon_ses_get_stats,
@@ -684,7 +395,6 @@ sub run {
         $DADA::Config::SIGN_IN_FLAVOR_NAME => \&sign_in,
     );
 
-    # the BIG switcheroo. Mark doesn't like this :)
     if ($flavor) {
         if ( exists( $Mode{$flavor} ) ) {
             $Mode{$flavor}->();    #call the correct subroutine
@@ -2593,7 +2303,55 @@ sub list_options {
 
 
 
-sub api{};
+sub api {
+    
+    my $dp = $q->url || $DADA::Config::PROGRAM_URL;
+    $dp =~ s/^(http:\/\/|https:\/\/)(.*?)\//\//;
+
+    my $info = $ENV{PATH_INFO};
+
+    $info =~ s/^$dp//;
+
+    # script name should be something like:
+    # /cgi-bin/dada/mail.cgi
+    $info =~ s/^$ENV{SCRIPT_NAME}//i;
+    $info =~ s/(^\/|\/$)//g;    #get rid of fore and aft slashes
+
+    # seriously, this shouldn't be needed:
+    $info =~ s/^dada\/mail\.cgi//;
+    
+    my ( $pi_flavor, $pi_list, $pi_service, $pi_public_key, $pi_digest ) = split( '/', $info );
+
+    # HTTP_AUTHORIZATION
+    my %incoming_headers = map { $_ => $q->http($_) } $q->http();
+    use Data::Dumper;
+    warn Dumper( {%incoming_headers} );
+
+    if ( !defined($pi_public_key) && !defined($pi_digest) ) {
+        my $auth_h = $incoming_headers{HTTP_AUTHORIZATION};
+        $auth_h =~ s/^hmac //;
+        ( $pi_public_key, $pi_digest ) = split( ':', $auth_h );
+    }
+    if ( !defined( $q->param('nonce') ) && $ENV{REQUEST_METHOD} eq 'GET' ) {
+        $q->param( 'nonce', $incoming_headers{'HTTP_X_DADA_NONCE'} );
+    }
+    
+    $q->delete( 'flavor' ); # ... probably. 
+    
+    require DADA::App::WebServices;
+    my $ws = DADA::App::WebServices->new;
+    my $r  = $ws->request(
+        {
+            -list       => $pi_list,
+            -service    => $pi_service,
+            -public_key => $pi_public_key,
+            -digest     => $pi_digest,
+            -cgi_obj    => $q,
+        }
+    );
+    print $r;
+
+}
     
 sub web_services { 
     
