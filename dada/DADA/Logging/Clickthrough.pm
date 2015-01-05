@@ -5,6 +5,8 @@ use lib qw(../../ ../../perllib);
 use strict; 
 use DADA::Config qw(!:DEFAULT); 
 use DADA::App::Guts;
+use Try::Tiny; 
+
 my $type;  
 
 
@@ -860,7 +862,9 @@ sub message_history_json {
 		# warn 'no $cached_data passed.';
 	}
 	
-	
+	if(!exists($args->{-type})){ 
+	    $args->{-type} = 'number'; 
+	}
 	
 	
 	my $json; 
@@ -871,7 +875,7 @@ sub message_history_json {
 	$json = $dc->retrieve(
 		{
 			-list    => $self->{name}, 
-			-name    => 'message_history_json', 
+			-name    => 'message_history_json.' . $args->{-type}, 
 			-page    => $page, 
 			-entries => $self->{ls}->param('tracker_record_view_count'), 
 		}
@@ -913,66 +917,121 @@ sub message_history_json {
 		require         Data::Google::Visualization::DataTable;
 		my $datatable = Data::Google::Visualization::DataTable->new();
 
-		$datatable->add_columns(
-			   { id => 'date',          label => 'Date',          type => 'string'}, 
-		       { id => 'subscribers',   label => "Subscribers",   type => 'number'},
-		       { id => 'opens',         label => "Opens",         type => 'number'},
-		       { id => 'clickthroughs', label => "Clickthroughs", type => 'number'},
-		       { id => 'unsubscribes',  label => "Unsubscribes",  type => 'number'},
-		       { id => 'soft_bounces',  label => "Soft Bounces",  type => 'number'},
-		       { id => 'hard_bounces',  label => "Hard Bounces",  type => 'number'},
-		);
+        if($args->{-type} eq 'number') { 
+
+            		$datatable->add_columns(
+            			   { id => 'date',          label => 'Date',          type => 'string'}, 
+            		       { id => 'subscribers',   label => "Subscribers",   type => 'number'},
+            		       #{ id => 'received',         label => "Recieved",         type => 'number'},
+                           { id => 'errors_sending_to', label => "Errors", type => 'number'},
+            		       { id => 'opens',         label => "Opens",         type => 'number'},
+            		       { id => 'clickthroughs', label => "Clickthroughs", type => 'number'},
+            		       { id => 'unsubscribes',  label => "Unsubscribes",  type => 'number'},
+            		       { id => 'soft_bounces',  label => "Soft Bounces",  type => 'number'},
+            		       { id => 'hard_bounces',  label => "Hard Bounces",  type => 'number'},
+            		);
+
+            		for(reverse @$report_by_message_index){ 
+            			if($self->verified_mid($_->{mid})){
+
+            				if($self->{ls}->param('tracker_clean_up_reports') == 1){ 
+            					next unless exists($_->{num_subscribers}) && $_->{num_subscribers} =~ m/^\d+$/
+            				}
+
+            				my $date; 
+            				my $num_subscribers = $_->{num_subscribers}; 
+            				my $opens           = 0;
+            				my $errors          = 0; 
+            				my $clickthroughs   = 0;
+            				my $unsubscribes    = 0;
+            				my $soft_bounces    = 0;
+            				my $hard_bounces    = 0;  
+
+            				if(defined($_->{open})){ 
+            					$opens = $_->{open};	
+            				}
+            				if(defined($_->{errors_sending_to})){ 
+            					$errors = $_->{errors_sending_to};	
+            				}
+
+            				if(defined($_->{count})){ 
+            					$clickthroughs = $_->{count};	
+            				}
+            				if(defined($_->{unsubscribe})){ 
+            					$unsubscribes = $_->{unsubscribe};	
+            				}
+            				if(defined($_->{soft_bounce})){ 
+            					$soft_bounces = $_->{soft_bounce};	
+            				}
+            				if(defined($_->{hard_bounce})){ 
+            					$hard_bounces = $_->{hard_bounce};	
+            				}
+            				
+            				$datatable->add_rows(
+            					{
+            				        date          =>  { 
+            											v => $_->{mid}, 
+            											f => DADA::App::Guts::date_this( -Packed_Date => $_->{mid}) 
+            											},
+            		                subscribers   => $num_subscribers ,
+            		                opens         => $opens ,
+            		                errors_sending_to         => $errors ,
+            		                clickthroughs => $clickthroughs,
+            		                unsubscribes  => $unsubscribes,
+            		                soft_bounces  => $soft_bounces, 
+            		                hard_bounces  => $hard_bounces ,
+            					}
+            				); 
+            			}
+            		} 
+            
+        }
+        elsif($args->{-type} eq 'rate') { 
+            
+    		$datatable->add_columns(
+    			   { id => 'date',          label => 'Date',          type => 'string'}, 
+    		      # { id => 'subscribers',   label => "Subscribers",   type => 'number'},
+    		       { id => 'received',         label => "Recieved",         type => 'number'},
+                   { id => 'errors_sending_to', label => "Errors", type => 'number'},
+    		       { id => 'opens',         label => "Opens",         type => 'number'},
+    		       { id => 'clickthroughs', label => "Clickthroughs", type => 'number'},
+    		       { id => 'unsubscribes',  label => "Unsubscribes",  type => 'number'},
+    		       { id => 'soft_bounces',  label => "Soft Bounces",  type => 'number'},
+    		       { id => 'hard_bounces',  label => "Hard Bounces",  type => 'number'},
+    		);
 	
-	
-		for(reverse @$report_by_message_index){ 
-			if($self->verified_mid($_->{mid})){
+    		for(reverse @$report_by_message_index){ 
+    			if($self->verified_mid($_->{mid})){
 			
-				if($self->{ls}->param('tracker_clean_up_reports') == 1){ 
-					next unless exists($_->{num_subscribers}) && $_->{num_subscribers} =~ m/^\d+$/
+    				if($self->{ls}->param('tracker_clean_up_reports') == 1){ 
+    					next unless exists($_->{num_subscribers}) && $_->{num_subscribers} =~ m/^\d+$/
+    				}
+
+            $datatable->add_rows(
+				{
+			        date          =>  { 
+										v => $_->{mid}, 
+										f => DADA::App::Guts::date_this( -Packed_Date => $_->{mid}) 
+										},
+	              #  subscribers   => $num_subscribers ,
+	                
+	                received      => $_->{received_percent},
+	                errors_sending_to        => $_->{errors_sending_to_percent},
+	                opens         => $_->{unique_opens_percent},  
+	                clickthroughs => $_->{unique_clickthroughs_percent},
+	                unsubscribes  => $_->{unique_unsubscribes_percent},
+	                soft_bounces  => $_->{unique_soft_bounces_percent},
+	                hard_bounces  => $_->{unique_hard_bounces_percent},
+	            
 				}
-		
-				my $date; 
-				my $num_subscribers = $_->{num_subscribers}; 
-				my $opens           = 0;
-				my $clickthroughs   = 0;
-				my $unsubscribes    = 0;
-				my $soft_bounces    = 0;
-				my $hard_bounces    = 0;  
+			); 
 			
-				if(defined($_->{open})){ 
-					$opens = $_->{open};	
-				}
-				if(defined($_->{count})){ 
-					$clickthroughs = $_->{count};	
-				}
+			
 				
-				if(defined($_->{unsubscribe})){ 
-					$unsubscribes = $_->{unsubscribe};	
-				}
-				
-				if(defined($_->{soft_bounce})){ 
-					$soft_bounces = $_->{soft_bounce};	
-				}
-				if(defined($_->{hard_bounce})){ 
-					$hard_bounces = $_->{hard_bounce};	
-				}
-			
-				$datatable->add_rows(
-					{
-				        date          =>  { 
-											v => $_->{mid}, 
-											f => DADA::App::Guts::date_this( -Packed_Date => $_->{mid}) 
-											},
-		                subscribers   => $num_subscribers ,
-		                opens         => $opens ,
-		                clickthroughs => $clickthroughs,
-		                unsubscribes  => $unsubscribes,
-		                soft_bounces  => $soft_bounces, 
-		                hard_bounces  => $hard_bounces ,
-					}
-				); 				
 			}
 		} 
+		
+ 	}
 
 
 		$json = $datatable->output_javascript(
@@ -981,7 +1040,7 @@ sub message_history_json {
 		$dc->cache(
 			{ 
 				-list    => $self->{name}, 
-				-name    => 'message_history_json', 
+				-name    => 'message_history_json.' . $args->{-type}, 
 				-page    => $page, 
 				-entries => $self->{ls}->param('tracker_record_view_count'), 
 				-data    => \$json, 
@@ -1004,6 +1063,30 @@ sub message_history_json {
 		return $json; 
 	}
 }
+
+
+sub percentage { 
+	my $self = shift; 
+	my $num  = shift; 
+	my $total = shift; 
+	my $p     = 0; 
+
+	$num = $num + 0; 
+	$total = $total + 0; 
+	
+	return 0 unless $total > 0; 
+	try { 
+		$p =  $num/$total * 100; 
+	} catch { 
+		carp "problems finding percentage: $_"; 
+	};
+
+	return sprintf ("%.1f", $p); 
+	
+	#return $p; 
+}
+
+
 
 
 1;

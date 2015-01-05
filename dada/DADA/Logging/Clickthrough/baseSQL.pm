@@ -956,6 +956,7 @@ sub msg_basic_event_count {
 		unsubscribe         => 1,
 		errors_sending_to   => 1,
 		abuse_report        => 1,
+		#clickthroughs       => 1,
     );
     
     for(keys %ok_events){ 
@@ -984,7 +985,7 @@ sub msg_basic_event_count {
 	my $total_recipients_query = 'SELECT details FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} .' WHERE list = ? AND msg_id = ? AND event = ?';
 	$basic_events->{total_recipients} = $self->{dbh}->selectcol_arrayref( $total_recipients_query, { MaxRows => 1 }, $self->{name}, $msg_id, 'total_recipients' )->[0];
 
-	# num subscribers
+	# total recipients
 	if(! defined($basic_events->{total_recipients}) || $basic_events->{total_recipients} eq ''){ 
 		$basic_events->{total_recipients} = $basic_events->{num_subscribers};
 	}
@@ -1015,11 +1016,36 @@ sub msg_basic_event_count {
 	$basic_events->{unique_open} = $uo_count; 
 	$sth->finish; 
 	# /Unique Opens
+	
+	# Unique Opens Percent
 	$basic_events->{unique_opens_percent}          
 		= $self->percentage(
 			$basic_events->{unique_open}, 
 			$basic_events->{received}
 	);
+	# /Unique Opens Percent
+	
+	# Unique Clickthroughs
+	my $uc_query = 'SELECT msg_id, email, COUNT(*) FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ? AND msg_id = ?  GROUP BY msg_id, email'; 
+	my $uc_count  = 0; 
+	my $sth      = $self->{dbh}->prepare($uc_query);
+       $sth->execute( $self->{name}, $msg_id);
+	# Just counting what gets returned. 
+	while ( my ( $m, $e, $c ) = $sth->fetchrow_array ) {
+	    #$basic_events->{clickthroughs} += $c; 
+		$uc_count++; 
+	}
+	$basic_events->{unique_clickthroughs} = $uc_count; 
+	$sth->finish; 
+	# /Unique Clickthroughs
+	
+	# Unique Clickthroughs Percent
+	$basic_events->{unique_clickthroughs_percent}          
+		= $self->percentage(
+			$basic_events->{unique_clickthroughs}, 
+			$basic_events->{received}
+	);
+	# /Unique Clickthroughs Percent
 	
 	# Unsubscribes 
 	$basic_events->{unique_unsubscribes_percent} = 
@@ -1199,26 +1225,6 @@ sub msg_basic_event_count_json {
 	
 }
 
-sub percentage { 
-	my $self = shift; 
-	my $num  = shift; 
-	my $total = shift; 
-	my $p     = 0; 
-
-	$num = $num + 0; 
-	$total = $total + 0; 
-	
-	return 0 unless $total > 0; 
-	try { 
-		$p =  $num/$total * 100; 
-	} catch { 
-		carp "problems finding percentage: $_"; 
-	};
-
-	return sprintf ("%.1f", $p); 
-	
-	#return $p; 
-}
 
 sub report_by_message {
 
