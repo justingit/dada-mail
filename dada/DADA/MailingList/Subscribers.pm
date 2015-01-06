@@ -1166,7 +1166,6 @@ sub domain_stats_json {
 	if($args->{-printout} == 1){ 
 		require CGI; 
 		my $q = CGI->new; 
-		
 		print $q->header(
 			'-Cache-Control' => 'no-cache, must-revalidate',
 			-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',

@@ -1129,6 +1129,8 @@ sub find_attachment_list {
 
 sub view_file_attachment { 
 	
+	warn 'this is probably very broken.'; 
+	
 	my $self = shift;
 
 	my %args = (

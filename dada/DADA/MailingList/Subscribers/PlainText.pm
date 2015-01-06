@@ -257,16 +257,28 @@ of they match.
 sub print_out_list { 
 
 	my $self = shift;
-	 	
-	my %args = (-Type => 'list',
-				-FH  => \*STDOUT,
-				@_); 
+	my ($args) = @_; 
 	
-	my $fh = $args{-FH};
-	my $email; 
-	my $count; 
+	my $r; 
+	
+	if(! exists($args->{-print_out})){ 
+	    $args->{-print_out} = 1;
+	}
+	if(! exists($args->{-fh})){ 
+			$args->{-fh} =  \*STDOUT;
+	}
+	if(! exists($args->{-type})){ 
+		$args->{-type} = 'list'; 
+	}	
+	
+	# DEV: There's a reason for this tmp var, correct?
+    my $fh = $args->{ -fh };
+	#binmode $fh, ':encoding(' . $DADA::Config::HTML_CHARSET . ')';
+    my $r; 
+    my $email; 
+    
 	if($self->{list}){ 
-		$self->open_list_handle(-Type => $args{-Type}); 
+		$self->open_list_handle(-Type => $args->{-type}); 
 		while(defined($email = <LIST>)){ 
 			# DEV: Do we remove newlines here? Huh? 
 			# BUG: [ 2147102 ] 3.0.0 - "Open List in New Window" has unwanted linebreak?
@@ -278,15 +290,18 @@ sub print_out_list {
 			
 			
 			#	chomp($email);
-			print $fh $email; 
-			
-			# And then, and then, put the newline back? 
-			print "\n"; 
-			$count++; 
+			$r .= $email . "\n";  
+		#	$count++; 
 			
 		}
 		close (LIST);            
-		return $count; 
+		if($args->{-print_out} == 1){ 
+            print $fh $r;
+        }
+        else { 
+            return $r; 
+        }
+        
 	}
 
 }

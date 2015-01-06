@@ -85,7 +85,8 @@ require Exporter;
   can_use_LWP_Simple
   can_use_AuthenCAPTCHA
   formatted_runtime
-  
+  commify
+  generate_rand_string_md5
 );
 
 
@@ -1933,7 +1934,7 @@ sub user_error {
     	}
 	);
 
-    $test ? return $error_msg : print $fh safely_encode($error_msg) and return;
+    return $error_msg; 
 
 }
 
@@ -3063,6 +3064,36 @@ sub formatted_runtime {
 
     return $runtime;
 }
+
+sub commify {
+    my $input = shift;
+    $input = reverse($input);
+    $input =~ s/(\d\d\d)(?=\d)(?!\d*\.)/$1,/g;
+    $input = reverse($input);
+    return $input;
+}
+
+sub generate_rand_string_md5 {
+
+    #warn "generate_rand_string";
+
+    my $chars = shift
+      || 'aAeEiIoOuUyYabcdefghijkmnopqrstuvwxyzABCDEFGHJKMNPQRSTUVWXYZ23456789';
+    my $num = shift || 1024;
+
+    require Digest::MD5;
+
+    my @chars = split '', $chars;
+    my $ran;
+    for ( 1 .. $num ) {
+        $ran .= $chars[ rand @chars ];
+    }
+    return Digest::MD5::md5_hex($ran);
+}
+
+
+
+
 
 
 

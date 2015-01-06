@@ -1961,7 +1961,6 @@ sub _apply_list_template {
 					-Part         => "header",
 					-Title        =>  $self->Subject,
 					-List         => $self->{ls}->param('list'),
-					-HTML_Header  => 0,
 					-vars => { 
 						# kludge
 						message_id => '[message_id]', # DEV: shouldn't be, "<!-- tmpl_var message_id -->" ?

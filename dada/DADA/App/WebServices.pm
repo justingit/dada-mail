@@ -147,17 +147,13 @@ sub request {
             $r->{private_api_key} = $self->{ls}->param('private_api_key');
         }
     }
-
-    my $d = $self->{q}->header(
+    my $headers = {
         -type            => 'application/json',
         '-Cache-Control' => 'no-cache, must-revalidate',
         -expires         => 'Mon, 26 Jul 1997 05:00:00 GMT',
-    );
-
+    };
     my $json = JSON->new->allow_nonref;
-    $d .= $json->pretty->encode($r);
-    return $d;
-
+    return ($headers, $json->pretty->encode($r)); 
 }
 
 sub validate_subscription {

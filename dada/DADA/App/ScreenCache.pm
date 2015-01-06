@@ -177,6 +177,69 @@ sub show {
 }
 
 
+sub cached_headers_body {
+
+    my $self   = shift;
+    my $screen = shift;
+    
+    my $headers = {}; 
+    my $body    = ''; 
+    
+    my ($args) = @_;
+    if ( !exists( $args->{-check_for_header} ) ) {
+        $args->{-check_for_header} = 0;
+    }
+    my $filename = $self->cache_dir . '/' . $self->translate_name($screen);
+
+    if ( $self->cached($screen) ) {
+        
+        my $scrn; 
+        
+        if ($self->_is_binary($filename)) {
+            open SCREEN, '<', DADA::App::Guts::make_safer($filename)
+              or croak("cannot open $filename - $!");
+            binmode SCREEN;
+        }
+        else {
+            open SCREEN, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', DADA::App::Guts::make_safer($filename)
+              or croak("cannot open $filename - $!");
+        }
+        if ($self->_is_binary($filename)) {
+	        while ( my $l = <SCREEN> ) {
+	            $scrn .= $l;
+	        }	
+		}
+		else { 	
+	        while ( my $l = <SCREEN> ) {
+	            $scrn .= $l;
+	        }
+		}
+        close(SCREEN)
+          or croak("cannot close $filename - $!");
+          my ($header_blob, $body) = split("\n\n", $scrn, 2);
+          # split.. logically
+      	  my @logical_lines = split /\n(?!\s)/, $header_blob;
+
+      	    # make the hash
+      	    for my $line(@logical_lines) {
+      	          my ($label, $value) = split(/:\s*/, $line, 2);
+      	          $headers->{$label} = $value;
+      	        }
+      	        
+      	    return($headers, $body); 
+
+      	
+          
+    }
+    else {
+        croak "screen is not cached! " . $!;
+    }
+
+}
+
+
+
+
 
 
 sub _is_binary { 

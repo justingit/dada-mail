@@ -2402,6 +2402,25 @@ sub isa_problem_address {
 
 }
 
+
+sub return_log { 
+    my $self = shift;
+    my $r = undef; 
+
+    my $file = $self->dir . '/' . $file_names->{log};
+    $file = make_safer($file);
+
+    open( MO_LOG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file )
+      or carp $!;
+
+    while (<MO_LOG>) {
+        $r .= $_;
+    }
+
+    close(MO_LOG);
+    return $r; 
+    
+}
 sub print_log {
 
     my $self = shift;

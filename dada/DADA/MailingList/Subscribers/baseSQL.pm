@@ -695,7 +695,24 @@ sub update_profiles {
 
 }
 
-sub fancy_print_out_list {
+
+sub fancy_print_out_list { 
+    my $self = shift;
+    my ($args) = @_;
+    
+    if ( !exists( $args->{ -FH } ) ) {
+        $args->{ -FH } = \*STDOUT;
+    }
+    my $fh = $args->{ -FH };
+    
+    my($scrn, $subscribers_count) = $self->fancy_list($args); 
+    e_print($scrn, $fh); 	
+    
+}
+
+
+
+sub fancy_list {
 
     my $count = 0;
 
@@ -707,10 +724,6 @@ sub fancy_print_out_list {
 'you must supply the type of list we are looking at in, the "-type" parameter';
     }
 
-    if ( !exists( $args->{ -FH } ) ) {
-        $args->{ -FH } = \*STDOUT;
-    }
-    my $fh = $args->{ -FH };
 
     if ( !exists( $args->{ -partial_listing } ) ) {
         $args->{ -partial_listing } = {};
@@ -755,9 +768,8 @@ sub fancy_print_out_list {
 			-expr => 1, 
         }
     );
-	e_print($scrn, $fh); 
-
-    return scalar @{$subscribers};
+     
+    return ($scrn, scalar @{$subscribers}); 
 
 }
 
@@ -769,6 +781,11 @@ sub print_out_list {
 #	use Data::Dumper; 
 #	warn 'args!' . Dumper($args); 
 	
+	my $r; 
+	
+	if(! exists($args->{-print_out})){ 
+	    $args->{-print_out} = 1;
+	}
 	if(! exists($args->{-fh})){ 
 			$args->{-fh} =  \*STDOUT;
 	}
@@ -790,7 +807,7 @@ sub print_out_list {
 	# DEV: There's a reason for this tmp var, correct?
     my $fh = $args->{ -fh };
 
-	binmode $fh, ':encoding(' . $DADA::Config::HTML_CHARSET . ')';
+	#binmode $fh, ':encoding(' . $DADA::Config::HTML_CHARSET . ')';
 
     my $count;
 	my $query = ''; 
@@ -873,7 +890,7 @@ sub print_out_list {
     if ( $csv->combine(@header) ) {
 
         my $hstring = $csv->string;
-        print $fh $hstring, "\n";
+        $r .= $hstring . "\n";
 
     }
     else {
@@ -900,7 +917,7 @@ sub print_out_list {
 
         if ( $csv->combine(@info) ) {
             my $string = $csv->string;
-            print $fh $string, "\n";
+            $r .= $string . "\n";
         }
         else {
             my $err = $csv->error_input;
@@ -916,7 +933,7 @@ sub print_out_list {
             }
             if ( $csv->combine(@new_info) ) {
                 my $hstring2 = $csv->string;
-                print $fh $hstring2, "\n";
+                $r .= $hstring2 . "\n";
             }
             else {
                 carp "combine() failed on argument: "
@@ -927,7 +944,13 @@ sub print_out_list {
     }
 
     $sth->finish;
-    return $count;
+    if($args->{-print_out} == 1){ 
+        print $fh $r;
+    }
+    else { 
+        return $r; 
+    }
+        
     
 }
 

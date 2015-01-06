@@ -156,7 +156,7 @@ sub admin_template {
 				-List         => "",
 				-Root_Login   => 0,
 				-li           => undef, 
-				-HTML_Header  => 1, 
+				-HTML_Header  => 0,
 				-Part         => undef, 
 				-vars         => {},
 				@_,
