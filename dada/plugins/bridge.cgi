@@ -4619,7 +4619,7 @@ This could be the cause of mysterious occurences of messages never reaching the 
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2014 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2015 Justin Simoni All rights reserved. 
 
 =head1 LICENSE
 

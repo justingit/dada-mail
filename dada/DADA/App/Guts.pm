@@ -87,6 +87,8 @@ require Exporter;
   formatted_runtime
   commify
   generate_rand_string_md5
+  
+  
 );
 
 
@@ -3091,6 +3093,18 @@ sub generate_rand_string_md5 {
     return Digest::MD5::md5_hex($ran);
 }
 
+sub list_types { 
+    return {
+        list               => 'Subscribers',
+        black_list         => 'Black Listed',
+        white_list         => 'White Listed',            # White listed isn't working, no?
+        authorized_senders => 'Authorized Senders',
+        moderators         => 'Moderators',
+        sub_request_list   => 'Subscription Requests',
+        unsub_request_list => 'Unsubscription Requests',
+        bounced_list       => 'Bouncing Addresses',
+    };
+}
 
 
 
@@ -3105,7 +3119,7 @@ sub generate_rand_string_md5 {
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2014 Justin Simoni 
+Copyright (c) 1999 - 2015 Justin Simoni 
 
 http://justinsimoni.com 
 

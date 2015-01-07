@@ -214,7 +214,7 @@ sub send_email {
                 }
             );
         }
-        e_print($scrn);
+        return({}, $scrn);
     }
     elsif ( $process eq 'save_as_draft' ) {
 
@@ -278,7 +278,7 @@ sub send_email {
               if $t;
 
             $self->wait_for_it($message_id);
-            print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL . '?f='
+            return({-redirect_uri => $DADA::Config::S_PROGRAM_URL . '?f='
                   . $flavor
                   . '&test_sent=1&test_recipient='
                   . $q->param('test_recipient')
@@ -287,7 +287,7 @@ sub send_email {
                   . '&restore_from_draft='
                   . $q->param('restore_from_draft')
                   . '&draft_role='
-                  . $q->param('draft_role') );
+                  . $q->param('draft_role')}, undef );
         }
         else {
             if ( $self->{md_obj}->enabled ) {
@@ -302,7 +302,7 @@ sub send_email {
             else {
                 $uri = $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&type=list&id=' . $message_id;
             }
-            print $q->redirect( -uri => $uri );
+            return({-redirect_uri => $uri}, undef);
         }
     }
 }
@@ -971,7 +971,7 @@ sub send_url_email {
                 }
             );
         }
-        e_print($scrn);
+        return({}, $scrn);
 
     }
     elsif ( $process eq 'save_as_draft' ) {
@@ -1006,12 +1006,11 @@ sub send_url_email {
         );
 
         if ( $status == 0 ) {
-            $self->report_mass_mail_errors( $errors, $root_login );
-            return;
+            return $self->report_mass_mail_errors( $errors, $root_login );
         }
         if ( $process =~ m/test/i ) {
             $self->wait_for_it($message_id);
-            print $q->redirect( -uri => $DADA::Config::S_PROGRAM_URL . '?f='
+            return({-redirect_uri => $DADA::Config::S_PROGRAM_URL . '?f='
                   . $flavor
                   . '&test_sent=1&test_recipient='
                   . $q->param('test_recipient')
@@ -1020,7 +1019,7 @@ sub send_url_email {
                   . '&restore_from_draft='
                   . $q->param('restore_from_draft')
                   . '&draft_role='
-                  . $q->param('draft_role') );
+                  . $q->param('draft_role')}, undef );
         }
         else {
             if ( $self->{md_obj}->enabled ) {
@@ -1035,7 +1034,7 @@ sub send_url_email {
             else {
                 $uri = $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&type=list&id=' . $message_id;
             }
-            print $q->redirect( -uri => $uri );
+            return({-redirect_uri => $uri}, undef );
         }
     }
 }
@@ -1182,7 +1181,7 @@ sub save_as_draft {
 
     my $draft_id   = $q->param('draft_id')   || undef;
     my $draft_role = $q->param('draft_role') || 'draft';
-    my $screen     = $q->param('f')          || 'send_email';
+    my $screen     = $q->param('flavor')     || 'send_email';
 
     my $saved_draft_id = $self->{md_obj}->save(
         {
@@ -1199,14 +1198,15 @@ sub save_as_draft {
         require JSON;
         my $json = JSON->new->allow_nonref;
         my $return = { id => $saved_draft_id };
-        print $q->header(
+        my $headers = {
             '-Cache-Control' => 'no-cache, must-revalidate',
             -expires         => 'Mon, 26 Jul 1997 05:00:00 GMT',
             -type            => 'application/json',
-        );
+        };
         warn '$json->pretty->encode($return) ' . $json->pretty->encode($return)
           if $t;
-        print $json->pretty->encode($return);
+        my $body = $json->pretty->encode($return);
+        return($headers, $body); 
     }
     else {
         return $saved_draft_id;
@@ -1331,7 +1331,7 @@ sub list_invite {
                 -list_settings_vars_param => { -dot_it => 1, },
             }
         );
-        e_print($scrn);
+        return({}, $scrn);
 
     }
     elsif (
@@ -1422,8 +1422,7 @@ sub list_invite {
         }
 
         if ( $text_message_body eq undef && $html_message_body eq undef ) {
-            $self->report_mass_mail_errors( "Message will be sent blank! Stopping!", $root_login );
-            return;
+            return $self->report_mass_mail_errors( "Message will be sent blank! Stopping!", $root_login );
         }
 
         ( $text_message_body, $html_message_body ) =
@@ -1439,16 +1438,14 @@ sub list_invite {
 
             my ( $status, $errors ) = $self->redirect_tag_check($text_message_body);
             if ( $status == 0 ) {
-                $self->report_mass_mail_errors( $errors, $root_login );
-                return;
+                return $self->report_mass_mail_errors( $errors, $root_login );
             }
             undef($status);
             undef($errors);
 
             my ( $status, $errors ) = $self->redirect_tag_check($html_message_body);
             if ( $status == 0 ) {
-                $self->report_mass_mail_errors( $errors, $root_login );
-                return;
+                return $self->report_mass_mail_errors( $errors, $root_login );
             }
             undef($status);
             undef($errors);
@@ -1477,8 +1474,7 @@ sub list_invite {
 
             my ( $status, $errors ) = $self->redirect_tag_check($html_message_body);
             if ( $status == 0 ) {
-                $self->report_mass_mail_errors( $errors, $root_login );
-                return;
+                return $self->report_mass_mail_errors( $errors, $root_login );
             }
             undef($status);
             undef($errors);
@@ -1496,8 +1492,7 @@ sub list_invite {
 
             my ( $status, $errors ) = $self->redirect_tag_check($text_message_body);
             if ( $status == 0 ) {
-                $self->report_mass_mail_errors( $errors, $root_login );
-                return;
+                return $self->report_mass_mail_errors( $errors, $root_login );
             }
             undef($status);
             undef($errors);
@@ -1517,8 +1512,7 @@ sub list_invite {
 
             my ( $status, $errors ) = $self->redirect_tag_check( $ls->param('invite_message_text') );
             if ( $status == 0 ) {
-                $self->report_mass_mail_errors( $errors, $root_login );
-                return;
+                return $self->report_mass_mail_errors( $errors, $root_login );
             }
             undef($status);
             undef($errors);
@@ -1543,8 +1537,7 @@ sub list_invite {
         eval { ( $header_glob, $message_string ) = $fm->format_headers_and_body( -msg => $msg_as_string ); };
 
         if ($@) {
-            $self->report_mass_mail_errors( $@, $root_login );
-            return;
+            return $self->report_mass_mail_errors( $@, $root_login );
         }
 
         require DADA::Mail::Send;
@@ -1571,7 +1564,7 @@ sub list_invite {
         my $message_id = $mh->mass_send( $mh->return_headers($header_glob), Body => $message_string, );
 
         my $uri = $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&type=invitelist&id=' . $message_id;
-        print $q->redirect( -uri => $uri );
+        return({-redirect_uri => $uri}, undef);
 
     }
     else {
@@ -1949,7 +1942,7 @@ sub report_mass_mail_errors {
             -vars   => { errors => $errors }
         }
     );
-    print $scrn;
+    return({}, $scrn);
 }
 
 sub just_subscribed_mass_mailing {

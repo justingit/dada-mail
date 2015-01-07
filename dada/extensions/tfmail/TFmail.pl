@@ -872,7 +872,7 @@ sub dada_mail_subscribe {
 	                $local_q->delete_all();
 	                $local_q->param( 'list',  $list );
 	                $local_q->param( 'email', $dm_email );
-	                $local_q->param( 'f',     's' );
+	                $local_q->param( 'flavor',     's' );
 
 
 	                require DADA::App::Subscriptions;

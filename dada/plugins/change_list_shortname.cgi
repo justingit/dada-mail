@@ -375,7 +375,7 @@ You can now log into your List Control Panel (make sure to log in with the B<Dad
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2014 
+Copyright (c) 1999 - 2015 
 
 Justin Simoni
 

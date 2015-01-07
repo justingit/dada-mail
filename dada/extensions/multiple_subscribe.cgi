@@ -46,7 +46,6 @@ my $email = $q->param('email');
 $email = $q->param('e') unless ($email);
 
 my $flavor = $q->param('flavor');
-$flavor = $q->param('f') unless ($flavor);
 
 my @unfiltered_lists = $q->param('list');
 
@@ -412,7 +411,7 @@ happening behind the curtains.
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2014 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2015 Justin Simoni All rights reserved. 
 
 To contact info, please see: 
 

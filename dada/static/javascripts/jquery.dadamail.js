@@ -89,7 +89,7 @@
 				};
 				
 				$("#" + copythis._targetForm + " :input").each(function() {
-					if(this.name != 'list' && this.name != 'email' && this.name != 'f') { 
+					if(this.name != 'list' && this.name != 'email' && this.name != 'flavor') { 
 						using_data[this.name] = this.value;
 					}
 				}); 
@@ -98,7 +98,7 @@
 
 				var fields = {};
 				$("#" + copythis._targetForm + " :input").each(function() {
-					if(this.name != 'list' && this.name != 'email' && this.name != 'f') { 
+					if(this.name != 'list' && this.name != 'email' && this.name != 'flavor') { 
 						fields[this.name] = this.value;
 					}
 				}); 

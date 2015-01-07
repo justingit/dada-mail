@@ -453,7 +453,7 @@ sub list_template {
         -List          => undef,
         -Part          => undef,
         -Title         => undef,
-        -HTML_Header   => 1,
+        #-HTML_Header   => 1,
         -header_params => {},	 # this is used only when you delete a list. 
         -data          => undef, # used in previewing a template.  
         -vars          => {},
@@ -651,7 +651,7 @@ sub open_template_from_url {
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2014 Justin Simoni 
+Copyright (c) 1999 - 2015 Justin Simoni 
 http://justinsimoni.com 
 All rights reserved. 
 

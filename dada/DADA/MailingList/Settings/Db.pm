@@ -290,7 +290,7 @@ DADA::MailingList::Settings
 
 =head1 COPYRIGHT
 
-Copyright (c) 1999 - 2014 Justin Simoni 
+Copyright (c) 1999 - 2015 Justin Simoni 
 http://justinsimoni.com 
 All rights reserved. 
 

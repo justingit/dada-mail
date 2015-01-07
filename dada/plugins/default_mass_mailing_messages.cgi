@@ -394,7 +394,7 @@ that are saved in the head of the document will be lost.
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2014 
+Copyright (c) 1999 - 2015 
 
 Justin Simoni
 

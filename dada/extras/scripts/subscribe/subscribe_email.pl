@@ -90,7 +90,7 @@ sub run {
 		
 		require CGI;
 		my $q = new CGI; 
-		   $q->param('f',     's'   );
+		   $q->param('flavor',     's'   );
 		   $q->param('list',  $list ); 
 		   $q->param('email', $email); 
 
