@@ -1,9 +1,40 @@
 package DADA::App::Dispatch; 
 
+use FindBin;
+use lib "$FindBin::Bin/../";
+use lib "$FindBin::Bin/../DADA/perllib";
+BEGIN {
+    my $b__dir = ( getpwuid($>) )[7] . '/perl';
+    push @INC, $b__dir . '5/lib/perl5',
+      $b__dir . '5/lib/perl5/x86_64-linux-thread-multi', $b__dir . 'lib',
+      map { $b__dir . $_ } @INC;
+}
+
+use DADA::Config; 
+use DADA::App::Guts; 
+
+
+
 use Carp qw(croak carp); 
+use CGI; 
 
 use vars qw($AUTOLOAD);
 my %allowed = ( test => 0, );
+
+sub hook {
+    my ( $filename, $buffer, $bytes_read, $data ) = @_;
+    $bytes_read ||= 0;
+    $filename = uriescape($filename);
+    open( COUNTER, ">", $DADA::Config::TMP . '/' . $filename . '-meta.txt' );
+    my $per = 0;
+    if ( $ENV{CONTENT_LENGTH} > 0 ) {    # This *should* stop us from dividing by 0, right?
+        $per = int( ( $bytes_read * 100 ) / ( $ENV{CONTENT_LENGTH} - 1024 ) );    #1024 added to round up.
+    }
+    print COUNTER $bytes_read . '-' . $ENV{CONTENT_LENGTH} . '-' . $per;
+    close(COUNTER);
+}
+
+
 
 sub new {
     my $that = shift;
@@ -47,11 +78,52 @@ sub _init {
 }
 
 
+sub prepare_cgi_obj { 
+    my $self = shift; 
+    my $q = CGI->new; 
+       $q->charset($DADA::Config::HTML_CHARSET);
+    
+    if ( $ENV{QUERY_STRING} =~ m/^\?/ ) {
+        # DEV Workaround for servers that give a bad PATH_INFO:
+        # Set the $DADA::Config::PROGRAM_URL to have, "?" at the end of the URL
+        # to change any PATH_INFO's into Query Strings.
+        # The below lines will then take this extra question mark
+        # out, so actual query strings will work as before.
+        $ENV{QUERY_STRING} =~ s/^\?//;
+        # DEV: This really really needs to be check to make sure it works
+        CGI::upload_hook( \&hook );
+        $q = CGI->new( $ENV{QUERY_STRING} );
+    }
+    else {
+        $q = CGI->new( \&hook );
+    }
+
+    # PROGRAM_URL has a, "?"
+    # PATH INFO is blank
+    # QUERY_STRING starts with a, "/"
+    if (   $DADA::Config::PROGRAM_URL =~ m/\?$/
+        && length( $ENV{PATH_INFO} ) == 0
+        && $ENV{QUERY_STRING} =~ m/^\// )
+    {
+        $ENV{PATH_INFO}    = $ENV{QUERY_STRING};
+        $ENV{QUERY_STRING} = '';
+    }
+    
+    # This basially just fills $q with things from the PATH_INFO
+    $q = $self->translate({
+        -cgi_obj      => $q ,
+    }); 
+    $q = DADA::App::Guts::decode_cgi_obj($q);
+    return $q;
+    
+    
+}
+
 sub translate {
     my $self   = shift;
     my ($args) = @_;
 
-    my $env          = $args->{-env};
+    my $env          = {%ENV};
     my $q            = $args->{-cgi_obj};
 
     if ( $env->{PATH_INFO} ) {
@@ -86,13 +158,12 @@ sub translate {
 
             my ( $sifn, $pi_list ) = split( '/', $info, 2 );
 
-            $q->param( 'f',    $DADA::Config::SIGN_IN_FLAVOR_NAME );
+            $q->param( 'flavor',    $DADA::Config::SIGN_IN_FLAVOR_NAME );
             $q->param( 'list', $pi_list );
 
         }
         elsif ( $info =~ m/^$DADA::Config::ADMIN_FLAVOR_NAME$/ ) {
-
-            $q->param( 'f', $DADA::Config::ADMIN_FLAVOR_NAME );
+            $q->param( 'flavor', $DADA::Config::ADMIN_FLAVOR_NAME );
 
         }
         elsif ( $info =~ m/^archive/ ) {
