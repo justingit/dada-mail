@@ -316,13 +316,13 @@ sub _open_db {
             carp "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! " . 
             'couldn\'t tie '. $self->_db_filename . ' for reading: ' . 
             $! . "Ignoring fatal error assuming you're (hopefully) resolving the issue by visiting: " . 
-            $DADA::Config::S_PROGRAM_URL . '?f=restore_lists ';
+            $DADA::Config::S_PROGRAM_URL . '?flavor=restore_lists ';
             $self->{DB_HASH} = {};
         }else{
             croak 'couldn\'t tie '. $self->_db_filename . ' for reading: ' . 
             $! .  '; If your server recently upgraded software or moved 
             your lists to a different server, you may need to restore your list ' . 
-            $self->{function} . '. Visit ' . $DADA::Config::S_PROGRAM_URL . '?f=restore_lists '; 
+            $self->{function} . '. Visit ' . $DADA::Config::S_PROGRAM_URL . '?flavor=restore_lists '; 
         }
     }
 	

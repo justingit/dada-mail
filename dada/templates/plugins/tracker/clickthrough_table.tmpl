@@ -166,12 +166,12 @@
 	          
 				<!-- tmpl_if message_subject -->
 				 	 <strong>
-					<a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
+					<a href="<!-- tmpl_var Plugin_URL" -->?flavor=m&mid=<!-- tmpl_var mid -->">
 					<!-- tmpl_var message_subject escape="HTML" -->
 					</a> 
 				<!-- tmpl_else --> 
 					 <strong>
-					<a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
+					<a href="<!-- tmpl_var Plugin_URL" -->?flavor=m&mid=<!-- tmpl_var mid -->">
 					#<!-- tmpl_var mid --> (unarchived message)
 					</a>
 					 </strong>
@@ -185,7 +185,7 @@
 			<!-- tmpl_if message_subject -->
 								
 				<p>
-				<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=view_archive&list=<!-- tmpl_var list -->&id=<!-- tmpl_var mid -->" target="_blank">
+				<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive&list=<!-- tmpl_var list -->&id=<!-- tmpl_var mid -->" target="_blank">
 				 </strong>
 					View 
 				</a> 
@@ -201,7 +201,7 @@
 		
 		     <td> 
 		      <p>
-		       <a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
+		       <a href="<!-- tmpl_var Plugin_URL" -->?flavor=m&mid=<!-- tmpl_var mid -->">
 			    <!-- tmpl_var num_subscribers  default="-"--> 
 			   </a> 
 		      </p>
@@ -209,7 +209,7 @@
 			
 			 <td> 
 		      <p>
-		       <a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
+		       <a href="<!-- tmpl_var Plugin_URL" -->?flavor=m&mid=<!-- tmpl_var mid -->">
 			    <!-- tmpl_var total_recipients  default="-"--> 
 			   </a> 
 		      </p>
@@ -219,7 +219,7 @@
 			
 			 <td> 
 		      <p>
-		       <a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
+		       <a href="<!-- tmpl_var Plugin_URL" -->?flavor=m&mid=<!-- tmpl_var mid -->">
 			    <!-- tmpl_var open default="-"  --> 
 			   </a> 
 		      </p>
@@ -229,7 +229,7 @@
 			
 		     <td> 
 		      <p>
-		       <a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
+		       <a href="<!-- tmpl_var Plugin_URL" -->?flavor=m&mid=<!-- tmpl_var mid -->">
 			    <!-- tmpl_var count  default="-"  --> 
 			   </a> 
 		      </p>
@@ -239,7 +239,7 @@
 			 
 		     <td> 
 		      <p>
-		       <a href="<!-- tmpl_var Plugin_URL" -->?f=m&mid=<!-- tmpl_var mid -->">
+		       <a href="<!-- tmpl_var Plugin_URL" -->?flavor=m&mid=<!-- tmpl_var mid -->">
 			    <!-- tmpl_var unsubscribe  default="-"  --> 
 			   </a> 
 		      </p>
@@ -250,7 +250,7 @@
 			
 		     <td> 
 		      <p>
-		       <a href="<!-- tmpl_var Plugin_URL -->?f=m&mid=<!-- tmpl_var mid -->">
+		       <a href="<!-- tmpl_var Plugin_URL -->?flavor=m&mid=<!-- tmpl_var mid -->">
 			    <!-- tmpl_var soft_bounce  default="-" --> /<!-- tmpl_var hard_bounce default="-" --> 
 			   </a> 
 		      </p>

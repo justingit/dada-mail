@@ -218,7 +218,7 @@ Rather than a succesful request, the following JSON will be returned:
 	   "redirect" : {
 	      "query" : "list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=already_sent_sub_confirmation",
 	      "using_with_query" : 1,
-	      "url" : "http://example.com/cgi-bin/dada/mail.cgi?f=show_error&email=user%40example.com&list=dadatest&error=already_sent_sub_confirmation",
+	      "url" : "http://example.com/cgi-bin/dada/mail.cgi?flavor=show_error&email=user%40example.com&list=dadatest&error=already_sent_sub_confirmation",
 	      "using" : 1
 	   },
 	   "errors" : {

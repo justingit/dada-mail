@@ -1293,7 +1293,7 @@ sub _rearrange_cid_img_tags {
 		for my $this_cid(@cids){
 		
 		
-			my $img_url = $DADA::Config::PROGRAM_URL . '?f=show_img&l=' . $self->{list} . '&id=' . $args{-key} . '&cid=' . $this_cid;  
+			my $img_url = $DADA::Config::PROGRAM_URL . '?flavor=show_img&l=' . $self->{list} . '&id=' . $args{-key} . '&cid=' . $this_cid;  
 	
 			my $link_wo_cid = $img_url; 
 			   $link_wo_cid =~ s/cid\://; 

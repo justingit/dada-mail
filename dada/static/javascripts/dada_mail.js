@@ -830,7 +830,7 @@ $(document).ready(function() {
 					type: "POST",
 					dataType: "json",
 					data: {
-						f: 'search_list_auto_complete',
+						flavor: 'search_list_auto_complete',
 						length: 10,
 						type: $("#type").val(),
 						query: request.term
@@ -1239,7 +1239,7 @@ function admin_menu_notification(flavor, target_class) {
 				type: "POST",
 				cache: false,
 				data: {
-					f: flavor
+					flavor: flavor
 				},
 				dataType: "html"
 			});
@@ -1376,7 +1376,7 @@ function update_sending_monitor_interface(message_id, type, target_id, refresh_a
 				type: "POST",
 				cache: false,
 				data: {
-					f: 'sending_monitor',
+					flavor: 'sending_monitor',
 					id: message_id,
 					type: type,
 					process: 'ajax'
@@ -1403,7 +1403,7 @@ function refresh_tracker_plugin(tracker_url, message_id, target_id) {
 	var tracker_refresh_loop = function(no_loop) {
 			$("#tracker_reports_container").load(tracker_url, {
 				chrome: 0,
-				f: "m",
+				flavor: "m",
 				mid: message_id
 			}, function() {
 				update_plugins_tracker_message_report();
@@ -1442,7 +1442,7 @@ function update_status_bar() {
 				url: $("#s_program_url").val(),
 				type: "GET",
 				data: {
-					f: 'check_status',
+					flavor: 'check_status',
 					new_email_file: $('#new_email_file').val(),
 					rand_string: $('#rand_string').val()
 				},
@@ -1495,7 +1495,7 @@ function view_list_viewport(initial) {
 		type: "POST",
 		cache: false,
 		data: {
-			f: 'view_list',
+			flavor: 'view_list',
 			mode: 'viewport',
 			type: $("#type").val(),
 			page: $("#page").val(),
@@ -1664,7 +1664,7 @@ function drawTrackerDomainBreakdownChart() {
 		url: $("#s_program_url").val(),
 		dataType: "json",
 		data: {
-			f: 'domain_breakdown_json',
+			flavor: 'domain_breakdown_json',
 			type: $("#type").val()
 		},
 		async: true,
@@ -1752,7 +1752,7 @@ backgroundColor: {
 		$.ajax({
 			url: $("#s_program_url").val(),
 			data: {
-				f: 'sub_unsub_trends_json',
+				flavor: 'sub_unsub_trends_json',
 				days: $("#amount option:selected").val()
 			},
 			dataType: "json",
@@ -1789,7 +1789,7 @@ function mailing_list_history() {
 		type: "POST",
 		cache: false,
 		data: {
-			f: 'mailing_list_history',
+			flavor: 'mailing_list_history',
 			email: $("#email").val(),
 			membership_history: scope
 		},
@@ -1809,7 +1809,7 @@ function membership_activity() {
 		type: "POST",
 		cache: false,
 		data: {
-			f: 'membership_activity',
+			flavor: 'membership_activity',
 			email: $("#email").val(),
 		},
 		dataType: "html"
@@ -1831,7 +1831,7 @@ function twiddle_validate_multiple_lists_button(button_id) {
 		url: $("#s_program_url").val(),
 		type: "GET",
 		data: {
-			f: 'also_member_of',
+			flavor: 'also_member_of',
 			email: $("#email").val(),
 			type:  $("#type_remove option:selected").val()
 		},
@@ -1879,7 +1879,7 @@ function validate_add_email() {
 		opacity: 0.50,
 		href: $("#s_program_url").val(),
 		data: {
-			f:              'add',
+			flavor:         'add',
 			chrome:         0, 
 			email:          $("#add_email").val(),
 			type:           $("#type_add").val(),
@@ -1902,7 +1902,7 @@ function validate_update_email(is_for_all_lists) {
 		opacity: 0.50,
 		href: $("#s_program_url").val(),
 		data: {
-			f: 'validate_update_email',
+			flavor: 'validate_update_email',
 			updated_email: $("#updated_email").val(),
 			email:         $("#original_email").val(),
 			for_all_lists: is_for_all_lists	
@@ -1921,7 +1921,7 @@ function validate_remove_email(for_multiple_lists) {
 		opacity: 0.50,
 		href: $("#s_program_url").val(),
 		data: {
-			f:                  'validate_remove_email',
+			flavor:             'validate_remove_email',
 			email:              $("#email").val(),
 			type:               $("#type_remove option:selected").val(),
 			for_multiple_lists: for_multiple_lists	
@@ -1938,7 +1938,7 @@ function membership_bouncing_address_information() {
 		type: "POST",
 		cache: false,
 		data: {
-			f:               'view_bounce_history',
+			flavor:          'view_bounce_history',
 			email:           $("#email").val(),
 			return_to:       'membership',
 			return_address:  $("#email").val()
@@ -2070,7 +2070,7 @@ function test_sending_preferences() {
 		opacity: 0.50,
 		href: $("#s_program_url").val(),
 		data: {
-			f: 'sending_preferences_test',
+			flavor: 'sending_preferences_test',
 			sending_method: $('input[name=sending_method]:checked').val(),
 			add_sendmail_f_flag: add_sendmail_f_flag,
 			smtp_server: $('#smtp_server').val(),
@@ -2106,7 +2106,7 @@ function amazon_verify_email(email) {
 		opacity: 0.50,
 		href: $("#s_program_url").val(),
 		data: {
-			f: 'amazon_ses_verify_email',
+			flavor: 'amazon_ses_verify_email',
 			amazon_ses_verify_email: email
 		}
 	});
@@ -2136,7 +2136,7 @@ function previewBatchSendingSpeed() {
 		type: "POST",
 		cache: false,
 		data: {
-			f: 'previewBatchSendingSpeed',
+			flavor: 'previewBatchSendingSpeed',
 			enable_bulk_batching: enable_bulk_batching,
 			mass_send_amount: $('#mass_send_amount').val(),
 			bulk_sleep_amount: $('#bulk_sleep_amount').val(),
@@ -2162,7 +2162,7 @@ function amazon_ses_get_stats() {
 		type: "POST",
 		cache: false,
 		data: {
-			f: 'amazon_ses_get_stats'
+			flavor: 'amazon_ses_get_stats'
 		},
 		dataType: "html"
 	});
@@ -2543,7 +2543,7 @@ function country_geoip_table(type, label, target_div) {
 		type: "POST",
 		cache: false,
 		data: {
-			f: 'country_geoip_table',
+			flavor: 'country_geoip_table',
 			mid: $('#tracker_message_id').val(),
 			type: type,
 			label: label
@@ -2592,7 +2592,7 @@ function country_geoip_map(type, target_div) {
 		url: $("#plugin_url").val(),
 		type: "POST",
 		data: {
-			f: 'country_geoip_json',
+			flavor: 'country_geoip_json',
 			mid: $('#tracker_message_id').val(),
 			type: type
 		},
@@ -2639,7 +2639,7 @@ function message_individual_email_activity_table(email, target_div) {
 	$.ajax({
 		url: $("#plugin_url").val(),
 		data: {
-			f: 'message_individual_email_activity_report_table',
+			flavor: 'message_individual_email_activity_report_table',
 			mid: $('#tracker_message_id').val(),
 			email: email
 		},
@@ -2661,7 +2661,7 @@ function individual_country_geoip_map(type, country, target_div) {
 	$.ajax({
 		url: $("#plugin_url").val(),
 		data: {
-			f: 'individual_country_geoip_json',
+			flavor: 'individual_country_geoip_json',
 			mid: $('#tracker_message_id').val(),
 			type: type,
 			country: country
@@ -2697,7 +2697,7 @@ function individual_country_cumulative_geoip_table(type, country, target_div) {
 	$.ajax({
 		url: $("#plugin_url").val(),
 		data: {
-			f: 'individual_country_geoip_report_table',
+			flavor: 'individual_country_geoip_report_table',
 			mid: $('#tracker_message_id').val(),
 			type: 'ALL',
 			country: country
@@ -2720,7 +2720,7 @@ function data_over_time_graph(type, label, target_div) {
 	var request = $.ajax({
 		url: $("#plugin_url").val(),
 		data: {
-			f: 'data_over_time_json',
+			flavor: 'data_over_time_json',
 			mid: $("#tracker_message_id").val(),
 			type: type,
 			label: label
@@ -2764,7 +2764,7 @@ function message_email_report_table(type, target_div) {
 		type: "POST",
 		cache: false,
 		data: {
-			f: 'message_email_report_table',
+			flavor: 'message_email_report_table',
 			mid: $('#tracker_message_id').val(),
 			type: type
 		},
@@ -2790,7 +2790,7 @@ function tracker_message_email_activity_listing_table(target_div) {
 		type: "POST",
 		cache: false,
 		data: {
-			f: 'message_email_activity_listing_table',
+			flavor: 'message_email_activity_listing_table',
 			mid: $('#tracker_message_id').val()
 		},
 		dataType: "html"
@@ -2822,7 +2822,7 @@ function email_breakdown_chart(type, label, target_div) {
 		url: $("#plugin_url").val(),
 		dataType: "json",
 		data: {
-			f: 'email_stats_json',
+			flavor: 'email_stats_json',
 			mid: $('#tracker_message_id').val(),
 			type: type,
 			label: label
@@ -2863,7 +2863,7 @@ function tracker_the_basics_piechart(type, label, target_div) {
 		url: $("#plugin_url").val(),
 		dataType: "json",
 		data: {
-			f: 'the_basics_piechart_json',
+			flavor: 'the_basics_piechart_json',
 			mid: $('#tracker_message_id').val(),
 			type: type,
 			label: label
@@ -2905,7 +2905,7 @@ function tracker_change_record_view() {
 		type: "POST",
 		cache: false,
 		data: {
-			f: 'save_view_count_prefs',
+			flavor: 'save_view_count_prefs',
 			tracker_record_view_count: $('#tracker_record_view_count option:selected').val()
 		},
 		dataType: "html"
@@ -2962,7 +2962,7 @@ function tracker_delete_msg_id_data(message_id){
 			type: "POST",
 			cache: false,
 			data: {
-				f: 'delete_msg_id_data',
+				flavor: 'delete_msg_id_data',
 				mid: message_id
 			},
 			dataType: "html"
@@ -3034,7 +3034,7 @@ function message_history_html() {
 		type: "POST",
 		cache: false,
 		data: {
-			f: 'message_history_html',
+			flavor: 'message_history_html',
 			page: $("#tracker_page").val()
 		},
 		dataType: "html"
@@ -3067,7 +3067,7 @@ function drawSubscriberHistoryChart() {
 	var request = $.ajax({
 		url: $("#plugin_url").val(),
 		data: {
-			f: 'message_history_json',
+			flavor: 'message_history_json',
 			page: $("#tracker_page").val(), 
 			type: history_type
 		},
@@ -3106,7 +3106,7 @@ function tracker_purge_log() {
 			type: "POST",
 			cache: false,
 			data: {
-				f: 'ajax_delete_log'
+				flavor: 'ajax_delete_log'
 			},
 			dataType: "html"
 		});

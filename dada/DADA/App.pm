@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 package DADA::App;
 use base 'CGI::Application';
- 
+#use base qw(CGI::Application::FastCGI);
 
 use strict;
 use 5.008_001;
@@ -56,10 +56,11 @@ use DADA::Template::HTML;
 sub setup {
    my $self = shift;
    
-  # die $self->query->param('flavor'); 
-   
+#   die $self->query->param('flavor'); 
       $self->start_mode('default');
       $self->mode_param('flavor');
+      
+      
       $self->run_modes(
         'default'                                     => \&default,
         'subscribe'                                   => \&subscribe,
@@ -208,6 +209,7 @@ sub setup {
     );
 
 }
+
 
 sub default {
     
@@ -373,7 +375,7 @@ sub list_page {
 
     if ( check_if_list_exists( -List => $q->param('list') ) == 0 ) {
         $q->delete('list');
-        $self->default();
+        return $self->default();
     }
     
     my $list = $q->param('list'); 
@@ -409,7 +411,7 @@ sub admin {
     
     my @available_lists = available_lists();
     if ( ( $#available_lists < 0 ) ) {
-        $self->default();
+        return $self->default();
     }
 
     if ( DADA::App::Guts::install_dir_around() == 1 ) {
@@ -700,7 +702,7 @@ sub admin_menu_bounce_handler_notification {
 sub send_email {
 
     my $self = shift;
-    my $q = $self->query();
+    my $q    = $self->query();
     
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
@@ -715,10 +717,16 @@ sub send_email {
             -root_login => $root_login,
         }
     );
-    if(keys %$headers){ 
-        $self->header_props(%$headers);
+    if(exists($headers->{-redirect_uri})){ 
+        $self->header_type('redirect');
+        $self->header_props( -url => $headers->{-redirect_uri} );
     }
-    return $body; 
+    else { 
+        if(keys %$headers){ 
+            $self->header_props(%$headers);
+        }
+        return $body; 
+    }
 }
 
 
@@ -948,8 +956,10 @@ sub delete_draft {
     my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
     die "not enabled! " unless $d->enabled;
     $d->remove($id);
-    return({-redirect_uri => $DADA::Config::S_PROGRAM_URL . '?f=drafts&delete_draft=1'}, undef);
     
+    $self->header_type('redirect');
+    $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=drafts&delete_draft=1' );
+        
 }
 
 
@@ -971,7 +981,7 @@ sub create_from_stationary {
     my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
     die "not enabled! " unless $d->enabled;
     my $new_id = $d->create_from_stationary({-id => $id, -screen => $screen});
-    return({redirect_uri => $DADA::Config::S_PROGRAM_URL . '?f=' . $screen . '&restore_from_draft=true&draft_id=' . $new_id}, undef);
+    return({redirect_uri => $DADA::Config::S_PROGRAM_URL . '?flavor=' . $screen . '&restore_from_draft=true&draft_id=' . $new_id}, undef);
     
 }
 
@@ -1248,8 +1258,7 @@ sub sending_monitor {
     $id =~ s/\>|\<//g;
 
     if ( !$q->param('id') ) {
-        sending_monitor_index();
-        return;
+        return $self->sending_monitor_index();
     }
 
     # 10 is the factory default setting to wait per batch.
@@ -1287,8 +1296,8 @@ sub sending_monitor {
             $mailout->associate( $id, $type );
             $mailout->clean_up;
 
-            return({-redirect_uri => $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&killed_it=1'}, undef);
-
+            $self->header_type('redirect');
+            $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=sending_monitor&killed_it=1' );
         }
         else {
             die "mailout does NOT exists! What's going on?!";
@@ -1303,13 +1312,14 @@ sub sending_monitor {
             $mailout->associate( $id, $type );
             $mailout->pause();
 
-            return({-redirect_uri => $DADA::Config::S_PROGRAM_URL
-                  . '?f=sending_monitor&id='
+
+            $self->header_type('redirect');
+            $self->header_props( -url => $DADA::Config::S_PROGRAM_URL
+                  . '?flavor=sending_monitor&id='
                   . $id
                   . '&type='
                   . $type
-                  . '&paused_it=1'}, undef);
-
+                  . '&paused_it=1' );
         }
         else {
             die "mass mailing does NOT exists! What's going on?!";
@@ -1324,12 +1334,14 @@ sub sending_monitor {
             $mailout->associate( $id, $type );
             $mailout->resume();
 
-            return({-redirect_uri => $DADA::Config::S_PROGRAM_URL
-                  . '?f=sending_monitor&id='
+            $self->header_type('redirect');
+            $self->header_props( -url => $DADA::Config::S_PROGRAM_URL
+                  . '?flavor=sending_monitor&id='
                   . $id
                   . '&type='
                   . $type
-                  . '&resume_it=1'}, undef );
+                  . '&resume_it=1' );
+            
         }
         else {
 
@@ -1360,7 +1372,7 @@ sub sending_monitor {
         if ( $should_be_restarted == 1 ) {
             $refresh_url =
                 $DADA::Config::S_PROGRAM_URL
-              . '?f=sending_monitor&id='
+              . '?flavor=sending_monitor&id='
               . $id
               . '&type='
               . $type
@@ -1368,7 +1380,7 @@ sub sending_monitor {
               . $restart_count;
         }
         else {
-            $refresh_url = $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&id=' . $id . '&type=' . $type;
+            $refresh_url = $DADA::Config::S_PROGRAM_URL . '?flavor=sending_monitor&id=' . $id . '&type=' . $type;
         }
         my $r = "<html>
                 <head>
@@ -1477,7 +1489,7 @@ sub sending_monitor {
 
             my $reload_url =
                 $DADA::Config::S_PROGRAM_URL
-              . '?f=sending_monitor&id='
+              . '?flavor=sending_monitor&id='
               . $id
               . '&process=restart&type='
               . $type
@@ -1963,7 +1975,7 @@ sub change_password {
         # -no_list_security_check, because the list password's changed, it wouldn't pass it anyways...
         my ($headers, $body) = logout(
             -no_list_security_check => 1,
-            -redirect_url           => $DADA::Config::S_PROGRAM_URL . '?f='
+            -redirect_url           => $DADA::Config::S_PROGRAM_URL . '?flavor='
               . $DADA::Config::SIGN_IN_FLAVOR_NAME
               . '&list='
               . $list,
@@ -3941,7 +3953,7 @@ sub remove_all_subscribers {
 
     $self->header_type('redirect');
     $self->header_props( -url => $DADA::Config::S_PROGRAM_URL
-          . '?f=view_list&delete_email_count='
+          . '?flavor=view_list&delete_email_count='
           . $count
           . '&type='
           . $type
@@ -4054,7 +4066,7 @@ sub membership {
         );
 
         $self->header_type('redirect');
-        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?f=membership&email=' . $q->param('email') . '&type=' . $type . '&done=1' );
+        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=membership&email=' . $q->param('email') . '&type=' . $type . '&done=1' );
     }
     else {
 
@@ -4911,7 +4923,7 @@ sub admin_change_profile_password {
     #
 
     $self->header_type('redirect');
-    $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?f=membership&email=' . uriescape($email) . '&type=' . $type . '&done=1' );
+    $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=membership&email=' . uriescape($email) . '&type=' . $type . '&done=1' );
 
 }
 
@@ -4942,7 +4954,7 @@ sub admin_profile_delivery_preferences {
     );
     
     $self->header_type('redirect');
-    $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?f=membership&email=' . uriescape($email) . '&type=' . $type . '&done=1' );
+    $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=membership&email=' . uriescape($email) . '&type=' . $type . '&done=1' );
     
 }
 
@@ -5000,13 +5012,13 @@ sub add {
             if ( strip( $q->param('new_email_file') ) eq '' ) {
                 
                 $self->header_type('redirect');
-                $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?f=add' );                
+                $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=add' );                
             }
         }
         elsif ( $q->param('method') eq 'via_textarea' ) {
             if ( strip( $q->param('new_emails') ) eq '' ) {
                 $self->header_type('redirect');
-                $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?f=add' );                
+                $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=add' );                
             }
         }
 
@@ -5028,7 +5040,7 @@ sub add {
 
             # DEV: why is it, "new_emails.txt"? Is that supposed to be a variable?
             my $redirect = $DADA::Config::S_PROGRAM_URL
-                  . '?f=add_email&fn='
+                  . '?flavor=add_email&fn='
                   . $q->param('rand_string') . '-'
                   . 'new_emails.txt'
                   . $qs
@@ -5046,7 +5058,7 @@ sub add {
         else {
 
             if ( $q->param('method') eq 'via_file_upload' ) {
-                _upload_that_file($q);
+                $self->_upload_that_file($q);
             }
             my $filename = $q->param('new_email_file');
             $filename =~ s!^.*(\\|\/)!!;
@@ -5054,7 +5066,7 @@ sub add {
             $filename = uriescape($filename);
 
             my $redirect =$DADA::Config::S_PROGRAM_URL
-                  . '?f=add_email&fn='
+                  . '?flavor=add_email&fn='
                   . $q->param('rand_string') . '-'
                   . $filename
                   . $qs;
@@ -5209,12 +5221,11 @@ sub dump_meta_file {
     my $q = $self->query();
     
     my $filename = $q->param('new_email_file');
-    $filename =~ s{^(.*)\/}{};
-
-    $filename = uriescape($filename);
+       $filename =~ s{^(.*)\/}{};
+       $filename = uriescape($filename);
 
     my $full_path_to_filename = make_safer( $DADA::Config::TMP . '/' . $filename . '-meta.txt' );
-
+    
     if ( !-e $full_path_to_filename ) {
 
     }
@@ -5380,7 +5391,7 @@ sub add_email {
 
         # and for some reason, this is its own subroutine...
         # This is down here, so the status bar won't disapear before this page is loaded (or the below redirect)
-        dump_meta_file();
+        $self->dump_meta_file();
 
         # This is to see if we're already over quota:
         my $subscription_quota_reached = 0;
@@ -5400,7 +5411,7 @@ sub add_email {
         }
         if ($subscription_quota_reached) {
             $self->header_type('redirect');
-            $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?f=add&type=list' );
+            $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=add&type=list' );
             return; 
         }
 
@@ -5959,7 +5970,7 @@ sub subscription_options {
         );
         
         $self->header_type('redirect');
-        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?f=subscription_options&done=1' );
+        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=subscription_options&done=1' );
     }
 
 }
@@ -6676,7 +6687,7 @@ sub edit_archived_msg {
                     if ($name) {
                         $attachment_url =
                             $DADA::Config::S_PROGRAM_URL
-                          . '?f=file_attachment&l='
+                          . '?flavor=file_attachment&l='
                           . $list . '&id='
                           . $id
                           . '&filename='
@@ -6691,7 +6702,7 @@ sub edit_archived_msg {
                         $m_cid =~ s/^\<|\>$//g;
 
                         $attachment_url =
-                          $DADA::Config::S_PROGRAM_URL . '?f=show_img&l=' . $list . '&id=' . $id . '&cid=' . $m_cid;
+                          $DADA::Config::S_PROGRAM_URL . '?flavor=show_img&l=' . $list . '&id=' . $id . '&cid=' . $m_cid;
 
                     }
 
@@ -6785,7 +6796,7 @@ sub edit_archived_msg {
             $ls->save( { editable_headers => $editable_headers } );
 
             $self->header_type('redirect');
-            $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?f=edit_archived_msg&process=prefs&done=1&id=' . $the_id );
+            $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=edit_archived_msg&process=prefs&done=1&id=' . $the_id );
             
         }
         else {
@@ -6860,7 +6871,7 @@ sub edit_archived_msg {
         }
 
         $self->header_type('redirect');
-        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?f=edit_archived_msg&id=' . $id . '&done=1' );
+        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=edit_archived_msg&id=' . $id . '&done=1' );
         
     }
 
@@ -7939,7 +7950,7 @@ sub profile_fields {
         $c->flush;
         
         $self->header_type('redirect');
-        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?f=profile_fields' );
+        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=profile_fields' );
 
     }
     if ( $process eq 'delete_field' ) {
@@ -7949,7 +7960,7 @@ sub profile_fields {
         
         $self->header_type('redirect');
         $self->header_props( -url => $DADA::Config::S_PROGRAM_URL
-      . '?f=profile_fields;deletion=1;working_field='
+      . '?flavor=profile_fields;deletion=1;working_field='
       . $field
       . ';field_changes=1' );
         
@@ -7972,7 +7983,7 @@ sub profile_fields {
             $self->header_type('redirect');
             $self->header_props( -url => 
                         $DADA::Config::S_PROGRAM_URL
-                      . '?f=profile_fields;addition=1;working_field='
+                      . '?flavor=profile_fields;addition=1;working_field='
                       . $field
                       . ';field_changes=1' );
             
@@ -8026,7 +8037,7 @@ sub profile_fields {
             
             $self->header_type('redirect');
             $self->header_props( -url => $DADA::Config::S_PROGRAM_URL
-                      . '?f=profile_fields;edited=1;working_field='
+                      . '?flavor=profile_fields;edited=1;working_field='
                       . $field
                       . ';field_changes=1' );
         }
@@ -8276,8 +8287,7 @@ sub outdated_subscription_urls {
     
     if ( check_if_list_exists( -List => $list ) == 0 ) {
         undef($list);
-        $self->default();
-        
+        return $self->default();
     }
 
     my $orig_flavor = $q->param('orig_flavor') || undef;
@@ -8565,19 +8575,19 @@ sub resend_conf_no_captcha {
     my $list_exists = check_if_list_exists( -List => $list, );
 
     if ( $list_exists == 0 ) {
-        $self->default();
+        return $self->default();
     }
     if ( !$email ) {
         $q->param( 'error_no_email', 1 );
-        $self->list_page();
+        return $self->list_page();
     }
     if (   $q->param('rm') ne 's'
         && $q->param('rm') ne 'u' )
     {
-        $self->default();
+        return $self->default();
     }
     if ( $q->request_method() !~ m/POST/i ) {
-        $self->default();
+        return $self->default();
     }
 
     require DADA::MailingList::Settings;
@@ -8622,7 +8632,7 @@ sub resend_conf_no_captcha {
                 );
             }
         }
-        $self->list_page();
+        return $self->list_page();
     }
     else {
 
@@ -8676,15 +8686,15 @@ sub show_error {
 
     my $list_exists = check_if_list_exists( -List => $list, );
     if ( $list_exists == 0 ) {
-        $self->default();     
+        return $self->default();     
     }
     if ( !$email ) {
         $q->param( 'error_no_email', 1 );
-        $self->list_page();
+        return $self->list_page();
     }
 
     if ( $error ne 'already_sent_sub_confirmation' ) {
-        $self->default();
+        return $self->default();
     }
 
     require DADA::App::Error;
@@ -9781,7 +9791,7 @@ sub send_archive {
         
         $self->header_type('redirect');
         $self->header_props( -url => $DADA::Config::PROGRAM_URL
-              . '?f=archive&l='
+              . '?flavor=archive&l='
               . $list . '&id='
               . $entry
               . '&send_archive_errors='
@@ -9912,7 +9922,7 @@ sub send_archive {
         
         $self->header_type('redirect');
         $self->header_props( -url => $DADA::Config::PROGRAM_URL
-              . '?f=archive&l='
+              . '?flavor=archive&l='
               . $list . '&id='
               . $entry
               . '&send_archive_success=1' );
@@ -10004,7 +10014,7 @@ sub archive_atom {
     
     my $self = shift;
     my $q = $self->query();
-    $self->archive_rss( -type => 'atom' );
+    return $self->archive_rss( -type => 'atom' );
 }
 
 sub email_password {
@@ -10376,7 +10386,7 @@ sub log_into_another_list {
         -Function => 'log_into_another_list'
     );
 
-    $self->logout( -redirect_url => $DADA::Config::PROGRAM_URL . '?f=' . $DADA::Config::SIGN_IN_FLAVOR_NAME, );
+    $self->logout( -redirect_url => $DADA::Config::PROGRAM_URL . '?flavor=' . $DADA::Config::SIGN_IN_FLAVOR_NAME, );
 
 }
 
@@ -11141,12 +11151,12 @@ sub subscriber_help {
     my $list = $q->param('list'); 
     
     if ( !$list ) {
-        $self->default();
+        return $self->default();
     }
 
     if ( check_if_list_exists( -List => $list ) == 0 ) {
         undef($list);
-        $self->default();
+        return $self->default();
     }
 
     require DADA::MailingList::Settings;
@@ -11426,7 +11436,7 @@ sub captcha_img {
 
     }
     else {
-        $self->default();
+        return $self->default();
     }
 }
 
@@ -11455,12 +11465,12 @@ sub profile_login {
     if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1
         || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
     {
-        $self->default();
+        return $self->default();
         
     }
 
     if ( $DADA::Config::PROFILE_OPTIONS->{enabled} != 1 ) {
-        $self->default();
+        return $self->default();
     }
     require DADA::Profile;
     ###
@@ -11592,12 +11602,12 @@ sub profile_register {
     if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1
         || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
     {
-        $self->default();
+        return $self->default();
     }
 
     require DADA::Profile;
     if ( !DADA::Profile::feature_enabled('register') == 1 ) {
-        $self->default();
+        return $self->default();
     }
 
     my $register_email       = strip( cased( xss_filter( $q->param('register_email') ) ) );
@@ -11660,12 +11670,12 @@ sub profile_activate {
     if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1
         || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
     {
-        $self->default();
+        return $self->default();
     }
 
     require DADA::Profile;
     if ( !DADA::Profile::feature_enabled('register') == 1 ) {
-        $self->default();
+        return $self->default();
     }
 
     my $email     = strip( cased( xss_filter( $q->param('email') ) ) );
@@ -11712,7 +11722,7 @@ sub profile {
     if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1
         || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
     {
-        $self->default();
+        return $self->default();
 
     }
 
@@ -11759,12 +11769,12 @@ sub profile {
             $dpf->insert( { -fields => $edited, } );
             
             $self->header_type('redirect');
-            $self->header_props( -url => $DADA::Config::PROGRAM_URL . '?f=profile&edit=1' );
+            $self->header_props( -url => $DADA::Config::PROGRAM_URL . '?flavor=profile&edit=1' );
         }
         elsif ( $q->param('process') eq 'change_password' ) {
 
             if ( !DADA::Profile::feature_enabled('change_password') == 1 ) {
-                $self->default();
+                return $self->default();
             }
 
             my $new_password       = xss_filter( $q->param('password') );
@@ -11804,7 +11814,7 @@ sub profile {
         elsif ( $q->param('process') eq 'update_email' ) {
 
             if ( !DADA::Profile::feature_enabled('update_email_address') == 1 ) {
-                $self->default();
+                return $self->default();
             }
 
             # So, send the confirmation email for update to the NEW email address?
@@ -11890,7 +11900,7 @@ sub profile {
         elsif ( $q->param('process') eq 'delete_profile' ) {
 
             if ( !DADA::Profile::feature_enabled('delete_profile') == 1 ) {
-                $self->default();
+                return $self->default();
             }
             else { 
                 $prof_sess->logout;
@@ -11920,7 +11930,7 @@ sub profile {
                 }   
             );
             $self->header_type('redirect');
-            $self->header_props( -url => $DADA::Config::PROGRAM_URL . '?f=profile&edit=1' );
+            $self->header_props( -url => $DADA::Config::PROGRAM_URL . '?flavor=profile&edit=1' );
             
         }
         else {
@@ -12058,14 +12068,14 @@ sub profile_logout {
     if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1
         || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
     {
-        $self->default();
+        return $self->default();
     }
 
     require DADA::Profile::Session;
     my $prof_sess = DADA::Profile::Session->new;
 
     $prof_sess->logout;
-    my $redirect_to = $DADA::Config::PROGRAM_URL . '?f=profile_login&logged_out=1';
+    my $redirect_to = $DADA::Config::PROGRAM_URL . '?flavor=profile_login&logged_out=1';
     
     if ( $q->referer() && $q->referer() !~ m/\/profile\//) {
         $redirect_to = $q->referer();
@@ -12095,12 +12105,12 @@ sub profile_reset_password {
     if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1
         || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
     {
-        $self->default();
+        return $self->default();
     }
 
     require DADA::Profile;
     if ( !DADA::Profile::feature_enabled('password_reset') == 1 ) {
-        $self->default();
+        return $self->default();
     }
 
     my $reset_email = cased( xss_filter( $q->param('reset_email') ) );
@@ -12213,7 +12223,7 @@ sub profile_update_email {
     require DADA::Profile;
 
     if ( !DADA::Profile::feature_enabled('update_email_address') == 1 ) {
-        $self->default();
+        return $self->default();
     }
 
     my $prof = DADA::Profile->new( { -email => $email } );
@@ -12346,9 +12356,6 @@ sub what_is_dada_mail {
 }
 
 sub END {
-    
-    my $self = shift;
-    my $q = $self->query();
     
     if ( $DADA::Config::MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION == 1 ) {
         require DADA::Mail::MailOut;

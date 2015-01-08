@@ -418,7 +418,7 @@ In any one of these directories is a list of files. Each file is named after the
 
 You can reload/reset your list archives/schedules/settings by visiting the following URL in your web browser: 
 
-http://example.com/cgi-bin/dada/mail.cgi?f=restore_lists
+http://example.com/cgi-bin/dada/mail.cgi?flavor=restore_lists
 
 Where, B<http://example.com/cgi-bin/dada/mail.cgi> 
 

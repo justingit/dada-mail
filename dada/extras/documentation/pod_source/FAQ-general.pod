@@ -131,9 +131,9 @@ Look for these lines:
 
 In this example, the C<$PROGRAM_ROOT_PASSWORD> variable holds an encrypted password as C<$ROOT_PASS_IS_ENCRYPTED> is set to, C<1>. There's no way to decrypt the password.
 
-You can encrypt a new password by visiting your Dada Mail with the query string, C<?f=pass_gen>, like this: 
+You can encrypt a new password by visiting your Dada Mail with the query string, C<?flavor=pass_gen>, like this: 
 
-L<http://example.com/cgi-bin/dada/mail.cgi?f=pass_gen>
+L<http://example.com/cgi-bin/dada/mail.cgi?flavor=pass_gen>
 
 Where, I<http://example.com/cgi-bin/dada/mail.cgi> is the URL of your Dada Mail and have a new password encrypted. Copy the encrypted password and set the C<$PROGRAM_ROOT_PASSWORD> variable to your new encrypted password. 
 
@@ -887,7 +887,7 @@ In that directory, you should see a whole lot of files, whose names are also num
 
 Visit: 
 
-http://example.com/cgi-bin/dada/mail.cgi?f=restore_lists
+http://example.com/cgi-bin/dada/mail.cgi?flavor=restore_lists
 
 and go through the process of restoring your lists. Heed the warning of making redundant backups. 
 

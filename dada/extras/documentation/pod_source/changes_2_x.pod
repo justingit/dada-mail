@@ -1632,11 +1632,11 @@ http://sourceforge.net/tracker/index.php?func=detail&aid=1525557&group_id=13002&
 
 http://sourceforge.net/tracker/index.php?func=detail&aid=1539402&group_id=13002&atid=113002
 
-=item * [ 1534947 ] 2.10.9 - http://example/cgi-bin/dada/mail.cgi?f=n causes error
+=item * [ 1534947 ] 2.10.9 - http://example/cgi-bin/dada/mail.cgi?flavor=n causes error
 
 Simply going to:
 
-http://example.com/cgi-bin/dada/mail.cgi?f=n
+http://example.com/cgi-bin/dada/mail.cgi?flavor=n
 
 Causes a Server 500 error..
 
@@ -3110,7 +3110,7 @@ Another example:
 
 Query String Version: 
 
-http://example.com/cgi-bin/dada/mail.cgi?f=n&l=announce&e=justin%40example.com&p=8911234
+http://example.com/cgi-bin/dada/mail.cgi?flavor=n&l=announce&e=justin%40example.com&p=8911234
 
 
 http://example.com/cgi-bin/dada/mail.cgi/n/announce/justin/example.com/8911234/
@@ -4227,7 +4227,7 @@ The Mystery Girl bounce handler has been updated - bug fixes mostly.
 
 B<Bug Fix:> [ 750715 ] wrong confirm link when + in e-mail address
 
-I added a little message that states, "you need cookies enabled" in the ?f=admin screen, so when people have trouble logging, they can at least self debug the most likely problem. 
+I added a little message that states, "you need cookies enabled" in the ?flavor=admin screen, so when people have trouble logging, they can at least self debug the most likely problem. 
 
 =back
 
@@ -4268,15 +4268,15 @@ I also cleaned up the B<Mailing List Options> screen as it was getting unruly wi
 
 You can now specify showing the oldest and newest archive entries without having to know the actual id number, instead of, say: 
 
- http://ms.com/cgi-bin/mojo/mojo.cgi?f=archive&l=justin&id=1234
+ http://ms.com/cgi-bin/mojo/mojo.cgi?flavor=archive&l=justin&id=1234
  
  You can say: 
  
- http://ms.com/cgi-bin/mojo/mojo.cgi?f=archive&l=justin&id=newest
+ http://ms.com/cgi-bin/mojo/mojo.cgi?flavor=archive&l=justin&id=newest
  
  or, 
  
-  http://ms.com/cgi-bin/mojo/mojo.cgi?f=archive&l=justin&id=oldest
+  http://ms.com/cgi-bin/mojo/mojo.cgi?flavor=archive&l=justin&id=oldest
   
 =item * $DEFAULT_SCREEN
 
@@ -4286,13 +4286,13 @@ You can now set a default url that Mojo Mail will redirect to, using the $DEFAUL
 
 To tie some things together, say I have a list called, "diary", which I write every week. I could have the default screen of Mojo Mail show the last entry that I sent out in my diary list by setting the the $DEFAULT_SCREEN to: 
 
- $DEFAULT_SCREEN = 'http://mysite.com/cgi-bin/mojo/mojo.cgi?f=archive&l=archive&id=newest'; 
+ $DEFAULT_SCREEN = 'http://mysite.com/cgi-bin/mojo/mojo.cgi?flavor=archive&l=archive&id=newest'; 
 
 That's pretty sick I think. 
 
 You can still access the default... default screen by specifying 'default' as the flavor that you type in the address bar: 
 
- http://ms.com/cgi-bin/mojo/mojo.cgi?f=default
+ http://ms.com/cgi-bin/mojo/mojo.cgi?flavor=default
 
 =item * $FOOTER
 
@@ -4640,9 +4640,9 @@ there was a bug in the add_to_email list function in MOJO::MailingList::Subscrib
 
 POP3 passwords are now Cipher encrypted in the list settings database. YOU WILL NEED TO RECONFIGURE THE POP3 PASSWORD IF YOU USE POP-BEFORE-SMTP AUTHENTICATION. 
 
-The program setup check has been fixed, it should now come up if the program wasn't setup correctly. Furthermmore, more information about the setup can be viewed, with hints on what, if anything, is wrong. ( $MOJO_URL?f=setup_info ) Funnily enough, if you didn't setup the $MOJO_RUL variable correctly, you won't be able to see any of the setup info. 
+The program setup check has been fixed, it should now come up if the program wasn't setup correctly. Furthermmore, more information about the setup can be viewed, with hints on what, if anything, is wrong. ( $MOJO_URL?flavor=setup_info ) Funnily enough, if you didn't setup the $MOJO_RUL variable correctly, you won't be able to see any of the setup info. 
 
-Cipher keys can be reset for all lists. ($MOJO_URL?f=reset_cipher_keys)
+Cipher keys can be reset for all lists. ($MOJO_URL?flavor=reset_cipher_keys)
 
 For security and functional reasons, this line: 
 
@@ -5222,7 +5222,7 @@ http://dev.skazat.com/cgi-bin/mojo/mojo.cgi?flavor=unsubscribe&list=big_list&ema
 
 Short Version: 
 
-http://dev.skazat.com/cgi-bin/mojo/mojo.cgi?f=u&l=big_list&e=justin@example.com&p=1234
+http://dev.skazat.com/cgi-bin/mojo/mojo.cgi?flavor=u&l=big_list&e=justin@example.com&p=1234
 
 seems to make a noticable difference, although my example is still over 70 
 characters long, This is a cutoff point, at least for terminals. 

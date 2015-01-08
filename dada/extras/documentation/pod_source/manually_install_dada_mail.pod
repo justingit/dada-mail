@@ -123,9 +123,9 @@ The first is to set the, C<$PROGRAM_ROOT_PASSWORD> variable to the Dada Mail Roo
 
 The second method is to set an I<encrypted> version of our Dada Mail Root Password. This is what we I<seriously> recommend. 
 
-To do so, visit your Dada Mail (in your web browser, go to the URL you're setting in the C<$PROGRAM_URL> variable) with this query string: C<?f=pass_gen>. You're entire URL will look like this: 
+To do so, visit your Dada Mail (in your web browser, go to the URL you're setting in the C<$PROGRAM_URL> variable) with this query string: C<?flavor=pass_gen>. You're entire URL will look like this: 
 
-L<http://example.com/cgi-bin/dada/mail.cgi?f=pass_gen>
+L<http://example.com/cgi-bin/dada/mail.cgi?flavor=pass_gen>
 
 if, I<http://example.com/cgi-bin/dada/mail.cgi> is the URL to your Dada Mail. 
 

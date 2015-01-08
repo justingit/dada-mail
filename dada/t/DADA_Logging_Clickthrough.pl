@@ -516,11 +516,11 @@ http://google.com/test.html
 
 <?dada redirect url="http://yahoo.com/test.html" ?>
 
-http://google.com/blah.cgi?f=test
+http://google.com/blah.cgi?flavor=test
 
-[redirect=http://gmail.com/blah.cgi?f=test]
+[redirect=http://gmail.com/blah.cgi?flavor=test]
 
-<?dada redirect url="http://yahoo.com/blah.cgi?f=test" ?>
+<?dada redirect url="http://yahoo.com/blah.cgi?flavor=test" ?>
 
 Redirect this! http://yahoo.com/
 
@@ -549,11 +549,11 @@ my $should_be = q{
 
 <?dada redirect url="http://yahoo.com/test.html" ?>
 
-<?dada redirect url="http://google.com/blah.cgi?f=test" ?>
+<?dada redirect url="http://google.com/blah.cgi?flavor=test" ?>
 
-[redirect=http://gmail.com/blah.cgi?f=test]
+[redirect=http://gmail.com/blah.cgi?flavor=test]
 
-<?dada redirect url="http://yahoo.com/blah.cgi?f=test" ?>
+<?dada redirect url="http://yahoo.com/blah.cgi?flavor=test" ?>
 
 Redirect this! <?dada redirect url="http://yahoo.com/" ?>
 
@@ -588,11 +588,11 @@ my $ar_str = q{
 	
 	<p><a href="<?dada redirect url="http://yahoo.com/test.html" ?>">Yahoo Test</a></p>
 	
-	<p><a href="http://google.com/blah.cgi?f=test">Google QS Test</a></p> 
+	<p><a href="http://google.com/blah.cgi?flavor=test">Google QS Test</a></p> 
 	
-	<p><a href="[redirect=http://gmail.com/blah.cgi?f=test]">Gmail QS Test</a></p>
+	<p><a href="[redirect=http://gmail.com/blah.cgi?flavor=test]">Gmail QS Test</a></p>
 	
-	<p><a href="<?dada redirect url="http://yahoo.com/blah.cgi?f=test" ?>">Yahoo QS Test</a></p>
+	<p><a href="<?dada redirect url="http://yahoo.com/blah.cgi?flavor=test" ?>">Yahoo QS Test</a></p>
 	
 	<p><a href = "http://example.com/randomspaces.html">Huh?</a></p>
 	
@@ -631,11 +631,11 @@ my $should_be = q{
 	
 	<p><a href="<?dada redirect url="http://yahoo.com/test.html" ?>">Yahoo Test</a></p>
 	
-	<p><a href="<?dada redirect url="http://google.com/blah.cgi?f=test" ?>">Google QS Test</a></p> 
+	<p><a href="<?dada redirect url="http://google.com/blah.cgi?flavor=test" ?>">Google QS Test</a></p> 
 	
-	<p><a href="[redirect=http://gmail.com/blah.cgi?f=test]">Gmail QS Test</a></p>
+	<p><a href="[redirect=http://gmail.com/blah.cgi?flavor=test]">Gmail QS Test</a></p>
 	
-	<p><a href="<?dada redirect url="http://yahoo.com/blah.cgi?f=test" ?>">Yahoo QS Test</a></p>
+	<p><a href="<?dada redirect url="http://yahoo.com/blah.cgi?flavor=test" ?>">Yahoo QS Test</a></p>
 	
 	<p><a href = "<?dada redirect url="http://example.com/randomspaces.html" ?>">Huh?</a></p>
 	

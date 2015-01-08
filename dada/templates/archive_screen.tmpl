@@ -105,7 +105,7 @@
 
 <!-- tmpl_if show_iframe -->
 	 
-	 <iframe src="<!-- tmpl_var PROGRAM_URL -->?f=archive_bare;l=<!-- tmpl_var list -->;id=<!-- tmpl_var id -->" id="archived_message_body_container">
+	 <iframe src="<!-- tmpl_var PROGRAM_URL -->?flavor=archive_bare;l=<!-- tmpl_var list -->;id=<!-- tmpl_var id -->" id="archived_message_body_container">
 	  <!-- redundancy for browsers & devices that aren't frames-compatible: -->
 	  <div id="archived_message_body">
 	   <!-- tmpl_var massaged_msg_for_display -->
@@ -134,7 +134,7 @@
 	<!-- tmpl_loop attachments -->
 		  
 		  <li>
-		   <a href="<!-- tmpl_var PROGRAM_URL -->?f=file_attachment&id=<!-- tmpl_var id -->&filename=<!-- tmpl_var name -->&list=<!-- tmpl_var list -->">
+		   <a href="<!-- tmpl_var PROGRAM_URL -->?flavor=file_attachment&id=<!-- tmpl_var id -->&filename=<!-- tmpl_var name -->&list=<!-- tmpl_var list -->">
 		   <!-- tmpl_var name -->
 		   </a>
 		  </li> 

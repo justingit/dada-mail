@@ -232,7 +232,7 @@ Here are the steps to do it manually:
 
 Visit Dada Mail (L<http://example.com/cgi-bin/dada/mail.cgi>), with the following query string: 
 
-L<http://example.com/cgi-bin/dada/mail.cgi?f=pass_gen>
+L<http://example.com/cgi-bin/dada/mail.cgi?flavor=pass_gen>
 
 =item 2
 
@@ -424,7 +424,7 @@ The complex data structure follows a pattern that looks like this,
 	 -Submenu    => [
 					{ 
 					-Title      => 'Send a Message',
-					-Title_URL  => "$S_PROGRAM_URL?f=send_email",
+					-Title_URL  => "$S_PROGRAM_URL?flavor=send_email",
 					-Function   => 'send_email',
 					-Activated  => 1,
 					},

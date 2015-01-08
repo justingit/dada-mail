@@ -43,7 +43,7 @@ The Password for your mailing list. This is saved in an encrypted form (CipherSa
 
 The cipher key for CipherSaber encryption. Can be reset (albeit, there' usually no need to) by going to, 
 
-L<http://example.com/cgi-bin/dada/mail.cgi?f=reset_cipher_keys> 
+L<http://example.com/cgi-bin/dada/mail.cgi?flavor=reset_cipher_keys> 
 
 Doing so will invalidate any passwords created with the previous key. 
 

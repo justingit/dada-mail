@@ -29,7 +29,7 @@
 		
 		<!-- tmpl_if expr="DATA_CACHE == 1" -->
 			<p class="alert" style="float:right">
-				Data below is cached. <a href="<!-- tmpl_var Plugin_URL -->?f=clear_message_data_cache&msg_id=<!-- tmpl_var mid -->">Clear</a>
+				Data below is cached. <a href="<!-- tmpl_var Plugin_URL -->?flavor=clear_message_data_cache&msg_id=<!-- tmpl_var mid -->">Clear</a>
 			</p>
 			<div style="clear:both"></div>
 		<!-- /tmpl_if --> 
@@ -450,7 +450,7 @@
 						 <td> 
 						 <p> 
 				<!-- tmpl_if comment --> 
-						    <a href="<!-- tmpl_var Plugin_URL -->?f=url&mid=<!-- tmpl_var mid -->&url=<!-- tmpl_var url escape="HTML" -->"> 
+						    <a href="<!-- tmpl_var Plugin_URL -->?flavor=url&mid=<!-- tmpl_var mid -->&url=<!-- tmpl_var url escape="HTML" -->"> 
 				<!-- /tmpl_if --> 
 					<a href="<!-- tmpl_var url -->" target="_blank"> 
 					<!-- tmpl_var url escape="HTML" -->

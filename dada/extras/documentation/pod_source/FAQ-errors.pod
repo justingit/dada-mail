@@ -665,7 +665,7 @@ By default, Dada Mail saves its B<list settings> and B<archives> (there's also a
 
 Visit the following URL: 
 
-http://example.com/cgi-bin/dada/mail.cgi?f=restore_lists
+http://example.com/cgi-bin/dada/mail.cgi?flavor=restore_lists
 
 You'll have to enter your Dada Mail Root Password and then you'll enter a screen that will allow you to restore your list settings/archives.
 
@@ -685,7 +685,7 @@ List passwords shouldn't become blank on their own, so if your password isn't se
 
 But! The easiest thing to solve this particular problem is to reset your password. In your web browser go to a URL like this: 
 
-http://example.com/cgi-bin/dada/mail.cgi?f=email_password&list=listshortname
+http://example.com/cgi-bin/dada/mail.cgi?flavor=email_password&list=listshortname
 
 Where, B<http://example.com/cgi-bin/dada/mail.cgi> is the URL to your Dada Mail and, B<listshortname> is the listshortname that's giving you trouble.
 
@@ -699,7 +699,7 @@ The error will look similar to this,
 
 Try restoring your Schedules, by using going to the Restore Mailing Lists screen in Dada Mail - ie: 
 
-L<http://example.com/cgi-bin/dada/mail.cgi?f=restore_lists> 
+L<http://example.com/cgi-bin/dada/mail.cgi?flavor=restore_lists> 
 
 You will only need to restore your mailing list Schedules. 
 

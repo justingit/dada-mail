@@ -65,7 +65,7 @@ If all this information is correct, you should be able to log into the Dada Mail
 There's one more field you can pass in this form and that is B<referer>. If set, it'll redirect you to a specific screen in Dada Mail. For example, if you want to log in directly to the, B<add> list control panel, add this into the form: 
 
 
- <input type="hidden" name="referer" value="http://example.com/cgi-bin/dada/mail.cgi?f=add" /> 
+ <input type="hidden" name="referer" value="http://example.com/cgi-bin/dada/mail.cgi?flavor=add" /> 
 
 Where "http://example.com/cgi-bin/dada/mail.cgi" is the URL to your Dada Mail. 
 

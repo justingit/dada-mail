@@ -129,7 +129,7 @@ make the tmp subscribe list right before sending, as mass mailings get queued.
 
 [ ] Integration w/StopForumSpam
     Here's some discussion:
-    http://dadamailproject.com/support/boards/viewtopic.php?f=9&t=4066&p=14868
+    http://dadamailproject.com/support/boards/viewtopic.php?flavor=9&t=4066&p=14868
     http://stopforumspam.com
 
 
@@ -421,7 +421,7 @@ origin of action - from the subscriber, or the list owner?
 	
 
 [ ] This is a good idea for the approval system: 
-http://dadamailproject.com/support/boards/viewtopic.php?f=25&t=2082&p=7931#p7931
+http://dadamailproject.com/support/boards/viewtopic.php?flavor=25&t=2082&p=7931#p7931
 Since the "Subscription requests approving/denying (experimental)" is asking for feedback, 
 I would suggest that the "white list" email addresses can bypass the manual approval process, 
 and be seen as a "pre-approval" list, or that there be an option under this feature to

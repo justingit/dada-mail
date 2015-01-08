@@ -399,8 +399,8 @@ $SHOW_ADMIN_LINK        ||= 1;
 $ADMIN_FLAVOR_NAME      ||= 'admin';
 $SIGN_IN_FLAVOR_NAME    ||= 'sign_in';
 $DEFAULT_SCREEN         ||= '';
-$DEFAULT_ADMIN_SCREEN   ||= $S_PROGRAM_URL . '?f=send_email';
-$DEFAULT_LOGOUT_SCREEN  ||= $S_PROGRAM_URL . '?f=' . $ADMIN_FLAVOR_NAME;
+$DEFAULT_ADMIN_SCREEN   ||= $S_PROGRAM_URL . '?flavor=send_email';
+$DEFAULT_LOGOUT_SCREEN  ||= $S_PROGRAM_URL . '?flavor=' . $ADMIN_FLAVOR_NAME;
 $DISABLE_OUTSIDE_LOGINS ||= 0;
 $LOGIN_WIDGET           ||= 'popup_menu';
 $ALLOW_ROOT_LOGIN       ||= 1;
@@ -596,35 +596,35 @@ $ADMIN_MENU ||= [
         -Submenu   => [
             {
                 -Title     => 'Send a Message',
-                -Title_URL => "$S_PROGRAM_URL?f=send_email",
+                -Title_URL => "$S_PROGRAM_URL?flavor=send_email",
                 -Function  => 'send_email',
                 -Activated => 1,
             },
 
             {
                 -Title     => 'Send a Webpage',
-                -Title_URL => "$S_PROGRAM_URL?f=send_url_email",
+                -Title_URL => "$S_PROGRAM_URL?flavor=send_url_email",
                 -Function  => 'send_url_email',
                 -Activated => 1,
             },
 
             {
                 -Title     => 'Drafts/Stationary/Schedules',
-                -Title_URL => "$S_PROGRAM_URL?f=drafts",
+                -Title_URL => "$S_PROGRAM_URL?flavor=drafts",
                 -Function  => 'drafts',
                 -Activated => 1,
             },
 
             {
                 -Title => 'Monitor Your Mailings',
-                -Title_URL => "$S_PROGRAM_URL?f=sending_monitor",
+                -Title_URL => "$S_PROGRAM_URL?flavor=sending_monitor",
                 -Function  => 'sending_monitor',
                 -Activated => 1,
             },
 
             {
                 -Title     => 'Options',
-                -Title_URL => "$S_PROGRAM_URL?f=mass_mailing_options",
+                -Title_URL => "$S_PROGRAM_URL?flavor=mass_mailing_options",
                 -Function  => 'mass_mailing_options',
                 -Activated => 1,
             },
@@ -638,35 +638,35 @@ $ADMIN_MENU ||= [
         -Submenu   => [
             {
                 -Title     => 'View',
-                -Title_URL => "$S_PROGRAM_URL?f=view_list",
+                -Title_URL => "$S_PROGRAM_URL?flavor=view_list",
                 -Function  => 'view_list',
                 -Activated => 1,
             },
 
             {
                 -Title     => 'Recent Activity',
-                -Title_URL => "$S_PROGRAM_URL?f=list_activity",
+                -Title_URL => "$S_PROGRAM_URL?flavor=list_activity",
                 -Function  => 'list_activity',
                 -Activated => 1,
             },
 
             {
                 -Title => 'Invite<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> /Subscribe<!-- /tmpl_if -->/Add',
-                -Title_URL => "$S_PROGRAM_URL?f=add",
+                -Title_URL => "$S_PROGRAM_URL?flavor=add",
                 -Function  => 'add',
                 -Activated => 1,
             },
 
             {
                 -Title     => 'Remove',
-                -Title_URL => "$S_PROGRAM_URL?f=delete_email",
+                -Title_URL => "$S_PROGRAM_URL?flavor=delete_email",
                 -Function  => 'delete_email',
                 -Activated => 1,
             },
 
             {
                 -Title     => 'Options',
-                -Title_URL => "$S_PROGRAM_URL?f=subscription_options",
+                -Title_URL => "$S_PROGRAM_URL?flavor=subscription_options",
                 -Function  => 'subscription_options',
                 -Activated => 0,
             },
@@ -679,28 +679,28 @@ $ADMIN_MENU ||= [
         -Submenu   => [
             {
                 -Title     => 'List Information',
-                -Title_URL => "$S_PROGRAM_URL?f=change_info",
+                -Title_URL => "$S_PROGRAM_URL?flavor=change_info",
                 -Function  => 'change_info',
                 -Activated => 1,
             },
 
             {
                 -Title     => 'List Password',
-                -Title_URL => "$S_PROGRAM_URL?f=change_password",
+                -Title_URL => "$S_PROGRAM_URL?flavor=change_password",
                 -Function  => 'change_password',
                 -Activated => 1,
             },
 
             {
                 -Title     => 'Options',
-                -Title_URL => "$S_PROGRAM_URL?f=list_options",
+                -Title_URL => "$S_PROGRAM_URL?flavor=list_options",
                 -Function  => 'list_options',
                 -Activated => 0,
             },
 
             {
                 -Title     => 'Web Services API',
-                -Title_URL => "$S_PROGRAM_URL?f=web_services",
+                -Title_URL => "$S_PROGRAM_URL?flavor=web_services",
                 -Function  => 'web_services',
                 -Activated => 1,
             },
@@ -708,7 +708,7 @@ $ADMIN_MENU ||= [
 
             {
                 -Title     => 'Delete This Mailing List',
-                -Title_URL => "$S_PROGRAM_URL?f=delete_list",
+                -Title_URL => "$S_PROGRAM_URL?flavor=delete_list",
                 -Function  => 'delete_list',
                 -Activated => 0,
             },
@@ -722,20 +722,20 @@ $ADMIN_MENU ||= [
 
             {
                 -Title     => 'Options',
-                -Title_URL => "$S_PROGRAM_URL?f=sending_preferences",
+                -Title_URL => "$S_PROGRAM_URL?flavor=sending_preferences",
                 -Function  => 'sending_preferences',
                 -Activated => 1,
             },
 
             {
                 -Title     => 'Advanced Options',
-                -Title_URL => "$S_PROGRAM_URL?f=adv_sending_preferences",
+                -Title_URL => "$S_PROGRAM_URL?flavor=adv_sending_preferences",
                 -Function  => 'adv_sending_preferences',
                 -Activated => 1,
             },
             {
                 -Title     => 'Mass Mailing Options',
-                -Title_URL => "$S_PROGRAM_URL?f=mass_mailing_preferences",
+                -Title_URL => "$S_PROGRAM_URL?flavor=mass_mailing_preferences",
                 -Function  => 'mass_mailing_preferences',
                 -Activated => 1,
             },
@@ -748,21 +748,21 @@ $ADMIN_MENU ||= [
         -Submenu   => [
             {
                 -Title     => 'View',
-                -Title_URL => "$S_PROGRAM_URL?f=view_archive",
+                -Title_URL => "$S_PROGRAM_URL?flavor=view_archive",
                 -Function  => 'view_archive',
                 -Activated => 1,
             },
 
             {
                 -Title     => 'Options',
-                -Title_URL => "$S_PROGRAM_URL?f=archive_options",
+                -Title_URL => "$S_PROGRAM_URL?flavor=archive_options",
                 -Function  => 'archive_options',
                 -Activated => 1,
             },
 
             {
                 -Title     => 'Advanced Options',
-                -Title_URL => "$S_PROGRAM_URL?f=adv_archive_options",
+                -Title_URL => "$S_PROGRAM_URL?flavor=adv_archive_options",
                 -Function  => 'adv_archive_options',
                 -Activated => 1,
             },
@@ -775,35 +775,35 @@ $ADMIN_MENU ||= [
         -Submenu   => [
             {
                 -Title     => 'Your Mailing List Template',
-                -Title_URL => "$S_PROGRAM_URL?f=edit_template",
+                -Title_URL => "$S_PROGRAM_URL?flavor=edit_template",
                 -Function  => 'edit_template',
                 -Activated => 1,
             },
 
             {
                 -Title     => 'Email Message Templates',
-                -Title_URL => "$S_PROGRAM_URL?f=edit_type",
+                -Title_URL => "$S_PROGRAM_URL?flavor=edit_type",
                 -Function  => 'edit_type',
                 -Activated => 1,
             },
 
             {
                 -Title     => 'HTML Screen Templates',
-                -Title_URL => "$S_PROGRAM_URL?f=edit_html_type",
+                -Title_URL => "$S_PROGRAM_URL?flavor=edit_html_type",
                 -Function  => 'edit_html_type',
                 -Activated => 1,
             },
 
             {
                 -Title     => 'Subscription Form HTML',
-                -Title_URL => "$S_PROGRAM_URL?f=html_code",
+                -Title_URL => "$S_PROGRAM_URL?flavor=html_code",
                 -Function  => 'html_code',
                 -Activated => 1,
             },
 
             {
                 -Title     => 'Create a Back Link',
-                -Title_URL => "$S_PROGRAM_URL?f=back_link",
+                -Title_URL => "$S_PROGRAM_URL?flavor=back_link",
                 -Function  => 'back_link',
                 -Activated => 1,
             },
@@ -817,7 +817,7 @@ $ADMIN_MENU ||= [
         -Submenu   => [
             {
                 -Title     => 'Profile Fields',
-                -Title_URL => "$S_PROGRAM_URL?f=profile_fields",
+                -Title_URL => "$S_PROGRAM_URL?flavor=profile_fields",
                 -Function  => 'profile_fields',
                 -Activated => 1,
             },
@@ -969,14 +969,14 @@ $ADMIN_MENU ||= [
         -Submenu   => [
             {
                 -Title     => 'Customize Feature Set',
-                -Title_URL => "$S_PROGRAM_URL?f=feature_set",
+                -Title_URL => "$S_PROGRAM_URL?flavor=feature_set",
                 -Function  => 'feature_set',
                 -Activated => 0,
             },
 
             {
                 -Title     => 'Options',
-                -Title_URL => "$S_PROGRAM_URL?f=list_cp_options",
+                -Title_URL => "$S_PROGRAM_URL?flavor=list_cp_options",
                 -Function  => 'list_cp_options',
                 -Activated => 0,
             }
@@ -989,14 +989,14 @@ $ADMIN_MENU ||= [
         -Submenu   => [
             {
                 -Title     => 'Configuration',
-                -Title_URL => "$S_PROGRAM_URL?f=setup_info",
+                -Title_URL => "$S_PROGRAM_URL?flavor=setup_info",
                 -Function  => 'setup_info',
                 -Activated => 1,
             },
 
             {
                 -Title     => 'About Dada Mail',
-                -Title_URL => "$S_PROGRAM_URL?f=manage_script",
+                -Title_URL => "$S_PROGRAM_URL?flavor=manage_script",
                 -Function  => 'manage_script',
                 -Activated => 1,
             },

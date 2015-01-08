@@ -1130,7 +1130,7 @@ to balance power and versatility of Dada Mail, with accountability and adherence
 of a legitimate mailing list. We will put on hold the plan to deprecate these features, until 
 we got more feedback from the users of Dada Mail. Please join the discussion: 
 
-L<http://dadamailproject.com/support/boards/viewtopic.php?f=25&t=2457>
+L<http://dadamailproject.com/support/boards/viewtopic.php?flavor=25&t=2457>
 
 
 =head3 Code Cleanup
@@ -1709,7 +1709,7 @@ L<http://dadamailproject.com/support/documentation/basic_to_contemporary_install
 
 The, "Setup Info" Screen, that you can access using this URL: 
 
-L<http://example.com/cgi-bin/dada/mail.cgi?f=setup_info>
+L<http://example.com/cgi-bin/dada/mail.cgi?flavor=setup_info>
 
 has been completely rewritten. In light of the Installer, it does not attempt to help 
 configure Dada Mail for you, but will tell you what type of installation it recognizes, 
@@ -1721,7 +1721,7 @@ file and will show you how all config variables are being interpreted.
 The $ADMIN_MENU variable has been changed to add the, "Dada Mail Setup Info" menu item. It looks like this: 
 
 	{-Title      => '<!-- tmpl_var PROGRAM_NAME --> Setup Info',
-	 -Title_URL  => "$S_PROGRAM_URL?f=setup_info",
+	 -Title_URL  => "$S_PROGRAM_URL?flavor=setup_info",
 	 -Function   => 'setup_info',
 	 -Activated  => 1,
 	},

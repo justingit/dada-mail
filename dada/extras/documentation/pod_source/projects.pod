@@ -11,7 +11,7 @@ These are broad ideas that we'd like to share about some new features we're like
 
 We're looking for comments about this issue, here: 
 
-L<http://dadamailproject.com/support/boards/viewtopic.php?f=25&t=2457>
+L<http://dadamailproject.com/support/boards/viewtopic.php?flavor=25&t=2457>
 
 If you have ideas, please post them, we could really use your help! 
 

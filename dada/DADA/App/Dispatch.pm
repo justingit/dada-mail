@@ -1,4 +1,5 @@
 package DADA::App::Dispatch; 
+use strict; 
 
 use FindBin;
 use lib "$FindBin::Bin/../";
@@ -78,9 +79,10 @@ sub _init {
 }
 
 
-sub prepare_cgi_obj { 
+sub prepare_cgi_obj
+ { 
     my $self = shift; 
-    my $q = CGI->new; 
+    my $q = shift || CGI->new;
        $q->charset($DADA::Config::HTML_CHARSET);
     
     if ( $ENV{QUERY_STRING} =~ m/^\?/ ) {
@@ -384,6 +386,10 @@ sub translate {
                   unless $info =~ m/^\x61\x72\x74/;
             }
         }
+    }
+    
+    if(!defined($q->param('flavor')) && defined($q->param('f'))){ 
+        $q->param('flavor', $q->param('f')); 
     }
     
     return $q;

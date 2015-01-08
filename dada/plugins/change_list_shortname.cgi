@@ -284,7 +284,7 @@ my $c = DADA::App::ScreenCache->new;
    $c->flush;
 
 
-print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?f=logout&login_url='. $DADA::Config::S_PROGRAM_URL . '?f=' . $DADA::Config::ADMIN_FLAVOR_NAME); 
+print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=logout&login_url='. $DADA::Config::S_PROGRAM_URL . '?flavor=' . $DADA::Config::ADMIN_FLAVOR_NAME); 
 
 }
 

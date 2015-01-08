@@ -5,7 +5,7 @@
 				<!-- tmpl_if flavor_is_view_list --> 
 					<a href="#" class="change_type" data-type="list">
 				<!-- tmpl_else --> 
-					<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=<!-- tmpl_var flavor -->;type=list">					
+					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var flavor -->;type=list">					
 				<!-- /tmpl_if -->
 				  <span>
 					Subscribers  (<!-- tmpl_var list_subscribers_num -->)
@@ -41,7 +41,7 @@
 			<!-- tmpl_if flavor_is_view_list -->
 				<a href="#" class="change_type" data-type="black_list">
 			<!-- tmpl_else --> 
-				<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=<!-- tmpl_var flavor -->;type=black_list">
+				<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var flavor -->;type=black_list">
 			<!-- /tmpl_if -->
 				<span>
 			   		Black List (<!-- tmpl_var black_list_subscribers_num -->)
@@ -54,7 +54,7 @@
 				<!-- tmpl_if flavor_is_view_list --> 
 					<a href="#" class="change_type" data-type="white_list">
 				<!-- tmpl_else --> 
-					<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=<!-- tmpl_var flavor -->;type=white_list">
+					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var flavor -->;type=white_list">
 				<!-- /tmpl_if -->
 				   <span>
 					White List (<!-- tmpl_var white_list_subscribers_num -->)
@@ -68,7 +68,7 @@
 				<!-- tmpl_if flavor_is_view_list --> 
 				  	<a href="#" class="change_type" data-type="authorized_senders">
 				<!-- tmpl_else --> 
-					<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=<!-- tmpl_var flavor -->;type=authorized_senders">
+					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var flavor -->;type=authorized_senders">
 				<!-- /tmpl_if -->
 				   <span>
 					Authorized Senders (<!-- tmpl_var authorized_senders_num -->)
@@ -83,7 +83,7 @@
 				<!-- tmpl_if flavor_is_view_list --> 
 				  	<a href="#" class="change_type" data-type="moderators">
 				<!-- tmpl_else --> 
-					<a href="<!-- tmpl_var S_PROGRAM_URL -->?f=<!-- tmpl_var flavor -->;type=moderators">
+					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var flavor -->;type=moderators">
 				<!-- /tmpl_if -->
 				   <span>
 					Moderators (<!-- tmpl_var moderators_num -->)

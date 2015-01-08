@@ -483,7 +483,7 @@ sub install_or_upgrade {
 			-with   => 'list', 
             -vars => {
 				# These are tricky.... 
-				SUPPORT_FILES_URL               => $Self_URL . '?f=screen&screen=',
+				SUPPORT_FILES_URL               => $Self_URL . '?flavor=screen&screen=',
 
 
 				dada_files_parent_dir               => $dada_files_parent_dir, 
@@ -666,7 +666,7 @@ sub scrn_configure_dada_mail {
                 %$advanced_config_params,
 
                 # These are tricky....
-                SUPPORT_FILES_URL                  => $Self_URL . '?f=screen&screen=',
+                SUPPORT_FILES_URL                  => $Self_URL . '?flavor=screen&screen=',
                 install_type                       => $install_type,
                 current_dada_files_parent_location => $current_dada_files_parent_location,
                 program_url_guess                  => program_url_guess(),
@@ -1235,7 +1235,7 @@ sub scrn_install_dada_mail {
             -vars => { 
 	
 			# These are tricky.... 
-			SUPPORT_FILES_URL               => $Self_URL . '?f=screen&screen=',
+			SUPPORT_FILES_URL               => $Self_URL . '?flavor=screen&screen=',
 			
 			
 			 install_log                  => plaintext_to_html({-str =>$log}), 
@@ -3532,7 +3532,7 @@ sub screen {
 	        }
 	    );	
 		my $hack_css_url = quotemeta(q{url('../images/header_bg.gif')}); 
-		my $r            = q{url('} . $Self_URL . q{?f=screen&screen=/images/installer-header_bg.gif')}; 
+		my $r            = q{url('} . $Self_URL . q{?flavor=screen&screen=/images/installer-header_bg.gif')}; 
 		   $t =~ s/$hack_css_url/$r/g;
 		print $t; 
 	}

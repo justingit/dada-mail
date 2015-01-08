@@ -220,14 +220,14 @@ sub send_email {
 
         # Utterly out of place
         # save_as_draft called via js
-        my $draft_id = $self->save_as_draft(
+        my ($headers, $body) = $self->save_as_draft(
             {
                 -cgi_obj => $q,
                 -list    => $self->{list},
                 -json    => 1,
             }
         );
-        return;
+        return ($headers, $body);
     }
     else {
         # Draft now has all our form params
@@ -269,8 +269,7 @@ sub send_email {
             );
         }
         if ( $status == 0 ) {
-            $self->report_mass_mail_errors( $errors, $root_login );
-            return;
+            return $self->report_mass_mail_errors( $errors, $root_login );
         }
 
         if ( $process =~ m/test/i ) {
@@ -278,7 +277,7 @@ sub send_email {
               if $t;
 
             $self->wait_for_it($message_id);
-            return({-redirect_uri => $DADA::Config::S_PROGRAM_URL . '?f='
+            return({-redirect_uri => $DADA::Config::S_PROGRAM_URL . '?flavor='
                   . $flavor
                   . '&test_sent=1&test_recipient='
                   . $q->param('test_recipient')
@@ -297,10 +296,10 @@ sub send_email {
             }
             my $uri;
             if ( $q->param('archive_no_send') == 1 && $q->param('archive_message') == 1 ) {
-                $uri = $DADA::Config::S_PROGRAM_URL . '?f=view_archive&id=' . $message_id;
+                $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=view_archive&id=' . $message_id;
             }
             else {
-                $uri = $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&type=list&id=' . $message_id;
+                $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=sending_monitor&type=list&id=' . $message_id;
             }
             return({-redirect_uri => $uri}, undef);
         }
@@ -975,13 +974,14 @@ sub send_url_email {
 
     }
     elsif ( $process eq 'save_as_draft' ) {
-        $self->save_as_draft(
+        my ($headers, $body) = $self->save_as_draft(
             {
                 -cgi_obj => $q,
                 -list    => $self->{list},
                 -json    => 1,
             }
         );
+        return ($headers, $body); 
     }
     else {
 
@@ -1010,7 +1010,7 @@ sub send_url_email {
         }
         if ( $process =~ m/test/i ) {
             $self->wait_for_it($message_id);
-            return({-redirect_uri => $DADA::Config::S_PROGRAM_URL . '?f='
+            return({-redirect_uri => $DADA::Config::S_PROGRAM_URL . '?flavor='
                   . $flavor
                   . '&test_sent=1&test_recipient='
                   . $q->param('test_recipient')
@@ -1029,10 +1029,10 @@ sub send_url_email {
             }
             my $uri;
             if ( $q->param('archive_no_send') == 1 && $q->param('archive_message') == 1 ) {
-                $uri = $DADA::Config::S_PROGRAM_URL . '?f=view_archive&id=' . $message_id;
+                $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=view_archive&id=' . $message_id;
             }
             else {
-                $uri = $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&type=list&id=' . $message_id;
+                $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=sending_monitor&type=list&id=' . $message_id;
             }
             return({-redirect_uri => $uri}, undef );
         }
@@ -1563,7 +1563,7 @@ sub list_invite {
 
         my $message_id = $mh->mass_send( $mh->return_headers($header_glob), Body => $message_string, );
 
-        my $uri = $DADA::Config::S_PROGRAM_URL . '?f=sending_monitor&type=invitelist&id=' . $message_id;
+        my $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=sending_monitor&type=invitelist&id=' . $message_id;
         return({-redirect_uri => $uri}, undef);
 
     }

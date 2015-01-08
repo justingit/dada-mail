@@ -169,7 +169,7 @@ sub save {
 		if -e $self->_db_filename; 
 	tie %tmp, "AnyDBM_File", $self->_db_filename,  O_RDWR|O_CREAT, $DADA::Config::FILE_CHMOD   
 	or croak 'couldn\'t tie '. $self->_db_filename . ' for reading: ' . $! .  '; If your server recently upgraded software or moved your lists to a different server, you may need to restore your list ' . $self->{function} . '. Visit ' . 
-			$DADA::Config::PROGRAM_URL . '?f=restore_lists '; 
+			$DADA::Config::PROGRAM_URL . '?flavor=restore_lists '; 
 	%tmp = %$new_vals; 
 	untie %tmp; 
 	$self->_open_db;

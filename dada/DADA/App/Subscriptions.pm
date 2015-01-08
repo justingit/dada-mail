@@ -346,7 +346,7 @@ sub subscribe {
                 email    => $email,
                 redirect => {
                         url => $DADA::Config::PROGRAM_URL
-                      . '?f=subscribe&email='
+                      . '?flavor=subscribe&email='
                       . uriescape($email)
                       . '&list='
                       . uriescape($list),
@@ -729,7 +729,7 @@ sub confirm {
                       if $t;
                     my $r =
                       $q->redirect(
-                        -uri => $DADA::Config::PROGRAM_URL . '?f=list&list=' . $list . '&error_no_email=1' );
+                        -uri => $DADA::Config::PROGRAM_URL . '?flavor=list&list=' . $list . '&error_no_email=1' );
                     $self->test ? return $r : print $fh safely_encode($r)
                       and return;
                 }
@@ -1347,7 +1347,7 @@ sub unsubscription_request {
               if $t;
             my $r =
               $q->redirect(
-                -uri => $DADA::Config::PROGRAM_URL . '?f=outdated_subscription_urls&list=' . $list . '&orig_flavor=u' );
+                -uri => $DADA::Config::PROGRAM_URL . '?flavor=outdated_subscription_urls&list=' . $list . '&orig_flavor=u' );
             $self->test ? return $r : print $fh safely_encode($r) and return;
         }
 
@@ -2532,7 +2532,7 @@ sub fancy_data {
             $return->{redirect_required} = 'subscription_requires_captcha';
             $return->{redirect}->{url} =
                 $DADA::Config::PROGRAM_URL
-              . '?f=show_error&email='
+              . '?flavor=show_error&email='
               . uriescape( $data->{email} )
               . '&list='
               . uriescape( $data->{list} )
