@@ -1,21 +1,19 @@
 package DADA::App::DBIHandle;   
 
-use lib qw( ../../ ../../perllib
-
-/sw/lib/perl5/5.8.6/darwin-thread-multi-2level
-/sw/lib/perl5
-
+use lib qw(
+    ../../ 
+    ../../perllib
 );
 
-#my $i = 1; 
-my $connect_n = 0; 
+
+
 use DADA::Config;  
-
-
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_DBIHandle}; 
-
-
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_DBIHandle}; 
 use Carp qw(carp croak); 
+
+# Singleton.
+# $dbh_stash holds DBH objects, one for each $pid. THis may or may not be a good idea...
+my $dbh_stash = {}; 
 
 
 # We usin' this at all?
@@ -26,7 +24,6 @@ if(
    $DADA::Config::SESSION_DB_TYPE    =~ m/SQL/i
 
 ){
-	
 	require DBI; 
 	# require WhackaWhack; 
 };
@@ -49,10 +46,8 @@ my $dbtype    = $DADA::Config::SQL_PARAMS{dbtype};
 
 
 sub new {
-
 	carp "Creating DBIHandle Object"
 		if $t; 
-		
 	my $class = shift;
 	my %args = (@_); 
 	   my $self = {};			
@@ -60,10 +55,6 @@ sub new {
 	   $self->_init(%args); 
 	   return $self;
 }
-
-
-
-
 sub _init  { 
 
 	carp "Initializing DBIHandle Object"
@@ -83,12 +74,10 @@ sub _init  {
 	){ 
 		carp "DBI support enabled"
 			if $t; 
-			
     	$self->{enabled} = 1; 
     } 
 	else { 
     	$self->{enabled} = undef; 
-
 		carp "DBI support is disabled"
 			if $t;
 			
@@ -120,86 +109,85 @@ sub connectdb {
     my $self = shift;
 
     return undef unless $self->{enabled};
-
-    carp "Connecting to DB..."
-      if $t;
-
-    my $dbh;
-    my $data_source;
-
-    if ( $dbtype eq 'SQLite' ) {
-
-        $data_source =
-          'dbi:' . $dbtype . ':' . $DADA::Config::FILES . '/' . $database;
-
-        if ( $DADA::Config::DBI_PARAMS->{dada_connection_method} eq 'connect' )
-        {
-            $dbh = DBI->connect( "$data_source", "", "" )
-              || croak("can't connect to db: $!");
-        }
-        elsif ( $DADA::Config::DBI_PARAMS->{dada_connection_method} eq
-            'connect_cached' )
-        {
-
-            $dbh =
-              DBI->connect_cached( "$data_source", "", "",
-                { dada_private_via_process => $$ } )
-              || croak("can't connect to db: $!");
-        }
-        else {
-            croak "Incorrect dada_connection_method passed.";
-        }
-
-        for ( keys %{$DADA::Config::DBI_PARAMS} ) {
-            next if $_ =~ m/dada/;
-
-            #$self->{dbh}->{$_} = $DADA::Config::DBI_PARAMS->{$_};
-            $dbh->{$_} = $DADA::Config::DBI_PARAMS->{$_};
-        }
-
-
+    
+    #Singleton.
+    if( exists($dbh_stash->{$$}) && defined($dbh_stash->{$$}) && $dbh_stash->{$$}->ping ) {
+        carp 'Returning already created $dbh for PID: ' . $$
+          if $t;
+        return $dbh_stash->{$$};
     }
-    else {
-
-        $data_source = "dbi:$dbtype:dbname=$database;host=$dbserver;port=$port";
-
-        if ( $DADA::Config::DBI_PARAMS->{dada_connection_method} eq 'connect' )
-        {
-
-            #$self->{dbh} =
-            $dbh = DBI->connect( "$data_source", $user, $pass )
-              || croak("can't connect to db: $!");
-        }
-        elsif ( $DADA::Config::DBI_PARAMS->{dada_connection_method} eq
-            'connect_cached' )
-        {
-
-            #$self->{dbh} =
-            $dbh =
-              DBI->connect_cached( "$data_source", $user, $pass,
-                { dada_private_via_process => $$ } )
-              || croak("can't connect to db: $!");
-        }
-        else {
-            croak "Incorrect dada_connection_method passed.";
-        }
-
-        for ( keys %{$DADA::Config::DBI_PARAMS} ) {
-            next if $_ =~ m/dada/;
-
-            #$self->{dbh}->{$_} = $DADA::Config::DBI_PARAMS->{$_};
-            $dbh->{$_} = $DADA::Config::DBI_PARAMS->{$_};
-        }
-
-        carp "Connected."
+    else { 
+        carp 'Creating new $dbh for PID: ' . $$
           if $t;
 
-        $self->{is_connected} = 1;
+        my $data_source;
+        if ( $dbtype eq 'SQLite' ) {
 
+            $data_source =
+              'dbi:' . $dbtype . ':' . $DADA::Config::FILES . '/' . $database;
+
+            if ( $DADA::Config::DBI_PARAMS->{dada_connection_method} eq 'connect' )
+            {
+                $dbh_stash->{$$} = DBI->connect( "$data_source", "", "" )
+                  || croak("can't connect to db: $!");
+            }
+            elsif ( $DADA::Config::DBI_PARAMS->{dada_connection_method} eq
+                'connect_cached' )
+            {
+
+                $dbh =
+                  DBI->connect_cached( "$data_source", "", "",
+                    { dada_private_via_process => $$ } )
+                  || croak("can't connect to db: $!");
+            }
+            else {
+                croak "Incorrect dada_connection_method passed.";
+            }
+
+            for ( keys %{$DADA::Config::DBI_PARAMS} ) {
+                next if $_ =~ m/dada/;
+                $dbh->{$_} = $DADA::Config::DBI_PARAMS->{$_};
+            }
+
+
+        }
+        else {
+
+            $data_source = "dbi:$dbtype:dbname=$database;host=$dbserver;port=$port";
+
+            if ( $DADA::Config::DBI_PARAMS->{dada_connection_method} eq 'connect' )
+            {
+
+                $dbh_stash->{$$} = DBI->connect( "$data_source", $user, $pass )
+                  || croak("can't connect to db: $!");
+            }
+            elsif ( $DADA::Config::DBI_PARAMS->{dada_connection_method} eq
+                'connect_cached' )
+            {
+
+                $dbh_stash->{$$} =
+                  DBI->connect_cached( "$data_source", $user, $pass,
+                    { dada_private_via_process => $$ } )
+                  || croak("can't connect to db: $!");
+            }
+            else {
+                croak "Incorrect dada_connection_method passed.";
+            }
+
+            for ( keys %{$DADA::Config::DBI_PARAMS} ) {
+                next if $_ =~ m/dada/;
+
+                $dbh_stash->{$$}->{$_} = $DADA::Config::DBI_PARAMS->{$_};
+            }
+
+            carp "Connected."
+              if $t;
+
+            $self->{is_connected} = 1;
+
+        }
+        return $dbh_stash->{$$};
     }
-
-    return $dbh;
-
 }
 
 
@@ -213,9 +201,10 @@ sub disconnectdb {
     carp "Disconnecting from DB..."
       if $t;
 
-    $self->{dbh}->disconnect;
+    $dbh_stash->{$$}->disconnect;
     $self->{is_connected} = 0;
-
+    undef $dbh_stash->{$$}; 
+    delete($dbh_stash->{$$}); 
     carp "Disconnected."
       if $t;
 
@@ -231,14 +220,14 @@ sub DESTROY {
 	my $self = shift;
 		return undef unless $self->{enabled}; 
 
-	carp "Destroying DADA::App::DBIHandle object..."
-		if $t;
-
-	if($self->{dbh}){ 
-		$self->disconnectdb ; 
-	}
-	else{ 
-	}
+#	carp "Destroying DADA::App::DBIHandle object..."
+#		if $t;
+#		
+#	if(defined($dbh)){ 
+#		$self->disconnectdb ; 
+#	}
+#	else{ 
+#	}
 }
 
 

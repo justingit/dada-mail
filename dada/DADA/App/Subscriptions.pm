@@ -96,7 +96,7 @@ sub token {
                   . $ENV{REMOTE_ADDR} . ')';
                 carp "Additional Information: " . Data::Dumper::Dumper($data);
                 if ( $q->param('simple_test') ne 'pass' ) {
-                    return user_error(
+                    return({},  user_error(
                         {
                             -error => 'mismatch_ip_on_confirm',
                             -test  => $self->test,
@@ -105,7 +105,7 @@ sub token {
                                 flavor => $data->{data}->{flavor},
                             }
                         }
-                    );
+                    ));
                 }
                 else {
                     carp "User has manually 'proved' that they're real - moving along,";
@@ -144,7 +144,7 @@ sub token {
             || $data->{data}->{flavor} eq 'sub_request_deny' )
         {
             $q->param( 'token', $token );
-            $self->subscription_requests(
+            return $self->subscription_requests(
                 {
                     -html_output => $args->{-html_output},
                     -cgi_obj     => $q,
@@ -170,7 +170,7 @@ sub token {
                 );
             }
             else { 
-                $self->complete_unsubscription(
+                return $self->complete_unsubscription(
                     {
                         -html_output => $args->{-html_output},
                         -cgi_obj     => $q,
@@ -182,21 +182,21 @@ sub token {
             }
         }
         else {
-            return user_error(
+            return ({}, user_error(
                 {
                     -error => 'token_problem',
                     -test  => $self->test,
-                }
+                })
             );
         }
     }
     else {
-        return user_error(
+        return({}, user_error(
             {
                 -error => 'token_problem',
                 -test  => $self->test,
             }
-        );
+        ));
     }
 
 }
@@ -285,8 +285,7 @@ sub subscribe {
         }
         else {
             # Test sub-subscribe-redirect-error_invalid_list
-            my $rd = $self->alt_redirect($r);
-            $self->test ? return $rd : print $fh safely_encode($rd) and return;
+            return $self->alt_redirect($r);
 
             # There's also:
             #return user_error(
@@ -368,7 +367,7 @@ sub subscribe {
                 return $self->fancy_data( { -data => $r, -type => 'json' } );
             }
             else {
-                return $self->fancy_data( { -data => $r } );
+                return$self->fancy_data( { -data => $r } );
             }
         }
 
@@ -495,9 +494,7 @@ sub subscribe {
         }
         elsif ( $args->{-html_output} == 1 ) {
             if ( $ls->param('use_alt_url_sub_confirm_failed') == 1 ) {
-                my $rd = $self->alt_redirect($r);
-                $self->test ? return $rd : print $fh safely_encode($rd)
-                  and return;
+                return $self->alt_redirect($r);
             }
             else {
                 # how does invalid email get here,
@@ -527,7 +524,7 @@ sub subscribe {
                         else { 
                             # ... 
                         }
-                        return user_error(
+                        return ({}, user_error(
                             {
                                 -list                   => $list,
                                 -email                  => $email,                  
@@ -536,7 +533,7 @@ sub subscribe {
                                 -fh                     => $args->{-fh},
                                 -test                   => $self->test,
                             }
-                        );
+                        ));
                     }
                 }
             }
@@ -633,9 +630,7 @@ sub subscribe {
         }
         else {
             if ( $ls->param('use_alt_url_sub_confirm_success') == 1 ) {
-                my $rd = $self->alt_redirect($r);
-                $self->test ? return $rd : print $fh safely_encode($rd)
-                  and return;
+                return $self->alt_redirect($r);
             }
             else {
 
@@ -646,9 +641,7 @@ sub subscribe {
                         -chrome => 1,
                     }
                 );
-
-                $self->test ? return $s : print $fh safely_encode($s)
-                  and return;
+                return ({}, $s)
             }
         }
     }
@@ -717,8 +710,7 @@ sub confirm {
 
             warn '>>>> >>>> list doesn\'t exist. Redirecting to default screen.'
               if $t;
-            my $r = $q->redirect( -uri => $DADA::Config::PROGRAM_URL . '?error_invalid_list=1' );
-            $self->test ? return $r : print $fh safely_encode($r) and return;
+            return ({-uri_redirect => $DADA::Config::PROGRAM_URL . '?error_invalid_list=1' }, undef);
         }
         else {
             # Again!
@@ -727,11 +719,7 @@ sub confirm {
                 if ( $ls->param('use_alt_url_sub_failed') == 1 ) {
                     warn '>>>> >>>> no email passed. Redirecting to list screen'
                       if $t;
-                    my $r =
-                      $q->redirect(
-                        -uri => $DADA::Config::PROGRAM_URL . '?flavor=list&list=' . $list . '&error_no_email=1' );
-                    $self->test ? return $r : print $fh safely_encode($r)
-                      and return;
+                    return ({-uri_redirect => $DADA::Config::PROGRAM_URL . '?flavor=list&list=' . $list . '&error_no_email=1' }, undef);
                 }
             }
         }
@@ -804,8 +792,7 @@ sub confirm {
                         },
                     },
                 );
-                $self->test ? return $r : print $fh safely_encode($r)
-                  and return;
+                return ({}, $r); 
             }
         }
         else {
@@ -870,7 +857,7 @@ sub confirm {
             if ( $errors->{no_list} == 1 ) {
                 warn '>>>> >>>> No list found.'
                   if $t;
-                return user_error(
+                return({},  user_error(
                     {
                         -list  => $list,
                         -error => "no_list",
@@ -878,7 +865,7 @@ sub confirm {
                         -fh    => $args->{-fh},
                         -test  => $self->test,
                     }
-                );
+                ));
             }
         }
     }
@@ -927,9 +914,7 @@ sub confirm {
         }
         elsif ( $args->{-html_output} == 1 ) {
             if ( $ls->param('use_alt_url_sub_failed') == 1 ) {
-                my $rd = $self->alt_redirect($r);
-                $self->test ? return $rd : print $fh safely_encode($rd)
-                  and return;
+                return $self->alt_redirect($r);
             }
             else {
                 my @list_of_errors = qw(
@@ -946,7 +931,7 @@ sub confirm {
 
                 for (@list_of_errors) {
                     if ( exists($errors->{$_}) ) {
-                        return user_error(
+                        return({},  user_error(
                             {
                                 -list  => $list,
                                 -error => $_,
@@ -954,7 +939,7 @@ sub confirm {
                                 -fh    => $args->{-fh},
                                 -test  => $self->test,
                             }
-                        );
+                        ));
                     }
                 }
             }
@@ -1144,9 +1129,7 @@ sub confirm {
             }
             elsif ( $args->{-html_output} == 1 ) {
                 if ( $ls->param('use_alt_url_sub_success') == 1 ) {
-                    my $r = $self->alt_redirect($r);
-                    $self->test ? return $r : print $fh safely_encode($r)
-                      and return;
+                    return $self->alt_redirect($r);
                 }
                 else {
 
@@ -1162,9 +1145,7 @@ sub confirm {
                             -sess_cookie => $sess_cookie,
                         }
                     );
-
-                    $self->test ? return $s : print $fh safely_encode($s)
-                      and return;
+                    return ({}, $s);
                 }
             }
         }
@@ -1284,9 +1265,7 @@ sub subscription_approval_step {
     }
     else {
         if ( $ls->param('use_alt_url_subscription_approval_step') == 1 ) {
-            my $rd = $self->alt_redirect($r);
-            $self->test ? return $rd : print $fh safely_encode($rd)
-              and return;
+            return $self->alt_redirect($r);
         }
         else {
 
@@ -1297,8 +1276,7 @@ sub subscription_approval_step {
                     -chrome => 1,
                 }
             );
-            $self->test ? return $s : print $fh safely_encode($s)
-              and return;
+            return ({}, $s);
         }
     }
 }
@@ -1334,8 +1312,7 @@ sub unsubscription_request {
     # If the list doesn't exist, don't go through the process,
     if ( $args->{-html_output} == 1 ) {
         if ( check_if_list_exists( -List => $list ) == 0 ) {
-            my $r = $q->redirect( -uri => $DADA::Config::PROGRAM_URL . '?error_invalid_list=1' );
-            $self->test ? return $r : print $fh safely_encode($r) and return;
+            return ({ -uri_redirect => $DADA::Config::PROGRAM_URL . '?error_invalid_list=1'}, undef );
         }
 
         # If the list is there,
@@ -1345,10 +1322,7 @@ sub unsubscription_request {
         if ( !$email ) {
             warn "no email."
               if $t;
-            my $r =
-              $q->redirect(
-                -uri => $DADA::Config::PROGRAM_URL . '?flavor=outdated_subscription_urls&list=' . $list . '&orig_flavor=u' );
-            $self->test ? return $r : print $fh safely_encode($r) and return;
+           return ({ -uri_redirect => $DADA::Config::PROGRAM_URL . '?flavor=outdated_subscription_urls&list=' . $list . '&orig_flavor=u'}, undef );
         }
 
     }
@@ -1421,7 +1395,7 @@ sub unsubscription_request {
                       if $_ eq 'invalid_email';
 
                     # warn "showing error, $_";
-                    return user_error(
+                    return ({},  user_error(
                         {
                             -list  => $list,
                             -error => $_,
@@ -1429,11 +1403,10 @@ sub unsubscription_request {
                             -fh    => $args->{-fh},
                             -test  => $self->test,
                         }
-                    );
+                    ));
                 }
             }
         }
-
     }
     else {    # Else, the unsubscribe request was OK,
 
@@ -1501,7 +1474,7 @@ sub unsubscription_request {
 
                 }
             );
-            $self->test ? return $r : print $fh safely_encode($r) and return;
+            return ({}, $r); 
         }
     }
 }
@@ -1542,24 +1515,24 @@ sub unsubscribe {
     require DADA::App::Subscriptions::ConfirmationTokens;
     my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
     if ( !$ct->exists($token) ) {
-        return user_error(
+        return ({}, user_error(
             {
                 -error => 'token_problem',
                 -test  => $self->test,
             }
-        );
+        ));
     }
 
     my $data = $ct->fetch($token);
 
     # not sure how you got here, but, whatever:
     if ( $data->{data}->{flavor} ne 'unsub_confirm' ) {
-        return user_error(
+        return ({}, user_error(
             {
                 -error => 'token_problem',
                 -test  => $self->test,
             }
-        );
+        ));
     }
 
     my $is_valid    = 1;
@@ -1585,12 +1558,10 @@ sub unsubscribe {
             my $ls = DADA::MailingList::Settings->new( { -list => $data->{data}->{list} } );
 
             if ( $ls->param('private_list') == 1 ) {
-                $self->pl_unsubscription_request($args);
-                return;
+                return $self->pl_unsubscription_request($args);
             }
             else {
-                $self->complete_unsubscription($args);
-                return;
+                return $self->complete_unsubscription($args);
             }
         }
     }
@@ -1619,7 +1590,7 @@ sub unsubscribe {
             : ()
         }
     );
-    $self->test ? return $r : print $fh safely_encode($r) and return;
+    return ({}, $r);
 }
 
 
@@ -1719,7 +1690,7 @@ sub complete_unsubscription {
 
     # Hmm, so we're not subscribed?
     if ( $status == 0 ) {
-        return user_error(
+        return ({}, user_error(
             {
                 -list  => $list,
                 -error => 'not_subscribed',
@@ -1727,7 +1698,7 @@ sub complete_unsubscription {
                 -fh    => $args->{-fh},
                 -test  => $self->test,
             }
-        );
+        ));
     }
     else {
 
@@ -1814,7 +1785,6 @@ sub complete_unsubscription {
         # We end things here, for private lists.
         if($ls->param('private_list') == 1) { 
             warn 'private list: we\'re done!'; 
-            return;
         }
         else {    
             # Public list?
@@ -1837,8 +1807,7 @@ sub complete_unsubscription {
 
             if ( $args->{-html_output} == 1 ) {
                 if ( $ls->param('use_alt_url_unsub_success') == 1 ) {
-                    my $rd = $self->alt_redirect($r);
-                    $self->test ? return $rd : print $fh safely_encode($rd) and return;
+                    return $self->alt_redirect($r);
                 }
                 else {
                     my $s = $ls->param('html_unsubscribed_message');
@@ -1852,7 +1821,7 @@ sub complete_unsubscription {
                             -subscriber_vars          => { 'subscriber.email' => $email },
                         }
                     );
-                    $self->test ? return $return : print $fh safely_encode($return) and return;
+                    return ({}, $return);
                 }
             }
             else {
@@ -1919,7 +1888,7 @@ sub pl_unsubscription_request {
 
     # Hmm, so we're not subscribed?
     if ( $status == 0 ) {
-        return user_error(
+        return ({}, user_error(
             {
                 -list  => $list,
                 -error => 'not_subscribed',
@@ -1927,8 +1896,7 @@ sub pl_unsubscription_request {
                 -fh    => $args->{-fh},
                 -test  => $self->test,
             }
-        );
-        return;
+        ));
     }
     else {    # $status == 1
 
@@ -1989,6 +1957,7 @@ sub pl_unsubscription_request {
             }
         );
 
+        # Uh-oh. I don't know if this is used for anything! 
         require DADA::Template::Widgets;
         my $return = DADA::Template::Widgets::wrap_screen(
             {
@@ -2018,8 +1987,7 @@ sub pl_unsubscription_request {
 
         if ( $args->{-html_output} == 1 ) {
             if ( $ls->param('use_alt_url_unsub_success') == 1 ) {
-                my $rd = $self->alt_redirect($r);
-                $self->test ? return $rd : print $fh safely_encode($rd) and return;
+                return $self->alt_redirect($r);
             }
             else {
                 require DADA::Template::Widgets;
@@ -2032,7 +2000,7 @@ sub pl_unsubscription_request {
                         -subscriber_vars          => { 'subscriber.email' => $email },
                     }
                 );
-                $self->test ? return $return : print $fh safely_encode($return) and return;
+                return ({}, $return);
             }
         }
         else {
@@ -2083,12 +2051,12 @@ sub complete_pl_unsubscription_request {
     require DADA::App::Subscriptions::ConfirmationTokens;
     my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
     if ( !$ct->exists($token) ) {
-        return user_error(
+        return ({}, user_error(
             {
                 -error => 'token_problem',
                 -test  => $self->test,
             }
-        );
+        ));
     }
 
     my $data = $ct->fetch($token);
@@ -2101,12 +2069,12 @@ sub complete_pl_unsubscription_request {
     if (   $data->{data}->{flavor} ne 'unsub_request_approve'
         && $data->{data}->{flavor} ne 'unsub_request_deny' )
     {
-        return user_error(
+        return ({}, user_error(
             {
                 -error => 'token_problem',
                 -test  => $self->test,
             }
-        );
+        ));
     }
 
     # And then, is never used?
@@ -2128,12 +2096,12 @@ sub complete_pl_unsubscription_request {
       )
     {
         $ct->remove_by_token($token);
-        return user_error(
+        return ({}, user_error(
             {
                 -error => 'token_problem',
                 -test  => $self->test,
             }
-        );
+        ));
     }
     else {
         # this is done by remove_subscriber
@@ -2192,7 +2160,7 @@ sub complete_pl_unsubscription_request {
 
                 }
             );
-            $self->test ? return $r : print $fh safely_encode($r) and return;
+            return ({}, $r);
 
         }
         elsif ( $data->{data}->{flavor} eq 'unsub_request_deny' ) {
@@ -2234,7 +2202,7 @@ sub complete_pl_unsubscription_request {
 
                 }
             );
-            $self->test ? return $r : print $fh safely_encode($r) and return;
+            return ({}, $r);
         }
         else {
             die "unknown process!";
@@ -2274,12 +2242,12 @@ sub subscription_requests {
     require DADA::App::Subscriptions::ConfirmationTokens;
     my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
     if ( !$ct->exists($token) ) {
-        return user_error(
+        return ({}, user_error(
             {
                 -error => 'token_problem',
                 -test  => $self->test,
             }
-        );
+        ));
     }
 
     my $data = $ct->fetch($token);
@@ -2288,12 +2256,12 @@ sub subscription_requests {
     if (   $data->{data}->{flavor} ne 'sub_request_approve'
         && $data->{data}->{flavor} ne 'sub_request_deny' )
     {
-        return user_error(
+        return ({}, user_error(
             {
                 -error => 'token_problem',
                 -test  => $self->test,
             }
-        );
+        ));
     }
 
     my $email  = $data->{email};
@@ -2319,12 +2287,12 @@ sub subscription_requests {
       )
     {
         $ct->remove_by_token($token);
-        return user_error(
+        return ({}, user_error(
             {
                 -error => 'token_problem',
                 -test  => $self->test,
             }
-        );
+        ));
     }
     else {
         $ct->remove_by_token($token);
@@ -2405,7 +2373,7 @@ sub subscription_requests {
 
                 }
             );
-            $self->test ? return $r : print $fh safely_encode($r) and return;
+            return ({}, $r);
 
         }
         elsif ( $flavor eq 'sub_request_deny' ) {
@@ -2453,7 +2421,7 @@ sub subscription_requests {
 
                 }
             );
-            $self->test ? return $r : print $fh safely_encode($r) and return;
+            return ({}, $r);
         }
         else {
             die "unknown process!";
@@ -2481,12 +2449,7 @@ sub error_token_undefined {
           . xss_filter( strip( $q->param('list') ) )
           . '&email='
           . xss_filter( strip( $q->param('email') ) ) );
-    if ( $self->test ) {
-        return $r;
-    }
-    else {
-        print $fh safely_encode($r);
-    }
+        return ({-uri_redirect => $r}, undef);
 }
 
 sub fancy_data {
@@ -2617,10 +2580,10 @@ sub fancy_data {
         require JSON;
         my $json      = JSON->new->allow_nonref;
         my $data_back = $json->pretty->encode($return);
-        return $data_back;
+        return ({}, $data_back);
     }
     else {
-        return $return;
+        return ({}, $return);
     }
 }
 
@@ -2670,7 +2633,7 @@ sub _subscription_confirmation_success_msg {
         );
     }
 
-    return $r;
+    return ({}, $r);
 
 }
 
@@ -2734,7 +2697,7 @@ sub _subscription_successful_message {
         );
     }
 
-    return $r;
+    return ({}, $r);
 }
 
 sub _subscription_requires_approval_message {
@@ -2790,7 +2753,7 @@ sub _subscription_requires_approval_message {
         );
     }
 
-    return $r;
+    return ({}, $r);
 }
 
 sub _user_error_msg {
@@ -2807,7 +2770,7 @@ sub _user_error_msg {
             -chrome                 => $args->{-chrome},
         }
     );
-    return $s;
+    $s;
 }
 
 sub alt_redirect {
@@ -2840,7 +2803,7 @@ sub alt_redirect {
         }
     }
     else {
-        return $q->redirect($url);
+        return ({-uri_redirect => $url}, undef);
     }
 
 }

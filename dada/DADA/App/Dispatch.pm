@@ -93,11 +93,11 @@ sub prepare_cgi_obj
         # out, so actual query strings will work as before.
         $ENV{QUERY_STRING} =~ s/^\?//;
         # DEV: This really really needs to be check to make sure it works
-        CGI::upload_hook( \&hook );
+        #CGI::upload_hook( \&hook );
         $q = CGI->new( $ENV{QUERY_STRING} );
     }
     else {
-        $q = CGI->new( \&hook );
+        #$q = CGI->new( \&hook );
     }
 
     # PROGRAM_URL has a, "?"

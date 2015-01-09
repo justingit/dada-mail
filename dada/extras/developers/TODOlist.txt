@@ -32,7 +32,7 @@ CGI::App notes:
 
 Note that cgiapp_init() will be called only once under lifecycle of FastCGI. setup() will also only be called once. (you should not be doing magical things in 'setup'.) So if you want to do something for every REQUESTS, you should write the logic in cgiapp_prerun().
 
-
+upload hook not owkring. 
 
 
 

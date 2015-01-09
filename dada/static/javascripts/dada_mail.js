@@ -1231,15 +1231,16 @@ function admin_menu_bounce_handler_notification() {
 }
 
 
-function admin_menu_notification(flavor, target_class) {
+function admin_menu_notification(sflavor, target_class) {
 	var r = 60 * 5 * 1000; // Every 5 minutes. 
 	var refresh_loop = function(no_loop) {
+			
 			var request = $.ajax({
 				url: $('#navcontainer').attr("data-s_program_url"),
 				type: "POST",
 				cache: false,
 				data: {
-					flavor: flavor
+					flavor: sflavor
 				},
 				dataType: "html"
 			});
@@ -1247,6 +1248,7 @@ function admin_menu_notification(flavor, target_class) {
 				if ($('.' + target_class + '_notification').length) {
 					$('.' + target_class + '_notification').remove();
 				}
+				
 				//console.log('update! ' + target_class); 
 				$('#' + target_class).append('<span class="' + target_class + '_notification"> ' + content + '</span>');
 			});

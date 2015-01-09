@@ -1,7 +1,6 @@
 #!/usr/bin/perl
 package DADA::App;
 use base 'CGI::Application';
-#use base qw(CGI::Application::FastCGI);
 
 use strict;
 use 5.008_001;
@@ -8127,12 +8126,23 @@ sub subscribe {
 
     require DADA::App::Subscriptions;
     my $das = DADA::App::Subscriptions->new;
-    $das->subscribe(
+    my ($headers, $body) = $das->subscribe(
         {
             -cgi_obj     => $q,
             -html_output => $args{-html_output},
         }
     );
+    
+    if(exists($headers->{-redirect_uri})){ 
+        $self->header_type('redirect');
+        $self->header_props( -url => $headers->{-redirect_uri} );
+    }
+    else { 
+        if(keys %$headers){ 
+            $self->header_props(%$headers);
+        }
+        return $body; 
+    }
 
 }
 
@@ -8224,7 +8234,7 @@ sub restful_subscribe {
         };
     }
 
-    my $json = $das->subscribe(
+    my ($throwaway_headers, $body) =  $das->subscribe(
         {
             -cgi_obj     => $new_q,
             -return_json => 1,
@@ -8236,11 +8246,11 @@ sub restful_subscribe {
     
     if ($using_jsonp) {
         $self->header_props(%$headers);
-       return $callback . '(' . $json . ');';
+       return $callback . '(' . $body . ');';
     }
     else {
         $self->header_props(%$headers);
-        return $json;
+        return $body;
     }
 }
 
@@ -8252,12 +8262,23 @@ sub unsubscribe {
     my %args = ( -html_output => 1, @_ );
     require DADA::App::Subscriptions;
     my $das = DADA::App::Subscriptions->new;
-    $das->unsubscribe(
+    my ($headers, $body) = $das->unsubscribe(
         {
             -cgi_obj     => $q,
             -html_output => $args{-html_output},
         }
     );
+    if(exists($headers->{-redirect_uri})){ 
+        $self->header_type('redirect');
+        $self->header_props( -url => $headers->{-redirect_uri} );
+    }
+    else { 
+        if(keys %$headers){ 
+            $self->header_props(%$headers);
+        }
+        return $body; 
+    }
+    
 
 }
 
@@ -8269,12 +8290,22 @@ sub unsubscription_request {
     my %args = ( -html_output => 1, @_ );
     require DADA::App::Subscriptions;
     my $das = DADA::App::Subscriptions->new;
-    $das->unsubscription_request(
+    my ($headers, $body) = $das->unsubscription_request(
         {
             -cgi_obj     => $q,
             -html_output => $args{-html_output},
         }
     );
+    if(exists($headers->{-redirect_uri})){ 
+        $self->header_type('redirect');
+        $self->header_props( -url => $headers->{-redirect_uri} );
+    }
+    else { 
+        if(keys %$headers){ 
+            $self->header_props(%$headers);
+        }
+        return $body; 
+    }
 
 }
 
@@ -8335,12 +8366,22 @@ sub token {
     my %args = ( -html_output => 1, @_ );
     require DADA::App::Subscriptions;
     my $das = DADA::App::Subscriptions->new;
-    $das->token(
+    my ($headers, $body) = $das->token(
         {
             -cgi_obj     => $q,
             -html_output => $args{-html_output},
         }
     );
+    if(exists($headers->{-redirect_uri})){ 
+        $self->header_type('redirect');
+        $self->header_props( -url => $headers->{-redirect_uri} );
+    }
+    else { 
+        if(keys %$headers){ 
+            $self->header_props(%$headers);
+        }
+        return $body; 
+    }
 }
 
 
