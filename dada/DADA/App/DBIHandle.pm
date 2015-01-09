@@ -8,7 +8,7 @@ use lib qw(
 
 
 use DADA::Config;  
-my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_DBIHandle}; 
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_DBIHandle}; 
 use Carp qw(carp croak); 
 
 # Singleton.
