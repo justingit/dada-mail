@@ -12,11 +12,16 @@ Key:
 
 [ ] Things for CGI::App migration: 
 
-Put Path Info in its own sub
+[x] Put Path Info in its own sub
+
+
 Perhaps figure out forking stuff, first? 
+
+
 Look at any subs that need to be cleaned out
 
-Maybe start having all subs return headers/body
+[-]Maybe start having all subs return headers/body
+
 figure out plugins (hard?) 
 
 Stop using CGI->param for lazily using its paramater setting/getting stuff. 
