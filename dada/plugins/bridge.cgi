@@ -325,7 +325,7 @@ sub cgi_manual_start {
 
 sub cgi_test_pop3_ajax {
 	
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'bridge',
     );
@@ -546,10 +546,9 @@ sub admin_cgi_manual_start_ajax {
 
 sub cgi_mod {
 
-    my ( $admin_list, $root_login, $checksout ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj         => $q,
         -Function        => 'bridge',
-        -manual_override => 1,
     );
 
     # $list is global, for some reason...

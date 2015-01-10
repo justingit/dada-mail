@@ -577,57 +577,35 @@ sub check_session_list_security {
         -Function       => $args{-Function},
         -IP_Address     => $ENV{REMOTE_ADDR},
     );
-
     if ($problems) {
-
-        if ( $args{-manual_override} == 1 ) {
-            return ( $args{-Admin_List}, $root_logged_in, 0 );
-        }
-        else {
-
-           # DEV: This is like, the most annoying thing in the whole wide world:
-           # If it's CGI::Session, let's ditch the session cookie...
-           # I forget why this was commented out - didn't work?!
-           # I'll add evals around it for now...
-
-            if (   $self->{can_use_cgi_session} == 1
-                && $self->{can_use_data_dumper} == 1
-                && $flags->{no_admin_permissions} != 1 )
-            {
-                eval {
-                    $session->delete();
-                    $session->flush();
-                };
-                if ($@) {
-                    warn "Problems deleting and flushing session cookie: $@";
-                }
-                else {
-
-                    # ...
-                }
-
+        if (   $self->{can_use_cgi_session} == 1
+            && $self->{can_use_data_dumper} == 1
+            && $flags->{no_admin_permissions} != 1 )
+        {
+            eval {
+                $session->delete();
+                $session->flush();
+            };
+            if ($@) {
+                warn "Problems deleting and flushing session cookie: $@";
             }
-            $self->enforce_admin_cgi_security(
-                -Admin_List     => $args{-Admin_List},
-                -Admin_Password => $args{-Admin_Password},
-                -Flags          => $flags,
-            );
-
         }
+        my $body = $self->enforce_admin_cgi_security(
+            -Admin_List     => $args{-Admin_List},
+            -Admin_Password => $args{-Admin_Password},
+            -Flags          => $flags,
+        );
+        return ( undef, 0, 0, $body );
     }
     else {
-
         if (   $self->{can_use_cgi_session} == 1
             && $self->{can_use_data_dumper} == 1 )
         {
             $session->flush();
             undef $session;
-
         }
-
-        return ( $args{-Admin_List}, $root_logged_in, 1 );
+        return ( $args{-Admin_List}, $root_logged_in, 1, undef );
     }
-
 }
 
 sub check_admin_cgi_security {
@@ -805,33 +783,28 @@ sub enforce_admin_cgi_security {
     my $flags = $args{-Flags};
     require DADA::App::Error;
 
-    my @error_precedence =
-      qw(need_to_login bad_ip no_list no_list_password invalid_password no_admin_permissions);
+    my @error_precedence = qw(need_to_login bad_ip no_list no_list_password invalid_password no_admin_permissions);
     for (@error_precedence) {
         if ( $flags->{$_} == 1 ) {
-
             if ( $_ eq 'no_admin_permissions' ) {
-                my $error_msg = DADA::App::Error::cgi_user_error({
-                    -list             => $args{-Admin_List},
-                    -error            => $_,
-                    -wrap_with        => 'admin',
-                });
-
-  #go, errors in the... whatever shouldn't make the script process anything more
-                print $error_msg;
+                my $error_msg = DADA::App::Error::cgi_user_error(
+                    {
+                        -list      => $args{-Admin_List},
+                        -error     => $_,
+                        -wrap_with => 'admin',
+                    }
+                );
+                return $error_msg;
             }
             else {
-
-                my $error_msg = DADA::App::Error::cgi_user_error({
-                    -list  => $args{-Admin_List},
-                    -error => $_
-                });
-
-  #go, errors in the... whatever shouldn't make the script process anything more
-                e_print($error_msg);
-
+                my $error_msg = DADA::App::Error::cgi_user_error(
+                    {
+                        -list  => $args{-Admin_List},
+                        -error => $_
+                    }
+                );
+                return $error_msg;
             }
-            exit;
         }
     }
 }

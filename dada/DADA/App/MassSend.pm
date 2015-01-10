@@ -1222,7 +1222,7 @@ sub list_invite {
     my $process = xss_filter( strip( $q->param('process') ) );
     my $flavor  = xss_filter( strip( $q->param('flavor') ) );
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'list_invite'
     );

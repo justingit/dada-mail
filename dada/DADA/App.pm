@@ -415,10 +415,9 @@ sub admin {
         return user_error( { -error => 'install_dir_still_around' } );
     }
 
-    my ( $admin_list, $root_login, $checksout ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj         => $q,
         -Function        => 'admin',
-        -manual_override => 1,
     );
     if ($checksout) {
         $self->header_type('redirect');
@@ -453,13 +452,11 @@ sub sign_in {
 
     if ( $list_exists >= 1 ) {
 
-        my ( $admin_list, $root_login, $checksout ) = check_list_security(
+        my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
             -cgi_obj         => $q,
             -Function        => 'sign_in',
-            -manual_override => 1,
         );
         if ( $checksout && $admin_list eq $list ) {
-
             $self->header_type('redirect');
             $self->header_props( -url => $DADA::Config::DEFAULT_ADMIN_SCREEN );
         }
@@ -513,12 +510,10 @@ sub admin_menu_drafts_notification {
 
     try {
 
-        my ( $admin_list, $root_login, $checksout ) = check_list_security(
+        my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
             -cgi_obj         => $q,
-            -manual_override => 1
         );
         if ($checksout) {
-
             my $list = $admin_list;
             require DADA::MailingList::MessageDrafts;
 
@@ -555,7 +550,7 @@ sub admin_menu_mailing_monitor_notification {
 
     try {
 
-        my ( $admin_list, $root_login, $checksout ) = check_list_security(
+        my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
             -cgi_obj         => $q,
             -manual_override => 1
         );
@@ -593,7 +588,7 @@ sub admin_menu_subscriber_count_notification {
 
     try {
 
-        my ( $admin_list, $root_login, $checksout ) = check_list_security(
+        my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
             -cgi_obj         => $q,
             -manual_override => 1
         );
@@ -619,7 +614,7 @@ sub admin_menu_archive_count_notification {
 
     try {
 
-        my ( $admin_list, $root_login, $checksout ) = check_list_security(
+        my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
             -cgi_obj         => $q,
             -manual_override => 1
         );
@@ -643,7 +638,7 @@ sub admin_menu_sending_preferences_notification {
     my $q    = $self->query();
 
     try {
-        my ( $admin_list, $root_login, $checksout ) = check_list_security(
+        my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
             -cgi_obj         => $q,
             -manual_override => 1
         );
@@ -675,7 +670,7 @@ sub admin_menu_bounce_handler_notification {
     my $q    = $self->query();
 
     try {
-        my ( $admin_list, $root_login, $checksout ) = check_list_security(
+        my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
             -cgi_obj         => $q,
             -manual_override => 1
         );
@@ -699,10 +694,12 @@ sub send_email {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'send_email'
     );
+    if(!$checksout){ return $error_msg; }
+    
     my $list = $admin_list;
     require DADA::App::MassSend;
     my $ms = DADA::App::MassSend->new( { -list => $list } );
@@ -729,7 +726,8 @@ sub ckeditor_template_tag_list {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security( -cgi_obj => $q, );
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security( -cgi_obj => $q, );
+    if(!$checksout){ return $error_msg; }
 
     my $list = $admin_list;
 
@@ -840,9 +838,10 @@ sub draft_saved_notification {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security( -cgi_obj => $q, );
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security( -cgi_obj => $q, );
+    if(!$checksout){ return $error_msg; }
+    
     my $role = $q->param('role');
-
     require DADA::Template::Widgets;
 
     my $scrn = DADA::Template::Widgets::screen(
@@ -862,10 +861,12 @@ sub drafts {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'drafts'
     );
+    if(!$checksout){ return $error_msg; }
+    
     require DADA::Template::Widgets;
     my $list = $admin_list;
 
@@ -931,7 +932,9 @@ sub delete_draft {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security( -cgi_obj => $q, );
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security( -cgi_obj => $q, );
+    if(!$checksout){ return $error_msg; }
+    
     my $list = $admin_list;
 
     my $id = $q->param('id');
@@ -951,7 +954,9 @@ sub create_from_stationary {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security( -cgi_obj => $q, );
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security( -cgi_obj => $q, );
+    if(!$checksout){ return $error_msg; }
+    
     my $list   = $admin_list;
     my $id     = $q->param('id');
     my $screen = $q->param('screen');
@@ -978,7 +983,9 @@ sub message_body_help {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security( -cgi_obj => $q, );
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security( -cgi_obj => $q, );
+    if(!$checksout){ return $error_msg; }
+    
     require DADA::Template::Widgets;
     my $body = DADA::Template::Widgets::screen( { -screen => 'send_email_message_body_help_widget.tmpl', } );
     return $body;
@@ -989,7 +996,11 @@ sub url_message_body_help {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security( -cgi_obj => $q, );
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security( 
+        -cgi_obj => $q
+    );
+    if(!$checksout){ return $error_msg; }
+    
     require DADA::Template::Widgets;
     print $q->header();
     return ( {}, DADA::Template::Widgets::screen( { -screen => 'send_url_email_message_body_help_widget.tmpl', } ) );
@@ -1002,7 +1013,9 @@ sub preview_message_receivers {
 
     my $r;
 
-    my ( $admin_list, $root_login ) = check_list_security( -cgi_obj => $q, );
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security( -cgi_obj => $q, );
+    if(!$checksout){ return $error_msg; }
+    
 
     # This comes in a s a string, sep. by commas. Sigh.
     my $al = $q->param('alternative_lists') || '';
@@ -1115,12 +1128,13 @@ sub sending_monitor_index {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'sending_monitor'
     );
+    if(!$checksout){ return $error_msg; }
+    
     my $list = $admin_list;
-
     my $mailout_status = [];
     my @lists;
 
@@ -1212,11 +1226,12 @@ sub sending_monitor {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'sending_monitor'
     );
-
+    if(!$checksout){ return $error_msg; }
+    
     require DADA::MailingList::Settings;
     require DADA::Mail::MailOut;
 
@@ -1619,10 +1634,12 @@ sub print_mass_mailing_log {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'sending_monitor'
     );
+    if(!$checksout){ return $error_msg; }
+    
 
     my $id   = $q->param('id');
     my $type = $q->param('type');
@@ -1640,10 +1657,12 @@ sub send_url_email {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'send_url_email'
     );
+    if(!$checksout){ return $error_msg; }
+    
     my $list = $admin_list;
 
     require DADA::App::MassSend;
@@ -1666,10 +1685,14 @@ sub list_invite {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'mass_mailing_options'
     );
+    if(!$checksout){ return $error_msg; }
+    
+    
+    
     my $list = $admin_list;
 
     require DADA::App::MassSend;
@@ -1682,10 +1705,13 @@ sub mass_mailing_options {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'mass_mailing_options'
     );
+    if(!$checksout){ return $error_msg; }
+    
+    
     my $list    = $admin_list;
     my $process = $q->param('process') || undef;
     my $done    = $q->param('done') || undef;
@@ -1745,10 +1771,11 @@ sub change_info {
     my $q       = $self->query();
     my $process = $q->param('process') || undef;
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'change_info'
     );
+    if(!$checksout){ return $error_msg; }
 
     my $list = $admin_list;
 
@@ -1883,10 +1910,12 @@ sub change_password {
 
     my $process = $q->param('process') || undef;
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'change_password',
     );
+    if(!$checksout){ return $error_msg; }
+    
 
     my $list = $admin_list;
 
@@ -1975,10 +2004,12 @@ sub delete_list {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'delete_list'
     );
+    if(!$checksout){ return $error_msg; }
+
 
     my $list = $admin_list;
 
@@ -2038,10 +2069,11 @@ sub list_options {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'list_options'
     );
+    if(!$checksout){ return $error_msg; }
 
     my $process = $q->param('process') || undef;
     my $done    = $q->param('done')    || undef;
@@ -2241,10 +2273,11 @@ sub web_services {
 
     my $process = $q->param('process') || undef;
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'web_services'
     );
+    if(!$checksout){ return $error_msg; }
 
     my $list = $admin_list;
 
@@ -2298,10 +2331,11 @@ sub sending_preferences {
     my $process = $q->param('process') || undef;
     my $done    = $q->param('done') || undef;
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'sending_preferences'
     );
+    if(!$checksout){ return $error_msg; }
 
     my $list = $admin_list;
 
@@ -2492,10 +2526,12 @@ sub mass_mailing_preferences {
     my $process = $q->param('process');
     my $done    = $q->param('done');
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'mass_mailing_preferences'
     );
+    if(!$checksout){ return $error_msg; }
+    
 
     my $list = $admin_list;
 
@@ -2611,10 +2647,11 @@ sub amazon_ses_verify_email {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'sending_preferences'
     );
+    if(!$checksout){ return $error_msg; }
 
     my $valid_email             = 1;
     my $status                  = undef;
@@ -2651,10 +2688,12 @@ sub amazon_ses_get_stats {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'mass_mailing_preferences'
     );
+    if(!$checksout){ return $error_msg; }
+    
     my $list = $admin_list;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
@@ -2736,10 +2775,12 @@ sub previewBatchSendingSpeed {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'mass_mailing_preferences'
     );
+    if(!$checksout){ return $error_msg; }
+    
 
     my $list = $admin_list;
 
@@ -2812,10 +2853,13 @@ sub adv_sending_preferences {
     my $process = $q->param('process');
     my $done    = $q->param('done');
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'adv_sending_preferences'
     );
+    if(!$checksout){ return $error_msg; }
+    
+    
     my $list = $admin_list;
 
     require DADA::Security::Password;
@@ -2925,10 +2969,11 @@ sub sending_tuning_options {
     my $q       = $self->query();
     my $process = $q->param('process');
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'sending_tuning_options'
     );
+    if(!$checksout){ return $error_msg; }
 
     my @allowed_tunings = qw(
       domain
@@ -3102,10 +3147,11 @@ sub sending_preferences_test {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'sending_preferences'
     );
+    if(!$checksout){ return $error_msg; }
 
     my $list = $admin_list;
     $q->param( 'no_redirect', 1 );
@@ -3167,10 +3213,12 @@ sub view_list {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'view_list'
     );
+    if(!$checksout){ return $error_msg; }
+    
     my $list = $admin_list;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
@@ -3462,12 +3510,14 @@ sub mass_update_profiles {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'view_list'
     );
+    if(!$checksout){ return $error_msg; }
+    
+    
     my $list = $admin_list;
-
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
     my $update_fields = {};
@@ -3524,12 +3574,14 @@ sub domain_breakdown_json {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'view_list'
     );
+    if(!$checksout){ return $error_msg; }
+    
+    
     my $list = $admin_list;
-
     my $type = $q->param('type') || 'list';
 
     require DADA::MailingList::Subscribers;
@@ -3559,10 +3611,13 @@ sub search_list_auto_complete {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'view_list'
     );
+    if(!$checksout){ return $error_msg; }
+    
+    
     my $list = $admin_list;
 
     my $query = xss_filter( $q->param('query') ) || undef;
@@ -3596,12 +3651,14 @@ sub list_activity {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'list_activity'
     );
+    if(!$checksout){ return $error_msg; }
+    
+    
     my $list = $admin_list;
-
     require DADA::App::LogSearch;
     my $dals = DADA::App::LogSearch->new;
     my $r = $dals->list_activity( { -list => $list, } );
@@ -3633,10 +3690,12 @@ sub sub_unsub_trends_json {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'list_activity'
     );
+    if(!$checksout){ return $error_msg; }
+    
     my $list = $admin_list;
 
     my $days = xss_filter( strip( $q->param('days') ) );
@@ -3666,12 +3725,13 @@ sub view_bounce_history {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'view_list'
     );
+    if(!$checksout){ return $error_msg; }
+    
     my $list = $admin_list;
-
     my $return_to      = $q->param('return_to')      || 'view_list';
     my $return_address = $q->param('return_address') || undef;
 
@@ -3707,10 +3767,12 @@ sub subscription_requests {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'view_list'
     );
+    if(!$checksout){ return $error_msg; }
+    
     my $list = $admin_list;
 
     if ( defined( $q->param('list') ) ) {
@@ -3872,10 +3934,13 @@ sub remove_all_subscribers {
     # maybe have a parameter saying what to do on an error.
     # or just return undef.
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'view_list',
     );
+    if(!$checksout){ return $error_msg; }
+    
+    
     my $list           = $admin_list;
     my $black_list_add = 0;
 
@@ -3934,10 +3999,13 @@ sub filter_using_black_list {
     my $q       = $self->query();
     my $process = $q->param('process');
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'filter_using_black_list'
     );
+    if(!$checksout){ return $error_msg; }
+    
+    
     my $list = $admin_list;
 
     if ( !$process ) {
@@ -3973,10 +4041,12 @@ sub membership {
     }
     my $type = $q->param('type') || 'list';
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'membership'
     );
+    if(!$checksout){ return $error_msg; }
+    
 
     my $list = $admin_list;
 
@@ -4262,10 +4332,13 @@ sub validate_update_email {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'membership'
     );
+    if(!$checksout){ return $error_msg; }
+    
+    
     my $list = $admin_list;
 
     require DADA::MailingList::Subscribers;
@@ -4444,10 +4517,13 @@ sub also_member_of {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'membership'
     );
+    if(!$checksout){ return $error_msg; }
+    
+    
     my $list  = $admin_list;
     my $email = xss_filter( $q->param('email') );
     my $type  = xss_filter( $q->param('type') ) || 'list';
@@ -4482,10 +4558,11 @@ sub validate_remove_email {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'membership'
     );
+    if(!$checksout){ return $error_msg; }
 
     my $list               = $admin_list;
     my $type               = xss_filter( $q->param('type') );
@@ -4614,12 +4691,14 @@ sub mailing_list_history {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'membership'
     );
+    if(!$checksout){ return $error_msg; }
+    
+    
     my $list = $admin_list;
-
     my $email              = xss_filter( $q->param('email') );
     my $membership_history = xss_filter( $q->param('membership_history') )
       || 'this_list';
@@ -4715,12 +4794,13 @@ sub membership_activity {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'membership'
     );
+    if(!$checksout){ return $error_msg; }
+    
     my $list = $admin_list;
-
     my $email = xss_filter( $q->param('email') );
     my $mode = xss_filter( $q->param('mode') ) || 'html';
 
@@ -4848,10 +4928,12 @@ sub admin_change_profile_password {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'membership'
     );
+    if(!$checksout){ return $error_msg; }
+    
     my $list             = $admin_list;
     my $profile_password = xss_filter( $q->param('profile_password') );
     my $email            = xss_filter( $q->param('email') );
@@ -4901,10 +4983,11 @@ sub admin_profile_delivery_preferences {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'membership'
     );
+    if(!$checksout){ return $error_msg; }
 
     my $email          = xss_filter( $q->param('email') );
     my $list           = xss_filter( $q->param('list') );
@@ -4937,13 +5020,14 @@ sub add {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'add'
     );
-
+    if(!$checksout){ return $error_msg; }
+    
+    
     my $list = $admin_list;
-
     my $chrome = $q->param('chrome');
     if ( $chrome ne '0' ) { $chrome = 1; }
 
@@ -5259,10 +5343,12 @@ sub add_email {
     my $process = $q->param('process') || undef;
     my $type    = $q->param('type') || undef;
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'add_email'
     );
+    if(!$checksout){ return $error_msg; }
+    
     my $list = $admin_list;
 
     my $return_to      = $q->param('return_to')      || '';
@@ -5626,10 +5712,13 @@ sub delete_email {
     my $q       = $self->query();
     my $process = $q->param('process');
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'delete_email',
     );
+    if(!$checksout){ return $error_msg; }
+    
+    
     my $list = $admin_list;
 
     my $type = $q->param('type') || 'list';
@@ -5768,10 +5857,13 @@ sub subscription_options {
     my $process = $q->param('process') || undef;
     my $done    = $q->param('done') || undef;
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'subscription_options'
     );
+    if(!$checksout){ return $error_msg; }
+    
+    
     my $list = $admin_list;
 
     require DADA::MailingList::Settings;
@@ -5938,10 +6030,11 @@ sub view_archive {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'view_archive'
     );
+    if(!$checksout){ return $error_msg; }
 
     my $list = $admin_list;
 
@@ -6114,11 +6207,12 @@ sub display_message_source {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'display_message_source'
     );
-
+    if(!$checksout){ return $error_msg; }
+    
     my $list = $admin_list;
 
     require DADA::MailingList::Settings;
@@ -6161,10 +6255,11 @@ sub delete_archive {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'delete_archive'
     );
+    if(!$checksout){ return $error_msg; }
 
     my $list    = $admin_list;
     my @address = $q->param("address");
@@ -6187,11 +6282,13 @@ sub purge_all_archives {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'purge_all_archives'
     );
-
+    if(!$checksout){ return $error_msg; }
+    
+    
     my $list = $admin_list;
 
     require DADA::MailingList::Settings;
@@ -6214,11 +6311,13 @@ sub archive_options {
     my $process = $q->param('process') || undef;
     my $done    = $q->param('done') || undef;
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'archive_options'
     );
-
+    if(!$checksout){ return $error_msg; }
+    
+    
     my $list = $admin_list;
 
     require DADA::MailingList::Settings;
@@ -6286,11 +6385,13 @@ sub adv_archive_options {
     my $process = $q->param('process') || undef;
     my $done    = $q->param('done') || undef;
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'adv_archive_options'
     );
-
+    if(!$checksout){ return $error_msg; }
+    
+    
     my $list = $admin_list;
 
     require DADA::MailingList::Settings;
@@ -6474,14 +6575,14 @@ sub edit_archived_msg {
 
     my $skel = [];
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'edit_archived_msg'
     );
+    if(!$checksout){ return $error_msg; }
+    
     my $list = $admin_list;
-
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-
     my $mh = DADA::Mail::Send->new(
         {
             -list   => $list,
@@ -7026,10 +7127,13 @@ sub html_code {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'html_code'
     );
+    if(!$checksout){ return $error_msg; }
+    
+    
     my $list = $admin_list;
 
     require DADA::Template::Widgets;
@@ -7100,12 +7204,14 @@ sub preview_jquery_plugin_subscription_form {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'html_code'
     );
+    if(!$checksout){ return $error_msg; }
+    
+    
     my $list = $admin_list;
-
     require DADA::Template::Widgets;
 
     my $jquery_subscription_form_body = DADA::Template::Widgets::screen(
@@ -7158,10 +7264,13 @@ sub edit_template {
     my $process = $q->param('process') || undef;
     my $done    = $q->param('don') || undef;
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'edit_template'
     );
+    if(!$checksout){ return $error_msg; }
+    
+    
     my $list = $admin_list;
 
     require DADA::MailingList::Settings;
@@ -7333,15 +7442,15 @@ sub back_link {
     my $q       = $self->query();
     my $process = $q->param('process') || undef;
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'back_link'
     );
+    if(!$checksout){ return $error_msg; }
 
     my $list = $admin_list;
 
     require DADA::MailingList::Settings;
-
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
     if ( !$process ) {
@@ -7393,10 +7502,13 @@ sub edit_type {
     my $process = $q->param('process') || undef;
     my $done    = $q->param('done') || undef;
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'edit_type'
     );
+    if(!$checksout){ return $error_msg; }
+    
+    
     my $list = $admin_list;
 
     require DADA::Template::Widgets;
@@ -7559,10 +7671,13 @@ sub edit_html_type {
 
     my $done = $q->param('done') || undef;
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'edit_html_type'
     );
+    if(!$checksout){ return $error_msg; }
+    
+    
     my $list = $admin_list;
 
     require DADA::MailingList::Settings;
@@ -7637,10 +7752,12 @@ sub manage_script {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'manage_script'
     );
+    if(!$checksout){ return $error_msg; }
+
 
     my $list               = $admin_list;
     my $more_info          = $q->param('more_info') || 0;
@@ -7696,12 +7813,14 @@ sub feature_set {
     my $process = $q->param('process') || undef;
     my $done    = $q->param('done') || undef;
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'feature_set'
     );
+    if(!$checksout){ return $error_msg; }
+    
+    
     my $list = $admin_list;
-
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
@@ -7764,10 +7883,13 @@ sub list_cp_options {
     my $q       = $self->query();
     my $process = $q->param('process') || undef;
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'list_cp_options'
     );
+    if(!$checksout){ return $error_msg; }
+    
+    
     my $list = $admin_list;
 
     require DADA::MailingList::Settings;
@@ -7832,10 +7954,12 @@ sub profile_fields {
     my $q       = $self->query();
     my $process = $q->param('process') || undef;
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'profile_fields'
     );
+    if(!$checksout){ return $error_msg; }
+
 
     my $list = $admin_list;
 
@@ -8729,10 +8853,11 @@ sub text_list {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'text_list'
     );
+    if(!$checksout){ return $error_msg; }
 
     my $list = $admin_list;
     my $ls   = DADA::MailingList::Settings->new( { -list => $list } );
@@ -9532,11 +9657,12 @@ sub archive_bare {
     my $list = $q->param('list');
 
     if ( $q->param('admin') ) {
-        my ( $admin_list, $root_login ) = check_list_security(
+        my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
             -cgi_obj  => $q,
             -Function => 'view_archive'
         );
-        my $list = $admin_list;
+        if(!$checksout){ return $error_msg; }
+        $list = $admin_list;
     }
 
     my $id = $q->param('id') || undef;
@@ -10327,14 +10453,13 @@ sub logout {
     my $list_exists = check_if_list_exists( -List => $admin_list );
 
     # I don't quite even understand why there's this check...
-
     if ( $args{-no_list_security_check} == 0 ) {
         if ( $list_exists == 1 ) {
-
-            ( $admin_list, $root_login ) = check_list_security(
+            my ( $admin_list, $root_login, $checksout, $error_msg ) =  check_list_security(
                 -cgi_obj  => $q,
                 -Function => 'logout'
             );
+            if(!$checksout){ return $error_msg; }
         }
     }
 
@@ -10392,10 +10517,11 @@ sub log_into_another_list {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'log_into_another_list'
     );
+    if(!$checksout){ return $error_msg; }
 
     $self->logout( -redirect_url => $DADA::Config::PROGRAM_URL . '?flavor=' . $DADA::Config::SIGN_IN_FLAVOR_NAME, );
 
@@ -10406,11 +10532,12 @@ sub change_login {
     my $self = shift;
     my $q    = $self->query();
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'change_login'
     );
-
+    if(!$checksout){ return $error_msg; }
+    
     die "only for root logins!"
       if !$root_login;
 
@@ -10457,13 +10584,13 @@ sub remove_subscribers {
     my $q    = $self->query();
     my $type = $q->param('type');
 
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'view_list'
     );
+    if(!$checksout){ return $error_msg; }
 
     my $list = $admin_list;
-
     my $return_to      = $q->param('return_to')      || '';
     my $return_address = $q->param('return_address') || '';
     my @address        = $q->param('address');
@@ -10507,10 +10634,11 @@ sub process_bouncing_addresses {
     my $q       = $self->query();
     my @address = $q->param('address');
     my $type    = $q->param('type');
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'view_list'
     );
+    if(!$checksout){ return $error_msg; }
 
     my $list = $admin_list;
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
@@ -10694,10 +10822,9 @@ sub setup_info {
 
     my $from_control_panel = 0;
 
-    my ( $admin_list, $root_login, $checksout ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj         => $q,
         -Function        => 'setup_info',
-        -manual_override => 1
     );
     my $list = undef;
     if ( $checksout == 1 && $root_password eq '' ) {
@@ -10800,12 +10927,12 @@ sub setup_info {
     else {
 
         if ( $from_control_panel == 1 ) {
-
             # just doin' this again, w/o the manual override:
-            check_list_security(
+            my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
                 -cgi_obj  => $q,
                 -Function => 'setup_info',
             );
+            if(!$checksout){ return $error_msg; }
         }
         else {
 
@@ -11204,11 +11331,11 @@ sub file_attachment {
     warn "I think this is real broken.";
 
     # Weird:
-    my ( $admin_list, $root_login, $checksout ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj         => $q,
         -Function        => 'send_email',
-        -manual_override => 1
     );
+    #if(!$checksout){ return $error_msg; }
 
     my %args = ( -inline_image_mode => 0, @_ );
 

@@ -7,7 +7,7 @@ use lib qw(./ ../ ../../ ../../DADA ../perllib);
 use DADA::Config qw(!:DEFAULT); 
 use DADA::App::Guts; 
 use DADA::MailingList::Settings;
-use base "DADA::MailingList::SchedulesDeprecated::MLDb";
+use base "DADA::MailingList::Schedules::MLDb";
 
 use Carp qw(croak carp);
 use Encode; 
@@ -19,16 +19,16 @@ use strict;
 
 =pod
 
-=head1 NAME DADA::MailingList::SchedulesDeprecated
+=head1 NAME DADA::MailingList::Schedules
 
 =head1 Synopsis
 
- my $mss = DADA::MailingList::SchedulesDeprecated->new({-list => 'listshortname'}); 
+ my $mss = DADA::MailingList::Schedules->new({-list => 'listshortname'}); 
 
 =head1 Description
 
 This module holds shared methods used for the Beatitude scheduled 
-mailer. The rest of the methods are located in DADA::MailingList::SchedulesDeprecated::MLDb.
+mailer. The rest of the methods are located in DADA::MailingList::Schedules::MLDb.
 
 =head1 Public Methods
 
@@ -1150,6 +1150,10 @@ sub _from_url {
 
 	my $self    = shift; 
 	my $url     = shift; 
+	return DADA::App::Guts::grab_url($url); 
+	
+=cut
+	
 	my $type    = shift; 
 	my $record  = shift; 
  
@@ -1197,6 +1201,9 @@ sub _from_url {
 	    carp "Problem fetching webpage, '$url':" . $res->status_line;
 		return undef; 
 	}
+	
+=cut
+	
 }
 
 
@@ -1424,7 +1431,7 @@ sub _find_mime_type {
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2015 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2014 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License

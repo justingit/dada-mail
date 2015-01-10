@@ -742,7 +742,6 @@ sub admin {
         my ($admin_list, $root_login, $checksout) = check_list_security(
 														-cgi_obj         => $args{-cgi_obj},  
                                                         -Function        => 'admin',
-                                                        -manual_override => 1,
                                                     );
         if($checksout == 1){ 
             require DADA::MailingList::Settings; 

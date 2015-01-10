@@ -101,7 +101,7 @@ sub cgi_main {
 sub cgi_default {
 
     # This will take care of all out security woes
-    my ( $admin_list, $root_login ) = check_list_security(
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'global_config'
     );

@@ -42,7 +42,7 @@ upload hook not owkring.
 
 
 
-
+[ ] Time to ditch raw evals for try {} blocks. 
 
 
 
@@ -56,6 +56,8 @@ http://dadamailproject.com/support/boards/viewtopic.php?t=4374&p=16228#p16228
 []  list-specific upload directories, rather than a shared one 
 
 [] remove MIME::Lite completely 
+[ ] MIME::Lite::HTML compat w/gzip compression... 
+maybe add proxy, basic auth support. 
 
 [ ] Digests 
     [ ] New Table dada_profile_settings

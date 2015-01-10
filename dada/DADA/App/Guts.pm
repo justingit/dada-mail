@@ -2057,9 +2057,9 @@ sub check_list_security {
 	require DADA::App::Session; 
 	
 	my $dada_session = DADA::App::Session->new();
-	my ($admin_list, $root_login, $checksout) = $dada_session->check_session_list_security(%args); 
-	return ($admin_list, $root_login, $checksout); 
-	
+	my ($admin_list, $root_login, $checksout, $error_msg) = $dada_session->check_session_list_security(%args); 
+	return ($admin_list, $root_login, $checksout, $error_msg); 
+
 }
 
 
