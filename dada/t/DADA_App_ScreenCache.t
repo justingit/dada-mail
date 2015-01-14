@@ -27,12 +27,12 @@ my $something      = 'something' . $dada_test_config::UTF8_STR; 		# test with a 
 my $something_else = 'something_else' . $dada_test_config::UTF8_STR;    # test with a UTF-8 string! 
 
 ok($c->cache($filename, \$something) == 1, "caching worked!"); 
-ok($c->cached($filename)             == 1, "reporting that it is cached."); 
-ok($c->cached('bs.txt')              == 0, "but this one doesn't really exist."); 
+ok($c->is_cached($filename)             == 1, "reporting that it is cached."); 
+ok($c->is_cached('bs.txt')              == 0, "but this one doesn't really exist."); 
 
 # What happens when we cache the same file, twice? 
 ok($c->cache($filename, \$something_else) == 1, "caching worked for the same file!"); 
-ok($c->cached($filename)             == 1, "reporting that it is cached(2)."); 
+ok($c->is_cached($filename)             == 1, "reporting that it is cached(2)."); 
 ok($c->pass($filename) eq $something_else, "got content back!");
 
 # well, good, we know that works, let's put that stuff back: 

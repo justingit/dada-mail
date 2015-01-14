@@ -1909,12 +1909,12 @@ sub user_error {
     my $error = $args->{-error};
     my $email = $args->{-email};
 	my $fh = undef; 
-	if(!exists($args->{-fh})){ 
-		$fh = \*STDOUT;
-	}
-	else { 
-		$fh = $args->{-fh};
-	}
+#	if(!exists($args->{-fh})){ 
+#		$fh = \*STDOUT;
+#	}
+#	else { 
+#		$fh = $args->{-fh};
+#	}
 
 #    my $fh    = $args->{-fh};
 #use Data::Dumper; 
@@ -2047,17 +2047,24 @@ sub message_id {
 
 
 sub check_list_security { 
-
+    
+    warn 'in check_list_security'; 
+    use Data::Dumper; 
+    
 	my %args = (-Function        => undef, 
 				-cgi_obj         => undef, 
 				-manual_override => 0, 
 				@_);
 	croak 'no CGI Object (-cgi_obj)' if ! $args{-cgi_obj};
+
+    warn 'args:' . Dumper({%args}); 
 	
 	require DADA::App::Session; 
 	
 	my $dada_session = DADA::App::Session->new();
 	my ($admin_list, $root_login, $checksout, $error_msg) = $dada_session->check_session_list_security(%args); 
+
+	warn 'returning: ' . Dumper([$admin_list, $root_login, $checksout, $error_msg]); 
 	return ($admin_list, $root_login, $checksout, $error_msg); 
 
 }

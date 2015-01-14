@@ -396,4 +396,7 @@ sub translate {
 
 }
 
+sub DESTROY {}
+
+
 1;

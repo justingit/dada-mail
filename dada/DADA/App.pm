@@ -1,6 +1,7 @@
 #!/usr/bin/perl
 package DADA::App;
 use base 'CGI::Application';
+use CGI::Application::Plugin::DebugScreen;
 
 use strict;
 use 5.008_001;
@@ -28,7 +29,6 @@ delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 
 #---------------------------------------------------------------------#
 use Carp qw(carp croak);
-
 #$CARP::Verbose = 1;
 
 #---------------------------------------------------------------------#
@@ -51,6 +51,9 @@ use DADA::Template::HTML;
 #---------------------------------------------------------------------#
 
 sub setup {
+
+    warn 'setup'; 
+    
     my $self = shift;
 
     #   die $self->query->param('flavor');
@@ -210,7 +213,8 @@ sub default {
 
     my $self = shift;
     my $q    = $self->query();
-
+        
+    
     if ( DADA::App::Guts::check_setup() == 0 ) {
         return user_error( { -error => 'bad_setup' } );
     }
@@ -313,29 +317,30 @@ sub default {
 
     if ( $available_lists[0] ) {
         if ( $q->param('error_invalid_list') != 1 ) {
-            if ( !$c->profile_on && $c->cached('default.scrn') ) {
-                return $c->cached_headers_body('default.scrn');
+            if ( !$c->profile_on && $c->is_cached('default.scrn') ) {
+                return $c->cached('default.scrn');
             }
         }
+        else { 
 
-        require DADA::Template::Widgets;
-        my $scrn = DADA::Template::Widgets::default_screen(
+            require DADA::Template::Widgets;
+            my $scrn = DADA::Template::Widgets::default_screen(
 
-            # {
-            -email              => $q->param('email'),
-            -list               => $q->param('list'),
-            -error_invalid_list => $q->param('error_invalid_list'),
+                # {
+                -email              => $q->param('email'),
+                -list               => $q->param('list'),
+                -error_invalid_list => $q->param('error_invalid_list'),
 
-            # }
-        );
-        if (  !$c->profile_on
-            && $available_lists[0]
-            && $q->param('error_invalid_list') != 1 )
-        {
-            $c->cache( 'default.scrn', \$scrn );
+                # }
+            );
+            if (  !$c->profile_on
+                && $available_lists[0]
+                && $q->param('error_invalid_list') != 1 )
+            {
+                $c->cache( 'default.scrn', \$scrn );
+            }
+            return $scrn;
         }
-        return $scrn;
-
     }
     else {
 
@@ -379,8 +384,8 @@ sub list_page {
     require DADA::MailingList::Settings;
 
     if ( !defined( $q->param('email') ) && ( $q->param('error_no_email') != 1 ) ) {
-        if ( !$c->profile_on && $c->cached( 'list/' . $list . '.scrn' ) ) {
-            return $c->cached_headers_body( 'list/' . $list . '.scrn' );
+        if ( !$c->profile_on && $c->is_cached( 'list/' . $list . '.scrn' ) ) {
+            return $c->cached( 'list/' . $list . '.scrn' );
         }
     }
 
@@ -406,6 +411,7 @@ sub admin {
     my $self = shift;
     my $q    = $self->query();
 
+    
     my @available_lists = available_lists();
     if ( ( $#available_lists < 0 ) ) {
         return $self->default();
@@ -418,10 +424,12 @@ sub admin {
     my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj         => $q,
         -Function        => 'admin',
-    );
+ );
+
     if ($checksout) {
         $self->header_type('redirect');
         $self->header_props( -url => $DADA::Config::DEFAULT_ADMIN_SCREEN );
+        return;
     }
     else {
 
@@ -703,9 +711,15 @@ sub send_email {
     my $list = $admin_list;
     require DADA::App::MassSend;
     my $ms = DADA::App::MassSend->new( { -list => $list } );
+       
+    my $Ext_Request = undef; 
+    if(defined($self->param('Ext_Request'))){ 
+       $Ext_Request =  $self->param('Ext_Request')
+    }
     my ( $headers, $body ) = $ms->send_email(
         {
             -cgi_obj    => $q,
+            -Ext_Request => $Ext_Request, 
             -root_login => $root_login,
         }
     );
@@ -6057,9 +6071,9 @@ sub view_archive {
         my $start = int( $q->param('start') ) || 0;
 
         if (  !$c->profile_on
-            && $c->cached( $list . '.admin.view_archive.index.' . $start . '.scrn' ) )
+            && $c->is_cached( $list . '.admin.view_archive.index.' . $start . '.scrn' ) )
         {
-            return $c->cached_headers_body( $list . '.admin.view_archive.index.' . $start . '.scrn' );
+            return $c->cached( $list . '.admin.view_archive.index.' . $start . '.scrn' );
         }
 
         my $ht_entries = [];
@@ -9285,9 +9299,9 @@ sub archive {
     if ( !$id ) {
 
         if (  !$c->profile_on
-            && $c->cached( 'archive/' . $list . '/' . $start . '.scrn' ) )
+            && $c->is_cached( 'archive/' . $list . '/' . $start . '.scrn' ) )
         {
-            return $c->cached_headers_body( 'archive/' . $list . '/' . $start . '.scrn' );
+            return $c->cached( 'archive/' . $list . '/' . $start . '.scrn' );
 
         }
 
@@ -9471,14 +9485,14 @@ sub archive {
         {
 
             if (  !$c->profile_on
-                && $c->cached( 'archive/' . $list . '/' . $id . '.scrn' ) )
+                && $c->is_cached( 'archive/' . $list . '/' . $id . '.scrn' ) )
             {
                 require DADA::Logging::Clickthrough;
                 my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
                 if ( $r->enabled ) {
                     $r->view_archive_log( { -mid => $id, } );
                 }
-                return $c->cached_headers_body( 'archive/' . $list . '/' . $id . '.scrn' );
+                return $c->cached( 'archive/' . $list . '/' . $id . '.scrn' );
             }
         }
 
@@ -9667,8 +9681,8 @@ sub archive_bare {
 
     my $id = $q->param('id') || undef;
 
-    if ( $c->cached( 'archive_bare.' . $list . '.' . $id . '.' . $q->param('admin') . '.scrn' ) ) {
-        return $c->cached_headers_body( 'archive_bare.' . $list . '.' . $id . '.' . $q->param('admin') . '.scrn' );
+    if ( $c->is_cached( 'archive_bare.' . $list . '.' . $id . '.' . $q->param('admin') . '.scrn' ) ) {
+        return $c->cached( 'archive_bare.' . $list . '.' . $id . '.' . $q->param('admin') . '.scrn' );
     }
 
     require DADA::MailingList::Archives;
@@ -9734,9 +9748,9 @@ sub search_archive {
 
     if ( $keyword =~ m/^[A-Za-z]+$/ ) {    # just words, basically.
         if (  !$c->profile_on
-            && $c->cached( $list . '.search_archive.' . $keyword . '.scrn' ) )
+            && $c->is_cached( $list . '.search_archive.' . $keyword . '.scrn' ) )
         {
-            return $c->cached_headers_body( $list . '.search_archive.' . $keyword . '.scrn' );
+            return $c->cached( $list . '.search_archive.' . $keyword . '.scrn' );
         }
     }
 
@@ -10112,8 +10126,8 @@ sub archive_rss {
 
                 if ( $args{-type} eq 'rss' ) {
 
-                    if ( $c->cached( 'archive_rss/' . $list ) ) {
-                        return $c->cached_headers_body( 'archive_rss/' . $list . '.scrn' );
+                    if ( $c->is_cached( 'archive_rss/' . $list ) ) {
+                        return $c->cached( 'archive_rss/' . $list . '.scrn' );
                     }
                     require DADA::MailingList::Archives;
                     my $archive = DADA::MailingList::Archives->new( { -list => $list } );
@@ -10126,8 +10140,8 @@ sub archive_rss {
 
                 }
                 elsif ( $args{-type} eq 'atom' ) {
-                    if ( $c->cached( 'archive_atom/' . $list ) ) {
-                        return $c->cached_headers_body( 'archive_atom/' . $list . '.scrn' );
+                    if ( $c->is_cached( 'archive_atom/' . $list ) ) {
+                        return $c->cached( 'archive_atom/' . $list . '.scrn' );
                     }
                     else {
                         require DADA::MailingList::Archives;
@@ -11328,7 +11342,6 @@ sub file_attachment {
     my $q    = $self->query();
     my $list = $q->param('list');
 
-    warn "I think this is real broken.";
 
     # Weird:
     my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
@@ -11362,12 +11375,12 @@ sub file_attachment {
                         if ( $args{-inline_image_mode} == 1 ) {
 
                             if (
-                                $c->cached(
+                                $c->is_cached(
                                     'view_inline_attachment.' . $list . '.' . $id . '.' . $q->param('cid') . '.cid'
                                 )
                               )
                             {
-                                return $c->cached_headers_body(
+                                return $c->cached(
                                     'view_inline_attachment.' . $list . '.' . $id . '.' . $q->param('cid') . '.cid' );
                             }
                             my $scrn = $la->view_inline_attachment(
@@ -11378,28 +11391,28 @@ sub file_attachment {
                             # Bettin' that it's binary (or at least, unencoded)
                             $c->cache( 'view_inline_attachment.' . $list . '.' . $id . '.' . $q->param('cid') . '.cid',
                                 \$scrn );
-
                             return $scrn;
 
                         }
                         else {
                             if (
-                                $c->cached( 'view_file_attachment.' . $list . '.' . $id . '.' . $q->param('filename') )
+                                $c->is_cached( 'view_file_attachment.' . $list . '.' . $id . '.' . $q->param('filename') )
                               )
                             {
-                                return $c->cached_headers_body(
+                                return $c->cached(
                                     'view_file_attachment.' . $list . '.' . $id . '.' . $q->param('filename') );
                             }
-                            my $scrn = $la->view_file_attachment(
-                                -id       => $q->param('id'),
-                                -filename => $q->param('filename')
-                            );
+                            else { 
+                                my $scrn = $la->view_file_attachment(
+                                    -id       => $q->param('id'),
+                                    -filename => $q->param('filename')
+                                );
+                                $c->cache( 'view_file_attachment.' . $list . '.' . $id . '.' . $q->param('filename'),
+                                    \$scrn );
 
-                   # Binary. Well, actually, *probably* - how would you figure out the content-type of an attached file?
-                            return $scrn;
-                            $c->cache( 'view_file_attachment.' . $list . '.' . $id . '.' . $q->param('filename'),
-                                \$scrn );
-
+                                # Binary. Well, actually, *probably* - how would you figure out the content-type of an attached file?
+                                return $scrn;
+                            }
                         }
 
                     }
@@ -12490,6 +12503,11 @@ sub END {
         DADA::Mail::MailOut::monitor_mailout( { -verbose => 0 } );
     }
 }
+
+sub DESTROY {
+   warn 'DADA::App::DESTROY called.';
+}
+
 
 1;
 

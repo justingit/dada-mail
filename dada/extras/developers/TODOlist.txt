@@ -17,19 +17,13 @@ Key:
 
 Perhaps figure out forking stuff, first? 
 
+Error Messages, where do they go?  - Server default - write about no go concerning setting your own, ask for help! 
 
 Look at any subs that need to be cleaned out
 
-[-]Maybe start having all subs return headers/body
 
 figure out plugins (hard?) 
 
-Stop using CGI->param for lazily using its paramater setting/getting stuff. 
-Probably stop using CGI dump for saving drafts. JSON? encoding problems? 
-
-THEN (and only then) move to CGI:App
-Then figure out FCGI stuff? 
-http://wiki.dreamhost.com/FastCGI
 no exits
 
 
@@ -37,7 +31,7 @@ CGI::App notes:
 
 Note that cgiapp_init() will be called only once under lifecycle of FastCGI. setup() will also only be called once. (you should not be doing magical things in 'setup'.) So if you want to do something for every REQUESTS, you should write the logic in cgiapp_prerun().
 
-upload hook not owkring. 
+upload hook not owkring?  
 
 
 

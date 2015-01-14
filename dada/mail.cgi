@@ -16,13 +16,17 @@ BEGIN {
 
 use CGI::Carp qw(fatalsToBrowser);
 
-use     DADA::App::Dispatch; 
-my $d = DADA::App::Dispatch->new; 
-my $q = $d->prepare_cgi_obj; 
-
-#use Data::Dumper; 
-#die Dumper($q); 
-
 use DADA::App;
-my $dadamail = DADA::App->new(QUERY => $q);
+use CGI; 
+my $q = new CGI; 
+
+use DADA::App::Dispatch; 
+my $d = DADA::App::Dispatch->new; 
+   $q = $d->prepare_cgi_obj($q); 
+my $dadamail = new DADA::App(
+    QUERY => $q,
+); 
 $dadamail->run();
+
+
+

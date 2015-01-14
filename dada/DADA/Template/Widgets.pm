@@ -743,12 +743,14 @@ sub admin {
 														-cgi_obj         => $args{-cgi_obj},  
                                                         -Function        => 'admin',
                                                     );
-        if($checksout == 1){ 
-            require DADA::MailingList::Settings; 
-            my $l_ls             = DADA::MailingList::Settings->new({-list => $admin_list}); 
-            my $l_li             = $l_ls->get; 
-            $logged_in_list_name = $l_li->{list_name};
-        }
+
+    # Well, this doesn't really happen anymore - we just go to the screen...
+    if($checksout == 1){ 
+        require DADA::MailingList::Settings; 
+        my $l_ls             = DADA::MailingList::Settings->new({-list => $admin_list}); 
+        my $l_li             = $l_ls->get; 
+        $logged_in_list_name = $l_li->{list_name};
+    }
 
     return wrap_screen(
                     {
@@ -1033,7 +1035,7 @@ sub login_switch_widget {
     require  DADA::App::ScreenCache; 
     my $c  = DADA::App::ScreenCache->new; 
     
-    if($c->cached('login_switch_widget.' . $args->{-list} . '.scrn')){ 
+    if($c->is_cached('login_switch_widget.' . $args->{-list} . '.scrn')){ 
         my $lsw = $c->pass('login_switch_widget.' . $args->{-list} . '.scrn');
            $lsw =~ s/\[LOCATION\]/$location/g; 
            return $lsw; 

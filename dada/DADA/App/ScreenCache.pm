@@ -86,7 +86,7 @@ sub cache_dir {
 
 }
 
-sub cached {
+sub is_cached {
 
     my $self   = shift;
     my $screen = shift;
@@ -134,7 +134,7 @@ sub show {
     }
     my $filename = $self->cache_dir . '/' . $self->translate_name($screen);
 
-    if ( $self->cached($screen) ) {
+    if ( $self->is_cached($screen) ) {
 
         if ($self->_is_binary($filename)) {
             open SCREEN, '<', DADA::App::Guts::make_safer($filename)
@@ -177,7 +177,7 @@ sub show {
 }
 
 
-sub cached_headers_body {
+sub cached {
 
     my $self   = shift;
     my $screen = shift;
@@ -186,15 +186,16 @@ sub cached_headers_body {
     my $body    = ''; 
     
     my ($args) = @_;
-    if ( !exists( $args->{-check_for_header} ) ) {
-        $args->{-check_for_header} = 0;
+    if ( !exists( $args->{-headers} ) ) {
+        $args->{-headers} = 0;
     }
+    
+    
     my $filename = $self->cache_dir . '/' . $self->translate_name($screen);
 
-    if ( $self->cached($screen) ) {
+    if ( $self->is_cached($screen) ) {
         
         my $scrn; 
-        
         if ($self->_is_binary($filename)) {
             open SCREEN, '<', DADA::App::Guts::make_safer($filename)
               or croak("cannot open $filename - $!");
@@ -204,32 +205,27 @@ sub cached_headers_body {
             open SCREEN, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', DADA::App::Guts::make_safer($filename)
               or croak("cannot open $filename - $!");
         }
-        if ($self->_is_binary($filename)) {
-	        while ( my $l = <SCREEN> ) {
-	            $scrn .= $l;
-	        }	
-		}
-		else { 	
-	        while ( my $l = <SCREEN> ) {
-	            $scrn .= $l;
-	        }
-		}
+        while ( my $l = <SCREEN> ) {
+            $scrn .= $l;
+        }
+
         close(SCREEN)
           or croak("cannot close $filename - $!");
-          my ($header_blob, $body) = split("\n\n", $scrn, 2);
-          # split.. logically
-      	  my @logical_lines = split /\n(?!\s)/, $header_blob;
-
-      	    # make the hash
-      	    for my $line(@logical_lines) {
-      	          my ($label, $value) = split(/:\s*/, $line, 2);
-      	          $headers->{$label} = $value;
-      	        }
-      	        
-      	    return($headers, $body); 
-
-      	
           
+          if($args->{-headers} == 1) { 
+              my ($header_blob, $body) = split("\n\n", $scrn, 2);
+              # split.. logically
+          	  my @logical_lines = split /\n(?!\s)/, $header_blob;
+          	    # make the hash
+          	    for my $line(@logical_lines) {
+          	          my ($label, $value) = split(/:\s*/, $line, 2);
+          	          $headers->{$label} = $value;
+          	    }
+          	    return($headers, $body); 
+          }
+          else { 
+              return $scrn; 
+          }
     }
     else {
         croak "screen is not cached! " . $!;
@@ -286,7 +282,7 @@ sub pass {
     my $screen   = shift;
     my $filename = $self->cache_dir . '/' . $self->translate_name($screen);
 
-    if ( $self->cached($screen) ) {
+    if ( $self->is_cached($screen) ) {
 
         if ($self->_is_binary($filename)) {
             open SCREEN, '<', DADA::App::Guts::make_safer($filename)
@@ -408,7 +404,7 @@ sub remove {
     my $self = shift;
     my $f    = shift;
 
-    if ( $self->cached($f) ) {
+    if ( $self->is_cached($f) ) {
         if ( -e DADA::App::Guts::make_safer( $self->cache_dir . '/' . $f ) ) {
             my $n = unlink( DADA::App::Guts::make_safer( $self->cache_dir . '/' . $f ) );
             if ( $n == 0 ) {
@@ -471,9 +467,7 @@ sub cached_screens {
     return $listing;
 }
 
-sub DESTROY { 
-	# ALL ASTROMEN!
-}
+sub DESTROY {}
 
 1;
 

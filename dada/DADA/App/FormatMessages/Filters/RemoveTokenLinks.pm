@@ -13,7 +13,7 @@ use Carp qw(croak carp);
 
 use DADA::App::Guts; 
 
-my $t = 0; 
+my $t = 1; 
 
 my %allowed = (
 
@@ -100,6 +100,7 @@ sub remove_unsub_links {
 	
 }
 
+sub DESTROY {}
 
 
 

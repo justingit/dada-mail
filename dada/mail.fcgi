@@ -1,0 +1,54 @@
+#!/usr/bin/perlml
+
+
+#use CGI::Carp qw(fatalsToBrowser);
+
+use FindBin;
+use lib "$FindBin::Bin/";
+use lib "$FindBin::Bin/DADA/perllib";
+
+BEGIN {
+    my $b__dir = ( getpwuid($>) )[7] . '/perl';
+    push @INC, $b__dir . '5/lib/perl5',
+      $b__dir . '5/lib/perl5/x86_64-linux-thread-multi', $b__dir . 'lib',
+      map { $b__dir . $_ } @INC;
+}
+
+
+#use CGI::Carp qw(fatalsToBrowser);
+use DADA::App; 
+use CGI::Fast;
+#use CGI qw(:standard);
+
+#print header(); 
+#print 'foo'; 
+
+
+ #   my $PROGRAM_ERROR_LOG = '/home8/dadademo/dada_files-secret/.dada_files/.logs/errors.txt';
+#    open( STDERR, ">>$PROGRAM_ERROR_LOG" ) or die $!; 
+    
+#die 'CGI::Fast::VERSION: ' . $CGI::Fast::VERSION; 
+
+
+
+CGI::Fast->file_handles({
+	fcgi_input_file_handle    => \*STDIN,
+	fcgi_output_file_handle   => \*STDOUT, 
+    fcgi_error_file_handle  => \*STDERR,
+});
+
+
+
+while (my $q = new CGI::Fast){
+	use DADA::App::Dispatch; 
+	my $d = DADA::App::Dispatch->new; 
+	   $q = $d->prepare_cgi_obj($q); 
+    my $dadamail = new DADA::App(
+        QUERY => $q,
+        PARAMS => { 
+            Ext_Request => \$CGI::Fast::Ext_Request,
+        }
+    ); 
+       $dadamail->run();
+	   warn 'run!'; 
+}

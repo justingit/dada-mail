@@ -13,7 +13,7 @@ my $dbi_obj;
 
 use DADA::Config qw(!:DEFAULT);  
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_Mail_Send}; 
+my $t = 1;# $DADA::Config::DEBUG_TRACE->{DADA_Mail_Send}; 
 
 use DADA::Logging::Usage;
 my $log =  new DADA::Logging::Usage;;
@@ -73,6 +73,8 @@ my %allowed = (
 	#unsub_obj                     => undef, 
 	
 	child_ct_obj                  => undef, 
+	
+	Ext_Request                   => undef, 
 	
 ); 
 
@@ -1266,9 +1268,9 @@ sub mass_send {
 	
 	
 	if( ! $mailout->still_around ){ 
-		warn '[' . $self->{list} . '] Mass Mailing seems to have been removed. exit()ing'
+		warn '[' . $self->{list} . '] Mass Mailing seems to have been removed. return()ing'
             if $t;
-		exit(0); 
+		return 0; 
 	}
 
     my $status = $mailout->status({-mail_fields => 0}); 
@@ -1389,9 +1391,16 @@ sub mass_send {
 		if $t; 
 	$mailout->log('About to fork off mass mailing...'); 
 	
+    if(defined($self->Ext_Request)) { 
+        my $blah = ${$self->Ext_Request};
+        $blah->Detach(); 
+    }
+    
 	FORK: {
 		if ($pid = fork) {
 
+
+            
 			$mailout->log('Mass Mailing Starting.'); 
 							    
 
@@ -1465,6 +1474,7 @@ sub mass_send {
 					# warn "Nope. No more lists to send to."; 
 				}
 			}
+			warn 'returning message id' . $fields{'Message-ID'};
             return $fields{'Message-ID'};
                 
         } elsif (defined $pid) { # $pid is zero here if defined
@@ -1473,10 +1483,10 @@ sub mass_send {
 			warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Fork successful. (From Child)'
 				if $t;	            
                 
-            if($DADA::Config::NULL_DEVICE){ 
-                open(STDIN,  ">>$DADA::Config::NULL_DEVICE") or carp "couldn't open '$DADA::Config::NULL_DEVICE' - $!"; 
-                open(STDOUT, ">>$DADA::Config::NULL_DEVICE") or carp "couldn't open '$DADA::Config::NULL_DEVICE' - $!"; 
-            }
+            #if($DADA::Config::NULL_DEVICE){ 
+                #open(STDIN,  ">>$DADA::Config::NULL_DEVICE") or carp "couldn't open '$DADA::Config::NULL_DEVICE' - $!"; 
+                #open(STDOUT, ">>$DADA::Config::NULL_DEVICE") or carp "couldn't open '$DADA::Config::NULL_DEVICE' - $!"; 
+            #}
             
             
             setpgrp; 
@@ -1595,10 +1605,10 @@ sub mass_send {
 				
 				if($is_mailout_paused > 0){                            
 					carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . 
-					     ' Mailing has been paused - exit()ing';
-					$mailout->log('Warning: Mailing has been paused - exit()ing'); 
+					     ' Mailing has been paused - return()ing';
+					$mailout->log('Warning: Mailing has been paused - return()ing'); 
 					$mailout->unlock_batch_lock;
-					exit(0);
+					return(0);
 				}
 				
 				if($status->{integrity_check} != 1){ 
@@ -1610,7 +1620,7 @@ sub mass_send {
 					               returning.');  
 					$mailout->unlock_batch_lock;
 					$mailout->pause;
-					exit(0); 
+					return(0); 
 				}
 				# / Is mass mailing paused? 
 				##############################################################
@@ -1679,7 +1689,7 @@ sub mass_send {
                              if $t; 
                              $mailout->update_last_access; 
  							 $mailout->unlock_batch_lock;
- 							 exit(0);
+ 							 return(0);
                         }
                     
                     }
@@ -1744,13 +1754,13 @@ sub mass_send {
 							next SUBSCRIBERLOOP;
 						}
 						else {
-							my $warning = '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Bailing out of Mailing for now - last message to, ' . $nfields{To} . ' was unable to be sent! exit()ing!';
+							my $warning = '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Bailing out of Mailing for now - last message to, ' . $nfields{To} . ' was unable to be sent! return()ing!';
 							warn $warning;
 							$mailout->log($warning);
 							$mailout->log_problem_address({-address => $current_email}); 
 							$mailout->update_last_access; 
 							$mailout->unlock_batch_lock;
-							exit(0);
+							return(0);
 						}
 					}
 					else { 
@@ -1781,11 +1791,11 @@ sub mass_send {
                                 . $mass_mailing_count 
                                 . ' is not the same as  $new_count: ' 
                                 . $new_count
-                                . ' - exit()ing to reset mass mailing.'; 
+                                . ' - return()ing to reset mass mailing.'; 
                                 carp $w; 
 								$mailout->log($w); 
 								$mailout->unlock_batch_lock;
-								exit(0); 
+								return(0); 
                             }
              				$batch_num_sent++; 
              				# /Count Subscriber
@@ -1859,23 +1869,23 @@ sub mass_send {
 							# Reset the batch settings. 
 
 							if($batch_status->{queued_mailout} == 1){  
-								carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Mailing has been queued - exit()ing'; 
-								$mailout->log('Warning: Mailing has been queued - exit()ing'); 
+								carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Mailing has been queued - return()ing'; 
+								$mailout->log('Warning: Mailing has been queued - return()ing'); 
 								$mailout->unlock_batch_lock;
-								exit(0); 
+								return(0); 
 							}
 							if($batch_status->{paused} > 0){                          
-								carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Mailing has been paused - exit()ing';
-								$mailout->log('Warning: Mailing has been paused - exit()ing'); 
+								carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Mailing has been paused - return()ing';
+								$mailout->log('Warning: Mailing has been paused - return()ing'); 
 								$mailout->unlock_batch_lock;
-								exit(0);
+								return(0);
 							}
 							if($batch_status->{integrity_check} != 1){ 
 								carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' is currently reporting an integrity check warning! Pausing mailing and returning.'; 
 								$mailout->log('Warning: Mailing is currently reporting an integrity check warning! Pausing mailing and returning.'); 
 								$mailout->unlock_batch_lock;
 								$mailout->pause;
-								exit(0);
+								return(0);
 							}
 						
 							# SES: explicitly reset the batch params cache after every 100 messages sent. 
@@ -1943,9 +1953,9 @@ sub mass_send {
 									if $t; 
 								
 								if( ! $mailout->still_around ){
-									warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Seems to have been removed. exit()ing'
+									warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Seems to have been removed. return()ing'
 							            if $t; 
-									exit(0); 
+									return(0); 
 								}
 								
 								# Let's make sure I'm still supposed to be working on stuff: 
@@ -1961,8 +1971,8 @@ sub mass_send {
 									warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . 
 										 ' Problem! Another process (Current PID: ' . $$ . ', Controlling PID: ' . 
 										   $batch_status->{controlling_pid} .' has taken over sending for this mailing! ' . 
-										   ' exit()ing to allow that process to do it\'s business!'; 
-									exit(0); 
+										   ' return()ing to allow that process to do it\'s business!'; 
+									return(0); 
 									
 								}
 								
@@ -1988,14 +1998,14 @@ sub mass_send {
 
 	                            $mailout->unlock_batch_lock;
                             
-	                            # We only want to, exit(0) if we have more mailings to go. 
+	                            # We only want to, return(0) if we have more mailings to go. 
 	                            # If we don't have any more to do, we have to do all the 
 	                            # cleanup, so let's not go quite yet. 
                             
 	                            if($batch_status->{total_sent_out} < $batch_status->{total_sending_out_num}){ # We have more mailings to do. 
 	                                warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' As far as I can tell, there\'s more mailing to do.'
 	                                    if $t; 
-	                                exit(0); 
+	                                return(0); 
 	                            }
                         
 	                        }                          
@@ -2104,9 +2114,9 @@ sub mass_send {
 			}
 			
 
-			warn  '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' We\'re done. exit()ing!' 
+			warn  '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' We\'re done. return()ing!' 
 			    if $t;
-           	exit(0);		 
+           	return (0);
 
 		} elsif ($! =~ /No more process/) {
 			
@@ -2124,6 +2134,12 @@ sub mass_send {
 			croak "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Error in Mail.pm, Unable to Fork new process to mass e-mail list message: $!\n";
 			}
 		}
+		
+		if(defined($self->Ext_Request)) {
+		    my $blah = ${$self->Ext_Request};
+           $blah->Attach(); 
+        }
+    
 	}
 
 
@@ -2838,9 +2854,6 @@ sub _email_batched_finished_notification {
         $m_report->{clickthrough_tracking_enabled} = 0;       
     }
 
-    require Data::Dumper; 
-    warn '$args{-msg_id}' . $args{-msg_id}; 
-    warn Data::Dumper::Dumper($m_report); 
 
     require MIME::Entity;
     my $entity = MIME::Entity->build(

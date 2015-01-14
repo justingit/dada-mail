@@ -1128,9 +1128,7 @@ sub find_attachment_list {
 
 
 sub view_file_attachment { 
-	
-	warn 'this is probably very broken.'; 
-	
+    	
 	my $self = shift;
 
 	my %args = (
@@ -1151,6 +1149,7 @@ sub view_file_attachment {
 	
 	my $r; 
 	
+	# Worried about this part. 
 	require CGI; 
 	my $q = CGI->new; 
 	   $q->charset($DADA::Config::HTML_CHARSET);

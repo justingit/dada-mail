@@ -93,7 +93,7 @@ sub view {
         -Function => 'screen_cache'
     );
     my $list = $admin_list;	
-    my $file_list = $c->cached_screens;
+    my $file_list = $c->is_cached_screens;
 
     my $app_file_list = [];
 

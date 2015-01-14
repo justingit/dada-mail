@@ -88,7 +88,7 @@ sub send_email {
 
     my $q          = $args->{-cgi_obj};
     my $root_login = $args->{-root_login};
-
+    
     my $process            = xss_filter( strip( $q->param('process') ) );
     my $flavor             = xss_filter( strip( $q->param('flavor') ) );
     my $restore_from_draft = xss_filter( strip( $q->param('restore_from_draft') ) ) || 'true';
@@ -239,6 +239,9 @@ sub send_email {
         my $message_id = undef;
 
         if ( $self->{md_obj}->enabled ) {
+
+            warn 'md_obj enabled.'; 
+
             $draft_id = $self->save_as_draft(
                 {
                     -cgi_obj => $q,
@@ -256,6 +259,8 @@ sub send_email {
                     -process  => $process,
                 }
             );
+            warn '$message_id ' . $message_id; 
+            
         }
         else {
             ( $status, $errors, $message_id ) = $self->construct_and_send(
@@ -267,6 +272,9 @@ sub send_email {
                     -cgi_obj => $q,
                 }
             );
+            
+            warn '$message_id ' . $message_id; 
+            
         }
         if ( $status == 0 ) {
             return $self->report_mass_mail_errors( $errors, $root_login );
@@ -275,6 +283,8 @@ sub send_email {
         if ( $process =~ m/test/i ) {
             warn 'test sending'
               if $t;
+              
+              warn '$message_id ' . $message_id; 
 
             $self->wait_for_it($message_id);
             return({-redirect_uri => $DADA::Config::S_PROGRAM_URL . '?flavor='
@@ -348,8 +358,8 @@ sub construct_and_send {
 
     if ( $self->{md_obj}->enabled ) {
         $draft_q = $self->q_obj_from_draft($args);
-        use Data::Dumper;
-        warn Dumper($draft_q);
+        #use Data::Dumper;
+        #warn Dumper($draft_q);
     }
     else {
         $draft_q = $args->{-cgi_obj};
@@ -416,6 +426,10 @@ sub construct_and_send {
         $mh->mass_test_recipient( $draft_q->param('test_recipient') );
         my $multi_list_send_no_dupes = $draft_q->param('multi_list_send_no_dupes')
           || 0;
+
+      if(exists($args->{-Ext_Request})){ 
+          $mh->Ext_Request($args->{-Ext_Request}); 
+      }
 
         $message_id = $mh->mass_send(
             {
@@ -1140,6 +1154,11 @@ sub wait_for_it {
     my $self       = shift;
     my $message_id = shift;
 
+    warn '$message_id ' . $message_id; 
+    
+    if($message_id == 0){ 
+        return 0; 
+    }
     my $still_working = 1;
     my $tries         = 0;
     require DADA::Mail::MailOut;

@@ -533,12 +533,13 @@ sub can_use_data_dumper {
 
 sub check_session_list_security {
 
+    warn 'at check_session_list_security'; 
+    
     my $self = shift;
 
     my %args = (
         -Function        => undef,
         -cgi_obj         => undef,
-        -manual_override => 0,
         @_
     );
 

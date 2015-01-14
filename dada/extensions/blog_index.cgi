@@ -107,7 +107,7 @@ sub main {
       . $Plugin_Config->{Style} . '.'
       . $amount . '.'
       . $mode . '.scrn';
-    if ( $c->cached($cache_filename) ) {
+    if ( $c->is_cached($cache_filename) ) {
         $c->show($cache_filename);
         return;
     }
