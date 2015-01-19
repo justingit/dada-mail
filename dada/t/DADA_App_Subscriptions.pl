@@ -158,16 +158,17 @@ ok(! defined($r->{list}));
 
 # diag Dumper($r); 
 undef $r;
-my $r = $das->subscribe(
+my ($h, $b) = $das->subscribe(
     {
         -cgi_obj     => $q,
         -html_output => 1,
     	-return_json => 0, 
 	}
 );
-my $redirect = "Status: 302 Found\r\nLocation: http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi?error_invalid_list=1\r\n\r\n";
-ok($r eq $redirect); 
-undef $r;
+
+ok($h->{-uri_redirect} eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi?error_invalid_list=1'); 
+undef $h;
+undef $b;
 
 
 
@@ -188,18 +189,18 @@ ok($r->{redirect}->{using} == 1);
 ok($r->{redirect}->{using_with_query} == 1);
 #diag Dumper($r); 
 undef $r; 
-my $r = $das->subscribe(
+my ($h, $b) = $das->subscribe(
     {
         -cgi_obj     => $q,
         -html_output => 1,
     	-return_json => 0, 
 	}
 );
-my $redirect = "Status: 302 Found\r\nLocation: http://example.com/alt_url_sub_confirm_failed.html?list=dadatest&email=&status=0&rm=sub_confirm&errors[]=invalid_email\r\n\r\n";
-ok($r eq $redirect); 
+my $redirect = 'http://example.com/alt_url_sub_confirm_failed.html?list=dadatest&email=&status=0&rm=sub_confirm&errors[]=invalid_email';
+ok($h->{-uri_redirect} eq $redirect); 
 $q->delete_all; 
-undef $r;
-
+undef $h;
+undef $b; 
 
 
 
@@ -227,16 +228,18 @@ $lh->remove_subscriber(
     }
 );
 $ct->remove_all_tokens; 
-my $r = $das->subscribe(
+my ($h, $b) = $das->subscribe(
     {
         -cgi_obj     => $q,
         -html_output => 1,
     	-return_json => 0, 
 	}
 );
-my $redirect = "Status: 302 Found\r\nLocation: http://example.com/alt_url_sub_confirm_success.html?list=dadatest&email=user%40example.com&status=1&rm=sub_confirm\r\n\r\n";
-ok($r eq $redirect); 
-undef $r; 
+my $redirect = "http://example.com/alt_url_sub_confirm_success.html?list=dadatest&email=user%40example.com&status=1&rm=sub_confirm";
+ok($h->{-uri_redirect} eq $redirect); 
+undef $h; 
+undef $b; 
+
 $q->delete_all; 
 # Don't remove the email from sub_confirm_list, as we'll use it for the next test: 
 
@@ -266,16 +269,18 @@ ok($r->{list} eq $list);
 
 
 undef $r; 
-my $r = $das->subscribe(
+my ($h, $b) = $das->subscribe(
     {
         -cgi_obj     => $q,
         -html_output => 1,
     	-return_json => 0, 
 	}
 );
-my $redirect = "Status: 302 Found\r\nLocation: http://example.com/alt_url_sub_confirm_failed.html?list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=already_sent_sub_confirmation\r\n\r\n";
-ok($r eq $redirect); 
-undef $r; 
+my $redirect = 'http://example.com/alt_url_sub_confirm_failed.html?list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=already_sent_sub_confirmation';
+ok($h->{-uri_redirect} eq $redirect); 
+undef $h;
+undef $b; 
+ 
 $q->delete_all;
 $lh->remove_subscriber(
     {
@@ -323,16 +328,18 @@ $lh->remove_subscriber(
         -type  => 'black_list',
     }
 );
-my $r = $das->subscribe(
+my ($h, $b) =  $das->subscribe(
     {
         -cgi_obj     => $q,
         -html_output => 1,
     	-return_json => 0, 
 	}
 );
-my $redirect = "Status: 302 Found\r\nLocation: http://example.com/alt_url_sub_confirm_success.html?list=dadatest&email=user%40example.com&status=1&rm=sub_confirm\r\n\r\n";
-ok($r eq $redirect); 
-undef $r;
+my $redirect = 'http://example.com/alt_url_sub_confirm_success.html?list=dadatest&email=user%40example.com&status=1&rm=sub_confirm';
+ok($h->{-uri_redirect} eq $redirect); 
+undef $h;
+undef $b;
+
 $ct->remove_all_tokens; 
 $lh->remove_subscriber(
     {
@@ -378,16 +385,19 @@ ok($r->{list} eq $list);
 undef $r; 
 $ct->remove_all_tokens;
 
-my $r = $das->subscribe(
+my ($h, $b) =  $das->subscribe(
     {
         -cgi_obj     => $q,
         -html_output => 1,
     	-return_json => 0, 
 	}
 );
-my $redirect = "Status: 302 Found\r\nLocation: http://example.com/alt_url_sub_confirm_failed.html?list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=black_listed\r\n\r\n";
-ok($r eq $redirect); 
-undef $r;
+my $redirect = 'http://example.com/alt_url_sub_confirm_failed.html?list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=black_listed';
+ok($h->{-uri_redirect} eq $redirect); 
+undef $h;
+undef $b;
+
+
 $lh->remove_subscriber(
     {
         -email => $email,
@@ -422,18 +432,20 @@ ok($r->{redirect}->{using} == 1);
 ok($r->{redirect}->{using_with_query} == 1);
 ok(exists($r->{error_descriptions}->{closed_list})); 
 undef $r; 
-my $r = $das->subscribe(
+my ($h, $b) =  $das->subscribe(
     {
         -cgi_obj     => $q,
         -html_output => 1,
     	-return_json => 0, 
 	}
 );
-my $redirect = "Status: 302 Found\r\nLocation: http://example.com/alt_url_sub_confirm_failed.html?list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=closed_list\r\n\r\n";
-ok($r eq $redirect); 
+my $redirect = 'http://example.com/alt_url_sub_confirm_failed.html?list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=closed_list';
+ok($h->{-uri_redirect} eq $redirect); 
+undef $h;
+undef $b;
+
 $q->delete_all;
 $ls->save({closed_list => 0});  
-undef $r; 
 
 
 # invite_only_list 
@@ -460,16 +472,17 @@ ok(exists($r->{error_descriptions}->{invite_only_list}));
 
 #diag Dumper($r); 
 undef $r; 
-my $r = $das->subscribe(
+my ($h, $b) = $das->subscribe(
     {
         -cgi_obj     => $q,
         -html_output => 1,
     	-return_json => 0, 
 	}
 );
-my $redirect = "Status: 302 Found\r\nLocation: http://example.com/alt_url_sub_confirm_failed.html?list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=invite_only_list\r\n\r\n";
-ok($r eq $redirect); 
-undef $r; 
+my $redirect = 'http://example.com/alt_url_sub_confirm_failed.html?list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=invite_only_list';
+ok($h->{-uri_redirect} eq $redirect); 
+undef $h;
+undef $b;
 $q->delete_all; 
 $ls->save({invite_only_list => 0}); 
 
@@ -499,16 +512,19 @@ ok($r->{redirect}->{using_with_query} == 1);
 ok(exists($r->{error_descriptions}->{over_subscription_quota})); 
 #diag Dumper($r); 
 undef $r; 
-my $r = $das->subscribe(
+my ($h, $b) = $das->subscribe(
     {
         -cgi_obj     => $q,
         -html_output => 1,
     	-return_json => 0, 
 	}
 );
-my $redirect = "Status: 302 Found\r\nLocation: http://example.com/alt_url_sub_confirm_failed.html?list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=over_subscription_quota\r\n\r\n";
-ok($r eq $redirect); 
-undef $r; 
+my $redirect = 'http://example.com/alt_url_sub_confirm_failed.html?list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=over_subscription_quota';
+
+ok($h->{-uri_redirect} eq $redirect); 
+undef $h;
+undef $b;
+
 $q->delete_all; 
 $ls->save({use_subscription_quota => 0});
 
@@ -539,16 +555,19 @@ ok($r->{redirect}->{using_with_query} == 1);
 ok(exists($r->{error_descriptions}->{over_subscription_quota})); 
 #diag Dumper($r);
 undef $r; 
-my $r = $das->subscribe(
+my ($h, $b) =  $das->subscribe(
     {
         -cgi_obj     => $q,
         -html_output => 1,
     	-return_json => 0, 
 	}
 );
-my $redirect = "Status: 302 Found\r\nLocation: http://example.com/alt_url_sub_confirm_failed.html?list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=over_subscription_quota\r\n\r\n";
-ok($r eq $redirect);  
-undef $r; 
+my $redirect = 'http://example.com/alt_url_sub_confirm_failed.html?list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=over_subscription_quota';
+
+ok($h->{-uri_redirect} eq $redirect); 
+undef $h;
+undef $b;
+
 $q->delete_all;
 $DADA::Config::SUBSCRIPTION_QUOTA = undef; 
 
@@ -673,16 +692,20 @@ ok(exists($r->{success_message}));
 $lh->remove_subscriber( { -email => $email, -type  => 'list', } );
 $lh->remove_subscriber( { -email => $email, -type  => 'sub_confirm_list', } );
 undef $r; 
-my $r = $das->subscribe(
+my ($h, $b) =  $das->subscribe(
     {
         -cgi_obj     => $q,
         -html_output => 1,
     	-return_json => 0, 
 	}
 );
-my $redirect = "Status: 302 Found\r\nLocation: http://example.com/alt_url_sub_confirm_success.html?list=dadatest&email=user%40example.com&status=1&rm=sub_confirm\r\n\r\n";
-ok($r eq $redirect); 
-undef $r; 
+my $redirect = 'http://example.com/alt_url_sub_confirm_success.html?list=dadatest&email=user%40example.com&status=1&rm=sub_confirm';
+
+ok($h->{-uri_redirect} eq $redirect); 
+undef $h;
+undef $b;
+
+
 $q->delete_all;
 $lh->remove_subscriber( { -email => $email, -type  => 'list', } );
 $lh->remove_subscriber( { -email => $email, -type  => 'sub_confirm_list', } );
@@ -714,16 +737,20 @@ ok(exists($r->{error_descriptions}->{subscribed}));
 
 
 undef $r; 
-my $r = $das->subscribe(
+my ($h, $b) =  $das->subscribe(
     {
         -cgi_obj     => $q,
         -html_output => 1,
     	-return_json => 0, 
 	}
 );
-my $redirect = "Status: 302 Found\r\nLocation: http://example.com/alt_url_sub_confirm_failed.html?list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=subscribed\r\n\r\n";
-ok($r eq $redirect); 
-undef $r; 
+my $redirect = 'http://example.com/alt_url_sub_confirm_failed.html?list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=subscribed';
+
+ok($h->{-uri_redirect} eq $redirect); 
+undef $h;
+undef $b;
+
+
 $lh->remove_subscriber( { -email => $email, -type  => 'list', } );
 $q->delete_all;
 

@@ -1,6 +1,9 @@
 #!/usr/bin/perl
 use strict;
 
+package view_list_settings;
+
+
 use FindBin;
 use lib "$FindBin::Bin/../";
 use lib "$FindBin::Bin/../DADA/perllib";
@@ -9,47 +12,57 @@ BEGIN {
     push @INC,$b__dir.'5/lib/perl5',$b__dir.'5/lib/perl5/x86_64-linux-thread-multi',$b__dir.'lib',map { $b__dir . $_ } @INC;
 }
 
-use CGI::Carp qw(fatalsToBrowser);
-
-# use some of those Modules
 use DADA::Config qw(!:DEFAULT);
 use DADA::Template::HTML;
 use DADA::App::Guts;
 use DADA::MailingList::Settings;
 
-# we need this for cookies things
-use CGI;
-my $q = new CGI;
-   $q->charset($DADA::Config::HTML_CHARSET);
-   $q = decode_cgi_obj($q);
+run()
+  unless caller();
 
-# This will take care of all our security woes
-my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
-    -cgi_obj  => $q,
-    -Function => 'view_list_settings'
-);
+sub run { 
+    
+    my $q = shift || self_cgi(); 
 
-my $list = $admin_list;
+    # use some of those Modules
+    # we need this for cookies things
 
-# get the list information
-my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-my $li = $ls->get;
-
-my $tmpl = template();
-
-require DADA::Template::Widgets;
-my $scrn = DADA::Template::Widgets::wrap_screen(
-    {
-        -data                     => \$tmpl,
-		-with           => 'admin', 
-		-wrapper_params => { 
-			-Root_Login => $root_login,
-			-List       => $list,  
-		},
-        -list_settings_vars_param => { -list => $list, -in_order => 1, i_know_what_im_doing => 1 },
+    # This will take care of all our security woes
+    
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
+        -cgi_obj         => $q,
+        -Function        => 'view_list_settings'
+    );
+    
+    if(!$checksout){ 
+        return $error_msg; 
     }
-);
-e_print($scrn); 
+    
+    
+    my $list = $admin_list;
+
+    # get the list information
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $li = $ls->get;
+
+    my $tmpl = template();
+
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+        {
+            -data                     => \$tmpl,
+    		-with           => 'admin', 
+    		-wrapper_params => { 
+    			-Root_Login => $root_login,
+    			-List       => $list,  
+    		},
+            -list_settings_vars_param => { -list => $list, -in_order => 1, i_know_what_im_doing => 1 },
+        }
+    );
+    #e_print($scrn); 
+    return $scrn;
+ 
+}
 
 sub template {
 
@@ -72,7 +85,17 @@ sub template {
     };
 
 }
+
+sub self_cgi { 
+    require CGI; 
+    return new CGI; 
+}
+
+1;
+
 __END__
+
+
 
 =pod
 

@@ -61,6 +61,7 @@ sub setup {
     $self->mode_param('flavor');
 
     $self->run_modes(
+        'plugins'                                     => \&plugins, 
         'default'                                     => \&default,
         'subscribe'                                   => \&subscribe,
         'restful_subscribe'                           => \&restful_subscribe,
@@ -560,7 +561,6 @@ sub admin_menu_mailing_monitor_notification {
 
         my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
             -cgi_obj         => $q,
-            -manual_override => 1
         );
         if ($checksout) {
 
@@ -12502,6 +12502,14 @@ sub END {
         require DADA::Mail::MailOut;
         DADA::Mail::MailOut::monitor_mailout( { -verbose => 0 } );
     }
+}
+
+sub plugins { 
+    my $self = shift; 
+    my $q = $self->query(); 
+    require 'plugins/bridge.cgi'; 
+    my ($h, $b) = bridge::run($q);
+    return $b;  
 }
 
 sub DESTROY {

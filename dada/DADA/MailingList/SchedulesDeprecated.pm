@@ -7,7 +7,7 @@ use lib qw(./ ../ ../../ ../../DADA ../perllib);
 use DADA::Config qw(!:DEFAULT); 
 use DADA::App::Guts; 
 use DADA::MailingList::Settings;
-use base "DADA::MailingList::Schedules::MLDb";
+use base "DADA::MailingList::SchedulesDeprecated::MLDb";
 
 use Carp qw(croak carp);
 use Encode; 
@@ -28,7 +28,7 @@ use strict;
 =head1 Description
 
 This module holds shared methods used for the Beatitude scheduled 
-mailer. The rest of the methods are located in DADA::MailingList::Schedules::MLDb.
+mailer. The rest of the methods are located in DADA::MailingList::SchedulesDeprecated::MLDb.
 
 =head1 Public Methods
 

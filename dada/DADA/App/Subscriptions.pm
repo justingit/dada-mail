@@ -14,7 +14,7 @@ use Try::Tiny;
 
 use vars qw($AUTOLOAD);
 use strict;
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_Subscriptions};
 
 my %allowed = ( test => 0, );
 
@@ -258,7 +258,6 @@ sub subscribe {
     else {
         warn 'list does NOT exist.'
           if $t;
-
     }
 
     # This is a special case, since without a valid list, we can't run any of the
@@ -286,7 +285,6 @@ sub subscribe {
         else {
             # Test sub-subscribe-redirect-error_invalid_list
             return $self->alt_redirect($r);
-
             # There's also:
             #return user_error(
             #    -List  => $list,
@@ -2782,11 +2780,6 @@ sub alt_redirect {
         croak "I need a url, before I can redirect to it!";
     }
     my $url = $args->{redirect}->{url};
-
-    require CGI;
-    my $q = CGI->new;
-    $q->charset($DADA::Config::HTML_CHARSET);
-
     $url = strip($url);
 
     if ( !isa_url($url) ) {
@@ -2794,12 +2787,13 @@ sub alt_redirect {
     }
     if ( $args->{redirect}->{using_with_query} == 1 ) {
         if ( $url =~ m/\?/ ) {
-
             # Already has a query string?!
-            $url = $q->redirect( $url . '&' . $args->{redirect}->{query} );
+            $url = $url . '&' . $args->{redirect}->{query};
+            return ({-uri_redirect => $url}, undef);
         }
         else {
-            $url = $q->redirect( $url . '?' . $args->{redirect}->{query} );
+            $url = $url . '?' . $args->{redirect}->{query} ;
+            return ({-uri_redirect => $url}, undef);
         }
     }
     else {

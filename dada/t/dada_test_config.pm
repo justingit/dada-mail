@@ -213,7 +213,8 @@ my @statements = split(';', $sql);
     my $dbh = $dbi_handle->dbh_obj;
     
     for(@statements){ 
-			
+		print $_ . "\n"; 
+		
     	my $settings_table                      = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{settings_table}; 
 		my $subscribers_table    	            = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{subscriber_table}; 
 		my $archives_table          		    = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{archives_table}; 

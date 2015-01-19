@@ -1095,7 +1095,6 @@ SKIP: {
 
 
     # We'll just do this again, for good measure...
-
     unlink $DADA::Config::TMP . '/mail.txt'
       if ( -e $DADA::Config::TMP . '/mail.txt' );
 

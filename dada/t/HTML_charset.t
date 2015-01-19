@@ -1,10 +1,14 @@
 #!/usr/bin/perl 
 
-
-
 use lib qw(./t ./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib ); 
 BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
+use Test::More qw(no_plan);
 
+# Charsets aren't really handled by DM anymore, but rather by CGI::App
+
+ok(1); 
+
+=cut
 use dada_test_config; 
 use Test::More qw(no_plan);
 
@@ -50,3 +54,5 @@ for my $charset(@DADA::Config::CHARSETS){
 
 dada_test_config::remove_test_list;
 dada_test_config::wipe_out;
+=cut
+

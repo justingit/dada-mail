@@ -8,7 +8,7 @@ use lib qw(
 
 
 use DADA::Config;  
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_DBIHandle}; 
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_DBIHandle}; 
 use Carp qw(carp croak); 
 
 # Singleton.
@@ -107,7 +107,8 @@ sub dbh_obj {
 sub connectdb {
 
     my $self = shift;
-
+    warn '$self->{enabled} ' . $self->{enabled}; 
+    
     return undef unless $self->{enabled};
     
     #Singleton.
@@ -122,7 +123,8 @@ sub connectdb {
 
         my $data_source;
         if ( $dbtype eq 'SQLite' ) {
-
+            warn 'SQLite' 
+                if $t; 
             $data_source =
               'dbi:' . $dbtype . ':' . $DADA::Config::FILES . '/' . $database;
 
@@ -135,7 +137,7 @@ sub connectdb {
                 'connect_cached' )
             {
 
-                $dbh =
+                $dbh_stash->{$$} =
                   DBI->connect_cached( "$data_source", "", "",
                     { dada_private_via_process => $$ } )
                   || croak("can't connect to db: $!");
@@ -146,10 +148,8 @@ sub connectdb {
 
             for ( keys %{$DADA::Config::DBI_PARAMS} ) {
                 next if $_ =~ m/dada/;
-                $dbh->{$_} = $DADA::Config::DBI_PARAMS->{$_};
+                $dbh_stash->{$$}->{$_} = $DADA::Config::DBI_PARAMS->{$_};
             }
-
-
         }
         else {
 

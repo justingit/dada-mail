@@ -116,4 +116,6 @@ sub read_message {
 
 }
 
+sub DESTROY {}
+
 1;

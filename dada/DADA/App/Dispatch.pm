@@ -85,6 +85,7 @@ sub prepare_cgi_obj
     my $q = shift || CGI->new;
        $q->charset($DADA::Config::HTML_CHARSET);
     
+    # Surely, this is broken. 
     if ( $ENV{QUERY_STRING} =~ m/^\?/ ) {
         # DEV Workaround for servers that give a bad PATH_INFO:
         # Set the $DADA::Config::PROGRAM_URL to have, "?" at the end of the URL

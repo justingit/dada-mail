@@ -191,7 +191,7 @@ sub _raw_db_hash {
 	
 	# Need $self->{RAW_DB_HASH} as a hash ref of settings - easy enough...
 	
-	my $query = 'SELECT setting, value from ' . $self->{sql_params}->{settings_table} .' where list = ?';
+	my $query = 'SELECT setting, value FROM ' . $self->{sql_params}->{settings_table} .' WHERE list = ?';
 	
 	my $sth = $self->{dbh}->prepare($query); 
 	   $sth->execute($self->{name})

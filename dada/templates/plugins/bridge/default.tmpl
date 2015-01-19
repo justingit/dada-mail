@@ -18,11 +18,13 @@
 
 <!-- tmpl_unless list_email_status --><!--/tmpl_unless-->
 
-<form name="default_form" action="<!-- tmpl_var Plugin_URL --> "method="post">
-
-	 <input type="hidden" name="plugin_url"    id="plugin_url"    value="<!-- tmpl_var Plugin_Url -->" /> 
-	 <input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" /> 
-
+<form name="default_form" action="<!-- tmpl_var S_PROGRAM_URL --> "method="post">
+    <input type="hidden" name="flavor"   value="plugins" /> 
+    <input type="hidden" name="plugin"   value="bridge" /> 
+    <input type="hidden" name="prm"      value="edit" />
+    <input type="hidden" name="process"  value="1" />
+    
+    
 <!-- tmpl_if list_settings.disable_discussion_sending -->
 <div class="badweatherbox">
   <p><strong>
@@ -1037,11 +1039,7 @@ Mailing List Security
  
  
  </fieldset> 
- 
- 
-   
- <input name="flavor"  type="hidden" value="cgi_default" />
- <input name="process" type="hidden" value="edit" />
+
  <div class="buttonfloat"> 
   <input type="reset"  class="cautionary" value="Clear Changes" />
   <input type="submit" class="processing" value="Save Changes" />
