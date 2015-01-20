@@ -16,12 +16,6 @@ use DADA::Template::HTML;
 use DADA::App::Guts;
 use DADA::MailingList::Settings;
 
-# we need this for cookies things
-use CGI;
-my $q = new CGI;
-$q->charset($DADA::Config::HTML_CHARSET);
-$q = decode_cgi_obj($q);
-
 use CGI::Carp qw(fatalsToBrowser);
 
 use Carp qw(croak carp); 
@@ -40,9 +34,16 @@ my $root_login;
 my $list; 
 my $ls; 
 
+sub reset_globals { 
+ $admin_list = undef; 
+ $root_login = undef 
+ $list = undef
+ $ls = undef
+}
+
 my $Plugin_Config                = {}; 
    $Plugin_Config->{Plugin_Name} = 'Change List Shortname'; 
-   $Plugin_Config->{Plugin_URL}  = self_url(); 
+   $Plugin_Config->{Plugin_URL}  = $DADA::Config::S_PROGRAM_URL . '/plugins/change_list_shortname'; 
 
 
 &init_vars; 
@@ -50,16 +51,11 @@ my $Plugin_Config                = {};
 sub init_vars {
 
 # DEV: This NEEDS to be in its own module - perhaps DADA::App::PluginHelper or something?
-
     while ( my $key = each %$Plugin_Config ) {
-
         if ( exists( $DADA::Config::PLUGIN_CONFIGS->{change_list_shortname}->{$key} ) ) {
-
             if ( defined( $DADA::Config::PLUGIN_CONFIGS->{change_list_shortname}->{$key} ) ) {
-
                 $Plugin_Config->{$key} =
                   $DADA::Config::PLUGIN_CONFIGS->{change_list_shortname}->{$key};
-
             }
         }
     }
@@ -68,20 +64,25 @@ sub init_vars {
 run()
   unless caller();
 
-sub _init { 
-	( $admin_list, $root_login ) = check_list_security(
+
+sub run {
+    
+    reset_globals(); 
+    my $q = shift || cgi_obj(); 
+    my $checksout; 
+    my $error_msg; 
+    
+    ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'change_list_shortname'
     );
+    if(!$checksout){ 
+        return({}, $error_msg); 
+    }
 
 	$list = $admin_list;
-}
-
-sub run {
-
-	_init(); 
-
-	my $flavor = $q->param('flavor') || 'cgi_default';
+	
+	my $prm = $q->param('prm') || 'cgi_default';
 	$ls = DADA::MailingList::Settings->new({-list => $list}); 	
 
 	my %Mode = (
@@ -90,12 +91,11 @@ sub run {
 		'change_list_shortname'        => \&change_list_shortname, 
 
 	);
-
-	if ( exists( $Mode{$flavor} ) ) {
-		$Mode{$flavor}->();    #call the correct subroutine
+	if ( exists( $Mode{$prm} ) ) {
+		return $Mode{$prm}->($q);    #call the correct subroutine
 	}
 	else {
-		&cgi_default;
+		return cgi_default($q);
 	}
 }
 
@@ -109,9 +109,9 @@ sub test_sub {
 
 sub cgi_default { 
 	
+	my $q = shift; 
 	if($DADA::Config::SUBSCRIBER_DB_TYPE !~ /SQL/i){ 
-		sql_backend_only_message(); 
-		return; 
+		return ({}, sql_backend_only_message($q)); 
 	}
 	
 	
@@ -137,7 +137,7 @@ sub cgi_default {
 
          }
      );
-     e_print($scrn);
+     return ({}, $scrn);
 }
 
 sub sql_backend_only_message { 
@@ -172,13 +172,16 @@ sub sql_backend_only_message {
             },
         }
     );	
-	e_print($scrn);
+	return ({}, $scrn);
 }
 
 
 
 
 sub verify_change_list_shortname {
+    
+    my $q = shift; 
+    
     my $new_name = strip( xss_filter( $q->param('new_name') ) );
     my ( $errors, $flags ) = check_list_setup(
         -fields => {
@@ -209,7 +212,6 @@ sub verify_change_list_shortname {
 	
 	
     require DADA::Template::Widgets;
-	
      my $scrn = DADA::Template::Widgets::screen(
          {
              -screen         => 'plugins/change_list_shortname/verify.tmpl',
@@ -228,14 +230,15 @@ sub verify_change_list_shortname {
 
          }
      );
-	print $q->header(); 
-     e_print($scrn);
+     
+     return ({}, $scrn);
 }
 
 
 
 sub change_list_shortname { 
-
+    my $q = shift; 
+    
 my $new_name = strip(xss_filter($q->param('new_name'))); 
 my %p = %DADA::Config::SQL_PARAMS; 
 
@@ -283,18 +286,14 @@ require DADA::App::ScreenCache;
 my $c = DADA::App::ScreenCache->new; 
    $c->flush;
 
-
-print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=logout&login_url='. $DADA::Config::S_PROGRAM_URL . '?flavor=' . $DADA::Config::ADMIN_FLAVOR_NAME); 
+return (
+    {-redirect_uri => $DADA::Config::S_PROGRAM_URL . '?flavor=logout&login_url='. $DADA::Config::S_PROGRAM_URL . '?flavor=' . $DADA::Config::ADMIN_FLAVOR_NAME}, undef); 
 
 }
 
-
-sub self_url { 
-	my $self_url = $q->url; 
-	if($self_url eq 'http://' . $ENV{HTTP_HOST}){ 
-			$self_url = $ENV{SCRIPT_URI};
-	}
-	return $self_url; 	
+sub cgi_obj { 
+    require CGI; 
+    return new CGI; 
 }
 
 

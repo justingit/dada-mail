@@ -1003,6 +1003,7 @@ $(document).ready(function() {
 		$("body").on("submit", "#change_name_form", function(event) {
 			event.preventDefault();
 		});
+		
 
 		$("body").on("click", "#verify_button", function(event) {
 			$.colorbox({
@@ -1012,9 +1013,11 @@ $(document).ready(function() {
 				maxHeight: 480,
 				maxWidth: 649,
 				opacity: 0.50,
-				href: $("#plugin_url").val(),
+				href: $("#s_program_url").val(),
 				data: {
-					flavor: $('#flavor').val(),
+					flavor: 'plugins',
+					plugin: 'change_list_shortname',
+					prm: $('#prm').val(),
 					new_name: $('#new_name').val()
 				}
 			});
@@ -2201,11 +2204,13 @@ function toggleManualBatchSettings() {
 function bounce_handler_show_scorecard() {
 	$("#bounce_scorecard_loading").html('<p class="alert">Loading...</p>');
 	var request = $.ajax({
-		url: $("#plugin_url").val(),
+		url: $("#s_program_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
-			flavor: 'cgi_scorecard',
+			flavor: 'plugins', 
+			plugin: 'bounce_handler', 
+			prm: 'cgi_scorecard',
 			page: $('#bounce_handler_page').val()
 		},
 		dataType: "html"
@@ -2236,11 +2241,13 @@ function bounce_handler_parse_bounces() {
 		isa_test = 'bounces';
 	}
 	var request = $.ajax({
-		url: $("#plugin_url").val(),
+		url: $("#s_program_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
-			flavor:       'ajax_parse_bounces_results',
+			flavor:      'plugins', 
+			plugin:      'bounce_handler',
+			prm:         'ajax_parse_bounces_results',
 			parse_amount: $('#parse_amount').val(),
 			test:         isa_test
 		},
@@ -2267,9 +2274,11 @@ function ajax_parse_bounces_results() {
 		maxHeight: 480,
 		maxWidth: 649,
 		opacity: 0.50,
-		href: $("#plugin_url").val(),
+		href: $("#s_program_url").val(),
 		data: {
-			flavor: 'ajax_parse_bounces_results',
+			flavor: 'plugins', 
+			plugin: 'bounce_handler', 
+			prm: 'ajax_parse_bounces_results',
 			parse_amount: $('#parse_amount').val(),
 			test:         isa_test
 		},
@@ -2284,11 +2293,13 @@ function bounce_handler_manually_enter_bounces() {
 	$("#" + target_id + "_loading").html('<p class="alert">Loading</p>');
 	$("#" + target_id).html('');
 	var request = $.ajax({
-		url: $("#plugin_url").val(),
+		url: $("#s_program_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
-			flavor: 'manually_enter_bounces',
+			flavor: 'plugins', 
+			plugin: 'bounce_handler',
+			prm: 'manually_enter_bounces',
 			process: $('#process').val(),
 			msg: $('#msg').val()
 		},
@@ -2368,7 +2379,9 @@ function plugins_bridge_test_pop3() {
 		opacity: 0.50,
 		href: $("#plugin_url").val(),
 		data: {
-			flavor: 'cgi_test_pop3_ajax',
+			flavor: 'plugins',
+			plugin: 'bridge',
+			prm: 'cgi_test_pop3_ajax',
 			server: $("#discussion_pop_server").val(),
 			username: $("#discussion_pop_username").val(),
 			password: $("#discussion_pop_password").val(),
@@ -2386,9 +2399,11 @@ function plugins_bridge_manually_check_messages() {
 		maxHeight: 480,
 		maxWidth: 649,
 		opacity: 0.50,
-		href: $("#plugin_url").val(),
+		href: $("#s_program_url").val(),
 		data: {
-			flavor: 'admin_cgi_manual_start_ajax'
+			flavor: 'plugins', 
+			plugin: 'bridge', 
+			prm:    'admin_cgi_manual_start_ajax'
 		}
 	});
 }
@@ -2413,11 +2428,13 @@ function plugins_bridge_hide_change_pop3_password_form() {
 function plugins_mailing_monitor() {
 	$("#mailing_monitor_results_loading").html('<p class="alert">Loading...</p>');
 	var request = $.ajax({
-		url: $("#plugin_url").val(),
+		url: $("#s_program_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
-			flavor: 'mailing_monitor_results'
+			flavor: 'plugins', 
+			plugin: 'mailing_monitor', 
+			prm: 'mailing_monitor_results'
 		},
 		dataType: "html"
 	});
@@ -2988,7 +3005,9 @@ function view_logs_results() {
 		type: "POST",
 		cache: false,
 		data: {
-			flavor: 'ajax_view_logs_results',
+			flavor: 'plugins', 
+			plugin: 'log_viewer',
+			prm: 'ajax_view_logs_results',
 			log_name: $('#log_name').val(),
 			lines: $('#lines').val()
 		},
@@ -3009,7 +3028,9 @@ function delete_log() {
 			type: "POST",
 			cache: false,
 			data: {
-				flavor: 'ajax_delete_log',
+				flavor: 'plugins', 
+				plugin: 'log_viewer',
+				prm: 'ajax_delete_log',
 				log_name: $('#log_name').val()
 			},
 			dataType: "html"

@@ -12,7 +12,7 @@
 
 <div id="plugins_bounce_handler_default"></div> 
 <form> 
-	<input type="hidden" name="plugin_url"          id="plugin_url"          value="<!-- tmpl_var Plugin_Url -->" /> 
+	<input type="hidden" name="s_program_url"          id="s_program_url"          value="<!-- tmpl_var S_PROGRAM_URL -->" /> 
 	<input type="hidden" name="bounce_handler_page" id="bounce_handler_page" value="1" /> 
 </form> 
 
@@ -51,7 +51,7 @@ these message report summaries.</p>
 	Manually Run <!-- tmpl_var Plugin_Name -->
 </legend> 
 
-<form action="<!-- tmpl_var Plugin_URL -->" id="parse_bounces_form">
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" id="parse_bounces_form">
 <input type="checkbox" name="test" id="test" value="bounces" />
 <label for="test">
 	Test With Awaiting Messages
@@ -63,7 +63,9 @@ these message report summaries.</p>
 		up to <!-- tmpl_var parse_amount_widget --> Messages.
 </p>
 
-<input type="hidden" name="flavor" id="flavor" value="cgi_parse_bounce" /> 
+<input type="hidden" name="prm" id="prm" value="cgi_parse_bounce" /> 
+<input type="hidden" name="flavor" value="plugins" /> 
+<input type="hidden" name="plugin" value="bounce_handler" /> 
 <div class="buttonfloat"> 
 	<input type="submit" class="cautionary" id="parse_bounces_button" value="Parse Received Bounces..." />
 </div> 
@@ -72,7 +74,7 @@ these message report summaries.</p>
 
 <p>
  <label for="cronjob_url">Manual Run URL:</label><br /> 
-<input type="text" class="full" id="cronjob_url" value="<!-- tmpl_var Plugin_URL -->?run=1&verbose=1&passcode=<!-- tmpl_var Manual_Run_Passcode -->" />
+<input type="text" class="full" id="cronjob_url" value="<!-- tmpl_var S_PROGRAM_URL -->?flavor=plugins&plugin=bounce_handler&run=1&verbose=1&passcode=<!-- tmpl_var Manual_Run_Passcode -->" />
 </p>
 <!-- tmpl_unless Allow_Manual_Run --> 
     <span class="error">(Currently disabled)</a>
@@ -80,7 +82,7 @@ these message report summaries.</p>
 
 
 <p> <label for="cronjob_command">curl command example (for a cronjob):</label><br /> 
-<input type="text" class="full" id="cronjob_command" value="<!-- tmpl_var name="curl_location" default="/cannot/find/curl" -->  -s --get --data run=1\;passcode=<!-- tmpl_var Manual_Run_Passcode -->\;verbose=0  --url <!-- tmpl_var Plugin_URL -->" />
+<input type="text" class="full" id="cronjob_command" value="<!-- tmpl_var name="curl_location" default="/cannot/find/curl" -->  -s --get --data flavor=plugins\;&plugin=bounce_handler\;run=1\;passcode=<!-- tmpl_var Manual_Run_Passcode -->\;verbose=0  --url <!-- tmpl_var S_PROGRAM_URL -->" />
 <!-- tmpl_unless curl_location --> 
 	<span class="error">Can't find the location to curl!</span><br />
 <!-- /tmpl_unless --> 
@@ -102,9 +104,11 @@ these message report summaries.</p>
 Scorecard Preferences
 </legend> 
 
-<form action="<!-- tmpl_var Plugin_URL -->" method="post">
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
 
-<input type="hidden" name="flavor" value="edit_prefs" /> 
+<input type="hidden" name="flavor" value="plugins" /> 
+<input type="hidden" name="plugin" value="bounce_handler" /> 
+<input type="hidden" name="prm" value="edit_prefs" /> 
 <p>
 	Addresses that bounce back reports because of <strong>temporary</strong> 
 	problems, like the mailbox being full or a network problem are given the
@@ -269,7 +273,9 @@ Scorecard Preferences
   
  <div class="buttonfloat"> 
  <form action="<!-- tmpl_var Plugin_URL -->"> 
-  <input type="hidden" name="flavor" value="cgi_show_plugin_config" /> 
+     <input type="hidden" name="flavor" value="plugins" /> 
+     <input type="hidden" name="plugin" value="bounce_handler" /> 
+  <input type="hidden" name="prm" value="cgi_show_plugin_config" /> 
   <input type="submit" value="View All Plugin Configurations..." class="cautionary" /> 
  </form> 
  </div> 

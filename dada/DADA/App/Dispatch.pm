@@ -169,6 +169,12 @@ sub translate {
             $q->param( 'flavor', $DADA::Config::ADMIN_FLAVOR_NAME );
 
         }
+        elsif ( $info =~ m/^plugins/ ) {
+            my ( $flavor, $plugin, $prm ) = split( '/', $info, 3 );
+            $q->param('flavor', $flavor); 
+            $q->param('plugin', $plugin); 
+            $q->param('prm',    $prm); 
+        }
         elsif ( $info =~ m/^archive/ ) {
 
             # archive, archive_rss and archive_atom

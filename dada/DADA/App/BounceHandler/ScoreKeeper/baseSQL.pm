@@ -262,14 +262,15 @@ sub raw_scorecard {
 
 }
 
-sub print_csv_scorecard { 
+sub csv_scorecard { 
     my $self = shift;
     my ($args) = @_;
-
-	if(!exists($args->{-fh})){ 
-		$args->{-fh} = \*STDOUT;
-	}
-	my $fh = $args->{-fh}; 
+    my $r = undef; 
+    
+#	if(!exists($args->{-fh})){ 
+#		$args->{-fh} = \*STDOUT;
+#	}
+#	my $fh = $args->{-fh}; 
 
     my $query =
         'SELECT email, score FROM '
@@ -285,13 +286,17 @@ sub print_csv_scorecard {
     my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
 
 
-	my $title_status = $csv->print ($fh, [qw(email score)]);
-	print $fh "\n";
+	#my $title_status = $csv->print ($fh, [qw(email score)]);
+	my $status = $csv->combine(qw(email score));    # combine columns into a string
+    $r .= $csv->string();                   # get the combined string
+	$r .= "\n";
 
 
     while ( my ( $email, $score ) = $sth->fetchrow_array ) {
-        my $status = $csv->print( $fh,[$email, $score]);
-        print $fh "\n";
+        #my $status = $csv->print( $fh,[$email, $score]);
+        my $status = $csv->combine($email, $score);   
+        $r .= $csv->string();                  
+        $r .= "\n";
     }
 
     $sth->finish;

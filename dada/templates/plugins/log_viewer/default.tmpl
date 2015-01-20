@@ -37,7 +37,11 @@
 	<br /><input type="button" value="Refresh" id="refresh_button" />
 	</td> 
 	<td valign="bottom"> 
-	<input type="hidden" name="flavor" value="download" /> 
+
+    	<input type="hidden" name="flavor" value="plugins" /> 
+    	<input type="hidden" name="plugin" value="log_viewer" /> 
+
+	<input type="hidden" name="prm" value="download" /> 
 	<br /><input type="submit"  value="Download Entire Log" id="download_button" />
 	</td>
 		
@@ -48,7 +52,10 @@
 	</td>
 <td valign="bottom"> <br />
 	<form method="get"> 
-     <input type="hidden" name="flavor" value="search_logs" /> 
+	    <input type="hidden" name="flavor" value="plugins" /> 
+    	<input type="hidden" name="plugin" value="log_viewer" /> 
+    	
+     <input type="hidden" name="prm" value="search_logs" /> 
      <input type="text" name="query" value="" /> 
      <input type="submit" value="Search All Logs" class="processing" /> 
     </form>

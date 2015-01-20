@@ -16,23 +16,14 @@ BEGIN {
     push @INC,$b__dir.'5/lib/perl5',$b__dir.'5/lib/perl5/x86_64-linux-thread-multi',$b__dir.'lib',map { $b__dir . $_ } @INC;
 }
 
-use CGI::Carp qw(fatalsToBrowser);
-
 use DADA::Config 7.0.0 qw(!:DEFAULT);
 use DADA::App::Guts; 
 use DADA::MailingList::Settings;
 use DADA::Profile::Htpasswd;
 
-# we need this for cookies things
-use CGI;
-my $q = new CGI;
-$q->charset($DADA::Config::HTML_CHARSET);
-$q = decode_cgi_obj($q);
-my $verbose = $q->param('verbose') || 0; 
 
 my $Plugin_Config                        = {}; 
    $Plugin_Config->{Plugin_Name}         = 'Password Protect Directories'; 
-   $Plugin_Config->{Plugin_URL}          = self_url(); 
    $Plugin_Config->{Allow_Manual_Run}    = 1; 
    $Plugin_Config->{Manual_Run_Passcode} = undef; 
    $Plugin_Config->{Base_Absolute_Path}  = $ENV{DOCUMENT_ROOT} . '/';
@@ -61,15 +52,22 @@ sub init_vars {
     }
 }
 
-my $list       = undef;
-my $root_login = 0;
+my $list;
+my $root_login;
 my $ls; 
+my $verbose; 
 
+sub reset_globals { 
+    my $list       = undef;
+    my $root_login = 0;
+    my $ls;
+}
 sub run {
+	reset_globals(); 
+	my $q = shift; 
 	
 	if ( !$ENV{GATEWAY_INTERFACE} ) {
-	
-		refresh_directories( { -verbose => $verbose } );
+		print refresh_directories( { -verbose => $verbose } );
         # this (hopefully) means we're running on the cl...
     }
 	elsif (   keys %{ $q->Vars }
@@ -77,23 +75,30 @@ sub run {
         && xss_filter( $q->param('run') ) == 1
         && $Plugin_Config->{Allow_Manual_Run} == 1 )
     {
-		print $q->header(); 
-		print '<pre>'
-		if $verbose; 
-		refresh_directories( { -verbose => $verbose } );
-           print '</pre>'
-		 if $verbose; 
+		my $r = refresh_directories( { -verbose => 0 } );
+	    if($verbose){ 
+	        print '<pre>' . $r . '</pre>'; 
+	    }
+	    return ({}, $r); 
 	}
 	else { 
 		my $admin_list; 
-		( $admin_list, $root_login ) = check_list_security(
+		my $checksout; 
+		my $error_msg; 
+		( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
 		    -cgi_obj  => $q,
 		    -Function => 'password_protect_directories'
 		);
+		if(!$checksout){ 
+		    return ({}, $error_msg); 
+		}
+		
+
 		$list = $admin_list;
 		$ls   = DADA::MailingList::Settings->new( { -list => $list } );
+		$verbose = $q->param('verbose') || 0; 
 	
-		my $f = $q->param('f') || undef;
+		my $prm = $q->param('prm') || undef;
 		my %Mode = (
 		    'default'                    => \&default,
 			'edit_dir'                   => \&default, 
@@ -102,17 +107,12 @@ sub run {
 			'delete_dir'                 => \&delete_dir, 
 			'cgi_refresh_directories'    => \&cgi_refresh_directories, 
 		);
-		if ($f) {
-		    if ( exists( $Mode{$f} ) ) {
-		        $Mode{$f}->();    #call the correct subroutine
-		    }
-		    else {
-		        &default;
-		    }
-		}
-		else {
-		    &default;
-		}
+	    if ( exists( $Mode{$prm} ) ) {
+	        return $Mode{$prm}->($q);    #call the correct subroutine
+	    }
+	    else {
+	        return default($q);
+	    }
 	}
 }
 
@@ -122,43 +122,43 @@ sub test_sub {
 }
 
 sub cgi_refresh_directories { 
+    my $q = shift; 
+    
 	$verbose = 0; 
 	refresh_directories(); 
-	print $q->redirect(-uri => $Plugin_Config->{Plugin_URL} . '?done=1'); 
+	return({-redirect_uri => $Plugin_Config->{Plugin_URL} . '?done=1'}, undef); 
 }
 sub refresh_directories {
-	print "Starting...\n"
-	 if $verbose; 
+    my $r; 
+    
+	$r .= "Starting...\n";
 	foreach my $list(available_lists()) { 
-		print "List: $list\n"
-			 if $verbose; 
+		$r .=  "List: $list\n";
 		my $htp     = DADA::Profile::Htpasswd->new({-list => $list});
 		for my $id(@{$htp->get_all_ids}) {  
-			print "id: $id\n"
-				 if $verbose; 
+			$r .=  "id: $id\n";
 			$htp->setup_directory({-id => $id});
 		}
 	}
-	print "Done.\n"
-		if $verbose;
+    $r .=  "Done.\n";
+    return $r; 
 }
 
 sub default {
+	my $q = shift; 
 	
 	if($DADA::Config::SUBSCRIBER_DB_TYPE !~ /SQL/i){ 
-		sql_backend_only_message(); 
-		return; 
+		return sql_backend_only_message(); 
 	}
 	
 	
 	my $htp     = DADA::Profile::Htpasswd->new({-list => $list});
 	my $entries = $htp->get_all_entries; 
-	
 	my $problems = $q->param('problems') || 0; 
 	my $edit     = 0; 
-	my $f        = $q->param('f'); 
+	my $process        = $q->param('process'); 
 	my $id       = undef; 
-	if($f eq 'edit_dir'){ 
+	if($process eq 'edit_dir'){ 
 		$id = $q->param('id') || undef; 
 		my $htp = DADA::Profile::Htpasswd->new({-list => $list});
 		my $entry = $htp->get({-id => $id });
@@ -166,7 +166,6 @@ sub default {
 		$q->param('name', $entry->{name});
 		$q->param('url', $entry->{url});
 		$q->param('path', $entry->{path});
-		
 		$q->param('use_custom_error_page', $entry->{use_custom_error_page});
 		$q->param('custom_error_page', $entry->{custom_error_page});
 		$q->param('f', 'process_edit_dir'); 
@@ -224,14 +223,14 @@ sub default {
 		my $h = HTML::FillInForm::Lite->new();
 		$scrn = $h->fill( \$scrn, $q );
 	}
-	
-	
-    e_print($scrn);
+    return( {}, $scrn);
 
 }
 
 
 sub new_dir { 
+
+    my $q = shift; 
     my $name = xss_filter( $q->param('name') ) || undef;
     my $url  = xss_filter( $q->param('url') )  || undef;
     my $path = xss_filter( $q->param('path') ) || undef;
@@ -276,13 +275,13 @@ sub new_dir {
 			$q->param('error_' . $_, $errors->{$_}); 
 		}
 		$q->param('problems', 1); 
-		&default; 
-		return; 
+		return default($q); 
 	}
 }
 
 
 sub sql_backend_only_message { 
+	
 	
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -302,10 +301,11 @@ sub sql_backend_only_message {
             },
         }
     );	
-	e_print($scrn);
+	return ({}, $scrn);
 }
 
 sub process_edit_dir { 
+	my $q = shift; 
 	
 	my $name                  = xss_filter( $q->param('name') ) || undef;
     my $url                   = xss_filter( $q->param('url') )  || undef;
@@ -346,7 +346,7 @@ sub process_edit_dir {
 			my $htp     = DADA::Profile::Htpasswd->new({-list => $list});
 			   $htp->setup_directory({-id => $id});
 			
-		print $q->redirect(-uri => $Plugin_Config->{Plugin_URL} . '?done=1'); 
+		return ({-redirect_uri => $Plugin_Config->{Plugin_URL} . '?done=1'}, undef); 
 	}
 	else { 
 		for(keys %$errors){ 
@@ -354,13 +354,13 @@ sub process_edit_dir {
 		}
 		$q->param('problems', 1); 
 		$q->param('f', 'edit_dir');
-		&default;  
-		return; 
+		return default($q);  
 	}	
 		
 }
 
 sub delete_dir { 
+    my $q = shift; 
 	my $id = $q->param('id'); 
 	my $htp     = DADA::Profile::Htpasswd->new({-list => $list});
 	   $htp->remove_directory_files({-id => $id}); 
@@ -370,14 +370,7 @@ sub delete_dir {
 }
 
 
-
-sub self_url { 
-	my $self_url = $q->url; 
-	if($self_url eq 'http://' . $ENV{HTTP_HOST}){ 
-			$self_url = $ENV{SCRIPT_URI};
-	}
-	return $self_url; 	
-}
+return 1; 
 
 __END__
 

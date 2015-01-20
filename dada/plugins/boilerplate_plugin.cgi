@@ -16,12 +16,6 @@ use DADA::Template::HTML;
 use DADA::App::Guts;
 use DADA::MailingList::Settings;
 
-# we need this for cookies things
-use CGI;
-my $q = new CGI;
-$q->charset($DADA::Config::HTML_CHARSET);
-$q = decode_cgi_obj($q);
-use CGI::Carp qw(fatalsToBrowser);
 
 run()
   unless caller();
@@ -33,67 +27,75 @@ sub default {
         -cgi_obj  => $q,
         -Function => 'boilerplate'
     );
-    my $list = $admin_list;
+    if(!$checksout){ 
+        return ({}, $error_msg); 
+    }
+    else { 
+        my $list = $admin_list;
+        # get the list information
+        my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+        my $li = $ls->get;
 
-    # get the list information
-    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
+        my $data = '';
+        if ( !$q->param('prm') ) {
 
-    my $data = '';
-    if ( !$q->param('process') ) {
+            $data = <<EOF
 
-        $data = <<EOF
-
-<!-- tmpl_set name="title" value="Plugins &#187; Admin Plugin Example" -->
-<p>I echo whatever you type in:</p> 
-<form> 
-<input type="text" name="echo" /> 
-<input type="hidden" name="process" value="true" /> 
-<input type="submit" value="echo away!" /> 
-</form> 
+    <!-- tmpl_set name="title" value="Plugins &#187; Admin Plugin Example" -->
+    <p>I echo whatever you type in:</p> 
+    <form method="post" action="<!-- tmpl_var S_PROGRAM_URL -->"> 
+    <input type="text" name="echo" /> 
+    <input type="hidden" name="flavor" value="plugins" /> 
+    <input type="hidden" name="plugin" value="boilerplate_plugin" /> 
+    <input type="hidden" name="prm" value="true" /> 
+    
+    <input type="submit" value="echo away!" /> 
+    </form> 
 
 EOF
-          ;
+;
 
-        require DADA::Template::Widgets;
-        my $scrn = DADA::Template::Widgets::wrap_screen(
-            {
-                -data           => \$data,
-                -with           => 'admin',
-                -wrapper_params => {
-                    -Root_Login => $root_login,
-                    -List       => $list,
-                },
-            }
-        );
-        e_print($scrn);
+            require DADA::Template::Widgets;
+            my $scrn = DADA::Template::Widgets::wrap_screen(
+                {
+                    -data           => \$data,
+                    -with           => 'admin',
+                    -wrapper_params => {
+                        -Root_Login => $root_login,
+                        -List       => $list,
+                    },
+                }
+            );
+            return({}, $scrn);
 
-    }
-    else {
+        }
+        else {
 
-        my $escape = $q->escapeHTML( $q->param('echo') );
-        $data = <<EOF
-<!-- tmpl_set name="title" value="Plugins &#187; Admin Plugin Example" -->
-<h1>Results:</h1>
-<p><!-- tmpl_var result --></p>  
+            my $escape = $q->escapeHTML( $q->param('echo') );
+
+$data = <<EOF
+    <!-- tmpl_set name="title" value="Plugins &#187; Admin Plugin Example" -->
+    <h1>Results:</h1>
+    <p><!-- tmpl_var result --></p>  
 		
 EOF
-          ;
+;
 
-        require DADA::Template::Widgets;
-        my $scrn = DADA::Template::Widgets::wrap_screen(
-            {
-                -data           => \$data,
-                -with           => 'admin',
-                -wrapper_params => {
-                    -Root_Login => $root_login,
-                    -List       => $list,
-                },
-                -vars => { result => $escape, }
-            }
-        );
-        e_print($scrn);
+            require DADA::Template::Widgets;
+            my $scrn = DADA::Template::Widgets::wrap_screen(
+                {
+                    -data           => \$data,
+                    -with           => 'admin',
+                    -wrapper_params => {
+                        -Root_Login => $root_login,
+                        -List       => $list,
+                    },
+                    -vars => { result => $escape, }
+                }
+            );
+            return({}, $scrn);
 
+        }
     }
 
 }

@@ -11,35 +11,16 @@ BEGIN {
     push @INC,$b__dir.'5/lib/perl5',$b__dir.'5/lib/perl5/x86_64-linux-thread-multi',$b__dir.'lib',map { $b__dir . $_ } @INC;
 }
 
-use CGI::Carp qw(fatalsToBrowser);
-
-
 $ENV{PATH} = "/bin:/usr/bin"; 
 delete @ENV{'IFS', 'CDPATH', 'ENV', 'BASH_ENV'};
-# we need this for cookies things;
-use CGI; 
-CGI->nph(1) 
-	if $DADA::Config::NPH == 1; 
-	
-	my $q = new CGI; 
-	   $q->charset($DADA::Config::HTML_CHARSET);
-       $q = decode_cgi_obj($q);
-
-
 my $Plugin_Config = {}; 
-
-
 # Usually, this doesn't need to be changed. 
 # But, if you are having trouble saving settings 
 # and are redirected to an 
 # outside page, you may need to set this manually.
 
-$Plugin_Config->{Plugin_URL}   = self_url(); 
-
-
+$Plugin_Config->{Plugin_URL}   = $DADA::Config::S_PROGRAM_URL . '?flavor=plugins;&plugin=log_viewer'; 
 $Plugin_Config->{Plugin_Name}  = 'Log Viewer'; 
-
-
 # This refers to the, "tail" command: 
 $Plugin_Config->{tail_command} =  'tail';
 
@@ -53,64 +34,69 @@ use DADA::MailingList::Settings;
 use DADA::App::LogSearch;
 
 
+my $admin_list;
+my $root_login;
+my $list;    
+my %Logs;    
+my $logs;    
+my $log_name;; 
+my $lines; 
+my $Default_Log;;
+
+sub reset_globals {
+    $admin_list  = undef; 
+    $root_login  = undef; 
+    $list        = undef; 
+    %Logs        = (); 
+    $logs        = undef; 
+    $log_name    = undef; 
+    $lines       = undef; 
+    $Default_Log = 'Usage Log';
+}
+
+reset_globals();
 init_vars(); 
-
-my $admin_list = undef; 
-my $root_login = undef; 
-my $list       = undef; 
-my %Logs       = (); 
-
-my $Default_Log = 'Usage Log';
-
-my $process     = $q->param('process'); 
-
-    my $logs        = {}; 
-    my $lines       = $q->param('lines')    || 100; 
-    my $log_name    = $q->param('log_name') || $Default_Log;
 
 run()
   unless caller();
 
-
 sub run { 
+    $q = shift; 
 	if(!$ENV{GATEWAY_INTERFACE}){ 
 	#	croak "There's no CLI for this plugin."; 
 	}else{ 
-		&cgi_main(); 
+		&cgi_main($q); 
 	}
 }
-
-
 sub test_sub { 
 	return "Hello, World!"; 
 }
-
-
-
 sub init_vars { 
 
     # DEV: This NEEDS to be in its own module - perhaps DADA::App::PluginHelper or something?
-
      while ( my $key = each %$Plugin_Config ) {
-        
         if(exists($DADA::Config::PLUGIN_CONFIGS->{'log_viewer'}->{$key})){ 
-        
             if(defined($DADA::Config::PLUGIN_CONFIGS->{'log_viewer'}->{$key})){ 
-                    
                 $Plugin_Config->{$key} = $DADA::Config::PLUGIN_CONFIGS->{'log_viewer'}->{$key};
-        
             }
         }
      }
 }
 
-sub cgi_main {
 
+sub cgi_main {
+    my $q = shift; 
+    
+    
 	( $admin_list, $root_login ) = check_list_security(
 	    -cgi_obj    => $q,
 	    -Function   => 'log_viewer',
 	);
 	$list = $admin_list; 
+ 
+    $logs        = {}; 
+    $lines       = $q->param('lines')    || 100; 
+    $log_name    = $q->param('log_name') || $Default_Log;
  
 	
 	%Logs = get_logs($list); 
@@ -119,7 +105,7 @@ sub cgi_main {
 	my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 	my $li = $ls->get;
 
-	my $flavor = $q->param('flavor') || 'cgi_view';
+	my $prm = $q->param('prm') || 'cgi_view';
 
 	my %Mode = (
 	   'cgi_view'               => \&cgi_view, 
@@ -129,11 +115,11 @@ sub cgi_main {
 	   'download'               => \&download, 
 	);
 
-	if ( exists( $Mode{$flavor} ) ) {
-	    $Mode{$flavor}->();    #call the correct subroutine
+	if ( exists( $Mode{$prm} ) ) {
+	    $Mode{$prm}->($q);    #call the correct subroutine
 	}
 	else {
-	    &cgi_view;
+	    cgi_view($q);
 	}
 
 }
@@ -142,6 +128,8 @@ sub cgi_main {
 
 sub cgi_view { 
 
+    my $q = shift; 
+    
     # get the list information
     my $ls = DADA::MailingList::Settings->new({-list => $list}); 
     my $li = $ls->get; 
@@ -181,7 +169,7 @@ sub cgi_view {
 		}
 		
 	); 
-	e_print($scrn); 
+	return ({}, $scrn); 
 	    
 }
 
@@ -189,13 +177,12 @@ sub cgi_view {
 
 sub ajax_view_logs_results {
 
+    my $q = shift; 
      my $scrn; 
         $scrn .=  '<div style="width:100%; overflow: auto; height: 500px" id="resultdiv">'; 
         $scrn .=  show_log($log_name, $lines); 
         $scrn .=  '</div>';
-        
-		print $q->header(); 
-        e_print($scrn); 
+        return ({}, $scrn); 
 }
 
 
@@ -222,7 +209,7 @@ sub ajax_delete_log {
         make_safer($file);
         unlink($file); 	
     }
-	print $q->header(); 
+    return ({}, undef);
 }
 
 
@@ -307,6 +294,8 @@ sub log_lines {
 
 
 sub search_logs { 
+	
+	my $q = shift; 
 	
 	my $s_logs = shift || [values(%$logs)]; 
 	my $query  = shift || $q->param('query'); 
@@ -427,7 +416,7 @@ sub search_logs {
 		return $return; 
 	}
 	else { 
-		e_print($return); 
+		return ({}, $return); 
 	}
 
 
@@ -440,17 +429,23 @@ sub download {
 	my $name = fileparse($Logs{$log_name});
 	my ($file_name, $file_ending) = split(/\./, $name, 2); 
 	
-	my $header  = 'Content-disposition: attachement; filename=' . $file_name . '-' . time . '.' . $file_ending . "\n"; 
-	   $header .= 'Content-type: text/plain' . "\n\n"; 
-	
-		print $header; 
 	
 		open my $LOG, '<:encoding('. $DADA::Config::HTML_CHARSET . ')', make_safer($Logs{$log_name}) or die $!; 
 		my $line; 
+        my $l = undef; 
+
 		while(defined($line = <$LOG>)){ 
-			 e_print($line); 
+			 $l .= $line; 
 		}
 		close($LOG); 
+		
+		return ({
+		        "-Content-disposition" => 'attachement; filename=' . $file_name . '-' . time . '.' . $file_ending,  
+                 -type => 'text/plain',
+                 }, 
+                 $l
+                );  
+
 }	
 
 sub get_logs { 
@@ -565,6 +560,8 @@ sub self_url {
 	}
 	return $self_url; 	
 }
+
+
 
 =pod
 

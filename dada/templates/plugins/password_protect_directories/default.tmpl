@@ -56,15 +56,21 @@
 			</table> 
 			<div class="buttonfloat">
 	
-				<form action="<!-- tmpl_var Plugin_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" style="display: inline; margin: 0;"> 
-					<input type="hidden" name="f" value="edit_dir" /> 
+				<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" style="display: inline; margin: 0;"> 
+					<input type="hidden" name="flavor" value="plugins" /> 
+					<input type="hidden" name="plugin" value="password_protect_directories" /> 
+					<input type="hidden" name="prm" value="edit_dir" /> 
+					<input type="hidden" name="process" value="edit_dir" /> 
 					<input type="hidden" name="id" value="<!-- tmpl_var id -->" /> 
 					<input type="submit" class="processing" value="Edit " />
 				</form>
 		
 		
-			<form action="<!-- tmpl_var Plugin_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" style="display: inline; margin: 0;"> 
-				<input type="hidden" name="f" value="delete_dir" /> 
+			<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" style="display: inline; margin: 0;"> 
+				
+				<input type="hidden" name="flavor" value="plugins" /> 
+				<input type="hidden" name="plugin" value="password_protect_directories" /> 				
+				<input type="hidden" name="prm" value="delete_dir" /> 
 				<input type="hidden" name="id" value="<!-- tmpl_var id -->" /> 
 	
 				<input type="submit" class="alertive" value="Delete " />
@@ -125,7 +131,11 @@
 <legend>Edit Password Protected Directory</legend> 
 <!-- /tmpl_unless --> 
 
-<form action="<!-- tmpl_var Plugin_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+    
+    <input type="hidden" name="flavor" value="plugins" /> 
+	<input type="hidden" name="plugin" value="password_protect_directories" /> 
+	
 <table class="stripedtable">
 <tr class="alt">
 <td width="200px">
@@ -220,10 +230,10 @@ Custom Error Page (Path):
 </table>
 
 <!-- tmpl_unless edit --> 
-<input type="hidden" name="f" value="new_dir" /> 
+<input type="hidden" name="prm" value="new_dir" /> 
 <!-- tmpl_else --> 
 <input type="hidden" name="id" value="<!-- tmpl_var id -->" /> 
-<input type="hidden" name="f" value="process_edit_dir" /> 
+<input type="hidden" name="prm" value="process_edit_dir" /> 
 <!-- /tmpl_unless --> 
 
 <div class="buttonfloat">

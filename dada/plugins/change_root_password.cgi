@@ -1,160 +1,137 @@
 #!/usr/bin/perl
-use strict; 
 
+package change_root_password;
+
+use strict;
 use FindBin;
 use lib "$FindBin::Bin/../";
 use lib "$FindBin::Bin/../DADA/perllib";
-BEGIN { 
-	my $b__dir = ( getpwuid($>) )[7].'/perl';
-    push @INC,$b__dir.'5/lib/perl5',$b__dir.'5/lib/perl5/x86_64-linux-thread-multi',$b__dir.'lib',map { $b__dir . $_ } @INC;
+
+BEGIN {
+    my $b__dir = ( getpwuid($>) )[7] . '/perl';
+    push @INC, $b__dir . '5/lib/perl5', $b__dir . '5/lib/perl5/x86_64-linux-thread-multi', $b__dir . 'lib',
+      map { $b__dir . $_ } @INC;
 }
 
-use CGI::Carp qw(fatalsToBrowser);
 
 # use some of those Modules
 use DADA::Config 7.0.0;
-use DADA::Template::HTML; 
-use DADA::Template::Widgets; 
+use DADA::Template::HTML;
+use DADA::Template::Widgets;
 use DADA::App::Guts;
-use DADA::MailingList::Settings; 
+use DADA::MailingList::Settings;
 
+my $Start_Marker = '# Start Root Password';
+my $End_Marker   = '# End Root Password';
 
-my $Start_Marker = '# Start Root Password'; 
-my $End_Marker   = '# End Root Password'; 
-
-
-
-
-
-# we need this for cookies things
-use CGI; 
-my $q = new CGI; 
-   $q->charset($DADA::Config::HTML_CHARSET);
-   $q = decode_cgi_obj($q);
-
-my $URL = self_url(); 
-
-# This will take care of all out security woes
-my ($admin_list, $root_login) = check_list_security(-cgi_obj  => $q, 
-                                                    -Function => 'change_root_password');
-my $list = $admin_list; 
-
-# get the list information
-my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-my $li = $ls->get; 
-                             
-	               
-if(!$q->param('process')){ 
-
-	my $scrn = DADA::Template::Widgets::wrap_screen(
-						{
-				            -screen         => 'plugins/change_root_password/default.tmpl',
-							-with           => 'admin', 
-							-wrapper_params => { 
-								-Root_Login => $root_login,
-								-List       => $list,  
-							},
-							-vars => { 
-								 ROOT_PASS_IS_ENCRYPTED => $DADA::Config::ROOT_PASS_IS_ENCRYPTED, 
-								
-							        new_pass_no_match => ($q->param('new_pass_no_match') == 1) ? 1 : 0, 
-							        old_root_pass_incorrect => ($q->param('old_root_pass_incorrect') == 1) ? 1 : 0, 
-								
-							},
-						}
-					);
-    e_print($scrn); 
-
-}else{ 
-
-
+sub run() {
     
-    if(!$q->param('old_password')){ 
-        
-        print $q->redirect(-url => $URL . '?old_root_pass_incorrect=1'); 
-        return; 
-        
-    }else{ 
-    
-    
-    
-       if($DADA::Config::ROOT_PASS_IS_ENCRYPTED == 1){ 	
-            require DADA::Security::Password; 
-            my $root_password_check = DADA::Security::Password::check_password($DADA::Config::PROGRAM_ROOT_PASSWORD, $q->param('old_password')); 
-            if($root_password_check == 1){
-                # we are good.
-            } else { 
-                print $q->redirect(-url => $URL . '?old_root_pass_incorrect=1'); 
-                return; 
+    my $q = shift;
+
+    # This will take care of all out security woes
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
+        -cgi_obj   => $q,
+        - Function => 'change_root_password'
+    );
+
+    if ( !$checksout ) {
+        return ( {}, $error_msg );
+    }
+
+    my $list = $admin_list;
+
+    # get the list information
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $li = $ls->get;
+
+    if ( !$q->param('process') ) {
+
+        my $scrn = DADA::Template::Widgets::wrap_screen(
+            {
+                -screen         => 'plugins/change_root_password/default.tmpl',
+                -with           => 'admin',
+                -wrapper_params => {
+                    -Root_Login => $root_login,
+                    -List       => $list,
+                },
+                -vars => {
+                    ROOT_PASS_IS_ENCRYPTED => $DADA::Config::ROOT_PASS_IS_ENCRYPTED,
+
+                    new_pass_no_match       => ( $q->param('new_pass_no_match') == 1 )       ? 1 : 0,
+                    old_root_pass_incorrect => ( $q->param('old_root_pass_incorrect') == 1 ) ? 1 : 0,
+
+                },
             }
-        }else{ 
-            
-            if($DADA::Config::PROGRAM_ROOT_PASSWORD eq $q->param('old_password')){ 
-                # we are good.
-            } else { 
-            
-                print $q->redirect(-url => $URL . '?old_root_pass_incorrect=1'); 
-                return; 
-                
+        );
+        return ({}, $scrn);
+    }
+    else {
+
+        if ( !$q->param('old_password') ) {
+            return({ -redirect_uri => $DADA::Config::S_PROGRAM_URL .'?flavor=plugins&plugin=change_root_password&old_root_pass_incorrect=1'}, undef );
+        }
+        else {
+
+            if ( $DADA::Config::ROOT_PASS_IS_ENCRYPTED == 1 ) {
+                require DADA::Security::Password;
+                my $root_password_check =
+                  DADA::Security::Password::check_password( $DADA::Config::PROGRAM_ROOT_PASSWORD,
+                    $q->param('old_password') );
+                if ( $root_password_check == 1 ) {
+                    # we are good.
+                }
+                else {
+                    return({-redirect_uri => $DADA::Config::S_PROGRAM_URL .'?flavor=plugins&plugin=change_root_password&old_root_pass_incorrect=1'}, undef );
+                }
+            }
+            else {
+
+                if ( $DADA::Config::PROGRAM_ROOT_PASSWORD ne $q->param('old_password') ) {
+                   return ({-redirect_uri => $DADA::Config::S_PROGRAM_URL .'?flavor=plugins&plugin=change_root_password&old_root_pass_incorrect=1'}, undef );
+                }
             }
         }
-                               
+
+        if ( $q->param('new_password') ne $q->param('again_new_password') ) {
+            return ({-redirect_uri => $DADA::Config::S_PROGRAM_URL .'?flavor=plugins&plugin=change_root_password&new_pass_no_match=1'}, undef );
+        }
+        else { 
+            
+            # Well, if everything works out, we're cool.
+            my $file = $DADA::Config::CONFIG_FILE;
+            open my $CONFIG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file
+              or die "Cannot read config file at: '" . $file . "' because: " . $!;
+            my $config = do { local $/; <$CONFIG> };
+            close($CONFIG) or die $!;
+
+            my $qmsp = quotemeta($Start_Marker);
+            my $qmep = quotemeta($End_Marker);
+
+            require DADA::Security::Password;
+
+            my $pw = $q->param('new_password');
+
+            my $root_pass = DADA::Security::Password::encrypt_passwd($pw);
+
+            my $new_pass =
+              "\n" . '$ROOT_PASS_IS_ENCRYPTED = 1; ' . "\n \n" . '$PROGRAM_ROOT_PASSWORD  = \'' . $root_pass . "'; \n";
+
+            $config =~ s/($qmsp)(.*?)($qmep)/$Start_Marker\n$new_pass\n$End_Marker/sm;
+
+            # die $root_pass;
+
+            open my $CONFIGW, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file
+              or die "Cannot write config file at: '" . $file . "' because: " . $!;
+            print $CONFIGW $config or die $!;
+            close($CONFIGW) or die $!;
+
+            return({-redirect_uri => $DADA::Config::S_PROGRAM_URL
+                  . '?flavor=logout&login_url='
+                  . $DADA::Config::S_PROGRAM_URL . '/'
+                  . $DADA::Config::ADMIN_FLAVOR_NAME}, undef );
+        }
     }
-    
-    if($q->param('new_password') ne $q->param('again_new_password')){ 
-    
-        print $q->redirect(-url => $URL . '?new_pass_no_match=1'); 
-        return; 
-    }
-    
-    
-    # Well, if everything works out, we're cool. 
-    my $file = $DADA::Config::CONFIG_FILE; 
-    open my $CONFIG, '<:encoding(' . $DADA::Config::HTML_CHARSET . ')', $file
-    or die "Cannot read config file at: '" . $file
-    . "' because: "
-    . $!;
-    my $config =  do { local $/; <$CONFIG> };
-    close($CONFIG) or die $!; 
-    
-    my $qmsp = quotemeta($Start_Marker); 
-    my $qmep = quotemeta($End_Marker); 
-    
-    require DADA::Security::Password; 
-    
-    my $pw = $q->param('new_password');
-        
-    my $root_pass = DADA::Security::Password::encrypt_passwd($pw);
-    
-    my $new_pass = "\n" . '$ROOT_PASS_IS_ENCRYPTED = 1; ' . "\n \n" . '$PROGRAM_ROOT_PASSWORD  = \'' . $root_pass . "'; \n"; 
-    
-    $config =~ s/($qmsp)(.*?)($qmep)/$Start_Marker\n$new_pass\n$End_Marker/sm; 
-    
-   # die $root_pass; 
-    
-    open my $CONFIGW, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')' , $file
-    or die "Cannot write config file at: '" . $file
-    . "' because: "
-    . $!;
-    print $CONFIGW $config or die $!; 
-    close($CONFIGW) or die $!; 
-    
-    print $q->redirect(-uri => $DADA::Config::S_PROGRAM_URL . '?flavor=logout&login_url='. $DADA::Config::S_PROGRAM_URL . '/' . $DADA::Config::ADMIN_FLAVOR_NAME); 
-    exit;
-
 }
-
-
-
-
-sub self_url { 
-	my $self_url = $q->url; 
-	if($self_url eq 'http://' . $ENV{HTTP_HOST}){ 
-			$self_url = $ENV{SCRIPT_URI};
-	}
-	return $self_url; 	
-}
-
 
 
 =pod

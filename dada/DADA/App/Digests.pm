@@ -380,4 +380,6 @@ sub digest_ht_vars {
 
 }
 
+
+sub DESTROY {}
 1;

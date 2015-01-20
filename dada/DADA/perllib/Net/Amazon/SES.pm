@@ -806,8 +806,6 @@ sub get_response {
 
 
 
-sub DESTORY {
-    my $self = shift;
-}
+sub DESTORY {}
 
 1;

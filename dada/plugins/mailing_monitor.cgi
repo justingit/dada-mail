@@ -13,9 +13,6 @@ BEGIN {
     push @INC,$b__dir.'5/lib/perl5',$b__dir.'5/lib/perl5/x86_64-linux-thread-multi',$b__dir.'lib',map { $b__dir . $_ } @INC;
 }
 
-use CGI::Carp qw(fatalsToBrowser);
-
-
 BEGIN {
    if($] > 5.008){
       require Errno;
@@ -28,26 +25,25 @@ use DADA::App::Guts;
 use DADA::Mail::MailOut;
 use DADA::MailingList::Schedules; 
 
-use CGI;
-my $q = new CGI;
-   $q->charset($DADA::Config::HTML_CHARSET);
-   $q = decode_cgi_obj($q);
-
-
 
 my $Plugin_Config = {}; 
    $Plugin_Config->{Plugin_Name}         = 'Mailing Monitor';
-   $Plugin_Config->{Plugin_URL}          = self_url();
    $Plugin_Config->{Allow_Manual_Run}    = 1;
    $Plugin_Config->{Manual_Run_Passcode} = undef; 
 
 use Getopt::Long;
 
-my $verbose = 1; 
-my $admin_list = undef; 
-my $root_login = undef; 
-my $list       = undef; 
+my $verbose;
+my $admin_list; 
+my $root_login; 
+my $list; 
 
+sub reset_globals { 
+    $verbose = 1; 
+    $admin_list = undef; 
+    $root_login = undef; 
+    $list       = undef;     
+}
 
 GetOptions(
     "verbose!"    => \$verbose
@@ -76,12 +72,12 @@ sub init_vars {
 }
 
 sub run {
-
+    reset_globals(); 
+    my $q = shift; 
+    
     if ( !$ENV{GATEWAY_INTERFACE} ) {
 	    # this (hopefully) means we're running on the cl...
-    
 		DADA::Mail::MailOut::monitor_mailout( { -verbose => $verbose } );
-		
         for(available_lists()){ 
             my $sched = DADA::MailingList::Schedules->new({-list => $_});
             if($sched->enabled) {
@@ -91,53 +87,53 @@ sub run {
     }
     else {
 
-		
         if (   keys %{ $q->Vars }
             && $q->param('run')
             && xss_filter( $q->param('run') ) == 1
             && $Plugin_Config->{Allow_Manual_Run} == 1 )
         {
-			print $q->header(); 
 			if(defined($q->param('verbose'))){ 
 				$verbose = $q->param('verbose'); 
 			}
-			
-			print '<pre>' 
-			    if $verbose == 1; 
-			    
-			DADA::Mail::MailOut::monitor_mailout( { -verbose => $verbose } );
+            my  ( $r, $total_mailouts, $active_mailouts, $paused_mailouts, $queued_mailouts, $inactive_mailouts );
+            DADA::Mail::MailOut::monitor_mailout(
+                {
+                    -verbose => 0,
+                }
+            );
         			
 			foreach(available_lists()){ 	
                 my $sched = DADA::MailingList::Schedules->new({-list => $_});
                 if($sched->enabled) {
-    			    $sched->run_schedules({ -verbose => $verbose });  
+    			    $r .= $sched->run_schedules();  
                 }
             }
-            
-            print '</pre>'
-			    if $verbose == 1; 
-            
+            return ({}, $r); 
         }
         else {
-
-            ( $admin_list, $root_login ) = check_list_security(
+            my $checksout; 
+            my $error_msg; 
+            ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
                 -cgi_obj  => $q,
                 -Function => 'mailing_monitor'
             );
+            if(!$checksout){ 
+                return ({}, $error_msg); 
+            }
 			$list = $admin_list; 
 
 
-	      my $flavor = $q->param('flavor') || 'cgi_default';
+	      my $prm = $q->param('prm') || 'cgi_default';
 	        my %Mode = ( 
 
 	        'cgi_default'             => \&cgi_default, 
 			'mailing_monitor_results' => \&mailing_monitor_results, 
 	        ); 
 
-	        if(exists($Mode{$flavor})) { 
-	            $Mode{$flavor}->();  #call the correct subroutine 
+	        if(exists($Mode{$prm})) { 
+	            return $Mode{$prm}->($q);  #call the correct subroutine 
 	        }else{
-	            &cgi_default;
+	            return cgi_default($q);
 	        }			
         }
     }
@@ -145,10 +141,11 @@ sub run {
 
 sub cgi_default { 
 	
+	my $q = shift; 
+	
 	my $curl_location = `which curl`;
        $curl_location = strip( make_safer($curl_location) );
     
-
 	require DADA::Template::Widgets; 
 	my $scrn = DADA::Template::Widgets::wrap_screen(
 						{ 
@@ -172,7 +169,7 @@ sub cgi_default {
 				                },
 						}
 					);
-	e_print($scrn);	
+	return ({}, $scrn);	
 }
 
 sub mailing_monitor_results {
@@ -186,19 +183,16 @@ sub mailing_monitor_results {
 			$queued_mailouts,
 			$inactive_mailouts
 		) = DADA::Mail::MailOut::monitor_mailout( { -verbose => 0 } );
-		print $q->header(); 
-		print '<pre>'; 
-		e_print($r); 
-		print '</pre>';
-		
+
 		foreach(available_lists()){ 			    
             my $sched = DADA::MailingList::Schedules->new({-list => $_});
             if($sched->enabled) {
-                print '<pre>'; 
-    		   e_print($sched->run_schedules({ -verbose => 0 }));  
-    			print '</pre>';
+    		   $r .= $sched->run_schedules();  
             }
         }
+        $r = '<pre>' . $r . '</pre>'; 
+        return ({}, $r); 
+        
 	} 
 	else { 
 		my (
@@ -209,29 +203,16 @@ sub mailing_monitor_results {
 			$queued_mailouts,
 			$inactive_mailouts
 		) = DADA::Mail::MailOut::monitor_mailout( { -verbose => 0, -list => $list } );		
-		print $q->header(); 
-		
-		print '<pre>'; 
-		e_print($r); 
 		
         my $sched = DADA::MailingList::Schedules->new({-list => $_});
         if($sched->enabled) {
-    	    e_print($sched->run_schedules());  
+    	    $r .= $sched->run_schedules();  
 		}
-		
-        print '</pre>';
-		
+		$r = '<pre>' . $r . '</pre>'; 
+        return ({}, $r); 
+        
 	}
 
-
-}
-
-sub self_url { 
-	my $self_url = $q->url; 
-	if($self_url eq 'http://' . $ENV{HTTP_HOST}){ 
-			$self_url = $ENV{SCRIPT_URI};
-	}
-	return $self_url; 	
 }
 
 

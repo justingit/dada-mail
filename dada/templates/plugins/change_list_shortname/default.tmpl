@@ -14,9 +14,13 @@
 <fieldset> 
 
 
-<form action="<!-- tmpl_var Plugin_URL -->" method="post" id="change_name_form" name="change_name_form">
-	<input type="hidden" name="flavor" id="flavor" value="verify_change_list_shortname" />
-	<input type="hidden" name="plugin_url" id="plugin_url" value="<!-- tmpl_var Plugin_URL -->" />
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" id="change_name_form" name="change_name_form">
+
+	<input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" />
+
+	<input type="hidden" name="flavor" id="flavor" value="plugins" />
+	<input type="hidden" name="plugin" id="plugin" value="change_list_shortname" />
+	<input type="hidden" name="prm" id="prm" value="verify_change_list_shortname" />
 	<p><label for="new_name">Your New List Short Name:</label><input type="text" name="new_name" id="new_name" value="" maxlength="16" /></p>
 	<div class="buttonfloat">
 	<input type="button" id="verify_button" value="Verify Your List Short Name Change..." class="alertive" /> 

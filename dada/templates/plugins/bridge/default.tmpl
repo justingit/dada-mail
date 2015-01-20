@@ -18,7 +18,8 @@
 
 <!-- tmpl_unless list_email_status --><!--/tmpl_unless-->
 
-<form name="default_form" action="<!-- tmpl_var S_PROGRAM_URL --> "method="post">
+<form name="default_form" action="<!-- tmpl_var S_PROGRAM_URL -->"method="post">
+    <input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->"> 
     <input type="hidden" name="flavor"   value="plugins" /> 
     <input type="hidden" name="plugin"   value="bridge" /> 
     <input type="hidden" name="prm"      value="edit" />
@@ -1057,8 +1058,11 @@ Mailing List Security
 <legend><!-- tmpl_var Plugin_Name --> Email Templates</legend>
 
  <div class="buttonfloat"> 
- <form action="<!-- tmpl_var Plugin_URL -->" method="get"> 
-  <input type="hidden" name="flavor" value="edit_email_msgs" /> 
+ <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get"> 
+
+     <input type="hidden" name="flavor" value="plugins" /> 
+     <input type="hidden" name="plugin" value="bridge" /> 
+  <input type="hidden" name="prm" value="edit_email_msgs" /> 
   <input type="submit" value="Customize Email Templates..." class="processing" /> 
  </form> 
  </div> 
@@ -1073,7 +1077,9 @@ Mailing List Security
 
  <div class="buttonfloat"> 
  <form action="<!-- tmpl_var Plugin_URL -->" method="get"> 
-  <input type="hidden" name="flavor" value="cgi_show_plugin_config" /> 
+  <input type="hidden" name="flavor" value="plugins" /> 
+  <input type="hidden" name="plugin" value="bridge" /> 
+  <input type="hidden" name="prm" value="cgi_show_plugin_config" /> 
   <input type="submit" value="View All Plugin Configurations..." class="processing" /> 
  </form> 
  </div> 

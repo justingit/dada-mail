@@ -194,4 +194,7 @@ sub _save_ses_stats {
     print $fh join(',', $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate); 
     close $fh or die $!; 
 }
+
+sub DESTROY {}
+    
 1;

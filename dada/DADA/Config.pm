@@ -1690,14 +1690,7 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
     bounce_handler_decay_score                => 1,
     bounce_handler_forward_msgs_to_list_owner => 0,
     bounce_handler_when_threshold_reached     => 'move_to_bounced_sublist',
-
-
-    # default messages
-    default_plaintext_message_content_src             => 'default',    # default/url_or_path
-    default_plaintext_message_content_src_url_or_path => undef,
-    default_html_message_content_src                  => 'default',    # default/url_or_path
-    default_html_message_content_src_url_or_path      => undef,
-    
+        
     public_api_key   =>  undef, 
     private_api_key  => undef, 
     

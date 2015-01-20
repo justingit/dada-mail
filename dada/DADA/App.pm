@@ -214,7 +214,6 @@ sub default {
 
     my $self = shift;
     my $q    = $self->query();
-        
     
     if ( DADA::App::Guts::check_setup() == 0 ) {
         return user_error( { -error => 'bad_setup' } );
@@ -285,6 +284,8 @@ sub default {
         }
     }
 
+
+
     require DADA::MailingList::Settings;
 
     my @available_lists;
@@ -308,22 +309,25 @@ sub default {
         @available_lists = available_lists( -In_Order => 1, );
     }
 
+
+
     if (   ( $DADA::Config::DEFAULT_SCREEN ne '' )
         && ( $q->param('flavor') ne 'default' )
         && ( $#available_lists >= 0 ) )
     {
         $self->header_type('redirect');
         $self->header_props( -url => $DADA::Config::DEFAULT_SCREEN );
+        return;
     }
 
     if ( $available_lists[0] ) {
-        if ( $q->param('error_invalid_list') != 1 ) {
-            if ( !$c->profile_on && $c->is_cached('default.scrn') ) {
+        
+        if ( $q->param('error_invalid_list') != 1 ) {               
+            if ( !$c->profile_on && $c->is_cached('default.scrn') ) {      
                 return $c->cached('default.scrn');
             }
         }
         else { 
-
             require DADA::Template::Widgets;
             my $scrn = DADA::Template::Widgets::default_screen(
 
@@ -10449,6 +10453,7 @@ sub login {
 sub logout {
 
     my $self = shift;
+    
     my $q    = $self->query();
 
     my $headers = {};
@@ -12507,9 +12512,68 @@ sub END {
 sub plugins { 
     my $self = shift; 
     my $q = $self->query(); 
-    require 'plugins/bridge.cgi'; 
-    my ($h, $b) = bridge::run($q);
-    return $b;  
+    my $plugin = $q->param('plugin'); 
+    my ($headers, $body);
+    if($plugin eq 'bounce_handler') {     
+        eval { 
+            require 'plugins/bounce_handler.cgi'; 
+            ($headers, $body)   = bounce_handler::run($q);
+        };
+    }
+    elsif($plugin eq 'bridge'){ 
+        eval { 
+            require 'plugins/bridge.cgi'; 
+            ($headers, $body)   = bridge::run($q);
+        };
+    }
+    elsif($plugin eq 'change_list_shortname'){ 
+        eval { 
+            require 'plugins/change_list_shortname.cgi'; 
+            ($headers, $body)   = change_list_shortname::run($q);
+        };
+    }
+    elsif($plugin eq 'log_viewer'){ 
+        eval { 
+            require 'plugins/log_viewer.cgi'; 
+            ($headers, $body)   = log_viewer::run($q);
+        };
+    }
+    elsif($plugin eq 'change_root_password'){ 
+        eval { 
+            require 'plugins/change_root_password.cgi'; 
+            ($headers, $body)   = change_root_password::run($q);
+        };
+    }
+    
+    elsif($plugin eq 'mailing_monitor'){ 
+        eval { 
+            require 'plugins/mailing_monitor.cgi'; 
+            ($headers, $body)   = mailing_monitor::run($q);
+        };
+    }
+    elsif($plugin eq 'password_protect_directories'){ 
+        eval { 
+            require 'plugins/password_protect_directories.cgi'; 
+            ($headers, $body)   = password_protect_directories::run($q);
+        };
+    }
+
+
+    if(!$@){ 
+        if ( exists( $headers->{-redirect_uri} ) ) {
+            $self->header_type('redirect');
+            $self->header_props( -url => $headers->{-redirect_uri} );
+        }
+        else {
+            if ( keys %$headers ) {
+                $self->header_props(%$headers);
+            }
+            return $body;
+        }        
+    }
+    else { 
+        croak($@); 
+    }
 }
 
 sub DESTROY {
