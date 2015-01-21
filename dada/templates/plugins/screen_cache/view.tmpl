@@ -68,9 +68,11 @@
 	  <td>
 
 
-	  <form action="<!-- tmpl_var Plugin_URL -->" method="POST"> 
-		<input type="hidden" name="f" value="clear_screen_cache" /> 
-		<input type="hidden" name="process" value="remove" />
+	  <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
+		<input type="hidden" name="flavor" value="plugins" /> 
+		<input type="hidden" name="plugin" value="screen_cache" /> 
+
+		<input type="hidden" name="prm" value="remove" />
 
 		<input type="hidden" name="filename" value="<!-- tmpl_var name -->" --> 
 
@@ -84,10 +86,13 @@
 	  <td><!-- tmpl_var size --></td> 
 
 	  <td>
-	   <form action="<!-- tmpl_var Plugin_URL -->" method="POST" target="preview"> 
-		<input type="hidden" name="f" value="clear_screen_cache" /> 
-		<input type="hidden" name="process" value="view" />
+	   <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" target="preview"> 
 
+	       <input type="hidden" name="flavor" value="plugins" /> 
+  	       <input type="hidden" name="plugin" value="screen_cache" /> 
+
+
+		<input type="hidden" name="prm" value="view" />
 		<input type="hidden" name="filename" value="<!-- tmpl_var name -->" --> 
 
 		<input type="submit" class="cautionary" value="View...">

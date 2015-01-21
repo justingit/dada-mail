@@ -29,7 +29,7 @@
 		
 		<!-- tmpl_if expr="DATA_CACHE == 1" -->
 			<p class="alert" style="float:right">
-				Data below is cached. <a href="<!-- tmpl_var Plugin_URL -->?flavor=clear_message_data_cache&msg_id=<!-- tmpl_var mid -->">Clear</a>
+				Data below is cached. <a href="<!-- tmpl_var Plugin_URL -->?prm=clear_message_data_cache&msg_id=<!-- tmpl_var mid -->">Clear</a>
 			</p>
 			<div style="clear:both"></div>
 		<!-- /tmpl_if --> 
@@ -37,7 +37,7 @@
 	<!-- /tmpl_if --> 
 
 	<form id="tracker_message_info">
-		<input type="hidden" id="plugin_url" name="plugin_url" value="<!-- tmpl_var Plugin_URL -->" /> 
+		<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" /> 
 		<input type="hidden" id="tracker_message_id" name="tracker_message_id" value="<!-- tmpl_var mid -->" />
 		<input type="hidden" id="can_use_country_geoip_data" name="can_use_country_geoip_data" value="<!-- tmpl_var can_use_country_geoip_data -->" />
 	</form> 
@@ -52,7 +52,7 @@
 		
 				
 		<td style="width:250px;background:#fff"> 
-			<div id="the_basics_bounces" data-title="Bounces" data-width="250" data-height="150" data-label="Opens"></div>
+			<div id="the_basics_bounces" data-title="Bounces" data-width="250" data-height="150" data-label="Bounces"></div>
 			<div id="the_basics_bounces_loading"></div>
 		</td>
 				
@@ -450,7 +450,7 @@
 						 <td> 
 						 <p> 
 				<!-- tmpl_if comment --> 
-						    <a href="<!-- tmpl_var Plugin_URL -->?flavor=url&mid=<!-- tmpl_var mid -->&url=<!-- tmpl_var url escape="HTML" -->"> 
+						    <a href="<!-- tmpl_var Plugin_URL -->?prm=url&mid=<!-- tmpl_var mid -->&url=<!-- tmpl_var url escape="HTML" -->"> 
 				<!-- /tmpl_if --> 
 					<a href="<!-- tmpl_var url -->" target="_blank"> 
 					<!-- tmpl_var url escape="HTML" -->
@@ -664,8 +664,10 @@
 		<legend>Export Message Logs</legend> 
 
 		<div class="buttonfloat">
-		<form action="<!-- tmpl_var PluginURL -->" method="post"> 
-		<input type="hidden" name="f" value="download_activity_logs" /> 
+		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
+		<input type="hidden" name="flavor" value="plugins" /> 
+		<input type="hidden" name="plugin" value="tracker" /> 
+		<input type="hidden" name="prm" value="download_activity_logs" /> 
 		<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" />
 		 <input type="submit" class="processing" name="process" value="Download Raw Activity Logs (.csv)" />
 		</form> 
@@ -673,8 +675,11 @@
 
 
 		<div class="buttonfloat">
-		<form action="<!-- tmpl_var PluginURL -->" method="post"> 
-		<input type="hidden" name="f" value="download_clickthrough_logs" /> 
+		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
+		<input type="hidden" name="flavor" value="plugins" /> 
+		<input type="hidden" name="plugin" value="tracker" /> 
+
+		<input type="hidden" name="prm" value="download_clickthrough_logs" /> 
 		<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" />
 		 <input type="submit" class="processing" name="process" value="Download Raw Clickthrough Logs (.csv)" />
 		</form> 

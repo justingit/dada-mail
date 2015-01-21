@@ -1616,10 +1616,6 @@ sub sending_monitor {
     }
     else {
 
-        my $tracker_url = $DADA::Config::S_PROGRAM_URL;
-        $tracker_url =~ m/(^.*\/)(.*?)/;    #just use the url to get the filename with a regex
-        $tracker_url = $1 . 'plugins/tracker.cgi';
-
         require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
@@ -1634,7 +1630,6 @@ sub sending_monitor {
                     message_id    => DADA::App::Guts::strip($id),
                     message_type  => $q->param('type'),
                     refresh_after => $refresh_after,
-                    tracker_url   => $tracker_url,
                     'list_settings.tracker_show_message_reports_in_mailing_monitor' =>
                       $ls->param('tracker_show_message_reports_in_mailing_monitor'),
                     list_type_isa_list => ( $q->param('type') eq 'list' )
@@ -12555,6 +12550,18 @@ sub plugins {
         eval { 
             require 'plugins/password_protect_directories.cgi'; 
             ($headers, $body)   = password_protect_directories::run($q);
+        };
+    }
+    elsif($plugin eq 'screen_cache'){ 
+        eval { 
+            require 'plugins/screen_cache.cgi'; 
+            ($headers, $body)   = screen_cache::run($q);
+        };
+    }
+    elsif($plugin eq 'tracker'){ 
+        eval { 
+            require 'plugins/tracker.cgi'; 
+            ($headers, $body)   = tracker::run($q);
         };
     }
 

@@ -19,7 +19,7 @@
 <!-- /tmpl_if --> 
 	<form> 
 	 <input type="hidden" name="tracker_page" id="tracker_page" value="1"  /> 
-	 <input type="hidden" name="plugin_url"   id="plugin_url"   value="<!-- tmpl_var Plugin_Url -->" /> 
+	 <input type="hidden" name="s_program_url"   id="s_program_url"   value="<!-- tmpl_var S_PROGRAM_URL -->" /> 
 	</form> 
 	<!-- tmpl_if expr="DATA_CACHE == 1" -->
 		<p class="alert" style="float:right">
@@ -53,21 +53,25 @@
  <table> 
   <tr> 
    <td> 
-  <form action="<!-- tmpl_var Plugin_URL -->" method="post">
-   <input type="hidden" name="f" value="download_logs" /> 
+  <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+   <input type="hidden" name="flavor" value="plugins" /> 
+   <input type="hidden" name="plugin" value="tracker" /> 
+   <input type="hidden" name="prm" value="download_logs" /> 
    <input type="hidden" name="log_type" value="clickthrough" /> 
    <input type="submit" value="Download Clickthrough Logs (.csv)" class="processing" />
   </form> 
  </td> 
 <td> 
-<form action="<!-- tmpl_var Plugin_URL -->" method="post">
- <input type="hidden" name="f" value="download_logs" /> 
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+ <input type="hidden" name="flavor" value="plugins" /> 
+ <input type="hidden" name="plugin" value="tracker" /> 
+ <input type="hidden" name="prm" value="download_logs" /> 
  <input type="hidden" name="log_type" value="activity" /> 
  <input type="submit" value="Download Mass Mailing Event Logs (.csv)" class="processing" />
 </form>
 </td> 
 <td> 
-<form action="<!-- tmpl_var Plugin_URL -->" method="post">
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
  <input type="button" value="Purge ALL Clickthrough Logs" class="alertive tracker_purge_log"/>
 </form> 
 </td> 
@@ -82,8 +86,10 @@
  Preferences
 </legend> 
 
-<form method="post"> 
-<input type="hidden" name="f" value="edit_prefs" /> 
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+<input type="hidden" name="flavor" value="plugins" /> 
+<input type="hidden" name="plugin" value="tracker" />     
+<input type="hidden" name="prm" value="edit_prefs" /> 
 
 
 <h3>

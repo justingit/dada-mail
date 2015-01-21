@@ -19,7 +19,7 @@ Error Messages, where do they go?  - Server default - write about no go concerni
 
 
 figure out plugins (hard?) 
-
+[]Remove non SQL stuff - not happening! 
 
 CGI::App notes: 
 

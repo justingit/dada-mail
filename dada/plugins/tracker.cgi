@@ -1,8 +1,6 @@
 #!/usr/bin/perl
-package tracker; 
+package tracker;
 use strict;
-
-$|++;
 
 $ENV{PATH} = "/bin:/usr/bin";
 delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
@@ -10,12 +8,12 @@ delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 use FindBin;
 use lib "$FindBin::Bin/../";
 use lib "$FindBin::Bin/../DADA/perllib";
-BEGIN { 
-	my $b__dir = ( getpwuid($>) )[7].'/perl';
-    push @INC,$b__dir.'5/lib/perl5',$b__dir.'5/lib/perl5/x86_64-linux-thread-multi',$b__dir.'lib',map { $b__dir . $_ } @INC;
-}
 
-use CGI::Carp qw(fatalsToBrowser);
+BEGIN {
+    my $b__dir = ( getpwuid($>) )[7] . '/perl';
+    push @INC, $b__dir . '5/lib/perl5', $b__dir . '5/lib/perl5/x86_64-linux-thread-multi', $b__dir . 'lib',
+      map { $b__dir . $_ } @INC;
+}
 
 use DADA::Config 7.0.0 qw(!:DEFAULT);
 use DADA::Template::HTML;
@@ -23,202 +21,203 @@ use DADA::App::Guts;
 use DADA::MailingList::Settings;
 use DADA::Logging::Clickthrough;
 use DADA::MailingList::Archives;
+use Try::Tiny;
 
+my $Plugin_Config = {};
+$Plugin_Config->{Plugin_Name}    = 'Tracker';
+$Plugin_Config->{Plugin_URL}     = $DADA::Config::S_PROGRAM_URL . '/plugins/tracker/';
+$Plugin_Config->{GeoIP_Db}       = 'data/GeoIP.dat';
+$Plugin_Config->{GeoLiteCity_Db} = 'data/GeoLiteCity.dat';
 
-# we need this for cookies things
-use CGI;
-my $q = new CGI;
-$q->charset($DADA::Config::HTML_CHARSET);
-$q = decode_cgi_obj($q);
-
-use Try::Tiny; 
-
-my $Plugin_Config                  = {}; 
-$Plugin_Config->{Plugin_Name}      = 'Tracker'; 
-$Plugin_Config->{Plugin_URL}       = $q->url; 
-$Plugin_Config->{GeoIP_Db}         = '../data/GeoIP.dat'; 
-$Plugin_Config->{GeoLiteCity_Db}   = '../data/GeoLiteCity.dat'; 
-
-
-
-&init_vars; 
+&init_vars;
 
 run()
-	unless caller();
+  unless caller();
 
 sub init_vars {
 
-# DEV: This NEEDS to be in its own module - perhaps DADA::App::PluginHelper or something?
+    # DEV: This NEEDS to be in its own module - perhaps DADA::App::PluginHelper or something?
 
     while ( my $key = each %$Plugin_Config ) {
-
         if ( exists( $DADA::Config::PLUGIN_CONFIGS->{Tracker}->{$key} ) ) {
-
             if ( defined( $DADA::Config::PLUGIN_CONFIGS->{Tracker}->{$key} ) ) {
-
                 $Plugin_Config->{$key} =
                   $DADA::Config::PLUGIN_CONFIGS->{Tracker}->{$key};
-
             }
         }
     }
 }
 
-my $list       = undef;
-my $ls         = undef;
-my $rd         = undef;
-my $mja        = undef;
-my $root_login = 0;
+my $list;
+my $ls;
+my $rd;
+my $mja;
+my $root_login;
 
-
-
+sub reset_globals {
+    $list       = undef;
+    $ls         = undef;
+    $rd         = undef;
+    $mja        = undef;
+    $root_login = 0;
+}
 
 sub run {
-	
-	my $admin_list; 
-	( $admin_list, $root_login ) = check_list_security(
-	    -cgi_obj  => $q,
-	    -Function => 'tracker'
-	);
-	$list = $admin_list;
-	$ls   = DADA::MailingList::Settings->new( { -list => $list } );
-	$rd   = DADA::Logging::Clickthrough->new( { -list => $list } );
-	$mja  = DADA::MailingList::Archives->new( { -list => $list } );
-	
-	my $f = $q->param('f') || undef;
-	my %Mode = (
-	    'default'                         => \&default,
-	    'm'                               => \&message_report,
-	    'edit_prefs'                      => \&edit_prefs,
-		'save_view_count_prefs'           => \&save_view_count_prefs, 
-	    'download_logs'                   => \&download_logs,
-	    'ajax_delete_log'                 => \&ajax_delete_log,
-		'message_history_html'            => \&message_history_html, 
-		'message_history_json'            => \&message_history_json, 
-		'delete_msg_id_data'              => \&delete_msg_id_data, 
-		'download_clickthrough_logs'      => \&download_clickthrough_logs, 
-		'download_activity_logs'          => \&download_activity_logs, 
-		'country_geoip_table'             => \&country_geoip_table, 
-		'country_geoip_json'              => \&country_geoip_json,
-		'individual_country_geoip_json'   => \&individual_country_geoip_json, 
-		'individual_country_geoip_report_table' => \&individual_country_geoip_report_table, 
-		'data_over_time_json'             => \&data_over_time_json, 
-		'message_email_report_table'      => \&message_email_report_table, 
-		'message_email_report_export_csv' => \&message_email_report_export_csv, 
-		'email_stats_json'                => \&email_stats_json, 
-		'clear_data_cache'                => \&clear_data_cache, 
-		'clear_message_data_cache'        => \&clear_message_data_cache, 
-		'export_subscribers'              => \&export_subscribers, 
-		
-		'message_email_activity_listing_table'           => \&message_email_activity_listing_table, 
-		'message_individual_email_activity_report_table' => \&message_individual_email_activity_report_table, 
-		'message_individual_email_activity_csv'             => \&message_individual_email_activity_csv, 
-		'the_basics_piechart_json'                       => \&the_basics_piechart_json, 
-	);
-	if ($f) {
-	    if ( exists( $Mode{$f} ) ) {
-	        $Mode{$f}->();    #call the correct subroutine
-	    }
-	    else {
-	        &default;
-	    }
-	}
-	else {
-	    &default;
-	}
+
+    my $q = shift;
+
+    my $admin_list;
+    my $checksout;
+    my $error_msg;
+
+    ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'tracker'
+    );
+    if ( !$checksout ) {
+        return ( {}, $error_msg );
+    }
+
+    $list = $admin_list;
+    $ls   = DADA::MailingList::Settings->new( { -list => $list } );
+    $rd   = DADA::Logging::Clickthrough->new( { -list => $list } );
+    $mja  = DADA::MailingList::Archives->new( { -list => $list } );
+
+    my $prm = $q->param('prm') || undef;
+    my %Mode = (
+        'default'                               => \&default,
+        'm'                                     => \&message_report,
+        'edit_prefs'                            => \&edit_prefs,
+        'save_view_count_prefs'                 => \&save_view_count_prefs,
+        'download_logs'                         => \&download_logs,
+        'ajax_delete_log'                       => \&ajax_delete_log,
+        'message_history_html'                  => \&message_history_html,
+        'message_history_json'                  => \&message_history_json,
+        'delete_msg_id_data'                    => \&delete_msg_id_data,
+        'download_clickthrough_logs'            => \&download_clickthrough_logs,
+        'download_activity_logs'                => \&download_activity_logs,
+        'country_geoip_table'                   => \&country_geoip_table,
+        'country_geoip_json'                    => \&country_geoip_json,
+        'individual_country_geoip_json'         => \&individual_country_geoip_json,
+        'individual_country_geoip_report_table' => \&individual_country_geoip_report_table,
+        'data_over_time_json'                   => \&data_over_time_json,
+        'message_email_report_table'            => \&message_email_report_table,
+        'message_email_report_export_csv'       => \&message_email_report_export_csv,
+        'email_stats_json'                      => \&email_stats_json,
+        'clear_data_cache'                      => \&clear_data_cache,
+        'clear_message_data_cache'              => \&clear_message_data_cache,
+        'export_subscribers'                    => \&export_subscribers,
+
+        'message_email_activity_listing_table'           => \&message_email_activity_listing_table,
+        'message_individual_email_activity_report_table' => \&message_individual_email_activity_report_table,
+        'message_individual_email_activity_csv'          => \&message_individual_email_activity_csv,
+        'the_basics_piechart_json'                       => \&the_basics_piechart_json,
+    );
+    if ( exists( $Mode{$prm} ) ) {
+        return $Mode{$prm}->($q);    #call the correct subroutine
+    }
+    else {
+        return default($q);
+    }
+
 }
 
 sub default {
-	
-	if($DADA::Config::SUBSCRIBER_DB_TYPE !~ /SQL/i){ 
-		sql_backend_only_message(); 
-		return; 
-	}
-	
-	require DADA::MailingList::Subscribers; 
-	my $lh       = DADA::MailingList::Subscribers->new({-list => $list});
-	
-	
-	my $tracker_record_view_count_widget = $q->popup_menu(
-			-id      => 'tracker_record_view_count',
-			-name    => 'tracker_record_view_count',
-			-values  => [qw(5 10 15 20 25 50 75 100)],
-			-default => $ls->param('tracker_record_view_count'), 
-		);			
-	eval { 
-		require URI::Find; 
-		require HTML::LinkExtor;
-	};
-	my $can_use_auto_redirect_tag  = 1; 
-	if($@){ 
-		$can_use_auto_redirect_tag = 0; 
-	}	
-	
-	require DADA::ProfileFieldsManager; 
-	my $dpfm               = DADA::ProfileFieldsManager->new;
-    my $field_attr         = $dpfm->get_all_field_attributes;
-    my $geo_ip_fields      = [];
-    
-    # thawed_geo_ip_profile_field_settings
+
+    my $q = shift;
+
+    if ( $DADA::Config::SUBSCRIBER_DB_TYPE !~ /SQL/i ) {
+        return sql_backend_only_message();
+    }
+
+    require DADA::MailingList::Subscribers;
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+
+    my $tracker_record_view_count_widget = $q->popup_menu(
+        -id      => 'tracker_record_view_count',
+        -name    => 'tracker_record_view_count',
+        -values  => [qw(5 10 15 20 25 50 75 100)],
+        -default => $ls->param('tracker_record_view_count'),
+    );
+    eval {
+        require URI::Find;
+        require HTML::LinkExtor;
+    };
+    my $can_use_auto_redirect_tag = 1;
+    if ($@) {
+        $can_use_auto_redirect_tag = 0;
+    }
+
+    require DADA::ProfileFieldsManager;
+    my $dpfm          = DADA::ProfileFieldsManager->new;
+    my $field_attr    = $dpfm->get_all_field_attributes;
+    my $geo_ip_fields = [];
+
+# thawed_geo_ip_profile_field_settings
 #    warn '$ls->param(\'tracker_update_profile_fields_ip_dada_meta\') ' . $ls->param('tracker_update_profile_fields_ip_dada_meta');
 
-    my $thawed_gip = {}; 
+    my $thawed_gip = {};
 
-    my $meta = $ls->param('tracker_update_profile_fields_ip_dada_meta'); 
-    
-    if(length($meta) > 4){ 
-        $thawed_gip = $ls->_dd_thaw($meta); 
+    my $meta = $ls->param('tracker_update_profile_fields_ip_dada_meta');
+
+    if ( length($meta) > 4 ) {
+        $thawed_gip = $ls->_dd_thaw($meta);
     }
     require Geo::IP::PurePerl;
-    my $gi = Geo::IP::PurePerl->new($Plugin_Config->{GeoLiteCity_Db});
-    my ($country_code,$country_code3,$country_name,$region,
-        $city,$postal_code,$latitude,$longitude,
-        $metro_code,$area_code ) = $gi->get_city_record($rd->remote_addr);
-        
-    my $geo_ip_data_order = [qw(
-        ip_address
-        country_code 
-        country_code3 
-        country_name   
-        region         
-        city           
-        postal_code   
-        latitude       
-        longitude      
-        metro_code     
-        area_code      
-    )]; 
-    
+    my $gi = Geo::IP::PurePerl->new( $Plugin_Config->{GeoLiteCity_Db} );
+    my (
+        $country_code, $country_code3, $country_name, $region,     $city,
+        $postal_code,  $latitude,      $longitude,    $metro_code, $area_code
+    ) = $gi->get_city_record( $rd->remote_addr );
+
+    my $geo_ip_data_order = [
+        qw(
+          ip_address
+          country_code
+          country_code3
+          country_name
+          region
+          city
+          postal_code
+          latitude
+          longitude
+          metro_code
+          area_code
+          )
+    ];
+
     my $geo_ip_data_types = {
-        'ip_address'     => 'IP Address     (' . $rd->remote_addr . ')',
-        'country_code'   => 'Country Code 2 (' . $country_code     .')', 
-        'country_code3'  => 'Country Code 3 (' . $country_code3    .')',
-        'country_name'   => 'Country Name   (' . $country_name     .')',
-        'region'         => 'Region         (' . $region           .')',
-        'city'           => 'City           (' . $city             .')',
-        'postal_code'    => 'Postal Code    (' . $postal_code      .')',
-        'latitude'       => 'Latitude       (' . $latitude         .')',
-        'longitude'      => 'Longitude      (' . $longitude        .')',
-        'metro_code'     => 'Metro Code     (' . $metro_code       .')',
-        'area_code'      => 'Area Code      (' . $area_code        .')',
-    }; 
+        'ip_address'    => 'IP Address     (' . $rd->remote_addr . ')',
+        'country_code'  => 'Country Code 2 (' . $country_code . ')',
+        'country_code3' => 'Country Code 3 (' . $country_code3 . ')',
+        'country_name'  => 'Country Name   (' . $country_name . ')',
+        'region'        => 'Region         (' . $region . ')',
+        'city'          => 'City           (' . $city . ')',
+        'postal_code'   => 'Postal Code    (' . $postal_code . ')',
+        'latitude'      => 'Latitude       (' . $latitude . ')',
+        'longitude'     => 'Longitude      (' . $longitude . ')',
+        'metro_code'    => 'Metro Code     (' . $metro_code . ')',
+        'area_code'     => 'Area Code      (' . $area_code . ')',
+    };
     my $field_names = [];
-    for (@{$dpfm->fields( { -show_hidden_fields => 1, } )}) {
-        push( @$field_names,        
-            { 
-                name        => $_,
-                label       => $field_attr->{$_}->{label},
-                enabled     => $thawed_gip->{$_}->{enabled},  
-                popup_menu  => $q->popup_menu(
-                    -default => $thawed_gip->{$_}->{geoip_data_type}, 
-                    -name    => $_ . '.geoip_data_type', 
-                    -id      => $_   . '.geoip_data_type', 
-                    -values  =>$geo_ip_data_order, 
-                    -labels  => $geo_ip_data_types, 
-                ) 
-            } );
+    for ( @{ $dpfm->fields( { -show_hidden_fields => 1, } ) } ) {
+        push(
+            @$field_names,
+            {
+                name       => $_,
+                label      => $field_attr->{$_}->{label},
+                enabled    => $thawed_gip->{$_}->{enabled},
+                popup_menu => $q->popup_menu(
+                    -default => $thawed_gip->{$_}->{geoip_data_type},
+                    -name    => $_ . '.geoip_data_type',
+                    -id      => $_ . '.geoip_data_type',
+                    -values  => $geo_ip_data_order,
+                    -labels  => $geo_ip_data_types,
+                )
+            }
+        );
     }
-    
+
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
@@ -228,15 +227,15 @@ sub default {
                 -Root_Login => $root_login,
                 -List       => $ls->param('list'),
             },
-			-expr => 1, 
+            -expr => 1,
             -vars => {
-				screen                           => 'using_tracker', 
+                screen                           => 'using_tracker',
                 done                             => $q->param('done') || 0,
-				Plugin_URL                       => $Plugin_Config->{Plugin_URL}, 
-				tracker_record_view_count_widget => $tracker_record_view_count_widget, 
-				can_use_auto_redirect_tag        => $can_use_auto_redirect_tag, 
-				num_subscribers                  => commify($lh->num_subscribers), 
-				field_names                      => $field_names, 
+                Plugin_URL                       => $Plugin_Config->{Plugin_URL},
+                tracker_record_view_count_widget => $tracker_record_view_count_widget,
+                can_use_auto_redirect_tag        => $can_use_auto_redirect_tag,
+                num_subscribers                  => commify( $lh->num_subscribers ),
+                field_names                      => $field_names,
             },
             -list_settings_vars_param => {
                 -list   => $list,
@@ -244,14 +243,12 @@ sub default {
             },
         }
     );
-    e_print($scrn);
+    return ( {}, $scrn );
 
 }
 
+sub sql_backend_only_message {
 
-
-sub sql_backend_only_message { 
-	
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
@@ -260,475 +257,440 @@ sub sql_backend_only_message {
             -wrapper_params => {
                 -Root_Login => $root_login,
                 -List       => $ls->param('list'),
-            },, 
-            -vars => {
             },
+            ,
+            -vars => {},
 
             -list_settings_vars_param => {
                 -list   => $list,
                 -dot_it => 1,
             },
         }
-    );	
-	e_print($scrn);
+    );
+    return ( {}, $scrn );
 }
 
+sub percent {
+    my ( $num, $total ) = @_;
 
-
-
-
-
-
-
-
-sub percent { 
-	my ($num, $total) = @_; 
-	
-	my $percent = ($total ? $num/$total : undef);
-	   $percent = $percent * 100;
-	   $percent = sprintf("%.2f", $percent);
-	return $percent; 
+    my $percent = ( $total ? $num / $total : undef );
+    $percent = $percent * 100;
+    $percent = sprintf( "%.2f", $percent );
+    return $percent;
 }
 
+sub message_history_json {
+    my $q = shift;
 
+    my $page = $q->param('page') || 1;
+    my $type = $q->param('type') || 'number';
 
-
-sub message_history_json { 
-	
-	my $page = $q->param('page') || 1; 
-	my $type = $q->param('type') || 'number'; 
-	
-	$rd->message_history_json(
-		{
-			-page     => $page, 
-			-type     => $type,
-			-printout => 1
-		}
-	);
-
-
+    return $rd->message_history_json(
+        {
+            -page     => $page,
+            -type     => $type,
+            -printout => 0
+        }
+    );
 }
 
+sub delete_msg_id_data {
 
-sub delete_msg_id_data { 
-        
-   my $mid = $q->param('mid');
+    my $q = shift;
 
-   	$rd->delete_msg_id_data(
-		{
-			-mid      => $mid,
-		}
-	); 
-
-	print $q->header(); 
+    my $mid = $q->param('mid');
+    $rd->delete_msg_id_data(
+        {
+            -mid => $mid,
+        }
+    );
+    return ( {}, undef );
 }
 
+# This seems pretty ...universal
+sub every_nth {
+    my $array_ref = shift;
+    my $nth = shift || 10;
 
+    if ( $nth < 0 ) {
+        return $array_ref;
+    }
+    if ( scalar(@$array_ref) < $nth ) {
+        return $array_ref;
+    }
 
-sub every_nth { 
-	my $array_ref = shift; 
-	my $nth       = shift || 10; 
-	
-	if($nth < 0){ 
-		return $array_ref; 
-	}
-	if(scalar(@$array_ref) < $nth){ 
-		return $array_ref; 
-	}
-	
-	my $index =  int(scalar(@$array_ref) / $nth);
-	my $count = 0; 
-	my @group = (); 
-	for(@$array_ref){ 
-	
-		unless($count % $index ){ 
-			push(@group, $_); 
-		}
-		$count++; 
-	}
+    my $index = int( scalar(@$array_ref) / $nth );
+    my $count = 0;
+    my @group = ();
+    for (@$array_ref) {
 
-	return [@group];
+        unless ( $count % $index ) {
+            push( @group, $_ );
+        }
+        $count++;
+    }
+
+    return [@group];
 }
 
+sub data_over_time_json {
+    my $q     = shift;
+    my $mid   = $q->param('mid');
+    my $type  = $q->param('type');
+    my $label = $q->param('label');
 
-sub data_over_time_json { 
-	my $mid    = $q->param('mid'); 
-	my $type   = $q->param('type');
-	my $label  = $q->param('label'); 
-	
-	$rd->data_over_time_json(
-		{
-			-mid      => $mid,
-			-type     => $type, 
-			-label    => $label, 
-			-printout => 1
-		}
-	); 
-	
-}
-
-sub message_email_report_table { 
-	my $mid = $q->param('mid'); 
-	my $type = $q->param('type') || 'soft_bounce'; 
-	$rd->message_email_report_table(
-		{
-			-mid             => $mid,
-			-type            => $type, 
-			-printout        => 1,
-			-vars            => { 
-				Plugin_URL => $Plugin_Config->{Plugin_URL}, 
-				mid        => $mid, 
-				type       => $type, 
-			}
-		}
-	);
-}
-
-
-sub message_email_report_export_csv { 
-	my $mid = $q->param('mid'); 
-	my $type = $q->param('type') || 'soft_bounce';
-	
-	my $header = $q->header(
-		-attachment => 'email_report-' . $list . '-' . $type . '.' . $mid . '.csv',
-		-type       => 'text/csv', 
-	);
-	print $header;
-	
-	$rd->message_email_report_export_csv(
-		{
-			-mid             => $mid,
-			-type            => $type, 
-		}
-	);
-}
-
-
-
-
-
-sub email_stats_json { 
-		my $mid = $q->param('mid'); 
-		my $type = $q->param('type') || 'soft_bounce'; 
-		$rd->email_stats_json(
-			{
-				-mid             => $mid,
-				-type            => $type, 
-				-printout        => 1
-			}
-		);
-		
-}
-
-
-sub clear_data_cache { 
-	require DADA::App::DataCache; 
-	my $dc = DADA::App::DataCache->new;
-	$dc->flush(
-		{
-			-list => $list
-		}
-	); 
-	print $q->redirect( -uri => $Plugin_Config->{Plugin_URL} . '?done=1' );
-}
-
-sub clear_message_data_cache { 
-	require DADA::App::DataCache; 
-	my $dc = DADA::App::DataCache->new;
-	$dc->flush(
-		{
-			-list   => $list,
-			-msg_id => xss_filter(strip($q->param('msg_id'))), 
-		}
-	); 
-	print $q->redirect( -uri => $Plugin_Config->{Plugin_URL} . '?flavor=m&mid=' . xss_filter(strip($q->param('msg_id'))));
-}
-
-
-
-sub export_subscribers { 
-	
-	my $mid = xss_filter($q->param('mid')); 
-	my $type = xss_filter($q->param('type')); 
-	if($type ne 'clickthroughs' 
-	&& $type ne 'opens'
-	&& $type ne 'abuse_reports'
-	){ 
-		$type = 'clickthroughs'; 
-	}
-	
-	my $header  = 'Content-disposition: attachement; filename=' 
-			      . $list 
-			      . '-' 
-			      . $type 
-			      . '-subscribers-' 
-			      . $mid 
-			      . '.csv' 
-			      .  "\n";
-	
-	$header .= 'Content-type: text/csv' . "\n\n";
-    print $header;
-
-   $rd->export_by_email(
-		{
-			-type => $type, 
-			-mid  => $mid, 
-			-fh   => \*STDOUT
-		}
-	);
-	
-	 
-}
-
-sub message_email_activity_listing_table { 
-	
-	my $mid = xss_filter($q->param('mid')); 	
-   	$rd->message_email_activity_listing_table(
-		{
-			-mid  => $mid,
-			-vars => { 
-				mid  => $mid, 
-				type => 'email_activity', 
-			}
-		}
-	);
-}
-
-sub message_individual_email_activity_report_table { 
-
-	my $mid   = xss_filter($q->param('mid')); 
-	my $email = xss_filter($q->param('email')); 
-	print $q->header(); 
-	print $rd->message_individual_email_activity_report_table(
-		{
-			-mid    => $mid, 
-			-email  => $email, 
-			-plugin_url => $Plugin_Config->{Plugin_URL}, 
-
-		}
-	);
-}
-
-
-sub message_individual_email_activity_csv { 
-	my $mid   = xss_filter($q->param('mid')); 
-	my $email = xss_filter($q->param('email')); 
-	my $fn_email = $email; 
-	   $fn_email =~ s/\@/_at_/; 
-	my $header  = 'Content-disposition: attachement; filename=' . $list . '-message_individual_email_activity-' . $fn_email . '-' . $mid . '.csv' .  "\n"; 
-	   $header .= 'Content-type: text/csv' . "\n\n";
-    print $header;
-
-	print $rd->message_individual_email_activity_csv(
-		{
-			-mid    => $mid, 
-			-email  => $email, 
-			-fh   => \*STDOUT, 
-		}
-	);
-}
-
-sub the_basics_piechart_json { 
-	my $mid   = xss_filter($q->param('mid')); 
-	my $type  = xss_filter($q->param('type')); 
-	my $label = xss_filter($q->param('label')); 
-
-	$rd->msg_basic_event_count_json(
-		{
-			-mid      => $mid, 
-			-type     => $type, 
-			-label    => $label, 
-			-printout => 1, 
-		}
-	);
-}
-
-
-
-sub message_history_html { 
-	
-	my $page = $q->param('page') || 1; 
-	require DADA::Template::Widgets;
-	my $html; 
-	
-	require DADA::App::DataCache; 
-	my $dc = DADA::App::DataCache->new; 
-	
-	$html = $dc->retrieve(
-		{
-			-list    => $list, 
-			-name    => 'message_history_html', 
-			-page    => $page, 
-			-entries => $ls->param('tracker_record_view_count'), 
-		}
-	);
-	
-	if( defined($html)){ 
-		warn 'message_history_html cached in file'; 
-	}
-	
-	if(! defined($html)){ 
-		
-		my ($total, $msg_ids) = $rd->get_all_mids(
-			{ 
-				-page    => $page, 
-				-entries => $ls->param('tracker_record_view_count'),  
-			}
-		);
-
-
-		require Data::Pageset;
-		my $page_info = Data::Pageset->new(
-			{
-			'total_entries'       => $total, 
-			'entries_per_page'    => $ls->param('tracker_record_view_count'), # needs to be tweakable...  
-			'current_page'        => $page,
-			'mode'                => 'slide', # default fixed
-	 		}
-		);
-
-		my $pages_in_set = [];
-		foreach my $page_num (@{$page_info->pages_in_set()}) {
-			if($page_num == $page_info->current_page()) {
-				push(@$pages_in_set, {page => $page_num, on_current_page => 1});
-			}
-			else { 
-				push(@$pages_in_set, {page => $page_num, on_current_page => undef});
-			}
-		}
-
-		my $report_by_message_id = $rd->report_by_message_index(
-			{
-				-all_mids => $msg_ids, #Strange speedup
-				-page     => $page,
-			}
-		) || []; 
-
-	    require    DADA::Template::Widgets;
-	    $html = DADA::Template::Widgets::screen(
-	        {
-	            -screen           => 'plugins/tracker/clickthrough_table.tmpl',
-	            -vars => {
-	                report_by_message_index   => $report_by_message_id,
-					first_page                => $page_info->first_page(), 
-					last_page                 => $page_info->last_page(), 
-					next_page                 => $page_info->next_page(), 
-					previous_page             => $page_info->previous_page(), 
-					pages_in_set              => $pages_in_set,  		
-					Plugin_URL                => $Plugin_Config->{Plugin_URL}, 
-	            },
-	            -list_settings_vars_param => {
-	                -list   => $list,
-	                -dot_it => 1,
-	            },
-	        }
-	    );
-		$dc->cache(
-			{ 
-				-list    => $list, 
-				-name    => 'message_history_html', 
-				-page    => $page, 
-				-entries => $ls->param('tracker_record_view_count'), 
-				-data    => \$html, 
-			}
-		);
-	
-	}
-	print $q->header(); 
-    e_print($html);
+    return $rd->data_over_time_json(
+        {
+            -mid      => $mid,
+            -type     => $type,
+            -label    => $label,
+            -printout => 0
+        }
+    );
 
 }
 
+sub message_email_report_table {
+    my $q    = shift;
+    my $mid  = $q->param('mid');
+    my $type = $q->param('type') || 'soft_bounce';
+    return $rd->message_email_report_table(
+        {
+            -mid      => $mid,
+            -type     => $type,
+            -printout => 0,
+            -vars     => {
+                Plugin_URL => $Plugin_Config->{Plugin_URL},
+                mid        => $mid,
+                type       => $type,
+            }
+        }
+    );
+}
 
+sub message_email_report_export_csv {
+    my $q    = shift;
+    my $mid  = $q->param('mid');
+    my $type = $q->param('type') || 'soft_bounce';
+    return $rd->message_email_report_export_csv(
+        {
+            -mid  => $mid,
+            -type => $type,
+        }
+    );
+}
 
+sub email_stats_json {
+    my $q    = shift;
+    my $mid  = $q->param('mid');
+    my $type = $q->param('type') || 'soft_bounce';
+    return $rd->email_stats_json(
+        {
+            -mid      => $mid,
+            -type     => $type,
+            -printout => 0,
+        }
+    );
+
+}
+
+sub clear_data_cache {
+    require DADA::App::DataCache;
+    my $dc = DADA::App::DataCache->new;
+    $dc->flush(
+        {
+            -list => $list
+        }
+    );
+    return ( { -redirect_uri => $Plugin_Config->{Plugin_URL} . '?done=1' }, undef );
+}
+
+sub clear_message_data_cache {
+    my $q = shift;
+    require DADA::App::DataCache;
+    my $dc = DADA::App::DataCache->new;
+    $dc->flush(
+        {
+            -list   => $list,
+            -msg_id => xss_filter( strip( $q->param('msg_id') ) ),
+        }
+    );
+    return (
+        {
+                -redirect_uri => $Plugin_Config->{Plugin_URL}
+              . '?flavor=m&mid='
+              . xss_filter( strip( $q->param('msg_id') ) )
+        },
+        undef
+    );
+}
+
+sub export_subscribers {
+
+    my $q    = shift;
+    my $mid  = xss_filter( $q->param('mid') );
+    my $type = xss_filter( $q->param('type') );
+    if (   $type ne 'clickthroughs'
+        && $type ne 'opens'
+        && $type ne 'abuse_reports' )
+    {
+        $type = 'clickthroughs';
+    }
+
+    return $rd->export_by_email(
+        {
+            -type => $type,
+            -mid  => $mid,
+
+            #-fh   => \*STDOUT
+            #-printout => 0,
+        }
+    );
+
+}
+
+sub message_email_activity_listing_table {
+    my $q   = shift;
+    my $mid = xss_filter( $q->param('mid') );
+    return $rd->message_email_activity_listing_table(
+        {
+            -mid  => $mid,
+            -vars => {
+                mid  => $mid,
+                type => 'email_activity',
+            }
+        }
+    );
+}
+
+sub message_individual_email_activity_report_table {
+    my $q     = shift;
+    my $mid   = xss_filter( $q->param('mid') );
+    my $email = xss_filter( $q->param('email') );
+    return $rd->message_individual_email_activity_report_table(
+        {
+            -mid        => $mid,
+            -email      => $email,
+            -plugin_url => $Plugin_Config->{Plugin_URL},
+
+        }
+    );
+}
+
+sub message_individual_email_activity_csv {
+    my $q        = shift;
+    my $mid      = xss_filter( $q->param('mid') );
+    my $email    = xss_filter( $q->param('email') );
+    my $fn_email = $email;
+    $fn_email =~ s/\@/_at_/;
+
+    return $rd->message_individual_email_activity_csv(
+        {
+            -mid   => $mid,
+            -email => $email,
+
+            #-fh   => \*STDOUT,
+        }
+    );
+}
+
+sub the_basics_piechart_json {
+    my $q     = shift;
+    my $mid   = xss_filter( $q->param('mid') );
+    my $type  = xss_filter( $q->param('type') );
+    my $label = xss_filter( $q->param('label') );
+
+    return $rd->msg_basic_event_count_json(
+        {
+            -mid      => $mid,
+            -type     => $type,
+            -label    => $label,
+            -printout => 0,
+        }
+    );
+}
+
+sub message_history_html {
+
+    my $q = shift;
+    my $page = $q->param('page') || 1;
+    require DADA::Template::Widgets;
+    my $html;
+
+    require DADA::App::DataCache;
+    my $dc = DADA::App::DataCache->new;
+
+    $html = $dc->retrieve(
+        {
+            -list    => $list,
+            -name    => 'message_history_html',
+            -page    => $page,
+            -entries => $ls->param('tracker_record_view_count'),
+        }
+    );
+
+    if ( defined($html) ) {
+        warn 'message_history_html cached in file';
+    }
+
+    if ( !defined($html) ) {
+
+        my ( $total, $msg_ids ) = $rd->get_all_mids(
+            {
+                -page    => $page,
+                -entries => $ls->param('tracker_record_view_count'),
+            }
+        );
+
+        require Data::Pageset;
+        my $page_info = Data::Pageset->new(
+            {
+                'total_entries'    => $total,
+                'entries_per_page' => $ls->param('tracker_record_view_count'),    # needs to be tweakable...
+                'current_page'     => $page,
+                'mode'             => 'slide',                                    # default fixed
+            }
+        );
+
+        my $pages_in_set = [];
+        foreach my $page_num ( @{ $page_info->pages_in_set() } ) {
+            if ( $page_num == $page_info->current_page() ) {
+                push( @$pages_in_set, { page => $page_num, on_current_page => 1 } );
+            }
+            else {
+                push( @$pages_in_set, { page => $page_num, on_current_page => undef } );
+            }
+        }
+
+        my $report_by_message_id = $rd->report_by_message_index(
+            {
+                -all_mids => $msg_ids,    #Strange speedup
+                -page     => $page,
+            }
+        ) || [];
+
+        require DADA::Template::Widgets;
+        $html = DADA::Template::Widgets::screen(
+            {
+                -screen => 'plugins/tracker/clickthrough_table.tmpl',
+                -vars   => {
+                    report_by_message_index => $report_by_message_id,
+                    first_page              => $page_info->first_page(),
+                    last_page               => $page_info->last_page(),
+                    next_page               => $page_info->next_page(),
+                    previous_page           => $page_info->previous_page(),
+                    pages_in_set            => $pages_in_set,
+                    Plugin_URL              => $Plugin_Config->{Plugin_URL},
+                },
+                -list_settings_vars_param => {
+                    -list   => $list,
+                    -dot_it => 1,
+                },
+            }
+        );
+        $dc->cache(
+            {
+                -list    => $list,
+                -name    => 'message_history_html',
+                -page    => $page,
+                -entries => $ls->param('tracker_record_view_count'),
+                -data    => \$html,
+            }
+        );
+
+    }
+    return ( {}, $html );
+
+}
 
 sub download_logs {
 
-	my $type = xss_filter($q->param('log_type')); 
-	if($type ne 'clickthrough' && $type ne 'activity'){ 
-		$type = 'clickthrough'; 
-	}
-	
-	my $header  = 'Content-disposition: attachement; filename=' . $list . '-' . $type . '.csv' .  "\n"; 
-	   $header .= 'Content-type: text/csv' . "\n\n";
-    print $header;
+    my $q    = shift;
+    my $type = xss_filter( $q->param('log_type') );
+    if ( $type ne 'clickthrough' && $type ne 'activity' ) {
+        $type = 'clickthrough';
+    }
+    my $headers = {
+        'Content-disposition' => 'attachement; filename=' . $list . '-' . $type . '.csv',
+        -type                 => 'text/csv',
+    };
+    my $r = $rd->export_logs(
+        {
+            -type => $type,
 
-    $rd->export_logs(
-		{
-			-type => $type, 
-			-fh   => \*STDOUT
-		}
-	);
+            #-fh   => \*STDOUT
+        }
+    );
+    return ( $headers, $r );
 }
 
+sub download_clickthrough_logs {
 
+    my $q       = shift;
+    my $mid     = xss_filter( $q->param('mid') );
+    my $headers = {
+        'Content-disposition' => 'attachement; filename=' . $list . '-clickthrough-' . $mid . '.csv',
+        -type                 => 'text/csv',
+    };
+    my $r = $rd->export_logs(
+        {
+            -type => 'clickthrough',
+            -mid  => $mid,
 
-
-sub download_clickthrough_logs { 
-	my $mid = xss_filter($q->param('mid')); 
-	my $header  = 'Content-disposition: attachement; filename=' . $list . '-clickthrough-' . $mid . '.csv' .  "\n"; 
-	   $header .= 'Content-type: text/csv' . "\n\n";
-    print $header;
-    $rd->export_logs(
-		{
-			-type => 'clickthrough', 
-			-mid  => $mid, 
-			-fh   => \*STDOUT
-		}
-	);
-
+            #-fh   => \*STDOUT
+        }
+    );
+    return ( $headers, $r );
 }
 
+sub download_activity_logs {
 
+    my $q       = shift;
+    my $mid     = xss_filter( $q->param('mid') );
+    my $headers = {
+        'Content-disposition' => 'attachement; filename=' . $list . '-activity-' . $mid . '.csv',
+        -type                 => 'text/csv',
+    };
 
-
-sub download_activity_logs { 
-	my $mid = xss_filter($q->param('mid')); 
-	my $header  = 'Content-disposition: attachement; filename=' . $list . '-activity-' . $mid . '.csv' .  "\n"; 
-	   $header .= 'Content-type: text/csv' . "\n\n";
-    print $header;
-    $rd->export_logs(
-		{
-			-type => 'activity', 
-			-mid  => $mid, 
-			-fh   => \*STDOUT
-		}
-	);
+    my $r = $rd->export_logs(
+        {
+            -type => 'activity',
+            -mid  => $mid,
+            -fh   => \*STDOUT
+        }
+    );
+    return ( $headers, $r );
 
 }
-
-
-
 
 sub ajax_delete_log {
-	$rd->purge_log; 
-	print $q->header(); 
+    $rd->purge_log;
+    return ( {}, undef );
 }
 
+sub save_view_count_prefs {
 
-
-sub save_view_count_prefs { 
-	$ls->save_w_params(
-    	{ 
-			-associate => $q, 
-			-settings  => { 
-				tracker_record_view_count => 0,
-			}
-		}
-	); 
-	require DADA::App::DataCache; 
-	my $dc = DADA::App::DataCache->new;
-	$dc->flush(
-		{
-			-list => $list
-		}
-	); 
-	
-	print $q->header(); 
+    my $q = shift;
+    $ls->save_w_params(
+        {
+            -associate => $q,
+            -settings  => {
+                tracker_record_view_count => 0,
+            }
+        }
+    );
+    require DADA::App::DataCache;
+    my $dc = DADA::App::DataCache->new;
+    $dc->flush(
+        {
+            -list => $list
+        }
+    );
+    return ( {}, undef );
 }
 
 sub edit_prefs {
-
+    my $q = shift;
     $ls->save_w_params(
         {
             -associate => $q,
@@ -739,278 +701,280 @@ sub edit_prefs {
                 tracker_track_email                             => 0,
                 tracker_clean_up_reports                        => 0,
                 tracker_show_message_reports_in_mailing_monitor => 0,
-                
-                tracker_update_profiles_w_geo_ip_data           => 0, 
-                
+
+                tracker_update_profiles_w_geo_ip_data => 0,
+
             }
         }
     );
-    
-    
-    my $tracker_update_profiles_geo_ip_data = {};     
-    require DADA::ProfileFieldsManager; 
-	my $dpfm               = DADA::ProfileFieldsManager->new;
-    for (@{$dpfm->fields( { -show_hidden_fields => 1, } )}) {
-        my $enabled       = $q->param($_ . '.enabled')       || 0; 
-        my $geoip_data_type = $q->param($_ . '.geoip_data_type') || ''; 
+
+    my $tracker_update_profiles_geo_ip_data = {};
+    require DADA::ProfileFieldsManager;
+    my $dpfm = DADA::ProfileFieldsManager->new;
+    for ( @{ $dpfm->fields( { -show_hidden_fields => 1, } ) } ) {
+        my $enabled         = $q->param( $_ . '.enabled' )         || 0;
+        my $geoip_data_type = $q->param( $_ . '.geoip_data_type' ) || '';
         $tracker_update_profiles_geo_ip_data->{$_} = {
-            enabled          => $enabled, 
-            geoip_data_type  => $geoip_data_type, 
+            enabled         => $enabled,
+            geoip_data_type => $geoip_data_type,
         };
     }
-    warn '$ls->_dd_freeze($tracker_update_profiles_geo_ip_data)' . $ls->_dd_freeze($tracker_update_profiles_geo_ip_data); 
+    warn '$ls->_dd_freeze($tracker_update_profiles_geo_ip_data)'
+      . $ls->_dd_freeze($tracker_update_profiles_geo_ip_data);
     $ls->save(
         {
             tracker_update_profile_fields_ip_dada_meta => $ls->_dd_freeze($tracker_update_profiles_geo_ip_data)
         }
-    ); 
-    
+    );
+
     require DADA::App::DataCache;
     my $dc = DADA::App::DataCache->new;
     $dc->flush( { -list => $list } );
-
-    print $q->redirect( -uri => $Plugin_Config->{Plugin_URL} . '?done=1' );
+    return ( { -redirect_uri => $Plugin_Config->{Plugin_URL} . '?done=1' }, undef );
 }
-
-
-
-
 
 sub message_report {
 
-	my $mid = $q->param('mid'); 
-	$mid =~ s/\.(.*?)$//;
-	$q->param('mid', $mid); 
-	
-	my $chrome = 1; 
-	if(defined($q->param('chrome'))){ 
-		$chrome = $q->param('chrome') || 0; 
-	}
-	my $Plugin_Url = $Plugin_Config->{Plugin_URL}; 
-	if(defined($q->param('tracker_url'))){ 
-		$Plugin_Url = $q->param('tracker_url');
-	}
-	
+    my $q   = shift;
+    my $mid = $q->param('mid');
+    $mid =~ s/\.(.*?)$//;
+    $q->param( 'mid', $mid );
+
+    my $chrome = 1;
+    if ( defined( $q->param('chrome') ) ) {
+        $chrome = $q->param('chrome') || 0;
+    }
+    my $Plugin_Url = $Plugin_Config->{Plugin_URL};
+    if ( defined( $q->param('tracker_url') ) ) {
+        $Plugin_Url = $q->param('tracker_url');
+    }
+
     my $m_report = $rd->report_by_message( $q->param('mid') );
-	
-	# This is strange, as we have to first break it out of the data structure, 
-	# and stick it back in: 
-	
-	my $u_url_report = {}; 
-	foreach(@{$m_report->{url_report}}){ 
-		$u_url_report->{$_->{url}} = $_->{count}; 
-	}
-	my $s_url_report = []; 
-	foreach my $v (sort {$u_url_report->{$b} <=> $u_url_report->{$a} }
-	           keys %$u_url_report)
-	{
-		 push(@$s_url_report, {url => $v, count => $u_url_report->{$v}}); 
-	}
-	
-			
-	my %tmpl_vars = (
-		
-		screen                      => 'using_tracker', 
-		
-		mid                         => $q->param('mid')                            || '',
-        subject                     => find_message_subject( $q->param('mid') )    || '',
-        url_report                  => $s_url_report                               || [],
-        num_subscribers             => commify($m_report->{num_subscribers})       || 0,
-        total_recipients            => commify($m_report->{total_recipients})      || 0,
-        opens                       => commify($m_report->{'open'})                || 0, 
-        unique_opens                => commify($m_report->{'unique_open'})         || 0, 
-        unique_opens_percent        => $m_report->{'unique_opens_percent'}         || 0, 
-        clickthroughs               => commify($m_report->{'clickthroughs'})       || 0, 
-        
-        unique_clickthroughs => $m_report->{'unique_clickthroughs'} || 0,
+
+    # This is strange, as we have to first break it out of the data structure,
+    # and stick it back in:
+
+    my $u_url_report = {};
+    foreach ( @{ $m_report->{url_report} } ) {
+        $u_url_report->{ $_->{url} } = $_->{count};
+    }
+    my $s_url_report = [];
+    foreach my $v (
+        sort { $u_url_report->{$b} <=> $u_url_report->{$a} }
+        keys %$u_url_report
+      )
+    {
+        push( @$s_url_report, { url => $v, count => $u_url_report->{$v} } );
+    }
+
+    my %tmpl_vars = (
+
+        screen => 'using_tracker',
+
+        mid                  => $q->param('mid')                         || '',
+        subject              => find_message_subject( $q->param('mid') ) || '',
+        url_report           => $s_url_report                            || [],
+        num_subscribers      => commify( $m_report->{num_subscribers} )  || 0,
+        total_recipients     => commify( $m_report->{total_recipients} ) || 0,
+        opens                => commify( $m_report->{'open'} )           || 0,
+        unique_opens         => commify( $m_report->{'unique_open'} )    || 0,
+        unique_opens_percent => $m_report->{'unique_opens_percent'}      || 0,
+        clickthroughs        => commify( $m_report->{'clickthroughs'} )  || 0,
+
+        unique_clickthroughs         => $m_report->{'unique_clickthroughs'}         || 0,
         unique_clickthroughs_percent => $m_report->{'unique_clickthroughs_percent'} || 0,
-        
-		unsubscribes                => commify($m_report->{'unsubscribe'})         || 0, 
-		unique_unsubscribes_percent => $m_report->{'unique_unsubscribes_percent'}  || 0, 
-		soft_bounce                 => commify($m_report->{'soft_bounce'})         || 0,
-        hard_bounce                 => commify($m_report->{'hard_bounce'})         || 0,
-  		
-		errors_sending_to        => commify($m_report->{'errors_sending_to'})      || 0,
-		errors_sending_to_percent => $m_report->{'errors_sending_to_percent'}      || 0, 
-		
-		abuse_report                => commify($m_report->{abuse_report})          || 0,
-#        abuse_report_percent        => $m_report->{abuse_report_to_percent}        || 0, 
 
-        received                 => commify($m_report->{'received'})               || 0,
-		received_percent          => $m_report->{'received_percent'}               || 0,  
-		unique_bounces_percent      => $m_report->{'unique_bounces_percent'}       || 0, 
-		view_archive                => commify($m_report->{'view_archive'})        || 0, 
-		forward_to_a_friend         => commify($m_report->{'forward_to_a_friend'}) || 0,
-		soft_bounce_report          => $m_report->{'soft_bounce_report'}           || [],
-		hard_bounce_report          => $m_report->{'hard_bounce_report'}           || [],
+        unsubscribes                => commify( $m_report->{'unsubscribe'} )      || 0,
+        unique_unsubscribes_percent => $m_report->{'unique_unsubscribes_percent'} || 0,
+        soft_bounce                 => commify( $m_report->{'soft_bounce'} )      || 0,
+        hard_bounce                 => commify( $m_report->{'hard_bounce'} )      || 0,
 
+        errors_sending_to         => commify( $m_report->{'errors_sending_to'} ) || 0,
+        errors_sending_to_percent => $m_report->{'errors_sending_to_percent'}    || 0,
 
-		can_use_country_geoip_data  => $rd->can_use_country_geoip_data, 
-		Plugin_URL                  => $Plugin_Url,
-		Plugin_Name                 => $Plugin_Config->{Plugin_Name},
-		chrome                      => $chrome, 		
-		
-	); 
-	my $scrn = ''; 
-	require DADA::Template::Widgets;
-    	
-	if($chrome == 0){ 
-		print $q->header();
-	    $scrn = DADA::Template::Widgets::screen(
-	        {
-	            -screen           => 'plugins/tracker/message_report.tmpl',
-				-expr             => 1, 
-	            -vars => {
-					%tmpl_vars, 
-	            },
-	        },
-	    );
-	}
-	else { 
-		 $scrn = DADA::Template::Widgets::wrap_screen(
-		        {
-		            -screen           => 'plugins/tracker/message_report.tmpl',
-					-expr             => 1, 
-		            -with           => 'admin',
-		            -wrapper_params => {
-		                -Root_Login => $root_login,
-		                -List       => $ls->param('list'),
-		            },
-		            -vars => {
-						%tmpl_vars, 
-		            },
-		        },
-		    );		
-	}
-    e_print($scrn);
+        abuse_report => commify( $m_report->{abuse_report} ) || 0,
+
+        #        abuse_report_percent        => $m_report->{abuse_report_to_percent}        || 0,
+
+        received               => commify( $m_report->{'received'} )            || 0,
+        received_percent       => $m_report->{'received_percent'}               || 0,
+        unique_bounces_percent => $m_report->{'unique_bounces_percent'}         || 0,
+        view_archive           => commify( $m_report->{'view_archive'} )        || 0,
+        forward_to_a_friend    => commify( $m_report->{'forward_to_a_friend'} ) || 0,
+        soft_bounce_report     => $m_report->{'soft_bounce_report'}             || [],
+        hard_bounce_report     => $m_report->{'hard_bounce_report'}             || [],
+
+        can_use_country_geoip_data => $rd->can_use_country_geoip_data,
+        Plugin_URL                 => $Plugin_Url,
+        Plugin_Name                => $Plugin_Config->{Plugin_Name},
+        chrome                     => $chrome,
+
+    );
+    my $scrn = '';
+    require DADA::Template::Widgets;
+
+    if ( $chrome == 0 ) {
+        $scrn = DADA::Template::Widgets::screen(
+            {
+                -screen => 'plugins/tracker/message_report.tmpl',
+                -expr   => 1,
+                -vars   => { %tmpl_vars, },
+            },
+        );
+    }
+    else {
+        $scrn = DADA::Template::Widgets::wrap_screen(
+            {
+                -screen         => 'plugins/tracker/message_report.tmpl',
+                -expr           => 1,
+                -with           => 'admin',
+                -wrapper_params => {
+                    -Root_Login => $root_login,
+                    -List       => $ls->param('list'),
+                },
+                -vars => { %tmpl_vars, },
+            },
+        );
+    }
+    return ( {}, $scrn );
 
 }
 
-
-
 sub country_geoip_table {
-	
-		
-		my $mid  = $q->param('mid')    || undef; 
-		my $type = $q->param('type')   || undef; 
-		my $label = $q->param('label') || undef; 		
-		
-		my $html; 
 
-		require DADA::App::DataCache; 
-		my $dc = DADA::App::DataCache->new; 
+    my $q     = shift;
+    my $mid   = $q->param('mid') || undef;
+    my $type  = $q->param('type') || undef;
+    my $label = $q->param('label') || undef;
 
-		$html = $dc->retrieve(
-			{
-				-list    => $list, 
-				-name    => 'country_geoip_table' . '.' . $mid . '.' . $type,
-			}
-		);
-		if(! defined($html)){
-					
-			my $report = $rd->country_geoip_data(
-				{ 
-					-mid   => $mid, 
-					-type  => $type, 
-					-label => $label, 
-					-db     => $Plugin_Config->{GeoIP_Db},
-				}
-			);
-			for(@$report){ 
-				$_->{type} = $type; 
-			}	
-		    require DADA::Template::Widgets;
-		    $html = DADA::Template::Widgets::screen(
-		        {
-		            -screen             => 'plugins/tracker/country_geoip_table.tmpl',
-					-vars => { 
-						c_geo_ip_report => $report, 
-						type            => $type,
-						label           => $label, 
-					
-					}
-		        }
-		    );
-			$dc->cache(
-				{ 
-					-list    => $list, 
-					-name    => 'country_geoip_table' . '.' . $mid . '.' . $type,
-					-data    => \$html, 
-				}
-			);
-		}
-		
-		print $q->header(); 
-	    e_print($html);
-	
+    my $html;
+
+    require DADA::App::DataCache;
+    my $dc = DADA::App::DataCache->new;
+
+    $html = $dc->retrieve(
+        {
+            -list => $list,
+            -name => 'country_geoip_table' . '.' . $mid . '.' . $type,
+        }
+    );
+    if ( !defined($html) ) {
+
+        my $report = $rd->country_geoip_data(
+            {
+                -mid   => $mid,
+                -type  => $type,
+                -label => $label,
+                -db    => $Plugin_Config->{GeoIP_Db},
+            }
+        );
+        for (@$report) {
+            $_->{type} = $type;
+        }
+        require DADA::Template::Widgets;
+        $html = DADA::Template::Widgets::screen(
+            {
+                -screen => 'plugins/tracker/country_geoip_table.tmpl',
+                -vars   => {
+                    c_geo_ip_report => $report,
+                    type            => $type,
+                    label           => $label,
+
+                }
+            }
+        );
+        $dc->cache(
+            {
+                -list => $list,
+                -name => 'country_geoip_table' . '.' . $mid . '.' . $type,
+                -data => \$html,
+            }
+        );
+    }
+
+    return ( {}, $html );
+
 }
 
 sub country_geoip_json {
-	my $mid  = $q->param('mid')    || undef; 
-	my $type = $q->param('type')   || undef; 
 
-	my $labels = { 
-		clickthroughs       => 'Clickthroughs', 
-		opens               => 'Opens', 
-		forward_to_a_friend => 'Forwards', 
-		view_archive        => 'Archive Views', 
-	};
-	$rd->country_geoip_json({ 
-		-mid      => $mid, 
-		-type     => $type, 
-		-db       => $Plugin_Config->{GeoIP_Db},
-		-label    => $labels->{$type}, 
-		-printout => 1,
-		});
+    my $q    = shift;
+    my $mid  = $q->param('mid') || undef;
+    my $type = $q->param('type') || undef;
+
+    my $labels = {
+        clickthroughs       => 'Clickthroughs',
+        opens               => 'Opens',
+        forward_to_a_friend => 'Forwards',
+        view_archive        => 'Archive Views',
+    };
+    return $rd->country_geoip_json(
+        {
+            -mid      => $mid,
+            -type     => $type,
+            -db       => $Plugin_Config->{GeoIP_Db},
+            -label    => $labels->{$type},
+            -printout => 0,
+        }
+    );
 }
+
 sub individual_country_geoip_json {
-	my $mid     = $q->param('mid')     || undef; 
-	my $type    = $q->param('type')    || undef; 
-	my $country = $q->param('country') || undef; 
-	
-	$rd->individual_country_geoip_json({ 
-		-mid      => $mid, 
-		-type     => $type, 
-		-db       => $Plugin_Config->{GeoLiteCity_Db},
-		-country  => $country, 
-		-printout => 1,
-		});
+
+    my $q       = shift;
+    my $mid     = $q->param('mid') || undef;
+    my $type    = $q->param('type') || undef;
+    my $country = $q->param('country') || undef;
+
+    $rd->individual_country_geoip_json(
+        {
+            -mid      => $mid,
+            -type     => $type,
+            -db       => $Plugin_Config->{GeoLiteCity_Db},
+            -country  => $country,
+            -printout => 0,
+        }
+    );
 }
+
 sub individual_country_geoip_report {
-	my $mid     = $q->param('mid')     || undef; 
-	my $type    = $q->param('type')    || undef; 
-	my $country = $q->param('country') || undef; 
-	
-	$rd->individual_country_geoip_report({ 
-		-mid      => $mid, 
-		-type     => $type, 
-		-db       => $Plugin_Config->{GeoLiteCity_Db},
-		-country  => $country, 
-		-printout => 1,
-		});
+
+    my $q       = shift;
+    my $mid     = $q->param('mid') || undef;
+    my $type    = $q->param('type') || undef;
+    my $country = $q->param('country') || undef;
+
+    return $rd->individual_country_geoip_report(
+        {
+            -mid      => $mid,
+            -type     => $type,
+            -db       => $Plugin_Config->{GeoLiteCity_Db},
+            -country  => $country,
+            -printout => 0,
+        }
+    );
 }
+
 sub individual_country_geoip_report_table {
-	my $mid     = $q->param('mid')     || undef; 
-	my $type    = $q->param('type')    || undef; 
-	my $country = $q->param('country') || undef; 
-	my $chrome  = $q->param('chrome')  || 0; 
-	
-	$rd->individual_country_geoip_report_table({ 
-		-mid      => $mid, 
-		-type     => $type, 
-		-db       => $Plugin_Config->{GeoLiteCity_Db},
-		-country  => $country, 
-		-chrome   => $chrome, 
-		-printout => 1,
-		Plugin_URL => $Plugin_Config->{Plugin_URL}, 
-		});
+
+    my $q       = shift;
+    my $mid     = $q->param('mid') || undef;
+    my $type    = $q->param('type') || undef;
+    my $country = $q->param('country') || undef;
+    my $chrome  = $q->param('chrome') || 0;
+
+    return $rd->individual_country_geoip_report_table(
+        {
+            -mid       => $mid,
+            -type      => $type,
+            -db        => $Plugin_Config->{GeoLiteCity_Db},
+            -country   => $country,
+            -chrome    => $chrome,
+            -printout  => 0,
+            Plugin_URL => $Plugin_Config->{Plugin_URL},
+        }
+    );
 }
-
-
-
-
-
-
 
 sub find_message_subject {
     my $mid = shift;
@@ -1023,12 +987,12 @@ sub find_message_subject {
 }
 
 sub commify {
-    local $_  = shift;
+    local $_ = shift;
     1 while s/^(-?\d+)(\d{3})/$1,$2/;
     return $_;
 }
 
-
+1;
 
 =pod
 

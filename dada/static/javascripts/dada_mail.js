@@ -453,7 +453,7 @@ $(document).ready(function() {
 
 		if ($("#tracker_reports").length) {
 			refresh_tracker_plugin(
-			$("#tracker_url").val(), $("#message_id").val(), 'tracker_reports_container');
+			$("#s_program_url").val(), $("#message_id").val(), 'tracker_reports_container');
 		}
 
 
@@ -1058,7 +1058,7 @@ $(document).ready(function() {
 	
 		message_history_html();
 		$("body").on("change", '#tracker_record_view_count', function(event) {
-			message_history_html();
+			tracker_change_record_view();
 		});
 		
 		
@@ -1408,7 +1408,9 @@ function refresh_tracker_plugin(tracker_url, message_id, target_id) {
 	var tracker_refresh_loop = function(no_loop) {
 			$("#tracker_reports_container").load(tracker_url, {
 				chrome: 0,
-				flavor: "m",
+				flavor: 'plugins', 
+				plugin: 'tracker', 
+				prm: "m",
 				mid: message_id
 			}, function() {
 				update_plugins_tracker_message_report();
@@ -2377,7 +2379,7 @@ function plugins_bridge_test_pop3() {
 		maxHeight: 480,
 		maxWidth: 649,
 		opacity: 0.50,
-		href: $("#plugin_url").val(),
+		href: $("#s_program_url").val(),
 		data: {
 			flavor: 'plugins',
 			plugin: 'bridge',
@@ -2507,13 +2509,10 @@ function update_plugins_tracker_message_report() {
 	if ($("#can_use_country_geoip_data").val() == 1) {
 
 		tracker_message_report_callback.add(tracker_message_email_activity_listing_table('message_email_activity_listing_table'));
-
-
 		tracker_message_report_callback.add(country_geoip_table('clickthroughs', 'Clickthroughs', 'country_geoip_clickthroughs_table'));
 		tracker_message_report_callback.add(country_geoip_table('opens', 'Opens', 'country_geoip_opens_table'));
 		tracker_message_report_callback.add(country_geoip_table('view_archive', 'Archive Views', 'country_geoip_view_archive_table'));
 		tracker_message_report_callback.add(country_geoip_table('forward_to_a_friend', 'Forwards', 'country_geoip_forwards_table'));
-
 
 		google.setOnLoadCallback(country_geoip_map('clickthroughs', 'country_geoip_clickthroughs_map'));
 		google.setOnLoadCallback(country_geoip_map('opens', 'country_geoip_opens_map'));
@@ -2525,15 +2524,13 @@ function update_plugins_tracker_message_report() {
 	google.setOnLoadCallback(tracker_the_basics_piechart('opens', 'Opens', 'the_basics_opens')); 
 	google.setOnLoadCallback(tracker_the_basics_piechart('unsubscribes', 'Unsubscribes', 'the_basics_unsubscribes')); 
 	google.setOnLoadCallback(tracker_the_basics_piechart('bounces', 'Bounces', 'the_basics_bounces')); 
-
-
+	
 	google.setOnLoadCallback(data_over_time_graph('clickthroughs', 'Clickthroughs', 'over_time_clickthroughs_graph'));
 	google.setOnLoadCallback(data_over_time_graph('unsubscribes', 'Unsubscribes', 'over_time_unsubscribe_graph'));
 	google.setOnLoadCallback(data_over_time_graph('opens', 'Opens', 'over_time_opens_graph'));
 	google.setOnLoadCallback(data_over_time_graph('view_archive', 'Archive Views', 'over_time_view_archive_graph'));
 	google.setOnLoadCallback(data_over_time_graph('forward_to_a_friend', 'Forwards', 'over_time_forwards_graph'));
 	google.setOnLoadCallback(data_over_time_graph('abuse_report', 'Abuse Reports', 'over_time_abuse_report_graph'));
-
 
 	google.setOnLoadCallback(email_breakdown_chart('unsubscribe', 'Unsubscribes', 'unsubscribe_graph'));
 	google.setOnLoadCallback(email_breakdown_chart('soft_bounce', 'Soft Bounces', 'soft_bounce_graph'));
@@ -2545,10 +2542,7 @@ function update_plugins_tracker_message_report() {
 	tracker_message_report_callback.add(message_email_report_table('soft_bounce',    'soft_bounce_table'));
 	tracker_message_report_callback.add(message_email_report_table('hard_bounce',    'hard_bounce_table'));
 	tracker_message_report_callback.add(message_email_report_table('errors_sending_to', 'errors_sending_to_table'));
-
 	tracker_message_report_callback.add(message_email_report_table('abuse_report', 'abuse_report_table'));
-
-
 
 	tracker_message_report_callback.fire(); 
 	
@@ -2558,11 +2552,13 @@ function country_geoip_table(type, label, target_div) {
 
 	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
 	var request = $.ajax({
-		url: $("#plugin_url").val(),
+		url: $("#s_program_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
-			flavor: 'country_geoip_table',
+			flavor: 'plugins', 
+			plugin: 'tracker', 
+			prm: 'country_geoip_table',
 			mid: $('#tracker_message_id').val(),
 			type: type,
 			label: label
@@ -2608,10 +2604,12 @@ function country_geoip_map(type, target_div) {
 
 	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
 	$.ajax({
-		url: $("#plugin_url").val(),
+		url: $("#s_program_url").val(),
 		type: "POST",
 		data: {
-			flavor: 'country_geoip_json',
+			flavor: 'plugins', 
+			plugin: 'tracker', 
+			prm: 'country_geoip_json',
 			mid: $('#tracker_message_id').val(),
 			type: type
 		},
@@ -2656,9 +2654,11 @@ function country_geoip_map(type, target_div) {
 function message_individual_email_activity_table(email, target_div) { 
 	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
 	$.ajax({
-		url: $("#plugin_url").val(),
+		url: $("#s_program_url").val(),
 		data: {
-			flavor: 'message_individual_email_activity_report_table',
+			flavor: 'plugins', 
+			plugin: 'tracker', 
+			prm: 'message_individual_email_activity_report_table',
 			mid: $('#tracker_message_id').val(),
 			email: email
 		},
@@ -2678,9 +2678,11 @@ function message_individual_email_activity_table(email, target_div) {
 function individual_country_geoip_map(type, country, target_div) {
 	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
 	$.ajax({
-		url: $("#plugin_url").val(),
+		url: $("#s_program_url").val(),
 		data: {
-			flavor: 'individual_country_geoip_json',
+			flavor: 'plugins', 
+			plugin: 'tracker', 
+			prm: 'individual_country_geoip_json',
 			mid: $('#tracker_message_id').val(),
 			type: type,
 			country: country
@@ -2714,9 +2716,11 @@ function individual_country_geoip_map(type, country, target_div) {
 function individual_country_cumulative_geoip_table(type, country, target_div) {
 	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
 	$.ajax({
-		url: $("#plugin_url").val(),
+		url: $("#s_program_url").val(),
 		data: {
-			flavor: 'individual_country_geoip_report_table',
+			flavor: 'plugins', 
+			plugin: 'tracker', 
+			prm: 'individual_country_geoip_report_table',
 			mid: $('#tracker_message_id').val(),
 			type: 'ALL',
 			country: country
@@ -2737,9 +2741,11 @@ function individual_country_cumulative_geoip_table(type, country, target_div) {
 function data_over_time_graph(type, label, target_div) {
 	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
 	var request = $.ajax({
-		url: $("#plugin_url").val(),
+		url: $("#s_program_url").val(),
 		data: {
-			flavor: 'data_over_time_json',
+			flavor: 'plugins', 
+			plugin: 'tracker', 
+			prm: 'data_over_time_json',
 			mid: $("#tracker_message_id").val(),
 			type: type,
 			label: label
@@ -2779,11 +2785,13 @@ function message_email_report_table(type, target_div) {
 	
 	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
 	var request = $.ajax({
-		url: $("#plugin_url").val(),
+		url: $("#s_program").val(),
 		type: "POST",
 		cache: false,
 		data: {
-			flavor: 'message_email_report_table',
+			flavor: 'plugins', 
+			plugin: 'tracker', 
+			prm: 'message_email_report_table',
 			mid: $('#tracker_message_id').val(),
 			type: type
 		},
@@ -2805,11 +2813,13 @@ function tracker_message_email_activity_listing_table(target_div) {
 
 	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
 	var request = $.ajax({
-		url: $("#plugin_url").val(),
+		url: $("#s_program_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
-			flavor: 'message_email_activity_listing_table',
+			flavor: 'plugins', 
+			plugin: 'tracker',
+			prm: 'message_email_activity_listing_table',
 			mid: $('#tracker_message_id').val()
 		},
 		dataType: "html"
@@ -2838,10 +2848,12 @@ function email_breakdown_chart(type, label, target_div) {
 	
 	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
 	$.ajax({
-		url: $("#plugin_url").val(),
+		url: $("#s_program_url").val(),
 		dataType: "json",
 		data: {
-			flavor: 'email_stats_json',
+			flavor: 'plugins', 
+			plugin: 'tracker', 
+			prm: 'email_stats_json',
 			mid: $('#tracker_message_id').val(),
 			type: type,
 			label: label
@@ -2879,10 +2891,12 @@ function tracker_the_basics_piechart(type, label, target_div) {
 	
 	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
 	$.ajax({
-		url: $("#plugin_url").val(),
+		url: $("#s_program_url").val(),
 		dataType: "json",
 		data: {
-			flavor: 'the_basics_piechart_json',
+			flavor: 'plugins', 
+			plugin: 'tracker', 
+			prm: 'the_basics_piechart_json',
 			mid: $('#tracker_message_id').val(),
 			type: type,
 			label: label
@@ -2919,12 +2933,15 @@ function tracker_the_basics_piechart(type, label, target_div) {
 // Plugins >> Tracker
 
 function tracker_change_record_view() {
+	
 	var request = $.ajax({
-		url: $("#plugin_url").val(),
+		url: $("#s_program_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
-			flavor: 'save_view_count_prefs',
+			flavor: 'plugins', 
+			plugin: 'tracker', 
+			prm: 'save_view_count_prefs',
 			tracker_record_view_count: $('#tracker_record_view_count option:selected').val()
 		},
 		dataType: "html"
@@ -2977,11 +2994,13 @@ function tracker_delete_msg_id_data(message_id){
 	var confirm_msg = "Are you sure you want to delete data for this mass mailing? ";
 	if (confirm(confirm_msg)) {
 		var request = $.ajax({
-			url: $("#plugin_url").val(),
+			url: $("#s_program_url").val(),
 			type: "POST",
 			cache: false,
 			data: {
-				flavor: 'delete_msg_id_data',
+				flavor: 'plugins', 
+				plugin: 'tracker', 
+				prm: 'delete_msg_id_data',
 				mid: message_id
 			},
 			dataType: "html"
@@ -3001,7 +3020,7 @@ function tracker_delete_msg_id_data(message_id){
 function view_logs_results() {
 	$("#refresh_button").val('Loading....');
 	var request = $.ajax({
-		url: $("#plugin_url").val(),
+		url: $("#s_program_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
@@ -3024,7 +3043,7 @@ function delete_log() {
 	confirm_msg += "There is no way to undo this deletion.";
 	if (confirm(confirm_msg)) {
 		var request = $.ajax({
-			url: $("#plugin_url").val(),
+			url: $("#s_program_url").val(),
 			type: "POST",
 			cache: false,
 			data: {
@@ -3053,11 +3072,13 @@ function message_history_html() {
 
 	$("#show_table_results_loading").html('<p class="alert">Loading...</p>');
 	var request = $.ajax({
-		url: $("#plugin_url").val(),
+		url: $("#s_program_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
-			flavor: 'message_history_html',
+			flavor: 'plugins', 
+			plugin: 'tracker', 
+			prm: 'message_history_html',
 			page: $("#tracker_page").val()
 		},
 		dataType: "html"
@@ -3088,9 +3109,11 @@ function drawSubscriberHistoryChart() {
 	}
 	$("#subscriber_history_chart_loading").html('<p class="alert">Loading...</p>');
 	var request = $.ajax({
-		url: $("#plugin_url").val(),
+		url: $("#s_program_url").val(),
 		data: {
-			flavor: 'message_history_json',
+			flavor: 'plugins', 
+			plugin: 'tracker',
+			prm: 'message_history_json',
 			page: $("#tracker_page").val(), 
 			type: history_type
 		},
@@ -3125,11 +3148,13 @@ function tracker_purge_log() {
 	confirm_msg += "There is no way to undo this deletion.";
 	if (confirm(confirm_msg)) {
 		var request = $.ajax({
-			url: $("#plugin_url").val(),
+			url: $("#s_program_url").val(),
 			type: "POST",
 			cache: false,
 			data: {
-				flavor: 'ajax_delete_log'
+				flavor: 'plugins',
+				plugin: 'tracker',
+				prm: 'ajax_delete_log'
 			},
 			dataType: "html"
 		});

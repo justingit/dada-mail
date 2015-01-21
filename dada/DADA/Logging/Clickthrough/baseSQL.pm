@@ -1208,18 +1208,20 @@ sub msg_basic_event_count_json {
 		
 	}
 	
+	my $headers = {
+	    '-Cache-Control' => 'no-cache, must-revalidate',
+	    -expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
+	    -type            =>  'application/json',
+    }; 
+
 	if($args->{-printout} == 1){ 
 		require CGI; 
 		my $q = CGI->new; 
-		print $q->header(
-			'-Cache-Control' => 'no-cache, must-revalidate',
-			-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
-			-type            =>  'application/json',
-		);
+		print $q->header(%$headers);
 		print $json; 
 	}
 	else { 
-		return $json; 
+		return ($headers, $json); 
 	}
 	
 	
@@ -1265,11 +1267,13 @@ sub export_logs {
 
     my $self   = shift;
 	my ($args) = @_; 
-
-	if(!exists($args->{-fh})){ 
-		$args->{-fh} = \*STDOUT;
-	}
-	my $fh = $args->{-fh}; 
+    
+    my $r = undef; 
+    
+	#if(!exists($args->{-fh})){ 
+	#	$args->{-fh} = \*STDOUT;
+	#}
+	#my $fh = $args->{-fh}; 
 	
 	if(!exists($args->{-type})){ 
 		$args->{-type} = 'clickthrough';
@@ -1291,15 +1295,21 @@ sub export_logs {
 			$sql_snippet = ', ' . $sql_snippet; 
 		}
 		
-		my $title_status = $csv->print ($fh, [qw(timestamp remote_addr msg_id url, email), @$custom_fields]);
-		print $fh "\n";
+		#my $title_status = $csv->print ($fh, [qw(timestamp remote_addr msg_id url, email), @$custom_fields]);
+		#print $fh "\n";
 		
+		my $title_status = $csv->combine(qw(timestamp remote_addr msg_id url, email)); # combine columns into a string
+        $r              .= $csv->string();   # get the combined string
+    	$r              .= "\n";
         $query = 'SELECT timestamp, remote_addr, msg_id, url, email'. $sql_snippet .' FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ?';
     }
     elsif ( $args->{-type} eq 'activity' ) {
 	
-		my $title_status = $csv->print ($fh, [qw(timestamp remote_addr msg_id activity details email)]);
-		print $fh "\n";
+		#my $title_status = $csv->print ($fh, [qw(timestamp remote_addr msg_id activity details email)]);
+		#print $fh "\n";
+		my $title_status = $csv->combine(qw(timestamp remote_addr msg_id activity details email)); # combine columns into a string
+        $r              .= $csv->string();   # get the combined string
+    	$r              .= "\n";
 		
 		# timestamp list message_id activity details
         $query = 'SELECT timestamp, remote_addr, msg_id, event, details, email FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ?';
@@ -1318,9 +1328,13 @@ sub export_logs {
 	}
 
  	while ( my $fields = $sth->fetchrow_arrayref ) {
-        my $status = $csv->print( $fh, $fields );
-        print $fh "\n";
+        #my $status = $csv->print( $fh, $fields );
+        #print $fh "\n";
+        my $status = $csv->combine(@$fields); # combine columns into a string
+        $r        .= $csv->string();   # get the combined string
+    	$r        .= "\n";
     }
+    return $r; 
 }
 
 sub export_by_email { 
@@ -1328,13 +1342,15 @@ sub export_by_email {
 	my $self   = shift; 
 	my ($args) = @_;
 	
+	my $r; 
+	
 	require Text::CSV;
     my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
 
-	if(!exists($args->{-fh})){ 
-		$args->{-fh} = \*STDOUT;
-	}
-	my $fh = $args->{-fh}; 
+	#if(!exists($args->{-fh})){ 
+    #		$args->{-fh} = \*STDOUT;
+	#}
+	#my $fh = $args->{-fh}; 
 	
 	if(!exists($args->{-type})){ 
 		$args->{-type} = 'clickthroughs';
@@ -1377,9 +1393,25 @@ sub export_by_email {
 	 if $t; 
 	
 	while ( my $fields = $sth->fetchrow_arrayref ) {
-        my $status = $csv->print( $fh, $fields );
-        print $fh "\n";
+        
+        #my $status = $csv->print( $fh, $fields );
+        my $status = $csv->combine(@$fields); # combine columns into a string
+        $r              .= $csv->string();   # get the combined string
+    	$r              .= "\n";
     }
+    
+    my $headers = {'Content-disposition' => 'attachement; filename=' 
+			                              . $self->{name} 
+                        			      . '-' 
+                        			      . $args->{-type} 
+                        			      . '-subscribers-' 
+                        			      . $args->{-mid} 
+                        			      . '.csv' 
+                        			      .  "\n", 
+			      -type => 'text/csv', 
+		        }; 
+	
+	return ($headers, $r); 
 	
 }
 
@@ -1608,18 +1640,20 @@ sub country_geoip_json {
 		
 	}
 	
+	my $headers = {
+	    '-Cache-Control' => 'no-cache, must-revalidate',
+		-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
+		-type            =>  'application/json',
+	}; 
+	
 	if($args->{-printout} == 1){ 
 		require CGI; 
 		my $q = CGI->new; 
-		print $q->header(
-			'-Cache-Control' => 'no-cache, must-revalidate',
-			-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
-			-type            =>  'application/json',
-		);
+		print $q->header(%$headers);
 		print $json; 
 	}
 	else { 
-		return $json; 
+		return ($headers, $json); 
 	}
 	
 }
@@ -1759,20 +1793,23 @@ sub individual_country_geoip_json {
 		);
 	}
 	
+	my $headers = {
+	    '-Cache-Control' => 'no-cache, must-revalidate',
+		-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
+		-type            =>  'application/json',
+	}; 
+	
 	if($args->{-printout} == 1){ 
 		require CGI; 
 		my $q = CGI->new; 
-		print $q->header(
-			'-Cache-Control' => 'no-cache, must-revalidate',
-			-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
-			-type            =>  'application/json',
-		);
+		print $q->header(%$headers);
 		print $json; 
 	}
 	else { 
-		return $json; 
+		return ($headers, $json); 
 	}
 }
+
 sub individual_country_geoip_report { 
 	my $self   = shift; 
 	my ($args) = @_;  
@@ -1900,10 +1937,14 @@ sub individual_country_geoip_report_table {
 		);
 	}
 	
-	
-	use CGI qw(:standard); 
-	print header(); 
-	print $html; 
+	if($args->{-printout} == 1){ 
+    	use CGI qw(:standard); 
+    	print header(); 
+    	print $html; 
+    }
+    else { 
+        return ({}, $html); 
+    }
     
 }
 
@@ -1979,6 +2020,7 @@ sub data_over_time {
 }
 
 sub data_over_time_json { 
+    
 	my $self   = shift; 
 	my ($args) = @_;
 	
@@ -2028,18 +2070,21 @@ sub data_over_time_json {
 		);
 	}
 	
+	my $headers = {
+	    '-Cache-Control' => 'no-cache, must-revalidate',
+		-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
+		-type            =>  'application/json',
+		
+	}; 
+	
 	if($args->{-printout} == 1){ 
 		require CGI; 
 		my $q = CGI->new; 
-		print $q->header(
-			'-Cache-Control' => 'no-cache, must-revalidate',
-			-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
-			-type            =>  'application/json',
-		);
+		print $q->header(%$headers);
 		print $json; 
 	}
 	else { 
-		return $json; 
+		return ($headers, $json); 
 	}
 }
 
@@ -2125,6 +2170,10 @@ sub message_email_report_table {
 		$args->{-vars} = {}; 
 	}
 	
+	if(! exists($args->{-printout})){ 
+	    $args->{-printout} = 0; 
+	}
+	
 	require DADA::App::DataCache; 
 	my $dc = DADA::App::DataCache->new; 
 
@@ -2173,9 +2222,14 @@ sub message_email_report_table {
 			}
 		);
 	}
-	use CGI qw(:standard); 
-	print header(); 
-	e_print($html); 
+	if($args->{-printout} == 1){ 
+    	require CGI; 
+    	print CGI::header(); 
+    	e_print($html); 
+    }
+    else { 
+        return({}, $html); 
+    }
 }
 
 
@@ -2185,14 +2239,16 @@ sub message_email_report_export_csv {
 	my $self   = shift; 
 	my ($args) = @_; 
 	
+	my $r = undef;
+	
 	if(! exists($args->{-type})){ 
 		croak 'you MUST pass -type!'; 
 	}
 	
-	if(!exists($args->{-fh})){ 
-		$args->{-fh} = \*STDOUT;
-	}
-	my $fh = $args->{-fh};
+	#if(!exists($args->{-fh})){ 
+	#	$args->{-fh} = \*STDOUT;
+	#}
+	#my $fh = $args->{-fh};
 	
 	require Text::CSV;
     my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
@@ -2200,20 +2256,36 @@ sub message_email_report_export_csv {
 	
 	if($args->{-type} eq 'email_activity') { 
 		$report = $self->message_email_activity_listing($args);
-	
 	}
 	else { 
 		$report = $self->message_email_report($args);
 	}
 	
-	my $title_status = $csv->print($fh, ['email type: ' . $args->{-type}]);
-	print $fh "\n";
+	#my $title_status = $csv->print($fh, ['email type: ' . $args->{-type}]);
+	#print $fh "\n";
+	
+	my $title_status = $csv->combine('email type: ' . $args->{-type}); # combine columns into a string
+    $r              .= $csv->string();                                 # get the combined string
+	$r              .= "\n";
+	
 	
 	for my $i_report(@$report){ 
 		my $email = $i_report->{email};
-		my $status = $csv->print( $fh, [$email] );
-        print $fh "\n";
+
+		# my $status = $csv->print( $fh, [$email] );
+        # print $fh "\n";
+        
+        my $status = $csv->combine($email);    # combine columns into a string
+        $r              .= $csv->string();                   # get the combined string
+    	$r              .= "\n";
 	}
+	
+	my $headers = {
+		-attachment => 'email_report-' . $self->{name} . '-' . $args->{-type} . '.' . $args->{-mid} . '.csv',
+		-type       => 'text/csv', 
+	};
+	
+	return ($headers, $r); 
 }
 
 
@@ -2280,12 +2352,16 @@ sub email_stats {
 
 }
 
-sub email_stats_json { 
+sub email_stats_json {
+     
 	my $self = shift; 
 	my ($args) = @_; 
 	
 	if(!exists($args->{-count})){ 
 		$args->{-count} = 15; 
+	}
+	if(!exists($args->{-printout})){ 
+		$args->{-printout} = 0; 
 	}
 
 	my $json; 
@@ -2333,19 +2409,20 @@ sub email_stats_json {
 		);
 	}
 	
+	my $headers = {
+		'-Cache-Control' => 'no-cache, must-revalidate',
+		-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
+		-type            =>  'application/json',
+	};
+	
 	if($args->{-printout} == 1){ 
 		require CGI; 
 		my $q = CGI->new; 
-		
-		print $q->header(
-			'-Cache-Control' => 'no-cache, must-revalidate',
-			-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
-			-type            =>  'application/json',
-		);
+		print $q->header(%$headers); 
 		print $json; 
 	}
 	else { 
-		return $json;
+		return ($headers, $json);
 	}
 	
 }
@@ -2481,9 +2558,7 @@ sub message_email_activity_listing_table {
 		);
 	}
 	
-	use CGI qw(:standard); 
-	print header(); 
-	print $html;
+	return({}, $html);
 	
 }
 
@@ -2494,6 +2569,7 @@ sub message_individual_email_activity_csv {
     
 	my $self   = shift; 
 	my ($args) = @_; 
+	my $r; 
 	
 	if(!exists($args->{-fh})){ 
 		$args->{-fh} = \*STDOUT;
@@ -2519,17 +2595,33 @@ sub message_individual_email_activity_csv {
         url 
     ); 
     
-    my $title_status = $csv->print($fh, [@title_fields]);
-    print $fh "\n";
+    my $headers ={
+        'Content-disposition' => 'attachement; filename=' . $self->{name} . '-message_individual_email_activity-' .  $args->{-email} . '-' .  $args->{-mid} . '.csv', 
+        -type =>  'text/csv'
+    }; 
+    
+    
+    #my $title_status = $csv->print($fh, [@title_fields]);
+    #print $fh "\n";
+    
+    my $title_status = $csv->combine(@title_fields); # combine columns into a string
+    $r              .= $csv->string();   # get the combined string
+	$r              .= "\n";
+    
     
     foreach my $ir(@$report) { 
         my $row = []; 
         foreach(@fields){ 
             push(@$row, $ir->{$_}); 
         }
-        my $status = $csv->print( $fh, $row );
-        print $fh "\n";
+        #my $status = $csv->print( $fh, $row );
+        
+        my $status = $csv->combine(@$row); # combine columns into a string
+        $r        .= $csv->string();   # get the combined string
+    	$r        .= "\n";
     }
+    
+    return ($headers, $r); 
     
 }
 
@@ -2647,7 +2739,7 @@ sub message_individual_email_activity_report_table {
 			}
 		);
 	}
-	return $html
+	return ({}, $html); 
 
 }
 

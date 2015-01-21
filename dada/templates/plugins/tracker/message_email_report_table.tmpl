@@ -14,7 +14,7 @@
 	   <strong>Email Address</strong> 
 		<span style="font-size:.8em">
 			(
-			<a href="<!-- tmpl_var Plugin_URL -->?flavor=message_email_report_export_csv&mid=<!-- tmpl_var mid ESCAPE="URL" -->&type=<!-- tmpl_var type  ESCAPE="URL" -->">
+			<a href="<!-- tmpl_var Plugin_URL -->?prm=message_email_report_export_csv&mid=<!-- tmpl_var mid ESCAPE="URL" -->&type=<!-- tmpl_var type  ESCAPE="URL" -->">
 				export .csv
 			</a>
 			)
@@ -32,7 +32,7 @@
 	  <td>
 		
 		<!-- tmpl_if expr="((type eq 'soft_bounce') || (type eq 'hard_bounce'))" -->
-		<a class="modalbox"  href="./bounce_handler.cgi?flavor=cgi_bounce_score_search;query=<!-- tmpl_var email escape="URL" -->;chrome=0" title="Bounce Log for <!-- tmpl_var email escape="HTML" -->" >
+		<a class="modalbox"  href="<!-- tmpl_var Plugin_URL -->?prm=cgi_bounce_score_search;query=<!-- tmpl_var email escape="URL" -->;chrome=0" title="Bounce Log for <!-- tmpl_var email escape="HTML" -->" >
 		 <!-- tmpl_var email -->
 	    </a>
 		<!-- tmpl_else --> 

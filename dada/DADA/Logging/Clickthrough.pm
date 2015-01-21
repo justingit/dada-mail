@@ -1048,19 +1048,21 @@ sub message_history_json {
 		);
 	
 	}
-
+    my $headers = {
+        '-Cache-Control' => 'no-cache, must-revalidate',
+		-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
+		-type            =>  'application/json',
+		
+	}; 
+	
 	if($args->{-printout} == 1){ 
 		require CGI; 
 		my $q = CGI->new; 
-		print $q->header(
-			'-Cache-Control' => 'no-cache, must-revalidate',
-			-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
-			-type            =>  'application/json',
-		);
+		print $q->header(%$headers);
 		print $json; 
 	}
 	else { 
-		return $json; 
+		return ($headers, $json); 
 	}
 }
 

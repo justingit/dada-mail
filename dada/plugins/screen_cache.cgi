@@ -13,21 +13,12 @@ BEGIN {
 }
 
 
-use CGI::Carp qw(fatalsToBrowser);
-
-
-use DADA::Config 7.0.0;
-# we need this for cookies things
-use CGI;
-my $q = new CGI;
-$q->charset($DADA::Config::HTML_CHARSET);
-$q = decode_cgi_obj($q);
-
-my $verbose = 0;
+my $verbose;
+my $c; 
 
 my $Plugin_Config = {};
 
-$Plugin_Config->{Plugin_URL}         = self_url();
+$Plugin_Config->{Plugin_URL}         = $DADA::Config::S_PROGRAM_URL . '/plugins/screen_cache/';
 
 # Set to, 1, to enable
 $Plugin_Config->{Allow_Manual_Run}   = 1;
@@ -35,41 +26,45 @@ $Plugin_Config->{Allow_Manual_Run}   = 1;
 # Pick some sort of passcode, for a semblance of security 
 $Plugin_Config->{Manual_Run_Passcode} = '';
 
-
-
-
 use     DADA::App::ScreenCache;
-my $c = DADA::App::ScreenCache->new;
 
 # use some of those Modules
 use DADA::Template::HTML;
 use DADA::App::Guts;
 use DADA::MailingList::Settings;
 
-
+sub reset_globals { 
+    $verbose = 0; 
+    $c       = DADA::App::ScreenCache->new;
+}
 
 
 run()
   unless caller();
 
 sub run {
-    main();
+    reset_globals(); 
+    my $q = shift; 
+    main($q);
 }
 
 sub main {
-	my $process = $q->param('process'); 
+    
+    my $q = shift;
+	my $prm = $q->param('prm') || undef; 
 	
-    if ($process) {
-        if ( $process eq 'view' ) {
-            $c->show( $q->param('filename'),{-check_for_header => 1} );
+    if ($prm) {
+        if ( $prm eq 'view' ) {
+            # Probably have to deal with headers, here. 
+            return ({}, $c->cached( $q->param('filename'),{-check_for_header => 1}) ); # -check_for_header doing anything? 
         }
-        elsif ( $process eq 'remove' ) {
+        elsif ( $prm eq 'remove' ) {
             $c->remove( $q->param('filename') );
-            view();
+            return view($q);
         }
-        elsif ( $process eq 'flush' ) {
+        elsif ( $prm eq 'flush' ) {
             $c->flush;
-            view();
+            return view($q);
         }
     }
     else {
@@ -78,22 +73,28 @@ sub main {
 	        && xss_filter( $q->param('run') ) == 1
 	        && $Plugin_Config->{Allow_Manual_Run} == 1 )
 	    {
-	        cgi_manual_start();
+	        return cgi_manual_start($q);
 	    }
 		else { 
-        	view();
+        	return view($q);
 		}	
     }
 }
 
 sub view {
 
+    my $q = shift; 
+    
     my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'screen_cache'
     );
+    if(!$checksout){ 
+        return({}, $error_msg); 
+    }
+    
     my $list = $admin_list;	
-    my $file_list = $c->is_cached_screens;
+    my $file_list = $c->cached_screens;
 
     my $app_file_list = [];
 
@@ -111,7 +112,7 @@ sub view {
     }
 
     my $curl_location = `which curl`;
-    $curl_location = strip( make_safer($curl_location) );
+       $curl_location = strip( make_safer($curl_location) );
 
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -132,12 +133,13 @@ sub view {
             },
         }
     );
-    e_print($scrn);
+    return ({}, $scrn);
 
 }
 
 sub cgi_manual_start {
-
+    my $q = shift; 
+    
     if (
         (
             xss_filter( $q->param('passcode') ) eq
@@ -147,7 +149,6 @@ sub cgi_manual_start {
       )
     {
 
-        print $q->header();
 
         if ( defined( xss_filter( $q->param('verbose') ) ) ) {
             $verbose = xss_filter( $q->param('verbose') );
@@ -157,23 +158,11 @@ sub cgi_manual_start {
         }
 
      	$c->flush;
-		print 'All cached screens have been removed.'
-			if $verbose; 
+		return ({}, 'All cached screens have been removed.'); 
     }
     else {
-        print $q->header();
-        print	"$DADA::Config::PROGRAM_NAME $DADA::Config::VER Authorization Denied.";
+        return ({}, "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Authorization Denied.");
     }
-}
-
-
-
-sub self_url { 
-	my $self_url = $q->url; 
-	if($self_url eq 'http://' . $ENV{HTTP_HOST}){ 
-			$self_url = $ENV{SCRIPT_URI};
-	}
-	return $self_url; 	
 }
 
 =pod
