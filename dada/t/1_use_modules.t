@@ -193,6 +193,7 @@ BEGIN{ use_ok('DADA::Template::Widgets'); }
 
 BEGIN{ use_ok('CGI'); }
 
+BEGIN{ use_ok('CGI::Application'); }
 
 BEGIN{ use_ok('CGI::Session'); }
 BEGIN{ use_ok('CGI::Session::ExpireSessions'); }
