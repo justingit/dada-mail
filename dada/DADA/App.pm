@@ -62,6 +62,7 @@ sub setup {
 
     $self->run_modes(
         'plugins'                                     => \&plugins, 
+        'schedules'                                   => \&schedules, 
         'default'                                     => \&default,
         'subscribe'                                   => \&subscribe,
         'restful_subscribe'                           => \&restful_subscribe,
@@ -12509,6 +12510,46 @@ sub plugins {
     my $q = $self->query(); 
     my $plugin = $q->param('plugin'); 
     my ($headers, $body);
+    
+    my $plugins = {
+        'bounce_handler'               => { run_sub => \&bounce_handler::run },
+        'bridge'                       => { run_sub => \&bridge::run },
+        'change_list_shortname'        => { run_sub => \&change_list_shortname::run },
+        'change_root_password'         => { run_sub => \&change_root_password::run },
+        'log_viewer'                   => { run_sub => \&log_viewer::run },
+        'mailing_monitor'              => { run_sub => \&mailing_monitor::run },
+        'password_protect_directories' => { run_sub => \&password_protect_directories::run },
+        'screen_cache'                 => { run_sub => \&screen_cache::run },
+        'tracker'                      => { run_sub => \&tracker::run },
+    };
+
+    if(exists($plugins->{$plugin})){ 
+        eval { 
+            require 'plugins/' . $plugin . '.cgi'; 
+            ($headers, $body) = $plugins->{$plugin}->{run_sub}->($q); 
+        };
+        if(!$@){ 
+            if ( exists( $headers->{-redirect_uri} ) ) {
+                $self->header_type('redirect');
+                $self->header_props( -url => $headers->{-redirect_uri} );
+            }
+            else {
+                if ( keys %$headers ) {
+                    $self->header_props(%$headers);
+                }
+                return $body;
+            }        
+        }
+        else { 
+            croak($@); 
+        }
+    }
+    else { 
+        croak "plugin not registered."; 
+    }
+
+=cut   
+
     if($plugin eq 'bounce_handler') {     
         eval { 
             require 'plugins/bounce_handler.cgi'; 
@@ -12517,8 +12558,10 @@ sub plugins {
     }
     elsif($plugin eq 'bridge'){ 
         eval { 
-            require 'plugins/bridge.cgi'; 
-            ($headers, $body)   = bridge::run($q);
+            my $plugin_name = 'plugins/bridge.cgi'; 
+            require $plugin_name; 
+            my $func = \&bridge::run; 
+            ($headers, $body) = $func->($q);
         };
     }
     elsif($plugin eq 'change_list_shortname'){ 
@@ -12581,6 +12624,13 @@ sub plugins {
     else { 
         croak($@); 
     }
+=cut
+
+}
+
+
+sub schedules { 
+    return "yo dude!"; 
 }
 
 sub DESTROY {

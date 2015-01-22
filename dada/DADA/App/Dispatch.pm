@@ -171,9 +171,16 @@ sub translate {
         }
         elsif ( $info =~ m/^plugins/ ) {
             my ( $flavor, $plugin, $prm ) = split( '/', $info, 3 );
-            $q->param('flavor', $flavor); 
+            $q->param('flavor', 'plugins'); 
             $q->param('plugin', $plugin); 
             $q->param('prm',    $prm); 
+        }
+        
+        elsif ( $info =~ m/^schedules/ ) {
+            my ( $flavor, $schedule, $output_mode ) = split( '/', $info, 3 );
+            $q->param('flavor',      'schedules'); 
+            $q->param('schedule',    $schedule); 
+            $q->param('output_mode', $output_mode); 
         }
         elsif ( $info =~ m/^archive/ ) {
 
