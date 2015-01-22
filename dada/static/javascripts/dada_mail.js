@@ -102,7 +102,7 @@ $(document).ready(function() {
 			$('#schedule_datetime').datetimepicker(
 				{
 					minDate: 0,
-					minTime: 0, 
+					//minTime: 0, 
 					inline:false, 
 					format:'Y-m-d H:i:s'
 				}
@@ -169,7 +169,7 @@ $(document).ready(function() {
 				$('#popup_schedule_datetime').datetimepicker(
 					{
 						minDate: 0,
-						minTime: 0,  
+						//minTime: 0,  
 						inline:true, 
 						format:'Y-m-d H:i:s'
 					}
