@@ -766,7 +766,6 @@ sub cl_main {
         $r .= version();
     }
     else {
-
         my $bh = DADA::App::BounceHandler->new($Plugin_Config);
         $r .= $bh->parse_all_bounces(
             {
@@ -779,6 +778,33 @@ sub cl_main {
 
 }
 
+
+sub scheduled_task {
+    my $list = shift || undef; 
+    if($list eq '_all') { 
+        undef ($list); 
+    }
+    
+    my $r; 
+    my @lists = (); 
+
+    if(defined($list)){ 
+        push(@lists, $list); 
+    }
+    else { 
+        @lists = available_lists( -In_Random_Order => 1 );
+    }
+        
+    foreach my $l(@lists){ 
+        my $bh = DADA::App::BounceHandler->new($Plugin_Config);
+        $r .= $bh->parse_all_bounces(
+            {
+                -list => $l,
+            }
+        );
+    }
+    return $r; 
+}
 sub help {
     require DADA::Template::Widgets;
     return DADA::Template::Widgets::screen( { -screen => 'plugins/bounce_handler/cl_help.tmpl' } );

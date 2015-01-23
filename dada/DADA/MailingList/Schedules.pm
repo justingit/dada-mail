@@ -202,5 +202,7 @@ sub deactivate_schedule {
 
     return 1; 
 }
+
+sub DESTROY {}
     
 1;

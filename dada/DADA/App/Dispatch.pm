@@ -2,7 +2,7 @@ package DADA::App::Dispatch;
 use strict; 
 
 use FindBin;
-use lib "$FindBin::Bin/../";
+use lib "$FindBin::Bin/../../";
 use lib "$FindBin::Bin/../DADA/perllib";
 BEGIN {
     my $b__dir = ( getpwuid($>) )[7] . '/perl';
@@ -177,10 +177,28 @@ sub translate {
         }
         
         elsif ( $info =~ m/^schedules/ ) {
-            my ( $flavor, $schedule, $output_mode ) = split( '/', $info, 3 );
+            my ( $flavor, $schedule, $list, $output_mode ) = split( '/', $info, 4 );
             $q->param('flavor',      'schedules'); 
-            $q->param('schedule',    $schedule); 
-            $q->param('output_mode', $output_mode); 
+            if(!defined($schedule)){ 
+                $q->param('schedule',    '_all');
+            }
+            else { 
+                $q->param('schedule',    $schedule);
+            }
+            if(!defined($list)){
+                $q->param('list',        '_all');
+            } 
+            else { 
+                $q->param('list',        $list);
+            }
+            if(!defined($output_mode)){
+                $q->param('output_mode', 'verbose');
+            }
+            else { 
+                $q->param('output_mode', $output_mode);
+            }   
+            
+
         }
         elsif ( $info =~ m/^archive/ ) {
 

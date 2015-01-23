@@ -1,7 +1,7 @@
 #!/usr/bin/perl
 package DADA::App;
 use base 'CGI::Application';
-use CGI::Application::Plugin::DebugScreen;
+#use CGI::Application::Plugin::DebugScreen;
 
 use strict;
 use 5.008_001;
@@ -50,6 +50,19 @@ use DADA::Template::HTML;
 
 #---------------------------------------------------------------------#
 
+
+my $plugins = {
+    'bounce_handler'               => { run_sub => \&bounce_handler::run, schedule_sub => \&bounce_handler::scheduled_task },
+    'bridge'                       => { run_sub => \&bridge::run, schedule_sub => \&bridge::scheduled_task },
+    'change_list_shortname'        => { run_sub => \&change_list_shortname::run },
+    'change_root_password'         => { run_sub => \&change_root_password::run },
+    'log_viewer'                   => { run_sub => \&log_viewer::run },
+    'password_protect_directories' => { run_sub => \&password_protect_directories::run },
+    'screen_cache'                 => { run_sub => \&screen_cache::run },
+    'tracker'                      => { run_sub => \&tracker::run },
+};
+
+
 sub setup {
 
     warn 'setup'; 
@@ -60,6 +73,14 @@ sub setup {
     $self->start_mode('default');
     $self->mode_param('flavor');
 
+
+    # So, maybe the, "schedules" runmode should be something quite random, that can also be reset? 
+    # And then implement some sort of limit on how many times a schedule can be run? 
+    # And then, and then! Have a screen showing: 
+    # * an example cronjob
+    # * a way to force the schedule to run
+    # * 
+     
     $self->run_modes(
         'plugins'                                     => \&plugins, 
         'schedules'                                   => \&schedules, 
@@ -12511,17 +12532,6 @@ sub plugins {
     my $plugin = $q->param('plugin'); 
     my ($headers, $body);
     
-    my $plugins = {
-        'bounce_handler'               => { run_sub => \&bounce_handler::run },
-        'bridge'                       => { run_sub => \&bridge::run },
-        'change_list_shortname'        => { run_sub => \&change_list_shortname::run },
-        'change_root_password'         => { run_sub => \&change_root_password::run },
-        'log_viewer'                   => { run_sub => \&log_viewer::run },
-        'mailing_monitor'              => { run_sub => \&mailing_monitor::run },
-        'password_protect_directories' => { run_sub => \&password_protect_directories::run },
-        'screen_cache'                 => { run_sub => \&screen_cache::run },
-        'tracker'                      => { run_sub => \&tracker::run },
-    };
 
     if(exists($plugins->{$plugin})){ 
         eval { 
@@ -12630,7 +12640,79 @@ sub plugins {
 
 
 sub schedules { 
-    return "yo dude!"; 
+    
+    my $self = shift; 
+    my $q = $self->query; 
+    
+#    $q->param('schedule',    $schedule); 
+#    $q->param('list',        $list); 
+#    $q->param('output_mode', $output_mode); 
+    
+    my $list = $q->param('list'); 
+    
+    my $r; 
+    
+    # A way to call a specific schedule
+    # A way to list a specific list to run schedule for 
+    # verbose or not 
+    # 
+    
+    require DADA::App::ScheduledTasks; 
+    my $dast = DADA::App::ScheduledTasks->new; 
+    
+    if($q->param('schedule') eq '_all') { 
+        $r .= $dast->mass_mailing_monitor($list);     
+        $r .= $dast->scheduled_mass_mailings($list); 
+        undef($dast); 
+    
+        for my $plugin(keys %$plugins) { 
+            if(exists($plugins->{$plugin}->{schedule_sub})) { 
+                eval { 
+                    require 'plugins/' . $plugin . '.cgi'; 
+                    $r .= $plugins->{$plugin}->{schedule_sub}->($list);                  
+                };
+                if($@) { 
+                     $r .= $@; 
+                }
+            }
+        }
+    }
+    elsif($q->param('schedule') eq 'mass_mailing_monitor'){ 
+        $r .= $dast->mass_mailing_monitor($list);     
+        
+    }
+    elsif($q->param('schedule') eq 'scheduled_mass_mailings'){ 
+        $r .= $dast->scheduled_mass_mailings($list); 
+    }
+    elsif($q->param('schedule') eq 'bridge'){ 
+        eval { 
+            require 'plugins/bridge.cgi'; 
+            $r .= $plugins->{bridge}->{schedule_sub}->($list);                  
+        };
+        if($@) { 
+             $r .= $@; 
+        }
+    }
+    elsif($q->param('schedule') eq 'bounce_handler'){ 
+        eval { 
+            require 'plugins/bounce_handler.cgi'; 
+            $r .= $plugins->{bounce_handler}->{schedule_sub}->($list);                  
+        };
+        if($@) { 
+             $r .= $@; 
+        }
+    }
+    else { 
+        $r .= 'No such schedule:"' . $q->param('schedule') . '"'; 
+    }
+    
+    if($q->param('output_mode') ne 'silent'){ 
+        $self->header_props({-type => 'text/plain'}); 
+        return $r; 
+    }
+    else { 
+        return ''; 
+    }
 }
 
 sub DESTROY {

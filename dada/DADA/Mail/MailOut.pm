@@ -2521,7 +2521,7 @@ sub monitor_mailout {
 
     my $r = '';
 
-    my @available_lists = DADA::App::Guts::available_lists();
+    my @available_lists = DADA::App::Guts::available_lists(-In_Random_Order => 1);
 
     require DADA::Mail::Send;
     require DADA::MailingList::Settings;
@@ -2863,11 +2863,7 @@ sub _formatted_runtime {
     return $runtime;
 }
 
-sub DESTROY {
-
-    my $self = shift;
-
-}
+sub DESTROY {}
 
 1;
 

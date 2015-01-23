@@ -1,7 +1,5 @@
 #!/usr/bin/perl 
 
-$|++;
-
 use FindBin;
 use lib "$FindBin::Bin/";
 use lib "$FindBin::Bin/DADA/perllib";
@@ -13,16 +11,14 @@ BEGIN {
       map { $b__dir . $_ } @INC;
 }
 
-
-use CGI::Carp qw(fatalsToBrowser);
-
-use DADA::App;
 use CGI; 
-my $q = new CGI; 
-
+use DADA::App;
 use DADA::App::Dispatch; 
+
 my $d = DADA::App::Dispatch->new; 
+my $q = new CGI; 
    $q = $d->prepare_cgi_obj($q); 
+   
 my $dadamail = new DADA::App(
     QUERY => $q,
 ); 

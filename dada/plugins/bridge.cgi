@@ -173,14 +173,14 @@ run()
 
 sub run {
     
-    $q = shift;
+    my $q = shift;
     reset_globals();
-    if ( !$ENV{GATEWAY_INTERFACE} ) {
-        &cl_main();
-    }
-    else {
+#    if ( !$ENV{GATEWAY_INTERFACE} ) {
+#        &cl_main();
+#    }
+#    else {
         &cgi_main($q);
-    }
+#    }
 
 }
 
@@ -189,7 +189,7 @@ sub test_sub {
 }
 
 sub cgi_main {
-    $q = shift;
+my $q = shift;
     if (   keys %{ $q->Vars }
         && $q->param('run')
         && xss_filter( $q->param('run') ) == 1
@@ -261,20 +261,6 @@ sub cgi_manual_start {
         my ( $h, $b ) = start();
         $r .= $b;
 
-        require DADA::Mail::MailOut;
-        if ($run_list) {
-            my  ( $r, $total_mailouts, $active_mailouts, $paused_mailouts, $queued_mailouts, $inactive_mailouts );
-            DADA::Mail::MailOut::monitor_mailout(
-                {
-                    -verbose => 0,
-                    -list    => $list,
-                }
-            );
-
-        }
-        else {
-            DADA::Mail::MailOut::monitor_mailout( { -verbose => $verbose } );
-        }
     }
     else {
         $r = "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Authorization Denied.";
@@ -333,7 +319,7 @@ sub cgi_test_pop3_ajax {
 }
 
 sub cgi_test_pop3 {
-
+    my $q = shift;
     my $r = '';
 
     my $chrome = 1;
@@ -498,7 +484,8 @@ sub admin_cgi_manual_start_ajax {
 }
 
 sub mod {
-
+    my $q = shift; 
+    
     my $r = '';
 
     # $list is global, for some reason...
@@ -695,6 +682,8 @@ sub validate_list_email {
 
 sub edit {
 
+    my $q = shift; 
+    
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
     my %bridge_settings_defaults = (
@@ -929,6 +918,8 @@ sub edit {
 
 }
 
+=cut
+
 sub cl_main {
 
     GetOptions(
@@ -940,7 +931,6 @@ sub cl_main {
         "check_deletions" => \$check_deletions,
     );
 
-  #  init(); does... noting!
   
     if ($inject) {
         try {
@@ -984,60 +974,32 @@ sub cl_main {
     }
 }
 
-#sub init { }
+
+=cut
+
+sub scheduled_task { 
+    my $list = shift; 
+    if($list eq '_all'){
+        undef $list; 
+    }
+    my ($h, $b) = start($list);
+    return $b;  
+}
 
 sub start {
+    
+    my $list_to_run = shift || undef; 
     my $r;
 
-    my @lists;
-    if ( !$run_list ) {
-        $r .=
-          "Running all lists - \nTo test an individual list, pass the list shortname in the '--list' parameter...\n\n";
-
+    my @lists = ();
+    if ( ! defined($list_to_run) ) {
         @lists = available_lists( -In_Random_Order => 1 );
     }
     else {
-        $lists[0] = $run_list;
+        push(@lists, $list_to_run);
     }
 
-    require DADA::Mail::MailOut;
-    my (
-        $monitor_mailout_report, $total_mailouts,  $active_mailouts,
-        $paused_mailouts,        $queued_mailouts, $inactive_mailouts
-      )
-      = DADA::Mail::MailOut::monitor_mailout(
-        {
-            -verbose => 0,
-            -action  => 0,
-        }
-      );
-
-    if ( $Plugin_Config->{Room_For_One_More_Check} == 1 ) {
-
-        #/KLUDGE!
-        if ( ( $active_mailouts + $queued_mailouts ) >= $DADA::Config::MAILOUT_AT_ONCE_LIMIT ) {
-            $r .=
-                "There are currently, "
-              . ( $active_mailouts + $queued_mailouts )
-              . " Mass Mailing(s) running or queued. Going to wait until that number falls below, "
-              . $DADA::Config::MAILOUT_AT_ONCE_LIMIT
-              . " Mass Mailing(s) \n";
-            return ( {-type => 'text/plain'}, $r );
-        }
-        else {
-            $r .=
-                "Currently, "
-              . ( $active_mailouts + $queued_mailouts )
-              . " Mass Mailing(s) running or queued. \n\n"
-              . "That's below the limit ($DADA::Config::MAILOUT_AT_ONCE_LIMIT). \n"
-              . "Checking awaiting  messages:\n";
-        }
-    }
-    else {
-        $r .= "Skipping, 'Room for one more?' check.\n";
-    }
-
-    my $messages_viewed = 0;
+  my $messages_viewed = 0;
   LIST_QUEUE: for my $list (@lists) {
 
         if ( $messages_viewed >= $Plugin_Config->{MessagesAtOnce} ) {
@@ -3323,13 +3285,6 @@ sub inject {
 
 }
 
-sub self_url {
-    my $self_url = $q->url;
-    if ( $self_url eq 'http://' . $ENV{HTTP_HOST} ) {
-        $self_url = $ENV{SCRIPT_URI};
-    }
-    return $self_url;
-}
 
 END {
 
