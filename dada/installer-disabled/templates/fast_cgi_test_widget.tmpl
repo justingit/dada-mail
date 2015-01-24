@@ -1,0 +1,15 @@
+<!-- begin fast_cgi_test_widget.tmpl -->
+
+<!-- tmpl_if errors -->
+
+    <div class="badweatherbox"> 
+        <p>Something else may be needed, for FastCGI support:</p> 
+        <code><!-- tmpl_var errors escape="HTML" --></code>
+    </div>
+<!-- tmpl_else --> 
+    <div class="clearskiesbox"> 
+        <p>FastCGI is Supported!</p>
+    </div> 
+<!-- /tmpl_if --> 
+
+<!-- end fast_cgi_test_widget.tmpl -->

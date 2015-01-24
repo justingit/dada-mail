@@ -77,7 +77,7 @@
 	
 
 			<form target="_blank" action="<!-- tmpl_var Self_URL -->"> 
-				<input type="hidden" name="f" value="show_current_dada_config" /> 
+				<input type="hidden" name="flavor" value="show_current_dada_config" /> 
 				<input type="hidden" name="config_file" value = "<!-- tmpl_var configured_dada_config_file escape="HTML" -->" /> 
 				<div style="text-align:center">
 				<input type="submit" value="View this .dada_config Configuration..." class="plain" />
@@ -882,6 +882,28 @@ editors also have the ability to make simple HTML tables for basic layouts.
 		<!-- tmpl_include upgrade_to_pro_dada.tmpl --> 
 	<!-- /tmpl_if -->
 
+
+    <!-- show_fast_cgi_options --> 
+    <p>
+    	<input type="checkbox" name="configure_fastcgi" id="configure_fastcgi" value="1" />			
+    <label for="configure_fastcgi">Configure FastCGI Options</label>
+    </p>
+    <div id="fastcgi_options">
+        <fieldset> 
+        	<p>
+        		<input type="checkbox" name="fastcgi_options_run_under_fastcgi" id="fastcgi_options_run_under_fastcgi" value="1"  />			
+        		<label for="fastcgi_options_run_under_fastcgi">
+        			Run <!-- tmpl_var PROGRAM_NAME --> under FastCGI
+        		</label>
+        	</p>
+        	
+        	<!-- tmpl_var cgi_test_FastCGI --> 
+        	
+        </fieldset> 
+    </div>
+
+    <!-- end tag -->
+    
 	<!-- tmpl_if show_profiles --> 
 		<p>
 			<input type="checkbox" name="configure_profiles" id="configure_profiles" value="1" />			
@@ -1635,7 +1657,7 @@ editors also have the ability to make simple HTML tables for basic layouts.
 
 
 
-<input type="hidden" name="f" value="check" /> 
+<input type="hidden" name="flavor" value="check" /> 
 
 <p style="text-align:center">
  <input type="submit" value="       &#187; Configure  <!-- tmpl_var PROGRAM_NAME -->! &#171;       " class="processing bigger_button" /> 

@@ -201,7 +201,7 @@ function installer_test_sql_connection() {
 		type: "POST",
 		cache: false,
 		data: {
-			f: 'cgi_test_sql_connection',
+			flavor: 'cgi_test_sql_connection',
 			backend: $("#backend").val(),
 			sql_server: $("#sql_server").val(),
 			sql_port: $("#sql_port").val(),
@@ -235,7 +235,7 @@ function installer_test_pop3_connection() {
 		type: "POST",
 		cache: false,
 		data: {
-			f: 'cgi_test_pop3_connection',
+			flavor: 'cgi_test_pop3_connection',
 			bounce_handler_Server:    $("#bounce_handler_Server").val(),
 			bounce_handler_Username:  $("#bounce_handler_Username").val(),
 			bounce_handler_Password:  $("#bounce_handler_Password").val(),
@@ -266,7 +266,7 @@ function test_amazon_ses_configuration() {
 		type: "POST",
 		cache: false,
 		data: {
-			f:                                           'cgi_test_amazon_ses_configuration',
+			flavor:                                      'cgi_test_amazon_ses_configuration',
 			amazon_ses_AWS_endpoint:                     $("#amazon_ses_AWS_endpoint").val(), 
 			amazon_ses_AWSSecretKey:                     $("#amazon_ses_AWSSecretKey").val(),
 			amazon_ses_AWSAccessKeyId:                   $("#amazon_ses_AWSAccessKeyId").val(),
@@ -295,7 +295,7 @@ function test_mandrill_configuration() {
 		type: "POST",
 		cache: false,
 		data: {
-			f:                                         'cgi_test_mandrill_configuration',
+			flavor:                                    'cgi_test_mandrill_configuration',
 			mandrill_api_key:                          $("#mandrill_api_key").val(),
 			mandrill_Allowed_Sending_Quota_Percentage: mandrill_Allowed_Sending_Quota_Percentage
 		},
@@ -321,7 +321,7 @@ function test_user_template() {
 		type: "POST",
 		cache: false,
 		data: {
-			f: 'cgi_test_user_template',
+			flavor: 'cgi_test_user_template',
 			template_options_USER_TEMPLATE: $("#template_options_USER_TEMPLATE").val()
 		},
 		dataType: "html"
@@ -353,7 +353,7 @@ function test_CAPTCHA_configuration() {
 			type: "POST",
 			cache: false,
 			data: {
-				f: 'cgi_test_default_CAPTCHA'
+				flavor: 'cgi_test_default_CAPTCHA'
 			},
 			dataType: "html"
 		});
@@ -367,7 +367,7 @@ function test_CAPTCHA_configuration() {
 			type: "POST",
 			cache: false,
 			data: {
-				f: 'cgi_test_CAPTCHA_reCAPTCHA',
+				flavor: 'cgi_test_CAPTCHA_reCAPTCHA',
 				captcha_reCAPTCHA_public_key: $("#captcha_reCAPTCHA_public_key").val()
 			},
 			dataType: "html"
@@ -411,7 +411,7 @@ function test_captcha_reCAPTCHA_Mailhide_configuration() {
 		type: "POST",
 		cache: false,
 		data: {
-			f: 'cgi_test_captcha_reCAPTCHA_Mailhide',
+			flavor: 'cgi_test_captcha_reCAPTCHA_Mailhide',
 			captcha_reCAPTCHA_Mailhide_public_key:  $("#captcha_reCAPTCHA_Mailhide_public_key").val(), 
 			captcha_reCAPTCHA_Mailhide_private_key: $("#captcha_reCAPTCHA_Mailhide_private_key").val()
 		},
@@ -512,7 +512,7 @@ function installer_move_installer_dir() {
 		type: "POST",
 		cache: false,
 		data: {
-			f: 'move_installer_dir_ajax',
+			flavor: 'move_installer_dir_ajax',
 		},
 		dataType: "html"
 	});

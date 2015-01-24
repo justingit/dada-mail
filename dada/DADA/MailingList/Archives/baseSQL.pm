@@ -151,6 +151,31 @@ sub print_message_source {
 	}
 }
 
+sub message_source { 
+
+	my $self = shift; 
+	my $id   = shift; 
+	
+	croak "no id!" if ! $id; 
+	croak "no fh!" if ! $fh; 
+	
+	croak "archive backend does not support viewing message source!" 
+	 	unless can_display_message_source; 
+	 	
+	my ($subject, $message, $format, $raw_msg) = $self->get_archive_info($id); 
+	my $r; 
+	require Encode; 
+	if(length($raw_msg) > 0){ 
+		$r = $raw_msg;
+	}
+	else { 
+		$r .= "No raw source available."; 
+	}
+	
+	return $r; 
+}
+
+
 =pod
 
 

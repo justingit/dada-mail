@@ -5,8 +5,6 @@ use FindBin;
 use lib "$FindBin::Bin/../";
 use lib "$FindBin::Bin/../DADA/perllib";
 use lib "$FindBin::Bin/lib";
-
-
 BEGIN {
     my $b__dir = ( getpwuid($>) )[7] . '/perl';
     push @INC, $b__dir . '5/lib/perl5',
@@ -15,12 +13,13 @@ BEGIN {
 }
 
 
-use Carp      qw(croak carp);
-use CGI::Carp qw(fatalsToBrowser);
+#use Carp      qw(croak carp);
+#use CGI::Carp qw(fatalsToBrowser);
 
 # -T flag stuff. 
 $ENV{PATH} = "/bin:/usr/bin";
 delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
-
+ 
 use DadaMailInstaller; 
-    DadaMailInstaller->run();
+my $installer = new DadaMailInstaller(); 
+   $installer->run();

@@ -18,7 +18,7 @@
 	<p><input type="radio" name="install_type" id="upgrade" value="upgrade" <!-- tmpl_if found_existing_dada_files_dir -->checked="checked"<!-- /tmpl_if -->  class="installer_changeDisplayStateDivs" data-state="show" data-target="upgrade_options" /><label for="upgrade">Upgrade</label></p>
 	
 	<div id="upgrade_options" <!-- tmpl_unless found_existing_dada_files_dir -->style="display:none"<!-- /tmpl_unless -->>
-	<input type="hidden" name="f" value="check_install_or_upgrade" />
+	<input type="hidden" name="flavor" value="check_install_or_upgrade" />
 
 		<!-- tmpl_if error_cant_find_dada_files_location --> 
 		<div class="clearskiesbox">

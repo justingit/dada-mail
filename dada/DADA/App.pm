@@ -65,7 +65,7 @@ my $plugins = {
 
 sub setup {
 
-    warn 'setup'; 
+    # warn 'setup'; 
     
     my $self = shift;
 
@@ -233,18 +233,16 @@ sub setup {
 }
 
 sub default {
-
+    
     my $self = shift;
     my $q    = $self->query();
     
     if ( DADA::App::Guts::check_setup() == 0 ) {
         return user_error( { -error => 'bad_setup' } );
     }
-
     if ( DADA::App::Guts::install_dir_around() == 1 ) {
         return user_error( { -error => 'install_dir_still_around' } );
     }
-
     if (   $DADA::Config::ARCHIVE_DB_TYPE eq 'Db'
         || $DADA::Config::SETTINGS_DB_TYPE eq 'Db' )
     {
@@ -261,11 +259,10 @@ sub default {
 
         my @l_check = available_lists();
         if ( $l_check[0] ) {
-
             require DADA::MailingList::Settings;
             my $ls = DADA::MailingList::Settings->new( { -list => $l_check[0] } );
             eval { $ls->_open_db; };
-            if ($@) {
+            if ($@) {                
                 return user_error(
                     {
                         -error         => 'unreadable_db_files',
@@ -276,8 +273,8 @@ sub default {
         }
 
     }
-
-    elsif ($DADA::Config::SUBSCRIBER_DB_TYPE =~ /SQL/
+    
+    if ($DADA::Config::SUBSCRIBER_DB_TYPE =~ /SQL/
         || $DADA::Config::ARCHIVE_DB_TYPE =~ /SQL/
         || $DADA::Config::SETTINGS_DB_TYPE =~ /SQL/ )
     {
@@ -303,13 +300,13 @@ sub default {
             if ( DADA::App::Guts::SQL_check_setup() == 0 ) {
                 return user_error( { -error => 'bad_SQL_setup' } );
             }
+            else { 
+            }
         }
     }
 
 
-
     require DADA::MailingList::Settings;
-
     my @available_lists;
     if (   $DADA::Config::SUBSCRIBER_DB_TYPE =~ /SQL/
         || $DADA::Config::ARCHIVE_DB_TYPE =~ /SQL/
@@ -318,7 +315,6 @@ sub default {
 
         eval { @available_lists = available_lists( -In_Order => 1, ); };
         if ($@) {
-
             return user_error(
                 {
                     -error         => 'sql_connect_error',
@@ -327,70 +323,65 @@ sub default {
             );
         }
     }
-    else {
-        @available_lists = available_lists( -In_Order => 1, );
-    }
-
-
+    
+    
+    @available_lists = available_lists( -In_Order => 1, );
 
     if (   ( $DADA::Config::DEFAULT_SCREEN ne '' )
         && ( $q->param('flavor') ne 'default' )
         && ( $#available_lists >= 0 ) )
     {
+            
         $self->header_type('redirect');
         $self->header_props( -url => $DADA::Config::DEFAULT_SCREEN );
         return;
     }
 
-    if ( $available_lists[0] ) {
         
-        if ( $q->param('error_invalid_list') != 1 ) {               
-            if ( !$c->profile_on && $c->is_cached('default.scrn') ) {      
-                return $c->cached('default.scrn');
+        if ( ! $available_lists[0] ) {  
+            my $auth_state;
+            if ( $DADA::Config::DISABLE_OUTSIDE_LOGINS == 1 ) {
+                require DADA::Security::SimpleAuthStringState;
+                my $sast = DADA::Security::SimpleAuthStringState->new;
+                $auth_state = $sast->make_state;
             }
-        }
-        else { 
+
             require DADA::Template::Widgets;
-            my $scrn = DADA::Template::Widgets::default_screen(
-
-                # {
-                -email              => $q->param('email'),
-                -list               => $q->param('list'),
-                -error_invalid_list => $q->param('error_invalid_list'),
-
-                # }
+            my $scrn = DADA::Template::Widgets::wrap_screen(
+                {
+                    -screen => 'congrats_screen.tmpl',
+                    -with   => 'list',
+                    -vars   => {
+                        havent_agreed => ( ( xss_filter( $q->param('agree') ) eq 'no' ) ? 1 : 0 ),
+                        auth_state => $auth_state,
+                    },
+                }
             );
-            if (  !$c->profile_on
-                && $available_lists[0]
-                && $q->param('error_invalid_list') != 1 )
-            {
-                $c->cache( 'default.scrn', \$scrn );
-            }
             return $scrn;
         }
-    }
-    else {
-
-        my $auth_state;
-        if ( $DADA::Config::DISABLE_OUTSIDE_LOGINS == 1 ) {
-            require DADA::Security::SimpleAuthStringState;
-            my $sast = DADA::Security::SimpleAuthStringState->new;
-            $auth_state = $sast->make_state;
+                  
+        if ( $q->param('error_invalid_list') != 1 && (! $c->profile_on) && ($c->is_cached('default.scrn')) ) {               
+                return $c->cached('default.scrn');
         }
 
         require DADA::Template::Widgets;
-        my $scrn = DADA::Template::Widgets::wrap_screen(
-            {
-                -screen => 'congrats_screen.tmpl',
-                -with   => 'list',
-                -vars   => {
-                    havent_agreed => ( ( xss_filter( $q->param('agree') ) eq 'no' ) ? 1 : 0 ),
-                    auth_state => $auth_state,
-                },
-            }
+        my $scrn = DADA::Template::Widgets::default_screen(
+
+            # {
+            -email              => $q->param('email'),
+            -list               => $q->param('list'),
+            -error_invalid_list => $q->param('error_invalid_list'),
+
+            # }
         );
+        if (  !$c->profile_on
+            && $available_lists[0]
+            && $q->param('error_invalid_list') != 1 )
+        {
+            $c->cache( 'default.scrn', \$scrn );
+        }                    
         return $scrn;
-    }
+    
 }
 
 sub list_page {
@@ -6262,10 +6253,8 @@ sub display_message_source {
 
         if ( $la->can_display_message_source ) {
 
-            #DEV: FIX
-            warn 'fix.';
-            print $q->header('text/plain');
-            $la->print_message_source( \*STDOUT, $q->param('id') );
+            $self->header_props({-type => 'text/plain'}); 
+            return $la->message_source( $q->param('id') );
 
         }
         else {
@@ -12557,105 +12546,19 @@ sub plugins {
     else { 
         croak "plugin not registered."; 
     }
-
-=cut   
-
-    if($plugin eq 'bounce_handler') {     
-        eval { 
-            require 'plugins/bounce_handler.cgi'; 
-            ($headers, $body)   = bounce_handler::run($q);
-        };
-    }
-    elsif($plugin eq 'bridge'){ 
-        eval { 
-            my $plugin_name = 'plugins/bridge.cgi'; 
-            require $plugin_name; 
-            my $func = \&bridge::run; 
-            ($headers, $body) = $func->($q);
-        };
-    }
-    elsif($plugin eq 'change_list_shortname'){ 
-        eval { 
-            require 'plugins/change_list_shortname.cgi'; 
-            ($headers, $body)   = change_list_shortname::run($q);
-        };
-    }
-    elsif($plugin eq 'log_viewer'){ 
-        eval { 
-            require 'plugins/log_viewer.cgi'; 
-            ($headers, $body)   = log_viewer::run($q);
-        };
-    }
-    elsif($plugin eq 'change_root_password'){ 
-        eval { 
-            require 'plugins/change_root_password.cgi'; 
-            ($headers, $body)   = change_root_password::run($q);
-        };
-    }
-    
-    elsif($plugin eq 'mailing_monitor'){ 
-        eval { 
-            require 'plugins/mailing_monitor.cgi'; 
-            ($headers, $body)   = mailing_monitor::run($q);
-        };
-    }
-    elsif($plugin eq 'password_protect_directories'){ 
-        eval { 
-            require 'plugins/password_protect_directories.cgi'; 
-            ($headers, $body)   = password_protect_directories::run($q);
-        };
-    }
-    elsif($plugin eq 'screen_cache'){ 
-        eval { 
-            require 'plugins/screen_cache.cgi'; 
-            ($headers, $body)   = screen_cache::run($q);
-        };
-    }
-    elsif($plugin eq 'tracker'){ 
-        eval { 
-            require 'plugins/tracker.cgi'; 
-            ($headers, $body)   = tracker::run($q);
-        };
-    }
-
-
-    if(!$@){ 
-        if ( exists( $headers->{-redirect_uri} ) ) {
-            $self->header_type('redirect');
-            $self->header_props( -url => $headers->{-redirect_uri} );
-        }
-        else {
-            if ( keys %$headers ) {
-                $self->header_props(%$headers);
-            }
-            return $body;
-        }        
-    }
-    else { 
-        croak($@); 
-    }
-=cut
-
 }
 
 
 sub schedules { 
     
+    # Just need to document this 
+    # and figure out inject stuff.... sigh. 
     my $self = shift; 
     my $q = $self->query; 
-    
-#    $q->param('schedule',    $schedule); 
-#    $q->param('list',        $list); 
-#    $q->param('output_mode', $output_mode); 
     
     my $list = $q->param('list'); 
     
     my $r; 
-    
-    # A way to call a specific schedule
-    # A way to list a specific list to run schedule for 
-    # verbose or not 
-    # 
     
     require DADA::App::ScheduledTasks; 
     my $dast = DADA::App::ScheduledTasks->new; 
