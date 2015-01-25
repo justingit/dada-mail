@@ -124,6 +124,7 @@ $(document).ready(function() {
 			"program_name", 
 			"amazon_ses", 
 			"mandrill", 
+			"fastcgi",
 			"profiles",
 			"templates", 
 			"cache",

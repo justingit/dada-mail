@@ -70,61 +70,75 @@ my $plugins_extensions = {
     tracker                       => { installed => 0, loc => '../plugins/tracker.cgi' },
     bridge                        => { installed => 0, loc => '../plugins/bridge.cgi' },
     bounce_handler                => { installed => 0, loc => '../plugins/bounce_handler.cgi' },
-    scheduled_mailings            => { installed => 0, loc => '../plugins/scheduled_mailings.pl' },
     multiple_subscribe            => { installed => 0, loc => '../extensions/multiple_subscribe.cgi' },
     blog_index                    => { installed => 0, loc => '../extensions/blog_index.cgi' },
-    mailing_monitor               => { installed => 0, loc => '../plugins/mailing_monitor.cgi' },
-    default_mass_mailing_messages => { installed => 0, loc => '../plugins/default_mass_mailing_messages.cgi' },
     password_protect_directories  => { installed => 0, loc => '../plugins/password_protect_directories.cgi' },
     change_list_shortname         => { installed => 0, loc => '../plugins/change_list_shortname.cgi' },
     global_config                 => { installed => 0, loc => '../plugins/global_config.cgi' },
 };
 $plugins_extensions->{change_root_password}->{code} = q{#					{
 #					-Title      => 'Change the Program Root Password',
-#					-Title_URL  => $PLUGIN_URL."/change_root_password.cgi",
+#					-Title_URL  => $S_PROGRAM_URL."/plugins/change_root_password",
 #					-Function   => 'change_root_password',
 #					-Activated  => 0,
 #					},};
 
 $plugins_extensions->{screen_cache}->{code} = q{#					{
 #					-Title      => 'Screen Cache',
-#					-Title_URL  => $PLUGIN_URL."/screen_cache.cgi",
+#					-Title_URL  => $S_PROGRAM_URL."/plugins/screen_cache",
 #					-Function   => 'screen_cache',
 #					-Activated  => 0,
 #					},};
 
 $plugins_extensions->{log_viewer}->{code} = q{#					{
 #					-Title      => 'View Logs',
-#					-Title_URL  => $PLUGIN_URL."/log_viewer.cgi",
+#					-Title_URL  => $S_PROGRAM_URL."/plugins/log_viewer",
 #					-Function   => 'log_viewer',
 #					-Activated  => 1,
 #					},};
 
 $plugins_extensions->{tracker}->{code} = q{#					{
 #					-Title      => 'Tracker',
-#					-Title_URL  => $PLUGIN_URL."/tracker.cgi",
+#					-Title_URL  => $S_PROGRAM_URL."/plugins/tracker",
 #					-Function   => 'tracker',
 #					-Activated  => 1,
 #					},};
 
 $plugins_extensions->{bridge}->{code} = q{#					{
 #					-Title      => 'Bridge',
-#					-Title_URL  => $PLUGIN_URL."/bridge.cgi",
+#					-Title_URL  => $S_PROGRAM_URL."/plugins/bridge",
 #					-Function   => 'bridge',
 #					-Activated  => 1,
 #					},};
 
 $plugins_extensions->{bounce_handler}->{code} = q{#					{
 #					-Title      => 'Bounce Handler',
-#					-Title_URL  => $PLUGIN_URL."/bounce_handler.cgi",
+#					-Title_URL  => $S_PROGRAM_URL."/plugins/bounce_handler",
 #					-Function   => 'bounce_handler',
 #					-Activated  => 1,
 #					},};
 
-$plugins_extensions->{scheduled_mailings}->{code} = q{#					{-Title      => 'Scheduled Mailings',
-#					 -Title_URL  => $PLUGIN_URL."/scheduled_mailings.pl",
-#					 -Function   => 'scheduled_mailings',
-#					 -Activated  => 1,
+
+
+$plugins_extensions->{password_protect_directories}->{code} = q{#					{
+#					-Title      => 'Password Protect Directories',
+#					-Title_URL  => $S_PROGRAM_URL."/plugins/password_protect_directories",
+#					-Function   => 'password_protect_directories',
+#					-Activated  => 1,
+#					},};
+
+$plugins_extensions->{change_list_shortname}->{code} = q{#					{
+#					-Title      => 'Change Your List Short Name',
+#					-Title_URL  => $S_PROGRAM_URL."/plugins/change_list_shortname",
+#					-Function   => 'change_list_shortname',
+#					-Activated  => 0,
+#					},};
+
+$plugins_extensions->{global_config}->{code} = q{#					{
+#					-Title      => 'Global Configuration',
+#					-Title_URL  => $S_PROGRAM_URL."/plugins/global_config",
+#					-Function   => 'global_config',
+#					-Activated  => 0,
 #					},};
 
 $plugins_extensions->{multiple_subscribe}->{code} = q{#					{
@@ -139,41 +153,6 @@ $plugins_extensions->{blog_index}->{code} = q{#					{
 #					-Title_URL  => $EXT_URL."/blog_index.cgi?mode=html&list=<!-- tmpl_var list_settings.list -->",
 #					-Function   => 'blog_index',
 #					-Activated  => 1,
-#					},};
-
-$plugins_extensions->{mailing_monitor}->{code} = q{#					{
-#					-Title      => 'Mailing Monitor',
-#					-Title_URL  => $PLUGIN_URL."/mailing_monitor.cgi",
-#					-Function   => 'mailing_monitor',
-#					-Activated  => 0,
-#					},};
-
-$plugins_extensions->{password_protect_directories}->{code} = q{#					{
-#					-Title      => 'Password Protect Directories',
-#					-Title_URL  => $PLUGIN_URL."/password_protect_directories.cgi",
-#					-Function   => 'password_protect_directories',
-#					-Activated  => 1,
-#					},};
-
-$plugins_extensions->{default_mass_mailing_messages}->{code} = q{#					{
-#					-Title      => 'Default Mass Mailing Messages',
-#					-Title_URL  => $PLUGIN_URL."/default_mass_mailing_messages.cgi",
-#					-Function   => 'default_mass_mailing_messages',
-#					-Activated  => 1,
-#					},};
-
-$plugins_extensions->{change_list_shortname}->{code} = q{#					{
-#					-Title      => 'Change Your List Short Name',
-#					-Title_URL  => $PLUGIN_URL."/change_list_shortname.cgi",
-#					-Function   => 'change_list_shortname',
-#					-Activated  => 0,
-#					},};
-
-$plugins_extensions->{global_config}->{code} = q{#					{
-#					-Title      => 'Global Configuration',
-#					-Title_URL  => $PLUGIN_URL."/global_config.cgi",
-#					-Function   => 'global_config',
-#					-Activated  => 0,
 #					},};
 
 my $advanced_config_params = {
@@ -256,7 +235,7 @@ sub setup {
         #cgi_test_CAPTCHA_reCAPTCHA_iframe  => \&cgi_test_CAPTCHA_reCAPTCHA_iframe,
         cgi_test_default_CAPTCHA            => \&cgi_test_default_CAPTCHA,
         cgi_test_captcha_reCAPTCHA_Mailhide => \&cgi_test_captcha_reCAPTCHA_Mailhide,
-        cgi_test_FastCGI                    => \&cgi_test_FastCGI, 
+        #cgi_test_FastCGI                    => \&cgi_test_FastCGI, 
     );
 }
 
@@ -516,14 +495,12 @@ sub scrn_configure_dada_mail {
     if ( !keys %params ) {
 
         # well, then place some defaults:
-        $q->param( 'install_mailing_monitor',               1 );
         $q->param( 'install_change_root_password',          1 );
         $q->param( 'install_screen_cache',                  1 );
         $q->param( 'install_log_viewer',                    1 );
         $q->param( 'install_tracker',                       1 );
         $q->param( 'install_multiple_subscribe',            1 );
         $q->param( 'install_blog_index',                    1 );
-        $q->param( 'install_default_mass_mailing_messages', 1 );
         $q->param( 'install_change_list_shortname',         1 );
         $q->param( 'global_config',                         0 );
 
@@ -564,7 +541,7 @@ sub scrn_configure_dada_mail {
         # No? Good -
     }
     else {
-        if ( test_can_create_dada_files_dir( $self->auto_dada_files_dir() ) == 0 ) {
+        if ( $self->test_can_create_dada_files_dir( $self->auto_dada_files_dir() ) == 0 ) {
             $q->param( 'dada_files_loc',       $self->auto_dada_files_dir() );
             $q->param( 'dada_files_dir_setup', 'manual' );
         }
@@ -632,10 +609,10 @@ sub scrn_configure_dada_mail {
                 can_use_CAPTCHA_reCAPTCHA_Mailhide => test_can_use_CAPTCHA_reCAPTCHA_Mailhide(),
                 error_cant_read_config_dot_pm      => test_can_read_config_dot_pm(),
                 error_cant_write_config_dot_pm     => test_can_write_config_dot_pm(),
+                cgi_test_FastCGI                   => $self->cgi_test_FastCGI, 
                 home_dir_guess                     => $self->guess_home_dir(),
                 install_dada_files_dir_at          => $self->install_dada_files_dir_at_from_params(),
-                test_complete_dada_files_dir_structure_exists =>
-                  $self->test_complete_dada_files_dir_structure_exists( $self->install_dada_files_dir_at_from_params() ),
+                test_complete_dada_files_dir_structure_exists => $self->test_complete_dada_files_dir_structure_exists( $self->install_dada_files_dir_at_from_params() ),
                 dada_files_dir_setup                     => $q->param('dada_files_dir_setup')                     || '',
                 dada_files_loc                           => $q->param('dada_files_loc')                           || '',
                 error_create_dada_mail_support_files_dir => $q->param('error_create_dada_mail_support_files_dir') || 0,
@@ -665,7 +642,6 @@ sub scrn_configure_dada_mail {
                   $amazon_ses_Allowed_Sending_Quota_Percentage_popup_menu,
                 mandrill_Allowed_Sending_Quota_Percentage_popup_menu =>
                   $mandrill_Allowed_Sending_Quota_Percentage_popup_menu,
-                  cgi_test_FastCGI => $self->cgi_test_FastCGI, 
                 Big_Pile_Of_Errors => $Big_Pile_Of_Errors,
                 Trace              => $Trace,
             },
@@ -770,17 +746,14 @@ sub grab_former_config_vals {
     # Plugins/Extensions
     for my $plugin_ext (
         qw(
-        mailing_monitor
         change_root_password
         screen_cache
         log_viewer
         tracker
         bridge
         bounce_handler
-        scheduled_mailings
         multiple_subscribe
         blog_index
-        default_mass_mailing_messages
         change_list_shortname
         global_config
         password_protect_directories
@@ -802,9 +775,6 @@ sub grab_former_config_vals {
     }
     if ( admin_menu_item_used('dada_bridge') == 1 ) {
         $local_q->param( 'install_bridge', 1 );
-    }
-    if ( admin_menu_item_used('auto_pickup') == 1 ) {
-        $local_q->param( 'install_mailing_monitor', 1 );
     }
     if ( admin_menu_item_used('clickthrough_tracking') == 1 ) {
         $local_q->param( 'install_tracker', 1 );
@@ -891,6 +861,13 @@ sub grab_former_config_vals {
         $local_q->param( 'file_browser_install', 'core5_filemanager' );
         $local_q->param( 'core5_filemanager_connector',
             $BootstrapConfig::FILE_BROWSER_OPTIONS->{core5_filemanager}->{connector} );
+    }
+
+
+    # FastCGI
+    if ( defined( $BootstrapConfig::RUNNING_AS ) &&  $BootstrapConfig::RUNNING_AS eq 'FastCGI' ) {
+        $local_q->param( 'configure_fastcgi', 1 );
+        $local_q->param( 'fastcgi_options_run_under_fastcgi', 1 );
     }
 
     # Profiles
@@ -1187,6 +1164,22 @@ sub scrn_install_dada_mail {
     my $self = shift;
     my $q    = $self->query();
 
+    # THis is sort of awkward - but we need to do the switcheroo: 
+    if($q->param('fastcgi_options_run_under_fastcgi') == 1){ 
+        my $purl = $q->param('program_url');
+        if($purl =~ m/mail\.cgi$/){ 
+            $purl =~ s/mail\.cgi$/mail\.fcgi/; 
+            $q->param('program_url', $purl);
+        }
+    }
+    else { 
+        my $purl = $q->param('program_url');
+        if($purl =~ m/mail\.fcgi$/){ 
+            $purl =~ s/mail\.fcgi$/mail\.cgi/; 
+            $q->param('program_url', $purl);
+        }        
+    }
+
     my $install_dada_files_loc = $self->install_dada_files_dir_at_from_params();
     my ( $log, $status, $errors ) = $self->install_dada_mail(
         {
@@ -1250,7 +1243,7 @@ sub install_dada_mail {
 
     if ( $args->{-if_dada_files_already_exists} eq 'keep_dir_create_new_config' ) {
         $log .= "* Backing up current configuration file\n";
-        eval { backup_current_config_file($args); };
+        eval { $self->backup_current_config_file($args); };
         if ($@) {
             $log .= "* Problems backing up config file: $@\n";
             $errors->{cant_backup_orig_config_file} = 1;
@@ -1287,6 +1280,9 @@ sub install_dada_mail {
 
         # Making the .dada_config file
         $log .= "* Attempting to create .dada_config file...\n";
+        #
+        # DEV: create_dada_config_file uses a lot of vars from $q - not too comfortable with that. 
+        #
         if ( $self->create_dada_config_file($args) == 1 ) {
             $log .= "* Success!\n";
         }
@@ -1398,6 +1394,17 @@ sub install_dada_mail {
             $log .= "* Success!\n";
         }
     }
+    
+    $log .= "* Setting up CGI/FastCGI Support...\n";
+    eval { $self->setup_fastcgi($args); };
+    if ($@) {
+        $log .= "* Problems setting up CGI/FastCGI Support: $@\n";
+        # $errors->{cant_setup_fast_cgi} = 1;
+    }
+    else {
+        $log .= "* Done!\n";
+    }
+    
 
     $log .= "* Checking for needed CPAN modules to install...\n";
     eval { install_missing_CPAN_modules(); };
@@ -1511,6 +1518,9 @@ sub backup_config_dot_pm {
 }
 
 sub backup_current_config_file {
+    
+    my $self = shift; 
+    
     my ($args) = @_;
 
     my $dot_configs_file_loc =
@@ -1543,8 +1553,8 @@ sub create_dada_files_dir_structure {
 
     eval {
 
-        installer_mkdir( $loc, $DADA::Config::DIR_CHMOD );
-        create_htaccess_deny_from_all_file($loc);
+        $self->installer_mkdir( $loc, $DADA::Config::DIR_CHMOD );
+        $self->create_htaccess_deny_from_all_file($loc);
         for (
             qw(
             .archives
@@ -1558,7 +1568,7 @@ sub create_dada_files_dir_structure {
           )
         {
             my $sub_dir = make_safer( $loc . '/' . $_ );
-            installer_mkdir( $sub_dir, $DADA::Config::DIR_CHMOD );
+            $self->installer_mkdir( $sub_dir, $DADA::Config::DIR_CHMOD );
         }
     };
     if ($@) {
@@ -1570,6 +1580,8 @@ sub create_dada_files_dir_structure {
         return 1;
     }
 }
+
+# DEV: create_dada_config_file uses a lot of vars from $q - not too comfortable with that. 
 
 sub create_dada_config_file {
 
@@ -1602,6 +1614,13 @@ sub create_dada_config_file {
         $prog_url =~ s{installer\/install\.cgi}{mail\.cgi};
         $args->{-program_url} = $prog_url;
     }
+    if($q->param('fastcgi_options_run_under_fastcgi') == 1){ 
+        $args->{-program_url} =~ s/mail\.cgi$/mail\.fcgi/;
+    }
+    else { 
+        $args->{-program_url} =~ s/mail\.fcgi$/mail\.cgi/;        
+    }
+    
 
     my $SQL_params = {};
     if ( $args->{-backend} ne 'default' && $args->{-backend} ne '' ) {
@@ -1634,6 +1653,16 @@ sub create_dada_config_file {
         $args->{-sql_port}     = '';
         $args->{-sql_username} = '';
         $args->{-sql_password} = '';
+    }
+    
+    my $fast_cgi_params = {}; 
+    if ( $q->param('configure_fastcgi') == 1 ) {
+        if($q->param('fastcgi_options_run_under_fastcgi') == 1){ 
+            $fast_cgi_params->{fast_cgi_RUNNING_AS} = 'FastCGI'; 
+        }
+        else { 
+            $fast_cgi_params->{fast_cgi_RUNNING_AS} = 'CGI'; 
+        }
     }
 
     my $profiles_params = {};
@@ -1881,6 +1910,7 @@ sub create_dada_config_file {
                 %{$cache_options_params},
                 %{$debugging_options_params},
                 %{$template_options_params},
+                %{$fast_cgi_params}, 
                 %{$profiles_params},
                 %{$security_params},
                 %{$captcha_params},
@@ -2129,7 +2159,7 @@ sub check_setup {
         }
         else {
 
-            if ( test_can_create_dada_files_dir($install_dada_files_dir_at) == 0 ) {
+            if ( $self->test_can_create_dada_files_dir($install_dada_files_dir_at) == 0 ) {
                 $errors->{create_dada_files_dir} = 1;
             }
             else {
@@ -2137,7 +2167,7 @@ sub check_setup {
             }
         }
 
-        if ( test_can_create_dada_mail_support_files_dir( $q->param('support_files_dir_path') ) == 0 ) {
+        if ( $self->test_can_create_dada_mail_support_files_dir( $q->param('support_files_dir_path') ) == 0 ) {
             $errors->{create_dada_mail_support_files_dir} = 1;
         }
         else {
@@ -2233,9 +2263,9 @@ sub edit_config_file_for_plugins {
                     my $uncommented_code = uncomment_admin_menu_entry($orig_code);
                     $orig_code = quotemeta($orig_code);
                     $config_file =~ s/$orig_code/$uncommented_code/;
-                    my $installer_successful =
-                      installer_chmod( $DADA::Config::DIR_CHMOD,
-                        make_safer( $plugins_extensions->{$plugins_data}->{loc} ) );
+                    #my $installer_successful =
+                    #  installer_chmod( $DADA::Config::DIR_CHMOD,
+                    #    make_safer( $plugins_extensions->{$plugins_data}->{loc} ) );
                 }
             }
         }
@@ -2271,7 +2301,7 @@ sub setup_support_files_dir {
         croak "Can't install set up Support Files Directory: '$support_files_dir_path' does not exist!";
     }
     if ( !-d $support_files_dir_path . '/' . $Support_Files_Dir_Name ) {
-        installer_mkdir( make_safer( $support_files_dir_path . '/' . $Support_Files_Dir_Name ),
+        $self->installer_mkdir( make_safer( $support_files_dir_path . '/' . $Support_Files_Dir_Name ),
             $DADA::Config::DIR_CHMOD );
     }
 
@@ -2286,6 +2316,57 @@ sub setup_support_files_dir {
     unlink( make_safer( $target_loc . '/README.txt' ) );
     return 1;
 }
+
+sub setup_fastcgi {
+    
+    my $self = shift;
+    my $q    = $self->query();
+    my ($args) = @_;    
+    
+    my $cgi_enabled    = '../mail.cgi'; 
+    my $cgi_disabled   = '../mail.cgi-disabled'; 
+    my $fcgi_enabled   = '../mail.fcgi'; 
+    my $fcgi_disabled  = '../mail.fcgi-disabled';     
+    
+    my $install = $q->param('fastcgi_options_run_under_fastcgi') || 0;
+    if ( $install != 1 ) {
+        if(-e $fcgi_enabled) { 
+            installer_chmod( 0644, make_safer($fcgi_enabled));    
+            installer_mv(make_safer($fcgi_enabled), make_safer($fcgi_disabled)); 
+        }
+        if(-e $cgi_disabled){ 
+            installer_mv(make_safer($cgi_disabled), make_safer($cgi_enabled)); 
+            installer_chmod( 0755, make_safer($cgi_enabled))    
+        }
+        return 1;
+    }
+    else { 
+        # right. 
+        if(-e $fcgi_enabled) { 
+            installer_chmod( 0755, make_safer($fcgi_enabled));
+            if($cgi_disabled){ 
+                installer_chmod( 0644, make_safer($cgi_disabled));
+            }
+            return 1; 
+        }
+        else { 
+            if(-e $cgi_enabled){
+                installer_chmod( 0644, $cgi_enabled );
+                installer_mv($cgi_enabled, $cgi_disabled); 
+            }
+    
+            if(-e $fcgi_disabled) { 
+                installer_mv($fcgi_disabled, $fcgi_enabled); 
+                installer_chmod( 0755, $fcgi_enabled );
+            }
+            else { 
+                #die 'Can\'t find fcgi mail script at: ../mail.fcgi-disabled'; 
+            }
+        }
+        $self->create_htaccess_fastcgi('../'); 
+    }
+}
+
 
 sub install_wysiwyg_editors {
 
@@ -2313,7 +2394,7 @@ sub install_wysiwyg_editors {
     my %tmpl_vars = ();
 
     if ( !-d $support_files_dir_path . '/' . $Support_Files_Dir_Name ) {
-        installer_mkdir( make_safer( $support_files_dir_path . '/' . $Support_Files_Dir_Name ),
+        $self->installer_mkdir( make_safer( $support_files_dir_path . '/' . $Support_Files_Dir_Name ),
             $DADA::Config::DIR_CHMOD );
     }
 
@@ -2344,7 +2425,7 @@ sub install_wysiwyg_editors {
         if ( !-d $upload_dir ) {
 
             # No need to backup this.
-            installer_mkdir( $upload_dir, $DADA::Config::DIR_CHMOD );
+            $self->installer_mkdir( $upload_dir, $DADA::Config::DIR_CHMOD );
             create_htaccess_no_script_execution($upload_dir);
         }
         else {
@@ -2370,7 +2451,7 @@ sub install_wysiwyg_editors {
         if ( !-d $upload_dir ) {
 
             # No need to backup this.
-            installer_mkdir( $upload_dir, $DADA::Config::DIR_CHMOD );
+            $self->installer_mkdir( $upload_dir, $DADA::Config::DIR_CHMOD );
         }
 
     }
@@ -2551,7 +2632,7 @@ sub install_and_configure_kcfinder {
 
     my $sess_dir = make_safer( $args->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.tmp/php_sessions' );
     if ( !-d $sess_dir ) {
-        installer_mkdir( $sess_dir, $DADA::Config::DIR_CHMOD );
+        $self->installer_mkdir( $sess_dir, $DADA::Config::DIR_CHMOD );
     }
     my $kcfinder_config_php = DADA::Template::Widgets::screen(
         {
@@ -2707,12 +2788,12 @@ sub install_and_configure_core5_filemanager {
         installer_chmod( $DADA::Config::DIR_CHMOD, $core5_filemanager_connector_loc );
         installer_chmod( $DADA::Config::DIR_CHMOD, $core5_filemanager_config_loc );
 
-        #		installer_rmdir(make_safer($install_path . '/core5_filemanager/connectors/php'));
+        #		$self->installer_rmdir(make_safer($install_path . '/core5_filemanager/connectors/php'));
 
     }
 
     #	elsif($q->param('core5_filemanager_connector') eq 'php') {
-    #		installer_rmdir(make_safer($install_path . '/core5_filemanager/connectors/pl'));
+    #		$self->installer_rmdir(make_safer($install_path . '/core5_filemanager/connectors/pl'));
     #	}
 
 }
@@ -2787,6 +2868,7 @@ sub hack_program_url {
 
 sub test_can_create_dada_files_dir {
 
+    my $self = shift; 
     my $dada_files_parent_dir = shift;
 
     # blank?!
@@ -2795,9 +2877,9 @@ sub test_can_create_dada_files_dir {
     }
     my $dada_files_dir = make_safer( $dada_files_parent_dir . '/' . $Dada_Files_Dir_Name );
 
-    if ( installer_mkdir( $dada_files_dir, $DADA::Config::DIR_CHMOD ) ) {
+    if ( $self->installer_mkdir( $dada_files_dir, $DADA::Config::DIR_CHMOD ) ) {
         if ( -e $dada_files_dir ) {
-            installer_rmdir($dada_files_dir);
+            $self->installer_rmdir($dada_files_dir);
             return 1;
         }
         else {
@@ -2813,6 +2895,7 @@ sub test_can_create_dada_files_dir {
 
 sub test_can_create_dada_mail_support_files_dir {
 
+    my $self = shift; 
     my $support_files_parent_dir = shift;
 
     # blank?!
@@ -2830,7 +2913,7 @@ sub test_can_create_dada_mail_support_files_dir {
     }
     else {
         # Let's try making it,
-        if ( installer_mkdir( $support_files_dir, $DADA::Config::DIR_CHMOD ) ) {
+        if ( $self->installer_mkdir( $support_files_dir, $DADA::Config::DIR_CHMOD ) ) {
 
             # And let's see if it's around,
             if ( -e $support_files_dir && -d _ ) {
@@ -2853,7 +2936,7 @@ sub test_can_create_dada_mail_support_files_dir {
                     #
                     installer_rm($ran_file_name);
                     if ( $already_exists != 1 ) {
-                        installer_rmdir($support_files_dir);
+                        $self->installer_rmdir($support_files_dir);
                     }
 
                     # Yes! Yes, it works.
@@ -3046,8 +3129,7 @@ sub cgi_test_sql_connection {
     my $user     = strip( xss_filter( $q->param('sql_username') ) );
     my $pass     = strip( xss_filter( $q->param('sql_password') ) );
 
-    my ( $status, $details ) = test_sql_connection( $dbtype, $dbserver, $port, $database, $user, $pass, );
-    print $q->header();
+    my ( $status, $details ) = $self->test_sql_connection( $dbtype, $dbserver, $port, $database, $user, $pass, );
 
     if ( $status == 1 ) {
         $r .= '<p>Connection Successful!</p>';
@@ -3741,12 +3823,16 @@ sub installer_chmod {
 }
 
 sub installer_mkdir {
+    
+    my $self = shift; 
+    
     my ( $dir, $chmod ) = @_;
     my $r = mkdir( $dir, $chmod );
     return $r;
 }
 
 sub installer_rmdir {
+    my $self = shift; 
     my $dir = shift;
     my $r   = rmdir($dir);
     return $r;
@@ -3781,7 +3867,23 @@ sub auto_dada_files_dir {
     return $self->guess_home_dir();
 }
 
+
+sub create_htaccess_fastcgi {
+    
+    my $self = shift; 
+    
+    my $loc           = shift;
+    my $htaccess_file = make_safer( $loc . '/.htaccess' );
+    open my $htaccess, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $htaccess_file or croak $!;
+    print $htaccess 'AddHandler fcgid-script .fcgi' . "\n" or croak $!;
+    close $htaccess or croak $!;
+    installer_chmod( 0644, $htaccess_file );
+}
+
 sub create_htaccess_deny_from_all_file {
+    
+    my $self = shift; 
+    
     my $loc           = shift;
     my $htaccess_file = make_safer( $loc . '/.htaccess' );
     open my $htaccess, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $htaccess_file or croak $!;
