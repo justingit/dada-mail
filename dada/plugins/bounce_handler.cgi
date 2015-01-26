@@ -897,25 +897,11 @@ Check to make sure that the POP3 server (usually, port 110) is not blocked from 
 
 =back
 
-=head1 Recommended
-
-These points are not required, but recommended to use Bounce Handler:
-
-=over
-
-=item * Ability to set Cron Jobs. 
-
-Bounce Handler can be configured to run automatically by using a cronjob.
-
-If you do not know how to set up a cronjob, attempting to set one up for Dada Mail will result in much aggravation. Please read up on the topic before attempting! 
-
-=back
-
 =head1 Installation
 
 This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. The below installation instructions go through how to install the plugin B<manually>. We suggest using the Dada Mail Installer. 
 
-If you do install this way, note that you still have to create the create the Bounce Handler email account as well set the cronjob. Both are covered below. 
+If you do install this way, note that you still have to create the create the Bounce Handler email account.
 
 =head1 Lightning Configuration/Installation Instructions 
 
@@ -936,8 +922,6 @@ B<Your Mailing List - List Information>
 =item * chmod 755 the bounce_handler.cgi script
 
 =item * visit the plugin via a web browser. 
-
-=item * Set the cronjob (optional)
 
 =back
 
@@ -1117,104 +1101,6 @@ The first line has the B<Return-Path> header should have the Bounce Handler Emai
 
 In this example, my List Owner address, B<justin@myhost.com> still occupies the C<To:> and C<Reply-To headers>, so whoever replies to my message will reply to me, I<not> Bounce Handler.
 
-=head1 Configuring the Cronjob to Automatically Run Bounce Handler
-
-We're going to assume that you already know how to set up the actual cronjob, 
-but we'll be explaining in depth on what the cronjob you need to set B<is>.
-
-=head2 Setting the cronjob via curl
-
-Generally, setting the cronjob to have Bounce Handler run automatically, just 
-means that you have to have a cronjob access a specific URL (via a utility, like curl). The URL looks something like this: 
-
- http://example.com/cgi-bin/dada/plugins/bounce_handler.cgi?run=1&verbose=1
-
-Where, L<http://example.com/cgi-bin/dada/plugins/bounce_handler.cgi> is the URL to your copy of C<bounce_handler.cgi>
-
-You'll see the specific URL used for your installation of Dada Mail in the web-based control panel for Bounce Handler, under the fieldset legend, B<Manually Run Bounce Handler>, under the heading, B<Manual Run URL:>
-
-This will have Bounce Handler check any awaiting messages. 
-
-A I<Pretty Good Guess> of what the entire cronjob should be set to is located 
-in the web-based crontrol panel for Bounce Handler, under the fieldset legend, B<Manually Run Bounce Handler>, under the heading, B<curl command example (for a cronjob):>
-
-=head3 Customizing your cronjob with added parameters
-
-=head4 passcode
-
-Since anyone (or anything) can run your Bounce Handler, by following that same URL, (C<http://example.com/cgi-bin/dada/plugins/bounce_handler.cgi?run=1&verbose=1>), you can set up a simple B<Passcode>, to have some semblence of security over who runs the program. 
-
-Set a B<passcode> in Bounce Handler's Config variable, B<Manual_Run_Passcode>. This is done in your C<.dada_config> file - the same place the B<mail server>, B<username> and B<password> were set. Find the lines in your C<.dada_config> file that look like this: 
-
-	$PLUGIN_CONFIGS = { 
-	
-		Bounce_Handler => {
-			Server                      => 'mail.yourdomain.com', 
-			Username                    => 'bounces+yourdomain.com', 
-			Password                    => 'password', 
-			Port                        => undef,
-			USESSL                      => undef,
-			AUTH_MODE                   => undef,
-			Plugin_Name                 => undef,
-			Plugin_URL                  => undef,
-			Allow_Manual_Run            => undef,
-			Manual_Run_Passcode         => undef,
-			Enable_POP3_File_Locking    => undef, 
-			Log                         => undef,
-			MessagesAtOnce              => undef,
-			Max_Size_Of_Any_Message     => undef,
-			Rules                       => undef,
-			
-		},
-
-Find the config parameter named, B<Manual_Run_Passcode> and set it to whatever you'd like this Passcode to be: 
-
-		Manual_Run_Passcode         => 'sneaky',
-
-Then change the URL to include this passcode. In our examples, it would then look like this: 
-
- http://example.com/cgi-bin/dada/plugins/bounce_handler.cgi?run=1&passcode=sneaky
-
-The example cronjob for curl in Bounce Handler's list control panel should also update use the new passcode. 
-
-=head3 messages
-
-Sets how many messages should be checked and parsed in one execution of the program. Example: 
-
- http://example.com/cgi-bin/dada/plugins/bounce_handler.cgi?run=1&messages=10
-
-=head3 verbose
-
-When set to, B<1>, you'll receive the a report of how Bounce Handler is doing parsing and adding scores (and what not). This is sometimes not so desired, especially in a cron environment, since all this informaiton will be emailed to you (or someone) everytime the script is run.
-
-If you set B<verbose> to, "0", under normal operation, Bounce Handler won't show any output, but if there's a server error, you'll receive an email about it. This is probably a good thing. Example (for cronjob-run curl command): 
-
- * * * * * /usr/local/bin/curl -s --get --data run=1\;verbose=0 --url http://example.com/cgi-bin/dada/plugins/bounce_handler.cgi
-
-=head3 test
-
-Runs Bounce Handler in test mode by checking the bounces and parsing them, but not actually carrying out any rules (no scores added, no email addresses unsubscribed). 
-
-=head1 Command Line Interface
-
-There's a slew of optional arguments you can give to this script. To use Bounce Handler via the command line, first change into the directory that Bounce Handler resides in, and issue the command: 
-
- ./bounce_handler.cgi --help
-
-For a full list of parameters. 
-
-You may set the cronjob via the command line interface, rather than the web-based way. You may run into file permission problems when running it this way, depending on your server setup. 
-
-=head2 Command Line Interface for Cronjobs: 
-
-The secret is to actually have two commands in one. The first command changes into the same directory as the C<bounce_handler.cgi> script, the second invokes the script with the parameters you'd like. 
-
-For example: 
-
- */5 * * * * cd /home/myaccount/cgi-bin/dada/plugins; /usr/bin/perl ./bounce_handler.cgi  >/dev/null 2>&1
-
-Where, I</home/myaccount/cgi-bin/dada/plugins> is the full path to the directory the C<dada_bounc_handler.pl> script resides.
-
 =head1 Plugin Configs
 
 These plugin configs are located in your C<.dada_config> file, as mentioned above. 
@@ -1259,15 +1145,6 @@ Defaults to: B<Bounce Handler>
 
 The URL of the plugin. This is usually figured out by default, but if it's not (you'll know, as links are broken in the plugin and nothing seems to work) you may have to set this, manually. 
 
-=head2 Allow_Manual_Run
-
-Defaults to B<1> (enabled)
-
-Sets whether you may use the B<manual run URL> to run Bounce Handler. The manual run URL is what the curl-powered cronjob uses. If you want to disable this method, set this config variable to, B<0>
-
-=head2 Manual_Run_Passcode
-
-This is covered above, under, B<passcode> 
 
 =head2 Enable_POP3_File_Locking
 

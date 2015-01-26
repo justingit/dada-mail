@@ -3918,9 +3918,9 @@ There's a few constraints you want to keep in mind when creating the List Email.
 
 The List Email can either be a normal POP3 email account, or a Mail Forward.
 
-A B<POP3 account> is fairly easy to set up, as its similar to setting up any mail reader - and Bridge basically acts as a mail reader, while checking messages sent to this account. It does require you to set up an additional cronjob (scheduled task), to check this account on a regular schedule; for example: every 5 minutes. 
+A B<POP3 account> is fairly easy to set up, as its similar to setting up any mail reader - and Bridge basically acts as a mail reader, while checking messages sent to this account.
 
-A B<Mail Forward> does not need this additional cronjob created, but may be slightly trickier to set up on the mail forward side of things. Before attempting, make sure that you can set up a mail forward that can B<Pipe to a Program>, and not simply forward to another email address.  
+A B<Mail Forward> may be slightly trickier to set up on the mail forward side of things. Before attempting, make sure that you can set up a mail forward that can B<Pipe to a Program>, and not simply forward to another email address.  
 
 =head3 Setup As: POP3 Account 
 
@@ -3930,11 +3930,6 @@ Create a new POP3 Account. This email account will be the email address you will
 
 Once the login information works with Bridge, Save your changes. 
 
-=head4 Set the cronjob
-
-Once you've saved your POP3 login info, set the cronjob for Bridge. An I<example> of a cronjob that should work, can be found in the textbox labeled, I<cronjob command using curl (example)>. We recommend setting the cronjob to run every 5 minutes, or less. 
-
-Other options for cronjobs exist and are detailed, below, if the provided example doesn't work. 
 
 =head3 Setup As: Mail Forward
 
@@ -4045,113 +4040,6 @@ When testing the validity of a received message, Dada Mail will look to see if t
 
 C<Check_Multiple_Return_Path_Headers> is another validity test for received messages. This time, the message is looked to see if it has more than one C<Return-Path> header. If it does, it is rejected. If you set, C<Check_Multiple_Return_Path_Headers> to, C<0>, this test will be disabled. 
 
-=head2 Advanced Cronjobs 
-
-A cronjob will need to be set for Bridge, if you have a mailing list that uses a POP3 account for its List Email. If you are using Mail Forwards only, no cronjob needs to be set. 
-
-Generally, setting the cronjob to have Bridge run automatically just means that you have to have a cronjob access a specific URL. The URL looks something like this:
-
- http://example.com/cgi-bin/dada/plugins/bridge.cgi?run=1&verbose=1
-
-Where, I<http://example.com/cgi-bin/dada/plugins/bridge.cgi> is the URL to your copy of bridge.cgi
-
-You'll see the specific URL used for your installation of Dada Mail in the web-based control panel for Bridge, under the label, B< Manual Run URL:> 
-
-This should work for most Cpanel-based hosting accounts.
-
-Here's the entire cronjob explained:
-
-In this example, I'll be running the script every 5 minutes ( */5 * * * * ) - tailor to your taste.
-
-
-	*/5 * * * * /usr/local/bin/curl -s --get --data run=1\;verbose=0\; --url http://example.com/cgi-bin/dada/plugins/bridge.cgi
-
-=head2 Disallowing running Bridge manually (via URL) 
-
-If you DO NOT want to use this way of invoking the program to check awaiting messages and send them out, make sure to set the B<plugin config variable> (which we'll cover below) C<Allow_Manual_Run> to, C<0>. 
-
-=head2 Security Concerns "Manual_Run_Passcode"
-
-If you'd like, you can set up a simple B<Passcode>, to have some semblence of security over who runs the program. Do this by setting the, plugin config, C<Manual_Run_Passcode> to a password-like string: 
-
-	Manual_Run_Passcode                 => 'sneaky', 
-
-
-In this example, you'll then have to change the URL in these examples to:
-
- http://example.com/cgi-bin/dada/plugins/bridge.cgi?run=1&passcode=sneaky
-
-=head3 Additional Options
-
-You can control quite a few things by setting variables right in the query string:
-
-=over
-
-=item * passcode
-
-As mentioned above, the C<Manual_Run_Passcode> allows you to set some sort of security while running in this mode. Passing the actual password is done in the query string:
-
- http://example.com/cgi-bin/dada/plugins/bridge.cgi?run=1&passcode=sneaky
-
-=item * verbose
-
-By default, you'll receive the a report of how Bridge is doing downloading awaiting messages, validating them and sending them off. 
-
-This is sometimes not so desired, especially in a cron environment, since all this informaiton will be emailed to you (or someone) everytime the script is run. You can run Bridge with a cron that looks like this:
-
- */5 * * * * /usr/local/bin/curl -s --get --data run=1 --url http://example.com/cgi-bin/dada/plugins/bridge.cgi >/dev/null 2>&1
-
-The, >/dev/null 2>&1 line throws away any values returned.
-
-Since all the information being returned from the plugin is done sort of indirectly, this also means that any problems actually running the program will also be thrown away.
-
-If you set verbose to, C<0>, under normal operation, Bridge won't show any output, but if there's a server error, you'll receive an email about it. This is probably a good thing. Example:
-
- * * * * * /usr/local/bin/curl -s --get --data run=1\;verbose=0 --url http://example.com/cgi-bin/dada/plugins/bridge.cgi
-
-=item * test
-
-Runs Bridge in test mode by checking the messages awaiting and parsing them, but not actually carrying out any sending. 
-
-=back 
-
-=head3 Notes on Setting the Cronjob for curl
-
-You may want to check your version of curl and see if there's a speific way to pass a query string. For example, this:
-
- */5 * * * * /usr/local/bin/curl -s http://example.com/cgi-bin/dada/plugins/bridge.cgi?run=1&passcode=sneaky
-
-Doesn't work for me.
-
-I have to use the --get and --data flags, like this:
-
- */5 * * * * /usr/local/bin/curl -s --get --data run=1\;passcode=sneaky --url http://example.com/cgi-bin/dada/plugins/bridge.cgi
-
-my query string is this part:
-
- run=1\;passcode=sneaky
-
-And also note I had to escape the, ; character. You'll probably have to do the same for the & character.
-
-Finally, I also had to pass the actual URL of the plugin using the --url flag.
-
-=head1 Command Line Interface
-
-This plugin can also be invoked in a command line interface. 
-
-To use Bridge via the command line, first change into the directory that Bridge resides in, and issue the command:
-
- ./bridge.cgi --help
-
-=head2 Command Line Interface for Cronjobs: 
-
-You can also invoke C<bridge.cgi> from the command line interface for cronjobs. The secret is to actually have two commands in one. The first command changes into the same directory as the C<bridge.cgi> script, the second invokes the script with the parameters you'd like. 
-
-For example: 
-
- */5 * * * * cd /home/myaccount/cgi-bin/dada/plugins; /usr/bin/perl ./bridge.cgi  >/dev/null 2>&1
-
-Where, I</home/myaccount/cgi-bin/dada/plugins> is the full path to the directory the C<bridge.cgi> script is located. 
 
 
 =head1 Manual Installation

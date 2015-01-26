@@ -226,19 +226,6 @@ Uncomment the lines, by taking off the, "#"'s:
 
 Save your C<.dada_config> file.
 
-=head1 Using screen_cache.cgi as a cronjob
-
-This plugin can also be used as a simple cronjob, to periodically flush all the cached screens. 
-
-All that needs to be done is to visit the screen periodically using the URL labeled, B<Manual Run URL:> in the list control panel of this plugin. 
-
-A sample curl command, useful for a cronjob is listed in the textbox labeled, B<curl command example (for a cronjob):>
-
-Running this cronjob every hour, or day, or week, should be plenty. 
-
-You may also just use the, C<rm> command directly, but this has the possibility of removing the wrong directory!
-
-
 =head1 COPYRIGHT
 
 Copyright (c) 1999 - 2015 Justin Simoni All rights reserved. 

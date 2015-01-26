@@ -71,26 +71,6 @@ these message report summaries.</p>
 </div> 
 <div class="floatclear"></div> 
 </form>
-
-<p>
- <label for="cronjob_url">Manual Run URL:</label><br /> 
-<input type="text" class="full" id="cronjob_url" value="<!-- tmpl_var S_PROGRAM_URL -->?flavor=plugins&plugin=bounce_handler&run=1&verbose=1&passcode=<!-- tmpl_var Manual_Run_Passcode -->" />
-</p>
-<!-- tmpl_unless Allow_Manual_Run --> 
-    <span class="error">(Currently disabled)</a>
-<!-- /tmpl_unless -->
-
-
-<p> <label for="cronjob_command">curl command example (for a cronjob):</label><br /> 
-<input type="text" class="full" id="cronjob_command" value="<!-- tmpl_var name="curl_location" default="/cannot/find/curl" -->  -s --get --data flavor=plugins\;&plugin=bounce_handler\;run=1\;passcode=<!-- tmpl_var Manual_Run_Passcode -->\;verbose=0  --url <!-- tmpl_var S_PROGRAM_URL -->" />
-<!-- tmpl_unless curl_location --> 
-	<span class="error">Can't find the location to curl!</span><br />
-<!-- /tmpl_unless --> 
-
-<!-- tmpl_unless Allow_Manual_Run --> 
-    <span class="error">(Currently disabled)</a>
-<!-- /tmpl_unless --> 
-
 </p>
 </li>
 </ul> 

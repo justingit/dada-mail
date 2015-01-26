@@ -863,7 +863,21 @@ sub grab_former_config_vals {
             $BootstrapConfig::FILE_BROWSER_OPTIONS->{core5_filemanager}->{connector} );
     }
 
-
+    # $SCHEDULED_JOBS_OPTIONS
+    
+    if ( keys( %{$BootstrapConfig::SCHEDULED_JOBS_OPTIONS} ) ) {
+        $local_q->param( 'configure_scheduled_jobs_options', 1 );
+        if(! exists($BootstrapConfig::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor})){ 
+            my $ran_str       = '_sched' . uc(substr(DADA::App::Guts::generate_rand_string_md5(), 0, 16));
+            $BootstrapConfig::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor} = $ran_str; 
+        }
+        $local_q->param( 'scheduled_jobs_flavor', $BootstrapConfig::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor});
+        $local_q->param( 'scheduled_jobs_log', $BootstrapConfig::SCHEDULED_JOBS_OPTIONS->{log});
+    }
+    else { 
+        my $ran_str       = '_sched' . uc(substr(DADA::App::Guts::generate_rand_string_md5(), 0, 16));
+        $local_q->param( 'scheduled_jobs_flavor', $ran_str);
+    }
     # FastCGI
     if ( defined( $BootstrapConfig::RUNNING_AS ) &&  $BootstrapConfig::RUNNING_AS eq 'FastCGI' ) {
         $local_q->param( 'configure_fastcgi', 1 );
@@ -1655,13 +1669,20 @@ sub create_dada_config_file {
         $args->{-sql_password} = '';
     }
     
-    my $fast_cgi_params = {}; 
+    
+    my $scheduled_jobs_params = {}; 
+    if($q->param('configure_scheduled_jobs') == 1) { 
+        $scheduled_jobs_params->{configure_scheduled_jobs} = 1; 
+        $scheduled_jobs_params->{scheduled_jobs_flavor} = $q->param('scheduled_jobs_flavor') || 0;
+        $scheduled_jobs_params->{scheduled_jobs_log}    = $q->param('scheduled_jobs_log') || '_schedules';
+    }
+    my $fastcgi_params = {}; 
     if ( $q->param('configure_fastcgi') == 1 ) {
         if($q->param('fastcgi_options_run_under_fastcgi') == 1){ 
-            $fast_cgi_params->{fast_cgi_RUNNING_AS} = 'FastCGI'; 
+            $fastcgi_params->{fastcgi_RUNNING_AS} = 'FastCGI'; 
         }
         else { 
-            $fast_cgi_params->{fast_cgi_RUNNING_AS} = 'CGI'; 
+            $fastcgi_params->{fastcgi_RUNNING_AS} = 'CGI'; 
         }
     }
 
@@ -1910,7 +1931,8 @@ sub create_dada_config_file {
                 %{$cache_options_params},
                 %{$debugging_options_params},
                 %{$template_options_params},
-                %{$fast_cgi_params}, 
+                %{$scheduled_jobs_params}, 
+                %{$fastcgi_params}, 
                 %{$profiles_params},
                 %{$security_params},
                 %{$captcha_params},

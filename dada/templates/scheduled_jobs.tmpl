@@ -1,0 +1,30 @@
+<!-- begin scheduled_jobs.tmpl -->
+<!-- tmpl_set name="title" value="Scheduled Jobs" -->
+
+
+<div id="scheduled_jobs"></div> 
+<div id="screen_meta" data-menu_highlight="scheduled_jobs"></div>
+
+
+<form>
+    
+<fieldset> 
+    <legend> 
+        Scheduled Job URL
+    </legend>
+    
+    <input type="text" class="full" value="<!-- tmpl_var S_PROGRAM_URL -->/<!-- tmpl_var scheduled_jobs_flavor escape="HTML" -->/_all/_all/_verbose/" />
+
+</fieldset> 
+
+    <div style="text-align:center">
+        <input type="hidden" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" id="s_program_url" /> 
+        <input type="hidden" name="sched_flavor" id="sched_flavor" value="<!-- tmpl_var scheduled_jobs_flavor escape="HTML" -->" /> 
+        
+        
+	    <input type="button" value="Manually Run Scheduled Jobs" class="processing bigger_button manually_run_scheduled_jobs" />
+    </div>
+</form>
+
+
+<!-- end scheduled_jobs.tmpl -->

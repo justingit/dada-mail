@@ -905,6 +905,26 @@ $(document).ready(function() {
 		event.preventDefault();
 		check_newest_version($('#check_version').attr("data-ver"));
 	});
+	
+	if($("#scheduled_jobs").length) { 
+		$("body").on("click", ".manually_run_scheduled_jobs", function(event) {
+			$.colorbox({
+				top: 0,
+				fixed: true,
+				initialHeight: 50,
+				maxHeight: 480,
+				maxWidth: 649,
+				opacity: 0.50,
+				href: $("#s_program_url").val(),
+				data: {
+					flavor: $("#sched_flavor").val(),
+					list: '_all', 
+					schedule: '_all', 
+					for_colorbox: 1
+				}
+			});
+		});
+	}
 
 
 	// Plugins >> Bounce Handler 
@@ -1155,6 +1175,8 @@ $(document).ready(function() {
 			delete_log();
 		});
 	}
+
+
 
 
 

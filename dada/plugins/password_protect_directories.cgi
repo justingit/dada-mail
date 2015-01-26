@@ -392,7 +392,6 @@ Currently, only Apache-style, C<.htaccess>/C<.htpasswd> files are supported.
 
 This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. The below installation instructions go through how to install the plugin manually.
 
-If you install the plugin using the Dada Mail installer, you will still have set the cronjob manually, which is covered below.
 
 =head2 Change permissions of "password_protect_directories.cgi" to 755
 
@@ -485,36 +484,6 @@ This optionally, may hold a default password that any subscriber of your mailing
 Currently, if you have more than one mailing list that attempts to password protect the same directory, one mailing list will overwrite the C<.htaccess> and C<.htpasswd> created by any other mailing list. 
 
 If you already have a C<.htaccess> and/or C<.htpasswd> file in the directory you attempt to password protect, created manually/outside of this plugin, it will also be overwritten by this plugin.
-
-=head2 Setting the cronjob
-
-You may set up a cronjob to periodically B<refresh> both the C<.htacces> and C<.htpasswd> files that this plugin creates. This can come in handy, if changes are made to user's Profile email address and/or Password and you need to keep both of these files updated. 
-
-Generally, setting the cronjob to have this plugin run automatically just means that you have to have a cronjob access a specific URL. The URL looks something like this:
-
- http://example.com/cgi-bin/dada/plugins/password_protect_directories.cgi?run=1&verbose=1
-
-Where, I<http://example.com/cgi-bin/dada/plugins/password_protect_directories.cgi> is the URL to your copy of this plugin. 
-
-A B<Best Guess> at what the entire cronjob that's needed (using the, C<curl> command to access the actual URL) to be set manually will appear in this plugin's list control panel under the fieldset labled, B<Manually Run Password Protect Directories> in the textbox labeled, B<curl command example (for a cronjob):>. It'll look something like this: 
-
- /usr/bin/curl  -s --get --data run=1\;passcode=\;verbose=0  --url http://example.com/cgi-bin/dada/plugins/password_protect_directories.cgi
-
-Where, I<http://example.com/cgi-bin/dada/plugins/password_protect_directories.cgi> is the URL to this plugin. We suggest running this cronjob every 5 to 15 minutes. A complete cronjob, with the time set for, "every 5 minutes" would look like this: 
-
- */5 * * * * /usr/bin/curl  -s --get --data run=1\;passcode=\;verbose=0  --url http://example.com/cgi-bin/dada/plugins/password_protect_directories.cgi
-
-=head3 Command Line
-
-This plugin can also be called directory on the command line and that can itself be used for the cronjob: 
-
-	cd /home/youraccount/cgi-bin/dada/plugins; /usr/bin/perl ./password_protect_directories.cgi
-
-You may pass the, C<--noverbose> flag to have the script return nothing at all:
-
-	cd /home/youraccount/cgi-bin/dada/plugins; /usr/bin/perl ./password_protect_directories.cgi --noverbose
-
-By default, it will print out the Password Protect Directories report. 
 
 =head1 SEE ALSO
 

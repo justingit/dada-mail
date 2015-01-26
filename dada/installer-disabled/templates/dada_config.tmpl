@@ -17,8 +17,7 @@ $PROGRAM_URL   = '<!-- tmpl_var PROGRAM_URL -->';
 <!-- tmpl_if configure_s_program_url --> 
 $S_PROGRAM_URL = '<!-- tmpl_var s_program_url_S_PROGRAM_URL -->';
 <!-- /tmpl_if -->
-
-$RUNNING_AS = '<!-- tmpl_var fast_cgi_RUNNING_AS default="CGI" -->';
+$RUNNING_AS = '<!-- tmpl_var fastcgi_RUNNING_AS default="CGI" -->';
 
 #---------------------------------------------------------------------#
 # The location (server path + URL) of static, support files
@@ -106,6 +105,12 @@ $FILE_BROWSER_OPTIONS = {
 =cut
 # end cut for WYSIWYG Editor Options
 
+<!-- tmpl_if configure_scheduled_jobs -->
+$SCHEDULED_JOBS_OPTIONS = { 
+   scheduled_jobs_flavor => '<!-- tmpl_var scheduled_jobs_flavor default="_schedules" -->', 
+   log                   =>  <!-- tmpl_var scheduled_jobs_log    default="0" -->, 
+};
+<!-- /tmpl_if -->
 
 <!-- tmpl_if configure_profiles --> 
 
@@ -831,6 +836,14 @@ $ADMIN_MENU = [
 					-Function   => 'manage_script',
 					-Activated  => 1,
 					},
+
+					{
+					-Title      => 'Scheduled Jobs',
+					-Title_URL  => "$S_PROGRAM_URL?flavor=scheduled_jobs",
+					-Function   => 'scheduled_jobs',
+					-Activated  => 1,
+					},
+
 
 				],
 			},

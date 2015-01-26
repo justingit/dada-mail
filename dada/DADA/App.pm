@@ -81,10 +81,12 @@ sub setup {
     # * a way to force the schedule to run
     # * 
      
+    my $sched_flavor = $DADA::Config::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor}; 
+    
     $self->run_modes(
         'plugins'                                     => \&plugins, 
-        'schedules'                                   => \&schedules,
-        'schedules_config'                            => \&schedules_config,  
+        $sched_flavor                                 => \&schedules,
+        'scheduled_jobs'                              => \&scheduled_jobs,  
         'default'                                     => \&default,
         'subscribe'                                   => \&subscribe,
         'restful_subscribe'                           => \&restful_subscribe,
@@ -12557,14 +12559,18 @@ sub schedules {
     my $self = shift; 
     my $q = $self->query; 
     
-    my $list = $q->param('list'); 
+    my $list        = $q->param('list')           || '_all'; 
+    my $schedule    = $q->param('schedule')       || '_all'; 
+    my $output_mode = $q->param('output_mode') || 'verbose'; 
+    my $for_colorbox = $q->param('for_colorbox') || 0; 
+    
     
     my $r; 
     
     require DADA::App::ScheduledTasks; 
     my $dast = DADA::App::ScheduledTasks->new; 
     
-    if($q->param('schedule') eq '_all') { 
+    if($schedule eq '_all') { 
         $r .= $dast->mass_mailing_monitor($list);     
         $r .= $dast->scheduled_mass_mailings($list); 
         undef($dast); 
@@ -12581,14 +12587,14 @@ sub schedules {
             }
         }
     }
-    elsif($q->param('schedule') eq 'mass_mailing_monitor'){ 
+    elsif($schedule eq 'mass_mailing_monitor'){ 
         $r .= $dast->mass_mailing_monitor($list);     
         
     }
-    elsif($q->param('schedule') eq 'scheduled_mass_mailings'){ 
+    elsif($schedule eq 'scheduled_mass_mailings'){ 
         $r .= $dast->scheduled_mass_mailings($list); 
     }
-    elsif($q->param('schedule') eq 'bridge'){ 
+    elsif($schedule eq 'bridge'){ 
         eval { 
             require 'plugins/bridge.cgi'; 
             $r .= $plugins->{bridge}->{schedule_sub}->($list);                  
@@ -12597,7 +12603,7 @@ sub schedules {
              $r .= $@; 
         }
     }
-    elsif($q->param('schedule') eq 'bounce_handler'){ 
+    elsif($schedule eq 'bounce_handler'){ 
         eval { 
             require 'plugins/bounce_handler.cgi'; 
             $r .= $plugins->{bounce_handler}->{schedule_sub}->($list);                  
@@ -12607,20 +12613,48 @@ sub schedules {
         }
     }
     else { 
-        $r .= 'No such schedule:"' . $q->param('schedule') . '"'; 
+        $r .= 'No such schedule:"' . $schedule . '"'; 
     }
     
-    if($q->param('output_mode') ne 'silent'){ 
+    if($output_mode ne 'silent'){ 
         $self->header_props({-type => 'text/plain'}); 
-        return $r; 
+        if($for_colorbox == 1){ 
+            return '<pre>' . $r . '</pre>';
+        }
+        else { 
+            return $r;    
+        }
     }
     else { 
         return ''; 
     }
 }
 
-sub schedules_config { 
-    return "thar we rrr!"; 
+sub scheduled_jobs { 
+    my $self = shift; 
+    my $q = $self->query; 
+    
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'send_email'
+    );
+    if(!$checksout){ return $error_msg; }
+        
+    require DADA::Template::Widgets;
+    my $scrn = DADA::Template::Widgets::wrap_screen(
+        {
+            -screen => 'scheduled_jobs.tmpl',
+            -with   => 'admin',
+            -wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $admin_list,
+            },
+            -expr => 1,
+            -vars   => {
+                scheduled_jobs_flavor => $DADA::Config::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor}, 
+            },
+        }
+    );
 }
 
 sub DESTROY {

@@ -129,6 +129,8 @@ sub translate {
     my $env          = {%ENV};
     my $q            = $args->{-cgi_obj};
 
+    my $sched_flavor = $DADA::Config::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor};
+    
     if ( $env->{PATH_INFO} ) {
 
         my $dp = $q->url || $DADA::Config::PROGRAM_URL;
@@ -178,9 +180,9 @@ sub translate {
         elsif ( $info =~ m/^schedules_config/ ) {
             $q->param('flavor',      'schedules_config'); 
         }
-        elsif ( $info =~ m/^schedules/ ) {
+        elsif ( $info =~ m/^$sched_flavor/ ) {
             my ( $flavor, $schedule, $list, $output_mode ) = split( '/', $info, 4 );
-            $q->param('flavor',      'schedules'); 
+            $q->param('flavor',      $sched_flavor); 
             if(!defined($schedule)){ 
                 $q->param('schedule',    '_all');
             }
