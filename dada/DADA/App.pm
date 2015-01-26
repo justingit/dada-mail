@@ -83,7 +83,8 @@ sub setup {
      
     $self->run_modes(
         'plugins'                                     => \&plugins, 
-        'schedules'                                   => \&schedules, 
+        'schedules'                                   => \&schedules,
+        'schedules_config'                            => \&schedules_config,  
         'default'                                     => \&default,
         'subscribe'                                   => \&subscribe,
         'restful_subscribe'                           => \&restful_subscribe,
@@ -12616,6 +12617,10 @@ sub schedules {
     else { 
         return ''; 
     }
+}
+
+sub schedules_config { 
+    return "thar we rrr!"; 
 }
 
 sub DESTROY {

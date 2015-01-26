@@ -175,7 +175,9 @@ sub translate {
             $q->param('plugin', $plugin); 
             $q->param('prm',    $prm); 
         }
-        
+        elsif ( $info =~ m/^schedules_config/ ) {
+            $q->param('flavor',      'schedules_config'); 
+        }
         elsif ( $info =~ m/^schedules/ ) {
             my ( $flavor, $schedule, $list, $output_mode ) = split( '/', $info, 4 );
             $q->param('flavor',      'schedules'); 

@@ -10,6 +10,10 @@ Key:
 [*] Naw...
 [?] Someday
 
+
+||= -> //= Insist on v5.10
+
+
 [ ] Things for CGI::App migration: 
 
 
