@@ -22,7 +22,7 @@ use Try::Tiny;
 
 use vars qw($AUTOLOAD);
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_Digests};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_Digests};
 
 my %allowed = ( test => 0, );
 
@@ -103,6 +103,10 @@ sub _init {
         undef( $self->{ls_obj} );
         $self->{ls_obj} = DADA::MailingList::Settings->new( { -list => $self->{list} } );
     }
+    else { 
+        warn 'digest_last_archive_id_sent ' . $self->{ls_obj}->param('digest_last_archive_id_sent') 
+        . '(' . scalar(localtime($self->archive_time_2_ctime($self->{ls_obj}->param('digest_last_archive_id_sent')))) .')';
+    }
 
     $self->{a_obj} = DADA::MailingList::Archives->new( { -list => $self->{list} } );
 
@@ -152,6 +156,14 @@ sub send_digest {
     my $self = shift;
 
     my $r;
+
+   my $digest_last_archive_id_sent = $self->{ls_obj}->param('digest_last_archive_id_sent') || undef;
+    if(defined($digest_last_archive_id_sent)){ 
+        $r .= 'Last Archived Message ID Sent: ' . $digest_last_archive_id_sent . "\n";
+    }
+    else { 
+        $r .= 'No archived messages sent as a digest.' . "\n"; 
+    }
 
     if ( $self->should_send_digest ) {
 
