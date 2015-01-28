@@ -1,0 +1,61 @@
+=pod
+
+=head1
+
+=head1 FastCGI Support
+
+Dada Mail now has full FastCGI support! FastCGI support is explained in detail here: 
+
+L<http://dadamailproject.com/d/features-fastcgi.pod.html>
+
+In a nutshell, FastCGI allows you to run Dada Mail in a persistent environment. A persistent environment cuts out much of the startup time that happens when running Dada Mail as CGI script. 
+
+This time-savings really comes apparent if you have a busy website, where Dada Mail is being accessed many times a second. Switching between the two ways Dada Mail can be run (CGI and FastCGI) is fairly easy to do, and we suggest trying out Dada Mail has a plain CGI app, before moving to running it as a FastCGI app.
+
+=head1 CGI::Application-based
+
+Dada Mail has been moved fully to the CGI::Application framework. This is one of the reasons we've been able to have FastCGI support. PSGI support could theoretically be easy to support as well, with a little tinkering. 
+
+More on C<CGI::Application>: 
+
+L<https://metacpan.org/pod/CGI::Application>
+
+=head1 Cronjobs
+
+Cronjobs in v8 are vastly simplified, with only one cronjob needing to be set, no matter what features and plugins you have enabled with Dada Mail. 
+
+Cronjobs created prior to v8 are no longer used in Dada Mail, so if you are upgrading, you will need to reset your cronjobs: remove the one's that existed for Dada Mail, and add the one cronjob that's now needed. 
+
+The cronjob that's needed will be shown at the last screen of the included installer, as well as in the List Control Panel, under: B<App Information -- Schedued Jobs> 
+
+This cronjob can be customized, and the output of the cronjob can be logged by Dada Mail - both these options can be configured in the Installer as well. See the docs on Scheduled Jobs in Dada Mail: 
+
+L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
+
+=head1 Supported Backends
+
+=head2 SQL
+
+All the current SQL backends: SQLite, MySQL and PostgreSQL are still supported, but the Default Backend has finally been retired. 
+
+=head1 Plugins
+
+Plugins work entirely different in v8 of Dada Mail. In prior versions, plugins were basically smaller apps that worked independently from the main Dada Mail app (mail.cgi). In v8, this isn't the case and plugins work as actual plugins to the main app. This is to keep the infrastructure of Dada Mail as simple as possible - there's only one app (run persistently if running under FastCGI) that needs to be dealt with. 
+
+=head2 Removed Plugins
+
+=head3 Mailing Monitor (mailing_monitor.cgi) 
+
+The functionality of the C<mailing_monitor.cgi> plugin has been folded into the code of Dada Mail - no plugin needed. 
+
+=head3 Beatitude (scheduled_mailings.pl) 
+
+Beatitude, after many years of being marked as, "deprecated", has been removed from Dada Mail. The biggest problem is that the internal architecture of Beatitude was just not going to work as a FastCGI app. 
+
+Scheduling Mass Mailings is support within the core of Dada Mail, although recurring schedules (run a message every day or every week, etc) are still not supported.
+
+=head3 default_mass_mailing_messages.cgi
+
+The core of Dada Mail now supports Stationary, which allows you to set multiple messages that you can use to start a new draft. 
+
+=cut

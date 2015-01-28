@@ -16,7 +16,7 @@ BEGIN {
     push @INC,$b__dir.'5/lib/perl5',$b__dir.'5/lib/perl5/x86_64-linux-thread-multi',$b__dir.'lib',map { $b__dir . $_ } @INC;
 }
 
-use DADA::Config 7.0.0 qw(!:DEFAULT);
+use DADA::Config 8.0.0 qw(!:DEFAULT);
 use DADA::App::Guts; 
 use DADA::MailingList::Settings;
 use DADA::Profile::Htpasswd;

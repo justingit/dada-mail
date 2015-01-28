@@ -31,7 +31,7 @@ delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 # that are set here are *optional*
 #---------------------------------------------------------------------#
 
-use DADA::Config 7.0.0;
+use DADA::Config 8.0.0;
 
 use Fcntl qw(
   O_CREAT
@@ -472,13 +472,15 @@ EOF
 
 sub admin_cgi_manual_start_ajax {
 
+    my $q = shift; 
+    
     $run_list        = $list;
     $verbose         = 1;
     $check_deletions = 1;
 
     my $r = '';
     $r .= '<pre>';     # DEV no like.
-    $r .= start();
+    $r .= start($list);
     $r .= '</pre>';    # DEV no like.
     return ( {}, $r );
 }

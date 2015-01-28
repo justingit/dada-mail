@@ -1,0 +1,44 @@
+=pod
+
+=head1 FastCGI Support
+
+Dada Mail can now be run under FastCGI. 
+
+=head2 Configuring Dada Mail to run under FastCGI
+
+When installing Dada Mail, look under B<Advanced Configuration (Optional)>
+
+Check the option, B<Configure FastCGI Options>. Then, check the option, B<Run Dada Mail under FastCGI>. Done! 
+
+Doing so will run Dada Mail using the included, C<mail.fcgi> script, rather than C<mail.cgi>
+
+=head1 Requirements
+
+Dada Mail running under FastCGI does have additional requirements, which can usually be detected by Dada Mail, during installation. The following CPAN Modules will need to be installed - they're not bundled with Dada Mail: 
+
+=over
+
+=item * CGI::Fast
+
+=item * FCGI
+
+=back
+
+Your web hosting account also needs to be support running Perl apps under FastCGI. 
+
+=head1 Feedback
+
+FastCGI support for Dada Mail is new! We expect some growing pains. We would love to hear your feedback on how Dada Mail is running under FastCGI. Please contact us directly: 
+
+L<http://dadamailproject.com/contact/>
+
+Start a new thread, 
+
+L<http://dadamailproject.com/support/boards>
+
+or sign up and post to the dadadev mailing list: 
+
+L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
+
+=end
+

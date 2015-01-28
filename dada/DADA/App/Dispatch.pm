@@ -196,7 +196,7 @@ sub translate {
                 $q->param('list',        $list);
             }
             if(!defined($output_mode)){
-                $q->param('output_mode', 'verbose');
+                $q->param('output_mode', '_verbose');
             }
             else { 
                 $q->param('output_mode', $output_mode);

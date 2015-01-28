@@ -2061,10 +2061,19 @@ sub check_list_security {
 	
 	require DADA::App::Session; 
 	
+	
 	my $dada_session = DADA::App::Session->new();
 	my ($admin_list, $root_login, $checksout, $error_msg) = $dada_session->check_session_list_security(%args); 
-
-	warn 'returning: ' . Dumper([$admin_list, $root_login, $checksout, $error_msg]); 
+    
+    if($checksout == 1){ 
+        if (install_dir_around() == 1 ) {
+                $checksout = 0; 
+                $error_msg = user_error( { -error => 'install_dir_still_around' } );
+                $root_login = 0; 
+                $admin_list = undef; 
+        }
+    }
+#	warn 'returning: ' . Dumper([$admin_list, $root_login, $checksout, $error_msg]); 
 	return ($admin_list, $root_login, $checksout, $error_msg); 
 
 }

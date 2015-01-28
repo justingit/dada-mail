@@ -33,7 +33,7 @@ use Carp qw(carp croak);
 
 #---------------------------------------------------------------------#
 
-use DADA::Config 7.0.0;
+use DADA::Config 8.0.0;
 
 use DADA::App::ScreenCache;
 my $c = DADA::App::ScreenCache->new;
@@ -12510,13 +12510,7 @@ sub what_is_dada_mail {
 
 }
 
-sub END {
-
-    if ( $DADA::Config::MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION == 1 ) {
-        require DADA::Mail::MailOut;
-        DADA::Mail::MailOut::monitor_mailout( { -verbose => 0 } );
-    }
-}
+sub END {}
 
 sub plugins { 
     my $self = shift; 
@@ -12561,7 +12555,7 @@ sub schedules {
     
     my $list        = $q->param('list')           || '_all'; 
     my $schedule    = $q->param('schedule')       || '_all'; 
-    my $output_mode = $q->param('output_mode') || 'verbose'; 
+    my $output_mode = $q->param('output_mode')    || '_verbose'; 
     my $for_colorbox = $q->param('for_colorbox') || 0; 
     
     
@@ -12616,7 +12610,13 @@ sub schedules {
         $r .= 'No such schedule:"' . $schedule . '"'; 
     }
     
-    if($output_mode ne 'silent'){ 
+    if($DADA::Config::SCHEDULED_JOBS_OPTIONS->{'log'} == 1) {
+        require       DADA::Logging::Usage;
+        my $log = new DADA::Logging::Usage;
+           $log->cron_log($r);     
+    }
+    
+    if($output_mode ne '_silent'){ 
         $self->header_props({-type => 'text/plain'}); 
         if($for_colorbox == 1){ 
             return '<pre>' . $r . '</pre>';
@@ -12630,7 +12630,9 @@ sub schedules {
     }
 }
 
-sub scheduled_jobs { 
+sub scheduled_jobs {
+    
+    
     my $self = shift; 
     my $q = $self->query; 
     
@@ -12640,6 +12642,8 @@ sub scheduled_jobs {
     );
     if(!$checksout){ return $error_msg; }
         
+    my $curl_location      = `which curl`;
+    
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
@@ -12651,14 +12655,15 @@ sub scheduled_jobs {
             },
             -expr => 1,
             -vars   => {
-                scheduled_jobs_flavor => $DADA::Config::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor}, 
+                scheduled_jobs_flavor => $DADA::Config::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor},
+                curl_location => $curl_location,  
             },
         }
     );
 }
 
 sub DESTROY {
-   warn 'DADA::App::DESTROY called.';
+   # warn 'DADA::App::DESTROY called.';
 }
 
 

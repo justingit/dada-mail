@@ -11,18 +11,14 @@ BEGIN {
       map { $b__dir . $_ } @INC;
 }
 
-use CGI; 
+use CGI;
 use DADA::App;
-use DADA::App::Dispatch; 
+use DADA::App::Dispatch;
 
-my $d = DADA::App::Dispatch->new; 
-my $q = new CGI; 
-   $q = $d->prepare_cgi_obj($q); 
-   
-my $dadamail = new DADA::App(
-    QUERY => $q,
-); 
-$dadamail->run();
+my $d = DADA::App::Dispatch->new;
+my $q = new CGI;
+   $q = $d->prepare_cgi_obj($q);
 
-
+my $dadamail = new DADA::App( QUERY => $q, );
+   $dadamail->run();
 

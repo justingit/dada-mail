@@ -73,6 +73,26 @@ sub mj_log {
 	}	
 }
 
+sub cron_log {
+ 
+	my $self           = shift; 
+    my $r              = shift;  
+	
+	my $cron_log = make_safer($DADA::Config::LOGS . '/cronjob_output.txt'); 
+	
+    if(open(CRON_LOG, '>>:encoding(' . $DADA::Config::HTML_CHARSET . ')',  $cron_log)){ 
+		flock(CRON_LOG, LOCK_SH);
+		print CRON_LOG "\n" . $r . "\n";
+		close(CRON_LOG) or warn $!; 
+	    return 1; 
+	}else{ 
+		warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER - I can't open the cronjob log at '$cron_log': $!";
+	    return 0; 
+	}
+}
+
+
+
 
 sub trace { 
 

@@ -887,26 +887,6 @@ to, B<HTML Template>.
 
 =head2 Program Behavior
 
-=head2 $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION 
-
-If set to, B<1>, Dada Mail's mailing monitor will automatically be called. See:
-
-L<http://dadamailproject.com/support/documentation/FAQ-mailing_list_sending.pod.html> 
-
-For more information. 
-
-It's suggested that you use the, B<Monitor Mailing> plugin that's mentioned in the above documentation, as this method has less testing  done to it, but if you can't be bothered (and for the sake of variety), this method is available. 
-
-If you do enable this option, every single time the, I<mail.cgi> program is run, the mailing monitor will be run just before the program quits. This makes things convenient, since you can you just have a cronjob set to run Dada Mail: 
-
- */5 * * * * /usr/bin/curl http://example.com/cgi-bin/dada/mail.cgi > /dev/null
-
-or, 
-
- */5 * * * * cd /home/youraccount/cgi-bin/dada/ /usr/bin/perl ./mail.cgi > /dev/null
-
-And you have a mailing monitor running, without any extra scripts to installed. It may also be convenient, if you want the mailing monitor that the C<auto_pick.pl> extension provides, but you don't have access to, or don't know how to set a cronjob. 
-
 
 =head2 $ENFORCE_CLOSED_LOOP_OPT_IN
 

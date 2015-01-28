@@ -254,15 +254,6 @@ If you do navigate away by mistake, it's not the end of the world, just navigate
 
 Log into your list via the list control panel. Under Send a Message, click on, B<Monitor Your Mailings>. This screen will give you a list of the mass mailings currently active. Click on the subject of the mass mailing you'd like to monitor. And, you're back.
 
-
-=head4 Setting, $MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION to, 1
-
-Another option, is to set the global config variable, C<$MONITOR_MAILOUTS_AFTER_EVERY_EXECUTION> to, B<1>. 
-
-When set to, B<1> after every time Dada Mail is run via the, C<mail.cgi> script, the mailing monitor will be run, exactly like the C<Mailing Monitor> plugin and monitor your mailings. This is somewhat of an imperfect option for you, but could come in handy if you cannot or do not know how to set up a cronjob. 
-
-The problem is, you never are guaranteed when Dada Mail is going to be run, so your mailing monitoring will be somewhat lopsided. 
-
 =head4 Bridge
 
 If you're using the Bridge plugin, it also has the same functionality as the B<Mailing Monitor> plugin built in. 

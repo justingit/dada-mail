@@ -1,0 +1,80 @@
+=pod
+
+=head1 Scheduled Jobs for Dada Mail
+
+Some of Dada Mail's more powerful features depend on a cronjob to be run on a periodic schedule. 
+
+Only one cronjob currently needs to be run for all the features in Dada Mail needs a scheduled job to run.just a command to grab a URL (curl, wget, etc) and the URL to access.
+
+Here's an exmaple: 
+
+L<http://example.com/cgi-bin/dada/mail.cgi/_sched513A3F128C5C41EC/_all/_all/_verbose/>
+
+C<http://example.com/cgi-bin/dada/mail.cgi> is just the URL to your Dada Mail, 
+
+A full cronjob would look like this: 
+
+    */5 * * * * /usr/bin/curl  -s --get --url http://example.com/cgi-bin/dada/mail.cgi/_sched513A3F128C5C41EC/_all/_all/_silent/
+
+C<*/5 * * * * > sets the schedule to run this job every 5 minutes, 
+
+C</usr/bin/curl  -s --get --url> is the curl command, with different paramaters passed to grab the URL and, 
+
+C<http://example.com/cgi-bin/dada/mail.cgi/_sched513A3F128C5C41EC/_all/_all/_silent/> 
+
+is the URL we want to grab. We've modified it slightly from what was originally shown (C<_silent>, instead of, C<_verbose>), which we'll explain below. 
+
+=head2 Schedule Flavor
+
+C<_sched513A3F128C5C41EC> is an individual B<flavor> for our specific install of Dada Mail. It's meant to be somewhat unique, so that someone nefarious doesn't start running all the schedules for all Dada Mail installations it can find. 
+
+This flavor can be set when installing Dada Mail via the Dada Mail Installer. It can also be set manually in your C<.dada_config> file, in the C<SCHEDULED_JOBS_OPTIONS> hashref. Look for the C<scheduled_jobs_flavor> paramater.
+
+If you would like to customize, the value of this paramater should only contain letters, numbers and underscores. Anything too tricky will foil the run mode dispatch code of Dada Mail. 
+
+=head2 Job To Run
+
+The next value in the path, C<_all> describes which jobs to run. C<_all> is special: it runs all the jobs can  be run. 
+
+You can also modify this to run a specific job. The following are also supported: 
+
+=over
+
+=item * mass_mailing_monitor
+
+Checks up on the status and health of any mass mailings currently going out. This used to be the job (prior to v8) of the Mailing Monitor plugin
+
+=item * scheduled_mass_mailings
+
+This job checks to see if any mass mailings that are run at a schedule time need to go out. 
+
+=item * bridge
+
+This job runs jobs for the Bridge plugin. This be to check for any awaiting discussion messages that are awaiting to be sent out, or if a digest message should be created and sent. 
+
+=item * bounce_handler
+
+This job runs the Bounce Handler, which checks the bounce handler's email account for any awaiting bounced messages to process. 
+
+=back
+
+=head2 Mailing List to Run
+
+The next value in the path, C<_all>  (and then second C<_all> found) describes which list to run jobs for. C<_all> is specially, as it will run jobs for all the mailing lists you have. If you would like to run jobs for just one mailing list, you can change this paramater the list short name of that list. 
+
+=head2 Job Output
+
+By Default, this is set to, C<_verbose> which will print out the output for all the jobs run. If you would like to suppress this, you can by setting this to, C<_silent>. 
+
+Another option is to supress the output in the cronjob itself, like this: 
+
+=head2 Running the scheduled jobs via the command line. 
+
+There's no special command-line way to run these jobs, although you can invoke Dada Mail on the command line easy enough. The following: 
+
+    cd /home/youraccount/public_html/cgi-bin/dada; /usr/bin/perl ./mail.cgi flavor=_sched schedule=_all list=_all output_mode=_verbose
+
+Will do the same thing, as our initial example for curl. 
+
+
+=cut

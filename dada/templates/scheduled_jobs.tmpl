@@ -10,18 +10,29 @@
     
 <fieldset> 
     <legend> 
-        Scheduled Job URL
+        Scheduled Jobs URL:
     </legend>
     
-    <input type="text" class="full" value="<!-- tmpl_var S_PROGRAM_URL -->/<!-- tmpl_var scheduled_jobs_flavor escape="HTML" -->/_all/_all/_verbose/" />
+    <div class="clearskiesbox" style="width:90%"> 
+        <h1>
+            <!-- tmpl_var S_PROGRAM_URL -->/<!-- tmpl_var scheduled_jobs_flavor escape="HTML" -->/_all/_all/_verbose/
+        </h1> 
+    </div> 
 
+    <p> 
+        Set this URL to be fetched by a scheduled task (cronjob) on a recurring schedule (~5 minutes)
+    </p>
+    
+    <p>
+        <label for="cronjob_url">Here's an example of a cronjob, using the curl command:</label> <br /> 
+    <input type="text" class="full" id="cronjob_url" value="<!-- tmpl_var name="curl_location" default="/cannot/find/curl" -->  -s --get --url <!-- tmpl_var S_PROGRAM_URL -->/<!-- tmpl_var scheduled_jobs_flavor escape="HTML" -->/_all/_all/_verbose/" />
+    </p>
+    
 </fieldset> 
 
     <div style="text-align:center">
         <input type="hidden" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" id="s_program_url" /> 
         <input type="hidden" name="sched_flavor" id="sched_flavor" value="<!-- tmpl_var scheduled_jobs_flavor escape="HTML" -->" /> 
-        
-        
 	    <input type="button" value="Manually Run Scheduled Jobs" class="processing bigger_button manually_run_scheduled_jobs" />
     </div>
 </form>

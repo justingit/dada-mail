@@ -1,4 +1,4 @@
-#!/usr/bin/perlml
+#!/usr/bin/perl
 
 use FindBin;
 use lib "$FindBin::Bin/";

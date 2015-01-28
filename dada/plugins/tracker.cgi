@@ -15,7 +15,7 @@ BEGIN {
       map { $b__dir . $_ } @INC;
 }
 
-use DADA::Config 7.0.0 qw(!:DEFAULT);
+use DADA::Config 8.0.0 qw(!:DEFAULT);
 use DADA::Template::HTML;
 use DADA::App::Guts;
 use DADA::MailingList::Settings;
