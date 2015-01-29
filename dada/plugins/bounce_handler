@@ -1,15 +1,16 @@
 #!/usr/bin/perl
 
 package bounce_handler;
+
 use strict;
 $|++;
 
 #---------------------------------------------------------------------#
-# bounce_handler.cgi
+# bounce_handler
 #
 # Documentation:
 #
-#  http://dadamailproject.com/d/bounce_handler.cgi.html
+#  http://dadamailproject.com/d/bounce_handler.html
 #
 #---------------------------------------------------------------------#
 
@@ -859,7 +860,7 @@ The usual action that is taken is to apply a B<score> to the email address that 
 
 =head1 Obtaining a Copy of the Plugin
 
-Bounce Handler is located in the, I<dada/plugins> directory of the main Dada Mail distribution, under the name, B<bounce_handler.cgi>
+Bounce Handler is located in the, I<dada/plugins> directory of the main Dada Mail distribution, under the name, B<bounce_handler>
 
 =head1 Requirements
 
@@ -919,7 +920,7 @@ B<Your Mailing List - List Information>
 
 (covered below)
 
-=item * chmod 755 the bounce_handler.cgi script
+=item * chmod 755 the bounce_handler script
 
 =item * visit the plugin via a web browser. 
 
@@ -1030,7 +1031,7 @@ Then, find these lines:
 
 
  #					{-Title      => 'Bounce Handler',
- #					 -Title_URL  => $PLUGIN_URL."/bounce_handler.cgi",
+ #					 -Title_URL  => $PLUGIN_URL."/bounce_handler",
  #					 -Function   => 'bounce_handler',
  #					 -Activated  => 1,
  #					},
@@ -1038,7 +1039,7 @@ Then, find these lines:
 Uncomment the lines, by taking off the, "#"'s: 
 
  					{-Title      => 'Bounce Handler',
- 					 -Title_URL  => $PLUGIN_URL."/bounce_handler.cgi",
+ 					 -Title_URL  => $PLUGIN_URL."/bounce_handler",
  					 -Function   => 'bounce_handler',
  					 -Activated  => 1,
  					},
@@ -1186,7 +1187,7 @@ Once the email address's B<Bounce Score> reaches the B<Threshold>, the email add
 
 Visit the plugin with the following query string, 
 
-L<http://example.com/cgi-bin/dada/plugins/bounce_handler.cgi?flavor=manually_enter_bounces>
+L<http://example.com/cgi-bin/dada/mail.cgi/plugins/bounce_handler/manually_enter_bounces>
 
 (C<manually_enter_bounces>) to enter a special debugging mode, where you can just paste in the source of a bounce message, 
 and see how Bounce Handler will handle it, without actually processing the message. 

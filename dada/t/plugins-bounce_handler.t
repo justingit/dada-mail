@@ -23,10 +23,10 @@ my $ls = DADA::MailingList::Settings->new({-list => $list});
 my $li = $ls->get; 
 
 
-do "plugins/bounce_handler.cgi"; 
+require plugins::bounce_handler; 
 
 
-ok(bounce_handler->test_sub() eq q{Hello, World!}); 
+ok(plugins::bounce_handler->test_sub() eq q{Hello, World!}); 
 
 my $test_msg = undef; 
 my $entity   = undef; 

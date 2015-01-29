@@ -11,6 +11,8 @@ use Carp qw(carp croak);
 use Try::Tiny;
 my $dbi_obj;
 
+my $t; 
+
 sub new {
     my $class = shift;
     my %args  = (
@@ -533,7 +535,8 @@ sub can_use_data_dumper {
 
 sub check_session_list_security {
 
-    warn 'at check_session_list_security'; 
+    warn 'at check_session_list_security'
+        if $t; 
     
     my $self = shift;
 

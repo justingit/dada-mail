@@ -251,7 +251,7 @@ Some of the plugins/extensions have additional configuration that will need to d
 
 One plugin, B<Bounce Handler>, also requires you to fill out the credentials for the Bounce Handler email account you need to set up to capture bounced emails. See the documentation on the Bounce Handler for more information: 
 
-L<http://dadamailproject.com/d/bounce_handler.cgi.html>
+L<http://dadamailproject.com/d/bounce_handler.html>
 
 =head2 WYSIWYG Editors
 

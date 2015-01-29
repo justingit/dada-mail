@@ -564,15 +564,9 @@ $ADMIN_MENU = [
 
 #					{
 #					-Title      => 'Bounce Handler',
-#					-Title_URL  => $PLUGIN_URL."/bounce_handler.cgi",
+#					-Title_URL  => $PLUGIN_URL."/bounce_handler",
 #					-Function   => 'bounce_handler',
 #					-Activated  => 1,
-#					},
-
-#					{-Title      => 'Scheduled Mailings',
-#					 -Title_URL  => $PLUGIN_URL."/scheduled_mailings.pl",
-#					 -Function   => 'scheduled_mailings',
-#					 -Activated  => 1,
 #					},
 
 #					{
@@ -582,19 +576,6 @@ $ADMIN_MENU = [
 #					-Activated  => 1,
 #					},
 
-#					{
-#					-Title      => 'Mailing Monitor',
-#					-Title_URL  => $PLUGIN_URL."/mailing_monitor.cgi",
-#					-Function   => 'mailing_monitor',
-#					-Activated  => 0,
-#					},
-
-#					{
-#					-Title      => 'Default Mass Mailing Messages',
-#					-Title_URL  => $PLUGIN_URL."/default_mass_mailing_messages.cgi",
-#					-Function   => 'default_mass_mailing_messages',
-#					-Activated  => 1,
-#					},
 
 #					{
 #					-Title      => 'Password Protect Directories',

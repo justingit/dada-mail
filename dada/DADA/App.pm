@@ -16,6 +16,9 @@ BEGIN {
 }
 use FindBin;
 use lib "$FindBin::Bin/../";
+use lib "$FindBin::Bin/../../";
+use lib "$FindBin::Bin/../../../";
+
 use lib "$FindBin::Bin/../DADA/perllib";
 
 BEGIN {
@@ -49,19 +52,6 @@ use Try::Tiny;
 use DADA::Template::HTML;
 
 #---------------------------------------------------------------------#
-
-
-my $plugins = {
-    'bounce_handler'               => { run_sub => \&bounce_handler::run, schedule_sub => \&bounce_handler::scheduled_task },
-    'bridge'                       => { run_sub => \&bridge::run, schedule_sub => \&bridge::scheduled_task },
-    'change_list_shortname'        => { run_sub => \&change_list_shortname::run },
-    'change_root_password'         => { run_sub => \&change_root_password::run },
-    'log_viewer'                   => { run_sub => \&log_viewer::run },
-    'password_protect_directories' => { run_sub => \&password_protect_directories::run },
-    'screen_cache'                 => { run_sub => \&screen_cache::run },
-    'tracker'                      => { run_sub => \&tracker::run },
-};
-
 
 sub setup {
 
@@ -12510,19 +12500,20 @@ sub what_is_dada_mail {
 
 }
 
-sub END {}
 
-sub plugins { 
+sub plugins {  
     my $self = shift; 
     my $q = $self->query(); 
     my $plugin = $q->param('plugin'); 
     my ($headers, $body);
-    
-
-    if(exists($plugins->{$plugin})){ 
+    if(exists($DADA::Config::PLUGINS_ENABLED->{$plugin})){ 
+        if($DADA::Config::PLUGINS_ENABLED->{$plugin} != 1) { 
+            return 'Plugin disabled.';
+        }
         eval { 
-            require 'plugins/' . $plugin . '.cgi'; 
-            ($headers, $body) = $plugins->{$plugin}->{run_sub}->($q); 
+            require 'plugins/' . $plugin; 
+            my $run_sub = '\&' . $plugin . '::run'; 
+            ($headers, $body) = $run_sub->($q); 
         };
         if(!$@){ 
             if ( exists( $headers->{-redirect_uri} ) ) {
@@ -12537,12 +12528,14 @@ sub plugins {
             }        
         }
         else { 
-            croak($@); 
+            return($@); 
         }
     }
     else { 
-        croak "plugin not registered."; 
+        return "plugin not registered."; 
     }
+    
+
 }
 
 
@@ -12569,11 +12562,13 @@ sub schedules {
         $r .= $dast->scheduled_mass_mailings($list); 
         undef($dast); 
     
-        for my $plugin(keys %$plugins) { 
-            if(exists($plugins->{$plugin}->{schedule_sub})) { 
+        for my $plugin(keys %$DADA::Config::PLUGINS_ENABLED) { 
+            if(exists($DADA::Config::PLUGINS_ENABLED->{$plugin})) { 
+                next if($DADA::Config::PLUGINS_ENABLED->{$plugin} != 1); 
                 eval { 
-                    require 'plugins/' . $plugin . '.cgi'; 
-                    $r .= $plugins->{$plugin}->{schedule_sub}->($list);                  
+                    require 'plugins/' . $plugin; 
+                    my $schedule_sub = '\&' . $plugin . '::schedule_sub'; 
+                    $r .= $schedule_sub->($list);                  
                 };
                 if($@) { 
                      $r .= $@; 
@@ -12588,24 +12583,23 @@ sub schedules {
     elsif($schedule eq 'scheduled_mass_mailings'){ 
         $r .= $dast->scheduled_mass_mailings($list); 
     }
-    elsif($schedule eq 'bridge'){ 
-        eval { 
-            require 'plugins/bridge.cgi'; 
-            $r .= $plugins->{bridge}->{schedule_sub}->($list);                  
-        };
-        if($@) { 
-             $r .= $@; 
+    elsif($schedule eq 'bridge'
+    ||    $schedule eq 'bounce_handler'    
+    ){ 
+        if($DADA::Config::PLUGINS_ENABLED->{$schedule} != 1) { 
+            #.... 
         }
-    }
-    elsif($schedule eq 'bounce_handler'){ 
-        eval { 
-            require 'plugins/bounce_handler.cgi'; 
-            $r .= $plugins->{bounce_handler}->{schedule_sub}->($list);                  
-        };
-        if($@) { 
-             $r .= $@; 
+        else { 
+            eval { 
+                require 'plugins/' . $schedule; 
+                my $run_sub = '\&' . $schedule . '::scheduled_task'; 
+                $r .= $run_sub->($q);
+            };
+            if($@) { 
+                 $r .= $@; 
+            }
         }
-    }
+    }    
     else { 
         $r .= 'No such schedule:"' . $schedule . '"'; 
     }
@@ -12665,6 +12659,8 @@ sub scheduled_jobs {
 sub DESTROY {
    # warn 'DADA::App::DESTROY called.';
 }
+
+sub END {}
 
 
 1;

@@ -304,7 +304,7 @@ The Bridge Plugin can also be set up to provide announce-only message sending fr
 
 See the B<Bounce Handler> plugin: 
 
-http://dadamailproject.com/support/documentation/bounce_handler.cgi.html
+http://dadamailproject.com/support/documentation/bounce_handler.html
 
 =head2 How do I create the HTML Subscription form code to place on my web pages to allow people to subscribe to my list? 
 
@@ -818,7 +818,7 @@ since you I<are not> sending messages through this host's mail servers.
 Invalid email addresses on your list just make mass mailing go slower. Use the bounce handler 
 to remove those addresses from your mailing list: 
 
-L<./bounce_handler.cgi.html>
+L<./bounce_handler.html>
 
 =item * Adjust your batch settings
 

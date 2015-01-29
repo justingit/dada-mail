@@ -64,17 +64,17 @@ my $admin_menu_end_cut = quotemeta(
 );
 
 my $plugins_extensions = {
-    change_root_password          => { installed => 0, loc => '../plugins/change_root_password.cgi' },
-    screen_cache                  => { installed => 0, loc => '../plugins/screen_cache.cgi' },
-    log_viewer                    => { installed => 0, loc => '../plugins/log_viewer.cgi' },
-    tracker                       => { installed => 0, loc => '../plugins/tracker.cgi' },
-    bridge                        => { installed => 0, loc => '../plugins/bridge.cgi' },
-    bounce_handler                => { installed => 0, loc => '../plugins/bounce_handler.cgi' },
+    change_root_password          => { installed => 0, loc => '../plugins/change_root_password' },
+    screen_cache                  => { installed => 0, loc => '../plugins/screen_cache' },
+    log_viewer                    => { installed => 0, loc => '../plugins/log_viewer' },
+    tracker                       => { installed => 0, loc => '../plugins/tracker' },
+    bridge                        => { installed => 0, loc => '../plugins/bridge' },
+    bounce_handler                => { installed => 0, loc => '../plugins/bounce_handler' },
+    password_protect_directories  => { installed => 0, loc => '../plugins/password_protect_directories' },
+    change_list_shortname         => { installed => 0, loc => '../plugins/change_list_shortname' },
+    global_config                 => { installed => 0, loc => '../plugins/global_config' },
     multiple_subscribe            => { installed => 0, loc => '../extensions/multiple_subscribe.cgi' },
     blog_index                    => { installed => 0, loc => '../extensions/blog_index.cgi' },
-    password_protect_directories  => { installed => 0, loc => '../plugins/password_protect_directories.cgi' },
-    change_list_shortname         => { installed => 0, loc => '../plugins/change_list_shortname.cgi' },
-    global_config                 => { installed => 0, loc => '../plugins/global_config.cgi' },
 };
 $plugins_extensions->{change_root_password}->{code} = q{#					{
 #					-Title      => 'Change the Program Root Password',
@@ -143,7 +143,7 @@ $plugins_extensions->{global_config}->{code} = q{#					{
 
 $plugins_extensions->{multiple_subscribe}->{code} = q{#					{
 #					-Title      => 'Multiple Subscribe',
-#					-Title_URL  => $EXT_URL."/multiple_subscribe.cgi",
+#					-Title_URL  => $EXT_URL."/multiple_subscribe",
 #					-Function   => 'multiple_subscribe',
 #					-Activated  => 1,
 #					},};

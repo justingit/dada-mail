@@ -10,6 +10,11 @@
 
 <form method="post"> 
 
+    <input type="hidden" name="flavor"  value="plugins" />
+    <input type="hidden" name="plugin"  value="change_root_password" />
+    <input type="hidden" name="prm"     value="change_password" />
+    <input type="hidden" name="process" value="true" />
+
 <!--tmpl_if old_root_pass_incorrect --> 
 
     <p class="error">
@@ -53,9 +58,5 @@
  <input type="submit" class="processing" value="Change <!-- tmpl_var PROGRAM_NAME --> Root Password" />
 </div>
 <div class="floatclear"></div>
-
-<input type="hidden" name="f"       value="change_password" />
-<input type="hidden" name="process" value="true" />
-
 
 </form> 

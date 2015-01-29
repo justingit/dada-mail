@@ -33,9 +33,8 @@ sub run {
         -cgi_obj         => $q,
         -Function        => 'view_list_settings'
     );
-    
     if(!$checksout){ 
-        return $error_msg; 
+        return ({}, $error_msg); 
     }
     
     
@@ -59,8 +58,7 @@ sub run {
             -list_settings_vars_param => { -list => $list, -in_order => 1, i_know_what_im_doing => 1 },
         }
     );
-    #e_print($scrn); 
-    return $scrn;
+    return ({}, $scrn);
  
 }
 

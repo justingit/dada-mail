@@ -151,7 +151,7 @@ and perhaps have some sort of fallback, so that mail just doesn't stop.
 	
 	Just need to figure out the subscribe stuff. 
 	Maybe the Appliation URL is something like: 
-	http://example.com/cgi-bin/dada/plugins/bounce_handler.cgi/sns/list_name
+	http://example.com/cgi-bin/dada/mail.cgi/plugins/bounce_handler/sns/list_name
 	
 
 [ ] title breadcrumbs:  Message Archives » View Archive - has no subject and, "View Archive" is not a link. 

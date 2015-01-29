@@ -35,7 +35,15 @@ my $Plugin_Config = {
 
 my $admin_list; 
 my $root_login; 
-my $list; 
+my $list;
+my $ls; 
+
+sub reset_globals {
+    $admin_list = undef;
+    $root_login = undef;
+    $list       = undef;
+    $ls         = undef; 
+}
 
 
 
@@ -46,7 +54,9 @@ run()
   unless caller();
 
 sub run { 
-	cgi_main(); 
+    reset_globals(); 
+    my $q = shift; 
+	cgi_main($q); 
 }
 sub init_vars {
 # DEV: This NEEDS to be in its own module - perhaps DADA::App::PluginHelper or something?
@@ -70,50 +80,46 @@ sub init_vars {
 
 sub cgi_main {
 
+    my $q = shift; 
+
     ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'bounce_handler'
+        -Function => 'global_config'
     );
 
     $list = $admin_list;
+    $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
-    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get();
-
-    my $flavor = $q->param('f') || 'cgi_default';
+    my $prm = $q->param('prm') || 'cgi_default';
     my %Mode = (
-
         'cgi_default'                => \&cgi_default,
-'reconfigure'                => \&reconfigure, 
-
+        'reconfigure'                => \&reconfigure, 
     );
 
-    if ( exists( $Mode{$flavor} ) ) {
-        $Mode{$flavor}->();    #call the correct subroutine
+    if ( exists( $Mode{$prm} ) ) {
+        return $Mode{$prm}->($q);    #call the correct subroutine
     }
     else {
-        &cgi_default;
+         return cgi_default($q);
     }
 }
 
 
 
 sub cgi_default {
-
-    # This will take care of all out security woes
+    my $self = shift; 
+    
+    
     my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'global_config'
     );
+    return ({}, $error_msg) if !$checksout; 
+        
     my $list = $admin_list;
-
-    # get the list information
-    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-    my $li = $ls->get;
-
+    
     my $data = '';
     if ( !$q->param('process') ) {
-
 	    require DADA::Template::Widgets;
 	    my $scrn = DADA::Template::Widgets::wrap_screen(
 	        {
@@ -133,14 +139,13 @@ sub cgi_default {
 	            },
 	        }
 	    );
-	    e_print($scrn);
-
-
+	    return({}, $scrn);
     }
 }
 
 sub reconfigure { 
 	
+	my $q = shift; 
 	my $installer_url            = installer_url(); 
 	my $found_install_dir        = 0; 
 	my $moved_installer_dir_back = 0; 
@@ -163,12 +168,13 @@ sub reconfigure {
 		}
 	}
 	
-	if($found_install_dir == 1 && $moved_installer_dir_back == 1 && $chmoded_installer_script == 1){ 
-		print $q->redirect(-uri => $installer_url); 
-		return; 
+	if($found_install_dir == 1 
+	 && $moved_installer_dir_back == 1 
+	 && $chmoded_installer_script == 1
+	 ){ 
+		return({-redirect_uri => $installer_url}, undef);
 	}
 	else { 
-		
 		if($chmoded_installer_script == 0){ 
 			chmod_installer_script(0644);
 		}
@@ -196,8 +202,8 @@ sub reconfigure {
 	            },
 	        }
 	    );
-	    e_print($scrn);
-	}	
+	    return ({}, $scrn);
+	}
 }
 
 sub installer_dir { 
@@ -230,6 +236,7 @@ sub installer_dir {
 }
 
 sub move_installer_dir_back { 
+    
 	my $installer_dir = shift; 
 	my $current_installer_dir_abs = make_safer($FindBin::Bin . '/../' . $installer_dir); 
 	my $future_installer_dir_abs  = make_safer($FindBin::Bin . '/../' . 'installer'); 

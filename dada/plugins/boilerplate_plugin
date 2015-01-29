@@ -1,5 +1,5 @@
 #!/usr/bin/perl
-package boilerplate;
+package boilerplate_plugin;
 use strict;
 
 use FindBin;
@@ -20,9 +20,9 @@ use DADA::MailingList::Settings;
 run()
   unless caller();
 
-sub default {
-
-    # This will take care of all out security woes
+sub run {
+    my $q = shift; 
+    
     my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'boilerplate'

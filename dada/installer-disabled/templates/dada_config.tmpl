@@ -321,6 +321,20 @@ $MANDRILL_OPTIONS = {
 =cut
 <!-- /tmpl_if -->
 
+$PLUGINS_ENABLED = {
+    boilerplate_plugin           => <!-- tmpl_var install_boilerplate_plugin           default="0" -->,
+    tracker                      => <!-- tmpl_var install_tracker                      default="1" -->,
+    bounce_handler               => <!-- tmpl_var install_bounce_handler               default="0" -->,
+    bridge                       => <!-- tmpl_var install_bridge                       default="0" -->,
+    change_root_password         => <!-- tmpl_var install_change_root_password         default="0" -->,
+    change_list_shortname        => <!-- tmpl_var install_change_list_shortname        default="0" -->,
+    password_protect_directories => <!-- tmpl_var install_password_protect_directories default="0" -->,
+    log_viewer                   => <!-- tmpl_var install_log_viewer                   default="1" -->,
+    screen_cache                 => <!-- tmpl_var install_screen_cache                 default="1" -->,
+    global_config                => <!-- tmpl_var install_global_config                default="0" -->,
+    view_list_settings           => <!-- tmpl_var install_view_list_settings           default="0" -->,
+};
+
 $PLUGIN_CONFIGS = { 
 
 	Bounce_Handler => {
@@ -331,9 +345,6 @@ $PLUGIN_CONFIGS = {
 		USESSL                      => <!-- tmpl_var bounce_handler_USESSL default="0"-->,
 		AUTH_MODE                   => <!-- tmpl_var bounce_handler_AUTH_MODE default="'BEST'"-->,
 		Plugin_Name                 => <!-- tmpl_var bounce_handler_Plugin_Name default="'Bounce Handler'"-->,
-		Plugin_URL                  => <!-- tmpl_var bounce_handler_Plugin_URL default="undef"-->,
-		Allow_Manual_Run            => <!-- tmpl_var bounce_handler_Allow_Manual_Run default="1"-->,
-		Manual_Run_Passcode         => <!-- tmpl_var bounce_handler_Manual_Run_Passcode default="undef"-->,
         Enable_POP3_File_Locking    => <!-- tmpl_var bounce_handler_Enable_POP3_File_Locking default="undef"-->,
 		Log                         => undef,
 		MessagesAtOnce              => <!-- tmpl_var bounce_handler_MessagesAtOnce default="100"-->,
@@ -343,21 +354,12 @@ $PLUGIN_CONFIGS = {
 	},
 
 	Beatitude => {
-
 		Plugin_Name                 => undef,
-		Plugin_URL                  => undef,
-		Allow_Manual_Run            => undef,
-		Manual_Run_Passcode         => undef,
 		Log                         => undef,
-
 	},
 	
 	Bridge => {
-
         Plugin_Name                         => <!-- tmpl_var bridge_Plugin_Name default="'Bridge'"-->,
-        Plugin_URL                          => <!-- tmpl_var bridge_Plugin_URL default="undef"-->,
-        Allow_Manual_Run                    => <!-- tmpl_var bridge_Allow_Manual_Run default="1"-->,
-        Manual_Run_Passcode                 => <!-- tmpl_var bridge_Manual_Run_Passcode default="undef"-->,
         MessagesAtOnce                      => <!-- tmpl_var bridge_MessagesAtOnce default="100"-->,
         Soft_Max_Size_Of_Any_Message        => <!-- tmpl_var bridge_Soft_Max_Size_Of_Any_Message default="1048576"-->,
         Max_Size_Of_Any_Message             => <!-- tmpl_var bridge_Max_Size_Of_Any_Message default="2621440"-->,
@@ -366,68 +368,39 @@ $PLUGIN_CONFIGS = {
         Enable_POP3_File_Locking            => <!-- tmpl_var bridge_Enable_POP3_File_Locking default="undef"-->,
         Check_List_Owner_Return_Path_Header => <!-- tmpl_var bridge_Check_List_Owner_Return_Path_Header default="undef"-->,
         Check_Multiple_Return_Path_Headers  => <!-- tmpl_var bridge_Check_Multiple_Return_Path_Headers default="undef"-->,
-
     },
 
 	Tracker => {
-
 		Plugin_Name                         => undef,
-		Plugin_URL                          => undef,
 		Geo_IP_Db                           => undef,
-		
 	},
-
-	Mailing_Monitor => {
-
-		Plugin_Name                         => undef,
-		Plugin_URL                          => undef,
-		Allow_Manual_Run                    => undef,
-		Manual_Run_Passcode                 => undef,
-
-	},
-
-    log_viewer => {	
-
+    log_viewer => {
 		Plugin_URL                          => undef,
 		tail_command                        => undef,
-
-	},
-
-	default_mass_mailing_messages => {
-
-		Plugin_Name                         => undef,
-		Plugin_URL                          => undef,
-
 	},
 
 	password_protect_directories => {
-
 		Plugin_Name                         => undef,
 		Plugin_URL                          => undef,
 		Allow_Manual_Run                    => undef,
 		Manual_Run_Passcode                 => undef,
 		Base_Absolute_Path                  => undef, 
 		Base_URL                            => undef, 
-
 	},
 
     blog_index => {
-
 		Default_List                        => undef,
 		Entries                             => undef,
 		Style                               => undef,
 		Allow_QS_Overrides                  => undef,
-
 	}, 
 
 	multiple_subscribe => {	
-
 		Plugin_Name                         => undef,
 		Plugin_URL                          => undef,
-
 	},
-
 };
+
 <!-- tmpl_if cut_plugin_configs -->
 =cut
 # end cut for plugin configs

@@ -450,9 +450,9 @@ sub parse_all_bounces {
                     if ($@) {
 
                         warn
-"bounce_handler.cgi - irrecoverable error processing message. Skipping message (sorry!): $@";
+"bounce_handler - irrecoverable error processing message. Skipping message (sorry!): $@";
                         $log .=
-"bounce_handler.cgi - irrecoverable error processing message. Skipping message (sorry!): $@";
+"bounce_handler - irrecoverable error processing message. Skipping message (sorry!): $@";
 
                         $need_to_delete = 1;
 
