@@ -11030,7 +11030,6 @@ sub restore_lists {
 
         require DADA::MailingList::Archives;
 
-        require DADA::MailingList::SchedulesDeprecated;
 
         # No SQL veresion, so don't worry about handing over the dbi handle...
 
@@ -11061,16 +11060,6 @@ sub restore_lists {
                 }
             }
 
-            for my $r_list (@lists) {
-                if (   $q->param( 'restore_' . $r_list . '_schedules' )
-                    && $q->param( 'restore_' . $r_list . '_schedules' ) == 1 )
-                {
-                    my $mss =
-                      DADA::MailingList::SchedulesDeprecated->new( { -list => $r_list, -ignore_open_db_error => 1 } );
-                    $mss->{ignore_open_db_error} = 1;
-                    $report .= $mss->restoreFromFile( $q->param( 'schedules_' . $r_list . '_version' ) );
-                }
-            }
             require DADA::Template::Widgets;
             my $scrn = DADA::Template::Widgets::wrap_screen(
                 {
@@ -11091,20 +11080,12 @@ sub restore_lists {
                   DADA::MailingList::Archives->new( { -list => $l, -ignore_open_db_error => 1 } )
                   ;    #yeah, it's diff from MailingList::Settings - I'm stupid.
 
-                my $mss = DADA::MailingList::SchedulesDeprecated->new( { -list => $l, -ignore_open_db_error => 1 } );
 
                 $backup_hist->{$l}->{settings} = $ls->backupDirs
                   if $ls->uses_backupDirs;
                 $backup_hist->{$l}->{archives} = $la->backupDirs
                   if $la->uses_backupDirs;
 
-                # DEV: Is this returning what I think it's supposed to?
-                # Tests have to be written about this...
-                $backup_hist->{$l}->{schedules} = $mss->backupDirs
-                  if $mss->uses_backupDirs;
-
-  #	require Data::Dumper;
-  #	warn '$l: ' . $l . '$n: ' . $mss->{name} . " backup dirs: " . Data::Dumper::Dumper($backup_hist->{$l}->{schedules});
 
             }
 

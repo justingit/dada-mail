@@ -96,10 +96,6 @@ SKIP: {
 
 
 BEGIN{ use_ok('DADA::MailingList::Archives'); }
-BEGIN{ use_ok('DADA::MailingList::SchedulesDeprecated::MLDb'); }
-
-
-BEGIN{ use_ok('DADA::MailingList::SchedulesDeprecated'); }
 
 
 SKIP: {

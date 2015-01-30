@@ -335,61 +335,6 @@ L<http://dadamailproject.com/support/documentation/MailingList_Archives_PostgreS
 
 =back
 
-=head2 Scheduled Mailings
-
-Currently, Dada Mail supports only one type of backend for its scheduled mailings. Scheduled Mailings itself are created using the B<Beatitude> plugin. 
-
-The file type itself is also a DBM-based file format, with multiple fields for the value. The fields are managed a bit more sophisticatedly, using the CPAN, B<MLDBM>. The value saved is a serialized Perl complex data structure, that looks a bit like this: 
-
-    my %d_form_vals = (
-            message_name           => 'scheduled mailing', 
-            active                  => 0, 
-            mailing_date            => time, 
-            repeat_times            => 1, 
-            repeat_label            => 'days',
-            repeat_mailing          => 0,
-            only_send_to_list_owner => 0,
-            archive_mailings        => 0,
-            only_send_if_diff       => 0,
-            self_destruct           => 0, 
-                    
-            PlainText_ver => {
-                               source                    => 'from_text',
-                               use_email_template        => 1,
-                               only_send_if_defined      => 0,
-                               grab_headers_from_message => 0, 
-                               checksum                  => undef, 
-                               
-                             }, 
-            HTML_ver      => { 				 
-                               source                    => 'from_text',
-                               use_email_template        => 1,
-                               only_send_if_defined      => 0,
-                               grab_headers_from_message => 0, 
-                               checksum                  => undef, 
-                                
-                             },
-            attachments   => [],
-        ); 
-
-See Also: 
-
-=over
-
-=item * Beatitude Plugin
-
-http://dadamailproject.com/support/documentation/scheduled_mailings.pl.html
-
-=item * DADA::MailingList::SchedulesDeprecated
-
-http:///dadamailproject.com/support/documentation/MailingList_Schedules.pm.html
-
-=item *  DADA::MailingList::SchedulesDeprecated::MLDb
-
-http://dadamailproject.com/support/documentation/MailingList_Schedules_MLDb.pm.html
-
-=back
-
 =head2 Backups
 
 By default, automated backups are created for the List Settings, Archives and Schedules backends.
