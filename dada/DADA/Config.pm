@@ -126,10 +126,10 @@ $FILE_BROWSER_OPTIONS //= {
 };
 
 
-$SCHEDULED_JOBS_OPTIONS = { 
+$SCHEDULED_JOBS_OPTIONS //= { 
 #   enabled               => 1, 
-   scheduled_jobs_flavor => '_sched', 
-#   log                   => 1, 
+   scheduled_jobs_flavor => '_schedules', 
+   log                   => 0, 
 };
 
 

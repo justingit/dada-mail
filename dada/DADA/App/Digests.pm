@@ -220,7 +220,7 @@ sub send_digest {
         );
     }
     else {
-        $r .= "\t* No new messages to create a digest message";
+        $r .= "\t* No new messages to create a digest message\n";
     }
     return $r;
 }

@@ -1693,6 +1693,9 @@ sub create_dada_config_file {
     
     
     my $scheduled_jobs_params = {}; 
+    if($q->param('scheduled_jobs_flavor') ne '_schedules'){ 
+        $q->param('configure_scheduled_jobs', 1);
+    }
     if($q->param('configure_scheduled_jobs') == 1) { 
         $scheduled_jobs_params->{configure_scheduled_jobs} = 1; 
         $scheduled_jobs_params->{scheduled_jobs_flavor} = $q->param('scheduled_jobs_flavor') || '_schedules';

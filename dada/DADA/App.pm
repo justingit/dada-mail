@@ -12545,10 +12545,11 @@ sub schedules {
         for my $plugin(keys %$DADA::Config::PLUGINS_ENABLED) { 
             if(exists($DADA::Config::PLUGINS_ENABLED->{$plugin})) { 
                 next if($DADA::Config::PLUGINS_ENABLED->{$plugin} != 1); 
+                next if ! exists( $DADA::Config::PLUGIN_RUNMODES->{$plugin}->{sched_run} ); 
+                
                 eval { 
                     require 'plugins/' . $plugin; 
-                    my $schedule_sub =  $DADA::Config::PLUGIN_RUNMODES->{$plugin}->{sched_run}->($q); 
-                    $r .= $schedule_sub->($list);                  
+                    $r .= $DADA::Config::PLUGIN_RUNMODES->{$plugin}->{sched_run}->($list); 
                 };
                 if($@) { 
                      $r .= $@; 
