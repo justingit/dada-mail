@@ -5,7 +5,6 @@ use lib qw(../../ ../../DADA/perllib);
 
 use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;
-use 5.008_001;
 use DADA::App::Guts;
 
 use Carp qw(croak carp);

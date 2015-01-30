@@ -8,7 +8,7 @@ use lib qw(
 
 
 use DADA::Config;  
-my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_DBIHandle}; 
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_DBIHandle}; 
 use Carp qw(carp croak); 
 
 # Singleton.
@@ -107,7 +107,9 @@ sub dbh_obj {
 sub connectdb {
 
     my $self = shift;
-    warn '$self->{enabled} ' . $self->{enabled}; 
+    
+    warn '$self->{enabled} ' . $self->{enabled}
+        if $t; 
     
     return undef unless $self->{enabled};
     

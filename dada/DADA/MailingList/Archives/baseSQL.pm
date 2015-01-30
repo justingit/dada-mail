@@ -157,7 +157,7 @@ sub message_source {
 	my $id   = shift; 
 	
 	croak "no id!" if ! $id; 
-	croak "no fh!" if ! $fh; 
+#	croak "no fh!" if ! $fh; 
 	
 	croak "archive backend does not support viewing message source!" 
 	 	unless can_display_message_source; 

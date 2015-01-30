@@ -210,7 +210,7 @@ sub installer_dir {
 	# installer-disabled.
 	  #  my $dirs = []; 
 		my $looking_for = qr/^installer\-disabled\./; 
-		my $dada_dir = $FindBin::Bin . '/../';
+		my $dada_dir = $FindBin::Bin;
 		my $f;
 	    opendir( DADADIR, $dada_dir )
 	      or croak
@@ -238,8 +238,8 @@ sub installer_dir {
 sub move_installer_dir_back { 
     
 	my $installer_dir = shift; 
-	my $current_installer_dir_abs = make_safer($FindBin::Bin . '/../' . $installer_dir); 
-	my $future_installer_dir_abs  = make_safer($FindBin::Bin . '/../' . 'installer'); 
+	my $current_installer_dir_abs = make_safer($FindBin::Bin . '/' . $installer_dir); 
+	my $future_installer_dir_abs  = make_safer($FindBin::Bin . '/' . 'installer'); 
 	if(move($current_installer_dir_abs, $future_installer_dir_abs)) { 
 		return 1; 
 	}
@@ -250,7 +250,7 @@ sub move_installer_dir_back {
 
 sub chmod_installer_script { 
 	my $chmod_octet = shift || 0755;
-	my $install_script  = make_safer($FindBin::Bin . '/../' . 'installer/install.cgi'); 
+	my $install_script  = make_safer($FindBin::Bin . '/' . 'installer/install.cgi'); 
 	
 	if(chmod($chmod_octet, $install_script)) { 
 		return 1; 
@@ -263,7 +263,7 @@ sub chmod_installer_script {
 sub installer_url { 
 	my $installer_url = $DADA::Config::PROGRAM_URL; 
        $installer_url =~ s{mail\.cgi}{installer\/install\.cgi};
-	$installer_url .= '?install_type=upgrade&f=check_install_or_upgrade&current_dada_files_parent_location=' 
+	   $installer_url .= '?install_type=upgrade&flavor=check_install_or_upgrade&current_dada_files_parent_location=' 
 					. uriescape(current_dada_files_parent_loc()); 	
 	return $installer_url; 
 }

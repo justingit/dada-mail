@@ -28,27 +28,12 @@ One major stumbling block is Perl for Windows lack of support for the C<fork()> 
 
 You'll also want to use the SQL backend if you ever attempt to run Dada Mail on a Windows-based server
 
-=head2 Perl 5.8.1
+=head2 Perl 5.10.1
 
 Since Dada Mail is a CGI app, you'll need support for Perl CGI scripts within your web server environment. 
 
 Dada Mail is not a PHP script, so the version of PHP that you have available will not make much of a difference. 
 
-Perl v5.8.1 is the lowest version of Perl that Dada Mail requires to run, and corresponds to two things: the least version of Perl that has good-enough UTF-8 support, as well as the lowest common denominator when it comes to the vendor-supplied version of Perl. 
-
-Saying that, v5.8.1 is freakin' old - released on September of 2003, and we don't suggest using it if a much more recent copy of Perl is available to you, either something you've installed yourself, or another version of Perl available in your hosting environment. 
-
-For example, cPanel-powered hosting environments, which run a good majority of shared hosting accounts usually have vendor supplied copy of Perl of v5.8.1, v5.8.8 or v5.10. All these will work with Dada Mail, but they may also have a copy of v5.14 of Perl available at the following path: 
-
-L</usr/local/cpanel/3rdparty/perl/514/bin/perl>
-
-See: 
-
-L<https://documentation.cpanel.net/display/SDK/_PerlEnvironments>
-
-For more information. 
-
-To utilize this version of Perl, you'll need to change the shebang line (first line of the scripts, bundled with Dada Mail) to this path, rather than what Dada Mail ships with (C</usr/bin/perl>) 
 
 =head2 Mail Transport Agent
 

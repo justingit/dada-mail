@@ -14,7 +14,6 @@ $(document).ready(function() {
 				}
 			}
 		});
-	
 	}
 	if ($("#installer_configure_dada_mail").length) {
 				
@@ -99,6 +98,10 @@ $(document).ready(function() {
 				},
 				amazon_ses_AWSSecretKey: { 
 					required: false, 
+				},
+				scheduled_jobs_flavor: {
+					required: false, 
+					alphanumericunderscore: true
 				}
 			}, 
 			messages: {

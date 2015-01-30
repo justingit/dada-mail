@@ -1,6 +1,6 @@
 =pod
 
-=head1 Dada Mail 5 to Dada Mail 6 Upgrade Guide
+=head1 Dada Mail 6 to Dada Mail 7 Upgrade Guide
 
 =head2 PlainText Backend - DEPRECATED
 

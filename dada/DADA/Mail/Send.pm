@@ -1268,9 +1268,15 @@ sub mass_send {
 	
 	
 	if( ! $mailout->still_around ){ 
-		warn '[' . $self->{list} . '] Mass Mailing seems to have been removed. return()ing'
-            if $t;
-		return 0; 
+	    warn '[' . $self->{list} . '] Mass Mailing seems to have been removed.'
+		    if $t; 
+		    
+	    if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+    		return 0; 
+        }
+        else { 
+    		exit(0); 
+        }
 	}
 
     my $status = $mailout->status({-mail_fields => 0}); 
@@ -1604,23 +1610,41 @@ sub mass_send {
 				 	if $t; 
 				
 				if($is_mailout_paused > 0){                            
-					carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . 
-					     ' Mailing has been paused - return()ing';
-					$mailout->log('Warning: Mailing has been paused - return()ing'); 
-					$mailout->unlock_batch_lock;
-					return(0);
+				
+				    if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+                
+				    	carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . 
+    					     ' Mailing has been paused - return()ing';
+    					$mailout->log('Warning: Mailing has been paused - return()ing'); 
+    					$mailout->unlock_batch_lock;
+    					return(0);
+				    }
+				    else { 
+    					carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . 
+    					     ' Mailing has been paused - exit()ing';
+    					$mailout->log('Warning: Mailing has been paused - exit()ing'); 
+    					$mailout->unlock_batch_lock;
+    					exit(0);
+				    }
 				}
 				
 				if($status->{integrity_check} != 1){ 
-					carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . 
-					     ' is currently reporting an integrity check warning! 
-					       Pausing mailing and returning.';
-					$mailout->log('Warning: Mailing is currently reporting an 
-					               integrity check warning! Pausing mailing and 
-					               returning.');  
-					$mailout->unlock_batch_lock;
-					$mailout->pause;
-					return(0); 
+				    
+				     carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . 
+    					     ' is currently reporting an integrity check warning! 
+    					       Pausing mailing.';
+    					$mailout->log('Warning: Mailing is currently reporting an 
+    					               integrity check warning! Pausing mailing.');  
+    					$mailout->unlock_batch_lock;
+    					$mailout->pause;
+                    
+				    if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+                        return(0); 
+					}
+					else { 
+    					exit(0); 
+					}
+					
 				}
 				# / Is mass mailing paused? 
 				##############################################################
@@ -1689,7 +1713,13 @@ sub mass_send {
                              if $t; 
                              $mailout->update_last_access; 
  							 $mailout->unlock_batch_lock;
- 							 return(0);
+ 							 
+ 							 if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+ 							     return(0);
+ 							 }
+ 							 else { 
+ 							     exit(0);
+ 							  }						 
                         }
                     
                     }
@@ -1754,13 +1784,18 @@ sub mass_send {
 							next SUBSCRIBERLOOP;
 						}
 						else {
-							my $warning = '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Bailing out of Mailing for now - last message to, ' . $nfields{To} . ' was unable to be sent! return()ing!';
+							my $warning = '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Bailing out of Mailing for now - last message to, ' . $nfields{To} . ' was unable to be sent!';
 							warn $warning;
 							$mailout->log($warning);
 							$mailout->log_problem_address({-address => $current_email}); 
 							$mailout->update_last_access; 
 							$mailout->unlock_batch_lock;
-							return(0);
+							if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+							    return(0);
+							}
+							else { 
+							    exit(0);
+							}
 						}
 					}
 					else { 
@@ -1790,12 +1825,16 @@ sub mass_send {
                                 . ' Warning: $mass_mailing_count: '
                                 . $mass_mailing_count 
                                 . ' is not the same as  $new_count: ' 
-                                . $new_count
-                                . ' - return()ing to reset mass mailing.'; 
+                                . $new_count;
                                 carp $w; 
 								$mailout->log($w); 
 								$mailout->unlock_batch_lock;
-								return(0); 
+								if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+								    return(0); 
+								}
+								else { 
+								    exit(0); 
+								}
                             }
              				$batch_num_sent++; 
              				# /Count Subscriber
@@ -1869,25 +1908,38 @@ sub mass_send {
 							# Reset the batch settings. 
 
 							if($batch_status->{queued_mailout} == 1){  
-								carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Mailing has been queued - return()ing'; 
-								$mailout->log('Warning: Mailing has been queued - return()ing'); 
+								carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Mailing has been queued'; 
+								$mailout->log('Warning: Mailing has been queued'); 
 								$mailout->unlock_batch_lock;
-								return(0); 
+								if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+    								return(0); 
+    							}
+    							else { 
+    							    exit(0);
+    							}
 							}
 							if($batch_status->{paused} > 0){                          
-								carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Mailing has been paused - return()ing';
-								$mailout->log('Warning: Mailing has been paused - return()ing'); 
+								carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Mailing has been paused';
+								$mailout->log('Warning: Mailing has been paused'); 
 								$mailout->unlock_batch_lock;
-								return(0);
-							}
+								if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+    								return(0); 
+    							}
+    							else { 
+    							    exit(0);
+    							}							}
 							if($batch_status->{integrity_check} != 1){ 
-								carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' is currently reporting an integrity check warning! Pausing mailing and returning.'; 
-								$mailout->log('Warning: Mailing is currently reporting an integrity check warning! Pausing mailing and returning.'); 
+								carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' is currently reporting an integrity check warning! Pausing mailing.'; 
+								$mailout->log('Warning: Mailing is currently reporting an integrity check warning! Pausing mailing.'); 
 								$mailout->unlock_batch_lock;
 								$mailout->pause;
-								return(0);
-							}
-						
+								if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+    								return(0); 
+    							}
+    							else { 
+    							    exit(0);
+    							}
+    						}
 							# SES: explicitly reset the batch params cache after every 100 messages sent. 
 							if((($mass_mailing_count % (int($batch_wait) * 100))) == 0) { 
 								$mailout->log("Resetting Batch Params Cache"); 
@@ -1953,9 +2005,14 @@ sub mass_send {
 									if $t; 
 								
 								if( ! $mailout->still_around ){
-									warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Seems to have been removed. return()ing'
+									warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Seems to have been removed.'
 							            if $t; 
-									return(0); 
+							        if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+									    return(0);
+									}
+									else { 
+									    exit(0); 
+									} 
 								}
 								
 								# Let's make sure I'm still supposed to be working on stuff: 
@@ -1971,15 +2028,17 @@ sub mass_send {
 									warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . 
 										 ' Problem! Another process (Current PID: ' . $$ . ', Controlling PID: ' . 
 										   $batch_status->{controlling_pid} .' has taken over sending for this mailing! ' . 
-										   ' return()ing to allow that process to do it\'s business!'; 
-									return(0); 
-									
+										   ' stopping to allow that process to do it\'s business!'; 
+                    		        if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+                    				    return(0);
+                    				}
+                    				else { 
+                    				    exit(0); 
+                    				}									
 								}
-								
-																
+															
 	                            $mailout->unlock_batch_lock;
 	                            $mailout->batch_lock;
-	
 								$batch_start_time = time; 
                             
 	                       } else { 
@@ -2005,8 +2064,13 @@ sub mass_send {
 	                            if($batch_status->{total_sent_out} < $batch_status->{total_sending_out_num}){ # We have more mailings to do. 
 	                                warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' As far as I can tell, there\'s more mailing to do.'
 	                                    if $t; 
-	                                return(0); 
-	                            }
+                    		        if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+                    				    return(0);
+                    				}
+                    				else { 
+                    				    exit(0); 
+                    				}
+                        	    }
                         
 	                        }                          
 						}
@@ -2114,10 +2178,14 @@ sub mass_send {
 			}
 			
 
-			warn  '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' We\'re done. return()ing!' 
+			warn  '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' We\'re done.' 
 			    if $t;
-           	return (0);
-
+	        if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+			    return(0);
+			}
+			else { 
+			    exit(0); 
+			}
 		} elsif ($! =~ /No more process/) {
 			
 			warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Getting error in fork: $! - sleeping for 5 seconds and retrying (don\'t hold your breath)'

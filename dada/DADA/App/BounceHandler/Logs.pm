@@ -8,7 +8,6 @@ use lib qw(
 
 use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;
-use 5.008_001;
 
 use Carp qw(croak carp);
 use vars qw($AUTOLOAD);

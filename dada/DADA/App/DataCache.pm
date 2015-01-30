@@ -1,5 +1,4 @@
 package DADA::App::DataCache;
-use 5.008_001;
 use Encode qw(encode decode);
 
 use strict;

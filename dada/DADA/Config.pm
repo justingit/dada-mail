@@ -1,5 +1,5 @@
 package DADA::Config;
-
+use v5.10.1;
 #----------------------------------------------------------------------------#
 # This file holds default values for the global configuration variables 
 # in Dada Mail. See:
@@ -12,8 +12,8 @@ package DADA::Config;
 
 require Exporter;
 our @ISA = qw(Exporter);
-use vars     qw($PROGRAM_ROOT_PASSWORD $MAILPROG $DIR $FILES $PROGRAM_URL $S_PROGRAM_URL $RUNNING_AS $PLUGIN_CONFIGS $PLUGINS_ENABLED $MAIL_SETTINGS $MASS_MAIL_SETTINGS $AMAZON_SES_OPTIONS $FIRST_SUB $SEC_SUB @C $SALT $FILE_CHMOD $DIR_CHMOD $GIVE_PROPS_IN_EMAIL $GIVE_PROPS_IN_HTML $GIVE_PROPS_IN_ADMIN $GIVE_PROPS_IN_SUBSCRIBE_FORM $SUBSCRIBED_MESSAGE     $ARCHIVES $TEMPLATES $ALTERNATIVE_HTML_TEMPLATE_PATH $TMP $LOGS $BACKUPS %BACKUP_HISTORY  $ENFORCE_CLOSED_LOOP_OPT_IN $SUPPORT_FILES $WYSIWYG_EDITOR_OPTIONS $FILE_BROWSER_OPTIONS $SCHEDULED_JOBS_OPTIONS $SCREEN_CACHE $DATA_CACHE $GLOBAL_BLACK_LIST $GLOBAL_UNSUBSCRIBE $MULTIPLE_LIST_SENDING $MULTIPLE_LIST_SENDING_TYPE $HIDDEN_SUBSCRIBER_FIELDS_PREFIX @PING_URLS $CONFIRMATION_TOKEN_OPTIONS $SUBSCRIPTION_SUCCESSFUL_COPY $PIN_WORD $PIN_NUM $TEXT_CSV_PARAMS $ALLOW_ROOT_LOGIN  @CHARSETS @CONTENT_TYPES %LIST_SETUP_DEFAULTS %LIST_SETUP_INCLUDE %LIST_SETUP_OVERRIDES @LIST_SETUP_DONT_CLONE %PRIORITIES $ATTACHMENT_TEMPFILE $MAIL_VERP_SEPARATOR %MIME_TYPES $DEFAULT_MIME_TYPE $MIME_PARANOID $MIME_HUSH $MIME_OPTIMIZE $NPH $PROGRAM_USAGE_LOG $ROOT_PASS_IS_ENCRYPTED @ALLOWED_IP_ADDRESSES $SHOW_ADMIN_LINK $ADMIN_FLAVOR_NAME $SIGN_IN_FLAVOR_NAME $DISABLE_OUTSIDE_LOGINS %LOG $DEBUG_TRACE %CPAN_DEBUG_SETTINGS $ADMIN_MENU $EMAIL_CASE @EMAIL_EXCEPTIONS $LIST_IN_ORDER $ADMIN_TEMPLATE $USER_TEMPLATE $BACKEND_DB_TYPE $SUBSCRIBER_DB_TYPE $ARCHIVE_DB_TYPE $SETTINGS_DB_TYPE $SESSION_DB_TYPE $BOUNCE_SCORECARD_DB_TYPE $CLICKTHROUGH_DB_TYPE %SQL_PARAMS $DBI_PARAMS $PROFILE_OPTIONS $PROGRAM_ERROR_LOG $SHOW_HELP_LINKS $HELP_LINKS_URL $VER $VERSION  $PROGRAM_NAME @CONTENT_TRANSFER_ENCODINGS $CONFIG_FILE $PROGRAM_CONFIG_FILE_DIR $OS $DEFAULT_ADMIN_SCREEN $DEFAULT_LOGOUT_SCREEN $DEFAULT_SCREEN $HTML_CHARSET $SEND_ARCHIVED_MESSAGE $REFERER_CHECK $CAPTCHA_TYPE $RECAPTCHA_PARAMS $RECAPTHCA_MAILHIDE_PARAMS $GD_SECURITYIMAGE_PARAMS $LOGIN_COOKIE_NAME %COOKIE_PARAMS $HTML_TEXTTOHTML_OPTIONS $HTML_SCRUBBER_OPTIONS $TEMPLATE_SETTINGS $LOGIN_WIDGET $NULL_DEVICE $LIST_QUOTA $SUBSCRIPTION_QUOTA $MAILOUT_AT_ONCE_LIMIT $MAILOUT_STALE_AFTER %EMAIL_HEADERS @EMAIL_HEADERS_ORDER);
-@EXPORT_OK = qw($PROGRAM_ROOT_PASSWORD $MAILPROG $DIR $FILES $PROGRAM_URL $S_PROGRAM_URL $RUNNING_AS $PLUGIN_CONFIGS $PLUGINS_ENABLED $MAIL_SETTINGS $MASS_MAIL_SETTINGS $AMAZON_SES_OPTIONS $FIRST_SUB $SEC_SUB @C $SALT $FILE_CHMOD $DIR_CHMOD $GIVE_PROPS_IN_EMAIL $GIVE_PROPS_IN_HTML $GIVE_PROPS_IN_ADMIN $GIVE_PROPS_IN_SUBSCRIBE_FORM $SUBSCRIBED_MESSAGE     $ARCHIVES $TEMPLATES $ALTERNATIVE_HTML_TEMPLATE_PATH $TMP $LOGS $BACKUPS %BACKUP_HISTORY  $ENFORCE_CLOSED_LOOP_OPT_IN $SUPPORT_FILES $WYSIWYG_EDITOR_OPTIONS $FILE_BROWSER_OPTIONS $SCHEDULED_JOBS_OPTIONS $SCREEN_CACHE $DATA_CACHE $GLOBAL_BLACK_LIST $GLOBAL_UNSUBSCRIBE $MULTIPLE_LIST_SENDING $MULTIPLE_LIST_SENDING_TYPE $HIDDEN_SUBSCRIBER_FIELDS_PREFIX @PING_URLS $CONFIRMATION_TOKEN_OPTIONS $SUBSCRIPTION_SUCCESSFUL_COPY $PIN_WORD $PIN_NUM $TEXT_CSV_PARAMS $ALLOW_ROOT_LOGIN  @CHARSETS @CONTENT_TYPES %LIST_SETUP_DEFAULTS %LIST_SETUP_INCLUDE %LIST_SETUP_OVERRIDES @LIST_SETUP_DONT_CLONE %PRIORITIES $ATTACHMENT_TEMPFILE $MAIL_VERP_SEPARATOR %MIME_TYPES $DEFAULT_MIME_TYPE $MIME_PARANOID $MIME_HUSH $MIME_OPTIMIZE $NPH $PROGRAM_USAGE_LOG $ROOT_PASS_IS_ENCRYPTED @ALLOWED_IP_ADDRESSES $SHOW_ADMIN_LINK $ADMIN_FLAVOR_NAME $SIGN_IN_FLAVOR_NAME $DISABLE_OUTSIDE_LOGINS %LOG $DEBUG_TRACE %CPAN_DEBUG_SETTINGS $ADMIN_MENU $EMAIL_CASE @EMAIL_EXCEPTIONS $LIST_IN_ORDER $ADMIN_TEMPLATE $USER_TEMPLATE $BACKEND_DB_TYPE $SUBSCRIBER_DB_TYPE $ARCHIVE_DB_TYPE $SETTINGS_DB_TYPE $SESSION_DB_TYPE $BOUNCE_SCORECARD_DB_TYPE $CLICKTHROUGH_DB_TYPE %SQL_PARAMS $DBI_PARAMS $PROFILE_OPTIONS $PROGRAM_ERROR_LOG $SHOW_HELP_LINKS $HELP_LINKS_URL $VER $VERSION  $PROGRAM_NAME @CONTENT_TRANSFER_ENCODINGS $CONFIG_FILE $PROGRAM_CONFIG_FILE_DIR $OS $DEFAULT_ADMIN_SCREEN $DEFAULT_LOGOUT_SCREEN $DEFAULT_SCREEN $HTML_CHARSET $SEND_ARCHIVED_MESSAGE $REFERER_CHECK $CAPTCHA_TYPE $RECAPTCHA_PARAMS $RECAPTHCA_MAILHIDE_PARAMS $GD_SECURITYIMAGE_PARAMS $LOGIN_COOKIE_NAME %COOKIE_PARAMS $HTML_TEXTTOHTML_OPTIONS $HTML_SCRUBBER_OPTIONS $TEMPLATE_SETTINGS $LOGIN_WIDGET $NULL_DEVICE $LIST_QUOTA $SUBSCRIPTION_QUOTA $MAILOUT_AT_ONCE_LIMIT $MAILOUT_STALE_AFTER %EMAIL_HEADERS @EMAIL_HEADERS_ORDER);
+use vars     qw($PROGRAM_ROOT_PASSWORD $MAILPROG $DIR $FILES $PROGRAM_URL $S_PROGRAM_URL $RUNNING_AS $PLUGIN_CONFIGS $PLUGINS_ENABLED $MAIL_SETTINGS $MASS_MAIL_SETTINGS $AMAZON_SES_OPTIONS $FIRST_SUB $SEC_SUB @C $SALT $FILE_CHMOD $DIR_CHMOD $GIVE_PROPS_IN_EMAIL $GIVE_PROPS_IN_HTML $GIVE_PROPS_IN_ADMIN $GIVE_PROPS_IN_SUBSCRIBE_FORM $SUBSCRIBED_MESSAGE     $ARCHIVES $TEMPLATES $ALTERNATIVE_HTML_TEMPLATE_PATH $TMP $LOGS $BACKUPS %BACKUP_HISTORY  $ENFORCE_CLOSED_LOOP_OPT_IN $SUPPORT_FILES $WYSIWYG_EDITOR_OPTIONS $FILE_BROWSER_OPTIONS $SCHEDULED_JOBS_OPTIONS $SCREEN_CACHE $DATA_CACHE $GLOBAL_BLACK_LIST $GLOBAL_UNSUBSCRIBE $MULTIPLE_LIST_SENDING $MULTIPLE_LIST_SENDING_TYPE $HIDDEN_SUBSCRIBER_FIELDS_PREFIX @PING_URLS $CONFIRMATION_TOKEN_OPTIONS $SUBSCRIPTION_SUCCESSFUL_COPY $PIN_WORD $PIN_NUM $TEXT_CSV_PARAMS $ALLOW_ROOT_LOGIN  @CHARSETS @CONTENT_TYPES %LIST_SETUP_DEFAULTS %LIST_SETUP_INCLUDE %LIST_SETUP_OVERRIDES @LIST_SETUP_DONT_CLONE %PRIORITIES $ATTACHMENT_TEMPFILE $MAIL_VERP_SEPARATOR %MIME_TYPES $DEFAULT_MIME_TYPE $MIME_PARANOID $MIME_HUSH $MIME_OPTIMIZE $NPH $PROGRAM_USAGE_LOG $ROOT_PASS_IS_ENCRYPTED @ALLOWED_IP_ADDRESSES $SHOW_ADMIN_LINK $ADMIN_FLAVOR_NAME $SIGN_IN_FLAVOR_NAME $DISABLE_OUTSIDE_LOGINS %LOG $DEBUG_TRACE %CPAN_DEBUG_SETTINGS $ADMIN_MENU $EMAIL_CASE @EMAIL_EXCEPTIONS $LIST_IN_ORDER $ADMIN_TEMPLATE $USER_TEMPLATE $BACKEND_DB_TYPE $SUBSCRIBER_DB_TYPE $ARCHIVE_DB_TYPE $SETTINGS_DB_TYPE $SESSION_DB_TYPE $BOUNCE_SCORECARD_DB_TYPE $CLICKTHROUGH_DB_TYPE %SQL_PARAMS $DBI_PARAMS $PROFILE_OPTIONS $PLUGIN_RUNMODES $PROGRAM_ERROR_LOG $SHOW_HELP_LINKS $HELP_LINKS_URL $VER $VERSION  $PROGRAM_NAME @CONTENT_TRANSFER_ENCODINGS $CONFIG_FILE $PROGRAM_CONFIG_FILE_DIR $OS $DEFAULT_ADMIN_SCREEN $DEFAULT_LOGOUT_SCREEN $DEFAULT_SCREEN $HTML_CHARSET $SEND_ARCHIVED_MESSAGE $REFERER_CHECK $CAPTCHA_TYPE $RECAPTCHA_PARAMS $RECAPTHCA_MAILHIDE_PARAMS $GD_SECURITYIMAGE_PARAMS $LOGIN_COOKIE_NAME %COOKIE_PARAMS $HTML_TEXTTOHTML_OPTIONS $HTML_SCRUBBER_OPTIONS $TEMPLATE_SETTINGS $LOGIN_WIDGET $NULL_DEVICE $LIST_QUOTA $SUBSCRIPTION_QUOTA $MAILOUT_AT_ONCE_LIMIT $MAILOUT_STALE_AFTER %EMAIL_HEADERS @EMAIL_HEADERS_ORDER);
+@EXPORT_OK = qw($PROGRAM_ROOT_PASSWORD $MAILPROG $DIR $FILES $PROGRAM_URL $S_PROGRAM_URL $RUNNING_AS $PLUGIN_CONFIGS $PLUGINS_ENABLED $MAIL_SETTINGS $MASS_MAIL_SETTINGS $AMAZON_SES_OPTIONS $FIRST_SUB $SEC_SUB @C $SALT $FILE_CHMOD $DIR_CHMOD $GIVE_PROPS_IN_EMAIL $GIVE_PROPS_IN_HTML $GIVE_PROPS_IN_ADMIN $GIVE_PROPS_IN_SUBSCRIBE_FORM $SUBSCRIBED_MESSAGE     $ARCHIVES $TEMPLATES $ALTERNATIVE_HTML_TEMPLATE_PATH $TMP $LOGS $BACKUPS %BACKUP_HISTORY  $ENFORCE_CLOSED_LOOP_OPT_IN $SUPPORT_FILES $WYSIWYG_EDITOR_OPTIONS $FILE_BROWSER_OPTIONS $SCHEDULED_JOBS_OPTIONS $SCREEN_CACHE $DATA_CACHE $GLOBAL_BLACK_LIST $GLOBAL_UNSUBSCRIBE $MULTIPLE_LIST_SENDING $MULTIPLE_LIST_SENDING_TYPE $HIDDEN_SUBSCRIBER_FIELDS_PREFIX @PING_URLS $CONFIRMATION_TOKEN_OPTIONS $SUBSCRIPTION_SUCCESSFUL_COPY $PIN_WORD $PIN_NUM $TEXT_CSV_PARAMS $ALLOW_ROOT_LOGIN  @CHARSETS @CONTENT_TYPES %LIST_SETUP_DEFAULTS %LIST_SETUP_INCLUDE %LIST_SETUP_OVERRIDES @LIST_SETUP_DONT_CLONE %PRIORITIES $ATTACHMENT_TEMPFILE $MAIL_VERP_SEPARATOR %MIME_TYPES $DEFAULT_MIME_TYPE $MIME_PARANOID $MIME_HUSH $MIME_OPTIMIZE $NPH $PROGRAM_USAGE_LOG $ROOT_PASS_IS_ENCRYPTED @ALLOWED_IP_ADDRESSES $SHOW_ADMIN_LINK $ADMIN_FLAVOR_NAME $SIGN_IN_FLAVOR_NAME $DISABLE_OUTSIDE_LOGINS %LOG $DEBUG_TRACE %CPAN_DEBUG_SETTINGS $ADMIN_MENU $EMAIL_CASE @EMAIL_EXCEPTIONS $LIST_IN_ORDER $ADMIN_TEMPLATE $USER_TEMPLATE $BACKEND_DB_TYPE $SUBSCRIBER_DB_TYPE $ARCHIVE_DB_TYPE $SETTINGS_DB_TYPE $SESSION_DB_TYPE $BOUNCE_SCORECARD_DB_TYPE $CLICKTHROUGH_DB_TYPE %SQL_PARAMS $DBI_PARAMS $PROFILE_OPTIONS $PLUGIN_RUNMODES $PROGRAM_ERROR_LOG $SHOW_HELP_LINKS $HELP_LINKS_URL $VER $VERSION  $PROGRAM_NAME @CONTENT_TRANSFER_ENCODINGS $CONFIG_FILE $PROGRAM_CONFIG_FILE_DIR $OS $DEFAULT_ADMIN_SCREEN $DEFAULT_LOGOUT_SCREEN $DEFAULT_SCREEN $HTML_CHARSET $SEND_ARCHIVED_MESSAGE $REFERER_CHECK $CAPTCHA_TYPE $RECAPTCHA_PARAMS $RECAPTHCA_MAILHIDE_PARAMS $GD_SECURITYIMAGE_PARAMS $LOGIN_COOKIE_NAME %COOKIE_PARAMS $HTML_TEXTTOHTML_OPTIONS $HTML_SCRUBBER_OPTIONS $TEMPLATE_SETTINGS $LOGIN_WIDGET $NULL_DEVICE $LIST_QUOTA $SUBSCRIPTION_QUOTA $MAILOUT_AT_ONCE_LIMIT $MAILOUT_STALE_AFTER %EMAIL_HEADERS @EMAIL_HEADERS_ORDER);
 
 #
 #
@@ -66,37 +66,37 @@ $PROGRAM_ERROR_LOG = undef;
 
 
 
-$PROGRAM_ROOT_PASSWORD  ||= 'root_password';
-$ROOT_PASS_IS_ENCRYPTED ||= 0;
+$PROGRAM_ROOT_PASSWORD  //= 'root_password';
+$ROOT_PASS_IS_ENCRYPTED //= 0;
 
 
 
 
-($DIR) ||= $PROGRAM_CONFIG_FILE_DIR =~ m/^(.*?)\/\.configs$/;
-$ARCHIVES          ||= $DIR . '/.archives';
-$BACKUPS           ||= $DIR . '/.backups';
-$FILES             ||= $DIR . '/.lists';
-$LOGS              ||= $DIR . '/.logs';
-$PROGRAM_USAGE_LOG ||= $LOGS . '/dada.txt';
-$TEMPLATES         ||= $DIR . '/.templates';
-$TMP               ||= $DIR . '/.tmp';
+($DIR) //= $PROGRAM_CONFIG_FILE_DIR =~ m/^(.*?)\/\.configs$/;
+$ARCHIVES          //= $DIR . '/.archives';
+$BACKUPS           //= $DIR . '/.backups';
+$FILES             //= $DIR . '/.lists';
+$LOGS              //= $DIR . '/.logs';
+$PROGRAM_USAGE_LOG //= $LOGS . '/dada.txt';
+$TEMPLATES         //= $DIR . '/.templates';
+$TMP               //= $DIR . '/.tmp';
 
 
 
 
-$PROGRAM_URL   ||= 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi';
-$S_PROGRAM_URL ||= $PROGRAM_URL;
+$PROGRAM_URL   //= 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi';
+$S_PROGRAM_URL //= $PROGRAM_URL;
 
-$RUNNING_AS ||= 'CGI'; 
+$RUNNING_AS //= 'CGI'; 
 
 
 
-$SUPPORT_FILES ||= {
+$SUPPORT_FILES //= {
     dir => '',
     url => '',
 };
 
-$WYSIWYG_EDITOR_OPTIONS ||= {
+$WYSIWYG_EDITOR_OPTIONS //= {
     ckeditor => {
         enabled => 0,
         url     => '',
@@ -107,7 +107,7 @@ $WYSIWYG_EDITOR_OPTIONS ||= {
     },
 };
 
-$FILE_BROWSER_OPTIONS ||= {
+$FILE_BROWSER_OPTIONS //= {
     kcfinder => {
         enabled      => 0,
         url          => '',
@@ -135,23 +135,23 @@ $SCHEDULED_JOBS_OPTIONS = {
 
 
 # Here are the four variables that are talked about, above:
-$BACKEND_DB_TYPE ||= 'Default';
+$BACKEND_DB_TYPE //= 'Default';
 
 if ( $BACKEND_DB_TYPE eq 'Default' ) {
-    $SUBSCRIBER_DB_TYPE       ||= 'PlainText';
-    $ARCHIVE_DB_TYPE          ||= 'Db';
-    $SETTINGS_DB_TYPE         ||= 'Db';
-    $SESSION_DB_TYPE          ||= 'Db';
-    $BOUNCE_SCORECARD_DB_TYPE ||= 'Db';
-    $CLICKTHROUGH_DB_TYPE     ||= 'Db';
+    $SUBSCRIBER_DB_TYPE       //= 'PlainText';
+    $ARCHIVE_DB_TYPE          //= 'Db';
+    $SETTINGS_DB_TYPE         //= 'Db';
+    $SESSION_DB_TYPE          //= 'Db';
+    $BOUNCE_SCORECARD_DB_TYPE //= 'Db';
+    $CLICKTHROUGH_DB_TYPE     //= 'Db';
 }
 elsif ( $BACKEND_DB_TYPE eq 'SQL' ) {
-    $SUBSCRIBER_DB_TYPE       ||= 'SQL';
-    $ARCHIVE_DB_TYPE          ||= 'SQL';
-    $SETTINGS_DB_TYPE         ||= 'SQL';
-    $SESSION_DB_TYPE          ||= 'SQL';
-    $BOUNCE_SCORECARD_DB_TYPE ||= 'SQL';
-    $CLICKTHROUGH_DB_TYPE     ||= 'SQL';
+    $SUBSCRIBER_DB_TYPE       //= 'SQL';
+    $ARCHIVE_DB_TYPE          //= 'SQL';
+    $SETTINGS_DB_TYPE         //= 'SQL';
+    $SESSION_DB_TYPE          //= 'SQL';
+    $BOUNCE_SCORECARD_DB_TYPE //= 'SQL';
+    $CLICKTHROUGH_DB_TYPE     //= 'SQL';
 }
 
 
@@ -181,7 +181,7 @@ elsif ( $BACKEND_DB_TYPE eq 'SQL' ) {
 
 
 
-$DBI_PARAMS ||= {
+$DBI_PARAMS //= {
 
     InactiveDestroy      => 0,
     pg_server_prepare    => 0,
@@ -229,7 +229,7 @@ $DBI_PARAMS ||= {
 
 
 
-$PROFILE_OPTIONS ||= {
+$PROFILE_OPTIONS //= {
 
     enabled                         => 1,
     profile_email                   => '',
@@ -266,8 +266,21 @@ $PROFILE_OPTIONS ||= {
 };
 
 
+$PLUGIN_RUNMODES //= { 
+    boilerplate_plugin           => {run => \&boilerplate_plugin::run},
+    tracker                      => {run => \&tracker::run}, 
+    bounce_handler               => {run => \&bounce_handler::run, sched_run => \&bounce_handler::scheduled_task},
+    bridge                       => {run => \&bridge::run,         sched_run => \&bridge::scheduled_task},
+    change_root_password         => {run => \&change_root_password::run}, 
+    change_list_shortname        => {run => \&change_list_shortname::run},  
+    password_protect_directories => {run => \&password_protect_directories::run},   
+    log_viewer                   => {run => \&log_viewer::run},
+    screen_cache                 => {run => \&screen_cache::run},
+    global_config                => {run => \&global_config::run}, 
+    view_list_settings           => {run => \&view_list_settings::run},
+};
 
-$PLUGINS_ENABLED ||= {
+$PLUGINS_ENABLED //= {
     boilerplate_plugin           => <!-- tmpl_var install_boilerplate_plugin           default="0" -->,
     tracker                      => <!-- tmpl_var install_tracker                      default="1" -->,
     bounce_handler               => <!-- tmpl_var install_bounce_handler               default="0" -->,
@@ -281,7 +294,7 @@ $PLUGINS_ENABLED ||= {
     view_list_settings           => <!-- tmpl_var install_view_list_settings           default="0" -->,
 };
 
-$PLUGIN_CONFIGS ||= { 
+$PLUGIN_CONFIGS //= { 
 
 	Bounce_Handler => {
 		Server                      => undef,
@@ -397,41 +410,41 @@ $PLUGIN_CONFIGS ||= {
 
 
 
-$MAILPROG           ||= '/usr/sbin/sendmail';
-$MAIL_SETTINGS      ||= "|$MAILPROG -t";
-$MASS_MAIL_SETTINGS ||= "|$MAILPROG -t";
+$MAILPROG           //= '/usr/sbin/sendmail';
+$MAIL_SETTINGS      //= "|$MAILPROG -t";
+$MASS_MAIL_SETTINGS //= "|$MAILPROG -t";
 
 
-$AMAZON_SES_OPTIONS ||= { 
+$AMAZON_SES_OPTIONS //= { 
     AWS_endpoint                     => undef,
 	AWSAccessKeyId                   => undef,
 	AWSSecretKey                     => undef,
 	Allowed_Sending_Quota_Percentage => 90,
 };
-$MANDRILL_OPTIONS ||= { 
+$MANDRILL_OPTIONS //= { 
     api_url => 'https://mandrillapp.com/api/1.0/users/info.json', 
     api_key => undef, 
     Allowed_Sending_Quota_Percentage => 90,
 };
 
-$SHOW_ADMIN_LINK        ||= 1;
-$ADMIN_FLAVOR_NAME      ||= 'admin';
-$SIGN_IN_FLAVOR_NAME    ||= 'sign_in';
-$DEFAULT_SCREEN         ||= '';
-$DEFAULT_ADMIN_SCREEN   ||= $S_PROGRAM_URL . '?flavor=send_email';
-$DEFAULT_LOGOUT_SCREEN  ||= $S_PROGRAM_URL . '?flavor=' . $ADMIN_FLAVOR_NAME;
-$DISABLE_OUTSIDE_LOGINS ||= 0;
-$LOGIN_WIDGET           ||= 'popup_menu';
-$ALLOW_ROOT_LOGIN       ||= 1;
-$REFERER_CHECK          ||= 0;
+$SHOW_ADMIN_LINK        //= 1;
+$ADMIN_FLAVOR_NAME      //= 'admin';
+$SIGN_IN_FLAVOR_NAME    //= 'sign_in';
+$DEFAULT_SCREEN         //= '';
+$DEFAULT_ADMIN_SCREEN   //= $S_PROGRAM_URL . '?flavor=send_email';
+$DEFAULT_LOGOUT_SCREEN  //= $S_PROGRAM_URL . '?flavor=' . $ADMIN_FLAVOR_NAME;
+$DISABLE_OUTSIDE_LOGINS //= 0;
+$LOGIN_WIDGET           //= 'popup_menu';
+$ALLOW_ROOT_LOGIN       //= 1;
+$REFERER_CHECK          //= 0;
 @ALLOWED_IP_ADDRESSES = qw()
   unless scalar @ALLOWED_IP_ADDRESSES;
 
 
 
 # Set to Either, "Default" or, "reCAPTCHA";
-$CAPTCHA_TYPE ||= 'Default';
-$GD_SECURITYIMAGE_PARAMS ||= {
+$CAPTCHA_TYPE //= 'Default';
+$GD_SECURITYIMAGE_PARAMS //= {
     'rand_string_from' => 'ABCDEFGHIJKLMNOPQRSTUVWXYZaeiouy',
     'rand_string_size' => 6,
     'new' => {
@@ -456,23 +469,23 @@ $GD_SECURITYIMAGE_PARAMS ||= {
     },
     particle => [ 500, undef ],
 };
-$RECAPTCHA_PARAMS ||= {
+$RECAPTCHA_PARAMS //= {
     remote_address => $ENV{'REMOTE_ADDR'},
     public_key     => undef,
     private_key    => undef,
 };
-$RECAPTHCA_MAILHIDE_PARAMS ||= {
+$RECAPTHCA_MAILHIDE_PARAMS //= {
     public_key  => '',
     private_key => '',
 };
 
 
 
-$SHOW_HELP_LINKS ||= 1;
-$HELP_LINKS_URL  ||= 'http://dadamailproject.com/pro_dada/7.4.0';
+$SHOW_HELP_LINKS //= 1;
+$HELP_LINKS_URL  //= 'http://dadamailproject.com/pro_dada/7.4.0';
 
 
-$LOGIN_COOKIE_NAME ||= 'dadalogin';
+$LOGIN_COOKIE_NAME //= 'dadalogin';
 
 %COOKIE_PARAMS = (
     -path    => '/',
@@ -480,7 +493,7 @@ $LOGIN_COOKIE_NAME ||= 'dadalogin';
 ) unless keys %COOKIE_PARAMS;
 
 
-$NPH ||= 0;
+$NPH //= 0;
 
 
 
@@ -499,7 +512,7 @@ $NPH ||= 0;
 
 
 
-$DEBUG_TRACE ||= {
+$DEBUG_TRACE //= {
 
     DADA_App_BounceHandler             => 0,
     DADA_App_DBIHandle                 => 0,
@@ -554,10 +567,10 @@ $DEBUG_TRACE ||= {
 
 ) unless keys %CPAN_DEBUG_SETTINGS;
 
-$ADMIN_TEMPLATE                 ||= '';
-$USER_TEMPLATE                  ||= '';
-$ALTERNATIVE_HTML_TEMPLATE_PATH ||= undef;
-$TEMPLATE_SETTINGS              ||= {
+$ADMIN_TEMPLATE                 //= '';
+$USER_TEMPLATE                  //= '';
+$ALTERNATIVE_HTML_TEMPLATE_PATH //= undef;
+$TEMPLATE_SETTINGS              //= {
     engine                           => 'Best',
 };
 
@@ -570,15 +583,15 @@ $TEMPLATE_SETTINGS              ||= {
 ) unless keys %BACKUP_HISTORY;
 
 
-$ENFORCE_CLOSED_LOOP_OPT_IN             ||= 0;
-$MULTIPLE_LIST_SENDING                  ||= 0;
-$MULTIPLE_LIST_SENDING_TYPE             ||= 'merged';    # individual
-$GLOBAL_BLACK_LIST                      ||= 0;
-$GLOBAL_UNSUBSCRIBE                     ||= 0;
-$HIDDEN_SUBSCRIBER_FIELDS_PREFIX        ||= '_';
+$ENFORCE_CLOSED_LOOP_OPT_IN             //= 0;
+$MULTIPLE_LIST_SENDING                  //= 0;
+$MULTIPLE_LIST_SENDING_TYPE             //= 'merged';    # individual
+$GLOBAL_BLACK_LIST                      //= 0;
+$GLOBAL_UNSUBSCRIBE                     //= 0;
+$HIDDEN_SUBSCRIBER_FIELDS_PREFIX        //= '_';
 
-$SCREEN_CACHE                           ||= 1;
-$DATA_CACHE                             ||= 1;
+$SCREEN_CACHE                           //= 1;
+$DATA_CACHE                             //= 1;
 
 @PING_URLS = qw(
   http://rpc.pingomatic.com/
@@ -587,7 +600,7 @@ $DATA_CACHE                             ||= 1;
   ) unless scalar @PING_URLS;
 
 
-$CONFIRMATION_TOKEN_OPTIONS ||= { 
+$CONFIRMATION_TOKEN_OPTIONS //= { 
 	expires => 60,
 };
 
@@ -606,7 +619,7 @@ my $PLUGIN_URL = $S_PROGRAM_URL;
 my $EXT_URL     = $PLUGIN_URL;
    $EXT_URL     =~ s/plugins/extensions/;
 
-$ADMIN_MENU ||= [
+$ADMIN_MENU //= [
 
     {
         -Title     => 'Mass Mailing',
@@ -1011,22 +1024,22 @@ $ADMIN_MENU ||= [
     },
 ];
 
-$LIST_QUOTA            ||= undef;
-$SUBSCRIPTION_QUOTA    ||= undef;
-$MAILOUT_AT_ONCE_LIMIT ||= 1;
-$MAILOUT_STALE_AFTER   ||= 86400;
+$LIST_QUOTA            //= undef;
+$SUBSCRIPTION_QUOTA    //= undef;
+$MAILOUT_AT_ONCE_LIMIT //= 1;
+$MAILOUT_STALE_AFTER   //= 86400;
 
-$EMAIL_CASE ||= 'lc_all';
+$EMAIL_CASE //= 'lc_all';
 
 @EMAIL_EXCEPTIONS = qw()
   unless scalar @EMAIL_EXCEPTIONS;
 
-$LIST_IN_ORDER ||= 0;
+$LIST_IN_ORDER //= 0;
 
-$FILE_CHMOD ||= 0666;
-$DIR_CHMOD  ||= 0755;
+$FILE_CHMOD //= 0666;
+$DIR_CHMOD  //= 0755;
 
-$HTML_CHARSET ||= 'UTF-8';
+$HTML_CHARSET //= 'UTF-8';
 
 # http://www.w3.org/International/O-charset.html
 # http://www.w3.org/International/O-HTTP-charset
@@ -1129,14 +1142,14 @@ $HTML_CHARSET ||= 'UTF-8';
   binary
   ) unless scalar @CONTENT_TRANSFER_ENCODINGS;
 
-$HTML_TEXTTOHTML_OPTIONS ||= {
+$HTML_TEXTTOHTML_OPTIONS //= {
     escape_HTML_chars => 0,    # This will also be overridden to, 0 by Dada Mail
                                # BUT! Dada Mail will provide it's own
                                # escape_HTML_chars-like routine
 
 };
 
-$HTML_SCRUBBER_OPTIONS ||= {
+$HTML_SCRUBBER_OPTIONS //= {
     rules   => [ script => 0, ],
     default => [
         1 => {
@@ -1205,10 +1218,10 @@ $HTML_SCRUBBER_OPTIONS ||= {
 
 ) unless keys %MIME_TYPES;
 
-$DEFAULT_MIME_TYPE ||= 'application/octet-stream';
-$MIME_PARANOID     ||= 0;
-$MIME_HUSH         ||= 0;
-$MIME_OPTIMIZE     ||= 'no tmp files';
+$DEFAULT_MIME_TYPE //= 'application/octet-stream';
+$MIME_PARANOID     //= 0;
+$MIME_HUSH         //= 0;
+$MIME_OPTIMIZE     //= 'no tmp files';
 
 %LIST_SETUP_DEFAULTS = (
 
@@ -1737,14 +1750,14 @@ $MIME_OPTIMIZE     ||= 'no tmp files';
 
   ) unless keys %LIST_SETUP_OVERRIDES;
 
-$OS ||= $^O;
+$OS //= $^O;
 
-$NULL_DEVICE ||= '/dev/null';
+$NULL_DEVICE //= '/dev/null';
 
 srand( time() ^ ( $$ + ( $$ << 15 ) ) );
 
-$FIRST_SUB ||= 0;
-$SEC_SUB   ||= 2;
+$FIRST_SUB //= 0;
+$SEC_SUB   //= 2;
 
 @C = ( 'a' .. 'z', 'A' .. 'Z', '0' .. '9', '.' );
 $SALT = $C[ rand(@C) ] . $C[ rand(@C) ];
@@ -1758,9 +1771,9 @@ if ( !defined($PIN_WORD) ) {
 }
 
 # Pick a number. I would keep it between 1 and 9.
-$PIN_NUM ||= unpack( "%32C*", $FILES );
+$PIN_NUM //= unpack( "%32C*", $FILES );
 
-$TEXT_CSV_PARAMS ||= {
+$TEXT_CSV_PARAMS //= {
 
     binary              => 1,
     allow_loose_escapes => 1,
@@ -1768,19 +1781,19 @@ $TEXT_CSV_PARAMS ||= {
 
 BEGIN { @AnyDBM_File::ISA = qw(DB_File GDBM_File) }
 
-$ATTACHMENT_TEMPFILE ||= 0;
+$ATTACHMENT_TEMPFILE //= 0;
 
-$MAIL_VERP_SEPARATOR ||= '-';
+$MAIL_VERP_SEPARATOR //= '-';
 
 $VERSION = 8.0.0;
-$VER     = '8.0.0 Alpha 1';
+$VER     = '8.0.0 Alpha 01/29/15';
 
 #
 #
 #
 #####################################################################
 
-$PROGRAM_NAME ||= "Dada Mail";
+$PROGRAM_NAME //= "Dada Mail";
 
 %EMAIL_HEADERS = (
 
@@ -1892,7 +1905,17 @@ $GIVE_PROPS_IN_SUBSCRIBE_FORM = 1;
 
 #
 
+# my $imported_config = 0; 
 sub _config_import {
+
+#	if ($imported_config == 1){
+#		warn 'skipping opening .dada_config - already imported.'; 
+#		return; 
+#	}	
+#	else { 
+#		warn 'opening .dada_config' ; 
+#	}
+
 
 # There's no user-servicable parts in the subroutine, so don't make any changes,
 # unless you're customizing Dada Mail or debugging something interesting.

@@ -50,8 +50,33 @@
 
 
 <!-- /tmpl_if --> 
-
- <h2>Rename/Remove the, "installer" Directory!</h2> 
+<fieldset> 
+    
+ <legend>Set the <!-- tmpl_var PROGRAM_NAME --> Cronjob:</legend> 
+ 
+ <p>
+     This cronjob makes sure that things like the Mailing Monitor, Scheduled Mass Mailing, Bounce Handler, and Bridge function properly: 
+ </p>
+ 
+ <div class="clearskiesbox" style="width:90%"> 
+     <h1>
+         <!-- tmpl_var S_PROGRAM_URL -->/<!-- tmpl_var scheduled_jobs_flavor escape="HTML" -->/_all/_all/_verbose/
+     </h1> 
+ </div> 
+ <p> 
+     Set this URL to be fetched by a scheduled task (cronjob) on a recurring schedule (~5 minutes)
+ </p>
+ 
+ <p>
+     <label for="cronjob_url">Here's an example of a cronjob, using the curl command:</label> <br /> 
+     <input type="text" class="full" id="cronjob_url" value="<!-- tmpl_var name="curl_location" default="/cannot/find/curl" -->  -s --get --url <!-- tmpl_var S_PROGRAM_URL -->/<!-- tmpl_var scheduled_jobs_flavor escape="HTML" -->/_all/_all/_verbose/" />
+ </p>
+ </fieldset> 
+ 
+ 
+ <fieldset> 
+     
+ <legend>Rename/Remove the, "installer" Directory!</legend> 
 
 <p>
 	Rename/Remove the, <em>dada/<strong>installer</strong></em> directory! <!-- tmpl_var PROGRAM_NAME --> will not be enabled 
@@ -66,7 +91,8 @@
 <div id="move_results"></div> 
 
 
-
+ </fieldset> 
+     
 <h1>Additional Configuration?</h1> 
 
 <p>If you want to perform any additional configuration, your outside config file is located at, </p> 

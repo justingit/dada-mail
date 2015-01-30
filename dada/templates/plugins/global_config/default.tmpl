@@ -23,8 +23,11 @@ re-enabling it, and allowing you to use it to reconfigure your <!-- tmpl_var PRO
 		Ready? 
 	</strong>
 </p>
-<form action="<!-- tmpl_var Plugin_URL -->" method="post">
-	<input type="hidden" name="f" value="reconfigure" /> 
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+
+	<input type="hidden" name="flavor" value="plugins" /> 
+	<input type="hidden" name="plugin" value="global_config" /> 
+	<input type="hidden" name="prm" value="reconfigure" /> 
 	<div style="text-align:center">
 	<input type="submit" value="       &#187; Reconfigure <!-- tmpl_var PROGRAM_NAME -->!  &#171;       " class="processing bigger_button" />
 </div>

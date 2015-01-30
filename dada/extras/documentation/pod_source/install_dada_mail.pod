@@ -281,6 +281,11 @@ Once you've filled out the form completely, just click the, B<Configure Dada Mai
 
 If everything works well (and we hope it does) you should be all set to run Dada Mail.
 
+=head2 Setup the Scheduled Jobs (cronjobs)
+
+For many things in Dada Mail, including making sure your mass mailings are going out correctly, you will need to set up the scheduled jobs - this is usually done by setting a new cronjob. The command for the cronjob will be presented to you. Here's more information on the scheduled job needed: 
+
+L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
 
 =head2 Moving the, "installer" directory
 

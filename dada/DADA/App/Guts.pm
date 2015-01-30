@@ -1,5 +1,4 @@
-package DADA::App::Guts;
-use 5.008_001; 
+package DADA::App::Guts; 
 
 
 use lib "../../";

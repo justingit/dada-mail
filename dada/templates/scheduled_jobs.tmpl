@@ -18,14 +18,13 @@
             <!-- tmpl_var S_PROGRAM_URL -->/<!-- tmpl_var scheduled_jobs_flavor escape="HTML" -->/_all/_all/_verbose/
         </h1> 
     </div> 
-
     <p> 
         Set this URL to be fetched by a scheduled task (cronjob) on a recurring schedule (~5 minutes)
     </p>
     
     <p>
         <label for="cronjob_url">Here's an example of a cronjob, using the curl command:</label> <br /> 
-    <input type="text" class="full" id="cronjob_url" value="<!-- tmpl_var name="curl_location" default="/cannot/find/curl" -->  -s --get --url <!-- tmpl_var S_PROGRAM_URL -->/<!-- tmpl_var scheduled_jobs_flavor escape="HTML" -->/_all/_all/_verbose/" />
+        <input type="text" class="full" id="cronjob_url" value="<!-- tmpl_var name="curl_location" default="/cannot/find/curl" -->  -s --get --url <!-- tmpl_var S_PROGRAM_URL -->/<!-- tmpl_var scheduled_jobs_flavor escape="HTML" -->/_all/_all/_verbose/" />
     </p>
     
 </fieldset> 

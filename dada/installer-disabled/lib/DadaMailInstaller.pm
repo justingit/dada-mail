@@ -14,7 +14,7 @@ use lib qw(
 );
 
 use strict;
-use 5.008_001;
+
 use Encode qw(encode decode);
 
 # A weird fix.
@@ -743,22 +743,39 @@ sub grab_former_config_vals {
         $local_q->param( 'backend', 'default' );
     }
 
-    # Plugins/Extensions
-    for my $plugin_ext (
-        qw(
-        change_root_password
-        screen_cache
-        log_viewer
-        tracker
-        bridge
-        bounce_handler
+    
+    my @plugin_exts = (qw(
         multiple_subscribe
         blog_index
-        change_list_shortname
-        global_config
-        password_protect_directories
-        )
-      )
+    )); 
+    
+    if(keys %$BootstrapConfig::PLUGINS_ENABLED) { 
+        for(keys %$BootstrapConfig::PLUGINS_ENABLED){ 
+            if($BootstrapConfig::PLUGINS_ENABLED->{$_} == 1) { 
+                $local_q->param( 'install_' . $_, 1 );
+            }
+            else { 
+                $local_q->param( 'install_' . $_, 0 );                
+            }
+        }
+    }
+    else { 
+        # else, we'll look for it, in the admin menu. 
+        push(@plugin_exts, qw(
+                change_root_password
+                screen_cache
+                log_viewer
+                tracker
+                bridge
+                bounce_handler
+                change_list_shortname
+                global_config
+                password_protect_directories
+            )
+        ); 
+    }
+    # Plugins/Extensions
+    for my $plugin_ext (@plugin_exts)
     {
 
         if ( admin_menu_item_used($plugin_ext) == 1 ) {
@@ -1212,6 +1229,9 @@ sub scrn_install_dada_mail {
         }
     );
 
+    my $sched_flavor  = $q->param('scheduled_jobs_flavor') || '_schedules';
+    my $curl_location = `which curl`;
+     
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen => 'installer_install_dada_mail_scrn.tmpl',
@@ -1232,6 +1252,8 @@ sub scrn_install_dada_mail {
                 S_PROGRAM_URL                 => program_url_guess(),
                 submitted_PROGRAM_URL         => $q->param('program_url'),
                 Self_URL                      => $Self_URL,
+                scheduled_jobs_flavor         => $sched_flavor, 
+                curl_location                 => $curl_location, 
 
             }
         }
@@ -1673,8 +1695,8 @@ sub create_dada_config_file {
     my $scheduled_jobs_params = {}; 
     if($q->param('configure_scheduled_jobs') == 1) { 
         $scheduled_jobs_params->{configure_scheduled_jobs} = 1; 
-        $scheduled_jobs_params->{scheduled_jobs_flavor} = $q->param('scheduled_jobs_flavor') || 0;
-        $scheduled_jobs_params->{scheduled_jobs_log}    = $q->param('scheduled_jobs_log') || '_schedules';
+        $scheduled_jobs_params->{scheduled_jobs_flavor} = $q->param('scheduled_jobs_flavor') || '_schedules';
+        $scheduled_jobs_params->{scheduled_jobs_log}    = $q->param('scheduled_jobs_log') || 0;
     }
     my $fastcgi_params = {}; 
     if ( $q->param('configure_fastcgi') == 1 ) {
@@ -1719,6 +1741,28 @@ sub create_dada_config_file {
                 $profiles_params->{ 'profiles_' . $_ } = $q->param( 'profiles_' . $_ ) || '';
             }
             $profiles_params->{ 'profiles_' . $_ } = clean_up_var( $profiles_params->{ 'profiles_' . $_ } );
+        }
+    }
+    
+    my $plugins_params = {}; 
+    for(qw(
+        boilerplate_plugin          
+        tracker                     
+        bounce_handler              
+        bridge                      
+        change_root_password        
+        change_list_shortname       
+        password_protect_directories
+        log_viewer                  
+        screen_cache                
+        global_config               
+        view_list_settings          
+        )){ 
+        if($q->param('install_' . $_) == 1){ 
+            $plugins_params->{'install_' . $_} = 1; 
+        }
+        else { 
+            $plugins_params->{'install_' . $_} = 0;                 
         }
     }
 
@@ -1873,11 +1917,8 @@ sub create_dada_config_file {
 
     my $bounce_handler_params = {};
     if ( $q->param('install_bounce_handler') == 1 ) {
-
         $cut_tag_params->{cut_list_settings_default} = 0;
         $cut_tag_params->{cut_plugin_configs}        = 0;
-
-        $bounce_handler_params->{install_bounce_handler} = 1;
         foreach my $config ( keys %bounce_handler_plugin_configs ) {
             if ( defined( $q->param( 'bounce_handler_' . $config ) )
                 && ( $q->param( 'bounce_handler_' . $config ) ne '' ) )
@@ -1897,10 +1938,7 @@ sub create_dada_config_file {
     }
     my $bridge_params = {};
     if ( $q->param('install_bridge') == 1 ) {
-
         $cut_tag_params->{cut_plugin_configs} = 0;
-
-        $bridge_params->{install_bridge} = 1;
         foreach my $config ( keys %bridge_plugin_configs ) {
             if ( defined( $q->param( 'bridge_' . $config ) ) && ( $q->param( 'bridge_' . $config ) ne '' ) ) {
                 $bridge_params->{ 'bridge_' . $config } = _sq( strip( $q->param( 'bridge_' . $config ) ) );
@@ -1933,6 +1971,7 @@ sub create_dada_config_file {
                 %{$template_options_params},
                 %{$scheduled_jobs_params}, 
                 %{$fastcgi_params}, 
+                %{$plugins_params},
                 %{$profiles_params},
                 %{$security_params},
                 %{$captcha_params},

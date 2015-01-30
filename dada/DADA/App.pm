@@ -4,7 +4,7 @@ use base 'CGI::Application';
 #use CGI::Application::Plugin::DebugScreen;
 
 use strict;
-use 5.008_001;
+
 use Encode qw(encode decode);
 
 # A weird fix.
@@ -12512,8 +12512,7 @@ sub plugins {
         }
         eval { 
             require 'plugins/' . $plugin; 
-            my $run_sub = '\&' . $plugin . '::run'; 
-            ($headers, $body) = $run_sub->($q); 
+            ($headers, $body) = $DADA::Config::PLUGIN_RUNMODES->{$plugin}->{run}->($q); 
         };
         if(!$@){ 
             if ( exists( $headers->{-redirect_uri} ) ) {
@@ -12567,7 +12566,7 @@ sub schedules {
                 next if($DADA::Config::PLUGINS_ENABLED->{$plugin} != 1); 
                 eval { 
                     require 'plugins/' . $plugin; 
-                    my $schedule_sub = '\&' . $plugin . '::schedule_sub'; 
+                    my $schedule_sub =  $DADA::Config::PLUGIN_RUNMODES->{$plugin}->{sched_run}->($q); 
                     $r .= $schedule_sub->($list);                  
                 };
                 if($@) { 
