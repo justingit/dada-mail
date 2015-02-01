@@ -16,9 +16,10 @@ BEGIN {
 }
 
 
-
+my $q; 
+#
+# oh that does not look good: 
 my $Yeah_Root_Login = 0; 
-
 
 use Fcntl qw(
 O_WRONLY 
@@ -138,10 +139,6 @@ sub admin_template {
 	require DADA::Template::Widgets; 
 	require DADA::Template::Widgets::Admin_Menu;
 	require CGI; 
-	my $q = CGI->new;
-	   $q->charset($DADA::Config::HTML_CHARSET);
-	   $q = decode_cgi_obj($q);
-
 	# DEV: Weird. I know. 
 	if($DADA::Config::PROGRAM_URL eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'){ 
 		$DADA::Config::PROGRAM_URL = $ENV{SCRIPT_URI} || $q->url();
@@ -439,10 +436,6 @@ sub open_template {
 sub list_template {
 
     require DADA::Template::Widgets;
-    require CGI;
-    my $q = CGI->new;
-       $q->charset($DADA::Config::HTML_CHARSET);
-
     # DEV: Weird. I know.
     if ( $DADA::Config::PROGRAM_URL eq
         'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi' )

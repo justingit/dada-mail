@@ -32,25 +32,19 @@ use Carp qw(carp croak);
 
 #$Carp::Verbose = 1;
 
-require CGI;
-my $q = CGI->new;
-$q->charset($DADA::Config::HTML_CHARSET);
-$q = decode_cgi_obj($q);
+#if (   ( $DADA::Config::PROGRAM_URL eq "" )
+#    || ( $DADA::Config::PROGRAM_URL eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi' ) )
+#{
+#    $DADA::Config::PROGRAM_URL = $ENV{SCRIPT_URI} || $q->url();
+#
+#}
+#
+#if (   ( $DADA::Config::S_PROGRAM_URL eq "" )
+#    || ( $DADA::Config::S_PROGRAM_URL eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi' ) )
+#{
+#    $DADA::Config::S_PROGRAM_URL = $ENV{SCRIPT_URI} || $q->url();
+#}
 
-my $Referer = uriescape( $q->referer );
-
-if (   ( $DADA::Config::PROGRAM_URL eq "" )
-    || ( $DADA::Config::PROGRAM_URL eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi' ) )
-{
-    $DADA::Config::PROGRAM_URL = $ENV{SCRIPT_URI} || $q->url();
-
-}
-
-if (   ( $DADA::Config::S_PROGRAM_URL eq "" )
-    || ( $DADA::Config::S_PROGRAM_URL eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi' ) )
-{
-    $DADA::Config::S_PROGRAM_URL = $ENV{SCRIPT_URI} || $q->url();
-}
 
 =pod
 
@@ -247,7 +241,6 @@ sub cgi_user_error {
                         flavor         => 'resend_conf',
                         list           => xss_filter($list),
                         email          => $email,
-                        token          => xss_filter( $q->param('token') ),
                     },
                 },
             );

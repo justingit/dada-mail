@@ -259,7 +259,7 @@ diag(Dumper($r));
 ok($r->{email} eq 'user@example.com');
 ok($r->{errors}->{already_sent_sub_confirmation} == 1);
 ok($r->{redirect}->{query} eq 'list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=already_sent_sub_confirmation');
-ok($r->{redirect}->{url}   eq 'http://localhost?flavor=show_error&email=user%40example.com&list=dadatest&error=already_sent_sub_confirmation');
+ok($r->{redirect}->{url}   eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi?flavor=show_error&email=user%40example.com&list=dadatest&error=already_sent_sub_confirmation');
 ok($r->{redirect}->{using} == 1); 
 ok($r->{redirect}->{using_with_query} == 1);
 ok($r->{status} == 0);
@@ -775,7 +775,8 @@ my $r = $das->subscribe(
 ok($r->{email} eq $email);
 ok($r->{list} eq $list);
 ok($r->{status} == 1);
-ok($r->{redirect}->{url}   eq 'http://localhost?flavor=subscribe&email=user%40example.com&list=dadatest');
+diag($r->{redirect}->{url}); 
+ok($r->{redirect}->{url}   eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi?flavor=subscribe&email=user%40example.com&list=dadatest');
 ok($r->{redirect_required} eq 'subscription_requires_captcha'); 
 ok($r->{success_message} eq 'use redirect'); 
 undef $r; 

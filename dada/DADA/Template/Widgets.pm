@@ -7,7 +7,6 @@ use lib qw(
 use Encode; 
 use Try::Tiny; 
 use Carp qw(croak carp); 
- # $Carp::Verbose = 1;
 
 use DADA::Config qw(!:DEFAULT);  
 
@@ -25,17 +24,14 @@ BEGIN {
 
 
 use DADA::App::Guts; 
-use CGI qw(-oldstyle_urls); 
-my $q = new CGI; 
-   $q->charset($DADA::Config::HTML_CHARSET);
-   $q = decode_cgi_obj($q); 
-	
+my $q; 
+
+lame_init(); 
 
 my $wierd_abs_path = __FILE__; 
    $wierd_abs_path =~ s{^/}{}g;
 
 my @guesses; 
-
 my $Templates; 
 
 if(! $DADA::Config::ALTERNATIVE_HTML_TEMPLATE_PATH ){ 
@@ -265,8 +261,7 @@ sub make_wysiwyg_vars {
 
 }
 if($Global_Template_Variables{PROGRAM_URL} eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi'){ 
-	require CGI;
-	my $q = CGI->new;  
+
 	$Global_Template_Variables{PROGRAM_URL} = $q->url; 
 	# Well, what if we're running as the installer?
 	if($Global_Template_Variables{PROGRAM_URL} =~ m/installer\/install\.cgi$/){ 
@@ -1165,8 +1160,6 @@ sub profile_widget {
 	        if ($dp) {
 	            require DADA::Profile::Session;
 	            require CGI;
-	            my $q = new CGI;
-			 	   $q = decode_cgi_obj($q); 
 	            my $prof_sess = DADA::Profile::Session->new;
 	            if ( $prof_sess->is_logged_in( { -cgi_obj => $q } ) ) {
 	                $is_logged_in = 1;
@@ -2806,12 +2799,7 @@ sub subscription_form {
 	}
 	
 	if(! exists ($args->{-ignore_cgi}) && $args->{-ignore_cgi} != 1){ 
-   
-        require CGI; 
-        my $q = new CGI; 
-           $q->charset($DADA::Config::HTML_CHARSET);
-		   $q = decode_cgi_obj($q); 
-        foreach(qw(email list )){ 
+           foreach(qw(email list )){ 
             if(! exists ( $args->{'-' . $_} ) && defined($q->param($_))){ 
                 $args->{'-' . $_} = xss_filter($q->param($_));
             }
@@ -3045,8 +3033,13 @@ sub _slurp_raw {
 
 
 
-
-
+# This is a bad idea - better to just OO this module... 
+sub lame_init(){ 
+    if(!defined($q)){ 
+        require CGI;
+        $q = CGI->new();
+    }
+}
 
 
 1;

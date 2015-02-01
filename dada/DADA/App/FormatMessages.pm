@@ -2244,7 +2244,7 @@ sub email_template {
     my ($args) = @_;
 
     require DADA::Template::Widgets;
-
+    
     if ( !exists( $args->{-entity} ) ) {
         croak 'did not pass an entity in, "-entity"!';
     }

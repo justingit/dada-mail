@@ -1,13 +1,10 @@
 package DADA::App::Guts; 
 
-
 use lib "../../";
 use lib "../../DADA/perllib";
 
 use Carp qw(carp croak);
-
 use DADA::Config qw(!:DEFAULT);  
-
 use Encode qw(encode decode);
 use Params::Validate ':all';
 use Try::Tiny; 
@@ -92,9 +89,10 @@ require Exporter;
 
 
 
-
 use strict; 
 use vars qw(@EXPORT);
+
+my $t = 0; 
 
 # evaluate these once at compile time
 use constant HAS_URI_ESCAPE_XS => eval { require URI::Escape::XS; 1; }; # Much faster, but requires C compiler.
@@ -2047,16 +2045,21 @@ sub message_id {
 
 sub check_list_security { 
     
-    warn 'in check_list_security'; 
-    use Data::Dumper; 
     
 	my %args = (-Function        => undef, 
 				-cgi_obj         => undef, 
 				-manual_override => 0, 
 				@_);
+
+        if($t == 1) { 
+            warn 'in check_list_security'; 
+            require Data::Dumper; 
+            warn 'args:' . Data::Dumper::Dumper({%args}); 
+        }
+
+
 	croak 'no CGI Object (-cgi_obj)' if ! $args{-cgi_obj};
 
-    warn 'args:' . Dumper({%args}); 
 	
 	require DADA::App::Session; 
 	

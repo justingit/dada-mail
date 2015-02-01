@@ -50,8 +50,22 @@ use Try::Tiny;
 # Since this'll basically hit everything...?
 
 use DADA::Template::HTML;
-
+use DADA::Template::Widgets;
 #---------------------------------------------------------------------#
+
+sub cgiapp_init {
+  my $self = shift;
+     $self->query->charset($DADA::Config::HTML_CHARSET);
+     
+     # Kinda Weird. 
+     $DADA::Template::Widgets::q = $self->query; 
+     $DADA::Template::HTML::q    = $self->query; 
+     
+}
+sub cgiapp_postrun {
+  my ($self, $output_ref) = @_;
+  safely_encode($$output_ref);
+}
 
 sub setup {
 
@@ -339,7 +353,6 @@ sub default {
                 $auth_state = $sast->make_state;
             }
 
-            require DADA::Template::Widgets;
             my $scrn = DADA::Template::Widgets::wrap_screen(
                 {
                     -screen => 'congrats_screen.tmpl',
@@ -357,7 +370,6 @@ sub default {
                 return $c->cached('default.scrn');
         }
 
-        require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::default_screen(
 
             # {
@@ -402,8 +414,6 @@ sub list_page {
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
-    require DADA::Template::Widgets;
-
     my $scrn = DADA::Template::Widgets::list_page(
         -list           => $list,
         -cgi_obj        => $q,
@@ -446,7 +456,7 @@ sub admin {
 
         my $login_widget = $q->param('login_widget')
           || $DADA::Config::LOGIN_WIDGET;
-        require DADA::Template::Widgets;
+
         my $scrn = DADA::Template::Widgets::admin(
             -login_widget => $login_widget,
             -cgi_obj      => $q
@@ -463,7 +473,6 @@ sub sign_in {
     if ( DADA::App::Guts::install_dir_around() == 1 ) {
         return user_error( { -error => 'install_dir_still_around' } );
     }
-    require DADA::Template::Widgets;
 
     my $list = $q->param('list');
 
@@ -866,7 +875,6 @@ sub draft_saved_notification {
     if(!$checksout){ return $error_msg; }
     
     my $role = $q->param('role');
-    require DADA::Template::Widgets;
 
     my $scrn = DADA::Template::Widgets::screen(
         {
@@ -890,8 +898,6 @@ sub drafts {
         -Function => 'drafts'
     );
     if(!$checksout){ return $error_msg; }
-    
-    require DADA::Template::Widgets;
     my $list = $admin_list;
 
     my $delete_draft = $q->param('delete_draft') || 0;
@@ -1010,7 +1016,6 @@ sub message_body_help {
     my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security( -cgi_obj => $q, );
     if(!$checksout){ return $error_msg; }
     
-    require DADA::Template::Widgets;
     my $body = DADA::Template::Widgets::screen( { -screen => 'send_email_message_body_help_widget.tmpl', } );
     return $body;
 }
@@ -1024,9 +1029,6 @@ sub url_message_body_help {
         -cgi_obj => $q
     );
     if(!$checksout){ return $error_msg; }
-    
-    require DADA::Template::Widgets;
-    print $q->header();
     return ( {}, DADA::Template::Widgets::screen( { -screen => 'send_url_email_message_body_help_widget.tmpl', } ) );
 }
 
@@ -1218,9 +1220,6 @@ sub sending_monitor_index {
             ( $root_login == 1 ) ? () : ( -list => $list )
         }
       );
-
-    require DADA::Template::Widgets;
-
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen         => 'sending_monitor_index_screen.tmpl',
@@ -1559,7 +1558,7 @@ sub sending_monitor {
         if ( $status->{mailing_time} > 0 ) {
             $hourly_rate = commify( int( ( $status->{total_sent_out} / $status->{mailing_time} ) * 60 * 60 + .5 ) );
         }
-        require DADA::Template::Widgets;
+
         my $header_subject_label = DADA::Template::Widgets::screen(
             {
                 -data                     => \$status->{email_fields}->{Subject},
@@ -1622,7 +1621,6 @@ sub sending_monitor {
     }
     else {
 
-        require DADA::Template::Widgets;
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'sending_monitor_container_screen.tmpl',
@@ -1745,7 +1743,7 @@ sub mass_mailing_options {
             $can_use_css_inliner = 0;
         };
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'mass_mailing_options_screen.tmpl',
@@ -1862,7 +1860,7 @@ sub change_info {
         my $flags_privacy_policy   = $flags->{privacy_policy}   || 0;
         my $flags_physical_address = $flags->{physical_address} || 0;
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'change_info_screen.tmpl',
@@ -1944,7 +1942,7 @@ sub change_password {
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
     if ( !$process ) {
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'change_password_screen.tmpl',
@@ -2037,7 +2035,7 @@ sub delete_list {
 
     if ( !$process ) {
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'delete_list_screen.tmpl',
@@ -2069,7 +2067,7 @@ sub delete_list {
         $c->flush;
 
         my $logout_cookie = logout( -redirect => 0 );
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'delete_list_success_screen.tmpl',
@@ -2128,7 +2126,7 @@ sub list_options {
             '-values' => [qw(list list_owner)],
         );
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'list_options_screen.tmpl',
@@ -2320,7 +2318,7 @@ sub web_services {
         $keys_reset = 1;
     }
 
-    require DADA::Template::Widgets;
+    
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen         => 'web_services.tmpl',
@@ -2443,7 +2441,7 @@ sub sending_preferences {
             $no_smtp_server_set = 1;
         }
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'sending_preferences_screen.tmpl',
@@ -2607,7 +2605,7 @@ sub mass_mailing_preferences {
             -class => 'previewBatchSendingSpeed',
         );
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'mass_mailing_preferences_screen.tmpl',
@@ -2685,7 +2683,7 @@ sub amazon_ses_verify_email {
         ( $status, $result ) = $ses->verify_sender( { -email => $amazon_ses_verify_email } );
     }
 
-    require DADA::Template::Widgets;
+    
 
     my $body = DADA::Template::Widgets::screen(
         {
@@ -2763,7 +2761,7 @@ sub amazon_ses_get_stats {
             $using_man                        = 1;
 
         }
-        require DADA::Template::Widgets;
+        
 
         my $body = DADA::Template::Widgets::screen(
             {
@@ -2848,7 +2846,7 @@ sub previewBatchSendingSpeed {
         }
     }
 
-    require DADA::Template::Widgets;
+    
     my $body = DADA::Template::Widgets::screen(
         {
             -screen => 'previewBatchSendingSpeed_widget.tmpl',
@@ -2925,7 +2923,7 @@ sub adv_sending_preferences {
             $can_mime_encode = 0;
         }
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'adv_sending_preferences_screen.tmpl',
@@ -3129,7 +3127,7 @@ sub sending_tuning_options {
             $c++;
         }
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'sending_tuning_options.tmpl',
@@ -3208,7 +3206,7 @@ sub sending_preferences_test {
         push( @$ht_report, { SMTP_command => $s_f, message => $f->{message} } );
     }
 
-    require DADA::Template::Widgets;
+    
     my $body = DADA::Template::Widgets::screen(
         {
             -screen => 'sending_preferences_test_widget.tmpl',
@@ -3262,7 +3260,7 @@ sub view_list {
     my $advanced_search = $q->param('advanced_search')    || 0;
     my $advanced_query  = $q->param('advanced_query')     || undef;
 
-    require DADA::Template::Widgets;
+    
     if ( $mode ne 'viewport' ) {
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
@@ -3296,7 +3294,7 @@ sub view_list {
                     bounced_list_moved_to_list_count => $bounced_list_moved_to_list_count,
                     bounced_list_removed_from_list   => $bounced_list_removed_from_list,
                     updated_addresses                => $updated_addresses,
-                    type_title                       => 'FIX ME',                            #$type_title,
+                    type_title                       => $DADA::Config::LIST_TYPES->{$type},
 
                 },
             }
@@ -3454,7 +3452,7 @@ sub view_list {
             );
         }
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::screen(
             {
                 -list   => $list,
@@ -3467,7 +3465,7 @@ sub view_list {
                     root_login                 => $root_login,
 
                     type       => $type,
-                    type_title => 'FIX ME',    #$type_title,
+                    type_title => $DADA::Config::LIST_TYPES->{$type},
 
                     first                 => $page_info->first,
                     last                  => $page_info->last,
@@ -3686,7 +3684,7 @@ sub list_activity {
         $r->[$i]->{show_email} = 1;
     }
 
-    require DADA::Template::Widgets;
+    
     my $body = DADA::Template::Widgets::wrap_screen(
         {
             -list           => $list,
@@ -3764,7 +3762,7 @@ sub view_bounce_history {
         }
     );
 
-    require DADA::Template::Widgets;
+    
     my $body = DADA::Template::Widgets::screen(
         {
             -screen => 'bounce_search_results_modal_menu.tmpl',
@@ -4033,7 +4031,7 @@ sub filter_using_black_list {
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
         my $filtered = $lh->filter_list_through_blacklist;
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -list           => $list,
@@ -4288,7 +4286,7 @@ sub membership {
         my $delivery_prefs = $s->{delivery_prefs} || 'individual';
         my $digest_timeframe = formatted_runtime( $ls->param('digest_schedule') );
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'membership_screen.tmpl',
@@ -4306,7 +4304,7 @@ sub membership {
                     query                          => $query,
                     order_by                       => $order_by,
                     order_dir                      => $order_dir,
-                    type_title                     => 'FIX ME',                          #$type_title,
+                    type_title                     => $DADA::Config::LIST_TYPES->{$type},
                     fields                         => $fields,
                     root_login                     => $root_login,
                     profile_exists                 => $profile_exists,
@@ -4473,7 +4471,7 @@ sub validate_update_email {
 
         require Data::Dumper;
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::screen(
             {
                 -screen => 'validate_update_email_widget.tmpl',
@@ -4650,7 +4648,7 @@ sub validate_remove_email {
         require Data::Dumper;
         my $subscribed_lists_dump = Data::Dumper::Dumper($subscribed_lists);
 
-        require DADA::Template::Widgets;
+        
         my $body = DADA::Template::Widgets::screen(
             {
                 -screen => 'validate_remove_email_widget.tmpl',
@@ -4752,7 +4750,7 @@ sub mailing_list_history {
             }
         }
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::screen(
             {
                 -screen => 'filtered_list_activity_widget.tmpl',
@@ -4862,7 +4860,7 @@ sub membership_activity {
             );
         }
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::screen(
             {
                 -screen                   => 'membership_activity_screen.tmpl',
@@ -5205,7 +5203,7 @@ sub add {
         {
             $list_is_closed = 1;
         }
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'add_screen.tmpl',
@@ -5222,7 +5220,7 @@ sub add {
                     num_subscribers            => $num_subscribers,
                     SUBSCRIPTION_QUOTA         => $DADA::Config::SUBSCRIPTION_QUOTA,
                     type                       => $type,
-                    type_title                 => 'FIX ME',                                            #$type_title,
+                    type_title                 => $DADA::Config::LIST_TYPES->{$type},
                     flavor                     => 'add',
                     rand_string                => $rand_string,
                     list_subscribers_num       => $lh->num_subscribers( { -type => 'list' } ),
@@ -5400,7 +5398,7 @@ sub add_email {
             my $num_file_lines = DADA::App::Guts::num_file_lines($new_emails_fn);
             if ( $num_file_lines > $ls->param('add_list_import_limit') ) {
                 my $error = 'over_add_list_import_limit';
-                require DADA::Template::Widgets;
+                
                 my $scrn = DADA::Template::Widgets::wrap_screen(
                     {
                         -screen         => 'add_email_error_screen.tmpl',
@@ -5428,7 +5426,7 @@ sub add_email {
         }
         catch {
             my $error = $_;
-            require DADA::Template::Widgets;
+            
             my $scrn = DADA::Template::Widgets::wrap_screen(
                 {
                     -screen         => 'add_email_error_screen.tmpl',
@@ -5584,14 +5582,14 @@ sub add_email {
             invalid_email              => $invalid_email,
             invalid_profile_fields     => $invalid_profile_fields,
             type                       => $type,
-            type_title                 => 'FIX ME',                          #$type_title,
+            type_title                 => $DADA::Config::LIST_TYPES->{$type},
             root_login                 => $root_login,
             return_to                  => $return_to,
             return_address             => $return_address,
             chrome                     => $chrome,
         );
 
-        require DADA::Template::Widgets;
+        
         my $scrn;
         if ( $chrome == 1 ) {
             $scrn = DADA::Template::Widgets::wrap_screen(
@@ -5747,7 +5745,7 @@ sub delete_email {
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
     if ( !$process ) {
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'delete_email_screen.tmpl',
@@ -5770,7 +5768,7 @@ sub delete_email {
                     list_type_isa_white_list         => ( $type eq 'white_list' )         ? 1
                     : 0,
                     type                       => $type,
-                    type_title                 => 'FIX ME',                                            #$type_title,
+                    type_title                 => $DADA::Config::LIST_TYPES->{$type},
                     flavor                     => 'delete_email',
                     list_subscribers_num       => $lh->num_subscribers( { -type => 'list' } ),
                     black_list_subscribers_num => $lh->num_subscribers( { -type => 'black_list' } ),
@@ -5841,7 +5839,7 @@ sub delete_email {
         my $invalid_addresses = [];
         push( @$invalid_addresses, { email => $_->{email} } ) for @$invalid_email;
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'delete_email_screen_filtered.tmpl',
@@ -5859,7 +5857,7 @@ sub delete_email {
                     invalid_addresses         => $invalid_addresses,
 
                     type       => $type,
-                    type_title => 'FIX ME',    #$type_title,
+                    type_title => $DADA::Config::LIST_TYPES->{$type},
 
                 },
             }
@@ -5981,7 +5979,7 @@ sub subscription_options {
             -default => $ls->param('add_list_import_limit'),
         );
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'subscription_options_screen.tmpl',
@@ -6142,7 +6140,7 @@ sub view_archive {
 
         my $index_nav = $archive->create_index_nav( $stopped_at, 1 );
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'view_archive_index_screen.tmpl',
@@ -6194,7 +6192,7 @@ sub view_archive {
             -Function => "admin"
         );
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'view_archive_screen.tmpl',
@@ -6345,7 +6343,7 @@ sub archive_options {
 
         my $can_use_captcha = can_use_AuthenCAPTCHA();
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'archive_options_screen.tmpl',
@@ -6492,7 +6490,7 @@ sub adv_archive_options {
             );
         }
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'adv_archive_options_screen.tmpl',
@@ -6841,7 +6839,7 @@ sub edit_archived_msg {
             }
         }
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'edit_archived_msg.tmpl',
@@ -6897,7 +6895,7 @@ sub edit_archived_msg {
             my $the_id = $q->param('id');
             my $done   = $q->param('done');
 
-            require DADA::Template::Widgets;
+            
             my $scrn = DADA::Template::Widgets::wrap_screen(
                 {
                     -screen         => 'edit_archived_msg_prefs_screen.tmpl',
@@ -7153,7 +7151,7 @@ sub html_code {
     
     my $list = $admin_list;
 
-    require DADA::Template::Widgets;
+    
 
     my $jquery_head_code = DADA::Template::Widgets::screen(
         {
@@ -7229,7 +7227,7 @@ sub preview_jquery_plugin_subscription_form {
     
     
     my $list = $admin_list;
-    require DADA::Template::Widgets;
+    
 
     my $jquery_subscription_form_body = DADA::Template::Widgets::screen(
         {
@@ -7293,7 +7291,7 @@ sub edit_template {
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
-    require DADA::Template::Widgets;
+    
     my $raw_template     = DADA::Template::HTML::default_template();
     my $default_template = default_template();
 
@@ -7356,7 +7354,7 @@ sub edit_template {
                 }
             }
         }
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'edit_template_screen.tmpl',
@@ -7413,7 +7411,7 @@ sub edit_template {
                 $template_info = $q->param("template_info");
             }
 
-            require DADA::Template::Widgets;
+            
             my $scrn = DADA::Template::Widgets::wrap_screen(
                 {
                     -screen                   => 'preview_template.tmpl',
@@ -7472,7 +7470,7 @@ sub back_link {
 
     if ( !$process ) {
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'back_link_screen.tmpl',
@@ -7528,7 +7526,7 @@ sub edit_type {
     
     my $list = $admin_list;
 
-    require DADA::Template::Widgets;
+    
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
@@ -7538,7 +7536,7 @@ sub edit_type {
 
     if ( !$process ) {
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'edit_type_screen.tmpl',
@@ -7705,7 +7703,7 @@ sub edit_html_type {
         #use Data::Dumper;
         #die Dumper($ls->get(-dotted => 1, -all_settings => 1));
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'edit_html_type_screen.tmpl',
@@ -7794,7 +7792,7 @@ sub manage_script {
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
-    require DADA::Template::Widgets;
+    
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen         => 'manage_script_screen.tmpl',
@@ -7847,7 +7845,7 @@ sub feature_set {
     if ( !$process ) {
 
         my $feature_set_menu = DADA::Template::Widgets::Admin_Menu::make_feature_menu( $ls->get );
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'feature_set_screen.tmpl',
@@ -7915,7 +7913,7 @@ sub list_cp_options {
 
     if ( !$process ) {
 
-        require DADA::Template::Widgets;
+        
 
         my %wysiwyg_vars = DADA::Template::Widgets::make_wysiwyg_vars($list);
 
@@ -7987,7 +7985,7 @@ sub profile_fields {
     my $dpf = DADA::Profile::Fields->new;
 
     if ( $dpf->can_have_subscriber_fields == 0 ) {
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen         => 'profile_fields_screen.tmpl',
@@ -8183,7 +8181,7 @@ sub profile_fields {
             }
         );
     }
-    require DADA::Template::Widgets;
+    
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen         => 'profile_fields_screen.tmpl',
@@ -8299,6 +8297,7 @@ sub restful_subscribe {
             $data = $json->decode($post_data);
         }
         catch {
+            warn 'problems decoding post data: ' . $_;
             die '400';
         };
 
@@ -8440,7 +8439,7 @@ sub outdated_subscription_urls {
 
     my $orig_flavor = $q->param('orig_flavor') || undef;
 
-    require DADA::Template::Widgets;
+    
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen => 'outdated_subscription_urls_screen.tmpl',
@@ -8519,7 +8518,7 @@ sub report_abuse {
 
             my $list = $data->{data}->{list};
 
-            require DADA::Template::Widgets;
+            
 
             if ( $process != 1 ) {
 
@@ -9018,7 +9017,7 @@ sub new_list {
                 $err_word = 'were' if $errors > 1;
             }
 
-            require DADA::Template::Widgets;
+            
 
             my @available_lists = DADA::App::Guts::available_lists();
             my $lists_exist     = $#available_lists + 1;
@@ -9176,7 +9175,7 @@ sub new_list {
                 $auth_state = $sast->make_state;
             }
 
-            require DADA::Template::Widgets;
+            
             my $scrn = DADA::Template::Widgets::wrap_screen(
                 {
                     -screen => 'new_list_created_screen.tmpl',
@@ -9233,7 +9232,7 @@ sub archive {
 
     my $start = int( $q->param('start') ) || 0;
 
-    require DADA::Template::Widgets;
+    
 
     if ( $ls->param('show_archives') == 0 ) {
         return user_error( { -list => $list, -error => "no_show_archives" } );
@@ -9822,7 +9821,7 @@ sub search_archive {
 
         unless ( $ls->param('archive_subscribe_form') == 0 ) {
             $archive_subscribe_form .= $info . "\n";
-            require DADA::Template::Widgets;
+            
             $archive_subscribe_form .= DADA::Template::Widgets::subscription_form(
                 {
                     -list       => $ls->param('list'),
@@ -9834,7 +9833,7 @@ sub search_archive {
 
     }
 
-    require DADA::Template::Widgets;
+    
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen => 'search_archive_screen.tmpl',
@@ -9972,7 +9971,7 @@ sub send_archive {
         my ( $subject, $message, $format, $raw_msg ) = $archive->get_archive_info($entry);
         chomp($subject);
 
-        require DADA::Template::Widgets;
+        
 
         # DEV: This is stupid, and I don't think it's a great idea.
         $subject = $archive->_parse_in_list_info( -data => $subject );
@@ -10319,7 +10318,7 @@ sub email_password {
             "remote_host:$ENV{REMOTE_HOST}, ip_address:$ENV{REMOTE_ADDR}"
         ) if $DADA::Config::LOG{list_lives};
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'list_password_confirmation_screen.tmpl',
@@ -10798,7 +10797,7 @@ sub pass_gen {
     my $q    = $self->query();
 
     my $pw = $q->param('pw');
-    require DADA::Template::Widgets;
+    
 
     if ( !$pw ) {
 
@@ -10834,7 +10833,7 @@ sub setup_info {
     my $self = shift;
     my $q    = $self->query();
 
-    require DADA::Template::Widgets;
+    
 
     my $root_password = $q->param('root_password') || '';
 
@@ -10908,7 +10907,7 @@ sub setup_info {
             push( @$config_vals, { name => $orig_name, value => $var_val } );
         }
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'setup_info_screen.tmpl',
@@ -10960,7 +10959,7 @@ sub setup_info {
               || $DADA::Config::PROGRAM_URL eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi';    # default.
 
             my $incorrect_root_password = $root_password ? 1 : 0;
-            require DADA::Template::Widgets;
+            
             my $scrn = DADA::Template::Widgets::wrap_screen(
                 {
                     -screen => 'setup_info_login_screen.tmpl',
@@ -10999,7 +10998,7 @@ sub reset_cipher_keys {
             $ls->save( { cipher_key => DADA::Security::Password::make_cipher_key() } );
         }
 
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             -screen => 'reset_cipher_keys_process.tmpl',
             -with   => 'list',
@@ -11008,7 +11007,7 @@ sub reset_cipher_keys {
 
     }
     else {
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             -screen => 'reset_cipher_keys.tmpl',
             -with   => 'list',
@@ -11060,7 +11059,7 @@ sub restore_lists {
                 }
             }
 
-            require DADA::Template::Widgets;
+            
             my $scrn = DADA::Template::Widgets::wrap_screen(
                 {
                     -screen => 'restore_lists_complete.tmpl',
@@ -11215,7 +11214,7 @@ sub restore_lists {
                 $restore_list_options .= '</table>';
             }
 
-            require DADA::Template::Widgets;
+            
             my $scrn = DADA::Template::Widgets::wrap_screen(
                 {
                     -screen => 'restore_lists_options_screen.tmpl',
@@ -11232,7 +11231,7 @@ sub restore_lists {
 
     }
     else {
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen( { -screen => 'restore_lists_screen.tmpl', -with => 'list', } );
         return $scrn;
     }
@@ -11246,7 +11245,7 @@ sub subscription_form_html {
     my $list                 = $q->param('list');
     my $subscription_form_id = $q->param('subscription_form_id')
       || 'jquery_subscription_form';
-    require DADA::Template::Widgets;
+    
     my $subscription_form = DADA::Template::Widgets::subscription_form(
         {
             -subscription_form_id => $subscription_form_id,
@@ -11297,7 +11296,7 @@ sub subscriber_help {
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
-    require DADA::Template::Widgets;
+    
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen => 'subscriber_help_screen.tmpl',
@@ -11521,7 +11520,7 @@ sub css {
     my $headers = { -type => 'text/css' };
 
     if ( $q->param('css_file') eq 'dada_mail.css' ) {
-        require DADA::Template::Widgets;
+        
         my $body = DADA::Template::Widgets::_raw_screen(
             { -screen => $DADA::Config::SUPPORT_FILES->{dir} . '/static/css/dada_mail.css' } );
 
@@ -11637,7 +11636,7 @@ sub profile_login {
                 $CAPTCHA_string = $cap->get_html( $DADA::Config::RECAPTCHA_PARAMS->{public_key} );
             }
 
-            require DADA::Template::Widgets;
+            
             $scrn = DADA::Template::Widgets::wrap_screen(
                 {
                     -screen => 'profile_login.tmpl',
@@ -11777,7 +11776,7 @@ sub profile_register {
     else {
         $prof->setup_profile( { -password => $register_password, } );
         my $scrn = '';
-        require DADA::Template::Widgets;
+        
         $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'profile_register.tmpl',
@@ -12005,7 +12004,7 @@ sub profile {
 
                 my $info = $prof->get( { -dotted => 1 } );
                 my $scrn = '';
-                require DADA::Template::Widgets;
+                
                 $scrn = DADA::Template::Widgets::wrap_screen(
                     {
                         -with   => 'list',
@@ -12094,7 +12093,7 @@ sub profile {
                 # Ack, this is very awkward:
 
                 #  Ack, this is very awkward:
-                require DADA::Template::Widgets;
+                
 
                 my $li = DADA::Template::Widgets::webify_and_santize(
                     {
@@ -12140,7 +12139,7 @@ sub profile {
             }
 
             my $scrn = '';
-            require DADA::Template::Widgets;
+            
             $scrn .= DADA::Template::Widgets::wrap_screen(
                 {
                     -screen => 'profile_home.tmpl',
@@ -12257,7 +12256,7 @@ sub profile_reset_password {
             my ( $status, $errors ) = $prof->is_valid_activation( { -auth_code => $auth_code, } );
             if ( $status == 1 ) {
                 if ( !$password ) {
-                    require DADA::Template::Widgets;
+                    
                     my $scrn = DADA::Template::Widgets::wrap_screen(
                         {
                             -screen => 'profile_reset_password.tmpl',
@@ -12309,7 +12308,7 @@ sub profile_reset_password {
 
                 $prof->send_profile_reset_password_email();
                 $prof->activate;
-                require DADA::Template::Widgets;
+                
                 my $scrn = DADA::Template::Widgets::wrap_screen(
                     {
                         -screen => 'profile_reset_password_confirm.tmpl',
@@ -12425,7 +12424,7 @@ sub profile_update_email {
 
             # I should probably also just, log this person in...
 
-            require DADA::Template::Widgets;
+            
             my $scrn = DADA::Template::Widgets::wrap_screen(
                 {
                     -screen => 'profile_update_email_confirm.tmpl',
@@ -12450,7 +12449,7 @@ sub profile_update_email {
         for ( keys %$errors ) {
             push( @$ht_errors, { name => $_, value => $errors->{$_} } );
         }
-        require DADA::Template::Widgets;
+        
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
                 -screen => 'profile_update_email_error.tmpl',
@@ -12470,7 +12469,7 @@ sub what_is_dada_mail {
     my $self = shift;
     my $q    = $self->query();
 
-    require DADA::Template::Widgets;
+    
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen => 'what_is_dada_mail.tmpl',
@@ -12619,7 +12618,7 @@ sub scheduled_jobs {
         
     my $curl_location      = `which curl`;
     
-    require DADA::Template::Widgets;
+    
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen => 'scheduled_jobs.tmpl',

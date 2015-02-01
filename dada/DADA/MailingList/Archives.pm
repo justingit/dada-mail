@@ -1341,7 +1341,6 @@ sub view_inline_attachment {
 	
 	my $a_entity = $self->_find_inline_attachment_entity(-cid => $args{-cid}, -entity => $entity); 
 	
-	
 	require CGI; 
 	my $q = CGI->new; 
 	   $q->charset($DADA::Config::HTML_CHARSET);

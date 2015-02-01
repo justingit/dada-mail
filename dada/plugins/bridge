@@ -184,89 +184,42 @@ sub run {
 
 }
 
-sub test_sub {
-    return "Hello, World!";
-}
-
 sub cgi_main {
-my $q = shift;
-    if (   keys %{ $q->Vars }
-        && $q->param('run')
-        && xss_filter( $q->param('run') ) == 1
-        && $Plugin_Config->{Allow_Manual_Run} == 1 )
-    {
-        return cgi_manual_start($q);
+    
+    my $q = shift;
+    my $admin_list;
+
+    ( $admin_list, $root_login ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'bridge',
+    );
+
+    $list = $admin_list;
+
+    my $prm = $q->param('prm') || 'cgi_default';
+
+    #die $prm;
+
+    my %Mode = (
+        'edit'                        => \&edit,
+        'cgi_show_plugin_config'      => \&cgi_show_plugin_config,
+        'test_pop3'                   => \&cgi_test_pop3,
+        'awaiting_msgs'               => \&cgi_awaiting_msgs,
+        'manual_start'                => \&admin_cgi_manual_start,
+        'admin_cgi_manual_start_ajax' => \&admin_cgi_manual_start_ajax,
+        'cgi_test_pop3_ajax'          => \&cgi_test_pop3_ajax,
+        'edit_email_msgs'             => \&cgi_edit_email_msgs,
+        'mod'                         => \&mod,
+    );
+
+    if ( exists( $Mode{$prm} ) ) {
+        return $Mode{$prm}->($q);    #call the correct subroutine
     }
     else {
-
-        my $admin_list;
-
-        ( $admin_list, $root_login ) = check_list_security(
-            -cgi_obj  => $q,
-            -Function => 'bridge',
-        );
-
-        $list = $admin_list;
-
-        my $prm = $q->param('prm') || 'cgi_default';
-
-        #die $prm;
-
-        my %Mode = (
-            'edit'                        => \&edit,
-            'cgi_show_plugin_config'      => \&cgi_show_plugin_config,
-            'test_pop3'                   => \&cgi_test_pop3,
-            'awaiting_msgs'               => \&cgi_awaiting_msgs,
-            'manual_start'                => \&admin_cgi_manual_start,
-            'admin_cgi_manual_start_ajax' => \&admin_cgi_manual_start_ajax,
-            'cgi_test_pop3_ajax'          => \&cgi_test_pop3_ajax,
-            'edit_email_msgs'             => \&cgi_edit_email_msgs,
-            'mod'                         => \&mod,
-        );
-
-        if ( exists( $Mode{$prm} ) ) {
-            return $Mode{$prm}->($q);    #call the correct subroutine
-        }
-        else {
-            return edit($q);
-        }
+        return edit($q);
     }
 }
 
-sub cgi_manual_start {
-
-    my $q = shift; 
-    my $r = '';
-
-    if (
-           ( xss_filter( $q->param('passcode') ) eq $Plugin_Config->{Manual_Run_Passcode} )
-        || ( $Plugin_Config->{Manual_Run_Passcode} eq '' )
-
-      )
-    {
-
-        if ( defined( xss_filter( $q->param('verbose') ) ) ) {
-            $verbose = xss_filter( $q->param('verbose') );
-        }
-        else {
-            $verbose = 1;
-        }
-
-        $check_deletions = 1;
-
-        if ( xss_filter( $q->param( xss_filter('list') ) ) ) {
-            $run_list = xss_filter( $q->param('list') );
-        }
-
-        my ( $h, $b ) = start();
-        $r .= $b;
-
-    }
-    else {
-        $r = "$DADA::Config::PROGRAM_NAME $DADA::Config::VER Authorization Denied.";
-    }
-    return ( {-type => 'text/plain'}, $r );
-}
 
 sub cgi_test_pop3_ajax {
 
@@ -477,11 +430,10 @@ sub admin_cgi_manual_start_ajax {
     $run_list        = $list;
     $verbose         = 1;
     $check_deletions = 1;
-
     my $r = '';
-    $r .= '<pre>';     # DEV no like.
-    $r .= start($list);
-    $r .= '</pre>';    # DEV no like.
+       $r .= '<pre>';     # DEV no like.
+       $r .= start($list);
+       $r .= '</pre>';    # DEV no like.
     return ( {}, $r );
 }
 
@@ -1070,9 +1022,11 @@ sub start {
 
             $r .= "\n";
             $r .= "Message Size: " . $msgnums->{$msgnum} . "\n";
-
-            if ( max_msg_test( { -size => $msgnums->{$msgnum} } ) == 0 ) {
-
+            
+            my ($mmt_status, $mmt_r) = max_msg_test( { -size => $msgnums->{$msgnum} } );
+            $r .= $mmt_r; 
+            
+            if ($mmt_status  == 0 ) {
                 # We don't do anything else to this guy
                 next MSG_QUEUE;
             }
@@ -1084,7 +1038,10 @@ sub start {
 
             push( @{ $checksums->{$list} }, create_checksum( \$full_msg ) );
 
-            if ( soft_max_msg_test( { -size => $msgnums->{$msgnum} } ) == 0 ) {
+            my ($smmt_status, $smmt_r) = soft_max_msg_test( { -size => $msgnums->{$msgnum} } );
+            $r .= $smmt_r; 
+            
+            if ( $smmt_status == 0 ) {
                 send_msg_too_big( $ls, \$full_msg, $msgnums->{$msgnum} );
                 next MSG_QUEUE;
             }
@@ -1197,8 +1154,9 @@ sub start {
 
 sub max_msg_test {
 
-    my $r      = '';
     my ($args) = @_;
+
+    my $r      = '';
     my $size   = $args->{-size};
 
     if ( $size > $Plugin_Config->{Max_Size_Of_Any_Message} ) {
@@ -1215,6 +1173,7 @@ sub max_msg_test {
         return ( 0, $r );
     }
     else {
+        $r .= '\t Message is below maximum size allowed.' . "\n";
         return ( 1, $r );
     }
 
@@ -1242,6 +1201,7 @@ sub soft_max_msg_test {
         return ( 0, $r );
     }
     else {
+        $r .= '\t Message is below maximum soft size allowed.' . "\n";
         return ( 1, $r );
     }
 
