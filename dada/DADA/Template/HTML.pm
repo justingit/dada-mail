@@ -17,6 +17,8 @@ BEGIN {
 
 
 my $q; 
+lame_init(); 
+
 #
 # oh that does not look good: 
 my $Yeah_Root_Login = 0; 
@@ -637,6 +639,13 @@ sub open_template_from_url {
 	}
 }	
 
+# This is a bad idea - better to just OO this module... 
+sub lame_init(){ 
+    if(!defined($q)){ 
+        require CGI;
+        $q = CGI->new();
+    }
+}
 
 
 

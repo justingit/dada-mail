@@ -116,4 +116,8 @@ The command line tool to install Dada Mail has been lagging behind the web-based
 
 Mail Forwarding for List Email current does not work in v8. The command line interface has been removed from Bridge, as it has for all plugins. This leaves the problem of how to make a mail forward to pipes to a command. 
 
+=head3 FastCGI and Error Logs
+
+Currently, if you run Dada Mail under FastCGI, warnings and errors will not be sent to Dada Mail's own error log, but instead will be printed in the server's own error log. We haven't yet figured a way to keep the previous behavior. 
+
 =cut
