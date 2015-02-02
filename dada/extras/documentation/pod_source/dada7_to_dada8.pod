@@ -28,7 +28,7 @@ L<https://metacpan.org/pod/CGI::Application>
 
 Cronjobs in v8 are vastly simplified, with only one cronjob needing to be set, no matter what features and plugins you have enabled with Dada Mail. 
 
-Cronjobs created prior to v8 are no longer used in Dada Mail, so if you are upgrading, you will need to reset your cronjobs: remove the one's that exist for Dada Mail, and add the one new cronjob that's now needed. 
+Cronjobs created prior to v8 are no longer used in Dada Mail, so if you are upgrading, you will need to reset your cronjobs: remove the ones that exist for Dada Mail, and add the one new cronjob that's now needed. 
 
 The cronjob that's needed will be shown at the last screen of the included installer, as well as in the List Control Panel, under: B<App Information -- Schedued Jobs> 
 
