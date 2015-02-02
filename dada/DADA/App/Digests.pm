@@ -22,7 +22,7 @@ use Try::Tiny;
 
 use vars qw($AUTOLOAD);
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_Digests};
+my $t =  $DADA::Config::DEBUG_TRACE->{DADA_App_Digests};
 
 my %allowed = ( test => 0, );
 
@@ -162,7 +162,7 @@ sub send_digest {
         my $entity = $self->create_digest_msg_entity();
 
         my $msg_as_string = ( defined($entity) ) ? $entity->as_string : undef;
-        $msg_as_string = safely_decode($msg_as_string);
+           $msg_as_string = safely_decode($msg_as_string);
 
         my ( $final_header, $final_body );
         eval { ( $final_header, $final_body ) = $fm->format_headers_and_body( -msg => $msg_as_string ); };

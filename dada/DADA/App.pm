@@ -38,17 +38,11 @@ use Carp qw(carp croak);
 
 use DADA::Config 8.0.0;
 
-use DADA::App::ScreenCache;
+use     DADA::App::ScreenCache;
 my $c = DADA::App::ScreenCache->new;
 use DADA::App::Guts;
 use DADA::MailingList::Subscribers;
 use Try::Tiny;
-
-# DEV
-# Shouldn't this be:
-# if($DADA::Config::PROGRAM_URL =~ m/^\?/){
-# Since this'll basically hit everything...?
-
 use DADA::Template::HTML;
 use DADA::Template::Widgets;
 #---------------------------------------------------------------------#
@@ -64,7 +58,7 @@ sub cgiapp_init {
 }
 sub cgiapp_postrun {
   my ($self, $output_ref) = @_;
-  safely_encode($$output_ref);
+  $$output_ref = safely_encode($$output_ref);
 }
 
 sub setup {

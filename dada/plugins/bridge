@@ -368,7 +368,7 @@ EOF
       if $verbose;
 
     for my $messagename (@$awaiting_msgs) {
-        my $parser = $parser;
+        my $parser = $parser;#!?
         my $entity;
 
         # unescape URI encoded stuff:
@@ -956,7 +956,9 @@ sub start {
 
   my $messages_viewed = 0;
   LIST_QUEUE: for my $list (@lists) {
-
+        
+        $r .= "list: " . $list . "\n\n";
+         
         if ( $messages_viewed >= $Plugin_Config->{MessagesAtOnce} ) {
             $r .= "\n\nThe limit has been reached of the amount of messages to be looked at for this execution\n\n";
             last;
@@ -1053,8 +1055,9 @@ sub start {
                 # The below line is just for testing purposes...
                 # die "aaaaaaarrrrgggghhhhh!!!";
 
-                my ( $status, $errors ) = validate_msg( $ls, \$full_msg );
-
+                my ( $status, $errors, $validate_r ) = validate_msg( $ls, \$full_msg );
+                $r .= $validate_r; 
+                
                 if ($status) {
 
                     if ( $ls->param('send_received_msg') == 1 ) {
@@ -1128,10 +1131,13 @@ sub start {
         }
     }    # LIST_QUEUE?
 
-    $r .= "\n\tProcessing Digests:\n" . '-' x 72 . "\n";
+    $r .= "\nProcessing Digests:\n" . '-' x 72 . "\n";
 
   DIGEST_QUEUE: for my $list (@lists) {
 
+      $r .= "list: " . $list . "\n\n";
+      
+      
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
         if ( $ls->param('disable_discussion_sending') == 1 ) {
@@ -1173,7 +1179,7 @@ sub max_msg_test {
         return ( 0, $r );
     }
     else {
-        $r .= '\t Message is below maximum size allowed.' . "\n";
+        $r .= "\t Message is below maximum size allowed.\n";
         return ( 1, $r );
     }
 
@@ -1201,7 +1207,7 @@ sub soft_max_msg_test {
         return ( 0, $r );
     }
     else {
-        $r .= '\t Message is below maximum soft size allowed.' . "\n";
+        $r .= "\t Message is below maximum soft size allowed.\n";
         return ( 1, $r );
     }
 
@@ -1572,19 +1578,20 @@ sub validate_msg {
     }
 
     my $entity;
-    $msg = safely_encode($msg);
+    #$msg = safely_encode($msg);
 
-    eval { $entity = $parser->parse_data($msg); };
-
-    if ( !$entity ) {
-        $r .= "\t\tMessage invalid! - no entity found.\n";
+    try {
+        $entity = $parser->parse_data($msg); 
+    } catch { 
+        $r .= "\t\tProblems with parsing message: $_\n";
+        $r .= '$msg:' . $msg; 
         $errors->{invalid_msg} = 1;
-        return ( 0, $errors, $r );
-    }
-
+        return ( 0, $errors, $r );        
+    };
+    
     # These checks make sure that multiple From: headers and addresses don't exist
     if ( $Plugin_Config->{Check_Multiple_From_Addresses} == 1 ) {
-        eval {
+        try {
             if ( $entity->head->count('From') > 1 ) {
                 $r .= "\t\tMessage has more than one 'From' header? Unsupported email message - will reject!\n";
                 $errors->{multiple_from_addresses} = 1;
@@ -1596,23 +1603,19 @@ sub validate_msg {
                     $errors->{multiple_from_addresses} = 1;
                 }
             }
-        };
-        if ($@) {
-            $r .= "\t\tError with multiple from address check! Marking as a problem! - $@";
+        } catch { 
+            $r .= "\t\tError with multiple from address check! Marking as a problem! - $_";
             $errors->{multiple_from_addresses} = 1;
-
-        }
+        };
     }
 
     # /These checks make sure that multiple From: headers and addresses don't exist
 
     if ( $Plugin_Config->{Check_Multiple_Return_Path_Headers} == 1 ) {
-
         if ( $entity->head->count('Return-Path') > 1 ) {
             $r .= "\t\tMessage has more than one 'Return-Path' header? Malformed email message - will reject!\n";
             $errors->{multiple_return_path_headers} = 1;
         }
-
     }
 
     if ( $entity->head->count('X-BeenThere') ) {
@@ -1633,20 +1636,14 @@ sub validate_msg {
     my $from_address = '';
 
     if ( defined($rough_from) ) {
-        eval {
+        try {
 
             # This correct ?
             $from_address = ( Email::Address->parse($rough_from) )[0]->address;
-        };
-    }
-    else {
-
-        # ...
-    }
-
-    if ($@) {
-        $r .= '\t*Warning! Something\'s wrong with the From address - ' . $@;
-    }
+        }
+    } catch { 
+         $r .= '\t*Warning! Something\'s wrong with the From address - ' . $_;
+    };
 
     $from_address = lc_email($from_address);
 
@@ -1973,12 +1970,11 @@ sub test_Check_List_Owner_Return_Path_Header {
 
     if ( defined($rough_from) ) {
 
-        eval { $from_address = ( Email::Address->parse($rough_from) )[0]->address; };
-    }
-
-    $notice .= '\t\tWarning! Something\'s wrong with the From address - ' . $@
-      if $@ && $verbose;
-
+        try { $from_address = ( Email::Address->parse($rough_from) )[0]->address; };
+    } catch { 
+        $notice .= '\t\tWarning! Something\'s wrong with the From address - ' . $_
+    };
+    
     $from_address = lc_email($from_address);
 
     # $notice .= '$from_address:  ' . $from_address;
@@ -2005,7 +2001,12 @@ sub test_Check_List_Owner_Return_Path_Header {
 
     if ( defined($rough_return_path) ) {
 
-        eval { $return_path_address = ( Email::Address->parse($rough_return_path) )[0]->address; };
+        try { 
+            $return_path_address = ( Email::Address->parse($rough_return_path) )[0]->address; 
+        }
+        catch { 
+            warn $_; 
+        }
     }
     $return_path_address = lc_email($return_path_address);
 
@@ -2769,163 +2770,168 @@ sub handle_errors {
 
     eval {
         $entity = $parser->parse_data(
-
             $full_msg
         );
     };
+    if($@){ 
+        $r .= "big problems: $@\n"; 
+    }
     if ( !$entity ) {
-        die "no entity found! die'ing!";
+        $r .= "No entity found. Skipping!\n";
+        return $r; 
     }
+    else {  
 
-    my $reasons = '';
-    for ( keys %$errors ) {
-        $reasons .= $_ . ', '
-          if $errors->{$_} == 1;
-    }
-    my $subject = $entity->head->get( 'Subject', 0 );
-    $subject =~ s/\n//g;
-    my $from = $entity->head->get( 'From', 0 );
-    $from =~ s/\n//g;
+        my $reasons = '';
+        for ( keys %$errors ) {
+            $reasons .= $_ . ', '
+              if $errors->{$_} == 1;
+        }
+        my $subject = $entity->head->get( 'Subject', 0 );
+        $subject =~ s/\n//g;
+        my $from = $entity->head->get( 'From', 0 );
+        $from =~ s/\n//g;
 
-    # $from should probably be simply the email address, not the entire header...
-    #
-    eval { $from = ( Email::Address->parse($from) )[0]->address; };
-    if ($@) {
-        warn "this was a problem parsing the email address from the header? '$@'";
-    }
+        # $from should probably be simply the email address, not the entire header...
+        #
+        eval { $from = ( Email::Address->parse($from) )[0]->address; };
+        if ($@) {
+            warn "this was a problem parsing the email address from the header? '$@'";
+        }
 
-    my $message_id = $entity->head->get( 'Message-Id', 0 );
-    $message_id =~ s/\n//g;
-    if ( !$message_id ) {
+        my $message_id = $entity->head->get( 'Message-Id', 0 );
+        $message_id =~ s/\n//g;
+        if ( !$message_id ) {
 
-        require DADA::Security::Password;
+            require DADA::Security::Password;
 
-        my ( $f_user, $f_domain ) = split( '@', $from );
-        my $fake_message_id = '<'
-          . DADA::App::Guts::message_id()
-          . '.FAKE_MSG_ID'
-          . DADA::Security::Password::generate_rand_string('1234567890') . '@'
-          . $f_domain . '>';
+            my ( $f_user, $f_domain ) = split( '@', $from );
+            my $fake_message_id = '<'
+              . DADA::App::Guts::message_id()
+              . '.FAKE_MSG_ID'
+              . DADA::Security::Password::generate_rand_string('1234567890') . '@'
+              . $f_domain . '>';
 
-        $message_id = $fake_message_id;
-        $entity->head->replace( 'Message-ID', $fake_message_id );
+            $message_id = $fake_message_id;
+            $entity->head->replace( 'Message-ID', $fake_message_id );
+
+            warn
+    "bridge.cgi - message has no Message-Id header!...? Creating FAKE Message-Id ($fake_message_id) , to avoid any conflicts...";
+
+        }
 
         warn
-"bridge.cgi - message has no Message-Id header!...? Creating FAKE Message-Id ($fake_message_id) , to avoid any conflicts...";
+    "bridge.cgi rejecting sending of received message - \tFrom: $from\tSubject: $subject\tMessage-ID: $message_id\tReasons: $reasons";
 
-    }
+        $r .= "\tReasons:\n";
 
-    warn
-"bridge.cgi rejecting sending of received message - \tFrom: $from\tSubject: $subject\tMessage-ID: $message_id\tReasons: $reasons";
-
-    $r .= "\tReasons:\n";
-
-    my %error_descriptions = (
-        needs_moderation        => 'Messages need to be moderated',
-        msg_not_from_subscriber => 'Message is not from a Subscriber',
-        msg_not_from_list_owner => 'Message is not from the List Owner',
-    );
-
-    for ( keys %$errors ) {
-        if ( $errors->{$_} == 1 ) {
-            if ( exists( $error_descriptions{$_} ) ) {
-                print "\t\t* " . $error_descriptions{$_} . "\n";
-            }
-            else {
-                print "\t\t" . $_ . "\n";
-            }
-        }
-    }
-
-    if ( $errors->{list_owner_return_path_set_funny} == 1 ) {
-        $r .= "\t\t* list_owner_return_path_set_funny\n";
-
-        # and I'm not going to do anything...
-    }
-
-    $r .= "\n";
-
-    if ( $errors->{message_seen_as_spam} == 1 ) {
-
-        if ( $ls->param('rejected_spam_messages') eq 'send_spam_rejection_message' ) {
-            $r .= "\t\t* end_spam_rejection_message on its way!\n";
-            send_spam_rejection_message( $ls, $full_msg );
-
-        }
-        elsif ( $ls->param('rejected_spam_messages') eq 'ignore_spam' ) {
-            $r .= "\t\t *** Message seen as SPAM - ignoring. ***\n";
-        }
-        else {
-            $r .= "\t\tlist_settings.rejected_spam_messages is setup impoperly - ignoring message!\n";
-        }
-
-    }
-    elsif ( $errors->{multiple_return_path_headers} == 1 ) {
-
-        $r .= "\t\t* Message has multiple 'Return-Path' headers. Ignoring. \n";
-        warn "$DADA::Config::PROGRAM_NAME Error: Message has multiple 'Return-Path' headers. Ignoring.";
-
-    }
-    elsif ( $errors->{msg_from_list_address} ) {
-
-        $r .= "\t\t* message was from the list address - will not process! - (ignoring) \n";
-        warn "$DADA::Config::PROGRAM_NAME Error: message was from the list address - will not process! - (ignoring)";
-    }
-    elsif ($errors->{msg_not_from_subscriber} == 1
-        || $errors->{msg_not_from_list_owner} == 1
-        || $errors->{msg_not_from_an_authorized_sender} == 1 )
-    {
-
-        if ( $ls->param('send_not_allowed_to_post_msg') == 1 ) {
-
-            $r .= "\t Sending out, 'Not Allowed to Post' message to poster\n";
-            send_msg_not_from_subscriber( $ls, $full_msg );
-
-        }
-
-        if ( $ls->param('send_invalid_msgs_to_owner') == 1 ) {
-            $r .= "\t Sending out, 'Not a Subscriber' message to List Owner\n";
-            send_invalid_msgs_to_owner( $ls, $full_msg );
-
-        }
-
-    }
-    elsif ( $errors->{needs_moderation} ) {
-
-        $r .= "Message being saved for moderation by List Owner.\n";
-
-        my $mod = SimpleModeration->new( { -List => $ls->param('list') } );
-        $mod->save_msg( { -msg => $full_msg, -msg_id => $message_id } );
-
-        # This is only used once...
-        $mod->moderation_msg(
-            {
-                -msg    => $full_msg,
-                -msg_id => $message_id,
-                -from   => $from,
-                -parser => $parser
-            }
+        my %error_descriptions = (
+            needs_moderation        => 'Messages need to be moderated',
+            msg_not_from_subscriber => 'Message is not from a Subscriber',
+            msg_not_from_list_owner => 'Message is not from the List Owner',
         );
 
-        if ( $ls->param('send_moderation_msg') == 1 ) {
-            $r .= "\t\t * Sending 'awaiting moderation' message!\n";
-            $mod->send_moderation_msg(
+        for ( keys %$errors ) {
+            if ( $errors->{$_} == 1 ) {
+                if ( exists( $error_descriptions{$_} ) ) {
+                    print "\t\t* " . $error_descriptions{$_} . "\n";
+                }
+                else {
+                    print "\t\t" . $_ . "\n";
+                }
+            }
+        }
+
+        if ( $errors->{list_owner_return_path_set_funny} == 1 ) {
+            $r .= "\t\t* list_owner_return_path_set_funny\n";
+
+            # and I'm not going to do anything...
+        }
+
+        $r .= "\n";
+
+        if ( $errors->{message_seen_as_spam} == 1 ) {
+
+            if ( $ls->param('rejected_spam_messages') eq 'send_spam_rejection_message' ) {
+                $r .= "\t\t* end_spam_rejection_message on its way!\n";
+                send_spam_rejection_message( $ls, $full_msg );
+
+            }
+            elsif ( $ls->param('rejected_spam_messages') eq 'ignore_spam' ) {
+                $r .= "\t\t *** Message seen as SPAM - ignoring. ***\n";
+            }
+            else {
+                $r .= "\t\tlist_settings.rejected_spam_messages is setup impoperly - ignoring message!\n";
+            }
+
+        }
+        elsif ( $errors->{multiple_return_path_headers} == 1 ) {
+
+            $r .= "\t\t* Message has multiple 'Return-Path' headers. Ignoring. \n";
+            warn "$DADA::Config::PROGRAM_NAME Error: Message has multiple 'Return-Path' headers. Ignoring.";
+
+        }
+        elsif ( $errors->{msg_from_list_address} ) {
+
+            $r .= "\t\t* message was from the list address - will not process! - (ignoring) \n";
+            warn "$DADA::Config::PROGRAM_NAME Error: message was from the list address - will not process! - (ignoring)";
+        }
+        elsif ($errors->{msg_not_from_subscriber} == 1
+            || $errors->{msg_not_from_list_owner} == 1
+            || $errors->{msg_not_from_an_authorized_sender} == 1 )
+        {
+
+            if ( $ls->param('send_not_allowed_to_post_msg') == 1 ) {
+
+                $r .= "\t Sending out, 'Not Allowed to Post' message to poster\n";
+                send_msg_not_from_subscriber( $ls, $full_msg );
+
+            }
+
+            if ( $ls->param('send_invalid_msgs_to_owner') == 1 ) {
+                $r .= "\t Sending out, 'Not a Subscriber' message to List Owner\n";
+                send_invalid_msgs_to_owner( $ls, $full_msg );
+
+            }
+
+        }
+        elsif ( $errors->{needs_moderation} ) {
+
+            $r .= "Message being saved for moderation by List Owner.\n";
+
+            my $mod = SimpleModeration->new( { -List => $ls->param('list') } );
+            $mod->save_msg( { -msg => $full_msg, -msg_id => $message_id } );
+
+            # This is only used once...
+            $mod->moderation_msg(
                 {
+                    -msg    => $full_msg,
                     -msg_id => $message_id,
-                    -parser => $parser,
+                    -from   => $from,
+                    -parser => $parser
                 }
             );
+
+            if ( $ls->param('send_moderation_msg') == 1 ) {
+                $r .= "\t\t * Sending 'awaiting moderation' message!\n";
+                $mod->send_moderation_msg(
+                    {
+                        -msg_id => $message_id,
+                        -parser => $parser,
+                    }
+                );
+            }
+
+            my $awaiting_msgs = $mod->awaiting_msgs();
+
+            $r .= "\t* Other awaiting messages:\n";
+
+            for (@$awaiting_msgs) {
+                $r .= "\t\t * " . $_ . "\n";
+            }
         }
-
-        my $awaiting_msgs = $mod->awaiting_msgs();
-
-        $r .= "\t* Other awaiting messages:\n";
-
-        for (@$awaiting_msgs) {
-            $r .= "\t\t * " . $_ . "\n";
-        }
+        return $r;
     }
-    return $r;
 }
 
 sub create_checksum {
@@ -3185,11 +3191,11 @@ sub inject {
     if ( $ls->param('disable_discussion_sending') != 1 ) {
         my ( $status, $errors );
 
-        eval {
-
+        try {
             my ( $status, $errors, $report ) = validate_msg( $ls, \$msg );
             $r .= $report;
-
+            require Data::Dumper; 
+          #  $r .= 'Errors: ' . Data::Dumper::Dumper($errors); 
             if ($status) {
                 if ( $ls->param('send_received_msg') == 1 ) {
                     notify_of_delivery(
@@ -3224,21 +3230,14 @@ sub inject {
 
             }
 
-        };
-
-        if ($@) {
-
+        } catch { 
             warn "bridge.cgi - irrecoverable error processing message. Skipping message (sorry!): $@";
             $r .= "bridge.cgi - irrecoverable error processing message. Skipping message (sorry!): $@";
             return ( 0, { irrecoverable_error => 1 }, $r );
 
-        }
-
-        else {
-
-            return ( $status, $errors, $r );
-
-        }
+        
+        }; 
+        return ( $status, $errors, $r );
 
     }
     else {
