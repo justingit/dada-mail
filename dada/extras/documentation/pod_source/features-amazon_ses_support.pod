@@ -18,7 +18,13 @@ B<Amazon SES costs around $0.10 per I<thousand> messages you send.> See:
 
 L<http://aws.amazon.com/ses/pricing/>
 
-for current pricing. Using the service in a testing, non-production mode is I<free>. 
+for current pricing. Using the service in a testing, non-production mode is I<free>.
+
+We also provide setting up Dada Mail using your own Amazon SES account as part of our installation/upgrade offerings: 
+
+L<http://dadamailproject.com/installation/request.html>
+
+Our services for installing and configuring Amazon SES for your Dada Mail is a one-time fee. 
 
 =head2 Use for Closed-List Opt-In Subscriptions Lists Only
 
