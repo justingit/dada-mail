@@ -219,6 +219,9 @@ $(document).ready(function() {
 			
 			
 			$("body").on("click", ".savedraft", function(event) {
+			
+				//alert ('itsa:' + $("#draft_role").val()); 
+				
 				$("#button_action_notice").html('Working...');
 				var role = $(this).attr("data-role");
 				$("#draft_role").val(role);
@@ -248,8 +251,8 @@ $(document).ready(function() {
 							}
 						});
 					}
-					else if($("#draft_role").val() == 'stationary') {
-						window.location.replace($("#s_program_url").val() + '?f=' + $("#f").val() + '&draft_id=' + $("#draft_id").val() + '&restore_from_draft=true&draft_role=stationary&done=1');
+					else if($("#draft_role").val() == 'stationary' || $("#draft_role").val() == 'schedule' ) {
+						window.location.replace($("#s_program_url").val() + '?f=' + $("#f").val() + '&draft_id=' + $("#draft_id").val() + '&restore_from_draft=true&draft_role=' + $("#draft_role").val() + '&done=1');
 					}
 				}
 				else if(ds === false) { 
@@ -1303,6 +1306,8 @@ function setup_attachment_fields() {
 	}	
 }
 function save_draft(async) { 
+	
+	//alert('save draft called!'); 
 	
 	var r = false; 
 	

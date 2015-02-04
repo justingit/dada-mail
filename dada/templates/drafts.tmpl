@@ -58,18 +58,20 @@
 
         <!-- tmpl_if draft_index --> 
 
+        <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+            <input type="hidden" name="flavor" value="delete_drafts" /> 
+        
         	<table class="stripedtable">
 
         		<tr>
-        			<th>
-        				<p>&nbsp;</p>
-        			</th>
-
         			<!-- 
         				<th>
         					<p>ID</p>
         				</th>
         			--> 
+        			<th>
+        				<p>&nbsp;</p>
+        			</th>
 
         			<th>
         				<p>
@@ -93,33 +95,25 @@
         				</p> 
         			</th>
         			<th>
-        				<p>&nbsp;</p>
-        				</p> 
+        				&nbsp;
         			</th>
+        			
+        			
         		</tr> 
 
 
          	<!-- tmpl_loop draft_index --> 
         		<tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
-        			<td>
-        					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" id="restore_form_<!-- tmpl_var id -->">
-        						<input type="hidden" name="flavor" value="<!-- tmpl_var screen -->" /> 
-        						<input type="hidden" name="restore_from_draft" value="true" /> 
-        						<input type="hidden" name="draft_id" value="<!-- tmpl_var id -->" />
-
-
-
-
-        						<input type="submit" name="" value="Edit..." class="processing" />  
-        					</form> 
-        				</p> 
-        			</td>
 
         			<!-- 
         				<td>
         					<p><!-- tmpl_var id --></p>
         				</td>
         			--> 
+        			<td>
+            		    <input type="checkbox" class="draft_ids" name="draft_ids" value="<!-- tmpl_var id escape="HTML" -->" />
+        			</td>
+
 
         			<td>
         				<p>
@@ -146,18 +140,29 @@
         					</p> 
 
         			</td>
+        			
         			<td>
-        					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="POST" class="delete_draft_form"  data-draft_role='Draft'>
-        						<input type="hidden" name="id" value="<!-- tmpl_var id -->" />
-        						<input type="hidden" name="flavor" value="delete_draft" /> 
-        							<input type="submit" name="" value="[x]" class="alertive" />  		
-        					</form> 
-        				</p> 
-        			</td>
+						<input type="button" name="" value="Edit..." class="processing" onClick="window.location='<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->'" />  
+				    </td>
+					
+					
 
         		</tr> 
         	<!-- /tmpl_loop -->
         	</table>  
+        	
+        	<table class="stripedtable">
+              <tr>
+               	<td width="25">
+            		<input class="toggleCheckboxes" type="checkbox" data-target_class="draft_ids" />
+               	</td>
+            	<td>
+            	 <input type="submit" class="small_button" value="Delete Checked" />
+            	 </td>
+            	</tr>
+            </table>
+            </form>
+            
         <!-- tmpl_else -->
         	<div class="clearskiesbox">
         		<p>
@@ -184,6 +189,9 @@
 
         <!-- tmpl_if stationary_index --> 
 
+        <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+            <input type="hidden" name="flavor" value="delete_drafts" /> 
+        
         	<table class="stripedtable">
 
         		<tr>
@@ -194,7 +202,6 @@
 					<th>
         				<p>&nbsp;</p>
         			</th>
-
 
         			<!-- 
         				<th>
@@ -235,33 +242,24 @@
         		<tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
 
 
-        			<td>			    
-        			    <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" id="restore_form_<!-- tmpl_var id -->">
-        					<input type="hidden" name="f" value="create_from_stationary" /> 
-        					<input type="hidden" name="screen" value="<!-- tmpl_var screen -->" /> 
-        					<input type="hidden" name="draft_id" value="<!-- tmpl_var id -->" />	
-        			        <input type="submit" class="processing create_from_stationary" name="process" value="New Draft From Stationary"  data-role="stationary" />
-                        </form>
-                    </td>
-                    
-                    <td>
-        					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" id="restore_form_<!-- tmpl_var id -->">
-        						<input type="hidden" name="flavor" value="<!-- tmpl_var screen -->" /> 
-        						<input type="hidden" name="restore_from_draft" value="true" /> 
-        						<input type="hidden" name="draft_id" value="<!-- tmpl_var id -->" />
-
-        						<input type="hidden" name="draft_role" value="stationary" --> <!-- not doing this for drafts above -->
-        						<input type="submit" name="" value="Edit..." class="processing" />  
-        					</form> 
-        				</p> 
-        			</td>
-
         			<!-- 
         				<td>
         					<p><!-- tmpl_var id --></p>
         				</td>
-        			--> 
-
+        			-->
+        			
+                    <td>
+            		    <input type="checkbox" class="stationary_ids" name="draft_ids"  value="<!-- tmpl_var id escape="HTML" -->" />
+        			</td>
+        			<td>			    
+                        <input 
+                            type="button" 
+                            name=""
+                            value="New Draft From Stationary" 
+                            class="processing" 
+                            onClick="window.location='<!-- tmpl_var S_PROGRAM_URL -->?flavor=create_from_stationary&screen=<!-- tmpl_var screen escape="HTML" -->&draft_id=<!-- tmpl_var id -->'"
+                         />  
+                    </td>
         			<td>
         				<p>
     						<a href="#" class="restore_from_draft_link" data-target="restore_form_<!-- tmpl_var id -->">
@@ -287,19 +285,29 @@
         					</p> 
 
         			</td>
-        			<td>
-        					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="POST" class="delete_draft_form" data-draft_role='Stationary'>
-        						<input type="hidden" name="id" value="<!-- tmpl_var id -->" />
-        						<input type="hidden" name="flavor" value="delete_draft" /> 
-        						<input type="hidden" name="draft_role" value="stationary" -->
-        						<input type="submit" name="" value="[x]" class="alertive" />  		
-        					</form> 
-        				</p> 
-        			</td>
+                    <td>
+                    		<input type="button" name="" value="Edit..." class="processing" onClick="window.location='<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_role=stationary&draft_id=<!-- tmpl_var id -->'" />  
+                    	</p> 
+                    </td>
+
 
         		</tr> 
         	<!-- /tmpl_loop -->
         	</table>  
+        	
+        	<table class="stripedtable">
+              <tr>
+               	<td width="25">
+            		<input class="toggleCheckboxes" type="checkbox" data-target_class="stationary_ids" />
+               	</td>
+            	<td>
+            	 <input type="submit" class="small_button" value="Delete Checked" />
+            	 </td>
+            	</tr>
+            </table>
+        	
+        	</form>
+        
         <!-- tmpl_else -->
         	<div class="clearskiesbox">
         		<p>
@@ -317,6 +325,10 @@
         	<!-- tmpl_if active_schedule_index -->
 
                 <h2>Active Schedules</h2> 
+            
+            <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+                <input type="hidden" name="flavor" value="delete_drafts" /> 
+            
             
             	<table class="stripedtable">
             		<tr>
@@ -365,14 +377,7 @@
          	    
             		    <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
                 			<td>
-                					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" id="restore_form_<!-- tmpl_var id -->">
-                						<input type="hidden" name="flavor" value="<!-- tmpl_var screen -->" /> 
-                						<input type="hidden" name="restore_from_draft" value="true" /> 
-                						<input type="hidden" name="draft_id" value="<!-- tmpl_var id -->" />
-                						<input type="hidden" name="draft_role" value="schedule" --> <!-- not doing this for drafts above -->
-                						<input type="submit" name="" value="Edit..." class="processing" />  
-                					</form> 
-                				</p> 
+                    		    <input type="checkbox" class="asched_ids" name="draft_ids" value="<!-- tmpl_var id escape="HTML" -->" />
                 			</td>
                 			<!-- 
                 				<td>
@@ -406,122 +411,153 @@
                 						<!-- /tmpl_if --> 
                 					</p> 
                 			</td>
-                			<td>
-                					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="POST" class="delete_draft_form"  data-draft_role='Schedule'>
-                						<input type="hidden" name="id" value="<!-- tmpl_var id -->" />
-                						<input type="hidden" name="flavor" value="delete_draft" /> 
-                							<input type="submit" name="" value="[x]" class="alertive" />  		
-                					</form> 
+                            <td>
+                					 <input 
+                					    type="button" 
+                					    name="" 
+                					    value="Edit..." 
+                					    class="processing" 
+                					    onClick="window.location='<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule'" 
+                					  />  
+             						
+             						
                 				</p> 
                 			</td>
 
                 		</tr> 
             	<!-- /tmpl_loop -->
-            	</table>  	
+            	</table> 
+            	<table class="stripedtable">
+                  <tr>
+                   	<td width="25">
+                		<input class="toggleCheckboxes" type="checkbox" data-target_class="asched_ids" />
+                   	</td>
+                	<td>
+                	 <input type="submit" class="small_button" value="Delete Checked" />
+                	 </td>
+                	</tr>
+                </table>
+            </form>
+            
+            	
             <!-- /tmpl_if --> 
             
         	<!-- tmpl_if inactive_schedule_index -->
+                    <h2>Inactive Schedules</h2> 
 
-                <h2>Inactive Schedules</h2> 
+                <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+                    <input type="hidden" name="flavor" value="delete_drafts" /> 
 
-            	<table class="stripedtable">
-            		<tr>
-            			<th>
-            				<p>&nbsp;</p>
-            			</th>
-            			<!-- 
-            				<th>
-            					<p>ID</p>
-            				</th>
-            			--> 
-                        <th> 
-            				<p>
-            					<strong>
-                            Sending On
-                            </strong>
-                        </p>
-                        </th>
-            			<th>
-            				<p>
-            					<strong>
-            						Subject
-            					</strong>
-            				</p> 
-            			</th>
-            			<th>
-            				<p>
-            					<strong>
-            						Last Modified
-            					</strong>
-            				</p> 
-            			</th>
-            			<th>
-            				<p>
-            					<strong>
-            						Screen
-            					</strong>
-            				</p> 
-            			</th>
-            			<th>
-            				<p>&nbsp;</p>
-            				</p> 
-            			</th>
-            		</tr> 
-             	<!-- tmpl_loop inactive_schedule_index --> 
-                		<tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
-                			<td>
-                					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" id="restore_form_<!-- tmpl_var id -->">
-                						<input type="hidden" name="flavor" value="<!-- tmpl_var screen -->" /> 
-                						<input type="hidden" name="restore_from_draft" value="true" /> 
-                						<input type="hidden" name="draft_id" value="<!-- tmpl_var id -->" />
-                						<input type="hidden" name="draft_role" value="schedule" --> <!-- not doing this for drafts above -->
-                						<input type="submit" name="" value="Edit..." class="processing" />  
-                					</form> 
-                				</p> 
-                			</td>
+
+                	<table class="stripedtable">
+                		<tr>
+                			<th>
+                				<p>&nbsp;</p>
+                			</th>
                 			<!-- 
-                				<td>
-                					<p><!-- tmpl_var id --></p>
-                				</td>
+                				<th>
+                					<p>ID</p>
+                				</th>
                 			--> 
-                			<td>
-                			    <!-- tmpl_var schedule_localtime -->
-                			</td>
-                			<td>
+                            <th> 
+                                <p>
+                                    <strong>
+                                        Sending On
+                                    </strong>
+                                </p>
+                            </td>
+                			<th>
                 				<p>
-            						<a href="#" class="restore_from_draft_link" data-target="restore_form_<!-- tmpl_var id -->">
-            							<!-- tmpl_var Subject escape="HTML" -->
-            						</a>
+                					<strong>
+                						Subject
+                					</strong>
                 				</p> 
                 			</td>
-                			<td>
+                			<th>
                 				<p>
-                					<a href="#" class="restore_from_draft_link" data-target="restore_form_<!-- tmpl_var id -->">
-                						<!-- tmpl_var last_modified_timestamp --> 
-                					</a>
+                					<strong>
+                						Last Modified
+                					</strong>
                 				</p> 
-                				<td>
-                					<p>
-                						<!-- tmpl_if expr="(screen eq 'send_email')" --> 
-                							Send a Message
-                						<!-- /tmpl_if --> 
-                						<!-- tmpl_if expr="(screen eq 'send_url_email')" --> 
-                							Send a Webpage
-                						<!-- /tmpl_if --> 
-                					</p> 
-                			</td>
-                			<td>
-                					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="POST" class="delete_draft_form"  data-draft_role='Schedule'>
-                						<input type="hidden" name="id" value="<!-- tmpl_var id -->" />
-                						<input type="hidden" name="flavor" value="delete_draft" /> 
-                							<input type="submit" name="" value="[x]" class="alertive" />  		
-                					</form> 
+                			</th>
+                			<th>
+                				<p>
+                					<strong>
+                						Screen
+                					</strong>
                 				</p> 
-                			</td>
-
+                			</th>
+                			<th>
+                				<p>&nbsp;</p>
+                				</p> 
+                			</th>
                 		</tr> 
-            	<!-- /tmpl_loop -->
-            	</table>  	
+                 	<!-- tmpl_loop inactive_schedule_index --> 
+
+                		    <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
+                    			<td>
+                        		    <input type="checkbox" class="iasched_ids" name="draft_ids" value="<!-- tmpl_var id escape="HTML" -->" />
+                    			</td>
+                    			<!-- 
+                    				<td>
+                    					<p><!-- tmpl_var id --></p>
+                    				</td>
+                    			--> 
+                    			<td>
+                    			    <!-- tmpl_var schedule_localtime -->
+                    			</td>
+                    			<td>
+                    				<p>
+                						<a href="#" class="restore_from_draft_link" data-target="restore_form_<!-- tmpl_var id -->">
+                							<!-- tmpl_var Subject escape="HTML" -->
+                						</a>
+                    				</p> 
+                    			</td>
+                    			<td>
+                    				<p>
+                    					<a href="#" class="restore_from_draft_link" data-target="restore_form_<!-- tmpl_var id -->">
+                    						<!-- tmpl_var last_modified_timestamp --> 
+                    					</a>
+                    				</p> 
+                    			</td>
+                    			<td>
+                    					<p>
+                    						<!-- tmpl_if expr="(screen eq 'send_email')" --> 
+                    							Send a Message
+                    						<!-- /tmpl_if --> 
+                    						<!-- tmpl_if expr="(screen eq 'send_url_email')" --> 
+                    							Send a Webpage
+                    						<!-- /tmpl_if --> 
+                    					</p> 
+                    			</td>
+                                <td>
+                    					 <input 
+                    					    type="button" 
+                    					    name="" 
+                    					    value="Edit..." 
+                    					    class="processing" 
+                    					    onClick="window.location='<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule'" 
+                    					  />  
+
+
+                    				</p> 
+                    			</td>
+
+                    		</tr> 
+                	<!-- /tmpl_loop -->
+                	</table> 
+                	<table class="stripedtable">
+                      <tr>
+                       	<td width="25">
+                    		<input class="toggleCheckboxes" type="checkbox" data-target_class="iasched_ids" />
+                       	</td>
+                    	<td>
+                    	 <input type="submit" class="small_button" value="Delete Checked" />
+                    	 </td>
+                    	</tr>
+                    </table>
+                </form>
+                
             <!-- /tmpl_if --> 
 
         <!-- tmpl_else -->
