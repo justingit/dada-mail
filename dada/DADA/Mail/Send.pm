@@ -1488,14 +1488,15 @@ sub mass_send {
 
 			warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Fork successful. (From Child)'
 				if $t;	            
-                
-            #if($DADA::Config::NULL_DEVICE){ 
-                #open(STDIN,  ">>$DADA::Config::NULL_DEVICE") or carp "couldn't open '$DADA::Config::NULL_DEVICE' - $!"; 
-                #open(STDOUT, ">>$DADA::Config::NULL_DEVICE") or carp "couldn't open '$DADA::Config::NULL_DEVICE' - $!"; 
-            #}
             
+            if($DADA::Config::RUNNING_AS ne 'FastCGI') {
+                if($DADA::Config::NULL_DEVICE){ 
+                    open(STDIN,  ">>$DADA::Config::NULL_DEVICE") or carp "couldn't open '$DADA::Config::NULL_DEVICE' - $!"; 
+                    open(STDOUT, ">>$DADA::Config::NULL_DEVICE") or carp "couldn't open '$DADA::Config::NULL_DEVICE' - $!"; 
+                }
+            }
             
-            setpgrp; 
+            setpgrp;  # FastCGI issues? 
             
             warn "($$) _clarify_dbi_stuff"
 				if $t; 
