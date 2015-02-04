@@ -10,78 +10,29 @@ Key:
 [*] Naw...
 [?] Someday
 
-
-||= -> //= Insist on v5.10
+[ ] Make MIME::Lite::HTML requests understand gzip compression
 
 
 [ ] Things for CGI::App migration: 
 
 
-Perhaps figure out forking stuff, first? 
-
-Error Messages, where do they go?  - Server default - write about no go concerning setting your own, ask for help! 
-
-
-figure out plugins (hard?) 
-[]Remove non SQL stuff - not happening! 
-
-CGI::App notes: 
-
-upload hook not owkring?  
-
-
-
+    Perhaps figure out forking stuff, first? 
 
 [ ] Time to ditch raw evals for try {} blocks. 
-
-
-
-
-
-http://dadamailproject.com/support/boards/viewtopic.php?t=4374&p=16228#p16228
-
-[ ] I know Justin isn't around, but I'm wondering if anyone can tell me if there is a template tag for the original sender's address in Bridge. I would like to put a footer in the emails that has the original sender's email address since P.P. mode converts the address to the list owner's address. The only tag I have found is the subscriber's email address (<!-- tmpl_var subscriber.email -->) but it seems like there should be one for the sender as well.
+    This will most likely be an ungoing process. 
 
 
 []  list-specific upload directories, rather than a shared one 
 
 [] remove MIME::Lite completely 
+    (ongoing process) 
+    
 [ ] MIME::Lite::HTML compat w/gzip compression... 
 maybe add proxy, basic auth support. 
 
-[ ] Digests 
-    [ ] New Table dada_profile_settings
-        CREATE TABLE IF NOT EXISTS dada_profile_settings (
-        id int4 not null primary key auto_increment,
-        email                            varchar(80),
-        list                             varchar(16),
-        setting                          varchar(64),
-        value                            text
-        ) CHARACTER SET utf8 COLLATE utf8_bin;
-    
-    Add to SQL statement:      
-     
-     AND EXISTS (
-                 SELECT * FROM dada_profiles_settings WHERE 
-                     dada_subscribers.email = dada_profiles_settings.email
-                     AND dada_profiles_settings.setting = 'digest'
-                     AND dada_profiles_settings.value = 1
-             )
-    
-    Have to update all other associated tables
-    
-    New Module DADA::Profile::Settings
-    
-    Change dada_archives
-    add visibility/public..? column 1/0
-    
-    new template for digest - both text and HTML
 
-
-[ ] Add, "Frequency of email messages" 
-
+[] Add, "Frequency of email messages" 
 [] ability to share stationary messages. 
-
 [ ] A way to set an alternative path to perl
 
 [ ] Keep tmp subscriber list fresh in mass mailing metadata. That basically means 
