@@ -693,8 +693,7 @@ sub mass_mailing_event_log {
         $sth->execute(@execute_args);
     }
     else {
-		@execute_args = ($self->{name},             $remote_address, $args->{-mid}, $event, $args->{-email}, $details);
-		
+		@execute_args = ($self->{name},             $remote_address, $args->{-mid}, $event, $args->{-email}, $details);		
         $sth->execute(@execute_args);
     	warn 'no timestamp' 
     	    if $t; 
