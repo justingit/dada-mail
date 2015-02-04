@@ -1,0 +1,97 @@
+=pod
+
+=head1 Third Party Email Services
+
+A problem users of Dada Mail have - especially once their list has grown considerably, is that the mail services provided by their web host are lacking. Users with shared web hosting accounts will find that the mail server provided is also shared, which leads to problems if this mail server gets added to a realtime block list. 
+
+A tool I use all the time to test if my client's own mail servers are blocked is this one: 
+
+L<http://mxtoolbox.com/blacklists.aspx> 
+
+If a mail server is added to a RBL, it's possible mail delivery will be impacted, as incoming mail servers will check these lists, before accepting delivery of a message. 
+
+Being blocked can happen for a variety of reasons - none of which may actually be because of any action of your own. In many instances, a mail server can be added to a RBL when a compromised web app (like, Wordpress) is used to send out unsolicited messages. Since the mail server is shared by many other users, it affects everyone using the mail server. The bottom line is mail doesn't get delivered when using this mail server at a respectable deliverability rate. What to do. 
+
+Some people will try to use the SMTP server that's available on their web host, thinking that sending a message, perhaps using SMTP authentication, will get around the problem of a shared webserver. Most of the time, this won't make a difference, as the SMTP server will, in the end, send messages out using the I<same> web server as the default (for Dada Mail) sendmail command does. SMTP, in this scenario, makes no difference - it's just a more complicated, slower, and more error-prone way of doing what you were already doing.
+
+At this point, some people opt to go for a virtual private server, or dedicated server, moving their entire website infrastructure over. Be careful with a virtual private server (do your research) - the mail server itself may still be shared! even if you are web hosting is on a dedicared IP. A dedicated server, where the mail server is running on this same phyiscal/virtual box may work well, but then you're burdened with the additional task of administrating the mail server. It usually not something you want to deal with.
+
+A solution that may work the best is to get an account with a third party email sending service. This will add some cost to your mailings, but it probably is worth it, if deliverability rates climb dramatically. 
+
+The following is a short list of such services: 
+
+=head2 Amazon SES
+
+Of all the services available, this is the one that I have the most experience with - in fact, it's what we use on L<http://dadamailproject.com> itself. We use it, we love it, Dada Mail has great support for it, and we want you to use it to. We have separate docs that goes through more information on Amazon SES, how to set it up in Dada Mail and some things you should read up on, so you can make sure SES is right for you: 
+
+L<http://dadamailproject.com/d/features-amazon_ses_support.pod.html>
+
+Amazon SES is also something that we offer as an option on our own installation services:
+
+L<http://dadamailproject.com/installation/request.html>
+
+=head3 Advantages
+
+=over
+
+=item * Great deliverability
+
+We've never had a problem ourselves
+
+=item * API Support
+
+Dada Mail has good support for Amazon SES's sending API. Dada Mail can also automatically set up your mailing list's batch sending speeds to make sure you're sending out under your daily limit. This is pretty important. 
+
+=item * Cheap!
+
+Amazon SES is the cheapest service out there @ 1,000 messages you can send out for $0.10 USD. This price does not go up or down, depending on how much you send out - and the skies the limit on what's supported. Pay-as-you-go billing. 
+
+=item * Flexible
+
+What's nice about Amazon SES is that it doesn't replace your current incoming/outgoing email infrastructure, so there's nothing new anyone in your company needs to learn. I personally use Amazon SES for all my outgoing email, since deliverability is that good, but you don't have to. 
+
+=item * Bounce Handling Integration
+
+Amazon SES will correctly send back bounced messages to Dada Mail's Bounce Handler to be processed.
+
+=back
+
+=head3 Grievances 
+
+All and all, Amazon SES is severely lacking in being simple to set up. The Amazon AWS spread of tools and services is incredible, and if you just want to use Amazon SES, you need to wade through everything else.
+
+We do provide setup of Amazon SES as part of our installation services of Dada Mail - see the installation request form for exact pricing. It's a one-time setup fee, and then the only recurring charge will be from Amazon AWS for messages you send: 
+
+L<http://dadamailproject.com/installation/request.html>
+
+Starting mail sending limits. For reasons that are lost on me personally, you can only start sending with the service at a rate of 10,000 messages/day. This limit can be raised, but only after the SES system sees that you are using the service up to its limit. Some of my clients now how daily quotes of 500,000 messages and above, but it won't be something you will have right off the bat. 
+
+=head2 Other Services
+
+We don't have as much experience with other third party email services (Amazon SES works that well), but there are a variety out there. 
+
+These services may have their own API for mail sending, but will not be supported by Dada Mail. All these services also have support for receiving messages via SMTP, which Dada Mail does have support for and this method would be the method you would use to send a message out using one the below services. 
+
+Before setting up an account with any of these services, double-check their docs on SMTP setup. Note the port you need to connect to, and double-check that that same port is open for outgoing connections on your own hosting account. In many shared hosting accounts, the most common SMTP port, port 25 is closed to outgoing connections. 
+
+=head3 MailGun
+
+l<http://mailgun.com>
+
+=head3 Elastic Email
+
+l<https://elasticemail.com/>
+
+=head3 Socket Labs
+
+l<http://www.socketlabs.com/>
+
+=head3 Mandrill
+
+l<http://mandrill.com/>
+
+=head3 turboSMTP 
+
+l<http://www.serversmtp.com/en/smtp-mailing-list-distributors>
+
+=cut
