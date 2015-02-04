@@ -70,7 +70,7 @@ sub setup {
     #   die $self->query->param('flavor');
     $self->start_mode('default');
     $self->mode_param('flavor');
-
+    $self->error_mode('yikes');
 
     # So, maybe the, "schedules" runmode should be something quite random, that can also be reset? 
     # And then implement some sort of limit on how many times a schedule can be run? 
@@ -138,7 +138,7 @@ sub setup {
         'ckeditor_template_tag_list'                  => \&ckeditor_template_tag_list,
         'draft_saved_notification'                    => \&draft_saved_notification,
         'drafts'                                      => \&drafts,
-        'delete_draft'                                => \&delete_draft,
+        'delete_drafts'                               => \&delete_drafts,
         'create_from_stationary'                      => \&create_from_stationary,
         'message_body_help'                           => \&message_body_help,
         'url_message_body_help'                       => \&url_message_body_help,
@@ -233,11 +233,48 @@ sub setup {
 
 }
 
+sub yikes { 
+
+my $self = shift;
+my $TIME = scalar(localtime());
+return qq{
+<html>
+<head></head>
+<body>
+<div style="padding:5px;border:3px dotted #ccc; font-family:helvetica; font-size:.7em; line-height:150%; width:600px;margin-left:auto;margin-right:auto;margin-top:100px;">
+<img alt="Dada Mail" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAJYAAAC
+WCAMAAAAL34HQAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAAxQTFRFCAgIXV
+1dp6en/f39XG2aJgAAAqpJREFUeNrs3OGO4yAMBOB0+/7vvFWRLMtjjAkEqDT5dddyy1fJNwSH7vU+8
+rrIWsX6+15k/TTr+l6v12s6jqxlrA/oUtdEHFm7WKXOyPotltZ8CmuijKw1LCks7ZiVFGQtYOlocF8n
+63CWZAGWkbxF1uGsYGEW1mBGkPUoyw13fJesY1k6GuKyWxoQZM0I9ya6t9TIeojV3KPWsqNwydrOisP
+duKWSPn+4l/tkTWc1w702Rm+QyNrIaoZ7HB/3GkxkzWVl2rW1lgRZJ7Ay4a6Lzx1G1kZWJtx18XVth8
+oqrh+R6iffZE1hJcM9sxgj64KrTCf1R9YUVibcm9Ggb5qFheMxhsgaZwVLr2tyh5UBWiYv4mcoY8iax
+cr8nzcmd5ihaGLtB5I1yJK1sxkNGZOulQyrfAyyBll4jieYT48pk5lTlfqD6c0PWY+ycNZaN0EPKOML
+SGK9ycIP3MgtsjpTHnG1w3baoUsK+w7mmNeEOwiyOnc+meDQ9WFYZhssAl2R2Xt5snpYZv02/YKgIkv
+cByxcKrDmyJrIynTtyw/VT8Jilukc+TfcZC1hmfN2+q8Bq3yAaU9fyRpjmcR3tzqi1JVH1mks3KCaZq
+IkSNfXSMhaw9IpgEeZcQdF1oGs2taldivcdQaIrC2sN3yfGXdK+W/JkrWLFfeG+pYQss5gjVxk3WaZj
+oNOcPf15ADsYtQmImucVfvVAKYb2OwbmplqveDgOTdZt1lB8z1o6WLX3sxE1kaWbqPXWLX2vXvjRdbT
+LHcCt27co1c4mKz1rGAC8wr+Agi3EN1FAlmNpZqsuyw32bEa8EGXW4LN2sKnLGTdY8Xh7tbN1bqSrOh
+ZNVlpFpYOHkw3LPNPZBuD05C1niXvmeM4Zkwt94NmrjnpRdZcFvtbv8z6F2AA/5G8jEIpBJoAAAAASU
+VORK5CYII=" style="float:left;padding:10px"/></p>
+<h1>Yikes! App/Server Problem!</h1>
+<p>We apologize, but the server encountered a problem when attempting to complete its task.</p> 
+<p>More information about this error may be available in the <em>program's own error log</em>.</p> 
+<p><a href="mailto:$ENV{SERVER_ADMIN}">Contact the Server Admin</a></p>
+<p>Time of error: <strong>$TIME</strong></p> 	
+</div>
+</body> 
+</html> 
+   
+};
+
+}
+
 sub default {
     
     my $self = shift;
     my $q    = $self->query();
-    
+
     if ( DADA::App::Guts::check_setup() == 0 ) {
         return user_error( { -error => 'bad_setup' } );
     }
@@ -736,11 +773,16 @@ sub send_email {
             -root_login => $root_login,
         }
     );
+    
+    warn 'and were back!'; 
+    
     if ( exists( $headers->{-redirect_uri} ) ) {
+        warn 'gotta -redirect_uri'; 
         $self->header_type('redirect');
         $self->header_props( -url => $headers->{-redirect_uri} );
     }
     else {
+        warn 'noope.'; 
         if ( keys %$headers ) {
             $self->header_props(%$headers);
         }
@@ -909,6 +951,9 @@ sub drafts {
         $sci = $d->draft_index( { -role => 'schedule' } );
     }
 
+    #use Data::Dumper; 
+    #return '<pre>' . Data::Dumper::Dumper($sci);
+    
     my $sci_active   = [];
     my $sci_inactive = [];
     for (@$sci) {
@@ -951,7 +996,7 @@ sub drafts {
     return $scrn;
 }
 
-sub delete_draft {
+sub delete_drafts {
 
     my $self = shift;
     my $q    = $self->query();
@@ -961,13 +1006,18 @@ sub delete_draft {
     
     my $list = $admin_list;
 
-    my $id = $q->param('id');
+    my @draft_ids = $q->param('draft_ids');
 
     require DADA::MailingList::MessageDrafts;
     my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
-    die "not enabled! " unless $d->enabled;
-    $d->remove($id);
 
+    die "not enabled! " 
+        unless $d->enabled;
+        
+    foreach my $id(@draft_ids){ 
+        $d->remove($id);
+    }
+    
     $self->header_type('redirect');
     $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=drafts&delete_draft=1' );
 
@@ -989,17 +1039,16 @@ sub create_from_stationary {
     my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
     die "not enabled! " unless $d->enabled;
     my $new_id = $d->create_from_stationary( { -id => $id, -screen => $screen } );
-    return (
-        {
-                redirect_uri => $DADA::Config::S_PROGRAM_URL
-              . '?flavor='
-              . $screen
-              . '&restore_from_draft=true&draft_id='
-              . $new_id
-        },
-        undef
+    
+    $self->header_type('redirect');
+    $self->header_props( -url => 
+        $DADA::Config::S_PROGRAM_URL
+      . '?flavor='
+      . $screen
+      . '&restore_from_draft=true&draft_id='
+      . $new_id    
     );
-
+    
 }
 
 sub message_body_help {
@@ -1303,18 +1352,17 @@ sub sending_monitor {
     if ( $q->param('process') eq 'kill' ) {
 
         if ( DADA::Mail::MailOut::mailout_exists( $list, $id, $type ) == 1 ) {
-
             my $mailout = DADA::Mail::MailOut->new( { -list => $list } );
-            $mailout->associate( $id, $type );
-            $mailout->clean_up;
-
-            $self->header_type('redirect');
-            $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=sending_monitor&killed_it=1' );
+               $mailout->associate( $id, $type );
+               $mailout->clean_up;
         }
         else {
-            die "mailout does NOT exists! What's going on?!";
+            warn "mailout $id does NOT exists! What's going on?!";
         }
-
+        
+        $self->header_type('redirect');
+        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=sending_monitor&killed_it=1' );
+        
     }
     elsif ( $q->param('process') eq 'pause' ) {
 
@@ -1323,7 +1371,7 @@ sub sending_monitor {
             my $mailout = DADA::Mail::MailOut->new( { -list => $list } );
             $mailout->associate( $id, $type );
             $mailout->pause();
-
+        
             $self->header_type('redirect');
             $self->header_props( -url => $DADA::Config::S_PROGRAM_URL
                   . '?flavor=sending_monitor&id='
@@ -1676,19 +1724,30 @@ sub send_url_email {
     
     my $list = $admin_list;
 
+    my $Ext_Request = undef; 
+    if(defined($self->param('Ext_Request'))){ 
+       $Ext_Request =  $self->param('Ext_Request')
+    }
+
     require DADA::App::MassSend;
     my $ms = DADA::App::MassSend->new( { -list => $list } );
     my ( $headers, $body ) = $ms->send_url_email(
-        {
-            -cgi_obj    => $q,
-            -root_login => $root_login,
+            {
+                -cgi_obj    => $q,
+                -Ext_Request => $Ext_Request, 
+                -root_login => $root_login,
+            }
+        );
+        if ( exists( $headers->{-redirect_uri} ) ) {
+            $self->header_type('redirect');
+            $self->header_props( -url => $headers->{-redirect_uri} );
         }
-    );
-    if ( keys %$headers ) {
-        $self->header_props(%$headers);
-    }
-
-    return $body;
+        else {
+            if ( keys %$headers ) {
+                $self->header_props(%$headers);
+            }
+            return $body;
+        }
 }
 
 sub list_invite {
@@ -1708,7 +1767,29 @@ sub list_invite {
 
     require DADA::App::MassSend;
     my $ms = DADA::App::MassSend->new( { -list => $list } );
-    $ms->list_invite( { -cgi_obj => $q, } );
+
+    my $Ext_Request = undef; 
+    if(defined($self->param('Ext_Request'))){ 
+       $Ext_Request =  $self->param('Ext_Request')
+    }
+
+    my ( $headers, $body ) = $ms->list_invite(
+            {
+                -cgi_obj    => $q,
+                -Ext_Request => $Ext_Request, 
+                -root_login => $root_login,
+            }
+        );
+        if ( exists( $headers->{-redirect_uri} ) ) {
+            $self->header_type('redirect');
+            $self->header_props( -url => $headers->{-redirect_uri} );
+        }
+        else {
+            if ( keys %$headers ) {
+                $self->header_props(%$headers);
+            }
+            return $body;
+        }
 }
 
 sub mass_mailing_options {
@@ -12566,8 +12647,8 @@ sub schedules {
         else { 
             eval { 
                 require 'plugins/' . $schedule; 
-                my $run_sub = '\&' . $schedule . '::scheduled_task'; 
-                $r .= $run_sub->($q);
+                $r .= $DADA::Config::PLUGIN_RUNMODES->{$schedule}->{sched_run}->($list); 
+                
             };
             if($@) { 
                  $r .= $@; 

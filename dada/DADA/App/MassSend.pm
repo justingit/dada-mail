@@ -12,9 +12,10 @@ use DADA::MailingList::Archives;
 use DADA::MailingList::Settings;
 use DADA::MailingList::Subscribers;
 use DADA::MailingList::MessageDrafts;
+use Try::Tiny; 
 
 use Carp qw(carp croak);
-$Carp::Verbose = 1;
+#$Carp::Verbose = 1;
 
 use strict;
 use vars qw($AUTOLOAD);
@@ -237,7 +238,8 @@ sub send_email {
 
         if ( $self->{md_obj}->enabled ) {
 
-            warn 'md_obj enabled.'; 
+            warn 'md_obj enabled.'
+             if $t; 
 
             $draft_id = $self->save_as_draft(
                 {
@@ -247,6 +249,8 @@ sub send_email {
                 }
             );
 
+            carp 'construct_and_send'; 
+            
             # to fetch a draft, I need id, list and role (lame)
             ( $status, $errors, $message_id ) = $self->construct_and_send(
                 {
@@ -256,8 +260,9 @@ sub send_email {
                     -process  => $process,
                 }
             );
-            warn '$message_id ' . $message_id; 
-            
+            carp '$message_id ' . $message_id; 
+            carp 'done with construct_and_send!'; 
+
         }
         else {
             ( $status, $errors, $message_id ) = $self->construct_and_send(
@@ -270,7 +275,7 @@ sub send_email {
                 }
             );
             
-            warn '$message_id ' . $message_id; 
+            carp '$message_id ' . $message_id; 
             
         }
         if ( $status == 0 ) {
@@ -308,6 +313,7 @@ sub send_email {
             else {
                 $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=sending_monitor&type=list&id=' . $message_id;
             }
+            carp 'returning!'; 
             return({-redirect_uri => $uri}, undef);
         }
     }
@@ -428,6 +434,7 @@ sub construct_and_send {
           $mh->Ext_Request($args->{-Ext_Request}); 
       }
 
+        
         $message_id = $mh->mass_send(
             {
                 -msg             => {%mailing},
@@ -857,15 +864,13 @@ sub send_url_email {
     my $ses_params         = $self->ses_params;
     my $draft_role         = $q->param('draft_role') || 'draft';
 
-    my $can_use_mime_lite_html = 0;
+    my $can_use_mime_lite_html = 1;
     my $mime_lite_html_error   = undef;
-    eval { require DADA::App::MyMIMELiteHTML };
-    if ( !$@ ) {
-        $can_use_mime_lite_html = 1;
-    }
-    else {
-        $mime_lite_html_error = $@;
-    }
+    try { 
+        require DADA::App::MyMIMELiteHTML 
+    } catch {
+        $can_use_mime_lite_html = 0;
+    };
 
     my $can_use_lwp_simple = 0;
     my $lwp_simple_error   = undef;
@@ -1148,7 +1153,8 @@ sub wait_for_it {
     my $self       = shift;
     my $message_id = shift;
 
-    warn '$message_id ' . $message_id; 
+    warn '$message_id ' . $message_id
+        if $t; 
     
     if($message_id == 0){ 
         return 0; 
@@ -1231,14 +1237,10 @@ sub list_invite {
     my $self   = shift;
     my ($args) = @_;
     my $q      = $args->{-cgi_obj};
+    my $root_login = $args->{-root_login};
 
     my $process = xss_filter( strip( $q->param('process') ) );
     my $flavor  = xss_filter( strip( $q->param('flavor') ) );
-
-    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
-        -cgi_obj  => $q,
-        -Function => 'list_invite'
-    );
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
@@ -1560,6 +1562,10 @@ sub list_invite {
                 -ls_obj => $ls,
             }
         );
+        if(exists($args->{-Ext_Request})){ 
+            $mh->Ext_Request($args->{-Ext_Request}); 
+        }
+        
 
         # translate the glob into a hash
 
@@ -1573,9 +1579,7 @@ sub list_invite {
             $mh->mass_test_recipient( strip( $q->param('test_recipient') ) );
             $test_recipient = $mh->mass_test_recipient;
         }
-
         my $message_id = $mh->mass_send( $mh->return_headers($header_glob), Body => $message_string, );
-
         my $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=sending_monitor&type=invitelist&id=' . $message_id;
         return({-redirect_uri => $uri}, undef);
 
