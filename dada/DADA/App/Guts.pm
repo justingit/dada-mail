@@ -2992,21 +2992,41 @@ sub grab_url {
             'Accept-Encoding' => $can_accept, 
         );
         if ($res->is_success) {
-    	    return $res->decoded_content;
+            if(wantarray){ 
+                return ($res->decoded_content, $res); 
+            }
+            else { 
+                $res->decoded_content
+            }
     	}
     	else { 
     	    carp "Problem fetching webpage, '$url':" . $res->status_line;
-    		return undef; 
+    		if(wantarray){ 
+                return (undef, $res); 
+            }
+            else { 
+    		    return undef; 
+    	    }
     	}
     }
     else {
         my $res = $ua->get($url);
         if ($res->is_success) {
-            return safely_decode( $res->content );
+            if(wantarray){ 
+    		    return (safely_decode( $res->content ), $res); 
+    		}
+    		else { 
+    		    return safely_decode( $res->content ); 
+    		}
         }
     	else { 
     	    carp "Problem fetching webpage, '$url':" . $res->status_line;
-    		return undef; 
+    		if(wantarray){ 
+                return (undef, $res); 
+            }
+            else { 
+    		    return undef; 
+    	    }
     	}
     	
     }

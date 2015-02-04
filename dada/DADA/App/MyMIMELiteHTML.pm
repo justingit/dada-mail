@@ -1,5 +1,8 @@
 package DADA::App::MyMIMELiteHTML; 
 
+use lib "../../";
+use lib "../../DADA/perllib";
+
 
 use MIME::Lite::HTML;
 @ISA = "MIME::Lite::HTML";
@@ -7,6 +10,7 @@ use MIME::Lite::HTML;
 #use base "MIME::Lite::HTML"; 
 
 use Carp qw(croak carp); 
+use DADA::App::Guts; 
 
 ## trés bizarre!
 #sub MIME::Lite::HTML::absUrl($$) {
@@ -51,12 +55,14 @@ sub parse
     if ($url_page && $url_page=~/^(https?|ftp|file|nntp):\/\//)
 	{
         print "Get ", $url_page,"\n" if $self->{_DEBUG};	
-        my $req = new HTTP::Request('GET' => $url_page);
-        my $res = $self->{_AGENT}->request($req);
-        if (!$res->is_success) 
-	    {$self->set_err("Can't fetch $url_page (".$res->message.")");}
-        else {$gabarit = $res->content;}
-        $racinePage=$url1 || $res->base;
+        my ($content, $res) = grab_url($url_page); 
+	    if(!defined($content)){
+	        $self->set_err("Can't fetch $url_page (".$res->message.")");
+	    }
+        else {
+            $gabarit = $content
+        }
+        $racinePage = $url1 || $res->base;
 	}
     else {
 		$gabarit=$url_page;
@@ -68,11 +74,14 @@ sub parse
 	  if ($url_txt=~/^(https?|ftp|file|nntp):\/\//)
 	    {
             print "Get ", $url_txt,"\n" if $self->{_DEBUG};
-            my $req2 = new HTTP::Request('GET' => $url_txt);
-            my $res3 = $self->{_AGENT}->request($req2);
-            if (!$res3->is_success) 
-		  {$self->set_err("Can't fetch $url_txt (".$res3->message.")");}
-            else {$gabarit_txt = $res3->content;}
+            
+            my ($content, $res) = grab_url($url_page); 
+    	    if(!defined($content)){
+		        $self->set_err("Can't fetch $url_txt (".$res3->message.")");
+		    }
+            else {
+                $gabarit_txt = $content;
+            }
 	    }
 	  else {$gabarit_txt=$url_txt;}
           }
@@ -255,18 +264,15 @@ sub include_css(\%$$) {
     
 	# Complete url
     my $ur = URI::URL->new($url, $root)->abs;
-    print "Include CSS file $ur\n" if $self->{_DEBUG};
-    my $res2 = $self->{_AGENT}->request(new HTTP::Request('GET' => $ur));
-    
-    if($res2->is_success()){ 
-	
-		print "Ok file downloaded\n" if $self->{_DEBUG};
+    print "Include CSS file $ur\n" if $self->{_DEBUG};    
+    my ($content, $res) = grab_url($ur); 
+    if(defined($content)){
+        print "Ok file downloaded\n" if $self->{_DEBUG};
 	    return      '<style type="text/css">'."\n".
 	      '<!--'."\n".$res2->content.
 		"\n-->\n</style>\n";
-	}
-	else { 
-	
+    }
+    else {
 		my $err = "Looking for css to include:, '" . $ur . "' was not successful - removing from message and ignoring"; 
 		$self->set_err($err);
 		carp $err; 
@@ -274,9 +280,7 @@ sub include_css(\%$$) {
 		# DEV: so, why was this returning an open <style> tag? 
 		# Because that's dumb.
 		return ''; #<style type="text/css">';	
-		
-	}
-
+    }
   }
   $gabarit=~s/<link ([^<>]*?)
                 href\s*=\s*"?([^\" ]*)"?([^>]*)>
@@ -304,10 +308,10 @@ sub pattern_js {
 	else { 
   	 	print "Include Javascript file $ur\n" 
 			if $self->{_DEBUG};
-		my $res2 = $self->{_AGENT}->request(new HTTP::Request('GET' => $ur));
-		if($res2->is_success()){ 
-			  my $content = $res2->content;
-			    print "Ok file downloaded\n" 
+
+        my $content = grab_url($ur); 
+        if(defined($content)){
+    		print "Ok file downloaded\n" 
 					if $self->{_DEBUG};
 			    return "\n"."<!-- $ur -->\n".
 			      '<script '.$milieu.$fin.">\n".
@@ -318,7 +322,7 @@ sub pattern_js {
 			my $err = "Looking for javascript to include:, '" . $ur . "' was not successful - removing from message and ignoring"; 
 			$self->set_err($err);
 			carp $err; 
-			return "<!-- Couldn't Include Javasript: $ur -->\n";		    
+			return "<!-- Couldn't Include Javascript: $ur -->\n";		    
 		}
 	}
  }
@@ -344,7 +348,6 @@ sub cid  (\%$) {
   my ($self, $url)=@_;
 
   require URI;
-  require DADA::App::Guts; 
 
   my $filename = DADA::App::Guts::uriescape((URI->new($url)->path_segments)[-1]);
 
