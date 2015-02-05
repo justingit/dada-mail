@@ -735,9 +735,6 @@ sub save_w_params {
         # a valid value.
     }
 
-#	use Data::Dumper; 
-#	croak Data::Dumper::Dumper($saved_settings); 
-
     return $self->save($saved_settings);
 	
 }

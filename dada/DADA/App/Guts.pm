@@ -274,7 +274,7 @@ sub partial_sending_query_to_params {
         }
     }
 
-    use Data::Dumper; 
+    #use Data::Dumper; 
     # warn Dumper($partial_sending); 
     
     return $partial_sending;

@@ -349,8 +349,8 @@ sub construct_and_send {
 
     if ( $self->{md_obj}->enabled ) {
         $draft_q = $self->q_obj_from_draft($args);
-        use Data::Dumper;
-        warn Dumper($draft_q);
+        require Data::Dumper;
+        warn Data::Dumper::Dumper($draft_q);
     }
     else {
         $draft_q = $args->{-cgi_obj};

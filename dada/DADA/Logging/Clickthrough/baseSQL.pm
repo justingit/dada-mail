@@ -2142,8 +2142,6 @@ sub message_email_report_table {
 		}
 		my $report = $self->message_email_report($args);
 		
-#		use Data::Dumper; 
-#		warn Dumper($report); 
 		
 		require DADA::Template::Widgets; 
 	    $html = DADA::Template::Widgets::screen(
