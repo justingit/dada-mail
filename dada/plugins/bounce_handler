@@ -10,7 +10,7 @@ $|++;
 #
 # Documentation:
 #
-#  http://dadamailproject.com/d/bounce_handler.html
+#  http://dadamailproject.com/d/bounce_handler.pod.html
 #
 #---------------------------------------------------------------------#
 
@@ -55,8 +55,6 @@ my $Plugin_Config = {
     Log                      => $DADA::Config::LOGS . '/bounces.txt',
     MessagesAtOnce           => 100,
     Max_Size_Of_Any_Message  => 2621440,
-    Allow_Manual_Run         => 1,
-    Manual_Run_Passcode      => undef,
     Enable_POP3_File_Locking => 1,
     Plugin_URL               => $DADA::Config::S_PROGRAM_URL . '?flavor=plugins&plugin=bounce_handler',
     Plugin_Name              => 'Bounce Handler',
@@ -848,7 +846,7 @@ L<http://dadamailproject.com/purchase/pro.html>
 
 =head1 Description
 
-Bounce Handler intelligently handles bounces from Dada Mail list messages.
+Bounce Handler intelligently handles bounces from Dada Mail mailing list messages.
 
 Messages sent to subscribers of your mailing list that bounce back will be directed to the B<List Administrator Address>. This email account is then checked periodically by Bounce Handler. 
 
@@ -860,21 +858,17 @@ The usual action that is taken is to apply a B<score> to the email address that 
 
 =head1 Obtaining a Copy of the Plugin
 
-Bounce Handler is located in the, I<dada/plugins> directory of the main Dada Mail distribution, under the name, B<bounce_handler>
+Bounce Handler is located in the, I<dada/plugins> directory of the main Dada Mail distribution, under the filename, B<bounce_handler>
 
 =head1 Requirements
 
-Please make sure you have these requirements before installing this plugin: 
-
-=over
-
-=item * A POP3 Email Account
+=head2 POP3 Email Account
 
 Bounce Handler works by checking a email address via POP3. (IMAP is currently not supported).  
 
 You will need to create a new email address account for Bounce Handler to utilize. 
 
-Example: create B<bounces@yourdomain.com>, where, I<yourdomain.com> is the name of the domain Dada Mail is installed on. 
+Example: create B<bounces@yourdomain.com>, where, I<yourdomain.com> is the name of the domain Dada Mail is installed on.
 
 Guidelines on this address: 
 
@@ -896,303 +890,22 @@ Check to make sure that the POP3 server (usually, port 110) is not blocked from 
 
 =back
 
-=back
-
 =head1 Installation
 
-This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. The below installation instructions go through how to install the plugin B<manually>. We suggest using the Dada Mail Installer. 
+This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. Under B<Plugins/Extensions (Optional)> check the option, B<Bounce Handler>. 
 
-If you do install this way, note that you still have to create the create the Bounce Handler email account.
+Below this option are form fields to put in the POP3 accounts login credentials, as well as a place to test those credentials out. 
 
-=head1 Lightning Configuration/Installation Instructions 
+Once Dada Mail installed, all new mailing lists will use the Bounce Handler's email address as the List Administrator. Any previous mailing lists may need to be manually set to have their List Administrator set to this address - this can be done in the List Control Panel under,  B<Your Mailing List - List Information>
 
-=over
+=head2 Cronjob
 
-=item * Create the bounce handler email account
+Bounce Handler runs in the background on a schedule. Make sure to set Dada Mail's cronjob: 
 
-=item * Configure your mailing list to use this email address for its, "List Administrator Address"
+L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod>
 
-Set this email address as our "List Administrator Address" in the list control panel, under,
 
-B<Your Mailing List - List Information> 
-
-=item * Configure the plugin in your .dada_config file
-
-(covered below)
-
-=item * chmod 755 the bounce_handler script
-
-=item * visit the plugin via a web browser. 
-
-=back
-
-=head1 Screencasts
-
-=head2 Part 1 
-
-L<https://www.youtube.com/watch?v=tvdIj1s19Vo>
-
-=head2 Part 2
-
-L<https://www.youtube.com/watch?v=CnsM994xa7A>
-
-=head1 Configuration
-
-There's a few things you need to configure for this plugin. Configure the plugin variables in your C<.dada_config> file (not in the plugin itself!)
-
-=head3 POP3 Server Information. 
-
-Create a new POP3 email account. This email account will be the address that
-bounced messages will be delivered to. 
-
-Open up your C<.dada_config> file for editing. 
-
-Search and see if the following lines are present: 
-
- # start cut for plugin configs
- =cut
-
- =cut
- # end cut for plugin configs
-
-If they are present, remove them. 
-
-You can then configure the plugin variables on these lines: 
-
-	Bounce_Handler => { 
-	
-	    Server                    			=> undef, 
-	    Username                  			=> undef, 
-	    Password                  			=> undef, 
-	    # etc.
-	},
-	
-For example: 
-
-Bounce_Handler => { 
-	
-		Server                    			=> 'mail.yourdomain.com', 
-		Username                  			=> 'bounces+yourdomain.com', 
-		Password                  			=> 'password', 
-	    # etc.
-},
-
-
-=head2 Set this address as the default List Administration Email Address
-
-You may also want to set a default value for the, List Adminstration Email, so that all new lists already have Bounce Handler enabled. 
-
-Find this chunk of lines in your C<.dada_config> file: 
-
-	# start cut for list settings defaults
-	=cut
-	
-	%LIST_SETUP_INCLUDE = (
-		set_smtp_sender              => 1, # For SMTP   
-		add_sendmail_f_flag          => 1, # For Sendmail Command
-		admin_email                  => 'bounces@example.com',
-	);
-	
-	=cut
-	# end cut for list settings defaults
-
-Remove the =cut lines, similar to before: 
-
-	# start cut for list settings defaults
-	=cut
-
-	=cut
-	# end cut for list settings defaults
-
-And then change the, C<admin_email> to your bounce handler email address: 
-
-
-	%LIST_SETUP_INCLUDE = (
-		set_smtp_sender              => 1, # For SMTP   
-		add_sendmail_f_flag          => 1, # For Sendmail Command
-		admin_email                  => 'bounces@yourdomain.com',
-	);
-
-=head2 List Control Panel Menu
-
-Now, edit your C<.dada_config> file, so that it shows Bounce Handler in the left-hand menu, under the, B<Plugins> heading: 
-
-First, see if the following lines are present in your C<.dada_config> file: 
-
- # start cut for list control panel menu
- =cut
-
- =cut
- # end cut for list control panel menu
-
-If they are, remove them. 
-
-Then, find these lines: 
-
-
- #					{-Title      => 'Bounce Handler',
- #					 -Title_URL  => $PLUGIN_URL."/bounce_handler",
- #					 -Function   => 'bounce_handler',
- #					 -Activated  => 1,
- #					},
-
-Uncomment the lines, by taking off the, "#"'s: 
-
- 					{-Title      => 'Bounce Handler',
- 					 -Title_URL  => $PLUGIN_URL."/bounce_handler",
- 					 -Function   => 'bounce_handler',
- 					 -Activated  => 1,
- 					},
-
-Save your C<.dada_config> file.
-
-
-=head2 Telling Dada Mail to use Bounce Handler. 
-
-You're going to have to tell Dada Mail explicitly that you want
-bounces to go to the bounce handler. The first step is to set the 
-B<Dada List Administrator> to your bounce email address. You'll set this per mailing list in the each mailing list's control panel, under 
-
-B<Your Mailing List -  List Information>
-
-After that, you'll need to configure outgoing email messages to set the B<Dada List Administrator> address in the C<Return-Path> header. Sounds scary, but it's easy enough.  
-
-=head3 If you're using th sendmail command: 
-
-In the list control panel, go to B<Mail Sending - Sending Options> and 
-check: B<Add the Sendmail '-f' flag when sending messages ...>
-
-This I<should> set the sending to the admin email, and in turn, set the
-B<Return-Path> header. Dada Mail is shipped to have this option set by default. 
-
-=head3 If you're using SMTP sending: 
-
-In the list control panel, go to: B<Mail Sending - Sending Options>
-and check the box labeled: B<Set the Sender of SMTP mailings to the 
-list administration email address>  Dada Mail is shipped to have this option set by default. 
-
-=head3 If you're using Amazon SES: 
-
-Dada Mail will automatically have bounces go to the List Administration Address when using Amazon SES. Make sure before you configure any of the above that you Verify this email address, just like you would a Amazon SES Sender. If you do not, your messages sent through Dada Mail will not be delivered.
-
-=head2 Testing
-
-To test out any of these configurations, Send yourself a test message through Dada Mail
-and view the source of the message itself, in your mail reader. In the
-mail headers, you should see the B<Return-Path> header: 
-
-
- Return-Path: <dadabounce@myhost.com>
- Delivered-To: justin@myhost.com
- Received: (qmail 75721 invoked from network); 12 May 2003 04:50:01 -0000
- Received: from myhost.com (208.10.44.140)
-   by hedwig.myhost.com with SMTP; 12 May 2003 04:50:01 -0000
- Date:Sun, 11 May 2003 23:50:01 -0500
- From:justin <justin@myhost.com>
- Subject:Test, Test, Test
- To:justin@myhost.com
- Sender:dadabounce@myhost.com
- Reply-To:justin <justin@myhost.com>
- Precedence:list
- Content-type:text/plain; charset=iso-8859-1
-
-The first line has the B<Return-Path> header should have the Bounce Handler Email set: 
-
-	Return-Path: <dadabounce@myhost.com>
-
-In this example, my List Owner address, B<justin@myhost.com> still occupies the C<To:> and C<Reply-To headers>, so whoever replies to my message will reply to me, I<not> Bounce Handler.
-
-=head1 Plugin Configs
-
-These plugin configs are located in your C<.dada_config> file, as mentioned above. 
-
-=head2 Server, Username, Password
-
-These configs need to be set, to hook Bounce Handler to the email address you want the bounce messages to go. 
-
-=head2 Port
-
-Defaults to: B<110> for regular connections, C<995> for SSL connections. 
-
-Sets the B<port> Bounce Handler uses connect to the POP server. 
-
-=head2 USESSL
-
-Defaults to: B<0>. Set to, B<1>, if you'd like (and can) connect to the POP server with an SSL connection.
-
-=head2 AUTH_MODE
-
-Defaults to: B<BEST>
-
-Allowed parameters: B<BEST>, B<PASS>, B<APOP>, B<CRAM-MD5>. 
-
-If the default of, B<BEST> isn't working, try the various allowed parameters. B<PASS> passes the POP3 password in cleartext. 
-
-=over
-
-=item * BEST
-
-Tries, B<APOP>, B<CRAM-MD5> and B<PASS> modes, in that order of availability. 
-
-=back
-
-=head2 Plugin_Name
-
-The name of this plugin. 
-
-Defaults to: B<Bounce Handler>
-
-=head2 Plugin_URL
-
-The URL of the plugin. This is usually figured out by default, but if it's not (you'll know, as links are broken in the plugin and nothing seems to work) you may have to set this, manually. 
-
-
-=head2 Enable_POP3_File_Locking
-
-Defaults to B<1> 
-
-When enabled, Bounce Handler will use a lock file to make sure only one connection to the POP server is done at one time. Disable this by setting this parameter to, B<0>. 
-
-=head2 Log
-
-Sets the path to the logfile Bounce Handler creates. Defaults to:
- C<bounces.txt> in your C<.dada_files/.logs> directory. 
-
-=head2 MessagesAtOnce
-
-Sets how many messages are checke, per running of the plugin. 
-
-Defaults to: B<100>
-
-Since there could be many bounce messages awaiting to be checked, there is a limit that's set on how many mesages are looked at, at one time. This also means that it may take a few runnings of the plugin to clear all the awaiting messages. 
-
-=head3 Max_Size_Of_Any_Message
-
-Defaults to: B<2,621,440> bytes (2.5 megs). Set in, B<octets>
-
-Sets the maximum size of any bounced message that Bounce Handler will deal with. Anything larger than this will simply be ignored and deleted. 
-
-
-=head1 More on Scores, Thresholds, etc
-
-By default, Bounce Handler assigns a particular score to each email address that bounces back a message. These scores are tallied each time an email address bounces a message.
-
-Since Dada Mail understands the differences between B<Hard Bounces> and B<Soft Bounces>, it'll append a smaller score for soft bounces, and a larger score for hard bounces. There's also a B<Decay Rate>, an amount that all scores are decreased by, every time a mass mailing is sent out.
-
-Once the email address's B<Bounce Score> reaches the B<Threshold>, the email address is then removed from the list. 
-
-=head1 Special Debugging Mode
- 
-=head2 manually_enter_bounces
-
-Visit the plugin with the following query string, 
-
-L<http://example.com/cgi-bin/dada/mail.cgi/plugins/bounce_handler/manually_enter_bounces>
-
-(C<manually_enter_bounces>) to enter a special debugging mode, where you can just paste in the source of a bounce message, 
-and see how Bounce Handler will handle it, without actually processing the message. 
-
-=head1 FAQs
+=head1 FAQ
 
 =head2 Bounce Email Address
 
@@ -1202,104 +915,6 @@ Yes.
 
 Even though there's only one Bounce Email Address, it is used by all the mailing lists of your Dada Mail, but Bounce Handler will work with every mailing list I<individually>. Each mailing list also has a separate Bounce Scorecard. 
 
-=head1 Introduction to Bounce Handler Rules
-
-Bounce Handler Rules are what's used when the bounced message is parsed and examined. They're a set of things to look for, and match, in an attempt to figure out what type of bounced message was given back. 
-
-An example Rule: 
-
-     {
-        exim_user_unknown => { 
-            Examine => { 
-                Message_Fields => { 
-                    Status      => [qw(5.x.y)], 
-                    Guessed_MTA => [qw(Exim)],  
-                }, 
-                Data => { 
-                    Email       => 'is_valid',
-                    List        => 'is_valid', 
-                }
-            },
-                Action => { 
-                     add_to_score => 'hardbounce_score',
-                }, 
-            }
-    }, 
-
-B<exim_user_unknown> is the title of the rule -  just a label, nothing else.
-
-B<Examine> holds a set of parameters that the handler looks at when
-trying to figure out what to do with a bounced message. This example
-has a B<Message_Fields> entry and inside that, a B<Status> entry. The
-B<Status> entry holds a list of status codes. The ones in shown there
-all correspond to hard bounces; the mailbox probably doesn't exist. 
-
-B<Message_Fields> also hold a, B<Guessed_MTA> entry - it's explicitly looking for a bounce back from the, I<Exim> mail server. 
-
-B<Examine> also holds a B<Data> entry, which holds the B<Email> or B<List> 
-entries, or both. Their values are either 'is_valid', or 'is_invalid'. 
-
-So, to sum this all up, this rule will match a message that has B<Status:> 
-B<Message Field> contaning a user unknown error code, B<(5.1.1, etc)> and also a B<Guessed_MTA> B<Message Field> containing, B<Exim>. The message
-also has to be parsed to have found a valid email and list name. 
-
-If this all matches, the B<Action> is... acted upon. In this case, the offending email address will be appended a, B<Bounce Score> of,
- whatever, B<hardbounce_score> is, which by is default, B<4>. 
-
-If you would like to have the bounced address automatically removed, without any sort of scoring happening, change the B<action> from,
-
-    add_to_score => 'hardbounce_score',
-
-to: 
-
-    unsubscribe_bounced_email => 'from_list'
-
-Also, changing B<from_list>, to B<from_all_lists> will do the trick. 
-
-Here's a schematic of all the different things you can do: 
-
- {
- rule_name => {
-	 Examine => {
-		Message_Fields => {
-			Status               => qw([    ]), 
-			Last-Attempt-Date    => qw([    ]), 
-			Action               => qw([    ]), 
-			Status               => qw([    ]), 
-			Diagnostic-Code      => qw([    ]), 
-			Final-Recipient      => qw([    ]), 
-			Remote-MTA           => qw([    ]), 
-			# etc, etc, etc
-			
-		},
-		Data => { 
-			Email => 'is_valid' | 'is_invalid' 
-			List  => 'is_valid' | 'is_invalid' 
-		}
-	},
-	Action => { 
-	           add_to_score             =>  $x, # where, "$x" is a number
-			   unsubscribe_bounced_email => 'from_list' | 'from_all_lists',
-	},
- },	
-
-Rules also support the use of regular expressions for matching any of the B<Message_Fields>. 
-
-To tell the parser that you're using a regular expression, make the Message_Field key end in '_regex': 
-
- 'Final-Recipient_regex' => [(qr/RFC822/)], 
-
-=head2 Customizing Bounce Handler Rules
-
-The default set of Bounce Handler Rules can be found at,
-
-I<dada/data/bounce_handler_rules.pl>
-
-Bounce Handler will also look for a copy of this file in your
-
-I<.dada_files/.configs>
-
-directory, which you can then customize with your own rules. When Dada Mail is upgrading, your customizations will then not be lost. 
 
 =head1 COPYRIGHT
 

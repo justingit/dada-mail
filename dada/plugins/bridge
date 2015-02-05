@@ -3834,13 +3834,9 @@ sub mod_dir {
 
 =head1 Bridge
 
-=head1 Description 
+The Bridge plugin connects your mail reader with Dada Mail, allowing you to send both announce-only messages from your mail reader, as well as enabling discussion mailing lists: each member of your mailing list may send messages to the List Email, which will then be sent to the entire mailing list. 
 
-B<Bridge> is one of the most powerful plugins that comes with Dada Mail. Once installed and configured, Bridge allows you to both send Announce Only messages from your mail reader, as well as set up a Discussion Lists, where  all members of your mailing list can join in and start talking to each other via email. 
-
-Bridge also allows you to set up your mailing list as an email discussion list: Each member of your mailing list may send messages to the List Email, which will then be sent to the entire mailing list. 
-
-Messages are received by sending to the B<List Email>. The List Email will need to be set up manually for each mailing list you will want to use Bridge and can be either a regular B<POP3 email account>, which Bridge will log into on a schedule, or an B<Email Forward>, which will forward the message directly to the plugin itself. 
+Messages are received by sending to the B<List Email>. The List Email will need to be set up manually for each mailing list you will want to use Bridge. It can be either a regular B<POP3 email account>, which Bridge will log into on a schedule, or an B<Email Forward>, which will forward the message directly to the plugin itself. 
 
 =head1 User Guide
 

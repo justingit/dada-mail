@@ -30,7 +30,7 @@ C<_sched513A3F128C5C41EC> is an individual B<flavor> for our specific install of
 
 This flavor can be set when installing Dada Mail via the Dada Mail Installer. It can also be set manually in your C<.dada_config> file, in the C<SCHEDULED_JOBS_OPTIONS> hashref. Look for the C<scheduled_jobs_flavor> paramater.
 
-If you would like to customize, the value of this paramater should only contain letters, numbers and underscores. Anything too tricky will foil the run mode dispatch code of Dada Mail. 
+If you would like to customize the Schedule Flavor, the value of this paramater should only contain letters, numbers and underscores. Anything too tricky will foil the run mode dispatch code of Dada Mail. This value should also NOT be the same as an already-existing flavor/run mode
 
 =head2 Job To Run
 
@@ -70,14 +70,12 @@ Another option is to supress the output in the cronjob itself, like this:
 
 */5 * * * * /usr/bin/curl  -s --get --url http://example.com/cgi-bin/dada/mail.cgi/_sched513A3F128C5C41EC/_all/_all/_verbose/ >/dev/null 2>&1 
 
-
 =head2 Running the scheduled jobs via the command line. 
 
 There's no special command-line way to run these jobs, although you can invoke Dada Mail on the command line easy enough. The following: 
 
-    cd /home/youraccount/public_html/cgi-bin/dada; /usr/bin/perl ./mail.cgi flavor=_sched schedule=_all list=_all output_mode=_verbose
+    cd /home/youraccount/public_html/cgi-bin/dada; /usr/bin/perl ./mail.cgi flavor=_sched513A3F128C5C41EC schedule=_all list=_all output_mode=_verbose
 
 Will do the same thing, as our initial example for curl. 
-
 
 =cut

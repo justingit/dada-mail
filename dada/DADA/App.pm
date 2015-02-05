@@ -11869,6 +11869,7 @@ sub profile_register {
 
 sub profile_activate {
 
+    
     my $self = shift;
     my $q    = $self->query();
 
@@ -11878,26 +11879,29 @@ sub profile_activate {
         return $self->default();
     }
 
+
     require DADA::Profile;
     if ( !DADA::Profile::feature_enabled('register') == 1 ) {
         return $self->default();
     }
+    
+    
 
     my $email     = strip( cased( xss_filter( $q->param('email') ) ) );
     my $auth_code = xss_filter( $q->param('auth_code') );
 
     my $prof = DADA::Profile->new( { -email => $email } );
 
-    if ( $email && $auth_code ) {
 
+
+    if ( $email && $auth_code ) {        
         my ( $status, $errors ) =
           $prof->is_valid_activation( { -auth_code => xss_filter( $q->param('auth_code') ) || '', } );
-
         if ( $status == 1 ) {
             $prof->activate;
             my $profile = $prof->get;
             $q->param( 'welcome', 1 );
-            profile_login();
+            return $self->profile_login();
         }
         else {
             my $p_errors = [];
@@ -11909,11 +11913,11 @@ sub profile_activate {
             $q->param( 'errors',                  $p_errors );
             $q->param( 'error_invalid_auth_code', $errors->{invalid_auth_code} );
             $q->param( 'error_profile_activate',  1 );
-            $self->profile_login();
+            return $self->profile_login();
         }
     }
     else {
-        die 'no email or auth code!';
+        return 'no email or auth code!';
     }
 }
 
