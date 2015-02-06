@@ -1317,9 +1317,9 @@ sub start {
                     
         require DADA::App::Digests; 
         my $digest = DADA::App::Digests->new({-list => $list});
-        print $digest->send_digest()
-            if $verbose;
-            
+        my $dr = $digest->send_digest();
+        print $dr 
+            if $verbose; 
             
     } # DIGEST_QUEUE
 
