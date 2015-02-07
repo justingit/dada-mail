@@ -202,7 +202,7 @@ sub send_email {
                 -list_settings_vars_param => { -dot_it => 1, },
             }
         );
-        if ( $restore_from_draft eq 'true' ) {
+        if ( $restore_from_draft eq 'true' && $self->{md_obj}->enabled) {
             $scrn = $self->fill_in_draft_msg(
                 {
                     -list     => $self->{list},
@@ -961,7 +961,7 @@ sub send_url_email {
                 -list_settings_vars_param => { -dot_it => 1, },
             }
         );
-        if ( $restore_from_draft eq 'true' ) {
+        if ( $restore_from_draft eq 'true' && $self->{md_obj}->enabled ) {
             $scrn = $self->fill_in_draft_msg(
                 {
                     -screen   => 'send_url_email',
