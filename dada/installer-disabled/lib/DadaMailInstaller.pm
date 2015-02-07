@@ -1212,22 +1212,47 @@ sub scrn_install_dada_mail {
     }
 
     my $install_dada_files_loc = $self->install_dada_files_dir_at_from_params();
-    my ( $log, $status, $errors ) = $self->install_dada_mail(
-        {
-            -if_dada_files_already_exists => $q->param('if_dada_files_already_exists') || undef,
-            -program_url                  => $q->param('program_url'),
-            -dada_root_pass               => $q->param('dada_root_pass'),
-            -dada_files_dir_setup         => $q->param('dada_files_dir_setup'),
-            -install_dada_files_loc       => $install_dada_files_loc,
-            -backend                      => $q->param('backend'),
-            -skip_configure_SQL           => $q->param('skip_configure_SQL')           || 0,
-            -sql_server                   => $q->param('sql_server'),
-            -sql_port                     => $self->sql_port_from_params(),
-            -sql_database                 => $q->param('sql_database'),
-            -sql_username                 => $q->param('sql_username'),
-            -sql_password                 => $q->param('sql_password'),
-        }
-    );
+ 
+=cut
+ 
+    -if_dada_files_already_exists => $q->param('if_dada_files_already_exists') || undef,
+    -program_url                  => $q->param('program_url'),
+    -dada_root_pass               => $q->param('dada_root_pass'),
+    -dada_files_dir_setup         => $q->param('dada_files_dir_setup'),
+    -install_dada_files_loc       => $install_dada_files_loc,
+    -backend                      => $q->param('backend'),
+    -skip_configure_SQL           => $q->param('skip_configure_SQL')           || 0,
+    -sql_server                   => $q->param('sql_server'),
+    -sql_port                     => $self->sql_port_from_params(),
+    -sql_database                 => $q->param('sql_database'),
+    -sql_username                 => $q->param('sql_username'),
+    -sql_password                 => $q->param('sql_password'),
+    
+=cut
+    
+    my $install_params = { 
+        -if_dada_files_already_exists  => $q->param('if_dada_files_already_exists'),
+        -program_url                   => $q->param('program_url'), 
+        -dada_root_pass                => $q->param('dada_root_pass'),
+        -dada_files_dir_setup          => $q->param('dada_files_dir_setup'),
+        -install_dada_files_loc        => $install_dada_files_loc,
+        -backend                       => $q->param('backend'),
+        -skip_configure_SQL            => $q->param('skip_configure_SQL'),
+        -sql_server                    => $q->param('sql_server'),
+        -sql_port                      => $self->sql_port_from_params(),
+        -sql_database                  => $q->param('sql_database'),
+        -sql_username                  => $q->param('sql_username'),
+        -sql_password                  => $q->param('sql_password'),
+        -dada_pass_use_orig            => $q->param('dada_pass_use_orig'),
+        
+        -fastcgi_options_run_under_fastcgi => $q->param('fastcgi_options_run_under_fastcgi'), 
+        
+        
+    }; 
+    my $self->param('install_params', $install_params); 
+    
+    
+    my ( $log, $status, $errors ) = $self->install_dada_mail();
 
     my $sched_flavor  = $q->param('scheduled_jobs_flavor') || '_schedules';
     my $curl_location = `which curl`;
@@ -1270,16 +1295,16 @@ sub scrn_install_dada_mail {
 sub install_dada_mail {
 
     my $self = shift;
-    my $q    = $self->query();
-
-    my ($args) = @_;
+    my $ip = $self->param('install_params'); 
+    
+   # my ($args) = @_;
     my $log    = undef;
     my $errors = {};
     my $status = 1;
 
-    if ( $args->{-if_dada_files_already_exists} eq 'keep_dir_create_new_config' ) {
+    if ( $ip->{-if_dada_files_already_exists} eq 'keep_dir_create_new_config' ) {
         $log .= "* Backing up current configuration file\n";
-        eval { $self->backup_current_config_file($args); };
+        eval { $self->backup_current_config_file(); };
         if ($@) {
             $log .= "* Problems backing up config file: $@\n";
             $errors->{cant_backup_orig_config_file} = 1;
@@ -1289,21 +1314,21 @@ sub install_dada_mail {
         }
     }
 
-    if ( $args->{-if_dada_files_already_exists} eq 'skip_configure_dada_files' ) {
+    if ( $ip->{-if_dada_files_already_exists} eq 'skip_configure_dada_files' ) {
         $log .= "* Skipping configuration of directory creation, config file and backend options\n";
     }
     else {
         $log .=
             "* Attempting to make $DADA::Config::PROGRAM_NAME Files at, "
-          . $args->{-install_dada_files_loc} . '/'
+          . $ip->{-install_dada_files_loc} . '/'
           . $Dada_Files_Dir_Name . "\n";
 
-        if ( $args->{-if_dada_files_already_exists} eq 'keep_dir_create_new_config' ) {
+        if ( $ip->{-if_dada_files_already_exists} eq 'keep_dir_create_new_config' ) {
             $log .= "* Skipping directory creation\n";
         }
         else {
             # Making the .dada_files structure
-            if ( $self->create_dada_files_dir_structure( $args->{-install_dada_files_loc} ) == 1 ) {
+            if ( $self->create_dada_files_dir_structure() == 1 ) {
                 $log .= "* Success!\n";
             }
             else {
@@ -1319,7 +1344,7 @@ sub install_dada_mail {
         #
         # DEV: create_dada_config_file uses a lot of vars from $q - not too comfortable with that. 
         #
-        if ( $self->create_dada_config_file($args) == 1 ) {
+        if ( $self->create_dada_config_file() == 1 ) {
             $log .= "* Success!\n";
         }
         else {
@@ -1554,39 +1579,45 @@ sub backup_config_dot_pm {
 }
 
 sub backup_current_config_file {
-    
-    my $self = shift; 
-    
-    my ($args) = @_;
+
+    my $self = shift;
+    my $ip   = $self->param('install_params');
+    if ( !exists( $ip->{-install_dada_files_loc} ) ) {
+        croak "something's wrong: -install_dada_files_loc should be set.";
+    }
+
+    # my ($args) = @_;
 
     my $dot_configs_file_loc =
-      make_safer( $args->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.configs/.dada_config' );
-    my $config_file = slurp( $dot_configs_file_loc );
+      make_safer( $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.configs/.dada_config' );
+    my $config_file = slurp($dot_configs_file_loc);
 
     my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) = localtime(time);
 
     my $timestamp = sprintf( "%4d-%02d-%02d", $year + 1900, $mon + 1, $mday ) . '-' . time;
 
     my $new_loc = make_safer(
-        $args->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.configs/.dada_config-backup-' . $timestamp );
+        $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.configs/.dada_config-backup-' . $timestamp );
 
     open my $config_backup, '>', $new_loc or croak $!;
     print $config_backup $config_file;
     close($config_backup) or croak $!;
-
     unlink($dot_configs_file_loc);
 
 }
 
+
 sub create_dada_files_dir_structure {
 
     my $self = shift;
-    my $q    = $self->query();
-
-    my $loc = shift;
-    $loc = $self->auto_dada_files_dir() if $loc eq 'auto';
-    $loc = make_safer( $loc . '/' . $Dada_Files_Dir_Name );
-
+    my $ip = $self->param('install_params'); 
+    my $loc =  $ip->{-install_dada_files_loc}; 
+    
+    if($loc eq 'auto') { 
+        $loc = $self->auto_dada_files_dir();
+        $loc = make_safer( $loc . '/' . $Dada_Files_Dir_Name );
+    }
+    
     eval {
 
         $self->installer_mkdir( $loc, $DADA::Config::DIR_CHMOD );
@@ -1622,10 +1653,9 @@ sub create_dada_files_dir_structure {
 sub create_dada_config_file {
 
     my $self   = shift;
-    my $q      = $self->query();
-    my ($args) = @_;
-
-    my $loc = $args->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name;
+    my $ip     = $self->param('install_params'); 
+    
+    my $loc = $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name;
 
     # eval {
     if ( !-e $loc . '/.configs' ) {
@@ -1634,23 +1664,24 @@ sub create_dada_config_file {
 
     require DADA::Security::Password;
     my $pass;
-    if ( $q->param('dada_pass_use_orig') == 1 ) {
-        $pass = $q->param('original_dada_root_pass');
-        if ( $q->param('original_dada_root_pass_is_encrypted') == 0 ) {
+    if ( $ip->{-dada_pass_use_orig} == 1 ) {
+        $pass = $ip->{-original_dada_root_pass};
+        if ( $ip->{-original_dada_root_pass_is_encrypted} == 0 ) {
             $pass = DADA::Security::Password::encrypt_passwd($pass);
         }
     }
     else {
-        $pass = DADA::Security::Password::encrypt_passwd( $args->{-dada_root_pass} );
+        $pass = DADA::Security::Password::encrypt_passwd( $ip->{-dada_root_pass} );
     }
 
     # Cripes, why wouldn't we pass a program url?
-    if ( !exists( $args->{-program_url} ) ) {
+    if ( !exists( $ip->{-program_url} ) ) {
         my $prog_url = $DADA::Config::PROGRAM_URL;
         $prog_url =~ s{installer\/install\.cgi}{mail\.cgi};
-        $args->{-program_url} = $prog_url;
+        $ip->{-program_url} = $prog_url;
+        $self->param('install_params', $ip); # awkward.
     }
-    if($q->param('fastcgi_options_run_under_fastcgi') == 1){ 
+    if($ip->{'-fastcgi_options_run_under_fastcgi'} == 1){ 
         $args->{-program_url} =~ s/mail\.cgi$/mail\.fcgi/;
     }
     else { 
