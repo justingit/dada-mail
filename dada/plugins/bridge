@@ -1150,7 +1150,7 @@ sub start {
         }
 
         require DADA::App::Digests;
-        my $digest = DADA::App::Digests->new( { -list => $list } );
+        my    $digest = DADA::App::Digests->new( { -list => $list } );
         $r .= $digest->send_digest();
 
     }    # DIGEST_QUEUE
