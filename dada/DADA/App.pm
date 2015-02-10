@@ -18,7 +18,6 @@ use FindBin;
 use lib "$FindBin::Bin/../";
 use lib "$FindBin::Bin/../../";
 use lib "$FindBin::Bin/../../../";
-
 use lib "$FindBin::Bin/../DADA/perllib";
 
 BEGIN {
@@ -229,13 +228,43 @@ sub setup {
         'send_email_testsuite'             => \&send_email_testsuite,
         $DADA::Config::ADMIN_FLAVOR_NAME   => \&admin,
         $DADA::Config::SIGN_IN_FLAVOR_NAME => \&sign_in,
+        
+        bridge_inject                      => \&bridge_inject, 
     );
+    
+    # ...inject? 
+    if ( !$ENV{GATEWAY_INTERFACE} ) {
+        
+        my $inject; 
+        my $run_list; 
+        require Getopt::Long;
+        Getopt::Long::GetOptions(
+            "inject"          => \$inject,
+            "list=s"          => \$run_list,
+        );
+        if($inject) { 
+           # $ENV{CGI_APP_RETURN_ONLY} = 1;
+           
+            if($run_list){ 
+                $self->param('run_list', $run_list); 
+                $self->start_mode('bridge_inject');
+            }
+            else { 
+                # Well, that won't work.
+            }
+        }
+        else { 
+            # Do watcha did before. 
+        }
+    }
 
 }
 
 sub yikes { 
 
 my $self = shift;
+my $error = shift; 
+
 my $TIME = scalar(localtime());
 return qq{
 <html>
@@ -265,8 +294,9 @@ VORK5CYII=" style="float:left;padding:10px"/></p>
 </div>
 </body> 
 </html> 
-   
+ $error
 };
+
 
 }
 
@@ -12593,6 +12623,47 @@ sub plugins {
         return "plugin not registered."; 
     }
     
+
+}
+
+
+sub bridge_inject { 
+    my $self = shift; 
+    my $r; 
+          
+    if($DADA::Config::PLUGINS_ENABLED->{bridge} != 1) { 
+        return 'Plugin disabled.';
+    }
+    my $run_list = $self->param('run_list'); 
+    if(!defined($run_list)){ 
+        return 'No List Defined.'; 
+    }
+    require 'plugins/bridge'; 
+
+    require DADA::Security::Password;
+    my $filename =
+      $DADA::Config::TMP . "/tmp_file" . DADA::Security::Password::generate_rand_string() . "-" . time . ".txt";
+
+    if(! -e $filename){ 
+        $r .= "No file found at, $filename\n"; 
+    }
+    else {
+        open my $tmp_file, ">", $filename or die $!;
+        my $msg;
+        while ( my $line = <STDIN> ) {
+            print $tmp_file $line;
+        }
+        close $tmp_file or die $!;
+        chmod( $DADA::Config::FILE_CHMOD, $filename );
+    
+        $r = bridge::inject_msg(
+            { 
+                -filename => $filename, 
+                -list     => $run_list,  
+            }
+        ); 
+    }
+    return $r; 
 
 }
 

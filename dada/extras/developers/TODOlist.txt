@@ -10,8 +10,6 @@ Key:
 [*] Naw...
 [?] Someday
 
-[ ] Make MIME::Lite::HTML requests understand gzip compression
-
 
 [ ] Things for CGI::App migration: 
 
@@ -19,7 +17,7 @@ Key:
     Perhaps figure out forking stuff, first? 
 
 [ ] Time to ditch raw evals for try {} blocks. 
-    This will most likely be an ungoing process. 
+    This will most likely be an ongoing process. 
 
 
 []  list-specific upload directories, rather than a shared one 

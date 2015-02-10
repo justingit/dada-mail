@@ -2,7 +2,8 @@
 
 package bridge;
 
-use FindBin;
+use FindBin qw($RealScript);
+
 use lib "$FindBin::Bin/../";
 use lib "$FindBin::Bin/../DADA/perllib";
 
@@ -806,7 +807,12 @@ sub edit {
         $ses_params->{list_admin_ses_verified}     = $ses->sender_verified( $ls->param('admin_email') );
         $ses_params->{discussion_pop_ses_verified} = $ses->sender_verified( $ls->param('discussion_pop_email') );
     }
-
+    
+    my $program_abs_path = $RealScript; 
+    $program_abs_path    =~ s/$FindBin::Bin//; 
+    $program_abs_path    = $FindBin::Bin . '/' . $RealScript; 
+    
+    
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -expr           => 1,
@@ -857,8 +863,8 @@ sub edit {
                 error_list_email_subscribed_to_another_moderators =>
                   $list_email_errors->{list_email_subscribed_to_another_moderators},
                 %$ses_params,
-                plugin_path     => $FindBin::Bin,
-                plugin_filename => 'bridge.cgi',
+                program_abs_path               => $program_abs_path,
+                
             },
             -list_settings_vars_param => {
                 -list                 => $list,
@@ -1215,22 +1221,14 @@ sub soft_max_msg_test {
 
 sub inject_msg {
 
+    my ($args) = @_; 
+    
+    my $filename = $args->{-filename};
+    my $run_list = $args->{-run_list};
     my $list = $run_list;
+    
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $r;
-
-    require DADA::Security::Password;
-
-    my $filename =
-      $DADA::Config::TMP . "/tmp_file" . DADA::Security::Password::generate_rand_string() . "-" . time . ".txt";
-
-    open my $tmp_file, ">", $filename or die $!;
-    my $msg;
-    while ( my $line = <STDIN> ) {
-        print $tmp_file $line;
-    }
-    close $tmp_file or die $!;
-    chmod( $DADA::Config::FILE_CHMOD, $filename );
 
     my $size = ( stat($filename) )[7];
     my ( $status, $error_msg ) = max_msg_test( { -size => $size } );
