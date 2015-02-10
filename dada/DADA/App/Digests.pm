@@ -135,9 +135,15 @@ sub archive_ids_for_digest {
         return [];
     }
 
+    if(
+        ($self->archive_time_2_ctime($digest_last_archive_id_sent) + int($self->{ls_obj}->param('digest_schedule'))) < $self->{ctime}){ 
+            # not the time to send out a digest!
+            return [];            
+    }
+
     for (@$keys) {
-        if (   $_ > $digest_last_archive_id_sent
-            && $_ < $self->ctime_2_archive_time( $self->{ctime} ) )
+        if (   $_ > $digest_last_archive_id_sent                    # after our last one was sent out
+            && $_ < $self->ctime_2_archive_time( $self->{ctime} ) ) # less than right now 
         {
             push( @$ids, $_ );
         }
@@ -164,6 +170,12 @@ sub send_digest {
     }
     else { 
         $r .= 'No archived messages sent as a digest.' . "\n"; 
+    }
+    
+    if(defined($digest_last_archive_id_sent)){ 
+        my $time_since_last_digest_sent = $self->{ctime} - $self->archive_time_2_ctime($digest_last_archive_id_sent);
+        $r .= 'Digests sent every: '   . formatted_runtime($self->{ls_obj}->param('digest_schedule')) . "\n"; 
+        $r .= 'Last digest message sent: ' . formatted_runtime($time_since_last_digest_sent) . " ago.\n"; 
     }
 
     if ( $self->should_send_digest ) {
