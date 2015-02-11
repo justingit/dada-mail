@@ -172,6 +172,7 @@ my $advanced_config_params = {
     show_annoying_whiny_pro_dada_notice => 0,
 };
 
+# Address isn't in here. 
 my %bounce_handler_plugin_configs = (
     Server                   => { default => '',     if_blank => 'undef' },
     Username                 => { default => '',     if_blank => 'undef' },
@@ -180,9 +181,6 @@ my %bounce_handler_plugin_configs = (
     USESSL                   => { default => 0,      if_blank => 0 },
     AUTH_MODE                => { default => 'BEST', if_blank => 'BEST' },
     MessagesAtOnce           => { default => '100',  if_blank => '100' },
-    Plugin_URL               => { default => '',     if_blank => 'undef' },
-    Allow_Manual_Run         => { default => 1,      if_blank => 0 },
-    Manual_Run_Passcode      => { default => '',     if_blank => 'undef' },
     Enable_POP3_File_Locking => { default => 1,      if_blank => 0 },
 );
 
@@ -190,14 +188,45 @@ my %bridge_plugin_configs = (
     MessagesAtOnce                      => { default => 1,       if_blank => 1 },         # Don't want, "0", you know?
     Soft_Max_Size_Of_Any_Message        => { default => 1048576, if_blank => 1048576 },
     Max_Size_Of_Any_Message             => { default => 2621440, if_blank => 2621440 },
-    Plugin_URL                          => { default => '',      if_blank => 'undef' },
-    Allow_Manual_Run                    => { default => 1,       if_blank => 0 },
-    Manual_Run_Passcode                 => { default => '',      if_blank => 'undef' },
     Room_For_One_More_Check             => { default => 1,       if_blank => 0 },
     Enable_POP3_File_Locking            => { default => 1,       if_blank => 0 },
     Check_List_Owner_Return_Path_Header => { default => 0,       if_blank => 0 },
     Check_Multiple_Return_Path_Headers  => { default => 0,       if_blank => 0 },
 );
+
+my @Debug_Option_Names = qw(
+    DADA_App_BounceHandler
+    DADA_App_DBIHandle
+    DADA_App_FormatMessages
+    DADA_App_Subscriptions
+    DADA_Logging_Clickthrough
+    DADA_Mail_MailOut
+    DADA_Mail_Send
+    DADA_MailingList
+    DADA_MailingList_MessageDrafts
+    DADA_Profile
+    DADA_Profile_Fields
+    DADA_Profile_Session
+    DBI
+    HTML_TEMPLATE
+    MIME_LITE_HTML
+    MAIL_POP3CLIENT
+    NET_SMTP
+); 
+
+my @Plugin_Names = qw(
+boilerplate_plugin          
+tracker                     
+bounce_handler              
+bridge                      
+change_root_password        
+change_list_shortname       
+password_protect_directories
+log_viewer                  
+screen_cache                
+global_config               
+view_list_settings
+); 
 
 # An unconfigured Dada Mail won't have these exactly handy to use.
 $DADA::Config::PROGRAM_URL   = program_url_guess();
@@ -607,8 +636,8 @@ sub scrn_configure_dada_mail {
                 can_use_GD                         => test_can_use_GD(),
                 can_use_CAPTCHA_reCAPTCHA          => test_can_use_CAPTCHA_reCAPTCHA(),
                 can_use_CAPTCHA_reCAPTCHA_Mailhide => test_can_use_CAPTCHA_reCAPTCHA_Mailhide(),
-                error_cant_read_config_dot_pm      => test_can_read_config_dot_pm(),
-                error_cant_write_config_dot_pm     => test_can_write_config_dot_pm(),
+                error_cant_read_config_dot_pm      => $self->test_can_read_config_dot_pm(),
+                error_cant_write_config_dot_pm     => $self->test_can_write_config_dot_pm(),
                 cgi_test_FastCGI                   => $self->cgi_test_FastCGI, 
                 home_dir_guess                     => $self->guess_home_dir(),
                 install_dada_files_dir_at          => $self->install_dada_files_dir_at_from_params(),
@@ -1211,44 +1240,129 @@ sub scrn_install_dada_mail {
         }        
     }
 
-    my $install_dada_files_loc = $self->install_dada_files_dir_at_from_params();
- 
-=cut
- 
-    -if_dada_files_already_exists => $q->param('if_dada_files_already_exists') || undef,
-    -program_url                  => $q->param('program_url'),
-    -dada_root_pass               => $q->param('dada_root_pass'),
-    -dada_files_dir_setup         => $q->param('dada_files_dir_setup'),
-    -install_dada_files_loc       => $install_dada_files_loc,
-    -backend                      => $q->param('backend'),
-    -skip_configure_SQL           => $q->param('skip_configure_SQL')           || 0,
-    -sql_server                   => $q->param('sql_server'),
-    -sql_port                     => $self->sql_port_from_params(),
-    -sql_database                 => $q->param('sql_database'),
-    -sql_username                 => $q->param('sql_username'),
-    -sql_password                 => $q->param('sql_password'),
+
+    my $install_params         = {}; 
+       $install_params->{-install_dada_files_loc} = $self->install_dada_files_dir_at_from_params();
+
+    my @install_param_names    = qw(
+    if_dada_files_already_exists      
+
+    program_url                       
+    dada_root_pass                    
+    dada_files_dir_setup              
+    skip_configure_SQL                
+    support_files_dir_path    
+    support_files_dir_url        
+    backend                           
     
-=cut
+    sql_server                        
+    sql_port                          
+    sql_database                      
+    sql_username                      
+    sql_password                      
     
-    my $install_params = { 
-        -if_dada_files_already_exists  => $q->param('if_dada_files_already_exists'),
-        -program_url                   => $q->param('program_url'), 
-        -dada_root_pass                => $q->param('dada_root_pass'),
-        -dada_files_dir_setup          => $q->param('dada_files_dir_setup'),
-        -install_dada_files_loc        => $install_dada_files_loc,
-        -backend                       => $q->param('backend'),
-        -skip_configure_SQL            => $q->param('skip_configure_SQL'),
-        -sql_server                    => $q->param('sql_server'),
-        -sql_port                      => $self->sql_port_from_params(),
-        -sql_database                  => $q->param('sql_database'),
-        -sql_username                  => $q->param('sql_username'),
-        -sql_password                  => $q->param('sql_password'),
-        -dada_pass_use_orig            => $q->param('dada_pass_use_orig'),
+    dada_pass_use_orig                
+    
+    
+    configure_fastcgi
+    fastcgi_options_run_under_fastcgi 
+    
+    scheduled_jobs_flavor             
+    configure_scheduled_jobs          
+    scheduled_jobs_flavor             
+    scheduled_jobs_log
+    
+    configure_profiles
+    profile_enabled
+    profile_profile_email
+    profile_profile_host_list
+    profile_enable_captcha
+    profile_enable_magic_subscription_forms
+    profile_help
+    profile_login
+    profile_register
+    profile_password_reset
+    profile_profile_fields
+    profile_mailing_list_subscriptions
+    profile_protected_directories
+    profile_update_email_address
+    profile_change_password
+    profile_delete_profile
+    
+    configure_templates
+    configure_user_template
+    template_options_USER_TEMPLATE
+    
+    configure_cache
+    cache_options_SCREEN_CACHE
+    cache_options_DATA_CACHE
+    
+    configure_security
+    security_no_show_admin_link
+    security_DISABLE_OUTSIDE_LOGINS
+    security_ADMIN_FLAVOR_NAME
+    security_SIGN_IN_FLAVOR_NAME
+    
+    configure_captcha
+    captcha_type
+    captcha_reCAPTCHA_remote_addr
+    captcha_reCAPTCHA_public_key
+    captcha_reCAPTCHA_private_key
+    captcha_reCAPTCHA_Mailhide_public_key
+    captcha_reCAPTCHA_Mailhide_private_key
+    
+    configure_global_mailing_list_options
+    global_mailing_list_options_GLOBAL_UNSUBSCRIBE
+    global_mailing_list_options_GLOBAL_BLACK_LIST
+    
+    configure_mass_mailing
+    mass_mailing_MAILOUT_AT_ONCE_LIMIT
+    mass_mailing_MULTIPLE_LIST_SENDING
+    mass_mailing_MAILOUT_STALE_AFTER
+    
+    configure_confirmation_token
+    confirmation_token_expires
+    
+    configure_s_program_url
+    s_program_url_S_PROGRAM_URL
+    
+    configure_program_name
+    program_name_PROGRAM_NAME
+    
+    configure_amazon_ses
+    amazon_ses_AWS_endpoint
+    amazon_ses_AWSAccessKeyId
+    amazon_ses_AWSSecretKey
+    amazon_ses_Allowed_Sending_Quota_Percentage
+    
+    configure_mandrill
+    mandrill_api_key
+    mandrill_Allowed_Sending_Quota_Percentage
+    
+    ); 
+    for(@Debug_Option_Names){ 
+        push(@install_param_names, 'debugging_options_' . $_); 
+    }
+    for(@Plugin_Names) { 
+        push(@install_param_names, 'install_' . $_); 
+    }
+    for(keys %bounce_handler_plugin_configs){ 
+        push(@install_param_names, 'bounce_handler_' . $_); 
+    }
+    push(@install_param_names, 'bounce_handler_' . 'Address'); 
+
+    for(keys %bridge_plugin_configs){ 
+        push(@install_param_names, 'bridge' . $_); 
+    }
+    
+    for(@install_param_names){ 
+        $install_params->{'-' . $_} = $q->param($_); 
+    }
+    
+    foreach(%$plugins_extensions){ 
         
-        -fastcgi_options_run_under_fastcgi => $q->param('fastcgi_options_run_under_fastcgi'), 
-        
-        
-    }; 
+    }
+    
     my $self->param('install_params', $install_params); 
     
     
@@ -1356,18 +1470,17 @@ sub install_dada_mail {
         }
 
         # Creating the needed SQL tables
-        if ( $args->{-backend} eq 'default' || $args->{-backend} eq '' ) {
-
+        if ( $ip->{-backend} eq 'default' || $args->{-backend} eq '' ) {
             # ...
         }
         else {
-            if ( $args->{-skip_configure_SQL} == 1 ) {
+            if ( $ip->{-skip_configure_SQL} == 1 ) {
                 $log .= "* Skipping the creation of the SQL Tables...\n";
             }
             else {
 
                 $log .= "* Attempting to create SQL Tables...\n";
-                my $sql_ok = create_sql_tables($args);
+                my $sql_ok = $self->create_sql_tables();
                 if ( $sql_ok == 1 ) {
                     $log .= "* Success!\n";
                 }
@@ -1383,7 +1496,7 @@ sub install_dada_mail {
 
     # Editing the Config.pm file
 
-    if ( test_can_read_config_dot_pm() == 1 ) {
+    if ( $self->test_can_read_config_dot_pm() == 1 ) {
         $log .= "* WARNING: Cannot read, $Config_LOC!\n";
         $errors->{cant_read_config_dot_pm} = 1;
 
@@ -1391,7 +1504,7 @@ sub install_dada_mail {
     }
 
     $log .= "* Attempting to backup original $Config_LOC file...\n";
-    eval { backup_config_dot_pm(); };
+    eval { $self->backup_config_dot_pm(); };
     if ($@) {
         $Big_Pile_Of_Errors .= $@;
         $log .= "* WARNING: Could not backup, $Config_LOC! (<code>$@</code>)\n";
@@ -1402,7 +1515,7 @@ sub install_dada_mail {
     }
 
     $log .= "* Attempting to edit $Config_LOC file...\n";
-    if ( test_can_write_config_dot_pm() == 1 ) {
+    if ( $self->test_can_write_config_dot_pm() == 1 ) {
         $log .= "* WARNING: Cannot write to, $Config_LOC!\n";
         $errors->{cant_edit_config_dot_pm} = 1;
 
@@ -1410,7 +1523,7 @@ sub install_dada_mail {
     }
     else {
 
-        if ( edit_config_dot_pm($args) == 1 ) {
+        if ( $self->edit_config_dot_pm() == 1 ) {
             $log .= "* Success!\n";
         }
         else {
@@ -1420,7 +1533,7 @@ sub install_dada_mail {
 
     }
     $log .= "* Setting up Support Files Directory...\n";
-    eval { $self->setup_support_files_dir($args); };
+    eval { $self->setup_support_files_dir(); };
     if ($@) {
         $log .= "* WARNING: Couldn't set up support files directory! $@\n";
         $errors->{cant_set_up_support_files_directory} = 1;
@@ -1432,7 +1545,7 @@ sub install_dada_mail {
     }
 
     $log .= "* Installing plugins/extensions...\n";
-    eval { $self->edit_config_file_for_plugins($args); };
+    eval { $self->edit_config_file_for_plugins(); };
     if ($@) {
         $log .= "* WARNING: Couldn't complete installing plugins/extensions! $@\n";
         $errors->{cant_install_plugins_extensions} = 1;
@@ -1520,17 +1633,19 @@ sub remove_old_screen_cache {
 
 sub edit_config_dot_pm {
 
-    my ($args) = @_;
-
+    my $self = shift; 
+    my $ip   = $self->param('install_params');
+    
+    
     my $search  = qr/\$PROGRAM_CONFIG_FILE_DIR \= \'(.*?)\'\;/;
     my $search2 = qr/\$PROGRAM_ERROR_LOG \= (.*?)\;/;
 
     my $replace_with =
-      q{$PROGRAM_CONFIG_FILE_DIR = '} . $args->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . q{/.configs';};
+      q{$PROGRAM_CONFIG_FILE_DIR = '} . $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . q{/.configs';};
 
     my $replace_with2 =
         q{$PROGRAM_ERROR_LOG = '}
-      . $args->{-install_dada_files_loc} . '/'
+      . $ip->{-install_dada_files_loc} . '/'
       . $Dada_Files_Dir_Name
       . q{/.logs/errors.txt';};
     $Config_LOC = make_safer($Config_LOC);
@@ -1538,7 +1653,7 @@ sub edit_config_dot_pm {
     my $config = slurp($Config_LOC);
 
     # "auto" usually does the job,
-    if ( $args->{-dada_files_dir_setup} ne 'auto' ) {
+    if ( $ip->{-dada_files_dir_setup} ne 'auto' ) {
         $config =~ s/$search/$replace_with/;
     }
 
@@ -1556,12 +1671,15 @@ sub edit_config_dot_pm {
 
     installer_chmod( $DADA::Config::FILE_CHMOD, $Config_LOC );
     installer_chmod( $DADA::Config::DIR_CHMOD,  make_safer('../DADA') );
+    
     return 1;
 
 }
 
 sub backup_config_dot_pm {
-
+    
+    my $self = shift; 
+    
     # Why 0777?
     installer_chmod( 0777, '../DADA' );
 
@@ -1681,7 +1799,7 @@ sub create_dada_config_file {
         $ip->{-program_url} = $prog_url;
         $self->param('install_params', $ip); # awkward.
     }
-    if($ip->{'-fastcgi_options_run_under_fastcgi'} == 1){ 
+    if($ip->{-fastcgi_options_run_under_fastcgi} == 1){ 
         $args->{-program_url} =~ s/mail\.cgi$/mail\.fcgi/;
     }
     else { 
@@ -1703,38 +1821,38 @@ sub create_dada_config_file {
             )
           )
         {
-            $args->{$_} = strip( xss_filter( $args->{$_} ) );
+            $ip->{$_} = strip( xss_filter( $ip->{$_} ) );
         }
 
-        $SQL_params->{backend}      = $args->{-backend};
-        $SQL_params->{sql_server}   = $args->{-sql_server};
-        $SQL_params->{sql_database} = clean_up_var( $args->{-sql_database} );
-        $SQL_params->{sql_port}     = clean_up_var( $args->{-sql_port} );
-        $SQL_params->{sql_username} = clean_up_var( $args->{-sql_username} );
-        $SQL_params->{sql_password} = clean_up_var( $args->{-sql_password} );
+        $SQL_params->{backend}      = $ip->{-backend};
+        $SQL_params->{sql_server}   = $ip->{-sql_server};
+        $SQL_params->{sql_database} = clean_up_var( $ip->{-sql_database} );
+        $SQL_params->{sql_port}     = clean_up_var( $ip->{-sql_port} );
+        $SQL_params->{sql_username} = clean_up_var( $ip->{-sql_username} );
+        $SQL_params->{sql_password} = clean_up_var( $ip->{-sql_password} );
     }
 
-    if ( $args->{-backend} eq 'SQLite' ) {
-        $args->{-sql_server}   = '';
-        $args->{-sql_database} = 'dadamail';
-        $args->{-sql_port}     = '';
-        $args->{-sql_username} = '';
-        $args->{-sql_password} = '';
+    if ( $ip->{-backend} eq 'SQLite' ) {
+        $ip->{-sql_server}   = '';
+        $ip->{-sql_database} = 'dadamail';
+        $ip->{-sql_port}     = '';
+        $ip->{-sql_username} = '';
+        $ip->{-sql_password} = '';
     }
     
     
     my $scheduled_jobs_params = {}; 
-    if($q->param('scheduled_jobs_flavor') ne '_schedules'){ 
-        $q->param('configure_scheduled_jobs', 1);
+    if($ip->{-scheduled_jobs_flavor} ne '_schedules'){ 
+        $ip->{-configure_scheduled_jobs} =1;
     }
-    if($q->param('configure_scheduled_jobs') == 1) { 
+    if($ip->{configure_scheduled_jobs} == 1) { 
         $scheduled_jobs_params->{configure_scheduled_jobs} = 1; 
-        $scheduled_jobs_params->{scheduled_jobs_flavor} = $q->param('scheduled_jobs_flavor') || '_schedules';
-        $scheduled_jobs_params->{scheduled_jobs_log}    = $q->param('scheduled_jobs_log') || 0;
+        $scheduled_jobs_params->{scheduled_jobs_flavor} = $ip->{-scheduled_jobs_flavor} || '_schedules';
+        $scheduled_jobs_params->{scheduled_jobs_log}    = $ip->{-scheduled_jobs_log} || 0;
     }
     my $fastcgi_params = {}; 
-    if ( $q->param('configure_fastcgi') == 1 ) {
-        if($q->param('fastcgi_options_run_under_fastcgi') == 1){ 
+    if ( $ip->{-configure_fastcgi} == 1 ) {
+        if($ip->{-fastcgi_options_run_under_fastcgi} == 1){ 
             $fastcgi_params->{fastcgi_RUNNING_AS} = 'FastCGI'; 
         }
         else { 
@@ -1743,7 +1861,7 @@ sub create_dada_config_file {
     }
 
     my $profiles_params = {};
-    if ( $q->param('configure_profiles') == 1 ) {
+    if ( $ip->{-configure_profiles} == 1 ) {
         $profiles_params->{configure_profiles} = 1;
         for (
             qw(
@@ -1769,30 +1887,18 @@ sub create_dada_config_file {
             if (   $_ ne 'profile_email'
                 && $_ ne 'profile_host_list' )
             {
-                $profiles_params->{ 'profiles_' . $_ } = $q->param( 'profiles_' . $_ ) || 0;
+                $profiles_params->{ 'profiles_' . $_ } = $ip->{'-profiles_' . $_ } || 0;
             }
             else {
-                $profiles_params->{ 'profiles_' . $_ } = $q->param( 'profiles_' . $_ ) || '';
+                $profiles_params->{ 'profiles_' . $_ } = $ip->{'-profiles_' . $_ } || '';
             }
             $profiles_params->{ 'profiles_' . $_ } = clean_up_var( $profiles_params->{ 'profiles_' . $_ } );
         }
     }
     
     my $plugins_params = {}; 
-    for(qw(
-        boilerplate_plugin          
-        tracker                     
-        bounce_handler              
-        bridge                      
-        change_root_password        
-        change_list_shortname       
-        password_protect_directories
-        log_viewer                  
-        screen_cache                
-        global_config               
-        view_list_settings          
-        )){ 
-        if($q->param('install_' . $_) == 1){ 
+    for(@Plugin_Names){ 
+        if($ip->{'-install_' . $_} == 1){ 
             $plugins_params->{'install_' . $_} = 1; 
         }
         else { 
@@ -1806,159 +1912,140 @@ sub create_dada_config_file {
     };
 
     my $template_options_params = {};
-    if ( $q->param('configure_templates') == 1 && $q->param('configure_user_template') == 1 ) {
+    if ( $ip->{-configure_templates} == 1 && $ip->{-configure_user_template} == 1 ) {
         $template_options_params->{template_options_USER_TEMPLATE} =
-          clean_up_var( $q->param('template_options_USER_TEMPLATE') );
+          clean_up_var( $ip->{-template_options_USER_TEMPLATE} );
         $template_options_params->{configure_templates} = 1;
     }
 
     my $cache_options_params = {};
-    if ( $q->param('configure_cache') == 1 ) {
+    if ( $ip->{-configure_cache} == 1 ) {
         $cache_options_params->{configure_cache} = 1;
-        if ( clean_up_var( $q->param('cache_options_SCREEN_CACHE') ) == 1 ) {
+        if ( clean_up_var( $ip->{-cache_options_SCREEN_CACHE} ) == 1 ) {
             $cache_options_params->{cache_options_SCREEN_CACHE} = 1;
         }
         else {
             $cache_options_params->{cache_options_SCREEN_CACHE} = 2;
         }
-        if ( clean_up_var( $q->param('cache_options_DATA_CACHE') ) == 1 ) {
+        if ( clean_up_var( $ip->{-cache_options_DATA_CACHE} ) == 1 ) {
             $cache_options_params->{cache_options_DATA_CACHE} = 1;
         }
         else {
             $cache_options_params->{cache_options_DATA_CACHE} = 2;
         }
     }
-
+    
+    
     my $debugging_options_params = {};
-    if ( $q->param('configure_debugging') == 1 ) {
+    if ( $ip->{-configure_debugging} == 1 ) {
         $debugging_options_params->{configure_debugging} = 1;
-        my @debug_options = qw(
-          DADA_App_BounceHandler
-          DADA_App_DBIHandle
-          DADA_App_FormatMessages
-          DADA_App_Subscriptions
-          DADA_Logging_Clickthrough
-          DADA_Mail_MailOut
-          DADA_Mail_Send
-          DADA_MailingList
-          DADA_MailingList_MessageDrafts
-          DADA_Profile
-          DADA_Profile_Fields
-          DADA_Profile_Session
-          DBI
-          HTML_TEMPLATE
-          MIME_LITE_HTML
-          MAIL_POP3CLIENT
-          NET_SMTP
-        );
-
-        for my $debug_option (@debug_options) {
+        for my $debug_option (@Debug_Option_Names) {
             $debugging_options_params->{ 'debugging_options_' . $debug_option } =
-              clean_up_var( $q->param( 'debugging_options_' . $debug_option ) ) || 0;
+              clean_up_var( $ip->{'-debugging_options_' . $debug_option } ) || 0;
         }
 
     }
 
     my $security_params = {};
-    if ( $q->param('configure_security') == 1 ) {
+    if ( $ip->{-configure_security} == 1 ) {
         $security_params->{configure_security} = 1;
-        if ( $q->param('security_no_show_admin_link') == 1 ) {
+        if ( $ip->{-security_no_show_admin_link} == 1 ) {
             $security_params->{security_SHOW_ADMIN_LINK} = 2;
         }
         else {
             $security_params->{security_SHOW_ADMIN_LINK} = 0;
         }
         $security_params->{security_DISABLE_OUTSIDE_LOGINS} =
-          clean_up_var( $q->param('security_DISABLE_OUTSIDE_LOGINS') );
-        if ( length( $q->param('security_ADMIN_FLAVOR_NAME') ) > 0 ) {
-            $security_params->{security_ADMIN_FLAVOR_NAME} = clean_up_var( $q->param('security_ADMIN_FLAVOR_NAME') );
+          clean_up_var( $ip->{-security_DISABLE_OUTSIDE_LOGINS} );
+        if ( length( $ip->{-security_ADMIN_FLAVOR_NAME} ) > 0 ) {
+            $security_params->{security_ADMIN_FLAVOR_NAME} = clean_up_var( $ip->{-security_ADMIN_FLAVOR_NAME} );
         }
-        if ( length( $q->param('security_SIGN_IN_FLAVOR_NAME') ) > 0 ) {
+        if ( length( $ip->{-security_SIGN_IN_FLAVOR_NAME} ) > 0 ) {
             $security_params->{security_SIGN_IN_FLAVOR_NAME} =
-              clean_up_var( $q->param('security_SIGN_IN_FLAVOR_NAME') );
+              clean_up_var( $ip->{-security_SIGN_IN_FLAVOR_NAME} );
         }
     }
 
     my $captcha_params = {};
-    if ( $q->param('configure_captcha') == 1 ) {
+    if ( $ip->{-configure_captcha} == 1 ) {
         $captcha_params->{configure_captcha}             = 1;
-        $captcha_params->{captcha_type}                  = clean_up_var( $q->param('captcha_type') );
-        $captcha_params->{captcha_reCAPTCHA_remote_addr} = clean_up_var( $q->param('captcha_reCAPTCHA_remote_addr') );
-        $captcha_params->{captcha_reCAPTCHA_public_key}  = clean_up_var( $q->param('captcha_reCAPTCHA_public_key') );
-        $captcha_params->{captcha_reCAPTCHA_private_key} = clean_up_var( $q->param('captcha_reCAPTCHA_private_key') );
+        $captcha_params->{captcha_type}                  = clean_up_var( $ip->{-captcha_type} );
+        $captcha_params->{captcha_reCAPTCHA_remote_addr} = clean_up_var( $ip->{-captcha_reCAPTCHA_remote_addr} );
+        $captcha_params->{captcha_reCAPTCHA_public_key}  = clean_up_var( $ip->{-captcha_reCAPTCHA_public_key} );
+        $captcha_params->{captcha_reCAPTCHA_private_key} = clean_up_var( $ip->{-captcha_reCAPTCHA_private_key} );
         $captcha_params->{captcha_reCAPTCHA_Mailhide_public_key} =
-          clean_up_var( $q->param('captcha_reCAPTCHA_Mailhide_public_key') );
+          clean_up_var( $ip->{-captcha_reCAPTCHA_Mailhide_public_key} );
         $captcha_params->{captcha_reCAPTCHA_Mailhide_private_key} =
-          clean_up_var( $q->param('captcha_reCAPTCHA_Mailhide_private_key') );
+          clean_up_var( $ip->{-captcha_reCAPTCHA_Mailhide_private_key} );
     }
 
     my $global_mailing_list_options = {};
-    if ( $q->param('configure_global_mailing_list_options') == 1 ) {
+    if ( $ip->{-configure_global_mailing_list_options} == 1 ) {
         $global_mailing_list_options->{configure_global_mailing_list_options} = 1;
         $global_mailing_list_options->{global_mailing_list_options_GLOBAL_UNSUBSCRIBE} =
-          strip( $q->param('global_mailing_list_options_GLOBAL_UNSUBSCRIBE') );
+          strip( $ip->{-global_mailing_list_options_GLOBAL_UNSUBSCRIBE} );
         $global_mailing_list_options->{global_mailing_list_options_GLOBAL_BLACK_LIST} =
-          strip( $q->param('global_mailing_list_options_GLOBAL_BLACK_LIST') );
+          strip($ip->{-global_mailing_list_options_GLOBAL_BLACK_LIST} );
     }
 
     my $mass_mailing_params = {};
-    if ( $q->param('configure_mass_mailing') == 1 ) {
+    if ( $ip->{-configure_mass_mailing} == 1 ) {
         $mass_mailing_params->{configure_mass_mailing} = 1;
         $mass_mailing_params->{mass_mailing_MAILOUT_AT_ONCE_LIMIT} =
-          clean_up_var( $q->param('mass_mailing_MAILOUT_AT_ONCE_LIMIT') );
+          clean_up_var( $ip->{-mass_mailing_MAILOUT_AT_ONCE_LIMIT} );
         $mass_mailing_params->{mass_mailing_MULTIPLE_LIST_SENDING} =
-          clean_up_var( $q->param('mass_mailing_MULTIPLE_LIST_SENDING') );
+          clean_up_var( $ip->{-mass_mailing_MULTIPLE_LIST_SENDING} );
         $mass_mailing_params->{mass_mailing_MAILOUT_STALE_AFTER} =
-          clean_up_var( $q->param('mass_mailing_MAILOUT_STALE_AFTER') );
+          clean_up_var( $ip->{-mass_mailing_MAILOUT_STALE_AFTER} );
     }
 
     my $confirmation_token_params = {};
-    if ( $q->param('configure_confirmation_token') == 1 ) {
+    if ( $ip->{-configure_confirmation_token} == 1 ) {
         $confirmation_token_params->{configure_confirmation_token} = 1;
-        $confirmation_token_params->{expires}                      = strip( $q->param('confirmation_token_expires') );
+        $confirmation_token_params->{expires}                      = strip( $ip->{-confirmation_token_expires} );
     }
 
     my $s_program_url_params = {};
-    if ( $q->param('configure_s_program_url') == 1 ) {
+    if ( $ip->{-configure_s_program_url} == 1 ) {
         $s_program_url_params->{configure_s_program_url} = 1;
         $s_program_url_params->{s_program_url_S_PROGRAM_URL} =
-          clean_up_var( strip( $q->param('s_program_url_S_PROGRAM_URL') ) );
+          clean_up_var( strip( $ip->{'-s_program_url_S_PROGRAM_URL'}) ) );
     }
 
     my $program_name_params = {};
-    if ( $q->param('configure_program_name') == 1 ) {
+    if ( $ip->{-configure_program_name} == 1 ) {
         $program_name_params->{configure_program_name} = 1;
         $program_name_params->{program_name_PROGRAM_NAME} =
-          clean_up_var( strip( $q->param('program_name_PROGRAM_NAME') ) );
+          clean_up_var( strip( $ip->{-program_name_PROGRAM_NAME} ) );
     }
 
     my $amazon_ses_params = {};
-    if ( $q->param('configure_amazon_ses') == 1 ) {
+    if ( $ip->{-configure_amazon_ses} == 1 ) {
         $amazon_ses_params->{configure_amazon_ses} = 1;
-        $amazon_ses_params->{AWS_endpoint}         = strip( $q->param('amazon_ses_AWS_endpoint') );
-        $amazon_ses_params->{AWSAccessKeyId}       = strip( $q->param('amazon_ses_AWSAccessKeyId') );
-        $amazon_ses_params->{AWSSecretKey}         = strip( $q->param('amazon_ses_AWSSecretKey') );
+        $amazon_ses_params->{AWS_endpoint}         = strip( $ip->{-amazon_ses_AWS_endpoint} );
+        $amazon_ses_params->{AWSAccessKeyId}       = strip( $ip->{-amazon_ses_AWSAccessKeyId} );
+        $amazon_ses_params->{AWSSecretKey}         = strip( $ip->{-amazon_ses_AWSSecretKey} );
         $amazon_ses_params->{Allowed_Sending_Quota_Percentage} =
-          strip( $q->param('amazon_ses_Allowed_Sending_Quota_Percentage') );
+          strip( $ip->{-amazon_ses_Allowed_Sending_Quota_Percentage} );
     }
     my $mandrill_params = {};
-    if ( $q->param('configure_mandrill') == 1 ) {
+    if ( $ip->{-configure_mandrill} == 1 ) {
         $mandrill_params->{configure_mandrill} = 1;
-        $mandrill_params->{mandrill_api_key}   = clean_up_var( strip( $q->param('mandrill_api_key') ) );
+        $mandrill_params->{mandrill_api_key}   = clean_up_var( strip( $ip->{-mandrill_api_key} ) );
         $mandrill_params->{mandrill_Allowed_Sending_Quota_Percentage} =
-          strip( $q->param('mandrill_Allowed_Sending_Quota_Percentage') );
+          strip( $ip->{-mandrill_Allowed_Sending_Quota_Percentage} );
     }
 
     my $bounce_handler_params = {};
-    if ( $q->param('install_bounce_handler') == 1 ) {
+    if ( $ip->{-install_bounce_handler} == 1 ) {
         $cut_tag_params->{cut_list_settings_default} = 0;
         $cut_tag_params->{cut_plugin_configs}        = 0;
         foreach my $config ( keys %bounce_handler_plugin_configs ) {
-            if ( defined( $q->param( 'bounce_handler_' . $config ) )
-                && ( $q->param( 'bounce_handler_' . $config ) ne '' ) )
+            if ( defined( $ip->{'-bounce_handler_' . $config ) )
+                && ( $ip->{'bounce_handler_' . $config} ne '' ) )
             {
                 $bounce_handler_params->{ 'bounce_handler_' . $config } =
-                  _sq( strip( $q->param( 'bounce_handler_' . $config ) ) );
+                  _sq( strip( $ip->{'bounce_handler_' . $config } ) );
             }
             else {
                 $bounce_handler_params->{ 'bounce_handler_' . $config } =
@@ -1967,15 +2054,15 @@ sub create_dada_config_file {
         }
 
         # This one's special:
-        $bounce_handler_params->{'bounce_handler_Address'} = strip( $q->param('bounce_handler_Address') );
+        $bounce_handler_params->{'bounce_handler_Address'} = strip( $ip->{bounce_handler_Address} );
 
     }
     my $bridge_params = {};
-    if ( $q->param('install_bridge') == 1 ) {
+    if ( $ip->{-install_bridge} == 1 ) {
         $cut_tag_params->{cut_plugin_configs} = 0;
         foreach my $config ( keys %bridge_plugin_configs ) {
-            if ( defined( $q->param( 'bridge_' . $config ) ) && ( $q->param( 'bridge_' . $config ) ne '' ) ) {
-                $bridge_params->{ 'bridge_' . $config } = _sq( strip( $q->param( 'bridge_' . $config ) ) );
+            if ( defined( $ip->{'-bridge_' . $config} ) && ( $ip->{'-bridge_' . $config } ne '' ) ) {
+                $bridge_params->{ 'bridge_' . $config } = _sq( strip( $ip->{ '-bridge_' . $config } ) );
             }
             else {
                 $bridge_params->{ 'bridge_' . $config } = _sq( $bridge_plugin_configs{$config}->{if_blank} );
@@ -1995,8 +2082,8 @@ sub create_dada_config_file {
                 ROOT_PASSWORD          => $pass,
                 ROOT_PASS_IS_ENCRYPTED => 1,
                 dada_files_dir         => $loc,
-                support_files_dir_path => $q->param('support_files_dir_path') . '/' . $Support_Files_Dir_Name,
-                support_files_dir_url  => $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name,
+                support_files_dir_path => $ip->{-support_files_dir_path} . '/' . $Support_Files_Dir_Name,
+                support_files_dir_url  => $ip->{-support_files_dir_url}  . '/' . $Support_Files_Dir_Name,
                 Big_Pile_Of_Errors     => $Big_Pile_Of_Errors,
                 Trace                  => $Trace,
                 %{$SQL_params},
@@ -2041,15 +2128,17 @@ sub create_dada_config_file {
 }
 
 sub create_sql_tables {
-    my ($args) = @_;
+    my $self = shift; 
+    my $ip = $self->param('install_params'); 
 
     my $sql_file = '';
-    if ( $args->{-backend} eq 'mysql' ) {
+    if ( $ip->{-backend} eq 'mysql' ) {
         $sql_file = 'mysql_schema.sql';
     }
-    elsif ( $args->{-backend} eq 'Pg' ) {
+    elsif ( $ip->{-backend} eq 'Pg' ) {
+        $sql_file = 'postgres_schema.sql'; 
     }
-    elsif ( $args->{-backend} eq 'SQLite' ) {
+    elsif ( $ip->{-backend} eq 'SQLite' ) {
         $sql_file = 'sqlite_schema.sql';
     }
 
@@ -2057,26 +2146,19 @@ sub create_sql_tables {
 
         require DBI;
 
-        my $dbtype   = $args->{-backend};
-        my $dbserver = $args->{-sql_server};
-        my $port     = $args->{-sql_port};
-        my $database = $args->{-sql_database};
-        my $user     = $args->{-sql_username};
-        my $pass     = $args->{-sql_password};
-
-        $dbtype   = strip( xss_filter($dbtype) );
-        $dbserver = strip( xss_filter($dbserver) );
-        $port     = strip( xss_filter($port) );
-        $database = strip( xss_filter($database) );
-        $user     = strip( xss_filter($user) );
-        $pass     = strip( xss_filter($pass) );
+        my $dbtype   = strip( xss_filter($ip->{-backend}) );
+        my $dbserver = strip( xss_filter($ip->{-sql_server}) );
+        my $port     = strip( xss_filter($ip->{-sql_port}) );
+        my $database = strip( xss_filter($ip->{-sql_database}) );
+        my $user     = strip( xss_filter($ip->{-sql_username}) );
+        my $pass     = strip( xss_filter($ip->{-sql_password}) );
 
         my $data_source = '';
         my $dbh         = undef;
         if ( $dbtype eq 'SQLite' ) {
             $data_source = 'dbi:'
               . $dbtype . ':'
-              . $args->{-install_dada_files_loc} . '/'
+              . $ip->{-install_dada_files_loc} . '/'
               . $Dada_Files_Dir_Name
               . '/.lists/'
               . 'dadamail';
@@ -2089,7 +2171,6 @@ sub create_sql_tables {
 
         my $schema = slurp( make_safer( '../extras/SQL/' . $sql_file ) );
         my @statements = split( ';', $schema );
-
         for (@statements) {
             if ( length($_) > 10 ) {
 
@@ -2325,12 +2406,9 @@ sub install_dada_files_dir_at_from_params {
 sub edit_config_file_for_plugins {
 
     my $self = shift;
-    my $q    = $self->query();
+    my $ip = $self->param('install_params'); 
 
-    my ($args) = @_;
-
-    my $dot_configs_file_loc =
-      make_safer( $args->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.configs/.dada_config' );
+    my $dot_configs_file_loc =  make_safer( $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.configs/.dada_config' );
 
     my $config_file = slurp($dot_configs_file_loc);
 
@@ -2387,11 +2465,9 @@ sub edit_config_file_for_plugins {
 sub setup_support_files_dir {
 
     my $self = shift;
-    my $q    = $self->query();
-
-    my ($args) = @_;
-
-    my $support_files_dir_path = $q->param('support_files_dir_path');
+    my $ip = $self->param('install_params'); 
+    
+    my $support_files_dir_path = $ip->{-support_files_dir_path};
     if ( !-d $support_files_dir_path ) {
         croak "Can't install set up Support Files Directory: '$support_files_dir_path' does not exist!";
     }
@@ -3633,6 +3709,9 @@ sub test_sql_connection {
 }
 
 sub test_can_read_config_dot_pm {
+
+    my $self = shift; 
+    
     eval {
         my $config = slurp($Config_LOC);
         if ( length($config) > 0 ) {
@@ -3650,7 +3729,8 @@ sub test_can_read_config_dot_pm {
 }
 
 sub test_can_write_config_dot_pm {
-
+    my $self = shift; 
+    
     if ( -w $Config_LOC ) {
         return 0;
     }
