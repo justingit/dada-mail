@@ -349,8 +349,8 @@ sub construct_and_send {
 
     if ( $self->{md_obj}->enabled ) {
         $draft_q = $self->q_obj_from_draft($args);
-        require Data::Dumper;
-        warn Data::Dumper::Dumper($draft_q);
+        #require Data::Dumper;
+        #warn Data::Dumper::Dumper($draft_q);
     }
     else {
         $draft_q = $args->{-cgi_obj};
@@ -984,26 +984,45 @@ sub send_url_email {
         );
     }
     else {
+        
+        my $draft_id   = undef;
+        my $status     = undef;
+        my $errors     = undef;
+        my $message_id = undef;
+        
+        if ( $self->{md_obj}->enabled ) {
+        
+            # Draft now has all our form params
+            # draft_id and role will be saved in $q
+            my $draft_id = $self->save_as_draft(
+                {
+                    -cgi_obj => $q,
+                    -list    => $self->{list},
+                    -json    => 0,
+                }
+            );
 
-        # Draft now has all our form params
-        # draft_id and role will be saved in $q
-        my $draft_id = $self->save_as_draft(
-            {
-                -cgi_obj => $q,
-                -list    => $self->{list},
-                -json    => 0,
-            }
-        );
-
-        # to fetch a draft, I need id, list and role (lame)
-        my ( $status, $errors, $message_id ) = $self->construct_and_send(
-            {
-                -draft_id => $draft_id,
-                -screen   => 'send_url_email',
-                -role     => $draft_role,
-                -process  => $process,
-            }
-        );
+            # to fetch a draft, I need id, list and role (lame)
+            ( $status, $errors, $message_id ) = $self->construct_and_send(
+                {
+                    -draft_id => $draft_id,
+                    -screen   => 'send_url_email',
+                    -role     => $draft_role,
+                    -process  => $process,
+                }
+            );
+        }
+        else { 
+            ( $status, $errors, $message_id ) = $self->construct_and_send(
+                {
+                    # -draft_id   => $draft_id,
+                    -screen  => 'send_url_email',
+                    -role    => $draft_role,
+                    -process => $process,
+                    -cgi_obj => $q,
+                }
+            );
+        }
 
         if ( $status == 0 ) {
             $self->report_mass_mail_errors( $errors, $root_login );
