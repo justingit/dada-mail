@@ -399,7 +399,7 @@ sub _fold_in_diagnostics {
             }
         }
         
-    use Data::Dumper; 
+    #use Data::Dumper; 
     # warn 'diag now looks like this: ' . Dumper($orig_d); 
     return $orig_d; 
         
