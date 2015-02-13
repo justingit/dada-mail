@@ -266,41 +266,49 @@ sub setup {
 
         #cgi_test_FastCGI                    => \&cgi_test_FastCGI,
     );
+    
+    if ( !$ENV{GATEWAY_INTERFACE} ) {
+        require Getopt::Long;
+        my %h = ();
+        
+        Getopt::Long::GetOptions(
+            \%h,                                'upgrading!',
+            'if_dada_files_already_exists=s',   'program_url=s',
+            'support_files_dir_path=s',         'support_files_dir_url=s',
+            'dada_root_pass=s',                 'dada_files_loc=s',
+            'dada_files_dir_setup=s',           'backend=s',
+            'skip_configure_SQL=s',             'sql_server=s',
+            'sql_port=s',                       'sql_database=s',
+            'sql_username=s',                   'sql_password=s',
+            'install_plugins=s@',               'install_wysiwyg_editors!',
+            'wysiwyg_editor_install_ckeditor!', 'wysiwyg_editor_install_tiny_mce!',
+            'help',
+        );
+        
+        $self->param('cl_params', \%h); 
+        $self->start_mode('cl_run');
+    
+    }
 }
 
 sub cl_run {
 
     my $self = shift;
 
-    require Getopt::Long;
-    my %h = ();
 
     # This'll have to be updated:
     # 'file_browser_install_kcfinder!',
-
-    Getopt::Long::GetOptions(
-        \%h,                                'upgrading!',
-        'if_dada_files_already_exists=s',   'program_url=s',
-        'support_files_dir_path=s',         'support_files_dir_url=s',
-        'dada_root_pass=s',                 'dada_files_loc=s',
-        'dada_files_dir_setup=s',           'backend=s',
-        'skip_configure_SQL=s',             'sql_server=s',
-        'sql_port=s',                       'sql_database=s',
-        'sql_username=s',                   'sql_password=s',
-        'install_plugins=s@',               'install_wysiwyg_editors!',
-        'wysiwyg_editor_install_ckeditor!', 'wysiwyg_editor_install_tiny_mce!',
-        'help',
-    );
+    my $cl_params = $self-param('cl_params'); 
 
     my $dash_opts = {};
-    foreach ( keys %h ) {
-        $dash_opts->{ '-' . $_ } = $h{$_};
+    foreach ( keys %$cl_params ) {
+        $dash_opts->{ '-' . $_ } = $cl_params->{$_};
     }
-    if ( exists( $h{upgrading} ) ) {
+    if ( exists( $cl_params->{upgrading} ) ) {
         if ( $dash_opts->{-upgrading} == 1 ) {
             $dash_opts->{'-install_type'}                       = 'upgrade';
             $dash_opts->{'-if_dada_files_already_exists'}       = 'keep_dir_create_new_config';
-            $dash_opts->{'-current_dada_files_parent_location'} = $h{dada_files_loc};
+            $dash_opts->{'-current_dada_files_parent_location'} = $cl_params->{dada_files_loc};
             $dash_opts->{'-dada_pass_use_orig'}                 = 1;
 
             my $former_opts = $self->grab_former_config_vals();
@@ -308,8 +316,8 @@ sub cl_run {
         }
     }
 
-    if ( exists( $h{install_plugins} ) ) {
-        my @install_plugins = split( /,/, join( ',', @{ $h{install_plugins} } ) );
+    if ( exists( $cl_params->{install_plugins} ) ) {
+        my @install_plugins = split( /,/, join( ',', @{ $cl_params->{install_plugins} } ) );
         for (@install_plugins) {
             $dash_opts->{ '-install_' . $_ } = 1;
         }
@@ -317,12 +325,12 @@ sub cl_run {
     }
 
     # This is very lazy of me - $q->param() is being used as a stash for persistance
-    if ( scalar( keys %h ) == 0 ) {
-        cl_quickhelp();
+    if ( scalar( keys %$cl_params ) == 0 ) {
+        return $self->cl_quickhelp();
         exit;
     }
-    elsif ( $h{help} == 1 ) {
-        cl_help();
+    elsif ( $cl_params->{cl_params} == 1 ) {
+        return $self->cl_help();
         exit;
     }
 
@@ -384,7 +392,7 @@ sub cl_run {
 }
 
 sub _fold_hashref {
-
+    
     my $orig_d = shift || {};
     my $new_d  = shift || {};
 
@@ -412,7 +420,9 @@ sub _fold_hashref {
 }
 
 sub cl_quickhelp {
-    e_print(
+    my $self = shift; 
+    
+    return 
         DADA::Template::Widgets::screen(
             {
                 -screen => 'cl_quickhelp_scrn.tmpl',
@@ -421,12 +431,13 @@ sub cl_quickhelp {
                 },
             }
         )
-    );
+
 }
 
 sub cl_help {
+    my $self = shift; 
 
-    e_print(
+    return 
         DADA::Template::Widgets::screen(
             {
                 -screen => 'cl_help_scrn.tmpl',
@@ -434,8 +445,7 @@ sub cl_help {
 
                 },
             }
-        )
-    );
+        );
 }
 
 sub install_or_upgrade {
