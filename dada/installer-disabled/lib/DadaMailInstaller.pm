@@ -1,7 +1,8 @@
 package DadaMailInstaller;
 use base 'CGI::Application';
+
 #use CGI::Application::Plugin::DebugScreen;
-use CGI::Carp qw(fatalsToBrowser); 
+use CGI::Carp qw(fatalsToBrowser);
 
 use Carp qw(carp croak);
 
@@ -64,17 +65,17 @@ my $admin_menu_end_cut = quotemeta(
 );
 
 my $plugins_extensions = {
-    change_root_password          => { installed => 0, loc => '../plugins/change_root_password' },
-    screen_cache                  => { installed => 0, loc => '../plugins/screen_cache' },
-    log_viewer                    => { installed => 0, loc => '../plugins/log_viewer' },
-    tracker                       => { installed => 0, loc => '../plugins/tracker' },
-    bridge                        => { installed => 0, loc => '../plugins/bridge' },
-    bounce_handler                => { installed => 0, loc => '../plugins/bounce_handler' },
-    password_protect_directories  => { installed => 0, loc => '../plugins/password_protect_directories' },
-    change_list_shortname         => { installed => 0, loc => '../plugins/change_list_shortname' },
-    global_config                 => { installed => 0, loc => '../plugins/global_config' },
-    multiple_subscribe            => { installed => 0, loc => '../extensions/multiple_subscribe.cgi' },
-    blog_index                    => { installed => 0, loc => '../extensions/blog_index.cgi' },
+    change_root_password         => { installed => 0, loc => '../plugins/change_root_password' },
+    screen_cache                 => { installed => 0, loc => '../plugins/screen_cache' },
+    log_viewer                   => { installed => 0, loc => '../plugins/log_viewer' },
+    tracker                      => { installed => 0, loc => '../plugins/tracker' },
+    bridge                       => { installed => 0, loc => '../plugins/bridge' },
+    bounce_handler               => { installed => 0, loc => '../plugins/bounce_handler' },
+    password_protect_directories => { installed => 0, loc => '../plugins/password_protect_directories' },
+    change_list_shortname        => { installed => 0, loc => '../plugins/change_list_shortname' },
+    global_config                => { installed => 0, loc => '../plugins/global_config' },
+    multiple_subscribe           => { installed => 0, loc => '../extensions/multiple_subscribe.cgi' },
+    blog_index                   => { installed => 0, loc => '../extensions/blog_index.cgi' },
 };
 $plugins_extensions->{change_root_password}->{code} = q{#					{
 #					-Title      => 'Change the Program Root Password',
@@ -117,8 +118,6 @@ $plugins_extensions->{bounce_handler}->{code} = q{#					{
 #					-Function   => 'bounce_handler',
 #					-Activated  => 1,
 #					},};
-
-
 
 $plugins_extensions->{password_protect_directories}->{code} = q{#					{
 #					-Title      => 'Password Protect Directories',
@@ -172,7 +171,7 @@ my $advanced_config_params = {
     show_annoying_whiny_pro_dada_notice => 0,
 };
 
-# Address isn't in here. 
+# Address isn't in here.
 my %bounce_handler_plugin_configs = (
     Server                   => { default => '',     if_blank => 'undef' },
     Username                 => { default => '',     if_blank => 'undef' },
@@ -195,38 +194,38 @@ my %bridge_plugin_configs = (
 );
 
 my @Debug_Option_Names = qw(
-    DADA_App_BounceHandler
-    DADA_App_DBIHandle
-    DADA_App_FormatMessages
-    DADA_App_Subscriptions
-    DADA_Logging_Clickthrough
-    DADA_Mail_MailOut
-    DADA_Mail_Send
-    DADA_MailingList
-    DADA_MailingList_MessageDrafts
-    DADA_Profile
-    DADA_Profile_Fields
-    DADA_Profile_Session
-    DBI
-    HTML_TEMPLATE
-    MIME_LITE_HTML
-    MAIL_POP3CLIENT
-    NET_SMTP
-); 
+  DADA_App_BounceHandler
+  DADA_App_DBIHandle
+  DADA_App_FormatMessages
+  DADA_App_Subscriptions
+  DADA_Logging_Clickthrough
+  DADA_Mail_MailOut
+  DADA_Mail_Send
+  DADA_MailingList
+  DADA_MailingList_MessageDrafts
+  DADA_Profile
+  DADA_Profile_Fields
+  DADA_Profile_Session
+  DBI
+  HTML_TEMPLATE
+  MIME_LITE_HTML
+  MAIL_POP3CLIENT
+  NET_SMTP
+);
 
 my @Plugin_Names = qw(
-boilerplate_plugin          
-tracker                     
-bounce_handler              
-bridge                      
-change_root_password        
-change_list_shortname       
-password_protect_directories
-log_viewer                  
-screen_cache                
-global_config               
-view_list_settings
-); 
+  boilerplate_plugin
+  tracker
+  bounce_handler
+  bridge
+  change_root_password
+  change_list_shortname
+  password_protect_directories
+  log_viewer
+  screen_cache
+  global_config
+  view_list_settings
+);
 
 # An unconfigured Dada Mail won't have these exactly handy to use.
 $DADA::Config::PROGRAM_URL   = program_url_guess();
@@ -240,9 +239,9 @@ use DADA::Template::HTML;
 sub setup {
 
     my $self = shift;
-    
+
     $Self_URL = $self->self_url();
-    
+
     $self->start_mode('install_or_upgrade');
     $self->mode_param('flavor');
     $self->run_modes(
@@ -264,202 +263,180 @@ sub setup {
         #cgi_test_CAPTCHA_reCAPTCHA_iframe  => \&cgi_test_CAPTCHA_reCAPTCHA_iframe,
         cgi_test_default_CAPTCHA            => \&cgi_test_default_CAPTCHA,
         cgi_test_captcha_reCAPTCHA_Mailhide => \&cgi_test_captcha_reCAPTCHA_Mailhide,
-        #cgi_test_FastCGI                    => \&cgi_test_FastCGI, 
+
+        #cgi_test_FastCGI                    => \&cgi_test_FastCGI,
     );
 }
 
-sub cl_run { 
+sub cl_run {
 
-    my $self = shift; 
-    
-	require Getopt::Long;
+    my $self = shift;
+
+    require Getopt::Long;
     my %h = ();
 
-	# This'll have to be updated: 
-	# 'file_browser_install_kcfinder!',
+    # This'll have to be updated:
+    # 'file_browser_install_kcfinder!',
 
     Getopt::Long::GetOptions(
-        \%h,
-		'upgrading!',
-        'if_dada_files_already_exists=s',
-        'program_url=s',
-		'support_files_dir_path=s',
-		'support_files_dir_url=s',
-        'dada_root_pass=s',
-        'dada_files_loc=s', 
-		'dada_files_dir_setup=s',
-        'backend=s',
-        'skip_configure_SQL=s',
-        'sql_server=s',
-        'sql_port=s',
-        'sql_database=s',
-        'sql_username=s',
-        'sql_password=s',
-		'install_plugins=s@', 
-		'install_wysiwyg_editors!',
-		'wysiwyg_editor_install_ckeditor!',
-		'wysiwyg_editor_install_tiny_mce!',
-		'help',
+        \%h,                                'upgrading!',
+        'if_dada_files_already_exists=s',   'program_url=s',
+        'support_files_dir_path=s',         'support_files_dir_url=s',
+        'dada_root_pass=s',                 'dada_files_loc=s',
+        'dada_files_dir_setup=s',           'backend=s',
+        'skip_configure_SQL=s',             'sql_server=s',
+        'sql_port=s',                       'sql_database=s',
+        'sql_username=s',                   'sql_password=s',
+        'install_plugins=s@',               'install_wysiwyg_editors!',
+        'wysiwyg_editor_install_ckeditor!', 'wysiwyg_editor_install_tiny_mce!',
+        'help',
     );
 
-    my $dash_opts = {}; 
-    foreach(keys %h){ 
-       $dash_opts->{'-' . $_} = $h{$_};  
+    my $dash_opts = {};
+    foreach ( keys %h ) {
+        $dash_opts->{ '-' . $_ } = $h{$_};
     }
-	if(exists($h{upgrading})){ 
-		if($dash_opts{-upgrading} == 1) { 
-			$dash_opts{'-install_type'} = 'upgrade';
-			$dash_opts{'-if_dada_files_already_exists'} = 'keep_dir_create_new_config';
-			$dash_opts{'-current_dada_files_parent_location'} = $h{dada_files_loc};
-            $dash_opts{'-dada_pass_use_orig'} = 1; 
-			
-			my $former_opts = $self->grab_former_config_vals();
-			   $dash_opts = _fold_hashref($dash_opts, $former_opts); 
-		}
-	}
-	
-	if(exists($h{install_plugins})){ 
-	my @install_plugins	 = split(/,/,join(',',@{$h{install_plugins}}));
-		for(@install_plugins){ 
-	        $dash_opts{'-install_' . $_} = 1; 
-		}
-		delete $dash_opts->{-install_plugins};
-	}
+    if ( exists( $h{upgrading} ) ) {
+        if ( $dash_opts->{-upgrading} == 1 ) {
+            $dash_opts->{'-install_type'}                       = 'upgrade';
+            $dash_opts->{'-if_dada_files_already_exists'}       = 'keep_dir_create_new_config';
+            $dash_opts->{'-current_dada_files_parent_location'} = $h{dada_files_loc};
+            $dash_opts->{'-dada_pass_use_orig'}                 = 1;
 
- 	# This is very lazy of me - $q->param() is being used as a stash for persistance 
-	if(scalar(keys %h) == 0){ 
-		cl_quickhelp(); 
-		exit;
-	}
-	elsif($h{help} == 1){ 
-		cl_help(); 
-		exit;
-	}
-	
-	# Uh, so we don't have to re-type this on the cl: 
-	if(exists($dash_opts->{-dada_root_pass})){ 
-		$dash_opts->{-dada_pass_use_orig} =  0; 
-        $dash_opts->{-dada_root_pass_again} = $dash_opts->{-dada_root_pass}; 
-	}
-	$self->param('install_params', $dash_opts); 
-    
-	my ( $check_status, $check_errors ) = $self->check_setup();
-    print "Checking Setup...\n"; 
-	if($check_status == 0){ 		
-		print "Problems were found:\n\n";
-		print "Uh, TODO - make these a little more intelligent:\n"; 
-		
-	    for(keys %$check_errors){ 
-			if($check_errors->{$_} == 1){ 
-				print "Error: $_\n"; 
-			}
-		}
-		print "\n" . $Big_Pile_Of_Errors . "\n";
-		exit;
-			
-	}
-	else { 
-		print "Paramaters passed look great! Configuring...\n"; 
-	   my $install_dada_files_loc = $self->install_dada_files_dir_at_from_params(); 
+            my $former_opts = $self->grab_former_config_vals();
+            $dash_opts = _fold_hashref( $dash_opts, $former_opts );
+        }
+    }
 
+    if ( exists( $h{install_plugins} ) ) {
+        my @install_plugins = split( /,/, join( ',', @{ $h{install_plugins} } ) );
+        for (@install_plugins) {
+            $dash_opts->{ '-install_' . $_ } = 1;
+        }
+        delete $dash_opts->{-install_plugins};
+    }
 
-	   my ( $install_log, $install_status, $install_errors ) = install_dada_mail() ;
-=cut
+    # This is very lazy of me - $q->param() is being used as a stash for persistance
+    if ( scalar( keys %h ) == 0 ) {
+        cl_quickhelp();
+        exit;
+    }
+    elsif ( $h{help} == 1 ) {
+        cl_help();
+        exit;
+    }
 
-FIX
-	        {
-	            -program_url                   => $q->param('program_url') || '',
-	            -dada_root_pass                => $q->param('dada_root_pass') || '',
-				-dada_files_dir_setup          => $q->param('dada_files_dir_setup') || 'manual', 
-	            -backend                       => $q->param('backend') || 'default',
-	            -sql_server                    => $q->param('sql_server') || '',
-	            -sql_database                  => $q->param('sql_database') || '',
-	            -sql_username                  => $q->param('sql_username') || '',
-	            -sql_password                  => $q->param('sql_password') || '',
-		        -sql_port                      => $self->sql_port_from_params(),
-				-install_dada_files_loc        => $install_dada_files_loc, 			
-				-skip_configure_SQL            => $q->param('skip_configure_SQL') || 0, 
-				-if_dada_files_already_exists  => $q->param('if_dada_files_already_exists') || undef,
-	        }
-=cut
+    # Uh, so we don't have to re-type this on the cl:
+    if ( exists( $dash_opts->{-dada_root_pass} ) ) {
+        $dash_opts->{-dada_pass_use_orig}   = 0;
+        $dash_opts->{-dada_root_pass_again} = $dash_opts->{-dada_root_pass};
+    }
+    $self->param( 'install_params', $dash_opts );
 
-		print $install_log . "\n"; 
-		if($install_status == 0){ 
-			print "Problems with configuration:\n\n"; 
-			
-			for(keys %$install_errors){ 
-				print $_ . " => " . $install_errors->{$_} . "\n"; 
-			}
-		}
-		else { 
-			print "Moving and Disabling, \"installer\" directory\n"; 
-			my ($new_dir, $eval_errors) = $self->move_installer_dir(); 
-			if($eval_errors){ 
-				print "Problems with moving installer directory: \n $eval_errors\n\n"; 
-			}
-			else{ 
-				print "Installer directory moved to, \"$new_dir\"\n";
-				print "Installation and Configuration Complete.\n\n\n";
-			}
-		}
-	
-	}
+    my ( $check_status, $check_errors ) = $self->check_setup();
+    print "Checking Setup...\n";
+    if ( $check_status == 0 ) {
+        print "Problems were found:\n\n";
+        print "Uh, TODO - make these a little more intelligent:\n";
+
+        for ( keys %$check_errors ) {
+            if ( $check_errors->{$_} == 1 ) {
+                print "Error: $_\n";
+            }
+        }
+        print "\n" . $Big_Pile_Of_Errors . "\n";
+        exit;
+
+    }
+    else {
+        print "Paramaters passed look great! Configuring...\n";
+        my $install_dada_files_loc = $self->install_dada_files_dir_at_from_params(
+            {
+                -install_type                       => $dash_opts->{-install_type},
+                -current_dada_files_parent_location => $dash_opts->{-current_dada_files_parent_location},
+                -dada_files_dir_setup               => $dash_opts->{-dada_files_dir_setup},
+            }
+        );
+
+        my ( $install_log, $install_status, $install_errors ) = install_dada_mail();
+
+        print $install_log . "\n";
+        if ( $install_status == 0 ) {
+            print "Problems with configuration:\n\n";
+
+            for ( keys %$install_errors ) {
+                print $_ . " => " . $install_errors->{$_} . "\n";
+            }
+        }
+        else {
+            print "Moving and Disabling, \"installer\" directory\n";
+            my ( $new_dir, $eval_errors ) = $self->move_installer_dir();
+            if ($eval_errors) {
+                print "Problems with moving installer directory: \n $eval_errors\n\n";
+            }
+            else {
+                print "Installer directory moved to, \"$new_dir\"\n";
+                print "Installation and Configuration Complete.\n\n\n";
+            }
+        }
+
+    }
 }
 
 sub _fold_hashref {
-    
-    my $orig_d = shift || {}; 
-    my $new_d  = shift || {}; 
-        
-    foreach my $key2 ( keys %{$new_d} )
-        {
-        if( exists $orig_d->{$key2} )
-            {
-          #  warn "Key [$key2] is in both hashes!";
-            
-                if(length($new_d->{$key2}) > 0){ 
-                    $orig_d->{$key2} = $new_d->{$key2};
-                }
-                else { 
-                   # warn "keeping old value."; 
-                }
+
+    my $orig_d = shift || {};
+    my $new_d  = shift || {};
+
+    foreach my $key2 ( keys %{$new_d} ) {
+        if ( exists $orig_d->{$key2} ) {
+
+            #  warn "Key [$key2] is in both hashes!";
+
+            if ( length( $new_d->{$key2} ) > 0 ) {
+                $orig_d->{$key2} = $new_d->{$key2};
             }
-        else
-            {
+            else {
+                # warn "keeping old value.";
+            }
+        }
+        else {
             $orig_d->{$key2} = $new_d->{$key2};
+        }
+    }
+
+    #use Data::Dumper;
+    # warn 'diag now looks like this: ' . Dumper($orig_d);
+    return $orig_d;
+
+}
+
+sub cl_quickhelp {
+    e_print(
+        DADA::Template::Widgets::screen(
+            {
+                -screen => 'cl_quickhelp_scrn.tmpl',
+                -vars   => {
+
+                },
             }
-        }
-        
-    #use Data::Dumper; 
-    # warn 'diag now looks like this: ' . Dumper($orig_d); 
-    return $orig_d; 
-        
+        )
+    );
 }
 
+sub cl_help {
 
-sub cl_quickhelp { 	
-	e_print(DADA::Template::Widgets::screen(
-        {
-            -screen => 'cl_quickhelp_scrn.tmpl',
-            -vars => {
+    e_print(
+        DADA::Template::Widgets::screen(
+            {
+                -screen => 'cl_help_scrn.tmpl',
+                -vars   => {
 
-            },
-        }
-    ));	
+                },
+            }
+        )
+    );
 }
-
-sub cl_help { 
-	
-	e_print( DADA::Template::Widgets::screen(
-        {
-            -screen => 'cl_help_scrn.tmpl',
-            -vars => {
-
-            },
-        }
-    ));	
-}
-
 
 sub install_or_upgrade {
 
@@ -473,9 +450,9 @@ sub install_or_upgrade {
     };
 
     my $dada_files_parent_dir = BootstrapConfig::guess_config_file();
-       $dada_files_parent_dir =~ s/\/$Dada_Files_Dir_Name\/\.configs\/\.dada_config//;
+    $dada_files_parent_dir =~ s/\/$Dada_Files_Dir_Name\/\.configs\/\.dada_config//;
     my $found_existing_dada_files_dir = $self->test_complete_dada_files_dir_structure_exists($dada_files_parent_dir);
-    
+
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen => 'install_or_upgrade.tmpl',
@@ -516,7 +493,8 @@ sub check_install_or_upgrade {
     if ( $q->param('install_type') eq 'install' ) {
         return $self->scrn_configure_dada_mail();
     }
-    else {
+    elsif ( $q->param('install_type') eq 'upgrade' ) {
+
         my $current_dada_files_parent_location = '';
         if ( $q->param('current_dada_files_parent_location') eq 'auto' ) {
             $current_dada_files_parent_location = $self->auto_dada_files_dir();
@@ -525,9 +503,7 @@ sub check_install_or_upgrade {
         else {
             $current_dada_files_parent_location = $q->param('current_dada_files_parent_location');
         }
-        
-        #die '$current_dada_files_parent_location ' . $current_dada_files_parent_location; 
-        
+
         if ( $self->test_complete_dada_files_dir_structure_exists($current_dada_files_parent_location) == 1 ) {
             return $self->scrn_configure_dada_mail;
         }
@@ -535,6 +511,9 @@ sub check_install_or_upgrade {
             $q->param( 'error_cant_find_dada_files_location', 1 );
             return $self->install_or_upgrade;
         }
+    }
+    else {
+        die 'unknown upgrade type! ' . $q->param('install_type');
     }
 }
 
@@ -561,14 +540,14 @@ sub scrn_configure_dada_mail {
     if ( !keys %params ) {
 
         # well, then place some defaults:
-        $q->param( 'install_change_root_password',          1 );
-        $q->param( 'install_screen_cache',                  1 );
-        $q->param( 'install_log_viewer',                    1 );
-        $q->param( 'install_tracker',                       1 );
-        $q->param( 'install_multiple_subscribe',            1 );
-        $q->param( 'install_blog_index',                    1 );
-        $q->param( 'install_change_list_shortname',         1 );
-        $q->param( 'global_config',                         0 );
+        $q->param( 'install_change_root_password',  1 );
+        $q->param( 'install_screen_cache',          1 );
+        $q->param( 'install_log_viewer',            1 );
+        $q->param( 'install_tracker',               1 );
+        $q->param( 'install_multiple_subscribe',    1 );
+        $q->param( 'install_blog_index',            1 );
+        $q->param( 'install_change_list_shortname', 1 );
+        $q->param( 'global_config',                 0 );
 
         for my $d (
             qw(
@@ -618,14 +597,19 @@ sub scrn_configure_dada_mail {
     my $original_dada_root_pass = undef;
 
     my $param_vals_from_former_config = undef;
+
     if ( $install_type eq 'upgrade' ) {
+
         $configured_dada_config_file =
-          $current_dada_files_parent_location . '/' . $Dada_Files_Dir_Name . '/.configs/.dada_config';
+          $current_dada_files_parent_location . '/' . $Dada_Files_Dir_Name . '/' . '.configs/.dada_config';
+
         $configured_dada_files_loc = $current_dada_files_parent_location;
-        $original_dada_root_pass   = $BootstrapConfig::PROGRAM_ROOT_PASSWORD;    # Why is this here, instead of grab_...
+
+        $original_dada_root_pass = $BootstrapConfig::PROGRAM_ROOT_PASSWORD;    # Why is this here, instead of grab_...
 
     }
     else {
+
         $configured_dada_config_file = $DADA::Config::CONFIG_FILE
           ;   # This may also be strange, although if this is an install, it'll just give you the default guess, anyways
         $configured_dada_files_loc = $configured_dada_config_file;
@@ -653,6 +637,17 @@ sub scrn_configure_dada_mail {
         -default => $DADA::Config::MADRILL->{Allowed_Sending_Quota_Percentage},
     );
 
+    my $install_dada_files_dir_at = $self->install_dada_files_dir_at_from_params(
+        {
+            -install_type                       => $q->param('install_type'),
+            -current_dada_files_parent_location => $q->param('current_dada_files_parent_location'),
+            -dada_files_dir_setup               => $q->param('dada_files_dir_setup'),
+
+        }
+    );
+
+    #die '$install_dada_files_dir_at ' . $install_dada_files_dir_at;
+
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen => 'installer_configure_dada_mail_scrn.tmpl',
@@ -675,10 +670,11 @@ sub scrn_configure_dada_mail {
                 can_use_CAPTCHA_reCAPTCHA_Mailhide => test_can_use_CAPTCHA_reCAPTCHA_Mailhide(),
                 error_cant_read_config_dot_pm      => $self->test_can_read_config_dot_pm(),
                 error_cant_write_config_dot_pm     => $self->test_can_write_config_dot_pm(),
-                cgi_test_FastCGI                   => $self->cgi_test_FastCGI, 
+                cgi_test_FastCGI                   => $self->cgi_test_FastCGI,
                 home_dir_guess                     => $self->guess_home_dir(),
-                install_dada_files_dir_at          => $self->install_dada_files_dir_at_from_params(),
-                test_complete_dada_files_dir_structure_exists => $self->test_complete_dada_files_dir_structure_exists( $self->install_dada_files_dir_at_from_params() ),
+                install_dada_files_dir_at          => $install_dada_files_dir_at,
+                test_complete_dada_files_dir_structure_exists =>
+                  $self->test_complete_dada_files_dir_structure_exists($install_dada_files_dir_at),
                 dada_files_dir_setup                     => $q->param('dada_files_dir_setup')                     || '',
                 dada_files_loc                           => $q->param('dada_files_loc')                           || '',
                 error_create_dada_mail_support_files_dir => $q->param('error_create_dada_mail_support_files_dir') || 0,
@@ -720,6 +716,7 @@ sub scrn_configure_dada_mail {
     # Uh, do are darnest to get the $PROGRAM_URL stuff working correctly,
     $scrn = hack_program_url($scrn);
 
+    my $q = $self->query;
     require HTML::FillInForm::Lite;
     my $h = HTML::FillInForm::Lite->new();
     if (
@@ -729,57 +726,54 @@ sub scrn_configure_dada_mail {
 
       )
     {
-        $former_opts = $self->grab_former_config_vals();
-        for(keys %$former_opts){ 
-            my $n = $_; 
-               $n =~ s/^\-//; 
-            $q->param($n, $former_opts->{$_};
+        my $former_opts = $self->grab_former_config_vals();        
+        for ( keys %$former_opts ) {
+            my $n = $_;
+            $n =~ s/^\-//;
+            $q->param( $n, $former_opts->{$_} );
         }
     }
-
     $scrn = $h->fill( \$scrn, $q );
 
     return $scrn;
 
 }
 
-
-
-
 sub grab_former_config_vals {
 
     my $self = shift;
-    my $opt = {}; 
+    my $opt  = {};
+
     # $PROGRAM_URL
-    $opt->{ 'program_url'} =  $BootstrapConfig::PROGRAM_URL;
+    $opt->{'program_url'} = $BootstrapConfig::PROGRAM_URL;
 
     # $SUPPORT_FILES
     my $support_files_dir_path;
     if ( defined( $BootstrapConfig::SUPPORT_FILES->{dir} ) ) {
         ($support_files_dir_path) = $BootstrapConfig::SUPPORT_FILES->{dir} =~ m/^(.*?)\/$Support_Files_Dir_Name$/;
-        $opt->{ 'support_files_dir_path'} =  $support_files_dir_path;
+        $opt->{'support_files_dir_path'} = $support_files_dir_path;
     }
     else {
         # in v5, there was no $SUPPORT_FILES var, but we're using the same dir as KCFinder, so we can look there:
         ($support_files_dir_path) = $BootstrapConfig::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_dir} =~
           m/^(.*?)\/$Support_Files_Dir_Name\/$File_Upload_Dir$/;
-        $opt->{ 'support_files_dir_path'} =  $support_files_dir_path;
+        $opt->{'support_files_dir_path'} = $support_files_dir_path;
     }
     my $support_files_dir_url;
     if ( defined( $BootstrapConfig::SUPPORT_FILES->{url} ) ) {
         ($support_files_dir_url) = $BootstrapConfig::SUPPORT_FILES->{url} =~ m/^(.*?)\/$Support_Files_Dir_Name$/;
-        $opt->{ 'support_files_dir_url' } =  $support_files_dir_url ;
+        $opt->{'support_files_dir_url'} = $support_files_dir_url;
     }
     else {
         # in v5, there was no $SUPPORT_FILES var, but we're using the same dir as KCFinder, so we can look there:
         ($support_files_dir_url) = $BootstrapConfig::FILE_BROWSER_OPTIONS->{kcfinder}->{upload_url} =~
           m/^(.*?)\/$Support_Files_Dir_Name\/$File_Upload_Dir$/;
-        $opt->{ 'support_files_dir_url'} =  $support_files_dir_url;
+        $opt->{'support_files_dir_url'} = $support_files_dir_url;
     }
 
     # $PROGRAM_ROOT_PASSWORD
-    $opt->{ 'original_dada_root_pass'} = $BootstrapConfig::PROGRAM_ROOT_PASSWORD ;
-    $opt->{ 'original_dada_root_pass_is_encrypted'} =  $BootstrapConfig::ROOT_PASS_IS_ENCRYPTED;
+    $opt->{'original_dada_root_pass'}              = $BootstrapConfig::PROGRAM_ROOT_PASSWORD;
+    $opt->{'original_dada_root_pass_is_encrypted'} = $BootstrapConfig::ROOT_PASS_IS_ENCRYPTED;
 
     # BACKEND
     # In v5 and earlier, there was no $BACKEND_DB, so we'll see what we have,
@@ -797,75 +791,77 @@ sub grab_former_config_vals {
     {
         # That means, we have an SQL backend.
         #%SQL_PARAMS;
-        $opt->{ 'backend' } =      $BootstrapConfig::SQL_PARAMS{dbtype} ;
-        $opt->{ 'sql_server'} =   $BootstrapConfig::SQL_PARAMS{dbserver} ;
-        $opt->{ 'sql_database'} = $BootstrapConfig::SQL_PARAMS{database} ;
-        $opt->{ 'sql_port'} =     $BootstrapConfig::SQL_PARAMS{port} ;
-        $opt->{ 'sql_username'} = $BootstrapConfig::SQL_PARAMS{user} ;
-        $opt->{ 'sql_password'} = $BootstrapConfig::SQL_PARAMS{pass} ;
+        $opt->{'backend'}      = $BootstrapConfig::SQL_PARAMS{dbtype};
+        $opt->{'sql_server'}   = $BootstrapConfig::SQL_PARAMS{dbserver};
+        $opt->{'sql_database'} = $BootstrapConfig::SQL_PARAMS{database};
+        $opt->{'sql_port'}     = $BootstrapConfig::SQL_PARAMS{port};
+        $opt->{'sql_username'} = $BootstrapConfig::SQL_PARAMS{user};
+        $opt->{'sql_password'} = $BootstrapConfig::SQL_PARAMS{pass};
 
     }
     elsif ( $BootstrapConfig::BACKEND_DB_TYPE eq 'Default' ) {
-        $opt->{ 'backend'}  = 'default' ;
+        $opt->{'backend'} = 'default';
     }
     elsif ($BootstrapConfig::SUBSCRIBER_DB_TYPE eq 'Default'
         || $BootstrapConfig::SETTINGS_DB_TYPE eq 'Default' )
     {
-        $opt->{ 'backend' } =  'default' ;
+        $opt->{'backend'} = 'default';
     }
 
-    
-    my @plugin_exts = (qw(
-        multiple_subscribe
-        blog_index
-    )); 
-    
-    if(keys %$BootstrapConfig::PLUGINS_ENABLED) { 
-        for(keys %$BootstrapConfig::PLUGINS_ENABLED){ 
-            if($BootstrapConfig::PLUGINS_ENABLED->{$_} == 1) { 
-                $opt->{ 'install_' . $_} =  1 ;
+    my @plugin_exts = (
+        qw(
+          multiple_subscribe
+          blog_index
+          )
+    );
+
+    if ( keys %$BootstrapConfig::PLUGINS_ENABLED ) {
+        for ( keys %$BootstrapConfig::PLUGINS_ENABLED ) {
+            if ( $BootstrapConfig::PLUGINS_ENABLED->{$_} == 1 ) {
+                $opt->{ 'install_' . $_ } = 1;
             }
-            else { 
-                $opt->{ 'install_' . $_} =  0 ;                
+            else {
+                $opt->{ 'install_' . $_ } = 0;
             }
         }
     }
-    else { 
-        # else, we'll look for it, in the admin menu. 
-        push(@plugin_exts, qw(
-                change_root_password
-                screen_cache
-                log_viewer
-                tracker
-                bridge
-                bounce_handler
-                change_list_shortname
-                global_config
-                password_protect_directories
-            )
-        ); 
+    else {
+        # else, we'll look for it, in the admin menu.
+        push(
+            @plugin_exts, qw(
+              change_root_password
+              screen_cache
+              log_viewer
+              tracker
+              bridge
+              bounce_handler
+              change_list_shortname
+              global_config
+              password_protect_directories
+              )
+        );
     }
+
     # Plugins/Extensions
-    for my $plugin_ext (@plugin_exts)
-    {
+    for my $plugin_ext (@plugin_exts) {
 
         if ( admin_menu_item_used($plugin_ext) == 1 ) {
-            $opt->{ 'install_' . $plugin_ext} =  1;
+            $opt->{ 'install_' . $plugin_ext } = 1;
         }
         else {
-            $opt->{ 'install_' . $plugin_ext} =  0;
+            $opt->{ 'install_' . $plugin_ext } = 0;
         }
     }
 
     # in ver. < 6, these were called something different...
     if ( admin_menu_item_used('dada_bounce_handler') == 1 ) {
-        $opt->{ 'install_bounce_handler'} =  1;
+        $opt->{'install_bounce_handler'} = 1;
     }
     if ( admin_menu_item_used('dada_bridge') == 1 ) {
-        $opt->{ 'install_bridge'} =  1;
+        $opt->{'install_bridge'} = 1;
     }
     if ( admin_menu_item_used('clickthrough_tracking') == 1 ) {
-        $opt->{ 'install_tracker'} =  1;
+        $opt->{'install_tracker'} = 1;
     }
 
     # Bridge
@@ -873,34 +869,35 @@ sub grab_former_config_vals {
         for my $config ( keys %bridge_plugin_configs ) {
             if ( exists( $BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{$config} ) ) {
                 if ( defined( $BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{$config} ) ) {
-                    $opt->{ 'bridge_' . $config} =  $BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{$config};
+                    $opt->{ 'bridge_' . $config } = $BootstrapConfig::PLUGIN_CONFIGS->{Bridge}->{$config};
                 }
                 else {
-                    $opt->{ 'bridge_' . $config} =  $bridge_plugin_configs{$config}->{default};
+                    $opt->{ 'bridge_' . $config } = $bridge_plugin_configs{$config}->{default};
                 }
             }
             else {
-                $opt->{ 'bridge_' . $config} = $bridge_plugin_configs{$config}->{default};
+                $opt->{ 'bridge_' . $config } = $bridge_plugin_configs{$config}->{default};
             }
         }
     }
 
     # Bounce Handler
     if ( exists( $BootstrapConfig::LIST_SETUP_INCLUDE{admin_email} ) ) {
-        $opt->{ 'bounce_handler_Address'} =  $BootstrapConfig::LIST_SETUP_INCLUDE{admin_email};
+        $opt->{'bounce_handler_Address'} = $BootstrapConfig::LIST_SETUP_INCLUDE{admin_email};
     }
     if ( exists( $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler} ) ) {
         for my $config ( keys %bounce_handler_plugin_configs ) {
             if ( exists( $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{$config} ) ) {
                 if ( defined( $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{$config} ) ) {
-                    $opt->{ 'bounce_handler_' . $config} = $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{$config};
+                    $opt->{ 'bounce_handler_' . $config } =
+                      $BootstrapConfig::PLUGIN_CONFIGS->{Bounce_Handler}->{$config};
                 }
                 else {
-                    $opt->{ 'bounce_handler_' . $config} =  $bounce_handler_plugin_configs{$config}->{default};
+                    $opt->{ 'bounce_handler_' . $config } = $bounce_handler_plugin_configs{$config}->{default};
                 }
             }
             else {
-                $opt->{ 'bounce_handler_' . $config} = $bounce_handler_plugin_configs{$config}->{default};
+                $opt->{ 'bounce_handler_' . $config } = $bounce_handler_plugin_configs{$config}->{default};
             }
         }
     }
@@ -908,13 +905,13 @@ sub grab_former_config_vals {
     # "Bounce_Handler" could also be, "Mystery_Girl" (change made in v4.9.0)
     elsif ( exists( $BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl} ) ) {
         if ( exists( $BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl}->{Server} ) ) {
-            $opt->{ 'bounce_handler_Server'} =  $BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl}->{Server} ;
+            $opt->{'bounce_handler_Server'} = $BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl}->{Server};
         }
         if ( exists( $BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl}->{Username} ) ) {
-            $opt->{ 'bounce_handler_Username'} =  $BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl}->{Username};
+            $opt->{'bounce_handler_Username'} = $BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl}->{Username};
         }
         if ( exists( $BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl}->{Password} ) ) {
-            $opt->{ 'bounce_handler_Password'} =  $BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl}->{Password};
+            $opt->{'bounce_handler_Password'} = $BootstrapConfig::PLUGIN_CONFIGS->{Mystery_Girl}->{Password};
         }
     }
 
@@ -925,60 +922,62 @@ sub grab_former_config_vals {
         || $BootstrapConfig::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1
         || $BootstrapConfig::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1 )
     {
-        $opt->{ 'install_wysiwyg_editors'} =  1;
+        $opt->{'install_wysiwyg_editors'} = 1;
     }
     else {
-        $opt->{ 'install_wysiwyg_editors'} =  0;
+        $opt->{'install_wysiwyg_editors'} = 0;
     }
 
     for my $editor (qw(ckeditor tiny_mce)) {
 
         # And then, individual:
         if ( $BootstrapConfig::WYSIWYG_EDITOR_OPTIONS->{$editor}->{enabled} == 1 ) {
-            $opt->{ 'wysiwyg_editor_install_' . $editor} = 1 ;
+            $opt->{ 'wysiwyg_editor_install_' . $editor } = 1;
         }
         else {
-            $opt->{ 'wysiwyg_editor_install_' . $editor} =  0;
+            $opt->{ 'wysiwyg_editor_install_' . $editor } = 0;
         }
     }
     if ( $BootstrapConfig::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1 ) {
-        $opt->{ 'file_browser_install'} = 'kcfinder' ;
+        $opt->{'file_browser_install'} = 'kcfinder';
     }
     elsif ( $BootstrapConfig::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1 ) {
-        $opt->{ 'file_browser_install'} = 'core5_filemanager';
-        $opt->{ 'core5_filemanager_connector'} =  $BootstrapConfig::FILE_BROWSER_OPTIONS->{core5_filemanager}->{connector};
+        $opt->{'file_browser_install'} = 'core5_filemanager';
+        $opt->{'core5_filemanager_connector'} =
+          $BootstrapConfig::FILE_BROWSER_OPTIONS->{core5_filemanager}->{connector};
     }
 
     # $SCHEDULED_JOBS_OPTIONS
-    
+
     if ( keys( %{$BootstrapConfig::SCHEDULED_JOBS_OPTIONS} ) ) {
-        $opt->{ 'configure_scheduled_jobs_options'} =  1;
-        if(! exists($BootstrapConfig::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor})){ 
-            my $ran_str       = '_sched' . uc(substr(DADA::App::Guts::generate_rand_string_md5(), 0, 16));
-            $BootstrapConfig::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor} = $ran_str; 
+        $opt->{'configure_scheduled_jobs_options'} = 1;
+        if ( !exists( $BootstrapConfig::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor} ) ) {
+            my $ran_str = '_sched' . uc( substr( DADA::App::Guts::generate_rand_string_md5(), 0, 16 ) );
+            $BootstrapConfig::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor} = $ran_str;
         }
-        $opt->{ 'scheduled_jobs_flavor'} =  $BootstrapConfig::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor};
-        $opt->{ 'scheduled_jobs_log'} =  $BootstrapConfig::SCHEDULED_JOBS_OPTIONS->{log};
+        $opt->{'scheduled_jobs_flavor'} = $BootstrapConfig::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor};
+        $opt->{'scheduled_jobs_log'}    = $BootstrapConfig::SCHEDULED_JOBS_OPTIONS->{log};
     }
-    else { 
+    else {
         # Kind of a weird place to find this:
-        my $ran_str       = '_sched' . uc(substr(DADA::App::Guts::generate_rand_string_md5(), 0, 16));
-        $opt->{ 'scheduled_jobs_flavor'} =  $ran_str;
+        my $ran_str = '_sched' . uc( substr( DADA::App::Guts::generate_rand_string_md5(), 0, 16 ) );
+        $opt->{'scheduled_jobs_flavor'} = $ran_str;
     }
+
     # FastCGI
-    if ( defined( $BootstrapConfig::RUNNING_AS ) &&  $BootstrapConfig::RUNNING_AS eq 'FastCGI' ) {
-        $opt->{ 'configure_fastcgi'} =  1;
-        $opt->{ 'fastcgi_options_run_under_fastcgi'} =  1;
+    if ( defined($BootstrapConfig::RUNNING_AS) && $BootstrapConfig::RUNNING_AS eq 'FastCGI' ) {
+        $opt->{'configure_fastcgi'}                 = 1;
+        $opt->{'fastcgi_options_run_under_fastcgi'} = 1;
     }
 
     # Profiles
     if ( exists( $BootstrapConfig::PROFILE_OPTIONS->{enabled} ) ) {
 
-        $opt->{ 'configure_profiles'} =  1;
+        $opt->{'configure_profiles'} = 1;
 
         for (qw(enabled profile_email profile_host_list enable_captcha enable_magic_subscription_forms)) {
             if ( exists( $BootstrapConfig::PROFILE_OPTIONS->{$_} ) ) {
-                $opt->{ 'profiles_' . $_} = $BootstrapConfig::PROFILE_OPTIONS->{$_};
+                $opt->{ 'profiles_' . $_ } = $BootstrapConfig::PROFILE_OPTIONS->{$_};
             }
         }
 
@@ -1000,7 +999,7 @@ sub grab_former_config_vals {
         {
 
             if ( exists( $BootstrapConfig::PROFILE_OPTIONS->{features}->{$_} ) ) {
-                $opt->{ 'profiles_' . $_} =  $BootstrapConfig::PROFILE_OPTIONS->{features}->{$_};
+                $opt->{ 'profiles_' . $_ } = $BootstrapConfig::PROFILE_OPTIONS->{features}->{$_};
             }
         }
 
@@ -1008,47 +1007,47 @@ sub grab_former_config_vals {
 
     # Global Template Options
     if ( defined($BootstrapConfig::USER_TEMPLATE) ) {
-        $opt->{ 'configure_templates'} =             1;
-        $opt->{ 'configure_user_template'} =         1;
-        $opt->{ 'template_options_USER_TEMPLATE'} =  $BootstrapConfig::USER_TEMPLATE;
+        $opt->{'configure_templates'}            = 1;
+        $opt->{'configure_user_template'}        = 1;
+        $opt->{'template_options_USER_TEMPLATE'} = $BootstrapConfig::USER_TEMPLATE;
     }
 
     # Caching Options
     if ( defined($BootstrapConfig::SCREEN_CACHE) || defined($BootstrapConfig::DATA_CACHE) ) {
-        $opt->{ 'configure_cache'} =  1;
+        $opt->{'configure_cache'} = 1;
 
         # Watch this, now:
         if ( defined($BootstrapConfig::SCREEN_CACHE) ) {
             if ( $BootstrapConfig::SCREEN_CACHE ne '1' ) {
-                $opt->{ 'cache_options_SCREEN_CACHE'} =  0;
+                $opt->{'cache_options_SCREEN_CACHE'} = 0;
             }
             else {
-                $opt->{ 'cache_options_SCREEN_CACHE'} =  1;
+                $opt->{'cache_options_SCREEN_CACHE'} = 1;
             }
         }
         if ( defined($BootstrapConfig::DATA_CACHE) ) {
             if ( $BootstrapConfig::DATA_CACHE ne '1' ) {
-                $opt->{ 'cache_options_DATA_CACHE' } =  0;
+                $opt->{'cache_options_DATA_CACHE'} = 0;
             }
             else {
-                $opt->{ 'cache_options_DATA_CACHE'} =  1;
+                $opt->{'cache_options_DATA_CACHE'} = 1;
             }
         }
     }
     else {
         # Defaul to, "1". Better way?
-        $opt->{ 'cache_options_SCREEN_CACHE'} =  1 ;
-        $opt->{ 'cache_options_DATA_CACHE'} =   1 ;
+        $opt->{'cache_options_SCREEN_CACHE'} = 1;
+        $opt->{'cache_options_DATA_CACHE'}   = 1;
     }
 
     # Debugging Options
     if ( defined($BootstrapConfig::DEBUG_TRACE) || keys %BootstrapConfig::CPAN_DEBUG_SETTINGS ) {
-        $opt->{ 'configure_debugging'} =  1;
+        $opt->{'configure_debugging'} = 1;
         foreach ( keys %{$BootstrapConfig::DEBUG_TRACE} ) {
-            $opt->{ 'debugging_options_' . $_} =  $BootstrapConfig::DEBUG_TRACE->{$_} ;
+            $opt->{ 'debugging_options_' . $_ } = $BootstrapConfig::DEBUG_TRACE->{$_};
         }
         foreach ( keys %BootstrapConfig::CPAN_DEBUG_SETTINGS ) {
-            $opt->{ 'debugging_options_' . $_} =  $BootstrapConfig::CPAN_DEBUG_SETTINGS{$_} ;
+            $opt->{ 'debugging_options_' . $_ } = $BootstrapConfig::CPAN_DEBUG_SETTINGS{$_};
         }
 
     }
@@ -1059,16 +1058,16 @@ sub grab_former_config_vals {
         || defined($BootstrapConfig::ADMIN_FLAVOR_NAME)
         || defined($BootstrapConfig::SIGN_IN_FLAVOR_NAME) )
     {
-        $opt->{ 'configure_security'} =  1;
+        $opt->{'configure_security'} = 1;
         if ( $BootstrapConfig::SHOW_ADMIN_LINK == 2 ) {
-            $opt->{ 'security_no_show_admin_link'} =  1 ;
+            $opt->{'security_no_show_admin_link'} = 1;
         }
         else {
-            $opt->{ 'security_no_show_admin_link'} =  0;
+            $opt->{'security_no_show_admin_link'} = 0;
         }
-        $opt->{ 'security_DISABLE_OUTSIDE_LOGINS'} =  $BootstrapConfig::DISABLE_OUTSIDE_LOGINS;
-        $opt->{ 'security_ADMIN_FLAVOR_NAME'} =       $BootstrapConfig::ADMIN_FLAVOR_NAME;
-        $opt->{ 'security_SIGN_IN_FLAVOR_NAME'} =     $BootstrapConfig::SIGN_IN_FLAVOR_NAME;
+        $opt->{'security_DISABLE_OUTSIDE_LOGINS'} = $BootstrapConfig::DISABLE_OUTSIDE_LOGINS;
+        $opt->{'security_ADMIN_FLAVOR_NAME'}      = $BootstrapConfig::ADMIN_FLAVOR_NAME;
+        $opt->{'security_SIGN_IN_FLAVOR_NAME'}    = $BootstrapConfig::SIGN_IN_FLAVOR_NAME;
 
     }
 
@@ -1077,32 +1076,31 @@ sub grab_former_config_vals {
         || keys %{$BootstrapConfig::RECAPTCHA_PARAMS}
         || keys %{$BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS} )
     {
-        $opt->{ 'configure_captcha'} =  1;
+        $opt->{'configure_captcha'} = 1;
 
         if ( $BootstrapConfig::CAPTCHA_TYPE eq 'Default' ) {
-            $opt->{ 'captcha_type'} =  'Default';
+            $opt->{'captcha_type'} = 'Default';
         }
         elsif ( $BootstrapConfig::CAPTCHA_TYPE eq 'reCAPTCHA' ) {
-            $opt->{ 'captcha_type'} =  'reCAPTCHA';
+            $opt->{'captcha_type'} = 'reCAPTCHA';
         }
 
         if ( defined( $BootstrapConfig::RECAPTCHA_PARAMS->{remote_address} ) ) {
-            $opt->{ 'captcha_reCAPTCHA_remote_addr'} =  $BootstrapConfig::RECAPTCHA_PARAMS->{remote_address};
+            $opt->{'captcha_reCAPTCHA_remote_addr'} = $BootstrapConfig::RECAPTCHA_PARAMS->{remote_address};
         }
         if ( defined( $BootstrapConfig::RECAPTCHA_PARAMS->{public_key} ) ) {
-            $opt->{ 'captcha_reCAPTCHA_public_key'} =  $BootstrapConfig::RECAPTCHA_PARAMS->{public_key};
+            $opt->{'captcha_reCAPTCHA_public_key'} = $BootstrapConfig::RECAPTCHA_PARAMS->{public_key};
         }
         if ( defined( $BootstrapConfig::RECAPTCHA_PARAMS->{private_key} ) ) {
-            $opt->{ 'captcha_reCAPTCHA_private_key'} =  $BootstrapConfig::RECAPTCHA_PARAMS->{private_key};
+            $opt->{'captcha_reCAPTCHA_private_key'} = $BootstrapConfig::RECAPTCHA_PARAMS->{private_key};
         }
 
         if ( defined( $BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS->{public_key} ) ) {
-            $opt->{ 'captcha_reCAPTCHA_Mailhide_public_key'} = 
-                $BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS->{public_key};
+            $opt->{'captcha_reCAPTCHA_Mailhide_public_key'} = $BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS->{public_key};
         }
         if ( defined( $BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS->{private_key} ) ) {
-            $opt->{ 'captcha_reCAPTCHA_Mailhide_private_key'} = 
-                $BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS->{private_key};
+            $opt->{'captcha_reCAPTCHA_Mailhide_private_key'} =
+              $BootstrapConfig::RECAPTHCA_MAILHIDE_PARAMS->{private_key};
         }
     }
 
@@ -1110,12 +1108,12 @@ sub grab_former_config_vals {
     if (   defined($BootstrapConfig::GLOBAL_UNSUBSCRIBE)
         || defined($BootstrapConfig::GLOBAL_BLACK_LIST) )
     {
-        $opt->{ 'configure_global_mailing_list_options'} =  1;
+        $opt->{'configure_global_mailing_list_options'} = 1;
         if ( defined($BootstrapConfig::GLOBAL_UNSUBSCRIBE) ) {
-            $opt->{ 'global_mailing_list_options_GLOBAL_UNSUBSCRIBE'} =  $BootstrapConfig::GLOBAL_UNSUBSCRIBE;
+            $opt->{'global_mailing_list_options_GLOBAL_UNSUBSCRIBE'} = $BootstrapConfig::GLOBAL_UNSUBSCRIBE;
         }
         if ( defined($BootstrapConfig::GLOBAL_BLACK_LIST) ) {
-            $opt->{ 'global_mailing_list_options_GLOBAL_BLACK_LIST'} = $BootstrapConfig::GLOBAL_BLACK_LIST;
+            $opt->{'global_mailing_list_options_GLOBAL_BLACK_LIST'} = $BootstrapConfig::GLOBAL_BLACK_LIST;
         }
     }
 
@@ -1127,62 +1125,62 @@ sub grab_former_config_vals {
 
       )
     {
-        $opt->{ 'configure_mass_mailing'} =              1;
-        $opt->{ 'mass_mailing_MAILOUT_AT_ONCE_LIMIT'}  = $BootstrapConfig::MAILOUT_AT_ONCE_LIMIT;
-        $opt->{ 'mass_mailing_MULTIPLE_LIST_SENDING'}  = $BootstrapConfig::MULTIPLE_LIST_SENDING;
-        $opt->{ 'mass_mailing_MAILOUT_STALE_AFTER'}   = $BootstrapConfig::MAILOUT_STALE_AFTER;
+        $opt->{'configure_mass_mailing'}             = 1;
+        $opt->{'mass_mailing_MAILOUT_AT_ONCE_LIMIT'} = $BootstrapConfig::MAILOUT_AT_ONCE_LIMIT;
+        $opt->{'mass_mailing_MULTIPLE_LIST_SENDING'} = $BootstrapConfig::MULTIPLE_LIST_SENDING;
+        $opt->{'mass_mailing_MAILOUT_STALE_AFTER'}   = $BootstrapConfig::MAILOUT_STALE_AFTER;
     }
 
     # $CONFIRMATION_TOKEN_OPTIONS
     if ( keys %{$BootstrapConfig::CONFIRMATION_TOKEN_OPTIONS} ) {
-        $opt->{ 'configure_confirmation_token'} =  1;
-        $opt->{ 'confirmation_token_expires'} =  $BootstrapConfig::CONFIRMATION_TOKEN_OPTIONS->{expires};
+        $opt->{'configure_confirmation_token'} = 1;
+        $opt->{'confirmation_token_expires'}   = $BootstrapConfig::CONFIRMATION_TOKEN_OPTIONS->{expires};
     }
 
     # S_PROGRAM URL
     if ( defined($BootstrapConfig::S_PROGRAM_URL) ) {
         if ( $BootstrapConfig::S_PROGRAM_URL ne $BootstrapConfig::PROGRAM_URL ) {
-            $opt->{ 'configure_s_program_url'} =  1;
-            $opt->{ 's_program_url_S_PROGRAM_URL'} =  $BootstrapConfig::S_PROGRAM_URL;
+            $opt->{'configure_s_program_url'}     = 1;
+            $opt->{'s_program_url_S_PROGRAM_URL'} = $BootstrapConfig::S_PROGRAM_URL;
         }
     }
 
     # PROGRAM NAME
     if ( defined($BootstrapConfig::PROGRAM_NAME) ) {
-        $opt->{ 'configure_program_name'} =     1;
-        $opt->{ 'program_name_PROGRAM_NAME'} =  $BootstrapConfig::PROGRAM_NAME;
+        $opt->{'configure_program_name'}    = 1;
+        $opt->{'program_name_PROGRAM_NAME'} = $BootstrapConfig::PROGRAM_NAME;
     }
 
     # $AMAZON_SES_OPTIONS
     if (   defined( $BootstrapConfig::AMAZON_SES_OPTIONS->{AWSAccessKeyId} )
         && defined( $BootstrapConfig::AMAZON_SES_OPTIONS->{AWSSecretKey} ) )
     {
-        $opt->{ 'configure_amazon_ses'} =   1;
-        $opt->{ 'amazon_ses_AWSAccessKeyId'} =  $BootstrapConfig::AMAZON_SES_OPTIONS->{AWSAccessKeyId};
-        $opt->{ 'amazon_ses_AWSSecretKey'} =   $BootstrapConfig::AMAZON_SES_OPTIONS->{AWSSecretKey};
+        $opt->{'configure_amazon_ses'}      = 1;
+        $opt->{'amazon_ses_AWSAccessKeyId'} = $BootstrapConfig::AMAZON_SES_OPTIONS->{AWSAccessKeyId};
+        $opt->{'amazon_ses_AWSSecretKey'}   = $BootstrapConfig::AMAZON_SES_OPTIONS->{AWSSecretKey};
 
         if ( exists( $BootstrapConfig::AMAZON_SES_OPTIONS->{AWS_endpoint} ) ) {
-            $opt->{ 'amazon_ses_AWS_endpoint'} =  $BootstrapConfig::AMAZON_SES_OPTIONS->{AWS_endpoint};
+            $opt->{'amazon_ses_AWS_endpoint'} = $BootstrapConfig::AMAZON_SES_OPTIONS->{AWS_endpoint};
         }
 
         if ( exists( $BootstrapConfig::AMAZON_SES_OPTIONS->{Allowed_Sending_Quota_Percentage} ) ) {
-            $opt->{ 'amazon_ses_Allowed_Sending_Quota_Percentage'} = $BootstrapConfig::AMAZON_SES_OPTIONS->{Allowed_Sending_Quota_Percentage};
+            $opt->{'amazon_ses_Allowed_Sending_Quota_Percentage'} =
+              $BootstrapConfig::AMAZON_SES_OPTIONS->{Allowed_Sending_Quota_Percentage};
         }
     }
 
     # Mandrill
     if ( keys %$BootstrapConfig::MANDRILL_OPTIONS ) {
-        $opt->{ 'configure_mandrill'} =  1 ;
-        $opt->{ 'mandrill_api_key'} =    1 ;
+        $opt->{'configure_mandrill'} = 1;
+        $opt->{'mandrill_api_key'}   = 1;
     }
-   
-   my $dash_opt = {}; 
-   for(keys %$opt){ 
-      $dash_opt->{'-' . $_} =  $dash_opt->{$_}; 
-   } 
-   return $dash_opt; 
-}
 
+    my $dash_opt = {};
+    for ( keys %$opt ) {
+        $dash_opt->{ '-' . $_ } = $opt->{$_};
+    }
+    return $dash_opt;
+}
 
 sub admin_menu_item_used {
     my $function = shift;
@@ -1237,14 +1235,18 @@ sub connectdb {
 
 sub check {
 
-    Oh, so check_setup uses $q->param too, great. 
-    
+    #    Oh, so check_setup uses $q->param too, great.
+
     my $self = shift;
-    my $q    = $self->query();
-    #my %params = $q->Vars;
-    
+    my $q    = $self->query;
+
+    $self->query_params_to_install_params();
+
     my ( $status, $errors ) = $self->check_setup();
 
+    #require Data::Dumper; 
+    #die Data::Dumper::Dumper($errors); 
+    
     if ( $status == 0 ) {
         my $ht_errors = [];
 
@@ -1268,164 +1270,38 @@ sub scrn_install_dada_mail {
     my $self = shift;
     my $q    = $self->query();
 
-    # THis is sort of awkward - but we need to do the switcheroo: 
-    if($q->param('fastcgi_options_run_under_fastcgi') == 1){ 
+    # THis is sort of awkward - but we need to do the switcheroo:
+    if ( $q->param('fastcgi_options_run_under_fastcgi') == 1 ) {
         my $purl = $q->param('program_url');
-        if($purl =~ m/mail\.cgi$/){ 
-            $purl =~ s/mail\.cgi$/mail\.fcgi/; 
-            $q->param('program_url', $purl);
+        if ( $purl =~ m/mail\.cgi$/ ) {
+            $purl =~ s/mail\.cgi$/mail\.fcgi/;
+            $q->param( 'program_url', $purl );
         }
     }
-    else { 
+    else {
         my $purl = $q->param('program_url');
-        if($purl =~ m/mail\.fcgi$/){ 
-            $purl =~ s/mail\.fcgi$/mail\.cgi/; 
-            $q->param('program_url', $purl);
-        }        
+        if ( $purl =~ m/mail\.fcgi$/ ) {
+            $purl =~ s/mail\.fcgi$/mail\.cgi/;
+            $q->param( 'program_url', $purl );
+        }
     }
 
-    my $install_dada_files_loc = $self->install_dada_files_dir_at_from_params();
+    #dsa;fla;sdkf;lasdkf
 
-    my $install_params         = {}; 
-        
-    $install_params->{-install_dada_files_loc} = $install_dada_files_loc;
-
-# HERE
-
-    my @install_param_names    = qw(
-    
-    if_dada_files_already_exists      
-
-    program_url                       
-    dada_root_pass                    
-    dada_files_dir_setup              
-    skip_configure_SQL                
-    support_files_dir_path    
-    support_files_dir_url        
-    backend                           
-    
-    sql_server                        
-    sql_port                          
-    sql_database                      
-    sql_username                      
-    sql_password      
-    
-    install_wysiwyg_editors                
-    wysiwyg_editor_install_ckeditor
-    wysiwyg_editor_install_tiny_mce
-    file_browser_install
-    core5_filemanager_connector
-    
-    dada_pass_use_orig                
-    
-    
-    configure_fastcgi
-    fastcgi_options_run_under_fastcgi 
-    
-    scheduled_jobs_flavor             
-    configure_scheduled_jobs          
-    scheduled_jobs_flavor             
-    scheduled_jobs_log
-    
-    configure_profiles
-    profile_enabled
-    profile_profile_email
-    profile_profile_host_list
-    profile_enable_captcha
-    profile_enable_magic_subscription_forms
-    profile_help
-    profile_login
-    profile_register
-    profile_password_reset
-    profile_profile_fields
-    profile_mailing_list_subscriptions
-    profile_protected_directories
-    profile_update_email_address
-    profile_change_password
-    profile_delete_profile
-    
-    configure_templates
-    configure_user_template
-    template_options_USER_TEMPLATE
-    
-    configure_cache
-    cache_options_SCREEN_CACHE
-    cache_options_DATA_CACHE
-    
-    configure_security
-    security_no_show_admin_link
-    security_DISABLE_OUTSIDE_LOGINS
-    security_ADMIN_FLAVOR_NAME
-    security_SIGN_IN_FLAVOR_NAME
-    
-    configure_captcha
-    captcha_type
-    captcha_reCAPTCHA_remote_addr
-    captcha_reCAPTCHA_public_key
-    captcha_reCAPTCHA_private_key
-    captcha_reCAPTCHA_Mailhide_public_key
-    captcha_reCAPTCHA_Mailhide_private_key
-    
-    configure_global_mailing_list_options
-    global_mailing_list_options_GLOBAL_UNSUBSCRIBE
-    global_mailing_list_options_GLOBAL_BLACK_LIST
-    
-    configure_mass_mailing
-    mass_mailing_MAILOUT_AT_ONCE_LIMIT
-    mass_mailing_MULTIPLE_LIST_SENDING
-    mass_mailing_MAILOUT_STALE_AFTER
-    
-    configure_confirmation_token
-    confirmation_token_expires
-    
-    configure_s_program_url
-    s_program_url_S_PROGRAM_URL
-    
-    configure_program_name
-    program_name_PROGRAM_NAME
-    
-    configure_amazon_ses
-    amazon_ses_AWS_endpoint
-    amazon_ses_AWSAccessKeyId
-    amazon_ses_AWSSecretKey
-    amazon_ses_Allowed_Sending_Quota_Percentage
-    
-    configure_mandrill
-    mandrill_api_key
-    mandrill_Allowed_Sending_Quota_Percentage
-    
-    ); 
-    for(@Debug_Option_Names){ 
-        push(@install_param_names, '-debugging_options_' . $_); 
-    }
-    for(@Plugin_Names) { 
-        push(@install_param_names, '-install_' . $_); 
-    }
-    for(keys %bounce_handler_plugin_configs){ 
-        push(@install_param_names, '-bounce_handler_' . $_); 
-    }
-    push(@install_param_names, '-bounce_handler_' . 'Address'); 
-
-    for(keys %bridge_plugin_configs){ 
-        push(@install_param_names, '-bridge' . $_); 
-    }
-    
-    for(@install_param_names){ 
-        $install_params->{'-' . $_} = $q->param($_); 
-    }
-    
-    foreach(%$plugins_extensions){ 
-        # And what's up with this? 
-    }
-    
-    $self->param('install_params', $install_params); 
-    
-    
     my ( $log, $status, $errors ) = $self->install_dada_mail();
 
-    my $sched_flavor  = $q->param('scheduled_jobs_flavor') || '_schedules';
+    my $sched_flavor = $q->param('scheduled_jobs_flavor') || '_schedules';
     my $curl_location = `which curl`;
-     
+
+    my $install_dada_files_loc = $self->install_dada_files_dir_at_from_params(
+        {
+            -install_type                       => $q->param('install_type'),
+            -current_dada_files_parent_location => $q->param('current_dada_files_parent_location'),
+            -dada_files_dir_setup               => $q->param('dada_files_dir_setup'),
+
+        }
+    );
+
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
             -screen => 'installer_install_dada_mail_scrn.tmpl',
@@ -1435,10 +1311,10 @@ sub scrn_install_dada_mail {
                 # These are tricky....
                 SUPPORT_FILES_URL => $Self_URL . '?flavor=screen&screen=',
 
-                install_log                   => plaintext_to_html( { -str => $log } ),
-                status                        => $status,
-                install_dada_files_loc        => $install_dada_files_loc,
-                Dada_Files_Dir_Name           => $Dada_Files_Dir_Name,
+                install_log            => plaintext_to_html( { -str => $log } ),
+                status                 => $status,
+                install_dada_files_loc => $install_dada_files_loc,
+                Dada_Files_Dir_Name    => $Dada_Files_Dir_Name,
                 error_cant_edit_config_dot_pm => $errors->{cant_edit_config_dot_pm} || 0,
                 Big_Pile_Of_Errors            => $Big_Pile_Of_Errors,
                 Trace                         => $Trace,
@@ -1446,8 +1322,8 @@ sub scrn_install_dada_mail {
                 S_PROGRAM_URL                 => program_url_guess(),
                 submitted_PROGRAM_URL         => $q->param('program_url'),
                 Self_URL                      => $Self_URL,
-                scheduled_jobs_flavor         => $sched_flavor, 
-                curl_location                 => $curl_location, 
+                scheduled_jobs_flavor         => $sched_flavor,
+                curl_location                 => $curl_location,
 
             }
         }
@@ -1461,11 +1337,164 @@ sub scrn_install_dada_mail {
 
 }
 
+sub query_params_to_install_params {
+
+    my $self = shift;
+    my $q    = $self->query();
+
+    my $install_dada_files_loc = $self->install_dada_files_dir_at_from_params(
+        {
+            -install_type                       => $q->param('install_type'),
+            -current_dada_files_parent_location => $q->param('current_dada_files_parent_location'),
+            -dada_files_dir_setup               => $q->param('dada_files_dir_setup'),
+
+        }
+    );
+
+    my $ip = {};
+    $ip->{-install_dada_files_loc} = $install_dada_files_loc;
+
+    my @install_param_names = qw(
+
+      install_type
+      current_dada_files_parent_location
+      dada_files_dir_setup
+
+      if_dada_files_already_exists
+
+      program_url
+      dada_root_pass
+      dada_root_pass_again
+    
+      skip_configure_SQL
+      support_files_dir_path
+      support_files_dir_url
+      backend
+
+      sql_server
+      sql_port
+      sql_database
+      sql_username
+      sql_password
+
+      install_wysiwyg_editors
+      wysiwyg_editor_install_ckeditor
+      wysiwyg_editor_install_tiny_mce
+      file_browser_install
+      core5_filemanager_connector
+
+
+      dada_pass_use_orig
+
+      configure_fastcgi
+      fastcgi_options_run_under_fastcgi
+
+      scheduled_jobs_flavor
+      configure_scheduled_jobs
+      scheduled_jobs_flavor
+      scheduled_jobs_log
+
+      configure_profiles
+      profile_enabled
+      profile_profile_email
+      profile_profile_host_list
+      profile_enable_captcha
+      profile_enable_magic_subscription_forms
+      profile_help
+      profile_login
+      profile_register
+      profile_password_reset
+      profile_profile_fields
+      profile_mailing_list_subscriptions
+      profile_protected_directories
+      profile_update_email_address
+      profile_change_password
+      profile_delete_profile
+
+      configure_templates
+      configure_user_template
+      template_options_USER_TEMPLATE
+
+      configure_cache
+      cache_options_SCREEN_CACHE
+      cache_options_DATA_CACHE
+
+      configure_security
+      security_no_show_admin_link
+      security_DISABLE_OUTSIDE_LOGINS
+      security_ADMIN_FLAVOR_NAME
+      security_SIGN_IN_FLAVOR_NAME
+
+      configure_captcha
+      captcha_type
+      captcha_reCAPTCHA_remote_addr
+      captcha_reCAPTCHA_public_key
+      captcha_reCAPTCHA_private_key
+      captcha_reCAPTCHA_Mailhide_public_key
+      captcha_reCAPTCHA_Mailhide_private_key
+
+      configure_global_mailing_list_options
+      global_mailing_list_options_GLOBAL_UNSUBSCRIBE
+      global_mailing_list_options_GLOBAL_BLACK_LIST
+
+      configure_mass_mailing
+      mass_mailing_MAILOUT_AT_ONCE_LIMIT
+      mass_mailing_MULTIPLE_LIST_SENDING
+      mass_mailing_MAILOUT_STALE_AFTER
+
+      configure_confirmation_token
+      confirmation_token_expires
+
+      configure_s_program_url
+      s_program_url_S_PROGRAM_URL
+
+      configure_program_name
+      program_name_PROGRAM_NAME
+
+      configure_amazon_ses
+      amazon_ses_AWS_endpoint
+      amazon_ses_AWSAccessKeyId
+      amazon_ses_AWSSecretKey
+      amazon_ses_Allowed_Sending_Quota_Percentage
+
+      configure_mandrill
+      mandrill_api_key
+      mandrill_Allowed_Sending_Quota_Percentage
+
+    );
+    for (@Debug_Option_Names) {
+        push( @install_param_names, 'debugging_options_' . $_ );
+    }
+    for (@Plugin_Names) {
+        push( @install_param_names, 'install_' . $_ );
+    }
+    for ( keys %bounce_handler_plugin_configs ) {
+        push( @install_param_names, 'bounce_handler_' . $_ );
+    }
+    push( @install_param_names, 'bounce_handler_' . 'Address' );
+
+    for ( keys %bridge_plugin_configs ) {
+        push( @install_param_names, 'bridge' . $_ );
+    }
+
+    for (@install_param_names) {
+        $ip->{ '-' . $_ } = $q->param($_);
+    }
+
+    foreach (%$plugins_extensions) {
+
+        # And what's up with this?
+    }
+
+    $self->param( 'install_params', $ip );
+
+}
+
 sub install_dada_mail {
 
     my $self = shift;
-    my $ip = $self->param('install_params'); 
-    
+    my $ip   = $self->param('install_params');
+
     my $log    = undef;
     my $errors = {};
     my $status = 1;
@@ -1510,7 +1539,7 @@ sub install_dada_mail {
         # Making the .dada_config file
         $log .= "* Attempting to create .dada_config file...\n";
         #
-        # DEV: create_dada_config_file uses a lot of vars from $q - not too comfortable with that. 
+        # DEV: create_dada_config_file uses a lot of vars from $q - not too comfortable with that.
         #
         if ( $self->create_dada_config_file() == 1 ) {
             $log .= "* Success!\n";
@@ -1525,6 +1554,7 @@ sub install_dada_mail {
 
         # Creating the needed SQL tables
         if ( $ip->{-backend} eq 'default' || $ip->{-backend} eq '' ) {
+
             # ...
         }
         else {
@@ -1622,17 +1652,17 @@ sub install_dada_mail {
             $log .= "* Success!\n";
         }
     }
-    
+
     $log .= "* Setting up CGI/FastCGI Support...\n";
     eval { $self->setup_fastcgi(); };
     if ($@) {
         $log .= "* Problems setting up CGI/FastCGI Support: $@\n";
+
         # $errors->{cant_setup_fast_cgi} = 1;
     }
     else {
         $log .= "* Done!\n";
     }
-    
 
     $log .= "* Checking for needed CPAN modules to install...\n";
     eval { install_missing_CPAN_modules(); };
@@ -1661,7 +1691,7 @@ sub install_dada_mail {
 
 sub remove_old_screen_cache {
     my $self = shift;
-    my $ip = $self->param('install_params'); 
+    my $ip   = $self->param('install_params');
 
     my $screen_cache_dir = $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.tmp/_screen_cache';
 
@@ -1689,10 +1719,9 @@ sub remove_old_screen_cache {
 
 sub edit_config_dot_pm {
 
-    my $self = shift; 
+    my $self = shift;
     my $ip   = $self->param('install_params');
-    
-    
+
     my $search  = qr/\$PROGRAM_CONFIG_FILE_DIR \= \'(.*?)\'\;/;
     my $search2 = qr/\$PROGRAM_ERROR_LOG \= (.*?)\;/;
 
@@ -1700,10 +1729,7 @@ sub edit_config_dot_pm {
       q{$PROGRAM_CONFIG_FILE_DIR = '} . $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . q{/.configs';};
 
     my $replace_with2 =
-        q{$PROGRAM_ERROR_LOG = '}
-      . $ip->{-install_dada_files_loc} . '/'
-      . $Dada_Files_Dir_Name
-      . q{/.logs/errors.txt';};
+      q{$PROGRAM_ERROR_LOG = '} . $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . q{/.logs/errors.txt';};
     $Config_LOC = make_safer($Config_LOC);
 
     my $config = slurp($Config_LOC);
@@ -1727,15 +1753,15 @@ sub edit_config_dot_pm {
 
     installer_chmod( $DADA::Config::FILE_CHMOD, $Config_LOC );
     installer_chmod( $DADA::Config::DIR_CHMOD,  make_safer('../DADA') );
-    
+
     return 1;
 
 }
 
 sub backup_config_dot_pm {
-    
-    my $self = shift; 
-    
+
+    my $self = shift;
+
     # Why 0777?
     installer_chmod( 0777, '../DADA' );
 
@@ -1778,18 +1804,17 @@ sub backup_current_config_file {
 
 }
 
-
 sub create_dada_files_dir_structure {
 
     my $self = shift;
-    my $ip = $self->param('install_params'); 
-    my $loc =  $ip->{-install_dada_files_loc}; 
-    
-    if($loc eq 'auto') { 
+    my $ip   = $self->param('install_params');
+    my $loc  = $ip->{-install_dada_files_loc};
+
+    if ( $loc eq 'auto' ) {
         $loc = $self->auto_dada_files_dir();
         $loc = make_safer( $loc . '/' . $Dada_Files_Dir_Name );
     }
-    
+
     eval {
 
         $self->installer_mkdir( $loc, $DADA::Config::DIR_CHMOD );
@@ -1820,13 +1845,13 @@ sub create_dada_files_dir_structure {
     }
 }
 
-# DEV: create_dada_config_file uses a lot of vars from $q - not too comfortable with that. 
+# DEV: create_dada_config_file uses a lot of vars from $q - not too comfortable with that.
 
 sub create_dada_config_file {
 
-    my $self   = shift;
-    my $ip     = $self->param('install_params'); 
-    
+    my $self = shift;
+    my $ip   = $self->param('install_params');
+
     my $loc = $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name;
 
     # eval {
@@ -1851,15 +1876,14 @@ sub create_dada_config_file {
         my $prog_url = $DADA::Config::PROGRAM_URL;
         $prog_url =~ s{installer\/install\.cgi}{mail\.cgi};
         $ip->{-program_url} = $prog_url;
-        $self->param('install_params', $ip); # awkward.
+        $self->param( 'install_params', $ip );    # awkward.
     }
-    if($ip->{-fastcgi_options_run_under_fastcgi} == 1){ 
+    if ( $ip->{-fastcgi_options_run_under_fastcgi} == 1 ) {
         $ip->{-program_url} =~ s/mail\.cgi$/mail\.fcgi/;
     }
-    else { 
-        $ip->{-program_url} =~ s/mail\.fcgi$/mail\.cgi/;        
+    else {
+        $ip->{-program_url} =~ s/mail\.fcgi$/mail\.cgi/;
     }
-    
 
     my $SQL_params = {};
     if ( $ip->{-backend} ne 'default' && $ip->{-backend} ne '' ) {
@@ -1893,24 +1917,23 @@ sub create_dada_config_file {
         $ip->{-sql_username} = '';
         $ip->{-sql_password} = '';
     }
-    
-    
-    my $scheduled_jobs_params = {}; 
-    if($ip->{-scheduled_jobs_flavor} ne '_schedules'){ 
-        $ip->{-configure_scheduled_jobs} =1;
+
+    my $scheduled_jobs_params = {};
+    if ( $ip->{-scheduled_jobs_flavor} ne '_schedules' ) {
+        $ip->{-configure_scheduled_jobs} = 1;
     }
-    if($ip->{configure_scheduled_jobs} == 1) { 
-        $scheduled_jobs_params->{configure_scheduled_jobs} = 1; 
-        $scheduled_jobs_params->{scheduled_jobs_flavor} = $ip->{-scheduled_jobs_flavor} || '_schedules';
-        $scheduled_jobs_params->{scheduled_jobs_log}    = $ip->{-scheduled_jobs_log} || 0;
+    if ( $ip->{configure_scheduled_jobs} == 1 ) {
+        $scheduled_jobs_params->{configure_scheduled_jobs} = 1;
+        $scheduled_jobs_params->{scheduled_jobs_flavor}    = $ip->{-scheduled_jobs_flavor} || '_schedules';
+        $scheduled_jobs_params->{scheduled_jobs_log}       = $ip->{-scheduled_jobs_log} || 0;
     }
-    my $fastcgi_params = {}; 
+    my $fastcgi_params = {};
     if ( $ip->{-configure_fastcgi} == 1 ) {
-        if($ip->{-fastcgi_options_run_under_fastcgi} == 1){ 
-            $fastcgi_params->{fastcgi_RUNNING_AS} = 'FastCGI'; 
+        if ( $ip->{-fastcgi_options_run_under_fastcgi} == 1 ) {
+            $fastcgi_params->{fastcgi_RUNNING_AS} = 'FastCGI';
         }
-        else { 
-            $fastcgi_params->{fastcgi_RUNNING_AS} = 'CGI'; 
+        else {
+            $fastcgi_params->{fastcgi_RUNNING_AS} = 'CGI';
         }
     }
 
@@ -1941,22 +1964,22 @@ sub create_dada_config_file {
             if (   $_ ne 'profile_email'
                 && $_ ne 'profile_host_list' )
             {
-                $profiles_params->{ 'profiles_' . $_ } = $ip->{'-profiles_' . $_ } || 0;
+                $profiles_params->{ 'profiles_' . $_ } = $ip->{ '-profiles_' . $_ } || 0;
             }
             else {
-                $profiles_params->{ 'profiles_' . $_ } = $ip->{'-profiles_' . $_ } || '';
+                $profiles_params->{ 'profiles_' . $_ } = $ip->{ '-profiles_' . $_ } || '';
             }
             $profiles_params->{ 'profiles_' . $_ } = clean_up_var( $profiles_params->{ 'profiles_' . $_ } );
         }
     }
-    
-    my $plugins_params = {}; 
-    for(@Plugin_Names){ 
-        if($ip->{'-install_' . $_} == 1){ 
-            $plugins_params->{'install_' . $_} = 1; 
+
+    my $plugins_params = {};
+    for (@Plugin_Names) {
+        if ( $ip->{ '-install_' . $_ } == 1 ) {
+            $plugins_params->{ 'install_' . $_ } = 1;
         }
-        else { 
-            $plugins_params->{'install_' . $_} = 0;                 
+        else {
+            $plugins_params->{ 'install_' . $_ } = 0;
         }
     }
 
@@ -1988,14 +2011,13 @@ sub create_dada_config_file {
             $cache_options_params->{cache_options_DATA_CACHE} = 2;
         }
     }
-    
-    
+
     my $debugging_options_params = {};
     if ( $ip->{-configure_debugging} == 1 ) {
         $debugging_options_params->{configure_debugging} = 1;
         for my $debug_option (@Debug_Option_Names) {
             $debugging_options_params->{ 'debugging_options_' . $debug_option } =
-              clean_up_var( $ip->{'-debugging_options_' . $debug_option } ) || 0;
+              clean_up_var( $ip->{ '-debugging_options_' . $debug_option } ) || 0;
         }
 
     }
@@ -2039,7 +2061,7 @@ sub create_dada_config_file {
         $global_mailing_list_options->{global_mailing_list_options_GLOBAL_UNSUBSCRIBE} =
           strip( $ip->{-global_mailing_list_options_GLOBAL_UNSUBSCRIBE} );
         $global_mailing_list_options->{global_mailing_list_options_GLOBAL_BLACK_LIST} =
-          strip($ip->{-global_mailing_list_options_GLOBAL_BLACK_LIST} );
+          strip( $ip->{-global_mailing_list_options_GLOBAL_BLACK_LIST} );
     }
 
     my $mass_mailing_params = {};
@@ -2063,7 +2085,7 @@ sub create_dada_config_file {
     if ( $ip->{-configure_s_program_url} == 1 ) {
         $s_program_url_params->{configure_s_program_url} = 1;
         $s_program_url_params->{s_program_url_S_PROGRAM_URL} =
-          clean_up_var( strip( $ip->{'-s_program_url_S_PROGRAM_URL'}) );
+          clean_up_var( strip( $ip->{'-s_program_url_S_PROGRAM_URL'} ) );
     }
 
     my $program_name_params = {};
@@ -2095,10 +2117,9 @@ sub create_dada_config_file {
         $cut_tag_params->{cut_list_settings_default} = 0;
         $cut_tag_params->{cut_plugin_configs}        = 0;
         foreach my $config ( keys %bounce_handler_plugin_configs ) {
-            if ( defined( $ip->{'-bounce_handler_' . $config} ) &&  $ip->{'bounce_handler_' . $config} ne '' )
-            {
+            if ( defined( $ip->{ '-bounce_handler_' . $config } ) && $ip->{ 'bounce_handler_' . $config } ne '' ) {
                 $bounce_handler_params->{ 'bounce_handler_' . $config } =
-                  _sq( strip( $ip->{'bounce_handler_' . $config } ) );
+                  _sq( strip( $ip->{ 'bounce_handler_' . $config } ) );
             }
             else {
                 $bounce_handler_params->{ 'bounce_handler_' . $config } =
@@ -2114,7 +2135,7 @@ sub create_dada_config_file {
     if ( $ip->{-install_bridge} == 1 ) {
         $cut_tag_params->{cut_plugin_configs} = 0;
         foreach my $config ( keys %bridge_plugin_configs ) {
-            if ( defined( $ip->{'-bridge_' . $config} ) && ( $ip->{'-bridge_' . $config } ne '' ) ) {
+            if ( defined( $ip->{ '-bridge_' . $config } ) && ( $ip->{ '-bridge_' . $config } ne '' ) ) {
                 $bridge_params->{ 'bridge_' . $config } = _sq( strip( $ip->{ '-bridge_' . $config } ) );
             }
             else {
@@ -2136,15 +2157,15 @@ sub create_dada_config_file {
                 ROOT_PASS_IS_ENCRYPTED => 1,
                 dada_files_dir         => $loc,
                 support_files_dir_path => $ip->{-support_files_dir_path} . '/' . $Support_Files_Dir_Name,
-                support_files_dir_url  => $ip->{-support_files_dir_url}  . '/' . $Support_Files_Dir_Name,
+                support_files_dir_url  => $ip->{-support_files_dir_url} . '/' . $Support_Files_Dir_Name,
                 Big_Pile_Of_Errors     => $Big_Pile_Of_Errors,
                 Trace                  => $Trace,
                 %{$SQL_params},
                 %{$cache_options_params},
                 %{$debugging_options_params},
                 %{$template_options_params},
-                %{$scheduled_jobs_params}, 
-                %{$fastcgi_params}, 
+                %{$scheduled_jobs_params},
+                %{$fastcgi_params},
                 %{$plugins_params},
                 %{$profiles_params},
                 %{$security_params},
@@ -2181,15 +2202,15 @@ sub create_dada_config_file {
 }
 
 sub create_sql_tables {
-    my $self = shift; 
-    my $ip = $self->param('install_params'); 
+    my $self = shift;
+    my $ip   = $self->param('install_params');
 
     my $sql_file = '';
     if ( $ip->{-backend} eq 'mysql' ) {
         $sql_file = 'mysql_schema.sql';
     }
     elsif ( $ip->{-backend} eq 'Pg' ) {
-        $sql_file = 'postgres_schema.sql'; 
+        $sql_file = 'postgres_schema.sql';
     }
     elsif ( $ip->{-backend} eq 'SQLite' ) {
         $sql_file = 'sqlite_schema.sql';
@@ -2199,12 +2220,12 @@ sub create_sql_tables {
 
         require DBI;
 
-        my $dbtype   = strip( xss_filter($ip->{-backend}) );
-        my $dbserver = strip( xss_filter($ip->{-sql_server}) );
-        my $port     = strip( xss_filter($ip->{-sql_port}) );
-        my $database = strip( xss_filter($ip->{-sql_database}) );
-        my $user     = strip( xss_filter($ip->{-sql_username}) );
-        my $pass     = strip( xss_filter($ip->{-sql_password}) );
+        my $dbtype   = strip( xss_filter( $ip->{-backend} ) );
+        my $dbserver = strip( xss_filter( $ip->{-sql_server} ) );
+        my $port     = strip( xss_filter( $ip->{-sql_port} ) );
+        my $database = strip( xss_filter( $ip->{-sql_database} ) );
+        my $user     = strip( xss_filter( $ip->{-sql_username} ) );
+        my $pass     = strip( xss_filter( $ip->{-sql_password} ) );
 
         my $data_source = '';
         my $dbh         = undef;
@@ -2249,17 +2270,17 @@ sub create_sql_tables {
 sub sql_port_from_params {
 
     my $self = shift;
-    my $q    = $self->query();
+    my $ip   = $self->param('install_params');
 
-    my $port = $q->param('sql_port');
-    if ( $q->param('sql_port') eq 'auto' ) {
-        if ( $q->param('backend') =~ /mysql/i ) {
+    my $port = $ip->{-sql_port};
+    if ( $ip->{-sql_port} eq 'auto' ) {
+        if ( $ip->{-backend} =~ /mysql/i ) {
             $port = 3306;
         }
-        elsif ( $q->param('backend') =~ /Pg/i ) {
+        elsif ( $ip->{-backend} =~ /Pg/i ) {
             $port = 5432;
         }
-        elsif ( $q->param('backend') =~ /SQLite/i ) {
+        elsif ( $ip->{-backend} =~ /SQLite/i ) {
             $port = '';
         }
         else {
@@ -2272,12 +2293,27 @@ sub sql_port_from_params {
 sub check_setup {
 
     my $self = shift;
-    my $q    = $self->query();
+
+    my $q  = $self->query;
+    my $ip = $self->param('install_params');
+    #require Data::Dumper; 
+    #die Data::Dumper::Dumper($ip); 
+    
+
+    my $install_dada_files_loc = $self->install_dada_files_dir_at_from_params(
+        {
+            -install_type                       => $ip->{-install_type},
+            -current_dada_files_parent_location => $ip->{-current_dada_files_parent_location},
+            -dada_files_dir_setup               => $ip->{-dada_files_dir_setup},
+
+        }
+    );
+   #die '$install_dada_files_loc ' . $install_dada_files_loc; 
 
     my $errors = {};
     if (
-        $q->param('if_dada_files_already_exists') eq 'skip_configure_dada_files'
-        && $self->test_complete_dada_files_dir_structure_exists( $self->install_dada_files_dir_at_from_params() ) ==
+           $ip->{-if_dada_files_already_exists} eq 'skip_configure_dada_files'
+        && $self->test_complete_dada_files_dir_structure_exists( $install_dada_files_loc ) ==
         1    # This still has to check out,
       )
     {
@@ -2287,26 +2323,26 @@ sub check_setup {
     }
     else {
 
-        if ( test_str_is_blank( $q->param('program_url') ) == 1 ) {
+        if ( test_str_is_blank( $ip->{-program_url} ) == 1 ) {
             $errors->{program_url_is_blank} = 1;
         }
         else {
             $errors->{program_url_is_blank} = 0;
         }
 
-        if ( $q->param('dada_pass_use_orig') == 1 ) {
+        if ( $ip->{-dada_pass_use_orig} == 1 ) {
 
             # Hopefully, original_dada_root_pass has been set.
         }
         else {
-            if ( test_str_is_blank( $q->param('dada_root_pass') ) == 1 ) {
+            if ( test_str_is_blank( $ip->{-dada_root_pass} ) == 1 ) {
                 $errors->{root_pass_is_blank} = 1;
 
             }
             else {
                 $errors->{root_pass_is_blank} = 0;
             }
-            if ( test_pass_match( $q->param('dada_root_pass'), $q->param('dada_root_pass_again') ) == 1 ) {
+            if ( test_pass_match( $ip->{-dada_root_pass}, $ip->{-dada_root_pass_again} ) == 1 ) {
                 $errors->{pass_no_match} = 1;
             }
             else {
@@ -2314,17 +2350,15 @@ sub check_setup {
             }
         }
 
-        if ( $q->param('backend') eq 'default' || $q->param('backend') eq '' ) {
+        if ( $ip->{-backend} eq 'default' || $ip->{-backend} eq '' ) {
             $errors->{sql_connection} = 0;
         }
         else {
             my ( $sql_test, $sql_test_details ) = $self->test_sql_connection(
-                $q->param('backend'),
-                $q->param('sql_server'),
-                'auto',
-                $q->param('sql_database'),
-                $q->param('sql_username'),
-                $q->param('sql_password')
+                $ip->{-backend}, $ip->{-sql_server}, 'auto',
+                $ip->{-sql_database},
+                $ip->{-sql_username},
+                $ip->{-sql_password},
             );
             if ( $sql_test == 0 ) {
                 $errors->{sql_connection} = 1;
@@ -2335,19 +2369,22 @@ sub check_setup {
 
                 if (
                     test_database_has_all_needed_tables(
-                        $q->param('backend'),          $q->param('sql_server'),
-                        $self->sql_port_from_params(), $q->param('sql_database'),
-                        $q->param('sql_username'),     $q->param('sql_password'),
+                        $ip->{-backend},      $ip->{-sql_server},   $self->sql_port_from_params(),
+                        $ip->{-sql_database}, $ip->{-sql_username}, $ip->{-sql_password},
                     ) == 1
                   )
                 {
-                    if ( $q->param('install_type') eq 'install' ) {
+                    if ( $ip->{-install_type} eq 'install' ) {
                         $errors->{sql_table_populated} = 1;
                     }
                     else {
                         # else, no problemo, right?
                         $errors->{sql_table_populated} = 0;
-                        $q->param( 'skip_configure_SQL', 1 );
+                        $q->param( 'skip_configure_SQL', 1 );    # eeeeeeeh.
+
+                        $ip->{-skip_configure_SQL} = 1;
+                        $self->param( 'install_params', $ip );    # updating
+
                     }
                 }
                 else {
@@ -2356,15 +2393,15 @@ sub check_setup {
 
             }
         }
-        my $install_dada_files_dir_at = $self->install_dada_files_dir_at_from_params();
+        my $install_dada_files_dir_at = $install_dada_files_loc;
         if ( test_dada_files_dir_no_exists($install_dada_files_dir_at) == 1 ) {
             $errors->{dada_files_dir_exists} = 0;
         }
         else {
 
             if (
-                $q->param('if_dada_files_already_exists') eq 'keep_dir_create_new_config'
-                && $self->test_complete_dada_files_dir_structure_exists( $self->install_dada_files_dir_at_from_params() ) ==
+                   $ip->{-if_dada_files_already_exists} eq 'keep_dir_create_new_config'
+                && $self->test_complete_dada_files_dir_structure_exists($install_dada_files_loc) ==
                 1    # This still has to check out,
               )
             {
@@ -2377,8 +2414,8 @@ sub check_setup {
         }
 
         if (
-            $q->param('if_dada_files_already_exists') eq 'keep_dir_create_new_config'
-            && $self->test_complete_dada_files_dir_structure_exists( $self->install_dada_files_dir_at_from_params() ) ==
+               $ip->{-if_dada_files_already_exists} eq 'keep_dir_create_new_config'
+            && $self->test_complete_dada_files_dir_structure_exists($install_dada_files_loc) ==
             1    # This still has to check out,
           )
         {
@@ -2396,7 +2433,7 @@ sub check_setup {
             }
         }
 
-        if ( $self->test_can_create_dada_mail_support_files_dir( $q->param('support_files_dir_path') ) == 0 ) {
+        if ( $self->test_can_create_dada_mail_support_files_dir( $ip->{-support_files_dir_path} ) == 0 ) {
             $errors->{create_dada_mail_support_files_dir} = 1;
         }
         else {
@@ -2411,7 +2448,7 @@ sub check_setup {
 
             # I guess there's exceptions to every rule:
             if (   $_ eq 'sql_table_populated'
-                && $q->param('skip_configure_SQL') == 1 )
+                && $ip->{-skip_configure_SQL} == 1 )
             {
 
                 # Skip!
@@ -2431,27 +2468,36 @@ sub check_setup {
 
 sub install_dada_files_dir_at_from_params {
 
-    my $self = shift;
-    my $q    = $self->query();
+    # this is probably now horribly broken.
+    my $self   = shift;
+    my ($args) = @_;
+    my $ip     = $self->param('install_params');
 
-    # None of the calls to this sub pass any variables. ?
+    my $r;
+
+    require Data::Dumper;
+    $r .= 'args: ' . Data::Dumper::Dumper($args);
+
     my $install_dada_files_dir_at = undef;
 
-    if ( $q->param('install_type') eq 'upgrade' ) {
-        $install_dada_files_dir_at = $q->param('current_dada_files_parent_location');
+    if ( $args->{-install_type} eq 'upgrade' ) {
+        $install_dada_files_dir_at = $args->{-current_dada_files_parent_location};
     }
     else {
-
-        if ( $q->param('dada_files_dir_setup') eq 'auto' ) {
+        if ( $args->{-dada_files_dir_setup} eq 'auto' ) {
             $install_dada_files_dir_at = $self->auto_dada_files_dir();
         }
         else {
-            $install_dada_files_dir_at = $q->param('dada_files_loc');
+            $install_dada_files_dir_at = $args->{-dada_files_loc};
         }
     }
 
+    warn "\n" . '$install_dada_files_dir_at ' . $install_dada_files_dir_at;
+
     # Take off that last slash - goodness, will that annoy me:
     $install_dada_files_dir_at =~ s/\/$//;
+
+    #die $r;
     return $install_dada_files_dir_at;
 
 }
@@ -2459,9 +2505,10 @@ sub install_dada_files_dir_at_from_params {
 sub edit_config_file_for_plugins {
 
     my $self = shift;
-    my $ip = $self->param('install_params'); 
+    my $ip   = $self->param('install_params');
 
-    my $dot_configs_file_loc =  make_safer( $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.configs/.dada_config' );
+    my $dot_configs_file_loc =
+      make_safer( $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.configs/.dada_config' );
 
     my $config_file = slurp($dot_configs_file_loc);
 
@@ -2484,11 +2531,12 @@ sub edit_config_file_for_plugins {
                 }
             }
             else {
-                if ( $ip->{'-install_' . $plugins_data} == 1 ) {
+                if ( $ip->{ '-install_' . $plugins_data } == 1 ) {
                     my $orig_code        = $plugins_extensions->{$plugins_data}->{code};
                     my $uncommented_code = uncomment_admin_menu_entry($orig_code);
                     $orig_code = quotemeta($orig_code);
                     $config_file =~ s/$orig_code/$uncommented_code/;
+
                     #my $installer_successful =
                     #  installer_chmod( $DADA::Config::DIR_CHMOD,
                     #    make_safer( $plugins_extensions->{$plugins_data}->{loc} ) );
@@ -2518,8 +2566,8 @@ sub edit_config_file_for_plugins {
 sub setup_support_files_dir {
 
     my $self = shift;
-    my $ip = $self->param('install_params'); 
-    
+    my $ip   = $self->param('install_params');
+
     my $support_files_dir_path = $ip->{-support_files_dir_path};
     if ( !-d $support_files_dir_path ) {
         croak "Can't install set up Support Files Directory: '$support_files_dir_path' does not exist!";
@@ -2542,62 +2590,61 @@ sub setup_support_files_dir {
 }
 
 sub setup_fastcgi {
-    
+
     my $self = shift;
-    my $ip = $self->param('install_params'); 
-    
-    my $cgi_enabled    = '../mail.cgi'; 
-    my $cgi_disabled   = '../mail.cgi-disabled'; 
-    my $fcgi_enabled   = '../mail.fcgi'; 
-    my $fcgi_disabled  = '../mail.fcgi-disabled';     
-    
+    my $ip   = $self->param('install_params');
+
+    my $cgi_enabled   = '../mail.cgi';
+    my $cgi_disabled  = '../mail.cgi-disabled';
+    my $fcgi_enabled  = '../mail.fcgi';
+    my $fcgi_disabled = '../mail.fcgi-disabled';
+
     my $install = $ip->{-fastcgi_options_run_under_fastcgi} || 0;
     if ( $install != 1 ) {
-        if(-e $fcgi_enabled) { 
-            installer_chmod( 0644, make_safer($fcgi_enabled));    
-            installer_mv(make_safer($fcgi_enabled), make_safer($fcgi_disabled)); 
+        if ( -e $fcgi_enabled ) {
+            installer_chmod( 0644, make_safer($fcgi_enabled) );
+            installer_mv( make_safer($fcgi_enabled), make_safer($fcgi_disabled) );
         }
-        if(-e $cgi_disabled){ 
-            installer_mv(make_safer($cgi_disabled), make_safer($cgi_enabled)); 
-            installer_chmod( 0755, make_safer($cgi_enabled))    
+        if ( -e $cgi_disabled ) {
+            installer_mv( make_safer($cgi_disabled), make_safer($cgi_enabled) );
+            installer_chmod( 0755, make_safer($cgi_enabled) );
         }
         return 1;
     }
-    else { 
-        # right. 
-        if(-e $fcgi_enabled) { 
-            installer_chmod( 0755, make_safer($fcgi_enabled));
-            if($cgi_disabled){ 
-                installer_chmod( 0644, make_safer($cgi_disabled));
+    else {
+        # right.
+        if ( -e $fcgi_enabled ) {
+            installer_chmod( 0755, make_safer($fcgi_enabled) );
+            if ($cgi_disabled) {
+                installer_chmod( 0644, make_safer($cgi_disabled) );
             }
-            return 1; 
+            return 1;
         }
-        else { 
-            if(-e $cgi_enabled){
+        else {
+            if ( -e $cgi_enabled ) {
                 installer_chmod( 0644, $cgi_enabled );
-                installer_mv($cgi_enabled, $cgi_disabled); 
+                installer_mv( $cgi_enabled, $cgi_disabled );
             }
-    
-            if(-e $fcgi_disabled) { 
-                installer_mv($fcgi_disabled, $fcgi_enabled); 
+
+            if ( -e $fcgi_disabled ) {
+                installer_mv( $fcgi_disabled, $fcgi_enabled );
                 installer_chmod( 0755, $fcgi_enabled );
             }
-            else { 
-                #die 'Can\'t find fcgi mail script at: ../mail.fcgi-disabled'; 
+            else {
+                #die 'Can\'t find fcgi mail script at: ../mail.fcgi-disabled';
             }
         }
-        $self->create_htaccess_fastcgi('../'); 
+        $self->create_htaccess_fastcgi('../');
     }
 }
-
 
 sub install_wysiwyg_editors {
 
     my $self = shift;
-    my $ip = $self->param('install_params'); 
+    my $ip   = $self->param('install_params');
 
     my $install = $ip->{-install_wysiwyg_editors} || 0;
-    
+
     if ( $install != 1 ) {
         return 1;
     }
@@ -2623,26 +2670,25 @@ sub install_wysiwyg_editors {
     if ( $ip->{-wysiwyg_editor_install_ckeditor} == 1 ) {
         $self->install_and_configure_ckeditor();
         $tmpl_vars{i_ckeditor_enabled} = 1;
-        $tmpl_vars{i_ckeditor_url} = $ip->{-support_files_dir_url} . '/' . $Support_Files_Dir_Name . '/ckeditor';
+        $tmpl_vars{i_ckeditor_url}     = $ip->{-support_files_dir_url} . '/' . $Support_Files_Dir_Name . '/ckeditor';
     }
     if ( $ip->{-wysiwyg_editor_install_tiny_mce} == 1 ) {
         $self->install_and_configure_tiny_mce();
         $tmpl_vars{i_tiny_mce_enabled} = 1;
-        $tmpl_vars{i_tiny_mce_url} = $ip->{-support_files_dir_url} . '/' . $Support_Files_Dir_Name . '/tinymce';
+        $tmpl_vars{i_tiny_mce_url}     = $ip->{-support_files_dir_url} . '/' . $Support_Files_Dir_Name . '/tinymce';
     }
 
     if ( $ip->{-file_browser_install} eq 'kcfinder' ) {
         $self->install_and_configure_kcfinder();
         $tmpl_vars{i_kcfinder_enabled} = 1;
-        $tmpl_vars{i_kcfinder_url} = $ip->{-support_files_dir_url} . '/' . $Support_Files_Dir_Name . '/kcfinder';
+        $tmpl_vars{i_kcfinder_url}     = $ip->{-support_files_dir_url} . '/' . $Support_Files_Dir_Name . '/kcfinder';
 
         my $upload_dir = make_safer( $support_files_dir_path . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir );
         $tmpl_vars{i_kcfinder_upload_dir} = $upload_dir;
         $tmpl_vars{i_kcfinder_upload_url} =
           $ip->{-support_files_dir_url} . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir;
 
-        $tmpl_vars{i_session_dir} =
-          $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.tmp/php_sessions';
+        $tmpl_vars{i_session_dir} = $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.tmp/php_sessions';
 
         if ( !-d $upload_dir ) {
 
@@ -2681,7 +2727,7 @@ sub install_wysiwyg_editors {
     my $wysiwyg_options_snippet = DADA::Template::Widgets::screen(
         {
             -screen => 'wysiwyg_options_snippet.tmpl',
-            -vars   => { %tmpl_vars }
+            -vars   => {%tmpl_vars}
         }
     );
 
@@ -2741,7 +2787,7 @@ sub install_missing_CPAN_modules {
 sub install_and_configure_ckeditor {
 
     my $self = shift;
-    my $ip = $self->param('install_params'); 
+    my $ip   = $self->param('install_params');
 
     my $install_path   = $ip->{-support_files_dir_path} . '/' . $Support_Files_Dir_Name;
     my $source_package = make_safer('../extras/packages/ckeditor');
@@ -2755,7 +2801,7 @@ sub install_and_configure_ckeditor {
 sub install_and_configure_tiny_mce {
 
     my $self = shift;
-    my $ip = $self->param('install_params'); 
+    my $ip   = $self->param('install_params');
 
     my $install_path   = $ip->{-support_files_dir_path} . '/' . $Support_Files_Dir_Name;
     my $source_package = make_safer('../extras/packages/tinymce');
@@ -2769,7 +2815,7 @@ sub install_and_configure_tiny_mce {
 sub install_and_configure_kcfinder {
 
     my $self = shift;
-    my $ip = $self->param('install_params'); 
+    my $ip   = $self->param('install_params');
 
     my $install_path   = $ip->{-support_files_dir_path} . '/' . $Support_Files_Dir_Name;
     my $source_package = make_safer('../extras/packages/kcfinder');
@@ -2875,8 +2921,8 @@ sub install_and_configure_kcfinder {
 sub install_and_configure_core5_filemanager {
 
     my $self = shift;
-    my $ip = $self->param('install_params'); 
-    
+    my $ip   = $self->param('install_params');
+
     my $install_path   = $ip->{-support_files_dir_path} . '/' . $Support_Files_Dir_Name;
     my $source_package = make_safer('../extras/packages/core5_filemanager');
     my $target_loc     = make_safer( $install_path . '/core5_filemanager' );
@@ -2953,10 +2999,9 @@ sub install_and_configure_core5_filemanager {
 
     # pl config:
 
-    my $uploads_directory =
-      $ip->{-support_files_dir_path} . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir;
-    my $url_path = $uploads_directory;
-    my $doc_root = $ENV{DOCUMENT_ROOT};
+    my $uploads_directory = $ip->{-support_files_dir_path} . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir;
+    my $url_path          = $uploads_directory;
+    my $doc_root          = $ENV{DOCUMENT_ROOT};
     $url_path =~ s/^$doc_root//;    # We use $url_path for the js config, too.
 
     my $core5_filemanager_config_pl = DADA::Template::Widgets::screen(
@@ -2982,7 +3027,7 @@ sub install_and_configure_core5_filemanager {
         {
             -screen => 'core5_filemanager_config_js.tmpl',
             -vars   => {
-                fileRoot => $url_path . '/',                            # slash on the end, there.
+                fileRoot => $url_path . '/',                       # slash on the end, there.
                 lang     => $ip->{-core5_filemanager_connector},
             }
         }
@@ -3046,15 +3091,12 @@ sub program_url_guess {
 sub support_files_dir_path_guess {
 
     my $self = shift;
-    my $q    = $self->query();
-
     return $ENV{DOCUMENT_ROOT};
 }
 
 sub support_files_dir_url_guess {
     my $self = shift;
     my $q    = $self->query();
-
     return $q->url( -base => 1 );
 }
 
@@ -3086,7 +3128,7 @@ sub hack_program_url {
 
 sub test_can_create_dada_files_dir {
 
-    my $self = shift; 
+    my $self                  = shift;
     my $dada_files_parent_dir = shift;
 
     # blank?!
@@ -3113,7 +3155,7 @@ sub test_can_create_dada_files_dir {
 
 sub test_can_create_dada_mail_support_files_dir {
 
-    my $self = shift; 
+    my $self                     = shift;
     my $support_files_parent_dir = shift;
 
     # blank?!
@@ -3298,11 +3340,12 @@ sub test_dada_files_dir_no_exists {
 }
 
 sub test_complete_dada_files_dir_structure_exists {
-    
-    my $self = shift; 
-    
+
+    my $self = shift;
+
     my $dada_files_dir = shift;
 
+    
     if ( -e $dada_files_dir . '/' . $Dada_Files_Dir_Name ) {
         for (
             qw(
@@ -3328,6 +3371,7 @@ sub test_complete_dada_files_dir_structure_exists {
     }
 
     if ( -e $dada_files_dir . '/' . $Dada_Files_Dir_Name . '/.configs/.dada_config' ) {
+
         # Seems to be all there!
         return 1;
     }
@@ -3615,36 +3659,34 @@ sub cgi_test_CAPTCHA_reCAPTCHA {
 
 }
 
-
 sub cgi_test_FastCGI {
     my $self = shift;
     my $q    = $self->query();
-    
-     my $errors  = undef;
-     
-     eval {
-         require CGI::Fast;
-         my $fastcgi_q = new CGI::Fast;
-     };
-     if ($@) {
-         $errors = $@;
-     }
-     my $r;
 
-     require DADA::Template::Widgets;
-     $r = DADA::Template::Widgets::screen(
-         {
-             -screen => 'fast_cgi_test_widget.tmpl',
-             -expr   => 1,
-             -vars   => {
-                 errors                       => $errors,
-                 Self_URL                     => $Self_URL,
-             }
-         }
-     );
-     return $r;
+    my $errors = undef;
+
+    eval {
+        require CGI::Fast;
+        my $fastcgi_q = new CGI::Fast;
+    };
+    if ($@) {
+        $errors = $@;
+    }
+    my $r;
+
+    require DADA::Template::Widgets;
+    $r = DADA::Template::Widgets::screen(
+        {
+            -screen => 'fast_cgi_test_widget.tmpl',
+            -expr   => 1,
+            -vars   => {
+                errors   => $errors,
+                Self_URL => $Self_URL,
+            }
+        }
+    );
+    return $r;
 }
-
 
 sub cgi_test_captcha_reCAPTCHA_Mailhide {
 
@@ -3757,8 +3799,8 @@ sub test_sql_connection {
 
 sub test_can_read_config_dot_pm {
 
-    my $self = shift; 
-    
+    my $self = shift;
+
     eval {
         my $config = slurp($Config_LOC);
         if ( length($config) > 0 ) {
@@ -3776,8 +3818,8 @@ sub test_can_read_config_dot_pm {
 }
 
 sub test_can_write_config_dot_pm {
-    my $self = shift; 
-    
+    my $self = shift;
+
     if ( -w $Config_LOC ) {
         return 0;
     }
@@ -3888,7 +3930,9 @@ sub move_installer_dir_ajax {
     }
     else {
         $r .=
-'<ul><li><p>installer directory moved to <em>' . $new_dir_name  . '</em>,</p></li><li> <p>Installer disabled!</p></li></ul>';
+            '<ul><li><p>installer directory moved to <em>'
+          . $new_dir_name
+          . '</em>,</p></li><li> <p>Installer disabled!</p></li></ul>';
     }
     $r .= "</fieldset>";
     return $r;
@@ -4045,18 +4089,18 @@ sub installer_chmod {
 }
 
 sub installer_mkdir {
-    
-    my $self = shift; 
-    
+
+    my $self = shift;
+
     my ( $dir, $chmod ) = @_;
     my $r = mkdir( $dir, $chmod );
     return $r;
 }
 
 sub installer_rmdir {
-    my $self = shift; 
-    my $dir = shift;
-    my $r   = rmdir($dir);
+    my $self = shift;
+    my $dir  = shift;
+    my $r    = rmdir($dir);
     return $r;
 }
 
@@ -4084,16 +4128,13 @@ sub backup_dir {
 
 sub auto_dada_files_dir {
     my $self = shift;
-    my $q    = $self->query();
-
     return $self->guess_home_dir();
 }
 
-
 sub create_htaccess_fastcgi {
-    
-    my $self = shift; 
-    
+
+    my $self = shift;
+
     my $loc           = shift;
     my $htaccess_file = make_safer( $loc . '/.htaccess' );
     open my $htaccess, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $htaccess_file or croak $!;
@@ -4103,9 +4144,9 @@ sub create_htaccess_fastcgi {
 }
 
 sub create_htaccess_deny_from_all_file {
-    
-    my $self = shift; 
-    
+
+    my $self = shift;
+
     my $loc           = shift;
     my $htaccess_file = make_safer( $loc . '/.htaccess' );
     open my $htaccess, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $htaccess_file or croak $!;
@@ -4127,7 +4168,6 @@ AddType text/plain .php .phtml .php3 .pl .cgi| or croak $!;
 sub guess_home_dir {
 
     my $self = shift;
-    my $q    = $self->query();
 
     my $home_dir = undef;
     eval { require File::HomeDir; };
