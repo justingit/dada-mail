@@ -948,7 +948,7 @@ sub scheduled_task {
 }
 
 sub start {
-    
+    reset_globals();
     my $list_to_run = shift || undef; 
     my $r;
 
@@ -1056,16 +1056,12 @@ sub start {
 
             $r .= "\t* Message Size is below both Soft and Hard Max Sizes.\n\n";
 
-            eval {
-
-                # The below line is just for testing purposes...
-                # die "aaaaaaarrrrgggghhhhh!!!";
+            try {
 
                 my ( $status, $errors, $validate_r ) = validate_msg( $ls, \$full_msg );
                 $r .= $validate_r; 
                 
                 if ($status) {
-
                     if ( $ls->param('send_received_msg') == 1 ) {
                         notify_of_delivery(
                             {
@@ -1080,26 +1076,18 @@ sub start {
                             -msg => \$full_msg,
                         }
                     );
-
                 }
                 else {
-
                     $r .= "\tMessage did not pass verification.\n";
-
                     $r .= handle_errors( $ls, $errors, $full_msg );
-
                 }
-
                 append_message_to_file( $ls, $full_msg );
 
+            } catch { 
+                warn '$r ' . $r; 
+                warn "bridge.cgi - irrecoverable error processing message. Skipping message (sorry!): $_";
+                $r .= "bridge.cgi - irrecoverable error processing message. Skipping message (sorry!): $_";
             };
-
-            if ($@) {
-
-                warn "bridge.cgi - irrecoverable error processing message. Skipping message (sorry!): $@";
-                $r .= "bridge.cgi - irrecoverable error processing message. Skipping message (sorry!): $@";
-
-            }
 
         }    # MSG_QUEUE
 
@@ -1160,6 +1148,9 @@ sub start {
         $r .= $digest->send_digest();
 
     }    # DIGEST_QUEUE
+
+
+
 
     return ( {}, $r );
 }
@@ -1576,17 +1567,22 @@ sub validate_msg {
     }
 
     my $entity;
-    #$msg = safely_encode($msg);
+    $msg = safely_encode($msg);
+    #warn '$msg:' . $msg; 
 
     try {
         $entity = $parser->parse_data($msg); 
+        #warn 'still here...'; 
     } catch { 
         $r .= "\t\tProblems with parsing message: $_\n";
-        $r .= '$msg:' . $msg; 
+        warn "\t\tProblems with parsing message: $_\n";
+        #$r .= '$msg:' . $msg; 
         $errors->{invalid_msg} = 1;
         return ( 0, $errors, $r );        
     };
     
+    #warn '$entity->as_string' . $entity->as_string; 
+        
     # These checks make sure that multiple From: headers and addresses don't exist
     if ( $Plugin_Config->{Check_Multiple_From_Addresses} == 1 ) {
         try {
@@ -2814,12 +2810,12 @@ sub handle_errors {
             $entity->head->replace( 'Message-ID', $fake_message_id );
 
             warn
-    "bridge.cgi - message has no Message-Id header!...? Creating FAKE Message-Id ($fake_message_id) , to avoid any conflicts...";
+    "bridge - message has no Message-Id header!...? Creating FAKE Message-Id ($fake_message_id) , to avoid any conflicts...";
 
         }
 
         warn
-    "bridge.cgi rejecting sending of received message - \tFrom: $from\tSubject: $subject\tMessage-ID: $message_id\tReasons: $reasons";
+    "bridge rejecting sending of received message - \tFrom: $from\tSubject: $subject\tMessage-ID: $message_id\tReasons: $reasons";
 
         $r .= "\tReasons:\n";
 
@@ -3193,7 +3189,8 @@ sub inject {
             my ( $status, $errors, $report ) = validate_msg( $ls, \$msg );
             $r .= $report;
             require Data::Dumper; 
-          #  $r .= 'Errors: ' . Data::Dumper::Dumper($errors); 
+            $r .= 'Errors: ' . Data::Dumper::Dumper($errors); 
+            $r .= 'Msg: ' . $msg; 
             if ($status) {
                 if ( $ls->param('send_received_msg') == 1 ) {
                     notify_of_delivery(
@@ -3229,8 +3226,9 @@ sub inject {
             }
 
         } catch { 
-            warn "bridge.cgi - irrecoverable error processing message. Skipping message (sorry!): $@";
-            $r .= "bridge.cgi - irrecoverable error processing message. Skipping message (sorry!): $@";
+            warn "bridge - irrecoverable error processing message. Skipping message (sorry!): $_";
+            
+            $r .= "bridge - irrecoverable error processing message. Skipping message (sorry!): $_";
             return ( 0, { irrecoverable_error => 1 }, $r );
 
         
@@ -3848,7 +3846,7 @@ L<http://dadamailproject.com/purchase/pro.html>
 
 =head1 Obtaining The Plugin
 
-Bridge is located in the, I<dada/plugins> directory of the Dada Mail distribution, under the name: I<bridge.cgi>
+Bridge is located in the, I<dada/plugins> directory of the Dada Mail distribution, under the name: I<bridge>
 
 =head1 Installation 
 
@@ -3893,7 +3891,7 @@ Toggle the radio buttons labeled, B<Setup As> to, B<Email Forward>. An I<example
 
 Create a new Mail Forward, and use the example shown as a starting point for the piped command. Here's an example, 
 
- |/home/youraccount/public_html/cgi-bin/dada/plugins/bridge.cgi --inject --list yourlist
+ |/home/youraccount/public_html/cgi-bin/dada/mail.cgi --inject --list yourlist
 
 If you're setting the command in cPanel (or something similar) and it asks you to, "I<enter a path relative to your home directory>", you may need to simply remove the "pipe" B<|> and the path to your home directory I</home/youraccount>, plugging in this, instead: 
 

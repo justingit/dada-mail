@@ -3279,7 +3279,7 @@ sub sending_preferences_test {
     $q->param( 'no_redirect', 1 );
 
     # Saves the params passed
-    sending_preferences();
+    $self->sending_preferences();
 
     require DADA::Mail::Send;
     require DADA::MailingList::Settings;
