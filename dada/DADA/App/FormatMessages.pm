@@ -926,24 +926,15 @@ sub _format_headers {
 		
     }
 	
-	# Set Sender: header, 
+	#Sender Header
 	if ( $entity->head->count('Sender') ) {
-    
+        $entity->head->delete('Sender');
+    }
+    if($self->{ls}->param('group_list')  == 1) { 
+            $entity->head->add( 'Sender', $self->{ls}->param('discussion_pop_email'));
     }
     else { 
-        #$entity->head->delete('Sender');
-		my    $og_from = $entity->head->get('From', 0);
-		chomp($og_from);
-      if($og_from) { 
-          require Email::Address; 
-    	   my $a = ( Email::Address->parse($og_from) )[0]->address;
-            $entity->head->add('Sender', $a);
-            undef $og_from; 
-        }
-        else { 
-            $entity->head->add('Sender', $self->{ls}->param('list_owner_email'));
-            
-        }
+        $entity->head->add( 'Sender', $self->{ls}->param('list_owner_email'));            
     }
     
     #warn '$self->mass_mailing ' . $self->mass_mailing; 
