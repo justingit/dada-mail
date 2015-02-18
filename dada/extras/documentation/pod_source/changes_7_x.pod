@@ -27,7 +27,7 @@ With B<Schedules>, any draft message you create can now be scheduled to be sent 
 
 To create a new Schedule, first go to the Send a Message, or Send a Webpage screen. Write your message! Then, click the, "B<Schedule...>" button. Tick, "Activate" and set the time in the future you would like your message to go out. Click, "Create Schedule" and you're done!
 
-Once a message has been scheduled, you may edit the message (and even reuse the schedule, if you would like!). In the list control panel, Go to: I<Mass Mailing - Drafts/Stationary/Schedules>. Click the B<Schedules> tab to view all your schedules. 
+Once a message has been scheduled, you may edit the message (and even reuse the schedule, if you would like!). In the list control panel, Go to: I<Mass Mailing - Drafts/Stationery/Schedules>. Click the B<Schedules> tab to view all your schedules. 
 
 Important: make sure the Mailing Monitor's cronjob is also set up. (I<It should already be to make sure mass mailings go smoothly.>)
 
@@ -188,14 +188,14 @@ L<https://github.com/justingit/dada-mail/issues/451>
 
 =head2 Features 7.1.0
 
-=head3 Stationary
+=head3 Stationery
 
 Draft Messages were introduced in Dada Mail recently, allowing one to save an unfinished message to be sent at a later time. 
 Many users also wanted the ability to have a message design they could use to start additional messages, and be kept around, until it was no longer needed (a draft would be removed, once the message was sent out).
 
-Similar to Message Drafts, Dada Mail now supports B<Stationary>. 
-Stationary are messages you can use as a starter for mailing list messages you would like to send out. 
-Unlike a draft message, Stationary will be saved to be reused for as many times as you'd like. 
+Similar to Message Drafts, Dada Mail now supports B<Stationery>. 
+Stationery are messages you can use as a starter for mailing list messages you would like to send out. 
+Unlike a draft message, Stationery will be saved to be reused for as many times as you'd like. 
 
 =head3 Tracker: Update Profiles w/Geo IP information 
 
@@ -239,7 +239,7 @@ L<https://github.com/justingit/dada-mail/issues/449>
 
 =head4 default_mass_mailing_messages.cgi
 
-The B<default_mass_mailing_messages.cgi> plugin has similar features to the Stationary feature. 
+The B<default_mass_mailing_messages.cgi> plugin has similar features to the Stationery feature. 
 As such, the plugin will be deprecated in a future version of Dada Mail, but not before the B<v7.2.0> release. 
 
 =head2 7.0.5

@@ -1,6 +1,6 @@
 <!-- begin drafts.tmpl -->
 
-<!-- tmpl_set name="title" value="Mass Mailing &#187; Drafts/Stationary/Schedules" -->
+<!-- tmpl_set name="title" value="Mass Mailing &#187; Drafts/Stationery/Schedules" -->
 
 <div id="screentitle"> 
 	<div id="screentitlepadding">
@@ -35,7 +35,7 @@
 		</li>
 		<li>
 			<a href="#stationary">
-				Stationary (<!-- tmpl_var num_stationary default="0" -->)
+				Stationery (<!-- tmpl_var num_stationary default="0" -->)
 			</a>
 		</li>
 		<li>
@@ -117,14 +117,14 @@
 
         			<td>
         				<p>
-    						<a href="#" class="restore_from_draft_link" data-target="restore_form_<!-- tmpl_var id -->">
+    						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->">
     							<!-- tmpl_var Subject escape="HTML" -->
     						</a>
         				</p> 
         			</td>
         			<td>
         				<p>
-        					<a href="#" class="restore_from_draft_link" data-target="restore_form_<!-- tmpl_var id -->">
+        					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->">
         						<!-- tmpl_var last_modified_timestamp --> 
         					</a>
         				</p> 
@@ -176,7 +176,7 @@
 	<div id="stationary">
 	    <p class="alert">
             <strong>
-            Stationary
+            Stationery
             </strong> 
             are messages that you can use to begin writing new mailing list messages with. They'll 
             stay around, so that you'll be able to continue to use them as many times as you would like.
@@ -255,21 +255,21 @@
                         <input 
                             type="button" 
                             name=""
-                            value="New Draft From Stationary" 
+                            value="New Draft From Stationery" 
                             class="processing" 
                             onClick="window.location='<!-- tmpl_var S_PROGRAM_URL -->?flavor=create_from_stationary&screen=<!-- tmpl_var screen escape="HTML" -->&draft_id=<!-- tmpl_var id -->'"
                          />  
                     </td>
         			<td>
         				<p>
-    						<a href="#" class="restore_from_draft_link" data-target="restore_form_<!-- tmpl_var id -->">
+    						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_role=stationary&draft_id=<!-- tmpl_var id -->" >
     							<!-- tmpl_var Subject escape="HTML" -->
     						</a>
         				</p> 
         			</td>
         			<td>
         				<p>
-        					<a href="#" class="restore_from_draft_link" data-target="restore_form_<!-- tmpl_var id -->">
+        					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_role=stationary&draft_id=<!-- tmpl_var id -->">
         						<!-- tmpl_var last_modified_timestamp --> 
         					</a>
         				</p> 
@@ -389,14 +389,14 @@
                 			</td>
                 			<td>
                 				<p>
-            						<a href="#" class="restore_from_draft_link" data-target="restore_form_<!-- tmpl_var id -->">
+            						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule">
             							<!-- tmpl_var Subject escape="HTML" -->
             						</a>
                 				</p> 
                 			</td>
                 			<td>
                 				<p>
-                					<a href="#" class="restore_from_draft_link" data-target="restore_form_<!-- tmpl_var id -->">
+                					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule">
                 						<!-- tmpl_var last_modified_timestamp --> 
                 					</a>
                 				</p> 
@@ -419,8 +419,6 @@
                 					    class="processing" 
                 					    onClick="window.location='<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule'" 
                 					  />  
-             						
-             						
                 				</p> 
                 			</td>
 
@@ -508,14 +506,14 @@
                     			</td>
                     			<td>
                     				<p>
-                						<a href="#" class="restore_from_draft_link" data-target="restore_form_<!-- tmpl_var id -->">
+                						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule">
                 							<!-- tmpl_var Subject escape="HTML" -->
                 						</a>
                     				</p> 
                     			</td>
                     			<td>
                     				<p>
-                    					<a href="#" class="restore_from_draft_link" data-target="restore_form_<!-- tmpl_var id -->">
+                    					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule">
                     						<!-- tmpl_var last_modified_timestamp --> 
                     					</a>
                     				</p> 

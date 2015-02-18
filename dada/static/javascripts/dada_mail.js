@@ -366,7 +366,7 @@ $(document).ready(function() {
 			
 			var confirm_msg = '';
 			if($("#draft_role").val() == 'stationary') {
-				confirm_msg = "Delete Stationary Message?";
+				confirm_msg = "Delete Stationery Message?";
 			}
 			else if($("#draft_role").val() == 'schedule') {
 				confirm_msg = "Remove Schedule?";
@@ -397,11 +397,6 @@ $(document).ready(function() {
 	if ($("#drafts_screen").length) {
 		
 		$("#tabs").tabs({ heightStyle: "auto" });
-		
-		$("body").on("click", ".restore_from_draft_link", function(event) {
-			event.preventDefault();
-			$("#" + $(this).attr("data-target")).submit();
-		}); 
 		
 		$("body").on("submit", ".delete_draft_form", function(event) {
 			if (confirm('Delete ' + $(this).attr('data-draft_role') + '?')) {

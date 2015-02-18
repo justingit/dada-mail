@@ -653,7 +653,7 @@ $ADMIN_MENU //= [
             },
 
             {
-                -Title     => 'Drafts/Stationary/Schedules',
+                -Title     => 'Drafts/Stationery/Schedules',
                 -Title_URL => "$S_PROGRAM_URL?flavor=drafts",
                 -Function  => 'drafts',
                 -Activated => 1,

@@ -76,7 +76,7 @@ Scheduling Mass Mailings is support within the core of Dada Mail, although recur
 
 =head3 default_mass_mailing_messages.cgi
 
-The core of Dada Mail now supports Stationary, which allows you to set multiple messages that you can use to start a new draft. 
+The core of Dada Mail now supports Stationery, which allows you to set multiple messages that you can use to start a new draft. 
 
 =head1 TODO
 
