@@ -226,6 +226,10 @@ my @Plugin_Names = qw(
   global_config
   view_list_settings
 );
+my @Extension_Names = qw(
+    blog_index
+    multiple_subscribe
+); 
 
 # An unconfigured Dada Mail won't have these exactly handy to use.
 $DADA::Config::PROGRAM_URL   = program_url_guess();
@@ -1484,17 +1488,17 @@ sub query_params_to_install_params {
     push( @install_param_names, 'bounce_handler_' . 'Address' );
 
     for ( keys %bridge_plugin_configs ) {
-        push( @install_param_names, 'bridge' . $_ );
+        push( @install_param_names, 'bridge_' . $_ );
+    }
+
+    for (@Extension_Names) {
+        push( @install_param_names, 'install_' . $_ );
     }
 
     for (@install_param_names) {
         $ip->{ '-' . $_ } = $q->param($_);
     }
 
-    foreach (%$plugins_extensions) {
-
-        # And what's up with this?
-    }
 
     $self->param( 'install_params', $ip );
 
@@ -1992,7 +1996,16 @@ sub create_dada_config_file {
             $plugins_params->{ 'install_' . $_ } = 0;
         }
     }
-
+    my $extensions_params = {};
+    for (@Extension_Names) {
+        if ( $ip->{ '-install_' . $_ } == 1 ) {
+            $extensions_params->{ 'install_' . $_ } = 1;
+        }
+        else {
+            $extensions_params->{ 'install_' . $_ } = 0;
+        }
+    }
+    
     my $cut_tag_params = {
         cut_list_settings_default => 1,
         cut_plugin_configs        => 1,
@@ -2127,9 +2140,9 @@ sub create_dada_config_file {
         $cut_tag_params->{cut_list_settings_default} = 0;
         $cut_tag_params->{cut_plugin_configs}        = 0;
         foreach my $config ( keys %bounce_handler_plugin_configs ) {
-            if ( defined( $ip->{ '-bounce_handler_' . $config } ) && $ip->{ 'bounce_handler_' . $config } ne '' ) {
+            if ( defined( $ip->{ '-bounce_handler_' . $config } ) && $ip->{ '-bounce_handler_' . $config } ne '' ) {
                 $bounce_handler_params->{ 'bounce_handler_' . $config } =
-                  _sq( strip( $ip->{ 'bounce_handler_' . $config } ) );
+                  _sq( strip( $ip->{ '-bounce_handler_' . $config } ) );
             }
             else {
                 $bounce_handler_params->{ 'bounce_handler_' . $config } =
@@ -2138,7 +2151,7 @@ sub create_dada_config_file {
         }
 
         # This one's special:
-        $bounce_handler_params->{'bounce_handler_Address'} = strip( $ip->{bounce_handler_Address} );
+        $bounce_handler_params->{'bounce_handler_Address'} = strip( $ip->{-bounce_handler_Address} );
 
     }
     my $bridge_params = {};
@@ -2177,6 +2190,7 @@ sub create_dada_config_file {
                 %{$scheduled_jobs_params},
                 %{$fastcgi_params},
                 %{$plugins_params},
+                %{$extensions_params}, 
                 %{$profiles_params},
                 %{$security_params},
                 %{$captcha_params},
