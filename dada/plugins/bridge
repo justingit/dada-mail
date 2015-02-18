@@ -1216,12 +1216,25 @@ sub soft_max_msg_test {
 }
 
 sub inject_msg {
-
+    
+    reset_globals(); 
+    
     my ($args) = @_; 
+    require Data::Dumper; 
+    warn Data::Dumper::Dumper($args); 
+    
+    my $r; 
     
     my $filename = $args->{-filename};
-    my $run_list = $args->{-run_list};
-    my $list = $run_list;
+    
+    if(! -e $filename){ 
+        $r .= "No file found at, $filename\n"; 
+        warn $r; 
+        return $r; 
+    }
+        
+    my $run_list = $args->{-list};
+    my $list     = $run_list;
     
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $r;
@@ -1263,6 +1276,7 @@ sub inject_msg {
             $r .= $msg;
         }
     }
+    warn $r; 
     return $r;
 }
 

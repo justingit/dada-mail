@@ -10,12 +10,7 @@ Key:
 [*] Naw...
 [?] Someday
 
-[ ] Fix S_PROGRAM_URL
-[ ] Are previous Root passwords working? 
-[ ] Bounce Handler/Bridge config params are not being saved. 
-    admin_email not being set? 
-
-
+[ ] Fix S_PROGRAM_URL (still a problem?) 
 
 [ ] Things for CGI::App migration: 
 

@@ -40,12 +40,13 @@ are UPGRADING Dada Mail, you may have other options.
 	The directory that the installer should create the, ".dada_files" directory 
 	under
 
+--run_under_fastcgi
+
+    If passed, Dada Mail will be set up to run under FastCGI, rather than under CGI
+
 --backend
 
 	The backend you'd like to use. Can be set to use any of the following: 
-	
-	default
-		Uses the file system, as well as plaintext files and DB Files
 		
 	mysql 
 		Uses a MySQL database
@@ -86,12 +87,10 @@ The following plugins/extensions are supported:
 	tracker
 	bridge
 	bounce_handler
-	scheduled_mailings
-	multiple_subscribe
-	blog_index
-	default_mass_mailing_messages
 	change_list_shortname
 	password_protect_directories
+	multiple_subscribe
+	blog_index
 	
 Example: 
 
@@ -116,9 +115,10 @@ You will *also* have to pass one or more of the following:
 
 		Installs Tiny MCE
 	
-	--file_browser_install_kcfinder
-
-		Installs the KCFinder File Browser/File Uploader
+	--file_browser_install
+	
+	    pass either, "kcfinder" to install the KCFinder File Browser,
+	    or pass, "core5_filemanager" to install the Core5 Filemanager
 
 A complete example of invoking the installer with the above parameters: 
 
@@ -145,7 +145,7 @@ A complete example of invoking the installer with the above parameters:
 	--install_wysiwyg_editors \
 	--wysiwyg_editor_install_ckeditor \
 	--wysiwyg_editor_install_tiny_mce \
-	--file_browser_install_kcfinder
+	--file_browser kcfinder
 
 UPGRADING
 

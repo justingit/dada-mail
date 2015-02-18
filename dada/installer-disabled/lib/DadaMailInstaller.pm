@@ -269,6 +269,7 @@ sub setup {
         cgi_test_captcha_reCAPTCHA_Mailhide => \&cgi_test_captcha_reCAPTCHA_Mailhide,
 
         #cgi_test_FastCGI                    => \&cgi_test_FastCGI,
+        cl_run                               => \&cl_run, 
     );
     
     if ( !$ENV{GATEWAY_INTERFACE} ) {
@@ -276,17 +277,29 @@ sub setup {
         my %h = ();
         
         Getopt::Long::GetOptions(
-            \%h,                                'upgrading!',
-            'if_dada_files_already_exists=s',   'program_url=s',
-            'support_files_dir_path=s',         'support_files_dir_url=s',
-            'dada_root_pass=s',                 'dada_files_loc=s',
-            'dada_files_dir_setup=s',           'backend=s',
-            'skip_configure_SQL=s',             'sql_server=s',
-            'sql_port=s',                       'sql_database=s',
-            'sql_username=s',                   'sql_password=s',
-            'install_plugins=s@',               'install_wysiwyg_editors!',
-            'wysiwyg_editor_install_ckeditor!', 'wysiwyg_editor_install_tiny_mce!',
+            \%h,                                
+            'upgrading!',
+            'if_dada_files_already_exists=s',   
+            'program_url=s',
+            'support_files_dir_path=s',         
+            'support_files_dir_url=s',
+            'dada_root_pass=s',                 
+            'dada_files_loc=s',
+            'dada_files_dir_setup=s',           
+            'backend=s',
+            'skip_configure_SQL=s',             
+            'sql_server=s',
+            'sql_port=s',                       
+            'sql_database=s',
+            'sql_username=s',                   
+            'sql_password=s',
+            'install_plugins=s@',               
+            'install_wysiwyg_editors!',
+            'wysiwyg_editor_install_ckeditor!', 
+            'wysiwyg_editor_install_tiny_mce!',
+            'file_browser_install=s',
             'help',
+            'run_under_fastcgi!', 
         );
         
         $self->param('cl_params', \%h); 
@@ -298,25 +311,33 @@ sub setup {
 sub cl_run {
 
     my $self = shift;
-
-
-    # This'll have to be updated:
-    # 'file_browser_install_kcfinder!',
-    my $cl_params = $self-param('cl_params'); 
+    my $r; 
+    
+    my $cl_params = $self->param('cl_params'); 
 
     my $dash_opts = {};
     foreach ( keys %$cl_params ) {
         $dash_opts->{ '-' . $_ } = $cl_params->{$_};
     }
+    
+    # Shortcut, so we don't have to pass two params: 
+    if(exists($cl_params->{run_under_fastcgi})){ 
+        $dash_opts->{-configure_fastcgi}                 = 1;
+        $dash_opts->{-fastcgi_options_run_under_fastcgi} = 1;
+        delete($dash_opts->{-run_under_fastcgi}  ); 
+    }
+    
     if ( exists( $cl_params->{upgrading} ) ) {
         if ( $dash_opts->{-upgrading} == 1 ) {
-            $dash_opts->{'-install_type'}                       = 'upgrade';
-            $dash_opts->{'-if_dada_files_already_exists'}       = 'keep_dir_create_new_config';
-            $dash_opts->{'-current_dada_files_parent_location'} = $cl_params->{dada_files_loc};
-            $dash_opts->{'-dada_pass_use_orig'}                 = 1;
+            $dash_opts->{-install_type}                       = 'upgrade';
+            $dash_opts->{-if_dada_files_already_exists}       = 'keep_dir_create_new_config';
+            $dash_opts->{-current_dada_files_parent_location} = $cl_params->{dada_files_loc};
+            $dash_opts->{-dada_pass_use_orig}                 = 1;
 
             my $former_opts = $self->grab_former_config_vals();
             $dash_opts = _fold_hashref( $dash_opts, $former_opts );
+            #require Data::Dumper; 
+            #$r .= 'Previous Params: ' . Data::Dumper::Dumper($dash_opts); 
         }
     }
 
@@ -343,56 +364,56 @@ sub cl_run {
         $dash_opts->{-dada_pass_use_orig}   = 0;
         $dash_opts->{-dada_root_pass_again} = $dash_opts->{-dada_root_pass};
     }
-    $self->param( 'install_params', $dash_opts );
 
-    my ( $check_status, $check_errors ) = $self->check_setup();
-    print "Checking Setup...\n";
+    my $install_dada_files_loc = $self->install_dada_files_dir_at_from_params(
+         {
+             -install_type                       => $dash_opts->{-install_type},
+             -current_dada_files_parent_location => $dash_opts->{-current_dada_files_parent_location},
+             -dada_files_dir_setup               => $dash_opts->{-dada_files_dir_setup},
+         }
+     ); 
+     $dash_opts->{-install_dada_files_loc} = $install_dada_files_loc;
+     $self->param( 'install_params', $dash_opts );
+    
+    
+    my ( $check_status, $check_errors, $check_r ) = $self->check_setup();
+    $r .= "Checking Setup...\n";
+    $r .= $check_r; 
     if ( $check_status == 0 ) {
-        print "Problems were found:\n\n";
-        print "Uh, TODO - make these a little more intelligent:\n";
-
+        $r .= "Problems were found:\n\n";
         for ( keys %$check_errors ) {
             if ( $check_errors->{$_} == 1 ) {
-                print "Error: $_\n";
+                $r .= "Error: $_\n";
             }
         }
-        print "\n" . $Big_Pile_Of_Errors . "\n";
-        exit;
-
+        $r .= "\n" . $Big_Pile_Of_Errors . "\n";
+        return $r; 
     }
     else {
-        print "Paramaters passed look great! Configuring...\n";
-        my $install_dada_files_loc = $self->install_dada_files_dir_at_from_params(
-            {
-                -install_type                       => $dash_opts->{-install_type},
-                -current_dada_files_parent_location => $dash_opts->{-current_dada_files_parent_location},
-                -dada_files_dir_setup               => $dash_opts->{-dada_files_dir_setup},
-            }
-        );
+         $r .= "Paramaters passed look great! Configuring...\n";
+        my ( $install_log, $install_status, $install_errors ) = $self->install_dada_mail();
 
-        my ( $install_log, $install_status, $install_errors ) = install_dada_mail();
-
-        print $install_log . "\n";
+         $r .= $install_log . "\n";
         if ( $install_status == 0 ) {
-            print "Problems with configuration:\n\n";
+             $r .= "Problems with configuration:\n\n";
 
             for ( keys %$install_errors ) {
-                print $_ . " => " . $install_errors->{$_} . "\n";
+                 $r .= $_ . " => " . $install_errors->{$_} . "\n";
             }
         }
         else {
-            print "Moving and Disabling, \"installer\" directory\n";
+             $r .= "Moving and Disabling, \"installer\" directory\n";
             my ( $new_dir, $eval_errors ) = $self->move_installer_dir();
             if ($eval_errors) {
-                print "Problems with moving installer directory: \n $eval_errors\n\n";
+                 $r .= "Problems with moving installer directory: \n $eval_errors\n\n";
             }
             else {
-                print "Installer directory moved to, \"$new_dir\"\n";
-                print "Installation and Configuration Complete.\n\n\n";
+                 $r .= "Installer directory moved to, \"$new_dir\"\n";
+                 $r .= "Installation and Configuration Complete.\n\n\n";
             }
         }
-
     }
+    return $r; 
 }
 
 sub _fold_hashref {
@@ -1256,7 +1277,7 @@ sub check {
 
     $self->query_params_to_install_params();
 
-    my ( $status, $errors ) = $self->check_setup();
+    my ( $status, $errors, $check_r ) = $self->check_setup();
 
     #require Data::Dumper; 
     #die Data::Dumper::Dumper($errors); 
@@ -1379,6 +1400,8 @@ sub query_params_to_install_params {
       program_url
       dada_root_pass
       dada_root_pass_again
+      original_dada_root_pass
+      original_dada_root_pass_is_encrypted
     
       skip_configure_SQL
       support_files_dir_path
@@ -2317,7 +2340,8 @@ sub sql_port_from_params {
 sub check_setup {
 
     my $self = shift;
-
+    my $r = ''; 
+    
     my $q  = $self->query;
     my $ip = $self->param('install_params');
     #require Data::Dumper; 
@@ -2374,16 +2398,22 @@ sub check_setup {
             }
         }
 
+        $r .= '$ip->{-backend}: ' . $ip->{-backend} . "\n";
+        
         if ( $ip->{-backend} eq 'default' || $ip->{-backend} eq '' ) {
             $errors->{sql_connection} = 0;
         }
         else {
             my ( $sql_test, $sql_test_details ) = $self->test_sql_connection(
-                $ip->{-backend}, $ip->{-sql_server}, 'auto',
+                $ip->{-backend}, 
+                $ip->{-sql_server}, 
+                'auto',
                 $ip->{-sql_database},
                 $ip->{-sql_username},
                 $ip->{-sql_password},
             );
+            $r .= '$sql_test_details: ' . $sql_test_details . "\n";
+            
             if ( $sql_test == 0 ) {
                 $errors->{sql_connection} = 1;
 
@@ -2486,7 +2516,7 @@ sub check_setup {
 
     # require Data::Dumper;
     #croak Data::Dumper::Dumper( $status, $errors );
-    return ( $status, $errors );
+    return ( $status, $errors, $r );
 
 }
 
@@ -3780,7 +3810,6 @@ sub test_pop3_connection {
 sub test_sql_connection {
 
     my $self = shift;
-    my $q    = $self->query();
 
     #	use Data::Dumper;
     #	croak Dumper([@_]);
@@ -3791,12 +3820,12 @@ sub test_sql_connection {
     my $user     = shift;
     my $pass     = shift;
 
-    my $dbtype   = strip( xss_filter( $q->param('backend') ) );
-    my $dbserver = strip( xss_filter( $q->param('sql_server') ) );
-    my $port     = strip( xss_filter( $q->param('sql_port') ) );
-    my $database = strip( xss_filter( $q->param('sql_database') ) );
-    my $user     = strip( xss_filter( $q->param('sql_username') ) );
-    my $pass     = strip( xss_filter( $q->param('sql_password') ) );
+    my $dbtype   = strip( xss_filter( $dbtype ) );
+    my $dbserver = strip( xss_filter ($dbserver ) );
+    my $port     = strip( xss_filter( $port ) );
+    my $database = strip( xss_filter( $database ) );
+    my $user     = strip( xss_filter( $user ) );
+    my $pass     = strip( xss_filter( $pass ) );
 
     if ( $port eq 'auto' ) {
         if ( $dbtype =~ /mysql/i ) {

@@ -1058,14 +1058,14 @@ sub create_from_stationary {
     my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security( -cgi_obj => $q, );
     if(!$checksout){ return $error_msg; }
     
-    my $list   = $admin_list;
-    my $id     = $q->param('id');
-    my $screen = $q->param('screen');
+    my $list         = $admin_list;
+    my $draft_id     = $q->param('draft_id');
+    my $screen       = $q->param('screen');
 
     require DADA::MailingList::MessageDrafts;
     my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
     die "not enabled! " unless $d->enabled;
-    my $new_id = $d->create_from_stationary( { -id => $id, -screen => $screen } );
+    my $new_id = $d->create_from_stationary( { -id => $draft_id, -screen => $screen } );
     
     $self->header_type('redirect');
     $self->header_props( -url => 
@@ -12625,27 +12625,26 @@ sub plugins {
 }
 
 
-sub bridge_inject { 
+sub bridge_inject {
+     
     my $self = shift; 
     my $r; 
+          
+    $ENV{CGI_APP_RETURN_ONLY} = 1;
           
     if($DADA::Config::PLUGINS_ENABLED->{bridge} != 1) { 
         return 'Plugin disabled.';
     }
     my $run_list = $self->param('run_list'); 
+    
     if(!defined($run_list)){ 
-        return 'No List Defined.'; 
+        $r .= 'No List Defined.'; 
     }
     require 'plugins/bridge'; 
 
     require DADA::Security::Password;
     my $filename =
       $DADA::Config::TMP . "/tmp_file" . DADA::Security::Password::generate_rand_string() . "-" . time . ".txt";
-
-    if(! -e $filename){ 
-        $r .= "No file found at, $filename\n"; 
-    }
-    else {
         open my $tmp_file, ">", $filename or die $!;
         my $msg;
         while ( my $line = <STDIN> ) {
@@ -12654,14 +12653,14 @@ sub bridge_inject {
         close $tmp_file or die $!;
         chmod( $DADA::Config::FILE_CHMOD, $filename );
     
-        $r = bridge::inject_msg(
+        $r .= bridge::inject_msg(
             { 
                 -filename => $filename, 
                 -list     => $run_list,  
             }
         ); 
-    }
-    return $r; 
+    #warn $r; 
+    #return $r; 
 
 }
 
@@ -12670,6 +12669,7 @@ sub schedules {
     
     # Just need to document this 
     # and figure out inject stuff.... sigh. 
+
     my $self = shift; 
     my $q = $self->query; 
     
@@ -12677,7 +12677,6 @@ sub schedules {
     my $schedule    = $q->param('schedule')       || '_all'; 
     my $output_mode = $q->param('output_mode')    || '_verbose'; 
     my $for_colorbox = $q->param('for_colorbox')  || 0; 
-    
     
     my $r; 
     
