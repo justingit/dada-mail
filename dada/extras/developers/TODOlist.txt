@@ -11,7 +11,7 @@ Key:
 [?] Someday
 
 [ ] Fix S_PROGRAM_URL
-[ ] Are previous passwords working? 
+[ ] Are previous Root passwords working? 
 [ ] Bounce Handler/Bridge config params are not being saved. 
     admin_email not being set? 
 
@@ -24,7 +24,6 @@ Key:
 
 [ ] Time to ditch raw evals for try {} blocks. 
     This will most likely be an ongoing process. 
-
 
 []  list-specific upload directories, rather than a shared one 
 
