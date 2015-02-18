@@ -439,6 +439,7 @@ sub admin_cgi_manual_start_ajax {
 }
 
 sub mod {
+
     my $q = shift; 
     
     my $r = '';
@@ -453,6 +454,8 @@ sub mod {
     if ( $list ne $q->param('list') ) {
         $checksout = 0;
     }
+    
+    
 
     # We'll use the list that's passed to us.
     $list = $q->param('list');
@@ -472,12 +475,14 @@ sub mod {
         );
     }
 
+
+
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
     my $mod = SimpleModeration->new( { -List => $list } );
     my $msg_id = $q->param('msg_id');
-
-    my $valid_msg = $mod->is_moderated_msg($msg_id);
+    my ($valid_msg, $imm_r) = $mod->is_moderated_msg($msg_id);
+    $r .= $imm_r; 
 
     if ( $valid_msg == 1 ) {
         $r .= "<p>Message appears to be valid and exists</p>";
@@ -2828,10 +2833,10 @@ sub handle_errors {
         for ( keys %$errors ) {
             if ( $errors->{$_} == 1 ) {
                 if ( exists( $error_descriptions{$_} ) ) {
-                    print "\t\t* " . $error_descriptions{$_} . "\n";
+                    $r .= "\t\t* " . $error_descriptions{$_} . "\n";
                 }
                 else {
-                    print "\t\t" . $_ . "\n";
+                    $r .= "\t\t" . $_ . "\n";
                 }
             }
         }
@@ -2897,7 +2902,7 @@ sub handle_errors {
             $mod->save_msg( { -msg => $full_msg, -msg_id => $message_id } );
 
             # This is only used once...
-            $mod->moderation_msg(
+            $r .= $mod->moderation_msg(
                 {
                     -msg    => $full_msg,
                     -msg_id => $message_id,
@@ -2974,7 +2979,6 @@ sub append_message_to_file {
       or die $!;
     chmod( $DADA::Config::FILE_CHMOD, $file );
     print APPENDLOG 'From ' . $rp . "\n";
-
     print APPENDLOG $msg . "\n";
     close(APPENDLOG) or die $!;
 
@@ -3378,6 +3382,7 @@ sub moderation_msg {
     my $self = shift;
     my ($args) = @_;
     my $reply;
+    my $r; 
 
     if ( !$args->{-msg} ) {
         die "You must supply a message!";
@@ -3444,12 +3449,11 @@ sub moderation_msg {
                 push( @moderators, $moderator->{email} );
             }
         }
-        print "\tMessage being sent to Moderators and List Owner for moderation.\n"
-          if $verbose;
+        $r .= "\tMessage being sent to Moderators and List Owner for moderation.\n";
+        
     }
     else {
-        print "\tMessage being sent to List Owner for moderation.\n"
-          if $verbose;
+        $r .= "\tMessage being sent to List Owner for moderation.\n";
     }
     push( @moderators, $ls->param('list_owner_email') );    # always addressed
 
@@ -3460,8 +3464,7 @@ sub moderation_msg {
             Subject => $ls->param('moderation_msg_subject'),
             To      => $to_address,
         );
-        print "\t* Sent moderation request to $to_address\n"
-          if $verbose;
+        $r .= "\t* Sent moderation request to $to_address\n";
 
         # attach parts
         $reply->attach(
@@ -3501,6 +3504,7 @@ sub moderation_msg {
             }
         );
     }
+    return $r; 
 }
 
 sub send_moderation_msg {
@@ -3732,17 +3736,18 @@ sub is_moderated_msg {
 
     my $self   = shift;
     my $msg_id = shift;
-
-    print '<pre>';
-    print "looking for:\n";
-    print $self->mod_msg_filename($msg_id) . "\n";
-    print '</pre>';
+    my $r = ''; 
+    
+    $r .= '<pre>';
+    $r .= "looking for:\n";
+    $r .= $self->mod_msg_filename($msg_id) . "\n";
+    $r .= '</pre>';
 
     if ( -e $self->mod_msg_filename($msg_id) ) {
-        return 1;
+        return (1, $r);
     }
     else {
-        return 0;
+        return (0, $r);
     }
 
 }

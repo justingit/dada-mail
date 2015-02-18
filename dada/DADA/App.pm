@@ -803,16 +803,13 @@ sub send_email {
             -root_login => $root_login,
         }
     );
-    
-    warn 'and were back!'; 
-    
+        
     if ( exists( $headers->{-redirect_uri} ) ) {
         warn 'gotta -redirect_uri'; 
         $self->header_type('redirect');
         $self->header_props( -url => $headers->{-redirect_uri} );
     }
     else {
-        warn 'noope.'; 
         if ( keys %$headers ) {
             $self->header_props(%$headers);
         }
@@ -1738,7 +1735,8 @@ sub print_mass_mailing_log {
     require DADA::Mail::MailOut;
     my $mailout = DADA::Mail::MailOut->new( { -list => $list } );
     $mailout->associate( $id, $type );
-    return ( { -type => 'text/plain' }, $mailout->return_log );
+    $self->header_props({-type => 'text/plain'}); 
+    return $mailout->return_log;
 }
 
 sub send_url_email {
@@ -12678,7 +12676,7 @@ sub schedules {
     my $list        = $q->param('list')           || '_all'; 
     my $schedule    = $q->param('schedule')       || '_all'; 
     my $output_mode = $q->param('output_mode')    || '_verbose'; 
-    my $for_colorbox = $q->param('for_colorbox') || 0; 
+    my $for_colorbox = $q->param('for_colorbox')  || 0; 
     
     
     my $r; 
@@ -12687,31 +12685,51 @@ sub schedules {
     my $dast = DADA::App::ScheduledTasks->new; 
     
     if($schedule eq '_all') { 
-        $r .= $dast->mass_mailing_monitor($list);     
-        $r .= $dast->scheduled_mass_mailings($list); 
+        $r .= "\n\nMass Mailing Monitor:\n" . '-' x 72 . "\n\n";
+        try { 
+            $r .= $dast->mass_mailing_monitor($list);     
+        } catch  {
+            $r .= "* Error: $_\n"; 
+        };
+        
+        $r .= "\n\nMass Mailing Schedules:\n" . '-' x 72 . "\n\n";
+        try { 
+            $r .= $dast->scheduled_mass_mailings($list); 
+        } catch  {
+            $r .= "* Error: $_\n"; 
+        };
+
         undef($dast); 
     
         for my $plugin(keys %$DADA::Config::PLUGINS_ENABLED) { 
             if(exists($DADA::Config::PLUGINS_ENABLED->{$plugin})) { 
                 next if($DADA::Config::PLUGINS_ENABLED->{$plugin} != 1); 
                 next if ! exists( $DADA::Config::PLUGIN_RUNMODES->{$plugin}->{sched_run} ); 
-                
-                eval { 
+                $r .= "\n\nPlugin: $plugin\n" . '-' x 72 . "\n\n";
+                try {  
                     require 'plugins/' . $plugin; 
                     $r .= $DADA::Config::PLUGIN_RUNMODES->{$plugin}->{sched_run}->($list); 
+                } catch  {
+                    $r .= "* Error: $_\n"; 
                 };
-                if($@) { 
-                     $r .= $@; 
-                }
             }
         }
     }
     elsif($schedule eq 'mass_mailing_monitor'){ 
-        $r .= $dast->mass_mailing_monitor($list);     
-        
+        $r .= "\n\nMass Mailing Monitor:\n" . '-' x 72 . "\n\n";
+        try {  
+            $r .= $dast->mass_mailing_monitor($list);     
+        } catch  {
+            $r .= "* Error: $_\n"; 
+        };
     }
     elsif($schedule eq 'scheduled_mass_mailings'){ 
-        $r .= $dast->scheduled_mass_mailings($list); 
+        $r .= "\n\nMass Mailing Schedules:\n" . '-' x 72 . "\n\n";
+        try {  
+            $r .= $dast->scheduled_mass_mailings($list); 
+        } catch  {
+            $r .= "* Error: $_\n"; 
+        };
     }
     elsif($schedule eq 'bridge'
     ||    $schedule eq 'bounce_handler'    
@@ -12720,14 +12738,13 @@ sub schedules {
             #.... 
         }
         else { 
-            eval { 
+            $r .= "\n\nPlugin: $schedule\n" . '-' x 72 . "\n\n";
+            try {  
                 require 'plugins/' . $schedule; 
                 $r .= $DADA::Config::PLUGIN_RUNMODES->{$schedule}->{sched_run}->($list); 
-                
-            };
-            if($@) { 
-                 $r .= $@; 
-            }
+            } catch  {
+                $r .= "* Error: $_\n"; 
+            };      
         }
     }    
     else { 
