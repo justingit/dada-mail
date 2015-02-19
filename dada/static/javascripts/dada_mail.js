@@ -208,7 +208,7 @@ $(document).ready(function() {
 				admin_menu_drafts_notification();
 				$("#button_action_notice").html('&nbsp;');	
 				if(ds === true) { 
-					window.location.replace($("#s_program_url").val() + '?f=' + $("#f").val() + '&draft_id=' + $("#draft_id").val() + '&restore_from_draft=true&draft_role=schedule&done=1');
+					window.location.replace($("#s_program_url").val() + '?flavor=' + $("#f").val() + '&draft_id=' + $("#draft_id").val() + '&restore_from_draft=true&draft_role=schedule&done=1');
 				}
 				else { 
 					alert("Error Saving Schedule."); 
@@ -252,7 +252,7 @@ $(document).ready(function() {
 						});
 					}
 					else if($("#draft_role").val() == 'stationary' || $("#draft_role").val() == 'schedule' ) {
-						window.location.replace($("#s_program_url").val() + '?f=' + $("#f").val() + '&draft_id=' + $("#draft_id").val() + '&restore_from_draft=true&draft_role=' + $("#draft_role").val() + '&done=1');
+						window.location.replace($("#s_program_url").val() + '?flavor=' + $("#f").val() + '&draft_id=' + $("#draft_id").val() + '&restore_from_draft=true&draft_role=' + $("#draft_role").val() + '&done=1');
 					}
 				}
 				else if(ds === false) { 
@@ -335,7 +335,7 @@ $(document).ready(function() {
 			$("#button_action_notice").html('Working...');
 			$("#draft_role").val('schedule');
 			save_draft(false);
-			window.location.replace($("#s_program_url").val() + '?f=' + $("#f").val() + '&draft_id=' + $("#draft_id").val() + '&restore_from_draft=true&draft_role=schedule&done=1');
+			window.location.replace($("#s_program_url").val() + '?flavor=' + $("#f").val() + '&draft_id=' + $("#draft_id").val() + '&restore_from_draft=true&draft_role=schedule&done=1');
 */
 		}); 
 		
@@ -375,7 +375,7 @@ $(document).ready(function() {
 				confirm_msg = "Delete Draft Message?";
 			}
 			if (confirm(confirm_msg)) {
-				window.location.replace($("#s_program_url").val() + '?f=delete_drafts&id=' + $("#draft_id").val());
+				window.location.replace($("#s_program_url").val() + '?flavor=delete_drafts&draft_ids=' + $("#draft_id").val());
 			 }
 			else { 
 				$("#button_action_notice").html('&nbsp;');
@@ -387,10 +387,10 @@ $(document).ready(function() {
 			$.colorbox.close(); 
 		}); 
 		$("body").on("click", "#create_a_new_mass_mailing", function(event) {
-		 	window.location.replace($("#s_program_url").val() + '?f=' + $("#f").val() + '&restore_from_draft=false');
+		 	window.location.replace($("#s_program_url").val() + '?flavor=' + $("#f").val() + '&restore_from_draft=false');
 		}); 
 		$("body").on("click", "#show_all_drafts", function(event) {
-		 	window.location.replace($("#s_program_url").val() + '?f=drafts');
+		 	window.location.replace($("#s_program_url").val() + '?flavor=drafts');
 		}); 
 	}
 
@@ -409,7 +409,7 @@ $(document).ready(function() {
 	}
 	// Mail Sending >> Mailing Monitor Index
 	if ($("#sending_monitor_index").length) {
-		refreshpage(60, $("#s_program_url").val() + "?f=sending_monitor");
+		refreshpage(60, $("#s_program_url").val() + "?flavor=sending_monitor");
 	}
 
 	if ($("#sending_monitor_container").length || $("#sending_monitor_index").length) {
@@ -994,19 +994,19 @@ $(document).ready(function() {
 		
 		$("body").on("click", ".view_authorized_senders", function(event) {
 			event.preventDefault();
-			window.location.href = $("#s_program_url").val() + '?f=view_list&type=authorized_senders';
+			window.location.href = $("#s_program_url").val() + '?flavor=view_list&type=authorized_senders';
 		});
 		$("body").on("click", ".add_authorized_senders", function(event) {
 			event.preventDefault();
-			window.location.href = $("#s_program_url").val() + '?f=add&type=authorized_senders';
+			window.location.href = $("#s_program_url").val() + '?flavor=add&type=authorized_senders';
 		});
 		$("body").on("click", ".view_moderators", function(event) {
 			event.preventDefault();
-			window.location.href = $("#s_program_url").val() + '?f=view_list&type=moderators';
+			window.location.href = $("#s_program_url").val() + '?flavor=view_list&type=moderators';
 		});
 		$("body").on("click", ".add_moderators", function(event) {
 			event.preventDefault();
-			window.location.href = $("#s_program_url").val() + '?f=add&type=moderators';
+			window.location.href = $("#s_program_url").val() + '?flavor=add&type=moderators';
 		});
 		
 
@@ -1343,7 +1343,7 @@ function save_draft(async) {
 }
 
 function create_from_stationary() { 
-	window.location.replace($("#s_program_url").val() + '?f=create_from_stationary&draft_id=' + $("#draft_id").val() + '&screen=' + $("#f").val());
+	window.location.replace($("#s_program_url").val() + '?flavor=create_from_stationary&draft_id=' + $("#draft_id").val() + '&screen=' + $("#f").val());
 }
 
 function auto_save_as_draft() {
