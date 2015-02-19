@@ -375,7 +375,7 @@ $(document).ready(function() {
 				confirm_msg = "Delete Draft Message?";
 			}
 			if (confirm(confirm_msg)) {
-				window.location.replace($("#s_program_url").val() + '?f=delete_draft&id=' + $("#draft_id").val());
+				window.location.replace($("#s_program_url").val() + '?f=delete_drafts&id=' + $("#draft_id").val());
 			 }
 			else { 
 				$("#button_action_notice").html('&nbsp;');
