@@ -5,6 +5,44 @@
 
 =head1 Dada Mail Changelog for v7.x
 
+=head2 7.4.1
+
+=head2 Summary 7.4.1
+
+This version is primarly a bugfix release, fixing issues found in the v7.4.0 release
+
+Some of these issues are as follows: 
+
+=over
+
+=item * Digests
+
+Digests messages were not going out correctly. This has hopefully been fixed. 
+
+=item * Sender: header set incorrectly
+
+The Sender: header was set incorrectly, and would lead to problems if you're trying to run a discussion list using Amazon SES for message sending. This shuold now be fixed. 
+
+=item * Default Backend
+
+Many features in Dada Mail, including Send a Message and Send a Webpage were inoperable, when using the Default backend. Fixed. 
+
+=item * Debugging Information
+
+Quite a bit of Debugging logs were being saved in the error log, leading to large sizes in the error log. This should now be fixed.
+
+=item * Schedules in the Send a Message screen
+
+Schedules set in the Send a Message had some major problems, with the "Scheduling Options" widget showing up twice, and not really working. Fixed. 
+
+=back
+
+=head2 Bugfixes 7.4.1 
+
+=head3 New Draft from Stationary
+
+L<https://github.com/justingit/dada-mail/issues/473>
+
 =head2 7.4.0 
 
 =head2 Features 7.4.0
