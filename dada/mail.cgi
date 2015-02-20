@@ -1423,15 +1423,15 @@ sub create_from_stationary {
         -cgi_obj  => $q,
     );
     $list = $admin_list;
-    my $id     = $q->param('id');
-    my $screen = $q->param('screen');
+    my $draft_id     = $q->param('draft_id');
+    my $screen       = $q->param('screen');
 
     require DADA::MailingList::MessageDrafts;
     my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
     die "not enabled! " unless $d->enabled;
     
 
-    my $new_id = $d->create_from_stationary({-id => $id, -screen => $screen});
+    my $new_id = $d->create_from_stationary({-id => $draft_id, -screen => $screen});
         
     print $q->redirect( -url => $DADA::Config::S_PROGRAM_URL . '?f=' . $screen . '&restore_from_draft=true&draft_id=' . $new_id);
     
