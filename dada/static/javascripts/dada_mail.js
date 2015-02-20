@@ -102,7 +102,7 @@ $(document).ready(function() {
 			$('#schedule_datetime').datetimepicker(
 				{
 					minDate: 0,
-					minTime: 0, 
+					//minTime: 0, 
 					inline:false, 
 					format:'Y-m-d H:i:s'
 				}
@@ -169,7 +169,7 @@ $(document).ready(function() {
 				$('#popup_schedule_datetime').datetimepicker(
 					{
 						minDate: 0,
-						minTime: 0,  
+						//minTime: 0,  
 						inline:true, 
 						format:'Y-m-d H:i:s'
 					}
@@ -248,7 +248,7 @@ $(document).ready(function() {
 							}
 						});
 					}
-					else if($("#draft_role").val() == 'stationary') {
+					else if($("#draft_role").val() == 'stationary' || $("#draft_role").val() == 'schedule' ) {
 						window.location.replace($("#s_program_url").val() + '?f=' + $("#f").val() + '&draft_id=' + $("#draft_id").val() + '&restore_from_draft=true&draft_role=stationary&done=1');
 					}
 				}
