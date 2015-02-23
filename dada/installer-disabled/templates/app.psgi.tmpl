@@ -1,0 +1,33 @@
+#!/usr/bin/perl 
+
+use FindBin;
+use lib "$FindBin::Bin/";
+use lib "$FindBin::Bin/DADA/perllib";
+
+BEGIN {
+    my $b__dir = ( getpwuid($>) )[7] . '/perl';
+    push @INC, $b__dir . '5/lib/perl5',
+      $b__dir . '5/lib/perl5/x86_64-linux-thread-multi', $b__dir . 'lib',
+      map { $b__dir . $_ } @INC;
+}
+
+
+use DADA::App;
+use CGI::PSGI;
+use DADA::App::Dispatch;
+ 
+my $handler = sub {
+
+    my $env = shift;    
+    my $d   = DADA::App::Dispatch->new;
+    my $q = CGI::PSGI->new($env); 
+    my $q = $d->prepare_cgi_obj($q);
+    my $webapp = DADA::App->new({ QUERY => $q });
+       $webapp->run_as_psgi;
+};
+
+use Plack::Builder;
+builder {
+    enable "Static", path => qr!^/dada_mail_support_files!, root => '<!-- tmpl_var path_to_dada_mail_support_files -->';
+    $handler;
+}

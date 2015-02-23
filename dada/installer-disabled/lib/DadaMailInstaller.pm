@@ -2648,21 +2648,46 @@ sub setup_fastcgi {
     my $self = shift;
     my $ip   = $self->param('install_params');
 
+    
     my $cgi_enabled   = '../mail.cgi';
-    my $cgi_disabled  = '../mail.cgi-disabled';
     my $fcgi_enabled  = '../mail.fcgi';
-    my $fcgi_disabled = '../mail.fcgi-disabled';
+    
+    require DADA::Security::Password;
+    my $ran_str      = DADA::Security::Password::generate_rand_string() . '.' . time;
+    
+    my $cgi_disabled  = '../mail.cgi-disabled.'  . $ran_str;
+    my $fcgi_disabled = '../mail.fcgi-disabled.' . $ran_str;
 
-    my $install = $ip->{-fastcgi_options_run_under_fastcgi} || 0;
-    if ( $install != 1 ) {
-        if ( -e $fcgi_enabled ) {
-            installer_chmod( 0644, make_safer($fcgi_enabled) );
-            installer_mv( make_safer($fcgi_enabled), make_safer($fcgi_disabled) );
+    my $install_fastcgi = $ip->{-fastcgi_options_run_under_fastcgi} || 0;
+    
+    my $run = { 
+        cgi => {
+            enabled => 'mail.cgi', 
+            disabled => 'mail.cgi-' . $ran_str,
+            tmpl      => './templates/mail.fcgi.tmpl', 
+        }, 
+        fastcgi => {
+            enabled => 'mail.fcgi', 
+            disabled => 'mail.fcgi-' . $ran_str
+        }, 
+        psgi    => {
+            enabled => 'app.psgi', 
+            disabled => 'app.psgi-' . $ran_str 
+        }, 
+    }
+    
+    # This is basically for everyone: 
+    for(qw(cgi fastcgi psgi)
+        if ( -e $run->{$_} ) {
+            installer_chmod( 0644, make_safer($run->{$_}->{enabled})) );
+            installer_mv( make_safer($run->{$_}->{enabled}), make_safer($run->{$_}->{disabled}) );
         }
-        if ( -e $cgi_disabled ) {
-            installer_mv( make_safer($cgi_disabled), make_safer($cgi_enabled) );
-            installer_chmod( 0755, make_safer($cgi_enabled) );
-        }
+    }
+
+    
+    if ( $install_fastcgi == 1 ) {
+        installer_mv( make_safer($run->{fastcgi}->{tmpl}), make_safer($run->{fastcgi}->{enabled}) );
+        installer_chmod( 0755, make_safer($run->{fastcgi}->{enabled}) );
         return 1;
     }
     else {
