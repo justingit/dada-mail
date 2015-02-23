@@ -219,10 +219,9 @@ sub batch_params {
         && $amazon_ses_auto_batch_settings == 1
       )
     {
-
         if ( exists( $self->{_cache}->{batch_params} ) ) {
             if ( exists( $self->{_cache}->{batch_params}->{cached_at} ) ) {
-                if ( ( int( $self->{_cache}->{batch_params}->{cached_at} ) + 600 ) < time ) {
+                if ( ( int( $self->{_cache}->{batch_params}->{cached_at} ) + 600 ) > time ) {
                     carp 'batch settings (cached): Enabled: '
                       . $self->{_cache}->{batch_params}->{enable_bulk_batching}
                       . ' Batch Size: '
@@ -230,7 +229,6 @@ sub batch_params {
                       . ' Batch Wait: '
                       . $self->{_cache}->{batch_params}->{batch_wait}
                       if $t;
-
                     return (
                         $self->{_cache}->{batch_params}->{enable_bulk_batching},
                         $self->{_cache}->{batch_params}->{batch_size},
@@ -240,9 +238,12 @@ sub batch_params {
             }
             else {
                 carp 'Love to use the batch settings cache, but it\'s too old by: '
-                  . int( $self->{_cache}->{batch_params}->{cached_at} ) + 600 - time
+                  . int( ($self->{_cache}->{batch_params}->{cached_at} ) + 600) - time
                   if $t;
             }
+        }
+        else { 
+            #warn 'no $self->{_cache}->{batch_params}'; 
         }
     }
 
@@ -374,28 +375,31 @@ sub batch_params {
                 # This slows the batch settings down, if there's > 1 mailout going on
                 # at one time.
                 if ( $DADA::Config::MAILOUT_AT_ONCE_LIMIT > 1 ) {
-                    my (
-                        $monitor_mailout_report, $total_mailouts,  $active_mailouts,
-                        $paused_mailouts,        $queued_mailouts, $inactive_mailouts
-                      )
-                      = monitor_mailout(
-                        {
-                            -verbose => 0,
-                            -action  => 0,
+                    
+                    # can't call monitor_mailout, because monitor_mailout 
+                    # will eventually call batch_params, 
+                    # leading to an infinite loop!
+                    my @mailouts = $self->current_mailouts;
+                    my $unpaused_mailouts_num = 0; 
+                    for(@mailouts){ 
+                        if(exists($_->{unpaused})){ 
+                            if($_->{unpaused} == 1) { 
+                                $unpaused_mailouts_num++;
+                            }
                         }
-                      );
+                    }
 
                     # If the batch size is larger than how many messages we have,
                     # better to divide that up, rather than the span between messages
                     # Round DOWN just to be on the safe side of things.
-                    if ( $batch_size > $active_mailouts ) {
+                    if ( $batch_size > $unpaused_mailouts_num ) {
 
-                        #					warn '$batch_size > $active_mailouts'
+                        #					warn '$batch_size > $unpaused_mailouts_num'
                         #						if $t;
 
-                        if ( $active_mailouts > 1 ) {
-                            if ( $active_mailouts < $DADA::Config::MAILOUT_AT_ONCE_LIMIT ) {
-                                $batch_size = POSIX::floor( ( $batch_size / $active_mailouts ) );
+                        if ( $unpaused_mailouts_num > 1 ) {
+                            if ( $unpaused_mailouts_num < $DADA::Config::MAILOUT_AT_ONCE_LIMIT ) {
+                                $batch_size = POSIX::floor( ( $batch_size / $unpaused_mailouts_num ) );
                             }
                             else {
                                 $batch_wait = POSIX::floor( ( $batch_size / $DADA::Config::MAILOUT_AT_ONCE_LIMIT ) );
@@ -404,9 +408,9 @@ sub batch_params {
                     }
                     else {
                         # else, make the wait longer
-                        if ( $active_mailouts > 1 ) {
-                            if ( $active_mailouts < $DADA::Config::MAILOUT_AT_ONCE_LIMIT ) {
-                                $batch_wait = ( $batch_wait * $active_mailouts );
+                        if ( $unpaused_mailouts_num > 1 ) {
+                            if ( $unpaused_mailouts_num < $DADA::Config::MAILOUT_AT_ONCE_LIMIT ) {
+                                $batch_wait = ( $batch_wait * $unpaused_mailouts_num );
                             }
                             else {
                                 $batch_wait = ( $batch_wait * $DADA::Config::MAILOUT_AT_ONCE_LIMIT );
@@ -2266,6 +2270,7 @@ sub current_mailouts {
             # this makes it so we don't have to call, "status", since that's pretty resource-intensive
 
             if ( -e $DADA::Config::TMP . '/' . $test_m->{sendout_dir} . '/' . $file_names->{pause} ) {
+                $test_m->{paused} = 1; 
                 push( @paused, $test_m );
             }
             else {
@@ -2282,13 +2287,16 @@ sub current_mailouts {
                     my $last_access = _poll($last_access_file);
 
                     if ( ( int(time) - $last_access ) >= $DADA::Config::MAILOUT_STALE_AFTER ) {
+                        $test_m->{stale} = 1; 
                         push( @stale, $test_m );
                     }
                     else {
+                        $test_m->{unpaused} = 1; 
                         push( @unpaused, $test_m );
                     }
                 }
                 else {
+                    $test_m->{unpaused} = 1; 
                     push( @unpaused, $test_m );
                 }
             }
@@ -2550,7 +2558,7 @@ sub monitor_mailout {
         # *Would(* there be a reason, $mailing->{list} would be blank!?
 
         if ( $mailing->{list} ) {
-
+                        
             my $mailout = DADA::Mail::MailOut->new( { -list => $mailing->{list} } );
             $mailout->associate( $mailing->{id}, $mailing->{type} );
 
