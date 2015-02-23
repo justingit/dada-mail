@@ -863,7 +863,13 @@ sub send {
 			}		
 			my $msg = ''; 
 						
-            for my $field (@default_headers){			
+            for my $field (@default_headers){
+                
+                # This could have disastrous consequences
+                if($self->im_mass_sending == 1) {
+                    next if $field eq 'Cc'; 
+                    next if $field eq 'Bcc'; 
+                }
 				if(
  					exists($fields{$field})                  && 
 					defined $fields{$field}                  && 
