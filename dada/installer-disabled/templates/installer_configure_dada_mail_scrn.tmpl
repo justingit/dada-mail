@@ -851,16 +851,18 @@ editors also have the ability to make simple HTML tables for basic layouts.
 
     <!-- show_fast_cgi_options --> 
     <p>
-    	<input type="checkbox" name="configure_fastcgi" id="configure_fastcgi" value="1" />			
-    <label for="configure_fastcgi">Configure FastCGI Options</label>
+    	<input type="checkbox" name="configure_deployment" id="configure_deployment" value="1" />			
+    <label for="configure_deployment">Configure Deployment Options</label>
     </p>
-    <div id="fastcgi_options">
+    <div id="deployment_options">
         <fieldset> 
         	<p>
-        		<input type="checkbox" name="fastcgi_options_run_under_fastcgi" id="fastcgi_options_run_under_fastcgi" value="1"  />			
-        		<label for="fastcgi_options_run_under_fastcgi">
-        			Run <!-- tmpl_var PROGRAM_NAME --> under FastCGI
-        		</label>
+        			Run <!-- tmpl_var PROGRAM_NAME --> under: 
+        			<select name="deployment_running_under"> 
+        			    <option value="CGI">CGI</option> 
+        			    <option value="FastCGI">FastCGI</option> 
+        			    <option value="PSGI">PSGI/Plack</option> 
+        			</select>
         	</p>
         	
         	<!-- tmpl_var cgi_test_FastCGI --> 

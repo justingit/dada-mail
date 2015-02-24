@@ -40,9 +40,23 @@ are UPGRADING Dada Mail, you may have other options.
 	The directory that the installer should create the, ".dada_files" directory 
 	under
 
---run_under_fastcgi
+--deployment_running_under
 
-    If passed, Dada Mail will be set up to run under FastCGI, rather than under CGI
+    Optional, defaults to, "CGI". Pass one of the following: 
+
+    * FastCGI to run under FastCGI
+
+    * PSGI to run under FastCGI/Plack
+
+    As long as your web server is set up to run CGI scripts (Apache, mod_cgi),
+    setting this parameter to, "CGI" will be all you need. 
+
+    If you're running Dada Mail under Apache and mod_fastcgi/fcgi, you again should 
+    be pretty much all set. 
+
+    Running Dada Mail under (say) nginx and either FastCGI or PSGI/Plack, you will 
+    most definitely have to set up the server configuration and manually start up
+    Dada Mail as a FastCGI or PSGI process. 
 
 --backend
 

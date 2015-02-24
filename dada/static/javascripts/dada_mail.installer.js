@@ -128,7 +128,7 @@ $(document).ready(function() {
 			"amazon_ses", 
 			"mandrill",
 			"scheduled_jobs", 
-			"fastcgi",
+			"deployment",
 			"profiles",
 			"templates", 
 			"cache",

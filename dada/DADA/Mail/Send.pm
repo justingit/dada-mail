@@ -1271,7 +1271,7 @@ sub mass_send {
 	    warn '[' . $self->{list} . '] Mass Mailing seems to have been removed.'
 		    if $t; 
 		    
-	    if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+	    if($DADA::Config::RUNNING_UNDER eq 'FastCGI') { 
     		return 0; 
         }
         else { 
@@ -1489,7 +1489,7 @@ sub mass_send {
 			warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Fork successful. (From Child)'
 				if $t;	            
             
-            if($DADA::Config::RUNNING_AS ne 'FastCGI') {
+            if($DADA::Config::RUNNING_UNDER ne 'FastCGI') {
                 if($DADA::Config::NULL_DEVICE){ 
                     open(STDIN,  ">>$DADA::Config::NULL_DEVICE") or carp "couldn't open '$DADA::Config::NULL_DEVICE' - $!"; 
                     open(STDOUT, ">>$DADA::Config::NULL_DEVICE") or carp "couldn't open '$DADA::Config::NULL_DEVICE' - $!"; 
@@ -1612,7 +1612,7 @@ sub mass_send {
 				
 				if($is_mailout_paused > 0){                            
 				
-				    if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+				    if($DADA::Config::RUNNING_UNDER eq 'FastCGI') { 
                 
 				    	carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . 
     					     ' Mailing has been paused - return()ing';
@@ -1639,7 +1639,7 @@ sub mass_send {
     					$mailout->unlock_batch_lock;
     					$mailout->pause;
                     
-				    if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+				    if($DADA::Config::RUNNING_UNDER eq 'FastCGI') { 
                         return(0); 
 					}
 					else { 
@@ -1715,7 +1715,7 @@ sub mass_send {
                              $mailout->update_last_access; 
  							 $mailout->unlock_batch_lock;
  							 
- 							 if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+ 							 if($DADA::Config::RUNNING_UNDER eq 'FastCGI') { 
  							     return(0);
  							 }
  							 else { 
@@ -1791,7 +1791,7 @@ sub mass_send {
 							$mailout->log_problem_address({-address => $current_email}); 
 							$mailout->update_last_access; 
 							$mailout->unlock_batch_lock;
-							if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+							if($DADA::Config::RUNNING_UNDER eq 'FastCGI') { 
 							    return(0);
 							}
 							else { 
@@ -1830,7 +1830,7 @@ sub mass_send {
                                 carp $w; 
 								$mailout->log($w); 
 								$mailout->unlock_batch_lock;
-								if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+								if($DADA::Config::RUNNING_UNDER eq 'FastCGI') { 
 								    return(0); 
 								}
 								else { 
@@ -1912,7 +1912,7 @@ sub mass_send {
 								carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Mailing has been queued'; 
 								$mailout->log('Warning: Mailing has been queued'); 
 								$mailout->unlock_batch_lock;
-								if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+								if($DADA::Config::RUNNING_UNDER eq 'FastCGI') { 
     								return(0); 
     							}
     							else { 
@@ -1923,7 +1923,7 @@ sub mass_send {
 								carp '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Mailing has been paused';
 								$mailout->log('Warning: Mailing has been paused'); 
 								$mailout->unlock_batch_lock;
-								if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+								if($DADA::Config::RUNNING_UNDER eq 'FastCGI') { 
     								return(0); 
     							}
     							else { 
@@ -1934,7 +1934,7 @@ sub mass_send {
 								$mailout->log('Warning: Mailing is currently reporting an integrity check warning! Pausing mailing.'); 
 								$mailout->unlock_batch_lock;
 								$mailout->pause;
-								if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+								if($DADA::Config::RUNNING_UNDER eq 'FastCGI') { 
     								return(0); 
     							}
     							else { 
@@ -2008,7 +2008,7 @@ sub mass_send {
 								if( ! $mailout->still_around ){
 									warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' Seems to have been removed.'
 							            if $t; 
-							        if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+							        if($DADA::Config::RUNNING_UNDER eq 'FastCGI') { 
 									    return(0);
 									}
 									else { 
@@ -2030,7 +2030,7 @@ sub mass_send {
 										 ' Problem! Another process (Current PID: ' . $$ . ', Controlling PID: ' . 
 										   $batch_status->{controlling_pid} .' has taken over sending for this mailing! ' . 
 										   ' stopping to allow that process to do it\'s business!'; 
-                    		        if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+                    		        if($DADA::Config::RUNNING_UNDER eq 'FastCGI') { 
                     				    return(0);
                     				}
                     				else { 
@@ -2065,7 +2065,7 @@ sub mass_send {
 	                            if($batch_status->{total_sent_out} < $batch_status->{total_sending_out_num}){ # We have more mailings to do. 
 	                                warn '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' As far as I can tell, there\'s more mailing to do.'
 	                                    if $t; 
-                    		        if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+                    		        if($DADA::Config::RUNNING_UNDER eq 'FastCGI') { 
                     				    return(0);
                     				}
                     				else { 
@@ -2181,7 +2181,7 @@ sub mass_send {
 
 			warn  '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . ' We\'re done.' 
 			    if $t;
-	        if($DADA::Config::RUNNING_AS eq 'FastCGI') { 
+	        if($DADA::Config::RUNNING_UNDER eq 'FastCGI') { 
 			    return(0);
 			}
 			else { 

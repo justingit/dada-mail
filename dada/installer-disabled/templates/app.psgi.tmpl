@@ -11,17 +11,16 @@ BEGIN {
       map { $b__dir . $_ } @INC;
 }
 
+use CGI::PSGI;
 
 use DADA::App;
-use CGI::PSGI;
 use DADA::App::Dispatch;
  
-my $handler = sub {
-
-    my $env = shift;    
-    my $d   = DADA::App::Dispatch->new;
-    my $q = CGI::PSGI->new($env); 
-    my $q = $d->prepare_cgi_obj($q);
+my $handler  = sub {
+    my $env    = shift;    
+    my $d      = DADA::App::Dispatch->new;
+    my $q      = CGI::PSGI->new($env); 
+    my $q      = $d->prepare_cgi_obj($q);
     my $webapp = DADA::App->new({ QUERY => $q });
        $webapp->run_as_psgi;
 };

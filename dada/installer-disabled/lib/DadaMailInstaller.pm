@@ -298,8 +298,8 @@ sub setup {
             'wysiwyg_editor_install_ckeditor!', 
             'wysiwyg_editor_install_tiny_mce!',
             'file_browser_install=s',
-            'help',
-            'run_under_fastcgi!', 
+            'deployment_running_under=s',
+            'help', 
         );
         
         $self->param('cl_params', \%h); 
@@ -321,10 +321,10 @@ sub cl_run {
     }
     
     # Shortcut, so we don't have to pass two params: 
-    if(exists($cl_params->{run_under_fastcgi})){ 
-        $dash_opts->{-configure_fastcgi}                 = 1;
-        $dash_opts->{-fastcgi_options_run_under_fastcgi} = 1;
-        delete($dash_opts->{-run_under_fastcgi}  ); 
+    if(exists($cl_params->{deployment_running_under})){ 
+        $dash_opts->{-configure_deployment}                 = 1;
+        # Welp, already doing that. 
+        # $dash_opts->{-deployment_running_under} = $cl_params->{deployment_running_under};
     }
     
     if ( exists( $cl_params->{upgrading} ) ) {
@@ -999,10 +999,10 @@ sub grab_former_config_vals {
         $opt->{'scheduled_jobs_flavor'} = $ran_str;
     }
 
-    # FastCGI
-    if ( defined($BootstrapConfig::RUNNING_AS) && $BootstrapConfig::RUNNING_AS eq 'FastCGI' ) {
-        $opt->{'configure_fastcgi'}                 = 1;
-        $opt->{'fastcgi_options_run_under_fastcgi'} = 1;
+    # CGI/FastCGI/PSGI
+    if ( defined($BootstrapConfig::RUNNING_UNDER) && $BootstrapConfig::RUNNING_UNDER =~ m/^(CGI|FastCGI|PSGI)$/ ) {
+        $opt->{'configure_deployment'}                 = 1;
+        $opt->{'deployment_running_under'}             = $BootstrapConfig::RUNNING_UNDER;
     }
 
     # Profiles
@@ -1306,14 +1306,22 @@ sub scrn_install_dada_mail {
     my $q    = $self->query();
 
     # THis is sort of awkward - but we need to do the switcheroo:
-    if ( $q->param('fastcgi_options_run_under_fastcgi') == 1 ) {
+    if ( $q->param('deployment_running_under') eq 'FastCGI' ) {
         my $purl = $q->param('program_url');
         if ( $purl =~ m/mail\.cgi$/ ) {
             $purl =~ s/mail\.cgi$/mail\.fcgi/;
             $q->param( 'program_url', $purl );
         }
     }
+    elsif ( $q->param('deployment_running_under') eq 'PSGI' ) {
+        my $purl = $q->param('program_url');
+        if ( $purl =~ m/mail\.cgi$/ ) {
+            $purl =~ s/mail\.cgi$/app\.psgi/;
+            $q->param( 'program_url', $purl );
+        }    
+    }
     else {
+        # This is sorta weird. 
         my $purl = $q->param('program_url');
         if ( $purl =~ m/mail\.fcgi$/ ) {
             $purl =~ s/mail\.fcgi$/mail\.cgi/;
@@ -1321,7 +1329,6 @@ sub scrn_install_dada_mail {
         }
     }
 
-    #dsa;fla;sdkf;lasdkf
 
     my ( $log, $status, $errors ) = $self->install_dada_mail();
 
@@ -1423,8 +1430,8 @@ sub query_params_to_install_params {
 
       dada_pass_use_orig
 
-      configure_fastcgi
-      fastcgi_options_run_under_fastcgi
+      configure_deployment
+      deployment_running_under
 
       scheduled_jobs_flavor
       configure_scheduled_jobs
@@ -1690,11 +1697,10 @@ sub install_dada_mail {
         }
     }
 
-    $log .= "* Setting up CGI/FastCGI Support...\n";
-    eval { $self->setup_fastcgi(); };
+    $log .= "* Setting up CGI/FastCGI/PSGI Deployment...\n";
+    eval { $self->setup_deployment(); };
     if ($@) {
         $log .= "* Problems setting up CGI/FastCGI Support: $@\n";
-
         # $errors->{cant_setup_fast_cgi} = 1;
     }
     else {
@@ -1915,7 +1921,7 @@ sub create_dada_config_file {
         $ip->{-program_url} = $prog_url;
         $self->param( 'install_params', $ip );    # awkward.
     }
-    if ( $ip->{-fastcgi_options_run_under_fastcgi} == 1 ) {
+    if ( $ip->{-deployment_options_run_under_fastcgi} == 1 ) {
         $ip->{-program_url} =~ s/mail\.cgi$/mail\.fcgi/;
     }
     else {
@@ -1964,16 +1970,11 @@ sub create_dada_config_file {
         $scheduled_jobs_params->{scheduled_jobs_flavor}    = $ip->{-scheduled_jobs_flavor} || '_schedules';
         $scheduled_jobs_params->{scheduled_jobs_log}       = $ip->{-scheduled_jobs_log} || 0;
     }
-    my $fastcgi_params = {};
-    if ( $ip->{-configure_fastcgi} == 1 ) {
-        if ( $ip->{-fastcgi_options_run_under_fastcgi} == 1 ) {
-            $fastcgi_params->{fastcgi_RUNNING_AS} = 'FastCGI';
-        }
-        else {
-            $fastcgi_params->{fastcgi_RUNNING_AS} = 'CGI';
-        }
+    my $deployment_params = {};
+    if ( $ip->{-configure_deployment} == 1 ) {
+            $deployment_params->{deployment_running_under} = $ip->{-deployment_running_under} || 'CGI'; 
     }
-
+    
     my $profiles_params = {};
     if ( $ip->{-configure_profiles} == 1 ) {
         $profiles_params->{configure_profiles} = 1;
@@ -2211,7 +2212,7 @@ sub create_dada_config_file {
                 %{$debugging_options_params},
                 %{$template_options_params},
                 %{$scheduled_jobs_params},
-                %{$fastcgi_params},
+                %{$deployment_params},
                 %{$plugins_params},
                 %{$extensions_params}, 
                 %{$profiles_params},
@@ -2643,77 +2644,61 @@ sub setup_support_files_dir {
     return 1;
 }
 
-sub setup_fastcgi {
+sub setup_deployment {
 
     my $self = shift;
     my $ip   = $self->param('install_params');
 
     
-    my $cgi_enabled   = '../mail.cgi';
-    my $fcgi_enabled  = '../mail.fcgi';
-    
     require DADA::Security::Password;
     my $ran_str      = DADA::Security::Password::generate_rand_string() . '.' . time;
     
-    my $cgi_disabled  = '../mail.cgi-disabled.'  . $ran_str;
-    my $fcgi_disabled = '../mail.fcgi-disabled.' . $ran_str;
-
-    my $install_fastcgi = $ip->{-fastcgi_options_run_under_fastcgi} || 0;
-    
     my $run = { 
         cgi => {
-            enabled => 'mail.cgi', 
-            disabled => 'mail.cgi-' . $ran_str,
-            tmpl      => './templates/mail.fcgi.tmpl', 
+            enabled   => '../mail.cgi', 
+            disabled  => '../mail.cgi-' . $ran_str,
+            tmpl      => './templates/mail.cgi.tmpl', 
         }, 
         fastcgi => {
-            enabled => 'mail.fcgi', 
-            disabled => 'mail.fcgi-' . $ran_str
+            enabled   => '../mail.fcgi', 
+            disabled  => '../mail.fcgi-' . $ran_str,
+            tmpl      => './templates/mail.fcgi.tmpl', 
+            
         }, 
         psgi    => {
-            enabled => 'app.psgi', 
-            disabled => 'app.psgi-' . $ran_str 
+            enabled   => '../app.psgi', 
+            disabled  => '../app.psgi-' . $ran_str ,
+            tmpl      => './templates/app.psgi.tmpl', 
+            
         }, 
-    }
+    };
     
     # This is basically for everyone: 
-    for(qw(cgi fastcgi psgi)
-        if ( -e $run->{$_} ) {
-            installer_chmod( 0644, make_safer($run->{$_}->{enabled})) );
+    for(qw(cgi fastcgi psgi)) { 
+        if ( -e  make_safer($run->{$_}->{enabled}) ) {
+            installer_chmod( 0644, make_safer($run->{$_}->{enabled}) );
             installer_mv( make_safer($run->{$_}->{enabled}), make_safer($run->{$_}->{disabled}) );
         }
     }
 
     
-    if ( $install_fastcgi == 1 ) {
-        installer_mv( make_safer($run->{fastcgi}->{tmpl}), make_safer($run->{fastcgi}->{enabled}) );
+    if ( $ip->{-deployment_running_under} eq 'FastCGI' ) {
+        installer_cp( make_safer($run->{fastcgi}->{tmpl}), make_safer($run->{fastcgi}->{enabled}) );
         installer_chmod( 0755, make_safer($run->{fastcgi}->{enabled}) );
+        
+        $self->create_htaccess_fastcgi('../');
+        
         return 1;
     }
+    elsif($ip->{-deployment_running_under} eq 'PSGI' ) {
+        installer_cp( make_safer($run->{psgi}->{tmpl}), make_safer($run->{psgi}->{enabled}) );
+        installer_chmod( 0755, make_safer($run->{psgi}->{enabled}) );
+        return 1;        
+    }
     else {
-        # right.
-        if ( -e $fcgi_enabled ) {
-            installer_chmod( 0755, make_safer($fcgi_enabled) );
-            if ($cgi_disabled) {
-                installer_chmod( 0644, make_safer($cgi_disabled) );
-            }
-            return 1;
-        }
-        else {
-            if ( -e $cgi_enabled ) {
-                installer_chmod( 0644, $cgi_enabled );
-                installer_mv( $cgi_enabled, $cgi_disabled );
-            }
-
-            if ( -e $fcgi_disabled ) {
-                installer_mv( $fcgi_disabled, $fcgi_enabled );
-                installer_chmod( 0755, $fcgi_enabled );
-            }
-            else {
-                #die 'Can\'t find fcgi mail script at: ../mail.fcgi-disabled';
-            }
-        }
-        $self->create_htaccess_fastcgi('../');
+        installer_cp( make_safer($run->{cgi}->{tmpl}), make_safer($run->{cgi}->{enabled}) );
+        installer_chmod( 0755, make_safer($run->{cgi}->{enabled}) );      
+        return 1;   
     }
 }
 
@@ -4150,7 +4135,7 @@ sub installer_cp {
 sub installer_mv {
     require File::Copy;
     my ( $to, $from ) = @_;
-    my $r = File::Copy::move( $to, $from );    # or croak "Copy failed: $!";
+    my $r = File::Copy::move( $to, $from ) or croak "Copy failed to:'$to', from:'$from': $!";
     return $r;
 }
 
