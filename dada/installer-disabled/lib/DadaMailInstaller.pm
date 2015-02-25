@@ -315,6 +315,9 @@ sub cl_run {
     
     my $cl_params = $self->param('cl_params'); 
 
+    require Data::Dumper; 
+    $r .= "Passed Params:\n\n" . Data::Dumper::Dumper($cl_params); 
+    
     my $dash_opts = {};
     foreach ( keys %$cl_params ) {
         $dash_opts->{ '-' . $_ } = $cl_params->{$_};
@@ -327,11 +330,12 @@ sub cl_run {
         # $dash_opts->{-deployment_running_under} = $cl_params->{deployment_running_under};
     }
     
+    $dash_opts->{-current_dada_files_parent_location} = $cl_params->{dada_files_loc};
+    
     if ( exists( $cl_params->{upgrading} ) ) {
         if ( $dash_opts->{-upgrading} == 1 ) {
             $dash_opts->{-install_type}                       = 'upgrade';
             $dash_opts->{-if_dada_files_already_exists}       = 'keep_dir_create_new_config';
-            $dash_opts->{-current_dada_files_parent_location} = $cl_params->{dada_files_loc};
             $dash_opts->{-dada_pass_use_orig}                 = 1;
 
             my $former_opts = $self->grab_former_config_vals();
@@ -347,6 +351,14 @@ sub cl_run {
             $dash_opts->{ '-install_' . $_ } = 1;
         }
         delete $dash_opts->{-install_plugins};
+    }
+
+    if(exists($cl_params->{backend})){ 
+        $cl_params->{backend} eq 'SQLite') { 
+            if(!exists($dash_opts->{-sql_database})){ 
+                $dash_opts->{-sql_database} = 'dadamail';
+            }
+        }
     }
 
     # This is very lazy of me - $q->param() is being used as a stash for persistance
@@ -370,14 +382,16 @@ sub cl_run {
              -install_type                       => $dash_opts->{-install_type},
              -current_dada_files_parent_location => $dash_opts->{-current_dada_files_parent_location},
              -dada_files_dir_setup               => $dash_opts->{-dada_files_dir_setup},
+             -dada_files_loc                     => $dash_opts->{-dada_files_loc},  
          }
      ); 
      $dash_opts->{-install_dada_files_loc} = $install_dada_files_loc;
      $self->param( 'install_params', $dash_opts );
     
+
+     $r .= "Checking Setup...\n";
     
     my ( $check_status, $check_errors, $check_r ) = $self->check_setup();
-    $r .= "Checking Setup...\n";
     $r .= $check_r; 
     if ( $check_status == 0 ) {
         $r .= "Problems were found:\n\n";
@@ -677,6 +691,7 @@ sub scrn_configure_dada_mail {
             -install_type                       => $q->param('install_type'),
             -current_dada_files_parent_location => $q->param('current_dada_files_parent_location'),
             -dada_files_dir_setup               => $q->param('dada_files_dir_setup'),
+            -dada_files_loc                     => $q->param('dada_files_loc'),  
 
         }
     );
@@ -1340,6 +1355,7 @@ sub scrn_install_dada_mail {
             -install_type                       => $q->param('install_type'),
             -current_dada_files_parent_location => $q->param('current_dada_files_parent_location'),
             -dada_files_dir_setup               => $q->param('dada_files_dir_setup'),
+            -dada_files_loc                     => $q->param('dada_files_loc'),  
 
         }
     );
@@ -1389,12 +1405,13 @@ sub query_params_to_install_params {
             -install_type                       => $q->param('install_type'),
             -current_dada_files_parent_location => $q->param('current_dada_files_parent_location'),
             -dada_files_dir_setup               => $q->param('dada_files_dir_setup'),
+            -dada_files_loc                     => $q->param('dada_files_loc'),  
 
         }
     );
 
     my $ip = {};
-    $ip->{-install_dada_files_loc} = $install_dada_files_loc;
+       $ip->{-install_dada_files_loc} = $install_dada_files_loc;
 
     my @install_param_names = qw(
 
@@ -1582,20 +1599,29 @@ sub install_dada_mail {
 
         # Making the .dada_config file
         $log .= "* Attempting to create .dada_config file...\n";
-        #
-        # DEV: create_dada_config_file uses a lot of vars from $q - not too comfortable with that.
-        #
-        if ( $self->create_dada_config_file() == 1 ) {
-            $log .= "* Success!\n";
-        }
-        else {
-            $log .= "* Problems Creating .dada_config file! STOPPING!\n";
+        my $create_dada_config_file = 0; 
+        eval { 
+            $create_dada_config_file = $self->create_dada_config_file();
+        }; 
+        if ($@) {
+            $log .= "* Problems creating .dada_config file: $@\n";
             $errors->{cant_create_dada_config} = 1;
             $status = 0;
-
+            # $create_dada_config_file = 0;
             return ( $log, $status, $errors );
         }
-
+        else {
+            if ($create_dada_config_file  == 1 ) {
+                $log .= "* Success!\n";
+            }
+            else {
+                $log .= "* Problems Creating .dada_config file! STOPPING!\n";
+                $errors->{cant_create_dada_config} = 1;
+                $status = 0;
+                return ( $log, $status, $errors );
+            }
+        }
+       
         # Creating the needed SQL tables
         if ( $ip->{-backend} eq 'default' || $ip->{-backend} eq '' ) {
 
@@ -1853,10 +1879,14 @@ sub create_dada_files_dir_structure {
     my $ip   = $self->param('install_params');
     my $loc  = $ip->{-install_dada_files_loc};
 
+    warn '$loc ' . $loc; 
+    
+    # Not sure this is needed, anymore: 
     if ( $loc eq 'auto' ) {
         $loc = $self->auto_dada_files_dir();
-        $loc = make_safer( $loc . '/' . $Dada_Files_Dir_Name );
     }
+
+    $loc = make_safer( $loc . '/' . $Dada_Files_Dir_Name );
 
     eval {
 
@@ -2345,8 +2375,8 @@ sub check_setup {
     
     my $q  = $self->query;
     my $ip = $self->param('install_params');
-    #require Data::Dumper; 
-    #die Data::Dumper::Dumper($ip); 
+    require Data::Dumper; 
+    warn 'at check_setup: ' .  Data::Dumper::Dumper($ip); 
     
 
     my $install_dada_files_loc = $self->install_dada_files_dir_at_from_params(
@@ -2354,6 +2384,7 @@ sub check_setup {
             -install_type                       => $ip->{-install_type},
             -current_dada_files_parent_location => $ip->{-current_dada_files_parent_location},
             -dada_files_dir_setup               => $ip->{-dada_files_dir_setup},
+            -dada_files_loc                     => $ip->{-dada_files_loc},  
 
         }
     );
@@ -2523,7 +2554,6 @@ sub check_setup {
 
 sub install_dada_files_dir_at_from_params {
 
-    # this is probably now horribly broken.
     my $self   = shift;
     my ($args) = @_;
     my $ip     = $self->param('install_params');
@@ -2531,7 +2561,7 @@ sub install_dada_files_dir_at_from_params {
     my $r;
 
     require Data::Dumper;
-    $r .= 'args: ' . Data::Dumper::Dumper($args);
+    warn '$args at install_dada_files_dir_at_from_params: ' . Data::Dumper::Dumper($args);
 
     my $install_dada_files_dir_at = undef;
 
@@ -2547,7 +2577,7 @@ sub install_dada_files_dir_at_from_params {
         }
     }
 
-    warn "\n" . '$install_dada_files_dir_at ' . $install_dada_files_dir_at;
+    warn "\n" . '$install_dada_files_dir_at set to:' . $install_dada_files_dir_at;
 
     # Take off that last slash - goodness, will that annoy me:
     $install_dada_files_dir_at =~ s/\/$//;
@@ -3195,6 +3225,8 @@ sub test_can_create_dada_files_dir {
     my $self                  = shift;
     my $dada_files_parent_dir = shift;
 
+    warn 'passed: ' . $dada_files_parent_dir; 
+    
     # blank?!
     if ( $dada_files_parent_dir eq '' ) {
         return 0;
@@ -4157,6 +4189,9 @@ sub installer_mkdir {
 
     my ( $dir, $chmod ) = @_;
     my $r = mkdir( $dir, $chmod );
+    if(!$r){ 
+        warn 'mkdir didn\'t succeed at: ' . $dir . ' because:' . $!; 
+    }
     return $r;
 }
 

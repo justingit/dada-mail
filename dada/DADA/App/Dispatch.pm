@@ -15,7 +15,6 @@ use DADA::Config;
 use DADA::App::Guts; 
 
 
-
 use Carp qw(croak carp); 
 use CGI; 
 
@@ -85,6 +84,12 @@ sub prepare_cgi_obj
     my $q = shift || CGI->new;
        $q->charset($DADA::Config::HTML_CHARSET);
     
+    if($DADA::Config::RUNNING_UNDER eq 'PSGI'){ 
+        $ENV{PATH_INFO}    = $q->path_info(); 
+        $ENV{QUERY_STRING} = $q->query_string(); 
+    }
+    
+    
     # Surely, this is broken. 
     if ( $ENV{QUERY_STRING} =~ m/^\?/ ) {
         # DEV Workaround for servers that give a bad PATH_INFO:
@@ -126,12 +131,19 @@ sub translate {
     my $self   = shift;
     my ($args) = @_;
 
-    my $env          = {%ENV};
     my $q            = $args->{-cgi_obj};
+    
+    if($DADA::Config::RUNNING_UNDER eq 'PSGI'){ 
+        $ENV{PATH_INFO}    = $q->path_info(); 
+        $ENV{QUERY_STRING} = $q->query_string(); 
+    }
 
+    my $env          = {%ENV};
+
+    
     my $sched_flavor = $DADA::Config::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor};
     
-    if ( $env->{PATH_INFO} ) {
+    if ( $env->{PATH_INFO} ) { # should be exists($env->{PATH_INFO})? 
 
         my $dp = $q->url || $DADA::Config::PROGRAM_URL;
         $dp =~ s/^(http:\/\/|https:\/\/)(.*?)\//\//;

@@ -17,7 +17,9 @@ use DADA::App;
 use DADA::App::Dispatch;
  
 my $handler  = sub {
-    my $env    = shift;    
+    my $env    = shift; 
+    require Data::Dumper; 
+    warn 'ENV: ' . Data::Dumper::Dumper($env);    
     my $d      = DADA::App::Dispatch->new;
     my $q      = CGI::PSGI->new($env); 
     my $q      = $d->prepare_cgi_obj($q);
@@ -27,6 +29,6 @@ my $handler  = sub {
 
 use Plack::Builder;
 builder {
-    enable "Static", path => qr!^/dada_mail_support_files!, root => '<!-- tmpl_var path_to_dada_mail_support_files -->';
+    enable "Static", path => sub { s!^/dada_mail_support_files/!! }, root => "/Library/WebServer/Documents/dada_mail_support_files/";
     $handler;
 }

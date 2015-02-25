@@ -2338,7 +2338,7 @@ sub api {
     my $dp = $q->url || $DADA::Config::PROGRAM_URL;
     $dp =~ s/^(http:\/\/|https:\/\/)(.*?)\//\//;
 
-    my $info = $ENV{PATH_INFO};
+    my $info = $q->path_info();
 
     $info =~ s/^$dp//;
 
@@ -11581,7 +11581,7 @@ sub m_o_c {
     my $list = xss_filter( $q->param('list') );
 
     if ( check_if_list_exists( -List => $list ) == 0 ) {
-        carp "list: '$list' does not exist, aborted logging of open message\n" . '$ENV{PATH_INFO}: ' . $ENV{PATH_INFO};
+        carp "list: '$list' does not exist, aborted logging of open message\n" . 'path_info(): ' . $q->path_info();
 
     }
     else {

@@ -135,7 +135,7 @@ sub request {
     }
 
     if ($t) {
-        $r->{og_path_info}      = $ENV{PATH_INFO};
+        $r->{og_path_info}      = $self->{cgi_obj}->path_info();
         $r->{og_service}        = $self->{service};
         $r->{og_query}          = $self->{cgi_obj}->query_string();
         $r->{og_digest}         = $self->{digest};
