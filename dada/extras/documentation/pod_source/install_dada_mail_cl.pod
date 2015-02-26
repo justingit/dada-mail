@@ -1,0 +1,326 @@
+=pod
+
+=head1 Dada Mail Installation/Configuration - Command Line Interface
+
+Dada Mail is installed/configured using the included installer, either using its 
+web-based interface, or the command line interface. The web-based interface will 
+basically only work if you already have CGI support on your server. If you don't, 
+you'll want to use the command line interface.  
+
+Please file any problems at: 
+
+	https://github.com/justingit/dada-mail/issues
+
+=head1 Required Paramaters
+
+The following parameters are required, if you're INSTALLING Dada Mail. If you 
+are UPGRADING Dada Mail, there are separate options to make things easier: 
+ 
+=head2 --dada_files_loc
+
+Dada Mail needs a certain directory structure to keep its configuration files, 
+temporary files, etc in.  The top directory will be called, ".dada_files" and 
+will need to be readable/writable to whatever process runs Dada Mail. 
+
+Set C<--dada_files_loc> to the parent directory you would like the .dada_files 
+directory to be created in. 
+ 
+=head2 --program_url
+
+The URL used to access Dada Mail. 
+
+=head2--dada_root_pass
+
+The Dada Mail Root Password you'd like to use 
+
+=head2 --support_files_dir_path --support_files_dir_url
+
+Dada Mail keeps its static files in a directory called, "dada_mail_support_files"
+(images/javascripts,etc). Set the parent directory this should be created in 
+using these two parameters.
+
+C<--support_files_dir_path> should contain the absolute server path to this directory
+
+C<--support_files_dir_url> should contain the URL that maps to this directory
+
+=head2 --backend
+
+The backend you'd like to use. Can be set to use any of the following: 
+
+=over
+
+=item * mysql
+ 
+Uses a MySQL database
+
+=item * Pg
+
+Uses a PostgreSQL database
+
+=item * SQLite
+
+Uses a SQLite database - good for testing/development, but most likely 
+not something you want to use for production use. 
+
+=back
+
+If you set, C<--backend> to either, C<mysql>, or, C<Pg>, you will also have to pass
+the following parameters: 
+
+=over
+
+=item * --sql_server
+
+The SQL server
+
+=item * --sql_port
+
+SQL port - can be set to, "auto" to choose the default port for mysql and Pg
+
+=item * --sql_database
+
+The name of your SQL database
+
+=item * --sql_username
+
+Your SQL username
+
+=item * --sql_password
+
+Your SQL password
+
+=back
+
+=head1 Optional Paramaters 
+
+=head2 --deployment_running_under
+
+Dada Mail defaults to, "CGI". Supported are the following:
+
+=over
+
+=item * CGI
+
+When running Dada Mail as a CGI scripts using something like Apache and mod_cgi,
+most likely in a shared hosting environment. This is the default configuration, 
+so you will not need to pass this parameter.
+
+=item * FastCGI
+
+This will set up Dada Mail to run as a FastCGI script using CGI::Fast. This 
+would be useful if you're running under Apache, but would like to run Dada Mail
+as a FastCGI script using mod_fastcgi or mod_fcgi. 
+
+If you want to run Dada Mail under a reverse proxy, we'd suggest instead using 
+the PSGI deployment option instead
+
+=item * PSGI
+
+Use this option to run Dada Mail under PSGI/Plack. Doing so will set up Dada Mail's
+own "app.psgi" script inside its "dada" directory, which you can then start up
+and utilize  however you would like using the wonders of PSGI:  
+
+    sudo plackup --port 9090 --host 127.0.0.1
+
+=back
+
+=head2 --install_plugins
+
+Takes a comma separated (no space between the comma) list of plugin/extension names. 
+
+The following plugins/extensions are supported: 
+
+=over
+
+=item * mailing_monitor
+
+=item * change_root_password
+
+=item * screen_cache
+
+=item * log_viewer
+
+=item * tracker
+
+=item * bridge
+
+=item * bounce_handler
+
+=item * change_list_shortname
+
+=item * password_protect_directories
+
+=item * multiple_subscribe
+
+=item * blog_index
+
+=back
+	
+Example: 
+
+	--install_plugins mailing_monitor,change_root_password,screen_cache
+
+This also works: 
+
+	--install_plugins mailing_monitor --install_plugins change_root_password --install_plugins screen_cache
+
+=head2 --install_wysiwyg_editors
+
+If passed, will enable you to install the WYSIWYG editors +  File Browser. 
+You will *also* have to pass one or more of the following: 
+
+=over
+
+=item * --wysiwyg_editor_install_ckeditor
+
+Installs CKeditor
+
+=item * --wysiwyg_editor_install_tiny_mce
+
+Installs Tiny MCE
+	
+=item * --file_browser_install
+	
+pass either, C<kcfinder> to install the KCFinder File Browser,
+or pass, C<core5_filemanager> to install the Core5 Filemanager
+
+=back
+
+=head2 Amazon SES
+
+Dada Mail support for using Amazon SES to send messages out, sending verification 
+email messages to addresses you would like to use the service, and to find out 
+your sending stats and limitations. To do that, you will need to pass your 
+C<AWSAccessKeyId> and C<AWSSecretKey>.
+
+=over
+
+=item * --amazon_ses_AWSAccessKeyId
+
+Your AWSAccessKeyId
+
+=item * --amazon_ses_AWSSecretKey
+    
+Your AWSSecretKey
+    
+=item * --amazon_ses_AWS_endpoint
+    
+Optionally, you may set the AWS Endpoint. Available endpoints are listed here: 
+    
+L<http://docs.aws.amazon.com/ses/latest/DeveloperGuide/regions.html>    
+
+C<us-east> is used by default
+    
+=item * --amazon_ses_Allowed_Sending_Quota_Percentage
+
+=back
+
+=head1 Examples
+
+An example of invoking the installer with the above parameters: 
+
+	./install.cgi --program_url http://example.com/cgi-bin/dada/mail.cgi \
+	--dada_root_pass secret \
+	--dada_files_loc /home/example \
+	--support_files_dir_path /home/example/public_html \
+	--support_files_dir_url http://example.com \
+	--backend mysql \
+	--sql_server localhost \
+	--sql_port 3306 \
+	--sql_database dada_mail \
+	--sql_username username \
+	--sql_password password \
+	--install_plugins mailing_monitor \
+	--install_plugins change_root_password \
+	--install_plugins screen_cache \
+	--install_plugins log_viewer \
+	--install_plugins tracker \
+	--install_plugins multiple_subscribe \
+	--install_plugins blog_index \
+	--install_plugins default_mass_mailing_message \
+	--install_plugins change_list_shortname \
+	--install_wysiwyg_editors \
+	--wysiwyg_editor_install_ckeditor \
+	--wysiwyg_editor_install_tiny_mce \
+	--file_browser kcfinder
+
+=head1 Upgrading
+
+If you are using the installer to upgrade from an install of dada mail you installed, 
+using the installer, you may simply pass the, 
+
+	--dada_files_loc
+		
+flag, as well as the, 
+
+	--upgrading
+	
+parameter, and the installer will install Dada Mail, based on the previous values in your
+global configuration.
+
+You may then pass I<additional> parameters, to augment the previous configuration. 
+
+For example: 
+
+	./install.cgi --dada_files_loc /home/account --upgrading
+	
+Will upgrade Dada Mail, pulling the previous global config values, 
+
+	./install.cgi --dada_files_loc /home/account --upgrading \
+	--install_wysiwyg_editors \
+	--wysiwyg_editor_install_ckeditor
+	--install_plugins mailing_monitor,change_root_password,screen_cache
+	
+Will upgrade Dada Mail, pulling the previous global config values, as well as
+making sure the CKEditor and the three plugins are also installed. 
+
+You CANNOT use the, C<--dada_files_dir_setup> parameter with the, C<--upgrading> 
+parameter. You must explicitly set the, C<--dada_files_loc>. 
+
+If performing an partial upgrade or doing some of your installation manually, 
+you can tell Dada Mail to skip some of the tests it would usually preform, before 
+configuring Dada Mail: 
+
+=over
+
+=item * --dada_files_dir_setup 
+
+If you pass this parameter with a value of, "auto", you do not need to 
+pass the,  "--dada_files_loc" parameter provided that you're certain that 
+the directory it automatically discovers to create the, ".dada_files" 
+directory structure will be correct. The installer usually guesses the home 
+directory.
+	
+=item * --skip_configure_SQL
+
+By default, the installer will make sure the database you pass in, 
+"--sql_database" doesn't already have the tables required for a Dada Mail
+install. If you've already set up these tables (for example, in a previous
+version of Dada Mail) pass this parameter with a value of, "1" to simply 
+use the sql_* parameters you're passing, without attempting to set up 
+the database, itself. 
+
+=item * --if_dada_files_already_exists
+
+If you pass, C<keep_dir_create_new_config>, the installer will install Dada Mail,
+ even if a already-existing, C<.dada_files> directory is found. 
+
+If you pass this parameter, C<skip_configure_dada_files>, NO other parameter is really 
+required, except, C<--dada_files_loc>,  provided that the directory you pass in that parameter
+ has an already-set up C<.dada_files> directory,  including a valid C<.dada_config> file. When passing this 
+parameter, this  script will simply change the, "dada/DADA/Config.pm" file to point to 
+the already-created C<.dada_files> directory.
+
+=back
+
+=head1 Other Paramaters
+
+=head2 --help
+
+Displays this help doc. Use: 
+	
+    ./install.cgi | less 
+		
+(or something similar) so that the script doesn't zoom to the end.
+
+=cut

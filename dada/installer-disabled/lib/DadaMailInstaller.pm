@@ -299,6 +299,10 @@ sub setup {
             'wysiwyg_editor_install_tiny_mce!',
             'file_browser_install=s',
             'deployment_running_under=s',
+            'amazon_ses_AWSAccessKeyId=s',
+            'amazon_ses_AWSSecretKey=s',
+            'amazon_ses_AWS_endpoint=s',
+            'amazon_ses_Allowed_Sending_Quota_Percentage=s',
             'help', 
         );
         
@@ -332,6 +336,7 @@ sub cl_run {
     
     $dash_opts->{-current_dada_files_parent_location} = $cl_params->{dada_files_loc};
     
+    # UPGRADING? 
     if ( exists( $cl_params->{upgrading} ) ) {
         if ( $dash_opts->{-upgrading} == 1 ) {
             $dash_opts->{-install_type}                       = 'upgrade';
@@ -345,6 +350,7 @@ sub cl_run {
         }
     }
 
+    # PLUGINS!
     if ( exists( $cl_params->{install_plugins} ) ) {
         my @install_plugins = split( /,/, join( ',', @{ $cl_params->{install_plugins} } ) );
         for (@install_plugins) {
@@ -353,6 +359,8 @@ sub cl_run {
         delete $dash_opts->{-install_plugins};
     }
 
+    # SQLite needs "-sql_database" set to the name of the file you want the 
+    # database saved as, but it's not required you explicitly set that name: 
     if(exists($cl_params->{backend})){ 
         $cl_params->{backend} eq 'SQLite') { 
             if(!exists($dash_opts->{-sql_database})){ 
@@ -360,8 +368,14 @@ sub cl_run {
             }
         }
     }
+    
+    # Amazon SES: 
+    if(exists($cl_params->{amazon_ses_AWSAccessKeyId})
+    && exists($cl_params->{amazon_ses_AWSSecretKey}
+    ){ 
+        $cl_params->{configure_amazon_ses} = 1; 
+    }
 
-    # This is very lazy of me - $q->param() is being used as a stash for persistance
     if ( scalar( keys %$cl_params ) == 0 ) {
         return $self->cl_quickhelp();
         exit;
@@ -371,7 +385,7 @@ sub cl_run {
         exit;
     }
 
-    # Uh, so we don't have to re-type this on the cl:
+    # Dada Root Pass - no need to retype it on the CL
     if ( exists( $dash_opts->{-dada_root_pass} ) ) {
         $dash_opts->{-dada_pass_use_orig}   = 0;
         $dash_opts->{-dada_root_pass_again} = $dash_opts->{-dada_root_pass};

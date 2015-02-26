@@ -16,9 +16,17 @@ INSTALLATION: REQUIRED PARAMETERS:
 The following parameters are required, if you're INSTALLING Dada Mail. If you 
 are UPGRADING Dada Mail, you may have other options. 
  
+--dada_files_loc
+
+    Dada Mail needs a certain directory structure to keep its configuration files, 
+    temporary files, etc in. The top directory will be called, ".dada_files"
+    
+    Set --dada_files_loc to the parent directory you would like the .dada_files 
+    directory to be created in. 
+ 
 --program_url
 
-	The URL of your Dada Mail, "mail.cgi" script
+	The URL used to access Dada Mail. 
 
 --dada_root_pass
 
@@ -27,37 +35,14 @@ are UPGRADING Dada Mail, you may have other options.
 --support_files_dir_path
 --support_files_dir_url
 
-	These parameters need to be passed with the value publicly accessible directory 
-	(something in your public_html directory), in both the absolute server path
-	(--support_files_dir_path) and URL (--support_files_dir_url). 
-	
-	This directory will have an additional directory created inside it, called, 
-	"dada_mail_support_files", where the installer will place the necessary 
-	static files/resouces required for Dada Mail. 
-
---dada_files_loc
-
-	The directory that the installer should create the, ".dada_files" directory 
-	under
-
---deployment_running_under
-
-    Optional, defaults to, "CGI". Pass one of the following: 
-
-    * FastCGI to run under FastCGI
-
-    * PSGI to run under FastCGI/Plack
-
-    As long as your web server is set up to run CGI scripts (Apache, mod_cgi),
-    setting this parameter to, "CGI" will be all you need. 
-
-    If you're running Dada Mail under Apache and mod_fastcgi/fcgi, you again should 
-    be pretty much all set. 
-
-    Running Dada Mail under (say) nginx and either FastCGI or PSGI/Plack, you will 
-    most definitely have to set up the server configuration and manually start up
-    Dada Mail as a FastCGI or PSGI process. 
-
+    Dada Mail keeps its static files in a directory called, "dada_mail_support_files"
+    (images/javascripts,etc). Set the parent directory this should be created in 
+    using these two parameters.
+    
+    --support_files_dir_path should contain the absolute server path to this directory
+    
+    --support_files_dir_url should contain the URL that maps to this directory
+    
 --backend
 
 	The backend you'd like to use. Can be set to use any of the following: 
@@ -70,7 +55,8 @@ are UPGRADING Dada Mail, you may have other options.
 		
 	SQLite
 	
-	    Uses a SQLite database
+	    Uses a SQLite database - good for testing/development, but most likely 
+	    not something you want to use for production use. 
 		
 If you set, --backend to either, "mysql", or, "Pg" you will also have to pass
 the following parameters: 
@@ -91,6 +77,33 @@ the following parameters:
 		Your mysql password
 
 OPTIONAL PARAMETERS
+
+    --deployment_running_under
+
+     Optional, Dada Mail defaults to, "CGI". Supports the following:
+    
+    * CGI
+    
+    When running Dada Mail as a CGI scripts using something like Apache and mod_cgi,
+    most likely in a shared hosting environment. This is the default configuration, 
+    so you will not need to pass this parameter.
+    
+    * FastCGI
+    
+    This will set up Dada Mail to run as a FastCGI script using CGI::Fast. This 
+    would be useful if you're running under Apache, but would like to run Dada Mail
+    as a FastCGI script using mod_fastcgi or mod_fcgi. 
+    
+    If you want to run Dada Mail under a reverse proxy, we'd suggest instead using 
+    the PSGI deployment option instead
+    
+    * PSGI
+    
+    Use this option to run Dada Mail under PSGI/Plack. Doing so will set up Dada Mail's
+    own "app.psgi" script inside its "dada" directory, which you can then start up
+    and utilize  however you would like using the wonders of PSGI:  
+
+        sudo plackup --port 9090 --host 127.0.0.1
 
 	--install_plugins
 
@@ -138,7 +151,32 @@ You will *also* have to pass one or more of the following:
 	    pass either, "kcfinder" to install the KCFinder File Browser,
 	    or pass, "core5_filemanager" to install the Core5 Filemanager
 
-A complete example of invoking the installer with the above parameters: 
+Amazon SES
+
+Dada Mail support for using Amazon SES to send messages out, sending verification 
+email messages to addresses you would like to use the service, and to find out 
+your sending stats and limitations. To do that, you will need to pass your 
+AWSAccessKeyId and AWSSecretKey.
+
+    --amazon_ses_AWSAccessKeyId
+    
+    Your AWSAccessKeyId
+    
+    --amazon_ses_AWSSecretKey
+    
+    Your AWSSecretKey
+    
+    --amazon_ses_AWS_endpoint
+    
+    Optionally, you may set the AWS Endpoint. Available endpoints are listed here: 
+    
+    http://docs.aws.amazon.com/ses/latest/DeveloperGuide/regions.html
+    
+    us-east is used by default
+    
+    --amazon_ses_Allowed_Sending_Quota_Percentage
+
+An example of invoking the installer with the above parameters: 
 
 	./install.cgi --program_url http://example.com/cgi-bin/dada/mail.cgi \
 	--dada_root_pass secret \
