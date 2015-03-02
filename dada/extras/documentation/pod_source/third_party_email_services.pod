@@ -76,22 +76,27 @@ Before setting up an account with any of these services, double-check their docs
 
 =head3 MailGun
 
-l<http://mailgun.com>
+L<http://mailgun.com>
 
 =head3 Elastic Email
 
-l<https://elasticemail.com/>
+L<https://elasticemail.com/>
 
 =head3 Socket Labs
 
-l<http://www.socketlabs.com/>
+L<http://www.socketlabs.com/>
 
 =head3 Mandrill
 
-l<http://mandrill.com/>
+L<http://mandrill.com/>
 
 =head3 turboSMTP 
 
-l<http://www.serversmtp.com/en/smtp-mailing-list-distributors>
+L<http://www.serversmtp.com/en/smtp-mailing-list-distributors>
+
+=head3 Unified eMail
+
+L<http://www.unifiedemail.net> 
+
 
 =cut
