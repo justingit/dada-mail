@@ -414,7 +414,7 @@ All other options for a mailing list are still available for a Private List, all
 
 More information about Private and Public Mailing Lists:
 
-L<http://dadamailproject.com/d/features-public_and_private_lists.pod>
+L<http://dadamailproject.com/d/features-public_and_private_lists.pod.html>
 
 =head3 Abuse Reporting
 
