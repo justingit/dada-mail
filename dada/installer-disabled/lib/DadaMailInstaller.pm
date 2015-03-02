@@ -373,7 +373,7 @@ sub cl_run {
     if(exists($cl_params->{amazon_ses_AWSAccessKeyId})
     && exists($cl_params->{amazon_ses_AWSSecretKey})
     ){ 
-        $cl_params->{configure_amazon_ses} = 1; 
+        $dash_opts->{-configure_amazon_ses} = 1; 
     }
 
     if ( scalar( keys %$cl_params ) == 0 ) {
