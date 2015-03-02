@@ -718,7 +718,7 @@ sub _recorded_open_recently {
 
     my $query;
 
-	if ($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql'){ 
+	if ($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' || $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite'){ 
 		    if ( $args->{-timestamp} ) {
 		        $query =
 		            'SELECT COUNT(*) from '
@@ -732,7 +732,13 @@ sub _recorded_open_recently {
 		            'SELECT COUNT(*) from '
 		          . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
 		          . ' where list = ? AND remote_addr = ? AND msg_id = ? AND event = ? AND timestamp >= DATE_SUB(NOW(), INTERVAL 1 HOUR)';
+		        if($DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite'){ 
+      				$query =~ s/NOW\(\)/CURRENT_TIMESTAMP/;
+      			}				
 		    }
+		    
+			
+			
 	}
 	elsif ($DADA::Config::SQL_PARAMS{dbtype} eq 'Pg'){
 		

@@ -123,11 +123,21 @@ sub save {
         warn 'id undefined.'
           if $t;
 
-        my $query =
-            'INSERT INTO '
-          . $self->{sql_params}->{message_drafts_table}
-          . ' (list, screen, role, draft, last_modified_timestamp) VALUES (?,?,?,?, NOW())';
+          my $query; 
+        if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
+            $query =
+                'INSERT INTO '
+              . $self->{sql_params}->{message_drafts_table}
+              . ' (list, screen, role, draft, last_modified_timestamp) VALUES (?,?,?,?, CURRENT_TIMESTAMP)';
+        }
+        else { 
 
+            $query =
+                'INSERT INTO '
+              . $self->{sql_params}->{message_drafts_table}
+              . ' (list, screen, role, draft, last_modified_timestamp) VALUES (?,?,?,?, NOW())';
+        }
+        
         # Uh, it's gotta be a little different.
         if ( $self->{sql_params}->{dbtype} eq 'SQLite' ) {
             $query =~ s/NOW\(\)/CURRENT_TIMESTAMP/;
@@ -168,11 +178,23 @@ sub save {
         warn 'id defined.'
           if $t;
 
-        my $query =
-            'UPDATE '
-          . $self->{sql_params}->{message_drafts_table}
-          . ' SET screen = ?, role = ?, draft = ?, last_modified_timestamp = NOW() WHERE list = ? AND id = ?';
+        my $query; 
+        
+        
+        if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
+            $query =
+                'UPDATE '
+              . $self->{sql_params}->{message_drafts_table}
+              . ' SET screen = ?, role = ?, draft = ?, last_modified_timestamp = CURRENT_TIMESTAMP WHERE list = ? AND id = ?';
+        }
+        else { 
+            $query =
+                'UPDATE '
+              . $self->{sql_params}->{message_drafts_table}
+              . ' SET screen = ?, role = ?, draft = ?, last_modified_timestamp = NOW() WHERE list = ? AND id = ?';
 
+        }
+        
         warn 'QUERY: ' . $query
           if $t;
 
