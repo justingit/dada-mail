@@ -59,7 +59,12 @@ tinymce.init({
      visual: true, 
      convert_urls: false, 
      relative_urls: false,
+     <!-- tmpl_if kcfinder_enabled --> 
      document_base_url :     "<!-- tmpl_var support_files_dir_url -->/<!-- tmpl_var Support_Files_Dir_Name -->/",
+     <!-- /tmpl_if -->
+     <!-- tmpl_if core5_filemanager_enabled --> 
+     document_base_url :     "<!-- tmpl_var support_files_dir_url -->/<!-- tmpl_var Support_Files_Dir_Name -->/",
+     <!-- /tmpl_if -->
      remove_script_host: false, 
      visualblocks_default_state: true,
     

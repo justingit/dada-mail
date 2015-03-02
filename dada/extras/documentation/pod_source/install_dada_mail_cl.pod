@@ -242,22 +242,25 @@ This also works:
 
 =head2 --install_wysiwyg_editors
 
-If passed, will enable you to install the WYSIWYG editors +  File Browser. 
-You will *also* have to pass one or more of the following: 
+You can pass one of the following (or both), to setup and install the following WYSIWYG editors: 
 
 =over
 
-=item * --wysiwyg_editor_install_ckeditor
+=item * ckeditor
 
-Installs CKeditor
+=item * tiny_mce
 
-=item * --wysiwyg_editor_install_tiny_mce
+=back
 
-Installs Tiny MCE
+Example: 
+
+    --install_wysiwyg_editors ckeditor,tiny_mce
+
+=over
+
+=head2 --install_file_browser
 	
-=item * --file_browser_install
-	
-pass either, C<kcfinder> to install the KCFinder File Browser,
+pass B<either>, C<kcfinder> to install the KCFinder File Browser,
 or pass, C<core5_filemanager> to install the Core5 Filemanager
 
 =back
@@ -313,12 +316,14 @@ An example of invoking the installer with the above parameters:
 	--install_plugins tracker \
 	--install_plugins multiple_subscribe \
 	--install_plugins blog_index \
-	--install_plugins default_mass_mailing_message \
 	--install_plugins change_list_shortname \
 	--install_wysiwyg_editors \
 	--wysiwyg_editor_install_ckeditor \
 	--wysiwyg_editor_install_tiny_mce \
 	--file_browser kcfinder
+
+Since the list of options is so long, it may make sense to put the entire command w/options in its own file,
+so that you can resuse your own recipe for installing Dada Mail in multiple locations.
 
 =head1 Upgrading
 
