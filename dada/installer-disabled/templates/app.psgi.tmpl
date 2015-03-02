@@ -29,6 +29,8 @@ my $handler  = sub {
 
 use Plack::Builder;
 builder {
-    enable "Static", path => sub { s!^/dada_mail_support_files/!! }, root => "/Library/WebServer/Documents/dada_mail_support_files/";
+    enable "Static", 
+    path => sub { s!^/dada_mail_support_files/!! }, 
+    root => "<!-- tmpl_var support_files_dir_path -->/<!-- tmpl_var Support_Files_Dir_Name -->";
     $handler;
 }

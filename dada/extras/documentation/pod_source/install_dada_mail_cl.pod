@@ -2,14 +2,90 @@
 
 =head1 Dada Mail Installation/Configuration - Command Line Interface
 
-Dada Mail is installed/configured using the included installer, either using its 
-web-based interface, or the command line interface. The web-based interface will 
-basically only work if you already have CGI support on your server. If you don't, 
-you'll want to use the command line interface.  
+Dada Mail is installed/configured using the included installer, either using the installer's web-based interface, or the command line interface. 
 
-Please file any problems at: 
+The web-based interface works great if you are setting up and running Dada Mail in a CGI environment. Otherwise, you probably will want to use the command line interface. 
 
-	https://github.com/justingit/dada-mail/issues
+Installing with the CLI requires command line access (just to be perfectly clear)
+
+=head1 Installing Dada Mail via the CLI
+
+=head2 Download Dada Mail
+
+The latest version of Dada Mail will be listed on: 
+
+L<http://dadamailproject.com/download>
+
+if you are a Pro Dada subscription, you may download the most recent version of Pro Dada at: 
+
+L<http://dadamailproject.com/pro_dada>
+
+Copy the distribution to the directory you would like to install Dada Mail under. 
+
+=head2 Uncompress the Distribution
+
+Uncompress Dada Mail - this will create a new directory named C<dada>. Change into 
+this directory:
+
+    gunzip dada-8_0_0-alpha3.tar.gz
+    tar -xvf dada-8_0_0-alpha3.tar
+    cd dada
+
+In the C<dada> directory, rename the, "installer-disabled" directory to simply, C<install> and change into the 
+directory. Once in the C<installer> directory,change the permissions of the C<install.cgi> 
+script to, C<755>: 
+
+    mv installer-disabled installer
+    cd installer
+    chmod 755 install.cgi
+
+You're now ready to run the C<install.cgi> install/configuration script. 
+
+Below are instructions on how to use the C<install.cgi> script. To make sure permissions are set correctly, 
+we suggest running the C<install.cgi> script under the same owner as will run Dada Mail, 
+or change the ownership of the files at a later on - just don't forget!
+
+=head1 Introduction to the Installation/Configuration Process
+
+The C<install.cgi> script takes care of the following things: 
+
+=over
+
+=item * Creates the .dada_files directory structure
+
+Dada Mail uses this directory structure to save it's configuration file, and 
+keep its temporary files, amongst other things. If you use SQLite for your backend, 
+the SQLite database will be saved here, as well. 
+
+=item *  Writes the .dada_config configuration file. 
+
+Dada Mail's global configuration file is called, C.dada_config> and is 
+written in Perl. Any global changes you would like to make to Dada Mail should be 
+made in this file. The global defaults are located in C<dada/DADA/Config.pm>, it 
+is not suggested that you make changes to this file. 
+
+=item * Copies over static files
+
+Dada Mail has a collection of static files that need to be copied over and in some 
+cases also configured to work. Static files include images, stylesheets and javascript files - 
+some of these need extra configuration. Dada Mail keeps all of these files in a directory 
+called C<dada_mail_support_files>. The collection of these files will be copied from the, C<dada/static> 
+directory from the distribution, but the design is not to configure Dada Mail to use the location 
+as the location for your C<dada_mail_support_files> directory> - they should most 
+definitely be located outside of the C<dada> directory. 
+
+=item * Verifies configuration information
+
+The installer will make sure that the information you submit is correct - files 
+can be written where you ask them to be written, the database connection works, etc. 
+
+=back
+
+The C<install.cgi> script does not take care of any web server configuration, so for example, if you run Dada Mail under PSGI/Plack, you will need to configure your webserver (nginx, most likely) to run Dada Mail, once you start the PSGI process. 
+
+More on running Dada Mail under nginx:
+
+L<http://dadamailproject.com/d/features-psgi_support.pod.html>
 
 =head1 Required Paramaters
 
@@ -322,5 +398,12 @@ Displays this help doc. Use:
     ./install.cgi | less 
 		
 (or something similar) so that the script doesn't zoom to the end.
+
+=head1 Bugs
+
+Please file any problems at: 
+
+L<https://github.com/justingit/dada-mail/issues> 
+
 
 =cut

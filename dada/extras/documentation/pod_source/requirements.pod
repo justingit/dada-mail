@@ -4,11 +4,13 @@
 
 Requirements needed to run Dada Mail
 
-Dada Mail is designed to be fairly flexible in the type of environment you run it in, so long as that environment is Unix/Linux-like, you have access to Perl v5.8.1 or later and your web server can execute CGI scripts. 
+Dada Mail is designed to be fairly flexible in the type of environment you run it in, so long as that environment is Unix/Linux-like, you have access to Perl v5.10.1 or later and your web server can execute CGI scripts. 
 
 =head2 Environment
 
-For the most part, Dada Mail is a web application; you interact with it via a web browser and it lives on top of a web server. Dada Mail is a simple CGI app for the most part, it does not currently support C<mod_perl> or even C<Fast CGI>, so those are not prerequisites. 
+For the most part, Dada Mail is a web application; you interact with it via a web browser and it lives on top of a web server. 
+
+Dada Mail can be run is a simple CGI app, a FastCGI app, or as a PSGI app.
 
 Dada Mail is not a desktop application. 
 
@@ -22,22 +24,15 @@ Solaris should also work well, but there are some issue with Sun's file locking 
 
 Dada Mail isn't ever tested on a Windows Server or even Apache running on top of Windows. 
 
-Fair warning.
-
-One major stumbling block is Perl for Windows lack of support for the C<fork()> built-in, but this support has gotten better in time. We still don't test Dada Mail on Windows, though. 
-
-You'll also want to use the SQL backend if you ever attempt to run Dada Mail on a Windows-based server
-
 =head2 Perl 5.10.1
 
 Since Dada Mail is a CGI app, you'll need support for Perl CGI scripts within your web server environment. 
 
 Dada Mail is not a PHP script, so the version of PHP that you have available will not make much of a difference. 
 
-
 =head2 Mail Transport Agent
 
-Dada Mail can pass messages to send to a sendmail-like command that applications like sendmail, qmail, postfix, exim, etc come with, or it can pass messages using the SMTP protocol. Amazon SES support is also avaiable. You will need one of these. Dada Mail is not an SMTP server itself. 
+Dada Mail can pass messages to send to a sendmail-like command that applications like sendmail, qmail, postfix, exim, etc come with, or it can pass messages using the SMTP protocol. Amazon SES support is also available. You will need one of these. Dada Mail is not an SMTP server itself. 
 
 =head2 Backend Options
 
@@ -45,7 +40,7 @@ Dada Mail can pass messages to send to a sendmail-like command that applications
 
 Dada Mail is tested with MySQL B<5>, PostgreSQL B<8> and SQLite B<3>. We highly suggest using Dada Mail with either MySQL or PostgreSQL. 
 
-To utilize these backens, not only will you have to have these databases installed, you will need the Perl driver for these databases: 
+To utilize these backends, not only will you have to have these databases installed, you will need the Perl driver for these databases: 
 
 =over
 

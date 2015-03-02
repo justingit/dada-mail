@@ -362,7 +362,7 @@ sub cl_run {
     # SQLite needs "-sql_database" set to the name of the file you want the 
     # database saved as, but it's not required you explicitly set that name: 
     if(exists($cl_params->{backend})){ 
-        $cl_params->{backend} eq 'SQLite') { 
+        if($cl_params->{backend} eq 'SQLite') { 
             if(!exists($dash_opts->{-sql_database})){ 
                 $dash_opts->{-sql_database} = 'dadamail';
             }
@@ -371,7 +371,7 @@ sub cl_run {
     
     # Amazon SES: 
     if(exists($cl_params->{amazon_ses_AWSAccessKeyId})
-    && exists($cl_params->{amazon_ses_AWSSecretKey}
+    && exists($cl_params->{amazon_ses_AWSSecretKey})
     ){ 
         $cl_params->{configure_amazon_ses} = 1; 
     }
@@ -2693,7 +2693,6 @@ sub setup_deployment {
     my $self = shift;
     my $ip   = $self->param('install_params');
 
-    
     require DADA::Security::Password;
     my $ran_str      = DADA::Security::Password::generate_rand_string() . '.' . time;
     
@@ -2735,8 +2734,23 @@ sub setup_deployment {
         return 1;
     }
     elsif($ip->{-deployment_running_under} eq 'PSGI' ) {
-        installer_cp( make_safer($run->{psgi}->{tmpl}), make_safer($run->{psgi}->{enabled}) );
+        #installer_cp( make_safer($run->{psgi}->{tmpl}), make_safer($run->{psgi}->{enabled}) );
+        my $psgi_app  = DADA::Template::Widgets::screen(
+            {
+                -screen => 'app.psgi.tmpl',
+                -vars   => {
+                    support_files_dir_path => $ip->{-support_files_dir_path}, 
+                    Support_Files_Dir_Name => $Support_Files_Dir_Name, 
+                }
+            }
+        );
+        
+        open my $app_psgi_script, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', make_safer($run->{psgi}->{enabled})
+            or croak $!;
+        print $app_psgi_script $psgi_app or croak $!;
+        close $app_psgi_script or croak $!;
         installer_chmod( 0755, make_safer($run->{psgi}->{enabled}) );
+        
         return 1;        
     }
     else {

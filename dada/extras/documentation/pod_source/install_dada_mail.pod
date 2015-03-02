@@ -14,7 +14,7 @@ Download Pro Dada at:
 
 L<http://dadamailproject.com/pro_dada>
 
-Here's more information about B<Pro Dada>: 
+More information about B<Pro Dada>: 
 
 L<http://dadamailproject.com/purchase/pro.html> 
 
@@ -67,9 +67,7 @@ You may have to uncompress and prep Dada Mail manually.
 
 </div>
 
-
 =end html
-
 
 =head2 Configuring Dada Mail with the Dada Mail Installer
 
@@ -344,7 +342,6 @@ This screencast goes step by step, slowly through the entire process of installi
 
 L<https://www.youtube.com/watch?v=x7PRauNDKA4> 
 
-
 =head2 Command Line Interface
 
 An alternative, command line interface is available, instructions can be 
@@ -352,15 +349,9 @@ found on how to use it, by invoking the script with the, C<--help> flag,
 
  shell>./install.cgi --help
 
-L<http://dadamailproject.com/support/documentation/install_dada-command_line.pod.html>
+L<http://dadamailproject.com/support/documentation/install_dada-cl.pod.html>
 
-most of the options available on the web-based interface are available in the command line interface, except the installation of the plugins/extensions. 
-
-=head2 Manual Installation
-
-We suggest using the Dada Mail Installer, but you can still install Dada Mail manually: 
-
-L<http://dadamailproject.com/support/documentation/manually_install_dada_mail.pod.html>
+most of the options available on the web-based interface are available in the command line interface.
 
 =cut
 

@@ -1,0 +1,62 @@
+=pod
+
+=head1 Dada Mail PSGI Support
+
+Dada Mail supports running under PSGI. Background:
+
+L<http://plackperl.org/>
+
+I<PSGI is an interface between Perl web applications and web servers, and Plack is a Perl module and toolkit that contains PSGI middleware, helpers and adapters to web servers.>
+
+I<PSGI and Plack are inspired by Python's WSGI and Ruby's Rack.>
+
+=head1 Additional Requirements
+
+Dada Mail will require additional CPAN modules that are not shipped with Dada Mail: 
+
+=over
+
+=item * Task::Plack
+
+=item * Plack::Builder
+
+=item * Plack::Middleware::Static
+
+=back
+
+=head1 Configuring Dada Mail to run under PSGI
+
+You probably will want to install Dada Mail using the command line interface of Dada Mail's included installer. Documentation to do so is located here: 
+
+L<http://dadamailproject.com/d/installer_dada_mail_cl.pod>
+
+One thing to note is the C<--deployment_running_under> flag, which you will want to pass, C<PSGI>: 
+
+    --deployment_running_under PSGI
+
+=head1 Running the PSGI Process
+
+Once you've ran the installer (and the installation/configuration is successful), you will want to change back into the C<dada> directory, and run Dada Mail: 
+
+    plackup --host 127.0.0.1 --port 9090 app.psgi
+
+Dada Mail would then be available at: L<127.0.0.1:9090>
+
+=head1 Configuring your web server
+
+In this example, we'll be using the nginx web server to run the PSGI process via a reverse proxy. Our nginx configuration would include something like the following simplified example:
+
+    http {
+        server { 
+            location / {
+                proxy_pass http://127.0.0.1:9090;
+            }
+        }
+    }
+
+Dada Mail will then be available at, L<http://127.0.0.1>
+
+=back
+
+
+=cut

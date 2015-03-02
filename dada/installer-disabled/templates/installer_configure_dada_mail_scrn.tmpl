@@ -857,8 +857,10 @@ editors also have the ability to make simple HTML tables for basic layouts.
     <div id="deployment_options">
         <fieldset> 
         	<p>
-        			Run <!-- tmpl_var PROGRAM_NAME --> under: 
-        			<select name="deployment_running_under"> 
+        			<label for="deployment_running_under">
+        			    Run <!-- tmpl_var PROGRAM_NAME --> under:
+        			</label>
+        			<select name="deployment_running_under" id="deployment_running_under"> 
         			    <option value="CGI">CGI</option> 
         			    <option value="FastCGI">FastCGI</option> 
         			    <option value="PSGI">PSGI/Plack</option> 

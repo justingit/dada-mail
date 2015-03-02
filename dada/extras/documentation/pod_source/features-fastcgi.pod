@@ -2,19 +2,24 @@
 
 =head1 FastCGI Support
 
-Dada Mail can now be run under FastCGI. 
+Dada Mail can be run under FastCGI. 
 
 =head2 Configuring Dada Mail to run under FastCGI
 
-When installing Dada Mail, look under B<Advanced Configuration (Optional)>
+When installing Dada Mail via the web-based interface, look under B<Advanced Configuration (Optional)>
 
-Check the option, B<Configure FastCGI Options>. Then, check the option, B<Run Dada Mail under FastCGI>. Done! 
+Check the option, B<Configure Deployment Options>.
+In the option labeled, B<Run Dada Mail under:> select, B<FastCGI>. Done! 
+
+When installing Dada Mail via the command line interface, pass the C<--deployment_running_under> flag with the value, C<FastCGI>: 
+
+    --deployment_running_under FastCGI
 
 Doing so will run Dada Mail using the included, C<mail.fcgi> script, rather than C<mail.cgi>
 
 =head1 Requirements
 
-Dada Mail running under FastCGI does have additional requirements, which can usually be detected by Dada Mail, during installation. The following CPAN Modules will need to be installed - they're not bundled with Dada Mail: 
+Dada Mail running under FastCGI does have additional requirements, which can usually be detected by Dada Mail during installation. The following CPAN Modules will need to be installed - they're not bundled with Dada Mail: 
 
 =over
 
@@ -24,7 +29,9 @@ Dada Mail running under FastCGI does have additional requirements, which can usu
 
 =back
 
-Your web hosting account also needs to be support running Perl apps under FastCGI. 
+Your web hosting account also needs to support running Perl apps under FastCGI. FastCGI support for Dada Mail is set up to use an environment similar to having Apache configure with support for the mod_fcgi/mod_fastcgi module: simply accessing the script starts up an FastCGI process, which persists for a specified amount of time (more requests may create a specified pool of processes). If you make global configuration changes to Dada Mail, you will want to manually kill these processes, before you will see your configuration changes.
+
+If you want to run Dada Mail under a different environment, for example: you're running the nginx webserver with a reverse proxy to a fastcgi server, you most likely want to run Dada Mail under PSGI/Plack, where one of the PSGI server options is to run as a FastCGI server.
 
 =head1 Feedback
 
