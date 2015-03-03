@@ -297,6 +297,7 @@ sub setup {
             'install_wysiwyg_editors=s@',
             'install_file_browser=s',
             'deployment_running_under=s',
+            'scheduled_jobs_flavor=s', 
             'amazon_ses_AWSAccessKeyId=s',
             'amazon_ses_AWSSecretKey=s',
             'amazon_ses_AWS_endpoint=s',
@@ -326,8 +327,8 @@ sub cl_run {
         exit;
     }
     
-    require Data::Dumper; 
-    $r .= "Passed Params:\n\n" . Data::Dumper::Dumper($cl_params); 
+   # require Data::Dumper; 
+   # $r .= "Passed Params:\n\n" . Data::Dumper::Dumper($cl_params); 
     
     my $dash_opts = {};
     foreach ( keys %$cl_params ) {
@@ -352,14 +353,24 @@ sub cl_run {
 
             my $former_opts = $self->grab_former_config_vals();
             $dash_opts = _fold_hashref( $dash_opts, $former_opts );
+            
+          #  $r .= 'scheduled_jobs_flavor' . $dash_opts->{-scheduled_jobs_flavor}; 
+            
             #require Data::Dumper; 
             #$r .= 'Previous Params: ' . Data::Dumper::Dumper($dash_opts); 
         }
     }
 
+    $dash_opts->{-configure_scheduled_jobs} = 1; 
+    if ( exists( $cl_params->{scheduled_jobs_flavor} ) ) {
+    }
+    else { 
+        $dash_opts->{-scheduled_jobs_flavor} = '_sched' . uc( substr( DADA::App::Guts::generate_rand_string_md5(), 0, 16 ) );   
+    }
+
     # WYSIWYG Editors: 
     if ( exists( $cl_params->{install_wysiwyg_editors} ) ) {
-        $r .= "we got WYSIWYG!\n"; 
+     #   $r .= "we got WYSIWYG!\n"; 
         my @wysiwyg_editors = split( /,/, join( ',', @{ $cl_params->{install_wysiwyg_editors} } ) );
         for(@wysiwyg_editors){ 
             if($_ eq 'ckeditor'){ 
@@ -376,7 +387,7 @@ sub cl_run {
         }
     }
     else { 
-        $r .= "No WYSIWYG wah\n";
+        #$r .= "No WYSIWYG wah\n";
         $dash_opts->{-install_wysiwyg_editors} = 0;
     }
     
@@ -467,6 +478,15 @@ sub cl_run {
             }
         }
     }
+    
+    my $ip   = $self->param('install_params');
+    my $sched_flavor = $ip->{'-scheduled_jobs_flavor'} || '_schedules';
+    my $curl_location = `which curl` || '/cannot/find/curl';
+    chomp($curl_location); 
+    
+    $r .= "Cronjob Example:\n\n"; 
+    $r .= $curl_location . ' -s --get --url ' . $dash_opts->{'-program_url'} . '/' . $sched_flavor . '/_all/_all/_verbose/' . "\n\n";
+    
     return $r; 
 }
 
@@ -1040,7 +1060,7 @@ sub grab_former_config_vals {
     # $SCHEDULED_JOBS_OPTIONS
 
     if ( keys( %{$BootstrapConfig::SCHEDULED_JOBS_OPTIONS} ) ) {
-        $opt->{'configure_scheduled_jobs_options'} = 1;
+        $opt->{'configure_scheduled_jobs'} = 1;
         if ( !exists( $BootstrapConfig::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor} ) ) {
             my $ran_str = '_sched' . uc( substr( DADA::App::Guts::generate_rand_string_md5(), 0, 16 ) );
             $BootstrapConfig::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor} = $ran_str;
@@ -1919,7 +1939,7 @@ sub create_dada_files_dir_structure {
     my $ip   = $self->param('install_params');
     my $loc  = $ip->{-install_dada_files_loc};
 
-    warn '$loc ' . $loc; 
+    #warn '$loc ' . $loc; 
     
     # Not sure this is needed, anymore: 
     if ( $loc eq 'auto' ) {
@@ -2035,7 +2055,7 @@ sub create_dada_config_file {
     if ( $ip->{-scheduled_jobs_flavor} ne '_schedules' ) {
         $ip->{-configure_scheduled_jobs} = 1;
     }
-    if ( $ip->{configure_scheduled_jobs} == 1 ) {
+    if ( $ip->{-configure_scheduled_jobs} == 1 ) {
         $scheduled_jobs_params->{configure_scheduled_jobs} = 1;
         $scheduled_jobs_params->{scheduled_jobs_flavor}    = $ip->{-scheduled_jobs_flavor} || '_schedules';
         $scheduled_jobs_params->{scheduled_jobs_log}       = $ip->{-scheduled_jobs_log} || 0;
@@ -2416,7 +2436,7 @@ sub check_setup {
     my $q  = $self->query;
     my $ip = $self->param('install_params');
     require Data::Dumper; 
-    warn 'at check_setup: ' .  Data::Dumper::Dumper($ip); 
+    #warn 'at check_setup: ' .  Data::Dumper::Dumper($ip); 
     
 
     my $install_dada_files_loc = $self->install_dada_files_dir_at_from_params(
@@ -2470,7 +2490,7 @@ sub check_setup {
             }
         }
 
-        $r .= '$ip->{-backend}: ' . $ip->{-backend} . "\n";
+#        $r .= '$ip->{-backend}: ' . $ip->{-backend} . "\n";
         
         if ( $ip->{-backend} eq 'default' || $ip->{-backend} eq '' ) {
             $errors->{sql_connection} = 0;
@@ -2484,7 +2504,7 @@ sub check_setup {
                 $ip->{-sql_username},
                 $ip->{-sql_password},
             );
-            $r .= '$sql_test_details: ' . $sql_test_details . "\n";
+            #$r .= '$sql_test_details: ' . $sql_test_details . "\n";
             
             if ( $sql_test == 0 ) {
                 $errors->{sql_connection} = 1;
@@ -2588,6 +2608,7 @@ sub check_setup {
 
     # require Data::Dumper;
     #croak Data::Dumper::Dumper( $status, $errors );
+    $self->header_type('none');
     return ( $status, $errors, $r );
 
 }
@@ -2600,8 +2621,8 @@ sub install_dada_files_dir_at_from_params {
 
     my $r;
 
-    require Data::Dumper;
-    warn '$args at install_dada_files_dir_at_from_params: ' . Data::Dumper::Dumper($args);
+    #require Data::Dumper;
+    #warn '$args at install_dada_files_dir_at_from_params: ' . Data::Dumper::Dumper($args);
 
     my $install_dada_files_dir_at = undef;
 
@@ -2617,7 +2638,7 @@ sub install_dada_files_dir_at_from_params {
         }
     }
 
-    warn "\n" . '$install_dada_files_dir_at set to:' . $install_dada_files_dir_at;
+    #warn "\n" . '$install_dada_files_dir_at set to:' . $install_dada_files_dir_at;
 
     # Take off that last slash - goodness, will that annoy me:
     $install_dada_files_dir_at =~ s/\/$//;
@@ -2791,7 +2812,7 @@ sub install_wysiwyg_editors {
     my $self = shift;
     my $ip   = $self->param('install_params');
     
-    warn 'install_wysiwyg_editors ' . $ip->{-install_wysiwyg_editors};
+    #warn 'install_wysiwyg_editors ' . $ip->{-install_wysiwyg_editors};
      
     my $install = $ip->{-install_wysiwyg_editors} || 0;
 
@@ -3337,7 +3358,7 @@ sub test_can_create_dada_files_dir {
     my $self                  = shift;
     my $dada_files_parent_dir = shift;
 
-    warn 'passed: ' . $dada_files_parent_dir; 
+    #warn 'passed: ' . $dada_files_parent_dir; 
     
     # blank?!
     if ( $dada_files_parent_dir eq '' ) {

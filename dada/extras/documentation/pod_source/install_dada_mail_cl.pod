@@ -31,19 +31,18 @@ this directory:
     tar -xvf dada-8_0_0-alpha3.tar
     cd dada
 
-In the C<dada> directory, rename the, "installer-disabled" directory to simply, C<install> and change into the 
-directory. Once in the C<installer> directory,change the permissions of the C<install.cgi> 
-script to, C<755>: 
+In the C<dada> directory, rename the, "installer-disabled" directory to simply, C<install> and change into this directory. 
+Once in the C<installer> directory,change the permissions of the C<install.cgi> script to, C<755>: 
 
     mv installer-disabled installer
     cd installer
     chmod 755 install.cgi
 
-You're now ready to run the C<install.cgi> install/configuration script. 
+You're now ready to run the C<install.cgi> install/configuration script and below are instructions 
+on how to do that. 
 
-Below are instructions on how to use the C<install.cgi> script. To make sure permissions are set correctly, 
-we suggest running the C<install.cgi> script under the same owner as will run Dada Mail, 
-or change the ownership of the files at a later on - just don't forget!
+To make sure permissions are set correctly,  we suggest running the C<install.cgi> script under the same owner as 
+will run Dada Mail (or change the ownership of the files at a later on - just don't forget!)
 
 =head1 Introduction to the Installation/Configuration Process
 
@@ -59,7 +58,7 @@ the SQLite database will be saved here, as well.
 
 =item *  Writes the .dada_config configuration file. 
 
-Dada Mail's global configuration file is called, C.dada_config> and is 
+Dada Mail's global configuration file is called, C.dada_config> and is itself
 written in Perl. Any global changes you would like to make to Dada Mail should be 
 made in this file. The global defaults are located in C<dada/DADA/Config.pm>, it 
 is not suggested that you make changes to this file. 
@@ -261,7 +260,10 @@ Example:
 =head2 --install_file_browser
 	
 pass B<either>, C<kcfinder> to install the KCFinder File Browser,
-or pass, C<core5_filemanager> to install the Core5 Filemanager
+or pass, C<core5_filemanager> to install the Core5 Filemanager. 
+
+Unlike the, C<--install_wysiwyg_editors> option, C<--install_file_browser> (and Dada Mail)
+ only supports installing one file browser/manager at a time.
 
 =back
 
@@ -288,9 +290,15 @@ Optionally, you may set the AWS Endpoint. Available endpoints are listed here:
     
 L<http://docs.aws.amazon.com/ses/latest/DeveloperGuide/regions.html>    
 
-C<us-east> is used by default
+C<us-east> is used by default - use the full URL listed when setting the region
     
 =item * --amazon_ses_Allowed_Sending_Quota_Percentage
+
+Dada Mail can be configured to use all, or only part of your total Amazon SES quota. 
+Setting this paramater will allow you to set that amount. For example, to allow 
+Dada Mail to use only 50% of your total SES sending quota, set this paramater to the following: 
+
+    --amazon_ses_Allowed_Sending_Quota_Percentage 50
 
 =back
 
@@ -317,7 +325,7 @@ An example of invoking the installer with the above parameters:
 	--install_plugins multiple_subscribe \
 	--install_plugins blog_index \
 	--install_plugins change_list_shortname \
-	--install_wysiwyg_editors \
+    --install_wysiwyg_editors ckeditor \
 	--wysiwyg_editor_install_ckeditor \
 	--wysiwyg_editor_install_tiny_mce \
 	--file_browser kcfinder
@@ -348,12 +356,11 @@ For example:
 Will upgrade Dada Mail, pulling the previous global config values, 
 
 	./install.cgi --dada_files_loc /home/account --upgrading \
-	--install_wysiwyg_editors \
-	--wysiwyg_editor_install_ckeditor
+    --install_wysiwyg_editors ckeditor,tiny_mce \
 	--install_plugins mailing_monitor,change_root_password,screen_cache
 	
 Will upgrade Dada Mail, pulling the previous global config values, as well as
-making sure the CKEditor and the three plugins are also installed. 
+making sure CKeditor and TinyMCE is installed, and the three plugins listed are also installed. 
 
 You CANNOT use the, C<--dada_files_dir_setup> parameter with the, C<--upgrading> 
 parameter. You must explicitly set the, C<--dada_files_loc>. 

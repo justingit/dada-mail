@@ -10,10 +10,7 @@ Key:
 [*] Naw...
 [?] Someday
 
-[] make a note about the file browsers probably not working out well via pSGI
-
-
-[ ] Fix S_PROGRAM_URL (still a problem?) 
+[] make sure the sched stuff works in the installer. 
 
 [ ] Things for CGI::App migration: 
 
@@ -28,12 +25,9 @@ Key:
 [] remove MIME::Lite completely 
     (ongoing process) 
     
-[ ] MIME::Lite::HTML compat w/gzip compression... 
-maybe add proxy, basic auth support. 
-
 
 [] Add, "Frequency of email messages" 
-[] ability to share stationary messages. 
+[] ability to share stationery messages. 
 [ ] A way to set an alternative path to perl
 
 [ ] Keep tmp subscriber list fresh in mass mailing metadata. That basically means 

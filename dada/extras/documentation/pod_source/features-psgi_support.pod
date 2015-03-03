@@ -10,6 +10,8 @@ I<PSGI is an interface between Perl web applications and web servers, and Plack 
 
 I<PSGI and Plack are inspired by Python's WSGI and Ruby's Rack.>
 
+PSGI is astonishing simple and incredibly powerful. 
+
 =head1 Additional Requirements
 
 Dada Mail will require additional CPAN modules that are not shipped with Dada Mail: 
@@ -58,5 +60,38 @@ Dada Mail will then be available at, L<http://127.0.0.1>
 
 =back
 
+=head1 PSGI Shortcomings in Dada Mail
+
+The following features current do not work when running Dada Mail under PSGI
+
+=over
+
+=item * File Browser/Manager
+
+Neither KCFinder, nor Core5 Filemanager work under PSGI, as both will be served as static files, rather than php/perl applications. This feature is useful in Dada Mail's Send a Message/Webpage screens to upload images and place them in email messages you are composing, as well as upload files to be used as attachments. 
+
+There may be a way to have the webserver (ngnix)  know to serve the backend for (as an example) KCFinder as a php app. If you do configure nginix this way, we would highly suggest to specify the exact PHP script names you would like to run, and nothing else. 
+
+=item * Bridge Mail Forwarding
+
+Bridge's Mail Forward feature, where messages are piped directly to the application will not work with Dada Mail running under PSGI. You may still use Dada Mail's POP3 support for your List Email. 
+
+One workaround for this is to have a separate script available just for mail forwarding - a copy of this script can be found in Dada Mail's installer directory. The name of this directory is changed to a random name, but should be located at, 
+
+I<dada/installer-disabled[random]/templates> 
+
+Where, C<[random]> is random string of letters and numbers. Inside this C<templates> directory is a file called, C<mail.cgi.tmpl>. Copy this file into the, C<dada> directory and rename it to whatever you'd like (we would suggest giving it a file ending of, ".pl", example: C<mail.pl>. 
+
+Change its permissions to, C<755> and use this as the script used for mail forwarding. Bridge will probably give something like the following as the absolute path to this script: 
+
+I<|/home/youraccount/dada/app.psgi --inject --list listshortname>
+
+This would be wrong. 
+
+Rather, you would use something like the following: 
+
+I<|/home/youraccount/dada/mail.pl --inject --list listshortname>
+
+=back
 
 =cut
