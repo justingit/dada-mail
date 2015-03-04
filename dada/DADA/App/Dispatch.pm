@@ -437,7 +437,7 @@ sub translate {
     }
     
     if(!defined($q->param('flavor')) && defined($q->param('f'))){ 
-        $q->param('flavor', $q->param('f')); 
+        $q->param('flavor', scalar $q->param('f')); 
     }
     
     return $q;

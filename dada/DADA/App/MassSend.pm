@@ -1654,7 +1654,6 @@ sub fill_in_draft_msg {
     my $str;
 
     if ( defined($q_draft) ) {
-
         require HTML::FillInForm::Lite;
         my $h       = HTML::FillInForm::Lite->new;
         my $tmp_str = $args->{-str};
