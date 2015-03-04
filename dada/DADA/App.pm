@@ -435,9 +435,9 @@ sub default {
     my $scrn = DADA::Template::Widgets::default_screen(
 
         # {
-        -email              => $q->param('email'),
-        -list               => $q->param('list'),
-        -error_invalid_list => $q->param('error_invalid_list'),
+        -email              => scalar $q->param('email'),
+        -list               => scalar $q->param('list'),
+        -error_invalid_list => scalar $q->param('error_invalid_list'),
 
         # }
     );
@@ -460,7 +460,7 @@ sub list_page {
         return user_error( { -error => 'bad_setup' } );
     }
 
-    if ( check_if_list_exists( -List => $q->param('list') ) == 0 ) {
+    if ( check_if_list_exists( -List => scalar $q->param('list') ) == 0 ) {
         $q->delete('list');
         return $self->default();
     }
@@ -479,8 +479,8 @@ sub list_page {
     my $scrn = DADA::Template::Widgets::list_page(
         -list           => $list,
         -cgi_obj        => $q,
-        -email          => $q->param('email'),
-        -error_no_email => $q->param('error_no_email') || 0,
+        -email          => scalar $q->param('email'),
+        -error_no_email => scalar $q->param('error_no_email') || 0,
     );
     if ( !$c->profile_on && !defined( $q->param('email') ) && ( $q->param('error_no_email') != 1 ) ) {
         $c->cache( 'list/' . $list . '.scrn', \$scrn );
@@ -1029,7 +1029,7 @@ sub delete_drafts {
 
     my $list = $admin_list;
 
-    my @draft_ids = $q->param('draft_ids');
+    my @draft_ids = $q->multi_param('draft_ids');
 
     require DADA::MailingList::MessageDrafts;
     my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
@@ -1288,7 +1288,7 @@ sub sending_monitor_index {
             },
             -vars => {
                 screen                 => 'sending_monitor',
-                killed_it              => $q->param('killed_it') ? 1 : 0,
+                killed_it              => scalar $q->param('killed_it') ? 1 : 0,
                 mailout_status         => $mailout_status,
                 monitor_mailout_report => $monitor_mailout_report,
             },
@@ -1639,7 +1639,7 @@ sub sending_monitor {
                     screen                    => 'sending_monitor',
                     mailout_exists            => $mailout_exists,
                     message_id                => DADA::App::Guts::strip($id),
-                    message_type              => $q->param('type'),
+                    message_type              => scalar $q->param('type'),
                     total_sent_out            => $status->{total_sent_out},
                     total_sending_out_num     => $status->{total_sending_out_num},
                     mailing_time              => $status->{mailing_time},
@@ -1658,7 +1658,7 @@ sub sending_monitor {
                     auto_pickup_dropped_mailings => $ls->param('auto_pickup_dropped_mailings'),
                     sending_done                 => ( $status->{percent_done} < 100 ) ? 0 : 1,
                     refresh_after                => $refresh_after,
-                    killed_it                    => $q->param('killed_it') ? 1 : 0,
+                    killed_it                    => scalar $q->param('killed_it') ? 1 : 0,
                     sending_status               => $sending_status,
                     is_paused                    => $status->{paused} > 0 ? 1 : 0,
                     paused                       => $status->{paused},
@@ -1689,7 +1689,7 @@ sub sending_monitor {
                 -vars => {
                     screen        => 'sending_monitor',
                     message_id    => DADA::App::Guts::strip($id),
-                    message_type  => $q->param('type'),
+                    message_type  => scalar $q->param('type'),
                     refresh_after => $refresh_after,
                     'list_settings.tracker_show_message_reports_in_mailing_monitor' =>
                       $ls->param('tracker_show_message_reports_in_mailing_monitor'),
@@ -2544,15 +2544,15 @@ sub sending_preferences {
                     can_use_ssl                   => $can_use_ssl,
                     f_flag_settings => $DADA::Config::MAIL_SETTINGS . ' -f' . $ls->param('admin_email'),
 
-                    use_sasl_smtp_auth => $q->param('use_sasl_smtp_auth') ? $q->param('use_sasl_smtp_auth')
+                    use_sasl_smtp_auth => scalar $q->param('use_sasl_smtp_auth') ? scalar $q->param('use_sasl_smtp_auth')
                     : $ls->param('use_sasl_smtp_auth'),
-                    decrypted_pop3_pass => $q->param('pop3_password') ? $q->param('pop3_password')
+                    decrypted_pop3_pass => scalar $q->param('pop3_password') ? scalar $q->param('pop3_password')
                     : $decrypted_pop3_pass,
-                    sasl_auth_mechanism => $q->param('sasl_auth_mechanism') ? $q->param('sasl_auth_mechanism')
+                    sasl_auth_mechanism => scalar $q->param('sasl_auth_mechanism') ? scalar $q->param('sasl_auth_mechanism')
                     : $ls->param('sasl_auth_mechanism'),
-                    sasl_smtp_username => $q->param('sasl_smtp_username') ? $q->param('sasl_smtp_username')
+                    sasl_smtp_username => scalar $q->param('sasl_smtp_username') ? scalar $q->param('sasl_smtp_username')
                     : $ls->param('sasl_smtp_username'),
-                    sasl_smtp_password => $q->param('sasl_smtp_password') ? $q->param('sasl_smtp_password')
+                    sasl_smtp_password => scalar $q->param('sasl_smtp_password') ? scalar $q->param('sasl_smtp_password')
                     : $decrypted_sasl_pass,
 
                     amazon_ses_requirements_widget => DADA::Template::Widgets::amazon_ses_requirements_widget(),
@@ -3817,7 +3817,7 @@ sub view_bounce_history {
     my $bhl     = DADA::App::BounceHandler::Logs->new;
     my $results = $bhl->search(
         {
-            -query => $q->param('email'),
+            -query => scalar $q->param('email'),
             -list  => $list,
             -file  => $DADA::Config::LOGS . '/bounces.txt',
         }
@@ -3829,7 +3829,7 @@ sub view_bounce_history {
             -vars   => {
                 search_results => $results,
                 total_bounces  => scalar(@$results),
-                email          => $q->param('email'),
+                email          => scalar $q->param('email'),
                 type           => 'bounced_list',
                 return_to      => $return_to,
                 return_address => $return_address,
@@ -3863,7 +3863,7 @@ sub subscription_requests {
         }
     }
 
-    my @address        = $q->param('address');
+    my @address        = $q->multi_param('address');
     my $return_to      = $q->param('return_to') || '';
     my $return_address = $q->param('return_address') || '';
 
@@ -3900,7 +3900,7 @@ sub subscription_requests {
 
                 # Make a profile, if needed,
                 require DADA::Profile;
-                my $prof = DADA::Profile->new( { -email => $q->param('email') } );
+                my $prof = DADA::Profile->new( { -email => scalar $q->param('email') } );
                 if ( !$prof->exists ) {
                     $new_profile = 1;
                     $new_pass    = $prof->_rand_str(8);
@@ -3918,13 +3918,13 @@ sub subscription_requests {
             DADA::App::Messages::send_subscription_request_approved_message(
                 {
                     -list   => $list,
-                    -email  => $q->param('email'),
+                    -email  => scalar $q->param('email'),
                     -ls_obj => $ls,
 
                     #-test   => $self->test,
                     -vars => {
                         new_profile        => $new_profile,
-                        'profile.email'    => $q->param('email'),
+                        'profile.email'    => scalar $q->param('email'),
                         'profile.password' => $new_pass,
 
                     }
@@ -4147,7 +4147,7 @@ sub membership {
 
     my $profile_exists = 0;
     require DADA::Profile;
-    my $prof = DADA::Profile->new( { -email => $q->param('email') } );
+    my $prof = DADA::Profile->new( { -email => scalar $q->param('email') } );
     if ($prof) {
         $profile_exists = $prof->exists;
     }
@@ -4166,7 +4166,7 @@ sub membership {
         my $fields = DADA::Profile::Fields->new;
         $fields->insert(
             {
-                -email  => $q->param('email'),
+                -email  => scalar $q->param('email'),
                 -fields => $new_fields,
             }
         );
@@ -4187,7 +4187,7 @@ sub membership {
 
         # this is a hack - if type has nothing, this fails, so we fill it in with, "list"
         if ( !defined($type) || $type eq '' ) { $type = 'list'; }
-        $subscriber_info = $lh->get_subscriber( { -email => $q->param('email') } );
+        $subscriber_info = $lh->get_subscriber( { -email => scalar $q->param('email') } );
 
         # DEV: This is repeated quite a bit...
         require DADA::ProfileFieldsManager;
@@ -4206,7 +4206,7 @@ sub membership {
         }
 
         my $subscribed_to_lt = {};
-        for ( @{ $lh->member_of( { -email => $q->param('email') } ) } ) {
+        for ( @{ $lh->member_of( { -email => scalar $q->param('email') } ) } ) {
             $subscribed_to_lt->{$_} = 1;
         }
 
@@ -4337,7 +4337,7 @@ sub membership {
         my $s   = $dpa->fetch(
             {
                 -list  => $list,
-                -email => $q->param('email'),
+                -email => scalar $q->param('email'),
             }
         );
         my $delivery_prefs = $s->{delivery_prefs} || 'individual';
@@ -4354,7 +4354,7 @@ sub membership {
                 -expr => 1,
                 -vars => {
                     done                           => $done,
-                    email                          => $q->param('email'),
+                    email                          => scalar $q->param('email'),
                     type                           => $type,
                     page                           => $page,
                     query                          => $query,
@@ -4549,7 +4549,7 @@ sub validate_update_email {
 
     }
     else {
-        my @update_list   = $q->param('update_list');
+        my @update_list   = $q->multi_param('update_list');
         my $total_u_count = 0;
 
         foreach my $update_list (@update_list) {
@@ -4638,7 +4638,7 @@ sub validate_remove_email {
     my $type               = xss_filter( $q->param('type') );
     my $email              = xss_filter( $q->param('email') );
     my $process            = xss_filter( $q->param('process') ) || 0;
-    my @remove_from_list   = $q->param('remove_from_list');
+    my @remove_from_list   = $q->multi_param('remove_from_list');
     my $return_to          = xss_filter( $q->param('return_to') ) || 0;
     my $for_multiple_lists = xss_filter( $q->param('for_multiple_lists') ) || 0;
 
@@ -5680,7 +5680,7 @@ sub add_email {
 
                 # This is what updates already existing profile fields and profile passwords;
                 #
-                my @update_fields_address = $q->param("update_fields_address");
+                my @update_fields_address = $q->multi_param("update_fields_address");
 
                 # This is a lot of code, to set one thing:
                 my $subscribed_fields_options_mode =
@@ -5724,7 +5724,7 @@ sub add_email {
                 }
             }
 
-            my @address = $q->param("address");
+            my @address = $q->multi_param("address");
 
             my @munged_add_addresses = ();
             for my $a (@address) {
@@ -6318,7 +6318,7 @@ sub delete_archive {
     if ( !$checksout ) { return $error_msg; }
 
     my $list    = $admin_list;
-    my @address = $q->param("address");
+    my @address = $q->multi_param("address");
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
@@ -6889,7 +6889,7 @@ sub edit_archived_msg {
                     big_blob_of_form_widgets_to_edit_an_archived_message => $form_blob,
                     can_display_message_source                           => $ah->can_display_message_source,
                     id                                                   => $id,
-                    done                                                 => $q->param('done'),
+                    done                                                 => scalar $q->param('done'),
 
                 },
                 -list_settings_vars_param => {
@@ -9628,9 +9628,9 @@ sub archive {
                     uri_encoded_url  => uriescape( $DADA::Config::PROGRAM_URL . '/archive/' . $list . '/' . $id . '/' ),
                     archived_msg_url => $DADA::Config::PROGRAM_NAME . '/archive/' . $list . '/' . $id . '/',
                     massaged_msg_for_display => $massaged_message_for_display,
-                    send_archive_success     => $q->param('send_archive_success') ? $q->param('send_archive_success')
+                    send_archive_success     => scalar $q->param('send_archive_success') ? $q->param('send_archive_success')
                     : undef,
-                    send_archive_errors => $q->param('send_archive_errors') ? $q->param('send_archive_errors')
+                    send_archive_errors => scalar $q->param('send_archive_errors') ? $q->param('send_archive_errors')
                     : undef,
                     show_iframe     => $show_iframe,
                     discussion_list => ( $ls->param('group_list') == 1 ) ? 1
@@ -10610,7 +10610,7 @@ sub remove_subscribers {
     my $list           = $admin_list;
     my $return_to      = $q->param('return_to') || '';
     my $return_address = $q->param('return_address') || '';
-    my @address        = $q->param('address');
+    my @address        = $q->multi_param('address');
 
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
     my ( $d_count, $bl_count ) = $lh->admin_remove_subscribers(
@@ -10649,7 +10649,7 @@ sub process_bouncing_addresses {
 
     my $self    = shift;
     my $q       = $self->query();
-    my @address = $q->param('address');
+    my @address = $q->multi_param('address');
     my $type    = $q->param('type');
     my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
@@ -11358,8 +11358,8 @@ sub file_attachment {
                                     'view_inline_attachment.' . $list . '.' . $id . '.' . $q->param('cid') . '.cid' );
                             }
                             my $scrn = $la->view_inline_attachment(
-                                -id  => $q->param('id'),
-                                -cid => $q->param('cid')
+                                -id  => scalar $q->param('id'),
+                                -cid => scalar $q->param('cid')
                             );
 
                             # Bettin' that it's binary (or at least, unencoded)
@@ -11380,8 +11380,8 @@ sub file_attachment {
                             }
                             else {
                                 my $scrn = $la->view_file_attachment(
-                                    -id       => $q->param('id'),
-                                    -filename => $q->param('filename')
+                                    -id       => scalar $q->param('id'),
+                                    -filename => scalar $q->param('filename')
                                 );
                                 $c->cache( 'view_file_attachment.' . $list . '.' . $id . '.' . $q->param('filename'),
                                     \$scrn );
@@ -11426,7 +11426,7 @@ sub redirection {
     #	use Data::Dumper;
     #	die Dumper([$q->param('key'), $q->param('email')] );
     require DADA::Logging::Clickthrough;
-    my $r = DADA::Logging::Clickthrough->new( { -list => $q->param('list') } );
+    my $r = DADA::Logging::Clickthrough->new( { -list => scalar $q->param('list') } );
     if ( !$r->enabled ) {
         $self->header_type('redirect');
         $self->header_props( -url => $DADA::Config::PROGRAM_URL );
@@ -11442,7 +11442,7 @@ sub redirection {
                         -mid   => $mid,
                         -url   => $url,
                         -atts  => $atts,
-                        -email => $q->param('email'),
+                        -email => scalar $q->param('email'),
                     }
                 );
             }
@@ -11475,14 +11475,14 @@ sub m_o_c {
     }
     else {
         require DADA::Logging::Clickthrough;
-        my $r = DADA::Logging::Clickthrough->new( { -list => $q->param('list') } );
+        my $r = DADA::Logging::Clickthrough->new( { -list => scalar $q->param('list') } );
         if ( $r->enabled ) {
             if ( defined( $q->param('mid') ) ) {
 
                 $r->open_log(
                     {
-                        -mid   => $q->param('mid'),
-                        -email => $q->param('email'),
+                        -mid   => scalar $q->param('mid'),
+                        -email => scalar $q->param('email'),
                     }
                 );
             }
@@ -11648,16 +11648,16 @@ sub profile_login {
                         register_email_again => xss_filter( $q->param('register_email_again') )
                           || '',
 
-                        error_profile_login          => $q->param('error_profile_login')          || '',
-                        error_profile_register       => $q->param('error_profile_register')       || '',
-                        error_profile_activate       => $q->param('error_profile_activate')       || '',
-                        error_profile_reset_password => $q->param('error_profile_reset_password') || '',
-                        password_changed             => $q->param('password_changed')             || '',
-                        logged_out                   => $q->param('logged_out')                   || '',
+                        error_profile_login          => scalar $q->param('error_profile_login')          || '',
+                        error_profile_register       => scalar $q->param('error_profile_register')       || '',
+                        error_profile_activate       => scalar $q->param('error_profile_activate')       || '',
+                        error_profile_reset_password => scalar $q->param('error_profile_reset_password') || '',
+                        password_changed             => scalar $q->param('password_changed')             || '',
+                        logged_out                   => scalar $q->param('logged_out')                   || '',
                         can_use_captcha              => $can_use_captcha,
                         CAPTCHA_string               => $CAPTCHA_string,
-                        welcome                      => $q->param('welcome')                      || '',
-                        removal                      => $q->param('removal')                      || '',
+                        welcome                      => scalar $q->param('welcome')                      || '',
+                        removal                      => scalar $q->param('removal')                      || '',
                         %{ DADA::Profile::feature_enabled() }
                     },
 
@@ -11748,8 +11748,8 @@ sub profile_register {
             -email                     => $register_email,
             -email_again               => $register_email_again,
             -password                  => $register_password,
-            -recaptcha_challenge_field => $q->param('recaptcha_challenge_field'),
-            -recaptcha_response_field  => $q->param('recaptcha_response_field'),
+            -recaptcha_challenge_field => scalar $q->param('recaptcha_challenge_field'),
+            -recaptcha_response_field  => scalar $q->param('recaptcha_response_field'),
         }
     );
     if ( $status == 0 ) {
@@ -12134,25 +12134,25 @@ sub profile {
                     -with   => 'list',
                     -expr   => 1,
                     -vars   => {
-                        errors => $q->param('errors')
+                        errors => scalar $q->param('errors')
                           || 0,
                         'profile.email'   => $email,
                         subscriber_fields => $fields,
                         subscriptions     => $filled,
                         has_subscriptions => $has_subscriptions,
-                        welcome           => $q->param('welcome')
+                        welcome           => scalar $q->param('welcome')
                           || '',
-                        edit => $q->param('edit')
+                        edit => scalar $q->param('edit')
                           || '',
-                        errors_change_password => $q->param('errors_change_password')
+                        errors_change_password => scalar $q->param('errors_change_password')
                           || '',
-                        errors_update_email => $q->param('errors_update_email')
+                        errors_update_email => scalar $q->param('errors_update_email')
                           || '',
-                        error_invalid_email => $q->param('error_invalid_email')
+                        error_invalid_email => scalar $q->param('error_invalid_email')
                           || '',
-                        error_profile_exists => $q->param('error_profile_exists')
+                        error_profile_exists => scalar $q->param('error_profile_exists')
                           || '',
-                        updated_email => $q->param('updated_email')
+                        updated_email => scalar $q->param('updated_email')
                           || '',
 
                         gravators_enabled     => $DADA::Config::PROFILE_OPTIONS->{gravatar_options}->{enable_gravators},

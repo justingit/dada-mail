@@ -573,8 +573,8 @@ sub install_or_upgrade {
                 dada_files_parent_dir               => $dada_files_parent_dir,
                 Dada_Files_Dir_Name                 => $Dada_Files_Dir_Name,
                 found_existing_dada_files_dir       => $found_existing_dada_files_dir,
-                current_dada_files_parent_location  => $q->param('current_dada_files_parent_location'),
-                error_cant_find_dada_files_location => $q->param('error_cant_find_dada_files_location'),
+                current_dada_files_parent_location  => scalar $q->param('current_dada_files_parent_location'),
+                error_cant_find_dada_files_location => scalar $q->param('error_cant_find_dada_files_location'),
                 Self_URL                            => $Self_URL,
             },
         }
@@ -748,10 +748,10 @@ sub scrn_configure_dada_mail {
 
     my $install_dada_files_dir_at = $self->install_dada_files_dir_at_from_params(
         {
-            -install_type                       => $q->param('install_type'),
-            -current_dada_files_parent_location => $q->param('current_dada_files_parent_location'),
-            -dada_files_dir_setup               => $q->param('dada_files_dir_setup'),
-            -dada_files_loc                     => $q->param('dada_files_loc'),  
+            -install_type                       => scalar $q->param('install_type'),
+            -current_dada_files_parent_location => scalar $q->param('current_dada_files_parent_location'),
+            -dada_files_dir_setup               => scalar $q->param('dada_files_dir_setup'),
+            -dada_files_loc                     => scalar $q->param('dada_files_loc'),  
 
         }
     );
@@ -785,18 +785,18 @@ sub scrn_configure_dada_mail {
                 install_dada_files_dir_at          => $install_dada_files_dir_at,
                 test_complete_dada_files_dir_structure_exists =>
                   $self->test_complete_dada_files_dir_structure_exists($install_dada_files_dir_at),
-                dada_files_dir_setup                     => $q->param('dada_files_dir_setup')                     || '',
-                dada_files_loc                           => $q->param('dada_files_loc')                           || '',
-                error_create_dada_mail_support_files_dir => $q->param('error_create_dada_mail_support_files_dir') || 0,
-                error_root_pass_is_blank                 => $q->param('error_root_pass_is_blank')                 || 0,
-                error_pass_no_match                      => $q->param('error_pass_no_match')                      || 0,
-                error_program_url_is_blank               => $q->param('error_program_url_is_blank')               || 0,
-                error_create_dada_files_dir              => $q->param('error_create_dada_files_dir')              || 0,
-                error_dada_files_dir_exists              => $q->param('error_dada_files_dir_exists')              || 0,
-                error_sql_connection                     => $q->param('error_sql_connection')                     || 0,
-                error_sql_table_populated                => $q->param('error_sql_table_populated')                || 0,
-                skip_configure_SQL                       => $q->param('skip_configure_SQL')                       || 0,
-                errors                                   => $q->param('errors')                                   || [],
+                dada_files_dir_setup                     => scalar $q->param('dada_files_dir_setup')                     || '',
+                dada_files_loc                           => scalar $q->param('dada_files_loc')                           || '',
+                error_create_dada_mail_support_files_dir => scalar $q->param('error_create_dada_mail_support_files_dir') || 0,
+                error_root_pass_is_blank                 => scalar $q->param('error_root_pass_is_blank')                 || 0,
+                error_pass_no_match                      => scalar $q->param('error_pass_no_match')                      || 0,
+                error_program_url_is_blank               => scalar $q->param('error_program_url_is_blank')               || 0,
+                error_create_dada_files_dir              => scalar $q->param('error_create_dada_files_dir')              || 0,
+                error_dada_files_dir_exists              => scalar $q->param('error_dada_files_dir_exists')              || 0,
+                error_sql_connection                     => scalar $q->param('error_sql_connection')                     || 0,
+                error_sql_table_populated                => scalar $q->param('error_sql_table_populated')                || 0,
+                skip_configure_SQL                       => scalar $q->param('skip_configure_SQL')                       || 0,
+                errors                                   => scalar $q->param('errors')                                   || [],
                 PROGRAM_URL                              => program_url_guess(),
                 S_PROGRAM_URL                            => program_url_guess(),
                 Dada_Files_Dir_Name                      => $Dada_Files_Dir_Name,
@@ -1412,10 +1412,10 @@ sub scrn_install_dada_mail {
 
     my $install_dada_files_loc = $self->install_dada_files_dir_at_from_params(
         {
-            -install_type                       => $q->param('install_type'),
-            -current_dada_files_parent_location => $q->param('current_dada_files_parent_location'),
-            -dada_files_dir_setup               => $q->param('dada_files_dir_setup'),
-            -dada_files_loc                     => $q->param('dada_files_loc'),  
+            -install_type                       => scalar $q->param('install_type'),
+            -current_dada_files_parent_location => scalar $q->param('current_dada_files_parent_location'),
+            -dada_files_dir_setup               => scalar $q->param('dada_files_dir_setup'),
+            -dada_files_loc                     => scalar $q->param('dada_files_loc'),  
 
         }
     );
@@ -1438,7 +1438,7 @@ sub scrn_install_dada_mail {
                 Trace                         => $Trace,
                 PROGRAM_URL                   => program_url_guess(),
                 S_PROGRAM_URL                 => program_url_guess(),
-                submitted_PROGRAM_URL         => $q->param('program_url'),
+                submitted_PROGRAM_URL         => scalar $q->param('program_url'),
                 Self_URL                      => $Self_URL,
                 scheduled_jobs_flavor         => $sched_flavor,
                 curl_location                 => $curl_location,
@@ -1462,10 +1462,10 @@ sub query_params_to_install_params {
 
     my $install_dada_files_loc = $self->install_dada_files_dir_at_from_params(
         {
-            -install_type                       => $q->param('install_type'),
-            -current_dada_files_parent_location => $q->param('current_dada_files_parent_location'),
-            -dada_files_dir_setup               => $q->param('dada_files_dir_setup'),
-            -dada_files_loc                     => $q->param('dada_files_loc'),  
+            -install_type                       => scalar $q->param('install_type'),
+            -current_dada_files_parent_location => scalar $q->param('current_dada_files_parent_location'),
+            -dada_files_dir_setup               => scalar $q->param('dada_files_dir_setup'),
+            -dada_files_loc                     => scalar $q->param('dada_files_loc'),  
 
         }
     );

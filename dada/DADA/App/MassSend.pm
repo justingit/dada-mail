@@ -1261,7 +1261,7 @@ sub list_invite {
             push( @$field_names, { name => $_ } );
         }
 
-        my @addresses = $q->param('address');
+        my @addresses = $q->multi_param('address');
 
         my $verified_addresses        = [];
         my $invited_already_addresses = [];
@@ -1353,8 +1353,8 @@ sub list_invite {
         $process =~ m/send test invitation|send a test invitation|send invitations|send\: invit|send\: test invit/i )
     {    # $process is dependent on the label of the button - which is not a good idea
 
-        my @address                 = $q->param('address');
-        my @already_invited_address = $q->param('already_invited_address');
+        my @address                 = $q->multi_param('address');
+        my @already_invited_address = $q->multi_param('already_invited_address');
 
         # This is a little safety - there shouldn't be anything in
         # @already_invited_address anyways.

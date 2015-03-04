@@ -304,11 +304,11 @@ Hopefully, if you're a seasoned Perl programmer, you can edit the above idea to 
 	$q->param('text_message_body', "This is my PlainText version!"); 
 	# etc....
 	use DADA::App::MassSend; 
-    my $ms = DADA::App::MassSend->new({-list => $q->param('list')});
+    my $ms = DADA::App::MassSend->new({-list => scalar $q->param('list')});
 	   $ms->send_email(
 			{
 				-cgi_obj     => $q, 
-				-list        => $q->param('list'), 
+				-list        => scalar $q->param('list'), 
 				-html_output => 0, 
 			}
 		); 	

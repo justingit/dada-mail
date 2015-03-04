@@ -47,7 +47,7 @@ $email = $q->param('e') unless ($email);
 
 my $flavor = $q->param('flavor');
 
-my @unfiltered_lists = $q->param('list');
+my @unfiltered_lists = $q->multi_param('list');
 
 my $redirect_url = $q->param('redirect_url');
 
@@ -183,7 +183,7 @@ sub subscription_form {
                         -give_props     => 0
                     }
                 ),
-                error_invalid_email => $q->param('invalid_email'),
+                error_invalid_email => scalar $q->param('invalid_email'),
 
             }
         }

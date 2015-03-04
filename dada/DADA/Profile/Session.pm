@@ -318,8 +318,8 @@ C<new> does not take any parameters and returns a C<DADA::Profile::Session> obje
 
 	my $cookie = $prof_sess->login(
 		{ 
-			-email    => $q->param('email'),
-			-password => $q->param('password'), 
+			-email    => scalar $q->param('email'),
+			-password => scalar $q->param('password'), 
 		},
 	);
 
@@ -344,8 +344,8 @@ if the profile is not actually logged in.
 
 	my ($status, $errors) = $prof_sess->validate_profile_login(
 		{ 
-			-email    => $q->param('email'),
-			-password => $q->param('password'), 
+			-email    => scalar $q->param('email'),
+			-password => scalar $q->param('password'), 
 		
 		},
 	);
