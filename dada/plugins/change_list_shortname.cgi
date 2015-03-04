@@ -179,7 +179,7 @@ sub sql_backend_only_message {
 
 
 sub verify_change_list_shortname {
-    my $new_name = strip( xss_filter( $q->param('new_name') ) );
+    my $new_name = strip( xss_filter( scalar $q->param('new_name') ) );
     my ( $errors, $flags ) = check_list_setup(
         -fields => {
             list             => $new_name,

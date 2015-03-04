@@ -89,12 +89,12 @@ sub send_email {
     my $q          = $args->{-cgi_obj};
     my $root_login = $args->{-root_login};
 
-    my $process            = xss_filter( strip( $q->param('process') ) );
-    my $flavor             = xss_filter( strip( $q->param('flavor') ) );
-    my $restore_from_draft = xss_filter( strip( $q->param('restore_from_draft') ) ) || 'true';
-    my $test_sent          = xss_filter( strip( $q->param('test_sent') ) ) || 0;
-    my $test_recipient     = xss_filter( strip( $q->param('test_recipient') ) );
-    my $done               = xss_filter( strip( $q->param('done') ) ) || 0;
+    my $process            = xss_filter( strip( scalar $q->param('process') ) );
+    my $flavor             = xss_filter( strip( scalar $q->param('flavor') ) );
+    my $restore_from_draft = xss_filter( strip( scalar $q->param('restore_from_draft') ) ) || 'true';
+    my $test_sent          = xss_filter( strip( scalar $q->param('test_sent') ) ) || 0;
+    my $test_recipient     = xss_filter( strip( scalar $q->param('test_recipient') ) );
+    my $done               = xss_filter( strip( scalar $q->param('done') ) ) || 0;
     my $draft_role         = $q->param('draft_role') || 'draft';
     my $ses_params         = $self->ses_params;
 
@@ -413,8 +413,8 @@ sub construct_and_send {
 
     if ( $draft_q->param('archive_no_send') != 1 ) {
         my @alternative_list = ();
-        @alternative_list = $draft_q->param('alternative_list');
-        $mh->mass_test_recipient( $draft_q->param('test_recipient') );
+        @alternative_list = $draft_q->multi_param('alternative_list');
+        $mh->mass_test_recipient( scalar $draft_q->param('test_recipient') );
         my $multi_list_send_no_dupes = $draft_q->param('multi_list_send_no_dupes')
           || 0;
 
@@ -486,14 +486,14 @@ sub construct_from_text {
         )
       )
     {
-        if ( defined( $draft_q->param($h) ) ) {
+        if ( defined( scalar $draft_q->param($h) ) ) {
 
             # I do not like how we treat Subject differently, but I don't have a better idea on what to do.
             if ( $h eq 'Subject' ) {
-                $headers{$h} = $fm->_encode_header( 'Subject', $draft_q->param($h) );
+                $headers{$h} = $fm->_encode_header( 'Subject', scalar $draft_q->param($h) );
             }
             else {
-                $headers{$h} = strip( $draft_q->param($h) );
+                $headers{$h} = strip( scalar $draft_q->param($h) );
             }
         }
     }
@@ -838,10 +838,10 @@ sub send_url_email {
     my $q          = $args->{-cgi_obj};
     my $root_login = $args->{-root_login};
 
-    my $process            = xss_filter( strip( $q->param('process') ) );
-    my $flavor             = xss_filter( strip( $q->param('flavor') ) );
-    my $test_sent          = xss_filter( strip( $q->param('test_sent') ) ) || 0;
-    my $done               = xss_filter( strip( $q->param('done') ) ) || 0;
+    my $process            = xss_filter( strip( scalar $q->param('process') ) );
+    my $flavor             = xss_filter( strip( scalar $q->param('flavor') ) );
+    my $test_sent          = xss_filter( strip( scalar $q->param('test_sent') ) ) || 0;
+    my $done               = xss_filter( strip( scalar $q->param('done') ) ) || 0;
     my $test_recipient     = $q->param('test_recipient');
     my $restore_from_draft = $q->param('restore_from_draft') || 'true';
     my $ses_params         = $self->ses_params;
@@ -1238,8 +1238,8 @@ sub list_invite {
     my ($args) = @_;
     my $q      = $args->{-cgi_obj};
 
-    my $process = xss_filter( strip( $q->param('process') ) );
-    my $flavor  = xss_filter( strip( $q->param('flavor') ) );
+    my $process = xss_filter( strip( scalar $q->param('process') ) );
+    my $flavor  = xss_filter( strip( scalar $q->param('flavor') ) );
 
     my ( $admin_list, $root_login ) = check_list_security(
         -cgi_obj  => $q,
@@ -1424,7 +1424,7 @@ sub list_invite {
                     $headers{$h} = $fm->_encode_header( 'Subject', $q->param($h) );
                 }
                 else {
-                    $headers{$h} = strip( $q->param($h) );
+                    $headers{$h} = strip( scalar $q->param($h) );
                 }
             }
         }
@@ -1583,7 +1583,7 @@ sub list_invite {
 
         my $test_recipient = '';
         if ( $process =~ m/test/i ) {
-            $mh->mass_test_recipient( strip( $q->param('test_recipient') ) );
+            $mh->mass_test_recipient( strip( scalar $q->param('test_recipient') ) );
             $test_recipient = $mh->mass_test_recipient;
         }
 

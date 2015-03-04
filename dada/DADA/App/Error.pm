@@ -247,7 +247,7 @@ sub cgi_user_error {
                         flavor         => 'resend_conf',
                         list           => xss_filter($list),
                         email          => $email,
-                        token          => xss_filter( $q->param('token') ),
+                        token          => xss_filter( scalar $q->param('token') ),
                     },
                 },
             );

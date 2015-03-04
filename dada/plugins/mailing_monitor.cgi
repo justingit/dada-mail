@@ -94,7 +94,7 @@ sub run {
 		
         if (   keys %{ $q->Vars }
             && $q->param('run')
-            && xss_filter( $q->param('run') ) == 1
+            && xss_filter( scalar $q->param('run') ) == 1
             && $Plugin_Config->{Allow_Manual_Run} == 1 )
         {
 			print $q->header(); 

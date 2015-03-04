@@ -148,7 +148,7 @@ sub admin_template {
 	}
 	
 	# DEV: ?!?!
-	$q->param('flavor', $q->param('f'))
+	$q->param('flavor', scalar $q->param('f'))
 		if ! defined($q->param('flavor')); 
 	
 	my %args = (

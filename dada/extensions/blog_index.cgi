@@ -65,16 +65,16 @@ sub main {
 
     my $list = $Plugin_Config->{Default_List};
     if ( $q->param('list') ) {
-        $list = xss_filter( $q->param('list') );
+        $list = xss_filter( scalar $q->param('list') );
     }
 
     if ( $Plugin_Config->{Allow_QS_Overrides} == 1 ) {
 
         if ( $q->param('entries') ) {
-            $Plugin_Config->{Entries} = xss_filter( $q->param('entries') );
+            $Plugin_Config->{Entries} = xss_filter( scalar $q->param('entries') );
         }
         if ( $q->param('style') ) {
-            $Plugin_Config->{Style} = xss_filter( $q->param('style') );
+            $Plugin_Config->{Style} = xss_filter( scalar $q->param('style') );
             if (   $Plugin_Config->{Style} ne 'blurb'
                 && $Plugin_Config->{Style} ne 'full' )
             {

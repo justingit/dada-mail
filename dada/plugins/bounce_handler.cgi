@@ -163,7 +163,7 @@ sub cgi_main {
 
     if (   keys %{ $q->Vars }
         && $q->param('run')
-        && xss_filter( $q->param('run') ) == 1
+        && xss_filter( scalar $q->param('run') ) == 1
         && $Plugin_Config->{Allow_Manual_Run} == 1 )
     {
         print cgi_manual_start();
@@ -336,9 +336,9 @@ sub ajax_parse_bounces_results {
 		$test = undef; 
 	}
 
-    if ( defined( xss_filter( $q->param('parse_amount') ) ) ) {
+    if ( defined( xss_filter( scalar $q->param('parse_amount') ) ) ) {
         $Plugin_Config->{MessagesAtOnce} =
-          xss_filter( $q->param('parse_amount') );
+          xss_filter( scalar $q->param('parse_amount') );
     }
 
     my $r = '';
@@ -363,8 +363,8 @@ sub cgi_parse_bounce {
             },
 
             -vars => {
-                parse_amount   => xss_filter( $q->param('parse_amount') ),
-                test           => xss_filter( $q->param('test') ),
+                parse_amount   => xss_filter( scalar $q->param('parse_amount') ),
+                test           => xss_filter( scalar $q->param('test') ),
                 Plugin_Name    => $Plugin_Config->{Plugin_Name},
                 Plugin_URL     => $Plugin_Config->{Plugin_URL},
                 MessagesAtOnce => $Plugin_Config->{MessagesAtOnce},
@@ -381,7 +381,7 @@ sub cgi_manual_start {
     my $r = '';
     if (
         (
-            xss_filter( $q->param('passcode') ) eq
+            xss_filter( scalar $q->param('passcode') ) eq
             $Plugin_Config->{Manual_Run_Passcode}
         )
         || ( $Plugin_Config->{Manual_Run_Passcode} eq '' )
@@ -390,20 +390,20 @@ sub cgi_manual_start {
     {
 
         my $verbose;
-        if ( defined( xss_filter( $q->param('verbose') ) ) ) {
-            $verbose = xss_filter( $q->param('verbose') );
+        if ( defined( xss_filter( scalar $q->param('verbose') ) ) ) {
+            $verbose = xss_filter( scalar $q->param('verbose') );
         }
         else {
             $verbose = 1;
         }
 
-        if ( defined( xss_filter( $q->param('test') ) ) ) {
+        if ( defined( xss_filter( scalar $q->param('test') ) ) ) {
             $test = $q->param('test');
         }
 
-        if ( defined( xss_filter( $q->param('messages') ) ) ) {
+        if ( defined( xss_filter( scalar $q->param('messages') ) ) ) {
             $Plugin_Config->{MessagesAtOnce} =
-              xss_filter( $q->param('messages') );
+              xss_filter( scalar $q->param('messages') );
         }
         if ( defined( $q->param('list') ) ) {
             $list = $q->param('list');
@@ -556,7 +556,7 @@ sub cgi_show_plugin_config {
 
 sub cgi_bounce_score_search {
 
-    my $query = xss_filter( $q->param('query') );
+    my $query = xss_filter( scalar $q->param('query') );
 
     my $chrome = 1;
     if ( defined( $q->param('chrome') ) ) {

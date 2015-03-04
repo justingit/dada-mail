@@ -220,7 +220,7 @@ sub cgi_main {
 
     if (   keys %{ $q->Vars }
         && $q->param('run')
-        && xss_filter( $q->param('run') ) == 1
+        && xss_filter( scalar $q->param('run') ) == 1
         && $Plugin_Config->{Allow_Manual_Run} == 1 )
     {
         cgi_manual_start();
@@ -268,7 +268,7 @@ sub cgi_manual_start {
 
     if (
         (
-            xss_filter( $q->param('passcode') ) eq
+            xss_filter( scalar $q->param('passcode') ) eq
             $Plugin_Config->{Manual_Run_Passcode}
         )
         || ( $Plugin_Config->{Manual_Run_Passcode} eq '' )
@@ -278,8 +278,8 @@ sub cgi_manual_start {
 
         print $q->header();
 
-        if ( defined( xss_filter( $q->param('verbose') ) ) ) {
-            $verbose = xss_filter( $q->param('verbose') );
+        if ( defined( xss_filter( scalar $q->param('verbose') ) ) ) {
+            $verbose = xss_filter( scalar $q->param('verbose') );
         }
         else {
             $verbose = 1;
@@ -287,8 +287,8 @@ sub cgi_manual_start {
 
         $check_deletions = 1;
 
-        if ( xss_filter( $q->param( xss_filter('list') ) ) ) {
-            $run_list = xss_filter( $q->param('list') );
+        if ( xss_filter( scalar $q->param( xss_filter('list') ) ) ) {
+            $run_list = xss_filter( scalar $q->param('list') );
         }
 
         print '<pre>'
