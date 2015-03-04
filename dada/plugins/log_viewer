@@ -283,7 +283,7 @@ sub search_logs {
 
     if ( !$test ) {
 
-        $only_content = xss_filter( $q->param('only_content') ) || 0;
+        $only_content = xss_filter( scalar $q->param('only_content') ) || 0;
 
         my ( $admin_list, $root_login ) = check_list_security(
             -cgi_obj  => $q,

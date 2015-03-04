@@ -90,12 +90,12 @@ sub send_email {
     my $q          = $args->{-cgi_obj};
     my $root_login = $args->{-root_login};
     
-    my $process            = xss_filter( strip( $q->param('process') ) );
-    my $flavor             = xss_filter( strip( $q->param('flavor') ) );
-    my $restore_from_draft = xss_filter( strip( $q->param('restore_from_draft') ) ) || 'true';
-    my $test_sent          = xss_filter( strip( $q->param('test_sent') ) ) || 0;
-    my $test_recipient     = xss_filter( strip( $q->param('test_recipient') ) );
-    my $done               = xss_filter( strip( $q->param('done') ) ) || 0;
+    my $process            = xss_filter( strip( scalar $q->param('process') ) );
+    my $flavor             = xss_filter( strip( scalar $q->param('flavor') ) );
+    my $restore_from_draft = xss_filter( strip( scalar $q->param('restore_from_draft') ) ) || 'true';
+    my $test_sent          = xss_filter( strip( scalar $q->param('test_sent') ) ) || 0;
+    my $test_recipient     = xss_filter( strip( scalar $q->param('test_recipient') ) );
+    my $done               = xss_filter( strip( scalar $q->param('done') ) ) || 0;
     my $draft_role         = $q->param('draft_role') || 'draft';
     my $ses_params         = $self->ses_params;
 
@@ -855,10 +855,10 @@ sub send_url_email {
     my $q          = $args->{-cgi_obj};
     my $root_login = $args->{-root_login};
 
-    my $process            = xss_filter( strip( $q->param('process') ) );
-    my $flavor             = xss_filter( strip( $q->param('flavor') ) );
-    my $test_sent          = xss_filter( strip( $q->param('test_sent') ) ) || 0;
-    my $done               = xss_filter( strip( $q->param('done') ) ) || 0;
+    my $process            = xss_filter( strip( scalar $q->param('process') ) );
+    my $flavor             = xss_filter( strip( scalar $q->param('flavor') ) );
+    my $test_sent          = xss_filter( strip( scalar $q->param('test_sent') ) ) || 0;
+    my $done               = xss_filter( strip( scalar $q->param('done') ) ) || 0;
     my $test_recipient     = $q->param('test_recipient');
     my $restore_from_draft = $q->param('restore_from_draft') || 'true';
     my $ses_params         = $self->ses_params;
@@ -1239,8 +1239,8 @@ sub list_invite {
     my $q      = $args->{-cgi_obj};
     my $root_login = $args->{-root_login};
 
-    my $process = xss_filter( strip( $q->param('process') ) );
-    my $flavor  = xss_filter( strip( $q->param('flavor') ) );
+    my $process = xss_filter( strip( scalar $q->param('process') ) );
+    my $flavor  = xss_filter( strip( scalar $q->param('flavor') ) );
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
@@ -1420,7 +1420,7 @@ sub list_invite {
                     $headers{$h} = $fm->_encode_header( 'Subject', $q->param($h) );
                 }
                 else {
-                    $headers{$h} = strip( $q->param($h) );
+                    $headers{$h} = strip( scalar $q->param($h) );
                 }
             }
         }
@@ -1576,7 +1576,7 @@ sub list_invite {
 
         my $test_recipient = '';
         if ( $process =~ m/test/i ) {
-            $mh->mass_test_recipient( strip( $q->param('test_recipient') ) );
+            $mh->mass_test_recipient( strip( scalar $q->param('test_recipient') ) );
             $test_recipient = $mh->mass_test_recipient;
         }
         my $message_id = $mh->mass_send( $mh->return_headers($header_glob), Body => $message_string, );

@@ -72,7 +72,7 @@ sub token {
         $q = $args->{-cgi_obj};
     }
 
-    my $token = xss_filter( $q->param('token') );
+    my $token = xss_filter( scalar $q->param('token') );
 
     require DADA::App::Subscriptions::ConfirmationTokens;
     my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
@@ -237,11 +237,11 @@ sub subscribe {
         warn Data::Dumper::Dumper( { $q->Vars } );
     }
 
-    my $list = xss_filter( $q->param('list') );
+    my $list = xss_filter( scalar $q->param('list') );
     warn '$list: ' . $list
       if $t;
 
-    my $email = lc_email( strip( xss_filter( $q->param('email') ) ) );
+    my $email = lc_email( strip( xss_filter( scalar $q->param('email') ) ) );
     warn '$email: ' . $email
       if $t;
 
@@ -306,7 +306,7 @@ sub subscribe {
     my $fields = {};
     for ( @{ $lh->subscriber_fields } ) {
         if ( defined( $q->param($_) ) ) {
-            $fields->{$_} = xss_filter( $q->param($_) );
+            $fields->{$_} = xss_filter( scalar $q->param($_) );
         }
     }
 
@@ -683,8 +683,8 @@ sub confirm {
     my $fh = $args->{-fh};
 
     my $q     = $args->{-cgi_obj};
-    my $list  = xss_filter( $q->param('list') );
-    my $email = lc_email( strip( xss_filter( $q->param('email') ) ) );
+    my $list  = xss_filter( scalar $q->param('list') );
+    my $email = lc_email( strip( xss_filter( scalar $q->param('email') ) ) );
 
     warn '$list: ' . $list
       if $t;
@@ -733,7 +733,7 @@ sub confirm {
               if $t;
             my $captcha_worked = 0;
             my $captcha_auth   = 1;
-            if ( !xss_filter( $q->param('recaptcha_response_field') ) ) {
+            if ( !xss_filter( scalar $q->param('recaptcha_response_field') ) ) {
                 $captcha_worked = 0;
             }
             else {
@@ -778,9 +778,9 @@ sub confirm {
                         -vars                   => {
                             CAPTCHA_string => $CAPTCHA_string,
                             flavor         => 't',
-                            list           => xss_filter( $q->param('list') ),
-                            email          => lc_email( strip( xss_filter( $q->param('email') ) ) ),
-                            token          => xss_filter( $q->param('token') ),
+                            list           => xss_filter( scalar $q->param('list') ),
+                            email          => lc_email( strip( xss_filter( scalar $q->param('email') ) ) ),
+                            token          => xss_filter( scalar $q->param('token') ),
                             captcha_auth   => xss_filter($captcha_auth),
                             simple_test    => (
                                   ( $simple_test == 1 )
@@ -1304,8 +1304,8 @@ sub unsubscription_request {
     my $fh = $args->{-fh};
 
     my $q     = $args->{-cgi_obj};
-    my $list  = xss_filter( $q->param('list') );
-    my $email = lc_email( strip( xss_filter( $q->param('email') ) ) );
+    my $list  = xss_filter( scalar $q->param('list') );
+    my $email = lc_email( strip( xss_filter( scalar $q->param('email') ) ) );
 
     # If the list doesn't exist, don't go through the process,
     if ( $args->{-html_output} == 1 ) {
@@ -1538,7 +1538,7 @@ sub unsubscribe {
 
     if ( $process == 1 ) {
 
-        my $email = lc_email( strip( xss_filter( $q->param('email') ) ) );
+        my $email = lc_email( strip( xss_filter( scalar $q->param('email') ) ) );
         if ( $email eq $data->{email} ) {
             $is_valid = 1;
         }
@@ -2444,9 +2444,9 @@ sub error_token_undefined {
           . '?flavor=outdated_subscription_urls&orig_flavor='
           . $args->{-orig_flavor}
           . '&list='
-          . xss_filter( strip( $q->param('list') ) )
+          . xss_filter( strip( scalar $q->param('list') ) )
           . '&email='
-          . xss_filter( strip( $q->param('email') ) ) );
+          . xss_filter( strip( scalar $q->param('email') ) ) );
         return ({-uri_redirect => $r}, undef);
 }
 

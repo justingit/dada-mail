@@ -412,14 +412,14 @@ sub clear_message_data_cache {
     $dc->flush(
         {
             -list   => $list,
-            -msg_id => xss_filter( strip( $q->param('msg_id') ) ),
+            -msg_id => xss_filter( strip( scalar $q->param('msg_id') ) ),
         }
     );
     return (
         {
                 -redirect_uri => $Plugin_Config->{Plugin_URL}
               . '?flavor=m&mid='
-              . xss_filter( strip( $q->param('msg_id') ) )
+              . xss_filter( strip( scalar $q->param('msg_id') ) )
         },
         undef
     );
@@ -428,8 +428,8 @@ sub clear_message_data_cache {
 sub export_subscribers {
 
     my $q    = shift;
-    my $mid  = xss_filter( $q->param('mid') );
-    my $type = xss_filter( $q->param('type') );
+    my $mid  = xss_filter( scalar $q->param('mid') );
+    my $type = xss_filter( scalar $q->param('type') );
     if (   $type ne 'clickthroughs'
         && $type ne 'opens'
         && $type ne 'abuse_reports' )
@@ -451,7 +451,7 @@ sub export_subscribers {
 
 sub message_email_activity_listing_table {
     my $q   = shift;
-    my $mid = xss_filter( $q->param('mid') );
+    my $mid = xss_filter( scalar $q->param('mid') );
     return $rd->message_email_activity_listing_table(
         {
             -mid  => $mid,
@@ -465,8 +465,8 @@ sub message_email_activity_listing_table {
 
 sub message_individual_email_activity_report_table {
     my $q     = shift;
-    my $mid   = xss_filter( $q->param('mid') );
-    my $email = xss_filter( $q->param('email') );
+    my $mid   = xss_filter( scalar $q->param('mid') );
+    my $email = xss_filter( scalar $q->param('email') );
     return $rd->message_individual_email_activity_report_table(
         {
             -mid        => $mid,
@@ -479,8 +479,8 @@ sub message_individual_email_activity_report_table {
 
 sub message_individual_email_activity_csv {
     my $q        = shift;
-    my $mid      = xss_filter( $q->param('mid') );
-    my $email    = xss_filter( $q->param('email') );
+    my $mid      = xss_filter( scalar $q->param('mid') );
+    my $email    = xss_filter( scalar $q->param('email') );
     my $fn_email = $email;
     $fn_email =~ s/\@/_at_/;
 
@@ -496,9 +496,9 @@ sub message_individual_email_activity_csv {
 
 sub the_basics_piechart_json {
     my $q     = shift;
-    my $mid   = xss_filter( $q->param('mid') );
-    my $type  = xss_filter( $q->param('type') );
-    my $label = xss_filter( $q->param('label') );
+    my $mid   = xss_filter( scalar $q->param('mid') );
+    my $type  = xss_filter( scalar $q->param('type') );
+    my $label = xss_filter( scalar $q->param('label') );
 
     return $rd->msg_basic_event_count_json(
         {
@@ -606,7 +606,7 @@ sub message_history_html {
 sub download_logs {
 
     my $q    = shift;
-    my $type = xss_filter( $q->param('log_type') );
+    my $type = xss_filter( scalar $q->param('log_type') );
     if ( $type ne 'clickthrough' && $type ne 'activity' ) {
         $type = 'clickthrough';
     }
@@ -627,7 +627,7 @@ sub download_logs {
 sub download_clickthrough_logs {
 
     my $q       = shift;
-    my $mid     = xss_filter( $q->param('mid') );
+    my $mid     = xss_filter( scalar $q->param('mid') );
     my $headers = {
         'Content-disposition' => 'attachement; filename=' . $list . '-clickthrough-' . $mid . '.csv',
         -type                 => 'text/csv',
@@ -646,7 +646,7 @@ sub download_clickthrough_logs {
 sub download_activity_logs {
 
     my $q       = shift;
-    my $mid     = xss_filter( $q->param('mid') );
+    my $mid     = xss_filter( scalar $q->param('mid') );
     my $headers = {
         'Content-disposition' => 'attachement; filename=' . $list . '-activity-' . $mid . '.csv',
         -type                 => 'text/csv',

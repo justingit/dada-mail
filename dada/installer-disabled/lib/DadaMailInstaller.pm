@@ -487,6 +487,8 @@ sub cl_run {
     $r .= "Cronjob Example:\n\n"; 
     $r .= $curl_location . ' -s --get --url ' . $dash_opts->{'-program_url'} . '/' . $sched_flavor . '/_all/_all/_verbose/' . "\n\n";
     
+    $self->header_type('none');
+    
     return $r; 
 }
 
@@ -2608,7 +2610,6 @@ sub check_setup {
 
     # require Data::Dumper;
     #croak Data::Dumper::Dumper( $status, $errors );
-    $self->header_type('none');
     return ( $status, $errors, $r );
 
 }
@@ -3613,12 +3614,12 @@ sub cgi_test_sql_connection {
     my $q    = $self->query();
     my $r;
 
-    my $dbtype   = strip( xss_filter( $q->param('backend') ) );
-    my $dbserver = strip( xss_filter( $q->param('sql_server') ) );
-    my $port     = strip( xss_filter( $q->param('sql_port') ) );
-    my $database = strip( xss_filter( $q->param('sql_database') ) );
-    my $user     = strip( xss_filter( $q->param('sql_username') ) );
-    my $pass     = strip( xss_filter( $q->param('sql_password') ) );
+    my $dbtype   = strip( xss_filter( scalar $q->param('backend') ) );
+    my $dbserver = strip( xss_filter( scalar $q->param('sql_server') ) );
+    my $port     = strip( xss_filter( scalar $q->param('sql_port') ) );
+    my $database = strip( xss_filter( scalar $q->param('sql_database') ) );
+    my $user     = strip( xss_filter( scalar $q->param('sql_username') ) );
+    my $pass     = strip( xss_filter( scalar $q->param('sql_password') ) );
 
     my ( $status, $details ) = $self->test_sql_connection( $dbtype, $dbserver, $port, $database, $user, $pass, );
 
@@ -3721,10 +3722,10 @@ sub cgi_test_amazon_ses_configuration {
     my $self = shift;
     my $q    = $self->query();
 
-    my $amazon_ses_AWSAccessKeyId                   = strip( $q->param('amazon_ses_AWSAccessKeyId') );
-    my $amazon_ses_AWSSecretKey                     = strip( $q->param('amazon_ses_AWSSecretKey') );
-    my $amazon_ses_AWS_endpoint                     = strip( $q->param('amazon_ses_AWS_endpoint') );
-    my $amazon_ses_Allowed_Sending_Quota_Percentage = strip( $q->param('amazon_ses_Allowed_Sending_Quota_Percentage') );
+    my $amazon_ses_AWSAccessKeyId                   = strip( scalar $q->param('amazon_ses_AWSAccessKeyId') );
+    my $amazon_ses_AWSSecretKey                     = strip( scalar $q->param('amazon_ses_AWSSecretKey') );
+    my $amazon_ses_AWS_endpoint                     = strip( scalar $q->param('amazon_ses_AWS_endpoint') );
+    my $amazon_ses_Allowed_Sending_Quota_Percentage = strip( scalar $q->param('amazon_ses_Allowed_Sending_Quota_Percentage') );
 
     my ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate );
 
@@ -3766,8 +3767,8 @@ sub cgi_test_mandrill_configuration {
     my $self = shift;
     my $q    = $self->query();
 
-    my $mandrill_api_key                          = strip( $q->param('mandrill_api_key') );
-    my $mandrill_Allowed_Sending_Quota_Percentage = strip( $q->param('mandrill_Allowed_Sending_Quota_Percentage') );
+    my $mandrill_api_key                          = strip( scalar $q->param('mandrill_api_key') );
+    my $mandrill_Allowed_Sending_Quota_Percentage = strip( scalar $q->param('mandrill_Allowed_Sending_Quota_Percentage') );
 
     my ( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate );
 

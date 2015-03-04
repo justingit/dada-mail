@@ -420,7 +420,7 @@ sub default {
                 -screen => 'congrats_screen.tmpl',
                 -with   => 'list',
                 -vars   => {
-                    havent_agreed => ( ( xss_filter( $q->param('agree') ) eq 'no' ) ? 1 : 0 ),
+                    havent_agreed => ( ( xss_filter( scalar $q->param('agree') ) eq 'no' ) ? 1 : 0 ),
                     auth_state => $auth_state,
                 },
             }
@@ -1329,7 +1329,7 @@ sub sending_monitor {
     # so we have to be *real* careful to get it to a state
     # that we *need* it in.
 
-    my $id = DADA::App::Guts::strip( $q->param('id') );
+    my $id = DADA::App::Guts::strip( scalar $q->param('id') );
     $id =~ s/\@/_at_/g;
     $id =~ s/\>|\<//g;
 
@@ -2142,7 +2142,7 @@ sub delete_list {
         DADA::MailingList::Remove(
             {
                 -name           => $list,
-                -delete_backups => xss_filter( $q->param('delete_backups') ),
+                -delete_backups => xss_filter( scalar $q->param('delete_backups') ),
             }
         );
 
@@ -2569,12 +2569,12 @@ sub sending_preferences {
     }
     else {
 
-        my $pop3_password = strip( $q->param('pop3_password') ) || undef;
+        my $pop3_password = strip( scalar $q->param('pop3_password') ) || undef;
         if ( defined($pop3_password) ) {
             $q->param( 'pop3_password',
                 DADA::Security::Password::cipher_encrypt( $ls->param('cipher_key'), $pop3_password ) );
         }
-        my $sasl_smtp_password = strip( $q->param('sasl_smtp_password') )
+        my $sasl_smtp_password = strip( scalar $q->param('sasl_smtp_password') )
           || undef;
         if ( defined($sasl_smtp_password) ) {
             $q->param( 'sasl_smtp_password',
@@ -2750,7 +2750,7 @@ sub amazon_ses_verify_email {
     my $valid_email             = 1;
     my $status                  = undef;
     my $result                  = undef;
-    my $amazon_ses_verify_email = xss_filter( strip( $q->param('amazon_ses_verify_email') ) );
+    my $amazon_ses_verify_email = xss_filter( strip( scalar $q->param('amazon_ses_verify_email') ) );
     if ( check_for_valid_email($amazon_ses_verify_email) == 1 ) {
         $valid_email = 0;
     }
@@ -2876,10 +2876,10 @@ sub previewBatchSendingSpeed {
 
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
-    my $enable_bulk_batching           = xss_filter( $q->param('enable_bulk_batching') );
-    my $mass_send_amount               = xss_filter( $q->param('mass_send_amount') );
-    my $bulk_sleep_amount              = xss_filter( $q->param('bulk_sleep_amount') );
-    my $amazon_ses_auto_batch_settings = xss_filter( $q->param('amazon_ses_auto_batch_settings') );
+    my $enable_bulk_batching           = xss_filter( scalar $q->param('enable_bulk_batching') );
+    my $mass_send_amount               = xss_filter( scalar $q->param('mass_send_amount') );
+    my $bulk_sleep_amount              = xss_filter( scalar $q->param('bulk_sleep_amount') );
+    my $amazon_ses_auto_batch_settings = xss_filter( scalar $q->param('amazon_ses_auto_batch_settings') );
 
     my $per_hour         = 0;
     my $num_subs         = 0;
@@ -3308,23 +3308,23 @@ sub view_list {
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
-    my $add_email_count    = xss_filter( $q->param('add_email_count') )    || 0;
-    my $update_email_count = xss_filter( $q->param('update_email_count') ) || 0;
-    my $skipped_email_count = xss_filter( $q->param('skipped_email_count') )
+    my $add_email_count    = xss_filter( scalar $q->param('add_email_count') )    || 0;
+    my $update_email_count = xss_filter( scalar $q->param('update_email_count') ) || 0;
+    my $skipped_email_count = xss_filter( scalar $q->param('skipped_email_count') )
       || 0;
-    my $delete_email_count               = xss_filter( $q->param('delete_email_count') )               || 0;
-    my $black_list_add                   = xss_filter( $q->param('black_list_add') )                   || 0;
-    my $approved_count                   = xss_filter( $q->param('approved_count') )                   || 0;
-    my $denied_count                     = xss_filter( $q->param('denied_count') )                     || 0;
-    my $bounced_list_moved_to_list_count = xss_filter( $q->param('bounced_list_moved_to_list_count') ) || 0;
-    my $bounced_list_removed_from_list   = xss_filter( $q->param('bounced_list_removed_from_list') )   || 0;
-    my $updated_addresses                = xss_filter( $q->param('updated_addresses') )                || 0;
-    my $type                             = xss_filter( $q->param('type') )                             || 'list';
-    my $query                            = xss_filter( $q->param('query') )                            || undef;
+    my $delete_email_count               = xss_filter( scalar $q->param('delete_email_count') )               || 0;
+    my $black_list_add                   = xss_filter( scalar $q->param('black_list_add') )                   || 0;
+    my $approved_count                   = xss_filter( scalar $q->param('approved_count') )                   || 0;
+    my $denied_count                     = xss_filter( scalar $q->param('denied_count') )                     || 0;
+    my $bounced_list_moved_to_list_count = xss_filter( scalar $q->param('bounced_list_moved_to_list_count') ) || 0;
+    my $bounced_list_removed_from_list   = xss_filter( scalar $q->param('bounced_list_removed_from_list') )   || 0;
+    my $updated_addresses                = xss_filter( scalar $q->param('updated_addresses') )                || 0;
+    my $type                             = xss_filter( scalar $q->param('type') )                             || 'list';
+    my $query                            = xss_filter( scalar $q->param('query') )                            || undef;
     my $order_by        = $q->param('order_by')           || $ls->param('view_list_order_by');
     my $order_dir       = $q->param('order_dir')          || lc( $ls->param('view_list_order_by_direction') );
-    my $mode            = xss_filter( $q->param('mode') ) || 'view';
-    my $page            = xss_filter( $q->param('page') ) || 1;
+    my $mode            = xss_filter( scalar $q->param('mode') ) || 'view';
+    my $page            = xss_filter( scalar $q->param('page') ) || 1;
     my $advanced_search = $q->param('advanced_search')    || 0;
     my $advanced_query  = $q->param('advanced_query')     || undef;
 
@@ -3610,7 +3610,7 @@ sub mass_update_profiles {
         }
     }
 
-    my $advanced_query = xss_filter( $q->param('advanced_query') ) || undef;
+    my $advanced_query = xss_filter( scalar $q->param('advanced_query') ) || undef;
     open my $fh, '<', \$advanced_query || die $!;
     my $new_q = CGI->new($fh);
     $new_q = decode_cgi_obj($new_q);
@@ -3700,8 +3700,8 @@ sub search_list_auto_complete {
 
     my $list = $admin_list;
 
-    my $query = xss_filter( $q->param('query') ) || undef;
-    my $type  = xss_filter( $q->param('type') )  || 'list';
+    my $query = xss_filter( scalar $q->param('query') ) || undef;
+    my $type  = xss_filter( scalar $q->param('type') )  || 'list';
 
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
@@ -3776,7 +3776,7 @@ sub sub_unsub_trends_json {
 
     my $list = $admin_list;
 
-    my $days = xss_filter( strip( $q->param('days') ) );
+    my $days = xss_filter( strip( scalar $q->param('days') ) );
 
     require DADA::App::LogSearch;
     my $dals = DADA::App::LogSearch->new;
@@ -4020,7 +4020,7 @@ sub remove_all_subscribers {
     my $list           = $admin_list;
     my $black_list_add = 0;
 
-    my $type = xss_filter( $q->param('type') );
+    my $type = xss_filter( scalar $q->param('type') );
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
@@ -4130,9 +4130,9 @@ sub membership {
 
     my $process = $q->param('process')             || undef;
     my $done    = $q->param('done')                || undef;
-    my $query   = xss_filter( $q->param('query') ) || undef;
-    my $page    = xss_filter( $q->param('page') )  || 1;
-    my $type    = xss_filter( $q->param('type') );
+    my $query   = xss_filter( scalar $q->param('query') ) || undef;
+    my $page    = xss_filter( scalar $q->param('page') )  || 1;
+    my $type    = xss_filter( scalar $q->param('type') );
 
     my $order_by  = $q->param('order_by')  || $ls->param('view_list_order_by');
     my $order_dir = $q->param('order_dir') || lc( $ls->param('view_list_order_by_direction') );
@@ -4429,8 +4429,8 @@ sub validate_update_email {
 
     my $for_all_lists     = $q->param('for_all_lists') || 0;
     my $lists_to_validate = [];
-    my $email             = cased( xss_filter( $q->param('email') ) );
-    my $updated_email     = cased( xss_filter( $q->param('updated_email') ) );
+    my $email             = cased( xss_filter( scalar $q->param('email') ) );
+    my $updated_email     = cased( xss_filter( scalar $q->param('updated_email') ) );
     my $process           = $q->param('process') || 0;
 
     my $list_lh = DADA::MailingList::Subscribers->new( { -list => $list } );
@@ -4595,8 +4595,8 @@ sub also_member_of {
     if ( !$checksout ) { return $error_msg; }
 
     my $list  = $admin_list;
-    my $email = xss_filter( $q->param('email') );
-    my $type  = xss_filter( $q->param('type') ) || 'list';
+    my $email = xss_filter( scalar $q->param('email') );
+    my $type  = xss_filter( scalar $q->param('type') ) || 'list';
 
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
@@ -4635,12 +4635,12 @@ sub validate_remove_email {
     if ( !$checksout ) { return $error_msg; }
 
     my $list               = $admin_list;
-    my $type               = xss_filter( $q->param('type') );
-    my $email              = xss_filter( $q->param('email') );
-    my $process            = xss_filter( $q->param('process') ) || 0;
+    my $type               = xss_filter( scalar $q->param('type') );
+    my $email              = xss_filter( scalar $q->param('email') );
+    my $process            = xss_filter( scalar $q->param('process') ) || 0;
     my @remove_from_list   = $q->multi_param('remove_from_list');
-    my $return_to          = xss_filter( $q->param('return_to') ) || 0;
-    my $for_multiple_lists = xss_filter( $q->param('for_multiple_lists') ) || 0;
+    my $return_to          = xss_filter( scalar $q->param('return_to') ) || 0;
+    my $for_multiple_lists = xss_filter( scalar $q->param('for_multiple_lists') ) || 0;
 
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
@@ -4767,10 +4767,10 @@ sub mailing_list_history {
     if ( !$checksout ) { return $error_msg; }
 
     my $list               = $admin_list;
-    my $email              = xss_filter( $q->param('email') );
-    my $membership_history = xss_filter( $q->param('membership_history') )
+    my $email              = xss_filter( scalar $q->param('email') );
+    my $membership_history = xss_filter( scalar $q->param('membership_history') )
       || 'this_list';
-    my $mode = xss_filter( $q->param('mode') ) || 'html';
+    my $mode = xss_filter( scalar $q->param('mode') ) || 'html';
 
     require DADA::App::LogSearch;
     my $searcher = DADA::App::LogSearch->new;
@@ -4868,8 +4868,8 @@ sub membership_activity {
     if ( !$checksout ) { return $error_msg; }
 
     my $list  = $admin_list;
-    my $email = xss_filter( $q->param('email') );
-    my $mode  = xss_filter( $q->param('mode') ) || 'html';
+    my $email = xss_filter( scalar $q->param('email') );
+    my $mode  = xss_filter( scalar $q->param('mode') ) || 'html';
 
     if ( $mode eq 'html' ) {
         require DADA::Logging::Clickthrough;
@@ -5001,9 +5001,9 @@ sub admin_change_profile_password {
     if ( !$checksout ) { return $error_msg; }
 
     my $list             = $admin_list;
-    my $profile_password = xss_filter( $q->param('profile_password') );
-    my $email            = xss_filter( $q->param('email') );
-    my $type             = xss_filter( $q->param('type') );
+    my $profile_password = xss_filter( scalar $q->param('profile_password') );
+    my $email            = xss_filter( scalar $q->param('email') );
+    my $type             = xss_filter( scalar $q->param('type') );
 
     require DADA::Profile;
     my $prof = DADA::Profile->new( { -email => $email } );
@@ -5055,10 +5055,10 @@ sub admin_profile_delivery_preferences {
     );
     if ( !$checksout ) { return $error_msg; }
 
-    my $email          = xss_filter( $q->param('email') );
-    my $list           = xss_filter( $q->param('list') );
-    my $delivery_prefs = xss_filter( $q->param('delivery_prefs') );
-    my $type           = xss_filter( $q->param('type') );
+    my $email          = xss_filter( scalar $q->param('email') );
+    my $list           = xss_filter( scalar $q->param('list') );
+    my $delivery_prefs = xss_filter( scalar $q->param('delivery_prefs') );
+    my $type           = xss_filter( scalar $q->param('type') );
 
     require DADA::Profile::Settings;
     my $dps = DADA::Profile::Settings->new;
@@ -5110,12 +5110,12 @@ sub add {
             # in the, "new_emails" CGI param. (Hehehe);
 
             my @columns = ();
-            push( @columns, xss_filter( $q->param('email') ) );
+            push( @columns, xss_filter( scalar $q->param('email') ) );
             for ( @{ $lh->subscriber_fields() } ) {
-                push( @columns, xss_filter( $q->param($_) ) );
+                push( @columns, xss_filter( scalar $q->param($_) ) );
             }
             if ( $type eq 'list' && $lh->can_have_subscriber_fields ) {
-                push( @columns, xss_filter( $q->param('profile_password') ) );
+                push( @columns, xss_filter( scalar $q->param('profile_password') ) );
             }
 
             require Text::CSV;
@@ -5132,14 +5132,14 @@ sub add {
         }
 
         if ( $q->param('method') eq 'via_file_upload' ) {
-            if ( strip( $q->param('new_email_file') ) eq '' ) {
+            if ( strip( scalar $q->param('new_email_file') ) eq '' ) {
 
                 $self->header_type('redirect');
                 $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=add' );
             }
         }
         elsif ( $q->param('method') eq 'via_textarea' ) {
-            if ( strip( $q->param('new_emails') ) eq '' ) {
+            if ( strip( scalar $q->param('new_emails') ) eq '' ) {
                 $self->header_type('redirect');
                 $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=add' );
             }
@@ -5148,7 +5148,7 @@ sub add {
         # DEV: This whole building of query string is much too messy.
         my $qs = '&type=' . $q->param('type') . '&new_email_file=' . $q->param('new_email_file');
 
-        if ( DADA::App::Guts::strip( $q->param('new_emails') ) ne "" ) {
+        if ( DADA::App::Guts::strip( scalar $q->param('new_emails') ) ne "" ) {
 
             # DEV: why is it, "new_emails.txt"? Is that supposed to be a variable?
             my $outfile = make_safer( $DADA::Config::TMP . '/' . $q->param('rand_string') . '-' . 'new_emails.txt' );
@@ -7942,7 +7942,7 @@ sub list_cp_options {
                 -list => $list,
                 -vars => {
                     screen => 'list_cp_options',
-                    done   => xss_filter( $q->param('done') ),
+                    done   => xss_filter( scalar $q->param('done') ),
 
                     ckeditor_enabled => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{enabled},
                     ckeditor_url     => $DADA::Config::WYSIWYG_EDITOR_OPTIONS->{ckeditor}->{url},
@@ -8036,7 +8036,7 @@ sub profile_fields {
     };
     my %flattened_field_errors = ();
 
-    my $edit_field = xss_filter( $q->param('edit_field') );
+    my $edit_field = xss_filter( scalar $q->param('edit_field') );
 
     my $field                = '';
     my $fallback_field_value = '';
@@ -8044,15 +8044,15 @@ sub profile_fields {
     my $field_required       = 0;
 
     if ( $edit_field == 1 ) {
-        $field                = xss_filter( $q->param('field') );
+        $field                = xss_filter( scalar $q->param('field') );
         $fallback_field_value = $fields_attr->{$field}->{fallback_value};
         $field_label          = $fields_attr->{$field}->{label};
         $field_required       = $fields_attr->{$field}->{required};
     }
     else {
-        $field                = xss_filter( $q->param('field') );
-        $fallback_field_value = xss_filter( $q->param('fallback_field_value') );
-        $field_label          = xss_filter( $q->param('field_label') );
+        $field                = xss_filter( scalar $q->param('field') );
+        $fallback_field_value = xss_filter( scalar $q->param('fallback_field_value') );
+        $field_label          = xss_filter( scalar $q->param('field_label') );
         $field_required       = $q->param('field_required') || 0;
         if ( $field_required ne "1" && $field_required ne "0" ) {
             die "field_required needs to be either 1, or 0!";
@@ -8121,7 +8121,7 @@ sub profile_fields {
     }
     elsif ( $process eq 'edit_field' ) {
 
-        my $orig_field = xss_filter( $q->param('orig_field') );
+        my $orig_field = xss_filter( scalar $q->param('orig_field') );
 
         #old name			# new name
         if ( $orig_field eq $field ) {
@@ -8168,7 +8168,7 @@ sub profile_fields {
         else {
             # Else, I guess for now, we'll show the template and have the errors print out there...
             $edit_field = 1;
-            $field      = xss_filter( $q->param('orig_field') );
+            $field      = xss_filter( scalar $q->param('orig_field') );
 
             for (%$field_error_details) {
                 $flattened_field_errors{ 'field_error_' . $_ } = $field_error_details->{$_};
@@ -8226,11 +8226,11 @@ sub profile_fields {
                 using_SQLite => $DADA::Config::SUBSCRIBER_DB_TYPE eq 'SQLite'
                 ? 1
                 : 0,
-                field_changes => xss_filter( $q->param('field_changes') ),
-                working_field => xss_filter( $q->param('working_field') ),
-                deletion      => xss_filter( $q->param('deletion') ),
-                addition      => xss_filter( $q->param('addition') ),
-                edited        => xss_filter( $q->param('edited') ),
+                field_changes => xss_filter( scalar $q->param('field_changes') ),
+                working_field => xss_filter( scalar $q->param('working_field') ),
+                deletion      => xss_filter( scalar $q->param('deletion') ),
+                addition      => xss_filter( scalar $q->param('addition') ),
+                edited        => xss_filter( scalar $q->param('edited') ),
 
                 can_move_columns => $can_move_columns,
 
@@ -8642,7 +8642,7 @@ sub resend_conf_captcha {
 
     my $captcha_worked = 0;
     my $captcha_auth   = 1;
-    if ( !xss_filter( $q->param('recaptcha_response_field') ) ) {
+    if ( !xss_filter( scalar $q->param('recaptcha_response_field') ) ) {
         $captcha_worked = 0;
     }
     else {
@@ -8767,7 +8767,7 @@ sub resend_conf_no_captcha {
     if (
         DADA::App::Guts::check_email_pin(
             -Email => $month . '.' . $day . '.' . $email,
-            -Pin   => xss_filter( $q->param('auth_code') ),
+            -Pin   => xss_filter( scalar $q->param('auth_code') ),
             -List  => $list,
         ) == 0
       )
@@ -8840,9 +8840,9 @@ sub show_error {
     my $self = shift;
     my $q    = $self->query();
 
-    my $email = xss_filter( $q->param('email') ) || undef;
-    my $error = xss_filter( $q->param('error') ) || undef;
-    my $list  = xss_filter( $q->param('list') )  || undef;
+    my $email = xss_filter( scalar $q->param('email') ) || undef;
+    my $error = xss_filter( scalar $q->param('error') ) || undef;
+    my $list  = xss_filter( scalar $q->param('list') )  || undef;
 
     require DADA::MailingList::Settings;
 
@@ -8889,9 +8889,9 @@ sub text_list {
     my $lh   = DADA::MailingList::Subscribers->new( { -list => $list } );
 
     my $type            = $q->param('type')                          || 'list';
-    my $query           = xss_filter( $q->param('query') )           || undef;
-    my $advanced_search = xss_filter( $q->param('advanced_search') ) || 0;
-    my $advanced_query  = xss_filter( $q->param('advanced_query') )  || undef;
+    my $query           = xss_filter( scalar $q->param('query') )           || undef;
+    my $advanced_search = xss_filter( scalar $q->param('advanced_search') ) || 0;
+    my $advanced_query  = xss_filter( scalar $q->param('advanced_query') )  || undef;
     my $order_by        = $q->param('order_by')                      || $ls->param('view_list_order_by');
     my $order_dir = $q->param('order_dir') || lc( $ls->param('view_list_order_by_direction') );
 
@@ -9150,7 +9150,7 @@ sub new_list {
                     {
                         -list     => $list,
                         -settings => $new_info,
-                        -clone    => xss_filter( $q->param('clone_settings_from_this_list') ),
+                        -clone    => xss_filter( scalar $q->param('clone_settings_from_this_list') ),
                     }
                 );
             }
@@ -9252,9 +9252,9 @@ sub archive {
     my $archive_send_form = '';
     $archive_send_form = DADA::Template::Widgets::archive_send_form(
         $list, $id,
-        xss_filter( $q->param('send_archive_errors') ),
+        xss_filter( scalar $q->param('send_archive_errors') ),
         $ls->param('captcha_archive_send_form'),
-        xss_filter( $q->param('captcha_fail') )
+        xss_filter( scalar $q->param('captcha_fail') )
     ) if $ls->param('archive_send_form') == 1 && defined($id);
 
     my $nav_table = '';
@@ -9872,10 +9872,10 @@ sub send_archive {
     my $self = shift;
     my $q    = $self->query();
 
-    my $entry      = xss_filter( $q->param('entry') );
-    my $from_email = xss_filter( $q->param('from_email') );
-    my $to_email   = xss_filter( $q->param('to_email') );
-    my $note       = xss_filter( $q->param('note') );
+    my $entry      = xss_filter( scalar $q->param('entry') );
+    my $from_email = xss_filter( scalar $q->param('from_email') );
+    my $to_email   = xss_filter( scalar $q->param('to_email') );
+    my $note       = xss_filter( scalar $q->param('note') );
     my $list       = $q->param('list');
 
     my $errors = 0;
@@ -9921,7 +9921,7 @@ sub send_archive {
         require DADA::Security::AuthenCAPTCHA;
         my $cap = DADA::Security::AuthenCAPTCHA->new;
 
-        if ( xss_filter( $q->param('recaptcha_response_field') ) ) {
+        if ( xss_filter( scalar $q->param('recaptcha_response_field') ) ) {
             my $result = $cap->check_answer(
                 $DADA::Config::RECAPTCHA_PARAMS->{private_key}, $DADA::Config::RECAPTCHA_PARAMS->{'remote_address'},
                 $q->param('recaptcha_challenge_field'),         $q->param('recaptcha_response_field')
@@ -11212,7 +11212,7 @@ sub restore_lists {
                     -with   => 'list',
                     -vars   => {
                         restore_list_options => $restore_list_options,
-                        root_password        => xss_filter( $q->param('root_password') ),
+                        root_password        => xss_filter( scalar $q->param('root_password') ),
                     }
                 }
             );
@@ -11467,7 +11467,7 @@ sub m_o_c {
     my $self = shift;
     my $q    = $self->query();
 
-    my $list = xss_filter( $q->param('list') );
+    my $list = xss_filter( scalar $q->param('list') );
 
     if ( check_if_list_exists( -List => $list ) == 0 ) {
         carp "list: '$list' does not exist, aborted logging of open message\n" . 'path_info(): ' . $q->path_info();
@@ -11529,7 +11529,7 @@ sub captcha_img {
     my $self = shift;
     my $q    = $self->query();
 
-    my $img_str = xss_filter( $q->param('img_string') );
+    my $img_str = xss_filter( scalar $q->param('img_string') );
 
     if ( -e $DADA::Config::TMP . '/capcha_imgs/CAPTCHA-' . $img_str . '.png' ) {
 
@@ -11637,15 +11637,15 @@ sub profile_login {
                         errors => $all_errors,
                         %$named_errs,
 
-                        email => xss_filter( $q->param('email') )
+                        email => xss_filter( scalar $q->param('email') )
                           || '',
-                        login_email => xss_filter( $q->param('login_email') )
+                        login_email => xss_filter( scalar $q->param('login_email') )
                           || '',
-                        register_email => xss_filter( $q->param('register_email') )
+                        register_email => xss_filter( scalar $q->param('register_email') )
                           || '',
-                        reset_email => xss_filter( $q->param('reset_email') )
+                        reset_email => xss_filter( scalar $q->param('reset_email') )
                           || '',
-                        register_email_again => xss_filter( $q->param('register_email_again') )
+                        register_email_again => xss_filter( scalar $q->param('register_email_again') )
                           || '',
 
                         error_profile_login          => scalar $q->param('error_profile_login')          || '',
@@ -11669,8 +11669,8 @@ sub profile_login {
     else {
         my ( $status, $errors ) = $prof_sess->validate_profile_login(
             {
-                -email    => xss_filter( $q->param('login_email') ),
-                -password => xss_filter( $q->param('login_password') ),
+                -email    => xss_filter( scalar $q->param('login_email') ),
+                -password => xss_filter( scalar $q->param('login_password') ),
 
             },
         );
@@ -11678,8 +11678,8 @@ sub profile_login {
         if ( $status == 1 ) {
             my $cookie = $prof_sess->login(
                 {
-                    -email    => xss_filter( $q->param('login_email') ),
-                    -password => xss_filter( $q->param('login_password') ),
+                    -email    => xss_filter( scalar $q->param('login_email') ),
+                    -password => xss_filter( scalar $q->param('login_password') ),
                 },
             );
 
@@ -11731,9 +11731,9 @@ sub profile_register {
         return $self->default();
     }
 
-    my $register_email       = strip( cased( xss_filter( $q->param('register_email') ) ) );
-    my $register_email_again = strip( cased( xss_filter( $q->param('register_email_again') ) ) );
-    my $register_password    = strip( xss_filter( $q->param('register_password') ) );
+    my $register_email       = strip( cased( xss_filter( scalar $q->param('register_email') ) ) );
+    my $register_email_again = strip( cased( xss_filter( scalar $q->param('register_email_again') ) ) );
+    my $register_password    = strip( xss_filter( scalar $q->param('register_password') ) );
 
     my $prof = DADA::Profile->new( { -email => $register_email } );
 
@@ -11799,14 +11799,14 @@ sub profile_activate {
         return $self->default();
     }
 
-    my $email     = strip( cased( xss_filter( $q->param('email') ) ) );
-    my $auth_code = xss_filter( $q->param('auth_code') );
+    my $email     = strip( cased( xss_filter( scalar $q->param('email') ) ) );
+    my $auth_code = xss_filter( scalar $q->param('auth_code') );
 
     my $prof = DADA::Profile->new( { -email => $email } );
 
     if ( $email && $auth_code ) {
         my ( $status, $errors ) =
-          $prof->is_valid_activation( { -auth_code => xss_filter( $q->param('auth_code') ) || '', } );
+          $prof->is_valid_activation( { -auth_code => xss_filter( scalar $q->param('auth_code') ) || '', } );
         if ( $status == 1 ) {
             $prof->activate;
             my $profile = $prof->get;
@@ -11862,7 +11862,7 @@ sub profile {
 
             my $edited = {};
             for (@$subscriber_fields) {
-                $edited->{$_} = xss_filter( $q->param($_) );
+                $edited->{$_} = xss_filter( scalar $q->param($_) );
 
                 # This is better than nothing, but it's very lazy -
                 # Make sure that the length is less than 10k.
@@ -11894,8 +11894,8 @@ sub profile {
                 return $self->default();
             }
 
-            my $new_password       = xss_filter( $q->param('password') );
-            my $again_new_password = xss_filter( $q->param('again_password') );
+            my $new_password       = xss_filter( scalar $q->param('password') );
+            my $again_new_password = xss_filter( scalar $q->param('again_password') );
 
             # DEV: See?! Why are we doing this manually? Can we use is_valid_registration() perhaps?
             if ( length($new_password) > 0
@@ -11964,7 +11964,7 @@ sub profile {
             # Valid? OK! send the confirmaiton email
 
             # Not Valid? Geez we better tell someone.
-            my $updated_email = cased( xss_filter( $q->param('updated_email') ) );
+            my $updated_email = cased( xss_filter( scalar $q->param('updated_email') ) );
 
             # Oh. What if there is already a profile for this address?
 
@@ -12033,8 +12033,8 @@ sub profile {
             }
         }
         elsif ( $q->param('process') eq 'profile_delivery_preferences' ) {
-            my $list           = xss_filter( $q->param('list') );
-            my $delivery_prefs = xss_filter( $q->param('delivery_prefs') );
+            my $list           = xss_filter( scalar $q->param('list') );
+            my $delivery_prefs = xss_filter( scalar $q->param('delivery_prefs') );
 
             require DADA::Profile::Settings;
             my $dps = DADA::Profile::Settings->new;
@@ -12227,8 +12227,8 @@ sub profile_reset_password {
         return $self->default();
     }
 
-    my $reset_email = cased( xss_filter( $q->param('reset_email') ) );
-    my $auth_code = xss_filter( $q->param('auth_code') ) || undef;
+    my $reset_email = cased( xss_filter( scalar $q->param('reset_email') ) );
+    my $auth_code = xss_filter( scalar $q->param('auth_code') ) || undef;
 
     if ($auth_code) {
         $reset_email = $email;
@@ -12238,7 +12238,7 @@ sub profile_reset_password {
 
     if ($reset_email) {
 
-        my $password = xss_filter( $q->param('password') ) || undef;
+        my $password = xss_filter( scalar $q->param('password') ) || undef;
 
         if ($auth_code) {
             my ( $status, $errors ) = $prof->is_valid_activation( { -auth_code => $auth_code, } );
@@ -12330,9 +12330,9 @@ sub profile_update_email {
     my $self = shift;
     my $q    = $self->query();
 
-    my $auth_code = xss_filter( $q->param('auth_code') );
-    my $email     = cased( xss_filter( $q->param('email') ) );
-    my $confirmed = xss_filter( $q->param('confirmed') );
+    my $auth_code = xss_filter( scalar $q->param('auth_code') );
+    my $email     = cased( xss_filter( scalar $q->param('email') ) );
+    my $confirmed = xss_filter( scalar $q->param('confirmed') );
 
     require DADA::Profile;
 
