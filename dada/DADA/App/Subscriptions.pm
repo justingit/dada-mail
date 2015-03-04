@@ -1081,7 +1081,7 @@ sub confirm {
                 }
                 require DADA::App::Subscriptions::ConfirmationTokens;
                 my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
-                $ct->remove_by_token( $q->param('token') );
+                $ct->remove_by_token( scalar $q->param('token') );
             }
             else {
 
@@ -1189,7 +1189,7 @@ sub subscription_approval_step {
     
     require DADA::App::Subscriptions::ConfirmationTokens;
     my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
-    $ct->remove_by_token( $q->param('token') );
+    $ct->remove_by_token( scalar $q->param('token') );
      
 
     my $approve_token = $ct->save(

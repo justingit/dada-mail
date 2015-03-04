@@ -425,8 +425,8 @@ sub construct_and_send {
 
     if ( $draft_q->param('archive_no_send') != 1 ) {
         my @alternative_list = ();
-        @alternative_list = $draft_q->param('alternative_list');
-        $mh->mass_test_recipient( $draft_q->param('test_recipient') );
+        @alternative_list = $draft_q->multi_param('alternative_list');
+        $mh->mass_test_recipient( scalar $draft_q->param('test_recipient') );
         my $multi_list_send_no_dupes = $draft_q->param('multi_list_send_no_dupes')
           || 0;
 
@@ -503,14 +503,14 @@ sub construct_from_text {
         )
       )
     {
-        if ( defined( $draft_q->param($h) ) ) {
+        if ( defined( scalar $draft_q->param($h) ) ) {
 
             # I do not like how we treat Subject differently, but I don't have a better idea on what to do.
             if ( $h eq 'Subject' ) {
-                $headers{$h} = $fm->_encode_header( 'Subject', $draft_q->param($h) );
+                $headers{$h} = $fm->_encode_header( 'Subject', scalar $draft_q->param($h) );
             }
             else {
-                $headers{$h} = strip( $draft_q->param($h) );
+                $headers{$h} = strip( scalar $draft_q->param($h) );
             }
         }
     }

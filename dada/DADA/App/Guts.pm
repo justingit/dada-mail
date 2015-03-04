@@ -2888,7 +2888,7 @@ sub decode_cgi_obj {
             next;
         }
 
-        my @val     = $query->param($name);
+        my @val     = $query->multi_param($name);
         my @new_val = ();
 
         # are we really using UTF-8 encoded *names*?!
