@@ -399,18 +399,18 @@ sub cl_run {
 	   my $install_dada_files_loc = install_dada_files_dir_at_from_params(); 
 	   my ( $install_log, $install_status, $install_errors ) = install_dada_mail(
 	        {
-	            -program_url                   => $q->param('program_url') || '',
-	            -dada_root_pass                => $q->param('dada_root_pass') || '',
-				-dada_files_dir_setup          => $q->param('dada_files_dir_setup') || 'manual', 
-	            -backend                       => $q->param('backend') || 'default',
-	            -sql_server                    => $q->param('sql_server') || '',
-	            -sql_database                  => $q->param('sql_database') || '',
-	            -sql_username                  => $q->param('sql_username') || '',
-	            -sql_password                  => $q->param('sql_password') || '',
+	            -program_url                   => scalar $q->param('program_url') || '',
+	            -dada_root_pass                => scalar $q->param('dada_root_pass') || '',
+				-dada_files_dir_setup          => scalar $q->param('dada_files_dir_setup') || 'manual', 
+	            -backend                       => scalar $q->param('backend') || 'default',
+	            -sql_server                    => scalar $q->param('sql_server') || '',
+	            -sql_database                  => scalar $q->param('sql_database') || '',
+	            -sql_username                  => scalar $q->param('sql_username') || '',
+	            -sql_password                  => scalar $q->param('sql_password') || '',
 		        -sql_port                      => sql_port_from_params(),
 				-install_dada_files_loc        => $install_dada_files_loc, 			
-				-skip_configure_SQL            => $q->param('skip_configure_SQL') || 0, 
-				-if_dada_files_already_exists  => $q->param('if_dada_files_already_exists') || undef,
+				-skip_configure_SQL            => scalar $q->param('skip_configure_SQL') || 0, 
+				-if_dada_files_already_exists  => scalar $q->param('if_dada_files_already_exists') || undef,
 	        }
 	    );
 
@@ -489,8 +489,8 @@ sub install_or_upgrade {
 				dada_files_parent_dir               => $dada_files_parent_dir, 
 				Dada_Files_Dir_Name                 => $Dada_Files_Dir_Name, 
 				found_existing_dada_files_dir       => $found_existing_dada_files_dir ,
-				current_dada_files_parent_location  => $q->param('current_dada_files_parent_location'), 
-				error_cant_find_dada_files_location => $q->param('error_cant_find_dada_files_location'), 
+				current_dada_files_parent_location  => scalar $q->param('current_dada_files_parent_location'), 
+				error_cant_find_dada_files_location => scalar $q->param('error_cant_find_dada_files_location'), 
 				Self_URL                            => $Self_URL, 
 				
 				
@@ -683,18 +683,18 @@ sub scrn_configure_dada_mail {
                 install_dada_files_dir_at          => install_dada_files_dir_at_from_params(),
                 test_complete_dada_files_dir_structure_exists =>
                   test_complete_dada_files_dir_structure_exists( install_dada_files_dir_at_from_params() ),
-                dada_files_dir_setup                     => $q->param('dada_files_dir_setup')                     || '',
-                dada_files_loc                           => $q->param('dada_files_loc')                           || '',
-                error_create_dada_mail_support_files_dir => $q->param('error_create_dada_mail_support_files_dir') || 0,
-                error_root_pass_is_blank                 => $q->param('error_root_pass_is_blank')                 || 0,
-                error_pass_no_match                      => $q->param('error_pass_no_match')                      || 0,
-                error_program_url_is_blank               => $q->param('error_program_url_is_blank')               || 0,
-                error_create_dada_files_dir              => $q->param('error_create_dada_files_dir')              || 0,
-                error_dada_files_dir_exists              => $q->param('error_dada_files_dir_exists')              || 0,
-                error_sql_connection                     => $q->param('error_sql_connection')                     || 0,
-                error_sql_table_populated                => $q->param('error_sql_table_populated')                || 0,
-                skip_configure_SQL                       => $q->param('skip_configure_SQL')                       || 0,
-                errors                                   => $q->param('errors')                                   || [],
+                dada_files_dir_setup                     => scalar $q->param('dada_files_dir_setup')                     || '',
+                dada_files_loc                           => scalar $q->param('dada_files_loc')                           || '',
+                error_create_dada_mail_support_files_dir => scalar $q->param('error_create_dada_mail_support_files_dir') || 0,
+                error_root_pass_is_blank                 => scalar $q->param('error_root_pass_is_blank')                 || 0,
+                error_pass_no_match                      => scalar $q->param('error_pass_no_match')                      || 0,
+                error_program_url_is_blank               => scalar $q->param('error_program_url_is_blank')               || 0,
+                error_create_dada_files_dir              => scalar $q->param('error_create_dada_files_dir')              || 0,
+                error_dada_files_dir_exists              => scalar $q->param('error_dada_files_dir_exists')              || 0,
+                error_sql_connection                     => scalar $q->param('error_sql_connection')                     || 0,
+                error_sql_table_populated                => scalar $q->param('error_sql_table_populated')                || 0,
+                skip_configure_SQL                       => scalar $q->param('skip_configure_SQL')                       || 0,
+                errors                                   => scalar $q->param('errors')                                   || [],
                 PROGRAM_URL                              => program_url_guess(),
                 S_PROGRAM_URL                            => program_url_guess(),
                 Dada_Files_Dir_Name                      => $Dada_Files_Dir_Name,
@@ -1213,18 +1213,18 @@ sub scrn_install_dada_mail {
 	my $install_dada_files_loc = install_dada_files_dir_at_from_params(); 
     my ( $log, $status, $errors ) = install_dada_mail(
         {
-			-if_dada_files_already_exists  => $q->param('if_dada_files_already_exists') || undef,
-            -program_url                   => $q->param('program_url'),
-            -dada_root_pass                => $q->param('dada_root_pass'),
-			-dada_files_dir_setup          => $q->param('dada_files_dir_setup'), 
+			-if_dada_files_already_exists  => scalar $q->param('if_dada_files_already_exists') || undef,
+            -program_url                   => scalar $q->param('program_url'),
+            -dada_root_pass                => scalar $q->param('dada_root_pass'),
+			-dada_files_dir_setup          => scalar $q->param('dada_files_dir_setup'), 
 			-install_dada_files_loc        => $install_dada_files_loc, 
-            -backend                       => $q->param('backend'),
-			-skip_configure_SQL            => $q->param('skip_configure_SQL') || 0, 
-            -sql_server                    => $q->param('sql_server'),
+            -backend                       => scalar $q->param('backend'),
+			-skip_configure_SQL            => scalar $q->param('skip_configure_SQL') || 0, 
+            -sql_server                    => scalar $q->param('sql_server'),
             -sql_port                      => sql_port_from_params(),
-            -sql_database                  => $q->param('sql_database'),
-            -sql_username                  => $q->param('sql_username'),
-            -sql_password                  => $q->param('sql_password'),
+            -sql_database                  => scalar $q->param('sql_database'),
+            -sql_username                  => scalar $q->param('sql_username'),
+            -sql_password                  => scalar $q->param('sql_password'),
         }
     );
 
@@ -1247,7 +1247,7 @@ sub scrn_install_dada_mail {
 			Trace                         => $Trace, 
 			PROGRAM_URL                   => program_url_guess(),
             S_PROGRAM_URL                 => program_url_guess(),
-			submitted_PROGRAM_URL         => $q->param('program_url'),
+			submitted_PROGRAM_URL         => scalar $q->param('program_url'),
 			Self_URL                      => $Self_URL, 
 			
 	 		}
@@ -1897,8 +1897,8 @@ sub create_dada_config_file {
                 ROOT_PASSWORD          => $pass,
                 ROOT_PASS_IS_ENCRYPTED => 1,
                 dada_files_dir         => $loc,
-				support_files_dir_path => $q->param('support_files_dir_path') . '/' . $Support_Files_Dir_Name, 
-				support_files_dir_url  => $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name, 
+				support_files_dir_path => scalar $q->param('support_files_dir_path') . '/' . $Support_Files_Dir_Name, 
+				support_files_dir_url  => scalar $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name, 
 				Big_Pile_Of_Errors     => $Big_Pile_Of_Errors, 
 				Trace                  => $Trace, 
 				%{$SQL_params},
@@ -2553,7 +2553,7 @@ sub install_and_configure_kcfinder {
         {
             -screen => 'kcfinder_config_php.tmpl',
             -vars   => {
-				i_tinyMCEPath => $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/tinymce',
+				i_tinyMCEPath => scalar $q->param('support_files_dir_url') . '/' . $Support_Files_Dir_Name . '/tinymce',
 				i_sessionDir  => $sess_dir,
 			}
         }
@@ -2674,7 +2674,7 @@ sub install_and_configure_core5_filemanager {
             -screen => 'core5_filemanager_config_js.tmpl',
             -vars   => {
 				fileRoot          => $url_path . '/', # slash on the end, there. 
-				lang              => $q->param('core5_filemanager_connector'), 
+				lang              => scalar $q->param('core5_filemanager_connector'), 
 			}
         }
     );

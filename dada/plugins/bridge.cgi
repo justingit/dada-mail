@@ -348,12 +348,12 @@ sub cgi_test_pop3_ajax {
 	    my ( $pop3_obj, $pop3_status, $pop3_log ) =
 	      DADA::App::POP3Tools::mail_pop3client_login(
 	        {
-	            server    => $q->param('server'),
-	            username  => $q->param('username'),
+	            server    => scalar $q->param('server'),
+	            username  => scalar $q->param('username'),
 	            password  => $password,
 #	            port      => $args->{Port},
-	            AUTH_MODE => $q->param('auth_mode'),
-	            USESSL    => $q->param('use_ssl'),
+	            AUTH_MODE => scalar $q->param('auth_mode'),
+	            USESSL    => scalar $q->param('use_ssl'),
 	        }
 	      );
 	    if ( defined($pop3_obj) ) {

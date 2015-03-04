@@ -264,7 +264,7 @@ $q->delete('utf8str');
 $q->param('utf8array', Encode::encode('UTF-8', $str), Encode::encode('UTF-8', $str), Encode::encode('UTF-8', $str)); # kind of like if we got it from outside the prog, 
 $q = decode_cgi_obj($q); 
 
-my @utf8array = $q->param('utf8array'); 
+my @utf8array = $q->multi_param('utf8array'); 
 for(@utf8array){ 
 	ok($_ eq $dada_test_config::UTF8_STR, "decoding the cgi object didn't destroy our data!");
 }

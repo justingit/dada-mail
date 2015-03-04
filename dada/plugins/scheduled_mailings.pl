@@ -425,7 +425,7 @@ sub edit  {
 			$key = $mss->save_from_params({-cgi_obj => $q });
 			my $status = test_handler(
 				-key => $key,
-				-test_recipient => $q->param('test_recipient'), 
+				-test_recipient => scalar $q->param('test_recipient'), 
 			 );
 			if(! keys %$status){ 
 				$message = '<p class="positive">Your test message has been sent.</p>';

@@ -441,9 +441,9 @@ sub draft_index {
             last_modified_timestamp => $hashref->{last_modified_timestamp},
             screen                  => $hashref->{screen},
             role                    => $hashref->{role},
-            Subject                 => $q->param('Subject'),
-            schedule_datetime       => $q->param('schedule_datetime'),
-            schedule_activated      => $q->param('schedule_activated'),
+            Subject                 => scalar $q->param('Subject'),
+            schedule_datetime       => scalar $q->param('schedule_datetime'),
+            schedule_activated      => scalar $q->param('schedule_activated'),
         };
 
         if (   $args->{-role} eq 'schedule'

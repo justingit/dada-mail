@@ -242,8 +242,8 @@ sub save_from_params {
 	        #if(defined($q->param($field . '.value'))){ 
     		    push(@$saved_pso, {
     				field_name     => $field,
-    				field_rangestart  => $q->param($field . '.rangestart'), 
-    				field_rangeend    => $q->param($field . '.rangeend'),  
+    				field_rangestart  => scalar $q->param($field . '.rangestart'), 
+    				field_rangeend    => scalar $q->param($field . '.rangeend'),  
 				}); 
     		#}
 	    }
@@ -251,8 +251,8 @@ sub save_from_params {
     		if(defined($q->param($field . '.value'))){ 
     				push(@$saved_pso, {
         				field_name     => $field,
-        				field_operator => $q->param($field . '.operator'), 
-        				field_value    => $q->param($field . '.value'),  
+        				field_operator => scalar $q->param($field . '.operator'), 
+        				field_value    => scalar $q->param($field . '.value'),  
     				}
     			); 
     		}

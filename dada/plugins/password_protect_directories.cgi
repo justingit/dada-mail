@@ -195,7 +195,7 @@ sub default {
             },
 			-expr => 1, 
             -vars => {
-                done                             => $q->param('done') || 0,
+                done                             => scalar $q->param('done') || 0,
 				Plugin_URL                       => $Plugin_Config->{Plugin_URL}, 
 				entries                          => $entries, 
 				problems                         => $problems, 

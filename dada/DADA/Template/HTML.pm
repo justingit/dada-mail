@@ -211,7 +211,7 @@ sub admin_template {
 	
 	my $login_switch_widget = ''; 
 	if($Yeah_Root_Login){  
-		$login_switch_widget = DADA::Template::Widgets::login_switch_widget({-list => $args{-List}, ($q->param('flavor') ? (-f => $q->param('flavor')) : ())}); 
+		$login_switch_widget = DADA::Template::Widgets::login_switch_widget({-list => $args{-List}, ($q->param('flavor') ? (-f => scalar $q->param('flavor')) : ())}); 
 	}
 
 
