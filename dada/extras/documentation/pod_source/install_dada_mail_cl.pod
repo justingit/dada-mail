@@ -255,7 +255,6 @@ Example:
 
     --install_wysiwyg_editors ckeditor,tiny_mce
 
-=over
 
 =head2 --install_file_browser
 	
@@ -265,7 +264,6 @@ or pass, C<core5_filemanager> to install the Core5 Filemanager.
 Unlike the, C<--install_wysiwyg_editors> option, C<--install_file_browser> (and Dada Mail)
  only supports installing one file browser/manager at a time.
 
-=back
 
 =head2 Amazon SES
 
@@ -306,29 +304,29 @@ Dada Mail to use only 50% of your total SES sending quota, set this paramater to
 
 An example of invoking the installer with the above parameters: 
 
-	./install.cgi --program_url http://example.com/cgi-bin/dada/mail.cgi \
-	--dada_root_pass secret \
-	--dada_files_loc /home/example \
-	--support_files_dir_path /home/example/public_html \
-	--support_files_dir_url http://example.com \
-	--backend mysql \
-	--sql_server localhost \
-	--sql_port 3306 \
-	--sql_database dada_mail \
-	--sql_username username \
-	--sql_password password \
-	--install_plugins mailing_monitor \
-	--install_plugins change_root_password \
-	--install_plugins screen_cache \
-	--install_plugins log_viewer \
-	--install_plugins tracker \
-	--install_plugins multiple_subscribe \
-	--install_plugins blog_index \
-	--install_plugins change_list_shortname \
+    ./install.cgi --program_url http://example.com/cgi-bin/dada/mail.cgi \
+    --dada_root_pass secret \
+    --dada_files_loc /home/example \
+    --support_files_dir_path /home/example/public_html \
+    --support_files_dir_url http://example.com \
+    --backend mysql \
+    --sql_server localhost \
+    --sql_port 3306 \
+    --sql_database dada_mail \
+    --sql_username username \
+    --sql_password password \
+    --install_plugins mailing_monitor \
+    --install_plugins change_root_password \
+    --install_plugins screen_cache \
+    --install_plugins log_viewer \
+    --install_plugins tracker \
+    --install_plugins multiple_subscribe \
+    --install_plugins blog_index \
+    --install_plugins change_list_shortname \
     --install_wysiwyg_editors ckeditor \
-	--wysiwyg_editor_install_ckeditor \
-	--wysiwyg_editor_install_tiny_mce \
-	--file_browser kcfinder
+    --wysiwyg_editor_install_ckeditor \
+    --wysiwyg_editor_install_tiny_mce \
+    --file_browser kcfinder
 
 Since the list of options is so long, it may make sense to put the entire command w/options in its own file,
 so that you can resuse your own recipe for installing Dada Mail in multiple locations.
