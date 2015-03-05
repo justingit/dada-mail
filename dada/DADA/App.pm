@@ -4031,9 +4031,8 @@ sub remove_all_subscribers {
             require DADA::App::MassSend;
             eval {
                 my $dam = DADA::App::MassSend->new( { -list => $list } );
-                $dam->just_unsubscribed_mass_mailing(
+                   $dam->just_unsubscribed_mass_mailing(
                     {
-                        -list              => $list,
                         -send_to_everybody => 1,
                     }
                 );

@@ -1966,17 +1966,13 @@ sub just_subscribed_mass_mailing {
     my $self = shift;
 
     my ($args) = @_;
-    if ( !exists( $args->{-list} ) ) {
-        croak "You MUST pass a list in the, '-list' parameter!";
-    }
     if ( !$args->{-addresses}->[0] ) {
         return;
     }
 
     my $type = '_tmp-just_subscribed-' . time;
 
-    for my $a ( @{ $args->{-addresses} } ) {
-        my $info = $self->{lh_obj}->csv_to_cds($a);
+    for my $info ( @{ $args->{-addresses} } ) {
         my $dmls = $self->{lh_obj}->add_subscriber(
             {
                 -email      => $info->{email},
@@ -1990,13 +1986,13 @@ sub just_subscribed_mass_mailing {
     }
 
     require DADA::App::FormatMessages;
-    my $fm = DADA::App::FormatMessages->new( -List => $args->{-list} );
+    my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
     $fm->mass_mailing(1);
     $fm->list_type('just_subscribed');
     $fm->use_email_templates(0);
 
     require DADA::MailingList::Settings;
-    my $ls = DADA::MailingList::Settings->new( { -list => $args->{-list} } );
+    my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
     my ( $header_glob, $message_string ) = $fm->format_headers_and_body(
         -msg => $fm->string_from_dada_style_args(
             {
@@ -2009,7 +2005,7 @@ sub just_subscribed_mass_mailing {
     );
 
     require DADA::Mail::Send;
-    my $mh = DADA::Mail::Send->new( { -list => $args->{-list} } );
+    my $mh = DADA::Mail::Send->new( { -list => $self->{list} } );
     $mh->list_type($type);
     my $message_id = $mh->mass_send( { -msg => { $mh->return_headers($header_glob), Body => $message_string, }, } );
     return 1;
@@ -2020,10 +2016,7 @@ sub just_unsubscribed_mass_mailing {
 
     my $self = shift;
     my ($args) = @_;
-    if ( !exists( $args->{-list} ) ) {
-        croak "You MUST pass a list in the, '-list' parameter!";
-    }
-
+    
     my $type = '_tmp-just_unsubscribed-' . time;
     if ( !$args->{-addresses}->[0] ) {
         if ( exists( $args->{-send_to_everybody} ) ) {
@@ -2054,13 +2047,13 @@ sub just_unsubscribed_mass_mailing {
     }
 
     require DADA::App::FormatMessages;
-    my $fm = DADA::App::FormatMessages->new( -List => $args->{-list} );
+    my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
     $fm->use_email_templates(0);
     $fm->mass_mailing(1);
     $fm->list_type('just_unsubscribed');
 
     require DADA::MailingList::Settings;
-    my $ls = DADA::MailingList::Settings->new( { -list => $args->{-list} } );
+    my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
     my ( $header_glob, $message_string ) = $fm->format_headers_and_body(
         -msg => $fm->string_from_dada_style_args(
             {
@@ -2073,7 +2066,7 @@ sub just_unsubscribed_mass_mailing {
     );
 
     require DADA::Mail::Send;
-    my $mh = DADA::Mail::Send->new( { -list => $args->{-list} } );
+    my $mh = DADA::Mail::Send->new( { -list => $self->{list} } );
     $mh->list_type($type);
     my $message_id = $mh->mass_send( { -msg => { $mh->return_headers($header_glob), Body => $message_string, }, } );
     return 1;
@@ -2083,15 +2076,13 @@ sub send_last_archived_msg_mass_mailing {
 
     my $self = shift;
     my ($args) = @_;
-    if ( !exists( $args->{-list} ) ) {
-        croak "You MUST pass a list in the, '-list' parameter!";
-    }
     if ( !$args->{-addresses}->[0] ) {
+        warn 'no subscribers passed.'; 
         return;
     }
 
     require DADA::MailingList::Archives;
-    my $la = DADA::MailingList::Archives->new( { -list => $args->{-list} } );
+    my $la = DADA::MailingList::Archives->new( { -list => $self->{list} } );
     my $entries = $la->get_archive_entries();
     if ( scalar(@$entries) <= 0 ) {
         return;
@@ -2101,8 +2092,7 @@ sub send_last_archived_msg_mass_mailing {
 
     my $type = '_tmp-just_subed_archive-' . time;
 
-    for my $a ( @{ $args->{-addresses} } ) {
-        my $info = $self->{lh_obj}->csv_to_cds($a);
+    for my $info ( @{ $args->{-addresses} } ) {
         my $dmls = $self->{lh_obj}->add_subscriber(
             {
                 -email      => $info->{email},
@@ -2123,7 +2113,7 @@ sub send_last_archived_msg_mass_mailing {
     );
 
     require DADA::Mail::Send;
-    my $mh = DADA::Mail::Send->new( { -list => $args->{-list} } );
+    my $mh = DADA::Mail::Send->new( { -list => $self->{list} } );
     $mh->list_type($type);
     my $message_id = $mh->mass_send( { -msg => { $mh->return_headers($head), Body => $body, }, } );
     return 1;
