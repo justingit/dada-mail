@@ -522,42 +522,42 @@ $ADMIN_MENU = [
 
 #					{
 #					-Title      => 'Boilerplate Example',
-#					-Title_URL  => $PLUGIN_URL."/boilerplate_plugin.cgi",
+#					-Title_URL  => $PLUGIN_URL."/boilerplate_plugin",
 #					-Function   => 'boilerplate',
 #					-Activated  => 1,
 #					},
 
 #					{
 #					-Title      => 'Change the Program Root Password',
-#					-Title_URL  => $PLUGIN_URL."/change_root_password.cgi",
+#					-Title_URL  => $PLUGIN_URL."/change_root_password",
 #					-Function   => 'change_root_password',
 #					-Activated  => 0,
 #					},
 
 #					{
 #					-Title      => 'Screen Cache',
-#					-Title_URL  => $PLUGIN_URL."/screen_cache.cgi",
+#					-Title_URL  => $PLUGIN_URL."/screen_cache",
 #					-Function   => 'screen_cache',
 #					-Activated  => 0,
 #					},
 
 #					{
 #					-Title      => 'View Logs',
-#					-Title_URL  => $PLUGIN_URL."/log_viewer.cgi",
+#					-Title_URL  => $PLUGIN_URL."/log_viewer",
 #					-Function   => 'log_viewer',
 #					-Activated  => 1,
 #					},
 
 #					{
 #					-Title      => 'Tracker',
-#					-Title_URL  => $PLUGIN_URL."/tracker.cgi",
+#					-Title_URL  => $PLUGIN_URL."/tracker",
 #					-Function   => 'tracker',
 #					-Activated  => 1,
 #					},
 
 #					{
 #					-Title      => 'Bridge',
-#					-Title_URL  => $PLUGIN_URL."/bridge.cgi",
+#					-Title_URL  => $PLUGIN_URL."/bridge",
 #					-Function   => 'bridge',
 #					-Activated  => 1,
 #					},

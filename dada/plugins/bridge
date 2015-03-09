@@ -20,10 +20,10 @@ delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 #---------------------------------------------------------------------#
 # Bridge
 # For instructions, see the pod of this file. try:
-#  pod2text ./bridge.cgi | less
+#  pod2text ./bridge | less
 #
 # Or try online:
-#  http://dadamailproject.com/d/bridge.cgi.html
+#  http://dadamailproject.com/d/bridge.html
 #
 #---------------------------------------------------------------------#
 # REQUIRED:
@@ -46,23 +46,7 @@ use Try::Tiny;
 my $Plugin_Config = {};
 
 $Plugin_Config->{Plugin_Name} = 'Bridge';
-$Plugin_Config->{Plugin_URL}  = $DADA::Config::S_PROGRAM_URL . '?f=plugin&plugins=bridge';
 
-# Can the checking of awaiting messages to send out happen by invoking this
-# script from a URL? (CGI mode?)
-# The URL would look like this:
-#
-# http://example.com/cgi-bin/dada/plugins/bridge.cgi?run=1
-
-$Plugin_Config->{Allow_Manual_Run} = 1;
-
-# Set a passcode that you'll have to also pass to invoke this script as
-# explained above in, "$Plugin_Config->{Allow_Manual_Run}"
-
-$Plugin_Config->{Manual_Run_Passcode} = '';
-
-# How many messages does Dada Mail look at, at once?
-#
 $Plugin_Config->{MessagesAtOnce} = 1;
 
 # Is there a limit on how large a single email message can be, until we outright # reject it?
@@ -883,64 +867,7 @@ sub edit {
 
 }
 
-=cut
 
-sub cl_main {
-
-    GetOptions(
-        "help"            => \$help,
-        "test=s"          => \$test,
-        "verbose"         => \$verbose,
-        "inject"          => \$inject,
-        "list=s"          => \$run_list,
-        "check_deletions" => \$check_deletions,
-    );
-
-  
-    if ($inject) {
-        try {
-            my $r = inject_msg();
-            print $r
-              if $verbose;
-        }
-        catch {
-            warn "Problems with injecting message: $_";
-        };
-    }
-    elsif ($test) {
-        $verbose = 1;
-        if ( $test eq 'pop3' ) {
-            my ( $h, $b ) = test_pop3();
-            print $b
-              if $verbose;
-        }
-        else {
-            print "I don't know what you want to test!\n\n";
-            my ( $h, $b ) = help();
-            print $b;
-        }
-    }
-    elsif ($help) {
-        my ( $h, $b ) = help();
-        print $b
-          if $verbose;
-    }
-    else {
-        my ( $h, $b ) = start();
-        print $b
-          if $verbose;
-        require DADA::Mail::MailOut;
-        if ($list) {
-            DADA::Mail::MailOut::monitor_mailout( { -verbose => 0, -list => $list } );
-        }
-        else {
-            DADA::Mail::MailOut::monitor_mailout( { -verbose => 0 } );
-        }
-    }
-}
-
-
-=cut
 
 sub scheduled_task { 
     
@@ -1090,8 +1017,8 @@ sub start {
 
             } catch { 
                 warn '$r ' . $r; 
-                warn "bridge.cgi - irrecoverable error processing message. Skipping message (sorry!): $_";
-                $r .= "bridge.cgi - irrecoverable error processing message. Skipping message (sorry!): $_";
+                warn "bridge - irrecoverable error processing message. Skipping message (sorry!): $_";
+                $r .= "bridge - irrecoverable error processing message. Skipping message (sorry!): $_";
             };
 
         }    # MSG_QUEUE
@@ -1174,7 +1101,7 @@ sub max_msg_test {
           . $size
           . " ) is larger than the maximum size allowed ( "
           . $Plugin_Config->{Max_Size_Of_Any_Message} . " )\n";
-        warn "bridge.cgi Warning! Message size ( "
+        warn "bridge Warning! Message size ( "
           . $size
           . " ) is larger than the maximum size allowed ( "
           . $Plugin_Config->{Max_Size_Of_Any_Message} . ")";
@@ -1201,7 +1128,7 @@ sub soft_max_msg_test {
           . $size
           . " ) is larger than the soft maximum size allowed ( "
           . $Plugin_Config->{Soft_Max_Size_Of_Any_Message} . " )\n";
-        warn "bridge.cgi Warning! Message size ( "
+        warn "bridge Warning! Message size ( "
           . $size
           . " ) is larger than the soft maximum size allowed ( "
           . $Plugin_Config->{Soft_Max_Size_Of_Any_Message} . ")";
@@ -1374,7 +1301,7 @@ arguments:
 -----------------------------------------------------------
 for a general overview and more instructions, try:
 
-pod2text ./bridge.cgi | less
+pod2text ./bridge | less
 
 -----------------------------------------------------------
 
@@ -1398,14 +1325,14 @@ Currently the only test available.
 
 Example: 
 
- prompt>bridge.cgi --test pop3 --list yourlistshortname
+ prompt>bridge --test pop3 --list yourlistshortname
 
 Will test the pop3 connection of a list with a shortname of, 
 yourlistshortname
 
 Another Example: 
 
- prompt>bridge.cgi --verbose --list yourlistshortname
+ prompt>bridge --verbose --list yourlistshortname
 
 Will check for messages to deliver for list, 
 yourlistshortname> and outputting a lot of information on the command line. 
@@ -3849,9 +3776,13 @@ sub mod_dir {
 
 =head1 Bridge
 
-The Bridge plugin connects your mail reader with Dada Mail, allowing you to send both announce-only messages from your mail reader, as well as enabling discussion mailing lists: each member of your mailing list may send messages to the List Email, which will then be sent to the entire mailing list. 
+Bridge connects your mail reader with Dada Mail, allowing you to send both announce-only messages from your mail reader as well as enabling discussion mailing lists, where each member of your mailing list may send messages out which will then be sent to the entire mailing list. 
 
-Messages are received by sending to the B<List Email>. The List Email will need to be set up manually for each mailing list you will want to use Bridge. It can be either a regular B<POP3 email account>, which Bridge will log into on a schedule, or an B<Email Forward>, which will forward the message directly to the plugin itself. 
+=head2 How Bridge Works
+
+Messages are received by sending these messages to the B<List Email>, which you will have to set up separately to this plugin. 
+
+The List Email can be either a regular B<POP3 email account>, which Bridge will log into on a schedule, or an B<Email Forward>, which will forward the message directly to the Bridge. 
 
 =head1 User Guide
 
@@ -3869,31 +3800,39 @@ Bridge is located in the, I<dada/plugins> directory of the Dada Mail distributio
 
 =head1 Installation 
 
-This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. Under, B<Plugins/Extensions>, check, B<Bridge>.
-
-Manual installation isn't recommended, but is outlined later in this doc. 
+Bridge can be installed using the included installer that comes with Dada Mail. In the Installer look under, B<Plugins/Extensions> and check B<Bridge>.
 
 =head1 Mailing List Configuration 
 
-Once you've installed Bridge, you may access it via the List Control Panel. Bridge is located in the left hand menu, under, B<Plugins>. 
+Once you've installed Bridge, you may access it via the List Control Panel. Bridge can be accessed via the left hand menu under, B<Plugins - Discussion Lists> 
 
-Before you can start using Bridge for your mailing list, there's two things that will have to be done: the first is to B<enable> the plugin; the second is to configure your B<List Email>. 
+Before you can start using Bridge for your mailing list, there's two things that you will need to do for each mailing list you would like to use Bridge for:
+
+=over
+
+=item * Enable Bridge
+
+=item * Create and Configure the List Email 
+
+=back 
 
 =head2 Enable Bridge
 
-In Bridge's control panel, under, B<General>, uncheck the option, B<Disable sending using this method>. Save your changes. 
+In Bridge's control panel, under, B<General>, uncheck the option: B<Disable sending using this method>. Save your changes. 
 
-=head2 List Email Configuration 
+=head2 Create and Configure the List Email
 
-The List Email is the address that you will be sending your email messages, to be broadcasted to your entire mailing list. 
+The B<List Email> is the address that you will be sending your email messages to for them to be broadcasted to your entire mailing list.
 
 There's a few constraints you want to keep in mind when creating the List Email. Most likely, the address is going to be on the same domain that you install Dada Mail and it's going to be an address that you're not already using; either somewhere else in Dada Mail, or as another general email address. 
 
-The List Email can either be a normal POP3 email account, or a Mail Forward.
+The List Email can either be a normal B<POP3 Email Account>, or a B<Mail Forward>.
 
-A B<POP3 account> is fairly easy to set up, as its similar to setting up any mail reader - and Bridge basically acts as a mail reader, while checking messages sent to this account.
+A B<POP3 account> is fairly easy to set up and Bridge basically acts as a mail reader: Bridge will log in via POP3, check any messages that may be available, process them, then delete them when they've been read. 
 
-A B<Mail Forward> may be slightly trickier to set up on the mail forward side of things. Before attempting, make sure that you can set up a mail forward that can B<Pipe to a Program>, and not simply forward to another email address.  
+A B<Mail Forward> may be slightly trickier to set up, but messages will br processed much quicker, as it's not waiting for the schedule to run, as you do, with a POP3 setup. 
+
+Before attempting, make sure that you can set up a mail forward that can B<Pipe to a Program>, and not simply forward to another email address.  
 
 =head3 Setup As: POP3 Account 
 
@@ -3903,7 +3842,6 @@ Create a new POP3 Account. This email account will be the email address you will
 
 Once the login information works with Bridge, Save your changes. 
 
-
 =head3 Setup As: Mail Forward
 
 Toggle the radio buttons labeled, B<Setup As> to, B<Email Forward>. An I<example> of the command you'll need to work with Bridge will be shown. 
@@ -3912,17 +3850,29 @@ Create a new Mail Forward, and use the example shown as a starting point for the
 
  |/home/youraccount/public_html/cgi-bin/dada/mail.cgi --inject --list yourlist
 
-If you're setting the command in cPanel (or something similar) and it asks you to, "I<enter a path relative to your home directory>", you may need to simply remove the "pipe" B<|> and the path to your home directory I</home/youraccount>, plugging in this, instead: 
+If you're setting the command in cPanel (or something similar) and it asks you to, "I<enter a path relative to your home directory>", you may need to simply remove the B<Pipe Character> (B<|>) and the path to your home directory I</home/youraccount>, and plugging in this instead: 
 
-	public_html/cgi-bin/dada/plugins/bridge.cgi --inject --list yourlist
+    public_html/cgi-bin/dada/mail.cgi --inject --list yourlist
 
-=head2 Testing Bridge. 
+=head2 Cronjob
 
-Once you've enabled Bridge, and set up the List Email, it's time to test the plugin. Simply send a message to your List Email. To make things easier, make sure to send the message from the List Owner's email address, which is allowed to send to both announce-only and discussion type mailing lists. If a message is sent out to your entire mailing list, congratulations: Bridge is working. 
+Bridge runs in the background on a schedule. Make sure to set Dada Mail's cronjob: 
+
+L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod>
+
+=head2 DMARC Policies and Bridge
+
+Bridge has a very important option labeled, B<Send messages, "On Behalf Of" (p.p. mode) >. If you are running a discussion list, you will want this option checked, to make sure mail delivery works. 
+
+This feature was introduced in v7.3.0 of Dada Mail and has been refined since. If you're running a version of Dada Mail below v7.3.0 and are running a discussion list, it's import to upgrade, to make sure your discussion list is running correctly. 
+
+=head2 Testing Bridge
+
+Once you've enabled Bridge, and have set up the List Email, it's time to test the plugin. Simply send a message to your List Email. To make things easier, make sure to send the message from the List Owner's email address, which is allowed to send to both announce-only and discussion type mailing lists. If a message is sent out to your entire mailing list, congratulations: Bridge is working. 
 
 =head2 Additional Mailing List Configuration
 
-In Bridge's List Control Panel and below, B<List Email Configuration> section, are additional settings you may customize, depending on how you'd like your mailing list to function. 
+In Bridge's List Control Panel and below, B<List Email Configuration> section, there are additional settings you may customize, depending on how you'd like your mailing list to function. 
 
 =head1 Advanced Topics
 
@@ -3945,9 +3895,6 @@ You can then configure the plugin variables on these lines:
 	Bridge => {
 	
 		Plugin_Name                         => undef,
-		Plugin_URL                          => undef,
-		Allow_Manual_Run                    => undef,
-		Manual_Run_Passcode                 => undef,
 		MessagesAtOnce                      => undef,
 		Soft_Max_Size_Of_Any_Message        => undef,
 		Max_Size_Of_Any_Message             => undef,
@@ -3962,18 +3909,6 @@ You can then configure the plugin variables on these lines:
 =head2 Plugin_Name
 
 The name of the plugin. By default, B<Bridge>.
-
-=head2 Plugin_URL
-
-Sometimes, the plugin has a hard time guessing what its own URL is. If this is happening, you can manually set the URL of the plugin in C<Plugin_URL>.
-
-=head2 Allow_Manual_Run
-
-Allows you to invoke the plugin to check and send awaiting messages via a URL. 
-
-=head2 Manual_Run_Passcode
-
-Allows you to set a passcode if you want to allow manually running the plugin. 
 
 =head2 MessagesAtOnce
 
@@ -4014,52 +3949,6 @@ When testing the validity of a received message, Dada Mail will look to see if t
 C<Check_Multiple_Return_Path_Headers> is another validity test for received messages. This time, the message is looked to see if it has more than one C<Return-Path> header. If it does, it is rejected. If you set, C<Check_Multiple_Return_Path_Headers> to, C<0>, this test will be disabled. 
 
 
-
-=head1 Manual Installation
-
-
-=head2 Configuring Bridge's Plugin Side
-
-=head2 #1 Change the permissions of the, bridge.cgi script to, "755"
-
-Find the C<bridge.cgi> script in your I<dada/plugins> directory. Change its permissions to, C<755> 
-
-=head2 #2 Configure your outside config file (.dada_config)
-
-You'll most likely want to edit your outside config file (C<.dada_config>)
-so that it shows Bridge in the left-hand menu, under the, B<Plugins> heading. 
-
-First, see if the following lines are present in your C<.dada_config> file: 
-
- # start cut for list control panel menu
- =cut
-
- =cut
- # end cut for list control panel menu
-
-If they are, remove them. 
-
-Then, find these lines: 
-
-
- #					{-Title      => 'Discussion Lists',
- #					 -Title_URL  => $PLUGIN_URL."/bridge.cgi",
- #					 -Function   => 'bridge',
- #					 -Activated  => 1,
- #					},
-
-Uncomment the lines, by taking off the, "#"'s: 
-
- 					{-Title      => 'Discussion Lists',
- 					 -Title_URL  => $PLUGIN_URL."/bridge.cgi",
- 					 -Function   => 'bridge',
- 					 -Activated  => 1,
- 					},
-
-Save your C<.dada_config> file. 
-
-You can now log into your List Control Panel and under the, B<plugins> heading you should now see a link entitled, "Bridge". Clicking that link will allow you to set up Bridge. 
-
 =head1 Debugging 
 
 
@@ -4067,18 +3956,18 @@ You can now log into your List Control Panel and under the, B<plugins> heading y
 
 The easiest way to debug your POP3 account info is to actually test it out. 
 
-If you have a command line, drop into it and connect to your POP3 server, like so: 
+Try logging into your List Email, via the command line:
 
- prompt:]telnet pop3.example.com 110
- Trying 12.123.123.123...
- Connected to pop3.example.com.
- Escape character is '^]'.
- +OK <37892.1178250885@hedwig.summersault.com>
- user user%example.com
- +OK 
- pass sneaky
- +OK 
- list
+     prompt:]telnet pop3.example.com 110
+     Trying 12.123.123.123...
+     Connected to pop3.example.com.
+     Escape character is '^]'.
+     +OK <37892.1178250885@hedwig.summersault.com>
+     user user%example.com
+     +OK 
+     pass sneaky
+     +OK 
+     list
 
 In the above example, B<pop3.example.com> is your POP3 server. You'll be typing in: 
 

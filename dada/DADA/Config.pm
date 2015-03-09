@@ -878,7 +878,7 @@ $ADMIN_MENU //= [
 
             #					{
             #					-Title      => 'Tracker',
-            #					-Title_URL  => $PLUGIN_URL."/tracker.cgi",
+            #					-Title_URL  => $PLUGIN_URL."/tracker",
             #					-Function   => 'tracker',
             #					-Activated  => 1,
             #					},
@@ -892,7 +892,7 @@ $ADMIN_MENU //= [
 
             #					{
             #					-Title      => 'Bridge',
-            #					-Title_URL  => $PLUGIN_URL."/bridge.cgi",
+            #					-Title_URL  => $PLUGIN_URL."/bridge",
             #					-Function   => 'bridge',
             #					-Activated  => 1,
             #					},
@@ -920,7 +920,7 @@ $ADMIN_MENU //= [
 
             #					{
             #					-Title      => 'View Logs',
-            #					-Title_URL  => $PLUGIN_URL."/log_viewer.cgi",
+            #					-Title_URL  => $PLUGIN_URL."/log_viewer",
             #					-Function   => 'log_viewer',
             #					-Activated  => 1,
             #					},

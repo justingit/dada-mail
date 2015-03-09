@@ -657,8 +657,10 @@ sub scrn_configure_dada_mail {
         $q->param( 'install_tracker',               1 );
         $q->param( 'install_multiple_subscribe',    1 );
         $q->param( 'install_blog_index',            1 );
+        $q->param( 'install_bridge',                1 );
+        $q->param( 'install_bounce_handler',        1 );
         $q->param( 'install_change_list_shortname', 1 );
-        $q->param( 'global_config',                 0 );
+        $q->param( 'install_global_config',         0 );
 
         for my $d (
             qw(

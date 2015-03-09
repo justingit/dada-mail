@@ -90,7 +90,6 @@ sub run_schedules {
     my $index = $self->{d_obj}->draft_index({-role => 'schedule'});
     SCHEDULES: for my $sched(@$index){ 
         $r .= "\n\nSubject: " . $sched->{Subject} . "\n"; 
-        #$r .= '-' x 72 . "\n"; 
         
         if($sched->{schedule_activated} != 1){ 
             $r .= "Schedule is NOT Activated.\n"; 

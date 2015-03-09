@@ -10,7 +10,7 @@ $|++;
 #
 # Documentation:
 #
-#  http://dadamailproject.com/d/bounce_handler.pod.html
+#  http://dadamailproject.com/d/bounce_handler.html
 #
 #---------------------------------------------------------------------#
 
@@ -830,9 +830,7 @@ sub version {
 
 =pod
 
-=head1 Name
-
-Bounce Handler for Dada Mail
+=head1 Bounce Handler
 
 =head1 User Guide
 
@@ -843,8 +841,6 @@ L<http://dadamailproject.com/pro_dada/using_bounce_handler.html>
 For more information on Pro Dada/Dada Mail Manual: 
 
 L<http://dadamailproject.com/purchase/pro.html>
-
-=head1 Description
 
 Bounce Handler intelligently handles bounces from Dada Mail mailing list messages.
 
@@ -864,7 +860,7 @@ Bounce Handler is located in the, I<dada/plugins> directory of the main Dada Mai
 
 =head2 POP3 Email Account
 
-Bounce Handler works by checking a email address via POP3. (IMAP is currently not supported).  
+Bounce Handler works by checking a email address via POP3. (IMAP is not supported).  
 
 You will need to create a new email address account for Bounce Handler to utilize. 
 

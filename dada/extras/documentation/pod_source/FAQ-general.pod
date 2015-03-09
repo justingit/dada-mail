@@ -296,7 +296,7 @@ Dada Mail handles announce only lists with ease - a standard installation will b
 
 Dada Mail can also be set up to allow discussion lists, you'll have to also install the B<Bridge> plugin. 
 
-http://dadamailproject.com/support/documentation/bridge.cgi.html
+http://dadamailproject.com/support/documentation/bridge.html
 
 The Bridge Plugin can also be set up to provide announce-only message sending from your mail reader - 
 
