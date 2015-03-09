@@ -147,10 +147,11 @@ sub admin_template {
 		$DADA::Config::PROGRAM_URL = $ENV{SCRIPT_URI} || $q->url();
 	}
 	
-	# DEV: ?!?!
-	$q->param('flavor', scalar $q->param('f'))
-		if ! defined($q->param('flavor')); 
-	
+    my $f = $q->param('f') || undef;
+    if (! defined(scalar $q->param('flavor'))) {
+        $q->param('flavor', $f);
+    }
+    
 	my %args = (
 				-Title        => "", 
 				-List         => "",

@@ -4204,10 +4204,9 @@ sub remove_all_subscribers {
         if ( $ls->param('send_unsubscribed_by_list_owner_message') == 1 ) {
             require DADA::App::MassSend;
             eval {
-                my $dam = DADA::App::MassSend->new({-list => $list}); 
-                $dam->just_unsubscribed_mass_mailing(
+                my $dam = DADA::App::MassSend->new( { -list => $list } );
+                   $dam->just_unsubscribed_mass_mailing(
                     {
-                        -list              => $list,
                         -send_to_everybody => 1,
                     }
                 );

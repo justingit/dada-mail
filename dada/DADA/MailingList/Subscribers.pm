@@ -5,6 +5,7 @@ use lib qw(
 	../../DADA/perllib
 );
 
+use Try::Tiny;
 
 use Carp qw(carp croak);
 my $type;
@@ -212,36 +213,35 @@ sub add_subscribers {
     if ( $type eq 'list' ) {
         if ( $self->{ls}->param('send_subscribed_by_list_owner_message') == 1 ) {
             require DADA::App::MassSend;
-            eval {
-                
+            try { 
                 # DEV: 
                 # This needs to send the Profile Password, if it's known. 
                 #
+                #warn '$self->{list} ' . $self->{list}; 
                 require DADA::App::MassSend;
-                DADA::App::MassSend::just_subscribed_mass_mailing(
+                my $dam = DADA::App::MassSend->new({-list => $self->{list}}); 
+                   $dam->just_subscribed_mass_mailing(
                     {
-                        -list      => $self->{list},
                         -addresses => $added_addresses,
                     }
                 );
+            } catch { 
+                warn 'Problems w/send_subscribed_by_list_owner_message:' . $_; 
             };
-            if ($@) {
-                carp $@;
-            }
+
         }
         if ( $self->{ls}->param('send_last_archived_msg_mass_mailing') == 1 ) {
-            eval {
+            try {
                 require DADA::App::MassSend;
-                DADA::App::MassSend::send_last_archived_msg_mass_mailing(
+                my $dam = DADA::App::MassSend->new({-list => $self->{list}}); 
+                   $dam->send_last_archived_msg_mass_mailing(
                     {
-                        -list      => $self->{list},
                         -addresses => $added_addresses,
                     }
                 );
-            };
-            if ($@) {
-                carp $@;
-            }
+            } catch {
+                warn 'Problems w/send_last_archived_msg_mass_mailing:' . $_; 
+            };        
         }
     }
 
@@ -413,17 +413,17 @@ sub admin_remove_subscribers {
 	if($type eq 'list') { 
 		if($self->{ls}->param('send_unsubscribed_by_list_owner_message') == 1){
 			require DADA::App::MassSend; 
-			eval { 
-				DADA::App::MassSend::just_unsubscribed_mass_mailing(
+			try { 
+				my $dam = DADA::App::MassSend->new({-list => $self->{list}});
+				   $dam->just_unsubscribed_mass_mailing(
 					{ 
 						-list      => $self->{list}, 
 						-addresses => $addresses, 
 					}	
 				); 
+			} catch { 
+                warn 'Problems w/send_unsubscribed_by_list_owner_message:' . $_; 
 			};
-			if($@){ 
-				carp $@; 
-			}	
 		}
 	}
 	
