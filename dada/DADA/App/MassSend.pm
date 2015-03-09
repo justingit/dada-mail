@@ -261,9 +261,10 @@ sub send_email {
                     -process  => $process,
                 }
             );
-            carp '$message_id ' . $message_id;
-            carp 'done with construct_and_send!';
-
+            if($t) { 
+                carp '$message_id ' . $message_id;
+                carp 'done with construct_and_send!';
+            }
         }
         else {
             ( $status, $errors, $message_id ) = $self->construct_and_send(
@@ -275,8 +276,9 @@ sub send_email {
                     -cgi_obj => $q,
                 }
             );
-
-            carp '$message_id ' . $message_id;
+ 
+            warn '$message_id ' . $message_id 
+                if $t;
 
         }
         if ( $status == 0 ) {
@@ -286,8 +288,6 @@ sub send_email {
         if ( $process =~ m/test/i ) {
             warn 'test sending'
               if $t;
-
-            warn '$message_id ' . $message_id;
 
             $self->wait_for_it($message_id);
             return (
@@ -320,7 +320,6 @@ sub send_email {
             else {
                 $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=sending_monitor&type=list&id=' . $message_id;
             }
-            carp 'returning!';
             return ( { -redirect_uri => $uri }, undef );
         }
     }
