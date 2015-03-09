@@ -12,9 +12,10 @@ use DADA::MailingList::Archives;
 use DADA::MailingList::Settings;
 use DADA::MailingList::Subscribers;
 use DADA::MailingList::MessageDrafts;
-use Try::Tiny; 
+use Try::Tiny;
 
 use Carp qw(carp croak);
+
 #$Carp::Verbose = 1;
 
 use strict;
@@ -89,7 +90,7 @@ sub send_email {
 
     my $q          = $args->{-cgi_obj};
     my $root_login = $args->{-root_login};
-    
+
     my $process            = xss_filter( strip( scalar $q->param('process') ) );
     my $flavor             = xss_filter( strip( scalar $q->param('flavor') ) );
     my $restore_from_draft = xss_filter( strip( scalar $q->param('restore_from_draft') ) ) || 'true';
@@ -212,20 +213,20 @@ sub send_email {
                 }
             );
         }
-        return({}, $scrn);
+        return ( {}, $scrn );
     }
     elsif ( $process eq 'save_as_draft' ) {
 
         # Utterly out of place
         # save_as_draft called via js
-        my ($headers, $body) = $self->save_as_draft(
+        my ( $headers, $body ) = $self->save_as_draft(
             {
                 -cgi_obj => $q,
                 -list    => $self->{list},
                 -json    => 1,
             }
         );
-        return ($headers, $body);
+        return ( $headers, $body );
     }
     else {
         # Draft now has all our form params
@@ -239,7 +240,7 @@ sub send_email {
         if ( $self->{md_obj}->enabled ) {
 
             warn 'md_obj enabled.'
-             if $t; 
+              if $t;
 
             $draft_id = $self->save_as_draft(
                 {
@@ -249,8 +250,8 @@ sub send_email {
                 }
             );
 
-            carp 'construct_and_send'; 
-            
+            carp 'construct_and_send';
+
             # to fetch a draft, I need id, list and role (lame)
             ( $status, $errors, $message_id ) = $self->construct_and_send(
                 {
@@ -260,8 +261,8 @@ sub send_email {
                     -process  => $process,
                 }
             );
-            carp '$message_id ' . $message_id; 
-            carp 'done with construct_and_send!'; 
+            carp '$message_id ' . $message_id;
+            carp 'done with construct_and_send!';
 
         }
         else {
@@ -274,9 +275,9 @@ sub send_email {
                     -cgi_obj => $q,
                 }
             );
-            
-            carp '$message_id ' . $message_id; 
-            
+
+            carp '$message_id ' . $message_id;
+
         }
         if ( $status == 0 ) {
             return $self->report_mass_mail_errors( $errors, $root_login );
@@ -285,20 +286,26 @@ sub send_email {
         if ( $process =~ m/test/i ) {
             warn 'test sending'
               if $t;
-              
-              warn '$message_id ' . $message_id; 
+
+            warn '$message_id ' . $message_id;
 
             $self->wait_for_it($message_id);
-            return({-redirect_uri => $DADA::Config::S_PROGRAM_URL . '?flavor='
-                  . $flavor
-                  . '&test_sent=1&test_recipient='
-                  . $q->param('test_recipient')
-                  . '&draft_id='
-                  . $q->param('draft_id')
-                  . '&restore_from_draft='
-                  . $q->param('restore_from_draft')
-                  . '&draft_role='
-                  . $q->param('draft_role')}, undef );
+            return (
+                {
+                        -redirect_uri => $DADA::Config::S_PROGRAM_URL
+                      . '?flavor='
+                      . $flavor
+                      . '&test_sent=1&test_recipient='
+                      . $q->param('test_recipient')
+                      . '&draft_id='
+                      . $q->param('draft_id')
+                      . '&restore_from_draft='
+                      . $q->param('restore_from_draft')
+                      . '&draft_role='
+                      . $q->param('draft_role')
+                },
+                undef
+            );
         }
         else {
             if ( $self->{md_obj}->enabled ) {
@@ -313,8 +320,8 @@ sub send_email {
             else {
                 $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=sending_monitor&type=list&id=' . $message_id;
             }
-            carp 'returning!'; 
-            return({-redirect_uri => $uri}, undef);
+            carp 'returning!';
+            return ( { -redirect_uri => $uri }, undef );
         }
     }
 }
@@ -361,6 +368,7 @@ sub construct_and_send {
 
     if ( $self->{md_obj}->enabled ) {
         $draft_q = $self->q_obj_from_draft($args);
+
         #use Data::Dumper;
         #warn Dumper($draft_q);
     }
@@ -430,11 +438,10 @@ sub construct_and_send {
         my $multi_list_send_no_dupes = $draft_q->param('multi_list_send_no_dupes')
           || 0;
 
-      if(exists($args->{-Ext_Request})){ 
-          $mh->Ext_Request($args->{-Ext_Request}); 
-      }
+        if ( exists( $args->{-Ext_Request} ) ) {
+            $mh->Ext_Request( $args->{-Ext_Request} );
+        }
 
-        
         $message_id = $mh->mass_send(
             {
                 -msg             => {%mailing},
@@ -866,9 +873,10 @@ sub send_url_email {
 
     my $can_use_mime_lite_html = 1;
     my $mime_lite_html_error   = undef;
-    try { 
-        require DADA::App::MyMIMELiteHTML 
-    } catch {
+    try {
+        require DADA::App::MyMIMELiteHTML
+    }
+    catch {
         $can_use_mime_lite_html = 0;
     };
 
@@ -963,8 +971,9 @@ sub send_url_email {
                     num_total_mailouts     => $num_total_mailouts,
                     active_mailouts        => $active_mailouts,
 
-                    schedule_last_checked_frt => formatted_runtime( time - $self->{ls_obj}->param('schedule_last_checked_time') ),
-                    
+                    schedule_last_checked_frt =>
+                      formatted_runtime( time - $self->{ls_obj}->param('schedule_last_checked_time') ),
+
                     %wysiwyg_vars,
                     %$ses_params,
 
@@ -983,18 +992,18 @@ sub send_url_email {
                 }
             );
         }
-        return({}, $scrn);
+        return ( {}, $scrn );
 
     }
     elsif ( $process eq 'save_as_draft' ) {
-        my ($headers, $body) = $self->save_as_draft(
+        my ( $headers, $body ) = $self->save_as_draft(
             {
                 -cgi_obj => $q,
                 -list    => $self->{list},
                 -json    => 1,
             }
         );
-        return ($headers, $body); 
+        return ( $headers, $body );
     }
     else {
 
@@ -1023,16 +1032,22 @@ sub send_url_email {
         }
         if ( $process =~ m/test/i ) {
             $self->wait_for_it($message_id);
-            return({-redirect_uri => $DADA::Config::S_PROGRAM_URL . '?flavor='
-                  . $flavor
-                  . '&test_sent=1&test_recipient='
-                  . $q->param('test_recipient')
-                  . '&draft_id='
-                  . $q->param('draft_id')
-                  . '&restore_from_draft='
-                  . $q->param('restore_from_draft')
-                  . '&draft_role='
-                  . $q->param('draft_role')}, undef );
+            return (
+                {
+                        -redirect_uri => $DADA::Config::S_PROGRAM_URL
+                      . '?flavor='
+                      . $flavor
+                      . '&test_sent=1&test_recipient='
+                      . $q->param('test_recipient')
+                      . '&draft_id='
+                      . $q->param('draft_id')
+                      . '&restore_from_draft='
+                      . $q->param('restore_from_draft')
+                      . '&draft_role='
+                      . $q->param('draft_role')
+                },
+                undef
+            );
         }
         else {
             if ( $self->{md_obj}->enabled ) {
@@ -1047,7 +1062,7 @@ sub send_url_email {
             else {
                 $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=sending_monitor&type=list&id=' . $message_id;
             }
-            return({-redirect_uri => $uri}, undef );
+            return ( { -redirect_uri => $uri }, undef );
         }
     }
 }
@@ -1154,10 +1169,10 @@ sub wait_for_it {
     my $message_id = shift;
 
     warn '$message_id ' . $message_id
-        if $t; 
-    
-    if($message_id == 0){ 
-        return 0; 
+      if $t;
+
+    if ( $message_id == 0 ) {
+        return 0;
     }
     my $still_working = 1;
     my $tries         = 0;
@@ -1215,8 +1230,8 @@ sub save_as_draft {
 
     if ( $args->{-json} == 1 ) {
         require JSON;
-        my $json = JSON->new->allow_nonref;
-        my $return = { id => $saved_draft_id };
+        my $json    = JSON->new->allow_nonref;
+        my $return  = { id => $saved_draft_id };
         my $headers = {
             '-Cache-Control' => 'no-cache, must-revalidate',
             -expires         => 'Mon, 26 Jul 1997 05:00:00 GMT',
@@ -1225,7 +1240,7 @@ sub save_as_draft {
         warn '$json->pretty->encode($return) ' . $json->pretty->encode($return)
           if $t;
         my $body = $json->pretty->encode($return);
-        return($headers, $body); 
+        return ( $headers, $body );
     }
     else {
         return $saved_draft_id;
@@ -1234,9 +1249,9 @@ sub save_as_draft {
 
 sub list_invite {
 
-    my $self   = shift;
-    my ($args) = @_;
-    my $q      = $args->{-cgi_obj};
+    my $self       = shift;
+    my ($args)     = @_;
+    my $q          = $args->{-cgi_obj};
     my $root_login = $args->{-root_login};
 
     my $process = xss_filter( strip( scalar $q->param('process') ) );
@@ -1346,7 +1361,7 @@ sub list_invite {
                 -list_settings_vars_param => { -dot_it => 1, },
             }
         );
-        return({}, $scrn);
+        return ( {}, $scrn );
 
     }
     elsif (
@@ -1562,10 +1577,9 @@ sub list_invite {
                 -ls_obj => $ls,
             }
         );
-        if(exists($args->{-Ext_Request})){ 
-            $mh->Ext_Request($args->{-Ext_Request}); 
+        if ( exists( $args->{-Ext_Request} ) ) {
+            $mh->Ext_Request( $args->{-Ext_Request} );
         }
-        
 
         # translate the glob into a hash
 
@@ -1581,7 +1595,7 @@ sub list_invite {
         }
         my $message_id = $mh->mass_send( $mh->return_headers($header_glob), Body => $message_string, );
         my $uri = $DADA::Config::S_PROGRAM_URL . '?flavor=sending_monitor&type=invitelist&id=' . $message_id;
-        return({-redirect_uri => $uri}, undef);
+        return ( { -redirect_uri => $uri }, undef );
 
     }
     else {
@@ -1958,7 +1972,7 @@ sub report_mass_mail_errors {
             -vars   => { errors => $errors }
         }
     );
-    return({}, $scrn);
+    return ( {}, $scrn );
 }
 
 sub just_subscribed_mass_mailing {
@@ -2016,7 +2030,7 @@ sub just_unsubscribed_mass_mailing {
 
     my $self = shift;
     my ($args) = @_;
-    
+
     my $type = '_tmp-just_unsubscribed-' . time;
     if ( !$args->{-addresses}->[0] ) {
         if ( exists( $args->{-send_to_everybody} ) ) {
@@ -2077,7 +2091,7 @@ sub send_last_archived_msg_mass_mailing {
     my $self = shift;
     my ($args) = @_;
     if ( !$args->{-addresses}->[0] ) {
-        warn 'no subscribers passed.'; 
+        warn 'no subscribers passed.';
         return;
     }
 
