@@ -567,16 +567,15 @@ sub params_to_save {
         html_message_body => 1,
         text_message_body => 1,
 
-        archive_message   => 1,
-        archive_no_send   => 1,
-        back_date         => 1,
-        backdate_datetime => 1,
-        test_recipient    => 1,
-
-        Subject => 1,
-
-        schedule_activated => 1,
-        schedule_datetime  => 1,
+        local_archive_options_present => 1, 
+        archive_message               => 1,
+        archive_no_send               => 1,
+        back_date                     => 1,
+        backdate_datetime             => 1,
+        test_recipient                => 1,
+        Subject                       => 1,
+        schedule_activated            => 1,
+        schedule_datetime             => 1,
 
     };
 

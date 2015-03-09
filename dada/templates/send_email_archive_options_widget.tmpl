@@ -10,7 +10,19 @@
   <tr> 
    <td>
     <p>
-     <input type="checkbox" name="archive_message" id="archive_message" <!-- tmpl_if list_settings.archive_messages -->checked="checked"<!--/tmpl_if--> value="1" class="ChangeMassMailingButtonLabel" />
+        
+     <input 
+        type="checkbox" 
+        name="archive_message" 
+        id="archive_message" 
+        <!-- tmpl_unless draft_id --> 
+            <!-- tmpl_if list_settings.archive_messages -->
+                checked="checked"
+            <!-- /tmpl_if -->
+        <!-- /tmpl_unless --> 
+        value="1" 
+        class="ChangeMassMailingButtonLabel" 
+    />
     </p>
    </td>
    <td>
