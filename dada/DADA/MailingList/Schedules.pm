@@ -9,7 +9,7 @@ use lib qw(
 use Carp qw(croak carp);
 use DADA::Config qw(!:DEFAULT);
 
-my $t = 0; #$DADA::Config::DEBUG_TRACE->{DADA_MailingList_MessageDrafts};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_MessageDrafts};
 
 use DADA::MailingList::MessageDrafts;
 use DADA::MailingList::Settings; 
@@ -93,14 +93,14 @@ sub run_schedules {
         #$r .= '-' x 72 . "\n"; 
         
         if($sched->{schedule_activated} != 1){ 
-            $r .= "Scheduled NOT Activated\n"; 
+            $r .= "Schedule is NOT Activated.\n"; 
             next SCHEDULES; 
-            $r .= "Scheduled is Activated\n"; 
+            $r .= "Schedule is Activated!\n"; 
         }
         
         if($sched->{schedule_time} < ($t - 86400)) { # was this supposed to be sent a day ago? 
             $r .= 'Schedule is too late to run - should have ran ' . formatted_runtime($t - $sched->{schedule_time}) . ' ago.' . "\n"; 
-            $r .= "Deactivating Schedule\n"; 
+            $r .= "Deactivating Schedule...\n"; 
             $self->deactivate_schedule(
                 {
                     -id     => $sched->{id},
@@ -118,12 +118,12 @@ sub run_schedules {
         my $last_checked = $self->{ls_obj}->param('schedule_last_checked_time'); 
                 
         if($sched->{schedule_time} > $t){ 
-            $r .= "Schedule is to run in the future. (" . formatted_runtime($sched->{schedule_time} - $t)   ." from now)\n";
+            $r .= "Schedule will run " . formatted_runtime($sched->{schedule_time} - $t)   ." from now\n";
             next SCHEDULES; 
         }
         
         if($sched->{schedule_time} >= $self->{ls_obj}->param('schedule_last_checked_time')){ 
-            $r .= "Schedule to be sent!\n";
+            $r .= "Schedule running now!\n";
             
            my ($status, $errors, $message_id) = $self->{ms_obj}->construct_and_send(
                 {
@@ -137,9 +137,9 @@ sub run_schedules {
                 $r .= "Scheduled Mass Mailing added to the Queue, Message ID: $message_id\n"; 
             }
             else { 
-                $r .= "Problems with Mass Mailing:\n$errors\n"; 
+                $r .= "PROBLEMS with Mass Mailing:\n$errors\n"; 
             }
-            $r .= "Deactivating Schedule\n"; 
+            $r .= "Deactivating Schedule...\n"; 
             $self->deactivate_schedule(
                 {
                     -id     => $sched->{id},
@@ -151,7 +151,7 @@ sub run_schedules {
         }
         if($sched->{schedule_time} < $self->{ls_obj}->param('schedule_last_checked_time')){ 
             $r .= "Schedule SHOULD have been sent, but wasn't\n";
-            $r .= "Deactivating Schedule\n"; 
+            $r .= "Deactivating Schedule...\n"; 
              
             $self->deactivate_schedule(
                 {
