@@ -12,7 +12,6 @@ Key:
 
 
 [] global option to enable/disable modal meny on subscription form?
-[] make sure the sched stuff works in the installer. 
 
 [ ] Things for CGI::App migration: 
 
