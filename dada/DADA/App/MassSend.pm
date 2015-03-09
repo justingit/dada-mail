@@ -1633,7 +1633,7 @@ sub q_obj_from_draft {
         return $q_draft;
     }
     else {
-        warn 'doesnt have a draft!';
+        warn 'doesn\'t have a draft!';
         return undef;
     }
 
