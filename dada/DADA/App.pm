@@ -801,7 +801,6 @@ sub send_email {
     );
 
     if ( exists( $headers->{-redirect_uri} ) ) {
-        warn 'gotta -redirect_uri';
         $self->header_type('redirect');
         $self->header_props( -url => $headers->{-redirect_uri} );
     }
