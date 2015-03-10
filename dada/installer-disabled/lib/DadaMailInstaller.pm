@@ -142,7 +142,7 @@ $plugins_extensions->{global_config}->{code} = q{#					{
 
 $plugins_extensions->{multiple_subscribe}->{code} = q{#					{
 #					-Title      => 'Multiple Subscribe',
-#					-Title_URL  => $EXT_URL."/multiple_subscribe",
+#					-Title_URL  => $EXT_URL."/multiple_subscribe.cgi",
 #					-Function   => 'multiple_subscribe',
 #					-Activated  => 1,
 #					},};
@@ -1599,14 +1599,14 @@ sub query_params_to_install_params {
         push( @install_param_names, 'bounce_handler_' . $_ );
     }
     push( @install_param_names, 'bounce_handler_' . 'Address' );
+    for (@Extension_Names) {
+        push( @install_param_names, 'install_' . $_ );
+    }
 
     for ( keys %bridge_plugin_configs ) {
         push( @install_param_names, 'bridge_' . $_ );
     }
 
-    for (@Extension_Names) {
-        push( @install_param_names, 'install_' . $_ );
-    }
 
     for (@install_param_names) {
         $ip->{ '-' . $_ } = $q->param($_);
@@ -2668,6 +2668,7 @@ sub edit_config_file_for_plugins {
     $config_file =~ s/$admin_menu_end_cut//;
 
     for my $plugins_data (%$plugins_extensions) {
+        warn 'working on: ' . $plugins_data; 
         if ( exists( $plugins_extensions->{$plugins_data}->{code} ) ) {
             if ( $ip->{-if_dada_files_already_exists} eq 'skip_configure_dada_files' ) {
 
@@ -2680,6 +2681,9 @@ sub edit_config_file_for_plugins {
                       installer_chmod( $DADA::Config::DIR_CHMOD,
                         make_safer( $plugins_extensions->{$plugins_data}->{loc} ) );
                 }
+                else { 
+                    
+                }   
             }
             else {
                 if ( $ip->{ '-install_' . $plugins_data } == 1 ) {
@@ -2687,10 +2691,13 @@ sub edit_config_file_for_plugins {
                     my $uncommented_code = uncomment_admin_menu_entry($orig_code);
                     $orig_code = quotemeta($orig_code);
                     $config_file =~ s/$orig_code/$uncommented_code/;
-
-                    #my $installer_successful =
-                    #  installer_chmod( $DADA::Config::DIR_CHMOD,
-                    #    make_safer( $plugins_extensions->{$plugins_data}->{loc} ) );
+                    
+                    # we don't need to chmod plugins, anymore: 
+                    if($plugins_data =~ m/multiple_subscribe|blog_index/) { 
+                        my $installer_successful =
+                          installer_chmod( $DADA::Config::DIR_CHMOD,
+                            make_safer( $plugins_extensions->{$plugins_data}->{loc} ) );
+                    }
                 }
             }
         }
