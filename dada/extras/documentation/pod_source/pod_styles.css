@@ -19,10 +19,6 @@ font: 11px/22px monaco, mono, courier-new, courier, fixed;
 border: 1px dotted black; 
 margin: 20px; 
 padding:5px;
-background-color:#CFC;
+background-color:#ccc;
 
 }
-
-/*i do not know if this works! */ 
-
-hr(color:black;height:1px;width:66%}

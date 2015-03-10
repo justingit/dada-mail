@@ -155,20 +155,22 @@ $plugins_extensions->{blog_index}->{code} = q{#					{
 #					},};
 
 my $advanced_config_params = {
-    show_profiles                       => 1,
-    show_global_template_options        => 1,
-    show_security_options               => 1,
-    show_captcha_options                => 1,
-    show_global_mailing_list_options    => 1,
-    show_global_mass_mailing_options    => 1,
-    show_cache_options                  => 1,
-    show_debugging_options              => 1,
-    show_confirmation_token_options     => 1,
-    show_amazon_ses_options             => 1,
-    show_mandrill_options               => 1,
-    show_program_name_options           => 1,
-    show_s_program_url_options          => 1,
-    show_annoying_whiny_pro_dada_notice => 0,
+show_scheduled_jobs_options         => 1,
+show_deployment_options             => 1,
+show_profiles                       => 1,
+show_global_template_options        => 1,
+show_security_options               => 1,
+show_captcha_options                => 1,
+show_global_mailing_list_options    => 1,
+show_global_mass_mailing_options    => 1,
+show_cache_options                  => 1,
+show_debugging_options              => 1,
+show_confirmation_token_options     => 1,
+show_amazon_ses_options             => 1,
+show_mandrill_options               => 1,
+show_program_name_options           => 1,
+show_s_program_url_options          => 1,
+show_annoying_whiny_pro_dada_notice => 0,
 };
 
 # Address isn't in here.

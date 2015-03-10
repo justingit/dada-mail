@@ -16,9 +16,15 @@ In a nutshell, FastCGI allows you to run Dada Mail in a persistent environment. 
 
 This time-savings really becomes apparent if you have a busy website, where Dada Mail is being accessed many times a second. Switching between the two ways Dada Mail can be run (CGI and FastCGI) is fairly easy to do, and we suggest trying out Dada Mail as a plain CGI app, before moving to running it as a FastCGI app.
 
+=head1 PSGI Support
+
+Dada Mail also has PSGI support. PSGI support has many of the advantages of running Dada Mail under FastCGI, but is much more modern and flexible because of its idea of Middleware. Details: 
+
+L<http://dadamailproject.com/d/features-psgi_support.pod.html>
+
 =head1 CGI::Application-based
 
-Dada Mail has been fully moved to the CGI::Application framework. This is one of the reasons we've been able to have FastCGI support. PSGI support could theoretically be easy to support as well, with a little tinkering. 
+Dada Mail has been moved to the CGI::Application framework. This is one of the reasons we've been able to have FastCGI/PSGI support.
 
 More on C<CGI::Application>: 
 
@@ -80,10 +86,6 @@ The core of Dada Mail now supports Stationery, which allows you to set multiple 
 
 =head1 TODO
 
-=head2 Testing! 
-
-Other than FastCGI support, v8 does not have too many different features that differentiate it from v7. Although under the hood, the code organization and execution is very different. This means that pretty much anything could  be broken, and these bugs can only be found by testing everything out. 
-
 We could really use your feedback. Please contact us directly: 
 
 L<http://dadamailproject.com/contact/>
@@ -104,12 +106,5 @@ And tell us how well Dada Mail 8 is working for you.
 
 We're most concerned about how Dada Mail is running under FastCGI - that's all new to us, and we're almost positive that there's some issues to work out in some particularily important parts of the app (mass mailing sending!) 
 
-=head2 Unfinished
-
-Remember v8 is currently an ALPHA release, and shouldn't be put into production. 
-
-=head3 FastCGI and Error Logs
-
-Currently, if you run Dada Mail under FastCGI, warnings and errors will not be sent to Dada Mail's own error log, but instead will be printed in the server's own error log. We haven't yet figured a way to keep the previous behavior. 
 
 =cut

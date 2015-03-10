@@ -2,7 +2,7 @@
 
 =head1 Advanced Configuration with the Dada Mail Installer
 
-This doc covers the options in the Dada Mail Installer, under the heading, B<Advanced Configuration (Optional)>
+This doc covers the options in the Dada Mail Installer under the heading, B<Advanced Configuration (Optional)>
 
 If you're looking for general instructions on how to use the Dada Mail Installer, look no further than, 
 
@@ -16,7 +16,48 @@ L<http://dadamailproject.com/support/documentation/global_variables.pod.html>
 
 We'll be listing the actual global variables used, when discussing what the installer configures for you. You do have the option to edit the C<.dada_config> file that the installer creates, to make even more customizations. 
 
-As a warning, the installer only supports reading in, and editing variables that are presented to you, in the Installer itself. That means anything that's not presented to you, will be lost if you change the configuration, with the Installer again. Because of this, you'll want to put your own unsupported (by the Installer) configuration changes in a centralized place in your C<.dada_config> file, so you can easily (manually - copy and paste!) move them back to the C<.dada_config> file that's generated.
+As a warning, the installer only supports reading in, and editing variables that are presented to you in the Installer itself. That means anything that's not presented to you, will be lost if you change the configuration, with the Installer again. Because of this, you'll want to put your own unsupported (by the Installer) configuration changes in a centralized place in your C<.dada_config> file, so you can easily (manually via copy and paste) move them back to the C<.dada_config> file that's generated.
+
+=head2 Configure Scheduled Jobs 
+
+Dada Mail requires a cronjob to run for some of its more advanced features: keeping tabs on mass mailings going out, sending out scheduled mailings, Bridge, etc. 
+
+More on Scheduled Jobs and Dada Mail: 
+
+L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
+
+=head3 Scheduled Jobs Flavor
+
+The B<Scheduled Jobs Flavor> changes the URL and PATH INFO used to access Dada Mail, to run your scheduled jobs. The idea is that this URL should be slightly unique, so that someone cannot run the schedules themselves. 
+
+The Scheduled Jobs Flavor should be unqiue, and not be the value of another flavor used by Dada Mail (C<admin>, C<send_email>, etc). An easy way to make sure of this, is just to preceed your flavor with, C<_sched> and then set the rest of the string to whatever you would like. Example, 
+
+    _sched83449774F89D9E95
+
+=head3 Log Job Output
+
+When checked, B<Log Job Output> will log anything returned by the jobs run. You'll find this log in the C<.dada_files/.logs/cronjob_output.txt> file. This is helpful with debugging a problem, but this file can get potentially large, quickly, so think of either using this option temporarily, or schedule a cronjob to either rotate, or delete this log periodically. 
+
+=head2 Configure Deployment Options
+
+Dada Mail can be deployed as a CGI, FastCGI, or PSGI/Plack app. 
+
+If you're setting things up using the included installer through the web-based interface, you're probably going to keep this set as the default, C<CGI> or C<FastCGI>. If you would like to set Dada Mail up to be deployed under PSGI, it's best to use the command line interface of the installer, as the web-based installer itself runs under CGI. 
+
+More on FastCGI Support: 
+
+L<http://dadamailproject.com/d/features-fastcgi.pod.html>
+
+More on PSGI Support: 
+
+L<http://dadamailproject.com/d/features-psgi_support.pod.html>
+
+Command Line Installer: 
+
+L<http://dadamailproject.com/d/install_dada_mail_cl.pod.html>
+
+B<Config Variable:> C<$RUNNING_UNDER>. 
+Valid values: C<CGI>, C<FastCGI>, C<PSGI>
 
 =head2 Configure Profiles
 
@@ -376,6 +417,3 @@ Amazon SES does have a long list of required Perl CPAN modules that need to be i
 To configure Dada Mail to use SES sending, first check the checkbox labeled,B< Configure Amazon SES>  Then, you will need to give the installer your B<AWS Access Key ID> and a B<AWS Secret Access Key>. To test your information, click the, B<Test Your AWS Credentials> button. 
 
 =head2 Configure Mandrill
-
- 
-

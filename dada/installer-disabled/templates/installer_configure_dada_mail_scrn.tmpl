@@ -826,53 +826,51 @@ editors also have the ability to make simple HTML tables for basic layouts.
 		<!-- tmpl_include upgrade_to_pro_dada.tmpl --> 
 	<!-- /tmpl_if -->
 
-    <!-- show_scheduled_jobs_options --> 
-    <p>
-    	<input type="checkbox" name="configure_scheduled_jobs" id="configure_scheduled_jobs" value="1" />			
-    <label for="configure_scheduled_jobs">Configure Scheduled Jobs</label>
-    </p>
-    
-    <div id="scheduled_jobs_options">
-        <fieldset>
-            <p>
-			<label for="scheduled_jobs_flavor">Scheduled Jobs Flavor:</label>
-			<input type="text" name="scheduled_jobs_flavor" id="scheduled_jobs_flavor" value=""/>			
-			</p>
-        	<p>
-        		<input type="checkbox" name="scheduled_jobs_log" id="scheduled_jobs_log" value="1"  />			
-        		<label for="scheduled_jobs_log">
-        			Log Job Output
-        		</label>
-        	</p>	
-        </fieldset> 
-    </div>
-    <!-- end tag -->
+    <!-- tmpl_if show_scheduled_jobs_options --> 
+        <p>
+        	<input type="checkbox" name="configure_scheduled_jobs" id="configure_scheduled_jobs" value="1" />			
+        <label for="configure_scheduled_jobs">Configure Scheduled Jobs</label>
+        </p>
+        <div id="scheduled_jobs_options">
+            <fieldset>
+                <p>
+    			<label for="scheduled_jobs_flavor">Scheduled Jobs Flavor:</label>
+    			<input type="text" name="scheduled_jobs_flavor" id="scheduled_jobs_flavor" value=""/>			
+    			</p>
+            	<p>
+            		<input type="checkbox" name="scheduled_jobs_log" id="scheduled_jobs_log" value="1"  />			
+            		<label for="scheduled_jobs_log">
+            			Log Job Output
+            		</label>
+            	</p>	
+            </fieldset> 
+        </div>
+    <!-- /tmpl_if -->
 
 
-    <!-- show_fast_cgi_options --> 
-    <p>
-    	<input type="checkbox" name="configure_deployment" id="configure_deployment" value="1" />			
-    <label for="configure_deployment">Configure Deployment Options</label>
-    </p>
-    <div id="deployment_options">
-        <fieldset> 
-        	<p>
-        			<label for="deployment_running_under">
-        			    Run <!-- tmpl_var PROGRAM_NAME --> under:
-        			</label>
-        			<select name="deployment_running_under" id="deployment_running_under"> 
-        			    <option value="CGI">CGI</option> 
-        			    <option value="FastCGI">FastCGI</option> 
-        			    <option value="PSGI">PSGI/Plack</option> 
-        			</select>
-        	</p>
-        	
-        	<!-- tmpl_var cgi_test_FastCGI --> 
-        	
-        </fieldset> 
-    </div>
-
-    <!-- end tag -->
+    <!-- tmpl_if show_deployment_options --> 
+        <p>
+        	<input type="checkbox" name="configure_deployment" id="configure_deployment" value="1" />			
+        <label for="configure_deployment">Configure Deployment Options</label>
+        </p>
+        <div id="deployment_options">
+            <fieldset> 
+            	<p>
+            			<label for="deployment_running_under">
+            			    Run <!-- tmpl_var PROGRAM_NAME --> under:
+            			</label>
+            			<select name="deployment_running_under" id="deployment_running_under"> 
+            			    <option value="CGI">CGI</option> 
+            			    <option value="FastCGI">FastCGI</option> 
+            			    <option value="PSGI">PSGI/Plack</option> 
+            			</select>
+            	</p>
+    	
+            	<!-- tmpl_var cgi_test_FastCGI --> 
+    	
+            </fieldset> 
+        </div>
+    <!-- /tmpl_if -->
     
 	<!-- tmpl_if show_profiles --> 
 		<p>

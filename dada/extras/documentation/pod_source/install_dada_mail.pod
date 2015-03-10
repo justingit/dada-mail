@@ -4,23 +4,39 @@
 
 =head2 Step #1: Download Dada Mail
 
-Here's the direct download to Dada Mail v8.0.0 Alpha 3:
+=begin html 
 
-L<https://sourceforge.net/projects/dadamail/files/dada-8_0_0-alpha3.tar.gz/download>
+<uL>
+<p>
+    <li>
+    <a href="https://sourceforge.net/projects/dadamail/files/dada-8_0_0-alpha3.tar.gz/download">
+        Click here to download to Dada Mail v8.0.0 Alpha 3
+    </a> 
+    </li>
+    <li>
+    Or, if you're a Pro Dada Subscriber, 
+    <a href="http://dadamailproject.com/pro_dada">
+        click here to download to Pro Dada v8.0.0 Alpha 3
+    </a>
+    </li>
+</ul>
+</p>
+    
+    <p><a href="http://dadamailproject.com/purchase/pro.html">
+    Here's more information about Pro Dada
+    </a>
+    </p>
+    
+</p>
 
-=head2 Pro Dada Subscriber?
+=end html 
 
-Download Pro Dada at: 
+I<When installing Pro Dada, use, B<pro_dada-8_0_0-alpha3.tar.gz> as the name of the distribution, in these directions.>
 
-L<http://dadamailproject.com/pro_dada>
-
-More information about B<Pro Dada>: 
-
-L<http://dadamailproject.com/purchase/pro.html> 
 
 =head2 Step #2 Upload the, "dada-8_0_0-alpha3.tar.gz" distro into your cgi-bin
 
-Once you download the C<dada-8_0_0-alpha3.tar.gz> distro, upload it to your hosting account's I<cgi-bin>. For Pro Dada users, this distro is named, C<pro_dada-8_0_0-alpha3.tar.gz> - use that name for the rest of the directions, below. 
+Once you downloaded the C<dada-8_0_0-alpha3.tar.gz> distro, upload it to your hosting account's I<cgi-bin>.
 
 =begin html
 
@@ -281,7 +297,9 @@ If everything works well (and we hope it does) you should be all set to run Dada
 
 =head2 Setup the Scheduled Jobs (cronjobs)
 
-For many things in Dada Mail, including making sure your mass mailings are going out correctly, you will need to set up the scheduled jobs - this is usually done by setting a new cronjob. The command for the cronjob will be presented to you. Here's more information on the scheduled job needed: 
+For many things in Dada Mail, including making sure your mass mailings are going out correctly, you will need to set up the scheduled jobs.
+
+The unique command needed to run the required jobs will be shown. More information on the scheduled job: 
 
 L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
 
@@ -344,14 +362,9 @@ L<https://www.youtube.com/watch?v=x7PRauNDKA4>
 
 =head2 Command Line Interface
 
-An alternative, command line interface is available, instructions can be 
-found on how to use it, by invoking the script with the, C<--help> flag, 
-
- shell>./install.cgi --help
+An alternative command line interface is available:
 
 L<http://dadamailproject.com/support/documentation/install_dada-cl.pod.html>
-
-most of the options available on the web-based interface are available in the command line interface.
 
 =cut
 

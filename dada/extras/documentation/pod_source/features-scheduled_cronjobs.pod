@@ -4,7 +4,7 @@
 
 Some of Dada Mail's more powerful features depend on a cronjob to be run on a periodic schedule. 
 
-Only one cronjob currently needs to be run for all the features in Dada Mail needs a scheduled job to run.just a command to grab a URL (curl, wget, etc) and the URL to access.
+Only one cronjob is required for all scheduled tasks in Dada Mail. It is composed of a URL that will need to be accessed.
 
 Here's an exmaple: 
 
@@ -77,5 +77,9 @@ There's no special command-line way to run these jobs, although you can invoke D
     cd /home/youraccount/public_html/cgi-bin/dada; /usr/bin/perl ./mail.cgi flavor=_sched513A3F128C5C41EC schedule=_all list=_all output_mode=_verbose
 
 Will do the same thing, as our initial example for curl. 
+
+=head1 Retrieving the Cronjob
+
+If you need to access the scheduled job URL again, log into your list control panel (any list will do) and go to, B<App Information - Scheduled Job> 
 
 =cut
