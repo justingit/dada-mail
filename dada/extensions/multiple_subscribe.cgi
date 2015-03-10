@@ -188,6 +188,7 @@ sub subscription_form {
             }
         }
     );
+    print $q->header(); 
     e_print($scrn);
 
 }
@@ -308,6 +309,7 @@ sub subscribe_emails {
                 },
             }
         );
+        print $q->header(); 
         e_print($scrn);
 
     }
