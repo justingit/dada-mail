@@ -2,7 +2,10 @@
 
 use lib qw(./t ./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib); 
 BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
+
+
 use dada_test_config; 
+dada_test_config::create_SQLite_db(); 
 
 
 my %test_message = (
@@ -294,4 +297,5 @@ SKIP: {
 
 
 dada_test_config::remove_test_list;
+dada_test_config::destroy_SQLite_db();
 dada_test_config::wipe_out;

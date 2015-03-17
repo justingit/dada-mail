@@ -158,12 +158,7 @@ $(document).ready(function() {
 		});
 		
 		if ($("#send_email_screen").length || $("#send_url_email").length) {
-			if($("#draft_enabled").val() == 1){ 
-				auto_save_as_draft();
-			}
-			else { 
-			}
-			
+			auto_save_as_draft();
 			$("body").on("click", ".start_a_schedule", function(event) {
 				
 				$('#popup_schedule_datetime').datetimepicker(
@@ -296,13 +291,8 @@ $(document).ready(function() {
 			var itsatest = $(this).hasClass("justatest");
 			if (sendMailingListMessage(fid, itsatest) === true) {
 				if($("#f").val() != 'list_invite') { 
-					if($("#draft_enabled").val() == 1){ 
-						save_draft(false);
-						admin_menu_drafts_notification();
-					}
-					else { 
-				
-					}
+					save_draft(false);
+					admin_menu_drafts_notification();
 				}
 				if($("#f").val() == 'list_invite' && itsatest == true) { 
 					// alert('now were sending out a test message!');
@@ -1347,10 +1337,6 @@ function create_from_stationary() {
 }
 
 function auto_save_as_draft() {
-	if($("#draft_enabled").val() === 0){ 
-		return; 
-	}
-	
 	if ($("#using_ckeditor").length) {
 		if(CKEDITOR.instances['html_message_body']) { 
 			CKEDITOR.instances['html_message_body'].updateElement();

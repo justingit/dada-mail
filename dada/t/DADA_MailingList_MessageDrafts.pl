@@ -18,8 +18,6 @@ use DADA::MailingList::MessageDrafts;
 
 my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
 
-ok( $d->enabled == 1, 'Should be enabled' );
-
 ok( $d->count == 0, 'No drafts, yet' );
 
 ok( $d->id_exists == 0, 'Empty ID? 0' );

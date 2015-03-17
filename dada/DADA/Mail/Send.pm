@@ -2335,19 +2335,17 @@ sub _set_clickthrough_tracking_stuff {
             #
         }
     );
-    if ( $ct->enabled ) {
-        $fields = $ct->parse_email(
-            {
-                -as_ref => 1,
-                -fields => $fields,
-                -mid    => $fields->{'Message-ID'},
+    $fields = $ct->parse_email(
+        {
+            -as_ref => 1,
+            -fields => $fields,
+            -mid    => $fields->{'Message-ID'},
 
-            }
-        );
-        undef $ct;
+        }
+    );
+    undef $ct;
 
-        # And, that's it.
-    }
+    # And, that's it.
     #
     ##################################################################
 
@@ -2370,14 +2368,12 @@ sub _log_sending_error {
 	try { 
 		require DADA::Logging::Clickthrough;
 	    $r = DADA::Logging::Clickthrough->new( { -list => $self->{ list } } );
-	    if ( $r->enabled ) {
-	        $r->error_sending_to_log(
-	            {
-	                -mid   => $mid,
-	                -email => $args->{-email},
-	            }
-	        );
-	    }
+        $r->error_sending_to_log(
+            {
+                -mid   => $mid,
+                -email => $args->{-email},
+            }
+        );
 	} catch { 
 		carp "Problems logging error w/sending to: " . $args->{-email} . " (oh, what a world!): $_"; 
 		return undef; 
@@ -2915,14 +2911,7 @@ sub _email_batched_finished_notification {
     
     $args{-msg_id} =~ s/\.(.*)$//; # remove everything after the first dot.
     
-    if($r->enabled) { 
         $m_report = $r->report_by_message( $args{-msg_id} );
-        $m_report->{clickthrough_tracking_enabled} = 1;
-    }
-    else { 
-        $m_report->{clickthrough_tracking_enabled} = 0;       
-    }
-
 
     require MIME::Entity;
     my $entity = MIME::Entity->build(
@@ -3290,7 +3279,6 @@ sub _log_sub_count {
             -ls   => $self->{ls},
         }
     );
-    return if !$r->enabled;
 
     my $msg_id = $args->{-msg_id};
     $msg_id =~ s/\<|\>//g;

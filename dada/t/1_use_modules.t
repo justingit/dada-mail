@@ -3,6 +3,7 @@
 use lib qw(./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib ./t); 
 
 use dada_test_config;
+dada_test_config::create_SQLite_db(); 
 
 
 use Test::More qw(no_plan); 
@@ -14,7 +15,6 @@ use Test::More qw(no_plan);
 
 
 BEGIN{ use_ok('DADA::App::BounceHandler::ScoreKeeper'); }
-BEGIN{ use_ok('DADA::App::BounceHandler::ScoreKeeper::Db'); }
 
 SKIP: {
 
@@ -59,7 +59,6 @@ BEGIN{ use_ok('DADA::App::Subscriptions'); }
 BEGIN{ use_ok('DADA::Config'); }
 
 BEGIN{ use_ok('DADA::Logging::Clickthrough'); }
-BEGIN{ use_ok('DADA::Logging::Clickthrough::Db'); }
 
 BEGIN{ use_ok('DADA::Logging::Usage'); }
 
@@ -76,7 +75,6 @@ SKIP: {
 
 
 
-BEGIN{ use_ok('DADA::MailingList::Archives::Db'); }
 
 SKIP: {
     eval { require DBI;};
@@ -107,8 +105,6 @@ SKIP: {
 }
 
 
-
-BEGIN{ use_ok('DADA::MailingList::Settings::Db'); }
 
 
 SKIP: {
@@ -306,5 +302,5 @@ BEGIN { use_ok('HTML::Entities::Numbered'); } # a module used for the XML named-
 BEGIN { use_ok('version'); } # version is now required for Text::Balanced.
 
 
-
+dada_test_config::destroy_SQLite_db();
 dada_test_config::wipe_out;

@@ -4,6 +4,8 @@ use strict;
 use lib qw(./t ./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib); 
 BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
 use dada_test_config; 
+dada_test_config::create_SQLite_db(); 
+
 
 
 use Test::More qw( no_plan ); 
@@ -143,6 +145,6 @@ my $flags       = {};
     
 # This has to be continued, but you get the idea...
 
-
+dada_test_config::destroy_SQLite_db();
 dada_test_config::wipe_out;
 

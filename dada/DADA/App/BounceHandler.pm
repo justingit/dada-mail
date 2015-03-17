@@ -1040,45 +1040,44 @@ sub carry_out_rule {
             $report .= "\nSaving bounced email report in tracker\n";
             require DADA::Logging::Clickthrough;
             my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
-			if($r->enabled) { 
-                my $hard_bounce = 0;
-				my $soft_bounce = 0; 
-                if (   $action eq 'add_to_score'
-                    && $actions->{$action} eq 'hardbounce_score' )
-                {
-                    $hard_bounce = 1;
-                }
-				elsif (   $action eq 'add_to_score'
-                    && $actions->{$action} eq 'softbounce_score' ){ 
-					$soft_bounce = 1; 
-                }
-                elsif ( $action ne 'add_to_score' ) {
-                    #$hard_bounce = 1;
-                }
-                else {
-					# ... 
-                }
-                if ( $hard_bounce == 1 ) {
-                    $r->bounce_log(
-                        {
-                            -type  => 'hard',
-                            -mid   => $diagnostics->{'Simplified-Message-Id'},
-                            -email => $email,
-							# -rule  => $title, 
-                        }
-                    );
-                }
-                else {
-                    $r->bounce_log(
-                        {
-                            -type  => 'soft',
-                            -mid   => $diagnostics->{'Simplified-Message-Id'},
-                            -email => $email,
-							# -rule  => $title, 
-                        }
-                    );
-                }
-			}
+            my $hard_bounce = 0;
+			my $soft_bounce = 0; 
+            if (   $action eq 'add_to_score'
+                && $actions->{$action} eq 'hardbounce_score' )
+            {
+                $hard_bounce = 1;
+            }
+			elsif (   $action eq 'add_to_score'
+                && $actions->{$action} eq 'softbounce_score' ){ 
+				$soft_bounce = 1; 
+            }
+            elsif ( $action ne 'add_to_score' ) {
+                #$hard_bounce = 1;
+            }
+            else {
+				# ... 
+            }
+            if ( $hard_bounce == 1 ) {
+                $r->bounce_log(
+                    {
+                        -type  => 'hard',
+                        -mid   => $diagnostics->{'Simplified-Message-Id'},
+                        -email => $email,
+						# -rule  => $title, 
+                    }
+                );
+            }
+            else {
+                $r->bounce_log(
+                    {
+                        -type  => 'soft',
+                        -mid   => $diagnostics->{'Simplified-Message-Id'},
+                        -email => $email,
+						# -rule  => $title, 
+                    }
+                );
+            }
+		
         }
         else {
             if($action ne 'abuse_report') { 
@@ -1193,14 +1192,12 @@ sub abuse_report {
     
     require DADA::Logging::Clickthrough;
     my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
-    if ( $r->enabled ) {
         $r->abuse_log( 
             { 
                 -email => $email,
                 -mid   => $diagnostics->{'Simplified-Message-Id'},
             } 
         );
-    }                
 }
 
 

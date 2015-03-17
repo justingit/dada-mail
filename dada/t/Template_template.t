@@ -3,6 +3,11 @@
 use lib qw(./t ./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib); 
 BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
 use dada_test_config; 
+dada_test_config::create_SQLite_db(); 
+
+
+
+
 use Test::More;
 
 # Think about using Test::HTML::Tidy, instead for at least some of these. 
@@ -252,6 +257,7 @@ for(keys %$template_strings){
 		undef $template; 
 	
 }
+dada_test_config::destroy_SQLite_db();
 dada_test_config::wipe_out;
 
 

@@ -4,6 +4,10 @@ use strict;
 use lib qw(./t ./ ./DADA/perllib ../ ../DADA/perllib ../../ ../../DADA/perllib ); 
 BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
 use dada_test_config; 
+dada_test_config::create_SQLite_db(); 
+
+
+
 
 use Test::More qw(no_plan);  
 
@@ -50,6 +54,7 @@ ok($c->remove($filename) == 0, "Trying to remove this file twice doesn't work!")
 # Still more to do... 
 
 #dada_test_config::remove_test_list;
+dada_test_config::destroy_SQLite_db();
 dada_test_config::wipe_out;
 
 

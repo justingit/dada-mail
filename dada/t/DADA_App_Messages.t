@@ -10,6 +10,10 @@ BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
 
 
 use dada_test_config; 
+dada_test_config::create_SQLite_db(); 
+
+
+
 use Test::More qw(no_plan);  
 use utf8; 
 use DADA::Config;
@@ -886,10 +890,6 @@ my @parts = $entity->parts;
 #diag '$parts[1]->as_string ' . safely_encode($parts[1]->as_string); 
 
 my $msg_str0 = safely_decode($parts[0]->bodyhandle->as_string);
-#my $msg_str1 = safely_decode($parts[1]->bodyhandle->as_string);
-my $msg_str1 = safely_decode($parts[1]->as_string); # uh, why?
-
-
 TODO: {
 	    local $TODO = 'There is, I think a bug in the test itself, dealing with an encoding issue, but this needs to be double-checked.';
 
@@ -931,13 +931,11 @@ undef($list_name);
 
 
 
-like($msg_str1, qr/$q_fake_message_back/, "Original Message seems to be attached.");
 
 ok(unlink($mh->test_send_file));
 undef $msg; 
 undef $entity; 
 undef $msg_str0; 
-undef $msg_str1; 
 
 
 
@@ -1173,6 +1171,7 @@ undef $msg_str;
 
 
 dada_test_config::remove_test_list;
+dada_test_config::destroy_SQLite_db();
 dada_test_config::wipe_out;
 
 
@@ -1191,6 +1190,5 @@ sub decode_header {
 	   $dec = safely_decode($dec); 
 	return $dec; 
 }
-
 
 

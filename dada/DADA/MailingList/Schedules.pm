@@ -39,7 +39,6 @@ sub _init {
     my ($args) = @_;
 
     $self->{list}   = $args->{-list};
-    $self->{d_obj}  =  DADA::MailingList::MessageDrafts->new( { -list => $self->{list}  } );
     
     $self->{ms_obj} = DADA::App::MassSend->new({-list => $self->{list}}); 
     
@@ -54,11 +53,6 @@ sub _init {
     
     
 }
-
-sub enabled { 
-    my $self = shift; 
-    return $self->{d_obj}->enabled; 
-};
 
 
 

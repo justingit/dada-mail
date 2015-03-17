@@ -164,7 +164,6 @@ sub send_email {
                     screen                     => 'send_email',
                     flavor                     => $flavor,
                     draft_id                   => $draft_id,
-                    draft_enabled              => $self->{md_obj}->enabled,
                     draft_role                 => $draft_role,
                     restore_from_draft         => $restore_from_draft,
                     done                       => $done,
@@ -237,49 +236,25 @@ sub send_email {
         my $errors     = undef;
         my $message_id = undef;
 
-        if ( $self->{md_obj}->enabled ) {
-
-            warn 'md_obj enabled.'
-              if $t;
-
-            $draft_id = $self->save_as_draft(
-                {
-                    -cgi_obj => $q,
-                    -list    => $self->{list},
-                    -json    => 0,
-                }
-            );
-
-            carp 'construct_and_send';
-
-            # to fetch a draft, I need id, list and role (lame)
-            ( $status, $errors, $message_id ) = $self->construct_and_send(
-                {
-                    -draft_id => $draft_id,
-                    -screen   => 'send_email',
-                    -role     => $draft_role,
-                    -process  => $process,
-                }
-            );
-            if($t) { 
-                carp '$message_id ' . $message_id;
-                carp 'done with construct_and_send!';
+        $draft_id = $self->save_as_draft(
+            {
+                -cgi_obj => $q,
+                -list    => $self->{list},
+                -json    => 0,
             }
-        }
-        else {
-            ( $status, $errors, $message_id ) = $self->construct_and_send(
-                {
-                    # -draft_id   => $draft_id,
-                    -screen  => 'send_email',
-                    -role    => $draft_role,
-                    -process => $process,
-                    -cgi_obj => $q,
-                }
-            );
- 
-            warn '$message_id ' . $message_id 
-                if $t;
-
+        );
+        # to fetch a draft, I need id, list and role (lame)
+        ( $status, $errors, $message_id ) = $self->construct_and_send(
+            {
+                -draft_id => $draft_id,
+                -screen   => 'send_email',
+                -role     => $draft_role,
+                -process  => $process,
+            }
+        );
+        if($t) { 
+            carp '$message_id ' . $message_id;
+            carp 'done with construct_and_send!';
         }
         if ( $status == 0 ) {
             return $self->report_mass_mail_errors( $errors, $root_login );
@@ -308,10 +283,8 @@ sub send_email {
             );
         }
         else {
-            if ( $self->{md_obj}->enabled ) {
-                if ( defined($draft_id) ) {
-                    $self->{md_obj}->remove($draft_id);
-                }
+            if ( defined($draft_id) ) {
+                $self->{md_obj}->remove($draft_id);
             }
             my $uri;
             if ( $q->param('archive_no_send') == 1 && $q->param('archive_message') == 1 ) {
@@ -363,17 +336,7 @@ sub construct_and_send {
     #}
 
     my $draft_q = undef;
-    warn '$self->{md_obj}->enabled  ' . $self->{md_obj}->enabled;
-
-    if ( $self->{md_obj}->enabled ) {
-        $draft_q = $self->q_obj_from_draft($args);
-
-        #use Data::Dumper;
-        #warn Dumper($draft_q);
-    }
-    else {
-        $draft_q = $args->{-cgi_obj};
-    }
+       $draft_q = $self->q_obj_from_draft($args);
 
     my $process    = $args->{-process};
     my $status     = 0;
@@ -942,7 +905,6 @@ sub send_url_email {
                     screen => 'send_url_email',
 
                     draft_id           => $draft_id,
-                    draft_enabled      => $self->{md_obj}->enabled,
                     draft_role         => $draft_role,
                     restore_from_draft => $restore_from_draft,
                     done               => $done,
@@ -1049,10 +1011,8 @@ sub send_url_email {
             );
         }
         else {
-            if ( $self->{md_obj}->enabled ) {
-                if ( defined($draft_id) ) {
-                    $self->{md_obj}->remove($draft_id);
-                }
+            if ( defined($draft_id) ) {
+                $self->{md_obj}->remove($draft_id);
             }
             my $uri;
             if ( $q->param('archive_no_send') == 1 && $q->param('archive_message') == 1 ) {
@@ -1078,49 +1038,47 @@ sub find_draft_id {
 
     # Get $draft_id based on if an id is passed, and role:
 
-    if ( $self->{md_obj}->enabled ) {
-
-        # $restore_from_draft defaults to, "true" if no param is passed.
-        if (   $restore_from_draft ne 'true'
-            && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => $args->{-role} } ) )
-        {
-            $draft_id = undef;
+    # $restore_from_draft defaults to, "true" if no param is passed.
+    if (   $restore_from_draft ne 'true'
+        && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => $args->{-role} } ) )
+    {
+        $draft_id = undef;
+    }
+    elsif ($restore_from_draft eq 'true'
+        && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'draft' } )
+        && $args->{-role} eq 'draft' )
+    {    # so, only drafts (not stationary),
+        if ( defined( $q->param('draft_id') ) ) {
+            $draft_id = $q->param('draft_id');
         }
-        elsif ($restore_from_draft eq 'true'
-            && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'draft' } )
-            && $args->{-role} eq 'draft' )
-        {    # so, only drafts (not stationary),
-            if ( defined( $q->param('draft_id') ) ) {
-                $draft_id = $q->param('draft_id');
-            }
-            else {
-                $draft_id = $self->{md_obj}->latest_draft_id( { -screen => $args->{-screen}, -role => 'draft' } );
-            }
-        }
-        elsif ($restore_from_draft eq 'true'
-            && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'stationary' } )
-            && $args->{-role} eq 'stationary' )
-        {
-            if ( defined( $q->param('draft_id') ) ) {
-                $draft_id = $q->param('draft_id');
-            }
-            else {
-                # $draft_id = $self->{md_obj}->latest_draft_id( { -screen => 'send_email', -role => 'draft' } );
-                # we don't want to load up the most recent stationary, since that's not how stationary... work.
-            }
-        }
-        elsif ($restore_from_draft eq 'true'
-            && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'schedule' } )
-            && $args->{-role} eq 'schedule' )
-        {
-            if ( defined( $q->param('draft_id') ) ) {
-                $draft_id = $q->param('draft_id');
-            }
-            else {
-                # we don't want to load up the most recent schedule, since that's not how schedules... work.
-            }
+        else {
+            $draft_id = $self->{md_obj}->latest_draft_id( { -screen => $args->{-screen}, -role => 'draft' } );
         }
     }
+    elsif ($restore_from_draft eq 'true'
+        && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'stationary' } )
+        && $args->{-role} eq 'stationary' )
+    {
+        if ( defined( $q->param('draft_id') ) ) {
+            $draft_id = $q->param('draft_id');
+        }
+        else {
+            # $draft_id = $self->{md_obj}->latest_draft_id( { -screen => 'send_email', -role => 'draft' } );
+            # we don't want to load up the most recent stationary, since that's not how stationary... work.
+        }
+    }
+    elsif ($restore_from_draft eq 'true'
+        && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'schedule' } )
+        && $args->{-role} eq 'schedule' )
+    {
+        if ( defined( $q->param('draft_id') ) ) {
+            $draft_id = $q->param('draft_id');
+        }
+        else {
+            # we don't want to load up the most recent schedule, since that's not how schedules... work.
+        }
+    }
+
 
     #/ Get $draft_id based on if an id is passed, and role:
     return $draft_id;
@@ -1130,9 +1088,7 @@ sub find_draft_id {
 sub delete_draft {
     my $self = shift;
     my $id   = shift;
-    if ( $self->{md_obj}->enabled ) {
-        $self->{md_obj}->remove($id);
-    }
+    $self->{md_obj}->remove($id);
 }
 
 sub ses_params {
@@ -1209,8 +1165,6 @@ sub save_as_draft {
     if ( !exists( $args->{-json} ) ) {
         $args->{-json} = 0;
     }
-
-    return unless $self->{md_obj}->enabled;
 
     my $draft_id   = $q->param('draft_id')   || undef;
     my $draft_role = $q->param('draft_role') || 'draft';
@@ -1621,9 +1575,6 @@ sub q_obj_from_draft {
         }
     }
 
-    return $args->{-str}
-      unless ( $self->{md_obj}->enabled );
-
     if (
         $self->{md_obj}->has_draft(
             {
@@ -1940,9 +1891,6 @@ sub redirect_tag_check {
             -ls   => $ls,
         }
     );
-    if ( !$ct->enabled ) {
-        return ( 1, undef );
-    }
     eval { $ct->check_redirect_urls( { -str => $str, -raise_error => 1, } ); };
     if ($@) {
         return ( 0, $@ );

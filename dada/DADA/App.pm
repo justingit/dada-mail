@@ -605,21 +605,19 @@ sub admin_menu_drafts_notification {
             require DADA::MailingList::MessageDrafts;
 
             my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
-            if ( $d->enabled ) {
-                my $num_drafts     = $d->count( { -role => 'draft' } );
-                my $num_stationary = $d->count( { -role => 'stationary' } );
-                my $num_shedules   = $d->count( { -role => 'schedule' } );
+            my $num_drafts     = $d->count( { -role => 'draft' } );
+            my $num_stationary = $d->count( { -role => 'stationary' } );
+            my $num_shedules   = $d->count( { -role => 'schedule' } );
 
-                if (   $num_drafts > 0
-                    || $num_stationary > 0
-                    || $num_shedules > 0 )
-                {
-                    return
-                        '('
-                      . commify($num_drafts) . ','
-                      . commify($num_stationary) . ','
-                      . commify($num_shedules) . ')';
-                }
+            if (   $num_drafts > 0
+                || $num_stationary > 0
+                || $num_shedules > 0 )
+            {
+                return
+                    '('
+                  . commify($num_drafts) . ','
+                  . commify($num_stationary) . ','
+                  . commify($num_shedules) . ')';
             }
         }
     }
@@ -967,11 +965,9 @@ sub drafts {
     my $si  = [];
     my $sci = [];
 
-    if ( $d->enabled ) {
-        $di  = $d->draft_index( { -role => 'draft' } );
-        $si  = $d->draft_index( { -role => 'stationary' } );
-        $sci = $d->draft_index( { -role => 'schedule' } );
-    }
+    $di  = $d->draft_index( { -role => 'draft' } );
+    $si  = $d->draft_index( { -role => 'stationary' } );
+    $sci = $d->draft_index( { -role => 'schedule' } );
 
     #use Data::Dumper;
     #return '<pre>' . Data::Dumper::Dumper($sci);
@@ -987,7 +983,6 @@ sub drafts {
         }
     }
 
-    my $enabled = $d->enabled;
     my $scrn    = DADA::Template::Widgets::wrap_screen(
         {
             -screen         => 'drafts.tmpl',
@@ -1033,9 +1028,6 @@ sub delete_drafts {
     require DADA::MailingList::MessageDrafts;
     my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
 
-    die "not enabled! "
-      unless $d->enabled;
-
     foreach my $id (@draft_ids) {
         $d->remove($id);
     }
@@ -1059,7 +1051,6 @@ sub create_from_stationary {
 
     require DADA::MailingList::MessageDrafts;
     my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
-    die "not enabled! " unless $d->enabled;
     my $new_id = $d->create_from_stationary( { -id => $draft_id, -screen => $screen } );
 
     $self->header_type('redirect');
@@ -8568,7 +8559,6 @@ sub report_abuse {
                 # Log it for the Tracker
                 require DADA::Logging::Clickthrough;
                 my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
-                if ( $r->enabled ) {
                     $r->abuse_log(
                         {
                             -email => $email,
@@ -8577,7 +8567,7 @@ sub report_abuse {
                             # -details => unique_id to some sort of report table...
                         }
                     );
-                }
+            
 
                 $ct->remove_by_token($report_abuse_token);
 
@@ -9493,9 +9483,7 @@ sub archive {
             {
                 require DADA::Logging::Clickthrough;
                 my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
-                if ( $r->enabled ) {
-                    $r->view_archive_log( { -mid => $id, } );
-                }
+                   $r->view_archive_log( { -mid => $id, } );
                 return $c->cached( 'archive/' . $list . '/' . $id . '.scrn' );
             }
         }
@@ -9652,9 +9640,7 @@ sub archive {
 
         require DADA::Logging::Clickthrough;
         my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
-        if ( $r->enabled ) {
-            $r->view_archive_log( { -mid => $id, } );
-        }
+           $r->view_archive_log( { -mid => $id, } );
         if (  !$c->profile_on
             && $ls->param('archive_send_form') != 1
             && $ls->param('captcha_archive_send_form') != 1 )
@@ -10068,9 +10054,7 @@ sub send_archive {
 
         require DADA::Logging::Clickthrough;
         my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
-        if ( $r->enabled ) {
-            $r->forward_to_a_friend_log( { -mid => $entry, } );
-        }
+           $r->forward_to_a_friend_log( { -mid => $entry, } );
 
         $self->header_type('redirect');
         $self->header_props( -url => $DADA::Config::PROGRAM_URL
@@ -11425,38 +11409,32 @@ sub redirection {
     #	die Dumper([$q->param('key'), $q->param('email')] );
     require DADA::Logging::Clickthrough;
     my $r = DADA::Logging::Clickthrough->new( { -list => scalar $q->param('list') } );
-    if ( !$r->enabled ) {
-        $self->header_type('redirect');
-        $self->header_props( -url => $DADA::Config::PROGRAM_URL );
-    }
-    else {
-        if ( defined( $q->param('key') ) ) {
+    if ( defined( $q->param('key') ) ) {
 
-            my ( $mid, $url, $atts ) = $r->fetch( $q->param('key') );
+        my ( $mid, $url, $atts ) = $r->fetch( $q->param('key') );
 
-            if ( defined($mid) && defined($url) ) {
-                $r->r_log(
-                    {
-                        -mid   => $mid,
-                        -url   => $url,
-                        -atts  => $atts,
-                        -email => scalar $q->param('email'),
-                    }
-                );
-            }
-            if ($url) {
-                $self->header_type('redirect');
-                $self->header_props( -url => $url );
-            }
-            else {
-                $self->header_type('redirect');
-                $self->header_props( -url => $DADA::Config::PROGRAM_URL );
-            }
+        if ( defined($mid) && defined($url) ) {
+            $r->r_log(
+                {
+                    -mid   => $mid,
+                    -url   => $url,
+                    -atts  => $atts,
+                    -email => scalar $q->param('email'),
+                }
+            );
+        }
+        if ($url) {
+            $self->header_type('redirect');
+            $self->header_props( -url => $url );
         }
         else {
             $self->header_type('redirect');
             $self->header_props( -url => $DADA::Config::PROGRAM_URL );
         }
+    }
+    else {
+        $self->header_type('redirect');
+        $self->header_props( -url => $DADA::Config::PROGRAM_URL );
     }
 }
 
@@ -11474,16 +11452,14 @@ sub m_o_c {
     else {
         require DADA::Logging::Clickthrough;
         my $r = DADA::Logging::Clickthrough->new( { -list => scalar $q->param('list') } );
-        if ( $r->enabled ) {
-            if ( defined( $q->param('mid') ) ) {
+        if ( defined( $q->param('mid') ) ) {
 
-                $r->open_log(
-                    {
-                        -mid   => scalar $q->param('mid'),
-                        -email => scalar $q->param('email'),
-                    }
-                );
-            }
+            $r->open_log(
+                {
+                    -mid   => scalar $q->param('mid'),
+                    -email => scalar $q->param('email'),
+                }
+            );
         }
     }
     require MIME::Base64;

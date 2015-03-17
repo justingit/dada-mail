@@ -13,7 +13,9 @@ use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts; 
 
 BEGIN { 
+    
 	$type = $DADA::Config::SETTINGS_DB_TYPE;
+	
 	if($type eq 'SQL'){ 
 	 	if ($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql'){ 
 			$backend = 'MySQL';

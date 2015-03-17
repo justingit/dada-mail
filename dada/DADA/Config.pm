@@ -134,28 +134,13 @@ $SCHEDULED_JOBS_OPTIONS //= {
 
 
 
-# Here are the four variables that are talked about, above:
-$BACKEND_DB_TYPE //= 'Default';
-
-if ( $BACKEND_DB_TYPE eq 'Default' ) {
-    $SUBSCRIBER_DB_TYPE       //= 'PlainText';
-    $ARCHIVE_DB_TYPE          //= 'Db';
-    $SETTINGS_DB_TYPE         //= 'Db';
-    $SESSION_DB_TYPE          //= 'Db';
-    $BOUNCE_SCORECARD_DB_TYPE //= 'Db';
-    $CLICKTHROUGH_DB_TYPE     //= 'Db';
-}
-elsif ( $BACKEND_DB_TYPE eq 'SQL' ) {
-    $SUBSCRIBER_DB_TYPE       //= 'SQL';
-    $ARCHIVE_DB_TYPE          //= 'SQL';
-    $SETTINGS_DB_TYPE         //= 'SQL';
-    $SESSION_DB_TYPE          //= 'SQL';
-    $BOUNCE_SCORECARD_DB_TYPE //= 'SQL';
-    $CLICKTHROUGH_DB_TYPE     //= 'SQL';
-}
-
-
-
+$BACKEND_DB_TYPE          //= 'SQL';
+$SUBSCRIBER_DB_TYPE       //= 'SQL';
+$ARCHIVE_DB_TYPE          //= 'SQL';
+$SETTINGS_DB_TYPE         //= 'SQL';
+$SESSION_DB_TYPE          //= 'SQL';
+$BOUNCE_SCORECARD_DB_TYPE //= 'SQL';
+$CLICKTHROUGH_DB_TYPE     //= 'SQL';
 
 %SQL_PARAMS = (
 
@@ -2018,6 +2003,11 @@ sub _config_import {
         password_protect_directories_table => 'dada_password_protect_directories',
         confirmation_tokens_table          => 'dada_confirmation_tokens',
 		message_drafts_table               => 'dada_message_drafts', 
+		
+		dbtype => 'SQLite',
+		database => 'dadamail',
+        
+		
     );
     for ( keys %default_table_names ) {
         if ( !exists( $SQL_PARAMS{$_} ) ) {

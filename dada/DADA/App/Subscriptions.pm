@@ -1769,14 +1769,12 @@ sub complete_unsubscription {
 		
         require DADA::Logging::Clickthrough;
         my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
-        if ( $r->enabled ) {
-		    $r->unsubscribe_log(
+		   $r->unsubscribe_log(
                 {
                     -mid   => $mid,
                     -email => $email,
                 }
             );
-		}
 
 		
 		

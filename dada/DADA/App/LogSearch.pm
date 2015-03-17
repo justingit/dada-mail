@@ -7,13 +7,6 @@ use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts; 
 use DADA::MailingList::Settings;
 
-# Sorry - global!
-my $List_Names = {};
-foreach my $l( available_lists() ){
-	my $ls = DADA::MailingList::Settings->new({-list => $l}); 
-		$List_Names->{$l} = $ls->param('list_name');				
-}
-
 use Carp qw(croak carp);
 use Fcntl qw(	O_WRONLY	O_TRUNC		O_CREAT		);
 
@@ -66,7 +59,12 @@ sub AUTOLOAD {
 sub _init { 
 
 	my $self = shift; 
-		
+	
+    foreach my $l( available_lists() ){
+    	my $ls = DADA::MailingList::Settings->new({-list => $l}); 
+    		$self->{List_Names}->{$l} = $ls->param('list_name');				
+    }
+    
 }
 
 
@@ -332,7 +330,7 @@ sub log_line_report {
     return {
         date           => $date,
         list           => $list,
-		list_name      => $List_Names->{$list}, 
+		list_name      => $self->{List_Names}->{$list}, 
         ip             => $ip,
         email          => $email,
         type           => $sublist,
