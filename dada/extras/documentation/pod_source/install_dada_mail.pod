@@ -364,7 +364,7 @@ L<https://www.youtube.com/watch?v=x7PRauNDKA4>
 
 An alternative command line interface is available:
 
-L<http://dadamailproject.com/support/documentation/install_dada-cl.pod.html>
+L<http://dadamailproject.com/d/install_dada_mail_cl.pod.html>
 
 =cut
 

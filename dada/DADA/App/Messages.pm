@@ -1015,13 +1015,13 @@ sub send_not_allowed_to_post_msg {
 		$ls = $args->{-ls_obj};
 	}
 
-	my $attachment;
-	if(!exists($args->{-attachment})){ 
-		croak "I need an attachment in, -attachment!"; 
-	}
-	else { 
-		$attachment = $args->{-attachment}; 
-	}
+#        	my $attachment;
+#        	if(!exists($args->{-attachment})){ 
+#        		croak "I need an attachment in, -attachment!"; 
+#        	}
+#        	else { 
+#        		$attachment = $args->{-attachment}; 
+#        	}
 	
 
 	my $reply = MIME::Entity->build(Type 	=> "multipart/mixed", 
@@ -1036,10 +1036,10 @@ sub send_not_allowed_to_post_msg {
 				   Data     => $ls->param('not_allowed_to_post_msg'),
 				  ); 
 				
-	$reply->attach( Type        => 'message/rfc822', 
-					Disposition  => "attachment",
-					Data         => $attachment,
-					); 
+#	$reply->attach( Type        => 'message/rfc822', 
+#					Disposition  => "attachment",
+#					Data         => $attachment,
+#					); 
 
 
 	# This is weird. I sorta want to do this myself, but maybe I'll just let, 
@@ -1068,6 +1068,9 @@ sub send_not_allowed_to_post_msg {
 				{
 					'subscriber.email' => $args->{-email}
 				},
+			-vars => { 
+			   original_subject => $args->{-original_subject},  
+			}, 
 		},
 
 		-test         => $args->{-test}, 

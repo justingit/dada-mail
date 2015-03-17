@@ -15,10 +15,17 @@ Content-Type: text/plain
 Content-Disposition: inline
 Content-Transfer-Encoding: binary
 
+A message was set to, 
 
-The attached message was sent to your Mailing List, 
+<!-- tmpl_var list_settings.list_name --> (<!-- tmpl_var list_settings.discussion_pop_email -->)
 
-	<!-- tmpl_var list_settings.list_name -->
+with the subject of, 
+
+    <!-- tmpl_var original_subject --> 
+    
+from, 
+
+<!-- tmpl_var subscriber.email -->
 	
 but was not sent from an address that has permission to do so. 
 

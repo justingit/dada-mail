@@ -21,6 +21,10 @@ You recently sent a message to,
 
 	<!-- tmpl_var list_settings.list_name --> (<!-- tmpl_var list_settings.discussion_pop_email -->)
 	
+with the subject of, 
+
+    <!-- tmpl_var original_subject --> 
+    
 with the email address: 
 
     <!-- tmpl_var subscriber.email -->
@@ -41,7 +45,6 @@ You may email the List Owner at:
 	mailto:<!-- tmpl_var list_settings.list_owner_email -->
 
 	-- <!-- tmpl_var PROGRAM_NAME -->
-
 
 ------------=_1390863785-5879-0
 Content-Type: text/html

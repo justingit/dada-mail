@@ -2547,7 +2547,9 @@ sub send_msg_not_from_subscriber {
 
     $msg = safely_encode($msg);
     my $entity = $parser->parse_data($msg);
-
+    my $original_subject = $entity->head->get( 'Subject', 0 );
+   
+   
     my $rough_from = $entity->head->get( 'From', 0 );
     my $from_address;
     if ( defined($rough_from) ) {
@@ -2570,7 +2572,8 @@ sub send_msg_not_from_subscriber {
                 {
                     -list       => $ls->param('list'),
                     -email      => $from_address,
-                    -attachment => safely_encode($att),
+                    #-attachment => safely_encode($att),
+                    -original_subject => $original_subject, 
 
                 },
             );
@@ -2653,6 +2656,8 @@ sub send_invalid_msgs_to_owner {
 
     if ( $from_address && $from_address ne '' ) {
 
+        my $original_subject = $entity->head->get( 'Subject', 0 );
+        
         my $reply = MIME::Entity->build(
             Type    => "multipart/mixed",
             From    => $ls->param('list_owner_email'),
@@ -2666,11 +2671,11 @@ sub send_invalid_msgs_to_owner {
             Data     => $ls->param('invalid_msgs_to_owner_msg'),
         );
 
-        $reply->attach(
-            Type        => 'message/rfc822',
-            Disposition => "inline",
-            Data        => safely_decode( $entity->as_string ),
-        );
+#        $reply->attach(
+#            Type        => 'message/rfc822',
+#            Disposition => "inline",
+#            Data        => safely_decode( $entity->as_string ),
+#        );
 
         my %msg_headers = DADA::App::Messages::_mime_headers_from_string( $reply->stringify_header );
 
@@ -2688,7 +2693,12 @@ sub send_invalid_msgs_to_owner {
                     -list_settings_vars       => $ls->params,
                     -list_settings_vars_param => { -dot_it => 1, },
 
-                    -subscriber_vars => { 'subscriber.email' => $from_address, }
+                    -subscriber_vars => { 
+                        'subscriber.email' => $from_address, 
+                    },
+                    -vars => { 
+                        original_subject => $original_subject, 
+                    },
                 },
             }
         );
