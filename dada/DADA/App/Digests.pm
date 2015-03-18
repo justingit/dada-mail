@@ -69,9 +69,9 @@ sub _init {
     $self->{ls_obj} = DADA::MailingList::Settings->new( { -list => $self->{list} } );
 
     if ( exists( $args->{-ctime} ) ) {
-        warn 'passed -ctime: ' . $args->{-ctime};
-        $self->{ctime} = $args->{-ctime}
-          if $t;
+        warn 'passed -ctime: ' . $args->{-ctime}
+            if $t;
+        $self->{ctime} = $args->{-ctime};
     }
     else {
         warn 'no passed -ctime'
