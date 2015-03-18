@@ -125,33 +125,41 @@ sub archive_ids_for_digest {
     my $ids  = [];
 
     my $digest_last_archive_id_sent = $self->{ls_obj}->param('digest_last_archive_id_sent') || undef;
-
-
+    
     # no archives available? no digest.
     if ( scalar( @{$keys} ) == 0 ) {
         return [];
     }
-    
-    if(
-        ($self->archive_time_2_ctime($digest_last_archive_id_sent) + int($self->{ls_obj}->param('digest_schedule'))) < $self->{ctime}){ 
-            # not the time to send out a digest!
-            return [];            
-    }
-
-    for (@$keys) {
-        if (   $_ > $digest_last_archive_id_sent
-            && $_ < $self->ctime_2_archive_time( $self->{ctime} ) )
-        {
-            push( @$ids, $_ );
+    else { 
+        if(
+            ($self->archive_time_2_ctime($digest_last_archive_id_sent) + int($self->{ls_obj}->param('digest_schedule'))) > $self->{ctime}){ 
+                # not the time to send out a digest!
+                return [];            
         }
-    }
-    if ($t) {
-        warn 'ids to make digest: ';
-        for (@$ids) {
-            warn "$_\n";
+        for (@$keys) {            
+            if (   
+                # after our last one was sent out (redundant?)
+                $self->archive_time_2_ctime($_) > $self->archive_time_2_ctime($digest_last_archive_id_sent) 
+                
+                &&
+                # Is within the digest_schedule
+                $self->archive_time_2_ctime($_) >  $self->{ctime}  - (int($self->{ls_obj}->param('digest_schedule')))
+                
+                # BUT less than right now 
+                && $self->archive_time_2_ctime($_) < $self->{ctime} 
+            ) 
+            {
+                push( @$ids, $_ );
+            }
         }
+        if ($t) {
+            warn 'ids to make digest: ';
+            for (@$ids) {
+                warn "$_\n";
+            }
+        }
+        return $ids;
     }
-    return $ids;
 }
 
 sub send_digest {
