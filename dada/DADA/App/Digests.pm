@@ -69,9 +69,9 @@ sub _init {
     $self->{ls_obj} = DADA::MailingList::Settings->new( { -list => $self->{list} } );
 
     if ( exists( $args->{-ctime} ) ) {
-        warn 'passed -ctime: ' . $args->{-ctime};
-        $self->{ctime} = $args->{-ctime}
-          if $t;
+        warn 'passed -ctime: ' . $args->{-ctime}
+            if $t;
+        $self->{ctime} = $args->{-ctime};
     }
     else {
         warn 'no passed -ctime'
@@ -129,8 +129,12 @@ sub archive_ids_for_digest {
     my $ids  = [];
 
     my $digest_last_archive_id_sent = $self->{ls_obj}->param('digest_last_archive_id_sent') || undef;
+        
+    if($t) { 
+        warn 'Now: ' . scalar localtime($self->{ctime}); 
+        warn 'Last Archive Sent: ' . scalar localtime($self->archive_time_2_ctime($digest_last_archive_id_sent));
+    }
     
-    #warn 'archive_ids_for_digest: $digest_last_archive_id_sent ' . $digest_last_archive_id_sent; 
     #warn 'scalar localtime($self->archive_time_2_ctime($digest_last_archive_id_sent))' .  scalar localtime($self->archive_time_2_ctime($digest_last_archive_id_sent));
     # no archives available? no digest.
 

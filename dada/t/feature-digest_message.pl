@@ -283,7 +283,7 @@ undef($digest); # this is to reload the D::M::Settings;
 my $digest = digest_obj(); 
 
 # Haven't sent a digest, but most recent digest is out of scope! (too far in the future!); 
-ok($digest->should_send_digest == 1); 
+ok($digest->should_send_digest == 1, "send out that digest, I say!"); 
 
 my $ids = $digest->archive_ids_for_digest; 
 ok(scalar(@$ids) == 3, "three archives for digest!");  
