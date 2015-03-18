@@ -1,129 +1,121 @@
 package DADA::MailingList::Subscribers;
 
 use lib qw(
-	../../
-	../../DADA/perllib
+  ../../
+  ../../DADA/perllib
 );
 
 use Try::Tiny;
 
 use Carp qw(carp croak);
 my $type;
-my $backend;  
-use DADA::Config qw(!:DEFAULT); 	
-BEGIN { 
-	$type = $DADA::Config::SUBSCRIBER_DB_TYPE;
-	if($type eq 'SQL'){ 
-	 	if ($DADA::Config::SQL_PARAMS{dbtype} eq 'mysql'){ 
-			$backend = 'MySQL';
-		}
-		elsif ($DADA::Config::SQL_PARAMS{dbtype} eq 'Pg'){ 		
-				$backend = 'PostgreSQL';
-		}
-		elsif ($DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite'){ 
-			$backend = 'SQLite';
-		}
-	}
-	elsif($type eq 'PlainText'){ 
-		$backend = 'PlainText'; 
-	}
-	else { 
-		die "Unknown \$SUBSCRIBER_DB_TYPE: '$type' Supported types: 'PlainText', 'SQL'"; 
-	}
+my $backend;
+use DADA::Config qw(!:DEFAULT);
+
+BEGIN {
+    $type = $DADA::Config::SUBSCRIBER_DB_TYPE;
+    if ( $type eq 'SQL' ) {
+        if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
+            $backend = 'MySQL';
+        }
+        elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'Pg' ) {
+            $backend = 'PostgreSQL';
+        }
+        elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
+            $backend = 'SQLite';
+        }
+    }
+    elsif ( $type eq 'PlainText' ) {
+        $backend = 'PlainText';
+    }
+    else {
+        die "Unknown \$SUBSCRIBER_DB_TYPE: '$type' Supported types: 'PlainText', 'SQL'";
+    }
 }
 
-use strict; 
+use strict;
 
 use base "DADA::MailingList::Subscribers::$backend";
 use DADA::App::Guts;
-use DADA::MailingList::Subscriber; 
+use DADA::MailingList::Subscriber;
 use DADA::MailingList::Subscriber::Validate;
-use DADA::Profile::Fields; 
+use DADA::Profile::Fields;
 use DADA::Logging::Usage;
 my $log = new DADA::Logging::Usage;
 
-
 sub new {
 
-	my $class  = shift;
-	my ($args) = @_; 
+    my $class = shift;
+    my ($args) = @_;
 
-	my $self = {};			
-	bless $self, $class;
-	$self->_init($args); 
-	return $self;
+    my $self = {};
+    bless $self, $class;
+    $self->_init($args);
+    return $self;
 
 }
 
+sub _init {
 
+    my $self = shift;
 
+    my ($args) = @_;
 
+    if ( !exists( $args->{-ls_obj} ) ) {
+        require DADA::MailingList::Settings;
+        $self->{ls} = DADA::MailingList::Settings->new( { -list => $args->{-list} } );
+    }
+    else {
+        $self->{ls} = $args->{-ls_obj};
+    }
 
-sub _init  { 
+    if ( exists( $args->{-dpfm_obj} ) ) {
+        $self->{-dpfm_obj} = $args->{-dpfm_obj};
+    }
+    else {
+        #$self->{-dpfm_obj} = $args->{-dpfm_obj} = undef;
+    }
 
-    my $self = shift; 
-
-	my ($args) = @_; 
-
-	if(!exists($args->{-ls_obj})){ 
-		require DADA::MailingList::Settings;		 
-		$self->{ls} = DADA::MailingList::Settings->new({-list => $args->{-list}}); 
-	}
-	else { 
-		$self->{ls} = $args->{-ls_obj};
-	}
-	
-	if(exists($args->{-dpfm_obj})){ 
-		$self->{-dpfm_obj} = $args->{-dpfm_obj};
-	}
-	else {
-		#$self->{-dpfm_obj} = $args->{-dpfm_obj} = undef; 
-	}
-	
-    $self->{'log'}      = DADA::Logging::Usage->new;
-    $self->{list}       = $args->{-list};
+    $self->{'log'} = DADA::Logging::Usage->new;
+    $self->{list} = $args->{-list};
 
     $self->{sql_params} = {%DADA::Config::SQL_PARAMS};
-    	
-	if($DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/){ 
-	
-		require DADA::App::DBIHandle; 
-		my $dbi_obj = DADA::App::DBIHandle->new; 
-		$self->{dbh} = $dbi_obj->dbh_obj; 
-	}
-	
-	if(exists($args->{-dpfm_obj})){ 
-		$self->{fields}   = DADA::Profile::Fields->new(
-			{
-				-dpfm_obj => $args->{-dpfm_obj},
-			}
-		); 		
-		
-	}
-	else { 
-		$self->{fields}   = DADA::Profile::Fields->new; 		
-	}
 
-	$self->{validate} = DADA::MailingList::Subscriber::Validate->new({-list => $self->{list}, -lh_obj => $self}); 		
+    if ( $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/ ) {
+
+        require DADA::App::DBIHandle;
+        my $dbi_obj = DADA::App::DBIHandle->new;
+        $self->{dbh} = $dbi_obj->dbh_obj;
+    }
+
+    if ( exists( $args->{-dpfm_obj} ) ) {
+        $self->{fields} = DADA::Profile::Fields->new(
+            {
+                -dpfm_obj => $args->{-dpfm_obj},
+            }
+        );
+
+    }
+    else {
+        $self->{fields} = DADA::Profile::Fields->new;
+    }
+
+    $self->{validate} = DADA::MailingList::Subscriber::Validate->new( { -list => $self->{list}, -lh_obj => $self } );
 }
-
-
 
 sub add_subscriber {
 
     my $self = shift;
-	my ($args) = @_;
-	$args->{-list} = $self->{list};
-	if(exists($self->{-dpfm_obj})){ 
-		$args->{-dpfm_obj} = $self->{-dpfm_obj}; 
-	}
-    return DADA::MailingList::Subscriber->add( $args );
+    my ($args) = @_;
+    $args->{-list} = $self->{list};
+    if ( exists( $self->{-dpfm_obj} ) ) {
+        $args->{-dpfm_obj} = $self->{-dpfm_obj};
+    }
+    return DADA::MailingList::Subscriber->add($args);
 }
 
-
-
-sub quota_limit { 
-    my $self = shift; 
+sub quota_limit {
+    my $self        = shift;
     my $quota_limit = undef;
     if ( $type eq 'list' ) {
         if ( $self->{ls}->param('use_subscription_quota') == 1 ) {
@@ -135,28 +127,28 @@ sub quota_limit {
             $quota_limit = $DADA::Config::SUBSCRIPTION_QUOTA;
         }
     }
-    return $quota_limit; 
-    
+    return $quota_limit;
+
 }
 
-sub add_subscribers { 
-    
-    my $self   = shift; 
-    my ($args) = @_; 
-    
-    my $addresses           = $args->{-addresses};
-    my $added_addresses     = []; 
-    my $type                = $args->{-type}; 
-    if(!exists($args->{-fields_options_mode})){ 
+sub add_subscribers {
+
+    my $self = shift;
+    my ($args) = @_;
+
+    my $addresses       = $args->{-addresses};
+    my $added_addresses = [];
+    my $type            = $args->{-type};
+    if ( !exists( $args->{-fields_options_mode} ) ) {
         $args->{-fields_options_mode} = 'preserve_if_defined';
     }
-    
+
     my $num_subscribers     = $self->num_subscribers;
-    my $new_total           = $num_subscribers; 
-    my $quota_limit         = $self->quota_limit; 
-    my $new_email_count     = 0; 
-    my $skipped_email_count = 0; 
-    
+    my $new_total           = $num_subscribers;
+    my $quota_limit         = $self->quota_limit;
+    my $new_email_count     = 0;
+    my $skipped_email_count = 0;
+
     # Each Address is a CSV line...
     for my $info (@$addresses) {
 
@@ -169,79 +161,81 @@ sub add_subscribers {
             $skipped_email_count++;
         }
         else {
-            my $pf_om   = 'preserve_if_defined'; 
-            my $pass_om = 'preserve_if_defined'; 
+            my $pf_om   = 'preserve_if_defined';
+            my $pass_om = 'preserve_if_defined';
 
-            if($args->{-fields_options_mode} eq 'writeover_ex_password'){ 
-                $pf_om   = 'writeover'; 
-                $pass_om = 'preserve_if_defined'; 
+            if ( $args->{-fields_options_mode} eq 'writeover_ex_password' ) {
+                $pf_om   = 'writeover';
+                $pass_om = 'preserve_if_defined';
             }
-            elsif($args->{-fields_options_mode} eq 'writeover_inc_password'){ 
-                $pf_om   = 'writeover'; 
-                $pass_om = 'writeover'; 
+            elsif ( $args->{-fields_options_mode} eq 'writeover_inc_password' ) {
+                $pf_om   = 'writeover';
+                $pass_om = 'writeover';
             }
-            
+
             $dmls = $self->add_subscriber(
                 {
-                    -email             => $info->{email},
-                    -fields            => $info->{fields},
-                    -profile           => { 
-                        -password => $info->{profile}->{password}, 
-                        -mode     => $args->{-fields_options_mode}, 
+                    -email   => $info->{email},
+                    -fields  => $info->{fields},
+                    -profile => {
+                        -password => $info->{profile}->{password},
+                        -mode     => $args->{-fields_options_mode},
                     },
-                    -type              => $type,
-                    -fields_options    => { -mode => $args->{-fields_options_mode}, },
-                    -dupe_check        => {
+                    -type           => $type,
+                    -fields_options => { -mode => $args->{-fields_options_mode}, },
+                    -dupe_check     => {
                         -enable  => 1,
                         -on_dupe => 'ignore_add',
                     },
                 }
-            );                         
+            );
             $new_total++;
             if ( defined($dmls) ) {    # undef means it wasn't added.
                 $new_email_count++;
-                push(@$added_addresses, $info); 
+                push( @$added_addresses, $info );
             }
             else {
                 $skipped_email_count++;
             }
         }
     }
-    
-    undef($addresses); 
-    
+
+    undef($addresses);
+
     if ( $type eq 'list' ) {
         if ( $self->{ls}->param('send_subscribed_by_list_owner_message') == 1 ) {
             require DADA::App::MassSend;
-            try { 
-                # DEV: 
-                # This needs to send the Profile Password, if it's known. 
+            try {
+                # DEV:
+                # This needs to send the Profile Password, if it's known.
                 #
-                #warn '$self->{list} ' . $self->{list}; 
+                #warn '$self->{list} ' . $self->{list};
                 require DADA::App::MassSend;
-                my $dam = DADA::App::MassSend->new({-list => $self->{list}}); 
-                   $dam->just_subscribed_mass_mailing(
+                my $dam = DADA::App::MassSend->new( { -list => $self->{list} } );
+                $dam->just_subscribed_mass_mailing(
                     {
                         -addresses => $added_addresses,
                     }
                 );
-            } catch { 
-                warn 'Problems w/send_subscribed_by_list_owner_message:' . $_; 
+            }
+            catch {
+                warn 'Problems w/send_subscribed_by_list_owner_message:' . $_;
             };
 
         }
         if ( $self->{ls}->param('send_last_archived_msg_mass_mailing') == 1 ) {
             try {
                 require DADA::App::MassSend;
-                my $dam = DADA::App::MassSend->new({-list => $self->{list}}); 
-                   $dam->send_last_archived_msg_mass_mailing(
+                my $dam = DADA::App::MassSend->new( { -list => $self->{list} } );
+                $dam->send_last_archived_msg_mass_mailing(
                     {
                         -addresses => $added_addresses,
                     }
                 );
-            } catch {
-                warn 'Problems w/send_last_archived_msg_mass_mailing:' . $_; 
-            };        
+            }
+            catch {
+                warn 'Problems w/send_last_archived_msg_mass_mailing:' . $_;
+            };
         }
     }
 
@@ -250,7 +244,7 @@ sub add_subscribers {
     {
         eval {
             require DADA::Profile::Htpasswd;
-            my $htp = DADA::Profile::Htpasswd->new( { -list =>$self->{list} } );
+            my $htp = DADA::Profile::Htpasswd->new( { -list => $self->{list} } );
             for my $id ( @{ $htp->get_all_ids } ) {
                 $htp->setup_directory( { -id => $id } );
             }
@@ -259,436 +253,553 @@ sub add_subscribers {
             warn "Problem updated Password Protected Directories: $@";
         }
     }
-    
-    return ($new_email_count, $skipped_email_count); 
-    
+
+    return ( $new_email_count, $skipped_email_count );
+
 }
 
-
-
-
-
 sub get_subscriber {
-    my $self   = shift;
+    my $self = shift;
     my ($args) = @_;
-	$args->{-list} = $self->{list};
-    my $dmls =
-      DADA::MailingList::Subscriber->new($args);
+    $args->{-list} = $self->{list};
+    my $dmls = DADA::MailingList::Subscriber->new($args);
     return $dmls->get($args);
 
 }
 
-
-
-
 sub move_subscriber {
     my $self = shift;
     my ($args) = @_;
-	$args->{-list} = $self->{list};
-	$args->{-type} = $args->{-from};
-    my $dmls =
-      DADA::MailingList::Subscriber->new( $args );
+    $args->{-list} = $self->{list};
+    $args->{-type} = $args->{-from};
+    my $dmls = DADA::MailingList::Subscriber->new($args);
 
     return $dmls->move($args);
-	
-}
-sub edit_subscriber { 
-	my $self = shift;
-    my ($args) = @_;
-	$args->{-list} = $self->{list};
-    my $dmls =
-      DADA::MailingList::Subscriber->new( $args );
-   return $dmls->edit($args);
-   
+
 }
 
-
-
-
-sub copy_subscriber { 
-	my $self = shift;
+sub edit_subscriber {
+    my $self = shift;
     my ($args) = @_;
-	$args->{-list} = $self->{list};
-	$args->{-type} = $args->{-from};
-	
-    my $dmls =
-      DADA::MailingList::Subscriber->new( $args );
+    $args->{-list} = $self->{list};
+    my $dmls = DADA::MailingList::Subscriber->new($args);
+    return $dmls->edit($args);
+
+}
+
+sub copy_subscriber {
+    my $self = shift;
+    my ($args) = @_;
+    $args->{-list} = $self->{list};
+    $args->{-type} = $args->{-from};
+
+    my $dmls = DADA::MailingList::Subscriber->new($args);
     return $dmls->copy($args);
 }
 
-sub member_of { 
-	my $self = shift; 
-	my ($args) = @_;
-	$args->{-list} = $self->{list};
-	
- my $dmls =
-      DADA::MailingList::Subscriber->new( $args );
-    return $dmls->member_of($args);	
+sub member_of {
+    my $self = shift;
+    my ($args) = @_;
+    $args->{-list} = $self->{list};
+
+    my $dmls = DADA::MailingList::Subscriber->new($args);
+    return $dmls->member_of($args);
 }
 
-sub also_subscribed_to { 
-	
-	my $self = shift; 
-	my ($args) = @_; 
-	
-	my @lists = (); 
-	if(! exists($args->{-types})){ 
-		$args->{-types} = [qw(list)];
-	}
-	
-	
-	LIST: foreach my $list(available_lists()){ 
+sub also_subscribed_to {
 
-		next
-			if $list eq $self->{list};	
-
-		my $temp_lh = DADA::MailingList::Subscribers->new({-list => $list});
-				
-		for my $type(@{$args->{-types}}){ 
-			if($temp_lh->check_for_double_email(
-		        -Email => $args->{ -email },
-		        -Type  => $type
-		    ) == 1){
-				push(@lists, $list); 
-				undef $temp_lh;
-				next LIST; 
-			}
-		}
-		undef $temp_lh;
-	}
-	
-	return @lists; 
-}
-
-
-
-sub admin_remove_subscribers { 
-	
-	my $self = shift; 
-	my ($args) = @_; 
-	
-	my $addresses = $args->{-addresses}; 
-	if(! exists($args->{-type})){ 
-		croak "you MUST pass the, '-type' parameter!"; 
-	}
-	my $type      = $args->{-type};
-
-	my $d_count = 0; 
-	for my $address(@$addresses){ 
-		my $c = $self->remove_subscriber(
-			{ 
-				-email             => $address, 
-				-type              => $type, 
-				-validation_check  => 0, 
-			}
-		); 
-		$d_count = $d_count + $c; 
-	}
-
-	my $bl_count = 0; 
-	if($type eq 'list' || $type eq 'bounced_list'){
-				
-	    if($self->{ls}->param('black_list')               == 1 &&
-	       $self->{ls}->param('add_unsubs_to_black_list') == 1
-	       ){
-			
-			for(@$addresses){
-				my $a = $self->add_subscriber(
-					{
-						-email => $_,
-						-type  => 'black_list',
-						-dupe_check    => {
-											-enable  => 1,
-											-on_dupe => 'ignore_add',
-	                					},
-					}
-				);
-				if(defined($a)){ 
-					$bl_count++;
-				}
-			}
-	    }
-	}
-
-	if($type eq 'list') { 
-		if($self->{ls}->param('send_unsubscribed_by_list_owner_message') == 1){
-			require DADA::App::MassSend; 
-			try { 
-				my $dam = DADA::App::MassSend->new({-list => $self->{list}});
-				   $dam->just_unsubscribed_mass_mailing(
-					{ 
-						-list      => $self->{list}, 
-						-addresses => $addresses, 
-					}	
-				); 
-			} catch { 
-                warn 'Problems w/send_unsubscribed_by_list_owner_message:' . $_; 
-			};
-		}
-	}
-	
-	
-	return($d_count, $bl_count); 
-		
-}
-
-
-
-sub admin_update_address { 
-
-	my $self = shift; 
-	my ($args) = @_; 
-	
-	my $addresses = $args->{-addresses}; 
-	if(! exists($args->{-type})){ 
-		croak "you MUST pass the, '-type' parameter!"; 
-	}
-	my $type          = $args->{-type};
-	my $email         = $args->{-email}; 
-	my $updated_email = $args->{-updated_email}; 
-
-	my $og_prof = undef; 
-	
-	if($self->can_have_subscriber_fields) { 
-		require DADA::Profile; 
-		$og_prof = DADA::Profile->new({-email => $email}); 	
-	}
-		
-	# Switch the addresses around
-
-	require DADA::Logging::Usage;
-    my $log = new DADA::Logging::Usage;
-
-	$self->remove_subscriber(
-		{
-			-email  => cased($email),
-			-type   => $type, 
-			-log_it => 0, 
-		}
-	);
-	$self->add_subscriber(
-		{
-			-email  => cased($updated_email), 
-			-type   => $type, 
-			-log_it => 0,
-		}
-	);
-	$log->mj_log(
-		 $self->{list}, 
-		'Updated Subscription for ' .  $self->{list} . '.' . $type,  
-		$email . ':' . $updated_email
-	);
-	
-	
-	# PROFILES
-	
-	if(! $self->can_have_subscriber_fields) { 
-	
-	}
-	else { 
-		
-		# JUST one list? 
-		# it gets a little crazy... 
-	
-		# Basically what we want to do is this: 
-		# If the OLD address is subscribed to > 1 list, don't mess with the current
-		# profile information, 
-		# If the NEW address already has profile information, do not overwrite it
-		# 
-
-		# 
-		my $og_subscriptions = $og_prof->subscribed_to({-type => 'list'}); 
-
-		if(! $og_prof->exists){ 
-			# Make one (old email) 
-			$og_prof->insert({
-			    -password  => $og_prof->_rand_str(8),
-			    -activated => 1,
-			}); 
-		}
-
-		# Is there another mailing list that has the old address as a subscriber? 
-		# Remember, we already changed over ONE of the subscriptions. 
-
-		if(scalar(@$og_subscriptions) >= 1){ 
-	
-			my $updated_prof = DADA::Profile->new({-email => $updated_email});
-			# This already around? 
-			if($updated_prof->exists){ 
-		
-				# Got any information? 
-				if($updated_prof->{fields}->are_empty){ 
-			
-					# No info in there yet? 
-					$updated_prof->{fields}->insert({
-						-fields => $og_prof->{fields}->get, 
-						-mode   => 'writeover', 
-					}); 		
-				}
-			}
-			else {
-		
-				# So there's not a profile, yet? 
-				# COPY (don't move) the old profile info, 
-				# to the new profile
-				# (inludeds fields) 
-				my $new_prof = $og_prof->copy({ 
-					-from => $email, 
-					-to   => $updated_email, 
-				}); 
-			}
-		}
-		else { 
-	
-			# So, no other mailing list has a subscription for the new email address
-			# 
-			my $updated_prof = DADA::Profile->new({-email => $updated_email});
-			# But does this profile already exists for the updated address? 
-			
-			if($updated_prof->exists){ 
-		
-				 # Well, nothing, since it already exists.
-			}
-			else { 
-		
-				# updated our old email profile, to the new email 
-				# Only ONE subscription, w/Profile
-				# First save the updated email
-				
-				$og_prof->update({ 
-					-activated      => 1, 
-					-update_email	=> $updated_email, 
-				}); 
-				# Then this method changes the updated email to the email..
-				# And changes the profiles fields, as well... 
-				$og_prof->update_email;		
-			}
-		}
-		# so, the old prof have any subscriptions? 
-		my $old_prof = DADA::Profile->new({-email => $email}); 
-		if($old_prof->exists){ 
-			# Again, this will only touch, "list" sublist...
-			if(scalar(@{$old_prof->subscribed_to}) == 0) { 
-				# Then we can remove it, 
-				$old_prof->remove;
-			}
-		}
-	}
-	
-	return 1; 
-}
-
-
-
-
-
-sub remove_subscriber { 
-	my $self = shift;
+    my $self = shift;
     my ($args) = @_;
 
-	if(exists($self->{-dpfm_obj})){ 
-		$args->{-dpfm_obj} = $self->{-dpfm_obj}; 
-	}
+    my @lists = ();
+    if ( !exists( $args->{-types} ) ) {
+        $args->{-types} = [qw(list)];
+    }
+
+  LIST: foreach my $list ( available_lists() ) {
+
+        next
+          if $list eq $self->{list};
+
+        my $temp_lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+
+        for my $type ( @{ $args->{-types} } ) {
+            if (
+                $temp_lh->check_for_double_email(
+                    -Email => $args->{-email},
+                    -Type  => $type
+                ) == 1
+              )
+            {
+                push( @lists, $list );
+                undef $temp_lh;
+                next LIST;
+            }
+        }
+        undef $temp_lh;
+    }
+
+    return @lists;
+}
+
+sub admin_remove_subscribers {
+
+    my $self = shift;
+    my ($args) = @_;
+
+    my $addresses = $args->{-addresses};
+    if ( !exists( $args->{-type} ) ) {
+        croak "you MUST pass the, '-type' parameter!";
+    }
+    my $type = $args->{-type};
+
+    my $d_count = 0;
+    for my $address (@$addresses) {
+        my $c = $self->remove_subscriber(
+            {
+                -email            => $address,
+                -type             => $type,
+                -validation_check => 0,
+            }
+        );
+        $d_count = $d_count + $c;
+    }
+
+    my $bl_count = 0;
+    if ( $type eq 'list' || $type eq 'bounced_list' ) {
+
+        if (   $self->{ls}->param('black_list') == 1
+            && $self->{ls}->param('add_unsubs_to_black_list') == 1 )
+        {
+
+            for (@$addresses) {
+                my $a = $self->add_subscriber(
+                    {
+                        -email      => $_,
+                        -type       => 'black_list',
+                        -dupe_check => {
+                            -enable  => 1,
+                            -on_dupe => 'ignore_add',
+                        },
+                    }
+                );
+                if ( defined($a) ) {
+                    $bl_count++;
+                }
+            }
+        }
+    }
+
+    if ( $type eq 'list' ) {
+        if ( $self->{ls}->param('send_unsubscribed_by_list_owner_message') == 1 ) {
+            require DADA::App::MassSend;
+            try {
+                my $dam = DADA::App::MassSend->new( { -list => $self->{list} } );
+                $dam->just_unsubscribed_mass_mailing(
+                    {
+                        -list      => $self->{list},
+                        -addresses => $addresses,
+                    }
+                );
+            }
+            catch {
+                warn 'Problems w/send_unsubscribed_by_list_owner_message:' . $_;
+            };
+        }
+        
+=cut        
+        # David
+        
+        require DADA::MailingList::Settings;
+        my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
+
+        if ( $ls->param('send_admin_unsubscription_notice') == 1 ) {
+
+            require DADA::App::FormatMessages;
+            my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
+            $fm->use_email_templates(0);
+
+            my $tmpl_addresses = [];
+            require DADA::Profile;
+
+            # Ugly!
+            foreach my $un (@$unsubscribed) {
+                require DADA::Profile::Fields;
+                my $dpf = DADA::Profile::Fields->new( { -email => $un } );
+                my $profile_vals = {};
+                if ( $dpf->exists( { -email => $un } ) ) {
+                    $profile_vals = $dpf->get(
+                        {
+                            -dotted => 1,
+                            -dotted_with =>
+                              'profile',    # -dotted_with does not work actually (just an idea), use subscriber.
+                        }
+                    );
+                }
+                my $subscriber_loop = [];
+                foreach ( sort keys %{$profile_vals} ) {
+                    my $nk = $_;
+                    $nk =~ s/subscriber\.//;
+                    push( @$subscriber_loop, { name => $nk, value => $profile_vals->{$_} } );
+                }
+                push(
+                    @$tmpl_addresses,
+                    {
+                        subscriber => $subscriber_loop,
+                        %$profile_vals,
+                        email => $_,
+                    }
+                );
+            }
+            # /ugly
+
+            my $msg = $ls->param('unsubscription_notice_message');
+
+            require DADA::Template::Widgets;
+            $msg = DADA::Template::Widgets::screen(
+                {
+                    -data => \$msg,
+                    -expr => 1,
+                    -vars => {
+                        addresses => $tmpl_addresses,
+                    },
+                    -list_settings_vars_param => {
+                        -list => $self->{list},
+                    },
+
+                    #-profile_vars_param => {
+                    #    -email => $profile_email,
+                    #},
+                }
+            );
+
+            my $to = $ls->param('list_owner_email');
+
+            if ( $ls->param('send_admin_unsubscription_notice_to') eq 'list' ) {
+
+                # warn 'send_admin_unsubscription_notice_to list';
+
+                $fm->mass_mailing(1);
+                require DADA::Mail::Send;
+                my $mh = DADA::Mail::Send->new( { -list => $self->{list} } );
+                $mh->list_type('list');
+                my $message_id = $mh->mass_send(
+                    {
+                        -msg => {
+                            Subject => $ls->param('unsubscription_notice_message_subject'),
+                            Body    => $msg,
+                        },
+                    }
+                );
+            }
+            else {
+                if ( $ls->param('send_admin_unsubscription_notice_to') eq 'alt'
+                    && check_for_valid_email( $ls->param('alt_send_admin_unsubscription_notice_to') ) == 0 )
+                {
+                    $to = $ls->param('alt_send_admin_unsubscription_notice_to');
+
+                    # warn 'send_admin_unsubscription_notice_to alt';
+                    # warn '$to: ' . $to;
+
+                }
+
+                # else {
+                # warn q|$ls->param('send_admin_unsubscription_notice_to')|
+                #  . $ls->param('send_admin_unsubscription_notice_to');
+                # }
+
+                require DADA::App::Messages;
+                DADA::App::Messages::send_generic_email(
+                    {
+                        -list    => $self->{list},
+                        -headers => {
+                            To      => $to,
+                            From    => $ls->param('list_owner_email'),
+                            Subject => $ls->param('unsubscription_notice_message_subject'),
+                        },
+                        -body => $msg,
+                    }
+                );
+            }
+            
+            #/David
+=cut
+           
+        
+    
+    }
+
+    return ( $d_count, $bl_count );
+
+}
+
+sub admin_update_address {
+
+    my $self = shift;
+    my ($args) = @_;
+
+    my $addresses = $args->{-addresses};
+    if ( !exists( $args->{-type} ) ) {
+        croak "you MUST pass the, '-type' parameter!";
+    }
+    my $type          = $args->{-type};
+    my $email         = $args->{-email};
+    my $updated_email = $args->{-updated_email};
+
+    my $og_prof = undef;
+
+    if ( $self->can_have_subscriber_fields ) {
+        require DADA::Profile;
+        $og_prof = DADA::Profile->new( { -email => $email } );
+    }
+
+    # Switch the addresses around
+
+    require DADA::Logging::Usage;
+    my $log = new DADA::Logging::Usage;
+
+    $self->remove_subscriber(
+        {
+            -email  => cased($email),
+            -type   => $type,
+            -log_it => 0,
+        }
+    );
+    $self->add_subscriber(
+        {
+            -email  => cased($updated_email),
+            -type   => $type,
+            -log_it => 0,
+        }
+    );
+    $log->mj_log(
+        $self->{list},
+        'Updated Subscription for ' . $self->{list} . '.' . $type,
+        $email . ':' . $updated_email
+    );
+
+    # PROFILES
+
+    if ( !$self->can_have_subscriber_fields ) {
+
+    }
+    else {
+
+        # JUST one list?
+        # it gets a little crazy...
+
+        # Basically what we want to do is this:
+        # If the OLD address is subscribed to > 1 list, don't mess with the current
+        # profile information,
+        # If the NEW address already has profile information, do not overwrite it
+        #
+
+        #
+        my $og_subscriptions = $og_prof->subscribed_to( { -type => 'list' } );
+
+        if ( !$og_prof->exists ) {
+
+            # Make one (old email)
+            $og_prof->insert(
+                {
+                    -password  => $og_prof->_rand_str(8),
+                    -activated => 1,
+                }
+            );
+        }
+
+        # Is there another mailing list that has the old address as a subscriber?
+        # Remember, we already changed over ONE of the subscriptions.
+
+        if ( scalar(@$og_subscriptions) >= 1 ) {
+
+            my $updated_prof = DADA::Profile->new( { -email => $updated_email } );
+
+            # This already around?
+            if ( $updated_prof->exists ) {
+
+                # Got any information?
+                if ( $updated_prof->{fields}->are_empty ) {
+
+                    # No info in there yet?
+                    $updated_prof->{fields}->insert(
+                        {
+                            -fields => $og_prof->{fields}->get,
+                            -mode   => 'writeover',
+                        }
+                    );
+                }
+            }
+            else {
+
+                # So there's not a profile, yet?
+                # COPY (don't move) the old profile info,
+                # to the new profile
+                # (inludeds fields)
+                my $new_prof = $og_prof->copy(
+                    {
+                        -from => $email,
+                        -to   => $updated_email,
+                    }
+                );
+            }
+        }
+        else {
+
+            # So, no other mailing list has a subscription for the new email address
+            #
+            my $updated_prof = DADA::Profile->new( { -email => $updated_email } );
+
+            # But does this profile already exists for the updated address?
+
+            if ( $updated_prof->exists ) {
+
+                # Well, nothing, since it already exists.
+            }
+            else {
+
+                # updated our old email profile, to the new email
+                # Only ONE subscription, w/Profile
+                # First save the updated email
+
+                $og_prof->update(
+                    {
+                        -activated    => 1,
+                        -update_email => $updated_email,
+                    }
+                );
+
+                # Then this method changes the updated email to the email..
+                # And changes the profiles fields, as well...
+                $og_prof->update_email;
+            }
+        }
+
+        # so, the old prof have any subscriptions?
+        my $old_prof = DADA::Profile->new( { -email => $email } );
+        if ( $old_prof->exists ) {
+
+            # Again, this will only touch, "list" sublist...
+            if ( scalar( @{ $old_prof->subscribed_to } ) == 0 ) {
+
+                # Then we can remove it,
+                $old_prof->remove;
+            }
+        }
+    }
+
+    return 1;
+}
+
+sub remove_subscriber {
+    my $self = shift;
+    my ($args) = @_;
+
+    if ( exists( $self->{-dpfm_obj} ) ) {
+        $args->{-dpfm_obj} = $self->{-dpfm_obj};
+    }
     if ( !exists( $args->{-type} ) ) {
         $args->{-type} = 'list';
     }
-		
+
     my $dmls =
       DADA::MailingList::Subscriber->new( { %{$args}, -list => $self->{list} } );
-	$dmls->remove($args);
-	return 1; 
+    $dmls->remove($args);
+    return 1;
 }
 
-sub columns { 
-	my $self = shift; 
-	return $self->{fields}->{manager}->columns; 
-}
-sub subscriber_fields { 
-	my $self = shift; 
-	return $self->{fields}->{manager}->fields(@_);
-}
-sub add_subscriber_field { 
-	my $self = shift; 
-	return $self->{fields}->{manager}->add_field(@_);
-}
-sub edit_subscriber_field_name { 
-	my $self = shift; 
-	return $self->{fields}->{manager}->edit_subscriber_field_name(@_);
-}
-sub remove_subscriber_field { 
-	my $self = shift; 
-	return $self->{fields}->{manager}->remove_field(@_);
-}
-sub subscriber_field_exists { 
-	my $self = shift; 
-	return $self->{fields}->{manager}->field_exists(@_);
-}
-sub validate_subscriber_field_name { 
-	my $self = shift; 
-	return $self->{fields}->{manager}->validate_field_name(@_);
-}
-sub get_all_field_attributes { 
-	my $self = shift; 
-	return $self->{fields}->{manager}->get_all_field_attributes(@_);
+sub columns {
+    my $self = shift;
+    return $self->{fields}->{manager}->columns;
 }
 
+sub subscriber_fields {
+    my $self = shift;
+    return $self->{fields}->{manager}->fields(@_);
+}
 
+sub add_subscriber_field {
+    my $self = shift;
+    return $self->{fields}->{manager}->add_field(@_);
+}
 
+sub edit_subscriber_field_name {
+    my $self = shift;
+    return $self->{fields}->{manager}->edit_subscriber_field_name(@_);
+}
+
+sub remove_subscriber_field {
+    my $self = shift;
+    return $self->{fields}->{manager}->remove_field(@_);
+}
+
+sub subscriber_field_exists {
+    my $self = shift;
+    return $self->{fields}->{manager}->field_exists(@_);
+}
+
+sub validate_subscriber_field_name {
+    my $self = shift;
+    return $self->{fields}->{manager}->validate_field_name(@_);
+}
+
+sub get_all_field_attributes {
+    my $self = shift;
+    return $self->{fields}->{manager}->get_all_field_attributes(@_);
+}
 
 sub get_list_types {
 
-	my $self = shift; 
-	return { 
-		list                => 1,       
-		black_list          => 1, 
-		authorized_senders  => 1, 
-		moderators         => 1,
-		testers             => 1, 
-		white_list          => 1, 
-		sub_confirm_list    => 1, 
-		unsub_confirm_list  => 1, 
-		invitelist          => 1,
-		invited_list        => 1,  
-		sub_request_list    => 1,
-		unsub_request_list  => 1, 
-		bounced_list        => 1,			
-	};
-	
+    my $self = shift;
+    return {
+        list               => 1,
+        black_list         => 1,
+        authorized_senders => 1,
+        moderators         => 1,
+        testers            => 1,
+        white_list         => 1,
+        sub_confirm_list   => 1,
+        unsub_confirm_list => 1,
+        invitelist         => 1,
+        invited_list       => 1,
+        sub_request_list   => 1,
+        unsub_request_list => 1,
+        bounced_list       => 1,
+    };
+
 }
 
-sub allowed_list_types { 
+sub allowed_list_types {
 
-    my $self = shift; 
-    my $type = shift; 
+    my $self = shift;
+    my $type = shift;
 
     my $named_list_types = $self->get_list_types;
-    
-	if( exists( $named_list_types->{$type} ) ){ 
-		return 1; 
-	}
-	elsif($type =~ m/_tmp(.*?)/){ 
-			return 1; 
-	}
-	else { 
-		return 0;
-	}
-   
+
+    if ( exists( $named_list_types->{$type} ) ) {
+        return 1;
+    }
+    elsif ( $type =~ m/_tmp(.*?)/ ) {
+        return 1;
+    }
+    else {
+        return 0;
+    }
+
 }
 
-sub subscription_check { 
-	my $self = shift;
+sub subscription_check {
+    my $self = shift;
     my ($args) = @_;
     return $self->{validate}->subscription_check($args);
 }
 
 sub unsubscription_check {
-	my $self = shift;
+    my $self = shift;
     my ($args) = @_;
     return $self->{validate}->unsubscription_check($args);
 
 }
-
-
 
 sub filter_subscribers {
 
@@ -716,12 +827,14 @@ sub filter_subscribers {
         my $status = 1;
 
         # It's weird, because Black List and White List still have some sort of
-        # format they have to follow. 
-        # 
+        # format they have to follow.
+        #
         if ( $type eq 'black_list' ) {
+
             # Yeah... nothing...
         }
         elsif ( $type eq 'white_list' ) {
+
             # Yeah... nothing...
         }
         else {
@@ -733,7 +846,7 @@ sub filter_subscribers {
                 $errors->{invalid_email} = 0;
             }
         }
-        
+
         if ( $type eq 'list' ) {
             if ( $ls->param('use_subscription_quota') == 1 ) {
                 if ( ( $num_subscribers + 1 ) >= $ls->param('subscription_quota') ) {
@@ -758,7 +871,7 @@ sub filter_subscribers {
         }
     }
 
-    # I've gotta do this twice, why not just once, before looking for validity? 
+    # I've gotta do this twice, why not just once, before looking for validity?
     #
     my %seen = ();
     my @unique_good_emails = grep { !$seen{$_}++ } @good_emails;
@@ -766,12 +879,12 @@ sub filter_subscribers {
     %seen = ();
     my @unique_bad_emails = grep { !$seen{$_}++ } @bad_emails;
 
-    # And then, sorting? 
+    # And then, sorting?
     @unique_good_emails = sort(@unique_good_emails);
     @unique_bad_emails  = sort(@unique_bad_emails);
 
     # figure out what unique emails we have from the new list when compared to the old list
-    # We do this, rather than "check_for_double_email" - I guess that's a optimization... 
+    # We do this, rather than "check_for_double_email" - I guess that's a optimization...
     #
     my ( $unique_ref, $not_unique_ref ) = $self->unique_and_duplicate(
         -New_List => \@unique_good_emails,
@@ -780,16 +893,16 @@ sub filter_subscribers {
 
     #initialize
     my @black_list;
-    my $found_black_list_ref   = [];
-    my $clean_list_ref         = [];
-    my $black_listed_ref       = [];
-    my $black_list_ref         = [];
-    my $white_listed           = [];
-    my $not_white_listed       = [];
-    
-    # This is basically, "Are you blacklisted...", 
-    # check_for_double_email will also do an inexact match, you tell it to, 
-    # 
+    my $found_black_list_ref = [];
+    my $clean_list_ref       = [];
+    my $black_listed_ref     = [];
+    my $black_list_ref       = [];
+    my $white_listed         = [];
+    my $not_white_listed     = [];
+
+    # This is basically, "Are you blacklisted...",
+    # check_for_double_email will also do an inexact match, you tell it to,
+    #
     #
     if ( $ls->param('black_list') == 1 && $type eq 'list' ) {
         for my $b_email (@$unique_ref) {
@@ -812,9 +925,9 @@ sub filter_subscribers {
     }
 
     # The entire white list stuff is pure messed.
-    # This is basically, "Are you white listed...", 
-    # check_for_double_email will also do an inexact match, you tell it to, 
-    
+    # This is basically, "Are you white listed...",
+    # check_for_double_email will also do an inexact match, you tell it to,
+
     if ( $ls->param('enable_white_list') == 1 && $type eq 'list' ) {
         for my $w_email (@$clean_list_ref) {
             my $is_white_listed = $self->inexact_match(
@@ -842,95 +955,99 @@ sub filter_subscribers {
 
 }
 
-sub filter_subscribers_w_meta { 
+sub filter_subscribers_w_meta {
 
-    # So, what are we doing about dupes? 
+    # So, what are we doing about dupes?
 
-	my $self   = shift; 
-	my ($args) = @_; 
+    my $self = shift;
+    my ($args) = @_;
 
-	my $info = $args->{-emails}; 
+    my $info = $args->{-emails};
 
-	if(! exists($args->{-type})){ 
-		$args->{-type} = 'list'; 
-	}
-	my $type = $args->{-type}; 
+    if ( !exists( $args->{-type} ) ) {
+        $args->{-type} = 'list';
+    }
+    my $type = $args->{-type};
 
     my $dupe_check = {};
 
-	my $emails = [];
+    my $emails = [];
 
-	my $fields = $self->subscriber_fields(); 
+    my $fields = $self->subscriber_fields();
 
-	require   Text::CSV; 
-	my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
+    require Text::CSV;
+    my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
 
     require DADA::MailingList::Settings;
     my $ls = DADA::MailingList::Settings->new( { -list => $self->{list} } );
 
-    for my $n_address(@{$info}){ 
+    for my $n_address ( @{$info} ) {
 
-        if(exists($dupe_check->{$n_address->{email}})){
-            carp "already looked at: '"  . $n_address->{email} . "' - will not process twice!"; 
+        if ( exists( $dupe_check->{ $n_address->{email} } ) ) {
+            carp "already looked at: '" . $n_address->{email} . "' - will not process twice!";
         }
-        $dupe_check->{$n_address->{email}} = 1; 
+        $dupe_check->{ $n_address->{email} } = 1;
 
-        my ($status, $errors) = $self->subscription_check(
+        my ( $status, $errors ) = $self->subscription_check(
             {
                 -email  => $n_address->{email},
-                -type   => $type, 
-                -mode   => 'admin', 
+                -type   => $type,
+                -mode   => 'admin',
                 -fields => $n_address->{fields},
-                -skip   => [qw(
-                    mx_lookup_failed
-                    already_sent_sub_confirmation
-                    already_sent_unsub_confirmation
-                    over_subscription_quota
-                    invite_only_list
-                    )],
-                -ls_obj => $ls, 
+                -skip   => [
+                    qw(
+                      mx_lookup_failed
+                      already_sent_sub_confirmation
+                      already_sent_unsub_confirmation
+                      over_subscription_quota
+                      invite_only_list
+                      )
+                ],
+                -ls_obj => $ls,
             }
         );
-        my $csv_str = ''; 
-        my $csv_fields = [$n_address->{email}]; 
-        foreach(@$fields){ 
-            push(@$csv_fields, $n_address->{fields}->{$_}); 
+        my $csv_str    = '';
+        my $csv_fields = [ $n_address->{email} ];
+        foreach (@$fields) {
+            push( @$csv_fields, $n_address->{fields}->{$_} );
         }
-        push(@$csv_fields, $n_address->{profile}->{password}); 
-        
-        if ($csv->combine(@$csv_fields)) {
-	        $csv_str = $csv->string;
-	    } else {
-		    carp "well, that didn't work."; 
-		}		
-		
-		# Put in the import limit, and check that before anything else.
-		# Put in the pref's to enable/disable tests, like blacklist, whitelist, missing profile fields, etc
-		
-		# Ability to set Profile Password...
-		
-		# MAYBE put in pref - what to do with addresses that are already subscribed - update instead? 
-		# "These addresses are already subscribed (check for Profile Fields if so...:) Update thier profiles? (Root Login only) 
-		# 
-		
+        push( @$csv_fields, $n_address->{profile}->{password} );
 
-        push(@$emails, {
-                email    => $n_address->{email}, 
-                fields   => $n_address->{fields}, 
-                profile  => $n_address->{profile}, 
-                status   => $status, 
-                errors   => $errors, 
-                csv_str  => $csv_str, 
-                #%$ht_errors, 
+        if ( $csv->combine(@$csv_fields) ) {
+            $csv_str = $csv->string;
+        }
+        else {
+            carp "well, that didn't work.";
+        }
+
+        # Put in the import limit, and check that before anything else.
+        # Put in the pref's to enable/disable tests, like blacklist, whitelist, missing profile fields, etc
+
+        # Ability to set Profile Password...
+
+ # MAYBE put in pref - what to do with addresses that are already subscribed - update instead?
+ # "These addresses are already subscribed (check for Profile Fields if so...:) Update thier profiles? (Root Login only)
+ #
+
+        push(
+            @$emails,
+            {
+                email   => $n_address->{email},
+                fields  => $n_address->{fields},
+                profile => $n_address->{profile},
+                status  => $status,
+                errors  => $errors,
+                csv_str => $csv_str,
+
+                #%$ht_errors,
             }
-        ); 
+        );
     }
-    return $emails; 
+    return $emails;
 }
 
-
 sub filter_subscribers_massaged_for_ht {
-    my $self   = shift;
+    my $self = shift;
     my ($args) = @_;
 
     my $emails = $self->filter_subscribers_w_meta($args);
@@ -939,17 +1056,16 @@ sub filter_subscribers_massaged_for_ht {
     my $fields     = $self->subscriber_fields();
 
     for my $address (@$emails) {
-        
+
         my $ht_fields = [];
         my $ht_errors = [];
-        
-        if(exists($address->{errors}->{invalid_profile_fields})) { 
-            for my $field(@$fields) {
-                if ( 
-                    exists($address->{errors})
-                 && exists($address->{errors}->{invalid_profile_fields}->{$field}) 
-                 && exists( $address->{errors}->{invalid_profile_fields}->{$field}->{required} ) 
-                 ) {
+
+        if ( exists( $address->{errors}->{invalid_profile_fields} ) ) {
+            for my $field (@$fields) {
+                if (   exists( $address->{errors} )
+                    && exists( $address->{errors}->{invalid_profile_fields}->{$field} )
+                    && exists( $address->{errors}->{invalid_profile_fields}->{$field}->{required} ) )
+                {
                     push(
                         @$ht_fields,
                         {
@@ -959,7 +1075,7 @@ sub filter_subscribers_massaged_for_ht {
                         }
                     );
                 }
-                else {                
+                else {
                     push(
                         @$ht_fields,
                         {
@@ -970,8 +1086,8 @@ sub filter_subscribers_massaged_for_ht {
                 }
             }
         }
-        else { 
-            for my $field(@$fields) {
+        else {
+            for my $field (@$fields) {
                 push(
                     @$ht_fields,
                     {
@@ -980,12 +1096,12 @@ sub filter_subscribers_massaged_for_ht {
                     }
                 );
             }
-            
+
         }
-        
-        if(exists($address->{errors})){ 
-            if(keys %{$address->{errors}}) { 
-                for my $error( keys %{ $address->{errors} } ) {
+
+        if ( exists( $address->{errors} ) ) {
+            if ( keys %{ $address->{errors} } ) {
+                for my $error ( keys %{ $address->{errors} } ) {
                     push(
                         @$ht_errors,
                         {
@@ -999,15 +1115,15 @@ sub filter_subscribers_massaged_for_ht {
         push(
             @$new_emails,
             {
-                email              => $address->{email},
-                profile_password   => $address->{profile}->{password},
-                status             => $address->{status},
-                og_errors          => $address->{errors},
-                csv_str            => $address->{csv_str},
-                
-                errors             => $ht_errors,
-                fields             => $ht_fields,
-                
+                email            => $address->{email},
+                profile_password => $address->{profile}->{password},
+                status           => $address->{status},
+                og_errors        => $address->{errors},
+                csv_str          => $address->{csv_str},
+
+                errors => $ht_errors,
+                fields => $ht_fields,
+
                 # %$ht_errors,
             }
         );
@@ -1046,152 +1162,137 @@ sub filter_subscribers_massaged_for_ht {
     return ( $not_members, $invalid_email, $subscribed, $black_listed, $not_white_listed, $invalid_profile_fields );
 }
 
+sub find_unique_elements {
 
+    my $self = shift;
 
+    my $A = shift || undef;
+    my $B = shift || undef;
 
-sub find_unique_elements { 
+    if ( $A and $B ) {
 
-	my $self = shift; 
-	
-	my $A = shift || undef; 
-	my $B = shift || undef; 
-	
-	if($A and $B){ 	
-		#lookup table
-		my %seen = ();     
-		# we'll store unique things in here            
-		my @unique = ();
-		#we'll store what we already got in here
-		my @already_in = ();                 
-		# build lookup table
-		for my $item (@$B) { $seen{$item} = 1 }
-		# find only elements in @$A and not in @$B
-		for my $item (@$A) {
-			unless ($seen{$item}) {
-				# it's not in %seen, so add to @aonly
-				push(@unique, $item);
-			}else{
-				push(@already_in, $item);
-				}
-		}
-		
-		return (\@unique, \@already_in); 
-	
-	}else{ 
-		carp 'I need two array refs!';
-		return ([], []); 
-	}
+        #lookup table
+        my %seen = ();
+
+        # we'll store unique things in here
+        my @unique = ();
+
+        #we'll store what we already got in here
+        my @already_in = ();
+
+        # build lookup table
+        for my $item (@$B) { $seen{$item} = 1 }
+
+        # find only elements in @$A and not in @$B
+        for my $item (@$A) {
+            unless ( $seen{$item} ) {
+
+                # it's not in %seen, so add to @aonly
+                push( @unique, $item );
+            }
+            else {
+                push( @already_in, $item );
+            }
+        }
+
+        return ( \@unique, \@already_in );
+
+    }
+    else {
+        carp 'I need two array refs!';
+        return ( [], [] );
+    }
 }
 
+sub csv_to_cds {
+    my $self     = shift;
+    my $csv_line = shift;
+    my $cds      = {};
 
+    my $subscriber_fields = $self->subscriber_fields;
 
+    require Text::CSV;
+    my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
 
-sub csv_to_cds { 
-	my $self     = shift; 
-	my $csv_line = shift; 
-	my $cds      = {};
-	
-	my $subscriber_fields = $self->subscriber_fields;
-	
-	require   Text::CSV; 
-	my $csv = Text::CSV->new($DADA::Config::TEXT_CSV_PARAMS);
-    
-	if ($csv->parse($csv_line)) {
-	    
+    if ( $csv->parse($csv_line) ) {
+
         my @fields = $csv->fields;
-        my $email  = shift @fields; 
+        my $email  = shift @fields;
 
         $email =~ s{^<}{};
         $email =~ s{>$}{};
-        $email =  cased(strip(xss_filter($email))); 
-
+        $email = cased( strip( xss_filter($email) ) );
 
         $cds->{email}  = $email;
-		$cds->{fields} = {};
-		
-		my $i = 0; 
-        for(@$subscriber_fields){ 
-			$cds->{fields}->{$_} = $fields[$i];
-			$i++; 
-		}
-		# $i, huh. OK: 
-		$cds->{profile}->{password} = $fields[$i];
-    } else {
-        carp $DADA::Config::PROGRAM_NAME . " Error: CSV parsing error: parse() failed on argument: ". $csv->error_input() . ' ' . $csv->error_diag();         
-		$cds->{email} = $csv_line; 
+        $cds->{fields} = {};
+
+        my $i = 0;
+        for (@$subscriber_fields) {
+            $cds->{fields}->{$_} = $fields[$i];
+            $i++;
+        }
+
+        # $i, huh. OK:
+        $cds->{profile}->{password} = $fields[$i];
     }
-	
-	return $cds; 
-	
+    else {
+        carp $DADA::Config::PROGRAM_NAME
+          . " Error: CSV parsing error: parse() failed on argument: "
+          . $csv->error_input() . ' '
+          . $csv->error_diag();
+        $cds->{email} = $csv_line;
+    }
+
+    return $cds;
+
 }
 
+sub domain_stats_json {
+    my $self = shift;
+    my ($args) = @_;
+    if ( !exists( $args->{-count} ) ) {
+        $args->{-count} = 10;
+    }
+    if ( !exists( $args->{-printout} ) ) {
+        $args->{-printout} = 0;
+    }
+    my $stats = $self->domain_stats(
+        {
+            -count => $args->{-count},
+            -type  => $args->{-type},
+        }
+    );
 
-sub domain_stats_json { 
-	my $self    = shift;
-	my ($args)  = @_; 
-	if(!exists($args->{-count})){ 
-		$args->{-count} = 10; 
-	}
-	if(!exists($args->{-printout})){ 
-		$args->{-printout} = 0; 
-	}
-	my $stats = $self->domain_stats(
-		{ 
-			-count => $args->{-count},
-			-type  => $args->{-type},
-		}
-	);
-	
-	require         Data::Google::Visualization::DataTable;
-	my $datatable = Data::Google::Visualization::DataTable->new();
+    require Data::Google::Visualization::DataTable;
+    my $datatable = Data::Google::Visualization::DataTable->new();
 
-	$datatable->add_columns(
-	       { id => 'domain',     label => "Domain",        type => 'string',},
-	       { id => 'number',     label => "Number",        type => 'number',},
-	);
+    $datatable->add_columns(
+        { id => 'domain', label => "Domain", type => 'string', },
+        { id => 'number', label => "Number", type => 'number', },
+    );
 
-	for(@$stats){ 
-		$datatable->add_rows(
-	        [
-	               { v => $_->{domain} },
-	               { v => $_->{number} },
-	       ],
-		);
-	}
+    for (@$stats) {
+        $datatable->add_rows( [ { v => $_->{domain} }, { v => $_->{number} }, ], );
+    }
 
-	# Fancy-pants
-	my $json = $datatable->output_javascript(
-		pretty  => 1,
-	);
-	if($args->{-printout} == 1){ 
-		require CGI; 
-		my $q = CGI->new; 
-		
-		print $q->header(
-			'-Cache-Control' => 'no-cache, must-revalidate',
-			-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
-			-type            =>  'application/json',
-		);
-		print $json; 
-	}
-	else { 
-		return $json;
-	}
-	
+    # Fancy-pants
+    my $json = $datatable->output_javascript( pretty => 1, );
+    if ( $args->{-printout} == 1 ) {
+        require CGI;
+        my $q = CGI->new;
+
+        print $q->header(
+            '-Cache-Control' => 'no-cache, must-revalidate',
+            -expires         => 'Mon, 26 Jul 1997 05:00:00 GMT',
+            -type            => 'application/json',
+        );
+        print $json;
+    }
+    else {
+        return $json;
+    }
+
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 1;
 
