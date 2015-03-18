@@ -376,6 +376,7 @@ sub _fill_in_html_settings {
 	}; 
 	
     if(exists($message_settings->{$name})) { 
+        require DADA::Template::Widgets; 
         my $raw_screen = DADA::Template::Widgets::_raw_screen( { -screen => 'list/' . $message_settings->{$name} } );
         return $raw_screen; 
 	}
