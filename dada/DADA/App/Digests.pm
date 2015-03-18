@@ -104,7 +104,7 @@ sub _init {
         $self->{ls_obj} = DADA::MailingList::Settings->new( { -list => $self->{list} } );
     }
     else { 
-        warn 'digest_last_archive_id_sent ' . $self->{ls_obj}->param('digest_last_archive_id_sent') 
+        carp 'digest_last_archive_id_sent ' . $self->{ls_obj}->param('digest_last_archive_id_sent') 
         . '(' . scalar(localtime($self->archive_time_2_ctime($self->{ls_obj}->param('digest_last_archive_id_sent')))) .')';
     }
 
@@ -129,32 +129,54 @@ sub archive_ids_for_digest {
     my $ids  = [];
 
     my $digest_last_archive_id_sent = $self->{ls_obj}->param('digest_last_archive_id_sent') || undef;
-
+    
+    #warn 'archive_ids_for_digest: $digest_last_archive_id_sent ' . $digest_last_archive_id_sent; 
+    #warn 'scalar localtime($self->archive_time_2_ctime($digest_last_archive_id_sent))' .  scalar localtime($self->archive_time_2_ctime($digest_last_archive_id_sent));
     # no archives available? no digest.
+
     if ( scalar( @{$keys} ) == 0 ) {
         return [];
     }
-
-    if(
-        ($self->archive_time_2_ctime($digest_last_archive_id_sent) + int($self->{ls_obj}->param('digest_schedule'))) < $self->{ctime}){ 
-            # not the time to send out a digest!
-            return [];            
-    }
-
-    for (@$keys) {
-        if (   $_ > $digest_last_archive_id_sent                    # after our last one was sent out
-            && $_ < $self->ctime_2_archive_time( $self->{ctime} ) ) # less than right now 
-        {
-            push( @$ids, $_ );
+    else { 
+        
+        # warn q{$self->archive_time_2_ctime($digest_last_archive_id_sent):} . $self->archive_time_2_ctime($digest_last_archive_id_sent); 
+        # warn q{int($self->{ls_obj}->param('digest_schedule')):}            . int($self->{ls_obj}->param('digest_schedule')); 
+        # warn '$self->{ctime}:'                                             . $self->{ctime}; 
+        if(
+            ($self->archive_time_2_ctime($digest_last_archive_id_sent) + int($self->{ls_obj}->param('digest_schedule'))) > $self->{ctime}){ 
+                # not the time to send out a digest!
+                return [];            
         }
-    }
-    if ($t) {
-        warn 'ids to make digest: ';
-        for (@$ids) {
-            warn "$_\n";
+
+        for (@$keys) {
+            
+            # warn '$_ => ' . $_; 
+            # warn '$digest_last_archive_id_sent => ' . $digest_last_archive_id_sent; 
+            # warn '$self->ctime_2_archive_time( $self->{ctime} ) ' . $self->ctime_2_archive_time( $self->{ctime} ); 
+            
+            if (   
+                # after our last one was sent out (redundant?)
+                $self->archive_time_2_ctime($_) > $self->archive_time_2_ctime($digest_last_archive_id_sent) 
+                
+                &&
+                # Is within the digest_schedule
+                $self->archive_time_2_ctime($_) >  $self->{ctime}  - (int($self->{ls_obj}->param('digest_schedule')))
+                
+                # BUT less than right now 
+                && $self->archive_time_2_ctime($_) < $self->{ctime} 
+            ) 
+            {
+                push( @$ids, $_ );
+            }
         }
+        if ($t) {
+            warn 'ids to make digest: ';
+            for (@$ids) {
+                warn "$_\n";
+            }
+        }
+        return $ids;
     }
-    return $ids;
 }
 
 sub send_digest {
@@ -166,7 +188,7 @@ sub send_digest {
    my $digest_last_archive_id_sent = $self->{ls_obj}->param('digest_last_archive_id_sent') || undef;
     if(defined($digest_last_archive_id_sent)){ 
         $r .= 'Last Archived Message ID Sent: ' . $digest_last_archive_id_sent
-        . '(' . scalar(localtime($self->archive_time_2_ctime($self->{ls_obj}->param('digest_last_archive_id_sent')))) .')' . "\n";
+        . ' (' . scalar(localtime($self->archive_time_2_ctime($self->{ls_obj}->param('digest_last_archive_id_sent')))) .')' . "\n";
     }
     else { 
         $r .= 'No archived messages sent as a digest.' . "\n"; 
