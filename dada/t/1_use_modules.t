@@ -138,10 +138,6 @@ SKIP: {
 
 }
 
-
-BEGIN{ use_ok('DADA::MailingList::Subscribers::PlainText'); }
-
-
 SKIP: {
     eval { require DBI;};
 
