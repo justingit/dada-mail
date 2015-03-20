@@ -12494,12 +12494,20 @@ sub bridge_inject {
     }
     require 'plugins/bridge';
 
+
+    # One problem with this is that we don't know the encoding of the message.
+    # If it's 8bit, and ISO-whatever, we're in trouble
+    # We could read the full msg in, and change the encoding, THEN Tag the message in that encoding. 
+    # Sounds message. 
+    
     require DADA::Security::Password;
     my $filename =
       $DADA::Config::TMP . "/tmp_file" . DADA::Security::Password::generate_rand_string() . "-" . time . ".txt";
-    open my $tmp_file, ">", $filename or die $!;
+    open my $tmp_file, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $filename or die $!;
     my $msg;
     while ( my $line = <STDIN> ) {
+        $line = safely_decode($line); 
+        $line = safely_encode($line); 
         print $tmp_file $line;
     }
     close $tmp_file or die $!;
