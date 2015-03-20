@@ -1147,8 +1147,8 @@ sub inject_msg {
     reset_globals(); 
     
     my ($args) = @_; 
-    require Data::Dumper; 
-    warn Data::Dumper::Dumper($args); 
+    # require Data::Dumper; 
+    # warn Data::Dumper::Dumper($args); 
     
     my $r; 
     
@@ -1172,7 +1172,7 @@ sub inject_msg {
         return $error_msg;
     }
     require File::Slurp;
-    my $msg = File::Slurp::read_file($filename);
+    my $msg = File::Slurp::read_file($filename, binmode => ':encoding(' . $DADA::Config::HTML_CHARSET . ')');
     my $n   = unlink($filename);
     if ( $n != 1 ) {
         warn "could not remove tmpfile at, $filename";
