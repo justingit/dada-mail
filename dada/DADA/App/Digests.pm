@@ -158,6 +158,7 @@ sub archive_ids_for_digest {
                 warn "$_\n";
             }
         }
+        @$ids = reverse(@$ids); 
         return $ids;
     }
 }
@@ -244,7 +245,7 @@ sub send_digest {
 
         $self->{ls_obj}->save(
             {
-                digest_last_archive_id_sent => $keys->[0],
+                digest_last_archive_id_sent => $keys->[-1], 
             }
         );
     }
