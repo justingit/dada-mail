@@ -999,7 +999,6 @@ sub drafts {
                 stationary_index        => $si,
                 active_schedule_index   => $sci_active,
                 inactive_schedule_index => $sci_inactive,
-                enabled                 => $enabled,
                 num_drafts              => scalar(@$di),
                 num_stationary          => scalar(@$si),
                 num_schedules           => scalar(@$sci),
@@ -1124,9 +1123,11 @@ sub preview_message_receivers {
         $order_by  => 'timestamp';
         $order_dir => 'desc';
     }
+    my ($fancy_r, $fancy_c); 
+    
     if ( keys %$partial_sending ) {
         if ( $DADA::Config::MULTIPLE_LIST_SENDING_TYPE eq 'merged' ) {
-            $r .= $lh->fancy_list(
+            ($fancy_r, $fancy_c) = $lh->fancy_list(
                 {
                     -partial_listing       => $partial_sending,
                     -type                  => 'list',
@@ -1137,18 +1138,19 @@ sub preview_message_receivers {
                     -order_dir             => $order_dir,
                 }
             );
+            $r .= $fancy_r;
         }
         else {
             $r .= '<h1>' . $list . '</h1>';
 
-            $r .= $lh->fancy_list(
+            ($fancy_r, $fancy_c) = $lh->fancy_list(
                 {
                     -partial_listing       => $partial_sending,
                     -type                  => 'list',
                     -show_timestamp_column => 1,
                 }
             );
-
+            $r .= $fancy_r;
             my @exclude_from = ();
 
             if ( $multi_list_send_no_dupes == 1 ) {
@@ -1158,7 +1160,7 @@ sub preview_message_receivers {
                 for my $alt_list (@alternative_list) {
                     $r .= '<h1>' . $alt_list . '</h1>';
                     my $alt_mls = DADA::MailingList::Subscribers->new( { -list => $alt_list } );
-                    $r .= $alt_mls->fancy_list(
+                    ($fancy_r, $fancy_c) = $alt_mls->fancy_list(
                         {
                             -partial_listing => $partial_sending,
                             -type            => 'list',
@@ -1193,7 +1195,7 @@ sub preview_message_receivers {
             );
         }
     }
-    return ( {}, $r );
+    return $r;
 
 }
 

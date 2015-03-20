@@ -47,7 +47,7 @@ Content-Transfer-Encoding: binary
 <ul>
 <!-- tmpl_loop digest_messages -->
 <li>
-    <a href="#diget_<!-- tmpl_var archive_id -->">
+    <a href="#digest_<!-- tmpl_var archive_id -->">
         <!-- tmpl_var subject -->
     </a>
     by, 
@@ -59,7 +59,7 @@ Content-Transfer-Encoding: binary
 </ul>
 
 <p>
-<a name="diget_<!-- tmpl_var archive_id -->"></a>
+<a name="digest_<!-- tmpl_var archive_id -->"></a>
 <strong>Date:</strong> <!-- tmpl_var date --><br />
 <strong>From:</strong> <!-- tmpl_var subscriber.email --><br />
 <strong>Subject:</strong> <!-- tmpl_var subject --></p>

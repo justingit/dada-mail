@@ -3327,7 +3327,7 @@ function preview_message_receivers() {
 		multi_list_send_no_dupes = 1;
 	}
 
-	f_params.f                       = 'preview_message_receivers';
+	f_params.flavor                  = 'preview_message_receivers';
 	f_params.alternative_lists       = alternative_lists;
 	f_params.multi_list_send_no_dupe = multi_list_send_no_dupes;
 

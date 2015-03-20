@@ -41,6 +41,7 @@ sub _init {
     $self->{list}   = $args->{-list};
     
     $self->{ms_obj} = DADA::App::MassSend->new({-list => $self->{list}}); 
+    $self->{d_obj} = DADA::MailingList::MessageDrafts->new( { -list => $self->{list} } );
     
     
     $self->{ls_obj} =  DADA::MailingList::Settings->new( { -list => $self->{list}  } );

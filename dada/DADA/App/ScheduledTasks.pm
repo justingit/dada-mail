@@ -101,9 +101,9 @@ sub scheduled_mass_mailings {
     require DADA::MailingList::Schedules; 
     foreach my $l (@lists){ 			    
         my $sched = DADA::MailingList::Schedules->new({-list => $l});
-        if($sched->enabled) {
+#        if($sched->enabled) {
             $r .= $sched->run_schedules();  
-        }
+#       }
         undef($sched); 
     }
     return $r; 
