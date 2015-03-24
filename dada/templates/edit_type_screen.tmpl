@@ -416,6 +416,41 @@
 
 
 
+<fieldset>
+	<legend>
+		List Control Panel Unsubscription Notification 
+	</legend>
+
+
+	<!-- tmpl_if list_settings.send_admin_unsubscription_notice --> 
+	    <p class="positive">
+	        Enabled.
+	    </p>
+	<!-- tmpl_else -->
+	    <p class="error"> 
+			Currently Disabled.
+		</p>
+	<!-- /tmpl_if -->
+	
+	<fieldset>
+		<legend>
+			Headers: 
+		</legend>
+        <p>
+         <label for="unsubscription_notice_message_subject" class="label_by_5">Subject:</label> <input type="text" name="unsubscription_notice_message_subject" id="unsubscription_notice_message_subject" value="<!-- tmpl_var list_settings.unsubscription_notice_message_subject escape=HTML -->" class="midi" />
+        </p>
+	</fieldset>
+	<fieldset>
+		<legend>
+			PlainText Message: 
+		</legend>
+	<p>
+        <textarea name="unsubscription_notice_message" id="unsubscription_notice_message" rows="10" cols="50" ><!-- tmpl_var list_settings.unsubscription_notice_message escape=HTML --></textarea> 
+    </p>
+    </fieldset> 
+</fieldset>
+
+
 
 
 

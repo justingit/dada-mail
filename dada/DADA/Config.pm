@@ -1311,6 +1311,12 @@ $MIME_OPTIMIZE     //= 'no tmp files';
 
     send_last_archived_msg_mass_mailing => 0,
 
+    send_admin_unsubscription_notice        => 0, 
+    send_admin_unsubscription_notice_to     => 'list_owner', 
+    alt_send_admin_unsubscription_notice_to => '', 
+
+
+
     # SMTP Options
 
     smtp_server => undef,

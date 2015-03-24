@@ -661,10 +661,110 @@ $(document).ready(function() {
 		});	
 		$('#private_list').live('click', function(event) {
 			toggle_private_list(); 
-		});	
+		});
+		
+		validator = $("#list_options_form").validate({
+			debug: false,
+			rules: {
+				alt_send_subscription_notice_to: {
+					email:    true,
+					required: {
+						depends:  function(element) { 
+							if($("#send_subscription_notice_to option:selected").val() == "alt" ){ 
+								return true; 
+							}
+							else {
+								return false; 
+							}
+						}
+					}
+				},
+				alt_send_unsubscription_notice_to: {
+					email:    true,
+					required: {
+						depends:  function(element) { 
+							if($("#send_unsubscription_notice_to option:selected").val() == "alt" ){ 
+								return true; 
+							}
+							else {
+								return false; 
+							}
+						}
+					}
+				},
+				alt_send_admin_unsubscription_notice_to: {
+					email:    true,
+					required: {
+						depends:  function(element) { 
+							if($("#send_admin_unsubscription_notice_to option:selected").val() == "alt" ){ 
+								return true; 
+							}
+							else {
+								return false; 
+							}
+						}
+					}
+				}
+				
+			}
+		});
+		toggle_sub_notice_to();
+		toggle_unsub_notice_to();
+		toggle_admin_unsub_notice_to(); 
+		
+		$("#send_subscription_notice_to").on("change", function(event) {
+			validator.resetForm();
+			toggle_sub_notice_to(); 
+		});  
+		$("#send_unsubscription_notice_to").on("change", function(event) {
+			validator.resetForm();
+			toggle_unsub_notice_to(); 
+		});  	
+		$("#send_admin_unsubscription_notice_to").on("change", function(event) {
+			validator.resetForm();
+			toggle_admin_unsub_notice_to(); 
+		});  	
+		
+		
 			
 	}
 	
+	function toggle_sub_notice_to(){ 
+		if($("#send_subscription_notice_to option:selected").val() == "alt"){ 
+			if($("#alt_send_subscription_notice_to").is(':hidden')) {
+				$("#alt_send_subscription_notice_to").show(); 
+			}
+		}
+		else { 
+			if($("#alt_send_subscription_notice_to").is(':visible')) {
+				$("#alt_send_subscription_notice_to").hide(); 
+			}
+		}
+	}
+	function toggle_unsub_notice_to(){ 
+		if($("#send_unsubscription_notice_to option:selected").val() == "alt"){ 
+			if($("#alt_send_unsubscription_notice_to").is(':hidden')) {
+				$("#alt_send_unsubscription_notice_to").show(); 
+			}
+		}
+		else { 
+			if($("#alt_send_unsubscription_notice_to").is(':visible')) {
+				$("#alt_send_unsubscription_notice_to").hide(); 
+			}
+		}
+	}
+	function toggle_admin_unsub_notice_to(){ 
+		if($("#send_admin_unsubscription_notice_to option:selected").val() == "alt"){ 
+			if($("#alt_send_admin_unsubscription_notice_to").is(':hidden')) {
+				$("#alt_send_admin_unsubscription_notice_to").show(); 
+			}
+		}
+		else { 
+			if($("#alt_send_admin_unsubscription_notice_to").is(':visible')) {
+				$("#alt_send_admin_unsubscription_notice_to").hide(); 
+			}
+		}
+	}
 	function toggle_anyone_can_subscribe() { 
 		if ($("#anyone_can_subscribe").prop("checked") === true) {
 			if($("#anyone_can_subscribe_options").is(':hidden')) {

@@ -474,37 +474,35 @@
 
 
                 <table class="options_tb">
-
-                 <tr>
-                  <td class="checkbox_container">
-                   <input type="checkbox" name="get_sub_notice" id="get_sub_notice" value="1" <!-- tmpl_if list_settings.get_sub_notice -->checked="checked"<!--/tmpl_if--> />
-                  </td>
-                  <td width="99%">
-                   <p>
-                    <label for="get_sub_notice">
-                     Send Subscription Notifications
-                    </label>
-                    <br />
-                    Send Subscription Notifications to: <!-- tmpl_var send_subscription_notice_to_popup_menu -->
-               	    </p>
-                  </td>
-                 </tr>
-                 <tr>
-                  <td class="checkbox_container">
-                   <input type="checkbox" name="send_sub_success_email" id="send_sub_success_email" value="1" <!-- tmpl_if list_settings.send_sub_success_email -->checked="checked"<!--/tmpl_if--> />
-                  </td>
-                  <td width="99%">
-                   <p>
-                    <label for="send_sub_success_email">
-                     Send Subscription Successful Email Notifications
-                    </label>
-                    <br />
-                    After a person subscribes, an email will be sent to them 
-                    to announce the subscription.
-                   </p>
-                  </td>
-                 </tr>
-
+                    <tr>
+                     <td class="checkbox_container">
+                      <input type="checkbox" name="get_sub_notice" id="get_sub_notice" value="1" <!-- tmpl_if list_settings.get_sub_notice -->checked="checked"<!--/tmpl_if--> />
+                     </td>
+                     <td width="99%">
+                      <p>
+                       <label for="get_sub_notice">
+                        Send Subscription Notifications to:
+                       </label>
+                       <!-- tmpl_var send_subscription_notice_to_popup_menu -->
+                  	    <input type="text" name="alt_send_subscription_notice_to" id="alt_send_subscription_notice_to" value="<!-- tmpl_var list_settings.alt_send_subscription_notice_to -->" />                    
+                  	    </p>
+                     </td>
+                    </tr>
+                     <tr>
+                      <td class="checkbox_container">
+                       <input type="checkbox" name="send_sub_success_email" id="send_sub_success_email" value="1" <!-- tmpl_if list_settings.send_sub_success_email -->checked="checked"<!--/tmpl_if--> />
+                      </td>
+                      <td width="99%">
+                       <p>
+                        <label for="send_sub_success_email">
+                         Send Subscription Successful Email Notifications
+                        </label>
+                        <br />
+                        After a person subscribes, an email will be sent to them 
+                        to announce the subscription.
+                       </p>
+                      </td>
+                     </tr>
                	<tr>
                	  <td class="checkbox_container">
                	   <input type="checkbox" name="send_newest_archive" id="send_newest_archive" value="1" <!-- tmpl_if list_settings.send_newest_archive -->checked="checked"<!--/tmpl_if--> />
@@ -745,21 +743,20 @@
 <fieldset><legend>After the Unsubscription</legend>
 
     <table class="options_tb">
-      <tr>
-       <td>
-        <input type="checkbox" name="get_unsub_notice" id="get_unsub_notice" value="1" <!-- tmpl_if list_settings.get_unsub_notice -->checked="checked"<!--/tmpl_if --> />
-       </td>
-       <td>
-        <p>
-         <label for="get_unsub_notice"> 
-          Send Unsubscription Notifications
-         </label>
-         <br />
-         Send Unsubscription Notifications to: <!-- tmpl_var send_unsubscription_notice_to_popup_menu -->
-        </p>
-       </td>
-      </tr>
-      <tr>
+        <tr>
+         <td>
+          <input type="checkbox" name="get_unsub_notice" id="get_unsub_notice" value="1" <!-- tmpl_if list_settings.get_unsub_notice -->checked="checked"<!--/tmpl_if --> />
+         </td>
+         <td>
+          <p>
+           <label for="get_unsub_notice"> 
+            Send Unsubscription Notifications to:
+           </label><!-- tmpl_var send_unsubscription_notice_to_popup_menu -->
+           <input type="text" name="alt_send_unsubscription_notice_to" id="alt_send_unsubscription_notice_to" value="<!-- tmpl_var list_settings.alt_send_unsubscription_notice_to -->" />
+          </p>
+         </td>
+        </tr>
+        <tr>
         <td class="checkbox_container">
         <input type="checkbox" name="send_unsub_success_email" id="send_unsub_success_email" value="1" <!-- tmpl_if list_settings.send_unsub_success_email -->checked="checked"<!--/tmpl_if--> />
        </td>
@@ -830,6 +827,24 @@
     					</p>
 
 
+    				</td>
+    			</tr>
+    			
+    			<tr> 
+    				 <td class="checkbox_container">
+    					<p>
+    						<input type="checkbox" name="send_admin_unsubscription_notice" id="send_admin_unsubscription_notice" <!-- tmpl_if list_settings.send_admin_unsubscription_notice -->checked="checked"<!-- /tmpl_if --> value="1" /> 	
+    					</p>
+    				</td>
+    				<td>
+    					<p>
+    						<label for="send_admin_unsubscription_notice">
+    							Send Email Notification to:
+    						</label>
+    						<!-- tmpl_var send_admin_unsubscription_notice_to_popup_menu -->
+    					    <input type="text" name="alt_send_admin_unsubscription_notice_to" id="alt_send_admin_unsubscription_notice_to" value="<!-- tmpl_var list_settings.alt_send_admin_unsubscription_notice_to -->" />
+                           	    
+    					</p>
     				</td>
     			</tr>
     </table>
