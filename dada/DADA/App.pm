@@ -8303,6 +8303,9 @@ sub restful_subscribe {
             $data = $json->decode($post_data);
         }
         catch {
+            # What should really be done is to return a custom json doc
+            # saying there was a problem with the POSTDATA - essentially, it
+            # would be blank. 
             warn 'problems decoding POSTDATA: ' . $_;
             warn 'POSTDATA looks like this: ' . $data;
             die '400';
