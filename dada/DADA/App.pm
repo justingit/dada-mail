@@ -66,11 +66,8 @@ sub cgiapp_postrun {
 
 sub setup {
 
-    # warn 'setup';
-
     my $self = shift;
 
-    #   die $self->query->param('flavor');
     $self->start_mode('default');
     $self->mode_param('flavor');
     $self->error_mode('yikes');
@@ -3423,7 +3420,10 @@ sub view_list {
 
             if ( $advanced_search == 1 ) {
                 open my $fh, '<', \$advanced_query || die $!;
+                require CGI;
                 my $new_q = CGI->new($fh);
+                   $new_q->charset($DADA::Config::HTML_CHARSET);
+                
                 $new_q = decode_cgi_obj($new_q);
                 my $partial_sending = partial_sending_query_to_params($new_q);
 
@@ -3618,7 +3618,9 @@ sub mass_update_profiles {
 
     my $advanced_query = xss_filter( scalar $q->param('advanced_query') ) || undef;
     open my $fh, '<', \$advanced_query || die $!;
+    require CGI;
     my $new_q = CGI->new($fh);
+       $new_q->charset($DADA::Config::HTML_CHARSET);
     $new_q = decode_cgi_obj($new_q);
     my $partial_listing = partial_sending_query_to_params($new_q);
 
@@ -3637,6 +3639,7 @@ sub mass_update_profiles {
     $q->param( 'done',              1 );
 
     undef($new_q);
+    require CGI;
     $new_q = CGI->new;
     $new_q->charset($DADA::Config::HTML_CHARSET);
     $new_q->delete_all;
@@ -3944,7 +3947,7 @@ sub subscription_requests {
             $flavor_to_return_to = $return_to;
         }
 
-        my $qs = 'f=' . $flavor_to_return_to . '&type=' . $q->param('type') . '&approved_count=' . $count;
+        my $qs = 'f=' . $flavor_to_return_to . '&type=' . scalar($q->param('type')) . '&approved_count=' . $count;
 
         if ( $return_to eq 'membership' ) {
             $qs .= '&email=' . $return_address;
@@ -3986,7 +3989,7 @@ sub subscription_requests {
             $flavor_to_return_to = $return_to;
         }
 
-        my $qs = 'f=' . $flavor_to_return_to . '&type=' . $q->param('type') . '&denied_count=' . $count;
+        my $qs = 'f=' . $flavor_to_return_to . '&type=' . scalar($q->param('type')) . '&denied_count=' . $count;
 
         if ( $return_to eq 'membership' ) {
             $qs .= '&email=' . $return_address;
@@ -4179,7 +4182,7 @@ sub membership {
         $self->header_type('redirect');
         $self->header_props( -url => $DADA::Config::S_PROGRAM_URL
               . '?flavor=membership&email='
-              . $q->param('email')
+              . scalar($q->param('email'))
               . '&type='
               . $type
               . '&done=1' );
@@ -5151,12 +5154,12 @@ sub add {
         }
 
         # DEV: This whole building of query string is much too messy.
-        my $qs = '&type=' . $q->param('type') . '&new_email_file=' . $q->param('new_email_file');
+        my $qs = '&type=' . scalar($q->param('type')) . '&new_email_file=' . scalar($q->param('new_email_file'));
 
         if ( DADA::App::Guts::strip( scalar $q->param('new_emails') ) ne "" ) {
 
             # DEV: why is it, "new_emails.txt"? Is that supposed to be a variable?
-            my $outfile = make_safer( $DADA::Config::TMP . '/' . $q->param('rand_string') . '-' . 'new_emails.txt' );
+            my $outfile = make_safer( $DADA::Config::TMP . '/' . scalar($q->param('rand_string')) . '-' . 'new_emails.txt' );
 
             open( OUTFILE, '>:encoding(UTF-8)', $outfile )
               or die "can't write to " . $outfile . ": $!";
@@ -5170,7 +5173,7 @@ sub add {
             my $redirect =
                 $DADA::Config::S_PROGRAM_URL
               . '?flavor=add_email&fn='
-              . $q->param('rand_string') . '-'
+              . scalar($q->param('rand_string')) . '-'
               . 'new_emails.txt'
               . $qs
               . '&return_to='
@@ -5195,7 +5198,7 @@ sub add {
             $filename = uriescape($filename);
 
             my $redirect =
-              $DADA::Config::S_PROGRAM_URL . '?flavor=add_email&fn=' . $q->param('rand_string') . '-' . $filename . $qs;
+              $DADA::Config::S_PROGRAM_URL . '?flavor=add_email&fn=' . scalar($q->param('rand_string')) . '-' . $filename . $qs;
 
             $self->header_type('redirect');
             $self->header_props( -url => $redirect );
@@ -5387,7 +5390,7 @@ sub _upload_that_file {
     # warn '$q->param(\'new_email_file\') ' . $q->param('new_email_file');
     return '' if !$filename;
 
-    my $outfile = make_safer( $DADA::Config::TMP . '/' . $q->param('rand_string') . '-' . $filename );
+    my $outfile = make_safer( $DADA::Config::TMP . '/' . scalar($q->param('rand_string')) . '-' . $filename );
 
     # warn ' $outfile ' . $outfile;
 
@@ -8314,10 +8317,15 @@ sub restful_subscribe {
             $data = $json->decode($post_data);
         }
         catch {
-            warn 'problems decoding post data: ' . $_;
+            # What should really be done is to return a custom json doc
+            # saying there was a problem with the POSTDATA - essentially, it
+            # would be blank. 
+            warn 'problems decoding POSTDATA: ' . $_;
+            warn 'POSTDATA looks like this: ' . $data;
             die '400';
         };
-
+        
+        require CGI; 
         $new_q = CGI->new;
         $new_q->charset($DADA::Config::HTML_CHARSET);
 
@@ -8903,7 +8911,9 @@ sub text_list {
     if ($advanced_query) {
         if ( $advanced_search == 1 ) {
             open my $fh, '<', \$advanced_query || die $!;
+            require CGI;
             my $new_q = CGI->new($fh);
+            $new_q->charset($DADA::Config::HTML_CHARSET);
             $new_q           = decode_cgi_obj($new_q);
             $partial_listing = partial_sending_query_to_params($new_q);
         }
@@ -9687,8 +9697,8 @@ sub archive_bare {
 
     my $id = $q->param('id') || undef;
 
-    if ( $c->is_cached( 'archive_bare.' . $list . '.' . $id . '.' . $q->param('admin') . '.scrn' ) ) {
-        return $c->cached( 'archive_bare.' . $list . '.' . $id . '.' . $q->param('admin') . '.scrn' );
+    if ( $c->is_cached( 'archive_bare.' . $list . '.' . $id . '.' . scalar($q->param('admin')) . '.scrn' ) ) {
+        return $c->cached( 'archive_bare.' . $list . '.' . $id . '.' . scalar($q->param('admin')) . '.scrn' );
     }
 
     require DADA::MailingList::Archives;
@@ -9716,7 +9726,7 @@ sub archive_bare {
     }
 
     my $scrn = $la->massaged_msg_for_display( { -key => $id } );
-    $c->cache( 'archive_bare.' . $list . '.' . $id . '.' . $q->param('admin') . '.scrn', \$scrn );
+    $c->cache( 'archive_bare.' . $list . '.' . $id . '.' . scalar($q->param('admin')) . '.scrn', \$scrn );
     return $scrn;
 
 }
@@ -10766,8 +10776,9 @@ sub file_upload {
     my $q    = $self->query();
 
     my $upload_file = shift;
-
-    my $fu   = CGI->new();
+    require CGI;
+    my $fu   = CGI->new;
+    $fu->charset($DADA::Config::HTML_CHARSET);
     my $file = $fu->param($upload_file);
     if ( $file ne "" ) {
         my $fileName = $file;
@@ -11348,12 +11359,12 @@ sub file_attachment {
 
                             if (
                                 $c->is_cached(
-                                    'view_inline_attachment.' . $list . '.' . $id . '.' . $q->param('cid') . '.cid'
+                                    'view_inline_attachment.' . $list . '.' . $id . '.' . scalar($q->param('cid')) . '.cid'
                                 )
                               )
                             {
                                 return $c->cached(
-                                    'view_inline_attachment.' . $list . '.' . $id . '.' . $q->param('cid') . '.cid' );
+                                    'view_inline_attachment.' . $list . '.' . $id . '.' . scalar($q->param('cid')) . '.cid' );
                             }
                             my $scrn = $la->view_inline_attachment(
                                 -id  => scalar $q->param('id'),
@@ -11361,7 +11372,7 @@ sub file_attachment {
                             );
 
                             # Bettin' that it's binary (or at least, unencoded)
-                            $c->cache( 'view_inline_attachment.' . $list . '.' . $id . '.' . $q->param('cid') . '.cid',
+                            $c->cache( 'view_inline_attachment.' . $list . '.' . $id . '.' . scalar($q->param('cid')) . '.cid',
                                 \$scrn );
                             return $scrn;
 
@@ -11369,19 +11380,19 @@ sub file_attachment {
                         else {
                             if (
                                 $c->is_cached(
-                                    'view_file_attachment.' . $list . '.' . $id . '.' . $q->param('filename')
+                                    'view_file_attachment.' . $list . '.' . $id . '.' . scalar($q->param('filename'))
                                 )
                               )
                             {
                                 return $c->cached(
-                                    'view_file_attachment.' . $list . '.' . $id . '.' . $q->param('filename') );
+                                    'view_file_attachment.' . $list . '.' . $id . '.' . scalar($q->param('filename') ));
                             }
                             else {
                                 my $scrn = $la->view_file_attachment(
                                     -id       => scalar $q->param('id'),
                                     -filename => scalar $q->param('filename')
                                 );
-                                $c->cache( 'view_file_attachment.' . $list . '.' . $id . '.' . $q->param('filename'),
+                                $c->cache( 'view_file_attachment.' . $list . '.' . $id . '.' . scalar($q->param('filename')),
                                     \$scrn );
 
                    # Binary. Well, actually, *probably* - how would you figure out the content-type of an attached file?
