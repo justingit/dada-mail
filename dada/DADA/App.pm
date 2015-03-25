@@ -7642,8 +7642,13 @@ sub edit_type {
             admin_subscription_notice_message
             admin_subscription_notice_message_subject
 
+            unsubscription_notice_message
+            unsubscription_notice_message_subject
+            
             admin_unsubscription_notice_message
             admin_unsubscription_notice_message_subject
+            
+            
 
             )
           )
@@ -7655,8 +7660,8 @@ sub edit_type {
             }
             else {
                 my $tmp_setting = $q->param($_);
-                $tmp_setting =~ s/\r\n/\n/g;
-                $q->param( $_, $tmp_setting );
+                   $tmp_setting =~ s/\r\n/\n/g;
+                   $q->param( $_, $tmp_setting );
             }
         }
 
@@ -7693,6 +7698,9 @@ sub edit_type {
                     invite_message_subject                      => undef,
                     admin_subscription_notice_message           => undef,
                     admin_subscription_notice_message_subject   => undef,
+                    
+                    unsubscription_notice_message               => undef, 
+                    unsubscription_notice_message_subject       => undef, 
                     admin_unsubscription_notice_message         => undef,
                     admin_unsubscription_notice_message_subject => undef,
 

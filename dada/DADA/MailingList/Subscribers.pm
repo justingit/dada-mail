@@ -10,7 +10,9 @@ use Try::Tiny;
 use Carp qw(carp croak);
 my $type;
 my $backend;  
-use DADA::Config qw(!:DEFAULT); 	
+use DADA::Config qw(!:DEFAULT); 
+my $t = 0;
+
 BEGIN { 
 	$type = $DADA::Config::SUBSCRIBER_DB_TYPE;
 	if($type eq 'SQL'){ 
@@ -417,14 +419,23 @@ sub admin_remove_subscribers {
 	    }
 	}
 
+    warn '$type:' . $type
+        if $t; 
 	if($type eq 'list') { 
+	    warn q{$self->{ls}->param('send_unsubscribed_by_list_owner_message')} . $self->{ls}->param('send_unsubscribed_by_list_owner_message')
+	        if $t; 
 		if($self->{ls}->param('send_unsubscribed_by_list_owner_message') == 1){
 			require DADA::App::MassSend; 
+			warn 'sending just_unsubscribed_mass_mailing'
+			    if $t; 
+			if($t){ 
+			    require Data::Dumper; 
+			    warn 'addresses:' . Data::Dumper::Dumper($addresses); 
+			}
 			try { 
 				my $dam = DADA::App::MassSend->new({-list => $self->{list}});
 				   $dam->just_unsubscribed_mass_mailing(
 					{ 
-						-list      => $self->{list}, 
 						-addresses => $addresses, 
 					}	
 				); 
@@ -433,7 +444,6 @@ sub admin_remove_subscribers {
 			};
 		}
 		
-		# David 
 		if ( $self->{ls}->param('send_admin_unsubscription_notice') == 1 ) {
 
             require DADA::App::FormatMessages;
@@ -546,7 +556,6 @@ sub admin_remove_subscribers {
                 );
             }
         }
-        # /David
 	}
 	
 	

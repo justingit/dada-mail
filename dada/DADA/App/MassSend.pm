@@ -1978,8 +1978,15 @@ sub just_unsubscribed_mass_mailing {
     my $self = shift;
     my ($args) = @_;
 
+    if($t){ 
+        warn 'just_unsubscribed_mass_mailing'; 
+        require Data::Dumper; 
+        warn '$args:' . Data::Dumper::Dumper($args); 
+    }
+    
+        
     my $type = '_tmp-just_unsubscribed-' . time;
-    if ( !$args->{-addresses}->[0] ) {
+    if ( ! $args->{-addresses}->[0] ) {
         if ( exists( $args->{-send_to_everybody} ) ) {
             $self->{lh_obj}->clone(
                 {
