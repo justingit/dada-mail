@@ -1,6 +1,10 @@
 <!-- begin list_options_screen.tmpl -->
 
+
 <!-- tmpl_set name="title" value="Your Mailing List &#187; Options" -->
+<!-- tmpl_set name="load_jquery_validate" value="1" -->
+
+
 <div id="screen_meta" data-menu_highlight="list_options"></div>
 <div id="list_options"></div> 
 
@@ -17,7 +21,7 @@
 
 
 
-<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" id="list_options_form" name="list_options_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 
 <fieldset><legend>Mailing List Mode</legend>
 
