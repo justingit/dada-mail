@@ -3792,7 +3792,7 @@ Bridge connects your mail reader with Dada Mail, allowing you to send both annou
 
 Messages are received by sending these messages to the B<List Email>, which you will have to set up separately to this plugin. 
 
-The List Email can be either a regular B<POP3 email account>, which Bridge will log into on a schedule, or an B<Email Forward>, which will forward the message directly to the Bridge. 
+The List Email can be either a regular B<POP3 email account>, which Bridge will log into on a schedule (cronjob), or an B<Email Forward>, which will forward the message directly to the Bridge. 
 
 =head1 User Guide
 
@@ -3874,7 +3874,7 @@ L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod>
 
 Bridge has a very important option labeled, B<Send messages, "On Behalf Of" (p.p. mode) >. If you are running a discussion list, you will want this option checked, to make sure mail delivery works. 
 
-This feature was introduced in v7.3.0 of Dada Mail and has been refined since. If you're running a version of Dada Mail below v7.3.0 and are running a discussion list, it's import to upgrade, to make sure your discussion list is running correctly. 
+This feature was introduced in v7.3.0 of Dada Mail and has been refined since. If you're running a version of Dada Mail below v7.3.0 and are running a discussion list, it's important to upgrade to make sure your discussion list is running correctly. 
 
 =head2 Testing Bridge
 
@@ -3961,7 +3961,6 @@ C<Check_Multiple_Return_Path_Headers> is another validity test for received mess
 
 =head1 Debugging 
 
-
 =head2 Debugging your POP3 account information
 
 The easiest way to debug your POP3 account info is to actually test it out. 
@@ -3989,7 +3988,7 @@ and:
 
 (changing them to their real values) when prompted. This is basically what bridge.cgi does itself. 
 
-If you don't have a command line, try adding an account in a desktop mail reader. If these credentials work there, they'll most likely work for bridge.cgi. 
+If you don't have command line access, try adding an account in a desktop mail reader. If these credentials work there, they'll most likely work for Bridge. 
 
 If your account information is correct and also logs in when you test the pop3 login information through bridge.cgi yourself, check to see if there isn't an email filter attached the account that looks at messages before they're delivered to the POP3 Mailbox and outright deletes messages because it triggered a flag. 
 

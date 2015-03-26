@@ -832,15 +832,6 @@ sub version {
 
 =head1 Bounce Handler
 
-=head1 User Guide
-
-For a guide on using Bounce Handler, see the B<Dada Mail Manual>: 
-
-L<http://dadamailproject.com/pro_dada/using_bounce_handler.html>
-
-For more information on Pro Dada/Dada Mail Manual: 
-
-L<http://dadamailproject.com/purchase/pro.html>
 
 Bounce Handler intelligently handles bounces from Dada Mail mailing list messages.
 
@@ -852,6 +843,16 @@ The B<parsed> message will then be B<examined> and an B<action> will be taken.
 
 The usual action that is taken is to apply a B<score> to the email address that has bounced the message. Once the B<Score Threshold> is reached, the email address is unsubscribed from the mailing list. 
 
+=head1 User Guide
+
+For a guide on using Bounce Handler, see the B<Dada Mail Manual>: 
+
+L<http://dadamailproject.com/pro_dada/using_bounce_handler.html>
+
+For more information on Pro Dada/Dada Mail Manual: 
+
+L<http://dadamailproject.com/purchase/pro.html>
+
 =head1 Obtaining a Copy of the Plugin
 
 Bounce Handler is located in the, I<dada/plugins> directory of the main Dada Mail distribution, under the filename, B<bounce_handler>
@@ -862,7 +863,7 @@ Bounce Handler is located in the, I<dada/plugins> directory of the main Dada Mai
 
 Bounce Handler works by checking a email address via POP3. (IMAP is not supported).  
 
-You will need to create a new email address account for Bounce Handler to utilize. 
+You will need to create a new email address account manually for Bounce Handler to utilize. 
 
 Example: create B<bounces@yourdomain.com>, where, I<yourdomain.com> is the name of the domain Dada Mail is installed on.
 
@@ -899,7 +900,6 @@ Once Dada Mail installed, all new mailing lists will use the Bounce Handler's em
 Bounce Handler runs in the background on a schedule. Make sure to set Dada Mail's cronjob: 
 
 L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod>
-
 
 =head1 FAQ
 
