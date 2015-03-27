@@ -10,8 +10,6 @@ Key:
 [*] Naw...
 [?] Someday
 
-alt. dir for .dada_files during install - works? 
-
 git checkout new_master
 # merge master - ignoring master's changes
 git merge -s ours master
@@ -21,12 +19,12 @@ git merge new_master
 # now new_master can be deleted
 
 
-[ ] global size restricturions need to be per list in bridge
+[x] global size restrictions need to be per list in bridge
+    [] change documentation
+    
+[] global option to enable/disable modal menu on subscription form?
 
-[] global option to enable/disable modal meny on subscription form?
-
-[ ] Things for CGI::App migration: 
-
+[ ] Things for CGI::App migration:
 
     Perhaps figure out forking stuff, first? 
 

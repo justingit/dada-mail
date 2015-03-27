@@ -6,27 +6,6 @@ The File Formats for much of Dada Mail's list settings, archives, etc are very b
 
 Currently, Dada Mail is shipped with support for three different types of backends for the subscription list. They are: 
 
-=head2 PlainText
-
-The default backend is, B<PlainText>. Each list has one file, named, I<listshortname.list>, where I<listshortname> is the list's short name. This file is saved wherever the I<$FILES> Config.pm variable is set to. This file is where the subscribers to your mailing list are saved. 
-
-
-The internal file format is simply one email address per line, with a newline (in Perl, "\n") separated each line. The end of the file has an extra newline. 
-
-For example: 
-
- one@example.com
- two@example.com
- three@example.com
-  
-
-There are currently two other subscription lists that are associated with a Mailing List. They are the, B<black list> and B<invitation list>. 
-
-The blacklist is saved in a file with the same file format, except it has a, B<black_list> file ending, example: B<listshortname.black_list>. 
-
-The Invitation list has the same file format as the regular subscription list, except that it has a, B<invitelist> file ending, example: <listshortname.invitelist>
-
-
 =head2 Postgres
 
 Dada Mail also supports a Postgres based subscription list backend. 
@@ -80,39 +59,6 @@ L<http://dadamailproject.com/support/documentation/MailingList_Subscribers.pm.ht
 =head2 List Settings
 
 Currently, Dada Mail is shipped with support for three different types of backends for the List Settings. They are: 
-
-=head2 DBM File
-
-The default backend is, B<Db>. 
-
-Dada Mail can support any DBM File format that's support by the CPAN Perl Module, B<AnyDBM_File>. By default, the following types are support by default: 
-
-=over
-
-=item * DB_File
-
-=item * GDBM_File
-
-=item * NDBM_File
-
-=item * ODBM_File
-
-=back
-
-SDBM_File could also be used, but it's own file format limits the amount of information that can be stored per key value and Dada Mail's archived messages are known to go over this, fairly easily. The DBM file type is picked automatically, first trying DB_File, all the way to ODBM_File. You can set this precedence yourself in the Config.pm variable, B<@AnyDBM_File>
-
-More information:
-
-http://dadamailproject.com/support/documentation/global_variables.pod.html#_anydbm_file
-
-Each list has one file, named, I<mj-listshortname>, where listshortname is the list's short name. This file is saved wherever the I<$FILES> Config.pm variable is set to.
-
-The internal format of list settings is basically: Each key holds a the B<settings name>, the value is the value of the setting itself. 
-
-
-The default key/values are saved in the Config.pm variable, %B<LIST_SETUP_DEFAULTS>. Programically, only the keys that are listed in that hash can be saved in the list settings. 
-
-List Setting values are currently extremely free form. Most of them are simple strings, but some may be either encoded Perl complex data structures, different fields separated by a specific delimeter, or something quite different all together. For the most part, they are simple strings. 
 
 
 =head2 Postgres
@@ -171,93 +117,6 @@ L<http://dadamailproject.com/support/documentation/MailingList_Settings_MySQL.pm
 
 Currently, Dada Mail is shipped with support for three different types of backends for the message archives. They are: 
 
-=head2 DBM File
-
-The default backend is, B<Db>. 
-
-Dada Mail can support any DBM File format that's support by the CPAN Perl Module, B<AnyDBM_File>. By default, the following types are support by default: 
-
-=over
-
-=item * DB_File
-
-=item * GDBM_File
-
-=item * NDBM_File
-
-=item * ODBM_File
-
-=back
-
-SDBM_File could also be used, but it's own file format limits the amount of information that can be stored per key value and Dada Mail's archived messages are known to go over this, fairly easily. The DBM file type is picked automatically, first trying DB_File, all the way to ODBM_File. You can set this precedence yourself in the Config.pm variable, B<@AnyDBM_File>
-
-More information:
-
-http://dadamailproject.com/support/documentation/global_variables.pod.html#_anydbm_file
-
-Each list has one file, named, I<mj-listshortname-archive>, where listshortname is the list's short name. This file is saved wherever the I<$ARCHIVES> Config.pm variable is set to. If the B<$ARCHIVES> variable isn't explicitly set, the value of the B<$FILES> variable is used. 
-
-The internal format of archived messages is basically: Each key holds a simplified message-id for the email message information saved in the value. 
-
-The message id itself is based on the date the message is sent, and the time and date of when it was sent it taken from the key. More information on how this key is created can be found in the I<message_id()> subroutine in DADA::App::Guts: 
-
-http://dadamailproject.com/support/documentation/App_Guts.pm.html#message_id
-
-The value saved is a string, with delimeters to separate the different types of information saved. 
-
-Because the age of this format and the various revisions, the format is quite dirty (for lack of a better word) and shouldn't be used as an example of the pinnacle of using the DBM File format for saving of complex information. 
-
-Anyways...
-
-By default, the delimiter is the string, B<[::]>.
-
-The information that's currently saved, in order of how it is seen in the string is: 
-
-=over
-
-=item * Subject
-
-The message Subject
-
-=item * Message
-
-The actual email message.
-
-B<Note!> That only the main message I<body> is saved in the DBM backend. This backend is not at all MIME-aware, having been made long before Dada Mail become completely MIME aware itself. Look below for more limitations of this format. 
-
-=item * The Format of the email message
-
-Basically states if the email message is a PlainText message, or an HTML  message. This field is fairly free form, being able to accept a Content-Type-like header (text/plain, text/html) or just something like, "Text", or, "HTML". 
-
-=back
-
-An example of the value of a key in the of an archived message DBM would look like this: 
-
- My Subject![::]The actual text of the message![::]text/plain
-
-Where, B<My Subject!> is the Subject of the message, B<The actual text of the message!> is the actual text of the message and, B<text/plain> is the format of the message. 
-
-There are many limitations and known issues of this backend: 
-
-=over
-
-=item * [::] delimiter
-
-The format of the archived message will most likely break in some ways if either the Subject, Message Body or the Format contains the, B<[::]> delimter. Currently, it doesn't look like there's any escaping of this character from any of the fields before saving. 
-
-=item * MIME messages simplified
-
-This particular backend type does not support saving of MIME messages for a few reasons. The headers of an email message are stripped and only a simplified form of the format of the body of the email message is saved (And this is only text or HTML). We haven't had good results in dumping the entire MIME message as the, "Body" field of this backend. For unknown reasons, this seems to cause the backend to be unstable. A workaround to that particular problem may be just to binary encode the message, before saving, but you'd also have to deal with backwards compatibility of older messages archived. 
-
-=item * Message size
-
-Some of the DBM backends only support a specific # of bytes per key value. This is most notable in the SDBM file type, which is now not currently supported by Dada Mail. 
-
-=item * key 
-
-Keys are created using a simple format based on the date of the message sending. Date information isn't encoded in the value, so this is the only place where it's kept. If two or more messages have the exact same date, only one message will be saved, the other messages will be lost. 
-
-=back
 
 
 =head2 Postgres

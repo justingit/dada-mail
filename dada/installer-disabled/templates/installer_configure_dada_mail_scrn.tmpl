@@ -410,12 +410,29 @@
 
 <div id="backend_help" class="clearskiesbox"> 
  
+    <!-- tmpl_unless can_use_DBI --> 
+        <div class="badweatherbox">
+            <p>
+                <strong>
+                    No supported backends can be found! 
+                </strong>
+            </p>
+            
+            <p>
+                You will need to install on of the following Perl database drivers to utilize <!-- tmpl_var PROGRAM_NAME -->:
+            </p>
+                <ul>
+                    <li>DBD::mysql</li>
+                    <li>DBD::Pg</li>
+                    <li>DBD::SQLite</li>
+                </ul>
+        </div>
+    <!-- /tmpl_unless --> 
+
 <p>	
 	<!-- tmpl_var PROGRAM_NAME --> supports a few different types of backends to save its mailing list settings, lists, archive, etc into. 
 </p> 
 <p>	
-	The <strong>Default</strong> backend should be available for almost any server setup, but doesn't allow you to use some of the more 
-	advanced features of <!-- tmpl_var PROGRAM_NAME -->. </p> 
 	<p>The <strong>MySQL</strong>, <strong>PostgreSQL</strong> and <strong>SQLite</strong> 
 		backends allow you to use these advanced features and just require you to fill in the database details.
 If using either the SQL backends, make sure to create a new database before configuring 
@@ -428,12 +445,10 @@ If using either the SQL backends, make sure to create a new database before conf
 </div>
 <p>
 	<select name="backend" id="backend"> 
-		<option value="default">Default Backend</option>
-		<!-- tmpl_if can_use_DBI --> 
 			<option value="mysql" <!-- tmpl_unless can_use_MySQL -->disabled="disabled"<!-- tmpl_else -->selected="selected"<!-- /tmpl_unless -->><!-- tmpl_if can_use_MySQL -->MySQL (recommended)<!-- tmpl_else -->MySQL (not available)<!-- /tmpl_if --></option> 
 			<option value="Pg" <!-- tmpl_unless can_use_Pg -->disabled="disabled"<!-- /tmpl_unless -->>PostgreSQL <!-- tmpl_unless can_use_Pg -->(not available)<!-- /tmpl_unless --></option> 	
 			<option value="SQLite" <!-- tmpl_unless can_use_SQLite -->disabled="disabled"<!-- /tmpl_unless -->>SQLite<!-- tmpl_unless can_use_SQLite -->(not available)<!-- /tmpl_unless --></option> 
-		<!-- /tmpl_if --> 
+	
 	</select>
 </p>
 

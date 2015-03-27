@@ -82,6 +82,16 @@ This is to keep the infrastructure of Dada Mail as simple as possible - there's 
 
 Some plugins had command line interfaces - those interfaces have all been removed in the name of simplicity. 
 
+=head2 Plugin Changes/Enhancements
+
+=head3 Bridge
+
+Setting the maximum size allowed for messages is now done on a per-mailing list basis, rather than as a global setting.
+
+=head3 Tracker 
+
+The line graph on the default screen, showing various analytics across campaigns can be shown normalized by the amount of recipients. 
+
 =head2 Removed Plugins
 
 =head3 Mailing Monitor (mailing_monitor.cgi) 

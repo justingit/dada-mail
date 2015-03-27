@@ -848,7 +848,7 @@ make up the, "what" of your Dada Mail list. The settings hold things like the na
 
 =head2 Mailing List Settings Model
 
-Settings are saved in a key/value pair, as originally, the backend for all this was a dn file - and still is, for the default backend. This module basically manipulates that key/value hash. Very simple. 
+Settings are saved in a key/value pair, as originally, the backend for all this was a dn file. This module basically manipulates that key/value hash. Very simple. 
 
 =head2 Default Values of List Settings
 
