@@ -2131,7 +2131,6 @@ sub delete_list {
         DADA::MailingList::Remove(
             {
                 -name           => $list,
-                -delete_backups => xss_filter( scalar $q->param('delete_backups') ),
             }
         );
 

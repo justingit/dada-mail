@@ -140,10 +140,6 @@ sub Remove {
     }
 
     my $list = $args->{-name};
-    my $delete_backups
-        = $args->{-delete_backups} ? $args->{-delete_backups} : 1;
-
-
 
     require DADA::MailingList::Settings;
 
@@ -174,15 +170,9 @@ sub Remove {
 
 
     my $lh = DADA::MailingList::Subscribers->new({-list => $list});
-
-
-
-    if ( $delete_backups == 1 ) {
-	
-        $ls->removeAllBackups();
-        $la->removeAllBackups(1);
-    }
-
+    	
+    $ls->removeAllBackups();
+    $la->removeAllBackups(1);
 
     #mostly for the SQL backends
 	for(keys  %{$lh->get_list_types }){ 
@@ -297,12 +287,9 @@ This method returns a B<DADA::MailingList::Settings> object.
 
 =head2 Remove
 
- DADA::MailingList::Remove({ -name => 'mylist', -delete_backups => 1}); 
+ DADA::MailingList::Remove({ -name => 'mylist'}); 
 
-Removes a Mailing List. the B<-name> parameter is required. B<-delete_backups> 
-is optional, but when set to 1, will remove any backups of the list settings, 
-archives or schedules. 
-
+Removes a Mailing List. the B<-name> parameter is required.
 =head1 AUTHOR
 
 Justin Simoni - http://dadamailproject.com/contact

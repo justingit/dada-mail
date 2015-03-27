@@ -838,6 +838,18 @@ $(document).ready(function() {
 		});
 	}
 	
+	if ($("#delete_list_screen").length) { 
+		$("body").on("submit", "#delete_list_form", function(event) {
+			if (confirm('Delete Mailing List? This cannot be undone.')) {
+				return true; 
+			}
+			else { 
+				alert("Cancelled."); 
+				return false;
+			}
+		}); 
+	}
+	
 	// Mail Sending >> Advanced Options
 	if ($("#adv_sending_preferences").length) {
 		$("#misc_options").hide();

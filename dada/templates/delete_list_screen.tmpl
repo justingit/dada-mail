@@ -2,6 +2,7 @@
 
 <!-- tmpl_set name="title" value="Your Mailing List &#187; Delete This Mailing List" -->
 <div id="screen_meta" data-menu_highlight="delete_list"></div>
+<div id="delete_list_screen"></div> 
 
 
 <div id="screentitle"> 
@@ -25,18 +26,11 @@
 
 <fieldset> 
 	
-<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" id="delete_list_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
 
 
-<input type="hidden" name="f"       value="delete_list" />
+<input type="hidden" name="flavor"  value="delete_list" />
 <input type="hidden" name="process" value="true" />
-
-<p>
- <input type="checkbox" name="delete_backups" value="1" checked="checked" />
- <strong>
-  Delete List Backups
- </strong>
-</p>
 
 <div class="buttonfloat">
  <input type="submit" class="alertive" value="Delete Your Mailing List (<!-- tmpl_var name="list_settings.list_name" ESCAPE="HTML" -->)" />
