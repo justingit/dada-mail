@@ -307,13 +307,12 @@ General
 
 
  <table width="100%" cellspacing="0" cellpadding="5">
+
   <tr>
     <td width="20">
     <input name="disable_discussion_sending" id="disable_discussion_sending" type="checkbox" value="1" <!--tmpl_if list_settings.disable_discussion_sending -->checked="checked"<!--/tmpl_if--> />
    </td>
    <td>
-   
-    
     <p>
      <label for="disable_discussion_sending">
       Disable Bridge
@@ -325,9 +324,6 @@ General
 		<!-- /tmpl_if -->
 		will be deleted.     
     </p>
-   
-   
-   
    </td>
   </tr>
 
@@ -362,7 +358,35 @@ General
 	  </table> 
 	 </p>
 	</td>
-	</tr>   
+	</tr>  
+	
+	<tr>
+      <td width="20">
+          &nbsp;
+     </td>
+     <td>
+      <p>
+       <label for="msg_soft_size_limit">
+        Soft Max Size of Messages: <!-- tmpl_var msg_soft_size_limit_popup_menu -->
+       </label>
+      </p>
+     </td>
+    </tr>
+
+	<tr>
+      <td width="20">
+          &nbsp;
+     </td>
+     <td>
+      <p>
+       <label for="msg_hard_size_limit">
+        Hard Max Size of Messages: <!-- tmpl_var msg_hard_size_limit_popup_menu -->
+       </label>
+      </p>
+     </td>
+    </tr>
+
+    
    </table> 
 
 

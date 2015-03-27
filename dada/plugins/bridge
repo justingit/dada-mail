@@ -49,20 +49,6 @@ $Plugin_Config->{Plugin_Name} = 'Bridge';
 
 $Plugin_Config->{MessagesAtOnce} = 1;
 
-# Is there a limit on how large a single email message can be, until we outright # reject it?
-# In, "octets" (bytes) - this is about 2.5 megs...
-#
-# Soft_Max_Size_Of_Any_Message is the limit to reach before we email the
-# original sending, telling them that the message is too large
-
-$Plugin_Config->{Soft_Max_Size_Of_Any_Message} = 1048576;    # 1   meg
-
-# Max_Size_Of_Any_Message is the limit to reach before we just simply
-# ignore and remove the message. The reason why we'd ignore and remove is that
-# the message is too large to even process!
-
-$Plugin_Config->{Max_Size_Of_Any_Message} = 2621440;    # 2.5 meg
-
 $Plugin_Config->{Allow_Open_Discussion_List} = 0;
 
 # Another Undocumented feature - Room for one more?
@@ -632,6 +618,9 @@ sub edit {
 
     my %bridge_settings_defaults = (
         disable_discussion_sending                 => 0,
+        
+        msg_soft_size_limit                        => undef, 
+        msg_hard_size_limit                        => undef,
         group_list                                 => 0,
         group_list_pp_mode                         => 0,
         group_list_pp_mode_from_phrase             => undef,
@@ -765,8 +754,35 @@ sub edit {
         -id       => 'digest_schedule',
     );
 
-    my $curl_location = `which curl`;
-    $curl_location = strip( make_safer($curl_location) );
+    my $msg_sizes = { 
+        1048576  => '1 Megabyte',
+        2097152  => '2 Megabytes', 
+        2621440  => '2.5 Megabytes',
+        3145728  => '3 Megabytes', 
+        4194304  => '4 Megabytes', 
+        5242880  => '5 Megabytes', 
+        6291456  => '6 Megabytes', 
+        7340032  => '7 Megabytes', 
+        8388608  => '8 Megabytes', 
+        9437184  => '9 Megabytes', 
+        10485760 => '10 Megabytes',
+        20971520 => '20 Megabytes',
+    }; 
+	
+    my $msg_soft_size_limit_popup_menu= $q->popup_menu(
+        '-values' => [sort  {$a <=> $b} keys %$msg_sizes],
+        -labels   => $msg_sizes, 
+        -default  => $ls->param('msg_soft_size_limit'),
+        -name     => 'msg_soft_size_limit',
+        -id       => 'msg_soft_size_limit',
+    );
+    my $msg_hard_size_limit_popup_menu  = $q->popup_menu(
+        '-values' => [sort  {$a <=> $b} keys %$msg_sizes],
+        -labels   => $msg_sizes, 
+        -default  => $ls->param('msg_hard_size_limit'),
+        -name     => 'msg_hard_size_limit',
+        -id       => 'msg_hard_size_limit',
+    );
 
     require DADA::Template::Widgets;
 
@@ -819,13 +835,14 @@ sub edit {
                 Allow_Manual_Run               => $Plugin_Config->{Allow_Manual_Run},
                 Plugin_URL                     => $DADA::Config::S_PROGRAM_URL,
                 Manual_Run_Passcode            => $Plugin_Config->{Manual_Run_Passcode},
-                curl_location                  => $curl_location,
                 can_use_ssl                    => $can_use_ssl,
                 done                           => $done,
                 authorized_senders_count       => $auth_senders_count,
                 moderators_count               => $moderators_count,
                 has_discussion_pop_password    => $has_discussion_pop_password,
                 discussion_pop_auth_mode_popup => $discussion_pop_auth_mode_popup,
+                msg_soft_size_limit_popup_menu => $msg_soft_size_limit_popup_menu, 
+                msg_hard_size_limit_popup_menu => $msg_hard_size_limit_popup_menu, 
                 can_use_spam_assassin          => &can_use_spam_assassin(),
                 spam_level_popup_menu          => $spam_level_popup_menu,
                 find_spam_assassin_score_by_calling_spamassassin_directly =>
@@ -963,7 +980,12 @@ sub start {
             $r .= "\n";
             $r .= "Message Size: " . $msgnums->{$msgnum} . "\n";
             
-            my ($mmt_status, $mmt_r) = max_msg_test( { -size => $msgnums->{$msgnum} } );
+            my ($mmt_status, $mmt_r) = max_msg_test( 
+                { 
+                    -size    => $msgnums->{$msgnum},
+                    -ls_obj => $ls,
+                 } 
+            );
             $r .= $mmt_r; 
             
             if ($mmt_status  == 0 ) {
@@ -978,7 +1000,12 @@ sub start {
 
             push( @{ $checksums->{$list} }, create_checksum( \$full_msg ) );
 
-            my ($smmt_status, $smmt_r) = soft_max_msg_test( { -size => $msgnums->{$msgnum} } );
+            my ($smmt_status, $smmt_r) = soft_max_msg_test( 
+                { 
+                    -size => $msgnums->{$msgnum},
+                    -ls_obj => $ls, 
+                 } 
+            );
             $r .= $smmt_r; 
             
             if ( $smmt_status == 0 ) {
@@ -1091,20 +1118,22 @@ sub max_msg_test {
 
     my ($args) = @_;
 
+    my $ls = $args->{-ls_obj}; 
+
     my $r      = '';
     my $size   = $args->{-size};
 
-    if ( $size > $Plugin_Config->{Max_Size_Of_Any_Message} ) {
+    if ( $size > $ls->param('msg_hard_size_limit') ) {
 
         $r .=
             "\t* Warning! Message size ( "
           . $size
           . " ) is larger than the maximum size allowed ( "
-          . $Plugin_Config->{Max_Size_Of_Any_Message} . " )\n";
+          . $ls->param('msg_hard_size_limit') . " )\n";
         warn "bridge Warning! Message size ( "
           . $size
           . " ) is larger than the maximum size allowed ( "
-          . $Plugin_Config->{Max_Size_Of_Any_Message} . ")";
+          . $ls->param('msg_hard_size_limit') . ")";
         return ( 0, $r );
     }
     else {
@@ -1118,20 +1147,22 @@ sub soft_max_msg_test {
 
     my ($args) = @_;
 
+    my $ls = $args->{-ls_obj}; 
+    
     my $r = '';
 
     my $size = $args->{-size};
-    if ( $size > $Plugin_Config->{Soft_Max_Size_Of_Any_Message} ) {
+    if ( $size > $ls->param('msg_soft_size_limit') ) {
 
         $r .=
             "\t* Warning! Message size ( "
           . $size
           . " ) is larger than the soft maximum size allowed ( "
-          . $Plugin_Config->{Soft_Max_Size_Of_Any_Message} . " )\n";
+          . $ls->param('msg_soft_size_limit') . " )\n";
         warn "bridge Warning! Message size ( "
           . $size
           . " ) is larger than the soft maximum size allowed ( "
-          . $Plugin_Config->{Soft_Max_Size_Of_Any_Message} . ")";
+          . $ls->param('msg_soft_size_limit') . ")";
 
         return ( 0, $r );
     }
@@ -1167,7 +1198,12 @@ sub inject_msg {
     my $r;
 
     my $size = ( stat($filename) )[7];
-    my ( $status, $error_msg ) = max_msg_test( { -size => $size } );
+    my ( $status, $error_msg ) = max_msg_test( 
+        { 
+            -size   => $size,
+            -ls_obj => $ls,
+         } 
+    );
     if ( $status == 0 ) {
         return $error_msg;
     }
@@ -1185,7 +1221,12 @@ sub inject_msg {
         warn "Bridge is not enabled to receive mail this way, for this list.";
     }
     else {
-        my ( $status, $error_msg ) = soft_max_msg_test( { -size => $size } );
+        my ( $status, $error_msg ) = soft_max_msg_test( 
+            { 
+                -size => $size,
+                -ls_obj => $ls, 
+            } 
+        );
         if ( $status == 0 ) {
             $r .= $error_msg;
             send_msg_too_big( $ls, \$msg, $size );
@@ -2023,8 +2064,6 @@ sub send_msg_too_big {
                     -vars            => {
                         original_subject         => $subject,
                         size_of_original_message => sprintf( "%.1f", ( $size / 1024 ) ),
-                        Soft_Max_Size_Of_Any_Message =>
-                          sprintf( "%.1f", ( $Plugin_Config->{Soft_Max_Size_Of_Any_Message} / 1024 ) ),
                     }
                 }
             }
@@ -3024,10 +3063,6 @@ sub cgi_edit_email_msgs {
                     done        => $done,
                     Plugin_Name => $Plugin_Config->{Plugin_Name},
                     Plugin_URL  => $DADA::Config::S_PROGRAM_URL,
-                    Soft_Max_Size_Of_Any_Message =>
-                      sprintf( "%.1f", ( $Plugin_Config->{Soft_Max_Size_Of_Any_Message} / 1024 ) ),
-                    Max_Size_Of_Any_Message => sprintf( "%.1f", ( $Plugin_Config->{Max_Size_Of_Any_Message} / 1024 ) ),
-
                 },
                 -list_settings_vars       => $ls->get( -all_settings => 1 ),
                 -list_settings_vars_param => { -dot_it               => 1, },
@@ -3906,8 +3941,6 @@ You can then configure the plugin variables on these lines:
 	
 		Plugin_Name                         => undef,
 		MessagesAtOnce                      => undef,
-		Soft_Max_Size_Of_Any_Message        => undef,
-		Max_Size_Of_Any_Message             => undef,
 		Allow_Open_Discussion_List          => undef,
 		Room_For_One_More_Check             => undef,
 		Enable_POP3_File_Locking            => undef,
@@ -3923,18 +3956,6 @@ The name of the plugin. By default, B<Bridge>.
 =head2 MessagesAtOnce
 
 You can specify how many messages you want to have the program actually handle per execution of the script by changing the, C<MessagesAtOnce> variable. By default, it's set conservatively to, C<1>.
-
-=head2 Max_Size_Of_Any_Message
-
-Sets a hard limit on how large a single message can actually be, before you won't allow the message to be processed. If a message is too large, it'll be simple deleted. A warning will be written in the error log, but the original sender will not be notified.
-
-=head2 Soft_Max_Size_Of_Any_Message
-
-Like its brethren, C<Max_Size_Of_Any_Message> C<Soft_Max_Size_Of_Any_Message> sets the maximum size of a message that's accepted, but
-If the message falls between, C<Soft_Max_Size_Of_Any_Message> and, C<Max_Size_Of_Any_Message> a, "Your email message is too big!" email message will
-be sent to the original poster. 
-
-Set the size in octects. 
 
 =head2 Allow_Open_Discussion_List
 

@@ -27,7 +27,7 @@ but couldn't deliver it to the mailing list because the size of the message,
 
 is larger than the maximum allowed: 
 
-	<!-- tmpl_var Soft_Max_Size_Of_Any_Message --> kilobytes
+	<!-- tmpl_var list_settings.msg_soft_size_limit --> kilobytes
 
 Please try to resend the message again, but within the maximum size allowed, 
 

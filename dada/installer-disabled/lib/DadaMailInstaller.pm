@@ -187,8 +187,6 @@ my %bounce_handler_plugin_configs = (
 
 my %bridge_plugin_configs = (
     MessagesAtOnce                      => { default => 1,       if_blank => 1 },         # Don't want, "0", you know?
-    Soft_Max_Size_Of_Any_Message        => { default => 1048576, if_blank => 1048576 },
-    Max_Size_Of_Any_Message             => { default => 2621440, if_blank => 2621440 },
     Room_For_One_More_Check             => { default => 1,       if_blank => 0 },
     Enable_POP3_File_Locking            => { default => 1,       if_blank => 0 },
     Check_List_Owner_Return_Path_Header => { default => 0,       if_blank => 0 },
@@ -667,8 +665,6 @@ sub scrn_configure_dada_mail {
         for my $d (
             qw(
             MessagesAtOnce
-            Soft_Max_Size_Of_Any_Message
-            Max_Size_Of_Any_Message
             Allow_Manual_Run
             Room_For_One_More_Check
             Enable_POP3_File_Locking

@@ -10,6 +10,8 @@ Key:
 [*] Naw...
 [?] Someday
 
+alt. dir for .dada_files during install - works? 
+
 git checkout new_master
 # merge master - ignoring master's changes
 git merge -s ours master
@@ -18,6 +20,8 @@ git checkout master
 git merge new_master
 # now new_master can be deleted
 
+
+[ ] global size restricturions need to be per list in bridge
 
 [] global option to enable/disable modal meny on subscription form?
 

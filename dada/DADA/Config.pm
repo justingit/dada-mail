@@ -317,8 +317,6 @@ $PLUGIN_CONFIGS //= {
 		Allow_Manual_Run                    => undef,
 		Manual_Run_Passcode                 => undef,
 		MessagesAtOnce                      => undef,
-		Soft_Max_Size_Of_Any_Message        => undef,
-		Max_Size_Of_Any_Message             => undef,
 		Allow_Open_Discussion_List          => undef,
 		Room_For_One_More_Check             => undef,
 		Enable_POP3_File_Locking            => undef,
@@ -1685,6 +1683,10 @@ $MIME_OPTIMIZE     //= 'no tmp files';
     
     msg_received_msg_subject => undef, 
     msg_received_msg         => undef, 
+    
+    msg_soft_size_limit      => 2621440, 
+    msg_hard_size_limit      => 5242880, 
+    
     
     msg_labeled_as_spam_msg_subject => undef,
     msg_labeled_as_spam_msg => undef,
