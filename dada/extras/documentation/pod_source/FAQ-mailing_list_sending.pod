@@ -42,9 +42,7 @@ These are also the default settings for Dada Mail.
 
 =item * Keep the Monitor Your Mailings screen open
 
-After you've submitted a mailing list message, keep that screen open until your message has completed! 
-
-Read below on how to set up a cronjob (scheduled task) to monitor your mailing for you, so you don't have to keep this window open.  
+After you've submitted a mailing list message, keep that screen open until your message has completed. 
 
 =back
 
@@ -211,30 +209,14 @@ That turns on the feature. Have that checked.
 
 =back
 
-=head2 The Mailing Monitor Plugin
 
-The B<Mailing Monitor> plugin, which comes with Dada Mail is designed to run on a schedule, and monitor any outgoing mass mailings. If it detects a mass mailing has stopped sending, it will safely restartt the mass mailing at the point it left off. 
-
-Setting it up correctly means that you B<do not have to keep the Monitor Your Mailings> screen open - monitoring of your mass mailings will happen in the background. 
-
-B<See the Mailing Monitor Plugin Documentation:>
-
-L<http://dadamailproject.com/d/mailing_monitor.cgi.html>
-
-This plugin is designed to be run via cronjob, on a repeating schedule (say, every 5 minutes). 
-
-=head3 Alternatives to the Mailing Monitor Plugin
-
-We highly suggest the Mailing Monitor plugin, but other options are present - you may use any of these options with each other. 
-
-
-=head4 The Monitor Your Mailings Screen 
+=head2 The Monitor Your Mailings Screen 
 
 The B<Monitor Your Mailings> screen will tell you how far along your mass mailing has gone. 
 
 In the list control panel, when you send out a message, by pressing B<Send Mass Mailing> button on the, B<Send a Message> screen (and friends), the screen will refresh and you'll see another screen, stating your mailing is on its way. The screen will refresh again to the B<Monitor Your Mailing> screen.  
 
-Keeping this screen open until your mass mailing has finished will make sure your mass mailing goes to completion. If you haven't set up the cronjob for the Mailing Monitor B<plugin> this is the best way to keep things running smoothly. 
+Keeping this screen open until your mass mailing has finished will make sure your mass mailing goes to completion. 
 
 The Monitor Your Mailings screen should refresh every few seconds to update the status of your mass mailing. During a refresh, if Dada Mail sees a mailing has been dropped, it will automatically pick up the lost mailing at the exact spot it was dropped.
 

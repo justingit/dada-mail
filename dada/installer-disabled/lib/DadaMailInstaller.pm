@@ -485,7 +485,7 @@ sub cl_run {
     chomp($curl_location); 
     
     $r .= "Cronjob Example:\n\n"; 
-    $r .= $curl_location . ' -s --get --url ' . $dash_opts->{'-program_url'} . '/' . $sched_flavor . '/_all/_all/_verbose/' . "\n\n";
+    $r .= $curl_location . ' -s --get --url ' . $dash_opts->{'-program_url'} . '/' . $sched_flavor . '/_all/_all/_silent/' . "\n\n";
     
     $self->header_type('none');
     

@@ -274,7 +274,7 @@ If you're using  a different email address for your mailing list's List Owner, a
 
 This can be a little tricky, if the account for the List Administrator Address is being checked by the Bounce Handler, to process any bounced messages sent back from your mailing list. 
 
-What you'll basically need to do is check the POP3 mailbox of your Bounce Handler, before the Bounce Handler does. Easiest way to do that, is to remove the cronjob that runs the Bounce Handler on a schedule, send the Amazon SES sender verification email (using the same steps above), log into the email account yourself, find the message sent by Amazon SES and click on the verification email found in that message. Once that's done, you can reset the cronjob for the Bounce Handler, is it was before. 
+What you'll basically need to do is check the POP3 mailbox of your Bounce Handler, before the Bounce Handler does. Easiest way to do that, is to remove the app cronjob, send the Amazon SES sender verification email (using the same steps above), log into the email account yourself, find the message sent by Amazon SES and click on the verification email found in that message. Once that's done, you can reset the cronjob as it was before. 
 
 =head4 Other Ways to Verify a Sender
 

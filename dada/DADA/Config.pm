@@ -1654,8 +1654,8 @@ $MIME_OPTIMIZE     //= 'no tmp files';
     discussion_pop_auth_mode => 'BEST',
     discussion_pop_use_ssl   => 0,
 
-    send_not_allowed_to_post_msg => 0,
-    send_invalid_msgs_to_owner   => 0,
+    send_not_allowed_to_post_msg => 1,
+    send_invalid_msgs_to_owner   => 1,
     send_msg_copy_to             => 0,
     rewrite_anounce_from_header  => 1,
     discussion_clean_up_replies  => 0,

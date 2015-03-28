@@ -80,7 +80,7 @@ sub mail_pop3client_login {
 	}
 	else { 
 	    
-        $r .= "\tLogging into POP3 server: " . $args->{server} . "\n"; 
+        $r .= "\t* Logging into POP3 server '" . $args->{server} . "'\n"; 
     
         my $pop = new Mail::POP3Client(%$params);
            $pop->User( $args->{username} );
@@ -89,13 +89,13 @@ sub mail_pop3client_login {
            $pop->Connect() >= 0 || die $pop->Message();
        
            if($pop->Count == -1){ 
-                $r .= "\tConnection to '" . $args->{server} . "' wasn't successful: " . $pop->Message() . "\n";
+                $r .= "\t*Connection to '" . $args->{server} . "' wasn't successful: " . $pop->Message() . "\n";
            	   return ( undef, 0, $r );
 	    
     		}
            else { 
-                $r .= "\tPOP3 Login succeeded.\n";
-                $r .= "\n\tMessage count: " . $pop->Count . "\n";
+                $r .= "\t* POP3 Login succeeded.\n";
+                $r .= "\t* Message count: " . $pop->Count . "\n";
            }
            return ( $pop, 1, $r );
       }

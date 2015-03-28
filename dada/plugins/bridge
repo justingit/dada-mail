@@ -397,10 +397,6 @@ EOF
 sub admin_cgi_manual_start_ajax {
 
     my $q = shift; 
-    
-    $run_list        = $list;
-    $verbose         = 1;
-    $check_deletions = 1;
     my $r = '';
        $r .= '<pre>';     # DEV no like.
        $r .= start($list);
@@ -897,10 +893,11 @@ sub scheduled_task {
 }
 
 sub start {
+    
+    my $list_to_run = shift;
     reset_globals();
-    my $list_to_run = shift || undef; 
+    
     my $r;
-
     my @lists = ();
     if ( ! defined($list_to_run) ) {
         @lists = available_lists( -In_Random_Order => 1 );
@@ -910,10 +907,9 @@ sub start {
     }
 
   my $messages_viewed = 0;
+    
   LIST_QUEUE: for my $list (@lists) {
         
-        $r .= "list: " . $list . "\n\n";
-         
         if ( $messages_viewed >= $Plugin_Config->{MessagesAtOnce} ) {
             $r .= "\n\nThe limit has been reached of the amount of messages to be looked at for this execution\n\n";
             last;
@@ -921,7 +917,7 @@ sub start {
 
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
-        $r .= "\n" . '-' x 72 . "\nMailing List: " . $ls->param('list_name') . ' (' . $list . ")\n";
+        $r .= "Mailing List: " . $ls->param('list_name') . ' (' . $list . ")\n";
 
         if ( $ls->param('disable_discussion_sending') == 1 ) {
             $r .= "\t* Bridge is not enabled for, $list \n";
@@ -1087,12 +1083,12 @@ sub start {
     $r .= "\nProcessing Digests:\n" . '-' x 72 . "\n";
 
   DIGEST_QUEUE: for my $list (@lists) {
-
-      $r .= "list: " . $list . "\n\n";
-      
-      
+            
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
+        $r .= "Mailing List: " . $ls->param('list_name') . ' (' . $list . ")\n";
+        
+        
         if ( $ls->param('disable_discussion_sending') == 1 ) {
             $r .= "\t* Bridge is not enabled for, $list \n";
             next DIGEST_QUEUE;

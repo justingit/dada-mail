@@ -8,7 +8,7 @@ Only one cronjob is required for all scheduled tasks in Dada Mail. It is compose
 
 Here's an exmaple: 
 
-L<http://example.com/cgi-bin/dada/mail.cgi/_sched513A3F128C5C41EC/_all/_all/_verbose/>
+L<http://example.com/cgi-bin/dada/mail.cgi/_sched513A3F128C5C41EC/_all/_all/_silent/>
 
 C<http://example.com/cgi-bin/dada/mail.cgi> is just the URL to your Dada Mail, 
 
@@ -22,11 +22,11 @@ C</usr/bin/curl  -s --get --url> is the curl command, with different paramaters 
 
 C<http://example.com/cgi-bin/dada/mail.cgi/_sched513A3F128C5C41EC/_all/_all/_silent/> 
 
-is the URL we want to grab. We've modified it slightly from what was originally shown (C<_silent>, instead of, C<_verbose>), which we'll explain below. 
+is the URL we want to grab.
 
 =head2 Schedule Flavor
 
-C<_sched513A3F128C5C41EC> is an individual B<flavor> for our specific install of Dada Mail. It's meant to be somewhat unique, so that someone nefarious doesn't start running all the schedules for all Dada Mail installations it can find. 
+C<_sched513A3F128C5C41EC> is an individual B<flavor> for our specific install of Dada Mail. It's meant to be somewhat unique, so that someone nefarious doesn't start running all the schedules for all Dada Mail installations it can find.
 
 This flavor can be set when installing Dada Mail via the Dada Mail Installer. It can also be set manually in your C<.dada_config> file, in the C<SCHEDULED_JOBS_OPTIONS> hashref. Look for the C<scheduled_jobs_flavor> paramater.
 
@@ -64,7 +64,7 @@ The next value in the path, C<_all>  (and then second C<_all> found) describes w
 
 =head2 Job Output
 
-By Default, this is set to, C<_verbose> which will print out the output for all the jobs run. If you would like to suppress this, you can by setting this to, C<_silent>. 
+By Default, this is set to, C<_verbose> which will print out the output for all the jobs run. If you would like to suppress this, you can, by setting this to, C<_silent>. 
 
 Another option is to supress the output in the cronjob itself, like this: 
 

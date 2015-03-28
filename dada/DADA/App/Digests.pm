@@ -170,17 +170,17 @@ sub send_digest {
 
     my $digest_last_archive_id_sent = $self->{ls_obj}->param('digest_last_archive_id_sent') || undef;
      if(defined($digest_last_archive_id_sent)){ 
-         $r .= 'Last Archived Message ID Sent: ' . $digest_last_archive_id_sent
-         . '(' . scalar(localtime($self->archive_time_2_ctime($self->{ls_obj}->param('digest_last_archive_id_sent')))) .')' . "\n";
+         $r .= "\t *" . 'Last Archived Message ID Sent: ' . $digest_last_archive_id_sent
+         . ' (' . scalar(localtime($self->archive_time_2_ctime($self->{ls_obj}->param('digest_last_archive_id_sent')))) .')' . "\n";
      }
      else { 
-         $r .= 'No archived messages sent as a digest.' . "\n"; 
+         $r .= "\t * No archived messages sent as a digest.\n"; 
      }
 
      if(defined($digest_last_archive_id_sent)){ 
          my $time_since_last_digest_sent = $self->{ctime} - $self->archive_time_2_ctime($digest_last_archive_id_sent);
-         $r .= 'Digests sent every: '   . formatted_runtime($self->{ls_obj}->param('digest_schedule')) . "\n"; 
-         $r .= 'Last digest message sent: ' . formatted_runtime($time_since_last_digest_sent) . " ago.\n"; 
+         $r .= "\t* Digests sent every: " .      formatted_runtime($self->{ls_obj}->param('digest_schedule')) . "\n"; 
+         $r .= "\t*Last digest message sent: " . formatted_runtime($time_since_last_digest_sent) . " ago.\n"; 
      }
      
     if ( $self->should_send_digest ) {

@@ -69,31 +69,31 @@ sub run_schedules {
     }
     my $t    = time; 
     
-    my $r = 'Running Schedules for, ' . $self->{list} . "\n";
+    my $r = "Running Schedules for, " . $self->{list} . "\n";
        $r .= '-' x 72 . "\n";
-       $r .= 'Current Server Time: ' . scalar(localtime($t)) . "\n";  
-       $r .= 'Schedules Last Run: ' . scalar(localtime($self->{ls_obj}->param('schedule_last_checked_time'))) . "\n"; 
+       $r .= "\t* Current Server Time: " . scalar(localtime($t)) . "\n";  
+       $r .= "\t* Schedules Last Run: " . scalar(localtime($self->{ls_obj}->param('schedule_last_checked_time'))) . "\n"; 
 
     my $count = $self->{d_obj}->count({-role => 'schedule'});
 
     if($count <= 0){ 
-        $r .= "No Schedules currently saved\n";
+        $r .= "\t* No Schedules currently saved\n";
     }     
     else { 
-        $r .= "$count Schedules\n";
+        $r .= "\t* $count Schedules\n";
     }
     my $index = $self->{d_obj}->draft_index({-role => 'schedule'});
     SCHEDULES: for my $sched(@$index){ 
-        $r .= "\n\nSubject: " . $sched->{Subject} . "\n"; 
+        $r .= "\n*\t\t Subject: " . $sched->{Subject} . "\n"; 
         
         if($sched->{schedule_activated} != 1){ 
-            $r .= "Schedule is NOT Activated.\n"; 
+            $r .= "\t\t* Schedule is NOT Activated.\n"; 
             next SCHEDULES; 
-            $r .= "Schedule is Activated!\n"; 
+            $r .= "\t\t* Schedule is Activated!\n"; 
         }
         
         if($sched->{schedule_time} < ($t - 86400)) { # was this supposed to be sent a day ago? 
-            $r .= 'Schedule is too late to run - should have ran ' . formatted_runtime($t - $sched->{schedule_time}) . ' ago.' . "\n"; 
+            $r .= "\t\t* Schedule is too late to run - should have ran " . formatted_runtime($t - $sched->{schedule_time}) . ' ago.' . "\n"; 
             $r .= "Deactivating Schedule...\n"; 
             $self->deactivate_schedule(
                 {
@@ -105,19 +105,19 @@ sub run_schedules {
             next SCHEDULES;
         }
         else {     
-            $r .= 'Schedule to run at: ' . $sched->{schedule_localtime} . "\n"; 
+            $r .= "\t\t* Schedule to run at: " . $sched->{schedule_localtime} . "\n"; 
         }
         
         
         my $last_checked = $self->{ls_obj}->param('schedule_last_checked_time'); 
                 
         if($sched->{schedule_time} > $t){ 
-            $r .= "Schedule will run " . formatted_runtime($sched->{schedule_time} - $t)   ." from now\n";
+            $r .= "\t\t* Schedule will run " . formatted_runtime($sched->{schedule_time} - $t)   ." from now\n";
             next SCHEDULES; 
         }
         
         if($sched->{schedule_time} >= $self->{ls_obj}->param('schedule_last_checked_time')){ 
-            $r .= "Schedule running now!\n";
+            $r .= "\t\t\t* Schedule running now!\n";
             
            my ($status, $errors, $message_id) = $self->{ms_obj}->construct_and_send(
                 {
@@ -128,12 +128,12 @@ sub run_schedules {
                 }
             );
             if($status == 1){ 
-                $r .= "Scheduled Mass Mailing added to the Queue, Message ID: $message_id\n"; 
+                $r .= "\t\t* Scheduled Mass Mailing added to the Queue, Message ID: $message_id\n"; 
             }
             else { 
-                $r .= "PROBLEMS with Mass Mailing:\n$errors\n"; 
+                $r .= "\t\t* PROBLEMS with Mass Mailing:\n$errors\n"; 
             }
-            $r .= "Deactivating Schedule...\n"; 
+            $r .= "\t\t* Deactivating Schedule...\n"; 
             $self->deactivate_schedule(
                 {
                     -id     => $sched->{id},
@@ -144,8 +144,8 @@ sub run_schedules {
              
         }
         if($sched->{schedule_time} < $self->{ls_obj}->param('schedule_last_checked_time')){ 
-            $r .= "Schedule SHOULD have been sent, but wasn't\n";
-            $r .= "Deactivating Schedule...\n"; 
+            $r .= "\t\t* Schedule SHOULD have been sent, but wasn't\n";
+            $r .= "\t\t* Deactivating Schedule...\n"; 
              
             $self->deactivate_schedule(
                 {
@@ -158,6 +158,8 @@ sub run_schedules {
     }
     
     $self->{ls_obj}->save({schedule_last_checked_time => time});
+    
+    $r .= "\n"; 
     
     if($args->{-verbose} == 1){ 
         print $r; 
