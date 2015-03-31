@@ -2135,7 +2135,7 @@ sub delete_list {
 
         $c->flush;
 
-        my $logout_cookie = logout( -redirect => 0 );
+      #  my $logout_cookie = logout( -redirect => 0 );
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
@@ -2143,9 +2143,21 @@ sub delete_list {
                 -with   => 'list',
 
                 #	-list   => $list, # The list doesn't really exist anymore now, does it?
-                -wrapper_params => { -header_params => { -COOKIE => $logout_cookie }, }
+                # -wrapper_params => { -header_params => { -COOKIE => $logout_cookie }, }
             }
         );
+        #my $headers = {
+        #    -COOKIE  => $logout_cookie,
+        #}; 
+        
+        require DADA::App::Session;
+        my $dada_session  = DADA::App::Session->new( -List => $list );
+        my $logout_cookie = $dada_session->logout_cookie( -cgi_obj => $q );
+        
+        
+        $self->header_props(
+            -cookie => $logout_cookie, 
+        ); 
         return $scrn;
     }
 }
