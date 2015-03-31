@@ -199,34 +199,17 @@ The, B<Dada Mail Root Password> is the main administrative password to your Dada
 
 =head2 Dada Mail Backend
 
-Dada Mail will need to save its mailing lists and other information in various files and/or an SQL database. Using an SQL database Backend is optional, but we I<highly> suggest using it: 
+Dada Mail will need to save its mailing lists and other information inan SQL database.
 
-=over
+=head3 Choices: MySQL, PostgreSQL or SQLite
 
-=item * upgrades are easier
+Both B<MySQL> and B<PostgreSQL> will have the same features available and work under the hood, basically the same way. We recommend either equally.
 
-=item * your information will be saved more securely
-
-=item * any migrations you do will be easier, more and fancier features will be available for you
-
-=back
-
-=head4 Default 
-
-Select B<Default> if you cannot, do not know how, or do not want the SQL backend option.
-
-=head4 MySQL, PostgreSQL or SQLite
-
-Both B<MySQL> and B<PostgreSQL> will have the same features available and work under the hood, basically the same way.
-
-B<SQLite> is also an option, but we recommend using it for local testing purposes I<only>. 
+B<SQLite> is also an option, but we recommend using it only for local testing purposes. 
 
 When you select one of the SQL backends, you'll also be asked to fill in the SQL connection information, including the database server, the port number, the name of the database itself and the username and password. 
 
-This database has to be set up beforehand. It's not too hard to do if you have a cPanel w/phpMyAdmin to help you along. Just note the B<Server>, B<Database>, B<Username> and B<Password>, once you create the database (No tables have to be created, beforehand). The SQL user will need full priviliges to your database. We don't suggest, for security reasons, giving this same user any permissions to any other database. 
-
-I<Don't worry about filling any of these out if you've chosen to use the B<SQLite> backend.>
-
+This database has to be set up beforehand. It's not too hard to do if you are running an account under cPanel w/phpMyAdmin to help you along. Just note the B<Server>, B<Database>, B<Username> and B<Password>, once you create the database (You will not need to create any tables beforehand). The SQL user will need full priviliges to your database. For security reasons, we don't suggest giving this same user any permissions to any other database. 
 
 =over
 
@@ -259,9 +242,9 @@ A button labeled, B<Test Your SQL Connection> when pressed, will run a quick con
 
 =head2 Plugins/Extensions
 
-Optionally, you may also install many of the plugins and extensions that come with Dada Mail. Access to the plugins/extensions will be available in the list control panel's left hand admin menu.
+Optionally, you may also install many of the plugins and extensions that come with Dada Mail. Access to the plugins/extensions will be available in the list control panel's left hand admin menu, under, B<Plugins>
 
-Some of the plugins/extensions have additional configuration that will need to done, before they work completely. For some of these plugins/extensions, you'll need to also set a B<cron job>. 
+Some of the plugins/extensions have additional configuration that will need to done, before they work completely.
 
 One plugin, B<Bounce Handler>, also requires you to fill out the credentials for the Bounce Handler email account you need to set up to capture bounced emails. See the documentation on the Bounce Handler for more information: 
 
@@ -288,16 +271,17 @@ Many of the Advanced Configuration parameters are only available in Pro Dada:
 
 L<http://dadamailproject.com/purchase/pro.html> 
 
+One notable exception is B<Amazon SES support>. 
 
 =head2 Completing the Installation and Configuration. 
 
-Once you've filled out the form completely, just click the, B<Configure Dada Mail!> button. The screen will refresh and go about configuring Dada Mail for your hosting setup. 
+Once you've filled out the form completely, just click the, B<Configure Dada Mail!> button. The screen will refresh and go about configuring Dada Mail for you.
 
 If everything works well (and we hope it does) you should be all set to run Dada Mail.
 
-=head2 Setup the Scheduled Jobs (cronjobs)
+=head2 Setup the Scheduled Job (cronjobs)
 
-For many things in Dada Mail, including making sure your mass mailings are going out correctly, you will need to set up the scheduled jobs.
+For many things in Dada Mail, including making sure your mass mailings are going out correctly, B<you will need to set up the scheduled job>.
 
 The unique command needed to run the required jobs will be shown. More information on the scheduled job: 
 

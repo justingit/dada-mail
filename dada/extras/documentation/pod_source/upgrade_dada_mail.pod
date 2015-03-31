@@ -4,7 +4,7 @@
 
 =head2 Introduction
 
-These docs will guide you through an installation of Dada Mail, originally installed and configured with the included Dada Mail Installer. 
+This doc. will guide you through an upgrade of Dada Mail, originally installed and configured with the included Dada Mail Installer. 
 
 =begin html
 
@@ -16,7 +16,7 @@ These docs will guide you through an installation of Dada Mail, originally insta
 
 =head2 Step #1 Rename the, "dada" Directory
 
-Dada Mail, "The Program" is the collection of files and directories that are in the directory called, C<dada>. 
+Dada Mail, "The App" is the collection of files and directories that are in the directory called, C<dada>. 
 
 The, C<dada> directory has a structure like this: 
 
@@ -28,7 +28,7 @@ The, C<dada> directory has a structure like this:
             - Config.pm
             - etc, etc, etc
 
-This is Dada Mail, B<The Program>
+This is Dada Mail, B<The App>
 
 Simply rename this directory on your hosting account from: 
 
@@ -54,7 +54,7 @@ Moving the directory:
 
 Upgrading will now be similar to installing Dada Mail (L<http://dadamailproject.com/d/install_dada_mail.pod.html>) 
 
-Except, that on the first screen, instead of choosing, "Install" - 
+Except that on the first screen of the Installer, instead of choosing, "Install"...
 
 =head2 Choose, "Upgrade"
 
@@ -65,7 +65,7 @@ A new form field will appear labeled, B<Current .dada_files Location>.
 If it can automatically be found, the textbox will already be filled with
 the absolute path to the parent directory of where the C<.dada_files> directory lives. If this path looks correct, click, B<Continue...>. 
 
-If this isn't the correct location, or no location was pre-filled in, fill in the correct location manually. The installer shouldn't 
+If this isn't the correct location or no location was pre-filled in, fill in the correct location manually. The installer shouldn't 
 allow you to continue, unless this directory is successfully found. 
 
 =head2 Upgrade Options
@@ -74,8 +74,10 @@ Two new options are presented to you in the installer, if you are B<upgrading>.
 
 =head3 Create a new .dada_config file
 
-Select this option if you are B<upgrading between major versions> of Dada Mail. For example, version B<5>.0.0 to version B<6>.0.0 or, 
-from version 6.B<0>.0 to version 6.B<2>.0. 
+(This is what we suggest in most cases)
+
+Select this option if you are B<upgrading between major versions> of Dada Mail. For example, version B<7>.0.0 to version B<8>.0.0 or, 
+from version 8.B<0>.0 to version 8.B<2>.0. 
 
 =head4 Why Create a new .dada_config file? 
 
@@ -89,13 +91,12 @@ If you have manually editing the C<.dada_config> file, note that the installer d
 
 =head3  Use the current .dada_config file
 
-Select this option if you are upgrading between minor versions of Dada Mail. For example, version 5.0.B<0> to 5.0.B<1>. 
+Select this option if you are upgrading between minor versions of Dada Mail. For example, version 8.0.B<0> to 8.0.B<1>. 
 
-The rest of the installer form will be hidden, as no extra configuration is needed. 
 
 
 =head2 Changelog 
 
 It's a B<I<very very>> good idea to look at the changelog and note B<any> incompatibilities between versions. It's possible that incompatibilities could break your installation, when you upgrade. 
 
-Changelog: L<http://dadamailproject.com/d/changes_7_x.pod.html>
+Changelog: L<http://dadamailproject.com/d/changes_8_x.pod.html>

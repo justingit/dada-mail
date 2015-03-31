@@ -22,15 +22,15 @@ Copy the distribution to the directory you would like to install Dada Mail under
 
 =head2 Uncompress the Distribution
 
-Uncompress Dada Mail - this will create a new directory named C<dada>. Change into 
-this directory:
+Uncompress Dada Mail - this will create a new directory named C<dada>.
+Change into this directory:
 
     gunzip dada-8_0_0.tar.gz
     tar -xvf dada-8_0_0.tar
     cd dada
 
-In the C<dada> directory, rename the, "installer-disabled" directory to simply, C<install> and change into this directory. 
-Once in the C<installer> directory,change the permissions of the C<install.cgi> script to, C<755>: 
+In the C<dada> directory, rename the, C<installer-disabled> directory to simply, C<install> and change into this directory. 
+Once in the C<installer> directory, change the permissions of the C<install.cgi> script to, C<755>: 
 
     mv installer-disabled installer
     cd installer
@@ -38,27 +38,26 @@ Once in the C<installer> directory,change the permissions of the C<install.cgi> 
 
 You're now ready to run the C<install.cgi> install/configuration script.
 
-To make sure permissions are set correctly,  we suggest running the C<install.cgi> script under the same owner as 
-will run Dada Mail (or change the ownership of the files at a later on - just don't forget!)
+To make sure permissions are set correctly,  we suggest running the C<install.cgi> script under the same owner as will run Dada Mail (or change the ownership of the files at a later on - just don't forget!)
 
 =head1 Introduction to the Installation/Configuration Process
 
-The C<install.cgi> script takes care of the following things: 
+The C<install.cgi> script takes care of the following jobs: 
 
 =over
 
 =item * Creates the .dada_files directory structure
 
 Dada Mail uses this directory structure to save it's configuration file, and 
-keep its temporary files, among other things. If you use SQLite for your backend, 
-the SQLite database will be saved here, as well. 
+keep its temporary files, among other things. 
+If you use SQLite for your backend, the SQLite database will be saved here, as well. 
 
 =item *  Writes the .dada_config configuration file. 
 
-Dada Mail's global configuration file is called, C<dada_config> and is itself
-written in Perl. Any global changes you would like to make to Dada Mail should be 
-made in this file. The global defaults are located in C<dada/DADA/Config.pm>, it 
-is not suggested that you make changes to this file. 
+Dada Mail's global configuration file is called, C<.dada_config> and is itself
+written in Perl. 
+Any global changes you would like to make to Dada Mail should be made in this file. 
+The global defaults are located in C<dada/DADA/Config.pm>, it  is not suggested that you make changes to this file. 
 
 =item * Copies over static files
 
@@ -79,14 +78,14 @@ can be written where you ask them to be written, the database connection works, 
 The C<install.cgi> script does not take care of any web server configuration. 
 If you run Dada Mail under PSGI/Plack, you will need to configure your webserver (nginx, most likely) to run Dada Mail, once you start the PSGI process. 
 
-More on running Dada Mail under nginx:
+More on running Dada Mail under PSGI/Plack:
 
 L<http://dadamailproject.com/d/features-psgi_support.pod.html>
 
 =head1 Required Paramaters
 
-The following parameters are required, if you're B<installing> Dada Mail. If you 
-are B<upgrading> Dada Mail, there are separate options to make things easier: 
+The following parameters are required, if you're B<installing> Dada Mail. 
+If you are B<upgrading> Dada Mail, there are separate options to make things easier: 
  
 =head2 --dada_files_loc
 

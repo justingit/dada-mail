@@ -88,6 +88,8 @@ Some plugins had command line interfaces - those interfaces have all been remove
 
 Setting the maximum size allowed for messages is now done on a per-mailing list basis, rather than as a global setting.
 
+Bridge is also installed by default, if you're using the included installer in its web-based mode.
+
 =head3 Tracker 
 
 The line graph on the default screen, showing various analytics across campaigns can be shown normalized by the amount of recipients. 
