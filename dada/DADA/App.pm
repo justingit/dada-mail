@@ -296,7 +296,6 @@ VORK5CYII=" style="float:left;padding:10px"/></p>
 </div>
 </body> 
 </html> 
- $error
 };
 
 }
