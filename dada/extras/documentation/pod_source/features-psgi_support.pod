@@ -58,8 +58,6 @@ In this example, we'll be using the nginx web server to run the PSGI process via
 
 Dada Mail will then be available at, L<http://127.0.0.1>
 
-=back
-
 =head1 PSGI Shortcomings in Dada Mail
 
 The following features current do not work when running Dada Mail under PSGI
