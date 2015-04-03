@@ -1,6 +1,8 @@
 =pod
 
+
 =head1 Email Design Resources
+
 
 =begin html
 
@@ -11,6 +13,10 @@
 <p>
 	<a href="http://zurb.com/playground/responsive-email-templates">Responsive Email Templates by Zurb</a>
 </p>
+
+<p><a href="http://zurb.com/ink/">Ink by Zurb</a> is an entire framework for producing beautiful HTML email messages.</p> 
+
+
 <p>
 	<a href="http://htmlemailboilerplate.com/">HTML Email Boilerplate.</a>
 </p>
