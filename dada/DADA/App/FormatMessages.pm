@@ -900,10 +900,24 @@ sub _format_headers {
     }
 
     if ( $self->{ls}->param('prefix_list_name_to_subject') == 1 ) {
-        my $new_subject = $self->_list_name_subject(
-            safely_decode( $entity->head->get( 'Subject', 0 ) ) );
+        
+        # Most likely, the OG subject is encoded... 
+        my $new_subject;
+        
+        my $og_subject = $entity->head->get( 'Subject', 0 );
+        
+         if($og_subject =~ m/\=\?(.*?)\?Q\?/){ 
+             # probably not going to need to be decoded, it's 7bit ASCII
+            $new_subject = $og_subject; 
+         }
+         else { 
+             $new_subject = safely_decode($og_subject); 
+        }
+        $new_subject = $self->_list_name_subject($new_subject); 
+        
         $entity->head->delete('Subject');
-        $entity->head->add( 'Subject', safely_encode($new_subject) );
+        # also, probably don't have to re-encode this, as it's encoded... sigh.
+        $entity->head->add( 'Subject', safely_encode($new_subject) ); 
     }
 
     # DEV:  Send mass mailings via sendmail, OTHER THAN via a discussion list,
@@ -1172,6 +1186,8 @@ sub _decode_header {
     else { 
     	require MIME::EncWords; 
     	my $dec = MIME::EncWords::decode_mimewords($header, Charset => '_UNICODE_'); 
+    	   $dec = safely_decode($dec);
+    	
     	warn 'safely_encode($dec) after: ' . safely_encode($dec)
     	    if $t; 
     	return $dec; 
