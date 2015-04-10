@@ -236,6 +236,10 @@ sub parse
 					    $self->{_HASH_TEMPLATE});
 	}
 
+    warn '$gabarit' . $gabarit; 
+    warn '$gabarit_txt' . $gabarit_txt; 
+    warn '@mail' . join('', @mail); 
+    
     # Create MIME-Lite object
     $self->build_mime_object($gabarit, $gabarit_txt || undef,  \@mail);
 
@@ -268,15 +272,17 @@ sub include_css(\%$$) {
     my ($content, $res) = grab_url($ur); 
     if(defined($content)){
         print "Ok file downloaded\n" if $self->{_DEBUG};
-	    return      '<style type="text/css">'."\n".
-	      '<!--'."\n".$res2->content.
-		"\n-->\n</style>\n";
+	    return '<style type="text/css">'
+	           . "\n"
+	           . '<!--'
+	           . "\n"
+	           . $content
+	           . "\n-->\n</style>\n";
     }
     else {
 		my $err = "Looking for css to include:, '" . $ur . "' was not successful - removing from message and ignoring"; 
 		$self->set_err($err);
-		carp $err; 
-		
+		carp $err; 	
 		# DEV: so, why was this returning an open <style> tag? 
 		# Because that's dumb.
 		return ''; #<style type="text/css">';	
