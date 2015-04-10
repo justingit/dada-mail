@@ -19,8 +19,8 @@
 				modal: 1,
 				mode: 'jsonp',
 				LoadingMessage: '<h1>Sending Over Request...</h1><p>One second as we look over what you\'ve given us...</p>',
-				LoadingError:   '<h1>Apologies,</h1><p>An error occurred while processing your request. Please try again in a few minutes.</p>',
-				showLoadingError: true
+				LoadingError:   '<h1>Apologies,</h1><p>An error occurred while processing your request. Please try again in a few minutes.</p>'
+				
 			},
             options
         );
@@ -35,7 +35,6 @@
 		 this._LoadingMessage  = this.options.LoadingMessage; 
 		 this._mode            = this.options.mode; 
 		 this._LoadingError    = this.options.LoadingError; 
-		 this._showLoadingError = this.options.showLoadingError; 
         
 		return this; 
 		
@@ -164,23 +163,10 @@
 				error: function(xhr, ajaxOptions, thrownError) {
 					console.log('status: ' + xhr.status);
 					console.log('thrownError:' + thrownError);
-
-					if(copythis._showLoadingError === true) { 
-						$.colorbox({
-							html: copythis._LoadingError,
-							opacity: 0.50
-						});
-					}
-					else { 
-						$.colorbox({
-							html: copythis.LoadingMessage,
-							opacity: 0.50
-						});
-						/* for some reason, just returning true isn't submitting the form... */
-						$('body').off('submit', "#" + copythis._targetForm);
-						$("#" + copythis._targetForm).submit();
-						return true;
-					}
+					$.colorbox({
+						html: copythis._LoadingError,
+						opacity: 0.50
+					});
 				}
 			}); 
 
