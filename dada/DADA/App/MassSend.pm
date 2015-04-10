@@ -747,7 +747,7 @@ sub construct_from_url {
             eval { $LWP::Simple::ua->agent( 'Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')' ); };
             my $can_fetch = LWP::Simple::get($url);
             if ($can_fetch) {
-                $errors .= "* Can successfully fetch, " . $url . "\n";
+                $errors .= "* Cannot fetch, " . $url . "\n";
             }
             else {
                 $errors .= "* Cannot fetch, " . $url . " using LWP::Simple::get()\n";
