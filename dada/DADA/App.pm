@@ -2345,8 +2345,8 @@ sub api {
 
     # HTTP_AUTHORIZATION
     my %incoming_headers = map { $_ => $q->http($_) } $q->http();
-    use Data::Dumper;
-    warn Dumper( {%incoming_headers} );
+    #use Data::Dumper;
+    #warn Dumper( {%incoming_headers} );
 
     if ( !defined($pi_public_key) && !defined($pi_digest) ) {
         my $auth_h = $incoming_headers{HTTP_AUTHORIZATION};
@@ -6818,7 +6818,7 @@ sub edit_archived_msg {
                     if ($name) {
                         $attachment_url =
                             $DADA::Config::S_PROGRAM_URL
-                          . '?flavor=file_attachment&l='
+                          . '?flavor=file_attachment&list='
                           . $list . '&id='
                           . $id
                           . '&filename='
@@ -6834,7 +6834,7 @@ sub edit_archived_msg {
 
                         $attachment_url =
                             $DADA::Config::S_PROGRAM_URL
-                          . '?flavor=show_img&l='
+                          . '?flavor=show_img&list='
                           . $list . '&id='
                           . $id . '&cid='
                           . $m_cid;
@@ -9975,7 +9975,7 @@ sub send_archive {
 
         $self->header_type('redirect');
         $self->header_props( -url => $DADA::Config::PROGRAM_URL
-              . '?flavor=archive&l='
+              . '?flavor=archive&list='
               . $list . '&id='
               . $entry
               . '&send_archive_errors='
@@ -10102,7 +10102,7 @@ sub send_archive {
 
         $self->header_type('redirect');
         $self->header_props( -url => $DADA::Config::PROGRAM_URL
-              . '?flavor=archive&l='
+              . '?flavor=archive&list='
               . $list . '&id='
               . $entry
               . '&send_archive_success=1' );
@@ -11351,7 +11351,10 @@ sub file_attachment {
 
     #if(!$checksout){ return $error_msg; }
 
-    my %args = ( -inline_image_mode => 0, @_ );
+    my %args = ( 
+        -inline_image_mode => 0, 
+        @_ 
+    );
 
     my $id = $q->param('id') || undef;
 
@@ -11375,47 +11378,53 @@ sub file_attachment {
 
                         if ( $args{-inline_image_mode} == 1 ) {
 
-                            if (
-                                $c->is_cached(
-                                    'view_inline_attachment.' . $list . '.' . $id . '.' . scalar($q->param('cid')) . '.cid'
-                                )
-                              )
-                            {
-                                return $c->cached(
-                                    'view_inline_attachment.' . $list . '.' . $id . '.' . scalar($q->param('cid')) . '.cid' );
-                            }
-                            my $scrn = $la->view_inline_attachment(
+                          #  if (
+                          #      $c->is_cached(
+                          #          'view_inline_attachment.' . $list . '.' . $id . '.' . scalar($q->param('cid')) . '.cid'
+                          #      )
+                          #    )
+                          #  {
+                          #      return $c->cached(
+                          #          'view_inline_attachment.' . $list . '.' . $id . '.' . scalar($q->param('cid')) . '.cid' );
+                          #  }
+                            my ($h, $scrn) = $la->view_inline_attachment(
                                 -id  => scalar $q->param('id'),
                                 -cid => scalar $q->param('cid')
                             );
 
                             # Bettin' that it's binary (or at least, unencoded)
-                            $c->cache( 'view_inline_attachment.' . $list . '.' . $id . '.' . scalar($q->param('cid')) . '.cid',
-                                \$scrn );
-                            return $scrn;
+                           # $c->cache( 'view_inline_attachment.' . $list . '.' . $id . '.' . scalar($q->param('cid')) . '.cid',
+                           #        \$scrn );
+                           #    return $scrn;
+                           
+                           $self->header_props($h);
+                           return $scrn; 
 
                         }
                         else {
-                            if (
-                                $c->is_cached(
-                                    'view_file_attachment.' . $list . '.' . $id . '.' . scalar($q->param('filename'))
-                                )
-                              )
-                            {
-                                return $c->cached(
-                                    'view_file_attachment.' . $list . '.' . $id . '.' . scalar($q->param('filename') ));
-                            }
-                            else {
-                                my $scrn = $la->view_file_attachment(
+                            #if (
+                            #    $c->is_cached(
+                            #        'view_file_attachment.' . $list . '.' . $id . '.' . scalar($q->param('filename'))
+                            #    )
+                            #  )
+                            #{
+                            #    return $c->cached(
+                            #        'view_file_attachment.' . $list . '.' . $id . '.' . scalar($q->param('filename') ));
+                            #}
+                            #else {
+                                my ($h, $scrn) = $la->view_inline_attachment(
                                     -id       => scalar $q->param('id'),
                                     -filename => scalar $q->param('filename')
                                 );
-                                $c->cache( 'view_file_attachment.' . $list . '.' . $id . '.' . scalar($q->param('filename')),
-                                    \$scrn );
+                                #$c->cache( 'view_file_attachment.' . $list . '.' . $id . '.' . scalar($q->param('filename')),
+                                #    \$scrn );
 
                    # Binary. Well, actually, *probably* - how would you figure out the content-type of an attached file?
-                                return $scrn;
-                            }
+                            $self->header_props($h);
+                            return $scrn; 
+                            
+
+                            #}
                         }
 
                     }
@@ -11756,12 +11765,14 @@ sub profile_register {
 
     my $prof = DADA::Profile->new( { -email => $register_email } );
 
+     
     if ( $prof->exists()
         && !$prof->is_activated() )
     {
         $prof->remove();
     }
 
+    
     my ( $status, $errors ) = $prof->is_valid_registration(
         {
             -email                     => $register_email,
@@ -11771,6 +11782,8 @@ sub profile_register {
             -recaptcha_response_field  => scalar $q->param('recaptcha_response_field'),
         }
     );
+    
+    
     if ( $status == 0 ) {
         my $p_errors = [];
         for ( keys %$errors ) {
@@ -12562,9 +12575,6 @@ sub bridge_inject {
             -list     => $run_list,
         }
     );
-
-    #warn $r;
-    #return $r;
 
 }
 

@@ -1292,7 +1292,7 @@ sub _rearrange_cid_img_tags {
 		for my $this_cid(@cids){
 		
 		
-			my $img_url = $DADA::Config::PROGRAM_URL . '?flavor=show_img&l=' . $self->{list} . '&id=' . $args{-key} . '&cid=' . $this_cid;  
+			my $img_url = $DADA::Config::PROGRAM_URL . '?flavor=show_img&list=' . $self->{list} . '&id=' . $args{-key} . '&cid=' . $this_cid;  
 	
 			my $link_wo_cid = $img_url; 
 			   $link_wo_cid =~ s/cid\://; 
@@ -1339,7 +1339,10 @@ sub view_inline_attachment {
 	
 	my $body; 
 	
-	my $a_entity = $self->_find_inline_attachment_entity(-cid => $args{-cid}, -entity => $entity); 
+	my $a_entity = $self->_find_inline_attachment_entity(
+	    -cid    => $args{-cid}, 
+	    -entity => $entity
+	); 
 	
 	require CGI; 
 	my $q = CGI->new; 
@@ -1358,26 +1361,28 @@ sub view_inline_attachment {
 	
 	require MIME::Base64; 
 	
-	my $r; 
+	my $r; 	
+	my $h = {}; 
+	    
 	
 	if($c_type =~ m/image\/gif/){ 
-		$r .= $q->header('image/gif');
+		$h->{type} = 'image/gif';
 	}elsif($c_type =~ m/image\/jpg|image\/jpeg/){ 
-		$r .= $q->header('image/jpg');
+		$h->{type} = 'image/jpg';
 	}elsif($c_type =~ m/image\/png/){ 
-		$r .= $q->header('image/png');
+		$h->{type} = 'image/png';
 	}elsif($c_type =~ m/application\/octet\-stream/){ # dude, this could be anything...
 		if($a_entity->head->mime_attr("content-type.name") =~ m/\.png$/i){
-			$r .= $q->header('image/png'); 
+		    $h->{type} = 'image/png'; 
 		}elsif($a_entity->head->mime_attr("content-type.name") =~ m/\.jpg$|\.jpeg/i){
-			$r .= $q->header('image/jpg'); 
+			$h->{type} = 'image/jpg'; 
 		}elsif($a_entity->head->mime_attr("content-type.name") =~ m/\.gif$/i){
-			$r .= $q->header('image/gif'); 
+			$h->{type} = 'image/gif'; 
 		}
 	}else{ 
 		warn "unsupported content type! " .  $c_type; 
 
-		$r .= $q->header('image/png');
+		$h->{type} = 'image/png';
 		# a simple, 1px png image. 
 		my $str = <<EOF
 iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAMAAAAoyzS7AAAABGdBTUEAANbY1E9YMgAAABl0RVh0
@@ -1385,15 +1390,15 @@ U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAGUExURf///wAAAFXC034AAAABdFJOUwBA
 5thmAAAADElEQVR42mJgAAgwAAACAAFPbVnhAAAAAElFTkSuQmCC
 EOF
 ;
-		$r .= MIME::Base64::decode_base64($str);
-		return $r; 
-		
+		$r = MIME::Base64::decode_base64($str);
 	}
 	
 	   #Encoded. Yes or no?
-	   $r .=  $body->as_string; 
+	   
+ 
+	   $r =  $body->as_string; 
 	  
-	   return $r; 	
+	   return ($h, $r); 	
 }
 
 
