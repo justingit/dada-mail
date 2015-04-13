@@ -12,6 +12,8 @@ BEGIN {
 }
 
 use CGI;
+    $CGI::LIST_CONTEXT_WARN = 0;
+    
 use DADA::App;
 use DADA::App::Dispatch;
 

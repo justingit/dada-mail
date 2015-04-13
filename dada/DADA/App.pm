@@ -50,6 +50,9 @@ use DADA::Template::Widgets;
 #---------------------------------------------------------------------#
 
 sub cgiapp_init {
+    
+    $CGI::Application::LIST_CONTEXT_WARN = 0;
+    
     my $self = shift;
     $self->query->charset($DADA::Config::HTML_CHARSET);
 
@@ -793,6 +796,7 @@ sub send_email {
             -root_login  => $root_login,
         }
     );
+    
 
     if ( exists( $headers->{-redirect_uri} ) ) {
         $self->header_type('redirect');
