@@ -1,0 +1,11 @@
+=pod
+
+=encoding utf-8
+
+=head1 Dada Mail Changelog for v8.x
+
+=head2 8.0.1 
+
+=head2 Summary
+
+This is a bugfix only release of Dada Mail
