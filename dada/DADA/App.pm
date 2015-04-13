@@ -12564,13 +12564,21 @@ sub bridge_inject {
     my $filename =
       $DADA::Config::TMP . "/tmp_file" . DADA::Security::Password::generate_rand_string() . "-" . time . ".txt";
     open my $tmp_file, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $filename or die $!;
+ #   open my $tmp_file2, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')', $filename . '2' or die $!;
+    
     my $msg;
+    # binmode(STDIN,  ":utf8");
+    # binmode STDIN;
     while ( my $line = <STDIN> ) {
-        $line = safely_decode($line); 
-        $line = safely_encode($line); 
+#        $line = safely_decode($line);
+#        $line = safely_encode($line);
+
         print $tmp_file $line;
+#        print $tmp_file2 $line; 
     }
-    close $tmp_file or die $!;
+    close $tmp_file  or die $!;
+ #   close $tmp_file2 or die $!;
+    
     chmod( $DADA::Config::FILE_CHMOD, $filename );
 
     $r .= bridge::inject_msg(

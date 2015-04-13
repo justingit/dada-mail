@@ -992,10 +992,12 @@ sub start {
             my $full_msg = $pop3_obj->Retrieve($msgnum);
 
             # We're taking a guess on this decoding:
-            $full_msg = safely_decode($full_msg);
+
 
             push( @{ $checksums->{$list} }, create_checksum( \$full_msg ) );
 
+            $full_msg = safely_decode($full_msg);
+            
             my ($smmt_status, $smmt_r) = soft_max_msg_test( 
                 { 
                     -size => $msgnums->{$msgnum},
@@ -1205,6 +1207,11 @@ sub inject_msg {
     }
     require File::Slurp;
     my $msg = File::Slurp::read_file($filename, binmode => ':encoding(' . $DADA::Config::HTML_CHARSET . ')');
+    
+    #$msg = safely_decode($msg); 
+    #$msg = safely_decode($msg); 
+    
+    
     my $n   = unlink($filename);
     if ( $n != 1 ) {
         warn "could not remove tmpfile at, $filename";
