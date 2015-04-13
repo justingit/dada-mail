@@ -11926,7 +11926,7 @@ sub profile {
 
                 require DADA::Profile::Session;
                 my $prof_sess = DADA::Profile::Session->new->logout;
-                profile_login();
+                $self->profile_login();
 
                 # DEV: This is going to get repeated quite a bit..
                 require DADA::Profile::Htpasswd;
@@ -12290,7 +12290,7 @@ sub profile_reset_password {
                     $q->param( 'process',        1 );
 
                     # and just called the subroutine itself. Hazzah!
-                    profile_login();
+                    $self->profile_login();
 
                     # Go home, kiss the wife.
                 }
@@ -12306,7 +12306,7 @@ sub profile_reset_password {
                 }
                 $q->param( 'error_profile_reset_password', 1 );
                 $q->param( 'errors',                       $p_errors );
-                profile_login();
+                $self->profile_login();
             }
         }
         else {

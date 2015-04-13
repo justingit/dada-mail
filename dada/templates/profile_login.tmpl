@@ -25,7 +25,6 @@
 
 <!-- tmpl_if comment -->
 
-    <!-- 
         <!-- tmpl_if errors --> 
             <h1>YOU HAVE ERRORS!!!</h1> 
             <ul>
@@ -41,7 +40,6 @@
     <hr /> 
     <hr /> 
 
-    --> 
 <!-- /tmpl_if --> 
 
 
@@ -63,28 +61,26 @@
 
     <!-- tmpl_if errors --> 
         <div class="badweatherbox">
-        <p><strong>Problems with your Request</strong></p>
-    <p>Look below for errors concerning your last request.</p>     
-    <!-- /tmpl_if --> 
-
-
+            <p>
+                <strong>
+                    Problems with your Request:
+                </strong>
+            </p>
+            <ul> 
+                
+    
     <!-- tmpl_if error_profile_activate --> 
-        <div class="badweatherbox">
-        <ul>
-            <!-- tmpl_if error_invalid_auth_code --> 
-                <li>
-                    <p>
-                        Auth code is not valid. Make sure to copy/paste the entire registration link. 
-                    </p> 
-                </li>
-            <!-- /tmpl_if -->        
-        </ul> 
-        </div> 
-    <!-- /tmpl_if --> 
-
+        <!-- tmpl_if error_invalid_auth_code -->                 
+            <li>
+                <p>
+                    Auth code is not valid. Make sure to copy/paste the entire registration link. 
+                </p> 
+            </li>
+        <!-- /tmpl_if -->  
+    <!-- /tmpl_if -->
+                
     <!-- tmpl_if error_profile_register --> 
-        <div class="badweatherbox">
-        <ul> 
+    
             <!-- tmpl_if error_invalid_email -->
             <li>
                 <p>
@@ -109,31 +105,37 @@
             <!-- tmpl_if error_captcha_failed --> 
             <li>
                 <p>
-                    CAPTCHA Failed. 
+                    Sorry, the CAPTCHA failed. 
                 </p> 
             </li>
             <!-- /tmpl_if --> 
-        </ul> 
-        </div> 
+            
+            <!-- tmpl_if error_profile_exists -->
+            <li>
+                <p>
+                    A Profile for this address already exists. Please log in, or reset your Profile Password.
+                </p> 
+            </li>        
+            <!-- /tmpl_if --> 
+            
     <!-- /tmpl_if --> 
 
 
     <!-- tmpl_if error_profile_login --> 
-        <ul> 
-            <!-- tmpl_if errors_not_logged_in --> 
-                
-            <!-- /tmpl_if --> 
-            <li>
-                <p>
-                    You'll have to log in, before you can access your profile.
-                </p>
-            </li>            
+
+            <!-- tmpl_if errors_not_logged_in -->     
+                <li>
+                    <p>
+                        You'll have to log in, before you can access your profile.
+                    </p>
+                </li>
+            <!-- /tmpl_if -->             
             <!-- tmpl_if error_unknown_user --> 
-            <li>
-                <p>
-                    User Unknown - have you registered?
-                </p>
-            </li>
+                <li>
+                    <p>
+                        User Unknown - have you registered?
+                    </p>
+                </li>
             <!-- /tmpl_if --> 
             <!-- tmpl_if error_incorrect_pass --> 
             <li>
@@ -145,14 +147,10 @@
             
         </ul> 
     <!-- /tmpl_if --> 
-    <!-- tmpl_if errors --> 
-        </div> 
-    <!-- /tmpl_if --> 
-
+    
+    
     <!-- tmpl_if error_profile_reset_password --> 
-        <div class="badweatherbox">
-            <ul>
-                <!-- tmpl_if error_invalid_auth_code --> 
+            <!-- tmpl_if error_invalid_auth_code --> 
                     <li>
                         <p>
                             Auth code is not valid. Make sure to copy/paste the entire password reset link. 
@@ -168,9 +166,12 @@
                     </li> 
                 <!-- /tmpl_if -->
 
-            </ul> 
+    <!-- /tmpl_if -->
+    
+        </ul>
         </div> 
     <!-- /tmpl_if --> 
+
 
   
      <div class="clearskiesbox"> 

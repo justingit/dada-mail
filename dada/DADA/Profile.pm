@@ -115,14 +115,7 @@ sub _init {
 sub exists {
 	
     my $self = shift;
-  #  my ($args) = @_;
 
-	# This is saying, if we don't have a dbh handle, we don't have a proper 
-	# "handle" on a profile. 
-	
-	if(! exists($self->{dbh})){ 
-		return 0; 
-	}
     my $query =
       'SELECT COUNT(*) FROM '
       . $DADA::Config::SQL_PARAMS{profile_table}
@@ -139,6 +132,7 @@ sub exists {
       my $count = $sth->fetchrow_array;
 
     $sth->finish;
+    
 
     if ( $count eq undef ) {
         return 0;
@@ -674,16 +668,18 @@ sub is_activated {
     warn 'QUERY: ' . $query
 		if $t; 
 
-    $sth->execute( $args->{ -email } )
+    $sth->execute( $self->{email}  )
       or croak "cannot do statement (is_activated)! $DBI::errstr\n";
  #   my @row = $sth->fetchrow_array();
 
     my $activated = 0;
   	FETCH: while ( my $hashref = $sth->fetchrow_hashref ) {
-        $activated = $hashref->{activated};
-        last FETCH;
+  	    
+  	    if($hashref->{activated} == 1) { 
+            $activated = $hashref->{activated};
+            last FETCH;
+        }
     }
-
     $sth->finish;
     return $activated;
 }
