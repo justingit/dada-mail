@@ -909,6 +909,11 @@ sub _format_headers {
          if($og_subject =~ m/\=\?(.*?)\?Q\?/){ 
              # probably not going to need to be decoded, it's 7bit ASCII
             $new_subject = $og_subject; 
+        
+            # This is related to the bug with the named capture in _list_name_subject 
+            # http://stackoverflow.com/questions/10217531/whats-the-best-way-to-clear-regex-matching-variables
+            "a" =~ /a/;
+            
          }
          else { 
              $new_subject = safely_decode($og_subject); 
@@ -1321,32 +1326,44 @@ sub _list_name_subject {
 	my $list_name  = $self->{ls}->param('list_name'); 
 	
 	# This really needs to look for both list name and list short name... I'm thinking...
+	
+	
 	$orig_subject   =~ s/\[($list|$list_name)\]//; # This only looks for list shortname...
-
-	$orig_subject =~ s/^((RE:|AW:|FW:|WG:)\s+)+//i; # AW & WG are German!
+	$orig_subject   =~ s/^((RE:|AW:|FW:|WG:)\s+)+//i; # AW & WG are German!
 	
 	my $re      = $1;
 	   $re      =~ s/^(\s+)//; 
 	   $re      =~ s/(\s+)$//; 
-	   $re      = ' ' . $re if $re; 
-	   
+
+
+       	# there must be some strange named capture that isn't being undef'd, so if 
+       	# it already holds a value, it gets set to, $re. Weird. 
+       	if($re =~ m/UTF\-8/){ 
+       	    #warn 'undef!'; 
+       	    $re = undef; 
+       	} 
+
+
+	   $re      = ' ' . $re if $re; 	
+	
+
 	$orig_subject    =~ s/^(\s+)//;
 	
-					
 	if($self->{ls}->param('prefix_discussion_list_subjects_with') eq "list_name"){ 
 		$orig_subject    = '[' . '<!-- tmpl_var list_settings.list_name -->' . ']' . "$re $orig_subject"; 		
 	}
 	elsif($self->{ls}->param('prefix_discussion_list_subjects_with') eq "list_shortname"){ 
 		$orig_subject    = '[' . '<!-- tmpl_var list_settings.list -->' . ']' . "$re $orig_subject"; 
 	}
+		
 	
-	warn 'in _list_name_subject before encode: ' . $orig_subject 
+	warn 'in _list_name_subject before encode2: ' . $orig_subject 
 		if $t;
 		
 	$orig_subject = $self->_encode_header('Subject', $orig_subject); 
 
-	   warn 'in _list_name_subject after encode: ' . $orig_subject 
-		if $t;
+   warn 'in _list_name_subject after encode2: ' . $orig_subject 
+	if $t;
 				
 	return $orig_subject; 
 
