@@ -2,6 +2,8 @@
 
 package bridge;
 
+
+
 use FindBin qw($RealScript);
 
 use lib "$FindBin::Bin/../";
@@ -16,6 +18,9 @@ BEGIN {
 use strict;
 $ENV{PATH} = "/bin:/usr/bin";
 delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
+
+
+use Carp qw(cluck); 
 
 #---------------------------------------------------------------------#
 # Bridge
@@ -142,6 +147,10 @@ sub init_vars {
 run()
   unless caller();
 
+sub test_sub { 
+    return 'Hello, World!'; 
+    
+}   
 sub run {
     
     my $q = shift;
@@ -455,6 +464,7 @@ sub mod {
 
         if ( $q->param('process') eq 'confirm' ) {
             my $g_msg = $mod->get_msg( { -msg_id => $msg_id } );
+            # Change content-transfer-encoding?
             $r .= process(
                 {
                     -ls  => $ls,
@@ -996,7 +1006,7 @@ sub start {
 
             push( @{ $checksums->{$list} }, create_checksum( \$full_msg ) );
 
-            $full_msg = safely_decode($full_msg);
+            # $full_msg = safely_decode($full_msg);
             
             my ($smmt_status, $smmt_r) = soft_max_msg_test( 
                 { 
@@ -1013,6 +1023,20 @@ sub start {
 
             $r .= "\t* Message Size is below both Soft and Hard Max Sizes.\n\n";
 
+
+            try { 
+               require DADA::App::FormatMessages;
+               my $dfm = DADA::App::FormatMessages->new( -List => $ls->param('list') );
+                my $entity = $parser->parse_data(safely_encode($full_msg)); 
+                   $entity = $dfm->change_content_transfer_encoding({-entity => $entity}); 
+                   $full_msg    = safely_decode($entity->as_string); 
+                   undef $entity; 
+                   # warn 'Hey Hey! $full_msg ' . safely_encode($full_msg); 
+            } catch { 
+                warn 'Couldn\'t change Content-Transfer-Encoding: ' . $_; 
+            };
+            
+            
             try {
 
                 my ( $status, $errors, $validate_r ) = validate_msg( $ls, \$full_msg );
@@ -1041,8 +1065,9 @@ sub start {
                 append_message_to_file( $ls, $full_msg );
 
             } catch { 
-                warn '$r ' . $r; 
-                warn "bridge - irrecoverable error processing message. Skipping message (sorry!): $_";
+                cluck "bridge - irrecoverable error processing message. Skipping message (sorry!): $_";
+                # Then, we have to tell the og sender, something went wrong: 
+                
                 $r .= "bridge - irrecoverable error processing message. Skipping message (sorry!): $_";
             };
 
@@ -1176,9 +1201,6 @@ sub inject_msg {
     reset_globals(); 
     
     my ($args) = @_; 
-    # require Data::Dumper; 
-    # warn Data::Dumper::Dumper($args); 
-    
     my $r; 
     
     my $filename = $args->{-filename};
@@ -1207,10 +1229,6 @@ sub inject_msg {
     }
     require File::Slurp;
     my $msg = File::Slurp::read_file($filename, binmode => ':encoding(' . $DADA::Config::HTML_CHARSET . ')');
-    
-    #$msg = safely_decode($msg); 
-    #$msg = safely_decode($msg); 
-    
     
     my $n   = unlink($filename);
     if ( $n != 1 ) {
@@ -1247,7 +1265,7 @@ sub inject_msg {
             $r .= $msg;
         }
     }
-    warn $r; 
+    # warn $r; 
     return $r;
 }
 
@@ -1558,15 +1576,18 @@ sub validate_msg {
 
     my $entity;
     $msg = safely_encode($msg);
-    #warn '$msg:' . $msg; 
 
+#    use Data::Dumper; 
+#    warn '$parser ' . Dumper($parser); 
+    
     try {
         $entity = $parser->parse_data($msg); 
         #warn 'still here...'; 
     } catch { 
         $r .= "\t\tProblems with parsing message: $_\n";
-        warn "\t\tProblems with parsing message: $_\n";
-        #$r .= '$msg:' . $msg; 
+        cluck "Problems with parsing message: $_\n";
+        cluck '$msg:' . $msg; 
+        
         $errors->{invalid_msg} = 1;
         return ( 0, $errors, $r );        
     };
@@ -2391,9 +2412,15 @@ sub deliver_copy {
     $mh->test($test_mail);
 
     my $entity;
-    $msg = safely_encode($msg);
 
-    eval { $entity = $parser->parse_data($msg) };
+    eval { 
+        
+        $entity = $parser->parse_data(
+            safely_encode(
+                $msg
+                )
+            ) 
+    };
 
     if ( !$entity ) {
         $r .= "\t* Message sucks!\n";
@@ -2402,15 +2429,14 @@ sub deliver_copy {
     else {
 
         my $headers = $entity->stringify_header;
-        $headers = safely_decode($headers);
+           $headers = safely_decode($headers);
 
         my %headers = $mh->return_headers($headers);
-        $headers{To} = $ls->param('send_msg_copy_address');
+          $headers{To} = $ls->param('send_msg_copy_address');
 
         $r .= "\t* Message Details:\n";
         $r .= "\t* Subject: " . $headers{Subject} . "\n";
 
-        # Um. I'm not touching that.
         my $msg_id = $mh->send(
 
             %headers,
@@ -2504,15 +2530,13 @@ sub deliver {
             }
         }
 
-        my $body = $entity->stringify_body;
-        $body = safely_decode($body);
-
         my $msg_id = $mh->mass_send(
-            %headers,
-
-            # Trust me on these :)
-            Body => $body,
+            {            
+                -msg             => {%headers, Body => safely_decode($entity->stringify_body)},
+            }
         );
+
+
 
         return ( $msg_id, $mh->saved_message, $r );
 
@@ -2760,16 +2784,23 @@ sub handle_errors {
 
     $full_msg = safely_encode($full_msg);
 
-    eval {
+    try {
         $entity = $parser->parse_data(
             $full_msg
         );
+    } catch { 
+        $r .= "Problems Handling Error: $_\n"; 
+#      warn 'length($full_msg):' . length($full_msg); 
+#       warn '$full_msg' . $full_msg; 
+#        warn 'reseting mime parser.'; 
+        $parser          = new MIME::Parser;
+        $parser          = optimize_mime_parser($parser);
+        
+              
     };
-    if($@){ 
-        $r .= "big problems: $@\n"; 
-    }
+    
     if ( !$entity ) {
-        $r .= "No entity found. Skipping!\n";
+        $r .= "No entity found!\n";
         return $r; 
     }
     else {  
@@ -3175,16 +3206,39 @@ sub inject {
         $ls = DADA::MailingList::Settings->new( { -list => $ls->param('list') } );
     }
 
+    try { 
+       require DADA::App::FormatMessages;
+       my $dfm = DADA::App::FormatMessages->new( -List => $ls->param('list') );
+        my $entity = $parser->parse_data(safely_encode($msg)); 
+           $entity = $dfm->change_content_transfer_encoding({-entity => $entity}); 
+           $msg    = safely_decode($entity->as_string); 
+           undef $entity; 
+           # warn 'Hey Hey! $msg ' . safely_encode($msg); 
+    } catch { 
+        warn 'Couldn\'t change Content-Transfer-Encoding: ' . $_; 
+    };
+    
     if ( $ls->param('disable_discussion_sending') != 1 ) {
         my ( $status, $errors );
 
+        my $status;
+        my $errors;
+        my $report;
+         
         try {
-            my ( $status, $errors, $report ) = validate_msg( $ls, \$msg );
-            $r .= $report;
-            require Data::Dumper; 
-            $r .= 'Errors: ' . Data::Dumper::Dumper($errors); 
-            $r .= 'Msg: ' . $msg; 
-            if ($status) {
+            ( $status, $errors, $report ) = validate_msg( $ls, \$msg );
+        } catch { 
+            warn 'couldn\'t validate_msg?!'; 
+            return (0, {}, 'couldn\'t validate_msg?!'); 
+        };
+        
+        try { 
+            
+            #require Data::Dumper; 
+            #$r .= 'Errors: ' . Data::Dumper::Dumper({status => $status, errors => $errors, report => $report}); 
+            #$r .= 'Msg: ' . $msg; 
+            
+            if ($status == 1) {
                 if ( $ls->param('send_received_msg') == 1 ) {
                     notify_of_delivery(
                         {
@@ -3211,7 +3265,7 @@ sub inject {
 
                 $r .= "\tMessage did not pass verification.\n";
                 $r .= handle_errors( $ls, $errors, $msg );
-
+                
                 append_message_to_file( $ls, $msg );
 
                 return ( $status, $errors, $r );
@@ -3219,12 +3273,14 @@ sub inject {
             }
 
         } catch { 
-            warn "bridge - irrecoverable error processing message. Skipping message (sorry!): $_";
+            
+            cluck "bridge - irrecoverable error processing message. Skipping message (sorry!): $_";
+            # Then, we have to tell the og sender, something went wrong: 
+            
             
             $r .= "bridge - irrecoverable error processing message. Skipping message (sorry!): $_";
             return ( 0, { irrecoverable_error => 1 }, $r );
 
-        
         }; 
         return ( $status, $errors, $r );
 

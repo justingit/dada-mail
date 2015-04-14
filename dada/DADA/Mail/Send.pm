@@ -22,7 +22,7 @@ use DADA::App::Guts;
 		
 use vars qw($AUTOLOAD); 
 use Carp qw(croak carp);
-   #$Carp::Verbose = 1; 
+ #  $Carp::Verbose = 1; 
 
 use Try::Tiny; 
 
@@ -1480,7 +1480,9 @@ sub mass_send {
 					# warn "Nope. No more lists to send to."; 
 				}
 			}
-			warn 'returning message id' . $fields{'Message-ID'};
+			carp 'returning message id' . $fields{'Message-ID'};
+#			use Data::Dumper; 
+#			carp '%fields' . Dumper({%fields}); 
             return $fields{'Message-ID'};
                 
         } elsif (defined $pid) { # $pid is zero here if defined

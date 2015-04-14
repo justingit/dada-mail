@@ -269,8 +269,11 @@ sub format_headers_and_body {
 	
 	
 	# Guessing, really. 
-	$msg           = safely_encode($msg); 
-	my $entity     = $self->{parser}->parse_data($msg);
+	my $entity     = $self->{parser}->parse_data(
+	    safely_encode(
+	        $msg
+	    )
+	);
 	
 	if($args{-convert_charset} == 1){ 
 		eval { 
@@ -304,13 +307,10 @@ sub format_headers_and_body {
     	if $entity->head->get('X-Mailer', 0); 
 		# or how about, count?
 
-	my $header = $entity->head->as_string;
-	   $header = safely_decode($header); 
-
-	my $body   = $entity->body_as_string;	
- 	   $body = safely_decode($body); 
-	return ($header, $body) ;
-	
+	return (
+	    safely_decode($entity->head->as_string), 
+	    safely_decode($entity->body_as_string)
+	);
 
 }
 
@@ -1297,6 +1297,116 @@ sub change_charset {
 
 	return $args->{-entity}; 
 }
+
+
+
+
+sub change_content_transfer_encoding {
+
+    my $self = shift;
+
+    my ($args) = @_;
+    if ( !exists( $args->{-entity} ) ) {
+        croak 'did not pass an entity in, "-entity"!';
+    }
+
+    my @parts = $args->{-entity}->parts;
+
+    if (@parts) {
+        warn "this part has " . $#parts . "parts."
+          if $t;
+
+        my $i;
+        for $i ( 0 .. $#parts ) {
+            $parts[$i] = $self->change_content_transfer_encoding( { %{$args}, -entity => $parts[$i] } );
+        }
+
+        $args->{-entity}->sync_headers(
+            'Length'      => 'COMPUTE',
+            'Nonstandard' => 'ERASE'
+        );
+
+    }
+    else {
+
+        my $is_att = 0;
+        if ( defined( $args->{-entity}->head->mime_attr('content-disposition') ) ) {
+            warn q{content-disposition has set to: } . $args->{-entity}->head->mime_attr('content-disposition')
+              if $t;
+            if ( $args->{-entity}->head->mime_attr('content-disposition') =~ m/attachment/ ) {
+                warn "we have an attachment?"
+                  if $t;
+                $is_att = 1;
+            }
+        }
+        else {
+            warn "can't find a content-disposition"
+              if $t;
+        }
+
+        if (
+            (
+                   ( $args->{-entity}->head->mime_type eq 'text/plain' )
+                || ( $args->{-entity}->head->mime_type eq 'text/html' )
+            )
+            && ( $is_att != 1 )
+          )
+        {
+
+            $args->{-entity} = $self->change_content_transfer_encoding_in_body( $args->{-entity} );
+        }
+    }
+
+    return $args->{-entity};
+}
+
+sub change_content_transfer_encoding_in_body {
+
+    my $self     = shift;
+    my $entity   = shift;
+    my $encoding = shift || 'quoted-printable';
+    my $charset  = shift || $DADA::Config::HTML_CHARSET;
+
+    my $body    = $entity->bodyhandle;
+    my $content = $entity->bodyhandle->as_string;
+    
+    my $mime_charset = $entity->head->mime_attr("content-type.charset") || $charset;
+    my $content_type = $entity->head->mime_attr("content-type");
+
+    $content = Encode::decode( $mime_charset, $content );
+
+    for ( 'Content-Transfer-Encoding', 'Content-transfer-encoding' ) {
+        if ( $entity->head->count($_) > 0 ) {
+            $entity->head->delete($_);
+        }
+    }
+    $entity->head->add( 'Content-Transfer-Encoding', $encoding );
+    $entity->head->mime_attr( "Content-type.charset" => $charset, );
+
+    require MIME::Entity;
+
+    my $n_entity = MIME::Entity->build(
+        Type     => $content_type,
+        Charset  => $charset,
+        Encoding => $encoding,
+        Data     => safely_encode($content)
+    );
+
+    my $io        = $body->open('w');
+    my $n_content = safely_encode( safely_decode( $n_entity->bodyhandle->as_string ) );
+    $io->print($n_content);
+    $io->close;
+    $entity->sync_headers(
+
+        #'Length'      => 'COMPUTE', #optimization
+        'Length'      => 'ERASE',
+        'Nonstandard' => 'ERASE'
+    );
+
+    return $entity;
+
+}
+
 
 =pod
 

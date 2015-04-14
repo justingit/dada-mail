@@ -11,6 +11,9 @@ BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
 
 
 use dada_test_config; 
+use dada_test_config; 
+dada_test_config::create_SQLite_db(); 
+
 use DADA::App::Guts; 
 use DADA::MailingList::Settings; 
 
@@ -26,12 +29,11 @@ my $list = dada_test_config::create_test_list;
 
 my $ls = DADA::MailingList::Settings->new({-list => $list}); 
 my $li = $ls->get; 
-do "plugins/bridge.cgi"; 
+require 'plugins/bridge';
+use CGI; 
+my $q = new CGI; 
 
-
-
-
-ok(bridge->test_sub() eq q{Hello, World!}); 
+ok(bridge::test_sub($q) eq q{Hello, World!}); 
 
 my $test_msg = undef; 
 my $entity   = undef; 
@@ -78,9 +80,10 @@ undef $test_msg;
 # Hey! Let's see if our new, "inject' thingy works!
 $test_msg = ''; 
 my $status = undef; 
+my $r;
 
 
-($status, $errors) = bridge::inject(
+( $status, $errors, $r ) = bridge::inject(
 	{ 
 		-ls        => $ls, 
 		-msg       => $test_msg, 
@@ -98,9 +101,10 @@ ok($ls->param('disable_discussion_sending') == 0, "we've enabled this crazy thin
 
 $errors = {}; 
 undef $status; 
+ 
 
 
-($status, $errors) = bridge::inject(
+( $status, $errors, $r ) = bridge::inject(
 	{ 
 		-ls        => $ls,
 		-msg       => '', 
@@ -110,7 +114,11 @@ undef $status;
 );
 
 ok($status == 0, "inject returning 0 - it's not disabled, but we've got an improper email message"); 
+use Data::Dumper; 
+diag Dumper([$status, $errors, $r]); 
 ok($errors->{blank_message} == 1, "Error Produced is that the message is blank. Good! ($errors->{blank_message})"); 
+
+
 
 # We should really go through all the different thinga-ma-jigs that you can, to make a message work, 
 # But, we'll leave that for later... 
@@ -127,7 +135,8 @@ $ls->param('rewrite_anounce_from_header', 0                     );
 $ls->param('enable_bulk_batching',        0                     ); 
 $ls->param('get_finished_notification',   0                     ); 
 
-($status, $errors) = bridge::inject(
+bridge::reset_globals(); 
+( $status, $errors, $r ) = bridge::inject(
 	{ 
 		-msg       => $msg, 
 		-verbose   => 1, 
@@ -146,12 +155,27 @@ wait_for_msg_sending();
 
 my $mh = DADA::Mail::Send->new({-list => $list}); 
 my $sent_msg =  slurp($mh->test_send_file); 
+   $sent_msg = safely_decode($sent_msg); 
+   
+#diag '$sent_msg ' . $sent_msg; 
 
 # This could be a lot more intricate, but we're just going to see if the 
 # To: and, Subject: Headers are the same and contain the mime encoded words strings, 
 # (for now) 
+
+
 my $orig_entity = $parser->parse_data($msg);
-my $sent_entity = $parser->parse_data($sent_msg);
+use Data::Dumper; 
+# diag 'og_entity: ' . Data::Dumper::Dumper($orig_entity); 
+my $sent_entity = undef; 
+#eval { 
+    $sent_entity = $parser->parse_data($sent_msg);
+#};
+#if($@){ 
+#    diag "ACK!" . $@; 
+#}
+
+
 
 SKIP: {
     skip 'Some UTF stuff - the encoding is done different, the unencoded is probably the same', 2 unless 0;
@@ -175,7 +199,7 @@ unlink $mh->test_send_file;
 $ls->param('charset',                        "utf-8\tutf-8"        ); 
 $ls->param('mime_encode_words_in_headers',   1                     ); 
 
-($status, $errors) = bridge::inject(
+( $status, $errors, $r ) = bridge::inject(
 	{ 
 		-msg       => $msg, 
 		-verbose   => 1, 
@@ -264,7 +288,7 @@ undef $test_msg;
 $ls->param('group_list', 1); 
 
 
-($status, $errors) = bridge::inject(
+( $status, $errors, $r ) = bridge::inject(
 	{ 
 		-msg       => $msg, 
 		-verbose   => 1, 
@@ -282,6 +306,7 @@ $sent_msg =  slurp($mh->test_send_file);
 $orig_entity = $parser->parse_data($msg);
 $sent_entity = $parser->parse_data($sent_msg);
 my $sent_sub = MIME::EncWords::decode_mimewords($sent_entity->head->get('Subject', 0), Charset => '_UNICODE_');
+
 my $qm_subject = quotemeta('[dadatest]'); 
 like($sent_sub, qr/^$qm_subject/, "list short name appeneded to Subject! ($sent_sub)"); 
 
@@ -302,7 +327,7 @@ $msg = slurp('t/corpus/email_messages/simple_utf8_msg.eml');
 
 ok($status == 1, "status returning 1"); 
 
-($status, $errors) = bridge::inject(
+( $status, $errors, $r )= bridge::inject(
 	{ 
 		-msg       => $msg, 
 		-verbose   => 1, 
@@ -330,11 +355,10 @@ undef $sent_msg;
 
 
 
-
-
 dada_test_config::remove_test_list;
+dada_test_config::destroy_SQLite_db();
 dada_test_config::wipe_out;
- 
+
 
 
 

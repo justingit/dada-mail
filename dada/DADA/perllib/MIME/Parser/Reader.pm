@@ -34,6 +34,10 @@ This class has no official public interface
 =cut
 
 use strict;
+#use Carp qw(croak carp);
+#   $Carp::Verbose = 1; 
+#   use Carp;
+#   $SIG{ __DIE__ } = sub { Carp::confess( @_ ) };
 
 ### All possible end-of-line sequences.
 ### Note that "" is included because last line of stream may have no newline!
