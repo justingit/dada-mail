@@ -45,7 +45,7 @@ use Fcntl qw(
   LOCK_EX
   LOCK_NB
 );
-use Encode;
+use Encode qw(encode decode);
 use Try::Tiny;
 
 my $Plugin_Config = {};
@@ -1001,9 +1001,7 @@ sub start {
 
             my $full_msg = $pop3_obj->Retrieve($msgnum);
 
-            # We're taking a guess on this decoding:
-
-
+            
             push( @{ $checksums->{$list} }, create_checksum( \$full_msg ) );
 
             # $full_msg = safely_decode($full_msg);
@@ -1067,7 +1065,6 @@ sub start {
             } catch { 
                 cluck "bridge - irrecoverable error processing message. Skipping message (sorry!): $_";
                 # Then, we have to tell the og sender, something went wrong: 
-                
                 $r .= "bridge - irrecoverable error processing message. Skipping message (sorry!): $_";
             };
 
@@ -1229,6 +1226,16 @@ sub inject_msg {
     }
     require File::Slurp;
     my $msg = File::Slurp::read_file($filename, binmode => ':encoding(' . $DADA::Config::HTML_CHARSET . ')');
+
+    eval { 
+        $msg = decode( 'UTF-8', $msg );
+    }; 
+    if($@){ 
+        warn 'extra decoding did not work: ' . $@; 
+    }
+    else { 
+        warn 'extra decoding worked!'; 
+    }
     
     my $n   = unlink($filename);
     if ( $n != 1 ) {
