@@ -129,35 +129,25 @@ function confirm_profile_removal(form_name) {
         <!-- /tmpl_if --> 
         
         <!-- tmpl_if expr="profile_feature_profile_fields == 1" -->
-            <li>    
-                <a href="#profile_fields">
-                    Profile Fields
-                </a>
-            </li>
+            <!-- tmpl_if subscriber_fields -->
+                <li>    
+                    <a href="#profile_fields">
+                        Profile Fields
+                    </a>
+                </li>
+            <!-- /tmpl_if -->
         <!-- /tmpl_if -->
         
         <!-- tmpl_if protected_directories --> 
             <!-- tmpl_if expr="profile_feature_protected_directories == 1" -->    
                 <li>    
                     <a href="#protected_directories">
-                        <p>Access these directories with your Profile Username/Password.
-                        <ul>        
-                            <!-- tmpl_loop protected_directories --> 
-                                <p>
-                                    <li>
-                                        <strong>
-                                            <a href="<!-- tmpl_var url -->" target="_blank"><!-- tmpl_var name --></a>
-                                        </strong> 
-                                    </li>
-                                </p>
-                            <!-- /tmpl_loop --> 
-                        </ul>
+                        Protected Directories
                     </a>
                 </li>
-            <!-- /tmpl_if --> 
+            <!-- /tmpl_if -->
         <!-- /tmpl_if -->
-        
-        
+                
         <!-- tmpl_if expr="profile_feature_update_email_address == 1" -->
             <li>    
                 <a href="#update_email_address">
@@ -276,7 +266,7 @@ function confirm_profile_removal(form_name) {
                             <legend>Delivery Preferences:</legend>
                             <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
                                 
-                                <input type="hidden" name="f"        value="profile" /> 
+                                <input type="hidden" name="flavor"        value="profile" /> 
                                 <input type="hidden" name="process"  value="profile_delivery_preferences" /> 
                                 <input type="hidden" name="list"     value="<!-- tmpl_var list_settings.list -->" /> 
                                 
@@ -322,10 +312,11 @@ function confirm_profile_removal(form_name) {
     
     
     <!-- tmpl_if expr="profile_feature_profile_fields == 1" -->
+        <!-- tmpl_if subscriber_fields -->
         <div id="profile_fields">
             <!-- tmpl_if subscriber_fields --> 
                 <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="membership_profile_fields"> 
-                    <input type="hidden" name="f"        value="profile" /> 
+                    <input type="hidden" name="flavor"        value="profile" /> 
                     <input type="hidden" name="process"  value="edit_subscriber_fields" /> 
                     <!-- tmpl_loop subscriber_fields --> 
                         <p>
@@ -352,17 +343,29 @@ function confirm_profile_removal(form_name) {
             <!-- /tmpl_if --> 
             
         </div>
+        <!-- /tmpl_if -->
     <!-- /tmpl_if--><!-- profile_feature_profile_fields -->
     
-   
     <!-- tmpl_if protected_directories --> 
         <!-- tmpl_if expr="profile_feature_protected_directories == 1" -->    
-            <div id="protected_directories">> 
-                protected_directories
+            <div id="protected_directories">
+                    <p>Access these directories with your Profile Username/Password.
+                    <ul>        
+                        <!-- tmpl_loop protected_directories --> 
+                            <p>
+                                <li>
+                                    <strong>
+                                        <a href="<!-- tmpl_var url -->" target="_blank"><!-- tmpl_var name --></a>
+                                    </strong> 
+                                </li>
+                            </p>
+                        <!-- /tmpl_loop --> 
+                    </ul>
             </div>
-        <!-- /tmpl_if -->
-    <!-- /tmpl_if --> <!-- protected_directories -->
-
+        <!-- /tmpl_if --> 
+    <!-- /tmpl_if -->
+    
+    
 
 
     <!-- tmpl_if expr="profile_feature_update_email_address == 1" -->
@@ -372,7 +375,7 @@ function confirm_profile_removal(form_name) {
                 will be replaced with this new email address, where it's allowed: 
             </p>
             <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
-                <input type="hidden" name="f"        value="profile" /> 
+                <input type="hidden" name="flavor"        value="profile" /> 
                 <input type="hidden" name="process"  value="update_email" />
                     <!-- tmpl_if errors_update_email --> 
                         <!-- tmpl_if error_invalid_email --> 
@@ -410,7 +413,7 @@ function confirm_profile_removal(form_name) {
     <!-- tmpl_if expr="profile_feature_change_password == 1" -->
         <div id="change_password">
             <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
-                <input type="hidden" name="f"        value="profile" /> 
+                <input type="hidden" name="flavor"        value="profile" /> 
                 <input type="hidden" name="process"  value="change_password" />
 
                 <!-- tmpl_if errors_change_password --> 
@@ -446,7 +449,7 @@ function confirm_profile_removal(form_name) {
     <!-- tmpl_if expr="profile_feature_delete_profile == 1" -->
         <div id="delete_profile">
             <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
-                <input type="hidden" name="f"        value="profile" /> 
+                <input type="hidden" name="flavor"        value="profile" /> 
                 <input type="hidden" name="process"  value="delete_profile" />
                 <p>
                     Deleting your profile will remove all your profile information, but 

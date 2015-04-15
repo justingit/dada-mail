@@ -12227,9 +12227,9 @@ sub profile_logout {
     $prof_sess->logout;
     my $redirect_to = $DADA::Config::PROGRAM_URL . '?flavor=profile_login&logged_out=1';
 
-    if ( $q->referer() && $q->referer() !~ m/\/profile\// ) {
-        $redirect_to = $q->referer();
-    }
+    #if ( $q->referer() && $q->referer() !~ m/\/profile\// ) {
+    #    $redirect_to = $q->referer();
+    #}
     my $headers = {
         -cookie  => [ $prof_sess->logout_cookie ],
         -nph     => $DADA::Config::NPH,

@@ -124,7 +124,7 @@ sub token {
             warn 'confirming'
               if $t;
 
-            $self->confirm(
+            return $self->confirm(
                 {
                     -html_output => $args->{-html_output},
                     -cgi_obj     => $q,
@@ -960,8 +960,7 @@ sub confirm {
                 }
             );             
         }
-        else {
-
+        else {            
             my $new_pass    = '';
             my $new_profile = 0;
             my $sess_cookie = undef;
@@ -1025,6 +1024,7 @@ sub confirm {
                     }
                     else {
                         $sess_cookie = $sess->_login_cookie( { -email => $email } );
+                        
                     }
                 }
                 warn '>>>> >>>> send_sub_success_email is set to: ' . $ls->param('send_sub_success_email')
@@ -1140,10 +1140,10 @@ sub confirm {
                             -email       => $email,
                             -chrome      => 1,
                             -sess        => $sess,
-                            -sess_cookie => $sess_cookie,
+                            # -sess_cookie => $sess_cookie,
                         }
                     );
-                    return ({}, $s);
+                    return ({-cookie => $sess_cookie}, $s);
                 }
             }
         }
@@ -2654,7 +2654,6 @@ sub _subscription_successful_message {
                 -data           => \$s,
                 -with           => 'list',
                 -wrapper_params => {
-                    -header_params => { -cookie => [ $args->{-sess_cookie} ], },
                     -prof_sess_obj => $args->{-sess},
                 },
                 -list_settings_vars_param => { -list => $ls->param('list'), },
@@ -2692,8 +2691,14 @@ sub _subscription_successful_message {
 
         );
     }
+    
 
-    return ({}, $r);
+    return (
+        {
+            -cookie => $args->{-sess_cookie},
+        },
+        $r
+    );
 }
 
 sub _subscription_requires_approval_message {

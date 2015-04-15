@@ -23,7 +23,6 @@
 <!-- /tmpl_if --> 
 
 
-<!-- tmpl_if comment -->
 
         <!-- tmpl_if errors --> 
             <h1>YOU HAVE ERRORS!!!</h1> 
@@ -40,7 +39,7 @@
     <hr /> 
     <hr /> 
 
-<!-- /tmpl_if --> 
+
 
 
 <!-- tmpl_if logged_out --> 
@@ -67,6 +66,16 @@
                 </strong>
             </p>
             <ul> 
+        
+            <!-- tmpl_if error_profile_login --> 
+            <li>
+                <p>
+                    Please log into your Profile.
+                </p> 
+            </li>
+            
+            <!-- /tmpl_if --> 
+        
                 
     
     <!-- tmpl_if error_profile_activate --> 
@@ -210,7 +219,7 @@
     <div id="profile_login">
            
         <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="profile_login"> 
-            <input type="hidden" name="f" value="profile_login" /> 
+            <input type="hidden" name="flavor" value="profile_login" /> 
             <input type="hidden" name="process" value="1" /> 
             <p>
                 <label for="login_email" style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block">
@@ -234,7 +243,7 @@
     <!-- tmpl_if expr="profile_feature_password_reset == 1" -->
         <div id="profile_password_reset">
         <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="profile_reset_password"> 
-            <input type="hidden" name="f" value='profile_reset_password' /> 
+            <input type="hidden" name="flavor" value='profile_reset_password' /> 
             <p>
                 <label for="reset_email" style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block">
                     Email Address:
@@ -257,7 +266,7 @@
             </p> 
 
             <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="profile_register"> 
-                <input type="hidden" name="f" value="profile_register" /> 
+                <input type="hidden" name="flavor" value="profile_register" /> 
                 <p>
                     <label for="register_email" style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block">
                         Email Address:
