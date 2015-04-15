@@ -8,4 +8,60 @@
 
 =head2 Summary
 
-This is a bugfix only release of Dada Mail
+This is a bugfix only release of Dada Mail, but touches upon a multitude of problems uncovered after the release of v8.0.0 of Dada Mail.
+
+=head2 Bugfixes
+
+=head3 Bridge
+
+Several problems with encoding have been found in Bridge, most notably when a message in 8bit Content Transfer Encoding and UTF-8 Encoding is sent. Messages are, by default, handled in a different Content Transfer Encoding (quoted-printable), which is basically 7bit. Problem happens if you try to work with these two Content Transfer Encodings together - basically corruption of text. 
+
+To counteract this, messages received by Bridge are first changed to whatever the internal Content Transfer Encoding is, then processed as usual.
+
+=head3 Archives w/Inline File Attachments
+
+Somewhat related to Bridge, archives with inline file attachments wouldn't  show up correctly. 
+
+L<https://github.com/justingit/dada-mail/issues/482>
+
+=head3 Multiple Subscribe Extension Script
+
+Subscription confirmation in the C<multiple_subscribe.cgi> extension script would fail, if you have a Profile Field that is required, even if it's submitted with the form. 
+
+L<https://github.com/justingit/dada-mail/issues/481>
+
+=head3 Profiles
+
+Profiles had several issues: 
+
+=over
+
+=item * Logging in, after subscription
+
+After a subscription is made, the subscriber should be logged into their profile right afterwards (via a session cookie) and able to visit their profile via the really big button presented to them, without having to know their current login information. This was broken (now fixed). 
+
+Also, when this was broken, it wasn't clear why things didn't work, as no useful error message was presented (fixed as well). 
+
+=item * HTML formatting
+
+Several errors in the HTML was present in the Profile Home screen, leading to some of the interface to be broken. 
+
+L<https://github.com/justingit/dada-mail/issues/479>
+
+=item * Logging In
+
+There seemed also to be a problem with merely logging into you Profile in some instances.
+
+=item * Registering an already-existing account
+
+It was also called to our attention that you could still attempt to register an already existing account, even though there's a check in place to hault such an action. 
+
+=back
+
+=head3 Send a Webpage
+
+Many problems have cropped up in the Send a Webpage screen, some having to do with problems with encoding (again), and others, when specific types of data are included in the webapge, including linked stylesheets. This would ultimately cause a sending to fail. 
+
+
+
+=cut
