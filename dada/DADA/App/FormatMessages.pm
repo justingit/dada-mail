@@ -2552,6 +2552,7 @@ sub email_template {
 			
 					   # Decode it, 
 					   $phrase = $self->_decode_header($phrase); 
+					   
 					  
 					
 					if($phrase =~ m/\[|\</){ # does it even look like we have a templated thingy? (optimization)
@@ -2599,16 +2600,6 @@ sub email_template {
 				warn 'get() returned:' . safely_encode( $header_value)	
 				 if $t; 
 
-			       # this shouldn't be required, but headers are sometimes saved un-MIME Words encoded. 
-			     #  $header_value = safely_decode($header_value); 
-                 #warn 'safely_decode(get()) returned:' . safely_encode( $header_value)	
-   				 #if $t; 
-   								
-				# I'm a little weirded by this, but if, some reason
-				# UTF-8 (decoded) stuff gets through, this does help it. 
-				# Uneeded, if there is no UTF-8 stuff is in the header (which should be the 
-				# the case, anyways - 
-
 								
 				# Decode EncWords
 				$header_value = $self->_decode_header($header_value);
@@ -2626,7 +2617,7 @@ sub email_template {
 						if $t;
 				}
 				
-				$header_value = $self->_encode_header($header, $header_value); 
+				$header_value = $self->_encode_header($header, safely_encode($header_value)); 
 				warn 'encode EncWords:' . safely_encode( $header_value)
 					if $t; 
 						

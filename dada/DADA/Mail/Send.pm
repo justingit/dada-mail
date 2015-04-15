@@ -2974,7 +2974,7 @@ sub _email_batched_finished_notification {
                 mailing_finish_time => $formatted_end_time,
                 total_mailing_time  => $total_time,
                 last_email_send_to  => $args{-last_email},
-                message_subject     => safely_encode( $fm->_decode_header($fields->{Subject} )),
+                message_subject     => $fm->_decode_header($fields->{Subject}),
                 %$m_report,
             }, 
 			-expr => $expr, 
