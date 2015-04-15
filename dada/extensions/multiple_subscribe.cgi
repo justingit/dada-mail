@@ -253,14 +253,14 @@ sub subscribe_emails {
         if ( $status == 1 ) {
 
             my $local_q = new CGI;
-            $local_q->delete_all();
-            $local_q->param( 'list',  $this_list );
-            $local_q->param( 'email', $email );
-            $local_q->param( 'flavor',     's' );
+               $local_q->delete_all();
+               $local_q->param( 'list',  $this_list );
+               $local_q->param( 'email', $email );
+               $local_q->param( 'flavor',     's' );
 
             # Hmm. This should take care of that.
             foreach ( @{ $lh->subscriber_fields } ) {
-                $local_q->param( $_, $q->param($_) );
+                $local_q->param( $_, scalar $q->param($_) ) );
             }
 
             require DADA::App::Subscriptions;
