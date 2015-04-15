@@ -141,6 +141,10 @@ sub init {
 
 }
 
+sub test_sub { 
+    return 'Hello, World!'; 
+}
+
 sub run {
     my $q = shift;
     reset_globals();

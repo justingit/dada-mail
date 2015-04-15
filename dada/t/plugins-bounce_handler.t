@@ -10,6 +10,9 @@ BEGIN{$ENV{NO_DADA_MAIL_CONFIG_IMPORT} = 1}
 
 
 use dada_test_config; 
+dada_test_config::create_SQLite_db(); 
+
+
 use DADA::App::Guts; 
 use DADA::MailingList::Settings; 
 
@@ -23,10 +26,10 @@ my $ls = DADA::MailingList::Settings->new({-list => $list});
 my $li = $ls->get; 
 
 
-require plugins::bounce_handler; 
+require 'plugins/bounce_handler'; 
 
 
-ok(plugins::bounce_handler->test_sub() eq q{Hello, World!}); 
+ok(bounce_handler::test_sub() eq q{Hello, World!}); 
 
 my $test_msg = undef; 
 my $entity   = undef; 
@@ -49,11 +52,12 @@ require DADA::App::BounceHandler::MessageParser;
 my $bhmp = DADA::App::BounceHandler::MessageParser->new;
 my ($e, $l, $d) = $bhmp->run_all_parses($entity); 
 
-#use Data::Dumper; 
-#diag Dumper([$e, $l, $d]); 
+use Data::Dumper; 
+diag Dumper([$e, $l, $d]); 
 ok($e eq 'bouncing.email@example.com',"($e)"); 
  
 dada_test_config::remove_test_list;
+dada_test_config::destroy_SQLite_db();
 dada_test_config::wipe_out;
  
 
