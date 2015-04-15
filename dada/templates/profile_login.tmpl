@@ -24,22 +24,25 @@
 
 
 
-        <!-- tmpl_if errors --> 
-            <h1>YOU HAVE ERRORS!!!</h1> 
-            <ul>
-            <!-- tmpl_loop errors --> 
-                <li><p><!-- tmpl_var error --></p></li>
-            <!-- /tmpl_loop --> 
-            </ul>
-        <!-- /tmpl_if --> 
+<!-- tmpl_if comment --> 
+
+
+                        <!-- tmpl_if errors --> 
+                            <h1>YOU HAVE ERRORS!!!</h1> 
+                            <ul>
+                            <!-- tmpl_loop errors --> 
+                                <li><p><!-- tmpl_var error --></p></li>
+                            <!-- /tmpl_loop --> 
+                            </ul>
+                        <!-- /tmpl_if --> 
     
-        <h1>error_profile_login: <!-- tmpl_var error_profile_login --> </h1> 
-        <h1>error_profile_register: <!-- tmpl_var error_profile_register --></h1>
-    <hr /> 
-    <hr /> 
-    <hr /> 
+                        <h1>error_profile_login: <!-- tmpl_var error_profile_login --> </h1> 
+                        <h1>error_profile_register: <!-- tmpl_var error_profile_register --></h1>
+                    <hr /> 
+                    <hr /> 
+                    <hr /> 
 
-
+<!-- /tmpl_if --> 
 
 
 <!-- tmpl_if logged_out --> 
