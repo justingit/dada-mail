@@ -213,9 +213,17 @@ sub subscribe_emails {
         my $ls = DADA::MailingList::Settings->new( { -list => $this_list } );
         my $li = $ls->get;
 
+        my $fields = {}; 
+        foreach ( @{ $lh->subscriber_fields } ) {
+            if(defined($q->param($_)) && length($q->param($_)) > 0){ 
+                $fields->{$_} = xss_filter( scalar $q->param($_)); 
+            }
+        }
+        
         my ( $status, $errors ) = $lh->subscription_check(
             {
-                -email => $email,
+                -email  => $email,
+                -fields => $fields, 
                 ( $li->{email_your_subscribed_msg} == 1 )
                 ? ( -skip => ['subscribed'], )
                 : (),
@@ -225,7 +233,13 @@ sub subscribe_emails {
 
         my $error_report = [];
         foreach ( keys %$errors ) {
-            push( @$error_report, { error => $_ } ) if $errors->{$_} == 1;
+            if($_ eq 'invalid_profile_fields') { 
+                push( @$error_report, { error => 'invalid_profile_fields' } );
+                
+            }
+            else { 
+                push( @$error_report, { error => $_ } ) if $errors->{$_} == 1;
+            }
         }
 
         #--- debug! --- #
@@ -233,7 +247,7 @@ sub subscribe_emails {
           $q->h1( "List: '"
               . $this_list
               . "', Email: $email, Status: "
-              . $q->b($status) )
+              . $q->b($status) ) . $q->pre(Dumper({status => $status, errors => $errors}))
           if $Debug == 1;
 
         if ( $status == 1 ) {
@@ -242,7 +256,7 @@ sub subscribe_emails {
             $local_q->delete_all();
             $local_q->param( 'list',  $this_list );
             $local_q->param( 'email', $email );
-            $local_q->param( 'f',     's' );
+            $local_q->param( 'flavor',     's' );
 
             # Hmm. This should take care of that.
             foreach ( @{ $lh->subscriber_fields } ) {
@@ -391,7 +405,7 @@ This script takes three different arguments; B<list>, B<s> and B<email>. You wil
 	  <input type="text" name="email" />
 	 </p>
 	 <p>
-	 <input type="checkbox" name="f" value="s"> Subscribe!<br /> 
+	 <input type="checkbox" name="flavor" value="s"> Subscribe!<br /> 
 	 </p>
 	 <p>
 	 <input type="submit" value="Subscribe Me" /> 
