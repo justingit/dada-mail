@@ -20,7 +20,7 @@ An easier way, if all you want to do is to, say, have a button in another progra
 
 <form action="http://example.com/cgi-bin/dada/mail.cgi" method="post">
  
-  <input type="hidden" name="f"              value="login" />
+  <input type="hidden" name="flavor"              value="login" />
  
   <input type="hidden" name="process"        value="true" />
  

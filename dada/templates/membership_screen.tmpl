@@ -111,7 +111,7 @@
 						<legend>Subscription Requests</legend>
 						<p><!-- tmpl_var email escape="HTML" --> has requested to be Subscribed to your Mailing List.</p>
 						<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
-							<input type="hidden" name="f"       value="subscription_requests" />
+							<input type="hidden" name="flavor"       value="subscription_requests" />
 							<input type="hidden" name="type" value="sub_request_list" />
 							<input type="hidden" name="address" value="<!-- tmpl_var email escape="HTML" -->" />
 							<input type="hidden" name="return_to" value="membership" />
@@ -129,7 +129,7 @@
 						<legend>Unsubscription Requests</legend>
 						<p><!-- tmpl_var email escape="HTML" --> has requested to be Unsubscribed from your Mailing List.</p>
 						<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
-							<input type="hidden" name="f"       value="unsubscription_requests" />
+							<input type="hidden" name="flavor"       value="unsubscription_requests" />
 							<input type="hidden" name="type" value="unsub_request_list" />
 							<input type="hidden" name="address" value="<!-- tmpl_var email escape="HTML" -->" />
 							<input type="hidden" name="return_to" value="membership" />
@@ -222,7 +222,7 @@
 					<input type="hidden" name="process" value="delete" />
 
 					<input type="hidden" name="address" value="<!-- tmpl_var email escape="HTML" -->" />
-					<input type="hidden" name="f"       value="remove_subscribers" />	
+					<input type="hidden" name="flavor"       value="remove_subscribers" />	
 					<input type="hidden" name="return_to" value="membership" />
 					<input type="hidden" name="return_address" value="<!-- tmpl_var email escape="HTML" -->" />
 					<p>
@@ -315,7 +315,7 @@
 
     			<!-- tmpl_if expr="(root_login == 1 || list_settings.allow_profile_editing == 1)" --> 
 					 <input type="hidden" name="email"   value="<!-- tmpl_var email escape="HTML" -->" />
-					 <input type="hidden" name="f"       value="membership" />
+					 <input type="hidden" name="flavor"       value="membership" />
 					 <input type="hidden" name="process" value="1" />
 					 <input type="hidden" name="type"    value="<!-- tmpl_var type -->" />
 				<!-- /tmpl_if --> 
@@ -380,7 +380,7 @@
 						</div> 
 						<div id="change_profile_password_form" style="display:none">
 							<form name="change_profile_password" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-								<input type="hidden" name="f" value="admin_change_profile_password" /> 
+								<input type="hidden" name="flavor" value="admin_change_profile_password" /> 
 								<input type="hidden" name="email" value="<!-- tmpl_var email escape="HTML" -->" />
 								<input type="hidden" name="type" value="<!-- tmpl_var type -->" />
 
@@ -418,7 +418,7 @@
     	
         <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
             
-            <input type="hidden" name="f"        value="admin_profile_delivery_preferences" /> 
+            <input type="hidden" name="flavor"        value="admin_profile_delivery_preferences" /> 
             <input type="hidden" name="list"     value="<!-- tmpl_var list_settings.list -->" /> 
             <input type="hidden" name="email"    value="<!-- tmpl_var email escape="HTML" -->" /> 
 
