@@ -676,14 +676,15 @@ sub construct_from_url {
         %headers,
     );
 
+
     my $text_message = undef;
-    if ( $draft_q->param('text_message_body') ) {
+    if ( defined(scalar $draft_q->param('text_message_body')) ) {
         $text_message = $draft_q->param('text_message_body');
     }
     else {
         $text_message = 'This email message requires that your mail reader support HTML';
     }
-
+    
     if ( $draft_q->param('auto_create_plaintext') == 1 ) {
         if ( $draft_q->param('content_from') eq 'url' ) {
             if ( length($url) <= 0 ) {
@@ -712,6 +713,7 @@ sub construct_from_url {
         }
     }
 
+    
     my ( $status, $errors ) = $self->redirect_tag_check($text_message);
     if ( $status == 0 ) {
         return ( $status, $errors, undef, undef );
@@ -738,7 +740,7 @@ sub construct_from_url {
         # Redirect tag check
 
         my $errors = undef;
-        eval { $MIMELiteObj = $mailHTML->parse( $url, safely_encode($t) ); };
+        eval { $MIMELiteObj = $mailHTML->parse( $url, safely_encode($text_message) ); };
 
         # DEV: It would be a lot nicer, if this was just printed in our control panel, instead of an error:
         if ($@) {
@@ -757,7 +759,6 @@ sub construct_from_url {
     }
     else {
         my $html_message = $draft_q->param('html_message_body');
-        my $text_message = undef;
         ( $text_message, $html_message ) =
           DADA::App::FormatMessages::pre_process_msg_strings( $text_message, $html_message );
 
@@ -768,6 +769,7 @@ sub construct_from_url {
         undef($status);
         undef($errors);
 
+        
         eval { $MIMELiteObj = $mailHTML->parse( safely_encode($html_message), safely_encode($text_message) ); };
         if ($@) {
             my $errors = "Problems sending HTML! \n

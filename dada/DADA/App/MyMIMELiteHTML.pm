@@ -48,7 +48,12 @@ sub absUrl($$) {
 
 sub parse
   {
-    my($self,$url_page,$url_txt,$url1)=@_;
+    my(
+        $self,
+        $url_page,
+        $url_txt,
+        $url1
+    )=@_;
     my ($type,@mail,$gabarit,$gabarit_txt,$racinePage);
 
     # Get content of $url_page with LWP
@@ -83,7 +88,9 @@ sub parse
                 $gabarit_txt = safely_decode($content);
             }
 	    }
-	  else {$gabarit_txt=$url_txt;}
+	  else {
+	      $gabarit_txt=$url_txt;
+	      }
           }
     goto BUILD_MESSAGE unless $gabarit;
 
@@ -236,6 +243,7 @@ sub parse
 					    $self->{_HASH_TEMPLATE});
 	}
     
+    
     # Create MIME-Lite object
     $self->build_mime_object($gabarit, $gabarit_txt || undef,  \@mail);
 
@@ -363,6 +371,7 @@ sub cid  (\%$) {
 
 sub build_mime_object {
   my ($self,$html,$txt,$ref_mail)=@_;
+   
   my ($txt_part, $part,$mail);
   # Create part for HTML if needed
   if ($html) {
@@ -395,7 +404,10 @@ sub build_mime_object {
     $txt_part->replace("X-Mailer" => "");
     $txt_part->replace("Content-Disposition" => "");
     # only text, no html
-    $mail = $txt_part unless $html;
+    
+    $mail = $txt_part unless $html; # unless html?
+    
+    
   }
 
   # If images and html and no text, multipart/related
@@ -440,6 +452,7 @@ sub build_mime_object {
   }
   $mail->replace('X-Mailer',"MIME::Lite::HTML $VERSION");
   $self->{_MAIL} = $mail;
+  
 }
 
 
