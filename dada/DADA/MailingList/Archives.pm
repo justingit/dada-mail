@@ -298,7 +298,7 @@ sub get_header {
 	my $header = $entity->head->get($args{-header}, 0); 
 
 	# DEV: Decode Header!
-	if($args{-header} =~ m/Reply\-To|To|From|Subject|Cc|Sender/){ 
+	if($args{-header} =~ m/Reply\-To|To|From|Subject|Cc|Sender|X\-Origina\-From/){ 
 		$header = $self->_decode_header($header); 
 	}
 
@@ -322,9 +322,9 @@ sub sender_address {
     
     my $e = $self->get_header(
         -key    => $id,
-        -header => 'Sender', 
+        -header => 'X-Original-From', 
     );
-    if(!defined($e) || length($e) < 1){ 
+    if(!defined($e) || length($e) <= 1){ 
         $e = $self->get_header(
             -key    => $id,
             -header => 'From', 

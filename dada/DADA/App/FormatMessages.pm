@@ -957,11 +957,14 @@ sub _format_headers {
         $entity->head->add( 'Sender', $self->{ls}->param('list_owner_email'));            
     }
     
-    #warn '$self->mass_mailing ' . $self->mass_mailing; 
-	#warn q|$self->{ls}->param('group_list')| . $self->{ls}->param('group_list'); 
-	#warn q|$self->{ls}->param('discussion_pop_email')| . $self->{ls}->param('discussion_pop_email'); 
-	#warn q|$self->{ls}->param('group_list_pp_mode')| . $self->{ls}->param('group_list_pp_mode'); 
+
 	
+	# This is weird, right? remove the original original from header, and put our own: 
+	if ( $entity->head->count('X-Original-From') ) {
+        $entity->head->delete('X-Original-From');
+    }
+    $entity->head->add( 'X-Original-From', $entity->head->get('From', 0));
+    
 	if (   $self->mass_mailing == 1
         && $self->{ls}->param('group_list') == 1
         && defined( $self->{ls}->param('discussion_pop_email') ) 
@@ -974,6 +977,7 @@ sub _format_headers {
 			
 			$entity->head->delete('From');
 	        $entity->head->add( 'From', safely_encode($self->_pp($og_from)) );
+			
 			
 			if($self->{ls}->param('set_to_header_to_list_address') == 1) { 
 		        if ( $entity->head->count('Reply-To') ) {

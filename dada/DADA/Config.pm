@@ -1808,50 +1808,42 @@ $PROGRAM_NAME //= "Dada Mail";
 
 %EMAIL_HEADERS = (
 
-    Date          => undef,
-    From          => undef,
-    To            => undef,
-    Cc            => undef,
-    Bcc           => undef,
-    Sender        => undef,
-    'Return-Path' => undef,
-    'Reply-To'    => undef,
-    'In-Reply-To' => undef,
-    'Errors-To'   => undef,
-    References    => undef,
-    'X-Priority'  => undef,
-
-    'Content-Base'     => undef,
-    List               => undef,
-    'List-Archive'     => undef,
-    'List-Digest'      => undef,
-    'List-Help'        => undef,
-    'List-ID'          => undef,
-    'List-Owner'       => undef,
-    'List-Post'        => undef,
-    'List-Subscribe'   => undef,
-    'List-Unsubscribe' => undef,
-    'List-URL'         => undef,
-    'X-BeenThere'      => undef,
-
-    'Message-ID' => undef,
-    'Precedence' => 'list',
-    'X-Mailer'   => "$PROGRAM_NAME $VER ",
-
+    Date                        => undef,
+    From                        => undef,
+    To                          => undef,
+    Cc                          => undef,
+    Bcc                         => undef,
+    Sender                      => undef,
+    'Return-Path'               => undef,
+    'Reply-To'                  => undef,
+    'In-Reply-To'               => undef,
+    'Errors-To'                 => undef,
+    References                  => undef,
+    'X-Priority'                => undef,
+    'X-Original-From'           => undef,
+    'Content-Base'              => undef,
+    List                        => undef,
+    'List-Archive'              => undef,
+    'List-Digest'               => undef,
+    'List-Help'                 => undef,
+    'List-ID'                   => undef,
+    'List-Owner'                => undef,
+    'List-Post'                 => undef,
+    'List-Subscribe'            => undef,
+    'List-Unsubscribe'          => undef,
+    'List-URL'                  => undef,
+    'X-BeenThere'               => undef,
+    'Message-ID'                => undef,
+    'Precedence'                => 'list',
+    'X-Mailer'                  => "$PROGRAM_NAME $VER ",
     'Content-type'              => undef,
     'Content-Transfer-Encoding' => undef,
-
-    # Content-Length            =>    undef, # See it *should* be here,
-    # but it also states it's unofficial
-
-    'Content-Disposition' => undef,
-    'MIME-Version'        => undef,
-
-    Subject => '(no subject)',
-
-    Body => 'blank',
-
+    'Content-Disposition'       => undef,
+    'MIME-Version'              => undef,
+    Subject                     => '(no subject)',
+    Body                        => 'blank',
 ) unless keys %EMAIL_HEADERS;
+
 
 @EMAIL_HEADERS_ORDER = qw(
   Date
@@ -1866,6 +1858,8 @@ $PROGRAM_NAME //= "Dada Mail";
   Errors-To
   References
   X-Priority
+  X-Original-From
+  
   Precedence
 
   List
