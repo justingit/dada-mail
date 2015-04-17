@@ -1764,7 +1764,7 @@ sub list_invite {
 
     my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'mass_mailing_options'
+        -Function => 'add'
     );
     if ( !$checksout ) { return $error_msg; }
 
