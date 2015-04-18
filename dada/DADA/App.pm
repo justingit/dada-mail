@@ -136,7 +136,9 @@ sub setup {
         'admin_menu_mailing_monitor_notification'     => \&admin_menu_mailing_monitor_notification,
         'admin_menu_archive_count_notification'       => \&admin_menu_archive_count_notification,
         'admin_menu_sending_preferences_notification' => \&admin_menu_sending_preferences_notification,
+        'admin_menu_mass_mailing_preferences_notification' => \&admin_menu_mass_mailing_preferences_notification, 
         'admin_menu_bounce_handler_notification'      => \&admin_menu_bounce_handler_notification,
+        'admin_menu_tracker_notification'             => \&admin_menu_tracker_notification,
         'send_email'                                  => \&send_email,
         'ckeditor_template_tag_list'                  => \&ckeditor_template_tag_list,
         'draft_saved_notification'                    => \&draft_saved_notification,
@@ -685,6 +687,7 @@ sub admin_menu_subscriber_count_notification {
     }
     catch {
         carp($_);
+        return '';
     }
 }
 
@@ -711,6 +714,7 @@ sub admin_menu_archive_count_notification {
     }
     catch {
         carp($_);
+        return '';
     }
 }
 
@@ -743,8 +747,45 @@ sub admin_menu_sending_preferences_notification {
     }
     catch {
         carp($_);
+        return '';
     }
 }
+
+
+sub admin_menu_mass_mailing_preferences_notification {
+    my $self = shift;
+    my $q    = $self->query();
+    try {
+        my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
+            -cgi_obj         => $q,
+            -manual_override => 1
+        );
+        if ($checksout) {
+            my $list = $admin_list;
+            require  DADA::Mail::MailOut;
+            my $mo = DADA::Mail::MailOut->new( { -list => $list } );
+            my ( $batch_sending_enabled, $batch_size, $batch_wait ) = $mo->batch_params();
+            my $per_sec = $batch_size / $batch_wait;
+            my $per_hour =  int( $per_sec * 60 * 60 + .5 );    # DEV .5 is some sort of rounding thing (with int). That's wrong.
+            if($batch_sending_enabled == 1){ 
+                return '(' . commify($per_hour) . '/hr)';
+            }
+            else { 
+                return ''; 
+            }
+        }
+    }
+    catch {
+        carp($_);
+        return '';
+    }
+}
+
+
+
+
+
+
 
 sub admin_menu_bounce_handler_notification {
     my $self = shift;
@@ -767,8 +808,36 @@ sub admin_menu_bounce_handler_notification {
     }
     catch {
         carp($_);
+        return '';
     }
 }
+
+
+
+
+sub admin_menu_tracker_notification {
+    my $self = shift;
+    my $q    = $self->query();
+
+    try {
+        my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
+            -cgi_obj         => $q,
+            -manual_override => 1
+        );
+        my $rs = '';
+        if ($checksout) {
+            require DADA::Logging::Clickthrough;
+            my $rd = DADA::Logging::Clickthrough->new({-list => $admin_list});
+            my ( $total, $msg_ids ) = $rd->get_all_mids; 
+            return '(' . commify($total) . ')';
+        }
+    } catch {
+        carp($_);
+        return '';
+    };
+}
+
+
 
 sub send_email {
 

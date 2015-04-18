@@ -8,7 +8,17 @@
 
 =head2 Summary
 
-This is a bugfix only release of Dada Mail, but touches upon a multitude of problems uncovered after the release of v8.0.0 of Dada Mail.
+This is a bugfix release of Dada Mail, but touches upon a multitude of problems uncovered after the release of v8.0.0 of Dada Mail.
+
+=head2 Enhancements 
+
+=head3 Admin Menu: Tracker, Mass Mailing Options
+
+Both the Tracker and Mass Mailing Options link in the admin menu will show additional information that reflects data and settings of your mailing list
+
+Tracker will show the number of mass mailing campaigns that have been analyzed in the Tracker plugin. 
+
+Mass Mailing Options will show your current batch sending speeds in messages per hour. 
 
 =head2 Bugfixes
 

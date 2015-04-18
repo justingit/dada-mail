@@ -43,7 +43,9 @@ $(document).ready(function() {
 		admin_menu_callbacks.add(admin_menu_subscriber_count_notification());
 		admin_menu_callbacks.add(admin_menu_archive_count_notification());
 		admin_menu_callbacks.add(admin_menu_sending_preferences_notification());
+		admin_menu_callbacks.add(admin_menu_mass_mailing_preferences_notification());
 		admin_menu_callbacks.add(admin_menu_bounce_handler_notification());
+		admin_menu_callbacks.add(admin_menu_tracker_notification());
 		admin_menu_callbacks.fire();
 		
 		if($("#screen_meta").length) { 
@@ -1352,8 +1354,15 @@ function admin_menu_sending_preferences_notification() {
 	admin_menu_notification('admin_menu_sending_preferences_notification', 'admin_menu_sending_preferences');	
 }
 
+function admin_menu_mass_mailing_preferences_notification() { 
+	admin_menu_notification('admin_menu_mass_mailing_preferences_notification', 'admin_menu_mass_mailing_preferences');	
+}
+
 function admin_menu_bounce_handler_notification() { 
 	admin_menu_notification('admin_menu_bounce_handler_notification', 'admin_menu_bounce_handler');	
+}
+function admin_menu_tracker_notification() { 
+	admin_menu_notification('admin_menu_tracker_notification', 'admin_menu_tracker');	
 }
 
 
