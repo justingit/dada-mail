@@ -24,15 +24,12 @@ my @dirs = (
 	'templates/plugins/bounce_handler',
 	'templates/plugins/bridge',
 	'templates/plugins/change_list_shortname',
-	'templates/plugins/default_mass_mailing_messages',
 	'templates/plugins/global_config',
 	'templates/plugins/log_viewer',
-	'templates/plugins/mailing_monitor',
 	'templates/plugins/password_protect_directories',
 	'templates/plugins/screen_cache',
 	'templates/plugins/shared',
-	'templates/plugins/tracker',
-	
+	'templates/plugins/tracker',	
 	'installer-disabled/templates',
 ); 
 
