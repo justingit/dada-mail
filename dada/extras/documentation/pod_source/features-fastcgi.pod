@@ -57,5 +57,3 @@ or sign up and post to the dadadev mailing list:
 
 L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
 
-=end
-

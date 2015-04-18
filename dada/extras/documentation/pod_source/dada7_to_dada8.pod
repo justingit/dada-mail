@@ -12,6 +12,7 @@ If you are running a version of Dada Mail below v8, here are a few things to mak
 
 =item * MySQL/PostgreSQL + Perl Driver support 
 
+=back
 
 =head1 Perl Minimum Version: 5.10.1
 
