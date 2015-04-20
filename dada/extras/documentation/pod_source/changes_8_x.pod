@@ -84,5 +84,13 @@ List Invitation doesn't have its screen available in the menu, so it's a little 
 
 L<https://github.com/justingit/dada-mail/issues/486>
 
+=head3 Subscription Confirmation URL Redirect
+
+The URL redirect after a subscription confirmation led to a blank page (fixed) 
+
+L<https://github.com/justingit/dada-mail/issues/488>
+
+
+
 
 =cut
