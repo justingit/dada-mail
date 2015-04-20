@@ -8603,6 +8603,10 @@ sub token {
             -html_output => $args{-html_output},
         }
     );
+    
+    # use Data::Dumper;
+    # warn Dumper({headers => $headers, body => $body}); 
+    
     if ( exists( $headers->{-redirect_uri} ) ) {
         $self->header_type('redirect');
         $self->header_props( -url => $headers->{-redirect_uri} );

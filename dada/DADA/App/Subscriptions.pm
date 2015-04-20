@@ -9,7 +9,6 @@ use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;
 
 use Carp qw(carp croak);
-$CARP::Verbose = 1;
 use Try::Tiny;
 
 use vars qw($AUTOLOAD);
@@ -284,7 +283,7 @@ sub subscribe {
         }
         else {
             # Test sub-subscribe-redirect-error_invalid_list
-            return $self->alt_redirect($r);
+            return ({redirect_uri => $self->alt_redirect($r)}, undef);
             # There's also:
             #return user_error(
             #    -List  => $list,
@@ -492,7 +491,7 @@ sub subscribe {
         }
         elsif ( $args->{-html_output} == 1 ) {
             if ( $ls->param('use_alt_url_sub_confirm_failed') == 1 ) {
-                return $self->alt_redirect($r);
+                return ({-redirect_uri => $self->alt_redirect($r)}, undef);
             }
             else {
                 # how does invalid email get here,
@@ -628,7 +627,7 @@ sub subscribe {
         }
         else {
             if ( $ls->param('use_alt_url_sub_confirm_success') == 1 ) {
-                return $self->alt_redirect($r);
+                return ({-redirect_uri => $self->alt_redirect($r)}, undef);
             }
             else {
 
@@ -708,7 +707,7 @@ sub confirm {
 
             warn '>>>> >>>> list doesn\'t exist. Redirecting to default screen.'
               if $t;
-            return ({-uri_redirect => $DADA::Config::PROGRAM_URL . '?error_invalid_list=1' }, undef);
+            return ({-redirect_uri => $DADA::Config::PROGRAM_URL . '?error_invalid_list=1' }, undef);
         }
         else {
             # Again!
@@ -717,7 +716,7 @@ sub confirm {
                 if ( $ls->param('use_alt_url_sub_failed') == 1 ) {
                     warn '>>>> >>>> no email passed. Redirecting to list screen'
                       if $t;
-                    return ({-uri_redirect => $DADA::Config::PROGRAM_URL . '?flavor=list&list=' . $list . '&error_no_email=1' }, undef);
+                    return ({-redirect_uri => $DADA::Config::PROGRAM_URL . '?flavor=list&list=' . $list . '&error_no_email=1' }, undef);
                 }
             }
         }
@@ -912,7 +911,7 @@ sub confirm {
         }
         elsif ( $args->{-html_output} == 1 ) {
             if ( $ls->param('use_alt_url_sub_failed') == 1 ) {
-                return $self->alt_redirect($r);
+                return ({-redirect_uri => $self->alt_redirect($r)}, undef);
             }
             else {
                 my @list_of_errors = qw(
@@ -1127,7 +1126,7 @@ sub confirm {
             }
             elsif ( $args->{-html_output} == 1 ) {
                 if ( $ls->param('use_alt_url_sub_success') == 1 ) {
-                    return $self->alt_redirect($r);
+                    return ({-redirect_uri => $self->alt_redirect($r)}, undef);
                 }
                 else {
 
@@ -1263,7 +1262,7 @@ sub subscription_approval_step {
     }
     else {
         if ( $ls->param('use_alt_url_subscription_approval_step') == 1 ) {
-            return $self->alt_redirect($r);
+            return ({-redirect_uri => $self->alt_redirect($r)}, undef);
         }
         else {
 
@@ -1310,7 +1309,7 @@ sub unsubscription_request {
     # If the list doesn't exist, don't go through the process,
     if ( $args->{-html_output} == 1 ) {
         if ( check_if_list_exists( -List => $list ) == 0 ) {
-            return ({ -uri_redirect => $DADA::Config::PROGRAM_URL . '?error_invalid_list=1'}, undef );
+            return ({ -redirect_uri => $DADA::Config::PROGRAM_URL . '?error_invalid_list=1'}, undef );
         }
 
         # If the list is there,
@@ -1320,7 +1319,7 @@ sub unsubscription_request {
         if ( !$email ) {
             warn "no email."
               if $t;
-           return ({ -uri_redirect => $DADA::Config::PROGRAM_URL . '?flavor=outdated_subscription_urls&list=' . $list . '&orig_flavor=u'}, undef );
+           return ({ -redirect_uri => $DADA::Config::PROGRAM_URL . '?flavor=outdated_subscription_urls&list=' . $list . '&orig_flavor=u'}, undef );
         }
 
     }
@@ -1803,7 +1802,7 @@ sub complete_unsubscription {
 
             if ( $args->{-html_output} == 1 ) {
                 if ( $ls->param('use_alt_url_unsub_success') == 1 ) {
-                    return $self->alt_redirect($r);
+                    return ({-redirect_uri => $self->alt_redirect($r)}, undef);
                 }
                 else {
                     my $s = $ls->param('html_unsubscribed_message');
@@ -1983,7 +1982,7 @@ sub pl_unsubscription_request {
 
         if ( $args->{-html_output} == 1 ) {
             if ( $ls->param('use_alt_url_unsub_success') == 1 ) {
-                return $self->alt_redirect($r);
+                return ({-redirect_uri => $self->alt_redirect($r)}, undef);
             }
             else {
                 require DADA::Template::Widgets;
@@ -2445,7 +2444,7 @@ sub error_token_undefined {
           . xss_filter( strip( scalar $q->param('list') ) )
           . '&email='
           . xss_filter( strip( scalar $q->param('email') ) ) );
-        return ({-uri_redirect => $r}, undef);
+        return ({-redirect_uri => $r}, undef);
 }
 
 sub fancy_data {
@@ -2792,15 +2791,15 @@ sub alt_redirect {
         if ( $url =~ m/\?/ ) {
             # Already has a query string?!
             $url = $url . '&' . $args->{redirect}->{query};
-            return ({-uri_redirect => $url}, undef);
+            return $url;
         }
         else {
             $url = $url . '?' . $args->{redirect}->{query} ;
-            return ({-uri_redirect => $url}, undef);
+            return $url;
         }
     }
     else {
-        return ({-uri_redirect => $url}, undef);
+        return $url
     }
 
 }

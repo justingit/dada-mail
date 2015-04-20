@@ -166,7 +166,7 @@ my ($h, $b) = $das->subscribe(
 	}
 );
 
-ok($h->{-uri_redirect} eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi?error_invalid_list=1'); 
+ok($h->{-redirect_uri} eq 'http://www.changetoyoursite.com/cgi-bin/dada/mail.cgi?error_invalid_list=1'); 
 undef $h;
 undef $b;
 
@@ -197,7 +197,7 @@ my ($h, $b) = $das->subscribe(
 	}
 );
 my $redirect = 'http://example.com/alt_url_sub_confirm_failed.html?list=dadatest&email=&status=0&rm=sub_confirm&errors[]=invalid_email';
-ok($h->{-uri_redirect} eq $redirect); 
+ok($h->{-redirect_uri} eq $redirect); 
 $q->delete_all; 
 undef $h;
 undef $b; 
@@ -236,7 +236,7 @@ my ($h, $b) = $das->subscribe(
 	}
 );
 my $redirect = "http://example.com/alt_url_sub_confirm_success.html?list=dadatest&email=user%40example.com&status=1&rm=sub_confirm";
-ok($h->{-uri_redirect} eq $redirect); 
+ok($h->{-redirect_uri} eq $redirect); 
 undef $h; 
 undef $b; 
 
@@ -277,7 +277,7 @@ my ($h, $b) = $das->subscribe(
 	}
 );
 my $redirect = 'http://example.com/alt_url_sub_confirm_failed.html?list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=already_sent_sub_confirmation';
-ok($h->{-uri_redirect} eq $redirect); 
+ok($h->{-redirect_uri} eq $redirect); 
 undef $h;
 undef $b; 
  
@@ -336,7 +336,7 @@ my ($h, $b) =  $das->subscribe(
 	}
 );
 my $redirect = 'http://example.com/alt_url_sub_confirm_success.html?list=dadatest&email=user%40example.com&status=1&rm=sub_confirm';
-ok($h->{-uri_redirect} eq $redirect); 
+ok($h->{-redirect_uri} eq $redirect); 
 undef $h;
 undef $b;
 
@@ -393,7 +393,7 @@ my ($h, $b) =  $das->subscribe(
 	}
 );
 my $redirect = 'http://example.com/alt_url_sub_confirm_failed.html?list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=black_listed';
-ok($h->{-uri_redirect} eq $redirect); 
+ok($h->{-redirect_uri} eq $redirect); 
 undef $h;
 undef $b;
 
@@ -440,7 +440,7 @@ my ($h, $b) =  $das->subscribe(
 	}
 );
 my $redirect = 'http://example.com/alt_url_sub_confirm_failed.html?list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=closed_list';
-ok($h->{-uri_redirect} eq $redirect); 
+ok($h->{-redirect_uri} eq $redirect); 
 undef $h;
 undef $b;
 
@@ -480,7 +480,7 @@ my ($h, $b) = $das->subscribe(
 	}
 );
 my $redirect = 'http://example.com/alt_url_sub_confirm_failed.html?list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=invite_only_list';
-ok($h->{-uri_redirect} eq $redirect); 
+ok($h->{-redirect_uri} eq $redirect); 
 undef $h;
 undef $b;
 $q->delete_all; 
@@ -521,7 +521,7 @@ my ($h, $b) = $das->subscribe(
 );
 my $redirect = 'http://example.com/alt_url_sub_confirm_failed.html?list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=over_subscription_quota';
 
-ok($h->{-uri_redirect} eq $redirect); 
+ok($h->{-redirect_uri} eq $redirect); 
 undef $h;
 undef $b;
 
@@ -564,7 +564,7 @@ my ($h, $b) =  $das->subscribe(
 );
 my $redirect = 'http://example.com/alt_url_sub_confirm_failed.html?list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=over_subscription_quota';
 
-ok($h->{-uri_redirect} eq $redirect); 
+ok($h->{-redirect_uri} eq $redirect); 
 undef $h;
 undef $b;
 
@@ -701,7 +701,7 @@ my ($h, $b) =  $das->subscribe(
 );
 my $redirect = 'http://example.com/alt_url_sub_confirm_success.html?list=dadatest&email=user%40example.com&status=1&rm=sub_confirm';
 
-ok($h->{-uri_redirect} eq $redirect); 
+ok($h->{-redirect_uri} eq $redirect); 
 undef $h;
 undef $b;
 
@@ -746,7 +746,7 @@ my ($h, $b) =  $das->subscribe(
 );
 my $redirect = 'http://example.com/alt_url_sub_confirm_failed.html?list=dadatest&email=user%40example.com&status=0&rm=sub_confirm&errors[]=subscribed';
 
-ok($h->{-uri_redirect} eq $redirect); 
+ok($h->{-redirect_uri} eq $redirect); 
 undef $h;
 undef $b;
 
