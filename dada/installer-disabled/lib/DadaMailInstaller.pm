@@ -2437,20 +2437,25 @@ sub check_setup {
     
     my $q  = $self->query;
     my $ip = $self->param('install_params');
-    require Data::Dumper; 
+    # require Data::Dumper; 
     #warn 'at check_setup: ' .  Data::Dumper::Dumper($ip); 
-    
 
-    my $install_dada_files_loc = $self->install_dada_files_dir_at_from_params(
-        {
-            -install_type                       => $ip->{-install_type},
-            -current_dada_files_parent_location => $ip->{-current_dada_files_parent_location},
-            -dada_files_dir_setup               => $ip->{-dada_files_dir_setup},
-            -dada_files_loc                     => $ip->{-dada_files_loc},  
+    my $install_dada_files_loc = undef; 
+	if(exists($ip->{-install_dada_files_loc})){ 
+		$install_dada_files_loc = $ip->{-install_dada_files_loc};
+	}
+	else {	
+	    $install_dada_files_loc = $self->install_dada_files_dir_at_from_params(
+	        {
+	            -install_type                       => $ip->{-install_type},
+	            -current_dada_files_parent_location => $ip->{-current_dada_files_parent_location},
+	            -dada_files_dir_setup               => $ip->{-dada_files_dir_setup},
+	            -dada_files_loc                     => $ip->{-dada_files_loc},  
 
-        }
-    );
-   #die '$install_dada_files_loc ' . $install_dada_files_loc; 
+	        }
+	    );
+		$ip->{-install_dada_files_loc} = $install_dada_files_loc;
+	}
 
     my $errors = {};
     if (
