@@ -283,7 +283,7 @@ sub subscribe {
         }
         else {
             # Test sub-subscribe-redirect-error_invalid_list
-            return ({redirect_uri => $self->alt_redirect($r)}, undef);
+            return ({-redirect_uri => $self->alt_redirect($r)}, undef);
             # There's also:
             #return user_error(
             #    -List  => $list,
