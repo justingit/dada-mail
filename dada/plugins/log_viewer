@@ -68,7 +68,7 @@ sub run {
         #	croak "There's no CLI for this plugin.";
     }
     else {
-        &cgi_main($q);
+        cgi_main($q);
     }
 }
 
@@ -90,10 +90,14 @@ sub init_vars {
 
 sub cgi_main {
     my $q = shift;
-    ( $admin_list, $root_login ) = check_list_security(
+
+    my ( $admin_list, $t_root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'log_viewer',
+        -Function => 'log_viewer'
     );
+    if ( !$checksout ) { return ({}, $error_msg) }
+    
+    $root_login = $t_root_login; 
     $list = $admin_list;
 
     $logs     = {};
@@ -117,10 +121,10 @@ sub cgi_main {
     );
 
     if ( exists( $Mode{$prm} ) ) {
-        $Mode{$prm}->($q);    #call the correct subroutine
+        return $Mode{$prm}->($q);    #call the correct subroutine
     }
     else {
-        cgi_view($q);
+        return cgi_view($q);
     }
 
 }
@@ -267,16 +271,15 @@ sub log_lines {
 
 sub search_logs {
 
-    my $q = shift;
-
+    my $q      = shift;
     my $s_logs = shift || [ values(%$logs) ];
     my $query  = shift || $q->param('query');
     my $test   = shift || undef;
+       $list  ||= shift; 
 
     require Data::Dumper;
 
     my $only_content = 0;
-    my $list         = undef;
     my $ls           = undef;
     my $li           = undef;
     my $return       = undef;
@@ -284,13 +287,6 @@ sub search_logs {
     if ( !$test ) {
 
         $only_content = xss_filter( scalar $q->param('only_content') ) || 0;
-
-        my ( $admin_list, $root_login ) = check_list_security(
-            -cgi_obj  => $q,
-            -Function => 'log_viewer'
-        );
-        $list = $admin_list;
-
         # get the list information
         $ls = DADA::MailingList::Settings->new(
             {
@@ -305,7 +301,7 @@ sub search_logs {
     }
 
     # header
-    $return .= $q->header( admin_header_params() );
+    #$return .= $q->header( admin_header_params() );
 
     if ( $only_content != 1 ) {
 
@@ -443,6 +439,7 @@ sub get_logs {
 }
 
 sub mass_mailing_logs {
+    
     my $list = shift;
 
     my $dir = $DADA::Config::LOGS;
@@ -505,6 +502,7 @@ sub mass_mailing_logs {
 }
 
 sub bridge_received_msgs {
+    
     my $list = shift;
 
     my $dir = $DADA::Config::TMP;
