@@ -2146,7 +2146,7 @@ sub change_password {
         $ls->save( { password => DADA::Security::Password::encrypt_passwd($new_password), } );
 
         # -no_list_security_check, because the list password's changed, it wouldn't pass it anyways...
-        my ( $headers, $body ) = logout(
+        my ( $headers, $body ) = $self->logout(
             -no_list_security_check => 1,
             -redirect_url           => $DADA::Config::S_PROGRAM_URL
               . '?flavor='
@@ -3465,7 +3465,7 @@ sub view_list {
                 # *Switch* the login. Brilliant! --- maybe I don't want to switch lists automatically - without
                 # someone perhaps knowing that THAT's what I did...
                 my ( $headers, $body ) =
-                  logout( -redirect_url => $DADA::Config::S_PROGRAM_URL . '?' . $q->query_string(), );
+                  $self->logout( -redirect_url => $DADA::Config::S_PROGRAM_URL . '?' . $q->query_string(), );
 
                 if ( keys %$headers ) {
                     $self->header_props(%$headers);
@@ -3947,7 +3947,7 @@ sub subscription_requests {
     if ( defined( $q->param('list') ) ) {
         if ( $list ne $q->param('list') ) {
             my ( $headers, $body ) =
-              logout( -redirect_url => $DADA::Config::S_PROGRAM_URL . '?' . $q->query_string(), );
+              $self->logout( -redirect_url => $DADA::Config::S_PROGRAM_URL . '?' . $q->query_string(), );
             if ( keys %$headers ) {
                 $self->header_props(%$headers);
             }
@@ -10622,9 +10622,10 @@ sub logout {
           ),
           $q->p( $q->a( { -href => $location }, 'Logging Out...' ) ),
           $q->end_html();
+          
+        # Probably not setting up the header_props here, yey?
         $self->header_props(%$headers);
-
-        return $body;
+        return ($headers, $body);
     }
     else {
         return $logout_cookie;    #DEV: not sure about this one...
