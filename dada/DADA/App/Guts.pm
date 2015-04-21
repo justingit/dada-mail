@@ -2048,7 +2048,6 @@ sub check_list_security {
     
 	my %args = (-Function        => undef, 
 				-cgi_obj         => undef, 
-				-manual_override => 0, 
 				@_);
 
         if($t == 1) { 
@@ -2060,7 +2059,6 @@ sub check_list_security {
 
 	croak 'no CGI Object (-cgi_obj)' if ! $args{-cgi_obj};
 
-	
 	require DADA::App::Session; 
 	
 	
