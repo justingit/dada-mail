@@ -90,7 +90,11 @@ The URL redirect after a subscription confirmation led to a blank page (fixed)
 
 L<https://github.com/justingit/dada-mail/issues/488>
 
+=head3 Installer: Setting .dada_files location
 
+It seems that there was a bug related to setting a custom location for the C<.dada_files> directory location. Your custom choice would 
+not be tried out, although the installer would come back and tell you that what you've chosen won't work - maddening. (fixed) 
 
-
+L<https://github.com/justingit/dada-mail/issues/480>
+    
 =cut
