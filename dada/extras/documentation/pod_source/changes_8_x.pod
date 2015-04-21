@@ -96,5 +96,17 @@ It seems that there was a bug related to setting a custom location for the C<.da
 not be tried out, although the installer would come back and tell you that what you've chosen won't work - maddening. (fixed) 
 
 L<https://github.com/justingit/dada-mail/issues/480>
-    
+
+=head3 Log Viewer 
+
+Looks like the Log Viewer plugin always thinks you're logged in w/the List Password, even if you're logged in w/the Root Pass. There's some other oddities I'll also address. (fixed)
+
+L<https://github.com/justingit/dada-mail/issues/489>
+
+=head3 Problems logging out, changing List Password
+
+Changing the List Password works, but you will refresh to a server error screen. Seems there's some problem with the logout() method that seems to be touched quite a few times in the code. (fixed)
+
+L<https://github.com/justingit/dada-mail/issues/490>
+
 =cut
