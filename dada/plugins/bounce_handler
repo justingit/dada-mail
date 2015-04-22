@@ -903,7 +903,7 @@ Once Dada Mail installed, all new mailing lists will use the Bounce Handler's em
 
 Bounce Handler runs in the background on a schedule. Make sure to set Dada Mail's cronjob: 
 
-L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod>
+L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
 
 =head1 FAQ
 

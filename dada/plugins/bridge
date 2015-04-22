@@ -3969,7 +3969,7 @@ If you're setting the command in cPanel (or something similar) and it asks you t
 
 Bridge runs in the background on a schedule. Make sure to set Dada Mail's cronjob: 
 
-L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod>
+L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
 
 =head2 DMARC Policies and Bridge
 
