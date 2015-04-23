@@ -134,11 +134,24 @@ sub get_stats {
 		return ($status, undef, undef, undef); 
 	}
 	else { 
-	    my ( $label, $data ) = split( "\n", $result );
-	    my ( $SentLast24Hours, $Max24HourSend, $MaxSendRate ) =
-	      split( /\s+/, $data );
-
-	    return ($status, $SentLast24Hours, $Max24HourSend, $MaxSendRate );
+	    # Kind of ridiculous: 
+	    my ( $label, $data ) = split( "\n", $result,2 );
+	    my $labeled_data = {};
+	    my @labels = split(/\s+/, $label,3); 
+	    my @data   = split(/\s+/, $data,3); 
+	    my $n = 0; 
+	    foreach(@labels){ 
+	        $_ = strip($_);
+	        $labeled_data->{$_} = strip($data[$n]);
+	        # warn $_  . ' => ' . strip($data[$n]);
+	        $n++;
+	    }
+	         return(
+    	         $status, 
+    	         $labeled_data->{SentLast24Hours}, 
+    	         $labeled_data->{Max24HourSend},
+    	         $labeled_data->{MaxSendRate},
+	         ); 
 	}
 }
 
