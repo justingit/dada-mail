@@ -18,6 +18,7 @@ git checkout master
 git merge new_master
 # now new_master can be deleted
 
+[] Maybe an email about hwne a mass mailing starts? 
 
 [x] global size restrictions need to be per list in bridge
     [] change documentation
