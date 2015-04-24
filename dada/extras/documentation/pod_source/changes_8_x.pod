@@ -4,7 +4,29 @@
 
 =head1 Dada Mail Changelog for v8.x
 
-=head2 8.0.1 
+=head2 8.0.2
+
+=head2 Summary
+
+This is a bugfix release of Dada Mail.
+
+=head2 Bugfixes
+
+=head3 Amazon SES 
+
+Recently, Amazon SES seems to have slightly changed the way it has been returning results to its API calls, 
+specifically when finding your daily email sending quotas. This change has caused problems with Dada Mail's 
+method of setting its auto-batching capabilities. (fixed) 
+
+L<https://github.com/justingit/dada-mail/issues/491>
+
+=head3 Installer
+
+Advanced Options to set the Confirmation Token expiration date were not being written to the global configuration. (fixed) 
+
+L<https://github.com/justingit/dada-mail/issues/492>
+
+=head2 8.0.1
 
 =head2 Summary
 
