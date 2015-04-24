@@ -24,6 +24,10 @@ my $using = $pro;
 print "Content-type:text/html\r\n\r\n";
 print '<h1>Adventures with Dada Mail!</h1>';
 
+if($] < 5.011){ 
+    print "<p>Warning, you may be running a version of Perl below the minimum requirement (v5.10.1)</p>"; 
+}
+
 if ( -e 'dada' ) {
     print 
 "<p>Yikes! A directory named, \"dada\" already exists in this location! Please manually move this directory, before running this script!</p>";
