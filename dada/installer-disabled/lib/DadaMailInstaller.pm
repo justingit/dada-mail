@@ -2217,7 +2217,7 @@ sub create_dada_config_file {
     my $confirmation_token_params = {};
     if ( $ip->{-configure_confirmation_token} == 1 ) {
         $confirmation_token_params->{configure_confirmation_token} = 1;
-        $confirmation_token_params->{expires}                      = strip( $ip->{-confirmation_token_expires} );
+        $confirmation_token_params->{confirmation_token_expires}   = strip( $ip->{-confirmation_token_expires} );
     }
 
     my $s_program_url_params = {};
