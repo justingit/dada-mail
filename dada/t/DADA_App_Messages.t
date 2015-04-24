@@ -916,7 +916,7 @@ TODO: {
 ok(
 	decode_header($entity->head->get('Subject', 0))
 	eq
-	"Not Allowed to Post On " . $ls->param('list_name') . " (your original message is attached)", 
+	"Not Allowed to Post On " . $ls->param('list_name'), 
 	"Subject: Set Correctly"
 );
 

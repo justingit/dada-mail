@@ -5,7 +5,6 @@ X-Mailer: MIME-tools 5.502 (Entity 5.502)
 To: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
 From: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
 Subject: Not Allowed to Post On <!-- tmpl_var list_settings.list_name -->
- (your original message is attached)
 
 This is a multi-part message in MIME format...
 
