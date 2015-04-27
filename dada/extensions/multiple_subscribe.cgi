@@ -260,7 +260,7 @@ sub subscribe_emails {
 
             # Hmm. This should take care of that.
             foreach ( @{ $lh->subscriber_fields } ) {
-                $local_q->param( $_, scalar $q->param($_) ) );
+                $local_q->param( $_, scalar $q->param($_) );
             }
 
             require DADA::App::Subscriptions;
