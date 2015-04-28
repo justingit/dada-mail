@@ -6,7 +6,7 @@ To: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
 From: "<!-- tmpl_var list_settings.list_name -->" <user@example.com>
 Subject: <!-- tmpl_var PROGRAM_NAME --> Error - <!-- tmpl_var
  subscriber.email --> Not Allowed to Post On <!-- tmpl_var list_settings.list_name
- --> (original message attached)
+ -->
 
 This is a multi-part message in MIME format...
 
@@ -27,7 +27,7 @@ from,
 
 <!-- tmpl_var subscriber.email -->
 	
-but was not sent from an address that has permission to do so. 
+because it was not sent from an address that has permission to do so. 
 
 -- <!-- tmpl_var PROGRAM_NAME -->
 
