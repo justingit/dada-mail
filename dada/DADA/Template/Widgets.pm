@@ -140,6 +140,7 @@ GIVE_PROPS_IN_ADMIN           => $DADA::Config::GIVE_PROPS_IN_ADMIN,
 DEFAULT_ADMIN_SCREEN          => $DADA::Config::DEFAULT_ADMIN_SCREEN, 
 MAIL_SETTINGS                 => $DADA::Config::MAIL_SETTINGS, 
 MASS_MAIL_SETTINGS            => $DADA::Config::MASS_MAIL_SETTINGS, 
+VER                           => $DADA::Config::VER, 
 
 
 ENV_SCRIPT_URI                => $ENV{SCRIPT_URI}, 
