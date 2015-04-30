@@ -914,22 +914,18 @@ sub html_archive_list {
 	                    if ( !$@ ) {
 	                        $can_use_gravatar_url = 1;
 
-	                        require Email::Address;
-	                        if ( defined($orig_header_from) ) {
-	                            ;
-	                            eval {
-	                                $orig_header_from =
-	                                  ( Email::Address->parse($orig_header_from) )
-	                                  [0]->address;
-	                            };
-	                        }
-	                        $gravatar_img_url = gravatar_img_url(
-	                            {
-	                                -email => $orig_header_from,
-	                                -default_gravatar_url =>
-	                                  $ls->param('default_gravatar_url'),
-	                            }
-	                        );
+
+                                my $header_address = $archive->sender_address(
+                                 {
+                                        -id => $entries->[$i],
+                                    }
+                            ); 
+                            $gravatar_img_url = gravatar_img_url(
+                                {
+                                    -email                => $header_address,
+                                    -default_gravatar_url => $ls->param('default_gravatar_url'),
+                                }
+                            );
 	                    }
 	                    else {
 	                        $can_use_gravatar_url = 0;
