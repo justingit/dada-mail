@@ -548,6 +548,13 @@ sub list_template {
 	if ( $DADA::Config::GIVE_PROPS_IN_HTML == 1) {
 		$footer_props = DADA::Template::HTML::HTML_Footer(); 
     }
+    
+     my $content_tag = quotemeta('<!-- tmpl_var content -->');
+     if ( $list_template !~ m/$content_tag/ ) {
+          warn 'can\'t find content tag in list template'; 
+     }
+    
+    
 	
     my $final_list_template = DADA::Template::Widgets::screen(
         {
