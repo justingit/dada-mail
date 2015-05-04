@@ -1319,7 +1319,7 @@ sub message_was_deleted_check {
             $r .= "\t\tcs:             $cs\n";
 
             my @cs;
-            if ( defined( @{ $checksums->{$list} } ) ) {
+            if ( exists($checksums->{$list}) ) {
                 @cs = @{ $checksums->{$list} };
             }
 

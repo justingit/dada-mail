@@ -5637,7 +5637,7 @@ sub add_email {
         }
 
         my $addresses_to_add = 0;
-        if ( defined( @$not_members[0] ) ) {
+        if ( exists($not_members[0]) ) {
             $addresses_to_add = 1;
         }
 
@@ -9875,11 +9875,11 @@ sub search_archive {
 
     my $search_results = $archive->search_entries($keyword);
 
-    if ( defined( @$search_results[0] ) && ( @$search_results[0] ne "" ) ) {
+    if ( exists($search_results[0]) && ( @$search_results[0] ne "" ) ) {
 
         $count  = $#{$search_results} + 1;
         $ending = 's'
-          if defined( @$search_results[1] );
+          if exists($search_results[1]);
 
         my $summaries = $archive->make_search_summary( $keyword, $search_results );
 
