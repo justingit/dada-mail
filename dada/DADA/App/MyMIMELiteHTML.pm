@@ -61,7 +61,7 @@ sub parse
 	{
         print "Get ", $url_page,"\n" if $self->{_DEBUG};	
         my ($content, $res) = grab_url($url_page); 
-	    if(!defined($content)){
+	    if(!$res->is_success){
 	        $self->set_err("Can't fetch $url_page (".$res->message.")");
 	    }
         else {
@@ -81,7 +81,7 @@ sub parse
             print "Get ", $url_txt,"\n" if $self->{_DEBUG};
             
             my ($content, $res) = grab_url($url_page); 
-    	    if(!defined($content)){
+    	    if(!$res->is_success){
 		        $self->set_err("Can't fetch $url_txt (".$res->message.")");
 		    }
             else {
@@ -274,7 +274,7 @@ sub include_css(\%$$) {
     my $ur = URI::URL->new($url, $root)->abs;
     print "Include CSS file $ur\n" if $self->{_DEBUG};    
     my ($content, $res) = grab_url($ur); 
-    if(defined($content)){
+    if($res->is_success){
         print "Ok file downloaded\n" if $self->{_DEBUG};
 	    return '<style type="text/css">'
 	           . "\n"
@@ -320,7 +320,7 @@ sub pattern_js {
 			if $self->{_DEBUG};
 
         my $content = grab_url($ur); 
-        if(defined($content)){
+        if($res->is_success){
     		print "Ok file downloaded\n" 
 					if $self->{_DEBUG};
 			    return "\n"."<!-- $ur -->\n".
@@ -370,89 +370,104 @@ sub cid  (\%$) {
 }
 
 sub build_mime_object {
-  my ($self,$html,$txt,$ref_mail)=@_;
-   
-  my ($txt_part, $part,$mail);
-  # Create part for HTML if needed
-  if ($html) {
-    my $ref = ($txt || @$ref_mail) ? {} : $self->{_param};
-    $part = new MIME::Lite(%$ref,
-			  'Type'     => 'TEXT',
-			  'Encoding' => $self->{_htmlencoding},
-			  'Data'     => safely_encode($html)
-			 );
-    $part->attr("content-type"=> "text/html; charset=".$self->{_htmlcharset});
-    # Remove some header for Eudora client in HTML and related part
-    $part->replace("MIME-Version" => "");
-    $part->replace('X-Mailer' =>"");
-    $part->replace('Content-Disposition' =>"");
-    # only html, no images & no txt
-    $mail = $part unless ($txt || @$ref_mail);
-  }
+    my ( $self, $html, $txt, $ref_mail ) = @_;
 
-  # Create part for text if needed
-  if ($txt) {
-    my $ref = ($html ? {} : $self->{_param}  );
-    $txt_part = new MIME::Lite (%$ref,
-			       'Type'     => 'TEXT',
-			       'Data'     => safely_encode($txt),
-			       'Encoding' => $self->{_textencoding});
-    $txt_part->attr("content-type" => 
-		    "text/plain; charset=".$self->{_textcharset});
-    # Remove some header for Eudora client
-    $txt_part->replace("MIME-Version" => "");
-    $txt_part->replace("X-Mailer" => "");
-    $txt_part->replace("Content-Disposition" => "");
-    # only text, no html
-    
-    $mail = $txt_part unless $html; # unless html?
-    
-    
-  }
+    my ( $txt_part, $part, $mail );
 
-  # If images and html and no text, multipart/related
-  if (@$ref_mail and !$txt) {
-    my $ref=$self->{_param};
-    $$ref{'Type'} = "multipart/related";	
-    $mail = new MIME::Lite (%$ref);
-    # Attach HTML part to related part
-    $mail->attach($part);
-    # Attach each image to related part
-    foreach (@$ref_mail) {$mail->attach($_);} # Attach list of part
-    $mail->replace("Content-Disposition" => "");
-  }
+    # Create part for HTML if needed
+    if ($html) {
+        my $ref = ( $txt || @$ref_mail ) ? {} : $self->{_param};
+        $part = new MIME::Lite(
+            %$ref,
+            'Type'     => 'TEXT',
+            'Encoding' => $self->{_htmlencoding},
+            'Data'     => safely_encode($html)
+        );
+        $part->attr( "content-type" => "text/html; charset=" . $self->{_htmlcharset} );
 
-  # Else if html and text and no images, multipart/alternative
-  elsif ($txt and !@$ref_mail) {
-    my $ref=$self->{_param};
-    $$ref{'Type'} = "multipart/alternative";	
-    $mail = new MIME::Lite (%$ref);
-    $mail->attach($txt_part); # Attach text part
-    $mail->attach($part); # Attach HTML part	
-  }
+        # Remove some header for Eudora client in HTML and related part
+        $part->replace( "MIME-Version"        => "" );
+        $part->replace( 'X-Mailer'            => "" );
+        $part->replace( 'Content-Disposition' => "" );
 
-  # Else (html, txt and images) mutilpart/alternative
-  elsif ($txt && @$ref_mail) {
-    my $ref=$self->{_param};
-    $$ref{'Type'} = "multipart/alternative";	
-    $mail = new MIME::Lite (%$ref); 
-    # Create related part
-    my $rel = new MIME::Lite ('Type'=>'multipart/related');
-    $rel->replace("Content-transfer-encoding" => "");
-    $rel->replace("MIME-Version" => "");
-    $rel->replace("X-Mailer" => "");
-    # Attach text part to alternative part
-    $mail->attach($txt_part);
-    # Attach HTML part to related part
-    $rel->attach($part);
-    # Attach each image to related part
-    foreach (@$ref_mail) {$rel->attach($_);}
-    # Attach related part to alternative part
-    $mail->attach($rel);
-  }
-  $mail->replace('X-Mailer',"MIME::Lite::HTML $VERSION");
-  $self->{_MAIL} = $mail;
-  
+        # only html, no images & no txt
+        $mail = $part unless ( $txt || @$ref_mail );
+    }
+
+    # Create part for text if needed
+    if ($txt) {
+        my $ref = ( $html ? {} : $self->{_param} );
+        $txt_part = new MIME::Lite(
+            %$ref,
+            'Type'     => 'TEXT',
+            'Data'     => safely_encode($txt),
+            'Encoding' => $self->{_textencoding}
+        );
+        $txt_part->attr( "content-type" => "text/plain; charset=" . $self->{_textcharset} );
+
+        # Remove some header for Eudora client
+        $txt_part->replace( "MIME-Version"        => "" );
+        $txt_part->replace( "X-Mailer"            => "" );
+        $txt_part->replace( "Content-Disposition" => "" );
+
+        # only text, no html
+
+        $mail = $txt_part unless $html;    # unless html?
+
+    }
+
+    # If images and html and no text, multipart/related
+    if ( @$ref_mail and !$txt ) {
+        my $ref = $self->{_param};
+        $$ref{'Type'} = "multipart/related";
+        $mail = new MIME::Lite(%$ref);
+
+        # Attach HTML part to related part
+        $mail->attach($part);
+
+        # Attach each image to related part
+        foreach (@$ref_mail) { $mail->attach($_); }    # Attach list of part
+        $mail->replace( "Content-Disposition" => "" );
+    }
+
+    # Else if html and text and no images, multipart/alternative
+    elsif ( $txt and !@$ref_mail ) {
+        my $ref = $self->{_param};
+        $$ref{'Type'} = "multipart/alternative";
+        $mail = new MIME::Lite(%$ref);
+        $mail->attach($txt_part);                      # Attach text part
+        $mail->attach($part);                          # Attach HTML part
+    }
+
+    # Else (html, txt and images) mutilpart/alternative
+    elsif ( $txt && @$ref_mail ) {
+        my $ref = $self->{_param};
+        $$ref{'Type'} = "multipart/alternative";
+        $mail = new MIME::Lite(%$ref);
+
+        # Create related part
+        my $rel = new MIME::Lite( 'Type' => 'multipart/related' );
+        $rel->replace( "Content-transfer-encoding" => "" );
+        $rel->replace( "MIME-Version"              => "" );
+        $rel->replace( "X-Mailer"                  => "" );
+
+        # Attach text part to alternative part
+        $mail->attach($txt_part);
+
+        # Attach HTML part to related part
+        $rel->attach($part);
+
+        # Attach each image to related part
+        foreach (@$ref_mail) { $rel->attach($_); }
+
+        # Attach related part to alternative part
+        $mail->attach($rel);
+    }
+
+    #  $mail->replace('X-Mailer',"MIME::Lite::HTML $VERSION");
+
+    $self->{_MAIL} = $mail;
+
 }
 
 
