@@ -2205,6 +2205,9 @@ sub message_email_report_table {
 #		use Data::Dumper; 
 #		warn Dumper($report); 
 		
+		my $Bounce_Handler_URL = $args->{-vars}->{Plugin_URL};
+           $Bounce_Handler_URL =~ s/tracker/bounce_handler/; 
+
 		require DADA::Template::Widgets; 
 	    $html = DADA::Template::Widgets::screen(
 	        {
@@ -2215,6 +2218,7 @@ sub message_email_report_table {
 					report        => $report, 
 					num           => scalar(@$report), 
 					title         => $title,  
+					Bounce_Handler_URL => $Bounce_Handler_URL, 
 					%{$args->{-vars}}, 
 	            },
 	        }
@@ -2718,6 +2722,11 @@ sub message_individual_email_activity_report_table {
 		}
 	);
 	
+	my $Bounce_Handler_URL = $args->{-plugin_url};
+       $Bounce_Handler_URL =~ s/tracker/bounce_handler/; 
+    
+    
+	
 	if(!defined($html)){ 
 	
 		my $report = $self->message_individual_email_activity_report($args); 
@@ -2732,6 +2741,7 @@ sub message_individual_email_activity_report_table {
 					mid           => $args->{-mid},
 					report        => $report, 
 					Plugin_URL    => $args->{-plugin_url}, 
+					Bounce_Handler_URL => $Bounce_Handler_URL,
 
 	            },
 	        }

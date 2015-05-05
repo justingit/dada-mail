@@ -32,7 +32,7 @@
 	  <td>
 		
 		<!-- tmpl_if expr="((type eq 'soft_bounce') || (type eq 'hard_bounce'))" -->
-		<a class="modalbox"  href="<!-- tmpl_var Plugin_URL -->?prm=cgi_bounce_score_search;query=<!-- tmpl_var email escape="URL" -->;chrome=0" title="Bounce Log for <!-- tmpl_var email escape="HTML" -->" >
+		<a class="modalbox"  href="<!-- tmpl_var Bounce_Handler_URL -->?prm=cgi_bounce_score_search&query=<!-- tmpl_var email escape="URL" -->&chrome=0" title="Bounce Log for <!-- tmpl_var email escape="HTML" -->" >
 		 <!-- tmpl_var email -->
 	    </a>
 		<!-- tmpl_else --> 
