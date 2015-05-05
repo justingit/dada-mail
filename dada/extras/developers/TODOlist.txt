@@ -11,6 +11,9 @@ Key:
 [?] Someday
 
 
+is bounce handler set as default admin email? 
+
+
 [] Maybe an email about hwne a mass mailing starts? 
 
 [x] global size restrictions need to be per list in bridge

@@ -471,6 +471,11 @@ sub list_template {
 
     my $list_template = undef;
 
+
+    
+    
+=cut
+
     if ( defined( $args{ -data } ) ) {	
         $list_template = ${ $args{ -data } };
     }
@@ -509,6 +514,55 @@ sub list_template {
     else {
         $list_template = default_template();
     }
+
+
+
+=cut
+
+    my $src = grab_url('http://dadamailproject.com');
+    use HTML::TreeBuilder;
+    my $root = HTML::TreeBuilder->new;
+      $root->parse( $src ); 
+      $root->eof( );  # done parsing for this tree
+      $root->elementify();
+
+      
+      use Try::Tiny; 
+      try { 
+          use HTML::Element;
+      
+          # We probably need to add a base: href: 
+          
+          my $base_href_ele = HTML::Element->new(
+              'base', 'href' => 'http://dadamailproject.com', 
+          ); 
+          my $head_ele = $root->find_by_tag_name('head');
+             $head_ele->unshift_content($base_href_ele);
+          
+          # And, let's put the css in there: 
+          $head_ele->push_content(
+            HTML::Element->new(
+            '~literal', 
+            'text' => '<!-- tmpl_include list_template_header_code_block.tmpl -->',
+            )
+          );
+          
+          # Let's replace using this specific tag id:       
+          #my $body_tag = $root->find_by_tag_name('body'); The entire body: 
+          my $body_tag = $root->look_down("id", 'contentcolumn');
+             $body_tag->delete_content();
+          $body_tag->push_content(
+              HTML::Element->new(
+                  '~literal',
+                 'text' => '<!-- tmpl_include list_template_body_code_block.tmpl -->',
+               )
+           );
+          $list_template = $root->as_HTML(undef, '  ');
+          $root->delete;
+      } catch { 
+          $list_template = $_; 
+      };
+      
 
     my $prof_email         = '';
     my $is_logged_in       = 0;

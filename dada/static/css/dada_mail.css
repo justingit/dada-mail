@@ -3,7 +3,7 @@ html {
 	margin: 0;
 	padding: 0;
 }
-body {
+#Dada body {
 	margin: 0;
 	padding: 0;
 	background-color: #fff;
@@ -16,17 +16,14 @@ body {
 
 /* ----- IDS: General Page Layout ----- */
 
-/* non-admin */
-#PageWrapper {
-}
 
 html, body {
 	height: 100%;
 }
-#PageWrapper {
+#Dada_PageWrapper {
 	min-height: 100%;
 }
-#ContentWrapper {
+#Dada_ContentWrapper {
 	overflow: auto;
 	padding-bottom: 50px;
 }
@@ -37,7 +34,7 @@ html, body {
 
 
 /* BOTH */
-#Header {
+#Dada_Header {
 	min-width: 800px;
 	min-height: 50px;
 	margin: 0 auto; /* page centering for all but IE */
@@ -51,40 +48,36 @@ html, body {
 	text-shadow: 1px 1px 2px #330033;
 }
 
-#Header img { 
+#Dada_Header img { 
  border:0px; 	
 }
-#Logo {
-	float: left;
-	text-align: left;
-}
 
-#Title {
+#Dada_Title {
 	float: right;
 	padding-right: 10px;
 	padding-top: 20px;
 	color: #fff;
 }
-#Title img {
+#Dada_Title img {
 	vertical-align: bottom;
 	padding-top: -20px;
 	border: 1px solid #666;
 	margin-right: 5px;
 	margin-left: 5px;
 }
-#Title a {
+#Dada_Title a {
 	font-weight: bold;
 	color: #fff;
 	text-decoration: none;
 }
-#Title a:hover {
+#Dada_Title a:hover {
 	font-weight: bold;
 	color: #fff;
 	text-decoration: underline;
 }
 
 /* non-admin */
-#Content {
+#Dada_Content {
 	padding-left: 50px;
 	padding-right: 50px;
 	padding-top: 20px;
@@ -92,7 +85,7 @@ html, body {
 }
 
 /* admin */
-#Menu {
+#Dada_Menu {
 	position:relative;
 	margin-left: -100%;
 	float: left;
@@ -106,21 +99,21 @@ html, body {
 }
 
 /* BOTH */
-#AdminContentWrapper,
-#ContentWrapper {
+#Dada_AdminContentWrapper,
+#Dada_ContentWrapper {
 	border-top: 1px solid #666;
 	float: left;
 	width: 100%
 }
 
 /* admin */
-#AdminContent {
+#Dada_AdminContent {
 	margin-left: 200px;
 	padding-bottom: 10px;
 }
 
 /* BOTH */
-#Footer {
+#Dada_Footer {
 	border-top: 1px solid #666;
 	background-color: #669999;
 	height: 50px;
@@ -137,15 +130,15 @@ html, body {
 	
 	
 }
-#Footer a {
+#Dada_Footer a {
 	color: #fff;
 	text-decoration: none;
 }
-#Footer a:hover {
+#Dada_Footer a:hover {
 	color: #fff;
 	text-decoration: underline;
 }
-#FooterPadding {
+#Dada_FooterPadding {
 	padding: 5px;
 }
 
@@ -284,12 +277,12 @@ p {
 */
 }
 
-#AdminContent h1,
-#AdminContent h2,
-#AdminContent h3,
-#AdminContent h4,
-#AdminContent h5,
-#AdminContent p {
+#Dada_AdminContent h1,
+#Dada_AdminContent h2,
+#Dada_AdminContent h3,
+#Dada_AdminContent h4,
+#Dada_AdminContent h5,
+#Dada_AdminContent p {
 	padding-left: 5px;
 	padding-right: 5px;
 }
@@ -380,11 +373,11 @@ fieldset {
 	border: 1px solid black;
 	background: #ededed;
 }
-#AdminContent fieldset {
+#Dada_AdminContent fieldset {
 	border-left: 0px;
 	border-right: 0px;
 }
-#Content fieldset {
+#Dada_Content fieldset {
 	margin-left: auto;
 	margin-right: auto;
 	width: 75%;
@@ -393,7 +386,7 @@ fieldset {
 	border-radius: 5px;
 }
 
-#AdminContent fieldset fieldset {
+#Dada_AdminContent fieldset fieldset {
 	background: #e6e6e6;
 	border: 1px solid black;
 	-webkit-border-radius: 5px;
@@ -435,7 +428,7 @@ textarea,
     min-height:50px;
     background: transparent url('../images/spinner.gif') 50% 0 no-repeat;
 }
-#Header select { 
+#Dada_Header select { 
 	font-size: .8em;
 	font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
 	width: 150px;
@@ -444,7 +437,7 @@ textarea,
 	padding: 1px;
 }
 
-#Header .select2-container
+#Dada_Header .select2-container
  {
 		font-size: .8em;
 		font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
@@ -455,16 +448,16 @@ textarea,
 		bottom:-6px;
 		color:#000;
 }
-#Header .select2-choice { 
+#Dada_Header .select2-choice { 
     height: 22px; 
 	line-height: 22px; 
 		color:#000;	
 }
-#Header .select2-container a:hover { 
+#Dada_Header .select2-container a:hover { 
 	color:#000;
 }
 
-#Header .select2-choice a:hover { 
+#Dada_Header .select2-choice a:hover { 
 	color:#000;
 }
 
@@ -508,7 +501,7 @@ input.bigger_button {
 	
 }
 
-#Header input.small_button {
+#Dada_Header input.small_button {
 	padding-top: 1px;
 	padding-bottom: 1px;
 }
