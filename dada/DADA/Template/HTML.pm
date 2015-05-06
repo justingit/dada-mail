@@ -4,6 +4,7 @@ use lib qw(../../ ../../DADA/perllib);
 
 use DADA::Config qw(!:DEFAULT);  
 use DADA::App::Guts; 
+   use Try::Tiny; 
 
 use Carp qw(croak carp); 
 
@@ -300,22 +301,149 @@ sub admin_header_params {
 
 
 sub default_template { 
- 
-	
-	
-	# DEV: should the templates found in the other ways be run through the templating system? I kinda think they should...  
-	if(!$DADA::Config::USER_TEMPLATE){ 		
-		require DADA::Template::Widgets; 	   
-		return DADA::Template::Widgets::_raw_screen({-screen => 'list_template.tmpl', -encoding => 1}); 
-	}else{ 
-		if(DADA::App::Guts::isa_url($DADA::Config::USER_TEMPLATE)){ 
-			return open_template_from_url(-URL => $DADA::Config::USER_TEMPLATE);
-		}else{ 	
-			return fetch_user_template($DADA::Config::USER_TEMPLATE); 
-		}
-	}       
+    return template_from_model(); 
+
+=cut    
+    	# DEV: should the templates found in the other ways be run through the templating system? I kinda think they should...  
+    	if(!$DADA::Config::USER_TEMPLATE){ 		
+    		require DADA::Template::Widgets; 	   
+    		return DADA::Template::Widgets::_raw_screen({-screen => 'list_template.tmpl', -encoding => 1}); 
+    	}else{ 
+    		if(DADA::App::Guts::isa_url($DADA::Config::USER_TEMPLATE)){ 
+    			return open_template_from_url(-URL => $DADA::Config::USER_TEMPLATE);
+    		}else{ 	
+    			return fetch_user_template($DADA::Config::USER_TEMPLATE); 
+    		}
+    	}       
+=cut
+    
 }
 
+sub template_from_model {
+    my $can_use_html_tree = 1;
+    try {
+        require HTML::Tree;
+    }
+    catch {
+        $can_use_html_tree = 0;
+    };
+
+    my $opts = $DADA::Config::TEMPLATE_OPTIONS->{user}->{template_options};
+    if ( $can_use_html_tree == 1 ) {
+        try {
+            #my $src = grab_url('http://dadamailproject.com');
+            my $src = grab_url( $opts->{template_url} );
+
+            require HTML::TreeBuilder;
+            my $root = HTML::TreeBuilder->new;
+            $root->parse($src);
+            $root->eof();    # done parsing for this tree
+            $root->elementify();
+
+            require HTML::Element;
+
+            # We probably need to add a base: href:
+            
+            my $title_ele = $root->find_by_tag_name('title');
+            $title_ele->delete_content();
+            $title_ele->push_content(
+                HTML::Element->new(
+                    '~literal', 'text' => '<!-- tmpl_var title -->',
+                )
+            );
+            
+            my $head_ele = $root->find_by_tag_name('head');
+            
+            if($opts->{'add_base_href'} == 1) { 
+                my $base_href_ele = HTML::Element->new( 'base', 'href' => $opts->{base_href_url}, );
+                   $head_ele->unshift_content($base_href_ele);
+            }
+            
+            # And, let's put the css in there:
+            $head_ele->push_content(
+                HTML::Element->new(
+                    '~literal', 'text' => '<!-- tmpl_include list_template_header_code_block.tmpl -->',
+                )
+            );
+
+            if ( $opts->{add_custom_css} == 1 ) {
+
+                # Custom css:
+                $head_ele->push_content(
+                    HTML::Element->new(
+                        'link',
+                        rel   => "stylesheet",
+                        type  => "text/css",
+                        media => "screen",
+                        href  => $opts->{custom_css_url},
+                    )
+                );
+            }
+
+            if ( $opts->{replace_content_from} eq 'id' ) {
+
+                my $id_tag = $root->look_down( "id", $opts->{replace_id} );
+
+                # Remove everything
+                $id_tag->delete_content();
+
+                # push to 0
+
+                if ( $opts->{add_app_css} == 1 ) {
+                    $id_tag->push_content(
+                        HTML::Element->new(
+                            'div', id => "Dada"
+                          )->push_content(
+                            HTML::Element->new(
+                                '~literal', 'text' => '<!-- tmpl_include list_template_body_code_block.tmpl -->'
+                            )
+                          )
+                    );
+                }
+                else {
+                    $id_tag->push_content(
+                        HTML::Element->new(
+                            '~literal', 'text' => '<!-- tmpl_include list_template_body_code_block.tmpl -->'
+                        )
+                    );
+                }
+            }
+            else {
+
+                my $body_tag = $root->find_by_tag_name('body');
+                $body_tag->delete_content();
+                if ( $opts->{add_app_css} == 1 ) {
+                    $body_tag->push_content(
+                        HTML::Element->new(
+                            'div', id => "Dada"
+                          )->push_content(
+                            HTML::Element->new(
+                                '~literal', 'text' => '<!-- tmpl_include list_template_body_code_block.tmpl -->'
+                            )
+                          )
+                    );
+
+                }
+                else {
+                    $body_tag->push_content(
+                        HTML::Element->new(
+                            '~literal', 'text' => '<!-- tmpl_include list_template_body_code_block.tmpl -->'
+                        )
+                    );
+                }
+            }
+
+            return $root->as_HTML( undef, '  ' );
+            $root->delete;
+        }
+        catch {
+            return $_;
+        };
+    }
+    else {
+        return;
+    }
+}
 
 ######################################################################
 # templates and such that give the look of dada                      #
@@ -471,11 +599,6 @@ sub list_template {
 
     my $list_template = undef;
 
-
-    
-    
-=cut
-
     if ( defined( $args{ -data } ) ) {	
         $list_template = ${ $args{ -data } };
     }
@@ -483,7 +606,6 @@ sub list_template {
         if ( $ls->param('get_template_data') eq "from_url"
             && DADA::App::Guts::isa_url( $ls->param('url_template') ) == 1 )
         {
-
             $list_template =
               open_template_from_url( -URL => $ls->param('url_template'), );
 
@@ -491,7 +613,7 @@ sub list_template {
         elsif ( $ls->param('get_template_data') eq 'from_default_template' ) {
 
             $list_template = default_template();
-
+            
         }
         elsif (
             -e make_safer(
@@ -517,51 +639,8 @@ sub list_template {
 
 
 
-=cut
 
-    my $src = grab_url('http://dadamailproject.com');
-    use HTML::TreeBuilder;
-    my $root = HTML::TreeBuilder->new;
-      $root->parse( $src ); 
-      $root->eof( );  # done parsing for this tree
-      $root->elementify();
 
-      
-      use Try::Tiny; 
-      try { 
-          use HTML::Element;
-      
-          # We probably need to add a base: href: 
-          
-          my $base_href_ele = HTML::Element->new(
-              'base', 'href' => 'http://dadamailproject.com', 
-          ); 
-          my $head_ele = $root->find_by_tag_name('head');
-             $head_ele->unshift_content($base_href_ele);
-          
-          # And, let's put the css in there: 
-          $head_ele->push_content(
-            HTML::Element->new(
-            '~literal', 
-            'text' => '<!-- tmpl_include list_template_header_code_block.tmpl -->',
-            )
-          );
-          
-          # Let's replace using this specific tag id:       
-          #my $body_tag = $root->find_by_tag_name('body'); The entire body: 
-          my $body_tag = $root->look_down("id", 'contentcolumn');
-             $body_tag->delete_content();
-          $body_tag->push_content(
-              HTML::Element->new(
-                  '~literal',
-                 'text' => '<!-- tmpl_include list_template_body_code_block.tmpl -->',
-               )
-           );
-          $list_template = $root->as_HTML(undef, '  ');
-          $root->delete;
-      } catch { 
-          $list_template = $_; 
-      };
       
 
     my $prof_email         = '';

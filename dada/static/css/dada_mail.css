@@ -3,16 +3,18 @@ html {
 	margin: 0;
 	padding: 0;
 }
-#Dada body {
-	margin: 0;
+body {
+}
+
+#Dada { 
+    margin: 0;
 	padding: 0;
 	background-color: #fff;
 	font-family: Helvetica,Verdana,Arial,sans-serif;
 	line-height: 1.50em;
 	font-size: .8em;
-	background: #fff;
+	background: #fff;	
 }
-
 
 /* ----- IDS: General Page Layout ----- */
 
@@ -23,6 +25,7 @@ html, body {
 #Dada_PageWrapper {
 	min-height: 100%;
 }
+
 #Dada_ContentWrapper {
 	overflow: auto;
 	padding-bottom: 50px;
@@ -52,32 +55,32 @@ html, body {
  border:0px; 	
 }
 
-#Dada_Title {
+#Dada #Dada_Title {
 	float: right;
 	padding-right: 10px;
 	padding-top: 20px;
 	color: #fff;
 }
-#Dada_Title img {
+#Dada #Dada_Title img {
 	vertical-align: bottom;
 	padding-top: -20px;
 	border: 1px solid #666;
 	margin-right: 5px;
 	margin-left: 5px;
 }
-#Dada_Title a {
+#Dada #Dada_Title a {
 	font-weight: bold;
 	color: #fff;
 	text-decoration: none;
 }
-#Dada_Title a:hover {
+#Dada #Dada_Title a:hover {
 	font-weight: bold;
 	color: #fff;
 	text-decoration: underline;
 }
 
 /* non-admin */
-#Dada_Content {
+#Dada #Dada_Content {
 	padding-left: 50px;
 	padding-right: 50px;
 	padding-top: 20px;
@@ -85,7 +88,7 @@ html, body {
 }
 
 /* admin */
-#Dada_Menu {
+#Dada #Dada_Menu {
 	position:relative;
 	margin-left: -100%;
 	float: left;
@@ -99,21 +102,21 @@ html, body {
 }
 
 /* BOTH */
-#Dada_AdminContentWrapper,
-#Dada_ContentWrapper {
+#Dada #Dada_AdminContentWrapper,
+#Dada #Dada_ContentWrapper {
 	border-top: 1px solid #666;
 	float: left;
 	width: 100%
 }
 
 /* admin */
-#Dada_AdminContent {
+#Dada #Dada_AdminContent {
 	margin-left: 200px;
 	padding-bottom: 10px;
 }
 
 /* BOTH */
-#Dada_Footer {
+#Dada #Dada_Footer {
 	border-top: 1px solid #666;
 	background-color: #669999;
 	height: 50px;
@@ -130,28 +133,27 @@ html, body {
 	
 	
 }
-#Dada_Footer a {
+#Dada #Dada_Footer a {
 	color: #fff;
 	text-decoration: none;
 }
-#Dada_Footer a:hover {
+#Dada #Dada_Footer a:hover {
 	color: #fff;
 	text-decoration: underline;
 }
-#Dada_FooterPadding {
+#Dada #Dada_FooterPadding {
 	padding: 5px;
 }
 
-#breadcrumbs {
-}
+#Dada #breadcrumbs {}
 
 /* ----- CLASSES ----- */
 
-.disabled {
+#Dada .disabled {
 	background-color: #ccc;
 	border: 1px solid #fff;
 }
-.error {
+#Dada .error {
 	font-size: .9em;
 	font-family: Helvetica,Verdana,Arial,sans-serif;
 	/*font-size:11px;*/
@@ -159,45 +161,43 @@ html, body {
 	color: #600;
 }
 
-.alert {
+#Dada .alert {
 	font-family: Helvetica,Verdana,Arial,sans-serif;
 	font-size: .9em;
 	color: #09c;
 }
 
-
-
-.hidden {
+#Dada .hidden {
 	display: none;
 }
 
 
-.highlighted {
+#Dada .highlighted {
 	font-style: normal;
 	background-color: #6F3;
 }
 
-.positive {
+#Dada .positive {
 	font-family: Helvetica,Verdana,Arial,sans-serif;
 	/*font-size:11px;*/
 	font-size: .9em;
 	color: #063;
 }
 
-.simplebox {
+#Dada .simplebox {
 	padding: 7px;
 	border: 1px solid #000;
 	background-color: #fff;
 }
 
 /* all but IE/Win & NN4: */
-.simplebox>p {
+#Dada .simplebox>p {
 	margin: 0;
 }
 
-.clearskiesbox,
-.badweatherbox,
-.login_message {
+#Dada .clearskiesbox,
+#Dada .badweatherbox,
+#Dada .login_message {
 	margin-top: 10px;
 	margin-bottom: 10px;
 	margin-left: auto;
@@ -220,55 +220,56 @@ html, body {
 	border-radius: 5px;
 }
 
-.clearskiesbox {
+#Dada .clearskiesbox {
 	background: #cbecff;
 	width: 500px;
 }
 
-.badweatherbox {
+#Dada .badweatherbox {
 	width: 500px;
 	background: #fcc;
 }
 
-.login_message {
+#Dada .login_message {
 	width: auto;
 	float: right;
 	background-color: #ffc;
 }
 
-.login_message p {
+#Dada .login_message p {
 	line-height: 100%;
 }
 
-.login_message ul {
+#Dada .login_message ul {
 	list-style-type: square;
 	color: #ccc;
 }
 
 /* ----- HEADINGS ----- */
 
-h1, h2, h3 {
+#Dada h1, 
+#Dada h2, 
+#Dada h3 {
 	font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
 	font-weight:bold;
-	line-height: 1.50em;
-	
+	line-height: 1.50em;	
 }
 
-h1 {
+#Dada h1 {
 	font-size: 1.4em;
 }
 
-h2 {
+#Dada h2 {
 	font-size: 1.2em;
 }
 
-h3 {
+#Dada h3 {
 	font-size: 1em
 }
 
 /* ----- PARAGRAPHS ----- */
 
-p {
+#Dada p {
 /* 
 
 	margin-top: 0.75em;
@@ -277,18 +278,18 @@ p {
 */
 }
 
-#Dada_AdminContent h1,
-#Dada_AdminContent h2,
-#Dada_AdminContent h3,
-#Dada_AdminContent h4,
-#Dada_AdminContent h5,
-#Dada_AdminContent p {
+#Dada #Dada_AdminContent h1,
+#Dada #Dada_AdminContent h2,
+#Dada #Dada_AdminContent h3,
+#Dada #Dada_AdminContent h4,
+#Dada #Dada_AdminContent h5,
+#Dada #Dada_AdminContent p {
 	padding-left: 5px;
 	padding-right: 5px;
 }
 
 
-p.small {
+#Dada p.small {
 	font-family: Helvetica,Verdana,Arial,sans-serif;
 	/*font-size:11px;*/
 	font-size: .9em;
@@ -296,7 +297,9 @@ p.small {
 
 /* ----- CODE ----- */
 
-code, pre, p.fake_code {
+#Dada code, 
+#Dada pre, 
+#Dada p.fake_code {
 	margin: 5px;
 	padding: 5px;
 	border: 1px solid #ccc;
@@ -306,31 +309,31 @@ code, pre, p.fake_code {
 
 /* ----- LINKS ----- */
 
-a {
+#Dada a {
 	text-decoration: none;
 }
 
-a:link {
+#Dada a:link {
 	color: #339; 
 }
 
-a:visited {
+#Dada a:visited {
 	color: #03c;
 }
 
-a:hover {
+#Dada a:hover {
 	color: #33c;
 }
 
-a:active {
+#Dada a:active {
 }
-.ui-widget-content a {
+#Dada .ui-widget-content a {
 	color: #339; 
 }
 
 /* ----- FORMS ----- */
 
-label {
+#Dada label {
 	font-family: Helvetica,Verdana,Arial,sans-serif;
 
 /*font-size:12px;*/
@@ -339,20 +342,20 @@ font-weight:bold;
 color: #000;
 }
 
-label.disabled { 
+#Dada label.disabled { 
 	color: #999;
 	background-color: transparent;
 	border: 0;
 }
 
-.label_by_5 {
+#Dada .label_by_5 {
 	width: 4em;
 	float: left;
 	text-align: right;
 	margin-right: 0.5em;
 	display: block;
 }
-.label_profile_fields {
+#Dada .label_profile_fields {
 	width: 18em;
 	float: left;
 	text-align: right;
@@ -361,7 +364,7 @@ label.disabled {
 }
 
 
-fieldset {
+#Dada fieldset {
 	padding-top: 4px;
 	padding-bottom: 9px;
 	padding-left: 7px;
@@ -373,11 +376,11 @@ fieldset {
 	border: 1px solid black;
 	background: #ededed;
 }
-#Dada_AdminContent fieldset {
+#Dada #Dada_AdminContent fieldset {
 	border-left: 0px;
 	border-right: 0px;
 }
-#Dada_Content fieldset {
+#Dada #Dada_Content fieldset {
 	margin-left: auto;
 	margin-right: auto;
 	width: 75%;
@@ -386,7 +389,7 @@ fieldset {
 	border-radius: 5px;
 }
 
-#Dada_AdminContent fieldset fieldset {
+#Dada #Dada_AdminContent fieldset fieldset {
 	background: #e6e6e6;
 	border: 1px solid black;
 	-webkit-border-radius: 5px;
@@ -394,18 +397,18 @@ fieldset {
 	border-radius: 5px;
 }
 
-legend {
+#Dada legend {
 	font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
 	font-weight: bold;
 	font-size: 1.25em;
 }
 
-input[type="text"],
-input[type="email"],
-input[type="password"],
-select,
-textarea,
-.fake_input {
+#Dada input[type="text"],
+#Dada input[type="email"],
+#Dada input[type="password"],
+#Dada select,
+#Dada textarea,
+#Dada .fake_input {
 	margin: 3px;
 	padding: 5px;
 	border-width: 1px;
@@ -417,18 +420,18 @@ textarea,
 	-webkit-box-shadow:  0px 1px 0 3px rgba(51,0,0,0.3) inset;
 	box-shadow:  0px 1px 3px 0 rgba(51,0,0,0.3) inset;
 }
-.fake_input { 
+#Dada .fake_input { 
 	margin-left:0; 
 	background-color:#ededed; 
 	font-style: italic;
 	
 }
-.spinner_bg { 
+#Dada .spinner_bg { 
     min-width:50px; 
     min-height:50px;
     background: transparent url('../images/spinner.gif') 50% 0 no-repeat;
 }
-#Dada_Header select { 
+#Dada #Dada_Header select { 
 	font-size: .8em;
 	font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
 	width: 150px;
@@ -437,7 +440,7 @@ textarea,
 	padding: 1px;
 }
 
-#Dada_Header .select2-container
+#Dada #Dada_Header .select2-container
  {
 		font-size: .8em;
 		font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
@@ -448,7 +451,7 @@ textarea,
 		bottom:-6px;
 		color:#000;
 }
-#Dada_Header .select2-choice { 
+#Dada #Dada_Header .select2-choice { 
     height: 22px; 
 	line-height: 22px; 
 		color:#000;	
@@ -463,17 +466,17 @@ textarea,
 
 
 /* affects buttons only: */
-input[type="submit"],
-input[type="button"],
-input[type="reset"],
-button,
-input.plain,
-input.processing,
-input.cautionary,
-input.alertive,
-input.quiet,
-input.help,
-input.small_button {
+#Dada input[type="submit"],
+#Dada input[type="button"],
+#Dada input[type="reset"],
+#Dada button,
+#Dada input.plain,
+#Dada input.processing,
+#Dada input.cautionary,
+#Dada input.alertive,
+#Dada input.quiet,
+#Dada input.help,
+#Dada input.small_button {
 	margin: 3px;
 	padding: 3px;
 	border-width: 1px;
@@ -484,13 +487,13 @@ input.small_button {
 	background-color: #ededed;
 }
 
-input.small_button {
+#Dada input.small_button {
 	margin: 1px;
 	padding: 2px;
 	font-size: .9em;
 }
 
-input.bigger_button { 
+#Dada input.bigger_button { 
 	font-size: 1.25em; 
 	
 	-webkit-border-radius: 1px;
@@ -506,13 +509,13 @@ input.bigger_button {
 	padding-bottom: 1px;
 }
 
-input.small_button:hover,
-input.plain:hover,
-input.processing:hover,
-input.cautionary:hover,
-input.quiet:hover,
-input.alertive:hover,
-input.help:hover {
+#Dada input.small_button:hover,
+#Dada input.plain:hover,
+#Dada input.processing:hover,
+#Dada input.cautionary:hover,
+#Dada input.quiet:hover,
+#Dada input.alertive:hover,
+#Dada input.help:hover {
 	color: #333;
 	background-color: #ffe1af;
 	color: #333;
@@ -521,110 +524,110 @@ input.help:hover {
 
 
 
-input.small_input {
+#Dada input.small_input {
 	margin: 1px;
 	padding: 3px;
 	font-size: .9em;
 }
 
-input.full {
+#Dada input.full {
 	margin-top: -5px;
 	width: 95%;
 }
-input.midi {
+#Dada input.midi {
 	width: 50%;
 	margin-top: -5px;
 }
 
-textarea {
+#Dada textarea {
 	padding: 10px;
 	width: 90%;
 	color: #333;
 }
 
 
-input.processing {
+#Dada input.processing {
 	background-color: #cfc;
 	color: #333;
 }
-input.cautionary {
+#Dada input.cautionary {
 	background-color: #ffc;
 	color: #333;
 }
 
-input.quiet {
+#Dada input.quiet {
 	background-color: #fff;
 	color: #666;
 	border:1px solid #333; 
 }
 
 
-input.alertive {
+#Dada input.alertive {
 	background-color: #f66;
 	color: #fcc;
 }
 
-input.help {
+#Dada input.help {
 	background-color: #fcf;
 	color: #333;
 }
 
-input.disabled {
+#Dada input.disabled {
 	color: #999;
 	background-color: #ccc;
 	border: 1px solid black;
 }
 
-div.buttonfloat {
+#Dada div.buttonfloat {
 	float: right;
 }
 
 /* ----- TABLES ----- */
 
-table {
+#Dada table {
 	font-size: 100%; /* fixes IE inheritance bug, redundant for others */
 }
 
-td {
+#Dada td {
 	vertical-align: top;
 }
 
 /* all but IE/Win & NN4: */
-td>p {
+#Dada td>p {
 	margin: 0;
 }
 
-table.tagchart {
+#Dada table.tagchart {
 	border-collapse: collapse;
 	border: 2px solid #000;
 	background-color: #fff;
 	width: 100%;
 }
 
-table.tagchart td {
+#Dada table.tagchart td {
 	border: 1px solid #000;
 	padding: 5px;
 }
 
-table.options_tb { 
+#Dada table.options_tb { 
     width:   100%; 
     margin:  0px;   
     border:  0px;   
 }
-table.options_tb td { 
+#Dada table.options_tb td { 
     padding-right: 0px; 
     padding-left: 0px; 
 /*    padding-top:5px; */ 
 	padding-bottom:5px; 
     
 }
-td.checkbox_container { 
+#Dada td.checkbox_container { 
  width:20px;
 }
 
 
-table.options_tb input[type="checkbox"], 
-table.options_tb input[type="radio"], 
+#Dada table.options_tb input[type="checkbox"], 
+#Dada table.options_tb input[type="radio"], 
  { 
     vertical-align: middle; 
     margin: 0px;
@@ -632,7 +635,7 @@ table.options_tb input[type="radio"],
 
 /* ----- BREAKS ----- */
 
-hr {
+#Dada hr {
 	width: 66%;
 	text-align: center;
 	height: 1px;
@@ -642,7 +645,7 @@ hr {
 	clear:both;
 }
 
-div.floatclear {
+#Dada div.floatclear {
 	clear: both;
 	height: 1px;
 	overflow: hidden;
@@ -656,7 +659,7 @@ div.floatclear {
 #archived_message_head {
 }
 
-iframe#archived_message_body_container {
+#Dada iframe#archived_message_body_container {
 	height: 500px;
 	width: 100%;
 	border: 1px solid #000;
@@ -669,7 +672,7 @@ iframe-displayed HTML messages *always* retain their own style. this does nothin
 plain text messages, whether inline or iframed, will be styled here also. */
 }
 
-.quoted_reply {
+#Dada .quoted_reply {
 	color: #666;
 	font-style: italic;
 }
@@ -678,14 +681,14 @@ plain text messages, whether inline or iframed, will be styled here also. */
 }
 
 
-ul.archive_badges_ul {
+#Dada ul.archive_badges_ul {
 
 /* font-size: 11px; */
 font-size: .9em;
 line-height: 13px;
 }
 
-li.archive_badges_li {
+#Dada li.archive_badges_li {
 	display: inline;
 	padding-left: 3px;
 	padding-right: 7px;
@@ -697,7 +700,7 @@ li.archive_badges_li {
 
 /* http://matthewjamestaylor.com/blog/beautiful-css-centered-menus-no-hacks-full-cross-browser-support */
 
-#centeredmenu {
+#Dada #centeredmenu {
 	clear: left;
 	float: left;
 	padding: 0;
@@ -708,7 +711,8 @@ li.archive_badges_li {
 	font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
 	/* text-shadow: 1px 1px 2px #330033;*/
 }
-#centeredmenu ul {
+
+#Dada #centeredmenu ul {
 	float: left;
 	margin: 0;
 	padding: 0;
@@ -717,7 +721,8 @@ li.archive_badges_li {
 	left: 50%;
 	text-align: center;
 }
-#centeredmenu ul li {
+
+#Dada #centeredmenu ul li {
 	display: block;
 	float: left;
 	list-style: none;
@@ -726,7 +731,8 @@ li.archive_badges_li {
 	position: relative;
 	right: 50%;
 }
-#centeredmenu ul li a {
+
+#Dada #centeredmenu ul li a {
 	display: block;
 	float: left;
 	margin: 0 1px;
@@ -740,15 +746,19 @@ li.archive_badges_li {
 	position: relative;
 	bottom: 1px;
 }
-#centeredmenu ul li a:hover {
+
+#Dada #centeredmenu ul li a:hover {
 	background: #ffe1af;
 	color: #000;
 }
-#centeredmenu ul li.active {
+
+#Dada #centeredmenu ul li.active {
 	margin-top: 10px;
 }
-#centeredmenu ul li.active a,
-#centeredmenu ul li.active a:hover {
+
+#Dada #centeredmenu ul li.active a,
+
+#Dada #centeredmenu ul li.active a:hover {
 	position: relative;
 	bottom: 0;
 	padding: 10px;
@@ -757,14 +767,15 @@ li.archive_badges_li {
 	font-weight: bold;
 }
 
-#list_activity ul {
+#Dada #list_activity ul {
 	list-style: none;
 }
-#list_activity li {
+
+#Dada #list_activity li {
 	line-height: 200%;
 }
 
-#screentitle {
+#Dada #screentitle {
 	width: 100%;
 	height: 25px;
 	background-color: #cc9999;
@@ -778,25 +789,25 @@ li.archive_badges_li {
 	
 	
 }
-#screentitle a,
-#screentitle hover,
-#screentitle link,
-#screentitle visited {
+#Dada #screentitle a,
+#Dada #screentitle hover,
+#Dada #screentitle link,
+#Dada #screentitle visited {
 	color: #fff;
 }
 
-#screentitlepadding {
+#Dada #screentitlepadding {
 	float: left;
 	padding: 3px;
 }
 
 
-#navcontainer {
+#Dada #navcontainer {
 	margin: 0px;
 	border-bottom: 1px solid #666;
 }
 
-#navcontainer ul {
+#Dada #navcontainer ul {
 	margin: 0;
 	padding: 0;
 	list-style-type: none;
@@ -804,11 +815,11 @@ li.archive_badges_li {
 }
 
 /* this is the horizontal separator */
-#navcontainer li {
+#Dada #navcontainer li {
 	margin: 0 0 1px 0;
 }
 
-#navcontainer a {
+#Dada #navcontainer a {
 	display: block;
 	padding: 2px 5px;
 	width: 189px;
@@ -817,13 +828,13 @@ li.archive_badges_li {
 	text-decoration: none;
 }
 
-#navcontainer a:hover {
+#Dada #navcontainer a:hover {
 	color: #666;
 	background-color: #ffe1af;
 	text-decoration: none;
 }
 
-#navcontainer span.title {
+#Dada #navcontainer span.title {
 	display: block;
 	/* h, w */
 	padding: 2px 5px;
@@ -842,11 +853,11 @@ li.archive_badges_li {
 }
 
 /* this is the horizontal separator */
-#navcontainer ul ul li {
+#Dada #navcontainer ul ul li {
 	margin: 0 0 1px 0;
 }
 
-#navcontainer ul ul a {
+#Dada #navcontainer ul ul a {
 	display: block;
 	padding: 2px 2px 2px 20px;
 	width: 177px; /* 20 + 2 */
@@ -854,41 +865,41 @@ li.archive_badges_li {
 	text-decoration: none;
 	font-size: .9em;
 }
-#navcontainer ul ul span.title {
+#Dada #navcontainer ul ul span.title {
 	color: #fff;
 }
 
-#navcontainer ul ul a:hover {
+#Dada #navcontainer ul ul a:hover {
 	color: #666;
 	background-color: #ffe1af;
 	text-decoration: none;
 }
-#navcontainer ul ul a:active,
-#navcontainer ul ul a:focus {
+#Dada #navcontainer ul ul a:active,
+#Dada #navcontainer ul ul a:focus {
 	color: #000;
 	background-color: #f4ffaf;
 }
 
-#navcontainer ul ul a.menu_disabled,
-#navcontainer ul ul a.menu_disabled:link,
-#navcontainer ul ul a.menu_disabled:visited,
-#navcontainer ul ul a.menu_disabled:hover,
-#navcontainer ul ul a.menu_disabled:active {
+#Dada #navcontainer ul ul a.menu_disabled,
+#Dada #navcontainer ul ul a.menu_disabled:link,
+#Dada #navcontainer ul ul a.menu_disabled:visited,
+#Dada #navcontainer ul ul a.menu_disabled:hover,
+#Dada #navcontainer ul ul a.menu_disabled:active {
 	color: #ccc;
 	font-style: italic;
 }
 
-#navcontainer ul ul a.menu_selected,
-#navcontainer ul ul a.menu_selected:link,
-#navcontainer ul ul a.menu_selected:visited,
-#navcontainer ul ul a.menu_selected:hover,
-#navcontainer ul ul a.menu_selected:active {
+#Dada #navcontainer ul ul a.menu_selected,
+#Dada #navcontainer ul ul a.menu_selected:link,
+#Dada #navcontainer ul ul a.menu_selected:visited,
+#Dada #navcontainer ul ul a.menu_selected:hover,
+#Dada #navcontainer ul ul a.menu_selected:active {
 	color: #000;
 	background-color: #f4ffaf;
 }
 
 
-.stripedtable {
+#Dada .stripedtable {
 	/*border: 1px solid red;*/ /* for testing. */
 	border-collapse: collapse;
 	background-color: #fff;
@@ -896,42 +907,35 @@ li.archive_badges_li {
 	border: 0px;
 	
 }
-.stripedtable td, 
-.stripedtable th 
+#Dada .stripedtable td, 
+#Dada .stripedtable th 
  {
 	vertical-align: top;
 	text-align:left; 
 	padding: 2px;
 	margin: 0px;
 }
-.stripedtable tr td,
-.stripedtable tr th 
+#Dada .stripedtable tr td,
+#Dada .stripedtable tr th 
  {
 	background-color: #fff;
 }
 
-div.alt,
-.stripedtable tr.alt td {
+#Dada div.alt,
+#Dada .stripedtable tr.alt td {
 	background-color: #ededed;
 }
 
-.stripedtable a {
+#Dada .stripedtable a {
 	color: #666;
 	/* border-bottom:1px dotted #ffe1af; */
 	text-decoration:none;
 }
 
-.stripedtable a:hover {
+#Dada .stripedtable a:hover {
 	color: #666;
 	background-color: #ffe1af;
 }
-
-
-
-
-
-
-
 #format_type_container {
 	/* for centering: 
 	 clear: left;
@@ -945,7 +949,9 @@ div.alt,
 	font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
 	/* text-shadow: 1px 1px 2px #330033;*/
 }
-#format_type_container ul {
+
+
+#Dada #format_type_container ul {
 	float: left;
 	margin: 0;
 	padding: 0;
@@ -956,7 +962,8 @@ div.alt,
 	text-align: center;
 	*/
 }
-#format_type_container ul li {
+
+#Dada #format_type_container ul li {
 	display: block;
 	float: left;
 	list-style: none;
@@ -967,7 +974,8 @@ div.alt,
 	right: 50%;
 	*/
 }
-#format_type_container ul li a {
+
+#Dada #format_type_container ul li a {
 	display: block;
 	float: left;
 	margin: 0 1px;
@@ -981,15 +989,19 @@ div.alt,
 	position: relative;
 	bottom: 1px;
 }
-#format_type_container ul li a:hover {
+
+#Dada #format_type_container ul li a:hover {
 	background: #ffe1af;
 	color: #000;
 }
-#format_type_container ul li.active {
+
+#Dada #format_type_container ul li.active {
 	margin-top: 10px;
 }
-#format_type_container ul li.active a,
-#format_type_container ul li.active a:hover {
+
+#Dada #format_type_container ul li.active a,
+
+#Dada #format_type_container ul li.active a:hover {
 	position: relative;
 	bottom: 0;
 	padding: 10px;
@@ -1007,9 +1019,9 @@ div.alt,
 
 /* TableSorter */
 /* tables */
-table.tablesorter {
-}
-table.tablesorter thead tr th, table.tablesorter tfoot tr th {
+#Dada table.tablesorter {}
+
+#Dada table.tablesorter thead tr th, table.tablesorter tfoot tr th {
 	
 	background-color: #e6EEEE;
 	
@@ -1019,48 +1031,57 @@ table.tablesorter thead tr th, table.tablesorter tfoot tr th {
 		padding: 4px;
 		padding:0px;*/
 }
-table.tablesorter thead tr .header {
+
+#Dada table.tablesorter thead tr .header {
 	background-image: url(../images/jquery.tablesorter/bg.gif);
 	background-repeat: no-repeat;
 	background-position: center right;
 	cursor: pointer;
 }
-table.tablesorter tbody td {
+
+#Dada table.tablesorter tbody td {
 /*	color: #3D3D3D;
 	padding: 4px;
 	padding:0px;
 	background-color: #FFF;
 	vertical-align: top;*/
 }
-table.tablesorter tbody tr.odd td {
+
+#Dada table.tablesorter tbody tr.odd td {
 	background-color:#ededed;
 }
-table.tablesorter thead tr .headerSortUp {
+
+#Dada table.tablesorter thead tr .headerSortUp {
 	background-image: url(../images/jquery.tablesorter/asc.gif);
 }
-table.tablesorter thead tr .headerSortDown {
+
+#Dada table.tablesorter thead tr .headerSortDown {
 	background-image: url(../images/jquery.tablesorter/desc.gif);
 }
-table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
+
+#Dada table.tablesorter thead tr .headerSortDown, table.tablesorter thead tr .headerSortUp {
 background-color: #8dbdd8;
 }
 
-#form_widgets {
+#Dada #form_widgets {
   margin-top:60px;	
   float:left;
   width:100%;
 
 }
-#entire_form {
+
+#Dada #entire_form {
   position: relative;
 }
-#top_floating_button_wrapper { /* required to avoid jumping */
+
+#Dada #top_floating_button_wrapper { /* required to avoid jumping */
   position: absolute;
   width:100%;
 
 
 }
-#buttons {
+
+#Dada #buttons {
   position: absolute;
   top: 0;
 /*  padding-top: 19px;*/
@@ -1075,7 +1096,8 @@ background-color: #8dbdd8;
 
 
 }
-#buttons.fixed {
+
+#Dada #buttons.fixed {
   position: fixed;
   top: 0;
  
