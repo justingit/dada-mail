@@ -418,7 +418,7 @@ sub clear_message_data_cache {
     return (
         {
                 -redirect_uri => $Plugin_Config->{Plugin_URL}
-              . '?flavor=m&mid='
+              . '?prm=m&mid='
               . xss_filter( strip( scalar $q->param('msg_id') ) )
         },
         undef
