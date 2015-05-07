@@ -1069,12 +1069,16 @@ sub filter_subscribers_massaged_for_ht {
     my $new_emails = [];
     my $fields     = $self->subscriber_fields();
 
+    if(! exists($args->{-treat_profile_fields_special})){ 
+        $args->{-treat_profile_fields_special} = 1; 
+    }
+    
     for my $address (@$emails) {
         
         my $ht_fields = [];
         my $ht_errors = [];
         
-        if(exists($address->{errors}->{invalid_profile_fields})) { 
+        if(exists($address->{errors}->{invalid_profile_fields}) && $args->{-treat_profile_fields_special} == 1) { 
             for my $field(@$fields) {
                 if ( 
                     exists($address->{errors})
