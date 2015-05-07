@@ -1366,23 +1366,23 @@ sub view_inline_attachment {
 	    
 	
 	if($c_type =~ m/image\/gif/){ 
-		$h->{type} = 'image/gif';
+		$h->{-type} = 'image/gif';
 	}elsif($c_type =~ m/image\/jpg|image\/jpeg/){ 
-		$h->{type} = 'image/jpg';
+		$h->{-type} = 'image/jpg';
 	}elsif($c_type =~ m/image\/png/){ 
-		$h->{type} = 'image/png';
+		$h->{-type} = 'image/png';
 	}elsif($c_type =~ m/application\/octet\-stream/){ # dude, this could be anything...
 		if($a_entity->head->mime_attr("content-type.name") =~ m/\.png$/i){
-		    $h->{type} = 'image/png'; 
+		    $h->{-type} = 'image/png'; 
 		}elsif($a_entity->head->mime_attr("content-type.name") =~ m/\.jpg$|\.jpeg/i){
-			$h->{type} = 'image/jpg'; 
+			$h->{-type} = 'image/jpg'; 
 		}elsif($a_entity->head->mime_attr("content-type.name") =~ m/\.gif$/i){
-			$h->{type} = 'image/gif'; 
+			$h->{-type} = 'image/gif'; 
 		}
 	}else{ 
 		warn "unsupported content type! " .  $c_type; 
 
-		$h->{type} = 'image/png';
+		$h->{-type} = 'image/png';
 		# a simple, 1px png image. 
 		my $str = <<EOF
 iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAMAAAAoyzS7AAAABGdBTUEAANbY1E9YMgAAABl0RVh0
