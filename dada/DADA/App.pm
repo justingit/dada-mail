@@ -5927,7 +5927,7 @@ sub delete_email {
         my $delete_list       = undef;
         my $delete_email_file = $q->param('delete_email_file');
         if ($delete_email_file) {
-            my $new_file = file_upload('delete_email_file');
+            my $new_file = $self->file_upload('delete_email_file');
             open( UPLOADED, "$new_file" )
               or die $!;
             $delete_list = do { local $/; <UPLOADED> };
@@ -5951,11 +5951,13 @@ sub delete_email {
         my $new_info   = [];
         ( $new_emails, $new_info ) = DADA::App::Guts::csv_subscriber_parse( $admin_list, $outfile_filename );
 
-        my ( $not_members, $invalid_email, $subscribed, $black_listed, $not_white_listed, $invalid_profile_fields, ) =
+        my ( $not_members, $invalid_email, $subscribed, $black_listed, $not_white_listed, $invalid_profile_fields ) =
           $lh->filter_subscribers_massaged_for_ht(
             {
                 -emails => $new_emails,
                 -type   => $type
+                -treat_profile_fields_special => 0, 
+                
             }
           );
 
@@ -7242,7 +7244,7 @@ sub edit_archived_msg {
         my $cid         = shift;
         my $disposition = shift || 'attachment';
 
-        my $filename = file_upload( 'upload_' . $name );
+        my $filename = $self->file_upload( 'upload_' . $name );
         my $data;
 
         my $nice_filename = $q->param( 'upload_' . $name );
