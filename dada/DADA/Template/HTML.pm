@@ -301,10 +301,13 @@ sub admin_header_params {
 
 
 sub default_template { 
-    return template_from_model(); 
+    my $tmp = template_from_model(); 
 
-=cut    
-    	# DEV: should the templates found in the other ways be run through the templating system? I kinda think they should...  
+    if(defined($tmp)){ 
+        return $tmp; 
+    }
+    else { 
+        # DEV: should the templates found in the other ways be run through the templating system? I kinda think they should...  
     	if(!$DADA::Config::USER_TEMPLATE){ 		
     		require DADA::Template::Widgets; 	   
     		return DADA::Template::Widgets::_raw_screen({-screen => 'list_template.tmpl', -encoding => 1}); 
@@ -315,8 +318,7 @@ sub default_template {
     			return fetch_user_template($DADA::Config::USER_TEMPLATE); 
     		}
     	}       
-=cut
-    
+    }
 }
 
 sub template_from_model {
@@ -331,9 +333,11 @@ sub template_from_model {
     my $opts = $DADA::Config::TEMPLATE_OPTIONS->{user}->{template_options};
     if ( $can_use_html_tree == 1 ) {
         try {
-            #my $src = grab_url('http://dadamailproject.com');
-            my $src = grab_url( $opts->{template_url} );
-
+            my ($src, $res) = grab_url( $opts->{template_url} );
+            if(!$res->is_success){ 
+                warn "Couldn't fetch template: " . $res->message;
+                return undef; 
+            }
             require HTML::TreeBuilder;
             my $root = HTML::TreeBuilder->new;
             $root->parse($src);
@@ -380,9 +384,22 @@ sub template_from_model {
                 );
             }
 
+            my $found_id_tag = 0;
+            my $id_tag = undef; 
+             
+            if($opts->{replace_content_from} eq 'id') { 
+                
+                if($id_tag = $root->look_down( "id", $opts->{replace_id} )){ 
+                    # Well, that's good!
+                }
+                else { 
+                    warn "cannot find css selector id, '" . $opts->{replace_id} . "' - will be replace content in body tag.";
+                    $opts->{replace_content_from} = 'body'; 
+                }
+            }
+             
             if ( $opts->{replace_content_from} eq 'id' ) {
 
-                my $id_tag = $root->look_down( "id", $opts->{replace_id} );
 
                 # Remove everything
                 $id_tag->delete_content();
