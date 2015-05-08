@@ -1802,6 +1802,7 @@ $TEXT_CSV_PARAMS //= {
 
     binary              => 1,
     allow_loose_escapes => 1,
+    always_quote        => 1,
 };
 
 BEGIN { @AnyDBM_File::ISA = qw(DB_File GDBM_File) }
