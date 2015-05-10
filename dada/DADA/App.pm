@@ -12771,7 +12771,7 @@ sub schedules {
             return '<pre>' . $r . '</pre>';
         }
         else {
-            $ENV{CGI_APP_RETURN_ONLY} = 1;
+           # $ENV{CGI_APP_RETURN_ONLY} = 1;
             return $r;
         }
     }
