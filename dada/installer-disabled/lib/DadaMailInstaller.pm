@@ -263,10 +263,12 @@ sub setup {
         cgi_test_amazon_ses_configuration => \&cgi_test_amazon_ses_configuration,
         cgi_test_mandrill_configuration   => \&cgi_test_mandrill_configuration,
         cgi_test_CAPTCHA_reCAPTCHA        => \&cgi_test_CAPTCHA_reCAPTCHA,
-
+        
         #cgi_test_CAPTCHA_reCAPTCHA_iframe  => \&cgi_test_CAPTCHA_reCAPTCHA_iframe,
         cgi_test_default_CAPTCHA            => \&cgi_test_default_CAPTCHA,
         cgi_test_captcha_reCAPTCHA_Mailhide => \&cgi_test_captcha_reCAPTCHA_Mailhide,
+        
+        cgi_test_magic_template             => \&cgi_test_magic_template,
 
         #cgi_test_FastCGI                    => \&cgi_test_FastCGI,
         cl_run                               => \&cl_run, 
@@ -770,6 +772,7 @@ sub scrn_configure_dada_mail {
 
                 # These are tricky....
                 SUPPORT_FILES_URL                  => $Self_URL . '?flavor=screen&screen=',
+                Self_URL                           => $Self_URL,
                 install_type                       => $install_type,
                 current_dada_files_parent_location => $current_dada_files_parent_location,
                 program_url_guess                  => program_url_guess(),
@@ -3968,6 +3971,46 @@ sub cgi_test_captcha_reCAPTCHA_Mailhide {
 
     return $r;
 
+}
+
+sub cgi_test_magic_template {
+    my $self = shift;
+    my $q    = $self->query();
+
+    require DADA::Template::HTML;
+    my $tmpl = DADA::Template::HTML::template_from_magic(
+        {
+            template_url         => scalar $q->param('template_url'),
+            add_base_href_url        => scalar $q->param('add_base_href_url'),
+            base_href_url        => scalar $q->param('base_href_url'),
+            replace_content_from => scalar $q->param('replace_content_from'),
+            replace_id           => scalar $q->param('replace_id'),
+            replace_class        => scalar $q->param('replace_class'), 
+            add_app_css          => scalar $q->param('add_app_css'),
+            add_custom_css       => scalar $q->param('add_custom_css'),
+            custom_css_url       => scalar $q->param('custom_css_url'),
+        }
+    );
+    
+    my $content = DADA::Template::Widgets::_raw_screen(
+        {
+            -screen   => 'installer-magic_template_content.tmpl',
+        }
+    );
+    
+    
+    return 
+        DADA::Template::Widgets::screen(
+            {
+                -data => \$tmpl, 
+                -vars   => {
+                    content => $content, 
+                    SUPPORT_FILES_URL    => $Self_URL . '?flavor=screen&screen=',
+                },
+            }
+        )
+    
+    
 }
 
 sub test_pop3_connection {

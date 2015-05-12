@@ -301,7 +301,7 @@ sub admin_header_params {
 
 
 sub default_template { 
-    my $tmp = template_from_model(); 
+    my $tmp = template_from_magic(); 
 
     if(defined($tmp)){ 
         return $tmp; 
@@ -321,7 +321,10 @@ sub default_template {
     }
 }
 
-sub template_from_model {
+sub template_from_magic {
+    
+    my ($args) = shift || undef; 
+
     my $can_use_html_tree = 1;
     try {
         require HTML::Tree;
@@ -329,17 +332,32 @@ sub template_from_model {
     catch {
         $can_use_html_tree = 0;
     };
-
-    my $opts = $DADA::Config::TEMPLATE_OPTIONS->{user}->{template_options};
+    
+    if(! defined($args)){ 
+        $args = $DADA::Config::TEMPLATE_OPTIONS->{user}->{template_options};
+    }
+    
     if ( $can_use_html_tree == 1 ) {
         try {
-            my ($src, $res) = grab_url( $opts->{template_url} );
+            my ($src, $res) = grab_url( $args->{template_url} );
             if(!$res->is_success){ 
                 warn "Couldn't fetch template: " . $res->message;
                 return undef; 
             }
             require HTML::TreeBuilder;
-            my $root = HTML::TreeBuilder->new;
+            #require HTML::TreeBuilder::LibXML;
+            #HTML::TreeBuilder::LibXML->replace_original();
+            
+            # can I use LibXML and do the same I'm doing here, just w/XPaths?
+            # What's the smae as, find_by_tag_name?
+            #
+            my $root = HTML::TreeBuilder->new(
+                ignore_unknown => 0, 
+                no_space_compacting => 1,
+                store_comments => 1, 
+                
+                 );
+                 
             $root->parse($src);
             $root->eof();    # done parsing for this tree
             $root->elementify();
@@ -358,19 +376,20 @@ sub template_from_model {
             
             my $head_ele = $root->find_by_tag_name('head');
             
-            if($opts->{'add_base_href'} == 1) { 
-                my $base_href_ele = HTML::Element->new( 'base', 'href' => $opts->{base_href_url}, );
+            if($args->{'add_base_href_url'} == 1) { 
+                my $base_href_ele = HTML::Element->new( 'base', 'href' => $args->{base_href_url}, );
                    $head_ele->unshift_content($base_href_ele);
             }
             
             # And, let's put the css in there:
+                       # unshift_content
             $head_ele->push_content(
                 HTML::Element->new(
                     '~literal', 'text' => '<!-- tmpl_include list_template_header_code_block.tmpl -->',
                 )
             );
 
-            if ( $opts->{add_custom_css} == 1 ) {
+            if ( $args->{add_custom_css} == 1 ) {
 
                 # Custom css:
                 $head_ele->push_content(
@@ -379,35 +398,47 @@ sub template_from_model {
                         rel   => "stylesheet",
                         type  => "text/css",
                         media => "screen",
-                        href  => $opts->{custom_css_url},
+                        href  => $args->{custom_css_url},
                     )
                 );
             }
 
             my $found_id_tag = 0;
-            my $id_tag = undef; 
+            my $replace_tag = undef; 
              
-            if($opts->{replace_content_from} eq 'id') { 
-                
-                if($id_tag = $root->look_down( "id", $opts->{replace_id} )){ 
-                    # Well, that's good!
+            if($args->{replace_content_from} eq 'id' || $args->{replace_content_from} eq 'class') { 
+                if($args->{replace_content_from} eq 'id') { 
+                    if($replace_tag = $root->look_down( "id", $args->{replace_id} )){ 
+                        # Well, that's good!
+                    }
+                    else { 
+                        warn "cannot find css selector id, '" . $args->{replace_id} . "' - will be replace content in body tag.";
+                        $args->{replace_content_from} = 'body'; 
+                    }
                 }
-                else { 
-                    warn "cannot find css selector id, '" . $opts->{replace_id} . "' - will be replace content in body tag.";
-                    $opts->{replace_content_from} = 'body'; 
+                elsif($args->{replace_content_from} eq 'class') { 
+                    if($replace_tag = $root->look_down( "class", $args->{replace_class} )){ 
+                        # Well, that's good!
+                    }
+                    else { 
+                        return "cannot find css selector class, '" . $args->{replace_class} . "' - will be replace content in body tag.";
+                     
+                        warn "cannot find css selector class, '" . $args->{replace_class} . "' - will be replace content in body tag.";
+                        $args->{replace_content_from} = 'body'; 
+                    }
                 }
             }
              
-            if ( $opts->{replace_content_from} eq 'id' ) {
+            if ( $args->{replace_content_from} eq 'id'  || $args->{replace_content_from} eq 'class' ) {
 
 
                 # Remove everything
-                $id_tag->delete_content();
+                $replace_tag->delete_content();
 
                 # push to 0
 
-                if ( $opts->{add_app_css} == 1 ) {
-                    $id_tag->push_content(
+                if ( $args->{add_app_css} == 1 ) {
+                    $replace_tag->push_content(
                         HTML::Element->new(
                             'div', id => "Dada"
                           )->push_content(
@@ -418,7 +449,7 @@ sub template_from_model {
                     );
                 }
                 else {
-                    $id_tag->push_content(
+                    $replace_tag->push_content(
                         HTML::Element->new(
                             '~literal', 'text' => '<!-- tmpl_include list_template_body_code_block.tmpl -->'
                         )
@@ -429,7 +460,7 @@ sub template_from_model {
 
                 my $body_tag = $root->find_by_tag_name('body');
                 $body_tag->delete_content();
-                if ( $opts->{add_app_css} == 1 ) {
+                if ( $args->{add_app_css} == 1 ) {
                     $body_tag->push_content(
                         HTML::Element->new(
                             'div', id => "Dada"
