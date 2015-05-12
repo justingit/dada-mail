@@ -2824,9 +2824,9 @@ sub install_wysiwyg_editors {
 
     my $self = shift;
     my $ip   = $self->param('install_params');
-    
+
     #warn 'install_wysiwyg_editors ' . $ip->{-install_wysiwyg_editors};
-     
+
     my $install = $ip->{-install_wysiwyg_editors} || 0;
 
     if ( $install != 1 ) {
@@ -2892,8 +2892,7 @@ sub install_wysiwyg_editors {
 
         my $upload_dir = make_safer( $support_files_dir_path . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir );
         $tmpl_vars{i_core5_filemanager_enabled} = 1;
-        $tmpl_vars{i_core5_filemanager_url} =
-          $ip->{-support_files_dir_url} . '/' . $Support_Files_Dir_Name . '/core5_filemanager';
+        $tmpl_vars{i_core5_filemanager_url}     = $ip->{-support_files_dir_url} . '/' . $Support_Files_Dir_Name . '/core5_filemanager';
         $tmpl_vars{i_core5_filemanager_connector} = $ip->{-core5_filemanager_connector};
         my $upload_dir = make_safer( $support_files_dir_path . '/' . $Support_Files_Dir_Name . '/' . $File_Upload_Dir );
         $tmpl_vars{i_core5_filemanager_upload_dir} = $upload_dir;
@@ -3185,6 +3184,7 @@ sub install_and_configure_core5_filemanager {
             {
                 -screen => 'ckeditor_config_js.tmpl',
                 -vars   => {
+                    configure_file_browser  => 1, 
                     file_manager_browse_url => $support_files_dir_url . '/'
                       . $Support_Files_Dir_Name
                       . '/core5_filemanager/index.html',
