@@ -197,14 +197,36 @@ $DEBUG_TRACE = {
     NET_SMTP        =>  <!-- tmpl_var debugging_options_NET_SMTP         default="0" -->,
 );
 
-<!-- /tmpl_if --> 
+<!-- /tmpl_if -->
 
 
-<!-- tmpl_if configure_templates --> 
+
+
+<!-- tmpl_if configure_user_template --> 
 #---------------------------------------------------------------------#
 # Template Options 
-
-$USER_TEMPLATE  = '<!-- tmpl_var template_options_USER_TEMPLATE -->';
+$TEMPLATE_OPTIONS = {
+    user => { 
+            mode => '<!-- tmpl_var template_options_mode -->',
+            manual_options => { 
+                template_url => '<!-- tmpl_var template_options_manual_template_url -->',
+            },
+            magic_options => { 
+                template_url         => '<!-- tmpl_var template_options_magic_template_url         -->', 
+                add_base_href        =>  <!-- tmpl_var template_options_add_base_href default="0"  -->, 
+                base_href_url        => '<!-- tmpl_var template_options_base_href_url              -->', 
+                replace_content_from => '<!-- tmpl_var template_options_replace_content_from       -->',
+                replace_id           => '<!-- tmpl_var template_options_replace_id                 -->', 
+                replace_class        => '<!-- tmpl_var template_options_replace_class              -->', 
+                add_app_css          =>  <!-- tmpl_var template_options_add_app_css default="0"    -->, 
+                add_custom_css       =>  <!-- tmpl_var template_options_add_custom_css default="0" -->, 
+                custom_css_url       => '<!-- tmpl_var template_options_custom_css_url             -->', 
+            }
+    }, 
+    admin => { 
+        template_url => '',
+    },
+};
 <!-- /tmpl_if --> 
 
 

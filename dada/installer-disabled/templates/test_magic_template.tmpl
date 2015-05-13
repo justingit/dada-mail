@@ -1,0 +1,40 @@
+<!-- begin test_magic_template.tmpl -->
+
+<p>Testing: <!-- tmpl_var template_url escape="HTML" --></p>
+
+<!-- tmpl_if status --> 
+    <p>Template worked!</p>
+<!-- tmpl_else --> 
+    <p>Looks like there may be some problems:</p>
+<!-- /tmpl_if -->
+
+<!-- tmpl_if errors -->
+    <p><strong>Problems Found:</strong></p>
+
+    <ul>
+    <!-- tmpl_loop errors --> 
+        <!-- tmpl_if expr="(error eq 'missing_cpan_modules')" -->    
+            <li>The required CPAN modules are missing.</li>
+        <!-- /tmpl_if -->
+
+        <!-- tmpl_if expr="(error eq 'problems_fetching_url')" -->
+             <li>Can't fetch the URL!</li>
+        <!-- /tmpl_if -->
+
+        <!-- tmpl_if expr="(error eq 'cannot_find_id')" -->
+             <li>Cannot find id</li>
+        <!-- /tmpl_if -->
+
+        <!-- tmpl_if expr="(error eq 'cannot_find_class')" -->   
+            <li>Cannot find class</li>
+        <!-- /tmpl_if -->
+
+        <!-- tmpl_if expr="(error eq 'cannot_parse_page')" -->    
+            <li>Cannot parse the page correctly.</li>
+        <!-- /tmpl_if -->
+    <!-- /tmpl_loop --> 
+    </ul>
+<!-- /tmpl_if -->
+
+
+<!-- end test_magic_template.tmpl -->

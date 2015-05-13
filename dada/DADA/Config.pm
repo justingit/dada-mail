@@ -563,27 +563,35 @@ $DEBUG_TRACE //= {
 
 ) unless keys %CPAN_DEBUG_SETTINGS;
 
-$ADMIN_TEMPLATE                 //= '';
-$USER_TEMPLATE                  //= '';
+$ADMIN_TEMPLATE                 = undef; #noop
+$USER_TEMPLATE                  = undef; #noop
 $ALTERNATIVE_HTML_TEMPLATE_PATH //= undef;
+
 $TEMPLATE_SETTINGS              //= {
     engine                           => 'Best',
 };
 
 $TEMPLATE_OPTIONS //= {
     user => { 
-       mode => 'template|model', 
-       template_options => { 
-            template_url         => '', 
-            add_base_href        => 1|0, 
-            base_href            => '', 
-            replace_content_from => 'body|id',
-            replace_id           => '', 
-            add_app_css          => 1|0, 
-            add_custom_css       => 1|0, 
-            custom_css           => '', 
-       }
-    }   
+            mode => undef,
+            manual_options => { 
+                template_url => undef,
+            },
+            magic_options => { 
+                template_url         => undef, 
+                add_base_href        => 0, 
+                base_href_url        => undef, 
+                replace_content_from => undef,
+                replace_id           => undef, 
+                replace_class        => undef, 
+                add_app_css          => 0, 
+                add_custom_css       => 0, 
+                custom_css_url       => undef, 
+            }
+    }, 
+    admin => { 
+        template_url => '',
+    },
 };
 
 %BACKUP_HISTORY = (

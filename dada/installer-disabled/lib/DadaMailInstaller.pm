@@ -260,6 +260,8 @@ sub setup {
         cgi_test_sql_connection           => \&cgi_test_sql_connection,
         cgi_test_pop3_connection          => \&cgi_test_pop3_connection,
         cgi_test_user_template            => \&cgi_test_user_template,
+        cgi_test_magic_template           => \&cgi_test_magic_template, 
+        cgi_test_magic_template_diag_box => \&cgi_test_magic_template_diag_box, 
         cgi_test_amazon_ses_configuration => \&cgi_test_amazon_ses_configuration,
         cgi_test_mandrill_configuration   => \&cgi_test_mandrill_configuration,
         cgi_test_CAPTCHA_reCAPTCHA        => \&cgi_test_CAPTCHA_reCAPTCHA,
@@ -267,9 +269,6 @@ sub setup {
         #cgi_test_CAPTCHA_reCAPTCHA_iframe  => \&cgi_test_CAPTCHA_reCAPTCHA_iframe,
         cgi_test_default_CAPTCHA            => \&cgi_test_default_CAPTCHA,
         cgi_test_captcha_reCAPTCHA_Mailhide => \&cgi_test_captcha_reCAPTCHA_Mailhide,
-        
-        cgi_test_magic_template             => \&cgi_test_magic_template,
-
         #cgi_test_FastCGI                    => \&cgi_test_FastCGI,
         cl_run                               => \&cl_run, 
     );
@@ -1539,7 +1538,18 @@ sub query_params_to_install_params {
 
       configure_templates
       configure_user_template
-      template_options_USER_TEMPLATE
+      
+      template_options_mode
+      template_options_manual_template_url
+      template_options_magic_template_url
+      template_options_add_base_href
+      template_options_base_href_url
+      template_options_replace_content_from
+      template_options_replace_id
+      template_options_replace_class
+      template_options_add_app_css
+      template_options_add_custom_css
+      template_options_custom_css_url
 
       configure_cache
       cache_options_SCREEN_CACHE
@@ -2130,11 +2140,25 @@ sub create_dada_config_file {
         cut_plugin_configs        => 1,
     };
 
-    my $template_options_params = {};
-    if ( $ip->{-configure_templates} == 1 && $ip->{-configure_user_template} == 1 ) {
-        $template_options_params->{template_options_USER_TEMPLATE} =
-          clean_up_var( $ip->{-template_options_USER_TEMPLATE} );
-        $template_options_params->{configure_templates} = 1;
+    my $template_options_params = {};        
+    if ( $ip->{-configure_user_template} == 1 ) {
+        $template_options_params->{configure_user_template} = 1;
+        for (qw(
+            template_options_mode
+            template_options_manual_template_url
+            template_options_magic_template_url
+            template_options_add_base_href
+            template_options_base_href_url
+            template_options_replace_content_from
+            template_options_replace_id
+            template_options_replace_class
+            template_options_add_app_css
+            template_options_add_custom_css
+            template_options_custom_css_url
+            )
+        ) { 
+            $template_options_params->{$_} = $ip->{'-' . $_};
+        }
     }
 
     my $cache_options_params = {};
@@ -3700,17 +3724,17 @@ sub cgi_test_user_template {
     my $self = shift;
     my $q    = $self->query();
 
-    my $template_options_USER_TEMPLATE = $q->param('template_options_USER_TEMPLATE');
+    my $template_options_manual_template_url = $q->param('template_options_manual_template_url');
     my $can_get_content                = 0;
     my $can_use_lwp_simple             = DADA::App::Guts::can_use_LWP_Simple;
-    my $isa_url                        = isa_url($template_options_USER_TEMPLATE);
+    my $isa_url                        = isa_url($template_options_manual_template_url);
     if ($isa_url) {
-        if ( grab_url($template_options_USER_TEMPLATE) ) {
+        if ( DADA::Template::HTML::can_grab_url($template_options_manual_template_url)  == 1) {
             $can_get_content = 1;
         }
     }
     else {
-        if ( -e $template_options_USER_TEMPLATE ) {
+        if ( -e $template_options_manual_template_url ) {
             $can_get_content = 1;
         }
     }
@@ -3721,7 +3745,7 @@ sub cgi_test_user_template {
             -screen => 'test_user_template.tmpl',
             -expr   => 1,
             -vars   => {
-                template_options_USER_TEMPLATE => $template_options_USER_TEMPLATE,
+                template_options_USER_TEMPLATE => $template_options_manual_template_url,
                 can_use_lwp_simple             => $can_use_lwp_simple,
                 isa_url                        => $isa_url,
                 can_get_content                => $can_get_content,
@@ -3731,7 +3755,6 @@ sub cgi_test_user_template {
     return $r;
 
 }
-
 sub cgi_test_amazon_ses_configuration {
 
     my $self = shift;
@@ -3973,44 +3996,77 @@ sub cgi_test_captcha_reCAPTCHA_Mailhide {
 
 }
 
+sub cgi_test_magic_template_diag_box {
+    my $self = shift; 
+    my $q    = $self->query();
+    my ($t_status, $t_errors, $t_tmpl) = $self->cgi_test_magic_template(1);
+    
+    my $ht_errors = [];
+    for(%$t_errors){ 
+        push(@$ht_errors, {error => $_}); 
+    }
+    
+    require DADA::Template::Widgets;
+    my $r = DADA::Template::Widgets::screen(
+        {
+            -screen => 'test_magic_template.tmpl',
+            -expr   => 1,
+            -vars   => {
+                template_url         => scalar $q->param('template_options_template_url'),
+                status               => $t_status, 
+                errors               => $ht_errors, 
+            }
+        }
+    );
+    return $r;
+    
+}
+
+
+
 sub cgi_test_magic_template {
-    my $self = shift;
+    my $self        = shift;
+    my $just_return = shift || 0; 
+    
     my $q    = $self->query();
 
     require DADA::Template::HTML;
-    my $tmpl = DADA::Template::HTML::template_from_magic(
+    my ($t_status, $t_errors, $t_tmpl) = DADA::Template::HTML::template_from_magic(
         {
-            template_url         => scalar $q->param('template_url'),
-            add_base_href_url        => scalar $q->param('add_base_href_url'),
-            base_href_url        => scalar $q->param('base_href_url'),
-            replace_content_from => scalar $q->param('replace_content_from'),
-            replace_id           => scalar $q->param('replace_id'),
-            replace_class        => scalar $q->param('replace_class'), 
-            add_app_css          => scalar $q->param('add_app_css'),
-            add_custom_css       => scalar $q->param('add_custom_css'),
-            custom_css_url       => scalar $q->param('custom_css_url'),
+           template_url         => scalar $q->param('template_options_template_url'),
+           add_base_href_url    => scalar $q->param('template_options_add_base_href'),
+           base_href_url        => scalar $q->param('template_options_base_href_url'),
+           replace_content_from => scalar $q->param('template_options_replace_content_from'),
+           replace_id           => scalar $q->param('template_options_replace_id'),
+           replace_class        => scalar $q->param('template_options_replace_class'), 
+           add_app_css          => scalar $q->param('template_options_add_app_css'),
+           add_custom_css       => scalar $q->param('template_options_add_custom_css'),
+           custom_css_url       => scalar $q->param('template_options_custom_css_url'),
         }
     );
     
-    my $content = DADA::Template::Widgets::_raw_screen(
-        {
-            -screen   => 'installer-magic_template_content.tmpl',
-        }
-    );
-    
-    
-    return 
-        DADA::Template::Widgets::screen(
+    if($just_return == 0){ 
+        
+        my $content = DADA::Template::Widgets::_raw_screen(
             {
-                -data => \$tmpl, 
-                -vars   => {
-                    content => $content, 
-                    SUPPORT_FILES_URL    => $Self_URL . '?flavor=screen&screen=',
-                },
+                -screen   => 'installer-magic_template_content.tmpl',
             }
-        )
+        );
     
-    
+        return 
+            DADA::Template::Widgets::screen(
+                {
+                    -data => \$t_tmpl, 
+                    -vars   => {
+                        content => $content, 
+                        SUPPORT_FILES_URL    => $Self_URL . '?flavor=screen&screen=',
+                    },
+                }
+            );
+    }
+    else { 
+        return ($t_status, $t_errors, $t_tmpl); 
+    }
 }
 
 sub test_pop3_connection {
@@ -4277,7 +4333,7 @@ sub screen {
         );
     }
     elsif ($screen eq 'installer-dada_mail.js'
-        || $screen eq 'installer-dada_mail.installer.js'
+        || $screen eq 'dada_mail.installer.js'
         || $screen =~ m/installer\-jquery/
         || $screen =~ m/installer\-jquery\-ui/ )
     {

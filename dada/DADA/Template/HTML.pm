@@ -301,10 +301,10 @@ sub admin_header_params {
 
 
 sub default_template { 
-    my $tmp = template_from_magic(); 
+    my ($m_status, $m_errors, $m_tmpl) = template_from_magic(); 
 
-    if(defined($tmp)){ 
-        return $tmp; 
+    if($m_status == 1){ 
+        return $m_tmpl; 
     }
     else { 
         # DEV: should the templates found in the other ways be run through the templating system? I kinda think they should...  
@@ -321,16 +321,31 @@ sub default_template {
     }
 }
 
+sub can_grab_url { 
+    my $url = shift || undef;
+    my ($src, $res) = grab_url( $url );
+    if($res->is_success){ 
+        return 1; 
+    }
+    else { 
+        return 0; 
+    }
+}
 sub template_from_magic {
     
-    my ($args) = shift || undef; 
-
+    my ($args)            = shift || undef; 
+    my $status            = 0; 
+    my $errors            = {};
+    my $template          = undef; 
     my $can_use_html_tree = 1;
+    
     try {
         require HTML::Tree;
     }
     catch {
         $can_use_html_tree = 0;
+        $errors->{missing_cpan_modules} = 1; 
+        return ($status, $errors, undef); 
     };
     
     if(! defined($args)){ 
@@ -342,7 +357,8 @@ sub template_from_magic {
             my ($src, $res) = grab_url( $args->{template_url} );
             if(!$res->is_success){ 
                 warn "Couldn't fetch template: " . $res->message;
-                return undef; 
+                $errors->{problems_fetching_url} = 1;
+                return ($status, $errors, undef);  
             }
             require HTML::TreeBuilder;
             #require HTML::TreeBuilder::LibXML;
@@ -355,8 +371,7 @@ sub template_from_magic {
                 ignore_unknown => 0, 
                 no_space_compacting => 1,
                 store_comments => 1, 
-                
-                 );
+            );
                  
             $root->parse($src);
             $root->eof();    # done parsing for this tree
@@ -412,6 +427,7 @@ sub template_from_magic {
                         # Well, that's good!
                     }
                     else { 
+                        $errors->{cannot_find_id} = 1; 
                         warn "cannot find css selector id, '" . $args->{replace_id} . "' - will be replace content in body tag.";
                         $args->{replace_content_from} = 'body'; 
                     }
@@ -420,10 +436,9 @@ sub template_from_magic {
                     if($replace_tag = $root->look_down( "class", $args->{replace_class} )){ 
                         # Well, that's good!
                     }
-                    else { 
-                        return "cannot find css selector class, '" . $args->{replace_class} . "' - will be replace content in body tag.";
-                     
+                    else {                      
                         warn "cannot find css selector class, '" . $args->{replace_class} . "' - will be replace content in body tag.";
+                        $errors->{cannot_find_class} = 1; 
                         $args->{replace_content_from} = 'body'; 
                     }
                 }
@@ -481,15 +496,15 @@ sub template_from_magic {
                 }
             }
 
-            return $root->as_HTML( undef, '  ' );
+            $status = 1; 
+            my $tmpl = $root->as_HTML( undef, '  ' );
             $root->delete;
+            return ($status, $errors, $tmpl);  
         }
         catch {
-            return $_;
+            $errors->{cannot_parse_page} = 1; 
+            return ($status, $errors, undef);  
         };
-    }
-    else {
-        return;
     }
 }
 

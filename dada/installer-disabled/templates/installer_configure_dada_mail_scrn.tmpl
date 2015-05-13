@@ -1129,83 +1129,69 @@ editors also have the ability to make simple HTML tables for basic layouts.
 			<label for="configure_user_template">
 				Use A Custom User Template
 			</label>
-		</p>
-
-
-<!-- 
-
-    template_url         => '', 
-    add_base_href_url        => 1|0, 
-    base_href_url            => '', 
-    replace_content_from => 'body|id',
-    replace_id           => '', 
-    add_app_css          => 1|0, 
-    add_custom_css       => 1|0, 
-    custom_css_url           => '', 
-
---> 
-
-		<p>
-		    <input type="radio" name="template_options_mode" value="magic" id="template_options_mode_manual" />
-		    <label>
-		        Magically
-		    </label>
-            <blockquote>
-                <label for="template_url">
-                    URL:
-                </label><br /> 
+		</p>		
+		    <p>
+    		    <input type="radio" name="template_options_mode" value="manual" id="template_options_mode_manual" checked="checked" class="template_options_mode" />
+    		    <label for="template_options_mode_manual">Manually</label>
+            </p>
+    		    <div id="template_mode_manual_options"> 
+    		        <blockquote> 
+    			<label for="template_options_USER_TEMPLATE">
+    				Server Absolute Path or URL to your User Template:
+    			</label>
+    			<br />
+    			<input type="text" name="template_options_manual_template_url" id="template_options_manual_template_url" value="" class="full" />
+    	        </blockquote> 
+            </div> 
+    	    
+		    
+		    
+		    <p>
+    		    <input type="radio" name="template_options_mode" value="magic" id="template_options_mode_magic" checked="checked" class="template_options_mode" />
+		        <label for="template_options_mode_magic">
+		            Magically
+		        </label>
+	        </p>
+	    
+		    <div id="template_mode_magic_options"> 
+                <blockquote>
+                    <label for="template_options_magic_template_url">
+                        URL:
+                    </label><br /> 
            
-                <input type="text" name="template_url" id="template_url" class="full" /><br />
+                    <input type="text" name="template_options_magic_template_url" id="template_options_magic_template_url" class="full" /><br />
            
-                <input type="checkbox" name="add_base_href_url" id="add_base_href_url" />
-                <label for="add_base_href_url">Add a, &lt;base href=&quot;...&quot;&gt; tag:</label><br />
-                <input type="text" name="base_href_url" id="base_href_url"  class="full" /><br />
+                    <input type="checkbox" name="template_options_add_base_href" id="template_options_add_base_href" />
+                    <label for="template_options_add_base_href">Add a, &lt;base href=&quot;...&quot;&gt; tag:</label><br />
+                    <input type="text" name="template_options_base_href_url" id="template_options_base_href_url"  class="full" /><br />
              
-                 Replace content from the: <br />
-                <input type="radio" name="replace_content_from" id="replace_content_from_body" value="body"> <label for="replace_content_from_body">&lt;body&gt; tag</label>
-                <br />
-                <input type="radio" name="replace_content_from" id="replace_content_from_id" value="id"> <label for="replace_content_from_id">css id:</label>
-                <input type="text" name="replace_id" id="replace_id" value="" />
-                <br />
-                <input type="radio" name="replace_content_from" id="replace_content_from_class" value="class"> <label for="replace_content_from_class">css class:</label>
-                <input type="text" name="replace_class" id="replace_class" value="" />
-                <br />
+                     Replace content from the: <br />
+                    <input type="radio" name="template_options_replace_content_from" id="template_options_replace_content_from_body" value="body" checked="checked"> 
+                    <label for="template_options_replace_content_from_body">&lt;body&gt; tag</label>
+                    <br />
+                    <input type="radio" name="template_options_replace_content_from" id="template_options_replace_content_from_id" value="id"> 
+                    <label for="template_options_replace_content_from_id">css id:</label>
+                    <input type="text" name="template_options_replace_id" id="template_options_replace_id" value="" />
+                    <br />
+                    <input type="radio" name="template_options_replace_content_from" id="template_options_replace_content_from_class" value="class"> 
+                    <label for="template_options_replace_content_from_class">css class:</label>
+                    <input type="text" name="template_options_replace_class" id="template_options_replace_class" value="" />
+                    <br />
             
+                    <input type="checkbox" name="template_options_add_app_css" id="template_options_add_app_css"  value="1" />
+                    <label for="template_options_add_app_css">Include Dada Mail's own styles</label><br />
             
-            
-                <input type="checkbox" name="add_app_css" id="add_app_css"  value="1" /><label for="add_app_css">Include Dada Mail's own styles</label><br />
-            
-                <input type="checkbox" name="add_custom_css" id="add_custom_css" value="1"/><label for="add_custom_css">Include a custom stylesheet:</label><br />
-                <input type="text" name="custom_css_url" id="custom_css_url" class="full" />
-    	    </p> 
-        </blockquote>
+                    <input type="checkbox" name="template_options_add_custom_css" id="template_options_add_custom_css" value="1"/>
+                    <label for="template_options_add_custom_css">Include a custom stylesheet:</label><br />
+                    <input type="text" name="template_options_custom_css_url" id="template_options_custom_css_url" class="full" />
+        	    </p> 
+                </blockquote>
+            </div> 
 	
-	    <p>
-		    <input type="radio" name="template_options_mode" value="manual" id="template_options_mode_manual" />
-		    <label for="template_options_mode">Manually</label>
-		<br />
-			<label for="template_options_USER_TEMPLATE">
-				Server Absolute Path or URL to your User Template:
-			</label>
-			<br />
-			<input type="text" name="template_options_USER_TEMPLATE" id="template_options_USER_TEMPLATE" value="" class="full" />
-		</p>
-		<p>
-			<input type="button" class="processing test_magic_template" value="Test Your Magic User Template"/>
-		</p>
-
-
-		
-		<!-- 
-		
-		<div class="buttonfloat"> 
+    
 		<p>
 			<input type="button" class="processing test_user_template" value="Test Your User Template"/>
 		</p>
-				</div>
-	    --> 
-	    
-	    
 
 		<div class="floatclear"></div> 
 		<div id="test_user_template_results" class="clearskiesbox"></div> 
