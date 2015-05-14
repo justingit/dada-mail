@@ -578,21 +578,22 @@ $TEMPLATE_OPTIONS //= {
                 template_url => undef,
             },
             magic_options => { 
-                template_url         => undef, 
-                add_base_href        => 0, 
-                base_href_url        => undef, 
+                template_url         => undef,
+                add_base_href        => 0,
+                base_href_url        => undef,
                 replace_content_from => undef,
-                replace_id           => undef, 
-                replace_class        => undef, 
-                add_app_css          => 0, 
-                add_custom_css       => 0, 
-                custom_css_url       => undef, 
+                replace_id           => undef,
+                replace_class        => undef,
+                add_app_css          => 0,
+                add_custom_css       => 0,
+                custom_css_url       => undef,
             }
     }, 
     admin => { 
         template_url => '',
     },
 };
+
 
 %BACKUP_HISTORY = (
     settings  => 3,

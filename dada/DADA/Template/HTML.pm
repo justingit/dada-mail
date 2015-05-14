@@ -300,25 +300,46 @@ sub admin_header_params {
 
 
 
-sub default_template { 
-    my ($m_status, $m_errors, $m_tmpl) = template_from_magic(); 
+sub default_template {
 
-    if($m_status == 1){ 
-        return $m_tmpl; 
+    my $tmpl;
+
+    if ( defined( $DADA::Config::TEMPLATE_OPTIONS->{user}->{mode} ) ) {
+        if ( $DADA::Config::TEMPLATE_OPTIONS->{user}->{mode} eq 'magic' ) {
+            my ( $m_status, $m_errors, $m_tmpl ) = template_from_magic();
+            if ( $m_status == 1 ) {
+                $tmpl = $m_tmpl;
+            }
+            else {
+                warn 'problems fetching magic template:';
+                for (%$m_errors) {
+                    warn $_;
+                }
+            }
+        }
+        elsif ( $DADA::Config::TEMPLATE_OPTIONS->{user}->{mode} eq 'manual' ) {
+            my $tmpl_file = $DADA::Config::TEMPLATE_OPTIONS->{user}->{manual_options}->{template_url};
+            if ( DADA::App::Guts::isa_url($tmpl_file) ) {
+                $tmpl = open_template_from_url( -URL => $tmpl_file );
+            }
+            else {
+                $tmpl = fetch_user_template($tmpl_file);
+            }
+        }
+        else {
+            warn 'Unknown user template type: "' . $DADA::Config::TEMPLATE_OPTIONS->{user}->{mode} . '"';
+        }
     }
-    else { 
-        # DEV: should the templates found in the other ways be run through the templating system? I kinda think they should...  
-    	if(!$DADA::Config::USER_TEMPLATE){ 		
-    		require DADA::Template::Widgets; 	   
-    		return DADA::Template::Widgets::_raw_screen({-screen => 'list_template.tmpl', -encoding => 1}); 
-    	}else{ 
-    		if(DADA::App::Guts::isa_url($DADA::Config::USER_TEMPLATE)){ 
-    			return open_template_from_url(-URL => $DADA::Config::USER_TEMPLATE);
-    		}else{ 	
-    			return fetch_user_template($DADA::Config::USER_TEMPLATE); 
-    		}
-    	}       
+    if ( !defined($tmpl) ) {
+        require DADA::Template::Widgets;
+        $tmpl = DADA::Template::Widgets::_raw_screen(
+            {
+                -screen   => 'list_template.tmpl',
+                -encoding => 1,
+            }
+        );
     }
+    return $tmpl;
 }
 
 sub can_grab_url { 
@@ -349,7 +370,7 @@ sub template_from_magic {
     };
     
     if(! defined($args)){ 
-        $args = $DADA::Config::TEMPLATE_OPTIONS->{user}->{template_options};
+        $args = $DADA::Config::TEMPLATE_OPTIONS->{user}->{magic_options};
     }
     
     if ( $can_use_html_tree == 1 ) {
@@ -391,7 +412,7 @@ sub template_from_magic {
             
             my $head_ele = $root->find_by_tag_name('head');
             
-            if($args->{'add_base_href_url'} == 1) { 
+            if($args->{'add_base_href'} == 1) { 
                 my $base_href_ele = HTML::Element->new( 'base', 'href' => $args->{base_href_url}, );
                    $head_ele->unshift_content($base_href_ele);
             }
@@ -822,28 +843,27 @@ sub HTML_Footer {
 	return '<a href="http://dadamailproject.com" target="_blank">Dada Mail ' . $DADA::Config::VER . '</a> | Copyright &copy; 1999-2015, <a href="http://dadamailproject.com/justin" target="_blank">Simoni Creative</a>';	
 }
 
-sub open_template_from_url { 
-	my %args = (
-					-URL  => undef,
-					@_,
-			    );
-			
-	if(!$args{-URL}){ 
-		carp "no url passed! $!"; 
-		return undef;
-	}else{ 
-		eval { require LWP::Simple };
-		if($@){
-			carp "LWP::Simple not installed! $!"; 
-			return undef;
-		}else{ 
-			eval { $LWP::Simple::ua->agent('Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')'); };
-			my $tmp = LWP::Simple::get($args{-URL});
-			   $tmp = safely_decode($tmp); 
-			   return $tmp; 
-		} 	
-	}
-}	
+sub open_template_from_url {
+    my %args = (
+        -URL => undef,
+        @_,
+    );
+
+    if ( !$args{-URL} ) {
+        carp "no url passed! $!";
+        return undef;
+    }
+    else {
+        my ( $src, $res ) = grab_url( $args{-URL} );
+        if ( $res->is_success ) {
+            return $src;
+        }
+        else {
+            return undef;
+        }
+    }
+}
+	
 
 # This is a bad idea - better to just OO this module... 
 sub lame_init(){ 

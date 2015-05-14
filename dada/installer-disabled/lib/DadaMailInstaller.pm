@@ -2141,9 +2141,9 @@ sub create_dada_config_file {
     };
 
     my $template_options_params = {};        
-    if ( $ip->{-configure_user_template} == 1 ) {
-        $template_options_params->{configure_user_template} = 1;
+    if ( $ip->{-configure_templates} == 1 ) {
         for (qw(
+            configure_user_template
             template_options_mode
             template_options_manual_template_url
             template_options_magic_template_url
