@@ -1120,10 +1120,21 @@ sub grab_former_config_vals {
     }
 
     # Global Template Options
-    if ( defined($BootstrapConfig::USER_TEMPLATE) ) {
-        $opt->{'configure_templates'}            = 1;
-        $opt->{'configure_user_template'}        = 1;
-        $opt->{'template_options_USER_TEMPLATE'} = $BootstrapConfig::USER_TEMPLATE;
+    if ( keys %$BootstrapConfig::TEMPLATE_OPTIONS ) {
+        $opt->{'configure_templates'}                   = 1;
+        $opt->{'configure_user_template'}               = 1;
+        $opt->{'template_options_mode'}                 = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{mode};
+        $opt->{'template_options_manual_template_url'}  = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{manual_options}->{template_url};
+        
+        $opt->{'template_options_magic_template_url'}   = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{template_url};
+        $opt->{'template_options_add_base_href'}        = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{add_base_href};
+        $opt->{'template_options_base_href_url'}        = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{base_href_url};
+        $opt->{'template_options_replace_content_from'} = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{replace_content_from};
+        $opt->{'template_options_replace_id'}           = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{replace_id};
+        $opt->{'template_options_replace_class'}        = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{replace_class};
+        $opt->{'template_options_add_app_css'}          = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{add_app_css};
+        $opt->{'template_options_add_custom_css'}       = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{add_custom_css};
+        $opt->{'template_options_custom_css_url'}       = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{custom_css_url}; 
     }
 
     # Caching Options
@@ -4034,7 +4045,7 @@ sub cgi_test_magic_template {
     my ($t_status, $t_errors, $t_tmpl) = DADA::Template::HTML::template_from_magic(
         {
            template_url         => scalar $q->param('template_options_template_url'),
-           add_base_href_url    => scalar $q->param('template_options_add_base_href'),
+           add_base_href        => scalar $q->param('template_options_add_base_href'),
            base_href_url        => scalar $q->param('template_options_base_href_url'),
            replace_content_from => scalar $q->param('template_options_replace_content_from'),
            replace_id           => scalar $q->param('template_options_replace_id'),
