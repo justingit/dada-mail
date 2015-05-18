@@ -22,11 +22,11 @@ body {
 html, body {
 	height: 100%;
 }
-#Dada_PageWrapper {
+#Dada #PageWrapper {
 	min-height: 100%;
 }
 
-#Dada_ContentWrapper {
+#Dada #ContentWrapper {
 	overflow: auto;
 	padding-bottom: 50px;
 }
@@ -37,7 +37,7 @@ html, body {
 
 
 /* BOTH */
-#Dada_Header {
+#Dada #Header {
 	min-width: 800px;
 	min-height: 50px;
 	margin: 0 auto; /* page centering for all but IE */
@@ -51,36 +51,36 @@ html, body {
 	text-shadow: 1px 1px 2px #330033;
 }
 
-#Dada_Header img { 
+#Dada #Header img { 
  border:0px; 	
 }
 
-#Dada #Dada_Title {
+#Dada #Header #Title {
 	float: right;
 	padding-right: 10px;
 	padding-top: 20px;
 	color: #fff;
 }
-#Dada #Dada_Title img {
+#Dada #Header #Title img {
 	vertical-align: bottom;
 	padding-top: -20px;
 	border: 1px solid #666;
 	margin-right: 5px;
 	margin-left: 5px;
 }
-#Dada #Dada_Title a {
+#Dada #Header #Title a {
 	font-weight: bold;
 	color: #fff;
 	text-decoration: none;
 }
-#Dada #Dada_Title a:hover {
+#Dada #Header #Title a:hover {
 	font-weight: bold;
 	color: #fff;
 	text-decoration: underline;
 }
 
 /* non-admin */
-#Dada #Dada_Content {
+#Dada #Content {
 	padding-left: 50px;
 	padding-right: 50px;
 	padding-top: 20px;
@@ -88,7 +88,7 @@ html, body {
 }
 
 /* admin */
-#Dada #Dada_Menu {
+#Dada #Menu {
 	position:relative;
 	margin-left: -100%;
 	float: left;
@@ -102,21 +102,21 @@ html, body {
 }
 
 /* BOTH */
-#Dada #Dada_AdminContentWrapper,
-#Dada #Dada_ContentWrapper {
+#Dada #AdminContentWrapper,
+#Dada #ContentWrapper {
 	border-top: 1px solid #666;
 	float: left;
 	width: 100%
 }
 
 /* admin */
-#Dada #Dada_AdminContent {
+#Dada #AdminContent {
 	margin-left: 200px;
 	padding-bottom: 10px;
 }
 
 /* BOTH */
-#Dada #Dada_Footer {
+#Dada #FooterWrapper {
 	border-top: 1px solid #666;
 	background-color: #669999;
 	height: 50px;
@@ -133,15 +133,15 @@ html, body {
 	
 	
 }
-#Dada #Dada_Footer a {
+#Dada #FooterWrapper a {
 	color: #fff;
 	text-decoration: none;
 }
-#Dada #Dada_Footer a:hover {
+#Dada #FooterWrapper a:hover {
 	color: #fff;
 	text-decoration: underline;
 }
-#Dada #Dada_FooterPadding {
+#Dada #FooterPadding {
 	padding: 5px;
 }
 
@@ -278,12 +278,12 @@ html, body {
 */
 }
 
-#Dada #Dada_AdminContent h1,
-#Dada #Dada_AdminContent h2,
-#Dada #Dada_AdminContent h3,
-#Dada #Dada_AdminContent h4,
-#Dada #Dada_AdminContent h5,
-#Dada #Dada_AdminContent p {
+#Dada #AdminContent h1,
+#Dada #AdminContent h2,
+#Dada #AdminContent h3,
+#Dada #AdminContent h4,
+#Dada #AdminContent h5,
+#Dada #AdminContent p {
 	padding-left: 5px;
 	padding-right: 5px;
 }
@@ -376,11 +376,11 @@ color: #000;
 	border: 1px solid black;
 	background: #ededed;
 }
-#Dada #Dada_AdminContent fieldset {
+#Dada #AdminContent fieldset {
 	border-left: 0px;
 	border-right: 0px;
 }
-#Dada #Dada_Content fieldset {
+#Dada #Content fieldset {
 	margin-left: auto;
 	margin-right: auto;
 	width: 75%;
@@ -389,7 +389,7 @@ color: #000;
 	border-radius: 5px;
 }
 
-#Dada #Dada_AdminContent fieldset fieldset {
+#Dada #AdminContent fieldset fieldset {
 	background: #e6e6e6;
 	border: 1px solid black;
 	-webkit-border-radius: 5px;
@@ -409,6 +409,7 @@ color: #000;
 #Dada select,
 #Dada textarea,
 #Dada .fake_input {
+    width: auto;
 	margin: 3px;
 	padding: 5px;
 	border-width: 1px;
@@ -431,7 +432,7 @@ color: #000;
     min-height:50px;
     background: transparent url('../images/spinner.gif') 50% 0 no-repeat;
 }
-#Dada #Dada_Header select { 
+#Dada #Header select { 
 	font-size: .8em;
 	font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
 	width: 150px;
@@ -440,7 +441,7 @@ color: #000;
 	padding: 1px;
 }
 
-#Dada #Dada_Header .select2-container
+#Dada #Header .select2-container
  {
 		font-size: .8em;
 		font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
@@ -451,16 +452,16 @@ color: #000;
 		bottom:-6px;
 		color:#000;
 }
-#Dada #Dada_Header .select2-choice { 
+#Dada #Header .select2-choice { 
     height: 22px; 
 	line-height: 22px; 
 		color:#000;	
 }
-#Dada_Header .select2-container a:hover { 
+#Dada #Header .select2-container a:hover { 
 	color:#000;
 }
 
-#Dada_Header .select2-choice a:hover { 
+#Dada #Header .select2-choice a:hover { 
 	color:#000;
 }
 
@@ -504,7 +505,7 @@ color: #000;
 	
 }
 
-#Dada_Header input.small_button {
+#Dada #Header input.small_button {
 	padding-top: 1px;
 	padding-bottom: 1px;
 }
