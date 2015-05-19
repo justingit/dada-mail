@@ -774,21 +774,21 @@ sub scrn_configure_dada_mail {
                 Self_URL                           => $Self_URL,
                 install_type                       => $install_type,
                 current_dada_files_parent_location => $current_dada_files_parent_location,
-                program_url_guess                  => program_url_guess(),
-                can_use_DBI                        => test_can_use_DBI(),
-                can_use_MySQL                      => test_can_use_MySQL(),
-                can_use_Pg                         => test_can_use_Pg(),
-                can_use_SQLite                     => test_can_use_SQLite(),
-                can_use_GD                         => test_can_use_GD(),
-                can_use_CAPTCHA_reCAPTCHA          => test_can_use_CAPTCHA_reCAPTCHA(),
-                can_use_CAPTCHA_reCAPTCHA_Mailhide => test_can_use_CAPTCHA_reCAPTCHA_Mailhide(),
-                error_cant_read_config_dot_pm      => $self->test_can_read_config_dot_pm(),
-                error_cant_write_config_dot_pm     => $self->test_can_write_config_dot_pm(),
-                cgi_test_FastCGI                   => $self->cgi_test_FastCGI,
-                home_dir_guess                     => $self->guess_home_dir(),
-                install_dada_files_dir_at          => $install_dada_files_dir_at,
-                test_complete_dada_files_dir_structure_exists =>
-                  $self->test_complete_dada_files_dir_structure_exists($install_dada_files_dir_at),
+                program_url_guess                  => scalar program_url_guess(),
+                can_use_DBI                        => scalar test_can_use_DBI(),
+                can_use_MySQL                      => scalar test_can_use_MySQL(),
+                can_use_Pg                         => scalar test_can_use_Pg(),
+                can_use_SQLite                     => scalar test_can_use_SQLite(),
+                can_use_GD                         => scalar test_can_use_GD(),
+                can_use_CAPTCHA_reCAPTCHA          => scalar test_can_use_CAPTCHA_reCAPTCHA(),
+                can_use_CAPTCHA_reCAPTCHA_Mailhide => scalar test_can_use_CAPTCHA_reCAPTCHA_Mailhide(),
+                can_use_HTML_Tree                  => scalar test_can_use_HTML_Tree(), 
+                error_cant_read_config_dot_pm      => scalar $self->test_can_read_config_dot_pm(),
+                error_cant_write_config_dot_pm     => scalar $self->test_can_write_config_dot_pm(),
+                cgi_test_FastCGI                   => scalar $self->cgi_test_FastCGI,
+                home_dir_guess                     => scalar $self->guess_home_dir(),
+                install_dada_files_dir_at          => scalar $install_dada_files_dir_at,
+                test_complete_dada_files_dir_structure_exists => scalar $self->test_complete_dada_files_dir_structure_exists($install_dada_files_dir_at),
                 dada_files_dir_setup                     => scalar $q->param('dada_files_dir_setup')                     || '',
                 dada_files_loc                           => scalar $q->param('dada_files_loc')                           || '',
                 error_create_dada_mail_support_files_dir => scalar $q->param('error_create_dada_mail_support_files_dir') || 0,
@@ -801,18 +801,18 @@ sub scrn_configure_dada_mail {
                 error_sql_table_populated                => scalar $q->param('error_sql_table_populated')                || 0,
                 skip_configure_SQL                       => scalar $q->param('skip_configure_SQL')                       || 0,
                 errors                                   => scalar $q->param('errors')                                   || [],
-                PROGRAM_URL                              => program_url_guess(),
-                S_PROGRAM_URL                            => program_url_guess(),
+                PROGRAM_URL                              => scalar program_url_guess(),
+                S_PROGRAM_URL                            => scalar program_url_guess(),
                 Dada_Files_Dir_Name                      => $Dada_Files_Dir_Name,
                 configured_dada_config_file              => $configured_dada_config_file,
                 configured_dada_files_loc                => $configured_dada_files_loc,
                 DOC_VER                                  => $DOC_VER,
-                DOC_URL                        => 'http://dadamailproject.com/support/documentation-' . $DOC_VER,
-                original_dada_root_pass        => $original_dada_root_pass,
-                support_files_dir_path         => $self->support_files_dir_path_guess(),
-                support_files_dir_url          => $self->support_files_dir_url_guess(),
-                Support_Files_Dir_Name         => $Support_Files_Dir_Name,
-                amazon_ses_requirements_widget => DADA::Template::Widgets::amazon_ses_requirements_widget(),
+                DOC_URL                                  => 'http://dadamailproject.com/support/documentation-' . $DOC_VER,
+                original_dada_root_pass                  => $original_dada_root_pass,
+                support_files_dir_path                   => scalar $self->support_files_dir_path_guess(),
+                support_files_dir_url                    => scalar $self->support_files_dir_url_guess(),
+                Support_Files_Dir_Name                   => $Support_Files_Dir_Name,
+                amazon_ses_requirements_widget           => scalar DADA::Template::Widgets::amazon_ses_requirements_widget(),
 
                 amazon_ses_Allowed_Sending_Quota_Percentage_popup_menu =>
                   $amazon_ses_Allowed_Sending_Quota_Percentage_popup_menu,
@@ -3582,6 +3582,20 @@ sub test_can_use_GD {
         return 1;
     }
 }
+
+sub test_can_use_HTML_Tree {
+    eval { require HTML::Tree; };
+    if ($@) {
+        carp $@;
+        $Big_Pile_Of_Errors .= $@;
+        return 0;
+    }
+    else {
+        return 1;
+    }
+}
+
+
 
 sub test_str_is_blank {
 

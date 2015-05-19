@@ -311,10 +311,11 @@ sub default_template {
                 $tmpl = $m_tmpl;
             }
             else {
-                warn 'problems fetching magic template:';
+                my $error = 'problems fetching magic template:';
                 for (%$m_errors) {
-                    warn $_;
+                    $error .= $_ . "\n";
                 }
+                warn $error;
             }
         }
         elsif ( $DADA::Config::TEMPLATE_OPTIONS->{user}->{mode} eq 'manual' ) {

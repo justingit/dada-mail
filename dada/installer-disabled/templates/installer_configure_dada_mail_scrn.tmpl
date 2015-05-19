@@ -422,7 +422,7 @@
             </p>
             
             <p>
-                You will need to install on of the following Perl database drivers to utilize <!-- tmpl_var PROGRAM_NAME -->:
+                You will need to install one of the following Perl database drivers to utilize <!-- tmpl_var PROGRAM_NAME -->:
             </p>
                 <ul>
                     <li>DBD::mysql</li>
@@ -1152,6 +1152,25 @@ editors also have the ability to make simple HTML tables for basic layouts.
 		            Magically
 		        </label>
 	        </p>
+	        
+	        <!-- tmpl_unless can_use_HTML_Tree --> 
+                <div class="badweatherbox">
+                    <p>
+                        <strong>
+                            Magic Templates are not supported.
+                        </strong>
+                    </p>
+
+                    <p>
+                        The following CPAN Perl module will need to be installed:
+                    </p>
+                        <ul>
+                            <li>HTML::Tree</li>
+                        </ul>
+                </div>
+            <!-- /tmpl_unless --> 
+            
+            
 	    
 		    <div id="template_mode_magic_options"> 
                 <blockquote>
