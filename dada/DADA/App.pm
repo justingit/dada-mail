@@ -8454,8 +8454,8 @@ sub restful_subscribe {
     if ($using_jsonp) {
         $headers = {
             -type                          => 'application/javascript',
-            'Access-Control-Allow-Origin'  => '*',
-            'Access-Control-Allow-Methods' => 'POST',
+            '-Access-Control-Allow-Origin'  => '*',
+            '-Access-Control-Allow-Methods' => 'POST',
             '-Cache-Control'               => 'no-cache, must-revalidate',
             -expires                       => 'Mon, 26 Jul 1997 05:00:00 GMT',
         };
@@ -11356,8 +11356,8 @@ sub subscription_form_html {
 
         my $headers = {
             -type                          => 'application/javascript',
-            'Access-Control-Allow-Origin'  => '*',
-            'Access-Control-Allow-Methods' => 'POST',
+            '-Access-Control-Allow-Origin'  => '*',
+            '-Access-Control-Allow-Methods' => 'POST',
             '-Cache-Control'               => 'no-cache, must-revalidate',
             -expires                       => 'Mon, 26 Jul 1997 05:00:00 GMT',
         };
