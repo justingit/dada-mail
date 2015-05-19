@@ -8477,7 +8477,7 @@ sub restful_subscribe {
     );
 
     #	warn "\$callback\n" . $callback;
-    #	warn "\$header\n" . $header;
+    #	warn "\$headers\n" . $headers;
 
     if ($using_jsonp) {
         $self->header_props(%$headers);
