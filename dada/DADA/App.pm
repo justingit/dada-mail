@@ -9227,11 +9227,13 @@ sub new_list {
 
         if ( $list_errors >= 1 ) {
             undef($process);
-            new_list( $list_errors, $flags );
+            $q->delete('process'); 
+            
+            $self->new_list( $list_errors, $flags );
 
         }
         elsif ( $list_exists >= 1 ) {
-            returnuser_error(
+            return user_error(
                 {
                     -list  => $list,
                     -error => "list_already_exists"
