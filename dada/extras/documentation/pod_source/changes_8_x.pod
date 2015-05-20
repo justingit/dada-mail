@@ -34,6 +34,22 @@ L<https://github.com/justingit/dada-mail/issues/502>
  
 L<https://github.com/justingit/dada-mail/issues/500>
 
+=head3  Minimal Subscription Form does not have correct form field name 
+
+L<https://github.com/justingit/dada-mail/issues/499>
+
+=head3 Version Check Broken
+
+L<https://github.com/justingit/dada-mail/issues/498>
+
+=head3  Rejected Emails not being attached
+
+L<https://github.com/justingit/dada-mail/issues/496>
+
+=head3  Extra Bracket in multiple_subscribe.cgi 
+
+L<https://github.com/justingit/dada-mail/issues/495>
+
 =head2 8.0.2
 
 =head2 Summary
