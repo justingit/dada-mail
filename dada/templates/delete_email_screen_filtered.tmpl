@@ -35,7 +35,11 @@ Remove
  
 <!-- tmpl_loop name="addresses_to_remove" --> 
 	 
-	 <input type="checkbox" name="address" value="<!-- tmpl_var email escape="HTML" -->" checked="checked" /> &nbsp; <!-- tmpl_var email escape="HTML" -->
+	 <input type="checkbox" name="address" id="<!-- tmpl_var email escape="HTML" -->" value="<!-- tmpl_var email escape="HTML" -->" checked="checked" /> 
+	 &nbsp; 
+	 <label for="<!-- tmpl_var email escape="HTML" -->">
+	    <!-- tmpl_var email escape="HTML" -->
+	</label>
 	 <br />
 	 
 <!--/tmpl_loop-->
