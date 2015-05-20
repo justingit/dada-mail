@@ -985,7 +985,10 @@ sub filter_subscribers_w_meta {
 	if(! exists($args->{-type})){ 
 		$args->{-type} = 'list'; 
 	}
-	my $type = $args->{-type}; 
+	if(!exists($args->{-type})){ 
+        $args->{-type} = 'list'; 
+    }
+    
 
     my $dupe_check = {};
 
@@ -1005,11 +1008,10 @@ sub filter_subscribers_w_meta {
             carp "already looked at: '"  . $n_address->{email} . "' - will not process twice!"; 
         }
         $dupe_check->{$n_address->{email}} = 1; 
-
         my ($status, $errors) = $self->subscription_check(
             {
                 -email  => $n_address->{email},
-                -type   => $type, 
+                -type   => $args->{-type}, 
                 -mode   => 'admin', 
                 -fields => $n_address->{fields},
                 -skip   => [qw(
@@ -1022,6 +1024,7 @@ sub filter_subscribers_w_meta {
                 -ls_obj => $ls, 
             }
         );
+        
         my $csv_str = ''; 
         my $csv_fields = [$n_address->{email}]; 
         foreach(@$fields){ 

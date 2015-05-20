@@ -5594,7 +5594,7 @@ sub add_email {
           $lh->filter_subscribers_massaged_for_ht(
             {
                 -emails => $new_emails,
-                -type   => $type
+                -type   => $type,
             }
           );
 
@@ -5960,12 +5960,22 @@ sub delete_email {
           $lh->filter_subscribers_massaged_for_ht(
             {
                 -emails => $new_emails,
-                -type   => $type
+                -type   => $type,
                 -treat_profile_fields_special => 0, 
                 
             }
           );
 
+#        use Data::Dumper; 
+#        warn Dumper({
+#             not_members => $not_members, 
+#             invalid_email => $invalid_email, 
+#             subscribed => $subscribed, 
+#             black_listed => $black_listed, 
+#             not_white_listed => $not_white_listed, 
+#             invalid_profile_fields => $invalid_profile_fields,
+#        }); 
+        
         my $have_subscribed_addresses = 0;
         $have_subscribed_addresses = 1
           if $subscribed->[0];
@@ -8459,8 +8469,8 @@ sub restful_subscribe {
     if ($using_jsonp) {
         $headers = {
             -type                          => 'application/javascript',
-            'Access-Control-Allow-Origin'  => '*',
-            'Access-Control-Allow-Methods' => 'POST',
+            '-Access-Control-Allow-Origin'  => '*',
+            '-Access-Control-Allow-Methods' => 'POST',
             '-Cache-Control'               => 'no-cache, must-revalidate',
             -expires                       => 'Mon, 26 Jul 1997 05:00:00 GMT',
         };
@@ -9235,11 +9245,13 @@ sub new_list {
 
         if ( $list_errors >= 1 ) {
             undef($process);
-            new_list( $list_errors, $flags );
+            $q->delete('process'); 
+            
+            $self->new_list( $list_errors, $flags );
 
         }
         elsif ( $list_exists >= 1 ) {
-            returnuser_error(
+            return user_error(
                 {
                     -list  => $list,
                     -error => "list_already_exists"
@@ -11370,8 +11382,8 @@ sub subscription_form_html {
 
         my $headers = {
             -type                          => 'application/javascript',
-            'Access-Control-Allow-Origin'  => '*',
-            'Access-Control-Allow-Methods' => 'POST',
+            '-Access-Control-Allow-Origin'  => '*',
+            '-Access-Control-Allow-Methods' => 'POST',
             '-Cache-Control'               => 'no-cache, must-revalidate',
             -expires                       => 'Mon, 26 Jul 1997 05:00:00 GMT',
         };
