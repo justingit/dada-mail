@@ -4,6 +4,36 @@
 
 =head1 Dada Mail Changelog for v8.x
 
+=head2 8.0.3
+
+This is a bugfix release of Dada Mail.
+
+=head2 Bugfixes
+
+=head3 Problems creating new list if errors present in values passed 
+
+L<https://github.com/justingit/dada-mail/issues/506>
+
+=head3 Subscription Form: Restful Subscribe API not working in jsonp mode 
+
+L<https://github.com/justingit/dada-mail/issues/505>
+
+=head3  Membership >> Remove Subscribers throws, "Yikes!" error when you attempt to upload a file
+
+L<https://github.com/justingit/dada-mail/issues/504>
+
+=head3  Tracker plugin: Bounce Handler reports do not show in modal window 
+
+L<https://github.com/justingit/dada-mail/issues/503>
+
+=head3 Images don't show in archive view in Chrome
+
+L<https://github.com/justingit/dada-mail/issues/502>
+
+=head3 Gravatar Images break with p.p. mode enabled
+ 
+L<https://github.com/justingit/dada-mail/issues/500>
+
 =head2 8.0.2
 
 =head2 Summary
