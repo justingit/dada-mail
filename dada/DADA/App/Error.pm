@@ -281,7 +281,6 @@ sub cgi_user_error {
                         ? (
                             -with           => 'admin',
                             -wrapper_params => {
-
                                 #-Root_Login => $root_login,
                                 -List => $args->{-list},
                             },

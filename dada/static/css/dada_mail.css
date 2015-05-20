@@ -227,7 +227,7 @@ html, body {
 
 #Dada .badweatherbox {
 	width: 500px;
-	background: #fcc;
+	background: #fc9;
 }
 
 #Dada .login_message {
@@ -330,6 +330,11 @@ html, body {
 #Dada .ui-widget-content a {
 	color: #339; 
 }
+
+#Dada .ui-tabs a {
+	color: #222; 
+}
+
 
 /* ----- FORMS ----- */
 

@@ -175,25 +175,86 @@ For more information on what each option enables, see the section on the, C<$DEB
 
 =head2 Configure Global Template Options 
 
-Global Template Options allow you to set a B<Global>, user-facing template. That's the template that's shown for basically anything that's not the Admin List Control Panel. 
+Global Template Options allow you to set a B<Global>, user-facing template -  that's the template that's shown for basically anything that's not the Admin List Control Panel. 
 
-Although you can set a list-specific template, this leaves any screen that's not tied to a specific mailing list left using the default template, which you may not find desirable. Setting a global, user-facing template here will fill in that needed customization. If you're happy with the global List Template, you may find no need to make mailing-list specific templates, as they'll use whatever you set here. 
+Although you can set a list-specific template, this leaves any screen that's not tied to a specific mailing list left using the default template, which you may not find desirable. 
 
-How to create a template is covered in detail in the chapter, Introduction to Dada Mail HTML Screen Templates
 
 =head3 Set a Global, User-Facing Template 
 
-Check this option, if you'd like to set a Gloval, User-Facing Template. You'll be setting where this template can be found, right below this option - 
+Check this option, if you'd like to set a Global, User-Facing Template. You'll be setting where this template can be found, right below this option - 
+
+=head3  Use A Custom User Template 
+
+Check this option, to enable using your custom template
+
+=head3  Manually/Magically
+
+There are two methods Dada Mail can create a User Template.
+
+=head3 Manually
+
+The first is manually, where you basically replace the included user template file with your own. The default user template can be found at: 
+
+I<dada/templates/list_template.tmpl>
+
+Some background on Dada Mail's templating language:
+
+L<http://dadamailproject.com/d/features-email_template_syntax.pod.html>
 
 =head3 Server Absolute Path or URL to your User Template: 
 
 This is where you'll want to enter I<either> the absolute path to your template file, or the URL that it can be found at. 
 
-B<Config Variable:> C<$USER_TEMPLATE>
+This option gives you total control over the layout and design of your user template. For some people, this is too much control. 
+
+=head3 Magically
+
+Another option is to, "magically" create a Dada Mail User Template, by basing your design on an already-existing web page. This is useful if you would like integrate your Dada Mail with the rest of your website, by having it's layout/design be based exactly on what already exists. Magically creating this template may take a bit of trial and error, and there are a few options available to tailor it to your specific needs: 
+
+=head4 URL:
+
+Creating a user template magically works by giving Dada Mail a URL to base the template off of. Set that URL in this textbox. 
+
+=head4 Add a, <base href="..."> tag:
+
+Since you'll probably be pulling the source of the template from a different location than where Dada Mail is installed, you'll probably need to set a base href tag to the beginning of the HTML. Check this option, the fill out what the base href URL should be, below. 
+
+=head4 Replace content from the: body tag/css id:/css class:
+
+Dada Mail will replace already existing content it finds, with Dada Mail's own content. But first, it needs to know where to find that content. Dada Mail supports finding the right place in three ways. 
+
+=over
+
+=item * body tag
+
+The first is the most basic: it'll just replace all the content found in the body of your HTML doc. This is most likely not what you want to do, but can be a way to easily have Dada Mail inherit some of the styles of your website. 
+
+=item * css id
+
+The second way is the most specific, and it's what we recommend. Give Dada Mail the id of an HTML element, and Dada Mail will only replace the content within that element. 
+
+=item * css class
+
+Similar to using an id, you can also use a class name of an HTML element for Dada Mail to replace content with. The problem of using a class is that id's are supposed to be unique in an HTML document; classes are not. But, some layouts are created without using id's at all. In these cases, you still have the option to use a class name.
+
+=back
+
+=head4 Include Dada Mail's own styles
+
+Check this option to have Dada Mail style its content, and only its content, using styles set in its own included stylesheet. This is done by wrapping Dada Mail's own content with another div tag, with the id of, "Dada"
+
+Include a custom stylesheet:
+
+Check this option, and give the URL of a custom stylesheet. This option works well in conjunction with the previous option. Say, you want to override the typeface used within Dada Mail's content, but don't want to change Dada Mail's css file. For clarity, we'll work with just the, C<p> tag. In your custom stylesheet, you would add a new entry: 
+
+    #Dada p { 
+        /* your new styles here! */ 
+    }
 
 =head3 Test Your User Template
 
-Use this button to check if Dada Mail will be able to retrieve your template. Currently this button only checks if the template can be found, not if the template is valid.
+Use this button to check if Dada Mail will be able to retrieve your template. If you're setting your template Magically, a new window will also pop up giving you a preview of what your template will look like.
 
 =head2 Configure Security Options 
 

@@ -1122,7 +1122,7 @@ sub grab_former_config_vals {
     # Global Template Options
     if ( keys %$BootstrapConfig::TEMPLATE_OPTIONS ) {
         $opt->{'configure_templates'}                   = 1;
-        $opt->{'configure_user_template'}               = 1;
+        $opt->{'template_options_enabled'}              = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{enabled};
         $opt->{'template_options_mode'}                 = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{mode};
         $opt->{'template_options_manual_template_url'}  = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{manual_options}->{template_url};
         
@@ -1548,8 +1548,7 @@ sub query_params_to_install_params {
       profile_delete_profile
 
       configure_templates
-      configure_user_template
-      
+      template_options_enabled
       template_options_mode
       template_options_manual_template_url
       template_options_magic_template_url
@@ -2153,8 +2152,9 @@ sub create_dada_config_file {
 
     my $template_options_params = {};        
     if ( $ip->{-configure_templates} == 1 ) {
-        for (qw(
-            configure_user_template
+        $template_options_params->{configure_templates} = 1; 
+        for (qw( 
+            template_options_enabled
             template_options_mode
             template_options_manual_template_url
             template_options_magic_template_url

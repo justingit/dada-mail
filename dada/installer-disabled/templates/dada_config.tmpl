@@ -202,16 +202,17 @@ $DEBUG_TRACE = {
 
 
 
-<!-- tmpl_if configure_user_template --> 
+<!-- tmpl_if configure_templates --> 
 #---------------------------------------------------------------------#
 # Template Options 
 $TEMPLATE_OPTIONS = {
     user => { 
-            mode => '<!-- tmpl_var template_options_mode -->',
+            enabled        => <!-- tmpl_var template_options_enabled default="0" -->,
+            mode           => '<!-- tmpl_var template_options_mode default="manual" -->',
             manual_options => { 
                 template_url => '<!-- tmpl_var template_options_manual_template_url -->',
             },
-            magic_options => { 
+            magic_options  => { 
                 template_url         => '<!-- tmpl_var template_options_magic_template_url         -->', 
                 add_base_href        =>  <!-- tmpl_var template_options_add_base_href default="0"  -->, 
                 base_href_url        => '<!-- tmpl_var template_options_base_href_url              -->', 

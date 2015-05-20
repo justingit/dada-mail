@@ -301,10 +301,18 @@ sub admin_header_params {
 
 
 sub default_template {
-
+    
+    my ($args) = @_; 
+    if(!exists($args->{-Use_Custom})){ 
+        $args->{-Use_Custom} = 1; 
+    }
     my $tmpl;
 
-    if ( defined( $DADA::Config::TEMPLATE_OPTIONS->{user}->{mode} ) ) {
+    if (   
+           $args->{-Use_Custom} == 1
+        && $DADA::Config::TEMPLATE_OPTIONS->{user}->{enabled} == 1 
+        && defined( $DADA::Config::TEMPLATE_OPTIONS->{user}->{mode} ) 
+     ) {
         if ( $DADA::Config::TEMPLATE_OPTIONS->{user}->{mode} eq 'magic' ) {
             my ( $m_status, $m_errors, $m_tmpl ) = template_from_magic();
             if ( $m_status == 1 ) {
@@ -663,6 +671,7 @@ sub list_template {
     my %args = (
         -List          => undef,
         -Part          => undef,
+        -Use_Custom    => 1,
         -Title         => undef,
         #-HTML_Header   => 1,
         -header_params => {},	 # this is used only when you delete a list. 
@@ -713,13 +722,11 @@ sub list_template {
 
         }    # meaning, there's no list template
         else {
-
             $list_template = default_template();
-
         }
     }    # meaning, no list was passed:
     else {
-        $list_template = default_template();
+        $list_template = default_template({-Use_Custom => $args{-Use_Custom}});
     }
 
 

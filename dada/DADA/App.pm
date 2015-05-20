@@ -564,9 +564,12 @@ sub sign_in {
 
             my $scrn = DADA::Template::Widgets::wrap_screen(
                 {
-                    -screen => 'list_login_form.tmpl',
-                    -with   => 'list',
-                    -vars   => {
+                    -screen         => 'list_login_form.tmpl',
+                    -with           => 'list',
+                    -wrapper_params => {
+                        -Use_Custom => 0,
+                    },
+                    -vars => {
                         flavor_sign_in => 1,
                         auth_state     => $auth_state,
                     },
@@ -2214,7 +2217,9 @@ sub delete_list {
             {
                 -screen => 'delete_list_success_screen.tmpl',
                 -with   => 'list',
-
+                -wrapper_params => {
+                   -Use_Custom => 0,
+                },
                 #	-list   => $list, # The list doesn't really exist anymore now, does it?
                 # -wrapper_params => { -header_params => { -COOKIE => $logout_cookie }, }
             }
@@ -9151,6 +9156,9 @@ sub new_list {
                 {
                     -screen => 'new_list_screen.tmpl',
                     -with   => 'list',
+                    -wrapper_params => {
+                       -Use_Custom => 0,
+                    },
                     -vars   => {
                         errors                   => $errors,
                         ending                   => $ending,
@@ -11165,6 +11173,9 @@ sub restore_lists {
                 {
                     -screen => 'restore_lists_complete.tmpl',
                     -with   => 'list',
+                    -wrapper_params => {
+                       -Use_Custom => 0,
+                    },
                 }
             );
             return $scrn;
@@ -11317,6 +11328,9 @@ sub restore_lists {
                 {
                     -screen => 'restore_lists_options_screen.tmpl',
                     -with   => 'list',
+                    -wrapper_params => {
+                       -Use_Custom => 0,
+                    },
                     -vars   => {
                         restore_list_options => $restore_list_options,
                         root_password        => xss_filter( scalar $q->param('root_password') ),
