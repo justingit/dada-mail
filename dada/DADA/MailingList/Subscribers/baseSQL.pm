@@ -993,8 +993,13 @@ sub clone {
 
 
 sub subscription_list {
-
+        
     my $self = shift;
+
+    warn 'subscription_list'
+     if $t; 
+
+    my $st = time; 
 
     my ($args) = @_;
     if ( !exists( $args->{-start} ) ) {
@@ -1050,6 +1055,11 @@ sub subscription_list {
         push( @$list, $hashref );
 
     }
+
+    my $et = time; 
+    
+    warn 'subscription_list time:' . ($et - $st) . ' seconds.'
+        if $t;
 
     return $list;
 
