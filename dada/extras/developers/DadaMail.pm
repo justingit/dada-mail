@@ -72,6 +72,8 @@ HTML::Template
 
 HTML::Tiny
 
+HTML::Tree
+
 Data::Pageset
 
 HTML::Template::Expr

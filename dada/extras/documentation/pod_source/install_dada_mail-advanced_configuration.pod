@@ -213,6 +213,8 @@ Another option is to, "magically" create a Dada Mail User Template, by basing yo
 
 Magically creating this template may take a bit of trial and error. There are a few options available to tailor it to your specific needs: 
 
+(Note: Magically creating a template requires that you have the C<HTML::Tree> CPAN Module installed)
+
 =head4 URL:
 
 Creating a user template magically works by giving Dada Mail a URL to base the template off of. Set that URL in this textbox. 

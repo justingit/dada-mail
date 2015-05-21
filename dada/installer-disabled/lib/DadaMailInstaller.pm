@@ -569,6 +569,9 @@ sub install_or_upgrade {
         {
             -screen => 'install_or_upgrade.tmpl',
             -with   => 'list',
+            -wrapper_params => {
+                -Use_Custom => 0,
+            },
             -vars   => {
 
                 # These are tricky....
@@ -766,6 +769,9 @@ sub scrn_configure_dada_mail {
             -screen => 'installer_configure_dada_mail_scrn.tmpl',
             -with   => 'list',
             -expr   => 1,
+            -wrapper_params => {
+                -Use_Custom => 0,
+            },
             -vars   => {
                 %$advanced_config_params,
 
@@ -1450,6 +1456,9 @@ sub scrn_install_dada_mail {
         {
             -screen => 'installer_install_dada_mail_scrn.tmpl',
             -with   => 'list',
+            -wrapper_params => {
+                -Use_Custom => 0,
+            },
             -vars   => {
 
                 # These are tricky....
