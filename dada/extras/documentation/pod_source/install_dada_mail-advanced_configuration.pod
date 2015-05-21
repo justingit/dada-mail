@@ -257,6 +257,9 @@ Check this option, and give the URL of a custom stylesheet. This option works we
 
 Use this button to check if Dada Mail will be able to retrieve your template. If you're setting your template Magically, a new window will also pop up giving you a preview of what your template will look like.
 
+B<Config Variable:> C<$TEMPLATE_OPTIONS>. 
+
+
 =head2 Configure Security Options 
 
 =head3 Hide Administration Link

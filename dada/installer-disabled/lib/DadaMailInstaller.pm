@@ -1120,7 +1120,8 @@ sub grab_former_config_vals {
     }
 
     # Global Template Options
-    if ( keys %$BootstrapConfig::TEMPLATE_OPTIONS ) {
+    if ( keys %$BootstrapConfig::TEMPLATE_OPTIONS
+        && $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{mode} =~ m/manual|magic/) {
         $opt->{'configure_templates'}                   = 1;
         $opt->{'template_options_enabled'}              = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{enabled};
         $opt->{'template_options_mode'}                 = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{mode};
@@ -1135,6 +1136,16 @@ sub grab_former_config_vals {
         $opt->{'template_options_add_app_css'}          = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{add_app_css};
         $opt->{'template_options_add_custom_css'}       = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{add_custom_css};
         $opt->{'template_options_custom_css_url'}       = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{custom_css_url}; 
+    }
+    elsif(defined($BootstrapConfig::USER_TEMPLATE)) {
+        # Backwards compat. 
+        $opt->{'configure_templates'}                   = 1;
+        $opt->{'template_options_enabled'}              = 1;
+        $opt->{'template_options_mode'}                 = 'manual';
+        $opt->{'template_options_manual_template_url'}  = $BootstrapConfig::USER_TEMPLATE; 
+    }
+    else { 
+        # ... 
     }
 
     # Caching Options

@@ -574,7 +574,7 @@ $TEMPLATE_SETTINGS              //= {
 $TEMPLATE_OPTIONS //= {
     user => { 
             enabled        => 0,
-            mode           => "manual",
+            mode           => undef,
             manual_options => { 
                 template_url => undef,
             },
@@ -590,9 +590,6 @@ $TEMPLATE_OPTIONS //= {
                 custom_css_url       => undef, 
             }
     }, 
-    admin => { 
-        template_url => '',
-    },
 };
 
 

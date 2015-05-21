@@ -4,7 +4,23 @@
 
 =head1 Dada Mail Changelog for v8.x
 
+=head2 8.1.0
+
+=head2 Summary
+
+This release primarily introduces Magic User Templates as an experimental feature. 
+
+=head2 Features
+
+=head3 Magic User Templates (Experimental) 
+
+Magic Templates allow you to simply set a URL to fetch a webpage, which will then be utilized as your global user template. Various options to adjust the output of your template are available, all of which are available in the included Dada Mail Installer's Advanced Configuration: 
+
+L<http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Configure-Global-Template-Options>
+
 =head2 8.0.3
+
+=head2 Summary
 
 This is a bugfix release of Dada Mail.
 

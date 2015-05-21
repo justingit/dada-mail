@@ -837,12 +837,11 @@ By default, this variable is C<undef>.
 
 =head2 $USER_TEMPLATE
 
-$USER_TEMPLATE should hold the absolute server path to the template used for everything
-other than the List Control Panel. 
+C<$USER_TEMPLATE> is now a noop. Use, C<$TEMPLATE_OPTIONS> instead.
 
-The default template is located at: 
+=head2 $TEMPLATE_OPTIONS
 
-I<dada/templates/list_template.tmpl>
+C<$TEMPLATE_OPTIONS> holds options to control the global, default user template: 
 
 =head2 $ALTERNATIVE_HTML_TEMPLATE_PATH
 
