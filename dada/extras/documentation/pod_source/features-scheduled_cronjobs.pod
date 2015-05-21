@@ -14,11 +14,11 @@ C<http://example.com/cgi-bin/dada/mail.cgi> is just the URL to your Dada Mail,
 
 A full cronjob would look like this: 
 
-    */5 * * * * /usr/bin/curl  -s --get --url http://example.com/cgi-bin/dada/mail.cgi/_sched513A3F128C5C41EC/_all/_all/_silent/
+    */5 * * * * /usr/bin/curl --user-agent "Mozilla/5.0 (compatible;)" --silent --get --url http://example.com/cgi-bin/dada/mail.cgi/_sched513A3F128C5C41EC/_all/_all/_silent/
 
 C<*/5 * * * * > sets the schedule to run this job every 5 minutes, 
 
-C</usr/bin/curl  -s --get --url> is the curl command, with different paramaters passed to grab the URL and, 
+C</usr/bin/curl --user-agent "Mozilla/5.0 (compatible;)" --silent --get --url> is the curl command, with different paramaters passed to grab the URL and, 
 
 C<http://example.com/cgi-bin/dada/mail.cgi/_sched513A3F128C5C41EC/_all/_all/_silent/> 
 
@@ -68,7 +68,7 @@ By Default, this is set to, C<_verbose> which will print out the output for all 
 
 Another option is to supress the output in the cronjob itself, like this: 
 
-*/5 * * * * /usr/bin/curl  -s --get --url http://example.com/cgi-bin/dada/mail.cgi/_sched513A3F128C5C41EC/_all/_all/_verbose/ >/dev/null 2>&1 
+*/5 * * * * /usr/bin/curl --user-agent "Mozilla/5.0 (compatible;)" --silent --get --url http://example.com/cgi-bin/dada/mail.cgi/_sched513A3F128C5C41EC/_all/_all/_verbose/ >/dev/null 2>&1 
 
 =head2 Running the scheduled jobs via the command line. 
 
