@@ -26,9 +26,14 @@ Dada Mail isn't ever tested on a Windows Server or even Apache running on top of
 
 =head2 Perl 5.10.1
 
+Sometimes, the default system Perl is a lower version that v5.10.1, but a more up-to-date version of Perl may be available at a different location than the what Dada Mail is set to, by default (C</usr/bin/perl>). More information: 
+
+L<http://dadamailproject.com/d/FAQ-errors.pod.html#Perl-Version>
+
 Since Dada Mail is a CGI app, you'll need support for Perl CGI scripts within your web server environment. 
 
 Dada Mail is not a PHP script, so the version of PHP that you have available will not make much of a difference. 
+
 
 =head2 Mail Transport Agent
 

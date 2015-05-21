@@ -212,15 +212,41 @@ Send email messages, including mass mailings.
 
 =head2 General Problems
 
+=head2 Perl Version
+
+Sometimes, the default system Perl is an old version - v5.8, or even v5.6! 
+
+This will not work with Dada Mail as it currently requires v5.10.1. There is a chance that a more up-to-date version of Perl is available at a different location. 
+
+If you're hosted on a cPanel-based hosting account, a more up-to-date version of Perl may be available at: 
+
+C</usr/local/cpanel/3rdparty/bin/perl>
+
+To use this version, you will need to slightly adjust Dada Mail to use this version of Perl. When installing, after you've run the, C<uncompress_dada.cgi> script (or prepped manually), you will need to change the following files: 
+
+I<dada/installer/install.cgi>
+
+I<dada/installer/templates/mail.cgi.tmpl>
+
+Open them up in a text editor, and find the first line: 
+
+    #!/usr/bin/perl
+
+and change it to, 
+
+    #!/usr/local/cpanel/3rdparty/bin/perl
+
+Save your changes, then run the installer. 
+
 =head2 Mass Mailing Messages Are Not Delivered or Are Delivered to Junk/Spam Folder
 
 =head3 Hosting-Account Hourly Email Sending Limit
 
 Many shared hosting accounts have hourly email sending quotas, that will need to send below. 
 
-B<See the FAQ on Mass Mail Sending:> L<FAQ-mailing_list_sending.pod.html>
+B<See the FAQ on Mass Mail Sending:> L<http://dadamailproject.com/d/FAQ-mailing_list_sending.pod.html>
 
-The majority of mass mailing delivery problems is from sending over your hosting account's hourly email limit. 
+The majority of mass mailing delivery problems are from sending over your hosting account's hourly email limit. 
 
 =head3 Message Content 
 
@@ -507,8 +533,6 @@ I'm getting an error with the following (or similar) gobble-dee-gook:
  Guts.pm: [^>'"] * # 0 or more thi/: regexp *+ operand could be empty 
  at /DADA/App/Guts.pm line 1217. BEGIN failed--compilation aborted at mail.cgi 
  line 87.
-
-This error happens if you're server is running a version of Perl that's below version 5.005. Dada Mail requires at least version 5.005 of Perl and it's suggested that you use at least Perl 5.6. Dada Mail is developed and tested on a machine running Perl Version 5.8. 
 
 Among major hosts that have a version of Perl that's below 5.005 is Earthlink. Dada Mail will not run correctly on an Earthlink account. It's suggested that if you do have an account on Earthlink and want to run Dada Mail that you thoughtfully express your wantings of an up-to-date version of Perl available on their servers. Or, move your account to a hosting company that responds to their customers wants and needs. 
 

@@ -25,7 +25,7 @@ print "Content-type:text/html\r\n\r\n";
 print '<h1>Adventures with Dada Mail!</h1>';
 
 if($] < 5.010){ 
-    print "<p>Warning, you may be running a version of Perl that's below the minimum requirement (Perl v5.10.1)</p>"; 
+    print "<p>Warning, you may be currently a version of Perl that's below the minimum requirement (Perl v5.10.1) - see if a newer version of Perl is available and adjust the app, before running the installer!</p>"; 
 }
 
 if ( -e 'dada' ) {
