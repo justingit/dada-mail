@@ -1,0 +1,23 @@
+=pod
+
+=head1 Template Tags
+
+=head2 User Template
+
+C<list_template.tmpl>
+
+=head3 title
+
+Sets a title for the screen
+
+=head3 show_profile_widget
+
+B<0> or B<1>. Some screens, like the administration screen do not show the Profile Widget. 
+
+=head3 profile_widget
+
+Contains the Profile Widget
+
+# Yadda yadda. 
+
+=cut

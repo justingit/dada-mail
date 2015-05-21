@@ -175,10 +175,9 @@ For more information on what each option enables, see the section on the, C<$DEB
 
 =head2 Configure Global Template Options 
 
-Global Template Options allow you to set a B<Global>, user-facing template -  that's the template that's shown for basically anything that's not the Admin List Control Panel. 
+Global Template Options allow you to set a B<Global>, user-facing template -  that's the template that's shown for basically anything that's not the Admin List Control Panel.
 
 Although you can set a list-specific template, this leaves any screen that's not tied to a specific mailing list left using the default template, which you may not find desirable. 
-
 
 =head3 Set a Global, User-Facing Template 
 
@@ -186,7 +185,7 @@ Check this option, if you'd like to set a Global, User-Facing Template. You'll b
 
 =head3  Use A Custom User Template 
 
-Check this option, to enable using your custom template
+Check this option, to I<enable> using your custom template.
 
 =head3  Manually/Magically
 
@@ -208,9 +207,11 @@ This is where you'll want to enter I<either> the absolute path to your template 
 
 This option gives you total control over the layout and design of your user template. For some people, this is too much control. 
 
-=head3 Magically
+=head3 Magically (Experimental)
 
-Another option is to, "magically" create a Dada Mail User Template, by basing your design on an already-existing web page. This is useful if you would like integrate your Dada Mail with the rest of your website, by having it's layout/design be based exactly on what already exists. Magically creating this template may take a bit of trial and error, and there are a few options available to tailor it to your specific needs: 
+Another option is to, "magically" create a Dada Mail User Template, by basing your design on an already-existing web page. This is useful if you would like integrate your Dada Mail with the rest of your website, by having it's layout/design be based exactly on what already exists.
+
+Magically creating this template may take a bit of trial and error. There are a few options available to tailor it to your specific needs: 
 
 =head4 URL:
 
@@ -218,7 +219,7 @@ Creating a user template magically works by giving Dada Mail a URL to base the t
 
 =head4 Add a, <base href="..."> tag:
 
-Since you'll probably be pulling the source of the template from a different location than where Dada Mail is installed, you'll probably need to set a base href tag to the beginning of the HTML. Check this option, the fill out what the base href URL should be, below. 
+Since you'll probably be pulling the source of the template from a different location than where Dada Mail is installed, you'll probably need to set a base href tag to the beginning of the HTML. Check this option, then fill out what the base href URL should be, below. 
 
 =head4 Replace content from the: body tag/css id:/css class:
 
