@@ -140,6 +140,8 @@ sub setup {
         'admin_menu_bounce_handler_notification'      => \&admin_menu_bounce_handler_notification,
         'admin_menu_tracker_notification'             => \&admin_menu_tracker_notification,
         'send_email'                                  => \&send_email,
+        'recurring_schedules'                         => \&recurring_schedules,
+
         'ckeditor_template_tag_list'                  => \&ckeditor_template_tag_list,
         'draft_saved_notification'                    => \&draft_saved_notification,
         'drafts'                                      => \&drafts,
@@ -881,6 +883,151 @@ sub send_email {
         return $body;
     }
 }
+
+sub recurring_schedules { 
+
+    my $self = shift;
+    my $q    = $self->query();
+
+    require DateTime; 
+    require DateTime::Event::Recurrence; 
+    require DateTime::Format::Strptime;
+    
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'send_email'
+    );    
+    if ( !$checksout ) { return $error_msg; }
+    my $list = $admin_list; 
+    my $process = $q->param('process') || 0; 
+    if(!$process) { 
+        my $scrn    = DADA::Template::Widgets::wrap_screen(
+            {
+                -screen         => 'recurring_schedules.tmpl',
+                -with           => 'admin',
+                -wrapper_params => {
+                    -Root_Login => $root_login,
+                    -List       => $list,
+                },
+                -expr => 1,
+                -vars => {
+                    #
+                },
+                -list_settings_vars_param => {
+                    -list   => $list,
+                    -dot_it => 1,
+                },
+            }
+        );
+        return $scrn;
+    }
+    else { 
+        my @recurring_day = $q->multi_param('recurring_day');
+        my $rd = []; 
+        my $days = { 
+          0 => 'Sunday', 
+          1 => 'Monday', 
+          2 => 'Tuesday', 
+          3 => 'Wednesday', 
+          4 => 'Thursday', 
+          5 => 'Friday', 
+          6 => 'Saturday', 
+        };
+        
+        for(@recurring_day){ 
+            push(@$rd, {
+                day => $_,
+                name => $days->{$_}, 
+            }); 
+        }
+        my $recurring_datetime_time  = $q->param('recurring_datetime_time'); 
+        
+        my $recurring_datetime_start = $q->param('recurring_datetime_start'); 
+        my $recurring_datetime_end   = $q->param('recurring_datetime_end'); 
+        
+        $recurring_datetime_start .= ' ' . $recurring_datetime_time;
+        $recurring_datetime_end   .= ' ' . $recurring_datetime_time;
+        
+        my $strp = DateTime::Format::Strptime->new(
+             pattern => '%Y-%m-%d %T',
+         );
+
+         my $start = DateTime->new($recurring_datetime_start); 
+         my $end   = DateTime->new($recurring_datetime_end);  
+         
+         my ($hours, $minutes) = split(':', $recurring_datetime_time); 
+         
+         my $day_set = DateTime::Event::Recurrence->weekly(
+               days    => [@recurring_day], 
+               hours   => $hours,
+               minutes => $minutes
+              );
+
+         my $it = $day_set->iterator(
+             start  => $start,
+             before => $end,
+         );
+         
+        my $dates = [];
+        while ( my $dt = $it->next() )
+        {
+            push(@$dates, {date => $dt->datetime()}); 
+        }
+        
+        my $scrn    = DADA::Template::Widgets::screen(
+            {
+                -screen         => 'recurring_schedules_test.tmpl',
+                #-with           => 'admin',
+                #-wrapper_params => {
+                #    -Root_Login => $root_login,
+                #    -List       => $list,
+                #},
+                -expr => 1,
+                -vars => {
+                    recurring_datetime_time  => $recurring_datetime_time, 
+                    recurring_datetime_start => $recurring_datetime_start, 
+                    locatetime_start         => scalar datetime_to_localtime($recurring_datetime_start),
+                    
+                    recurring_datetime_end   => $recurring_datetime_end, 
+                    locatetime_end           => scalar datetime_to_localtime($recurring_datetime_end),
+
+                    recurring_day            => $rd, 
+                    dates                    => $dates, 
+                },
+                -list_settings_vars_param => {
+                    -list   => $list,
+                    -dot_it => 1,
+                },
+            }
+        );
+        return $scrn;
+        
+
+    }
+    
+}
+
+sub datetime_to_ctime {
+    my $datetime = shift;
+    require Time::Local;
+    my ( $date, $time ) = split( ' ', $datetime );
+    my ( $year, $month,  $day )    = split( '-', $date );
+    my ( $hour, $minute, $second ) = split( ':', $time );
+    $second = int( $second - 0.5 );    # no idea.
+    my $time = Time::Local::timelocal( $second, $minute, $hour, $day, $month - 1, $year );
+
+    return $time;
+}
+sub datetime_to_localtime {
+    my $datetime = shift;
+    my $time     = datetime_to_ctime($datetime);
+    return scalar( localtime($time) );
+}
+
+
+
+
+
 
 sub ckeditor_template_tag_list {
 

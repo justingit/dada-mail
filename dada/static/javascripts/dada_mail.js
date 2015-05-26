@@ -62,8 +62,73 @@ $(document).ready(function() {
 		
 	}
 	
+	if ($("#recurring_schedules").length) {
 	
+	
+	
+	
+	if($('#recurring_datetime_time').length) { 
+	 $('#recurring_datetime_time').datetimepicker({
+	  format:'H:i',
+	  datepicker:false,
+	  onShow:function( ct ){
+	  }
+	 });
+	}
+	
+	
+	
+		if($('#recurring_datetime_start').length) { 
+		 $('#recurring_datetime_start').datetimepicker({
+		  format:'Y-m-d',
+		  timepicker:false,
+		  onShow:function( ct ){
+		   this.setOptions({
+		    maxDate:$('#recurring_datetime_end').val()?$('#recurring_datetime_end').val():false
+		   })
+		  }
+		 });
+		}
 
+		if($('#recurring_datetime_end').length) { 
+		 $('#recurring_datetime_end').datetimepicker({
+		  format:'Y-m-d',
+		   timepicker:false,
+		  onShow:function( ct ){
+		   this.setOptions({
+		    minDate:$('#recurring_datetime_start').val()?$('#recurring_datetime_start').val():false
+		   })
+		  }
+		 });
+		}
+		
+		$("body").on("click", "#try_recurring", function(event) {
+			 /* 
+				alert( $("#recurring_scheds").serialize()); 
+			*/
+			event.preventDefault();
+			var request = $.ajax({
+				url: $("#s_program_url").val(),
+				type: "POST",
+				dataType: "html",
+				cache: false,
+				data: $("#recurring_scheds").serialize(),
+				success: function(content) {
+					$("#recurring_results").html(content); 
+				},
+				error: function(xhr, ajaxOptions, thrownError) {
+					alert('No work: ' + thrownError); 
+					console.log('status: ' + xhr.status);
+					console.log('thrownError:' + thrownError);
+				}, 
+			});	
+			
+		});
+		
+		
+	}
+	
+	
 	//Mail Sending >> Send a Message 
 	if ($("#send_email_screen").length || $("#send_url_email").length || $("#list_invite").length) {
 		
