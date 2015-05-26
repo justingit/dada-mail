@@ -456,6 +456,8 @@ sub draft_index {
 
   FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
         my $q = $self->decode_draft( $hashref->{draft} );
+        warn q{$q->param('schedule_datetime')} . $q->param('schedule_datetime'); 
+        
         my $params = {
             id                      => $hashref->{id},
             list                    => $hashref->{list},
@@ -575,8 +577,12 @@ sub params_to_save {
         test_recipient                => 1,
         Subject                       => 1,
         schedule_activated            => 1,
+        schedule_type                 => 1,
         schedule_datetime             => 1,
-
+        schedule_recurring_days       => 1, 
+        schedule_recurring_date_start => 1, 
+        schedule_recurring_date_end   => 1, 
+        schedule_recurring_time       => 1, 
     };
 
     require DADA::ProfileFieldsManager;

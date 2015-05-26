@@ -891,7 +891,6 @@ sub recurring_schedules {
 
     require DateTime; 
     require DateTime::Event::Recurrence; 
-    require DateTime::Format::Strptime;
     
     my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
@@ -925,7 +924,7 @@ sub recurring_schedules {
         my @recurring_day = $q->multi_param('recurring_day');
         my $rd = []; 
         my $days = { 
-          0 => 'Sunday', 
+          7 => 'Sunday', 
           1 => 'Monday', 
           2 => 'Tuesday', 
           3 => 'Wednesday', 
@@ -941,21 +940,18 @@ sub recurring_schedules {
             }); 
         }
         my $recurring_datetime_time  = $q->param('recurring_datetime_time'); 
-        
+           $recurring_datetime_time .= ':00'; 
+           
         my $recurring_datetime_start = $q->param('recurring_datetime_start'); 
         my $recurring_datetime_end   = $q->param('recurring_datetime_end'); 
         
         $recurring_datetime_start .= ' ' . $recurring_datetime_time;
         $recurring_datetime_end   .= ' ' . $recurring_datetime_time;
-        
-        my $strp = DateTime::Format::Strptime->new(
-             pattern => '%Y-%m-%d %T',
-         );
-
-         my $start = DateTime->new($recurring_datetime_start); 
-         my $end   = DateTime->new($recurring_datetime_end);  
          
-         my ($hours, $minutes) = split(':', $recurring_datetime_time); 
+         my $start = DateTime->from_epoch(epoch => datetime_to_ctime($recurring_datetime_start)); 
+         my $end   = DateTime->from_epoch(epoch => datetime_to_ctime($recurring_datetime_end));  
+         
+         my ($hours, $minutes, $seconds) = split(':', $recurring_datetime_time); 
          
          my $day_set = DateTime::Event::Recurrence->weekly(
                days    => [@recurring_day], 
@@ -971,7 +967,10 @@ sub recurring_schedules {
         my $dates = [];
         while ( my $dt = $it->next() )
         {
-            push(@$dates, {date => $dt->datetime()}); 
+            push(@$dates, {
+                date  => $dt->datetime,
+                ctime => $dt->epoch,
+            }); 
         }
         
         my $scrn    = DADA::Template::Widgets::screen(

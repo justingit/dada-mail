@@ -150,34 +150,31 @@ $(document).ready(function() {
 	    });
 	  }
 		
-		$("body").on("click", ".kcfinder_open", function(event) {
-			event.preventDefault();
-			
-			if($("#kcfinder_enabled").val() == 1) { 
-				attachments_openKCFinder(this);
-			}else if($("#core5_filemanager_enabled").val() == 1){ 
-				browsecore5FileManager(this);
-			}
-			else { 
-				alert("No File Browser set up!");
-			}
-		});
+	$("body").on("click", ".kcfinder_open", function(event) {
+		event.preventDefault();
 		
-		datetimesetupstuff(); 
-		
-		if($('#schedule_datetime').length) { 
-			$('#schedule_datetime').datetimepicker(
-				{
-					minDate: 0,
-					//minTime: 0, 
-					inline:false, 
-					format:'Y-m-d H:i:s'
-				}
-			);
+		if($("#kcfinder_enabled").val() == 1) { 
+			attachments_openKCFinder(this);
+		}else if($("#core5_filemanager_enabled").val() == 1){ 
+			browsecore5FileManager(this);
 		}
-		
-		
-		
+		else { 
+			alert("No File Browser set up!");
+		}
+	});
+	
+	datetimesetupstuff(); 
+	
+	if($('#schedule_datetime').length) { 
+		$('#schedule_datetime').datetimepicker(
+			{
+				minDate: 0,
+				//minTime: 0, 
+				inline:false, 
+				format:'Y-m-d H:i:s'
+			}
+		);
+	}
 		
 		if($('#backdate_datetime').length) { 
 			$('#backdate_datetime').datetimepicker({maxDate: 0, format:'Y-m-d H:i:s'});
@@ -226,44 +223,112 @@ $(document).ready(function() {
 		
 		if ($("#send_email_screen").length || $("#send_url_email").length) {
 			auto_save_as_draft();
-			$("body").on("click", ".start_a_schedule", function(event) {
-				
-				$('#popup_schedule_datetime').datetimepicker(
-					{
-						minDate: 0,
-						//minTime: 0,  
-						inline:true, 
-						format:'Y-m-d H:i:s'
-					}
-				);
-				
+			$("body").on("click", ".start_a_schedule", function(event) {		
 				$.colorbox(
 					{
 						top: 0,
 						fixed: true,
-						initialHeight: 50,
+						initialHeight: 480,
 						maxHeight: 480,
 						maxWidth: 849,
 						width: 700,
 						opacity: 0.50,
 						inline:true,
-						href:"#start_a_schedule"
+						href:"#start_a_schedule",
+						onComplete: function(){
+							//alert($("#mass_mailing").serialize());	
+							// Single
+							if($('#popup_schedule_datetime').length) { 
+								$('#popup_schedule_datetime').datetimepicker(
+									{
+										minDate: 0,
+										//minTime: 0,  
+										inline:false, 
+										format:'Y-m-d H:i:s'
+									}
+								);
+							}
+							// Recurring 
+							if($('#popup_schedule_recurring_time').length) {  
+								$('#popup_schedule_recurring_time').datetimepicker(
+									{
+								  		format:'H:i',
+								  		datepicker:false,
+								  		onShow:function( ct ){}
+								 	}
+								);
+							}
+							if($('#popup_schedule_recurring_date_start').length) { 
+								 $('#popup_schedule_recurring_date_start').datetimepicker({
+								  format:'Y-m-d',
+								  timepicker:false,
+								  onShow:function( ct ){
+								   this.setOptions({
+								    maxDate:$('#popup_schedule_recurring_date_end').val()?$('#popup_schedule_recurring_date_end').val():false
+								   })
+								  }
+								 });
+							}
+							if($('#popup_schedule_recurring_date_end').length) { 
+								 $('#popup_schedule_recurring_date_end').datetimepicker(
+									{
+										format:'Y-m-d',
+										timepicker:false,
+										onShow:function( ct ){
+											this.setOptions({
+								    			minDate:$('#popup_schedule_recurring_date_start').val()?$('#popup_schedule_recurring_date_start').val():false
+								   			})
+								  		}
+								 	}
+								);
+							}
+						}
 					}
 				);
 			}); 
 			$("body").on("click", "#cancel_create_schedule", function(event) {
 				$('#popup_schedule_activated').prop('checked', false);
-				$("#popup_schedule_datetime").val('');
+				$("#schedule_datetime").val('');
 				$.colorbox.close();
 			}); 
 			$("body").on("click", "#create_schedule", function(event) {
 				
-				$("#schedule_datetime").val(
-					$("#popup_schedule_datetime").val()
-				);
+				// Sigh.
 				if($('#popup_schedule_activated').prop('checked') === true){ 
 					$('#schedule_activated').val(1); // It's not a checkbox, it's a hidden field. 
 				}
+				$("#schedule_datetime").val(
+					$("#popup_schedule_datetime").val()
+				);
+				$("#schedule_type").val(
+					 $("input:radio[name ='popup_schedule_type']:checked").val()
+				); 
+				$("#schedule_recurring_date_start").val(
+					$("#popup_schedule_recurring_date_start").val()
+				);
+				$("#schedule_recurring_date_end").val(
+					$("#popup_schedule_recurring_date_end").val()
+				);
+
+				var t = [];
+				$('input[name=popup_schedule_recurring_days]:checked').each(function() {
+					alert($(this).val());
+					if ($(this).prop("checked") === true) {
+						t.push(
+							$(this).val()
+						); 
+					}
+				});
+				$("#schedule_recurring_days").val(
+					t.join(',')
+				); 
+				$("#schedule_recurring_time").val(
+					$("#popup_schedule_recurring_time").val()
+				); 
+				
+
+
+
 				$("#button_action_notice").html('Working...');
 				$("#draft_role").val('schedule');
 				var ds = save_draft(false); 
@@ -387,6 +452,7 @@ $(document).ready(function() {
 		});
 		
 		$("body").on("click", ".schedulemassmailing", function(event) {
+			
 			alert('schedulemassmailing'); 
 /*
 			$("#button_action_notice").html('Working...');
@@ -1483,7 +1549,10 @@ function save_draft(async) {
 	
 	var r = false; 
 	
-    /* alert($("#mass_mailing").serialize() + '&process=save_as_draft'); */
+   alert(
+		$("#mass_mailing").serialize()
+		 + '&process=save_as_draft'
+	);
 
 
 	if ($("#using_ckeditor").length) {
