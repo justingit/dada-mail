@@ -444,7 +444,6 @@ sub _format_text {
                         };
                     }
 
-                    #if ( $self->{ls}->param('group_list') != 1 ) {
                         try {
                             require DADA::App::FormatMessages::Filters::UnescapeTemplateTags;
                             my $utt = DADA::App::FormatMessages::Filters::UnescapeTemplateTags->new;
@@ -453,7 +452,6 @@ sub _format_text {
                         catch {
                             carp "Problems with filter: $_";
                         };
-                    #}
                 }
 
                 # This means, we've got a discussion list:
@@ -932,19 +930,26 @@ sub _format_headers {
     #
 
     if (   $self->mass_mailing == 1
-        && $self->{ls}->param('group_list') != 1
         && defined( $self->{ls}->param('discussion_pop_email') ) )
     {
         if ( $entity->head->count('Cc') ) {
+            $entity->head->add( 'X-Cc', $entity->head->get('Cc', 0));
             $entity->head->delete('Cc');
+        }
+        if ( $entity->head->count('CC') ) {
+            $entity->head->add( 'X-Cc', $entity->head->get('CC', 0));
+            $entity->head->delete('CC');
         }
 
         if ( $entity->head->count('Bcc') ) {
             $entity->head->delete('Bcc');
         }
+        if ( $entity->head->count('BCC') ) {
+            $entity->head->delete('BCC');
+        }
 		
     }
-
+	
 	
 	#Sender Header
 	if ( $entity->head->count('Sender') ) {

@@ -1857,6 +1857,7 @@ $PROGRAM_NAME //= "Dada Mail";
     'Message-ID'                => undef,
     'Precedence'                => 'list',
     'X-Mailer'                  => "$PROGRAM_NAME $VER ",
+    'X-Cc'                      => undef,
     'Content-type'              => undef,
     'Content-Transfer-Encoding' => undef,
     'Content-Disposition'       => undef,
@@ -1900,6 +1901,7 @@ $PROGRAM_NAME //= "Dada Mail";
   Message-ID
 
   X-Mailer
+  X-Cc
 
   Content-type
   Content-Transfer-Encoding
