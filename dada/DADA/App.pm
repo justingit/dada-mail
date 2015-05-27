@@ -140,6 +140,7 @@ sub setup {
         'admin_menu_bounce_handler_notification'      => \&admin_menu_bounce_handler_notification,
         'admin_menu_tracker_notification'             => \&admin_menu_tracker_notification,
         'send_email'                                  => \&send_email,
+        'preview_mass_mail_schedules'                 => \&preview_mass_mail_schedules, 
         'recurring_schedules'                         => \&recurring_schedules,
 
         'ckeditor_template_tag_list'                  => \&ckeditor_template_tag_list,
@@ -882,6 +883,54 @@ sub send_email {
         }
         return $body;
     }
+}
+
+
+
+sub preview_mass_mail_schedules {
+    
+    my $self = shift;
+    my $q    = $self->query();
+
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'send_email'
+    );
+    my $list = $admin_list; 
+
+    my $schedule_activated            = $q->param('schedule_activated') || 0;
+    my $schedule_type                 = $q->param('schedule_type');
+    my $schedule_datetime             = $q->param('schedule_datetime');
+    my $schedule_recurring_date_start = $q->param('schedule_recurring_date_start');
+    my $schedule_recurring_date_end   = $q->param('schedule_recurring_date_end');
+    my $schedule_recurring_days       = $q->param('schedule_recurring_days');
+    my $schedule_recurring_time       = $q->param('schedule_recurring_time');
+    
+    my $scrn    = DADA::Template::Widgets::screen(
+        {
+            -screen         => 'mass_mail_schedules_preview.tmpl',
+            -wrapper_params => {
+                -Root_Login => $root_login,
+                -List       => $list,
+            },
+            -expr => 1,
+            -vars => {
+                schedule_activated            => $schedule_activated,            
+                schedule_type                 => $schedule_type,                 
+                schedule_datetime             => $schedule_datetime,             
+                schedule_recurring_date_start => $schedule_recurring_date_start, 
+                schedule_recurring_date_end   => $schedule_recurring_date_end,   
+                schedule_recurring_days       => $schedule_recurring_days,     
+                schedule_recurring_time       => $schedule_recurring_time,       
+            },
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+        }
+    );
+    return $scrn;
+
 }
 
 sub recurring_schedules { 

@@ -1,0 +1,22 @@
+<!-- begin mass_mail_schedules_preview.tmpl --> 
+        <!-- tmpl_if schedule_activated -->
+            <p>Schedules activated!</p>
+            
+            <!-- tmpl_if expr="(schedule_type eq 'single')" -->
+                <p>This is a one-time mass mailing, set to be sent on <!-- tmpl_var schedule_datetime escape="HTML" --></p> 
+            <!-- /tmpl_if --> 
+            <!-- tmpl_if expr="(schedule_type eq 'recurring')" -->
+                <p>This is a recurring mass mailing, between 
+                <!-- tmpl_var schedule_recurring_date_start --> and 
+                <!-- tmpl_var schedule_recurring_date_end --> at 
+                <!-- tmpl schedule_recurring_time -->
+                on: <!-- tmpl_var schedule_recurring_days -->
+                </p>
+            <!-- /tmpl_if -->
+            
+        <!-- tmpl_else --> 
+            <p>Schedules are not activated.</p>
+        <!-- /tmpl_if -->
+    
+
+<!-- end mass_mail_schedules_preview.tmpl --> 
