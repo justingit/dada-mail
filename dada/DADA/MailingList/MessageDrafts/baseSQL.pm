@@ -10,7 +10,7 @@ use lib qw(
 use Carp qw(croak carp);
 use DADA::Config qw(!:DEFAULT);
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_MessageDrafts};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_MailingList_MessageDrafts};
 
 sub new {
 
@@ -99,29 +99,51 @@ sub save {
     my $self = shift;
     my ($args) = @_;
 
+    warn 'here.';
+        
     if ( !exists( $args->{-cgi_obj} ) ) {
         croak "You MUST pass a, '-cgi_obj' parameter!";
     }
+    warn 'here.';
 
     if ( !exists( $args->{-screen} ) ) {
         croak "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
     }
+    warn 'here.';
+    
     if ( !exists( $args->{-role} ) ) {
         $args->{-role} = 'draft';
     }
+    warn 'here.';
+    
     if ( !exists( $args->{-save_role} ) ) {
         $args->{-save_role} = 'draft';
     }
+    warn 'here.';
 
+
+    warn '$args->{-role}'      . $args->{-role}; 
+    warn '$args->{-save_role}' . $args->{-save_role}; 
+
+    warn 'here.';
 
     my $id = undef;
     if ( exists( $args->{-id} ) ) {
         $id = $args->{-id};
     }
+    warn 'here.';
 
+    #if($t == 1){ 
+    #    require Data::Dumper; 
+    #    warn 'save() args:' . "\n" . Data::Dumper::Dumper($args); 
+    #}
     #	warn '$id:' . $id;
+    warn 'here.';
 
     my $draft = $self->stringify_cgi_params( { -cgi_obj => $args->{-cgi_obj}, -screen => $args->{-screen} } );
+
+    warn 'here.';
+
 
     if ( !defined($id) ) {
 
@@ -182,14 +204,24 @@ sub save {
 
         warn 'id defined.'
           if $t;
+       
+       warn 'still here.'; 
 
         # Trying to figure out what else this would be... 
         if(
-               ($args->{-role} eq 'draft' && $args->{-save_role} eq 'draft')
-            || ($args->{-role} eq 'draft' && $args->{-save_role} eq 'stationery')
-            || ($args->{-role} eq 'draft' && $args->{-save_role} eq 'schedule')
+               ($args->{-role} eq 'draft'      && $args->{-save_role} eq 'draft')
+               
+            || ($args->{-role} eq 'draft'      && $args->{-save_role} eq 'stationery')
+            
+            || ($args->{-role} eq 'draft'      && $args->{-save_role} eq 'schedule')
+            
+            || ($args->{-role} eq 'schedule'   && $args->{-save_role} eq 'schedule')
+            
+            || ($args->{-role} eq 'stationery' && $args->{-save_role} eq 'stationery')
         ) {
 
+            warn "Saving Regularly!"; 
+            
             my $query; 
             if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
                 $query =
@@ -219,11 +251,35 @@ sub save {
             $sth->finish;
             return $id;
         }
-       # elsif(
-       #        ($args->{-role} eq 'stationery' && $args->{-save_role} eq 'draft')
-       #    ) { 
-        #    $self->create_from_stationery($args); 
-        #}
+        elsif($args->{-role} eq 'stationery' && $args->{-save_role} eq 'draft') {
+            
+            warn 'Draft from Stationery!'; 
+             
+            # All we need to do, is save this as stationery first, then - 
+            $self->save({
+                    %$args, 
+                    -role      => 'stationery',
+                    -save_role => 'stationery', # So, we save the stationery.  
+            }); 
+            warn 'saved.'
+                if $t;
+            warn '# Then this makes the copy.'
+                if $t; 
+            my $saved_id = $self->create_from_stationery(
+                    {
+                        -id     => $args->{-id},
+                        -screen => $args->{-screen},
+                    }
+                ); 
+            warn 'created from stationery!'; 
+            warn 'Stationery ID: ' . $id; 
+            warn 'Returning  ID: ' . $saved_id ; 
+            return $saved_id;             
+        }
+        else { 
+            warn 'don\'t.... know what to save!'; 
+            return $id; 
+        }
     }
 }
 
@@ -387,13 +443,16 @@ sub create_from_stationery {
 
     my $saved_draft_id = $self->save(
         {
-            -cgi_obj => $q_draft,
-            -role    => 'draft',
-            -screen  => $args->{-screen},
+            -cgi_obj   => $q_draft,
+            -role      => 'draft',
+            -save_role => 'draft', 
+            -screen    => $args->{-screen},
         }
     );
-    return ($saved_draft_id);
+    warn '$saved_draft_id' . $saved_draft_id; 
+    return $saved_draft_id;
 }
+
 
 sub count {
     my $self = shift;
@@ -406,8 +465,8 @@ sub count {
     my @row;
     my $query = 'SELECT COUNT(*) FROM ' . $self->{sql_params}->{message_drafts_table} . ' WHERE list = ? AND role = ?';
 
-    warn 'QUERY: ' . $query
-      if $t;
+#    warn 'QUERY: ' . $query
+#      if $t;
 
     my $count = $self->{dbh}->selectrow_array( $query, undef, $self->{list}, $args->{-role} );
     return $count;

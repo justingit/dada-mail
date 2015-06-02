@@ -1,7 +1,8 @@
 <!-- begin send_email_schedule_options_widget.tmpl -->
 
+
 <!-- tmpl_if expr="(draft_role ne 'schedule')" -->
-    <div class="display:none:">
+    <div style="display:none">
 <!-- /tmpl_if -->
     
 
@@ -11,16 +12,23 @@
             <p class="alert"> 
                 Current Server Time: <!-- tmpl_var date -->
             </p>
+    
+            <div class="clearskiesbox"> 
+                <div id="mass_mail_schedules_preview_results">
+                    
+                </div> 
+            </div> 
+        
             
             
             <p>
-                <input type="checkbox" name="schedule_activated" id="schedule_activated" value="1" class="" />
+                <input type="checkbox" name="schedule_activated" id="schedule_activated" value="1" class="schedule_field" />
                 <label for="schedule_activated">
                     Activate
                 </label></p>
 
             <p>
-            <input type="radio" name="schedule_type" id="schedule_type_single" value="single" checked="checked" class="scheduled_type">
+            <input type="radio" name="schedule_type" id="schedule_type_single" value="single" checked="checked" class="scheduled_type schedule_field">
             <label for="schedule_type_single">Single</label>
 
             <div id="schedule_type_single_options"> 
@@ -28,12 +36,12 @@
                         <label for="schedule_datetime">
                             Schedule For:
                         </label>
-                    <input type="text" name="schedule_datetime" id="schedule_datetime" />
+                    <input type="text" name="schedule_datetime" id="schedule_datetime" class="schedule_field" />
                 </p>
             </div> 
             
             <p>
-            <input type="radio" name="schedule_type" id="schedule_type_recurring" value="recurring"  class="scheduled_type">
+            <input type="radio" name="schedule_type" id="schedule_type_recurring" value="recurring"  class="scheduled_type schedule_field">
             <label for="schedule_type_recurring">Recurring</label>
             <p>
 
@@ -42,38 +50,33 @@
                 <label for="schedule_recurring_date_start">
                     Starting on: 
                 </label>
-                <input type="text" name="schedule_recurring_date_start" id="schedule_recurring_date_start" />
+                <input type="text" name="schedule_recurring_date_start" id="schedule_recurring_date_start" class="schedule_field" />
                 </p>
 
                 <p>
                 <label for="schedule_recurring_date_end">
                     Ending on: 
                 </label>
-                <input type="text" name="schedule_recurring_date_end" id="schedule_recurring_date_end" />
+                <input type="text" name="schedule_recurring_date_end" id="schedule_recurring_date_end" class="schedule_field" />
                 </p> 
 
                 <p> Every
-                <label for="mon">Mon:</label><input type="checkbox" name="schedule_recurring_days" id="mon" value="1" /> |
-                <label for="tue">Tue:</label><input type="checkbox" name="schedule_recurring_days" id="tue" value="2" /> | 
-                <label for="wed">Wed:</label><input type="checkbox" name="schedule_recurring_days" id="wed" value="3" /> | 
-                <label for="thu">Thu:</label><input type="checkbox" name="schedule_recurring_days" id="thu" value="4" /> | 
-                <label for="fri">Fri:</label><input type="checkbox" name="schedule_recurring_days" id="fri" value="5" /> | 
-                <label for="sat">Sat:</label><input type="checkbox" name="schedule_recurring_days" id="sat" value="6" /> | 
-                <label for="sun">Sun:</label><input type="checkbox" name="schedule_recurring_days" id="sun" value="7" /> 
+                <label for="mon">Mon:</label><input type="checkbox" name="schedule_recurring_days" id="mon" value="1" class="schedule_field" /> |
+                <label for="tue">Tue:</label><input type="checkbox" name="schedule_recurring_days" id="tue" value="2" class="schedule_field"  /> | 
+                <label for="wed">Wed:</label><input type="checkbox" name="schedule_recurring_days" id="wed" value="3" class="schedule_field"  /> | 
+                <label for="thu">Thu:</label><input type="checkbox" name="schedule_recurring_days" id="thu" value="4" class="schedule_field"  /> | 
+                <label for="fri">Fri:</label><input type="checkbox" name="schedule_recurring_days" id="fri" value="5" class="schedule_field"  /> | 
+                <label for="sat">Sat:</label><input type="checkbox" name="schedule_recurring_days" id="sat" value="6" class="schedule_field"  /> | 
+                <label for="sun">Sun:</label><input type="checkbox" name="schedule_recurring_days" id="sun" value="7" class="schedule_field"  /> 
                 </p>
 
                 <p>
                 <label for="schedule_recurring_time">
                     At: 
                 </label>
-                <input type="text" name="schedule_recurring_time" id="schedule_recurring_time" />
+                <input type="text" name="schedule_recurring_time" id="schedule_recurring_time" class="schedule_field"  />
                 </p> 
             </div>
-            <div class="buttonfloat">
-               <input type="button" id="cancel_create_schedule" class="cautionary" value="Cancel" /> 
-               <input type="button" id="create_schedule"        class="processing" value="Create Schedule" /> 
-           </div> 
-           <div class="floatclear"></div>
 
 </fieldset> 
 

@@ -1,0 +1,39 @@
+<!-- begin mass_mail_schedules_preview.tmpl --> 
+
+<!-- tmpl_if errors --> 
+    <p>Sorry, looks like something went wrong, calculating the schedules:</p>
+    <code><!-- tmpl_var errors escape="HTML" --></code>
+<!-- tmpl_else --> 
+    <!-- tmpl_if schedule_activated -->
+        <p><strong>Schedules activated!</strong></p>
+    
+        <!-- tmpl_if expr="(schedule_type eq 'single')" -->
+            <p>This is a <strong>one-time</strong> mass mailing, set to be sent on 
+                <strong><!-- tmpl_var schedule_locatime escape="HTML" --></strong></p> 
+        <!-- /tmpl_if --> 
+        <!-- tmpl_if expr="(schedule_type eq 'recurring')" -->
+            <p>This is a <strong>recurring</strong> mass mailing, between 
+            <strong><!-- tmpl_var schedule_recurring_localtime_start --></strong>
+                 and 
+            <strong><!-- tmpl_var schedule_recurring_localtime_end --></strong>
+            on: 
+            <!-- tmpl_loop schedule_recurring_days -->
+                <!-- tmpl_if __last__ -->
+                and
+                <!-- /tmpl_if  -->
+                <strong><!-- tmpl_var name --></strong><!-- tmpl_unless __last__ -->,
+                <!-- /tmpl_unless --> 
+            <!-- /tmpl_loop -->
+            
+             at:
+            <strong><!-- tmpl_var schedule_recurring_time --></strong>
+            
+            </p>
+        <!-- /tmpl_if -->
+    
+    <!-- tmpl_else --> 
+        <p><strong>Schedules are not activated.</strong></p>
+    <!-- /tmpl_if -->
+<!-- /tmpl_if --> 
+<!-- end mass_mail_schedules_preview.tmpl --> 
+

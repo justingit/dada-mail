@@ -21,7 +21,7 @@ use Carp qw(carp croak);
 use strict;
 use vars qw($AUTOLOAD);
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_MassSend};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_MassSend};
 
 my %allowed = ( test => 0, );
 
@@ -1158,8 +1158,8 @@ sub save_as_draft {
     my $self = shift;
     my ($args) = @_;
     if ( $t == 1 ) {
-        require Data::Dumper;
-        warn 'args:' . Data::Dumper::Dumper($args);
+        #require Data::Dumper;
+        #warn 'args:' . Data::Dumper::Dumper($args);
     }
 
     my $q = $args->{-cgi_obj};
@@ -1183,7 +1183,8 @@ sub save_as_draft {
         }
     );
 
-    # warn '$saved_draft_id: ' . $saved_draft_id;
+    warn '$saved_draft_id: ' . $saved_draft_id
+        if $t; 
 
     if ( $args->{-json} == 1 ) {
         require JSON;
@@ -1194,9 +1195,12 @@ sub save_as_draft {
             -expires         => 'Mon, 26 Jul 1997 05:00:00 GMT',
             -type            => 'application/json',
         };
-        warn '$json->pretty->encode($return) ' . $json->pretty->encode($return)
-          if $t;
         my $body = $json->pretty->encode($return);
+        if($t == 1){ 
+            require Data::Dumper; 
+            warn 'returning headers: ' . Data::Dumper::Dumper($headers); 
+            warn 'returning body: ' . $body; 
+        }
         return ( $headers, $body );
     }
     else {
@@ -1568,10 +1572,10 @@ sub q_obj_from_draft {
     my $self = shift;
     my ($args) = @_;
 
-    if ( $t == 1 ) {
-        require Data::Dumper;
-        warn 'args:' . Data::Dumper::Dumper($args);
-    }
+    #if ( $t == 1 ) {
+    #    require Data::Dumper;
+    #    warn 'args:' . Data::Dumper::Dumper($args);
+    #}
 
     for ( '-screen', '-draft_id', '-role' ) {
         if ( !exists( $args->{$_} ) ) {
