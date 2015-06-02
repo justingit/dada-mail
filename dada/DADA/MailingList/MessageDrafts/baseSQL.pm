@@ -109,6 +109,11 @@ sub save {
     if ( !exists( $args->{-role} ) ) {
         $args->{-role} = 'draft';
     }
+    if ( !exists( $args->{-save_role} ) ) {
+        $args->{-save_role} = 'draft';
+    }
+
+
     my $id = undef;
     if ( exists( $args->{-id} ) ) {
         $id = $args->{-id};
@@ -149,9 +154,9 @@ sub save {
         my $sth = $self->{dbh}->prepare($query);
         if($t == 1) { 
             require Data::Dumper; 
-            warn 'execute params: ' . Data::Dumper::Dumper([$self->{list}, $args->{-screen}, $args->{-role}, $draft]); 
+            warn 'execute params: ' . Data::Dumper::Dumper([$self->{list}, $args->{-screen}, $args->{-save_role}, $draft]); 
         }
-        $sth->execute( $self->{list}, $args->{-screen}, $args->{-role}, $draft )
+        $sth->execute( $self->{list}, $args->{-screen}, $args->{-save_role}, $draft )
           or croak "cannot do statement '$query'! $DBI::errstr\n";
 
         $sth->finish;
@@ -178,31 +183,47 @@ sub save {
         warn 'id defined.'
           if $t;
 
-        my $query; 
-        
-        
-        if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
-            $query =
-                'UPDATE '
-              . $self->{sql_params}->{message_drafts_table}
-              . ' SET screen = ?, role = ?, draft = ?, last_modified_timestamp = CURRENT_TIMESTAMP WHERE list = ? AND id = ?';
-        }
-        else { 
-            $query =
-                'UPDATE '
-              . $self->{sql_params}->{message_drafts_table}
-              . ' SET screen = ?, role = ?, draft = ?, last_modified_timestamp = NOW() WHERE list = ? AND id = ?';
+        # Trying to figure out what else this would be... 
+        if(
+               ($args->{-role} eq 'draft' && $args->{-save_role} eq 'draft')
+            || ($args->{-role} eq 'draft' && $args->{-save_role} eq 'stationery')
+            || ($args->{-role} eq 'draft' && $args->{-save_role} eq 'schedule')
+        ) {
 
-        }
-        
-        warn 'QUERY: ' . $query
-          if $t;
+            my $query; 
+            if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
+                $query =
+                    'UPDATE '
+                  . $self->{sql_params}->{message_drafts_table}
+                  . ' SET screen = ?, role = ?, draft = ?, last_modified_timestamp = CURRENT_TIMESTAMP WHERE list = ? AND id = ?';
+            }
+            else { 
+                $query =
+                    'UPDATE '
+                  . $self->{sql_params}->{message_drafts_table}
+                  . ' SET screen = ?, role = ?, draft = ?, last_modified_timestamp = NOW() WHERE list = ? AND id = ?';
 
-        my $sth = $self->{dbh}->prepare($query);
-        $sth->execute( $args->{-screen}, $args->{-role}, $draft, $self->{list}, $args->{-id} )
-          or croak "cannot do statement '$query'! $DBI::errstr\n";
-        $sth->finish;
-        return $id;
+            }
+        
+            warn 'QUERY: ' . $query
+              if $t;
+
+            my $sth = $self->{dbh}->prepare($query);
+               $sth->execute( 
+                   $args->{-screen}, 
+                   $args->{-save_role}, 
+                   $draft, $self->{list}, 
+                   $args->{-id} 
+              )
+              or croak "cannot do statement '$query'! $DBI::errstr\n";
+            $sth->finish;
+            return $id;
+        }
+       # elsif(
+       #        ($args->{-role} eq 'stationery' && $args->{-save_role} eq 'draft')
+       #    ) { 
+        #    $self->create_from_stationery($args); 
+        #}
     }
 }
 
@@ -353,14 +374,14 @@ sub fetch {
 
 }
 
-sub create_from_stationary {
+sub create_from_stationery {
     my $self    = shift;
     my ($args)  = @_;
     my $q_draft = $self->fetch(
         {
             -id     => $args->{-id},
             -screen => $args->{-screen},
-            -role   => 'stationary',
+            -role   => 'stationery',
         }
     );
 

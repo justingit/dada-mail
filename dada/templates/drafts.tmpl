@@ -34,8 +34,8 @@
 			</a>
 		</li>
 		<li>
-			<a href="#stationary">
-				Stationery (<!-- tmpl_var num_stationary default="0" -->)
+			<a href="#stationery">
+				Stationery (<!-- tmpl_var num_stationery default="0" -->)
 			</a>
 		</li>
 		<li>
@@ -173,7 +173,7 @@
         
 	</div> 
 	
-	<div id="stationary">
+	<div id="stationery">
 	    <p class="alert">
             <strong>
             Stationery
@@ -183,11 +183,11 @@
         </p>
 
         <p class="alert">
-             Once you create a new message from the stationary, it will itself be saved as a draft, 
-            that you may continue to edit, separate from the original stationary.
+             Once you create a new message from the stationery, it will itself be saved as a draft, 
+            that you may continue to edit, separate from the original stationery.
         </p>
 
-        <!-- tmpl_if stationary_index --> 
+        <!-- tmpl_if stationery_index --> 
 
         <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
             <input type="hidden" name="flavor" value="delete_drafts" /> 
@@ -238,7 +238,7 @@
         		</tr> 
 
 
-         	<!-- tmpl_loop stationary_index --> 
+         	<!-- tmpl_loop stationery_index --> 
         		<tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
 
 
@@ -249,7 +249,7 @@
         			-->
         			
                     <td>
-            		    <input type="checkbox" class="stationary_ids" name="draft_ids"  value="<!-- tmpl_var id escape="HTML" -->" />
+            		    <input type="checkbox" class="stationery_ids" name="draft_ids"  value="<!-- tmpl_var id escape="HTML" -->" />
         			</td>
         			<td>			    
                         <input 
@@ -257,19 +257,19 @@
                             name=""
                             value="New Draft From Stationery" 
                             class="processing" 
-                            onClick="window.location='<!-- tmpl_var S_PROGRAM_URL -->?flavor=create_from_stationary&screen=<!-- tmpl_var screen escape="HTML" -->&draft_id=<!-- tmpl_var id -->'"
+                            onClick="window.location='<!-- tmpl_var S_PROGRAM_URL -->?flavor=create_from_stationery&screen=<!-- tmpl_var screen escape="HTML" -->&draft_id=<!-- tmpl_var id -->'"
                          />  
                     </td>
         			<td>
         				<p>
-    						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_role=stationary&draft_id=<!-- tmpl_var id -->" >
+    						<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_role=stationery&draft_id=<!-- tmpl_var id -->" >
     							<!-- tmpl_var Subject escape="HTML" -->
     						</a>
         				</p> 
         			</td>
         			<td>
         				<p>
-        					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_role=stationary&draft_id=<!-- tmpl_var id -->">
+        					<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_role=stationery&draft_id=<!-- tmpl_var id -->">
         						<!-- tmpl_var last_modified_timestamp --> 
         					</a>
         				</p> 
@@ -286,7 +286,7 @@
 
         			</td>
                     <td>
-                    		<input type="button" name="" value="Edit..." class="processing" onClick="window.location='<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_role=stationary&draft_id=<!-- tmpl_var id -->'" />  
+                    		<input type="button" name="" value="Edit..." class="processing" onClick="window.location='<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_role=stationery&draft_id=<!-- tmpl_var id -->'" />  
                     	</p> 
                     </td>
 
@@ -298,7 +298,7 @@
         	<table class="stripedtable">
               <tr>
                	<td width="25">
-            		<input class="toggleCheckboxes" type="checkbox" data-target_class="stationary_ids" />
+            		<input class="toggleCheckboxes" type="checkbox" data-target_class="stationery_ids" />
                	</td>
             	<td>
             	 <input type="submit" class="small_button" value="Delete Checked" />
@@ -311,7 +311,7 @@
         <!-- tmpl_else -->
         	<div class="clearskiesbox">
         		<p>
-        			There are currently no saved stationary. 
+        			There are currently no saved stationery. 
         		</p>
         	</div> 
         <!-- /tmpl_if --> 

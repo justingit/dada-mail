@@ -1,109 +1,72 @@
 <!-- begin send_email_schedule_options_widget.tmpl -->
 
-<!-- tmpl_if expr="(draft_role eq 'schedule')" -->
+<!-- tmpl_if expr="(draft_role ne 'schedule')" -->
+    <div class="display:none:">
+<!-- /tmpl_if -->
+    
+
         <fieldset>
-            <legend>Scheduling Options</legend>
-            
-            <div class="clearskiesbox">
-                <p> 
-                    <strong>Current Server Time:</strong> <!-- tmpl_var date --><br /> 
-                    <strong>Schedules Last Checked:</strong> <!-- tmpl_var schedule_last_checked_frt --> ago.
-                </p>
-            </div>
-        <p>
-            <input type="checkbox" name="schedule_activated" id="schedule_activated" value="1" class="" />
-            <label for="schedule_activated">
-                Activate
-            </label></p>
-        
-            <p>
-                <label for="schedule_datetime">
-                    Schedule For:
-                </label><br />
-            <input type="text" name="schedule_datetime" id="schedule_datetime" />
-        </p>
-    </fieldset> 
-<!-- tmpl_else --> 
+            <legend>Scheduling Options</legend>    
     
-    
-    <input type="hidden" name="schedule_activated"             id="schedule_activated" />
-    <input type="hidden" name="schedule_type"                  id="schedule_type" />
-    
-    <input type="hidden" name="schedule_datetime"              id="schedule_datetime" />
-    
-    <input type="hidden" name="schedule_recurring_date_start"  id="schedule_recurring_date_start" />
-    <input type="hidden" name="schedule_recurring_date_end"    id="schedule_recurring_date_end" />
-    <input type="hidden" name="schedule_recurring_days"        id="schedule_recurring_days" />
-    <input type="hidden" name="schedule_recurring_time"        id="schedule_recurring_time" />
-    
-    <!-- the below form fields are not a part of the actual form --> 
-
-    <div id="schedule_popup_hidden_wrapper" style="display:none"> 
-        <div id="start_a_schedule">
-            
-
-            <h1>
-                Scheduling Options
-            </h1>
-            
             <p class="alert"> 
                 Current Server Time: <!-- tmpl_var date -->
             </p>
             
             
             <p>
-                <input type="checkbox" name="popup_schedule_activated" id="popup_schedule_activated" value="1" class="" />
-                <label for="popup_schedule_activated">
+                <input type="checkbox" name="schedule_activated" id="schedule_activated" value="1" class="" />
+                <label for="schedule_activated">
                     Activate
                 </label></p>
 
             <p>
-            <input type="radio" name="popup_schedule_type" id="popup_schedule_type_single" value="single" checked="checked">
+            <input type="radio" name="schedule_type" id="schedule_type_single" value="single" checked="checked" class="scheduled_type">
             <label for="schedule_type_single">Single</label>
-            <div id="popup_schedule_type_single_options"> 
+
+            <div id="schedule_type_single_options"> 
                     <p>
-                        <label for="popup_schedule_datetime">
+                        <label for="schedule_datetime">
                             Schedule For:
                         </label>
-                    <input type="text" name="popup_schedule_datetime" id="popup_schedule_datetime" />
+                    <input type="text" name="schedule_datetime" id="schedule_datetime" />
                 </p>
             </div> 
             
+            <p>
+            <input type="radio" name="schedule_type" id="schedule_type_recurring" value="recurring"  class="scheduled_type">
+            <label for="schedule_type_recurring">Recurring</label>
+            <p>
+
+            <div id="schedule_type_recurring_options"> 
             
-            <div id="popup_schedule_type_recurring_options"> 
-            
-                <p>
-                <input type="radio" name="popup_schedule_type" id="popup_schedule_type_recurring" value="recurring">
-                <label for="popup_schedule_type_recurring">Recurring</label>
-                <p>
-                <label for="popup_schedule_recurring_date_start">
+                <label for="schedule_recurring_date_start">
                     Starting on: 
                 </label>
-                <input type="text" name="popup_schedule_recurring_date_start" id="popup_schedule_recurring_date_start" />
+                <input type="text" name="schedule_recurring_date_start" id="schedule_recurring_date_start" />
                 </p>
 
                 <p>
-                <label for="popup_schedule_recurring_date_end">
+                <label for="schedule_recurring_date_end">
                     Ending on: 
                 </label>
-                <input type="text" name="popup_schedule_recurring_date_end" id="popup_schedule_recurring_date_end" />
+                <input type="text" name="schedule_recurring_date_end" id="schedule_recurring_date_end" />
                 </p> 
 
                 <p> Every
-                <label for="mon">Mon:</label><input type="checkbox" name="popup_schedule_recurring_days" id="mon" value="1" /> |
-                <label for="tue">Tue:</label><input type="checkbox" name="popup_schedule_recurring_days" id="tue" value="2" /> | 
-                <label for="wed">Wed:</label><input type="checkbox" name="popup_schedule_recurring_days" id="wed" value="3" /> | 
-                <label for="thu">Thu:</label><input type="checkbox" name="popup_schedule_recurring_days" id="thu" value="4" /> | 
-                <label for="fri">Fri:</label><input type="checkbox" name="popup_schedule_recurring_days" id="fri" value="5" /> | 
-                <label for="sat">Sat:</label><input type="checkbox" name="popup_schedule_recurring_days" id="sat" value="6" /> | 
-                <label for="sun">Sun:</label><input type="checkbox" name="popup_schedule_recurring_days" id="sun" value="7" /> 
+                <label for="mon">Mon:</label><input type="checkbox" name="schedule_recurring_days" id="mon" value="1" /> |
+                <label for="tue">Tue:</label><input type="checkbox" name="schedule_recurring_days" id="tue" value="2" /> | 
+                <label for="wed">Wed:</label><input type="checkbox" name="schedule_recurring_days" id="wed" value="3" /> | 
+                <label for="thu">Thu:</label><input type="checkbox" name="schedule_recurring_days" id="thu" value="4" /> | 
+                <label for="fri">Fri:</label><input type="checkbox" name="schedule_recurring_days" id="fri" value="5" /> | 
+                <label for="sat">Sat:</label><input type="checkbox" name="schedule_recurring_days" id="sat" value="6" /> | 
+                <label for="sun">Sun:</label><input type="checkbox" name="schedule_recurring_days" id="sun" value="7" /> 
                 </p>
 
                 <p>
-                <label for="popup_schedule_recurring_time">
+                <label for="schedule_recurring_time">
                     At: 
                 </label>
-                <input type="text" name="popup_schedule_recurring_time" id="popup_schedule_recurring_time" />
+                <input type="text" name="schedule_recurring_time" id="schedule_recurring_time" />
                 </p> 
             </div>
             <div class="buttonfloat">
@@ -111,11 +74,12 @@
                <input type="button" id="create_schedule"        class="processing" value="Create Schedule" /> 
            </div> 
            <div class="floatclear"></div>
-        </div>
-    </div>
-    
-<!-- /tmpl_if -->
 
+</fieldset> 
+
+<!-- tmpl_if expr="(draft_role ne 'schedule')" -->
+    </div>
+<!-- /tmpl_if -->
 
 
 

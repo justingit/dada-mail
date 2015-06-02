@@ -62,72 +62,6 @@ $(document).ready(function() {
 		
 	}
 	
-	if ($("#recurring_schedules").length) {
-	
-	
-	
-	
-	if($('#recurring_datetime_time').length) { 
-	 $('#recurring_datetime_time').datetimepicker({
-	  format:'H:i',
-	  datepicker:false,
-	  onShow:function( ct ){
-	  }
-	 });
-	}
-	
-	
-	
-		if($('#recurring_datetime_start').length) { 
-		 $('#recurring_datetime_start').datetimepicker({
-		  format:'Y-m-d',
-		  timepicker:false,
-		  onShow:function( ct ){
-		   this.setOptions({
-		    maxDate:$('#recurring_datetime_end').val()?$('#recurring_datetime_end').val():false
-		   })
-		  }
-		 });
-		}
-
-		if($('#recurring_datetime_end').length) { 
-		 $('#recurring_datetime_end').datetimepicker({
-		  format:'Y-m-d',
-		   timepicker:false,
-		  onShow:function( ct ){
-		   this.setOptions({
-		    minDate:$('#recurring_datetime_start').val()?$('#recurring_datetime_start').val():false
-		   })
-		  }
-		 });
-		}
-		
-		$("body").on("click", "#try_recurring", function(event) {
-			 /* 
-				alert( $("#recurring_scheds").serialize()); 
-			*/
-			event.preventDefault();
-			var request = $.ajax({
-				url: $("#s_program_url").val(),
-				type: "POST",
-				dataType: "html",
-				cache: false,
-				data: $("#recurring_scheds").serialize(),
-				success: function(content) {
-					$("#recurring_results").html(content); 
-				},
-				error: function(xhr, ajaxOptions, thrownError) {
-					alert('No work: ' + thrownError); 
-					console.log('status: ' + xhr.status);
-					console.log('thrownError:' + thrownError);
-				}, 
-			});	
-			
-		});
-		
-		
-	}
-	
 	
 	//Mail Sending >> Send a Message 
 	if ($("#send_email_screen").length || $("#send_url_email").length || $("#list_invite").length) {
@@ -163,18 +97,8 @@ $(document).ready(function() {
 		}
 	});
 	
-	datetimesetupstuff(); 
+		datetimesetupstuff(); 
 	
-	if($('#schedule_datetime').length) { 
-		$('#schedule_datetime').datetimepicker(
-			{
-				minDate: 0,
-				//minTime: 0, 
-				inline:false, 
-				format:'Y-m-d H:i:s'
-			}
-		);
-	}
 		
 		if($('#backdate_datetime').length) { 
 			$('#backdate_datetime').datetimepicker({maxDate: 0, format:'Y-m-d H:i:s'});
@@ -207,6 +131,13 @@ $(document).ready(function() {
 		}
 		
 		setup_attachment_fields(); 
+		setup_schedule_fields(); 
+		toggle_schedule_options(); 
+		
+		$("body").on("click", ".scheduled_type", function(event) {
+			toggle_schedule_options();
+		}); 
+		
 		$("body").on("click", ".remove_attachment", function(event) {
 			if(confirm("Remove Attachment?")) { 
 				$("#" + $(this).attr("data-attachment")).val(''); 
@@ -222,142 +153,30 @@ $(document).ready(function() {
 		});
 		
 		if ($("#send_email_screen").length || $("#send_url_email").length) {
-			auto_save_as_draft();
-			$("body").on("click", ".start_a_schedule", function(event) {		
-				$.colorbox(
-					{
-						top: 0,
-						fixed: true,
-						initialHeight: 480,
-						maxHeight: 480,
-						maxWidth: 849,
-						width: 700,
-						opacity: 0.50,
-						inline:true,
-						href:"#start_a_schedule",
-						onComplete: function(){
-							//alert($("#mass_mailing").serialize());	
-							// Single
-							if($('#popup_schedule_datetime').length) { 
-								$('#popup_schedule_datetime').datetimepicker(
-									{
-										minDate: 0,
-										//minTime: 0,  
-										inline:false, 
-										format:'Y-m-d H:i:s'
-									}
-								);
-							}
-							// Recurring 
-							if($('#popup_schedule_recurring_time').length) {  
-								$('#popup_schedule_recurring_time').datetimepicker(
-									{
-								  		format:'H:i',
-								  		datepicker:false,
-								  		onShow:function( ct ){}
-								 	}
-								);
-							}
-							if($('#popup_schedule_recurring_date_start').length) { 
-								 $('#popup_schedule_recurring_date_start').datetimepicker({
-								  format:'Y-m-d',
-								  timepicker:false,
-								  onShow:function( ct ){
-								   this.setOptions({
-								    maxDate:$('#popup_schedule_recurring_date_end').val()?$('#popup_schedule_recurring_date_end').val():false
-								   })
-								  }
-								 });
-							}
-							if($('#popup_schedule_recurring_date_end').length) { 
-								 $('#popup_schedule_recurring_date_end').datetimepicker(
-									{
-										format:'Y-m-d',
-										timepicker:false,
-										onShow:function( ct ){
-											this.setOptions({
-								    			minDate:$('#popup_schedule_recurring_date_start').val()?$('#popup_schedule_recurring_date_start').val():false
-								   			})
-								  		}
-								 	}
-								);
-							}
-						}
-					}
-				);
-			}); 
-			$("body").on("click", "#cancel_create_schedule", function(event) {
-				$('#popup_schedule_activated').prop('checked', false);
-				$("#schedule_datetime").val('');
-				$.colorbox.close();
-			}); 
-			$("body").on("click", "#create_schedule", function(event) {
-				
-				// Sigh.
-				if($('#popup_schedule_activated').prop('checked') === true){ 
-					$('#schedule_activated').val(1); // It's not a checkbox, it's a hidden field. 
-				}
-				$("#schedule_datetime").val(
-					$("#popup_schedule_datetime").val()
-				);
-				$("#schedule_type").val(
-					 $("input:radio[name ='popup_schedule_type']:checked").val()
-				); 
-				$("#schedule_recurring_date_start").val(
-					$("#popup_schedule_recurring_date_start").val()
-				);
-				$("#schedule_recurring_date_end").val(
-					$("#popup_schedule_recurring_date_end").val()
-				);
-
-				var t = [];
-				$('input[name=popup_schedule_recurring_days]:checked').each(function() {
-					alert($(this).val());
-					if ($(this).prop("checked") === true) {
-						t.push(
-							$(this).val()
-						); 
-					}
-				});
-				$("#schedule_recurring_days").val(
-					t.join(',')
-				); 
-				$("#schedule_recurring_time").val(
-					$("#popup_schedule_recurring_time").val()
-				); 
-				
-
-
-
-				$("#button_action_notice").html('Working...');
-				$("#draft_role").val('schedule');
-				var ds = save_draft(false); 
-				admin_menu_drafts_notification();
-				$("#button_action_notice").html('&nbsp;');	
-				if(ds === true) { 
-					window.location.replace($("#s_program_url").val() + '?flavor=' + $("#f").val() + '&draft_id=' + $("#draft_id").val() + '&restore_from_draft=true&draft_role=schedule&done=1');
-				}
-				else { 
-					alert("Error Saving Schedule."); 
-				}
-				
-			}); 
+			auto_save_as_draft();						
+			$("body").on("click", ".save_msg", function(event) {
 			
-			
-			
-			$("body").on("click", ".savedraft", function(event) {
-			
-				//alert ('itsa:' + $("#draft_role").val()); 
+				console.log('.save_msg');
 				
 				$("#button_action_notice").html('Working...');
-				var role = $(this).attr("data-role");
-				$("#draft_role").val(role);
-				var ds = save_draft(false); 
+				$("#save_draft_role").val(
+					$(this).attr("data-save_draft_role")
+				);
+				var ds = save_draft(false);
+				
+				window.location.replace(
+					$("#s_program_url").val() 
+					+ '?flavor=' + $("#flavor").val() 
+					+ '&draft_id=' + $("#draft_id").val() + 
+					'&restore_from_draft=true&draft_role=' + $("#save_draft_role").val() + '&done=1'
+				);
+				
+/*				
 				admin_menu_drafts_notification();
 				if($("#draft_role").val() == 'draft') { 
-					if($("#save_draft_button").val() == 'Save as: Draft') { 
-						$("#save_draft_button").val('Save Draft')
-					}
+					//if($("#save_draft_button").val() == 'Save as: Draft') { 
+					//	$("#save_draft_button").val('Save Draft')
+					//}
 				}
 				$("#button_action_notice").html('&nbsp;');	
 				if(ds === true) { 
@@ -378,22 +197,24 @@ $(document).ready(function() {
 							}
 						});
 					}
-					else if($("#draft_role").val() == 'stationary' || $("#draft_role").val() == 'schedule' ) {
+					else if($("#draft_role").val() == 'stationery' || $("#draft_role").val() == 'schedule' ) {
 						window.location.replace($("#s_program_url").val() + '?flavor=' + $("#f").val() + '&draft_id=' + $("#draft_id").val() + '&restore_from_draft=true&draft_role=' + $("#draft_role").val() + '&done=1');
 					}
 				}
 				else if(ds === false) { 
 					//alert('Error Saving Draft: '); 
 				}
+				
+*/
 			});
 			
-			$("body").on("click", ".create_from_stationary", function(event) {
+			$("body").on("click", ".create_from_stationery", function(event) {
 				$("#button_action_notice").html('Working...');
-				var role = $(this).attr("data-role");
-				$("#draft_role").val(role); // should be, "stationary", but... 
+				var role = $(this).attr("data-save_draft_role");
+				$("#draft_role").val(role); // should be, "stationery", but... 
 				var ds = save_draft(false); 
 				if(ds === true) { 
-					create_from_stationary(); 
+					create_from_stationery(); 
 				}
 				else if(ds === false) { 
 					//alert('Error Saving Draft: '); 
@@ -452,9 +273,7 @@ $(document).ready(function() {
 		});
 		
 		$("body").on("click", ".schedulemassmailing", function(event) {
-			
-			alert('schedulemassmailing'); 
-/*
+			/*
 			$("#button_action_notice").html('Working...');
 			$("#draft_role").val('schedule');
 			save_draft(false);
@@ -488,7 +307,7 @@ $(document).ready(function() {
 			save_draft(false)
 			
 			var confirm_msg = '';
-			if($("#draft_role").val() == 'stationary') {
+			if($("#draft_role").val() == 'stationery') {
 				confirm_msg = "Delete Stationery Message?";
 			}
 			else if($("#draft_role").val() == 'schedule') {
@@ -1528,6 +1347,30 @@ function admin_menu_notification(sflavor, target_class) {
 }
 
 // Mass Mailing >> Send a Message 
+/*
+function send_a_list_message_button_toolbar(){ 
+	
+	var request = $.ajax({
+		url:       $("#s_program_url").val(),
+		type:      "POST",
+		cache:     false,
+		async:     false,
+		data: { 
+			flavor: 'send_a_list_message_button_toolbar'
+		},
+		success: function(content) {
+			$("#button_toolbar").html(content); 
+		},
+		error: function(xhr, ajaxOptions, thrownError) {
+			alert('Error Saving ' + $("#draft_role").val() + ': ' + thrownError); 
+			console.log('status: ' + xhr.status);
+			console.log('thrownError:' + thrownError);
+		//	r = false; 
+		}, 
+	});
+}
+*/
+
 
 function setup_attachment_fields() { 
 	var a_nums = [1,2,3,4,5];
@@ -1543,17 +1386,85 @@ function setup_attachment_fields() {
 		}
 	}	
 }
+
+function setup_schedule_fields() { 
+	if($('#schedule_datetime').length) { 
+		$('#schedule_datetime').datetimepicker(
+			{
+				minDate: 0,
+				//minTime: 0,  
+				inline:false, 
+				format:'Y-m-d H:i:s'
+			}
+		);
+	}
+	// Recurring 
+	if($('#schedule_recurring_time').length) {  
+		$('#schedule_recurring_time').datetimepicker(
+			{
+		  		format:'H:i',
+		  		datepicker:false,
+		  		onShow:function( ct ){}
+		 	}
+		);
+	}
+	if($('#schedule_recurring_date_start').length) { 
+		 $('#schedule_recurring_date_start').datetimepicker({
+		  format:'Y-m-d',
+		  timepicker:false,
+		  onShow:function( ct ){
+		   this.setOptions({
+		    maxDate:$('#schedule_recurring_date_end').val()?$('#schedule_recurring_date_end').val():false
+		   })
+		  }
+		 });
+	}
+	if($('#schedule_recurring_date_end').length) { 
+		 $('#schedule_recurring_date_end').datetimepicker(
+			{
+				format:'Y-m-d',
+				timepicker:false,
+				onShow:function( ct ){
+					this.setOptions({
+		    			minDate:$('#schedule_recurring_date_start').val()?$('#schedule_recurring_date_start').val():false
+		   			})
+		  		}
+		 	}
+		);
+	}
+}
+
+function toggle_schedule_options() { 
+	if ($("#schedule_type_single").prop("checked") === true) {
+		if ($('#schedule_type_single_options').is(':hidden')) {
+			$('#schedule_type_single_options').show('blind');
+		}
+		if ($('#schedule_type_recurring_options').is(':visible')) {
+			$('#schedule_type_recurring_options').hide('blind');
+		}
+	}
+	
+	if ($("#schedule_type_recurring").prop("checked") === true) {
+		if ($('#schedule_type_recurring_options').is(':hidden')) {
+			$('#schedule_type_recurring_options').show('blind');
+		}
+		if ($('#schedule_type_single_options').is(':visible')) {
+			$('#schedule_type_single_options').hide('blind');
+		}
+	}
+}
+
+
 function save_draft(async) { 
 	
 	//alert('save draft called!'); 
-	
-	var r = false; 
-	
-   alert(
-		$("#mass_mailing").serialize()
-		 + '&process=save_as_draft'
-	);
 
+	var r = false; 
+
+	//	console.log(
+	//	$("#mass_mailing").serialize()
+	//	 + '&process=save_as_draft'
+	//	);
 
 	if ($("#using_ckeditor").length) {
 		if(CKEDITOR.instances['html_message_body']) { 
@@ -1585,11 +1496,12 @@ function save_draft(async) {
 			r = false; 
 		}, 
 	});
+	
 	return r; 
 }
 
-function create_from_stationary() { 
-	window.location.replace($("#s_program_url").val() + '?flavor=create_from_stationary&draft_id=' + $("#draft_id").val() + '&screen=' + $("#f").val());
+function create_from_stationery() { 
+	window.location.replace($("#s_program_url").val() + '?flavor=create_from_stationery&draft_id=' + $("#draft_id").val() + '&screen=' + $("#f").val());
 }
 
 function auto_save_as_draft() {
@@ -1615,6 +1527,7 @@ function auto_save_as_draft() {
 			data: $("#mass_mailing").serialize() + '&process=save_as_draft',
 			success: function(content) {
 				$('#draft_notice .alert').text('Last auto-save: ' + new Date().format("yyyy-MM-dd h:mm:ss"));
+				console.log('content.id: ' + content.id); 
 				$("#draft_id").val(content.id);
 				admin_menu_drafts_notification();
 			},
@@ -3603,23 +3516,23 @@ function preview_message_receivers() {
 function ChangeMassMailingButtonLabel() {
 /*	
 	if($("#scheduled_mailing").prop("checked")){ 
-		// This should work, as you can't set this, while as a stationary. 
+		// This should work, as you can't set this, while as a stationery. 
 		$('#submit_mass_mailing').hide('fade');
 		$('#save_draft_button').val('Save Schedule');
-		$("#save_draft_button").attr("data-role", 'schedule'); 
+		$("#save_draft_button").attr("data-save_draft_role", 'schedule'); 
 	
-		$('#save_as_stationary_button').hide('fade');
+		$('#save_as_stationery_button').hide('fade');
 	}
 	else { 
 */		
 		$('#submit_mass_mailing').show();
 		$('#save_draft_button').show();
-		$('#save_as_stationary_button').show();
+		$('#save_as_stationery_button').show();
 		
 		$('#save_draft_button').val($("#default_save_draft_button_label").val());
 		
 		
-		$("#save_draft_button").attr("data-role", 'draft'); 
+		$("#save_draft_button").attr("data-save_draft_role", 'draft'); 
 
 		
 		if ($("#archive_message").prop("checked") === true && $("#archive_no_send").prop("checked") === true) {

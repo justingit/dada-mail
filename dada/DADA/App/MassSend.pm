@@ -1044,12 +1044,12 @@ sub find_draft_id {
     if (   $restore_from_draft ne 'true'
         && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => $args->{-role} } ) )
     {
-        $draft_id = undef;
+         $draft_id = undef;
     }
     elsif ($restore_from_draft eq 'true'
         && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'draft' } )
         && $args->{-role} eq 'draft' )
-    {    # so, only drafts (not stationary),
+    {    # so, only drafts (not stationery),
         if ( defined( $q->param('draft_id') ) ) {
             $draft_id = $q->param('draft_id');
         }
@@ -1058,15 +1058,15 @@ sub find_draft_id {
         }
     }
     elsif ($restore_from_draft eq 'true'
-        && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'stationary' } )
-        && $args->{-role} eq 'stationary' )
+        && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'stationery' } )
+        && $args->{-role} eq 'stationery' )
     {
         if ( defined( $q->param('draft_id') ) ) {
             $draft_id = $q->param('draft_id');
         }
         else {
             # $draft_id = $self->{md_obj}->latest_draft_id( { -screen => 'send_email', -role => 'draft' } );
-            # we don't want to load up the most recent stationary, since that's not how stationary... work.
+            # we don't want to load up the most recent stationery, since that's not how stationery... works.
         }
     }
     elsif ($restore_from_draft eq 'true'
@@ -1168,16 +1168,18 @@ sub save_as_draft {
         $args->{-json} = 0;
     }
 
-    my $draft_id   = $q->param('draft_id')   || undef;
-    my $draft_role = $q->param('draft_role') || 'draft';
-    my $screen     = $q->param('flavor')     || 'send_email';
-
+    my $draft_id        = $q->param('draft_id')        || undef;
+    my $draft_role      = $q->param('draft_role')      || 'draft';
+    my $save_draft_role = $q->param('save_draft_role') || 'draft';
+    my $screen          = $q->param('flavor')          || 'send_email';
+ 
     my $saved_draft_id = $self->{md_obj}->save(
         {
-            -cgi_obj => $q,
-            -id      => $draft_id,
-            -role    => $draft_role,
-            -screen  => $screen,
+            -cgi_obj   => $q,
+            -id        => $draft_id,
+            -role      => $draft_role,
+            -save_role => $save_draft_role, 
+            -screen    => $screen,
         }
     );
 

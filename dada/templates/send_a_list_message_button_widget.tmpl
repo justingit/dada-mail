@@ -1,48 +1,80 @@
 <!-- begin send_a_list_message_button_widget.tmpl -->
 
+<input type="button" class="bigger_button cancel_message" id="cancel_message_link" value="[x]" />
+ &nbsp;&nbsp;|&nbsp;&nbsp; 
+ 
+ <!-- tmpl_if expr="(draft_role eq 'draft')" -->
+    <input type="submit" class="bigger_button plain sendmassmailing justatest"  name="process" id="submit_test_mailing" value="Test" />    
+    <input type="submit" class="bigger_button plain sendmassmailing"            name="process" id="submit_mass_mailing"  value="Mass Send" />
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    <input type="button" class="bigger_button plain save_msg"         name="process"  value="Save: Draft"         data-save_draft_role="draft"       />
+    <input type="button" class="bigger_button plain save_msg"         name="process"  value="Save as: Stationery" data-save_draft_role="stationery"  />
+    <input type="submit" class="bigger_button plain save_msg"         name="process"  value="Save as: Schedule"   data-save_draft_role="schedule"    />
+<!-- /tmpl_if -->
 
-	<!-- tmpl_unless expr="(mass_mailing_type eq 'invite')" -->
+<!-- tmpl_if expr="(draft_role eq 'stationery')" -->
+    <input type="submit" class="bigger_button plain sendmassmailing justatest"  name="process" id="submit_test_mailing" value="Test" />    
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    <input type="button" class="bigger_button plain save_msg"         name="process"  value="New Draft From Stationery"         data-save_draft_role="draft"       />
+    <input type="button" class="bigger_button plain save_msg"         name="process"  value="Save Stationery" data-save_draft_role="stationery"  />
+    <input type="submit" class="bigger_button plain save_msg"         name="process"  value="New Schedule From Stationery"   data-save_draft_role="schedule"    />
+<!-- /tmpl_if -->
+
+<!-- tmpl_if expr="(draft_role eq 'schedule')" -->
+    <input type="submit" class="bigger_button plain sendmassmailing justatest"  name="process" id="submit_test_mailing" value="Test" />    
+    &nbsp;&nbsp;|&nbsp;&nbsp;
+    <input type="submit" class="bigger_button plain save_msg"         name="process"  value="Save Schedule"   data-save_draft_role="schedule"    />
+<!-- /tmpl_if -->
+
+
+<span id="button_action_notice" class="alert">
+	&nbsp;
+</span>
+
+
+<!-- tmpl_if comment --> 
+
+
+        	<!-- tmpl_unless expr="(mass_mailing_type eq 'invite')" -->
 	
-    <input type="hidden" name="default_save_draft_button_label" id="default_save_draft_button_label" value="Save as: Draft" />
-	<!-- tmpl_if expr="(draft_role eq 'stationary')" -->
-		<input type="button" class="bigger_button processing savedraft" name="process" value="Save Stationery"  data-role="stationary" id="save_stationary_button"  />
-        <input type="button" class="bigger_button processing create_from_stationary" name="process" value="New Draft From Stationery"  data-role="stationary" />
-        or <a href="#"       class="cancel_message" id="delete_stationary_link">Delete Stationery</a>
-    <!-- /tmpl_if -->
-    <!-- tmpl_if expr="(draft_role eq 'schedule')" -->
-        <input type="button" class="bigger_button processing savedraft" name="process" value="Save Schedule"  data-role="schedule" id="save_schedule_button"  />
-        or <a href="#"       class="cancel_message" id="delete_schedule_link">Delete Schedule</a>
-    <!-- /tmpl_if -->
-    <!-- tmpl_if expr="(draft_role eq 'draft')" -->
-        <!-- tmpl_if draft_id --> 
-            <input type="button" class="bigger_button processing savedraft" name="process" value="Save Draft"       data-role="draft" id="save_draft_button" />
-        <!-- tmpl_else --> 
-            <input type="button" class="bigger_button processing savedraft" name="process" value="Save as: Draft"       data-role="draft" id="save_draft_button" />       	
-        <!-- /tmpl_if -->             
-        <input type="button" class="bigger_button processing savedraft" name="process" value="Save as: Stationery"  data-role="stationary" id="save_as_stationary_button" />
-        or <a href="#"       class="cancel_message" id="cancel_message_link">Cancel Message</a>
-    <!-- /tmpl_if --> 
-<!-- /tmpl_unless -->
-
-
-
-    <input type="submit" class="bigger_button processing sendmassmailing justatest"  name="process" id="submit_test_mailing" value="<!-- tmpl_if expr="(mass_mailing_type eq 'invite')" -->Send: Test Invitation<!-- tmpl_else -->Send: Test Message<!-- /tmpl_if -->" />    
-<!-- tmpl_if expr="(draft_role ne 'stationary') && (draft_role ne 'schedule')" -->
-        <input type="submit" class="bigger_button cautionary sendmassmailing"            name="process" id="submit_mass_mailing"  value="<!-- tmpl_if expr="(mass_mailing_type eq 'invite')" -->Send: Invitations<!-- tmpl_else -->Send: Mass Mailing<!-- /tmpl_if -->" />
-        <input type="hidden" id="default_mass_mailing_button_label"                      name="default_mass_mailing_button_label" value="<!-- tmpl_if expr="(mass_mailing_type eq 'invite')" -->Send: Invitations<!-- tmpl_else -->Send: Mass Mailing<!-- /tmpl_if -->" />
-
-        <!-- tmpl_unless expr="(mass_mailing_type eq 'invite')" -->
-            <input type="submit" class="bigger_button cautionary start_a_schedule" name="process" id=""  value="Schedule..." />
+            <input type="hidden" name="default_save_draft_button_label" id="default_save_draft_button_label" value="Save as: Draft" />
+        	<!-- tmpl_if expr="(draft_role eq 'stationery')" -->
+        		<input type="button" class="bigger_button processing savedraft" name="process" value="Save Stationery"  data-role="stationery" id="save_stationery_button"  />
+                <input type="button" class="bigger_button processing create_from_stationery" name="process" value="New Draft From Stationery"  data-role="stationery" />
+                or <a href="#"       class="cancel_message" id="delete_stationery_link">Delete Stationery</a>
+            <!-- /tmpl_if -->
+            <!-- tmpl_if expr="(draft_role eq 'schedule')" -->
+                <input type="button" class="bigger_button processing savedraft" name="process" value="Save Schedule"  data-role="schedule" id="save_schedule_button"  />
+                or <a href="#"       class="cancel_message" id="delete_schedule_link">Delete Schedule</a>
+            <!-- /tmpl_if -->
+            <!-- tmpl_if expr="(draft_role eq 'draft')" -->
+                <!-- tmpl_if draft_id --> 
+                    <input type="button" class="bigger_button processing savedraft" name="process" value="Save Draft"       data-role="draft" id="save_draft_button" />
+                <!-- tmpl_else --> 
+                    <input type="button" class="bigger_button processing savedraft" name="process" value="Save as: Draft"       data-role="draft" id="save_draft_button" />       	
+                <!-- /tmpl_if -->             
+                <input type="button" class="bigger_button processing savedraft" name="process" value="Save as: Stationery"  data-role="stationery" id="save_as_stationery_button" />
+                or <a href="#"       class="cancel_message" id="cancel_message_link">Cancel Message</a>
+            <!-- /tmpl_if --> 
         <!-- /tmpl_unless -->
+
+
+
+            <input type="submit" class="bigger_button processing sendmassmailing justatest"  name="process" id="submit_test_mailing" value="<!-- tmpl_if expr="(mass_mailing_type eq 'invite')" -->Send: Test Invitation<!-- tmpl_else -->Send: Test Message<!-- /tmpl_if -->" />    
+        <!-- tmpl_if expr="(draft_role ne 'stationery') && (draft_role ne 'schedule')" -->
+                <input type="submit" class="bigger_button cautionary sendmassmailing"            name="process" id="submit_mass_mailing"  value="<!-- tmpl_if expr="(mass_mailing_type eq 'invite')" -->Send: Invitations<!-- tmpl_else -->Send: Mass Mailing<!-- /tmpl_if -->" />
+                <input type="hidden" id="default_mass_mailing_button_label"                      name="default_mass_mailing_button_label" value="<!-- tmpl_if expr="(mass_mailing_type eq 'invite')" -->Send: Invitations<!-- tmpl_else -->Send: Mass Mailing<!-- /tmpl_if -->" />
+
+                <!-- tmpl_unless expr="(mass_mailing_type eq 'invite')" -->
+                    <input type="submit" class="bigger_button cautionary start_a_schedule" name="process" id=""  value="Schedule..." />
+                <!-- /tmpl_unless -->
         
+
+        <!-- /tmpl_if --> 
+
 
 <!-- /tmpl_if --> 
 
-	<span id="button_action_notice" class="alert">
-		&nbsp;
-	</span>
 <!-- end send_a_list_message_button_widget.tmpl -->
-
-
 
 

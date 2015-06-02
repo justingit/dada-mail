@@ -140,13 +140,14 @@ sub setup {
         'admin_menu_bounce_handler_notification'      => \&admin_menu_bounce_handler_notification,
         'admin_menu_tracker_notification'             => \&admin_menu_tracker_notification,
         'send_email'                                  => \&send_email,
+        'send_a_list_message_button_toolbar'          => \&send_a_list_message_button_toolbar, 
         'recurring_schedules'                         => \&recurring_schedules,
 
         'ckeditor_template_tag_list'                  => \&ckeditor_template_tag_list,
         'draft_saved_notification'                    => \&draft_saved_notification,
         'drafts'                                      => \&drafts,
         'delete_drafts'                               => \&delete_drafts,
-        'create_from_stationary'                      => \&create_from_stationary,
+        'create_from_stationery'                      => \&create_from_stationery,
         'message_body_help'                           => \&message_body_help,
         'url_message_body_help'                       => \&url_message_body_help,
         'preview_message_receivers'                   => \&preview_message_receivers,
@@ -612,17 +613,17 @@ sub admin_menu_drafts_notification {
 
             my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
             my $num_drafts     = $d->count( { -role => 'draft' } );
-            my $num_stationary = $d->count( { -role => 'stationary' } );
+            my $num_stationery = $d->count( { -role => 'stationery' } );
             my $num_shedules   = $d->count( { -role => 'schedule' } );
 
             if (   $num_drafts > 0
-                || $num_stationary > 0
+                || $num_stationery > 0
                 || $num_shedules > 0 )
             {
                 return
                     '('
                   . commify($num_drafts) . ','
-                  . commify($num_stationary) . ','
+                  . commify($num_stationery) . ','
                   . commify($num_shedules) . ')';
             }
         }
@@ -882,6 +883,33 @@ sub send_email {
         }
         return $body;
     }
+}
+
+sub send_a_list_message_button_toolbar { 
+    my $self = shift;
+    my $q    = $self->query();
+    
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'send_email'
+    );    
+    if ( !$checksout ) { return $error_msg; }
+    my $list = $admin_list;
+    
+    my $scrn    = DADA::Template::Widgets::screen(
+        {
+            -screen         => 'send_a_list_message_button_widget.tmpl',
+            -expr => 1,
+            -vars => {
+                #
+            },
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+        }
+    );
+    return $scrn;
 }
 
 sub recurring_schedules { 
@@ -1184,7 +1212,7 @@ sub drafts {
     my $sci = [];
 
     $di  = $d->draft_index( { -role => 'draft' } );
-    $si  = $d->draft_index( { -role => 'stationary' } );
+    $si  = $d->draft_index( { -role => 'stationery' } );
     $sci = $d->draft_index( { -role => 'schedule' } );
 
     #use Data::Dumper;
@@ -1214,11 +1242,11 @@ sub drafts {
                 screen                  => 'drafts',
                 delete_draft            => $delete_draft,
                 draft_index             => $di,
-                stationary_index        => $si,
+                stationery_index        => $si,
                 active_schedule_index   => $sci_active,
                 inactive_schedule_index => $sci_inactive,
                 num_drafts              => scalar(@$di),
-                num_stationary          => scalar(@$si),
+                num_stationery          => scalar(@$si),
                 num_schedules           => scalar(@$sci),
             },
             -list_settings_vars_param => {
@@ -1254,7 +1282,7 @@ sub delete_drafts {
 
 }
 
-sub create_from_stationary {
+sub create_from_stationery {
 
     my $self = shift;
     my $q    = $self->query();
@@ -1268,7 +1296,7 @@ sub create_from_stationary {
 
     require DADA::MailingList::MessageDrafts;
     my $d = DADA::MailingList::MessageDrafts->new( { -list => $list } );
-    my $new_id = $d->create_from_stationary( { -id => $draft_id, -screen => $screen } );
+    my $new_id = $d->create_from_stationery( { -id => $draft_id, -screen => $screen } );
 
     $self->header_type('redirect');
     $self->header_props(
