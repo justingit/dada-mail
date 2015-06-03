@@ -539,23 +539,38 @@ sub draft_index {
         warn q{$q->param('schedule_datetime')} . $q->param('schedule_datetime'); 
         
         my $params = {
-            id                      => $hashref->{id},
-            list                    => $hashref->{list},
-            created_timestamp       => $hashref->{created_timestamp},
-            last_modified_timestamp => $hashref->{last_modified_timestamp},
-            screen                  => $hashref->{screen},
-            role                    => $hashref->{role},
-            Subject                 => scalar $q->param('Subject'),
-            schedule_datetime       => scalar $q->param('schedule_datetime'),
-            schedule_activated      => scalar $q->param('schedule_activated'),
+            id                            => $hashref->{id},
+            list                          => $hashref->{list},
+            created_timestamp             => $hashref->{created_timestamp},
+            last_modified_timestamp       => $hashref->{last_modified_timestamp},
+            screen                        => $hashref->{screen},
+            role                          => $hashref->{role},
+            Subject                       => scalar $q->param('Subject'),
+            schedule_datetime             => scalar $q->param('schedule_datetime'),
+            schedule_activated            => scalar $q->param('schedule_activated'),
+            
+            schedule_type                 => scalar $q->param('schedule_type'),
+            schedule_recurring_days       => [$q->multi_param('schedule_recurring_days')],
+            schedule_recurring_date_start => scalar $q->param('schedule_recurring_date_start'),
+            schedule_recurring_date_end   => scalar $q->param('schedule_recurring_date_end'),
+            schedule_recurring_time       => scalar $q->param('schedule_recurring_time')  . ':00',
+            
         };
 
-        if (   $args->{-role} eq 'schedule'
-            && length( $params->{schedule_datetime} ) > 0
-            && $params->{schedule_datetime} > 0 )
+        if ( $args->{-role} eq 'schedule')
         {
-            $params->{schedule_localtime} = $self->datetime_to_localtime( $q->param('schedule_datetime') );
-            $params->{schedule_time}      = $self->datetime_to_ctime(     $q->param('schedule_datetime') );
+            $params->{schedule_localtime}                 = $self->datetime_to_localtime( $q->param('schedule_datetime') );
+            $params->{schedule_time}                      = $self->datetime_to_ctime(     $q->param('schedule_datetime') );
+            
+            $params->{schedule_recurring_datetime_start}  = $params->{schedule_recurring_date_start} . ' ' . $params->{schedule_recurring_time}; 
+            $params->{schedule_recurring_datetime_end}    = $params->{schedule_recurring_date_end}   . ' ' . $params->{schedule_recurring_time}; 
+
+            $params->{schedule_recurring_localtime_start} = $self->datetime_to_localtime($params->{schedule_recurring_datetime_start}); 
+            $params->{schedule_recurring_localtime_end}   = $self->datetime_to_localtime($params->{schedule_recurring_datetime_end});   
+
+            $params->{schedule_recurring_time_start}      = $self->datetime_to_ctime($params->{schedule_recurring_datetime_start}); 
+            $params->{schedule_recurring_time_end}        = $self->datetime_to_ctime($params->{schedule_recurring_datetime_end});   
+        
         }
         push( @$r, $params );        
     }

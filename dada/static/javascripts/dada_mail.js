@@ -138,13 +138,11 @@ $(document).ready(function() {
 		$("body").on("click", ".scheduled_type", function(event) {
 			toggle_schedule_options();
 		}); 
-		$("body").on("click", ".schedule_field", function(event) {
+
+		
+		$("body").on("change", ".schedule_field", function(event) {
 			mass_mail_schedules_preview();
 		}); 
-		
-	//	$("body").on("change", ".schedule_field", function(event) {
-	//		mass_mail_schedules_preview();
-	//	}); 
 		
 		
 		
@@ -1354,7 +1352,10 @@ function setup_schedule_fields() {
 				minDate: 0,
 				//minTime: 0,  
 				inline:false, 
-				format:'Y-m-d H:i:s'
+				format:'Y-m-d H:i:s',
+				onChangeDateTime:function(dp,$input){
+				   mass_mail_schedules_preview(); 
+				}
 			}
 		);
 	}
@@ -1364,7 +1365,10 @@ function setup_schedule_fields() {
 			{
 		  		format:'H:i',
 		  		datepicker:false,
-		  		onShow:function( ct ){}
+		  		onShow:function( ct ){},
+				onChangeDateTime:function(dp,$input){
+				   mass_mail_schedules_preview(); 
+				}
 		 	}
 		);
 	}
@@ -1376,8 +1380,11 @@ function setup_schedule_fields() {
 		   this.setOptions({
 		    maxDate:$('#schedule_recurring_date_end').val()?$('#schedule_recurring_date_end').val():false
 		   })
-		  }
-		 });
+		  },
+		onChangeDateTime:function(dp,$input){
+			mass_mail_schedules_preview(); 
+		}
+		});
 	}
 	if($('#schedule_recurring_date_end').length) { 
 		 $('#schedule_recurring_date_end').datetimepicker(
@@ -1388,7 +1395,11 @@ function setup_schedule_fields() {
 					this.setOptions({
 		    			minDate:$('#schedule_recurring_date_start').val()?$('#schedule_recurring_date_start').val():false
 		   			})
-		  		}
+		  		},
+				onChangeDateTime:function(dp,$input){
+				   mass_mail_schedules_preview(); 
+				}
+		
 		 	}
 		);
 	}

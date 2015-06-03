@@ -193,6 +193,7 @@ sub send_email {
                       DADA::Template::Widgets::global_list_sending_checkbox_widget( $self->{list} ),
                     schedule_last_checked_frt =>
                       formatted_runtime( time - $self->{ls_obj}->param('schedule_last_checked_time') ),
+                      can_use_datetime => scalar DADA::App::Guts::can_use_datetime(), 
                     %wysiwyg_vars,
                     %$ses_params,
                 },

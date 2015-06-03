@@ -80,6 +80,7 @@ require Exporter;
   grab_url
   can_use_LWP_Simple
   can_use_AuthenCAPTCHA
+  can_use_datetime
   formatted_runtime
   commify
   generate_rand_string_md5
@@ -3042,6 +3043,19 @@ sub can_use_compress_zlib {
     	};
     	return $can_use_compress_zlib;
 }
+
+sub can_use_datetime { 
+    my $can_use_datetime = 1; 
+   	try { 
+        require DateTime;
+        require DateTime::Event::Recurrence;
+    } catch { 
+        $can_use_datetime = 0; 
+    };
+    # warn 'can_use_datetime ' . scalar $can_use_datetime; 
+    return $can_use_datetime; 
+}
+
 
 sub can_use_LWP_Simple { 
 	my $can_use_lwp_simple = 1; 

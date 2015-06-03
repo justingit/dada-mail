@@ -41,8 +41,8 @@
             </div> 
             
             <p>
-            <input type="radio" name="schedule_type" id="schedule_type_recurring" value="recurring"  class="scheduled_type schedule_field">
-            <label for="schedule_type_recurring">Recurring</label>
+            <input type="radio" name="schedule_type" id="schedule_type_recurring" value="recurring"  class="scheduled_type schedule_field" <!-- tmpl_unless can_use_datetime -->disabled="disabled" class="disabled"<!-- /tmpl_unless --> />
+            <label for="schedule_type_recurring">Recurring</label> <!-- tmpl_unless can_use_datetime -->(Disabled.)<!-- /tmpl_unless -->
             <p>
 
             <div id="schedule_type_recurring_options"> 

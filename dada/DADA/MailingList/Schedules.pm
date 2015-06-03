@@ -15,7 +15,7 @@ use DADA::MailingList::MessageDrafts;
 use DADA::MailingList::Settings; 
 use DADA::App::MassSend; 
 use DADA::App::Guts; 
-
+use Try::Tiny; 
 
 
 sub new {
@@ -84,6 +84,11 @@ sub run_schedules {
     }
     my $index = $self->{d_obj}->draft_index({-role => 'schedule'});
     SCHEDULES: for my $sched(@$index){ 
+        
+        #$r .= "Raw Paramaters:\n"; 
+        #require Data::Dumper; 
+        #$r .= Data::Dumper::Dumper($sched);
+        
         $r .= "\n*\t\t Subject: " . $sched->{Subject} . "\n"; 
         
         if($sched->{schedule_activated} != 1){ 
@@ -92,6 +97,72 @@ sub run_schedules {
             $r .= "\t\t* Schedule is Activated!\n"; 
         }
         
+        if($sched->{schedule_type} eq 'recurring'){ 
+            
+            my $d_lt = {
+                7 => 'Sunday',
+                1 => 'Monday',
+                2 => 'Tuesday',
+                3 => 'Wednesday',
+                4 => 'Thursday',
+                5 => 'Friday',
+                6 => 'Saturday',
+            };
+            my $days_str = undef; 
+            for(@{$sched->{schedule_recurring_days}}){ 
+                $days_str .= $d_lt->{$_} . ', '; 
+            }
+            $r .= "\t\t* Schedule Type: Recurring\n"; 
+            $r .= 'This is a *Recurring* mass mailing, between ' . "\n" . 
+            $sched->{schedule_recurring_localtime_start} . 
+            ' and ' . 
+            $sched->{schedule_recurring_localtime_end} .  "\n" .
+            ' on: ' . 
+            $days_str ."\n" .
+            ' at: '  . $sched->{schedule_recurring_time} . "\n\n"; 
+            
+            my ($s_t_r, $r_sched_t)  = $self->recurring_schedule_times(
+                {
+                    -recurring_time => $sched->{schedule_recurring_time},
+                    -days           => $sched->{schedule_recurring_days}, 
+                    -start          => $sched->{schedule_recurring_time_start}, 
+                    -end            => $sched->{schedule_recurring_time_end}, 
+                }
+            ); 
+            $r .= "\n\n\$s_t_r: $s_t_r\n\n"; 
+            
+            #require Data::Dumper; 
+            #$r .=   Data::Dumper::Dumper($r_sched_t); 
+            
+            my $recent_t = []; 
+            for(@$r_sched_t){ 
+                if(
+                       $_->{ctime} > ($t - 86400) 
+                    &&   $_->{ctime} < ($t + 86400) 
+                ){ 
+                    push(@$recent_t, $_->{ctime}); 
+                }
+            }
+            if(scalar @$recent_t > 0){ 
+                $r .= "Approaching Times:\n";
+                for(@$recent_t) { 
+                    $r .= scalar localtime($_) . "\n"; 
+                }
+            }
+            else { 
+                $r .= "No Scheduled Mailing needs to be sent out.\n"; 
+            }
+            #$r .= '$s_t_r: ' . $s_t_r; 
+            
+           # require Data::Dumper; 
+           #$r .= Data::Dumper::Dumper($schedule_times); 
+        
+        }
+        else { 
+            $r .= "\t\t* Schedule Type: One-Time\n"; 
+        }
+=cut
+
         if($sched->{schedule_time} < ($t - 86400)) { # was this supposed to be sent a day ago? 
             $r .= "\t\t* Schedule is too late to run - should have ran " . formatted_runtime($t - $sched->{schedule_time}) . ' ago.' . "\n"; 
             $r .= "Deactivating Schedule...\n"; 
@@ -155,9 +226,13 @@ sub run_schedules {
                 }
             );
         }
+=cut
+
     }
     
     $self->{ls_obj}->save({schedule_last_checked_time => time});
+
+
     
     $r .= "\n"; 
     
@@ -166,6 +241,88 @@ sub run_schedules {
     }
     return $r; 
     
+}
+
+sub recurring_schedule_times {
+    my $self = shift;
+    my ($args) = @_;
+    my $r = undef; 
+    
+    require Data::Dumper; 
+    $r .= "args:" . Data::Dumper::Dumper($args); 
+    
+    my $recurring_time = $args->{-recurring_time};
+    my $days           = $args->{-days};
+    my $start          = $args->{-start};
+    my $end            = $args->{-end};
+
+    my $times = [];
+
+    try {
+
+        require DateTime;
+        require DateTime::Event::Recurrence;
+        
+        my $start_dt = DateTime->from_epoch( epoch => $start );
+        my $end_dt   = DateTime->from_epoch( epoch => $end );
+
+        my ( $hours, $minutes, $seconds ) = split( ':', $recurring_time );
+
+        $r .= '$start_dt ' . $start_dt->epoch . "\n"; 
+        $r .= '$end_dt '   . $end_dt->epoch   . "\n";
+        $r .= '$recurring_time ' . $recurring_time  . "\n";
+        $r .= '$hours ' . $hours  . "\n";
+        $r .= '$minutes ' . $minutes . "\n";
+        $r .= '$seconds  '  . $seconds . "\n";
+        
+
+        my $day_set = undef;
+        my $dates   = [];
+
+        $day_set = DateTime::Event::Recurrence->weekly(
+            days    => $days,
+            hours   => $hours,
+            minutes => $minutes
+        );
+        my $it = $day_set->iterator(
+            start  => $start_dt,
+            before => $end_dt,
+        );
+
+        while ( my $dt = $it->next() ) {
+            push(
+                @$times,
+                {
+                    date  => $dt->datetime,
+                    #ctime => $dt->epoch,
+                    #'localtime' => scalar localtime($dt->epoch),
+                    localtime => scalar localtime($self->T_datetime_to_ctime($dt->datetime)),
+                   # 'datetime_to_ctime' => $self->T_datetime_to_ctime($dt->datetime), 
+                    ctime => $self->T_datetime_to_ctime($dt->datetime), 
+                }
+            );
+        }
+
+    } catch {
+        warn $_;
+        $r .= 'PROBLEMS: ' . $_; 
+    };
+
+    return ($r, $times);
+}
+
+sub T_datetime_to_ctime {
+    my $self = shift; 
+    my $datetime = shift;
+    warn '$datetime ' . $datetime; 
+    require Time::Local;
+    my ( $date, $time ) = split( 'T', $datetime );
+    my ( $year, $month,  $day )    = split( '-', $date );
+    my ( $hour, $minute, $second ) = split( ':', $time );
+    $second = int( $second - 0.5 );    # no idea.
+    my $time = Time::Local::timelocal( $second, $minute, $hour, $day, $month - 1, $year );
+
+    return $time;
 }
 
 

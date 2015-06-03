@@ -927,7 +927,7 @@ sub mass_mail_schedules_preview {
     if ( !$checksout ) { return $error_msg; }
     my $list = $admin_list;
 
-
+    
     my @schedule_recurring_days = $q->multi_param('schedule_recurring_days');
     my $rd                      = [];
     my $days                    = {
@@ -1020,7 +1020,7 @@ sub mass_mail_schedules_preview {
             #},
             -expr => 1,
             -vars => {
-                errors                             => $errors,                
+                errors                             => $errors,   
                 schedule_activated                 => $schedule_activated,
                 schedule_type                      => $schedule_type,
                 schedule_datetime                  => $schedule_datetime, 
@@ -1032,6 +1032,8 @@ sub mass_mail_schedules_preview {
                 schedule_recurring_localtime_end   => datetime_to_localtime($schedule_recurring_date_end), 
                 schedule_recurring_days            => $rd,
                 dates                              => $dates,
+                can_use_datetime                   => scalar DADA::App::Guts::can_use_datetime(),      
+                
             },
             -list_settings_vars_param => {
                 -list   => $list,
@@ -1045,6 +1047,7 @@ sub mass_mail_schedules_preview {
 
 sub datetime_to_ctime {
     my $datetime = shift;
+    warn '$datetime ' . $datetime; 
     require Time::Local;
     my ( $date, $time ) = split( ' ', $datetime );
     my ( $year, $month,  $day )    = split( '-', $date );
