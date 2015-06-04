@@ -114,6 +114,7 @@ sub setup {
         'sub_unsub_trends_json'                       => \&sub_unsub_trends_json,
         'view_bounce_history'                         => \&view_bounce_history,
         'subscription_requests'                       => \&subscription_requests,
+        'unsubscription_requests'                     => \&unsubscription_requests,
         'remove_all_subscribers'                      => \&remove_all_subscribers,
         'view_list_options'                           => \&list_cp_options,
         'membership'                                  => \&membership,
@@ -4144,6 +4145,7 @@ sub subscription_requests {
 
     my $list = $admin_list;
 
+    #?
     if ( defined( $q->param('list') ) ) {
         if ( $list ne $q->param('list') ) {
             my ( $headers, $body ) =
@@ -4287,6 +4289,133 @@ sub subscription_requests {
     }
 
 }
+
+sub unsubscription_requests {
+
+    my $self = shift;
+    my $q    = $self->query();
+
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'view_list'
+    );
+    if ( !$checksout ) { return $error_msg; }
+
+    my $list = $admin_list;
+
+    #    #?
+    #    if ( defined( $q->param('list') ) ) {
+    #        if ( $list ne $q->param('list') ) {
+    #            my ( $headers, $body ) =
+    #              $self->logout( -redirect_url => $DADA::Config::S_PROGRAM_URL . '?' . $q->query_string(), );
+    #            if ( keys %$headers ) {
+    #                $self->header_props(%$headers);
+    #            }
+    #            return $body;
+    #        }
+    #    }
+
+    my @address        = $q->multi_param('address');
+    my $return_to      = $q->param('return_to') || '';
+    my $return_address = $q->param('return_address') || '';
+
+    my $count = 0;
+    require DADA::MailingList::Settings;
+
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+    my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
+
+    if ( $q->param('process') =~ m/approve/i ) {
+
+        # go!
+        my ( $d_count, $bl_count ) = $lh->admin_remove_subscribers(
+            {
+                -addresses        => [@address],
+                -type             => 'list',
+                -validation_check => 0,
+            }
+        );
+
+        for my $email (@address) {
+            $lh->remove_subscriber(
+                {
+                    -email => $email,
+                    -type  => 'unsub_request_list',
+                }
+            );
+
+            #           warn 'send_unsubscription_request_approved_message'
+            #                if $t;
+            require DADA::App::Messages;
+            DADA::App::Messages::send_unsubscription_request_approved_message(
+                {
+                    -list   => $list,
+                    -email  => $email,
+                    -ls_obj => $ls,
+
+                    #-test   => $self->test,
+                }
+            );
+            $count = $count + $d_count;
+        }
+
+        my $flavor_to_return_to = 'view_list';
+        if ( $return_to eq 'membership' ) {    # or, others...
+            $flavor_to_return_to = $return_to;
+        }
+
+        my $qs = 'f=' . $flavor_to_return_to . '&type=' . scalar( $q->param('type') ) . '&approved_count=' . $count;
+
+        if ( $return_to eq 'membership' ) {
+            $qs .= '&email=' . $return_address;
+        }
+
+        $self->header_type('redirect');
+        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?' . $qs );
+    }
+    elsif ( $q->param('process') =~ m/deny/i ) {
+        for my $email (@address) {
+            $lh->remove_subscriber(
+                {
+                    -email => $email,
+                    -type  => 'unsub_request_list',
+                }
+            );
+            require DADA::App::Messages;
+            DADA::App::Messages::send_unsubscription_request_denied_message(
+                {
+                    -list   => $list,
+                    -email  => $email,
+                    -ls_obj => $ls,
+
+                    #-test   => $self->test,
+                }
+            );
+            $count++;
+        }
+
+        my $flavor_to_return_to = 'view_list';
+        if ( $return_to eq 'membership' ) {    # or, others...
+            $flavor_to_return_to = $return_to;
+        }
+
+        my $qs = 'f=' . $flavor_to_return_to . '&type=' . scalar( $q->param('type') ) . '&denied_count=' . $count;
+
+        if ( $return_to eq 'membership' ) {
+            $qs .= '&email=' . $return_address;
+        }
+
+        $self->header_type('redirect');
+        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?' . $qs );
+
+    }
+    else {
+        die "unknown process!";
+    }
+
+}
+
+
 
 sub remove_all_subscribers {
 

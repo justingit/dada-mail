@@ -57,7 +57,14 @@
 		<!-- tmpl_else --> 
 			<!-- tmpl_var approved_count --> address(es) have been 
 		<!-- /tmpl_if --> 	
-			approved for subscription.
+			approved for 
+		<!-- tmpl_if expr="(type eq 'unsub_request_list')" --> 
+		    removal.
+		<!-- tmpl_else --> 
+		    subscription.
+		<!-- /tmpl_if -->
+
+	
 	</p>
 <!-- /tmpl_if --> 
 
