@@ -4356,9 +4356,10 @@ sub unsubscription_requests {
                     #-test   => $self->test,
                 }
             );
-            $count = $count + $d_count;
         }
-
+        
+        $count = int($count) + int($d_count);
+        
         my $flavor_to_return_to = 'view_list';
         if ( $return_to eq 'membership' ) {    # or, others...
             $flavor_to_return_to = $return_to;
