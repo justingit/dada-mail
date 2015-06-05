@@ -80,22 +80,25 @@ sub run_schedules {
         $r .= "\t* No Schedules currently saved\n";
     }     
     else { 
-        $r .= "\t* $count Schedules\n";
+        $r .= "\t* $count Schedule(s)\n";
     }
     my $index = $self->{d_obj}->draft_index({-role => 'schedule'});
+    
     SCHEDULES: for my $sched(@$index){ 
         
         #$r .= "Raw Paramaters:\n"; 
         #require Data::Dumper; 
         #$r .= Data::Dumper::Dumper($sched);
         
-        $r .= "\n*\t\t Subject: " . $sched->{Subject} . "\n"; 
+        $r .= "\n\t\t* Subject: " . $sched->{Subject} . "\n\n"; 
         
         if($sched->{schedule_activated} != 1){ 
             $r .= "\t\t* Schedule is NOT Activated.\n"; 
             next SCHEDULES; 
             $r .= "\t\t* Schedule is Activated!\n"; 
         }
+        
+        my $schedule_times = []; 
         
         if($sched->{schedule_type} eq 'recurring'){ 
             
@@ -112,14 +115,15 @@ sub run_schedules {
             for(@{$sched->{schedule_recurring_days}}){ 
                 $days_str .= $d_lt->{$_} . ', '; 
             }
-            $r .= "\t\t* Schedule Type: Recurring\n"; 
-            $r .= 'This is a *Recurring* mass mailing, between ' . "\n" . 
+#            $r .= "\t\t* Schedule Type: Recurring\n"; 
+
+            $r .= "\t\tThis is a *Recurring* mass mailing, between " . "\n\t\t" . 
             $sched->{schedule_recurring_localtime_start} . 
             ' and ' . 
-            $sched->{schedule_recurring_localtime_end} .  "\n" .
-            ' on: ' . 
-            $days_str ."\n" .
-            ' at: '  . $sched->{schedule_recurring_time} . "\n\n"; 
+            $sched->{schedule_recurring_localtime_end} .  "\n\t\t" .
+            'on: ' . 
+            $days_str ."\n\t\t" .
+            'at: '  . $sched->{schedule_recurring_time} . "\n\n"; 
             
             my ($s_t_r, $r_sched_t)  = $self->recurring_schedule_times(
                 {
@@ -129,111 +133,117 @@ sub run_schedules {
                     -end            => $sched->{schedule_recurring_time_end}, 
                 }
             ); 
-            $r .= "\n\n\$s_t_r: $s_t_r\n\n"; 
+            if(defined($s_t_r) > 0){ 
+                $r .= "Problems?: $s_t_r\n\n"; 
+            }
             
             #require Data::Dumper; 
             #$r .=   Data::Dumper::Dumper($r_sched_t); 
             
-            my $recent_t = []; 
             for(@$r_sched_t){ 
                 if(
-                       $_->{ctime} > ($t - 86400) 
-                    &&   $_->{ctime} < ($t + 86400) 
+                         $_->{ctime} >= ($t - 86400) 
+                    &&   $_->{ctime} <= ($t + 86400) 
                 ){ 
-                    push(@$recent_t, $_->{ctime}); 
+                    push(@$schedule_times, $_->{ctime}); 
                 }
             }
-            if(scalar @$recent_t > 0){ 
-                $r .= "Approaching Times:\n";
-                for(@$recent_t) { 
-                    $r .= scalar localtime($_) . "\n"; 
-                }
+            if(scalar @$schedule_times <= 0){ 
+                $r .= "\t\t* No Scheduled Mailing needs to be sent out.\n";                 
             }
             else { 
-                $r .= "No Scheduled Mailing needs to be sent out.\n"; 
+                $r .= "\t\t* Approaching Times:\n";
+                for(@$schedule_times) { 
+                    $r .= "\t\t\t* " . scalar localtime($_) . "\n"; 
+                }
             }
-            #$r .= '$s_t_r: ' . $s_t_r; 
-            
-           # require Data::Dumper; 
-           #$r .= Data::Dumper::Dumper($schedule_times); 
-        
         }
         else { 
             $r .= "\t\t* Schedule Type: One-Time\n"; 
+            push(@$schedule_times, $sched->{schedule_time}); 
         }
-=cut
+        
+        SPECIFIC_SCHEDULES: for my $specific_time(@$schedule_times) { 
 
-        if($sched->{schedule_time} < ($t - 86400)) { # was this supposed to be sent a day ago? 
-            $r .= "\t\t* Schedule is too late to run - should have ran " . formatted_runtime($t - $sched->{schedule_time}) . ' ago.' . "\n"; 
-            $r .= "Deactivating Schedule...\n"; 
-            $self->deactivate_schedule(
-                {
-                    -id     => $sched->{id},
-                    -role   => $sched->{role},
-                    -screen => $sched->{screen},
-                }
-            );
-            next SCHEDULES;
-        }
-        else {     
-            $r .= "\t\t* Schedule to run at: " . $sched->{schedule_localtime} . "\n"; 
-        }
-        
-        
-        my $last_checked = $self->{ls_obj}->param('schedule_last_checked_time'); 
-                
-        if($sched->{schedule_time} > $t){ 
-            $r .= "\t\t* Schedule will run " . formatted_runtime($sched->{schedule_time} - $t)   ." from now\n";
-            next SCHEDULES; 
-        }
-        
-        if($sched->{schedule_time} >= $self->{ls_obj}->param('schedule_last_checked_time')){ 
-            $r .= "\t\t\t* Schedule running now!\n";
-            
-           my ($status, $errors, $message_id) = $self->{ms_obj}->construct_and_send(
-                {
-                    -draft_id   => $sched->{id},
-                    -screen     => $sched->{screen},
-                    -role       => $sched->{role},,
-                    -process    => 1, 
-                }
-            );
-            if($status == 1){ 
-                $r .= "\t\t* Scheduled Mass Mailing added to the Queue, Message ID: $message_id\n"; 
+            my $end_time; 
+            if($sched->{schedule_type} eq 'recurring'){ 
+                $end_time = $sched->{schedule_recurring_time_end}
             }
             else { 
-                $r .= "\t\t* PROBLEMS with Mass Mailing:\n$errors\n"; 
+                $end_time = $specific_time; 
             }
-            $r .= "\t\t* Deactivating Schedule...\n"; 
-            $self->deactivate_schedule(
-                {
-                    -id     => $sched->{id},
-                    -role   => $sched->{role},
-                    -screen => $sched->{screen},
+            
+            if($end_time < ($t - 86400)) { # was this supposed to be sent a day ago? 
+                $r .= "\t\t* Schedule is too late to run - should have ran " . formatted_runtime($t - $end_time) . ' ago.' . "\n"; 
+                $r .= "Deactivating Schedule...\n"; 
+                $self->deactivate_schedule(
+                    {
+                        -id     => $sched->{id},
+                        -role   => $sched->{role},
+                        -screen => $sched->{screen},
+                    }
+                );
+                next SPECIFIC_SCHEDULES;
+            }
+            else {     
+                $r .= "\t\t* Schedule runs at: " . scalar localtime($specific_time) . "\n"; 
+            }
+        
+            my $last_checked = $self->{ls_obj}->param('schedule_last_checked_time'); 
+                
+            if($specific_time > $t){ 
+                $r .= "\t\t* Schedule will run " . formatted_runtime($specific_time - $t)   ." from now\n";
+                next SPECIFIC_SCHEDULES; 
+            }
+        
+            if($specific_time >= $self->{ls_obj}->param('schedule_last_checked_time')){ 
+                $r .= "\t\t\t* Running schedule now!\n";
+            
+               my ($status, $errors, $message_id) = $self->{ms_obj}->construct_and_send(
+                    {
+                        -draft_id   => $sched->{id},
+                        -screen     => $sched->{screen},
+                        -role       => $sched->{role},,
+                        -process    => 1, 
+                    }
+                );
+                if($status == 1){ 
+                    $r .= "\t\t* Scheduled Mass Mailing added to the Queue, Message ID: $message_id\n"; 
                 }
-            );
-             
-        }
-        if($sched->{schedule_time} < $self->{ls_obj}->param('schedule_last_checked_time')){ 
-            $r .= "\t\t* Schedule SHOULD have been sent, but wasn't\n";
-            $r .= "\t\t* Deactivating Schedule...\n"; 
-             
-            $self->deactivate_schedule(
-                {
-                    -id     => $sched->{id},
-                    -role   => $sched->{role},
-                    -screen => $sched->{screen},
+                else { 
+                    $r .= "\t\t* PROBLEMS with Mass Mailing:\n$errors\n"; 
                 }
-            );
+                if($sched->{schedule_type} ne 'recurring'){ 
+                    $r .= "\t\t* Deactivating Schedule...\n"; 
+                    $self->deactivate_schedule(
+                        {
+                            -id     => $sched->{id},
+                            -role   => $sched->{role},
+                            -screen => $sched->{screen},
+                        }
+                    );
+                }
+            }
+            
+            if($sched->{schedule_type} ne 'recurring'){ 
+                if($specific_time < $self->{ls_obj}->param('schedule_last_checked_time')){ 
+                    $r .= "\t\t* Schedule SHOULD have been sent, but wasn't\n";
+                    $r .= "\t\t* Deactivating Schedule...\n"; 
+             
+                    $r .= $self->deactivate_schedule(
+                        {
+                            -id     => $sched->{id},
+                            -role   => $sched->{role},
+                            -screen => $sched->{screen},
+                        }
+                    );
+                }
+            }
         }
-=cut
-
     }
     
     $self->{ls_obj}->save({schedule_last_checked_time => time});
 
-
-    
     $r .= "\n"; 
     
     if($args->{-verbose} == 1){ 
@@ -248,8 +258,8 @@ sub recurring_schedule_times {
     my ($args) = @_;
     my $r = undef; 
     
-    require Data::Dumper; 
-    $r .= "args:" . Data::Dumper::Dumper($args); 
+    # require Data::Dumper; 
+    # $r .= "args:" . Data::Dumper::Dumper($args); 
     
     my $recurring_time = $args->{-recurring_time};
     my $days           = $args->{-days};
@@ -268,12 +278,12 @@ sub recurring_schedule_times {
 
         my ( $hours, $minutes, $seconds ) = split( ':', $recurring_time );
 
-        $r .= '$start_dt ' . $start_dt->epoch . "\n"; 
-        $r .= '$end_dt '   . $end_dt->epoch   . "\n";
-        $r .= '$recurring_time ' . $recurring_time  . "\n";
-        $r .= '$hours ' . $hours  . "\n";
-        $r .= '$minutes ' . $minutes . "\n";
-        $r .= '$seconds  '  . $seconds . "\n";
+        #$r .= '$start_dt ' . $start_dt->epoch . "\n"; 
+        #$r .= '$end_dt '   . $end_dt->epoch   . "\n";
+        #$r .= '$recurring_time ' . $recurring_time  . "\n";
+        #$r .= '$hours ' . $hours  . "\n";
+        #$r .= '$minutes ' . $minutes . "\n";
+        #$r .= '$seconds  '  . $seconds . "\n";
         
 
         my $day_set = undef;
@@ -305,7 +315,7 @@ sub recurring_schedule_times {
 
     } catch {
         warn $_;
-        $r .= 'PROBLEMS: ' . $_; 
+        $r .= $_; 
     };
 
     return ($r, $times);
@@ -333,11 +343,17 @@ sub deactivate_schedule {
     my $self   = shift; 
     my ($args) = @_; 
     
+    require Data::Dumper;
+    my $r; 
+    $r .= 'passed args:'; 
+    $r .= Data::Dumper::Dumper($args); 
+    
+    
     my $local_q = $self->{d_obj}->fetch(
         {
            -id     => $args->{-id}, 
            -role   => $args->{-role},  
-           -screen =>  $args->{-screen},  
+           -screen => $args->{-screen},  
         }
     ); 
     
@@ -349,11 +365,12 @@ sub deactivate_schedule {
             -cgi_obj => $local_q,
             -id      => $args->{-id}, 
             -role    => $args->{-role},  
-            -screen  =>  $args->{-screen},  
+            -screen  => $args->{-screen},  
         }
     ); 
 
-    return 1; 
+    return $r; 
+   # return 1; 
 }
 
 sub DESTROY {}

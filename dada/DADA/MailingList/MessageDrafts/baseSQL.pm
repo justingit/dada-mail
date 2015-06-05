@@ -117,7 +117,7 @@ sub save {
     warn 'here.';
     
     if ( !exists( $args->{-save_role} ) ) {
-        $args->{-save_role} = 'draft';
+        $args->{-save_role} = $args->{-role};
     }
     warn 'here.';
 
