@@ -927,8 +927,27 @@ sub mass_mail_schedules_preview {
     if ( !$checksout ) { return $error_msg; }
     my $list = $admin_list;
 
+    my $errors; 
     
-    my @schedule_recurring_days = $q->multi_param('schedule_recurring_days');
+    my $schedule_activated      = $q->param('schedule_activated')      || 0;
+    my $schedule_type           = $q->param('schedule_type')           || undef;
+    
+    my $schedule_single_displaytime = undef; 
+    my $schedule_single_ctime = undef; 
+    
+    if($schedule_type eq 'single') { 
+        $schedule_single_displaytime = $q->param('schedule_single_displaytime') || undef;
+        warn '$schedule_single_displaytime ' . $schedule_single_displaytime; 
+        $schedule_single_ctime       = displaytime_to_ctime($schedule_single_displaytime);
+    }
+    
+    my $day_set = undef; 
+    my $dates   = [];
+    my $errors  = undef; 
+    
+    my $start = undef; 
+    my $end   = undef; 
+    
     my $rd                      = [];
     my $days                    = {
         7 => 'Sunday',
@@ -939,75 +958,88 @@ sub mass_mail_schedules_preview {
         5 => 'Friday',
         6 => 'Saturday',
     };
-
-    for (@schedule_recurring_days) {
-        push(
-            @$rd,
-            {
-                day  => $_,
-                name => $days->{$_},
-            }
-        );
-    }
-
-    my $schedule_activated      = $q->param('schedule_activated')      || 0;
-    my $schedule_type           = $q->param('schedule_type')           || undef;
     
-    my $schedule_datetime       = $q->param('schedule_datetime') || undef;
+    my $schedule_recurring_displaydatetime_start = undef; 
+    my $schedule_recurring_displaydatetime_end   = undef;
+    my $schedule_recurring_ctime_start = undef;
+    my $schedule_recurring_ctime_end  = undef;
+    my $schedule_recurring_display_hms = undef;
+    my $schedule_recurring_hms = undef;
+    my @schedule_recurring_days = undef;
     
-    my $schedule_recurring_time = $q->param('schedule_recurring_time');
-       $schedule_recurring_time .= ':00';
-   
-    my $schedule_recurring_date_start = $q->param('schedule_recurring_date_start');
-    my $schedule_recurring_date_end   = $q->param('schedule_recurring_date_end');
-   
-       $schedule_recurring_date_start .= ' ' . $schedule_recurring_time;
-       $schedule_recurring_date_end   .= ' ' . $schedule_recurring_time;
-    my $errors = undef; 
-  
-    my $start = undef; 
-    my $end   = undef; 
+    
+    
+    if($schedule_type eq 'recurring') { 
 
-  
-   try { 
-       require DateTime;
-       require DateTime::Event::Recurrence;
-       $start = DateTime->from_epoch( epoch => datetime_to_ctime($schedule_recurring_date_start) );
-       $end   = DateTime->from_epoch( epoch => datetime_to_ctime($schedule_recurring_date_end) );
-   } catch { 
-       warn $_; 
-       $errors .= $_; 
-   };  
-    my ( $hours, $minutes, $seconds ) = split( ':', $schedule_recurring_time );
     
-    my $day_set = undef; 
-    my $dates   = [];
+        $schedule_recurring_displaydatetime_start = $q->param('schedule_recurring_displaydatetime_start');
+        $schedule_recurring_displaydatetime_end   = $q->param('schedule_recurring_displaydatetime_end');
+        warn '$schedule_recurring_displaydatetime_start ' . $schedule_recurring_displaydatetime_start; 
+        warn '$schedule_recurring_displaydatetime_end '   . $schedule_recurring_displaydatetime_end; 
+        
+        $schedule_recurring_ctime_start = displaytime_to_ctime($schedule_recurring_displaydatetime_start); 
+        $schedule_recurring_ctime_end   = displaytime_to_ctime($schedule_recurring_displaydatetime_end); 
     
-    try { 
-        $day_set = DateTime::Event::Recurrence->weekly(
-            days    => [@schedule_recurring_days],
-            hours   => $hours,
-            minutes => $minutes
-        );
-        my $it = $day_set->iterator(
-            start  => $start,
-            before => $end,
-        );
-
-        while ( my $dt = $it->next() ) {
+        $schedule_recurring_display_hms = $q->param('schedule_recurring_display_hms');
+        $schedule_recurring_display_hms .= ':00';
+        $schedule_recurring_hms = display_hms_to_hms($schedule_recurring_display_hms); 
+    
+        @schedule_recurring_days = $q->multi_param('schedule_recurring_days');
+        
+        
+        for (@schedule_recurring_days) {
             push(
-                @$dates,
+                @$rd,
                 {
-                    date  => $dt->datetime,
-                    ctime => $dt->epoch,
+                    day  => $_,
+                    name => $days->{$_},
                 }
             );
         }
-    } catch { 
-        warn $_; 
-        $errors .= $_; 
+   
+           $schedule_recurring_ctime_start += $schedule_recurring_hms;
+           $schedule_recurring_ctime_end   += $schedule_recurring_hms;
+  
+
+  
+       try { 
+           require DateTime;
+           require DateTime::Event::Recurrence;
+           $start = DateTime->from_epoch( epoch => $schedule_recurring_ctime_start );
+           $end   = DateTime->from_epoch( epoch => $schedule_recurring_ctime_end );
+       } catch { 
+           warn $_; 
+           $errors .= $_; 
+       };  
+        my ( $hours, $minutes, $seconds ) = split( ':', $schedule_recurring_display_hms );
+    
+    
+        try { 
+            $day_set = DateTime::Event::Recurrence->weekly(
+                days    => [@schedule_recurring_days],
+                hours   => $hours,
+                minutes => $minutes
+            );
+            my $it = $day_set->iterator(
+                start  => $start,
+                before => $end,
+            );
+
+            while ( my $dt = $it->next() ) {
+                push(
+                    @$dates,
+                    {
+                        date  => $dt->datetime,
+                        ctime => $dt->epoch,
+                    }
+                );
+            }
+        } catch { 
+            warn $_; 
+            $errors .= $_; 
         
-    }; 
+        }; 
+    }
     
     my $scrn = DADA::Template::Widgets::screen(
         {
@@ -1023,13 +1055,23 @@ sub mass_mail_schedules_preview {
                 errors                             => $errors,   
                 schedule_activated                 => $schedule_activated,
                 schedule_type                      => $schedule_type,
-                schedule_datetime                  => $schedule_datetime, 
-                schedule_locatime                  => datetime_to_localtime($schedule_datetime), 
-                schedule_recurring_time            => $schedule_recurring_time,
-                schedule_recurring_date_start      => $schedule_recurring_date_start,
-                schedule_recurring_date_end        => $schedule_recurring_date_end,
-                schedule_recurring_localtime_start => datetime_to_localtime($schedule_recurring_date_start), 
-                schedule_recurring_localtime_end   => datetime_to_localtime($schedule_recurring_date_end), 
+                
+                
+                schedule_single_ctime                      =>                     $schedule_single_ctime, 
+                schedule_single_localtime                  => ctime_to_localtime( $schedule_single_ctime), 
+                schedule_single_displaytime                => $schedule_single_displaytime,
+                
+                
+                schedule_recurring_hms            => $schedule_recurring_hms,
+                schedule_recurring_display_hms    => $schedule_recurring_display_hms,
+                
+                
+               schedule_recurring_displaydatetime_start      => $schedule_recurring_displaydatetime_start,
+               schedule_recurring_displaydatetime_end        => $schedule_recurring_displaydatetime_end,
+
+                schedule_recurring_localtime_start => ctime_to_localtime($schedule_recurring_ctime_start), 
+                schedule_recurring_localtime_end   => ctime_to_localtime($schedule_recurring_ctime_end),
+
                 schedule_recurring_days            => $rd,
                 dates                              => $dates,
                 can_use_datetime                   => scalar DADA::App::Guts::can_use_datetime(),      

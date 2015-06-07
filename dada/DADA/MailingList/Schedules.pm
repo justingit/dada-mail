@@ -123,11 +123,11 @@ sub run_schedules {
             $sched->{schedule_recurring_localtime_end} .  "\n\t\t" .
             'on: ' . 
             $days_str ."\n\t\t" .
-            'at: '  . $sched->{schedule_recurring_time} . "\n\n"; 
+            'at: '  . $sched->{schedule_recurring_hms} . "\n\n"; 
             
             my ($s_t_r, $r_sched_t)  = $self->recurring_schedule_times(
                 {
-                    -recurring_time => $sched->{schedule_recurring_time},
+                    -recurring_time => $sched->{schedule_recurring_hms},
                     -days           => $sched->{schedule_recurring_days}, 
                     -start          => $sched->{schedule_recurring_time_start}, 
                     -end            => $sched->{schedule_recurring_time_end}, 

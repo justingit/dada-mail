@@ -1346,8 +1346,8 @@ function setup_attachment_fields() {
 }
 
 function setup_schedule_fields() { 
-	if($('#schedule_datetime').length) { 
-		$('#schedule_datetime').datetimepicker(
+	if($('#schedule_single_displaytime').length) { 
+		$('#schedule_single_displaytime').datetimepicker(
 			{
 				minDate: 0,
 				//minTime: 0,  
@@ -1360,8 +1360,8 @@ function setup_schedule_fields() {
 		);
 	}
 	// Recurring 
-	if($('#schedule_recurring_time').length) {  
-		$('#schedule_recurring_time').datetimepicker(
+	if($('#schedule_recurring_display_hms').length) {  
+		$('#schedule_recurring_display_hms').datetimepicker(
 			{
 		  		format:'H:i',
 		  		datepicker:false,
@@ -1372,13 +1372,13 @@ function setup_schedule_fields() {
 		 	}
 		);
 	}
-	if($('#schedule_recurring_date_start').length) { 
-		 $('#schedule_recurring_date_start').datetimepicker({
+	if($('#schedule_recurring_displaydatetime_start').length) { 
+		 $('#schedule_recurring_displaydatetime_start').datetimepicker({
 		  format:'Y-m-d',
 		  timepicker:false,
 		  onShow:function( ct ){
 		   this.setOptions({
-		    maxDate:$('#schedule_recurring_date_end').val()?$('#schedule_recurring_date_end').val():false
+		    maxDate:$('#schedule_recurring_displaydatetime_end').val()?$('#schedule_recurring_displaydatetime_end').val():false
 		   })
 		  },
 		onChangeDateTime:function(dp,$input){
@@ -1386,14 +1386,14 @@ function setup_schedule_fields() {
 		}
 		});
 	}
-	if($('#schedule_recurring_date_end').length) { 
-		 $('#schedule_recurring_date_end').datetimepicker(
+	if($('#schedule_recurring_displaydatetime_end').length) { 
+		 $('#schedule_recurring_displaydatetime_end').datetimepicker(
 			{
 				format:'Y-m-d',
 				timepicker:false,
 				onShow:function( ct ){
 					this.setOptions({
-		    			minDate:$('#schedule_recurring_date_start').val()?$('#schedule_recurring_date_start').val():false
+		    			minDate:$('#schedule_recurring_displaydatetime_start').val()?$('#schedule_recurring_displaydatetime_start').val():false
 		   			})
 		  		},
 				onChangeDateTime:function(dp,$input){

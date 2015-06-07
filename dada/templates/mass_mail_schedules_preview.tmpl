@@ -19,7 +19,7 @@
     
         <!-- tmpl_if expr="(schedule_type eq 'single')" -->
             <p>This is a <strong>one-time</strong> mass mailing, set to be sent on 
-                <strong><!-- tmpl_var schedule_locatime escape="HTML" --></strong></p> 
+                <strong><!-- tmpl_var schedule_single_localtime escape="HTML" --></strong></p> 
         <!-- /tmpl_if --> 
         <!-- tmpl_if expr="(schedule_type eq 'recurring')" -->
             <p>This is a <strong>recurring</strong> mass mailing, between 
@@ -36,7 +36,7 @@
             <!-- /tmpl_loop -->
             
              at:
-            <strong><!-- tmpl_var schedule_recurring_time --></strong>
+            <strong><!-- tmpl_var schedule_recurring_display_hms --></strong>
             
             </p>
         <!-- /tmpl_if -->

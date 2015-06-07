@@ -85,6 +85,12 @@ require Exporter;
   commify
   generate_rand_string_md5
   
+  ctime_to_localtime
+  ctime_to_displaytime
+  displaytime_to_ctime
+  hms_to_dislay_hms
+  display_hms_to_hms
+  
   
 );
 
@@ -3116,6 +3122,60 @@ sub formatted_runtime {
 
     return $runtime;
 }
+
+sub ctime_to_localtime { 
+    my $ctime = shift; 
+    return scalar localtime($ctime); 
+}
+
+
+sub ctime_to_displaytime { 
+    my $ctime = shift; 
+    
+    require POSIX;
+    my $displaytime = POSIX::strftime('%Y-%m-%d %H:%M:%S', localtime $ctime);
+    return $displaytime; 
+    
+}
+sub displaytime_to_ctime { 
+
+    my $displaytime = shift;
+
+    require Time::Local;
+    my ( $date, $time ) = split(/ |T/, $displaytime );
+    my ( $year, $month,  $day )    = split( '-', $date );
+    my ( $hour, $minute, $second ) = split( ':', $time );
+    $second = int( $second - 0.5 );    # no idea.
+    my $time = Time::Local::timelocal( $second, $minute, $hour, $day, $month - 1, $year );
+
+    return $time;
+}
+
+
+sub hms_to_dislay_hms { 
+   
+   my $hms  = shift; 
+
+   return 
+    sprintf("%02d", ($hms/(60*60))%24) . 
+   ':' . 
+    sprintf("%02d", ($hms/60)%60) . 
+    ':' . 
+    sprintf("%02d", $hms%60);
+    
+}
+
+sub display_hms_to_hms { 
+    
+    my $display_hms = shift; 
+    
+    my ($h, $m, $s) = split(':', $display_hms); 
+    
+    my $sec = (int($h) * 60 * 60) + (int($m) * 60) + int($s);  
+
+    return $sec; 
+}
+
 
 sub commify {
     my $input = shift;
