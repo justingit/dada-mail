@@ -1363,7 +1363,7 @@ function setup_schedule_fields() {
 	if($('#schedule_recurring_display_hms').length) {  
 		$('#schedule_recurring_display_hms').datetimepicker(
 			{
-		  		format:'H:i',
+		  		format:'H:i:s',
 		  		datepicker:false,
 		  		onShow:function( ct ){},
 				onChangeDateTime:function(dp,$input){
@@ -1397,7 +1397,7 @@ function setup_schedule_fields() {
 		   			})
 		  		},
 				onChangeDateTime:function(dp,$input){
-				   mass_mail_schedules_preview(); 
+				 	mass_mail_schedules_preview(); 
 				}
 		
 		 	}
@@ -1426,10 +1426,20 @@ function toggle_schedule_options() {
 }
 
 
+var mmsp = ''; 
 function mass_mail_schedules_preview() { 
-	$("#mass_mail_schedules_preview_results").hide('fade');
-	$("#mass_mail_schedules_preview_results").html('<p><strong>Loading...</strong></p>');
-	$("#mass_mail_schedules_preview_results").show('fade');
+	
+	var new_mmsp = $('.schedule_field').serialize(); 
+	if(mmsp == new_mmsp){ 
+		return false; 
+	} 
+	else { 
+		mmsp = new_mmsp; 
+	}
+
+	$("#mass_mail_schedules_preview_results").hide().html('<p>&nbsp;</p><p class="text-align:center"><strong>Loading...</strong></p><p>&nbsp;</p>').show('fade');
+
+
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
 		data: $('.schedule_field').serialize() + '&flavor=mass_mail_schedules_preview', 
@@ -1437,9 +1447,13 @@ function mass_mail_schedules_preview() {
 		dataType: "html",
 		async: true,
 		success: function(content) {
-			$("#mass_mail_schedules_preview_results").hide('fade');
-			$("#mass_mail_schedules_preview_results").html(content);
-			$("#mass_mail_schedules_preview_results").show('fade');
+			$("#mass_mail_schedules_preview_results").hide("fade", function() {
+				$("#mass_mail_schedules_preview_results").html(content);
+				$("#mass_mail_schedules_preview_results").show('fade');
+			});
+		
+		
+		
 		}
 	});	
 }

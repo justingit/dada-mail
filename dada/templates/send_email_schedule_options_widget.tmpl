@@ -9,10 +9,6 @@
         <fieldset>
             <legend>Scheduling Options</legend>    
     
-            <p class="alert"> 
-                Current Server Time: <!-- tmpl_var date -->
-            </p>
-    
             <div class="clearskiesbox"> 
                 <div id="mass_mail_schedules_preview_results">
                     
@@ -61,20 +57,20 @@
                 </p> 
 
                 <p> Every
-                <label for="mon">Mon:</label><input type="checkbox" name="schedule_recurring_days" id="mon" value="1" class="schedule_field" /> |
-                <label for="tue">Tue:</label><input type="checkbox" name="schedule_recurring_days" id="tue" value="2" class="schedule_field"  /> | 
-                <label for="wed">Wed:</label><input type="checkbox" name="schedule_recurring_days" id="wed" value="3" class="schedule_field"  /> | 
-                <label for="thu">Thu:</label><input type="checkbox" name="schedule_recurring_days" id="thu" value="4" class="schedule_field"  /> | 
-                <label for="fri">Fri:</label><input type="checkbox" name="schedule_recurring_days" id="fri" value="5" class="schedule_field"  /> | 
-                <label for="sat">Sat:</label><input type="checkbox" name="schedule_recurring_days" id="sat" value="6" class="schedule_field"  /> | 
-                <label for="sun">Sun:</label><input type="checkbox" name="schedule_recurring_days" id="sun" value="7" class="schedule_field"  /> 
+                <label for="mon">Mon:</label><input type="checkbox" name="schedule_recurring_days" id="mon" value="1" class="schedule_field" checked="checked" /> |
+                <label for="tue">Tue:</label><input type="checkbox" name="schedule_recurring_days" id="tue" value="2" class="schedule_field" checked="checked"  /> | 
+                <label for="wed">Wed:</label><input type="checkbox" name="schedule_recurring_days" id="wed" value="3" class="schedule_field" checked="checked"  /> | 
+                <label for="thu">Thu:</label><input type="checkbox" name="schedule_recurring_days" id="thu" value="4" class="schedule_field" checked="checked"  /> | 
+                <label for="fri">Fri:</label><input type="checkbox" name="schedule_recurring_days" id="fri" value="5" class="schedule_field" checked="checked"  /> | 
+                <label for="sat">Sat:</label><input type="checkbox" name="schedule_recurring_days" id="sat" value="6" class="schedule_field" checked="checked"  /> | 
+                <label for="sun">Sun:</label><input type="checkbox" name="schedule_recurring_days" id="sun" value="7" class="schedule_field" checked="checked" /> 
                 </p>
 
                 <p>
                 <label for="schedule_recurring_display_hms">
                     At: 
                 </label>
-                <input type="text" name="schedule_recurring_display_hms" id="schedule_recurring_display_hms" class="schedule_field"  />
+                <input type="text" name="schedule_recurring_display_hms" id="schedule_recurring_display_hms" value="00:00" class="schedule_field"  />
                 </p> 
             </div>
 

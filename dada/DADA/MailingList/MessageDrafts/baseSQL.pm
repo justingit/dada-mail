@@ -9,7 +9,7 @@ use lib qw(
 
 use Carp qw(croak carp);
 use DADA::Config qw(!:DEFAULT);
-
+use DADA::App::Guts; 
 my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_MailingList_MessageDrafts};
 
 sub new {
@@ -99,50 +99,40 @@ sub save {
     my $self = shift;
     my ($args) = @_;
 
-    warn 'here.';
-        
     if ( !exists( $args->{-cgi_obj} ) ) {
         croak "You MUST pass a, '-cgi_obj' parameter!";
     }
-    warn 'here.';
 
     if ( !exists( $args->{-screen} ) ) {
         croak "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
     }
-    warn 'here.';
     
     if ( !exists( $args->{-role} ) ) {
         $args->{-role} = 'draft';
     }
-    warn 'here.';
     
     if ( !exists( $args->{-save_role} ) ) {
         $args->{-save_role} = $args->{-role};
     }
-    warn 'here.';
 
 
     warn '$args->{-role}'      . $args->{-role}; 
     warn '$args->{-save_role}' . $args->{-save_role}; 
 
-    warn 'here.';
-
     my $id = undef;
     if ( exists( $args->{-id} ) ) {
         $id = $args->{-id};
     }
-    warn 'here.';
 
     #if($t == 1){ 
     #    require Data::Dumper; 
     #    warn 'save() args:' . "\n" . Data::Dumper::Dumper($args); 
     #}
     #	warn '$id:' . $id;
-    warn 'here.';
+    my $q = $args->{-cgi_obj}; 
+       $q = $self->fill_in_schedule_options($q); 
+    my $draft = $self->stringify_cgi_params( { -cgi_obj => $q, -screen => $args->{-screen} } );
 
-    my $draft = $self->stringify_cgi_params( { -cgi_obj => $args->{-cgi_obj}, -screen => $args->{-screen} } );
-
-    warn 'here.';
 
 
     if ( !defined($id) ) {
@@ -281,6 +271,27 @@ sub save {
             return $id; 
         }
     }
+}
+
+sub fill_in_schedule_options { 
+    my $self = shift; 
+    my $q    = shift; 
+    
+    if(!defined($q->param('schedule_single_ctime')) && defined($q->param('schedule_single_displaytime'))){ 
+        $q->param('schedule_single_ctime', displaytime_to_ctime($q->param('schedule_single_displaytime')));
+    }
+    if(!defined($q->param('schedule_recurring_ctime_start')) && defined($q->param('schedule_recurring_displaydatetime_start'))){ 
+        $q->param('schedule_recurring_ctime_start', displaytime_to_ctime($q->param('schedule_recurring_displaydatetime_start')));
+    }
+    if(!defined($q->param('schedule_recurring_ctime_end')) && defined($q->param('schedule_recurring_displaydatetime_end'))){ 
+        $q->param('schedule_recurring_ctime_end', displaytime_to_ctime($q->param('schedule_recurring_displaydatetime_end')));
+    }
+    
+    if(!defined($q->param('schedule_recurring_hms')) && defined($q->param('schedule_recurring_display_hms'))){ 
+        $q->param('schedule_recurring_hms', display_hms_to_hms($q->param('schedule_recurring_display_hms')));
+    }
+    
+    return $q;     
 }
 
 sub has_draft {
@@ -425,7 +436,15 @@ sub fetch {
     }
 
     my $q = $self->decode_draft($saved);
-
+    my $additional_schedule_params = $self->additional_schedule_params($q); 
+    #use Data::Dumper; 
+    #warn Dumper($additional_schedule_params); 
+    
+    for(%$additional_schedule_params){ 
+       # warn '$_:' . $_; 
+       #warn '$additional_schedule_params->{$_} ' . $additional_schedule_params->{$_}; 
+        $q->param($_, $additional_schedule_params->{$_}); 
+    }
     return $q;
 
 }
@@ -551,7 +570,7 @@ sub draft_index {
             schedule_activated             => scalar $q->param('schedule_activated'),
             schedule_type                  => scalar $q->param('schedule_type'),
             schedule_single_ctime          => scalar $q->param('schedule_single_ctime'),
-            schedule_recurring_days        => $q->multi_param('schedule_recurring_days'),
+            schedule_recurring_days        => [$q->multi_param('schedule_recurring_days')],
             schedule_recurring_ctime_start => scalar $q->param('schedule_recurring_ctime_start'),
             schedule_recurring_ctime_end   => scalar $q->param('schedule_recurring_ctime_end'),
             schedule_recurring_hms         => scalar $q->param('schedule_recurring_hms'),
@@ -561,13 +580,10 @@ sub draft_index {
 
         if ( $args->{-role} eq 'schedule')
         {
-            $params->{schedule_single_localtime}                  = ctime_to_localtime($params->{schedule_single_ctime} ); 
-            $params->{schedule_single_displaytime}                = ctime_to_displaytime($params->{schedule_single_ctime} ); 
-            $params->{schedule_recurring_displaydatetime_start}   = ctime_to_displaytime($params->{schedule_recurring_ctime_start}); 
-            $params->{schedule_recurring_displaydatetime_end}     = ctime_to_displaytime($params->{schedule_recurring_displaydatetime_end}); 
-            $params->{schedule_recurring_localtime_start}         = ctime_to_localtime($params->{schedule_recurring_localtime_start} ); 
-            $params->{schedule_recurring_localtime_end}           = ctime_to_localtime($params->{schedule_recurring_localtime_end} ); 
-            $params->{schedule_recurring_display_hms}             = hms_to_dislay_hms($params->{schedule_recurring_hms}); 
+            my $additional_schedule_params = $self->additional_schedule_params($q); 
+            for(%$additional_schedule_params){ 
+                $params->{$_} = $additional_schedule_params->{$_}; 
+            }
         }
         push( @$r, $params );        
     }
@@ -579,6 +595,22 @@ sub draft_index {
     
     
     return $r;
+}
+
+
+sub additional_schedule_params { 
+    my $self = shift; 
+    my $q    = shift; 
+    my $schedule_params = {}; 
+    $schedule_params->{schedule_single_localtime}                  = ctime_to_localtime(scalar $q->param('schedule_single_ctime')); 
+    $schedule_params->{schedule_single_displaytime}                = ctime_to_displaytime(scalar $q->param('schedule_single_ctime')); 
+    $schedule_params->{schedule_recurring_displaydatetime_start}   = ctime_to_displaytime(scalar $q->param('schedule_recurring_ctime_start'), 0); 
+    $schedule_params->{schedule_recurring_displaydatetime_end}     = ctime_to_displaytime(scalar $q->param('schedule_recurring_ctime_end'), 0); 
+    $schedule_params->{schedule_recurring_localtime_start}         = ctime_to_localtime(scalar $q->param('schedule_recurring_ctime_start')); 
+    $schedule_params->{schedule_recurring_localtime_end}           = ctime_to_localtime(scalar $q->param('schedule_recurring_ctime_end')); 
+    $schedule_params->{schedule_recurring_display_hms}             = hms_to_dislay_hms(scalar $q->param('schedule_recurring_hms')); 
+    
+    return $schedule_params; 
 }
 
 sub sort_by_schedule { 
@@ -678,6 +710,8 @@ sub params_to_save {
         schedule_recurring_ctime_start => 1,
         schedule_recurring_ctime_end   => 1,
         schedule_recurring_hms         => 1,
+
+
 
 
     };

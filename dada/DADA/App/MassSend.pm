@@ -1174,8 +1174,6 @@ sub save_as_draft {
     my $save_draft_role = $q->param('save_draft_role') || 'draft';
     my $screen          = $q->param('flavor')          || 'send_email';
  
-    my $
- 
     # I wanna that we do it, here! 
  
     my $saved_draft_id = $self->{md_obj}->save(

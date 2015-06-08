@@ -1,5 +1,20 @@
 <!-- begin mass_mail_schedules_preview.tmpl --> 
 
+<ul> 
+    <li>
+        Current Server Time: <storng><!-- tmpl_var date --></strong>
+    </li>
+    <!-- tmpl_if list_settings.schedule_last_checked_time -->
+        <li>Mass Mailing Schedules Last Checked: <!-- tmpl_var schedule_last_checked_ago --> ago.</li>
+    <!-- tmpl_else --> 
+        <li>Mass Mailing Schedules haven't ever run.</li>
+    <!-- /tmpl_if -->
+</ul> 
+
+
+
+
+    
 <!-- tmpl_if errors --> 
     <p>Sorry, looks like something went wrong, calculating the schedules:</p>
     <!-- tmpl_if can_use_datetime --> 
@@ -15,30 +30,57 @@
     <!-- /tmpl_if --> 
 <!-- tmpl_else --> 
     <!-- tmpl_if schedule_activated -->
-        <p><strong>Schedules activated!</strong></p>
+        <p><strong>This Schedule has been activated!</strong></p>
     
         <!-- tmpl_if expr="(schedule_type eq 'single')" -->
-            <p>This is a <strong>one-time</strong> mass mailing, set to be sent on 
-                <strong><!-- tmpl_var schedule_single_localtime escape="HTML" --></strong></p> 
+            <p>This is a <strong>one-time</strong> mass mailing,
+                <!-- tmpl_if schedule_single_localtime --> 
+                    set to be sent on 
+                    <strong><!-- tmpl_var schedule_single_localtime escape="HTML" --></strong></p> 
+                <!-- tmpl_else --> 
+                    but you will need to set a time for the mailing to go out!
+                <!-- /tmpl_if --> 
         <!-- /tmpl_if --> 
         <!-- tmpl_if expr="(schedule_type eq 'recurring')" -->
-            <p>This is a <strong>recurring</strong> mass mailing, between 
-            <strong><!-- tmpl_var schedule_recurring_localtime_start --></strong>
-                 and 
-            <strong><!-- tmpl_var schedule_recurring_localtime_end --></strong>
-            on: 
-            <!-- tmpl_loop schedule_recurring_days -->
-                <!-- tmpl_if __last__ -->
-                and
-                <!-- /tmpl_if  -->
-                <strong><!-- tmpl_var name --></strong><!-- tmpl_unless __last__ -->,
-                <!-- /tmpl_unless --> 
-            <!-- /tmpl_loop -->
-            
-             at:
-            <strong><!-- tmpl_var schedule_recurring_display_hms --></strong>
-            
-            </p>
+            <p>This is a <strong>recurring</strong> mass mailing, 
+            <!-- tmpl_if expr="((schedule_recurring_localtime_start ne '') && (schedule_recurring_localtime_end ne ''))" --> 
+                
+                    between 
+                <strong><!-- tmpl_var schedule_recurring_localtime_start --></strong>
+                     and 
+                <strong><!-- tmpl_var schedule_recurring_localtime_end --></strong>
+
+                <!-- tmpl_if expr="(num_recurring_days == 0)" --> 
+                    but you need to set what day the schedule goes out on
+                <!-- tmpl_else --> 
+                    <!-- tmpl_if expr="(num_recurring_days == 7)" --> 
+                        sent <strong>every day</strong>
+                    <!-- tmpl_else --> 
+                        on: 
+                        <!-- tmpl_if expr="(num_recurring_days == 1)" --> 
+                            <!-- tmpl_loop schedule_recurring_days -->
+                                <strong><!-- tmpl_var name --></strong>
+                            <!-- /tmpl_loop -->
+                        <!-- tmpl_else --> 
+                            <!-- tmpl_loop schedule_recurring_days -->
+                                <!-- tmpl_if __last__ -->
+                                and
+                                <!-- /tmpl_if  -->
+                                <strong><!-- tmpl_var name --></strong><!-- tmpl_unless __last__ -->,
+                                <!-- /tmpl_unless --> 
+                            <!-- /tmpl_loop -->
+                        <!-- /tmpl_if --> 
+                    <!-- /tmpl_if -->
+                <!-- /tmpl_if --> 
+                
+                 at:
+                <strong><!-- tmpl_var schedule_recurring_display_hms --></strong>
+
+                </p>
+
+            <!-- tmpl_else --> 
+                but you need to set a start and end date.
+            <!-- /tmpl_if -->
         <!-- /tmpl_if -->
     
     <!-- tmpl_else --> 

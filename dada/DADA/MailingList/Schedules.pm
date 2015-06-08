@@ -72,7 +72,7 @@ sub run_schedules {
     my $r = "Running Schedules for, " . $self->{list} . "\n";
        $r .= '-' x 72 . "\n";
        $r .= "\t* Current Server Time: " . scalar(localtime($t)) . "\n";  
-       $r .= "\t* Schedules Last Run: " . scalar(localtime($self->{ls_obj}->param('schedule_last_checked_time'))) . "\n"; 
+       $r .= "\t* Mass Mailing Schedules Last Ran: " . scalar(localtime($self->{ls_obj}->param('schedule_last_checked_time'))) . "\n"; 
 
     my $count = $self->{d_obj}->count({-role => 'schedule'});
 
@@ -100,7 +100,13 @@ sub run_schedules {
         
         my $schedule_times = []; 
         
-        if($sched->{schedule_type} eq 'recurring'){ 
+        my $can_use_datetime = DADA::App::Guts::can_use_datetime(); 
+
+        if($sched->{schedule_type} eq 'recurring' && $can_use_datetime == 0){  
+            $r .= "Recurring schedule set, but the DateTime CPAN Perl module will need to be installed.\n";
+            next SCHEDULES; 
+        }
+        elsif($sched->{schedule_type} eq 'recurring' && $can_use_datetime == 1){ 
             
             my $d_lt = {
                 7 => 'Sunday',
@@ -112,25 +118,27 @@ sub run_schedules {
                 6 => 'Saturday',
             };
             my $days_str = undef; 
+            # use Data::Dumper; 
+            # die Dumper($sched->{schedule_recurring_days}); 
             for(@{$sched->{schedule_recurring_days}}){ 
                 $days_str .= $d_lt->{$_} . ', '; 
             }
 #            $r .= "\t\t* Schedule Type: Recurring\n"; 
 
             $r .= "\t\tThis is a *Recurring* mass mailing, between " . "\n\t\t" . 
-            $sched->{schedule_recurring_localtime_start} . 
+            $sched->{schedule_recurring_displaydatetime_start} . 
             ' and ' . 
-            $sched->{schedule_recurring_localtime_end} .  "\n\t\t" .
+            $sched->{schedule_recurring_displaydatetime_end} .  "\n\t\t" .
             'on: ' . 
             $days_str ."\n\t\t" .
-            'at: '  . $sched->{schedule_recurring_hms} . "\n\n"; 
+            'at: '  . $sched->{schedule_recurring_display_hms} . "\n\n"; 
             
             my ($s_t_r, $r_sched_t)  = $self->recurring_schedule_times(
                 {
-                    -recurring_time => $sched->{schedule_recurring_hms},
+                    -recurring_time => $sched->{schedule_recurring_display_hms},
                     -days           => $sched->{schedule_recurring_days}, 
-                    -start          => $sched->{schedule_recurring_time_start}, 
-                    -end            => $sched->{schedule_recurring_time_end}, 
+                    -start          => $sched->{schedule_recurring_ctime_start}, 
+                    -end            => $sched->{schedule_recurring_ctime_end}, 
                 }
             ); 
             if(defined($s_t_r) > 0){ 
@@ -142,8 +150,8 @@ sub run_schedules {
             
             for(@$r_sched_t){ 
                 if(
-                         $_->{ctime} >= ($t - 86400) 
-                    &&   $_->{ctime} <= ($t + 86400) 
+                         $_->{ctime} >= ($t - 259_200) 
+                    &&   $_->{ctime} <= ($t + 259_200) 
                 ){ 
                     push(@$schedule_times, $_->{ctime}); 
                 }
@@ -152,7 +160,7 @@ sub run_schedules {
                 $r .= "\t\t* No Scheduled Mailing needs to be sent out.\n";                 
             }
             else { 
-                $r .= "\t\t* Approaching Times:\n";
+                $r .= "\t\t* Approaching/Past Schedule Times:\n";
                 for(@$schedule_times) { 
                     $r .= "\t\t\t* " . scalar localtime($_) . "\n"; 
                 }
@@ -160,14 +168,14 @@ sub run_schedules {
         }
         else { 
             $r .= "\t\t* Schedule Type: One-Time\n"; 
-            push(@$schedule_times, $sched->{schedule_time}); 
+            push(@$schedule_times, $sched->{schedule_single_ctime}); 
         }
         
         SPECIFIC_SCHEDULES: for my $specific_time(@$schedule_times) { 
 
             my $end_time; 
             if($sched->{schedule_type} eq 'recurring'){ 
-                $end_time = $sched->{schedule_recurring_time_end}
+                $end_time = $sched->{schedule_recurring_ctime_end}
             }
             else { 
                 $end_time = $specific_time; 
@@ -192,7 +200,12 @@ sub run_schedules {
             my $last_checked = $self->{ls_obj}->param('schedule_last_checked_time'); 
                 
             if($specific_time > $t){ 
-                $r .= "\t\t* Schedule will run " . formatted_runtime($specific_time - $t)   ." from now\n";
+                $r .= "\t\t* ";
+                
+                if($sched->{schedule_type} eq 'recurring'){ 
+                    $r .= "Next "; 
+                }
+                $r .= "Schedule will run " . formatted_runtime($specific_time - $t)   ." from now\n";
                 next SPECIFIC_SCHEDULES; 
             }
         

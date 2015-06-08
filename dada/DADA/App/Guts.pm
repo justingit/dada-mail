@@ -3125,22 +3125,32 @@ sub formatted_runtime {
 
 sub ctime_to_localtime { 
     my $ctime = shift; 
+    return undef if $ctime eq undef; 
     return scalar localtime($ctime); 
 }
 
 
 sub ctime_to_displaytime { 
-    my $ctime = shift; 
-    
+    my $ctime    = shift; 
+    my $show_hms = shift || 1; 
+    return undef if $ctime eq undef; 
     require POSIX;
-    my $displaytime = POSIX::strftime('%Y-%m-%d %H:%M:%S', localtime $ctime);
+    my $displaytime = undef; 
+    if($show_hms == 1) { 
+        $displaytime = POSIX::strftime('%Y-%m-%d %H:%M:%S', localtime $ctime);
+    }
+    else { 
+        $displaytime = POSIX::strftime('%Y-%m-%d', localtime $ctime);        
+    }
+    
     return $displaytime; 
     
 }
 sub displaytime_to_ctime { 
 
     my $displaytime = shift;
-
+    return undef if $displaytime eq undef; 
+    
     require Time::Local;
     my ( $date, $time ) = split(/ |T/, $displaytime );
     my ( $year, $month,  $day )    = split( '-', $date );
@@ -3155,6 +3165,8 @@ sub displaytime_to_ctime {
 sub hms_to_dislay_hms { 
    
    my $hms  = shift; 
+   return undef if $hms eq undef; 
+
 
    return 
     sprintf("%02d", ($hms/(60*60))%24) . 
@@ -3168,6 +3180,9 @@ sub hms_to_dislay_hms {
 sub display_hms_to_hms { 
     
     my $display_hms = shift; 
+    
+    return undef if $display_hms eq undef; 
+    
     
     my ($h, $m, $s) = split(':', $display_hms); 
     

@@ -929,6 +929,7 @@ sub mass_mail_schedules_preview {
 
     my $errors; 
     
+    
     my $schedule_activated      = $q->param('schedule_activated')      || 0;
     my $schedule_type           = $q->param('schedule_type')           || undef;
     
@@ -981,7 +982,7 @@ sub mass_mail_schedules_preview {
         $schedule_recurring_ctime_end   = displaytime_to_ctime($schedule_recurring_displaydatetime_end); 
     
         $schedule_recurring_display_hms = $q->param('schedule_recurring_display_hms');
-        $schedule_recurring_display_hms .= ':00';
+        $schedule_recurring_display_hms;
         $schedule_recurring_hms = display_hms_to_hms($schedule_recurring_display_hms); 
     
         @schedule_recurring_days = $q->multi_param('schedule_recurring_days');
@@ -999,9 +1000,7 @@ sub mass_mail_schedules_preview {
    
            $schedule_recurring_ctime_start += $schedule_recurring_hms;
            $schedule_recurring_ctime_end   += $schedule_recurring_hms;
-  
-
-  
+ 
        try { 
            require DateTime;
            require DateTime::Event::Recurrence;
@@ -1041,6 +1040,7 @@ sub mass_mail_schedules_preview {
         }; 
     }
     
+    my $ls  = DADA::MailingList::Settings->new( { -list => $list } );
     my $scrn = DADA::Template::Widgets::screen(
         {
             -screen => 'mass_mail_schedules_preview.tmpl',
@@ -1069,12 +1069,15 @@ sub mass_mail_schedules_preview {
                schedule_recurring_displaydatetime_start      => $schedule_recurring_displaydatetime_start,
                schedule_recurring_displaydatetime_end        => $schedule_recurring_displaydatetime_end,
 
-                schedule_recurring_localtime_start => ctime_to_localtime($schedule_recurring_ctime_start), 
-                schedule_recurring_localtime_end   => ctime_to_localtime($schedule_recurring_ctime_end),
+                schedule_recurring_localtime_start          => ctime_to_localtime($schedule_recurring_ctime_start), 
+                schedule_recurring_localtime_end            => ctime_to_localtime($schedule_recurring_ctime_end),
 
                 schedule_recurring_days            => $rd,
+                num_recurring_days                 => scalar @$rd, 
                 dates                              => $dates,
-                can_use_datetime                   => scalar DADA::App::Guts::can_use_datetime(),      
+                can_use_datetime                   => scalar DADA::App::Guts::can_use_datetime(),  
+                
+                schedule_last_checked_ago    => formatted_runtime(time - $ls->param('schedule_last_checked_time')),
                 
             },
             -list_settings_vars_param => {
