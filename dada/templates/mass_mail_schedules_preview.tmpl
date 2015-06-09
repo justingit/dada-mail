@@ -30,25 +30,25 @@
     <!-- /tmpl_if --> 
 <!-- tmpl_else --> 
     <!-- tmpl_if schedule_activated -->
-        <p><strong>This Schedule has been activated!</strong></p>
+        <p><strong>Schedule activated:</strong></p>
     
         <!-- tmpl_if expr="(schedule_type eq 'single')" -->
             <p>This is a <strong>one-time</strong> mass mailing,
                 <!-- tmpl_if schedule_single_localtime --> 
                     set to be sent on 
-                    <strong><!-- tmpl_var schedule_single_localtime escape="HTML" --></strong></p> 
+                    <strong><!-- tmpl_var schedule_single_displaydatetime escape="HTML" --></strong></p> 
                 <!-- tmpl_else --> 
                     but you will need to set a time for the mailing to go out!
                 <!-- /tmpl_if --> 
         <!-- /tmpl_if --> 
         <!-- tmpl_if expr="(schedule_type eq 'recurring')" -->
             <p>This is a <strong>recurring</strong> mass mailing, 
-            <!-- tmpl_if expr="((schedule_recurring_localtime_start ne '') && (schedule_recurring_localtime_end ne ''))" --> 
+            <!-- tmpl_if expr="((schedule_recurring_displaydatetime_start ne '') && (schedule_recurring_displaydatetime_end ne ''))" --> 
                 
                     between 
-                <strong><!-- tmpl_var schedule_recurring_localtime_start --></strong>
+                <strong><!-- tmpl_var schedule_recurring_displaydatetime_start --></strong>
                      and 
-                <strong><!-- tmpl_var schedule_recurring_localtime_end --></strong>
+                <strong><!-- tmpl_var schedule_recurring_displaydatetime_end --></strong>
 
                 <!-- tmpl_if expr="(num_recurring_days == 0)" --> 
                     but you need to set what day the schedule goes out on
@@ -84,7 +84,7 @@
         <!-- /tmpl_if -->
     
     <!-- tmpl_else --> 
-        <p><strong>Schedules are not activated.</strong></p>
+        <p><strong>Schedule inactive.</strong></p>
     <!-- /tmpl_if -->
 <!-- /tmpl_if --> 
 <!-- end mass_mail_schedules_preview.tmpl --> 

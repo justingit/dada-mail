@@ -29,10 +29,10 @@
 
             <div id="schedule_type_single_options"> 
                     <p>
-                        <label for="schedule_single_displaytime">
+                        <label for="schedule_single_displaydatetime">
                             Schedule For:
                         </label>
-                    <input type="text" name="schedule_single_displaytime" id="schedule_single_displaytime" class="schedule_field" />
+                    <input type="text" name="schedule_single_displaydatetime" id="schedule_single_displaydatetime" class="schedule_field" />
                 </p>
             </div> 
             
@@ -43,35 +43,50 @@
 
             <div id="schedule_type_recurring_options"> 
             
-                <label for="schedule_recurring_displaydatetime_start">
-                    Starting on: 
-                </label>
-                <input type="text" name="schedule_recurring_displaydatetime_start" id="schedule_recurring_displaydatetime_start" class="schedule_field" />
-                </p>
+                <table> 
+                    <tr> 
+                        <td> 
+                            
+                        <p><label for="schedule_recurring_displaydatetime_start">
+                            Starting on:
+                        </label>
+                        <br /> 
+                        <input type="text" name="schedule_recurring_displaydatetime_start" id="schedule_recurring_displaydatetime_start" class="schedule_field" />
+                            </p>
+                        </td>
+                        <td>
+                            <p>
+                        <label for="schedule_recurring_displaydatetime_end">
+                            Ending on: 
+                        </label><br /> 
+                        
+                           <input type="text" name="schedule_recurring_displaydatetime_end" id="schedule_recurring_displaydatetime_end" class="schedule_field" />
+                        </p></td>
+                        <td> 
+                            <p>
+                            <label for="schedule_recurring_display_hms">
+                                At: 
+                            </label><br />
+                            <input type="text" name="schedule_recurring_display_hms" id="schedule_recurring_display_hms" value="00:00" class="schedule_field"  />
+                            </p> 
+                        </td>
+                    </tr>
+                </table> 
 
-                <p>
-                <label for="schedule_recurring_displaydatetime_end">
-                    Ending on: 
-                </label>
-                <input type="text" name="schedule_recurring_displaydatetime_end" id="schedule_recurring_displaydatetime_end" class="schedule_field" />
-                </p> 
+                <table> 
+                <tr> 
+                <td><p>Sent on:
+                </td><td><input type="checkbox" name="schedule_recurring_days" id="mon" value="1" class="schedule_field" checked="checked" /> <label for="mon">Monday</label> |
+                </td><td><input type="checkbox" name="schedule_recurring_days" id="tue" value="2" class="schedule_field" checked="checked"  /> <label for="tue">Tuesday</label> | 
+                </td><td><input type="checkbox" name="schedule_recurring_days" id="wed" value="3" class="schedule_field" checked="checked"  /> <label for="wed">Wednesday</label> | 
+                </td><td><input type="checkbox" name="schedule_recurring_days" id="thu" value="4" class="schedule_field" checked="checked"  /> <label for="thu">Thursday</label> | 
+                </td><td><input type="checkbox" name="schedule_recurring_days" id="fri" value="5" class="schedule_field" checked="checked"  /> <label for="fri">Friday</label> | 
+                </td><td><input type="checkbox" name="schedule_recurring_days" id="sat" value="6" class="schedule_field" checked="checked"  /> <label for="sat">Saturday</label> | 
+               </td><td> <input type="checkbox" name="schedule_recurring_days" id="sun" value="7" class="schedule_field" checked="checked" />  <label for="sun">Sunday</label>
+                </td>
+                <tr>
+                </table> 
 
-                <p> Every
-                <label for="mon">Mon:</label><input type="checkbox" name="schedule_recurring_days" id="mon" value="1" class="schedule_field" checked="checked" /> |
-                <label for="tue">Tue:</label><input type="checkbox" name="schedule_recurring_days" id="tue" value="2" class="schedule_field" checked="checked"  /> | 
-                <label for="wed">Wed:</label><input type="checkbox" name="schedule_recurring_days" id="wed" value="3" class="schedule_field" checked="checked"  /> | 
-                <label for="thu">Thu:</label><input type="checkbox" name="schedule_recurring_days" id="thu" value="4" class="schedule_field" checked="checked"  /> | 
-                <label for="fri">Fri:</label><input type="checkbox" name="schedule_recurring_days" id="fri" value="5" class="schedule_field" checked="checked"  /> | 
-                <label for="sat">Sat:</label><input type="checkbox" name="schedule_recurring_days" id="sat" value="6" class="schedule_field" checked="checked"  /> | 
-                <label for="sun">Sun:</label><input type="checkbox" name="schedule_recurring_days" id="sun" value="7" class="schedule_field" checked="checked" /> 
-                </p>
-
-                <p>
-                <label for="schedule_recurring_display_hms">
-                    At: 
-                </label>
-                <input type="text" name="schedule_recurring_display_hms" id="schedule_recurring_display_hms" value="00:00" class="schedule_field"  />
-                </p> 
             </div>
 
 </fieldset> 

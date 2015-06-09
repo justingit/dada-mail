@@ -277,8 +277,8 @@ sub fill_in_schedule_options {
     my $self = shift; 
     my $q    = shift; 
     
-    if(!defined($q->param('schedule_single_ctime')) && defined($q->param('schedule_single_displaytime'))){ 
-        $q->param('schedule_single_ctime', displaytime_to_ctime($q->param('schedule_single_displaytime')));
+    if(!defined($q->param('schedule_single_ctime')) && defined($q->param('schedule_single_displaydatetime'))){ 
+        $q->param('schedule_single_ctime', displaytime_to_ctime($q->param('schedule_single_displaydatetime')));
     }
     if(!defined($q->param('schedule_recurring_ctime_start')) && defined($q->param('schedule_recurring_displaydatetime_start'))){ 
         $q->param('schedule_recurring_ctime_start', displaytime_to_ctime($q->param('schedule_recurring_displaydatetime_start')));
@@ -602,13 +602,16 @@ sub additional_schedule_params {
     my $self = shift; 
     my $q    = shift; 
     my $schedule_params = {}; 
-    $schedule_params->{schedule_single_localtime}                  = ctime_to_localtime(scalar $q->param('schedule_single_ctime')); 
-    $schedule_params->{schedule_single_displaytime}                = ctime_to_displaytime(scalar $q->param('schedule_single_ctime')); 
-    $schedule_params->{schedule_recurring_displaydatetime_start}   = ctime_to_displaytime(scalar $q->param('schedule_recurring_ctime_start'), 0); 
-    $schedule_params->{schedule_recurring_displaydatetime_end}     = ctime_to_displaytime(scalar $q->param('schedule_recurring_ctime_end'), 0); 
-    $schedule_params->{schedule_recurring_localtime_start}         = ctime_to_localtime(scalar $q->param('schedule_recurring_ctime_start')); 
-    $schedule_params->{schedule_recurring_localtime_end}           = ctime_to_localtime(scalar $q->param('schedule_recurring_ctime_end')); 
-    $schedule_params->{schedule_recurring_display_hms}             = hms_to_dislay_hms(scalar $q->param('schedule_recurring_hms')); 
+        
+        
+    $schedule_params->{schedule_single_displaydatetime}            = ctime_to_displaytime(  scalar $q->param('schedule_single_ctime')); 
+    $schedule_params->{schedule_single_localtime}                  = ctime_to_localtime(    scalar $q->param('schedule_single_ctime')); 
+    $schedule_params->{schedule_recurring_displaydatetime_start}   = ctime_to_displaytime(  (scalar $q->param('schedule_recurring_ctime_start')), 0); 
+    $schedule_params->{schedule_recurring_displaydatetime_end}     = ctime_to_displaytime(  (scalar $q->param('schedule_recurring_ctime_end')),   0); 
+    $schedule_params->{schedule_recurring_localtime_start}         = ctime_to_localtime(    scalar $q->param('schedule_recurring_ctime_start')); 
+    $schedule_params->{schedule_recurring_localtime_end}           = ctime_to_localtime(    scalar $q->param('schedule_recurring_ctime_end')); 
+    $schedule_params->{schedule_recurring_display_hms}             = hms_to_dislay_hms(     scalar $q->param('schedule_recurring_hms')); 
+    
     
     return $schedule_params; 
 }

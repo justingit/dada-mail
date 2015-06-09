@@ -899,12 +899,16 @@ sub send_a_list_message_button_toolbar {
     if ( !$checksout ) { return $error_msg; }
     my $list = $admin_list;
     
+    my $draft_role = $q->param('draft_role') || 'draft'; 
+    my $archive_no_send = $q->param('archive_no_send') || 0; 
+    
     my $scrn    = DADA::Template::Widgets::screen(
         {
             -screen         => 'send_a_list_message_button_widget.tmpl',
             -expr => 1,
             -vars => {
-                #
+                draft_role => $draft_role ,
+                archive_no_send => $archive_no_send, 
             },
             -list_settings_vars_param => {
                 -list   => $list,
@@ -933,13 +937,13 @@ sub mass_mail_schedules_preview {
     my $schedule_activated      = $q->param('schedule_activated')      || 0;
     my $schedule_type           = $q->param('schedule_type')           || undef;
     
-    my $schedule_single_displaytime = undef; 
+    my $schedule_single_displaydatetime = undef; 
     my $schedule_single_ctime = undef; 
     
     if($schedule_type eq 'single') { 
-        $schedule_single_displaytime = $q->param('schedule_single_displaytime') || undef;
-        warn '$schedule_single_displaytime ' . $schedule_single_displaytime; 
-        $schedule_single_ctime       = displaytime_to_ctime($schedule_single_displaytime);
+        $schedule_single_displaydatetime = $q->param('schedule_single_displaydatetime') || undef;
+        warn '$schedule_single_displaydatetime ' . $schedule_single_displaydatetime; 
+        $schedule_single_ctime       = displaytime_to_ctime($schedule_single_displaydatetime);
     }
     
     my $day_set = undef; 
@@ -1059,7 +1063,7 @@ sub mass_mail_schedules_preview {
                 
                 schedule_single_ctime                      =>                     $schedule_single_ctime, 
                 schedule_single_localtime                  => ctime_to_localtime( $schedule_single_ctime), 
-                schedule_single_displaytime                => $schedule_single_displaytime,
+                schedule_single_displaydatetime                => $schedule_single_displaydatetime,
                 
                 
                 schedule_recurring_hms            => $schedule_recurring_hms,

@@ -75,8 +75,8 @@
 
 
 <!-- tmpl_include draft_notice_widget.tmpl --> 
-
 <!-- tmpl_include send_email_schedule_options_widget.tmpl -->
+<!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
 
  <input type="hidden" name="s_program_url"     id="s_program_url"     value="<!-- tmpl_var S_PROGRAM_URL -->" />
  <input type="hidden" name="support_files_url" id="support_files_url" value="<!-- tmpl_var SUPPORT_FILES_URL -->" />
@@ -90,10 +90,6 @@
 <input type="hidden" id="draft_role"         name="draft_role"            value="<!-- tmpl_var draft_role -->"              />
 <input type="hidden" id="restore_from_draft" name="restore_from_draft"    value="<!-- tmpl_var restore_from_draft -->"      />
 
-
-
-
-<!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
 
 <fieldset> 
  <legend>Message Body [<a href="#" onclick="$.colorbox({inline:true, href:$('#message_body_help')})">?</a>]</legend>
@@ -228,7 +224,9 @@
 
 <div id="top_floating_button_wrapper">
   <div id="buttons">
-      <!-- tmpl_include send_a_list_message_button_widget.tmpl --> 
+      <div id="button_toolbar">
+          <input type="button" value="Loading..." class="bigger_button" />
+    </div>
   </div>
 </div>
 

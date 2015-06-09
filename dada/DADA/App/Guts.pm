@@ -3131,8 +3131,8 @@ sub ctime_to_localtime {
 
 
 sub ctime_to_displaytime { 
-    my $ctime    = shift; 
-    my $show_hms = shift || 1; 
+    my $ctime    = shift || undef; 
+    my $show_hms = shift // 1;
     return undef if $ctime eq undef; 
     require POSIX;
     my $displaytime = undef; 
@@ -3143,8 +3143,7 @@ sub ctime_to_displaytime {
         $displaytime = POSIX::strftime('%Y-%m-%d', localtime $ctime);        
     }
     
-    return $displaytime; 
-    
+    return $displaytime;     
 }
 sub displaytime_to_ctime { 
 
