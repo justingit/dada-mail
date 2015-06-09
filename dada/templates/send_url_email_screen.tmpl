@@ -323,13 +323,15 @@
 					</li>
 
 <!-- /tmpl_if --> 
-		<!-- tmpl_if can_have_subscriber_fields --> 
-		<li>
-			<a href="#subscriber_field_tags_listing">
- 				 Subscriber Fields
-			</a>
-		</li>
-		<!-- /tmpl_if --> 
+
+<!-- tmpl_if comment --> 
+    <!-- tmpl_if can_have_subscriber_fields --> 
+    	<div id="update_profile_fields">		
+    	    <!--  update_profile_fields.tmpl --> 
+    	</div> 
+    <!-- /tmpl_if --> 
+<!-- /tmpl_if --> 
+
 		<li>
 			<a href="#send_email_test_recipient">
  				 Testing
@@ -358,12 +360,14 @@
 				<!-- tmpl_include file_attachments_widget.tmpl -->
 				</div> 
 	<!-- /tmpl_if --> 
-	<!-- tmpl_if can_have_subscriber_fields --> 
-		<div id="subscriber_field_tags_listing">		
-		<!-- tmpl_include subscriber_field_tags_listing_widget.tmpl --> 
-		</div> 
-	<!-- /tmpl_if --> 
-
+	
+	<!-- tmpl_if comment --> 
+    	<!-- tmpl_if can_have_subscriber_fields --> 
+    		<div id="profile_field_tags_listing">		
+    		<!-- tmpl_include subscriber_field_tags_listing_widget.tmpl --> 
+    		</div> 
+    	<!-- /tmpl_if --> 
+    <!-- /tmpl_if -->
 	<div id="send_email_test_recipient">		
 	<!-- tmpl_include send_email_test_recipient_widget.tmpl --> 
 	</div> 

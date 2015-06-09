@@ -457,11 +457,14 @@ color: #000;
 		bottom:-6px;
 		color:#000;
 }
-#Dada #Header .select2-choice { 
+
+#Dada #Header .select2-choice, 
+#Dada #Header #Title .select2-container a { 
     height: 22px; 
 	line-height: 22px; 
-		color:#000;	
+	color:#000;	
 }
+
 #Dada #Header .select2-container a:hover { 
 	color:#000;
 }

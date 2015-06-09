@@ -3514,7 +3514,7 @@ function ChangeMassMailingButtonLabel(first_run) {
 		cache:     false,
 		async:     true,
 		data: { 
-			flavor: 'send_a_list_message_button_toolbar', 
+			flavor: 'send_email_button_widget', 
 			draft_role: $("#draft_role").val(),
 			archive_no_send: archive_no_send,
 		},

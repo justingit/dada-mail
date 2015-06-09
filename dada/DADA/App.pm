@@ -140,7 +140,7 @@ sub setup {
         'admin_menu_bounce_handler_notification'      => \&admin_menu_bounce_handler_notification,
         'admin_menu_tracker_notification'             => \&admin_menu_tracker_notification,
         'send_email'                                  => \&send_email,
-        'send_a_list_message_button_toolbar'          => \&send_a_list_message_button_toolbar, 
+        'send_email_button_widget'                    => \&send_email_button_widget, 
         'mass_mail_schedules_preview'                 => \&mass_mail_schedules_preview, 
 
         'ckeditor_template_tag_list'                  => \&ckeditor_template_tag_list,
@@ -888,7 +888,7 @@ sub send_email {
     }
 }
 
-sub send_a_list_message_button_toolbar { 
+sub send_email_button_widget { 
     my $self = shift;
     my $q    = $self->query();
     
@@ -904,7 +904,7 @@ sub send_a_list_message_button_toolbar {
     
     my $scrn    = DADA::Template::Widgets::screen(
         {
-            -screen         => 'send_a_list_message_button_widget.tmpl',
+            -screen         => 'send_email_button_widget.tmpl',
             -expr => 1,
             -vars => {
                 draft_role => $draft_role ,
@@ -931,8 +931,8 @@ sub mass_mail_schedules_preview {
     if ( !$checksout ) { return $error_msg; }
     my $list = $admin_list;
 
-    my $errors; 
-    
+    my $errors = {}; 
+    my $status = 1; 
     
     my $schedule_activated      = $q->param('schedule_activated')      || 0;
     my $schedule_type           = $q->param('schedule_type')           || undef;
@@ -942,7 +942,11 @@ sub mass_mail_schedules_preview {
     
     if($schedule_type eq 'single') { 
         $schedule_single_displaydatetime = $q->param('schedule_single_displaydatetime') || undef;
-        warn '$schedule_single_displaydatetime ' . $schedule_single_displaydatetime; 
+        if(!$schedule_single_displaydatetime){ 
+            $status = 0; 
+            $errors->{missing_information}; 
+        }
+        # warn '$schedule_single_displaydatetime ' . $schedule_single_displaydatetime; 
         $schedule_single_ctime       = displaytime_to_ctime($schedule_single_displaydatetime);
     }
     
@@ -975,95 +979,105 @@ sub mass_mail_schedules_preview {
     
     
     if($schedule_type eq 'recurring') { 
+    
+        $schedule_recurring_displaydatetime_start = $q->param('schedule_recurring_displaydatetime_start') || undef;
+        $schedule_recurring_displaydatetime_end   = $q->param('schedule_recurring_displaydatetime_end')   || undef;
+        $schedule_recurring_display_hms           = $q->param('schedule_recurring_display_hms') || undef;
+        $schedule_recurring_ctime_start           = displaytime_to_ctime($schedule_recurring_displaydatetime_start); 
+        $schedule_recurring_ctime_end             = displaytime_to_ctime($schedule_recurring_displaydatetime_end); 
+        @schedule_recurring_days                  = $q->multi_param('schedule_recurring_days');
+        $schedule_recurring_hms                   = display_hms_to_hms($schedule_recurring_display_hms); 
 
-    
-        $schedule_recurring_displaydatetime_start = $q->param('schedule_recurring_displaydatetime_start');
-        $schedule_recurring_displaydatetime_end   = $q->param('schedule_recurring_displaydatetime_end');
-        warn '$schedule_recurring_displaydatetime_start ' . $schedule_recurring_displaydatetime_start; 
-        warn '$schedule_recurring_displaydatetime_end '   . $schedule_recurring_displaydatetime_end; 
-        
-        $schedule_recurring_ctime_start = displaytime_to_ctime($schedule_recurring_displaydatetime_start); 
-        $schedule_recurring_ctime_end   = displaytime_to_ctime($schedule_recurring_displaydatetime_end); 
-    
-        $schedule_recurring_display_hms = $q->param('schedule_recurring_display_hms');
-        $schedule_recurring_display_hms;
-        $schedule_recurring_hms = display_hms_to_hms($schedule_recurring_display_hms); 
-    
-        @schedule_recurring_days = $q->multi_param('schedule_recurring_days');
-        
-        
-        for (@schedule_recurring_days) {
-            push(
-                @$rd,
-                {
-                    day  => $_,
-                    name => $days->{$_},
-                }
-            );
+        if(! (scalar DADA::App::Guts::can_use_datetime())) { 
+            $status = 0; 
+            $errors->{datetime} = 1;
         }
-   
-           $schedule_recurring_ctime_start += $schedule_recurring_hms;
-           $schedule_recurring_ctime_end   += $schedule_recurring_hms;
- 
-       try { 
-           require DateTime;
-           require DateTime::Event::Recurrence;
-           $start = DateTime->from_epoch( epoch => $schedule_recurring_ctime_start );
-           $end   = DateTime->from_epoch( epoch => $schedule_recurring_ctime_end );
-       } catch { 
-           warn $_; 
-           $errors .= $_; 
-       };  
-        my ( $hours, $minutes, $seconds ) = split( ':', $schedule_recurring_display_hms );
+        elsif($schedule_recurring_ctime_start > $schedule_recurring_ctime_end) { 
+            $status = 0; 
+            $errors->{schedule_recurring_dates_wrong} = 1;  
+        }
+        elsif(
+            ! $schedule_recurring_displaydatetime_start 
+         || ! $schedule_recurring_displaydatetime_start
+         || ! $schedule_recurring_display_hms
+         || (scalar @schedule_recurring_days <= 0)
+         ) { 
+             $status = 0; 
+             $errors->{missing_information} = 1; 
+     }
+     else { 
     
-    
-        try { 
-            $day_set = DateTime::Event::Recurrence->weekly(
-                days    => [@schedule_recurring_days],
-                hours   => $hours,
-                minutes => $minutes
-            );
-            my $it = $day_set->iterator(
-                start  => $start,
-                before => $end,
-            );
-
-            while ( my $dt = $it->next() ) {
+            for (@schedule_recurring_days) {
                 push(
-                    @$dates,
+                    @$rd,
                     {
-                        date  => $dt->datetime,
-                        ctime => $dt->epoch,
+                        day  => $_,
+                        name => $days->{$_},
                     }
                 );
             }
-        } catch { 
-            warn $_; 
-            $errors .= $_; 
+               $schedule_recurring_ctime_start += $schedule_recurring_hms;
+               $schedule_recurring_ctime_end   += $schedule_recurring_hms;
+ 
+           try { 
+               require DateTime;
+               require DateTime::Event::Recurrence;
+               $start = DateTime->from_epoch( epoch => $schedule_recurring_ctime_start );
+               $end   = DateTime->from_epoch( epoch => $schedule_recurring_ctime_end );
+           } catch { 
+               warn $_; 
+               $errors .= $_; 
+           };  
+            my ( $hours, $minutes, $seconds ) = split( ':', $schedule_recurring_display_hms );
+
+=cut
+
+            try { 
+                $day_set = DateTime::Event::Recurrence->weekly(
+                    days    => [@schedule_recurring_days],
+                    hours   => $hours,
+                    minutes => $minutes
+                );
+                my $it = $day_set->iterator(
+                    start  => $start,
+                    before => $end,
+                );
+
+                while ( my $dt = $it->next() ) {
+                    push(
+                        @$dates,
+                        {
+                            date  => $dt->datetime,
+                            ctime => $dt->epoch,
+                        }
+                    );
+                }
+            } catch { 
+                warn $_; 
+                $errors .= $_; 
         
-        }; 
+            }; 
+
+=cut
+
+        }
     }
-    
+
     my $ls  = DADA::MailingList::Settings->new( { -list => $list } );
     my $scrn = DADA::Template::Widgets::screen(
         {
             -screen => 'mass_mail_schedules_preview.tmpl',
-
-            #-with           => 'admin',
-            #-wrapper_params => {
-            #    -Root_Login => $root_login,
-            #    -List       => $list,
-            #},
             -expr => 1,
             -vars => {
-                errors                             => $errors,   
+                status                             => $status, 
+             #   errors                             => $errors,   
                 schedule_activated                 => $schedule_activated,
                 schedule_type                      => $schedule_type,
                 
                 
-                schedule_single_ctime                      =>                     $schedule_single_ctime, 
-                schedule_single_localtime                  => ctime_to_localtime( $schedule_single_ctime), 
-                schedule_single_displaydatetime                => $schedule_single_displaydatetime,
+                schedule_single_ctime              =>                     $schedule_single_ctime, 
+                schedule_single_localtime          => ctime_to_localtime( $schedule_single_ctime), 
+                schedule_single_displaydatetime    => $schedule_single_displaydatetime,
                 
                 
                 schedule_recurring_hms            => $schedule_recurring_hms,
@@ -1078,8 +1092,8 @@ sub mass_mail_schedules_preview {
 
                 schedule_recurring_days            => $rd,
                 num_recurring_days                 => scalar @$rd, 
-                dates                              => $dates,
-                can_use_datetime                   => scalar DADA::App::Guts::can_use_datetime(),  
+              #  dates                              => $dates,
+                
                 
                 schedule_last_checked_ago    => formatted_runtime(time - $ls->param('schedule_last_checked_time')),
                 

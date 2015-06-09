@@ -165,13 +165,17 @@
 				</a>
 			</li>
 		<!-- /tmpl_if --> 
-		<!-- tmpl_if can_have_subscriber_fields --> 
-		<li>
-			<a href="#subscriber_field_tags_listing">
- 				 Subscriber Fields
-			</a>
-		</li>		
-		<!-- /tmpl_if --> 
+		
+		<!-- tmpl_if comment --> 
+		
+		    <!-- tmpl_if can_have_subscriber_fields --> 
+    		<li>
+    			<a href="#update_profile_fields">
+     				 Update Profile Fields
+    			</a>
+    		</li>		
+		    <!-- /tmpl_if --> 
+	    <!-- /tmpl_if --> 
 
 		<li>
 			<a href="#send_email_test_recipient">
@@ -205,8 +209,8 @@
 	
 
 	<!-- tmpl_if can_have_subscriber_fields --> 
-		<div id="subscriber_field_tags_listing">		
-		<!-- tmpl_include subscriber_field_tags_listing_widget.tmpl --> 
+		<div id="update_profile_fields">		
+		    <!-- tmpl_include update_profile_fields.tmpl --> 
 		</div> 
 	<!-- /tmpl_if --> 
 

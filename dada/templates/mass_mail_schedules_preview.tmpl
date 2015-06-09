@@ -13,45 +13,51 @@
 
 
 
+<!-- tmpl_if schedule_activated -->
+    <p><strong>Schedule activated:</strong></p>
 
     
-<!-- tmpl_if errors --> 
-    <p>Sorry, looks like something went wrong, calculating the schedules:</p>
-    <!-- tmpl_if can_use_datetime --> 
-        <code><!-- tmpl_var errors escape="HTML" --></code>
-    <!-- tmpl_else --> 
-        <p>
-            The following CPAN Perl Modules will need to be installed, for recurring schedules to work:
-        </p>
-        <ul>
-            <li>DateTime</li>
-            <li>DateTime::Event::Recurrence</li>
-        </ul> 
-    <!-- /tmpl_if --> 
-<!-- tmpl_else --> 
-    <!-- tmpl_if schedule_activated -->
-        <p><strong>Schedule activated:</strong></p>
+    <!-- tmpl_unless status --> 
+        <p>Sorry, looks like something went wrong, calculating the schedule - is there information missing?</p>
+
+        <!-- tmpl_if comment --> 
     
+            <!--  can_use_datetime --> 
+                <code><!-- tmpl_var errors escape="HTML" --></code>
+            <!--  --> 
+                <p>
+                    The following CPAN Perl Modules will need to be installed, for recurring schedules to work:
+                </p>
+                <ul>
+                    <li>DateTime</li>
+                    <li>DateTime::Event::Recurrence</li>
+                </ul> 
+                <!-- / --> 
+            <!-- /tmpl_if --> 
+        
+    <!-- tmpl_else --> 
         <!-- tmpl_if expr="(schedule_type eq 'single')" -->
-            <p>This is a <strong>one-time</strong> mass mailing,
+            <p>This will be a <strong>one-time</strong> mass mailing 
                 <!-- tmpl_if schedule_single_localtime --> 
-                    set to be sent on 
-                    <strong><!-- tmpl_var schedule_single_displaydatetime escape="HTML" --></strong></p> 
+                    which will be sent on 
+                    <strong>
+                        <!-- tmpl_var schedule_single_displaydatetime escape="HTML" -->
+                    </strong>
                 <!-- tmpl_else --> 
-                    but you will need to set a time for the mailing to go out!
-                <!-- /tmpl_if --> 
+                    
+                <!-- /tmpl_if -->
+            </p> 
         <!-- /tmpl_if --> 
         <!-- tmpl_if expr="(schedule_type eq 'recurring')" -->
             <p>This is a <strong>recurring</strong> mass mailing, 
             <!-- tmpl_if expr="((schedule_recurring_displaydatetime_start ne '') && (schedule_recurring_displaydatetime_end ne ''))" --> 
-                
                     between 
                 <strong><!-- tmpl_var schedule_recurring_displaydatetime_start --></strong>
                      and 
                 <strong><!-- tmpl_var schedule_recurring_displaydatetime_end --></strong>
 
                 <!-- tmpl_if expr="(num_recurring_days == 0)" --> 
-                    but you need to set what day the schedule goes out on
+                    
                 <!-- tmpl_else --> 
                     <!-- tmpl_if expr="(num_recurring_days == 7)" --> 
                         sent <strong>every day</strong>
@@ -79,13 +85,12 @@
                 </p>
 
             <!-- tmpl_else --> 
-                but you need to set a start and end date.
+                
             <!-- /tmpl_if -->
         <!-- /tmpl_if -->
-    
-    <!-- tmpl_else --> 
-        <p><strong>Schedule inactive.</strong></p>
-    <!-- /tmpl_if -->
-<!-- /tmpl_if --> 
+<!-- /tmpl_unless --> 
+<!-- tmpl_else --> 
+    <p><strong>Schedule inactive.</strong></p>
+<!-- /tmpl_if -->
 <!-- end mass_mail_schedules_preview.tmpl --> 
 
