@@ -133,7 +133,7 @@ sub run_schedules {
             $days_str ."\n\t\t" .
             'at: '  . $sched->{schedule_recurring_display_hms} . "\n\n"; 
             
-            my ($s_t_r, $r_sched_t)  = $self->recurring_schedule_times(
+            my ($status, $errors, $r_sched_t)  = $self->recurring_schedule_times(
                 {
                     -recurring_time => $sched->{schedule_recurring_display_hms},
                     -days           => $sched->{schedule_recurring_days}, 
@@ -141,8 +141,9 @@ sub run_schedules {
                     -end            => $sched->{schedule_recurring_ctime_end}, 
                 }
             ); 
-            if(defined($s_t_r) > 0){ 
-                $r .= "Problems?: $s_t_r\n\n"; 
+            if($status == 0){ 
+                $r .= "Problems calculating recurring schedules - skipping schedule: " . $errors; 
+                next SCHEDULES; 
             }
             
             #require Data::Dumper; 
@@ -271,6 +272,10 @@ sub recurring_schedule_times {
     my ($args) = @_;
     my $r = undef; 
     
+    my $status = 1; 
+    my $errors = undef; 
+    my $times = [];
+    
     # require Data::Dumper; 
     # $r .= "args:" . Data::Dumper::Dumper($args); 
     
@@ -279,10 +284,9 @@ sub recurring_schedule_times {
     my $start          = $args->{-start};
     my $end            = $args->{-end};
 
-    my $times = [];
 
     try {
-
+        
         require DateTime;
         require DateTime::Event::Recurrence;
         
@@ -290,14 +294,6 @@ sub recurring_schedule_times {
         my $end_dt   = DateTime->from_epoch( epoch => $end );
 
         my ( $hours, $minutes, $seconds ) = split( ':', $recurring_time );
-
-        #$r .= '$start_dt ' . $start_dt->epoch . "\n"; 
-        #$r .= '$end_dt '   . $end_dt->epoch   . "\n";
-        #$r .= '$recurring_time ' . $recurring_time  . "\n";
-        #$r .= '$hours ' . $hours  . "\n";
-        #$r .= '$minutes ' . $minutes . "\n";
-        #$r .= '$seconds  '  . $seconds . "\n";
-        
 
         my $day_set = undef;
         my $dates   = [];
@@ -316,28 +312,24 @@ sub recurring_schedule_times {
             push(
                 @$times,
                 {
-                    date  => $dt->datetime,
-                    #ctime => $dt->epoch,
-                    #'localtime' => scalar localtime($dt->epoch),
-                    localtime => scalar localtime($self->T_datetime_to_ctime($dt->datetime)),
-                   # 'datetime_to_ctime' => $self->T_datetime_to_ctime($dt->datetime), 
-                    ctime => $self->T_datetime_to_ctime($dt->datetime), 
+                    # date        => $dt->datetime,
+                    # localtime => scalar localtime($self->T_datetime_to_ctime($dt->datetime)),
+                    ctim        => $self->T_datetime_to_ctime($dt->datetime), 
                 }
             );
         }
 
     } catch {
-        warn $_;
-        $r .= $_; 
+        $status = 0; 
+        $errors = $_; 
     };
 
-    return ($r, $times);
+    return ($status, $errors, $times);
 }
 
 sub T_datetime_to_ctime {
     my $self = shift; 
     my $datetime = shift;
-    warn '$datetime ' . $datetime; 
     require Time::Local;
     my ( $date, $time ) = split( 'T', $datetime );
     my ( $year, $month,  $day )    = split( '-', $date );

@@ -555,7 +555,7 @@ sub draft_index {
 
   FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
         my $q = $self->decode_draft( $hashref->{draft} );
-       # warn q{$q->param('schedule_datetime')} . $q->param('schedule_datetime'); 
+       # warn q{$q->param('schedule_single_ctime')} . $q->param('schedule_single_ctime'); 
         
         my $params = {
             id                            => $hashref->{id},
@@ -621,7 +621,8 @@ sub sort_by_schedule {
     my $r    = shift; 
     my $s    = []; 
     
-    foreach my $row (sort { $a->{schedule_datetime} <=> $b->{schedule_datetime} } @$r ) {
+    # Kinda wrong, now that we have recurring schedules. 
+    foreach my $row (sort { $a->{schedule_single_ctime} <=> $b->{schedule_single_ctime} } @$r ) {
         push(@$s, $row);
     }
     return $s; 

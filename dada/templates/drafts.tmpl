@@ -343,7 +343,7 @@
                         <th> 
                             <p>
                                 <strong>
-                                    Sending On
+                                    Sending On/Between
                                 </strong>
                             </p>
                         </td>
@@ -385,7 +385,11 @@
                 				</td>
                 			--> 
                 			<td>
-                			    <!-- tmpl_var schedule_localtime -->
+                                <!-- tmpl_if expr="(schedule_type eq 'single')" --> 
+        						    <!-- tmpl_var schedule_single_displaydatetime -->
+        						<!-- tmpl_else --> 
+        						    <!-- tmpl_var schedule_recurring_displaydatetime_start --> - <!-- tmpl_var schedule_recurring_displaydatetime_end -->
+        						<!-- /tmpl_if -->
                 			</td>
                 			<td>
                 				<p>
@@ -460,7 +464,7 @@
                             <th> 
                                 <p>
                                     <strong>
-                                        Sending On
+                                        Sending On/Between
                                     </strong>
                                 </p>
                             </td>
@@ -502,7 +506,13 @@
                     				</td>
                     			--> 
                     			<td>
-                    			    <!-- tmpl_var schedule_localtime -->
+
+                                        <!-- tmpl_if expr="(schedule_type eq 'single')" --> 
+                						    <!-- tmpl_var schedule_single_displaydatetime -->
+                						<!-- tmpl_else --> 
+                						    <!-- tmpl_var schedule_recurring_displaydatetime_start --> - <!-- tmpl_var schedule_recurring_displaydatetime_end -->
+                						<!-- /tmpl_if -->
+
                     			</td>
                     			<td>
                     				<p>
