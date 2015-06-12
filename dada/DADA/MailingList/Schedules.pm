@@ -133,7 +133,7 @@ sub run_schedules {
             $days_str ."\n\t\t" .
             'at: '  . $sched->{schedule_recurring_display_hms} . "\n\n"; 
             
-            my ($status, $errors, $r_sched_t)  = $self->recurring_schedule_times(
+            my ($status, $errors, $recurring_scheds)  = $self->recurring_schedule_times(
                 {
                     -recurring_time => $sched->{schedule_recurring_display_hms},
                     -days           => $sched->{schedule_recurring_days}, 
@@ -149,7 +149,7 @@ sub run_schedules {
             #require Data::Dumper; 
             #$r .=   Data::Dumper::Dumper($r_sched_t); 
             
-            for(@$r_sched_t){ 
+            for(@$recurring_scheds){ 
                 if(
                          $_->{ctime} >= ($t - 259_200) 
                     &&   $_->{ctime} <= ($t + 259_200) 
@@ -314,7 +314,7 @@ sub recurring_schedule_times {
                 {
                     # date        => $dt->datetime,
                     # localtime => scalar localtime($self->T_datetime_to_ctime($dt->datetime)),
-                    ctim        => $self->T_datetime_to_ctime($dt->datetime), 
+                    ctime         => $self->T_datetime_to_ctime($dt->datetime), 
                 }
             );
         }

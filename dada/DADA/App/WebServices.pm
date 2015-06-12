@@ -484,7 +484,6 @@ sub check_digest {
 
     my $n_digest = undef; 
 
-
     if ( $self->{service} eq 'mass_email' ) {
         $qq->param( 'format',  $self->{cgi_obj}->param('format') );
         $qq->param( 'message', $self->{cgi_obj}->param('message') );

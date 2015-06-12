@@ -920,8 +920,8 @@ $(document).ready(function() {
 				href: $("#s_program_url").val(),
 				data: {
 					flavor: $("#sched_flavor").val(),
-					list: '_all', 
-					schedule: '_all',
+					list:        '_all', 
+					schedule:    '_all',
 					output_mode: '_verbose', 
 					for_colorbox: 1
 				}

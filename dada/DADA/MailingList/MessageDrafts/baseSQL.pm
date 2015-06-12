@@ -603,7 +603,13 @@ sub additional_schedule_params {
     my $q    = shift; 
     my $schedule_params = {}; 
         
-        
+    # backwards compat.
+    if( defined($q->param('schedule_datetime'))
+    && !defined($q->param('schedule_single_ctime'))
+    ){ 
+        $schedule_params->{'schedule_single_ctime'} = $q->param('schedule_datetime');
+    }
+    
     $schedule_params->{schedule_single_displaydatetime}            = ctime_to_displaytime(  scalar $q->param('schedule_single_ctime')); 
     $schedule_params->{schedule_single_localtime}                  = ctime_to_localtime(    scalar $q->param('schedule_single_ctime')); 
     $schedule_params->{schedule_recurring_displaydatetime_start}   = ctime_to_displaytime(  (scalar $q->param('schedule_recurring_ctime_start')), 0); 
@@ -611,7 +617,6 @@ sub additional_schedule_params {
     $schedule_params->{schedule_recurring_localtime_start}         = ctime_to_localtime(    scalar $q->param('schedule_recurring_ctime_start')); 
     $schedule_params->{schedule_recurring_localtime_end}           = ctime_to_localtime(    scalar $q->param('schedule_recurring_ctime_end')); 
     $schedule_params->{schedule_recurring_display_hms}             = hms_to_dislay_hms(     scalar $q->param('schedule_recurring_hms')); 
-    
     
     return $schedule_params; 
 }
@@ -709,14 +714,13 @@ sub params_to_save {
 
         schedule_activated             => 1,
         schedule_type                  => 1,
+        
+        # schedule_datetime            => 1, # No longer used, schedule_single_ctime is used instead. 
         schedule_single_ctime          => 1,
         schedule_recurring_days        => 1,
         schedule_recurring_ctime_start => 1,
         schedule_recurring_ctime_end   => 1,
         schedule_recurring_hms         => 1,
-
-
-
 
     };
 
