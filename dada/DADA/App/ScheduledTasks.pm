@@ -110,5 +110,6 @@ sub scheduled_mass_mailings {
 }
 
 sub DESTORY {}
+sub END {}
 
 1;

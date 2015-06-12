@@ -17,7 +17,7 @@
 	 	        <!-- tmpl_if expr="(draft_role eq 'draft')" --> 
 	 	             Draft
 	 	        <!-- /tmpl_if -->
-	 	        <!-- tmpl_if expr="(draft_role eq 'stationary')" --> 
+	 	        <!-- tmpl_if expr="(draft_role eq 'stationery')" --> 
 	 	            Stationery
 	 	        <!-- /tmpl_if -->
 	 	        <!-- tmpl_if expr="(draft_role eq 'schedule')" --> 
@@ -36,7 +36,6 @@
 	  <div id="form_widgets">
 	      
       <!-- tmpl_include test_sent_notice_widget.tmpl --> 
-      <!-- tmpl_include send_email_schedule_options_widget.tmpl -->
       <!-- tmpl_include ses_email_verification_widget.tmpl -->
       <!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
       <!-- tmpl_include discussion_list_support_notice_widget.tmpl --> 
@@ -50,16 +49,13 @@
         		</p>
         	</div> 
         <!-- /tmpl_if -->
-        <!-- tmpl_if expr="(draft_role eq 'stationary')" --> 
+        <!-- tmpl_if expr="(draft_role eq 'stationery')" --> 
             <!-- tmpl_if done --> 
                 <!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
             <!-- /tmpl_if -->
         <!-- /tmpl_if -->     
     <!-- /tmpl_If -->
 
- <input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" />
- <input type="hidden" id="f" name="flavor" value="send_url_email" />
- <input type="hidden" name="support_files_url" id="support_files_url" value="<!-- tmpl_var SUPPORT_FILES_URL -->" />
  
 
 <!-- tmpl_unless can_use_mime_lite_html -->
@@ -84,15 +80,22 @@
 		  </pre> 
 		 </div> 
 			<!-- tmpl_else-->
-        <input type="hidden" id="draft_alert"        name="draft_alert"           value="<!-- tmpl_var draft_alert default="0" -->" />
-        <input type="hidden" id="draft_id"           name="draft_id"              value="<!-- tmpl_var draft_id -->"                /> 
-        <input type="hidden" id="draft_role"         name="draft_role"            value="<!-- tmpl_var draft_role -->"              />
-        <input type="hidden" id="restore_from_draft" name="restore_from_draft"    value="<!-- tmpl_var restore_from_draft -->"      />
 
 <!-- tmpl_include draft_notice_widget.tmpl --> 
-
+<!-- tmpl_include send_email_schedule_options_widget.tmpl -->
 <!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
-	
+
+    <input type="hidden" name="s_program_url"      id="s_program_url"    value="<!-- tmpl_var S_PROGRAM_URL -->" />
+    <input type="hidden" name="flavor"            id="flavor"            value="send_url_email" />
+    <input type="hidden" name="support_files_url" id="support_files_url" value="<!-- tmpl_var SUPPORT_FILES_URL -->" />
+
+    <input type="hidden" id="draft_alert"        name="draft_alert"           value="<!-- tmpl_var draft_alert default="0" -->" />
+    <input type="hidden" id="draft_id"           name="draft_id"              value="<!-- tmpl_var draft_id -->"                /> 
+    <input type="hidden" id="save_draft_role"    name="save_draft_role"       value=""                                          />
+    <input type="hidden" id="draft_role"         name="draft_role"            value="<!-- tmpl_var draft_role -->"              />
+    <input type="hidden" id="restore_from_draft" name="restore_from_draft"    value="<!-- tmpl_var restore_from_draft -->"      />
+    
+    
 	<fieldset> 
 		 <legend>Message Body [<a href="#" onclick="$.colorbox({inline:true, href:$('#message_body_help')})">?</a>]</legend>
 
@@ -320,13 +323,15 @@
 					</li>
 
 <!-- /tmpl_if --> 
-		<!-- tmpl_if can_have_subscriber_fields --> 
-		<li>
-			<a href="#subscriber_field_tags_listing">
- 				 Subscriber Fields
-			</a>
-		</li>
-		<!-- /tmpl_if --> 
+
+<!-- tmpl_if comment --> 
+    <!-- tmpl_if can_have_subscriber_fields --> 
+    	<div id="update_profile_fields">		
+    	    <!--  update_profile_fields.tmpl --> 
+    	</div> 
+    <!-- /tmpl_if --> 
+<!-- /tmpl_if --> 
+
 		<li>
 			<a href="#send_email_test_recipient">
  				 Testing
@@ -355,12 +360,14 @@
 				<!-- tmpl_include file_attachments_widget.tmpl -->
 				</div> 
 	<!-- /tmpl_if --> 
-	<!-- tmpl_if can_have_subscriber_fields --> 
-		<div id="subscriber_field_tags_listing">		
-		<!-- tmpl_include subscriber_field_tags_listing_widget.tmpl --> 
-		</div> 
-	<!-- /tmpl_if --> 
-
+	
+	<!-- tmpl_if comment --> 
+    	<!-- tmpl_if can_have_subscriber_fields --> 
+    		<div id="profile_field_tags_listing">		
+    		<!-- tmpl_include subscriber_field_tags_listing_widget.tmpl --> 
+    		</div> 
+    	<!-- /tmpl_if --> 
+    <!-- /tmpl_if -->
 	<div id="send_email_test_recipient">		
 	<!-- tmpl_include send_email_test_recipient_widget.tmpl --> 
 	</div> 
@@ -375,7 +382,9 @@
 
 <div id="top_floating_button_wrapper">
   <div id="buttons">
-	<!-- tmpl_include send_a_list_message_button_widget.tmpl -->
+      <div id="button_toolbar">
+          <input type="button" value="Loading..." class="bigger_button" />
+    </div>
   </div>
 </div>
 

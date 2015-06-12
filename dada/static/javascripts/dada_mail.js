@@ -62,72 +62,6 @@ $(document).ready(function() {
 		
 	}
 	
-	if ($("#recurring_schedules").length) {
-	
-	
-	
-	
-	if($('#recurring_datetime_time').length) { 
-	 $('#recurring_datetime_time').datetimepicker({
-	  format:'H:i',
-	  datepicker:false,
-	  onShow:function( ct ){
-	  }
-	 });
-	}
-	
-	
-	
-		if($('#recurring_datetime_start').length) { 
-		 $('#recurring_datetime_start').datetimepicker({
-		  format:'Y-m-d',
-		  timepicker:false,
-		  onShow:function( ct ){
-		   this.setOptions({
-		    maxDate:$('#recurring_datetime_end').val()?$('#recurring_datetime_end').val():false
-		   })
-		  }
-		 });
-		}
-
-		if($('#recurring_datetime_end').length) { 
-		 $('#recurring_datetime_end').datetimepicker({
-		  format:'Y-m-d',
-		   timepicker:false,
-		  onShow:function( ct ){
-		   this.setOptions({
-		    minDate:$('#recurring_datetime_start').val()?$('#recurring_datetime_start').val():false
-		   })
-		  }
-		 });
-		}
-		
-		$("body").on("click", "#try_recurring", function(event) {
-			 /* 
-				alert( $("#recurring_scheds").serialize()); 
-			*/
-			event.preventDefault();
-			var request = $.ajax({
-				url: $("#s_program_url").val(),
-				type: "POST",
-				dataType: "html",
-				cache: false,
-				data: $("#recurring_scheds").serialize(),
-				success: function(content) {
-					$("#recurring_results").html(content); 
-				},
-				error: function(xhr, ajaxOptions, thrownError) {
-					alert('No work: ' + thrownError); 
-					console.log('status: ' + xhr.status);
-					console.log('thrownError:' + thrownError);
-				}, 
-			});	
-			
-		});
-		
-		
-	}
-	
 	
 	//Mail Sending >> Send a Message 
 	if ($("#send_email_screen").length || $("#send_url_email").length || $("#list_invite").length) {
@@ -163,22 +97,17 @@ $(document).ready(function() {
 		}
 	});
 	
-	datetimesetupstuff(); 
-	
-	if($('#schedule_datetime').length) { 
-		$('#schedule_datetime').datetimepicker(
-			{
-				minDate: 0,
-				//minTime: 0, 
-				inline:false, 
-				format:'Y-m-d H:i:s'
-			}
-		);
-	}
+		var send_email_callbacks = $.Callbacks();
+		send_email_callbacks.add(setup_attachment_fields());
+		send_email_callbacks.add(setup_schedule_fields());
+		send_email_callbacks.add(toggle_schedule_options());
+		send_email_callbacks.add(datetimesetupstuff());
+		send_email_callbacks.add(ChangeMassMailingButtonLabel(1));
+		send_email_callbacks.add(mass_mail_schedules_preview());
+		send_email_callbacks.fire();
 		
 		if($('#backdate_datetime').length) { 
 			$('#backdate_datetime').datetimepicker({maxDate: 0, format:'Y-m-d H:i:s'});
-			
 			if($('#backdate_datetime').val() == ""){ 
 				var d       = new Date();
 				var year    = d.getFullYear();
@@ -206,7 +135,14 @@ $(document).ready(function() {
 			}
 		}
 		
-		setup_attachment_fields(); 
+		
+		$("body").on("click", ".scheduled_type", function(event) {
+			toggle_schedule_options();
+		});
+		$("body").on("change", ".schedule_field", function(event) {
+			mass_mail_schedules_preview();
+		}); 
+		
 		$("body").on("click", ".remove_attachment", function(event) {
 			if(confirm("Remove Attachment?")) { 
 				$("#" + $(this).attr("data-attachment")).val(''); 
@@ -214,108 +150,27 @@ $(document).ready(function() {
 				$(this).hide(); 
 			}
 		});
-		
-		//$("body").on("click", "#scheduled_mailing", function(event) {}); 
-		
 		$("body").on("submit", "#mass_mailing", function(event) {
 			event.preventDefault();
 		});
 		
 		if ($("#send_email_screen").length || $("#send_url_email").length) {
-			auto_save_as_draft();
-			
-			$("body").on("click", ".toggle_schedule_options", function(event) {
-				toggle_schedule_options(); 
-			}); 
-			
-			$("body").on("change", ".schedule_fields", function(event) {
-				//preview_mass_mail_schedules(); 
-			}); 
-			$("body").on("click", ".schedule_fields", function(event) {
-				preview_mass_mail_schedules(); 
-			}); 
-			
-			setup_schedules_tab(); 
-			
-			$("body").on("click", "#cancel_create_schedule", function(event) {
-				$('#popup_schedule_activated').prop('checked', false);
-				$("#schedule_datetime").val('');
-				$.colorbox.close();
-			}); 
-			$("body").on("click", "#create_schedule", function(event) {
-				
-				//popup_schedules_fields_to_schedule_fields(); 
-				
+			auto_save_as_draft();						
+
+			$("body").on("click", ".save_msg", function(event) {
+				console.log('.save_msg');
 				$("#button_action_notice").html('Working...');
-				$("#draft_role").val('schedule');
-				var ds = save_draft(false); 
-				admin_menu_drafts_notification();
-				$("#button_action_notice").html('&nbsp;');	
-				if(ds === true) { 
-					window.location.replace($("#s_program_url").val() + '?flavor=' + $("#f").val() + '&draft_id=' + $("#draft_id").val() + '&restore_from_draft=true&draft_role=schedule&done=1');
-				}
-				else { 
-					alert("Error Saving Schedule."); 
-				}
 				
-			}); 
-			
-			
-			
-			$("body").on("click", ".savedraft", function(event) {
-			
-				//alert ('itsa:' + $("#draft_role").val()); 
+				$("#save_draft_role").val($(this).attr("data-save_draft_role"));
 				
-				$("#button_action_notice").html('Working...');
-				var role = $(this).attr("data-role");
-				$("#draft_role").val(role);
-				var ds = save_draft(false); 
-				admin_menu_drafts_notification();
-				if($("#draft_role").val() == 'draft') { 
-					if($("#save_draft_button").val() == 'Save as: Draft') { 
-						$("#save_draft_button").val('Save Draft')
-					}
-				}
-				$("#button_action_notice").html('&nbsp;');	
-				if(ds === true) { 
-					if($("#draft_role").val() == 'draft') {
-						$.colorbox({
-							top: 0,
-							fixed: true,
-							initialHeight: 50,
-							maxHeight: 480,
-							maxWidth: 849,
-							width: 700,
-							opacity: 0.50,
-							href: $("#s_program_url").val(),
-							data: {
-								flavor: 'draft_saved_notification',
-								'screen': $("#f").val(),
-								role: role
-							}
-						});
-					}
-					else if($("#draft_role").val() == 'stationary' || $("#draft_role").val() == 'schedule' ) {
-						window.location.replace($("#s_program_url").val() + '?flavor=' + $("#f").val() + '&draft_id=' + $("#draft_id").val() + '&restore_from_draft=true&draft_role=' + $("#draft_role").val() + '&done=1');
-					}
-				}
-				else if(ds === false) { 
-					//alert('Error Saving Draft: '); 
-				}
+				var ds = save_msg(false);
+				window.location.replace(
+					$("#s_program_url").val() 
+					+ '?flavor='   + $("#flavor").val() 
+					+ '&draft_id=' + $("#draft_id").val() + 
+					'&restore_from_draft=true&draft_role=' + $("#save_draft_role").val() + '&done=1'
+				);
 			});
-			
-			$("body").on("click", ".create_from_stationary", function(event) {
-				$("#button_action_notice").html('Working...');
-				var role = $(this).attr("data-role");
-				$("#draft_role").val(role); // should be, "stationary", but... 
-				var ds = save_draft(false); 
-				if(ds === true) { 
-					create_from_stationary(); 
-				}
-				else if(ds === false) { 
-					//alert('Error Saving Draft: '); 
-				}
-			}); 
 		}
 			
 			
@@ -340,7 +195,7 @@ $(document).ready(function() {
 			var itsatest = $(this).hasClass("justatest");
 			if (sendMailingListMessage(fid, itsatest) === true) {
 				if($("#f").val() != 'list_invite') { 
-					save_draft(false);
+					save_msg(false);
 					admin_menu_drafts_notification();
 				}
 				if($("#f").val() == 'list_invite' && itsatest == true) { 
@@ -369,12 +224,10 @@ $(document).ready(function() {
 		});
 		
 		$("body").on("click", ".schedulemassmailing", function(event) {
-			
-			alert('schedulemassmailing'); 
-/*
+			/*
 			$("#button_action_notice").html('Working...');
 			$("#draft_role").val('schedule');
-			save_draft(false);
+			save_msg(false);
 			window.location.replace($("#s_program_url").val() + '?flavor=' + $("#f").val() + '&draft_id=' + $("#draft_id").val() + '&restore_from_draft=true&draft_role=schedule&done=1');
 */
 		}); 
@@ -383,7 +236,6 @@ $(document).ready(function() {
 			ChangeMassMailingButtonLabel();
 		});
 
-		ChangeMassMailingButtonLabel();
 		$("#tabs").tabs({ heightStyle: "auto" });
 		$("#tabs_mass_mailing_options").tabs({ heightStyle: "auto" });
 
@@ -402,10 +254,10 @@ $(document).ready(function() {
 
 		$("body").on("click", ".cancel_message", function(event) {
 			$("#button_action_notice").html('Working...');
-			save_draft(false)
+			save_msg(false)
 			
 			var confirm_msg = '';
-			if($("#draft_role").val() == 'stationary') {
+			if($("#draft_role").val() == 'stationery') {
 				confirm_msg = "Delete Stationery Message?";
 			}
 			else if($("#draft_role").val() == 'schedule') {
@@ -1068,8 +920,8 @@ $(document).ready(function() {
 				href: $("#s_program_url").val(),
 				data: {
 					flavor: $("#sched_flavor").val(),
-					list: '_all', 
-					schedule: '_all',
+					list:        '_all', 
+					schedule:    '_all',
 					output_mode: '_verbose', 
 					for_colorbox: 1
 				}
@@ -1444,8 +1296,6 @@ function admin_menu_notification(sflavor, target_class) {
 	refresh_loop(1);
 }
 
-// Mass Mailing >> Send a Message 
-
 function setup_attachment_fields() { 
 	var a_nums = [1,2,3,4,5];
 	for (var i = 0; i < a_nums.length; i++) {	
@@ -1460,17 +1310,131 @@ function setup_attachment_fields() {
 		}
 	}	
 }
-function save_draft(async) { 
+
+function setup_schedule_fields() { 
+	if($('#schedule_single_displaydatetime').length) { 
+		$('#schedule_single_displaydatetime').datetimepicker(
+			{
+				minDate: 0,
+				//minTime: 0,  
+				inline:false, 
+				format:'Y-m-d H:i:s',
+				onChangeDateTime:function(dp,$input){
+				   mass_mail_schedules_preview(); 
+				}
+			}
+		);
+	}
+	// Recurring 
+	if($('#schedule_recurring_display_hms').length) {  
+		$('#schedule_recurring_display_hms').datetimepicker(
+			{
+		  		format:'H:i:s',
+		  		datepicker:false,
+		  		onShow:function( ct ){},
+				onChangeDateTime:function(dp,$input){
+				   mass_mail_schedules_preview(); 
+				}
+		 	}
+		);
+	}
+	if($('#schedule_recurring_displaydatetime_start').length) { 
+		 $('#schedule_recurring_displaydatetime_start').datetimepicker({
+		  format:'Y-m-d',
+		  timepicker:false,
+		  onShow:function( ct ){
+		   this.setOptions({
+		    maxDate:$('#schedule_recurring_displaydatetime_end').val()?$('#schedule_recurring_displaydatetime_end').val():false
+		   })
+		  },
+		onChangeDateTime:function(dp,$input){
+			mass_mail_schedules_preview(); 
+		}
+		});
+	}
+	if($('#schedule_recurring_displaydatetime_end').length) { 
+		 $('#schedule_recurring_displaydatetime_end').datetimepicker(
+			{
+				format:'Y-m-d',
+				timepicker:false,
+				onShow:function( ct ){
+					this.setOptions({
+		    			minDate:$('#schedule_recurring_displaydatetime_start').val()?$('#schedule_recurring_displaydatetime_start').val():false
+		   			})
+		  		},
+				onChangeDateTime:function(dp,$input){
+				 	mass_mail_schedules_preview(); 
+				}
+		
+		 	}
+		);
+	}
+}
+
+function toggle_schedule_options() { 
+	if ($("#schedule_type_single").prop("checked") === true) {
+		if ($('#schedule_type_single_options').is(':hidden')) {
+			$('#schedule_type_single_options').show('blind');
+		}
+		if ($('#schedule_type_recurring_options').is(':visible')) {
+			$('#schedule_type_recurring_options').hide('blind');
+		}
+	}
+	
+	if ($("#schedule_type_recurring").prop("checked") === true) {
+		if ($('#schedule_type_recurring_options').is(':hidden')) {
+			$('#schedule_type_recurring_options').show('blind');
+		}
+		if ($('#schedule_type_single_options').is(':visible')) {
+			$('#schedule_type_single_options').hide('blind');
+		}
+	}
+}
+
+
+var mmsp = ''; 
+function mass_mail_schedules_preview() { 
+	
+	var new_mmsp = $('.schedule_field').serialize(); 
+	if(mmsp == new_mmsp){ 
+		return false; 
+	} 
+	else { 
+		mmsp = new_mmsp; 
+	}
+
+	$("#mass_mail_schedules_preview_results").hide().html('<p>&nbsp;</p><p class="text-align:center"><strong>Loading...</strong></p><p>&nbsp;</p>').show('fade');
+
+
+	var request = $.ajax({
+		url: $("#s_program_url").val(),
+		data: $('.schedule_field').serialize() + '&flavor=mass_mail_schedules_preview', 
+		cache: false,
+		dataType: "html",
+		async: true,
+		success: function(content) {
+			$("#mass_mail_schedules_preview_results").hide("fade", function() {
+				$("#mass_mail_schedules_preview_results").html(content);
+				$("#mass_mail_schedules_preview_results").show('fade');
+			});
+		
+		
+		
+		}
+	});	
+}
+
+
+function save_msg(async) { 
 	
 	//alert('save draft called!'); 
-	
-	var r = false; 
-	
-//   alert(
-//		$("#mass_mailing").serialize()
-//		 + '&process=save_as_draft'
-//	);
 
+	var r = false; 
+
+	//	console.log(
+	//	$("#mass_mailing").serialize()
+	//	 + '&process=save_as_draft'
+	//	);
 
 	if ($("#using_ckeditor").length) {
 		if(CKEDITOR.instances['html_message_body']) { 
@@ -1482,31 +1446,30 @@ function save_draft(async) {
 			tinyMCE.triggerSave();
 		}
 	}
-	var request = $.ajax({
-		url:       $("#s_program_url").val(),
-		type:      "POST",
-		dataType: "json",
-		cache:     false,
-		async:     async,
-		data: $("#mass_mailing").serialize() + '&process=save_as_draft',
-		success: function(content) {
-			//alert('content.id ' + content.id); 
-			$("#draft_id").val(content.id); 
-			$('#draft_notice .alert').text($("#draft_role").val() + ' saved: ' + new Date().format("yyyy-MM-dd h:mm:ss")); 
-			r = true; 
-		},
-		error: function(xhr, ajaxOptions, thrownError) {
-			alert('Error Saving ' + $("#draft_role").val() + ': ' + thrownError); 
-			console.log('status: ' + xhr.status);
-			console.log('thrownError:' + thrownError);
-			r = false; 
-		}, 
-	});
-	return r; 
-}
+	
 
-function create_from_stationary() { 
-	window.location.replace($("#s_program_url").val() + '?flavor=create_from_stationary&draft_id=' + $("#draft_id").val() + '&screen=' + $("#f").val());
+		var request = $.ajax({
+			url:       $("#s_program_url").val(),
+			type:      "POST",
+			dataType: "json",
+			cache:     false,
+			async:     async,
+			data: $("#mass_mailing").serialize() + '&process=save_as_draft&json=1',
+			success: function(content) {
+				//alert('content.id ' + content.id); 
+				$("#draft_id").val(content.id); 
+				$('#draft_notice .alert').text($("#draft_role").val() + ' saved: ' + new Date().format("yyyy-MM-dd h:mm:ss")); 
+				r = true; 
+			},
+			error: function(xhr, ajaxOptions, thrownError) {
+				alert('Error Saving ' + $("#draft_role").val() + ': ' + thrownError); 
+				console.log('status: ' + xhr.status);
+				console.log('thrownError:' + thrownError);
+				r = false; 
+			}, 
+		});	
+		return r;
+
 }
 
 function auto_save_as_draft() {
@@ -1521,7 +1484,11 @@ function auto_save_as_draft() {
 		}
 	}
 	
+	
+	$("#save_draft_role").val($("#draft_role").val()); 
+		
 	var r = 60 * 1000; // Every 1 minute. 
+	//var r = 10 * 1000; // Every 10 seconds 
 	var refresh_loop = function(no_loop) {
 		$('#draft_notice .alert').text('auto-saving...'); 
 		var request = $.ajax({
@@ -1529,9 +1496,15 @@ function auto_save_as_draft() {
 			type: "POST",
 			dataType: "json",
 			cache: false,
-			data: $("#mass_mailing").serialize() + '&process=save_as_draft',
+			data: $("#mass_mailing").serialize() + '&process=save_as_draft&json=1',
 			success: function(content) {
 				$('#draft_notice .alert').text('Last auto-save: ' + new Date().format("yyyy-MM-dd h:mm:ss"));
+				console.log('Saving Draft Successful - content.id: ' + content.id); 
+				console.log('$("#draft_role").val(): '               + $("#draft_role").val()); 
+				console.log('$("#save_draft_role").val(): '          + $("#save_draft_role").val()); 
+				
+				
+				
 				$("#draft_id").val(content.id);
 				admin_menu_drafts_notification();
 			},
@@ -3665,36 +3638,46 @@ function preview_message_receivers() {
 
 }
 
-function ChangeMassMailingButtonLabel() {
-/*	
-	if($("#scheduled_mailing").prop("checked")){ 
-		// This should work, as you can't set this, while as a stationary. 
-		$('#submit_mass_mailing').hide('fade');
-		$('#save_draft_button').val('Save Schedule');
-		$("#save_draft_button").attr("data-role", 'schedule'); 
-	
-		$('#save_as_stationary_button').hide('fade');
-	}
-	else { 
-*/		
-		$('#submit_mass_mailing').show();
-		$('#save_draft_button').show();
-		$('#save_as_stationary_button').show();
-		
-		$('#save_draft_button').val($("#default_save_draft_button_label").val());
-		
-		
-		$("#save_draft_button").attr("data-role", 'draft'); 
+var cmmbl = ''; 
+function ChangeMassMailingButtonLabel(first_run) {	
 
-		
-		if ($("#archive_message").prop("checked") === true && $("#archive_no_send").prop("checked") === true) {
-			$("#submit_mass_mailing").prop('value', 'Archive Message');
-		} else {
-			$("#submit_mass_mailing").prop('value', $("#default_mass_mailing_button_label").val());
+	var new_cmmbl = $('.ChangeMassMailingButtonLabel').serialize(); 
+	if(first_run !== 1) { 
+		if(cmmbl == new_cmmbl){ 
+			return false; 
+		} 
+		else { 
+			cmmbl = new_cmmbl; 
 		}
-/*
 	}
-*/
+	var archive_no_send = 0; 
+	if ($("#archive_no_send").prop("checked") === true && $("#archive_message").prop("checked") === true) {
+		archive_no_send = 1; 
+	} 
+	$("#button_toolbar").hide().html('<input type="button" value="Loading..." class="bigger_button" />').show('fade');
+	
+	var request = $.ajax({
+		url:       $("#s_program_url").val(),
+		type:      "POST",
+		cache:     false,
+		async:     true,
+		data: { 
+			flavor: 'send_email_button_widget', 
+			draft_role: $("#draft_role").val(),
+			archive_no_send: archive_no_send,
+		},
+		success: function(content) {
+			$("#button_toolbar").hide("fade", function() {
+				$("#button_toolbar").html(content);
+				$("#button_toolbar").show('fade');
+			});
+		},
+		error: function(xhr, ajaxOptions, thrownError) {
+			console.log('status: ' + xhr.status);
+			console.log('thrownError:' + thrownError);
+		}, 
+	});
+
 
 }
 

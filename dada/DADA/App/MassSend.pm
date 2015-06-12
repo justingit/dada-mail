@@ -21,7 +21,7 @@ use Carp qw(carp croak);
 use strict;
 use vars qw($AUTOLOAD);
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_App_MassSend};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_App_MassSend};
 
 my %allowed = ( test => 0, );
 
@@ -193,6 +193,7 @@ sub send_email {
                       DADA::Template::Widgets::global_list_sending_checkbox_widget( $self->{list} ),
                     schedule_last_checked_frt =>
                       formatted_runtime( time - $self->{ls_obj}->param('schedule_last_checked_time') ),
+                      can_use_datetime => scalar DADA::App::Guts::can_use_datetime(), 
                     %wysiwyg_vars,
                     %$ses_params,
                 },
@@ -933,9 +934,11 @@ sub send_url_email {
                     num_list_mailouts      => $num_list_mailouts,
                     num_total_mailouts     => $num_total_mailouts,
                     active_mailouts        => $active_mailouts,
+                    
+                      schedule_last_checked_frt =>
+                        formatted_runtime( time - $self->{ls_obj}->param('schedule_last_checked_time') ),
+                        can_use_datetime => scalar DADA::App::Guts::can_use_datetime(), 
 
-                    schedule_last_checked_frt =>
-                      formatted_runtime( time - $self->{ls_obj}->param('schedule_last_checked_time') ),
 
                     %wysiwyg_vars,
                     %$ses_params,
@@ -1044,12 +1047,12 @@ sub find_draft_id {
     if (   $restore_from_draft ne 'true'
         && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => $args->{-role} } ) )
     {
-        $draft_id = undef;
+         $draft_id = undef;
     }
     elsif ($restore_from_draft eq 'true'
         && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'draft' } )
         && $args->{-role} eq 'draft' )
-    {    # so, only drafts (not stationary),
+    {    # so, only drafts (not stationery),
         if ( defined( $q->param('draft_id') ) ) {
             $draft_id = $q->param('draft_id');
         }
@@ -1058,15 +1061,15 @@ sub find_draft_id {
         }
     }
     elsif ($restore_from_draft eq 'true'
-        && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'stationary' } )
-        && $args->{-role} eq 'stationary' )
+        && $self->{md_obj}->has_draft( { -screen => $args->{-screen}, -role => 'stationery' } )
+        && $args->{-role} eq 'stationery' )
     {
         if ( defined( $q->param('draft_id') ) ) {
             $draft_id = $q->param('draft_id');
         }
         else {
             # $draft_id = $self->{md_obj}->latest_draft_id( { -screen => 'send_email', -role => 'draft' } );
-            # we don't want to load up the most recent stationary, since that's not how stationary... work.
+            # we don't want to load up the most recent stationery, since that's not how stationery... works.
         }
     }
     elsif ($restore_from_draft eq 'true'
@@ -1158,8 +1161,8 @@ sub save_as_draft {
     my $self = shift;
     my ($args) = @_;
     if ( $t == 1 ) {
-        require Data::Dumper;
-        warn 'args:' . Data::Dumper::Dumper($args);
+        #require Data::Dumper;
+        #warn 'args:' . Data::Dumper::Dumper($args);
     }
 
     my $q = $args->{-cgi_obj};
@@ -1168,20 +1171,25 @@ sub save_as_draft {
         $args->{-json} = 0;
     }
 
-    my $draft_id   = $q->param('draft_id')   || undef;
-    my $draft_role = $q->param('draft_role') || 'draft';
-    my $screen     = $q->param('flavor')     || 'send_email';
-
+    my $draft_id        = $q->param('draft_id')        || undef;
+    my $draft_role      = $q->param('draft_role')      || 'draft';
+    my $save_draft_role = $q->param('save_draft_role') || 'draft';
+    my $screen          = $q->param('flavor')          || 'send_email';
+ 
+    # I wanna that we do it, here! 
+ 
     my $saved_draft_id = $self->{md_obj}->save(
         {
-            -cgi_obj => $q,
-            -id      => $draft_id,
-            -role    => $draft_role,
-            -screen  => $screen,
+            -cgi_obj   => $q,
+            -id        => $draft_id,
+            -role      => $draft_role,
+            -save_role => $save_draft_role, 
+            -screen    => $screen,
         }
     );
 
-    # warn '$saved_draft_id: ' . $saved_draft_id;
+    warn '$saved_draft_id: ' . $saved_draft_id
+        if $t; 
 
     if ( $args->{-json} == 1 ) {
         require JSON;
@@ -1192,9 +1200,12 @@ sub save_as_draft {
             -expires         => 'Mon, 26 Jul 1997 05:00:00 GMT',
             -type            => 'application/json',
         };
-        warn '$json->pretty->encode($return) ' . $json->pretty->encode($return)
-          if $t;
         my $body = $json->pretty->encode($return);
+        if($t == 1){ 
+            require Data::Dumper; 
+            warn 'returning headers: ' . Data::Dumper::Dumper($headers); 
+            warn 'returning body: ' . $body; 
+        }
         return ( $headers, $body );
     }
     else {
@@ -1566,10 +1577,10 @@ sub q_obj_from_draft {
     my $self = shift;
     my ($args) = @_;
 
-    if ( $t == 1 ) {
-        require Data::Dumper;
-        warn 'args:' . Data::Dumper::Dumper($args);
-    }
+    #if ( $t == 1 ) {
+    #    require Data::Dumper;
+    #    warn 'args:' . Data::Dumper::Dumper($args);
+    #}
 
     for ( '-screen', '-draft_id', '-role' ) {
         if ( !exists( $args->{$_} ) ) {

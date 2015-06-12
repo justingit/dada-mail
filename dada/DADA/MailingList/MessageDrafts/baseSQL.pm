@@ -9,8 +9,8 @@ use lib qw(
 
 use Carp qw(croak carp);
 use DADA::Config qw(!:DEFAULT);
-
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_MessageDrafts};
+use DADA::App::Guts; 
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_MailingList_MessageDrafts};
 
 sub new {
 
@@ -106,17 +106,34 @@ sub save {
     if ( !exists( $args->{-screen} ) ) {
         croak "You MUST pass a, '-screen' parameter! (send_email, send_url_email)";
     }
+    
     if ( !exists( $args->{-role} ) ) {
         $args->{-role} = 'draft';
     }
+    
+    if ( !exists( $args->{-save_role} ) ) {
+        $args->{-save_role} = $args->{-role};
+    }
+
+
+    warn '$args->{-role}'      . $args->{-role}; 
+    warn '$args->{-save_role}' . $args->{-save_role}; 
+
     my $id = undef;
     if ( exists( $args->{-id} ) ) {
         $id = $args->{-id};
     }
 
+    #if($t == 1){ 
+    #    require Data::Dumper; 
+    #    warn 'save() args:' . "\n" . Data::Dumper::Dumper($args); 
+    #}
     #	warn '$id:' . $id;
+    my $q = $args->{-cgi_obj}; 
+       $q = $self->fill_in_schedule_options($q); 
+    my $draft = $self->stringify_cgi_params( { -cgi_obj => $q, -screen => $args->{-screen} } );
 
-    my $draft = $self->stringify_cgi_params( { -cgi_obj => $args->{-cgi_obj}, -screen => $args->{-screen} } );
+
 
     if ( !defined($id) ) {
 
@@ -149,9 +166,9 @@ sub save {
         my $sth = $self->{dbh}->prepare($query);
         if($t == 1) { 
             require Data::Dumper; 
-            warn 'execute params: ' . Data::Dumper::Dumper([$self->{list}, $args->{-screen}, $args->{-role}, $draft]); 
+            warn 'execute params: ' . Data::Dumper::Dumper([$self->{list}, $args->{-screen}, $args->{-save_role}, $draft]); 
         }
-        $sth->execute( $self->{list}, $args->{-screen}, $args->{-role}, $draft )
+        $sth->execute( $self->{list}, $args->{-screen}, $args->{-save_role}, $draft )
           or croak "cannot do statement '$query'! $DBI::errstr\n";
 
         $sth->finish;
@@ -177,33 +194,104 @@ sub save {
 
         warn 'id defined.'
           if $t;
+       
+       warn 'still here.'; 
 
-        my $query; 
+        # Trying to figure out what else this would be... 
+        if(
+               ($args->{-role} eq 'draft'      && $args->{-save_role} eq 'draft')
+               
+            || ($args->{-role} eq 'draft'      && $args->{-save_role} eq 'stationery')
+            
+            || ($args->{-role} eq 'draft'      && $args->{-save_role} eq 'schedule')
+            
+            || ($args->{-role} eq 'schedule'   && $args->{-save_role} eq 'schedule')
+            
+            || ($args->{-role} eq 'stationery' && $args->{-save_role} eq 'stationery')
+        ) {
+
+            warn "Saving Regularly!"; 
+            
+            my $query; 
+            if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
+                $query =
+                    'UPDATE '
+                  . $self->{sql_params}->{message_drafts_table}
+                  . ' SET screen = ?, role = ?, draft = ?, last_modified_timestamp = CURRENT_TIMESTAMP WHERE list = ? AND id = ?';
+            }
+            else { 
+                $query =
+                    'UPDATE '
+                  . $self->{sql_params}->{message_drafts_table}
+                  . ' SET screen = ?, role = ?, draft = ?, last_modified_timestamp = NOW() WHERE list = ? AND id = ?';
+
+            }
         
-        
-        if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
-            $query =
-                'UPDATE '
-              . $self->{sql_params}->{message_drafts_table}
-              . ' SET screen = ?, role = ?, draft = ?, last_modified_timestamp = CURRENT_TIMESTAMP WHERE list = ? AND id = ?';
+            warn 'QUERY: ' . $query
+              if $t;
+
+            my $sth = $self->{dbh}->prepare($query);
+               $sth->execute( 
+                   $args->{-screen}, 
+                   $args->{-save_role}, 
+                   $draft, $self->{list}, 
+                   $args->{-id} 
+              )
+              or croak "cannot do statement '$query'! $DBI::errstr\n";
+            $sth->finish;
+            return $id;
+        }
+        elsif($args->{-role} eq 'stationery' && $args->{-save_role} eq 'draft') {
+            
+            warn 'Draft from Stationery!'; 
+             
+            # All we need to do, is save this as stationery first, then - 
+            $self->save({
+                    %$args, 
+                    -role      => 'stationery',
+                    -save_role => 'stationery', # So, we save the stationery.  
+            }); 
+            warn 'saved.'
+                if $t;
+            warn '# Then this makes the copy.'
+                if $t; 
+            my $saved_id = $self->create_from_stationery(
+                    {
+                        -id     => $args->{-id},
+                        -screen => $args->{-screen},
+                    }
+                ); 
+            warn 'created from stationery!'; 
+            warn 'Stationery ID: ' . $id; 
+            warn 'Returning  ID: ' . $saved_id ; 
+            return $saved_id;             
         }
         else { 
-            $query =
-                'UPDATE '
-              . $self->{sql_params}->{message_drafts_table}
-              . ' SET screen = ?, role = ?, draft = ?, last_modified_timestamp = NOW() WHERE list = ? AND id = ?';
-
+            warn 'don\'t.... know what to save!'; 
+            return $id; 
         }
-        
-        warn 'QUERY: ' . $query
-          if $t;
-
-        my $sth = $self->{dbh}->prepare($query);
-        $sth->execute( $args->{-screen}, $args->{-role}, $draft, $self->{list}, $args->{-id} )
-          or croak "cannot do statement '$query'! $DBI::errstr\n";
-        $sth->finish;
-        return $id;
     }
+}
+
+sub fill_in_schedule_options { 
+    my $self = shift; 
+    my $q    = shift; 
+    
+    if(!defined($q->param('schedule_single_ctime')) && defined($q->param('schedule_single_displaydatetime'))){ 
+        $q->param('schedule_single_ctime', displaytime_to_ctime($q->param('schedule_single_displaydatetime')));
+    }
+    if(!defined($q->param('schedule_recurring_ctime_start')) && defined($q->param('schedule_recurring_displaydatetime_start'))){ 
+        $q->param('schedule_recurring_ctime_start', displaytime_to_ctime($q->param('schedule_recurring_displaydatetime_start')));
+    }
+    if(!defined($q->param('schedule_recurring_ctime_end')) && defined($q->param('schedule_recurring_displaydatetime_end'))){ 
+        $q->param('schedule_recurring_ctime_end', displaytime_to_ctime($q->param('schedule_recurring_displaydatetime_end')));
+    }
+    
+    if(!defined($q->param('schedule_recurring_hms')) && defined($q->param('schedule_recurring_display_hms'))){ 
+        $q->param('schedule_recurring_hms', display_hms_to_hms($q->param('schedule_recurring_display_hms')));
+    }
+    
+    return $q;     
 }
 
 sub has_draft {
@@ -348,31 +436,42 @@ sub fetch {
     }
 
     my $q = $self->decode_draft($saved);
-
+    my $additional_schedule_params = $self->additional_schedule_params($q); 
+    #use Data::Dumper; 
+    #warn Dumper($additional_schedule_params); 
+    
+    for(%$additional_schedule_params){ 
+       # warn '$_:' . $_; 
+       #warn '$additional_schedule_params->{$_} ' . $additional_schedule_params->{$_}; 
+        $q->param($_, $additional_schedule_params->{$_}); 
+    }
     return $q;
 
 }
 
-sub create_from_stationary {
+sub create_from_stationery {
     my $self    = shift;
     my ($args)  = @_;
     my $q_draft = $self->fetch(
         {
             -id     => $args->{-id},
             -screen => $args->{-screen},
-            -role   => 'stationary',
+            -role   => 'stationery',
         }
     );
 
     my $saved_draft_id = $self->save(
         {
-            -cgi_obj => $q_draft,
-            -role    => 'draft',
-            -screen  => $args->{-screen},
+            -cgi_obj   => $q_draft,
+            -role      => 'draft',
+            -save_role => 'draft', 
+            -screen    => $args->{-screen},
         }
     );
-    return ($saved_draft_id);
+    warn '$saved_draft_id' . $saved_draft_id; 
+    return $saved_draft_id;
 }
+
 
 sub count {
     my $self = shift;
@@ -385,8 +484,8 @@ sub count {
     my @row;
     my $query = 'SELECT COUNT(*) FROM ' . $self->{sql_params}->{message_drafts_table} . ' WHERE list = ? AND role = ?';
 
-    warn 'QUERY: ' . $query
-      if $t;
+#    warn 'QUERY: ' . $query
+#      if $t;
 
     my $count = $self->{dbh}->selectrow_array( $query, undef, $self->{list}, $args->{-role} );
     return $count;
@@ -456,26 +555,35 @@ sub draft_index {
 
   FETCH: while ( $hashref = $sth->fetchrow_hashref ) {
         my $q = $self->decode_draft( $hashref->{draft} );
-        warn q{$q->param('schedule_datetime')} . $q->param('schedule_datetime'); 
+       # warn q{$q->param('schedule_single_ctime')} . $q->param('schedule_single_ctime'); 
         
         my $params = {
-            id                      => $hashref->{id},
-            list                    => $hashref->{list},
-            created_timestamp       => $hashref->{created_timestamp},
-            last_modified_timestamp => $hashref->{last_modified_timestamp},
-            screen                  => $hashref->{screen},
-            role                    => $hashref->{role},
-            Subject                 => scalar $q->param('Subject'),
-            schedule_datetime       => scalar $q->param('schedule_datetime'),
-            schedule_activated      => scalar $q->param('schedule_activated'),
+            id                            => $hashref->{id},
+            list                          => $hashref->{list},
+            created_timestamp             => $hashref->{created_timestamp},
+            last_modified_timestamp       => $hashref->{last_modified_timestamp},
+            screen                        => $hashref->{screen},
+            role                          => $hashref->{role},
+            Subject                       => scalar $q->param('Subject'),
+
+
+            schedule_activated             => scalar $q->param('schedule_activated'),
+            schedule_type                  => scalar $q->param('schedule_type'),
+            schedule_single_ctime          => scalar $q->param('schedule_single_ctime'),
+            schedule_recurring_days        => [$q->multi_param('schedule_recurring_days')],
+            schedule_recurring_ctime_start => scalar $q->param('schedule_recurring_ctime_start'),
+            schedule_recurring_ctime_end   => scalar $q->param('schedule_recurring_ctime_end'),
+            schedule_recurring_hms         => scalar $q->param('schedule_recurring_hms'),
+
+            
         };
 
-        if (   $args->{-role} eq 'schedule'
-            && length( $params->{schedule_datetime} ) > 0
-            && $params->{schedule_datetime} > 0 )
+        if ( $args->{-role} eq 'schedule')
         {
-            $params->{schedule_localtime} = $self->datetime_to_localtime( $q->param('schedule_datetime') );
-            $params->{schedule_time}      = $self->datetime_to_ctime(     $q->param('schedule_datetime') );
+            my $additional_schedule_params = $self->additional_schedule_params($q); 
+            for(%$additional_schedule_params){ 
+                $params->{$_} = $additional_schedule_params->{$_}; 
+            }
         }
         push( @$r, $params );        
     }
@@ -489,16 +597,43 @@ sub draft_index {
     return $r;
 }
 
+
+sub additional_schedule_params { 
+    my $self = shift; 
+    my $q    = shift; 
+    my $schedule_params = {}; 
+        
+    # backwards compat.
+    if( defined($q->param('schedule_datetime'))
+    && !defined($q->param('schedule_single_ctime'))
+    ){ 
+        $schedule_params->{'schedule_single_ctime'} = $q->param('schedule_datetime');
+    }
+    
+    $schedule_params->{schedule_single_displaydatetime}            = ctime_to_displaytime(  scalar $q->param('schedule_single_ctime')); 
+    $schedule_params->{schedule_single_localtime}                  = ctime_to_localtime(    scalar $q->param('schedule_single_ctime')); 
+    $schedule_params->{schedule_recurring_displaydatetime_start}   = ctime_to_displaytime(  (scalar $q->param('schedule_recurring_ctime_start')), 0); 
+    $schedule_params->{schedule_recurring_displaydatetime_end}     = ctime_to_displaytime(  (scalar $q->param('schedule_recurring_ctime_end')),   0); 
+    $schedule_params->{schedule_recurring_localtime_start}         = ctime_to_localtime(    scalar $q->param('schedule_recurring_ctime_start')); 
+    $schedule_params->{schedule_recurring_localtime_end}           = ctime_to_localtime(    scalar $q->param('schedule_recurring_ctime_end')); 
+    $schedule_params->{schedule_recurring_display_hms}             = hms_to_dislay_hms(     scalar $q->param('schedule_recurring_hms')); 
+    
+    return $schedule_params; 
+}
+
 sub sort_by_schedule { 
     my $self = shift; 
     my $r    = shift; 
     my $s    = []; 
     
-    foreach my $row (sort { $a->{schedule_datetime} <=> $b->{schedule_datetime} } @$r ) {
+    # Kinda wrong, now that we have recurring schedules. 
+    foreach my $row (sort { $a->{schedule_single_ctime} <=> $b->{schedule_single_ctime} } @$r ) {
         push(@$s, $row);
     }
     return $s; 
 }
+
+
 
 sub stringify_cgi_params {
 
@@ -576,13 +711,17 @@ sub params_to_save {
         backdate_datetime             => 1,
         test_recipient                => 1,
         Subject                       => 1,
-        schedule_activated            => 1,
-        schedule_type                 => 1,
-        schedule_datetime             => 1,
-        schedule_recurring_days       => 1, 
-        schedule_recurring_date_start => 1, 
-        schedule_recurring_date_end   => 1, 
-        schedule_recurring_time       => 1, 
+
+        schedule_activated             => 1,
+        schedule_type                  => 1,
+        
+        # schedule_datetime            => 1, # No longer used, schedule_single_ctime is used instead. 
+        schedule_single_ctime          => 1,
+        schedule_recurring_days        => 1,
+        schedule_recurring_ctime_start => 1,
+        schedule_recurring_ctime_end   => 1,
+        schedule_recurring_hms         => 1,
+
     };
 
     require DADA::ProfileFieldsManager;
@@ -628,6 +767,8 @@ sub params_to_save {
 
 }
 
+=cut
+
 sub datetime_to_ctime {
     my $self     = shift;
     my $datetime = shift;
@@ -658,6 +799,8 @@ sub datetime_to_localtime {
         return 0;
     }
 }
+
+=cut
 
 sub enabled {
     my $self = shift; 

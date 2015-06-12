@@ -1,22 +1,96 @@
 <!-- begin mass_mail_schedules_preview.tmpl --> 
-        <!-- tmpl_if schedule_activated -->
-            <p>Schedules activated!</p>
-            
-            <!-- tmpl_if expr="(schedule_type eq 'single')" -->
-                <p>This is a one-time mass mailing, set to be sent on <!-- tmpl_var schedule_datetime escape="HTML" --></p> 
-            <!-- /tmpl_if --> 
-            <!-- tmpl_if expr="(schedule_type eq 'recurring')" -->
-                <p>This is a recurring mass mailing, between 
-                <!-- tmpl_var schedule_recurring_date_start --> and 
-                <!-- tmpl_var schedule_recurring_date_end --> at 
-                <!-- tmpl schedule_recurring_time -->
-                on: <!-- tmpl_var schedule_recurring_days -->
-                </p>
-            <!-- /tmpl_if -->
-            
-        <!-- tmpl_else --> 
-            <p>Schedules are not activated.</p>
-        <!-- /tmpl_if -->
-    
 
+<ul> 
+    <li>
+        Current Server Time: <strong><!-- tmpl_var date --></strong>
+    </li>
+    <!-- tmpl_if list_settings.schedule_last_checked_time -->
+        <li>Mass Mailing Schedules Last Checked: <strong>
+        <!-- tmpl_var schedule_last_checked_ago --></strong> ago.</li>
+    <!-- tmpl_else --> 
+        <li>Mass Mailing Schedules haven't ever run.</li>
+    <!-- /tmpl_if -->
+</ul> 
+
+
+
+<!-- tmpl_if schedule_activated -->
+    <p><strong>Schedule activated:</strong></p>
+
+    
+    <!-- tmpl_unless status --> 
+        <p>Sorry - looks like something went wrong calculating the schedule - is there information missing?</p>
+
+        <!-- tmpl_if comment --> 
+    
+            <!--  can_use_datetime --> 
+                <code><!-- tmpl_var errors escape="HTML" --></code>
+            <!--  --> 
+                <p>
+                    The following CPAN Perl Modules will need to be installed, for recurring schedules to work:
+                </p>
+                <ul>
+                    <li>DateTime</li>
+                    <li>DateTime::Event::Recurrence</li>
+                </ul> 
+                <!-- / --> 
+            <!-- /tmpl_if --> 
+        
+    <!-- tmpl_else --> 
+        <!-- tmpl_if expr="(schedule_type eq 'single')" -->
+            <p>This will be a <strong>one-time</strong> mass mailing 
+                <!-- tmpl_if schedule_single_localtime --> 
+                    which will be sent on 
+                    <strong>
+                        <!-- tmpl_var schedule_single_displaydatetime escape="HTML" -->
+                    </strong>
+                <!-- tmpl_else --> 
+                    
+                <!-- /tmpl_if -->
+            </p> 
+        <!-- /tmpl_if --> 
+        <!-- tmpl_if expr="(schedule_type eq 'recurring')" -->
+            <p>This is a <strong>recurring</strong> mass mailing, 
+            <!-- tmpl_if expr="((schedule_recurring_displaydatetime_start ne '') && (schedule_recurring_displaydatetime_end ne ''))" --> 
+                    between 
+                <strong><!-- tmpl_var schedule_recurring_displaydatetime_start --></strong>
+                     and 
+                <strong><!-- tmpl_var schedule_recurring_displaydatetime_end --></strong>
+
+                <!-- tmpl_if expr="(num_recurring_days == 0)" --> 
+                    
+                <!-- tmpl_else --> 
+                    <!-- tmpl_if expr="(num_recurring_days == 7)" --> 
+                        sent <strong>every day</strong>
+                    <!-- tmpl_else --> 
+                        on: 
+                        <!-- tmpl_if expr="(num_recurring_days == 1)" --> 
+                            <!-- tmpl_loop schedule_recurring_days -->
+                                <strong><!-- tmpl_var name --></strong>
+                            <!-- /tmpl_loop -->
+                        <!-- tmpl_else --> 
+                            <!-- tmpl_loop schedule_recurring_days -->
+                                <!-- tmpl_if __last__ -->
+                                and
+                                <!-- /tmpl_if  -->
+                                <strong><!-- tmpl_var name --></strong><!-- tmpl_unless __last__ -->,<!-- /tmpl_unless --> 
+                            <!-- /tmpl_loop -->
+                        <!-- /tmpl_if --> 
+                    <!-- /tmpl_if -->
+                <!-- /tmpl_if --> 
+                
+                 at:
+                <strong><!-- tmpl_var schedule_recurring_display_hms --></strong>
+
+                </p>
+
+            <!-- tmpl_else --> 
+                
+            <!-- /tmpl_if -->
+        <!-- /tmpl_if -->
+<!-- /tmpl_unless --> 
+<!-- tmpl_else --> 
+    <p><strong>Schedule inactive.</strong></p>
+<!-- /tmpl_if -->
 <!-- end mass_mail_schedules_preview.tmpl --> 
+

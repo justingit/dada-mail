@@ -80,9 +80,16 @@ require Exporter;
   grab_url
   can_use_LWP_Simple
   can_use_AuthenCAPTCHA
+  can_use_datetime
   formatted_runtime
   commify
   generate_rand_string_md5
+  
+  ctime_to_localtime
+  ctime_to_displaytime
+  displaytime_to_ctime
+  hms_to_dislay_hms
+  display_hms_to_hms
   
   
 );
@@ -3043,6 +3050,19 @@ sub can_use_compress_zlib {
     	return $can_use_compress_zlib;
 }
 
+sub can_use_datetime { 
+    my $can_use_datetime = 1; 
+   	try { 
+        require DateTime;
+        require DateTime::Event::Recurrence;
+    } catch { 
+        $can_use_datetime = 0; 
+    };
+    # warn 'can_use_datetime ' . scalar $can_use_datetime; 
+    return $can_use_datetime; 
+}
+
+
 sub can_use_LWP_Simple { 
 	my $can_use_lwp_simple = 1; 
 	try { 
@@ -3102,6 +3122,74 @@ sub formatted_runtime {
 
     return $runtime;
 }
+
+sub ctime_to_localtime { 
+    my $ctime = shift; 
+    return undef if $ctime eq undef; 
+    return scalar localtime($ctime); 
+}
+
+
+sub ctime_to_displaytime { 
+    my $ctime    = shift || undef; 
+    my $show_hms = shift // 1;
+    return undef if $ctime eq undef; 
+    require POSIX;
+    my $displaytime = undef; 
+    if($show_hms == 1) { 
+        $displaytime = POSIX::strftime('%Y-%m-%d %H:%M:%S', localtime $ctime);
+    }
+    else { 
+        $displaytime = POSIX::strftime('%Y-%m-%d', localtime $ctime);        
+    }
+    
+    return $displaytime;     
+}
+sub displaytime_to_ctime { 
+
+    my $displaytime = shift;
+    return undef if $displaytime eq undef; 
+    
+    require Time::Local;
+    my ( $date, $time ) = split(/ |T/, $displaytime );
+    my ( $year, $month,  $day )    = split( '-', $date );
+    my ( $hour, $minute, $second ) = split( ':', $time );
+    $second = int( $second - 0.5 );    # no idea.
+    my $time = Time::Local::timelocal( $second, $minute, $hour, $day, $month - 1, $year );
+
+    return $time;
+}
+
+
+sub hms_to_dislay_hms { 
+   
+   my $hms  = shift; 
+   return undef if $hms eq undef; 
+
+
+   return 
+    sprintf("%02d", ($hms/(60*60))%24) . 
+   ':' . 
+    sprintf("%02d", ($hms/60)%60) . 
+    ':' . 
+    sprintf("%02d", $hms%60);
+    
+}
+
+sub display_hms_to_hms { 
+    
+    my $display_hms = shift; 
+    
+    return undef if $display_hms eq undef; 
+    
+    
+    my ($h, $m, $s) = split(':', $display_hms); 
+    
+    my $sec = (int($h) * 60 * 60) + (int($m) * 60) + int($s);  
+
+    return $sec; 
+}
+
 
 sub commify {
     my $input = shift;
