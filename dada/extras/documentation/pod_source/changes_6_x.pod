@@ -957,7 +957,7 @@ The HTML/Javascript data that the C<blog_index.cgi> extension makes are now cach
 
 To help make using the more advanced features of Dada Mail - ones that require you to install additional Perl CPAN modules that aren't included with Dada Mail (Amazon SES, Gravatars, JSON, etc), Dada Mail itself will attempt to detect common places where private, account-specific Perl libraries are placed. By default, Dada Mail will look for Perl Libraries in the home directory of an account. 
 
-If you are running a Cpanel-powered account, Dada Mail will play well with how Cpanel's B<Perl Module Installer> work.
+If you are running a cPanel-powered account, Dada Mail will play well with how cPanel's B<Perl Module Installer> work.
 
 =head2 Bugfixes 6.3.0
 

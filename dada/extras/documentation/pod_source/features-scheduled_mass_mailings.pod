@@ -62,7 +62,23 @@ L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
 
 You may manually check the Scheduled Jobs in the list control panel under, B<App Information - Scheduled Jobs> 
 
+=head1 System Requirements
 
+Single Mass Mailing Schedules do not have any unique system requirements. 
+
+Recurring Mass Mailing Schedules require the following CPAN Perl Modules: 
+
+=over
+
+=item * DateTime;
+
+=item * DateTime::Event::Recurrence;
+
+=back
+
+These modules can be installed in a variety of ways: 
+
+L<http://dadamailproject.com/d/FAQ-general.pod.html#How-do-you-install-CPAN-Perl-Modules>
 
 =cut
 

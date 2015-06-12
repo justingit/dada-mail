@@ -424,24 +424,24 @@ Installing these modules may be tricky for the uninitiated. We'll go over a few 
 
 =head3 The cpan Shell
 
-The, C<cpan> shell is how one usually installs CPAN modules. You'll need root access to your hosting account, usually, but you can install CPAN modules in your home directory. This topic is well over the 
+The, C<cpan> shell is how one usually installs CPAN modules. You'll need root access to your hosting account usually, but you can install CPAN modules in your home directory. This topic is well over the 
 forté of this particular FAQ, but do see: 
 
 L<http://perl-begin.org/topics/cpan/life-with-cpan/non-root/> 
 
-Actually, this entire site is very helpful: 
+The entire site is very helpful: 
 
 L<http://perl-begin.org/topics/cpan/life-with-cpan>
 
-So, say you need a Perl CPAN module that Dada Mail wants to use, like C<Gravatar::URL>. Once you have your CPAN shell all set up, you'd just ask C<cpan> to install it, like so: 
+For example, say you need a Perl CPAN module that Dada Mail wants to use, like C<Gravatar::URL>. Once you have your CPAN shell all set up, you'd just ask C<cpan> to install it, like so: 
 
  cpan install Gravatar::URL
 
-=head3 Cpanel's Perl Module Installer
+=head3 cPanel's Perl Module Installer
 
-If all this talk of shells and commands and CPANs has you confused, you're in luck, if you have a hosting account that's powered by Cpanel. 
+If all this talk of shells and commands and CPANs has you confused, you're in luck, if you have a hosting account that's powered by cPanel. 
 
-Your Cpanel may have a Perl Module Installer - in your cPanel look for, I<Perl Module Installer>. Once in this screen, just enter the module you'd like to install, like, C<Gravatar::URL>. and it'll handle on the hard stuff for you, similar to how its down above. 
+Your cPanel may have a Perl Module Installer. In your cPanel look for, I<Perl Module Installer>. Once in this screen, just enter the module you'd like to install, like, C<Gravatar::URL>. and it'll handle on the hard stuff for you, similar to how its down above. 
 
 =head2 The List Confirmation Process
 

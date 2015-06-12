@@ -71,7 +71,7 @@ L<https://metacpan.org/pod/DBD::SQLite>
 
 =back
 
-If these modules are not available, you'll need to install them using the operating system package management system, or using the C<cpan> or C<cpanm> command line tool, which should be installed when Perl is installed, or some hosts (like Cpanel) may have a way to install Perl modules through Cpanel. See: 
+If these modules are not available, you'll need to install them using the operating system package management system, or using the C<cpan> or C<cpanm> command line tool, which should be installed when Perl is installed, or some hosts (like cPanel) may have a way to install Perl modules through cPanel. See: 
 
 L<http://dadamailproject.com/support/documentation-6_8_1/FAQ-general.pod.html#How-do-you-install-CPAN-Perl-Modules>
 
