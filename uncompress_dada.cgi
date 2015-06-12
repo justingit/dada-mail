@@ -13,7 +13,7 @@ delete @ENV{ 'IFS', 'CDPATH', 'ENV', 'BASH_ENV' };
 
 # What's the name of the file I'm looking for to uncompress?
 # Basic Dada Mail
-my $basic = 'dada-8_1_0.tar.gz';
+my $basic = 'dada-8_2_0.tar.gz';
 #
 #
 # Pro Dada
@@ -25,7 +25,7 @@ print "Content-type:text/html\r\n\r\n";
 print '<h1>Adventures with Dada Mail!</h1>';
 
 if($] < 5.010){ 
-    print "<p>Warning, you may be currently a version of Perl that's below the minimum requirement (Perl v5.10.1) - see if a newer version of Perl is available and adjust the app, before running the installer!</p>"; 
+    print "<p>Warning, you may be currently running a version of Perl that's below the minimum requirement (Perl v5.10.1) - see if a newer version of Perl is available and adjust the app, before running the installer!</p>"; 
 }
 
 if ( -e 'dada' ) {
