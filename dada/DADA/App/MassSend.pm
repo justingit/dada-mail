@@ -191,8 +191,7 @@ sub send_email {
                     active_mailouts        => $active_mailouts,
                     global_list_sending_checkbox_widget =>
                       DADA::Template::Widgets::global_list_sending_checkbox_widget( $self->{list} ),
-                    schedule_last_checked_frt =>
-                      formatted_runtime( time - $self->{ls_obj}->param('schedule_last_checked_time') ),
+                    schedule_last_checked_frt => scalar formatted_runtime( time - $self->{ls_obj}->param('schedule_last_checked_time') ),
                       can_use_datetime => scalar DADA::App::Guts::can_use_datetime(), 
                     %wysiwyg_vars,
                     %$ses_params,
@@ -1634,7 +1633,13 @@ sub fill_in_draft_msg {
         require HTML::FillInForm::Lite;
         my $h       = HTML::FillInForm::Lite->new;
         my $tmp_str = $args->{-str};
-        $str = $h->fill( \$tmp_str, $q_draft, fill_password => 1 );
+        $str = $h->fill( 
+            \$tmp_str, 
+            $q_draft, 
+            fill_password => 1,
+#            ignore_fields => ['schedule_type'], # I can't get this to work. Ugh!
+           # clear_absent_checkboxes => 1,
+             );
         return $str;
     }
     else {

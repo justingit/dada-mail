@@ -91,6 +91,8 @@ require Exporter;
   hms_to_dislay_hms
   display_hms_to_hms
   
+  naive_csv_split
+  
   
 );
 
@@ -3190,6 +3192,29 @@ sub display_hms_to_hms {
     return $sec; 
 }
 
+sub naive_csv_split { 
+    my $line = shift;
+    my $sep = shift || ',';
+    my @cells;
+
+    return () unless $line;
+
+    try { 
+        $line =~ s/\r?\n$//;
+
+        my $re = qr/(?:^|$sep)(?:"([^"]*)"|([^$sep]*))/;
+
+        while($line =~ /$re/g) {
+                my $value = defined $1 ? $1 : $2;
+                push @cells, (defined $value ? $value : '');
+        }
+    } catch { 
+        return (); 
+    };
+
+    return @cells;
+    
+}
 
 sub commify {
     my $input = shift;
