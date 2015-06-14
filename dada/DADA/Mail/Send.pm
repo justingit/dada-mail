@@ -1656,17 +1656,26 @@ sub mass_send {
 				my @ml_info; 
 				if ($csv->parse($subcriber_line)) {
 			     	@ml_info = $csv->fields;
-			    } else {
-			        my $w =  '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . " Error: CSV parsing error: parse() failed on argument: ". $csv->error_input() . ' ' . $csv->error_diag ();
-			        $mailout->log($w);
-			        carp($w); 
-			        undef ($w); 
-			    	undef(@ml_info);
-					next SUBSCRIBERLOOP;
-				}
+			    }
+			    else {    
+			        my $w =  '[' . $self->{list} . '] Mass Mailing:' . $mailout_id . 
+			                  " Error: CSV parsing error: parse() failed on argument: ". 
+			                  $csv->error_input() . ' ' . 
+			                  $csv->error_diag ();
+   			        $mailout->log($w);
+   			        carp($w); 
+   			        undef ($w); 
+   			    	undef(@ml_info);
+   			    	
+			        carp 'Text::CSV parse did not work, falling back on naive split:'; 
+			        @ml_info = DADA::App::Guts::naive_csv_split($subcriber_line); 
+			        if(scalar @ml_info <= 0) { 
+			            carp "naive_csv_split also did not work. Skipping."; 
+        				next SUBSCRIBERLOOP;
+                    }
+			    } 
                 # incremented:
                 $mass_mailing_count++;
-				
 				
 				my $current_email = $ml_info[0];
 				
