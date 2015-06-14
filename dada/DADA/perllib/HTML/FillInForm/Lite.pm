@@ -1,10 +1,10 @@
 package HTML::FillInForm::Lite;
-use 5.006_000; # 5.6.0
+use 5.008_001; # 5.8.1
 
 use strict;
 use warnings;
 
-our $VERSION  = '1.10';
+our $VERSION  = '1.13';
 
 use Exporter ();
 our @ISA       = qw(Exporter);
@@ -33,8 +33,8 @@ my $value    = q{[vV][aA][lL][uU][eE]};
 
 my $SPACE        =  q{\s};
 my $ATTR_NAME    =  q{[\w\-]+};
-my $ATTR_VALUE   =  q{(?: " [^"]* " | ' [^']* ' | [^'"/>\s]+ )};
-my $ATTR         = qq{(?:$SPACE+ $ATTR_NAME = $ATTR_VALUE )};
+my $ATTR_VALUE   =  q{(?:" [^"]* " | ' [^']* ' | [^'"/>\s]+ | [\w\-]+ )};
+my $ATTR         = qq{(?: $SPACE+ (?: $ATTR_NAME (?: = $ATTR_VALUE )? ) )};
 
 my $FORM         = qq{(?: <$form     $ATTR+ $SPACE*  > )}; # <form>
 my $INPUT        = qq{(?: <$input    $ATTR+ $SPACE*/?> )}; # <input>
@@ -47,29 +47,28 @@ my $END_SELECT   = qq{(?: </$select>   )};
 my $END_OPTION   = qq{(?: </$option>   )};
 my $END_TEXTAREA = qq{(?: </$textarea> )};
 
-my $CHECKED      = qq{(?: $checked  = (?: "$checked " | '$checked'  | $checked  ) )};
-my $SELECTED     = qq{(?: $selected = (?: "$selected" | '$selected' | $selected ) )};
-my $MULTIPLE     = qq{(?: $multiple = (?: "$multiple" | '$multiple' | $multiple ) )};
+my $CHECKED      = qq{(?:
+    $checked  (?: = (?: "$checked " | '$checked'  | $checked  ) )?
+)};
+my $SELECTED     = qq{(?:
+    $selected (?: = (?: "$selected" | '$selected' | $selected ) )?
+)};
+my $MULTIPLE     = qq{(?:
+    $multiple (?: = (?: "$multiple" | '$multiple' | $multiple ) )?
+)};
 
 #my $DISABLED = q{(?: disabled = (?: "disabled" | 'disabled' | disabled ) )};
 
 #sub _extract{ # for debugging only
 #    my $s = shift;
 #    my %f = (input => [], select => [], textarea => []);
-#    @{$f{input}}    = $s =~ m{($INPUT)}ogxmsi;
-#    @{$f{select}}   = $s =~ m{($SELECT.*?$END_SELECT)}ogxmsi;
-#    @{$f{textarea}} = $s =~ m{($TEXTAREA.*?$END_TEXTAREA)}ogxmsi;
+#    @{$f{input}}    = $s =~ m{($INPUT)}gxmsi;
+#    @{$f{select}}   = $s =~ m{($SELECT.*?$END_SELECT)}gxmsi;
+#    @{$f{textarea}} = $s =~ m{($TEXTAREA.*?$END_TEXTAREA)}gxmsi;
 #
 #    return \%f;
 #}
 
-if($] >= 5.008_001) {
-    *is_utf8     = \&utf8::is_utf8;
-    *utf8_decode = \&utf8::decode;
-}
-else {
-    *utf8_decode = *is_utf8 = sub { 0 };
-}
 
 sub fillinform { # function interface to fill()
     if(@_ == 1) {
@@ -91,16 +90,16 @@ sub _unquote{
     $_[0] =~ /(['"]) (.*) \1/xms ? $2 : $_[0]; # ' for poor editors
 }
 sub _get_id{
-    $_[0] =~ /$id    = ($ATTR_VALUE)/oxms ? _unquote($1) : undef;
+    $_[0] =~ /$id    = ($ATTR_VALUE)/xms ? _unquote($1) : undef;
 }
 sub _get_type{
-    $_[0] =~ /$type  = ($ATTR_VALUE)/oxms ? _unquote($1) : undef;
+    $_[0] =~ /$type  = ($ATTR_VALUE)/xms ? _unquote($1) : undef;
 }
 sub _get_name{
-    $_[0] =~ /$name  = ($ATTR_VALUE)/oxms ? _unquote($1) : undef;
+    $_[0] =~ /$name  = ($ATTR_VALUE)/xms ? _unquote($1) : undef;
 }
 sub _get_value{
-    $_[0] =~ /$value = ($ATTR_VALUE)/oxms ? _unquote($1) : undef;
+    $_[0] =~ /$value = ($ATTR_VALUE)/xms ? _unquote($1) : undef;
 }
 
 #use macro
@@ -227,7 +226,7 @@ sub fill :method{
     }
 
     # if $content is utf8-flagged, params should be utf8-encoded
-    local $context->{utf8} = is_utf8($content);
+    local $context->{utf8} = utf8::is_utf8($content);
 
     # param object converted from data or object
     local $context->{data} =  _to_form_object($q);
@@ -246,7 +245,7 @@ sub fill :method{
                 (defined($id) and $context->{target} eq $id)
                     ? $beg . _fill($context, $content) . $end
                     : $beg .                 $content  . $end
-        }goexms;
+        }gexms;
 
         return $content;
     }
@@ -259,13 +258,13 @@ sub fill :method{
 sub _fill{
     my($context, $content) = @_;
     $content =~ s{($INPUT)}
-             { _fill_input($context, $1)                  }goexms;
+             { _fill_input($context, $1)                  }gexms;
 
     $content =~ s{($SELECT) (.*?) ($END_SELECT) }
-             { $1 . _fill_select($context, $1, $2) . $3   }goexms;
+             { $1 . _fill_select($context, $1, $2) . $3   }gexms;
 
     $content =~ s{($TEXTAREA) (.*?) ($END_TEXTAREA) }
-             { $1 . _fill_textarea($context, $1, $2) . $3 }goexms;
+             { $1 . _fill_textarea($context, $1, $2) . $3 }gexms;
 
     return $content;
 }
@@ -295,20 +294,20 @@ sub _fill_input{
         }
 
         if(grep { $value eq $_ } @{$values_ref}){
-            $tag =~ /$CHECKED/oxms
+            $tag =~ /$CHECKED/xms
                 or $tag =~ s{$SPACE* (/?) > \z}
-                        { checked="checked" $1>}oxms;
+                        { checked="checked" $1>}xms;
         }
         else{
-            $tag =~ s/$SPACE+$CHECKED//goxms;
+            $tag =~ s/$SPACE+$CHECKED//gxms;
         }
     }
     else{
         my $new_value = $context->{escape}->(shift @{$values_ref});
 
-        $tag =~ s{$value = $ATTR_VALUE}{value="$new_value"}oxms
+        $tag =~ s{$value = $ATTR_VALUE}{value="$new_value"}xms
             or $tag =~ s{$SPACE* (/?) > \z}
-                    { value="$new_value" $1>}oxms;
+                    { value="$new_value" $1>}xms;
     }
     return $tag;
 }
@@ -323,7 +322,7 @@ sub _fill_select{
     }
 
     $content =~ s{($OPTION) (.*?) ($END_OPTION)}
-             { _fill_option($context, $values_ref, $1, $2) . $2 . $3 }goexms;
+             { _fill_option($context, $values_ref, $1, $2) . $2 . $3 }gexms;
     return $content;
 }
 sub _fill_option{
@@ -332,9 +331,9 @@ sub _fill_option{
     my $value = _get_value($tag);
     unless( defined $value ){
         $value = $content;
-        $value =~ s{\A $SPACE+   } {}oxms;
-        $value =~ s{   $SPACE{2,}}{ }oxms;
-        $value =~ s{   $SPACE+ \z} {}oxms;
+        $value =~ s{\A $SPACE+   } {}xms;
+        $value =~ s{   $SPACE{2,}}{ }xms;
+        $value =~ s{   $SPACE+ \z} {}xms;
     }
 
     $value = $context->{decode_entity}->($value);
@@ -343,10 +342,10 @@ sub _fill_option{
     if(grep{ $value eq $_ }  @{$values_ref}){
         $tag =~ /$SELECTED/oxms
             or $tag =~ s{ $SPACE* > \z}
-                    { selected="selected">}oxms;
+                    { selected="selected">}xms;
     }
     else{
-        $tag =~ s/$SPACE+$SELECTED//goxms;
+        $tag =~ s/$SPACE+$SELECTED//gxms;
     }
     return $tag;
 }
@@ -375,7 +374,7 @@ sub _get_param{
 
         if($context->{utf8}){
             for my $datum( @{$ref} ){
-                utf8_decode($datum) unless is_utf8($datum);
+                utf8::decode($datum) unless utf8::is_utf8($datum);
             }
         }
     }
@@ -423,9 +422,9 @@ sub _decode_entity{
 #    my $name   = shift;
 #
 #    if($context->{disable_fields}{$name}){
-#        $_[0] =~ /$DISABLED/oxmsi
+#        $_[0] =~ /$DISABLED/xmsi
 #            or $_[0] =~ s{$SPACE* /? > \z}
-#                    { disabled="disabled" />}oxmsi;
+#                    { disabled="disabled" />}xmsi;
 #    }
 #    return;
 #}
@@ -643,13 +642,15 @@ __END__
 
 =encoding utf-8
 
+=for stopwords fillinform bool iolayer fill_scalarref scalarref
+
 =head1 NAME
 
 HTML::FillInForm::Lite - Lightweight FillInForm module in Pure Perl
 
 =head1 VERSION
 
-The document describes HTML::FillInForm::Lite version 1.10
+The document describes HTML::FillInForm::Lite version 1.13
 
 =head1 SYNOPSIS
 

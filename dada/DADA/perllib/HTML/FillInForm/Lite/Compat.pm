@@ -3,7 +3,7 @@ package HTML::FillInForm::Lite::Compat;
 use strict;
 use warnings;
 
-our $VERSION = '1.10';
+our $VERSION = '1.13';
 
 use HTML::FillInForm::Lite;
 our @ISA = qw(HTML::FillInForm::Lite);

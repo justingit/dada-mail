@@ -1,13 +1,15 @@
 
 =encoding utf-8
 
+=for stopwords checkbox
+
 =head1 NAME
 
 HTML::FillInForm::Lite::JA - HTMLフォームにデータを充填する
 
 =head1 VERSION
 
-The document describes HTML::FillInForm::Lite version 1.10
+The document describes HTML::FillInForm::Lite version 1.12
 
 =head1 SYNOPSIS
 
@@ -118,7 +120,7 @@ C<HTML::FillInForm>は自動的に状態フィールドのHTML実体参照をデ
 
 =head2 fill(source, form_data [, options...])
 
-I<souce>をI<form_data>で充填します。I<souce>またはI<form_data>が渡されない場合、C<die>します。
+I<source>をI<form_data>で充填します。I<source>またはI<form_data>が渡されない場合、C<die>します。
 
 オプションはC<new()>と同じです。
 
@@ -130,7 +132,7 @@ C<fill()>の前にあらかじめC<new()>でインスタンスを作っておく
 しかし、同じインスタンスにつき一度しか呼び出さないなら、インスタンスを作った
 としてもパフォーマンスは上がりません。
 
-I<sorce>としては，スカラーリファレンスか文字列の配列リファレンス，
+I<source>としては，スカラーリファレンスか文字列の配列リファレンス，
 ファイル名，ファイルハンドルを渡すことが出来ます。
 
 I<form_data>としては，ハッシュリファレンスかC<param()>メソッドを持つ
@@ -197,7 +199,7 @@ C<HTML::FillInForm::Lite>はコメントやその他の無視すべきものを�
 No bugs have been reported.
 
 Please report any bug or feature request to E<lt>gfuji(at)cpan.orgE<gt>,
-or through thr RT L<http://rt.cpan.org/>.
+or through RT L<http://rt.cpan.org/>.
 
 =head1 SEE ALSO
 
