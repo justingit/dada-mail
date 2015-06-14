@@ -276,6 +276,10 @@ sub save {
 sub fill_in_schedule_options { 
     my $self = shift; 
     my $q    = shift; 
+        
+    if(!defined($q->param('schedule_type'))) { 
+        $q->param('schedule_type', 'single'); 
+    }
     
     if(!defined($q->param('schedule_single_ctime')) && defined($q->param('schedule_single_displaydatetime'))){ 
         $q->param('schedule_single_ctime', displaytime_to_ctime($q->param('schedule_single_displaydatetime')));
@@ -290,6 +294,8 @@ sub fill_in_schedule_options {
     if(!defined($q->param('schedule_recurring_hms')) && defined($q->param('schedule_recurring_display_hms'))){ 
         $q->param('schedule_recurring_hms', display_hms_to_hms($q->param('schedule_recurring_display_hms')));
     }
+    
+    
     
     return $q;     
 }
@@ -602,8 +608,15 @@ sub additional_schedule_params {
     my $self = shift; 
     my $q    = shift; 
     my $schedule_params = {}; 
-        
+                
     # backwards compat.
+    if(
+        defined($q->param('schedule_datetime'))
+      &&  !defined($q->param('schedule_type'))
+      ) { 
+          $schedule_params->{schedule_type} = 'single';  
+    }
+    
     if( defined($q->param('schedule_datetime'))
     && !defined($q->param('schedule_single_ctime'))
     ){ 
