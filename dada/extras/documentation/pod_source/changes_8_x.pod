@@ -8,13 +8,25 @@
 
 =head2 Features
 
-=head3 Recurring Schedules
+=head3 Recurring Scheduled Mass Mailings
 
-Recurring Schedules have been integrated into the core of Dada Mail, having only been available before in the now retired Beatitude plugin. Set a beginning and end date of your mass mailings, the time they should all go out, and the days of the week that they should be sent. 
+Recurring Scheduled Mass Mailings have been integrated into the core of Dada Mail, having only been available before in the now retired Beatitude plugin. 
 
-More information on Schedules, but single and recurring can be found here: 
+Set a beginning and end date of your mass mailings, the time they should all go out, and the days of the week that you would like the mailings to be sent. 
+
+More information on Single and Recurring Scheduled Mass Mailings can be found here: 
 
 L<http://dadamailproject.com/d/features-scheduled_mass_mailings.pod.html>
+
+=head2 Bugfixes 
+
+=head3 Unsubscription Requests Do Not Work in the List Control Panel
+
+L<https://github.com/justingit/dada-mail/issues/508>
+
+=head3 CC addresses not removed from bridge email when using SES
+
+L<https://github.com/justingit/dada-mail/issues/507>
 
 =head2 8.1.0
 
