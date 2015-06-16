@@ -30,7 +30,7 @@
             
             <p>
             <input type="radio" name="schedule_type" id="schedule_type_recurring" value="recurring"  class="scheduled_type schedule_field" <!-- tmpl_unless can_use_datetime -->disabled="disabled" class="disabled"<!-- /tmpl_unless --> />
-            <label for="schedule_type_recurring">Recurring</label> <!-- tmpl_unless can_use_datetime -->(Disabled.)<!-- /tmpl_unless -->
+            <label for="schedule_type_recurring">Recurring</label> <!-- tmpl_unless can_use_datetime --><span class="error">Disabled. Recurring scheduled mass mailings require the DateTime and DateTime::Event::Recurrence CPAN Perl modules installed.</span><!-- /tmpl_unless -->
             <p>
 
             <div id="schedule_type_recurring_options"> 
@@ -82,9 +82,12 @@
             </div>
             
             <div class="clearskiesbox"> 
-                <div id="mass_mail_schedules_preview_results">
-                    
-                </div> 
+                <div id="mass_mailing_schedules_preview_results"></div>
+                <div class="buttonfloat"> 
+                	<input type="button" class="processing manually_run_all_scheduled_mass_mailings" value="Manually Run All Scheduled Mass Mailings"/>
+                </div>
+                <div class="floatclear"></div> 
+                 
             </div> 
             
 

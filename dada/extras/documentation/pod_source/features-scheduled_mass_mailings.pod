@@ -68,9 +68,9 @@ You may manually check all the Scheduled Jobs in the list control panel under, B
 
 =head1 System Requirements
 
-Single Mass Mailing Schedules do not have any unique system requirements. 
+Single Scheduled Mass Mailings do not have any unique system requirements. 
 
-Recurring Mass Mailing Schedules require the following CPAN Perl Modules: 
+Recurring Scheduled Mass Mailings require the following CPAN Perl Modules: 
 
 =over
 

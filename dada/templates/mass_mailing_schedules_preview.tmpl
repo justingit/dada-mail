@@ -1,21 +1,28 @@
-<!-- begin mass_mail_schedules_preview.tmpl --> 
+<!-- begin mass_mailing_schedules_preview.tmpl --> 
+
+
+<!-- tmpl_if schedule_activated -->
+    <p><strong>Scheduled Mass Mailing Activated:</strong></p>
+<!-- tmpl_else --> 
+    <p><strong>Scheduled Mass Mailing Deactivated.</strong></p>
+<!-- /tmpl_if -->
+
 
 <ul> 
     <li>
         Current Server Time: <strong><!-- tmpl_var date --></strong>
     </li>
     <!-- tmpl_if list_settings.schedule_last_checked_time -->
-        <li>Mass Mailing Schedules Last Checked: <strong>
+        <li>Scheduled Mass Mailings Last Checked: <strong>
         <!-- tmpl_var schedule_last_checked_ago --></strong> ago.</li>
     <!-- tmpl_else --> 
-        <li>Mass Mailing Schedules haven't ever run.</li>
+        <li>Scheduled Mass Mailings haven't ever run.</li>
     <!-- /tmpl_if -->
 </ul> 
 
 
 
 <!-- tmpl_if schedule_activated -->
-    <p><strong>Schedule activated:</strong></p>
 
     
     <!-- tmpl_unless status --> 
@@ -38,9 +45,9 @@
         
     <!-- tmpl_else --> 
         <!-- tmpl_if expr="(schedule_type eq 'single')" -->
-            <p>This will be a <strong>one-time</strong> mass mailing 
+            <p>This is a <strong>one-time</strong> mass mailing 
                 <!-- tmpl_if schedule_single_localtime --> 
-                    which will be sent on 
+                    scheduled for: 
                     <strong>
                         <!-- tmpl_var schedule_single_displaydatetime escape="HTML" -->
                     </strong>
@@ -88,9 +95,9 @@
                 
             <!-- /tmpl_if -->
         <!-- /tmpl_if -->
-<!-- /tmpl_unless --> 
-<!-- tmpl_else --> 
-    <p><strong>Schedule inactive.</strong></p>
+    <!-- /tmpl_unless --> 
 <!-- /tmpl_if -->
-<!-- end mass_mail_schedules_preview.tmpl --> 
 
+
+
+<!-- end mass_mailing_schedules_preview.tmpl -->

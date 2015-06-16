@@ -72,7 +72,7 @@ sub run_schedules {
     my $r = "Running Schedules for, " . $self->{list} . "\n";
        $r .= '-' x 72 . "\n";
        $r .= "\t* Current Server Time: " . scalar(localtime($t)) . "\n";  
-       $r .= "\t* Mass Mailing Schedules Last Ran: " . scalar(localtime($self->{ls_obj}->param('schedule_last_checked_time'))) . "\n"; 
+       $r .= "\t* Scheduled Mass Mailings Last Ran: " . scalar(localtime($self->{ls_obj}->param('schedule_last_checked_time'))) . "\n"; 
 
     my $count = $self->{d_obj}->count({-role => 'schedule'});
 
@@ -350,8 +350,8 @@ sub deactivate_schedule {
     
     require Data::Dumper;
     my $r; 
-    $r .= 'passed args:'; 
-    $r .= Data::Dumper::Dumper($args); 
+    # $r .= 'passed args:'; 
+    # $r .= Data::Dumper::Dumper($args); 
     
     
     my $local_q = $self->{d_obj}->fetch(

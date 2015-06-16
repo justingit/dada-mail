@@ -142,7 +142,7 @@ sub setup {
         'admin_menu_tracker_notification'             => \&admin_menu_tracker_notification,
         'send_email'                                  => \&send_email,
         'send_email_button_widget'                    => \&send_email_button_widget, 
-        'mass_mail_schedules_preview'                 => \&mass_mail_schedules_preview, 
+        'mass_mailing_schedules_preview'                 => \&mass_mailing_schedules_preview, 
 
         'ckeditor_template_tag_list'                  => \&ckeditor_template_tag_list,
         'draft_saved_notification'                    => \&draft_saved_notification,
@@ -920,7 +920,7 @@ sub send_email_button_widget {
     return $scrn;
 }
 
-sub mass_mail_schedules_preview {
+sub mass_mailing_schedules_preview {
 
     my $self = shift;
     my $q    = $self->query();
@@ -1035,7 +1035,7 @@ sub mass_mail_schedules_preview {
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $scrn = DADA::Template::Widgets::screen(
         {
-            -screen => 'mass_mail_schedules_preview.tmpl',
+            -screen => 'mass_mailing_schedules_preview.tmpl',
             -expr   => 1,
             -vars   => {
                 status => $status,

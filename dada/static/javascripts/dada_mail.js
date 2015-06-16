@@ -103,7 +103,7 @@ $(document).ready(function() {
 		send_email_callbacks.add(toggle_schedule_options());
 		send_email_callbacks.add(datetimesetupstuff());
 		send_email_callbacks.add(ChangeMassMailingButtonLabel(1));
-		send_email_callbacks.add(mass_mail_schedules_preview());
+		send_email_callbacks.add(mass_mailing_schedules_preview());
 		send_email_callbacks.fire();
 		
 		if($('#backdate_datetime').length) { 
@@ -140,8 +140,17 @@ $(document).ready(function() {
 			toggle_schedule_options();
 		});
 		$("body").on("change", ".schedule_field", function(event) {
-			mass_mail_schedules_preview();
+			mass_mailing_schedules_preview();
 		}); 
+		$("body").on("click", ".manually_run_all_scheduled_mass_mailings", function(event) {
+			var mrasmm = $.Callbacks();
+				mrasmm.add(save_msg(false));
+				mrasmm.add(manually_run_all_scheduled_mass_mailings());
+				mrasmm.fire();	
+		});
+
+		
+		
 		
 		$("body").on("click", ".remove_attachment", function(event) {
 			if(confirm("Remove Attachment?")) { 
@@ -1320,7 +1329,7 @@ function setup_schedule_fields() {
 				inline:false, 
 				format:'Y-m-d H:i:s',
 				onChangeDateTime:function(dp,$input){
-				   mass_mail_schedules_preview(); 
+				   mass_mailing_schedules_preview(); 
 				}
 			}
 		);
@@ -1333,7 +1342,7 @@ function setup_schedule_fields() {
 		  		datepicker:false,
 		  		onShow:function( ct ){},
 				onChangeDateTime:function(dp,$input){
-				   mass_mail_schedules_preview(); 
+				   mass_mailing_schedules_preview(); 
 				}
 		 	}
 		);
@@ -1348,7 +1357,7 @@ function setup_schedule_fields() {
 		   })
 		  },
 		onChangeDateTime:function(dp,$input){
-			mass_mail_schedules_preview(); 
+			mass_mailing_schedules_preview(); 
 		}
 		});
 	}
@@ -1363,7 +1372,7 @@ function setup_schedule_fields() {
 		   			})
 		  		},
 				onChangeDateTime:function(dp,$input){
-				 	mass_mail_schedules_preview(); 
+				 	mass_mailing_schedules_preview(); 
 				}
 		
 		 	}
@@ -1392,36 +1401,62 @@ function toggle_schedule_options() {
 }
 
 
-var mmsp = ''; 
-function mass_mail_schedules_preview() { 
-	
-	var new_mmsp = $('.schedule_field').serialize(); 
-	if(mmsp == new_mmsp){ 
-		return false; 
-	} 
-	else { 
-		mmsp = new_mmsp; 
-	}
 
-	$("#mass_mail_schedules_preview_results").hide().html('<p>&nbsp;</p><p class="text-align:center"><strong>Loading...</strong></p><p>&nbsp;</p>').show('fade');
+var mmsp = ''; 
+function mass_mailing_schedules_preview(skip_stale_check) { 
+	var new_mmsp = $('.schedule_field').serialize(); 
+	
+	if(skip_stale_check !== 1) { 
+		if(mmsp == new_mmsp){ 
+			return false; 
+		} 
+		else { 
+			mmsp = new_mmsp; 
+		}
+	}
+	$("#mass_mailing_schedules_preview_results").hide().html('<p>&nbsp;</p><p class="text-align:center"><strong>Loading...</strong></p><p>&nbsp;</p>').show('fade');
 
 
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
-		data: $('.schedule_field').serialize() + '&flavor=mass_mail_schedules_preview', 
+		data: $('.schedule_field').serialize() + '&flavor=mass_mailing_schedules_preview', 
 		cache: false,
 		dataType: "html",
 		async: true,
 		success: function(content) {
-			$("#mass_mail_schedules_preview_results").hide("fade", function() {
-				$("#mass_mail_schedules_preview_results").html(content);
-				$("#mass_mail_schedules_preview_results").show('fade');
+			$("#mass_mailing_schedules_preview_results").hide("fade", function() {
+				$("#mass_mailing_schedules_preview_results").html(content);
+				$("#mass_mailing_schedules_preview_results").show('fade');
 			});
 		
 		
 		
 		}
 	});	
+}
+
+function manually_run_all_scheduled_mass_mailings() { 
+	$.colorbox({
+		top: 0,
+		fixed: true,
+		initialHeight: 50,
+		maxHeight: 480,
+		maxWidth: 649,
+		opacity: 0.50,
+		href: $("#s_program_url").val(),
+		data: {
+			flavor:         $("#sched_flavor").val(),
+			list:           $("#list").val(), 
+			schedule:       'scheduled_mass_mailings',
+			output_mode:    '_verbose', 
+			for_colorbox:   1
+		},
+		onComplete: function(){
+			mass_mailing_schedules_preview(1);
+		}
+	});
+	
+	
 }
 
 
@@ -1447,6 +1482,7 @@ function save_msg(async) {
 		}
 	}
 	
+		$('#draft_notice .alert').text('auto-saving...'); 
 
 		var request = $.ajax({
 			url:       $("#s_program_url").val(),

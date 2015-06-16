@@ -85,6 +85,9 @@
 <!-- tmpl_include send_email_schedule_options_widget.tmpl -->
 <!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
 
+    <input type="hidden" id="list"               name="list"                  value="<!-- tmpl_var list_settings.list -->" />
+    <input type="hidden" id="sched_flavor"       name="sched_flavor"          value="<!-- tmpl_var sched_flavor -->" />
+
     <input type="hidden" name="s_program_url"      id="s_program_url"    value="<!-- tmpl_var S_PROGRAM_URL -->" />
     <input type="hidden" name="flavor"            id="flavor"            value="send_url_email" />
     <input type="hidden" name="support_files_url" id="support_files_url" value="<!-- tmpl_var SUPPORT_FILES_URL -->" />

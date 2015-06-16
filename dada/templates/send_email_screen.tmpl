@@ -82,8 +82,11 @@
  <input type="hidden" name="support_files_url" id="support_files_url" value="<!-- tmpl_var SUPPORT_FILES_URL -->" />
 
 
-<input type="hidden" id="flavor"             name="flavor"                value="send_email" />
+<input type="hidden" id="list"               name="list"                  value="<!-- tmpl_var list_settings.list -->" />
+<input type="hidden" id="sched_flavor"       name="sched_flavor"          value="<!-- tmpl_var sched_flavor -->" />
 
+
+<input type="hidden" id="flavor"             name="flavor"                value="send_email" />
 <input type="hidden" id="draft_alert"        name="draft_alert"           value="<!-- tmpl_var draft_alert default="0" -->" />
 <input type="hidden" id="draft_id"           name="draft_id"              value="<!-- tmpl_var draft_id -->"                /> 
 <input type="hidden" id="save_draft_role"    name="save_draft_role"       value=""                                          />
