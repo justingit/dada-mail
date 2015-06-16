@@ -12,26 +12,11 @@ Key:
 
 
 [] Ability to set defautl draft message for new messages
-[] reoccuring schedules
-start_datetime
-end_datetime
-recurring_day mon, tue, wed, thur, fri, sat, sun
-
-
-One Time: 
-Recurring
-Every []Sun []Mon []Tue []Wed []Thur []Fri []Sat 
-Starting one: 
-[--------------]
-Ending on: 
-[--------------]
-
-
 
 is bounce handler set as default admin email? 
 
 
-[] Maybe an email about hwne a mass mailing starts? 
+[] Maybe an email about when a mass mailing starts? 
 
 [x] global size restrictions need to be per list in bridge
     [] change documentation
