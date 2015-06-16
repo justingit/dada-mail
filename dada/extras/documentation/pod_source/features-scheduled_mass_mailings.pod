@@ -4,25 +4,27 @@
 
 Dada Mail supports both single and recurring scheduled mass mailings.
 
-You can create a scheduled mass mailing in the Send a Message, or Send a Webpage screens. Create your message, and when you're ready, click the button labeled, B<Save as: Schedule>. Scheduled Mass Mailings can also be created from Stationery or a Draft Message.
+You may create a scheduled mass mailing in the B<Send a Message>, and B<Send a Webpage> screens: 
 
-Your schedule will then be saved, the screen will refresh, and options to activate the schedule, as well as options to set a date and time of your schedule will be shown. 
+Create your message, and when you're ready, click the button labeled, B<Save as: Schedule>. Scheduled Mass Mailings can also be created from Stationery or from an already existing Draft Message.
+
+Your schedule will then be saved, the screen will refresh, and options to activate the schedule, as well as options to set the type, date,time of the new schedule will be shown. 
 
 =head1 Options
 
 =head2 Activate
 
-Check the option when you're ready to have your scheduled mailing go live. If a scheduled mass mailing is not activated, it will not be sent out.
+Check the option when you're ready to have your scheduled mailing go B<live>. If a scheduled mass mailing is not activated, it will not be sent out, but will be available for further editing. 
 
 =head2 Single
 
-A single scheduled mass mailing will be sent only once, sometime in the future. Click the textbox next to the label, B<Schedule For:> to set the date and time you would like the schedule to go out. A calendar widget should pop up, to facilitate setting up the scheduled date and time.
+A single scheduled mass mailing will be sent only once sometime in the future. Click the textbox next to the label, B<Schedule For:> to set the date and time you would like the schedule to go out. A calendar widget should pop up, to facilitate setting up the scheduled date and time.
 
-Once everything is all set, click the button labeled, B<Save Schedule>
+Once everything is all set, click the button labeled, B<Save Schedule>.
 
 =head2 Recurring
 
-A recurring mass mailing will be sent repeatedly, based on the options you've set. You will have to set a start date, and an end date, a time in the day the schedule should go out, and what day you would like it to be sent out on. 
+A recurring mass mailing will be sent repeatedly, based on the options you've set. You will have to set a start date, an end date, a time in the day the schedule should go out, and what days of the week you would like the message to be sent out on.
 
 =head3  Starting on: 
 
@@ -38,7 +40,7 @@ This is the hour, minute, and second your mass mailing will go out at.
 
 =head3 Sent on: 
 
-Select the days in the week you would like your mass mailing to be sent on. 
+Select the days in the week you would like your mass mailing to be sent out on. 
 
 =head2 Scheduled Mailing Date/Time Preview
 
@@ -52,15 +54,17 @@ Once you've activated your schedule, set the type of schedule you want to send, 
 
 =head2 Viewing/Editing Saved Scheduled Mass Mailing
 
-Once a schedule is saved, you may view and edit them in the list control panel under, B<Mass Mailing - Drafts/Stationery/Schedules>. Click the, B<Schedules> tab to see all your schedules. Click the Subject of your schedule, or click the button labeled, B<Edit...> to further edit your scheduled mass mailing.
+Once a scheduled mass mailing is saved, you may view and edit it in the list control panel under, B<Mass Mailing - Drafts/Stationery/Schedules>. Click the, B<Schedules> tab to see all your schedules. 
+
+Click the Subject of your schedule, or click the button labeled, B<Edit...> to further edit your scheduled mass mailing.
 
 =head2 Checking the Scheduled Mass Mailings
 
-Dada Mail's system-wide cronjob checks and runs the scheduled mass mailings. Make sure it's set, or your scheduled mass mailings will not go out: 
+Dada Mail's system-wide cronjob checks and runs the scheduled mass mailings. Make sure it's set, or your scheduled mass mailings will not go out:
 
 L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
 
-You may manually check the Scheduled Jobs in the list control panel under, B<App Information - Scheduled Jobs> 
+You may manually check all the Scheduled Jobs in the list control panel under, B<App Information - Scheduled Jobs> 
 
 =head1 System Requirements
 
