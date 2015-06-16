@@ -44,6 +44,10 @@ Data::PageSet
 
 Date::Format
 
+DateTime
+
+DateTime::Event::Recurrence
+
 Digest 
 
 Digest::MD5
