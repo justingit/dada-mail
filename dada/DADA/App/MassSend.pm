@@ -836,6 +836,8 @@ sub send_url_email {
     my $ses_params         = $self->ses_params;
     my $draft_role         = $q->param('draft_role') || 'draft';
 
+    my $li = $self->{ls_obj}->get( -all_settings => 1 );
+    
     my $can_use_mime_lite_html = 1;
     my $mime_lite_html_error   = undef;
     try {
@@ -945,7 +947,7 @@ sub send_url_email {
                     %$ses_params,
 
                 },
-                -list_settings_vars       => $self->{ls_obj}->params,
+                -list_settings_vars       => $li,
                 -list_settings_vars_param => { -dot_it => 1, },
             }
         );
