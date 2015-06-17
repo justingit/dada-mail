@@ -1405,7 +1405,7 @@ sub export_by_email {
     	$r              .= "\n";
     }
     
-    my $headers = {'Content-disposition' => 'attachement; filename=' 
+    my $headers = {'Content-disposition' => 'attachment; filename=' 
 			                              . $self->{name} 
                         			      . '-' 
                         			      . $args->{-type} 
@@ -2605,7 +2605,7 @@ sub message_individual_email_activity_csv {
     ); 
     
     my $headers ={
-        'Content-disposition' => 'attachement; filename=' . $self->{name} . '-message_individual_email_activity-' .  $args->{-email} . '-' .  $args->{-mid} . '.csv', 
+        'Content-disposition' => 'attachment; filename=' . $self->{name} . '-message_individual_email_activity-' .  $args->{-email} . '-' .  $args->{-mid} . '.csv', 
         -type =>  'text/csv'
     }; 
     

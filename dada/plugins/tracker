@@ -611,7 +611,7 @@ sub download_logs {
         $type = 'clickthrough';
     }
     my $headers = {
-        'Content-disposition' => 'attachement; filename=' . $list . '-' . $type . '.csv',
+        'Content-disposition' => 'attachment; filename=' . $list . '-' . $type . '.csv',
         -type                 => 'text/csv',
     };
     my $r = $rd->export_logs(
@@ -629,7 +629,7 @@ sub download_clickthrough_logs {
     my $q       = shift;
     my $mid     = xss_filter( scalar $q->param('mid') );
     my $headers = {
-        'Content-disposition' => 'attachement; filename=' . $list . '-clickthrough-' . $mid . '.csv',
+        'Content-disposition' => 'attachment; filename=' . $list . '-clickthrough-' . $mid . '.csv',
         -type                 => 'text/csv',
     };
     my $r = $rd->export_logs(
@@ -648,7 +648,7 @@ sub download_activity_logs {
     my $q       = shift;
     my $mid     = xss_filter( scalar $q->param('mid') );
     my $headers = {
-        'Content-disposition' => 'attachement; filename=' . $list . '-activity-' . $mid . '.csv',
+        'Content-disposition' => 'attachment; filename=' . $list . '-activity-' . $mid . '.csv',
         -type                 => 'text/csv',
     };
 

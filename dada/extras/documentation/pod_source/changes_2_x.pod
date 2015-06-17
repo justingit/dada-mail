@@ -4504,7 +4504,7 @@ A referer check is also done before sending, something that was lacking in the o
 
 B<new feature:> The send an archive message  can now be edited and customized via the control panel, under "Manage Copy->Email Messages". 
 
-Along the same line, There is now a "Resend an archived message" button when you browse the list's archives via the admin control panel. Pushing this button will take you to the Advanced "Send a Message" screen with the appropriate fields already filled in. Because the entire message is NOT saved in the archive, things like attachements won't be automatically added. 
+Along the same line, There is now a "Resend an archived message" button when you browse the list's archives via the admin control panel. Pushing this button will take you to the Advanced "Send a Message" screen with the appropriate fields already filled in. Because the entire message is NOT saved in the archive, things like attachments won't be automatically added. 
 
 B<bug fix:> When using a SQL backend and SMTP sending, tmp subscription list files, created when you send a mass email, are never deleted. This should be fixed. 
 

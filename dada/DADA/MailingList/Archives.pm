@@ -1127,85 +1127,84 @@ sub find_attachment_list {
 
 
 
-sub view_file_attachment { 
-    	
-	my $self = shift;
+sub view_file_attachment {
 
-	my %args = (
-		-id       => undef, 
-		-filename => undef, 
-		-mode     => 'attachment', 
-		@_, 
-	); 
-	
-	
-	my $id       = $args{-id}; 
-	my $filename = $args{-filename}; 
-	
-	chomp($filename); 
-	
-	die "archive $id does not exist!"
-		unless $self->check_if_entry_exists($id); 
-	
-	my $r; 
-	
-	# Worried about this part. 
-	require CGI; 
-	my $q = CGI->new; 
-	   $q->charset($DADA::Config::HTML_CHARSET);
-	   $q = decode_cgi_obj($q);
-	
-	my ($subject, $message, $format, $raw_msg) = $self->get_archive_info($id, 1); 
-	
-	if(! $raw_msg){ 
-		$r.= return $q->header('text/plain') . "can not find the attachment in question."; 
-	}
-	
-	my $entity   = $self->_entity_from_raw_msg($raw_msg);
-	
-	# I don't like how this is called thrice.... but, oh well...
-	my $a_entity = undef;
-	
-	
-	$a_entity = $self->_find_filename_attachment_entity(
-		-filename => $filename, 
-		-entity   => $entity
-	); 	
-	if(! defined( $a_entity )){ 
-		$filename =~ s/ /+/g;		
-		$a_entity = $self->_find_filename_attachment_entity(
-			-filename => $filename, 
-			-entity   => $entity
-		);		
-	}
-	# We sort of undo what we just did! 
-	if(! defined( $a_entity )){ 
-		$filename =~ s/\+/\%20/g;
-		$a_entity = $self->_find_filename_attachment_entity(
-			-filename => $filename, 
-			-entity   => $entity
-		);		
-	}
-	if(! defined( $a_entity )){ 
-		return $q->header('text/plain') . 'Error: Cannot view attachment!'; 
-	}
-	else { 
-	my $body     = $a_entity->bodyhandle;
-	
-	if($args{-mode} eq 'inline'){ 
-		$r .= $q->header($a_entity->head->mime_type); 
-	}else{ 
-	
-			$r .=  "Content-disposition: attachement; filename=\"$filename\"\n";
-	   		$r .=  "Content-type: application/octet-stream\n\n";
-	
-		}
-	
-		# encoded. Yes or no?
-		$r .=  $body->as_string; 
-	
-		return $r; 	
-	}
+    my $self = shift;
+
+    my %args = (
+        -id       => undef,
+        -filename => undef,
+        -mode     => 'attachment',
+        @_,
+    );
+
+    my $id       = $args{-id};
+    my $filename = $args{-filename};
+
+    chomp($filename);
+
+    die "archive $id does not exist!"
+      unless $self->check_if_entry_exists($id);
+
+    my $r;
+
+    # Worried about this part.
+    require CGI;
+    my $q = CGI->new;
+    $q->charset($DADA::Config::HTML_CHARSET);
+    $q = decode_cgi_obj($q);
+
+    my ( $subject, $message, $format, $raw_msg ) = $self->get_archive_info( $id, 1 );
+
+    if ( !$raw_msg ) {
+        $r .= return $q->header('text/plain') . "can not find the attachment in question.";
+    }
+
+    my $entity = $self->_entity_from_raw_msg($raw_msg);
+
+    # I don't like how this is called thrice.... but, oh well...
+    my $a_entity = undef;
+
+    $a_entity = $self->_find_filename_attachment_entity(
+        -filename => $filename,
+        -entity   => $entity
+    );
+    if ( !defined($a_entity) ) {
+        $filename =~ s/ /+/g;
+        $a_entity = $self->_find_filename_attachment_entity(
+            -filename => $filename,
+            -entity   => $entity
+        );
+    }
+
+    # We sort of undo what we just did!
+    if ( !defined($a_entity) ) {
+        $filename =~ s/\+/\%20/g;
+        $a_entity = $self->_find_filename_attachment_entity(
+            -filename => $filename,
+            -entity   => $entity
+        );
+    }
+    if ( !defined($a_entity) ) {
+        return ({-type => 'text/plain'}, 'Error: Cannot view attachment!'); 
+    }
+    else {
+        my $body = $a_entity->bodyhandle;
+        my $h    = {};
+
+        if ( $args{-mode} eq 'inline' ) {
+            $h->{-type} = $a_entity->head->mime_type;
+        }
+        else {
+
+            $h->{'Content-disposition'} = 'attachment; filename=' . $filename;
+            $h->{-type}                 = 'application/octet-stream';
+        }
+
+        # encoded. Yes or no?
+        $r = $body->as_string;
+        return ( $h, $r );
+    }
 
 }
 
@@ -1320,85 +1319,99 @@ sub _rearrange_cid_img_tags {
 # Does this open up any weird 
 # security issues?
 
-sub view_inline_attachment { 
+sub view_inline_attachment {
 
-	my $self = shift; 
-	my %args = (
-	         -id  => undef, 
-	         -cid => undef, 
-	         @_,
-	        ); 
+    my $self = shift;
+    my %args = (
+        -id       => undef,
+        -cid      => undef,
+  #      @_,
+    );
+    
+    #warn '$args{-id} ' . $args{-id}; 
+    
 
-	my ($subject, $message, $format, $raw_msg) = $self->get_archive_info($args{-id}, 1);
-	
-	if(! $raw_msg){ 
-		return undef; 
-	}
-	
-	my $entity = $self->_entity_from_raw_msg($raw_msg);
-	
-	my $body; 
-	
-	my $a_entity = $self->_find_inline_attachment_entity(
-	    -cid    => $args{-cid}, 
-	    -entity => $entity
-	); 
-	
-	require CGI; 
-	my $q = CGI->new; 
-	   $q->charset($DADA::Config::HTML_CHARSET);
-	   $q = decode_cgi_obj($q);
-	
-	my $c_type;
-	
-	if(!$a_entity){ 
-		$c_type = 'INVALID';
-	}else{ 
-		$c_type = $a_entity->head->get('content-type');
-		chomp($c_type); 
-		$body    = $a_entity->bodyhandle;
-	}
-	
-	require MIME::Base64; 
-	
-	my $r; 	
-	my $h = {}; 
-	    
-	
-	if($c_type =~ m/image\/gif/){ 
-		$h->{-type} = 'image/gif';
-	}elsif($c_type =~ m/image\/jpg|image\/jpeg/){ 
-		$h->{-type} = 'image/jpg';
-	}elsif($c_type =~ m/image\/png/){ 
-		$h->{-type} = 'image/png';
-	}elsif($c_type =~ m/application\/octet\-stream/){ # dude, this could be anything...
-		if($a_entity->head->mime_attr("content-type.name") =~ m/\.png$/i){
-		    $h->{-type} = 'image/png'; 
-		}elsif($a_entity->head->mime_attr("content-type.name") =~ m/\.jpg$|\.jpeg/i){
-			$h->{-type} = 'image/jpg'; 
-		}elsif($a_entity->head->mime_attr("content-type.name") =~ m/\.gif$/i){
-			$h->{-type} = 'image/gif'; 
-		}
-	}else{ 
-		warn "unsupported content type! " .  $c_type; 
+    my ( $subject, $message, $format, $raw_msg ) = $self->get_archive_info( $args{-id}, 1 );
 
-		$h->{-type} = 'image/png';
-		# a simple, 1px png image. 
-		my $str = <<EOF
+    if ( !$raw_msg ) {
+        return undef;
+    }
+
+    my $entity = $self->_entity_from_raw_msg($raw_msg);
+
+    my $body;
+
+    my $a_entity = $self->_find_inline_attachment_entity(
+        -cid    => $args{-cid},
+        -entity => $entity
+    );
+    #warn 'inline entity: ' . $a_entity->as_string; 
+    
+
+    require CGI;
+    my $q = CGI->new;
+    $q->charset($DADA::Config::HTML_CHARSET);
+    $q = decode_cgi_obj($q);
+
+    my $c_type;
+
+    if ( !$a_entity ) {
+        $c_type = 'INVALID';
+    }
+    else {
+        $c_type = $a_entity->head->get('content-type');
+        chomp($c_type);
+        $body = $a_entity->bodyhandle;
+    }
+
+    require MIME::Base64;
+
+    my $r;
+    my $h = {};
+
+    if ( $c_type =~ m/text\/plain/ ) {
+        $h->{-type} = 'text\/plain';
+    }
+    elsif ( $c_type =~ m/image\/gif/ ) {
+        $h->{-type} = 'image/gif';
+    }
+    elsif ( $c_type =~ m/image\/jpg|image\/jpeg/ ) {
+        $h->{-type} = 'image/jpg';
+    }
+    elsif ( $c_type =~ m/image\/png/ ) {
+        $h->{-type} = 'image/png';
+    }
+    elsif ( $c_type =~ m/application\/octet\-stream/ ) {    # dude, this could be anything...
+        if ( $a_entity->head->mime_attr("content-type.name") =~ m/\.png$/i ) {
+            $h->{-type} = 'image/png';
+        }
+        elsif ( $a_entity->head->mime_attr("content-type.name") =~ m/\.jpg$|\.jpeg/i ) {
+            $h->{-type} = 'image/jpg';
+        }
+        elsif ( $a_entity->head->mime_attr("content-type.name") =~ m/\.gif$/i ) {
+            $h->{-type} = 'image/gif';
+        }
+    }
+    else {
+        warn "unsupported content type! " . $c_type;
+
+        $h->{-type} = 'image/png';
+
+        # a simple, 1px png image.
+        my $str = <<EOF
 iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAMAAAAoyzS7AAAABGdBTUEAANbY1E9YMgAAABl0RVh0
 U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAGUExURf///wAAAFXC034AAAABdFJOUwBA
 5thmAAAADElEQVR42mJgAAgwAAACAAFPbVnhAAAAAElFTkSuQmCC
 EOF
-;
-		$r = MIME::Base64::decode_base64($str);
-	}
-	
-	   #Encoded. Yes or no?
-	   
- 
-	   $r =  $body->as_string; 
-	  
-	   return ($h, $r); 	
+          ;
+        $r = MIME::Base64::decode_base64($str);
+    }
+
+    #Encoded. Yes or no?
+
+    $r = $body->as_string;
+
+    return ( $h, $r );
 }
 
 
