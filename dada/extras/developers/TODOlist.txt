@@ -10,12 +10,20 @@ Key:
 [*] Naw...
 [?] Someday
 
-
-[ ] Some IP Addresses for opens/clickthroughs are from datacenters of the mail service (gmail, hotmail) - is there a way to get the original ip? 
-
+[ ] Time to upgrade jQuery?
+    .live() to .on()
+    a... few other things. 
+    
+[ ] Magic Templates 
+ [ ] Way to disable putting in js libraries - especially jquery. 
+ 
+Recurring Schedules - 
+    [ ] Grab subject from title of webpage
+    [ ] Don't forget the idea of updating profile fields after a message is sent out, 
+ 
 [ ] are we not tracking user agent, and finding the type of device people are using? 
 
-[] Ability to set defautl draft message for new messages
+[] Ability to set default stationery message for new messages
 
 is bounce handler set as default admin email? 
 
