@@ -668,6 +668,8 @@ sub edit {
 
         digest_enable   => 0,
         digest_schedule => 86400,
+        bridge_announce_reply_to => 'none', 
+        
     );
 
     # Validation, basically.
@@ -2273,6 +2275,8 @@ sub dm_format {
         $fm->reset_from_header(0);
     }
 
+warn ' ${$msg} ' .  ${$msg}; 
+
     my ( $header_str, $body_str ) = $fm->format_headers_and_body(
         -msg             => ${$msg},
         -convert_charset => 1,
@@ -3171,6 +3175,7 @@ sub cgi_edit_email_msgs {
                     digest_message_subject => '',
                     digest_message         => '',
                     digest_message_html    => '',
+                    
 
                 }
             }

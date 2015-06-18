@@ -448,6 +448,44 @@ General
 	   </td>
 	  </tr>
 	</table> 
+	
+	<p><label>Set Reply-To header:</label><br/> 
+
+ 	<table width="100%" cellspacing="0" cellpadding="5">
+
+          <tr>
+            <td width="20">
+     	<p>
+     	  <input type="radio" name="bridge_announce_reply_to" id="bridge_announce_reply_to_none" value="none" <!-- tmpl_if expr="(list_settings.bridge_announce_reply_to eq 'none')" -->checked="checked"<!--/tmpl_if--> />
+     	</p>
+     	</td>
+     	<td>
+     	<p><label for="bridge_announce_reply_to_none">
+     	  don't set Reply-To header
+     	</label></p>
+     	</td>
+     	</tr> 
+      <tr>
+        <td width="20">
+ 	<p>
+ 	  <input type="radio" name="bridge_announce_reply_to" id="bridge_announce_reply_to_list_owner" value="list_owner" <!-- tmpl_if expr="(list_settings.bridge_announce_reply_to eq 'list_owner')" -->checked="checked"<!--/tmpl_if--> />
+ 	</p>
+ 	</td>
+ 	<td>
+ 	<p><label for="bridge_announce_reply_to_list_owner">to the List Owner (<!-- tmpl_var list_settings.list_owner_email ESCAPE="HTML" -->)</label></p>
+ 	</td>
+ 	</tr> 
+ 	<tr> 
+    <td width="20">
+ 	<p>
+ 	 <input type="radio" name="bridge_announce_reply_to" id="bridge_announce_reply_to_og_sender" value="og_sender" <!-- tmpl_if expr="(list_settings.bridge_announce_reply_to eq 'og_sender')" -->checked="checked"<!--/tmpl_if--> />
+ 	</p></td> 
+ 	<td><p><label for="bridge_announce_reply_to_og_sender">to the original message sender (Authorized Sender)</label></p> 
+     </td> 
+     </tr> 
+     </table>
+ 	
+ 	
    </fieldset> 
 
 <fieldset> 
@@ -554,10 +592,10 @@ General
 	</p></td> 
 	<td> 
 	<label for="set_to_header_to_list_address_0">be addressed to the mailing list</label>
-</p> 
-</td> 
-</tr> 
-</table>
+    </p> 
+    </td> 
+    </tr> 
+    </table>
 
 
 <table width="100%" cellspacing="0" cellpadding="5">

@@ -10,7 +10,7 @@ use lib qw(
 use Carp qw(croak carp);
 use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts; 
-my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_MailingList_MessageDrafts};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_MessageDrafts};
 
 sub new {
 

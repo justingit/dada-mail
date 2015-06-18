@@ -888,14 +888,6 @@ sub _format_headers {
     # discussion messages
     #
 
-    if ( $self->{ls}->param('group_list') == 1 ) {
-        $entity->head->delete('Return-Path');
-    }
-    else {
-        if ( $self->reset_from_header ) {
-            $entity->head->delete('From');
-        }
-    }
 
     if ( $self->{ls}->param('prefix_list_name_to_subject') == 1 ) {
         
@@ -950,20 +942,6 @@ sub _format_headers {
 		
     }
 	
-	
-	#Sender Header
-	if ( $entity->head->count('Sender') ) {
-        $entity->head->delete('Sender');
-    }
-    if($self->{ls}->param('group_list')  == 1) { 
-            $entity->head->add( 'Sender', $self->{ls}->param('discussion_pop_email'));
-    }
-    else { 
-        $entity->head->add( 'Sender', $self->{ls}->param('list_owner_email'));            
-    }
-    
-
-	
 	# This is weird, right? remove the original original from header, and put our own: 
 	if ( $entity->head->count('X-Original-From') ) {
         $entity->head->delete('X-Original-From');
@@ -994,7 +972,68 @@ sub _format_headers {
 	}
 	else { 
 		# "no pp mode!"; 
-	}	
+	}
+
+    # Only Announce-Only
+	if (   $self->mass_mailing == 1
+        && $self->{ls}->param('group_list') == 0
+        && defined( $self->{ls}->param('discussion_pop_email')) 
+        ) 
+    {
+        warn q{$entity->head->get('From', 0) } . $entity->head->get('From', 0); 
+        warn q{$entity->head->get('Reply-To', 0) } . $entity->head->get('Reply-To', 0); 
+        warn q{$entity->head->get('Sender', 0) } . $entity->head->get('Sender', 0); 
+        
+        
+        warn 'Only Announce-Only'; 
+        
+        if($self->{ls}->param('bridge_announce_reply_to') eq 'list_owner') { 
+            if ( $entity->head->count('Reply-To') ) {
+				$entity->head->delete('Reply-To');
+			}
+			warn q{$entity->head->add( 'Reply-To', $self->{ls}->param('list_owner_email') );}; 
+			$entity->head->add( 'Reply-To', $self->{ls}->param('list_owner_email') );
+        }
+        elsif($self->{ls}->param('bridge_announce_reply_to') eq 'og_sender') { 
+            warn q{lsif($self->{ls}->param('bridge_announce_reply_to') eq 'og_sender') }; 
+            
+            if ( $entity->head->count('Reply-To') ) {
+				$entity->head->delete('Reply-To');
+			}
+			if ( $entity->head->count('Sender') ) {
+               warn q{ $entity->head->add( 'Reply-To',  $entity->head->get('Sender', 0) );}; 
+                $entity->head->add( 'Reply-To',  $entity->head->get('Sender', 0) );
+            }
+            else { 
+                warn q{$entity->head->add( 'Reply-To',  $entity->head->get('From', 0) );}; 
+                $entity->head->add( 'Reply-To',  $entity->head->get('From', 0) );
+            }
+        }
+        elsif($self->{ls}->param('bridge_announce_reply_to') eq 'none') { 
+            #...
+        }
+    }
+	
+	if ( $self->{ls}->param('group_list') == 1 ) {
+        $entity->head->delete('Return-Path');
+    }
+    else {
+        if ( $self->reset_from_header ) {
+            $entity->head->delete('From');
+        }
+    }
+    
+	#Sender Header
+	if ( $entity->head->count('Sender') ) {
+        $entity->head->delete('Sender');
+    }
+    if($self->{ls}->param('group_list')  == 1) { 
+            $entity->head->add( 'Sender', $self->{ls}->param('discussion_pop_email'));
+    }
+    else { 
+        $entity->head->add( 'Sender', $self->{ls}->param('list_owner_email'));            
+    }
+	
 	
     $entity->head->delete('Message-ID');
 
@@ -1054,6 +1093,8 @@ sub _format_headers {
         $entity->head->add( 'X-BeenThere',
             safely_encode( $self->{ls}->param('discussion_pop_email') ) );
     }
+
+	warn $entity->as_string; 
 
     return $entity;
 
