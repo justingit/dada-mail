@@ -875,6 +875,11 @@ Given an entity, will do some transformations on the headers. It will:
 
 sub _format_headers {
 
+    # so much shuffling.
+    # a copy of the message should be made - at least the headers, 
+    # we can then modify the copy, using a r/o og copy, and not worry about
+    # "hey, did I touch this, yet?" 
+    
     my $self   = shift;
     my $entity = shift;
     
