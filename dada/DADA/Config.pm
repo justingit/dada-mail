@@ -588,6 +588,10 @@ $TEMPLATE_OPTIONS //= {
                 add_app_css          => 0,
                 add_custom_css       => 0,
                 custom_css_url       => undef, 
+                include_jquery_lib   => 1,
+                include_jqueryui_lib => 1,
+                include_app_user_js  => 1,
+                
             }
     }, 
 };

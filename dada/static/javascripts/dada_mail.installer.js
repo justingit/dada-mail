@@ -1,4 +1,4 @@
-$(document).ready(function() {
+jQuery(document).ready(function($){
 
 	// Installer 
 	if ($("#install_or_upgrade").length) {
@@ -54,10 +54,10 @@ $(document).ready(function() {
 		});
 
 
-		jQuery.validator.addMethod("alphanumericunderscore", function(value, element) {
+		$.validator.addMethod("alphanumericunderscore", function(value, element) {
 	    return this.optional(element) || value == value.match(/^[-a-zA-Z0-9_]+$/);
 	    }, "Only letters, Numbers and Underscores Allowed.");
-		jQuery.validator.addMethod("alphanumeric", function(value, element) {
+		$.validator.addMethod("alphanumeric", function(value, element) {
 	    return this.optional(element) || value == value.match(/^[-a-zA-Z0-9]+$/);
 	    }, "Only letters and Numbers Allowed.");
 
@@ -202,7 +202,7 @@ $(document).ready(function() {
 		});
 	}
 
-}); 
+
 
 function installer_test_sql_connection() {
 	var target_div = 'test_sql_connection_results';
@@ -373,22 +373,40 @@ function test_magic_template() {
 		add_custom_css = 1; 
 	}
 
+	var include_jquery_lib = 0; 
+	if ($("#template_options_include_jquery_lib").prop("checked") === true) {
+		include_jquery_lib = 1; 
+	}
+
+	var include_jqueryui_lib = 0; 
+	if ($("#template_options_include_jqueryui_lib").prop("checked") === true) {
+		include_jqueryui_lib = 1; 
+	}
+
+	var include_app_user_js = 0; 
+	if ($("#template_options_include_app_user_js").prop("checked") === true) {
+		include_app_user_js = 1; 
+	}
+
 
 	var request = $.ajax({
 		url: $("#self_url").val(),
 		type: "POST",
 		cache: false,
 		data: {
-			flavor: 'cgi_test_magic_template_diag_box',
-			template_options_template_url: $('#template_options_magic_template_url').val(), 
-			template_options_add_base_href: add_base_href_url,  
-			template_options_base_href_url: $('#template_options_base_href_url').val(),
+			flavor:                                'cgi_test_magic_template_diag_box',
+			template_options_template_url:         $('#template_options_magic_template_url').val(), 
+			template_options_add_base_href:        add_base_href_url,  
+			template_options_base_href_url:        $('#template_options_base_href_url').val(),
 			template_options_replace_content_from: $("input:radio[name ='template_options_replace_content_from']:checked").val(),
-			template_options_replace_id: $('#template_options_replace_id').val(), 
-			template_options_replace_class: $('#template_options_replace_class').val(), 
-			template_options_add_app_css:add_app_css, 
-			template_options_add_custom_css:add_custom_css,  
-			template_options_custom_css_url: $('#template_options_custom_css_url').val()
+			template_options_replace_id:           $('#template_options_replace_id').val(), 
+			template_options_replace_class:        $('#template_options_replace_class').val(), 
+			template_options_add_app_css:          add_app_css, 
+			template_options_add_custom_css:       add_custom_css,  
+			template_options_custom_css_url:       $('#template_options_custom_css_url').val(),
+			template_options_include_jquery_lib:   include_jquery_lib,
+			template_options_include_jqueryui_lib: include_jqueryui_lib,
+			template_options_include_app_user_js:  include_app_user_js
 		},
 		dataType: "html"
 	});
@@ -408,7 +426,11 @@ function test_magic_template() {
 		'&template_options_replace_class='  + encodeURIComponent($('#template_options_replace_class').val()) + 
 		'&template_options_add_app_css='    + encodeURIComponent(add_app_css) +
 		'&template_options_add_custom_css=' + encodeURIComponent(add_custom_css) + 
-		'&template_options_custom_css_url=' + encodeURIComponent($('#template_options_custom_css_url').val()),
+		'&template_options_custom_css_url=' + encodeURIComponent($('#template_options_custom_css_url').val()) + 
+		
+		'&template_options_include_jquery_lib='   + encodeURIComponent(include_jquery_lib) + 
+		'&template_options_include_jqueryui_lib=' + encodeURIComponent(include_jqueryui_lib) + 
+		'&template_options_include_app_user_js='  + encodeURIComponent(include_app_user_js),
  		"magicTemplatetest", 
 		"width=640,height=480,scrollbars=yes");
 
@@ -626,3 +648,18 @@ function installer_move_installer_dir() {
 		$("#move_results").show('blind');
 	});
 }
+
+function changeDisplayState(target, state) {
+	if (state == 'show') {
+		if ($('#' + target).is(':hidden')) {
+			$('#' + target).show('blind');
+		}
+	} else {
+		if ($('#' + target).is(':visible')) {
+			$('#' + target).hide('blind');
+		}
+	}
+}
+
+});
+

@@ -1128,6 +1128,7 @@ sub grab_former_config_vals {
     # Global Template Options
     if ( keys %$BootstrapConfig::TEMPLATE_OPTIONS
         && $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{mode} =~ m/manual|magic/) {
+        # for qw(all these options...){ 
         $opt->{'configure_templates'}                   = 1;
         $opt->{'template_options_enabled'}              = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{enabled};
         $opt->{'template_options_mode'}                 = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{mode};
@@ -1142,6 +1143,10 @@ sub grab_former_config_vals {
         $opt->{'template_options_add_app_css'}          = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{add_app_css};
         $opt->{'template_options_add_custom_css'}       = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{add_custom_css};
         $opt->{'template_options_custom_css_url'}       = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{custom_css_url}; 
+        $opt->{'template_options_include_jquery_lib'}   = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{include_jquery_lib}; 
+        $opt->{'template_options_include_jqueryui_lib'} = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{include_jqueryui_lib}; 
+        $opt->{'template_options_include_app_user_js'}  = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{include_app_user_js}; 
+        
     }
     elsif(defined($BootstrapConfig::USER_TEMPLATE)) {
         # Backwards compat. 
@@ -1580,6 +1585,9 @@ sub query_params_to_install_params {
       template_options_add_app_css
       template_options_add_custom_css
       template_options_custom_css_url
+      template_options_include_jquery_lib
+      template_options_include_jqueryui_lib
+      template_options_include_app_user_js
 
       configure_cache
       cache_options_SCREEN_CACHE
@@ -2186,6 +2194,9 @@ sub create_dada_config_file {
             template_options_add_app_css
             template_options_add_custom_css
             template_options_custom_css_url
+            template_options_include_jquery_lib
+            template_options_include_jqueryui_lib
+            template_options_include_app_user_js
             )
         ) { 
             $template_options_params->{$_} = $ip->{'-' . $_};
@@ -3407,7 +3418,11 @@ sub hack_in_js {
             -vars   => { my_S_PROGRAM_URL => program_url_guess(), Self_URL => $Self_URL }
         }
     );
-    $scrn =~ s/\<head\>/\<head\>$js/;
+
+    my $dm_js = '/static/javascripts/jquery.dadamail.js"></script>';
+    my $dm_js_qm = quotemeta($dm_js); 
+    
+    $scrn =~ s/$dm_js_qm/$dm_js\n$js/;
 
     #/ Hackity Hack!
 
@@ -4075,20 +4090,23 @@ sub cgi_test_magic_template {
     
     my $q    = $self->query();
 
+    my $template_args = {
+        template_url         => scalar $q->param('template_options_template_url'),
+        add_base_href        => scalar $q->param('template_options_add_base_href'),
+        base_href_url        => scalar $q->param('template_options_base_href_url'),
+        replace_content_from => scalar $q->param('template_options_replace_content_from'),
+        replace_id           => scalar $q->param('template_options_replace_id'),
+        replace_class        => scalar $q->param('template_options_replace_class'), 
+        add_app_css          => scalar $q->param('template_options_add_app_css'),
+        add_custom_css       => scalar $q->param('template_options_add_custom_css'),
+        custom_css_url       => scalar $q->param('template_options_custom_css_url'),
+        include_jquery_lib   => scalar $q->param('template_options_include_jquery_lib'),
+        include_jqueryui_lib => scalar $q->param('template_options_include_jqueryui_lib'),
+        include_app_user_js  => scalar $q->param('template_options_include_app_user_js'),
+    }; 
+        
     require DADA::Template::HTML;
-    my ($t_status, $t_errors, $t_tmpl) = DADA::Template::HTML::template_from_magic(
-        {
-           template_url         => scalar $q->param('template_options_template_url'),
-           add_base_href        => scalar $q->param('template_options_add_base_href'),
-           base_href_url        => scalar $q->param('template_options_base_href_url'),
-           replace_content_from => scalar $q->param('template_options_replace_content_from'),
-           replace_id           => scalar $q->param('template_options_replace_id'),
-           replace_class        => scalar $q->param('template_options_replace_class'), 
-           add_app_css          => scalar $q->param('template_options_add_app_css'),
-           add_custom_css       => scalar $q->param('template_options_add_custom_css'),
-           custom_css_url       => scalar $q->param('template_options_custom_css_url'),
-        }
-    );
+    my ($t_status, $t_errors, $t_tmpl) = DADA::Template::HTML::template_from_magic($template_args);
     
     if($just_return == 0){ 
         
@@ -4105,6 +4123,8 @@ sub cgi_test_magic_template {
                     -vars   => {
                         content => $content, 
                         SUPPORT_FILES_URL    => $Self_URL . '?flavor=screen&screen=',
+                        %{$template_args},
+                        
                     },
                 }
             );
@@ -4377,11 +4397,21 @@ sub screen {
             }
         );
     }
-    elsif ($screen eq 'installer-dada_mail.js'
-        || $screen eq 'dada_mail.installer.js'
-        || $screen =~ m/installer\-jquery/
-        || $screen =~ m/installer\-jquery\-ui/ )
+    elsif(
+        $screen   =~ m/dada_mail\.user\.js/
+        ||$screen =~ m/jquery\.dadamail.js/
+    ){ 
+        $self->header_props( { -type => 'text/javascript' } );
+        return ''; 
+    }    
+    elsif ($screen =~ m/dada_mail\.js/
+        || $screen =~ m/dada_mail.installer\.js/
+        || $screen =~ m/jquery/
+        || $screen =~ m/jquery\-ui/
+         )
     {
+        $screen =~ s/\/static\/javascripts\///;
+        
         $self->header_props( { -type => 'text/javascript' } );
 
         return DADA::Template::Widgets::screen(

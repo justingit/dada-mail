@@ -4,7 +4,7 @@ use lib qw(../../ ../../DADA/perllib);
 
 use DADA::Config qw(!:DEFAULT);  
 use DADA::App::Guts; 
-   use Try::Tiny; 
+use Try::Tiny; 
 
 use Carp qw(croak carp); 
 
@@ -398,9 +398,9 @@ sub template_from_magic {
             # What's the smae as, find_by_tag_name?
             #
             my $root = HTML::TreeBuilder->new(
-                ignore_unknown => 0, 
+                ignore_unknown      => 0, 
                 no_space_compacting => 1,
-                store_comments => 1, 
+                store_comments      => 1, 
             );
                  
             $root->parse($src);
@@ -692,9 +692,11 @@ sub list_template {
     }
 
     my $list_template = undef;
-
+    my $using_default_template = 1; 
+    
     if ( defined( $args{ -data } ) ) {	
         $list_template = ${ $args{ -data } };
+        $using_default_template = 0; 
     }
     elsif ($list) {
         if ( $ls->param('get_template_data') eq "from_url"
@@ -702,6 +704,7 @@ sub list_template {
         {
             $list_template =
               open_template_from_url( -URL => $ls->param('url_template'), );
+              $using_default_template = 0; 
 
         }
         elsif ( $ls->param('get_template_data') eq 'from_default_template' ) {
@@ -719,6 +722,7 @@ sub list_template {
                     $DADA::Config::TEMPLATES . '/' . $list . '.template'
                 )
             );
+            $using_default_template = 0; 
 
         }    # meaning, there's no list template
         else {
@@ -740,7 +744,31 @@ sub list_template {
     my $subscribed_to_list = 0;
     my $prof_sess          = undef; 
     my $profile_widget     = undef;
-    eval {
+    
+    
+    my $header_options = {
+        include_jquery_lib   => 1,
+        include_jqueryui_lib => 1,
+        include_app_user_js  => 1,
+        add_app_css          => 1,
+    }; 
+    
+    warn q{$args{-Use_Custom}} . $args{-Use_Custom};
+    warn q{$DADA::Config::TEMPLATE_OPTIONS->{user}->{enabled}} . $DADA::Config::TEMPLATE_OPTIONS->{user}->{enabled}; 
+    warn q{$DADA::Config::TEMPLATE_OPTIONS->{user}->{mode}} . $DADA::Config::TEMPLATE_OPTIONS->{user}->{mode}; 
+    warn q{$using_default_template} . $using_default_template; 
+    
+    if(
+              $args{-Use_Custom} == 1
+           && $DADA::Config::TEMPLATE_OPTIONS->{user}->{enabled} == 1 
+           && $DADA::Config::TEMPLATE_OPTIONS->{user}->{mode} eq 'magic'
+           && $using_default_template == 1
+           ) {
+               warn 'using magic header params'; 
+               $header_options = $DADA::Config::TEMPLATE_OPTIONS->{user}->{magic_options};
+    }
+    
+    try {
 
         require DADA::Profile::Session;
         require DADA::Profile;
@@ -764,10 +792,9 @@ sub list_template {
 		else { 
 			$profile_widget = DADA::Template::Widgets::profile_widget(); 
 		}
+    } catch {
+        carp "CAUGHT Error with Sessioning: $_";
     };
-    if ($@) {
-        carp "CAUGHT Error with Sessioning: $@";
-    }
 	
 	my $footer_props; 
 	if ( $DADA::Config::GIVE_PROPS_IN_HTML == 1) {
@@ -797,8 +824,13 @@ sub list_template {
                 dada                => '[_dada_content]',
                 profile_widget      => $profile_widget,
                 show_profile_widget => 1,
-				footer_props => $footer_props, 
-
+				footer_props        => $footer_props, 
+				
+				include_jquery_lib   =>  $header_options->{include_jquery_lib},
+                include_jqueryui_lib =>  $header_options->{include_jqueryui_lib},
+                include_app_user_js  =>  $header_options->{include_app_user_js},
+                add_app_css          =>  $header_options->{add_app_css},
+                
                 %{ $args{ -vars } },
             },
             (

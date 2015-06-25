@@ -8,6 +8,8 @@ var plainOverlayOptions = {
 
 
 jQuery(document).ready(function($){
+
+	
 	$('body').on('click', 'a.modalbox', function(event){	
 		event.preventDefault();
 		$.colorbox({
