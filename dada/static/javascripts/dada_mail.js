@@ -6,9 +6,9 @@ var plainOverlayOptions = {
 		}
 };
 
-$(document).ready(function() {
-				
-	$("a.modalbox").live("click", function(event) {
+
+jQuery(document).ready(function($){
+	$('body').on('click', 'a.modalbox', function(event){	
 		event.preventDefault();
 		$.colorbox({
 			top: 0,
@@ -388,7 +388,7 @@ $(document).ready(function() {
 		
 		if ($("#mailing_list_history").length) {
 			mailing_list_history();
-			$(".radio_toggle_membership_history").live("click", function(event) {
+			$('body').on('click', '.radio_toggle_membership_history', function(){
 				mailing_list_history();
 			}); 		
 		}
@@ -448,7 +448,7 @@ $(document).ready(function() {
 	// Membership >> Invite/Add
 	if ($("#add").length) {
 		$("#show_progress").hide();
-		$("#fileupload").live("submit", function(event) {
+		$('body').on('submit', '#fileupload', function(event){
 			check_status();
 		});
 		
@@ -490,7 +490,7 @@ $(document).ready(function() {
 	// Membership >> Invite
 	if ($("#list_invite").length) {
 		$("#customize_invite_message_form").hide();
-		$('.show_customize_invite_message').live("click", function(event) {
+		$('body').on('click', '.show_customize_invite_message', function(event){
 			event.preventDefault();
 			show_customize_invite_message();
 		});
@@ -558,19 +558,19 @@ $(document).ready(function() {
 		toggle_closed_list(); 
 		toggle_private_list(); 
 		
-		$('#anyone_can_subscribe').live('click', function(event) {
+		$('body').on('click', '#anyone_can_subscribe', function(event){
 			toggle_anyone_can_subscribe(); 
 		});
 		
-		$('#closed_list').live('click', function(event) {
+		$('body').on('click', '#closed_list', function(event){
 			toggle_closed_list(); 
 		});	
 
 
-		$('#private_list_no').live('click', function(event) {
+		$('body').on('click', '#private_list_no', function(event){
 			toggle_private_list(); 
 		});	
-		$('#private_list').live('click', function(event) {
+		$('body').on('click', '#private_list', function(event){
 			toggle_private_list(); 
 		});
 		
@@ -784,34 +784,35 @@ $(document).ready(function() {
 
 	// Membership >> View List
 		
-	$(".change_type").live("click", function(event) {
+	$('body').on('click', '.change_type', function(event){
 		change_type($(this).attr("data-type"));
 		event.preventDefault();
 	});
-	$(".turn_page").live("click", function(event) {
+	$('body').on('click', '.turn_page', function(event){		
 		turn_page($(this).attr("data-page"));
 		event.preventDefault();
 	});
-	$(".change_order").live("click", function(event) {
+	
+	$('body').on('click', '.change_order', function(event){		
 		change_order($(this).attr("data-by"), $(this).attr("data-dir"));
 		event.preventDefault();
 	});
-	$(".search_list").live("click", function(event) {
+	$('body').on('click', '.search_list', function(event){		
 		search_list();
 		event.preventDefault();
 	});
-	$(".show_advanced_search_list").live("click", function(event) {
+	
+	$('body').on('click', '.show_advanced_search_list', function(event){		
 		//alert('Calling show_advanced_search_list()');  
 		show_advanced_search_list();
 		event.preventDefault();
 	});
-	$(".advanced_search_list").live("click", function(event) {
+	$('body').on('click', '.advanced_search_list', function(event){		
 		advanced_search_list();
 		event.preventDefault();
 	});
 
-
-	$(".close_advanced_search_list").live("click", function(event) {
+	$('body').on('click', '.close_advanced_search_list', function(event){		
 		close_advanced_search_list();
 		event.preventDefault();
 	});
@@ -820,20 +821,21 @@ $(document).ready(function() {
 	
 	
 	
-	$("#search_form").live("submit", function(event) {
+	$('body').on('submit', '#search_form', function(event){		
 		search_list();
 		event.preventDefault();
 	});
-	$(".clear_search").live("click", function(event) {
+	$('body').on('click', '.clear_search', function(event){		
 		clear_search();
 		event.preventDefault();
 	});
-	$(".clear_advanced_search_list").live("click", function(event) {
+
+	$('body').on('click', '.clear_advanced_search_list', function(event){		
 		clear_advanced_search();
 		event.preventDefault();
 	});
 		
-	$('#search_query').live('keydown', function() {
+	$('body').on('keydown', '#search_query', function(event){			
 		$("#search_query").autocomplete({
 			source: function(request, response) {
 				$.ajax({
@@ -873,21 +875,22 @@ $(document).ready(function() {
 	if($("#membership_profile_fields").length) { 
 		$("#membership_profile_fields").validate();
 	}
-	$(".change_profile_password").live("click", function(event) {
+	$('body').on('click', '.change_profile_password', function(event){		
 		show_change_profile_password_form();
 		event.preventDefault();
 	});
-	$(".cancel_change_profile_password").live("click", function(event) {
+
+	$('body').on('click', '.cancel_change_profile_password', function(event){		
 		cancel_change_profile_password();
 		event.preventDefault();
 	});
 
 	// Mail Sending >> Mass Mailing Options 
-	$(".previewBatchSendingSpeed").live("change", function(event) {
+	$('body').on('click', '.previewBatchSendingSpeed', function(event){		
 		previewBatchSendingSpeed();
 	});
 
-	$("#amazon_ses_auto_batch_settings").live("click", function(event) {
+	$('body').on('click', '#amazon_ses_auto_batch_settings', function(event){		
 		toggleManualBatchSettings();
 	});
 
@@ -912,7 +915,7 @@ $(document).ready(function() {
 	}
 	
 	// Version Check 
-	$('#check_version').live('click', function(event) {
+	$('body').on('click', '#check_version', function(event){		
 		event.preventDefault();
 		check_newest_version($('#check_version').attr("data-ver"));
 	});
@@ -979,11 +982,12 @@ $(document).ready(function() {
 			plugins_bridge_test_pop3();
 		});
 
-		$(".change_pop3_password").live("click", function(event) {
+		$('body').on('click', '.change_pop3_password', function(event){		
 			plugins_bridge_show_change_pop3_password_form();
 			event.preventDefault();
 		});
-		$(".cancel_change_pop3_password").live("click", function(event) {
+		
+		$('body').on('click', '.cancel_change_pop3_password', function(event){		
 			plugins_bridge_hide_change_pop3_password_form();
 			event.preventDefault();
 		});
@@ -1060,7 +1064,7 @@ $(document).ready(function() {
 	if ($("#plugins_mailing_monitor_default").length) {
 
 		plugins_mailing_monitor();
-		$("#mailing_monitor_button").live("click", function(event) {
+		$('body').on('click', '#mailing_monitor_button', function(event){
 			event.preventDefault();
 			plugins_mailing_monitor();
 		});
@@ -1165,7 +1169,7 @@ $(document).ready(function() {
 	}
 	// Plugins >> Password Protect Directories
 	if ($("#plugins_password_protect_directories_default").length) {
-		$("#change_password_button").live("click", function(event) {
+		$('body').on('click', '#change_password_button', function(event){
 			password_protect_directories_show_change_password_form();
 		});
 	}
@@ -1194,26 +1198,26 @@ $(document).ready(function() {
 
 	/* Global */
 	
-	$(".clear_field").live("click", function(event) {
+	$('body').on('click', '.clear_field', function(event){
 		event.preventDefault();
 		$("#" + $(this).attr("data-target")).val(''); 
 	});
 
-	$(".previous").live("click", function(event) {
+	$('body').on('click', '.previous', function(event){
 		event.preventDefault();
 		history.back();
 	});
 
-	$(".fade_me").live("click", function(event) {
+	$('body').on('click', '.fade_me', function(event){
 		$('#alertbox').effect('fade');
 		event.preventDefault();
 	});
 
-	$('.toggleCheckboxes').live("click", function(event) {
+	$('body').on('click', '.toggleCheckboxes', function(event){
 		toggleCheckboxes(
 		$(this).prop("checked"), $(this).attr("data-target_class"));
 	});
-	$('.linkToggleCheckboxes').live("click", function(event) {
+	$('body').on('click', '.linkToggleCheckboxes', function(event){
 		event.preventDefault();
 		var state = true;
 		if ($(this).attr("data-state") == "false") {
@@ -1223,11 +1227,11 @@ $(document).ready(function() {
 		state, $(this).attr("data-target_class"));
 	});
 
-	$('.toggleDivs').live("click", function(event) {
+	$('body').on('click', '.toggleDivs', function(event){
 		event.preventDefault();
 		toggleDisplay($(this).attr("data-target"));
 	});
-	$('.radio_toggleDivs').live("click", function(event) {
+	$('body').on('click', '.radio_toggleDivs', function(event){
 		toggleDisplay($(this).attr("data-target"));
 	});
 	
@@ -1236,7 +1240,7 @@ $(document).ready(function() {
 		amazon_verify_email($(this).attr("data-email"));
 	});
 
-});
+
 
 
 // Admin Menu 
@@ -3737,107 +3741,6 @@ function removeSubscriberField(form_name) {
 
 }
 
-function attachments_openKCFinder(field) {
-    window.KCFinder = {
-    	callBack: function(url) {
-			var kcfinder_upload_url = escapeRegExp($("#kcfinder_upload_url").val() + '/'); 			
-			var re = new RegExp(kcfinder_upload_url,'g');
-			var new_val = url.replace(re, ''); 
-	        $(field).html('<img src="' + $("#SUPPORT_FILES_URL").val() + '/static/images/attachment_icon.gif" />' + new_val);			
-			$("#" + $(field).attr("data-attachment")).val(new_val); 
-			$("#" + $(field).attr("data-attachment") + '_remove_button').show(); 			
-			window.KCFinder = null;
-		}
-    };
-    window.open($("#kcfinder_url").val() + '/browse.php?type=files&opener=custom', 'kcfinder_single',
-        'status=0, toolbar=0, location=0, menubar=0, directories=0, ' +
-        'resizable=1, scrollbars=0, width=800, height=600'
-    );
-}
-function escapeRegExp(str) {
-  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
-}
-
-
-
-/* core5 FileManager */
-var urlobj;
-
-function browsecore5FileManager(obj) {
-	urlobj = obj;
-	var core5_filemanager_url = $("#core5_filemanager_url").val() + '/index.html';
-	opencore5FileManager(
-	core5_filemanager_url, screen.width * 0.7, screen.height * 0.7);
-}
-
-var oWindow;
-
-function opencore5FileManager(url, width, height) {
-	var iLeft = (screen.width - width) / 2;
-	var iTop = (screen.height - height) / 2;
-	var sOptions = "toolbar=no,status=no,resizable=yes,dependent=yes";
-	sOptions += ",width=" + width;
-	sOptions += ",height=" + height;
-	sOptions += ",left=" + iLeft;
-	sOptions += ",top=" + iTop;
-	oWindow = window.open(url + '?custom_function=SetAttachmentUrl', "BrowseWindow", sOptions);
-}
-
-/* Seems like with the new ver of core5 FileManager, this needs to be called, SetUrl. Aww, well? 
-function SetAttachmentUrl(url, width, height, alt) {
-	var core5_filemanager_upload_url = escapeRegExp($("#core5_filemanager_upload_url").val() + '/');
-	core5_filemanager_upload_url + '/';
-	var re = new RegExp(core5_filemanager_upload_url, 'g');
-	var new_val = url.replace(re, '');
-	// console.log('new_val: ' + new_val);
-	var field = urlobj;
-
-	$(field).html('<img src="' + $("#SUPPORT_FILES_URL").val() + '/static/images/attachment_icon.gif" />' + new_val);
-	$("#" + $(field).attr("data-attachment")).val(new_val);
-	$("#" + $(field).attr("data-attachment") + '_remove_button').show();
-	oWindow = null;
-}
-*/
-
-
-function SetUrl(url, width, height, alt) {
-	var core5_filemanager_upload_url = escapeRegExp($("#core5_filemanager_upload_url").val() + '/');
-	core5_filemanager_upload_url + '/';
-	var re = new RegExp(core5_filemanager_upload_url, 'g');
-	var new_val = url.replace(re, '');
-	// console.log('new_val: ' + new_val);
-	var field = urlobj;
-
-	$(field).html('<img src="' + $("#SUPPORT_FILES_URL").val() + '/static/images/attachment_icon.gif" />' + new_val);
-	$("#" + $(field).attr("data-attachment")).val(new_val);
-	$("#" + $(field).attr("data-attachment") + '_remove_button').show();
-	oWindow = null;
-}
-
-
-
-
-Date.prototype.format = function(format) //author: meizz
-{
-  var o = {
-    "M+" : this.getMonth()+1, //month
-    "d+" : this.getDate(),    //day
-    "h+" : this.getHours(),   //hour
-    "m+" : this.getMinutes(), //minute
-    "s+" : this.getSeconds(), //second
-    "q+" : Math.floor((this.getMonth()+3)/3),  //quarter
-    "S" : this.getMilliseconds() //millisecond
-  }
-
-  if(/(y+)/.test(format)) format=format.replace(RegExp.$1,
-    (this.getFullYear()+"").substr(4 - RegExp.$1.length));
-  for(var k in o)if(new RegExp("("+ k +")").test(format))
-    format = format.replace(RegExp.$1,
-      RegExp.$1.length==1 ? o[k] :
-        ("00"+ o[k]).substr((""+ o[k]).length));
-  return format;
-}
-
 
 
 function datetimesetupstuff() {
@@ -3865,5 +3768,109 @@ function datetimesetupstuff() {
 	}
 }
 
+
+});
+
+
+function attachments_openKCFinder(field) {
+    window.KCFinder = {
+    	callBack: function(url) {
+			var kcfinder_upload_url = escapeRegExp(jQuery("#kcfinder_upload_url").val() + '/'); 			
+			var re = new RegExp(kcfinder_upload_url,'g');
+			var new_val = url.replace(re, ''); 
+	        jQuery(field).html('<img src="' + jQuery("#SUPPORT_FILES_URL").val() + '/static/images/attachment_icon.gif" />' + new_val);			
+			jQuery("#" + jQuery(field).attr("data-attachment")).val(new_val); 
+			jQuery("#" + jQuery(field).attr("data-attachment") + '_remove_button').show(); 			
+			window.KCFinder = null;
+		}
+    };
+    window.open(jQuery("#kcfinder_url").val() + '/browse.php?type=files&opener=custom', 'kcfinder_single',
+        'status=0, toolbar=0, location=0, menubar=0, directories=0, ' +
+        'resizable=1, scrollbars=0, width=800, height=600'
+    );
+}
+function escapeRegExp(str) {
+  return str.replace(/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g, "\\$&");
+}
+
+
+
+/* core5 FileManager */
+var urlobj;
+
+function browsecore5FileManager(obj) {
+	urlobj = obj;
+	var core5_filemanager_url = jQuery("#core5_filemanager_url").val() + '/index.html';
+	opencore5FileManager(
+	core5_filemanager_url, screen.width * 0.7, screen.height * 0.7);
+}
+
+var oWindow;
+
+function opencore5FileManager(url, width, height) {
+	var iLeft = (screen.width - width) / 2;
+	var iTop = (screen.height - height) / 2;
+	var sOptions = "toolbar=no,status=no,resizable=yes,dependent=yes";
+	sOptions += ",width=" + width;
+	sOptions += ",height=" + height;
+	sOptions += ",left=" + iLeft;
+	sOptions += ",top=" + iTop;
+	oWindow = window.open(url + '?custom_function=SetAttachmentUrl', "BrowseWindow", sOptions);
+}
+
+/* Seems like with the new ver of core5 FileManager, this needs to be called, SetUrl. Aww, well? 
+function SetAttachmentUrl(url, width, height, alt) {
+	var core5_filemanager_upload_url = escapeRegExp(jQuery("#core5_filemanager_upload_url").val() + '/');
+	core5_filemanager_upload_url + '/';
+	var re = new RegExp(core5_filemanager_upload_url, 'g');
+	var new_val = url.replace(re, '');
+	// console.log('new_val: ' + new_val);
+	var field = urlobj;
+
+	jQuery(field).html('<img src="' + jQuery("#SUPPORT_FILES_URL").val() + '/static/images/attachment_icon.gif" />' + new_val);
+	jQuery("#" + jQuery(field).attr("data-attachment")).val(new_val);
+	jQuery("#" + jQuery(field).attr("data-attachment") + '_remove_button').show();
+	oWindow = null;
+}
+*/
+
+
+function SetUrl(url, width, height, alt) {
+	var core5_filemanager_upload_url = escapeRegExp(jQuery("#core5_filemanager_upload_url").val() + '/');
+	core5_filemanager_upload_url + '/';
+	var re = new RegExp(core5_filemanager_upload_url, 'g');
+	var new_val = url.replace(re, '');
+	// console.log('new_val: ' + new_val);
+	var field = urlobj;
+
+	jQuery(field).html('<img src="' + jQuery("#SUPPORT_FILES_URL").val() + '/static/images/attachment_icon.gif" />' + new_val);
+	jQuery("#" + jQuery(field).attr("data-attachment")).val(new_val);
+	jQuery("#" + jQuery(field).attr("data-attachment") + '_remove_button').show();
+	oWindow = null;
+}
+
+
+
+
+Date.prototype.format = function(format) //author: meizz
+{
+  var o = {
+    "M+" : this.getMonth()+1, //month
+    "d+" : this.getDate(),    //day
+    "h+" : this.getHours(),   //hour
+    "m+" : this.getMinutes(), //minute
+    "s+" : this.getSeconds(), //second
+    "q+" : Math.floor((this.getMonth()+3)/3),  //quarter
+    "S" : this.getMilliseconds() //millisecond
+  }
+
+  if(/(y+)/.test(format)) format=format.replace(RegExp.$1,
+    (this.getFullYear()+"").substr(4 - RegExp.$1.length));
+  for(var k in o)if(new RegExp("("+ k +")").test(format))
+    format = format.replace(RegExp.$1,
+      RegExp.$1.length==1 ? o[k] :
+        ("00"+ o[k]).substr((""+ o[k]).length));
+  return format;
+}
 
 

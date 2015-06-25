@@ -1,4 +1,8 @@
-$(document).ready(function() {
+(function( $ ) {
+  "use strict";
+ 
+  $(function() {
+
 	if ($("#subscription_form").length) {
 		$("#subscription_form").validate({
 			debug: false,
@@ -183,5 +187,8 @@ $(document).ready(function() {
 		$("#tabs").tabs({ heightStyle: "auto" });
 	}
 	
-});
+  });
+ 
+}(jQuery));
+
 
