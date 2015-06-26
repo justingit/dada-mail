@@ -4371,7 +4371,7 @@ sub screen {
         $self->header_props( { -type => 'text/css' } );
         my $t = DADA::Template::Widgets::screen(
             {
-                -screen => 'installer-dada_mail.css',
+                -screen => 'dada_mail.css',
                 -vars   => {
 
                 },
