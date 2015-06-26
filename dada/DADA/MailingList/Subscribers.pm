@@ -1006,6 +1006,7 @@ sub filter_subscribers_w_meta {
 
         if(exists($dupe_check->{$n_address->{email}})){
             carp "already looked at: '"  . $n_address->{email} . "' - will not process twice!"; 
+            next; 
         }
         $dupe_check->{$n_address->{email}} = 1; 
         my ($status, $errors) = $self->subscription_check(
