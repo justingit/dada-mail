@@ -13,7 +13,7 @@ BEGIN {
 
 use CGI;
     $CGI::LIST_CONTEXT_WARN = 0;
-    
+
 use DADA::App;
 use DADA::App::Dispatch;
 
@@ -23,4 +23,3 @@ my $q = new CGI;
 
 my $dadamail = new DADA::App( QUERY => $q, );
    $dadamail->run();
-

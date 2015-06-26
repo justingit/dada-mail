@@ -1146,6 +1146,7 @@ sub grab_former_config_vals {
         $opt->{'template_options_include_jquery_lib'}   = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{include_jquery_lib}; 
         $opt->{'template_options_include_jqueryui_lib'} = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{include_jqueryui_lib}; 
         $opt->{'template_options_include_app_user_js'}  = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{include_app_user_js}; 
+        $opt->{'template_options_head_content_added_by'}  = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{head_content_added_by}; 
         
     }
     elsif(defined($BootstrapConfig::USER_TEMPLATE)) {
@@ -1588,6 +1589,7 @@ sub query_params_to_install_params {
       template_options_include_jquery_lib
       template_options_include_jqueryui_lib
       template_options_include_app_user_js
+      template_options_head_content_added_by
 
       configure_cache
       cache_options_SCREEN_CACHE
@@ -2197,6 +2199,7 @@ sub create_dada_config_file {
             template_options_include_jquery_lib
             template_options_include_jqueryui_lib
             template_options_include_app_user_js
+            template_options_head_content_added_by
             )
         ) { 
             $template_options_params->{$_} = $ip->{'-' . $_};
@@ -4085,52 +4088,52 @@ sub cgi_test_magic_template_diag_box {
 
 
 sub cgi_test_magic_template {
-    my $self        = shift;
-    my $just_return = shift || 0; 
-    
-    my $q    = $self->query();
+    my $self = shift;
+    my $just_return = shift || 0;
+
+    my $q = $self->query();
 
     my $template_args = {
-        template_url         => scalar $q->param('template_options_template_url'),
-        add_base_href        => scalar $q->param('template_options_add_base_href'),
-        base_href_url        => scalar $q->param('template_options_base_href_url'),
-        replace_content_from => scalar $q->param('template_options_replace_content_from'),
-        replace_id           => scalar $q->param('template_options_replace_id'),
-        replace_class        => scalar $q->param('template_options_replace_class'), 
-        add_app_css          => scalar $q->param('template_options_add_app_css'),
-        add_custom_css       => scalar $q->param('template_options_add_custom_css'),
-        custom_css_url       => scalar $q->param('template_options_custom_css_url'),
-        include_jquery_lib   => scalar $q->param('template_options_include_jquery_lib'),
-        include_jqueryui_lib => scalar $q->param('template_options_include_jqueryui_lib'),
-        include_app_user_js  => scalar $q->param('template_options_include_app_user_js'),
-    }; 
-        
+        template_url          => scalar $q->param('template_options_template_url'),
+        add_base_href         => scalar $q->param('template_options_add_base_href'),
+        base_href_url         => scalar $q->param('template_options_base_href_url'),
+        replace_content_from  => scalar $q->param('template_options_replace_content_from'),
+        replace_id            => scalar $q->param('template_options_replace_id'),
+        replace_class         => scalar $q->param('template_options_replace_class'),
+        add_app_css           => scalar $q->param('template_options_add_app_css'),
+        add_custom_css        => scalar $q->param('template_options_add_custom_css'),
+        custom_css_url        => scalar $q->param('template_options_custom_css_url'),
+        include_jquery_lib    => scalar $q->param('template_options_include_jquery_lib'),
+        include_jqueryui_lib  => scalar $q->param('template_options_include_jqueryui_lib'),
+        include_app_user_js   => scalar $q->param('template_options_include_app_user_js'),
+        head_content_added_by => scalar $q->param('template_options_head_content_added_by'),
+    };
+
     require DADA::Template::HTML;
-    my ($t_status, $t_errors, $t_tmpl) = DADA::Template::HTML::template_from_magic($template_args);
-    
-    if($just_return == 0){ 
-        
+    my ( $t_status, $t_errors, $t_tmpl ) = DADA::Template::HTML::template_from_magic($template_args);
+
+    if ( $just_return == 0 ) {
+
         my $content = DADA::Template::Widgets::_raw_screen(
             {
-                -screen   => 'installer-magic_template_content.tmpl',
+                -screen => 'installer-magic_template_content.tmpl',
             }
         );
-    
-        return 
-            DADA::Template::Widgets::screen(
-                {
-                    -data => \$t_tmpl, 
-                    -vars   => {
-                        content => $content, 
-                        SUPPORT_FILES_URL    => $Self_URL . '?flavor=screen&screen=',
-                        %{$template_args},
-                        
-                    },
-                }
-            );
+
+        return DADA::Template::Widgets::screen(
+            {
+                -data => \$t_tmpl,
+                -vars => {
+                    content           => $content,
+                    SUPPORT_FILES_URL => $Self_URL . '?flavor=screen&screen=',
+                    %{$template_args},
+
+                },
+            }
+        );
     }
-    else { 
-        return ($t_status, $t_errors, $t_tmpl); 
+    else {
+        return ( $t_status, $t_errors, $t_tmpl );
     }
 }
 

@@ -430,7 +430,8 @@ function test_magic_template() {
 		
 		'&template_options_include_jquery_lib='   + encodeURIComponent(include_jquery_lib) + 
 		'&template_options_include_jqueryui_lib=' + encodeURIComponent(include_jqueryui_lib) + 
-		'&template_options_include_app_user_js='  + encodeURIComponent(include_app_user_js),
+		'&template_options_include_app_user_js='  + encodeURIComponent(include_app_user_js) + 
+		'&template_options_head_content_added_by=' + encodeURIComponent($("#template_options_head_content_added_by option:selected").val()),
  		"magicTemplatetest", 
 		"width=640,height=480,scrollbars=yes");
 

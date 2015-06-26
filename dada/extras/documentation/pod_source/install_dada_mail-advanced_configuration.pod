@@ -243,7 +243,7 @@ Similar to using an id, you can also use a class name of an HTML element for Dad
 
 =back
 
-=head4 Include Dada Mail's own styles
+=head4 Include Dada Mail's own stylesheet
 
 Check this option to have Dada Mail style its content, and only its content, using styles set in its own included stylesheet. This is done by wrapping Dada Mail's own content with another div tag, with the id of, "Dada"
 

@@ -421,31 +421,48 @@ sub template_from_magic {
             
             my $head_ele = $root->find_by_tag_name('head');
             
+            
+            # And, let's put the css in there:
+            my $custom_css_ele = undef; 
+            if ( $args->{add_custom_css} == 1 ) {
+                 $custom_css_ele = HTML::Element->new(
+                    'link',
+                    rel   => "stylesheet",
+                    type  => "text/css",
+                    media => "screen",
+                    href  => $args->{custom_css_url},
+                );
+            }
+        
+            
+            if($args->{head_content_added_by} eq 'push'){
+                    $head_ele->push_content(
+                        HTML::Element->new(
+                            '~literal', 'text' => '<!-- tmpl_include list_template_header_code_block.tmpl -->',
+                        )
+                    );
+                    if ( $args->{add_custom_css} == 1 ) {
+                        $head_ele->push_content(
+                            $custom_css_ele
+                        );
+                    }
+            }
+            elsif($args->{head_content_added_by} eq 'unshift'){
+                $head_ele->unshift_content(
+                    HTML::Element->new(
+                        '~literal', 'text' => '<!-- tmpl_include list_template_header_code_block.tmpl -->',
+                    )
+                );
+                if ( $args->{add_custom_css} == 1 ) {
+                    $head_ele->unshift_content(
+                        $custom_css_ele
+                    );
+                }
+            }
+            
             if($args->{'add_base_href'} == 1) { 
                 my $base_href_ele = HTML::Element->new( 'base', 'href' => $args->{base_href_url}, );
                    $head_ele->unshift_content($base_href_ele);
-            }
-            
-            # And, let's put the css in there:
-                       # unshift_content
-            $head_ele->push_content(
-                HTML::Element->new(
-                    '~literal', 'text' => '<!-- tmpl_include list_template_header_code_block.tmpl -->',
-                )
-            );
-
-            if ( $args->{add_custom_css} == 1 ) {
-
-                # Custom css:
-                $head_ele->push_content(
-                    HTML::Element->new(
-                        'link',
-                        rel   => "stylesheet",
-                        type  => "text/css",
-                        media => "screen",
-                        href  => $args->{custom_css_url},
-                    )
-                );
             }
 
             my $found_id_tag = 0;
@@ -482,7 +499,7 @@ sub template_from_magic {
 
                 # push to 0
 
-                if ( $args->{add_app_css} == 1 ) {
+                #if ( $args->{add_app_css} == 1 ) {
                     $replace_tag->push_content(
                         HTML::Element->new(
                             'div', id => "Dada"
@@ -492,14 +509,14 @@ sub template_from_magic {
                             )
                           )
                     );
-                }
-                else {
-                    $replace_tag->push_content(
-                        HTML::Element->new(
-                            '~literal', 'text' => '<!-- tmpl_include list_template_body_code_block.tmpl -->'
-                        )
-                    );
-                }
+                #}
+                #else {
+                #    $replace_tag->push_content(
+                #        HTML::Element->new(
+                #            '~literal', 'text' => '<!-- tmpl_include list_template_body_code_block.tmpl -->'
+                #        )
+                #    );
+                #}
             }
             else {
 

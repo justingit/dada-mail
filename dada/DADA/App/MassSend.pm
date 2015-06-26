@@ -641,7 +641,7 @@ sub construct_from_url {
 
     my $proxy = undef;
     if ( defined( $draft_q->param('proxy') ) ) {
-        $draft_q->param('proxy');
+        $draft_q->param('proxy'); # the heck does that do?
     }
 
     my %headers = ();
@@ -659,7 +659,15 @@ sub construct_from_url {
             $headers{$h} = strip( $draft_q->param($h) );
         }
     }
-
+    
+    if($draft_q->param('subject_from') eq 'title_tag') { 
+        
+       my $url_subject = $self->subject_from_title_tag($draft_q); 
+       if(defined($url_subject)){ 
+            $headers{Subject} = $url_subject; 
+        }
+    }
+    
     my $mailHTML = new DADA::App::MyMIMELiteHTML(
         remove_jscript => $remove_javascript,
         'IncludeType'  => $url_options,
@@ -817,6 +825,51 @@ sub construct_from_url {
 
     return ( 1, undef, $entity, $fm );
 
+}
+
+sub subject_from_title_tag {
+    my $self       = shift; 
+    my $draft_q    = shift; 
+    my $html; 
+    
+    if ( $draft_q->param('content_from') eq 'url' ) {
+        my ($src, $res) = grab_url($draft_q->param('url') );
+        if( $res->is_success){ 
+            $html = $src; 
+        }
+        else { 
+            return undef; 
+        }
+    }
+    else { 
+        $html = $draft_q->param('html_message_body');
+    }
+    try {
+         
+         require HTML::TreeBuilder; 
+         my $root = HTML::TreeBuilder->new(
+             ignore_unknown      => 0, 
+             no_space_compacting => 1,
+             store_comments      => 1, 
+         );
+         $root->parse($html);
+         $root->eof();    # done parsing for this tree
+         $root->elementify();
+         
+         require HTML::Element;
+
+         my $title_ele = $root->find_by_tag_name('title');
+         return $title_ele->as_text; 
+     } catch { 
+         # aaaaaand if that does work, regex to the rescue!
+         my ($title) = $html =~ m/<title>([a-zA-Z\/][^>]+)<\/title>/si;
+         if(defined($title)){ 
+             return $title; 
+         }
+         else { 
+             return undef; 
+        }
+    };
 }
 
 sub send_url_email {
