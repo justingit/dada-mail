@@ -579,26 +579,24 @@ $TEMPLATE_OPTIONS //= {
                 template_url => undef,
             },
             magic_options  => { 
-                template_url         => undef, 
-                add_base_href        => 0,
-                base_href_url        => undef, 
-                replace_content_from => undef,
-                replace_id           => undef, 
-                replace_class        => undef, 
-                add_app_css          => 0,
-                add_custom_css       => 0,
-                custom_css_url       => undef, 
-                include_jquery_lib   => 1,
-                include_jqueryui_lib => 1,
-                include_app_user_js  => 1,
+                template_url          => undef, 
+                add_base_href         => 0,
+                base_href_url         => undef, 
+                replace_content_from  => undef,
+                replace_id            => undef, 
+                replace_class         => undef, 
+                add_app_css           => 0,
+                add_custom_css        => 0,
+                custom_css_url        => undef, 
+                include_jquery_lib    => 1,
+                include_jqueryui_lib  => 1,
+                include_app_user_js   => 1,
                 head_content_added_by => 'push', 
-                
-                
             }
     }, 
 };
 
-
+# Mostly a noop these days... 
 %BACKUP_HISTORY = (
     settings  => 3,
     archives  => 3,
@@ -1824,8 +1822,8 @@ $ATTACHMENT_TEMPFILE //= 0;
 
 $MAIL_VERP_SEPARATOR //= '-';
 
-$VERSION = 8.2.0;
-$VER     = '8.2.0 Stable 06/17/15';
+$VERSION = 8.3.0;
+$VER     = '8.3.0 Stable 06/26/15';
 
 #
 #

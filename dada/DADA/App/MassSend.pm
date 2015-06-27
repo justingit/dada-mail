@@ -827,50 +827,60 @@ sub construct_from_url {
 
 }
 
+
+
+
 sub subject_from_title_tag {
-    my $self       = shift; 
-    my $draft_q    = shift; 
-    my $html; 
-    
+
+    my $self    = shift;
+    my $draft_q = shift;
+    my $html;
+
     if ( $draft_q->param('content_from') eq 'url' ) {
-        my ($src, $res) = grab_url($draft_q->param('url') );
-        if( $res->is_success){ 
-            $html = $src; 
+        my ( $src, $res ) = grab_url( $draft_q->param('url') );
+        if ( $res->is_success ) {
+            $html = $src;
         }
-        else { 
-            return undef; 
+        else {
+            carp 'couldn\'t fetch url: ' . $draft_q->param('url');
+            return undef;
         }
     }
-    else { 
+    else {
         $html = $draft_q->param('html_message_body');
     }
     try {
-         
-         require HTML::TreeBuilder; 
-         my $root = HTML::TreeBuilder->new(
-             ignore_unknown      => 0, 
-             no_space_compacting => 1,
-             store_comments      => 1, 
-         );
-         $root->parse($html);
-         $root->eof();    # done parsing for this tree
-         $root->elementify();
-         
-         require HTML::Element;
+        
+        require HTML::Element;
+        require HTML::TreeBuilder;
+        
+        my $root = HTML::TreeBuilder->new(
+            ignore_unknown      => 0,
+            no_space_compacting => 1,
+            store_comments      => 1,
+        );
+        
+        $root->parse($html);
+        $root->eof();
+        $root->elementify();
 
-         my $title_ele = $root->find_by_tag_name('title');
-         return $title_ele->as_text; 
-     } catch { 
-         # aaaaaand if that does work, regex to the rescue!
-         my ($title) = $html =~ m/<title>([a-zA-Z\/][^>]+)<\/title>/si;
-         if(defined($title)){ 
-             return $title; 
-         }
-         else { 
-             return undef; 
+        my $title_ele = $root->find_by_tag_name('title');
+        return $title_ele->as_text;
+    }
+    catch {
+        # aaaaaand if that does work, regex to the rescue!
+        my ($title) = $html =~ m/<title>([a-zA-Z\/][^>]+)<\/title>/si;
+        if ( defined($title) ) {
+            return $title;
+        }
+        else {
+            return undef;
         }
     };
 }
+
+
+
 
 sub send_url_email {
 
