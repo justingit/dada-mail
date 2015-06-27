@@ -8,7 +8,7 @@
 
 =head2 Summary
 
-This is a minor feature release to v8.2.0, related to features first introduced in .the v8 series of Dada Mail
+This is a feature release to v8.2.0, relating to features first introduced in the v8 series of Dada Mail
 
 =head2 Features
 
