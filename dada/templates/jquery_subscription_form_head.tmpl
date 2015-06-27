@@ -1,5 +1,5 @@
 
-<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/jquery-1.8.2.min.js"></script>
+<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/jquery-1.11.3.min.js"></script>
 
 <link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/colorbox/colorbox.css">
 <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/colorbox/jquery.colorbox-min.js"></script>
@@ -11,14 +11,15 @@ $(document).ready(function() {
     
                 var targetDiv = '#dada_mail_modal_subscription_form_container';    
                 /* Initialize: */
-                $(targetDiv).DadaMail(
-                        {
-                            targetForm: 'dada_mail_modal_subscription_form'
-                        }
-                )
+                if($(targetDiv).length) { 
+                    $(targetDiv).DadaMail(
+                            {
+                                targetForm: 'dada_mail_modal_subscription_form'
+                            }
+                    )
         
-                /* Create the form: */
-                $(targetDiv).DadaMail('Modal');
-                
+                    /* Create the form: */
+                    $(targetDiv).DadaMail('Modal');
+                }
         });
 </script>

@@ -202,18 +202,18 @@
     <ul> 
         <!-- tmpl_if expr="profile_feature_login == 1" -->
             <li>
-                <a href="#profile_login">Login</a>
+                <a href="<!-- tmpl_var WHOLE_URL -->#profile_login">Login</a>
             </li>
         <!-- /tmpl_if -->
         
         <!-- tmpl_if expr="profile_feature_password_reset == 1" --> 
             <li>
-                <a href="#profile_password_reset">Reset Password</a>
+                <a href="<!-- tmpl_var WHOLE_URL -->#profile_password_reset">Reset Password</a>
             </li>        
         <!-- /tmpl_if -->
         <!-- tmpl_if expr="profile_feature_register == 1" -->
             <li>
-                <a href="#profile_register">Register</a>
+                <a href="<!-- tmpl_var WHOLE_URL -->#profile_register">Register</a>
             </li>
         <!-- /tmpl_if -->
     </ul>

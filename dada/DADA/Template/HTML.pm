@@ -526,6 +526,7 @@ sub template_from_magic {
             $status  = 1;
             my $tmpl = $root->as_HTML( undef, '  ' );
             $root->delete;
+            
             return ( $status, $errors, $tmpl );
         }
         catch {
@@ -749,10 +750,10 @@ sub list_template {
         add_app_css          => 1,
     }; 
     
-    warn q{$args{-Use_Custom}} . $args{-Use_Custom};
-    warn q{$DADA::Config::TEMPLATE_OPTIONS->{user}->{enabled}} . $DADA::Config::TEMPLATE_OPTIONS->{user}->{enabled}; 
-    warn q{$DADA::Config::TEMPLATE_OPTIONS->{user}->{mode}} . $DADA::Config::TEMPLATE_OPTIONS->{user}->{mode}; 
-    warn q{$using_default_template} . $using_default_template; 
+#    warn q{$args{-Use_Custom}} . $args{-Use_Custom};
+#    warn q{$DADA::Config::TEMPLATE_OPTIONS->{user}->{enabled}} . $DADA::Config::TEMPLATE_OPTIONS->{user}->{enabled}; 
+#    warn q{$DADA::Config::TEMPLATE_OPTIONS->{user}->{mode}} . $DADA::Config::TEMPLATE_OPTIONS->{user}->{mode}; 
+#    warn q{$using_default_template} . $using_default_template; 
     
     if(
               $args{-Use_Custom} == 1
@@ -760,7 +761,7 @@ sub list_template {
            && $DADA::Config::TEMPLATE_OPTIONS->{user}->{mode} eq 'magic'
            && $using_default_template == 1
            ) {
-               warn 'using magic header params'; 
+#               warn 'using magic header params'; 
                $header_options = $DADA::Config::TEMPLATE_OPTIONS->{user}->{magic_options};
     }
     
@@ -799,7 +800,7 @@ sub list_template {
     
      my $content_tag = quotemeta('<!-- tmpl_var content -->');
      if ( $list_template !~ m/$content_tag/ ) {
-          warn 'can\'t find content tag in list template'; 
+          # warn 'can\'t find content tag in list template'; 
      }
     
     

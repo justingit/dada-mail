@@ -1848,18 +1848,6 @@ sub _depersonalize_mlm_template {
 			og => '<!-- tmpl_var list_subscribe_link -->',
 			re => '<!-- tmpl_var PROGRAM_URL -->/s/<!-- tmpl_var list_settings.list -->', 
 		},
-#		{
-#			og => '<!-- tmpl_var list_unsubscribe_link -->', 
-#			re => '<!-- tmpl_var PROGRAM_URL -->/u/<!-- tmpl_var list_settings.list -->', 
-#		}, 
-		{
-#			og => '<!-- tmpl_var PROGRAM_URL -->/profile_login/<!-- tmpl_var subscriber.email_name -->/<!-- tmpl_var subscriber.email_domain -->/', 
-#			re => '<!-- tmpl_var PROGRAM_URL -->/profile_login/', 
-		},
-#		{
-#			og => 'Using the address: <!-- tmpl_var subscriber.email -->', 
-#			re => '', 
-#		}
 	];
 	for my $tag(@$tags) { 
 		my $og = quotemeta($tag->{og});

@@ -385,7 +385,7 @@ Dada Mail comes with a jQuery Plugin, that can be used to create a subscription 
 
 To use the jQuery plugin, you'll first need to load the plugin's .js file, along with other .js files it requires, in the head of your document: 
 
-	<script src="http://example.com/dada_mail_support_files/static/javascripts/jquery-1.8.2.min.js"></script>
+	<script src="http://example.com/dada_mail_support_files/static/javascripts/jquery-1.11.3.min.js"></script>
 	
 	<link rel="stylesheet" href="http://example.com/dada_mail_support_files/static/css/colorbox/colorbox.css">
 	<script src="http://example.com/dada_mail_support_files/static/javascripts/colorbox/jquery.colorbox-min.js"></script>
@@ -393,7 +393,7 @@ To use the jQuery plugin, you'll first need to load the plugin's .js file, along
 	<script src="http://example.com/dada_mail_support_files/static/javascripts/jquery.dadamail.js"></script>
 
 
-B<jquery.dadamail.js> is the jQuery plugin itself, but it does require B<jQuery> to be loaded (in our case, it's called, B<jquery-1.8.2.min.js>), as well the Colorbox jQuery plugin (L<http://www.jacklmoore.com/colorbox/>). 
+B<jquery.dadamail.js> is the jQuery plugin itself, but it does require B<jQuery> to be loaded (in our case, it's called, B<jquery-1.11.3.min.js>), as well the Colorbox jQuery plugin (L<http://www.jacklmoore.com/colorbox/>). 
 
 All these are bundled with Dada Mail, but you may use your own copies, if you'd like. To change the design of the modal window that pops up, you'll want to work with Colorbox's own .css file. 
 
@@ -406,17 +406,18 @@ The jQuery plugin has two "methods" you may use.
 		var targetDiv = '#mydiv';
 	
 		/* Initialize: */
-		$(targetDiv).DadaMail(
-			{
-				DadaMailURL: 'http://example.com/cgi-bin/dada/mail.cgi', 
-				list: 'yourlist', 
-				modal: 1
-			}
-		)
+		if($(targetDiv).length) { 
+    		$(targetDiv).DadaMail(
+    			{
+    				DadaMailURL: 'http://example.com/cgi-bin/dada/mail.cgi', 
+    				list: 'yourlist', 
+    				modal: 1
+    			}
+    		)
 	
-		/* Create the form: */
-		$(targetDiv).DadaMail('CreateSubscribeForm');
-		
+    		/* Create the form: */
+    		$(targetDiv).DadaMail('CreateSubscribeForm');
+		}
 	}); 
 
 B<CreateSubscribeForm> will place a subscription form in a div with the id of, B<mydiv>
@@ -461,15 +462,16 @@ B<JavaScript:>
 		var targetDiv = '#mydiv';
 		
 		/* Initialize: */
-		$(targetDiv).DadaMail(
-			{
-				targetForm: 'myForm'
-			}	
-		);
+		if($(targetDiv).length) { 
+            $(targetDiv).DadaMail(
+    			{
+    				targetForm: 'myForm'
+    			}	
+    		);
 		
-		/* Control the form: */
-		$(targetDiv).DadaMail('Modal');
-		
+    		/* Control the form: */
+    		$(targetDiv).DadaMail('Modal');
+		}
 	});
 
 B<Your Subscription Form:>

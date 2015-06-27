@@ -12062,6 +12062,13 @@ sub profile_login {
     my $self = shift;
     my $q    = $self->query();
 
+    my $whole_url = $q->url( -path_info => 1, -query =>0 );
+    if(exists($ENV{QUERY_STRING})) { 
+        if(length($ENV{QUERY_STRING}) > 0) { 
+            $whole_url .= '?' . $ENV{QUERY_STRING};
+        }
+    }
+    
     if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1
         || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
     {
@@ -12136,6 +12143,7 @@ sub profile_login {
                         CAPTCHA_string               => $CAPTCHA_string,
                         welcome                      => scalar $q->param('welcome')                      || '',
                         removal                      => scalar $q->param('removal')                      || '',
+                        WHOLE_URL => $whole_url, 
                         %{ DADA::Profile::feature_enabled() }
                     },
 
@@ -12187,7 +12195,7 @@ sub profile_login {
             $q->param( 'errors',              $p_errors );
             $q->param( 'process',             0 );
             $q->param( 'error_profile_login', 1 );
-            $self->profile_login();
+            return $self->profile_login();
         }
     }
 
@@ -12243,7 +12251,7 @@ sub profile_register {
         }
         $q->param( 'errors',                 $p_errors );
         $q->param( 'error_profile_register', 1 );
-        $self->profile_login();
+        return $self->profile_login();
 
     }
     else {
@@ -12318,6 +12326,14 @@ sub profile {
     my $self = shift;
     my $q    = $self->query();
 
+    my $whole_url = $q->url( -path_info => 1, -query =>0 );
+    if(exists($ENV{QUERY_STRING})) { 
+        if(length($ENV{QUERY_STRING}) > 0) { 
+            $whole_url .= '?' . $ENV{QUERY_STRING};
+        }
+    }
+
+
     if (   $DADA::Config::PROFILE_OPTIONS->{enabled} != 1
         || $DADA::Config::SUBSCRIBER_DB_TYPE !~ m/SQL/ )
     {
@@ -12371,9 +12387,13 @@ sub profile {
             $self->header_props( -url => $DADA::Config::PROGRAM_URL . '?flavor=profile&edit=1' );
         }
         elsif ( $q->param('process') eq 'change_password' ) {
-
+            
             if ( !DADA::Profile::feature_enabled('change_password') == 1 ) {
+                warn 'feature disabled.'; 
                 return $self->default();
+            }
+            else { 
+#                warn 'feature enabled!'; 
             }
 
             my $new_password       = xss_filter( scalar $q->param('password') );
@@ -12389,7 +12409,6 @@ sub profile {
 
                 require DADA::Profile::Session;
                 my $prof_sess = DADA::Profile::Session->new->logout;
-                $self->profile_login();
 
                 # DEV: This is going to get repeated quite a bit..
                 require DADA::Profile::Htpasswd;
@@ -12400,19 +12419,22 @@ sub profile {
                     }
                 }
                 #
-
+                return $self->profile_login();
+                
             }
             else {
                 $q->param( 'errors',                 1 );
                 $q->param( 'errors_change_password', 1 );
                 $q->delete('process');
-                profile();
+                return $self->profile();
             }
 
         }
         elsif ( $q->param('process') eq 'update_email' ) {
 
             if ( !DADA::Profile::feature_enabled('update_email_address') == 1 ) {
+                 
+                
                 return $self->default();
             }
 
@@ -12467,10 +12489,12 @@ sub profile {
                 $q->param( 'process',             0 );
                 $q->param( 'errors_update_email', 1 );
                 $q->param( 'updated_email',       $updated_email );
-                profile();
+                return $self->profile();
             }
             else {
 
+                 
+                
                 $prof->confirm_update_profile_email( { -updated_email => $updated_email, } );
 
                 my $info = $prof->get( { -dotted => 1 } );
@@ -12510,8 +12534,8 @@ sub profile {
 
                 $q->param( 'flavor',  'profile_login' );
                 $q->param( 'removal', 1 );
-
-                $self->profile_login();
+                
+                return $self->profile_login();
             }
         }
         elsif ( $q->param('process') eq 'profile_delivery_preferences' ) {
@@ -12640,6 +12664,7 @@ sub profile {
                         gravators_enabled     => $DADA::Config::PROFILE_OPTIONS->{gravatar_options}->{enable_gravators},
                         gravatar_img_url      => gravatar_img_url( { -email => $email, } ),
                         protected_directories => $protected_directories,
+                        WHOLE_URL => $whole_url, 
                         %{ DADA::Profile::feature_enabled() },
 
                     }
@@ -12651,7 +12676,7 @@ sub profile {
     else {
         $q->param( 'error_profile_login', 1 );
         $q->param( 'errors', ['not_logged_in'] );
-        $self->profile_login();
+        return $self->profile_login();
     }
 
 }
@@ -12753,7 +12778,7 @@ sub profile_reset_password {
                     $q->param( 'process',        1 );
 
                     # and just called the subroutine itself. Hazzah!
-                    $self->profile_login();
+                    return $self->profile_login();
 
                     # Go home, kiss the wife.
                 }
@@ -12769,7 +12794,7 @@ sub profile_reset_password {
                 }
                 $q->param( 'error_profile_reset_password', 1 );
                 $q->param( 'errors',                       $p_errors );
-                $self->profile_login();
+                return $self->profile_login();
             }
         }
         else {
@@ -12796,7 +12821,7 @@ sub profile_reset_password {
                 $q->param( 'error_unknown_user',           1 );
                 $q->param( 'errors', ['unknown_user'] );
                 $q->param( 'email', $reset_email );
-                $self->profile_login();
+                return $self->profile_login();
             }
         }
     }

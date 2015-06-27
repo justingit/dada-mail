@@ -1377,7 +1377,9 @@ sub _is_integer {
 
 sub feature_enabled { 	
 	#my $self = shift; 
-	my $feature || undef; 
+	my $feature = shift || undef; 
+	
+	warn '$feature:' . $feature; 
 	my $enabled = $DADA::Config::PROFILE_OPTIONS->{features}; 
 
 
