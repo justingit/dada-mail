@@ -4,7 +4,53 @@
 
 =head1 Dada Mail Changelog for v8.x
 
-=head2 8.2.0
+=head1 8.3.0
+
+=head2 Summary
+
+This is a minor feature release to v8.2.0, related to features first introduced in .the v8 series of Dada Mail
+
+=head2 Features
+
+=head3 Magic User Templates Enhancements
+
+We've added I<four> new options, when creating your Magic User Templates and are there to help with compatibility with your already existing site's design. 
+
+These four options control how Dada Mail inserts its own Javascript into the template. Since it's basing the template off your already existing site design it's possible that some of the JavaScript libraries required, like jQuery, are already included within your page. If so, there's no need to add them again - doing so could potentially disrupt functionality on your site or inadvertainly change the design of your page. 
+
+More can be learned about Magic User Templates in Dada Mail's documentation about all the Advanced Installation Configuration options, that are available in Pro Dada: 
+
+L<http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Configure-Global-Template-Options>
+
+=head3 Send a Webpage: grab the Subject of a message, from the Title of the Webpage
+
+Rather than setting the Subject of a message manually when sending a webpage, you can tell Dada Mail to use the title of the webpage as the Subject of the message. 
+
+This can be used to easily have a dynamic message subject, for recurring scheduled mass mailings. 
+
+Look for this feature in the B<Mass Mailing - Send a Webpage> screen
+
+=head2 Bugfixes
+
+=head3  Archived message file attachments cannot always be downloaded 
+
+L<https://github.com/justingit/dada-mail/issues/509>
+
+=head3  Installer: incorrect javasript filename being called
+
+L<https://github.com/justingit/dada-mail/issues/510>
+
+=head3  List Invitations: Multiple invites are allowed to be sent to the same address
+
+L<https://github.com/justingit/dada-mail/issues/511>
+ 
+=head2 Changes
+
+=head3 jQuery and jQuery Libraries updated
+
+Dada Mail relies on jQuery and many independent libraries to enhance its functionalities. We've upgraded jQuery to v1.11.3, as well as updating the Colorbox plugin to v1.6.1. This should help with compatibility, when using Dada Mail's Magic User Templates feature. 
+
+=head1 8.2.0
 
 =head2 Features
 
@@ -28,7 +74,7 @@ L<https://github.com/justingit/dada-mail/issues/508>
 
 L<https://github.com/justingit/dada-mail/issues/507>
 
-=head2 8.1.0
+=head1 8.1.0
 
 =head2 Summary
 
@@ -42,7 +88,7 @@ Magic Templates allow you to simply set a URL to fetch a webpage, which will the
 
 L<http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Configure-Global-Template-Options>
 
-=head2 8.0.3
+=head1 8.0.3
 
 =head2 Summary
 
@@ -90,7 +136,7 @@ L<https://github.com/justingit/dada-mail/issues/496>
 
 L<https://github.com/justingit/dada-mail/issues/495>
 
-=head2 8.0.2
+=head1 8.0.2
 
 =head2 Summary
 
@@ -112,7 +158,7 @@ Advanced Options to set the Confirmation Token expiration date were not being wr
 
 L<https://github.com/justingit/dada-mail/issues/492>
 
-=head2 8.0.1
+=head1 8.0.1
 
 =head2 Summary
 

@@ -223,7 +223,42 @@ Creating a user template magically works by giving Dada Mail a URL to base the t
 
 Since you'll probably be pulling the source of the template from a different location than where Dada Mail is installed, you'll probably need to set a base href tag to the beginning of the HTML. Check this option, then fill out what the base href URL should be, below. 
 
-=head4 Replace content from the: body tag/css id:/css class:
+=head4 Place Pro Dada's head content before/after existing content. 
+
+This controls where Dada Mail places its head content - links to the javascript libraries and css files it uses. Depending on how your current page is coded, you may want to place Dada Mail's head content before, or after what's already there. 
+
+=head3 Stylesheet Options
+
+=head4 Include Dada Mail's own stylesheet
+
+Check this option to have Dada Mail style its content, and only its content, using styles set in its own included stylesheet. This is done by wrapping Dada Mail's own content with another div tag, with the id of, "Dada"
+
+=head4 Include a custom stylesheet
+
+Check this option, and give the URL of a custom stylesheet. This option works well in conjunction with the previous option. Say, you want to override the typeface used within Dada Mail's content, but don't want to change Dada Mail's css file. For clarity, we'll work with just the, C<p> tag. In your custom stylesheet, you would add a new entry: 
+
+    #Dada p { 
+        /* your new styles here! */ 
+    }
+
+=head3 Javascript Options
+
+Dada Mail relies on some JavaScript libraries to enhance its user experience. 
+These libraries aren't strictly required to run Dada Mail, and sometimes disabling them give you a better user experience, when using Magic Templates: 
+
+=head4 Include a Copy of jQuery (v1.11.3)  
+
+Keep this option checked, if your site's design doesn't use jQuery, but uncheck it, if a jQuery library is already being utilized. jQuery is used in almost every Wordpress installation, so if you're basing your user template off of a Wordpress design, uncheck this! 
+
+=head4 Include a Copy of jQuery UI (v1.9.1) 
+
+Similar to jQuery, Dada Mail uses the jQuery UI library as well. If this is already loaded, uncheck this option
+
+=head4 Include Dada Mail's JavaScript User-Facing Enhancements 
+
+Dada Mail's other collection of Javascript libraries rely on these first two. If you experience problems with Dada Mail's functionality, you may want to disable them as well. Dada Mail's user-facing features should all gracefully degrade, if the Javascript they rely on isn't available. 
+ 
+=head3 Place Pro Dada's body content inside the:
 
 Dada Mail will replace already existing content it finds, with Dada Mail's own content. But first, it needs to know where to find that content. Dada Mail supports finding the right place in three ways. 
 
@@ -233,27 +268,15 @@ Dada Mail will replace already existing content it finds, with Dada Mail's own c
 
 The first is the most basic: it'll just replace all the content found in the body of your HTML doc. This is most likely not what you want to do, but can be a way to easily have Dada Mail inherit some of the styles of your website. 
 
-=item * css id
+=item * tag with css id
 
 The second way is the most specific, and it's what we recommend. Give Dada Mail the id of an HTML element, and Dada Mail will only replace the content within that element. 
 
-=item * css class
+=item * tag with css class
 
 Similar to using an id, you can also use a class name of an HTML element for Dada Mail to replace content with. The problem of using a class is that id's are supposed to be unique in an HTML document; classes are not. But, some layouts are created without using id's at all. In these cases, you still have the option to use a class name.
 
 =back
-
-=head4 Include Dada Mail's own stylesheet
-
-Check this option to have Dada Mail style its content, and only its content, using styles set in its own included stylesheet. This is done by wrapping Dada Mail's own content with another div tag, with the id of, "Dada"
-
-Include a custom stylesheet:
-
-Check this option, and give the URL of a custom stylesheet. This option works well in conjunction with the previous option. Say, you want to override the typeface used within Dada Mail's content, but don't want to change Dada Mail's css file. For clarity, we'll work with just the, C<p> tag. In your custom stylesheet, you would add a new entry: 
-
-    #Dada p { 
-        /* your new styles here! */ 
-    }
 
 =head3 Test Your User Template
 
