@@ -8,17 +8,17 @@
 
 =head2 Summary
 
-This is a feature release to v8.2.0, relating to features first introduced in the v8 series of Dada Mail
+This is a feature release, relating to features first introduced in the v8 series of Dada Mail. We're building upon those features, and making them more useful. 
 
 =head2 Features
 
 =head3 Magic User Templates Enhancements
 
-We've added I<four> new options, when creating your Magic User Templates and are there to help with compatibility with your already existing site's design. 
+We've added I<four> new options, when creating your Magic User Templates. They're there to help with compatibility with your already existing site design. 
 
 These four options control how Dada Mail inserts its own Javascript into the template. Since it's basing the template off your already existing site design it's possible that some of the JavaScript libraries required, like jQuery, are already included within your page. If so, there's no need to add them again - doing so could potentially disrupt functionality on your site or inadvertainly change the design of your page. 
 
-More can be learned about Magic User Templates in Dada Mail's documentation about all the Advanced Installation Configuration options, that are available in Pro Dada: 
+More can be learned about Magic User Templates in Dada Mail's documentation on Advanced Installation Configuration options in the Dada Mail Installer. These options are available in Pro Dada: 
 
 L<http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html#Configure-Global-Template-Options>
 
@@ -26,7 +26,7 @@ L<http://dadamailproject.com/d/install_dada_mail-advanced_configuration.pod.html
 
 Rather than setting the Subject of a message manually when sending a webpage, you can tell Dada Mail to use the title of the webpage as the Subject of the message. 
 
-This can be used to easily have a dynamic message subject, for recurring scheduled mass mailings. 
+This can be used to easily have a dynamic message subject, when sending out a recurring scheduled mass mailing. 
 
 Look for this feature in the B<Mass Mailing - Send a Webpage> screen
 
@@ -48,7 +48,7 @@ L<https://github.com/justingit/dada-mail/issues/511>
 
 =head3 jQuery and jQuery Libraries updated
 
-Dada Mail relies on jQuery and many independent libraries to enhance its functionalities. We've upgraded jQuery to v1.11.3, as well as updating the Colorbox plugin to v1.6.1. This should help with compatibility, when using Dada Mail's Magic User Templates feature. 
+Dada Mail relies on jQuery and many independent jquery plugins to enhance its user experience. We've upgraded jQuery to v1.11.3, as well as updating the Colorbox plugin to v1.6.1. This should help with compatibility when using Dada Mail's Magic User Templates feature. 
 
 =head1 8.2.0
 
