@@ -1823,7 +1823,7 @@ $ATTACHMENT_TEMPFILE //= 0;
 $MAIL_VERP_SEPARATOR //= '-';
 
 $VERSION = 8.3.0;
-$VER     = '8.3.0 Stable 06/26/15';
+$VER     = '8.3.0 Stable 06/29/15';
 
 #
 #
