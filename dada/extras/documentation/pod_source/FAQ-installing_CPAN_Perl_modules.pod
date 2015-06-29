@@ -4,22 +4,23 @@
 
 =head1 Installing CPAN Perl Modules
 
-Many of Dada Mail's most advanced features rely on additional code libraries, called B<CPAN Perl Modules> to be installed and available on the web server that Dada Mail runs on. These features are usually entirely optional, so Dada Mail will run just fine without them, but your experiene will be enhanced if they are available. 
+Many of Dada Mail's most advanced features rely on additional code libraries, called B<CPAN Perl Modules> to be installed and available on the web server that Dada Mail runs on. These features are usually entirely optional, meaning Dada Mail will run just fine without them, but your experiene will be enhanced if they are available. 
 
-Usually, if a feature is unavailable because of a missing CPAN Perl module, there will be an alert either in the included Dada Mail Installer, where you would initially configure this feature; or from within the list control panel, where you would enable the feature. 
+Usually, if a feature is unavailable because of a missing CPAN Perl module, there will be an alert either in the included Dada Mail Installer, where you would initially configure this feature; or from within the list control panel, where you would enable/work the feature. 
 
-Dada Mail does already ship with many included CPAN Perl modules, but it can't ship with all of them, as they could potentially need additional configuration, a dependency outside of Dada Mail's and Perl's immediate ecosystem, or compilation. 
+Dada Mail does already ship with many included CPAN Perl modules, but it can't ship with all of them, as they could potentially need additional configuration, a dependency outside of Dada Mail's and Perl's immediate ecosystem, or code compilation. 
 
 A fairly exhaustive list of all the CPAN Perl Modules Dada Mail ships with, as well as optional modules you may install for additional features can be found here: 
 
 L<http://dadamailproject.com/d/DadaMail.pm.html>
 
-We try to keep this list up-to-date, but other modules for optional features may be required.
+We try to keep this list up-to-date, but other modules for optional features may be required, that haven't yet been added to this list.
 
 In this FAQ, we're going to focus on using the cPanel Perl Module Installer, which may be available to you, if you're running a hosting account powered by cPanel.  
 
-If you're not, you may have to ask your hosting support to install these modules. If you have full access to your webserver, the tradional ways of installing CPAN Perl modules will work just fine for you - either using a package manager released by the vendor of your operating system, or by using the C<cpan> or C<cpanm> command line tools. It's a little trickier, but certainly not impossible, to install Perl module without root privileges, but you'll need access to the command line. Some resources: 
+If you're not, you may have to ask your hosting support to install these modules. If you have full access to your webserver, the tradional ways of installing CPAN Perl modules will work just fine for you - either using a package manager released by the vendor of your operating system, or by using the C<cpan> or C<cpanm> command line tools. It's a little trickier, but certainly not impossible, to install Perl module without root privileges, but you'll need access to the command line. 
 
+Some resources: 
 
 L<http://perl-begin.org/topics/cpan/life-with-cpan/non-root/>
 
@@ -29,19 +30,18 @@ L<http://stackoverflow.com/questions/2980297/how-can-i-use-cpan-as-a-non-root-us
 
 =head1 Using the cPanel Perl Module Installer
 
-In this example, we're going to install a CPAN Perl Module called, C<DateTime::Event::Recurrence>. This module is required to be installed, if you want to have recurring scheduled mass mailings (one-time scheduled mass mailings won't need it).
+In this example, we're going to install a CPAN Perl Module called, C<DateTime::Event::Recurrence>. This module is required to be installed if you want to have recurring scheduled mass mailings (one-time scheduled mass mailings don't require this module).
 
 =begin html
 
 <p style="text-align:center">
 <img src="http://dadamailproject.com/images/docs/cpanel_perl_modules-require_datetime.jpg" width="720" height="537" style="border:1px solid black" /><br /> 
-<em></em> 
+<em>Recurring Scheduled Mass Mailings disabled, without the required CPAN Perl Module</em> 
 </p>
 
 =end html
 
-
-Login into your cPanel. Search for, B<Perl Modules> 
+Log into your cPanel. Search for, B<Perl Modules> 
 
 =begin html
 
@@ -54,7 +54,7 @@ Login into your cPanel. Search for, B<Perl Modules>
 
 Click this icon. 
 
-Scroll down, and find the form labeled, B<Install a Perl Module>.  In the form field, type in: C<DateTime::Event::Recurrence>, then click, B<Install Now>
+Scroll down, and find the form labeled, B<Install a Perl Module>.  In this form field, type in: C<DateTime::Event::Recurrence>, then click: B<Install Now>
 
 
 =begin html
@@ -66,12 +66,11 @@ Scroll down, and find the form labeled, B<Install a Perl Module>.  In the form f
 
 =end html
 
-The process of fetching the module and installing it will then commence. A lot of diagnostics will be printed out, much of which you may ignore, unless the install doesn't work correctly. 
+The process of fetching the module and installing it will then commence. A lot of diagnostics will be printed out, much of which you may ignore, unless the install doesn't work correctly. One reason the installation of a module will fail is because a compiler is not available. If you're on a shared host, you may be out of luck, unless your hosting support can help. If you have more control over your account, like access to WHM, you can turn on complier support in there. 
 
 Once the process is completed, click the button labeled, B<Go Back> at the bottom of the screen (or generally: go back to the B<Perl Modules> screen), and scroll below the, B<Install a Perl Module> form, where the table of B<Installed Perl Module(s)> is located. 
 
 Look and see if you're newly installed CPAN Perl Module is one that's included in the list. 
-
 
 =begin html
 
