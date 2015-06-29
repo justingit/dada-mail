@@ -4,6 +4,18 @@
 
 Dada Mail supports both single and recurring scheduled mass mailings.
 
+=begin html
+
+<p style="text-align:center">
+<img src="http://dadamailproject.com/images/docs/recurring_schedules.jpg" width="720" height="612" style="border:1px solid black" /><br /> 
+<em></em> 
+</p>
+
+=end html
+
+
+
+
 You may create a scheduled mass mailing in either the B<Send a Message>, or B<Send a Webpage> screens: 
 
 Author your message, and when you're ready, click the button labeled, B<Save as: Schedule>. Scheduled Mass Mailings can also be created from Stationery or from an already existing Draft Message.
