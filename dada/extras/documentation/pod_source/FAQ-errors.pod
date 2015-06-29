@@ -613,7 +613,7 @@ If you're on a WinNT server, you're most likely not going to be using Sendmail t
 
 Dada Mail uses the Google Visualization API to create its charts and graphs. This API needs its data given to it in the JSON format and Dada Mail uses the B<JSON> CPAN module to create the data. If you do not have this module currently installed, you will need to install it, yourself. 
 
-See, B<How to install CPAN modules>: L<http://dadamailproject.com/d/FAQ-general.pod.html#how_do_you_install__cpan_perl_modules>
+See, B<Installing CPAN Perl Modules>: L<http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
 
 Dada Mail also ships with a disabled copy of B<JSON>. In the I<dada/DADA/perllib> directory, find the directory named, 
 

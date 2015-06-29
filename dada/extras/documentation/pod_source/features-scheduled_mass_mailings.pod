@@ -74,15 +74,15 @@ Recurring Scheduled Mass Mailings require the following CPAN Perl Modules:
 
 =over
 
-=item * DateTime;
+=item * DateTime
 
-=item * DateTime::Event::Recurrence;
+=item * DateTime::Event::Recurrence
 
 =back
 
 These modules can be installed in a variety of ways: 
 
-L<http://dadamailproject.com/d/FAQ-general.pod.html#How-do-you-install-CPAN-Perl-Modules>
+L<http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
 
 =cut
 

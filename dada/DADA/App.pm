@@ -11967,7 +11967,11 @@ sub m_o_c {
         }
     }
     require MIME::Base64;
-    my $headers = { -type => 'image/png' };
+    my $headers = {
+        -type             => 'image/png',
+        '-Cache-Control'  => 'no-cache, max-age=0',
+       # '-Content-Length' => 0,
+     };
 
     # a simple, 1px png image.
     my $str = <<EOF
@@ -11975,7 +11979,7 @@ iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAMAAAAoyzS7AAAABGdBTUEAANbY1E9YMgAAABl0RVh0
 U29mdHdhcmUAQWRvYmUgSW1hZ2VSZWFkeXHJZTwAAAAGUExURf///wAAAFXC034AAAABdFJOUwBA
 5thmAAAADElEQVR42mJgAAgwAAACAAFPbVnhAAAAAElFTkSuQmCC
 EOF
-      ;
+;
     $self->header_props(%$headers);
     return MIME::Base64::decode_base64($str);
 

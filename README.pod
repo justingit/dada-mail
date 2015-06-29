@@ -30,7 +30,7 @@ Mail is free software that you're able to use, modify, share and enhance
 under the terms of the GNU General Public License. Dada Mail is written
 in Perl because we love Perl.
 
-Dada Mail's system requirements are minimal: it runs as a CGI script, requires only Perl 5.8.1, supports multiple SQL backend flavors (as well as a file/directory-based backend), bundles all of its CPAN Perl module dependencies, and comes with a web-based installer. Download/Upload the distro, run the installer script. 
+Dada Mail's system requirements are minimal: it runs as a CGI script, requires only Perl 5.10.1, supports multiple SQL backend flavors, bundles all of its CPAN Perl module dependencies, and comes with a web-based installer. Download/Upload the distro, run the installer script. 
 
 Dada Mail works well in shared hosting environments thanks to its mass sending throttling capabilities. Dada Mail can also work well with large mailing lists that require a third party email service, like Amazon SES. 
 
