@@ -213,15 +213,19 @@ Another option is to, "magically" create a Dada Mail User Template, by basing yo
 
 Magically creating this template may take a bit of trial and error. There are a few options available to tailor it to your specific needs: 
 
-(Note: Magically creating a template requires that you have the C<HTML::Tree> CPAN Module installed)
+Magically creating a template requires that you have the C<HTML::Tree> CPAN Module installed. See: 
+
+L<http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
 
 =head4 URL:
 
-Creating a user template magically works by giving Dada Mail a URL to base the template off of. Set that URL in this textbox. 
+Creating a user template magically works by first giving Dada Mail a URL to base the template off of. Set that URL in this textbox. 
 
 =head4 Add a, <base href="..."> tag:
 
-Since you'll probably be pulling the source of the template from a different location than where Dada Mail is installed, you'll probably need to set a base href tag to the beginning of the HTML. Check this option, then fill out what the base href URL should be, below. 
+Since you'll probably be pulling the source of the template from a different location than where Dada Mail is installed, you'll probably need to set a base href tag to the beginning of the HTML. 
+
+Check this option, then fill out what the base href URL should be, below. Most likely, it'll be the same URL as the URL, above. 
 
 =head4 Place Pro Dada's head content before/after existing content. 
 
@@ -235,7 +239,9 @@ Check this option to have Dada Mail style its content, and only its content, usi
 
 =head4 Include a custom stylesheet
 
-Check this option, and give the URL of a custom stylesheet. This option works well in conjunction with the previous option. Say, you want to override the typeface used within Dada Mail's content, but don't want to change Dada Mail's css file. For clarity, we'll work with just the, C<p> tag. In your custom stylesheet, you would add a new entry: 
+Check this option, and give the URL of a custom stylesheet. This option works well in conjunction with the previous option. Say, you want to override the typeface used within Dada Mail's content, but don't want to change Dada Mail's css file. 
+
+For clarity, we'll work with just the, C<p> tag. In your custom stylesheet, you would add a new entry: 
 
     #Dada p { 
         /* your new styles here! */ 
@@ -248,7 +254,7 @@ These libraries aren't strictly required to run Dada Mail, and sometimes disabli
 
 =head4 Include a Copy of jQuery (v1.11.3)  
 
-Keep this option checked, if your site's design doesn't use jQuery, but uncheck it, if a jQuery library is already being utilized. jQuery is used in almost every Wordpress installation, so if you're basing your user template off of a Wordpress design, uncheck this! 
+Keep this option checked, if your site's design doesn't use jQuery. Uncheck this option if a jQuery library is already being utilized. jQuery is used in almost every Wordpress installation, so if you're basing your user template off of a Wordpress design, uncheck this! 
 
 =head4 Include a Copy of jQuery UI (v1.9.1) 
 
