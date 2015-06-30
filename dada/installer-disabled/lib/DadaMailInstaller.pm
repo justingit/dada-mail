@@ -1562,7 +1562,6 @@ sub query_params_to_install_params {
       profile_profile_host_list
       profile_enable_captcha
       profile_enable_magic_subscription_forms
-      profile_help
       profile_login
       profile_register
       profile_password_reset
