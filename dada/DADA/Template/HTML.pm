@@ -4,7 +4,7 @@ use lib qw(../../ ../../DADA/perllib);
 
 use DADA::Config qw(!:DEFAULT);  
 use DADA::App::Guts; 
-   use Try::Tiny; 
+use Try::Tiny; 
 
 use Carp qw(croak carp); 
 
@@ -361,56 +361,62 @@ sub can_grab_url {
         return 0; 
     }
 }
+
+
+
+
 sub template_from_magic {
-    
-    my ($args)            = shift || undef; 
-    my $status            = 0; 
-    my $errors            = {};
-    my $template          = undef; 
+
+    my ($args) = shift || undef;
+    my $status = 0;
+    my $errors = {};
+    my $template          = undef;
     my $can_use_html_tree = 1;
-    
+
     try {
         require HTML::Tree;
     }
     catch {
         $can_use_html_tree = 0;
-        $errors->{missing_cpan_modules} = 1; 
-        return ($status, $errors, undef); 
+        $errors->{missing_cpan_modules} = 1;
+        return ( $status, $errors, undef );
     };
-    
-    if(! defined($args)){ 
+
+    if ( !defined($args) ) {
         $args = $DADA::Config::TEMPLATE_OPTIONS->{user}->{magic_options};
     }
-    
+
     if ( $can_use_html_tree == 1 ) {
         try {
-            my ($src, $res) = grab_url( $args->{template_url} );
-            if(!$res->is_success){ 
+            my ( $src, $res ) = grab_url( $args->{template_url} );
+            if ( !$res->is_success ) {
                 warn "Couldn't fetch template: " . $res->message;
                 $errors->{problems_fetching_url} = 1;
-                return ($status, $errors, undef);  
+                return ( $status, $errors, undef );
             }
+            
+            require HTML::Element;
             require HTML::TreeBuilder;
+
+            ############################################################
+            # This module is said to work better for things like HTML 5:
             #require HTML::TreeBuilder::LibXML;
             #HTML::TreeBuilder::LibXML->replace_original();
-            
             # can I use LibXML and do the same I'm doing here, just w/XPaths?
-            # What's the smae as, find_by_tag_name?
+            # What's the same as, find_by_tag_name?
             #
             my $root = HTML::TreeBuilder->new(
-                ignore_unknown => 0, 
+                ignore_unknown      => 0,
                 no_space_compacting => 1,
-                store_comments => 1, 
+                store_comments      => 1,
             );
-                 
+
             $root->parse($src);
-            $root->eof();    # done parsing for this tree
+            $root->eof();
             $root->elementify();
 
-            require HTML::Element;
 
-            # We probably need to add a base: href:
-            
+            # <title> tag:
             my $title_ele = $root->find_by_tag_name('title');
             $title_ele->delete_content();
             $title_ele->push_content(
@@ -418,122 +424,114 @@ sub template_from_magic {
                     '~literal', 'text' => '<!-- tmpl_var title -->',
                 )
             );
-            
+
+            # <head> manipulation
             my $head_ele = $root->find_by_tag_name('head');
-            
-            if($args->{'add_base_href'} == 1) { 
-                my $base_href_ele = HTML::Element->new( 'base', 'href' => $args->{base_href_url}, );
-                   $head_ele->unshift_content($base_href_ele);
-            }
-            
-            # And, let's put the css in there:
-                       # unshift_content
-            $head_ele->push_content(
-                HTML::Element->new(
-                    '~literal', 'text' => '<!-- tmpl_include list_template_header_code_block.tmpl -->',
-                )
-            );
 
+            # css
+            my $custom_css_ele = undef;
             if ( $args->{add_custom_css} == 1 ) {
-
-                # Custom css:
-                $head_ele->push_content(
-                    HTML::Element->new(
-                        'link',
-                        rel   => "stylesheet",
-                        type  => "text/css",
-                        media => "screen",
-                        href  => $args->{custom_css_url},
-                    )
+                $custom_css_ele = HTML::Element->new(
+                    'link',
+                    rel   => "stylesheet",
+                    type  => "text/css",
+                    media => "screen",
+                    href  => $args->{custom_css_url},
                 );
             }
 
+            my $header_code_block_ele = HTML::Element->new('~literal', 'text' => '<!-- tmpl_include list_template_header_code_block.tmpl -->');
+            # push or unshift?
+            if ( $args->{head_content_added_by} eq 'push' ) {
+                $head_ele->push_content($header_code_block_ele);
+                if ( $args->{add_custom_css} == 1 ) {
+                    $head_ele->push_content( $custom_css_ele );
+                }
+            }
+            elsif ( $args->{head_content_added_by} eq 'unshift' ) {
+                $head_ele->unshift_content($custom_css_ele);
+                if ( $args->{add_custom_css} == 1 ) {
+                    $head_ele->unshift_content( $custom_css_ele );
+                }
+            }
+
+            if ( $args->{'add_base_href'} == 1 ) {
+                my $base_href_ele = HTML::Element->new( 'base', 'href' => $args->{base_href_url}, );
+                $head_ele->unshift_content($base_href_ele);
+            }
+
+            # Body:
+            
             my $found_id_tag = 0;
-            my $replace_tag = undef; 
-             
-            if($args->{replace_content_from} eq 'id' || $args->{replace_content_from} eq 'class') { 
-                if($args->{replace_content_from} eq 'id') { 
-                    if($replace_tag = $root->look_down( "id", $args->{replace_id} )){ 
+            my $replace_tag  = undef;
+
+            if ( $args->{replace_content_from} eq 'id' || $args->{replace_content_from} eq 'class' ) {
+                if ( $args->{replace_content_from} eq 'id' ) {
+                    if ( $replace_tag = $root->look_down( "id", $args->{replace_id} ) ) {
                         # Well, that's good!
                     }
-                    else { 
-                        $errors->{cannot_find_id} = 1; 
-                        warn "cannot find css selector id, '" . $args->{replace_id} . "' - will be replace content in body tag.";
-                        $args->{replace_content_from} = 'body'; 
+                    else {
+                        $errors->{cannot_find_id} = 1;
+                        warn "cannot find css selector id, '"
+                          . $args->{replace_id}
+                          . "' - will be replace content in body tag.";
+                        $args->{replace_content_from} = 'body';
                     }
                 }
-                elsif($args->{replace_content_from} eq 'class') { 
-                    if($replace_tag = $root->look_down( "class", $args->{replace_class} )){ 
+                elsif ( $args->{replace_content_from} eq 'class' ) {
+                    if ( $replace_tag = $root->look_down( "class", $args->{replace_class} ) ) {
                         # Well, that's good!
                     }
-                    else {                      
-                        warn "cannot find css selector class, '" . $args->{replace_class} . "' - will be replace content in body tag.";
-                        $errors->{cannot_find_class} = 1; 
-                        $args->{replace_content_from} = 'body'; 
+                    else {
+                        warn "cannot find css selector class, '"
+                          . $args->{replace_class}
+                          . "' - will be replace content in body tag.";
+                        $errors->{cannot_find_class}  = 1;
+                        $args->{replace_content_from} = 'body';
                     }
                 }
             }
-             
-            if ( $args->{replace_content_from} eq 'id'  || $args->{replace_content_from} eq 'class' ) {
 
+            if ( $args->{replace_content_from} eq 'id' 
+              || $args->{replace_content_from} eq 'class' ) {
 
                 # Remove everything
                 $replace_tag->delete_content();
 
                 # push to 0
-
-                if ( $args->{add_app_css} == 1 ) {
-                    $replace_tag->push_content(
-                        HTML::Element->new(
-                            'div', id => "Dada"
-                          )->push_content(
-                            HTML::Element->new(
-                                '~literal', 'text' => '<!-- tmpl_include list_template_body_code_block.tmpl -->'
-                            )
-                          )
-                    );
-                }
-                else {
-                    $replace_tag->push_content(
+                $replace_tag->push_content(
+                    HTML::Element->new(
+                        'div', id => "Dada"
+                      )->push_content(
                         HTML::Element->new(
                             '~literal', 'text' => '<!-- tmpl_include list_template_body_code_block.tmpl -->'
                         )
-                    );
-                }
+                      )
+                );
             }
             else {
-
                 my $body_tag = $root->find_by_tag_name('body');
                 $body_tag->delete_content();
-                if ( $args->{add_app_css} == 1 ) {
-                    $body_tag->push_content(
-                        HTML::Element->new(
-                            'div', id => "Dada"
-                          )->push_content(
-                            HTML::Element->new(
-                                '~literal', 'text' => '<!-- tmpl_include list_template_body_code_block.tmpl -->'
-                            )
-                          )
-                    );
-
-                }
-                else {
-                    $body_tag->push_content(
+                $body_tag->push_content(
+                    HTML::Element->new(
+                        'div', id => "Dada"
+                      )->push_content(
                         HTML::Element->new(
                             '~literal', 'text' => '<!-- tmpl_include list_template_body_code_block.tmpl -->'
                         )
-                    );
-                }
+                      )
+                );
             }
 
-            $status = 1; 
+            $status  = 1;
             my $tmpl = $root->as_HTML( undef, '  ' );
             $root->delete;
-            return ($status, $errors, $tmpl);  
+            
+            return ( $status, $errors, $tmpl );
         }
         catch {
-            $errors->{cannot_parse_page} = 1; 
-            return ($status, $errors, undef);  
+            $errors->{cannot_parse_page} = 1;
+            return ( $status, $errors, undef );
         };
     }
 }
@@ -549,7 +547,6 @@ sub check_if_template_exists {
 
 	my %args = (-List => undef, 
 				@_);
-	
 	if($args{-List}){ 
 		my(@available_templates) = &available_templates;
 		my $template_exists = 0;	
@@ -692,9 +689,11 @@ sub list_template {
     }
 
     my $list_template = undef;
-
+    my $using_default_template = 1; 
+    
     if ( defined( $args{ -data } ) ) {	
         $list_template = ${ $args{ -data } };
+        $using_default_template = 0; 
     }
     elsif ($list) {
         if ( $ls->param('get_template_data') eq "from_url"
@@ -702,6 +701,7 @@ sub list_template {
         {
             $list_template =
               open_template_from_url( -URL => $ls->param('url_template'), );
+              $using_default_template = 0; 
 
         }
         elsif ( $ls->param('get_template_data') eq 'from_default_template' ) {
@@ -719,6 +719,7 @@ sub list_template {
                     $DADA::Config::TEMPLATES . '/' . $list . '.template'
                 )
             );
+            $using_default_template = 0; 
 
         }    # meaning, there's no list template
         else {
@@ -740,7 +741,31 @@ sub list_template {
     my $subscribed_to_list = 0;
     my $prof_sess          = undef; 
     my $profile_widget     = undef;
-    eval {
+    
+    
+    my $header_options = {
+        include_jquery_lib   => 1,
+        include_jqueryui_lib => 1,
+        include_app_user_js  => 1,
+        add_app_css          => 1,
+    }; 
+    
+#    warn q{$args{-Use_Custom}} . $args{-Use_Custom};
+#    warn q{$DADA::Config::TEMPLATE_OPTIONS->{user}->{enabled}} . $DADA::Config::TEMPLATE_OPTIONS->{user}->{enabled}; 
+#    warn q{$DADA::Config::TEMPLATE_OPTIONS->{user}->{mode}} . $DADA::Config::TEMPLATE_OPTIONS->{user}->{mode}; 
+#    warn q{$using_default_template} . $using_default_template; 
+    
+    if(
+              $args{-Use_Custom} == 1
+           && $DADA::Config::TEMPLATE_OPTIONS->{user}->{enabled} == 1 
+           && $DADA::Config::TEMPLATE_OPTIONS->{user}->{mode} eq 'magic'
+           && $using_default_template == 1
+           ) {
+#               warn 'using magic header params'; 
+               $header_options = $DADA::Config::TEMPLATE_OPTIONS->{user}->{magic_options};
+    }
+    
+    try {
 
         require DADA::Profile::Session;
         require DADA::Profile;
@@ -764,10 +789,9 @@ sub list_template {
 		else { 
 			$profile_widget = DADA::Template::Widgets::profile_widget(); 
 		}
+    } catch {
+        carp "CAUGHT Error with Sessioning: $_";
     };
-    if ($@) {
-        carp "CAUGHT Error with Sessioning: $@";
-    }
 	
 	my $footer_props; 
 	if ( $DADA::Config::GIVE_PROPS_IN_HTML == 1) {
@@ -776,7 +800,7 @@ sub list_template {
     
      my $content_tag = quotemeta('<!-- tmpl_var content -->');
      if ( $list_template !~ m/$content_tag/ ) {
-          warn 'can\'t find content tag in list template'; 
+          # warn 'can\'t find content tag in list template'; 
      }
     
     
@@ -797,8 +821,13 @@ sub list_template {
                 dada                => '[_dada_content]',
                 profile_widget      => $profile_widget,
                 show_profile_widget => 1,
-				footer_props => $footer_props, 
-
+				footer_props        => $footer_props, 
+				
+				include_jquery_lib   =>  $header_options->{include_jquery_lib},
+                include_jqueryui_lib =>  $header_options->{include_jqueryui_lib},
+                include_app_user_js  =>  $header_options->{include_app_user_js},
+                add_app_css          =>  $header_options->{add_app_css},
+                
                 %{ $args{ -vars } },
             },
             (

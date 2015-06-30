@@ -202,18 +202,18 @@
     <ul> 
         <!-- tmpl_if expr="profile_feature_login == 1" -->
             <li>
-                <a href="#profile_login">Login</a>
+                <a href="<!-- tmpl_var WHOLE_URL -->#profile_login">Login</a>
             </li>
         <!-- /tmpl_if -->
         
         <!-- tmpl_if expr="profile_feature_password_reset == 1" --> 
             <li>
-                <a href="#profile_password_reset">Reset Password</a>
+                <a href="<!-- tmpl_var WHOLE_URL -->#profile_password_reset">Reset Password</a>
             </li>        
         <!-- /tmpl_if -->
         <!-- tmpl_if expr="profile_feature_register == 1" -->
             <li>
-                <a href="#profile_register">Register</a>
+                <a href="<!-- tmpl_var WHOLE_URL -->#profile_register">Register</a>
             </li>
         <!-- /tmpl_if -->
     </ul>
@@ -245,19 +245,19 @@
     
     <!-- tmpl_if expr="profile_feature_password_reset == 1" -->
         <div id="profile_password_reset">
-        <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="profile_reset_password"> 
-            <input type="hidden" name="flavor" value='profile_reset_password' /> 
-            <p>
-                <label for="reset_email" style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block">
-                    Email Address:
-                </label>
-                 <input type="text" id="reset_email" name="reset_email" value="<!-- tmpl_var reset_email -->" />
-            </p> 
-            <div class="buttonfloat">    
-                <input type="submit" value="Reset Your Profile Password" /> 
-            </div>
-            <div class="floatclear"></div>
-        </form>
+            <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="profile_reset_password"> 
+                <input type="hidden" name="flavor" value='profile_reset_password' /> 
+                <p>
+                    <label for="reset_email" style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block">
+                        Email Address:
+                    </label>
+                     <input type="text" id="reset_email" name="reset_email" value="<!-- tmpl_var reset_email -->" />
+                </p> 
+                <div class="buttonfloat">    
+                    <input type="submit" value="Reset Your Profile Password" /> 
+                </div>
+                <div class="floatclear"></div>
+            </form>
         </div> 
     <!-- /tmpl_if --> 
     

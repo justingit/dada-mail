@@ -230,7 +230,7 @@
         this.DEBUG && console.warn( arguments );    
     }
  
-    $.fn[ PLUGIN_NS ] = function( methodOrOptions ) 
+    jQuery.fn[ PLUGIN_NS ] = function( methodOrOptions ) 
     {
         if (!$(this).length) {
             return $(this);

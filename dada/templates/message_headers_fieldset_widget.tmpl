@@ -158,7 +158,17 @@
 	 <!-- tmpl_if Subject --> 
 		<input type="text" name="Subject" id="Subject" value="<!-- tmpl_var Subject escape="HTML"  -->" class="full" />
      <!-- tmpl_else --> 
+     <!-- tmpl_if expr="(screen eq 'send_url_email')" --> 
+     <input type="radio" name="subject_from" id="subject_from_input" value="input" checked="checked">
+     <input type="text" name="Subject" id="Subject" value="<!-- tmpl_var list_settings.mailing_list_message_subject escape="HTML" -->" class="full" />
+  	 <br /> 
+  	 <input type="radio" name="subject_from" id="subject_from_title_tag" value="title_tag"><label for="subject_from_title_tag" />
+  	 Use the Webpage's &lt;title&gt; as Message Subject
+    
+     <!-- tmpl_else --> 
      	<input type="text" name="Subject" id="Subject" value="<!-- tmpl_var list_settings.mailing_list_message_subject escape="HTML" -->" class="full" />
+	<!-- /tmpl_if -->
+	
 	<!-- /tmpl_if -->
     </p>
    </td>

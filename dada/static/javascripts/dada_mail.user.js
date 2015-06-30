@@ -1,4 +1,8 @@
-$(document).ready(function() {
+(function( $ ) {
+  "use strict";
+ 
+  $(function() {
+
 	if ($("#subscription_form").length) {
 		$("#subscription_form").validate({
 			debug: false,
@@ -102,7 +106,11 @@ $(document).ready(function() {
 	}	
 	if ($("#profile_login_registration").length) {
 		
-		$("#tabs").tabs({ heightStyle: "auto" });
+		$("#tabs").tabs(
+			{ 
+			heightStyle: "auto"
+		}
+	);
 		
 		if ($("#profile_login").length) {
 			$("#profile_login").validate({
@@ -180,8 +188,23 @@ $(document).ready(function() {
 	}
 	
 	if ($("#profile_home").length) {
-		$("#tabs").tabs({ heightStyle: "auto" });
+		/* the beforeLoad stops the tabs from loading a url via ajax,
+		   which happens if the screen has a base href tag */
+		
+		$("#tabs").tabs(
+			{ 
+				heightStyle: "auto",
+				beforeLoad: function(event, ui) {
+			        // if the target panel is empty, return true
+			        return ui.panel.html() == "";
+			    }
+			    
+			}
+		);
 	}
 	
-});
+  });
+ 
+}(jQuery));
+
 

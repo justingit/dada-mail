@@ -1,19 +1,35 @@
-<!-- jQuery -->
-<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/jquery-1.8.2.min.js"></script>
-<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/jquery.validate.js"></script>
-<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/jquery.dadamail.js"></script>
-<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/dada_mail.user.js"></script>
-<!-- tmpl_if comment --><script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script><!-- /tmpl_if -->
-<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/jquery-ui-1.9.1.custom.min.js"></script>
+<!-- begin <!-- tmpl_var PROGRAM_NAME --> list_template_header_code_block.tmpl --> 
 
-<!-- tmpl_if load_colorbox --> 
-	<link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/colorbox/colorbox.css">
-	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/colorbox/jquery.colorbox-min.js"></script>
+<!-- tmpl_if include_jquery_lib --> 
+<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/jquery-1.11.3.min.js"></script>
+<!-- /tmpl_if --> 
+
+<!-- tmpl_if include_jqueryui_lib --> 
+<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/jquery-ui-1.9.1.custom.min.js"></script>
+<link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/jquery-ui-1.9.1.custom.min.css">
+<!-- /tmpl_if --> 
+
+
+<!-- tmpl_if include_app_user_js -->
+    <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/jquery.validate.js"></script>
+    <!-- tmpl_if load_colorbox --> 
+    	<link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/colorbox/colorbox.css">
+    	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/colorbox/jquery.colorbox-min.js"></script>
+    <!-- /tmpl_if -->
+    <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/dada_mail.user.js"></script>
+    <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/jquery.dadamail.js"></script>
+<!-- /tmpl_if -->
+
+<!-- tmpl_if include_jquery_lib-->
+<script type="text/javascript">
+   var $dm = $.noConflict(true);
+</script>
 <!-- /tmpl_if -->
 
 
-<link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/jquery-ui-1.9.1.custom.min.css">
-<link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/dada_mail.css" type="text/css" media="screen" />
+<!-- tmpl_if add_app_css -->
+    <link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/dada_mail.css" type="text/css" media="screen" />
+<!-- /tmpl_if -->
 
 <!-- tmpl_if list_settings.show_archives --> 
 	<!-- tmpl_if list_settings.publish_archives_rss --> 
@@ -22,3 +38,4 @@
 	<!-- /tmpl_if --> 
 <!-- /tmpl_if -->
 
+<!-- end <!-- tmpl_var PROGRAM_NAME --> list_template_header_code_block.tmpl --> 
