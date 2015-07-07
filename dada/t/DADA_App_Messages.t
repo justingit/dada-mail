@@ -513,6 +513,7 @@ ok(
 );
 
 diag "here."; 
+diag q{decode_header($entity->head->get('To', 0))} . safely_encode(decode_header($entity->head->get('To', 0))); 
 
 ok(
 	decode_header($entity->head->get('To', 0))
