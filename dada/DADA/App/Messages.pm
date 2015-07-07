@@ -156,16 +156,22 @@ sub send_generic_email {
 
 
 sub send_abuse_report {
+    
     my ($args) = @_;
 
     #    -list                 => $list,
     #    -email                => $email,
     #    -abuse_report_details => $abuse_report_details,
     #     -mid => $diagnostics->{'Simplified-Message-Id'},
+    
     my $abuse_report_details = $args->{-abuse_report_details}; 
     
 	require DADA::MailingList::Settings; 
 	my $ls = DADA::MailingList::Settings->new({-list => $args->{-list}});
+	
+	require DADA::App::FormatMessages; 
+    my $fm = DADA::App::FormatMessages->new(-List => $args->{-list}); 
+    
 
 	require DADA::App::ReadEmailMessages; 
     my $rm = DADA::App::ReadEmailMessages->new; 
@@ -210,8 +216,8 @@ sub send_abuse_report {
         {
             -list    => $args->{-list},
             -headers => {
-                To      => '"' . $msg_data->{to_phrase} . '" <' . $ls->param('list_owner_email') . '>',
-                From    => '"' . $msg_data->{to_phrase} . '" <' . $ls->param('list_owner_email') . '>',
+                To      => $fm->format_phrase_address($msg_data->{to_phrase}, $ls->param('list_owner_email')),
+                From    => $fm->format_phrase_address($msg_data->{to_phrase}, $ls->param('list_owner_email')),
 # Amazon SES doesn't like that: 
 #                From    => '"' . $msg_data->{from_phrase} . '" <' . $args->{-email} . '>',
 
@@ -265,7 +271,7 @@ sub send_confirmation_message {
 		{
 			-list    => $args->{-list}, 
 			-headers => { 
-				To              => '"<!-- tmpl_var list_settings.list_name --> Subscriber" <' . $args->{-email} . '>',
+			    To              => $fm->format_phrase_address($ls->param('list_name') . ' Subscriber', $args->{-email}),
 			    Subject         => $ls->param('confirmation_message_subject'),
 			}, 
 			
@@ -586,8 +592,6 @@ sub send_unsubscribed_message {
 		$ls = $args->{-ls_obj};
 	}
 	
-	warn q{$ls->param('list')} . $ls->param('list');  
-	warn q{$args->{-list}} . $args->{-list}; 
 	
 	# This is a hack - if the subscriber has recently been removed, you 
 	# won't be able to get the subscriber fields - since there's no way to 
@@ -616,6 +620,9 @@ sub send_unsubscribed_message {
 		}
 	#/This is a hack - if the subscriber has recently been removed, you
 	
+	require DADA::App::FormatMessages; 
+    my $fm = DADA::App::FormatMessages->new(-List => $args->{-list}); 
+	
 	
 	send_generic_email(
 		{
@@ -624,7 +631,7 @@ sub send_unsubscribed_message {
 			-ls_obj      => $ls,
 			-email       => $args->{-email}, 
 			-headers => { 	
-				To           => '"<!-- tmpl_var list_settings.list_name -->" <' . $args->{-email} . '>',
+				To           => $fm->format_phrase_address($ls->param('list_name'), $args->{-email}),
 				Subject      => $ls->param('unsubscribed_message_subject'), 
 			},
 			-body    => $ls->param('unsubscribed_message'),
