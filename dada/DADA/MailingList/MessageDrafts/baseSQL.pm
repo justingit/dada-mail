@@ -10,7 +10,7 @@ use lib qw(
 use Carp qw(croak carp);
 use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts; 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_MessageDrafts};
+my $t = 1;#$DADA::Config::DEBUG_TRACE->{DADA_MailingList_MessageDrafts};
 
 sub new {
 
@@ -96,9 +96,12 @@ sub save {
     warn 'save'
       if $t;
 
-    my $self = shift;
+    my $self   = shift;
     my ($args) = @_;
 
+    require Data::Dumper; 
+    warn 'save $args:' . Data::Dumper::Dumper($args); 
+    
     if ( !exists( $args->{-cgi_obj} ) ) {
         croak "You MUST pass a, '-cgi_obj' parameter!";
     }
@@ -131,7 +134,12 @@ sub save {
     #	warn '$id:' . $id;
     my $q = $args->{-cgi_obj}; 
        $q = $self->fill_in_schedule_options($q); 
-    my $draft = $self->stringify_cgi_params( { -cgi_obj => $q, -screen => $args->{-screen} } );
+    my $draft = $self->stringify_cgi_params( 
+        { 
+            -cgi_obj => $q, 
+            -screen  => $args->{-screen} 
+        } 
+    );
 
 
 
@@ -229,12 +237,15 @@ sub save {
         
             warn 'QUERY: ' . $query
               if $t;
-
+            warn '$draft ' . $draft
+             if $t; 
+            
             my $sth = $self->{dbh}->prepare($query);
                $sth->execute( 
                    $args->{-screen}, 
                    $args->{-save_role}, 
-                   $draft, $self->{list}, 
+                   $draft, 
+                   $self->{list}, 
                    $args->{-id} 
               )
               or croak "cannot do statement '$query'! $DBI::errstr\n";
@@ -563,6 +574,7 @@ sub draft_index {
         my $q = $self->decode_draft( $hashref->{draft} );
        # warn q{$q->param('schedule_single_ctime')} . $q->param('schedule_single_ctime'); 
         
+        warn q{$q->param('schedule_html_body_checksum') } . $q->param('schedule_html_body_checksum');
         my $params = {
             id                            => $hashref->{id},
             list                          => $hashref->{list},
@@ -581,6 +593,7 @@ sub draft_index {
             schedule_recurring_ctime_end   => scalar $q->param('schedule_recurring_ctime_end'),
             schedule_recurring_hms         => scalar $q->param('schedule_recurring_hms'),
 
+            schedule_html_body_checksum    => scalar $q->param('schedule_html_body_checksum'), 
             
         };
 
@@ -692,6 +705,7 @@ sub remove_unwanted_params {
       $self->params_to_save( { -screen => $args->{-screen} } );
 
     for ( $new_q->param ) {
+        
         unless ( exists( $params_to_save->{$_} ) ) {
             $new_q->delete($_);
         }
@@ -734,6 +748,9 @@ sub params_to_save {
         schedule_recurring_ctime_start => 1,
         schedule_recurring_ctime_end   => 1,
         schedule_recurring_hms         => 1,
+        
+        schedule_html_body_checksum    => 1,
+        
 
     };
 
@@ -773,8 +790,8 @@ sub params_to_save {
         $params->{proxy}                 = 1;
     }
 
-    #	use Data::Dumper;
-    #	warn Dumper($params);
+    	use Data::Dumper;
+    	warn 'params_to_save:' . Dumper($params);
 
     return $params;
 

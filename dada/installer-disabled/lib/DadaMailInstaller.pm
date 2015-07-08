@@ -3791,7 +3791,7 @@ sub cgi_test_user_template {
     my $can_use_lwp_simple             = DADA::App::Guts::can_use_LWP_Simple;
     my $isa_url                        = isa_url($template_options_manual_template_url);
     if ($isa_url) {
-        if ( DADA::Template::HTML::can_grab_url($template_options_manual_template_url)  == 1) {
+        if ( DADA::Template::HTML::can_grab_url({-url => $template_options_manual_template_url})  == 1) {
             $can_get_content = 1;
         }
     }

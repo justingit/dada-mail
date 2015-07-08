@@ -232,12 +232,7 @@ sub send_email {
         # Draft now has all our form params
         # draft_id and role will be saved in $q
 
-        my $draft_id   = undef;
-        my $status     = undef;
-        my $errors     = undef;
-        my $message_id = undef;
-
-        $draft_id = $self->save_as_draft(
+        my $draft_id = $self->save_as_draft(
             {
                 -cgi_obj => $q,
                 -list    => $self->{list},
@@ -245,7 +240,7 @@ sub send_email {
             }
         );
         # to fetch a draft, I need id, list and role (lame)
-        ( $status, $errors, $message_id ) = $self->construct_and_send(
+        my ( $status, $errors, $message_id, $md5 ) = $self->construct_and_send(
             {
                 -draft_id => $draft_id,
                 -screen   => 'send_email',
@@ -345,12 +340,13 @@ sub construct_and_send {
     my $message_id = undef;
     my $entity     = undef;
     my $fm         = undef;
-
+    my $md5        = undef; 
+    
     if ( $args->{-screen} eq 'send_email' ) {
         ( $status, $errors, $entity, $fm ) = $self->construct_from_text($draft_q);
     }
     elsif ( $args->{-screen} eq 'send_url_email' ) {
-        ( $status, $errors, $entity, $fm ) = $self->construct_from_url($draft_q);
+        ( $status, $errors, $entity, $fm, $md5 ) = $self->construct_from_url($draft_q);
     }
     else {
         croak "unknown screen: " . $args->{-screen};
@@ -360,7 +356,7 @@ sub construct_and_send {
         warn '$errors: ' . $errors;
     }
     if ( $status == 0 ) {
-        return ( 0, $errors, undef );
+        return ( 0, $errors, undef, undef );
     }
 
     # Good? Alright.
@@ -370,10 +366,11 @@ sub construct_and_send {
     #    $fm->Subject( $headers{Subject} );
 
     my ( $final_header, $final_body );
-    eval { ( $final_header, $final_body ) = $fm->format_headers_and_body( -msg => $msg_as_string ); };
-    if ($@) {
-        return ( 0, $@, undef );
-    }
+    try { 
+        ( $final_header, $final_body ) = $fm->format_headers_and_body( -msg => $msg_as_string ); 
+    } catch { 
+        return ( 0, $@, undef, undef );
+    };
 
     require DADA::Mail::Send;
     my $mh = DADA::Mail::Send->new(
@@ -384,7 +381,7 @@ sub construct_and_send {
     );
 
     unless ( $mh->isa('DADA::Mail::Send') ) {
-        return ( 0, "DADA::Mail::Send object wasn't created correctly?", undef );
+        return ( 0, "DADA::Mail::Send object wasn't created correctly?", undef, undef );
     }
 
     $mh->test( $self->test );
@@ -448,7 +445,7 @@ sub construct_and_send {
         $self->{ah_obj}->set_archive_info( $message_id, $mailing{Subject}, undef, undef, $mh->saved_message );
     }
 
-    return ( 1, undef, $message_id );
+    return ( 1, undef, $message_id, $md5 );
 }
 
 sub construct_from_text {
@@ -626,7 +623,7 @@ sub construct_from_url {
     }
 
     if ( !$can_use_mime_lite_html ) {
-        return ( 0, $@, undef, undef );
+        return ( 0, $@, undef, undef, undef );
     }
 
     my $url               = strip( $draft_q->param('url') );
@@ -725,13 +722,14 @@ sub construct_from_url {
     
     my ( $status, $errors ) = $self->redirect_tag_check($text_message);
     if ( $status == 0 ) {
-        return ( $status, $errors, undef, undef );
+        return ( $status, $errors, undef, undef, undef );
     }
     undef($status);
     undef($errors);
 
     my $MIMELiteObj;
-
+    my $md5; 
+    
     if ( $draft_q->param('content_from') eq 'url' ) {
 
         # AWKWARD.
@@ -741,7 +739,7 @@ sub construct_from_url {
         my $rtc = LWP::Simple::get($url);
         my ( $status, $errors ) = $self->redirect_tag_check($rtc);
         if ( $status == 0 ) {
-            return ( $status, $errors, undef, undef );
+            return ( $status, $errors, undef, undef, undef );
         }
         undef($status);
         undef($errors);
@@ -749,46 +747,38 @@ sub construct_from_url {
         # Redirect tag check
 
         my $errors = undef;
-        eval { $MIMELiteObj = $mailHTML->parse( $url, safely_encode($text_message) ); };
-
-        # DEV: It would be a lot nicer, if this was just printed in our control panel, instead of an error:
-        if ($@) {
+        try { 
+            ($MIMELiteObj, $md5) = $mailHTML->parse( $url, safely_encode($text_message) );
+        } catch { 
             $errors .= "Problems with sending a webpage! Make sure you've correctly entered the URL to your webpage!\n";
-            $errors .= "* Returned Error: $@";
-            eval { $LWP::Simple::ua->agent( 'Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')' ); };
-            my $can_fetch = LWP::Simple::get($url);
-            if ($can_fetch) {
-                $errors .= "* Cannot fetch, " . $url . "\n";
-            }
-            else {
-                $errors .= "* Cannot fetch, " . $url . " using LWP::Simple::get()\n";
-            }
-            return ( 0, $errors, undef, undef );
-        }
+            $errors .= "* Returned Error: $_";
+            return ( 0, $errors, undef, undef, undef );  
+        };
     }
     else {
+        
         my $html_message = $draft_q->param('html_message_body');
         ( $text_message, $html_message ) =
           DADA::App::FormatMessages::pre_process_msg_strings( $text_message, $html_message );
 
         my ( $status, $errors ) = $self->redirect_tag_check($html_message);
         if ( $status == 0 ) {
-            return ( $status, $errors, undef, undef );
+            return ( $status, $errors, undef, undef, undef );
         }
         undef($status);
         undef($errors);
 
         
-        eval { $MIMELiteObj = $mailHTML->parse( safely_encode($html_message), safely_encode($text_message) ); };
-        if ($@) {
+        try { 
+            ($MIMELiteObj, $md5) = $mailHTML->parse( safely_encode($html_message), safely_encode($text_message) ); 
+        } catch { 
             my $errors = "Problems sending HTML! \n
-    * Are you trying to send a webpage via URL instead?
-    * Have you entered anything in the, HTML Version?
-    * Returned Error: $@
-    ";
+            * Are you trying to send a webpage via URL instead?
+            * Have you entered anything in the, HTML Version?
+            * Returned Error: $_
+            ";
             return ( 0, $errors, undef, undef );
-
-        }
+        }; 
     }
 
     my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
@@ -803,27 +793,26 @@ sub construct_from_url {
     my $source           = '';
     my @MIME_HTML_errors = ();
 
-    eval { $source = $MIMELiteObj->as_string; };
-    if ($@) {
-        warn "$DADA::Config::PROGRAM_NAME $DADA::Config::VER - Send a Webpage isn't functioning correctly? - $@";
+    try { 
+        $source = $MIMELiteObj->as_string; 
+    } catch { 
+        carp "$DADA::Config::PROGRAM_NAME $DADA::Config::VER - Send a Webpage isn't functioning correctly? - $_";
         $status           = 0;
-        $errors           = $@;
+        $errors           = $_;
         @MIME_HTML_errors = $mailHTML->errstr;
-        for (@MIME_HTML_errors) {
-            $errors .= $_;
+        for my $mhe (@MIME_HTML_errors) {
+            $errors .= $mhe;
         }
-        return ( 0, $errors, undef, undef );
-    }
+        return ( 0, $errors, undef, undef, undef );
+    };
 
     # / convert for string check.
-
     use MIME::Parser;
     my $parser = new MIME::Parser;
-    $parser = optimize_mime_parser($parser);
-
+       $parser = optimize_mime_parser($parser);
     my $entity = $parser->parse_data($source);
 
-    return ( 1, undef, $entity, $fm );
+    return ( 1, undef, $entity, $fm, $md5 );
 
 }
 
@@ -837,7 +826,7 @@ sub subject_from_title_tag {
     my $html;
 
     if ( $draft_q->param('content_from') eq 'url' ) {
-        my ( $src, $res ) = grab_url( $draft_q->param('url') );
+        my ( $src, $res, $md5 ) = grab_url({-url => $draft_q->param('url') });
         if ( $res->is_success ) {
             $html = $src;
         }
@@ -1048,9 +1037,8 @@ sub send_url_email {
                 -json    => 0,
             }
         );
-
         # to fetch a draft, I need id, list and role (lame)
-        my ( $status, $errors, $message_id ) = $self->construct_and_send(
+        my ( $status, $errors, $message_id, $md5 ) = $self->construct_and_send(
             {
                 -draft_id => $draft_id,
                 -screen   => 'send_url_email',
@@ -1679,7 +1667,6 @@ sub q_obj_from_draft {
         warn 'doesn\'t have a draft!';
         return undef;
     }
-
 }
 
 sub fill_in_draft_msg {
@@ -1713,6 +1700,37 @@ sub fill_in_draft_msg {
         return $args->{-str};
     }
 }
+
+sub draft_message_values {
+    my $self = shift;
+    my ($args) = @_;
+    my $q = $args->{-cgi_obj}; 
+    
+    my $q_draft = $self->q_obj_from_draft(
+        {
+            -screen   => $q->param('draft_screen'), 
+            -draft_id => $q->param('draft_id'), 
+            -role     => $q->param('draft_role'), 
+        }
+    );
+    
+    # For now, I'm just sending back what I need: 
+    my $hr = { 
+        schedule_html_body_checksum => $q_draft->param('schedule_html_body_checksum'),
+        schedule_activated          => $q_draft->param('schedule_activated'),
+    };
+    
+    require JSON;
+    my $json    = JSON->new->allow_nonref;
+    my $headers = {
+        '-Cache-Control' => 'no-cache, must-revalidate',
+        -expires         => 'Mon, 26 Jul 1997 05:00:00 GMT',
+        -type            => 'application/json',
+    };
+    my $body = $json->pretty->encode($hr);
+    return ( $headers, $body );    
+}
+
 
 sub has_attachments {
 
