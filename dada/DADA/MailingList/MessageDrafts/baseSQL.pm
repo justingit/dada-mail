@@ -306,6 +306,10 @@ sub fill_in_schedule_options {
         $q->param('schedule_recurring_hms', display_hms_to_hms($q->param('schedule_recurring_display_hms')));
     }
     
+    if(!defined($q->param('schedule_recurring_only_mass_mail_if_html_diff'))) { 
+        $q->param('schedule_recurring_only_mass_mail_if_html_diff', 0);
+    }
+    
     
     
     return $q;     
@@ -595,6 +599,8 @@ sub draft_index {
 
             schedule_html_body_checksum    => scalar $q->param('schedule_html_body_checksum'), 
             
+            schedule_recurring_only_mass_mail_if_html_diff => scalar $q->param('schedule_recurring_only_mass_mail_if_html_diff'), 
+            
         };
 
         if ( $args->{-role} eq 'schedule')
@@ -751,6 +757,8 @@ sub params_to_save {
         
         schedule_html_body_checksum    => 1,
         
+        schedule_recurring_only_mass_mail_if_html_diff => 1, 
+        
 
     };
 
@@ -790,8 +798,8 @@ sub params_to_save {
         $params->{proxy}                 = 1;
     }
 
-    	use Data::Dumper;
-    	warn 'params_to_save:' . Dumper($params);
+    # use Data::Dumper;
+    # warn 'params_to_save:' . Dumper($params);
 
     return $params;
 

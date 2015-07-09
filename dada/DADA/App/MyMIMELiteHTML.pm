@@ -47,13 +47,22 @@ sub absUrl($$) {
 # looks sort of strange. Regardless - not the best design for MIME::Lite::HTML, unfortunetly.
 
 sub parse {
+     
     my ( $self, $url_page, $url_txt, $url1 ) = @_;
     my ( $type, @mail, $html_ver, $txt_ver, $rootPage );
 
+         
+
+
     my $html_md5 = undef; 
+
+         
+
     
     # Get content of $url_page with LWP
     if ( $url_page && $url_page =~ /^(https?|ftp|file|nntp):\/\// ) {
+     
+
         print "Get ", $url_page, "\n" if $self->{_DEBUG};
         my ( $content, $res, $md5 ) = grab_url({-url => $url_page});
         $html_md5 = $md5; 
@@ -66,8 +75,11 @@ sub parse {
         $rootPage = $url1 || $res->base;
     }
     else {
-        $html_ver     = $url_page; # so, set the $html_ver to the URL we're sending from? WHY?!
+         
+        $html_ver     = $url_page;
         $rootPage = $url1;
+        $html_md5 = md5_checksum(\$html_ver);
+        #warn '$html_md5 ' . $html_md5; 
     }
 
     # Get content of $url_txt with LWP if needed
@@ -93,9 +105,9 @@ sub parse {
 
     # Get all multimedia part (img, flash) for later create a MIME part
     # for each of them
-    my $analyseur = HTML::LinkExtor->new;
-    $analyseur->parse($html_ver);
-    my @l = $analyseur->links;
+    my $analyzer = HTML::LinkExtor->new;
+       $analyzer->parse($html_ver);
+    my @l = $analyzer->links;
 
     # Include external CSS files
     $html_ver = $self->include_css( $html_ver, $rootPage );

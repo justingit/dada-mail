@@ -341,6 +341,11 @@ sub construct_and_send {
     my $entity     = undef;
     my $fm         = undef;
     my $md5        = undef; 
+    my $dry_run    = 0; 
+    
+    if ( exists($args->{-dry_run})) {
+        $dry_run = $args->{-dry_run};
+    }
     
     if ( $args->{-screen} eq 'send_email' ) {
         ( $status, $errors, $entity, $fm ) = $self->construct_from_text($draft_q);
@@ -372,80 +377,86 @@ sub construct_and_send {
         return ( 0, $@, undef, undef );
     };
 
-    require DADA::Mail::Send;
-    my $mh = DADA::Mail::Send->new(
-        {
-            -list   => $self->{list},
-            -ls_obj => $self->{ls_obj},
-        }
-    );
-
-    unless ( $mh->isa('DADA::Mail::Send') ) {
-        return ( 0, "DADA::Mail::Send object wasn't created correctly?", undef, undef );
-    }
-
-    $mh->test( $self->test );
-
-    my %mailing = ( $mh->return_headers($final_header), Body => $final_body, );
-
-    my $naked_fields = $self->{lh_obj}->subscriber_fields( { -dotted => 0 } );
-    my $partial_sending = partial_sending_query_to_params( $draft_q, $naked_fields );
-
-    if ( $draft_q->param('archive_no_send') != 1 ) {
-        my @alternative_list = ();
-        @alternative_list = $draft_q->multi_param('alternative_list');
-        $mh->mass_test_recipient( scalar $draft_q->param('test_recipient') );
-        my $multi_list_send_no_dupes = $draft_q->param('multi_list_send_no_dupes')
-          || 0;
-
-        if ( exists( $args->{-Ext_Request} ) ) {
-            $mh->Ext_Request( $args->{-Ext_Request} );
-        }
-
-        $message_id = $mh->mass_send(
+    if($dry_run != 1) { 
+        require DADA::Mail::Send;
+        my $mh = DADA::Mail::Send->new(
             {
-                -msg             => {%mailing},
-                -partial_sending => $partial_sending,
-                -multi_list_send => {
-                    -lists    => [@alternative_list],
-                    -no_dupes => $multi_list_send_no_dupes,
-                },
-                -also_send_to => [@alternative_list],
-                ( $process =~ m/test/i )
-                ? (
-                    -mass_test      => 1,
-                    -test_recipient => $draft_q->param('test_recipient'),
-                  )
-                : ( -mass_test => 0, )
-
+                -list   => $self->{list},
+                -ls_obj => $self->{ls_obj},
             }
         );
-    }
-    else {
 
-        if ( $draft_q->param('back_date') == 1 ) {
-            $message_id = $self->backdated_msg_id( $draft_q->param('backdate_datetime') );
+        unless ( $mh->isa('DADA::Mail::Send') ) {
+            return ( 0, "DADA::Mail::Send object wasn't created correctly?", undef, undef );
+        }
+
+        $mh->test( $self->test );
+
+        my %mailing = ( $mh->return_headers($final_header), Body => $final_body, );
+
+        my $naked_fields = $self->{lh_obj}->subscriber_fields( { -dotted => 0 } );
+        my $partial_sending = partial_sending_query_to_params( $draft_q, $naked_fields );
+
+        if ( $draft_q->param('archive_no_send') != 1 ) {
+            my @alternative_list = ();
+            @alternative_list = $draft_q->multi_param('alternative_list');
+            $mh->mass_test_recipient( scalar $draft_q->param('test_recipient') );
+            my $multi_list_send_no_dupes = $draft_q->param('multi_list_send_no_dupes')
+              || 0;
+
+            if ( exists( $args->{-Ext_Request} ) ) {
+                $mh->Ext_Request( $args->{-Ext_Request} );
+            }
+
+            $message_id = $mh->mass_send(
+                {
+                    -msg             => {%mailing},
+                    -partial_sending => $partial_sending,
+                    -multi_list_send => {
+                        -lists    => [@alternative_list],
+                        -no_dupes => $multi_list_send_no_dupes,
+                    },
+                    -also_send_to => [@alternative_list],
+                    ( $process =~ m/test/i )
+                    ? (
+                        -mass_test      => 1,
+                        -test_recipient => $draft_q->param('test_recipient'),
+                      )
+                    : ( -mass_test => 0, )
+
+                }
+            );
         }
         else {
-            $message_id = DADA::App::Guts::message_id();
+
+            if ( $draft_q->param('back_date') == 1 ) {
+                $message_id = $self->backdated_msg_id( $draft_q->param('backdate_datetime') );
+            }
+            else {
+                $message_id = DADA::App::Guts::message_id();
+            }
+
+            %mailing = $mh->clean_headers(%mailing);
+            %mailing = ( %mailing, $mh->_make_general_headers, $mh->list_headers );
+
+            require DADA::Security::Password;
+            my $ran_number = DADA::Security::Password::generate_rand_string('1234567890');
+            $mailing{'Message-ID'} =
+              '<' . $message_id . '.' . $ran_number . '.' . $self->{ls_obj}->param('list_owner_email') . '>';
+            $mh->saved_message( $mh->_massaged_for_archive( \%mailing ) );
+
         }
 
-        %mailing = $mh->clean_headers(%mailing);
-        %mailing = ( %mailing, $mh->_make_general_headers, $mh->list_headers );
+        if ( ( $self->are_we_archiving_based_on_params($draft_q) == 1 ) && ( $process !~ m/test/i ) ) {
+            $self->{ah_obj}->set_archive_info( $message_id, $mailing{Subject}, undef, undef, $mh->saved_message );
+        }
 
-        require DADA::Security::Password;
-        my $ran_number = DADA::Security::Password::generate_rand_string('1234567890');
-        $mailing{'Message-ID'} =
-          '<' . $message_id . '.' . $ran_number . '.' . $self->{ls_obj}->param('list_owner_email') . '>';
-        $mh->saved_message( $mh->_massaged_for_archive( \%mailing ) );
-
+        return ( 1, undef, $message_id, $md5 );
     }
-
-    if ( ( $self->are_we_archiving_based_on_params($draft_q) == 1 ) && ( $process !~ m/test/i ) ) {
-        $self->{ah_obj}->set_archive_info( $message_id, $mailing{Subject}, undef, undef, $mh->saved_message );
+    else { 
+        # Dry run: 
+        return ( 1, undef, undef, $md5 );
     }
-
-    return ( 1, undef, $message_id, $md5 );
 }
 
 sub construct_from_text {
@@ -681,7 +692,6 @@ sub construct_from_url {
         ),
         %headers,
     );
-
 
     my $text_message = undef;
     if ( defined(scalar $draft_q->param('text_message_body')) ) {

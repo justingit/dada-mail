@@ -210,21 +210,53 @@ sub run_schedules {
             }
         
             if($specific_time >= $self->{ls_obj}->param('schedule_last_checked_time')){ 
-                $r .= "\t\t\t* Running schedule now!\n";
-            
-            
+                
+                if($sched->{schedule_recurring_only_mass_mail_if_html_diff} == 1){ 
+                    $r .= "*\t\tChecking message content...\n";
+                    my ($status, $errors, $message_id, $md5) = $self->{ms_obj}->construct_and_send(
+                         {
+                             -draft_id   => $sched->{id},
+                             -screen     => $sched->{screen},
+                             -role       => $sched->{role},,
+                             -process    => 1, 
+                             -dry_run    => 1, 
+                         }
+                     );      
+                     undef($status);       
+                     undef($errors);
+                     undef($message_id);
+                     if(
+                            defined($md5) 
+                         && defined($sched->{schedule_html_body_checksum})
+                         && $md5 eq $sched->{schedule_html_body_checksum}
+                    ) { 
+                            $r .= "\t\t\t* HTML Content same as previously sent scheduled mass mailing.\n";
+                            $r .= "\t\t\t  Skipping sending scheduled mass mailing.\n\n"; 
+                            undef($md5); 
+                            next SPECIFIC_SCHEDULES;
+                            
+                     }
+                     else { 
+                         $r .= "*\t\tLooks good! HTML content is different than last scheduled mass mailing.\n";
+                         undef($md5); 
+                     }
+                }
+              
+                 $r .= "\t\t\t* Running schedule now!\n";
+
                my ($status, $errors, $message_id, $md5) = $self->{ms_obj}->construct_and_send(
                     {
                         -draft_id   => $sched->{id},
                         -screen     => $sched->{screen},
                         -role       => $sched->{role},,
                         -process    => 1, 
+                        -dry_run    => 1, 
                     }
                 );
-                
-                $r .= 'Saved MD5: ' . $sched->{schedule_html_body_checksum} . "\n";
-                $r .= 'MD5: ' . $md5 . "\n"; 
-                $r .= $self->update_schedule(
+               # $r .= 'schedule_recurring_only_mass_mail_if_html_diff ' . $sched->{schedule_recurring_only_mass_mail_if_html_diff} . "\n";
+               #    $r .= 'Saved MD5: ' . $sched->{schedule_html_body_checksum} . "\n";
+               #    $r .= 'MD5: ' . $md5 . "\n"; 
+               $self->update_schedule(
                     {
                         -id     => $sched->{id},
                         -role   => $sched->{role},

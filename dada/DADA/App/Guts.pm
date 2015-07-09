@@ -78,6 +78,7 @@ require Exporter;
   safely_encode
   slurp
   grab_url
+  md5_checksum
   can_use_LWP_Simple
   can_use_AuthenCAPTCHA
   can_use_datetime
