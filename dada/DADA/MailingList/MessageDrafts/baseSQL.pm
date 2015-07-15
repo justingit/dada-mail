@@ -793,9 +793,11 @@ sub params_to_save {
         $params->{auto_create_plaintext} = 1;
         $params->{url_options}           = 1;
         $params->{remove_javascript}     = 1;
-        $params->{url_username}          = 1;
-        $params->{url_password}          = 1;
-        $params->{proxy}                 = 1;
+        
+        # These aren't used atm. 
+        #$params->{url_username}          = 1;
+        #$params->{url_password}          = 1;
+        #$params->{proxy}                 = 1;
     }
 
     # use Data::Dumper;

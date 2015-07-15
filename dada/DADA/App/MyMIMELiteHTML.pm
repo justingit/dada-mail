@@ -99,8 +99,17 @@ sub parse {
             $txt_ver = $url_txt;
         }
     }
-    
-    # I'm trying horribly to think of when I wouldn't have an HTML Version... 
+
+    # Means successful, but blank. Blank is no good for us. 
+    if(! $html_ver){ 
+        $self->set_err( 'Webpage content is blank.' );
+        if(wantarray){ 
+     	    return (0, 'Webpage content is blank.', $self->{_MAIL}, $html_md5);        
+        }
+        else { 
+            return undef;
+        }
+    }
     goto BUILD_MESSAGE unless $html_ver;
 
     # Get all multimedia part (img, flash) for later create a MIME part
@@ -271,7 +280,7 @@ sub parse {
     $self->build_mime_object( $html_ver, $txt_ver || undef, \@mail );
 
     if(wantarray){ 
- 	    return ($self->{_MAIL}, $html_md5);        
+ 	    return (1, undef, $self->{_MAIL}, $html_md5);        
     }
     else { 
 	    return $self->{_MAIL};

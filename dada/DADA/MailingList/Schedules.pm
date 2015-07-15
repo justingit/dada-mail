@@ -271,7 +271,8 @@ sub run_schedules {
                     $r .= "\t\t* Scheduled Mass Mailing added to the Queue, Message ID: $message_id\n"; 
                 }
                 else { 
-                    $r .= "\t\t* PROBLEMS with Mass Mailing:\n$errors\n"; 
+                    $r .= "\t\t* Scheduled Mass Mailing not sent, reasons:\n$errors\n";
+                    warn        "Scheduled Mass Mailing not sent, reasons:\n$errors\n";
                 }
                 if($sched->{schedule_type} ne 'recurring'){ 
                     $r .= "\t\t* Deactivating Schedule...\n"; 

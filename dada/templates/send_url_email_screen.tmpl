@@ -136,8 +136,9 @@
 		  
 
 		<!-- tmpl_include html_message_form_field_widget.tmpl --> 
-	
-<h2>Advanced Options</h2>
+
+<fieldset>
+<legend>Advanced Options</legend>
 		<table>
 		  <tr>
 		   <td>
@@ -192,6 +193,8 @@
 			   </label> <em>(highly recommended)</em>
 			 </p>
 			</td>
+	
+	<!-- tmpl_if comment --> 
 	
 		  </tr> 
 		  <tr>
@@ -260,8 +263,12 @@
 			</table>
 		   </td>
 		  </tr>
+		  
+		  
+	<!-- /tmpl_if --> 
+	
 		 </table>
-
+</fieldset>
 </div> 
 
 <div id="plaintext_message"> 

@@ -640,12 +640,12 @@ sub construct_from_url {
     my $url               = strip( $draft_q->param('url') );
     my $url_options       = $draft_q->param('url_options') || undef;
     my $remove_javascript = $draft_q->param('remove_javascript') || 0;
-    my $login_details;
-    if (   defined( $draft_q->param('url_username') )
-        && defined( $draft_q->param('url_password') ) )
-    {
-        $login_details = $draft_q->param('url_username') . ':' . $draft_q->param('url_password');
-    }
+    #my $login_details;
+    #if (   defined( $draft_q->param('url_username') )
+    #    && defined( $draft_q->param('url_password') ) )
+    #{
+    #    $login_details = $draft_q->param('url_username') . ':' . $draft_q->param('url_password');
+    #}
 
     my $proxy = undef;
     if ( defined( $draft_q->param('proxy') ) ) {
@@ -683,8 +683,8 @@ sub construct_from_url {
         'HTMLCharset'  => $self->{ls_obj}->param('charset_value'),
         HTMLEncoding   => $self->{ls_obj}->param('html_encoding'),
         TextEncoding   => $self->{ls_obj}->param('plaintext_encoding'),
-        ( ($proxy)         ? ( Proxy        => $proxy, )         : () ),
-        ( ($login_details) ? ( LoginDetails => $login_details, ) : () ),
+        #( ($proxy)         ? ( Proxy        => $proxy, )         : () ),
+        #( ($login_details) ? ( LoginDetails => $login_details, ) : () ),
         (
               ( $DADA::Config::CPAN_DEBUG_SETTINGS{MIME_LITE_HTML} == 1 )
             ? ( Debug => 1, )
@@ -739,6 +739,8 @@ sub construct_from_url {
 
     my $MIMELiteObj;
     my $md5; 
+    my $mlo_status = 1; 
+    my $mlo_errors = undef; 
     
     if ( $draft_q->param('content_from') eq 'url' ) {
 
@@ -758,12 +760,15 @@ sub construct_from_url {
 
         my $errors = undef;
         try { 
-            ($MIMELiteObj, $md5) = $mailHTML->parse( $url, safely_encode($text_message) );
+            ($mlo_status, $mlo_errors, $MIMELiteObj, $md5) = $mailHTML->parse( $url, safely_encode($text_message) );
         } catch { 
             $errors .= "Problems with sending a webpage! Make sure you've correctly entered the URL to your webpage!\n";
             $errors .= "* Returned Error: $_";
             return ( 0, $errors, undef, undef, undef );  
         };
+        if($mlo_status == 0){ 
+            return ( 0, $mlo_errors, undef, undef, undef );  
+        }
     }
     else {
         
@@ -780,15 +785,18 @@ sub construct_from_url {
 
         
         try { 
-            ($MIMELiteObj, $md5) = $mailHTML->parse( safely_encode($html_message), safely_encode($text_message) ); 
+            ($mlo_status, $mlo_errors, $MIMELiteObj, $md5) = $mailHTML->parse( safely_encode($html_message), safely_encode($text_message) ); 
         } catch { 
             my $errors = "Problems sending HTML! \n
             * Are you trying to send a webpage via URL instead?
             * Have you entered anything in the, HTML Version?
             * Returned Error: $_
             ";
-            return ( 0, $errors, undef, undef );
+            return ( 0, $errors, undef, undef, undef );
         }; 
+        if($mlo_status == 0){ 
+            return ( 0, $mlo_errors, undef, undef, undef );  
+        }
     }
 
     my $fm = DADA::App::FormatMessages->new( -List => $self->{list} );
