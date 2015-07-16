@@ -3,18 +3,18 @@ package DADA::App::MyMIMELiteHTML;
 use lib "../../";
 use lib "../../DADA/perllib";
 
-use MIME::Lite::HTML;
-@ISA = "MIME::Lite::HTML";
+use MIME::Lite::HTMLForked;
+@ISA = "MIME::Lite::HTMLForked";
 use strict; 
 
-#use base "MIME::Lite::HTML";
+#use base "MIME::Lite::HTMLForked";
 
 use Carp qw(croak carp);
 use DADA::App::Guts;
 use Try::Tiny; 
 
 ## trés bizarre!
-#sub MIME::Lite::HTML::absUrl($$) {
+#sub MIME::Lite::HTMLForked::absUrl($$) {
 sub absUrl($$) {
     my $str  = shift;
     my $base = shift;
@@ -46,7 +46,7 @@ sub absUrl($$) {
 # DEV: For whatever reason, I can't overload, "absUrl", without bringing in this entire subroutine.
 # I'm pretty sure it has to do with either the absUrl() call happening in a private subroutine,
 # or, absUrl isn't overloadable? It's not actually a method and isn't exported... I can force it, but it
-# looks sort of strange. Regardless - not the best design for MIME::Lite::HTML, unfortunetly.
+# looks sort of strange. Regardless - not the best design for MIME::Lite::HTMLForked, unfortunetly.
 
 sub parse {
 
@@ -510,7 +510,7 @@ sub build_mime_object {
         $mail->attach($rel);
     }
 
-    #  $mail->replace('X-Mailer',"MIME::Lite::HTML $VERSION");
+    #  $mail->replace('X-Mailer',"MIME::Lite::HTMLForked $VERSION");
 
     $self->{_MAIL} = $mail;
 
@@ -526,8 +526,6 @@ sub crop_html {
   #  warn q{$self->{crop_html_content_selector_type}} . $self->{crop_html_content_selector_type}; 
   #  warn q{$self->{crop_html_content_selector_label}} . $self->{crop_html_content_selector_label}; 
   #  warn q{$self->{crop_html_content}} . $self->{crop_html_content}; 
-    
-
 
     try {
         require HTML::Tree;
@@ -571,7 +569,6 @@ sub crop_html {
                 '~literal', 'text' => $crop,
             )
         );
-       # warn 'returning: ' . $root->as_HTML( undef, '  ' );
         return $root->as_HTML( undef, '  ' );
 
     }
@@ -591,7 +588,7 @@ DADA::App::MyMIMELiteHTML
 
 =head1 DESCRIPTION
 
-This is a small small module that inherits almost everything from the CPAN, C<MIME::Lite::HTML> module, but
+This is a small small module that inherits almost everything from the CPAN, C<MIME::Lite::HTMLForked> module, but
 overrides the method, C<absUrl> so it may work well with Dada Mail's Clickthrough Tracker's redirect tags, which look like this: 
 
  [redirect=http://yahoo.com]
@@ -602,7 +599,7 @@ The inheritence is done exactly as outlined in C<perltoot>
 
 http://perldoc.perl.org/perltoot.html#Inheritance
 
-C<MIME::Lite::HTML> can be found here: 
+C<MIME::Lite::HTMLForked> can be found here: 
 
 http://search.cpan.org/~alian/MIME-Lite-HTML/
 

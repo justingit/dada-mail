@@ -144,11 +144,15 @@
     <table> 
         <tr> 
             <td>
-                <input type="checkbox" name="crop_html_content" id="crop_html_content" value="1" />
+                <input type="checkbox" name="crop_html_content" id="crop_html_content" value="1"  />
             </td>
             <td>
                 <label for="crop_html_content">Crop Webpage</label>
-                
+                <!-- tmpl_unless can_use_HTML_Tree --> 
+                    <p class="error">
+                        Disabled. The following CPAN Perl module will need to be installed: HTML::Tree. 
+                    </p>
+                <!-- /tmpl_unless --> 
                 <table>
                  <tr>
                   <td>

@@ -82,6 +82,7 @@ require Exporter;
   can_use_LWP_Simple
   can_use_AuthenCAPTCHA
   can_use_datetime
+  can_use_HTML_Tree
   formatted_runtime
   commify
   generate_rand_string_md5
@@ -3107,6 +3108,20 @@ sub can_use_AuthenCAPTCHA {
     };
 	return $can_use_captcha;
 }
+
+sub can_use_HTML_Tree {
+    my $can_use_HTML_Tree = 1; 
+    try { 
+        require HTML::Tree;
+        require HTML::Element;
+        require HTML::TreeBuilder;
+        
+    } catch { 
+        $can_use_HTML_Tree = 0;
+    };
+    return $can_use_HTML_Tree;
+}
+
 
 sub formatted_runtime {
 

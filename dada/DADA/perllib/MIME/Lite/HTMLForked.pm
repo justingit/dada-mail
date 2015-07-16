@@ -1,6 +1,6 @@
-package MIME::Lite::HTML;
+package MIME::Lite::HTMLForked;
 
-# module MIME::Lite::HTML : Provide routine to transform a HTML page in
+# module MIME::Lite::HTMLForked : Provide routine to transform a HTML page in
 # a MIME::Lite mail
 # Copyright 2001 A.Barbet alian@alianwebserver.com.  All rights reserved.
 
@@ -47,6 +47,7 @@ package MIME::Lite::HTML;
 # report.
 #
 # See Changes files for older changes
+use lib qw(../../); 
 
 use LWP::UserAgent;
 use HTML::LinkExtor;
@@ -127,20 +128,6 @@ sub new {
     }
     else { $self->{_remove_jscript} = 0; }
 
-    for (qw(
-            crop_html_content 
-            crop_html_content_selector_type 
-            crop_html_content_selector_label
-        )){ 
-        if(exists($param{$_})) { 
-            $self->{$_} = $param{$_};
-        }
-        else { 
-            $self->{$_} = undef;
-            
-        }
-    }
-                
     # Set debug level
     if ( $param{'Debug'} ) {
         $self->{_DEBUG} = 1;
@@ -188,7 +175,7 @@ sub new {
     ## End. Default values remain as they were initially set.
     ## No need to change existing scripts if you send US-ASCII.
     ## If you DON't send us-ascii, you wouldn't be able to use
-    ## MIME::Lite::HTML anyway :-)
+    ## MIME::Lite::HTMLForked anyway :-)
 
     # Set proxy to use to get file
     if ( $param{'Proxy'} ) {
@@ -537,7 +524,7 @@ sub build_mime_object {
         # Attach related part to alternative part
         $mail->attach($rel);
     }
-    $mail->replace( 'X-Mailer', "MIME::Lite::HTML $VERSION" );
+    $mail->replace( 'X-Mailer', "MIME::Lite::HTMLForked $VERSION" );
     $self->{_MAIL} = $mail;
 }
 
@@ -769,12 +756,12 @@ __END__
 
 =head1 NAME
 
-MIME::Lite::HTML - Provide routine to transform a HTML page in a MIME-Lite mail
+MIME::Lite::HTMLForked - Provide routine to transform a HTML page in a MIME-Lite mail
 
 =head1 SYNOPSIS
 
-  perl -MMIME::Lite::HTML -e '
-     new MIME::Lite::HTML
+  perl -MMIME::Lite::HTMLForked -e '
+     new MIME::Lite::HTMLForked
          From     => "MIME-Lite\@alianwebserver.com",
          To       => "alian\@cpan.org",
          Url      => "http://localhost/server-status";'
@@ -830,7 +817,7 @@ Did you alread see link like "Send this page to a friend" ?. With this module,
 you can do script that to this in 3 lines.
 
 It can be used too in a HTML newsletter. You make a classic HTML page,
-and give just url to MIME::Lite::HTML.
+and give just url to MIME::Lite::HTMLForked.
 
 =head2 Construction
 
@@ -957,7 +944,7 @@ Subscribe on http://www.alianwebserver.com/cgi-bin/news_mlh.cgi
 
 =item new(%hash)
 
-Create a new instance of MIME::Lite::HTML.
+Create a new instance of MIME::Lite::HTMLForked.
 
 The hash can have this key : [Url], [Proxy], [Debug], [IncludeType],
  [HashTemplate], [LoginDetails], [TextCharset], [HTMLCharset],
@@ -968,7 +955,7 @@ The hash can have this key : [Url], [Proxy], [Debug], [IncludeType],
 =item Url
 
 ... is url to parse and send. If this param is found, call of parse routine
-and send of mail is done. Else you must use parse routine of MIME::Lite::HTML
+and send of mail is done. Else you must use parse routine of MIME::Lite::HTMLForked
 and send of MIME::Lite.
 
 =item Proxy
@@ -1012,7 +999,7 @@ so images are fetch when user read mail. (Server must be reachable !)
 
 =item $hash{'HashTemplate'} 
 
-... is a reference to a hash. If present, MIME::Lite::HTML 
+... is a reference to a hash. If present, MIME::Lite::HTMLForked 
 will substitute <? $name ?> with $hash{'HashTemplate'}{'name'} when parse url 
 to send. $hash{'HashTemplate'} can be used too for include data for subelement.
 Eg:
@@ -1223,9 +1210,9 @@ If no errors where found, it'll return undef.
   use strict;
   use CGI qw/:standard/;
   use CGI::Carp qw/fatalsToBrowser/;
-  use MIME::Lite::HTML;
+  use MIME::Lite::HTMLForked;
   
-  my $mailHTML = new MIME::Lite::HTML
+  my $mailHTML = new MIME::Lite::HTMLForked
      From     => 'MIME-Lite@alianwebserver.com',
      To       => param('email'),
      Subject => 'Your url: '.param('url');

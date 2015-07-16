@@ -10,7 +10,7 @@ use lib qw(
 use Carp qw(croak carp);
 use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts; 
-my $t = 1;#$DADA::Config::DEBUG_TRACE->{DADA_MailingList_MessageDrafts};
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_MessageDrafts};
 
 sub new {
 
@@ -201,7 +201,7 @@ sub save {
         warn 'id defined.'
           if $t;
        
-       warn 'still here.'; 
+#       warn 'still here.'; 
 
         # Trying to figure out what else this would be... 
         if(
@@ -216,7 +216,7 @@ sub save {
             || ($args->{-role} eq 'stationery' && $args->{-save_role} eq 'stationery')
         ) {
 
-            warn "Saving Regularly!"; 
+#            warn "Saving Regularly!"; 
             
             my $query; 
             if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
@@ -252,7 +252,7 @@ sub save {
         }
         elsif($args->{-role} eq 'stationery' && $args->{-save_role} eq 'draft') {
             
-            warn 'Draft from Stationery!'; 
+            # warn 'Draft from Stationery!'; 
              
             # All we need to do, is save this as stationery first, then - 
             $self->save({
@@ -270,13 +270,13 @@ sub save {
                         -screen => $args->{-screen},
                     }
                 ); 
-            warn 'created from stationery!'; 
-            warn 'Stationery ID: ' . $id; 
-            warn 'Returning  ID: ' . $saved_id ; 
+            # warn 'created from stationery!'; 
+            # warn 'Stationery ID: ' . $id; 
+            # warn 'Returning  ID: ' . $saved_id ; 
             return $saved_id;             
         }
         else { 
-            warn 'don\'t.... know what to save!'; 
+            # warn 'don\'t.... know what to save!'; 
             return $id; 
         }
     }
@@ -576,7 +576,7 @@ sub draft_index {
         my $q = $self->decode_draft( $hashref->{draft} );
        # warn q{$q->param('schedule_single_ctime')} . $q->param('schedule_single_ctime'); 
         
-        warn q{$q->param('schedule_html_body_checksum') } . $q->param('schedule_html_body_checksum');
+#        warn q{$q->param('schedule_html_body_checksum') } . $q->param('schedule_html_body_checksum');
         my $params = {
             id                            => $hashref->{id},
             list                          => $hashref->{list},

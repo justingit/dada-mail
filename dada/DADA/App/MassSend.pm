@@ -1010,10 +1010,11 @@ sub send_url_email {
                     num_total_mailouts     => $num_total_mailouts,
                     active_mailouts        => $active_mailouts,
                     
-                      schedule_last_checked_frt =>
-                        formatted_runtime( time - $self->{ls_obj}->param('schedule_last_checked_time') ),
-                        can_use_datetime => scalar DADA::App::Guts::can_use_datetime(), 
-                        sched_flavor => $DADA::Config::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor},
+                    schedule_last_checked_frt =>
+                    formatted_runtime( time - $self->{ls_obj}->param('schedule_last_checked_time') ),
+                    can_use_datetime  => scalar DADA::App::Guts::can_use_datetime(), 
+                    can_use_HTML_Tree => scalar DADA::App::Guts::can_use_HTML_Tree(), 
+                    sched_flavor      => $DADA::Config::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor},
 
 
                     %wysiwyg_vars,
