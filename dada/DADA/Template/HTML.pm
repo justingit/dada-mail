@@ -465,8 +465,7 @@ sub template_from_magic {
                 $head_ele->unshift_content($base_href_ele);
             }
 
-            # Body:
-            
+            # Body:            
             my $found_id_tag = 0;
             my $replace_tag  = undef;
 

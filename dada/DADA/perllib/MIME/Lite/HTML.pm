@@ -1,6 +1,6 @@
 package MIME::Lite::HTML;
 
-# module MIME::Lite::HTML : Provide routine to transform a HTML page in 
+# module MIME::Lite::HTML : Provide routine to transform a HTML page in
 # a MIME::Lite mail
 # Copyright 2001 A.Barbet alian@alianwebserver.com.  All rights reserved.
 
@@ -57,9 +57,9 @@ use vars qw($VERSION @ISA @EXPORT @EXPORT_OK);
 
 require Exporter;
 
-@ISA = qw(Exporter);
-@EXPORT = qw();
-$VERSION = ('$Revision: 1.23 $ ' =~ /(\d+\.\d+)/)[0];
+@ISA     = qw(Exporter);
+@EXPORT  = qw();
+$VERSION = ( '$Revision: 1.23 $ ' =~ /(\d+\.\d+)/ )[0];
 
 my $LOGINDETAILS;
 
@@ -67,634 +67,698 @@ my $LOGINDETAILS;
 # redefine get_basic_credentials
 #------------------------------------------------------------------------------
 {
-  package RequestAgent;
-  use vars qw(@ISA);
-  @ISA = qw(LWP::UserAgent);
 
-  sub new {
-    my $self = LWP::UserAgent::new(@_);
-    $self;
-  }
+    package RequestAgent;
+    use vars qw(@ISA);
+    @ISA = qw(LWP::UserAgent);
 
-  sub get_basic_credentials {	
-    my($self, $realm, $uri) = @_;
-    # Use parameter of MIME-Lite-HTML, key LoginDetails
-    if (defined $LOGINDETAILS) { return split(':', $LOGINDETAILS, 2); } 
-    # Ask user on STDIN
-    elsif (-t) {
-      my $netloc = $uri->host_port;
-      print "Enter username for $realm at $netloc: ";
-      my $user = <STDIN>;
-      chomp($user);
-      # 403 if no user given
-      return (undef, undef) unless length $user;
-      print "Password: ";
-      system("stty -echo");
-      my $password = <STDIN>;
-      system("stty echo");
-      print "\n";  # because we disabled echo
-      chomp($password);
-      return ($user, $password);
+    sub new {
+        my $self = LWP::UserAgent::new(@_);
+        $self;
     }
-    # Damm we got 403 with CGI (use param LoginDetails)  ...
-    else { return (undef, undef) }
-  }
+
+    sub get_basic_credentials {
+        my ( $self, $realm, $uri ) = @_;
+
+        # Use parameter of MIME-Lite-HTML, key LoginDetails
+        if ( defined $LOGINDETAILS ) { return split( ':', $LOGINDETAILS, 2 ); }
+
+        # Ask user on STDIN
+        elsif (-t) {
+            my $netloc = $uri->host_port;
+            print "Enter username for $realm at $netloc: ";
+            my $user = <STDIN>;
+            chomp($user);
+
+            # 403 if no user given
+            return ( undef, undef ) unless length $user;
+            print "Password: ";
+            system("stty -echo");
+            my $password = <STDIN>;
+            system("stty echo");
+            print "\n";    # because we disabled echo
+            chomp($password);
+            return ( $user, $password );
+        }
+
+        # Damm we got 403 with CGI (use param LoginDetails)  ...
+        else { return ( undef, undef ) }
+    }
 }
 
 #------------------------------------------------------------------------------
 # new
 #------------------------------------------------------------------------------
 sub new {
-  my $class = shift;
-  my $self = {};
-  bless $self, $class;
-  my %param = @_;
-  # Agent name
-  $self->{_AGENT} = new RequestAgent;
-  $self->{_AGENT}->agent("MIME-Lite-HTML $VERSION");
-  # $self->{_AGENT}->from('mime-lite-html@alianwebserver.com' );
+    my $class = shift;
+    my $self  = {};
+    bless $self, $class;
+    my %param = @_;
 
-  # remove javascript code or no ?
-  if ($param{'remove_jscript'}) {
-    $self->{_remove_jscript} = 1;
-  } else { $self->{_remove_jscript} = 0; }
+    # Agent name
+    $self->{_AGENT} = new RequestAgent;
+    $self->{_AGENT}->agent("MIME-Lite-HTML $VERSION");
 
-  # Set debug level
-  if ($param{'Debug'}) {
-    $self->{_DEBUG} = 1;
-    delete $param{'Debug'};
-  }
+    # $self->{_AGENT}->from('mime-lite-html@alianwebserver.com' );
 
-  # Set Login information
-  if ($param{'LoginDetails'}) {
-    $LOGINDETAILS = $param{'LoginDetails'};
-    delete $param{'LoginDetails'};
-  }
-  # Set type of include to do
-  if ($param{'IncludeType'}) {
-    die "IncludeType must be in 'extern', 'cid' or 'location'\n" if
-      ( ($param{'IncludeType'} ne 'extern') and
-	($param{'IncludeType'} ne 'cid') and
-	($param{'IncludeType'} ne 'location'));	
-    $self->{_include} = $param{'IncludeType'};
-    delete $param{'IncludeType'};
-  } # Defaut type: use a Content-Location field
-  else {$self->{_include}='location';}
+    # remove javascript code or no ?
+    if ( $param{'remove_jscript'} ) {
+        $self->{_remove_jscript} = 1;
+    }
+    else { $self->{_remove_jscript} = 0; }
 
-  ## Added by Michalis@linuxmail.org to manipulate non-us mails
-  if ($param{'TextCharset'}) {
-    $self->{_textcharset}=$param{'TextCharset'};
-    delete $param{'TextCharset'};
-  } else { $self->{_textcharset}='iso-8859-1'; }
-  if ($param{'HTMLCharset'}) {
-    $self->{_htmlcharset}=$param{'HTMLCharset'};
-    delete $param{'HTMLCharset'};
-  } else { $self->{_htmlcharset}='iso-8859-1'; }
-  if ($param{'TextEncoding'}) {
-    $self->{_textencoding}=$param{'TextEncoding'};
-    delete $param{'TextEncoding'};
-  } else { $self->{_textencoding}='7bit'; }
-  if ($param{'HTMLEncoding'}) {
-    $self->{_htmlencoding}=$param{'HTMLEncoding'};
-    delete $param{'HTMLEncoding'};
-  } else { $self->{_htmlencoding}='quoted-printable'; }
-  ## End. Default values remain as they were initially set.
-  ## No need to change existing scripts if you send US-ASCII. 
-  ## If you DON't send us-ascii, you wouldn't be able to use 
-  ## MIME::Lite::HTML anyway :-)
+    for (qw(
+            crop_html_content 
+            crop_html_content_selector_type 
+            crop_html_content_selector_label
+        )){ 
+        if(exists($param{$_})) { 
+            $self->{$_} = $param{$_};
+        }
+        else { 
+            $self->{$_} = undef;
+            
+        }
+    }
+                
+    # Set debug level
+    if ( $param{'Debug'} ) {
+        $self->{_DEBUG} = 1;
+        delete $param{'Debug'};
+    }
 
-  # Set proxy to use to get file
-  if ($param{'Proxy'}) {
-    $self->{_AGENT}->proxy('http',$param{'Proxy'}) ;
-    print "Set proxy for http : ", $param{'Proxy'},"\n" 
-      if ($self->{_DEBUG});
-    delete $param{'Proxy'};
-  }
+    # Set Login information
+    if ( $param{'LoginDetails'} ) {
+        $LOGINDETAILS = $param{'LoginDetails'};
+        delete $param{'LoginDetails'};
+    }
 
-  # Set hash to use with template
-  if ($param{'HashTemplate'}) {
-    $param{'HashTemplate'} = ref($param{'HashTemplate'}) eq "HASH" 
-      ? $param{'HashTemplate'} : %{$param{'HashTemplate'}};
-    $self->{_HASH_TEMPLATE}= $param{'HashTemplate'};
-    delete $param{'HashTemplate'};
-  }
+    # Set type of include to do
+    if ( $param{'IncludeType'} ) {
+        die "IncludeType must be in 'extern', 'cid' or 'location'\n"
+          if (  ( $param{'IncludeType'} ne 'extern' )
+            and ( $param{'IncludeType'} ne 'cid' )
+            and ( $param{'IncludeType'} ne 'location' ) );
+        $self->{_include} = $param{'IncludeType'};
+        delete $param{'IncludeType'};
+    }    # Defaut type: use a Content-Location field
+    else { $self->{_include} = 'location'; }
 
-  # Ok I hope I known what I do ;-)
-  MIME::Lite->quiet(1);
+    ## Added by Michalis@linuxmail.org to manipulate non-us mails
+    if ( $param{'TextCharset'} ) {
+        $self->{_textcharset} = $param{'TextCharset'};
+        delete $param{'TextCharset'};
+    }
+    else { $self->{_textcharset} = 'iso-8859-1'; }
+    if ( $param{'HTMLCharset'} ) {
+        $self->{_htmlcharset} = $param{'HTMLCharset'};
+        delete $param{'HTMLCharset'};
+    }
+    else { $self->{_htmlcharset} = 'iso-8859-1'; }
+    if ( $param{'TextEncoding'} ) {
+        $self->{_textencoding} = $param{'TextEncoding'};
+        delete $param{'TextEncoding'};
+    }
+    else { $self->{_textencoding} = '7bit'; }
+    if ( $param{'HTMLEncoding'} ) {
+        $self->{_htmlencoding} = $param{'HTMLEncoding'};
+        delete $param{'HTMLEncoding'};
+    }
+    else { $self->{_htmlencoding} = 'quoted-printable'; }
+    ## End. Default values remain as they were initially set.
+    ## No need to change existing scripts if you send US-ASCII.
+    ## If you DON't send us-ascii, you wouldn't be able to use
+    ## MIME::Lite::HTML anyway :-)
 
-  # direct call of new parse & send
-  my $url;
-  if ($param{'Url'}) {
-    $url = $param{'Url'};
-    delete $param{'Url'};
-  }
-  $self->{_param} = \%param;
-  if ($url) {
-    my $m = $self->parse($url);
-    $m->send;
-  }
+    # Set proxy to use to get file
+    if ( $param{'Proxy'} ) {
+        $self->{_AGENT}->proxy( 'http', $param{'Proxy'} );
+        print "Set proxy for http : ", $param{'Proxy'}, "\n"
+          if ( $self->{_DEBUG} );
+        delete $param{'Proxy'};
+    }
 
-  return $self;
+    # Set hash to use with template
+    if ( $param{'HashTemplate'} ) {
+        $param{'HashTemplate'} =
+          ref( $param{'HashTemplate'} ) eq "HASH" ? $param{'HashTemplate'} : %{ $param{'HashTemplate'} };
+        $self->{_HASH_TEMPLATE} = $param{'HashTemplate'};
+        delete $param{'HashTemplate'};
+    }
+
+    # Ok I hope I known what I do ;-)
+    MIME::Lite->quiet(1);
+
+    # direct call of new parse & send
+    my $url;
+    if ( $param{'Url'} ) {
+        $url = $param{'Url'};
+        delete $param{'Url'};
+    }
+    $self->{_param} = \%param;
+    if ($url) {
+        my $m = $self->parse($url);
+        $m->send;
+    }
+
+    return $self;
 }
 
 #------------------------------------------------------------------------------
 # absUrl
 #------------------------------------------------------------------------------
 sub absUrl($$) {
-  # rt 19656 : unknown URI schemes cause rewrite to fail
-  my $rep = eval { URI::WithBase->new($_[0], $_[1])->abs; };
-  return ($rep ? $rep : $_[0]);
+
+    # rt 19656 : unknown URI schemes cause rewrite to fail
+    my $rep = eval { URI::WithBase->new( $_[0], $_[1] )->abs; };
+    return ( $rep ? $rep : $_[0] );
 }
 
 # Replace in HTML link with image with cid:key
 sub pattern_image_cid {
-  my $sel = shift;
-  return '<img '.$_[0].'src="cid:'.$sel->cid(absUrl($_[1],$_[2])).'"';
+    my $sel = shift;
+    return '<img ' . $_[0] . 'src="cid:' . $sel->cid( absUrl( $_[1], $_[2] ) ) . '"';
 }
+
 # Replace relative url for image with absolute
 sub pattern_image {
-  return '<img '.$_[0].'src="'.absUrl($_[1],$_[2]).'"';
+    return '<img ' . $_[0] . 'src="' . absUrl( $_[1], $_[2] ) . '"';
 }
 
 sub pattern_href {
-  my ($url,$balise, $sep)=@_;
-  my $b=" $balise=\"$url\"";
-  $b.=$sep if ($sep ne '"' and $sep ne "'");
-  return $b;
+    my ( $url, $balise, $sep ) = @_;
+    my $b = " $balise=\"$url\"";
+    $b .= $sep if ( $sep ne '"' and $sep ne "'" );
+    return $b;
 }
 
 #------------------------------------------------------------------------------
 # parse
 #------------------------------------------------------------------------------
-sub parse
-  {
-    my($self,$url_page,$url_txt,$url1)=@_;
-    my ($type,@mail,$gabarit,$gabarit_txt,$racinePage);
+sub parse {
+    my ( $self, $url_page, $url_txt, $url1 ) = @_;
+    my ( $type, @mail, $gabarit, $gabarit_txt, $racinePage );
 
     # Get content of $url_page with LWP
-    if ($url_page && $url_page=~/^(https?|ftp|file|nntp):\/\//)
-	{
-        print "Get ", $url_page,"\n" if $self->{_DEBUG};	
-        my $req = new HTTP::Request('GET' => $url_page);
+    if ( $url_page && $url_page =~ /^(https?|ftp|file|nntp):\/\// ) {
+        print "Get ", $url_page, "\n" if $self->{_DEBUG};
+        my $req = new HTTP::Request( 'GET' => $url_page );
         my $res = $self->{_AGENT}->request($req);
-        if (!$res->is_success) 
-	    {$self->set_err("Can't fetch $url_page (".$res->message.")");}
-        else {$gabarit = $res->content;}
-        $racinePage=$url1 || $res->base;
-	}
-    else {$gabarit=$url_page;$racinePage=$url1;}
+        if   ( !$res->is_success ) { $self->set_err( "Can't fetch $url_page (" . $res->message . ")" ); }
+        else                       { $gabarit = $res->content; }
+        $racinePage = $url1 || $res->base;
+    }
+    else { $gabarit = $url_page; $racinePage = $url1; }
 
     # Get content of $url_txt with LWP if needed
-    if ($url_txt)
-	{
-	  if ($url_txt=~/^(https?|ftp|file|nntp):\/\//)
-	    {
-            print "Get ", $url_txt,"\n" if $self->{_DEBUG};
-            my $req2 = new HTTP::Request('GET' => $url_txt);
+    if ($url_txt) {
+        if ( $url_txt =~ /^(https?|ftp|file|nntp):\/\// ) {
+            print "Get ", $url_txt, "\n" if $self->{_DEBUG};
+            my $req2 = new HTTP::Request( 'GET' => $url_txt );
             my $res3 = $self->{_AGENT}->request($req2);
-            if (!$res3->is_success) 
-		  {$self->set_err("Can't fetch $url_txt (".$res3->message.")");}
-            else {$gabarit_txt = $res3->content;}
-	    }
-	  else {$gabarit_txt=$url_txt;}
-          }
+            if   ( !$res3->is_success ) { $self->set_err( "Can't fetch $url_txt (" . $res3->message . ")" ); }
+            else                        { $gabarit_txt = $res3->content; }
+        }
+        else { $gabarit_txt = $url_txt; }
+    }
     goto BUILD_MESSAGE unless $gabarit;
 
-    # Get all multimedia part (img, flash) for later create a MIME part 
+    # Get all multimedia part (img, flash) for later create a MIME part
     # for each of them
     my $analyseur = HTML::LinkExtor->new;
     $analyseur->parse($gabarit);
     my @l = $analyseur->links;
 
     # Include external CSS files
-    $gabarit = $self->include_css($gabarit,$racinePage);
+    $gabarit = $self->include_css( $gabarit, $racinePage );
 
     # Include external Javascript files
-    $gabarit = $self->include_javascript($gabarit,$racinePage);
+    $gabarit = $self->include_javascript( $gabarit, $racinePage );
 
     # Include form images
-    ($gabarit,@mail) = $self->input_image($gabarit,$racinePage);
+    ( $gabarit, @mail ) = $self->input_image( $gabarit, $racinePage );
 
     # Change target action for form
-    $gabarit = $self->link_form($gabarit,$racinePage);
+    $gabarit = $self->link_form( $gabarit, $racinePage );
 
     # Scan each part found by linkExtor
-    my (%images_read,%url_remplace);
+    my ( %images_read, %url_remplace );
     foreach my $url (@l) {
-	  my $urlAbs = absUrl($$url[2],$racinePage);
-	  chomp $urlAbs; # Sometime a strange cr/lf occur
+        my $urlAbs = absUrl( $$url[2], $racinePage );
+        chomp $urlAbs;    # Sometime a strange cr/lf occur
 
-	  # Replace relative href found to absolute one
-	  if ( ($$url[0] eq 'a') && ($$url[1] eq 'href') && ($$url[2]) &&
-		 (($$url[2]!~m!^http://!) && # un lien non absolu
-		  ($$url[2]!~m!^mailto:!) && # pas les mailto
-		  ($$url[2]!~m!^\#!))     && # ni les ancres
-		 (!$url_remplace{$urlAbs}) ) # ni les urls deja remplacees
-	    {
-		$gabarit=~s/\s href \s* = \s* [\"']? \Q$$url[2]\E ([\"'>])
+        # Replace relative href found to absolute one
+        if (
+               ( $$url[0] eq 'a' )
+            && ( $$url[1] eq 'href' )
+            && ( $$url[2] )
+            && (
+                ( $$url[2] !~ m!^http://! ) &&    # un lien non absolu
+                ( $$url[2] !~ m!^mailto:! ) &&    # pas les mailto
+                ( $$url[2] !~ m!^\#! )
+            )
+            &&                                    # ni les ancres
+            ( !$url_remplace{$urlAbs} )
+          )                                       # ni les urls deja remplacees
+        {
+            $gabarit =~ s/\s href \s* = \s* [\"']? \Q$$url[2]\E ([\"'>])
 		           /pattern_href($urlAbs,"href",$1)/giemx;
-		print "Replace ",$$url[2]," with ",$urlAbs,"\n" 
-		  if ($self->{_DEBUG});
-		$url_remplace{$urlAbs}=1;
-	    }
+            print "Replace ", $$url[2], " with ", $urlAbs, "\n"
+              if ( $self->{_DEBUG} );
+            $url_remplace{$urlAbs} = 1;
+        }
 
-	  # For frame & iframe
-	  elsif ( (lc($$url[0] eq 'iframe') || lc($$url[0] eq 'frame')) &&
-		   (lc($$url[1]) eq 'src') && ($$url[2]) )
-	    {
-		$gabarit=~s/\s src \s* = \s* [\"']? \Q$$url[2]\E ([\"'>])
+        # For frame & iframe
+        elsif (( lc( $$url[0] eq 'iframe' ) || lc( $$url[0] eq 'frame' ) )
+            && ( lc( $$url[1] ) eq 'src' )
+            && ( $$url[2] ) )
+        {
+            $gabarit =~ s/\s src \s* = \s* [\"']? \Q$$url[2]\E ([\"'>])
 		           /pattern_href($urlAbs,"src",$1)/giemx;
-		print "Replace ",$$url[2]," with ",$urlAbs,"\n"
-		  if ($self->{_DEBUG});
-		$url_remplace{$urlAbs}=1;
-	    }
+            print "Replace ", $$url[2], " with ", $urlAbs, "\n"
+              if ( $self->{_DEBUG} );
+            $url_remplace{$urlAbs} = 1;
+        }
 
-	  # For background images
-	  elsif ((lc($$url[1]) eq 'background') && ($$url[2])) {
-	    # Replace relative url with absolute
-	    my $v = ($self->{_include} eq 'cid') ?
-	      "cid:".$self->cid($urlAbs) : $urlAbs;
-	    $gabarit=~s/background \s* = \s* [\"']? \Q$$url[2]\E ([\"'>])
+        # For background images
+        elsif ( ( lc( $$url[1] ) eq 'background' ) && ( $$url[2] ) ) {
+
+            # Replace relative url with absolute
+            my $v = ( $self->{_include} eq 'cid' ) ? "cid:" . $self->cid($urlAbs) : $urlAbs;
+            $gabarit =~ s/background \s* = \s* [\"']? \Q$$url[2]\E ([\"'>])
                        /pattern_href($v,"background",$1)/giemx;
+
             # Exit with extern configuration, don't include image
             # else add part to mail
-	    if (($self->{_include} ne 'extern')&&(!$images_read{$urlAbs}))
-		 {
-		   $images_read{$urlAbs} = 1;
-		   push(@mail, $self->create_image_part($urlAbs)); 
-		 }
-	   }
+            if ( ( $self->{_include} ne 'extern' ) && ( !$images_read{$urlAbs} ) ) {
+                $images_read{$urlAbs} = 1;
+                push( @mail, $self->create_image_part($urlAbs) );
+            }
+        }
 
-	  # For flash part (embed)
-	  elsif (lc($$url[0]) eq 'embed' && $$url[4]) 
-	   {
-	     # rebuild $urlAbs
-	     $urlAbs = absUrl($$url[4],$racinePage);
-	     # Replace relative url with absolute
-	     my $v = ($self->{_include} eq 'cid') ?
-		 "cid:$urlAbs" : $urlAbs;
-	     $gabarit=~s/src \s = \s [\"'] \Q$$url[4]\E ([\"'>])
+        # For flash part (embed)
+        elsif ( lc( $$url[0] ) eq 'embed' && $$url[4] ) {
+
+            # rebuild $urlAbs
+            $urlAbs = absUrl( $$url[4], $racinePage );
+
+            # Replace relative url with absolute
+            my $v = ( $self->{_include} eq 'cid' ) ? "cid:$urlAbs" : $urlAbs;
+            $gabarit =~ s/src \s = \s [\"'] \Q$$url[4]\E ([\"'>])
                         /pattern_href($v,"src",$1)/giemx;
-	     # Exit with extern configuration, don't include image
-	     if (($self->{_include} ne 'extern')&&(!$images_read{$urlAbs}))
-		 {
-		   $images_read{$urlAbs}=1;
-		   push(@mail, $self->create_image_part($urlAbs));
-		 }
-	   }
 
-	  # For flash part (object)
-	  # Need to add "param" to Tagset.pm in the linkElements definition:
-	  # 'param' => ['name', 'value'],
-	  # Tks to tosh@c4.ca for that
-	  elsif (lc($$url[0]) eq 'param' && lc($$url[2]) eq 'movie' 
-		 && $$url[4]) {
-	    # rebuild $urlAbs
-	    $urlAbs = absUrl($$url[4],$racinePage);
-	    # Replace relative url with absolute
-	    my $v = ($self->{_include} eq 'cid') ?
-	      "cid:".$self->cid($urlAbs) : $urlAbs;
-	    $gabarit=~s/value \s* = \s* [\"'] \Q$$url[4]\E ([\"'>])
+            # Exit with extern configuration, don't include image
+            if ( ( $self->{_include} ne 'extern' ) && ( !$images_read{$urlAbs} ) ) {
+                $images_read{$urlAbs} = 1;
+                push( @mail, $self->create_image_part($urlAbs) );
+            }
+        }
+
+        # For flash part (object)
+        # Need to add "param" to Tagset.pm in the linkElements definition:
+        # 'param' => ['name', 'value'],
+        # Tks to tosh@c4.ca for that
+        elsif (lc( $$url[0] ) eq 'param'
+            && lc( $$url[2] ) eq 'movie'
+            && $$url[4] )
+        {
+            # rebuild $urlAbs
+            $urlAbs = absUrl( $$url[4], $racinePage );
+
+            # Replace relative url with absolute
+            my $v = ( $self->{_include} eq 'cid' ) ? "cid:" . $self->cid($urlAbs) : $urlAbs;
+            $gabarit =~ s/value \s* = \s* [\"'] \Q$$url[4]\E ([\"'>])
                        /pattern_href($v,"value",$1)/giemx;
-	    # Exit with extern configuration, don't include image
-	    if (($self->{_include} ne 'extern')&&(!$images_read{$urlAbs}))
-	      {
-		$images_read{$urlAbs}=1;
-		push(@mail, $self->create_image_part($urlAbs));
-	      }
-	  }
 
-	  # For new images create part
-	  # Exit with extern configuration, don't include image
-	  elsif ( ($self->{_include} ne 'extern') &&
-		    ((lc($$url[0]) eq 'img') || (lc($$url[0]) eq 'src')) &&
-		    (!$images_read{$urlAbs})) {
-	    $images_read{$urlAbs}=1;
-	    push(@mail, $self->create_image_part($urlAbs));
-	  }
-	}
+            # Exit with extern configuration, don't include image
+            if ( ( $self->{_include} ne 'extern' ) && ( !$images_read{$urlAbs} ) ) {
+                $images_read{$urlAbs} = 1;
+                push( @mail, $self->create_image_part($urlAbs) );
+            }
+        }
 
-     # If cid choice, put a cid + absolute url on each link image
-     if ($self->{_include} eq 'cid') 
-       {$gabarit=~s/<img ([^<>]*) src\s*=\s*(["']?) ([^"'> ]* )(["']?)
-	           /pattern_image_cid($self,$1,$3,$racinePage)/iegx;}
-     # Else just make a absolute url
-     else {$gabarit=~s/<img ([^<>]*) src\s*=\s*(["']?)([^"'> ]*) (["']?)
-	              /pattern_image($1,$3,$racinePage)/iegx;}
+        # For new images create part
+        # Exit with extern configuration, don't include image
+        elsif (( $self->{_include} ne 'extern' )
+            && ( ( lc( $$url[0] ) eq 'img' ) || ( lc( $$url[0] ) eq 'src' ) )
+            && ( !$images_read{$urlAbs} ) )
+        {
+            $images_read{$urlAbs} = 1;
+            push( @mail, $self->create_image_part($urlAbs) );
+        }
+    }
 
-   BUILD_MESSAGE:
+    # If cid choice, put a cid + absolute url on each link image
+    if ( $self->{_include} eq 'cid' ) {
+        $gabarit =~ s/<img ([^<>]*) src\s*=\s*(["']?) ([^"'> ]* )(["']?)
+	           /pattern_image_cid($self,$1,$3,$racinePage)/iegx;
+    }
+
+    # Else just make a absolute url
+    else {
+        $gabarit =~ s/<img ([^<>]*) src\s*=\s*(["']?)([^"'> ]*) (["']?)
+	              /pattern_image($1,$3,$racinePage)/iegx;
+    }
+
+  BUILD_MESSAGE:
+
     # Substitue value in template if needed
-    if (scalar keys %{$self->{_HASH_TEMPLATE}}!=0)
-	{
-	  $gabarit=$self->fill_template($gabarit,$self->{_HASH_TEMPLATE}) 
-	    if ($gabarit);
-	  $gabarit_txt=$self->fill_template($gabarit_txt,
-					    $self->{_HASH_TEMPLATE});
-	}
+    if ( scalar keys %{ $self->{_HASH_TEMPLATE} } != 0 ) {
+        $gabarit = $self->fill_template( $gabarit, $self->{_HASH_TEMPLATE} )
+          if ($gabarit);
+        $gabarit_txt = $self->fill_template( $gabarit_txt, $self->{_HASH_TEMPLATE} );
+    }
 
     # Create MIME-Lite object
-    $self->build_mime_object($gabarit, $gabarit_txt || undef,  \@mail);
+    $self->build_mime_object( $gabarit, $gabarit_txt || undef, \@mail );
 
     return $self->{_MAIL};
-  }
+}
 
 #------------------------------------------------------------------------------
 # size
 #------------------------------------------------------------------------------
-sub size  {
-  my ($self)=shift;
-  return length($self->{_MAIL}->as_string);
+sub size {
+    my ($self) = shift;
+    return length( $self->{_MAIL}->as_string );
 }
 
 #------------------------------------------------------------------------------
 # build_mime_object
 #------------------------------------------------------------------------------
 sub build_mime_object {
-  my ($self,$html,$txt,$ref_mail)=@_;
-  my ($txt_part, $part,$mail);
-  # Create part for HTML if needed
-  if ($html) {
-    my $ref = ($txt || @$ref_mail) ? {} : $self->{_param};
-    $part = new MIME::Lite(%$ref,
-			  'Type'     => 'TEXT',
-			  'Encoding' => $self->{_htmlencoding},
-			  'Data'     => $html);
-    $part->attr("content-type"=> "text/html; charset=".$self->{_htmlcharset});
-    # Remove some header for Eudora client in HTML and related part
-    $part->replace("MIME-Version" => "");
-    $part->replace('X-Mailer' =>"");
-    $part->replace('Content-Disposition' =>"");
-    # only html, no images & no txt
-    $mail = $part unless ($txt || @$ref_mail);
-  }
+    my ( $self, $html, $txt, $ref_mail ) = @_;
+    my ( $txt_part, $part, $mail );
 
-  # Create part for text if needed
-  if ($txt) {
-    my $ref = ($html ? {} : $self->{_param}  );
-    $txt_part = new MIME::Lite (%$ref,
-			       'Type'     => 'TEXT',
-			       'Data'     => $txt,
-			       'Encoding' => $self->{_textencoding});
-    $txt_part->attr("content-type" => 
-		    "text/plain; charset=".$self->{_textcharset});
-    # Remove some header for Eudora client
-    $txt_part->replace("MIME-Version" => "");
-    $txt_part->replace("X-Mailer" => "");
-    $txt_part->replace("Content-Disposition" => "");
-    # only text, no html
-    $mail = $txt_part unless $html;
-  }
+    # Create part for HTML if needed
+    if ($html) {
+        my $ref = ( $txt || @$ref_mail ) ? {} : $self->{_param};
+        $part = new MIME::Lite(
+            %$ref,
+            'Type'     => 'TEXT',
+            'Encoding' => $self->{_htmlencoding},
+            'Data'     => $html
+        );
+        $part->attr( "content-type" => "text/html; charset=" . $self->{_htmlcharset} );
 
-  # If images and html and no text, multipart/related
-  if (@$ref_mail and !$txt) {
-    my $ref=$self->{_param};
-    $$ref{'Type'} = "multipart/related";	
-    $mail = new MIME::Lite (%$ref);
-    # Attach HTML part to related part
-    $mail->attach($part);
-    # Attach each image to related part
-    foreach (@$ref_mail) {$mail->attach($_);} # Attach list of part
-    $mail->replace("Content-Disposition" => "");
-  }
+        # Remove some header for Eudora client in HTML and related part
+        $part->replace( "MIME-Version"        => "" );
+        $part->replace( 'X-Mailer'            => "" );
+        $part->replace( 'Content-Disposition' => "" );
 
-  # Else if html and text and no images, multipart/alternative
-  elsif ($txt and !@$ref_mail) {
-    my $ref=$self->{_param};
-    $$ref{'Type'} = "multipart/alternative";	
-    $mail = new MIME::Lite (%$ref);
-    $mail->attach($txt_part); # Attach text part
-    $mail->attach($part); # Attach HTML part	
-  }
+        # only html, no images & no txt
+        $mail = $part unless ( $txt || @$ref_mail );
+    }
 
-  # Else (html, txt and images) mutilpart/alternative
-  elsif ($txt && @$ref_mail) {
-    my $ref=$self->{_param};
-    $$ref{'Type'} = "multipart/alternative";	
-    $mail = new MIME::Lite (%$ref); 
-    # Create related part
-    my $rel = new MIME::Lite ('Type'=>'multipart/related');
-    $rel->replace("Content-transfer-encoding" => "");
-    $rel->replace("MIME-Version" => "");
-    $rel->replace("X-Mailer" => "");
-    # Attach text part to alternative part
-    $mail->attach($txt_part);
-    # Attach HTML part to related part
-    $rel->attach($part);
-    # Attach each image to related part
-    foreach (@$ref_mail) {$rel->attach($_);}
-    # Attach related part to alternative part
-    $mail->attach($rel);
-  }
-  $mail->replace('X-Mailer',"MIME::Lite::HTML $VERSION");
-  $self->{_MAIL} = $mail;
+    # Create part for text if needed
+    if ($txt) {
+        my $ref = ( $html ? {} : $self->{_param} );
+        $txt_part = new MIME::Lite(
+            %$ref,
+            'Type'     => 'TEXT',
+            'Data'     => $txt,
+            'Encoding' => $self->{_textencoding}
+        );
+        $txt_part->attr( "content-type" => "text/plain; charset=" . $self->{_textcharset} );
+
+        # Remove some header for Eudora client
+        $txt_part->replace( "MIME-Version"        => "" );
+        $txt_part->replace( "X-Mailer"            => "" );
+        $txt_part->replace( "Content-Disposition" => "" );
+
+        # only text, no html
+        $mail = $txt_part unless $html;
+    }
+
+    # If images and html and no text, multipart/related
+    if ( @$ref_mail and !$txt ) {
+        my $ref = $self->{_param};
+        $$ref{'Type'} = "multipart/related";
+        $mail = new MIME::Lite(%$ref);
+
+        # Attach HTML part to related part
+        $mail->attach($part);
+
+        # Attach each image to related part
+        foreach (@$ref_mail) { $mail->attach($_); }    # Attach list of part
+        $mail->replace( "Content-Disposition" => "" );
+    }
+
+    # Else if html and text and no images, multipart/alternative
+    elsif ( $txt and !@$ref_mail ) {
+        my $ref = $self->{_param};
+        $$ref{'Type'} = "multipart/alternative";
+        $mail = new MIME::Lite(%$ref);
+        $mail->attach($txt_part);                      # Attach text part
+        $mail->attach($part);                          # Attach HTML part
+    }
+
+    # Else (html, txt and images) mutilpart/alternative
+    elsif ( $txt && @$ref_mail ) {
+        my $ref = $self->{_param};
+        $$ref{'Type'} = "multipart/alternative";
+        $mail = new MIME::Lite(%$ref);
+
+        # Create related part
+        my $rel = new MIME::Lite( 'Type' => 'multipart/related' );
+        $rel->replace( "Content-transfer-encoding" => "" );
+        $rel->replace( "MIME-Version"              => "" );
+        $rel->replace( "X-Mailer"                  => "" );
+
+        # Attach text part to alternative part
+        $mail->attach($txt_part);
+
+        # Attach HTML part to related part
+        $rel->attach($part);
+
+        # Attach each image to related part
+        foreach (@$ref_mail) { $rel->attach($_); }
+
+        # Attach related part to alternative part
+        $mail->attach($rel);
+    }
+    $mail->replace( 'X-Mailer', "MIME::Lite::HTML $VERSION" );
+    $self->{_MAIL} = $mail;
 }
 
 #------------------------------------------------------------------------------
 # include_css
 #------------------------------------------------------------------------------
 sub pattern_css {
-  my ($self,$url,$milieu,$fin,$root)=@_;
-  # if not stylesheet - rt19655
-  if ($milieu!~/stylesheet/i && $fin!~/stylesheet/i) {
-    return "<link".$milieu." href=\"$url\"".$fin.">";
-  }
-  # Don't store <LINK REL="SHORTCUT ICON"> tag. Tks to doggy@miniasp.com
-  if ( $fin =~ m/shortcut/i || $milieu =~ m/shortcut/i )
-    { return "<link" . $milieu . "href='". $url . "'" . $fin .">"; }
-  # Complete url
-  my $ur = URI::URL->new($url, $root)->abs;
-  print "Include CSS file $ur\n" if $self->{_DEBUG};
-  my $res2 = $self->{_AGENT}->request(new HTTP::Request('GET' => $ur));
-  print "Ok file downloaded\n" if $self->{_DEBUG};
-  return      '<style type="text/css">'."\n".
-    '<!--'."\n".$res2->content.
-      "\n-->\n</style>\n";
+    my ( $self, $url, $milieu, $fin, $root ) = @_;
+
+    # if not stylesheet - rt19655
+    if ( $milieu !~ /stylesheet/i && $fin !~ /stylesheet/i ) {
+        return "<link" . $milieu . " href=\"$url\"" . $fin . ">";
+    }
+
+    # Don't store <LINK REL="SHORTCUT ICON"> tag. Tks to doggy@miniasp.com
+    if ( $fin =~ m/shortcut/i || $milieu =~ m/shortcut/i ) {
+        return "<link" . $milieu . "href='" . $url . "'" . $fin . ">";
+    }
+
+    # Complete url
+    my $ur = URI::URL->new( $url, $root )->abs;
+    print "Include CSS file $ur\n" if $self->{_DEBUG};
+    my $res2 = $self->{_AGENT}->request( new HTTP::Request( 'GET' => $ur ) );
+    print "Ok file downloaded\n" if $self->{_DEBUG};
+    return '<style type="text/css">' . "\n" . '<!--' . "\n" . $res2->content . "\n-->\n</style>\n";
 }
 
 sub include_css(\%$$) {
-  my ($self,$gabarit,$root)=@_;
-  $gabarit=~s/<link ([^<>]*?)
+    my ( $self, $gabarit, $root ) = @_;
+    $gabarit =~ s/<link ([^<>]*?)
                 href\s*=\s*"?([^\" ]*)"?([^>]*)>
     /$self->pattern_css($2,$1,$3,$root)/iegmx;
 
-  print "Done CSS\n" if ($self->{_DEBUG});
-  return $gabarit;
+    print "Done CSS\n" if ( $self->{_DEBUG} );
+    return $gabarit;
 }
-
 
 #------------------------------------------------------------------------------
 # include_javascript
 #------------------------------------------------------------------------------
 sub pattern_js {
-  my ($self,$url,$milieu,$fin,$root)=@_;
-  my $ur = URI::URL->new($url, $root)->abs;
-  print "Include Javascript file $ur\n" if $self->{_DEBUG};
-  my $res2 = $self->{_AGENT}->request(new HTTP::Request('GET' => $ur));
-  my $content = $res2->content;
-  print "Ok file downloaded\n" if $self->{_DEBUG};
-  return ($self->{_remove_jscript} ? ' ' : "\n"."<!-- $ur -->\n".
-    '<script '.$milieu.$fin.">\n".
-      '<!--'."\n".$content.
-	"\n-->\n</script>\n");
+    my ( $self, $url, $milieu, $fin, $root ) = @_;
+    my $ur = URI::URL->new( $url, $root )->abs;
+    print "Include Javascript file $ur\n" if $self->{_DEBUG};
+    my $res2 = $self->{_AGENT}->request( new HTTP::Request( 'GET' => $ur ) );
+    my $content = $res2->content;
+    print "Ok file downloaded\n" if $self->{_DEBUG};
+    return (
+        $self->{_remove_jscript}
+        ? ' '
+        : "\n"
+          . "<!-- $ur -->\n"
+          . '<script '
+          . $milieu
+          . $fin . ">\n" . '<!--' . "\n"
+          . $content
+          . "\n-->\n</script>\n"
+    );
 }
 
 sub include_javascript(\%$$) {
-  my ($self,$gabarit,$root)=@_;
-  $gabarit=~s/<script([^>]*)src\s*=\s*"?([^\" ]*js)"?([^>]*)>[^<]*<\/script>
+    my ( $self, $gabarit, $root ) = @_;
+    $gabarit =~ s/<script([^>]*)src\s*=\s*"?([^\" ]*js)"?([^>]*)>[^<]*<\/script>
     /$self->pattern_js($2,$1,$3,$root)/iegmx;
-  if ($self->{_remove_jscript}) {
-	#die "Yes."; 
-    # Old!
-	# $gabarit=~s/<script([^>]*)>[^<]*<\/script>//iegmx;
-	# New!
-	$gabarit =~ s/<script([^>]*)>[\s\S]*?<\/script>//iegmx;
-  }
-  print "Done Javascript\n" if $self->{_DEBUG};
-  return $gabarit;
-}
+    if ( $self->{_remove_jscript} ) {
 
+        #die "Yes.";
+        # Old!
+        # $gabarit=~s/<script([^>]*)>[^<]*<\/script>//iegmx;
+        # New!
+        $gabarit =~ s/<script([^>]*)>[\s\S]*?<\/script>//iegmx;
+    }
+    print "Done Javascript\n" if $self->{_DEBUG};
+    return $gabarit;
+}
 
 #------------------------------------------------------------------------------
 # input_image
 #------------------------------------------------------------------------------
 sub pattern_input_image {
-  my ($self,$deb,$url,$fin,$base,$ref_tab_mail)=@_;
-  my $ur = URI::URL->new($url, $base)->abs;
-  if ($self->{_include} ne 'extern')
-    {push(@$ref_tab_mail,$self->create_image_part($ur));}
-  if ($self->{_include} eq 'cid') 
-    {return '<input '.$deb.' src="cid:'.$ur.'"'.$fin;}
-  else {return '<input '.$deb.' src="'.$ur.'"'.$fin;}
+    my ( $self, $deb, $url, $fin, $base, $ref_tab_mail ) = @_;
+    my $ur = URI::URL->new( $url, $base )->abs;
+    if ( $self->{_include} ne 'extern' ) { push( @$ref_tab_mail, $self->create_image_part($ur) ); }
+    if   ( $self->{_include} eq 'cid' ) { return '<input ' . $deb . ' src="cid:' . $ur . '"' . $fin; }
+    else                                { return '<input ' . $deb . ' src="' . $ur . '"' . $fin; }
 }
 
 sub input_image(\%$$) {
-  my ($self,$gabarit,$root)=@_;
-  my @mail;
-  $gabarit=~s/<input([^<>]*)src\s*=\s*"?([^\"'> ]*)"?([^>]*)>
+    my ( $self, $gabarit, $root ) = @_;
+    my @mail;
+    $gabarit =~ s/<input([^<>]*)src\s*=\s*"?([^\"'> ]*)"?([^>]*)>
     /$self->pattern_input_image($1,$2,$3,$root,\@mail)/iegmx;
-  print "Done input image\n" if $self->{_DEBUG};
-  return ($gabarit,@mail);
+    print "Done input image\n" if $self->{_DEBUG};
+    return ( $gabarit, @mail );
 }
 
 #------------------------------------------------------------------------------
 # create_image_part
 #------------------------------------------------------------------------------
 sub create_image_part {
-  my ($self,$ur, $typ)=@_;
-  my ($type, $buff1);
-  # Create MIME type
-  if ($typ) { $type = $typ; }
-  elsif (lc($ur)=~/\.gif$/i) {$type="image/gif";}
-  elsif (lc($ur)=~/\.jpg$/i) {$type = "image/jpg";}
-  elsif (lc($ur)=~/\.png$/i) {$type = "image/png";}
-  else { $type = "application/x-shockwave-flash"; }
+    my ( $self, $ur, $typ ) = @_;
+    my ( $type, $buff1 );
 
-  # Url is already in memory
-  if ($self->{_HASH_TEMPLATE}{$ur}) {
-    print "Using buffer on: ", $ur,"\n" if $self->{_DEBUG};
-    $buff1 = ref($self->{_HASH_TEMPLATE}{$ur}) eq "ARRAY" 
-      ? join "", @{$self->{_HASH_TEMPLATE}{$ur}} 
-	: $self->{_HASH_TEMPLATE}{$ur};
-    delete $self->{_HASH_TEMPLATE}{$ur};
-  } else { # Get image 
-    print "Get img ", $ur,"\n" if $self->{_DEBUG};
-    my $res2 = $self->{_AGENT}->
-      request(new HTTP::Request('GET' => $ur));
-    if (!$res2->is_success) {$self->set_err("Can't get $ur\n");}
-    $buff1=$res2->content;
-  }
+    # Create MIME type
+    if    ($typ)                   { $type = $typ; }
+    elsif ( lc($ur) =~ /\.gif$/i ) { $type = "image/gif"; }
+    elsif ( lc($ur) =~ /\.jpg$/i ) { $type = "image/jpg"; }
+    elsif ( lc($ur) =~ /\.png$/i ) { $type = "image/png"; }
+    else                           { $type = "application/x-shockwave-flash"; }
 
-  # Create part
-  my $mail = new MIME::Lite( Data => $buff1, Encoding =>'base64');
+    # Url is already in memory
+    if ( $self->{_HASH_TEMPLATE}{$ur} ) {
+        print "Using buffer on: ", $ur, "\n" if $self->{_DEBUG};
+        $buff1 =
+          ref( $self->{_HASH_TEMPLATE}{$ur} ) eq "ARRAY"
+          ? join "", @{ $self->{_HASH_TEMPLATE}{$ur} }
+          : $self->{_HASH_TEMPLATE}{$ur};
+        delete $self->{_HASH_TEMPLATE}{$ur};
+    }
+    else {    # Get image
+        print "Get img ", $ur, "\n" if $self->{_DEBUG};
+        my $res2 = $self->{_AGENT}->request( new HTTP::Request( 'GET' => $ur ) );
+        if ( !$res2->is_success ) { $self->set_err("Can't get $ur\n"); }
+        $buff1 = $res2->content;
+    }
 
-  $mail->attr("Content-type"=>$type);
-  # With cid configuration, add a Content-ID field
-  if ($self->{_include} eq 'cid') {
-    $mail->attr('Content-ID' =>'<'.$self->cid($ur).'>');
-  } else {  # Else (location) put a Content-Location field
-    $mail->attr('Content-Location'=>$ur);
-  }
+    # Create part
+    my $mail = new MIME::Lite( Data => $buff1, Encoding => 'base64' );
 
-  # Remove header for Eudora client
-  $mail->replace("X-Mailer" => "");
-  $mail->replace("MIME-Version" => "");
-  $mail->replace("Content-Disposition" => "");
-  return $mail;
+    $mail->attr( "Content-type" => $type );
+
+    # With cid configuration, add a Content-ID field
+    if ( $self->{_include} eq 'cid' ) {
+        $mail->attr( 'Content-ID' => '<' . $self->cid($ur) . '>' );
+    }
+    else {    # Else (location) put a Content-Location field
+        $mail->attr( 'Content-Location' => $ur );
+    }
+
+    # Remove header for Eudora client
+    $mail->replace( "X-Mailer"            => "" );
+    $mail->replace( "MIME-Version"        => "" );
+    $mail->replace( "Content-Disposition" => "" );
+    return $mail;
 }
 
 #------------------------------------------------------------------------------
 # cid
 #------------------------------------------------------------------------------
-sub cid  (\%$) {
-  my ($self, $url)=@_;
-  # rfc say: don't use '/'. So I do a pack on it.
-  # but as string can get long, I need to revert it to have
-  # difference at begin of url to avoid max size of cid
-  # I remove scheme always same in a document.
-  $url = reverse(substr($url, 7));
-  return reverse(split("",unpack("h".length($url),$url))).'@MIME-Lite-HTML-'.
-    $VERSION;
-}
+sub cid (\%$) {
+    my ( $self, $url ) = @_;
 
+    # rfc say: don't use '/'. So I do a pack on it.
+    # but as string can get long, I need to revert it to have
+    # difference at begin of url to avoid max size of cid
+    # I remove scheme always same in a document.
+    $url = reverse( substr( $url, 7 ) );
+    return reverse( split( "", unpack( "h" . length($url), $url ) ) ) . '@MIME-Lite-HTML-' . $VERSION;
+}
 
 #------------------------------------------------------------------------------
 # link_form
 #------------------------------------------------------------------------------
-sub pattern_link_form  {
-  my ($self,$deb,$url,$fin,$base)=@_;
-  my $type;
-  my $ur = URI::URL->new($url, $base)->abs;
-  return '<form '.$deb.' action="'.$ur.'"'.$fin.'>';
+sub pattern_link_form {
+    my ( $self, $deb, $url, $fin, $base ) = @_;
+    my $type;
+    my $ur = URI::URL->new( $url, $base )->abs;
+    return '<form ' . $deb . ' action="' . $ur . '"' . $fin . '>';
 }
 
-sub link_form
-  {
-    my ($self,$gabarit,$root)=@_;
+sub link_form {
+    my ( $self, $gabarit, $root ) = @_;
     my @mail;
-     $gabarit=~s/<form([^<>]*)action="?([^\"'> ]*)"?([^>]*)>
+    $gabarit =~ s/<form([^<>]*)action="?([^\"'> ]*)"?([^>]*)>
                 /$self->pattern_link_form($1,$2,$3,$root)/iegmx;
     print "Done form\n" if $self->{_DEBUG};
     return $gabarit;
-  }
+}
 
 #------------------------------------------------------------------------------
 # fill_template
 #------------------------------------------------------------------------------
-sub fill_template  {
-  my ($self,$masque,$vars)=@_;
-  return unless $masque;
-  my @buf=split(/\n/,$masque);
-  my $i=0;
-  while (my ($n,$v)=each(%$vars)) {
-    if ($v) {map {s/<\?\s\$$n\s\?>/$v/gm} @buf;}
-    else {map {s/<\?\s\$$n\s\?>//gm} @buf;}
-    $i++;
-  }
-  return join("\n",@buf);
+sub fill_template {
+    my ( $self, $masque, $vars ) = @_;
+    return unless $masque;
+    my @buf = split( /\n/, $masque );
+    my $i = 0;
+    while ( my ( $n, $v ) = each(%$vars) ) {
+        if ($v) {
+            map { s/<\?\s\$$n\s\?>/$v/gm } @buf;
+        }
+        else {
+            map { s/<\?\s\$$n\s\?>//gm } @buf;
+        }
+        $i++;
+    }
+    return join( "\n", @buf );
 }
 
 #------------------------------------------------------------------------------
 # set_err
 #------------------------------------------------------------------------------
 sub set_err {
-  my($self,$error) = @_;
-  print $error,"\n" if ($self->{_DEBUG});
-  my @array;
-  if ($self->{_ERRORS}) {
-    @array = @{$self->{_ERRORS}};
-  }
-  push @array, $error;
-  $self->{_ERRORS} = \@array;
-  return 1;
+    my ( $self, $error ) = @_;
+    print $error, "\n" if ( $self->{_DEBUG} );
+    my @array;
+    if ( $self->{_ERRORS} ) {
+        @array = @{ $self->{_ERRORS} };
+    }
+    push @array, $error;
+    $self->{_ERRORS} = \@array;
+    return 1;
 }
 
 #------------------------------------------------------------------------------
-# errstr 
+# errstr
 #------------------------------------------------------------------------------
-sub errstr  {
-  my($self) = @_;
-  return @{$self->{_ERRORS}} if ($self->{_ERRORS});
-  return ();
+sub errstr {
+    my ($self) = @_;
+    return @{ $self->{_ERRORS} } if ( $self->{_ERRORS} );
+    return ();
 }
 
 __END__

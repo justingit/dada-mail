@@ -1093,13 +1093,13 @@ sub draft_message_values {
         }
     );
 
-    require Data::Dumper; 
-    warn Data::Dumper::Dumper(
-        { 
-            headers => $headers, 
-            body => $body, 
-        }
-    );
+#    require Data::Dumper; 
+#    warn Data::Dumper::Dumper(
+#        { 
+#            headers => $headers, 
+#            body    => $body, 
+#        }
+#    );
     if ( keys %$headers ) {
         $self->header_props(%$headers);
     }

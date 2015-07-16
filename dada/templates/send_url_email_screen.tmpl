@@ -139,9 +139,41 @@
 
 <fieldset>
 <legend>Advanced Options</legend>
+
+
+    <table> 
+        <tr> 
+            <td>
+                <input type="checkbox" name="crop_html_content" id="crop_html_content" value="1" />
+            </td>
+            <td>
+                <label for="crop_html_content">Crop Webpage</label>
+                
+                <table>
+                 <tr>
+                  <td>
+                   Only send content found within the HTML tag with the:
+                   <select name="crop_html_content_selector_type" id="crop_html_content_selector_type"> 
+                       <option value="id">id</option>
+                       <option value="class">class</option>
+                   </select> 
+                   of: <input type="text" name="crop_html_content_selector_label" id="crop_html_content_selector_label" />
+                  </td>
+                 </tr>
+                </table> 
+            </td>
+        </tr>
+    </table> 
+    
+
+
+
 		<table>
 		  <tr>
 		   <td>
+		       
+		       
+		       
 			<p>
 			 <strong>
 			  Images in this webpage should:

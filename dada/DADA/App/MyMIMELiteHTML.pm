@@ -5,11 +5,13 @@ use lib "../../DADA/perllib";
 
 use MIME::Lite::HTML;
 @ISA = "MIME::Lite::HTML";
+use strict; 
 
 #use base "MIME::Lite::HTML";
 
 use Carp qw(croak carp);
 use DADA::App::Guts;
+use Try::Tiny; 
 
 ## trés bizarre!
 #sub MIME::Lite::HTML::absUrl($$) {
@@ -47,39 +49,40 @@ sub absUrl($$) {
 # looks sort of strange. Regardless - not the best design for MIME::Lite::HTML, unfortunetly.
 
 sub parse {
-     
+
     my ( $self, $url_page, $url_txt, $url1 ) = @_;
     my ( $type, @mail, $html_ver, $txt_ver, $rootPage );
 
-         
+    my $html_md5 = undef;
 
-
-    my $html_md5 = undef; 
-
-         
-
-    
     # Get content of $url_page with LWP
     if ( $url_page && $url_page =~ /^(https?|ftp|file|nntp):\/\// ) {
-     
 
         print "Get ", $url_page, "\n" if $self->{_DEBUG};
-        my ( $content, $res, $md5 ) = grab_url({-url => $url_page});
-        $html_md5 = $md5; 
+        my ( $content, $res, $md5 ) = grab_url( { -url => $url_page } );
+        $html_md5 = $md5;
         if ( !$res->is_success ) {
             $self->set_err( "Can't fetch $url_page (" . $res->message . ")" );
         }
         else {
             $html_ver = safely_decode($content);
+            #warn q{$self->{crop_html_content}} . $self->{crop_html_content}; 
+            
+            if ( $self->{crop_html_content} == 1 ) {
+                $html_ver = $self->crop_html($html_ver);
+            }
         }
         $rootPage = $url1 || $res->base;
     }
     else {
-         
-        $html_ver     = $url_page;
+        $html_ver = $url_page;
+        if ( $self->{crop_html_content} == 1 ) {
+            $html_ver = $self->crop_html($html_ver);
+        }
         $rootPage = $url1;
-        $html_md5 = md5_checksum(\$html_ver);
-        #warn '$html_md5 ' . $html_md5; 
+        $html_md5 = md5_checksum( \$html_ver );
+
+        #warn '$html_md5 ' . $html_md5;
     }
 
     # Get content of $url_txt with LWP if needed
@@ -87,7 +90,7 @@ sub parse {
         if ( $url_txt =~ /^(https?|ftp|file|nntp):\/\// ) {
             print "Get ", $url_txt, "\n" if $self->{_DEBUG};
 
-            my ( $content, $res, $md5 ) = grab_url({-url => $url_page});
+            my ( $content, $res, $md5 ) = grab_url( { -url => $url_page } );
             if ( !$res->is_success ) {
                 $self->set_err( "Can't fetch $url_txt (" . $res->message . ")" );
             }
@@ -100,22 +103,23 @@ sub parse {
         }
     }
 
-    # Means successful, but blank. Blank is no good for us. 
-    if(! $html_ver){ 
-        $self->set_err( 'Webpage content is blank.' );
-        if(wantarray){ 
-     	    return (0, 'Webpage content is blank.', $self->{_MAIL}, $html_md5);        
+    # Means successful, but blank. Blank is no good for us.
+    if ( !$html_ver ) {
+        $self->set_err('Webpage content is blank.');
+        if (wantarray) {
+            return ( 0, 'Webpage content is blank.', $self->{_MAIL}, $html_md5 );
         }
-        else { 
+        else {
             return undef;
         }
     }
+
     goto BUILD_MESSAGE unless $html_ver;
 
     # Get all multimedia part (img, flash) for later create a MIME part
     # for each of them
     my $analyzer = HTML::LinkExtor->new;
-       $analyzer->parse($html_ver);
+    $analyzer->parse($html_ver);
     my @l = $analyzer->links;
 
     # Include external CSS files
@@ -269,7 +273,8 @@ sub parse {
 	              /pattern_image($1,$3,$rootPage)/iegx;
     }
 
- BUILD_MESSAGE:
+  BUILD_MESSAGE:
+
     # Substitue value in template if needed
     if ( scalar keys %{ $self->{_HASH_TEMPLATE} } != 0 ) {
         $html_ver = $self->fill_template( $html_ver, $self->{_HASH_TEMPLATE} )
@@ -279,11 +284,11 @@ sub parse {
 
     $self->build_mime_object( $html_ver, $txt_ver || undef, \@mail );
 
-    if(wantarray){ 
- 	    return (1, undef, $self->{_MAIL}, $html_md5);        
+    if (wantarray) {
+        return ( 1, undef, $self->{_MAIL}, $html_md5 );
     }
-    else { 
-	    return $self->{_MAIL};
+    else {
+        return $self->{_MAIL};
     }
 }
 
@@ -309,7 +314,7 @@ sub include_css(\%$$) {
         # Complete url
         my $ur = URI::URL->new( $url, $root )->abs;
         print "Include CSS file $ur\n" if $self->{_DEBUG};
-        my ( $content, $res, $md5 ) = grab_url({-url => $ur});
+        my ( $content, $res, $md5 ) = grab_url( { -url => $ur } );
         if ( $res->is_success ) {
             print "Ok file downloaded\n" if $self->{_DEBUG};
             return '<style type="text/css">' . "\n" . '<!--' . "\n" . safely_decode($content) . "\n-->\n</style>\n";
@@ -352,7 +357,7 @@ sub pattern_js {
         print "Include Javascript file $ur\n"
           if $self->{_DEBUG};
 
-        my $content = grab_url({-url => $ur});
+          my ( $content, $res, $md5 ) = grab_url( { -url => $ur } );
         if ( $res->is_success ) {
             print "Ok file downloaded\n"
               if $self->{_DEBUG};
@@ -509,6 +514,71 @@ sub build_mime_object {
 
     $self->{_MAIL} = $mail;
 
+}
+
+sub crop_html {
+    
+    
+    my $self = shift;
+    my $html = shift;
+
+  #  warn 'crop_html'; 
+  #  warn q{$self->{crop_html_content_selector_type}} . $self->{crop_html_content_selector_type}; 
+  #  warn q{$self->{crop_html_content_selector_label}} . $self->{crop_html_content_selector_label}; 
+  #  warn q{$self->{crop_html_content}} . $self->{crop_html_content}; 
+    
+
+
+    try {
+        require HTML::Tree;
+        require HTML::Element;
+        require HTML::TreeBuilder;
+
+        my $root = HTML::TreeBuilder->new(
+            ignore_unknown      => 0,
+            no_space_compacting => 1,
+            store_comments      => 1,
+        );
+
+        $root->parse($html);
+        $root->eof();
+        $root->elementify();
+        my $replace_tag = undef;
+        my $crop        = undef;
+        if ( $self->{crop_html_content_selector_type} eq 'id' ) {
+            if ( $replace_tag = $root->look_down( "id", $self->{crop_html_content_selector_label} ) ) {
+                $crop = $replace_tag->as_HTML( undef, '  ' );
+            }
+            else {
+                warn 'cannot crop html: ' . 'cannot find id, ' . $self->{crop_html_content_selector_label};
+                return $html;
+            }
+        }
+        elsif ( $self->{crop_html_content_selector_type} eq 'class' ) {
+            if ( $replace_tag = $root->look_down( "class", $self->{crop_html_content_selector_label} ) ) {
+                $crop = $replace_tag->as_HTML( undef, '  ' );
+            }
+            else {
+                warn 'cannot crop html: ' . 'cannot find class, ' . $self->{crop_html_content_selector_label};
+                return $html;
+            }
+        }
+
+        my $body_tag = $root->find_by_tag_name('body');
+        $body_tag->delete_content();
+        $body_tag->push_content(
+            HTML::Element->new(
+                '~literal', 'text' => $crop,
+            )
+        );
+       # warn 'returning: ' . $root->as_HTML( undef, '  ' );
+        return $root->as_HTML( undef, '  ' );
+
+    }
+    catch {
+        warn 'cannot crop html: ' . $_;
+        return $html;
+    };
 }
 
 1;

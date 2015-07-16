@@ -99,8 +99,8 @@ sub save {
     my $self   = shift;
     my ($args) = @_;
 
-    require Data::Dumper; 
-    warn 'save $args:' . Data::Dumper::Dumper($args); 
+#    require Data::Dumper; 
+#    warn 'save $args:' . Data::Dumper::Dumper($args); 
     
     if ( !exists( $args->{-cgi_obj} ) ) {
         croak "You MUST pass a, '-cgi_obj' parameter!";
@@ -119,8 +119,8 @@ sub save {
     }
 
 
-    warn '$args->{-role}'      . $args->{-role}; 
-    warn '$args->{-save_role}' . $args->{-save_role}; 
+#    warn '$args->{-role}'      . $args->{-role}; 
+#    warn '$args->{-save_role}' . $args->{-save_role}; 
 
     my $id = undef;
     if ( exists( $args->{-id} ) ) {
@@ -140,8 +140,6 @@ sub save {
             -screen  => $args->{-screen} 
         } 
     );
-
-
 
     if ( !defined($id) ) {
 
@@ -798,6 +796,10 @@ sub params_to_save {
         #$params->{url_username}          = 1;
         #$params->{url_password}          = 1;
         #$params->{proxy}                 = 1;
+        
+        $params->{crop_html_content}                = 1;
+        $params->{crop_html_content_selector_type}  = 1;
+        $params->{crop_html_content_selector_label} = 1;
     }
 
     # use Data::Dumper;

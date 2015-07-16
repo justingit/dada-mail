@@ -647,10 +647,10 @@ sub construct_from_url {
     #    $login_details = $draft_q->param('url_username') . ':' . $draft_q->param('url_password');
     #}
 
-    my $proxy = undef;
-    if ( defined( $draft_q->param('proxy') ) ) {
-        $draft_q->param('proxy'); # the heck does that do?
-    }
+    #my $proxy = undef;
+    #if ( defined( $draft_q->param('proxy') ) ) {
+    #    $draft_q->param('proxy'); # the heck does that do?
+    #}
 
     my %headers = ();
     for my $h (
@@ -677,12 +677,15 @@ sub construct_from_url {
     }
     
     my $mailHTML = new DADA::App::MyMIMELiteHTML(
-        remove_jscript => $remove_javascript,
-        'IncludeType'  => $url_options,
-        'TextCharset'  => $self->{ls_obj}->param('charset_value'),
-        'HTMLCharset'  => $self->{ls_obj}->param('charset_value'),
-        HTMLEncoding   => $self->{ls_obj}->param('html_encoding'),
-        TextEncoding   => $self->{ls_obj}->param('plaintext_encoding'),
+        remove_jscript                   => $remove_javascript,
+        'IncludeType'                    => $url_options,
+        'TextCharset'                    => scalar $self->{ls_obj}->param('charset_value'),
+        'HTMLCharset'                    => scalar $self->{ls_obj}->param('charset_value'),
+        HTMLEncoding                     => scalar $self->{ls_obj}->param('html_encoding'),
+        TextEncoding                     => scalar $self->{ls_obj}->param('plaintext_encoding'),
+        crop_html_content                => scalar $draft_q->param('crop_html_content'),
+        crop_html_content_selector_type  => scalar $draft_q->param('crop_html_content_selector_type'),
+        crop_html_content_selector_label => scalar $draft_q->param('crop_html_content_selector_label'),
         #( ($proxy)         ? ( Proxy        => $proxy, )         : () ),
         #( ($login_details) ? ( LoginDetails => $login_details, ) : () ),
         (
