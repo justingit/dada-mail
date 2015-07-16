@@ -96,9 +96,12 @@ sub save {
     warn 'save'
       if $t;
 
-    my $self = shift;
+    my $self   = shift;
     my ($args) = @_;
 
+#    require Data::Dumper; 
+#    warn 'save $args:' . Data::Dumper::Dumper($args); 
+    
     if ( !exists( $args->{-cgi_obj} ) ) {
         croak "You MUST pass a, '-cgi_obj' parameter!";
     }
@@ -116,8 +119,8 @@ sub save {
     }
 
 
-    warn '$args->{-role}'      . $args->{-role}; 
-    warn '$args->{-save_role}' . $args->{-save_role}; 
+#    warn '$args->{-role}'      . $args->{-role}; 
+#    warn '$args->{-save_role}' . $args->{-save_role}; 
 
     my $id = undef;
     if ( exists( $args->{-id} ) ) {
@@ -131,9 +134,12 @@ sub save {
     #	warn '$id:' . $id;
     my $q = $args->{-cgi_obj}; 
        $q = $self->fill_in_schedule_options($q); 
-    my $draft = $self->stringify_cgi_params( { -cgi_obj => $q, -screen => $args->{-screen} } );
-
-
+    my $draft = $self->stringify_cgi_params( 
+        { 
+            -cgi_obj => $q, 
+            -screen  => $args->{-screen} 
+        } 
+    );
 
     if ( !defined($id) ) {
 
@@ -194,8 +200,6 @@ sub save {
 
         warn 'id defined.'
           if $t;
-       
-      # warn 'still here.'; 
 
         # Trying to figure out what else this would be... 
         if(
@@ -210,7 +214,7 @@ sub save {
             || ($args->{-role} eq 'stationery' && $args->{-save_role} eq 'stationery')
         ) {
 
-            warn "Saving Regularly!"; 
+#            warn "Saving Regularly!"; 
             
             my $query; 
             if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
@@ -229,12 +233,15 @@ sub save {
         
             warn 'QUERY: ' . $query
               if $t;
-
+            warn '$draft ' . $draft
+             if $t; 
+            
             my $sth = $self->{dbh}->prepare($query);
                $sth->execute( 
                    $args->{-screen}, 
                    $args->{-save_role}, 
-                   $draft, $self->{list}, 
+                   $draft, 
+                   $self->{list}, 
                    $args->{-id} 
               )
               or croak "cannot do statement '$query'! $DBI::errstr\n";
@@ -243,7 +250,7 @@ sub save {
         }
         elsif($args->{-role} eq 'stationery' && $args->{-save_role} eq 'draft') {
             
-            warn 'Draft from Stationery!'; 
+            # warn 'Draft from Stationery!'; 
              
             # All we need to do, is save this as stationery first, then - 
             $self->save({
@@ -261,13 +268,13 @@ sub save {
                         -screen => $args->{-screen},
                     }
                 ); 
-            warn 'created from stationery!'; 
-            warn 'Stationery ID: ' . $id; 
-            warn 'Returning  ID: ' . $saved_id ; 
+            # warn 'created from stationery!'; 
+            # warn 'Stationery ID: ' . $id; 
+            # warn 'Returning  ID: ' . $saved_id ; 
             return $saved_id;             
         }
         else { 
-            warn 'don\'t.... know what to save!'; 
+            # warn 'don\'t.... know what to save!'; 
             return $id; 
         }
     }
@@ -293,6 +300,10 @@ sub fill_in_schedule_options {
     
     if(!defined($q->param('schedule_recurring_hms')) && defined($q->param('schedule_recurring_display_hms'))){ 
         $q->param('schedule_recurring_hms', display_hms_to_hms($q->param('schedule_recurring_display_hms')));
+    }
+    
+    if(!defined($q->param('schedule_recurring_only_mass_mail_if_html_diff'))) { 
+        $q->param('schedule_recurring_only_mass_mail_if_html_diff', 0);
     }
     
     
@@ -563,6 +574,7 @@ sub draft_index {
         my $q = $self->decode_draft( $hashref->{draft} );
        # warn q{$q->param('schedule_single_ctime')} . $q->param('schedule_single_ctime'); 
         
+#        warn q{$q->param('schedule_html_body_checksum') } . $q->param('schedule_html_body_checksum');
         my $params = {
             id                            => $hashref->{id},
             list                          => $hashref->{list},
@@ -581,6 +593,9 @@ sub draft_index {
             schedule_recurring_ctime_end   => scalar $q->param('schedule_recurring_ctime_end'),
             schedule_recurring_hms         => scalar $q->param('schedule_recurring_hms'),
 
+            schedule_html_body_checksum    => scalar $q->param('schedule_html_body_checksum'), 
+            
+            schedule_recurring_only_mass_mail_if_html_diff => scalar $q->param('schedule_recurring_only_mass_mail_if_html_diff'), 
             
         };
 
@@ -692,6 +707,7 @@ sub remove_unwanted_params {
       $self->params_to_save( { -screen => $args->{-screen} } );
 
     for ( $new_q->param ) {
+        
         unless ( exists( $params_to_save->{$_} ) ) {
             $new_q->delete($_);
         }
@@ -734,6 +750,11 @@ sub params_to_save {
         schedule_recurring_ctime_start => 1,
         schedule_recurring_ctime_end   => 1,
         schedule_recurring_hms         => 1,
+        
+        schedule_html_body_checksum    => 1,
+        
+        schedule_recurring_only_mass_mail_if_html_diff => 1, 
+        
 
     };
 
@@ -768,13 +789,19 @@ sub params_to_save {
         $params->{auto_create_plaintext} = 1;
         $params->{url_options}           = 1;
         $params->{remove_javascript}     = 1;
-        $params->{url_username}          = 1;
-        $params->{url_password}          = 1;
-        $params->{proxy}                 = 1;
+        
+        # These aren't used atm. 
+        #$params->{url_username}          = 1;
+        #$params->{url_password}          = 1;
+        #$params->{proxy}                 = 1;
+        
+        $params->{crop_html_content}                = 1;
+        $params->{crop_html_content_selector_type}  = 1;
+        $params->{crop_html_content_selector_label} = 1;
     }
 
-    #	use Data::Dumper;
-    #	warn Dumper($params);
+    # use Data::Dumper;
+    # warn 'params_to_save:' . Dumper($params);
 
     return $params;
 

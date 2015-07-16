@@ -339,7 +339,7 @@ sub mass_email {
             $process = 1; 
         }
         # to fetch a draft, I need id, list and role (lame)
-        my ( $status, $errors, $message_id ) = $dam->construct_and_send(
+        my ( $status, $errors, $message_id, $md5 ) = $dam->construct_and_send(
             {
                 -draft_id => $draft_id,
                 -screen   => 'send_email',

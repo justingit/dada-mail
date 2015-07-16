@@ -78,9 +78,11 @@ require Exporter;
   safely_encode
   slurp
   grab_url
+  md5_checksum
   can_use_LWP_Simple
   can_use_AuthenCAPTCHA
   can_use_datetime
+  can_use_HTML_Tree
   formatted_runtime
   commify
   generate_rand_string_md5
@@ -2974,16 +2976,20 @@ sub slurp {
 }
 
 sub grab_url {
-
-    my $url = shift;
-
+    my ($args) = @_; 
+    my $url = $args->{-url}; 
+    
     try {
         require LWP;
     }
     catch {
         carp "LWP not installed! $!";
-        return undef;
-
+		if(wantarray){ 
+            return (undef, undef, undef); 
+        }
+        else { 
+		    return undef; 
+	    }
     };
 
     require LWP;
@@ -2999,8 +3005,9 @@ sub grab_url {
             'Accept-Encoding' => $can_accept, 
         );
         if ($res->is_success) {
-            if(wantarray){ 
-                return ($res->decoded_content, $res); 
+            if(wantarray){
+                my $dc = $res->decoded_content;  
+                return ($dc, $res, md5_checksum(\$dc)); 
             }
             else { 
                 $res->decoded_content
@@ -3009,7 +3016,7 @@ sub grab_url {
     	else { 
     	    carp "Problem fetching webpage, '$url':" . $res->status_line;
     		if(wantarray){ 
-                return (undef, $res); 
+                return (undef, $res, undef); 
             }
             else { 
     		    return undef; 
@@ -3020,8 +3027,9 @@ sub grab_url {
         my $res = $ua->get($url);
         if ($res->is_success) {
             if(wantarray){ 
-    		    return (safely_decode( $res->content ), $res); 
-    		}
+                my $dc = safely_decode( $res->content );      
+                return ($dc, $res, md5_checksum(\$dc)); 
+            }
     		else { 
     		    return safely_decode( $res->content ); 
     		}
@@ -3029,16 +3037,29 @@ sub grab_url {
     	else { 
     	    carp "Problem fetching webpage, '$url':" . $res->status_line;
     		if(wantarray){ 
-                return (undef, $res); 
+                return (undef, $res, undef); 
             }
             else { 
     		    return undef; 
     	    }
     	}
-    	
     }
 }
 
+
+sub md5_checksum {
+
+    my $data = shift;
+
+    try {
+        require Digest::MD5;
+    }
+    catch {
+        carp "Can't use Digest::MD5?! - $_";
+        return undef;
+    };
+    return Digest::MD5::md5_hex( safely_encode($$data) );
+}
 
 
 sub can_use_compress_zlib { 
@@ -3087,6 +3108,20 @@ sub can_use_AuthenCAPTCHA {
     };
 	return $can_use_captcha;
 }
+
+sub can_use_HTML_Tree {
+    my $can_use_HTML_Tree = 1; 
+    try { 
+        require HTML::Tree;
+        require HTML::Element;
+        require HTML::TreeBuilder;
+        
+    } catch { 
+        $can_use_HTML_Tree = 0;
+    };
+    return $can_use_HTML_Tree;
+}
+
 
 sub formatted_runtime {
 

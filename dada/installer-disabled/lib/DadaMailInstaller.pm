@@ -788,7 +788,7 @@ sub scrn_configure_dada_mail {
                 can_use_GD                         => scalar test_can_use_GD(),
                 can_use_CAPTCHA_reCAPTCHA          => scalar test_can_use_CAPTCHA_reCAPTCHA(),
                 can_use_CAPTCHA_reCAPTCHA_Mailhide => scalar test_can_use_CAPTCHA_reCAPTCHA_Mailhide(),
-                can_use_HTML_Tree                  => scalar test_can_use_HTML_Tree(), 
+                can_use_HTML_Tree                  => scalar can_use_HTML_Tree(), 
                 error_cant_read_config_dot_pm      => scalar $self->test_can_read_config_dot_pm(),
                 error_cant_write_config_dot_pm     => scalar $self->test_can_write_config_dot_pm(),
                 cgi_test_FastCGI                   => scalar $self->cgi_test_FastCGI,
@@ -3620,20 +3620,6 @@ sub test_can_use_GD {
     }
 }
 
-sub test_can_use_HTML_Tree {
-    eval { require HTML::Tree; };
-    if ($@) {
-        carp $@;
-        $Big_Pile_Of_Errors .= $@;
-        return 0;
-    }
-    else {
-        return 1;
-    }
-}
-
-
-
 sub test_str_is_blank {
 
     my $str = shift;
@@ -3791,7 +3777,7 @@ sub cgi_test_user_template {
     my $can_use_lwp_simple             = DADA::App::Guts::can_use_LWP_Simple;
     my $isa_url                        = isa_url($template_options_manual_template_url);
     if ($isa_url) {
-        if ( DADA::Template::HTML::can_grab_url($template_options_manual_template_url)  == 1) {
+        if ( DADA::Template::HTML::can_grab_url({-url => $template_options_manual_template_url})  == 1) {
             $can_get_content = 1;
         }
     }

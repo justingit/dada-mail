@@ -352,8 +352,13 @@ sub default_template {
 }
 
 sub can_grab_url { 
-    my $url = shift || undef;
-    my ($src, $res) = grab_url( $url );
+    my ($args) = @_; 
+    if(!exists($args->{-url})){ 
+        return undef; 
+    }
+    my $url = $args->{-url};
+    
+    my ($src, $res, $md5) = grab_url({-url =>  $url });
     if($res->is_success){ 
         return 1; 
     }
@@ -388,7 +393,7 @@ sub template_from_magic {
 
     if ( $can_use_html_tree == 1 ) {
         try {
-            my ( $src, $res ) = grab_url( $args->{template_url} );
+            my ( $src, $res, $md5 ) = grab_url({-url =>  $args->{template_url} });
             if ( !$res->is_success ) {
                 warn "Couldn't fetch template: " . $res->message;
                 $errors->{problems_fetching_url} = 1;
@@ -460,8 +465,7 @@ sub template_from_magic {
                 $head_ele->unshift_content($base_href_ele);
             }
 
-            # Body:
-            
+            # Body:            
             my $found_id_tag = 0;
             my $replace_tag  = undef;
 
@@ -891,7 +895,7 @@ sub open_template_from_url {
         return undef;
     }
     else {
-        my ( $src, $res ) = grab_url( $args{-URL} );
+        my ( $src, $res, $md5 ) = grab_url({-url =>  $args{-URL} });
         if ( $res->is_success ) {
             return $src;
         }

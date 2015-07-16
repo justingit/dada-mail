@@ -1459,9 +1459,38 @@ function manually_run_all_scheduled_mass_mailings() {
 		},
 		onComplete: function(){
 			mass_mailing_schedules_preview(1);
+			update_scheduled_mass_mailings_options();
 		}
 	});
-	
+}
+
+function update_scheduled_mass_mailings_options() { 
+	$.ajax({
+		url: $("#s_program_url").val(),
+		data: {
+			flavor:        'draft_message_values',
+			draft_id:     $("#draft_id").val(),
+			draft_role:   $("#draft_role").val(),
+			draft_screen: $("#flavor").val()
+		},
+		dataType: "json",
+		async: true,
+		success: function(content) {
+			
+			$("#schedule_html_body_checksum").val(content.schedule_html_body_checksum); 
+			
+			if(content.schedule_activated == "1"){ 
+				if ($("#schedule_activated").prop("checked") === false) {
+					$('#schedule_activated').prop('checked', true);
+				}
+			}
+			else if(content.schedule_activated == "0"){ 
+				if ($("#schedule_activated").prop("checked") === true) {
+					$('#schedule_activated').prop('checked', false);
+				}
+			}
+		}
+	});
 	
 }
 

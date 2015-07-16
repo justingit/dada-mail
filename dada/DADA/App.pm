@@ -143,7 +143,7 @@ sub setup {
         'send_email'                                  => \&send_email,
         'send_email_button_widget'                    => \&send_email_button_widget, 
         'mass_mailing_schedules_preview'                 => \&mass_mailing_schedules_preview, 
-
+        'draft_message_values'                        => \&draft_message_values, 
         'ckeditor_template_tag_list'                  => \&ckeditor_template_tag_list,
         'draft_saved_notification'                    => \&draft_saved_notification,
         'drafts'                                      => \&drafts,
@@ -1071,6 +1071,40 @@ sub mass_mailing_schedules_preview {
     );
     return $scrn;
 
+}
+
+sub draft_message_values {
+    my $self = shift;
+    my $q    = $self->query();
+
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'send_email'
+    );
+    if ( !$checksout ) { return $error_msg; }
+    my $list = $admin_list;    
+
+    require DADA::App::MassSend;
+    my $ms = DADA::App::MassSend->new( { -list => $list } );
+
+    my ( $headers, $body ) = $ms->draft_message_values(
+        {
+            -cgi_obj     => $q,
+        }
+    );
+
+#    require Data::Dumper; 
+#    warn Data::Dumper::Dumper(
+#        { 
+#            headers => $headers, 
+#            body    => $body, 
+#        }
+#    );
+    if ( keys %$headers ) {
+        $self->header_props(%$headers);
+    }
+    return $body;
+    
 }
 
 sub datetime_to_ctime {

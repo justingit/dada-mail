@@ -9,6 +9,7 @@
         <fieldset>
             <legend>Scheduling Options</legend>    
 
+            <input type="hidden" name="schedule_html_body_checksum" id="schedule_html_body_checksum" value="" />
             <p>
                 <input type="checkbox" name="schedule_activated" id="schedule_activated" value="1" class="schedule_field" />
                 <label for="schedule_activated">
@@ -74,11 +75,26 @@
                 </td><td><input type="checkbox" name="schedule_recurring_days" id="thu" value="4" class="schedule_field" checked="checked"  /> <label for="thu">Thursday</label> | 
                 </td><td><input type="checkbox" name="schedule_recurring_days" id="fri" value="5" class="schedule_field" checked="checked"  /> <label for="fri">Friday</label> | 
                 </td><td><input type="checkbox" name="schedule_recurring_days" id="sat" value="6" class="schedule_field" checked="checked"  /> <label for="sat">Saturday</label> | 
-               </td><td> <input type="checkbox" name="schedule_recurring_days" id="sun" value="7" class="schedule_field" checked="checked" />  <label for="sun">Sunday</label>
+                </td><td> <input type="checkbox" name="schedule_recurring_days" id="sun" value="7" class="schedule_field" checked="checked" />  <label for="sun">Sunday</label>
                 </td>
                 <tr>
                 </table> 
-
+                
+                <!-- tmpl_if expr="(screen eq 'send_url_email')" -->
+                <p>
+                    <input type="checkbox" name="schedule_recurring_only_mass_mail_if_html_diff" id="schedule_recurring_only_mass_mail_if_html_diff"  class="schedule_field"  value="1" checked="checked" />
+                    <label for="schedule_recurring_only_mass_mail_if_html_diff">
+                        Only send the next scheduled mass mailing, if the HTML content differs from the previous scheduled  mass mailing
+                    </label>
+                </p>
+                <!-- tmpl_else --> 
+                <p>
+                    <input type="hidden" name="schedule_recurring_only_mass_mail_if_html_diff" id="schedule_recurring_only_mass_mail_if_html_diff" value="1" />
+                    
+                </p>
+                
+                <!-- /tmpl_if --> 
+                
             </div>
             
             <div class="clearskiesbox"> 
