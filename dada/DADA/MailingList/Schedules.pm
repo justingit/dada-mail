@@ -211,7 +211,10 @@ sub run_schedules {
         
             if($specific_time >= $self->{ls_obj}->param('schedule_last_checked_time')){ 
                 
-                if($sched->{schedule_recurring_only_mass_mail_if_html_diff} == 1){ 
+                if(
+                    $sched->{schedule_type}                                  eq 'recurring'
+                 && $sched->{schedule_recurring_only_mass_mail_if_html_diff} == 1
+                ){ 
                     $r .= "\t\t* Checking message content...\n";
                     my ($status, $errors, $message_id, $md5) = $self->{ms_obj}->construct_and_send(
                          {
@@ -248,27 +251,30 @@ sub run_schedules {
                     {
                         -draft_id   => $sched->{id},
                         -screen     => $sched->{screen},
-                        -role       => $sched->{role},,
+                        -role       => $sched->{role},
                         -process    => 1, 
-                        -dry_run    => 1, 
                     }
                 );
                # $r .= 'schedule_recurring_only_mass_mail_if_html_diff ' . $sched->{schedule_recurring_only_mass_mail_if_html_diff} . "\n";
                #    $r .= 'Saved MD5: ' . $sched->{schedule_html_body_checksum} . "\n";
                #    $r .= 'MD5: ' . $md5 . "\n"; 
-               $self->update_schedule(
-                    {
-                        -id     => $sched->{id},
-                        -role   => $sched->{role},
-                        -screen => $sched->{screen},
-                        -vars => { 
-                            schedule_html_body_checksum => $md5, 
-                        },
-                    }   
-                );
+               if($sched->{schedule_type} eq 'recurring') { 
+                   $r .= $self->update_schedule(
+                        {
+                            -id     => $sched->{id},
+                            -role   => $sched->{role},
+                            -screen => $sched->{screen},
+                            -vars => { 
+                                schedule_html_body_checksum => $md5, 
+                            },
+                        }   
+                    );
+                }
                 
                 if($status == 1){ 
-                    $r .= "\t\t* Scheduled Mass Mailing added to the Queue, Message ID: $message_id\n"; 
+                    my $escaped_mid = $message_id; 
+                       $escaped_mid =~ s/\>|\<//g; 
+                    $r .= "\t\t* Scheduled Mass Mailing added to the Queue, Message ID: $escaped_mid\n"; 
                 }
                 else { 
                     $r .= "\t\t* Scheduled Mass Mailing not sent, reasons:\n$errors\n";
@@ -452,7 +458,6 @@ sub update_schedule {
         $r .= $_ . ' => ' . $vars->{$_} . "\n"; 
         $local_q->param($_, $vars->{$_}); 
     }
-    $local_q->param('Subject', time); 
             
     $self->{d_obj}->save(
         {
