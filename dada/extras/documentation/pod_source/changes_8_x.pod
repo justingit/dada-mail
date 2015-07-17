@@ -4,6 +4,30 @@
 
 =head1 Dada Mail Changelog for v8.x
 
+=head1 8.4.0
+
+=head2 Features
+
+=head3 Recurring Scheduled Mass Mailing Enhancements
+
+Dada Mail now supports only sending the next recurring scheduled mass mailing, if the content differs from the message previously sent out. 
+
+This is useful when you send a web page, as that webpage could in fact, only be periodically updated, and on a schedule that differs from Dada Mail's own recurring schedule. 
+
+With this feature activated, only when the content changes, will a recurring scheduled mailing be sent out. 
+
+=head3 Send a Webpage: Send a Cropped Webpage
+
+Dada Mail now has supports sending only a cropped portion of the webpage's content. All you will need to do is specify the class or id of the HTML tag that has the content you would like to send out. The rest of the page will not be included as part of the message. 
+
+This can be helpful, if the original of the message you would like to send is a full blown page from a website, but you would rather not send the entire message, as such a message would not render well as a email message. 
+
+=head2 Bugfixes
+
+=head3 List Names set the same as List Email sometimes interpreted as an email address in From:, To: headers
+
+L<https://github.com/justingit/dada-mail/issues/512>
+
 =head1 8.3.0
 
 =head2 Summary
