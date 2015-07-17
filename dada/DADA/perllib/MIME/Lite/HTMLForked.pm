@@ -139,6 +139,21 @@ sub new {
         $LOGINDETAILS = $param{'LoginDetails'};
         delete $param{'LoginDetails'};
     }
+    
+    for (qw(
+            crop_html_content 
+            crop_html_content_selector_type 
+            crop_html_content_selector_label
+        )){ 
+        if(exists($param{$_})) { 
+            $self->{$_} = $param{$_};
+        }
+        else { 
+            $self->{$_} = undef;
+            
+        }
+    }
+    
 
     # Set type of include to do
     if ( $param{'IncludeType'} ) {
