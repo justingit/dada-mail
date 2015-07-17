@@ -231,7 +231,7 @@ sub add_subscribers {
                 warn 'Problems w/send_subscribed_by_list_owner_message:' . $_; 
             };
         }
-        warn q{$self->{ls}->param('send_last_archived_msg_mass_mailing')} . $self->{ls}->param('send_last_archived_msg_mass_mailing'); 
+#        warn q{$self->{ls}->param('send_last_archived_msg_mass_mailing')} . $self->{ls}->param('send_last_archived_msg_mass_mailing'); 
         
         if ( $self->{ls}->param('send_last_archived_msg_mass_mailing') == 1 ) {
             try {
