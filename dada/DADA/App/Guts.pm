@@ -2294,6 +2294,26 @@ sub upgrade_tables {
             undef $query;
             undef $sth;
         }
+        if ( exists( $table_cols->{user_agent} ) ) {
+            # good to go.
+        }
+        else {
+            my $query;
+            if ( $tablename eq 'clickthrough_url_log_table' ) {
+                $query = 'ALTER TABLE ' . $DADA::Config::SQL_PARAMS{$tablename} . ' ADD user_agent VARCHAR(255)';
+            }
+            elsif ( $tablename eq 'mass_mailing_event_log_table' ) {
+                $query = 'ALTER TABLE ' . $DADA::Config::SQL_PARAMS{$tablename} . ' ADD user_agent VARCHAR(255)';
+            }
+            else {
+                croak "unknown error!";
+            }
+            # warn 'Query: ' . $query;
+            my $sth = $dbh->do($query)
+              or croak $dbh->errstr;
+            undef $query;
+            undef $sth;
+        }
     }
 
     # dada_profile_fields_attributes
