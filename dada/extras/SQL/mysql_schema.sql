@@ -104,7 +104,8 @@ remote_addr text,
 msg_id text, 
 event text,
 details text,
-email varchar(80)
+email varchar(80), 
+user_agent varchar(255)
 ); 
 
 CREATE TABLE IF NOT EXISTS dada_clickthrough_url_log (
@@ -114,7 +115,8 @@ timestamp TIMESTAMP DEFAULT NOW(),
 remote_addr text,
 msg_id text, 
 url text,
-email varchar(80)
+email varchar(80),
+user_agent varchar(255)
 );
 
 CREATE TABLE IF NOT EXISTS dada_password_protect_directories (

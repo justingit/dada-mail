@@ -19,7 +19,7 @@ use DADA::Config qw(!:DEFAULT);
 use DADA::App::Guts;    # For now, my dear.
 use Try::Tiny; 
 
-my $t = $DADA::Config::DEBUG_TRACE->{DADA_Logging_Clickthrough};
+my $t = 1; #$DADA::Config::DEBUG_TRACE->{DADA_Logging_Clickthrough};
 
 sub new {
 
@@ -243,6 +243,7 @@ sub r_log {
 
     my $self      = shift;
     my ($args)    = @_;
+
     my $timestamp = undef;
     if ( exists( $args->{-timestamp} ) ) {
         $timestamp = $args->{-timestamp};
@@ -269,6 +270,11 @@ sub r_log {
         $args->{-update_fields}; 
     }
     
+    if(!exists($args->{-ua})){ 
+        $args->{-ua} = $ENV{HTTP_USER_AGENT},
+    }
+#    warn q{$args->{-ua}} . $args->{-ua}; 
+    
     my $recorded_open_recently = 1;
     try {
         $recorded_open_recently = $self->_recorded_open_recently($args);
@@ -277,7 +283,12 @@ sub r_log {
         carp "Couldn't execute, '_recorded_open_recently', : $_";
     };
     if ( $recorded_open_recently <= 0 ) {
-        $self->open_log($args);
+        $self->open_log(
+            {
+                %$args, 
+                # -ua => $args->{-ua} . ' *'
+            }
+        );
     }
 
     my $place_holder_string = '';
@@ -307,20 +318,33 @@ sub r_log {
       . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table}
       . '(list,'
       . $ts_snippet
-      . 'remote_addr, msg_id, url, email'
+      . 'remote_addr, msg_id, url, email, user_agent'
       . $sql_snippet
-      . ') VALUES (?, ?, ?, ?, ?'
+      . ') VALUES (?, ?, ?, ?, ?, ?'
       . $place_holder_string . ')';
 
     my $sth = $self->{dbh}->prepare($query);
     if ( defined($timestamp) ) {
-        $sth->execute( $self->{name}, $timestamp, $remote_address,
-            $args->{-mid}, $args->{-url}, $args->{-email}, @values );
+        $sth->execute( 
+            $self->{name}, 
+            $timestamp, 
+            $remote_address,
+            $args->{-mid}, 
+            $args->{-url}, 
+            $args->{-email},
+            $args->{-ua}, 
+            @values
+        );
     }
     else {
         $sth->execute(
-            $self->{name}, $remote_address, $args->{-mid},
-            $args->{-url}, $args->{-email}, @values
+            $self->{name}, 
+            $remote_address, 
+            $args->{-mid},
+            $args->{-url}, 
+            $args->{-email},
+            $args->{-ua}, 
+            @values
         );
     }
     $sth->finish;
@@ -638,6 +662,12 @@ sub mass_mailing_event_log {
     my $details = $args->{-details};
     
     
+    if(!exists($args->{-ua})){ 
+        $args->{-ua} = $ENV{HTTP_USER_AGENT},        
+    }
+#    warn '$ENV{HTTP_USER_AGENT}' . $ENV{HTTP_USER_AGENT}; 
+    my $ua = $args->{-ua};
+    
     
     # Record this as an open? 
     if ( !exists( $args->{-record_as_open} ) ) {
@@ -660,7 +690,12 @@ sub mass_mailing_event_log {
             }
         }
         if ( $recorded_open_recently <= 0 && defined($args->{-mid})) {
-            $self->open_log($args);
+            $self->open_log(
+                {
+                    %$args, 
+                    # -ua => $args->{-ua} . ' *'
+                }    
+            );
         }
     }
     
@@ -677,7 +712,7 @@ sub mass_mailing_event_log {
       . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table}
       . '(list, '
       . $ts_snippet
-      . 'remote_addr, msg_id, event, email, details) VALUES (?, ?, ?, ?, ?, ?'
+      . 'remote_addr, msg_id, event, email, user_agent, details) VALUES (?, ?, ?, ?, ?, ?, ?'
       . $place_holder_string . ')';
 
 	  warn '$query:' . $query
@@ -689,11 +724,28 @@ sub mass_mailing_event_log {
     if ( defined($timestamp) ) {
 		warn 'timestamp!'
 		    if $t; 
-		@execute_args = ($self->{name}, $timestamp, $remote_address, $args->{-mid}, $event, $args->{-email}, $details);
+		@execute_args = (
+		    $self->{name}, 
+		    $timestamp, 
+		    $remote_address, 
+		    $args->{-mid}, 
+		    $event, 
+		    $args->{-email}, 
+		    $ua, 
+		    $details
+		);
         $sth->execute(@execute_args);
     }
     else {
-		@execute_args = ($self->{name},             $remote_address, $args->{-mid}, $event, $args->{-email}, $details);		
+		@execute_args = (
+		    $self->{name},
+		    $remote_address, 
+		    $args->{-mid}, 
+		    $event, 
+		    $args->{-email}, 
+		    $ua, 
+		    $details
+		);
         $sth->execute(@execute_args);
     	warn 'no timestamp' 
     	    if $t; 
