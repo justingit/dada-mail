@@ -2669,6 +2669,8 @@ sub api {
 
     my ( $pi_flavor, $pi_list, $pi_service, $pi_public_key, $pi_digest ) = split( '/', $info );
 
+    # https://metacpan.org/pod/distribution/CGI/lib/CGI.pod#FETCHING-ENVIRONMENT-VARIABLES
+    # http://stackoverflow.com/questions/7362932/perl-equivalent-of-php-auth-pw
     # HTTP_AUTHORIZATION
     my %incoming_headers = map { $_ => $q->http($_) } $q->http();
     #use Data::Dumper;
