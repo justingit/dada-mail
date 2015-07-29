@@ -1492,7 +1492,7 @@ sub mass_send {
 				if $t;	            
             
             if($DADA::Config::RUNNING_UNDER ne 'FastCGI') {
-                if($DADA::Config::NULL_DEVICE){ 
+                if(defined($DADA::Config::NULL_DEVICE)){ 
                     open(STDIN,  ">>$DADA::Config::NULL_DEVICE") or carp "couldn't open '$DADA::Config::NULL_DEVICE' - $!"; 
                     open(STDOUT, ">>$DADA::Config::NULL_DEVICE") or carp "couldn't open '$DADA::Config::NULL_DEVICE' - $!"; 
                 }
