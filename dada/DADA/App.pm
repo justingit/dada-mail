@@ -13106,15 +13106,19 @@ sub schedules {
     # Just need to document this
     # and figure out inject stuff.... sigh.
 
+    
     my $self = shift;
     my $q    = $self->query;
 
+    my $t = time;
+    
     my $list         = $q->param('list')         || '_all';
     my $schedule     = $q->param('schedule')     || '_all';
     my $output_mode  = $q->param('output_mode')  || '_verbose';
     my $for_colorbox = $q->param('for_colorbox') || 0;
 
     my $r;
+    $r .= "Started: " . scalar localtime($t) . "\n"; 
 
     require DADA::App::ScheduledTasks;
     my $dast = DADA::App::ScheduledTasks->new;
@@ -13193,12 +13197,18 @@ sub schedules {
         $r .= 'No such schedule:"' . $schedule . '"';
     }
 
+    my $end_t = time; 
+    my $total_t = $end_t - $t; 
+    $r .= "Finished: " . scalar localtime($end_t) . "\n"; 
+    $r .= "Total processing time: " . formatted_runtime($total_t) . "\n"; 
+    
     if ( $DADA::Config::SCHEDULED_JOBS_OPTIONS->{'log'} == 1 ) {
         require DADA::Logging::Usage;
         my $log = new DADA::Logging::Usage;
         $log->cron_log($r);
     }
 
+    
     if ( $output_mode ne '_silent' ) {
         $self->header_props( { -type => 'text/plain' } );
         if ( $for_colorbox == 1 ) {
