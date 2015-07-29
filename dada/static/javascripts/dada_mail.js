@@ -1781,7 +1781,6 @@ function view_list_viewport(initial) {
 			google.setOnLoadCallback(drawTrackerDomainBreakdownChart());
 		}
 	}); 
-
 }
 
 function set_up_advanced_search_form() { 
@@ -1889,7 +1888,6 @@ function change_order(order_by, order_dir) {
 
 var domain_breakdown_chart; // you've got to be serious... 
 var domain_breakdown_chart_data;
-
 function drawTrackerDomainBreakdownChart() {
 	$("#domain_break_down_chart_loading").html('<p class="alert">Loading...</p>');
 	$.ajax({
@@ -1924,6 +1922,55 @@ function drawTrackerDomainBreakdownChart() {
 			google.visualization.events.addListener(domain_breakdown_chart, 'select', selectHandler);
 		}
 	});
+}
+
+
+function user_agent_chart(type, target_div) {
+	console.log('user_agent_chart! type: ' + type + ';target_div:' + target_div); 
+	
+	$("#" + target_div + "_loading").html('<p class="alert">Loading...</p>');
+	$.ajax({
+		url: $("#s_program_url").val(),
+		type: "POST",
+		data: {
+			flavor: 'plugins', 
+			plugin: 'tracker', 
+			prm: 'user_agent_json',
+			mid: $('#tracker_message_id').val(),
+			type: type
+		},
+		dataType: "json",
+		cache: false,
+		async: true,
+		success: function(jsonData) {
+			// Create our data table out of JSON data loaded from server.
+			var options = {
+				chartArea: {
+					left: 20,
+					top: 20,
+					width: "90%",
+					height: "90%"
+				},
+				width: $('#' + target_div).attr("data-width"),
+				height: $('#' + target_div).attr("data-height"),
+				pieSliceTextStyle: {
+					color: '#FFFFFF'
+				},
+				colors: ["ffabab", "ffabff", "a1a1f0", "abffff", "abffab", "ffffab"],
+				is3D: true
+			};
+			var data = new google.visualization.DataTable(jsonData);
+			var chart = new google.visualization.PieChart(document.getElementById(target_div));
+			
+			$("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
+			$("#" + target_div).hide("fade", function() {
+				chart.draw(data, options);
+				$("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
+				$("#" + target_div).show('fade');
+			});
+		}
+	});
+
 }
 
 function selectHandler(event) {
@@ -2762,6 +2809,9 @@ function update_plugins_tracker_message_report() {
 	google.setOnLoadCallback(email_breakdown_chart('hard_bounce', 'Hard Bounces', 'hard_bounce_graph'));
 	google.setOnLoadCallback(email_breakdown_chart('errors_sending_to', 'Sending Errors', 'errors_sending_to_graph'));
 	google.setOnLoadCallback(email_breakdown_chart('abuse_report', 'Abuse reports', 'abuse_report_graph'));
+	
+	google.setOnLoadCallback(user_agent_chart('opens',                 'user_agent_opens_chart'));
+	google.setOnLoadCallback(user_agent_chart('clickthroughs', 'user_agent_clickthroughs_chart'));
 
 	tracker_message_report_callback.add(message_email_report_table('unsubscribe',    'unsubscribe_table'));
 	tracker_message_report_callback.add(message_email_report_table('soft_bounce',    'soft_bounce_table'));
@@ -2770,6 +2820,7 @@ function update_plugins_tracker_message_report() {
 	tracker_message_report_callback.add(message_email_report_table('abuse_report', 'abuse_report_table'));
 
 	tracker_message_report_callback.fire(); 
+	
 	
 }
 

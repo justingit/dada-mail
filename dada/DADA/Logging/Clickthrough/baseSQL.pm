@@ -1355,21 +1355,21 @@ sub export_logs {
 		#my $title_status = $csv->print ($fh, [qw(timestamp remote_addr msg_id url, email), @$custom_fields]);
 		#print $fh "\n";
 		
-		my $title_status = $csv->combine(qw(timestamp remote_addr msg_id url, email)); # combine columns into a string
+		my $title_status = $csv->combine(qw(timestamp remote_addr user_agent msg_id url email)); # combine columns into a string
         $r              .= $csv->string();   # get the combined string
     	$r              .= "\n";
-        $query = 'SELECT timestamp, remote_addr, msg_id, url, email'. $sql_snippet .' FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ?';
+        $query = 'SELECT timestamp, remote_addr, user_agent, msg_id, url, email'. $sql_snippet .' FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ?';
     }
     elsif ( $args->{-type} eq 'activity' ) {
 	
 		#my $title_status = $csv->print ($fh, [qw(timestamp remote_addr msg_id activity details email)]);
 		#print $fh "\n";
-		my $title_status = $csv->combine(qw(timestamp remote_addr msg_id activity details email)); # combine columns into a string
+		my $title_status = $csv->combine(qw(timestamp remote_addr user_agent msg_id activity details email)); # combine columns into a string
         $r              .= $csv->string();   # get the combined string
     	$r              .= "\n";
 		
 		# timestamp list message_id activity details
-        $query = 'SELECT timestamp, remote_addr, msg_id, event, details, email FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ?';
+        $query = 'SELECT timestamp, remote_addr, user_agent, msg_id, event, details, email FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE list = ?';
     }
 	if(defined($args->{-mid})){ 
 		$query .= ' AND msg_id = ?'; 
@@ -1457,14 +1457,13 @@ sub export_by_email {
     	$r              .= "\n";
     }
     
-    my $headers = {'Content-disposition' => 'attachement; filename=' 
+    my $headers = {'-Content-disposition' => 'attachment; filename=' 
 			                              . $self->{name} 
                         			      . '-' 
                         			      . $args->{-type} 
                         			      . '-subscribers-' 
                         			      . $args->{-mid} 
-                        			      . '.csv' 
-                        			      .  "\n", 
+                        			      . '.csv', 
 			      -type => 'text/csv', 
 		        }; 
 	
@@ -1576,6 +1575,10 @@ sub user_agent_data {
 	my $self   = shift; 
 	my ($args) = @_; 
 
+
+    require Data::Dumper; 
+    #warn 'args: ' . Data::Dumper::Dumper($args); 
+    
 	if(!exists($args->{-mid})){ 
 		$args->{-mid} = undef; 
 	}
@@ -1606,7 +1609,7 @@ sub user_agent_data {
 	}
 	my $sth = $self->{dbh}->prepare($query);
 
-	#	die $query; 
+    #warn '$query ' . $query; 
 
 	if(defined($args->{-mid})){ 
 		$sth->execute($self->{name}, $args->{-mid});
@@ -1618,8 +1621,11 @@ sub user_agent_data {
 
 	my $row; 
 	while ( $row = $sth->fetchrow_hashref ) {
+	    if($row->{user_agent} eq ''){ 
+	        $row->{user_agent} = 'Unknown'; 
+	    }
 		push(@$uas, {
-			user_agent => $row->{user_agent}, 				
+			user_agent => $row->{user_agent},
 		});
 	}	
 	$sth->finish; 
@@ -1639,17 +1645,40 @@ sub user_agent_data {
 	#return $uas; 
     my $ua_count = {}; 
     for(@$uas){ 
-        if(exists($ua_count->{$_})) { 
-            $ua_count->{$_}++; 
+        if(exists($ua_count->{$_->{user_agent}})) { 
+            $ua_count->{$_->{user_agent}}++; 
         }
         else { 
-            $ua_count->{$_} = 1;   
+            $ua_count->{$_->{user_agent}} = 1;   
         }
     }
     
+    # Sorted Index
+	my @index = sort { $ua_count->{$b} <=> $ua_count->{$a} } keys %$ua_count; 
+
+    my $count = 15; 
+    
+	# Top n
+	my @top = splice(@index,0,($count-1));
+
+	# Everyone else
+	my $other = 0; 
+	foreach(@index){ 
+		$other = $other + $ua_count->{$_};
+	}
+	my $final = {};
+	foreach(@top){ 
+		$final->{$_} = $ua_count->{$_};
+	}
+	if($other > 0){ 
+		$final->{other} = $ua_count->{$other};
+	}		
+	
+	
+	
     require Data::Dumper; 
-    warn Data::Dumper::Dumper($ua_count); 
-    return $ua_count; 
+   # warn '$final ' . Data::Dumper::Dumper($final); 
+    return $final; 
 
 }
 
@@ -1683,10 +1712,17 @@ sub user_agent_json {
 		pretty  => 1,
 	);
 	
-	require Data::Dumper; 
-	warn Data::Dumper::Dumper($json); 
+	#require Data::Dumper; 
+	#warn Data::Dumper::Dumper($json); 
 	
-	return $json; 
+	my $headers = {
+		'-Cache-Control' => 'no-cache, must-revalidate',
+		-expires         =>  'Mon, 26 Jul 1997 05:00:00 GMT',
+		-type            =>  'application/json',
+	};
+	
+	return ($headers, $json);
+	
 }
 
 
@@ -2769,7 +2805,7 @@ sub message_individual_email_activity_csv {
         timestamp
         remote_addr   
         event 
-        url 
+        url
     ); 
 
     my @fields = qw(
@@ -2780,8 +2816,8 @@ sub message_individual_email_activity_csv {
     ); 
     
     my $headers ={
-        'Content-disposition' => 'attachement; filename=' . $self->{name} . '-message_individual_email_activity-' .  $args->{-email} . '-' .  $args->{-mid} . '.csv', 
-        -type =>  'text/csv'
+        '-Content-disposition' => 'attachment; filename=' . $self->{name} . '-message_individual_email_activity-' .  $args->{-email} . '-' .  $args->{-mid} . '.csv', 
+         -type                 =>  'text/csv'
     }; 
     
     

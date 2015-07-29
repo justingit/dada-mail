@@ -104,6 +104,7 @@ sub run {
         'message_email_report_table'            => \&message_email_report_table,
         'message_email_report_export_csv'       => \&message_email_report_export_csv,
         'email_stats_json'                      => \&email_stats_json,
+        'user_agent_json'                       => \&user_agent_json, 
         'clear_data_cache'                      => \&clear_data_cache,
         'clear_message_data_cache'              => \&clear_message_data_cache,
         'export_subscribers'                    => \&export_subscribers,
@@ -394,6 +395,20 @@ sub email_stats_json {
 
 }
 
+
+sub user_agent_json { 
+    my $q    = shift;
+    my $mid  = $q->param('mid');
+    my $type = $q->param('type');
+    return $rd->user_agent_json(
+        {
+            -mid      => $mid,
+            -type     => $type,
+            -printout => 0,
+        }
+    );
+}
+
 sub clear_data_cache {
     require DADA::App::DataCache;
     my $dc = DADA::App::DataCache->new;
@@ -611,7 +626,7 @@ sub download_logs {
         $type = 'clickthrough';
     }
     my $headers = {
-        'Content-disposition' => 'attachement; filename=' . $list . '-' . $type . '.csv',
+        'Content-disposition' => 'attachment; filename=' . $list . '-' . $type . '.csv',
         -type                 => 'text/csv',
     };
     my $r = $rd->export_logs(
@@ -629,8 +644,8 @@ sub download_clickthrough_logs {
     my $q       = shift;
     my $mid     = xss_filter( scalar $q->param('mid') );
     my $headers = {
-        'Content-disposition' => 'attachement; filename=' . $list . '-clickthrough-' . $mid . '.csv',
-        -type                 => 'text/csv',
+        '-Content-disposition' => 'attachment; filename=' . $list . '-clickthrough-' . $mid . '.csv',
+        -type                  => 'text/csv',
     };
     my $r = $rd->export_logs(
         {
@@ -648,7 +663,7 @@ sub download_activity_logs {
     my $q       = shift;
     my $mid     = xss_filter( scalar $q->param('mid') );
     my $headers = {
-        'Content-disposition' => 'attachement; filename=' . $list . '-activity-' . $mid . '.csv',
+        'Content-disposition' => 'attachment; filename=' . $list . '-activity-' . $mid . '.csv',
         -type                 => 'text/csv',
     };
 

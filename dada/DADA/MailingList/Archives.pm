@@ -1196,7 +1196,7 @@ sub view_file_attachment {
 		$r .= $q->header($a_entity->head->mime_type); 
 	}else{ 
 	
-			$r .=  "Content-disposition: attachement; filename=\"$filename\"\n";
+			$r .=  "Content-disposition: attachment; filename=\"$filename\"\n";
 	   		$r .=  "Content-type: application/octet-stream\n\n";
 	
 		}

@@ -340,14 +340,6 @@
 			Abuse Reports
 			</a>
 			</li>
-
-			<li>
-			<a href="#user_agents">
-			User Agents
-			</a>
-			</li>
-
-			
 			
 		</ul>
 
@@ -394,15 +386,19 @@
 	<div id="over_time_opens_graph_loading"></div> 
 	<div id="over_time_opens_graph" data-width="720" data-height="400" style="width:720px;height:400px"></div> 
 
+    <h2>User Agents for Opens</h2>
+    <div id="user_agent_opens_chart_loading"></div> 
+	<div id="user_agent_opens_chart" data-width="720" data-height="400" style="width:720px;height:400px"></div>
+    
 
 		
 		<fieldset> 
 			<div class="buttonfloat">
 			<form action="<!-- tmpl_var PluginURL -->" method="post"> 
-			<input type="hidden" name="flavor"    value="export_subscribers" /> 
-			<input type="hidden" name="type" value="opens" /> 
-			<input type="hidden" name="mid"  value="<!-- tmpl_var mid -->" />
-			<input type="submit" value="Export Subscribers Opening This Message" class="processing" /> 
+    			<input type="hidden" name="prm"    value="export_subscribers" /> 
+    			<input type="hidden" name="type" value="opens" /> 
+    			<input type="hidden" name="mid"  value="<!-- tmpl_var mid -->" />
+    			<input type="submit" value="Export Subscribers Opening This Message" class="processing" /> 
 			</form>
 			</div> 
 			<div class="floatclear"></div>	
@@ -474,21 +470,26 @@
 						</td> 
 						</tr> 
 				    <!-- /tmpl_loop -->
-				</table> 
-				</div> 
-				</div> 
+    				</table> 
+    				</div> 
+    				</div> 
 			
 				<!-- tmpl_else --> 
 					<p class="alert">Nothing to report.</p> 
 				<!-- /tmpl_if --> 
 
+        <h2>User Agents for Clickthroughs</h2>
+        <div id="user_agent_clickthroughs_chart_loading"></div> 
+		<div id="user_agent_clickthroughs_chart" data-width="720" data-height="400" style="width:720px;height:400px"></div>
+
+
 	<fieldset> 
 		<div class="buttonfloat">
 		<form action="<!-- tmpl_var PluginURL -->" method="post"> 
-		<input type="hidden" name="flavor"    value="export_subscribers" /> 
-		<input type="hidden" name="type" value="clickthroughs" /> 
-		<input type="hidden" name="mid"  value="<!-- tmpl_var mid -->" />
-		<input type="submit" value="Export Subscribers Clickthroughing This Message" class="processing" /> 
+    		<input type="hidden" name="prm"  value="export_subscribers" /> 
+    		<input type="hidden" name="type" value="clickthroughs" /> 
+    		<input type="hidden" name="mid"  value="<!-- tmpl_var mid -->" />
+    		<input type="submit" value="Export Subscribers Clickthroughing This Message" class="processing" /> 
 		</form>
 		</div> 
 		<div class="floatclear"></div>	
@@ -646,21 +647,16 @@
 		<fieldset> 
 			<div class="buttonfloat">
 			<form action="<!-- tmpl_var PluginURL -->" method="post"> 
-			<input type="hidden" name="flavor"    value="export_subscribers" /> 
-			<input type="hidden" name="type" value="abuse_reports" /> 
-			<input type="hidden" name="mid"  value="<!-- tmpl_var mid -->" />
-			<input type="submit" value="Export Subscribers Reporting Abuse for This Message" class="processing" /> 
+		    	<input type="hidden" name="flavor"    value="export_subscribers" /> 
+    			<input type="hidden" name="type" value="abuse_reports" /> 
+    			<input type="hidden" name="mid"  value="<!-- tmpl_var mid -->" />
+			    <input type="submit" value="Export Subscribers Reporting Abuse for This Message" class="processing" /> 
 			</form>
 			</div> 
 			<div class="floatclear"></div>	
 		</fieldset>
 		
 	</div> 
-
-	<div id="user_agents"> 
-		<div id="user_agents_report_graph_loading"></div> 
-		<div id="user_agents_report_graph" data-width="720" data-height="400" style="width:720px;height:400px"></div>
-    </div> 
 
 
 
@@ -675,11 +671,11 @@
 
 		<div class="buttonfloat">
 		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
-		<input type="hidden" name="flavor" value="plugins" /> 
-		<input type="hidden" name="plugin" value="tracker" /> 
-		<input type="hidden" name="prm" value="download_activity_logs" /> 
-		<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" />
-		 <input type="submit" class="processing" name="process" value="Download Raw Activity Logs (.csv)" />
+    		<input type="hidden" name="flavor" value="plugins" /> 
+    		<input type="hidden" name="plugin" value="tracker" /> 
+    		<input type="hidden" name="prm" value="download_activity_logs" /> 
+    		<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" />
+    		 <input type="submit" class="processing" name="process" value="Download Raw Activity Logs (.csv)" />
 		</form> 
 		</div>
 
