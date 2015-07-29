@@ -1568,6 +1568,129 @@ sub ip_data {
 	return $ips; 
 	
 }
+
+sub user_agent_data { 
+	
+	# Todo: add email stuff to that. 
+	# Remember bounces and everything else use a different column for email address!
+	my $self   = shift; 
+	my ($args) = @_; 
+
+	if(!exists($args->{-mid})){ 
+		$args->{-mid} = undef; 
+	}
+	if(!exists($args->{-type})){ 
+		$args->{-type} = 'clickthroughs'; 
+	}
+
+#	select remote_addr from dada_clickthrough_url_log where msg_id = '20110502135133'; 
+	my $query; 
+	if($args->{-type} eq 'clickthroughs'){ 
+		$query = 'SELECT user_agent FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} . ' WHERE list = ?'; 
+	}
+	elsif($args->{-type} eq 'opens'){ 
+		$query = 'SELECT user_agent FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'open\' AND list = ?'; 	
+	}
+	elsif($args->{-type} eq 'forward_to_a_friend') { 
+		$query = 'SELECT user_agent FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'forward_to_a_friend\' AND list = ?'; 			
+	}
+	elsif($args->{-type} eq 'view_archive') { 
+		$query = 'SELECT user_agent FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE event = \'view_archive\' AND list = ?'; 			
+	}
+	elsif($args->{-type} eq 'ALL') {
+		$query = 'SELECT user_agent FROM ' . $DADA::Config::SQL_PARAMS{mass_mailing_event_log_table} . ' WHERE (event = \'open\' OR event = \'forward_to_a_friend\' OR event = \'view_archive\') AND list = ?'; 				
+	} 
+
+	if(defined($args->{-mid})){ 
+		$query .= ' AND msg_id=?'; 
+	}
+	my $sth = $self->{dbh}->prepare($query);
+
+	#	die $query; 
+
+	if(defined($args->{-mid})){ 
+		$sth->execute($self->{name}, $args->{-mid});
+	}
+	else { 
+		$sth->execute($self->{name});
+	}
+	my $uas = []; 
+
+	my $row; 
+	while ( $row = $sth->fetchrow_hashref ) {
+		push(@$uas, {
+			user_agent => $row->{user_agent}, 				
+		});
+	}	
+	$sth->finish; 
+
+
+	if($args->{-type} eq 'ALL') {
+		my $cuas = $self->user_agent_data(
+			{ 
+				-type => 'clickthroughs', 
+				-mid  => $args->{-mid}, 
+			}
+		); 
+		foreach(@$cuas){ 
+			push(@$uas, $_);
+		}
+	}
+	#return $uas; 
+    my $ua_count = {}; 
+    for(@$uas){ 
+        if(exists($ua_count->{$_})) { 
+            $ua_count->{$_}++; 
+        }
+        else { 
+            $ua_count->{$_} = 1;   
+        }
+    }
+    
+    require Data::Dumper; 
+    warn Data::Dumper::Dumper($ua_count); 
+    return $ua_count; 
+
+}
+
+sub user_agent_json { 
+    
+    my $self   = shift; 
+	my ($args) = @_; 	
+	my $report = $self->user_agent_data($args);	
+    
+    my $json;
+    
+	require Data::Google::Visualization::DataTable; 
+	my $datatable = Data::Google::Visualization::DataTable->new();
+
+	$datatable->add_columns(
+	       { id => 'user_agent', label => "User Agent",  type => 'string',},
+	       { id => 'number',     label => "Number",      type => 'number',},
+	);
+
+	for(keys %$report){ 
+		$datatable->add_rows(
+	        [
+            { v => $_  },
+            { v => $report->{$_} },
+	       ],
+		);
+	}
+
+
+	$json = $datatable->output_javascript(
+		pretty  => 1,
+	);
+	
+	require Data::Dumper; 
+	warn Data::Dumper::Dumper($json); 
+	
+	return $json; 
+}
+
+
+
 sub country_geoip_data { 
 	
 	my $self   = shift; 
