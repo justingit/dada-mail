@@ -310,18 +310,26 @@
 <div id="plaintext_message"> 
 		 
 		<p>
-		  <input type="radio" name="auto_create_plaintext" id="auto_create_plaintext" value="1" checked="checked" />
-		  <label for="auto_create_plaintext">
+		  <input type="radio" name="plaintext_content_from" id="plaintext_content_from_auto" value="auto" checked="checked" />
+		  <label for="plaintext_content_from_auto">
 		   Create a PlainText version automatically
 		  </label>
-		  <br />
-		  <em>
-		   Will NOT work if you use a username/password or proxy.
-		  </em>
 		 </p>
+
 		 <p>
-		  <input type="radio" name="auto_create_plaintext" id="no_auto_create_plaintext" value="0" />
-		  <label for="no_auto_create_plaintext">
+		  <input type="radio" name="plaintext_content_from" id="plaintext_content_from_url" value="url" />
+		  <label for="plaintext_content_from_url">
+		    Grab content from this webpage address (URL): 
+		  </label>
+  		  <br />
+  		  <input type="plaintext_url" name="plaintext_url" id="plaintext_url" class="full" value="http://" />
+  		</p>
+
+
+
+		 <p>
+		  <input type="radio" name="plaintext_content_from" id="plaintext_content_from_text" value="text" />
+		  <label for="plaintext_content_from_text">
 		   Use the text below as the PlainText version:
 		  </label>
 		 </p>

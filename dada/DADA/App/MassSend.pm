@@ -640,17 +640,6 @@ sub construct_from_url {
     my $url               = strip( $draft_q->param('url') );
     my $url_options       = $draft_q->param('url_options') || undef;
     my $remove_javascript = $draft_q->param('remove_javascript') || 0;
-    #my $login_details;
-    #if (   defined( $draft_q->param('url_username') )
-    #    && defined( $draft_q->param('url_password') ) )
-    #{
-    #    $login_details = $draft_q->param('url_username') . ':' . $draft_q->param('url_password');
-    #}
-
-    #my $proxy = undef;
-    #if ( defined( $draft_q->param('proxy') ) ) {
-    #    $draft_q->param('proxy'); # the heck does that do?
-    #}
 
     my %headers = ();
     for my $h (
@@ -696,7 +685,7 @@ sub construct_from_url {
         %headers,
     );
 
-    my $text_message = undef;
+    my $text_message = undef; 
     if ( defined(scalar $draft_q->param('text_message_body')) ) {
         $text_message = $draft_q->param('text_message_body');
     }
@@ -704,14 +693,13 @@ sub construct_from_url {
         $text_message = 'This email message requires that your mail reader support HTML';
     }
     
-    if ( $draft_q->param('auto_create_plaintext') == 1 ) {
+    if ( $draft_q->param('plaintext_content_from') eq 'auto' ) {
         if ( $draft_q->param('content_from') eq 'url' ) {
             if ( length($url) <= 0 ) {
                 croak "You did not fill in a URL!";
             }
-            require LWP::Simple;
-            eval { $LWP::Simple::ua->agent( 'Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')' ); };
-            my $good_try = LWP::Simple::get($url);
+            my ( $good_try, $res, $md5 ) = grab_url({-url => $draft_q->param('url') });
+
             $text_message = html_to_plaintext(
                 {
                     -str              => $good_try,
@@ -731,8 +719,11 @@ sub construct_from_url {
             );
         }
     }
+    elsif ( $draft_q->param('plaintext_content_from') eq 'url' ) {        
+        my $res; my $md5; 
+        ( $text_message, $res, $md5 ) = grab_url({-url => $draft_q->param('plaintext_url') });
+    }
 
-    
     my ( $status, $errors ) = $self->redirect_tag_check($text_message);
     if ( $status == 0 ) {
         return ( $status, $errors, undef, undef, undef );
@@ -749,9 +740,7 @@ sub construct_from_url {
 
         # AWKWARD.
         # Redirect tag check
-        require LWP::Simple;
-        eval { $LWP::Simple::ua->agent( 'Mozilla/5.0 (compatible; ' . $DADA::CONFIG::PROGRAM_NAME . ')' ); };
-        my $rtc = LWP::Simple::get($url);
+        my ( $rtc, $res, $md5 ) = grab_url({-url => $draft_q->param('plaintext_url') });
         my ( $status, $errors ) = $self->redirect_tag_check($rtc);
         if ( $status == 0 ) {
             return ( $status, $errors, undef, undef, undef );
