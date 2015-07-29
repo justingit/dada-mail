@@ -115,6 +115,7 @@ sub _lock_pop3_check {
     
 	if(-f _lockfile_name($args)){ 
 		# oh, boy - the lockfile exists. 
+		# -M  Script start time minus file modification time, in days.
 		if(-M _lockfile_name($args) > 1){ 
 			# And it's really old. Let's remove! 
 			_remove_pop3_check($args);

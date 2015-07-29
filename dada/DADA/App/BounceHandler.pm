@@ -10,7 +10,7 @@ use DADA::App::Guts;
 use Carp qw(croak carp);
 use vars qw($AUTOLOAD);
 
-my $Have_Log    = 0;
+my $Have_Log = 0;
 
 my $parser;
 my %allowed = (
@@ -70,14 +70,14 @@ sub _init {
     $self->config($args);
     $self->open_log( $self->config->{Log} );
 
-	$self->{tmp_scorecard}   = {}; 
-	$self->{tmp_remove_list} = {};
-		
-	my $list_lookup_table = {};
-	foreach(available_lists()) { 
-		$list_lookup_table->{$_} = 1; 
-	}
-	$self->{list_lookup_table} = $list_lookup_table; 
+    $self->{tmp_scorecard}   = {};
+    $self->{tmp_remove_list} = {};
+
+    my $list_lookup_table = {};
+    foreach ( available_lists() ) {
+        $list_lookup_table->{$_} = 1;
+    }
+    $self->{list_lookup_table} = $list_lookup_table;
 }
 
 sub erase_score_card {
@@ -106,8 +106,7 @@ sub erase_score_card {
     for my $list (@delete_list) {
 
         require DADA::App::BounceHandler::ScoreKeeper;
-        my $bsk =
-          DADA::App::BounceHandler::ScoreKeeper->new( { -list => $list } );
+        my $bsk = DADA::App::BounceHandler::ScoreKeeper->new( { -list => $list } );
 
         $bsk->erase;
 
@@ -121,9 +120,9 @@ sub erase_score_card {
 
 sub test_bounces {
 
-    my $self = shift;
+    my $self   = shift;
     my ($args) = @_;
-    my $list = undef;
+    my $list   = undef;
     my $test_type;
 
     if ( exists( $args->{-list} ) ) {
@@ -168,12 +167,10 @@ sub test_pop3 {
     my $lock_file_fh;
     if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
 
-        $lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check(
-            { name => 'bounce_handler.lock', } );
+        $lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check( { name => 'bounce_handler.lock', } );
     }
 
-    my ( $pop3_obj, $pop3_status, $pop3_log ) =
-      DADA::App::POP3Tools::mail_pop3client_login(
+    my ( $pop3_obj, $pop3_status, $pop3_log ) = DADA::App::POP3Tools::mail_pop3client_login(
         {
 
             server    => $self->config->{Server},
@@ -183,7 +180,7 @@ sub test_pop3 {
             USESSL    => $self->config->{USESSL},
             AUTH_MODE => $self->config->{AUTH_MODE},
         }
-      );
+    );
 
     if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
         DADA::App::POP3Tools::_unlock_pop3_check(
@@ -203,9 +200,9 @@ sub test_pop3 {
 
 sub test_files {
 
-    my $self = shift;
+    my $self   = shift;
     my ($args) = @_;
-    my $list = undef;
+    my $list   = undef;
     my $test_files;
     my $r = '';
     if ( exists( $args->{-list} ) ) {
@@ -224,14 +221,13 @@ sub test_files {
     my $i = 1;
     for my $testfile (@$test_files) {
         $r .= "Test #$i: $testfile\n" . '-' x 60 . "\n";
-        my ($found_list, $need_to_delete, $msg_report, $rule_report, $diag) =
-          $self->parse_bounce( 
-			{ 
-				-message => $self->openfile($testfile), 
-				-test    => 1, 
-				-list    => $list, 
-			} 
-		);
+        my ( $found_list, $need_to_delete, $msg_report, $rule_report, $diag ) = $self->parse_bounce(
+            {
+                -message => $self->openfile($testfile),
+                -test    => 1,
+                -list    => $list,
+            }
+        );
 
         $r .= $msg_report;
         ++$i;
@@ -241,20 +237,20 @@ sub test_files {
 }
 
 sub openfile {
-	
 
     my $self = shift;
     my $file = shift;
     my $data = undef;
 
     $file = make_safer($file);
-	if(-e $file){ 
-		# ...
-	}
-	else { 
-		carp "file, '$file' doesn't exist!";
-		return undef; 
-	}
+    if ( -e $file ) {
+
+        # ...
+    }
+    else {
+        carp "file, '$file' doesn't exist!";
+        return undef;
+    }
     open my $FILE, '<', $file or die $!;
 
     $data = do { local $/; <$FILE> };
@@ -290,73 +286,69 @@ sub parse_all_bounces {
     my ($args) = @_;
 
     my $list;
-	# Type of test
+
+    # Type of test
     my $test = undef;
-	# Running a test? 
-	my $isa_test = 0; 
-	
-    my $log  = '';
+
+    # Running a test?
+    my $isa_test = 0;
+
+    my $log = '';
     if ( exists( $args->{-list} ) ) {
         $list = $args->{-list};
     }
-	
+
     if ( exists( $args->{-test} ) ) {
-        $test     = $args->{-test};
-		if($test eq 'bounces') { 
-			$isa_test = 1; 
-		}
+        $test = $args->{-test};
+        if ( $test eq 'bounces' ) {
+            $isa_test = 1;
+        }
     }
 
     my @all_lists_to_check   = ();
-	my $all_list_mode        = 0; 
-	my $per_list_check_limit = 0; 
-	
+    my $all_list_mode        = 0;
+    my $per_list_check_limit = 0;
+    my $has_bounces          = 1;
+
     if ( defined($list) ) {
         push( @all_lists_to_check, $list );
     }
     else {
         # Guess, we'll do 'em all!
-        @all_lists_to_check = available_lists();
-		$all_list_mode   = 1; 
-    }	
-    LISTCHECK: 
-	for my $list_to_check (@all_lists_to_check) {
+        @all_lists_to_check = available_lists(-In_Random_Order => 1 );
+        $all_list_mode      = 1;
+    }
+  LISTCHECK:
+    for my $list_to_check (@all_lists_to_check) {
 
-        my $ls =
-          DADA::MailingList::Settings->new( { -list => $list_to_check } );
-        my $lh =
-          DADA::MailingList::Subscribers->new( { -list => $list_to_check } );
+        my $ls = DADA::MailingList::Settings->new( { -list => $list_to_check } );
+        my $lh = DADA::MailingList::Subscribers->new( { -list => $list_to_check } );
 
-        $log .= "Checking Bounces for Mailing List: "
-          . $ls->param('list_name') . "\n";
+        $log .= "Checking Bounces for Mailing List: " . $ls->param('list_name') . "\n";
 
         if (   !defined( $self->config->{Server} )
             || !defined( $self->config->{Username} )
             || !defined( $self->config->{Password} ) )
         {
-            $log .=
-"The Server Username and/password haven't been filled out, stopping.";
+            $log .= "The Server Username and/password haven't been filled out, stopping.";
 
             return $log;
         }
-		
-		if($isa_test == 1) { 
-        	$log .= "Testing is enabled -  messages will be parsed and examined, but will not be acted upon.\n\n"
-		}
-		
-        $log .=
-          "Making POP3 Connection to " . $self->config->{Server} . "...\n";
+
+        if ( $isa_test == 1 ) {
+            $log .= "Testing is enabled -  messages will be parsed and examined, but will not be acted upon.\n\n";
+        }
+
+        $log .= "Making POP3 Connection to " . $self->config->{Server} . "...\n";
 
         require DADA::App::POP3Tools;
 
         my $lock_file_fh;
         if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
-            $lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check(
-                { name => 'bounce_handler.lock' } );
+            $lock_file_fh = DADA::App::POP3Tools::_lock_pop3_check( { name => 'bounce_handler.lock' } );
         }
 
-        my ( $pop3_obj, $pop3status, $pop3log ) =
-          DADA::App::POP3Tools::mail_pop3client_login(
+        my ( $pop3_obj, $pop3status, $pop3log ) = DADA::App::POP3Tools::mail_pop3client_login(
             {
                 server    => $self->config->{Server},
                 username  => $self->config->{Username},
@@ -365,32 +357,32 @@ sub parse_all_bounces {
                 USESSL    => $self->config->{USESSL},
                 AUTH_MODE => $self->config->{AUTH_MODE},
             }
-          );
+        );
         if ( $pop3status != 1 ) {
             $log .= "Status returned $pop3status\n\n$pop3log";
-	        if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
-	            DADA::App::POP3Tools::_unlock_pop3_check(
-	                {
-	                    name => 'bounce_handler.lock',
-	                    fh   => $lock_file_fh,
-	                },
-	            );
-	        }
+            if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
+                DADA::App::POP3Tools::_unlock_pop3_check(
+                    {
+                        name => 'bounce_handler.lock',
+                        fh   => $lock_file_fh,
+                    },
+                );
+            }
 
             next LISTCHECK;
         }
 
         $log .= $pop3log;
         if ( $pop3status == 0 ) {
-	        if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
-	            DADA::App::POP3Tools::_unlock_pop3_check(
-	                {
-	                    name => 'bounce_handler.lock',
-	                    fh   => $lock_file_fh,
-	                },
-	            );
-	        }
-	
+            if ( $self->config->{Enable_POP3_File_Locking} == 1 ) {
+                DADA::App::POP3Tools::_unlock_pop3_check(
+                    {
+                        name => 'bounce_handler.lock',
+                        fh   => $lock_file_fh,
+                    },
+                );
+            }
+
             next LISTCHECK;
         }
 
@@ -401,25 +393,26 @@ sub parse_all_bounces {
         if ( !$List[0] ) {
 
             $log .= "\tNo bounces to handle.\n";
+            $has_bounces = 0;
         }
         else {
-		#$log .= scalar(@List) . " total messages to be handled\n"; 
-		my $msg_num = 0; 
+            #$log .= scalar(@List) . " total messages to be handled\n";
+            my $msg_num = 0;
           MSGCHECK:
             for my $msg_info (@List) {
-				my $found_list  = undef; 
-				$msg_num++; 
-				$log .= "\n# $msg_num:\n"; 
+                my $found_list = undef;
+                $msg_num++;
+                $log .= "\n# $msg_num:\n";
                 my $need_to_delete = undef;
                 my ( $msgnum, $msgsize ) = split( '\s+', $msg_info );
 
                 if ( $msgsize > $self->config->{Max_Size_Of_Any_Message} ) {
                     $log .=
-                        "\tWarning! Message size ( " 
+                        "\tWarning! Message size ( "
                       . $msgsize
                       . " ) is larger than the maximum size allowed ( "
                       . $self->config->{Max_Size_Of_Any_Message} . ")";
-                    warn "Warning! Message size ( " 
+                    warn "Warning! Message size ( "
                       . $msgsize
                       . " ) is larger than the maximum size allowed ( "
                       . $self->config->{Max_Size_Of_Any_Message} . ")";
@@ -434,24 +427,22 @@ sub parse_all_bounces {
 
                     my $msg_report  = '';
                     my $rule_report = '';
-					my $diag        = {};
+                    my $diag        = {};
                     eval {
 
-                        ($found_list, $need_to_delete, $msg_report, $rule_report, $diag) =
-                          $self->parse_bounce(
+                        ( $found_list, $need_to_delete, $msg_report, $rule_report, $diag ) = $self->parse_bounce(
                             {
                                 -list    => $list_to_check,
                                 -message => $full_msg,
                                 -test    => $isa_test,
                             }
-                          );
+                        );
                     };
                     if ($@) {
 
-                        warn
-"bounce_handler - irrecoverable error processing message. Skipping message (sorry!): $@";
+                        warn "bounce_handler - irrecoverable error processing message. Skipping message (sorry!): $@";
                         $log .=
-"bounce_handler - irrecoverable error processing message. Skipping message (sorry!): $@";
+                          "bounce_handler - irrecoverable error processing message. Skipping message (sorry!): $@";
 
                         $need_to_delete = 1;
 
@@ -460,63 +451,64 @@ sub parse_all_bounces {
                     $log .= $msg_report;
                     $log .= $rule_report;
 
-					if ( $need_to_delete == 1 ) {
-						if($ls->param('bounce_handler_forward_msgs_to_list_owner')){ 
-							my $r = $self->forward_to_list_owner(
-								{ 
-									-ls_obj => $ls,
-									-msg    => $full_msg
-								}
-							);
-							if($r == 1){ 
-								$log .= "Forwarding bounces message to the List Owner (" . $ls->param('list_owner_email') . ")\n"; 
-							}
-							else { 
-								$log .= "Problems forwarding message to the List Owner!\n";
-							}
-						}
-					}
-					
-					
-                }
+                    if ( $need_to_delete == 1 ) {
+                        if ( $ls->param('bounce_handler_forward_msgs_to_list_owner') ) {
+                            my $r = $self->forward_to_list_owner(
+                                {
+                                    -ls_obj => $ls,
+                                    -msg    => $full_msg
+                                }
+                            );
+                            if ( $r == 1 ) {
+                                $log .= "Forwarding bounces message to the List Owner ("
+                                  . $ls->param('list_owner_email') . ")\n";
+                            }
+                            else {
+                                $log .= "Problems forwarding message to the List Owner!\n";
+                            }
+                        }
+                    }
 
-				
+                }
 
                 if ( $need_to_delete == 1 ) {
                     push( @delete_list, $msgnum );
                 }
 
-
-                if ( ( $#delete_list + 1 ) >= $self->config->{MessagesAtOnce} )
-                {
+                if ( ( $#delete_list + 1 ) >= $self->config->{MessagesAtOnce} ) {
 
                     $log .=
-"\n\nThe limit has been reached of the amount of messages to be looked at for this execution\n\n";
+                      "\n\nThe limit has been reached of the amount of messages to be looked at for this execution\n\n";
                     last MSGCHECK;
 
                 }
-				
-				# This stops us from going through tons of messages for bounces, that
-				# don't belong to this list. 
-				if($all_list_mode) {
-					if($found_list ne $list_to_check) { 
-						$per_list_check_limit++; 
-						if($per_list_check_limit >= $self->config->{MessagesAtOnce}){ 
-							$log .= "Bounces are coming from a different mailing list altogether - moving on!\n"; 
-							$per_list_check_limit = 0;
-							last MSGCHECK; 
-						}
-					}
-					else { 
-						if($per_list_check_limit > 0){ 
-							$per_list_check_limit--;
-						}
-					}
-				}
-            }
-        } # MSGCHECK
 
-        if (!$isa_test) {
+                # This stops us from going through tons of messages for bounces, that
+                # don't belong to this list.
+                my $altogether_limit = 3; 
+                if($self->config->{MessagesAtOnce} < $altogether_limit){ 
+                    $altogether_limit = $self->config->{MessagesAtOnce};
+                }
+                
+                if ($all_list_mode) {
+                    if ( $found_list ne $list_to_check ) {
+                        $per_list_check_limit++;
+                        if ( $per_list_check_limit >= $altogether_limit ) {
+                            $log .= "Bounces are obviously coming from a different mailing list altogether - moving on!\n";
+                            $per_list_check_limit = 0;
+                            last MSGCHECK;
+                        }
+                    }
+                    else {
+                        if ( $per_list_check_limit > 0 ) {
+                            $per_list_check_limit--;
+                        }
+                    }
+                }
+            }
+        }    # MSGCHECK
+
+        if ( !$isa_test ) {
             for (@delete_list) {
                 $log .= "deleting message #: $_\n";
                 $pop3_obj->Delete($_);
@@ -536,63 +528,65 @@ sub parse_all_bounces {
             );
         }
 
-		if (!$isa_test) {
-		    $log .= "\nSaving Scores...\n\n";
-		    my $r = $self->save_scores(
-				{
-					-list => $list_to_check
-				}
-			);
-		    $log .= $r;
-		    undef $r;
-		}
-	    if (!$isa_test) {
-			my $r;
-			
-			if($ls->param('bounce_handler_when_threshold_reached') eq 'move_to_bounced_sublist') {  
-				$r = $self->move_bouncing_subscribers(
-					{
-						-list => $list_to_check,
-					}
-				); 
-			}
-			elsif($ls->param('bounce_handler_when_threshold_reached') eq 'unsub_subscriber') {  	
-				$r = $self->remove_bounces(
-						{
-							-list => $list_to_check,
-						}
-					);
-			}
-	    $log .= $r;
-	        undef $r;
-	    }
-	
-	   $log .= "Finished: " . $ls->param('list_name') . "\n\n";
-    } # LISTCHECK
+        if ( !$isa_test ) {
+            $log .= "\nSaving Scores...\n\n";
+            my $r = $self->save_scores(
+                {
+                    -list => $list_to_check
+                }
+            );
+            $log .= $r;
+            undef $r;
+        }
+        if ( !$isa_test ) {
+            my $r;
 
+            if ( $ls->param('bounce_handler_when_threshold_reached') eq 'move_to_bounced_sublist' ) {
+                $r = $self->move_bouncing_subscribers(
+                    {
+                        -list => $list_to_check,
+                    }
+                );
+            }
+            elsif ( $ls->param('bounce_handler_when_threshold_reached') eq 'unsub_subscriber' ) {
+                $r = $self->remove_bounces(
+                    {
+                        -list => $list_to_check,
+                    }
+                );
+            }
+            $log .= $r;
+            undef $r;
+        }
 
+        $log .= "Finished: " . $ls->param('list_name') . "\n\n";
+        if($has_bounces == 0){ 
+            
+            $log .= "Skipping checking any more lists.\n\n\n";
+            last LISTCHECK;
+        }
+    }    # LISTCHECK
 
     return $log;
 }
 
 sub parse_bounce {
 
-    my $self       = shift;
+    my $self = shift;
     my ($args) = @_;
 
     my $msg_report = '';
-    my $list = undef;
+    my $list       = undef;
 
     if ( exists( $args->{-list} ) && defined( $args->{-list} ) ) {
         $list = $args->{-list};
     }
     else {
-        $msg_report .=
-          "You MUST pass the, '-list' parameter to, parse_bounce!\n";
+        $msg_report .= "You MUST pass the, '-list' parameter to, parse_bounce!\n";
         return ( undef, 0, $msg_report, '' );
     }
 
-	# NOT the type of test - just if this is a test, or not!
+    # NOT the type of test - just if this is a test, or not!
     my $test    = $args->{-test};
     my $message = $args->{-message};
 
@@ -614,14 +608,13 @@ sub parse_bounce {
     if ( !$entity ) {
 
         warn "No MIME entity found, this message could be garbage, skipping\n";
-        $msg_report .=
-          "No MIME entity found, this message could be garbage, skipping\n";
-        return ( undef, 1, $msg_report, '', {});
+        $msg_report .= "No MIME entity found, this message could be garbage, skipping\n";
+        return ( undef, 1, $msg_report, '', {} );
 
     }
 
     # Run it through the ringer.
-    require  DADA::App::BounceHandler::MessageParser;
+    require DADA::App::BounceHandler::MessageParser;
     my $bp = DADA::App::BounceHandler::MessageParser->new;
 
     ( $email, $found_list, $diagnostics ) = $bp->run_all_parses($entity);
@@ -629,27 +622,25 @@ sub parse_bounce {
     # Test:  Can't find a list?
     if ( !$found_list ) {
 
-# $msg_report .= "No valid list found. Ignoring and deleting.\n\n" . $entity->as_string . "\n\n";
+        # $msg_report .= "No valid list found. Ignoring and deleting.\n\n" . $entity->as_string . "\n\n";
         $msg_report .= "No valid list found. Ignoring and deleting. Ignoring and deleting.\n";
-        return ( undef, 1, $msg_report, '', {});
+        return ( undef, 1, $msg_report, '', {} );
     }
-	if(! exists($self->{list_lookup_table}->{$found_list})) { 
+    if ( !exists( $self->{list_lookup_table}->{$found_list} ) ) {
         $msg_report .= "list found does not exist ($found_list).\n";
-        return ( undef, 1, $msg_report, '', {});		
-	}
+        return ( undef, 1, $msg_report, '', {} );
+    }
 
     # Test:  Hey, is this a bounce from me?!
     if ( $self->bounce_from_me($entity) ) {
-        $msg_report .=
-          "Bounced message was sent by myself. Ignoring and deleting.\n";
+        $msg_report .= "Bounced message was sent by myself. Ignoring and deleting.\n";
         warn "Bounced message was sent by myself. Ignoring and deleting.";
-        return ( undef, 1, $msg_report, '', {});
+        return ( undef, 1, $msg_report, '', {} );
     }
 
     # Is this from a mailing list I'm currently looking at?
     if ( $found_list ne $list ) {
-        $msg_report .=
-          "Bounced message is from a different Mailing List ($found_list). Skipping over.\n";
+        $msg_report .= "Bounced message is from a different Mailing List ($found_list). Skipping over.\n";
 
         # Save it for another go.
         return ( $found_list, 0, $msg_report, '', $diagnostics );
@@ -661,117 +652,103 @@ sub parse_bounce {
     # OK, all tests done? Let's get to it:
 
     my $rule_report = '';
-    $msg_report .=
-      $self->generate_nerd_report( $found_list, $email, $diagnostics );
+    $msg_report .= $self->generate_nerd_report( $found_list, $email, $diagnostics );
     require DADA::App::BounceHandler::Rules;
     my $bhr = DADA::App::BounceHandler::Rules->new;
     my $rule = $bhr->find_rule_to_use( $found_list, $email, $diagnostics );
 
-	$diagnostics->{matched_rule} = $rule;
-	
+    $diagnostics->{matched_rule} = $rule;
+
     $msg_report .= "\n* Using Rule: $rule\n";
     if ( DADA::App::Guts::check_if_list_exists( -List => $found_list ) == 0 ) {
-        $msg_report .=
-          'List, ' . $found_list . ' doesn\'t exist. Ignoring and deleting.';
-        return ( $found_list, 1, $msg_report, '', $diagnostics);
+        $msg_report .= 'List, ' . $found_list . ' doesn\'t exist. Ignoring and deleting.';
+        return ( $found_list, 1, $msg_report, '', $diagnostics );
     }
 
     my $lh = DADA::MailingList::Subscribers->new( { -list => $found_list } );
     if ( $lh->check_for_double_email( -Email => $email ) != 1 ) {
-        $msg_report .=
-"Bounced Message is from an email address that isn't subscribed to: $found_list. Ignorning.\n";
-        return ( $found_list, 1, $msg_report, '', $diagnostics);
+        $msg_report .= "Bounced Message is from an email address that isn't subscribed to: $found_list. Ignorning.\n";
+        return ( $found_list, 1, $msg_report, '', $diagnostics );
     }
 
     if ( $args->{-test} != 1 ) {
 
-        $rule_report =
-          $self->carry_out_rule( $rule, $found_list, $email, $diagnostics,
-            $message );
+        $rule_report = $self->carry_out_rule( $rule, $found_list, $email, $diagnostics, $message );
     }
 
-	# DEV: For whatever reason, the rule used is never reported. Which is ridiculous. 
-	# So, let's report that! 
-	
-    return ( $found_list, 1, $msg_report, $rule_report, $diagnostics);
+    # DEV: For whatever reason, the rule used is never reported. Which is ridiculous.
+    # So, let's report that!
+
+    return ( $found_list, 1, $msg_report, $rule_report, $diagnostics );
 
 }
 
+sub forward_to_list_owner {
+    my $self = shift;
+    my ($args) = @_;
+    my $msg;
 
+    if ( !exists( $args->{-msg} ) ) {
+        croak "you MUST pass a msg in the, '-msg' parameter!";
+    }
+    else {
+        $msg = $args->{-msg};
+    }
+    if ( !exists( $args->{-ls_obj} ) ) {
+        croak "you MUST pass a DM::ML::LS object in the, '-ls_obj' parameter!";
+    }
 
+    my $entity;
+    eval { $entity = $self->parser->parse_data($msg) };
+    if ($@) {
+        carp "problem with parsing message! $@";
+        return undef;
+    }
 
-sub forward_to_list_owner { 
-	my $self   = shift; 
-	my ($args) = @_; 
-	my $msg; 
-	
-	 
-	if(!exists($args->{-msg})){ 	
-		croak "you MUST pass a msg in the, '-msg' parameter!"; 
-	}
-	else { 
-		$msg = $args->{-msg}; 
-	}
-	if(!exists($args->{-ls_obj})){ 	
-		croak "you MUST pass a DM::ML::LS object in the, '-ls_obj' parameter!"; 
-	}
-	
-	
-	my $entity; 
-	eval { $entity = $self->parser->parse_data($msg) };
-    if($@){ 
-		carp "problem with parsing message! $@"; 
-		return undef; 
-	}
-	
-	if ($entity->head->get('To', 0)){ 
-		$entity->head->delete('To'); 
-	} 
-	$entity->head->add('To', $args->{-ls_obj}->param('list_owner_email')); 
-	
-	require Email::Address; 
-	$entity->head->add('X-BeenThere', Email::Address->new($self->config->{Plugin_Name}, $args->{-ls_obj}->param('admin_email'))->format); 
-	
-	my $header = $entity->head->as_string;
-	   $header = safely_decode($header); 
+    if ( $entity->head->get( 'To', 0 ) ) {
+        $entity->head->delete('To');
+    }
+    $entity->head->add( 'To', $args->{-ls_obj}->param('list_owner_email') );
 
-	my $body   = $entity->body_as_string;	
- 	   $body = safely_decode($body); 
-	
-	
-	require DADA::Mail::Send; 
-	my $mh = DADA::Mail::Send->new(
-		{
-			list => $args->{-ls_obj}->param('list')
-		}
-	); 
-	
-	$mh->send(
-			$mh->return_headers($header),
-			Body => $body
-		);
+    require Email::Address;
+    $entity->head->add( 'X-BeenThere',
+        Email::Address->new( $self->config->{Plugin_Name}, $args->{-ls_obj}->param('admin_email') )->format );
 
-	return 1; 
-} 
+    my $header = $entity->head->as_string;
+    $header = safely_decode($header);
 
+    my $body = $entity->body_as_string;
+    $body = safely_decode($body);
+
+    require DADA::Mail::Send;
+    my $mh = DADA::Mail::Send->new(
+        {
+            list => $args->{-ls_obj}->param('list')
+        }
+    );
+
+    $mh->send( $mh->return_headers($header), Body => $body );
+
+    return 1;
+}
 
 sub bounce_from_me {
-    my $self      = shift;
-    my $entity    = shift;
-	if($entity->head->count('X-BeenThere' > 0)){ # Uh oh.. 
-		require Email::Address; 
-		my @addr = Email::Address->parse($entity->head->get( 'X-BeenThere', 0 )); 
-	    my $pn = 	$self->config->{Plugin_Name}; 
-		for my $a(@addr){ 
-			if($a->phrase =~ m/$pn/){ 
-				return 1;
-			}
-		}
-		return 0; 
-	}
-	else { 
-		return 0; 
-	}
+    my $self   = shift;
+    my $entity = shift;
+    if ( $entity->head->count( 'X-BeenThere' > 0 ) ) {    # Uh oh..
+        require Email::Address;
+        my @addr = Email::Address->parse( $entity->head->get( 'X-BeenThere', 0 ) );
+        my $pn = $self->config->{Plugin_Name};
+        for my $a (@addr) {
+            if ( $a->phrase =~ m/$pn/ ) {
+                return 1;
+            }
+        }
+        return 0;
+    }
+    else {
+        return 0;
+    }
 }
 
 sub save_scores {
@@ -783,25 +760,21 @@ sub save_scores {
     my $m = '';
 
     require DADA::App::BounceHandler::ScoreKeeper;
-    my $bsk =
-      DADA::App::BounceHandler::ScoreKeeper->new( { -list => $list } );
+    my $bsk = DADA::App::BounceHandler::ScoreKeeper->new( { -list => $list } );
 
-
-    if ( keys %{ $self->{tmp_scorecard} }) {
+    if ( keys %{ $self->{tmp_scorecard} } ) {
 
         $m .= "\nWorking on list: $list\n";
-
 
         my $list_scores = $self->{tmp_scorecard}->{$list};
 
         my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
         for my $bouncing_email ( keys %$list_scores ) {
-			
-			# Remove scores from addresses that are not correctly subscribed.
-			# 
-            if ( $lh->check_for_double_email( -Email => $bouncing_email ) == 0 )
-            {
+
+            # Remove scores from addresses that are not correctly subscribed.
+            #
+            if ( $lh->check_for_double_email( -Email => $bouncing_email ) == 0 ) {
                 undef( $list_scores->{$bouncing_email} );
                 delete( $list_scores->{$bouncing_email} );
 
@@ -822,40 +795,39 @@ sub save_scores {
 
             }
         }
-		
-		$m.= "\n";
-		
-		}
-		else { 
-			$m .= "No Subscribers need to be removed.\n"; 
-		}
-		
-		my $removal_list = $bsk->removal_list();
-		if(scalar(@$removal_list) > 0){ 
-	        $m .= "Subscribers to be removed:\n" . '-' x 72 . "\n";
-	        for my $bad_email (@$removal_list) {
-	            $self->{tmp_remove_list}->{$list}->{$bad_email} = 1;
-	            $m .= "* $bad_email\n";
-	        }
-        
+
+        $m .= "\n";
+
+    }
+    else {
+        $m .= "No Subscribers need to be removed.\n";
+    }
+
+    my $removal_list = $bsk->removal_list();
+    if ( scalar(@$removal_list) > 0 ) {
+        $m .= "Subscribers to be removed:\n" . '-' x 72 . "\n";
+        for my $bad_email (@$removal_list) {
+            $self->{tmp_remove_list}->{$list}->{$bad_email} = 1;
+            $m .= "* $bad_email\n";
+        }
+
         $m .= "\nFlushing old scores\n";
         $bsk->flush_old_scores();
     }
     else {
         $m .= "No scores to tally.\n";
     }
-    
+
     return $m;
 }
 
-
 sub remove_bounces {
 
-    my $self = shift;
+    my $self   = shift;
     my ($args) = @_;
-    my $list = $args->{-list};
+    my $list   = $args->{-list};
 
-    my $m    = '';
+    my $m = '';
     $m .= "Unsubscribing bouncing addresses:\n" . '-' x 72 . "\n";
 
     $m .= "\nList: $list\n";
@@ -867,7 +839,7 @@ sub remove_bounces {
 
     # Remove the Subscriber:
     for (@remove_list) {
-        $lh->remove_subscriber( { -email => $_, -type => 'list'} );
+        $lh->remove_subscriber( { -email => $_, -type => 'list' } );
         $m .= "Removing: $_\n";
     }
 
@@ -891,7 +863,7 @@ sub remove_bounces {
     if ( $ls->param('get_unsub_notice') == 1 ) {
         require DADA::App::Messages;
 
-         $m .= "\n";
+        $m .= "\n";
 
         my $aa = 0;
 
@@ -908,9 +880,9 @@ sub remove_bounces {
                 }
             );
 
-        	require DADA::App::ReadEmailMessages; 
-            my $rm = DADA::App::ReadEmailMessages->new; 
-            my $msg_data = $rm->read_message('unsubscribed_because_of_bouncing.eml'); 
+            require DADA::App::ReadEmailMessages;
+            my $rm       = DADA::App::ReadEmailMessages->new;
+            my $msg_data = $rm->read_message('unsubscribed_because_of_bouncing.eml');
 
             DADA::App::Messages::send_generic_email(
                 {
@@ -920,12 +892,11 @@ sub remove_bounces {
                     -headers => {
                         Subject => $msg_data->{subject},
                     },
-                    -body => $msg_data->{plaintext_body},
+                    -body        => $msg_data->{plaintext_body},
                     -tmpl_params => {
-                        -list_settings_vars_param => { -list => $list, },
-                        -subscriber_vars => { 'subscriber.email' => $d_email, },
-                        -vars =>
-                          { Plugin_Name => $self->config->{Plugin_Name}, },
+                        -list_settings_vars_param => { -list              => $list, },
+                        -subscriber_vars          => { 'subscriber.email' => $d_email, },
+                        -vars                     => { Plugin_Name        => $self->config->{Plugin_Name}, },
                     },
                 }
             );
@@ -935,15 +906,13 @@ sub remove_bounces {
     return $m;
 }
 
-
-
 sub move_bouncing_subscribers {
 
-	my $self = shift;
+    my $self   = shift;
     my ($args) = @_;
-    my $list = $args->{-list};
+    my $list   = $args->{-list};
 
-    my $m    = '';
+    my $m = '';
     $m .= "Moving Subscribers to Bouncing Addresses sublist:\n" . '-' x 72 . "\n";
     $m .= "\nList: $list\n";
 
@@ -951,23 +920,21 @@ sub move_bouncing_subscribers {
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
     my @remove_list = keys %{ $self->{tmp_remove_list}->{$list} };
-    
-	foreach my $sub(@remove_list){ 	
-		$m .= "Moving: $sub\n";
-		$lh->move_subscriber(
+
+    foreach my $sub (@remove_list) {
+        $m .= "Moving: $sub\n";
+        $lh->move_subscriber(
             {
-                -email            => $sub,
-                -from             => 'list',
-                -to               => 'bounced_list', 
-        		-mode             => 'writeover', 
+                -email => $sub,
+                -from  => 'list',
+                -to    => 'bounced_list',
+                -mode  => 'writeover',
             }
-		);
-	}
-	
-	return $m; 
+        );
+    }
+
+    return $m;
 }
-
-
 
 sub carry_out_rule {
 
@@ -976,11 +943,11 @@ sub carry_out_rule {
     require DADA::App::BounceHandler::Rules;
     my $bhr   = DADA::App::BounceHandler::Rules->new;
     my $Rules = $bhr->rules;
-	# $title  eq the rule used. 
+
+    # $title  eq the rule used.
     my ( $title, $list, $email, $diagnostics, $message ) = @_;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-
 
     my $actions = {};
 
@@ -989,73 +956,68 @@ sub carry_out_rule {
     my $i = 0;
     for my $rule (@$Rules) {
         if ( ( keys %$rule )[0] eq $title ) {
-			# Why not just, $rule->{$title}->{Action}? 
-            $actions = $Rules->[$i]->{$title}->{Action};   
-			# And then, why not break? As we'll overrite $actions, anyways. 
+
+            # Why not just, $rule->{$title}->{Action}?
+            $actions = $Rules->[$i]->{$title}->{Action};
+
+            # And then, why not break? As we'll overrite $actions, anyways.
         }
         $i++;
     }
 
-#	if( $diagnostics->{matched_rule} eq 'unknown_bounce_type') { 
-#		$self->save_bounce( $list, $email, $diagnostics, 'blah', $message );
-#	}
+    #	if( $diagnostics->{matched_rule} eq 'unknown_bounce_type') {
+    #		$self->save_bounce( $list, $email, $diagnostics, 'blah', $message );
+    #	}
 
-
-	# And, $actions, usually only has one thing. hmm. 
+    # And, $actions, usually only has one thing. hmm.
     for my $action ( keys %$actions ) {
 
         if ( $action eq 'add_to_score' ) {
-            $report .=
-              $self->add_to_score( $list, $email, $diagnostics,
-                $actions->{$action} );
+            $report .= $self->add_to_score( $list, $email, $diagnostics, $actions->{$action} );
 
-#            $report .=
-#             $self->append_message_to_file( $list, $email, $diagnostics,
-#              $actions->{$action}, $message );
-#
+            #            $report .=
+            #             $self->append_message_to_file( $list, $email, $diagnostics,
+            #              $actions->{$action}, $message );
+            #
         }
         elsif ( $action eq 'unsubscribe_bounced_email' ) {
-            $report .=
-              $self->unsubscribe_bounced_email( $list, $email, $diagnostics,
-                $actions->{$action} );
+            $report .= $self->unsubscribe_bounced_email( $list, $email, $diagnostics, $actions->{$action} );
         }
-        elsif( $action eq 'abuse_report' ){ 
-            $self->abuse_report( $list, $email, $diagnostics, $actions->{$action} );            
+        elsif ( $action eq 'abuse_report' ) {
+            $self->abuse_report( $list, $email, $diagnostics, $actions->{$action} );
         }
         elsif ( $action eq 'append_message_to_file' ) {
-            $report .=
-              $self->append_message_to_file( $list, $email, $diagnostics,
-                $actions->{$action}, $message );
+            $report .= $self->append_message_to_file( $list, $email, $diagnostics, $actions->{$action}, $message );
         }
         elsif ( $action eq 'default' ) {
-            $report .=
-              $self->default_action( $list, $email, $diagnostics,
-                $actions->{$action}, $message );
+            $report .= $self->default_action( $list, $email, $diagnostics, $actions->{$action}, $message );
         }
         else {
             warn "unknown rule trying to be carried out, ignoring";
         }
-        
+
         if ( exists( $diagnostics->{'Simplified-Message-Id'} ) && $action ne 'abuse_report' ) {
             $report .= "\nSaving bounced email report in tracker\n";
             require DADA::Logging::Clickthrough;
-            my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
+            my $r           = DADA::Logging::Clickthrough->new( { -list => $list } );
             my $hard_bounce = 0;
-			my $soft_bounce = 0; 
+            my $soft_bounce = 0;
             if (   $action eq 'add_to_score'
                 && $actions->{$action} eq 'hardbounce_score' )
             {
                 $hard_bounce = 1;
             }
-			elsif (   $action eq 'add_to_score'
-                && $actions->{$action} eq 'softbounce_score' ){ 
-				$soft_bounce = 1; 
+            elsif ($action eq 'add_to_score'
+                && $actions->{$action} eq 'softbounce_score' )
+            {
+                $soft_bounce = 1;
             }
             elsif ( $action ne 'add_to_score' ) {
+
                 #$hard_bounce = 1;
             }
             else {
-				# ... 
+                # ...
             }
             if ( $hard_bounce == 1 ) {
                 $r->bounce_log(
@@ -1063,7 +1025,8 @@ sub carry_out_rule {
                         -type  => 'hard',
                         -mid   => $diagnostics->{'Simplified-Message-Id'},
                         -email => $email,
-						# -rule  => $title, 
+
+                        # -rule  => $title,
                     }
                 );
             }
@@ -1073,25 +1036,24 @@ sub carry_out_rule {
                         -type  => 'soft',
                         -mid   => $diagnostics->{'Simplified-Message-Id'},
                         -email => $email,
-						# -rule  => $title, 
+
+                        # -rule  => $title,
                     }
                 );
             }
-		
+
         }
         else {
-            if($action ne 'abuse_report') { 
+            if ( $action ne 'abuse_report' ) {
                 warn
-    "cannot log bounced email from, '$email' for, '$list' in tracker log - no Simplified-Message-Id found. Ignoring!";
+"cannot log bounced email from, '$email' for, '$list' in tracker log - no Simplified-Message-Id found. Ignoring!";
+            }
         }
-        }
-        
 
-		# I'm putting the rule used in $diagnostics, for now: 
-		$diagnostics->{matched_rule} = $title; 
-		
-        log_action($list, $email, $diagnostics,
-            "$action $actions->{$action}" );
+        # I'm putting the rule used in $diagnostics, for now:
+        $diagnostics->{matched_rule} = $title;
+
+        log_action( $list, $email, $diagnostics, "$action $actions->{$action}" );
     }
 
     return $report;
@@ -1135,10 +1097,6 @@ sub add_to_score {
 
 }
 
-
-
-
-
 sub unsubscribe_bounced_email {
 
     my $self = shift;
@@ -1152,8 +1110,7 @@ sub unsubscribe_bounced_email {
         @delete_list = DADA::App::Guts::available_lists();
     }
     else {
-        warn
-"unknown action: '$action', no unsubscription will be made from this email!";
+        warn "unknown action: '$action', no unsubscription will be made from this email!";
     }
 
     #$Bounce_History->{$list}->{$email} = [$diagnostics, $action];
@@ -1171,16 +1128,15 @@ sub unsubscribe_bounced_email {
 
 }
 
-
-sub abuse_report { 
+sub abuse_report {
     my $self = shift;
     my ( $list, $email, $diagnostics, $action ) = @_;
-    
-    my $abuse_report_details; 
-    for(keys %$diagnostics){ 
-        $abuse_report_details .= $_ . ": " . $diagnostics->{$_} . "\n"; 
+
+    my $abuse_report_details;
+    for ( keys %$diagnostics ) {
+        $abuse_report_details .= $_ . ": " . $diagnostics->{$_} . "\n";
     }
-    require DADA::App::Messages; 
+    require DADA::App::Messages;
     DADA::App::Messages::send_abuse_report(
         {
             -list                 => $list,
@@ -1188,18 +1144,17 @@ sub abuse_report {
             -abuse_report_details => $abuse_report_details,
             -mid                  => $diagnostics->{'Simplified-Message-Id'},
         }
-    ); 
-    
+    );
+
     require DADA::Logging::Clickthrough;
     my $r = DADA::Logging::Clickthrough->new( { -list => $list } );
-        $r->abuse_log( 
-            { 
-                -email => $email,
-                -mid   => $diagnostics->{'Simplified-Message-Id'},
-            } 
-        );
+    $r->abuse_log(
+        {
+            -email => $email,
+            -mid   => $diagnostics->{'Simplified-Message-Id'},
+        }
+    );
 }
-
 
 sub save_bounce {
 
@@ -1207,8 +1162,8 @@ sub save_bounce {
     my ( $list, $email, $diagnostics, $action, $message ) = @_;
     my $report;
 
-	require DADA::Security::Password; 
-	my $rand_str = DADA::Security::Password::generate_rand_string();
+    require DADA::Security::Password;
+    my $rand_str = DADA::Security::Password::generate_rand_string();
 
     my $file = $DADA::Config::TMP . '/bounced_messages/' . $list . '-' . time . '-' . $rand_str;
 
@@ -1218,38 +1173,35 @@ sub save_bounce {
 
     chmod( $DADA::Config::FILE_CHMOD, $file );
 
-		my $entity;
-	    eval { 
-			$entity = $self->parser->parse_data($message) ;
-			require Email::Address;		
-			require POSIX; 
-		
-			# This is wrong in a few ways: 
-			# The should be the envelope sender, not the "From:" header
-			# the date should probably be the datein the email message. 
-			# We'll try this out... 	
-			my $rough_from = $entity->head->get('From', 0);
-			my $from_address = ( Email::Address->parse($rough_from) )[0]->address;
-			print APPENDLOG 'From ' . $from_address . ' ' . POSIX::ctime(time); 
-		};
-		if($@){ 
-			carp "problem, somewhere: $@"; 
-		}	
-    print APPENDLOG $message. "\n\n";
+    my $entity;
+    eval {
+        $entity = $self->parser->parse_data($message);
+        require Email::Address;
+        require POSIX;
+
+        # This is wrong in a few ways:
+        # The should be the envelope sender, not the "From:" header
+        # the date should probably be the datein the email message.
+        # We'll try this out...
+        my $rough_from = $entity->head->get( 'From', 0 );
+        my $from_address = ( Email::Address->parse($rough_from) )[0]->address;
+        print APPENDLOG 'From ' . $from_address . ' ' . POSIX::ctime(time);
+    };
+    if ($@) {
+        carp "problem, somewhere: $@";
+    }
+    print APPENDLOG $message . "\n\n";
     close(APPENDLOG) or die $!;
 
     return $report;
 
 }
 
-
-
 sub append_message_to_file {
 
     my $self = shift;
     my ( $list, $email, $diagnostics, $action, $message ) = @_;
     my $report;
-
 
     my $file = $DADA::Config::TMP . '/bounced_messages-' . $list . '.mbox';
     $report .= "* Appending Email to '$file'\n";
@@ -1260,24 +1212,24 @@ sub append_message_to_file {
 
     chmod( $DADA::Config::FILE_CHMOD, $file );
 
-		my $entity;
-	    eval { 
-			$entity = $self->parser->parse_data($message) ;
-			require Email::Address;		
-			require POSIX; 
-		
-			# This is wrong in a few ways: 
-			# The should be the envelope sender, not the "From:" header
-			# the date should probably be the datein the email message. 
-			# We'll try this out... 	
-			my $rough_from = $entity->head->get('From', 0);
-			my $from_address = ( Email::Address->parse($rough_from) )[0]->address;
-			print APPENDLOG 'From ' . $from_address . ' ' . POSIX::ctime(time); 
-		};
-		if($@){ 
-			carp "problem, somewhere: $@"; 
-		}	
-    print APPENDLOG $message. "\n\n";
+    my $entity;
+    eval {
+        $entity = $self->parser->parse_data($message);
+        require Email::Address;
+        require POSIX;
+
+        # This is wrong in a few ways:
+        # The should be the envelope sender, not the "From:" header
+        # the date should probably be the datein the email message.
+        # We'll try this out...
+        my $rough_from = $entity->head->get( 'From', 0 );
+        my $from_address = ( Email::Address->parse($rough_from) )[0]->address;
+        print APPENDLOG 'From ' . $from_address . ' ' . POSIX::ctime(time);
+    };
+    if ($@) {
+        carp "problem, somewhere: $@";
+    }
+    print APPENDLOG $message . "\n\n";
     close(APPENDLOG) or die $!;
 
     return $report;
@@ -1323,14 +1275,13 @@ sub log_action {
         for ( keys %$diagnostics ) {
             $diagnostics->{$_} =~ s/(\n|\r)/\\n/g;
 
-       		$diagnostics->{$_} =~ s/\:/__colon__/g; # placeholder. Lame?
+            $diagnostics->{$_} =~ s/\:/__colon__/g;    # placeholder. Lame?
             $d .= $_ . ': ' . $diagnostics->{$_} . ', ';
         }
         print BOUNCELOG "[$time]\t$list\t$action\t$email\t$d\n";
     }
 
 }
-
 
 sub close_log {
     if ($Have_Log) {

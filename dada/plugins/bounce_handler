@@ -784,28 +784,21 @@ sub cl_main {
 
 sub scheduled_task {
     my $list = shift || undef; 
-    if($list eq '_all') { 
-        undef ($list); 
-    }
-    
+       
     my $r; 
-    my @lists = (); 
-
-    if(defined($list)){ 
-        push(@lists, $list); 
-    }
-    else { 
-        @lists = available_lists( -In_Random_Order => 1 );
-    }
-        
-    foreach my $l(@lists){ 
-        my $bh = DADA::App::BounceHandler->new($Plugin_Config);
-        $r .= $bh->parse_all_bounces(
-            {
-                -list => $l,
-            }
-        );
-    }
+    my $bh = DADA::App::BounceHandler->new($Plugin_Config);
+     
+        if($list eq '_all') { 
+            $r .= $bh->parse_all_bounces();
+        }
+        else {
+           $r .= $bh->parse_all_bounces(
+                {
+                    -list => $list,
+                }
+            );
+        }
+    
     return $r; 
 }
 sub help {
