@@ -1171,10 +1171,13 @@ $HTML_TEXTTOHTML_OPTIONS //= {
 };
 
 $HTML_SCRUBBER_OPTIONS //= {
-    rules   => [ script => 0, ],
+    rules   => [ 
+        script => 0, 
+        style  => 1, 
+    ],
     default => [
         1 => {
-            '*' => 1,          # default rule, allow all attributes
+            '*'        => 1,          # default rule, allow all attributes
             'href'     => qr{^(?!(?:java)?script)}i,
             'src'      => qr{^(?!(?:java)?script)}i,
             'cite'     => '(?i-xsm:^(?!(?:java)?script))',

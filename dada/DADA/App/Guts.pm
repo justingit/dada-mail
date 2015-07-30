@@ -78,6 +78,7 @@ require Exporter;
   safely_encode
   slurp
   grab_url
+  scrub_js
   md5_checksum
   can_use_LWP_Simple
   can_use_AuthenCAPTCHA
@@ -3065,6 +3066,27 @@ sub grab_url {
     	}
     }
 }
+
+
+sub scrub_js { 
+
+	my $html = shift; 
+
+	try {  
+		require HTML::Scrubber;
+		my $scrubber = HTML::Scrubber->new(
+	    	%{$DADA::Config::HTML_SCRUBBER_OPTIONS}
+	    );
+	    $scrubber->style(1); # I can't figure out how to put this in the options...
+		$html = $scrubber->scrub($html); 
+	} catch { 
+		carp "Cannot use HTML::Scrubber: $_"; 
+	};
+	
+	return $html;	
+}
+
+
 
 
 sub md5_checksum {

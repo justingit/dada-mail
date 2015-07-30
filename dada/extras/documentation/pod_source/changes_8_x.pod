@@ -22,6 +22,18 @@ Dada Mail now has supports sending only a cropped portion of the webpage's conte
 
 This can be helpful, if the original of the message you would like to send is a full blown page from a website, but you would rather not send the entire message, as such a message would not render well as a email message. 
 
+=head3 Send a Webpage: PlainText version via URL
+
+Much like fetching the HTML version of your message by URL, you may do the same with the PlainText version as well. 
+
+=head3 Tracker Plugin: Tracking the User Agent
+
+Dada Mail now tracks, and reports on the user agent that's being used to open, and view clickthroughs. This feature is currently fairly rough, but a pie chart is available in the Tracker plugin for each message to see what user agent is being used for both opens and clickthroughs. We're investigating the best way to display this information, but thought best to introduce it, as it is. 
+
+=head3 Bounce Handler Plugin: Optimizations
+
+Bounce Handler bogs down if you have a large number of lists, with a large number of subscribers, and a large number of bounces from this list. Processing bounces in this setup is fairly intense. We've made some modifications to the plugin to handle this scenario in a more optimized way. 
+
 =head2 Bugfixes
 
 =head3 List Names set the same as List Email sometimes interpreted as an email address in From:, To: headers

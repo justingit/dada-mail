@@ -718,27 +718,6 @@ sub _neuter_confirmation_token_links {
 	
 }
 
-sub _scrub_js { 
-
-	my $self = shift; 
-	my $body = shift; 
-
-	try {  
-		require HTML::Scrubber;
-		my $scrubber = HTML::Scrubber->new(
-	    	%{$DADA::Config::HTML_SCRUBBER_OPTIONS}
-	    );
-		$body = $scrubber->scrub($body); 
-	} catch { 
-		carp "Cannot use HTML::Scrubber: $_"; 
-	};
-	
-	return $body;	
-}
-
-
-
-
 sub _email_protect { 
 	
 	my $self   = shift; 
@@ -1616,9 +1595,9 @@ sub message_blurb {
 	my $take = $l < $size ? $l : $size; 
 	
 	# xss_filter is one way to do this, the other is
-	# going through the _scrub_js
+	# going through the scrub_js
 	# xss_filter is a LOT faster, and should do the job...
-	# anyways, it probably already is going through _scrub_js
+	# anyways, it probably already is going through scrub_js
 	# if it's also going through: massaged_msg_for_display
 	#return substr($msg, 0, $take); 
 	return xss_filter(substr($msg, 0, $take));
@@ -1894,7 +1873,7 @@ sub massaged_msg_for_display {
 
 	$body = $self->_neuter_confirmation_token_links($body);
 
-    $body = $self->_scrub_js($body)
+    $body = scrub_js($body)
       if $self->{ls}->param('disable_archive_js') == 1;
 
     $body = $self->_email_protect( $b_entity, $body )

@@ -116,6 +116,10 @@ sub parse {
 
     goto BUILD_MESSAGE unless $html_ver;
 
+    if ( $self->{_remove_jscript} == 1 ) {
+        $html_ver = scrub_js($html_ver); 
+    }
+    
     # Get all multimedia part (img, flash) for later create a MIME part
     # for each of them
     my $analyzer = HTML::LinkExtor->new;
@@ -125,9 +129,11 @@ sub parse {
     # Include external CSS files
     $html_ver = $self->include_css( $html_ver, $rootPage );
 
-    # Include external Javascript files
-    $html_ver = $self->include_javascript( $html_ver, $rootPage );
-
+    #if ( $self->{_remove_jscript} != 1 ) {
+        # Include external Javascript files
+        $html_ver = $self->include_javascript( $html_ver, $rootPage );
+    #}
+    
     # Include form images
     ( $html_ver, @mail ) = $self->input_image( $html_ver, $rootPage );
 
