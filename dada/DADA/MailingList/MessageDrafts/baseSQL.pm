@@ -599,6 +599,11 @@ sub draft_index {
             
         };
 
+        # This sort of gets around the problem of having subject fetched from the webpage's <title>:
+        if(scalar $q->param('subject_from') eq 'title_tag') { 
+            $params->{Subject} = '(from webpage title tag)';
+        }
+
         if ( $args->{-role} eq 'schedule')
         {
             my $additional_schedule_params = $self->additional_schedule_params($q); 
