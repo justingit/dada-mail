@@ -6,21 +6,35 @@
 
 =head1 8.4.0
 
+=head2 Dada Mail Manual revision
+
+The Dada Mail Manual has been revised for the v8.4.0 release. The following chapters have been updated, to include up to date information on Dada Mail's new features, like recurring schedules. 
+
+=over
+
+=item * Send a Message
+
+=item * Send a URL
+
+=back
+
 =head2 Features
 
 =head3 Recurring Scheduled Mass Mailing Enhancements
 
-Dada Mail now supports only sending the next recurring scheduled mass mailing, if the content differs from the message previously sent out. 
+Dada Mail supports sending out mass mailings on a specific predetermined date and time, as well as on a recurring schedule; where the start and end date, time, and day may be set. 
 
-This is useful when you send a web page, as that webpage could in fact, only be periodically updated, and on a schedule that differs from Dada Mail's own recurring schedule. 
+Now, Dada Mail also supports  sending the next edition of a recurring scheduled mass mailing only if the content differs from the previously sent out message.
 
-With this feature activated, only when the content changes, will a recurring scheduled mailing be sent out. 
+This can be useful - consider the following scenario: 
+
+You're sending out a web page and this page is only be periodically updated - say it's the index page of a blog. You only want to send it out, if there's been new entries posted. Using this feature, you would set up your recurring schedule and only when the page is updated will a new edition of the mass mailing be sent out. 
 
 =head3 Send a Webpage: Send a Cropped Webpage
 
-Dada Mail now has supports sending only a cropped portion of the webpage's content. All you will need to do is specify the class or id of the HTML tag that has the content you would like to send out. The rest of the page will not be included as part of the message. 
+Dada Mail now has supports sending only a cropped portion of the webpage's content. All you will need to do is specify the HTML tag Dada Mail should look for, when searching for the content. The rest of the page will not be included as part of the message. 
 
-This can be helpful, if the original of the message you would like to send is a full blown page from a website, but you would rather not send the entire message, as such a message would not render well as a email message. 
+This can be helpful, if the original of the message you would like to send is a full blown page from a website, but you would rather not send the entire page as such a message would not render well as a email message. 
 
 =head3 Send a Webpage: PlainText version via URL
 
@@ -28,7 +42,9 @@ Much like fetching the HTML version of your message by URL, you may do the same 
 
 =head3 Tracker Plugin: Tracking the User Agent
 
-Dada Mail now tracks, and reports on the user agent that's being used to open, and view clickthroughs. This feature is currently fairly rough, but a pie chart is available in the Tracker plugin for each message to see what user agent is being used for both opens and clickthroughs. We're investigating the best way to display this information, but thought best to introduce it, as it is. 
+Dada Mail's Tracker plugin is useful in collecting a lot of information about activity related to your mass mailings: information like opens, clickthroughs, unsubscribers and bounces and logged and reported using this plugin. 
+
+Dada Mail now tracks and reports on the user agent (the app used: like your browser or mail client) that's being used to open, and view clickthroughs. This feature is currently in a rough form, but a pie chart is now available in the Tracker plugin for each mailing list message you've sent out showing what user agent was being used for both opens and clickthroughs. We're investigating the best way to display this information, but thought best to introduce it, as it is. In the future, 
 
 =head3 Bounce Handler Plugin: Optimizations
 
