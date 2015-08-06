@@ -1128,16 +1128,11 @@ sub view_file_attachment {
 	
 	my $r; 
 	
-	# Worried about this part. 
-	require CGI; 
-	my $q = CGI->new; 
-	   $q->charset($DADA::Config::HTML_CHARSET);
-	   $q = decode_cgi_obj($q);
 	
 	my ($subject, $message, $format, $raw_msg) = $self->get_archive_info($id, 1); 
 	
 	if(! $raw_msg){ 
-		$r.= return $q->header('text/plain') . "can not find the attachment in question."; 
+		return ({-type => 'text/plain'}, "can not find the attachment in question."); 
 	}
 	
 	my $entity   = $self->_entity_from_raw_msg($raw_msg);
@@ -1166,24 +1161,24 @@ sub view_file_attachment {
 		);		
 	}
 	if(! defined( $a_entity )){ 
-		return $q->header('text/plain') . 'Error: Cannot view attachment!'; 
+		return ({-type => 'text/plain'},  'Error: Cannot view attachment!'); 
 	}
 	else { 
 	my $body     = $a_entity->bodyhandle;
-	
+	my $h = {}; 
+	    
 	if($args{-mode} eq 'inline'){ 
-		$r .= $q->header($a_entity->head->mime_type); 
+		$h->{-type} = $a_entity->head->mime_type; 
 	}else{ 
-	
-			$r .=  "Content-disposition: attachment; filename=\"$filename\"\n";
-	   		$r .=  "Content-type: application/octet-stream\n\n";
-	
+	    $h->{'-Content-disposition'} = 'attachment; filename="' . $filename . '"';
+#	   	$h->{-type}                  = 'application/octet-stream';
+        $h->{-type} = $a_entity->head->mime_type; 
 		}
 	
-		# encoded. Yes or no?
-		$r .=  $body->as_string; 
+	#	# encoded. Yes or no?
+	#	$r .=  $body->as_string; 
 	
-		return $r; 	
+		return ($h, $body->as_string);	
 	}
 
 }
@@ -1308,6 +1303,8 @@ sub view_inline_attachment {
 	         @_,
 	        ); 
 
+    #require Data::Dumper; 
+    #warn '%args:' . Data::Dumper::Dumper({%args}); 
 	my ($subject, $message, $format, $raw_msg) = $self->get_archive_info($args{-id}, 1);
 	
 	if(! $raw_msg){ 
@@ -1342,7 +1339,11 @@ sub view_inline_attachment {
 	
 	my $r; 	
 	my $h = {}; 
-	    
+	
+	#warn '$c_type:' . $c_type; 
+	#warn '$a_entity->head->mime_attr("content-type.name"):' 
+	#. $a_entity->head->mime_attr("content-type.name"); 
+	#warn '$a_entity->as_string:' . $a_entity->as_string; 
 	
 	if($c_type =~ m/image\/gif/){ 
 		$h->{-type} = 'image/gif';

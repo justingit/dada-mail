@@ -11898,7 +11898,7 @@ sub file_attachment {
                             #}
                             #else {
                                 
-                                my ($h, $scrn) = $la->view_inline_attachment(
+                                my ($h, $scrn) = $la->view_file_attachment(
                                     -id       => scalar $q->param('id'),
                                     -filename => scalar $q->param('filename')
                                 );
