@@ -65,30 +65,23 @@
 <!-- /tmpl_if -->
 
 
-<p>
- <label for="list_name">
-  List Name
- </label>
- <br />
- What is the name of your list?
-</p>
-<p>
- <input type="text" name="list_name" id="list_name" value="<!-- tmpl_var list_name escape="HTML" -->" class="full" />
-</p>
+<div class="row">
+   <div class="large-12 columns">
+        <label for="list_name">
+            List Name
+            <input type="text" name="list_name" id="list_name" value="<!-- tmpl_var list_name escape="HTML" -->"  />
+        </label>
+    </div> 
+</div> 
 
 <!-- tmpl_if flags_invalid_list_owner_email -->
-	
-	<p class="error">
-	 <em>
-	  You need to give a valid email address for the list owner.
-	 </em>
-	</p>
-	
+    <div class="alert-box alert round">
+        You need to give a valid email address for the list owner.
+    </div>
 <!--/tmpl_if-->
 
-
 <!-- tmpl_if expr="(using_ses eq '1') && (list_owner_ses_verified ne '1')" --> 
-    <div class="badweatherbox">
+    <div class="alert-box alert round">
 	    <p>
 	        Your current <strong>List Owner</strong>, <!-- tmpl_var list_owner_email escape="HTML" --> has not been verified through <strong>Amazon SES</strong>.
 	    </p>
@@ -96,113 +89,105 @@
 <!-- /tmpl_if --> 
 
 
-
-<p>
- <label for="list_owner_email">
-  List Owner Address
- </label>
- <br/>
- What email address corresponds to the list owner?
- (When emails are sent, they are sent using this address.)
- </p>
- <p>
-	<input type="text" name="list_owner_email" id="list_owner_email" value="<!-- tmpl_var list_owner_email escape="HTML" -->" class="full" />
-</p>
-
-<p>
- <label for="admin_email">
-  List Administrator Address
- </label>
- <br />
- <em>
-  Optional: 
- </em>
-This address is where Bounced Messages go.
-</p>
-
-<!-- tmpl_if expr="(using_ses eq '1') && (list_admin_ses_verified ne '1')" --> 
-    <div class="badweatherbox">
-	    <p>
-	        Your current <strong>List Administrator</strong>, <!-- tmpl_var admin_email escape="HTML" -->has not been verified through <strong>Amazon SES</strong>.
-	    </p>
-	</div>
-<!-- /tmpl_if --> 
-
-
-<p>
- <input type="text" name="admin_email" id="admin_email" value="<!-- tmpl_var admin_email escape="HTML" -->" class="full" />
-</p>
+<div class="row">
+   <div class="large-12 columns">
+       <label for="list_owner_email">
+           List Owner Address
+           <input type="text" name="list_owner_email" id="list_owner_email" value="<!-- tmpl_var list_owner_email escape="HTML" -->" />
+       </label>
+   </div> 
+</div>
+   
+   
+   <!-- tmpl_if expr="(using_ses eq '1') && (list_admin_ses_verified ne '1')" --> 
+       <div class="alert-box alert round">
+   	    <p>
+   	        Your current <strong>List Administrator</strong>, <!-- tmpl_var admin_email escape="HTML" -->has not been verified through <strong>Amazon SES</strong>.
+   	    </p>
+   	</div>
+   <!-- /tmpl_if -->
+   
+   <div class="row">
+      <div class="large-12 columns">
+          <label for="admin_email">
+              List Administrator Address
+              <input type="text" name="admin_email" id="admin_email" value="<!-- tmpl_var admin_email escape="HTML" -->" class="full" />
+            </label>
+           </div> 
+        </div>      
 
 <!-- tmpl_if flags_list_info -->
-	
-	<p class="error">
-	 <em>
-	  You need to give your list a description.
-	 </em>
-	</p>
-	
+    <div class="alert-box alert round">
+        You need to give your list a description.
+    </div> 
 <!--/tmpl_if-->
 
-<p>
- <label for="info">
-  List Description
- </label>
- <br />
- <textarea name="info" id="info" cols="50" rows="5"><!-- tmpl_var info --></textarea>
-</p>
+
+<div class="row">
+    <div class="large-12 columns">
+        <label for="info">
+            List Description
+            <textarea name="info" id="info"><!-- tmpl_var info --></textarea>
+        </label>
+   </div> 
+</div>
 
 <!-- tmpl_if flags_privacy_policy -->
-	
-	<p class="error">
-	 <em>
+    <div class="alert-box alert round">
 	  You need to give your list a privacy policy.
-	 </em>
-	</p>
+    </div> 
+
 	
 <!--/tmpl_if-->
 
-<p>
- <label for="privacy_policy">
-  Privacy Policy
- </label>
- <br />
- Please write a small privacy policy for your list. 
- (Some people won't subscribe to lists because they 
- fear their email addresses will be used for spamming 
- purposes.)
- <br />
- <textarea name="privacy_policy" id="privacy_policy" cols="50" rows="5"><!-- tmpl_var privacy_policy --></textarea>
-</p>
+<div class="row">
+    <div class="large-12 columns">
+        <label for="privacy_policy">
+            Privacy Policy
+            <textarea name="privacy_policy" id="privacy_policy"><!-- tmpl_var privacy_policy --></textarea>
+        </label>
+   </div> 
+</div>
+
 
 <!-- tmpl_if flags_physical_address -->
-	
-	<p class="error">
-	 <em>
-	  You need to give your list a physical address.
-	 </em>
-	</p>
-	
+    <div class="alert-box alert round">
+	    You need to give your list a physical address.
+    </div> 
 <!--/tmpl_if-->
 
-<p>
- <label for="physical_address"> 
-  Physical Address
- </label>
- <br/>
- What is the physical address associated with this mailing list?
- <br />
- <textarea name="physical_address" id="physical_address" cols="50" rows="5"><!-- tmpl_var physical_address --></textarea>
-</p>
+<div class="row">
+    <div class="large-12 columns">
+    <label for="physical_address"> 
+        Physical Address
+        <textarea name="physical_address" id="physical_address" cols="50" rows="5"><!-- tmpl_var physical_address --></textarea>
+     </label>
+    </div> 
+ </div>
+        
 
 </fieldset>
-	
+
 <input type="hidden" name="flavor"       value="change_info" />
 <input type="hidden" name="process" value="1" />
+
+
+<ul class="button-group round right">    
+    <li><input type="reset"  class="cautionary button" value="Clear Changes" /></li>
+    <li><input type="submit" class="processing button" value="Save Changes" /></li>
+</ul>
+
+
+<!-- tmpl_if comment --> 
+
 <div class="buttonfloat">
  <input type="reset"  class="cautionary" value="Clear Changes" />
  <input type="submit" class="processing" value="Save Changes" />
 </div>
 <div class="floatclear"></div>
+
+<!-- /tmpl_if --> 
+
 
 </form> 
 

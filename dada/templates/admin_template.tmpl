@@ -76,48 +76,102 @@
 	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/select2.js"></script>
     
     
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/foundation.css" />
+    <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/modernizr.js"></script>
+    
     
 </head>
- 
- <body id="Dada">
-   <div id="Header">
-	<a href="<!-- tmpl_var PROGRAM_URL -->">
-		<img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/dada_mail_logo.png" alt="<!-- tmpl_var PROGRAM_NAME -->" />
-    </a>
-	<span id="Title">
-		Logged in as
-		<!-- tmpl_if root_login --> 
-		 <strong><!-- tmpl_var PROGRAM_NAME --> Root</strong>
-		<!-- tmpl_else --> 
-			List Owner
-		<!-- /tmpl_if -->
-		of 
-		<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/" target="_blank"><!-- tmpl_var list_settings.list_name --> (<!-- tmpl_var list_settings.list -->)</a>   
-	 	
-		<!-- tmpl_if login_switch_widget --> 
-			<!-- tmpl_if root_login --> 
-			| 
-				<!-- tmpl_var login_switch_widget -->
-			<!-- /tmpl_if -->
-		<!-- /tmpl_if -->
-		| <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=logout">Log Out</a>
-		
-    </span>
-    <div class="floatclear"></div>
-  </div><!-- ends id="Header" -->
- 
+ <body id="Dada"> 
 
 
- <div id="AdminContentWrapper">
-   <div id="AdminContent">
-		<!-- tmpl_var content -->
-   </div><!-- ends id="AdminContent" -->
-  </div><!-- ends id="AdminContentWrapper" -->
-   
+     <div class="off-canvas-wrap" data-offcanvas>
+       <div class="inner-wrap">
+         <nav class="tab-bar show-for-small">
+         <!-- <nav class="tab-bar"> --> 
+           <section class="left-small">
+             <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
+           </section>
 
- <div id="Menu">     
-  <!-- tmpl_var admin_menu -->
- </div><!-- ends id="Menu" -->
+           <section class="middle tab-bar-section">
+             <h1 class="title"><!-- tmpl_var PROGRAM_NAME --></h1>
+           </section>
+
+         </nav>
+
+         <aside class="left-off-canvas-menu">
+             <!-- tmpl_var admin_menu -->
+         </aside>
+
+         <aside class="right-off-canvas-menu">
+           <ul class="off-canvas-list">
+             <li><label>Users</label></li>
+             <li><a href="#">Hari Seldon</a></li>
+             <li><a href="#">...</a></li>
+           </ul>
+         </aside>
+
+         <section class="main-section">
+             <div class="row">
+                 <div class="large-12">
+                
+              <div id="Header" class="hide-for-small">
+           	<a href="<!-- tmpl_var PROGRAM_URL -->">
+           		<img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/dada_mail_logo.png" alt="<!-- tmpl_var PROGRAM_NAME -->" />
+               </a>
+           	<span id="Title">
+           		Logged in as
+           		<!-- tmpl_if root_login --> 
+           		 <strong><!-- tmpl_var PROGRAM_NAME --> Root</strong>
+           		<!-- tmpl_else --> 
+           			List Owner
+           		<!-- /tmpl_if -->
+           		of 
+           		<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/" target="_blank"><!-- tmpl_var list_settings.list_name --> (<!-- tmpl_var list_settings.list -->)</a>   
+
+           		<!-- tmpl_if login_switch_widget --> 
+           			<!-- tmpl_if root_login --> 
+           			| 
+           				<!-- tmpl_var login_switch_widget -->
+           			<!-- /tmpl_if -->
+           		<!-- /tmpl_if -->
+           		| <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=logout">Log Out</a>
+
+               </span>
+               <div class="floatclear"></div>
+                        </div> 
+             </div><!-- ends id="Header" -->
+         </div> 
+         
+             
+             
+             <div class="row">
+                 <div class="large-3 medium-4 columns">
+                     <div class="hide-for-small">
+                         <div class="sidebar">
+                             <nav>
+                                 <!-- tmpl_var admin_menu -->
+                             </nav> 
+                         </div> 
+                     </div> 
+                 </div>
+                 <div class="large-9 medium-8 columns">
+                     <!-- tmpl_var content -->
+                 </div> 
+            </div> 
+                 
+                 
+                 
+         </section>
+
+       <a class="exit-off-canvas"></a>
+
+       </div>
+     </div>
+
+
+
+
 
 
 
@@ -128,6 +182,15 @@
 		</div>
 	</div> 
 
+
+    <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/foundation.min.js"></script>
+    <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/foundation/foundation.offcanvas.js"></script>
+    
+    
+    
+    <script>
+      $(document).foundation();
+    </script>
 
  </body>
 </html>

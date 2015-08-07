@@ -153,19 +153,23 @@ html, body {
 	background-color: #ccc;
 	border: 1px solid #fff;
 }
-#Dada .error {
+
+/*#Dada .error {
 	font-size: .9em;
 	font-family: Helvetica,Verdana,Arial,sans-serif;
 	/*font-size:11px;*/
 	font-style: italic;
 	color: #600;
 }
+*/
 
+/*
 #Dada .alert {
 	font-family: Helvetica,Verdana,Arial,sans-serif;
 	font-size: .9em;
 	color: #09c;
 }
+*/
 
 #Dada .hidden {
 	display: none;
@@ -338,11 +342,13 @@ html, body {
 
 /* ----- FORMS ----- */
 
+/*
+
 #Dada label {
 	font-family: Helvetica,Verdana,Arial,sans-serif;
 
-/*font-size:12px;*/
-/*font-size: .95em; */
+///*font-size:12px;*/
+///*font-size: .95em; */
 font-weight:bold;
 color: #000;
 }
@@ -368,7 +374,9 @@ color: #000;
 	display: block;
 }
 
+*/
 
+/*
 #Dada fieldset {
 	padding-top: 4px;
 	padding-bottom: 9px;
@@ -401,18 +409,21 @@ color: #000;
 	-moz-border-radius: 5px;
 	border-radius: 5px;
 }
-
+*/
+/*
 #Dada legend {
 	font-family: "Century Gothic", CenturyGothic, "AppleGothic", "Avant Garde", Avantgarde, sans-serif;
 	font-weight: bold;
 	font-size: 1.25em;
 }
+*/
+//#Dada input[type="text"],
+//#Dada input[type="email"],
+//#Dada input[type="password"],
 
-#Dada input[type="text"],
-#Dada input[type="email"],
-#Dada input[type="password"],
+//#Dada textarea,
+
 #Dada select,
-#Dada textarea,
 #Dada .fake_input {
     width: auto;
 	margin: 3px;
@@ -532,7 +543,7 @@ color: #000;
 
 
 
-
+/*
 #Dada input.small_input {
 	margin: 1px;
 	padding: 3px;
@@ -547,13 +558,14 @@ color: #000;
 	width: 50%;
 	margin-top: -5px;
 }
-
+*/
+/*
 #Dada textarea {
 	padding: 10px;
 	width: 90%;
 	color: #333;
 }
-
+*/
 
 #Dada input.processing {
 	background-color: #cfc;
