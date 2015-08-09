@@ -9,7 +9,12 @@
 
   <title><!-- tmpl_var title --> - <!-- tmpl_var list_settings.list_name --> - <!-- tmpl_var PROGRAM_NAME --></title>
  
-  <link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/dada_mail.css" type="text/css" media="screen" />
+  <link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/foundation.css" />
+ 
+ 
+ <!-- tmpl_if comment --> 
+    <link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/dada_mail.css" type="text/css" media="screen" />
+ <!-- /tmpl_if --> 
 
 
 <!-- tmpl_if load_google_viz --> 
@@ -77,7 +82,6 @@
     
     
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/foundation.css" />
     <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/modernizr.js"></script>
     
     
@@ -86,38 +90,73 @@
 
 
      <div class="off-canvas-wrap" data-offcanvas>
-       <div class="inner-wrap">
+         <div class="inner-wrap">
+           
+         
+         <!-- mobile navigation stuff -->
          <nav class="tab-bar show-for-small">
          <!-- <nav class="tab-bar"> --> 
            <section class="left-small">
              <a class="left-off-canvas-toggle menu-icon" href="#"><span></span></a>
            </section>
-
            <section class="middle tab-bar-section">
              <h1 class="title"><!-- tmpl_var PROGRAM_NAME --></h1>
            </section>
-
          </nav>
-
          <aside class="left-off-canvas-menu">
              <!-- tmpl_var admin_menu -->
          </aside>
+         <!-- mobile navigation stuff -->
+
+
+
+
 
          <section class="main-section">
 
-          <div class="fixed">
-               <nav class="top-bar hide-for-small" data-topbar role="navigation">
+               <nav class="top-bar hide-for-small" data-topbar role="navigation" id="admin_header">
                     <ul class="title-area">
                        <li class="name">
                          <h1><a href="<!-- tmpl_var PROGRAM_URL -->">
-                            <!-- tmpl_var PROGRAM_NAME -->
+                            <img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/dada_mail_logo.png" alt="<!-- tmpl_var PROGRAM_NAME -->" />
                          </a></h1>
                        </li>
-                        <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
-                       <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
                      </ul>
+
+                <section class="top-bar-section">
+                 <ul class="right">
+                     <li class="divider"></li>
+                     <li>
+                 		<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/" target="_blank">
+                         Logged in as
+                		<!-- tmpl_if root_login --> 
+                            <!-- tmpl_var PROGRAM_NAME --> Root
+                		<!-- tmpl_else --> 
+                			List Owner
+                		<!-- /tmpl_if -->
+                		of 
+                            <!-- tmpl_var list_settings.list_name --> 
+                		    (<!-- tmpl_var list_settings.list -->)
+                		</a>   
+                    </li>
+                        <!-- tmpl_if login_switch_widget --> 
+                   			<!-- tmpl_if root_login --> 
+                   			<li class="divider"></li>
+                   				<!-- tmpl_var login_switch_widget -->
+                   			<li class="divider"></li>
+                   			<!-- /tmpl_if -->
+                   		<!-- /tmpl_if -->
+                    <li class="has-form">
+                	    <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=logout" class="button alert">
+                	        Log Out
+                	    </a>
+                    </li>
+                 </ul>
+             </section> 
+
+
+
                </nav>
-           </div>
              
              <!-- tmpl_if comment --> 
              
@@ -155,7 +194,7 @@
          
              
              
-             <div class="row">
+             <div class="row" style="background:#fff">
                  <div class="large-3 medium-4 columns">
                      <div class="hide-for-small">
                          <div class="sidebar">

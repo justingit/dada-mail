@@ -25,6 +25,7 @@ jQuery(document).ready(function($){
 
 	// Admin Menu
 	
+	/*
 	if ($("#change_to_list_form").length) {
 		$("#change_to_list").select2();
 		$("body").on("submit", "#change_to_list_form", function(event) {
@@ -36,6 +37,7 @@ jQuery(document).ready(function($){
 			return true;
 		});		
 	}
+	*/
 	
 	if ($("#navcontainer").length) {
 		
@@ -67,7 +69,8 @@ jQuery(document).ready(function($){
 	
 	//Mail Sending >> Send a Message 
 	if ($("#send_email_screen").length || $("#send_url_email").length || $("#list_invite").length) {
-		
+
+/*
 	  var msie6 = $.browser == 'msie' && $.browser.version < 7;
 	  if (!msie6) {
 	    var top = $('#buttons').offset().top - parseFloat($('#buttons').css('margin-top').replace(/auto/, 0));
@@ -85,7 +88,8 @@ jQuery(document).ready(function($){
 	      }
 	    });
 	  }
-		
+*/
+
 	$("body").on("click", ".kcfinder_open", function(event) {
 		event.preventDefault();
 		

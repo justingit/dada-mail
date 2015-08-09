@@ -1032,59 +1032,48 @@ sub login_switch_widget {
     require  DADA::App::ScreenCache; 
     my $c  = DADA::App::ScreenCache->new; 
     
-    if($c->is_cached('login_switch_widget.' . $args->{-list} . '.scrn')){ 
-        my $lsw = $c->pass('login_switch_widget.' . $args->{-list} . '.scrn');
-           $lsw =~ s/\[LOCATION\]/$location/g; 
-           return $lsw; 
-      }
+ #   if($c->is_cached('login_switch_widget.' . $args->{-list} . '.scrn')){ 
+ #       my $lsw = $c->pass('login_switch_widget.' . $args->{-list} . '.scrn');
+ #          $lsw =~ s/\[LOCATION\]/$location/g; 
+ #          return $lsw; 
+ #     }
 
     my $scrn; 
+    my $lists = []; 
     
-
-	my @lists = available_lists(-In_Order => 1); 
-	my %label = (); 
-	
-	# DEV TODO - This needs its own METHOD!!!
-	
-	foreach my $list( @lists ){
+	foreach my $list(available_lists(-In_Order => 1)){
 			my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-			$label{$list} = $ls->param('list_name') . ' (' . $list . ')'; 
-			
+			my $logged_in = 0; 
+			if($list eq $args->{-list}){ 
+			   $logged_in = 1;  
+			}
+			push(
+			    @$lists, 
+			    {
+			        'list_settings.list'      => $list, 
+			        'list_settings.list_name' => $ls->param('list_name'), 
+			        location                  => $location, 
+			        logged_in                 => $logged_in, 
+			    }
+			); 
 	}
+#	use Data::Dumper; 
+#	warn Data::Dumper::Dumper($lists); 
 	
-	$label{$args->{-list}} = '----------'; 
+	return DADA::Template::Widgets::screen(
+				{
+				    -screen => 'login_switch_widget.tmpl',
+				    -vars   => { 
+				        lists => $lists, 
+				    },
+				}
+			); 
 	
-	if($lists[1]){ 
-		$scrn = $q->start_form(-action => $DADA::Config::S_PROGRAM_URL, 
-							  -method => "post",
-							  -style => 'display:inline;margin:0px',
-							  -id    => 'change_to_list_form', 
-							  ) . 
-			   $q->popup_menu(-name    => 'change_to_list', 
-							  -id      => 'change_to_list', 
-							  -value   => [@lists], 
-							  -default => $args->{-list},
-							  -labels  => {%label}, 
-							  ) . 
-			   $q->hidden(-name => 'location', 
-						  -value => '[LOCATION]',
-						 ) . 
-			   $q->hidden(-name      => 'flavor', 
-						   -value    => 'change_login',
-						   -override => 1,
-				 ) . 
 	
-			   $q->submit(-value => 'switch', -class=>'small_button', -id => 'submit_change_to_list') .
-			   $q->end_form(); 
-	}else{ 
-		$scrn = '';
-	}
 	
-	$c->cache('login_switch_widget.' . $args->{-list} . '.scrn', \$scrn);
-	
-	$scrn =~ s/\[LOCATION\]/$location/g; 
-	
-    return $scrn; 
+#	$c->cache('login_switch_widget.' . $args->{-list} . '.scrn', \$scrn);	
+#	$scrn =~ s/\[LOCATION\]/$location/g; 
+ # return $scrn; 
 }
 
 
