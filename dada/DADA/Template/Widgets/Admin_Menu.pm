@@ -244,6 +244,9 @@ sub make_admin_menu {
         );
 
     }
+    
+    require Data::Dumper; 
+    warn Data::Dumper::Dumper($ht_entry); 
 
     return DADA::Template::Widgets::screen(
         {

@@ -1,0 +1,62 @@
+<!-- begin admin_menu_widget.tmpl -->
+
+<div id="navcontainer" data-s_program_url="<!-- tmpl_var S_PROGRAM_URL -->">
+<ul>
+<!-- tmpl_loop name="NAV" -->
+  <!-- tmpl_unless Activated --> 
+  <!-- tmpl_if hide_nav -->
+   <li class="hidden">
+  <!-- tmpl_else --> 
+   <li>
+  <!--/tmpl_if --> 
+  <!-- tmpl_else --> 
+  <li>
+  <!-- /tmpl_unless -->
+ <!-- tmpl_if Title_URL -->
+     <!-- tmpl_if Activated -->
+     <a href="<!-- tmpl_var name="Title_URL" -->" id="admin_menu_<!-- tmpl_var Function escape="HTML" -->">
+      <!-- tmpl_var Title -->
+     </a>
+   <!--tmpl_else--> 
+    <a href="<!-- tmpl_var name="Title_URL" -->" id="admin_menu_<!-- tmpl_var Function escape="HTML" -->" class="menu_disabled>">
+     <!-- tmpl_var Title -->
+    </a>
+   <!--/tmpl_if--> 
+ <!--tmpl_else-->
+    <span class="title"><!-- tmpl_var Title --></span>
+ <!--/tmpl_if-->
+ <!-- tmpl_if SUBNAV -->
+    <ul>
+  <!-- tmpl_loop SUBNAV -->
+  <!-- tmpl_unless Activated --> 
+  <!-- tmpl_if hide_nav --> 
+   <li class="hidden">
+  <!-- tmpl_else --> 
+   <li>
+  <!--/tmpl_if --> 
+  <!-- tmpl_else --> 
+  <li>
+  <!-- /tmpl_unless -->
+   <!-- tmpl_if Title_URL -->
+     <!-- tmpl_if Activated -->
+      <a href="<!-- tmpl_var name="Title_URL" -->" id="admin_menu_<!-- tmpl_var Function escape="HTML" -->">
+       <!-- tmpl_var Title -->
+      </a>
+     <!--tmpl_else--> 
+      <a href="<!-- tmpl_var name="Title_URL" -->" id="admin_menu_<!-- tmpl_var Function escape="HTML" -->" class="menu_disabled">
+       <!-- tmpl_var Title -->
+      </a>
+     <!--/tmpl_if-->
+   <!--tmpl_else-->
+     <!-- tmpl_var Title -->
+   <!--/tmpl_if-->
+      </li>
+  <!--/tmpl_loop-->
+    </ul>
+ <!--/tmpl_if-->
+  </li>
+<!--/tmpl_loop-->
+</ul>
+</div> 
+
+<!-- end admin_menu_widget.tmpl -->

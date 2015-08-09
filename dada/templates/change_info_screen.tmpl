@@ -12,22 +12,36 @@
 </div>
 
 
-<!-- tmpl_if done -->
-	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
-<!--/tmpl_if-->
 
-<!-- tmpl_if errors -->
-	
-	<p class="error">
-	 The <!-- tmpl_var errors --> field<!-- tmpl_var errors_ending --> on this form 
-	 <!-- tmpl_var err_word --> filled out incorrectly and 
-	 must be fixed for all new information to be saved.
-	</p>
-	
-<!--/tmpl_if-->
 
+       
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 
+
+  
+  <div class="contain-to-grid">
+    <nav class="top-bar" data-topbar role="navigation" style="background:#ff3300">
+    <ul class="button-group round right">    
+        <li><input type="reset"  class="cautionary button" value="Clear Changes" /></li>
+        <li><input type="submit" class="processing button" value="Save Changes" /></li>
+    </ul>
+    </nav>
+  </div>
+    
+    <!-- tmpl_if done -->
+    	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
+    <!--/tmpl_if-->
+
+    <!-- tmpl_if errors -->
+
+    	<p class="error">
+    	 The <!-- tmpl_var errors --> field<!-- tmpl_var errors_ending --> on this form 
+    	 <!-- tmpl_var err_word --> filled out incorrectly and 
+    	 must be fixed for all new information to be saved.
+    	</p>
+
+    <!--/tmpl_if-->
+    
 
 <fieldset> 
 	<legend>Your List Information</legend> 
@@ -171,25 +185,8 @@
 <input type="hidden" name="flavor"       value="change_info" />
 <input type="hidden" name="process" value="1" />
 
-
-<ul class="button-group round right">    
-    <li><input type="reset"  class="cautionary button" value="Clear Changes" /></li>
-    <li><input type="submit" class="processing button" value="Save Changes" /></li>
-</ul>
-
-
-<!-- tmpl_if comment --> 
-
-<div class="buttonfloat">
- <input type="reset"  class="cautionary" value="Clear Changes" />
- <input type="submit" class="processing" value="Save Changes" />
-</div>
-<div class="floatclear"></div>
-
-<!-- /tmpl_if --> 
-
-
 </form> 
+
 
  
 

@@ -313,6 +313,7 @@ html, body {
 
 /* ----- LINKS ----- */
 
+/*
 #Dada a {
 	text-decoration: none;
 }
@@ -331,6 +332,8 @@ html, body {
 
 #Dada a:active {
 }
+*/
+
 #Dada .ui-widget-content a {
 	color: #339; 
 }
@@ -823,6 +826,7 @@ line-height: 13px;
 }
 
 
+/*
 #Dada #navcontainer {
 	margin: 0px;
 	border-bottom: 1px solid #666;
@@ -835,7 +839,6 @@ line-height: 13px;
 	font-family: verdana, arial, Helvetica, sans-serif;
 }
 
-/* this is the horizontal separator */
 #Dada #navcontainer li {
 	margin: 0 0 1px 0;
 }
@@ -919,6 +922,7 @@ line-height: 13px;
 	background-color: #f4ffaf;
 }
 
+*/
 
 #Dada .stripedtable {
 	/*border: 1px solid red;*/ /* for testing. */

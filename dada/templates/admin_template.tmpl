@@ -103,45 +103,55 @@
              <!-- tmpl_var admin_menu -->
          </aside>
 
-         <aside class="right-off-canvas-menu">
-           <ul class="off-canvas-list">
-             <li><label>Users</label></li>
-             <li><a href="#">Hari Seldon</a></li>
-             <li><a href="#">...</a></li>
-           </ul>
-         </aside>
-
          <section class="main-section">
-             <div class="row">
-                 <div class="large-12">
+
+          <div class="fixed">
+               <nav class="top-bar hide-for-small" data-topbar role="navigation">
+                    <ul class="title-area">
+                       <li class="name">
+                         <h1><a href="<!-- tmpl_var PROGRAM_URL -->">
+                            <!-- tmpl_var PROGRAM_NAME -->
+                         </a></h1>
+                       </li>
+                        <!-- Remove the class "menu-icon" to get rid of menu icon. Take out "Menu" to just have icon alone -->
+                       <li class="toggle-topbar menu-icon"><a href="#"><span>Menu</span></a></li>
+                     </ul>
+               </nav>
+           </div>
+             
+             <!-- tmpl_if comment --> 
+             
+                             <div class="row">
+                                 <div class="large-12">
                 
-              <div id="Header" class="hide-for-small">
-           	<a href="<!-- tmpl_var PROGRAM_URL -->">
-           		<img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/dada_mail_logo.png" alt="<!-- tmpl_var PROGRAM_NAME -->" />
-               </a>
-           	<span id="Title">
-           		Logged in as
-           		<!-- tmpl_if root_login --> 
-           		 <strong><!-- tmpl_var PROGRAM_NAME --> Root</strong>
-           		<!-- tmpl_else --> 
-           			List Owner
-           		<!-- /tmpl_if -->
-           		of 
-           		<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/" target="_blank"><!-- tmpl_var list_settings.list_name --> (<!-- tmpl_var list_settings.list -->)</a>   
+                              <div id="Header" class="hide-for-small">
+                           	<a href="<!-- tmpl_var PROGRAM_URL -->">
+                           		<img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/dada_mail_logo.png" alt="<!-- tmpl_var PROGRAM_NAME -->" />
+                               </a>
+                           	<span id="Title">
+                           		Logged in as
+                           		<!-- tmpl_if root_login --> 
+                           		 <strong><!-- tmpl_var PROGRAM_NAME --> Root</strong>
+                           		<!-- tmpl_else --> 
+                           			List Owner
+                           		<!-- /tmpl_if -->
+                           		of 
+                           		<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/" target="_blank"><!-- tmpl_var list_settings.list_name --> (<!-- tmpl_var list_settings.list -->)</a>   
 
-           		<!-- tmpl_if login_switch_widget --> 
-           			<!-- tmpl_if root_login --> 
-           			| 
-           				<!-- tmpl_var login_switch_widget -->
-           			<!-- /tmpl_if -->
-           		<!-- /tmpl_if -->
-           		| <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=logout">Log Out</a>
+                           		<!-- tmpl_if login_switch_widget --> 
+                           			<!-- tmpl_if root_login --> 
+                           			| 
+                           				<!-- tmpl_var login_switch_widget -->
+                           			<!-- /tmpl_if -->
+                           		<!-- /tmpl_if -->
+                           		| <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=logout">Log Out</a>
 
-               </span>
-               <div class="floatclear"></div>
-                        </div> 
-             </div><!-- ends id="Header" -->
-         </div> 
+                               </span>
+                               <div class="floatclear"></div>
+                                        </div> 
+                             </div><!-- ends id="Header" -->
+                         </div> 
+            <!-- /tmpl_if -->
          
              
              
