@@ -30,7 +30,7 @@
 	 <input type="hidden" name="process" value="true" />
 	 <input type="hidden" name="root_password" value="<!-- tmpl_var root_password escape="HTML" -->" />
 	 <input type="hidden" name="auth_state" value="<!-- tmpl_var auth_state escape="HTML" -->" />
-	<div class="clearskiesbox">
+	<div data-alert class="alert-box success radius">>
 		
 	<p>Please Fill in all the fields below, to create your new Mailing List</p>
 	<p>
@@ -64,7 +64,7 @@
 	 
 	<!-- /tmpl_if -->
 
-		<div class="clearskiesbox">
+		<div data-alert class="alert-box success radius">>
 		
 		 <p>
 		  	What is the Mailing List's name? Use a unique name to help you tell your Mailing Lists apart.
@@ -74,7 +74,7 @@
 		
 		</div>
 	 <p><label for="list_name">Mailing List Name:</label><br/>
-	  <input type="text" id="list_name" name="list_name" value="<!-- tmpl_var list_name escape="HTML" -->" class="full" maxlength="250" />
+	  <input type="text" id="list_name" name="list_name" value="<!-- tmpl_var list_name escape="HTML" -->"  maxlength="250" />
 	 </p>
 </fieldset> 
 
@@ -145,7 +145,7 @@
 	<!-- /tmpl_if -->
 
 
-	<div class="clearskiesbox">
+	<div data-alert class="alert-box success radius">>
 	<p>
 	  The List Short Name will be used internally by <!-- tmpl_var PROGRAM_NAME --> 
 	  and will also be used for subscription/unsubscription links and filenames. 
@@ -183,7 +183,7 @@
 	 
 	<!-- /tmpl_if -->
 
-		<div class="clearskiesbox">
+		<div data-alert class="alert-box success radius">>
 		 <p>
 		  The <strong>List Password</strong> can be used to log into this 
 		  mailing list's list control panel, usually with restrictions on what can be 
@@ -255,7 +255,7 @@
 	 
 	<!-- /tmpl_if -->
 
-		<div class="clearskiesbox">
+		<div data-alert class="alert-box success radius">>
 		 <p>
 		  The List Owner's email address will be the email address all mass mailing messages
 		will be sent on behalf of.
@@ -268,7 +268,7 @@
   		<label for="list_owner_email">List Owner Email Address:</label>
 	</p>
 <p>
-	  <input type="text" id="list_owner_email" name="list_owner_email" value="<!-- tmpl_var list_owner_email escape="HTML"-->" class="full" maxlength="100" />
+	  <input type="text" id="list_owner_email" name="list_owner_email" value="<!-- tmpl_var list_owner_email escape="HTML"-->"  maxlength="100" />
 	 </p>
 
 </fieldset>
@@ -290,7 +290,7 @@
 	 
 	<!-- /tmpl_if -->
 
-		<div class="clearskiesbox">
+		<div data-alert class="alert-box success radius">>
 		 <p>
 		  A description of your Mailing List will tell would-be subscribers 
 		  what your Mailing List is all about. This information will be shown on the 
@@ -327,7 +327,7 @@
 	 
 	<!-- /tmpl_if -->
 
-		<div class="clearskiesbox">
+		<div data-alert class="alert-box success radius">>
 		 <p>
 		  A Privacy Policy allows a subscriber to know exactly how the 
 		  information they submit (their email address, etc.) will be used.
@@ -360,7 +360,7 @@
 	 
 	<!-- /tmpl_if -->
 
-		<div class="clearskiesbox">
+		<div data-alert class="alert-box success radius">>
 		 <p>
 		  A Physical Address ties your Mailing List to a known business 
 		  or organization, even if that organization is yourself. It 

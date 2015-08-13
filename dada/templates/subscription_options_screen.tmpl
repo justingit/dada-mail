@@ -98,7 +98,7 @@
 
 	<!-- tmpl_if SUBSCRIPTION_QUOTA --> 
 
-		<div class="clearskiesbox">
+		<div data-alert class="alert-box success radius">>
 	    	<p>
 	     	Currently, there is a Global limit of <!-- tmpl_var commified_subscription_quota --> Subscribers per Mailing List.
 	    	</p>
@@ -106,7 +106,7 @@
 
 	<!-- tmpl_else --> 
 
-		<div class="clearskiesbox">
+		<div data-alert class="alert-box success radius">>
 	     <p>There are no Global Subscription Quotas!</p>
 	    </div>
 

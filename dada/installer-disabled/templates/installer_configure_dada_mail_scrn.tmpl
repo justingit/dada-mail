@@ -285,7 +285,7 @@
 	
 
 	
-	<div class="clearskiesbox" id="support_files_help">
+	<div data-alert class="alert-box success radius"> id="support_files_help">
 		<p>
 			The Installer will use the Absolute Path and Corresponding URL you set below to 
 			copy over the static files used in Dada Mail: images, stylesheets, and javascript files. 
@@ -1140,7 +1140,7 @@ editors also have the ability to make simple HTML tables for basic layouts.
     				Server Absolute Path or URL to your User Template:
     			</label>
     			<br />
-    			<input type="text" name="template_options_manual_template_url" id="template_options_manual_template_url" value="" class="full" />
+    			<input type="text" name="template_options_manual_template_url" id="template_options_manual_template_url" value=""  />
     	        </blockquote> 
             </div> 
     	    
@@ -1178,11 +1178,11 @@ editors also have the ability to make simple HTML tables for basic layouts.
                         URL:
                     </label><br /> 
            
-                    <input type="text" name="template_options_magic_template_url" id="template_options_magic_template_url" class="full" /><br />
+                    <input type="text" name="template_options_magic_template_url" id="template_options_magic_template_url"  /><br />
            
                     <input type="checkbox" name="template_options_add_base_href" id="template_options_add_base_href" value="1" />
                     <label for="template_options_add_base_href">Add a, &lt;base href=&quot;...&quot;&gt; tag:</label><br />
-                    <input type="text" name="template_options_base_href_url" id="template_options_base_href_url"  class="full" /><br />
+                    <input type="text" name="template_options_base_href_url" id="template_options_base_href_url"   /><br />
                 </p>
                 
                     <p>
@@ -1207,7 +1207,7 @@ editors also have the ability to make simple HTML tables for basic layouts.
             
                     <input type="checkbox" name="template_options_add_custom_css" id="template_options_add_custom_css" value="1"/>
                     <label for="template_options_add_custom_css">Include a custom stylesheet:</label><br />
-                    <input type="text" name="template_options_custom_css_url" id="template_options_custom_css_url" class="full" />
+                    <input type="text" name="template_options_custom_css_url" id="template_options_custom_css_url"  />
             	    </p> 
             	    <p><strong>Javascript Options:</strong><br />
                     <label for="template_options_include_jquery_lib">
@@ -1298,7 +1298,7 @@ editors also have the ability to make simple HTML tables for basic layouts.
 	<fieldset> 
 		
 		
-		<div class="clearskiesbox"> 
+		<div data-alert class="alert-box success radius">> 
 		
 		<!-- tmpl_if can_use_GD --> 
 				<ul>

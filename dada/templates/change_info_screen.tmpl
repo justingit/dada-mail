@@ -3,12 +3,17 @@
 
 <!-- tmpl_set name="title" value="Your Mailing List &#187; List Information" -->
 <div id="screen_meta" data-menu_highlight="change_info"></div>
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-		<!-- tmpl_var title -->
-	</div> 
-	<!-- tmpl_include help_link_widget.tmpl -->
-</div>
+
+
+<div class="row">
+   <div class="small-9 medium-8 columns">
+      <!-- tmpl_var title -->
+   </div> 
+    <div class="small-3 medium-4 columns right">
+     <!-- tmpl_include help_link_widget.tmpl -->
+    </div> 
+</div> 
+
 
 <!-- tmpl_if done -->
 	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
@@ -16,11 +21,11 @@
 
 <!-- tmpl_if errors -->
 	
-	<p class="error">
+    <div class="alert-box alert radius">
 	 The <!-- tmpl_var errors --> field<!-- tmpl_var errors_ending --> on this form 
 	 <!-- tmpl_var err_word --> filled out incorrectly and 
 	 must be fixed for all new information to be saved.
-	</p>
+	</div>
 	
 <!--/tmpl_if-->
 
@@ -64,7 +69,7 @@
 
 
 <div class="row">
-   <div class="large-12 columns">
+   <div class="small-12 columns">
         <label for="list_name">
             List Name
             <input type="text" name="list_name" id="list_name" value="<!-- tmpl_var list_name escape="HTML" -->"  />
@@ -73,13 +78,13 @@
 </div> 
 
 <!-- tmpl_if flags_invalid_list_owner_email -->
-    <div class="alert-box alert round">
+    <div class="alert-box alert radius">
         You need to give a valid email address for the list owner.
     </div>
 <!--/tmpl_if-->
 
 <!-- tmpl_if expr="(using_ses eq '1') && (list_owner_ses_verified ne '1')" --> 
-    <div class="alert-box alert round">
+    <div class="alert-box alert radius">
 	    <p>
 	        Your current <strong>List Owner</strong>, <!-- tmpl_var list_owner_email escape="HTML" --> has not been verified through <strong>Amazon SES</strong>.
 	    </p>
@@ -88,7 +93,7 @@
 
 
 <div class="row">
-   <div class="large-12 columns">
+   <div class="small-12 columns">
        <label for="list_owner_email">
            List Owner Address
            <input type="text" name="list_owner_email" id="list_owner_email" value="<!-- tmpl_var list_owner_email escape="HTML" -->" />
@@ -98,7 +103,7 @@
    
    
    <!-- tmpl_if expr="(using_ses eq '1') && (list_admin_ses_verified ne '1')" --> 
-       <div class="alert-box alert round">
+       <div class="alert-box alert radius">
    	    <p>
    	        Your current <strong>List Administrator</strong>, <!-- tmpl_var admin_email escape="HTML" -->has not been verified through <strong>Amazon SES</strong>.
    	    </p>
@@ -106,23 +111,23 @@
    <!-- /tmpl_if -->
    
    <div class="row">
-      <div class="large-12 columns">
+      <div class="small-12 columns">
           <label for="admin_email">
               List Administrator Address
-              <input type="text" name="admin_email" id="admin_email" value="<!-- tmpl_var admin_email escape="HTML" -->" class="full" />
+              <input type="text" name="admin_email" id="admin_email" value="<!-- tmpl_var admin_email escape="HTML" -->"  />
             </label>
            </div> 
         </div>      
 
 <!-- tmpl_if flags_list_info -->
-    <div class="alert-box alert round">
+    <div class="alert-box alert radius">
         You need to give your list a description.
     </div> 
 <!--/tmpl_if-->
 
 
 <div class="row">
-    <div class="large-12 columns">
+    <div class="small-12 columns">
         <label for="info">
             List Description
             <textarea name="info" id="info"><!-- tmpl_var info --></textarea>
@@ -131,7 +136,7 @@
 </div>
 
 <!-- tmpl_if flags_privacy_policy -->
-    <div class="alert-box alert round">
+    <div class="alert-box alert radius">
 	  You need to give your list a privacy policy.
     </div> 
 
@@ -139,7 +144,7 @@
 <!--/tmpl_if-->
 
 <div class="row">
-    <div class="large-12 columns">
+    <div class="small-12 columns">
         <label for="privacy_policy">
             Privacy Policy
             <textarea name="privacy_policy" id="privacy_policy"><!-- tmpl_var privacy_policy --></textarea>
@@ -149,13 +154,13 @@
 
 
 <!-- tmpl_if flags_physical_address -->
-    <div class="alert-box alert round">
+    <div class="alert-box alert radius">
 	    You need to give your list a physical address.
     </div> 
 <!--/tmpl_if-->
 
 <div class="row">
-    <div class="large-12 columns">
+    <div class="small-12 columns">
     <label for="physical_address"> 
         Physical Address
         <textarea name="physical_address" id="physical_address" cols="50" rows="5"><!-- tmpl_var physical_address --></textarea>

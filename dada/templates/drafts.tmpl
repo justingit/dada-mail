@@ -14,7 +14,7 @@
 
 
 <!-- tmpl_if delete_draft --> 
-	<div class="clearskiesbox" id="alertbox">
+	<div data-alert class="alert-box success radius"> id="alertbox">
 		<p>
 			Message Deleted. 
 		</p>
@@ -164,7 +164,7 @@
             </form>
             
         <!-- tmpl_else -->
-        	<div class="clearskiesbox">
+        	<div data-alert class="alert-box success radius">>
         		<p>
         			There are currently no saved message drafts. 
         		</p>
@@ -309,7 +309,7 @@
         	</form>
         
         <!-- tmpl_else -->
-        	<div class="clearskiesbox">
+        	<div data-alert class="alert-box success radius">>
         		<p>
         			There are currently no saved stationery. 
         		</p>
@@ -569,7 +569,7 @@
             <!-- /tmpl_if --> 
 
         <!-- tmpl_else -->
-        	<div class="clearskiesbox">
+        	<div data-alert class="alert-box success radius">>
         		<p>
         			There are currently no saved message Schedules. 
         		</p>

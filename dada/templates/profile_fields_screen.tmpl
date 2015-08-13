@@ -26,7 +26,7 @@
 
 <!-- tmpl_if field_changes --> 
 
-	<div class="clearskiesbox" id="changes_saved_dialog_box">
+	<div data-alert class="alert-box success radius"> id="changes_saved_dialog_box">
 	
     	<!-- tmpl_if deletion --> 
     		<p>
@@ -156,7 +156,7 @@
 	
     <!-- /tmpl_unless --> 
     
-	<div class="clearskiesbox">
+	<div data-alert class="alert-box success radius">>
 	<p>
 	 Profile Fields are <strong>Global</strong> and will affect all Mailing Lists. 
 	 You may only change the Profile Fields if you are logged in with the <!-- tmpl_var PROGRAM_NAME --> 
@@ -383,7 +383,7 @@
                </td> 
                <td> 
                  <p>
-                  <input type="text" name="field"  id="field" value="<!-- tmpl_var field escape="HTML"  -->" class="full" <!-- tmpl_if using_SQLite --><!-- tmpl_if edit_field -->disabled="disabled"<!-- /tmpl_if --><!-- /tmpl_if --> /><br /> 
+                  <input type="text" name="field"  id="field" value="<!-- tmpl_var field escape="HTML"  -->"  <!-- tmpl_if using_SQLite --><!-- tmpl_if edit_field -->disabled="disabled"<!-- /tmpl_if --><!-- /tmpl_if --> /><br /> 
                   <em>
 					(Use underscores, instead of spaces - no funny characters, and use lower case characters instead of uppercase.)
                   </em><br /> <br /> 
@@ -410,7 +410,7 @@
                </td> 
                <td> 
                 <p>
-                 <input type="text" name="field_label" id="field_label"  value="<!-- tmpl_var field_label escape="HTML" -->" class="full" /><br />
+                 <input type="text" name="field_label" id="field_label"  value="<!-- tmpl_var field_label escape="HTML" -->"  /><br />
                   <em>This label will be used on public subscription forms</em>
                 </p>
             </td>
@@ -424,7 +424,7 @@
                </td> 
                <td> 
                 <p>
-                    <input type="text" name="fallback_field_value" id="fallback_field_value"  value="<!-- tmpl_var fallback_field_value escape="HTML" -->" class="full" />
+                    <input type="text" name="fallback_field_value" id="fallback_field_value"  value="<!-- tmpl_var fallback_field_value escape="HTML" -->"  />
                     <br />
                     <em>This value is used in things like mail merging, when there's no information saved for the subscriber. </em>
                 </p>

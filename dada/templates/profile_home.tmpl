@@ -9,7 +9,7 @@
     [ <a href="<!-- tmpl_var PROGRAM_URL -->/profile_logout/">Logout</a>]
 </p>
 
-<div class="clearskiesbox">
+<div data-alert class="alert-box success radius">>
     <h1>
         
         <!-- tmpl_if gravators_enabled --> 
@@ -53,7 +53,7 @@ function confirm_profile_removal(form_name) {
 
 
 <!-- tmpl_if welcome --> 
-    <div class="clearskiesbox">
+    <div data-alert class="alert-box success radius">>
     <p>
      Welcome to your profile home. From here, you may subscribe/unsubscribe 
      to the available mailing lists, as well as update your subscription 
@@ -62,7 +62,7 @@ function confirm_profile_removal(form_name) {
     </div> 
 <!-- /tmpl_if --> 
 <!-- tmpl_if edit --> 
-    <div class="clearskiesbox">
+    <div data-alert class="alert-box success radius">>
     <p>
         Your changes have been saved!
     </p> 

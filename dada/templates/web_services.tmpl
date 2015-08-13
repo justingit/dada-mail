@@ -9,8 +9,10 @@
 </div>
 <div id="screen_meta" data-menu_highlight="web_services"></div>
 
-<div class="clearskiesbox">
-    <p>Confused? See the 
+
+
+<div class="alert-box info radius">
+    <p><strong>Confused?</strong> See the 
         <a href="http://dadamailproject.com/d/features-restful_web_services.pod.html" target="_blank">
         docs on Web Services
        </a>
@@ -19,7 +21,7 @@
 
 
 <!-- tmpl_if keys_reset --> 
-    	<div class="clearskiesbox" id="alertbox">
+    	<div data-alert class="alert-box success radius">
         <p>
          Public and Private Keys have been reset.
         </p>
@@ -33,29 +35,30 @@
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
     <input type="hidden" name="flavor"  value="web_services" />
     <input type="hidden" name="process" value="reset_keys" />
-<fieldset> 
-    
-<p><strong>Public API Key:</strong></p> 
 
-<p>
-    <input type="text"  class="full" value="<!-- tmpl_var list_settings.public_api_key escape="HTML" -->" >
-</p> 
-
-<p><strong>Private API Key:</strong></p> 
-
-<p>
-<input type="text" class="full" value="<!-- tmpl_var list_settings.private_api_key escape="HTML" -->" >
-</p>
-
-<div class="buttonfloat">
- <input type="submit" class="processing" value="Reset Keys" />
-</div>
-<div class="floatclear"></div>
-</form> 
-
-
-</fieldset> 
-
+    <fieldset> 
+        <div class="row">
+            <div class="small-12 columns">
+                <label for="public_api_key">
+                    Public API Key
+                    <input type="text" value="<!-- tmpl_var list_settings.public_api_key escape="HTML" -->" id="public_api_key" >
+                </label>
+           </div> 
+        </div>
+            
+        <div class="row">
+            <div class="small-12 columns">
+                <label for="private_api_key">
+                    Private API Key
+                    <input type="text"  value="<!-- tmpl_var list_settings.private_api_key escape="HTML" -->" id="private_api_key">
+                </label>
+           </div> 
+        </div>
+        
+        <ul class="button-group right">    
+             <li><input type="submit" class="button processing" value="Reset Keys" /></li>
+        </ul>
+    </fieldset> 
 </form> 
 
 <!-- end web_services.tmpl --> 

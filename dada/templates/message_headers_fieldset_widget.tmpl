@@ -30,9 +30,9 @@
 		<!-- tmpl_if comment --> 
 		
 		 <!-- tmpl_if To --> 
-			<input type="text" name="To" id="To" value="<!-- tmpl_var To  escape="HTML" -->" disabled="disabled" class="full" />
+			<input type="text" name="To" id="To" value="<!-- tmpl_var To  escape="HTML" -->" disabled="disabled"  />
 		<!-- tmpl_else --> 
-	     	<input type="text" name="To" id="To" value="<!-- tmpl_var list_settings.mailing_list_message_to_phrase  escape="HTML" --> &lt;...&gt;" disabled="disabled" class="full" />
+	     	<input type="text" name="To" id="To" value="<!-- tmpl_var list_settings.mailing_list_message_to_phrase  escape="HTML" --> &lt;...&gt;" disabled="disabled"  />
 		<!-- /tmpl_if --> 
 
 		<!-- /tmpl_if --> 
@@ -54,9 +54,9 @@
 		<span style="font-family:Helvetica,Verdana,Arial,sans-serif; ">
 			<!-- tmpl_if comment --> 
 		 <!-- tmpl_if From --> 
-			<input type="text" name="From" id="From" value="<!-- tmpl_var From  escape="HTML" -->" disabled="disabled" class="full" />
+			<input type="text" name="From" id="From" value="<!-- tmpl_var From  escape="HTML" -->" disabled="disabled"  />
 	     <!-- tmpl_else --> 
-	     	<input type="text" name="From" id="From" value="<!-- tmpl_var list_settings.mailing_list_message_from_phrase  escape="HTML" --> &lt;<!-- tmpl_var list_settings.list_owner_email  escape="HTML" -->&gt;" disabled="disabled" class="full" />
+	     	<input type="text" name="From" id="From" value="<!-- tmpl_var list_settings.mailing_list_message_from_phrase  escape="HTML" --> &lt;<!-- tmpl_var list_settings.list_owner_email  escape="HTML" -->&gt;" disabled="disabled"  />
 		<!-- /tmpl_if -->
 		<!-- /tmpl_if --> 
 		
@@ -78,7 +78,7 @@
 	   </td>
 	   <td>
 	    <p>
-	     <input type="text" name="Reply-To" id="Reply-To" value="" class="full" />
+	     <input type="text" name="Reply-To" id="Reply-To" value=""  />
 	    </p>
 	   </td>
 	  </tr>
@@ -95,7 +95,7 @@
 		   </td>
 		   <td>
 		    <p>
-		     <input type="text" name="Errors-To" id="Errors-To" value="<!-- tmpl_var list_settings.admin_email  escape="HTML" -->" class="full" />
+		     <input type="text" name="Errors-To" id="Errors-To" value="<!-- tmpl_var list_settings.admin_email  escape="HTML" -->"  />
 		    </p>
 		   </td>
 		  </tr>
@@ -114,7 +114,7 @@
 		   </td>
 		   <td>
 		    <p>
-		     <input type="text" name="Return-Path" id="Return-Path" value="<!-- tmpl_var list_settings.admin_email -->" class="full" />
+		     <input type="text" name="Return-Path" id="Return-Path" value="<!-- tmpl_var list_settings.admin_email -->"  />
 		    </p>
 		   </td>
 		  </tr>
@@ -156,17 +156,17 @@
    <td width="99%">
     <p>
 	 <!-- tmpl_if Subject --> 
-		<input type="text" name="Subject" id="Subject" value="<!-- tmpl_var Subject escape="HTML"  -->" class="full" />
+		<input type="text" name="Subject" id="Subject" value="<!-- tmpl_var Subject escape="HTML"  -->"  />
      <!-- tmpl_else --> 
      <!-- tmpl_if expr="(screen eq 'send_url_email')" --> 
      <input type="radio" name="subject_from" id="subject_from_input" value="input" checked="checked">
-     <input type="text" name="Subject" id="Subject" value="<!-- tmpl_var list_settings.mailing_list_message_subject escape="HTML" -->" class="full" />
+     <input type="text" name="Subject" id="Subject" value="<!-- tmpl_var list_settings.mailing_list_message_subject escape="HTML" -->"  />
   	 <br /> 
   	 <input type="radio" name="subject_from" id="subject_from_title_tag" value="title_tag"><label for="subject_from_title_tag" />
   	 Use the Webpage's &lt;title&gt; as Message Subject
     
      <!-- tmpl_else --> 
-     	<input type="text" name="Subject" id="Subject" value="<!-- tmpl_var list_settings.mailing_list_message_subject escape="HTML" -->" class="full" />
+     	<input type="text" name="Subject" id="Subject" value="<!-- tmpl_var list_settings.mailing_list_message_subject escape="HTML" -->"  />
 	<!-- /tmpl_if -->
 	
 	<!-- /tmpl_if -->

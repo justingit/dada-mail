@@ -86,7 +86,7 @@
 		<!-- tmpl_else --> 
 		
 				<!-- tmpl_unless member_of_num --> 
-					<div class="clearskiesbox">
+					<div data-alert class="alert-box success radius">>
 						<p>
 							<!-- tmpl_var email escape="HTML" --> isn't a part of your Mailing List.
 						</p>
@@ -200,7 +200,7 @@
 				<!-- tmpl_if subscribed_to_list -->
 					<!-- tmpl_if list_settings.black_list -->
 						<!-- tmpl_if list_settings.add_unsubs_to_black_list -->
-						<div class="clearskiesbox">
+						<div data-alert class="alert-box success radius">>
 							<p><strong>Black Listing is enabled.</strong></p>
 							<p>
 								Subscribers that are Unsubscribed from this mailing list are added automatically to your Black List.
@@ -303,7 +303,7 @@
 
 
     			<!-- tmpl_unless expr="(root_login == 1 || list_settings.allow_profile_editing == 1)" --> 
-					<div class="clearskiesbox">
+					<div data-alert class="alert-box success radius">>
 						<p>
 							Editing Profile Fields is <strong>disabled</strong>. 
 						</p>
@@ -395,7 +395,7 @@
 					<div class="floatclear"></div>
 
 					<!-- tmpl_else -->
-					<div class="clearskiesbox">
+					<div data-alert class="alert-box success radius">>
 						<p>
 							Updating the Profile Password is <strong>disabled</strong>. 
 						</p>
@@ -411,7 +411,7 @@
 	<div id="delivery_preferences_tab">
 
         <!-- tmpl_unless list_settings.digest_enable --> 
-    	    <div class="clearskiesbox">
+    	    <div data-alert class="alert-box success radius">>
     	        <p>Digests are currently disable, and these settings are not used.</p>
     	    </div> 
     	<!-- /tmpl_unless -->

@@ -43,7 +43,7 @@
 
     <!-- tmpl_if draft_id --> 
         <!-- tmpl_if expr="(draft_role eq 'draft')" --> 
-        	<div class="clearskiesbox">
+        	<div data-alert class="alert-box success radius">>
         		<p>
         			Draft message restored below:
         		</p>
@@ -125,7 +125,7 @@
 		   Grab content from this webpage address (URL):
 		  </label>
 		  <br />
-		  <input type="url" name="url" id="url" class="full" value="http://" />
+		  <input type="url" name="url" id="url"  value="http://" />
 		</p>
 		<p>
 		  <input type="radio" name="content_from" id="content_from_textarea" value="content_from_textarea" />
@@ -322,7 +322,7 @@
 		    Grab content from this webpage address (URL): 
 		  </label>
   		  <br />
-  		  <input type="plaintext_url" name="plaintext_url" id="plaintext_url" class="full" value="http://" />
+  		  <input type="plaintext_url" name="plaintext_url" id="plaintext_url"  value="http://" />
   		</p>
 
 

@@ -17,51 +17,48 @@
 <!--/tmpl_if-->
 
 	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-	
+	    <input type="hidden" name="process" value="1" />
+        <input type="hidden" name="flavor"       value="mass_mailing_options" />
+    
 <fieldset>
+    <div class="row">
+        <div class="small-12 columns">
+            <input type="checkbox" 
+                name="mass_mailing_convert_plaintext_to_html" 
+                id="mass_mailing_convert_plaintext_to_html" 
+                value="1" 
+                <!-- tmpl_if list_settings.mass_mailing_convert_plaintext_to_html -->checked="checked"<!-- /tmpl_if --> 
+             />
+            <label for="mass_mailing_convert_plaintext_to_html">  
+                Convert PlainText-only Mass Email Messages to HTML
+            </label>
+        </div>
 
-<table cellspacing="5" width="100%">
-<tr> 
-<td width="20">
-	<input type="checkbox" name="mass_mailing_convert_plaintext_to_html" id="mass_mailing_convert_plaintext_to_html" value="1" <!-- tmpl_if list_settings.mass_mailing_convert_plaintext_to_html -->checked="checked"<!-- /tmpl_if --> />
-</td>	
-<td with="20">
-	<label for="mass_mailing_convert_plaintext_to_html">
-		Convert PlainText-only Mass Email Messages to HTML
-	</label> 
-</td>	
-</tr> 
-
-<tr> 
-<td width="20">
-	<input type="checkbox" name="mass_mailing_block_css_to_inline_css" id="mass_mailing_block_css_to_inline_css" value="1" <!-- tmpl_if list_settings.mass_mailing_block_css_to_inline_css -->checked="checked"<!-- /tmpl_if --> />
-</td>	
-<td with="20">
-	<label for="mass_mailing_block_css_to_inline_css" <!-- tmpl_unless can_use_css_inliner -->class="disabled"<!-- /tmpl_unless -->>
-		Convert CSS &lt;style&gt; blocks to inline styles in HTML messages <em>(Experimental)</em>
-	</label> <br /> 
-	Inline styles are more widely supported in various mail readers.
-	
-	<!-- tmpl_unless can_use_css_inliner --> 
-		<div class="badweatherbox">
-			<p><strong>Disabled</strong>. The Perl CPAN module, <strong>CSS::Inliner</strong> will need to be installed.</p>
-		</div> 
-	<!-- /tmpl_unless -->
-</td>	
-</tr>
+        <div class="small-12 columns">
+            <input type="checkbox" name="mass_mailing_block_css_to_inline_css" id="mass_mailing_block_css_to_inline_css" value="1" <!-- tmpl_if list_settings.mass_mailing_block_css_to_inline_css -->checked="checked"<!-- /tmpl_if --> />
+            <label for="mass_mailing_block_css_to_inline_css" <!-- tmpl_unless can_use_css_inliner -->class="disabled"<!-- /tmpl_unless -->>
+                Convert CSS &lt;style&gt; blocks to inline styles in HTML messages
+            </label>
+            <!-- tmpl_unless can_use_css_inliner --> 
+                <div class="badweatherbox">
+                    <p>
+                        <strong>Disabled:</strong>
+                        The Perl CPAN module, <strong>CSS::Inliner</strong> will need to be installed.
+                    </p>
+                </div> 
+            <!-- /tmpl_unless -->
+    </div> 
+    
+                    
 
 
-</table> 
+
+<ul class="button-group right">    
+     <li><input type="reset"  class="button cautionary" value="Clear Changes" /></li>
+     <li><input type="submit" class="button processing" value="Save Options" /></li>
+</ul>
 
 </fieldset> 
-
-<input type="hidden" name="process" value="1" />
-<input type="hidden" name="flavor"       value="mass_mailing_options" />
-<div class="buttonfloat">
- <input type="reset"  class="cautionary" value="Clear Changes" />
- <input type="submit" class="processing" value="Save Options" />
-</div>
-<div class="floatclear"></div>
 
 </form> 
 

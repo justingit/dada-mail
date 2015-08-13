@@ -15,7 +15,7 @@
 	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" /> 
 </form> 
 
-<div class="clearskiesbox">
+<div data-alert class="alert-box success radius">>
  <p> 
   Screen will refresh every 60 seconds.
  </p>
@@ -40,7 +40,7 @@
 
 
  <!-- tmpl_if killed_it -->
-    	<div class="clearskiesbox" id="alertbox">
+    	<div data-alert class="alert-box success radius"> id="alertbox">
         <p>
          Your Mass Mailing was successfully stopped.
         </p>
