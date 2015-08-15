@@ -19,30 +19,28 @@
 <h1>Subscription Trends</h1> 
 
 <form> 
-<div id="sub_unsub_trends_loading"></div> 
+    <div class="row">
+       <div class="large-12 columns">
+           <label for="display_the_last">
+               Display the last 
+               <select id="amount" id="display_the_last"> 
+                    <option value="7">7 days</option>
+                    <option value="14">2 weeks</option>
+                    <option value="30" selected="selected">1 month</option> 
+                    <option value="60">2 months</option>
+                    <option value="90">3 months</option>
+                    <option  value="183">6 months</option>
+                    <option value="365">1 year</option> 
+                    <option value="730">2 years</option> 
+                    <option value="1095">3 years</option> 
+                </select>
+            </label> 
+        </div> 
+    </div>
+</form>
 
-
-<div class="row">
-   <div class="large-12 columns">
-       <label for="display_the_last">
-           Display the last: 
-           <select id="amount" id="display_the_last"> 
-                <option value="7">7 days</option>
-                <option value="14">2 weeks</option>
-                <option value="30" selected="selected">1 month</option> 
-                <option value="60">2 months</option>
-                <option value="90">3 months</option>
-                <option  value="183">6 months</option>
-                <option value="365">1 year</option> 
-                <option value="730">2 years</option> 
-                <option value="1095">3 years</option> 
-            </select>
-        </label> 
-    </div> 
-</div>
-
-</form> 
-<div id="sub_unsub_trends" style="width:720px;height:480px"></div> 
+<div id="sub_unsub_trends_loading"></div>  
+<div id="sub_unsub_trends"></div> 
 
 <h1>Recent Subscription Activity</h1> 
 <!-- tmpl_include filtered_list_activity_widget.tmpl -->

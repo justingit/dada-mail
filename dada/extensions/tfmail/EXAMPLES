@@ -223,7 +223,7 @@ contents:
   <body>
     <h1 class="title">Thank You</h1>
     <p>This is what you submitted on {= date =}</p>
-    <table border="1" align="center">
+    <table  border="1" align="center">
 {= FOREACH input_field =}
     <tr>
      <td><b>{= name =}</b></td>

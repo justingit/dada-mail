@@ -140,7 +140,7 @@ Content-length: 12900
 
 
 <p style="color:rgb(0,0,0); text-align:center; font-size:10px" >If you can't see this email please click <a href="http://example.com/cgi-bin/dada/mail.cgi/r/listshortname/018864468567/">here</a><p>
-<table align="center" style="width:600px; border:10px solid rgb(204,0,153); padding:5px; background-color:rgb(255,255,255); font-family:Arial, Helvetica, sans-serif;">
+<table  align="center" style="width:600px; border:10px solid rgb(204,0,153); padding:5px; background-color:rgb(255,255,255); font-family:Arial, Helvetica, sans-serif;">
   <tr>
     
     <td colspan="2" style=" width:380px;padding:0 10px 10px 10px; color:rgb(153,0,153); border:0; background-color:rgb(255,255,255)"><p align="center"><a href="http://example.com/cgi-bin/dada/mail.cgi/r/listshortname/888554025911/" style="border:0px;"><img style="border:0px;" src="http://www.mygames4girls.com/images/logo-listshortname.jpg" alt="mygames4girls.com" width="300" height="80" /></a></p><h1 style=" text-align:center; font-size:25px; font-weight:bold; color:rgb(153,0,153); font-family:Arial, Helvetica, sans-serif; margin:0; padding:0;"><b>New fun on Mygames4girls !</b></h1>
@@ -160,7 +160,7 @@ Content-length: 12900
     <td colspan="2"><h1 style=" text-align:center; font-size:28px; font-weight:normal; color:rgb(180,180,180); font-family:Arial, Helvetica, sans-serif; margin:0; padding:0;">The new games</h1></td>
     <td rowspan="11" valign="top" style="background-color:rgb(230,230,230); width:200px; padding:10px;">
     
-  <table style="width:200px;" width="200" border="0" cellspacing="5" cellpadding="0">
+  <table  style="width:200px;" width="200" border="0" cellspacing="5" cellpadding="0">
   <tr>
     <td><div style="text-align:center; padding:5px; background-color:rgb(255,255,255);"><img src="http://www.mygames4girls.com/images/envoyer-amie.png" alt="&gt;" border="0" /> <a style="color:rgb(51,153,204); font-size:12px; font-weight:bold" href="http://example.com/cgi-bin/dada/mail.cgi/r/listshortname/553583181541/"> Send to your friends</a></div></td>
   </tr>

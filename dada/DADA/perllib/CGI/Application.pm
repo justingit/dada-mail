@@ -1246,7 +1246,7 @@ cgiapp_postrun() method might be implemented as follows:
     my $output_ref = shift;
 
     # Enclose output HTML table
-    my $new_output = "<table border=1>";
+    my $new_output = "<table  border=1>";
     $new_output .= "<tr><td> Hello, World! </td></tr>";
     $new_output .= "<tr><td>". $$output_ref ."</td></tr>";
     $new_output .= "</table>";

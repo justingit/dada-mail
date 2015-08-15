@@ -1910,8 +1910,8 @@ function drawTrackerDomainBreakdownChart() {
 				chartArea: {
 					left: 20,
 					top: 20,
-					width: "90%",
-					height: "90%"
+					width: "70%",
+					height: "70%"
 				},
 				width: $('#domain_break_down_chart').attr("data-width"),
 				height: $('#domain_break_down_chart').attr("data-height"),
@@ -1921,7 +1921,16 @@ function drawTrackerDomainBreakdownChart() {
 				colors: ["ffabab", "ffabff", "a1a1f0", "abffff", "abffab", "ffffab"],
 				is3D: true
 			};
+
+			options['width']  = $('#domain_break_down_chart').width();
+			options['height'] = $('#domain_break_down_chart').width();
 			domain_breakdown_chart.draw(domain_breakdown_chart_data, options);
+
+			window.onresize = function(){
+			   options['width']  = $('#domain_break_down_chart').width();
+			   options['height'] = $('#domain_break_down_chart').width();
+			   domain_breakdown_chart.draw(domain_breakdown_chart_data, options);
+			};
 			$("#domain_break_down_chart_loading").html('<p class="alert">&nbsp;</p>');
 			google.visualization.events.addListener(domain_breakdown_chart, 'select', selectHandler);
 		}
@@ -2007,14 +2016,14 @@ backgroundColor: {
 
 	var options = {
 		width: 720,
-		height: 480,
+		height: 720,
 		chartArea: {
 			left: 60,
-			top: 20,
-			width: "70%",
-			height: "70%"
-		},
+			top: 20, 
+			width: '70%',
+			height: '70%',
 
+		},
 		colors: ['blue', 'red', 'green', 'orange'],
 		title: "Subscription Trends",
 		animation: {
@@ -2042,7 +2051,17 @@ backgroundColor: {
 			async: true,
 			success: function(jsonData) {
 				data = new google.visualization.DataTable(jsonData);
+				
+				   options['width']  = $('#sub_unsub_trends').width();
+				   options['height'] = $('#sub_unsub_trends').width();
+				
+				
 				sub_unsub_trend_c.draw(data, options);
+				window.onresize = function(){
+				   options['width']  = $('#sub_unsub_trends').width();
+				   options['height'] = $('#sub_unsub_trends').width();
+					sub_unsub_trend_c.draw(data, options);
+				};
 				$("#sub_unsub_trends_loading").html('<p class="alert">&nbsp;</p>');
 			}
 		});

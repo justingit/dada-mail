@@ -1,12 +1,8 @@
 <!-- begin mass_mailing_limit_notice_widget.tmpl --> 
 	<!-- tmpl_if test_sent --> 
-		<div data-alert class="alert-box success radius"> id="alertbox">
-			<p>
-				Test message sent to, <strong><!-- tmpl_var test_recipient --></strong> 
-			</p>
-			<div style="text-align: center;">
-			<input type="button" class="small_button fade_me" value="Thanks!" />
-			</div>
-		</div>
+        <div data-alert class="alert-box success radius">
+            Test message sent to, <strong><!-- tmpl_var test_recipient --></strong> 
+            <a href="#" class="close">&times;</a>
+        </div>
 	<!-- /tmpl_if --> 
 <!-- end mass_mailing_limit_notice_widget.tmpl --> 

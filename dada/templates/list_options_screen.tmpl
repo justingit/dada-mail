@@ -24,121 +24,90 @@
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" id="list_options_form" name="list_options_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 
 <fieldset><legend>Mailing List Mode</legend>
-
-<p>
-    <strong>
-        Run This Mailing List As A: 
-    </strong>
-</p> 
-
-<fieldset><!-- Public Mailing List -->
-<table class="options_tb"> 
- <tr>
-  <td class="checkbox_container">
-   <p>
-     <input type="radio" name="private_list" id="private_list_no" value="0" <!-- tmpl_unless list_settings.private_list -->checked="checked"<!--/tmpl_unless--> />
-    </p>
-   </td>
-   <td>
-    <p>
-     <label for="private_list_no">
-      Public Mailing List
-     </label>
-     <br /> 
-      Used for marketing, public discussion lists, and public mailing lists. 
-   </p>
-    <p>
-     <ul> 
-         <li>
-     	    Subscribers may remove themselves at any time, using the Unsubscribe Links in mailing list messages. 
-         </li> 
-         <li>
-             Unsubscription Links in mailing list messages are mandatory 
-          </li>
-        </ul> 
-     </p>
-   </td>
-  </tr>
- </table> 
-</fieldset><!-- Public Mailing List --> 
-
-
-
-
-<fieldset><!-- Private Mailing List --> 
- <table class="options_tb"> 
- <tr>
-   <td class="checkbox_container">
-    <p>
-     <input type="radio" name="private_list" id="private_list" value="1" <!-- tmpl_if list_settings.private_list -->checked="checked"<!--/tmpl_if--> />
-    </p>
-   </td>
-   <td>
-    <p>
-     <label for="private_list">
-      Private Mailing List
-     </label>
-     <br /> 
-     Used for internal mailing lists, and private discussion mailing lists.      </p>
- </p>
-	 <p>
-     <ul>
-	  <li>
-	       Mailing List Unsubscriptions are managed <em>only</em> by the List Owner.
-          <br>
-          (Subscription Options can be customized, below)
+    <div class="row"> 
+        <div class="small-12 columns">
+            <strong>
+                Run This Mailing List As A: 
+            </strong>
+        </div> 
+    </div> 
+    <div class="row"> 
+        <div class="small-12 columns">
+         <input type="radio" name="private_list" id="private_list_no" value="0" <!-- tmpl_unless list_settings.private_list -->checked="checked"<!--/tmpl_unless--> />
+         <label for="private_list_no">
+          Public Mailing List
+         </label>
+         </div> 
+     </div>
+     <div class="row"> 
+         <div class="small-12 small-offset-1 columns">   
+             <ul> 
+                 <li>
+             	    Subscribers may remove themselves at any time, using the Unsubscribe Links in mailing list messages. 
+                 </li> 
+                 <li>
+                     Unsubscription Links in mailing list messages are mandatory 
+                  </li>
+                </ul> 
+        </div> 
+    </div>
+    <div class="row"> 
+        <div class="small-12 columns">
+             <input type="radio" name="private_list" id="private_list" value="1" <!-- tmpl_if list_settings.private_list -->checked="checked"<!--/tmpl_if--> />
+             <label for="private_list">
+              Private Mailing List
+             </label>
+         </div> 
+     </div>
+     <div class="row"> 
+         <div class="small-12 small-offset-1 columns">   
+             Used for internal mailing lists, and private discussion mailing lists.
+             <ul>
+        	  <li>
+        	       Mailing List Unsubscriptions are managed <em>only</em> by the List Owner.
+                  <br>
+                  (Subscription Options can be customized, below)
           
-            </li>
-	  <li>Unsubscription Links in mailing list messages are <em>optional</em></li>
-	  <li>Unsubscription Links work as Requests to Unsubscribe - the List Owner will be required to approve the unsubscription.</li>
-	 </ul>
-	 
-	 <table class="options_tb"> 
-	   <tr>
-        <td class="checkbox_container">
-         <p>
-          <input type="checkbox" name="hide_list" id="hide_list" value="1" <!-- tmpl_if list_settings.hide_list -->checked="checked"<!--/tmpl_if--> />
-         </p>
-        </td>
-        <td>
-         <p>
+                    </li>
+        	  <li>Unsubscription Links in mailing list messages are <em>optional</em></li>
+        	  <li>Unsubscription Links work as Requests to Unsubscribe - the List Owner will be required to approve the unsubscription.</li>
+        	 </ul>
+	    </div> 
+    </div>
+    <div class="row"> 
+        <div class="small-12 small-offset-1 columns">
+	      <input type="checkbox" name="hide_list" id="hide_list" value="1" <!-- tmpl_if list_settings.hide_list -->checked="checked"<!--/tmpl_if--> />
           <label for="hide_list">
            Hidden
           </label>
-      </p>
-     <ul> 
-     	<li> 
-     This mailing list will not be listed on the 
-          <a href="<!-- tmpl_var PROGRAM_URL -->" target="_blank">
-           <!-- tmpl_var PROGRAM_NAME --> main screen</a> 
-         </li>
-     <li>
+        </div> 
+     </div>
+ 	<div class="row"> 
+        <div class="small-12 small-offset-2 columns"> 
+             <ul> 
+             	<li> 
+             This mailing list will not be listed on the 
+                  <a href="<!-- tmpl_var PROGRAM_URL -->" target="_blank">
+                   <!-- tmpl_var PROGRAM_NAME --> main screen</a> 
+                 </li>
+             <li>
+                 This mailing list will still have a 
+                  <a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/" target="_blank">
+                      List Page 
+                  </a>
+              </li>
+             <li>
+                 People will still be able to subscribe/unsubscribe with the proper information
+             </li>
+             <li>
+                 You will also have to manually enter this mailing list's Short Name when logging into the list control panel
+             </li>
+            </ul> 
+       </div> 
+    </div>
 
 
-      This mailing list will still have a 
-          <a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/" target="_blank">
-           List Page 
-          </a>
-      </li>
-     <li>
-     People will still be able to subscribe/unsubscribe 
-          with the proper information
-         </li>
 
-     <li>
-
-          You will also have to manually enter this mailing list's 
-          Short Name when logging into the list control panel
-         </li>
-     </ul> 
-
-        </td>
-       </tr>
-     </table> 
-   </td>
-  </tr>
-</table> 
-</fieldset><!-- Private Mailing List -->
 
 </fieldset> <!-- Mailing List Mode --> 
 
@@ -150,7 +119,7 @@
 
     
     <fieldset><!-- Disable All Subscriptions -->
-    <table class="options_tb"> 
+    <table  class="options_tb"> 
      <tr>
       <td class="checkbox_container"> 
           <p>
@@ -165,7 +134,7 @@
           </p>
           
           <div id="closed_list_notice"> 
-              <div data-alert class="alert-box success radius">>  
+              <div class="alert-box info radius">  
                   <p><strong>Closed List</strong></p> 
                   <p>Your Mailing List will be closed to all new subscriptions</p>
               </div> 
@@ -180,7 +149,7 @@
          
          
      <fieldset><!-- Allow Anyone To Subscribe --> 
-     <table class="options_tb"> 
+     <table  class="options_tb"> 
       <tr>
        <td class="checkbox_container">
            <p>
@@ -196,7 +165,7 @@
            
            
            <div id="not_anyone_can_subscribe_options">
-               <div data-alert class="alert-box success radius">>
+               <div class="alert-box info radius">
                    <p><strong>Invitation-Only Mailing List</strong></p>
 
                    <p>
@@ -210,7 +179,7 @@
            <div id="anyone_can_subscribe_options">
                
                <fieldset><legend>Subscription Confirmation</legend> 
-                   <table class="options_tb"> 
+                   <table  class="options_tb"> 
                     <tr>
                      <td class="checkbox_container">
                          <input type="checkbox" name="enable_closed_loop_opt_in" id="enable_closed_loop_opt_in" value="1" <!-- tmpl_if list_settings.enable_closed_loop_opt_in -->checked="checked"<!--/tmpl_if--> />
@@ -227,7 +196,7 @@
                          confirmation email sent to their address before they are joined to the list. 
                         </p>
                     
-                        <table class="options_tb"> 
+                        <table  class="options_tb"> 
                     		<tr>
                     		 <td class="checkbox_container">
                     		  <input type="checkbox" name="skip_sub_confirm_if_logged_in" id="skip_sub_confirm_if_logged_in" value="1" <!-- tmpl_if list_settings.skip_sub_confirm_if_logged_in -->checked="checked"<!--/tmpl_if--> />
@@ -262,7 +231,7 @@
                     		to subscribe more than once. This is to stop abuse of the confirmation process. 
 
                     		</p>
-                    	    <table class="options_tb">
+                    	    <table  class="options_tb">
                     				<tr>
                     					<td class="checkbox_container"> 
                     					    <input type="checkbox" name="limit_sub_confirm_use_captcha" id="limit_sub_confirm_use_captcha" value="1" <!-- tmpl_if list_settings.limit_sub_confirm_use_captcha -->checked="checked"<!--/tmpl_if--> />						
@@ -325,7 +294,7 @@
                     	         (and a Closed-Loop Opt-In Confirmation email is on its way), redirect to this URL:
                     	        </label>
                     	        </p>
-                    	        <table class="options_tb">
+                    	        <table  class="options_tb">
                     	         <tr> 
                     	          <td class="checkbox_container"> 
                     	           <input type="text" name="alt_url_sub_confirm_success" value="<!-- tmpl_var list_settings.alt_url_sub_confirm_success escape="HTML" -->"  />
@@ -354,7 +323,7 @@
                     	         redirect to this URL:
                     	        </label>
                     	       </p>
-                    	       <table class="options_tb"> 
+                    	       <table  class="options_tb"> 
                     	        <tr> 
                     	         <td class="checkbox_container"> 
                     	          <input type="text" name="alt_url_sub_confirm_failed" value="<!-- tmpl_var list_settings.alt_url_sub_confirm_failed escape="HTML" -->"  />
@@ -384,7 +353,7 @@
             
             <fieldset><legend>Completing the Subscription</legend>
             
-            <table class="options_tb">
+            <table  class="options_tb">
                <tr>
               <td class="checkbox_container">
                <input type="checkbox" name="captcha_sub" id="captcha_sub" value="1" <!-- tmpl_if list_settings.captcha_sub -->checked="checked"<!--/tmpl_if--> />
@@ -416,7 +385,7 @@
             
             
             
-            <table class="options_tb">
+            <table  class="options_tb">
               <tr>
                <td class="checkbox_container">
                 <input type="checkbox" name="enable_subscription_approval_step" id="enable_subscription_approval_step" value="1" <!-- tmpl_if list_settings.enable_subscription_approval_step -->checked="checked"<!--/tmpl_if--> />
@@ -431,7 +400,7 @@
               
                 </p>
 
-                  <table class="options_tb">
+                  <table  class="options_tb">
                   <tr>
                    <td class="checkbox_container">
                     <input type="checkbox" name="use_alt_url_subscription_approval_step" id="use_alt_url_subscription_approval_step" value="1" <!-- tmpl_if list_settings.use_alt_url_subscription_approval_step -->checked="checked"<!--/tmpl_if--> />
@@ -443,7 +412,7 @@
                      </label>
                     </p>
 
-                    <table class="options_tb">
+                    <table  class="options_tb">
                      <tr> 
                       <td class="checkbox_container">
                        <input type="text" name="alt_url_subscription_approval_step" value="<!-- tmpl_var list_settings.alt_url_subscription_approval_step escape="HTML" -->"  />
@@ -477,7 +446,7 @@
 
 
 
-                <table class="options_tb">
+                <table  class="options_tb">
                     <tr>
                      <td class="checkbox_container">
                       <input type="checkbox" name="get_sub_notice" id="get_sub_notice" value="1" <!-- tmpl_if list_settings.get_sub_notice -->checked="checked"<!--/tmpl_if--> />
@@ -525,7 +494,7 @@
 
                 </table>
 
-                 <table class="options_tb">
+                 <table  class="options_tb">
                  <tr>
                   <td class="checkbox_container">
                    <input type="checkbox" name="use_alt_url_sub_success" id="use_alt_url_sub_success" value="1" <!-- tmpl_if list_settings.use_alt_url_sub_success -->checked="checked"<!--/tmpl_if--> />
@@ -537,7 +506,7 @@
                     </label>
                    </p>
 
-                   <table class="options_tb">
+                   <table  class="options_tb">
                     <tr> 
                      <td>
                       <input type="text" name="alt_url_sub_success" value="<!-- tmpl_var list_settings.alt_url_sub_success escape="HTML" -->"  />
@@ -564,7 +533,7 @@
                     </label>
                    </p>     
 
-                 <table class="options_tb">
+                 <table  class="options_tb">
                	 <tr> 
                	  <td> 
                       <input type="text" name="alt_url_sub_failed" value="<!-- tmpl_var list_settings.alt_url_sub_failed escape="HTML" -->"  />
@@ -593,7 +562,7 @@
 
 
     <fieldset><!-- Allow Subscriptions in the List Control Panel, Without Confirmation --> 
-    <table class="options_tb">
+    <table  class="options_tb">
      <tr> 
       <td class="checkbox_container">
        <p>
@@ -609,7 +578,7 @@
       </p>
       
       
-      <table class="options_tb">
+      <table  class="options_tb">
        <tr> 
         <td class="checkbox_container">
          <p>
@@ -628,7 +597,7 @@
         
 
     <fieldset><!-- Send a &quot;Welcome&quot; Message to Addresses Subscribed in the List Control Panel --> 
-    <table class="options_tb"> 
+    <table  class="options_tb"> 
      <tr> 
       <td>
        <p>
@@ -687,7 +656,7 @@
     
     
     <div id="private_list_notice"> 
-        <div data-alert class="alert-box success radius">>
+        <div class="alert-box info radius">
             <p>
                 <strong> 
                     Private List Mode
@@ -709,7 +678,7 @@
 
 <fieldset><legend>Completing the Unsubscription</legend>
     
-     <table class="options_tb">
+     <table  class="options_tb">
     	<tr>
         <td class="checkbox_container">
         <input type="checkbox" name="unsub_show_email_hint" id="unsub_show_email_hint" value="1" <!-- tmpl_if list_settings.unsub_show_email_hint -->checked="checked"<!--/tmpl_if --> />
@@ -746,7 +715,7 @@
     
 <fieldset><legend>After the Unsubscription</legend>
 
-    <table class="options_tb">
+    <table  class="options_tb">
         <tr>
          <td>
           <input type="checkbox" name="get_unsub_notice" id="get_unsub_notice" value="1" <!-- tmpl_if list_settings.get_unsub_notice -->checked="checked"<!--/tmpl_if --> />
@@ -786,7 +755,7 @@
          </label>
          </p>
 
-            <table class="options_tb">
+            <table  class="options_tb">
              <tr> 
               <td> 
                <input type="text" name="alt_url_unsub_success" value="<!-- tmpl_var list_settings.alt_url_unsub_success escape="HTML" -->"  />
@@ -815,7 +784,7 @@
             In the List Control Panel:
         </strong>
     </p>
-    		<table class="options_tb">
+    		<table  class="options_tb">
     			<tr> 
     				 <td class="checkbox_container">
     					<p>
@@ -856,7 +825,7 @@
 
 
     <!-- tmpl_if list_settings.black_list --> 
-        <div data-alert class="alert-box success radius">>  
+        <div class="alert-box info radius">  
             <p>
                 <strong>
                     Black List is Enabled.
@@ -898,7 +867,7 @@
 
 <fieldset> 
 	<legend>Misc.</legend>
-	 <table class="options_tb">
+	 <table  class="options_tb">
 	  <tr>
 	   <td>
 	    <input type="checkbox" name="mx_check" id="mx_check" value="1" <!-- tmpl_if list_settings.mx_check -->checked="checked"<!-- /tmpl_if --> />

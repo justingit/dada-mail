@@ -3302,7 +3302,7 @@ END
 print <<END;
   </head>
   <body>
-    <table border="0" width="600" summary="">
+    <table  border="0" width="600" summary="">
       <tr class="title_row">
         <th class="c1">$etitle</th>
       </tr>

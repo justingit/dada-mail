@@ -5,7 +5,7 @@
 <div id="install_or_upgrade"></div> 
 
 <!-- tmpl_if found_existing_dada_files_dir --> 
-	<div data-alert class="alert-box success radius">>
+	<div class="alert-box info radius">
 		<p>Found an existing <!-- tmpl_var Dada_Files_Dir_Name --> directory at:</p>
 		<p style="text-align:center"><strong><!-- tmpl_var dada_files_parent_dir -->/.dada_files</strong></p> 
 		<p>Want to upgrade?</p>
@@ -21,7 +21,7 @@
 	<input type="hidden" name="flavor" value="check_install_or_upgrade" />
 
 		<!-- tmpl_if error_cant_find_dada_files_location --> 
-		<div data-alert class="alert-box success radius">>
+		<div class="alert-box info radius">
 			<p><strong>Sorry!</strong></p>
 			
 			<p>Couldn't find a complete .dada_files directory structure at, <em><!-- tmpl_var current_dada_files_parent_location -->/.dada_files</em></p>

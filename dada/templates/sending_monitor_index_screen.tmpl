@@ -15,7 +15,7 @@
 	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" /> 
 </form> 
 
-<div data-alert class="alert-box success radius">>
+<div class="alert-box info radius">
  <p> 
   Screen will refresh every 60 seconds.
  </p>
@@ -40,15 +40,11 @@
 
 
  <!-- tmpl_if killed_it -->
-    	<div data-alert class="alert-box success radius"> id="alertbox">
-        <p>
-         Your Mass Mailing was successfully stopped.
-        </p>
-		<div style="text-align: center;">
 
-		<input type="button" class="small_button fade_me" value="Thanks!" />
-		</div>
-	</div>
+<div data-alert class="alert-box success radius">
+    Your Mass Mailing was successfully stopped.
+    <a href="#" class="close">&times;</a>
+</div>
 <!-- /tmpl_if --> 
 
         
@@ -62,7 +58,7 @@ Current Mass Mailings
 
 <!-- tmpl_if mailout_status --> 
 
-    <table class="stripedtable">
+    <table  class="stripedtable">
      <tr> 
 	
 	
@@ -238,7 +234,7 @@ Current Mass Mailings
 <td>  
        		<!-- tmpl_if percent_done -->
 		         <p>
-		          <table cellpadding="0" cellspacing="0" border="0" style="width:102px"> 
+		          <table  cellpadding="0" cellspacing="0" border="0" style="width:102px"> 
 		           <tr> 
 		            <td> 
 		              <div style="width:102px"> 

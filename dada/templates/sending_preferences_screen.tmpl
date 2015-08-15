@@ -34,7 +34,7 @@
 
 
 
-	<table width="100%">
+	<table  width="100%">
 	 <tr>
 	  <td width="20">
 	   <input type="radio" class="sending_prefs_radio" name="sending_method" id="sending_method_sendmail" value="sendmail" <!-- tmpl_if expr="(list_settings.sending_method eq 'sendmail')" -->checked="checked"<!--/tmpl_if --> />
@@ -62,7 +62,7 @@
 	
 			<div id="sendmail_options" > 
 			<fieldset> 
-			<table width="100%">
+			<table  width="100%">
 			 <tr>
 			  <td width="20">
 			   <p>
@@ -115,7 +115,7 @@
 
 
 
-<table width="100%">
+<table  width="100%">
  <tr>
 <td width="20">
 <input type="radio" class="sending_prefs_radio" name="sending_method" id="sending_method_smtp" value="smtp" <!-- tmpl_if expr="(list_settings.sending_method eq 'smtp')" -->checked="checked"<!--/tmpl_if --> />
@@ -131,7 +131,7 @@
 	
 <fieldset> 
 
-<table cellpadding="5">
+<table  cellpadding="5">
  <tr>
   <td>
    <p>
@@ -168,7 +168,7 @@
 
 
 
-    <table <!-- tmpl_unless can_use_smtp_ssl -->class="disabled"<!--/tmpl_unless-->> 
+    <table  <!-- tmpl_unless can_use_smtp_ssl -->class="disabled"<!--/tmpl_unless-->> 
      <tr>
       <td width="20"> 
        <p>
@@ -293,7 +293,7 @@
 			<div id="pop_before_smtp_options">
 			<fieldset> 
 
-			<div data-alert class="alert-box success radius">>
+			<div class="alert-box info radius">
 		    A connection to your POP Server will be created before any mail will be sent. 
 		    This can authenticate your outgoing mail requests, if your SMTP server 
 		    uses POP-before-SMTP or your SMTP server does not use SASL.
@@ -307,7 +307,7 @@
 		   </p>
 			</div> 
 
-		   <table border="0">
+		   <table  border="0">
 		    <tr>
 		     <td>
 		      <p>
@@ -367,7 +367,7 @@
 
 		   </table>
 
-		    <table  width="100%" <!-- tmpl_unless can_use_ssl -->class="disabled"<!--/tmpl_unless-->> 
+		    <table   width="100%" <!-- tmpl_unless can_use_ssl -->class="disabled"<!--/tmpl_unless-->> 
 		     <tr>
 		      <td width="20">
 		       <p>
@@ -407,7 +407,7 @@
 
 
 
-	<table width="100%">
+	<table  width="100%">
 	 <tr>
 	  <td width="20">
 	   <p>
@@ -462,7 +462,7 @@
 			    <!-- tmpl_include ses_email_verification_widget.tmpl -->
 
 
-				<div data-alert class="alert-box success radius">>
+				<div class="alert-box info radius">
 					<div id="amazon_ses_get_stats"></div> 
 				</div> 
 			<!-- /tmpl_if --> 

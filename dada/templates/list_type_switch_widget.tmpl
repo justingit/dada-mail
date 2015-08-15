@@ -1,7 +1,6 @@
 <!-- begin list_type_switch_widget.tmpl -->
-<div id="centeredmenu">
-		<ul>
-			<li <!-- tmpl_if EXPR="(type eq 'list')" --> class="active" <!-- /tmpl_if -->>
+		<ul  class="tabs" data-tab>
+			<li class="tab-title <!-- tmpl_if EXPR="(type eq 'list')" -->active<!-- /tmpl_if -->" >
 				<!-- tmpl_if flavor_is_view_list --> 
 					<a href="#" class="change_type" data-type="list">
 				<!-- tmpl_else --> 
@@ -16,7 +15,7 @@
 			
 			<!-- tmpl_if flavor_is_view_list --> 
 				<!-- tmpl_if list_settings.enable_subscription_approval_step -->
-					<li <!-- tmpl_if EXPR="(type eq 'sub_request_list')" --> class="active" <!-- /tmpl_if -->> 
+					<li class="tab-title <!-- tmpl_if EXPR="(type eq 'sub_request_list')" --> active<!-- /tmpl_if -->"> 
 						<a href="#" class="change_type" data-type="sub_request_list">
 					  <span>
 						Subscription Requests  (<!-- tmpl_var sub_request_list_subscribers_num -->)
@@ -26,7 +25,7 @@
 				<!-- /tmpl_if --> 
 
 				<!-- tmpl_if list_settings.private_list -->
-					<li <!-- tmpl_if EXPR="(type eq 'unsub_request_list')" --> class="active" <!-- /tmpl_if -->> 
+					<li class="tab-title <!-- tmpl_if EXPR="(type eq 'unsub_request_list')" -->active<!-- /tmpl_if -->"> 
 						<a href="#" class="change_type" data-type="unsub_request_list">
 					  <span>
 						Unsubscription Requests  (<!-- tmpl_var unsub_request_list_subscribers_num -->)
@@ -37,7 +36,7 @@
 			<!-- /tmpl_if --> 
 			
 			
-			<li <!-- tmpl_if EXPR="(type eq 'black_list')" --> class="active" <!-- /tmpl_if -->>
+			<li class="tab-title <!-- tmpl_if EXPR="(type eq 'black_list')" --> active<!-- /tmpl_if -->">
 			<!-- tmpl_if flavor_is_view_list -->
 				<a href="#" class="change_type" data-type="black_list">
 			<!-- tmpl_else --> 
@@ -50,7 +49,7 @@
 			</li>
 			
 			<!-- tmpl_if list_settings.enable_white_list -->
-				<li <!-- tmpl_if EXPR="(type eq 'white_list')" --> class="active" <!-- /tmpl_if -->>
+				<li  class="tab-title <!-- tmpl_if EXPR="(type eq 'white_list')" --> active<!-- /tmpl_if -->">
 				<!-- tmpl_if flavor_is_view_list --> 
 					<a href="#" class="change_type" data-type="white_list">
 				<!-- tmpl_else --> 
@@ -64,7 +63,7 @@
 			<!-- /tmpl_if --> 
 			
 			<!-- tmpl_if list_settings.enable_authorized_sending -->
-				<li <!-- tmpl_if EXPR="(type eq 'authorized_senders')" --> class="active" <!-- /tmpl_if -->>
+				<li class="tab-title <!-- tmpl_if EXPR="(type eq 'authorized_senders')" -->active<!-- /tmpl_if -->">
 				<!-- tmpl_if flavor_is_view_list --> 
 				  	<a href="#" class="change_type" data-type="authorized_senders">
 				<!-- tmpl_else --> 
@@ -79,7 +78,7 @@
 			
 
 			<!-- tmpl_if list_settings.enable_moderation -->
-				<li <!-- tmpl_if EXPR="(type eq 'moderators')" --> class="active" <!-- /tmpl_if -->>
+				<li  class="tab-title <!-- tmpl_if EXPR="(type eq 'moderators')" -->active<!-- /tmpl_if -->">
 				<!-- tmpl_if flavor_is_view_list --> 
 				  	<a href="#" class="change_type" data-type="moderators">
 				<!-- tmpl_else --> 
@@ -95,7 +94,7 @@
 			
 			<!-- tmpl_if flavor_is_view_list --> 
 				<!-- tmpl_if show_bounced_list -->
-				<li <!-- tmpl_if EXPR="(type eq 'bounced_list')" --> class="active" <!-- /tmpl_if -->>
+				<li  class="tab-title <!-- tmpl_if EXPR="(type eq 'bounced_list')" -->active<!-- /tmpl_if -->">
 				
 					<a href="#" class="change_type" data-type="bounced_list">
 					 <span>
@@ -107,7 +106,6 @@
 				<!-- /tmpl_if -->
 			<!-- /tmpl_if --> 
 		</ul>
-	</div>
 
 
 <!-- end list_type_switch_widget.tmpl --> 

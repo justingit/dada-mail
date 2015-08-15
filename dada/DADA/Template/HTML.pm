@@ -176,6 +176,7 @@ sub admin_template {
 		
 	### Admin Menu Creation...
     my $admin_menu; 
+    my $m_admin_menu; 
 	my $li; 
 	if(!$args{-li}){ 
 	    require  DADA::MailingList::Settings; 
@@ -186,14 +187,28 @@ sub admin_template {
 	}
 	
 	if($Yeah_Root_Login == 1){ 
-		$admin_menu  = DADA::Template::Widgets::Admin_Menu::make_admin_menu('superuser', $li); 
+		$admin_menu  = DADA::Template::Widgets::Admin_Menu::make_admin_menu('superuser',   $li); 
+		$m_admin_menu  = DADA::Template::Widgets::Admin_Menu::make_admin_menu('superuser', $li, 1); 
+		
 	}else{
 		$admin_menu  = DADA::Template::Widgets::Admin_Menu::make_admin_menu('user', $li); 
+		$m_admin_menu  = DADA::Template::Widgets::Admin_Menu::make_admin_menu('user', $li, 1); 
+		
 	}
 	
 	$admin_menu = DADA::Template::Widgets::screen(
 					{
 						-data => \$admin_menu, 
+						-list_settings_vars_param => { 
+													-list   => $list, 
+													-dot_it => 1, 
+											 	},
+					   -vars => {}
+					}
+				); 
+	$m_admin_menu = DADA::Template::Widgets::screen(
+					{
+						-data => \$m_admin_menu, 
 						-list_settings_vars_param => { 
 													-list   => $list, 
 													-dot_it => 1, 
@@ -234,6 +249,7 @@ sub admin_template {
 											{
 												login_switch_widget => $login_switch_widget, 
 												admin_menu          => $admin_menu, 
+												mobile_admin_menu   => $m_admin_menu,
 												title               => $args{-Title},
 												root_login          => $args{-Root_Login},
 												content             => '[_dada_content]',	

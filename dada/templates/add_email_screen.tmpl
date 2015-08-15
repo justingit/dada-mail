@@ -34,7 +34,7 @@
 
 <!-- tmpl_if expr="(type eq 'list')" --> 
         <!-- tmpl_if list_settings.send_subscribed_by_list_owner_message --> 
-            <div data-alert class="alert-box success radius">>
+            <div class="alert-box info radius">
                 <ul> 
                     <li>
                      <p>
@@ -45,7 +45,7 @@
             </div>
             <!-- /tmpl_if --> 
             <!-- tmpl_if list_settings.send_last_archived_msg_mass_mailing --> 
-            <div data-alert class="alert-box success radius">>
+            <div class="alert-box info radius">
             <ul> 
                 <li>
                  <p>
@@ -71,7 +71,7 @@
 <!-- tmpl_if expr="(type eq 'list')" --> 
     <!-- tmpl_if list_settings.closed_list -->
         <!-- tmpl_unless expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
-         <div data-alert class="alert-box success radius">>
+         <div class="alert-box info radius">
          <p><strong>Warning!</strong></p> 
          <p>
              You currently have a <strong>Closed List</strong> and subscribing members via the list 
@@ -85,7 +85,7 @@
 
 <!-- tmpl_if expr="(type eq 'list')" --> 
     <!-- tmpl_unless expr="((list_settings.allow_profile_editing == 1) || (root_login == 1))"-->
-        <div data-alert class="alert-box success radius">>
+        <div class="alert-box info radius">
             <p>
                 Profile Field Editing is <strong>Disabled.</strong>
             </p>
@@ -98,7 +98,7 @@
 
 
 <!-- tmpl_if expr="(type eq 'list')" --> 
-    <div data-alert class="alert-box success radius">>
+    <div class="alert-box info radius">
         <p>
             <strong>Check</strong> the addresses that you would like to Subscribe/Invite/Update
         </p> 
@@ -122,7 +122,7 @@
 
           <!-- tmpl_if expr="(root_login == 1) || (list_settings.allow_profile_editing == 1)" -->           
               <!-- tmpl_if expr="(type eq 'list')" -->
-                  <div data-alert class="alert-box success radius">>
+                  <div class="alert-box info radius">
                       <p>
                           Some of the <strong>Verified Addresses</strong> below may already have profile information saved.
                       </p>        
@@ -143,7 +143,7 @@
 
 
           <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
-              <table class="stripedtable">
+              <table  class="stripedtable">
                <tr>
                 <td width="25">
                  <p>&nbsp;</p>
@@ -238,7 +238,7 @@
 
          <!-- tmpl_if expr="(root_login == 1) || (list_settings.allow_profile_editing == 1)" --> 
              <!-- tmpl_if expr="(type eq 'list')" --> 
-                 <div data-alert class="alert-box success radius">>
+                 <div class="alert-box info radius">
                      <p>
                       These addresses are <strong>already members</strong> of your Subscribers. They will not be subscribed/added/invited again. 
                      </p>
@@ -260,7 +260,7 @@
         <!-- /tmpl_if -->
 
      <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
-      <table class="stripedtable">
+      <table  class="stripedtable">
        <tr>
         <td width="25">
          <p>&nbsp;</p>
@@ -368,7 +368,7 @@
              <div id="black_listed_addresses">
              <fieldset> 
                <legend>Black Listed Addresses</legend>
-                 <div data-alert class="alert-box success radius">>
+                 <div class="alert-box info radius">
                   <p>
                    These addresses are 
                    <strong>
@@ -382,7 +382,7 @@
                      </p>
                  </div> 
              <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
-              <table class="stripedtable">
+              <table  class="stripedtable">
                <tr>
                 <td width="25">
                  <p>&nbsp;</p>
@@ -494,7 +494,7 @@
  --> 
  <fieldset> 
   <legend>Not White Listed Addresses</legend>
-     <div data-alert class="alert-box success radius">>
+     <div class="alert-box info radius">
          <p>These addresses are not included on your 
            <strong>
             white list.
@@ -504,7 +504,7 @@
      </div>
 
  <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
-  <table class="stripedtable">
+  <table  class="stripedtable">
    <tr>
     <td width="25">
      <p>&nbsp;</p>
@@ -611,7 +611,7 @@
      <fieldset> 
       <legend>Missing Profile Fields</legend>
   
-     <div data-alert class="alert-box success radius">>
+     <div class="alert-box info radius">
          <p>
           These addresses have missing profile fields that have been set as being required.
          </p>
@@ -624,7 +624,7 @@
      </div> 
  
      <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
-      <table class="stripedtable">
+      <table  class="stripedtable">
        <tr>
         <td width="25">
          <p>&nbsp;</p>
@@ -733,14 +733,14 @@
  <fieldset> 
   <legend>Invalid Email Addresses</legend>
 
-     <div data-alert class="alert-box success radius">>
+     <div class="alert-box info radius">
          <p>
           These addresses did not go through validation successfully. They will <strong>not</strong> be subscribed/added/invited. 
           </p>
      </div> 
 
      <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
-  <table class="stripedtable">
+  <table  class="stripedtable">
    <tr>
     <td width="25">
      <p>&nbsp;</p>

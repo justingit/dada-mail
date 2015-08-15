@@ -84,6 +84,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/modernizr.js"></script>
     
+    <style> 
+        table { 
+            border: 1px solid red; 
+        }
+    </style> 
     
 </head>
  <body id="Dada"> 
@@ -104,7 +109,7 @@
            </section>
          </nav>
          <aside class="left-off-canvas-menu">
-             <!-- tmpl_var admin_menu -->
+             <!-- tmpl_var mobile_admin_menu -->
          </aside>
          <!-- mobile navigation stuff -->
 
@@ -193,20 +198,20 @@
             <!-- /tmpl_if -->
          
              
+             <div style="width: 95%; margin-left: auto; margin-right: auto; max-width: initial;">
              
-             <div class="row" style="background:#fff">
-                 <div class="large-3 medium-4 columns">
-                     <div class="hide-for-small">
-                         <div class="sidebar">
-                             <nav>
-                                 <!-- tmpl_var admin_menu -->
-                             </nav> 
+                     <div class="large-2 medium-3 columns">
+                         <div class="hide-for-small">
+                             <div class="sidebar">
+                                 <nav>
+                                     <!-- tmpl_var admin_menu -->
+                                 </nav> 
+                             </div> 
                          </div> 
+                     </div>
+                     <div class="large-10 medium-9 columns">
+                        <!-- tmpl_var content -->
                      </div> 
-                 </div>
-                 <div class="large-9 medium-8 columns">
-                     <!-- tmpl_var content -->
-                 </div> 
             </div> 
                  
                  

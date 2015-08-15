@@ -1,0 +1,55 @@
+<!-- begin view_list_pagination_widget.tmpl --> 
+
+
+<ul class="pagination">
+    
+    <li class="arrow">
+        <a href="#" class="turn_page" data-page="<!-- tmpl_var first_page -->">&laquo;
+        </a>
+    </li>
+
+    <!-- tmpl_if previous_page --> 
+        <li>
+            <a href="#" class="turn_page" data-page="<!-- tmpl_var previous_page -->">
+                &lsaquo;
+            </a>
+        </li>
+    <!-- tmpl_else --> 
+        
+    <!-- /tmpl_if -->
+    
+        <!-- tmpl_loop pages_in_set --> 
+            <!-- tmpl_if on_current_page --> 
+                <li class="current">
+                    <a href="#">
+                        <!-- tmpl_var page -->
+                    </a>
+                </li>
+            <!-- tmpl_else --> 
+                <li>
+                    <a href="#" class="turn_page" data-page="<!-- tmpl_var page -->">
+                        <!-- tmpl_var page --> 
+                    </a>
+                </li>
+            <!-- /tmpl_if --> 
+
+        <!-- /tmpl_loop --> 
+        
+        <!-- tmpl_if next_page -->
+            <li>
+                <a href="#"  class="turn_page" data-page="<!-- tmpl_var next_page -->">
+                    &rsaquo;
+                </a>
+            </li>
+        <!-- tmpl_else --> 
+            
+        <!-- /tmpl_if --> 
+
+      <li class="arrow">
+          <a href="#" class="turn_page" data-page="<!-- tmpl_var last_page -->">
+              &raquo;
+          </a>
+       </li>
+</ul>
+
+<!-- end view_list_pagination_widget.tmpl --> 

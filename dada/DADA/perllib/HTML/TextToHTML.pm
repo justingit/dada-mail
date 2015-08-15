@@ -5482,7 +5482,7 @@ with a border, like so:
 
 The above becomes
 
-    <table border="1">
+    <table  border="1">
     <thead><tr><th>Column1</th><th>Column2</th></tr></thead>
     <tbody>
     <tr><td>val1</td><td>val2</td></tr>

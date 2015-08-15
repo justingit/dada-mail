@@ -102,7 +102,7 @@
 
 
 <!-- tmpl_if list_settings.use_add_list_import_limit --> 
-    <div data-alert class="alert-box success radius">>
+    <div class="alert-box info radius">
         <p>
             There is a set limit of 
             <strong>
@@ -116,7 +116,7 @@
 <!-- tmpl_if expr="(type eq 'list')" -->
     <!-- tmpl_unless list_is_closed -->
         <!-- tmpl_unless expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
-            <div data-alert class="alert-box success radius">>
+            <div class="alert-box info radius">
                 <p>
                     Importing Subscribers via the List Control Panel has been <strong>disabled.</strong>
                 </p>

@@ -154,6 +154,7 @@ sub make_admin_menu {
 
     my $permissions = shift;
     my $li          = shift;
+    my $for_mobile  = shift || 0; 
 
    #---------------------------------------------------------------------------#
     require DADA::Template::Widgets;
@@ -251,7 +252,10 @@ sub make_admin_menu {
     return DADA::Template::Widgets::screen(
         {
             -screen => 'admin_menu_widget.tmpl',
-            -vars   => { NAV => $ht_entry, }
+            -vars   => { 
+                for_mobile => $for_mobile, 
+                NAV        => $ht_entry, 
+            }
         }
     );
 

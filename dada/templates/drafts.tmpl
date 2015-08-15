@@ -14,12 +14,12 @@
 
 
 <!-- tmpl_if delete_draft --> 
-	<div data-alert class="alert-box success radius"> id="alertbox">
+	<div data-alert class="alert-box success radius">
 		<p>
 			Message Deleted. 
 		</p>
 		<div style="text-align: center;">
-		<input type="button" class="small_button fade_me" value="Thanks!" />
+		<input type="button" class="button small fade_me" value="Thanks!" />
 		</div>
 	</div> 
 <!-- /tmpl_if --> 
@@ -61,7 +61,7 @@
         <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
             <input type="hidden" name="flavor" value="delete_drafts" /> 
         
-        	<table class="stripedtable">
+        	<table  class="stripedtable">
 
         		<tr>
         			<!-- 
@@ -151,20 +151,20 @@
         	<!-- /tmpl_loop -->
         	</table>  
         	
-        	<table class="stripedtable">
+        	<table  class="stripedtable">
               <tr>
                	<td width="25">
             		<input class="toggleCheckboxes" type="checkbox" data-target_class="draft_ids" />
                	</td>
             	<td>
-            	 <input type="submit" class="small_button" value="Delete Checked" />
+            	 <input type="submit" class="button small" value="Delete Checked" />
             	 </td>
             	</tr>
             </table>
             </form>
             
         <!-- tmpl_else -->
-        	<div data-alert class="alert-box success radius">>
+        	<div class="alert-box info radius">
         		<p>
         			There are currently no saved message drafts. 
         		</p>
@@ -192,7 +192,7 @@
         <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
             <input type="hidden" name="flavor" value="delete_drafts" /> 
         
-        	<table class="stripedtable">
+        	<table  class="stripedtable">
 
         		<tr>
         			<th>
@@ -295,13 +295,13 @@
         	<!-- /tmpl_loop -->
         	</table>  
         	
-        	<table class="stripedtable">
+        	<table  class="stripedtable">
               <tr>
                	<td width="25">
             		<input class="toggleCheckboxes" type="checkbox" data-target_class="stationery_ids" />
                	</td>
             	<td>
-            	 <input type="submit" class="small_button" value="Delete Checked" />
+            	 <input type="submit" class="button small" value="Delete Checked" />
             	 </td>
             	</tr>
             </table>
@@ -309,7 +309,7 @@
         	</form>
         
         <!-- tmpl_else -->
-        	<div data-alert class="alert-box success radius">>
+        	<div class="alert-box info radius">
         		<p>
         			There are currently no saved stationery. 
         		</p>
@@ -330,7 +330,7 @@
                 <input type="hidden" name="flavor" value="delete_drafts" /> 
             
             
-            	<table class="stripedtable">
+            	<table  class="stripedtable">
             		<tr>
             			<th>
             				<p>&nbsp;</p>
@@ -429,13 +429,13 @@
                 		</tr> 
             	<!-- /tmpl_loop -->
             	</table> 
-            	<table class="stripedtable">
+            	<table  class="stripedtable">
                   <tr>
                    	<td width="25">
                 		<input class="toggleCheckboxes" type="checkbox" data-target_class="asched_ids" />
                    	</td>
                 	<td>
-                	 <input type="submit" class="small_button" value="Delete Checked" />
+                	 <input type="submit" class="button small" value="Delete Checked" />
                 	 </td>
                 	</tr>
                 </table>
@@ -451,7 +451,7 @@
                     <input type="hidden" name="flavor" value="delete_drafts" /> 
 
 
-                	<table class="stripedtable">
+                	<table  class="stripedtable">
                 		<tr>
                 			<th>
                 				<p>&nbsp;</p>
@@ -554,13 +554,13 @@
                     		</tr> 
                 	<!-- /tmpl_loop -->
                 	</table> 
-                	<table class="stripedtable">
+                	<table  class="stripedtable">
                       <tr>
                        	<td width="25">
                     		<input class="toggleCheckboxes" type="checkbox" data-target_class="iasched_ids" />
                        	</td>
                     	<td>
-                    	 <input type="submit" class="small_button" value="Delete Checked" />
+                    	 <input type="submit" class="button small" value="Delete Checked" />
                     	 </td>
                     	</tr>
                     </table>
@@ -569,7 +569,7 @@
             <!-- /tmpl_if --> 
 
         <!-- tmpl_else -->
-        	<div data-alert class="alert-box success radius">>
+        	<div class="alert-box info radius">
         		<p>
         			There are currently no saved message Schedules. 
         		</p>

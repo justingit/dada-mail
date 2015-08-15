@@ -971,7 +971,7 @@ All random codes have a length of six (6) characters, unless stated otherwise.
 So, (for example) there is no clipping in <code>ELLIPS</code>.
 </p>
 
-<table border      = "1"
+<table  border      = "1"
        cellpadding = "4"
        cellspacing = "1"
 >
@@ -1021,7 +1021,7 @@ So, (for example) there is no clipping in <code>ELLIPS</code>.
 
 <p>&nbsp;</p>
 
-<table border      = "1"
+<table  border      = "1"
        cellpadding = "4"
        cellspacing = "2"
 >

@@ -7197,7 +7197,7 @@ sub edit_archived_msg {
             }
 
             if ( $tb->{address} eq '0' ) {
-                $form_blob .= '<table width="100%">';
+                $form_blob .= '<table  width="100%">';
 
                 # head of the message!
                 my %headers = $mh->return_headers( $tb->{entity}->head->original_text );
@@ -7313,7 +7313,7 @@ sub edit_archived_msg {
                     $form_blob .= $q->p( $q->strong('Attachment: '),
                         $q->a( { -href => $attachment_url, -target => '_blank' }, $name ) );
 
-                    $form_blob .= '<table style="padding:5px">';
+                    $form_blob .= '<table  style="padding:5px">';
 
                     $form_blob .= '<tr><td>';
 

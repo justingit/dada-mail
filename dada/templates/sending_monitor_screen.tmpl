@@ -19,7 +19,7 @@
 <!-- tmpl_if mailout_exists -->
 
 	<!-- tmpl_if sending_done --> 
-		<div data-alert class="alert-box success radius">>
+		<div class="alert-box info radius">
 	    <p> 
 	     Your mailing looks finished! You may navigate away from this window!
 	    </p>
@@ -111,7 +111,7 @@
 
 
 
-	 <table width="500" cellpadding="0" cellspacing="0" align="center"> 
+	 <table  width="500" cellpadding="0" cellspacing="0" align="center"> 
 	  <tr> 
 	   <td> 
 	    <h1> 
@@ -136,7 +136,7 @@
 	<form><input type="hidden" id="progressbar_percent" value="<!-- tmpl_var percent_done -->" /></form>  
 	 <div> 
 
-	  <table align="center" width="502" >
+	  <table  align="center" width="502" >
 	   <tr> 
 	    <td> 
 	     <h3>
@@ -271,7 +271,7 @@
 </legend>
 
 <div id="verbose_sending_information" style="display:none">
- <table class="tagchart"> 
+ <table  class="tagchart"> 
  
  <!-- tmpl_loop sending_status --> 
   <tr>  
@@ -306,18 +306,13 @@
 <!--tmpl_else--> 
 
     <!-- tmpl_if killed_it -->
-    	<div data-alert class="alert-box success radius"> id="alertbox">
-        <p>
-         Your Mass Mailing was successfully stopped.
-        </p>
-		<div style="text-align: center;">
-
-		<input type="button" class="small_button fade_me" value="Thanks!" />
-		</div>
-	</div>    
+        <div data-alert class="alert-box success radius">
+            Your Mass Mailing was successfully stopped.
+            <a href="#" class="close">&times;</a>
+        </div>    
     <!-- tmpl_else --> 
         
-	<div data-alert class="alert-box success radius">>
+	<div class="alert-box info radius">
         <p> 
          This Mass Mailing has completed.
         </p>
