@@ -26,14 +26,14 @@
 		</div>
 	<!-- tmpl_else --> 
 	    <!-- tmpl_if its_killed -->
-			<div class="badweatherbox">
+			<div class="alert-box info radius">
 	        <p> 
 	         Message Sending seems to have stopped. 
 	        </p>
 			</div>
 	    <!--/tmpl_if-->
 	    <!-- tmpl_if status_mailout_stale --> 
-	    	<div class="badweatherbox">
+	    	<div class="alert-box info radius">
 	        <p> 
 	         The time since the last message sent has elapsed past a certain period and is considered, 
 				&quot;Stale&quot; You may continue the mailing by clicking, &quot;Pickup Mailing&quot;
@@ -45,7 +45,7 @@
 
 	<!-- tmpl_unless integrity_check --> 
 
-		<div class="badweatherbox">
+		<div class="alert-box info radius">
 		  <p>
 			<strong>
 		   Warning! Mass Mailing seems broken!

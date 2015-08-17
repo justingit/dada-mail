@@ -59,7 +59,7 @@
 
 <!-- tmpl_if expr="(type eq 'list')" --> 
     <!-- tmpl_if going_over_quota -->
-         <div class="badweatherbox">
+         <div class="alert-box info radius">
             <p>
              Warning! You cannot subscribe all the addresses that you have submitted,
              since you will go over your subscription limit. Please re-submit a smaller number of addresses to subscribe.
@@ -835,7 +835,7 @@
 <!-- tmpl_if not_members --> 
     <!-- ... -->
 <!-- tmpl_else --> 
-    <div class="badweatherbox">
+    <div class="alert-box info radius">
     <p> 
         No addresses have passed verification. 
     </p> 

@@ -81,7 +81,7 @@
         			</p>
     		    </div> 		
     		<!-- tmpl_else --> 
-        		<div class="badweatherbox"> 
+        		<div class="alert-box info radius"> 
         			<p>
         				Couldn't find an <strong>Unsubscribe Link</strong> 
         				(<code>&lt;!-- tmpl_var list_unsubscribe_link --&gt;</code>) in your template. 
@@ -94,7 +94,7 @@
 		
 		
 		<!-- tmpl_unless message_body_tag_found_in_pt_mlm --> 
-    		<div class="badweatherbox"> 
+    		<div class="alert-box info radius"> 
         		<p>
         			 Couldn't find the <code>&lt;!-- tmpl_var message_body --&gt;</code>
         			tag in your template! Please place this tag in your template, to ensure proper formatting.  
@@ -131,7 +131,7 @@
         			</p>
         	    </div> 		
     		<!-- tmpl_else --> 
-        		<div class="badweatherbox"> 
+        		<div class="alert-box info radius"> 
             		<p>
        				    Couldn't find an Unsubscribe Link (<code>&lt;!-- tmpl_var list_unsubscribe_link --&gt;</code>) in your template! If your mailing is sent out without one, somewhere, an unsubscribe link will be automatically appended to the top of your message. 
             		</p>			
@@ -140,7 +140,7 @@
         <!-- /tmpl_unless --> 
         
 		<!-- tmpl_unless message_body_tag_found_in_html_mlm --> 
-    		<div class="badweatherbox"> 
+    		<div class="alert-box info radius"> 
         		<p>
         			Couldn't find the <code>&lt;!-- tmpl_var message_body --&gt;</code>
         			tag in your template! Please place this tag in your template, to ensure proper formatting.  

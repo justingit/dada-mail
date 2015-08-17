@@ -2519,11 +2519,11 @@ sub list_options {
     if ( !$process ) {
 
         my $send_subscription_notice_to_popup_menu = $q->popup_menu(
-            -name     => 'send_subscription_notice_to',
-            -id       => 'send_subscription_notice_to',
-            -default  => $ls->param('send_subscription_notice_to'),
-            -labels   => { list => 'Your Subscribers', 'list_owner' => 'The List Owner', 'alt' => 'Other:'},
-            '-values' => [qw(list list_owner alt)],
+            -name        => 'send_subscription_notice_to',
+            -id          => 'send_subscription_notice_to',
+            -default     => $ls->param('send_subscription_notice_to'),
+            -labels      => { list => 'Your Subscribers', 'list_owner' => 'The List Owner', 'alt' => 'Other:'},
+            '-values'    => [qw(list list_owner alt)],
         );
         my $send_unsubscription_notice_to_popup_menu = $q->popup_menu(
             -name     => 'send_unsubscription_notice_to',

@@ -5,7 +5,7 @@
 
 <!-- tmpl_if errors -->
 	
-	<div class="badweatherbox">
+	<div class="alert-box info radius">
 	<p>
 	 <!-- tmpl_var errors -->  field<!-- tmpl_var ending --> 
 	 on this form  <!-- tmpl_var err_word --> filled out incorrectly 
@@ -47,7 +47,7 @@
  
 	<!-- tmpl_if flags_list_name -->
 	 
-		<div class="badweatherbox">
+		<div class="alert-box info radius">
 		 <p>
 			Please fill out your new Mailing List's name:
 		 </p>
@@ -56,7 +56,7 @@
 	<!-- /tmpl_if -->
 
 	<!-- tmpl_if flags_list_name_bad_characters -->
-	 	<div class="badweatherbox">
+	 	<div class="alert-box info radius">
 		 <p>
 		   Your Mailing List Name contains &lt;'s, &gt;'s or, &quot;'s.
 		 </p>
@@ -86,7 +86,7 @@
  
 	<!-- tmpl_if flags_list_exists -->
 	 
-		<div class="badweatherbox">
+		<div class="alert-box info radius">
 		 <p>
 		   This list Short Name already exists. Please choose a different Short Name.
 		 </p>
@@ -95,7 +95,7 @@
 	<!-- /tmpl_if -->
 
 	<!-- tmpl_if flags_list -->
-	 	<div class="badweatherbox">
+	 	<div class="alert-box info radius">
 		 <p>
 		   Please fill out a Short Name.
 		 </p>
@@ -105,7 +105,7 @@
 
 	<!-- tmpl_if flags_shortname_too_long -->
 	 
-		<div class="badweatherbox">
+		<div class="alert-box info radius">
 		 <p>
 		   Your list Short Name is longer than 16 characters.
 		 </p>
@@ -115,7 +115,7 @@
 
 	<!-- tmpl_if flags_slashes_in_name -->
 	 
-		<div class="badweatherbox">
+		<div class="alert-box info radius">
 		 <p>
 		   Your list Short Name can't have slashes (&quot;/&quot; or &quot;\&quot;) in the name itself.
 		 </p>
@@ -125,7 +125,7 @@
 
 	<!-- tmpl_if flags_weird_characters -->
 	 
-		<div class="badweatherbox">
+		<div class="alert-box info radius">
 		 <p>
 		   Your list Short Name appears to have weird characters in the 
 		   name that may create problems. Please use only lowercase 
@@ -136,7 +136,7 @@
 	<!-- /tmpl_if -->
 
 	<!-- tmpl_if flags_quotes -->
-	 	<div class="badweatherbox">
+	 	<div class="alert-box info radius">
 		 <p>
 		   Your list Short Name cannot contain quotes.
 		 </p>
@@ -165,7 +165,7 @@
  
 	<!-- tmpl_if flags_password -->
 	
-	 	<div class="badweatherbox">
+	 	<div class="alert-box info radius">
 		 <p>
 		   Please type a List Password.
 		 </p>
@@ -174,7 +174,7 @@
 	<!-- /tmpl_if -->
 
 	<!-- tmpl_if flags_password_is_root_password -->
-	 	<div class="badweatherbox">
+	 	<div class="alert-box info radius">
 		 <p>
 		   The password you have entered is the same as the <!-- tmpl_var PROGRAM_NAME --> 
 		   Root Password. Please pick a different password.
@@ -222,7 +222,7 @@
 
 	<!-- tmpl_if flags_password_ne_retype_password -->
 	 
-		<div class="badweatherbox">
+		<div class="alert-box info radius">
 		 <p>
 		   Please make sure your List Password and what you've re-typed match.
 		 </p>
@@ -246,7 +246,7 @@
  
 	<!-- tmpl_if flags_invalid_list_owner_email -->
 	 
-		<div class="badweatherbox">
+		<div class="alert-box info radius">
 		 <p>
 		   Please type a valid email address for the List Owner.
 		 </p>
@@ -281,7 +281,7 @@
  
 	<!-- tmpl_if flags_list_info -->
 	 
-		<div class="badweatherbox">
+		<div class="alert-box info radius">
 		 <p>
 		   Please type a Mailing List description.
 		 </p>
@@ -319,7 +319,7 @@
  
 	<!-- tmpl_if flags_privacy_policy -->
 	 
-		<div class="badweatherbox">
+		<div class="alert-box info radius">
 		 <p>
 		   Please type a Mailing List Privacy Policy.
 		 </p>
@@ -352,7 +352,7 @@
 	<!-- tmpl_if flags_physical_address -->
 
 	  
-		<div class="badweatherbox">
+		<div class="alert-box info radius">
 		 <p>
 		   Please type a Physical Address
 		 </p>

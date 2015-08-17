@@ -3,7 +3,7 @@
 
 
 <!-- tmpl_if expr="(using_ses eq '1') && (list_owner_ses_verified ne '1')" --> 
-    <div class="badweatherbox">
+    <div class="alert-box info radius">
 	    <p>
 	        Your current <strong>List Owner</strong>, <!-- tmpl_var list_settings.list_owner_email escape="HTML" --> has not been verified through <strong>Amazon SES</strong>.
 	        Sending email will not function correctly, until this address is verified.  
@@ -12,7 +12,7 @@
 	</div>
 <!-- /tmpl_if --> 
 <!-- tmpl_if expr="(using_ses eq '1') && (list_admin_ses_verified ne '1')" --> 
-    <div class="badweatherbox">
+    <div class="alert-box info radius">
 	    <p>
 	        Your current <strong>List Administrator</strong>, <!-- tmpl_var list_settings.admin_email escape="HTML" --> has not been verified through <strong>Amazon SES</strong>.
 	        Sending email will not function correctly, until this address is verified. 
@@ -22,7 +22,7 @@
 <!-- /tmpl_if -->
 
 <!-- tmpl_if expr="(using_ses eq '1') && (discussion_pop_ses_verified ne '1') && (list_settings.disable_discussion_sending ne '1') && (list_settings.group_list eq '1')" --> 
-    <div class="badweatherbox">
+    <div class="alert-box info radius">
 	    <p>
 	        Your current <strong>List Email</strong>, <!-- tmpl_var list_settings.discussion_pop_email escape="HTML" --> has not been verified through <strong>Amazon SES</strong>.
 	        Sending email will not function correctly, until this address is verified.  
