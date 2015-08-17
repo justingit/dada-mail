@@ -63,15 +63,21 @@
 
     <div class="row"> 
         <div class="small-12 columns">
-             <input type="radio" name="private_list" id="private_list" value="1" <!-- tmpl_if list_settings.private_list -->checked="checked"<!--/tmpl_if--> />
+             <input 
+			 	type="radio" 
+				name="private_list" 
+				id="private_list" 
+				value="1" 
+				<!-- tmpl_if list_settings.private_list -->checked="checked"<!--/tmpl_if--> 
+			 />
              <label for="private_list">
               Private Mailing List
              </label>
 		 	 <div class="alert-box info radius">     
- 
-		          Used for internal mailing lists, and private discussion mailing lists.
 		          <ul>
-		           <li>
+		           <li>Used for internal mailing lists, and private discussion mailing lists.
+		           </li>
+				   <li>
 		                Mailing List Unsubscriptions are managed <em>only</em> by the List Owner.
 		               <br>
 		               (Subscription Options can be customized, below)
@@ -80,11 +86,11 @@
 		           <li>Unsubscription Links in mailing list messages are <em>optional</em></li>
 		           <li>Unsubscription Links work as Requests to Unsubscribe - the List Owner will be required to approve the unsubscription.</li>
 		          </ul>
-
 		     </div>
 			 
          </div> 
      </div>
+	 
     <div class="row"> 
 		<div class="small-1  columns"></div>
         <div class="small-11 columns">
@@ -394,7 +400,10 @@
             
             
             
-	        <fieldset><legend>Completing the Subscription</legend>
+	        <fieldset>
+				<legend>
+					Completing the Subscription
+			    </legend>
             
 			<div class="row"> 
 				<div class="small-12 columns">           
@@ -485,7 +494,10 @@
            
            
  
-       <fieldset><legend>After the Subscription</legend>
+       <fieldset>
+		   <legend>
+			   After the Subscription
+		</legend>
 		<div class="row"> 
 			<div class="small-12 columns">		   	
               <input type="checkbox" name="get_sub_notice" id="get_sub_notice" value="1" <!-- tmpl_if list_settings.get_sub_notice -->checked="checked"<!--/tmpl_if--> />
@@ -502,7 +514,7 @@
 					name="alt_send_subscription_notice_to" 
 					id="alt_send_subscription_notice_to" 
 					value="<!-- tmpl_var list_settings.alt_send_subscription_notice_to -->" 
-					placeholder="you@yours.com 
+					placeholder="you@yours.com"
 				/>                    
 			</div>
 		</div>
@@ -570,7 +582,7 @@
 				name="alt_url_sub_failed" 
 				value="<!-- tmpl_var list_settings.alt_url_sub_failed escape="HTML" -->"  
 				placeholder="http://"
-		/>
+		  />
   		</div>
   	   </div>
         <div class="row"> 
@@ -583,82 +595,57 @@
 
        </fieldset><!-- After the Subscription -->
         
-  	   </fieldset><!-- Allow Anyone To Subscribe -->
        
 
 
 
-        <fieldset><!-- Allow Subscriptions in the List Control Panel, Without Confirmation --> 
-        <table  class="options_tb">
-         <tr> 
-          <td class="checkbox_container">
-           <p>
-            <input type="checkbox" name="enable_mass_subscribe" id="enable_mass_subscribe" <!-- tmpl_if list_settings.enable_mass_subscribe -->checked="checked"<!-- /tmpl_if --> value="1" />     
-           </p>
-          </td>
-          <td>
-           <p>
-            <label for="enable_mass_subscribe">
-            Allow Subscriptions in the List Control Panel, Without Confirmation
-           </label><br /> 
-           (Inviting Subscribers will always be available)
-          </p>
-      
-      
-          <table  class="options_tb">
-           <tr> 
-            <td class="checkbox_container">
-             <p>
-              <input type="checkbox" name="enable_mass_subscribe_only_w_root_login" id="enable_mass_subscribe_only_w_root_login" value="1" <!-- tmpl_if list_settings.enable_mass_subscribe_only_w_root_login -->checked="checked"<!-- /tmpl_if --> />
-             </p>
-            </td>
-            <td>
-            <p>
-                <label for="enable_mass_subscribe_only_w_root_login">
-                    Only Allow when logged in with the Pro Dada Root Password
-                </label>
-            </p>
-           </td>
-          </tr> 
-        </table> 
-        
+        <fieldset>
+			<legend>
+				Control Panel
+		</legend>
+			<!-- Allow Subscriptions in the List Control Panel, Without Confirmation --> 
+	        <div class="row"> 
+	  		 <div class="small-12  columns"> 
+			
+	            <input type="checkbox" name="enable_mass_subscribe" id="enable_mass_subscribe" <!-- tmpl_if list_settings.enable_mass_subscribe -->checked="checked"<!-- /tmpl_if --> value="1" />     
+	            <label for="enable_mass_subscribe">
+	            Allow Subscriptions in the List Control Panel, Without Confirmation
+	           </label>      		
+			</div>
+		</div>
+        <div class="row"> 
+		 <div class="small-1  columns"></div>
+  		 <div class="small-11  columns"> 
+			 
+            <input type="checkbox" name="enable_mass_subscribe_only_w_root_login" id="enable_mass_subscribe_only_w_root_login" value="1" <!-- tmpl_if list_settings.enable_mass_subscribe_only_w_root_login -->checked="checked"<!-- /tmpl_if --> />
+			<label for="enable_mass_subscribe_only_w_root_login">
+				Only Allow when logged in with the Pro Dada Root Password
+			</label>
+	   	   <div class="alert-box info radius">  
+	   		   (Inviting Subscribers will always be available)
+	           </div
+		 </div>
+		</div>
+	   
+		
 
-        <fieldset><!-- Send a &quot;Welcome&quot; Message to Addresses Subscribed in the List Control Panel --> 
-        <table  class="options_tb"> 
-         <tr> 
-          <td>
-           <p>
+        <div class="row"> 	  		 
+  		 <div class="small-12  columns"> 
             <input type="checkbox" name="send_subscribed_by_list_owner_message" id="send_subscribed_by_list_owner_message" <!-- tmpl_if list_settings.send_subscribed_by_list_owner_message -->checked="checked"<!-- /tmpl_if --> value="1" />     
-           </p>
-          </td>
-          <td>
-           <p>
             <label for="send_subscribed_by_list_owner_message">
              	Send a &quot;Welcome&quot; Message to Addresses Subscribed in the List Control Panel  
             </label>
-           </p>
-          </td>
-         </tr>
-         <tr> 
-          <td class="checkbox_container">
-           <p>
+		 </div> 
+		</div>
+		
+        <div class="row">
+  		 <div class="small-12  columns"> 
             <input type="checkbox" name="send_last_archived_msg_mass_mailing" id="send_last_archived_msg_mass_mailing" <!-- tmpl_if list_settings.send_last_archived_msg_mass_mailing -->checked="checked"<!-- /tmpl_if --> value="1" />     
-           </p>
-          </td>
-          <td>
-           <p>
             <label for="send_last_archived_msg_mass_mailing">
              Send the Newest Archived Message to Addresses Subscribed in the List Control Panel
            </label>
-           </p>
-          </td>
-         </tr>
-        </table>
-        </fieldset><!-- Send a &quot;Welcome&quot; Message to Addresses Subscribed in the List Control Panel --> 
-
-           </td>
-          </tr>
-         </table>
+		 </div> 
+		</div>
       </fieldset><!-- Allow Subscriptions in the List Control Panel, Without Confirmation --> 
 	  
 	</div><!-- opened_list_options --> 
@@ -676,17 +663,12 @@
     
     <div id="private_list_notice"> 
         <div class="alert-box info radius">
-            <p>
-                <strong> 
-                    Private List Mode
-                </strong> 
-            </p>
-            <p>
-                The List Owner will be sent a notification of any Subscribers who 
-                have requested to be removed from your mailing list. 
-            </p>
+	        <strong> 
+	            Private List Mode:
+	        </strong> 
+	        The List Owner will be sent a notification of any Subscribers who 
+	        have requested to be removed from your mailing list. 
         </div> 
-        
     </div> 
     
 <p> 
@@ -695,154 +677,53 @@
     </strong> 
 </p> 
 
-<fieldset><legend>Completing the Unsubscription</legend>
-    
-     <table  class="options_tb">
-        <tr>
-        <td class="checkbox_container">
-        <input type="checkbox" name="unsub_show_email_hint" id="unsub_show_email_hint" value="1" <!-- tmpl_if list_settings.unsub_show_email_hint -->checked="checked"<!--/tmpl_if --> />
-       </td>
-       <td>
-        <p>
-         <label for="unsub_show_email_hint"> 
-          Show Email Hint
-         </label>
-         <br />
-         The Unsubscription Form will have the user's email address partially shown to help users fill out the form, with the correct email address.     
-        </p>
-        <blockquote> 
-        <p>
-            <strong>
-                 Example:
-            </strong>
+<fieldset>
+	<legend>
+		Completing the Unsubscription
+</legend>
+
+        <div class="row"> 	  		 
+  			<div class="small-12  columns"> 
+		        <input 
+					type="checkbox" 
+					name="unsub_show_email_hint" 
+					id="unsub_show_email_hint" 
+					value="1" <!-- tmpl_if list_settings.unsub_show_email_hint -->checked="checked"<!--/tmpl_if -->
+				 >
+	        	 <label for="unsub_show_email_hint"> 
+	          	   Show Email Hint
+	        	 </label>
+			</div>
+		</div>
+		
+		 
+	   	<div class="alert-box info radius">  
+
+		    <p>
+	         The Unsubscription Form will have the user's email address partially shown to help users fill out the form, with the correct email address.     
+	        </p>
+			<p>
+	            <strong>
+	                 Example:
+	            </strong>
         
-            <em>
-                <!-- tmpl_var list_settings.list_owner_email -->
-            </em>    
-             will be shown as,
-            <em>
-                <!-- tmpl_var list_owner_email_anonystar_address -->
-            </em>
-        </p>
-        </blockquote> 
-    
-       </td>
-      </tr>
-     </table> 
+	            <em>
+	                <!-- tmpl_var list_settings.list_owner_email -->
+	            </em>    
+	             will be shown as,
+	            <em>
+	                <!-- tmpl_var list_owner_email_anonystar_address -->
+	            </em>
+	        </p>
+		</div>
     </fieldset><!-- Completing the Unsubscription --> 
     
     
-<fieldset><legend>After the Unsubscription</legend>
-
-    <table  class="options_tb">
-        <tr>
-         <td>
-          <input type="checkbox" name="get_unsub_notice" id="get_unsub_notice" value="1" <!-- tmpl_if list_settings.get_unsub_notice -->checked="checked"<!--/tmpl_if --> />
-         </td>
-         <td>
-          <p>
-           <label for="get_unsub_notice"> 
-            Send Unsubscription Notifications to:
-           </label><!-- tmpl_var send_unsubscription_notice_to_popup_menu -->
-           <input type="text" name="alt_send_unsubscription_notice_to" id="alt_send_unsubscription_notice_to" value="<!-- tmpl_var list_settings.alt_send_unsubscription_notice_to -->" />
-          </p>
-         </td>
-        </tr>
-        <tr>
-        <td class="checkbox_container">
-        <input type="checkbox" name="send_unsub_success_email" id="send_unsub_success_email" value="1" <!-- tmpl_if list_settings.send_unsub_success_email -->checked="checked"<!--/tmpl_if--> />
-       </td>
-       <td>
-        <p>
-         <label for="send_unsub_success_email">
-          Send Unsubscription Successful Email Notifications
-         </label>
-         <br />
-         After a person unsubscribes, an email will be sent to them 
-         to announce the unsubscription.
-        </p>
-       </td>
-      </tr>
-      <tr>
-        <td class="checkbox_container">
-        <input type="checkbox" name="use_alt_url_unsub_success" id="use_alt_url_unsub_success" value="1" <!-- tmpl_if list_settings.use_alt_url_unsub_success -->checked="checked"<!--/tmpl_if--> />
-       </td>
-       <td>
-        <p>
-         <label for="use_alt_url_unsub_success">
-          If an unsubscription is successful, redirect to this URL:
-         </label>
-         </p>
-
-            <table  class="options_tb">
-             <tr> 
-              <td> 
-               <input type="text" name="alt_url_unsub_success" value="<!-- tmpl_var list_settings.alt_url_unsub_success escape="HTML" -->"  />
-              </td>
-             </tr> 
-             <tr> 
-               <td class="checkbox_container">
-               <input type="checkbox" name="alt_url_unsub_success_w_qs" id="alt_url_unsub_success_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_unsub_success_w_qs -->checked="checked"<!--/tmpl_if--> />
-               <label for="alt_url_unsub_success_w_qs">Redirect with query string</label>
-              </td> 
-             </tr> 
-            </table>       
-       </td>
-      </tr>
-    </table> 
-
-
-
-</fieldset><!-- After the Unsubscription --> 
-
-</fieldset><!-- By Users: --> 
-
-<fieldset><!-- In the List Control Panel: --> 
-    <p>
-        <strong> 
-            In the List Control Panel:
-        </strong>
-    </p>
-            <table  class="options_tb">
-                <tr> 
-                     <td class="checkbox_container">
-                        <p>
-                            <input type="checkbox" name="send_unsubscribed_by_list_owner_message" id="send_unsubscribed_by_list_owner_message" <!-- tmpl_if list_settings.send_unsubscribed_by_list_owner_message -->checked="checked"<!-- /tmpl_if --> value="1" />     
-                        </p>
-                    </td>
-                    <td>
-                        <p>
-                            <label for="send_unsubscribed_by_list_owner_message">
-                                Send a "Farewell" Message to Addresses Unsubscribed in the List Control Panel
-                            </label><br /> 
-
-                        </p>
-
-
-                    </td>
-                </tr>
-                
-                <tr> 
-                     <td class="checkbox_container">
-                        <p>
-                            <input type="checkbox" name="send_admin_unsubscription_notice" id="send_admin_unsubscription_notice" <!-- tmpl_if list_settings.send_admin_unsubscription_notice -->checked="checked"<!-- /tmpl_if --> value="1" />     
-                        </p>
-                    </td>
-                    <td>
-                        <p>
-                            <label for="send_admin_unsubscription_notice">
-                                Send Email Notification to:
-                            </label>
-                            <!-- tmpl_var send_admin_unsubscription_notice_to_popup_menu -->
-                            <input type="text" name="alt_send_admin_unsubscription_notice_to" id="alt_send_admin_unsubscription_notice_to" value="<!-- tmpl_var list_settings.alt_send_admin_unsubscription_notice_to -->" />
-                                   
-                        </p>
-                    </td>
-                </tr>
-    </table>
-</fieldset><!-- In the List Control Panel: --> 
-
-
+<fieldset>
+	<legend>
+		After the Unsubscription
+	</legend>
+	
     <!-- tmpl_if list_settings.black_list --> 
         <div class="alert-box info radius">  
             <p>
@@ -877,8 +758,118 @@
             </ul> 
         </div> 
     <!-- /tmpl_if -->
-    
-    
+	
+
+    <div class="row"> 	  		 
+		<div class="small-12  columns"> 
+	
+          <input type="checkbox" name="get_unsub_notice" id="get_unsub_notice" value="1" <!-- tmpl_if list_settings.get_unsub_notice -->checked="checked"<!--/tmpl_if --> />
+           <label for="get_unsub_notice"> 
+            Send Unsubscription Notifications to:
+           </label>
+		  </div>
+		 </div>
+         <div class="row"> 	  		 
+   			<div class="small-12  columns"> 
+		 	   <!-- tmpl_var send_unsubscription_notice_to_popup_menu -->
+		  </div>
+		 </div>
+         <div class="row"> 	  		 
+   			<div class="small-12  columns"> 		
+				<input 
+					type="text" 
+					name="alt_send_unsubscription_notice_to" 
+					id="alt_send_unsubscription_notice_to" 
+					value="<!-- tmpl_var list_settings.alt_send_unsubscription_notice_to -->" 
+					placeholder='you@yours.com' 
+					/>
+		  </div>
+		 </div>
+         
+		 <div class="row"> 	  		 
+   			<div class="small-12  columns"> 		
+				<input type="checkbox" name="send_unsub_success_email" id="send_unsub_success_email" value="1" <!-- tmpl_if list_settings.send_unsub_success_email -->checked="checked"<!--/tmpl_if--> />
+		         <label for="send_unsub_success_email">
+		          Send Unsubscription Successful Email Notifications
+		         </label>
+		 	   	<div class="alert-box info radius">   
+					 After a person unsubscribes, an email will be sent to them 
+			         to announce the unsubscription.
+			 	</div> 
+			</div>
+	 </div>
+		
+	<div class="row"> 	  		 
+		<div class="small-12  columns"> 		
+
+        <input type="checkbox" name="use_alt_url_unsub_success" id="use_alt_url_unsub_success" value="1" <!-- tmpl_if list_settings.use_alt_url_unsub_success -->checked="checked"<!--/tmpl_if--> />
+        <label for="use_alt_url_unsub_success">
+          If an unsubscription is successful, redirect to this URL:
+         </label>
+	  </div>
+	 </div>
+		
+ 	<div class="row"> 	  		 
+ 		<div class="small-12  columns">   
+        	<input type="text" name="alt_url_unsub_success" value="<!-- tmpl_var list_settings.alt_url_unsub_success escape="HTML" -->"  />
+	  </div>
+	 </div>
+ 	
+	<div class="row"> 	  		 
+	 
+	 <div class="small-1  columns"></div> 
+	 <div class="small-11  columns">
+           <input type="checkbox" name="alt_url_unsub_success_w_qs" id="alt_url_unsub_success_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_unsub_success_w_qs -->checked="checked"<!--/tmpl_if--> />
+           <label for="alt_url_unsub_success_w_qs">Redirect with query string</label>
+	  </div>
+	 </div>
+
+
+</fieldset><!-- After the Unsubscription --> 
+
+</fieldset><!-- By Users: --> 
+
+<fieldset>
+	<!-- In the List Control Panel: --> 
+    <p>
+        <strong> 
+            In the List Control Panel:
+        </strong>
+    </p>
+
+ 	<div class="row"> 	  		 
+ 		<div class="small-12  columns">
+			<input type="checkbox" name="send_unsubscribed_by_list_owner_message" id="send_unsubscribed_by_list_owner_message" <!-- tmpl_if list_settings.send_unsubscribed_by_list_owner_message -->checked="checked"<!-- /tmpl_if --> value="1" />     
+			<label for="send_unsubscribed_by_list_owner_message">
+				Send a &quot;Farewell&quot; Message to Addresses Unsubscribed in the List Control Panel
+			</label>
+		</div> 
+	</div>
+ 	
+	<div class="row"> 	  		 
+ 		<div class="small-12  columns">   
+		<input type="checkbox" name="send_admin_unsubscription_notice" id="send_admin_unsubscription_notice" <!-- tmpl_if list_settings.send_admin_unsubscription_notice -->checked="checked"<!-- /tmpl_if --> value="1" />     
+		<label for="send_admin_unsubscription_notice">
+		Send Email Notification to:
+		</label>
+		<!-- tmpl_var send_admin_unsubscription_notice_to_popup_menu -->
+	</div> 
+</div>
+ 	<div class="row"> 	  		 
+ 		<div class="small-12  columns">   
+
+			<input 
+				type="text" 
+				name="alt_send_admin_unsubscription_notice_to" 
+				id="alt_send_admin_unsubscription_notice_to" 
+				value="<!-- tmpl_var list_settings.alt_send_admin_unsubscription_notice_to -->"
+				placeholder="you@yours.com"
+			>
+		</div>
+	</div> 
+	
+
+</fieldset><!-- In the List Control Panel: --> 
 </fieldset><!-- Unsubscriptions --> 
 
 
@@ -886,39 +877,42 @@
 
 <fieldset> 
     <legend>Misc.</legend>
-     <table  class="options_tb">
-      <tr>
-       <td>
-        <input type="checkbox" name="mx_check" id="mx_check" value="1" <!-- tmpl_if list_settings.mx_check -->checked="checked"<!-- /tmpl_if --> />
-       </td>
-       <td> 
-        <p>
-         <label for="mx_check"  <!-- tmpl_unless can_use_mx_lookup -->class="disabled"<!--/tmpl_unless-->>
-          Look Up Hostnames When Validating Email Addresses (MX Lookup)
-         </label>
-         <br />
-         When a request to subscribe is submitted by an individual the 
-         domain of the address will be checked for its existence. (Add/Invitations 
-        in the list control panel currently do not use MX Lookups.)
-        </p>
-    <!-- tmpl_unless can_use_mx_lookup -->
-        <div class="alert-box info radius">
-            <p>
-             <strong>Disabled.</strong> The Net::DNS module needs to be installed.
-            </p>
-        </div>
-    <!--/tmpl_unless-->
+	 	
+		<div class="row"> 	  		 
+	 		<div class="small-12  columns">   
+			<input type="checkbox" name="mx_check" id="mx_check" value="1" <!-- tmpl_if list_settings.mx_check -->checked="checked"<!-- /tmpl_if --> />
+	         <label for="mx_check"  <!-- tmpl_unless can_use_mx_lookup -->class="disabled"<!--/tmpl_unless-->>
+	          Look Up Hostnames When Validating Email Addresses (MX Lookup)
+	         </label>
 
-       </td>
-      </tr>
-     </table>
-    
+		     <div class="alert-box info radius">  
+		          When a request to subscribe is submitted by an individual the 
+		          domain of the address will be checked for its existence. (Add/Invitations 
+		         in the list control panel currently do not use MX Lookups.)
+		 	</div>
+			
+		    <!-- tmpl_unless can_use_mx_lookup -->
+		        <div class="alert-box info radius">
+		            <p>
+		             <strong>Disabled.</strong> The Net::DNS module needs to be installed.
+		            </p>
+		        </div>
+		    <!--/tmpl_unless-->
+			
+		</div> 
+	</div>
+
     </fieldset> 
 
-
- <input type="reset"  class="cautionary" value="Clear Changes" />
- <input type="submit" class="processing" value="Save List Options" />
-
+	<ul class="button-group right">    
+		 <li>
+			 <input type="reset"  class="cautionary button" value="Clear Changes">
+		 </li>
+		 <li>
+			 <input type="submit" class="processing button" value="Save List Options">
+		</li>
+ 	</ul>
+ 
 </form> 
 
 <!-- end list_options_screen.tmpl -->

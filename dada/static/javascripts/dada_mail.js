@@ -71,25 +71,18 @@ jQuery(document).ready(function($){
 	if ($("#send_email_screen").length || $("#send_url_email").length || $("#list_invite").length) {
 
 /*
-	  var msie6 = $.browser == 'msie' && $.browser.version < 7;
-	  if (!msie6) {
-	    var top = $('#buttons').offset().top - parseFloat($('#buttons').css('margin-top').replace(/auto/, 0));
-	    $(window).scroll(function (event) {
-	      // what the y position of the scroll is
-	      var y = $(this).scrollTop();
+        var stickyHeader = $('#this_thing').offset().top;
 
-	      // whether that's below the form
-	      if (y >= top) {
-	        // if so, ad the fixed class
-	        $('#buttons').addClass('fixed');
-	      } else {
-	        // otherwise remove it
-	        $('#buttons').removeClass('fixed');
-	      }
-	    });
-	  }
+        $(window).scroll(function(){
+                if( $(window).scrollTop() > stickyHeader ) {
+		  	        $('#this_thing').addClass('fixed');
+                } else {
+		  	        $('#this_thing').removeClass('fixed');
+                }
+        });
 */
-
+	  
+		
 	$("body").on("click", ".kcfinder_open", function(event) {
 		event.preventDefault();
 		
@@ -3651,7 +3644,7 @@ function ChangeMassMailingButtonLabel(first_run) {
 	if ($("#archive_no_send").prop("checked") === true && $("#archive_message").prop("checked") === true) {
 		archive_no_send = 1; 
 	} 
-	$("#button_toolbar").hide().html('<input type="button" value="Loading..." class="bigger_button" />').show('fade');
+	$("#button_toolbar").hide().html('<input type="button" class="small button" value="Loading...">').show('fade');
 	
 	var request = $.ajax({
 		url:       $("#s_program_url").val(),

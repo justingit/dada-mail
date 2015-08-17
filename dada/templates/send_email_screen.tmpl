@@ -32,13 +32,14 @@
 
 <form name="mass_mailing" id="mass_mailing" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"  accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 
-    <div data-magellan-expedition="fixed">
-      <dl class="sub-nav">
-          <div id="button_toolbar">
-              <input type="button" value="Loading..." class="bigger_button" />
-        </div>
-      </div>
-    </div>
+	<div class="contain-to-grid sticky"  style="background:white">
+  	  <nav class="top-bar" data-topbar role="navigation" id="button_toolbar" style="background:white">
+			<input type="button" value="Loading..." class="button small" />
+		</nav>
+	</div>
+	
+	
+	<hr />
     
 <div id="entire_form">
   <div id="form_widgets">
@@ -47,9 +48,7 @@
       <!-- tmpl_if draft_id --> 
           <!-- tmpl_if expr="(draft_role eq 'draft')" --> 
           	<div class="alert-box info radius">
-          		<p>
           			Draft message restored below:
-          		</p>
           	</div> 
           <!-- /tmpl_if -->
           <!-- tmpl_if expr="(draft_role eq 'stationery')" --> 
