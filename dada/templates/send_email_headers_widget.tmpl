@@ -1,0 +1,140 @@
+<!-- begin send_email_headers_widget.tmpl --> 
+
+
+<fieldset> 
+ <legend>
+  Message Headers
+ </legend>
+	<p>
+		  <strong>
+			<a href="#" class="toggleDivs" data-target="additional_email_headers">
+			+/-
+		   </a> Additional Headers
+		  </strong>
+	</p>
+
+	<div id="additional_email_headers">
+		
+		<div class="row">
+			<div class="small-12 columns">
+		     <label for="To">
+		      To:
+		     </label>
+			<input 
+				type="text" 
+				disabled="disabled"
+				value="<!-- tmpl_var list_settings.mailing_list_message_to_phrase  escape="HTML" --> &lt;...&gt;"
+			> 
+		</div>
+	</div> 
+	<div class="row">
+		<div class="small-12 columns">
+	
+	     <label for="From">
+	      From:
+	     </label>
+		<input 
+			type="text" 
+			disabled="disabled"
+			value="<!-- tmpl_var list_settings.mailing_list_message_from_phrase  escape="HTML" --> &lt;<!-- tmpl_var list_settings.list_owner_email  escape="HTML" -->&gt;"
+		>
+		</div>
+	</div> 
+
+	<div class="row">
+		<div class="small-12 columns">
+	     <label for="Reply-To">
+	      Reply-To:
+	     </label>
+	     <input type="text" name="Reply-To" id="Reply-To" value=""  />
+  		</div>
+  	</div> 
+	  
+	<!-- tmpl_if list_settings.print_errors_to_header -->
+		  
+	  	<div class="row">
+	  		<div class="small-12 columns">
+		  
+		     <label for="Errors-To">
+		      Errors-To:
+		    </label>
+		     <input type="text" name="Errors-To" id="Errors-To" value="<!-- tmpl_var list_settings.admin_email  escape="HTML" -->"  />
+  		</div>
+  	</div> 
+	<!-- /tmpl_if -->
+
+	<!-- tmpl_if list_settings.print_return_path_header -->
+		  
+  	  	<div class="row">
+  	  		<div class="small-12 columns">
+		  
+		     <label for="Return-Path">
+		      Return-Path:
+		     </label>
+		     <input type="text" name="Return-Path" id="Return-Path" value="<!-- tmpl_var list_settings.admin_email -->"  />
+	    		</div>
+	    	</div> 
+		  
+	<!-- /tmpl_if -->
+
+<!-- tmpl_if priority_popup_menu --> 
+
+	  	<div class="row">
+	  		<div class="small-12 columns">
+
+		     <label>
+		      Priority:
+		     </label>
+		     <!-- tmpl_var name="priority_popup_menu" -->
+	    		</div>
+	    	</div> 
+
+<!-- /tmpl_if --> 
+	  
+
+  </div>
+  
+  
+  	  	<div class="row">
+  	  		<div class="small-12 columns">
+
+     <label for="Subject">
+      Subject:
+     </label>
+
+	 <!-- tmpl_if Subject --> 
+		<input type="text" name="Subject" id="Subject" value="<!-- tmpl_var Subject escape="HTML"  -->"  />
+     <!-- tmpl_else --> 
+		 <!-- tmpl_if expr="(screen eq 'send_url_email')" --> 
+		 
+      <div class="row collapse">
+		    <div class="small-1 columns">
+		     <input type="radio" name="subject_from" id="subject_from_input" value="input" checked="checked">
+		    </div>
+   	  		<div class="small-11 columns">
+			 <input type="text" name="Subject" id="Subject" value="<!-- tmpl_var list_settings.mailing_list_message_subject escape="HTML" -->"  />
+			</div>
+	    </div>
+	  	 
+      <div class="row collapse">
+   	  	 <div class="small-1 columns">
+			 <input type="radio" name="subject_from" id="subject_from_title_tag" value="title_tag"><label for="subject_from_title_tag" />
+		 </div>   	  		
+		 <div class="small-11 columns">
+			 Use the Webpage's &lt;title&gt; as Message Subject    
+ 	     </div>
+ 	   </div> 
+			 
+	     <!-- tmpl_else --> 
+	     	<input type="text" name="Subject" id="Subject" value="<!-- tmpl_var list_settings.mailing_list_message_subject escape="HTML" -->"  />
+		<!-- /tmpl_if -->	
+	<!-- /tmpl_if -->
+
+	    		</div>
+	    	</div> 
+
+
+ 
+</fieldset>
+
+<!-- begin send_email_headers_widget.tmpl --> 

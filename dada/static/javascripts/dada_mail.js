@@ -68,33 +68,23 @@ jQuery(document).ready(function($){
 	
 	
 	//Mail Sending >> Send a Message 
-	if ($("#send_email_screen").length || $("#send_url_email").length || $("#list_invite").length) {
-
-/*
-        var stickyHeader = $('#this_thing').offset().top;
-
-        $(window).scroll(function(){
-                if( $(window).scrollTop() > stickyHeader ) {
-		  	        $('#this_thing').addClass('fixed');
-                } else {
-		  	        $('#this_thing').removeClass('fixed');
-                }
-        });
-*/
-	  
+		if ($("#send_email_screen").length || $("#send_url_email").length || $("#list_invite").length) {
 		
-	$("body").on("click", ".kcfinder_open", function(event) {
-		event.preventDefault();
+			if($("#additional_email_headers").length){ 
+				$("#additional_email_headers").hide(); 
+			}
+		$("body").on("click", ".kcfinder_open", function(event) {
+			event.preventDefault();
 		
-		if($("#kcfinder_enabled").val() == 1) { 
-			attachments_openKCFinder(this);
-		}else if($("#core5_filemanager_enabled").val() == 1){ 
-			browsecore5FileManager(this);
-		}
-		else { 
-			alert("No File Browser set up!");
-		}
-	});
+			if($("#kcfinder_enabled").val() == 1) { 
+				attachments_openKCFinder(this);
+			}else if($("#core5_filemanager_enabled").val() == 1){ 
+				browsecore5FileManager(this);
+			}
+			else { 
+				alert("No File Browser set up!");
+			}
+		});
 	
 		var send_email_callbacks = $.Callbacks();
 		send_email_callbacks.add(setup_attachment_fields());

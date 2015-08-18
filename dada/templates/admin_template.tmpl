@@ -9,7 +9,7 @@
 
   <title><!-- tmpl_var title --> - <!-- tmpl_var list_settings.list_name --> - <!-- tmpl_var PROGRAM_NAME --></title>
  
-  <link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/foundation.css" />
+  <link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/foundation/foundation.css" />
  
  
  <!-- tmpl_if comment --> 
@@ -84,6 +84,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/modernizr.js"></script>
     
+	
+
+
+	<link type="text/css" media="screen" rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/foundation/responsive-tables.css" />
+	<script type="text/javascript" src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/foundation/responsive-tables.js"></script>
+
+	
+	
+	
     <style> 
         table { 
             border: 1px solid red; 
@@ -229,7 +238,6 @@
 
 
 
- 
 	<div id="Footer">
 		<div id="FooterPadding">
 			<p><!-- tmpl_var footer_props --></p>
@@ -239,7 +247,6 @@
 
     <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/foundation.min.js"></script>
     <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/foundation/foundation.offcanvas.js"></script>
-    
     
     
     <script>

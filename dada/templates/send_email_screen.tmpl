@@ -32,12 +32,22 @@
 
 <form name="mass_mailing" id="mass_mailing" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"  accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 
-	<div class="contain-to-grid sticky"  style="background:white">
+
+<!-- tmpl_if comment -->
+<div id="this_thing" class="sticky contain-to-grid ">
   	  <nav class="top-bar" data-topbar role="navigation" id="button_toolbar" style="background:white">
 			<input type="button" value="Loading..." class="button small" />
 		</nav>
-	</div>
-	
+	</div>	
+<!-- /tmpl_if --> 
+
+<div class="contain-to-grid sticky">
+	  <nav class="top-bar" data-topbar role="navigation">
+	<div id="button_toolbar">
+			<input type="button" value="Loading..." class="button small" />
+	</div>	
+</nav>
+</div>	
 	
 	<hr />
     
@@ -83,7 +93,7 @@
 
 <!-- tmpl_include draft_notice_widget.tmpl --> 
 <!-- tmpl_include send_email_schedule_options_widget.tmpl -->
-<!-- tmpl_include message_headers_fieldset_widget.tmpl --> 
+<!-- tmpl_include send_email_headers_widget.tmpl --> 
 
  <input type="hidden" name="s_program_url"     id="s_program_url"     value="<!-- tmpl_var S_PROGRAM_URL -->" />
  <input type="hidden" name="support_files_url" id="support_files_url" value="<!-- tmpl_var SUPPORT_FILES_URL -->" />
