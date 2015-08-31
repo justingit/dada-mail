@@ -719,6 +719,12 @@ sub generic_delivery_status_parse {
 	    	$remail = undef; 
 		}
 	}
+	elsif(exists($diag->{'Final-recipient'})){
+		( $rfc, $remail ) = split( ';', $diag->{'Final-recipient'} );	
+		if ( $remail eq '<>' ) {    #example: Final-Recipient: LOCAL;<>
+	    	$remail = undef; 
+		}
+	}
 	elsif(exists($diag->{'Original-Rcpt-To'})){ 
 	    $remail = $diag->{'Original-Rcpt-To'}; 
 	}
@@ -742,6 +748,17 @@ sub generic_delivery_status_parse {
 	$email =~ s/\n$//g;
 	$email =~ s/\r$//g;
 	
+	if(
+	         exists($diag->{'X-Supplementary-Info'}) 
+        && ! exists($diag->{'Diagnostic-Code'})
+    ){ 
+	    $diag->{'Diagnostic-Code'} = $diag->{'X-Supplementary-Info'}; 
+	}
+	
+	#use Data::Dumper; 
+    #warn '$diag from sub:' . Data::Dumper::Dumper($diag); 
+    
+    
     return ( $email, $diag );
 }
 

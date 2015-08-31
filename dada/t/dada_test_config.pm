@@ -213,7 +213,7 @@ my @statements = split(';', $sql);
     my $dbh = $dbi_handle->dbh_obj;
     
     for(@statements){ 
-		print $_ . "\n"; 
+		#print $_ . "\n"; 
 		
     	my $settings_table                      = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{settings_table}; 
 		my $subscribers_table    	            = $__Test_Config_Vars::TEST_SQL_PARAMS->{SQLite}->{subscriber_table}; 
@@ -248,7 +248,7 @@ my @statements = split(';', $sql);
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_confirmation_tokens}{CREATE TABLE IF NOT EXISTS $confirmation_tokens_table};	
 		$_ =~ s{CREATE TABLE IF NOT EXISTS dada_message_drafts}{CREATE TABLE IF NOT EXISTS $message_drafts_table};	
 		
-		print 'query: ' . $_ . "\n\n"; 
+	#	print 'query: ' . $_ . "\n\n"; 
         my $sth = $dbh->prepare($_) or croak $DBI::errstr; 
 
        $sth->execute
@@ -484,7 +484,7 @@ my @statements = split(';', $sql);
 		$_ =~ s{CREATE TABLE dada_confirmation_tokens}{CREATE TABLE IF NOT EXISTS $confirmation_tokens_table};	
 		$_ =~ s{CREATE TABLE dada_message_drafts}{CREATE TABLE IF NOT EXISTS $message_drafts_table};	
 
-		print "query: $_"; 
+		#print "query: $_"; 
 
 
 	    my $sth = $dbh->prepare($_); #  or croak $DBI::errstr; 

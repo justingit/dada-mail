@@ -43,6 +43,8 @@ my $bhmp = DADA::App::BounceHandler::MessageParser->new();
 my $bhr = DADA::App::BounceHandler::Rules->new;
 my $rule; 
 
+
+
 $msg = dada_test_config::slurp('t/corpus/email_messages/bounce-qmail-550-5.1.1.eml'); 
 $entity = $parser->parse_data($msg);
 
@@ -384,6 +386,7 @@ undef $diag;
 undef $entity;
 
 
+
 # diag "looking at: bounce_secureserver.net-mail_quota_exceeded.eml"; 
 $msg    = dada_test_config::slurp('t/corpus/email_messages/bounces_amazon_ses_abuse_report.eml'); 
 $entity = $parser->parse_data($msg);
@@ -397,6 +400,39 @@ undef $email;
 undef $found_list; 
 undef $diag; 
 undef $entity;
+
+
+# $email:bouncing.email@example.com
+# $rule:following_recipients_failed
+# $email:bouncing.email@example.com
+# $found_list:dadatest
+
+
+
+# diag "looking at: bounce_secureserver.net-mail_quota_exceeded.eml"; 
+$msg    = dada_test_config::slurp('t/corpus/email_messages/hotmail-utf7.eml'); 
+$entity = $parser->parse_data($msg);
+( $email, $found_list, $diag ) = $bhmp->run_all_parses($entity);
+ok($email eq 'bouncing.email@example.com'); 
+ok($found_list eq 'dadatest', 'found list');
+$rule = $bhr->find_rule_to_use( $found_list, $email, $diag );
+ok($rule eq 'following_recipients_failed', "rule is: $rule"); 
+
+#use Data::Dumper; 
+#diag '$diag' . Dumper($diag); 
+#diag '$email:' . $email;
+#diag '$rule:' . $rule;
+#diag '$msg:'   . $msg; 
+#diag '$email:' . $email; 
+#diag '$found_list:' . $found_list; 
+
+undef $msg; 
+undef $email; 
+undef $found_list; 
+undef $diag; 
+undef $entity;
+
+
 
 
 

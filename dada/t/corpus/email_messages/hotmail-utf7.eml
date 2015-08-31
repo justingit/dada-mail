@@ -1,0 +1,123 @@
+Received: from DB4PR04MB364.eurprd04.prod.outlook.com (10.141.236.152) by
+ AM3PR04MB355.eurprd04.prod.outlook.com (10.242.111.149) with Microsoft SMTP
+ Server (TLS) id 15.1.243.23 via Mailbox Transport; Thu, 27 Aug 2015 14:17:49
+ +0000
+Received: from VI1PR04CA0039.eurprd04.prod.outlook.com (10.163.3.49) by
+ DB4PR04MB364.eurprd04.prod.outlook.com (10.141.236.152) with Microsoft SMTP
+ Server (TLS) id 15.1.243.23; Thu, 27 Aug 2015 14:15:26 +0000
+Received: from AM1FFO11OLC006.protection.gbl (2a01:111:f400:7e00::169) by
+ VI1PR04CA0039.outlook.office365.com (2a01:111:e400:58e9::49) with Microsoft
+ SMTP Server (TLS) id 15.1.256.15 via Frontend Transport; Thu, 27 Aug 2015
+ 14:15:26 +0000
+Received: from BLU004-OMC4S25.hotmail.com (65.55.111.164) by
+ AM1FFO11OLC006.mail.protection.outlook.com (10.174.64.134) with Microsoft
+ SMTP Server (TLS) id 15.1.256.10 via Frontend Transport; Thu, 27 Aug 2015
+ 14:15:26 +0000
+Received: from BAY004-MC6F28.hotmail.com ([65.55.111.137]) by BLU004-OMC4S25.hotmail.com over TLS secured channel with Microsoft SMTPSVC(7.5.7601.23008);
+	 Thu, 27 Aug 2015 07:15:25 -0700
+From: "postmaster@hotmail.com" <postmaster@hotmail.com>
+To: bounces <bounces@example.com>
+Subject: =?utf-7?B?VW5kZWxpdmVyYWJsZTogTWFhayBlbGtlIGRhZyBrYW5zIG9wIGVlbiBzcGVs?=
+ =?utf-7?B?cGFra2V0IHQudy52LiArSUt3LSAyMDArQUNFLQ==?=
+Thread-Topic: =?utf-7?B?TWFhayBlbGtlIGRhZyBrYW5zIG9wIGVlbiBzcGVscGFra2V0IHQudy52LiA=?=
+ =?utf-7?B?K0lLdy0gMjAwK0FDRS0=?=
+Thread-Index: AQHQ4NMnFNtOhJls5Eukm6TntsK6cQ==
+Date: Thu, 27 Aug 2015 14:14:34 +0000
+Message-ID: <vlZGdOZof000228c9@BAY004-MC6F28.hotmail.com>
+Content-Language: nl-NL
+X-MS-Exchange-Organization-AuthAs: Anonymous
+X-MS-Exchange-Organization-AuthSource: AM1FFO11OLC006.protection.gbl
+X-MS-Has-Attach: yes
+X-Auto-Response-Suppress: All
+X-MS-Exchange-Organization-Network-Message-Id: 5b9e9448-a14b-4582-d08f-08d2aee9f471
+X-MS-Exchange-Organization-SCL: 1
+X-MS-TNEF-Correlator:
+received-spf: None (protection.outlook.com: BLU004-OMC4S25.hotmail.com does
+ not designate permitted sender hosts)
+Content-Type: multipart/report;
+	boundary="_000_vlZGdOZof000228c9BAY004MC6F28hotmailcom_";
+	report-type=delivery-status
+MIME-Version: 1.0
+
+--_000_vlZGdOZof000228c9BAY004MC6F28hotmailcom_
+Content-Type: text/plain; charset="utf-7"
+Content-ID: <C48F1908EB07704B94FD5BAED8EF68AD@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+
+This is an automatically generated Delivery Status Notification.
+
+Delivery to the following recipients failed.
+
+       bouncing.email+AEA-example.com
+
+
+
+
+--_000_vlZGdOZof000228c9BAY004MC6F28hotmailcom_
+Content-Type: message/delivery-status
+
+Reporting-MTA: dns; BAY004-MC6F28.hotmail.com
+
+Final-recipient: RFC822; bouncing.email@example.com
+Action: failed
+Status: 5.5.0
+X-Supplementary-Info: < #5.5.0 smtp;550 Requested action not taken: mailbox
+ unavailable (495782920:4198:-2147467259)>
+
+
+--_000_vlZGdOZof000228c9BAY004MC6F28hotmailcom_
+Content-Type: message/rfc822
+Content-Disposition: attachment;
+	creation-date="Thu, 27 Aug 2015 14:17:49 GMT";
+	modification-date="Thu, 27 Aug 2015 14:17:49 GMT"
+Content-ID: <FBD42159BC526E40B199BDA72ACAFACC@eurprd04.prod.outlook.com>
+
+Received: from wh06.example.com ([87.195.27.36]) by BAY004-MC6F28.hotmail.com over TLS secured channel with Microsoft SMTPSVC(7.5.7601.23143);
+	 Thu, 27 Aug 2015 07:14:33 -0700
+Received: from wh06.example.com (localhost [127.0.0.1])
+	by wh06.example.com (8.14.5/8.14.5) with ESMTP id t7REEVdF006835
+	for <bouncing.email@example.com>; Thu, 27 Aug 2015 16:14:31 +0200 (CEST)
+	(envelope-from bounces@example.com)
+Received: (from www@localhost)
+	by wh06.example.com (8.14.5/8.14.5/Submit) id t7REEVuu006834;
+	Thu, 27 Aug 2015 16:14:31 +0200 (CEST)
+	(envelope-from bounces@example.com)
+X-Authentication-Warning: wh06.example.com: www set sender to bounces@example.com using -f
+Date: Thu, 27 Aug 2015 16:14:31 +0200
+From: Dada Test <news@example.com>
+To: Dada Test Subscriber <bouncing.email@example.com>
+Precedence: list
+List: dadatest
+List-ID: <dadatest.wh06.example.com.example.com>
+List-Owner: <news@example.com>
+List-Post: NO
+List-Subscribe: <http://example.com/cgi-bin/mail.cgi/s/dadatest/tinne.sels/hotmail.be/>
+List-Unsubscribe: <mailto:news@example.com?Subject=Unsubscribe%20from%20Dada Test>, <http://example.com/cgi-bin/mail.cgi/t/eUnSgvZMEUYHPFvAtNaAGvYZBJPTqU8c7rOvuwXA/>
+List-URL: <http://example.com/cgi-bin/mail.cgi/list/dadatest/>
+Message-ID: <20150827093618.93914005@example.com>
+X-Mailer: Pro Dada 8.4.0 Stable 07/29/15 
+Content-Type: multipart/alternative;
+	boundary="----------=_1440660978-29227-0"; charset="UTF-8"
+Subject: Subject
+Return-Path: bounces@example.com
+X-OriginalArrivalTime: 27 Aug 2015 14:14:34.0835 (UTC) FILETIME=[B338EA30:01D0E0D2]
+MIME-Version: 1.0
+
+------------=_1440660978-29227-0
+Content-Type: text/plain; charset="UTF-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+X-Mailer: MIME-tools 5.502 (Entity 5.502)
+
+
+Plaintext
+
+------------=_1440660978-29227-0
+Content-Type: text/html; charset="UTF-8"
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+HTML
+------------=_1440660978-29227-0--
+
+--_000_vlZGdOZof000228c9BAY004MC6F28hotmailcom_--
