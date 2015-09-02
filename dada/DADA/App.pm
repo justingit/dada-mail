@@ -7,6 +7,15 @@ use base 'CGI::Application';
 use strict;
 
 use Encode qw(encode decode);
+use Fcntl qw(
+	LOCK_EX 
+	LOCK_NB 
+	LOCK_SH
+	O_WRONLY 
+	O_TRUNC 
+	O_CREAT 
+	O_RDWR
+);
 
 # A weird fix.
 BEGIN {
@@ -62,10 +71,218 @@ sub cgiapp_init {
 
 }
 
+sub cgiapp_prerun {
+	
+	my $self = shift; 
+	
+	#warn '$DADA::Config::RUNNING_UNDER:'             . $DADA::Config::RUNNING_UNDER; 
+	#warn '$DADA::Config::CGI_RESTRICT_PROCESS_COUNT' . $DADA::Config::CGI_RESTRICT_PROCESS_COUNT; 
+	
+	if ($DADA::Config::RUNNING_UNDER eq 'CGI' 
+	&& $DADA::Config::CGI_RESTRICT_PROCESS_COUNT > 0 ) {	
+		if($self->highlander == 0){ 
+			$self->prerun_mode('yikes'); 
+			#exit;
+		}
+	}
+	
+}
+
 sub cgiapp_postrun {
     my ( $self, $output_ref ) = @_;
     $$output_ref = safely_encode($$output_ref);
 }
+
+sub teardown { 
+	
+	my $self = shift;
+	
+	if ($DADA::Config::RUNNING_UNDER eq 'CGI' 
+	&& $DADA::Config::CGI_RESTRICT_PROCESS_COUNT > 0 ) {	
+		my $counter = make_safer($DADA::Config::TMP . '/' . 'process_counter.txt');
+		   $self->counter_down($counter); 
+	}
+	
+}
+sub highlander { 
+	
+	my $self = shift; 
+	my $counter = make_safer($DADA::Config::TMP . '/' . 'process_counter.txt');
+	try {
+		if(! -e $counter) { 
+			$self->create_counter($counter);
+		}
+		my $counter_at = $self->counter_at($counter); 
+		if($counter_at >= $DADA::Config::CGI_RESTRICT_PROCESS_COUNT) {
+			return 0; 
+		}
+		else { 
+			$self->counter_up($counter, $counter_at);
+			return 1; 
+		}
+	} catch { 
+		warn 'something is wrong with the highlander mode:' . $_; 
+		return 1; 
+	};
+}
+
+
+sub create_counter {
+
+    my $self = shift;
+    my $c    = shift; 
+
+    my $lock = $self->lock_file($c);
+
+    sysopen( COUNTER, $c, O_WRONLY | O_TRUNC | O_CREAT, $DADA::Config::FILE_CHMOD )
+      or croak "couldn't open counter at: '$c' because: $!";
+    print COUNTER '0';
+    close(COUNTER)
+      or croak "couldn't close counter at: '$c' because: $!";
+
+    $self->unlock_file($lock);
+
+    chmod( $DADA::Config::FILE_CHMOD, $c );
+
+    return 1;
+
+}
+
+sub counter_up {
+
+    my $self = shift;
+    my $c    = shift; 
+	my $num  = shift || $self->counter_at($c);
+	
+    my $lock = $self->lock_file($c);
+
+    sysopen( FH, $c, O_RDWR | O_CREAT, $DADA::Config::FILE_CHMOD )
+      or croak "can't open '$c' because: $!";
+
+    flock( FH, LOCK_EX )
+      or croak "can't flock '$c' because: $!";
+
+    seek( FH, 0, 0 ) or croak "can't rewind counter: $!";
+    truncate( FH, 0 ) or croak "can't truncate counter: $!";
+
+    my $new_count = int($num) + 1;
+    
+    print FH $new_count, "\n" or croak "can't write counter: $!";
+    close FH or croak "can't close counter: $!";
+
+    $self->unlock_file($lock);
+
+    return $new_count;
+
+}
+sub counter_down {
+
+    my $self = shift;
+    my $c    = shift; 
+	my $num = $self->counter_at($c);
+	
+    my $lock = $self->lock_file($c);
+
+    sysopen( FH, $c, O_RDWR | O_CREAT, $DADA::Config::FILE_CHMOD )
+      or croak "can't open '$c' because: $!";
+
+    flock( FH, LOCK_EX )
+      or croak "can't flock '$c' because: $!";
+
+    seek( FH, 0, 0 ) or croak "can't rewind counter: $!";
+    truncate( FH, 0 ) or croak "can't truncate counter: $!";
+
+    my $new_count = int($num) -1;
+    if($new_count < 0){ 
+		$new_count = 0; 
+	}
+    print FH $new_count, "\n" or croak "can't write counter: $!";
+    close FH or croak "can't close counter: $!";
+
+    $self->unlock_file($lock);
+
+    return $new_count;
+
+}
+
+sub counter_at {
+
+	my $selft = shift; 
+    my $c  = shift;
+
+    sysopen( FH, $c, O_RDWR | O_CREAT, $DADA::Config::FILE_CHMOD )
+      or die "can't open counter: $!";
+    flock( FH, LOCK_SH )
+      or die "can't flock counter: $!";
+    my $num = readline(*FH);
+
+    close FH
+      or die "can't close counter: $!";
+    chmod( $DADA::Config::FILE_CHMOD, $c );
+    $num =~ s/^\s+//o;
+    $num =~ s/\s+$//o;
+
+    return $num;
+}
+
+
+
+
+
+sub lock_file {
+
+    my $i = 0;
+	
+    my $self = shift;
+
+    my $file      = shift || croak "You must pass a file to lock!";
+    my $countdown = shift || 10;
+
+    my $lockfile = make_safer( $file . '.lock' );
+
+    open my $fh, ">", $lockfile
+      or croak "Can't open semaphore file '$lockfile' because: $!";
+
+    chmod $DADA::Config::FILE_CHMOD, $lockfile;
+
+    {
+
+        # Two potentially non-obvious but traditional flock semantics are that it
+        # waits indefinitely until the lock is granted, and that its locks merely
+        # advisory.
+        # DEV: Ah, NB: Non blocking - that's what we need...
+
+        my $count = 0;
+        {
+
+            flock $fh, LOCK_EX | LOCK_NB and last;
+
+            sleep 1;
+            redo if ++$count < $countdown;
+
+            croak "Couldn't lock semaphore file '$lockfile' for '$file' because: '$!', exiting with error to avoid file corruption!";
+
+        }
+    }
+
+    return $fh;
+
+}
+
+sub unlock_file {
+
+    my $self = shift;
+
+    my $file = shift || croak "You must pass a filehandle to unlock!";
+    close($file) or croak q{Couldn't unlock semaphore file for, } . $file . ' ' . $!;
+
+    return 1;
+
+}
+
+
+
+
 
 sub setup {
 
@@ -236,6 +453,9 @@ sub setup {
         'ur'                               => \&outdated_subscription_urls,
         'smtm'                             => \&what_is_dada_mail,
         'send_email_testsuite'             => \&send_email_testsuite,
+		
+		'yikes'                            => \&yikes, 
+		
         $DADA::Config::ADMIN_FLAVOR_NAME   => \&admin,
         $DADA::Config::SIGN_IN_FLAVOR_NAME => \&sign_in,
 
@@ -4398,8 +4618,6 @@ sub unsubscription_requests {
                 }
             );
 
-            #           warn 'send_unsubscription_request_approved_message'
-            #                if $t;
             require DADA::App::Messages;
             DADA::App::Messages::send_unsubscription_request_approved_message(
                 {
