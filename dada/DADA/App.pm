@@ -6847,7 +6847,7 @@ sub view_archive {
             #for $entry (@$entries){
             my ( $subject, $message, $format, $raw_msg ) = $archive->get_archive_info($entry);
 
-            my $pretty_subject = pretty($subject);
+            my $pretty_subject = pretty($subject); #?
 
             my $header_from = undef;
             if ($raw_msg) {
@@ -13433,11 +13433,11 @@ sub schedules {
             return '<pre>' . $r . '</pre>';
         }
         else {
-           # $ENV{CGI_APP_RETURN_ONLY} = 1;
             return $r;
         }
     }
     else {
+		$ENV{CGI_APP_RETURN_ONLY} = 1;
         return '';
     }
 }
