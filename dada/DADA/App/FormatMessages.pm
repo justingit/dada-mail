@@ -1500,10 +1500,9 @@ sub _list_name_subject {
 	   $re      =~ s/^(\s+)//; 
 	   $re      =~ s/(\s+)$//; 
 
-
        	# there must be some strange named capture that isn't being undef'd, so if 
        	# it already holds a value, it gets set to, $re. Weird. 
-       	if($re =~ m/UTF\-8/){ 
+       	if($re =~ m/UTF\-8|ISO\-8859/){ 
        	    #warn 'undef!'; 
        	    $re = undef; 
        	} 
