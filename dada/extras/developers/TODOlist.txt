@@ -11,6 +11,8 @@ Key:
 [?] Someday
 
 
+remove p.p. mode - it's the default, disabling breaks the app. 
+
 list invites 500 error out if the mass mailing finishes, before the screen refreshes?
 
 [ ] Some IP Addresses for opens/clickthroughs are from datacenters of the mail service (gmail, hotmail) - is there a way to get the original ip? 
