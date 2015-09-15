@@ -15,7 +15,7 @@ a message to a friend.
 The B<Forward to a Friend> form is located at the bottom of any archived message. If you 
 do not see it, make sure to enable the option in the list control panel under, 
 
-B<Message Archives -E<gt> Archive Options>
+B<Message Archives -E<gt> Options>
 
 Look for the option labled, B<Enable "Forward to a Friend">
 
