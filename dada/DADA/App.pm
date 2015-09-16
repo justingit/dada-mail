@@ -136,8 +136,8 @@ sub setup {
         'admin_menu_subscriber_count_notification'    => \&admin_menu_subscriber_count_notification,
         'admin_menu_mailing_monitor_notification'     => \&admin_menu_mailing_monitor_notification,
         'admin_menu_archive_count_notification'       => \&admin_menu_archive_count_notification,
-        'admin_menu_sending_preferences_notification' => \&admin_menu_sending_preferences_notification,
-        'admin_menu_mass_mailing_preferences_notification' => \&admin_menu_mass_mailing_preferences_notification, 
+        'admin_menu_mail_sending_options_notification' => \&admin_menu_mail_sending_options_notification,
+        'admin_menu_mailing_sending_mass_mailing_options_notification' => \&admin_menu_mailing_sending_mass_mailing_options_notification, 
         'admin_menu_bounce_handler_notification'      => \&admin_menu_bounce_handler_notification,
         'admin_menu_tracker_notification'             => \&admin_menu_tracker_notification,
         'send_email'                                  => \&send_email,
@@ -176,12 +176,12 @@ sub setup {
         'edit_html_type'                              => \&edit_html_type,
         'list_options'                                => \&list_options,
         'web_services'                                => \&web_services,
-        'sending_preferences'                         => \&sending_preferences,
+        'mail_sending_options'                         => \&mail_sending_options,
         'amazon_ses_verify_email'                     => \&amazon_ses_verify_email,
         'amazon_ses_get_stats'                        => \&amazon_ses_get_stats,
-        'mass_mailing_preferences'                    => \&mass_mailing_preferences,
+        'mailing_sending_mass_mailing_options'                    => \&mailing_sending_mass_mailing_options,
         'previewBatchSendingSpeed'                    => \&previewBatchSendingSpeed,
-        'adv_sending_preferences'                     => \&adv_sending_preferences,
+        'mail_sending_advanced_options'                     => \&mail_sending_advanced_options,
         'sending_tuning_options'                      => \&sending_tuning_options,
         'filter_using_black_list'                     => \&filter_using_black_list,
         'search_archive'                              => \&search_archive,
@@ -193,7 +193,7 @@ sub setup {
         'feature_set'                                 => \&feature_set,
         'list_cp_options'                             => \&list_cp_options,
         'profile_fields'                              => \&profile_fields,
-        'sending_preferences_test'                    => \&sending_preferences_test,
+        'mail_sending_options_test'                    => \&mail_sending_options_test,
         'author'                                      => \&author,
         'list'                                        => \&list_page,
         'setup_info'                                  => \&setup_info,
@@ -726,7 +726,7 @@ sub admin_menu_archive_count_notification {
     }
 }
 
-sub admin_menu_sending_preferences_notification {
+sub admin_menu_mail_sending_options_notification {
     my $self = shift;
     my $q    = $self->query();
 
@@ -760,7 +760,7 @@ sub admin_menu_sending_preferences_notification {
 }
 
 
-sub admin_menu_mass_mailing_preferences_notification {
+sub admin_menu_mailing_sending_mass_mailing_options_notification {
     my $self = shift;
     my $q    = $self->query();
     try {
@@ -2762,7 +2762,7 @@ sub web_services {
 
 }
 
-sub sending_preferences {
+sub mail_sending_options {
 
     my $self    = shift;
     my $q       = $self->query();
@@ -2771,7 +2771,7 @@ sub sending_preferences {
 
     my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'sending_preferences'
+        -Function => 'mail_sending_options'
     );
     if ( !$checksout ) { return $error_msg; }
 
@@ -2864,7 +2864,7 @@ sub sending_preferences {
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
-                -screen         => 'sending_preferences_screen.tmpl',
+                -screen         => 'mail_sending_options_screen.tmpl',
                 -with           => 'admin',
                 -expr           => 1,
                 -wrapper_params => {
@@ -2872,7 +2872,7 @@ sub sending_preferences {
                     -List       => $list,
                 },
                 -vars => {
-                    screen                        => 'sending_preferences',
+                    screen                        => 'mail_sending_options',
                     done                          => $done,
                     no_smtp_server_set            => $no_smtp_server_set,
                     mechanism_popup               => $mechanism_popup,
@@ -2950,13 +2950,13 @@ sub sending_preferences {
         }
         else {
             $self->header_type('redirect');
-            $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=sending_preferences&done=1' );
+            $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=mail_sending_options&done=1' );
 
         }
     }
 }
 
-sub mass_mailing_preferences {
+sub mailing_sending_mass_mailing_options {
 
     my $self    = shift;
     my $q       = $self->query();
@@ -2965,7 +2965,7 @@ sub mass_mailing_preferences {
 
     my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'mass_mailing_preferences'
+        -Function => 'mailing_sending_mass_mailing_options'
     );
     if ( !$checksout ) { return $error_msg; }
 
@@ -3026,7 +3026,7 @@ sub mass_mailing_preferences {
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
-                -screen         => 'mass_mailing_preferences_screen.tmpl',
+                -screen         => 'mailing_sending_mass_mailing_options_screen.tmpl',
                 -with           => 'admin',
                 -expr           => 1,
                 -wrapper_params => {
@@ -3034,7 +3034,7 @@ sub mass_mailing_preferences {
                     -List       => $list,
                 },
                 -vars => {
-                    screen                  => 'mass_mailing_preferences',
+                    screen                  => 'mailing_sending_mass_mailing_options',
                     done                    => $done,
                     batch_sending_enabled   => $batch_sending_enabled,
                     mass_send_amount_menu   => $mass_send_amount_menu,
@@ -3073,7 +3073,7 @@ sub mass_mailing_preferences {
             }
         );
         $self->header_type('redirect');
-        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=mass_mailing_preferences&done=1' );
+        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=mailing_sending_mass_mailing_options&done=1' );
     }
 }
 
@@ -3084,7 +3084,7 @@ sub amazon_ses_verify_email {
 
     my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'sending_preferences'
+        -Function => 'mail_sending_options'
     );
     if ( !$checksout ) { return $error_msg; }
 
@@ -3123,7 +3123,7 @@ sub amazon_ses_get_stats {
 
     my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'mass_mailing_preferences'
+        -Function => 'mailing_sending_mass_mailing_options'
     );
     if ( !$checksout ) { return $error_msg; }
 
@@ -3209,7 +3209,7 @@ sub previewBatchSendingSpeed {
 
     my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'mass_mailing_preferences'
+        -Function => 'mailing_sending_mass_mailing_options'
     );
     if ( !$checksout ) { return $error_msg; }
 
@@ -3276,7 +3276,7 @@ sub previewBatchSendingSpeed {
 
 }
 
-sub adv_sending_preferences {
+sub mail_sending_advanced_options {
 
     my $self    = shift;
     my $q       = $self->query();
@@ -3285,7 +3285,7 @@ sub adv_sending_preferences {
 
     my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'adv_sending_preferences'
+        -Function => 'mail_sending_advanced_options'
     );
     if ( !$checksout ) { return $error_msg; }
 
@@ -3337,7 +3337,7 @@ sub adv_sending_preferences {
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
-                -screen         => 'adv_sending_preferences_screen.tmpl',
+                -screen         => 'mail_sending_advanced_options_screen.tmpl',
                 -with           => 'admin',
                 -wrapper_params => {
                     -Root_Login => $root_login,
@@ -3345,7 +3345,7 @@ sub adv_sending_preferences {
                 },
                 -list => $list,
                 -vars => {
-                    screen                        => 'adv_sending_preferences',
+                    screen                        => 'mail_sending_advanced_options',
                     title                         => 'Advanced Options',
                     done                          => $done,
                     precedence_popup_menu         => $precedence_popup_menu,
@@ -3386,7 +3386,7 @@ sub adv_sending_preferences {
         );
 
         $self->header_type('redirect');
-        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=adv_sending_preferences&done=1' );
+        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=mail_sending_advanced_options&done=1' );
 
     }
 }
@@ -3569,14 +3569,14 @@ sub sending_tuning_options {
 
 }
 
-sub sending_preferences_test {
+sub mail_sending_options_test {
 
     my $self = shift;
     my $q    = $self->query();
 
     my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'sending_preferences'
+        -Function => 'mail_sending_options'
     );
     if ( !$checksout ) { return $error_msg; }
 
@@ -3584,7 +3584,7 @@ sub sending_preferences_test {
     $q->param( 'no_redirect', 1 );
 
     # Saves the params passed
-    $self->sending_preferences();
+    $self->mail_sending_options();
 
     require DADA::Mail::Send;
     require DADA::MailingList::Settings;
@@ -3599,7 +3599,7 @@ sub sending_preferences_test {
     );
 
     my ( $results, $lines, $report );
-    eval { ( $results, $lines, $report ) = $mh->sending_preferences_test; };
+    eval { ( $results, $lines, $report ) = $mh->mail_sending_options_test; };
     if ($@) {
         $results .= $@;
     }
@@ -3618,7 +3618,7 @@ sub sending_preferences_test {
 
     my $body = DADA::Template::Widgets::screen(
         {
-            -screen => 'sending_preferences_test_widget.tmpl',
+            -screen => 'mail_sending_options_test_widget.tmpl',
             -expr   => 1,
             -vars   => {
                 report  => $ht_report,

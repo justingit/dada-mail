@@ -774,21 +774,21 @@ $ADMIN_MENU //= [
 
             {
                 -Title     => 'Options',
-                -Title_URL => "$S_PROGRAM_URL?flavor=sending_preferences",
-                -Function  => 'sending_preferences',
+                -Title_URL => "$S_PROGRAM_URL?flavor=mail_sending_options",
+                -Function  => 'mail_sending_options',
                 -Activated => 1,
             },
 
             {
                 -Title     => 'Advanced Options',
-                -Title_URL => "$S_PROGRAM_URL?flavor=adv_sending_preferences",
-                -Function  => 'adv_sending_preferences',
+                -Title_URL => "$S_PROGRAM_URL?flavor=mail_sending_advanced_options",
+                -Function  => 'mail_sending_advanced_options',
                 -Activated => 1,
             },
             {
                 -Title     => 'Mass Mailing Options',
-                -Title_URL => "$S_PROGRAM_URL?flavor=mass_mailing_preferences",
-                -Function  => 'mass_mailing_preferences',
+                -Title_URL => "$S_PROGRAM_URL?flavor=mailing_sending_mass_mailing_options",
+                -Function  => 'mailing_sending_mass_mailing_options',
                 -Activated => 1,
             },
         ]

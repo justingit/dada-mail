@@ -941,7 +941,7 @@ sub _massage_fields_for_amazon_ses {
 
 
 
-sub sending_preferences_test { 
+sub mail_sending_options_test { 
 
     my $self = shift; 
 
@@ -963,7 +963,7 @@ sub sending_preferences_test {
 
     require DADA::App::ReadEmailMessages; 
     my $rm = DADA::App::ReadEmailMessages->new; 
-    my $msg_data = $rm->read_message('sending_preferences_test_message.eml'); 
+    my $msg_data = $rm->read_message('mail_sending_options_test_message.eml'); 
 	
 	
 	require DADA::App::Messages; 

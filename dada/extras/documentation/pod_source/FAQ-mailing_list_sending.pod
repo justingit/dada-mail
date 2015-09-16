@@ -50,7 +50,7 @@ After you've submitted a mailing list message, keep that screen open until your 
 
 The Dada Mail Manual goes over every option in the B<Mail Sending - Mass Mailing Options> screen:
 
-L<http://dadamailproject.com/pro_dada/mass_mailing_preferences.html>
+L<http://dadamailproject.com/pro_dada/mailing_sending_mass_mailing_options.html>
 
 =head2 Batch Settings
 

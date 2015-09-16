@@ -2196,7 +2196,7 @@ http://github.com/justingit/dada-mail/issues/closed/#issue/6
 
 http://github.com/justingit/dada-mail/issues/closed#issue/10
 
-=head3 pop3_username parameter not passed to sending_preferences.tmpl
+=head3 pop3_username parameter not passed to mail_sending_options.tmpl
 
 http://github.com/justingit/dada-mail/issues/closed#issue/12
 

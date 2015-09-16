@@ -8,11 +8,11 @@
 <div class="row">
    <div class="small-9 medium-8 columns">
       <!-- tmpl_var title -->
-   </div> 
+   </div>
     <div class="small-3 medium-4 columns right">
      <!-- tmpl_include help_link_widget.tmpl -->
-    </div> 
-</div> 
+    </div>
+</div>
 
 
 <!-- tmpl_if done -->
@@ -20,51 +20,51 @@
 <!--/tmpl_if-->
 
 <!-- tmpl_if errors -->
-	
+
     <div class="alert-box alert radius">
-	 The <!-- tmpl_var errors --> field<!-- tmpl_var errors_ending --> on this form 
-	 <!-- tmpl_var err_word --> filled out incorrectly and 
+	 The <!-- tmpl_var errors --> field<!-- tmpl_var errors_ending --> on this form
+	 <!-- tmpl_var err_word --> filled out incorrectly and
 	 must be fixed for all new information to be saved.
 	</div>
-	
+
 <!--/tmpl_if-->
 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 
 
-<fieldset> 
-	<legend>Your List Information</legend> 
-	
+<input type="hidden" name="flavor"       value="change_info" />
+<input type="hidden" name="process" value="1" />
+
 <p>
- Your list's 
+ Your list's
  <strong>
   Short Name
- </strong> 
- is: 
+ </strong>
+ is:
  <strong>
   <!-- tmpl_var list -->
  </strong>
 </p>
 
 <!-- tmpl_if flags_list_name -->
-	
+
 	<p class="error">
 	 <em>
 	  You did not fill in a list name.
 	 </em>
 	</p>
-	
+
 <!--/tmpl_if-->
 
 
 <!-- tmpl_if name="flags_list_name_bad_characters" -->
-	 
+
 	 <p class="error">
 	  <em>
 	   Your list name contains &lt;'s, &gt;'s or, &quot;'s.
 	  </em>
 	 </p>
-	 
+
 <!-- /tmpl_if -->
 
 
@@ -74,8 +74,8 @@
             List Name
             <input type="text" name="list_name" id="list_name" value="<!-- tmpl_var list_name escape="HTML" -->"  />
         </label>
-    </div> 
-</div> 
+    </div>
+</div>
 
 <!-- tmpl_if flags_invalid_list_owner_email -->
     <div class="alert-box alert radius">
@@ -83,13 +83,13 @@
     </div>
 <!--/tmpl_if-->
 
-<!-- tmpl_if expr="(using_ses eq '1') && (list_owner_ses_verified ne '1')" --> 
+<!-- tmpl_if expr="(using_ses eq '1') && (list_owner_ses_verified ne '1')" -->
     <div class="alert-box alert radius">
 	    <p>
 	        Your current <strong>List Owner</strong>, <!-- tmpl_var list_owner_email escape="HTML" --> has not been verified through <strong>Amazon SES</strong>.
 	    </p>
 	</div>
-<!-- /tmpl_if --> 
+<!-- /tmpl_if -->
 
 
 <div class="row">
@@ -98,31 +98,31 @@
            List Owner Address
            <input type="text" name="list_owner_email" id="list_owner_email" value="<!-- tmpl_var list_owner_email escape="HTML" -->" />
        </label>
-   </div> 
+   </div>
 </div>
-   
-   
-   <!-- tmpl_if expr="(using_ses eq '1') && (list_admin_ses_verified ne '1')" --> 
+
+
+   <!-- tmpl_if expr="(using_ses eq '1') && (list_admin_ses_verified ne '1')" -->
        <div class="alert-box alert radius">
    	    <p>
    	        Your current <strong>List Administrator</strong>, <!-- tmpl_var admin_email escape="HTML" -->has not been verified through <strong>Amazon SES</strong>.
    	    </p>
    	</div>
    <!-- /tmpl_if -->
-   
+
    <div class="row">
       <div class="small-12 columns">
           <label for="admin_email">
               List Administrator Address
               <input type="text" name="admin_email" id="admin_email" value="<!-- tmpl_var admin_email escape="HTML" -->"  />
             </label>
-           </div> 
-        </div>      
+           </div>
+        </div>
 
 <!-- tmpl_if flags_list_info -->
     <div class="alert-box alert radius">
         You need to give your list a description.
-    </div> 
+    </div>
 <!--/tmpl_if-->
 
 
@@ -132,15 +132,15 @@
             List Description
             <textarea name="info" id="info"><!-- tmpl_var info --></textarea>
         </label>
-   </div> 
+   </div>
 </div>
 
 <!-- tmpl_if flags_privacy_policy -->
     <div class="alert-box alert radius">
 	  You need to give your list a privacy policy.
-    </div> 
+    </div>
 
-	
+
 <!--/tmpl_if-->
 
 <div class="row">
@@ -149,33 +149,29 @@
             Privacy Policy
             <textarea name="privacy_policy" id="privacy_policy"><!-- tmpl_var privacy_policy --></textarea>
         </label>
-   </div> 
+   </div>
 </div>
 
 
 <!-- tmpl_if flags_physical_address -->
     <div class="alert-box alert radius">
 	    You need to give your list a physical address.
-    </div> 
+    </div>
 <!--/tmpl_if-->
 
 <div class="row">
     <div class="small-12 columns">
-    <label for="physical_address"> 
+    <label for="physical_address">
         Physical Address
-        <textarea name="physical_address" id="physical_address" cols="50" rows="5"><!-- tmpl_var physical_address --></textarea>
+        <textarea name="physical_address" id="physical_address"><!-- tmpl_var physical_address --></textarea>
      </label>
-    </div> 
+    </div>
  </div>
-        
-
-</fieldset>
-
-<input type="hidden" name="flavor"       value="change_info" />
-<input type="hidden" name="process" value="1" />
 
 
-<ul class="button-group right">    
+
+
+<ul class="button-group right">
     <li><input type="reset"  class="cautionary button" value="Clear Changes" /></li>
     <li><input type="submit" class="processing button" value="Save Changes" /></li>
 </ul>
@@ -183,8 +179,8 @@
 
 
 
-</form> 
+</form>
 
- 
+
 
 <!-- end change_info_screen.tmpl -->
