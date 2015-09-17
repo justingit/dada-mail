@@ -11,8 +11,7 @@
 			<input type="hidden" id="kcfinder_upload_url" name="kcfinder_upload_url" value="<!-- tmpl_var kcfinder_upload_url -->"          />
 		<!-- /tmpl_if --> 
 		
-		<!-- tmpl_if core5_filemanager_enabled --> 
-		
+		<!-- tmpl_if core5_filemanager_enabled --> 		
 		
 			<input type="hidden" id="core5_filemanager_enabled"    name="core5_filemanager_enabled"    value="<!-- tmpl_var core5_filemanager_enabled -->"        />
 			<input type="hidden" id="core5_filemanager_url"        name="core5_filemanager_url"        value="<!-- tmpl_var core5_filemanager_url -->"        />
@@ -22,41 +21,47 @@
 
 		<input type="hidden" id="SUPPORT_FILES_URL"   name="SUPPORT_FILES_URL"   value="<!-- tmpl_var SUPPORT_FILES_URL -->"   /> 
 
-		<p>
-			<button type="button" name="attachment1_button" id="attachment1_button" value=""  data-attachment="attachment1" class="kcfinder_open"/>Select a File...</button>
-			<input  type="hidden" name="attachment1"        id="attachment1"        value="" /> 
-			<input type="button" value="[x]"  class="remove_attachment alertive" id="attachment1_remove_button" data-attachment="attachment1" />
-		</p>
+		<div class="row">
+		   <div class="small-12 columns">
+		
+				<button type="button" name="attachment1_button" id="attachment1_button" value=""  data-attachment="attachment1" class="kcfinder_open"/>Select a File...</button>
+				<input  type="hidden" name="attachment1"        id="attachment1"        value="" /> 
+				<input type="button" value="[x]"  class="button remove_attachment alertive" id="attachment1_remove_button" data-attachment="attachment1" />
+			</div>
+		</div>
 
-		<p>
-			<button type="button" name="attachment2_button" id="attachment2_button" value=""  data-attachment="attachment2" class="kcfinder_open"/>Select a File...</button>
-			<input  type="hidden" name="attachment2"        id="attachment2"        value="" /> 
-			<input type="button" value="[x]"  class="remove_attachment alertive button" id="attachment2_remove_button" data-attachment="attachment2" />
-		</p>
-
-
-		<p>
-			<button type="button" name="attachment3_button" id="attachment3_button" value=""  data-attachment="attachment3" class="kcfinder_open"/>Select a File...</button>
-			<input  type="hidden" name="attachment3"        id="attachment3"        value="" /> 
-			<input type="button" value="[x]"  class="remove_attachment alertive" id="attachment3_remove_button" data-attachment="attachment3" />
-		</p>
-
-
-		<p>
+		<div class="row">
+		   <div class="small-12 columns">	
+				<button type="button" name="attachment2_button" id="attachment2_button" value=""  data-attachment="attachment2" class="kcfinder_open"/>Select a File...</button>
+				<input  type="hidden" name="attachment2"        id="attachment2"        value="" /> 
+				<input type="button" value="[x]"  class="button remove_attachment alertive" id="attachment2_remove_button" data-attachment="attachment2" />
+			</div>
+		</div>
+		
+		<div class="row">
+		   <div class="small-12 columns">	
+				<button type="button" name="attachment3_button" id="attachment3_button" value=""  data-attachment="attachment3" class="kcfinder_open"/>Select a File...</button>
+				<input  type="hidden" name="attachment3"        id="attachment3"        value="" /> 
+				<input type="button" value="[x]"  class="button remove_attachment alertive" id="attachment3_remove_button" data-attachment="attachment3" />
+			</div>
+		</div>
+		<div class="row">
+		   <div class="small-12 columns">	
 			<button type="button" name="attachment4_button" id="attachment4_button" value=""  data-attachment="attachment4" class="kcfinder_open"/>Select a File...</button>
 			<input  type="hidden" name="attachment4"        id="attachment4"        value="" /> 
-			<input type="button" value="[x]"  class="remove_attachment alertive" id="attachment4_remove_button" data-attachment="attachment4" />
-		</p>
-
-
-		<p>
+			<input type="button" value="[x]"  class="button remove_attachment alertive" id="attachment4_remove_button" data-attachment="attachment4" />
+			</div>
+		</div>
+		
+		<div class="row">
+		   <div class="small-12 columns">	
+	
 			<button type="button" name="attachment5_button" id="attachment5_button" value=""  data-attachment="attachment5" class="kcfinder_open"/>Select a File...</button>
 			<input  type="hidden" name="attachment5"        id="attachment5"        value="" /> 
-			<input type="button" value="[x]"  class="remove_attachment alertive" id="attachment5_remove_button" data-attachment="attachment5" />
-		</p>
-
-
-
+			<input type="button" value="[x]"  class="button remove_attachment alertive" id="attachment5_remove_button" data-attachment="attachment5" />
+			</div>
+		</div>
+	
 	</div> 
 <!-- tmpL_else --> 
 	<div class="alert-box info radius">

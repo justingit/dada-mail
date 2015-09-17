@@ -1,83 +1,83 @@
 <!-- begin send_email_archive_options_widget.tmpl -->
 
-
-
-
-
 <input type="hidden" name="local_archive_options_present" value="1" /> 
 
- <table>
-  <tr> 
-   <td>
-    <p>
-        
-     <input 
-        type="checkbox" 
-        name="archive_message" 
-        id="archive_message" 
-        <!-- tmpl_unless draft_id --> 
-            <!-- tmpl_if list_settings.archive_messages -->
-                checked="checked"
-            <!-- /tmpl_if -->
-        <!-- /tmpl_unless --> 
-        value="1" 
-        class="ChangeMassMailingButtonLabel" 
-    />
-    </p>
-   </td>
-   <td>
-    <p>
-     <label for="archive_message">
-      Archive this message
-     </label>
-    </p>
-   </td>
-  </tr>
-  <tr>
-   <td>
-    <p>
-        <!-- tmpl_if expr="(draft_role eq 'draft')" --> 
-            <input type="checkbox" name="archive_no_send" id="archive_no_send" value="1" class="ChangeMassMailingButtonLabel" />
-        <!-- tmpl_else --> 
-            <input type="checkbox"  value="0" disabled="disabled"/>
-        <!-- /tmpl_if --> 
-    </p>
-   </td>
-   <td>
-    <p>
-     <label for="archive_no_send">
-      Only Archive, Don't Send
-     </label>
-     <!-- tmpl_unless expr="(draft_role eq 'draft')" --> 
-        <span class="disabled">
-             (Disabled - create a draft message first)
-         </span>
-     <!--/tmpl_unless -->
-    </p>
-    <!-- tmpl_if expr="(draft_role eq 'draft')" --> 
-    
-        <table  cellpadding="0" cellspacing="0">
-         <tr>
-          <td>
-           <p>
-                <input type="checkbox" name="back_date" id="back_date" value="1" />
-                <label for="back_date">
-                 Back Date:
-                </label>
-                    <input type="text" name="backdate_datetime" id="backdate_datetime" />
-               </p>
-          </td>
-         </tr> 
-        </table> 
-    <!-- /tmpl_if --> 
-    
-   </td>
-  </tr>
- </table>
+<div class="row">
+   <div class="small-12 columns">
+		<input 
+			type="checkbox" 
+			name="archive_message" 
+			id="archive_message" 
+			<!-- tmpl_unless draft_id --> 
+				<!-- tmpl_if list_settings.archive_messages -->
+					checked="checked"
+				<!-- /tmpl_if -->
+			<!-- /tmpl_unless --> 
+			value="1" 
+			class="ChangeMassMailingButtonLabel" 
+		/>
+		<label for="archive_message">
+			Archive this message
+		</label>
+	</div> 
+</div>
+<div class="row"> 
+	<div class="small-1  columns">
+	</div>
+	<div class="small-11 columns">	
+	
+		<!-- tmpl_if expr="(draft_role eq 'draft')" --> 
+			<input 
+				type="checkbox" 
+				name="archive_no_send" 
+				id="archive_no_send" 
+				value="1" 
+				class="ChangeMassMailingButtonLabel" 
+			/>
+		<!-- tmpl_else --> 
+			<input 
+				type="checkbox"  
+				value="0" 
+				disabled="disabled"
+			/>
+		<!-- /tmpl_if --> 
 
+		<label for="archive_no_send">
+			Only Archive, Don't Send
+		</label>
 
+		<!-- tmpl_unless expr="(draft_role eq 'draft')" --> 
+			<span class="disabled">
+					(Disabled - create a draft message first)
+				</span>
+		<!--/tmpl_unless -->
+	</div> 
+</div>
 
- 
+<div class="row"> 
+	<div class="small-2  columns">
+	</div>
+	<div class="small-10 columns">	
+		<!-- tmpl_if expr="(draft_role eq 'draft')" --> 
 
+			<input 
+				type="checkbox" 
+				name="back_date" 
+				id="back_date" 
+				value="1" 
+			/>
+			<label for="back_date">
+				Back Date:
+			</label>
+
+			<input 
+				type="text" 
+				name="backdate_datetime" 
+				id="backdate_datetime" 
+			/>
+
+		<!-- /tmpl_if --> 
+	</div> 
+</div>
 
 <!-- end send_email_archive_options_widget.tmpl -->

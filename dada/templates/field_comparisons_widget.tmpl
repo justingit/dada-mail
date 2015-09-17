@@ -1,62 +1,58 @@
+<!-- begin field_comparisons_widget.tmpl -->
+
 <div id="field_comparisons"> 
-<table> 
+	<!-- tmpl_loop undotted_fields --> 
+		
+		<div class="row">
+			<div class="large-2 columns">
+				<label for="<!-- tmpl_var name -->.operator" class="large-right">
+					<!-- tmpl_var label -->:
+				</label>
+			</div>
+			<div class="large-4 columns">			
+				<select name="<!-- tmpl_var name -->.operator" id="<!-- tmpl_var name -->.operator">
+					<option value="LIKE">Is Like</option>
+					<option value="=">Is Equal To</option> 
+					<option value="NOT LIKE">Is Not Like</option>
+					<option value="!=">Is Not Equal To</option> 
+				</select> 
+			</div>
+			<div class="large-6 columns">			
+				<input 
+					type="text" 
+					name="<!-- tmpl_var name -->.value" 
+					id="<!-- tmpl_var name -->.value" 
+				/>
+			</div>
+		</div>
+	<!-- /tmpl_loop --> 
 
-<!-- tmpl_loop undotted_fields --> 
-    <tr> 
-     <td align="right"> 
-      <p>
-       <label for="<!-- tmpl_var name -->.operator">
-        <!-- tmpl_var label -->:
-       </label> 
-      </p>
-     </td> 
-     <td>
-      <p>
-       <select name="<!-- tmpl_var name -->.operator" id="<!-- tmpl_var name -->.operator">
-		<option value="LIKE">Is Like</option>
-        <option value="=">Is Equal To</option> 
-		<option value="NOT LIKE">Is Not Like</option>
-        <option value="!=">Is Not Equal To</option> 
-
-       </select> 
-      </p>
-     </td>
-     <td>
-      <p>           
-       <input type="text" name="<!-- tmpl_var name -->.value" id="<!-- tmpl_var name -->.value" />
-      </p>
-     </td>
-    </tr> 
-<!-- /tmpl_loop --> 
-
-
-
-    <tr> 
-     <td align="right"> 
-      <p>
-       <label for="subscriber_timestamp_rangestart">
-            Subscription Date:
-       </label> 
-      </p>
-     </td> 
-     <td>
-         <p>
-             <label for="subscriber_timestamp_rangestart">Between:</label>
-             <br> 
-             <input id="subscriber_timestamp_rangestart" name="subscriber.timestamp.rangestart" type="text" >
-             <br />(<a href="#" class="clear_field" data-target="subscriber_timestamp_rangestart">clear</a>)
-        </p>
-    </td>
-    <td>
-        
-            <p><label for="subscriber_timestamp_rangeend">
-             And:
-            </label>
-            <br/>
-            <input id="subscriber_timestamp_rangeend" name="subscriber.timestamp.rangeend" type="text" >
-            <br />(<a href="#" class="clear_field" data-target="subscriber_timestamp_rangeend">clear</a>)
-         </p> 
-     </td>
-    </tr>
-</table> 
+	<div class="row">
+		<div class="large-2 columns">	
+			<label for="subscriber_timestamp_rangestart" class="large-right">
+				Subscription Date:
+			</label> 
+		</div>
+		<div class="large-5 columns">
+			<label for="subscriber_timestamp_rangestart">
+				Between:
+			</label>
+			<input type="text" id="subscriber_timestamp_rangestart" name="subscriber.timestamp.rangestart">
+			(<a href="#" class="clear_field" data-target="subscriber_timestamp_rangestart">
+				clear
+			</a>)
+		</div>
+		
+		<div class="large-5 columns">
+			<label for="subscriber_timestamp_rangeend">
+				And:
+			</label>			
+			<input type="text" id="subscriber_timestamp_rangeend" name="subscriber.timestamp.rangeend"  >
+			(<a href="#" class="clear_field" data-target="subscriber_timestamp_rangeend">
+				clear
+			</a>)
+		</div>
+	</div>
 </div> 
+
+<!-- end field_comparisons_widget.tmpl -->

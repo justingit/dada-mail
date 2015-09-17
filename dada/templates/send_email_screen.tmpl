@@ -114,38 +114,36 @@
 <fieldset> 
  <legend>Message Body [<a href="#" onclick="$.colorbox({inline:true, href:$('#message_body_help')})">?</a>]</legend>
 
-<div id="tabs"> 
+
 	
-	<ul> 
-		<li>
-			<a href="#html_message">
+<ul class="tabs" data-tab>
+	<li class="tab-title <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" --><!-- tmpl_else -->active<!-- /tmpl_if -->">
+		<a href="#html_message">
 				HTML Version
 			</a>
 		</li>
-		<li <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" -->class="ui-tabs-selected"<!-- /tmpl_if -->>
+		<li class="tab-title <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" --> active <!-- /tmpl_if -->">
 				<a href="#plaintext_message">
 					PlainText Version
 				</a>
 			</li>
-			<li>
-    			<a href="#file_attachments">
-     				 File Attachments
-    			</a>
-    		</li>
-    		
+		<li class="tab-title">
+			<a href="#file_attachments">
+ 				 File Attachments
+			</a>
+		</li>    		
 		</ul>
-	<div id="html_message" style="display: block; border-width: 0; padding: 0em 0em; background: none;"> 
-	    <!-- tmpl_include html_message_form_field_widget.tmpl --> 
-	</div>	
-	<div id="plaintext_message" style="display: block; border-width: 0; padding: 0em 0em; background: none;"> 
-	    <!-- tmpl_include plaintext_message_form_field_widget.tmpl -->
-	</div>
-	<div id="file_attachments">		
-	    <!-- tmpl_include send_email_file_attachments_widget.tmpl -->
+	<div class="tabs-content">
+		<div  class="content tab-title  <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" --><!-- tmpl_else -->active<!-- /tmpl_if -->" id="html_message"> 
+		    <!-- tmpl_include html_message_form_field_widget.tmpl --> 
+		</div>	
+		<div class="content <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" --> active <!-- /tmpl_if -->" id="plaintext_message"> 
+		    <!-- tmpl_include plaintext_message_form_field_widget.tmpl -->
+		</div>
+		<div class="content"  id="file_attachments">		
+		    <!-- tmpl_include send_email_file_attachments_widget.tmpl -->
+		</div> 
 	</div> 
-	
-	
-</div> 
  
 
 </fieldset>
@@ -155,78 +153,73 @@
 <legend>Options</legend>
 
 
-<div id="tabs_mass_mailing_options">
-	<ul>
-		<li>
-			<a href="#send_email_archive_options">
- 				Archiving
+<ul class="tabs" data-tab>
+	<li class="tab-title active">
+		<a href="#send_email_archive_options">
+			Archiving
+		</a>
+	</li>
+	<!-- tmpl_if MULTIPLE_LIST_SENDING --> 
+		<li class="tab-title">
+			<a href="#multiple_list_sending">
+ 				Multiple List Sending
 			</a>
 		</li>
-		
-		
-		<!-- tmpl_if MULTIPLE_LIST_SENDING --> 
-			<li>
-				<a href="#multiple_list_sending">
-	 				Multiple List Sending
-				</a>
-			</li>
-		<!-- /tmpl_if --> 
-		<!-- tmpl_if can_have_subscriber_fields --> 
-			<li>
-				<a href="#partial_sending_options">
-	 				 Partial Mailing List Sending 
-				</a>
-			</li>
-		<!-- /tmpl_if --> 
-		
-		<!-- tmpl_if comment --> 
-		
-		    <!-- tmpl_if can_have_subscriber_fields --> 
-    		<li>
-    			<a href="#update_profile_fields">
-     				 Update Profile Fields
-    			</a>
-    		</li>		
-		    <!-- /tmpl_if --> 
+	<!-- /tmpl_if --> 
+	<!-- tmpl_if can_have_subscriber_fields --> 
+		<li class="tab-title">
+			<a href="#partial_sending_options">
+ 				 Partial Mailing List Sending 
+			</a>
+		</li>
+	<!-- /tmpl_if --> 
+	
+	<!-- tmpl_if comment --> 
+	
+	    <!-- tmpl_if can_have_subscriber_fields --> 
+		<li class="tab-title">
+			<a href="#update_profile_fields">
+ 				 Update Profile Fields
+			</a>
+		</li>		
 	    <!-- /tmpl_if --> 
+    <!-- /tmpl_if --> 
 
-		<li>
-			<a href="#send_email_test_recipient">
- 				 Testing
-			</a>
-		</li>
-		
-		</ul>
-		
-	<div id="send_email_archive_options">		
-	<!-- tmpl_include send_email_archive_options_widget.tmpl -->
+	<li class="tab-title">
+		<a href="#send_email_test_recipient">
+			 Testing
+		</a>
+	</li>
+</ul>
+	
+<div class="tabs-content">
+	<div class="content tab-title active" id="send_email_archive_options">		
+		<!-- tmpl_include send_email_archive_options_widget.tmpl -->
 	</div> 
 	
 	
 	<!-- tmpl_if MULTIPLE_LIST_SENDING --> 
-		<div id="multiple_list_sending">		
-		<!-- tmpl_include multiple_list_sending_widget.tmpl --> 
+		<div class="content tab-title" id="multiple_list_sending">		
+			<!-- tmpl_include multiple_list_sending_widget.tmpl --> 
 		</div> 
 	<!-- /tmpl_if --> 
 	
 	<!-- tmpl_if can_have_subscriber_fields --> 
-		<div id="partial_sending_options">		
-		<!-- tmpl_include partial_sending_options_widget.tmpl --> 
+		<div  class="content tab-title" id="partial_sending_options">		
+			<!-- tmpl_include partial_sending_options_widget.tmpl --> 
 		</div> 
 	<!-- /tmpl_if --> 
 	
 
 	<!-- tmpl_if can_have_subscriber_fields --> 
-		<div id="update_profile_fields">		
+		<div class="content tab-title"  id="update_profile_fields">		
 		    <!-- tmpl_include update_profile_fields.tmpl --> 
 		</div> 
 	<!-- /tmpl_if --> 
 
-	<div id="send_email_test_recipient">		
-	<!-- tmpl_include send_email_test_recipient_widget.tmpl --> 
+	<div class="content tab-title"  id="send_email_test_recipient">		
+		<!-- tmpl_include send_email_test_recipient_widget.tmpl --> 
 	</div> 
-
-
 </div> 
 
 </fieldset> 
