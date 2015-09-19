@@ -28,9 +28,14 @@
 		<div style="clear:both"></div>
 	<!-- /tmpl_if -->
 	
-	Viewing: <!-- tmpl_var tracker_record_view_count_widget --> Records at once. 
-	
-	<div id="show_table_results" style="width:100%; height:325px"></div>
+	<div class="row">
+		<div class="small-12 columns ">	
+			Viewing 
+			<!-- tmpl_var tracker_record_view_count_widget --> 
+			Records at once. 
+		</div> 
+	</div>
+	<div id="show_table_results"></div>
 	<div id="show_table_results_loading"><p>&nbsp;</p></div>
 	<form> 
         <p>
@@ -43,291 +48,262 @@
         </select>
     </form>
 	<div id="subscriber_history_chart_loading"><p>&nbsp;</p></div>
-	<div id="subscriber_history_chart"style="width:100%; height:400px"></div>
+	<div id="subscriber_history_chart"></div>
     
 	
 
 <fieldset> 
  <legend>Export Logs</legend> 
-<div style="float:right">
- <table> 
-  <tr> 
-   <td> 
-  <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
-   <input type="hidden" name="flavor" value="plugins" > 
-   <input type="hidden" name="plugin" value="tracker" > 
-   <input type="hidden" name="prm" value="download_logs" > 
-   <input type="hidden" name="log_type" value="clickthrough" > 
-   <input type="submit" value="Download Clickthrough Logs (.csv)" class="processing" >
-  </form> 
- </td> 
-<td> 
-<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
- <input type="hidden" name="flavor" value="plugins" > 
- <input type="hidden" name="plugin" value="tracker" > 
- <input type="hidden" name="prm" value="download_logs" > 
- <input type="hidden" name="log_type" value="activity" > 
- <input type="submit" value="Download Mass Mailing Event Logs (.csv)" class="processing" >
-</form>
-</td> 
-<td> 
-<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
- <input type="button" value="Purge ALL Clickthrough Logs" class="alertive tracker_purge_log">
-</form> 
-</td> 
-</tr> 
-</table> 
-</div> 
-<div style="clear:both">
+
+<ul class="button-group right">
+	<li>
+		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+			<input type="hidden" name="flavor" value="plugins" > 
+			<input type="hidden" name="plugin" value="tracker" > 
+			<input type="hidden" name="prm" value="download_logs" > 
+			<input type="hidden" name="log_type" value="clickthrough" > 
+			<input type="submit" value="Download Clickthrough Logs (.csv)" class="button small processing" >
+		</form> 
+	</li>
+	<li>
+		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+			<input type="hidden" name="flavor" value="plugins" > 
+			<input type="hidden" name="plugin" value="tracker" > 
+			<input type="hidden" name="prm" value="download_logs" > 
+			<input type="hidden" name="log_type" value="activity" > 
+			<input type="submit" value="Download Mass Mailing Event Logs (.csv)" class="button small processing" >
+		</form>
+	</li>
+	<li>
+		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+			<input type="button" value="Purge ALL Clickthrough Logs" class="button small alertive tracker_purge_log">
+		</form> 
+	</li>
+</ul>
+
+
+
+
 </fieldset> 
 
 <fieldset> 
-<legend>
- Preferences
-</legend> 
+	<legend>
+		Preferences
+	</legend> 
 
-<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
-<input type="hidden" name="flavor" value="plugins" > 
-<input type="hidden" name="plugin" value="tracker" >     
-<input type="hidden" name="prm" value="edit_prefs" > 
-
-
-<h3>
-	<strong>Track Message Clickthroughs:</strong> 
-</h3> 
-	<table  width="100%">	
-	  <tr> 
-	  <td width="20"> 
-  	<input type="radio" id="tracker_auto_parse_links" name="tracker_auto_parse_links"   class="tracker_parse_links_setup"  value="1" <!-- tmpl_if list_settings.tracker_auto_parse_links -->checked="checked"<!--/tmpl_if -->>
-	  </td> 
-	  <td> 
+	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+		<input type="hidden" name="flavor" value="plugins" > 
+		<input type="hidden" name="plugin" value="tracker" >     
+		<input type="hidden" name="prm" value="edit_prefs" > 
 		
-		<p>
-		 <label for="tracker_auto_parse_links">Automatically</label></p>
-		<!-- tmpl_unless can_use_auto_redirect_tag -->
-			<div class="alert-box info radius"> 
-				<p class="error"> 
+		<div>
+			Track Message Clickthroughs:
+		</div> 
+	 
+ 		<div class="row">
+ 			<div class="small-12 columns ">	
+				<input type="radio" id="tracker_auto_parse_links" name="tracker_auto_parse_links"   class="tracker_parse_links_setup"  value="1" <!-- tmpl_if list_settings.tracker_auto_parse_links -->checked="checked"<!--/tmpl_if -->>
+				<label for="tracker_auto_parse_links">
+				Automatically
+			</label>
+			<!-- tmpl_unless can_use_auto_redirect_tag -->
+				<div class="alert-box info radius"> 
 					Disabled. You must have the HTML::LinkExtor and URI::Find CPAN modules installed. 
-				</p>
+				</div> 
+			<!-- tmpl_else -->
+				<div class="alert-box info radius"> 
+					 All message links will be parsed into redirect links and tracked. 
+				</div> 
+			<!-- /tmpl_unless -->
+		</div>
+	</div>
+	
+ 		<div class="row">
+ 			<div class="small-1 columns ">	
 			</div> 
-		<!-- /tmpl_unless -->
+	 		<div class="small-11 columns ">	
+				<div id="tracker_auto_parse_links_info"> 
+					<fieldset>
+						
+						      <input 
+							  	type="checkbox" 
+								id="tracker_auto_parse_mailto_links" 
+								name="tracker_auto_parse_mailto_links"  
+								value="1" 
+								<!-- tmpl_if list_settings.tracker_auto_parse_mailto_links -->checked="checked"<!--/tmpl_if -->
+							  >
+						      <label for="tracker_auto_parse_mailto_links">Auto Track mailto: Links</label> 
+							  <div class="alert-box info radius"> 
+							  	 Email addresses in <strong>mailto:</strong> 
+								 links will also be parsed into redirect links and tracked.
+							  </div>
+					</fieldset>
+				</div> 
+			</div> 
+		</div>
+
+		<div class="row">
+			<div class="small-12 columns ">		
+		  		<input type="radio" id="tracker_noauto_parse_links" name="tracker_auto_parse_links"  class="tracker_parse_links_setup" value="0" <!-- tmpl_unless list_settings.tracker_auto_parse_links -->checked="checked"<!--/tmpl_unless -->>
+				<label for="tracker_noauto_parse_links">
+					Manually, By Tagging Message Links
+				</label>
+			</div> 
+		</div>
 		
-		
-		<div id="tracker_auto_parse_links_info"> 
-			<fieldset>
-				<p>
-				 All message links will be parsed into redirect links and tracked. 
-				</p> 
-				    <table>   
-				    <tr> 
-				      <td> 
-				      <input type="checkbox" id="tracker_auto_parse_mailto_links" name="tracker_auto_parse_mailto_links"  value="1" <!-- tmpl_if list_settings.tracker_auto_parse_mailto_links -->checked="checked"<!--/tmpl_if -->>
-				      </td> 
-				      <td> 
-				      <p>
-				       <label for="tracker_auto_parse_mailto_links">Auto Track, mailto: Links</label> 
-				       <br > 
-				       email addresses in <strong>mailto:</strong> links will also be parsed into redirect links and tracked.
-				      </p> 
-				      </td> 
-				    </tr> 
-				</table>
-				
-			</fieldset>
-		</div> 
+		<div class="row">
+			<div class="small-1 columns ">
+			</div>		
+			<div class="small-11 columns ">
+				<div id="tracker_noauto_parse_links_info"> 
+					<fieldset> 
+						<div class="alert-box info radius"> 		
+							<p>Tag links you would like to track, with the special <strong>Redirect Tag</strong>. For example:</p>
+							<p><code>&lt;?dada redirect url=&quot;http://example.com&quot; ?&gt;</code></p>
+							<p>HTML Example:</p> 
+							<p><code>&lt;a href=&quot;&lt;?dada redirect url=&quot;http://example.com&quot; ?&gt;&quot;&gt;Click Here!&lt;/a&gt;</code></p>
+						</div>
+						</fieldset>
+				</div>
+			</div>
+		</div>
 
-	  </td> 
-	</tr> 
-	
-	  <tr> 
-	  <td width="20"> 
-  	<input type="radio" id="tracker_noauto_parse_links" name="tracker_auto_parse_links"  class="tracker_parse_links_setup" value="0" <!-- tmpl_unless list_settings.tracker_auto_parse_links -->checked="checked"<!--/tmpl_unless -->>
-	  </td> 
-	  <td> 
-		
-		<p>
-		 <label for="tracker_noauto_parse_links">Manually, By Tagging Message Links</label></p>
+  	<div>
+		Track Message Opens:
+	</div>
+	<div class="row">
+		<div class="small-12 columns ">	
+		  	<input type="radio" id="tracker_track_opens_directly" name="tracker_track_opens_method"   class="tracker_track_opens_directly"  value="directly" <!-- tmpl_if expr="(list_settings.tracker_track_opens_method eq 'directly')" -->checked="checked"<!--/tmpl_if -->>
+			<label for="tracker_track_opens_directly">
+				Directly using an embedded image
+			</label>
+		</div>
+	</div>
+	<div class="row">
+		<div class="small-12 columns ">	
+			<input type="radio" id="tracker_track_opens_indirectly" name="tracker_track_opens_method"   class="tracker_track_opens_indirectly"  value="indirectly" <!-- tmpl_if expr="(list_settings.tracker_track_opens_method ne 'directly')" -->checked="checked"<!--/tmpl_if -->>
+			<label for="tracker_track_opens_indirectly">
+				Indirectly when a user interacts with your messages
+			</label>
+		</div>
+	</div>
+	<div class="row">
+		<div class="small-12 columns ">				
+	    <input 
+			type="checkbox" 
+			name="tracker_track_email" 
+			id="tracker_track_email"  
+			value="1" 
+			<!-- tmpl_if list_settings.tracker_track_email -->checked="checked"<!--/tmpl_if -->
+		> 
+	    <label for="tracker_track_email"> 
+	     	Track with Email Addresses
+	    </label>
+			<div class="alert-box info radius"> 		
+				Message Clickthroughs, and Opens will also track the subscriber's email address. 
+				Tracking data with the user's email address allows
+				more refined email analytics and reports. 
+			</div>
+		</div>
+	</div>
+	<div class="row">
+		<div class="small-1 columns ">
+		</div>
+		<div class="small-11 columns ">
+			<div id="tracker_track_email_options">   
+		       <fieldset> 
+		           <legend>Profile Updates</legend>
+		                 <input 
+						 	type="checkbox" 
+							name="tracker_update_profiles_w_geo_ip_data" 
+							id="tracker_update_profiles_w_geo_ip_data" 
+							value="1" 
+							<!-- tmpl_if list_settings.tracker_update_profiles_w_geo_ip_data -->checked="checked"<!-- /tmpl_if -->
+						   >
+		                   <label for="tracker_update_profiles_w_geo_ip_data">
+		                       Update Profiles, after Opens/Clickthroughs
+		                   </label> 
 
-		
-		<div id="tracker_noauto_parse_links_info"> 
-			<fieldset> 
-			<p>Tag links you would like to track, with the special <strong>Redirect Tag</strong>. For example:</p>
-			
-			<p><code>&lt;?dada redirect url=&quot;http://example.com&quot; ?&gt;</code></p>
-
-			<p>HTML Example:</p> 
-			<p><code>&lt;a href=&quot;&lt;?dada redirect url=&quot;http://example.com&quot; ?&gt;&quot;&gt;Click Here!&lt;/a&gt;</code></p>
-			
-			</fieldset>
-		</div> 
-
-	  </td> 
-	</tr> 
-	
-	
-	
-	
-	</table>
-
-<h3>
- <strong>
-  Track Message Opens:
- </strong>
-   </h3>
-	
-	<table  width="100%">	
-	  <tr> 
-	  <td width="20"> 
-  	<input type="radio" id="tracker_track_opens_directly" name="tracker_track_opens_method"   class="tracker_track_opens_directly"  value="directly" <!-- tmpl_if expr="(list_settings.tracker_track_opens_method eq 'directly')" -->checked="checked"<!--/tmpl_if -->>
-	  </td> 
-	  <td> 
-		<label for="tracker_track_opens_directly">Directly</label>,
-		 using an embedded image
-	  </td> 
-	 </tr> 
-	  <tr> 
-	  <td width="20"> 
-  	<input type="radio" id="tracker_track_opens_indirectly" name="tracker_track_opens_method"   class="tracker_track_opens_indirectly"  value="indirectly" <!-- tmpl_if expr="(list_settings.tracker_track_opens_method ne 'directly')" -->checked="checked"<!--/tmpl_if -->>
-	  </td> 
-	  <td> 
-		<label for="tracker_track_opens_indirectly">
-			Indirectly
-		</label>,
-		 when a user interacts with your messages
-	  </td> 
-	 </tr> 
-	</table>
-	
-
-
-<br > 
-<br >
-
-<table  border="0">
-  <tr> 
-  <td> 
-   <p>
-    <input type="checkbox" name="tracker_track_email" id="tracker_track_email"  value="1" <!-- tmpl_if list_settings.tracker_track_email -->checked="checked"<!--/tmpl_if --> 
-   </p>	
-  </td> 
-  <td> 
-   <p>
-    <label for="tracker_track_email"> 
-     Track with Email Addresses
-    </label><br >
-		Message Clickthroughs, and Opens will also track the subscriber's email address. Tracking data with the user's email address allows
-		more refined email analytics and reports. 
-   </p>
-   
-   <div id="tracker_track_email_options"> 
-       
-       <fieldset> 
-           <legend>Profile Updates</legend>
-       
-       
-           <table  border="0">
-             <tr> 
-             <td>     
-                 <input type="checkbox" name="tracker_update_profiles_w_geo_ip_data" id="tracker_update_profiles_w_geo_ip_data" value="1" <!-- tmpl_if list_settings.tracker_update_profiles_w_geo_ip_data -->checked="checked"<!-- /tmpl_if --> >
-            </td>
-            <td>    
-               <p>
-                   <label for="tracker_update_profiles_w_geo_ip_data">
-                       Update Profiles, after Opens/Clickthroughs
-                   </label> 
-               </p>
-              </td>
-          </tr>
-          <td>&nbsp;</td> 
-          
-              <td>
-                   <div id="field_name_group">                
-                		<table  style="width:auto">
-                		    <!-- tmpl_loop field_names --> 
-                            <tr>     
-                		        <td width="25">
-                                    <input type="checkbox" 
-                                          id="<!-- tmpl_var name escape="HTML" -->.enabled" 
-                                        name="<!-- tmpl_var name escape="HTML" -->.enabled" 
-                                        class="field_checkbox" 
-                                        data-target="<!-- tmpl_var name escape="HTML" -->_popup_menu" 
-                                        value="1" 
-                                        <!-- tmpl_if enabled -->
-                                            checked="checked"
-                                        <!-- /tmpl_if --> 
-                                    >
-                                </td> 
-                                <td> 
-                                    <label for="<!-- tmpl_var name escape="HTML" -->.enabled"><!-- tmpl_var label  escape="HTML" --> (<!-- tmpl_var name escape="HTML" -->):
-                                </td>
-                                <td> 
-                                    <div id="<!-- tmpl_var name escape="HTML" -->_popup_menu">
-                                        <!-- tmpl_var popup_menu -->
-                                    </div>
-                               </td>
-                           </tr> 
-                           <!-- /tmpl_loop --> 
-                        </table> 
-                    </div> 
-                </td> 
-            </tr> 
-        </table> 
-        
-       </fieldset> 
+				   		<div class="small-1 columns ">
+				   		</div>
+				   		<div class="small-11 columns ">
+				   			<div id="tracker_track_email_options">   
+						   
+			                   <div id="field_name_group">                
+			                		    <!-- tmpl_loop field_names --> 
+											<div class="row">
+												<div class="small-1 columns ">				
+				                                    <input type="checkbox" 
+				                                          id="<!-- tmpl_var name escape="HTML" -->.enabled" 
+				                                        name="<!-- tmpl_var name escape="HTML" -->.enabled" 
+				                                        class="field_checkbox" 
+				                                        data-target="<!-- tmpl_var name escape="HTML" -->_popup_menu" 
+				                                        value="1" 
+				                                        <!-- tmpl_if enabled -->
+				                                            checked="checked"
+				                                        <!-- /tmpl_if --> 
+				                                    >
+												</div>
+												<div class="small-3 columns ">				
+				                                    <label for="<!-- tmpl_var name escape="HTML" -->.enabled">
+														<!-- tmpl_var label  escape="HTML" --> (<!-- tmpl_var name escape="HTML" -->):
+													</label>
+												</div>
+												<div class="small-8 columns ">				
+				                                    <div id="<!-- tmpl_var name escape="HTML" -->_popup_menu">
+				                                        <!-- tmpl_var popup_menu -->
+				                                    </div>
+												</div>
+											</div>
+									   <!-- /tmpl_loop --> 
+			                    </div> 
+							 </div> 
+						</div> 
+		       </fieldset> 
+		   </div> 
+   		</div> 
    </div> 
    
-  </td>
-  </tr> 
+	<div class="row">
+		<div class="small-12 columns ">	
+		    <input 
+				type="checkbox" 
+				name="tracker_clean_up_reports" 
+				id="tracker_clean_up_reports"  
+				value="1" 
+				<!-- tmpl_if list_settings.tracker_clean_up_reports -->checked="checked"<!--/tmpl_if --> 
+			>
+		    <label for="tracker_clean_up_reports"> 
+				Clean Up Tracker Reports
+		    </label> 
+   		</div> 
+   </div> 
+	<div class="row">
+		<div class="small-12 columns ">	
+	
+		    <input 
+				type="checkbox" 
+				name="tracker_show_message_reports_in_mailing_monitor" 
+				id="tracker_show_message_reports_in_mailing_monitor"  
+				value="1" 
+				<!-- tmpl_if list_settings.tracker_show_message_reports_in_mailing_monitor -->checked="checked"<!--/tmpl_if --> 
+			>
+		    <label for="tracker_show_message_reports_in_mailing_monitor"> 
+				Show Message Reports in Mailing Monitor
+		    </label> 
+   		</div> 
+   </div> 
 
-
-
-
-
-
-
-   <tr> 
-  <td> 
-   <p>
-    <input type="checkbox" name="tracker_clean_up_reports" id="tracker_clean_up_reports"  value="1" <!-- tmpl_if list_settings.tracker_clean_up_reports -->checked="checked"<!--/tmpl_if --> 
-   </p>
-  </td> 
-  <td> 
-   <p>
-    <label for="tracker_clean_up_reports"> 
-    Clean Up Tracker Reports
-    </label> 
-   </p>
-  </td>
-  </tr>
-
-   <tr> 
-  <td> 
-   <p>
-    <input type="checkbox" name="tracker_show_message_reports_in_mailing_monitor" id="tracker_show_message_reports_in_mailing_monitor"  value="1" <!-- tmpl_if list_settings.tracker_show_message_reports_in_mailing_monitor -->checked="checked"<!--/tmpl_if --> 
-   </p>
-  </td> 
-  <td> 
-   <p>
-    <label for="tracker_show_message_reports_in_mailing_monitor"> 
-    Show Message Reports in Mailing Monitor
-    </label> 
-   </p>
-  </td>
-  </tr>
-
-
-  
-</table> 
-
-
-
-
-
-<div class="buttonfloat">   
- <input type="submit" class="processing" value="Save Tracker Preferences" > 
- </div>
-<div class="floatclear"></div>
-</form> 
+		<ul class="button-group right">
+	 		<li>
+				<input 
+					type="submit" 
+					class="button processing" 
+					value="Save Tracker Preferences"
+				> 
+			</li>
+		</ul>
+	</form> 
 </fieldset> 
 
 

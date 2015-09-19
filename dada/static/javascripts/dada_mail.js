@@ -3413,15 +3413,23 @@ function drawSubscriberHistoryChart() {
 					width: "70%",
 					height: "70%"
 				},
-				width: 720,
-				height: 400
 			};
+			options['width']  = $('#subscriber_history_chart').width();
+			options['height'] = $('#subscriber_history_chart').width();
+			$('#subscriber_history_chart').height($('#subscriber_history_chart').width());
+					
 			var SubscriberHistoryChart = new google.visualization.LineChart(document.getElementById('subscriber_history_chart'));
 			$("#subscriber_history_chart").hide('fade');
 			SubscriberHistoryChart.draw(data, options);
 			$("#subscriber_history_chart").show('fade');
 			$("#subscriber_history_chart_loading").html('<p class="alert">&nbsp;</p>');
-
+			
+			window.onresize = function(){
+				options['width']  = $('#subscriber_history_chart').width();
+				options['height'] = $('#subscriber_history_chart').width();
+				$('#subscriber_history_chart').height($('#subscriber_history_chart').width());
+				SubscriberHistoryChart.draw(data, options);
+			};
 		}
 	});
 }

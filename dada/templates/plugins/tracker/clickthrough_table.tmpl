@@ -2,289 +2,170 @@
 
 
 <!-- tmpl_if report_by_message_index --> 
+
+	<div class="row">
+	  <div class="small-9 small-centered columns">	
 	
-
-	
-	<table  style="width:100%" class="responsive">
-	 <tr> 
-	<td width="33%" align="left"> 
-
-	<strong>
-		
-		<a href="#" class="tracker_turn_page" data-page="<!-- tmpl_var first_page -->">
-			First
-		</a>
-	</strong>
-	</td> 
-
-	<td width="33%" align="center"> 
-	<p>
-
-	<!-- tmpl_if previous_page --> 
-		<strong>
-			<a href="#" class="tracker_turn_page" data-page="<!-- tmpl_var previous_page -->">
-		</strong>
-	<!-- tmpl_else --> 
-	<!-- /tmpl_if -->
-	&nbsp;&nbsp;&nbsp;&nbsp;
-		<!-- tmpl_loop pages_in_set --> 
-			<!-- tmpl_if on_current_page --> 
-				<strong> 
-				 <!-- tmpl_var page --> 
-				</strong> 
-			<!-- tmpl_else --> 
-				<a href="#" class="tracker_turn_page" data-page="<!-- tmpl_var page -->">
-				 <!-- tmpl_var page --> 
+		<ul class="pagination">
+			<li class="arrow">
+				<a href="#" class="tracker_turn_page" data-page="<!-- tmpl_var first_page -->">
+					&laquo;
 				</a>
+			</li>
+
+		<!-- tmpl_if previous_page --> 
+			<li>
+				<a href="#" class="tracker_turn_page" data-page="<!-- tmpl_var previous_page -->">
+					&lsaquo;
+				</a>
+			</li>
+		<!-- /tmpl_if -->
+
+			<!-- tmpl_loop pages_in_set --> 
+				<!-- tmpl_if on_current_page --> 
+					 <li class="current">
+						 <a href="#">
+							 <!-- tmpl_var page --> 
+						</a>
+					 </li>
+				<!-- tmpl_else --> 
+					<li>
+						<a href="#" class="tracker_turn_page" data-page="<!-- tmpl_var page -->">
+							<!-- tmpl_var page --> 
+						</a>
+					</li>
+				<!-- /tmpl_if --> 
+			<!-- /tmpl_loop --> 
+			<!-- tmpl_if next_page -->
+				<li>
+					<a href="#" class="tracker_turn_page" data-page="<!-- tmpl_var next_page -->">				
+						&rsaquo;
+					</a>
+				</li>
 			<!-- /tmpl_if --> 
 
-		<!-- /tmpl_loop --> 
-		&nbsp;&nbsp;&nbsp;&nbsp;
-		<!-- tmpl_if next_page -->
-		<strong>
-			<a href="#" class="tracker_turn_page" data-page="<!-- tmpl_var next_page -->">				
-				Next</a></strong>
-		<!-- tmpl_else --> 
-		<!-- /tmpl_if --> 
-		</p>
-	</td> 
+			<li class="arrow">
+				<a href="#" class="tracker_turn_page" data-page="<!-- tmpl_var last_page -->">		
+					 &raquo;
+			 	</a>
+			</li>
+		</ul>
+	</div>
+</div>
 
-	<td width="33%" align="right"> 
-
-	<strong>
-		<a href="#" class="tracker_turn_page" data-page="<!-- tmpl_var last_page -->">		
-		Last</a></strong>
-
+<table  style="width:100%" class="responsive">
+<tr> 
+<th> 
+	Sent
+</th>			
+<th> 
+	Subject
+</th> 
+<th> 
+	Archive
+</th>
+<th> 
+	Subscribers
+</th>
+<th> 
+	Recipients
+</th>
+<th> 
+	Opens
+</th>
+<th> 
+	Clickthroughs
+</th>
+<th> 
+	Unsubscribes
+</th>
+<th> 
+	Bounces (soft/hard)
+</th>
+<th> 
+</th>
+</tr> 
+<!-- tmpl_loop report_by_message_index --> 
+<tr> 
+	<td> 
+		<!-- tmpl_var date --> 
 	</td>
 
-	</tr> 
-	</table>
-
-	<div> 
-		<div style="max-height: 300px; overflow: auto; border:1px solid black">
-
-		  <table  style="width:100%" class="responsive">
-		   <tr> 
-			
-			<td> 
-			 <p>
-			  <strong> 
-				Sent
-			  </strong> 
-			 </p>
-			</td>
-			
-		    <td> 
-			 <p>
-			  <strong> 
-				Subject
-			  </strong> 
-			 </p>
-			</td> 
-			
-			<td> 
-			 <p>
-			  <strong> 
-				Archive
-			  </strong> 
-			 </p>
-			</td>
-			
-			
-
-			
-		    <td> 
-			 <p>
-			  <strong> 
-				Subscribers
-			  </strong> 
-			 </p>
-			</td>
-			
-			<td> 
-			 <p>
-			  <strong> 
-				Recipients
-			  </strong> 
-			 </p>
-			</td>
-			
-			
-			<td> 
-			 <p>
-			  <strong> 
-				Opens
-			  </strong> 
-			 </p>
-			</td>
-			
-			
-		    <td> 
-			 <p>
-			  <strong> 
-				Clickthroughs
-			  </strong> 
-			 </p>
-			</td>
-			
-
-
-		    <td> 
-			 <p>
-			  <strong> 
-				Unsubscribes
-			  </strong> 
-			 </p>
-			</td>
-			
-			
-		    <td> 
-			 <p>
-			  <strong> 
-				Bounces (soft/hard)
-			  </strong> 
-			 </p>
-			</td>
-
-		    <td> 
-			 <p>&nbsp;</p>
-			</td>
-			
-			</tr> 
-
-			<!-- tmpl_loop report_by_message_index --> 
-			<tr <!-- tmpl_if __odd__ -->class="alt"<!-- /tmpl_if -->> 
-				
-				<td> 
-			  <p>
-				<!-- tmpl_var date --> 
-		      </p> 
-		     </td>
-		
-			 <td> 
-	          <p>
-	          
-				<!-- tmpl_if message_subject -->
-				 	 <strong>
-					<a href="<!-- tmpl_var Plugin_URL" -->?prm=m&mid=<!-- tmpl_var mid -->">
-					<!-- tmpl_var message_subject escape="HTML" -->
-					</a> 
-				<!-- tmpl_else --> 
-					 <strong>
-					<a href="<!-- tmpl_var Plugin_URL" -->?prm=m&mid=<!-- tmpl_var mid -->">
-					#<!-- tmpl_var mid --> (unarchived message)
-					</a>
-					 </strong>
-				<!-- /tmpl_if --> 
-	 		   
-			  </p>
-			 </td> 
-			
-			<td>
-				
-			<!-- tmpl_if message_subject -->
-								
-				<p>
-				<a href="<!-- tmpl_var S_PROGRAM_URL -->?prm=view_archive&list=<!-- tmpl_var list -->&id=<!-- tmpl_var mid -->" target="_blank">
-				 </strong>
-					View 
-				</a> 
-			</p>
-			<!-- tmpl_else --> 
-			
-			<!-- /tmpl_if --> 
-			
-			
-			
-
-		
-		
-		     <td> 
-		      <p>
-		       <a href="<!-- tmpl_var Plugin_URL" -->?prm=m&mid=<!-- tmpl_var mid -->">
-			    <!-- tmpl_var num_subscribers  default="-"--> 
-			   </a> 
-		      </p>
-			 </td> 
-			
-			 <td> 
-		      <p>
-		       <a href="<!-- tmpl_var Plugin_URL" -->?prm=m&mid=<!-- tmpl_var mid -->">
-			    <!-- tmpl_var total_recipients  default="-"--> 
-			   </a> 
-		      </p>
-			 </td>
-			
-			
-			
-			 <td> 
-		      <p>
-		       <a href="<!-- tmpl_var Plugin_URL" -->?prm=m&mid=<!-- tmpl_var mid -->">
-			    <!-- tmpl_var open default="-"  --> 
-			   </a> 
-		      </p>
-			 </td>
-			
-			
-			
-		     <td> 
-		      <p>
-		       <a href="<!-- tmpl_var Plugin_URL" -->?prm=m&mid=<!-- tmpl_var mid -->">
-			    <!-- tmpl_var count  default="-"  --> 
-			   </a> 
-		      </p>
-			 </td>
-			 
-			
-			 
-		     <td> 
-		      <p>
-		       <a href="<!-- tmpl_var Plugin_URL" -->?prm=m&mid=<!-- tmpl_var mid -->">
-			    <!-- tmpl_var unsubscribe  default="-"  --> 
-			   </a> 
-		      </p>
-			 </td>
-			
-			
-
-			
-		     <td> 
-		      <p>
-		       <a href="<!-- tmpl_var Plugin_URL -->?prm=m&mid=<!-- tmpl_var mid -->">
-			    <!-- tmpl_var soft_bounce  default="-" --> /<!-- tmpl_var hard_bounce default="-" --> 
-			   </a> 
-		      </p>
-			 </td> 
-			 
-			 <td>
-			     <form action="<!-- tmpl_var S_PROGRAM_URL -->">
-					<input type="button" name="" value="[x]" class="alertive tracker_delete_msg_id_data" data-mid="<!-- tmpl_var mid -->" >  		
-				</form> 
-			</td>
-			
-			
-		  </tr> 
-
-		<!-- /tmpl_loop --> 
-
-	     </table> 
-	</div>		
-
-	</div> 
-	<!-- tmpl_if comment --> 
+ <td> 
+	<!-- tmpl_if message_subject -->
+		<a href="<!-- tmpl_var Plugin_URL" -->?prm=m&mid=<!-- tmpl_var mid -->">
+			<!-- tmpl_var message_subject escape="HTML" -->
+		</a> 
+	<!-- tmpl_else --> 
+		<a href="<!-- tmpl_var Plugin_URL" -->?prm=m&mid=<!-- tmpl_var mid -->">
+			#<!-- tmpl_var mid --> (unarchived message)
+		</a>
+	<!-- /tmpl_if --> 
+	</td> 
+<td>
 	
+<!-- tmpl_if message_subject -->
+	<a href="<!-- tmpl_var S_PROGRAM_URL -->?prm=view_archive&list=<!-- tmpl_var list -->&id=<!-- tmpl_var mid -->" target="_blank">
+		View 
+	</a> 
+	<!-- tmpl_else --> 
+<!-- /tmpl_if --> 
+ <td> 
+   <a href="<!-- tmpl_var Plugin_URL" -->?prm=m&mid=<!-- tmpl_var mid -->">
+    <!-- tmpl_var num_subscribers  default="-"--> 
+   </a> 
+ </td> 			
+ <td> 
+   <a href="<!-- tmpl_var Plugin_URL" -->?prm=m&mid=<!-- tmpl_var mid -->">
+    <!-- tmpl_var total_recipients  default="-"--> 
+   </a> 
+ </td>
+ <td> 
+   <a href="<!-- tmpl_var Plugin_URL" -->?prm=m&mid=<!-- tmpl_var mid -->">
+    <!-- tmpl_var open default="-"  --> 
+   </a> 
+ </td>
+ <td> 
+   <a href="<!-- tmpl_var Plugin_URL" -->?prm=m&mid=<!-- tmpl_var mid -->">
+    <!-- tmpl_var count  default="-"  --> 
+   </a> 
+ </td>
+ <td> 
+   <a href="<!-- tmpl_var Plugin_URL" -->?prm=m&mid=<!-- tmpl_var mid -->">
+    <!-- tmpl_var unsubscribe  default="-"  --> 
+   </a> 
+ </td>
+ <td> 
+   <a href="<!-- tmpl_var Plugin_URL -->?prm=m&mid=<!-- tmpl_var mid -->">
+    <!-- tmpl_var soft_bounce  default="-" --> /<!-- tmpl_var hard_bounce default="-" --> 
+   </a> 
+ </td> 
+ <td>
+     <form action="<!-- tmpl_var S_PROGRAM_URL -->">
+		<input 
+			type="button" 
+			name="" value="[x]" 
+			class="button small alertive tracker_delete_msg_id_data" 
+			data-mid="<!-- tmpl_var mid -->" 
+		>  		
+	</form> 
+</td>
+</tr> 
+<!-- /tmpl_loop --> 
+</table> 
+
+<!-- tmpl_if comment --> 	
 	<fieldset> 
 		<pre>
 		<!-- tmpl_var report_by_message_id_dump escape="HTML" --> 
 		</pre> 
 	</fieldset> 
-	<!-- /tmpl_if --> 
+<!-- /tmpl_if --> 
 	
 <!-- tmpl_else --> 
-	<p class="alert">
-	  No logs to report.
-    </p>
+	  <div class="alert-box info radius">
+		  No logs to report.
+	  </div>
 <!-- /tmpl_if --> 
-
 
 <!-- end plugins/tracker/clickthrough_table.tmpl --> 
