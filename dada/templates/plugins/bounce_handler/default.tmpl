@@ -12,8 +12,8 @@
 
 <div id="plugins_bounce_handler_default"></div> 
 <form> 
-	<input type="hidden" name="s_program_url"          id="s_program_url"          value="<!-- tmpl_var S_PROGRAM_URL -->" /> 
-	<input type="hidden" name="bounce_handler_page" id="bounce_handler_page" value="1" /> 
+	<input type="hidden" name="s_program_url"          id="s_program_url"          value="<!-- tmpl_var S_PROGRAM_URL -->" > 
+	<input type="hidden" name="bounce_handler_page" id="bounce_handler_page" value="1" > 
 </form> 
 
 
@@ -52,7 +52,7 @@ these message report summaries.</p>
 </legend> 
 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" id="parse_bounces_form">
-<input type="checkbox" name="test" id="test" value="bounces" />
+<input type="checkbox" name="test" id="test" value="bounces" >
 <label for="test">
 	Test With Awaiting Messages
 </label>
@@ -63,11 +63,11 @@ these message report summaries.</p>
 		up to <!-- tmpl_var parse_amount_widget --> Messages.
 </p>
 
-<input type="hidden" name="prm" id="prm" value="cgi_parse_bounce" /> 
-<input type="hidden" name="flavor" value="plugins" /> 
-<input type="hidden" name="plugin" value="bounce_handler" /> 
+<input type="hidden" name="prm" id="prm" value="cgi_parse_bounce" > 
+<input type="hidden" name="flavor" value="plugins" > 
+<input type="hidden" name="plugin" value="bounce_handler" > 
 <div class="buttonfloat"> 
-	<input type="submit" class="cautionary" id="parse_bounces_button" value="Parse Received Bounces..." />
+	<input type="submit" class="cautionary" id="parse_bounces_button" value="Parse Received Bounces..." >
 </div> 
 <div class="floatclear"></div> 
 </form>
@@ -86,9 +86,9 @@ Scorecard Preferences
 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
 
-<input type="hidden" name="flavor" value="plugins" /> 
-<input type="hidden" name="plugin" value="bounce_handler" /> 
-<input type="hidden" name="prm" value="edit_prefs" /> 
+<input type="hidden" name="flavor" value="plugins" > 
+<input type="hidden" name="plugin" value="bounce_handler" > 
+<input type="hidden" name="prm" value="edit_prefs" > 
 <p>
 	Addresses that bounce back reports because of <strong>temporary</strong> 
 	problems, like the mailbox being full or a network problem are given the
@@ -167,11 +167,11 @@ Scorecard Preferences
 <table  cellpadding="5"> 
 <tr>
 <td>
-<input type="checkbox" name="bounce_handler_forward_msgs_to_list_owner" id="bounce_handler_forward_msgs_to_list_owner" value="1" <!-- tmpl_if list_settings.bounce_handler_forward_msgs_to_list_owner -->checked="checked"<!-- /tmpl_if --> />
+<input type="checkbox" name="bounce_handler_forward_msgs_to_list_owner" id="bounce_handler_forward_msgs_to_list_owner" value="1" <!-- tmpl_if list_settings.bounce_handler_forward_msgs_to_list_owner -->checked="checked"<!-- /tmpl_if --> >
 </td>
 <td>
 <label for="bounce_handler_forward_msgs_to_list_owner">Forward bounces to the List Owner After Processing</label>
-<br />Bounce Messages will be delivered to the List Owner (after being parsed and scored) for manual inspection. 
+<br >Bounce Messages will be delivered to the List Owner (after being parsed and scored) for manual inspection. 
 </td>
 </tr> 
 </table>
@@ -188,10 +188,10 @@ Scorecard Preferences
 </tr>
 <tr>
 <td>
-	 <p><input type="radio" name="bounce_handler_when_threshold_reached" id="bounce_handler_when_threshold_reached_unsub_subscriber" value="unsub_subscriber" <!-- tmpl_if expr="(list_settings.bounce_handler_when_threshold_reached eq 'unsub_subscriber')" -->checked="checked"<!-- /tmpl_if --> /><label for="bounce_handler_when_threshold_reached_unsub_subscriber">Be Unsubscribed Right Away</label><br />
+	 <p><input type="radio" name="bounce_handler_when_threshold_reached" id="bounce_handler_when_threshold_reached_unsub_subscriber" value="unsub_subscriber" <!-- tmpl_if expr="(list_settings.bounce_handler_when_threshold_reached eq 'unsub_subscriber')" -->checked="checked"<!-- /tmpl_if --> ><label for="bounce_handler_when_threshold_reached_unsub_subscriber">Be Unsubscribed Right Away</label><br >
 	     
 	     
-	 <input type="radio" name="bounce_handler_when_threshold_reached" id="bounce_handler_when_threshold_reached_move_to_bounced_sublist"  value="move_to_bounced_sublist" <!-- tmpl_if expr="(list_settings.bounce_handler_when_threshold_reached eq 'move_to_bounced_sublist')" -->checked="checked"<!-- /tmpl_if --> /><label for="bounce_handler_when_threshold_reached_move_to_bounced_sublist">Be Moved to the, "Bounced Addresses" Sublist</label>
+	 <input type="radio" name="bounce_handler_when_threshold_reached" id="bounce_handler_when_threshold_reached_move_to_bounced_sublist"  value="move_to_bounced_sublist" <!-- tmpl_if expr="(list_settings.bounce_handler_when_threshold_reached eq 'move_to_bounced_sublist')" -->checked="checked"<!-- /tmpl_if --> ><label for="bounce_handler_when_threshold_reached_move_to_bounced_sublist">Be Moved to the, "Bounced Addresses" Sublist</label>
 </p> 
 
 </td>
@@ -200,7 +200,7 @@ Scorecard Preferences
 </table> 
 
 <div class="buttonfloat">   
- <input type="submit" class="processing" value="Save Preferences" /> 
+ <input type="submit" class="processing" value="Save Preferences" > 
  </div>
 <div class="floatclear"></div>
 </form> 
@@ -253,10 +253,10 @@ Scorecard Preferences
   
  <div class="buttonfloat"> 
  <form action="<!-- tmpl_var Plugin_URL -->"> 
-     <input type="hidden" name="flavor" value="plugins" /> 
-     <input type="hidden" name="plugin" value="bounce_handler" /> 
-  <input type="hidden" name="prm" value="cgi_show_plugin_config" /> 
-  <input type="submit" value="View All Plugin Configurations..." class="cautionary" /> 
+     <input type="hidden" name="flavor" value="plugins" > 
+     <input type="hidden" name="plugin" value="bounce_handler" > 
+  <input type="hidden" name="prm" value="cgi_show_plugin_config" > 
+  <input type="submit" value="View All Plugin Configurations..." class="cautionary" > 
  </form> 
  </div> 
 

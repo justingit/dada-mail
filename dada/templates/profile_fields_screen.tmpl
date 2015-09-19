@@ -173,30 +173,30 @@
 				   	<ul class="button-group">
 				   		<li>
 				            <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-				             <input type="hidden" name="flavor" value="profile_fields" /> 
-				             <input type="hidden" name="edit_field" value="1" /> 
-				             <input type="hidden" name="field"  value="<!-- tmpl_var field -->" /> 
-				            <input type="submit" value="[edit]" class="cautionary button small" /> 
+				             <input type="hidden" name="flavor" value="profile_fields" > 
+				             <input type="hidden" name="edit_field" value="1" > 
+				             <input type="hidden" name="field"  value="<!-- tmpl_var field -->" > 
+				            <input type="submit" value="[edit]" class="cautionary button small" > 
 				            </form> 
 						</li>
 						<!-- tmpl_if can_move_columns --> 
 							<li>
 								<form accept-charset="<!-- tmpl_var HTML_CHARSET -->">			
-									<input type="hidden" name="flavor" value="profile_fields" /> 
-					             	<input type="hidden" name="process" value="edit_field_order" /> 
-					             	<input type="hidden" name="field"  value="<!-- tmpl_var field -->" />
-									<input type="hidden" name="direction" value="up" /> 
-									<input type="submit" value="^" class="button cautionary small" title="move this field up" <!-- tmpl_if __first__ -->disabled="disabled"<!-- /tmpl_if --> />
+									<input type="hidden" name="flavor" value="profile_fields" > 
+					             	<input type="hidden" name="process" value="edit_field_order" > 
+					             	<input type="hidden" name="field"  value="<!-- tmpl_var field -->" >
+									<input type="hidden" name="direction" value="up" > 
+									<input type="submit" value="^" class="button cautionary small" title="move this field up" <!-- tmpl_if __first__ -->disabled="disabled"<!-- /tmpl_if --> >
 				
 								</form>
 							</li>
 							<li>
 								<form style="margin: 0pt; display: inline;" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-									<input type="hidden" name="flavor" value="profile_fields" /> 
-					             	<input type="hidden" name="process" value="edit_field_order" /> 
-					             	<input type="hidden" name="field"  value="<!-- tmpl_var field -->" />
-									<input type="hidden" name="direction" value="down" />
-									<input type="submit" value="v" class="button small cautionary" title="move this field down"  <!-- tmpl_if __last__ -->disabled="disabled"<!-- /tmpl_if --> />
+									<input type="hidden" name="flavor" value="profile_fields" > 
+					             	<input type="hidden" name="process" value="edit_field_order" > 
+					             	<input type="hidden" name="field"  value="<!-- tmpl_var field -->" >
+									<input type="hidden" name="direction" value="down" >
+									<input type="submit" value="v" class="button small cautionary" title="move this field down"  <!-- tmpl_if __last__ -->disabled="disabled"<!-- /tmpl_if --> >
 								</form>
 							</li>
 						<!-- /tmpl_if --> 
@@ -224,10 +224,10 @@
 				   	<ul class="button-group">
 				   		<li>
 				            <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-				             <input type="hidden" name="flavor" value="profile_fields" /> 
-				             <input type="hidden" name="process" value="delete_field" /> 
-				             <input type="hidden" name="field"  value="<!-- tmpl_var field -->" /> 
-				            <input type="submit" value="&#8855;" class="button small alertive"  onclick="return removeSubscriberField(this.form);" /> 
+				             <input type="hidden" name="flavor" value="profile_fields" > 
+				             <input type="hidden" name="process" value="delete_field" > 
+				             <input type="hidden" name="field"  value="<!-- tmpl_var field -->" > 
+				            <input type="submit" value="&#8855;" class="button small alertive"  onclick="return removeSubscriberField(this.form);" > 
 				            </form> 
 						</li>
 					</ul>
@@ -260,13 +260,13 @@
 
     <!-- tmpl_if root_login --> 
          <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="add_edit_field">
-             <input type="hidden" name="flavor" value="profile_fields" /> 
+             <input type="hidden" name="flavor" value="profile_fields" > 
 
 			<!-- tmpl_unless edit_field --> 
-             	<input type="hidden" name="process" value="add_field" /> 
+             	<input type="hidden" name="process" value="add_field" > 
             <!-- tmpl_else --> 
-				<input type="hidden" name="process"    value="edit_field" /> 
- 				<input type="hidden" name="orig_field" value="<!-- tmpl_var field -->" /> 
+				<input type="hidden" name="process"    value="edit_field" > 
+ 				<input type="hidden" name="orig_field" value="<!-- tmpl_var field -->" > 
     		<!-- /tmpl_unless -->
 			
 			<div class="row">
@@ -302,7 +302,7 @@
 									disabled="disabled"
 								<!-- /tmpl_if -->
 							<!-- /tmpl_if --> 
-						/>
+						>
 				                  </div> 
 			 </div>
 
@@ -321,7 +321,7 @@
 					placeholder="Field Label"
 					
 					value="<!-- tmpl_var field_label escape="HTML" -->"  
-				  />
+				  >
 				</div> 
 			 </div>
   			<div class="row">
@@ -340,7 +340,7 @@
 					id="fallback_field_value"  
 					value="<!-- tmpl_var fallback_field_value escape="HTML" -->"  
 					placeholder="Fallback Value"
-				 />
+				 >
 				 
 	  			<div class="row">
 	  			   <div class="small-12 columns">
@@ -350,7 +350,7 @@
 						id="field_required"  
 						value="1" 
 							<!-- tmpl_if field_required -->checked="checked"<!-- /tmpl_if --> 
-						/>
+						>
 				
 	                  <label for="field_required">
 						  Required

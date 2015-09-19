@@ -60,13 +60,13 @@ Content-Transfer-Encoding: binary
 
 <p>
 <a name="digest_<!-- tmpl_var archive_id -->"></a>
-<strong>Date:</strong> <!-- tmpl_var date --><br />
-<strong>From:</strong> <!-- tmpl_var subscriber.email --><br />
+<strong>Date:</strong> <!-- tmpl_var date --><br >
+<strong>From:</strong> <!-- tmpl_var subscriber.email --><br >
 <strong>Subject:</strong> <!-- tmpl_var subject --></p>
 <p>
 <!-- tmpl_var html_message -->
 </p>
-<hr />
+<hr >
 
 <!-- /tmpl_loop -->
 

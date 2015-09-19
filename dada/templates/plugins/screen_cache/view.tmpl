@@ -35,8 +35,8 @@
 
 
 	<form action="<!-- tmpl_var Plugin_URL -->" method="POST"> 
-		<input type="hidden" name="process" value="flush" />
-		 <input type="submit" class="alertive" value="Remove All Cached Screens" />
+		<input type="hidden" name="process" value="flush" >
+		 <input type="submit" class="alertive" value="Remove All Cached Screens" >
 	</form> 
 
 	 </div>
@@ -45,7 +45,7 @@
 
 	<div style="max-height: 300px; overflow: auto; border:1px solid black">
 
-	<table  class="stripedtable">
+	<table  style="width:100%" class="responsive">
 
 
 	<tr> 
@@ -64,15 +64,15 @@
 
 	<!-- tmpl_loop file_list --> 
 
-		   <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
+		   <tr>
 	  <td>
 
 
 	  <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
-		<input type="hidden" name="flavor" value="plugins" /> 
-		<input type="hidden" name="plugin" value="screen_cache" /> 
+		<input type="hidden" name="flavor" value="plugins" > 
+		<input type="hidden" name="plugin" value="screen_cache" > 
 
-		<input type="hidden" name="prm" value="remove" />
+		<input type="hidden" name="prm" value="remove" >
 
 		<input type="hidden" name="filename" value="<!-- tmpl_var name -->" --> 
 
@@ -88,11 +88,11 @@
 	  <td>
 	   <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" target="preview"> 
 
-	       <input type="hidden" name="flavor" value="plugins" /> 
-  	       <input type="hidden" name="plugin" value="screen_cache" /> 
+	       <input type="hidden" name="flavor" value="plugins" > 
+  	       <input type="hidden" name="plugin" value="screen_cache" > 
 
 
-		<input type="hidden" name="prm" value="view" />
+		<input type="hidden" name="prm" value="view" >
 		<input type="hidden" name="filename" value="<!-- tmpl_var name -->" --> 
 
 		<input type="submit" class="cautionary" value="View...">

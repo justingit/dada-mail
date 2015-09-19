@@ -23,16 +23,16 @@
     </p>
     
     <p>
-        <label for="cronjob_url">Here's an example of a cronjob, using the curl command:</label> <br /> 
-        <input type="text"  id="cronjob_url" value="<!-- tmpl_var name="curl_location" default="/cannot/find/curl" --> --user-agent &quot;Mozilla/5.0 (compatible;)&quot; --silent --get --url <!-- tmpl_var S_PROGRAM_URL -->/<!-- tmpl_var scheduled_jobs_flavor escape="HTML" -->/_all/_all/_silent/" />
+        <label for="cronjob_url">Here's an example of a cronjob, using the curl command:</label> <br > 
+        <input type="text"  id="cronjob_url" value="<!-- tmpl_var name="curl_location" default="/cannot/find/curl" --> --user-agent &quot;Mozilla/5.0 (compatible;)&quot; --silent --get --url <!-- tmpl_var S_PROGRAM_URL -->/<!-- tmpl_var scheduled_jobs_flavor escape="HTML" -->/_all/_all/_silent/" >
     </p>
     
 </fieldset> 
 
     <div style="text-align:center">
-        <input type="hidden" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" id="s_program_url" /> 
-        <input type="hidden" name="sched_flavor" id="sched_flavor" value="<!-- tmpl_var scheduled_jobs_flavor escape="HTML" -->" /> 
-	    <input type="button" value="Manually Run Scheduled Jobs" class="processing bigger_button manually_run_scheduled_jobs" />
+        <input type="hidden" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" id="s_program_url" > 
+        <input type="hidden" name="sched_flavor" id="sched_flavor" value="<!-- tmpl_var scheduled_jobs_flavor escape="HTML" -->" > 
+	    <input type="button" value="Manually Run Scheduled Jobs" class="processing bigger_button manually_run_scheduled_jobs" >
     </div>
 </form>
 

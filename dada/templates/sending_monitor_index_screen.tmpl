@@ -12,140 +12,81 @@
 </div>
 <div id="sending_monitor_index"></div> 
 <form> 
-	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" /> 
+	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" > 
 </form> 
 
 <div class="alert-box info radius">
- <p> 
-  Screen will refresh every 60 seconds.
- </p>
+	<ul>
+		<li> 
+			Screen will refresh every 60 seconds.
+		</li>
+		<!-- tmpl_if list_settings.auto_pickup_dropped_mailings --> 
+			<li>
+				Auto Pickup of Dropped Mailings is enabled.
+			</li> 
+		<!-- tmpl_else --> 
 
-<!-- tmpl_if list_settings.auto_pickup_dropped_mailings --> 
-
-<p>
-  Auto Pickup of Dropped Mailings is enabled.
-</p> 
-
-<!-- tmpl_else --> 
-
-<p>
- Auto Pickup of Dropped Mailings is disabled.
-</p> 
-
-<!--/tmpl_if --> 
-
-
-
+			<li>
+				Auto Pickup of Dropped Mailings is disabled.
+			</li> 
+	<!--/tmpl_if --> 
+	</ul>
 </div> 
 
 
  <!-- tmpl_if killed_it -->
 
-<div data-alert class="alert-box success radius">
-    Your Mass Mailing was successfully stopped.
-    <a href="#" class="close">&times;</a>
-</div>
+	<div data-alert class="alert-box success radius">
+	    Your Mass Mailing was successfully stopped.
+		<a href="#" class="close">&times;</a>
+	</div>
 <!-- /tmpl_if --> 
 
-        
-    
 <fieldset> 
-
-<legend>
-Current Mass Mailings
-</legend> 
-
+	<legend>
+		Mass Mailings
+	</legend> 
 
 <!-- tmpl_if mailout_status --> 
 
-    <table  class="stripedtable">
-     <tr> 
-	
-	
-	      <td> 
-	      <p>
-	       <strong> 
-	        Mailing List:
-	       </strong> 
-	      </p>
-	     </td>
-	
-      <td> 
-      <p>
-       <strong> 
-        Subject:
-       </strong> 
-      </p>
-     </td> 
-	<td>
-	 <p>
-	  <strong>
-	   Created:
-	  </strong>
-	 </p>
-	</td> 
-     
-     
-     <td> 
-      <p> 
-       <strong>
-        Paused? 
-       </strong>
-      </p> 
-     </td> 
-     
-     <td> 
-      <p> 
-       <strong>
-        Queued? 
-       </strong>
-      </p> 
-     </td> 
- 
-
-     <td> 
-      <p> 
-       <strong>
+    <table>
+    	<tr> 
+    	<th> 
+      		Mailing List
+      	</th>
+      <th> 
+        Subject
+     </th> 
+	<th>
+	   Created
+	</th> 
+     <th>
+		 Paused? 
+     </th> 
+     <th>
+		 Queued? 
+     </th> 
+     <th> 
         Stale? 
-       </strong>
-      </p> 
-     </td>
-
-     <td> 
-      <p> 
-       <strong>
-        Broken? 
-       </strong>
-      </p> 
-     </td>
-     <td> 
-      <p> 
-       <strong>
+     </th>
+     <th>
+		 Broken? 
+     </th>
+     <th> 
         % Done
-       </strong>
-      </p> 
-     </td>
-    
-    <td> 
-    &nbsp;
-    </td>     
-    </tr> 
-    
-    <!-- tmpl_loop mailout_status --> 
+     </th>
+    <th> 
+    </th>     
+    </tr>   
+<!-- tmpl_loop mailout_status --> 
 
     
     	<tr <!-- tmpl_if integrity_check --> <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if--><!-- tmpl_else -->style="background-color:#cc3"<!-- /tmpl_if -->>
-
 		      <td> 
-		      <p>
-		       <strong> 
 		        <!-- tmpl_var list_name escape="HTML" --> (<!-- tmpl_var list escape="HTML" --> )
-		       </strong> 
-		      </p>
 		     </td>
 		
          <td>  
-          <p>
 	
 	<!-- tmpl_if current_list --> 
 	
@@ -173,82 +114,62 @@ Current Mass Mailings
 
 	<!-- /tmpl_if --> 
 
-          </p>
         </td>
         
         
         
         <td>
-	     <p>
 		 <!-- tmpl_var mailing_started --> 
-		</p> 
 	</td> 
 	
  	
          <td <!-- tmpl_if paused --> style="background:#ff0"<!-- /tmpl_if -->> 
-          <p style="text-align:center"> 
              <!-- tmpl_if paused --> 
                 x
              <!-- /tmpl_if --> 
-             
-           
-          </p> 
          </td> 
          
        
    
  	 
-         <td <!-- tmpl_if queued_mailout --> style="background:#ff0"<!-- /tmpl_if -->> 
-	
-	
-      <p style="text-align:center">  
-       
+         <td <!-- tmpl_if queued_mailout --> style="background:#ff0"<!-- /tmpl_if -->>        
         <!-- tmpl_if queued_mailout --> 
             x
         <!-- /tmpl_if --> 
-       
-      </p> 
+ 
      </td>
 
 
 	 	 
 	<td <!-- tmpl_if mailout_stale --> style="background:#ff0"<!-- /tmpl_if -->> 
-	  <p style="text-align:center">     
         <!-- tmpl_if mailout_stale --> 
             !!!
         <!-- /tmpl_if --> 
-      </p> 
      </td>
 
   
 	<td <!-- tmpl_unless integrity_check --> style="background:#ff0"<!-- /tmpl_unless -->> 
-	  <p style="text-align:center">     
         <!-- tmpl_unless integrity_check --> 
             !!!
         <!-- /tmpl_unless --> 
-      </p> 
      </td>
-
-
 
 <td>  
        		<!-- tmpl_if percent_done -->
-		         <p>
-		          <table  cellpadding="0" cellspacing="0" border="0" style="width:102px"> 
-		           <tr> 
-		            <td> 
-		              <div style="width:102px"> 
-		             <div style="width:<!-- tmpl_var status_bar_width -->px;height:10px;background-color:#3f0;float:left;border:1px solid black;border-right:0px;"></div>
-		             <div style="width:<!-- tmpl_var negative_status_bar_width -->px;height:10px;background-color:#cff;float:left;border:1px solid black;border-left:0px;"></div>
-		            </div> 
-		            </td> 
-		            <td> 
-            	&nbsp;<!-- tmpl_var percent_done -->%  
-          </td> 
-         </tr> 
-        </table> 
-        
-         </p>
+<table cellpadding="0" cellspacing="0" border="0" style="width:102px"> 
+<tr> 
+<td> 
+<div style="width:102px"> 
+<div style="width:<!-- tmpl_var status_bar_width -->px;height:10px;background-color:#3f0;float:left;border:1px solid black;border-right:0px;"></div>
+<div style="width:<!-- tmpl_var negative_status_bar_width -->px;height:10px;background-color:#cff;float:left;border:1px solid black;border-left:0px;"></div>
+</div> 
+</td> 
+<td> 
+&nbsp;<!-- tmpl_var percent_done -->%  
+</td> 
+</tr> 
+</table> 
+
  
 		 <!-- tmpl_else --> 
             <!-- ... --> 
@@ -261,11 +182,24 @@ Current Mass Mailings
      <!-- tmpl_if current_list --> 
 
 	    <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" style="display:inline" class="stop_mass_mailing"> 
-	    <input type="hidden" name="flavor" value="sending_monitor" /> 
-	    <input type="hidden" name="id" value="<!-- tmpl_var message_id -->" /> 
-	    <input type="hidden" name="type" value="<!-- tmpl_var message_type -->" /> 
-	    <input type="hidden" name="process" value="kill" /> 
-	    <input type="submit" value="&#8855;" <!-- tmpl_unless is_paused --><!-- tmpl_if sending_done -->disabled="disabled" class="disabled"<!-- tmpl_else --> class="alertive killMonitoredSending" <!--/tmpl_if --><!-- tmpl_else --> class="alertive killMonitoredSending" <!--/tmpl_unless --> title="Click to permanently STOP this mass mailing"  />
+		    <input type="hidden" name="flavor" value="sending_monitor" > 
+		    <input type="hidden" name="id" value="<!-- tmpl_var message_id -->" > 
+		    <input type="hidden" name="type" value="<!-- tmpl_var message_type -->" > 
+		    <input type="hidden" name="process" value="kill" > 
+		    <input 
+				type="submit" 
+				value="&#8855;" 
+				<!-- tmpl_unless is_paused -->
+					<!-- tmpl_if sending_done -->
+						disabled="disabled" class="button disabled"
+					<!-- tmpl_else -->
+						class="button alertive killMonitoredSending"
+					<!--/tmpl_if -->
+				<!-- tmpl_else -->
+					class="button alertive killMonitoredSending"
+				<!--/tmpl_unless --> 
+				title="Click to permanently STOP this mass mailing"
+			>
 	    </form> 
 		<!-- /tmpl_if --> 
 		
@@ -286,7 +220,7 @@ Current Mass Mailings
 
 
     <p class="positive"> 
-     Currently, there are no active Mass Mailings for this Mailing List.
+     	Currently, there are no active Mass Mailings for this Mailing List.
     </p>
 
 <!--/tmpl_if--> 

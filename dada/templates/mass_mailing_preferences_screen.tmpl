@@ -2,7 +2,7 @@
 <div id="screen_meta" data-menu_highlight="mailing_sending_mass_mailing_options"></div>
 <div id="mailing_sending_mass_mailing_options"></div> 
 <form> 
-	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" />
+	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" >
 </form> 
 
 
@@ -46,7 +46,7 @@
 <table> 
  <tr>
   <td>
-   <input type="checkbox" name="enable_bulk_batching" id="enable_bulk_batching" class="previewBatchSendingSpeed" value="1" <!-- tmpl_if list_settings.enable_bulk_batching -->checked="checked"<!--/tmpl_if--> />
+   <input type="checkbox" name="enable_bulk_batching" id="enable_bulk_batching" class="previewBatchSendingSpeed" value="1" <!-- tmpl_if list_settings.enable_bulk_batching -->checked="checked"<!--/tmpl_if--> >
   </td>
   <td>
    <p>
@@ -75,7 +75,7 @@
 
 	<!-- tmpl_var mass_send_amount_menu -->
  message(s) per batch
-     <br /> 
+     <br > 
      and then wait and sleep: <!-- tmpl_var bulk_sleep_amount_menu --> second(s), before sending the next batch.
     </p>
    </fieldset>
@@ -88,7 +88,7 @@
 		  <td>
 		 
 	
-		  <input type="checkbox" name="amazon_ses_auto_batch_settings" id="amazon_ses_auto_batch_settings" value="1" <!-- tmpl_if list_settings.amazon_ses_auto_batch_settings -->checked="checked"<!--/tmpl_if--> />
+		  <input type="checkbox" name="amazon_ses_auto_batch_settings" id="amazon_ses_auto_batch_settings" value="1" <!-- tmpl_if list_settings.amazon_ses_auto_batch_settings -->checked="checked"<!--/tmpl_if--> >
 		</td>
 		<td>
 		<p><label for="amazon_ses_auto_batch_settings">
@@ -98,7 +98,7 @@
                 Automatically set batching speeds based on your Amazon SES limits
 		    <!-- /tmpl_if -->
 		</label>
-		<br />
+		<br >
 		<!-- tmpl_if expr="(type_of_service eq 'mandrill')" --> 
 	        Batch settings will automatically adjust, based on your Mandrill limits and number of messages sent in the last 24 hours. </p>		
 		<!-- tmpl_else -->
@@ -110,14 +110,14 @@
 
  <tr>
   <td>
-   <input type="checkbox" name="adjust_batch_sleep_time" id="adjust_batch_sleep_time" value="1" <!-- tmpl_if list_settings.adjust_batch_sleep_time -->checked="checked"<!--/tmpl_if--> />
+   <input type="checkbox" name="adjust_batch_sleep_time" id="adjust_batch_sleep_time" value="1" <!-- tmpl_if list_settings.adjust_batch_sleep_time -->checked="checked"<!--/tmpl_if--> >
   </td>
   <td>
    <p>
     <label for="adjust_batch_sleep_time">
      Adjust Sleep Time 
     </label>
-    <br />
+    <br >
 
     The time <!-- tmpl_var PROGRAM_NAME --> <code>sleep()</code>s between batches will be adjusted, 
     depending on how long the batch took to complete.
@@ -128,14 +128,14 @@
 
 	 <tr>
 	  <td>
-	    <input type="checkbox" name="smtp_connection_per_batch" id="smtp_connection_per_batch" value="1" <!-- tmpl_if list_settings.smtp_connection_per_batch -->checked="checked"<!-- /tmpl_if --> />
+	    <input type="checkbox" name="smtp_connection_per_batch" id="smtp_connection_per_batch" value="1" <!-- tmpl_if list_settings.smtp_connection_per_batch -->checked="checked"<!-- /tmpl_if --> >
 	  </td>
 	  <td>
 	   <p>
 	    <label for="smtp_connection_per_batch"> 
 	     Use One SMTP Connection per Batch <em>(Experimental)</em> 
 	    </label>
-	    <br />
+	    <br >
 	<!-- tmpl_if expr="list_settings.sending_method eq 'smtp'" --> 
 		<p class="alert">
 			SMTP Sending is enabled.
@@ -187,14 +187,14 @@
 <table>
  <tr>
   <td>
-   <input type="checkbox" name="auto_pickup_dropped_mailings" id="auto_pickup_dropped_mailings" value="1" <!-- tmpl_if list_settings.auto_pickup_dropped_mailings -->checked="checked"<!--/tmpl_if--> />
+   <input type="checkbox" name="auto_pickup_dropped_mailings" id="auto_pickup_dropped_mailings" value="1" <!-- tmpl_if list_settings.auto_pickup_dropped_mailings -->checked="checked"<!--/tmpl_if--> >
   </td>
   <td>
    <p>
     <label for="auto_pickup_dropped_mailings">
      Auto-Pickup Dropped Mass Mailings
     </label>
-    <br />
+    <br >
 
 
 Since sending to your entire mailing list is usually a lengthy process (for most mailing lists), it can sometimes get interrupted by the server and won't proceed to completion. Activating this feature safeguards against this problem by automatically reloading a mailing from the point that it was dropped.
@@ -205,14 +205,14 @@ Since sending to your entire mailing list is usually a lengthy process (for most
     <table>
      <tr>
       <td>
-       <input type="checkbox" name="restart_mailings_after_each_batch" id="restart_mailings_after_each_batch" value="1" <!-- tmpl_if list_settings.restart_mailings_after_each_batch -->checked="checked"<!--/tmpl_if--> />
+       <input type="checkbox" name="restart_mailings_after_each_batch" id="restart_mailings_after_each_batch" value="1" <!-- tmpl_if list_settings.restart_mailings_after_each_batch -->checked="checked"<!--/tmpl_if--> >
       </td>
       <td>
        <p>
         <label for="restart_mailings_after_each_batch">
          Reload Mailings After Each Batch
         </label>
-        <br />
+        <br >
        
         Instead of having <!-- tmpl_var PROGRAM_NAME --> automatically <code>sleep()</code> between mailings, enabling this option will 
         reload the mailing between batches manually. 
@@ -245,14 +245,14 @@ Since sending to your entire mailing list is usually a lengthy process (for most
 <table> 
 	 <tr>
 	  <td>
-	   <input type="checkbox" name="mass_mailing_send_to_list_owner" id="mass_mailing_send_to_list_owner" value="1" <!-- tmpl_if list_settings.mass_mailing_send_to_list_owner -->checked="checked"<!--/tmpl_if--> />
+	   <input type="checkbox" name="mass_mailing_send_to_list_owner" id="mass_mailing_send_to_list_owner" value="1" <!-- tmpl_if list_settings.mass_mailing_send_to_list_owner -->checked="checked"<!--/tmpl_if--> >
 	  </td>
 	  <td>
 	   <p>
 	    <label for="mass_mailing_send_to_list_owner">
 	     Send Mass Mailing Messages to the List Owner
 	    </label>
-	    <br />
+	    <br >
 		The List Owner will receive a copy of all mass mailings sent to your Mailing List. 
 	   </p>
 	  </td>
@@ -262,7 +262,7 @@ Since sending to your entire mailing list is usually a lengthy process (for most
 	 <tr>
 	 
 	 <td>
-	   <input type="checkbox" name="get_finished_notification" id="get_finished_notification" value="1" <!-- tmpl_if list_settings.get_finished_notification -->checked="checked"<!--/tmpl_if--> />
+	   <input type="checkbox" name="get_finished_notification" id="get_finished_notification" value="1" <!-- tmpl_if list_settings.get_finished_notification -->checked="checked"<!--/tmpl_if--> >
 	  </td>
 	
 	  <td>
@@ -270,7 +270,7 @@ Since sending to your entire mailing list is usually a lengthy process (for most
 	    <label for="get_finished_notification">
 	     Send Finishing Message
 	    </label>
-	    <br />
+	    <br >
 	    The List Owner will be emailed when all the messages of mass mailings have been sent.
 	   </p>
 	  </td>
@@ -286,14 +286,14 @@ Since sending to your entire mailing list is usually a lengthy process (for most
 <table> 
 	 <tr>
 	  <td>
-	   <input type="checkbox" name="mass_mailing_save_logs" id="mass_mailing_save_logs" value="1" <!-- tmpl_if list_settings.mass_mailing_save_logs -->checked="checked"<!--/tmpl_if--> />
+	   <input type="checkbox" name="mass_mailing_save_logs" id="mass_mailing_save_logs" value="1" <!-- tmpl_if list_settings.mass_mailing_save_logs -->checked="checked"<!--/tmpl_if--> >
 	  </td>
 	  <td>
 	   <p>
 	    <label for="mass_mailing_save_logs">
 			Save Mass Mailing Logs
 	    </label>
-	    <br />
+	    <br >
 		View/Download mass mailing logs after a mass mailing has been completed. 
 	   </p>
 	  </td>
@@ -307,11 +307,11 @@ Since sending to your entire mailing list is usually a lengthy process (for most
 
 
 
-<input type="hidden" name="process" value="1" />
-<input type="hidden" name="flavor"       value="mailing_sending_mass_mailing_options" />
+<input type="hidden" name="process" value="1" >
+<input type="hidden" name="flavor"       value="mailing_sending_mass_mailing_options" >
 <div class="buttonfloat">
- <input type="reset"  class="cautionary" value="Clear Changes" />
- <input type="submit" class="processing" value="Save Sending Options" />
+ <input type="reset"  class="cautionary" value="Clear Changes" >
+ <input type="submit" class="processing" value="Save Sending Options" >
 </div>
 <div class="floatclear"></div>
 

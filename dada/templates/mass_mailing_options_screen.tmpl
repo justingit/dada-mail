@@ -17,8 +17,8 @@
 <!--/tmpl_if-->
 
 	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-	    <input type="hidden" name="process" value="1" />
-        <input type="hidden" name="flavor"       value="mass_mailing_options" />
+	    <input type="hidden" name="process" value="1" >
+        <input type="hidden" name="flavor"       value="mass_mailing_options" >
     
 <fieldset>
     <div class="row">
@@ -28,7 +28,7 @@
                 id="mass_mailing_convert_plaintext_to_html" 
                 value="1" 
                 <!-- tmpl_if list_settings.mass_mailing_convert_plaintext_to_html -->checked="checked"<!-- /tmpl_if --> 
-             />
+             >
             <label for="mass_mailing_convert_plaintext_to_html">  
                 Convert PlainText-only Mass Email Messages to HTML
             </label>
@@ -36,7 +36,7 @@
     </div> 
     <div class="row">
         <div class="small-12 columns">
-            <input type="checkbox" name="mass_mailing_block_css_to_inline_css" id="mass_mailing_block_css_to_inline_css" value="1" <!-- tmpl_if list_settings.mass_mailing_block_css_to_inline_css -->checked="checked"<!-- /tmpl_if --> />
+            <input type="checkbox" name="mass_mailing_block_css_to_inline_css" id="mass_mailing_block_css_to_inline_css" value="1" <!-- tmpl_if list_settings.mass_mailing_block_css_to_inline_css -->checked="checked"<!-- /tmpl_if --> >
             <label for="mass_mailing_block_css_to_inline_css" <!-- tmpl_unless can_use_css_inliner -->class="disabled"<!-- /tmpl_unless -->>
                 Convert CSS &lt;style&gt; blocks to inline styles in HTML messages
             </label>
@@ -55,8 +55,8 @@
 
 
 <ul class="button-group right">    
-     <li><input type="reset"  class="button cautionary" value="Clear Changes" /></li>
-     <li><input type="submit" class="button processing" value="Save Options" /></li>
+     <li><input type="reset"  class="button cautionary" value="Clear Changes" ></li>
+     <li><input type="submit" class="button processing" value="Save Options" ></li>
 </ul>
 
 </fieldset> 

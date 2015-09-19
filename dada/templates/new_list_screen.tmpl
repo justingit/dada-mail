@@ -26,10 +26,10 @@
 
 	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="create_new_list">
 
-	 <input type="hidden" name="flavor"       value="new_list" />
-	 <input type="hidden" name="process" value="true" />
-	 <input type="hidden" name="root_password" value="<!-- tmpl_var root_password escape="HTML" -->" />
-	 <input type="hidden" name="auth_state" value="<!-- tmpl_var auth_state escape="HTML" -->" />
+	 <input type="hidden" name="flavor"       value="new_list" >
+	 <input type="hidden" name="process" value="true" >
+	 <input type="hidden" name="root_password" value="<!-- tmpl_var root_password escape="HTML" -->" >
+	 <input type="hidden" name="auth_state" value="<!-- tmpl_var auth_state escape="HTML" -->" >
 	<div class="alert-box info radius">
 		
 	<p>Please Fill in all the fields below, to create your new Mailing List</p>
@@ -73,8 +73,8 @@
 		<p>The Mailing List Name cannot contain, &lt;'s, &gt;'s or, &quot;'s.</p>
 		
 		</div>
-	 <p><label for="list_name">Mailing List Name:</label><br/>
-	  <input type="text" id="list_name" name="list_name" value="<!-- tmpl_var list_name escape="HTML" -->"  maxlength="250" />
+	 <p><label for="list_name">Mailing List Name:</label><br>
+	  <input type="text" id="list_name" name="list_name" value="<!-- tmpl_var list_name escape="HTML" -->"  maxlength="250" >
 	 </p>
 </fieldset> 
 
@@ -154,8 +154,8 @@
   	</p>
 </div>
 
-	<p><label for="list">List Short Name:</label><br />
-	  <input type="text" id="list" name="list" value="<!-- tmpl_var list escape="HTML"-->" size="16" maxlength="16" />
+	<p><label for="list">List Short Name:</label><br >
+	  <input type="text" id="list" name="list" value="<!-- tmpl_var list escape="HTML"-->" size="16" maxlength="16" >
 	 </p>
 </fieldset> 
 <fieldset> 	
@@ -209,7 +209,7 @@
 	</label>
   </p>
 	<p>
-	  <input type="password" id="password" name="password" value="<!-- tmpl_var password escape="HTML"-->" size="16" maxlength="24" />
+	  <input type="password" id="password" name="password" value="<!-- tmpl_var password escape="HTML"-->" size="16" maxlength="24" >
 	 </p>
  
 	<!-- tmpl_if flags_retype_password -->
@@ -235,7 +235,7 @@
 	</label>
   </p>
 	<p>
-	  <input type="password" id="retype_password" name="retype_password" value="<!-- tmpl_var retype_password escape="HTML"-->" size="16" maxlength="24" />
+	  <input type="password" id="retype_password" name="retype_password" value="<!-- tmpl_var retype_password escape="HTML"-->" size="16" maxlength="24" >
 	 </p>
 
 </fieldset> 
@@ -268,7 +268,7 @@
   		<label for="list_owner_email">List Owner Email Address:</label>
 	</p>
 <p>
-	  <input type="text" id="list_owner_email" name="list_owner_email" value="<!-- tmpl_var list_owner_email escape="HTML"-->"  maxlength="100" />
+	  <input type="text" id="list_owner_email" name="list_owner_email" value="<!-- tmpl_var list_owner_email escape="HTML"-->"  maxlength="100" >
 	 </p>
 
 </fieldset>
@@ -303,7 +303,7 @@
  
 	 <p>
 	  <label for="info">Description:</label>
-	  <br />
+	  <br >
 	  <textarea id="info" name="info" cols="50" rows="5"><!-- tmpl_var info escape="HTML"--></textarea>
 	 </p>
 	
@@ -337,7 +337,7 @@
  
 	 <p>
 	  <label for="privacy_policy">Privacy Policy:</label>
-	  <br />
+	  <br >
 	  <textarea id="privacy_policy" name="privacy_policy" cols="50" rows="5"><!-- tmpl_var privacy_policy escape="HTML"--></textarea>
 	 </p>
 
@@ -371,7 +371,7 @@
  
 	 <p>
 	  <label for="physical_address">Physical Address:</label>
-	  <br />
+	  <br >
 	  <textarea id="physical_address" name="physical_address" cols="50" rows="5"><!-- tmpl_var physical_address escape="HTML"--></textarea>
 	 </p>
 
@@ -388,7 +388,7 @@
 		<tr> 
 			<td> 
 				<p>
-					<input type="checkbox" name="clone_settings" id="clone_settings" value="1"  />
+					<input type="checkbox" name="clone_settings" id="clone_settings" value="1"  >
 				</p>
 			</td>
 
@@ -413,7 +413,7 @@
 
 
  <p style="text-align:center">
-  <input type="submit" class="processing bigger_button" value="    Create Your Mailing List    " />
+  <input type="submit" class="processing bigger_button" value="    Create Your Mailing List    " >
  </p>
 
 

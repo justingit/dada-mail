@@ -3,29 +3,29 @@
 <!-- tmpl_set name="title" value="Filtering Subscription List..." -->
 
 <form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
- <input type="hidden" name="process" value="delete" />
- <input type="hidden" name="flavor"       value="remove_subscribers" />
- <input type="hidden" name="type"    value="list" />
- <input type="hidden" name="add_to_black_list" value="<!-- tmpl_var add_to_black_list -->" />
+ <input type="hidden" name="process" value="delete" >
+ <input type="hidden" name="flavor"       value="remove_subscribers" >
+ <input type="hidden" name="type"    value="list" >
+ <input type="hidden" name="add_to_black_list" value="<!-- tmpl_var add_to_black_list -->" >
  <p>
   These addresses are currently subscribed, but are 
   black listed. Click the checkbox next to the address 
   to remove them:
  <p>
  <div class="buttonfloat">
-  <input type="button" class="cautionary" value="Re-Enter Email List" onclick="history.back()" />
-  <input type="submit" class="processing" value="Unsubscribe Checked Emails" />
+  <input type="button" class="cautionary" value="Re-Enter Email List" onclick="history.back()" >
+  <input type="submit" class="processing" value="Unsubscribe Checked Emails" >
  </div>
  <div class="floatclear"></div>
  
 <!-- tmpl_loop name="filtered" -->
 	 
-	 <input type="checkbox" name="address" value="<!-- tmpl_var email escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->;type=<!-- tmpl_var list_type -->" checked="checked" />
+	 <input type="checkbox" name="address" value="<!-- tmpl_var email escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->;type=<!-- tmpl_var list_type -->" checked="checked" >
 	 &nbsp; 
 	 <label for="<!-- tmpl_var email escape="HTML" -->">
 	  <!-- tmpl_var email -->
 	 </label>
-	 <br />
+	 <br >
 	 
 <!--/tmpl_loop-->
  
@@ -39,8 +39,8 @@
   </a>
  </p>
  <div class="buttonfloat">
-  <input type="button" class="cautionary" value="Re-Enter Email List" onclick="history.back()" />
-  <input type="submit" class="processing" value="Unsubscribe Checked Emails" />
+  <input type="button" class="cautionary" value="Re-Enter Email List" onclick="history.back()" >
+  <input type="submit" class="processing" value="Unsubscribe Checked Emails" >
  </div>
  <div class="floatclear"></div>
 </form>

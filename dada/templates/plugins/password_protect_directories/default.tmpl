@@ -29,7 +29,7 @@
 				<fieldset> 
 				<legend><!-- tmpl_var name --></legend>
 		
-				<table  class="stripedtable">
+				<table  style="width:100%" class="responsive">
 				 	<tr class="alt"> 
 					<td width="200px">
 					<strong>Protected URL</strong></td><td><a href="<!-- tmpl_var url -->" target="_blank"><!-- tmpl_var url --></a></td>
@@ -57,23 +57,23 @@
 			<div class="buttonfloat">
 	
 				<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" style="display: inline; margin: 0;"> 
-					<input type="hidden" name="flavor" value="plugins" /> 
-					<input type="hidden" name="plugin" value="password_protect_directories" /> 
-					<input type="hidden" name="prm" value="edit_dir" /> 
-					<input type="hidden" name="process" value="edit_dir" /> 
-					<input type="hidden" name="id" value="<!-- tmpl_var id -->" /> 
-					<input type="submit" class="processing" value="Edit " />
+					<input type="hidden" name="flavor" value="plugins" > 
+					<input type="hidden" name="plugin" value="password_protect_directories" > 
+					<input type="hidden" name="prm" value="edit_dir" > 
+					<input type="hidden" name="process" value="edit_dir" > 
+					<input type="hidden" name="id" value="<!-- tmpl_var id -->" > 
+					<input type="submit" class="processing" value="Edit " >
 				</form>
 		
 		
 			<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" style="display: inline; margin: 0;"> 
 				
-				<input type="hidden" name="flavor" value="plugins" /> 
-				<input type="hidden" name="plugin" value="password_protect_directories" /> 				
-				<input type="hidden" name="prm" value="delete_dir" /> 
-				<input type="hidden" name="id" value="<!-- tmpl_var id -->" /> 
+				<input type="hidden" name="flavor" value="plugins" > 
+				<input type="hidden" name="plugin" value="password_protect_directories" > 				
+				<input type="hidden" name="prm" value="delete_dir" > 
+				<input type="hidden" name="id" value="<!-- tmpl_var id -->" > 
 	
-				<input type="submit" class="alertive" value="Delete " />
+				<input type="submit" class="alertive" value="Delete " >
 					</form> 
 		
 					</div>
@@ -133,10 +133,10 @@
 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
     
-    <input type="hidden" name="flavor" value="plugins" /> 
-	<input type="hidden" name="plugin" value="password_protect_directories" /> 
+    <input type="hidden" name="flavor" value="plugins" > 
+	<input type="hidden" name="plugin" value="password_protect_directories" > 
 	
-<table  class="stripedtable">
+<table  style="width:100%" class="responsive">
 <tr class="alt">
 <td width="200px">
  <label>
@@ -144,7 +144,7 @@
  </label>
 </td>
 <td align="left">
- <input type="text" name="name" value=""  />
+ <input type="text" name="name" value=""  >
 </td>
 </tr>
 
@@ -155,7 +155,7 @@
  </label>
 </td>
 <td align="left">
- <input type="text" name="url" value="<!-- tmpl_var Base_URL -->"  />
+ <input type="text" name="url" value="<!-- tmpl_var Base_URL -->"  >
 </td>
 </tr>
 
@@ -166,7 +166,7 @@
  </label>
 </td>
 <td align="left">
- <input type="text" name="path" value="<!-- tmpl_var Base_Absolute_Path -->"  />
+ <input type="text" name="path" value="<!-- tmpl_var Base_Absolute_Path -->"  >
 </td>
 </tr>
 
@@ -177,7 +177,7 @@
  </label>
 </td>
 <td align="left">
- <input type="checkbox" name="use_custom_error_page" value="1" />
+ <input type="checkbox" name="use_custom_error_page" value="1" >
 </td>
 </tr>
 
@@ -188,7 +188,7 @@ Custom Error Page (Path):
  </label>
 </td>
 <td align="left">
- <input type="text" name="custom_error_page" value=""  />
+ <input type="text" name="custom_error_page" value=""  >
 </td>
 </tr>
 
@@ -205,7 +205,7 @@ Custom Error Page (Path):
 			<input type="button" value="Click to Change Default Password..." class="cautionary" id="change_password_button">
 		</div> 
 		<div id="change_default_password_form" style="display:none">
-					<input type="password" name="default_password" value="" />
+					<input type="password" name="default_password" value="" >
 		</div>
 </td>
 </tr>
@@ -220,7 +220,7 @@ Custom Error Page (Path):
 	 </label>
 	</td>
 	<td align="left">
-	 <input type="text" name="default_password" value=""  />
+	 <input type="text" name="default_password" value=""  >
 	</td>
 </tr>
 
@@ -230,15 +230,15 @@ Custom Error Page (Path):
 </table>
 
 <!-- tmpl_unless edit --> 
-<input type="hidden" name="prm" value="new_dir" /> 
+<input type="hidden" name="prm" value="new_dir" > 
 <!-- tmpl_else --> 
-<input type="hidden" name="id" value="<!-- tmpl_var id -->" /> 
-<input type="hidden" name="prm" value="process_edit_dir" /> 
+<input type="hidden" name="id" value="<!-- tmpl_var id -->" > 
+<input type="hidden" name="prm" value="process_edit_dir" > 
 <!-- /tmpl_unless --> 
 
 <div class="buttonfloat">
-<input type="reset"  class="cautionary" value="Clear All Changes" />
-<input type="submit" class="processing" value="Save All Changes" />
+<input type="reset"  class="cautionary" value="Clear All Changes" >
+<input type="submit" class="processing" value="Save All Changes" >
 </div>
 <div class="floatclear"></div>
 

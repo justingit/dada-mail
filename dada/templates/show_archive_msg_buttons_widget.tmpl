@@ -3,19 +3,19 @@
 <!-- tmpl_if can_display_message_source --> 
 	<li>
 		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" target="_blank"> 
-			<input type="hidden" name="flavor" value="display_message_source" /> 
-			<input type="hidden" name="id" value="<!-- tmpl_var id -->" />
-			<input type="submit"  value="Show Original Message Source" class="plain button"  />    
+			<input type="hidden" name="flavor" value="display_message_source" > 
+			<input type="hidden" name="id" value="<!-- tmpl_var id -->" >
+			<input type="submit"  value="Show Original Message Source" class="plain button"  >    
 		 </form> 
  	</li>
 <!-- /tmpl_if --> 
 
 	<li>
 		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get" target="_blank"> 
-			<input type="hidden" name="flavor" value="archive" /> 
-			<input type="hidden" name="list" value="<!-- tmpl_var list_settings.list -->" /> 
-			<input type="hidden" name="id" value="<!-- tmpl_var id -->" />
-			<input type="submit"  value="Show Public View"  class="plain button" />    
+			<input type="hidden" name="flavor" value="archive" > 
+			<input type="hidden" name="list" value="<!-- tmpl_var list_settings.list -->" > 
+			<input type="hidden" name="id" value="<!-- tmpl_var id -->" >
+			<input type="submit"  value="Show Public View"  class="plain button" >    
 		 </form> 
 	 </li>
 

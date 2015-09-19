@@ -37,9 +37,9 @@
 	<!-- /tmpl_if --> 
 
 	<form id="tracker_message_info">
-		<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" /> 
-		<input type="hidden" id="tracker_message_id" name="tracker_message_id" value="<!-- tmpl_var mid -->" />
-		<input type="hidden" id="can_use_country_geoip_data" name="can_use_country_geoip_data" value="<!-- tmpl_var can_use_country_geoip_data -->" />
+		<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" > 
+		<input type="hidden" id="tracker_message_id" name="tracker_message_id" value="<!-- tmpl_var mid -->" >
+		<input type="hidden" id="can_use_country_geoip_data" name="can_use_country_geoip_data" value="<!-- tmpl_var can_use_country_geoip_data -->" >
 	</form> 
 	
 	<fieldset> 
@@ -67,7 +67,7 @@
 		</td>
 
 			<td>
- 			<table  class="stripedtable">
+ 			<table  style="width:100%" class="responsive">
 
  
 
@@ -344,7 +344,7 @@
 		</ul>
 
 	<div id="subscriber_activity">
-		<table  class="stripedtable">
+		<table  style="width:100%" class="responsive">
 		 <tr> 
 		<td width="350"> 
 		   <div id="message_email_activity_listing_table_loading"></div> 
@@ -367,7 +367,7 @@
 		
 		<h2>Message Opens by Country</h2>
 		<!-- tmpl_if can_use_country_geoip_data --> 
-			<table  class="stripedtable">
+			<table  style="width:100%" class="responsive">
 			 <tr> 
 			<td width="350"> 
 			   <div id="country_geoip_opens_table_loading"></div> 
@@ -395,10 +395,10 @@
 		<fieldset> 
 			<div class="buttonfloat">
 			<form action="<!-- tmpl_var PluginURL -->" method="post"> 
-    			<input type="hidden" name="prm"    value="export_subscribers" /> 
-    			<input type="hidden" name="type" value="opens" /> 
-    			<input type="hidden" name="mid"  value="<!-- tmpl_var mid -->" />
-    			<input type="submit" value="Export Subscribers Opening This Message" class="processing" /> 
+    			<input type="hidden" name="prm"    value="export_subscribers" > 
+    			<input type="hidden" name="type" value="opens" > 
+    			<input type="hidden" name="mid"  value="<!-- tmpl_var mid -->" >
+    			<input type="submit" value="Export Subscribers Opening This Message" class="processing" > 
 			</form>
 			</div> 
 			<div class="floatclear"></div>	
@@ -412,7 +412,7 @@
 		<h2>Clickthroughs by Country</h2>
 		
 		<!-- tmpl_if can_use_country_geoip_data --> 
-		<table  class="stripedtable">
+		<table  style="width:100%" class="responsive">
 		<tr> 
 		<td width="350"> 
 
@@ -439,7 +439,7 @@
 			  <div> 
 			 <!-- <div style="max-width:350px; max-height: 400px; overflow: auto; border:1px solid black overflow-y: scroll; overflow-x: hidden;"> -->
 				 <div style="max-height: 400px; overflow: auto; border:1px solid black overflow-y: scroll; overflow-x: hidden;">
-			 	<table  class="stripedtable">
+			 	<table  style="width:100%" class="responsive">
 					<tr style="background:#fff"> 
 					<td> 
 						<p><strong>URL</strong></p> 
@@ -486,10 +486,10 @@
 	<fieldset> 
 		<div class="buttonfloat">
 		<form action="<!-- tmpl_var PluginURL -->" method="post"> 
-    		<input type="hidden" name="prm"  value="export_subscribers" /> 
-    		<input type="hidden" name="type" value="clickthroughs" /> 
-    		<input type="hidden" name="mid"  value="<!-- tmpl_var mid -->" />
-    		<input type="submit" value="Export Subscribers Clickthroughing This Message" class="processing" /> 
+    		<input type="hidden" name="prm"  value="export_subscribers" > 
+    		<input type="hidden" name="type" value="clickthroughs" > 
+    		<input type="hidden" name="mid"  value="<!-- tmpl_var mid -->" >
+    		<input type="submit" value="Export Subscribers Clickthroughing This Message" class="processing" > 
 		</form>
 		</div> 
 		<div class="floatclear"></div>	
@@ -500,7 +500,7 @@
 	<div id="unsubscribes"> 
 		
 		<h2>Unsubscribes</h2>
-		<table  class="stripedtable">
+		<table  style="width:100%" class="responsive">
 		 <tr> 
 		  <td> 
 				<div id="unsubscribe_table_loading"></div> 
@@ -525,7 +525,7 @@
 	<div id="archive_views">
 	<h2>Archive Views by Country</h2>
 		<!-- tmpl_if can_use_country_geoip_data --> 
-			<table  class="stripedtable">
+			<table  style="width:100%" class="responsive">
 			 <tr> 
 			<td width="350"> 
 			   <div id="country_geoip_view_archive_table_loading"></div> 
@@ -552,7 +552,7 @@
 		
 		<h2>&quot;Forward to a Friend&quot; by Country</h2>
 		<!-- tmpl_if can_use_country_geoip_data --> 
-			<table  class="stripedtable">
+			<table  style="width:100%" class="responsive">
 			 <tr> 
 			<td width="350"> 
 			   <div id="country_geoip_forwards_table_loading"></div> 
@@ -578,7 +578,7 @@
 	<div id="bounces">
 		
 		<h2>Soft Bounces</h2>
-		<table  class="stripedtable">
+		<table  style="width:100%" class="responsive">
 		 <tr> 
 		  <td> 
 				<div id="soft_bounce_table_loading"></div> 
@@ -593,7 +593,7 @@
 		
 	
 		<h2>Hard Bounces</h2>
-		<table  class="stripedtable">
+		<table  style="width:100%" class="responsive">
 		 <tr> 
 		  <td> 
 				<div id="hard_bounce_table_loading"></div> 
@@ -609,7 +609,7 @@
 	</div> 
 
 	<div id="errors_sending_to">
-		<table  class="stripedtable">
+		<table  style="width:100%" class="responsive">
 		 <tr> 
 		  <td> 
 				<div id="errors_sending_to_table_loading"></div> 
@@ -627,7 +627,7 @@
 	<div id="abuse_reports"> 
 		
 		<h2>Abuse Reports</h2>
-		<table  class="stripedtable">
+		<table  style="width:100%" class="responsive">
 		 <tr> 
 		  <td> 
 				<div id="abuse_report_table_loading"></div> 
@@ -647,10 +647,10 @@
 		<fieldset> 
 			<div class="buttonfloat">
 			<form action="<!-- tmpl_var PluginURL -->" method="post"> 
-		    	<input type="hidden" name="flavor"    value="export_subscribers" /> 
-    			<input type="hidden" name="type" value="abuse_reports" /> 
-    			<input type="hidden" name="mid"  value="<!-- tmpl_var mid -->" />
-			    <input type="submit" value="Export Subscribers Reporting Abuse for This Message" class="processing" /> 
+		    	<input type="hidden" name="flavor"    value="export_subscribers" > 
+    			<input type="hidden" name="type" value="abuse_reports" > 
+    			<input type="hidden" name="mid"  value="<!-- tmpl_var mid -->" >
+			    <input type="submit" value="Export Subscribers Reporting Abuse for This Message" class="processing" > 
 			</form>
 			</div> 
 			<div class="floatclear"></div>	
@@ -671,23 +671,23 @@
 
 		<div class="buttonfloat">
 		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
-    		<input type="hidden" name="flavor" value="plugins" /> 
-    		<input type="hidden" name="plugin" value="tracker" /> 
-    		<input type="hidden" name="prm" value="download_activity_logs" /> 
-    		<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" />
-    		 <input type="submit" class="processing" name="process" value="Download Raw Activity Logs (.csv)" />
+    		<input type="hidden" name="flavor" value="plugins" > 
+    		<input type="hidden" name="plugin" value="tracker" > 
+    		<input type="hidden" name="prm" value="download_activity_logs" > 
+    		<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" >
+    		 <input type="submit" class="processing" name="process" value="Download Raw Activity Logs (.csv)" >
 		</form> 
 		</div>
 
 
 		<div class="buttonfloat">
 		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
-		<input type="hidden" name="flavor" value="plugins" /> 
-		<input type="hidden" name="plugin" value="tracker" /> 
+		<input type="hidden" name="flavor" value="plugins" > 
+		<input type="hidden" name="plugin" value="tracker" > 
 
-		<input type="hidden" name="prm" value="download_clickthrough_logs" /> 
-		<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" />
-		 <input type="submit" class="processing" name="process" value="Download Raw Clickthrough Logs (.csv)" />
+		<input type="hidden" name="prm" value="download_clickthrough_logs" > 
+		<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" >
+		 <input type="submit" class="processing" name="process" value="Download Raw Clickthrough Logs (.csv)" >
 		</form> 
 		</div>
 		<div class="floatclear"></div>

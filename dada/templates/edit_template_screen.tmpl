@@ -47,14 +47,14 @@
 	<!-- /tmpl_if -->
 
  <p>
-  <input type="radio" name="get_template_data" id="from_default_template" value="from_default_template" <!-- tmpl_if get_template_data_from_default_template -->checked="checked"<!--/tmpl_if--> />
+  <input type="radio" name="get_template_data" id="from_default_template" value="from_default_template" <!-- tmpl_if get_template_data_from_default_template -->checked="checked"<!--/tmpl_if--> >
   <label for="from_default_template">
    Use the Default Mailing List Template
   </label>
  </p>
 
  <p>
-  <input type="radio" name="get_template_data" id="from_template_file" value="from_template_file" <!-- tmpl_if get_template_data_from_template_file -->checked="checked"<!--/tmpl_if--> />
+  <input type="radio" name="get_template_data" id="from_template_file" value="from_template_file" <!-- tmpl_if get_template_data_from_template_file -->checked="checked"<!--/tmpl_if--> >
   <label for="from_template_file">
    Use this Custom Template for your Mailing List: 
   </label>
@@ -81,7 +81,7 @@
  <!-- tmpl_if can_use_lwp_simple -->
 	 
 	 <p>
-	  <input type="radio" name="get_template_data" id="from_url" value="from_url" <!-- tmpl_if get_template_data_from_url -->checked="checked"<!--/tmpl_if--> />
+	  <input type="radio" name="get_template_data" id="from_url" value="from_url" <!-- tmpl_if get_template_data_from_url -->checked="checked"<!--/tmpl_if--> >
 	  <label for="from_url">
 	   Use the Custom Template at this URL for your Mailing List:
 	  </label>
@@ -110,7 +110,7 @@
 	
 	
 <p>
- <input type="url" id="url_template" name="url_template" value="<!-- tmpl_var list_settings.url_template ESCAPE="HTML"-->"  />
+ <input type="url" id="url_template" name="url_template" value="<!-- tmpl_var list_settings.url_template ESCAPE="HTML"-->"  >
 </p>
 	 
 <!--/tmpl_if -->
@@ -120,20 +120,20 @@
 
  <p>
 	
-	<input type="hidden" name="process" value="true" />
-	<input type="hidden" name="flavor"       value="edit_template" />
+	<input type="hidden" name="process" value="true" >
+	<input type="hidden" name="flavor"       value="edit_template" >
 
-  <input type="hidden" name="default_template" value="<!-- tmpl_var default_template escape="HTML" -->" />
+  <input type="hidden" name="default_template" value="<!-- tmpl_var default_template escape="HTML" -->" >
   <div class="buttonfloat">
-   <input type="submit" class="plain"      value="Preview Template"  onclick="preview_template();" />
-   <input type="submit" class="processing" value="Change Template"   onclick="change_template();" />
-   <input type="reset"  class="cautionary" value="Clear Changes" />
+   <input type="submit" class="plain"      value="Preview Template"  onclick="preview_template();" >
+   <input type="submit" class="processing" value="Change Template"   onclick="change_template();" >
+   <input type="reset"  class="cautionary" value="Clear Changes" >
    <input type="button" class="alertive"   value="Revert to Default" onclick="set_to_default();">
   </div>
  </p>
 </form> 
 <div class="floatclear"></div>
-<hr />
+<hr >
 
 <table  class="tagchart">
 	

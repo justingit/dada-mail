@@ -78,7 +78,7 @@
         </p>
         
         <form action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-         <input type="hidden" name="flavor" value="new_list" />
+         <input type="hidden" name="flavor" value="new_list" >
          <table  align="center">
           <tr>
            <td colspan="2">
@@ -91,16 +91,16 @@
           </tr>
           <tr>
            <td>
-            <input type="password" name="root_password" id="root_password" maxlength="24" />
+            <input type="password" name="root_password" id="root_password" maxlength="24" >
            </td>
            <td>
-            <input type="submit" class="plain" value="Create a New Mailing List..." />
+            <input type="submit" class="plain" value="Create a New Mailing List..." >
            </td>
           </tr>
          </table>
          
          <!-- tmpl_if DISABLE_OUTSIDE_LOGINS --> 
-             <input type="hidden" name="auth_state" value="<!-- tmpl_var auth_state -->" /> 
+             <input type="hidden" name="auth_state" value="<!-- tmpl_var auth_state -->" > 
          <!--/tmpl_if--> 
     
         </form>

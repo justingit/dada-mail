@@ -22,11 +22,11 @@
 </div> 
 
 <form action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
- <input type="hidden" name="flavor" value="validate_remove_email" />
- <input type="hidden" name="process" value="1" />
- <input type="hidden" name="email" value="<!-- tmpl_var email -->" />
+ <input type="hidden" name="flavor" value="validate_remove_email" >
+ <input type="hidden" name="process" value="1" >
+ <input type="hidden" name="email" value="<!-- tmpl_var email -->" >
 
- <input type="hidden" name="return_to" value="membership" />
+ <input type="hidden" name="return_to" value="membership" >
 
 
 
@@ -41,7 +41,7 @@
 	</li> 
 	<!-- tmpl_loop sublists --> 
 		<p>
-			<input type="checkbox" name="remove_from_list" id="<!-- tmpl_var list_settings.list -->:<!-- tmpl_var type -->" value="<!-- tmpl_var list_settings.list -->:<!-- tmpl_var type -->" checked="checked" />
+			<input type="checkbox" name="remove_from_list" id="<!-- tmpl_var list_settings.list -->:<!-- tmpl_var type -->" value="<!-- tmpl_var list_settings.list -->:<!-- tmpl_var type -->" checked="checked" >
 			<label for="<!-- tmpl_var list_settings.list -->:<!-- tmpl_var type -->">
 				<!-- tmpl_var type_label -->
 			</label>
@@ -52,7 +52,7 @@
 <!-- /tmpl_loop -->
 
 	 <div class="buttonfloat">	 
-		<input type="submit" value="Remove <!-- tmpl_var email -->" class="cautionary" id="remove_email" />
+		<input type="submit" value="Remove <!-- tmpl_var email -->" class="cautionary" id="remove_email" >
 	</div> 
 	<div class="floatclear"></div>
 </form> 

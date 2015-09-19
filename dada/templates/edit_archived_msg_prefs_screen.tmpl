@@ -6,7 +6,7 @@
 
 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
-	 <input type="hidden" name="flavor" value="edit_archived_msg" /> 
+	 <input type="hidden" name="flavor" value="edit_archived_msg" > 
 	
 	<!-- tmpl_if done --> 
 	
@@ -17,14 +17,14 @@
 	<p><strong>Editable Headers:</strong></p>
 	
 	<div style="max-height: 200px; width:250px; overflow: auto; border:1px solid black">
-	 <table  class="stripedtable">
+	 <table  style="width:100%" class="responsive">
      
 	<!-- tmpl_loop edit_headers_menu --> 
-	  <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
+	  <tr>
 
 		    <td width="25">
 
-	 <input type="checkbox" name="editable_header" id="<!-- tmpl_var name ESCAPE="HTML"-->" value="<!-- tmpl_var name ESCAPE="HTML"-->" <!--tmpl_if editable -->checked="checked"<!--/tmpl_if--> />
+	 <input type="checkbox" name="editable_header" id="<!-- tmpl_var name ESCAPE="HTML"-->" value="<!-- tmpl_var name ESCAPE="HTML"-->" <!--tmpl_if editable -->checked="checked"<!--/tmpl_if--> >
 	 </td> 
 	 <td> 
 	  
@@ -39,16 +39,16 @@
 	</table> 
 	</div>
 	
-	<hr /> 
-	<input type="hidden" name="process" value="prefs" /> 
-	<input type="hidden" name="process_prefs" value="1" /> 
-	<input type="hidden" name="id" value="<!-- tmpl_var id -->" />
+	<hr > 
+	<input type="hidden" name="process" value="prefs" > 
+	<input type="hidden" name="process_prefs" value="1" > 
+	<input type="hidden" name="id" value="<!-- tmpl_var id -->" >
 
 	<div class="buttonfloat">
-	 <input type="reset" class="cautionary"  value="Clear Changes" />
-	 <input type="submit" class="processing" value="Save Changes" />
+	 <input type="reset" class="cautionary"  value="Clear Changes" >
+	 <input type="submit" class="processing" value="Save Changes" >
 	</div>
-	<br />
+	<br >
 	<div class="floatclear"></div>
 	
 	</form> 

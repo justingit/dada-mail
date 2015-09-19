@@ -62,7 +62,7 @@
 	<div> 
 		<div style="max-height: 300px; overflow: auto; border:1px solid black">
 
-		  <table  class="stripedtable">
+		  <table  style="width:100%" class="responsive">
 		   <tr style="background:#fff"> 
 		   		<td>
 					<p>
@@ -77,7 +77,7 @@
 			</tr> 
 
 			<!-- tmpl_loop scorecard --> 
-		   	<tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
+		   	<tr>
 				<td>
 					<p>
 					<a href="<!-- tmpl_var PLUGIN_URL -->?prm=cgi_bounce_score_search&amp;query=<!-- tmpl_var email ESCAPE="URL" -->&chrome=0" title="<!-- tmpl_var email ESCAPE="HTML" -->" class="modalbox">
@@ -97,13 +97,13 @@
 	</div> 
 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
-<input type="hidden" name="prm" value="cgi_erase_scorecard" /> 
-<input type="hidden" name="flavor" value="plugins" /> 
-<input type="hidden" name="plugin" value="bounce_handler" /> 
+<input type="hidden" name="prm" value="cgi_erase_scorecard" > 
+<input type="hidden" name="flavor" value="plugins" > 
+<input type="hidden" name="plugin" value="bounce_handler" > 
 	<div class="buttonfloat">
-	 <input type="submit" class="alertive" onclick="if(!confirm('Are you sure you want to Erase the Bounce Scorecard? This cannot be undone.')){alert('Scorecard Not Erased.');return false;}" name="process" value="Erase Score Card" />
+	 <input type="submit" class="alertive" onclick="if(!confirm('Are you sure you want to Erase the Bounce Scorecard? This cannot be undone.')){alert('Scorecard Not Erased.');return false;}" name="process" value="Erase Score Card" >
 	</div>
-	<br />
+	<br >
 	<div class="floatclear"></div>
 </form> 
 

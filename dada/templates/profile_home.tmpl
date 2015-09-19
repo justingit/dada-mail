@@ -16,7 +16,7 @@
             <!-- tmpl_if gravatar_img_url --> 
             
                     <a href="http://gravatar.com/" target="_blank">
-                        <img src="<!-- tmpl_var gravatar_img_url -->" style="float:left; padding:5px;padding-top:0px;border:0px" />
+                        <img src="<!-- tmpl_var gravatar_img_url -->" style="float:left; padding:5px;padding-top:0px;border:0px" >
                     </a>
         
             <!-- /tmpl_if -->
@@ -266,27 +266,27 @@ function confirm_profile_removal(form_name) {
                             <legend>Delivery Preferences:</legend>
                             <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
                                 
-                                <input type="hidden" name="flavor"        value="profile" /> 
-                                <input type="hidden" name="process"  value="profile_delivery_preferences" /> 
-                                <input type="hidden" name="list"     value="<!-- tmpl_var list_settings.list -->" /> 
+                                <input type="hidden" name="flavor"        value="profile" > 
+                                <input type="hidden" name="process"  value="profile_delivery_preferences" > 
+                                <input type="hidden" name="list"     value="<!-- tmpl_var list_settings.list -->" > 
                                 
                                 <p>
-                                    <input type="radio" name="delivery_prefs" value="individual" id="delivery_prefs_individual" <!-- tmpl_if expr="delivery_prefs eq 'individual'" -->checked="checked"<!-- /tmpl_if --> />
+                                    <input type="radio" name="delivery_prefs" value="individual" id="delivery_prefs_individual" <!-- tmpl_if expr="delivery_prefs eq 'individual'" -->checked="checked"<!-- /tmpl_if --> >
                                         <label for="delivery_prefs_individual">
                                             Receive Individual Messages
                                         </label>
-                                        <br />
+                                        <br >
                                     <input type="radio" name="delivery_prefs" value="digest" id="delivery_prefs_digest" <!-- tmpl_if expr="delivery_prefs eq 'digest'" -->checked="checked"<!-- /tmpl_if --> >
                                         <label for="delivery_prefs_digest">
                                             Receive Messages in a Digest
                                         </label> (<!-- tmpl_var digest_timeframe -->)
-                                        <br />
+                                        <br >
                                     <input type="radio" name="delivery_prefs" value="hold" id="delivery_prefs_hold" <!-- tmpl_if expr="delivery_prefs eq 'hold'" -->checked="checked"<!-- /tmpl_if --> >
                                         <label for="delivery_prefs_hold">
                                             Hold Mailings
                                         </label> (vacation, etc)     
                                         <div class="buttonfloat">    
-                                        <input type="submit" value="Save Delivery Preferences" class="processing" /> 
+                                        <input type="submit" value="Save Delivery Preferences" class="processing" > 
                                         </div>
                                         <div class="floatclear"></div>                       
                                 </p>
@@ -316,8 +316,8 @@ function confirm_profile_removal(form_name) {
         <div id="profile_fields">
             <!-- tmpl_if subscriber_fields --> 
                 <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="membership_profile_fields"> 
-                    <input type="hidden" name="flavor"        value="profile" /> 
-                    <input type="hidden" name="process"  value="edit_subscriber_fields" /> 
+                    <input type="hidden" name="flavor"        value="profile" > 
+                    <input type="hidden" name="process"  value="edit_subscriber_fields" > 
                     <!-- tmpl_loop subscriber_fields --> 
                         <p>
                         <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
@@ -327,7 +327,7 @@ function confirm_profile_removal(form_name) {
                             <!-- tmpl_var name escape=HTML -->: 
                         <!-- /tmpl_if -->
                         </label>
-                        <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->" <!-- tmpl_if required -->required<!-- /tmpl_if --> />
+                        <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->" <!-- tmpl_if required -->required<!-- /tmpl_if --> >
                         <!-- tmpl_if required -->
                             <span class="error">
                                 * Required
@@ -336,7 +336,7 @@ function confirm_profile_removal(form_name) {
                         </p>
                     <!-- /tmpl_loop -->
                     <div class="buttonfloat">    
-                    <input type="submit" value="Update Information" class="processing" /> 
+                    <input type="submit" value="Update Information" class="processing" > 
                     </div>
                     <div class="floatclear"></div>
                 </form>
@@ -375,8 +375,8 @@ function confirm_profile_removal(form_name) {
                 will be replaced with this new email address, where it's allowed: 
             </p>
             <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
-                <input type="hidden" name="flavor"        value="profile" /> 
-                <input type="hidden" name="process"  value="update_email" />
+                <input type="hidden" name="flavor"        value="profile" > 
+                <input type="hidden" name="process"  value="update_email" >
                     <!-- tmpl_if errors_update_email --> 
                         <!-- tmpl_if error_invalid_email --> 
                             <p class="error"> 
@@ -395,11 +395,11 @@ function confirm_profile_removal(form_name) {
                     <label for="updated_email" class="label_profile_fields">
                     Your New Profile Email Address: 
                     </label>
-                    <input type="text" name="updated_email" id="updated_email" value=""  />
+                    <input type="text" name="updated_email" id="updated_email" value=""  >
                     </p>
 
                 <div class="buttonfloat">    
-                    <input type="submit"  class="processing" value="Confirm and Update Your New Profile Email Address" /> 
+                    <input type="submit"  class="processing" value="Confirm and Update Your New Profile Email Address" > 
                 </div>
                 <div class="floatclear"></div>
             </form>
@@ -413,8 +413,8 @@ function confirm_profile_removal(form_name) {
     <!-- tmpl_if expr="profile_feature_change_password == 1" -->
         <div id="change_password">
             <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
-                <input type="hidden" name="flavor"        value="profile" /> 
-                <input type="hidden" name="process"  value="change_password" />
+                <input type="hidden" name="flavor"        value="profile" > 
+                <input type="hidden" name="process"  value="change_password" >
 
                 <!-- tmpl_if errors_change_password --> 
                         <p class="error">
@@ -425,17 +425,17 @@ function confirm_profile_removal(form_name) {
                     <label for="password" class="label_profile_fields">
                     New Password: 
                     </label>
-                    <input type="password" name="password" id="password" value=""  />
+                    <input type="password" name="password" id="password" value=""  >
                   </p>
                   <p>
                     <label for="again_password" class="label_profile_fields">
                     New Password Again: 
                     </label>
-                    <input type="password" name="again_password" id="again_password" value=""  />
+                    <input type="password" name="again_password" id="again_password" value=""  >
                    </p>
 
                 <div class="buttonfloat">    
-                <input type="submit"   class="processing"  value="Change Password" /> 
+                <input type="submit"   class="processing"  value="Change Password" > 
                 </div>
                 <div class="floatclear"></div>
             </form>
@@ -449,15 +449,15 @@ function confirm_profile_removal(form_name) {
     <!-- tmpl_if expr="profile_feature_delete_profile == 1" -->
         <div id="delete_profile">
             <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
-                <input type="hidden" name="flavor"        value="profile" /> 
-                <input type="hidden" name="process"  value="delete_profile" />
+                <input type="hidden" name="flavor"        value="profile" > 
+                <input type="hidden" name="process"  value="delete_profile" >
                 <p>
                     Deleting your profile will remove all your profile information, but 
                     all your subscriptions to subscribed mailing lists will remain.
                 </p> 
 
                 <div class="buttonfloat">    
-                <input type="submit" value="Delete Your Profile" class="alertive" onclick="return confirm_profile_removal(this.form);" /> 
+                <input type="submit" value="Delete Your Profile" class="alertive" onclick="return confirm_profile_removal(this.form);" > 
                 </div>
                 <div class="floatclear"></div>
             </form>

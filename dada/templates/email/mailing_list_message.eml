@@ -86,7 +86,7 @@ is located at the end of this message.)
  <strong>
   <!-- tmpl_var list_settings.list_owner_email -->
  </strong>
-<br />
+<br >
 <!-- tmpl_var list_settings.physical_address -->
 </p>
 

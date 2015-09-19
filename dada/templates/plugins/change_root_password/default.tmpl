@@ -10,10 +10,10 @@
 
 <form method="post"> 
 
-    <input type="hidden" name="flavor"  value="plugins" />
-    <input type="hidden" name="plugin"  value="change_root_password" />
-    <input type="hidden" name="prm"     value="change_password" />
-    <input type="hidden" name="process" value="true" />
+    <input type="hidden" name="flavor"  value="plugins" >
+    <input type="hidden" name="plugin"  value="change_root_password" >
+    <input type="hidden" name="prm"     value="change_password" >
+    <input type="hidden" name="process" value="true" >
 
 <!--tmpl_if old_root_pass_incorrect --> 
 
@@ -34,28 +34,28 @@
 
 	<p>
 	 Enter your old <!-- tmpl_var PROGRAM_NAME --> Root <label for="old_password">Password</label>:
-	 <br />
-	 <input type="password" id="old_password" name="old_password" maxlength="24" />
+	 <br >
+	 <input type="password" id="old_password" name="old_password" maxlength="24" >
 	</p>
 	
 
 <p>
  <label for="new_password">
   Enter your new <!-- tmpl_var PROGRAM_NAME --> Root Password</label>:
- <br />
- <input type="password" name="new_password" id="new_password" size="16" maxlength="24" />
+ <br >
+ <input type="password" name="new_password" id="new_password" size="16" maxlength="24" >
 </p>
 
 <p>
  <label for="again_new_password">
   Re-enter your new <!-- tmpl_var PROGRAM_NAME --> Root Password</label>:
- <br />
- <input type="password" name="again_new_password" id="again_new_password" size="16" maxlength="24" />
+ <br >
+ <input type="password" name="again_new_password" id="again_new_password" size="16" maxlength="24" >
 </p>
 
 <div class="buttonfloat">
- <input type="reset"  class="cautionary" />
- <input type="submit" class="processing" value="Change <!-- tmpl_var PROGRAM_NAME --> Root Password" />
+ <input type="reset"  class="cautionary" >
+ <input type="submit" class="processing" value="Change <!-- tmpl_var PROGRAM_NAME --> Root Password" >
 </div>
 <div class="floatclear"></div>
 

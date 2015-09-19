@@ -28,8 +28,8 @@
 	accept-charset="<!-- tmpl_var HTML_CHARSET -->"
 >
 
-	<input type="hidden" name="process" value="1" />
-	<input type="hidden" name="flavor"  value="list_options" />
+	<input type="hidden" name="process" value="1" >
+	<input type="hidden" name="flavor"  value="list_options" >
 	
 	
 <fieldset>
@@ -44,7 +44,7 @@
     </div> 
     <div class="row"> 
         <div class="small-12 columns">
-         	<input type="radio" name="private_list" id="private_list_no" value="0" <!-- tmpl_unless list_settings.private_list -->checked="checked"<!--/tmpl_unless--> />
+         	<input type="radio" name="private_list" id="private_list_no" value="0" <!-- tmpl_unless list_settings.private_list -->checked="checked"<!--/tmpl_unless--> >
          	<label for="private_list_no">
           	  Public Mailing List
          	</label>
@@ -69,7 +69,7 @@
 				id="private_list" 
 				value="1" 
 				<!-- tmpl_if list_settings.private_list -->checked="checked"<!--/tmpl_if--> 
-			 />
+			 >
              <label for="private_list">
               Private Mailing List
              </label>
@@ -98,7 +98,7 @@
 		  	type="checkbox" 
 			name="hide_list" 
 			id="hide_list" 
-			value="1" <!-- tmpl_if list_settings.hide_list -->checked="checked"<!--/tmpl_if--> />
+			value="1" <!-- tmpl_if list_settings.hide_list -->checked="checked"<!--/tmpl_if--> >
           <label for="hide_list">
            Hidden
           </label>
@@ -146,7 +146,7 @@
     <div class="row"> 
         <div class="small-12 columns">
             
-          <input type="checkbox" name="closed_list" id="closed_list" value="1" <!-- tmpl_if list_settings.closed_list --> checked="checked" <!-- /tmpl_if --> />
+          <input type="checkbox" name="closed_list" id="closed_list" value="1" <!-- tmpl_if list_settings.closed_list --> checked="checked" <!-- /tmpl_if --> >
           <label for="closed_list"> 
               Disable All Subscriptions
           </label>
@@ -259,7 +259,7 @@
                 <div class="row"> 
 					 <div class="small-1 columns"></div>
                      <div class="small-11 columns">                          
-                        <input type="checkbox" name="limit_sub_confirm" id="limit_sub_confirm" value="1" <!-- tmpl_if list_settings.limit_sub_confirm -->checked="checked"<!--/tmpl_if--> />
+                        <input type="checkbox" name="limit_sub_confirm" id="limit_sub_confirm" value="1" <!-- tmpl_if list_settings.limit_sub_confirm -->checked="checked"<!--/tmpl_if--> >
                          <label for="limit_sub_confirm">
                           Limit Subscription Confirmation Sending 
                          </label>
@@ -276,7 +276,7 @@
                 <div class="row"> 
 					 <div class="small-1  columns"></div>
                      <div class="small-11 columns">                          
-                        <input type="checkbox" name="limit_sub_confirm_use_captcha" id="limit_sub_confirm_use_captcha" value="1" <!-- tmpl_if list_settings.limit_sub_confirm_use_captcha -->checked="checked"<!--/tmpl_if--> />                        
+                        <input type="checkbox" name="limit_sub_confirm_use_captcha" id="limit_sub_confirm_use_captcha" value="1" <!-- tmpl_if list_settings.limit_sub_confirm_use_captcha -->checked="checked"<!--/tmpl_if--> >                        
                         <label for="limit_sub_confirm_use_captcha" <!-- tmpl_unless can_use_captcha -->class="disabled"<!-- /tmpl_unless -->>
                             Enable CAPTCHA
                         </label>
@@ -302,7 +302,7 @@
 					 <div class="small-1  columns"></div>
                      <div class="small-11 columns">                          
                         
-						<input type="checkbox" name="email_your_subscribed_msg" id="email_your_subscribed_msg" value="1" <!-- tmpl_if list_settings.email_your_subscribed_msg -->checked="checked"<!--/tmpl_if--> />
+						<input type="checkbox" name="email_your_subscribed_msg" id="email_your_subscribed_msg" value="1" <!-- tmpl_if list_settings.email_your_subscribed_msg -->checked="checked"<!--/tmpl_if--> >
                          <label for="email_your_subscribed_msg">
                             Send email notification of additional subscription attempt
                          </label>                         
@@ -325,7 +325,7 @@
 					 <div class="small-1  columns"></div>
                      <div class="small-11 columns">                          
                           
-                          <input type="checkbox" name="use_alt_url_sub_confirm_success" id="use_alt_url_sub_confirm_success" value="1" <!-- tmpl_if list_settings.use_alt_url_sub_confirm_success -->checked="checked"<!--/tmpl_if--> />
+                          <input type="checkbox" name="use_alt_url_sub_confirm_success" id="use_alt_url_sub_confirm_success" value="1" <!-- tmpl_if list_settings.use_alt_url_sub_confirm_success -->checked="checked"<!--/tmpl_if--> >
                           <label for="use_alt_url_sub_confirm_success">
                                  If Step #1 of the Closed-Loop Opt-In is successful, redirect to:
                            </label>
@@ -364,7 +364,7 @@
                     <div class="row"> 
 					 <div class="small-1  columns"></div>
                      <div class="small-11 columns">                          
-                           <input type="checkbox" name="use_alt_url_sub_confirm_failed" id="use_alt_url_sub_confirm_failed" value="1" <!-- tmpl_if list_settings.use_alt_url_sub_confirm_failed -->checked="checked"<!--/tmpl_if--> />
+                           <input type="checkbox" name="use_alt_url_sub_confirm_failed" id="use_alt_url_sub_confirm_failed" value="1" <!-- tmpl_if list_settings.use_alt_url_sub_confirm_failed -->checked="checked"<!--/tmpl_if--> >
                             <label for="use_alt_url_sub_confirm_failed">
                              If step #1 of the Closed-Loop Opt-In Confirmation fails, 
                              redirect to:
@@ -387,7 +387,7 @@
                     <div class="row"> 
 					 <div class="small-1  columns"></div>
                      <div class="small-10 offset-1 columns">                          
-                            <input type="checkbox" name="alt_url_sub_confirm_failed_w_qs" id="alt_url_sub_confirm_failed_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_sub_confirm_failed_w_qs -->checked="checked"<!--/tmpl_if--> />
+                            <input type="checkbox" name="alt_url_sub_confirm_failed_w_qs" id="alt_url_sub_confirm_failed_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_sub_confirm_failed_w_qs -->checked="checked"<!--/tmpl_if--> >
                             <label for="alt_url_sub_confirm_failed_w_qs">
                                 Redirect with query string
                             </label>
@@ -414,7 +414,7 @@
 						id="captcha_sub" 
 						value="1" 
 						<!-- tmpl_if list_settings.captcha_sub -->checked="checked"<!--/tmpl_if--> 
-					/>
+					>
                     <label for="captcha_sub" <!-- tmpl_unless can_use_captcha -->class="disabled"<!-- /tmpl_unless -->>
                      Require Solving a CAPTCHA
                     </label>
@@ -447,7 +447,7 @@
 						id="enable_subscription_approval_step" 
 						value="1" 
 						<!-- tmpl_if list_settings.enable_subscription_approval_step -->checked="checked"<!--/tmpl_if--> 
-					/>
+					>
                      <label for="enable_subscription_approval_step">
                        Require Approval from the List Owner 
                      </label>
@@ -465,7 +465,7 @@
 							name="use_alt_url_subscription_approval_step" 
 							id="use_alt_url_subscription_approval_step" 
 							value="1" <!-- tmpl_if list_settings.use_alt_url_subscription_approval_step -->checked="checked"<!--/tmpl_if--> 
-						 />
+						 >
                          <label for="use_alt_url_subscription_approval_step">
                           Redirect to this URL (instead of showing the default, &quot;List Subscription Request&quot; message):
                          </label>
@@ -478,13 +478,13 @@
 					name="alt_url_subscription_approval_step" 
 					value="<!-- tmpl_var list_settings.alt_url_subscription_approval_step escape="HTML" -->" 
 					placeholder="http://"
-				 />
+				 >
                </div> 
               </div> 
              <div class="row"> 
  			 <div class="small-1  columns"></div>
              	<div class="small-11 columns">    
-                    <input type="checkbox" name="alt_url_subscription_approval_step_w_qs" id="alt_url_subscription_approval_step_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_subscription_approval_step_w_qs -->checked="checked"<!--/tmpl_if--> />                      
+                    <input type="checkbox" name="alt_url_subscription_approval_step_w_qs" id="alt_url_subscription_approval_step_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_subscription_approval_step_w_qs -->checked="checked"<!--/tmpl_if--> >                      
 					<label for="alt_url_subscription_approval_step_w_qs">Redirect with query string</label>
              	</div> 
              </div>
@@ -500,7 +500,7 @@
 		</legend>
 		<div class="row"> 
 			<div class="small-12 columns">		   	
-              <input type="checkbox" name="get_sub_notice" id="get_sub_notice" value="1" <!-- tmpl_if list_settings.get_sub_notice -->checked="checked"<!--/tmpl_if--> />
+              <input type="checkbox" name="get_sub_notice" id="get_sub_notice" value="1" <!-- tmpl_if list_settings.get_sub_notice -->checked="checked"<!--/tmpl_if--> >
                <label for="get_sub_notice">
                 Send Subscription Notifications to:
                </label>
@@ -515,12 +515,12 @@
 					id="alt_send_subscription_notice_to" 
 					value="<!-- tmpl_var list_settings.alt_send_subscription_notice_to -->" 
 					placeholder="you@yours.com"
-				/>                    
+				>                    
 			</div>
 		</div>
 		<div class="row"> 
 			<div class="small-12 columns">
-	           <input type="checkbox" name="send_sub_success_email" id="send_sub_success_email" value="1" <!-- tmpl_if list_settings.send_sub_success_email -->checked="checked"<!--/tmpl_if--> />
+	           <input type="checkbox" name="send_sub_success_email" id="send_sub_success_email" value="1" <!-- tmpl_if list_settings.send_sub_success_email -->checked="checked"<!--/tmpl_if--> >
                 <label for="send_sub_success_email">
                  Send Subscription Successful Email Notifications
                 </label>
@@ -533,7 +533,7 @@
 		<div class="row"> 
 			<div class="small-12 columns">
 				
-	          <input type="checkbox" name="send_newest_archive" id="send_newest_archive" value="1" <!-- tmpl_if list_settings.send_newest_archive -->checked="checked"<!--/tmpl_if--> />
+	          <input type="checkbox" name="send_newest_archive" id="send_newest_archive" value="1" <!-- tmpl_if list_settings.send_newest_archive -->checked="checked"<!--/tmpl_if--> >
                <label for="send_newest_archive">
                 Send the Newest Archived Message to All New Subscribers 
                </label>
@@ -544,7 +544,7 @@
 		</div>
 		<div class="row"> 
 			<div class="small-12 columns">
-	           <input type="checkbox" name="use_alt_url_sub_success" id="use_alt_url_sub_success" value="1" <!-- tmpl_if list_settings.use_alt_url_sub_success -->checked="checked"<!--/tmpl_if--> />
+	           <input type="checkbox" name="use_alt_url_sub_success" id="use_alt_url_sub_success" value="1" <!-- tmpl_if list_settings.use_alt_url_sub_success -->checked="checked"<!--/tmpl_if--> >
 	            <label for="use_alt_url_sub_success">
 	             If a subscription is successful, redirect to:
 	            </label>
@@ -557,19 +557,19 @@
 				name="alt_url_sub_success" 
 				value="<!-- tmpl_var list_settings.alt_url_sub_success escape="HTML" -->"  
 				placeholder="http://"
-			/>
+			>
 	   	  </div>
 		</div>
         <div class="row"> 
 		 <div class="small-1  columns"></div>
           <div class="small-11 columns">		
-              <input type="checkbox" name="alt_url_sub_success_w_qs" id="alt_url_sub_success_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_sub_success_w_qs -->checked="checked"<!--/tmpl_if--> />
+              <input type="checkbox" name="alt_url_sub_success_w_qs" id="alt_url_sub_success_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_sub_success_w_qs -->checked="checked"<!--/tmpl_if--> >
               <label for="alt_url_sub_success_w_qs">Redirect with query string</label>
 	   	  </div>
 		</div>
 		<div class="row"> 
 			<div class="small-12 columns">
-           <input type="checkbox" name="use_alt_url_sub_failed" id="use_alt_url_sub_failed" value="1" <!-- tmpl_if list_settings.use_alt_url_sub_failed -->checked="checked"<!--/tmpl_if--> />
+           <input type="checkbox" name="use_alt_url_sub_failed" id="use_alt_url_sub_failed" value="1" <!-- tmpl_if list_settings.use_alt_url_sub_failed -->checked="checked"<!--/tmpl_if--> >
             <label for="use_alt_url_sub_failed">
              If a subscription fails, redirect to this URL:
             </label>
@@ -582,13 +582,13 @@
 				name="alt_url_sub_failed" 
 				value="<!-- tmpl_var list_settings.alt_url_sub_failed escape="HTML" -->"  
 				placeholder="http://"
-		  />
+		  >
   		</div>
   	   </div>
         <div class="row"> 
 		 <div class="small-1  columns"></div>
           <div class="small-11 columns">		
-		      <input type="checkbox" name="alt_url_sub_failed_w_qs" id="alt_url_sub_failed_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_sub_failed_w_qs -->checked="checked"<!--/tmpl_if--> />
+		      <input type="checkbox" name="alt_url_sub_failed_w_qs" id="alt_url_sub_failed_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_sub_failed_w_qs -->checked="checked"<!--/tmpl_if--> >
               <label for="alt_url_sub_failed_w_qs">Redirect with query string</label>
 	    </div>
 	  </div>
@@ -607,7 +607,7 @@
 	        <div class="row"> 
 	  		 <div class="small-12  columns"> 
 			
-	            <input type="checkbox" name="enable_mass_subscribe" id="enable_mass_subscribe" <!-- tmpl_if list_settings.enable_mass_subscribe -->checked="checked"<!-- /tmpl_if --> value="1" />     
+	            <input type="checkbox" name="enable_mass_subscribe" id="enable_mass_subscribe" <!-- tmpl_if list_settings.enable_mass_subscribe -->checked="checked"<!-- /tmpl_if --> value="1" >     
 	            <label for="enable_mass_subscribe">
 	            Allow Subscriptions in the List Control Panel, Without Confirmation
 	           </label>      		
@@ -617,7 +617,7 @@
 		 <div class="small-1  columns"></div>
   		 <div class="small-11  columns"> 
 			 
-            <input type="checkbox" name="enable_mass_subscribe_only_w_root_login" id="enable_mass_subscribe_only_w_root_login" value="1" <!-- tmpl_if list_settings.enable_mass_subscribe_only_w_root_login -->checked="checked"<!-- /tmpl_if --> />
+            <input type="checkbox" name="enable_mass_subscribe_only_w_root_login" id="enable_mass_subscribe_only_w_root_login" value="1" <!-- tmpl_if list_settings.enable_mass_subscribe_only_w_root_login -->checked="checked"<!-- /tmpl_if --> >
 			<label for="enable_mass_subscribe_only_w_root_login">
 				Only Allow when logged in with the Pro Dada Root Password
 			</label>
@@ -631,7 +631,7 @@
 
         <div class="row"> 	  		 
   		 <div class="small-12  columns"> 
-            <input type="checkbox" name="send_subscribed_by_list_owner_message" id="send_subscribed_by_list_owner_message" <!-- tmpl_if list_settings.send_subscribed_by_list_owner_message -->checked="checked"<!-- /tmpl_if --> value="1" />     
+            <input type="checkbox" name="send_subscribed_by_list_owner_message" id="send_subscribed_by_list_owner_message" <!-- tmpl_if list_settings.send_subscribed_by_list_owner_message -->checked="checked"<!-- /tmpl_if --> value="1" >     
             <label for="send_subscribed_by_list_owner_message">
              	Send a &quot;Welcome&quot; Message to Addresses Subscribed in the List Control Panel  
             </label>
@@ -640,7 +640,7 @@
 		
         <div class="row">
   		 <div class="small-12  columns"> 
-            <input type="checkbox" name="send_last_archived_msg_mass_mailing" id="send_last_archived_msg_mass_mailing" <!-- tmpl_if list_settings.send_last_archived_msg_mass_mailing -->checked="checked"<!-- /tmpl_if --> value="1" />     
+            <input type="checkbox" name="send_last_archived_msg_mass_mailing" id="send_last_archived_msg_mass_mailing" <!-- tmpl_if list_settings.send_last_archived_msg_mass_mailing -->checked="checked"<!-- /tmpl_if --> value="1" >     
             <label for="send_last_archived_msg_mass_mailing">
              Send the Newest Archived Message to Addresses Subscribed in the List Control Panel
            </label>
@@ -763,7 +763,7 @@
     <div class="row"> 	  		 
 		<div class="small-12  columns"> 
 	
-          <input type="checkbox" name="get_unsub_notice" id="get_unsub_notice" value="1" <!-- tmpl_if list_settings.get_unsub_notice -->checked="checked"<!--/tmpl_if --> />
+          <input type="checkbox" name="get_unsub_notice" id="get_unsub_notice" value="1" <!-- tmpl_if list_settings.get_unsub_notice -->checked="checked"<!--/tmpl_if --> >
            <label for="get_unsub_notice"> 
             Send Unsubscription Notifications to:
            </label>
@@ -782,13 +782,13 @@
 					id="alt_send_unsubscription_notice_to" 
 					value="<!-- tmpl_var list_settings.alt_send_unsubscription_notice_to -->" 
 					placeholder='you@yours.com' 
-					/>
+					>
 		  </div>
 		 </div>
          
 		 <div class="row"> 	  		 
    			<div class="small-12  columns"> 		
-				<input type="checkbox" name="send_unsub_success_email" id="send_unsub_success_email" value="1" <!-- tmpl_if list_settings.send_unsub_success_email -->checked="checked"<!--/tmpl_if--> />
+				<input type="checkbox" name="send_unsub_success_email" id="send_unsub_success_email" value="1" <!-- tmpl_if list_settings.send_unsub_success_email -->checked="checked"<!--/tmpl_if--> >
 		         <label for="send_unsub_success_email">
 		          Send Unsubscription Successful Email Notifications
 		         </label>
@@ -802,7 +802,7 @@
 	<div class="row"> 	  		 
 		<div class="small-12  columns"> 		
 
-        <input type="checkbox" name="use_alt_url_unsub_success" id="use_alt_url_unsub_success" value="1" <!-- tmpl_if list_settings.use_alt_url_unsub_success -->checked="checked"<!--/tmpl_if--> />
+        <input type="checkbox" name="use_alt_url_unsub_success" id="use_alt_url_unsub_success" value="1" <!-- tmpl_if list_settings.use_alt_url_unsub_success -->checked="checked"<!--/tmpl_if--> >
         <label for="use_alt_url_unsub_success">
           If an unsubscription is successful, redirect to this URL:
          </label>
@@ -811,7 +811,7 @@
 		
  	<div class="row"> 	  		 
  		<div class="small-12  columns">   
-        	<input type="text" name="alt_url_unsub_success" value="<!-- tmpl_var list_settings.alt_url_unsub_success escape="HTML" -->"  />
+        	<input type="text" name="alt_url_unsub_success" value="<!-- tmpl_var list_settings.alt_url_unsub_success escape="HTML" -->"  >
 	  </div>
 	 </div>
  	
@@ -819,7 +819,7 @@
 	 
 	 <div class="small-1  columns"></div> 
 	 <div class="small-11  columns">
-           <input type="checkbox" name="alt_url_unsub_success_w_qs" id="alt_url_unsub_success_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_unsub_success_w_qs -->checked="checked"<!--/tmpl_if--> />
+           <input type="checkbox" name="alt_url_unsub_success_w_qs" id="alt_url_unsub_success_w_qs" value="1" <!-- tmpl_if list_settings.alt_url_unsub_success_w_qs -->checked="checked"<!--/tmpl_if--> >
            <label for="alt_url_unsub_success_w_qs">Redirect with query string</label>
 	  </div>
 	 </div>
@@ -839,7 +839,7 @@
 
  	<div class="row"> 	  		 
  		<div class="small-12  columns">
-			<input type="checkbox" name="send_unsubscribed_by_list_owner_message" id="send_unsubscribed_by_list_owner_message" <!-- tmpl_if list_settings.send_unsubscribed_by_list_owner_message -->checked="checked"<!-- /tmpl_if --> value="1" />     
+			<input type="checkbox" name="send_unsubscribed_by_list_owner_message" id="send_unsubscribed_by_list_owner_message" <!-- tmpl_if list_settings.send_unsubscribed_by_list_owner_message -->checked="checked"<!-- /tmpl_if --> value="1" >     
 			<label for="send_unsubscribed_by_list_owner_message">
 				Send a &quot;Farewell&quot; Message to Addresses Unsubscribed in the List Control Panel
 			</label>
@@ -848,7 +848,7 @@
  	
 	<div class="row"> 	  		 
  		<div class="small-12  columns">   
-		<input type="checkbox" name="send_admin_unsubscription_notice" id="send_admin_unsubscription_notice" <!-- tmpl_if list_settings.send_admin_unsubscription_notice -->checked="checked"<!-- /tmpl_if --> value="1" />     
+		<input type="checkbox" name="send_admin_unsubscription_notice" id="send_admin_unsubscription_notice" <!-- tmpl_if list_settings.send_admin_unsubscription_notice -->checked="checked"<!-- /tmpl_if --> value="1" >     
 		<label for="send_admin_unsubscription_notice">
 		Send Email Notification to:
 		</label>
@@ -880,7 +880,7 @@
 	 	
 		<div class="row"> 	  		 
 	 		<div class="small-12  columns">   
-			<input type="checkbox" name="mx_check" id="mx_check" value="1" <!-- tmpl_if list_settings.mx_check -->checked="checked"<!-- /tmpl_if --> />
+			<input type="checkbox" name="mx_check" id="mx_check" value="1" <!-- tmpl_if list_settings.mx_check -->checked="checked"<!-- /tmpl_if --> >
 	         <label for="mx_check"  <!-- tmpl_unless can_use_mx_lookup -->class="disabled"<!--/tmpl_unless-->>
 	          Look Up Hostnames When Validating Email Addresses (MX Lookup)
 	         </label>

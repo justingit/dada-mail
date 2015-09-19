@@ -5,13 +5,13 @@
 
 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
-	<input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" />
-	<input type="hidden" name="process" id="process" value="1" /> 
-	<input type="hidden" name="prm" id="prm" value="manually_enter_bounces" /> 
-	<input type="hidden" name="flavor" value="plugins" /> 
-    <input type="hidden" name="plugin" value="bounce_handler" /> 
+	<input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" >
+	<input type="hidden" name="process" id="process" value="1" > 
+	<input type="hidden" name="prm" id="prm" value="manually_enter_bounces" > 
+	<input type="hidden" name="flavor" value="plugins" > 
+    <input type="hidden" name="plugin" value="bounce_handler" > 
 	<textarea name="msg" id="msg" cols="80" rows="20" style="margin: 5px; padding: 5px;font: .8em/1.6em Monaco,Mono,'Courier New',Courier,monospace;"></textarea>
-	<input type="button" id="manually_enter_bounces_button" value="Parse..." /> 
+	<input type="button" id="manually_enter_bounces_button" value="Parse..." > 
 </form> 
 
 <div id="manually_enter_bounces_results_loading"></div> 

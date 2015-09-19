@@ -128,23 +128,23 @@
 
     <div class="row"> 
         <div class="small-1 columns"> 
-              <input class="toggleCheckboxes" type="checkbox" data-target_class="address" />
+              <input class="toggleCheckboxes" type="checkbox" data-target_class="address" >
         </div> 
         <div class="small-11 columns">
             <ul class="button-group">
                 
         <!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'moderators') || (type eq 'white_list'))" -->
 
-             <input type="hidden" name="process" value="delete" />
-             <input type="hidden" name="flavor"       value="remove_subscribers" />
-             <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
+             <input type="hidden" name="process" value="delete" >
+             <input type="hidden" name="flavor"       value="remove_subscribers" >
+             <input type="hidden" name="type" value="<!-- tmpl_var type -->" >
             <!-- tmpl_if expr="(type eq 'list')" -->
                  <li>
                      <input type="submit" class="small button" value="&#8592; Unsubscribe Checked Subscribers">
                  </li>
             <!-- tmpl_else --> 
                 <li>
-                    <input type="submit" class="small button" value="&#8592; Remove Checked <!-- tmpl_var type_title -->" />
+                    <input type="submit" class="small button" value="&#8592; Remove Checked <!-- tmpl_var type_title -->" >
                 </li>
             <!-- /tmpl_if --> 
         
@@ -152,37 +152,37 @@
 
         <!-- tmpl_if EXPR="(type eq 'sub_request_list')" -->
 
-             <input type="hidden" name="flavor"       value="subscription_requests" />
-             <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
-             <input type="submit" name="process" class="small button" value="Approve Checked Subscription Requests" />
+             <input type="hidden" name="flavor"       value="subscription_requests" >
+             <input type="hidden" name="type" value="<!-- tmpl_var type -->" >
+             <input type="submit" name="process" class="small button" value="Approve Checked Subscription Requests" >
              <li>
-                 <input type="submit" name="process" class="small button" value="Deny Checked Subscription Requests" />
+                 <input type="submit" name="process" class="small button" value="Deny Checked Subscription Requests" >
              </li>
         <!-- /tmpl_if -->
 
         <!-- tmpl_if EXPR="(type eq 'unsub_request_list')" -->
 
-             <input type="hidden" name="flavor"        value="unsubscription_requests" />
-             <input type="hidden" name="type"          value="<!-- tmpl_var type -->" />
+             <input type="hidden" name="flavor"        value="unsubscription_requests" >
+             <input type="hidden" name="type"          value="<!-- tmpl_var type -->" >
              
              <li>
-                 <input type="submit" name="process" class="small button" value="Approve Checked Unsubscription Requests" />
+                 <input type="submit" name="process" class="small button" value="Approve Checked Unsubscription Requests" >
              </li>
              <li>
-                 <input type="submit" name="process" class="small button" value="Deny Checked Unsubscription Requests" />
+                 <input type="submit" name="process" class="small button" value="Deny Checked Unsubscription Requests" >
              </li>
         <!-- /tmpl_if -->
     
         <!-- tmpl_if EXPR="(type eq 'bounced_list')" -->
     
-                <input type="hidden" name="flavor"     value="process_bouncing_addresses" />
-                 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
+                <input type="hidden" name="flavor"     value="process_bouncing_addresses" >
+                 <input type="hidden" name="type" value="<!-- tmpl_var type -->" >
             
                 <li>
-                 <input type="submit" name="process" class="small button"  value="&#8594; Move Selected Bouncing Address Back to Subscribers" />
+                 <input type="submit" name="process" class="small button"  value="&#8594; Move Selected Bouncing Address Back to Subscribers" >
                 </li>
                 <li>
-                 <input type="submit" name="process" class="small button"  value="&#8855; Remove Selected Bouncing Addresses" />
+                 <input type="submit" name="process" class="small button"  value="&#8855; Remove Selected Bouncing Addresses" >
                 </li>
         <!-- /tmpl_if -->
     
@@ -191,15 +191,15 @@
         
             <!-- tmpl_unless query -->
                 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" style="display:inline;margin:0">
-                 <input type="hidden" name="flavor"       value="remove_all_subscribers" />
-                 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
+                 <input type="hidden" name="flavor"       value="remove_all_subscribers" >
+                 <input type="hidden" name="type" value="<!-- tmpl_var type -->" >
                 <!-- tmpl_if expr="(type eq 'list')" -->
                   <li>
-                      <input type="submit" class="small button" value="&#8656; Unsubscribe ALL <!-- tmpl_var type_title -->" onclick="return unsubscribeAllSubscribers(this.form, '<!-- tmpl_var type_title -->');"   />
+                      <input type="submit" class="small button" value="&#8656; Unsubscribe ALL <!-- tmpl_var type_title -->" onclick="return unsubscribeAllSubscribers(this.form, '<!-- tmpl_var type_title -->');"   >
                   </li>
                 <!-- tmpl_else --> 
                   <li>
-                      <input type="submit" class="small button" value="&#8656; Remove ALL <!-- tmpl_var type_title -->" onclick="return unsubscribeAllSubscribers(this.form, '<!-- tmpl_var type_title -->');"   />
+                      <input type="submit" class="small button" value="&#8656; Remove ALL <!-- tmpl_var type_title -->" onclick="return unsubscribeAllSubscribers(this.form, '<!-- tmpl_var type_title -->');"   >
                   </li>
                 <!-- /tmpl_if --> 
                 </form>
@@ -212,9 +212,9 @@
             <!-- tmpl_if can_filter_subscribers_through_blacklist --> 
                 <!-- tmpl_unless query --> 
                      <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="blacklist_filter_form">
-                      <input type="hidden" name="flavor" value="filter_using_black_list" />
+                      <input type="hidden" name="flavor" value="filter_using_black_list" >
                        <li>
-                           <input type="submit" class="small button" value="Filter Subscribers Through the Black List" />
+                           <input type="submit" class="small button" value="Filter Subscribers Through the Black List" >
                         </li>
                      </form>
                 <!-- /tmpl_unless -->

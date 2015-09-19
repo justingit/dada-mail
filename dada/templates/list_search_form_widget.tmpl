@@ -2,27 +2,27 @@
 
 <div id="basic_list_search_form">
     <form id="search_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" style="display: inline; margin: 0;" >
-      <input type="hidden" name="flavor"    value="view_list" />
-      <input type="hidden" name="type" value="<!-- tmpl_var type default="list" -->" />
+      <input type="hidden" name="flavor"    value="view_list" >
+      <input type="hidden" name="type" value="<!-- tmpl_var type default="list" -->" >
         <div class="row right">
           <div class="large-12 columns">
             <div class="row collapse">
               <div class="small-4 columns">
-                  <input type="text"   name="query" id="search_query" class="small" value="<!-- tmpl_var query default="" escape="HTML" -->" />
+                  <input type="text"   name="query" id="search_query" class="small" value="<!-- tmpl_var query default="" escape="HTML" -->" >
               </div>
               <div class="small-8 columns">
                       <ul class="button-group">    
 
                       <li>
-                          <input type="button" class="button small search_list" value="Search <!-- tmpl_var type_title escape="HTML" -->" />
+                          <input type="button" class="button small search_list" value="Search <!-- tmpl_var type_title escape="HTML" -->" >
                       </li>
                       <!-- tmpl_if query --> 
                             <li>
-                                <input type="button" class="button small clear_search" value="Clear" />
+                                <input type="button" class="button small clear_search" value="Clear" >
                             </li>
                  	 <!-- /tmpl_if --> 
                         <li>
-                            <input type="button" class="button small show_advanced_search_list" value="Advanced..." />
+                            <input type="button" class="button small show_advanced_search_list" value="Advanced..." >
                         </li>
                     </ul>
               </div>

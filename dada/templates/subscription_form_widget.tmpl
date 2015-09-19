@@ -21,7 +21,7 @@
 			</p>
 		<!-- /tmpl_if -->
     <!-- /tmpl_if -->
-    <input type="hidden" name="list" id="list" value="<!-- tmpl_var list escape=HTML -->" />
+    <input type="hidden" name="list" id="list" value="<!-- tmpl_var list escape=HTML -->" >
 <!-- tmpl_else --> 
     
     <!-- tmpl_if multiple_lists --> 
@@ -49,9 +49,9 @@ Email&nbsp;Address:
 </label>
 <!-- tmpl_if profile_logged_in --> 
 	<span style="padding:5px;border:1px solid black"><em><!-- tmpl_var email escape=HTML --></em></span>
-	<input type="hidden" name="email" id="email" value="<!-- tmpl_var email escape=HTML -->" />
+	<input type="hidden" name="email" id="email" value="<!-- tmpl_var email escape=HTML -->" >
 <!-- tmpl_else --> 
-	<input type="email" name="email" id="email" value="<!-- tmpl_var email escape=HTML -->" required /><span class="error">* Required</span>
+	<input type="email" name="email" id="email" value="<!-- tmpl_var email escape=HTML -->" required ><span class="error">* Required</span>
 <!-- /tmpl_if --> 
 
 </p>
@@ -70,7 +70,7 @@ Email&nbsp;Address:
 				<!-- tmpl_var name escape=HTML -->: 
 			<!-- /tmpl_if --> 
 			</label>
-	        <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" class="subscriber_field" value="<!-- tmpl_var given_value escape=HTML -->"  />
+	        <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" class="subscriber_field" value="<!-- tmpl_var given_value escape=HTML -->"  >
 	        <!-- tmpl_if required --> 
 	            <span class="error">* Required</span>
 	        <!-- /tmpl_if --> 
@@ -80,11 +80,11 @@ Email&nbsp;Address:
 	</div> 
 <!-- /tmpl_if -->
 
-<input type="hidden" name="flavor" id="f_s" value="subscribe" />
+<input type="hidden" name="flavor" id="f_s" value="subscribe" >
 
 
 <div class="buttonfloat"> 
-	<input type="submit" value="Subscribe" class="processing" id="subscribe_button" />
+	<input type="submit" value="Subscribe" class="processing" id="subscribe_button" >
 </div>
 <div class="floatclear"></div> 
 <!-- tmpl_if give_props --> 

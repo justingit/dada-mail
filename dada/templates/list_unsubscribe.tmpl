@@ -49,15 +49,15 @@
 		that is currently Subscribed, below:
 	</p> 
 
-	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" id="unsubscription_form" /> 
-		<input type="hidden" id="flavor" name="flavor" value="u" />
-		<input type="hidden" id="token" name="token" value="<!-- tmpl_var token  escape="HTML" -->" /> 
-		<input type="hidden" id="process" name="process" value="1" /> 
-		<input type="text"   id="email" name="email" value="<!-- tmpl_var email escape="HTML" -->" style="font-size:1.5em" />
+	<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" id="unsubscription_form" > 
+		<input type="hidden" id="flavor" name="flavor" value="u" >
+		<input type="hidden" id="token" name="token" value="<!-- tmpl_var token  escape="HTML" -->" > 
+		<input type="hidden" id="process" name="process" value="1" > 
+		<input type="text"   id="email" name="email" value="<!-- tmpl_var email escape="HTML" -->" style="font-size:1.5em" >
 		<!-- tmpl_if list_settings.private_list --> 
-			<input type="submit" value="Request Unsubscription" class="processing" style="font-size:1.5em" /> 
+			<input type="submit" value="Request Unsubscription" class="processing" style="font-size:1.5em" > 
 		<!-- tmpl_else --> 
-			<input type="submit" value="Unsubscribe" class="processing"  style="font-size:1.5em" />
+			<input type="submit" value="Unsubscribe" class="processing"  style="font-size:1.5em" >
 		<!-- /tmpl_if -->
 	</form> 
 
@@ -65,10 +65,10 @@
 	
 	
     <div class="buttonfloat" style="margin-top:50px"> 
-        <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" id="report_abuse_form" /> 
-    		<input type="hidden" name="flavor" value="report_abuse" />
-    		<input type="hidden" id="report_abuse_token" name="report_abuse_token" value="<!-- tmpl_var report_abuse_token  escape="HTML" -->" /> 
-		or, <input type="submit" class="quiet" value="Report Abuse..."/>
+        <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" id="report_abuse_form" > 
+    		<input type="hidden" name="flavor" value="report_abuse" >
+    		<input type="hidden" id="report_abuse_token" name="report_abuse_token" value="<!-- tmpl_var report_abuse_token  escape="HTML" -->" > 
+		or, <input type="submit" class="quiet" value="Report Abuse...">
 	    </form> 
 	</div>
 	<div class="floatclear"></div> 

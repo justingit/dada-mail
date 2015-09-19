@@ -5,8 +5,8 @@
 
 
 <form action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
- <input type="hidden" name="flavor"       value="login" />
- <input type="hidden" name="process" value="true" />
+ <input type="hidden" name="flavor"       value="login" >
+ <input type="hidden" name="process" value="true" >
 
  <h1>
   Enter Your List Control Panel
@@ -29,15 +29,15 @@
   </tr>
   <tr>
    <td valign="top" align="right">
-    <input type="hidden"   name="admin_list" value="<!-- tmpl_var list_settings.list -->" style="vertical-align:top;" /><!-- HACK: vertical-align is for IE -->
-    <input type="password" name="admin_password" id="admin_password" size="16" maxlength="24" />
-    <input type="submit" class="plain" value="Login" />
+    <input type="hidden"   name="admin_list" value="<!-- tmpl_var list_settings.list -->" style="vertical-align:top;" ><!-- HACK: vertical-align is for IE -->
+    <input type="password" name="admin_password" id="admin_password" size="16" maxlength="24" >
+    <input type="submit" class="plain" value="Login" >
    </td>
   </tr>
  </table>
  
 	 <!-- tmpl_if DISABLE_OUTSIDE_LOGINS --> 
-	     <input type="hidden" name="auth_state" value="<!-- tmpl_var auth_state -->" /> 
+	     <input type="hidden" name="auth_state" value="<!-- tmpl_var auth_state -->" > 
 	 <!--/tmpl_if--> 
 
 

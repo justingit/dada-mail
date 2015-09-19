@@ -38,9 +38,9 @@
     
                         <h1>error_profile_login: <!-- tmpl_var error_profile_login --> </h1> 
                         <h1>error_profile_register: <!-- tmpl_var error_profile_register --></h1>
-                    <hr /> 
-                    <hr /> 
-                    <hr /> 
+                    <hr > 
+                    <hr > 
+                    <hr > 
 
 <!-- /tmpl_if --> 
 
@@ -222,21 +222,21 @@
     <div id="profile_login">
            
         <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="profile_login"> 
-            <input type="hidden" name="flavor" value="profile_login" /> 
-            <input type="hidden" name="process" value="1" /> 
+            <input type="hidden" name="flavor" value="profile_login" > 
+            <input type="hidden" name="process" value="1" > 
             <p>
                 <label for="login_email" style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block">
                     Email Address:</label>
-                <input type="email" name="login_email" id="login_email" value="<!-- tmpl_var login_email escape="HTML" -->" /> 
+                <input type="email" name="login_email" id="login_email" value="<!-- tmpl_var login_email escape="HTML" -->" > 
             </p>
             <p>
                 <label for="login_password" style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block">
                     Password:
                 </label>
-                <input type="password" name="login_password" id="login_password" value="" /> 
+                <input type="password" name="login_password" id="login_password" value="" > 
 
             <div class="buttonfloat">
-                <input type="submit" value="Log Into Your Profile" /> 
+                <input type="submit" value="Log Into Your Profile" > 
             </div>
             <div class="floatclear"></div>
         </form>
@@ -246,15 +246,15 @@
     <!-- tmpl_if expr="profile_feature_password_reset == 1" -->
         <div id="profile_password_reset">
             <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="profile_reset_password"> 
-                <input type="hidden" name="flavor" value='profile_reset_password' /> 
+                <input type="hidden" name="flavor" value='profile_reset_password' > 
                 <p>
                     <label for="reset_email" style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block">
                         Email Address:
                     </label>
-                     <input type="text" id="reset_email" name="reset_email" value="<!-- tmpl_var reset_email -->" />
+                     <input type="text" id="reset_email" name="reset_email" value="<!-- tmpl_var reset_email -->" >
                 </p> 
                 <div class="buttonfloat">    
-                    <input type="submit" value="Reset Your Profile Password" /> 
+                    <input type="submit" value="Reset Your Profile Password" > 
                 </div>
                 <div class="floatclear"></div>
             </form>
@@ -269,24 +269,24 @@
             </p> 
 
             <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="profile_register"> 
-                <input type="hidden" name="flavor" value="profile_register" /> 
+                <input type="hidden" name="flavor" value="profile_register" > 
                 <p>
                     <label for="register_email" style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block">
                         Email Address:
                     </label>
-                    <input type="email" name="register_email" id="register_email" value="<!-- tmpl_var register_email -->" /> 
+                    <input type="email" name="register_email" id="register_email" value="<!-- tmpl_var register_email -->" > 
                 </p>
                 <p>
                     <label for="register_email_again" style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block">
                         Email Address (again):
                     </label>
-                    <input type="email" name="register_email_again" id="register_email_again" value="<!-- tmpl_var register_email_again -->" /> 
+                    <input type="email" name="register_email_again" id="register_email_again" value="<!-- tmpl_var register_email_again -->" > 
                 </p>
                 <p>
                     <label for="register_password" style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block">
                         Password:
                     </label>
-                    <input type="password" name="register_password" id="register_password" value="" /> 
+                    <input type="password" name="register_password" id="register_password" value="" > 
                 </p>
 
                 <!-- tmpl_if can_use_captcha --> 
@@ -304,7 +304,7 @@
                 <!-- /tmpl_if --> 
 
                 <div class="buttonfloat">    
-                    <input type="submit" value="Register a New Profile" /> 
+                    <input type="submit" value="Register a New Profile" > 
                 </div>
                 <div class="floatclear"></div>
 

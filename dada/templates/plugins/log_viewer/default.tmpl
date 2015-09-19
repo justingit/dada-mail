@@ -11,7 +11,7 @@
 
 
 <form> 
-	 <input type="hidden" name="plugin_url"   id="plugin_url"   value="<!-- tmpl_var Plugin_Url -->" /> 
+	 <input type="hidden" name="plugin_url"   id="plugin_url"   value="<!-- tmpl_var Plugin_Url -->" > 
 </form> 
 
 <!-- tmpl_if log_names --> 
@@ -20,12 +20,12 @@
 	<table  cellpadding="5"> 
 	 <tr> 
 	  <td valign="bottom"> 
-		<p><label for="log_name">View Log:</label><br /> 
+		<p><label for="log_name">View Log:</label><br > 
 		 <!-- tmpl_var logs_popup_menu --> 
 		</p> 
 	</td> 
  	<td valign="bottom"> 
-	  <p><label for="lines">And The Last:</label><br /> 
+	  <p><label for="lines">And The Last:</label><br > 
 		<select name="lines" id="lines"> 
 			<!-- tmpl_loop log_lines --> 
 				<option value="<!-- tmpl_var line_count -->"><!-- tmpl_var line_count --></option> 
@@ -34,30 +34,30 @@
 	</p> 
 	</td> 
  	<td valign="bottom"> 
-	<br /><input type="button" value="Refresh" id="refresh_button" />
+	<br ><input type="button" value="Refresh" id="refresh_button" >
 	</td> 
 	<td valign="bottom"> 
 
-    	<input type="hidden" name="flavor" value="plugins" /> 
-    	<input type="hidden" name="plugin" value="log_viewer" /> 
+    	<input type="hidden" name="flavor" value="plugins" > 
+    	<input type="hidden" name="plugin" value="log_viewer" > 
 
-	<input type="hidden" name="prm" value="download" /> 
-	<br /><input type="submit"  value="Download Entire Log" id="download_button" />
+	<input type="hidden" name="prm" value="download" > 
+	<br ><input type="submit"  value="Download Entire Log" id="download_button" >
 	</td>
 		
 		
  	<td valign="bottom"> 
-	<br /><input type="button" value="Delete Log" id="delete_log" /> 
+	<br ><input type="button" value="Delete Log" id="delete_log" > 
 			</form> 
 	</td>
-<td valign="bottom"> <br />
+<td valign="bottom"> <br >
 	<form method="get"> 
-	    <input type="hidden" name="flavor" value="plugins" /> 
-    	<input type="hidden" name="plugin" value="log_viewer" /> 
+	    <input type="hidden" name="flavor" value="plugins" > 
+    	<input type="hidden" name="plugin" value="log_viewer" > 
     	
-     <input type="hidden" name="prm" value="search_logs" /> 
-     <input type="text" name="query" value="" /> 
-     <input type="submit" value="Search All Logs" class="processing" /> 
+     <input type="hidden" name="prm" value="search_logs" > 
+     <input type="text" name="query" value="" > 
+     <input type="submit" value="Search All Logs" class="processing" > 
     </form>
 		</td> 
    </tr> 

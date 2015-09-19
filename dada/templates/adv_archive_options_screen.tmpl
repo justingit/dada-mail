@@ -33,7 +33,7 @@
  <tr>
   <td>
    <p>
-    <input type="checkbox" name="stop_message_at_sig" id="stop_message_at_sig" value="1" <!-- tmpl_if list_settings.stop_message_at_sig -->checked="checked"<!--/tmpl_if--> />
+    <input type="checkbox" name="stop_message_at_sig" id="stop_message_at_sig" value="1" <!-- tmpl_if list_settings.stop_message_at_sig -->checked="checked"<!--/tmpl_if--> >
    </p>
   </td>
   <td>
@@ -41,7 +41,7 @@
     <label for="stop_message_at_sig">
      Show Archived Messages without the Mailing List Template Applied
     </label>
-    <br />
+    <br >
     Plain text messages will be displayed after a double underscore plus 
     a space (&quot;__ &quot;) is reached on a line by itself, and until 
     a double dash plus a space (&quot;-- &quot;) is reached on a line by 
@@ -75,7 +75,7 @@
  <tr>
   <td>
    <p>
-    <input type="checkbox" name="style_quoted_archive_text" id="style_quoted_archive_text" value="1" <!-- tmpl_if list_settings.style_quoted_archive_text -->checked="checked"<!--/tmpl_if--> />
+    <input type="checkbox" name="style_quoted_archive_text" id="style_quoted_archive_text" value="1" <!-- tmpl_if list_settings.style_quoted_archive_text -->checked="checked"<!--/tmpl_if--> >
    </p>
   </td>
   <td>
@@ -83,7 +83,7 @@
     <label for="style_quoted_archive_text">
      Style Quoted Message Text
     </label>
-    <br />
+    <br >
     Lines that start with a &quot;&gt;&quot; will be styled like this:</p>
     <blockquote>
      <p>
@@ -100,7 +100,7 @@
  <tr>
   <td>
    <p>
-    <input type="checkbox" name="disable_archive_js" id="disable_archive_js" value="1" <!-- tmpl_if list_settings.disable_archive_js -->checked="checked"<!--/tmpl_if-->  />
+    <input type="checkbox" name="disable_archive_js" id="disable_archive_js" value="1" <!-- tmpl_if list_settings.disable_archive_js -->checked="checked"<!--/tmpl_if-->  >
    </p>
   </td>
   <td>
@@ -108,7 +108,7 @@
     <label for="disable_archive_js">
      Disable Embedded JavaScript in Archived Messages
     </label>
-    <br />
+    <br >
     
 <!-- tmpl_if can_use_html_scrubber --> 
 	    
@@ -134,7 +134,7 @@
  <tr>
   <td>
    <p>
-    <input type="checkbox" name="display_attachments" id="display_attachments" value="1" <!-- tmpl_if list_settings.display_attachments -->checked="checked"<!--/tmpl_if-->  />
+    <input type="checkbox" name="display_attachments" id="display_attachments" value="1" <!-- tmpl_if list_settings.display_attachments -->checked="checked"<!--/tmpl_if-->  >
    </p>
   </td>
   <td>
@@ -142,7 +142,7 @@
     <label for="display_attachments">
      Display Message Attachments
     </label>
-    <br />
+    <br >
     Messages with attachments will show these attachments available for download.
    </p>
    
@@ -162,7 +162,7 @@
  <tr>
   <td>
    <p>
-    <input type="checkbox" name="html_archives_in_iframe" id="html_archives_in_iframe" value="1" <!-- tmpl_if list_settings.html_archives_in_iframe -->checked="checked"<!--/tmpl_if--> />
+    <input type="checkbox" name="html_archives_in_iframe" id="html_archives_in_iframe" value="1" <!-- tmpl_if list_settings.html_archives_in_iframe -->checked="checked"<!--/tmpl_if--> >
    </p>
   </td>
   <td>
@@ -170,7 +170,7 @@
     <label for="html_archives_in_iframe">
      Show HTML Messages in an iFrame
     </label>
-    <br />
+    <br >
     Some HTML messages may display better inside an iFrame than inline.
    </p>
   </td>
@@ -190,7 +190,7 @@ Email Address Protection
  <tr>
   <td>
    <p>
-    <input type="radio" name="archive_protect_email" id="archive_protect_email_none" value="none" <!-- tmpl_if archive_protect_email_none -->checked="checked"<!--/tmpl_if--> />
+    <input type="radio" name="archive_protect_email" id="archive_protect_email_none" value="none" <!-- tmpl_if archive_protect_email_none -->checked="checked"<!--/tmpl_if--> >
    </p>
   </td>
   <td>
@@ -203,7 +203,7 @@ Email Address Protection
  <tr>
   <td>
    <p>
-    <input type="radio" name="archive_protect_email" id="archive_protect_email_spam_me_not" value="spam_me_not" <!-- tmpl_if archive_protect_email_spam_me_not -->checked="checked"<!--/tmpl_if--> />
+    <input type="radio" name="archive_protect_email" id="archive_protect_email_spam_me_not" value="spam_me_not" <!-- tmpl_if archive_protect_email_spam_me_not -->checked="checked"<!--/tmpl_if--> >
    </p>
   </td>
   <td>
@@ -219,7 +219,7 @@ Email Address Protection
  <tr>
   <td>
    <p>
-    <input type="radio" name="archive_protect_email" id="archive_protect_email_recaptcha_mailhide" value="recaptcha_mailhide" <!-- tmpl_if archive_protect_email_recaptcha_mailhide -->checked="checked"<!--/tmpl_if--> />
+    <input type="radio" name="archive_protect_email" id="archive_protect_email_recaptcha_mailhide" value="recaptcha_mailhide" <!-- tmpl_if archive_protect_email_recaptcha_mailhide -->checked="checked"<!--/tmpl_if--> >
    </p>
   </td>
   <td>
@@ -262,13 +262,13 @@ Email Address Protection
  <label>
   Sort Your Archives In:
  </label>
- <br />
- <input type="radio" name="sort_archives_in_reverse" id="sort_archives_in_reverse_1" value="1" <!--tmpl_if list_settings.sort_archives_in_reverse -->checked="checked"<!--/tmpl_if--> />
+ <br >
+ <input type="radio" name="sort_archives_in_reverse" id="sort_archives_in_reverse_1" value="1" <!--tmpl_if list_settings.sort_archives_in_reverse -->checked="checked"<!--/tmpl_if--> >
  <label for="sort_archives_in_reverse_1">
   Reverse Chronological Order
  </label>
- <br />
- <input type="radio" name="sort_archives_in_reverse" id="sort_archives_in_reverse_0" value="0" <!--tmpl_unless list_settings.sort_archives_in_reverse -->checked="checked"<!--/tmpl_unless--> />
+ <br >
+ <input type="radio" name="sort_archives_in_reverse" id="sort_archives_in_reverse_0" value="0" <!--tmpl_unless list_settings.sort_archives_in_reverse -->checked="checked"<!--/tmpl_unless--> >
  <label for="sort_archives_in_reverse_0">
   Chronological Order
  </label>
@@ -278,28 +278,28 @@ Email Address Protection
  <label>
   Show Archive Dates with the:
  </label>
- <br />
- <input type="checkbox" name="archive_show_month" id="archive_show_month" value="1"  <!-- tmpl_if list_settings.archive_show_month -->checked="checked"<!--/tmpl_if--> />
+ <br >
+ <input type="checkbox" name="archive_show_month" id="archive_show_month" value="1"  <!-- tmpl_if list_settings.archive_show_month -->checked="checked"<!--/tmpl_if--> >
  <label for="archive_show_month">
   Month (April)
  </label>
- <br />
- <input type="checkbox" name="archive_show_day" id="archive_show_day" value="1" <!-- tmpl_if list_settings.archive_show_day -->checked="checked"<!--/tmpl_if--> />
+ <br >
+ <input type="checkbox" name="archive_show_day" id="archive_show_day" value="1" <!-- tmpl_if list_settings.archive_show_day -->checked="checked"<!--/tmpl_if--> >
  <label for="archive_show_day">
   Day (19th)
  </label>
- <br />
- <input type="checkbox" name="archive_show_year" id="archive_show_year" value="1" <!-- tmpl_if list_settings.archive_show_year -->checked="checked"<!--/tmpl_if--> />
+ <br >
+ <input type="checkbox" name="archive_show_year" id="archive_show_year" value="1" <!-- tmpl_if list_settings.archive_show_year -->checked="checked"<!--/tmpl_if--> >
  <label for="archive_show_year">
   Year (2012)
  </label>
- <br />
- <input type="checkbox" name="archive_show_hour_and_minute" id="archive_show_hour_and_minute" value="1" <!-- tmpl_if list_settings.archive_show_hour_and_minute -->checked="checked"<!--/tmpl_if--> />
+ <br >
+ <input type="checkbox" name="archive_show_hour_and_minute" id="archive_show_hour_and_minute" value="1" <!-- tmpl_if list_settings.archive_show_hour_and_minute -->checked="checked"<!--/tmpl_if--> >
  <label for="archive_show_hour_and_minute">
   Hour and Minute (9:30)
  </label>
- <br />
- <input type="checkbox" name="archive_show_second" id="archive_show_second" value="1" <!-- tmpl_if list_settings.archive_show_second -->checked="checked"<!--/tmpl_if--> />
+ <br >
+ <input type="checkbox" name="archive_show_second" id="archive_show_second" value="1" <!-- tmpl_if list_settings.archive_show_second -->checked="checked"<!--/tmpl_if--> >
  <label for="archive_show_second">
   Second (:59)
  </label>
@@ -332,7 +332,7 @@ Email Address Protection
  <tr>
   <td>
    <p>
-    <input type="checkbox" name="publish_archives_rss" id="publish_archives_rss" value="1" <!-- tmpl_if list_settings.publish_archives_rss -->checked="checked"<!--/tmpl_if--> />
+    <input type="checkbox" name="publish_archives_rss" id="publish_archives_rss" value="1" <!-- tmpl_if list_settings.publish_archives_rss -->checked="checked"<!--/tmpl_if--> >
    </p>
   </td>
   <td>
@@ -340,7 +340,7 @@ Email Address Protection
     <label for="publish_archives_rss">
      Publish Your Archives Index in RSS/Atom
     </label>
-    <br />
+    <br >
     <ul> 
      
    <li>
@@ -361,7 +361,7 @@ Email Address Protection
     <tr>
      <td>
       <p>
-       <input type="checkbox" name="ping_archives_rss" id="ping_archives_rss" value="1" <!-- tmpl_if list_settings.ping_archives_rss -->checked="checked"<!--/tmpl_if--> />
+       <input type="checkbox" name="ping_archives_rss" id="ping_archives_rss" value="1" <!-- tmpl_if list_settings.ping_archives_rss -->checked="checked"<!--/tmpl_if--> >
       </p>
      </td>
      <td>
@@ -416,7 +416,7 @@ Email Address Protection
   <tr>
      <td>
       <p>
-       <input type="checkbox" name="add_subscribe_form_to_feeds" id="add_subscribe_form_to_feeds" value="1" <!-- tmpl_if list_settings.add_subscribe_form_to_feeds -->checked="checked"<!--/tmpl_if--> />
+       <input type="checkbox" name="add_subscribe_form_to_feeds" id="add_subscribe_form_to_feeds" value="1" <!-- tmpl_if list_settings.add_subscribe_form_to_feeds -->checked="checked"<!--/tmpl_if--> >
       </p>
      </td>
      <td>
@@ -432,7 +432,7 @@ Email Address Protection
      <tr>
      <td>
       <p>
-       <input type="checkbox" name="add_social_bookmarking_badges" id="add_social_bookmarking_badges" value="1" <!-- tmpl_if list_settings.add_social_bookmarking_badges -->checked="checked"<!--/tmpl_if--> />
+       <input type="checkbox" name="add_social_bookmarking_badges" id="add_social_bookmarking_badges" value="1" <!-- tmpl_if list_settings.add_social_bookmarking_badges -->checked="checked"<!--/tmpl_if--> >
       </p>
      </td>
      <td>
@@ -440,35 +440,35 @@ Email Address Protection
        <label for="add_social_bookmarking_badges">
         Add social bookmark buttons to your archived messages. <em>(Experimental)</em>
        </label> 
-       <br /> 
+       <br > 
        
        This will allow people to easily share archived message URLs.
        
-       <br /> 
+       <br > 
 	<!-- this has to be updated... --> 
        <ul class="archive_badges_ul">
         <li class="archive_badges_li">
-        <img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/badge_delicious.png" style="border:0px;padding:5px" title="Add to: del.icio.us" />
+        <img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/badge_delicious.png" style="border:0px;padding:5px" title="Add to: del.icio.us" >
         </li>
         
         <li class="archive_badges_li">
-        <img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/badge_digg.png" style="border:0px;padding:5px" title="Add to: digg" />
+        <img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/badge_digg.png" style="border:0px;padding:5px" title="Add to: digg" >
         </li>
         
         <li class="archive_badges_li">
-        <img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/badge_newsvine.png" style="border:0px;padding:5px" title="Add to: newsvine" />
+        <img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/badge_newsvine.png" style="border:0px;padding:5px" title="Add to: newsvine" >
         </li>
         
         <li class="archive_badges_li">
-        <img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/badge_reddit.png" style="border:0px;padding:5px" title="Add to: reddit" />
+        <img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/badge_reddit.png" style="border:0px;padding:5px" title="Add to: reddit" >
         </li>
         
         <li class="archive_badges_li">
-        <img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/badge_yahoo.png" style="border:0px;padding:5px" title="Add to: Y!" />
+        <img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/badge_yahoo.png" style="border:0px;padding:5px" title="Add to: Y!" >
         </li>
         
         <li class="archive_badges_li">
-        <img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/badge_magnolia.png" style="border:0px;padding:5px" title="Add to: magnolia" />
+        <img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/badge_magnolia.png" style="border:0px;padding:5px" title="Add to: magnolia" >
         </li>
        </ul> 
        
@@ -501,7 +501,7 @@ Gravatars
  <tr>
   <td>
    <p>
-    <input type="checkbox" name="enable_gravatars" id="enable_gravatars" value="1" <!-- tmpl_if list_settings.enable_gravatars -->checked="checked"<!--/tmpl_if--> />
+    <input type="checkbox" name="enable_gravatars" id="enable_gravatars" value="1" <!-- tmpl_if list_settings.enable_gravatars -->checked="checked"<!--/tmpl_if--> >
    </p>
   </td>
   <td>
@@ -517,7 +517,7 @@ Gravatars
 	
 <p>
 
-<img src="<!-- tmpl_var gravatar_img_url -->" width="80" height="80" style="float:left;padding:5px;" />
+<img src="<!-- tmpl_var gravatar_img_url -->" width="80" height="80" style="float:left;padding:5px;" >
 </p>
 
  <p>
@@ -532,9 +532,9 @@ Gravatars
  <label for="default_gravatar_url">
   Default Gravatar URL:
  </label>
- <br /> 
- <input type="text" name="default_gravatar_url" id="default_gravatar_url" value="<!-- tmpl_var list_settings.default_gravatar_url -->"  /> 
- <br /> 
+ <br > 
+ <input type="text" name="default_gravatar_url" id="default_gravatar_url" value="<!-- tmpl_var list_settings.default_gravatar_url -->"  > 
+ <br > 
  This image is used, if no Gravatar is found for the email address.
 
 </p>
@@ -553,11 +553,11 @@ Gravatars
 
 
 
-<input type="hidden" name="process" value="1" />
-<input type="hidden" name="flavor"       value="adv_archive_options" />
+<input type="hidden" name="process" value="1" >
+<input type="hidden" name="flavor"       value="adv_archive_options" >
 <div class="buttonfloat">
- <input type="reset"  class="cautionary" value="Clear Changes" />
- <input type="submit" class="processing" value="Change Archive Options" />
+ <input type="reset"  class="cautionary" value="Clear Changes" >
+ <input type="submit" class="processing" value="Change Archive Options" >
 </div>
 <div class="floatclear"></div>
 

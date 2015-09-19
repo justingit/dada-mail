@@ -84,7 +84,7 @@
         <div style="<!-- tmpl_if __odd__ -->background-color:#ccf;border:1px solid black;margin:5px;padding:5px;<!-- tmpl_else-->border:1px solid black;margin:5px;padding:5px;<!--/tmpl_if-->">
          
          <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
-         <input type="hidden" name="domain" value="<!-- tmpl_var domain -->" /> 
+         <input type="hidden" name="domain" value="<!-- tmpl_var domain -->" > 
          
          <table  border="0"> 
          <tr> 
@@ -101,7 +101,7 @@
         
          <tr> 
           <td> 
-           <input type="checkbox" name="sending_method" id="<!-- tmpl_var domain -->_sending_method_smtp" value="1" <!-- tmpl_if expr="sending_method eq 'smtp'" -->checked="checked"<!--/tmpl_if--> /> 
+           <input type="checkbox" name="sending_method" id="<!-- tmpl_var domain -->_sending_method_smtp" value="1" <!-- tmpl_if expr="sending_method eq 'smtp'" -->checked="checked"<!--/tmpl_if--> > 
           </td> 
           <td> 
            <p>
@@ -118,7 +118,7 @@
          
          <tr> 
           <td> 
-           <input type="checkbox" name="add_sendmail_f_flag" id="<!-- tmpl_var domain -->_add_sendmail_f_flag" value="1" <!-- tmpl_if add_sendmail_f_flag -->checked="checked"<!--/tmpl_if-->/> 
+           <input type="checkbox" name="add_sendmail_f_flag" id="<!-- tmpl_var domain -->_add_sendmail_f_flag" value="1" <!-- tmpl_if add_sendmail_f_flag -->checked="checked"<!--/tmpl_if-->> 
           </td> 
           <td> 
            <p>
@@ -135,7 +135,7 @@
          
          <tr> 
           <td> 
-           <input type="checkbox" name="print_return_path_header" id="<!-- tmpl_var domain -->_print_return_path_header" value="1" <!-- tmpl_if print_return_path_header -->checked="checked"<!--/tmpl_if--> /> 
+           <input type="checkbox" name="print_return_path_header" id="<!-- tmpl_var domain -->_print_return_path_header" value="1" <!-- tmpl_if print_return_path_header -->checked="checked"<!--/tmpl_if--> > 
           </td> 
           <td> 
            <p>
@@ -152,7 +152,7 @@
         
          <tr> 
           <td> 
-           <input type="checkbox" name="verp_return_path" id="<!-- tmpl_var domain -->_verp_return_path" value="1" <!-- tmpl_if verp_return_path -->checked="checked"<!--/tmpl_if--> /> 
+           <input type="checkbox" name="verp_return_path" id="<!-- tmpl_var domain -->_verp_return_path" value="1" <!-- tmpl_if verp_return_path -->checked="checked"<!--/tmpl_if--> > 
           </td> 
           <td> 
            <p>
@@ -169,13 +169,13 @@
          
         </table> 
         
-        <input type="hidden" name="flavor"       value="sending_tuning_options" />
+        <input type="hidden" name="flavor"       value="sending_tuning_options" >
         
         <div class="buttonfloat">
          
-         <input type="reset"  class="cautionary" value="Clear" />
-         <input type="submit" class="processing" name="process_edit" value="Edit Tuning" />
-         <input type="submit" class="alertive"   name="process_edit" value="Remove Tuning" />
+         <input type="reset"  class="cautionary" value="Clear" >
+         <input type="submit" class="processing" name="process_edit" value="Edit Tuning" >
+         <input type="submit" class="alertive"   name="process_edit" value="Remove Tuning" >
          
          </div>
          <div class="floatclear"></div>
@@ -187,7 +187,7 @@
             
     <!--/tmpl_loop--> 
 
-    <hr /> 
+    <hr > 
 
 <!--/tmpl_if-->
 
@@ -206,7 +206,7 @@
  <label for="new_tuning_domain"> 
   Domain:
  </label> 
- <input type="text" name="new_tuning_domain" id="new_tuning_domain" /> 
+ <input type="text" name="new_tuning_domain" id="new_tuning_domain" > 
 </p>
 
 <table  border="0"> 
@@ -214,7 +214,7 @@
  
  <tr> 
   <td> 
-   <input type="checkbox" name="new_tuning_sending_method" id="new_tuning_sending_method" value="smtp" <!-- tmpl_if list_sending_method -->checked="checked"<!--/tmpl_if--> /> 
+   <input type="checkbox" name="new_tuning_sending_method" id="new_tuning_sending_method" value="smtp" <!-- tmpl_if list_sending_method -->checked="checked"<!--/tmpl_if--> > 
   </td> 
   <td> 
    <p>
@@ -227,7 +227,7 @@
  
  <tr> 
   <td> 
-   <input type="checkbox" name="new_tuning_add_sendmail_f_flag" id="new_tuning_add_sendmail_f_flag" value="1" <!-- tmpl_if list_add_sendmail_f_flag -->checked="checked"<!--/tmpl_if--> /> 
+   <input type="checkbox" name="new_tuning_add_sendmail_f_flag" id="new_tuning_add_sendmail_f_flag" value="1" <!-- tmpl_if list_add_sendmail_f_flag -->checked="checked"<!--/tmpl_if--> > 
   </td> 
   <td> 
    <p>
@@ -244,7 +244,7 @@
  
  <tr> 
   <td> 
-   <input type="checkbox" name="new_tuning_print_return_path_header" id="new_tuning_print_return_path_header" value="1" <!-- tmpl_if list_print_return_path_header -->checked="checked"<!--/tmpl_if--> /> 
+   <input type="checkbox" name="new_tuning_print_return_path_header" id="new_tuning_print_return_path_header" value="1" <!-- tmpl_if list_print_return_path_header -->checked="checked"<!--/tmpl_if--> > 
   </td> 
   <td> 
    <p>
@@ -261,7 +261,7 @@
  
  <tr> 
   <td> 
-   <input type="checkbox" name="new_tuning_verp_return_path" id="new_tuning_verp_return_path" value="1" <!-- tmpl_if list_verp_return_path -->checked="checked"<!--/tmpl_if--> /> 
+   <input type="checkbox" name="new_tuning_verp_return_path" id="new_tuning_verp_return_path" value="1" <!-- tmpl_if list_verp_return_path -->checked="checked"<!--/tmpl_if--> > 
   </td> 
   <td> 
    <p>
@@ -273,15 +273,15 @@
  </tr> 
 
 
-<input type="hidden" name="new_tuning" value="1" /> 
+<input type="hidden" name="new_tuning" value="1" > 
   
 </table> 
     
-<input type="hidden" name="process" value="1" />
-<input type="hidden" name="flavor"       value="sending_tuning_options" />
+<input type="hidden" name="process" value="1" >
+<input type="hidden" name="flavor"       value="sending_tuning_options" >
 <div class="buttonfloat">
- <input type="reset"  class="cautionary" value="Clear" />
- <input type="submit" class="processing" value="Create New Tuning" />
+ <input type="reset"  class="cautionary" value="Clear" >
+ <input type="submit" class="processing" value="Create New Tuning" >
 </div>
 <div class="floatclear"></div>
 
@@ -296,18 +296,18 @@
 <!-- tmpl_if tunings -->
 
 
-    <hr /> 
+    <hr > 
     
     
     <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
     
     
-    <input type="hidden" name="process" value="remove_all" /> 
-    <input type="hidden" name="flavor"       value="sending_tuning_options" />
+    <input type="hidden" name="process" value="remove_all" > 
+    <input type="hidden" name="flavor"       value="sending_tuning_options" >
     <!-- <div class="buttonfloat"> --> 
     
     <div style="text-align:center"> 
-     <input type="submit" class="alertive"   name="process_edit" value="    Remove ALL Tunings    " />
+     <input type="submit" class="alertive"   name="process_edit" value="    Remove ALL Tunings    " >
     </div> 
     
     <!--  
@@ -318,7 +318,7 @@
     
     </form> 
 
-    <hr /> 
+    <hr > 
     
 <!--/tmpl_if--> 
  

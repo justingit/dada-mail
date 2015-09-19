@@ -57,27 +57,27 @@
 <!-- /tmpl_if -->
  
  <p>
-  <input type="checkbox" name="agree" value="yes" />
+  <input type="checkbox" name="agree" value="yes" >
   I agree to the GPL license and no-SPAM conditions.
  </p>
- <input type="hidden" name="flavor" value="new_list" />
+ <input type="hidden" name="flavor" value="new_list" >
 
 
  <p>
   <label for="root_password">
    <!-- tmpl_var PROGRAM_NAME --> Root Password:
   </label>
-  <br />
+  <br >
   
-  <input type="password" name="root_password" id="root_password" maxlength="24" />
+  <input type="password" name="root_password" id="root_password" maxlength="24" >
   
-  <input type="submit" class="processing" value="Set Up a New Mailing List" />
+  <input type="submit" class="processing" value="Set Up a New Mailing List" >
  </p>
 
 
 
 	 <!-- tmpl_if DISABLE_OUTSIDE_LOGINS --> 
-	     <input type="hidden" name="auth_state" value="<!-- tmpl_var auth_state -->" /> 
+	     <input type="hidden" name="auth_state" value="<!-- tmpl_var auth_state -->" > 
 	 <!--/tmpl_if--> 
 
 
@@ -85,7 +85,7 @@
 </form>
 
 
-<hr /> 
+<hr > 
 
 <h2>Program Configuration</h2>
 
@@ -98,13 +98,13 @@ If you would like to see more information about your current Program Configurati
  <label for="root_password">
   <!-- tmpl_var PROGRAM_NAME -->Root Password:
  </label>
- <br />
+ <br >
  
-<input type="hidden" name="flavor" value="setup_info" /> 
+<input type="hidden" name="flavor" value="setup_info" > 
 
- <input type="password" name="root_password" id="root_password" maxlength="24" />
+ <input type="password" name="root_password" id="root_password" maxlength="24" >
  
- <input type="submit" class="processing" value="Program Configuration Settings" />
+ <input type="submit" class="processing" value="Program Configuration Settings" >
 </p>
 
 </form> 

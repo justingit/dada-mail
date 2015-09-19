@@ -49,10 +49,10 @@
 	
 			<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 		
-				<input type="hidden" name="flavor" value="validate_update_email" /> 
-				<input type="hidden" name="email" value="<!-- tmpl_var email -->" /> 
-				<input type="hidden" name="updated_email" value="<!-- tmpl_var updated_email -->" />
-				<input type="hidden" name="process" value="1" /> 
+				<input type="hidden" name="flavor" value="validate_update_email" > 
+				<input type="hidden" name="email" value="<!-- tmpl_var email -->" > 
+				<input type="hidden" name="updated_email" value="<!-- tmpl_var updated_email -->" >
+				<input type="hidden" name="process" value="1" > 
 
 
 			<!-- tmpl_loop update_list_validation --> 
@@ -69,7 +69,7 @@
 		
 						<!-- tmpl_if status --> 
 							<p>
-								<input type="checkbox" name="update_list" id="<!-- tmpl_var list_settings.list -->:<!-- tmpl_var type -->" value="<!-- tmpl_var list_settings.list -->:<!-- tmpl_var type -->" checked="checked" />
+								<input type="checkbox" name="update_list" id="<!-- tmpl_var list_settings.list -->:<!-- tmpl_var type -->" value="<!-- tmpl_var list_settings.list -->:<!-- tmpl_var type -->" checked="checked" >
 								<label for="<!-- tmpl_var list_settings.list -->:<!-- tmpl_var type -->">
 									<!-- tmpl_var type_label -->
 								</label>
@@ -92,7 +92,7 @@
 
 	
 
-			<input type="submit" value="Update Subscription of: <!-- tmpl_var email --> to, <!-- tmpl_var updated_email -->" class="processing" />
+			<input type="submit" value="Update Subscription of: <!-- tmpl_var email --> to, <!-- tmpl_var updated_email -->" class="processing" >
 		</form> 
 		
 		<!-- /tmpl_if --> 

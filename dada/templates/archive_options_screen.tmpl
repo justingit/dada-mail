@@ -26,28 +26,28 @@
 <table  cellpadding="5">
  <tr>
   <td>
-   <input type="checkbox" name="archive_messages" id="archive_messages" value="1" <!-- tmpl_if list_settings.archive_messages -->checked="checked"<!--/tmpl_if--> />
+   <input type="checkbox" name="archive_messages" id="archive_messages" value="1" <!-- tmpl_if list_settings.archive_messages -->checked="checked"<!--/tmpl_if--> >
   </td>
   <td>
    <p>
     <label for="archive_messages">
      Archive Your Messages
     </label>
-    <br />
+    <br >
     Any messages already archived will still be available to your visitors.
    </p>
   </td>
  </tr>
  <tr>
   <td>
-   <input type="checkbox" name="show_archives" id="show_archives" value="1" <!-- tmpl_if list_settings.show_archives -->checked="checked"<!--/tmpl_if--> />
+   <input type="checkbox" name="show_archives" id="show_archives" value="1" <!-- tmpl_if list_settings.show_archives -->checked="checked"<!--/tmpl_if--> >
   </td>
   <td>
    <p>
     <label for="show_archives">
      Publicly Display Your Archives
     </label>
-    <br />
+    <br >
     Visitors to your site will be able to view your archived list messages 
     <a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list -->" target="_blank">
      here</a>.
@@ -60,13 +60,13 @@
  <table  cellspacing="5" <!-- tmpl_unless PROFILE_ENABLED -->class="disabled"<!--/tmpl_unless--> >
      <tr>
       <td>
-       <input type="checkbox" name="archives_available_only_to_subscribers" id="archives_available_only_to_subscribers" value="1" <!-- tmpl_if list_settings.archives_available_only_to_subscribers -->checked="checked"<!--/tmpl_if--> />
+       <input type="checkbox" name="archives_available_only_to_subscribers" id="archives_available_only_to_subscribers" value="1" <!-- tmpl_if list_settings.archives_available_only_to_subscribers -->checked="checked"<!--/tmpl_if--> >
       </td>
       <td>
        <p>
         <label for="archives_available_only_to_subscribers" <!-- tmpl_unless PROFILE_ENABLED -->class="disabled"<!-- /tmpl_unless -->>
          Only Allow Subscribers to View Archived Messages
-        </label><br /> 
+        </label><br > 
 		Only subscribers logged in will be able to view the publicly available archives. 
        </p>
 
@@ -95,7 +95,7 @@
  </tr>
  <tr>
   <td>
-   <input type="checkbox" name="archive_subscribe_form" id="archive_subscribe_form" value="1" <!-- tmpl_if list_settings.archive_subscribe_form -->checked="checked"<!--/tmpl_if--> />
+   <input type="checkbox" name="archive_subscribe_form" id="archive_subscribe_form" value="1" <!-- tmpl_if list_settings.archive_subscribe_form -->checked="checked"<!--/tmpl_if--> >
   </td>
   <td>
    <p>
@@ -107,7 +107,7 @@
  </tr>
  <tr>
   <td>
-   <input type="checkbox" name="archive_search_form" id="archive_search_form" value="1" <!-- tmpl_if list_settings.archive_search_form -->checked="checked"<!--/tmpl_if--> />
+   <input type="checkbox" name="archive_search_form" id="archive_search_form" value="1" <!-- tmpl_if list_settings.archive_search_form -->checked="checked"<!--/tmpl_if--> >
   </td>
   <td>
    <p>
@@ -119,21 +119,21 @@
  </tr>
  <tr>
   <td>
-   <input type="checkbox" name="archive_send_form" id="archive_send_form" value="1" <!-- tmpl_if list_settings.archive_send_form -->checked="checked"<!--/tmpl_if--> />
+   <input type="checkbox" name="archive_send_form" id="archive_send_form" value="1" <!-- tmpl_if list_settings.archive_send_form -->checked="checked"<!--/tmpl_if--> >
   </td>
   <td>
    <p>
     <label for="archive_send_form">
      Enable &quot;Forward to a Friend&quot;
     </label>
-    <br />
+    <br >
     Visitors will be able to forward archived messages they find interesting to friends.
    </p>
    
     <table  cellspacing="5" >
      <tr>
       <td>
-       <input type="checkbox" name="captcha_archive_send_form" id="captcha_archive_send_form" value="1" <!-- tmpl_if list_settings.captcha_archive_send_form -->checked="checked"<!--/tmpl_if--> />
+       <input type="checkbox" name="captcha_archive_send_form" id="captcha_archive_send_form" value="1" <!-- tmpl_if list_settings.captcha_archive_send_form -->checked="checked"<!--/tmpl_if--> >
       </td>
       <td>
        <p>
@@ -167,8 +167,8 @@
 </fieldset> 
 
 
-<input type="hidden" name="process" value="1" />
-<input type="hidden" name="flavor"       value="archive_options" />
+<input type="hidden" name="process" value="1" >
+<input type="hidden" name="flavor"       value="archive_options" >
 <div class="buttonfloat">
  <input type="reset"  class="cautionary" value="Clear Changes">
  <input type="submit" class="processing" value="Change Archive Options">

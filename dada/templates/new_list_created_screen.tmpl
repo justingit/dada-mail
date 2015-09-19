@@ -3,7 +3,7 @@
 <!-- tmpl_set name="title" value="Your New Mailing List Has Been Created" -->
 <!-- tmpl_set name="show_profile_widget" value="0" -->
 
-<table  class="stripedtable">
+<table  style="width:100%" class="responsive">
  <tr>
   <td>
    <p>
@@ -114,12 +114,12 @@
   <p>
    <label for="admin_password">
     List/<!-- tmpl_var PROGRAM_NAME --> Root Password:
-   </label><br />
-    <input type="hidden"   name="flavor"          value="login" />
-    <input type="hidden"   name="admin_list" value="<!-- tmpl_var list -->" />
-    <input type="password" name="admin_password" id="admin_password" maxlength="24" />
-   <input type="hidden" name="auth_state" value="<!-- tmpl_var auth_state -->" /> 
-   <input type="submit" class="plain" value="Log Into Your New Mailing List" />   
+   </label><br >
+    <input type="hidden"   name="flavor"          value="login" >
+    <input type="hidden"   name="admin_list" value="<!-- tmpl_var list -->" >
+    <input type="password" name="admin_password" id="admin_password" maxlength="24" >
+   <input type="hidden" name="auth_state" value="<!-- tmpl_var auth_state -->" > 
+   <input type="submit" class="plain" value="Log Into Your New Mailing List" >   
 </p>
 
    </form>

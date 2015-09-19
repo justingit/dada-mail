@@ -16,9 +16,9 @@ Remove
 
 
 <form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
- <input type="hidden" name="process" value="delete" />
- <input type="hidden" name="flavor"       value="remove_subscribers" />
- <input type="hidden" name="type"    value="<!-- tmpl_var type -->" />
+ <input type="hidden" name="process" value="delete" >
+ <input type="hidden" name="flavor"       value="remove_subscribers" >
+ <input type="hidden" name="type"    value="<!-- tmpl_var type -->" >
   
 <!-- tmpl_if have_subscribed_addresses -->
 	 
@@ -35,12 +35,12 @@ Remove
  
 <!-- tmpl_loop name="addresses_to_remove" --> 
 	 
-	 <input type="checkbox" name="address" id="<!-- tmpl_var email escape="HTML" -->" value="<!-- tmpl_var email escape="HTML" -->" checked="checked" /> 
+	 <input type="checkbox" name="address" id="<!-- tmpl_var email escape="HTML" -->" value="<!-- tmpl_var email escape="HTML" -->" checked="checked" > 
 	 &nbsp; 
 	 <label for="<!-- tmpl_var email escape="HTML" -->">
 	    <!-- tmpl_var email escape="HTML" -->
 	</label>
-	 <br />
+	 <br >
 	 
 <!--/tmpl_loop-->
  
@@ -50,8 +50,8 @@ Remove
 
 
  <div class="buttonfloat">
-  <input type="button" class="cautionary" value="Re-Enter Email List" onclick="history.back()" />
-  <input type="submit" class="processing" value="Unsubscribe Checked <!-- tmpl_var type_title -->" />
+  <input type="button" class="cautionary" value="Re-Enter Email List" onclick="history.back()" >
+  <input type="submit" class="processing" value="Unsubscribe Checked <!-- tmpl_var type_title -->" >
  </div>
 </form> 
 <div class="floatclear"></div>

@@ -106,10 +106,10 @@
 <!-- /tmpl_if --> 
 
 <form name="confirm_add" id="confirm_add" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
- <input type="hidden" name="flavor"              value="add_email" />
- <input type="hidden" name="type"           value="<!-- tmpl_var type -->" />
- <input type="hidden" name="return_to"      value="<!-- tmpl_var return_to -->" />
- <input type="hidden" name="return_address" value="<!-- tmpl_var return_address -->" />
+ <input type="hidden" name="flavor"              value="add_email" >
+ <input type="hidden" name="type"           value="<!-- tmpl_var type -->" >
+ <input type="hidden" name="return_to"      value="<!-- tmpl_var return_to -->" >
+ <input type="hidden" name="return_address" value="<!-- tmpl_var return_address -->" >
 
 
 
@@ -127,13 +127,13 @@
                           Some of the <strong>Verified Addresses</strong> below may already have profile information saved.
                       </p>        
                       <p>
-                          <input type="radio" name="not_members_fields_options_mode" id="not_members_fields_options_mode_preserve_if_defined" value="preserve_if_defined" checked="checked" /> 
+                          <input type="radio" name="not_members_fields_options_mode" id="not_members_fields_options_mode_preserve_if_defined" value="preserve_if_defined" checked="checked" > 
                           <label for="not_members_fields_options_mode_preserve_if_defined">Preserve any current profile data, but save profile data that's new.</label>
-                          <br />
-                          <input type="radio" name="not_members_fields_options_mode" id="not_members_fields_options_mode_writeover_inc_password" value="writeover_ex_password" /> 
+                          <br >
+                          <input type="radio" name="not_members_fields_options_mode" id="not_members_fields_options_mode_writeover_inc_password" value="writeover_ex_password" > 
                           <label for="not_members_fields_options_mode_writeover_inc_password">Update the profile data, excluding the Profile Password</label> 
-                          <br />
-                          <input type="radio" name="not_members_fields_options_mode" id="not_members_fields_options_mode_writeover_ex_password" value="writeover_inc_password" /> 
+                          <br >
+                          <input type="radio" name="not_members_fields_options_mode" id="not_members_fields_options_mode_writeover_ex_password" value="writeover_inc_password" > 
                           <label for="not_members_fields_options_mode_writeover_ex_password">Update the profile data, including the Profile Password</label> 
 
                       </p>    
@@ -142,63 +142,44 @@
         <!-- /tmpl_if --> 
 
 
-          <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
-              <table  class="stripedtable">
+          <div style="max-height: 480px; overflow: auto; border:1px solid black;background:#fff">
+              <table style="width:100%" class="responsive">
                <tr>
-                <td width="25">
-                 <p>&nbsp;</p>
-                </td>
-                <td>
-                <p>
-                 <strong>
+                <th width="25">
+                </th>
+                <th>
                   Email
-                </strong>
-               </p>
-              </td>
+              </th>
              <!-- tmpl_if expr="(type eq 'list')" -->
-                     <!-- tmpl_loop field_names --> 
-                     <td>
-                      <p>
-                       <strong>
-                        <!-- tmpl_if label --> 
-                            <!-- tmpl_var label escape="HTML" -->
-                        <!-- tmpl_else --> 
-                            <!-- tmpl_var name --> 
-                       <!-- /tmpl_if --> 
-                       </strong>
-                      </p>
-                     </td> 
+	             <!-- tmpl_loop field_names --> 
+		             <th>
+		                <!-- tmpl_if label --> 
+		                    <!-- tmpl_var label escape="HTML" -->
+		                <!-- tmpl_else --> 
+		                    <!-- tmpl_var name --> 
+		               <!-- /tmpl_if --> 
+		             </th> 
                  <!--/tmpl_loop --> 
-                 <td>
-                  <p>
-                   <strong>
+                 <th>
                     Profile Password
-                  </strong>
-                 </p>
-                 </td>
+                 </th>
              <!-- /tmpl_if --> 
-
-
                </tr>
 
                <!-- tmpl_loop not_members -->
-                 <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>     
+                 <tr>     
                      <td width="25">
-                   <input type="checkbox" name="address" value="<!-- tmpl_var csv_str escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" checked="checked" />
+                   <input type="checkbox" name="address" value="<!-- tmpl_var csv_str escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" checked="checked" >
                   </td>
                   <td>
-                   <p>
              <label for="<!-- tmpl_var email  escape="HTML" -->">
                     <!-- tmpl_var email  escape="HTML" -->
              </label>
-                   </p>
                   </td>
                   <!-- tmpl_if expr="(type eq 'list')" -->
                       <!-- tmpl_loop fields -->         
                          <td>
-                          <p>
-                           <!-- tmpl_var value default="&nbsp;" escape="HTML"  -->
-                          </p>
+                           <!-- tmpl_var value escape="HTML"  -->
                          </td>
                      <!-- /tmpl_loop -->                
                      <td>
@@ -214,16 +195,20 @@
            <!-- /tmpl_if -->   
          <!-- /tmpl_loop -->
          </div>
-         <p>
-         <input type="checkbox" class="check_all_in_div" id="checkbox_for_not_members_addresses" data-target="not_members_addresses" checked="checked">
-             <label for="checkbox_for_not_members_addresses">
-                 check all
-             </label>
-         </p>
 
+         <input 
+		 	type="checkbox" 
+			class="check_all_in_div" 
+			id="checkbox_for_not_members_addresses" 
+			data-target="not_members_addresses" 
+			checked="checked"
+		>
+	     <label for="checkbox_for_not_members_addresses">
+	         check all
+	     </label>
 
          </fieldset>
-         </div> 
+ 	</div> 
  <!--/tmpl_if-->
  
  
@@ -246,10 +231,10 @@
                          But, you may update the Profile Fields and Profile Password of these addresses.  
                      </p>
                       <p>
-                         <input type="radio" name="subscribed_fields_options_mode" id="subscribed_fields_options_mode_writeover_inc_password" value="writeover_ex_password" checked="checked" /> 
+                         <input type="radio" name="subscribed_fields_options_mode" id="subscribed_fields_options_mode_writeover_inc_password" value="writeover_ex_password" checked="checked" > 
                          <label for="subscribed_fields_options_mode_writeover_inc_password">Update the profile data, excluding the Profile Password</label> 
-                         <br />
-                         <input type="radio" name="subscribed_fields_options_mode" id="subscribed_fields_options_mode_writeover_ex_password" value="writeover_inc_password" /> 
+                         <br >
+                         <input type="radio" name="subscribed_fields_options_mode" id="subscribed_fields_options_mode_writeover_ex_password" value="writeover_inc_password" > 
                          <label for="subscribed_fields_options_mode_writeover_ex_password">Update the profile data, including the Profile Password</label> 
                      </p>                 
                      <p>
@@ -259,73 +244,55 @@
              <!-- /tmpl_if --> 
         <!-- /tmpl_if -->
 
-     <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
-      <table  class="stripedtable">
+     <div style="max-height: 480px; overflow: auto; border:1px solid black;background:#fff">
+      <table style="width:100%" class="responsive">
        <tr>
-        <td width="25">
+        <th width="25">
          <p>&nbsp;</p>
-        </td>
-        <td>
-        <p>
-         <strong>
+        </th>
+        <th>
           Email
-        </strong>
-       </p>
       </td>
       <!-- tmpl_if expr="(type eq 'list')" -->
           <!-- tmpl_loop field_names --> 
-              <td>
-               <p>
-                <strong>
+              <th>
                      <!-- tmpl_if label --> 
                          <!-- tmpl_var label escape="HTML" -->
                      <!-- tmpl_else --> 
                          <!-- tmpl_var name --> 
                     <!-- /tmpl_if --> 
-                </strong>
-               </p>
-              </td> 
+              </th> 
           <!--/tmpl_loop --> 
-          <td>
-           <p>
-            <strong>
+          <th>
              Profile Password
-           </strong>
-          </p>
-          </td>
+          </th>
      <!-- /tmpl_if -->
 
        </tr>
 
        <!-- tmpl_loop subscribed -->
-         <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
+         <tr>
           <td width="25">
 
               <!-- tmpl_if expr="(root_login == 1) || (list_settings.allow_profile_editing == 1)" --> 
                   <!-- tmpl_if expr="(type eq 'list')" --> 
-                     <input type="checkbox" name="update_fields_address" value="<!-- tmpl_var csv_str escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" />
+                     <input type="checkbox" name="update_fields_address" value="<!-- tmpl_var csv_str escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" >
                  <!-- /tmpl_if -->
               <!-- /tmpl_if --> 
           </td>
           <td>
-           <p>
      <label for="<!-- tmpl_var email escape="HTML" -->">
             <!-- tmpl_var email escape="HTML" -->
      </label>
-           </p>
           </td>
           <!-- tmpl_if expr="(type eq 'list')" -->
               <!-- tmpl_loop fields --> 
                  <td>
-                  <p>
                    <!-- tmpl_var value default="&nbsp;" escape="HTML"  -->
-                  </p>
                  </td>
              <!-- /tmpl_loop --> 
              <td>
-                <p>
                     <!-- tmpl_var profile_password escape="HTML" -->
-               </p>
               </td>
           <!-- /tmpl_if --> 
 
@@ -344,13 +311,17 @@
      
      <!-- tmpl_if expr="(root_login == 1) || (list_settings.allow_profile_editing == 1)" --> 
          <!-- tmpl_if expr="(type eq 'list')" --> 
-             <p>
-             <input type="checkbox" id="checkbox_for_subscribed_addresses" class="check_all_in_div" data-target="subscribed_addresses">
-                 <label for="checkbox_for_subscribed_addresses">
-                     check all
-                 </label>
-             </p>
-        <!-- /tmpl_if -->
+            
+             <input 
+			 	type="checkbox" 
+				id="checkbox_for_subscribed_addresses" 
+				class="check_all_in_div"
+				data-target="subscribed_addresses"
+			>
+             <label for="checkbox_for_subscribed_addresses">
+                 check all
+             </label>
+    	<!-- /tmpl_if -->
     <!-- /tmpl_if -->
      </fieldset> 
      </div> 
@@ -381,67 +352,48 @@
                          <!-- /tmpl_if --> 
                      </p>
                  </div> 
-             <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
-              <table  class="stripedtable">
+             <div style="max-height: 480px; overflow: auto; border:1px solid black;background:#fff">
+              <table style="width:100%" class="responsive">
                <tr>
-                <td width="25">
-                 <p>&nbsp;</p>
-                </td>
-                <td>
-                <p>
-                 <strong>
+                <th width="25">
+                </th>
+                <th>
                   Email
-                </strong>
-               </p>
-              </td>
+               </th>
               <!-- tmpl_if expr="(type eq 'list')" -->
                   <!-- tmpl_loop field_names --> 
-                      <td>
-                       <p>
-                        <strong>
-                             <!-- tmpl_if label --> 
-                                 <!-- tmpl_var label escape="HTML" -->
-                             <!-- tmpl_else --> 
-                                 <!-- tmpl_var name --> 
-                            <!-- /tmpl_if --> 
-                          
-                        </strong>
-                       </p>
+                      <th>
+                         <!-- tmpl_if label --> 
+                             <!-- tmpl_var label escape="HTML" -->
+                         <!-- tmpl_else --> 
+                             <!-- tmpl_var name --> 
+                        <!-- /tmpl_if -->           
                       </td> 
                   <!--/tmpl_loop --> 
-
-                  <td>
-                   <p>
-                    <strong>
+                  <th>
                      Profile Password
-                   </strong>
-                  </p>
-                  </td>
+                  </th>
               <!-- /tmpl_if --> 
                </tr>
 
                <!-- tmpl_loop black_listed -->
-                 <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
+                 <tr>
                   <td width="25">
                    <!-- tmpl_if list_settings.allow_admin_to_subscribe_blacklisted --> 
-                     <input type="checkbox" name="address" value="<!-- tmpl_var csv_str escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" />
+                     <input type="checkbox" name="address" value="<!-- tmpl_var csv_str escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" >
                      <!-- tmpl_else --> 
                      &nbsp;
                      <!-- /tmpl_if --> 
                   </td>
                   <td>
-                   <p>
                  <label for="<!-- tmpl_var email escape="HTML" -->">
                         <!-- tmpl_var email escape="HTML" -->
                  </label>
-                   </p>
                   </td>
                   <!-- tmpl_if expr="(type eq 'list')" -->
                       <!-- tmpl_loop fields -->         
                          <td>
-                          <p>
                            <!-- tmpl_var value default="&nbsp;" escape="HTML" -->
-                          </p>
                          </td>
                      <!-- /tmpl_loop --> 
 
@@ -503,73 +455,57 @@
           </p>
      </div>
 
- <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
-  <table  class="stripedtable">
+ <div style="max-height: 480px; overflow: auto; border:1px solid black;background:#fff">
+  <table style="width:100%" class="responsive">
    <tr>
-    <td width="25">
+    <th width="25">
      <p>&nbsp;</p>
-    </td>
-    <td>
-    <p>
-     <strong>
+    </th>
+    <th>
       Email
-    </strong>
-   </p>
-  </td>
+  </th>
   <!-- tmpl_if expr="(type eq 'list')" -->
       <!-- tmpl_loop field_names --> 
-          <td>
-           <p>
-            <strong>
+          <th>
                  <!-- tmpl_if label --> 
                      <!-- tmpl_var label escape="HTML" -->
                  <!-- tmpl_else --> 
                      <!-- tmpl_var name --> 
                 <!-- /tmpl_if --> 
-              
-            </strong>
-           </p>
-          </td> 
+          </th> 
       <!--/tmpl_loop --> 
-      <td>
-       <p>
-        <strong>
+      <th>
          Profile Password
-       </strong>
-      </p>
-      </td>
+      </th>
  <!-- /tmpl_if --> 
 
    </tr>
 
    <!-- tmpl_loop not_white_listed -->
-     <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
+     <tr>
       <td width="25">
-       <input type="checkbox" name="address" value="<!-- tmpl_var csv_str escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" />
+       <input 
+	   	type="checkbox" 
+		name="address" 
+		value="<!-- tmpl_var csv_str escape="HTML" -->" 
+		id="<!-- tmpl_var email escape="HTML" -->" 
+	  >
       </td>
       <td>
-       <p>
- <label for="<!-- tmpl_var email escape="HTML" -->">
-        <!-- tmpl_var email escape="HTML" -->
- </label>
-       </p>
+		 <label for="<!-- tmpl_var email escape="HTML" -->">
+		        <!-- tmpl_var email escape="HTML" -->
+		 </label>
       </td>
       <!-- tmpl_if expr="(type eq 'list')" -->
-
           <!-- tmpl_loop fields --> 
-
              <td>
-              <p>
                <!-- tmpl_var value escape="HTML" default="&nbsp;"  -->
-              </p>
              </td>
          <!-- /tmpl_loop --> 
-
          <td>
              <!-- tmpl_var profile_password escape="HTML" -->
          </td>
      <!-- /tmpl_if --> 
-
    </tr>
    <!-- tmpl_if __last__ --> 
 
@@ -623,75 +559,58 @@
         
      </div> 
  
-     <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
-      <table  class="stripedtable">
+     <div style="max-height: 480px; overflow: auto; border:1px solid black;background:#fff">
+      <table style="width:100%" class="responsive">
        <tr>
-        <td width="25">
-         <p>&nbsp;</p>
-        </td>
-        <td>
-        <p>
-         <strong>
+        <th width="25">
+        </th>
+        <th>
           Email
-        </strong>
-       </p>
-      </td>
+      </th>
       <!-- tmpl_if expr="(type eq 'list')" -->
           <!-- tmpl_loop field_names --> 
-              <td>
-               <p>
-                <strong>
-                     <!-- tmpl_if label --> 
-                         <!-- tmpl_var label escape="HTML" -->
-                     <!-- tmpl_else --> 
-                         <!-- tmpl_var name --> 
-                    <!-- /tmpl_if --> 
-                  
-                </strong>
-               </p>
-              </td> 
+              <th>
+                 <!-- tmpl_if label --> 
+                     <!-- tmpl_var label escape="HTML" -->
+                 <!-- tmpl_else --> 
+                     <!-- tmpl_var name --> 
+                <!-- /tmpl_if -->      
+              </th> 
           <!--/tmpl_loop --> 
-  
-          <td>
-           <p>
-            <strong>
+          <th>
              Profile Password
-           </strong>
-          </p>
-          </td>
+          </th>
      <!-- /tmpl_if --> 
-
        </tr>
 
        <!-- tmpl_loop invalid_profile_fields -->
-         <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
+         <tr>
           <td width="25">
               
               <!-- tmpl_if expr="(root_login == 1) || (list_settings.allow_profile_editing == 1)" -->           
-                <input type="checkbox" name="address" value="<!-- tmpl_var csv_str escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->" />
+                <input 
+					type="checkbox" 
+					name="address" 
+					value="<!-- tmpl_var csv_str escape="HTML" -->" 
+					id="<!-- tmpl_var email escape="HTML" -->" 
+				>
               <!-- /tmpl_if --> 
                 
           </td>
           <td>
-           <p>
-     <label for="<!-- tmpl_var email escape="HTML" -->">
-            <!-- tmpl_var email escape="HTML" -->
-     </label>
-           </p>
+		     <label for="<!-- tmpl_var email escape="HTML" -->">
+		            <!-- tmpl_var email escape="HTML" -->
+		     </label>
           </td>
           <!-- tmpl_loop fields --> 
      
              <td <!-- tmpl_if invalid_profile_field -->style="background-color:#ffe1af;"<!-- /tmpl_if -->>
-              <p>
                <!-- tmpl_var value default="&nbsp;" escape="HTML"  -->
-              </p>
              </td>
          <!-- /tmpl_loop --> 
-     
          <td>
              <!-- tmpl_var profile_password escape="HTML" -->
          </td>
-     
        </tr>
        <!-- tmpl_if __last__ --> 
 
@@ -705,12 +624,15 @@
      <p>&nbsp;</p>
      </div>
      <!-- tmpl_if expr="(root_login == 1) || (list_settings.allow_profile_editing == 1)" --> 
-         <p>
-         <input type="checkbox" id="checkbox_for_invalid_profile_fields_addresses" class="check_all_in_div" data-target="invalid_profile_fields_addresses">
-             <label for="checkbox_for_invalid_profile_fields_addresses">
-                 check all
-             </label>
-         </p>
+         <input 
+		 	type="checkbox" 
+			id="checkbox_for_invalid_profile_fields_addresses" 
+			class="check_all_in_div" 
+			data-target="invalid_profile_fields_addresses"
+		>
+		<label for="checkbox_for_invalid_profile_fields_addresses">
+			 check all
+		</label>
      <!-- /tmpl_if -->
      </fieldset> 
  </div> 
@@ -739,8 +661,8 @@
           </p>
      </div> 
 
-     <div style="max-height: 200px; overflow: auto; border:1px solid black;background:#fff">
-  <table  class="stripedtable">
+     <div style="max-height: 480px; overflow: auto; border:1px solid black;background:#fff">
+  <table style="width:100%" class="responsive">
    <tr>
     <td width="25">
      <p>&nbsp;</p>
@@ -782,7 +704,7 @@
 
 
    <!-- tmpl_loop invalid_email -->
-     <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>
+     <tr>
       <td width="25">
  &nbsp;     </td>
       <td>
@@ -825,13 +747,6 @@
 
 
 
-
-
-
-
-
-
-
 <!-- tmpl_if not_members --> 
     <!-- ... -->
 <!-- tmpl_else --> 
@@ -842,33 +757,69 @@
 </div>
 <!-- /tmpl_if -->
 
-
-     <div class="buttonfloat">
-    <!-- tmpl_if chrome --> 
-         <input type="button" class="cautionary previous" value="<< Re-Enter Addresses" />
-    <!-- /tmpl_if --> 
+	<ul class="button-group right">
+	
+	    <!-- tmpl_if chrome --> 
+	         <li><input 
+				 	type="button" 
+					class="button cautionary previous" 
+					value="&lArr; Re-Enter Addresses"
+				></li>
+	    <!-- /tmpl_if --> 
     
-    <!-- tmpl_if expr="(type eq 'list')" -->
+	    <!-- tmpl_if expr="(type eq 'list')" -->
     
-        <!-- tmpl_if show_invitation_button --> 
-            <input type="submit"  name="process" value="Send Invitation... &rArr;" <!-- tmpl_if list_settings.closed_list -->disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing addingemail"<!-- /tmpl_if --> />
-        <!-- /tmpl_if --> 
-    <!-- /tmpl_if -->
+	        <!-- tmpl_if show_invitation_button --> 
+	            <li><input 
+						type="submit"  
+						name="process" 
+						value="Send Invitation... &rArr;" 
+						<!-- tmpl_if list_settings.closed_list -->
+							disabled="disabled" class="button disabled"
+						<!-- tmpl_else -->
+							class="button processing addingemail"
+						<!-- /tmpl_if -->
+					></li>
+	        <!-- /tmpl_if --> 
+	    <!-- /tmpl_if -->
     
-    <!-- tmpl_if expr="(type eq 'list')" -->     
-        <!-- tmpl_if show_update_button --> 
-            <input type="submit" class="processing addingemail"name="process"  value="Update Checked Addresses &rArr;" />            
-        <!-- tmpl_else --> 
-            <!-- tmpl_if show_add_button --> 
-                <input type="submit" <!-- tmpl_unless expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing addingemail warnAboutMassSubscription"<!-- /tmpl_unless -->  name="process"  value="Subscribe/Update Checked Addresses &rArr;" />            
-            <!-- /tmpl_if -->         
-        <!-- /tmpl_if --> 
+	    <!-- tmpl_if expr="(type eq 'list')" -->     
+	        <!-- tmpl_if show_update_button --> 
+	            <li>
+					<input 
+						type="submit" 
+						class="button processing addingemail" 
+						name="process"  
+						value="Update Checked Addresses &rArr;">
+					</li>            
+	        <!-- tmpl_else --> 
+	            <!-- tmpl_if show_add_button --> 
+	                <li><input 
+						type="submit" 
+						<!-- tmpl_unless expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
+							disabled="disabled" class="button disabled"
+						<!-- tmpl_else -->
+							class="button processing addingemail warnAboutMassSubscription"
+						<!-- /tmpl_unless -->  
+						name="process"  
+						value="Subscribe/Update Checked Addresses &rArr;"
+						>
+					</li>            
+	            <!-- /tmpl_if -->         
+	        <!-- /tmpl_if --> 
         
-    <!-- tmpl_else --> 
-        <input type="submit" class="processing addingemail" name="process"  value="Add Checked Addresses to <!-- tmpl_var type_title --> &rArr;" />
-    <!-- /tmpl_if -->
-     </div>
-     <div class="floatclear"></div>
+	    <!-- tmpl_else --> 
+	        <li>
+				<input 
+					type="submit" 
+					class="button processing addingemail" 
+					name="process"  
+					value="Add Checked Addresses to <!-- tmpl_var type_title --> &rArr;"
+				>
+			</li>
+	    <!-- /tmpl_if -->
+	</ul>
+
     
  </form>
  

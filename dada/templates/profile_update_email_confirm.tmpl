@@ -25,7 +25,7 @@
 
 	
 	<!-- tmpl_if comment --> 
-	<br /> 
+	<br > 
 	[ ] Clone my profile, using <!-- tmpl_var profile.update_email --> as the new Profile Email Address. 
 	<!-- /tmpl_if --> 
 	
@@ -135,13 +135,13 @@
 <!-- /tmpl_if --> 
 
 <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
-	<input type="hidden" name="confirmed" value="1" /> 
-	<input type="hidden" name="auth_code" value="<!-- tmpl_var auth_code -->" /> 
-	<input type="hidden" name="email" value="<!-- tmpl_var profile.email -->" /> 
-	<input type="hidden" name="flavor" value="profile_update_email" /> 
+	<input type="hidden" name="confirmed" value="1" > 
+	<input type="hidden" name="auth_code" value="<!-- tmpl_var auth_code -->" > 
+	<input type="hidden" name="email" value="<!-- tmpl_var profile.email -->" > 
+	<input type="hidden" name="flavor" value="profile_update_email" > 
 	
 	<div class="buttonfloat">
-<input type="submit" value="Update my Profile Email and Mailing List Subscriptions!" class="processing" />	</div>
+<input type="submit" value="Update my Profile Email and Mailing List Subscriptions!" class="processing" >	</div>
 	<div class="floatclear"></div>
 	
 </form> 

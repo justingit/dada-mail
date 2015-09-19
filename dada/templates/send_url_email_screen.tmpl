@@ -85,18 +85,18 @@
 <!-- tmpl_include send_email_schedule_options_widget.tmpl -->
 <!-- tmpl_include send_email_headers_widget.tmpl --> 
 
-    <input type="hidden" id="list"               name="list"                  value="<!-- tmpl_var list_settings.list -->" />
-    <input type="hidden" id="sched_flavor"       name="sched_flavor"          value="<!-- tmpl_var sched_flavor -->" />
+    <input type="hidden" id="list"               name="list"                  value="<!-- tmpl_var list_settings.list -->" >
+    <input type="hidden" id="sched_flavor"       name="sched_flavor"          value="<!-- tmpl_var sched_flavor -->" >
 
-    <input type="hidden" name="s_program_url"      id="s_program_url"    value="<!-- tmpl_var S_PROGRAM_URL -->" />
-    <input type="hidden" name="flavor"            id="flavor"            value="send_url_email" />
-    <input type="hidden" name="support_files_url" id="support_files_url" value="<!-- tmpl_var SUPPORT_FILES_URL -->" />
+    <input type="hidden" name="s_program_url"      id="s_program_url"    value="<!-- tmpl_var S_PROGRAM_URL -->" >
+    <input type="hidden" name="flavor"            id="flavor"            value="send_url_email" >
+    <input type="hidden" name="support_files_url" id="support_files_url" value="<!-- tmpl_var SUPPORT_FILES_URL -->" >
 
-    <input type="hidden" id="draft_alert"        name="draft_alert"           value="<!-- tmpl_var draft_alert default="0" -->" />
-    <input type="hidden" id="draft_id"           name="draft_id"              value="<!-- tmpl_var draft_id -->"                /> 
-    <input type="hidden" id="save_draft_role"    name="save_draft_role"       value=""                                          />
-    <input type="hidden" id="draft_role"         name="draft_role"            value="<!-- tmpl_var draft_role -->"              />
-    <input type="hidden" id="restore_from_draft" name="restore_from_draft"    value="<!-- tmpl_var restore_from_draft -->"      />
+    <input type="hidden" id="draft_alert"        name="draft_alert"           value="<!-- tmpl_var draft_alert default="0" -->" >
+    <input type="hidden" id="draft_id"           name="draft_id"              value="<!-- tmpl_var draft_id -->"                > 
+    <input type="hidden" id="save_draft_role"    name="save_draft_role"       value=""                                          >
+    <input type="hidden" id="draft_role"         name="draft_role"            value="<!-- tmpl_var draft_role -->"              >
+    <input type="hidden" id="restore_from_draft" name="restore_from_draft"    value="<!-- tmpl_var restore_from_draft -->"      >
     
     
 	<fieldset> 
@@ -120,15 +120,15 @@
 	
   	    <div id="html_message">
 		<p>
-		<input type="radio" name="content_from" id="content_from_url" value="url" checked="checked" />
+		<input type="radio" name="content_from" id="content_from_url" value="url" checked="checked" >
 			  <label for="content_from_url">
 		   Grab content from this webpage address (URL):
 		  </label>
-		  <br />
-		  <input type="url" name="url" id="url"  placeholder="http://" />
+		  <br >
+		  <input type="url" name="url" id="url"  placeholder="http://" >
 		</p>
 		<p>
-		  <input type="radio" name="content_from" id="content_from_textarea" value="content_from_textarea" />
+		  <input type="radio" name="content_from" id="content_from_textarea" value="content_from_textarea" >
 			  <label for="content_from_textarea">
 			   Use the following HTML as content:
 			  </label>
@@ -144,7 +144,7 @@
     <table> 
         <tr> 
             <td>
-                <input type="checkbox" name="crop_html_content" id="crop_html_content" value="1"  />
+                <input type="checkbox" name="crop_html_content" id="crop_html_content" value="1"  >
             </td>
             <td>
                 <label for="crop_html_content">Crop Webpage</label>
@@ -161,7 +161,7 @@
                        <option value="id">id</option>
                        <option value="class">class</option>
                    </select> 
-                   of: <input type="text" name="crop_html_content_selector_label" id="crop_html_content_selector_label" />
+                   of: <input type="text" name="crop_html_content_selector_label" id="crop_html_content_selector_label" >
                   </td>
                  </tr>
                 </table> 
@@ -185,7 +185,7 @@
 			</p>
 		  
 			<p>
-			 <input type="radio" name="url_options" id="extern" value="extern" checked="checked" />
+			 <input type="radio" name="url_options" id="extern" value="extern" checked="checked" >
 			  <label for="extern">
 			   have their URLs changed to absolute
 			 </label> 
@@ -194,22 +194,22 @@
 			 <!-- DEV as far as I can tell, this option doesn't work!
 			 -js
 			 
-			 <br />
-			 <input type="radio" name="url_options" value="location" />
+			 <br >
+			 <input type="radio" name="url_options" value="location" >
 			 be embedded in the message itself, using the 'Content-Location' header
 			 
 			 --> 
 			 
 			 
-			 <br />
-			 <input type="radio" name="url_options" value="cid" id="cid" />
+			 <br >
+			 <input type="radio" name="url_options" value="cid" id="cid" >
 			  <label for="cid">
 			   be embedded in the message itself 
 			 </label>
 			 
 		<!-- tmpl_unless can_display_attachments --> 
 				 
-				 <br />
+				 <br >
 				 <p class="error"> 
 				  Warning: your current Archive backend does not support archiving messages with embedded images.
 				  When viewed, these archived messages may be missing images or formatted incorrectly.
@@ -222,7 +222,7 @@
 		  </tr>
 		  <tr> 
 			<td>
-			<p>	<input type="checkbox" name="remove_javascript" id="remove_javascript" checked="checked" value="1" />
+			<p>	<input type="checkbox" name="remove_javascript" id="remove_javascript" checked="checked" value="1" >
 			 
 			  <label for="remove_javascript">
 				Remove Javascript
@@ -264,7 +264,7 @@
 			  </td>
 			  <td>
 			   <p>
-				<input type="text" name="url_username" />
+				<input type="text" name="url_username" >
 			   </p>
 			  </td>
 			 </tr>
@@ -278,7 +278,7 @@
 			  </td>
 			  <td>
 			   <p>
-				<input type="text" name="url_password" />
+				<input type="text" name="url_password" >
 			   </p>
 			  </td>
 			 </tr>
@@ -292,7 +292,7 @@
 			  </td>
 			  <td>
 			   <p>
-				<input type="text" name="proxy" />
+				<input type="text" name="proxy" >
 			   </p>
 			  </td>
 			 </tr>
@@ -310,25 +310,25 @@
 <div id="plaintext_message"> 
 		 
 		<p>
-		  <input type="radio" name="plaintext_content_from" id="plaintext_content_from_auto" value="auto" checked="checked" />
+		  <input type="radio" name="plaintext_content_from" id="plaintext_content_from_auto" value="auto" checked="checked" >
 		  <label for="plaintext_content_from_auto">
 		   Create a PlainText Version automatically
 		  </label>
 		 </p>
 
 		 <p>
-		  <input type="radio" name="plaintext_content_from" id="plaintext_content_from_url" value="url" />
+		  <input type="radio" name="plaintext_content_from" id="plaintext_content_from_url" value="url" >
 		  <label for="plaintext_content_from_url">
 		    Grab content from this webpage address (URL): 
 		  </label>
-  		  <br />
-  		  <input type="text" name="plaintext_url" id="plaintext_url"  placeholder="http://" />
+  		  <br >
+  		  <input type="text" name="plaintext_url" id="plaintext_url"  placeholder="http://" >
   		</p>
 
 
 
 		 <p>
-		  <input type="radio" name="plaintext_content_from" id="plaintext_content_from_text" value="text" />
+		  <input type="radio" name="plaintext_content_from" id="plaintext_content_from_text" value="text" >
 		  <label for="plaintext_content_from_text">
 		   Use the text below as the PlainText version:
 		  </label>
@@ -437,7 +437,7 @@
 <div id="top_floating_button_wrapper">
   <div id="buttons">
       <div id="button_toolbar">
-          <input type="button" value="Loading..." class="bigger_button" />
+          <input type="button" value="Loading..." class="bigger_button" >
     </div>
   </div>
 </div>

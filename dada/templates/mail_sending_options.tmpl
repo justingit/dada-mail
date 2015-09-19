@@ -20,9 +20,9 @@
 
 	
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form">
-	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" />
-	<input type="hidden" name="process" id="process" value="1" /> 
-	<input type="hidden" name="flavor" id="flavor" value="mail_sending_options" />
+	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" >
+	<input type="hidden" name="process" id="process" value="1" > 
+	<input type="hidden" name="flavor" id="flavor" value="mail_sending_options" >
 
     <div class="row">
         <div class="small-12 columns">	
@@ -33,7 +33,7 @@
 				id="sending_method_sendmail" 
 				value="sendmail"
 				<!-- tmpl_if expr="(list_settings.sending_method eq 'sendmail')" -->checked="checked"<!--/tmpl_if --> 
-			/>
+			>
 		    <label for="sending_method_sendmail">
 		     sendmail Command
 		    </label>
@@ -50,7 +50,7 @@
 					id="add_sendmail_f_flag" 
 					value="1" 
 					<!-- tmpl_if list_settings.add_sendmail_f_flag -->checked="checked"<!--/tmpl_if--> 
-				/>
+				>
 			    <label for="add_sendmail_f_flag">
 			     Add the Sendmail '-f' flag when sending messages using 
 			     <!-- tmpl_var MAILPROG -->
@@ -86,7 +86,7 @@
 				id="sending_method_smtp" 
 				value="smtp" 
 				<!-- tmpl_if expr="(list_settings.sending_method eq 'smtp')" -->checked="checked"<!--/tmpl_if --> 
-			/>
+			>
 		    <label for="sending_method_smtp">
 		     SMTP
 		    </label>
@@ -108,7 +108,7 @@
 						id="smtp_server" 
 						value="<!-- tmpl_var list_settings.smtp_server -->" 
 						placeholder="smtp.example.com"
-					 />
+					 >
 				    <label for="smtp_port">
 				     	Port
 				    </label>
@@ -118,7 +118,7 @@
 						id="smtp_port" 
 						value="<!-- tmpl_var list_settings.smtp_port -->"
 						placeholder="25" 
-					/>
+					>
 				</div> 
 			</div>
 			<div class="row"> 
@@ -131,7 +131,7 @@
 						id="use_smtp_ssl" 
 						value="1" 
 						<!-- tmpl_if list_settings.use_smtp_ssl -->checked="checked"<!-- /tmpl_if --> 
-					/> 
+					> 
 				    <label for="use_smtp_ssl">
 						 Use Secure Sockets Layer (SSL)
 
@@ -154,7 +154,7 @@
 						id="set_smtp_sender" 
 						value="1" 
 						<!-- tmpl_if list_settings.set_smtp_sender -->checked="checked"<!-- /tmpl_if --> 
-					/>
+					>
 					<label for="set_smtp_sender">
 						Set the Sender of SMTP Mailings to the List Administration Address
 					</label>
@@ -179,7 +179,7 @@
 						id="use_sasl_smtp_auth" 
 						value="1" 
 						<!-- tmpl_if use_sasl_smtp_auth -->checked="checked"<!-- /tmpl_if -->
-					/>
+					>
 
 				    <label for="use_sasl_smtp_auth">
 				    	 Use SMTP Authentication (SASL)
@@ -199,7 +199,7 @@
 							name="sasl_smtp_username" 
 							id="sasl_smtp_username" 
 							value="<!-- tmpl_var sasl_smtp_username -->" 
-						/>
+						>
 						</div>
 					</div>
 		  		    <div class="row"> 
@@ -214,7 +214,7 @@
 							name="sasl_smtp_password" 
 							id="sasl_smtp_password" 
 							value="<!-- tmpl_var sasl_smtp_password -->"
-							 />
+							 >
 						</div>
 					</div> 
 			    <div class="row"> 
@@ -239,7 +239,7 @@
 						id="use_pop_before_smtp" 
 						value="1" 
 						<!-- tmpl_if list_settings.use_pop_before_smtp -->checked="checked"<!-- /tmpl_if --> 
-						/>
+						>
 						<label for="use_pop_before_smtp">
 							Use POP-Before-SMTP Authentication
 						</label>
@@ -308,7 +308,7 @@
 								name="pop3_password" 
 								id="pop3_password" 
 								value ="<!-- tmpl_var decrypted_pop3_pass -->"
-								/>
+								>
 							</div>
 						</div>
 						<div class="row"> 
@@ -333,7 +333,7 @@
 									id="pop3_use_ssl" 
 									value="1" 
 									<!-- tmpl_if list_settings.pop3_use_ssl -->checked="checked"<!-- /tmpl_if -->
-								/>
+								>
 								<label for="pop3_use_ssl">
 									Use Secure Sockets Layer (SSL)
 								</label>
@@ -355,7 +355,7 @@
 				id="sending_method_amazon_ses" 
 				value="amazon_ses" 
 				<!-- tmpl_if expr="(list_settings.sending_method eq 'amazon_ses')" -->checked="checked"<!--/tmpl_if --> 
-			/>
+			>
 			<label for="sending_method_amazon_ses">
 				Amazon Simple Email Service
 			</label>
@@ -391,7 +391,7 @@
 		  							id="amazon_ses_verify_email" 
 		  							value="<!-- tmpl_var list_settings.list_owner_email -->" 
 									placeholder="you@yours.com"
-		  						/> 
+		  						> 
 					          </div>
 					          <div class="small-2 columns">
 									<a href="#" class="button postfix amazon_verify_email">
@@ -418,9 +418,9 @@
 	</div>
 
 	<ul class="button-group right">    
-	    <li><input type="reset"  class="cautionary button" value="Clear Changes" /></li>
-	    <li><input type="submit" class="processing button" value="Save Changes" /></li>
-	    <li><input type="button"  value="Save, Then Test" class="processing test_mail_sending_options button" /></li>
+	    <li><input type="reset"  class="cautionary button" value="Clear Changes" ></li>
+	    <li><input type="submit" class="processing button" value="Save Changes" ></li>
+	    <li><input type="button"  value="Save, Then Test" class="processing test_mail_sending_options button" ></li>
 	</ul>
 
 </form> 

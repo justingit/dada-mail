@@ -10,12 +10,12 @@
 
 
 <form name="some_form" id="some_form"> 
-	<input type="hidden" id="s_program_url"    name="s_program_url"        value="<!-- tmpl_var S_PROGRAM_URL -->" /> 
-	<input type="hidden" name="flavor" value="plugins" /> 
-    <input type="hidden" name="plugin" value="bounce_handler" /> 
-	<input type="hidden" id="parse_amount"  name="parse_amount"  value="<!-- tmpl_if parse_amount --><!-- tmpl_var parse_amount --><!-- tmpl_else --><!-- tmpl_var MessagesAtOnce --><!-- /tmpl_if -->" /> 
-	<input type="hidden" id="test"   name="test"   value="<!-- tmpl_if test --><!-- tmpl_var test --><!-- tmpl_else --><!-- /tmpl_if -->" />
-	<input type="button" value="Parse Bounces" id="parse_bounces_button" class="processing" /> 
+	<input type="hidden" id="s_program_url"    name="s_program_url"        value="<!-- tmpl_var S_PROGRAM_URL -->" > 
+	<input type="hidden" name="flavor" value="plugins" > 
+    <input type="hidden" name="plugin" value="bounce_handler" > 
+	<input type="hidden" id="parse_amount"  name="parse_amount"  value="<!-- tmpl_if parse_amount --><!-- tmpl_var parse_amount --><!-- tmpl_else --><!-- tmpl_var MessagesAtOnce --><!-- /tmpl_if -->" > 
+	<input type="hidden" id="test"   name="test"   value="<!-- tmpl_if test --><!-- tmpl_var test --><!-- tmpl_else --><!-- /tmpl_if -->" >
+	<input type="button" value="Parse Bounces" id="parse_bounces_button" class="processing" > 
 </form>
 
 <div id="parse_bounce_results_loading"></div> 

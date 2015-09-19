@@ -37,7 +37,7 @@
 
 
 <form> 
-	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" /> 
+	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" > 
 </form> 
 
 
@@ -167,11 +167,11 @@
 
 	<form id="fileupload" enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 		
-		<input type="hidden" name="flavor"    id="f" value="add" />
-		<input type="hidden" name="type" value="<!-- tmpl_var type -->" />
-		<input type="hidden" name="process" value="1" />
-		<input type="hidden" name="rand_string" id="rand_string" value="<!-- tmpl_var rand_string -->" />
-		<input type="hidden" name="method" value="via_file_upload" /> 
+		<input type="hidden" name="flavor"    id="f" value="add" >
+		<input type="hidden" name="type" value="<!-- tmpl_var type -->" >
+		<input type="hidden" name="process" value="1" >
+		<input type="hidden" name="rand_string" id="rand_string" value="<!-- tmpl_var rand_string -->" >
+		<input type="hidden" name="method" value="via_file_upload" > 
 	
 	
 			<!-- tmpl_if comment -->
@@ -217,11 +217,11 @@
 
 
 	<form name="paste_addresses"  action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-	 <input type="hidden" name="flavor"    id="f" value="add" />
-	 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
-	 <input type="hidden" name="process" value="1" />
-	 <input type="hidden" name="rand_string" id="rand_string" value="<!-- tmpl_var rand_string -->" />
-	 <input type="hidden" name="method" value="via_textarea" /> 
+	 <input type="hidden" name="flavor"    id="f" value="add" >
+	 <input type="hidden" name="type" value="<!-- tmpl_var type -->" >
+	 <input type="hidden" name="process" value="1" >
+	 <input type="hidden" name="rand_string" id="rand_string" value="<!-- tmpl_var rand_string -->" >
+	 <input type="hidden" name="method" value="via_textarea" > 
 
 	<div class="row">
 	   <div class="small-12 columns">
@@ -232,7 +232,7 @@
 
 		  <ul class="button-group right">
 			  <li><input type="reset"  class="button cautionary" value="Clear Changes"></li>
-			  <li><input type="submit"          value="Verify Address..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="button disabled"<!-- tmpl_else -->class="button processing"<!-- /tmpl_if -->/></li>
+			  <li><input type="submit"          value="Verify Address..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="button disabled"<!-- tmpl_else -->class="button processing"<!-- /tmpl_if -->></li>
 		  </ul>
 
 	</form>
@@ -267,18 +267,18 @@
 	
 		<form name="via_add_one"  action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 	
-		 <input type="hidden" name="flavor"    id="f" value="add" />
-		 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
-		 <input type="hidden" name="process" value="1" />
-		 <input type="hidden" name="rand_string" id="rand_string" value="<!-- tmpl_var rand_string -->" />
-		 <input type="hidden" name="method" value="via_add_one" /> 
+		 <input type="hidden" name="flavor"    id="f" value="add" >
+		 <input type="hidden" name="type" value="<!-- tmpl_var type -->" >
+		 <input type="hidden" name="process" value="1" >
+		 <input type="hidden" name="rand_string" id="rand_string" value="<!-- tmpl_var rand_string -->" >
+		 <input type="hidden" name="method" value="via_add_one" > 
 		 
 		<div class="row">
 		   <div class="small-12 columns">
 			   <label for="email" class="label_profile_fields">
 			      Email Address
 			     </label>
-			    <input type="text" name="email" id="email" value=""  />
+			    <input type="text" name="email" id="email" value=""  >
 			</div> 
 		</div> 
 		
@@ -291,7 +291,7 @@
 		    		     <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
 		    		      <!-- tmpl_var label escape="HTML" --> (<!-- tmpl_var name escape="HTML" -->)
 		    		     </label>
-		    		    <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->"  />
+		    		    <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->"  >
 		    		    <!-- tmpl_if required -->
 				        <span class="error">
 				            * Required
@@ -307,14 +307,14 @@
 			     <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
 			      	Profile Password
 			     </label>
-			    <input type="text" name="profile_password" id="profile_password" value=""  />
+			    <input type="text" name="profile_password" id="profile_password" value=""  >
 			</div>
 		</div>
 	    <!-- /tmpl_if --> 
 		
 		  <ul class="button-group right">
 			  <li><input type="reset"  class="button cautionary" value="Clear Changes"></li>
-			  <li><input type="submit"        value="Verify Address..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="button disabled"<!-- tmpl_else -->class="button processing"<!-- /tmpl_if -->/></li>
+			  <li><input type="submit"        value="Verify Address..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="button disabled"<!-- tmpl_else -->class="button processing"<!-- /tmpl_if -->></li>
 		  </ul>
 	</form> 
 	

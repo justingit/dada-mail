@@ -18,8 +18,8 @@
 	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
 <!-- /tmpl_if --> 
 	<form> 
-	 <input type="hidden" name="tracker_page" id="tracker_page" value="1"  /> 
-	 <input type="hidden" name="s_program_url"   id="s_program_url"   value="<!-- tmpl_var S_PROGRAM_URL -->" /> 
+	 <input type="hidden" name="tracker_page" id="tracker_page" value="1"  > 
+	 <input type="hidden" name="s_program_url"   id="s_program_url"   value="<!-- tmpl_var S_PROGRAM_URL -->" > 
 	</form> 
 	<!-- tmpl_if expr="DATA_CACHE == 1" -->
 		<p class="alert" style="float:right">
@@ -54,25 +54,25 @@
   <tr> 
    <td> 
   <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
-   <input type="hidden" name="flavor" value="plugins" /> 
-   <input type="hidden" name="plugin" value="tracker" /> 
-   <input type="hidden" name="prm" value="download_logs" /> 
-   <input type="hidden" name="log_type" value="clickthrough" /> 
-   <input type="submit" value="Download Clickthrough Logs (.csv)" class="processing" />
+   <input type="hidden" name="flavor" value="plugins" > 
+   <input type="hidden" name="plugin" value="tracker" > 
+   <input type="hidden" name="prm" value="download_logs" > 
+   <input type="hidden" name="log_type" value="clickthrough" > 
+   <input type="submit" value="Download Clickthrough Logs (.csv)" class="processing" >
   </form> 
  </td> 
 <td> 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
- <input type="hidden" name="flavor" value="plugins" /> 
- <input type="hidden" name="plugin" value="tracker" /> 
- <input type="hidden" name="prm" value="download_logs" /> 
- <input type="hidden" name="log_type" value="activity" /> 
- <input type="submit" value="Download Mass Mailing Event Logs (.csv)" class="processing" />
+ <input type="hidden" name="flavor" value="plugins" > 
+ <input type="hidden" name="plugin" value="tracker" > 
+ <input type="hidden" name="prm" value="download_logs" > 
+ <input type="hidden" name="log_type" value="activity" > 
+ <input type="submit" value="Download Mass Mailing Event Logs (.csv)" class="processing" >
 </form>
 </td> 
 <td> 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
- <input type="button" value="Purge ALL Clickthrough Logs" class="alertive tracker_purge_log"/>
+ <input type="button" value="Purge ALL Clickthrough Logs" class="alertive tracker_purge_log">
 </form> 
 </td> 
 </tr> 
@@ -87,9 +87,9 @@
 </legend> 
 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
-<input type="hidden" name="flavor" value="plugins" /> 
-<input type="hidden" name="plugin" value="tracker" />     
-<input type="hidden" name="prm" value="edit_prefs" /> 
+<input type="hidden" name="flavor" value="plugins" > 
+<input type="hidden" name="plugin" value="tracker" >     
+<input type="hidden" name="prm" value="edit_prefs" > 
 
 
 <h3>
@@ -98,7 +98,7 @@
 	<table  width="100%">	
 	  <tr> 
 	  <td width="20"> 
-  	<input type="radio" id="tracker_auto_parse_links" name="tracker_auto_parse_links"   class="tracker_parse_links_setup"  value="1" <!-- tmpl_if list_settings.tracker_auto_parse_links -->checked="checked"<!--/tmpl_if -->/>
+  	<input type="radio" id="tracker_auto_parse_links" name="tracker_auto_parse_links"   class="tracker_parse_links_setup"  value="1" <!-- tmpl_if list_settings.tracker_auto_parse_links -->checked="checked"<!--/tmpl_if -->>
 	  </td> 
 	  <td> 
 		
@@ -121,12 +121,12 @@
 				    <table>   
 				    <tr> 
 				      <td> 
-				      <input type="checkbox" id="tracker_auto_parse_mailto_links" name="tracker_auto_parse_mailto_links"  value="1" <!-- tmpl_if list_settings.tracker_auto_parse_mailto_links -->checked="checked"<!--/tmpl_if -->/>
+				      <input type="checkbox" id="tracker_auto_parse_mailto_links" name="tracker_auto_parse_mailto_links"  value="1" <!-- tmpl_if list_settings.tracker_auto_parse_mailto_links -->checked="checked"<!--/tmpl_if -->>
 				      </td> 
 				      <td> 
 				      <p>
 				       <label for="tracker_auto_parse_mailto_links">Auto Track, mailto: Links</label> 
-				       <br /> 
+				       <br > 
 				       email addresses in <strong>mailto:</strong> links will also be parsed into redirect links and tracked.
 				      </p> 
 				      </td> 
@@ -141,7 +141,7 @@
 	
 	  <tr> 
 	  <td width="20"> 
-  	<input type="radio" id="tracker_noauto_parse_links" name="tracker_auto_parse_links"  class="tracker_parse_links_setup" value="0" <!-- tmpl_unless list_settings.tracker_auto_parse_links -->checked="checked"<!--/tmpl_unless -->/>
+  	<input type="radio" id="tracker_noauto_parse_links" name="tracker_auto_parse_links"  class="tracker_parse_links_setup" value="0" <!-- tmpl_unless list_settings.tracker_auto_parse_links -->checked="checked"<!--/tmpl_unless -->>
 	  </td> 
 	  <td> 
 		
@@ -178,7 +178,7 @@
 	<table  width="100%">	
 	  <tr> 
 	  <td width="20"> 
-  	<input type="radio" id="tracker_track_opens_directly" name="tracker_track_opens_method"   class="tracker_track_opens_directly"  value="directly" <!-- tmpl_if expr="(list_settings.tracker_track_opens_method eq 'directly')" -->checked="checked"<!--/tmpl_if -->/>
+  	<input type="radio" id="tracker_track_opens_directly" name="tracker_track_opens_method"   class="tracker_track_opens_directly"  value="directly" <!-- tmpl_if expr="(list_settings.tracker_track_opens_method eq 'directly')" -->checked="checked"<!--/tmpl_if -->>
 	  </td> 
 	  <td> 
 		<label for="tracker_track_opens_directly">Directly</label>,
@@ -187,7 +187,7 @@
 	 </tr> 
 	  <tr> 
 	  <td width="20"> 
-  	<input type="radio" id="tracker_track_opens_indirectly" name="tracker_track_opens_method"   class="tracker_track_opens_indirectly"  value="indirectly" <!-- tmpl_if expr="(list_settings.tracker_track_opens_method ne 'directly')" -->checked="checked"<!--/tmpl_if -->/>
+  	<input type="radio" id="tracker_track_opens_indirectly" name="tracker_track_opens_method"   class="tracker_track_opens_indirectly"  value="indirectly" <!-- tmpl_if expr="(list_settings.tracker_track_opens_method ne 'directly')" -->checked="checked"<!--/tmpl_if -->>
 	  </td> 
 	  <td> 
 		<label for="tracker_track_opens_indirectly">
@@ -200,8 +200,8 @@
 	
 
 
-<br /> 
-<br />
+<br > 
+<br >
 
 <table  border="0">
   <tr> 
@@ -214,7 +214,7 @@
    <p>
     <label for="tracker_track_email"> 
      Track with Email Addresses
-    </label><br />
+    </label><br >
 		Message Clickthroughs, and Opens will also track the subscriber's email address. Tracking data with the user's email address allows
 		more refined email analytics and reports. 
    </p>
@@ -228,7 +228,7 @@
            <table  border="0">
              <tr> 
              <td>     
-                 <input type="checkbox" name="tracker_update_profiles_w_geo_ip_data" id="tracker_update_profiles_w_geo_ip_data" value="1" <!-- tmpl_if list_settings.tracker_update_profiles_w_geo_ip_data -->checked="checked"<!-- /tmpl_if --> />
+                 <input type="checkbox" name="tracker_update_profiles_w_geo_ip_data" id="tracker_update_profiles_w_geo_ip_data" value="1" <!-- tmpl_if list_settings.tracker_update_profiles_w_geo_ip_data -->checked="checked"<!-- /tmpl_if --> >
             </td>
             <td>    
                <p>
@@ -244,7 +244,7 @@
                    <div id="field_name_group">                
                 		<table  style="width:auto">
                 		    <!-- tmpl_loop field_names --> 
-                            <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if-->>     
+                            <tr>     
                 		        <td width="25">
                                     <input type="checkbox" 
                                           id="<!-- tmpl_var name escape="HTML" -->.enabled" 
@@ -324,7 +324,7 @@
 
 
 <div class="buttonfloat">   
- <input type="submit" class="processing" value="Save Tracker Preferences" /> 
+ <input type="submit" class="processing" value="Save Tracker Preferences" > 
  </div>
 <div class="floatclear"></div>
 </form> 

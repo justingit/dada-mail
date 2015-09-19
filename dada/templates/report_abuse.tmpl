@@ -2,18 +2,18 @@
 <!-- tmpl_set name="title" value="Report Abuse" -->
 
 <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" id="report_abuse_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-    <input type="hidden" name="report_abuse_token"        value="<!-- tmpl_var report_abuse_token escape="HTML" -->" /> 
-    <input type="hidden" name="process"      value="1" /> 
-    <input type="hidden" name="flavor"       value="report_abuse" /> 
+    <input type="hidden" name="report_abuse_token"        value="<!-- tmpl_var report_abuse_token escape="HTML" -->" > 
+    <input type="hidden" name="process"      value="1" > 
+    <input type="hidden" name="flavor"       value="report_abuse" > 
 <p>
 <fieldset> 
     <legend>Abuse Report on: <!-- tmpl_var list_settings.list_name --></legend> 
     <p>
-        <label for="abuse_report_details">Please briefly describe the problems of abuse you are experiencing:</label><br /> 
+        <label for="abuse_report_details">Please briefly describe the problems of abuse you are experiencing:</label><br > 
         <textarea rows="8" cols="40" name="abuse_report_details" id="abuse_report_details"></textarea>
     </p>
     <div class="buttonfloat"> 
-        <input type="submit" value="Send Report" class="processing" />
+        <input type="submit" value="Send Report" class="processing" >
     </div>
     <div class="floatclear"></div> 
 </fieldset> 

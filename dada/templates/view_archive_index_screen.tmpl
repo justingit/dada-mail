@@ -13,7 +13,7 @@
 </div>
 
 <form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
- <input type="hidden" name="flavor" value="delete_archive" /> 
+ <input type="hidden" name="flavor" value="delete_archive" > 
 
  <table style="width:100%" class="responsive">
   <tr>
@@ -51,7 +51,7 @@
 				name="address" 
 				class="address" 
 				value="<!-- tmpl_var id -->" 
-			/>
+			>
 	    </td>
 	    <td> 
 			<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive;id=<!-- tmpl_var id -->">
@@ -88,18 +88,18 @@
 			type="checkbox"
 			class="toggleCheckboxes"
 			data-target_class="address" 
-		/>
+		>
    	</td>
 	<td>
 	 <input 
 	 	type="submit" 
 		class="button small" 
 		value="Delete Checked" 
-	/>
+	>
 	</form>
 		<form action="<!-- tmpl_var S_PROGRAM_URL -->" style="display:inline;margin:0">  
-		   <input type="hidden" name="flavor" value="purge_all_archives" />  
-		   <input type="submit" class="button small purge_archives" value="Purge All Archive Messages" />
+		   <input type="hidden" name="flavor" value="purge_all_archives" >  
+		   <input type="submit" class="button small purge_archives" value="Purge All Archive Messages" >
 	   </form> 
 	 </td>
 	</tr>

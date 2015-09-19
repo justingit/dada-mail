@@ -20,10 +20,10 @@
 
 <form name="default_form" action="<!-- tmpl_var S_PROGRAM_URL -->"method="post">
     <input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->"> 
-    <input type="hidden" name="flavor"   value="plugins" /> 
-    <input type="hidden" name="plugin"   value="bridge" /> 
-    <input type="hidden" name="prm"      value="edit" />
-    <input type="hidden" name="process"  value="1" />
+    <input type="hidden" name="flavor"   value="plugins" > 
+    <input type="hidden" name="plugin"   value="bridge" > 
+    <input type="hidden" name="prm"      value="edit" >
+    <input type="hidden" name="process"  value="1" >
     
     
 <!-- tmpl_if list_settings.disable_discussion_sending -->
@@ -139,7 +139,7 @@
     </label>
    </td>
    <td>
-    <input name="discussion_pop_email" id="discussion_pop_email" type="text" value="<!-- tmpl_var list_settings.discussion_pop_email -->" class="full bigger_button" style="color:black" <!-- tmpl_unless list_email_status -->style="background:red;font-weight:bold;color:white;border:3px solid black"<!-- /tmpl_unless -->/>
+    <input name="discussion_pop_email" id="discussion_pop_email" type="text" value="<!-- tmpl_var list_settings.discussion_pop_email -->" class="full bigger_button" style="color:black" <!-- tmpl_unless list_email_status -->style="background:red;font-weight:bold;color:white;border:3px solid black"<!-- /tmpl_unless -->>
 	
    </td>
   </tr>
@@ -166,8 +166,8 @@
 				</p>
 				<div id="bridge_mail_forward_pipe_params">
 					<fieldset>
-						<label for="bridge_mail_forward_pipe_command">Email Forward Pipe Command (example):</label><br /> 
-						<input type="text"  id="bridge_mail_forward_pipe_command" value="|<!-- tmpl_var program_abs_path --> --inject --list <!-- tmpl_var list_settings.list -->" />
+						<label for="bridge_mail_forward_pipe_command">Email Forward Pipe Command (example):</label><br > 
+						<input type="text"  id="bridge_mail_forward_pipe_command" value="|<!-- tmpl_var program_abs_path --> --inject --list <!-- tmpl_var list_settings.list -->" >
 					</fieldset>
 					 
 				</div> 
@@ -195,7 +195,7 @@
 					    </label>
 					   </td>
 					   <td>
-					    <input name="discussion_pop_server" id="discussion_pop_server" type="text" value="<!-- tmpl_var list_settings.discussion_pop_server -->"  />
+					    <input name="discussion_pop_server" id="discussion_pop_server" type="text" value="<!-- tmpl_var list_settings.discussion_pop_server -->"  >
 					   </td>
 					  </tr>
 					  <tr>
@@ -205,7 +205,7 @@
 					    </label>
 					   </td>
 					   <td>
-					    <input name="discussion_pop_username" id="discussion_pop_username" type="text" value="<!-- tmpl_var list_settings.discussion_pop_username -->"  />
+					    <input name="discussion_pop_username" id="discussion_pop_username" type="text" value="<!-- tmpl_var list_settings.discussion_pop_username -->"  >
 					   </td>
 					  </tr>
 					  <tr>
@@ -216,13 +216,13 @@
 					   </td>
 					   <td>
 						<!-- tmpl_unless has_discussion_pop_password --> 
-					    	<input name="discussion_pop_password" id="discussion_pop_password" type="password" value="" />
+					    	<input name="discussion_pop_password" id="discussion_pop_password" type="password" value="" >
 					   <!-- tmpl_else --> 
 							<div id="change_pop3_password_button">
-								<input type="button" value="Click to Change POP3 Password..." class="cautionary change_pop3_password" />
+								<input type="button" value="Click to Change POP3 Password..." class="cautionary change_pop3_password" >
 							</div> 
 							<div id="change_pop3_password_field" style="display:none">
-								<input name="discussion_pop_password" id="discussion_pop_password" type="text" /><a href="#" class="cancel_change_pop3_password"> or cancel </a>
+								<input name="discussion_pop_password" id="discussion_pop_password" type="text" ><a href="#" class="cancel_change_pop3_password"> or cancel </a>
 							</div>
 						<!-- /tmpl_unless --> 
 						
@@ -250,7 +250,7 @@
 
 
 					       <p>
-					        <input type="checkbox" name="discussion_pop_use_ssl" id="discussion_pop_use_ssl" value="1" <!-- tmpl_if list_settings.discussion_pop_use_ssl -->checked="checked"<!-- /tmpl_if --> <!-- tmpl_unless can_use_ssl -->disabled="disabled"<!--/tmpl_unless-->/>
+					        <input type="checkbox" name="discussion_pop_use_ssl" id="discussion_pop_use_ssl" value="1" <!-- tmpl_if list_settings.discussion_pop_use_ssl -->checked="checked"<!-- /tmpl_if --> <!-- tmpl_unless can_use_ssl -->disabled="disabled"<!--/tmpl_unless-->>
 					       </p>
 					      </td>
 					      <td valign="top">
@@ -260,7 +260,7 @@
 					         Use Secure Sockets Layer (SSL)
 					        </label>
 					        <!-- tmpl_unless can_use_ssl -->
-					            <br />
+					            <br >
 					            <span class="error">
 					             Disabled. The IO::Socket::SSL module needs to be installed.
 					            </span>
@@ -271,8 +271,8 @@
 					 </tr>
 				</table> 
 				 <div class="buttonfloat">
-				 <input type="button" class="cautionary plugins_bridge_test_pop3" value="Test POP3 Login Information..." />
-					  <input type="button" class="cautionary plugins_bridge_manually_check_messages" value="Manually Check and Send Waiting Messages..." />
+				 <input type="button" class="cautionary plugins_bridge_test_pop3" value="Test POP3 Login Information..." >
+					  <input type="button" class="cautionary plugins_bridge_manually_check_messages" value="Manually Check and Send Waiting Messages..." >
 				 </div> 
 				 <div class="floatclear"></div> 
 				 
@@ -310,14 +310,14 @@ General
 
   <tr>
     <td width="20">
-    <input name="disable_discussion_sending" id="disable_discussion_sending" type="checkbox" value="1" <!--tmpl_if list_settings.disable_discussion_sending -->checked="checked"<!--/tmpl_if--> />
+    <input name="disable_discussion_sending" id="disable_discussion_sending" type="checkbox" value="1" <!--tmpl_if list_settings.disable_discussion_sending -->checked="checked"<!--/tmpl_if--> >
    </td>
    <td>
     <p>
      <label for="disable_discussion_sending">
       Disable Bridge
      </label>
-          <br /> 
+          <br > 
       ALL e-mails sent to your List Email 
 		<!-- tmpl_if list_settings.discussion_pop_email --> 
 			(<strong><!-- tmpl_var list_settings.discussion_pop_email escape="HTML" --></strong>)
@@ -329,25 +329,25 @@ General
 
 	<tr> 
 	<td>
-	 <input name="prefix_list_name_to_subject" id="prefix_list_name_to_subject" type="checkbox" value="1" <!--tmpl_if list_settings.prefix_list_name_to_subject -->checked="checked"<!--/tmpl_if--> />
+	 <input name="prefix_list_name_to_subject" id="prefix_list_name_to_subject" type="checkbox" value="1" <!--tmpl_if list_settings.prefix_list_name_to_subject -->checked="checked"<!--/tmpl_if--> >
 	</td>
 	<td>  
 	 <p>
 	  <label for="prefix_discussion_list_subjects_with">
 	   Prefix message subjects with the:
 	  </label>
-	  <br />
+	  <br >
 	  <select name="prefix_discussion_list_subjects_with">
 	   <option value="list_shortname" <!--tmpl_if expr="(list_settings.prefix_discussion_list_subjects_with eq 'list_shortname')" -->selected="selected" <!--/tmpl_if--> >list shortname: [<!-- tmpl_var list_settings.list escape="HTML" -->]</option>
 	   <option value="list_name"      <!--tmpl_if expr="(list_settings.prefix_discussion_list_subjects_with eq 'list_name')" -->selected="selected" <!--/tmpl_if--> >List Name: [<!-- tmpl_var list_settings.list_name escape="HTML" -->]</option>
 	  </select> 
-	  <br />
+	  <br >
 	  The List Name/Short Name will be surrounded by square brackets. 
 
 	  <table>
 	   <tr> 
 	    <td>
-	        <input name="no_prefix_list_name_to_subject_in_archives" id="no_prefix_list_name_to_subject_in_archives" type="checkbox" value="1" <!--tmpl_if list_settings.no_prefix_list_name_to_subject_in_archives -->checked="checked"<!--/tmpl_if--> />
+	        <input name="no_prefix_list_name_to_subject_in_archives" id="no_prefix_list_name_to_subject_in_archives" type="checkbox" value="1" <!--tmpl_if list_settings.no_prefix_list_name_to_subject_in_archives -->checked="checked"<!--/tmpl_if--> >
 	    </td> 
 	    <td> 
 	     <label for="no_prefix_list_name_to_subject_in_archives">
@@ -402,14 +402,14 @@ General
  <table  width="100%" cellspacing="0" cellpadding="5">
   <tr> 
     <td width="20">
-	 <input name="group_list" id="group_list_no" type="radio" value="0" class="bridge_settings" <!--tmpl_unless list_settings.group_list -->checked="checked"<!--/tmpl_unless--> /> 
+	 <input name="group_list" id="group_list_no" type="radio" value="0" class="bridge_settings" <!--tmpl_unless list_settings.group_list -->checked="checked"<!--/tmpl_unless--> > 
 	  </td>
 	   <td>
 				
 	    <p>
 	     <label for="group_list_no">
 	      This mailing list is an Announce-Only mailing list
-	     </label><br /> 
+	     </label><br > 
 		 Your List Owner (
 		<a href="mailto:<!-- tmpl_var list_settings.list_owner_email ESCAPE="URL" -->">
 		<!-- tmpl_var list_settings.list_owner_email ESCAPE="HTML" -->
@@ -431,14 +431,14 @@ General
 		 <table  width="100%" cellspacing="0" cellpadding="5">
 		  <tr> 
 	  		<td width="20">
-			    <input name="rewrite_anounce_from_header" id="rewrite_anounce_from_header" type="checkbox" value="1" <!--tmpl_if list_settings.rewrite_anounce_from_header -->checked="checked"<!--/tmpl_if--> /> 
+			    <input name="rewrite_anounce_from_header" id="rewrite_anounce_from_header" type="checkbox" value="1" <!--tmpl_if list_settings.rewrite_anounce_from_header -->checked="checked"<!--/tmpl_if--> > 
 			   </td>
 			   <td>
 			    <p>
 			     <label for="rewrite_anounce_from_header">
 			      Rewrite the From: header on announce-only messages to the List Owner address 
 			     </label>
-			     <br /> 
+			     <br > 
 			     Outgoing announce-only mass mailings will have the From: header set to: <code><!-- tmpl_var mailing_list_message_from escape="HTML" --></code>
 			     </p>
 			    </td> 
@@ -449,14 +449,14 @@ General
 	  </tr>
 	</table> 
 	
-	<p><label>Set Reply-To header:</label><br/> 
+	<p><label>Set Reply-To header:</label><br> 
 
  	<table  width="100%" cellspacing="0" cellpadding="5">
 
           <tr>
             <td width="20">
      	<p>
-     	  <input type="radio" name="bridge_announce_reply_to" id="bridge_announce_reply_to_none" value="none" <!-- tmpl_if expr="(list_settings.bridge_announce_reply_to eq 'none')" -->checked="checked"<!--/tmpl_if--> />
+     	  <input type="radio" name="bridge_announce_reply_to" id="bridge_announce_reply_to_none" value="none" <!-- tmpl_if expr="(list_settings.bridge_announce_reply_to eq 'none')" -->checked="checked"<!--/tmpl_if--> >
      	</p>
      	</td>
      	<td>
@@ -468,7 +468,7 @@ General
       <tr>
         <td width="20">
  	<p>
- 	  <input type="radio" name="bridge_announce_reply_to" id="bridge_announce_reply_to_list_owner" value="list_owner" <!-- tmpl_if expr="(list_settings.bridge_announce_reply_to eq 'list_owner')" -->checked="checked"<!--/tmpl_if--> />
+ 	  <input type="radio" name="bridge_announce_reply_to" id="bridge_announce_reply_to_list_owner" value="list_owner" <!-- tmpl_if expr="(list_settings.bridge_announce_reply_to eq 'list_owner')" -->checked="checked"<!--/tmpl_if--> >
  	</p>
  	</td>
  	<td>
@@ -478,7 +478,7 @@ General
  	<tr> 
     <td width="20">
  	<p>
- 	 <input type="radio" name="bridge_announce_reply_to" id="bridge_announce_reply_to_og_sender" value="og_sender" <!-- tmpl_if expr="(list_settings.bridge_announce_reply_to eq 'og_sender')" -->checked="checked"<!--/tmpl_if--> />
+ 	 <input type="radio" name="bridge_announce_reply_to" id="bridge_announce_reply_to_og_sender" value="og_sender" <!-- tmpl_if expr="(list_settings.bridge_announce_reply_to eq 'og_sender')" -->checked="checked"<!--/tmpl_if--> >
  	</p></td> 
  	<td><p><label for="bridge_announce_reply_to_og_sender">to the original message sender (Authorized Sender)</label></p> 
      </td> 
@@ -497,14 +497,14 @@ General
  <table  width="100%" cellspacing="0" cellpadding="5">
   <tr> 
  <td width="20">
-    <input name="group_list" id="group_list_yes" type="radio" value="1" class="bridge_settings" <!--tmpl_if list_settings.group_list -->checked="checked"<!--/tmpl_if--> /> 
+    <input name="group_list" id="group_list_yes" type="radio" value="1" class="bridge_settings" <!--tmpl_if list_settings.group_list -->checked="checked"<!--/tmpl_if--> > 
    </td>
    <td>
     <p>
      <label for="group_list_yes">
       This mailing list is a Discussion List
      </label>
-     <br />
+     <br >
 	 Your List Owner (
 	<a href="mailto:<!-- tmpl_var list_settings.list_owner_email ESCAPE="URL" -->">
 	<!-- tmpl_var list_settings.list_owner_email ESCAPE="HTML" -->
@@ -529,66 +529,66 @@ General
 	<table  width="100%" cellspacing="0" cellpadding="5">
 	   <tr> 
 	   <td width="20">
-	    <input name="mail_discussion_message_to_poster" id="mail_discussion_message_to_poster" type="checkbox" value="1" <!--tmpl_if list_settings.mail_discussion_message_to_poster -->checked="checked"<!--/tmpl_if--> />
+	    <input name="mail_discussion_message_to_poster" id="mail_discussion_message_to_poster" type="checkbox" value="1" <!--tmpl_if list_settings.mail_discussion_message_to_poster -->checked="checked"<!--/tmpl_if--> >
 	   </td>
 	   <td>
 	    <label for="mail_discussion_message_to_poster">
 	     Send message posters a copy of the message they've sent the discussion list. 
 	    </label>
-	    <br />
+	    <br >
 	   </td>
 	  </tr>
 
 	     <tr> 
 	   <td>
-	    <input name="discussion_template_defang" id="discussion_template_defang" type="checkbox" value="1" <!--tmpl_if list_settings.discussion_template_defang -->checked="checked"<!--/tmpl_if--> />
+	    <input name="discussion_template_defang" id="discussion_template_defang" type="checkbox" value="1" <!--tmpl_if list_settings.discussion_template_defang -->checked="checked"<!--/tmpl_if--> >
 	   </td>
 	   <td>
 	    <label for="discussion_template_defang">
 		DON'T parse templates in discussion messages
 	    </label>
-	    <br />
+	    <br >
 		Parsing Template Tags could create formatting problems. 
 	   </td>
 	  </tr>
 
 	     <tr> 
 	   <td>
-	    <input name="group_list_pp_mode" id="group_list_pp_mode" type="checkbox" value="1" <!--tmpl_if list_settings.group_list_pp_mode -->checked="checked"<!--/tmpl_if--> />
+	    <input name="group_list_pp_mode" id="group_list_pp_mode" type="checkbox" value="1" <!--tmpl_if list_settings.group_list_pp_mode -->checked="checked"<!--/tmpl_if--> >
 	   </td>
 	   <td>
 	    <label for="group_list_pp_mode">
 		Send messages, &quot;On Behalf Of&quot; (p.p. mode)
 	    </label>
-	    <br />
+	    <br >
 			Discussion List messages will be sent as the List Owner, on behalf of List Members. 
 		</p>
 		<p>
 			<label for="group_list_pp_mode_from_phrase">From: header phrase:</label>
-			<input type="text" class="midi" name="group_list_pp_mode_from_phrase" id="group_list_pp_mode_from_phrase" value="<!-- tmpl_var list_settings.group_list_pp_mode_from_phrase escape="HTML" -->" />
+			<input type="text" class="midi" name="group_list_pp_mode_from_phrase" id="group_list_pp_mode_from_phrase" value="<!-- tmpl_var list_settings.group_list_pp_mode_from_phrase escape="HTML" -->" >
 		</p>
 	   </td>
 	  </tr>
 	 </table> 
 
-	<p><label>Replies to messages should:</label><br/> 
+	<p><label>Replies to messages should:</label><br> 
 
 	<table  width="100%" cellspacing="0" cellpadding="5">
      <tr>
        <td width="20">
 	<p>
-	  <input type="radio" name="set_to_header_to_list_address" id="set_to_header_to_list_address_1" value="1" <!--tmpl_if list_settings.set_to_header_to_list_address -->checked="checked"<!--/tmpl_if--> />
+	  <input type="radio" name="set_to_header_to_list_address" id="set_to_header_to_list_address_1" value="1" <!--tmpl_if list_settings.set_to_header_to_list_address -->checked="checked"<!--/tmpl_if--> >
 	</p>
 	</td>
 	<td>
-	<p><label for="set_to_header_to_list_address_1">be addressed to the sender</label><br />
+	<p><label for="set_to_header_to_list_address_1">be addressed to the sender</label><br >
 	 <em>(you can still "Reply-All" to send the reply to the sender, as well as the mailing list)</em></p>
 	</td>
 	</tr> 
 	<tr> 
    <td width="20">
 	<p>
-	 <input type="radio" name="set_to_header_to_list_address" id="set_to_header_to_list_address_0" value="0" <!--tmpl_unless list_settings.set_to_header_to_list_address -->checked="checked"<!--/tmpl_unless--> />
+	 <input type="radio" name="set_to_header_to_list_address" id="set_to_header_to_list_address_0" value="0" <!--tmpl_unless list_settings.set_to_header_to_list_address -->checked="checked"<!--/tmpl_unless--> >
 	</p></td> 
 	<td> 
 	<label for="set_to_header_to_list_address_0">be addressed to the mailing list</label>
@@ -605,11 +605,11 @@ General
 					<tr> 
 					<td>
 					<p>
-					 <input type="checkbox" name="discussion_clean_up_replies" id="discussion_clean_up_replies" value="1" <!--tmpl_if list_settings.discussion_clean_up_replies -->checked="checked"<!--/tmpl_if--> />
+					 <input type="checkbox" name="discussion_clean_up_replies" id="discussion_clean_up_replies" value="1" <!--tmpl_if list_settings.discussion_clean_up_replies -->checked="checked"<!--/tmpl_if--> >
 					</p></td> 
 					<td> 
 					<label for="discussion_clean_up_replies">Attempt to clean up replies</label>
-					 <em>(Experimental)</em><br /> 
+					 <em>(Experimental)</em><br > 
 					An attempt will be made to remove quoted Opening and Signature parts from replies. The Opening and Signature parts usually hold 
 					mailing list/unsubscribe/profile information that often gets repeated, forming long chains at the bottom of mailing list messages. 
 				</p> 
@@ -621,13 +621,13 @@ General
 <!-- tmpl_if Allow_Open_Discussion_List -->
         <tr> 
        <td align="right">
-        <input name="open_discussion_list" id="open_discussion_list" type="checkbox" value="1" <!--tmpl_if list_settings.open_discussion_list -->checked="checked"<!--/tmpl_if--> />
+        <input name="open_discussion_list" id="open_discussion_list" type="checkbox" value="1" <!--tmpl_if list_settings.open_discussion_list -->checked="checked"<!--/tmpl_if--> >
        </td>
        <td>
         <label for="open_discussion_list">
          Allow messages to also be posted to the list from non-subscribers.         
         </label>
-         <br /><span class="alert">(This opens up your mailing list to possible abuse, unless moderated)</span> 
+         <br ><span class="alert">(This opens up your mailing list to possible abuse, unless moderated)</span> 
        </td>
       </tr>
  <!-- /tmpl_if -->
@@ -641,7 +641,7 @@ General
   <table  width="100%" cellspacing="0" cellpadding="5">    
   <tr> 
     <td width="20"> 
-    <input name="enable_moderation" id="enable_moderation" type="checkbox" class="bridge_settings" value="1" <!--tmpl_if list_settings.enable_moderation -->checked="checked"<!--/tmpl_if--> /> 
+    <input name="enable_moderation" id="enable_moderation" type="checkbox" class="bridge_settings" value="1" <!--tmpl_if list_settings.enable_moderation -->checked="checked"<!--/tmpl_if--> > 
    </td>
    <td>
     <p>
@@ -655,13 +655,13 @@ General
 			          Messages sent to your discussion list will first have to be approved by: 
 		      </p>
 		   	  <p>
-		 		<input type="radio" name="moderate_discussion_lists_with" value="list_owner_email" id="moderate_discussion_lists_with_list_owner_email" <!--tmpl_if expr="(list_settings.moderate_discussion_lists_with eq 'list_owner_email')" -->checked="checked" <!--/tmpl_if--> />
+		 		<input type="radio" name="moderate_discussion_lists_with" value="list_owner_email" id="moderate_discussion_lists_with_list_owner_email" <!--tmpl_if expr="(list_settings.moderate_discussion_lists_with eq 'list_owner_email')" -->checked="checked" <!--/tmpl_if--> >
 				<label for="moderate_discussion_lists_with_list_owner_email">
 					List Owner
 				</label>
-				<br />
+				<br >
 
-		 			<input type="radio" name="moderate_discussion_lists_with" value="moderators" id="moderate_discussion_lists_with_moderators" <!--tmpl_if expr="(list_settings.moderate_discussion_lists_with eq 'moderators')" -->checked="checked"<!--/tmpl_if--> />
+		 			<input type="radio" name="moderate_discussion_lists_with" value="moderators" id="moderate_discussion_lists_with_moderators" <!--tmpl_if expr="(list_settings.moderate_discussion_lists_with eq 'moderators')" -->checked="checked"<!--/tmpl_if--> >
 					<label for="moderate_discussion_lists_with_moderators">
 						List Owner or a Moderator
 					</label>
@@ -669,8 +669,8 @@ General
 
 
 				<div class="buttonfloat"> 
-				  <input type="button"  class="processing view_moderators" value="View Moderators (<!-- tmpl_var moderators_count -->)"  />
-				  <input type="button" class="processing add_moderators" value="Add Moderators" />
+				  <input type="button"  class="processing view_moderators" value="View Moderators (<!-- tmpl_var moderators_count -->)"  >
+				  <input type="button" class="processing add_moderators" value="Add Moderators" >
 				 </div> 
 				 <div class="floatclear"></div> 
 
@@ -679,7 +679,7 @@ General
 		     <table   cellspacing="0" cellpadding="5">
 		      <tr>
 		       <td>
-		        <input name="authorized_sending_no_moderation" id="authorized_sending_no_moderation" type="checkbox" value="1" <!--tmpl_if list_settings.authorized_sending_no_moderation -->checked="checked"<!--/tmpl_if--> />
+		        <input name="authorized_sending_no_moderation" id="authorized_sending_no_moderation" type="checkbox" value="1" <!--tmpl_if list_settings.authorized_sending_no_moderation -->checked="checked"<!--/tmpl_if--> >
 		       </td>
 		       <td>
 		        <p>
@@ -694,13 +694,13 @@ General
 		   <!-- tmpl_if list_settings.group_list --> 
 		      <tr>
 		       <td>
-		        <input name="subscriber_sending_no_moderation" id="subscriber_sending_no_moderation" type="checkbox" value="1" <!--tmpl_if list_settings.subscriber_sending_no_moderation -->checked="checked"<!--/tmpl_if--> />
+		        <input name="subscriber_sending_no_moderation" id="subscriber_sending_no_moderation" type="checkbox" value="1" <!--tmpl_if list_settings.subscriber_sending_no_moderation -->checked="checked"<!--/tmpl_if--> >
 		       </td>
 		       <td>
 		        <p>
 		         <label for="subscriber_sending_no_moderation">
 		          Allow Subscribers to send messages to the entire list without moderation
-		         </label><br /> 
+		         </label><br > 
 		         If not checked, messages from Subscribers require moderation.
 		        </p>
 		       </td>
@@ -712,13 +712,13 @@ General
 		<table   cellspacing="0" cellpadding="5">
 		        <tr>
 		    <td>
-		     <input name="send_moderation_msg" id="send_moderation_msg" type="checkbox" value="1" <!--tmpl_if list_settings.send_moderation_msg -->checked="checked"<!--/tmpl_if--> />
+		     <input name="send_moderation_msg" id="send_moderation_msg" type="checkbox" value="1" <!--tmpl_if list_settings.send_moderation_msg -->checked="checked"<!--/tmpl_if--> >
 		    </td>
 		    <td>
 		     <p>
 		      <label for="send_moderation_msg">
 		       Send a &quot;Message Received, Awaiting Moderation&quot; Message
-		      </label><br /> 
+		      </label><br > 
 		      The original poster will receive a message stating that the message has been received, but requires moderation.
 		     </p>
 		    </td>
@@ -726,13 +726,13 @@ General
 
 		    <tr>
 		    <td>
-		     <input name="send_moderation_accepted_msg" id="send_moderation_accepted_msg" type="checkbox" value="1" <!--tmpl_if list_settings.send_moderation_accepted_msg -->checked="checked"<!--/tmpl_if--> />
+		     <input name="send_moderation_accepted_msg" id="send_moderation_accepted_msg" type="checkbox" value="1" <!--tmpl_if list_settings.send_moderation_accepted_msg -->checked="checked"<!--/tmpl_if--> >
 		    </td>
 		    <td>
 		     <p>
 		      <label for="send_moderation_accepted_msg">
 		       Send an &quot;Acceptance&quot; Message
-		      </label><br /> 
+		      </label><br > 
 		      The original poster will receive a message stating that the moderated message was accepted.
 		     </p>
 		    </td>  
@@ -740,13 +740,13 @@ General
 
 		   <tr>
 		    <td>
-		     <input name="send_moderation_rejection_msg" id="send_moderation_rejection_msg" type="checkbox" value="1" <!--tmpl_if list_settings.send_moderation_rejection_msg -->checked="checked"<!--/tmpl_if--> />
+		     <input name="send_moderation_rejection_msg" id="send_moderation_rejection_msg" type="checkbox" value="1" <!--tmpl_if list_settings.send_moderation_rejection_msg -->checked="checked"<!--/tmpl_if--> >
 		    </td>
 		    <td>
 		     <p>
 		      <label for="send_moderation_rejection_msg">
 		       Send a &quot;Rejection&quot; Message
-		      </label><br /> 
+		      </label><br > 
 		      The original poster will receive a message stating that the moderated message was rejected.
 		     </p>
 
@@ -782,20 +782,20 @@ General
 	<table  width="100%" cellspacing="0" cellpadding="5">
 		<tr> 
 		<td width="20">
-	    <input name="enable_authorized_sending" id="enable_authorized_sending" type="checkbox" value="1" <!--tmpl_if list_settings.enable_authorized_sending -->checked="checked"<!--/tmpl_if--> /> 
+	    <input name="enable_authorized_sending" id="enable_authorized_sending" type="checkbox" value="1" <!--tmpl_if list_settings.enable_authorized_sending -->checked="checked"<!--/tmpl_if--> > 
 	   </td>
 	   <td>
 	    <p>
 	     <label for="enable_authorized_sending">
 	      Allow Messages Sent By Authorized Senders
 	     </label>
-	     <br /> 
+	     <br > 
 	       Authorized Senders may send messages to your mailing list (announce-only, or discussion), without having to be a Subscriber themselves.
 		</p>
 
 			<div class="buttonfloat"> 
-			  <input type="button"  class="processing view_authorized_senders" value="View Authorized Senders (<!-- tmpl_var authorized_senders_count -->)" />
-			  <input type="button" class="processing add_authorized_senders" value="Add Authorized Senders" />
+			  <input type="button"  class="processing view_authorized_senders" value="View Authorized Senders (<!-- tmpl_var authorized_senders_count -->)" >
+			  <input type="button" class="processing add_authorized_senders" value="Add Authorized Senders" >
 			 </div> 
 			 <div class="floatclear"></div> 
 	    </td> 
@@ -824,13 +824,13 @@ General
 
         <tr>
          <td> 
-          <input type="checkbox" name="send_received_msg" id="send_received_msg" value="1" <!-- tmpl_if list_settings.send_received_msg -->checked="checked"<!--/tmpl_if--> />
+          <input type="checkbox" name="send_received_msg" id="send_received_msg" value="1" <!-- tmpl_if list_settings.send_received_msg -->checked="checked"<!--/tmpl_if--> >
          </td> 
          <td>
           <label for="send_received_msg">
            Send, &quot;Message Received&quot; notification
           </label>
-          <br /> 
+          <br > 
           A Mass Mailing may take a long time. A, &quot;Message Received&quot; notification sent to the original sender
           can stop them from second-guessing if if their message was successfully sent to the mailing list. 
          </td>
@@ -838,7 +838,7 @@ General
 
      <tr>
       <td> 
-       <input type="checkbox" name="send_msgs_to_list" id="send_msgs_to_list" value="1" <!-- tmpl_if list_settings.send_msgs_to_list -->checked="checked"<!--/tmpl_if--> />
+       <input type="checkbox" name="send_msgs_to_list" id="send_msgs_to_list" value="1" <!-- tmpl_if list_settings.send_msgs_to_list -->checked="checked"<!--/tmpl_if--> >
       </td> 
       <td>
        <label for="send_msgs_to_list">
@@ -848,13 +848,13 @@ General
      </tr> 
      <tr> 
       <td>
-       <input type="checkbox" name="send_msg_copy_to" id="send_msg_copy_to" value="1" <!-- tmpl_if list_settings.send_msg_copy_to -->checked="checked"<!--/tmpl_if--> />
+       <input type="checkbox" name="send_msg_copy_to" id="send_msg_copy_to" value="1" <!-- tmpl_if list_settings.send_msg_copy_to -->checked="checked"<!--/tmpl_if--> >
       </td>
       <td>
        <label for="send_msg_copy_to">
         Forward a copy to:</label>
        <p>
-        <input type="text" name="send_msg_copy_address" id="send_msg_copy_address"value="<!-- tmpl_var list_settings.send_msg_copy_address -->" />
+        <input type="text" name="send_msg_copy_address" id="send_msg_copy_address"value="<!-- tmpl_var list_settings.send_msg_copy_address -->" >
        </p>
       </td> 
      </tr> 
@@ -889,7 +889,7 @@ General
     <table> 
      <tr>
       <td> 
-       <input type="checkbox" name="send_invalid_msgs_to_owner" id="send_invalid_msgs_to_owner" value="1" <!-- tmpl_if list_settings.send_invalid_msgs_to_owner -->checked="checked"<!--/tmpl_if--> />
+       <input type="checkbox" name="send_invalid_msgs_to_owner" id="send_invalid_msgs_to_owner" value="1" <!-- tmpl_if list_settings.send_invalid_msgs_to_owner -->checked="checked"<!--/tmpl_if--> >
       </td> 
       <td>
        <label for="send_invalid_msgs_to_owner">
@@ -901,7 +901,7 @@ General
      <!--
      <tr> 
       <td>
-       <input type="checkbox" />
+       <input type="checkbox" >
       </td>
       <td>
        Be forwarded to the Authorized Senders (Authorized Sending must be turned on!).
@@ -911,7 +911,7 @@ General
      
      <tr> 
       <td> 
-       <input type="checkbox" name="send_not_allowed_to_post_msg" id="send_not_allowed_to_post_msg" value="1" <!-- tmpl_if list_settings.send_not_allowed_to_post_msg -->checked="checked"<!--/tmpl_if--> />
+       <input type="checkbox" name="send_not_allowed_to_post_msg" id="send_not_allowed_to_post_msg" value="1" <!-- tmpl_if list_settings.send_not_allowed_to_post_msg -->checked="checked"<!--/tmpl_if--> >
       </td> 
       <td> 
        <label for="send_not_allowed_to_post_msg">
@@ -936,7 +936,7 @@ General
    <tr>
     <td class="checkbox_container"> 
         <p>
-            <input type="checkbox" name="digest_enable" id="digest_enable" value="1" <!-- tmpl_if list_settings.digest_enable --> checked="checked"<!-- /tmpl_if --> />
+            <input type="checkbox" name="digest_enable" id="digest_enable" value="1" <!-- tmpl_if list_settings.digest_enable --> checked="checked"<!-- /tmpl_if --> >
         </p>
     </td> 
     <td>
@@ -978,7 +978,7 @@ Mailing List Security
 
    <tr>
       <td> 
-       <input type="checkbox" name="ignore_spam_messages" id="ignore_spam_messages" value="1" <!-- tmpl_if list_settings.ignore_spam_messages -->checked="checked"<!--/tmpl_if--> />
+       <input type="checkbox" name="ignore_spam_messages" id="ignore_spam_messages" value="1" <!-- tmpl_if list_settings.ignore_spam_messages -->checked="checked"<!--/tmpl_if--> >
       </td> 
       <td>
        <label for="ignore_spam_messages">
@@ -993,7 +993,7 @@ Mailing List Security
         <p>Find SpamAssassin Score By: 
         <table  border="0"> 
          <tr> 
-          <td><input type="radio" id="looking_for_embedded_headers" name="find_spam_assassin_score_by" value="looking_for_embedded_headers" <!-- tmpl_if find_spam_assassin_score_by_looking_for_embedded_headers -->checked="checked"<!--/tmpl_if--> /></td>
+          <td><input type="radio" id="looking_for_embedded_headers" name="find_spam_assassin_score_by" value="looking_for_embedded_headers" <!-- tmpl_if find_spam_assassin_score_by_looking_for_embedded_headers -->checked="checked"<!--/tmpl_if--> ></td>
           <td>
            <p>
             <label for="looking_for_embedded_headers">
@@ -1004,7 +1004,7 @@ Mailing List Security
          </tr>
          
          <tr> 
-          <td><input type="radio" id="calling_spamassassin_directly" name="find_spam_assassin_score_by" value="calling_spamassassin_directly" <!-- tmpl_if find_spam_assassin_score_by_calling_spamassassin_directly -->checked="checked"<!--/tmpl_if--> /></td>
+          <td><input type="radio" id="calling_spamassassin_directly" name="find_spam_assassin_score_by" value="calling_spamassassin_directly" <!-- tmpl_if find_spam_assassin_score_by_calling_spamassassin_directly -->checked="checked"<!--/tmpl_if--> ></td>
           <td>
            <p>
             <label for="calling_spamassassin_directly">
@@ -1017,7 +1017,7 @@ Mailing List Security
          <!-- 
          
          <tr> 
-          <td><input type="radio" disabled="disabled" /></td>
+          <td><input type="radio" disabled="disabled" ></td>
           <td>
            <p>
             <label> 
@@ -1036,13 +1036,13 @@ Mailing List Security
        </p> 
 	<table  cellpadding="5"> 
 	<tr> 
-	<td><input type="radio" name="rejected_spam_messages" value="ignore_spam" <!-- tmpl_if expr="(list_settings.rejected_spam_messages eq 'ignore_spam')" -->checked="checked"<!-- /tmpl_if --> /></td>
-	<td><p><label>Ignore Spam Messages</label><br /> 
+	<td><input type="radio" name="rejected_spam_messages" value="ignore_spam" <!-- tmpl_if expr="(list_settings.rejected_spam_messages eq 'ignore_spam')" -->checked="checked"<!-- /tmpl_if --> ></td>
+	<td><p><label>Ignore Spam Messages</label><br > 
 	</p>
 	</td>
 	</tr> 
 	<tr> 
-	<td><input type="radio" name="rejected_spam_messages" value="send_spam_rejection_message" <!-- tmpl_if expr="(list_settings.rejected_spam_messages eq 'send_spam_rejection_message')" -->checked="checked"<!-- /tmpl_if -->/><label></td><td><p><label>Send a Rejection Message</label><br /> 
+	<td><input type="radio" name="rejected_spam_messages" value="send_spam_rejection_message" <!-- tmpl_if expr="(list_settings.rejected_spam_messages eq 'send_spam_rejection_message')" -->checked="checked"<!-- /tmpl_if -->><label></td><td><p><label>Send a Rejection Message</label><br > 
 	The original poster will receive a message stating that the original message was rejected.
 
 </p> 
@@ -1058,15 +1058,15 @@ Mailing List Security
      <tr>
       <td> 
       
- <input type="checkbox" name="strip_file_attachments" id="strip_file_attachments" value="1" <!-- tmpl_if list_settings.strip_file_attachments -->checked="checked"<!--/tmpl_if--> />
+ <input type="checkbox" name="strip_file_attachments" id="strip_file_attachments" value="1" <!-- tmpl_if list_settings.strip_file_attachments -->checked="checked"<!--/tmpl_if--> >
  
  </td>
  <td>
  <p>
  <label for="strip_file_attachments">Strip attachments that have the following file ending or MIME-Type:</label> <em>(separated by spaces)</em>
-	 <br />
+	 <br >
 	 
-         <input type="text" name="file_attachments_to_strip" id="file_attachments_to_strip"value="<!-- tmpl_var list_settings.file_attachments_to_strip -->"  />
+         <input type="text" name="file_attachments_to_strip" id="file_attachments_to_strip"value="<!-- tmpl_var list_settings.file_attachments_to_strip -->"  >
 
   </p>
  </td>
@@ -1077,8 +1077,8 @@ Mailing List Security
  </fieldset> 
 
  <div class="buttonfloat"> 
-  <input type="reset"  class="cautionary" value="Clear Changes" />
-  <input type="submit" class="processing" value="Save Changes" />
+  <input type="reset"  class="cautionary" value="Clear Changes" >
+  <input type="submit" class="processing" value="Save Changes" >
  </div> 
  <div class="floatclear"></div> 
  
@@ -1095,10 +1095,10 @@ Mailing List Security
  <div class="buttonfloat"> 
  <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get"> 
 
-     <input type="hidden" name="flavor" value="plugins" /> 
-     <input type="hidden" name="plugin" value="bridge" /> 
-  <input type="hidden" name="prm" value="edit_email_msgs" /> 
-  <input type="submit" value="Customize Email Templates..." class="processing" /> 
+     <input type="hidden" name="flavor" value="plugins" > 
+     <input type="hidden" name="plugin" value="bridge" > 
+  <input type="hidden" name="prm" value="edit_email_msgs" > 
+  <input type="submit" value="Customize Email Templates..." class="processing" > 
  </form> 
  </div> 
 
@@ -1112,10 +1112,10 @@ Mailing List Security
 
  <div class="buttonfloat"> 
  <form action="<!-- tmpl_var Plugin_URL -->" method="get"> 
-  <input type="hidden" name="flavor" value="plugins" /> 
-  <input type="hidden" name="plugin" value="bridge" /> 
-  <input type="hidden" name="prm" value="cgi_show_plugin_config" /> 
-  <input type="submit" value="View All Plugin Configurations..." class="processing" /> 
+  <input type="hidden" name="flavor" value="plugins" > 
+  <input type="hidden" name="plugin" value="bridge" > 
+  <input type="hidden" name="prm" value="cgi_show_plugin_config" > 
+  <input type="submit" value="View All Plugin Configurations..." class="processing" > 
  </form> 
  </div> 
 

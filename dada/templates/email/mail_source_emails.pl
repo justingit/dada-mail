@@ -51,9 +51,9 @@ my $html = <<EOF
 
 <p>
 <a name="<!-- tmpl_var archive_id -->"></a>
-Date: <!-- tmpl_var date --><br />
-From: <!-- tmpl_var subscriber.email --><br />
-Subject: <!-- tmpl_var subject --><br />
+Date: <!-- tmpl_var date --><br >
+From: <!-- tmpl_var subscriber.email --><br >
+Subject: <!-- tmpl_var subject --><br >
 ---------------------------------------</p>
 <!-- tmpl_var plaintext_message -->
 ==============================================================================
