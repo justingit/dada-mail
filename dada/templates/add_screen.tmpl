@@ -1,7 +1,6 @@
 <!-- begin add_screen.tmpl -->
 
 <!-- tmpl_set name="title" value="Membership &#187; Invite/Add" -->
-
 <!-- tmpl_set name="load_linedtextarea" value="1" --> 
 
 
@@ -63,10 +62,8 @@
 	
 		<!-- tmpl_if use_subscription_quota --> 
 			<div class="alert-box info radius">
-				<p>
-					There is currently a limit of, <!-- tmpl_var subscription_quota --> 
-					Subscribers allowed to be subscribed on your mailing list.
-				</p>
+				There is currently a limit of, <!-- tmpl_var subscription_quota --> 
+				Subscribers allowed to be subscribed on your mailing list.
 			</div> 
 		<!-- /tmpl_if --> 
 		
@@ -154,37 +151,43 @@
         </p>
 
 
+		<!-- tmpl_if comment -->
+			<style>
+			.ui-progressbar .ui-progressbar-value { background-image: url(<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/jquery.ui/pbar-ani.gif); }
+			</style>
 
-		<style>
-		.ui-progressbar .ui-progressbar-value { background-image: url(<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/jquery.ui/pbar-ani.gif); }
-		</style>
-		<div id="show_progress" class="clearskiesbox">
-			<div id="progressbarWrapper" style="width:500px;height:22px;margin-left:auto;margin-right:auto" class="ui-widget-default">
-			<div id="progressbar" style="height:100%;"></div>
+			<div id="show_progress" class="clearskiesbox">
+				<div id="progressbarWrapper" style="width:500px;height:22px;margin-left:auto;margin-right:auto" class="ui-widget-default">
+				<div id="progressbar" style="height:100%;"></div>
+				</div>
+				<div id="upload_status"></div>
 			</div>
-			<div id="upload_status"></div>
-		</div>
+		<!-- /tmpl_if -->
 
 
 	<form id="fileupload" enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 		
-
-
-	<input type="hidden" name="flavor"    id="f" value="add" />
-	<input type="hidden" name="type" value="<!-- tmpl_var type -->" />
-	<input type="file"   name="new_email_file" id="new_email_file" />
-	<input type="hidden" name="process" value="1" />
-	<input type="hidden" name="rand_string" id="rand_string" value="<!-- tmpl_var rand_string -->" />
-	<input type="hidden" name="method" value="via_file_upload" /> 
-	
-
+		<input type="hidden" name="flavor"    id="f" value="add" />
+		<input type="hidden" name="type" value="<!-- tmpl_var type -->" />
+		<input type="hidden" name="process" value="1" />
+		<input type="hidden" name="rand_string" id="rand_string" value="<!-- tmpl_var rand_string -->" />
+		<input type="hidden" name="method" value="via_file_upload" /> 
 	
 	
-	 <div class="buttonfloat">
-	  <input type="reset"  class="cautionary" value="Clear Changes" />
-	  <input type="submit" value="Verify Addresses..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing"<!-- /tmpl_if --> />
-	 </div>
-	 <div class="floatclear"></div>
+			<!-- tmpl_if comment -->
+				<button class="file-upload">
+			<!-- /tmpl_if -->
+				<input type="file" class="file-input" name="new_email_file" class="file-input" id="new_email_file">
+
+			<!-- tmpl_if comment -->
+					Choose File
+				</button>
+			<!-- /tmpl_if -->
+	
+		<ul class="button-group right">
+			<li><input type="reset"  class="button cautionary" value="Clear Changes"></li>
+			<li><input type="submit" class="button"          , value="Verify Addresses..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing"<!-- /tmpl_if -->></li>
+		</ul>
 	</form>
 
 
@@ -220,17 +223,18 @@
 	 <input type="hidden" name="rand_string" id="rand_string" value="<!-- tmpl_var rand_string -->" />
 	 <input type="hidden" name="method" value="via_textarea" /> 
 
-<p>
- <textarea name="new_emails" id="new_emails" rows="10" cols="40" style="padding:0;width:90%"></textarea>
-</p>
+	<div class="row">
+	   <div class="small-12 columns">
+		   <textarea name="new_emails" id="new_emails" rows="10" cols="40"></textarea>
+	   </div>
+ 	</div>   
 
 
+		  <ul class="button-group right">
+			  <li><input type="reset"  class="button cautionary" value="Clear Changes"></li>
+			  <li><input type="submit"          value="Verify Address..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="button disabled"<!-- tmpl_else -->class="button processing"<!-- /tmpl_if -->/></li>
+		  </ul>
 
-	 <div class="buttonfloat">
-	  <input type="reset"  class="cautionary" value="Clear Changes" />
-	  <input type="submit"                    value="Verify Addresses..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing"<!-- /tmpl_if -->/>
-	 </div>
-	 <div class="floatclear"></div>
 	</form>
 
 	</fieldset> 
@@ -267,47 +271,51 @@
 		 <input type="hidden" name="type" value="<!-- tmpl_var type -->" />
 		 <input type="hidden" name="process" value="1" />
 		 <input type="hidden" name="rand_string" id="rand_string" value="<!-- tmpl_var rand_string -->" />
-
-		<input type="hidden" name="method" value="via_add_one" /> 
-
-		 <p>
-		     <label for="email" class="label_profile_fields">
-		      Email Address:
-		     </label>
-		    <input type="text" name="email" id="email" value=""  />
-		    </p>
-	
+		 <input type="hidden" name="method" value="via_add_one" /> 
+		 
+		<div class="row">
+		   <div class="small-12 columns">
+			   <label for="email" class="label_profile_fields">
+			      Email Address
+			     </label>
+			    <input type="text" name="email" id="email" value=""  />
+			</div> 
+		</div> 
+		
 		<!-- tmpl_if expr="(type eq 'list')" -->
 		
     		<!-- tmpl_loop fields --> 
-    		    <p>
-    		     <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
-    		      <!-- tmpl_var label escape="HTML" --> (<!-- tmpl_var name escape="HTML" -->): 
-    		     </label>
-    		    <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->"  />
-    		    <!-- tmpl_if required -->
-		        <span class="error">
-		            * Required
-		        </span>
-		    <!-- /tmpl_if -->
-    		    </p>
-    		<!--/tmpl_loop-->
-		
-    	    <p>
-    	     <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
-    	      Profile Password: 
-    	     </label>
-    	    <input type="text" name="profile_password" id="profile_password" value=""  />
-    	    </p>
-	    
+				<div class="row">
+				   <div class="small-12 columns">
+				
+		    		     <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
+		    		      <!-- tmpl_var label escape="HTML" --> (<!-- tmpl_var name escape="HTML" -->)
+		    		     </label>
+		    		    <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->"  />
+		    		    <!-- tmpl_if required -->
+				        <span class="error">
+				            * Required
+				        </span>
+				    <!-- /tmpl_if -->
+				</div> 
+			</div>
+			
+    	<!--/tmpl_loop-->
+		 <div class="row">
+		    <div class="small-12 columns">
+		 
+			     <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
+			      	Profile Password
+			     </label>
+			    <input type="text" name="profile_password" id="profile_password" value=""  />
+			</div>
+		</div>
 	    <!-- /tmpl_if --> 
-	    
-		 <div class="buttonfloat">
-		  <input type="reset"  class="cautionary" value="Clear Changes" />
-		  <input type="submit"                    value="Verify Address..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing"<!-- /tmpl_if -->/>
-		 </div>
-		 <div class="floatclear"></div>
-
+		
+		  <ul class="button-group right">
+			  <li><input type="reset"  class="button cautionary" value="Clear Changes"></li>
+			  <li><input type="submit"        value="Verify Address..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="button disabled"<!-- tmpl_else -->class="button processing"<!-- /tmpl_if -->/></li>
+		  </ul>
 	</form> 
 	
 		

@@ -15,60 +15,49 @@
 <form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
  <input type="hidden" name="flavor" value="delete_archive" /> 
 
- <table  class="stripedtable">
+ <table style="width:100%" class="responsive">
   <tr>
-   <td width="25">
-    <p>&nbsp;</p>
-   </td>
-     <td>
-    <p>
-     <strong>
+	<th width="25">
+	  <p>&nbsp;</p>
+   </th>
+     <th>
+
       From
-     </strong>
-    </p>
-   </td>
-   <td>
-    <p>
-     <strong>
+   </th>
+   <th>
       Subject
-     </strong>
-    </p>
-   </td>
+   </th>
    
-   <td>
-    <p>
-     <strong>
+   <th>
       Sent
-     </strong>
-    </p>
-   </td>
+   </th>
   <!-- tmpl_if ARCHIVE_EDITOR_URL --> 
-  <td>
+  <th>
   &nbsp;
-  </td>
+  </th>
   
   <!--/tmpl_if-->
   
   
   </tr>
   
-  
-
+ 
   <!-- tmpl_loop index_list --> 
   
-	   <tr <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if--> title="<!-- tmpl_var message_blurb -->">
-	    <td width="25">
-	     <input type="checkbox" name="address" class="address" value="<!-- tmpl_var id -->" />
+	   <tr title="<!-- tmpl_var message_blurb -->">
+	    <td>
+			<input 
+				type="checkbox" 
+				name="address" 
+				class="address" 
+				value="<!-- tmpl_var id -->" 
+			/>
 	    </td>
-	    
 	    <td> 
 			<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive;id=<!-- tmpl_var id -->">
 			<!-- tmpl_var name="from" ESCAPE="HTML" -->
 		</a>
 		</td>
-	    
-	    
-	    
 	    <td> 
 	     <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive;id=<!-- tmpl_var id -->">
 			<!-- tmpl_var name="subject" ESCAPE="HTML" -->
@@ -80,30 +69,38 @@
 		</a>
 		</td> 
 		<td>
-	      <input type="button" class="cautionary" onClick="window.location='<!-- tmpl_var S_PROGRAM_URL -->?flavor=edit_archived_msg&id=<!-- tmpl_var id -->'" value="[edit]"/>
+	      <a 
+		  	href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=edit_archived_msg&id=<!-- tmpl_var id -->"
+			class="button small"
+			>
+				[edit]
+			</a>
 		 </td>
 		</tr>
-
 <!-- /tmpl_loop -->
 
 </table> 
 
-<table  class="stripedtable">
+ <table style="width:100%" class="responsive">
   <tr>
    	<td width="25">
-		<!-- no offense, but why is the checkbox named, "address?" --> 
-		<input class="toggleCheckboxes" type="checkbox" data-target_class="address" />
-
+		<input 
+			type="checkbox"
+			class="toggleCheckboxes"
+			data-target_class="address" 
+		/>
    	</td>
 	<td>
-	 <input type="submit" class="button small" value="Delete Checked" />
+	 <input 
+	 	type="submit" 
+		class="button small" 
+		value="Delete Checked" 
+	/>
 	</form>
-
 		<form action="<!-- tmpl_var S_PROGRAM_URL -->" style="display:inline;margin:0">  
 		   <input type="hidden" name="flavor" value="purge_all_archives" />  
 		   <input type="submit" class="button small purge_archives" value="Purge All Archive Messages" />
 	   </form> 
-
 	 </td>
 	</tr>
 </table>

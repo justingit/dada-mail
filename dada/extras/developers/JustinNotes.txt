@@ -7,3 +7,10 @@ git checkout master
 # finally merge all our stuff to new master - actually it replaces the master with new_master
 git merge new_master
 # now new_master can be deleted
+
+
+
+
+
+Translation: 
+xgettext.pl -u -P generic -w -v -o output.txt ./test.txt && less output.txt

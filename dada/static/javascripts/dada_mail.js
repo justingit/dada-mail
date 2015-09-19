@@ -1645,13 +1645,13 @@ function refresh_tracker_plugin(tracker_url, message_id, target_id) {
 function check_status() {
 	$("#show_progress").show();
 	keep_updating_status_bar = 1;
-	update_status_bar();
+	//update_status_bar();
 }
 
 var keep_updating_status_bar = 0;
 
 function update_status_bar() {
-
+	/*
 	var update_status_bar_loop = function(no_loop) {
 
 			if (keep_updating_status_bar === 0) {
@@ -1697,6 +1697,7 @@ function update_status_bar() {
 		}
 	setTimeout(
 	update_status_bar_loop, 1000);
+	*/
 }
 
 

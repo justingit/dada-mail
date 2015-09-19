@@ -23,42 +23,40 @@
  </em>
 </p>
 
-<p class="alert">
-	Note: some archiving formatting options only take affect when viewing messages publicly.
-</p>
-
-<h2>
+	<div class="alert-box info radius">
+		Note: some archiving formatting options only take affect when viewing messages publicly.
+	</div>
+<h1>
  Subject: <!-- tmpl_var name="subject" ESCAPE="HTML" -->
-</h2>
+</h1>
 
 <iframe src="<!-- tmpl_var S_PROGRAM_URL -->?flavor=archive_bare;list=<!-- tmpl_var list_settings.list-->;id=<!-- tmpl_var id -->;admin=1" id="archived_message_body_container">
 <!-- tmpl_var massaged_msg_for_display --> 
 </iframe>
 
  
+	<ul class="button-group">
+		
+		<li>
+			<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get"> 
+				<input type="hidden" name="flavor" value="delete_archive" /> 
+				<input type="hidden" name="address" value="<!-- tmpl_var id -->" />
+				<input type="submit" class="alertive button" value="Delete Message" />    
+			 </form>
+	 	</li>
+		
+		<li>
+ 
+			<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get"> 
+				<input type="hidden" name="flavor" value="edit_archived_msg" /> 
+				<input type="hidden" name="id" value="<!-- tmpl_var id -->" />
+				<input type="submit" class="cautionary button" value="Edit Message..." />    
+			 </form> 
+		<li>
+			
+	 <!-- tmpl_include show_archive_msg_buttons_widget.tmpl --> 
 
-
-
-
-
-<div class="buttonfloat">
-	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get"> 
-		<input type="hidden" name="flavor" value="delete_archive" /> 
-		<input type="hidden" name="address" value="<!-- tmpl_var id -->" />
-		<input type="submit" class="alertive" value="Delete Message" />    
-	 </form>
-</div>
-
-<div class="buttonfloat">
-	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get"> 
-		<input type="hidden" name="flavor" value="edit_archived_msg" /> 
-		<input type="hidden" name="id" value="<!-- tmpl_var id -->" />
-		<input type="submit" class="cautionary" value="Edit Message..." />    
-	 </form> 
-</div>
-
-<!-- tmpl_include show_archive_msg_buttons_widget.tmpl --> 
-
+	</ul>
 
 	<!-- tmpl_var nav_table --> 
 
