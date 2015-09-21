@@ -13,18 +13,31 @@
  
  <body>
 
-<div class="row">
-   <div class="small-1">
-		<a href="<!-- tmpl_var PROGRAM_URL -->">
-			<img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/dada_mail_logo.png" title="<!-- tmpl_var PROGRAM_NAME -->" alt="<!-- tmpl_var PROGRAM_NAME -->" >
-		</a>
-	</div>
-    <div class="small-11">
-		<!-- tmpl_if show_profile_widget --> 
-			<!-- tmpl_var profile_widget --> 
-		<!-- /tmpl_if --> 
-	</div>
-</div>
+
+   <nav class="top-bar hide-for-small" data-topbar role="navigation" id="admin_header">
+        <ul class="title-area">
+           <li class="name">
+             <h1>
+				<a href="<!-- tmpl_var PROGRAM_URL -->">
+					<img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/dada_mail_logo.png" title="<!-- tmpl_var PROGRAM_NAME -->" alt="<!-- tmpl_var PROGRAM_NAME -->" >
+				</a>
+			  </h1>
+           </li>
+         </ul>
+	<!-- tmpl_if show_profile_widget --> 
+		<section class="top-bar-section">
+			<ul class="right">
+				<li class="has-form">
+					<!-- tmpl_var profile_widget --> 
+				</li>
+			</ul>
+		</section> 
+	<!-- /tmpl_if --> 
+</nav>
+
+
+
+
 
 <div class="row">
    <div class="small-12">
