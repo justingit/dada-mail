@@ -1,52 +1,62 @@
 <!-- begin list_breadcrumbs_widget.tmpl -->
-
-<p id="breadcrumbs">
- <a href="<!-- tmpl_var program_url -->">
-  <!-- tmpl_var program_name -->
- </a>
- &#187; 
- <a href="<!-- tmpl_var program_url -->/list/<!-- tmpl_var list_settings.list -->/">
-  <!-- tmpl_var list_settings.list_name -->
- </a>
+<ul class="breadcrumbs">
+	<li>
+		<a href="<!-- tmpl_var program_url -->">
+			<!-- tmpl_var program_name -->
+		</a>
+	</li>
+	<li>
+		 <a href="<!-- tmpl_var program_url -->/list/<!-- tmpl_var list_settings.list -->/">
+			  <!-- tmpl_var list_settings.list_name -->
+		 </a>
+	</li>
  
-<!-- tmpl_if header_subject -->
-	 
-	 &#187;
-	 <a href="<!-- tmpl_var program_url -->/archive/<!-- tmpl_var list_settings.list -->/">
-	  Archives 
-	 </a>
-	 &#187;
-	 <!-- tmpl_var header_subject escape="HTML" -->
-	 
-<!--/tmpl_if-->
+	<!-- tmpl_if header_subject -->
+		 <li>
+			 <a href="<!-- tmpl_var program_url -->/archive/<!-- tmpl_var list_settings.list -->/">
+			 	 Archives 
+			 </a>
+		 </li>
+		 <li class="current">
+			 <a href="#">
+			 	<!-- tmpl_var header_subject escape="HTML" -->
+			</a>
+		 </li>
+	<!--/tmpl_if-->
 
-<!-- tmpl_if keyword -->
+	<!-- tmpl_if keyword -->
 	 
-	  &#187;
-	 <a href="<!-- tmpl_var program_url -->/archive/<!-- tmpl_var list_settings.list -->/">
-	  Archives 
-	 </a>
-	 
-	   &#187;
-	 Search results for: 
-	 <em>
-	  <!-- tmpl_var keyword -->
-	 </em>
-	 
-<!--/tmpl_if-->
+		 <li>
+			 <a href="<!-- tmpl_var program_url -->/archive/<!-- tmpl_var list_settings.list -->/">
+		  	   Archives 
+		 	</a>
+		 </li>
+		 <li class="current">
+			 <a href="#">
+		 		Search results for: <!-- tmpl_var keyword escape="HTML"-->
+		  	 </a>
+		 </li>
+	<!--/tmpl_if-->
 
-<!-- tmpl_if flavor_sign_in -->
+	<!-- tmpl_if flavor_sign_in -->
 	 
-	 &#187; Login
-	 
-<!--/tmpl_if-->
+		 <li class="current">
+			 <a href="#">
+				 Login
+		  	 </a>
+		 </li>	 
+	<!--/tmpl_if-->
 
-<!-- tmpl_if flavor_archive -->
+	<!-- tmpl_if flavor_archive -->
 	 
-	 &#187; Archives
+		 <li class="current">
+			 <a href="#">
+				 Archives
+		  	 </a>
+		 </li>	 
 	 
-<!--/tmpl_if-->
+	<!--/tmpl_if-->
 
-</p>
+</ul>
 
 <!-- end list_breadcrumbs_widget.tmpl -->

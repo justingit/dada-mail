@@ -400,7 +400,7 @@ sub list_popup_menu {
                                -id      => $args{-name}, 
                               '-values' => [@opt_labels],
                                -labels   => $labels,
-                               -style    => 'width:200px'); 
+							  ); 
     }
 }
 

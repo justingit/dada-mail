@@ -8,62 +8,63 @@
 	<title><!-- tmpl_var title --></title>
 	
 	<!-- tmpl_include list_template_header_code_block.tmpl -->
-	
+
  </head>
  
- <body id="Dada">
-  <div id="PageWrapper">
- 	<div id="Header">
-        	<a href="<!-- tmpl_var PROGRAM_URL -->">
-        		<img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/dada_mail_logo.png" title="<!-- tmpl_var PROGRAM_NAME -->" alt="<!-- tmpl_var PROGRAM_NAME -->" >
-            </a>
-        		<!-- tmpl_if show_profile_widget --> 
-        			<!-- tmpl_var profile_widget --> 
-        		<!-- /tmpl_if --> 
-            <div class="floatclear"></div>
-          </div><!-- ends Header -->
+ <body>
 
-        <div id="ContentWrapper">
-        	<div id="Content">	
-
-        	<h1><!-- tmpl_var title --></h1>
-        	<!-- tmpl_if list_settings.list --> 
-        		<!-- tmpl_if subscribed_to_list --> 
-        			<div class="alert-box info radius">
-        				<p>
-        					You are currently subscribed to, <!-- tmpl_var list_settings.list_name -->!
-        				</p> 
-        			</div> 
-        		<!-- tmpl_else --> 
-        		<!-- /tmpl_if -->
-        	<!-- /tmpl_if -->
-
-
-            <!-- tmpl_var content --> 
-
-
-        	<!-- tmpl_if list_settings.website_name --> 
-        		<!-- tmpl_if list_settings.website_url --> 
-        			<p>
-        		     Go back to 
-        		       <a href="<!-- tmpl_var list_settings.website_url -->">
-        			  		<!-- tmpl_var list_settings.website_name -->
-        			   </a>
-        		    </p>
-        		<!-- /tmpl_if --> 
-        	<!-- /tmpl_if -->
-
-        	</div><!-- ends Content -->
-        </div> <!-- ends ContentWrapper -->
-</div><!-- ends id="PageWrapper" -->
-
-<div id="FooterWrapper">
-	<div id="FooterPadding">
-	    <div id="Footer">
-		    <p><!-- tmpl_var footer_props --></p>
-        </div> 
+<div class="row">
+   <div class="small-1">
+		<a href="<!-- tmpl_var PROGRAM_URL -->">
+			<img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/dada_mail_logo.png" title="<!-- tmpl_var PROGRAM_NAME -->" alt="<!-- tmpl_var PROGRAM_NAME -->" >
+		</a>
+	</div>
+    <div class="small-11">
+		<!-- tmpl_if show_profile_widget --> 
+			<!-- tmpl_var profile_widget --> 
+		<!-- /tmpl_if --> 
 	</div>
 </div>
+
+<div class="row">
+   <div class="small-12">
+	   
+	   <h1>
+		   <!-- tmpl_var title -->
+	   </h1>
+	   
+		<!-- tmpl_if list_settings.list --> 
+			<!-- tmpl_if subscribed_to_list --> 
+				<div class="alert-box info radius">
+					You are currently subscribed to, 
+					<!-- tmpl_var list_settings.list_name -->!
+				</div> 
+			<!-- /tmpl_if -->
+		<!-- /tmpl_if -->
+
+		<!-- tmpl_var content --> 
+
+		<!-- tmpl_if list_settings.website_name --> 
+			<!-- tmpl_if list_settings.website_url --> 
+				Go back to 
+			    <a href="<!-- tmpl_var list_settings.website_url -->">
+				  	<!-- tmpl_var list_settings.website_name -->
+				</a>
+			<!-- /tmpl_if --> 
+		<!-- /tmpl_if -->
+	</div>
+</div> 
+
+<div class="row">
+   <div class="small-12">
+	   <!-- tmpl_var footer_props -->
+	</div>
+</div> 
+
+
+<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/foundation.min.js"></script>
+<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/foundation/foundation.offcanvas.js"></script>
+
 	
  </body>
 </html>
