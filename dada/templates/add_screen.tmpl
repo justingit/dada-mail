@@ -3,35 +3,50 @@
 <!-- tmpl_set name="title" value="Membership &#187; Invite/Add" -->
 <!-- tmpl_set name="load_linedtextarea" value="1" --> 
 
+	<div class="row">
+	   <div class="large-11 medium-11 small-12 columns">		   
+		   	<ul class="breadcrumbs">	
+		
+			<li>
+					Membership (<!-- tmpl_var type_title -->)
+			</li>
+			<li class="current">
+				<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=add" >
+				<!-- tmpl_if expr="(type eq 'list')" -->
+						Invite
+						<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
+							/ Subscribe
+		 			    <!-- /tmpl_if -->
+					<!-- tmpl_else --> 
+						Add
+					<!-- /tmpl_if --> 
+				</a>
+			</li>
+			<li>
+					 Verify
+			</li>
+			<li>
+				<a href="#">
+				<!-- tmpl_if expr="(type eq 'list')" -->
+					Send Invitation
+					<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
+						/ Subscribe
+					<!-- /tmpl_if -->
+				<!-- tmpl_else --> 
+					Add
+				<!-- /tmpl_if -->
+			   </a>
+			  </li>
+			 </ul>
+	 </div>
+	 <div class="large-1 medium-1 small-12 columns large-text-right medium-text-right collapse">
+		 <!-- tmpl_include help_link_widget.tmpl -->
+	 </div>
+ </div> 
 
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-		 Membership (<!-- tmpl_var type_title -->)
-		&#187;
-		 <strong>
-			<!-- tmpl_if expr="(type eq 'list')" -->
-				Invite
-				<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
-					/ Subscribe
- 			    <!-- /tmpl_if -->
-			<!-- tmpl_else --> 
-				Add
-			<!-- /tmpl_if --> 
-			</strong>
-		&#187;
-		 Verify
-		&#187;
-		<!-- tmpl_if expr="(type eq 'list')" -->
-			Send Invitation
-			<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
-				/ Subscribe
-			<!-- /tmpl_if -->
-		<!-- tmpl_else --> 
-			Add
-		<!-- /tmpl_if -->
-	</div>
-	<!-- tmpl_include help_link_widget.tmpl -->
-</div>
+		
+
+
 <div id="add"></div>
 <div id="screen_meta" data-menu_highlight="add"></div>
 

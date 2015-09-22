@@ -616,9 +616,7 @@ $DATA_CACHE                             //= 1;
 
 @PING_URLS = qw(
   http://rpc.pingomatic.com/
-  http://rpc.weblogs.com/RPC2
-  http://ping.blo.gs/
-  ) unless scalar @PING_URLS;
+) unless scalar @PING_URLS;
 
 
 $CONFIRMATION_TOKEN_OPTIONS //= { 

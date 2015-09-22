@@ -49,7 +49,7 @@
 
 <!-- tmpl_if mailout_status --> 
 
-    <table>
+    <table width="100%" class="responsive">
     	<tr> 
     	<th> 
       		Mailing List
@@ -60,19 +60,10 @@
 	<th>
 	   Created
 	</th> 
-     <th>
-		 Paused? 
-     </th> 
-     <th>
-		 Queued? 
-     </th> 
-     <th> 
-        Stale? 
-     </th>
-     <th>
-		 Broken? 
-     </th>
-     <th> 
+	<th>
+	   Health
+	</th> 
+     <th width="200"> 
         % Done
      </th>
     <th> 
@@ -123,54 +114,34 @@
 	</td> 
 	
  	
-         <td <!-- tmpl_if paused --> style="background:#ff0"<!-- /tmpl_if -->> 
-             <!-- tmpl_if paused --> 
-                x
-             <!-- /tmpl_if --> 
-         </td> 
-         
-       
-   
- 	 
-         <td <!-- tmpl_if queued_mailout --> style="background:#ff0"<!-- /tmpl_if -->>        
-        <!-- tmpl_if queued_mailout --> 
-            x
-        <!-- /tmpl_if --> 
- 
-     </td>
-
-
-	 	 
-	<td <!-- tmpl_if mailout_stale --> style="background:#ff0"<!-- /tmpl_if -->> 
-        <!-- tmpl_if mailout_stale --> 
-            !!!
-        <!-- /tmpl_if --> 
-     </td>
-
-  
-	<td <!-- tmpl_unless integrity_check --> style="background:#ff0"<!-- /tmpl_unless -->> 
-        <!-- tmpl_unless integrity_check --> 
-            !!!
-        <!-- /tmpl_unless --> 
-     </td>
-
-<td>  
+     <td> 
+	 	<ul>
+	 <!-- tmpl_if paused -->
+	 	<li class="error">Paused</li>
+	 <!-- /tmpl_if -->
+     <!-- tmpl_if queued_mailout --> 
+       <li class="error">Queued</li>
+    <!-- /tmpl_if --> 
+    <!-- tmpl_if mailout_stale --> 
+        <li class="error">Stale</li>
+    <!-- /tmpl_if -->
+	<!-- tmpl_unless integrity_check --> 
+		<li class="error">Broken</li>
+	<!-- /tmpl_unless --> 
+		</ul>
+	 </td>
+<td width="200">  
        		<!-- tmpl_if percent_done -->
-<table cellpadding="0" cellspacing="0" border="0" style="width:102px"> 
-<tr> 
-<td> 
-<div style="width:102px"> 
-<div style="width:<!-- tmpl_var status_bar_width -->px;height:10px;background-color:#3f0;float:left;border:1px solid black;border-right:0px;"></div>
-<div style="width:<!-- tmpl_var negative_status_bar_width -->px;height:10px;background-color:#cff;float:left;border:1px solid black;border-left:0px;"></div>
-</div> 
-</td> 
-<td> 
-&nbsp;<!-- tmpl_var percent_done -->%  
-</td> 
-</tr> 
-</table> 
-
- 
+			<div class="row">
+			    <div class="small-10 columns">
+					<div class="progress success round">
+					  <span class="meter" style="width:<!-- tmpl_var percent_done -->%"></span>
+					</div>
+				</div> 
+			    <div class="small-2 columns">
+					<!-- tmpl_var percent_done -->%
+				</div>
+			</div>
 		 <!-- tmpl_else --> 
             <!-- ... --> 
          <!--/tmpl_if-->
@@ -191,12 +162,12 @@
 				value="&#8855;" 
 				<!-- tmpl_unless is_paused -->
 					<!-- tmpl_if sending_done -->
-						disabled="disabled" class="button disabled"
+						disabled="disabled" class="button small disabled"
 					<!-- tmpl_else -->
-						class="button alertive killMonitoredSending"
+						class="button small alertive killMonitoredSending"
 					<!--/tmpl_if -->
 				<!-- tmpl_else -->
-					class="button alertive killMonitoredSending"
+					class="button small alertive killMonitoredSending"
 				<!--/tmpl_unless --> 
 				title="Click to permanently STOP this mass mailing"
 			>

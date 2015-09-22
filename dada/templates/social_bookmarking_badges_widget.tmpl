@@ -1,78 +1,22 @@
 <!-- being social_bookmarking_badges_widget.tmpl --> 
-
-
-<hr > 
-
-<ul class="archive_badges_ul">
-
-
-			<li class="archive_badges_li">
-
-<!-- Place this tag where you want the +1 button to render -->
-<g:plusone></g:plusone>
-<!--  Place this tag after the last plusone tag -->
-<script type="text/javascript">
-  (function() {
-    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
-    po.src = 'https://apis.google.com/js/plusone.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
-  })();
-</script>
-</li>
-
-<li class="archive_badges_li">
-
- <a href="http://del.icio.us/post?url=<!-- tmpl_var uri_encoded_url -->&amp;title=<!-- tmpl_var uri_encoded_subject -->">
- <img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/badge_delicious.png" style="border:0px;padding:5px" title="Add to: del.icio.us" >
- </a>
-</li>
-
-
-<li class="archive_badges_li">
- <a href="http://digg.com/submit?phase=2&amp;url=<!-- tmpl_var uri_encoded_url -->&amp;title=<!-- tmpl_var uri_encoded_subject -->">
- <img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/badge_digg.png" style="border:0px;padding:5px" title="Add to: digg" >
- </a>
-</li>
-
-<li class="archive_badges_li">
- <a href="http://www.newsvine.com/_tools/seed&amp;save?u=<!-- tmpl_var uri_encoded_url -->&amp;h=<!-- tmpl_var uri_encoded_subject -->">
- <img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/badge_newsvine.png" style="border:0px;padding:5px" title="Add to: newsvine" >
- </a>
-</li>
-
-
-
-<li class="archive_badges_li">
- <a href="http://reddit.com/submit?url=<!-- tmpl_var uri_encoded_url -->&amp;title=<!-- tmpl_var uri_encoded_subject -->">
- <img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/badge_reddit.png" style="border:0px;padding:5px" title="Add to: reddit" >
- </a>
-</li>
-
-
-<li class="archive_badges_li">
- <a href="http://myweb2.search.yahoo.com/myresults/bookmarklet?u=<!-- tmpl_var uri_encoded_url -->&amp;t=<!-- tmpl_var uri_encoded_subject -->">
- <img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/badge_yahoo.png" style="border:0px;padding:5px" title="Add to: Y!" >
- </a>
-</li>
-
-
-
-
-</ul> 
-
-	<ul class="archive_badges_ul">
-
-
-	<li class="archive_badges_li">
-	<iframe src="http://www.facebook.com/plugins/like.php?href=<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var id -->/"
+<ul>
+	<li>
+		<script src="https://apis.google.com/js/platform.js" async defer></script>
+		<g:plus action="share"></g:plus>
+	</li>
+	<li>
+		<a href="#" onclick="window.open('https://delicious.com/save?v=5&provider={your-company}&noui&jump=close&url='+encodeURIComponent(location.href)+'&title='+encodeURIComponent(document.title), 'delicious','toolbar=no,width=550,height=550'); return false;">
+		  <img src="https://delicious.com/img/logo.png" height="16" width="16" alt="Delicious"> Save this on Delicious
+		</a>
+	</li>
+	<li>
+		<a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=' + encodeURIComponent(window.location); return false"> <img src="//www.redditstatic.com/spreddit7.gif" alt="submit to reddit" border="0" /> </a>
+	</li>
+	<li>
+	<iframe 
+		src="http://www.facebook.com/plugins/like.php?href=<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var id -->/"
  			scrolling="no" frameborder="0"
 	        style="border:none; width:450px; height:80px"></iframe>
 	</li>
 </ul> 
-
-
-<hr > 
-
-
-
-<!-- end social_bookmarking_badges_widget.tmpl --> 
+<!-- end social_bookmarking_badges_widget.tmpl -->
