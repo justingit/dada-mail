@@ -66,13 +66,23 @@ jQuery(document).ready(function($){
 
 	}
 
-
+	
 	//Mail Sending >> Send a Message
-		if ($("#send_email_screen").length || $("#send_url_email").length || $("#list_invite").length) {
-
-			if($("#additional_email_headers").length){
-				$("#additional_email_headers").hide();
-			}
+		if ($("#send_email_screen").length || $("#send_url_email").length || $("#list_invite").length) {		
+        
+		var stickyHeader = $('#buttons').offset().top;
+        $(window).scroll(function(){
+            if( $(window).scrollTop() > stickyHeader && $('#buttons').width() >= 640) {
+                    $('#buttons').css({position: 'fixed', top: '0px', width:'95%'});					
+            } else {
+                    $('#buttons').css({position: 'static', top: '0px', width: 'auto'});
+					
+            }
+        });
+			
+		if($("#additional_email_headers").length){
+			$("#additional_email_headers").hide();
+		}
 		$("body").on("click", ".kcfinder_open", function(event) {
 			event.preventDefault();
 
@@ -234,9 +244,6 @@ jQuery(document).ready(function($){
 			ChangeMassMailingButtonLabel();
 		});
 
-		$("#tabs").tabs({ heightStyle: "auto" });
-		$("#tabs_mass_mailing_options").tabs({ heightStyle: "auto" });
-
 		$("body").on("click", ".preview_message_receivers", function(event) {
 			event.preventDefault();
 			preview_message_receivers();
@@ -285,8 +292,6 @@ jQuery(document).ready(function($){
 	}
 
 	if ($("#drafts_screen").length) {
-
-		$("#tabs").tabs({ heightStyle: "auto" });
 
 		$("body").on("submit", ".delete_draft_form", function(event) {
 			if (confirm('Delete ' + $(this).attr('data-draft_role') + '?')) {

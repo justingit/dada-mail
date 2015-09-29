@@ -3,48 +3,42 @@
 <!-- tmpl_set name="title" value="Membership &#187; Invite/Add" -->
 <!-- tmpl_set name="load_linedtextarea" value="1" --> 
 
-	<div class="row">
-	   <div class="large-11 medium-11 small-12 columns">		   
-		   	<ul class="breadcrumbs">	
-		
-			<li>
-					Membership (<!-- tmpl_var type_title -->)
-			</li>
-			<li class="current">
-				<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=add" >
+<div class="row">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+			<a href="#">
+				Membership (<!-- tmpl_var type_title -->)
+			</a>
+			<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=add" class="current">
 				<!-- tmpl_if expr="(type eq 'list')" -->
-						Invite
-						<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
-							/ Subscribe
-		 			    <!-- /tmpl_if -->
-					<!-- tmpl_else --> 
-						Add
-					<!-- /tmpl_if --> 
-				</a>
-			</li>
-			<li>
-					 Verify
-			</li>
-			<li>
-				<a href="#">
-				<!-- tmpl_if expr="(type eq 'list')" -->
-					Send Invitation
+					Invite
 					<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
 						/ Subscribe
-					<!-- /tmpl_if -->
+	 			    <!-- /tmpl_if -->
 				<!-- tmpl_else --> 
 					Add
+				<!-- /tmpl_if --> 
+			</a>
+			<a href="#" class="unavailable">
+				Verify
+			</a>
+			<a href="#" class="unavailable">
+			<!-- tmpl_if expr="(type eq 'list')" -->
+				Send Invitation
+				<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
+					/ Subscribe
 				<!-- /tmpl_if -->
-			   </a>
-			  </li>
-			 </ul>
-	 </div>
-	 <div class="large-1 medium-1 small-12 columns large-text-right medium-text-right collapse">
-		 <!-- tmpl_include help_link_widget.tmpl -->
-	 </div>
- </div> 
+			<!-- tmpl_else --> 
+				Add
+			<!-- /tmpl_if -->
+		   </a>
+	 </nav>
+	</div>
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
+</div>
 
-		
 
 
 <div id="add"></div>
@@ -115,13 +109,11 @@
 
 <!-- tmpl_if list_settings.use_add_list_import_limit --> 
     <div class="alert-box info radius">
-        <p>
             There is a set limit of 
             <strong>
                 <!-- tmpl_var list_settings.add_list_import_limit -->
             </strong>
             addresses you may import at one time.
-        </p>
     </div> 
 <!-- /tmpl_if --> 
 

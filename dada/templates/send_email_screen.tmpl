@@ -4,52 +4,51 @@
 <!-- tmpl_set name="load_wysiwyg_editor" value="1" -->
 <!-- tmpl_set name="load_datetimepicker" value="1" -->
 
-
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-	 	Mass Mailing 
-	 	    &#187; 
-	 	    Send a Message
+<div class="row">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				 Mass Mailing 
+			 </a>
+	 	    <a href="#" class="unavailable">
+				Send a Message
+			</a>
 	 	    <!-- tmpl_if draft_id --> 
-	 	        &#187; 
-	 	        <!-- tmpl_if expr="(draft_role eq 'draft')" --> 
-	 	             Draft
-	 	        <!-- /tmpl_if -->
-	 	        <!-- tmpl_if expr="(draft_role eq 'stationery')" --> 
-	 	            Stationery
-	 	        <!-- /tmpl_if -->
-	 	        <!-- tmpl_if expr="(draft_role eq 'schedule')" --> 
-	 	            Schedule
-	 	        <!-- /tmpl_if -->
+				<a href="#" class="current">
+		 	        <!-- tmpl_if expr="(draft_role eq 'draft')" --> 
+		 	             Draft
+		 	        <!-- /tmpl_if -->
+		 	        <!-- tmpl_if expr="(draft_role eq 'stationery')" --> 
+		 	            Stationery
+		 	        <!-- /tmpl_if -->
+		 	        <!-- tmpl_if expr="(draft_role eq 'schedule')" --> 
+		 	            Schedule
+		 	        <!-- /tmpl_if -->
+				</a>
 	 	    <!-- tmpl_else --> 
-	 	         &#187; Draft
+	 	     	<a href="#" class="current">
+					Draft
+				</a>
 	 	    <!-- /tmpl_if -->
+		</nav>
 	</div>
-	<!-- tmpl_include help_link_widget.tmpl -->
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
 </div>
-<div id="send_email_screen"></div> 
+
+	
+	
+	<div id="send_email_screen"></div> 
 <div id="screen_meta" data-menu_highlight="send_email"></div>
 
 <form name="mass_mailing" id="mass_mailing" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"  accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 
-
-<!-- tmpl_if comment -->
-<div id="this_thing" class="sticky contain-to-grid ">
-  	  <nav class="top-bar" data-topbar role="navigation" id="button_toolbar" style="background:white">
-			<input type="button" value="Loading..." class="button small" >
-		</nav>
-	</div>	
-<!-- /tmpl_if --> 
-
-<div class="contain-to-grid sticky">
-	  <nav class="top-bar" data-topbar role="navigation">
+<div id="buttons" class="contain-to-grid" style="z-index:100; background-color:#fff">
 	<div id="button_toolbar">
-			<input type="button" value="Loading..." class="button small" >
-	</div>	
-</nav>
-</div>	
-	
-	<hr >
+		<input type="button" value="Loading..." class="button small" >
+	</div>
+</div>
     
 <div id="entire_form">
   <div id="form_widgets">

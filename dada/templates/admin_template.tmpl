@@ -120,6 +120,11 @@
 		  filter: alpha(opacity=0);
 	   }
 		
+	   .tabs dd.active a, .tabs .tab-title.active a {
+	       border-top: 1px solid #000;
+	       border-left: 1px solid #000;
+	       border-right: 1px solid #000;
+	   }
     </style> 
     
 </head>
@@ -228,9 +233,7 @@
                          </div> 
             <!-- /tmpl_if -->
          
-             
-             <div style="width: 95%; margin-left: auto; margin-right: auto; max-width: initial;">
-             
+             <div class="row"  style="width: 100%; margin-left: auto; margin-right: auto; max-width: initial;">
                      <div class="large-2 medium-3 columns">
                          <div class="hide-for-small">
                              <div class="sidebar">
@@ -240,7 +243,7 @@
                              </div> 
                          </div> 
                      </div>
-                     <div class="large-10 medium-9 columns">
+                     <div class="large-10 medium-9 columns" id="content_area">
                         <!-- tmpl_var content -->
                      </div> 
             </div> 

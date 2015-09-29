@@ -7,25 +7,37 @@
 <!-- tmpl_set name="load_datetimepicker" value="1" -->
 
 
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-	 	Mass Mailing 
-	 	    &#187; 
-	 	    Send a Webpage
+<div class="row">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				 Mass Mailing 
+			 </a>
+	 	    <a href="#" class="unavailable">
+				Send a Webpage
+			</a>
 	 	    <!-- tmpl_if draft_id --> 
-	 	        &#187; 
-	 	        <!-- tmpl_if expr="(draft_role eq 'draft')" --> 
-	 	             Draft
-	 	        <!-- /tmpl_if -->
-	 	        <!-- tmpl_if expr="(draft_role eq 'stationery')" --> 
-	 	            Stationery
-	 	        <!-- /tmpl_if -->
-	 	        <!-- tmpl_if expr="(draft_role eq 'schedule')" --> 
-	 	            Schedule
-	 	        <!-- /tmpl_if -->
+				<a href="#" class="current">
+		 	        <!-- tmpl_if expr="(draft_role eq 'draft')" --> 
+		 	             Draft
+		 	        <!-- /tmpl_if -->
+		 	        <!-- tmpl_if expr="(draft_role eq 'stationery')" --> 
+		 	            Stationery
+		 	        <!-- /tmpl_if -->
+		 	        <!-- tmpl_if expr="(draft_role eq 'schedule')" --> 
+		 	            Schedule
+		 	        <!-- /tmpl_if -->
+				</a>
+	 	    <!-- tmpl_else --> 
+	 	     	<a href="#" class="current">
+					Draft
+				</a>
 	 	    <!-- /tmpl_if -->
+		</nav>
 	</div>
-	<!-- tmpl_include help_link_widget.tmpl -->
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
 </div>
 <div id="send_url_email"></div> 
 
@@ -44,9 +56,7 @@
     <!-- tmpl_if draft_id --> 
         <!-- tmpl_if expr="(draft_role eq 'draft')" --> 
         	<div class="alert-box info radius">
-        		<p>
         			Draft message restored below:
-        		</p>
         	</div> 
         <!-- /tmpl_if -->
         <!-- tmpl_if expr="(draft_role eq 'stationery')" --> 
@@ -102,247 +112,160 @@
 	<fieldset> 
 		 <legend>Message Body [<a href="#" onclick="$.colorbox({inline:true, href:$('#message_body_help')})">?</a>]</legend>
 
-		<div id="tabs"> 
-
-			<ul>
-					<li>
-						<a href="#html_message">
-							HTML Version
-						</a>
-					</li>
-					<li>
-						<a href="#plaintext_message">
-							PlainText Version
-						</a>
-					</li>
-				</ul>
-				
+<ul class="tabs" data-tab>
+	<li class="tab-title <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" --><!-- tmpl_else -->active<!-- /tmpl_if -->">
+		<a href="#html_message">
+			HTML Version
+		</a>
+	</li>
+	<li class="tab-title <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" --> active <!-- /tmpl_if -->">
+		<a href="#plaintext_message">
+			PlainText Version
+		</a>
+	</li>		
+</ul>
+		
+		
+<div class="tabs-content">
+	<div  class="content tab-title  <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" --><!-- tmpl_else -->active<!-- /tmpl_if -->" id="html_message"> 
+	<div class="row">
+		<div class="small-12 columns">
+			<input type="radio" name="content_from" id="content_from_url" value="url" checked="checked" >
+			<label for="content_from_url">
+				Grab content from this webpage address (URL):
+			</label>
+		</div>
+	</div>
+	<div class="row">
+		<div class="small-12 columns">
+			<input type="url" name="url" id="url"  placeholder="http://" >
+		</div>
+	</div>
+	<div class="row">
+		<div class="small-12 columns">
+			<input type="radio" name="content_from" id="content_from_textarea" value="content_from_textarea" >
+			<label for="content_from_textarea">
+				Use the following HTML as content:
+			</label>
+		</div>
+	</div>
+	<div class="row">
+		<div class="small-12 columns">
+			<!-- tmpl_include html_message_form_field_widget.tmpl --> 
+		</div>
+	</div>
 	
-  	    <div id="html_message">
-		<p>
-		<input type="radio" name="content_from" id="content_from_url" value="url" checked="checked" >
-			  <label for="content_from_url">
-		   Grab content from this webpage address (URL):
-		  </label>
-		  <br >
-		  <input type="url" name="url" id="url"  placeholder="http://" >
-		</p>
-		<p>
-		  <input type="radio" name="content_from" id="content_from_textarea" value="content_from_textarea" >
-			  <label for="content_from_textarea">
-			   Use the following HTML as content:
-			  </label>
-		  </p>
-		  
-
-		<!-- tmpl_include html_message_form_field_widget.tmpl --> 
-
 <fieldset>
-<legend>Advanced Options</legend>
-
-
-    <table> 
-        <tr> 
-            <td>
-                <input type="checkbox" name="crop_html_content" id="crop_html_content" value="1"  >
-            </td>
-            <td>
-                <label for="crop_html_content">Crop Webpage</label>
-                <!-- tmpl_unless can_use_HTML_Tree --> 
-                    <p class="error">
-                        Disabled. The following CPAN Perl module will need to be installed: HTML::Tree. 
-                    </p>
-                <!-- /tmpl_unless --> 
-                <table>
-                 <tr>
-                  <td>
-                   Only send content found within the HTML tag with the:
-                   <select name="crop_html_content_selector_type" id="crop_html_content_selector_type"> 
-                       <option value="id">id</option>
-                       <option value="class">class</option>
-                   </select> 
-                   of: <input type="text" name="crop_html_content_selector_label" id="crop_html_content_selector_label" >
-                  </td>
-                 </tr>
-                </table> 
-            </td>
-        </tr>
-    </table> 
-    
-
-
-
-		<table>
-		  <tr>
-		   <td>
-		       
-		       
-		       
-			<p>
-			 <strong>
+	<legend>
+		Advanced Options
+	</legend>
+	
+	<div class="row">
+		<div class="small-12 columns">
+			<!-- tmpl_unless can_use_HTML_Tree --> 
+				<div class="alert-box alert radius">
+					Disabled. The following CPAN Perl module will need to be installed: HTML::Tree. 
+				</div>
+			<!-- /tmpl_unless --> 
+			<input 
+				type="checkbox" 
+				name="crop_html_content" 
+				id="crop_html_content" value="1"
+			>
+			<label for="crop_html_content">
+				Crop Webpage
+			</label>
+		</div>
+	</div>
+	<div class="row">
+		<div class="small-1 columns">
+		</div>
+		<div class="small-11 columns">
+			<label for="crop_html_content_selector_label">
+				Only send content found within the HTML tag with the:
+			</label>
+		</div>
+	</div>
+	
+	<div class="row collapse">
+		<div class="small-1 large-1 columns">&nbsp;
+		</div>
+		<div class="small-4 large-2 columns">
+			<select 
+				name="crop_html_content_selector_type" 
+				id="crop_html_content_selector_type"
+			> 
+				<option value="id">id</option>
+				<option value="class">class</option>
+			</select> 
+		</div>
+		<div class="small-6 large-4 columns">
+			<input 
+				type="text" 
+				name="crop_html_content_selector_label" 
+				id="crop_html_content_selector_label"
+			>
+		</div> 
+		<div class="small-1 large-1 columns">
+		</div>
+	</div>
+	
+	<hr>   
 			  Images in this webpage should:
-			 </strong>
-			</p>
-		  
-			<p>
-			 <input type="radio" name="url_options" id="extern" value="extern" checked="checked" >
+		 	  <input type="radio" name="url_options" id="extern" value="extern" checked="checked" >
 			  <label for="extern">
-			   have their URLs changed to absolute
+			  	 have their URLs changed to absolute
 			 </label> 
 			 
-			 
-			 <!-- DEV as far as I can tell, this option doesn't work!
-			 -js
-			 
-			 <br >
-			 <input type="radio" name="url_options" value="location" >
-			 be embedded in the message itself, using the 'Content-Location' header
-			 
-			 --> 
-			 
-			 
-			 <br >
-			 <input type="radio" name="url_options" value="cid" id="cid" >
+			  <input type="radio" name="url_options" value="cid" id="cid" >
 			  <label for="cid">
 			   be embedded in the message itself 
 			 </label>
 			 
 		<!-- tmpl_unless can_display_attachments --> 
 				 
-				 <br >
-				 <p class="error"> 
+				<div class="alert-box alert radius">
 				  Warning: your current Archive backend does not support archiving messages with embedded images.
 				  When viewed, these archived messages may be missing images or formatted incorrectly.
-				 </p>
-				 
+				 </div>
 		<!--/tmpl_unless--> 
 			 
-			</p>
-		   </td>
-		  </tr>
-		  <tr> 
-			<td>
-			<p>	<input type="checkbox" name="remove_javascript" id="remove_javascript" checked="checked" value="1" >
-			 
+			<input type="checkbox" name="remove_javascript" id="remove_javascript" checked="checked" value="1" > 
 			  <label for="remove_javascript">
 				Remove Javascript
-			   </label> <em>(highly recommended)</em>
-			 </p>
-			</td>
-	
-	<!-- tmpl_if comment --> 
-	
-		  </tr> 
-		  <tr>
-		   <td>
-			<table  class="simplebox">
-			 <tr>
-			  <td>
-			   <p>
-				<strong>
-				 Restricted URL Information
-				</strong>
-				   </p>
-				  </td>
-				  <td>
-			   <p>
-				(
-				<em>
-				 optional
-				</em>
-				)
-			   </p>
-			  </td>
-			 </tr>
-			 <tr>
-			  <td>
-			   <p align="right">
-				<strong>
-				 username:
-				</strong>
-			   </p>
-			  </td>
-			  <td>
-			   <p>
-				<input type="text" name="url_username" >
-			   </p>
-			  </td>
-			 </tr>
-			 <tr>
-			  <td>
-			   <p align="right">
-				<strong>
-				 password:
-				</strong>
-			   </p>
-			  </td>
-			  <td>
-			   <p>
-				<input type="text" name="url_password" >
-			   </p>
-			  </td>
-			 </tr>
-			 <tr>
-			  <td>
-			   <p align="right">
-				<strong>
-				 proxy:
-				</strong>
-			   </p>
-			  </td>
-			  <td>
-			   <p>
-				<input type="text" name="proxy" >
-			   </p>
-			  </td>
-			 </tr>
-			</table>
-		   </td>
-		  </tr>
-		  
-		  
-	<!-- /tmpl_if --> 
-	
-		 </table>
-</fieldset>
-</div> 
-
-<div id="plaintext_message"> 
-		 
-		<p>
-		  <input type="radio" name="plaintext_content_from" id="plaintext_content_from_auto" value="auto" checked="checked" >
-		  <label for="plaintext_content_from_auto">
-		   Create a PlainText Version automatically
-		  </label>
-		 </p>
-
-		 <p>
-		  <input type="radio" name="plaintext_content_from" id="plaintext_content_from_url" value="url" >
-		  <label for="plaintext_content_from_url">
-		    Grab content from this webpage address (URL): 
-		  </label>
-  		  <br >
-  		  <input type="text" name="plaintext_url" id="plaintext_url"  placeholder="http://" >
-  		</p>
-
-
-
-		 <p>
-		  <input type="radio" name="plaintext_content_from" id="plaintext_content_from_text" value="text" >
-		  <label for="plaintext_content_from_text">
-		   Use the text below as the PlainText version:
-		  </label>
-		 </p>
-		 <p>
-			 <!-- tmpl_include plaintext_message_form_field_widget.tmpl -->
-		 </p>
-	</div> 
-	
-</div> 
-
+			   </label>
 </fieldset>
 
+</div> 
 
+<div class="content <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" --> active <!-- /tmpl_if -->" id="plaintext_message"> 		 
+	<div class="row">
+		<div class="small-12 columns">
+			<input type="radio" name="plaintext_content_from" id="plaintext_content_from_auto" value="auto" checked="checked" >
+			<label for="plaintext_content_from_auto">
+				Create a PlainText Version automatically
+			</label>
+		</div>
+	</div>
+	<div class="row">
+		<div class="small-12 columns">
+			<input type="radio" name="plaintext_content_from" id="plaintext_content_from_url" value="url" >
+			<label for="plaintext_content_from_url">
+				Grab content from this webpage address (URL): 
+			</label>
+			<input type="text" name="plaintext_url" id="plaintext_url"  placeholder="http://" >
+		</div>
+	</div>
+	<div class="row">
+		<div class="small-12 columns">
+			<input type="radio" name="plaintext_content_from" id="plaintext_content_from_text" value="text" >
+			<label for="plaintext_content_from_text">
+				Use the text below as the PlainText version:
+			</label>
+			<!-- tmpl_include plaintext_message_form_field_widget.tmpl -->
+		</div>
+	</div>
+</div> 
 
 <div id="tabs_mass_mailing_options">
 	<ul>

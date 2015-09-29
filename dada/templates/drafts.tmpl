@@ -15,38 +15,35 @@
 
 <!-- tmpl_if delete_draft --> 
 	<div data-alert class="alert-box success radius">
-		<p>
 			Message Deleted. 
-		</p>
-		<div style="text-align: center;">
-		<input type="button" class="button small fade_me" value="Thanks!" >
-		</div>
+			<a href="#" class="close">&times;</a>
 	</div> 
 <!-- /tmpl_if --> 
 
 
-<div id="tabs"> 
+
     
-    <ul> 
-		<li>
-			<a href="#drafts">
-				Drafts (<!-- tmpl_var num_drafts default="0" -->)
-			</a>
-		</li>
-		<li>
-			<a href="#stationery">
-				Stationery (<!-- tmpl_var num_stationery default="0" -->)
-			</a>
-		</li>
-		<li>
-			<a href="#schedules">
-				Schedules (<!-- tmpl_var num_schedules default="0" -->)
-			</a>
-		</li>
-
-
-	</ul> 
-	<div id="drafts">
+<ul class="tabs" data-tab role="tablist">
+	
+	<li class="tab-title active">
+		<a href="#drafts">
+			Drafts (<!-- tmpl_var num_drafts default="0" -->)
+		</a>
+	</li>
+	<li class="tab-title">
+		<a href="#stationery">
+			Stationery (<!-- tmpl_var num_stationery default="0" -->)
+		</a>
+	</li class="tab-title">
+	<li class="tab-title">
+		<a href="#schedules">
+			Schedules (<!-- tmpl_var num_schedules default="0" -->)
+		</a>
+	</li>
+</ul> 
+	
+	<div class="tabs-content">	
+		<div class="content tab-title active" id="drafts">		
 	    <p class="alert">
             <strong>
             Drafts
@@ -166,7 +163,7 @@
         
 	</div> 
 	
-	<div id="stationery">
+	<div class="content tab-title" id="stationery">
 	    <p class="alert">
             <strong>
             Stationery
@@ -303,15 +300,12 @@
         
         <!-- tmpl_else -->
         	<div class="alert-box info radius">
-        		<p>
         			There are currently no saved stationery. 
-        		</p>
         	</div> 
         <!-- /tmpl_if --> 
 	</div>
 	
-	
-	<div id="schedules">
+	<div class="content tab-title" id="schedules">
 
         <!-- tmpl_if expr="(num_schedules > 0)" --> 
 	
@@ -568,8 +562,7 @@
         		</p>
         	</div> 
         <!-- /tmpl_if --> 
-
-    </div> 
+	</div> 
 </div> 
 
 <!-- end drafts.tmpl -->
