@@ -1,35 +1,45 @@
 <!-- begin add_email_screen.tmpl -->
 <!-- tmpl_set name="title" value="Membership &#187; Verify Invitations/Additions" -->
 <!-- tmpl_if chrome --> 
-    <div id="screentitle"> 
-        <div id="screentitlepadding">
-    Membership (<!-- tmpl_var type_title -->) 
-    &#187; 
-    <!-- tmpl_if expr="(type eq 'list')" --> 
-        Invite
-        <!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" -->             
-        / Subscribe
-        <!-- /tmpl_if -->
-    <!-- tmpl_else --> 
-        Add
-    <!-- /tmpl_if -->
-    &#187; 
-     <strong>Verify</strong>
-    &#187;
-    
-    <!-- tmpl_if expr="(type eq 'list')" --> 
-        Send Invitation
-        <!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
-            / Subscribe
-        <!-- /tmpl_if -->
-    <!-- tmpl_else --> 
-        Add
-    <!-- /tmpl_if -->
-    
-    </div>
-<!-- /tmpl_if --> 
-</div> 
-<div id="add_email"></div>
+	<div class="row">
+		<div class="medium-10 small-9 columns">
+		   	<nav class="breadcrumbs">	
+				<a href="#">
+					Membership (<!-- tmpl_var type_title -->)
+				</a>
+				<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=add">
+					<!-- tmpl_if expr="(type eq 'list')" -->
+						Invite
+						<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
+							/ Subscribe
+		 			    <!-- /tmpl_if -->
+					<!-- tmpl_else --> 
+						Add
+					<!-- /tmpl_if --> 
+				</a>
+				<a href="#" class="current">
+					Verify
+				</a>
+				<a href="#" class="unavailable">
+				<!-- tmpl_if expr="(type eq 'list')" -->
+					Send Invitation
+					<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
+						/ Subscribe
+					<!-- /tmpl_if -->
+				<!-- tmpl_else --> 
+					Add
+				<!-- /tmpl_if -->
+			   </a>
+		 </nav>
+		</div>
+		<div class="medium-2 small-3 columns text-right">
+		   <!-- tmpl_include help_link_widget.tmpl -->
+		</div>
+	</div>
+	<div id="add_email"></div>
+<!-- /tmpl_if -->
+
+
 <div id="screen_meta" data-menu_highlight="add"></div>
 
 <!-- tmpl_if expr="(type eq 'list')" --> 

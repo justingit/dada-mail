@@ -6,7 +6,6 @@
 <!-- tmpl_set name="load_wysiwyg_editor" value="1" -->
 <!-- tmpl_set name="load_datetimepicker" value="1" -->
 
-
 <div class="row">
 	<div class="medium-10 small-9 columns">
 	   	<nav class="breadcrumbs">	
@@ -39,342 +38,235 @@
 	   <!-- tmpl_include help_link_widget.tmpl -->
 	</div>
 </div>
+
 <div id="send_url_email"></div> 
 
 
 <form name="mass_mailing" id="mass_mailing" action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post">
-
-	<div id="entire_form">
-	  <div id="form_widgets">
-	      
-      <!-- tmpl_include test_sent_notice_widget.tmpl --> 
-      <!-- tmpl_include ses_email_verification_widget.tmpl -->
-      <!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
-      <!-- tmpl_include discussion_list_support_notice_widget.tmpl --> 
-
-
-    <!-- tmpl_if draft_id --> 
-        <!-- tmpl_if expr="(draft_role eq 'draft')" --> 
-        	<div class="alert-box info radius">
-        			Draft message restored below:
-        	</div> 
-        <!-- /tmpl_if -->
-        <!-- tmpl_if expr="(draft_role eq 'stationery')" --> 
-            <!-- tmpl_if done --> 
-                <!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
-            <!-- /tmpl_if -->
-        <!-- /tmpl_if -->     
-    <!-- /tmpl_If -->
-
- 
-
-<!-- tmpl_unless can_use_mime_lite_html -->
-	 
-	 <div class="disabled">
-	  <p class="error">
-	   Disabled. The 'MIME::Lite::HTML' Perl Library needs to be installed, or is missing required components. More information below:
-	  </p>
-	  <pre> 
-		<!-- tmpl_var mime_lite_html_error -->
-	  </pre> 
+	 <div id="buttons" class="contain-to-grid">
+	 	<div id="button_toolbar">
+	 		<input type="button" value="Loading..." class="button small" >
+	 	</div>
 	 </div>
-	 
-<!-- tmpl_else-->
-	 <!-- tmpl_unless can_use_lwp_simple -->
-		  <div class="disabled">
-		  <p class="error">
-		   Disabled. The 'LWP' Perl Library needs to be installed. More information below: 
-		  </p>
-		  <pre> 
-			<!-- tmpl_var lwp_simple_error --> 
-		  </pre> 
-		 </div> 
-			<!-- tmpl_else-->
+	<div id="entire_form">
+		<div id="form_widgets"> 
+			<!-- tmpl_include test_sent_notice_widget.tmpl --> 
+			<!-- tmpl_include ses_email_verification_widget.tmpl -->
+			<!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
+			<!-- tmpl_include discussion_list_support_notice_widget.tmpl --> 
 
-<!-- tmpl_include draft_notice_widget.tmpl --> 
-<!-- tmpl_include send_email_schedule_options_widget.tmpl -->
-<!-- tmpl_include send_email_headers_widget.tmpl --> 
+			<!-- tmpl_if draft_id --> 
+				<!-- tmpl_if expr="(draft_role eq 'draft')" --> 
+					<div class="alert-box info radius">
+						Draft message restored below:
+					</div> 
+				<!-- /tmpl_if -->
+				<!-- tmpl_if expr="(draft_role eq 'stationery')" --> 
+					<!-- tmpl_if done --> 
+						<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
+					<!-- /tmpl_if -->
+				<!-- /tmpl_if -->     
+			<!-- /tmpl_if -->
 
-    <input type="hidden" id="list"               name="list"                  value="<!-- tmpl_var list_settings.list -->" >
-    <input type="hidden" id="sched_flavor"       name="sched_flavor"          value="<!-- tmpl_var sched_flavor -->" >
-
-    <input type="hidden" name="s_program_url"      id="s_program_url"    value="<!-- tmpl_var S_PROGRAM_URL -->" >
-    <input type="hidden" name="flavor"            id="flavor"            value="send_url_email" >
-    <input type="hidden" name="support_files_url" id="support_files_url" value="<!-- tmpl_var SUPPORT_FILES_URL -->" >
-
-    <input type="hidden" id="draft_alert"        name="draft_alert"           value="<!-- tmpl_var draft_alert default="0" -->" >
-    <input type="hidden" id="draft_id"           name="draft_id"              value="<!-- tmpl_var draft_id -->"                > 
-    <input type="hidden" id="save_draft_role"    name="save_draft_role"       value=""                                          >
-    <input type="hidden" id="draft_role"         name="draft_role"            value="<!-- tmpl_var draft_role -->"              >
-    <input type="hidden" id="restore_from_draft" name="restore_from_draft"    value="<!-- tmpl_var restore_from_draft -->"      >
-    
-    
-	<fieldset> 
-		 <legend>Message Body [<a href="#" onclick="$.colorbox({inline:true, href:$('#message_body_help')})">?</a>]</legend>
-
-<ul class="tabs" data-tab>
-	<li class="tab-title <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" --><!-- tmpl_else -->active<!-- /tmpl_if -->">
-		<a href="#html_message">
-			HTML Version
-		</a>
-	</li>
-	<li class="tab-title <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" --> active <!-- /tmpl_if -->">
-		<a href="#plaintext_message">
-			PlainText Version
-		</a>
-	</li>		
-</ul>
-		
-		
-<div class="tabs-content">
-	<div  class="content tab-title  <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" --><!-- tmpl_else -->active<!-- /tmpl_if -->" id="html_message"> 
-	<div class="row">
-		<div class="small-12 columns">
-			<input type="radio" name="content_from" id="content_from_url" value="url" checked="checked" >
-			<label for="content_from_url">
-				Grab content from this webpage address (URL):
-			</label>
-		</div>
-	</div>
-	<div class="row">
-		<div class="small-12 columns">
-			<input type="url" name="url" id="url"  placeholder="http://" >
-		</div>
-	</div>
-	<div class="row">
-		<div class="small-12 columns">
-			<input type="radio" name="content_from" id="content_from_textarea" value="content_from_textarea" >
-			<label for="content_from_textarea">
-				Use the following HTML as content:
-			</label>
-		</div>
-	</div>
-	<div class="row">
-		<div class="small-12 columns">
-			<!-- tmpl_include html_message_form_field_widget.tmpl --> 
-		</div>
-	</div>
-	
-<fieldset>
-	<legend>
-		Advanced Options
-	</legend>
-	
-	<div class="row">
-		<div class="small-12 columns">
-			<!-- tmpl_unless can_use_HTML_Tree --> 
+			<!-- tmpl_unless can_use_mime_lite_html -->
 				<div class="alert-box alert radius">
-					Disabled. The following CPAN Perl module will need to be installed: HTML::Tree. 
+					<p>
+						Disabled. The 'MIME::Lite::HTML' Perl Library needs to be installed, or is missing required components. More information below:
+					</p>
+					<code> 
+						<!-- tmpl_var mime_lite_html_error -->
+					</code> 
 				</div>
-			<!-- /tmpl_unless --> 
-			<input 
-				type="checkbox" 
-				name="crop_html_content" 
-				id="crop_html_content" value="1"
-			>
-			<label for="crop_html_content">
-				Crop Webpage
-			</label>
-		</div>
-	</div>
-	<div class="row">
-		<div class="small-1 columns">
-		</div>
-		<div class="small-11 columns">
-			<label for="crop_html_content_selector_label">
-				Only send content found within the HTML tag with the:
-			</label>
-		</div>
-	</div>
+			<!-- tmpl_else-->
+				<!-- tmpl_unless can_use_lwp_simple -->
+					<div class="alert-box alert radius">
+						<p>
+							Disabled. The 'LWP' Perl Library needs to be installed. More information below: 
+						</p>
+						<code> 
+							<!-- tmpl_var lwp_simple_error --> 
+						</code> 
+					</div> 
+				<!-- tmpl_else-->
+
+					<!-- tmpl_include draft_notice_widget.tmpl --> 
+					<!-- tmpl_include send_email_schedule_options_widget.tmpl -->
+					<!-- tmpl_include send_email_headers_widget.tmpl --> 
+
+					<input type="hidden" id="list"               name="list"                  value="<!-- tmpl_var list_settings.list -->" >
+					<input type="hidden" id="sched_flavor"       name="sched_flavor"          value="<!-- tmpl_var sched_flavor -->" >
+
+					<input type="hidden" name="s_program_url"      id="s_program_url"    value="<!-- tmpl_var S_PROGRAM_URL -->" >
+					<input type="hidden" name="flavor"            id="flavor"            value="send_url_email" >
+					<input type="hidden" name="support_files_url" id="support_files_url" value="<!-- tmpl_var SUPPORT_FILES_URL -->" >
+
+					<input type="hidden" id="draft_alert"        name="draft_alert"           value="<!-- tmpl_var draft_alert default="0" -->" >
+					<input type="hidden" id="draft_id"           name="draft_id"              value="<!-- tmpl_var draft_id -->"                > 
+					<input type="hidden" id="save_draft_role"    name="save_draft_role"       value=""                                          >
+					<input type="hidden" id="draft_role"         name="draft_role"            value="<!-- tmpl_var draft_role -->"              >
+					<input type="hidden" id="restore_from_draft" name="restore_from_draft"    value="<!-- tmpl_var restore_from_draft -->"      >
+
+
+					<fieldset> 
+						 <legend>
+							 Message Body [<a href="#" onclick="$.colorbox({inline:true, href:$('#message_body_help')})">?</a>]
+						 </legend>
+
+						<ul class="tabs" data-tab>
+							<li class="tab-title <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" --><!-- tmpl_else -->active<!-- /tmpl_if -->">
+								<a href="#html_message">
+									HTML Version
+								</a>
+							</li>
+							<li class="tab-title <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" --> active <!-- /tmpl_if -->">
+								<a href="#plaintext_message">
+									PlainText Version
+								</a>
+							</li>		
+						</ul>	
+						<div class="tabs-content">
+							<div  class="content tab-title  <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" --><!-- tmpl_else -->active<!-- /tmpl_if -->" id="html_message"> 
+							<div class="row">
+								<div class="small-12 columns">
+									<input type="radio" name="content_from" id="content_from_url" value="url" checked="checked" >
+									<label for="content_from_url">
+										Grab content from a URL:
+									</label>
+								</div>
+							</div>
+							<div class="row">
+								<div class="small-12 columns">
+									<input type="url" name="url" id="url"  placeholder="http://" >
+								</div>
+							</div>
+							<div class="row">
+								<div class="small-12 columns">
+									<input type="radio" name="content_from" id="content_from_textarea" value="content_from_textarea" >
+									<label for="content_from_textarea">
+										Write/Paste Text:
+									</label>
+								</div>
+							</div>
+							<div class="row">
+								<div class="small-12 columns">
+									<!-- tmpl_include html_message_form_field_widget.tmpl --> 
+								</div>
+							</div>
 	
-	<div class="row collapse">
-		<div class="small-1 large-1 columns">&nbsp;
-		</div>
-		<div class="small-4 large-2 columns">
-			<select 
-				name="crop_html_content_selector_type" 
-				id="crop_html_content_selector_type"
-			> 
-				<option value="id">id</option>
-				<option value="class">class</option>
-			</select> 
-		</div>
-		<div class="small-6 large-4 columns">
-			<input 
-				type="text" 
-				name="crop_html_content_selector_label" 
-				id="crop_html_content_selector_label"
-			>
-		</div> 
-		<div class="small-1 large-1 columns">
-		</div>
+						<fieldset>
+							<legend>
+								Advanced Options
+							</legend>
+	
+							<div class="row">
+								<div class="small-12 columns">
+									<!-- tmpl_unless can_use_HTML_Tree --> 
+										<div class="alert-box alert radius">
+											Disabled. The following CPAN Perl module will need to be installed: HTML::Tree. 
+										</div>
+									<!-- /tmpl_unless --> 
+									<input 
+										type="checkbox" 
+										name="crop_html_content" 
+										id="crop_html_content" value="1"
+									>
+									<label for="crop_html_content">
+										Crop Webpage, sending only content found in the tag with: 
+									</label>
+								</div>
+							</div>
+							<div class="row collapse">
+								<div class="small-1 large-1 columns">&nbsp;
+								</div>
+								<div class="small-4 large-2 columns">
+									<select 
+										name="crop_html_content_selector_type" 
+										id="crop_html_content_selector_type"
+									> 
+										<option value="id">id:</option>
+										<option value="class">class:</option>
+									</select> 
+								</div>
+								<div class="small-6 large-4 columns">
+									<input 
+										type="text" 
+										name="crop_html_content_selector_label" 
+										id="crop_html_content_selector_label"
+									>
+								</div> 
+								<div class="small-1 large-1 columns">
+								</div>
+							</div>
+
+
+							<div class="row">
+								<div class="small-12 columns">
+								<input type="radio" name="url_options" id="extern" value="extern" checked="checked" >
+								<label for="extern">
+									Change Image URLs to Absolute
+								</label> 
+								</div> 
+							</div>
+							<div class="row">
+								<div class="small-12 columns">
+									<input type="radio" name="url_options" value="cid" id="cid" >
+									<label for="cid">
+										Embed Images in Message
+									</label>
+								</div> 
+							</div> 	 
+
+							<div class="row">
+								<div class="small-12 columns">			 
+									<input 
+										type="checkbox" 
+										name="remove_javascript" 
+										id="remove_javascript" 
+										checked="checked" value="1"
+									> 
+									<label for="remove_javascript">
+										Remove Javascript
+									</label>
+									</div> 
+								</div>
+							</fieldset>
+						</div> 
+						<div class="content <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" --> active <!-- /tmpl_if -->" id="plaintext_message"> 		 
+							<div class="row">
+								<div class="small-12 columns">
+									<input type="radio" name="plaintext_content_from" id="plaintext_content_from_auto" value="auto" checked="checked" >
+									<label for="plaintext_content_from_auto">
+										Create a PlainText Version automatically
+									</label>
+								</div>
+							</div>
+							<div class="row">
+								<div class="small-12 columns">
+									<input type="radio" name="plaintext_content_from" id="plaintext_content_from_url" value="url" >
+									<label for="plaintext_content_from_url">
+										Grab content from a URL: 
+									</label>
+									<input type="text" name="plaintext_url" id="plaintext_url"  placeholder="http://" >
+								</div>
+							</div>
+							<div class="row">
+								<div class="small-12 columns">
+									<input type="radio" name="plaintext_content_from" id="plaintext_content_from_text" value="text" >
+									<label for="plaintext_content_from_text">
+										Write/Paste Text:
+									</label>
+									<!-- tmpl_include plaintext_message_form_field_widget.tmpl -->
+								</div>
+							</div>
+						</div>
+						<!-- tmpl_include send_email_options-widgets.tmpl -->
+					<!-- /tmpl_unless --> 
+				<!-- /tmpl_unless --> 	
+			<!-- ?!?!!!? -->			
+		</div>	
 	</div>
-	
-	<hr>   
-			  Images in this webpage should:
-		 	  <input type="radio" name="url_options" id="extern" value="extern" checked="checked" >
-			  <label for="extern">
-			  	 have their URLs changed to absolute
-			 </label> 
-			 
-			  <input type="radio" name="url_options" value="cid" id="cid" >
-			  <label for="cid">
-			   be embedded in the message itself 
-			 </label>
-			 
-		<!-- tmpl_unless can_display_attachments --> 
-				 
-				<div class="alert-box alert radius">
-				  Warning: your current Archive backend does not support archiving messages with embedded images.
-				  When viewed, these archived messages may be missing images or formatted incorrectly.
-				 </div>
-		<!--/tmpl_unless--> 
-			 
-			<input type="checkbox" name="remove_javascript" id="remove_javascript" checked="checked" value="1" > 
-			  <label for="remove_javascript">
-				Remove Javascript
-			   </label>
-</fieldset>
-
-</div> 
-
-<div class="content <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" --> active <!-- /tmpl_if -->" id="plaintext_message"> 		 
-	<div class="row">
-		<div class="small-12 columns">
-			<input type="radio" name="plaintext_content_from" id="plaintext_content_from_auto" value="auto" checked="checked" >
-			<label for="plaintext_content_from_auto">
-				Create a PlainText Version automatically
-			</label>
-		</div>
-	</div>
-	<div class="row">
-		<div class="small-12 columns">
-			<input type="radio" name="plaintext_content_from" id="plaintext_content_from_url" value="url" >
-			<label for="plaintext_content_from_url">
-				Grab content from this webpage address (URL): 
-			</label>
-			<input type="text" name="plaintext_url" id="plaintext_url"  placeholder="http://" >
-		</div>
-	</div>
-	<div class="row">
-		<div class="small-12 columns">
-			<input type="radio" name="plaintext_content_from" id="plaintext_content_from_text" value="text" >
-			<label for="plaintext_content_from_text">
-				Use the text below as the PlainText version:
-			</label>
-			<!-- tmpl_include plaintext_message_form_field_widget.tmpl -->
-		</div>
-	</div>
-</div> 
-
-<div id="tabs_mass_mailing_options">
-	<ul>
-		<li>
-			<a href="#send_email_archive_options">
- 				Archiving
-			</a>
-		</li>
-		<!-- tmpl_if MULTIPLE_LIST_SENDING --> 
-		
-			<li>
-				<a href="#multiple_list_sending">
-	 				Multiple List Sending
-				</a>
-			</li>
-		<!-- /tmpl_if --> 
-		<!-- tmpl_if can_have_subscriber_fields --> 
-			<li>
-				<a href="#partial_sending_options">
-	 				 Partial Mailing List Sending 
-				</a>
-			</li>
-		<!-- /tmpl_if --> 
-		
-
-<!-- tmpl_if comment --> 
-
-					<li>
-						<a href="#file_attachments">
-			 				 File Attachments
-						</a>
-					</li>
-
-<!-- /tmpl_if --> 
-
-<!-- tmpl_if comment --> 
-    <!-- tmpl_if can_have_subscriber_fields --> 
-    	<div id="update_profile_fields">		
-    	    <!--  update_profile_fields.tmpl --> 
-    	</div> 
-    <!-- /tmpl_if --> 
-<!-- /tmpl_if --> 
-
-		<li>
-			<a href="#send_email_test_recipient">
- 				 Testing
-			</a>
-		</li>
-
-		</ul>
-		
-	<div id="send_email_archive_options">		
-	<!-- tmpl_include send_email_archive_options_widget.tmpl -->
-	</div> 
-	<!-- tmpl_if MULTIPLE_LIST_SENDING --> 
-		<div id="multiple_list_sending">		
-		<!-- tmpl_include multiple_list_sending_widget.tmpl --> 
-		</div> 
-	<!-- /tmpl_if --> 
-	
-	<!-- tmpl_if can_have_subscriber_fields --> 
-		<div id="partial_sending_options">		
-		<!-- tmpl_include partial_sending_options_widget.tmpl --> 
-		</div> 
-	<!-- /tmpl_if --> 
-	
-	<!-- tmpl_if comment --> 
-				<div id="file_attachments">		
-				<!-- tmpl_include send_email_file_attachments_widget.tmpl -->
-				</div> 
-	<!-- /tmpl_if --> 
-	
-	<!-- tmpl_if comment --> 
-    	<!-- tmpl_if can_have_subscriber_fields --> 
-    		<div id="profile_field_tags_listing">		
-    		<!-- tmpl_include subscriber_field_tags_listing_widget.tmpl --> 
-    		</div> 
-    	<!-- /tmpl_if --> 
-    <!-- /tmpl_if -->
-	<div id="send_email_test_recipient">		
-	<!-- tmpl_include send_email_test_recipient_widget.tmpl --> 
-	</div> 
-	
-</div>		 
-	<!-- /tmpl_unless -->
- 
-<!-- /tmpl_unless -->
-
-</div>
-
-
-<div id="top_floating_button_wrapper">
-  <div id="buttons">
-      <div id="button_toolbar">
-          <input type="button" value="Loading..." class="bigger_button" >
-    </div>
-  </div>
-</div>
-
-</div>
-
 </form>
-
-
-
-
-
+	
 <!-- tmpl_include send_url_email_message_body_help_widget.tmpl -->		
-
- 
 
 <!-- end send_url_screen.tmpl -->

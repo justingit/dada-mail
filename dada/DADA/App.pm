@@ -906,7 +906,7 @@ sub send_email_button_widget {
             -screen         => 'send_email_button_widget.tmpl',
             -expr => 1,
             -vars => {
-                draft_role => $draft_role ,
+                draft_role      => $draft_role ,
                 archive_no_send => $archive_no_send, 
             },
             -list_settings_vars_param => {

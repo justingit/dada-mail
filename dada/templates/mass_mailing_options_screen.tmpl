@@ -3,14 +3,24 @@
 <!-- tmpl_set name="title" value="Mass Mailing &#187; Options" -->
 <div id="screen_meta" data-menu_highlight="mass_mailing_options"></div>
 
-
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-	 	<!-- tmpl_var title --> 
+<div class="row">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				 Mass Mailing 
+			 </a>
+	 	    <a 
+				href="#"
+				class="current"
+			>	
+				Options
+			</a>
+		</nav>
 	</div>
-	<!-- tmpl_include help_link_widget.tmpl -->
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
 </div>
-
 
 <!-- tmpl_if done -->
 	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
@@ -23,21 +33,21 @@
 <fieldset>
     <div class="row">
         <div class="small-12 columns">
-            <input type="checkbox" 
-                name="mass_mailing_convert_plaintext_to_html" 
-                id="mass_mailing_convert_plaintext_to_html" 
-                value="1" 
-                <!-- tmpl_if list_settings.mass_mailing_convert_plaintext_to_html -->checked="checked"<!-- /tmpl_if --> 
-             >
-            <label for="mass_mailing_convert_plaintext_to_html">  
+			<label for="mass_mailing_convert_plaintext_to_html">  
+	            <input type="checkbox" 
+	                name="mass_mailing_convert_plaintext_to_html" 
+	                id="mass_mailing_convert_plaintext_to_html" 
+	                value="1" 
+	                <!-- tmpl_if list_settings.mass_mailing_convert_plaintext_to_html -->checked="checked"<!-- /tmpl_if --> 
+	             >
                 Convert PlainText-only Mass Email Messages to HTML
             </label>
         </div>
     </div> 
     <div class="row">
         <div class="small-12 columns">
-            <input type="checkbox" name="mass_mailing_block_css_to_inline_css" id="mass_mailing_block_css_to_inline_css" value="1" <!-- tmpl_if list_settings.mass_mailing_block_css_to_inline_css -->checked="checked"<!-- /tmpl_if --> >
             <label for="mass_mailing_block_css_to_inline_css" <!-- tmpl_unless can_use_css_inliner -->class="disabled"<!-- /tmpl_unless -->>
+				<input type="checkbox" name="mass_mailing_block_css_to_inline_css" id="mass_mailing_block_css_to_inline_css" value="1" <!-- tmpl_if list_settings.mass_mailing_block_css_to_inline_css -->checked="checked"<!-- /tmpl_if --> >
                 Convert CSS &lt;style&gt; blocks to inline styles in HTML messages
             </label>
             <!-- tmpl_unless can_use_css_inliner --> 

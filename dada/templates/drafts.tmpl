@@ -2,11 +2,20 @@
 
 <!-- tmpl_set name="title" value="Mass Mailing &#187; Drafts/Stationery/Schedules" -->
 
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-	 	<!-- tmpl_var title --> 
+<div class="row">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				 Mass Mailing 
+			 </a>
+	 	    <a href="#" class="current">
+				Drafts/Stationery/Schedules
+			</a>
+		</nav>
 	</div>
-	<!-- tmpl_include help_link_widget.tmpl -->
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
 </div>
 
 <div id="drafts_screen"></div> 
@@ -132,7 +141,12 @@
         			</td>
         			
         			<td>
-						<input type="button" name="" value="Edit..." class="processing" onClick="window.location='<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->'" >  
+						<a 
+							href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->" class="small button processing"
+							class="small button processing"
+						> 
+							Edit
+						</a> 
 				    </td>
 					
 					
@@ -276,8 +290,13 @@
 
         			</td>
                     <td>
-                    		<input type="button" name="" value="Edit..." class="processing" onClick="window.location='<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_role=stationery&draft_id=<!-- tmpl_var id -->'" >  
-                    	</p> 
+                    	<a 
+							href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_role=stationery&draft_id=<!-- tmpl_var id -->"
+							class="small button processing"
+						>
+							Edit
+						</a>	
+						
                     </td>
 
 
@@ -403,14 +422,12 @@
                 					</p> 
                 			</td>
                             <td>
-                					 <input 
-                					    type="button" 
-                					    name="" 
-                					    value="Edit..." 
-                					    class="processing" 
-                					    onClick="window.location='<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule'" 
-                					  >  
-                				</p> 
+								<a 
+								href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule" 
+								class="small button processing" 
+								>
+									Edit
+								</a>
                 			</td>
 
                 		</tr> 
@@ -526,16 +543,12 @@
                     					</p> 
                     			</td>
                                 <td>
-                    					 <input 
-                    					    type="button" 
-                    					    name="" 
-                    					    value="Edit..." 
-                    					    class="processing" 
-                    					    onClick="window.location='<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule'" 
-                    					  >  
-
-
-                    				</p> 
+									<a
+										href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule"
+										class="small button processing"
+									>
+										Edit
+									</a>
                     			</td>
 
                     		</tr> 

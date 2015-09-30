@@ -2,17 +2,28 @@
 
 <div id="screen_meta" data-menu_highlight="sending_monitor"></div>
 
-
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-		Mass Mailing &#187; <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=sending_monitor">Monitor Your Mailings</a>
-		<!-- tmpl_if header_subject_label --> 
-			 &#187;
-			 <!-- tmpl_var name="header_subject_label" escape="HTML" --> 
-		<!-- /tmpl_if --> 
+<div class="row">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				 Mass Mailing 
+			 </a>
+	 	    <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=sending_monitor">
+				Monitor Your Mailings
+			</a>
+			<!-- tmpl_if header_subject_label --> 
+				 <a href="#" class="current">
+					 <!-- tmpl_var name="header_subject_label" escape="HTML" --> 
+				</a>
+			<!-- /tmpl_if -->
+		</nav>
 	</div>
-	<!-- tmpl_include help_link_widget.tmpl -->
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
 </div>
+
+
 
 
 			  <!-- tmpl_if comment -->

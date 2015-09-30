@@ -5,40 +5,45 @@
 <div id="screen_meta" data-menu_highlight="add"></div>
 
 
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-		 Membership (Subscribers) 
-		<!-- tmpl_if list_type_isa_list -->
-			Invite
-			<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" -->
-				/ Add
-			<!-- /tmpl_if -->
-		<!-- tmpl_else --> 
-			Add
-		<!-- /tmpl_if -->
-		&#187;
-		 Verify 
-		&#187;
-		<!-- tmpl_if list_type_isa_list -->
-			<strong>Send Invitation</strong>
-			<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" -->
-				/ Subscribe
-			<!-- /tmpl_if -->
-		<!-- tmpl_else --> 
-			Add
-		<!-- /tmpl_if -->
-	
- </div> 
+<div class="row">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+			<a href="#">
+				Membership (Subscribers)
+			</a>
+			<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=add">
+					Invite
+					<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
+						/ Subscribe
+	 			    <!-- /tmpl_if -->
+			</a>
+			<a href="#" class="unavailable">
+				Verify
+			</a>
+			<a href="#" class="current">
+				Send Invitation
+		   </a>
+	 </nav>
+	</div>
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
 </div>
+
 <div id="list_invite"></div> 
 
 
 
 <form name="mass_mailing" id="mass_mailing" action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-
+	
 	<div id="entire_form">
 	  <div id="form_widgets">
 
+	  	<div id="buttons" class="contain-to-grid">
+			<!-- tmpl_include send_email_button_widget.tmpl -->
+	  	</div>
+		  
+		  
 		<!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
 
 
@@ -214,9 +219,16 @@
 
 
 <div id="customize_invite_message_button">
-	<div style="text-align:center">
-		<input type="button" value="Customize Your List Invitation Message..." class="cautionary bigger_button show_customize_invite_message" >
-	</div>
+		<ul class="button-group even-1">
+			<li>
+				<input 
+					type="button" 
+					value="Customize Your List Invitation Message..." 
+					class="button cautionary bigger_button show_customize_invite_message"
+				>
+			</li>
+		</ul>
+</div>
 	
 </div> 
 
@@ -273,11 +285,6 @@
 </div>
 
 
-<div id="top_floating_button_wrapper">
-  <div id="buttons">
-	<!-- tmpl_include send_email_button_widget.tmpl -->
-  </div>
-</div>
 
 </div>
 

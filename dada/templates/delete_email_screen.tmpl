@@ -3,18 +3,26 @@
 <!-- tmpl_set name="title" value="Membership &#187; Remove" -->
 <div id="screen_meta" data-menu_highlight="delete_email"></div>
 
-
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-	Membership (<!-- tmpl_var type_title -->)
-	&#187;
-	 <strong>Remove</strong>
-	&#187;
-	 Verify
-	&#187;
-	 Unsubscribe
-	</div> 
-	<!-- tmpl_include help_link_widget.tmpl -->
+<div class="row">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+			<a href="#">
+				Membership (<!-- tmpl_var type_title -->)
+			</a>
+			<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=delete_email" class="current">
+				Remove
+			</a>
+			<a href="#" class="unavailable">
+				Verify
+			</a>
+			<a href="#" class="unavailable">
+				Unsubscribe
+		   </a>
+	 </nav>
+	</div>
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
 </div>
 
 <!-- tmpl_include list_type_switch_widget.tmpl -->
@@ -23,80 +31,63 @@
 	
 	<!-- tmpl_if can_use_global_unsubscribe --> 
 		<div class="alert-box info radius">
-		<p>
-		 Global Unsubscribe has been enabled.
-		</p>
-	</div>
-		
+			 Global Unsubscribe has been enabled.
+		 </div>
 	<!--/tmpl_if-->
 	
 <!--/tmpl_if-->
 
 
+	
+	
 <fieldset>
-	
-	<legend>Remove a Bunch of Subscribers</legend>
-	
-	
-	<fieldset style="background:#e6e6e6">
-	<legend>Paste Addresses Below:</legend>
+	<legend>
+		Paste Your Addresses:
+	</legend>
 	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-
-    <p>
-      <label for="delete_list">
-              Enter
-     </label> 
-     addresses (one subscriber per line):
-</p>
-
-
-
- <textarea name="delete_list" id="delete_list" rows="5" cols="40"></textarea>
-
-
- <input type="hidden" name="process" value="1" >
- <input type="hidden" name="flavor"       value="delete_email" >
- <input type="hidden" name="type"    value="<!-- tmpl_var type -->" >
-
- <div class="buttonfloat">
-  <input type="reset"  class="cautionary" value="Clear Changes" >
-  <input type="submit" class="processing" value="Submit Email List" >
- </div>
-</form>
-<div class="floatclear"></div>
-
+    <input type="hidden" name="process" value="1" >
+    <input type="hidden" name="flavor"       value="delete_email" >
+    <input type="hidden" name="type"    value="<!-- tmpl_var type -->" >
+	
+			<div class="row">
+				<div class="small-12 columns">
+					<label for="delete_list">
+						Enter addresses (one subscriber per line):
+					</label> 
+					<textarea name="delete_list" id="delete_list"></textarea>
+				</div>
+				<ul class="button-group right">
+				  <li>
+					  <input type="reset"  class="button cautionary" value="Clear Changes" >
+				  </li>
+					<li>
+						<input type="submit" class="button processing" value="Submit Email List" >
+					</li>
+				</ul>
+			</div>
+		</div>
+	</form>
 </fieldset>
 
-<fieldset style="background:#e6e6e6">
-	<legend>Upload From File</legend>
-
- <p>
-  Alternatively, 
-  <label for="delete_email_file">
-   upload 
-  </label>
-  a text file that contains the addresses you'd like to unsubscribe:
- </p> 
-
+<fieldset>
+	<legend>Upload Your Addresses</legend>
 <form enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-
- <input type="file" name="delete_email_file" >
-
- <input type="hidden" name="process" value="1" >
- <input type="hidden" name="flavor"       value="delete_email" >
- <input type="hidden" name="type"    value="<!-- tmpl_var type -->" >
-
- <div class="buttonfloat">
-  <input type="reset"  class="cautionary" value="Clear Changes" >
-  <input type="submit" class="processing" value="Submit Email List" >
- </div>
-</form>
-<div class="floatclear"></div>
-
+	 <input type="hidden" name="process" value="1" >
+	 <input type="hidden" name="flavor"  value="delete_email" >
+	 <input type="hidden" name="type"    value="<!-- tmpl_var type -->" >
+	 <div class="row">
+		<div class="small-12 columns">
+			<label for="delete_email_file">
+				Alternatively, upload  a text file that contains the addresses you'd like to unsubscribe:
+			</label> 
+			<input type="file" name="delete_email_file" >
+			  <ul class="button-group right">
+			    <li><input type="reset"  class="button cautionary" value="Clear Changes"></li>
+			    <li><input type="submit" class="button processing" value="Submit Email List"></li>
+			 </ul>
+			</div>
+		</div>
+	</form>
 </fieldset>
-</fieldset>
-
- 
-
 
 <!-- end delete_email_screen.tmpl -->

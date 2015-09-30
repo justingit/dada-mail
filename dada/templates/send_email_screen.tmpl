@@ -37,198 +37,104 @@
 	</div>
 </div>
 
-	
-	
-	<div id="send_email_screen"></div> 
+
+<div id="send_email_screen"></div> 
 <div id="screen_meta" data-menu_highlight="send_email"></div>
 
 <form name="mass_mailing" id="mass_mailing" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"  accept-charset="<!-- tmpl_var HTML_CHARSET -->">
 
-<div id="buttons" class="contain-to-grid" style="z-index:100; background-color:#fff">
-	<div id="button_toolbar">
-		<input type="button" value="Loading..." class="button small" >
-	</div>
-</div>
-    
-<div id="entire_form">
-  <div id="form_widgets">
-
-
-      <!-- tmpl_if draft_id --> 
-          <!-- tmpl_if expr="(draft_role eq 'draft')" --> 
-          	<div class="alert-box info radius">
-          			Draft message restored below:
-          	</div> 
-          <!-- /tmpl_if -->
-          <!-- tmpl_if expr="(draft_role eq 'stationery')" --> 
-              <!-- tmpl_if done --> 
-                  <!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
-              <!-- /tmpl_if -->
-          <!-- /tmpl_if -->     
-          <!-- tmpl_if expr="(draft_role eq 'schedule')" --> 
-              <!-- tmpl_if done --> 
-                  <!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
-              <!-- /tmpl_if -->
-          <!-- /tmpl_if -->     
-
-      <!-- /tmpl_If --> 
-
-<!-- tmpl_include test_sent_notice_widget.tmpl --> 
-<!-- tmpl_include ses_email_verification_widget.tmpl -->
-<!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
-<!-- tmpl_include discussion_list_support_notice_widget.tmpl --> 
-
-
-<!-- tmpl_unless list_settings.smtp_server -->	
-	<!-- tmpl_if expr="list_settings.sending_method eq 'smtp'"  -->
-		<div class="alert-box info radius">
-		<p>
-		 Warning! No SMTP Server has been set!
-		</p>
-	</div> 
-	<!-- /tmpl_if -->
-<!-- /tmpl_unless -->
-
-
-<!-- tmpl_include draft_notice_widget.tmpl --> 
-<!-- tmpl_include send_email_schedule_options_widget.tmpl -->
-<!-- tmpl_include send_email_headers_widget.tmpl --> 
-
- <input type="hidden" name="s_program_url"     id="s_program_url"     value="<!-- tmpl_var S_PROGRAM_URL -->" >
- <input type="hidden" name="support_files_url" id="support_files_url" value="<!-- tmpl_var SUPPORT_FILES_URL -->" >
-
-
-<input type="hidden" id="list"               name="list"                  value="<!-- tmpl_var list_settings.list -->" >
-<input type="hidden" id="sched_flavor"       name="sched_flavor"          value="<!-- tmpl_var sched_flavor -->" >
-
-
-<input type="hidden" id="flavor"             name="flavor"                value="send_email" >
-<input type="hidden" id="draft_alert"        name="draft_alert"           value="<!-- tmpl_var draft_alert default="0" -->" >
-<input type="hidden" id="draft_id"           name="draft_id"              value="<!-- tmpl_var draft_id -->"                > 
-<input type="hidden" id="save_draft_role"    name="save_draft_role"       value=""                                          >
-<input type="hidden" id="draft_role"         name="draft_role"            value="<!-- tmpl_var draft_role -->"              >
-<input type="hidden" id="restore_from_draft" name="restore_from_draft"    value="<!-- tmpl_var restore_from_draft -->"      >
-
-
-<fieldset> 
- <legend>Message Body [<a href="#" onclick="$.colorbox({inline:true, href:$('#message_body_help')})">?</a>]</legend>
-
-
-	
-<ul class="tabs" data-tab>
-	<li class="tab-title <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" --><!-- tmpl_else -->active<!-- /tmpl_if -->">
-		<a href="#html_message">
-				HTML Version
-			</a>
-		</li>
-		<li class="tab-title <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" --> active <!-- /tmpl_if -->">
-				<a href="#plaintext_message">
-					PlainText Version
-				</a>
-			</li>
-		<li class="tab-title">
-			<a href="#file_attachments">
- 				 File Attachments
-			</a>
-		</li>    		
-		</ul>
-	<div class="tabs-content">
-		<div  class="content tab-title  <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" --><!-- tmpl_else -->active<!-- /tmpl_if -->" id="html_message"> 
-		    <!-- tmpl_include html_message_form_field_widget.tmpl --> 
-		</div>	
-		<div class="content <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" --> active <!-- /tmpl_if -->" id="plaintext_message"> 
-		    <!-- tmpl_include plaintext_message_form_field_widget.tmpl -->
+	<div id="buttons" class="contain-to-grid">
+		<div id="button_toolbar">
+			<input type="button" value="Loading..." class="button small" >
 		</div>
-		<div class="content"  id="file_attachments">		
-		    <!-- tmpl_include send_email_file_attachments_widget.tmpl -->
-		</div> 
-	</div> 
- 
+	</div>
 
-</fieldset>
- 
+	<div id="entire_form">
+		<div id="form_widgets">
+			<!-- tmpl_if draft_id --> 
+				<!-- tmpl_if expr="(draft_role eq 'draft')" --> 
+					<div class="alert-box info radius">
+						Draft message restored below:
+					</div> 
+				<!-- /tmpl_if -->
+				<!-- tmpl_if expr="(draft_role eq 'stationery')" --> 
+					<!-- tmpl_if done --> 
+						<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
+					<!-- /tmpl_if -->
+				<!-- /tmpl_if -->     
+				<!-- tmpl_if expr="(draft_role eq 'schedule')" --> 
+					<!-- tmpl_if done --> 
+						<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
+				<!-- /tmpl_if -->
+			<!-- /tmpl_if -->     
 
-<fieldset> 
-<legend>Options</legend>
+			<!-- /tmpl_If --> 
 
+			<!-- tmpl_include test_sent_notice_widget.tmpl --> 
+			<!-- tmpl_include ses_email_verification_widget.tmpl -->
+			<!-- tmpl_include mass_mailing_limit_notice_widget.tmpl --> 
+			<!-- tmpl_include discussion_list_support_notice_widget.tmpl --> 
 
-<ul class="tabs" data-tab>
-	<li class="tab-title active">
-		<a href="#send_email_archive_options">
-			Archiving
-		</a>
-	</li>
-	<!-- tmpl_if MULTIPLE_LIST_SENDING --> 
-		<li class="tab-title">
-			<a href="#multiple_list_sending">
- 				Multiple List Sending
-			</a>
-		</li>
-	<!-- /tmpl_if --> 
-	<!-- tmpl_if can_have_subscriber_fields --> 
-		<li class="tab-title">
-			<a href="#partial_sending_options">
- 				 Partial Mailing List Sending 
-			</a>
-		</li>
-	<!-- /tmpl_if --> 
-	
-	<!-- tmpl_if comment --> 
-	
-	    <!-- tmpl_if can_have_subscriber_fields --> 
-		<li class="tab-title">
-			<a href="#update_profile_fields">
- 				 Update Profile Fields
-			</a>
-		</li>		
-	    <!-- /tmpl_if --> 
-    <!-- /tmpl_if --> 
-
-	<li class="tab-title">
-		<a href="#send_email_test_recipient">
-			 Testing
-		</a>
-	</li>
-</ul>
-	
-<div class="tabs-content">
-	<div class="content tab-title active" id="send_email_archive_options">		
-		<!-- tmpl_include send_email_archive_options_widget.tmpl -->
-	</div> 
-	
-	
-	<!-- tmpl_if MULTIPLE_LIST_SENDING --> 
-		<div class="content tab-title" id="multiple_list_sending">		
-			<!-- tmpl_include multiple_list_sending_widget.tmpl --> 
-		</div> 
-	<!-- /tmpl_if --> 
-	
-	<!-- tmpl_if can_have_subscriber_fields --> 
-		<div  class="content tab-title" id="partial_sending_options">		
-			<!-- tmpl_include partial_sending_options_widget.tmpl --> 
-		</div> 
-	<!-- /tmpl_if --> 
-	
-
-	<!-- tmpl_if can_have_subscriber_fields --> 
-		<div class="content tab-title"  id="update_profile_fields">		
-		    <!-- tmpl_include update_profile_fields.tmpl --> 
-		</div> 
-	<!-- /tmpl_if --> 
-
-	<div class="content tab-title"  id="send_email_test_recipient">		
-		<!-- tmpl_include send_email_test_recipient_widget.tmpl --> 
-	</div> 
-</div> 
-
-</fieldset> 
-
-</div>
+			<!-- tmpl_unless list_settings.smtp_server -->	
+				<!-- tmpl_if expr="list_settings.sending_method eq 'smtp'"  -->
+					<div class="alert-box info radius">
+						Warning! No SMTP Server has been set!
+					</div> 
+				<!-- /tmpl_if -->
+			<!-- /tmpl_unless -->
 
 
+			<!-- tmpl_include draft_notice_widget.tmpl --> 
+			<!-- tmpl_include send_email_schedule_options_widget.tmpl -->
+			<!-- tmpl_include send_email_headers_widget.tmpl --> 
 
-</div>
+			<input type="hidden" name="s_program_url"     id="s_program_url"     value="<!-- tmpl_var S_PROGRAM_URL -->" >
+			<input type="hidden" name="support_files_url" id="support_files_url" value="<!-- tmpl_var SUPPORT_FILES_URL -->" >
+			<input type="hidden" id="list"               name="list"             value="<!-- tmpl_var list_settings.list -->" >
+			<input type="hidden" id="sched_flavor"       name="sched_flavor"     value="<!-- tmpl_var sched_flavor -->" >
+			<input type="hidden" id="flavor"             name="flavor"                value="send_email" >
+			<input type="hidden" id="draft_alert"        name="draft_alert"           value="<!-- tmpl_var draft_alert default="0" -->" >
+			<input type="hidden" id="draft_id"           name="draft_id"              value="<!-- tmpl_var draft_id -->"                > 
+			<input type="hidden" id="save_draft_role"    name="save_draft_role"       value=""                                          >
+			<input type="hidden" id="draft_role"         name="draft_role"            value="<!-- tmpl_var draft_role -->"              >
+			<input type="hidden" id="restore_from_draft" name="restore_from_draft"    value="<!-- tmpl_var restore_from_draft -->"      >
 
+			<fieldset> 
+				<legend>
+					Message Body [<a href="#" onclick="$.colorbox({inline:true, href:$('#message_body_help')})">?</a>]
+				</legend>
+				<ul class="tabs" data-tab>
+					<li class="tab-title <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" --><!-- tmpl_else -->active<!-- /tmpl_if -->">
+						<a href="#html_message">
+							HTML Version
+						</a>
+					</li>
+					<li class="tab-title <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" --> active <!-- /tmpl_if -->">
+						<a href="#plaintext_message">
+							PlainText Version
+						</a>
+					</li>
+					<li class="tab-title">
+						<a href="#file_attachments">
+							File Attachments
+						</a>
+					</li>    		
+				</ul>
+				<div class="tabs-content">
+					<div  class="content tab-title  <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" --><!-- tmpl_else -->active<!-- /tmpl_if -->" id="html_message"> 
+						<!-- tmpl_include html_message_form_field_widget.tmpl --> 
+					</div>	
+					<div class="content <!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" --> active <!-- /tmpl_if -->" id="plaintext_message"> 
+						<!-- tmpl_include plaintext_message_form_field_widget.tmpl -->
+					</div>
+					<div class="content"  id="file_attachments">		
+						<!-- tmpl_include send_email_file_attachments_widget.tmpl -->
+					</div> 
+				</div> 
+			</fieldset>
+			<!-- tmpl_include send_email_options-widgets.tmpl -->
+		</div>
+	</div>
 </form>
 
 <!-- tmpl_include send_email_message_body_help_widget.tmpl -->
