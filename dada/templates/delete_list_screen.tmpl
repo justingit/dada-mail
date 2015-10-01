@@ -5,12 +5,25 @@
 <div id="delete_list_screen"></div> 
 
 
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-		<!-- tmpl_var title --> 
-	</div> 
-	<!-- tmpl_include help_link_widget.tmpl -->
+<div class="row">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				Your Mailing List
+			 </a>
+	 	    <a 
+				href="#"
+				class="current"
+			>	
+				Delete This Mailing List
+			</a>
+		</nav>
+	</div>
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
 </div>
+
 
 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" id="delete_list_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
