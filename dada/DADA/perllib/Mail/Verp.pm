@@ -175,7 +175,7 @@ S<< my $x = Mail::Verp->new(separator => '+'); >>
 
 Encodes LOCAL-ADDRESS, REMOTE-ADDRESS into a verped address suitable for use
 as an envelope return address. It may also be useful to use the same address in
-Errors-To and Reply-To headers to compensate for broken Mail Transport Agents.
+Reply-To headers to compensate for broken Mail Transport Agents.
 
 Uses current separator value.
 

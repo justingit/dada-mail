@@ -2553,7 +2553,6 @@ sub email_template {
 	    'From', 
 	    'To', 
 	    'Reply-To', 
-	    'Errors-To', 
 	    'Return-Path', 
 	    'List', 
 	    'List-URL', 

@@ -1416,15 +1416,12 @@ $MIME_OPTIMIZE     //= 'no tmp files';
     charset_value => 'UTF-8',
     priority      => 3,
 
-    print_errors_to_header       => 0,
     print_return_path_header     => 0,
     plaintext_encoding           => 'quoted-printable',
     html_encoding                => 'quoted-printable',
     strip_message_headers        => 0,
     add_sendmail_f_flag          => 1,
     verp_return_path             => 0,
-    use_domain_sending_tunings   => 0,
-    domain_sending_tunings       => undef,
     mime_encode_words_in_headers => 1,
 
     # view list prefs
@@ -1845,7 +1842,6 @@ $PROGRAM_NAME //= "Dada Mail";
     'Return-Path'               => undef,
     'Reply-To'                  => undef,
     'In-Reply-To'               => undef,
-    'Errors-To'                 => undef,
     References                  => undef,
     'X-Priority'                => undef,
     'X-Original-From'           => undef,
@@ -1884,7 +1880,6 @@ $PROGRAM_NAME //= "Dada Mail";
   Return-Path
   Reply-To
   In-Reply-To
-  Errors-To
   References
   X-Priority
   X-Original-From

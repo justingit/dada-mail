@@ -474,7 +474,6 @@ sub construct_from_text {
     for my $h (
         qw(
         Reply-To
-        Errors-To
         Return-Path
         X-Priority
         Subject
@@ -645,7 +644,6 @@ sub construct_from_url {
     for my $h (
         qw(
         Reply-To
-        Errors-To
         Return-Path
         X-Priority
         Subject
@@ -1453,7 +1451,6 @@ sub list_invite {
         for my $h (
             qw(
             Reply-To
-            Errors-To
             Return-Path
             X-Priority
             Subject

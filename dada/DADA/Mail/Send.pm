@@ -148,32 +148,6 @@ sub _init {
 	$self->{mj_log} = $log;
 	
 	if(defined($args->{-list})){ 
-			
-		if($self->{list_info}->{use_domain_sending_tunings} == 1) { 
-	    #if($self->{ls}->param('use_domain_sending_tunings') == 1) { 
-    
-	        if($self->{ls}->param('domain_sending_tunings')) { 
-        
-	            my $tunings = eval($self->{ls}->param('domain_sending_tunings')); 
-	            my $lookup_tunings = {}; 
-            
-	            # let's make this into an easier-to-look-up-format: 
-            
-	            for my $tune(@$tunings){ 
-	                if($tune->{domain}){ # only real thingy needed...
-	                    $lookup_tunings->{$tune->{domain}} = {};
-	                    for my $in_tune(keys %$tune){ 
-	                       # next if $in_tune eq 'domain'; 
-	                        $lookup_tunings->{$tune->{domain}}->{$in_tune} = $tune->{$in_tune}; 
-	                    }
-	                }
-	            }
-            
-	            $self->{domain_specific_tunings} = $lookup_tunings; 
-	        }
-	    }
-    
-	
         require DADA::MailingList::Subscribers; 
         my $lh = DADA::MailingList::Subscribers->new(
 			{
@@ -365,17 +339,7 @@ sub send {
 	
 		# This copies over domain-specific tunings for sending...
 		my ($email_address, $email_domain) = split('@', $fields{To});
-		# damn that's weird.
-	
-		if($self->{ls}->param('use_domain_sending_tunings') == 1) { 
-		
-	        if($self->{domain_specific_tunings}->{$email_domain}->{domain} eq $email_domain){  
-	            for(keys %{$self->{domain_specific_tunings}->{$email_domain}}){
-	                $local_li->{$_} = $self->{domain_specific_tunings}->{$email_domain}->{$_};
-	            }
-	        }
-        
-		}
+		# damn that's weird.	
 	}
 	else { 
 		%{$local_li} = %DADA::Config::LIST_SETUP_DEFAULTS;
@@ -2620,14 +2584,6 @@ sub _make_general_headers {
 							$host . 
 							'>';					
 		
-		# Deprecated.
-		if($self->{ls}->param('print_errors_to_header') == 1){ 	
-			$gh{'Errors-To'} = $fm->format_phrase_address(
-				undef, 
-				$self->{ls}->param('admin_email')
-			);
-		} 	
-
 		if(defined($self->{ls}->param('priority'))) { 
 		    if($self->{ls}->param('priority') ne 'none'){ 
 		        $gh{'X-Priority'}  = $self->{ls}->param('priority');
@@ -3674,8 +3630,6 @@ Return a hash containing the following Email Headers:
 =item * From
 
 =item * Reply-To
-
-=item * Errors-To
 
 =item * Message-ID
 

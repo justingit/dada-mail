@@ -182,7 +182,6 @@ sub setup {
         'mailing_sending_mass_mailing_options'                    => \&mailing_sending_mass_mailing_options,
         'previewBatchSendingSpeed'                    => \&previewBatchSendingSpeed,
         'mail_sending_advanced_options'                     => \&mail_sending_advanced_options,
-        'sending_tuning_options'                      => \&sending_tuning_options,
         'filter_using_black_list'                     => \&filter_using_black_list,
         'search_archive'                              => \&search_archive,
         'send_archive'                                => \&send_archive,
@@ -629,11 +628,10 @@ sub admin_menu_drafts_notification {
                   . commify($num_shedules) . ')';
             }
         }
-    }
-    catch {
+    } catch {
         warn
 "Problems filling out the 'Sending Monitor' admin menu item with interesting bits of information about the mailouts: $_";
-    }
+    };
 
 }
 
@@ -665,11 +663,10 @@ sub admin_menu_mailing_monitor_notification {
               );
             return $list_mailouts . '/' . $total_mailouts;
         }
-    }
-    catch {
+    } catch {
         warn
 "Problems filling out the 'Sending Monitor' admin menu item with interesting bits of information about the mailouts: $_";
-    }
+    };
 }
 
 sub admin_menu_subscriber_count_notification {
@@ -692,11 +689,10 @@ sub admin_menu_subscriber_count_notification {
                 return '(' . commify($num) . ')';
             }
         }
-    }
-    catch {
+    } catch {
         carp($_);
         return '';
-    }
+    };
 }
 
 sub admin_menu_archive_count_notification {
@@ -719,11 +715,10 @@ sub admin_menu_archive_count_notification {
                 return '(' . commify($num) . ')';
             }
         }
-    }
-    catch {
+    } catch {
         carp($_);
         return '';
-    }
+    };
 }
 
 sub admin_menu_mail_sending_options_notification {
@@ -752,11 +747,10 @@ sub admin_menu_mail_sending_options_notification {
             }
         }
         return $rs;
-    }
-    catch {
+    } catch {
         carp($_);
         return '';
-    }
+    };
 }
 
 
@@ -782,11 +776,10 @@ sub admin_menu_mailing_sending_mass_mailing_options_notification {
                 return ''; 
             }
         }
-    }
-    catch {
+    } catch {
         carp($_);
         return '';
-    }
+    };
 }
 
 
@@ -813,11 +806,10 @@ sub admin_menu_bounce_handler_notification {
                 return '(' . commify($num) . ')';
             }
         }
-    }
-    catch {
+    } catch {
         carp($_);
         return '';
-    }
+    };
 }
 
 
@@ -1021,8 +1013,7 @@ sub mass_mailing_schedules_preview {
                 require DateTime::Event::Recurrence;
                 $start = DateTime->from_epoch( epoch => $schedule_recurring_ctime_start );
                 $end   = DateTime->from_epoch( epoch => $schedule_recurring_ctime_end );
-            }
-            catch {
+            } catch {
                 warn $_;
                 $errors .= $_;
             };
@@ -2137,8 +2128,7 @@ sub mass_mailing_options {
         my $can_use_css_inliner = 1;
         try {
             require CSS::Inliner;
-        }
-        catch {
+        } catch {
             $can_use_css_inliner = 0;
         };
 
@@ -3283,6 +3273,7 @@ sub mail_sending_advanced_options {
     my $process = $q->param('process');
     my $done    = $q->param('done');
 
+	
     my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
         -Function => 'mail_sending_advanced_options'
@@ -3295,6 +3286,7 @@ sub mail_sending_advanced_options {
     require DADA::MailingList::Settings;
 
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+
 
     if ( !$process ) {
 
@@ -3334,35 +3326,38 @@ sub mail_sending_advanced_options {
         if ($@) {
             $can_mime_encode = 0;
         }
+		
 
-        my $scrn = DADA::Template::Widgets::wrap_screen(
-            {
-                -screen         => 'mail_sending_advanced_options_screen.tmpl',
-                -with           => 'admin',
-                -wrapper_params => {
-                    -Root_Login => $root_login,
-                    -List       => $list,
-                },
-                -list => $list,
-                -vars => {
-                    screen                        => 'mail_sending_advanced_options',
-                    title                         => 'Advanced Options',
-                    done                          => $done,
-                    precedence_popup_menu         => $precedence_popup_menu,
-                    priority_popup_menu           => $priority_popup_menu,
-                    charset_popup_menu            => $charset_popup_menu,
-                    plaintext_encoding_popup_menu => $plaintext_encoding_popup_menu,
-                    html_encoding_popup_menu      => $html_encoding_popup_menu,
-                    can_mime_encode               => $can_mime_encode,
-                },
-                -list_settings_vars_param => {
-                    -list   => $list,
-                    -dot_it => 1,
-                },
+			
+	        my $scrn = DADA::Template::Widgets::wrap_screen(
+	            {
+	                -screen         => 'mail_sending_advanced_options_screen.tmpl',
+	                -with           => 'admin',
+	                -wrapper_params => {
+	                    -Root_Login => $root_login,
+	                    -List       => $list,
+	                },
+	                -list => $list,
+	                -vars => {
+	                    screen                        => 'mail_sending_advanced_options',
+	                    title                         => 'Advanced Options',
+	                    done                          => $done,
+	                    precedence_popup_menu         => $precedence_popup_menu,
+	                    priority_popup_menu           => $priority_popup_menu,
+	                    charset_popup_menu            => $charset_popup_menu,
+	                    plaintext_encoding_popup_menu => $plaintext_encoding_popup_menu,
+	                    html_encoding_popup_menu      => $html_encoding_popup_menu,
+	                    can_mime_encode               => $can_mime_encode,
+	                },
+	                -list_settings_vars_param => {
+	                    -list   => $list,
+	                    -dot_it => 1,
+	                },
 
-            }
-        );
-        return $scrn;
+	            }
+	        );
+			
+			return $scrn;
     }
     else {
 
@@ -3377,197 +3372,21 @@ sub mail_sending_advanced_options {
                     html_encoding                => undef,
                     strip_message_headers        => 0,
                     print_return_path_header     => 0,
-                    print_errors_to_header       => 0,
                     verp_return_path             => 0,
-                    use_domain_sending_tunings   => 0,
                     mime_encode_words_in_headers => 0,
                 }
             }
         );
 
         $self->header_type('redirect');
-        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=mail_sending_advanced_options&done=1' );
+        $self->header_props( 
+			-url => $DADA::Config::S_PROGRAM_URL . '?flavor=mail_sending_advanced_options&done=1'
+		);
 
     }
 }
 
-sub sending_tuning_options {
 
-    my $self    = shift;
-    my $q       = $self->query();
-    my $process = $q->param('process');
-
-    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
-        -cgi_obj  => $q,
-        -Function => 'sending_tuning_options'
-    );
-    if ( !$checksout ) { return $error_msg; }
-
-    my @allowed_tunings = qw(
-      domain
-      sending_method
-      add_sendmail_f_flag
-      print_return_path_header
-      verp_return_path
-    );
-
-    my $list = $admin_list;
-
-    require DADA::MailingList::Settings;
-
-    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-
-    if ( $process eq 'remove_all' ) {
-        $ls->save( { domain_sending_tunings => '' } );
-        $self->header_type('redirect');
-        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=sending_tuning_options&done=1&remove=1' );
-    }
-    elsif ( $process == 1 ) {
-
-        my $tunings = eval( $ls->param('domain_sending_tunings') );
-
-        #my $errors  = {};
-
-        if ( $q->param('new_tuning') == 1 ) {
-
-            my $new_tuning = {};
-            my $p_list     = $q->Vars;
-
-            for ( keys %$p_list ) {
-                if ( $_ =~ m/^new_tuning_/ ) {
-                    my $name = $_;
-                    $name =~ s/^new_tuning_//;
-                    $new_tuning->{$name} = $q->param($_);
-
-# if($p_list->{new_tuning_domain}){
-#    # TO DO domain regex needs some work...
-#     if(DADA::App::Guts($p_list->{new_tuning_domain}) == 0 && $p_list->{new_tuning_domain} !~ m/^([a-z]+[-]*(?=[a-z]|\d)\d*[a-z]*)\.(.*?)/){
-#         $errors{not_a_domain} = 1;
-#     }
-# }
-                }
-            }
-
-            if ( $new_tuning->{domain} ) {    # really, the only required field.
-                                              #if(! keys %$errors){
-                push( @$tunings, $new_tuning );
-
-                # }
-            }
-        }
-
-        # if(! keys %$errors){
-
-        require Data::Dumper;
-        my $tunes = Data::Dumper->new( [$tunings] );
-        $tunes->Purity(1)->Terse(1)->Deepcopy(1);
-        $ls->save( { domain_sending_tunings => $tunes->Dump } );
-
-        $self->header_type('redirect');
-        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=sending_tuning_options&done=1' );
-
-    }
-    elsif ( $q->param('process_edit') =~ m/Edit/i ) {
-
-        if ( $q->param('domain') ) {
-
-            my $saved_tunings = eval( $ls->param('domain_sending_tunings') );
-            my $new_tunings   = [];
-
-            for my $st (@$saved_tunings) {
-
-                if ( $st->{domain} eq $q->param('domain') ) {
-
-                    for my $a_tuning (@allowed_tunings) {
-
-                        my $new_tune = $q->param($a_tuning) || 0;
-
-                        #  if($q->param($a_tuning)){
-                        $st->{$a_tuning} = $new_tune;
-
-                        # }
-                    }
-                }
-            }
-
-            require Data::Dumper;
-            my $tunes = Data::Dumper->new( [$saved_tunings] );
-            $tunes->Purity(1)->Terse(1)->Deepcopy(1);
-            $ls->save( { domain_sending_tunings => $tunes->Dump } );
-
-        }
-
-        $self->header_type('redirect');
-        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=sending_tuning_options&done=1&edit=1' );
-
-    }
-    elsif ( $q->param('process_edit') =~ m/Remove/i ) {
-
-        if ( $q->param('domain') ) {
-
-            my $saved_tunings = eval( $ls->param('domain_sending_tunings') );
-            my $new_tunings   = [];
-
-            for (@$saved_tunings) {
-
-                if ( $_->{domain} ne $q->param('domain') ) {
-                    push( @$new_tunings, $_ );
-                }
-
-            }
-
-            require Data::Dumper;
-            my $tunes = Data::Dumper->new( [$new_tunings] );
-            $tunes->Purity(1)->Terse(1)->Deepcopy(1);
-            $ls->save( { domain_sending_tunings => $tunes->Dump } );
-
-        }
-
-        $self->header_type('redirect');
-        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=sending_tuning_options&done=1&remove=1' );
-
-    }
-    else {
-
-        my $saved_tunings = eval( $ls->param('domain_sending_tunings') );
-
-        # This is done because variables inside loops are local, not global, and global vars don't work in loops.
-        my $c = 0;
-        for (@$saved_tunings) {
-            $saved_tunings->[$c]->{S_PROGRAM_URL} = $DADA::Config::S_PROGRAM_URL;
-            $c++;
-        }
-
-        my $scrn = DADA::Template::Widgets::wrap_screen(
-            {
-                -screen         => 'sending_tuning_options.tmpl',
-                -with           => 'admin',
-                -wrapper_params => {
-                    -Root_Login => $root_login,
-                    -List       => $list,
-                },
-                -expr => 1,
-                -vars => {
-
-                    tunings => $saved_tunings,
-                    done    => ( $q->param('done') ? 1 : 0 ),
-                    edit    => ( $q->param('edit') ? 1 : 0 ),
-                    remove  => ( $q->param('remove') ? 1 : 0 ),
-
-                    use_domain_sending_tunings => ( $ls->param('use_domain_sending_tunings') ? 1 : 0 ),
-
-                    # For pre-filling in the "new" forms
-                    list_add_sendmail_f_flag      => $ls->param('add_sendmail_f_flag'),
-                    list_print_return_path_header => $ls->param('print_return_path_header'),
-                    list_verp_return_path         => $ls->param('verp_return_path'),
-
-                },
-            }
-        );
-        return $scrn;
-    }
-
-}
 
 sub mail_sending_options_test {
 
@@ -5946,8 +5765,7 @@ sub add_email {
         }
         try {
             ($new_emails) = DADA::App::Guts::csv_subscriber_parse( $admin_list, $new_emails_fn );
-        }
-        catch {
+        } catch {
             my $error = $_;
 
             my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -6971,8 +6789,7 @@ sub adv_archive_options {
         my $can_use_html_scrubber = 1;
         try {
             require HTML::Scrubber;
-        }
-        catch {
+        } catch {
             carp "HTML::Scrubber not working correctly?: $_";
             $can_use_html_scrubber = 0;
         };
@@ -6980,12 +6797,10 @@ sub adv_archive_options {
         my $can_use_recaptcha_mailhide = 1;
         try {
             require Captcha::reCAPTCHA::Mailhide;
-        }
-        catch {
+        } catch {
             carp "reCAPTCHA Mailhide not working correctly?: $_";
             $can_use_recaptcha_mailhide = 0;
-        }
-        finally {
+        } finally {
             if (   !defined( $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{public_key} )
                 || !defined( $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{private_key} )
                 || $DADA::Config::RECAPTHCA_MAILHIDE_PARAMS->{public_key} eq ''
@@ -6993,15 +6808,13 @@ sub adv_archive_options {
             {
                 $can_use_recaptcha_mailhide = 0;
             }
-
         };
 
         my $gravatar_img_url     = '';
         my $can_use_gravatar_url = 1;
         try {
             require Gravatar::URL;
-        }
-        catch {
+        } catch {
             $can_use_gravatar_url = 0;
         };
 
@@ -8802,8 +8615,7 @@ sub restful_subscribe {
         my $data      = undef;
         try {
             $data = $json->decode($post_data);
-        }
-        catch {
+        } catch {
             # What should really be done is to return a custom json doc
             # saying there was a problem with the POSTDATA - essentially, it
             # would be blank. 
@@ -13127,16 +12939,14 @@ sub schedules {
         $r .= "\n\nMass Mailing Monitor:\n" . '-' x 72 . "\n\n";
         try {
             $r .= $dast->mass_mailing_monitor($list);
-        }
-        catch {
+        } catch {
             $r .= "* Error: $_\n";
         };
 
         $r .= "\n\nMass Mailing Schedules:\n" . '-' x 72 . "\n\n";
         try {
             $r .= $dast->scheduled_mass_mailings($list);
-        }
-        catch {
+        } catch {
             $r .= "* Error: $_\n";
         };
 
@@ -13150,8 +12960,7 @@ sub schedules {
                 try {
                     require 'plugins/' . $plugin;
                     $r .= $DADA::Config::PLUGIN_RUNMODES->{$plugin}->{sched_run}->($list);
-                }
-                catch {
+                } catch {
                     $r .= "* Error: $_\n";
                 };
             }
@@ -13161,8 +12970,7 @@ sub schedules {
         $r .= "\n\nMass Mailing Monitor:\n" . '-' x 72 . "\n\n";
         try {
             $r .= $dast->mass_mailing_monitor($list);
-        }
-        catch {
+        } catch {
             $r .= "* Error: $_\n";
         };
     }
@@ -13170,8 +12978,7 @@ sub schedules {
         $r .= "\n\nMass Mailing Schedules:\n" . '-' x 72 . "\n\n";
         try {
             $r .= $dast->scheduled_mass_mailings($list);
-        }
-        catch {
+        } catch {
             $r .= "* Error: $_\n";
         };
     }
@@ -13187,8 +12994,7 @@ sub schedules {
             try {
                 require 'plugins/' . $schedule;
                 $r .= $DADA::Config::PLUGIN_RUNMODES->{$schedule}->{sched_run}->($list);
-            }
-            catch {
+            } catch {
                 $r .= "* Error: $_\n";
             };
         }

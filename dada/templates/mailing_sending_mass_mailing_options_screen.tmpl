@@ -92,15 +92,13 @@
 		<div id="batch_setting_settings">
 			<div id="manual_batch_settings"> 
 				<div class="row">
-					<div class="small-12 columns">
+					<div class="large-6 medium-6 columns">
 						<label>
 							Messages Sent Per Batch
 						</label>
 						<!-- tmpl_var mass_send_amount_menu -->
 					</div>
-				</div>
-				<div class="row">
-					<div class="small-12 columns">			
+					<div class="large-6 medium-6 columns">			
 						<label> 
 							Sleep Time Between Batches
 						</label>
@@ -155,17 +153,11 @@
 					<label for="smtp_connection_per_batch"> 
 						Use One SMTP Connection per Batch
 					</label>
-					<div class="alert-box info radius">
-						<!-- tmpl_if expr="list_settings.sending_method eq 'smtp'" --> 
-							<p>SMTP Sending is enabled.</p>
-						<!-- tmpl_else --> 
-							<p>SMTP Sending is disabled.</p>
-						<!-- /tmpl_if --> 
-						<p>
-							Instead of connecting to the SMTP server for each message sent, one 
-							connection will be made for each batch. 
-						</p>
-					</div>
+					<!-- tmpl_if expr="(list_settings.sending_method ne 'smtp')" --> 
+						<div class="alert-box info radius">
+								<em>Sending via SMTP is not enabled</em> 
+						</div>
+					<!-- /tmpl_if -->
 				</div> 
 			</div>
 		</div>
@@ -213,41 +205,55 @@
 		<legend>
 			Notifications
 		</legend>
-		<input 
-			type="checkbox" 
-			name="mass_mailing_send_to_list_owner"
-			id="mass_mailing_send_to_list_owner"
-			value="1" 
-			<!-- tmpl_if list_settings.mass_mailing_send_to_list_owner -->checked="checked"<!--/tmpl_if-->
-		>
-		<label for="mass_mailing_send_to_list_owner">
-			Send the List Owner Mass Mailings
-		</label>
-		<input 
-			type="checkbox" 
-			name="get_finished_notification" 
-			id="get_finished_notification" 
-			value="1" 
-			<!-- tmpl_if list_settings.get_finished_notification -->checked="checked"<!--/tmpl_if--> 
-		>
-		<label for="get_finished_notification">
-			Send, "Mass Mailing Completed" Notification to List Owner
-		</label>
+		<div class="row">
+			<div class="small-12 columns">							
+		
+				<input 
+					type="checkbox" 
+					name="mass_mailing_send_to_list_owner"
+					id="mass_mailing_send_to_list_owner"
+					value="1" 
+					<!-- tmpl_if list_settings.mass_mailing_send_to_list_owner -->checked="checked"<!--/tmpl_if-->
+				>
+				<label for="mass_mailing_send_to_list_owner">
+					Send Mass Mailings to List Owner
+				</label>
+			</div> 
+		</div>
+		<div class="row">
+			<div class="small-12 columns">							
+		
+				<input 
+					type="checkbox" 
+					name="get_finished_notification" 
+					id="get_finished_notification" 
+					value="1" 
+					<!-- tmpl_if list_settings.get_finished_notification -->checked="checked"<!--/tmpl_if--> 
+				>
+				<label for="get_finished_notification">
+					Send &quot;Mass Mailing Completed&quot; Notification to List Owner
+				</label>
+			</div>
+		</div>
 	</fieldset>
 	<fieldset> 
 		<legend>
 			Logging
 		</legend>
-		<input
-			type="checkbox" 
-			name="mass_mailing_save_logs" 
-			id="mass_mailing_save_logs" 
-			value="1" 
-			<!-- tmpl_if list_settings.mass_mailing_save_logs -->checked="checked"<!--/tmpl_if-->
-		>
-		<label for="mass_mailing_save_logs">
-			Save Mass Mailing Logs
-		</label>
+		<div class="row">
+			<div class="small-12 columns">									
+				<input
+					type="checkbox" 
+					name="mass_mailing_save_logs" 
+					id="mass_mailing_save_logs" 
+					value="1" 
+					<!-- tmpl_if list_settings.mass_mailing_save_logs -->checked="checked"<!--/tmpl_if-->
+				>
+				<label for="mass_mailing_save_logs">
+					Save Mass Mailing Logs
+				</label>
+			</div>
+		</div>
 	</fieldset>
 	<ul class="button-group right">
 	    <li>

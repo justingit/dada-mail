@@ -4182,7 +4182,6 @@ work now. Warnings are now put in the error log and in the B<Sending Options> sc
 
 Fixed a bad link in the I<Send a Message -> Advanced...>, the link, labeled, "Basic...", wasn't going anywhere interesting. 
 
-The B<Errors-To> textfield doesn't explicitly get printed out to tweak, unless you've asked that this header by printed in list messages. This itself is off by default, since this particular header is deprecated. 
 
 Similarily, the B<Return-Path> textfield doesn't explicitly get printed out to tweak, unless you've asked that this header by printed in list messages. But, you could never have this textfield printed before, so it's a little added feature. But! this as well is turned off, since I've never been able to set the Return-Path header myself, except when using Qmail. 
 
@@ -4308,8 +4307,6 @@ The MOJO::MailingList::Subscribers::baseSQL::print_out_list() method was printin
 The "Get HTML Code" form didn't "Set" anything in some instances, since there was a minor bug in the javascript. This has been fixed. 
 
 There was some debug code that has been taken out of the MOJO::MailingList::Subscribers::baseSQL::print_out_list() method and the view_list subroutine in mojo.cgi. 
-
-The B<Errors-To> mail header isn't printed in any email messages by default. This header has been deprecated for quite some time now. You can still enable this header in B<Sending Options> -> Advanced screen, it's list settings key is B<print_errors_to_header>
 
 The B<Sender> mail header is now supported by MOJO::Mail::Send
 
@@ -5073,7 +5070,6 @@ _make_general_headers
 which (at the moment) makes default headers for:
 
  From
- Errors-To
 
 and also makes sure they're escaped as in accordance to some hard to read RFC, i'm sure 
 
@@ -5460,7 +5456,7 @@ it now has two modes, 'Basic' and 'advanced',
 
 Basic is pretty much the same as what its been, advanced is a whole nother cookie. 
 
-In advanced, you're allowed to reset the 'From', 'Reply-To' and 'Errors-To' to your
+In advanced, you're allowed to reset the 'From', and 'Reply-To' to your
 fancy, you can also set the precedence and priority. I also added attachment support
 for as many attachments as you think your little MTA can handle. 
 
