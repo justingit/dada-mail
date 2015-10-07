@@ -26,28 +26,28 @@
 </div>
 
 
-	<ul class="tabs" data-tab>
-		<li class="tab-title active">
-			<a href="#modal_menu">
-				Modal Menu Subscription Form
-			</a>
-		</li>
-		<li class="tab-title">
-			<a href="#full">
-				Full Subscription Form
-			</a>
-		</li>
-		<li class="tab-title">
-			<a href="#minimal">
-				Minimal Subscription Form
-			</a>
-		</li>
-
-	</ul>
+<ul class="tabs" data-tab>
+	<li class="tab-title active">
+		<a href="#modal_menu">
+			Modal Menu Subscription Form
+		</a>
+	</li>
+	<li class="tab-title">
+		<a href="#full">
+			Full Subscription Form
+		</a>
+	</li>
+	<li class="tab-title">
+		<a href="#minimal">
+			Minimal Subscription Form
+		</a>
+	</li>
+</ul>
 	
 	
 	<div class="tabs-content">
-		<div  class="content tab-title active" id="modal_menu"> 
+		
+		<div class="content tab-title active" id="modal_menu"> 
      	   <p>
 			   Place the following in the head of your page:
 		  </p>       
@@ -56,18 +56,21 @@
 		<p>Place the following in the body of your page:</p> 
 		<textarea cols="50" rows="12"><!-- tmpl_var jquery_body_code escape="HTML" --></textarea>
 
-		<ul class="button-group center">
-		    <li>
+		<div class="row">
+  		  <div class="small-3 small-centered columns">
 				 <a 
 				 	href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=preview_jquery_plugin_subscription_form"
 					class="button processing preview_jquery_plugin_subscription_form"
+					target="_blank"
 				>
 					 	View Working Preview...
-				 </a>
-			</li>
-		</ul>
+ 				</a>
+  		  </div>
+	  </div>
+	  
 	</div>
-	<div id="full"> 
+	
+	<div class="content" id="full"> 
 		<p>
 			Copy the code in the text box and add it to any page on your site.
 		</p>
@@ -79,7 +82,7 @@
 	    <!-- tmpl_var subscription_form  -->
 	</div> 
 
-	<div id="minimal"> 
+	<div class="content" id="minimal"> 
 		<p>
 			Copy the code in the text box and add it to any page on your site.
 		</p>
@@ -92,5 +95,6 @@
 		<!-- tmpl_include minimal_subscription_form.tmpl -->
 		</fieldset>
 	</div> 
+	
 </div> 
 <!-- end html_code_screen.tmpl -->
