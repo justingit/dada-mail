@@ -80,7 +80,7 @@
 				<input type="hidden" name="flavor" value="show_current_dada_config" /> 
 				<input type="hidden" name="config_file" value = "<!-- tmpl_var configured_dada_config_file escape="HTML" -->" /> 
 				<div style="text-align:center">
-				<input type="submit" value="View this .dada_config Configuration..." class="plain" />
+				<input type="submit" value="View this .dada_config Configuration..." class="plain button" />
 				</div >
 			</form>
 
@@ -218,7 +218,7 @@
 			Manual Configuration of the, <em><!-- tmpl_var Dada_Files_Dir_Name --></em> directory
 		</legend> 
 		<p> 
-		 <input type="text" name="dada_files_loc" value="<!-- tmpl_var home_dir_guess -->" class="midi" style="text-align:right" /><span class="fake_input">/<!-- tmpl_var Dada_Files_Dir_Name --></span>
+		 <input type="text" name="dada_files_loc" value="<!-- tmpl_var home_dir_guess -->"  style="text-align:right" /><span class="fake_input">/<!-- tmpl_var Dada_Files_Dir_Name --></span>
 		</p> 
 
 		</fieldset>
@@ -270,7 +270,7 @@
 
 
 <p>
-<input type="text" id="program_url" name="program_url" class="midi" value="<!-- tmpl_var program_url_guess -->" />
+<input type="text" id="program_url" name="program_url"  value="<!-- tmpl_var program_url_guess -->" />
 </p> 
 
 </fieldset> 
@@ -313,11 +313,11 @@
 	
 	<p>
 		<label for="support_files_dir_path">Server Absolute Path to the <!-- tmpl_var PROGRAM_NAME --> Support Files Directory:</label><br />
-		<input type="text" name="support_files_dir_path"  id="support_files_dir_path" class="midi" style="text-align:right" value="<!-- tmpl_var support_files_dir_path -->" /><span class="fake_input">/<!-- tmpl_var Support_Files_Dir_Name --></span>
+		<input type="text" name="support_files_dir_path"  id="support_files_dir_path"  style="text-align:right" value="<!-- tmpl_var support_files_dir_path -->" /><span class="fake_input">/<!-- tmpl_var Support_Files_Dir_Name --></span>
 		<br />
 		<label for="support_files_dir_url">Corresponding URL to the Support Files Directory</label>
 		<br />
-		<input type="text" name="support_files_dir_url" id="support_files_dir_url" class="midi" style="text-align:right" value="<!-- tmpl_var support_files_dir_url -->" /><span class="fake_input">/<!-- tmpl_var Support_Files_Dir_Name --></span>
+		<input type="text" name="support_files_dir_url" id="support_files_dir_url"  style="text-align:right" value="<!-- tmpl_var support_files_dir_url -->" /><span class="fake_input">/<!-- tmpl_var Support_Files_Dir_Name --></span>
 	</p>
 	
 	
@@ -861,12 +861,12 @@ editors also have the ability to make simple HTML tables for basic layouts.
 		
 			<p>
 			<label for="profiles_profile_email">Profile Administration Email:</label>
-			<input type="text" name="profiles_profile_email" id="profiles_profile_email" value="" class="midi"/>			
+			<input type="text" name="profiles_profile_email" id="profiles_profile_email" value="" />			
 			</p>
 
 			<p>
 			<label for="profiles_profile_host_list">Profile Host List:</label>
-			<input type="text" name="profiles_profile_host_list" id="profiles_profile_host_list" value="" class="midi"/>			
+			<input type="text" name="profiles_profile_host_list" id="profiles_profile_host_list" value="" />			
 			</p>
 
 			<h2>
@@ -1364,21 +1364,21 @@ editors also have the ability to make simple HTML tables for basic layouts.
 				<label style="width: 18em;float: left;text-align: right;margin-right: 0.5em;display: block" for="captcha_reCAPTCHA_remote_addr">
 					Remote Address:
 				</label> 
-				<input type="text" name="captcha_reCAPTCHA_remote_addr" id="captcha_reCAPTCHA_remote_addr" value="" class="midi" />
+				<input type="text" name="captcha_reCAPTCHA_remote_addr" id="captcha_reCAPTCHA_remote_addr" value=""  />
 			</p>
 	
 			<p>
 				<label style="width: 18em;float: left;text-align: right;margin-right: 0.5em;display: block" for="captcha_reCAPTCHA_public_key">
 					reCPATCHA Public Key:
 				</label> 
-				<input type="text" name="captcha_reCAPTCHA_public_key" id="captcha_reCAPTCHA_public_key" value="" class="midi" />
+				<input type="text" name="captcha_reCAPTCHA_public_key" id="captcha_reCAPTCHA_public_key" value=""  />
 			</p>
 
 			<p>
 				<label style="width: 18em;float: left;text-align: right;margin-right: 0.5em;display: block" for="captcha_reCAPTCHA_private_key">
 					reCPATCHA Private Key:
 				</label> 
-				<input type="text" name="captcha_reCAPTCHA_private_key" id="captcha_reCAPTCHA_private_key" value="" class="midi" />
+				<input type="text" name="captcha_reCAPTCHA_private_key" id="captcha_reCAPTCHA_private_key" value=""  />
 			</p>
 		</div> 
 		
@@ -1406,14 +1406,14 @@ editors also have the ability to make simple HTML tables for basic layouts.
 			<label style="width: 18em;float: left;text-align: right;margin-right: 0.5em;display: block" for="captcha_reCAPTCHA_Mailhide_public_key">
 				reCAPTCHA Mailhide Public Key:
 			</label> 
-			<input type="text" name="captcha_reCAPTCHA_Mailhide_public_key" id="captcha_reCAPTCHA_Mailhide_public_key" value="" class="midi" />
+			<input type="text" name="captcha_reCAPTCHA_Mailhide_public_key" id="captcha_reCAPTCHA_Mailhide_public_key" value=""  />
 		</p>
 
 		<p>
 			<label style="width: 18em;float: left;text-align: right;margin-right: 0.5em;display: block" for="captcha_reCAPTCHA_Mailhide_private_key">
 				reCAPTCHA Mailhide Private Key:
 			</label> 
-			<input type="text" name="captcha_reCAPTCHA_Mailhide_private_key" id="captcha_reCAPTCHA_Mailhide_private_key" value="" class="midi" />
+			<input type="text" name="captcha_reCAPTCHA_Mailhide_private_key" id="captcha_reCAPTCHA_Mailhide_private_key" value=""  />
 		</p>
 		
 		<div class="buttonfloat"> 
@@ -1571,7 +1571,7 @@ editors also have the ability to make simple HTML tables for basic layouts.
 			<label for="program_name_PROGRAM_NAME">
 				Program Name: 
 			</label>
-			<input type="text" name="program_name_PROGRAM_NAME" id="program_name_PROGRAM_NAME" value="<!-- tmpl_var program_name_PROGRAM_NAME -->" class="midi" />
+			<input type="text" name="program_name_PROGRAM_NAME" id="program_name_PROGRAM_NAME" value="<!-- tmpl_var program_name_PROGRAM_NAME -->"  />
 		</p>
 	</fieldset>
 	</div> 
@@ -1590,7 +1590,7 @@ editors also have the ability to make simple HTML tables for basic layouts.
 			<label for="s_program_url_S_PROGRAM_URL">
 				Secure Program URL: 
 			</label>
-			<input type="text" name="s_program_url_S_PROGRAM_URL" id="s_program_url_S_PROGRAM_URL" value="" class="midi" />
+			<input type="text" name="s_program_url_S_PROGRAM_URL" id="s_program_url_S_PROGRAM_URL" value=""  />
 		</p>
 	</fieldset>
 	</div> 
@@ -1623,14 +1623,14 @@ editors also have the ability to make simple HTML tables for basic layouts.
 			<label style="width: 18em;float: left;text-align: right;margin-right: 0.5em;display: block" for="amazon_ses_AWSAccessKeyId">
 				AWS Access Key ID:
 			</label> 
-			<input type="text" name="amazon_ses_AWSAccessKeyId" id="amazon_ses_AWSAccessKeyId" value="" class="midi" />
+			<input type="text" name="amazon_ses_AWSAccessKeyId" id="amazon_ses_AWSAccessKeyId" value=""  />
 		</p>
 
 		<p>
 			<label style="width: 18em;float: left;text-align: right;margin-right: 0.5em;display: block" for="amazon_ses_AWSSecretKey">
 				AWS Secret Access Key:
 			</label> 
-			<input type="text" name="amazon_ses_AWSSecretKey" id="amazon_ses_AWSSecretKey" value=""  class="midi" />
+			<input type="text" name="amazon_ses_AWSSecretKey" id="amazon_ses_AWSSecretKey" value=""   />
 		</p>
 		
 		<p><label  style="width: 18em;float: left;text-align: right;margin-right: 0.5em;display: block" for="amazon_ses_Allowed_Sending_Quota_Percentage">
@@ -1669,7 +1669,7 @@ editors also have the ability to make simple HTML tables for basic layouts.
 			<label style="width: 18em;float: left;text-align: right;margin-right: 0.5em;display: block" for="mandrill_api_key">
 				API Key:
 			</label> 
-			<input type="text" name="mandrill_api_key" id="mandrill_api_key" value="" class="midi" />
+			<input type="text" name="mandrill_api_key" id="mandrill_api_key" value=""  />
 		</p>
 
 		

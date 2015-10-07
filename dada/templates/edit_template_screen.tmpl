@@ -3,152 +3,229 @@
 <!-- tmpl_set name="title" value="Appearance and Templates &#187; Your Mailing List Template" -->
 <div id="screen_meta" data-menu_highlight="edit_template"></div>
 
-
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-		<!-- tmpl_var title --> 
-	</div> 
-	<!-- tmpl_include help_link_widget.tmpl -->
+<div class="row">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				Appearance and Templates
+			 </a>
+	 	    <a 
+				href="#"
+				class="current"
+			>	
+				Your Mailing List Template
+			</a>
+		</nav>
+	</div>
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
 </div>
 
 <!-- tmpl_if done -->
 	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
 <!--/tmpl_if-->
 
-<p>
-	The Mailing List Template is used to personalize the look of your Mailing List, when you visit it in a web browser. 
-</p> 
-<p>
-	For example, your design will be reflected in your 
-	<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/"  target="_blank">
-		List Screen
-	</a>
-	and your
-	<a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list_settings.list -->/" target="_blank">
-		Archive Screens</a>.
-</p>
-
-<form name="the_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-
-<fieldset> 
-	<legend>Your Mailing List Template</legend> 
-
-
-
-
-	<!-- tmpl_if content_tag_found_in_default_template --> 
-		<p class="positive">
-			&quot;content&quot; tag found in default template. Good!
-		</p>
-	<!-- tmpl_else --> 
-		<p class="error">
-			Yikes! Couldn't find the content tag (<code>&lt;!-- tmpl_var content --&gt;</code>) in your default template! 
-		</p>
-	<!-- /tmpl_if -->
-
- <p>
-  <input type="radio" name="get_template_data" id="from_default_template" value="from_default_template" <!-- tmpl_if get_template_data_from_default_template -->checked="checked"<!--/tmpl_if--> >
-  <label for="from_default_template">
-   Use the Default Mailing List Template
-  </label>
- </p>
-
- <p>
-  <input type="radio" name="get_template_data" id="from_template_file" value="from_template_file" <!-- tmpl_if get_template_data_from_template_file -->checked="checked"<!--/tmpl_if--> >
-  <label for="from_template_file">
-   Use this Custom Template for your Mailing List: 
-  </label>
-  </p> 
-	<!-- tmpl_if content_tag_found_in_template --> 
-		<p class="positive">
-			&quot;content&quot; tag found in custom template. Good!
-		</p>
-	<!-- tmpl_else --> 
-		<p class="error">
-			Yikes! Couldn't find the content tag (<code>&lt;!-- tmpl_var content --&gt;</code>) in your custom template! 
-		</p>
-	<!-- /tmpl_if --> 
-
- <p>
-  <textarea name="template_info" cols="70" rows="20" wrap="off"><!-- tmpl_var edit_this_template --></textarea>
- </p>
-<!-- tmpl_if template_saved --> 
-	<p class="alert">
-		Saved at: <em><!-- tmpl_var TEMPLATES -->/<!-- tmpl_var list_settings.list -->.template</em>
+<div class="alert-box info radius">
+	<p>
+		The Mailing List Template is used to personalize the look of your Mailing List, when you visit it in a web browser. 
+	</p> 
+	<p>
+		For example, your design will be reflected in your 
+		<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/"  target="_blank">
+			List Screen
+		</a>
+		and your
+		<a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list_settings.list -->/" target="_blank">
+			Archive Screens</a>.
 	</p>
-<!-- /tmpl_if --> 
- 
- <!-- tmpl_if can_use_lwp_simple -->
-	 
-	 <p>
-	  <input type="radio" name="get_template_data" id="from_url" value="from_url" <!-- tmpl_if get_template_data_from_url -->checked="checked"<!--/tmpl_if--> >
-	  <label for="from_url">
-	   Use the Custom Template at this URL for your Mailing List:
-	  </label>
-	
-	<!-- tmpl_if list_settings.url_template --> 
-		<!-- tmpl_if template_url_check --> 
-			<p class="positive">
-				URL can be accessed. Good!
-			</p>
-			<!-- tmpl_if content_tag_found_in_url_template --> 
-				<p class="positive">
-					&quot;content&quot; tag found in url template. Good!
-				</p>
-			<!-- tmpl_else --> 
-				<p class="error">
-					Yikes! Couldn't find the content tag (<code>&lt;!-- tmpl_var content --&gt;</code>) in your url template! 
-				</p>
-			<!-- /tmpl_if -->
-		<!-- tmpl_else --> 
-	          <p class="error">
-				Yikes! Problems fetching the below URL. Please check the URL and try again:
-			</p>
-		<!-- /tmpl_if --> 
-	<!-- /tmpl_if --> 
-	
-	
-	
-<p>
- <input type="url" id="url_template" name="url_template" value="<!-- tmpl_var list_settings.url_template ESCAPE="HTML"-->"  >
-</p>
-	 
-<!--/tmpl_if -->
+</div>
+
+<form 
+	name="the_form" 
+	action="<!-- tmpl_var S_PROGRAM_URL -->" 
+	method="post" 
+	accept-charset="<!-- tmpl_var HTML_CHARSET -->"
+>
+	<input type="hidden" name="process"          value="true" >
+	<input type="hidden" name="flavor"           value="edit_template" >
+	<input type="hidden" name="default_template" value="<!-- tmpl_var default_template escape="HTML" -->" >
+
+	<fieldset> 
+		<legend>
+			Your Mailing List Template
+		</legend> 
 
 
-</fieldset> 
 
- <p>
+		<div class="row">
+			<div class="small-12 columns">
+				<label for="from_default_template">
+					<input 
+						type="radio" 
+						name="get_template_data" 
+						id="from_default_template" 
+						value="from_default_template" 
+						<!-- tmpl_if get_template_data_from_default_template -->checked="checked"<!--/tmpl_if-->
+					>
+					Use the Default Mailing List Template
+				</label>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="small-1 columns">
+			</div>
+			<div class="small-11 columns">
+		
+				<!-- tmpl_if content_tag_found_in_default_template --> 
+					<div class="alert-box success radius">
+						<code>&lt;!-- tmpl_var content --&gt;</code> tag found in default template.
+					</div>
+				<!-- tmpl_else --> 
+					<div class="alert-box alert radius">
+						Couldn't find, <code>&lt;!-- tmpl_var content --&gt;</code> in your default template! 
+					</div>
+				<!-- /tmpl_if -->
+			</div>
+		</div>
+		<div class="row">
+			<div class="small-12 columns">
+				<label for="from_template_file">
+					<input 
+					type="radio" 
+					name="get_template_data" 
+					id="from_template_file" 
+					value="from_template_file" 
+					<!-- tmpl_if get_template_data_from_template_file -->checked="checked"<!--/tmpl_if-->
+				>
+					Use this Custom Template for your Mailing List: 
+				</label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="small-1 columns">
+			</div>
+			<div class="small-11 columns">
+				
+				<textarea name="template_info" cols="70" rows="20" wrap="off"><!-- tmpl_var edit_this_template --></textarea>
+				
+				<!-- tmpl_if content_tag_found_in_template --> 
+					<div class="alert-box success radius">
+						<code>&lt;!-- tmpl_var content --&gt;</code> tag found in custom template.
+					</div>
+				<!-- tmpl_else --> 
+				<div class="alert-box alert radius">
+					Couldn't find, <code>&lt;!-- tmpl_var content --&gt;</code> tag in your custom template! 
+				</div>
+				<!-- /tmpl_if --> 
+
+				<!-- tmpl_if template_saved --> 
+					<div class="alert-box success radius">
+						Saved at: <em><!-- tmpl_var TEMPLATES -->/<!-- tmpl_var list_settings.list -->.template</em>
+					</div>
+				<!-- /tmpl_if --> 
+			</div>
+		</div>
+		<div class="row">
+			<div class="small-12 columns">
+				<!-- tmpl_if can_use_lwp_simple -->
+					<label for="from_url">
+						<input
+							type="radio" 
+							name="get_template_data" 
+							id="from_url" 
+							value="from_url" 
+							<!-- tmpl_if get_template_data_from_url -->checked="checked"<!--/tmpl_if-->
+						>
+						Use the Custom Template at this URL for your Mailing List:
+					</label>
+				</div>
+			</div>
+			<div class="row">
+				<div class="small-1 columns">
+				</div>
+				<div class="small-11 columns">
+					
+					<input 
+						type="url" 
+						id="url_template" 
+						name="url_template" 
+						value="<!-- tmpl_var list_settings.url_template ESCAPE="HTML"-->"
+					>
+					
+					<!-- tmpl_if list_settings.url_template --> 
+						<!-- tmpl_if template_url_check --> 
+								<div class="alert-box success radius">
+									URL accessible.
+								</div>
+							<!-- tmpl_if content_tag_found_in_url_template --> 
+								<div class="alert-box success radius">
+									<code>&lt;!-- tmpl_var content --&gt;</code> tag found in custom template.
+								</div>
+							<!-- tmpl_else --> 
+								<div class="alert-box alert radius">
+									Couldn't find, <code>&lt;!-- tmpl_var content --&gt;</code> tag in your custom template! 
+								</div>
+							<!-- /tmpl_if -->
+						<!-- tmpl_else --> 
+								<div class="alert-box alert radius">
+									Problems fetching the below URL. Please check the URL and try again:
+								</div>
+						<!-- /tmpl_if --> 
+					<!-- /tmpl_if --> 
+
+				</div>
+			</div>
+		<!--/tmpl_if -->
+	</fieldset> 
 	
-	<input type="hidden" name="process" value="true" >
-	<input type="hidden" name="flavor"       value="edit_template" >
-
-  <input type="hidden" name="default_template" value="<!-- tmpl_var default_template escape="HTML" -->" >
-  <div class="buttonfloat">
-   <input type="submit" class="plain"      value="Preview Template"  onclick="preview_template();" >
-   <input type="submit" class="processing" value="Change Template"   onclick="change_template();" >
-   <input type="reset"  class="cautionary" value="Clear Changes" >
-   <input type="button" class="alertive"   value="Revert to Default" onclick="set_to_default();">
-  </div>
- </p>
+	<ul class="button-group right">
+	    <li>
+		   <input 
+			   	type="submit" 
+				class="plain button"
+				value="Preview Template"
+				onclick="preview_template();"
+			>
+		</li>
+		<li>
+		   <input
+		   		type="submit" 
+				class="processing button" 
+				value="Change Template"
+				onclick="change_template();"
+			>
+		</li>
+		<li>
+		   <input
+		   		type="reset"
+				class="cautionary button"
+				value="Clear Changes"
+			>
+		</li>
+		<li>   
+		   <input 
+		   		type="button"
+				class="alertive button"
+				value="Revert to Default"
+				onclick="set_to_default();"
+			>
+		</li>
+	</ul>
 </form> 
-<div class="floatclear"></div>
-<hr >
 
-<table  class="tagchart">
+
+<table class="responsive" width="100%">
 	
 	
  <tr align="center">
-  <td>
-   <strong>
+  <th>
     This Tag
-   </strong>
-  </td>
-  <td>
-   <strong>
+  </th>
+  <th>
     Is Replaced With
-   </strong>
-  </td>
+  </th>
  </tr>
 
 
@@ -242,17 +319,6 @@ This tag is
   Will have a value of: 1 if the visitor to <!-- tmpl_var PROGRAM_NAME --> is subscribed to your list. 
   </td>
  </tr>
-
-
-
-
-
-
-
-
-
 </table>
-
- 
 
 <!-- end edit_template_screen.tmpl -->

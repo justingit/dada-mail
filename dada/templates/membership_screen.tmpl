@@ -116,8 +116,8 @@
 							<input type="hidden" name="address" value="<!-- tmpl_var email escape="HTML" -->" >
 							<input type="hidden" name="return_to" value="membership" >
 							<input type="hidden" name="return_address" value="<!-- tmpl_var email escape="HTML" -->" >
-							<input type="submit" name="process"  class="processing" value="Approve Subscription Request" >
-							<input type="submit" name="process"  class="cautionary" value="Deny Subscription Request" >
+							<input type="submit" name="process"  class="processing button" value="Approve Subscription Request" >
+							<input type="submit" name="process"  class="cautionary button" value="Deny Subscription Request" >
 						</form>
 						</fieldset>
 					<!-- /tmpl_if -->
@@ -134,8 +134,8 @@
 							<input type="hidden" name="address" value="<!-- tmpl_var email escape="HTML" -->" >
 							<input type="hidden" name="return_to" value="membership" >
 							<input type="hidden" name="return_address" value="<!-- tmpl_var email escape="HTML" -->" >
-							<input type="submit" name="process"  class="processing" value="Approve Unsubscription Request" >
-							<input type="submit" name="process"  class="cautionary" value="Deny Unsubscription Request" >
+							<input type="submit" name="process"  class="processing button" value="Approve Unsubscription Request" >
+							<input type="submit" name="process"  class="cautionary button" value="Deny Unsubscription Request" >
 						</form>
 						</fieldset>
 					<!-- /tmpl_if -->
@@ -158,7 +158,7 @@
 								&#8594; Add
 							</label>
 							address to: <!-- tmpl_var add_to_popup_menu -->
-							<input type="button" value="Add..."  class="processing"  id="validate_add_email" >
+							<input type="button" value="Add..."  class="processing button"  id="validate_add_email" >
 						</p>
 					</form>
 				</fieldset>
@@ -178,11 +178,11 @@
 					</label> address to:
 
 					<input type="text" id="updated_email" name="updated_email" value="<!-- tmpl_var email escape="HTML" -->" >
-					<input type="button" value="Update..." class="cautionary" id="validate_update_email" >
+					<input type="button" value="Update..." class="cautionary button" id="validate_update_email" >
 
 					<!-- tmpl_if root_login -->
 						<!-- tmpl_if can_have_subscriber_fields -->
-							<input type="button" value="Update on Multiple Mailing Lists..." class="cautionary" id="validate_update_email_for_multiple_lists" >
+							<input type="button" value="Update on Multiple Mailing Lists..." class="cautionary button" id="validate_update_email_for_multiple_lists" >
 						<!-- /tmpl_if -->
 					<!-- /tmpl_if --> 
 
@@ -227,9 +227,9 @@
 					<input type="hidden" name="return_address" value="<!-- tmpl_var email escape="HTML" -->" >
 					<p>
 						<label for="type_remove">&#8592;  Remove</label> address:
-						<input type="button" id="validate_remove_email" value="Remove..." class="cautionary"  >
+						<input type="button" id="validate_remove_email" value="Remove..." class="cautionary button"  >
 						<!-- tmpl_if root_login -->
-							<input type="button" id="validate_remove_email_multiple_lists" value="Remove on Multiple Mailing Lists..." class="cautionary"  >
+							<input type="button" id="validate_remove_email_multiple_lists" value="Remove on Multiple Mailing Lists..." class="cautionary button"  >
 						<!-- /tmpl_if -->
 						</p>
 					</form>
@@ -266,7 +266,7 @@
 				
 				
 				<div class="buttonfloat"> 
-					<input type="submit" value="Export Subscriber History (csv)" class="processing" >
+					<input type="submit" value="Export Subscriber History (csv)" class="processing button" >
 				</div> 
 				<div class="floatclear"></div>
 			</form>
@@ -283,7 +283,7 @@
 		<input type="hidden" name="email" value="<!-- tmpl_var email escape="HTML" -->" > 
 	
 		<div class="buttonfloat"> 
-			<input type="submit" value="Export Mailing List Activity (csv)" class="processing" >
+			<input type="submit" value="Export Mailing List Activity (csv)" class="processing button" >
 		</div> 
 		<div class="floatclear"></div>
 	
@@ -354,7 +354,7 @@
 
 				<!-- tmpl_if expr="(root_login == 1 || list_settings.allow_profile_editing == 1)" --> 
 					 <div class="buttonfloat">
-					  <input type="submit" value="Update Information" class="cautionary" >
+					  <input type="submit" value="Update Information" class="cautionary button" >
 					 </div>
 				<!-- /tmpl_if --> 
 
@@ -441,7 +441,7 @@
                     </label> (vacation, etc)     
                     
                     <div class="buttonfloat">    
-                    <input type="submit" value="Save Delivery Preferences" class="processing" > 
+                    <input type="submit" value="Save Delivery Preferences" class="processing button" > 
                     </div>
                     <div class="floatclear"></div>                       
             </p>

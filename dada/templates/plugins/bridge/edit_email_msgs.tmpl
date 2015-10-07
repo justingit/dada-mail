@@ -46,7 +46,7 @@
     		<!-- /tmpl_if --> 
 
     		<p>
-    		 <label for="msg_received_msg_subject" class="label_by_5">Subject:</label><input type="text" name="msg_received_msg_subject" id="msg_received_msg_subject" value="<!-- tmpl_var list_settings.msg_received_msg_subject escape="HTML" -->" class="midi" >
+    		 <label for="msg_received_msg_subject" >Subject:</label><input type="text" name="msg_received_msg_subject" id="msg_received_msg_subject" value="<!-- tmpl_var list_settings.msg_received_msg_subject escape="HTML" -->"  >
     		</p>
     		<p>
     		 <label for="msg_received_msg">PlainText Message:</label>
@@ -76,7 +76,7 @@
 		<!-- /tmpl_if --> 
 		
 		<p>
-		 <label for="not_allowed_to_post_msg_subject" class="label_by_5">Subject:</label><input type="text" name="not_allowed_to_post_msg_subject" id="not_allowed_to_post_msg_subject" value="<!-- tmpl_var list_settings.not_allowed_to_post_msg_subject escape="HTML" -->" class="midi" >
+		 <label for="not_allowed_to_post_msg_subject" >Subject:</label><input type="text" name="not_allowed_to_post_msg_subject" id="not_allowed_to_post_msg_subject" value="<!-- tmpl_var list_settings.not_allowed_to_post_msg_subject escape="HTML" -->"  >
 		</p>
 
 		<p>
@@ -106,7 +106,7 @@
 		<!-- /tmpl_if --> 
 		
 		<p>
-		 <label for="invalid_msgs_to_owner_msg_subject" class="label_by_5">Subject:</label><input type="text" name="invalid_msgs_to_owner_msg_subject" id="invalid_msgs_to_owner_msg_subject" value="<!-- tmpl_var list_settings.invalid_msgs_to_owner_msg_subject escape="HTML" -->" class="midi" >
+		 <label for="invalid_msgs_to_owner_msg_subject" >Subject:</label><input type="text" name="invalid_msgs_to_owner_msg_subject" id="invalid_msgs_to_owner_msg_subject" value="<!-- tmpl_var list_settings.invalid_msgs_to_owner_msg_subject escape="HTML" -->"  >
 		</p>
 
 		<p>
@@ -142,7 +142,7 @@
 		
 		
 		<p>
-		 <label for="moderation_msg_subject" class="label_by_5">Subject:</label><input type="text" name="moderation_msg_subject" id="moderation_msg_subject" value="<!-- tmpl_var list_settings.moderation_msg_subject escape="HTML" -->" class="midi" >
+		 <label for="moderation_msg_subject" >Subject:</label><input type="text" name="moderation_msg_subject" id="moderation_msg_subject" value="<!-- tmpl_var list_settings.moderation_msg_subject escape="HTML" -->"  >
 		</p>
 
 		<p>
@@ -171,7 +171,7 @@
 		<!-- /tmpl_if -->
 		
 		<p>
-		 <label for="await_moderation_msg_subject" class="label_by_5">Subject:</label><input type="text" name="await_moderation_msg_subject" id="await_moderation_msg_subject" value="<!-- tmpl_var list_settings.await_moderation_msg_subject escape="HTML" -->" class="midi" >
+		 <label for="await_moderation_msg_subject" >Subject:</label><input type="text" name="await_moderation_msg_subject" id="await_moderation_msg_subject" value="<!-- tmpl_var list_settings.await_moderation_msg_subject escape="HTML" -->"  >
 		</p>
 
 		<p>
@@ -200,7 +200,7 @@
 		<!-- /tmpl_if -->
 		
 		<p>
-		 <label for="accept_msg_subject" class="label_by_5">Subject:</label><input type="text" name="accept_msg_subject" id="accept_msg_subject" value="<!-- tmpl_var list_settings.accept_msg_subject escape="HTML" -->" class="midi" >
+		 <label for="accept_msg_subject" >Subject:</label><input type="text" name="accept_msg_subject" id="accept_msg_subject" value="<!-- tmpl_var list_settings.accept_msg_subject escape="HTML" -->"  >
 		</p>
 
 		<p>
@@ -231,7 +231,7 @@
 
 
 		<p>
-		 <label for="rejection_msg_subject" class="label_by_5">Subject:</label><input type="text" name="rejection_msg_subject" id="rejection_msg_subject" value="<!-- tmpl_var list_settings.rejection_msg_subject escape="HTML" -->" class="midi" >
+		 <label for="rejection_msg_subject" >Subject:</label><input type="text" name="rejection_msg_subject" id="rejection_msg_subject" value="<!-- tmpl_var list_settings.rejection_msg_subject escape="HTML" -->"  >
 		</p>
 
 		<p>
@@ -260,7 +260,7 @@
 		<!-- /tmpl_if -->
 
 		<p>
-		 <label for="msg_labeled_as_spam_msg_subject" class="label_by_5">Subject:</label><input type="text" name="msg_labeled_as_spam_msg_subject" id="msg_labeled_as_spam_msg_subject" value="<!-- tmpl_var list_settings.msg_labeled_as_spam_msg_subject escape="HTML" -->" class="midi" >
+		 <label for="msg_labeled_as_spam_msg_subject" >Subject:</label><input type="text" name="msg_labeled_as_spam_msg_subject" id="msg_labeled_as_spam_msg_subject" value="<!-- tmpl_var list_settings.msg_labeled_as_spam_msg_subject escape="HTML" -->"  >
 		</p>
 
 		<p>
@@ -286,7 +286,7 @@
 		</p>
 		
 		<p>
-		 <label for="msg_too_big_msg_subject" class="label_by_5">Subject:</label><input type="text" name="msg_too_big_msg_subject" id="msg_too_big_msg_subject" value="<!-- tmpl_var list_settings.msg_too_big_msg_subject escape="HTML" -->" class="midi" >
+		 <label for="msg_too_big_msg_subject" >Subject:</label><input type="text" name="msg_too_big_msg_subject" id="msg_too_big_msg_subject" value="<!-- tmpl_var list_settings.msg_too_big_msg_subject escape="HTML" -->"  >
 		</p>
 
 		<p>
@@ -311,17 +311,17 @@
 
 <!-- tmpl_if comment --> 
     	    <p>
-    	     <label for="mailing_list_message_from_phrase" class="label_by_5" >From:</label> <input type="text" name="mailing_list_message_from_phrase" id="mailing_list_message_from_phrase" value="<!-- tmpl_var list_settings.mailing_list_message_from_phrase escape=HTML -->" class="midi" > &lt;<!-- tmpl_var list_settings.list_owner_email -->&gt;
+    	     <label for="mailing_list_message_from_phrase"  >From:</label> <input type="text" name="mailing_list_message_from_phrase" id="mailing_list_message_from_phrase" value="<!-- tmpl_var list_settings.mailing_list_message_from_phrase escape=HTML -->"  > &lt;<!-- tmpl_var list_settings.list_owner_email -->&gt;
     	    </p>
 
     	    <p>
-    	     <label for="mailing_list_message_to_phrase" class="label_by_5" >To:</label> <input type="text" name="mailing_list_message_to_phrase" id="mailing_list_message_to_phrase" value="<!-- tmpl_var list_settings.mailing_list_message_to_phrase escape=HTML -->" class="midi" > &lt;<code>&lt;!-- tmpl_var subscriber.email --&gt;</code>&gt;
+    	     <label for="mailing_list_message_to_phrase"  >To:</label> <input type="text" name="mailing_list_message_to_phrase" id="mailing_list_message_to_phrase" value="<!-- tmpl_var list_settings.mailing_list_message_to_phrase escape=HTML -->"  > &lt;<code>&lt;!-- tmpl_var subscriber.email --&gt;</code>&gt;
     	    </p>
 <!-- /tmpl_if --> 
 
 
     	    <p>
-    	     <label for="digest_message_subject" class="label_by_5" >Subject:</label> <input type="text" name="digest_message_subject" id="digest_message_subject" value="<!-- tmpl_var list_settings.digest_message_subject escape=HTML -->" class="midi" >
+    	     <label for="digest_message_subject"  >Subject:</label> <input type="text" name="digest_message_subject" id="digest_message_subject" value="<!-- tmpl_var list_settings.digest_message_subject escape=HTML -->"  >
     	    </p>
 
     	</fieldset> 
@@ -354,9 +354,9 @@
 	<input type="hidden" name="plugin" value="bridge" >
 	<input type="hidden" name="prm" value="edit_email_msgs" >
 	<div class="buttonfloat">
-		<input type="reset" class="cautionary" value="Clear All Changes" >
-		<input type="submit" class="alertive" name="revert" value="Revert ALL Text to Defaults" >
-		<input type="submit" class="processing" value="Save All Changes" >
+		<input type="reset" class="cautionary button" value="Clear All Changes" >
+		<input type="submit" class="alertive button" name="revert" value="Revert ALL Text to Defaults" >
+		<input type="submit" class="processing button" value="Save All Changes" >
 	</div>
 	<div class="floatclear">
 	</div>

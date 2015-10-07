@@ -756,10 +756,6 @@ jQuery(document).ready(function($){
 		});
 	}
 
-	// Mail Sending >> Advanced Options
-	if ($("#mail_sending_advanced_options").length) {
-		$("#misc_options").hide();
-	}
 	// Mail Sending >> Mass Mailing Options
 	if ($("#mailing_sending_mass_mailing_options").length) {
 		if ($("#amazon_ses_get_stats").length) {

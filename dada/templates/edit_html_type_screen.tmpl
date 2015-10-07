@@ -3,95 +3,123 @@
 <!-- tmpl_set name="title" value="Appearance and Templates &#187; HTML Screen Templates" -->
 <div id="screen_meta" data-menu_highlight="edit_html_type"></div>
 
-
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-		<!-- tmpl_var title --> 
-	</div> 
-	<!-- tmpl_include help_link_widget.tmpl -->
+<div class="row">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				Appearance and Templates
+			 </a>
+	 	    <a 
+				href="#"
+				class="current"
+			>	
+				HTML Screen Templates
+			</a>
+		</nav>
+	</div>
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
 </div>
 
 <!-- tmpl_if done -->
 	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
 <!--/tmpl_if-->
 
-<p>
- You can customize many of the HTML screens 
- <!-- tmpl_var PROGRAM_NAME --> produces specifically for your Mailing List.
-</p>
+<div class="alert-box info radius">
+	<p>
+	 You may customize many of the HTML screens 
+	 <!-- tmpl_var PROGRAM_NAME --> produces specifically for your Mailing List.
+	</p>
 
-<p> <!-- tmpl_var PROGRAM_NAME --> uses 
- template tags to represent data that may change regularly. 
- A list of relevant tags is shown at the end of this screen.
-</p>
-
-
-<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-
-
-
-<fieldset> 
-<legend>
-	Subscription Confirmation:
- </legend>
-
-<!-- tmpl_if list_settings.enable_closed_loop_opt_in --> 
-	<p class="alert">Closed-Loop Opt-In is enabled.</p>
-<!-- tmpl_else --> 
-	<p class="alert">Closed-Loop Opt-In  is disabled.</p>
-<!-- /tmpl_if --> 
-
-
-<p>
- <textarea name="html_confirmation_message" id="html_confirmation_message" rows="10" cols="50"><!-- tmpl_var list_settings.html_confirmation_message --></textarea> 
-</p>
-
-</fieldset> 
-
-<fieldset> 
-	
- <legend>Subscription Successful:
- </legend>
- 
-<p>
- <textarea name="html_subscribed_message" id="html_subscribed_message" rows="10" cols="50"><!-- tmpl_var list_settings.html_subscribed_message --></textarea>
-</p>
-</fieldset> 
-
-
-<fieldset> 
-	
- <legend> Subscription Requests:</legend>
- 
-<!-- tmpl_if list_settings.enable_subscription_approval_step --> 
-	<p class="alert">Subscription Requests Approving/Denying is enabled.</p>
-<!-- tmpl_else --> 
-	<p class="alert">Subscription Requests Approving/Denying is disabled.</p>
-<!-- /tmpl_if --> 
-<p>
- <textarea name="html_subscription_request_message" id="html_subscription_request_message" rows="10" cols="50"><!-- tmpl_var list_settings.html_subscription_request_message --></textarea>
-</p>
-</fieldset> 
-
-	
-<fieldset>
-	<legend>Unsubscription Successful:</legend>
-<p>
- <textarea name="html_unsubscribed_message" id="html_unsubscribed_message" rows="10" cols="50"><!-- tmpl_var list_settings.html_unsubscribed_message --></textarea>
-</p>
-</fieldset> 
-
-
-<input type="hidden" name="process" value="1" >
-<input type="hidden" name="flavor"       value="edit_html_type" >
-<div class="buttonfloat">
- <input type="reset"  class="cautionary" value="Clear All Changes" >
- <input type="submit" class="processing" value="Save All Changes" >
+	<p> <!-- tmpl_var PROGRAM_NAME --> uses 
+	 template tags to represent data that may change regularly. 
+	 A list of relevant tags is shown at the end of this screen.
+	</p>
 </div>
-<div class="floatclear"></div>
 
+<form 
+	action="<!-- tmpl_var S_PROGRAM_URL -->" 
+	method="post" 
+	name="default_form" 
+	accept-charset="<!-- tmpl_var HTML_CHARSET -->"
+>
+	<input type="hidden" name="process" value="1">
+	<input type="hidden" name="flavor"  value="edit_html_type">
+	
+	<fieldset> 
+		<legend>
+			Subscription Confirmation
+		 </legend>
+		<div class="alert-box info radius">
+			<!-- tmpl_if list_settings.enable_closed_loop_opt_in --> 
+				Closed-Loop Opt-In is enabled.
+			<!-- tmpl_else --> 
+				Closed-Loop Opt-In  is disabled.
+			<!-- /tmpl_if --> 
+		</div>
+		<textarea 
+			name="html_confirmation_message" 
+			id="html_confirmation_message" 
+			rows="10" 
+			cols="50"
+		><!-- tmpl_var list_settings.html_confirmation_message --></textarea> 
+	</fieldset> 
 
+	<fieldset> 
+		<legend>
+			Subscription Successful
+		</legend>
+		<textarea 
+			name="html_subscribed_message"
+			id="html_subscribed_message"
+			rows="10"
+			cols="50"
+		><!-- tmpl_var list_settings.html_subscribed_message --></textarea>
+	</fieldset> 
+	
+	<fieldset>
+		<legend>
+			Subscription Requests
+		</legend>
+		<div class="alert-box info radius">
+			<!-- tmpl_if list_settings.enable_subscription_approval_step --> 
+				Subscription Requests Approving/Denying is enabled.
+			<!-- tmpl_else --> 
+				Subscription Requests Approving/Denying is disabled.
+			<!-- /tmpl_if --> 
+		</div>
+		<textarea 
+			name="html_subscription_request_message"
+			id="html_subscription_request_message"
+			rows="10"
+			cols="50"
+		><!-- tmpl_var list_settings.html_subscription_request_message --></textarea>
+	</fieldset> 
 
+	
+	<fieldset>
+		<legend>
+			Unsubscription Successful
+		</legend>
+		<textarea 
+			name="html_unsubscribed_message" 
+			id="html_unsubscribed_message" 
+			rows="10" 
+			cols="50"
+		><!-- tmpl_var list_settings.html_unsubscribed_message --></textarea>
+	</fieldset> 
+
+	<div class="clearfix">
+		<ul class="button-group right">
+		    <li>
+				<input type="reset" class="cautionary button" value="Clear All Changes">
+			</li>
+			<li>
+				<input type="submit" class="processing button" value="Save All Changes">
+			</li>
+		</ul>
+	</div>
 </form>
 
 <fieldset>
@@ -99,19 +127,14 @@
 	Available Template Tags
    </legend>    
    
-   <div id="template_tags">
-<table  class="tagchart">
+<table class="responsive" width="100%">
  <tr align="center">
-  <td>
-   <strong>
+  <th>
     This Tag
-   </strong>
-  </td>
-  <td>
-   <strong>
+  </th>
+  <th>
     Value
-   </strong>
-  </td>
+  </th>
  </tr>
 
  <tr>
@@ -182,8 +205,6 @@
   </td>
  </tr>
 </table>
-
-</div> 
 
 </fieldset> 
 

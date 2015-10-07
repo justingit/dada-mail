@@ -5,109 +5,92 @@
 <div id="screen_meta" data-menu_highlight="html_code"></div>
 <div id="html_code"></div>
 
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-		Appearance and Templates &#187; Subscription Form HTML
-	</div> 
-	<!-- tmpl_include help_link_widget.tmpl -->
+
+<div class="row">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				Appearance and Templates
+			 </a>
+	 	    <a 
+				href="#"
+				class="current"
+			>	
+				Subscription Form HTML
+			</a>
+		</nav>
+	</div>
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
 </div>
 
 
-<div id="tabs"> 
-	<ul>
-		<li>
+	<ul class="tabs" data-tab>
+		<li class="tab-title active">
 			<a href="#modal_menu">
 				Modal Menu Subscription Form
 			</a>
 		</li>
-		<li>
+		<li class="tab-title">
 			<a href="#full">
 				Full Subscription Form
 			</a>
 		</li>
-
-		<li>
+		<li class="tab-title">
 			<a href="#minimal">
 				Minimal Subscription Form
 			</a>
 		</li>
 
+	</ul>
+	
+	
+	<div class="tabs-content">
+		<div  class="content tab-title active" id="modal_menu"> 
+     	   <p>
+			   Place the following in the head of your page:
+		  </p>       
+     	 <textarea cols="50" rows="12"><!-- tmpl_var jquery_head_code escape="HTML" --></textarea>
 
+		<p>Place the following in the body of your page:</p> 
+		<textarea cols="50" rows="12"><!-- tmpl_var jquery_body_code escape="HTML" --></textarea>
+
+		<ul class="button-group center">
+		    <li>
+				 <a 
+				 	href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=preview_jquery_plugin_subscription_form"
+					class="button processing preview_jquery_plugin_subscription_form"
+				>
+					 	View Working Preview...
+				 </a>
+			</li>
 		</ul>
+	</div>
+	<div id="full"> 
+		<p>
+			Copy the code in the text box and add it to any page on your site.
+		</p>
+		<textarea name="code" cols="50" rows="12"><!-- tmpl_var subscription_form escape="HTML" --> </textarea>
 
+	    <fieldset>
+	    <legend>
+	    Working Preview</legend>
+	    <!-- tmpl_var subscription_form  -->
+	</div> 
 
-<div id="modal_menu"> 
-     <fieldset>
-     <p>Place the following in the head of your page:</p>       
-     <textarea cols="50" rows="12">
-     <!-- tmpl_var jquery_head_code escape="HTML" -->
-     </textarea>
-
-     <p>Place the following in the body of your page:</p> 
-     <textarea cols="50" rows="12">
-         <!-- tmpl_var jquery_body_code escape="HTML" -->
-     </textarea>
-
-     <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" target="_blank">
-     <p style="text-align:center"> 
-             <input type="hidden" name="flavor" value="preview_jquery_plugin_subscription_form">
-             <input type="submit" class="bigger_button processing preview_jquery_plugin_subscription_form" value="View Working Preview...">
-     </p> 
-     </form> 
-     </fieldset>
-</div> 
-
-
-<div id="full"> 
-    <fieldset>
-    <legend>
-    HTML</legend>
-     <p>
-      Copy the code in the text box and add it to any page on your site.
-     </p>
-
-     <textarea name="code" cols="50" rows="12">
-        <!-- tmpl_var subscription_form escape="HTML" --> 
-     </textarea>
-    </fieldset>
-
-
-
-    <fieldset>
-    <legend>
-    Working Preview</legend>
-    <!-- tmpl_var subscription_form  -->
-
-    </fieldset> 
-</div> 
-
-<div id="minimal"> 
-    
+	<div id="minimal"> 
+		<p>
+			Copy the code in the text box and add it to any page on your site.
+		</p>
+	 	<textarea name="min_code" cols="50" rows="12"><!-- tmpl_var minimal_subscription_form --></textarea>
 	
-	<fieldset>
-	<legend>
-	HTML</legend>
-
-	 <p>
-	  Copy the code in the text box and add it to any page on your site.
-	 </p>
-	 <textarea name="min_code" cols="50" rows="12"><!-- tmpl_var minimal_subscription_form --></textarea>
-	</fieldset>
-	
-	<fieldset>
-	<legend>
-	Working Preview</legend>
-<!-- tmpl_include minimal_subscription_form.tmpl -->
-	</fieldset>
+		<fieldset>
+			<legend>
+				Working Preview
+		</legend>
+		<!-- tmpl_include minimal_subscription_form.tmpl -->
+		</fieldset>
+	</div> 
 </div> 
-
-</div> 
-
-	
-
-
-
-
-
-
 <!-- end html_code_screen.tmpl -->

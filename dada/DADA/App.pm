@@ -3293,12 +3293,14 @@ sub mail_sending_advanced_options {
         unshift( @DADA::Config::CHARSETS, $ls->param('charset') );
         my $precedence_popup_menu = $q->popup_menu(
             -name    => "precedence",
+            -id      => "precedence",
             -value   => [@DADA::Config::PRECEDENCES],
             -default => $ls->param('precedence'),
         );
 
         my $priority_popup_menu = $q->popup_menu(
             -name    => "priority",
+            -id      => "priority",
             -value   => [ keys %DADA::Config::PRIORITIES ],
             -labels  => \%DADA::Config::PRIORITIES,
             -default => $ls->param('priority'),
@@ -3306,17 +3308,20 @@ sub mail_sending_advanced_options {
 
         my $charset_popup_menu = $q->popup_menu(
             -name  => 'charset',
+            -id    => 'charset',
             -value => [@DADA::Config::CHARSETS],
         );
 
         my $plaintext_encoding_popup_menu = $q->popup_menu(
             -name    => 'plaintext_encoding',
+			-id      => 'plaintext_encoding',
             -value   => [@DADA::Config::CONTENT_TRANSFER_ENCODINGS],
             -default => $ls->param('plaintext_encoding'),
         );
 
         my $html_encoding_popup_menu = $q->popup_menu(
             -name    => 'html_encoding',
+			-id      => 'html_encoding',
             -value   => [@DADA::Config::CONTENT_TRANSFER_ENCODINGS],
             -default => $ls->param('html_encoding'),
         );
@@ -3329,35 +3334,33 @@ sub mail_sending_advanced_options {
 		
 
 			
-	        my $scrn = DADA::Template::Widgets::wrap_screen(
-	            {
-	                -screen         => 'mail_sending_advanced_options_screen.tmpl',
-	                -with           => 'admin',
-	                -wrapper_params => {
-	                    -Root_Login => $root_login,
-	                    -List       => $list,
-	                },
-	                -list => $list,
-	                -vars => {
-	                    screen                        => 'mail_sending_advanced_options',
-	                    title                         => 'Advanced Options',
-	                    done                          => $done,
-	                    precedence_popup_menu         => $precedence_popup_menu,
-	                    priority_popup_menu           => $priority_popup_menu,
-	                    charset_popup_menu            => $charset_popup_menu,
-	                    plaintext_encoding_popup_menu => $plaintext_encoding_popup_menu,
-	                    html_encoding_popup_menu      => $html_encoding_popup_menu,
-	                    can_mime_encode               => $can_mime_encode,
-	                },
-	                -list_settings_vars_param => {
-	                    -list   => $list,
-	                    -dot_it => 1,
-	                },
-
-	            }
-	        );
-			
-			return $scrn;
+        my $scrn = DADA::Template::Widgets::wrap_screen(
+            {
+                -screen         => 'mail_sending_advanced_options_screen.tmpl',
+                -with           => 'admin',
+                -wrapper_params => {
+                    -Root_Login => $root_login,
+                    -List       => $list,
+                },
+                -list => $list,
+                -vars => {
+                    screen                        => 'mail_sending_advanced_options',
+                    title                         => 'Advanced Options',
+                    done                          => $done,
+                    precedence_popup_menu         => $precedence_popup_menu,
+                    priority_popup_menu           => $priority_popup_menu,
+                    charset_popup_menu            => $charset_popup_menu,
+                    plaintext_encoding_popup_menu => $plaintext_encoding_popup_menu,
+                    html_encoding_popup_menu      => $html_encoding_popup_menu,
+                    can_mime_encode               => $can_mime_encode,
+                },
+                -list_settings_vars_param => {
+                    -list   => $list,
+                    -dot_it => 1,
+                },
+            }
+        );
+		return $scrn;
     }
     else {
 

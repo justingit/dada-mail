@@ -26,7 +26,7 @@ has been sent to you. They wrote:
 
 The archived message is below. 
 
-You can subscribe to <!-- tmpl_var list_settings.list_name --> by following this link:
+You may subscribe to <!-- tmpl_var list_settings.list_name --> by following this link:
 
 <!-- tmpl_var list_subscribe_link -->
 
@@ -58,7 +58,7 @@ from:</p>
 
 <p>The archived message is below.</p> 
 
-<p>You can subscribe to <!-- tmpl_var list_settings.list_name --> by following this link:</p>
+<p>You may subscribe to <!-- tmpl_var list_settings.list_name --> by following this link:</p>
 
 <p>
  <a href="<!-- tmpl_var list_subscribe_link -->">

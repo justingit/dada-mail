@@ -3,18 +3,28 @@
 <!-- tmpl_set name="title" value="Message Archives &#187; View Archive" -->
 <div id="screen_meta" data-menu_highlight="view_archive"></div>
 
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-		Message Archives 
-		&#187; 
-		<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive">
-			View Archive
-		</a>
-		 &#187;
-		<!-- tmpl_var name="subject" ESCAPE="HTML" -->
-	</div> 
-	<!-- tmpl_include help_link_widget.tmpl -->
+<div class="row">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				Message Archives
+			 </a>
+			<a 
+				href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_archive">
+			>	
+				View
+			</a>
+			
+			<a href="current">
+				<!-- tmpl_var name="subject" ESCAPE="HTML" -->
+			</a>
+		</nav>
+	</div>
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
 </div>
+
 
 
 <p>
@@ -35,7 +45,7 @@
 </iframe>
 
  
-	<ul class="button-group">
+	<ul class="button-group right">
 		
 		<li>
 			<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get"> 

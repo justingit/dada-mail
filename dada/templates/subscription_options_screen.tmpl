@@ -75,15 +75,20 @@
 	<legend>
 	Membership &#187; Invite/Subscribe/Add
 	</legend>
-    
-        <div class="row">
-            <div class="small-12 columns">
-            <input type="checkbox" name="use_add_list_import_limit" id="use_add_list_import_limit" <!-- tmpl_if list_settings.use_add_list_import_limit -->checked="checked"<!-- /tmpl_if --> value="1" >
+    <div class="row">
+        <div class="small-12 columns">
             <label for="use_add_list_import_limit"> 
-            Limit the number of addresses processed to:
-            </label>
-        </div> 
-    </div> 
+				<input 
+					type="checkbox" 
+					name="use_add_list_import_limit" 
+					id="use_add_list_import_limit" 
+					value="1"
+					<!-- tmpl_if list_settings.use_add_list_import_limit -->checked="checked"<!-- /tmpl_if -->
+				>
+				Limit the number of addresses processed to:
+        	</label>
+    	</div> 
+	</div> 
     <div class="row">
         <div class="small-12 columns">
         <!-- tmpl_var add_list_import_limit_menu -->

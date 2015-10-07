@@ -26,7 +26,7 @@ to the mailing list:
 is complete. Thanks for subscribing! 
 
 <!-- tmpl_if list_settings.group_list --> 
-* This mailing list is a group discussion list <!-- tmpl_if list_settings.enable_moderation -->(moderated)<!-- tmpl_else -->(unmoderated)<!-- /tmpl_if -->. You can start a new thread, by sending an email message to, <!-- tmpl_var list_settings.discussion_pop_email --> 
+* This mailing list is a group discussion list <!-- tmpl_if list_settings.enable_moderation -->(moderated)<!-- tmpl_else -->(unmoderated)<!-- /tmpl_if -->. You may start a new thread, by sending an email message to, <!-- tmpl_var list_settings.discussion_pop_email --> 
 <!-- tmpl_else --> 
 * This mailing list is an announce-only mailing list. 
 <!-- /tmpl_if -->

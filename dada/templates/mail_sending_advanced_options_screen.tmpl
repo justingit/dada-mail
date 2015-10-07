@@ -32,122 +32,149 @@
 	method="post" 
 	accept-charset="<!-- tmpl_var HTML_CHARSET -->"
 >
-
+	<input type="hidden" name="process" value="1" >
+	<input type="hidden" name="flavor"  value="mail_sending_advanced_options" >
+	
 	<fieldset> 
 		<legend> 
 			Advanced
 		</legend> 
 
-		Default Character Set
-		<!-- tmpl_var charset_popup_menu -->
-
-		Default Plain Text Message Encoding
-		<!-- tmpl_var plaintext_encoding_popup_menu -->
-
-		Default HTML Message Encoding
-		<!-- tmpl_var html_encoding_popup_menu -->
-
-		<input 
-			type="checkbox" 
-			name="mime_encode_words_in_headers" 
-			id="mime_encode_words_in_headers" 
-			value="1" 
-			<!-- tmpl_if list_settings.mime_encode_words_in_headers -->checked="checked"<!--/tmpl_if-->
-		>
-		<label for="mime_encode_words_in_headers">
-			Encode Message Headers
-		</label>
-
-		Non-ASCII characters will be specially encoded in the To, From, Cc and Subject headers. 
-		<!-- tmpl_unless can_mime_encode --> 
-			<p class="error">
-			Warning! The MIME::EncWords CPAN module needs to be installed, for this option to work correctly!
-			</p>
-		<!-- /tmpl_unless --> 
-
-
-		<input 
-			type="checkbox" 
-			name="verp_return_path" 
-			id="verp_return_path" 
-			value="1" 
-			<!-- tmpl_if list_settings.verp_return_path -->checked="checked"<!--/tmpl_if-->
-		>
-		<label for="verp_return_path">
-		Use VERP
-		</label>
-		VERP, or Variable Envelope Return Paths, can help identify 
-		bounced email messages. 
-		(<a href="http://cr.yp.to/proto/verp.txt" target="_blank">More&nbsp;Information</a>.)
-
-		<strong>
-		Note: 
-		</strong>
-		VERP will only work if you are using SMTP sending, or if you 
-		successfully set the Return-Path header when sending via the 
-		sendmail command. This is done by setting the '-f' flag 
-		(best bet) or 'Return-Path' header.
-
+		<div class="row">
+			<div class="small-12 columns">
+				<label for="charset"> 
+					Default Character Set
+					<!-- tmpl_var charset_popup_menu -->
+				</label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="small-12 columns">
+			<label for="plaintext_encoding"> 
+				Default Plain Text Message Encoding
+				<!-- tmpl_var plaintext_encoding_popup_menu -->
+			</label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="small-12 columns">
+				<label for="html_encoding"> 
+					Default HTML Message Encoding
+					<!-- tmpl_var html_encoding_popup_menu -->
+				</label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="small-12 columns">
+				<label for="mime_encode_words_in_headers">
+					<input 
+						type="checkbox" 
+						name="mime_encode_words_in_headers" 
+						id="mime_encode_words_in_headers" 
+						value="1" 
+						<!-- tmpl_if list_settings.mime_encode_words_in_headers -->checked="checked"<!--/tmpl_if-->
+					>		
+					Encode Message Headers
+				</label>
+				<div class="alert-box info radius"> 
+					Non-ASCII characters will be specially encoded in the To, From, Cc and Subject headers. 
+				</div>
+				<!-- tmpl_unless can_mime_encode --> 
+					<div class="alert-box alert radius"> 
+						Warning! The MIME::EncWords CPAN module needs to be installed, for this option to work correctly!
+					</div>
+				<!-- /tmpl_unless --> 
+			</div>
+		</div>
+		<div class="row">
+			<div class="small-12 columns">
+				<label for="verp_return_path">
+					<input 
+						type="checkbox" 
+						name="verp_return_path" 
+						id="verp_return_path" 
+						value="1" 
+						<!-- tmpl_if list_settings.verp_return_path -->checked="checked"<!--/tmpl_if-->
+					>
+					Use VERP
+				</label>
+				<div class="alert-box info radius"> 
+					VERP, or Variable Envelope Return Paths, can help identify 
+					bounced email messages. (<a href="http://cr.yp.to/proto/verp.txt" target="_blank">More&nbsp;Information</a>.)
+					<br>
+					<br>
+					<strong>
+					Note: 
+					</strong>
+					VERP will only work if you are using SMTP sending, or if you 
+					successfully set the Return-Path header when sending via the 
+					sendmail command. This is done by setting the '-f' flag 
+					(best bet) or 'Return-Path' header.
+				</div> 
+			</div>
+		</div>
 	</fieldset> 
 
 	<fieldset> 
 		<legend> 
-			<a 
-				href="#" 
-				id="misc_options_label" 
-				class="toggleDivs" 
-				data-target="misc_options">
-					+/-
-			</a>
 			Misc. Options
 		</legend>
-		
-		<div id="misc_options">
-			Default Priority
-			<!-- tmpl_var priority_popup_menu -->
-			
-			<input 
-				type="checkbox" 
-				name="print_return_path_header" 
-				id="print_return_path_header" 
-				value="1" 
-				<!-- tmpl_if list_settings.print_return_path_header -->checked="checked"<!--/tmpl_if-->
-			>
-			<label for="print_return_path_header">
-				Print the 'Return-Path' header in all list emails
-			</label>
+		<div class="row">
+			<div class="small-12 columns">
+				<label for="priority">
+					Default Priority
+					<!-- tmpl_var priority_popup_menu -->
+				</label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="small-12 columns">
+				<label for="print_return_path_header">
 
-			The 'Return-Path' header works much like setting the '-f' flag. 
-			Alternatives to Sendmail (like qmail) allow you to use the 
-			'Return-Path' header.
+					<input 
+						type="checkbox" 
+						name="print_return_path_header" 
+						id="print_return_path_header" 
+						value="1" 
+						<!-- tmpl_if list_settings.print_return_path_header -->checked="checked"<!--/tmpl_if-->
+					>
+					Print the 'Return-Path' header in all list emails
+				</label>
+				<div class="alert-box info radius"> 			
+					The 'Return-Path' header works much like setting the '-f' flag. 
+					Alternatives to Sendmail (like qmail) allow you to use the 
+					'Return-Path' header.
+				</div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="small-12 columns">
+				<label for="strip_message_headers">
+					<input
+						type="checkbox" 
+						name="strip_message_headers" 
+						id="strip_message_headers" 
+						value="1" 
+						<!-- tmpl_if list_settings.strip_message_headers -->checked="checked"<!--/tmpl_if-->
+					>
 
+					Send all emails with only the address contained in the 
+					'To' and 'From' message headers
+				</label>
 
-			<input
-				type="checkbox" 
-				name="strip_message_headers" 
-				id="strip_message_headers" 
-				value="1" 
-				<!-- tmpl_if list_settings.strip_message_headers -->checked="checked"<!--/tmpl_if-->
-			>
-
-			<label for="strip_message_headers">
-				Send all emails with only the address contained in the 
-				'To' and 'From' message headers
-			</label>
-
-			Some SMTP servers get confused when 'To:' and 'From:' mail 
-			headers contain both the name and address 
-			( &quot;John Smith&quot; &lt;john@smith.com&gt;). With this 
-			option, all messages sent will contain only the address 
-			( john@smith.com ).
-			<em>
-			Most likely, you will not need this option.
-			</em>
+				<div class="alert-box info radius">
+					Some SMTP servers get confused when 'To:' and 'From:' mail 
+					headers contain both the name and address 
+					( &quot;John Smith&quot; &lt;john@smith.com&gt;). With this 
+					option, all messages sent will contain only the address 
+					( john@smith.com ).
+					<em>
+					Most likely, you will not need this option.
+					</em>
+				</div>
+			</div>
+		</div>
 	</fieldset> 
-
-	<input type="hidden" name="process" value="1" >
-	<input type="hidden" name="flavor"  value="mail_sending_advanced_options" >
-
 	<ul class="button-group right">
 	    <li>
 			<input type="reset"  class="button cautionary" value="Clear Changes">
@@ -157,7 +184,5 @@
 		</li>
 	</ul>
 </form> 
-
-
 
 <!-- end mail_sending_advanced_options_screen.tmpl -->
