@@ -2,55 +2,78 @@
 
 <div id="screen_meta" data-menu_highlight="back_link"></div>
 <!-- tmpl_set name="title" value="Appearance and Templates &#187; Create a Back Link" -->
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-		<!-- tmpl_var title --> 
-	</div> 
-	<!-- tmpl_include help_link_widget.tmpl -->
+
+<div class="row">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				Appearance and Templates
+			 </a>
+	 	    <a 
+				href="#"
+				class="current"
+			>	
+				Create a Back Link
+			</a>
+		</nav>
+	</div>
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
 </div>
+
 
 <!-- tmpl_if done -->
 	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
 <!--/tmpl_if -->
 
-<p>
+<div class="alert-box info radius">
  Enter your website's name and its URL to create a Back Link
  in screens presented to your visitors. Both the site name and 
  site URL are needed to make the link. Leave both text fields 
  blank to remove the link.
-</p>
-
-<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-
-
-<input type="hidden" name="process" value="1" >
-<input type="hidden" name="flavor"       value="back_link" >
-
-<p>
- <label for="website_name">
-  Site Name:
- </label>
- <br >
- <input type="text" name="website_name" id="website_name" value="<!-- tmpl_var list_settings.website_name escape="HTML"-->"  >
-</p>
-
-<p>
- <label for="website_url"> 
-  Site URL: (http://)
- </label>
- <br >
- <input type="text" name="website_url" id="website_url" value="<!-- tmpl_var list_settings.website_url escape="HTML" -->"  >
-</p>
-
-<div class="buttonfloat">
- <input type="reset"  class="cautionary button" value="Clear Changes" >
- <input type="submit" class="processing button" value="Change Back Link" >
 </div>
-<div class="floatclear"></div>
 
+<form 
+	action="<!-- tmpl_var S_PROGRAM_URL -->" 
+	method="post" 
+	name="default_form" 
+	accept-charset="<!-- tmpl_var HTML_CHARSET -->"
+>
+	<input type="hidden" name="process" value="1" >
+	<input type="hidden" name="flavor"  value="back_link" >
+
+	<div class="row">
+		<div class="small-12 columns">
+			<label for="website_name">
+				Site Name
+			</label>
+			<input type="text" name="website_name" id="website_name" value="<!-- tmpl_var list_settings.website_name escape="HTML"-->"  >
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="small-12 columns">	
+			<label for="website_url"> 
+				Site URL
+			</label>
+			<input 
+				type="text" 
+				name="website_url" 
+				id="website_url" 
+				value="<!-- tmpl_var list_settings.website_url escape="HTML" -->"
+				placeholder="http://"
+			>
+		</div>
+	</div>
+	<ul class="button-group right">
+	    <li>
+			<input type="reset"  class="cautionary button" value="Clear Changes">
+		</li>
+		<li>
+			<input type="submit" class="processing button" value="Change Back Link">
+		</li>
+	</ul>
 </form> 
-
- 
-
 
 <!-- end back_link_screen.tmpl -->

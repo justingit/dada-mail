@@ -1682,7 +1682,6 @@ $MIME_OPTIMIZE     //= 'no tmp files';
     send_invalid_msgs_to_owner   => 1,
     send_msg_copy_to             => 0,
     rewrite_anounce_from_header  => 1,
-    discussion_clean_up_replies  => 0,
 
     not_allowed_to_post_msg_subject => undef, ,
     not_allowed_to_post_msg         => undef,

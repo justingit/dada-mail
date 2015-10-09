@@ -664,8 +664,6 @@ sub edit {
         rewrite_anounce_from_header                => 0,
         discussion_pop_use_ssl                     => 0,
         discussion_template_defang                 => 0,
-        discussion_clean_up_replies                => 0,
-
         digest_enable   => 0,
         digest_schedule => 86400,
         bridge_announce_reply_to => 'none', 
