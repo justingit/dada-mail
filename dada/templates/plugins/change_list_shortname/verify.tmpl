@@ -61,22 +61,29 @@
 	
 <!-- tmpl_else --> 
 	<fieldset> 
-	<legend>Verification Successful</legend>
-	<p>Your new List Short Name checks out.</p> 
+	<h1>
+		Verification Successful
+	</h1>
+	<div class="alert-box info radius"> 
+		Your new List Short Name checks out.</p> 
+	</div>
 	
-	
-	<p><strong>Please make a backup of your current Dada Mail database, before continuing.</strong></p> 
+	<div class="alert-box warning radius"> 
+		Please make a backup of your current Dada Mail database, before continuing.</strong></p> 
+	</div>
 	
 	<form action="<!-- tmpl_var S_PROGRAM_URL -->"  method="post" >
+		
 	    <input type="hidden" name="flavor" id="flavor" value="plugins" >
 		<input type="hidden" name="plugin" id="plugin" value="change_list_shortname" >
 		<input type="hidden" name="prm" id="prm" value="change_list_shortname" >
 		<input type="hidden" name="new_name" id="new_name" value="<!-- tmpl_var new_name -->" > 
-		<div class="buttonfloat">
-		<input type="submit" value="Change your list short name from, &quot;<!-- tmpl_var list_settings.list -->&quot; to, &quot;<!-- tmpl_var new_name -->&quot;" class="processing button" > 
-		</div> 
-		<div class="floatclear"></div>
-		
+
+		<ul class="button-group right">
+		    <li>
+				<input type="submit" value="Change your list short name from, &quot;<!-- tmpl_var list_settings.list -->&quot; to, &quot;<!-- tmpl_var new_name -->&quot;" class="processing button" > 
+			</li>
+		</ul>
 	</form>
 	</fieldset> 
 	

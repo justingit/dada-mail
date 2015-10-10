@@ -2,13 +2,24 @@
 
 <div id="screen_meta" data-menu_highlight="change_list_shortname"></div>
 
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-		<!-- tmpl_var title --> 
+<div class="row">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				Plugins
+			 </a>
+	 	    <a 
+				href="#"
+				class="current"
+			>	
+				Change List Shortname
+			</a>
+		</nav>
 	</div>
-	<!-- tmpl_include help_link_widget.tmpl -->
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
 </div>
-
 <div id="plugins_change_list_shortname"></div> 
 
 <fieldset> 
@@ -17,15 +28,37 @@
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" id="change_name_form" name="change_name_form">
 
 	<input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" >
-
 	<input type="hidden" name="flavor" id="flavor" value="plugins" >
 	<input type="hidden" name="plugin" id="plugin" value="change_list_shortname" >
 	<input type="hidden" name="prm" id="prm" value="verify_change_list_shortname" >
-	<p><label for="new_name">Your New List Short Name:</label><input type="text" name="new_name" id="new_name" value="" maxlength="16" ></p>
-	<div class="buttonfloat">
-	<input type="button" id="verify_button" value="Verify Your List Short Name Change..." class="alertive button" > 
-	</div> 
-	<div class="floatclear"></div>
+	
+	<div class="row">
+		<div class="small-12">
+			<label for="new_name">
+				New List Short Name
+			</label>
+			<input 
+				type="text" 
+				name="new_name" 
+				id="new_name" 
+				value="" 
+				maxlength="16"
+			>
+		</div>
+	</div>
+	
+	<ul class="button-group right">
+	    <li>
+			<input 
+				type="button" 
+				id="verify_button" 
+				value="Verify ..." 
+				class="alertive button"
+			> 
+		</li>
+	</ul>
 </form>
+
+<div id="plugins_change_list_shortname_verify" data-reveal class="reveal-modal medium" role="dialog"></div>
 
 </fieldset>

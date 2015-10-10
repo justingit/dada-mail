@@ -1,5 +1,4 @@
 <!-- tmpl_set name="title" value="Bridge" -->
-<!-- tmpl_set name="load_colorbox" value="1" -->
 
 <div class="row">
 	<div class="medium-10 small-9 columns">
@@ -11,7 +10,7 @@
 				href="#"
 				class="current"
 			>	
-				Bridge
+				<!-- tmpl_var Plugin_Name -->
 			</a>
 		</nav>
 	</div>
@@ -43,7 +42,7 @@
 
 	<!-- tmpl_if list_settings.disable_discussion_sending -->
 		<div class="alert-box warning radius">
-			Bridge is Currently Disabled for this Mailing List. 
+			<!-- tmpl_var Plugin_Name --> is Currently Disabled for this Mailing List. 
 			<ul> 
 				<li>
 					Uncheck the option labeled, 
@@ -188,6 +187,7 @@
 							type="text"  
 							id="bridge_mail_forward_pipe_command" 
 							value="|<!-- tmpl_var program_abs_path --> --inject --list <!-- tmpl_var list_settings.list -->"
+							readonly
 						>
 					</div>
 				</div><!-- bridge_mail_forward_pipe_params -->
@@ -212,7 +212,7 @@
 				<div id="bridge_pop3_account_params">
 					<div class="panel"> 
 						<div class="row">
-							<div class="small-12">
+							<div class="small-12 columns">
 								<label for="discussion_pop_server">
 									POP3 Server
 									<input 
@@ -225,7 +225,7 @@
 							</div>
 						</div>
 						<div class="row">
-							<div class="small-12">						
+							<div class="small-12 columns">						
 								<label for="discussion_pop_username">
 									POP3 Username
 									<input 
@@ -245,7 +245,7 @@
 							
 								<div class="row">
 									<!-- tmpl_unless has_discussion_pop_password --> 
-										<div class="small-12">
+										<div class="small-12 columns">
 											<input 
 												name="discussion_pop_password" 
 												id="discussion_pop_password" 
@@ -287,7 +287,7 @@
 							</div>
 						</div>
 						<div class="row">
-							<div class="small-12">
+							<div class="small-12 columns">
 								<label for="discussion_pop_auth_mode">
 									Type
 									<!-- tmpl_var discussion_pop_auth_mode_popup --> 
@@ -295,7 +295,7 @@
 							</div>
 						</div>
 						<div class="row">
-							<div class="small-12">
+							<div class="small-12 columns">
 								<label for="discussion_pop_use_ssl">
 									<input 
 										type="checkbox" 
@@ -315,12 +315,12 @@
 							</div>
 						</div>
 						<div class="row">
-							<div class="small-12">
+							<div class="small-12 columns">
 								<ul class="button-group even-2">
 								    <li>
 										<input 
 											type="button small" 
-											class="cautionary plugins_bridge_test_pop3 button small" 
+											class="cautionary button small plugins_bridge_test_pop3" 
 											value="Test POP3 Login Information..."
 										>
 									</li>
@@ -332,6 +332,9 @@
 										>
 									</li>
 								</ul>
+								<div data-reveal id="plugins_bridge_test_pop3"               class="reveal-modal medium" role="dialog"></div>
+								<div data-reveal id="plugins_bridge_manually_check_messages" class="reveal-modal medium" role="dialog"></div>
+								
 							</div>
 						</div>
 					</div>
@@ -947,161 +950,187 @@
 						id="send_not_allowed_to_post_msg" 
 						value="1" <!-- tmpl_if list_settings.send_not_allowed_to_post_msg -->checked="checked"<!--/tmpl_if-->
 					>
-						Send back a &quot;Not Allowed to Post&quot; Email Notification
+						Send a &quot;Not Allowed to Post&quot; Email Notification
 				</label>
 			</div> 
 		</div> 
+	</fieldset> 
 
-</fieldset> 
+	<fieldset> 
+		<legend> 
+			Digests
+		</legend> 
+		<div class="row">
+			<div class="small-12 columns">				
+				<label for="digest_enable"> 
+					<input 
+						type="checkbox" 
+						name="digest_enable" 
+						id="digest_enable" 
+						value="1" 
+						<!-- tmpl_if list_settings.digest_enable --> checked="checked"<!-- /tmpl_if -->
+					>
+					Enable Digests
+				</label> 
+			</div> 
+		</div> 
+		<div class="row">
+			<div class="small-12 columns">				
+				<label for="digest_schedule"> 
+					Send Digests Every: 
+				</label>
+				<!-- tmpl_var digest_schedule_popup_menu -->
+			</div> 
+		</div> 
+		
+	</fieldset> 
 
 
+	<fieldset> 
+		<legend>
+			Security
+		</legend> 
 
-<fieldset> 
-	<legend> 
-		Digests
-	</legend> 
-	<div class="row">
-		<div class="small-12 columns">				
-			<label for="digest_enable"> 
+		<!-- tmpl_unless can_use_spam_assassin --> 
+			<div class="alert-box warning radius">
+				SpamAssassin may not be installed on your server.
+			</div>
+		<!--/tmpl_unless-->
+
+		<div class="row">
+			<div class="small-12 columns">
+				<label for="ignore_spam_messages">
+					<input 
+						type="checkbox" 
+						name="ignore_spam_messages" 
+						id="ignore_spam_messages" 
+						value="1" 
+						<!-- tmpl_if list_settings.ignore_spam_messages -->checked="checked"<!--/tmpl_if-->
+					>
+					Reject messages labeled as, &quot;SPAM&quot; by SpamAssassin filters. 
+				</label>
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="small-12 columns">
+				<label>
+					Find SpamAssassin Score By: 
+				</label>
+			</div>
+		</div> 
+
+		<div class="row">
+			<div class="small-12 columns">
+				<label for="looking_for_embedded_headers">
+					<input 
+						type="radio" 
+						id="looking_for_embedded_headers" 
+						name="find_spam_assassin_score_by" 
+						value="looking_for_embedded_headers" 
+						<!-- tmpl_if find_spam_assassin_score_by_looking_for_embedded_headers -->checked="checked"<!--/tmpl_if-->
+					>
+					Look for the embedded SpamAssassin Headers
+				</label> 
+			</div>
+		</div>
+		
+		<div class="row">
+			<div class="small-12 columns">
+				<label for="calling_spamassassin_directly">
+					<input 
+						type="radio" 
+						id="calling_spamassassin_directly" 
+						name="find_spam_assassin_score_by" 
+						value="calling_spamassassin_directly" 
+						<!-- tmpl_if find_spam_assassin_score_by_calling_spamassassin_directly -->checked="checked"<!--/tmpl_if--> 
+					>
+					Use the SpamAssassin Modules directly (Slow, resource-intensive)
+				</label> 
+			</div>
+		</div>
+		<div class="row">
+			<div class="small-12 columns">
+				<label for="ignore_spam_messages_with_status_of">
+					SpamAssassin Score Threshold
+				</label>
+				<!-- tmpl_var spam_level_popup_menu -->
+			</div>
+		</div>
+
+		
+		<div class="row">
+			<div class="small-12 columns">
+				<label>
+					If Scored as SPAM:
+				</label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="small-12 columns">
+				<label for="rejected_spam_messages_ignore_spam">
+					<input 
+						type="radio" 
+						name="rejected_spam_messages"
+						id="rejected_spam_messages_ignore_spam" 
+						value="ignore_spam" 
+						<!-- tmpl_if expr="(list_settings.rejected_spam_messages eq 'ignore_spam')" -->checked="checked"<!-- /tmpl_if -->
+					>
+					Ignore Spam Messages
+				</label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="small-12 columns">
+				<label for="rejected_spam_messages_send_spam_rejection_message">
+					<input 
+						type="radio" 
+						id="rejected_spam_messages_send_spam_rejection_message"
+						name="rejected_spam_messages"
+						value="send_spam_rejection_message" 
+						<!-- tmpl_if expr="(list_settings.rejected_spam_messages eq 'send_spam_rejection_message')" -->checked="checked"<!-- /tmpl_if -->
+					>
+					Send a Rejection Message
+				</label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="small-12 columns">
+				<label for="strip_file_attachments">
+					<input 
+						type="checkbox"
+						name="strip_file_attachments"
+						id="strip_file_attachments"
+						value="1" 
+						<!-- tmpl_if list_settings.strip_file_attachments -->checked="checked"<!--/tmpl_if-->
+						>
+						Strip attachments with the file ending/MIME-Types listed:
+				</label>
+			</div>
+		</div> 
+		<div class="row">
+			<div class="small-12 columns">
 				<input 
-					type="checkbox" 
-					name="digest_enable" 
-					id="digest_enable" 
-					value="1" 
-					<!-- tmpl_if list_settings.digest_enable --> checked="checked"<!-- /tmpl_if -->
+					type="text" 
+					name="file_attachments_to_strip" 
+					id="file_attachments_to_strip"
+					value="<!-- tmpl_var list_settings.file_attachments_to_strip -->"
+					placeholder="seperated by spaces"
 				>
-				Enable Digests
-			</label> 
+			</div>
 		</div> 
-	</div> 
-	<div class="row">
-		<div class="small-12 columns">				
-			<label for="digest_schedule"> 
-				Send Digests Every: 
-			</label>
-			<!-- tmpl_var digest_schedule_popup_menu -->
-		</div> 
-	</div> 
-</fieldset> 
+	</fieldset> 
 
-
-<fieldset> 
-<legend> 
-Mailing List Security
-</legend> 
-
-
-
-<table>
-
-
-<tr>
-<td> 
-<input type="checkbox" name="ignore_spam_messages" id="ignore_spam_messages" value="1" <!-- tmpl_if list_settings.ignore_spam_messages -->checked="checked"<!--/tmpl_if--> >
-</td> 
-<td>
-<label for="ignore_spam_messages">
-Reject messages labeled as, &quot;SPAM&quot; by SpamAssassin filters. 
-</label></p> 
-
-
-<!-- tmpl_unless can_use_spam_assassin --> 
-<p class="error">* SpamAssassin may not be installed on your server.</p>
-<!--/tmpl_unless--> 
-
-<p>Find SpamAssassin Score By: 
-<table  border="0"> 
-<tr> 
-<td><input type="radio" id="looking_for_embedded_headers" name="find_spam_assassin_score_by" value="looking_for_embedded_headers" <!-- tmpl_if find_spam_assassin_score_by_looking_for_embedded_headers -->checked="checked"<!--/tmpl_if--> ></td>
-<td>
-<p>
-<label for="looking_for_embedded_headers">
-Look for the embedded SpamAssassin Headers (Fast! But may not be available)
-</label> 
-</p>
-</td>
-</tr>
-
-<tr> 
-<td><input type="radio" id="calling_spamassassin_directly" name="find_spam_assassin_score_by" value="calling_spamassassin_directly" <!-- tmpl_if find_spam_assassin_score_by_calling_spamassassin_directly -->checked="checked"<!--/tmpl_if--> ></td>
-<td>
-<p>
-<label for="calling_spamassassin_directly">
-Use the SpamAssassin Modules directly (Slow, resource-intensive)
-</label> 
-</p>
-</td>
-</tr>
-
-<!-- 
-
-<tr> 
-<td><input type="radio" disabled="disabled"></td>
-<td>
-<p>
-<label> 
-Use the spamd daemon (not currently supported)
-</label>
-</p>
-</td>
-</tr>
-
---> 
-
-</table> 
-
-<p> 
-Messages must reach a SpamAssassin level of at least: <!-- tmpl_var spam_level_popup_menu --> to be considered SPAM.
-</p> 
-<table  cellpadding="5"> 
-<tr> 
-<td><input type="radio" name="rejected_spam_messages" value="ignore_spam" <!-- tmpl_if expr="(list_settings.rejected_spam_messages eq 'ignore_spam')" -->checked="checked"<!-- /tmpl_if --> ></td>
-<td><p><label>Ignore Spam Messages</label><br > 
-</p>
-</td>
-</tr> 
-<tr> 
-<td><input type="radio" name="rejected_spam_messages" value="send_spam_rejection_message" <!-- tmpl_if expr="(list_settings.rejected_spam_messages eq 'send_spam_rejection_message')" -->checked="checked"<!-- /tmpl_if -->><label></td><td><p><label>Send a Rejection Message</label><br > 
-The original poster will receive a message stating that the original message was rejected.
-
-</p> 
-</td>
-</tr> 
-</table> 
-
-</td>
-</tr> 
-
-
-
-<tr>
-<td> 
-
-<input type="checkbox" name="strip_file_attachments" id="strip_file_attachments" value="1" <!-- tmpl_if list_settings.strip_file_attachments -->checked="checked"<!--/tmpl_if--> >
-
-</td>
-<td>
-<p>
-<label for="strip_file_attachments">Strip attachments that have the following file ending or MIME-Type:</label> <em>(separated by spaces)</em>
-<br >
-
-<input type="text" name="file_attachments_to_strip" id="file_attachments_to_strip"value="<!-- tmpl_var list_settings.file_attachments_to_strip -->"  >
-
-</p>
-</td>
-</tr>
-</table> 
-
-
-</fieldset> 
-
-<div class="buttonfloat"> 
-<input type="reset"  class="cautionary button" value="Clear Changes">
-<input type="submit" class="processing button" value="Save Changes">
-</div> 
-<div class="floatclear"></div> 
-
-
+	<div class="clearfix">
+		<ul class="button-group right">
+		    <li>
+				<input type="reset"  class="cautionary button" value="Clear Changes">
+			</li>
+			<li>
+				<input type="submit" class="processing button" value="Save Changes">
+			</li>
+		</ul>
+	</div>
 </form>
 
 
@@ -1109,35 +1138,39 @@ The original poster will receive a message stating that the original message was
 
 
 <fieldset> 
-<legend><!-- tmpl_var Plugin_Name --> Email Templates</legend>
-
-<div class="buttonfloat"> 
-<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get"> 
-
-<input type="hidden" name="flavor" value="plugins"> 
-<input type="hidden" name="plugin" value="bridge"> 
-<input type="hidden" name="prm" value="edit_email_msgs"> 
-<input type="submit" value="Customize Email Templates..." class="processing button"> 
-</form> 
-</div> 
-
-<div class="floatclear"></div> 
-
+	<legend>
+		<!-- tmpl_var Plugin_Name --> Email Templates
+	</legend>
+	<div class="clearfix">
+		<ul class="button-group right">
+		    <li>
+				<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get"> 
+				<input type="hidden" name="flavor" value="plugins"> 
+				<input type="hidden" name="plugin" value="bridge"> 
+				<input type="hidden" name="prm" value="edit_email_msgs"> 
+				<input type="submit" value="Customize Email Templates..." class="processing button"> 
+				</form> 
+			</li>
+		</ul>
+	</div>
 </fieldset> 
 
 
 <fieldset> 
+
 <legend><!-- tmpl_var Plugin_Name --> Configuration</legend>
 
-<div class="buttonfloat"> 
-<form action="<!-- tmpl_var Plugin_URL -->" method="get"> 
-<input type="hidden" name="flavor" value="plugins"> 
-<input type="hidden" name="plugin" value="bridge"> 
-<input type="hidden" name="prm" value="cgi_show_plugin_config"> 
-<input type="submit" value="View All Plugin Configurations..." class="processing button"> 
-</form> 
-</div> 
-
-<div class="floatclear"></div> 
+	<div class="clearfix">
+		<ul class="button-group right">
+		    <li>
+				<form action="<!-- tmpl_var Plugin_URL -->" method="get"> 
+				<input type="hidden" name="flavor" value="plugins"> 
+				<input type="hidden" name="plugin" value="bridge"> 
+				<input type="hidden" name="prm" value="cgi_show_plugin_config"> 
+				<input type="submit" value="View All Plugin Configurations..." class="processing button"> 
+				</form> 
+			</li>
+		</ul>
+	</div>
 
 </fieldset>

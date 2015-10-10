@@ -3,152 +3,113 @@
 <!-- tmpl_set name="title" value="Your List Control Panel &#187; Options" -->
 <div id="screen_meta" data-menu_highlight="list_cp_options"></div>
 
-
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-		<!-- tmpl_var title --> 
+<div class="row">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				Your List Control Panel
+			 </a>
+	 	    <a 
+				href="#"
+				class="current"
+			>	
+				Options
+			</a>
+		</nav>
 	</div>
-	<!-- tmpl_include help_link_widget.tmpl -->
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
 </div>
 
 <!-- tmpl_if done -->
 	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
 <!--/tmpl_if -->
 
-<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+<form 
+	action="<!-- tmpl_var S_PROGRAM_URL -->" 
+	method="post" 
+	accept-charset="<!-- tmpl_var HTML_CHARSET -->"
+>
+
+	<input type="hidden" name="process" value="1" >
+	<input type="hidden" name="flavor"       value="list_cp_options" >
+
+	<fieldset> 
+		<legend>
+			WYSIWYG Editor Options
+		</legend> 
+
+		<!-- tmpl_if expr="((using_no_wysiwyg_editor == 1) && (list_settings.use_wysiwyg_editor ne 'none'))" --> 
+			<div class="alert-box warning radius">
+				<strong>Warning!</strong> You're currently selected WYSIWYG editor is currently 
+				not being used, because of a misconfiguration.</p>
+			</div>
+		<!-- /tmpl_if --> 
 
 
-
-<fieldset> 
-
-<legend>WYSIWYG Editor Options</legend> 
-
-
-<!-- tmpl_if expr="((using_no_wysiwyg_editor == 1) && (list_settings.use_wysiwyg_editor ne 'none'))" --> 
-<div class="alert-box info radius">
-<p>
- <strong>Warning!</strong>
-<p>You're currently selected WYSIWYG editor is currently not being used, because of a misconfiguration.</p>
-</div>
-
-<!-- /tmpl_if --> 
-
-<table  cellpadding="5" border="0"> 
-
-<!-- tmpl_if ckeditor_enabled --> 
-	<!-- tmpl_if ckeditor_url --> 
-	<tr> 
-	 <td>
-		<input type="radio" name="use_wysiwyg_editor" id="use_wysiwyg_editor_ckeditor" value="ckeditor" <!-- tmpl_if expr="(list_settings.use_wysiwyg_editor eq 'ckeditor')" -->checked="checked"<!--/tmpl_if -->  >
-	</td>
-	<td>
-		<label for="use_wysiwyg_editor_ckeditor">Use CKeditor</label>
-	</td>
-	</tr>
 	
-	<!-- /tmpl_if -->
-<!-- /tmpl_if --> 
-<!-- tmpl_if tiny_mce_enabled --> 
-	<!-- tmpl_if tiny_mce_url --> 
-		<tr> 
-		 <td>
-		
-		<input type="radio" name="use_wysiwyg_editor" id="use_wysiwyg_editor_tiny_mce" value="tiny_mce" <!-- tmpl_if expr="(list_settings.use_wysiwyg_editor eq 'tiny_mce')" -->checked="checked"<!--/tmpl_if -->  >
+		<!-- tmpl_if ckeditor_enabled --> 
+			<!-- tmpl_if ckeditor_url --> 
+				<div class="row">
+					<div class="small-12 columns">
+						<label for="use_wysiwyg_editor_ckeditor">
+							<input 
+								type="radio" 
+								name="use_wysiwyg_editor" 
+								id="use_wysiwyg_editor_ckeditor"
+								value="ckeditor"
+								<!-- tmpl_if expr="(list_settings.use_wysiwyg_editor eq 'ckeditor')" -->checked="checked"<!--/tmpl_if -->
+							>
+							Use CKeditor
+						</label>	
+					</div>
+				</div>
+			<!-- /tmpl_if -->
+		<!-- /tmpl_if --> 
 
-	</td>
-	<td>
-
-			<label for="use_wysiwyg_editor_tiny_mce">Use Tiny MCE</label>
-	</td> 
-	 </tr>
-		
-	<!-- /tmpl_if -->
-<!-- /tmpl_if --> 
-	
-		<tr> 
-		 <td>
-		
-		<input type="radio" name="use_wysiwyg_editor" id="use_wysiwyg_editor_none" value="none" <!-- tmpl_if expr="(list_settings.use_wysiwyg_editor eq 'none')" -->checked="checked"<!--/tmpl_if -->  >
-	</td>
-	<td>
-
-
-			<label for="use_wysiwyg_editor_none">Don't use a WYSIWYG Editor</label>
-	</td> 
-	 </tr>
-	
-	</table>
-				
-</fieldset> 
-
-
-
-<!-- tmpl_if comment --> 
-
-
-
-<fieldset> 
-
-<legend>
-List Message Sending Screens
-</legend> 
-
-
-. 
-	
-<table  cellpadding="5" border="0"> 
-	<tr> 
-		<td>
-			<p>
-				<input type="checkbox" name="pre_fill_email_templates_in_cp" id="pre_fill_email_templates_in_cp" <!-- tmpl_if list_settings.pre_fill_email_templates_in_cp -->checked="checked"<!-- /tmpl_if --> value="1" > 	
-			</p>
-		</td>
-		<td>
-			<p>
-				<label for="pre_fill_email_templates_in_cp">
-					 Pre fill out message bodies with the Mailing List Message email templates
+		<!-- tmpl_if tiny_mce_enabled --> 
+			<!-- tmpl_if tiny_mce_url -->
+				<div class="row">
+					<div class="small-12 columns">
+						<label for="use_wysiwyg_editor_tiny_mce">
+							<input 
+								type="radio" 
+								name="use_wysiwyg_editor" 
+								id="use_wysiwyg_editor_tiny_mce" 
+								value="tiny_mce"
+								<!-- tmpl_if expr="(list_settings.use_wysiwyg_editor eq 'tiny_mce')" -->checked="checked"<!--/tmpl_if -->
+							>
+								Use Tiny MCE
+						</label>
+					</div>
+				</div>
+			<!-- /tmpl_if -->
+		<!-- /tmpl_if --> 
+		<div class="row">
+			<div class="small-12 columns">
+				<label for="use_wysiwyg_editor_none">
+					<input 
+						type="radio" 
+						name="use_wysiwyg_editor" 
+						id="use_wysiwyg_editor_none" 
+						value="none" 
+						<!-- tmpl_if expr="(list_settings.use_wysiwyg_editor eq 'none')" -->checked="checked"<!--/tmpl_if -->
+					>
+						Don't use a WYSIWYG Editor
 				</label>
-				<br > 
-				
-				This will take affect in the following screens: 
-				<ul> 
-					<li>
-						Send a Message
-					</li>
-					<li>
-						Send a Webpage
-					</li>
-					<!--
-						<li>
-							Send a List Invitation
-						</li>
-					-->
-				</ul> 
-				
-			</p>
-		</td>
-	</tr>
-</table>
-</fieldset> 
+			</div>
+		</div>
+	</fieldset> 
 
-
-
-<!-- /tmpl_if --> 
-
-<input type="hidden" name="process" value="1" >
-<input type="hidden" name="flavor"       value="list_cp_options" >
-<div class="buttonfloat">
- <input type="reset"  class="cautionary button" value="Clear Changes" >
- <input type="submit" class="processing button" value="Save Changes" >
-</div>
-<div class="floatclear"></div>
-
+	<ul class="button-group right">
+	    <li>
+			<input type="reset"  class="cautionary button" value="Clear Changes">
+		</li>
+		<li>
+			<input type="submit" class="processing button" value="Save Changes">
+		</li>
+	</ul>
 </form> 
 
-
-
- 
-
-
-<!-- end list_cp_options_screen.tmpl --> 
-
+<!-- end list_cp_options_screen.tmpl -->

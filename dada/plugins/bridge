@@ -248,6 +248,8 @@ sub cgi_test_pop3_ajax {
         $r .= '<p>Connection is NOT Successful.</p>';
     }
     $r .= '<pre>' . $pop3_log . '</pre>';
+	
+	$r .= '<a class="close-reveal-modal" aria-label="Close">&#215;</a>';
     return ( {}, $r );
 }
 
@@ -410,6 +412,7 @@ sub admin_cgi_manual_start_ajax {
        $r .= '<pre>';     # DEV no like.
        $r .= start($list);
        $r .= '</pre>';    # DEV no like.
+   	$r .= '<a class="close-reveal-modal" aria-label="Close">&#215;</a>';
     return ( {}, $r );
 }
 
@@ -742,6 +745,7 @@ sub edit {
         '-values' => [ 1 .. 50 ],
         -default  => $ls->param('ignore_spam_messages_with_status_of'),
         -name     => 'ignore_spam_messages_with_status_of',
+		-id       => 'ignore_spam_messages_with_status_of', 
     );
     my $digest_labels = {
         3600   => 'Hour',

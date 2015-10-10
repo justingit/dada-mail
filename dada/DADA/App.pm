@@ -13021,7 +13021,10 @@ sub schedules {
     if ( $output_mode ne '_silent' ) {
         $self->header_props( { -type => 'text/plain' } );
         if ( $for_colorbox == 1 ) {
-            return '<pre>' . $r . '</pre>';
+            return '<pre>' . 
+					$r . 
+					'</pre>' . 
+					'<a class="close-reveal-modal" aria-label="Close">&#215;</a>';
         }
         else {
            # $ENV{CGI_APP_RETURN_ONLY} = 1;

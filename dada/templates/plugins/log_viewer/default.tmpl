@@ -1,75 +1,104 @@
 <!-- tmpl_set name="title" value="Plugins &#187; Log Viewer" -->
-<div id="screen_meta" data-menu_highlight="log_viewer"></div>
-
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-		Plugins &#187; Log Viewer
+<div class="row">
+	<div class="medium-10 large-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				Plugins
+			 </a>
+	 	    <a 
+				href="#"
+				class="current"
+			>	
+				Log Viewer
+			</a>
+		</nav>
 	</div>
-	<!-- tmpl_include help_link_widget.tmpl -->
+	<div class="medium-2 large-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
 </div>
-<div id="plugin_log_viewer_default"></div> 
 
-
+<div id="screen_meta" data-menu_highlight="log_viewer"></div>
+<div id="plugin_log_viewer_default"></div>
 <form> 
 	 <input type="hidden" name="plugin_url"   id="plugin_url"   value="<!-- tmpl_var Plugin_Url -->" > 
 </form> 
 
 <!-- tmpl_if log_names --> 
-	<div id="view_logs_results_loading"><p class="alert">&nbsp;</p></div> 
+
 	<form method="post">
-	<table  cellpadding="5"> 
-	 <tr> 
-	  <td valign="bottom"> 
-		<p><label for="log_name">View Log:</label><br > 
-		 <!-- tmpl_var logs_popup_menu --> 
-		</p> 
-	</td> 
- 	<td valign="bottom"> 
-	  <p><label for="lines">And The Last:</label><br > 
-		<select name="lines" id="lines"> 
-			<!-- tmpl_loop log_lines --> 
-				<option value="<!-- tmpl_var line_count -->"><!-- tmpl_var line_count --></option> 
-			<!-- /tmpl_loop --> 
-		</select> lines
-	</p> 
-	</td> 
- 	<td valign="bottom"> 
-	<br ><input type="button" value="Refresh" id="refresh_button" >
-	</td> 
-	<td valign="bottom"> 
-
-    	<input type="hidden" name="flavor" value="plugins" > 
-    	<input type="hidden" name="plugin" value="log_viewer" > 
-
-	<input type="hidden" name="prm" value="download" > 
-	<br ><input type="submit"  value="Download Entire Log" id="download_button" >
-	</td>
-		
-		
- 	<td valign="bottom"> 
-	<br ><input type="button" value="Delete Log" id="delete_log" > 
-			</form> 
-	</td>
-<td valign="bottom"> <br >
-	<form method="get"> 
-	    <input type="hidden" name="flavor" value="plugins" > 
-    	<input type="hidden" name="plugin" value="log_viewer" > 
-    	
-     <input type="hidden" name="prm" value="search_logs" > 
-     <input type="text" name="query" value="" > 
-     <input type="submit" value="Search All Logs" class="processing button" > 
-    </form>
-		</td> 
-   </tr> 
-</table> 
-<div id="view_logs_results"></div> 
+		<input type="hidden" name="flavor" value="plugins" > 
+		<input type="hidden" name="plugin" value="log_viewer" > 
+		<input type="hidden" name="prm" value="download" > 
 	
-
-
+	
+		<div class="row">
+			<div class="large-4 columns">
+				<div class="row collapse">
+					<div class="small-8 columns">
+						<!-- tmpl_var logs_popup_menu --> 
+					</div>
+					<div class="small-4 columns">
+						<select name="lines" id="lines"> 
+							<!-- tmpl_loop log_lines --> 
+								<option value="<!-- tmpl_var line_count -->"><!-- tmpl_var line_count --></option> 
+							<!-- /tmpl_loop --> 
+						</select>
+					</div>
+				</div>
+			</div> 
+			<div class="large-4 columns">	
+				<ul class="button-group even-3">		
+					<li>
+						<input 
+							type="button" 
+							value="Refresh" 
+							id="refresh_button" 
+							class="tiny button"
+						>
+					</li>
+					<li>
+						<input 
+							type="submit"
+							value="Download Log"
+							id="download_button"
+							class="tiny button"
+						>
+					</li>
+					<li>
+						<input 
+							type="button" 
+							value="Delete Log" 
+							id="delete_log"
+							class="tiny button"
+						> 
+					</li>
+				</ul>
+			</div>
+	</form> 
+	<div class="large-4 columns">
+		<form method="get"> 
+		<input type="hidden" name="flavor" value="plugins" > 
+		<input type="hidden" name="plugin" value="log_viewer" >     	
+		<input type="hidden" name="prm" value="search_logs" > 
+		<div class="row collapse">
+			<div class="small-6 columns">
+				<input type="text" name="query" value="" > 
+			</div>
+			<div class="small-6 columns">
+				<input type="submit" value="Search All Logs" class="processing tiny button"> 
+			</div>
+		</div>			
+	</form>
+</div>
+</div>	
+<div class="row">
+	<div class="small-12 columns">
+		<div id="view_logs_results"></div> 
+	</div>
+</div>
 <!-- tmpl_else -->
-	<p>
-	 <em>
-	  There are no <!-- tmpl_var PROGRAM_NAME --> logs set.
-	 </em>
-   </p>
+	<div class="alert-box info radius"> 
+		There are no <!-- tmpl_var PROGRAM_NAME --> logs set.
+	</div>
 <!-- /tmpl_if --> 

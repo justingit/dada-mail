@@ -913,21 +913,15 @@ jQuery(document).ready(function($){
 
 	if($("#scheduled_jobs").length) {
 		$("body").on("click", ".manually_run_scheduled_jobs", function(event) {
-			$.colorbox({
-				top: 0,
-				fixed: true,
-				initialHeight: 50,
-				maxHeight: 480,
-				maxWidth: 649,
-				opacity: 0.50,
-				href: $("#s_program_url").val(),
+			$('#scheduled_jobs_modal').foundation('reveal', 'open', {
+			    url: $("#s_program_url").val(),
 				data: {
 					flavor: $("#sched_flavor").val(),
 					list: '_all',
 					schedule: '_all',
 					output_mode: '_verbose',
 					for_colorbox: 1
-				}
+				},
 			});
 		});
 	}
@@ -972,7 +966,7 @@ jQuery(document).ready(function($){
 			event.preventDefault();
 			plugins_bridge_test_pop3();
 		});
-
+		
 		$('body').on('click', '.change_pop3_password', function(event){
 			plugins_bridge_show_change_pop3_password_form();
 			event.preventDefault();
@@ -1027,26 +1021,15 @@ jQuery(document).ready(function($){
 
 	// Plugins >> Change List Shortname
 	if ($("#plugins_change_list_shortname").length) {
-		$("body").on("submit", "#change_name_form", function(event) {
-			event.preventDefault();
-		});
-
-
 		$("body").on("click", "#verify_button", function(event) {
-			$.colorbox({
-				top: 0,
-				fixed: true,
-				initialHeight: 50,
-				maxHeight: 480,
-				maxWidth: 649,
-				opacity: 0.50,
-				href: $("#s_program_url").val(),
+			$('#plugins_change_list_shortname_verify').foundation('reveal', 'open', {
+			    url: $("#s_program_url").val(),
 				data: {
-					flavor: 'plugins',
-					plugin: 'change_list_shortname',
-					prm: $('#prm').val(),
-					new_name: $('#new_name').val()
-				}
+						flavor: 'plugins',
+						plugin: 'change_list_shortname',
+						prm: $('#prm').val(),
+						new_name: $('#new_name').val()
+				},
 			});
 		});
 	}
@@ -2648,19 +2631,15 @@ function bridge_setup_list_email_type_params() {
 }
 
 function plugins_bridge_test_pop3() {
-
+	
 	var use_ssl = 0;
 	if($("#discussion_pop_use_ssl").prop("checked") === true){
 		use_ssl = 1;
 	}
-	$.colorbox({
-		top: 0,
-		fixed: true,
-		initialHeight: 50,
-		maxHeight: 480,
-		maxWidth: 649,
-		opacity: 0.50,
-		href: $("#s_program_url").val(),
+	
+	
+	$('#plugins_bridge_test_pop3').foundation('reveal', 'open', {
+	    url: $("#s_program_url").val(),
 		data: {
 			flavor: 'plugins',
 			plugin: 'bridge',
@@ -2670,20 +2649,16 @@ function plugins_bridge_test_pop3() {
 			password: $("#discussion_pop_password").val(),
 			auth_mode: $("#discussion_pop_auth_mode option:selected").val(),
 			use_ssl: use_ssl
-		}
+		},
 	});
+	
 }
 
 function plugins_bridge_manually_check_messages() {
-	$.colorbox({
-		top: 0,
-		fixed: true,
-		initialHeight: 50,
-		maxHeight: 480,
-		maxWidth: 649,
-		opacity: 0.50,
-		href: $("#s_program_url").val(),
-		data: {
+	
+	$('#plugins_bridge_test_pop3').foundation('reveal', 'open', {
+	    url: $("#s_program_url").val(),
+			data: {
 			flavor: 'plugins',
 			plugin: 'bridge',
 			prm:    'admin_cgi_manual_start_ajax'
@@ -3616,14 +3591,8 @@ function preview_message_receivers() {
 	f_params.alternative_lists       = alternative_lists;
 	f_params.multi_list_send_no_dupe = multi_list_send_no_dupes;
 
-	$.colorbox({
-		top: 0,
-		fixed: true,
-		initialHeight: 50,
-		maxHeight: 480,
-		maxWidth: 700,
-		opacity: 0.50,
-		href: $("#s_program_url").val(),
+	$('#preview_message_receivers_div').foundation('reveal', 'open', {
+	    url: $("#s_program_url").val(),
 		data: f_params
 	});
 
