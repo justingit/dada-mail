@@ -1,0 +1,45 @@
+<!-- tmpl_set name="title" value="Plugin Configuration" --> 
+<div id="screen_meta" data-menu_highlight="bridge"></div>
+
+<div class="row">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				Plugins
+			 </a>
+	 	    <a 
+				href="<!-- tmpl_var Plugin_URL -->"
+			>	
+				<!-- tmpl_var Plugin_Name -->
+			</a>
+			<a href="#" class="current">
+				Plugin Configuration
+			</a>
+		</nav>
+	</div>
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
+</div>
+
+
+<table class="responsive" width="100%">   
+	<tr>
+		<th>
+			Setting Name
+		</th>
+		<th>
+			Setting Value
+		</th>
+	</tr>
+	<!-- tmpl_loop configs -->
+		<tr> 
+			<td> 
+				<!-- tmpl_var name --> 
+			</td> 
+			<td> 
+				<!-- tmpl_var value --> 
+			</td> 
+		</tr> 
+	<!-- /tmpl_loop --> 
+</table>

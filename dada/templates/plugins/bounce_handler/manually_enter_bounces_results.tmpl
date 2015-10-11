@@ -3,13 +3,15 @@
 <div id="screen_meta" data-menu_highlight="bounce_handler"></div>
 
 <h1>Message Diagnostics</h1> 
-<table>
+<table width="100%" class="responsive">
+	<tr>
+		<th>Name</th>
+		<th>Value</th>
+	</tr>
 <!-- tmpl_loop diagnostics -->
 	<tr>
 		<td>
-			<strong>
 			<!-- tmpl_var diagnostic_label ESCAPE="HTML" -->: 
-			</strong>
 		</td>
 		<td>
 		<!-- tmpl_var diagnostic_value  -->

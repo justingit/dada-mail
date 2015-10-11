@@ -1,44 +1,52 @@
-		
+
 <!-- tmpl_set name="title" value="Plugins &#187; Bounce Handler" -->	
 <div id="screen_meta" data-menu_highlight="bounce_handler"></div>
 
-	
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-		<!-- tmpl_var title -->
+<div class="row">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				Plugins
+			 </a>
+	 	    <a 
+				href="#"
+				class="current"
+			>	
+				<!-- tmpl_var Plugin_Name -->
+			</a>
+		</nav>
 	</div>
-	<!-- tmpl_include help_link_widget.tmpl -->
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
 </div>
 
 <div id="plugins_bounce_handler_default"></div> 
 <form> 
-	<input type="hidden" name="s_program_url"          id="s_program_url"          value="<!-- tmpl_var S_PROGRAM_URL -->" > 
+	<input type="hidden" name="s_program_url"          id="s_program_url"    value="<!-- tmpl_var S_PROGRAM_URL -->" > 
 	<input type="hidden" name="bounce_handler_page" id="bounce_handler_page" value="1" > 
 </form> 
 
 
 <!-- tmpl_unless plugin_configured --> 
-
-	<div class="alert-box info radius">
-	  <p><strong>
-	   Warning! <!-- tmpl_var Plugin_Name --> Not Configured!
-	  </strong></p> 
-
-	<p>
-	 You must set up the Bounce Handler Email Address in the plugin-specific configuration. 
-	</p> 
-		
-	 </div>
-
+	<div class="alert-box waring radius">
+		<!-- tmpl_var Plugin_Name --> not configured - 
+		You must set up the Bounce Handler Email Address in the plugin-specific configuration. 
+	</div>
 <!-- /tmpl_unless --> 
 
 <!-- tmpl_if done -->
 	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
 <!--/tmpl_if-->
-		
-<h1>Bounce Email Scorecard</h1>
-	<p class="alert">The Bounce Scorecard keeps track of subscribed address on your mailing list that bounce back message reports. Click on any address to see
-these message report summaries.</p>
+
+<h1>
+	Bounce Email Scorecard
+</h1>
+<div class="alert-box waring radius">
+	The Bounce Scorecard keeps track of subscribed address on your mailing list 
+	that bounce back message reports. Click on any address to see
+	these message report summaries.
+</div>
 <div id="bounce_scorecard_loading"><p>&nbsp;</p></div>
 <div id="bounce_scorecard" style="height:375px"></div> 
 
@@ -47,273 +55,262 @@ these message report summaries.</p>
 
 
 <fieldset> 
- <legend>
-	Manually Run <!-- tmpl_var Plugin_Name -->
-</legend> 
+	<legend>
+		Manually Run <!-- tmpl_var Plugin_Name -->
+	</legend> 
 
-<form action="<!-- tmpl_var S_PROGRAM_URL -->" id="parse_bounces_form">
-<input type="checkbox" name="test" id="test" value="bounces" >
-<label for="test">
-	Test With Awaiting Messages
-</label>
-<p>
-	<label for="parse_amount">
-		Review
-	</label> 
-		up to <!-- tmpl_var parse_amount_widget --> Messages.
-</p>
-
-<input type="hidden" name="prm" id="prm" value="cgi_parse_bounce" > 
-<input type="hidden" name="flavor" value="plugins" > 
-<input type="hidden" name="plugin" value="bounce_handler" > 
-<div class="buttonfloat"> 
-	<input type="submit" class="cautionary button" id="parse_bounces_button" value="Parse Received Bounces..." >
-</div> 
-<div class="floatclear"></div> 
-</form>
-</p>
-</li>
-</ul> 
+	<form action="<!-- tmpl_var S_PROGRAM_URL -->" id="parse_bounces_form">
+		<input type="hidden" name="prm" id="prm" value="cgi_parse_bounce" > 
+		<input type="hidden" name="flavor" value="plugins" > 
+		<input type="hidden" name="plugin" value="bounce_handler" > 
+		<div class="row">
+			<div class="small-12 columns">
+				<label for="test">
+				<input type="checkbox" name="test" id="test" value="bounces" >
+					Only Test Any Awaiting Messages
+				</label>
+			</div>
+		</div> 
+		<div class="row">
+			<div class="small-12 columns">
+				<label for="parse_amount">
+					# Messages to Review:
+				</label> 
+				<!-- tmpl_var parse_amount_widget -->
+			</div>
+		</div>
+		<ul class="button-group right">
+		    <li>
+				<input type="submit" class="cautionary button" id="parse_bounces_button" value="Parse Received Bounces..." >
+			</li>
+		</ul>
+	</form>
 </fieldset> 
 
 
-
-
 <fieldset> 
-<legend>
-Scorecard Preferences
-</legend> 
+	<legend>
+		Scorecard Preferences
+	</legend> 
 
-<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
 
-<input type="hidden" name="flavor" value="plugins" > 
-<input type="hidden" name="plugin" value="bounce_handler" > 
-<input type="hidden" name="prm" value="edit_prefs" > 
-<p>
+		<input type="hidden" name="flavor" value="plugins" > 
+		<input type="hidden" name="plugin" value="bounce_handler" > 
+		<input type="hidden" name="prm" value="edit_prefs" > 
+<div class="alert-box info radius">
 	Addresses that bounce back reports because of <strong>temporary</strong> 
 	problems, like the mailbox being full or a network problem are given the
 	<strong>Soft Bounce Score</strong>
-</p>
-<table  border="0"> 
- <tr> 
-  <td> 
-   <p>
-   	<label style="width: 12em;float: left;text-align: right;margin-right: 0.5em;display: block">"Soft" Bounce Score</label>
-	</p>
-  </td> 
-  <td> 
-	<!-- tmpl_var bounce_handler_softbounce_score_popup_menu -->
-  </td>
-  </tr>
-</table> 
+</div>
 
-<p>
+<label>
+	Soft Bounce Score
+</label>
+<!-- tmpl_var bounce_handler_softbounce_score_popup_menu -->
+
+<div class="alert-box info radius">
 	Address that bounce back reports because of <strong>permanent</strong>
 	problems, like the address not existing anymore, or messages being blocked
 	from being received are given the <strong>Hard Bounce Score</strong>
-</p>
-
-<table  border="0"> 
-
- <tr> 
-  <td> 
-	
-   <label style="width: 12em;float: left;text-align: right;margin-right: 0.5em;display: block">"Hard" Bounce Score</label>
-  </td> 
-  <td> 
-	<!-- tmpl_var bounce_handler_hardbounce_score_popup_menu -->
-  </td>
-  </tr>
-</table> 
+</div>
 
 
-   <p>
+<label>
+	Hard Bounce Score
+</label>
+<!-- tmpl_var bounce_handler_hardbounce_score_popup_menu -->
+
+
+<div class="alert-box info radius">
 	All addresses that currently have a score on the Bounce Scorecard will be 
 	lessened by the <strong>Decay Rate</strong>, each time a mass mailing is sent to 
 	the mailing list. This helps make sure <strong>temporary problems</strong> do 
 	not inadvertantly remove addresses from your list <strong>permanently</strong>.
-	</p>
+</div>
 
 
-<table  border="0"> 
-<tr>
-<td>
+<label>
+	Decay Rate
+</label>
+<!-- tmpl_var bounce_handler_decay_score_popup_menu -->
 
-   	<label style="width: 12em;float: left;text-align: right;margin-right: 0.5em;display: block">Decay Rate</label>
-  </td> 
-  <td> 
-	<!-- tmpl_var bounce_handler_decay_score_popup_menu -->
-  </td>
-  </tr>
-</table> 
-
-<p>
+<div class="alert-box info radius">
 	Addresses that reach the <strong>Score Threshold</strong> will be unsubscribed
 	from your mailing list. 
-</p>
-<table  border="0"> 
-<tr>
-<td>
+</div>
 
-   	 <label style="width: 12em;float: left;text-align: right;margin-right: 0.5em;display: block">Bounce Score Threshold</label>
-  </td> 
-  <td> 
-	<!-- tmpl_var bounce_handler_threshold_score_popup_menu -->
-  </td>
-  </tr>
-</table> 
+<div class="row">
+	<div class="small-12 columns">
+		<label>
+			Bounce Score Threshold
+		</label>
+		<!-- tmpl_var bounce_handler_threshold_score_popup_menu -->
+	</div>
+</div>
 
+<div class="row">
+	<div class="small-12 columns">
+		<label for="bounce_handler_forward_msgs_to_list_owner">
+			<input type="checkbox" 
+				name="bounce_handler_forward_msgs_to_list_owner" 
+				id="bounce_handler_forward_msgs_to_list_owner" 
+				value="1"
+				<!-- tmpl_if list_settings.bounce_handler_forward_msgs_to_list_owner -->checked="checked"<!-- /tmpl_if -->
+			>
+			Forward bounces to the List Owner After Processing
+		</label>
+	</div>
+</div> 
 
-<table  cellpadding="5"> 
-<tr>
-<td>
-<input type="checkbox" name="bounce_handler_forward_msgs_to_list_owner" id="bounce_handler_forward_msgs_to_list_owner" value="1" <!-- tmpl_if list_settings.bounce_handler_forward_msgs_to_list_owner -->checked="checked"<!-- /tmpl_if --> >
-</td>
-<td>
-<label for="bounce_handler_forward_msgs_to_list_owner">Forward bounces to the List Owner After Processing</label>
-<br >Bounce Messages will be delivered to the List Owner (after being parsed and scored) for manual inspection. 
-</td>
-</tr> 
-</table>
+<div class="row">
+	<div class="small-12 columns">
+		<label>
+			Addresses the reach the Bounce Score Threshold Should:
+		</label>
+	</div>
+</div>
 
-</td>
-</tr>
-</table> 
-
-<table  cellpadding="5"> 
-<tr> 
-<td> 
-	<p>Addresses the reach the <strong>Bounce Score Threshold</strong> Should:</p>
-</td>
-</tr>
-<tr>
-<td>
-	 <p><input type="radio" name="bounce_handler_when_threshold_reached" id="bounce_handler_when_threshold_reached_unsub_subscriber" value="unsub_subscriber" <!-- tmpl_if expr="(list_settings.bounce_handler_when_threshold_reached eq 'unsub_subscriber')" -->checked="checked"<!-- /tmpl_if --> ><label for="bounce_handler_when_threshold_reached_unsub_subscriber">Be Unsubscribed Right Away</label><br >
-	     
-	     
-	 <input type="radio" name="bounce_handler_when_threshold_reached" id="bounce_handler_when_threshold_reached_move_to_bounced_sublist"  value="move_to_bounced_sublist" <!-- tmpl_if expr="(list_settings.bounce_handler_when_threshold_reached eq 'move_to_bounced_sublist')" -->checked="checked"<!-- /tmpl_if --> ><label for="bounce_handler_when_threshold_reached_move_to_bounced_sublist">Be Moved to the, "Bounced Addresses" Sublist</label>
-</p> 
-
-</td>
-
-</tr>
-</table> 
-
-<div class="buttonfloat">   
- <input type="submit" class="processing button" value="Save Preferences" > 
- </div>
-<div class="floatclear"></div>
+<div class="row">
+	<div class="small-12 columns">
+		<label for="bounce_handler_when_threshold_reached_unsub_subscriber">
+			<input 
+				type="radio" 
+				name="bounce_handler_when_threshold_reached" 
+				id="bounce_handler_when_threshold_reached_unsub_subscriber" 
+				value="unsub_subscriber" 
+				<!-- tmpl_if expr="(list_settings.bounce_handler_when_threshold_reached eq 'unsub_subscriber')" -->checked="checked"<!-- /tmpl_if -->
+			>
+				Be Unsubscribed Right Away
+		</label>
+	</div> 
+</div> 
+<div class="row">
+	<div class="small-12 columns">
+		<label for="bounce_handler_when_threshold_reached_move_to_bounced_sublist">
+		<input 
+			type="radio" 
+			name="bounce_handler_when_threshold_reached" 
+			id="bounce_handler_when_threshold_reached_move_to_bounced_sublist"  
+			value="move_to_bounced_sublist" 
+			<!-- tmpl_if expr="(list_settings.bounce_handler_when_threshold_reached eq 'move_to_bounced_sublist')" -->checked="checked"<!-- /tmpl_if -->
+		>
+			Be Moved to the, Bounced Addresses Sublist
+		</label>
+	</div> 
+</div> 
+	
+	<ul class="button-group right">
+	    <li>
+			<input 
+				type="submit" 
+				class="processing button" 
+				value="Save Preferences"
+			> 
+		</li>
+	</ul>
 </form> 
 </fieldset>
 
 
 <fieldset>
- <legend> 
-  <!-- tmpl_var Plugin_Name --> Configuration</h1>
- </legend> 
- 
- 
- 
+	<legend> 
+		<!-- tmpl_var Plugin_Name --> Configuration</h1>
+	</legend> 
 
-<table  cellpadding="5">
- <tr> 
-  <td>
-   <p><strong>Your Bounce Handler POP3 Username:</strong>
-   </td> 
-   <td> 
-    <p>
+	<table width="100%" class="responsive">
+		<tr> 
+			<th>
+				Setting Name
+			</th>
+			<th>
+				Setting Value
+			</th>
+		</tr>
+		<tr> 
+			<td>
+	 		   Bounce Handler POP3 Username
+		   </td> 
+		   <td> 
+			   <!-- tmpl_if Username --> 
+			   		<!-- tmpl_var Username -->
+				<!-- tmpl_else --> 
+					<span class="error">
+						Not Set!
+					</span>
+				<!-- /tmpl_if --> 
+			</td> 
+		</tr> 
+		<tr> 
+			<td>
+				POP3 Mail Server
+			</td>
+			<td>
+				<!-- tmpl_if Server --> 
+					<!-- tmpl_var Server -->
+				<!-- tmpl_else --> 
+					<span class="error">
+						Not Set!
+					</span>
+				<!-- /tmpl_if -->	
+			</td> 
+		</tr> 
+	</table> 
 
-<!-- tmpl_if Username --> 
-	<!-- tmpl_var Username -->
-<!-- tmpl_else --> 
-	<span class="error">Not Set!</span>
-<!-- /tmpl_if --> 
-
-</p>
-   </td> 
-   </tr> 
-   <tr> 
-   <td>
-    <p><strong>On:</strong>
-    </p>
-    </td>
-    <td>
-     <p>
-
-	<!-- tmpl_if Server --> 
-      <!-- tmpl_var Server --></p>
-	<!-- tmpl_else --> 
-		<span class="error">Not Set!</span>
-	<!-- /tmpl_if -->	
-
-   </td> 
-   </tr> 
-   
-  </table> 
-  
- <div class="buttonfloat"> 
- <form action="<!-- tmpl_var Plugin_URL -->"> 
-     <input type="hidden" name="flavor" value="plugins" > 
-     <input type="hidden" name="plugin" value="bounce_handler" > 
-  <input type="hidden" name="prm" value="cgi_show_plugin_config" > 
-  <input type="submit" value="View All Plugin Configurations..." class="cautionary button" > 
- </form> 
- </div> 
-
-<div class="floatclear"></div> 
-  
+	<form action="<!-- tmpl_var Plugin_URL -->"> 
+		<input type="hidden" name="flavor" value="plugins" > 
+		<input type="hidden" name="plugin" value="bounce_handler" > 
+		<input type="hidden" name="prm" value="cgi_show_plugin_config" > 
+		<ul class="button-group right">
+		    <li>
+				<input 
+					type="submit" 
+					value="View All Plugin Configurations..." 
+					class="cautionary button"
+				>
+			</li>
+		</ul> 
+	</form> 
 </fieldset> 
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 <fieldset> 
 
 <legend>Mailing List Configuration</legend>
 
-<!-- tmpl_if expr="(list_settings.sending_method eq 'sendmail')" --> 
-	<p>Messages for this list are  being sent via <strong>the sendmail command <!-- tmpl_if list_settings.add_sendmail_f_flag -->with the '-f' flag<!--/tmpl_if--></strong>:</p>
+	<div class="alert-box info radius">
+		
+		<!-- tmpl_if expr="(list_settings.sending_method eq 'sendmail')" --> 
+			<p>Messages for this list are  being sent via <strong>the sendmail command <!-- tmpl_if list_settings.add_sendmail_f_flag -->with the '-f' flag<!--/tmpl_if--></strong>:</p>
 
-	<blockquote>
-	<p>
-	 <em>
-	  <!-- tmpl_var MAIL_SETTINGS --><!-- tmpl_if list_settings.add_sendmail_f_flag --> <strong>-f<!--tmpl_var list_settings.admin_email --><!--/tmpl_if--></strong></em></p>
-	</blockquote>
-<!-- /tmpl_if --> 
-
-<!-- tmpl_if expr="(list_settings.sending_method eq 'smtp')" --> 
-
-	<p>Messages for this mailing list are being sent via: <strong>SMTP</strong>. 
-
-	<!-- tmpl_if list_settings.set_smtp_sender --> 
-
-		<p>The SMTP Sender is being set to: <strong><!-- tmpl_var list_settings.admin_email --></strong>. This should
-		be the same address as the above <strong>Bounce Handler POP3 Username</strong></p> 
+			<code>
+				<!-- tmpl_var MAIL_SETTINGS --><!-- tmpl_if list_settings.add_sendmail_f_flag --> <strong>-f<!--tmpl_var list_settings.admin_email --><!--/tmpl_if-->
+			</code>
 	
-	<!-- tmpl_else --> 
+		<!-- /tmpl_if --> 
 
-		<p>The SMTP Sender has not be explicitly set.  Bounces may go to the list owner (<!-- tmpl_var list_settings.list_owner_email -->) or to 
-		a server default address.</p> 
+		<!-- tmpl_if expr="(list_settings.sending_method eq 'smtp')" --> 
 
-	<!--/tmpl_if-->
+			<p>Messages for this mailing list are being sent via: <strong>SMTP</strong>. 
 
-<!--/tmpl_if-->
+			<!-- tmpl_if list_settings.set_smtp_sender --> 
 
-<!-- tmpl_if expr="(list_settings.sending_method eq 'amazon_ses')" --> 
-	<p>Messages are currently being sent via Amazon SES.</p>
-	
-	<p>Outgoing messages will have the Return-Path header set to the List Administrator Email (<strong><!-- tmpl_var list_settings.admin_email --></strong>)
+				<p>The SMTP Sender is being set to: <strong><!-- tmpl_var list_settings.admin_email --></strong>. This should
+				be the same address as the above <strong>Bounce Handler POP3 Username</strong></p> 
 
-<!-- /tmpl_if -->
+			<!-- tmpl_else --> 
+
+				<p>The SMTP Sender has not be explicitly set.  Bounces may go to the list owner (<!-- tmpl_var list_settings.list_owner_email -->) or to 
+				a server default address.</p> 
+
+			<!--/tmpl_if-->
+
+		<!--/tmpl_if-->
+
+		<!-- tmpl_if expr="(list_settings.sending_method eq 'amazon_ses')" --> 
+			<p>Messages are currently being sent via Amazon SES.</p>
+
+			<p>Outgoing messages will have the Return-Path header set to the List Administrator Email (<strong><!-- tmpl_var list_settings.admin_email --></strong>)
+		<!-- /tmpl_if -->
+	</div>
 
 </legend> 

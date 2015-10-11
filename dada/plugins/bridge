@@ -48,40 +48,20 @@ use Fcntl qw(
 use Encode qw(encode decode);
 use Try::Tiny;
 
-my $Plugin_Config = {};
+my $Plugin_Config = {
+	Plugin_Name                         => 'Bridge',
+	MessagesAtOnce                      => 1,
+	Allow_Open_Discussion_List          => 0,
+	Room_For_One_More_Check             => 1,
+	Enable_POP3_File_Locking            => 1,
+	Check_List_Owner_Return_Path_Header => 0,
+	Check_Multiple_Return_Path_Headers  => 0,
+	Check_Multiple_From_Addresses       => 1,
+	Plugin_URL                          => $DADA::Config::S_PROGRAM_URL . '?flavor=plugins&plugin=bridge',
+	Plugin_Name                         => 'Bounce Handler',
+}; 
 
-$Plugin_Config->{Plugin_Name} = 'Bridge';
 
-$Plugin_Config->{MessagesAtOnce} = 1;
-
-$Plugin_Config->{Allow_Open_Discussion_List} = 0;
-
-# Another Undocumented feature - Room for one more?
-# When set to, "1" we look to see how many mailouts there are,
-# And if its above or at the limit, we don't attempt to check
-# any Bridge list emails for awaiting messages.
-# Sounds like a good idea, right? Well, the check has a bug in it, and this
-# This is a kludge
-
-$Plugin_Config->{Room_For_One_More_Check} = 1;
-
-# Another Undocumented Feature - Enable Pop3 File Locking?
-# Sometimes, the file lock for the POP3 server doesn't work correctly
-# and you get a stale lock. Setting this config variable to, "0"
-# will disable this plugin's own lock file scheme. Should be fairly safe to use.
-
-$Plugin_Config->{Enable_POP3_File_Locking} = 1;
-
-$Plugin_Config->{Check_List_Owner_Return_Path_Header} = 0;
-
-# Gmail seems to have problems with this...
-$Plugin_Config->{Check_Multiple_Return_Path_Headers} = 0;
-
-# Stops From: header spoofing (a little bit, anyways)
-$Plugin_Config->{Check_Multiple_From_Addresses} = 1;
-
-#
-# There is nothing else to configure in this program.
 #---------------------------------------------------------------------#
 
 #---------------------------------------------------------------------#
@@ -839,11 +819,10 @@ sub edit {
             },
             -vars => {
                 screen                         => 'using_bridge',
-                Plugin_URL                     => $DADA::Config::S_PROGRAM_URL,
+                Plugin_URL                     => $Plugin_Config->{Plugin_URL},
                 Plugin_Name                    => $Plugin_Config->{Plugin_Name},
                 Allow_Open_Discussion_List     => $Plugin_Config->{Allow_Open_Discussion_List},
                 Allow_Manual_Run               => $Plugin_Config->{Allow_Manual_Run},
-                Plugin_URL                     => $DADA::Config::S_PROGRAM_URL,
                 Manual_Run_Passcode            => $Plugin_Config->{Manual_Run_Passcode},
                 can_use_ssl                    => $can_use_ssl,
                 done                           => $done,
@@ -3061,7 +3040,7 @@ sub cgi_show_plugin_config {
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
-            -screen         => 'plugins/bridge/plugin_config.tmpl',
+            -screen         => 'plugins/shared/plugin_config.tmpl',
             -with           => 'admin',
             -wrapper_params => {
                 -Root_Login => $root_login,
@@ -3109,7 +3088,7 @@ sub cgi_edit_email_msgs {
                     title       => 'Email Templates',
                     done        => $done,
                     Plugin_Name => $Plugin_Config->{Plugin_Name},
-                    Plugin_URL  => $DADA::Config::S_PROGRAM_URL,
+                    Plugin_URL  => $Plugin_Config->{Plugin_URL},
                 },
                 -list_settings_vars       => $ls->get( -all_settings => 1 ),
                 -list_settings_vars_param => { -dot_it               => 1, },

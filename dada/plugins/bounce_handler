@@ -531,7 +531,7 @@ sub cgi_show_plugin_config {
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
         {
-            -screen         => 'plugins/bounce_handler/plugin_config.tmpl',
+            -screen         => 'plugins/shared/plugin_config.tmpl',
             -with           => 'admin',
             -wrapper_params => {
                 -Root_Login => $root_login,
