@@ -1,46 +1,51 @@
 <!-- begin setup_info_screen.tmpl -->
 <!-- tmpl_set name="show_profile_widget" value="0" -->
 <!-- tmpl_set name="title" value="App Information &#187; Configuration" -->
-<div id="screen_meta" data-menu_highlight="setup_info"></div>
 
-
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-		App Information &#187; Configuration
+<div class="row">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				App Information
+			 </a>
+	 	    <a 
+				href="#"
+				class="current"
+			>	
+				Configuration
+			</a>
+		</nav>
 	</div>
-	<!-- tmpl_include help_link_widget.tmpl -->
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
 </div>
+
+<div id="screen_meta" data-menu_highlight="setup_info"></div>
 
 
 <h1>Installation and Configuration</h1> 
 
 <!-- tmpl_if c_install --> 
 
-<h2>You have a Contemporary Install of Dada Mail</h2> 
+	<h2>You have a Contemporary Install of Dada Mail</h2> 
 
-<p><!-- tmpl_var PROGRAM_NAME --> is set up to use an outside config file.</p>
+	<p><!-- tmpl_var PROGRAM_NAME --> is set up to use an outside config file.</p>
 
-<h3>Configuration Variables</h3> 
-<ul> 
-<li><p><strong>$PROGRAM_CONFIG_FILE_DIR</strong><br > <code><!-- tmpl_var PROGRAM_CONFIG_FILE_DIR --></code></p></li>
-<li><p><strong>$PROGRAM_ERROR_LOG</strong><br > <code><!-- tmpl_var PROGRAM_ERROR_LOG --></code></p></li>
-
-</ul> 
-
-
-<h2>.dada_config file</h2> 
-
-<p>The contents of your <code>.dada_config</code> file are below:</p> 
-
-<div style="width:95%;height:300px;overflow:auto;border:1px solid black;padding:5px;margin:5px">
-
-	<pre><!-- tmpl_var config_file_contents escape="HTML" --> </pre>
-
-</div>
+	<h3>Configuration Variables</h3> 
+	<ul> 
+	<li><p><strong>$PROGRAM_CONFIG_FILE_DIR</strong><br > <code><!-- tmpl_var PROGRAM_CONFIG_FILE_DIR --></code></p></li>
+	<li><p><strong>$PROGRAM_ERROR_LOG</strong><br > <code><!-- tmpl_var PROGRAM_ERROR_LOG --></code></p></li>
+	</ul> 
 
 
+	<h2>.dada_config file</h2> 
 
+	<p>The contents of your <code>.dada_config</code> file are below:</p> 
 
+	<div style="width:95%;height:300px;overflow:auto;border:1px solid black;padding:5px;margin:5px">
+		<pre><!-- tmpl_var config_file_contents escape="HTML" --> </pre>
+	</div>
 
 <!-- tmpl_else --> 
 
@@ -104,14 +109,27 @@
 	
 
 <div style="width:95%;height:300px;overflow:auto;border:1px solid black;padding:5px;margin:5px">
-
-<table  border="0" cellpadding="5"> 
-	<!-- tmpl_loop config_vals --> 
-	<tr> 
-		<td width="150px"><p><!-- tmpl_var name --></p></td> 
-		<td><p><pre><!-- tmpl_var value escape="HTML" --></pre></p></td> 
-	</tr>
-	<!-- /tmpl_loop -->
-</table> 
+	<table class="responsive" width="100%"> 
+		<tr> 
+			<th>
+				Name
+			</th>
+			<th>
+				Value
+			</th>
+		<tr>
+		<!-- tmpl_loop config_vals --> 
+			<tr> 
+				<td>
+					<!-- tmpl_var name -->
+				</td> 
+				<td>
+					<code>
+						<!-- tmpl_var value escape="HTML" -->
+					</code>
+				</td> 
+			</tr>
+		<!-- /tmpl_loop -->
+	</table> 
 </div> 
 <!-- end setup_info_screen.tmpl -->

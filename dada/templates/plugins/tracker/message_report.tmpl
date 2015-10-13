@@ -4,694 +4,577 @@
 <div id="plugins_tracker_message_report"></div> 
 <div id="screen_meta" data-menu_highlight="tracker"></div>
 
-
-
 <!-- tmpl_if chrome --> 
+
+	<!-- tmpl_set name="title" value="Plugins &#187; Tracker &#187; Message Report" --> 
 	
-		<!-- tmpl_set name="title" value="Plugins &#187; Tracker &#187; Message Report" --> 
-		
-		<!-- tmpl_set name="load_google_viz" value="1" -->
-		
-		
-		<div id="screentitle"> 
-			<div id="screentitlepadding">
-				Plugins &#187; <a href="<!-- tmpl_var Plugin_URL -->">Tracker</a> &#187; Message Report
-			</div>
-			<!-- tmpl_include help_link_widget.tmpl -->
+	<!-- tmpl_set name="load_google_viz" value="1" -->
+	
+	<div class="row">
+		<div class="medium-10 small-9 columns">
+		   	<nav class="breadcrumbs">	
+			 	 <a href="#" class="unavailable">
+					Plugins
+				 </a>
+		 	    <a 
+					href="<!-- tmpl_var Plugin_URL -->"
+				>	
+					Tracker
+				</a>
+				<a href="#" class="current">
+					Message Report: <!-- tmpl_var subject escape="HTML" --> 
+				</a>
+			</nav>
 		</div>
-	<!-- /tmpl_if --> 
-		
-	<!-- tmpl_if chrome --> 
-		
-		<h1>Tracking Info For: 
-		 <!-- tmpl_var subject escape="HTML" --> 
-		</h1> 
-		
-		<!-- tmpl_if expr="DATA_CACHE == 1" -->
-			<p class="alert" style="float:right">
-				Data below is cached. <a href="<!-- tmpl_var Plugin_URL -->?prm=clear_message_data_cache&msg_id=<!-- tmpl_var mid -->">Clear</a>
-			</p>
-			<div style="clear:both"></div>
-		<!-- /tmpl_if --> 
-		
-	<!-- /tmpl_if --> 
-
-	<form id="tracker_message_info">
-		<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" > 
-		<input type="hidden" id="tracker_message_id" name="tracker_message_id" value="<!-- tmpl_var mid -->" >
-		<input type="hidden" id="can_use_country_geoip_data" name="can_use_country_geoip_data" value="<!-- tmpl_var can_use_country_geoip_data -->" >
-	</form> 
+		<div class="medium-2 small-3 columns text-right">
+		   <!-- tmpl_include help_link_widget.tmpl -->
+		</div>
+	</div>
 	
-	<fieldset> 
-	<legend>The Basics</legend> 
+	
+<!-- /tmpl_if --> 
+	
+<!-- tmpl_if chrome --> 
+		<!-- tmpl_if expr="DATA_CACHE == 1" -->
+		<p class="alert" style="float:right">
+			Data below is cached. <a href="<!-- tmpl_var Plugin_URL -->?prm=clear_message_data_cache&msg_id=<!-- tmpl_var mid -->">Clear</a>
+		</p>
+		<div style="clear:both"></div>
+	<!-- /tmpl_if --> 
+	
+<!-- /tmpl_if --> 
 
-	<div style="border: 1px solid black;">
-		
-	<table  style="border:0px;padding:0p;width:100%">
-		<tr>
-		
-				
-		<td style="width:250px;background:#fff"> 
-			<div id="the_basics_bounces" data-title="Bounces" data-width="250" data-height="150" data-label="Bounces"></div>
-			<div id="the_basics_bounces_loading"></div>
-		</td>
-				
-		<td style="width:250px;background:#fff"> 
-			<div id="the_basics_opens" data-title="Opens" data-width="250" data-height="150" data-label="Opens"></div>
-			<div id="the_basics_opens_loading"></div>
-		</td> 
+<form id="tracker_message_info">
+	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" > 
+	<input type="hidden" id="tracker_message_id" name="tracker_message_id" value="<!-- tmpl_var mid -->" >
+	<input type="hidden" id="can_use_country_geoip_data" name="can_use_country_geoip_data" value="<!-- tmpl_var can_use_country_geoip_data -->" >
+</form> 
 
-		<td style="width:250px;background:#fff"> 
-			<div id="the_basics_unsubscribes" data-title="Unsubscribes" data-width="250" data-height="150" data-label="Unsubscribes"></div>
+<div class="row">
+	<div class="large-4 medium-4 columns">
+		<div id="the_basics_bounces" data-title="Bounces" data-label="Bounces"></div>
+		<div id="the_basics_bounces_loading"></div>
+	</div>
+	<div class="large-4 medium-4 columns">	
+		<div id="the_basics_opens" data-title="Opens" data-label="Opens"></div>
+		<div id="the_basics_opens_loading"></div>
+	</div>
+	<div class="large-4 medium-4 columns">
+			<div id="the_basics_unsubscribes" data-title="Unsubscribes" data-label="Unsubscribes"></div>
 			<div id="the_basics_unsubscribes_loading"></div>
-		</td>
-
-			<td>
- 			<table  style="width:100%" class="responsive">
-
- 
-
-			<tr  class="alt"> 
-			<td>
-			<p>
-			 <strong> 
-			  <a href="#" class="to_subscriber_activity">
+	</div>
+</div>
+		
+		
+<table  style="width:100%">
+	<tr> 
+		<td>
+			<a href="#subscriber_activity">
 				Subscribers 
-			 </a>
-		     </strong> 
-		    </p>
-			</td> 
-			<td> 
-			 <p style="text-align:right"> 
+			</a>
+		</td> 
+		<td class="text-right">
 			<!-- tmpl_if num_subscribers --> 
 				<!-- tmpl_var num_subscribers -->
 			<!-- tmpl_else --> 
 				???
 			<!-- /tmpl_if -->
-			</p> 
-			</td>
-			</tr> 
-
-			<tr> 
-			<td>
-			<p>
-			 <strong> 
-				<a href="#" class="to_subscriber_activity">
-			 		Message Recipients 
-				</a>
-		     </strong> 
-		    </p>
-			</td> 
-			<td> 
-			 <p style="text-align:right"> 
-				Total: <strong><!-- tmpl_var total_recipients --></strong>, 
-				Received: <strong><!-- tmpl_var received --></strong> - <strong><!-- tmpl_var received_percent -->%</strong>
-			</p> 
-			</td>
-			</tr>
-
-
-			<tr class="alt">
-			<td> 
-			 <p>
-			  <strong>
-			 	<a href="#" class="to_opens">Opens</a>
-			  </strong> 
-			 </p> 
-			 </td> 
-			 <td> 
-			 <p style="text-align:right"> 
-			  <a href="#" class="to_opens">
-				Total: <strong><!-- tmpl_var opens --></strong>, Unique: <strong><!-- tmpl_var unique_opens --></strong> - <strong><!-- tmpl_var unique_opens_percent -->%</strong>
-		
-			 </a> 
-	
-			 </p>
-			</td> 
-			</tr>
-	
-	
-
-			<tr>
-			<td> 
-			 <p>
-			  <strong>
-			    	  <a href="#" class="to_clickthroughs">Clickthroughs</a>
-			  </strong>
-			 </p> 
-			 </td> 
-			 <td> 
-			 <p style="text-align:right"> 
-			  <a href="#" class="to_clickthroughs">
-			  Total: <strong><!-- tmpl_var clickthroughs --></strong>,
-			  Unique: <strong><!-- tmpl_var unique_clickthroughs --></strong> - <strong><!-- tmpl_var unique_clickthroughs_percent -->%</strong>
-			  </a>
-			 </p>
-			</td> 
-			</tr>
-
-
-			<tr class="alt">
-			<td> 
-			 <p>
-			  <strong>
-			    	  <a href="#" class="to_unsubscribes">Unsubscribes</a>
-			  </strong> 
-			 </p> 
-			 </td> 
-			 <td> 
-			 <p style="text-align:right"> 
-			  <a href="#" class="to_unsubscribes">
-			<strong> 
-				<!-- tmpl_var unsubscribes default="0" -->
-			</strong> 
-			- 
-			<strong> 
-				<!-- tmpl_var unique_unsubscribes_percent -->%
-			</strong> 
-			</a>
-			 </p>
-			</td> 
-			</tr>
-
-	
-		
-			<tr>
-			<td> 
-			 <p>
-			  <strong>
-			   <a href="#" class="to_bounces">Bounces</a>
-			  </strong> 
-			 </p> 
-			 </td> 
-			 <td> 
-			 <p style="text-align:right"> 
-			  <a href="#" class="to_bounces">
-			Soft: <strong><!-- tmpl_var soft_bounce default="0" --></strong>, 
-			Hard: <strong><!-- tmpl_var hard_bounce  default="0" --></strong> 
-			- <strong><!-- tmpl_var unique_bounces_percent -->%</strong>
-			</a>
-			 </p>
-			</td> 
-			</tr>	
-			
-			
-			
-			<tr class="alt">
-			<td> 
-			 <p>
-			  <strong>
-			   <a href="#" class="to_sending_errors">Sending Errors</a>
-			  </strong> 
-			 </p> 
-			 </td> 
-			 <td> 
-			 <p style="text-align:right"> 
-			  <a href="#" class="to_sending_errors">
-			  <strong><!-- tmpl_var errors_sending_to  default="0" --></strong> 
-			- <strong><!-- tmpl_var errors_sending_to_percent -->%</strong>
-			</a>
-			 </p>
-			</td> 
-			</tr>
-	
-	
-			<tr>
-			<td> 
-			 <p>
-			  <strong>
-			   <a href="#" class="to_archive_views">Archive Views</a>
-			  </strong> 
-			 </p> 
-			 </td> 
-			 <td> 
-			 <p style="text-align:right"> 
-			  <a href="#" class="to_archive_views"><!-- tmpl_var view_archive --></a> 
-			 </p>
-			</td> 
-			</tr>
-	
-	
-	
-			<tr  class="alt">
-			<td> 
-			 <p>
-			  <strong>
-			   	   <a href="#" class="to_forwards">Forwards</a>
-			  </strong> 
-			 </p> 
-			 </td> 
-			 <td> 
-			 <p style="text-align:right"> 
-			  <a href="#" class="to_forwards"><!-- tmpl_var forward_to_a_friend --></a>
-			 </p>
-			</td> 
-			</tr>
-			
-			<tr>
-			<td> 
-			 <p>
-			  <strong>
-			   	   <a href="#" class="to_abuse_reports">Abuse Reports</a>
-			  </strong> 
-			 </p> 
-			 </td> 
-			 <td> 
-			 <p style="text-align:right"> 
-     			  <a href="#" class="to_abuse_reports">
-     			      <strong><!-- tmpl_var abuse_report  default="0" --></strong> 
-     			</a>
-			 </p>
-			</td> 
-			</tr>
-			
-	
-	
-	
-	
-			</table> 
 		</td>
-	
-	 </tr>
-	</table> 
-		
-	</div> 
-	</fieldset>
-
-
-
-	<div id="tabs"> 
-		<ul>
-			
-			<li>
+	</tr> 
+	<tr> 
+		<td>
 			<a href="#subscriber_activity">
-			Subscriber Activity
+				Message Recipients 
 			</a>
-			</li>
-			
-			
-
-			<li>
+		</td> 
+		<td class="text-right"> 
+			Total: <!-- tmpl_var total_recipients -->, 
+			Received: <!-- tmpl_var received --> - <!-- tmpl_var received_percent -->%
+		</td>
+	</tr>
+	<tr>
+		<td> 
+			<a href="#opens">Opens</a>
+		</td> 
+		<td class="text-right"> 
 			<a href="#opens">
-			Opens
-			</a>
-			</li>
-			
-			<li>
+				Total: <!-- tmpl_var opens -->, Unique: <!-- tmpl_var unique_opens --> - <!-- tmpl_var unique_opens_percent -->%
+
+			</a> 
+		</td> 
+	</tr>
+	<tr>
+		<td> 
+			<a href="#clickthroughs">Clickthroughs</a>
+		</td> 
+		<td class="text-right"> 
 			<a href="#clickthroughs">
-			Clickthroughs
+				Total: <!-- tmpl_var clickthroughs -->,
+				Unique: <!-- tmpl_var unique_clickthroughs --> - <!-- tmpl_var unique_clickthroughs_percent -->%
 			</a>
-			</li>
-			
-			<li>
+		</td> 
+	</tr>
+	<tr>
+		<td> 
 			<a href="#unsubscribes">
-			Unsubscribes
+				Unsubscribes
 			</a>
-			</li>
-			
-
-
-			<li>
+		</td> 
+		<td class="text-right"> 
+			<a href="#unsubscribes">
+				<!-- tmpl_var unsubscribes default="0" -->
+				- 
+				<!-- tmpl_var unique_unsubscribes_percent -->%
+			</a>
+		</td> 
+	</tr>
+	<tr>
+		<td> 
 			<a href="#bounces">
-			Bounces
+				Bounces
 			</a>
-			</li>
-			
-			<li>
-			<a href="#errors_sending_to">
-			Sending Errors
+		</td> 
+		<td class="text-right"> 
+			<a href="#bounces">
+				Soft: <!-- tmpl_var soft_bounce default="0" -->, 
+				Hard: <!-- tmpl_var hard_bounce  default="0" --> 
+				- <!-- tmpl_var unique_bounces_percent -->%
 			</a>
-			</li>
-			
-			<li>
+		</td> 
+	</tr>	
+	<tr>
+		<td> 
+			<a href="#sending_errors">Sending Errors</a>
+		</td> 
+		<td class="text-right"> 
+			<a href="#sending_errors">
+				<!-- tmpl_var errors_sending_to  default="0" -->
+				- <!-- tmpl_var errors_sending_to_percent -->%
+			</a>
+		</td> 
+	</tr>
+	<tr>
+		<td> 
 			<a href="#archive_views">
-			Archive Views
+				Archive Views
 			</a>
-			</li>
-			
-			<li>
+		</td> 
+		<td class="text-right"> 
+			<a href="#archive_views">
+				<!-- tmpl_var view_archive -->
+			</a> 
+		</td> 
+	</tr>
+	<tr>
+		<td> 
 			<a href="#forwards">
-			Forwards
+				Forwards
 			</a>
-			</li>
-
-			<li>
+		</td> 
+		<td class="text-right"> 
+			<a href="#forwards">
+				<!-- tmpl_var forward_to_a_friend -->
+			</a>
+		</td> 
+	</tr>
+	<tr>
+		<td> 
 			<a href="#abuse_reports">
-			Abuse Reports
+				Abuse Reports
 			</a>
-			</li>
+		</td> 
+		<td class="text-right"> 
+			<a href="#abuse_reports">
+				<!-- tmpl_var abuse_report  default="0" --> 
+			</a>
+		</td> 
+	</tr>
+</table>
+		
+<div data-magellan-expedition="fixed">
+  <dl class="sub-nav">
+    <dd data-magellan-arrival="subscriber_activity"><a href="#subscriber_activity">Subcriber Activity</a></dd>
+    <dd data-magellan-arrival="opens"><a href="#opens">Opens</a></dd>
+    <dd data-magellan-arrival="clickthroughs"><a href="#clickthroughs">Clickthroughs</a></dd>
+    <dd data-magellan-arrival="unsubscribes"><a href="#unsubscribes">Unsubscribes</a></dd>
+    <dd data-magellan-arrival="archive_views"><a href="#archive_views">Archive Views</a></dd>
+    <dd data-magellan-arrival="forwards"><a href="#forwards">Forwards</a></dd>
+    <dd data-magellan-arrival="bounces"><a href="#bounces">Bounces</a></dd>
+    <dd data-magellan-arrival="sending_errors"><a href="#sending_errors">Sending Errors</a></dd>
+    <dd data-magellan-arrival="abuse_reports"><a href="#abuse_reports">Abuse Reports</a></dd>
+	<dd data-magellan-arrival="export_message_logs"><a href="#export_message_logs">Export Message Logs</a></dd>
+  </dl>
+</div>
+
+<h2 data-magellan-destination="subscriber_activity">
+	Subscribe Activity
+</h2>
+<a name="subscriber_activity"></a>
+
+
+<div class="row">
+	<div class="large-3 medium-3 columns">
+		<div id="message_email_activity_listing_table_loading"></div> 
+		<div id="message_email_activity_listing_table"></div>
+	</div>
+	<div class="large-9 medium-9 columns">
+		<div id="message_individual_email_activity_report_table_loading"></div> 
+		<div id="message_individual_email_activity_report_table"   ></div>
+	</div>
+</div> 
 			
-		</ul>
 
-	<div id="subscriber_activity">
-		<table  style="width:100%" class="responsive">
-		 <tr> 
-		<td width="350"> 
-		   <div id="message_email_activity_listing_table_loading"></div> 
-		   <div id="message_email_activity_listing_table"></div>
-		  </td> 
-		  <td> 
-		   <div id="message_individual_email_activity_report_table_loading"></div> 
-		   <div id="message_individual_email_activity_report_table" data-width="640" data-height="400" style="width:640px;height:400px"></div>
-		  </td> 
-		 </tr>
-		</table>
+<h2 data-magellan-destination="opens">
+	Opens
+</h2>
+<a name="opens"></a>
+
+<h3>
+	Message Opens by Country
+</h3>
+<!-- tmpl_if can_use_country_geoip_data --> 
+	<div class="row">
+		<div class="large-3 medium-3 columns">
+		<div id="country_geoip_opens_table_loading"></div> 
+		<div id="country_geoip_opens_table"></div>
+	</div>
+	<div class="large-9 medium-9 columns">
+		<div id="country_geoip_opens_map_loading"></div> 
+		<div id="country_geoip_opens_map"></div>
+	</div>
+<!-- tmpl_else --> 
+	<div class="alert-box info radius">
+		Nothing to report.
 	</div> 
-		
-	<div id="opens">
-		<!-- tmpl_if comment --> 
-		<h2>
-			Total Opens: <!-- tmpl_var opens -->, Unique Opens: <!-- tmpl_var unique_opens --> - <!-- tmpl_var unique_opens_percent -->%
-		</h2>
-		<!-- /tmpl_if --> 
-		
-		<h2>Message Opens by Country</h2>
-		<!-- tmpl_if can_use_country_geoip_data --> 
-			<table  style="width:100%" class="responsive">
-			 <tr> 
-			<td width="350"> 
-			   <div id="country_geoip_opens_table_loading"></div> 
-			   <div id="country_geoip_opens_table"></div>
-			  </td> 
-			  <td> 
-			   <div id="country_geoip_opens_map_loading"></div> 
-			   <div id="country_geoip_opens_map" data-width="640" data-height="400" style="width:640px;height:400px"></div>
-			  </td> 
-			 </tr>
-			</table>
-			<!-- tmpl_else --> 
-				<p class="alert">Nothing to report.</p> 
-			<!-- /tmpl_if -->
-	<h2>Message Opens Over Time</h2> 
-	<div id="over_time_opens_graph_loading"></div> 
-	<div id="over_time_opens_graph" data-width="720" data-height="400" style="width:720px;height:400px"></div> 
+<!-- /tmpl_if -->
 
-    <h2>User Agents for Opens</h2>
-    <div id="user_agent_opens_chart_loading"></div> 
-	<div id="user_agent_opens_chart" data-width="720" data-height="400" style="width:720px;height:400px"></div>
-    
+<h3>
+	Message Opens Over Time
+</h3> 
+<div id="over_time_opens_graph_loading"></div> 
+<div id="over_time_opens_graph"></div> 
 
-		
-		<fieldset> 
-			<div class="buttonfloat">
-			<form action="<!-- tmpl_var PluginURL -->" method="post"> 
-    			<input type="hidden" name="prm"    value="export_subscribers" > 
-    			<input type="hidden" name="type" value="opens" > 
-    			<input type="hidden" name="mid"  value="<!-- tmpl_var mid -->" >
-    			<input type="submit" value="Export Subscribers Opening This Message" class="processing button" > 
-			</form>
-			</div> 
-			<div class="floatclear"></div>	
-		</fieldset>
-		
-	</div> 
-	
-	
-	<div id="clickthroughs">
-	
-		<h2>Clickthroughs by Country</h2>
-		
-		<!-- tmpl_if can_use_country_geoip_data --> 
-		<table  style="width:100%" class="responsive">
-		<tr> 
-		<td width="350"> 
+<h3>
+	User Agents for Opens
+</h3>
+<div id="user_agent_opens_chart_loading"></div> 
+<div id="user_agent_opens_chart"   ></div>
 
-		<div id="country_geoip_clickthroughs_table_loading"></div> 
-		<div id="country_geoip_clickthroughs_table"></div>
-			</td> 
-			<td>
-		<div id="country_geoip_clickthroughs_map_loading"></div> 
-		<div id="country_geoip_clickthroughs_map" data-width="640" data-height="400" style="width:640px;height:400px"></div> 
-			</td> 
-		</tr>
-
-			</table>
-		<!-- tmpl_else --> 
-			<p class="alert">Nothing to report.</p> 
-		<!-- /tmpl_if --> 
-
-		
-		<h2>Clickthroughs Over Time</h2> 
-		<div id="over_time_clickthroughs_graph_loading"></div> 
-		<div id="over_time_clickthroughs_graph" data-width="720" data-height="400" style="width:720px;height:400px"></div> 	
-		<h2>Clickthroughs by URL</h2>
-				<!-- tmpl_if url_report --> 
-			  <div> 
-			 <!-- <div style="max-width:350px; max-height: 400px; overflow: auto; border:1px solid black overflow-y: scroll; overflow-x: hidden;"> -->
-				 <div style="max-height: 400px; overflow: auto; border:1px solid black overflow-y: scroll; overflow-x: hidden;">
-			 	<table  style="width:100%" class="responsive">
-					<tr style="background:#fff"> 
-					<td> 
-						<p><strong>URL</strong></p> 
-					</td> 
-					<td> <!--  style="width:50px" -->
-						<p><strong># Clickthroughs</strong></p>
-					</td> 
-					</tr> 
-						<!-- tmpl_loop url_report --> 
-						<tr> 
-						 <td> 
-						 <p> 
-				<!-- tmpl_if comment --> 
-						    <a href="<!-- tmpl_var Plugin_URL -->?prm=url&mid=<!-- tmpl_var mid -->&url=<!-- tmpl_var url escape="HTML" -->"> 
-				<!-- /tmpl_if --> 
-					<a href="<!-- tmpl_var url -->" target="_blank"> 
-					<!-- tmpl_var url escape="HTML" -->
-					</a> 
-					<!-- tmpl_if comment --> 
-					</a> 
-					<!-- /tmpl_if --> 	
-						</p> 
-						</td> 
-						<td align="right"> 
-						 <p>
-							<!-- tmpl_var count --> 
-						 </p> 
-						</td> 
-						</tr> 
-				    <!-- /tmpl_loop -->
-    				</table> 
-    				</div> 
-    				</div> 
-			
-				<!-- tmpl_else --> 
-					<p class="alert">Nothing to report.</p> 
-				<!-- /tmpl_if --> 
-
-        <h2>User Agents for Clickthroughs</h2>
-        <div id="user_agent_clickthroughs_chart_loading"></div> 
-		<div id="user_agent_clickthroughs_chart" data-width="720" data-height="400" style="width:720px;height:400px"></div>
-
-
-	<fieldset> 
-		<div class="buttonfloat">
+<div class="clearfix">
+	<ul class="button-group right">
+		<li>
 		<form action="<!-- tmpl_var PluginURL -->" method="post"> 
-    		<input type="hidden" name="prm"  value="export_subscribers" > 
-    		<input type="hidden" name="type" value="clickthroughs" > 
-    		<input type="hidden" name="mid"  value="<!-- tmpl_var mid -->" >
-    		<input type="submit" value="Export Subscribers Clickthroughing This Message" class="processing button" > 
+			<input type="hidden" name="prm"    value="export_subscribers" > 
+			<input type="hidden" name="type" value="opens" > 
+			<input type="hidden" name="mid"  value="<!-- tmpl_var mid -->" >
+			<input type="submit" value="Export Subscribers Opening This Message" class="processing button" > 
 		</form>
+		</li>
+	</ul>
+</div>
+
+<h2 data-magellan-destination="clickthroughs">
+	Clickthroughs
+</h2>
+<a name="clickthroughs"></a>
+	
+<h3>
+	Clickthroughs by Country
+</h3>
+
+<!-- tmpl_if can_use_country_geoip_data --> 
+	<div class="row">
+		<div class="large-3 medium-3 columns">
+			<div id="country_geoip_clickthroughs_table_loading"></div> 
+			<div id="country_geoip_clickthroughs_table"></div>
 		</div> 
-		<div class="floatclear"></div>	
-	</fieldset> 
-	
+		<div class="large-9 medium-9 columns">
+			<div id="country_geoip_clickthroughs_map_loading"></div> 
+			<div id="country_geoip_clickthroughs_map"   ></div> 
+		</div> 
+	</div>
+<!-- tmpl_else --> 
+	<div class="alert-box info radius">
+		Nothing to report.
 	</div> 
-	
-	<div id="unsubscribes"> 
+<!-- /tmpl_if --> 
+
 		
-		<h2>Unsubscribes</h2>
-		<table  style="width:100%" class="responsive">
-		 <tr> 
-		  <td> 
-				<div id="unsubscribe_table_loading"></div> 
-				<div id="unsubscribe_table" style="width:350px;height:400px"></div>
-			</td>
-			<td>
-				<div id="unsubscribe_graph_loading"></div> 
-				<div id="unsubscribe_graph" data-width="640" data-height="400" data-title="Unsubscribes"></div> 
-			</td>
-		   </tr>
-		</table>
-		
-		
-		<h2>Unsubscribes Over Time</h2> 
-		<div id="over_time_unsubscribe_graph_loading"></div> 
-		<div id="over_time_unsubscribe_graph" data-width="720" data-height="400" style="width:720px;height:400px"></div>
-		
-		
-	</div> 
-	
-	
-	<div id="archive_views">
-	<h2>Archive Views by Country</h2>
-		<!-- tmpl_if can_use_country_geoip_data --> 
+<h3>
+	Clickthroughs Over Time
+</h3> 
+
+<div id="over_time_clickthroughs_graph_loading"></div> 
+<div id="over_time_clickthroughs_graph"  ></div> 	
+
+<h3>
+	Clickthroughs by URL
+</h3>
+
+<!-- tmpl_if url_report --> 
+	<div> 
+		<div style="max-height: 400px; overflow: auto; border:1px solid black overflow-y: scroll; overflow-x: hidden;">
 			<table  style="width:100%" class="responsive">
-			 <tr> 
-			<td width="350"> 
-			   <div id="country_geoip_view_archive_table_loading"></div> 
-			   <div id="country_geoip_view_archive_table"></div>
-			  </td> 
-			  <td> 
-			   <div id="country_geoip_view_archive_map_loading"></div> 
-			   <div id="country_geoip_view_archive_map" data-width="640" data-height="400" style="width:640px;height:400px"></div>
-			  </td> 
-			 </tr>
-			</table>
-			<!-- tmpl_else --> 
-				<p class="alert">Nothing to report.</p> 
-			<!-- /tmpl_if -->
-		<h2>Archive Views Over Time</h2> 
-		<div id="over_time_view_archive_graph_loading"></div> 
-		<div id="over_time_view_archive_graph" data-width="720" data-height="400" style="width:720px;height:400px"></div>
-
-		
-		
+				<tr> 
+					<th> 
+						URL 
+					</th> 
+					<th> 
+						# Clickthroughs
+					</th> 
+				</tr> 
+				<!-- tmpl_loop url_report --> 
+					<tr> 
+						<td> 
+							<a href="<!-- tmpl_var url -->" target="_blank"> 
+								<!-- tmpl_var url escape="HTML" -->
+							</a> 
+						</td> 
+						<td> 
+							<!-- tmpl_var count --> 
+						</td> 
+					</tr> 
+				<!-- /tmpl_loop -->
+			</table> 
+		</div> 
 	</div> 
-	
-	<div id="forwards">
-		
-		<h2>&quot;Forward to a Friend&quot; by Country</h2>
-		<!-- tmpl_if can_use_country_geoip_data --> 
-			<table  style="width:100%" class="responsive">
-			 <tr> 
-			<td width="350"> 
-			   <div id="country_geoip_forwards_table_loading"></div> 
-			   <div id="country_geoip_forwards_table"></div>
-			  </td> 
-			  <td> 
-			   <div id="country_geoip_forwards_map_loading"></div> 
-			   <div id="country_geoip_forwards_map" data-width="640" data-height="400" style="width:640px;height:400px"></div>
-			  </td> 
-			 </tr>
-			</table>
-			<!-- tmpl_else --> 
-				<p class="alert">Nothing to report.</p> 
-			<!-- /tmpl_if -->
-
-	<h2>&quot;Forward to a Friend&quot; Over Time</h2>
-		<div id="over_time_forwards_graph_loading"></div> 
-		<div id="over_time_forwards_graph" data-width="720" data-height="400" style="width:720px;height:400px"></div>
+<!-- tmpl_else --> 
+	<div class="alert-box info radius">
+		Nothing to report.
 	</div> 
-	
-	
-	
-	<div id="bounces">
-		
-		<h2>Soft Bounces</h2>
-		<table  style="width:100%" class="responsive">
-		 <tr> 
-		  <td> 
-				<div id="soft_bounce_table_loading"></div> 
-				<div id="soft_bounce_table" style="width:350px;height:400px"></div>
-			</td>
-			<td>
-				<div id="soft_bounce_graph_loading"></div> 
-				<div id="soft_bounce_graph" data-width="640" data-height="400" data-title="Soft Bounces"></div> 
-			</td>
-		   </tr>
-		</table>
-		
-	
-		<h2>Hard Bounces</h2>
-		<table  style="width:100%" class="responsive">
-		 <tr> 
-		  <td> 
-				<div id="hard_bounce_table_loading"></div> 
-				<div id="hard_bounce_table" style="width:350px;height:400px"></div>
-			</td>
-			<td>
-				<div id="hard_bounce_graph_loading"></div> 
-				<div id="hard_bounce_graph" data-width="640" data-height="400" data-title="Hard Bounces"></div> 
-			</td>
-		   </tr>
-		</table>
+<!-- /tmpl_if --> 
 
-	</div> 
+<h3>
+	User Agents for Clickthroughs
+</h3>
+<div id="user_agent_clickthroughs_chart_loading"></div> 
+<div id="user_agent_clickthroughs_chart"   ></div>
 
-	<div id="errors_sending_to">
-		<table  style="width:100%" class="responsive">
-		 <tr> 
-		  <td> 
-				<div id="errors_sending_to_table_loading"></div> 
-				<div id="errors_sending_to_table" style="width:350px;height:400px"></div>
-			</td>
-			<td>
-				<div id="errors_sending_to_graph_loading"></div> 
-				<div id="errors_sending_to_graph" data-width="640" data-height="400" data-title="Sending Errors"></div> 
-			</td>
-		   </tr>
-		</table>		
-	</div> 
-
-
-	<div id="abuse_reports"> 
-		
-		<h2>Abuse Reports</h2>
-		<table  style="width:100%" class="responsive">
-		 <tr> 
-		  <td> 
-				<div id="abuse_report_table_loading"></div> 
-				<div id="abuse_report_table" style="width:350px;height:400px"></div>
-			</td>
-			<td>
-				<div id="abuse_report_graph_loading"></div> 
-				<div id="abuse_report_graph" data-width="640" data-height="400" data-title="Abuse Reports"></div> 
-			</td>
-		   </tr>
-		</table>
-		
-		<h2>Abuse Reports Over Time</h2> 
-		<div id="over_time_abuse_report_graph_loading"></div> 
-		<div id="over_time_abuse_report_graph" data-width="720" data-height="400" style="width:720px;height:400px"></div>
-		
-		<fieldset> 
-			<div class="buttonfloat">
+<div class="clearfix">
+	<ul class="button-group right">
+		<li>
 			<form action="<!-- tmpl_var PluginURL -->" method="post"> 
-		    	<input type="hidden" name="flavor"    value="export_subscribers" > 
-    			<input type="hidden" name="type" value="abuse_reports" > 
-    			<input type="hidden" name="mid"  value="<!-- tmpl_var mid -->" >
-			    <input type="submit" value="Export Subscribers Reporting Abuse for This Message" class="processing button" > 
+				<input type="hidden" name="prm"  value="export_subscribers" > 
+				<input type="hidden" name="type" value="clickthroughs" > 
+				<input type="hidden" name="mid"  value="<!-- tmpl_var mid -->" >
+				<input type="submit" value="Export Subscribers Clickthroughing This Message" class="processing button" > 
 			</form>
-			</div> 
-			<div class="floatclear"></div>	
-		</fieldset>
-		
-	</div> 
-
-
-
+		</li>
+	</ul>
 </div> 
 
+<h2 data-magellan-destination="unsubscribes">
+	Unsubscribes
+</h2>
+<a name="unsubscribes"></a>		
+
+	
+<div class="row">
+	<div class="large-3 medium-3 columns">
+		<div id="unsubscribe_table_loading"></div> 
+		<div id="unsubscribe_table" ></div>
+	</div> 
+	<div class="large-9 medium-9 columns">
+		<div id="unsubscribe_graph_loading"></div> 
+		<div id="unsubscribe_graph"   data-title="Unsubscribes"></div> 
+	</div> 	
+</div> 
+
+<h2>
+	Unsubscribes Over Time
+</h2> 
+<div id="over_time_unsubscribe_graph_loading"></div> 
+<div id="over_time_unsubscribe_graph"></div>
+		
+			
+<h2 data-magellan-destination="archive_views">
+	Archive Views
+</h2>
+<a name="archive_views"></a>
+
+<h3>
+	Archive Views by Country
+</h3>
+<!-- tmpl_if can_use_country_geoip_data --> 
+	<div class="row">
+		<div class="large-3 medium-3 columns">
+			<div id="country_geoip_view_archive_table_loading"></div> 
+			<div id="country_geoip_view_archive_table"></div>
+		</div> 
+		<div class="large-9 medium-9 columns">
+			<div id="country_geoip_view_archive_map_loading"></div> 
+			<div id="country_geoip_view_archive_map"   ></div>
+		</div> 
+	</div>
+<!-- tmpl_else --> 
+	<div class="alert-box info radius">
+		Nothing to report.
+	</div> 
+<!-- /tmpl_if -->
+
+<h3>
+	Archive Views Over Time
+</h3> 
+
+<div id="over_time_view_archive_graph_loading"></div> 
+<div id="over_time_view_archive_graph"></div>
+
+
+<h2 data-magellan-destination="forwards">
+	Forwards
+</h2>
+<a name="forwards"></a>
+
+<h3>
+	&quot;Forward to a Friend&quot; by Country
+</h3>
+
+<!-- tmpl_if can_use_country_geoip_data --> 
+	<div class="row">
+		<div class="large-3 medium-3 columns">
+			<div id="country_geoip_forwards_table_loading"></div> 
+			<div id="country_geoip_forwards_table"></div>
+		</div> 
+		<div class="large-9 medium-9 columns">
+			<div id="country_geoip_forwards_map_loading"></div> 
+			<div id="country_geoip_forwards_map"></div>
+		</div> 
+	</div> 
+<!-- tmpl_else --> 
+	<div class="alert-box info radius">
+		Nothing to report.
+	</div> 
+<!-- /tmpl_if -->
+
+<h3>
+	&quot;Forward to a Friend&quot; Over Time
+</h3>
+
+<div id="over_time_forwards_graph_loading"></div> 
+<div id="over_time_forwards_graph"></div>
+
+
+	
+<h2 data-magellan-destination="bounces">
+	Bounces
+</h2>
+<a name="bounces"></a>	
+
+<h3>
+	Soft Bounces
+</h3>
+
+<div class="row">
+	<div class="large-3 medium-3 columns">
+		<div id="soft_bounce_table_loading"></div> 
+		<div id="soft_bounce_table" ></div>
+	</div> 
+	<div class="large-9 medium-9 columns">
+		<div id="soft_bounce_graph_loading"></div> 
+		<div id="soft_bounce_graph"   data-title="Soft Bounces"></div> 
+	</div> 
+</div> 
+
+<h3>
+	Hard Bounces
+</h3>
+
+<div class="row">
+	<div class="large-3 medium-3 columns">
+		<div id="hard_bounce_table_loading"></div> 
+		<div id="hard_bounce_table" ></div>
+	</div> 
+	<div class="large-9 medium-9 columns">
+		<div id="hard_bounce_graph_loading"></div> 
+		<div id="hard_bounce_graph" data-title="Hard Bounces"></div> 
+	</div> 
+</div> 
+
+
+<h2 data-magellan-destination="sending_errors">
+	Sending Errors
+</h2>
+<a name="sending_errors"></a>
+
+<div class="row">
+	<div class="large-3 medium-3 columns">
+		<div id="errors_sending_to_table_loading"></div> 
+		<div id="errors_sending_to_table"></div>
+	</div> 
+	<div class="large-9 medium-9 columns">
+		<div id="errors_sending_to_graph_loading"></div> 
+		<div id="errors_sending_to_graph" data-title="Sending Errors"></div> 
+	</div> 
+</div> 
+
+
+<h2 data-magellan-destination="abuse_reports">
+	Abuse Reports
+</h2>
+<a name="abuse_reports"></a>
+
+<div class="row">
+	<div class="large-3 medium-3 columns">
+		<div id="abuse_report_table_loading"></div> 
+		<div id="abuse_report_table"></div>
+	</div> 
+	<div class="large-9 medium-9 columns">
+		<div id="abuse_report_graph_loading"></div> 
+		<div id="abuse_report_graph" data-title="Abuse Reports"></div> 
+	</div> 
+</div> 
+
+<h3>
+	Abuse Reports Over Time
+</h3> 
+<div id="over_time_abuse_report_graph_loading"></div> 
+<div id="over_time_abuse_report_graph"></div>
+
+<div class="clearfix">
+	<ul class="button-group right">
+		<li>
+			<form action="<!-- tmpl_var PluginURL -->" method="post"> 
+			<input type="hidden" name="flavor"    value="export_subscribers" > 
+			<input type="hidden" name="type" value="abuse_reports" > 
+			<input type="hidden" name="mid"  value="<!-- tmpl_var mid -->" >
+			<input type="submit" value="Export Subscribers Reporting Abuse for This Message" class="processing button" > 
+			</form>
+		</li>
+	</ul>
+</div>
 
 
 <!-- tmpl_if chrome -->
 
-	<fieldset> 
-		<legend>Export Message Logs</legend> 
+	<h2 data-magellan-destination="export_message_logs">
+		Export Message Logs
+	</h2>
+	<a name="export_message_logs"></a>
+	
 
-		<div class="buttonfloat">
-		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
-    		<input type="hidden" name="flavor" value="plugins" > 
-    		<input type="hidden" name="plugin" value="tracker" > 
-    		<input type="hidden" name="prm" value="download_activity_logs" > 
-    		<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" >
-    		 <input type="submit" class="processing button" name="process" value="Download Raw Activity Logs (.csv)" >
-		</form> 
-		</div>
+	<div class="clearfix">
+		<ul class="button-group right">
+			<li>
+				<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
+		    		<input type="hidden" name="flavor" value="plugins" > 
+		    		<input type="hidden" name="plugin" value="tracker" > 
+		    		<input type="hidden" name="prm" value="download_activity_logs" > 
+		    		<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" >
+		    		 <input type="submit" class="processing button" name="process" value="Download Raw Activity Logs (.csv)" >
+				</form> 
+			</li>
+			<li>
+				<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
+				<input type="hidden" name="flavor" value="plugins" > 
+				<input type="hidden" name="plugin" value="tracker" > 
 
-
-		<div class="buttonfloat">
-		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
-		<input type="hidden" name="flavor" value="plugins" > 
-		<input type="hidden" name="plugin" value="tracker" > 
-
-		<input type="hidden" name="prm" value="download_clickthrough_logs" > 
-		<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" >
-		 <input type="submit" class="processing button" name="process" value="Download Raw Clickthrough Logs (.csv)" >
-		</form> 
-		</div>
-		<div class="floatclear"></div>
-	</fieldset> 
+				<input type="hidden" name="prm" value="download_clickthrough_logs" > 
+				<input type="hidden" name="mid" value="<!-- tmpl_var mid -->" >
+				 <input type="submit" class="processing button" name="process" value="Download Raw Clickthrough Logs (.csv)" >
+				</form> 
+			</li>
+		</ul>
+	</div>
 
 <!-- /tmpl_if -->
 

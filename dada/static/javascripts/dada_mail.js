@@ -1058,6 +1058,17 @@ jQuery(document).ready(function($){
 
 	// Plugins >> Tracker
 	if ($("#plugins_tracker_message_report").length) {
+		var trackerc = new Array(); 
+		window.onresize = function(){
+			var arrayLength = trackerc.length;
+			for (var i = 0; i < arrayLength; i++) {
+				trackerc[i].chart_options['width']  = $("#" + trackerc[i].chart_options['target_div']).width();
+				trackerc[i].chart_options['height'] = $("#" + trackerc[i].chart_options['target_div']).width();
+				$("#" + trackerc[i].chart_options['target_div']).height($("#" + trackerc[i].chart_options['target_div']).width());
+				trackerc[i].chart_obj.draw(trackerc[i].chart_data, trackerc[i].chart_options);		
+			}
+		};
+	
 		update_plugins_tracker_message_report();
 	}
 
@@ -1933,13 +1944,14 @@ function user_agent_chart(type, target_div) {
 					width: "90%",
 					height: "90%"
 				},
-				width: $('#' + target_div).attr("data-width"),
-				height: $('#' + target_div).attr("data-height"),
 				pieSliceTextStyle: {
 					color: '#FFFFFF'
 				},
 				colors: ["ffabab", "ffabff", "a1a1f0", "abffff", "abffab", "ffffab"],
-				is3D: true
+				is3D: true,
+				width: $("#" + target_div).width(),
+				height: $("#" + target_div).width(),
+				target_div: target_div
 			};
 			var data = new google.visualization.DataTable(jsonData);
 			var chart = new google.visualization.PieChart(document.getElementById(target_div));
@@ -1947,6 +1959,7 @@ function user_agent_chart(type, target_div) {
 			$("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
 			$("#" + target_div).hide("fade", function() {
 				chart.draw(data, options);
+				trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
 				$("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
 				$("#" + target_div).show('fade');
 			});
@@ -2705,39 +2718,8 @@ function plugins_mailing_monitor() {
 // Plugins >> Tracker
 
 function update_plugins_tracker_message_report() {
-
-	var $tabs = $("#tabs").tabs({ heightStyle: "auto" });
-
-	$('body').on('click', '.to_subscriber_activity', function(event) {
-		$tabs.tabs('select', 0); return false;
-	});
-	$('body').on('click', '.to_opens', function(event) {
-		$tabs.tabs('select', 1); return false;
-	});
-	$('body').on('click', '.to_clickthroughs', function(event) {
-		$tabs.tabs('select', 2); return false;
-	});
-	$('body').on('click', '.to_unsubscribes', function(event) {
-		$tabs.tabs('select', 3); return false;
-	});
-	$('body').on('click', '.to_bounces', function(event) {
-		$tabs.tabs('select', 4); return false;
-	});
-
-	$('body').on('click', '.to_sending_errors', function(event) {
-		$tabs.tabs('select', 5); return false;
-	});
-
-	$('body').on('click', '.to_archive_views', function(event) {
-		$tabs.tabs('select', 6); return false;
-	});
-	$('body').on('click', '.to_forwards', function(event) {
-		$tabs.tabs('select', 7); return false;
-	});
-	$('body').on('click', '.to_abuse_reports', function(event) {
-		$tabs.tabs('select', 8); return false;
-	});
-
+	
+	
 	$("body").on("click", '.message_individual_email_activity', function(event) {
 		event.preventDefault();
 		message_individual_email_activity_table($(this).attr("data-email"), "message_individual_email_activity_report_table");
@@ -2881,22 +2863,25 @@ function country_geoip_map(type, target_div) {
 			var data = new google.visualization.DataTable(jsonData);
 			var options = {
 				region: 'world',
-				width: $('#' + target_div).attr("data-width"),
-				height: $('#' + target_div).attr("data-height"),
 				keepAspectRatio: true,
 				backgroundColor: "#FFFFFF",
 				colorAxis: {
 					colors: ['#e5f2ff', '#ff0066']
-				}
+				},
+				width: $("#" + target_div).width(),
+				height: $("#" + target_div).width(),
+				target_div: target_div
 			};
 			var chart = new google.visualization.GeoChart(document.getElementById(target_div));
 
 			$("#" + target_div).hide("fade", function() {
 				chart.draw(data, options);
+				trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
 				$("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
 				$("#" + target_div).show('fade');
 			});
 
+			
 			google.visualization.events.addListener(chart, 'select', country_geoip_map_selectHandler);
 
 			function country_geoip_map_selectHandler(event) {
@@ -2956,16 +2941,18 @@ function individual_country_geoip_map(type, country, target_div) {
 				region: country,
 				displayMode: 'markers',
 				resolution: 'provinces',
-				width: $('#' + target_div).attr("data-width"),
-				height: $('#' + target_div).attr("data-height"),
 				colorAxis: {
 					colors: ['#3399ff', '#ff0066']
-				}
+				},
+				width: $("#" + target_div).width(),
+				height: $("#" + target_div).width(),
+				target_div: target_div
 			};
 			var chart = new google.visualization.GeoChart(document.getElementById(target_div));
 
 			$("#" + target_div).hide("fade", function() {
 				chart.draw(data, options);
+				trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
 				$("#" + target_div + "_loading").html('<p class="alert"><a href="#" data-type="' + type + '" class="back_to_geoip_map">&lt; &lt;Back to World Map</a> | <a href="#"  data-type="' + type + '" data-country="' + country + '" class="individual_country_cumulative_geoip_table">Table View</a></p>');
 				$("#" + target_div).show('fade');
 			});
@@ -3022,18 +3009,20 @@ function data_over_time_graph(type, label, target_div) {
 					width: "70%",
 					height: "70%"
 				},
-				width: $('#' + target_div).attr("data-width"),
-				height: $('#' + target_div).attr("data-height"),
 				backgroundColor: {
 					stroke: '#FFFFFF',
 					strokeWidth: 0
 				},
 				hAxis: {
 					slantedText: true
-				}
+				},
+				width: $("#" + target_div).width(),
+				height: $("#" + target_div).width(),
+				target_div: target_div
 			};
 			var chart = new google.visualization.AreaChart(document.getElementById(target_div));
 			chart.draw(data, options);
+			trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
 			$("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
 		}
 	});
@@ -3140,10 +3129,14 @@ function email_breakdown_chart(type, label, target_div) {
 				is3D: true
 			};
 			chart.draw(data, options);
+			trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
+			
 			$("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
 		}
 	});
 }
+
+
 
 function tracker_the_basics_piechart(type, label, target_div) {
 
@@ -3173,17 +3166,21 @@ function tracker_the_basics_piechart(type, label, target_div) {
 					height: "90%"
 				},
 				title: $('#' + target_div).attr("data-title"),
-				width: $('#' + target_div).attr("data-width"),
-				height: $('#' + target_div).attr("data-height"),
-
 				pieSliceTextStyle: {
 					color: '#FFFFFF'
 				},
 				colors: ["ffabab", "ffabff", "a1a1f0", "abffff", "abffab", "ffffab"],
-				is3D: true
+				is3D: true, 
+				width: $("#" + target_div).width(),
+				height: $("#" + target_div).width(),
+				target_div: target_div
 			};
+			
 			chart.draw(data, options);
+			trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
+			
 			$("#" + target_div + "_loading").html('<p class="alert">&nbsp;</p>');
+			
 		}
 	});
 }

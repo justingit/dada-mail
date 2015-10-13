@@ -3,12 +3,28 @@
 <!-- tmpl_set name="title" value="Plugins &#187; Tracker" --> 
 <!-- tmpl_set name="load_google_viz" value="1" -->
 
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-		<!-- tmpl_var title --> 
-	</div>
-	<!-- tmpl_include help_link_widget.tmpl -->
-</div>
+
+
+		<div class="row">
+			<div class="medium-10 small-9 columns">
+			   	<nav class="breadcrumbs">	
+				 	 <a href="#" class="unavailable">
+						Plugins
+					 </a>
+			 	    <a 
+						href="<!-- tmpl_var Plugin_URL -->"
+						class="current"
+					>	
+						Tracker
+					</a>
+				</nav>
+			</div>
+			<div class="medium-2 small-3 columns text-right">
+			   <!-- tmpl_include help_link_widget.tmpl -->
+			</div>
+		</div>
+		
+		
 <div id="screen_meta" data-menu_highlight="tracker"></div>
 <div id="plugins_tracker_default"></div> 
 

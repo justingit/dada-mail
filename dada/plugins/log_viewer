@@ -152,6 +152,7 @@ sub cgi_view {
     $Default_Log = $log_name;
 
     my @log_names = keys %$logs;
+	
 
     require DADA::Template::Widgets;
     my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -163,7 +164,7 @@ sub cgi_view {
                 -List       => $list,
             },
             -vars => {
-                log_names => ( $log_names[0] ? 1 : 0 ),
+                log_names       => $#log_names,
                 logs_popup_menu => $logs_popup_menu,
                 log_lines       => $log_lines,
                 Plugin_URL      => $Plugin_Config->{Plugin_URL},
