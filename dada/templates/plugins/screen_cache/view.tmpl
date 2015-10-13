@@ -4,131 +4,97 @@
 <!-- tmpl_set name="title" value="Plugins &#187; Screen Cache" -->
 <div id="screen_meta" data-menu_highlight="screen_cache"></div>
 
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-		<!-- tmpl_var title --> 
+<div class="row">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				Plugins
+			 </a>
+	 	    <a 
+				href="#"
+				class="current"
+			>	
+				Screen Cache
+			</a>
+		</nav>
 	</div>
-	<!-- tmpl_include help_link_widget.tmpl -->
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
 </div>
 
-
 <div class="alert-box info radius">
-
-	<p>Screen Caching is currently <strong>
-<!-- tmpl_if cache_active --> 
-
-	enabled.
-
-<!-- tmpl_else --> 
-
-	disabled.
-
-<!-- /tmpl_if -->
-</strong>
-
+	Screen Caching is currently 
+	<strong>
+		<!-- tmpl_if cache_active --> 
+			enabled.
+		<!-- tmpl_else --> 
+			disabled.
+		<!-- /tmpl_if -->
+	</strong>
 </div> 
 
 
 <!-- tmpl_if file_list --> 
-
-	 <div class="buttonfloat">
-
-
 	<form action="<!-- tmpl_var Plugin_URL -->" method="POST"> 
-		<input type="hidden" name="process" value="flush" >
-		 <input type="submit" class="alertive button" value="Remove All Cached Screens" >
+	<input type="hidden" name="process" value="flush" >
+	<input type="submit" class="alertive button" value="Remove All Cached Screens" >
 	</form> 
 
-	 </div>
-	 <div class="floatclear"></div>
-
-
 	<div style="max-height: 300px; overflow: auto; border:1px solid black">
-
-	<table  style="width:100%" class="responsive">
-
-
-	<tr> 
-	  <td></td> 
-
-	  <td>Filename</td> 
-	  <td>Size (kb)</td> 
-
-	  <td></td> 
-
-	 </tr> 
-
-
-
-
-
-	<!-- tmpl_loop file_list --> 
-
+		<table  style="width:100%" class="responsive">
+		<tr> 
+		  <th></th> 
+		  <th>Filename</th> 	
+		  <th>Size (kb)</th> 
+		  <th></th> 
+		</tr> 
+		<!-- tmpl_loop file_list --> 
 		   <tr>
-	  <td>
+	  		 <td>				 
+			  <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
+				<input type="hidden" name="flavor" value="plugins" > 
+				<input type="hidden" name="plugin" value="screen_cache" > 
+				<input type="hidden" name="prm" value="remove" >
+				<input type="hidden" name="filename" value="<!-- tmpl_var name -->" --> 
+				<input type="submit" class="alertive small button" value="&#8855;">
+			   </form> 
+			  </td> 
+			  <td>
+				  <span title="<!-- tmpl_var name -->">
+					  <!-- tmpl_var cutoff_name --><!-- tmpl_var dotdot -->
+				  </span>
+			  </td> 
+	 		 <td>
+				 <!-- tmpl_var size -->
+			 </td> 
 
-
-	  <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
-		<input type="hidden" name="flavor" value="plugins" > 
-		<input type="hidden" name="plugin" value="screen_cache" > 
-
-		<input type="hidden" name="prm" value="remove" >
-
-		<input type="hidden" name="filename" value="<!-- tmpl_var name -->" --> 
-
-		<input type="submit" class="alertive button" value="&#8855;">
-	   </form> 
-
-	  </td> 
-
-
-	  <td><span title="<!-- tmpl_var name -->"><!-- tmpl_var cutoff_name --><!-- tmpl_var dotdot --></span></td> 
-	  <td><!-- tmpl_var size --></td> 
-
-	  <td>
-	   <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" target="preview"> 
-
-	       <input type="hidden" name="flavor" value="plugins" > 
-  	       <input type="hidden" name="plugin" value="screen_cache" > 
-
-
-		<input type="hidden" name="prm" value="view" >
-		<input type="hidden" name="filename" value="<!-- tmpl_var name -->" --> 
-
-		<input type="submit" class="cautionary button" value="View...">
-	   </form> 
-
-	  </td> 
-
-	 </tr> 
-
+			 <td>
+				<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" target="preview"> 
+					<input type="hidden" name="flavor" value="plugins" > 
+					<input type="hidden" name="plugin" value="screen_cache" > 
+					<input type="hidden" name="prm" value="view" >
+					<input type="hidden" name="filename" value="<!-- tmpl_var name -->" --> 
+					<input type="submit" class="cautionary small button" value="View...">
+				</form> 
+	  	  	</td> 
+	 	</tr> 
 	<!--/tmpl_loop-->
+</table> 
+</div> 
 
+<h3>
+	Cached Screen Preview:
+</h3>
 
-
-
-	</table> 
-	</div> 
-
-
-	<p> 
-	 <strong>
-	  Cached Screen Preview:
-	 </strong> 
-	</p>
-
-	<iframe height="500" name="preview" width="100%"></iframe>
+<iframe height="500" name="preview" width="100%"></iframe>
 
 <!-- tmpl_else --> 
-
 	<!-- tmpl_if cache_active --> 
-	
-		<p class="positive">
+		<div class="alert-box info radius">
 		  There are currently no cached screens.
-		</p>
-	
+		</div>
 	<!-- /tmpl_if --> 
-	
 <!--/tmpl_if-->
 
 

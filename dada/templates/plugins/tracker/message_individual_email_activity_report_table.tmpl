@@ -1,29 +1,25 @@
-
-
 <!-- begin plugins/tracker/message_individual_email_activity_report_table.tmpl -->
 
-
 <div>
-<div style="max-height: 400px; overflow: auto; border:1px solid black overflow-y: scroll; overflow-x: hidden;font-size:.75em">
+	<div style="max-height: 400px; overflow: auto; border:1px solid black overflow-y: scroll; overflow-x: hidden;font-size:.75em">
+		<table  style="border:1px solid black;border-collapse: collapse;width:640px">
+			<thead style="background-color:#999999;color:#FFFFFF;  text-align:center">
+				<tr style="background-color:#999999;color:#FFFFFF;  text-align:center">
+					<th colspan="3" style="background-color:#333333;color:#FFFFFF; text-align:center">
+						<p>
+							<strong> 
+								<!-- tmpl_var email -->
+								<!-- tmpl_if report --> 
+								    <a href="<!-- tmpl_var PLUGIN_URL -->?prm=message_individual_email_activity_csv&mid=<!-- tmpl_var mid -->&email=<!-- tmpl_var email escape="URL" -->" style="color:#FFFFFF"> 
+								        (export .csv)
+								    </a>
+								<!-- /tmpl_if -->
+							</strong> 
 
-	<table  style="border:1px solid black;border-collapse: collapse;width:640px">
-		<thead style="background-color:#999999;color:#FFFFFF;  text-align:center">
-		<tr style="background-color:#999999;color:#FFFFFF;  text-align:center">
-			<th colspan="3" style="background-color:#333333;color:#FFFFFF; text-align:center">
-				<p>
-					<strong> 
-						<!-- tmpl_var email -->
-						<!-- tmpl_if report --> 
-						    <a href="<!-- tmpl_var PLUGIN_URL -->?prm=message_individual_email_activity_csv&mid=<!-- tmpl_var mid -->&email=<!-- tmpl_var email escape="URL" -->" style="color:#FFFFFF"> 
-						        (export .csv)
-						    </a>
-						<!-- /tmpl_if -->
-					</strong> 
-
-				</p>
-			</th>
-		 </tr> 
-		 <tr> 
+						</p>
+					</th>
+				 </tr> 
+				 <tr> 
 				<th style="background-color:#999999;color:#FFFFFF; text-align:center">
 					Timestamp
 				</th>

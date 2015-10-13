@@ -4,417 +4,395 @@
 <!-- tmpl_set name="show_profile_widget" value="0" -->
 
 <!-- tmpl_if errors -->
-	
-	<div class="alert-box info radius">
-	<p>
-	 <!-- tmpl_var errors -->  field<!-- tmpl_var ending --> 
-	 on this form  <!-- tmpl_var err_word --> filled out incorrectly 
-	 and must to be fixed.</p>
-	
-	<p> Please fix the error<!-- tmpl_var ending --> 
-	 to successfully create your new Mailing List.
-	</p>
-	</div>
+	<div class="alert-box error radius">
+		<p>
+			<!-- tmpl_var errors -->  field<!-- tmpl_var ending --> 
+			on this form  <!-- tmpl_var err_word --> filled out incorrectly 
+			and must to be fixed.
+		</p>
 
-	
+		<p>
+			Please fix the error<!-- tmpl_var ending --> 
+			to successfully create your new Mailing List.
+		</p>
+	</div>
 <!-- /tmpl_if -->
 
+<form 
+	action="<!-- tmpl_var S_PROGRAM_URL -->" 
+	method="post" 
+	accept-charset="<!-- tmpl_var HTML_CHARSET -->" 
+	id="create_new_list"
+>
 
+	<input type="hidden" name="flavor"        value="new_list" >
+	<input type="hidden" name="process"       value="true" >
+	<input type="hidden" name="root_password" value="<!-- tmpl_var root_password escape="HTML" -->" >
+	<input type="hidden" name="auth_state"    value="<!-- tmpl_var auth_state escape="HTML" -->" >
 
-
-
-
-	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="create_new_list">
-
-	 <input type="hidden" name="flavor"       value="new_list" >
-	 <input type="hidden" name="process" value="true" >
-	 <input type="hidden" name="root_password" value="<!-- tmpl_var root_password escape="HTML" -->" >
-	 <input type="hidden" name="auth_state" value="<!-- tmpl_var auth_state escape="HTML" -->" >
+<p>&nbsp;</p>
 	<div class="alert-box info radius">
-		
-	<p>Please Fill in all the fields below, to create your new Mailing List</p>
-	<p>
-	 All information <em><strong>except</strong></em> the list's Short Name may be changed at a later time. 
-	</p>
-</div>
+		<p>
+			Please Fill in all the fields below, to create your new Mailing List
+		</p>
+		<p>
+			All information <em><strong>except</strong></em> the list's Short Name may be changed at a later time. 
+		</p>
+	</div>
 
-<fieldset> 
-	
+	<fieldset> 
+		<legend>
+			Mailing List Name
+		</legend>
 
-	 <legend>
-	  Mailing List Name
-	 </legend>
- 
-	<!-- tmpl_if flags_list_name -->
-	 
-		<div class="alert-box info radius">
-		 <p>
-			Please fill out your new Mailing List's name:
-		 </p>
-		</div>
-	 
-	<!-- /tmpl_if -->
+		<!-- tmpl_if flags_list_name -->
+			<div class="alert-box error radius">
+				Please fill out a name for your new Mailing List.
+			</div>
+		<!-- /tmpl_if -->
 
-	<!-- tmpl_if flags_list_name_bad_characters -->
-	 	<div class="alert-box info radius">
-		 <p>
-		   Your Mailing List Name contains &lt;'s, &gt;'s or, &quot;'s.
-		 </p>
-		</div>
-	 
-	<!-- /tmpl_if -->
+		<!-- tmpl_if flags_list_name_bad_characters -->
+			<div class="alert-box info radius">
+				Your Mailing List Name contains &lt;'s, &gt;'s or, &quot;'s.
+			</div>
+		<!-- /tmpl_if -->
 
 		<div class="alert-box info radius">
-		
-		 <p>
-		  	What is the Mailing List's name? Use a unique name to help you tell your Mailing Lists apart.
-		</p> 
-		
-		<p>The Mailing List Name cannot contain, &lt;'s, &gt;'s or, &quot;'s.</p>
-		
-		</div>
-	 <p><label for="list_name">Mailing List Name:</label><br>
-	  <input type="text" id="list_name" name="list_name" value="<!-- tmpl_var list_name escape="HTML" -->"  maxlength="250" >
-	 </p>
-</fieldset> 
-
-<fieldset> 
-		
-	 <legend>
-	  List Short Name
-	 </legend>
- 
-	<!-- tmpl_if flags_list_exists -->
-	 
-		<div class="alert-box info radius">
-		 <p>
-		   This list Short Name already exists. Please choose a different Short Name.
-		 </p>
-		</div>
-	 
-	<!-- /tmpl_if -->
-
-	<!-- tmpl_if flags_list -->
-	 	<div class="alert-box info radius">
-		 <p>
-		   Please fill out a Short Name.
-		 </p>
-		</div>
-	 
-	<!-- /tmpl_if -->
-
-	<!-- tmpl_if flags_shortname_too_long -->
-	 
-		<div class="alert-box info radius">
-		 <p>
-		   Your list Short Name is longer than 16 characters.
-		 </p>
-		</div>
-	 
-	<!-- /tmpl_if -->
-
-	<!-- tmpl_if flags_slashes_in_name -->
-	 
-		<div class="alert-box info radius">
-		 <p>
-		   Your list Short Name can't have slashes (&quot;/&quot; or &quot;\&quot;) in the name itself.
-		 </p>
-	 	</div>
-	
-	<!-- /tmpl_if -->
-
-	<!-- tmpl_if flags_weird_characters -->
-	 
-		<div class="alert-box info radius">
-		 <p>
-		   Your list Short Name appears to have weird characters in the 
-		   name that may create problems. Please use only lowercase 
-		   alphanumeric characters (e.g.: abc123).
-		 </p>
-	 	</div>
-	
-	<!-- /tmpl_if -->
-
-	<!-- tmpl_if flags_quotes -->
-	 	<div class="alert-box info radius">
-		 <p>
-		   Your list Short Name cannot contain quotes.
-		 </p>
-		</div>
-	 
-	<!-- /tmpl_if -->
-
-
-	<div class="alert-box info radius">
-	<p>
-	  The List Short Name will be used internally by <!-- tmpl_var PROGRAM_NAME --> 
-	  and will also be used for subscription/unsubscription links and filenames. 
-	  You should make the Short Name <strong>lowercase</strong> 
-	  and no more than 16 characters. Use only alphanumeric characters.
-  	</p>
-</div>
-
-	<p><label for="list">List Short Name:</label><br >
-	  <input type="text" id="list" name="list" value="<!-- tmpl_var list escape="HTML"-->" size="16" maxlength="16" >
-	 </p>
-</fieldset> 
-<fieldset> 	
-	 <legend>
-	  List Password
-	 </legend>
- 
-	<!-- tmpl_if flags_password -->
-	
-	 	<div class="alert-box info radius">
-		 <p>
-		   Please type a List Password.
-		 </p>
-		</div>
-	 
-	<!-- /tmpl_if -->
-
-	<!-- tmpl_if flags_password_is_root_password -->
-	 	<div class="alert-box info radius">
-		 <p>
-		   The password you have entered is the same as the <!-- tmpl_var PROGRAM_NAME --> 
-		   Root Password. Please pick a different password.
-		 </p>
-		</div>
-	 
-	<!-- /tmpl_if -->
-
-		<div class="alert-box info radius">
-		 <p>
-		  The <strong>List Password</strong> can be used to log into this 
-		  mailing list's list control panel, usually with restrictions on what can be 
-		  accessed and what features are enabled. 
-		 </p>
-		 <p>
-		     To have all access to all screens and have all features enabled, log
-		     into a mailing list with the <strong> <!-- tmpl_var PROGRAM_NAME --> Root Password</strong>. 
-		 </p> 
-		 
-		
-		<p>Please make 
-		  the List Password hard to guess, using upper and lowercase letters 
-		  mixed with numbers. The List Password should be no more than 
-		  16 characters long.
-		 </p>
+			<p>
+				Use a unique name to help you tell your Mailing Lists apart.
+			</p> 
+			
+			<p>
+				Mailing List Names cannot contain, &lt;'s, &gt;'s or, &quot;'s.
+			</p>
 		</div>
 		
- 
-	 <p>
-		<label for="password">
-	  List Password:
-	</label>
-  </p>
-	<p>
-	  <input type="password" id="password" name="password" value="<!-- tmpl_var password escape="HTML"-->" size="16" maxlength="24" >
-	 </p>
- 
-	<!-- tmpl_if flags_retype_password -->
-	 
-		 <p>
-		   Please re-type your List Password.
-		 </p>
-	 
-	<!-- /tmpl_if -->
+		<div class="row">
+			<div class="small-12 columns">
+				<label for="list_name">Mailing List Name</label>
+				<input 
+					type="text" 
+					id="list_name" 
+					name="list_name" 
+					value="<!-- tmpl_var list_name escape="HTML" -->"  m
+					axlength="250" 
+				>
+			</div> 
+		</div>
+	</fieldset> 
 
-	<!-- tmpl_if flags_password_ne_retype_password -->
-	 
-		<div class="alert-box info radius">
-		 <p>
-		   Please make sure your List Password and what you've re-typed match.
-		 </p>
-	 	</div>
-	
-	<!-- /tmpl_if -->
- 
-	 <p><label for="retype_password">
-	  Re-type your List Password:
-	</label>
-  </p>
-	<p>
-	  <input type="password" id="retype_password" name="retype_password" value="<!-- tmpl_var retype_password escape="HTML"-->" size="16" maxlength="24" >
-	 </p>
+	<fieldset> 
+		<legend>
+			List Short Name
+		</legend>
 
-</fieldset> 
-<fieldset> 	
-	 <legend>
-  		List Owner Email Address
-	 </legend>
- 
-	<!-- tmpl_if flags_invalid_list_owner_email -->
-	 
+		<!-- tmpl_if flags_list_exists -->
+		<div class="alert-box error radius">
+			<p>
+				This list Short Name already exists. Please choose a different 
+				List Short Name.
+			</p>
+		</div>
+		<!-- /tmpl_if -->
+
+		<!-- tmpl_if flags_list -->
+			<div class="alert-box error radius">
+				Please fill out a Short Name.
+			</div>
+		<!-- /tmpl_if -->
+
+		<!-- tmpl_if flags_shortname_too_long -->
+			<div class="alert-box error radius">
+				Your list Short Name is longer than 16 characters.
+			</div>
+		<!-- /tmpl_if -->
+
+		<!-- tmpl_if flags_slashes_in_name -->
+			<div class="alert-box error radius">
+				Your list Short Name can't have slashes (&quot;/&quot; or &quot;\&quot;) 
+				in the name itself.	
+			</div>
+		<!-- /tmpl_if -->
+
+		<!-- tmpl_if flags_weird_characters -->
+			<div class="alert-box error radius">
+				Your list Short Name appears to have weird characters in the 
+				name that may create problems. Please use only lowercase 
+				alphanumeric characters (e.g.: abc123).
+			</div>
+		<!-- /tmpl_if -->
+
+		<!-- tmpl_if flags_quotes -->
+			<div class="alert-box error radius">
+				Your list Short Name cannot contain quotes.
+			</div>
+		<!-- /tmpl_if -->
+
+
 		<div class="alert-box info radius">
-		 <p>
-		   Please type a valid email address for the List Owner.
-		 </p>
+			The List Short Name will be used internally by <!-- tmpl_var PROGRAM_NAME --> 
+			and will also be used for subscription/unsubscription links and filenames. 
+			You should make the Short Name <strong>lowercase</strong> 
+			and no more than 16 characters. Use only alphanumeric characters.
+		</div>
+
+		<div class="row">
+			<div class="small-5 columns">
+				<label for="list">
+					List Short Name
+				</label>
+				<input 
+					type="text" 
+					id="list" 
+					name="list" 
+					value="<!-- tmpl_var list escape="HTML"-->" 
+					maxlength="16"
+				>
+			</div>
+			<div class="small-7 columns">
+			</div>
+		</div>
+	</fieldset> 
+
+	<fieldset> 	
+		<legend>
+			List Password
+		</legend>
+
+		<!-- tmpl_if flags_password -->
+			<div class="alert-box error radius">
+				Please type a List Password.
+			</div>
+		<!-- /tmpl_if -->
+
+		<!-- tmpl_if flags_password_is_root_password -->
+			<div class="alert-box error radius">
+				The password you have entered is the same as the <!-- tmpl_var PROGRAM_NAME --> 
+				Root Password. Please pick a different password.
+			</div>
+		<!-- /tmpl_if -->
+		
+		<!-- tmpl_if flags_retype_password -->
+			<div class="alert-box error radius">
+				Please re-type your List Password
+			</div>
+		<!-- /tmpl_if -->
+
+		<!-- tmpl_if flags_password_ne_retype_password -->
+			<div class="alert-box error radius">
+				Please make sure your List Password and what you've re-typed match.
+			</div>
+		<!-- /tmpl_if -->
+
+		<div class="alert-box info radius">
+			<p>
+				The <strong>List Password</strong> can be used to log into this 
+				mailing list's list control panel, usually with restrictions on what can be 
+				accessed and what features are enabled. 
+			</p>
+			<p>
+				To have all access to all screens and have all features enabled, log
+				into a mailing list with the <strong> <!-- tmpl_var PROGRAM_NAME --> Root Password</strong>. 
+			</p> 
+
+			<p>
+				Please make 
+				the List Password hard to guess, using upper and lowercase letters 
+				mixed with numbers. The List Password should be no more than 
+				16 characters long.
+			</p>
 		</div>
 		
-	 
-	<!-- /tmpl_if -->
-
-		<div class="alert-box info radius">
-		 <p>
-		  The List Owner's email address will be the email address all mass mailing messages
-		will be sent on behalf of.
-		 </p>
+		<div class="row">
+			<div class="small-5 columns">
+				<label for="password">
+				List Password:
+				</label>
+				<input 
+					type="password" 
+					id="password" 
+					name="password" 
+					value="<!-- tmpl_var password escape="HTML"-->" 
+					maxlength="24"
+				>
+			</div>
+			<div class="small-7 columns">
+			</div>
 		</div>
-	 
+		<div class="row">
+			<div class="small-5 columns">
+				<label for="retype_password">
+					Re-type your List Password:
+				</label>
+				<input 
+					type="password" 
+					id="retype_password" 
+					name="retype_password" 
+					value="<!-- tmpl_var retype_password escape="HTML"-->" 
+					maxlength="24"
+				>
+			</div>
+			<div class="small-7 columns">
+			</div>
+		</div>
+	</fieldset> 
 
-	 
-	 <p>
-  		<label for="list_owner_email">List Owner Email Address:</label>
-	</p>
-<p>
-	  <input type="text" id="list_owner_email" name="list_owner_email" value="<!-- tmpl_var list_owner_email escape="HTML"-->"  maxlength="100" >
-	 </p>
-
-</fieldset>
-<fieldset>
-
-
-	 <legend>
-	  Description
+	<fieldset> 	
+	<legend>
+		List Owner Email Address
 	</legend>
- 
-	<!-- tmpl_if flags_list_info -->
-	 
-		<div class="alert-box info radius">
-		 <p>
-		   Please type a Mailing List description.
-		 </p>
+
+	<!-- tmpl_if flags_invalid_list_owner_email -->
+		<div class="alert-box error radius">
+			Please type a valid email address for the List Owner.
 		</div>
-		
-	 
 	<!-- /tmpl_if -->
 
-		<div class="alert-box info radius">
-		 <p>
-		  A description of your Mailing List will tell would-be subscribers 
-		  what your Mailing List is all about. This information will be shown on the 
-		  <!-- tmpl_var PROGRAM_NAME --> main screen, as well as in 
-	          confirmation emails sent to people wishing to subscribe.
-		 </p>
-		</div>
-		
-	 
- 
-	 <p>
-	  <label for="info">Description:</label>
-	  <br >
-	  <textarea id="info" name="info" cols="50" rows="5"><!-- tmpl_var info escape="HTML"--></textarea>
-	 </p>
+	<div class="alert-box info radius">
+		The List Owner's email address will be the email address all mass mailing messages
+		will be sent on behalf of.
+	</div>
 	
+	<div class="row">
+		<div class="small-5 columns">
+			<label for="list_owner_email">
+				List Owner Email Address
+			</label>
+			<input 
+				type="text" 
+				id="list_owner_email"
+				name="list_owner_email"
+				value="<!-- tmpl_var list_owner_email escape="HTML"-->"
+				maxlength="100"
+			>
+		</div>
+		<div class="small-7 columns">
+		</div>
+	</div>
+</fieldset>
+
+<fieldset>
+	<legend>
+		Description
+	</legend>
+
+	<!-- tmpl_if flags_list_info -->
+		<div class="alert-box error radius">
+			Please type a Mailing List description.
+		</div>
+	<!-- /tmpl_if -->
+
+	<div class="alert-box info radius">
+		A description of your Mailing List will tell would-be subscribers 
+		what your Mailing List is all about. This information will be shown on the 
+		<!-- tmpl_var PROGRAM_NAME --> main screen, as well as in 
+		confirmation emails sent to people wishing to subscribe.
+	</div>
+	
+	<div class="row">
+		<div class="small-12 columns">
+			<label for="info">
+				Description
+			</label>
+			<textarea 
+				id="info" 
+				name="info" 
+				cols="50" 
+				rows="5"><!-- tmpl_var info escape="HTML"--></textarea>
+		</div> 
+	</div>
 </fieldset>
 
 
 <fieldset>
-
-
-	 <legend>
-	  Privacy Policy
-	 </legend>
- 
+	<legend>
+		Privacy Policy
+	</legend>
+	
 	<!-- tmpl_if flags_privacy_policy -->
-	 
-		<div class="alert-box info radius">
-		 <p>
-		   Please type a Mailing List Privacy Policy.
-		 </p>
+		<div class="alert-box error radius">
+			Please type a Mailing List Privacy Policy.
 		</div>
-	 
 	<!-- /tmpl_if -->
 
-		<div class="alert-box info radius">
-		 <p>
-		  A Privacy Policy allows a subscriber to know exactly how the 
-		  information they submit (their email address, etc.) will be used.
-		 </p>
-		</div>
-	 
- 
-	 <p>
-	  <label for="privacy_policy">Privacy Policy:</label>
-	  <br >
-	  <textarea id="privacy_policy" name="privacy_policy" cols="50" rows="5"><!-- tmpl_var privacy_policy escape="HTML"--></textarea>
-	 </p>
+	<div class="alert-box info radius">
+		A Privacy Policy allows a subscriber to know exactly how the 
+		information they submit (their email address, etc.) will be used.
+	</div>
 
+	<div class="row">
+		<div class="small-12 columns">
+			<label for="privacy_policy">
+				Privacy Policy
+			</label>
+			<textarea 
+				id="privacy_policy" 
+				name="privacy_policy" 
+				cols="50" 
+				rows="5"><!-- tmpl_var privacy_policy escape="HTML"--></textarea>
+			</div> 
+		</div>
 </fieldset>
 
 <fieldset>
+	<legend>
+		Physical Address
+	</legend>
 
-	 <legend>
-	  Physical Address
-	 </legend>
- 
 	<!-- tmpl_if flags_physical_address -->
-
-	  
-		<div class="alert-box info radius">
-		 <p>
-		   Please type a Physical Address
-		 </p>
+		<div class="alert-box error radius">
+			Please type a Physical Address
 		</div>
-	 
 	<!-- /tmpl_if -->
 
-		<div class="alert-box info radius">
-		 <p>
-		  A Physical Address ties your Mailing List to a known business 
-		  or organization, even if that organization is yourself. It 
-		  also helps you conform to laws relating to mailing lists.
-		 </p>
-		</div>
-	 
- 
-	 <p>
-	  <label for="physical_address">Physical Address:</label>
-	  <br >
-	  <textarea id="physical_address" name="physical_address" cols="50" rows="5"><!-- tmpl_var physical_address escape="HTML"--></textarea>
-	 </p>
-
+	<div class="alert-box info radius">
+		A Physical Address ties your Mailing List to a known business 
+		or organization, even if that organization is yourself. It 
+		also helps you conform to laws relating to mailing lists.
+	</div>
+	
+	<div class="row">
+		<div class="small-12 columns">
+			<label for="physical_address">
+				Physical Address
+			</label>
+			<textarea 
+				id="physical_address" 
+				name="physical_address"
+				cols="50" 
+				rows="5"><!-- tmpl_var physical_address escape="HTML"--></textarea>
+		</div> 
+	</div>
 </fieldset> 
-
 
 <!-- tmpl_if lists_exist --> 
 
 	<fieldset>
-
-		<legend>Advanced Options</legend>
-
-	<table> 
-		<tr> 
-			<td> 
-				<p>
+		<legend>
+			Advanced Options
+		</legend>
+		<div class="row">
+			<div class="small-12 columns">	
+				<label for="clone_settings">
 					<input type="checkbox" name="clone_settings" id="clone_settings" value="1"  >
-				</p>
-			</td>
-
-			<td>
-				<p>
-					<label for="clone_settings">
-						Clone settings from this list: 
-					</label>
-					<!-- tmpl_var list_popup_menu -->
-				</p> 
-			</td> 
-		</tr> 
-	</table> 
-
-			
-
+					Clone settings from this mailing list: 
+				</label>
+			</div>
+		</div> 
+		<div class="row">
+			<div class="small-12 columns">
+				<!-- tmpl_var list_popup_menu -->
+			</div>
+		</div>
 	</fieldset> 
 
 <!-- /tmpl_if --> 
 
-
-
-
- <p style="text-align:center">
-  <input type="submit" class="processing bigger_button" value="    Create Your Mailing List    " >
- </p>
+<div class="row">
+	<div class="small-5 small-centered columns">
+		<input type="submit" class="processing exand button" value="Create Your New Mailing List">
+	</div>
+</div>
 
 
 </form>

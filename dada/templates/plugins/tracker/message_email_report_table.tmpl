@@ -7,19 +7,16 @@
 	<div> 
 	  <div style="max-width:350px; max-height: 400px; overflow: auto; border:1px solid black overflow-y: scroll; overflow-x: hidden;">
 	
-	
 	<table  style="width:325px">
 	<tr> 
-	  <td> 
-	   <strong>Email Address</strong> 
-		<span style="font-size:.8em">
+		<th> 
+	   	 Email Address 
 			(
 			<a href="<!-- tmpl_var Plugin_URL -->?prm=message_email_report_export_csv&mid=<!-- tmpl_var mid ESCAPE="URL" -->&type=<!-- tmpl_var type  ESCAPE="URL" -->">
 				export .csv
 			</a>
 			)
-		</span>
-	  </td> 
+		</td> 
 	
 	  <!-- tmpl_if show_count --> 
 		<td>&nbsp;</td>
@@ -32,7 +29,7 @@
 	  <td>
 		
 		<!-- tmpl_if expr="((type eq 'soft_bounce') || (type eq 'hard_bounce'))" -->
-		<a class="modalbox"  href="<!-- tmpl_var Bounce_Handler_URL -->?prm=cgi_bounce_score_search&query=<!-- tmpl_var email escape="URL" -->&chrome=0" title="Bounce Log for <!-- tmpl_var email escape="HTML" -->" >
+			<a class="modalbox"  href="<!-- tmpl_var Bounce_Handler_URL -->?prm=cgi_bounce_score_search&query=<!-- tmpl_var email escape="URL" -->&chrome=0" title="Bounce Log for <!-- tmpl_var email escape="HTML" -->" >
 		 <!-- tmpl_var email -->
 	    </a>
 		<!-- tmpl_else --> 
@@ -59,7 +56,13 @@
 <!-- /tmpl_loop -->
 
 </table> 
-<p style="text-align:right"><strong>Total:</strong> <!-- tmpl_var num -->&nbsp;</p> 
+<p class="text-right">
+	<strong>
+		Total:
+	</strong>
+	<!-- tmpl_var num -->
+	&nbsp;
+</p> 
  </div>
 </div>
 
