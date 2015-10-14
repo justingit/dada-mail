@@ -28,8 +28,6 @@ sub new {
 sub _init {
 
     my $self = shift;
-    $self->{can_use_cgi_session} = $self->can_use_cgi_session();
-    $self->{can_use_data_dumper} = $self->can_use_data_dumper();
 
     if ( $DADA::Config::SESSION_DB_TYPE =~ m/SQL/ ) {
         require DADA::App::DBIHandle;
@@ -125,59 +123,44 @@ sub login_cookies {
       DADA::Security::Password::cipher_encrypt( $li->{cipher_key},
         $args{-password} );
 
-    if (   $self->{can_use_cgi_session} == 1
-        && $self->{can_use_data_dumper} == 1 )
-    {
+    require CGI::Session;
+    CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);
 
-        require CGI::Session;
-        CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);
+    my $session = CGI::Session->new( $self->{dsn}, $q, $self->{dsn_args} )
+      or carp $!;
 
-        my $session = CGI::Session->new( $self->{dsn}, $q, $self->{dsn_args} )
-          or carp $!;
+    $session->param( 'Admin_List',     $args{-list} );
+    $session->param( 'Admin_Password', $cipher_pass );
 
-        $session->param( 'Admin_List',     $args{-list} );
-        $session->param( 'Admin_Password', $cipher_pass );
+    $session->expire( $DADA::Config::COOKIE_PARAMS{-expires} );
+    $session->expire( 'Admin_Password',
+        $DADA::Config::COOKIE_PARAMS{-expires} );
+    $session->expire( 'Admin_List',
+        $DADA::Config::COOKIE_PARAMS{-expires} );
 
-        $session->expire( $DADA::Config::COOKIE_PARAMS{-expires} );
-        $session->expire( 'Admin_Password',
-            $DADA::Config::COOKIE_PARAMS{-expires} );
-        $session->expire( 'Admin_List',
-            $DADA::Config::COOKIE_PARAMS{-expires} );
+    $cookies->[0] = $q->cookie(
+        -name  => $DADA::Config::LOGIN_COOKIE_NAME,
+        -value => $session->id,
+        %DADA::Config::COOKIE_PARAMS
+    );
 
-        $cookies->[0] = $q->cookie(
-            -name  => $DADA::Config::LOGIN_COOKIE_NAME,
-            -value => $session->id,
-            %DADA::Config::COOKIE_PARAMS
-        );
+    # My proposal to address the situation is quit relying on flush() happen
+    # automatically, and recommend that people use an explicit flush()
+    # instead, which works reliably for everyone.
+    $session->flush();
 
-        # My proposal to address the situation is quit relying on flush() happen
-        # automatically, and recommend that people use an explicit flush()
-        # instead, which works reliably for everyone.
-        $session->flush();
-
-        if ( $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1 ) {
-            try {
-                my $kcfinder_cookie = $self->kcfinder_session_begin;
-                if ( defined($kcfinder_cookie) ) {
-                    $cookies->[1] = $kcfinder_cookie;
-                }
-            }
-            catch {
-                carp "initializing kcfinder session return an error: $_";
+    if ( $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1 ) {
+        try {
+            my $kcfinder_cookie = $self->kcfinder_session_begin;
+            if ( defined($kcfinder_cookie) ) {
+                $cookies->[1] = $kcfinder_cookie;
             }
         }
+        catch {
+            carp "initializing kcfinder session return an error: $_";
+        }
     }
-    else {
 
-        $cookies->[0] = $q->cookie(
-            -name  => $DADA::Config::LOGIN_COOKIE_NAME,
-            -value => {
-                admin_list     => $args{-list},
-                admin_password => $cipher_pass
-            },
-            %DADA::Config::COOKIE_PARAMS
-        );
-    }
 
     return $cookies;
 }
@@ -311,76 +294,40 @@ sub change_login {
     my $q = $args{-cgi_obj};
     my $cookie;
 
-    if (   $self->{can_use_cgi_session} == 1
-        && $self->{can_use_data_dumper} == 1 )
-    {
+    require CGI::Session;
 
-        require CGI::Session;
+    CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);
+    my $old_session = CGI::Session->new( $self->{dsn}, $q, $self->{dsn_args} )
+      or carp $!;
 
-        CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);
-        my $old_session = CGI::Session->new( $self->{dsn}, $q, $self->{dsn_args} )
-          or carp $!;
+    my $old_password = $old_session->param('Admin_Password');
 
-        my $old_password = $old_session->param('Admin_Password');
+    my $old_list = $old_session->param('Admin_List');
 
-        my $old_list = $old_session->param('Admin_List');
+    my $old_ls = DADA::MailingList::Settings->new( { -list => $old_list } );
+    my $old_li = $old_ls->get;
 
-        my $old_ls = DADA::MailingList::Settings->new( { -list => $old_list } );
-        my $old_li = $old_ls->get;
+    my $ue_old_password =
+      DADA::Security::Password::cipher_decrypt( $old_li->{cipher_key},
+        $old_password );
 
-        my $ue_old_password =
-          DADA::Security::Password::cipher_decrypt( $old_li->{cipher_key},
-            $old_password );
+    my $ls = DADA::MailingList::Settings->new( { -list => $args{-list} } );
+    my $li = $ls->get;
 
-        my $ls = DADA::MailingList::Settings->new( { -list => $args{-list} } );
-        my $li = $ls->get;
+    my $cipher_pass =
+      DADA::Security::Password::cipher_encrypt( $li->{cipher_key},
+        $ue_old_password );
 
-        my $cipher_pass =
-          DADA::Security::Password::cipher_encrypt( $li->{cipher_key},
-            $ue_old_password );
+    $old_session->param( 'Admin_List',     $args{-list} );
+    $old_session->param( 'Admin_Password', $cipher_pass );
 
-        $old_session->param( 'Admin_List',     $args{-list} );
-        $old_session->param( 'Admin_Password', $cipher_pass );
+    $old_session->flush();
 
-        $old_session->flush();
-
-        $cookie = $q->cookie(
-            -name  => $DADA::Config::LOGIN_COOKIE_NAME,
-            -value => $old_session->id,
-            %DADA::Config::COOKIE_PARAMS
-        );
-        return $cookie;
-
-    }
-    else {
-
-        my %old_cookie   = $q->cookie($DADA::Config::LOGIN_COOKIE_NAME);
-        my $old_password = $old_cookie{admin_password};
-        my $old_list     = $old_cookie{admin_list};
-
-        my $old_ls = DADA::MailingList::Settings->new( { -list => $old_list } );
-        my $old_li = $old_ls->get;
-        my $ue_old_password =
-          DADA::Security::Password::cipher_decrypt( $old_li->{cipher_key},
-            $old_password );
-
-        my $ls = DADA::MailingList::Settings->new( { -list => $args{-list} } );
-        my $li = $ls->get;
-
-        my $cipher_pass =
-          DADA::Security::Password::cipher_encrypt( $li->{cipher_key},
-            $ue_old_password );
-
-        $cookie = $q->cookie(
-            -name  => $DADA::Config::LOGIN_COOKIE_NAME,
-            -value => {
-                admin_list     => $args{-list},
-                admin_password => $cipher_pass,
-            },
-            %DADA::Config::COOKIE_PARAMS
-        );
-    }
-
+    $cookie = $q->cookie(
+        -name  => $DADA::Config::LOGIN_COOKIE_NAME,
+        -value => $old_session->id,
+        %DADA::Config::COOKIE_PARAMS
+    );
     return $cookie;
 }
 
@@ -395,27 +342,15 @@ sub logged_into_diff_list {
 
     my $session;
 
-    if (   $self->{can_use_cgi_session} == 1
-        && $self->{can_use_data_dumper} == 1 )
-    {
+    require CGI::Session;
 
-        require CGI::Session;
+    CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);
+    $session = CGI::Session->new( $self->{dsn}, $q, $self->{dsn_args} )
+      or carp $!;
 
-        CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);
-        $session = CGI::Session->new( $self->{dsn}, $q, $self->{dsn_args} )
-          or carp $!;
+    $args{-Admin_List}     = $session->param('Admin_List');
+    $args{-Admin_Password} = $session->param('Admin_Password');
 
-        $args{-Admin_List}     = $session->param('Admin_List');
-        $args{-Admin_Password} = $session->param('Admin_Password');
-
-    }
-    else {
-
-        my %logincookie = $q->cookie($DADA::Config::LOGIN_COOKIE_NAME);
-        $args{-Admin_List}     = $logincookie{admin_list};
-        $args{-Admin_Password} = $logincookie{admin_password};
-
-    }
 
     if (   defined( $args{-Admin_List} )
         && $args{-Admin_List} ne ""
@@ -427,12 +362,8 @@ sub logged_into_diff_list {
 
 # This means, there isn't a session there before, so let's remove the one we just made.
 
-        if (   $self->{can_use_cgi_session} == 1
-            && $self->{can_use_data_dumper} == 1 )
-        {
-            $session->delete();
-            $session->flush;
-        }
+        $session->delete();
+        $session->flush;
 
         return 0;
 
@@ -454,33 +385,21 @@ sub logout_cookie {
 
     my $cookie;
 
-    if (   $self->{can_use_cgi_session} == 1
-        && $self->{can_use_data_dumper} == 1 )
-    {
-        require CGI::Session;
+    require CGI::Session;
 
-        CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);
-        my $session = CGI::Session->new( $self->{dsn}, $q, $self->{dsn_args} )
-          or carp $!;
+    CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);
+    my $session = CGI::Session->new( $self->{dsn}, $q, $self->{dsn_args} )
+      or carp $!;
 
-        $session->delete();
+    $session->delete();
 
-        $cookie = $q->cookie(
-            -name  => $DADA::Config::LOGIN_COOKIE_NAME,
-            -value => undef,
-            -path  => '/'
-        );
+    $cookie = $q->cookie(
+        -name  => $DADA::Config::LOGIN_COOKIE_NAME,
+        -value => undef,
+        -path  => '/'
+    );
 
-        $session->flush();
-    }
-    else {
-
-        $cookie = $q->cookie(
-            -name  => $DADA::Config::LOGIN_COOKIE_NAME,
-            -value => { admin_list => '', admin_password => '' },
-            -path  => '/'
-        );
-    }
+    $session->flush();
 
     try {
         if ( $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1 ) {
@@ -494,44 +413,7 @@ sub logout_cookie {
 
 }
 
-sub can_use_cgi_session {
 
-    my $self                = shift;
-    my $can_use_cgi_session = 0;
-
-    return 0
-      if $DADA::Config::SESSION_DB_TYPE eq 'Classic';
-
-    if ( $] >= 5.006_001 ) {
-
-        eval { require CGI::Session };
-        if ( !$@ ) {
-            $can_use_cgi_session = 1;
-        }
-    }
-
-    return $can_use_cgi_session;
-}
-
-sub can_use_data_dumper {
-
-    my $self = shift;
-
-    return 0
-      if $DADA::Config::SESSION_DB_TYPE eq 'Classic';
-
-    my $can_use_data_dumper = 0;
-
-    if ( $] >= 5.006_001 ) {
-        eval { require Data::Dumper };
-        if ( !$@ ) {
-            $can_use_data_dumper = 1;
-        }
-    }
-
-    return $can_use_data_dumper;
-
-}
 
 sub check_session_list_security {
 
@@ -550,28 +432,19 @@ sub check_session_list_security {
     my $q = $args{-cgi_obj};
 
     my $session = undef;
-    if (   $self->{can_use_cgi_session} == 1
-        && $self->{can_use_data_dumper} == 1 )
-    {
+ 
+    require CGI::Session;
 
-        require CGI::Session;
+    CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);
 
-        CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);
+    $session = CGI::Session->load( $self->{dsn}, $q, $self->{dsn_args} )
+      or carp $!;
 
-        $session = CGI::Session->load( $self->{dsn}, $q, $self->{dsn_args} )
-          or carp $!;
+	if($session) { 
+        $args{-Admin_List}     = $session->param('Admin_List');
+        $args{-Admin_Password} = $session->param('Admin_Password');
+	}
 
-		if($session) { 
-	        $args{-Admin_List}     = $session->param('Admin_List');
-	        $args{-Admin_Password} = $session->param('Admin_Password');
-		}
-    }
-    else {
-
-        my %logincookie = $q->cookie($DADA::Config::LOGIN_COOKIE_NAME);
-        $args{-Admin_List}     = $logincookie{admin_list};
-        $args{-Admin_Password} = $logincookie{admin_password};
-    }
 
     $args{-IP_Address} = $ENV{REMOTE_ADDR};
 
@@ -582,18 +455,14 @@ sub check_session_list_security {
         -IP_Address     => $ENV{REMOTE_ADDR},
     );
     if ($problems) {
-        if (   $self->{can_use_cgi_session} == 1
-            && $self->{can_use_data_dumper} == 1
-            && $flags->{no_admin_permissions} != 1 )
-        {
-            eval {
-                $session->delete();
-                $session->flush();
-            };
-            if ($@) {
-                warn "Problems deleting and flushing session cookie: $@";
-            }
-        }
+
+        try {
+            $session->delete();
+            $session->flush();
+        } catch { 
+            warn "Problems deleting and flushing session cookie: $_";
+        };
+        
         my $body = $self->enforce_admin_cgi_security(
             -Admin_List     => $args{-Admin_List},
             -Admin_Password => $args{-Admin_Password},
@@ -602,13 +471,9 @@ sub check_session_list_security {
         return ( undef, 0, 0, $body );
     }
     else {
-        if (   $self->{can_use_cgi_session} == 1
-            && $self->{can_use_data_dumper} == 1 )
-        {
-            $session->flush();
-            undef $session;
-        }
-        return ( $args{-Admin_List}, $root_logged_in, 1, undef );
+	    $session->flush();
+	    undef $session;
+		return ( $args{-Admin_List}, $root_logged_in, 1, undef );
     }
 }
 
@@ -740,19 +605,6 @@ sub check_admin_cgi_security {
             $flags{"invalid_password"} = 1;
         }
 
-        if ( $root_logged_in == 0 ) {
-            if (   ( !defined( $list_info->{password} ) )
-                || ( $list_info->{password} eq "" ) )
-            {
-                $problems++;
-                $flags{"no_list_password"} = 1;
-
-                # DEV: Why am I dying here?
-                die
-"List password for $list is blank! It is advised that you make sure your list settings file is not corrupted, or reset you list password.";
-            }
-        }
-
     # last but not least, we see if they're allowed in this particular function.
     # we are sneaky shits, aren't we?!
 
@@ -787,7 +639,7 @@ sub enforce_admin_cgi_security {
     my $flags = $args{-Flags};
     require DADA::App::Error;
 
-    my @error_precedence = qw(need_to_login bad_ip no_list no_list_password invalid_password no_admin_permissions);
+    my @error_precedence = qw(need_to_login bad_ip no_list invalid_password no_admin_permissions);
     for (@error_precedence) {
         if ( $flags->{$_} == 1 ) {
             if ( $_ eq 'no_admin_permissions' ) {
@@ -815,26 +667,24 @@ sub enforce_admin_cgi_security {
 
 sub remove_old_session_files {
 
-    my $self = shift;
+	my $self = shift;
+	# I'm going to wrap this in an eval(), since it's hell to get off of CPAN,
+	# for whatever reason. (?!?!)
 
-    if (   $self->{can_use_cgi_session} == 1
-        && $self->{can_use_data_dumper} == 1 )
-    {
+	try { 
+		require CGI::Session::ExpireSessions;
+	} catch { 
+		warn 'cannot use, CGI::Session::ExpireSessions';
+		return;
+	};
 
-      # I'm going to wrap this in an eval(), since it's hell to get off of CPAN,
-      # for whatever reason. (?!?!)
+	my $expirer = CGI::Session::ExpireSessions->new( delta => (86400 * 7));  
+	$expirer->expire_sessions(
+		cgi_session_dsn => $self->{dsn},
+		dsn_args        => $self->{dsn_args}
+	);
 
-        eval { require CGI::Session::ExpireSessions; };
-
-        if ( !$@ ) {
-            my $expirer =
-              CGI::Session::ExpireSessions->new( delta => 86400 );    # one day!
-            $expirer->expire_sessions(
-                cgi_session_dsn => $self->{dsn},
-                dsn_args        => $self->{dsn_args}
-            );
-        }
-    }
+    
 
 }
 
