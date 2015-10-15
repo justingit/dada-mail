@@ -520,13 +520,17 @@ sub admin {
     }
     else {
 
-        my $login_widget = $q->param('login_widget')
-          || $DADA::Config::LOGIN_WIDGET;
+        my $login_widget = $q->param('login_widget') // $DADA::Config::LOGIN_WIDGET;
 
         my $scrn = DADA::Template::Widgets::admin(
-            -login_widget => $login_widget,
-            -cgi_obj      => $q
-        );
+			{ 
+	            -cgi_obj      => $q,
+				-vars         => {
+					login_widget => $login_widget, 
+				}
+			}
+		); 
+		
         return $scrn;
     }
 }
@@ -591,9 +595,12 @@ sub sign_in {
         my $login_widget = $q->param('login_widget')
           || $DADA::Config::LOGIN_WIDGET;
         my $scrn = DADA::Template::Widgets::admin(
-            -login_widget            => $login_widget,
-            -no_show_create_new_list => 1,
-            -cgi_obj                 => $q,
+			{ 
+	            -cgi_obj                 => $q,
+				-vars => { 
+					login_widget => $login_widget
+				},
+			}
         );
         return $scrn;
     }

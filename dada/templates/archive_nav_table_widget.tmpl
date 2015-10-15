@@ -1,35 +1,24 @@
 <!-- begin archive_nav_table_widget.tmpl --> 
 
-
-<table class="responsive" width="100%"> 
- <tr>
-  <td valign="top" align="left" width="33%">
-   <p>
-    <strong>
-	<!-- tmpl_if prev_subject --> 
-		&lt;&lt; Previous: 
-		<a href="<!-- tmpl_var PROGRAM_URL -->?flavor=<!-- tmpl_var flavor_label -->&list=<!-- tmpl_var list_settings.list -->&id=<!-- tmpl_var prev -->">
-		 <!-- tmpl_var prev_subject -->
+<div class="row">
+	<div class="small-4 columns text-left">
+		<!-- tmpl_if prev_subject --> 
+			&lt;&lt; Previous
+			<a href="<!-- tmpl_var PROGRAM_URL -->?flavor=<!-- tmpl_var flavor_label -->&list=<!-- tmpl_var list_settings.list -->&id=<!-- tmpl_var prev -->">
+			 <!-- tmpl_var prev_subject -->
+			</a>
+		<!-- tmpl_else --> 
+				 &nbsp;
+		<!-- /tmpl_if --> 
+	</div>
+	<div class="small-4 columns text-center">
+	   	<a href="<!-- tmpl_var PROGRAM_URL -->?flavor=<!-- tmpl_var flavor_label -->&list=<!-- tmpl_var list_settings.list -->">
+			Archive Index
 		</a>
-	<!-- tmpl_else --> 
-			 &nbsp;
-	<!-- /tmpl_if --> 
-    </strong>
-   </p>
-  </td> 
-  <td valign="top" align="center" width="33%">
-   <p>| <strong>
-   	<a href="<!-- tmpl_var PROGRAM_URL -->?flavor=<!-- tmpl_var flavor_label -->&list=<!-- tmpl_var list_settings.list -->">
-		Archive Index
-	</a>
-
-   </strong> |</p>
-  </td> 
-  <td valign="top" align="right" width="33%"> 
-   <p>
-    <strong>
+	</div>
+	<div class="small-4 columns text-right">
 	<!-- tmpl_if next_subject --> 
-		Next: 
+		Next 
 		<a href="<!-- tmpl_var PROGRAM_URL -->?flavor=<!-- tmpl_var flavor_label -->&list=<!-- tmpl_var list_settings.list -->&id=<!-- tmpl_var next -->">
 		 <!-- tmpl_var next_subject -->
 		</a>
@@ -37,10 +26,7 @@
 	<!-- tmpl_else --> 
 			 &nbsp;
 	<!-- /tmpl_if --> 
-    </strong>
-   </p>
-  </td>
- </tr>
-</table>
+	</div> 
+</div>
 
 <!-- end archive_nav_table_widget.tmpl --> 

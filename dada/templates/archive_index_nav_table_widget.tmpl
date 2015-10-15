@@ -1,49 +1,30 @@
 <!-- begin archive_index_nav_table_widget.tmpl -->
 
-
-<table  cellpadding="5" width="100%" style="margin-left: auto; margin-right: auto;"> 
- <tr>
-  <td valign="top" align="left" width="33%">
-   <p>
-    <strong>
-        <!-- tmpl_if expr="((prev_link_start >= 0) && (prev_link_start ne ''))" -->
-        	&lt; &lt; 
+<div class="row">
+	<div class="small-4 columns text-left">
+		<!-- tmpl_if expr="((prev_link_start >= 0) && (prev_link_start ne ''))" -->
+			&lt; &lt; 
 			<a href="<!-- tmpl_var url -->?flavor=<!-- tmpl_var flavor_label -->&list=<!-- tmpl_var list escape="URL" -->&start=<!-- tmpl_var prev_link_start -->">
 				Previous
 			</a>
 		<!-- tmpl_else --> 
 			&nbsp;
 		<!-- /tmpl_if --> 
-		
-    </strong>
-   </p>
-  </td> 
-  
-  <td valign="top" align="center" width="33%"> 
-   <p>
-    <strong>
+	</div>
+	<div class="small-4 columns text-center">
 		<a href="<!-- tmpl_var url -->?flavor=<!-- tmpl_var flavor_label -->&list=<!-- tmpl_var list_settings.list -->">
-			Index
+			Archive Index
 		</a>
-	</strong>
-   </p>
-  </td>
-  
-  
-  <td valign="top" align="right" width="33%"> 
-   <p>
-    <strong>
-        <!-- tmpl_if expr="((next_link_start >= 0) && (next_link_start ne ''))" -->
-		    <a href="<!-- tmpl_var url -->?flavor=<!-- tmpl_var flavor_label -->&list=<!-- tmpl_var list escape="URL" -->&start=<!-- tmpl_var next_link_start -->">
+	</div>
+	<div class="small-4 columns text-right">
+		<!-- tmpl_if expr="((next_link_start >= 0) && (next_link_start ne ''))" -->
+			<a href="<!-- tmpl_var url -->?flavor=<!-- tmpl_var flavor_label -->&list=<!-- tmpl_var list escape="URL" -->&start=<!-- tmpl_var next_link_start -->">
 				Next
 			</a> &gt;&gt;
 		<!-- tmpl_else --> 
 			&nbsp;
 		<!-- /tmpl_if --> 
-    </strong>
-   </p>
-  </td>
- </tr>
-</table>
+	</div> 
+</div>
 
 <!-- end archive_index_nav_table_widget.tmpl -->

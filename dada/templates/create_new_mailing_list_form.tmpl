@@ -1,0 +1,50 @@
+<!-- begin create_new_mailing_list_form.tmpl -->
+
+<!-- tmpl_if expr="list_max_reached == 1" -->
+	<div class="alert-box info radius">
+		You have reached the maximum number of Mailing Lists that can be created.
+	</div>
+<!-- tmpl_else -->
+	<form 
+		action="<!-- tmpl_var name="S_PROGRAM_URL" -->" 
+		method="post" 
+		accept-charset="<!-- tmpl_var HTML_CHARSET -->"
+	>
+		<input 
+			type="hidden" 
+			name="flavor" 
+			value="new_list"
+		>
+		<!-- tmpl_if DISABLE_OUTSIDE_LOGINS --> 
+			<input 
+				type="hidden" 
+				name="auth_state" 
+				value="<!-- tmpl_var auth_state -->"
+			> 
+		<!--/tmpl_if--> 
+		<div class="row">
+			<div class="small-12 columns">
+				<label for="root_password">
+					<!-- tmpl_var name="PROGRAM_NAME" --> Root Password
+				</label>
+				<input 
+					type="password" 
+					name="root_password" 
+					id="root_password" 
+					maxlength="24"
+				>
+			</div>
+		</div>
+		<div class="row">
+			<div class="small-12 columns">
+				<input 
+					type="submit" 
+					class="plain expand button" 
+					value="Create a New Mailing List"
+				>
+			</div>
+		</div>
+	</form>
+<!-- /tmpl_if -->
+
+<!-- end create_new_mailing_list_form.tmpl -->

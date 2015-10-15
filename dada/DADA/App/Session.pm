@@ -467,6 +467,7 @@ sub check_session_list_security {
             -Admin_List     => $args{-Admin_List},
             -Admin_Password => $args{-Admin_Password},
             -Flags          => $flags,
+			-cgi_obj        => $q, 
         );
         return ( undef, 0, 0, $body );
     }
@@ -634,6 +635,7 @@ sub enforce_admin_cgi_security {
         -Admin_List     => undef,
         -Admin_Password => undef,
         -Flags          => {},
+		-cgi_obj        => undef, 
         @_
     );
     my $flags = $args{-Flags};
@@ -642,7 +644,24 @@ sub enforce_admin_cgi_security {
     my @error_precedence = qw(need_to_login bad_ip no_list invalid_password no_admin_permissions);
     for (@error_precedence) {
         if ( $flags->{$_} == 1 ) {
-            if ( $_ eq 'no_admin_permissions' ) {
+			
+			if($_ eq 'invalid_password'){ 
+				
+				# I could probably just pass the flags, here, eh? 
+				# Then, just show the various different error messages 
+				# based on the flags. 
+				# rather than a specific screen for each eerror message
+				# which would really cut down on how many error screens I have!
+				
+				require DADA::Template::Widgets; 
+				my $error_msg = DADA::Template::Widgets::admin(
+					{ 
+						-cgi_obj => $args{-cgi_obj},
+					}
+				); 
+				return $error_msg; 
+			}
+            elsif ( $_ eq 'no_admin_permissions' ) {
                 my $error_msg = DADA::App::Error::cgi_user_error(
                     {
                         -list      => $args{-Admin_List},

@@ -1,0 +1,110 @@
+<!-- begin control_panel_login_form.tmpl -->
+
+<form 
+	action="<!-- tmpl_var name="S_PROGRAM_URL" -->" 
+	method="post" 
+	accept-charset="<!-- tmpl_var HTML_CHARSET -->"
+>
+	
+	<!-- tmpl_if DISABLE_OUTSIDE_LOGINS --> 
+		<input 
+			type="hidden" 
+			name="auth_state" 
+			value="<!-- tmpl_var auth_state -->"
+		> 
+	<!--/tmpl_if--> 
+	
+	<input 
+		type="hidden" 
+		name="flavor"  
+		value="login"
+	>
+	<input 
+		type="hidden"
+		name="process"
+		value="true"
+	>
+
+	<!-- tmpl_if referer --> 
+		<input 
+			type="hidden"
+			name="referer"
+			value="<!-- tmpl_var referer -->"
+		> 
+	<!-- tmpl_else --> 
+		<!-- tmpl_if url --> 
+			<input 
+				type="hidden" 
+				name="referer" 
+				value="<!-- tmpl_var url --><!-- tmpl_if query_string -->?<!-- tmpl_var query_string --><!-- /tmpl_if --><!-- tmpl_if path_info -->/<!-- tmpl_var path_info --><!-- /tmpl_if -->"
+			> 
+		<!-- /tmpl_if --> 
+	<!-- /tmpl_if --> 
+
+	<div class="row">
+		<div class="small-12 columns">
+			
+			<!-- tmpl_if expr="login_widget eq 'text_box'" -->
+	
+				    <label for="admin_list">
+				     List Short Name
+				    </label>
+	
+				    <input 
+						type="text"
+						name="admin_list"
+						id="admin_list"
+					>
+	
+			<!-- tmpl_else -->
+			
+				<!-- tmpl_if expr="login_widget eq 'hidden_field'" -->
+					<!-- tmpl_var list_settings.list_name -->
+					<input
+						type="hidden"
+						name="list"
+						value="<!-- tmpl_var list_settings.list escape=HTML -->"
+					>	
+					
+				<!-- tmpl_else --> 
+					
+					<label for="admin_list">
+						Mailing List
+					</label>
+					<!-- tmpl_var name="list_popup_menu" -->
+					<!-- tmpl_if show_other_link --> 
+						<a 
+							href="<!-- tmpl_var name="PROGRAM_URL" -->?flavor=<!-- tmpl_var ADMIN_FLAVOR_NAME -->;login_widget=text_box"
+						>
+							other...
+						</a>
+					<!-- /tmpl_if -->
+					
+				<!-- /tmpl_if -->
+			<!-- /tmpl_if -->
+			
+		</div>
+	</div>
+	
+	<div class="row">
+		<div class="small-12 columns">
+			<label for="admin_password">
+				List Password/<!-- tmpl_var PROGRAM_NAME --> Root Password
+			</label>
+			<input 
+				type="password" 
+				name="admin_password" 
+				id="admin_password"  maxlength="24"
+			>
+		</div>
+	</div>
+	 <div class="row">
+ 		<div class="small-12 columns">
+			<input 
+				type="submit" 
+				class="plain expand button" 
+				value="Login"
+			>
+		</div>
+	</div>
+</form> 

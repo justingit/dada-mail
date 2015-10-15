@@ -682,38 +682,23 @@ sub list_page {
 
 sub admin {
 
-    my %args = (
-        -login_widget            => $DADA::Config::LOGIN_WIDGET,
-        -no_show_create_new_list => 0,
-        -cgi_obj                 => '',
-        @_,
-    );
+	my ($args) = @_; 
+	
+	if(! exists($args->{-vars}) ){ 
+		$args->{-vars} = {};
+	}no_show_create_new_list
+	
+	if(! exists($args->{-vars}->{login_widget}) ){ 
+		$args->{-vars}->{login_widget} = $DADA::Config::LOGIN_WIDGET;
+	}
 
-    my $login_widget = $DADA::Config::LOGIN_WIDGET;
-
-    # Why is this so BIG?!
-    if ( $args{-login_widget} eq 'text_box' ) {
-        $login_widget = 'text_box';
-    }
-    elsif ( $DADA::Config::LOGIN_WIDGET eq 'popup_menu' ) {
-        $login_widget = 'popup_menu';
-    }
-    elsif ( $DADA::Config::LOGIN_WIDGET eq 'text_box' ) {
-        $login_widget = 'text_box';
-    }
-    else {
-        carp "'\$DADA::Config::LOGIN_WIDGET' misconfigured!";
-    }
 
     my @available_lists = available_lists();
-
-    $DADA::Config::LIST_QUOTA = undef if strip($DADA::Config::LIST_QUOTA) eq '';
+	
     my $list_max_reached = 0;
-
     if (   ($DADA::Config::LIST_QUOTA)
         && ( ( $#available_lists + 1 ) >= $DADA::Config::LIST_QUOTA ) )
     {
-
         $list_max_reached = 1;
     }
 
@@ -729,27 +714,14 @@ sub admin {
     }
 
     my $auth_state;
-
+	
     if ( $DADA::Config::DISABLE_OUTSIDE_LOGINS == 1 ) {
         require DADA::Security::SimpleAuthStringState;
         my $sast = DADA::Security::SimpleAuthStringState->new;
         $auth_state = $sast->make_state;
     }
 
-    my $logged_in_list_name = undef;
-    my ( $admin_list, $root_login, $checksout ) = check_list_security(
-        -cgi_obj  => $args{-cgi_obj},
-        -Function => 'admin',
-    );
-
-    # Well, this doesn't really happen anymore - we just go to the screen...
-    if ( $checksout == 1 ) {
-        require DADA::MailingList::Settings;
-        my $l_ls = DADA::MailingList::Settings->new( { -list => $admin_list } );
-        my $l_li = $l_ls->get;
-        $logged_in_list_name = $l_li->{list_name};
-    }
-
+	my $show_another_link = _show_other_link(); 
     return wrap_screen(
         {
             -screen         => 'admin_screen.tmpl',
@@ -763,10 +735,9 @@ sub admin {
                 list_popup_menu         => $list_popup_menu,
                 list_max_reached        => $list_max_reached,
                 auth_state              => $auth_state,
-                show_other_link         => _show_other_link(),
-                no_show_create_new_list => $args{-no_show_create_new_list},
+                show_other_link         => $show_another_link,
                 logged_in_list_name     => $logged_in_list_name,
-
+				%{$self->{vars}},
             },
         }
     );
