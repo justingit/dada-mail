@@ -3,12 +3,103 @@
 <!-- tmpl_set name="title" value="Administration" --> 
 <!-- tmpl_set name="show_profile_widget" value="0" --> 
 
+<p>&nbsp;</p>
 
-<!-- tmpl_if invalid_login -->
-	<div class="alert-box error radius">
-		Login is invalid/session expired, please login in, below:
-	</div>
+<!-- tmpl_if logged_out -->
+		<div class="row">
+			<div class="small-10 medium-5 large-4 small-centered medium-centered large-centered columns">	 
+				<div data-alert class="alert-box success radius">
+					You have logged out.
+				</div>
+			</div>
+		</div>
+<!-- /tmpl_if --> 
+
+<!-- tmpl_if errors -->
+	<!-- tmpl_loop errors -->
+		<div class="row">
+			<div class="small-10 medium-5 large-4 small-centered medium-centered large-centered columns">	 
+
+				<!-- tmpl_if expr="(error eq 'mismatching_ip_address')" -->
+					<div class="alert-box alert radius">
+					   Your IP Address has changed
+					</div>
+				<!-- /tmpl_if -->
+				
+				<!-- tmpl_if expr="(error eq 'bad_ip')" -->
+					<div class="alert-box alert radius">
+					    You are not allowed to log into your list control panel from your present IP Address.
+					</div>
+				<!-- /tmpl_if -->
+				
+				<!-- tmpl_if expr="(error eq 'need_to_login')" -->
+					<div class="alert-box alert radius">
+						Please log in: 
+					</div>
+				<!-- /tmpl_if -->
+				
+				<!-- tmpl_if expr="(error eq 'invalid_password')" -->
+					<div class="alert-box alert radius">
+						Invalid Password. Please try logging in again, or reset your List Password, below:
+					</div>
+					<form 
+						action="<!-- tmpl_var S_PROGRAM_URL -->" 
+						method="post" 
+						accept-charset="<!-- tmpl_var HTML_CHARSET -->"
+					> 
+					<input 
+						type="hidden" 
+						name="flavor" 
+						value="email_password"
+					>
+					<input 
+						type="hidden" 
+						name="list" 
+						value="<!-- tmpl_var selected_list -->"
+					>
+					
+					<div clas="row">
+						<div class="small-12 columns">
+    
+						 	<!-- tmpl_if can_use_captcha --> 
+							    <!-- tmpl_if invalid_captcha --> 
+						            <div class="alert-box info radius"> 
+						    			<p>
+						    				<strong>
+						    					CAPTCHA failed, please try again:
+						    				</strong>
+						    			</p>
+						    			
+						    		</div> 
+						        <!-- /tmpl_if -->
+							<!-- /tmpl_if -->	
+						</div>
+					</div> 
+					
+					<!-- tmpl_var CAPTCHA_string --> 
+					
+					<div clas="row">
+						<div class="small-12 columns">
+							<input type="submit" class="cautionary button expand" value="Reset List Password" >
+						</div>
+					</div> 
+					
+					</form>
+					
+					
+				<!-- /tmpl_if -->
+				
+				<!-- tmpl_if expr="(error eq 'invalid_login')" -->
+					<div class="alert-box alert radius">
+						Login is invalid/session expired, please login in, below:
+					</div>
+				<!-- /tmpl_if -->
+				
+			</div>
+		</div>
+	<!-- /tmpl_loop>
 <!-- /tmpl_if -->
+
 
 <div class="row">
 	<div class="small-10 medium-5 large-4 small-centered medium-centered large-centered columns">

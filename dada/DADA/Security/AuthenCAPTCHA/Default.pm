@@ -58,26 +58,25 @@ sub get_html {
 
     my $self = shift; 
     
-    my $img_string = $self->create_CAPTCHA; 
-    my $width  = $DADA::Config::GD_SECURITYIMAGE_PARAMS->{new}->{width}; 
-    my $height = $DADA::Config::GD_SECURITYIMAGE_PARAMS->{new}->{height}; 
+    my $img_str = $self->create_CAPTCHA; 
+    my $img_width  = $DADA::Config::GD_SECURITYIMAGE_PARAMS->{new}->{width}; 
+    my $img_height = $DADA::Config::GD_SECURITYIMAGE_PARAMS->{new}->{height}; 
     
-    return qq{
-        <p>
-        <img src="$DADA::Config::PROGRAM_URL/captcha_img/$img_string/" width="$width" height="$height" /><br />
-    	<em>(CAPTCHA is case sensitive)</em>
-    
-        <!-- as far as I know, this doesn't do anythng... should it? --> 
-        <input type="hidden" name="recaptcha_challenge_field" value="$img_string" /> 
-        <br />
-        <input type="text" name="recaptcha_response_field" value="" /> 
-        </p>    
-    
-    }; 
-
-
-
-
+	require DADA::Template::Widgets; 
+	
+    return  DADA::Template::Widgets::screen(
+        {
+            -screen => 'invalid_list_captcha_widget.tmpl',
+            -expr   => 1,
+            -vars   => {
+              	img_str    => $img_str, 
+				img_width  => $img_width, 
+				img_height => $img_height, 
+				
+            }
+        }
+    );
+	
 }
 
 

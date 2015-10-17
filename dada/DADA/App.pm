@@ -303,6 +303,11 @@ VORK5CYII=" style="float:left;padding:10px"/></p>
 <p>Time of error: <strong>$TIME</strong></p> 	
 </div>
 
+
+<pre> 
+$error
+</pre> 
+
 </body> 
 </html> 
 };
@@ -10581,15 +10586,32 @@ sub email_password {
             }
 
             if ( $captcha_worked == 0 ) {
-                return user_error(
-                    {
-                        -list  => $list,
-                        -error => 'invalid_password',
-                        -vars  => {
-                            invalid_captcha => 1,
-                        }
-                    }
-                );
+				
+				my $add_vars = {}; 
+		        my $can_use_captcha = 0;
+		        my $CAPTCHA_string  = '';
+		        my $cap; 
+		        if ( can_use_AuthenCAPTCHA() == 1 ) {
+		            require DADA::Security::AuthenCAPTCHA;
+		            $cap    = DADA::Security::AuthenCAPTCHA->new;
+		            $CAPTCHA_string = $cap->get_html( $DADA::Config::RECAPTCHA_PARAMS->{public_key} );
+		            $add_vars->{captcha_string}  = $CAPTCHA_string;
+		            $add_vars->{can_use_captcha} = 1;
+		            $add_vars->{selected_list}   = $list;
+		        }
+				
+				require DADA::Template::Widgets; 
+                return DADA::Template::Widgets::admin(
+					{ 
+			            -cgi_obj      => $q,
+						-vars         => {
+							selected_list   => $list, 
+							invalid_captcha => 1, 
+							errors => [{error => 'invalid_password'}],
+							%$add_vars,
+						}
+					}
+				); 
             }
         }
 

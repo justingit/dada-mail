@@ -351,6 +351,7 @@ sub list_popup_menu {
 		-empty_list_check    => 0, 
 		-as_checkboxes       => 0, 
 		-show_list_shortname => 0, 
+		-selected_list       => undef, 
 	    @_
 	); 
 	my $labels = {}; 
@@ -391,6 +392,7 @@ sub list_popup_menu {
                                   '-values'   => [@opt_labels],
                                    -labels    => $labels,
                                    -columns   => 2, 
+								   -default  => [$args{-selected_list}],
                                  );				 	
 	
 	}
@@ -400,6 +402,7 @@ sub list_popup_menu {
                                -id      => $args{-name}, 
                               '-values' => [@opt_labels],
                                -labels   => $labels,
+							   -default  => [$args{-selected_list}],
 							  ); 
     }
 }
@@ -686,13 +689,20 @@ sub admin {
 	
 	if(! exists($args->{-vars}) ){ 
 		$args->{-vars} = {};
-	}no_show_create_new_list
+	}
 	
 	if(! exists($args->{-vars}->{login_widget}) ){ 
 		$args->{-vars}->{login_widget} = $DADA::Config::LOGIN_WIDGET;
 	}
-
-
+	
+	if(
+		check_if_list_exists( -List => $args->{-vars}->{selected_list}) >= 1
+		&& _is_hidden($args->{-vars}->{selected_list})
+	
+	){ 
+		$args->{-vars}->{login_widget} = 'text_box'; 
+	}
+	
     my @available_lists = available_lists();
 	
     my $list_max_reached = 0;
@@ -707,11 +717,8 @@ sub admin {
         -show_hidden         => 0,
         -empty_list_check    => 1,
         -show_list_shortname => 1,
+		-selected_list       => $args->{-vars}->{selected_list},
     );
-
-    if ( !$list_popup_menu ) {
-        $login_widget = 'text_box';    # hey Zeus that's a lot of switching aboot.
-    }
 
     my $auth_state;
 	
@@ -722,6 +729,9 @@ sub admin {
     }
 
 	my $show_another_link = _show_other_link(); 
+	
+	my $logged_out = $args->{-cgi_obj}->param('logged_out') // 0; 
+	
     return wrap_screen(
         {
             -screen         => 'admin_screen.tmpl',
@@ -731,20 +741,26 @@ sub admin {
                 -Use_Custom => 0,
             },
             -vars => {
-                login_widget            => $login_widget,
+				logged_out              => $logged_out, 
                 list_popup_menu         => $list_popup_menu,
                 list_max_reached        => $list_max_reached,
                 auth_state              => $auth_state,
                 show_other_link         => $show_another_link,
-                logged_in_list_name     => $logged_in_list_name,
-				%{$self->{vars}},
+				%{$args->{-vars}},
             },
         }
     );
 }
 
 
-
+sub _is_hidden { 
+    require DADA::MailingList::Settings; 
+    my $list = shift; 
+        my $ls = DADA::MailingList::Settings->new({-list => $list}); 
+        return 1
+            if $ls->param('hide_list') == 1  && $ls->param('private_list') == 1; 		
+    return 0; 
+}
 sub _show_other_link { 
 
     require DADA::MailingList::Settings; 

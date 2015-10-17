@@ -119,9 +119,7 @@ sub login_cookies {
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get;
 
-    my $cipher_pass =
-      DADA::Security::Password::cipher_encrypt( $li->{cipher_key},
-        $args{-password} );
+    my $cipher_pass = DADA::Security::Password::cipher_encrypt( $li->{cipher_key}, $args{-password} );
 
     require CGI::Session;
     CGI::Session->name($DADA::Config::LOGIN_COOKIE_NAME);
@@ -131,12 +129,12 @@ sub login_cookies {
 
     $session->param( 'Admin_List',     $args{-list} );
     $session->param( 'Admin_Password', $cipher_pass );
-
+    $session->param( 'ip_address',     $ENV{REMOTE_ADDR} );
+	
     $session->expire( $DADA::Config::COOKIE_PARAMS{-expires} );
-    $session->expire( 'Admin_Password',
-        $DADA::Config::COOKIE_PARAMS{-expires} );
-    $session->expire( 'Admin_List',
-        $DADA::Config::COOKIE_PARAMS{-expires} );
+    $session->expire( 'Admin_Password', $DADA::Config::COOKIE_PARAMS{-expires} );
+    $session->expire( 'Admin_List',     $DADA::Config::COOKIE_PARAMS{-expires} );
+    $session->expire( 'ip_address',     $DADA::Config::COOKIE_PARAMS{-expires} );
 
     $cookies->[0] = $q->cookie(
         -name  => $DADA::Config::LOGIN_COOKIE_NAME,
@@ -157,7 +155,7 @@ sub login_cookies {
             }
         }
         catch {
-            carp "initializing kcfinder session return an error: $_";
+            carp "initializing KCFinder session return an error: $_";
         }
     }
 
@@ -440,19 +438,17 @@ sub check_session_list_security {
     $session = CGI::Session->load( $self->{dsn}, $q, $self->{dsn_args} )
       or carp $!;
 
-	if($session) { 
-        $args{-Admin_List}     = $session->param('Admin_List');
-        $args{-Admin_Password} = $session->param('Admin_Password');
-	}
-
-
-    $args{-IP_Address} = $ENV{REMOTE_ADDR};
+	  my $sess_args = {
+	  	Admin_List     => $session->param('Admin_List'),
+	  	Admin_Password => $session->param('Admin_Password'),
+	  	ip_address     => $session->param('ip_address'),
+	  };
 
     my ( $problems, $flags, $root_logged_in ) = $self->check_admin_cgi_security(
-        -Admin_List     => $args{-Admin_List},
-        -Admin_Password => $args{-Admin_Password},
+        -Admin_List     => $sess_args->{'Admin_List'},
+        -Admin_Password => $sess_args->{'Admin_Password'},
+		-ip_address     => $sess_args->{'ip_address'},
         -Function       => $args{-Function},
-        -IP_Address     => $ENV{REMOTE_ADDR},
     );
     if ($problems) {
 
@@ -464,8 +460,8 @@ sub check_session_list_security {
         };
         
         my $body = $self->enforce_admin_cgi_security(
-            -Admin_List     => $args{-Admin_List},
-            -Admin_Password => $args{-Admin_Password},
+            -Admin_List     => $sess_args->{'Admin_List'},
+            -Admin_Password => $sess_args->{'Admin_Password'},
             -Flags          => $flags,
 			-cgi_obj        => $q, 
         );
@@ -474,7 +470,7 @@ sub check_session_list_security {
     else {
 	    $session->flush();
 	    undef $session;
-		return ( $args{-Admin_List}, $root_logged_in, 1, undef );
+		return ( $sess_args->{'Admin_List'},, $root_logged_in, 1, undef );
     }
 }
 
@@ -485,8 +481,8 @@ sub check_admin_cgi_security {
     my %args = (
         -Admin_List     => undef,
         -Admin_Password => undef,
+        -ip_address     => undef,
         -Function       => undef,
-        -IP_Address     => undef,
         @_
     );
 
@@ -518,7 +514,7 @@ sub check_admin_cgi_security {
     if (@DADA::Config::ALLOWED_IP_ADDRESSES) {
         my $ip_check = 0;
         for (@DADA::Config::ALLOWED_IP_ADDRESSES) {
-            if ( $_ eq $args{-IP_Address} ) {
+            if ( $_ eq $ENV{REMOTE_ADDR} ) {
                 $ip_check = 1;
                 last;
             }
@@ -530,6 +526,13 @@ sub check_admin_cgi_security {
             $flags{"bad_ip"} = 1;
         }
     }
+	
+	if($ENV{REMOTE_ADDR} ne $args{-ip_address}){ 
+        $problems++;
+        $flags{"mismatching_ip_address"} = 1;
+	}
+	
+	
 
     my $list = $args{-Admin_List};
     my ($list_exists) = check_if_list_exists( -List => $list );
@@ -641,11 +644,12 @@ sub enforce_admin_cgi_security {
     my $flags = $args{-Flags};
     require DADA::App::Error;
 
-    my @error_precedence = qw(need_to_login bad_ip no_list invalid_password no_admin_permissions);
+    my @error_precedence = qw(need_to_login mismatching_ip_address bad_ip no_list invalid_password no_admin_permissions);
     for (@error_precedence) {
         if ( $flags->{$_} == 1 ) {
 			
-			if($_ eq 'invalid_password'){ 
+			my $add_vars = {}; 
+			if($_  =~ m/need_to_login|mismatching_ip_address|bad_ip|invalid_password/){ 
 				
 				# I could probably just pass the flags, here, eh? 
 				# Then, just show the various different error messages 
@@ -653,10 +657,27 @@ sub enforce_admin_cgi_security {
 				# rather than a specific screen for each eerror message
 				# which would really cut down on how many error screens I have!
 				
+				if($_ eq 'invalid_password'){ 
+			        my $can_use_captcha = 0;
+			        my $CAPTCHA_string  = '';
+			        my $cap; 
+			        if ( can_use_AuthenCAPTCHA() == 1 ) {
+			            require DADA::Security::AuthenCAPTCHA;
+			            $cap    = DADA::Security::AuthenCAPTCHA->new;
+			            $CAPTCHA_string = $cap->get_html( $DADA::Config::RECAPTCHA_PARAMS->{public_key} );
+			            $add_vars->{captcha_string}  = $CAPTCHA_string;
+			            $add_vars->{can_use_captcha} = 1;
+			            $add_vars->{selected_list}   = $args{-Admin_List};
+			        }
+				}
 				require DADA::Template::Widgets; 
 				my $error_msg = DADA::Template::Widgets::admin(
 					{ 
 						-cgi_obj => $args{-cgi_obj},
+						-vars    => {
+							errors => [{error => $_}],
+							%$add_vars, 
+						}
 					}
 				); 
 				return $error_msg; 

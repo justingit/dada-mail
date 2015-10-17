@@ -251,23 +251,6 @@ sub cgi_user_error {
             # Continue below:
         }
     }
-    
-    if($args->{-error} eq 'invalid_password'){ 
-
-        my $can_use_captcha = 0;
-        my $CAPTCHA_string  = '';
-        my $cap; 
-        if ( can_use_AuthenCAPTCHA() == 1 ) {
-            require DADA::Security::AuthenCAPTCHA;
-            $cap    = DADA::Security::AuthenCAPTCHA->new;
-            $CAPTCHA_string = $cap->get_html( $DADA::Config::RECAPTCHA_PARAMS->{public_key} );
-            # It's a weird place for this, I admit: 
-            $args->{-vars}->{captcha_string}  = $CAPTCHA_string;
-            $args->{-vars}->{can_use_captcha} = 1;
-            
-        }
-    }
-
     my $screen = '';
     my $r      = '';
 

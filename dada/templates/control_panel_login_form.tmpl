@@ -54,16 +54,17 @@
 						type="text"
 						name="admin_list"
 						id="admin_list"
+						value="<!-- tmpl_var selected_list -->"
 					>
 	
 			<!-- tmpl_else -->
 			
 				<!-- tmpl_if expr="login_widget eq 'hidden_field'" -->
-					<!-- tmpl_var list_settings.list_name -->
+					<!-- tmpl_var selected_list -->
 					<input
 						type="hidden"
 						name="list"
-						value="<!-- tmpl_var list_settings.list escape=HTML -->"
+						value="<!-- tmpl_var selected_list escape=HTML -->"
 					>	
 					
 				<!-- tmpl_else --> 
@@ -74,7 +75,7 @@
 					<!-- tmpl_var name="list_popup_menu" -->
 					<!-- tmpl_if show_other_link --> 
 						<a 
-							href="<!-- tmpl_var name="PROGRAM_URL" -->?flavor=<!-- tmpl_var ADMIN_FLAVOR_NAME -->;login_widget=text_box"
+							href="<!-- tmpl_var name="PROGRAM_URL" -->?flavor=<!-- tmpl_var ADMIN_FLAVOR_NAME -->&login_widget=text_box"
 						>
 							other...
 						</a>
