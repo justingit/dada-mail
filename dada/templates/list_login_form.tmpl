@@ -4,44 +4,23 @@
 <!-- tmpl_set name="show_profile_widget" value="0" -->
 
 
-<form action="<!-- tmpl_var name="S_PROGRAM_URL" -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
- <input type="hidden" name="flavor"       value="login" >
- <input type="hidden" name="process" value="true" >
+<div class="row">
+	<div class="small-10 medium-5 large-4 small-centered medium-centered large-centered columns">
 
- <h1>
-  Enter Your List Control Panel
- </h1>
- <p>
-	You may use either your <strong>List Password</strong> or <!-- tmpl_var PROGRAM_NAME --> Root Password to to log into the List Control Panel. 
-	Your <!-- tmpl_var PROGRAM_NAME --> Root Password will work for all Mailing Lists. 
- </p>
-
- <table  class="text-center" cellpadding="5">
-  <tr>
-   <td >
-    <p>
-     Enter in your
-     <label for="admin_password">
-      Password:
-     </label>
-    </p>
-   </td>
-  </tr>
-  <tr>
-   <td  align="right">
-    <input type="hidden"   name="admin_list" value="<!-- tmpl_var list_settings.list -->" style="vertical-align:top;" ><!-- HACK: vertical-align is for IE -->
-    <input type="password" name="admin_password" id="admin_password" size="16" maxlength="24" >
-    <input type="submit" class="plain button" value="Login" >
-   </td>
-  </tr>
- </table>
- 
-	 <!-- tmpl_if DISABLE_OUTSIDE_LOGINS --> 
-	     <input type="hidden" name="auth_state" value="<!-- tmpl_var auth_state -->" > 
-	 <!--/tmpl_if--> 
-
-
- 
-</form>
+		<ul class="tabs" data-tab>
+			<li class="tab-title active">
+				<a href="#logintab" target="_self">
+					Login
+				</a>
+			</li>
+        </ul>
+		
+		<div class="tabs-content">
+			<div  class="content tab-title active"id="logintab">
+				<!-- tmpl_include control_panel_login_form.tmpl -->
+			</div>
+		</div>
+	</div> 
+</div> 
 
 <!-- end list_login_form.tmpl -->

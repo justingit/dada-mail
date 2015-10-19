@@ -60,13 +60,11 @@
 			<!-- tmpl_else -->
 			
 				<!-- tmpl_if expr="login_widget eq 'hidden_field'" -->
-					<!-- tmpl_var selected_list -->
-					<input
+					<input 
 						type="hidden"
-						name="list"
+						name="admin_list"
 						value="<!-- tmpl_var selected_list escape=HTML -->"
 					>	
-					
 				<!-- tmpl_else --> 
 					
 					<label for="admin_list">

@@ -3,13 +3,6 @@
 
 
 
-<!-- 
-Maybe split the screen in two, when there's a invalid password, one side shows the login/create forms, the other, the reset form, 
--->
-
-
-
-
 
 <!-- tmpl_set name="title" value="Administration" --> 
 <!-- tmpl_set name="show_profile_widget" value="0" --> 
@@ -26,102 +19,117 @@ Maybe split the screen in two, when there's a invalid password, one side shows t
 		</div>
 <!-- /tmpl_if --> 
 
+	
 <!-- tmpl_if errors -->
-	<!-- tmpl_loop errors -->
+
 		<div class="row">
 			<div class="small-10 medium-5 large-4 small-centered medium-centered large-centered columns">	 
-
-				<!-- tmpl_if expr="(error eq 'mismatching_ip_address')" -->
-					<div class="alert-box alert radius">
-					   Your IP Address has changed
-					</div>
-				<!-- /tmpl_if -->
-				
-				<!-- tmpl_if expr="(error eq 'bad_ip')" -->
-					<div class="alert-box alert radius">
-					    You are not allowed to log into your list control panel from your present IP Address.
-					</div>
-				<!-- /tmpl_if -->
-				
-				<!-- tmpl_if expr="(error eq 'need_to_login')" -->
-					<div class="alert-box alert radius">
-						Please log in: 
-					</div>
-				<!-- /tmpl_if -->
-				
-				<!-- tmpl_if expr="(error eq 'invalid_password')" -->
-					<div class="alert-box alert radius">
-						Invalid Password. Please try logging in again, or reset your List Password, below:
-					</div>
-					<form 
-						action="<!-- tmpl_var S_PROGRAM_URL -->" 
-						method="post" 
-						accept-charset="<!-- tmpl_var HTML_CHARSET -->"
-					> 
-					<input 
-						type="hidden" 
-						name="flavor" 
-						value="email_password"
-					>
-					<input 
-						type="hidden" 
-						name="list" 
-						value="<!-- tmpl_var selected_list -->"
-					>
-					
-					<div clas="row">
-						<div class="small-12 columns">
-    
-						 	<!-- tmpl_if can_use_captcha --> 
-							    <!-- tmpl_if invalid_captcha --> 
-						            <div class="alert-box info radius"> 
-						    			<p>
-						    				<strong>
-						    					CAPTCHA failed, please try again:
-						    				</strong>
-						    			</p>
-						    			
-						    		</div> 
-						        <!-- /tmpl_if -->
-							<!-- /tmpl_if -->	
+				<!-- tmpl_loop errors -->
+					<!-- tmpl_if expr="(error eq 'mismatching_ip_address')" -->
+						<div class="alert-box alert radius">
+						   Your IP Address has changed
 						</div>
-					</div> 
-					
-					<!-- tmpl_var CAPTCHA_string --> 
-					
-					<div clas="row">
-						<div class="small-12 columns">
-							<input type="submit" class="cautionary button expand" value="Reset List Password" >
+					<!-- /tmpl_if -->
+			
+					<!-- tmpl_if expr="(error eq 'bad_ip')" -->
+						<div class="alert-box alert radius">
+						    You are not allowed to log into your list control panel from your present IP Address.
 						</div>
-					</div> 
+					<!-- /tmpl_if -->
+			
+					<!-- tmpl_if expr="(error eq 'need_to_login')" -->
+						<div class="alert-box alert radius">
+							Please log in: 
+						</div>
+					<!-- /tmpl_if -->
 					
-					</form>
+					<!-- tmpl_if expr="(error eq 'invalid_root_password')" -->
+						<div class="alert-box alert radius">
+							Invalid <!-- tmpl_var PROGRAM_NAME --> Root Password
+						</div>
+					<!-- /tmpl_if --> 
 					
-					
-				<!-- /tmpl_if -->
+					<!-- tmpl_if expr="(error eq 'invalid_password')" -->
+						<div class="alert-box alert radius">
+							Invalid Password. Please try logging in again, 
+							or reset the List Password below:
+						</div>
+						<form 
+							action="<!-- tmpl_var S_PROGRAM_URL -->" 
+							method="post" 
+							accept-charset="<!-- tmpl_var HTML_CHARSET -->"
+						> 
+						<input 
+							type="hidden" 
+							name="flavor" 
+							value="email_password"
+						>
+						<input 
+							type="hidden" 
+							name="list" 
+							value="<!-- tmpl_var selected_list -->"
+						>
 				
-				<!-- tmpl_if expr="(error eq 'invalid_login')" -->
-					<div class="alert-box alert radius">
-						Login is invalid/session expired, please login in, below:
-					</div>
-				<!-- /tmpl_if -->
+						<div clas="row">
+							<div class="small-12 columns">
+							 	<!-- tmpl_if can_use_captcha --> 
+								    <!-- tmpl_if invalid_captcha --> 
+							            <div class="alert-box info radius"> 
+							    			CAPTCHA failed, please try again:
+							    		</div> 
+							        <!-- /tmpl_if -->
+								<!-- /tmpl_if -->	
+							</div>
+						</div> 
 				
-			</div>
+						<!-- tmpl_var CAPTCHA_string --> 
+						
+							<div clas="row">
+								<div class="small-12 columns">
+									<input 
+										type="submit" 
+										class="cautionary button expand"
+										value="Reset List Password"
+									>
+								</div>
+							</div> 			
+						</form>	
+					<!-- /tmpl_if -->
+					
+					<!-- tmpl_if expr="(error eq 'invalid_login')" -->
+						<div class="alert-box alert radius">
+							Login is invalid/session expired, please login in, below:
+						</div>
+					<!-- /tmpl_if -->
+			<!-- /tmpl_loop -->
 		</div>
-	<!-- /tmpl_loop>
+	</div>
 <!-- /tmpl_if -->
+
 
 
 <div class="row">
 	<div class="small-10 medium-5 large-4 small-centered medium-centered large-centered columns">
 
 		<ul class="tabs" data-tab>
-			<li class="tab-title active">
+			<li 
+				<!-- tmpl_unless expr="(error_with eq 'new_list')" -->
+					class="tab-title active"
+				<!-- tmpl_else -->
+					class="tab-title"
+				<!-- /tmpl_unless -->
+			>
 				<a href="#logintab" target="_self">
 					Login
 				</a>
 			</li>
-            <li class="tab-title">
+            <li
+				<!-- tmpl_if expr="(error_with eq 'new_list')" -->
+					class="tab-title active"
+				<!-- tmpl_else -->
+					class="tab-title"
+				<!-- /tmpl_if -->			
+			>
 				<a href="#createtab" target="_self">
 					Create
 				</a>
@@ -129,11 +137,25 @@ Maybe split the screen in two, when there's a invalid password, one side shows t
         </ul>
 		
 		<div class="tabs-content">
-			<div  class="content tab-title active"id="logintab">
+			<div  
+				<!-- tmpl_unless expr="(error_with eq 'new_list')" -->
+					class="content tab-title active"
+				<!-- tmpl_else -->
+					class="content tab-title"
+				<!-- /tmpl_unless -->
+			 	id="logintab"
+			>
 				<!-- tmpl_include control_panel_login_form.tmpl -->
 			</div>
 						
-			<div  class="content tab-title" id="createtab">
+			<div
+				<!-- tmpl_if expr="(error_with eq 'new_list')" -->
+					class="content tab-title active"
+				<!-- tmpl_else -->
+					class="content tab-title"
+				<!-- /tmpl_if -->
+			 	id="createtab"
+			 >
 				<!-- tmpl_include create_new_mailing_list_form.tmpl -->
 			</div>
 		</div>
@@ -143,6 +165,7 @@ Maybe split the screen in two, when there's a invalid password, one side shows t
 <!-- tmpl_if expr="list_max_reached == 1" -->
 	<!-- tmpl_include upgrade_to_pro_dada.tmpl -->
 <!-- /tmpl_if -->
+
 
 
 <!-- end admin_screen.tmpl -->

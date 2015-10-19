@@ -1,5 +1,9 @@
 <!-- begin list_type_switch_widget.tmpl -->
-		<ul  class="tabs" data-tab>
+		<!-- tmpl_if flavor_is_view_list --> 
+			<ul  class="tabs" data-tab>
+		<!-- tmpl_else -->
+			<ul  class="tabs">
+		<!-- /tmpl_if -->
 			<li class="tab-title <!-- tmpl_if EXPR="(type eq 'list')" -->active<!-- /tmpl_if -->" >
 				<!-- tmpl_if flavor_is_view_list --> 
 					<a href="#" class="change_type" data-type="list">
@@ -42,9 +46,9 @@
 			<!-- tmpl_else --> 
 				<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var flavor -->;type=black_list">
 			<!-- /tmpl_if -->
-				<span>
-			   		Black List (<!-- tmpl_var black_list_subscribers_num -->)
-				</span>
+			<span>
+		   		Black List (<!-- tmpl_var black_list_subscribers_num -->)
+			</span>
 			</a>
 			</li>
 			

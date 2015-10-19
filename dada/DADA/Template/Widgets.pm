@@ -732,6 +732,16 @@ sub admin {
 	
 	my $logged_out = $args->{-cgi_obj}->param('logged_out') // 0; 
 	
+	my $show_2col_view = 0; 
+	my $tmp_vars = $args->{-vars};
+	if(	exists($tmp_vars->{errors})	){ 
+		for my $err(@{$tmp_vars->{errors}}){ 
+			if($err->{error} eq 'invalid_password'){ 
+				$show_2col_view = 1;
+			}
+		}
+	}
+	
     return wrap_screen(
         {
             -screen         => 'admin_screen.tmpl',

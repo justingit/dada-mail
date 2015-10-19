@@ -6,14 +6,25 @@
 <div id="screen_meta" data-menu_highlight="view_list"></div>
 
 
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-		<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_list">
-			Membership
-		</a>
-		 &#187; <!-- tmpl_var email escape="HTML" -->
+<div class="row">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				Membership
+			 </a>
+	 	    <a 
+				href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_list;type=<!-- tmpl_var type -->;page=<!-- tmpl_var page -->;query=<!-- tmpl_var query -->;order_by=<!-- tmpl_var order_by -->;order_dir=<!-- tmpl_var order_dir -->"
+			>	
+				View
+			</a>
+			<a href="#" class="current">
+				<!-- tmpl_var email escape="HTML" -->
+			</a>
+		</nav>
 	</div>
-	<!-- tmpl_include help_link_widget.tmpl -->
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
 </div>
 
 <div id="membership"></div> 
@@ -33,433 +44,516 @@
 	<input type="hidden" id="email"         name="email"         value="<!-- tmpl_var email escape="HTML" -->" > 
 </form> 
 
-
-<div id="tabs"> 
-	<ul>
-		
-		<li>
+<ul class="tabs" data-tab>
+	<li class="tab-title active">
 		<a href="#membership_tab">
-		Membership
+			Membership
 		</a>
-		</li>
-		<li>
-			<a href="#subscriber_history_tab">
-				Subscriber History
-			</a>
-		</li>
-		
-		<li>
-			<a href="#activity_tab">
-				Mailing List Activity
-			</a>
-		</li>
-		<!-- tmpl_if can_have_subscriber_fields --> 
-			<li> 
-				<a href="#profile_tab">
-					Profile
-				</a>
-			</li>
-		<!-- /tmpl_if --> 
-		
-			<li> 
-				<a href="#delivery_preferences_tab">
-					Delivery Preferences
-				</a>
-			</li>
+	</li>
+	<li class="tab-title">
+		<a href="#subscriber_history_tab">
+			Subscriber History
+		</a>
+	</li>
+	<li class="tab-title">
+		<a href="#activity_tab">
+			Mailing List Activity
+		</a>
+	</li>
+	<li class="tab-title">
+		<a href="#profile_tab">
+			Profile
+		</a>
+	</li>
+	<li class="tab-title">
+		<a href="#delivery_preferences_tab">
+			Delivery Preferences
+		</a>
+	</li>
+</ul>
 
-	</ul>
-
-	<div id="membership_tab"> 
-
+<div class="tabs-content">
+	<div  class="content tab-title active" id="membership_tab"> 
 		<!-- tmpl_if is_bouncing_address --> 
-			<h1><!-- tmpl_var email escape="HTML" --> is Bouncing Back Messages.</h1> 
-			
+			<h1>
+				<!-- tmpl_var email escape="HTML" --> is Bouncing Back Messages
+			</h1> 
+
 			<p>
-				Choose to either reinstate the address back on to your Subscribers,
-				 or Unsubscribe this address permanently from your mailing list:
+			Choose to either reinstate the address back on to your Subscribers,
+			or Unsubscribe this address permanently from your mailing list:
 			</p> 
-			
+
 			<div id="bouncing_address_information"></div> 
 			<div id="membership_bouncing_address_information_loading"></div> 
 			<div id="membership_bouncing_address_information"></div> 
-			
+
 		<!-- tmpl_else --> 
-		
-				<!-- tmpl_unless member_of_num --> 
-					<div class="alert-box info radius">
-						<p>
-							<!-- tmpl_var email escape="HTML" --> isn't a part of your Mailing List.
-						</p>
-					</div>
-				<!-- tmpl_else --> 
 
-				
-					<h2>Member of:</h2>
+			<!-- tmpl_unless member_of_num --> 
+				<div class="alert-box info radius">
+					<!-- tmpl_var email escape="HTML" --> isn't a part of your Mailing List.
+				</div>
+			<!-- tmpl_else --> 
+			
+			<h2>Member of:</h2>
 
-					<ul style="list-style: none;">
-						<!-- tmpl_loop member_of --> 
-							<li>
-								<strong><!-- tmpl_var type_title --></strong>
-							</li>
-						<!-- /tmpl_loop -->
-					</ul>
-				<!-- /tmpl_unless --> 
+			<ul>
+				<!-- tmpl_loop member_of --> 
+					<li>
+						<!-- tmpl_var type_title -->
+					</li>
+				<!-- /tmpl_loop -->
+			</ul>
+		<!-- /tmpl_unless --> 
 
-				<!-- tmpl_if list_settings.enable_subscription_approval_step -->
-					<!-- tmpl_if subscribed_to_sub_request_list --> 
-						<fieldset>
-						<legend>Subscription Requests</legend>
-						<p><!-- tmpl_var email escape="HTML" --> has requested to be Subscribed to your Mailing List.</p>
-						<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
-							<input type="hidden" name="flavor"       value="subscription_requests" >
-							<input type="hidden" name="type" value="sub_request_list" >
-							<input type="hidden" name="address" value="<!-- tmpl_var email escape="HTML" -->" >
-							<input type="hidden" name="return_to" value="membership" >
-							<input type="hidden" name="return_address" value="<!-- tmpl_var email escape="HTML" -->" >
-							<input type="submit" name="process"  class="processing button" value="Approve Subscription Request" >
-							<input type="submit" name="process"  class="cautionary button" value="Deny Subscription Request" >
-						</form>
-						</fieldset>
-					<!-- /tmpl_if -->
-				<!-- /tmpl_if -->
-				
-				<!-- tmpl_if list_settings.private_list -->
-					<!-- tmpl_if subscribed_to_unsub_request_list --> 
-						<fieldset>
-						<legend>Unsubscription Requests</legend>
-						<p><!-- tmpl_var email escape="HTML" --> has requested to be Unsubscribed from your Mailing List.</p>
-						<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
-							<input type="hidden" name="flavor"       value="unsubscription_requests" >
-							<input type="hidden" name="type" value="unsub_request_list" >
-							<input type="hidden" name="address" value="<!-- tmpl_var email escape="HTML" -->" >
-							<input type="hidden" name="return_to" value="membership" >
-							<input type="hidden" name="return_address" value="<!-- tmpl_var email escape="HTML" -->" >
-							<input type="submit" name="process"  class="processing button" value="Approve Unsubscription Request" >
-							<input type="submit" name="process"  class="cautionary button" value="Deny Unsubscription Request" >
-						</form>
-						</fieldset>
-					<!-- /tmpl_if -->
-				<!-- /tmpl_if -->
-				
-			<!-- tmpl_if add_to_num --> 
-
+		<!-- tmpl_if list_settings.enable_subscription_approval_step -->
+			<!-- tmpl_if subscribed_to_sub_request_list --> 
 				<fieldset>
-				<legend>Add</legend>
-
-					<form  action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" id="add_email_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-						<input type="hidden" name="email" value="<!-- tmpl_var email escape="HTML" -->" id="add_email" >
-						<input type="hidden" name="process" value="1" id="add_process">
-						<input type="hidden" name="rand_string" id="add_rand_string" value="<!-- tmpl_var rand_string -->" >
-						<input type="hidden" name="method" value="via_add_one" id="add_method" >
-						<input type="hidden" name="return_to" value="membership" id="add_return_to" >
-						<input type="hidden" name="return_address" value="<!-- tmpl_var email escape="HTML" -->" id="add_return_address" >
-						<p>
-							<label for="type_add">
-								&#8594; Add
-							</label>
-							address to: <!-- tmpl_var add_to_popup_menu -->
-							<input type="button" value="Add..."  class="processing button"  id="validate_add_email" >
-						</p>
+					<legend>
+						Subscription Requests
+					</legend>
+					<p>
+						<!-- tmpl_var email escape="HTML" --> has requested to be Subscribed to your Mailing List.
+					</p>
+					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+						<input type="hidden" name="flavor"         value="subscription_requests" >
+						<input type="hidden" name="type"           value="sub_request_list" >
+						<input type="hidden" name="address"        value="<!-- tmpl_var email escape="HTML" -->" >
+						<input type="hidden" name="return_to"      value="membership" >
+						<input type="hidden" name="return_address" value="<!-- tmpl_var email escape="HTML" -->" >
+						
+						<ul class="button-group right">
+						    <li>
+								<input type="submit" name="process"  class="processing small button" value="Approve Subscription Request" >
+							</li>
+							<li>
+								<input type="submit" name="process"  class="cautionary small button" value="Deny Subscription Request" >
+							</li>
+						</ul>
 					</form>
 				</fieldset>
-			<!-- /tmpl_if --> 
+			<!-- /tmpl_if -->
+		<!-- /tmpl_if -->
 
-			<fieldset> 
-
-				<legend>Update</legend>
-
-				<!-- tmpl_if member_of_num --> 
-
-				<form action="<!-- tmpl_var S_PROGRAM_URL -->" id="update_email_form" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-					<input type="hidden" name="original_email" id="original_email" value="<!-- tmpl_var email escape="HTML" -->" >
-				<p>
-					<label for="updated_email">
-						&#8596; Update
-					</label> address to:
-
-					<input type="text" id="updated_email" name="updated_email" value="<!-- tmpl_var email escape="HTML" -->" >
-					<input type="button" value="Update..." class="cautionary button" id="validate_update_email" >
-
-					<!-- tmpl_if root_login -->
-						<!-- tmpl_if can_have_subscriber_fields -->
-							<input type="button" value="Update on Multiple Mailing Lists..." class="cautionary button" id="validate_update_email_for_multiple_lists" >
-						<!-- /tmpl_if -->
-					<!-- /tmpl_if --> 
-
-				</form> 
-
-				<!-- /tmpl_if -->
-
-			</fieldset> 
-
-			<fieldset>
-				<legend>Remove</legend>
-
-				<!-- tmpl_if remove_from_num --> 
-
-				<!-- tmpl_if subscribed_to_list -->
-					<!-- tmpl_if list_settings.black_list -->
-						<!-- tmpl_if list_settings.add_unsubs_to_black_list -->
-						<div class="alert-box info radius">
-							<p><strong>Black Listing is enabled.</strong></p>
-							<p>
-								Subscribers that are Unsubscribed from this mailing list are added automatically to your Black List.
-							</p>
-							<!-- tmpl_if list_settings.allow_blacklisted_to_subscribe --> 
-								Subscribers may resubscribe themselves. 
-							<!-- /tmpl_if --> 
-							<!-- tmpl_if list_settings.allow_admin_to_subscribe_blacklisted --> 
-								The List Owner may still resubscribe Black Listed addresses. 
-							<!-- /tmpl_if -->
-							
-						</div> 
-						<!-- /tmpl_if -->
-					<!-- /tmpl_if -->
-				<!-- /tmpl_if -->
-
-
-					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="remove_email_form">
-					<input type="hidden" name="process" value="delete" >
-
-					<input type="hidden" name="address" value="<!-- tmpl_var email escape="HTML" -->" >
-					<input type="hidden" name="flavor"       value="remove_subscribers" >	
-					<input type="hidden" name="return_to" value="membership" >
-					<input type="hidden" name="return_address" value="<!-- tmpl_var email escape="HTML" -->" >
+		<!-- tmpl_if list_settings.private_list -->
+			<!-- tmpl_if subscribed_to_unsub_request_list --> 
+				<fieldset>
+					<legend>
+						Unsubscription Requests
+					</legend>
 					<p>
-						<label for="type_remove">&#8592;  Remove</label> address:
-						<input type="button" id="validate_remove_email" value="Remove..." class="cautionary button"  >
-						<!-- tmpl_if root_login -->
-							<input type="button" id="validate_remove_email_multiple_lists" value="Remove on Multiple Mailing Lists..." class="cautionary button"  >
-						<!-- /tmpl_if -->
-						</p>
+						<!-- tmpl_var email escape="HTML" --> has requested to be Unsubscribed from your Mailing List.
+					</p>
+					<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+					<input type="hidden" name="flavor"         value="unsubscription_requests" >
+					<input type="hidden" name="type"           value="unsub_request_list" >
+					<input type="hidden" name="address"        value="<!-- tmpl_var email escape="HTML" -->" >
+					<input type="hidden" name="return_to"      value="membership" >
+					<input type="hidden" name="return_address" value="<!-- tmpl_var email escape="HTML" -->" >
+						<ul class="button-group right">
+						    <li>
+								<input type="submit" name="process"  class="processing button" value="Approve Unsubscription Request">
+							</li>
+							<li>
+								<input type="submit" name="process"  class="cautionary button" value="Deny Unsubscription Request">
+							</li>
+						</ul>
 					</form>
+				</fieldset>
+			<!-- /tmpl_if -->
+		<!-- /tmpl_if -->
 
+		<!-- tmpl_if add_to_num --> 
+		
+			<fieldset>
+				<legend>
+					Add
+				</legend>
+				
+				<div class="row">
+					<div class="small-12 medium-6 large-6 centered columns">	 
+				
 
-
-				<!-- /tmpl_if --> 
+						<form  action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" id="add_email_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+							<input type="hidden" name="email" value="<!-- tmpl_var email escape="HTML" -->" id="add_email" >
+							<input type="hidden" name="process" value="1" id="add_process">
+							<input type="hidden" name="rand_string" id="add_rand_string" value="<!-- tmpl_var rand_string -->" >
+							<input type="hidden" name="method" value="via_add_one" id="add_method" >
+							<input type="hidden" name="return_to" value="membership" id="add_return_to" >
+							<input type="hidden" name="return_address" value="<!-- tmpl_var email escape="HTML" -->" id="add_return_address" >
+					
+							<div class="row">
+								<div class="small-12 columns">
+									<label for="type_add">
+										&#8594; Add Address To:
+									</label>
+									<!-- tmpl_var add_to_popup_menu -->
+								</div>
+							</div> 
+							<div class="row">
+								<div class="small-12 columns">
+									<input type="button" value="Add..."  class="processing button expand"  id="validate_add_email">
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
 			</fieldset>
 		<!-- /tmpl_if --> 
-	</div>
-	
-	<div id="subscriber_history_tab"> 
-		<!-- tmpl_if root_login -->
-			<form id="toggle_membership_history"> 
-				
-				<input type="hidden" name="flavor" value="mailing_list_history" > 
-				<input type="hidden" name="mode" value="export_csv" > 				
-				<input type="hidden" name="email" value="<!-- tmpl_var email escape="HTML" -->" > 
-				
-				<p>
-				<input type="radio" id="membership_history_this_list" name="membership_history" value="this_list" class="radio_toggle_membership_history" checked="checked" >
-				<label for="membership_history_this_list">
-					For, "<!-- tmpl_var list_settings.list_name --> (<!-- tmpl_var list_settings.list -->)
-				</label> 
-				<input type="radio" id="membership_history_all_lists" name="membership_history" class="radio_toggle_membership_history" value="all_lists" >
-				<label for="membership_history_all_lists">
-	 				For All Mailing Lists
-				</label>
-				</p>
-			<!-- /tmpl_if --> 
+
+		<fieldset> 
+			<legend>
+				&#8596; Update Address
+			</legend>
+
+			<!-- tmpl_if member_of_num --> 
+
+				<div class="row">
+					<div class="small-12 medium-6 large-6 centered columns">	 
 			
-					<div id="mailing_list_history_loading"></div>
-					<div id="mailing_list_history"></div>
-				
-				
-				<div class="buttonfloat"> 
-					<input type="submit" value="Export Subscriber History (csv)" class="processing button" >
-				</div> 
-				<div class="floatclear"></div>
-			</form>
-	</div>  
-	
-	<div id="activity_tab">
-		
-		<form id="membership_activity_form"> 
-		<div id="membership_activity_loading"></div>
-		<div id="membership_activity"></div>
-
-		<input type="hidden" name="flavor" value="membership_activity" > 
-		<input type="hidden" name="mode" value="export_csv" > 				
-		<input type="hidden" name="email" value="<!-- tmpl_var email escape="HTML" -->" > 
-	
-		<div class="buttonfloat"> 
-			<input type="submit" value="Export Mailing List Activity (csv)" class="processing button" >
-		</div> 
-		<div class="floatclear"></div>
-	
-	
-		</form>
-
-	</div>
-	
-	<!-- tmpl_if can_have_subscriber_fields --> 
-	
-		<div id="profile_tab">
-			<!-- tmpl_if can_have_subscriber_fields --> 
-
-			<!-- tmpl_if fields --> 
-				<fieldset> 
-				<legend>Profile Fields</legend>
-
-
-    			<!-- tmpl_unless expr="(root_login == 1 || list_settings.allow_profile_editing == 1)" --> 
-					<div class="alert-box info radius">
-						<p>
-							Editing Profile Fields is <strong>disabled</strong>. 
-						</p>
-					</div>
-
-				<!-- /tmpl_unless -->
-
-				<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="membership_profile_fields">
-
-    			<!-- tmpl_if expr="(root_login == 1 || list_settings.allow_profile_editing == 1)" --> 
-					 <input type="hidden" name="email"   value="<!-- tmpl_var email escape="HTML" -->" >
-					 <input type="hidden" name="flavor"       value="membership" >
-					 <input type="hidden" name="process" value="1" >
-					 <input type="hidden" name="type"    value="<!-- tmpl_var type -->" >
-				<!-- /tmpl_if --> 
-
-				<!-- tmpl_if expr="(root_login == 1 || list_settings.allow_profile_editing == 1)" --> 
-
-                    <p class="alert">
-						Profile Fields information will be changed for all Mailing Lists.
-					</p>
-					<!-- tmpl_loop fields --> 
-					    <p>
-    					     <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
-    					      <!-- tmpl_var label escape=HTML --> (<!-- tmpl_var name escape=HTML -->): 
-    					     </label>
-    					    <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->" <!-- tmpl_if required -->required<!-- /tmpl_if -->>
-					        <!-- tmpl_if required -->
-					        <span class="error">
-					            * Required
-					        </span>
-					    <!-- /tmpl_if -->
-					    </p>
-					<!--/tmpl_loop-->
+						<form action="<!-- tmpl_var S_PROGRAM_URL -->" id="update_email_form" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+							<input type="hidden" name="original_email" id="original_email" value="<!-- tmpl_var email escape="HTML" -->" >
 					
-				<!-- tmpl_else --> 
-                
-    				<!-- tmpl_loop fields --> 
-    				    <p>
-    				     <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
-    				      <!-- tmpl_var label escape=HTML --> (<!-- tmpl_var name escape=HTML -->): 
-    				     </label>
-    				    <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->" disabled="disabled" >
-    				    </p>
-    				<!--/tmpl_loop--> 
+					
+							<div class="row">
+								<div class="small-12 columns">
+									<input type="text" id="updated_email" name="updated_email" value="<!-- tmpl_var email escape="HTML" -->" >
+								</div>
+							</div>
+							<div class="row">
+								<div class="small-12 columns">
+									<input type="button" value="Update..." class="cautionary button expand" id="validate_update_email" >
+								</div>
+							</div>
 
-				<!-- /tmpl_if --> 
+							<!-- tmpl_if root_login -->
+								<div class="row">
+									<div class="small-12 columns">
+										<input 
+											type="button" 
+											value="Update on Multiple Mailing Lists..." 
+											class="cautionary button expand" 
+											id="validate_update_email_for_multiple_lists" >
+									</div>
+								</div>
+							<!-- /tmpl_if --> 
+						</form> 
+					</div>
+				</div>
 
-				<!-- tmpl_if expr="(root_login == 1 || list_settings.allow_profile_editing == 1)" --> 
-					 <div class="buttonfloat">
-					  <input type="submit" value="Update Information" class="cautionary button" >
-					 </div>
-				<!-- /tmpl_if --> 
+			<!-- /tmpl_if -->
+		</fieldset> 
 
-					</form>
+		<fieldset>
+			<legend>
+				&#8592; Remove Address
+			</legend>
 
-				</fieldset>
+			<!-- tmpl_if remove_from_num --> 
+			
+				<!-- tmpl_if subscribed_to_list -->
+					<!-- tmpl_if list_settings.black_list -->
+						<!-- tmpl_if list_settings.add_unsubs_to_black_list -->						
+							<div class="alert-box info radius">
+								<p>
+									<strong>
+										Black Listing is enabled.
+									</strong>
+								</p>
+								<p>
+									Subscribers that are Unsubscribed from this mailing list are added automatically to your Black List.
+								</p>
+								<!-- tmpl_if list_settings.allow_blacklisted_to_subscribe --> 
+									Subscribers may resubscribe themselves. 
+								<!-- /tmpl_if --> 
+								<!-- tmpl_if list_settings.allow_admin_to_subscribe_blacklisted --> 
+									The List Owner may still resubscribe Black Listed addresses. 
+								<!-- /tmpl_if -->
+							</div> 
+						<!-- /tmpl_if -->
+					<!-- /tmpl_if -->
 				<!-- /tmpl_if -->
 
+				<div class="row">
+					<div class="small-12 medium-6 large-6 centered columns">	 
+				
+				
+						<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="remove_email_form">
+							<input type="hidden" name="process"        value="delete" >
+							<input type="hidden" name="address"        value="<!-- tmpl_var email escape="HTML" -->" >
+							<input type="hidden" name="flavor"         value="remove_subscribers" >	
+							<input type="hidden" name="return_to"      value="membership" >
+							<input type="hidden" name="return_address" value="<!-- tmpl_var email escape="HTML" -->" >
 
+							<div class="row">
+								<div class="small-12 columns">
+									<input 
+										type="button" 
+										id="validate_remove_email" 
+										value="Remove..." class="cautionary button expand"
+									>
+								</div> 
+							</div> 
+						
+							<!-- tmpl_if root_login -->
+								<div class="row">
+									<div class="small-12 columns">						
+										<input 
+											type="button" 
+											id="validate_remove_email_multiple_lists" 
+											value="Remove on Multiple Mailing Lists..." 
+											class="cautionary button expand"
+										>
+									</div> 
+								</div>
+							<!-- /tmpl_if -->
+						</form>
+					</div>
+				</div>
+			<!-- /tmpl_if --> 
+		</fieldset>	
+		<!-- /tmpl_if -->	
+	</div>
+	
+	<div  class="content tab-title" id="subscriber_history_tab"> 
+		<!-- tmpl_if root_login -->
+		
+			<form id="toggle_membership_history"> 
+		
+			<input type="hidden" name="flavor" value="mailing_list_history" > 
+			<input type="hidden" name="mode"   value="export_csv" > 				
+			<input type="hidden" name="email"  value="<!-- tmpl_var email escape="HTML" -->" > 
 
-					<fieldset> 
-					<legend>Profile Password</legend>
+	
+			<div class="rows">
+				<div class="small-12 columns">
+					<input 
+						type="radio" 
+						id="membership_history_this_list" 
+						name="membership_history" 
+						value="this_list" 
+						class="radio_toggle_membership_history" 
+						checked="checked"
+					>
+					<label for="membership_history_this_list"> 
+						For <!-- tmpl_var list_settings.list_name --> (<!-- tmpl_var list_settings.list -->)
+					</label> 
+					<input 
+						type="radio" 
+						id="membership_history_all_lists" 
+						name="membership_history" 
+						class="radio_toggle_membership_history" 
+						value="all_lists"
+					>
+					<label for="membership_history_all_lists">
+						For All Mailing Lists
+					</label>
+				</div>
+			</div>
+		<!-- /tmpl_if --> 
+
+		<div id="mailing_list_history_loading"></div>
+		<div id="mailing_list_history"></div>
+
+		<div class="clearfix">
+			<ul class="button-group right">
+				<li>
+					<input type="submit" value="Export Subscriber History (csv)" class="processing button" >
+				</li>
+			</ul>
+		</div>
+	</div>  
+
+	<div class="content tab-title" id="activity_tab">
+
+		<form id="membership_activity_form"> 
+			<div id="membership_activity_loading"></div>
+			<div id="membership_activity"></div>
+
+			<input type="hidden" name="flavor" value="membership_activity" > 
+			<input type="hidden" name="mode"   value="export_csv" > 				
+			<input type="hidden" name="email"  value="<!-- tmpl_var email escape="HTML" -->" > 
+
+			<div class="clearfix">
+				<ul class="button-group right">
+					<li>
+						<input type="submit" value="Export Mailing List Activity (csv)" class="processing button" >
+					</li>
+				</ul>
+			</div>
+		</form>
+	</div>
+
+	<div  class="content tab-title" id="profile_tab"> 
+		<!-- tmpl_if fields --> 
+			<fieldset> 
+				<legend>
+					Profile Fields
+				</legend>
+				<!-- tmpl_unless expr="(root_login == 1 || list_settings.allow_profile_editing == 1)" --> 
+					<div class="alert-box info radius">
+						Editing Profile Fields is <strong>disabled</strong>. 
+					</div>
+				<!-- /tmpl_unless -->
+
+				<form 
+					action="<!-- tmpl_var S_PROGRAM_URL -->" 
+					method="post" 
+					accept-charset="<!-- tmpl_var HTML_CHARSET -->" 
+					id="membership_profile_fields"
+				>
 
 					<!-- tmpl_if expr="(root_login == 1 || list_settings.allow_profile_editing == 1)" --> 
-
-                    
-						<div id="change_profile_password_button">
-							<input type="button" value="Click to Change Profile Password..." class="cautionary change_profile_password" > 
-						    <br> 
-						    <!-- tmpl_unless profile_exists --> 
-						        <p>This address does not currently have a Profile Password set.</p>
-						    <!-- /tmpl_unless --> 
-						</div> 
-						<div id="change_profile_password_form" style="display:none">
-							<form name="change_profile_password" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-								<input type="hidden" name="flavor" value="admin_change_profile_password" > 
-								<input type="hidden" name="email" value="<!-- tmpl_var email escape="HTML" -->" >
-								<input type="hidden" name="type" value="<!-- tmpl_var type -->" >
-
-								<p>
-									<input type="password" name="profile_password" value="" >
-									<input type="submit" value="Change Profile Password" >
-									or <a href="#" class="cancel_change_profile_password">cancel</a>
-        							
-							</form> 
-						</div>	
-					</fieldset> 
-					<div class="floatclear"></div>
-
-					<!-- tmpl_else -->
-					<div class="alert-box info radius">
-						<p>
-							Updating the Profile Password is <strong>disabled</strong>. 
-						</p>
-					</div>
+						<input type="hidden" name="email"   value="<!-- tmpl_var email escape="HTML" -->" >
+						<input type="hidden" name="flavor"  value="membership" >
+						<input type="hidden" name="process" value="1" >
+						<input type="hidden" name="type"    value="<!-- tmpl_var type -->" >
 					<!-- /tmpl_if --> 
 
-			<!-- /tmpl_if --> 
+					<!-- tmpl_if expr="(root_login == 1 || list_settings.allow_profile_editing == 1)" --> 
+						<div class="alert-box info radius">
+							Profile Fields Information will be changed for all Mailing Lists.
+						</div>
+					<!-- /tmpl_if -->
+
+					<!-- tmpl_loop fields -->
+					
+						<div class="row">
+							<div class="large-3 medium-3 columns">							
+								<label for="<!-- tmpl_var name escape=HTML -->"
+									class="medium-only-text-right large-only-text-right"
+								>
+									<!-- tmpl_var label escape=HTML --> (<!-- tmpl_var name escape=HTML -->)
+								</label>
+							</div> 
+							<div class="large-9 medium-9 columns">
+								<input
+									type="text" 
+									name="<!-- tmpl_var name escape=HTML -->" 
+									id="<!-- tmpl_var name escape=HTML -->" 
+									value="<!-- tmpl_var value escape=HTML -->" 
+									placeholder="<!-- tmpl_var value escape=HTML -->" 
+									<!-- tmpl_if required -->
+										required="required" 
+									<!-- /tmpl_if -->
+									<!-- tmpl_if expr="(root_login == 1 || list_settings.allow_profile_editing == 1)" --> 
+									<!-- tmpl_else -->
+										readonly 
+									<!-- /tmpl_if -->
+								>
+							</div> 
+						</div> 
+
+					<!--/tmpl_loop-->
 		
-		</div> 
-	<!-- /tmpl_if --> 
-	
-	
-	<div id="delivery_preferences_tab">
+					<!-- tmpl_if expr="(root_login == 1 || list_settings.allow_profile_editing == 1)" --> 
+						<div class="clearfix">
+							<ul class="button-group right">
+								<li>
+									<input type="submit" value="Update Information" class="cautionary button">
+								</li>
+							</ul>
+						</div>
+					<!-- /tmpl_if --> 
+				</form>
+			</fieldset>
+		<!-- /tmpl_if -->
 
-        <!-- tmpl_unless list_settings.digest_enable --> 
-    	    <div class="alert-box info radius">
-    	        <p>Digests are currently disable, and these settings are not used.</p>
-    	    </div> 
-    	<!-- /tmpl_unless -->
-    	
-        <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
-            
-            <input type="hidden" name="flavor"        value="admin_profile_delivery_preferences" > 
-            <input type="hidden" name="list"     value="<!-- tmpl_var list_settings.list -->" > 
-            <input type="hidden" name="email"    value="<!-- tmpl_var email escape="HTML" -->" > 
+	<fieldset> 
+	<legend>Profile Password</legend>
 
-            <input type="hidden" name="type"     value="<!-- tmpl_var type -->" >
-			
-            <p>
-                <input type="radio" name="delivery_prefs" value="individual" id="delivery_prefs_individual" <!-- tmpl_if expr="delivery_prefs eq 'individual'" -->checked="checked"<!-- /tmpl_if --> >
-                    <label for="delivery_prefs_individual">
-                        Receive Individual Messages
-                    </label>
-                    <br >
-                <input type="radio" name="delivery_prefs" value="digest" id="delivery_prefs_digest" <!-- tmpl_if expr="delivery_prefs eq 'digest'" -->checked="checked"<!-- /tmpl_if --> >
-                    <label for="delivery_prefs_digest">
-                        Receive Messages in a Digest
-                    </label> (<!-- tmpl_var digest_timeframe -->)
-                    <br >
-                <input type="radio" name="delivery_prefs" value="hold" id="delivery_prefs_hold" <!-- tmpl_if expr="delivery_prefs eq 'hold'" -->checked="checked"<!-- /tmpl_if --> >
-                    <label for="delivery_prefs_hold">
-                        Hold Mailings
-                    </label> (vacation, etc)     
-                    
-                    <div class="buttonfloat">    
-                    <input type="submit" value="Save Delivery Preferences" class="processing button" > 
-                    </div>
-                    <div class="floatclear"></div>                       
-            </p>
-            
-        </form>
-        
+		<!-- tmpl_if expr="(root_login == 1 || list_settings.allow_profile_editing == 1)" --> 
 
 
+		<div id="change_profile_password_button">
+			<input type="button" value="Click to Change Profile Password..." class="button cautionary change_profile_password" > 
+
+			<!-- tmpl_unless profile_exists --> 
+				<p><em>This address does not currently have a Profile Password set.</em></p>
+			<!-- /tmpl_unless --> 
+		</div>
+		 
+		<div id="change_profile_password_form" style="display:none">
+			<form name="change_profile_password" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+				<input type="hidden" name="flavor" value="admin_change_profile_password" > 
+				<input type="hidden" name="email"  value="<!-- tmpl_var email escape="HTML" -->" >
+				<input type="hidden" name="type"   value="<!-- tmpl_var type -->" >
+				<div class="row collapse">
+					<div class="small-3 columns">
+						<input type="password" name="profile_password" value="">
+					</div> 
+					<div class="small-3 columns">
+						<input type="submit" value="Change Profile Password" class="small button postfix">
+					</div> 
+					<div class="small-6 columns">
+						&nbsp;or <a href="#" class="cancel_change_profile_password"> cancel</a>
+					</div> 
+				</div> 
+			</form> 
+		</div>	
+	</fieldset> 
+	<div class="floatclear"></div>
+
+	<!-- tmpl_else -->
+	<div class="alert-box info radius">
+	<p>
+	Updating the Profile Password is <strong>disabled</strong>. 
+	</p>
 	</div>
+	<!-- /tmpl_if --> 
+
 </div> 
 
+	<div  class="content tab-title " id="delivery_preferences_tab"> 
 
+		<!-- tmpl_unless list_settings.digest_enable --> 
+			<div class="alert-box info radius">
+				Digests have not been enabled and these settings are not currently being utilized.
+			</div> 
+		<!-- /tmpl_unless -->
 
+		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
 
+			<input type="hidden" name="flavor"   value="admin_profile_delivery_preferences" > 
+			<input type="hidden" name="list"     value="<!-- tmpl_var list_settings.list -->" > 
+			<input type="hidden" name="email"    value="<!-- tmpl_var email escape="HTML" -->" > 
+			<input type="hidden" name="type"     value="<!-- tmpl_var type -->" >
+			
+			<div class="row">
+				<div class="small-12 columns">
+					<label for="delivery_prefs_individual">
+						<input type="radio" name="delivery_prefs" value="individual" id="delivery_prefs_individual" <!-- tmpl_if expr="delivery_prefs eq 'individual'" -->checked="checked"<!-- /tmpl_if --> >
+						Receive Individual Messages
+					</label>
+				</div> 
+			</div> 
+			<div class="row">
+				<div class="small-12 columns">
+					<label for="delivery_prefs_digest">
+						<input type="radio" name="delivery_prefs" value="digest" id="delivery_prefs_digest" <!-- tmpl_if expr="delivery_prefs eq 'digest'" -->checked="checked"<!-- /tmpl_if --> >
+						Receive Messages in a Digest  (<!-- tmpl_var digest_timeframe -->)
+					</label>
+				</div> 
+			</div> 
+			<div class="row">
+				<div class="small-12 columns">			
+					<label for="delivery_prefs_hold">
+						<input type="radio" name="delivery_prefs" value="hold" id="delivery_prefs_hold" <!-- tmpl_if expr="delivery_prefs eq 'hold'" -->checked="checked"<!-- /tmpl_if --> >
+						Hold Mailings (vacation, etc)   
+					</label>  
+				</div> 
+			</div> 
+			<div class="clearfix">
+				<ul class="button-group right">
+					<li>
+						<input type="submit" value="Save Delivery Preferences" class="processing button" > 
+					</li>
+				</ul>
+			</div>	
 
-
-	<p>
-	 <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_list;type=<!-- tmpl_var type -->;page=<!-- tmpl_var page -->;query=<!-- tmpl_var query -->;order_by=<!-- tmpl_var order_by -->;order_dir=<!-- tmpl_var order_dir -->">&lt;&lt; Back</a>
-	</p>
+		</form>
+	</div>
+</div> 
 
 <!-- end membership_screen.tmpl -->

@@ -148,32 +148,15 @@
 
 	<fieldset> 
 		<legend>Upload Your Addresses</legend>
-
-
-        <p>	    
-         <label for="new_email_file">
-         Upload
-         </label>
-         a text file <!-- tmpl_if expr="(type eq 'list')" --> (<strong><!-- tmpl_var HTML_CHARSET --> encoded</strong>) in the <strong>CSV format</strong> mentioned above<!-- /tmpl_if -->.
-        </p>
-
-
-		<!-- tmpl_if comment -->
-			<style>
-			.ui-progressbar .ui-progressbar-value { background-image: url(<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/jquery.ui/pbar-ani.gif); }
-			</style>
-
-			<div id="show_progress" class="clearskiesbox">
-				<div id="progressbarWrapper" style="width:500px;height:22px;margin-left:auto;margin-right:auto" class="ui-widget-default">
-				<div id="progressbar" style="height:100%;"></div>
-				</div>
-				<div id="upload_status"></div>
-			</div>
-		<!-- /tmpl_if -->
-
-
+		<label for="new_email_file">
+			Upload a text file 
+			<!-- tmpl_if expr="(type eq 'list')" -->
+				(<strong><!-- tmpl_var HTML_CHARSET --> encoded</strong>) 
+				in the <strong>CSV format</strong> mentioned above
+			<!-- /tmpl_if -->
+		</label>
+		 
 	<form id="fileupload" enctype="multipart/form-data" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-		
 		<input type="hidden" name="flavor"    id="f" value="add" >
 		<input type="hidden" name="type" value="<!-- tmpl_var type -->" >
 		<input type="hidden" name="process" value="1" >

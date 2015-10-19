@@ -578,6 +578,7 @@ sub sign_in {
             my $scrn = DADA::Template::Widgets::wrap_screen(
                 {
                     -screen         => 'list_login_form.tmpl',
+					-expr           => 1, 
                     -with           => 'list',
                     -wrapper_params => {
                         -Use_Custom => 0,
@@ -585,6 +586,8 @@ sub sign_in {
                     -vars => {
                         flavor_sign_in => 1,
                         auth_state     => $auth_state,
+						login_widget   => 'hidden_field',
+						selected_list  => $list,
                     },
                     -list_settings_vars_param => {
                         -list   => $list,
@@ -9419,12 +9422,17 @@ sub new_list {
 
         }
         else {
-            return user_error(
-                {
-                    -list  => $list,
-                    -error => "invalid_root_password"
-                }
-            );
+			require DADA::Template::Widgets; 
+            return DADA::Template::Widgets::admin(
+				{ 
+		            -cgi_obj      => $q,
+					-vars         => {
+						errors      => [{error => 'invalid_root_password'}],
+						error_with  => 'new_list', 
+					}
+				}
+			); 
+            
         }
     }
     else {
