@@ -66,13 +66,27 @@
 			
 			
 			event.preventDefault();
-					
+			
+			var responsive_options = {
+				width: '95%',
+				height: '95%',
+				maxWidth: '640px',
+				maxHeight: '480px'
+			};
 			$.colorbox({
 				html: copythis._loadingMsg,
-				maxHeight: 480,
-				maxWidth: 649,
-				opacity: 0.50
+				opacity: 0.50,
+				width: '95%',
+				height: '95%',
+				maxWidth: '640px',
+				maxHeight: '480px'
 			}); 
+			$(window).resize(function(){
+			    $.colorbox.resize({
+			      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+			      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+			    });		
+			});
 			
 			var using_datatype     = 'json';
 			var using_content_type = 'POST'; 
@@ -146,12 +160,26 @@
 							}
 						}
 						else { 
+							var responsive_options = {
+								width: '95%',
+								height: '95%',
+								maxWidth: '640px',
+								maxHeight: '480px'
+							};
 							$.colorbox({
 								html: html,
-								maxHeight: 480,
-								maxWidth: 649,
-								opacity: 0.50
+								opacity: 0.50,
+								width: '95%',
+								height: '95%',
+								maxWidth: '640px',
+								maxHeight: '480px'
 							}); 
+							$(window).resize(function(){
+							    $.colorbox.resize({
+							      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+							      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+							    });		
+							});
 						}
 					}
 					else { 
@@ -163,9 +191,25 @@
 				error: function(xhr, ajaxOptions, thrownError) {
 					console.log('status: ' + xhr.status);
 					console.log('thrownError:' + thrownError);
+					var responsive_options = {
+						width: '95%',
+						height: '95%',
+						maxWidth: '640px',
+						maxHeight: '480px'
+					};					
 					$.colorbox({
 						html: copythis._LoadingError,
-						opacity: 0.50
+						opacity: 0.50,
+						width: '95%',
+						height: '95%',
+						maxWidth: '640px',
+						maxHeight: '480px'
+					});
+					$(window).resize(function(){
+					    $.colorbox.resize({
+					      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+					      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+					    });		
 					});
 				}
 			}); 

@@ -9,17 +9,32 @@ var plainOverlayOptions = {
 
 jQuery(document).ready(function($){
 
-
+	// Bounce Handler, Mostly. 
 	$('body').on('click', 'a.modalbox', function(event){
 		event.preventDefault();
+		var responsive_options = {
+			width: '95%',
+			height: '95%',
+			maxWidth: '640px',
+			maxHeight: '480px'
+
+		};
 		$.colorbox({
 			top: 0,
 			fixed: true,
 			initialHeight: 50,
-			maxHeight: 480,
-			maxWidth: 649,
 			opacity: 0.50,
-			href: $(this).attr("href")
+			href: $(this).attr("href"),
+			maxWidth: '640px',
+			maxHeight: '480px',
+			width: '95%',
+			height: '95%'
+		});
+		$(window).resize(function(){
+		    $.colorbox.resize({
+		      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+		      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+		    });		
 		});
 	});
 
@@ -911,10 +926,18 @@ jQuery(document).ready(function($){
 		check_newest_version($('#check_version').attr("data-ver"));
 	});
 
+
 	if($("#scheduled_jobs").length) {
 		$("body").on("click", ".manually_run_scheduled_jobs", function(event) {
-			$('#scheduled_jobs_modal').foundation('reveal', 'open', {
-			    url: $("#s_program_url").val(),
+			
+			var responsive_options = {
+			  width: '95%',
+			  height: '95%',
+			  maxWidth: '640px',
+			  maxHeight: '480px'
+			};
+			$.colorbox({
+			    href: $("#s_program_url").val(),
 				data: {
 					flavor: $("#sched_flavor").val(),
 					list: '_all',
@@ -922,6 +945,16 @@ jQuery(document).ready(function($){
 					output_mode: '_verbose',
 					for_colorbox: 1
 				},
+				maxWidth: '640px',
+				maxHeight: '480px',
+				width: '95%',
+				height: '95%'				
+			});
+			$(window).resize(function(){
+			    $.colorbox.resize({
+			      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+			      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+			    });		
 			});
 		});
 	}
@@ -1425,12 +1458,20 @@ function mass_mailing_schedules_preview(skip_stale_check) {
 }
 
 function manually_run_all_scheduled_mass_mailings() {
+	var responsive_options = {
+	  width: '95%',
+	  height: '95%',
+	  maxWidth: '640px',
+	  maxHeight: '480px'
+	};
 	$.colorbox({
 		top: 0,
 		fixed: true,
 		initialHeight: 50,
-		maxHeight: 480,
-		maxWidth: 649,
+		width: '95%',
+		height: '95%',
+		maxWidth: '640px',
+		maxHeight: '480px',
 		opacity: 0.50,
 		href: $("#s_program_url").val(),
 		data: {
@@ -1444,6 +1485,12 @@ function manually_run_all_scheduled_mass_mailings() {
 			mass_mailing_schedules_preview(1);
 			update_scheduled_mass_mailings_options();
 		}
+	});
+	$(window).resize(function(){
+	    $.colorbox.resize({
+	      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+	      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+	    });		
 	});
 }
 
@@ -1789,20 +1836,33 @@ function show_update_profile_form(){
 
 	var $form = $("#mass_updates");
 
+	var responsive_options = {
+	  width: '95%',
+	  height: '95%',
+	  maxWidth: '640px',
+	  maxHeight: '480px'
+	};
 	$.colorbox({
 		inline:true,
 		href:$form,
 		top: 0,
 		fixed: true,
 		initialHeight: 50,
-		maxHeight: 480,
-		maxWidth: 649,
+		maxWidth: '640px',
+		maxHeight: '480px',
+		width: '95%',
+		height: '95%',		
 		opacity: 0.50,
-
 		onComplete: function(){
 			//alert("fill it in!" + $("#advanced_query").val());
 			$("#mass_update_advanced_query").val($("#advanced_query").val());
 		}
+	});
+	$(window).resize(function(){
+	    $.colorbox.resize({
+	      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+	      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+	    });		
 	});
 
 }
@@ -2154,12 +2214,22 @@ function twiddle_validate_multiple_lists_button(button_id) {
 }
 
 function validate_add_email() {
+	
+	var responsive_options = {
+	  width: '95%',
+	  height: '95%',
+	  maxWidth: '640px',
+	  maxHeight: '480px'
+	};
+	
 	$.colorbox({
 		top: 0,
 		fixed: true,
 		initialHeight: 50,
-		maxHeight: 480,
-		maxWidth: 649,
+		maxWidth: '640px',
+		maxHeight: '480px',
+		width: '95%',
+		height: '95%',		
 		opacity: 0.50,
 		href: $("#s_program_url").val(),
 		data: {
@@ -2174,15 +2244,29 @@ function validate_add_email() {
 			return_address: $("#add_return_address").val(),
 		}
 	});
+	$(window).resize(function(){
+	    $.colorbox.resize({
+	      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+	      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+	    });		
+	});
 }
 
 function validate_update_email(is_for_all_lists) {
+	var responsive_options = {
+	  width: '95%',
+	  height: '95%',
+	  maxWidth: '640px',
+	  maxHeight: '480px'
+	};
 	$.colorbox({
 		top: 0,
 		fixed: true,
 		initialHeight: 50,
-		maxHeight: 480,
-		maxWidth: 649,
+		width: '95%',
+		height: '95%',
+		maxWidth: '640px',
+		maxHeight: '480px',
 		opacity: 0.50,
 		href: $("#s_program_url").val(),
 		data: {
@@ -2192,16 +2276,30 @@ function validate_update_email(is_for_all_lists) {
 			for_all_lists: is_for_all_lists
 		}
 	});
+	$(window).resize(function(){
+	    $.colorbox.resize({
+	      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+	      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+	    });		
+	});
 }
 
 function validate_remove_email(for_multiple_lists) {
 
+	var responsive_options = {
+	  width: '95%',
+	  height: '95%',
+	  maxWidth: '640px',
+	  maxHeight: '480px'
+	};
 	$.colorbox({
 		top: 0,
 		fixed: true,
 		initialHeight: 50,
-		maxHeight: 480,
-		maxWidth: 649,
+		width: '95%',
+		height: '95%',
+		maxWidth: '640px',
+		maxHeight: '480px',
 		opacity: 0.50,
 		href: $("#s_program_url").val(),
 		data: {
@@ -2211,7 +2309,12 @@ function validate_remove_email(for_multiple_lists) {
 			for_multiple_lists: for_multiple_lists
 		}
 	});
-
+	$(window).resize(function(){
+	    $.colorbox.resize({
+	      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+	      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+	    });		
+	});
 }
 
 function membership_bouncing_address_information() {
@@ -2345,12 +2448,20 @@ function test_mail_sending_options() {
 		add_sendmail_f_flag = 1;
 	}
 
+	var responsive_options = {
+	  width: '95%',
+	  height: '95%',
+	  maxWidth: '640px',
+	  maxHeight: '480px'
+	};
 	$.colorbox({
 		top: 0,
 		fixed: true,
 		initialHeight: 50,
-		maxHeight: 480,
-		maxWidth: 649,
+		width: '95%',
+		height: '95%',
+		maxWidth: '640px',
+		maxHeight: '480px',
 		opacity: 0.50,
 		href: $("#s_program_url").val(),
 		data: {
@@ -2373,6 +2484,12 @@ function test_mail_sending_options() {
 			process: $('#process').val()
 		}
 	});
+	$(window).resize(function(){
+	    $.colorbox.resize({
+	      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+	      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+	    });		
+	});
 }
 
 
@@ -2381,18 +2498,32 @@ function test_mail_sending_options() {
 
 function amazon_verify_email(email) {
 
+	var responsive_options = {
+	  width: '95%',
+	  height: '95%',
+	  maxWidth: '640px',
+	  maxHeight: '480px'
+	};
 	$.colorbox({
 		top: 0,
 		fixed: true,
 		initialHeight: 50,
-		maxHeight: 480,
-		maxWidth: 649,
+		width: '95%',
+		height: '95%',
+		maxWidth: '640px',
+		maxHeight: '480px',
 		opacity: 0.50,
 		href: $("#s_program_url").val(),
 		data: {
 			flavor: 'amazon_ses_verify_email',
 			amazon_ses_verify_email: email
 		}
+	});
+	$(window).resize(function(){
+	    $.colorbox.resize({
+	      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+	      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+	    });		
 	});
 
 }
@@ -2546,12 +2677,21 @@ function ajax_parse_bounces_results() {
 	if($("#test").prop("checked") === true) {
 		isa_test = 'bounces';
 	}
+
+	var responsive_options = {
+		width: '95%',
+		height: '95%',
+		maxWidth: '640px',
+		maxHeight: '480px'
+	};
 	$.colorbox({
 		top: 0,
 		fixed: true,
 		initialHeight: 50,
-		maxHeight: 480,
-		maxWidth: 649,
+		width: '95%',
+		height: '95%',
+		maxWidth: '640px',
+		maxHeight: '480px',
 		opacity: 0.50,
 		href: $("#s_program_url").val(),
 		data: {
@@ -2564,6 +2704,12 @@ function ajax_parse_bounces_results() {
 		onComplete:function(){
 			bounce_handler_show_scorecard();
 		}
+	});
+	$(window).resize(function(){
+	    $.colorbox.resize({
+	      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+	      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+	    });		
 	});
 }
 
