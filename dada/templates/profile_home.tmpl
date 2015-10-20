@@ -5,48 +5,40 @@
 
 <div id="profile_home"></div>
 
-<p style="text-align:right"> 
-    [ <a href="<!-- tmpl_var PROGRAM_URL -->/profile_logout/">Logout</a>]
-</p>
+
 
 <div class="alert-box info radius">
-    <h1>
         
         <!-- tmpl_if gravators_enabled --> 
             <!-- tmpl_if gravatar_img_url --> 
             
                     <a href="http://gravatar.com/" target="_blank">
-                        <img src="<!-- tmpl_var gravatar_img_url -->" style="float:left; padding:5px;padding-top:0px;border:0px" >
+                        <img src="<!-- tmpl_var gravatar_img_url -->" >
                     </a>
         
             <!-- /tmpl_if -->
         <!-- /tmpl_if -->
                 
-        Hello, <!-- tmpl_var profile.email -->!
-        
-    </h1> 
-
-<div class="floatclear"></div>
-
+        <p>Hello, <!-- tmpl_var profile.email --></p>
+		<p class="text-right"> 
+		    [ <a href="<!-- tmpl_var PROGRAM_URL -->/profile_logout/">Logout</a>]
+		</p>
+       
 </div>
 
 
 <script type="text/javascript">
- 
-function confirm_profile_removal(form_name) {
+	function confirm_profile_removal(form_name) {
         
     
-    var confirm_msg =  "Are you sure you want to ";
-        confirm_msg += " remove this profile?";
-        confirm_msg += " This profile removal cannot be undone.";
-    if(!confirm(confirm_msg)){
-        alert('Profile not removed.');
-        return false;
-    }    
-}
-
-
-
+	    var confirm_msg =  "Are you sure you want to ";
+	        confirm_msg += " remove this profile?";
+	        confirm_msg += " This profile removal cannot be undone.";
+	    if(!confirm(confirm_msg)){
+	        alert('Profile not removed.');
+	        return false;
+	    }    
+	}
 </script> 
 
 
@@ -54,24 +46,20 @@ function confirm_profile_removal(form_name) {
 
 <!-- tmpl_if welcome --> 
     <div class="alert-box info radius">
-    <p>
-     Welcome to your profile home. From here, you may subscribe/unsubscribe 
-     to the available mailing lists, as well as update your subscription 
-    information.
-    </p> 
-    </div> 
+	     Welcome to your Profile. From here, you may subscribe/unsubscribe 
+	     to the available mailing lists, as well as update your subscription 
+	    information.
+	</div> 
 <!-- /tmpl_if --> 
 <!-- tmpl_if edit --> 
     <div class="alert-box info radius">
-    <p>
-        Your changes have been saved!
-    </p> 
+       Changes have been saved.
     </div>
 <!-- /tmpl_if --> 
 
 
 <!-- tmpl_if errors --> 
-    <div class="alert-box info radius">
+    <div class="alert-box warning radius">
     <p> 
         <strong>There was an error with your last request:</strong>
     </p> 
@@ -80,15 +68,11 @@ function confirm_profile_removal(form_name) {
         <p>Your Password:</p>
         <ul> 
             <li>
-            <p>
                 Make sure that you re-typed your password correctly. 
-            </p>
         </li> 
         </ul> 
 
     <!-- /tmpl_if -->
-
-
 
     <!-- tmpl_if errors_update_email --> 
         <p>
@@ -97,17 +81,13 @@ function confirm_profile_removal(form_name) {
         <ul> 
         <!-- tmpl_if error_invalid_email --> 
             <li>
-                <p> 
-                The email address you submitted is not valid.
-            </p>
+                The email address you submitted was not valid.
             </li> 
         <!-- /tmpl_if --> 
     
         <!-- tmpl_if error_profile_exists --> 
             <li>
-                 <p> 
                      A Profile already exists for the email address, <!-- tmpl_var updated_email -->.
-                 </p>
             </li> 
         <!-- /tmpl_if --> 
         </ul> 
@@ -118,20 +98,19 @@ function confirm_profile_removal(form_name) {
 
 
 
-<div id="tabs"> 
-    <ul>
-        <!-- tmpl_if expr="profile_feature_mailing_list_subscriptions == 1" -->
-            <li>    
-                <a href="<!-- tmpl_var WHOLE_URL -->#mailing_list_subscriptions">
-                    Mailing List Subscriptions
+<ul class="tabs" data-tab>
+	<!-- tmpl_if expr="profile_feature_mailing_list_subscriptions == 1" -->
+           <li class="tab-title active">
+                <a href="#mailing_list_subscriptions">
+                   Subscriptions
                 </a>
             </li>        
         <!-- /tmpl_if --> 
         
         <!-- tmpl_if expr="profile_feature_profile_fields == 1" -->
             <!-- tmpl_if subscriber_fields -->
-                <li>    
-                    <a href="<!-- tmpl_var WHOLE_URL -->#profile_fields">
+               <li class="tab-title">
+                    <a href="#profile_fields">
                         Profile Fields
                     </a>
                 </li>
@@ -140,8 +119,8 @@ function confirm_profile_removal(form_name) {
         
         <!-- tmpl_if protected_directories --> 
             <!-- tmpl_if expr="profile_feature_protected_directories == 1" -->    
-                <li>    
-                    <a href="<!-- tmpl_var WHOLE_URL -->#protected_directories">
+               <li class="tab-title">
+                    <a href="#protected_directories">
                         Protected Directories
                     </a>
                 </li>
@@ -149,34 +128,34 @@ function confirm_profile_removal(form_name) {
         <!-- /tmpl_if -->
                 
         <!-- tmpl_if expr="profile_feature_update_email_address == 1" -->
-            <li>    
-                <a href="<!-- tmpl_var WHOLE_URL -->#update_email_address">
-                    Update Your Profile Email Address
+            <li class="tab-title">
+                <a href="#update_email_address">
+                    Update Profile Email Address
                 </a>
             </li>        
         <!-- /tmpl_if -->
         
         
         <!-- tmpl_if expr="profile_feature_change_password == 1" -->
-            <li>    
-                <a href="<!-- tmpl_var WHOLE_URL -->#change_password">
-                    Change Your Profile Password
+            <li class="tab-title">
+                <a href="#change_password">
+                    Change Profile Password
                 </a>
             </li>
         <!-- /tmpl_if -->
         
         
         <!-- tmpl_if expr="profile_feature_delete_profile == 1" -->
-            <li>    
-                <a href="<!-- tmpl_var WHOLE_URL -->#delete_profile">
+            <li class="tab-title">
+                <a href="#delete_profile">
                     Delete This Profile
                 </a>
             </li>
         <!-- /tmpl_if -->
     </ul>
-    
+	<div class="tabs-content">
     <!-- tmpl_if expr="profile_feature_mailing_list_subscriptions == 1" -->
-        <div id="mailing_list_subscriptions">
+        <div class="content active" id="mailing_list_subscriptions">
                 <!-- tmpl_if has_subscriptions --> 
                     <!-- ... -->
                 <!-- tmpl_else --> 
@@ -313,7 +292,7 @@ function confirm_profile_removal(form_name) {
     
     <!-- tmpl_if expr="profile_feature_profile_fields == 1" -->
         <!-- tmpl_if subscriber_fields -->
-        <div id="profile_fields">
+        <div class="content" id="profile_fields">
             <!-- tmpl_if subscriber_fields --> 
                 <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="membership_profile_fields"> 
                     <input type="hidden" name="flavor"        value="profile" > 
@@ -348,7 +327,7 @@ function confirm_profile_removal(form_name) {
     
     <!-- tmpl_if protected_directories --> 
         <!-- tmpl_if expr="profile_feature_protected_directories == 1" -->    
-            <div id="protected_directories">
+            <div class="content" id="protected_directories">
                     <p>Access these directories with your Profile Username/Password.
                     <ul>        
                         <!-- tmpl_loop protected_directories --> 
@@ -364,12 +343,9 @@ function confirm_profile_removal(form_name) {
             </div>
         <!-- /tmpl_if --> 
     <!-- /tmpl_if -->
-    
-    
-
 
     <!-- tmpl_if expr="profile_feature_update_email_address == 1" -->
-        <div id="update_email_address">
+        <div class="content"  id="update_email_address">
             <p class="alert">
                 The Profile Email Address and Subscriptions using your current email address (<!-- tmpl_var profile.email -->) 
                 will be replaced with this new email address, where it's allowed: 
@@ -411,7 +387,7 @@ function confirm_profile_removal(form_name) {
 
 
     <!-- tmpl_if expr="profile_feature_change_password == 1" -->
-        <div id="change_password">
+        <div class="content" id="change_password">
             <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
                 <input type="hidden" name="flavor"        value="profile" > 
                 <input type="hidden" name="process"  value="change_password" >
@@ -447,7 +423,7 @@ function confirm_profile_removal(form_name) {
 
 
     <!-- tmpl_if expr="profile_feature_delete_profile == 1" -->
-        <div id="delete_profile">
+        <div class="content" id="delete_profile">
             <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
                 <input type="hidden" name="flavor"        value="profile" > 
                 <input type="hidden" name="process"  value="delete_profile" >

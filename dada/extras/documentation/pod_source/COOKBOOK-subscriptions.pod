@@ -385,10 +385,10 @@ Dada Mail comes with a jQuery Plugin, that can be used to create a subscription 
 
 To use the jQuery plugin, you'll first need to load the plugin's .js file, along with other .js files it requires, in the head of your document: 
 
-	<script src="http://example.com/dada_mail_support_files/static/javascripts/jquery-1.11.3.min.js"></script>
+	<script src="http://example.com/dada_mail_support_files/static/javascripts/vendor/jquery-1.11.3.min.js"></script>
 	
-	<link rel="stylesheet" href="http://example.com/dada_mail_support_files/static/css/colorbox/colorbox.css">
-	<script src="http://example.com/dada_mail_support_files/static/javascripts/colorbox/jquery.colorbox-min.js"></script>
+	<link rel="stylesheet" href="http://example.com/dada_mail_support_files/static/css/vendor/colorbox/colorbox.css">
+	<script src="http://example.com/dada_mail_support_files/static/javascripts/jquery/colorbox/jquery.colorbox-min.js"></script>
 	
 	<script src="http://example.com/dada_mail_support_files/static/javascripts/jquery.dadamail.js"></script>
 

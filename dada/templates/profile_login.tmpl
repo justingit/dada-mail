@@ -2,316 +2,327 @@
 
 <!-- tmpl_set name="title" value="Profile Login" --> 
 <!-- tmpl_set name="show_profile_widget" value="0" --> 
-
 <div id="profile_login_registration"></div>
 
 <!-- tmpl_if removal --> 
-    <div class="alert-box info radius">
-        <p> 
-            Your Profile has been removed.
-        </p> 
-    </div> 
+	<div class="alert-box info radius">
+		Your Profile has been removed.
+	</div> 
 <!-- /tmpl_if --> 
 
 <!-- tmpl_if welcome --> 
-    <div class="alert-box info radius">
-        <p>
-            You have been successfully registered! Please log in with your Profile email address and password:
-        </p> 
-    </div> 
-    
+	<div class="alert-box info radius">
+		You have been successfully registered! Please log in with your Profile email address and password:
+	</div> 
 <!-- /tmpl_if --> 
-
-
-
-<!-- tmpl_if comment --> 
-
-
-                        <!-- tmpl_if errors --> 
-                            <h1>YOU HAVE ERRORS!!!</h1> 
-                            <ul>
-                            <!-- tmpl_loop errors --> 
-                                <li><p><!-- tmpl_var error --></p></li>
-                            <!-- /tmpl_loop --> 
-                            </ul>
-                        <!-- /tmpl_if --> 
-    
-                        <h1>error_profile_login: <!-- tmpl_var error_profile_login --> </h1> 
-                        <h1>error_profile_register: <!-- tmpl_var error_profile_register --></h1>
-                    <hr > 
-                    <hr > 
-                    <hr > 
-
-<!-- /tmpl_if --> 
-
 
 <!-- tmpl_if logged_out --> 
-    <div class="alert-box info radius">
-        <p>
-            Logged out. 
-        </p> 
-    </div> 
+	<div class="alert-box info radius">
+		You have logged out. 
+	</div> 
 <!-- /tmpl_if --> 
+
 <!-- tmpl_if password_changed --> 
-    <div class="alert-box info radius">
-        <p> 
-            You've successfully changed your Profile password ! Please log in again:
-        </p> 
-    </div> 
+	<div class="alert-box info radius">
+		You've successfully changed your Profile password ! Please log in again:
+	</div> 
 <!-- /tmpl_if --> 
 
 
-    <!-- tmpl_if errors --> 
-        <div class="alert-box info radius">
-            <p>
-                <strong>
-                    Problems with your Request:
-                </strong>
-            </p>
-            <ul> 
-        
-            <!-- tmpl_if error_profile_login --> 
-            <li>
-                <p>
-                    Please log into your Profile.
-                </p> 
-            </li>
-            
-            <!-- /tmpl_if --> 
-        
-                
-    
-    <!-- tmpl_if error_profile_activate --> 
-        <!-- tmpl_if error_invalid_auth_code -->                 
-            <li>
-                <p>
-                    Auth code is not valid. Make sure to copy/paste the entire registration link. 
-                </p> 
-            </li>
-        <!-- /tmpl_if -->  
-    <!-- /tmpl_if -->
-                
-    <!-- tmpl_if error_profile_register --> 
-    
-            <!-- tmpl_if error_invalid_email -->
-            <li>
-                <p>
-                    The email address you've entered is not valid.
-                </p> 
-            </li>        
-            <!-- /tmpl_if --> 
-            <!-- tmpl_if error_password_blank --> 
-                <li>
-                    <p>
-                        You forgot to enter a password.
-                    </p> 
-                </li>
-            <!-- /tmpl_if --> 
-            <!-- tmpl_if error_email_no_match --> 
-            <li>
-                <p>
-                    The email addresses you've entered do not match.
-                </p> 
-            </li>        
-            <!-- /tmpl_if --> 
-            <!-- tmpl_if error_captcha_failed --> 
-            <li>
-                <p>
-                    Sorry, the CAPTCHA failed. 
-                </p> 
-            </li>
-            <!-- /tmpl_if --> 
-            
-            <!-- tmpl_if error_profile_exists -->
-            <li>
-                <p>
-                    A Profile for this address already exists. Please log in, or reset your Profile Password.
-                </p> 
-            </li>        
-            <!-- /tmpl_if --> 
-            
-    <!-- /tmpl_if --> 
+
+				<!-- tmpl_if comment --> 
+					<!-- tmpl_if errors --> 
+						<h1>YOU HAVE ERRORS!!!</h1> 
+						<ul>
+						<!-- tmpl_loop errors --> 
+							<li><p><!-- tmpl_var error --></p></li>
+						<!-- /tmpl_loop --> 
+						</ul>
+					<!-- /tmpl_if --> 
+
+					<h1>error_profile_login: <!-- tmpl_var error_profile_login --> </h1> 
+					<h1>error_profile_register: <!-- tmpl_var error_profile_register --></h1>
+					<hr > 
+					<hr > 
+					<hr > 
+				<!-- /tmpl_if --> 
 
 
-    <!-- tmpl_if error_profile_login --> 
-
-            <!-- tmpl_if errors_not_logged_in -->     
-                <li>
-                    <p>
-                        You'll have to log in, before you may access your profile.
-                    </p>
-                </li>
-            <!-- /tmpl_if -->             
-            <!-- tmpl_if error_unknown_user --> 
-                <li>
-                    <p>
-                        User Unknown - have you registered?
-                    </p>
-                </li>
-            <!-- /tmpl_if --> 
-            <!-- tmpl_if error_incorrect_pass --> 
-            <li>
-                <p>
-                    Incorrect Password - double check?
-                </p>
-            </li>
-            <!-- /tmpl_if --> 
-            
-        </ul> 
-    <!-- /tmpl_if --> 
-    
-    
-    <!-- tmpl_if error_profile_reset_password --> 
-            <!-- tmpl_if error_invalid_auth_code --> 
-                    <li>
-                        <p>
-                            Auth code is not valid. Make sure to copy/paste the entire password reset link. 
-                        </p>
-                    </li> 
-                <!-- /tmpl_if --> 
-
-                <!-- tmpl_if error_unknown_user --> 
-                    <li>
-                        <p>
-                            User Unknown - have you registered?
-                        </p>
-                    </li> 
-                <!-- /tmpl_if -->
-
-    <!-- /tmpl_if -->
-    
-        </ul>
-        </div> 
-    <!-- /tmpl_if --> 
 
 
-  
-     <div class="alert-box info radius"> 
-         <p>
-             <!-- tmpl_var PROGRAM_NAME --> Profiles allow you to view and work with all 
-             your <!-- tmpl_var PROGRAM_NAME --> subscriptions.
-         </p>
-     
-         <p>
-             Having a profile and being logged in also allows you to view subscriber-only archives.
-         </p>
-     </div> 
+<!-- tmpl_if errors --> 
+	<div class="alert-box warning radius">
+
+	<p>
+		<strong>
+			Problems with your Request:
+		</strong>
+	</p>
+	
+	<ul> 
+	<!-- tmpl_if error_profile_login --> 
+		<li>
+			Please log into your Profile.
+		</li>
+	<!-- /tmpl_if --> 
+	<!-- tmpl_if error_profile_activate --> 
+		<!-- tmpl_if error_invalid_auth_code -->                 
+			<li>
+				Your Registration Authorization Code does not seem to be valid. Make sure to copy/paste the entire registration link. 
+			</li>
+		<!-- /tmpl_if -->  
+	<!-- /tmpl_if -->
+
+	<!-- tmpl_if error_profile_register --> 
+		<!-- tmpl_if error_invalid_email -->
+			<li>
+				The email address you've entered is not valid.
+			</li>        
+		<!-- /tmpl_if --> 
+		<!-- tmpl_if error_password_blank --> 
+			<li>
+				You forgot to enter a password.
+			</li>
+		<!-- /tmpl_if --> 
+		<!-- tmpl_if error_email_no_match --> 	
+			<li>
+				The email addresses you've entered do not match.
+			</li>        
+		<!-- /tmpl_if --> 
+		<!-- tmpl_if error_captcha_failed --> 
+			<li>
+				Sorry, the CAPTCHA failed. 
+			</li>
+		<!-- /tmpl_if --> 
+
+		<!-- tmpl_if error_profile_exists -->
+			<li>
+				A Profile for this address already exists. Please log in, or reset your Profile Password.
+			</li>        
+		<!-- /tmpl_if --> 
+	<!-- /tmpl_if --> 
+
+	<!-- tmpl_if error_profile_login --> 
+		<!-- tmpl_if errors_not_logged_in -->     
+		<li>
+			You'll have to log in, before you may access your Profile.
+		</li>
+		<!-- /tmpl_if -->             
+		<!-- tmpl_if error_unknown_user --> 
+			<li>
+				Profile User Unknown - have you registered?
+			</li>
+		<!-- /tmpl_if --> 
+		<!-- tmpl_if error_incorrect_pass --> 
+			<li>
+				Incorrect Password.
+			</li>
+		<!-- /tmpl_if --> 
+		</ul> 
+	<!-- /tmpl_if --> 
+
+	<!-- tmpl_if error_profile_reset_password --> 
+		<!-- tmpl_if error_invalid_auth_code --> 
+			<li>
+				Authorization Code is not valid. Make sure to copy/paste the entire password reset link. 
+			</li> 
+		<!-- /tmpl_if --> 
+
+		<!-- tmpl_if error_unknown_user --> 
+			<li>
+				Profile User Unknown - have you registered?
+			</li> 
+		<!-- /tmpl_if -->
+	<!-- /tmpl_if -->
+		</ul>
+	</div> 
+<!-- /tmpl_if --> 
 
 
-<div id="tabs"> 
-    <ul> 
-        <!-- tmpl_if expr="profile_feature_login == 1" -->
-            <li>
-                <a href="<!-- tmpl_var WHOLE_URL -->#profile_login">Login</a>
-            </li>
-        <!-- /tmpl_if -->
-        
-        <!-- tmpl_if expr="profile_feature_password_reset == 1" --> 
-            <li>
-                <a href="<!-- tmpl_var WHOLE_URL -->#profile_password_reset">Reset Password</a>
-            </li>        
-        <!-- /tmpl_if -->
-        <!-- tmpl_if expr="profile_feature_register == 1" -->
-            <li>
-                <a href="<!-- tmpl_var WHOLE_URL -->#profile_register">Register</a>
-            </li>
-        <!-- /tmpl_if -->
-    </ul>
-    
-    <!-- tmpl_if expr="profile_feature_login == 1" -->
-    <div id="profile_login">
-           
-        <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="profile_login"> 
-            <input type="hidden" name="flavor" value="profile_login" > 
-            <input type="hidden" name="process" value="1" > 
-            <p>
-                <label for="login_email" style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block">
-                    Email Address:</label>
-                <input type="email" name="login_email" id="login_email" value="<!-- tmpl_var login_email escape="HTML" -->" > 
-            </p>
-            <p>
-                <label for="login_password" style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block">
-                    Password:
-                </label>
-                <input type="password" name="login_password" id="login_password" value="" > 
 
-            <div class="buttonfloat">
-                <input type="submit" value="Log Into Your Profile" > 
-            </div>
-            <div class="floatclear"></div>
-        </form>
-    </div>
-    <!-- /tmpl_if -->
-    
-    <!-- tmpl_if expr="profile_feature_password_reset == 1" -->
-        <div id="profile_password_reset">
-            <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="profile_reset_password"> 
-                <input type="hidden" name="flavor" value='profile_reset_password' > 
-                <p>
-                    <label for="reset_email" style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block">
-                        Email Address:
-                    </label>
-                     <input type="text" id="reset_email" name="reset_email" value="<!-- tmpl_var reset_email -->" >
-                </p> 
-                <div class="buttonfloat">    
-                    <input type="submit" value="Reset Your Profile Password" > 
-                </div>
-                <div class="floatclear"></div>
-            </form>
-        </div> 
-    <!-- /tmpl_if --> 
-    
-    
-    <!-- tmpl_if expr="profile_feature_register == 1" -->
-        <div id="profile_register">
-            <p>
-                Register a Profile to easily manage all your <!-- PROGRAM_NAME --> Subscriptions.
-            </p> 
 
-            <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="profile_register"> 
-                <input type="hidden" name="flavor" value="profile_register" > 
-                <p>
-                    <label for="register_email" style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block">
-                        Email Address:
-                    </label>
-                    <input type="email" name="register_email" id="register_email" value="<!-- tmpl_var register_email -->" > 
-                </p>
-                <p>
-                    <label for="register_email_again" style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block">
-                        Email Address (again):
-                    </label>
-                    <input type="email" name="register_email_again" id="register_email_again" value="<!-- tmpl_var register_email_again -->" > 
-                </p>
-                <p>
-                    <label for="register_password" style="width: 9em;float: left;text-align: right;margin-right: 0.5em;display: block">
-                        Password:
-                    </label>
-                    <input type="password" name="register_password" id="register_password" value="" > 
-                </p>
+<div class="alert-box info radius"> 
+	<p>
+		<!-- tmpl_var PROGRAM_NAME --> Profiles allow you to view and work with all 
+		your <!-- tmpl_var PROGRAM_NAME --> subscriptions.
+	</p>
+	<p>
+		Having a profile and being logged in also allows you to view subscriber-only archives.
+	</p>
+</div> 
 
-                <!-- tmpl_if can_use_captcha --> 
-                    <p> 
-                     Please type in the string of letters that you see in the below image into the text box:
-                    </p>
+<div class="row">
+	<div class="small-12 medium-6 large-6 small-centered medium-centered large-centered columns">	 
 
-                    <!-- tmpl_var CAPTCHA_string --> 
-                <!-- tmpl_else --> 
-                    <!-- 
-                        <p>
-                        Can't use CAPTCHA.
-                    </p>
-                    -->  
-                <!-- /tmpl_if --> 
+		<ul class="tabs" data-tab>
+			<!-- tmpl_if expr="profile_feature_login == 1" -->
+				<li class="tab-title active">
+					<a href="#profile_login">
+						Login
+					</a>
+				</li>
+			<!-- /tmpl_if -->
 
-                <div class="buttonfloat">    
-                    <input type="submit" value="Register a New Profile" > 
-                </div>
-                <div class="floatclear"></div>
+			<!-- tmpl_if expr="profile_feature_password_reset == 1" --> 
+				<li class="tab-title">
+					<a href="#profile_password_reset">
+						Reset Password
+					</a>
+				</li>        
+			<!-- /tmpl_if -->
+			<!-- tmpl_if expr="profile_feature_register == 1" -->
+				<li class="tab-title" >
+					<a href="#profile_register">
+						Register
+					</a>
+				</li>
+			<!-- /tmpl_if -->
+		</ul>
+		<div class="tabs-content">
+			<!-- tmpl_if expr="profile_feature_login == 1" -->
+				<div class="content active" id="profile_login">
+					<form 
+						action="<!-- tmpl_var PROGRAM_URL -->" 
+						method="post" 
+						accept-charset="<!-- tmpl_var HTML_CHARSET -->" 
+						id="profile_login"
+					> 
+						<input type="hidden" name="flavor" value="profile_login" > 
+						<input type="hidden" name="process" value="1" > 
+						
+						<div class="row">
+							<div class="small-12 colums">
+								<label for="login_email">
+									Email Address
+								</label>
+								<input 
+									type="email" 
+									name="login_email" 
+									id="login_email" 
+									value="<!-- tmpl_var login_email escape="HTML" -->"
+								> 
+							</div>
+						</div>
+						<div class="row">
+							<div class="small-12 colums">
+								<label for="login_password">
+									Password
+								</label>
+								<input 
+									type="password" 
+									name="login_password" 
+									id="login_password" 
+								> 
+							</div>
+						</div>
+						<div class="row">
+							<div class="small-12 colums">
+								<input type="submit" class="button expand" value="Log Into Your Profile" > 
+							</div>
+						</div>
+					</form>
+				</div>
+			<!-- /tmpl_if -->
 
-            </form> 
-        </div> 
-    <!-- /tmpl_if -->
+			<!-- tmpl_if expr="profile_feature_password_reset == 1" -->
+				<div class="content" id="profile_password_reset">
+					<form 
+						action="<!-- tmpl_var PROGRAM_URL -->" 
+						method="post" 
+						accept-charset="<!-- tmpl_var HTML_CHARSET -->" 
+						id="profile_reset_password"
+					> 
+						<input type="hidden" name="flavor" value='profile_reset_password' > 
+						
+						<div class="row">
+							<div class="small-12 colums">
+								<label for="reset_email">
+									Email Address
+								</label>
+								<input 
+									type="text" 
+									id="reset_email" 
+									name="reset_email" 
+									value="<!-- tmpl_var reset_email escape=HTML -->"
+								>
+							</div>
+						</div>
+						<div class="row">
+							<div class="small-12 colums">
+								<input type="submit" class="button expand" value="Reset Your Profile Password">
+							</div>
+						</div> 
+					</form>
+				</div> 
+			<!-- /tmpl_if --> 
 
+			<!-- tmpl_if expr="profile_feature_register == 1" -->
+				<div class="content" id="profile_register">
+					<div class="alert-box info radius">
+						Register a Profile to easily manage all your <!-- PROGRAM_NAME --> Subscriptions.
+					</div> 
+
+					<form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="profile_register"> 
+						<input type="hidden" name="flavor" value="profile_register" > 
+						
+						<div class="row">
+							<div class="small-12 colums">
+								<label for="register_email">
+									Email Address
+								</label>
+								<input 
+									type="email" 
+									name="register_email" 
+									id="register_email" 
+									value="<!-- tmpl_var register_email escape=HTML -->"
+								> 
+							</div>
+						</div>
+						<div class="row">
+							<div class="small-12 colums">
+								<label for="register_email_again" >
+									Email Address (again)
+								</label>
+								<input 
+									type="email" 
+									name="register_email_again" 
+									id="register_email_again" 
+									value="<!-- tmpl_var register_email_again -->"
+								> 
+							</div>
+						</div>
+						<div class="row">
+							<div class="small-12 colums">
+								<label for="register_password" >
+									Password
+								</label>
+								<input 
+									type="password" 
+									name="register_password" 
+									id="register_password" 
+								 > 
+							</div>
+						</div>
+						<!-- tmpl_if can_use_captcha --> 
+							<div class="row">
+								<div class="small-12 colums">
+									<div class="alert-box info radius">
+										Please type in the string of letters that you see in 
+										the below image into the text box:
+									</div>
+									<!-- tmpl_var CAPTCHA_string --> 
+								<!-- /tmpl_if --> 
+							</div> 
+						</div> 
+						<div class="row">
+							<div class="small-12 colums">
+								<input type="submit" class="button expand" value="Register a New Profile" > 
+							</div>
+						</div>
+					</form> 
+				</div> 
+			<!-- /tmpl_if -->
+		</div>
+	</div>
 </div>
-
 <!-- end profile_login.tmpl --> 
