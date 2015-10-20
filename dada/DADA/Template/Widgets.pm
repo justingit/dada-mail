@@ -1168,7 +1168,7 @@ sub profile_widget {
                 gravatar_img_url => gravatar_img_url(
                     {
                         -email                => $email,
-                        -size => '30',
+                        -size => 45,
                     }
                 ),
 

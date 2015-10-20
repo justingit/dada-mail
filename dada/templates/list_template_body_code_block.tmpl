@@ -1,39 +1,60 @@
-
+   <nav class="top-bar hide-for-small" data-topbar role="navigation" id="admin_header">
+        <ul class="title-area">
+           <li class="name">
+             <h1>
+				<a href="<!-- tmpl_var PROGRAM_URL -->">
+					<img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/dada_mail_logo.png" title="<!-- tmpl_var PROGRAM_NAME -->" alt="<!-- tmpl_var PROGRAM_NAME -->" >
+				</a>
+			  </h1>
+           </li>
+         </ul>
 		<!-- tmpl_if show_profile_widget --> 
-			<!-- tmpl_var profile_widget --> 
+			<section class="top-bar-section">
+						<!-- tmpl_var profile_widget --> 
+			</section> 
+		<!-- /tmpl_if --> 
+	</nav>
+
+<div class="row">
+   <div class="small-12">
+	   
+	   <!-- tmpl_if comment -->
+		   <h1>
+			   <!-- tmpl_var title -->
+		   </h1>
 		<!-- /tmpl_if --> 
 		
-	<h1><!-- tmpl_var title --></h1>
-	<!-- tmpl_if list_settings.list --> 
-		<!-- tmpl_if subscribed_to_list --> 
-			<div class="alert-box info radius">
-				<p>
-					You are currently subscribed to, <!-- tmpl_var list_settings.list_name -->!
-				</p> 
-			</div> 
-		<!-- tmpl_else --> 
+		<!-- tmpl_if list_settings.list --> 
+			<!-- tmpl_if subscribed_to_list --> 
+				<div class="alert-box info radius">
+					You are currently subscribed to, 
+					<!-- tmpl_var list_settings.list_name -->!
+				</div> 
+			<!-- /tmpl_if -->
 		<!-- /tmpl_if -->
-	<!-- /tmpl_if -->
-	
-	
-    <!-- tmpl_var content --> 
-	
-	
-	<!-- tmpl_if list_settings.website_name --> 
-		<!-- tmpl_if list_settings.website_url --> 
-			<p>
-		     Go back to 
-		       <a href="<!-- tmpl_var list_settings.website_url -->">
-			  		<!-- tmpl_var list_settings.website_name -->
-			   </a>
-		    </p>
-		<!-- /tmpl_if --> 
-	<!-- /tmpl_if -->
-	
 
-	<div id="FooterPadding">
-	    <div id="Footer">
-		    <p><!-- tmpl_var footer_props --></p>
-        </div> 
+		<!-- tmpl_var content --> 
+
+		<!-- tmpl_if list_settings.website_name --> 
+			<!-- tmpl_if list_settings.website_url --> 
+				Go back to 
+			    <a href="<!-- tmpl_var list_settings.website_url -->">
+				  	<!-- tmpl_var list_settings.website_name -->
+				</a>
+			<!-- /tmpl_if --> 
+		<!-- /tmpl_if -->
 	</div>
-  
+</div> 
+
+<div class="panel">   
+	   <!-- tmpl_var footer_props -->
+</div> 
+
+
+<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/foundation.min.js"></script>
+<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/foundation/foundation.offcanvas.js"></script>
+
+<script>
+	$(document).foundation();
+</script>
+	

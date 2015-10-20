@@ -1,26 +1,34 @@
 <!-- begin profile_widget.tmpl --> 
 
-<span id="Title">
-
 <!-- tmpl_if profiles_enabled --> 
-	<!-- tmpl_if is_logged_in --> 
-	
-		<!-- tmpl_if gravators_enabled --> 
-			<!-- tmpl_if gravatar_img_url --> 
-				<img src="<!-- tmpl_var gravatar_img_url -->" width="30" height="30" >
+
+	<ul class="right">			
+		<!-- tmpl_if is_logged_in --> 
+			<!-- tmpl_if gravators_enabled --> 
+				<!-- tmpl_if gravatar_img_url --> 
+					<li>
+						<img src="<!-- tmpl_var gravatar_img_url -->" width="45" height="45">
+					</li>
+				<!-- /tmpl_if -->
 			<!-- /tmpl_if -->
-		<!-- /tmpl_if -->
 		
-		Hello, <!-- tmpl_var profile.email -->
-		[<a href="<!-- tmpl_var PROGRAM_URL -->/profile/">Profile Home</a> | <a href="<!-- tmpl_var PROGRAM_URL -->/profile_logout/">Logout</a>]
-	<!-- tmpl_else --> 
-		[<a href="<!-- tmpl_var PROGRAM_URL -->/profile_login/">Profile Register/Log In</a>]
-	<!-- /tmpl_if --> 
+			<li>
+				<a href="<!-- tmpl_var PROGRAM_URL -->/profile/">
+					Hello, <!-- tmpl_var profile.email escape=HTML -->
+				</a>
+			</li>
+			<li>
+				<a href="<!-- tmpl_var PROGRAM_URL -->/profile_logout/">Logout</a>
+			</li>
+		<!-- tmpl_else --> 
+			<li>
+				<a href="<!-- tmpl_var PROGRAM_URL -->/profile_login/">Profile Register/Log In</a>
+			<li>
+		<!-- /tmpl_if --> 
+	</ul>
 <!-- tmpl_else --> 
 	<!-- profiles not enabled. --> 
 <!-- /tmpl_if --> 
-
-</span>
 
 <!-- end profile_widget.tmpl --> 
 

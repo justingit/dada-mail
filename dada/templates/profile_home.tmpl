@@ -1,30 +1,10 @@
 <!-- begin profile_home.tmpl --> 
 
 <!-- tmpl_set name="title" value="Profile" --> 
-<!-- tmpl_set name="show_profile_widget" value="0" -->
 
 <div id="profile_home"></div>
 
 
-
-<div class="alert-box info radius">
-        
-        <!-- tmpl_if gravators_enabled --> 
-            <!-- tmpl_if gravatar_img_url --> 
-            
-                    <a href="http://gravatar.com/" target="_blank">
-                        <img src="<!-- tmpl_var gravatar_img_url -->" >
-                    </a>
-        
-            <!-- /tmpl_if -->
-        <!-- /tmpl_if -->
-                
-        <p>Hello, <!-- tmpl_var profile.email --></p>
-		<p class="text-right"> 
-		    [ <a href="<!-- tmpl_var PROGRAM_URL -->/profile_logout/">Logout</a>]
-		</p>
-       
-</div>
 
 
 <script type="text/javascript">

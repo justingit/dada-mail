@@ -8,12 +8,9 @@
 	<title><!-- tmpl_var title --></title>
 	
 	<!-- tmpl_include list_template_header_code_block.tmpl -->
-
  </head>
- 
+
  <body>
-
-
    <nav class="top-bar hide-for-small" data-topbar role="navigation" id="admin_header">
         <ul class="title-area">
            <li class="name">
@@ -24,20 +21,12 @@
 			  </h1>
            </li>
          </ul>
-	<!-- tmpl_if show_profile_widget --> 
-		<section class="top-bar-section">
-			<ul class="right">
-				<li class="has-form">
-					<!-- tmpl_var profile_widget --> 
-				</li>
-			</ul>
-		</section> 
-	<!-- /tmpl_if --> 
-</nav>
-
-
-
-
+		<!-- tmpl_if show_profile_widget --> 
+			<section class="top-bar-section">
+						<!-- tmpl_var profile_widget --> 
+			</section> 
+		<!-- /tmpl_if --> 
+	</nav>
 
 <div class="row">
    <div class="small-12">
@@ -70,10 +59,8 @@
 	</div>
 </div> 
 
-<div class="row">
-   <div class="small-12">
+<div class="panel">   
 	   <!-- tmpl_var footer_props -->
-	</div>
 </div> 
 
 
