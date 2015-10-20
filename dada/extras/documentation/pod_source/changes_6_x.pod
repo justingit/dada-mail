@@ -718,7 +718,7 @@ The, "dada_mail.user.js" file holds JavaScript for user-facing Dada Mail screens
 The following new HTML can now be seen in the head of the C<list_template.tmpl>
 
 	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery-1.11.3.min.js"></script>
-	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery.validate.js"></script>
+	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/jquery/jquery.validate.js"></script>
 	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/dada_mail.user.js"></script>
 
 You may optionally add these lines to your own List Template to gain the same client-side valiation, but this is entirely optional. 
