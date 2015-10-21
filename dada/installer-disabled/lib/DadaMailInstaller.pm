@@ -4351,75 +4351,45 @@ sub screen {
     my $q    = $self->query();
 
     my $screen = $q->param('screen');
-
-    if ( $screen eq '/static/css/dada_mail.css' ) {
+	my $s_params = { 
+		-encoding => 0, 
+	}
+	
+    if ( $screen =~ m/include\/css/ ) {
         $self->header_props( { -type => 'text/css' } );
-        my $t = DADA::Template::Widgets::screen(
-            {
-                -screen => 'dada_mail.css',
-                -vars   => {
-
-                },
-            }
-        );
-        my $hack_css_url = quotemeta(q{url('../images/header_bg.gif')});
-        my $r            = q{url('} . $Self_URL . q{?flavor=screen&screen=/images/installer-header_bg.gif')};
-        $t =~ s/$hack_css_url/$r/g;
-        return $t;
-    }
-    elsif ( $screen eq '/static/images/dada_mail_logo.png' ) {
-        $self->header_props( { -type => 'image/png' } );
-        return DADA::Template::Widgets::_raw_screen(
-            {
-                -screen   => 'installer-dada_mail_logo.png',
-                -encoding => 0,
-            }
-        );
-    }
-    elsif ( $screen eq '/images/installer-header_bg.gif' ) {
-        $self->header_props( { -type => 'image/gif' } );
-        return DADA::Template::Widgets::_raw_screen(
-            {
-                -screen   => 'installer-header_bg.gif',
-                -encoding => 0,
-            }
-        );
-    }
-    elsif(
-        $screen   =~ m/dada_mail\.user\.js/
-        ||$screen =~ m/jquery\.dadamail.js/
-    ){ 
+	}
+	elsif ( $screen =~ m/include\/css/ ) {
         $self->header_props( { -type => 'text/javascript' } );
-        return ''; 
-    }    
-    elsif ($screen =~ m/dada_mail\.js/
-        || $screen =~ m/dada_mail.installer\.js/
-        || $screen =~ m/jquery/
-        || $screen =~ m/jquery\-ui/
-         )
-    {
-        $screen =~ s/\/static\/javascripts\///;
+	}
+	elsif ( $screen =~ /include\/images/ ) {
         
-        $self->header_props( { -type => 'text/javascript' } );
+		if ( $screen =~ /\.png/ ) {
+	        $self->header_props( { -type => 'image/png' } );
+		}
+		elsif ( $screen =~ /\.jpg/ ) {
+	        $self->header_props( { -type => 'image/jpg' } );
+		}
+		elsif ( $screen =~ /\.gif/ ) {
+	        $self->header_props( { -type => 'image/gif' } );
+		}
+		
+	}
 
-        return DADA::Template::Widgets::screen(
-            {
-                -screen => make_safer($screen),
-            }
-        );
-    }
-    elsif ( $screen =~ /^\/static/ ) {
-        $self->header_props( { -type => 'text/plain' } );
-    }
-    elsif ( $screen eq 'upgrade_to_pro_dada.jpg' ) {
-        $self->header_props( { -type => 'image/jpg' } );
-        return DADA::Template::Widgets::_raw_screen(
-            {
-                -screen   => 'upgrade_to_pro_dada.jpg',
-                -encoding => 0,
-            }
-        );
-    }
+    my $t = DADA::Template::Widgets::_raw_screen(
+        {
+            -screen => $screen,
+        	%$s_params,
+		}
+    );
+	
+    if ( $screen =~ m/include\/css/ ) {	
+		    my $hack_css_url = quotemeta(q{url('../images/header_bg.gif')});
+		    my $r            = q{url('} . $Self_URL . q{?flavor=screen&screen=include/images/installer-header_bg.gif')};
+		    $t               =~ s/$hack_css_url/$r/g;
+	}
+	
+	return $t; 
+		
 }
 
 sub move_installer_dir {
