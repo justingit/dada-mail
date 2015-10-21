@@ -207,17 +207,17 @@
 </div>
 
 <h2 data-magellan-destination="subscriber_activity">
-	Subscribe Activity
+	Subscriber Activity
 </h2>
 <a name="subscriber_activity"></a>
 
 
 <div class="row">
-	<div class="large-3 medium-3 columns">
+	<div class="large-4 medium-4 columns">
 		<div id="message_email_activity_listing_table_loading"></div> 
 		<div id="message_email_activity_listing_table"></div>
 	</div>
-	<div class="large-9 medium-9 columns">
+	<div class="large-8 medium-8 columns">
 		<div id="message_individual_email_activity_report_table_loading"></div> 
 		<div id="message_individual_email_activity_report_table"   ></div>
 	</div>
@@ -234,13 +234,14 @@
 </h3>
 <!-- tmpl_if can_use_country_geoip_data --> 
 	<div class="row">
-		<div class="large-3 medium-3 columns">
-		<div id="country_geoip_opens_table_loading"></div> 
-		<div id="country_geoip_opens_table"></div>
-	</div>
-	<div class="large-9 medium-9 columns">
-		<div id="country_geoip_opens_map_loading"></div> 
-		<div id="country_geoip_opens_map"></div>
+		<div class="large-4 medium-4 columns">
+			<div id="country_geoip_opens_table_loading"></div> 
+			<div id="country_geoip_opens_table"></div>
+		</div>
+		<div class="large-8 medium-8 columns">
+			<div id="country_geoip_opens_map_loading"></div> 
+			<div id="country_geoip_opens_map"></div>
+		</div>
 	</div>
 <!-- tmpl_else --> 
 	<div class="alert-box info radius">
@@ -251,9 +252,12 @@
 <h3>
 	Message Opens Over Time
 </h3> 
-<div id="over_time_opens_graph_loading"></div> 
-<div id="over_time_opens_graph"></div> 
-
+	<div class="row">
+		<div class="small-12 columns">
+			<div id="over_time_opens_graph_loading"></div> 
+			<div id="over_time_opens_graph"></div> 
+		</div>
+	</div>
 <h3>
 	User Agents for Opens
 </h3>
@@ -284,11 +288,11 @@
 
 <!-- tmpl_if can_use_country_geoip_data --> 
 	<div class="row">
-		<div class="large-3 medium-3 columns">
+		<div class="large-4 medium-4 columns">
 			<div id="country_geoip_clickthroughs_table_loading"></div> 
 			<div id="country_geoip_clickthroughs_table"></div>
 		</div> 
-		<div class="large-9 medium-9 columns">
+		<div class="large-8 medium-8 columns">
 			<div id="country_geoip_clickthroughs_map_loading"></div> 
 			<div id="country_geoip_clickthroughs_map"   ></div> 
 		</div> 
@@ -313,13 +317,13 @@
 
 <!-- tmpl_if url_report --> 
 	<div> 
-		<div style="max-height: 400px; overflow: auto; border:1px solid black overflow-y: scroll; overflow-x: hidden;">
-			<table  style="width:100%" class="responsive">
+		<div style="overflow: auto; border:1px solid black overflow-y: scroll; overflow-x: scroll;max-height:480px">
+			<table  style="width:100%">
 				<tr> 
 					<th> 
 						URL 
 					</th> 
-					<th> 
+					<th class="text-right"> 
 						# Clickthroughs
 					</th> 
 				</tr> 
@@ -330,7 +334,7 @@
 								<!-- tmpl_var url escape="HTML" -->
 							</a> 
 						</td> 
-						<td> 
+						<td class="text-right"> 
 							<!-- tmpl_var count --> 
 						</td> 
 					</tr> 
@@ -370,13 +374,13 @@
 
 	
 <div class="row">
-	<div class="large-3 medium-3 columns">
+	<div class="large-4 medium-4 columns">
 		<div id="unsubscribe_table_loading"></div> 
 		<div id="unsubscribe_table" ></div>
 	</div> 
-	<div class="large-9 medium-9 columns">
+	<div class="large-8 medium-8 columns">
 		<div id="unsubscribe_graph_loading"></div> 
-		<div id="unsubscribe_graph"   data-title="Unsubscribes"></div> 
+		<div id="unsubscribe_graph" data-title="Unsubscribes"></div> 
 	</div> 	
 </div> 
 
@@ -397,11 +401,11 @@
 </h3>
 <!-- tmpl_if can_use_country_geoip_data --> 
 	<div class="row">
-		<div class="large-3 medium-3 columns">
+		<div class="large-4 medium-4 columns">
 			<div id="country_geoip_view_archive_table_loading"></div> 
 			<div id="country_geoip_view_archive_table"></div>
 		</div> 
-		<div class="large-9 medium-9 columns">
+		<div class="large-8 medium-8 columns">
 			<div id="country_geoip_view_archive_map_loading"></div> 
 			<div id="country_geoip_view_archive_map"   ></div>
 		</div> 
@@ -431,11 +435,11 @@
 
 <!-- tmpl_if can_use_country_geoip_data --> 
 	<div class="row">
-		<div class="large-3 medium-3 columns">
+		<div class="large-4 medium-4 columns">
 			<div id="country_geoip_forwards_table_loading"></div> 
 			<div id="country_geoip_forwards_table"></div>
 		</div> 
-		<div class="large-9 medium-9 columns">
+		<div class="large-8 medium-8 columns">
 			<div id="country_geoip_forwards_map_loading"></div> 
 			<div id="country_geoip_forwards_map"></div>
 		</div> 
@@ -465,11 +469,11 @@
 </h3>
 
 <div class="row">
-	<div class="large-3 medium-3 columns">
+	<div class="large-4 medium-4 columns">
 		<div id="soft_bounce_table_loading"></div> 
 		<div id="soft_bounce_table" ></div>
 	</div> 
-	<div class="large-9 medium-9 columns">
+	<div class="large-8 medium-8 columns">
 		<div id="soft_bounce_graph_loading"></div> 
 		<div id="soft_bounce_graph"   data-title="Soft Bounces"></div> 
 	</div> 
@@ -480,11 +484,11 @@
 </h3>
 
 <div class="row">
-	<div class="large-3 medium-3 columns">
+	<div class="large-4 medium-4 columns">
 		<div id="hard_bounce_table_loading"></div> 
 		<div id="hard_bounce_table" ></div>
 	</div> 
-	<div class="large-9 medium-9 columns">
+	<div class="large-8 medium-8 columns">
 		<div id="hard_bounce_graph_loading"></div> 
 		<div id="hard_bounce_graph" data-title="Hard Bounces"></div> 
 	</div> 
@@ -497,11 +501,11 @@
 <a name="sending_errors"></a>
 
 <div class="row">
-	<div class="large-3 medium-3 columns">
+	<div class="large-4 medium-4 columns">
 		<div id="errors_sending_to_table_loading"></div> 
 		<div id="errors_sending_to_table"></div>
 	</div> 
-	<div class="large-9 medium-9 columns">
+	<div class="large-8 medium-8 columns">
 		<div id="errors_sending_to_graph_loading"></div> 
 		<div id="errors_sending_to_graph" data-title="Sending Errors"></div> 
 	</div> 
@@ -514,11 +518,11 @@
 <a name="abuse_reports"></a>
 
 <div class="row">
-	<div class="large-3 medium-3 columns">
+	<div class="large-4 medium-4 columns">
 		<div id="abuse_report_table_loading"></div> 
 		<div id="abuse_report_table"></div>
 	</div> 
-	<div class="large-9 medium-9 columns">
+	<div class="large-8 medium-8 columns">
 		<div id="abuse_report_graph_loading"></div> 
 		<div id="abuse_report_graph" data-title="Abuse Reports"></div> 
 	</div> 

@@ -5,9 +5,9 @@
 
 <!-- tmpl_if report --> 
 	<div> 
-	  <div style="max-width:350px; max-height: 400px; overflow: auto; border:1px solid black overflow-y: scroll; overflow-x: hidden;">
+	  <div style="overflow: auto; border:1px solid black overflow-y: scroll; overflow-x: scroll;max-height:640px;padding:3px">
 	
-	<table  style="width:325px">
+	<table width="100%">
 	<tr> 
 		<th> 
 	   	 Email Address 
@@ -16,10 +16,10 @@
 				export .csv
 			</a>
 			)
-		</td> 
+		</th> 
 	
 	  <!-- tmpl_if show_count --> 
-		<td>&nbsp;</td>
+		<th>&nbsp;</th>
 	  <!-- /tmpl_if --> 
 	
 	 </tr> 

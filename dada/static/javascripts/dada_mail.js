@@ -1095,9 +1095,20 @@ jQuery(document).ready(function($){
 		window.onresize = function(){
 			var arrayLength = trackerc.length;
 			for (var i = 0; i < arrayLength; i++) {
-				trackerc[i].chart_options['width']  = $("#" + trackerc[i].chart_options['target_div']).width();
-				trackerc[i].chart_options['height'] = $("#" + trackerc[i].chart_options['target_div']).width();
-				$("#" + trackerc[i].chart_options['target_div']).height($("#" + trackerc[i].chart_options['target_div']).width());
+				
+				var new_width  =  $("#" + trackerc[i].chart_options['target_div']).width();
+				var new_height = (new_width/1.68).toFixed(0);
+				
+				//if(new_height > new_width){ 
+				//	alert("new_height: " + new_height + "new_width:" + new_width); 
+				//	}
+				
+				trackerc[i].chart_options['width']  = new_width;
+				trackerc[i].chart_options['height'] = new_height;
+				
+				// I'm guessing this isn't doing the Thing I want it to do. 
+				$("#" + trackerc[i].chart_options['target_div']).height(new_height);
+				
 				trackerc[i].chart_obj.draw(trackerc[i].chart_data, trackerc[i].chart_options);		
 			}
 		};
@@ -1950,11 +1961,9 @@ function drawTrackerDomainBreakdownChart() {
 				chartArea: {
 					left: 20,
 					top: 20,
-					width: "70%",
-					height: "70%"
+					width: "90%",
+					height: "90%"
 				},
-				width: $('#domain_break_down_chart').attr("data-width"),
-				height: $('#domain_break_down_chart').attr("data-height"),
 				pieSliceTextStyle: {
 					color: '#FFFFFF'
 				},
@@ -2010,7 +2019,7 @@ function user_agent_chart(type, target_div) {
 				colors: ["ffabab", "ffabff", "a1a1f0", "abffff", "abffab", "ffffab"],
 				is3D: true,
 				width: $("#" + target_div).width(),
-				height: $("#" + target_div).width(),
+				height: ($("#" + target_div).width()/1.68).toFixed(0),
 				target_div: target_div
 			};
 			var data = new google.visualization.DataTable(jsonData);
@@ -2062,8 +2071,8 @@ backgroundColor: {
 		chartArea: {
 			left: 60,
 			top: 20,
-			width: '70%',
-			height: '70%',
+			width: '90%',
+			height: '90%',
 
 		},
 		colors: ['blue', 'red', 'green', 'orange'],
@@ -3015,7 +3024,7 @@ function country_geoip_map(type, target_div) {
 					colors: ['#e5f2ff', '#ff0066']
 				},
 				width: $("#" + target_div).width(),
-				height: $("#" + target_div).width(),
+				height: ($("#" + target_div).width()/1.68).toFixed(0),
 				target_div: target_div
 			};
 			var chart = new google.visualization.GeoChart(document.getElementById(target_div));
@@ -3091,7 +3100,7 @@ function individual_country_geoip_map(type, country, target_div) {
 					colors: ['#3399ff', '#ff0066']
 				},
 				width: $("#" + target_div).width(),
-				height: $("#" + target_div).width(),
+				height: ($("#" + target_div).width()/1.68).toFixed(0),
 				target_div: target_div
 			};
 			var chart = new google.visualization.GeoChart(document.getElementById(target_div));
@@ -3152,8 +3161,8 @@ function data_over_time_graph(type, label, target_div) {
 				chartArea: {
 					left: 60,
 					top: 20,
-					width: "70%",
-					height: "70%"
+					width: "90%",
+					height: "90%"
 				},
 				backgroundColor: {
 					stroke: '#FFFFFF',
@@ -3163,7 +3172,7 @@ function data_over_time_graph(type, label, target_div) {
 					slantedText: true
 				},
 				width: $("#" + target_div).width(),
-				height: $("#" + target_div).width(),
+				height: ($("#" + target_div).width()/1.68).toFixed(0),
 				target_div: target_div
 			};
 			var chart = new google.visualization.AreaChart(document.getElementById(target_div));
@@ -3258,16 +3267,14 @@ function email_breakdown_chart(type, label, target_div) {
 			var data = new google.visualization.DataTable(jsonData);
 			var chart = new google.visualization.PieChart(document.getElementById(target_div));
 			var options = {
+				width: $("#" + target_div).width(),
+				height: ($("#" + target_div).width()/1.68).toFixed(0),
 				chartArea: {
 					left: 20,
 					top: 20,
 					width: "90%",
 					height: "90%"
 				},
-				title: $('#' + target_div).attr("data-title"),
-				width: $('#' + target_div).attr("data-width"),
-				height: $('#' + target_div).attr("data-height"),
-
 				pieSliceTextStyle: {
 					color: '#FFFFFF'
 				},
@@ -3318,7 +3325,7 @@ function tracker_the_basics_piechart(type, label, target_div) {
 				colors: ["ffabab", "ffabff", "a1a1f0", "abffff", "abffab", "ffffab"],
 				is3D: true, 
 				width: $("#" + target_div).width(),
-				height: $("#" + target_div).width(),
+				height: ($("#" + target_div).width()/1.68).toFixed(0),
 				target_div: target_div
 			};
 			
@@ -3529,8 +3536,8 @@ function drawSubscriberHistoryChart() {
 				chartArea: {
 					left: 60,
 					top: 20,
-					width: "70%",
-					height: "70%"
+					width: "90%",
+					height: "90%"
 				},
 			};
 			options['width']  = $('#subscriber_history_chart').width();

@@ -4,7 +4,7 @@
 <!-- tmpl_unless chrome --> 
 
 	<div>
-		<div style="max-height: 400px; overflow: auto; border:1px solid black overflow-y: scroll; overflow-x: hidden;">
+		<div style="overflow: auto; border:1px solid black overflow-y: scroll; overflow-x: scroll;max-height:480px">
 			<p class="text-right">
 		<a href="<!-- tmpl_var Plugin_URL -->?prm=individual_country_geoip_report_table&mid=<!-- tmpl_var mid -->&country=<!-- tmpl_var country -->&type=ALL&chrome=1" target="_blank">
 			View Report in a New Window &gt;&gt;
@@ -26,7 +26,7 @@
 		
 	<!-- tmpl_loop unique_ips -->
 	
-		<table  style="border:1px solid black;border-collapse: collapse;width:640px">
+		<table style="border:1px solid black" width="100%">
 			<thead style="background-color:#999999;color:#FFFFFF;  text-align:center">
 			<tr style="background-color:#999999;color:#FFFFFF;  text-align:center">
 				<th colspan="3" style="background-color:#333333;color:#FFFFFF; text-align:center">
