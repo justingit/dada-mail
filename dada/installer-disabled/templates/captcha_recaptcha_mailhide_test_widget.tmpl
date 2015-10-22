@@ -1,6 +1,6 @@
 <!-- begin captcha_recaptcha_mailhide_test_widget.tmpl --> 
 	<!-- tmpl_if errors --> 
-		<div class="alert-box info radius"> 
+		<div class="alert-box warning radius"> 
 			<p>
 				<strong>
 					reCAPTCHA Mailhide Configuration Failed:
@@ -12,7 +12,9 @@
 	<!-- tmpl_else --> 
 	
 <!-- tmpl_if comment --> 
-<!-- tmpl_var captcha escape="HTML" --></pre> 
+	<pre>
+		<!-- tmpl_var captcha escape="HTML" -->
+	</pre> 
 <!-- /tmpl_if --> 
 		
 		<div class="alert-box info radius"> 
@@ -21,9 +23,9 @@
 			</p>
 			
 			<!-- tmpl_if captcha --> 
-				<h1 style="text-align:center">
+				<p class="text-center">
 					<!-- tmpl_var captcha -->
-				</h1> 
+				</p> 
 			<!-- /tmpl_if --> 
 		</div>
 	

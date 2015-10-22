@@ -1,6 +1,6 @@
 <!-- begin captcha_default_test_widget.tmpl --> 
 	<!-- tmpl_if errors --> 
-		<div class="alert-box info radius"> 
+		<div class="alert-box warning radius"> 
 			<p>
 				<strong>
 					Default CAPTCHA Configuration Failed:
@@ -8,18 +8,15 @@
 			</p>
 			<p><code><!-- tmpl_var errors escape="HTML" --></code></p>
 		</div> 
-		
 	<!-- tmpl_else --> 
-	
 		<div class="alert-box info radius"> 
 			<p>
-				If you see the CAPTCHA widget below, <strong>Default CAPTCHA</strong> Configuration Worked!.
+				If you see the CAPTCHA widget below, <strong>Default CAPTCHA</strong> Configuration Worked!
 			</p>
 			
-			<p style="text-align:center"><img src="<!-- tmpl_var captcha -->" /></p>
-			
+			<p class="text-center">
+				<img src="<!-- tmpl_var captcha -->">
+			</p>
 		</div>
-	
 	<!-- /tmpl_if --> 
-	
 <!-- end captcha_recaptcha_test_widget.tmpl -->
