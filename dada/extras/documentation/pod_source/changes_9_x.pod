@@ -1,0 +1,39 @@
+=pod
+
+=encoding utf-8
+
+=head1 Dada Mail Changelog for v9.x
+
+=head1 9.0.0 Alpha 1 - 10/25/15
+
+Initial release of v9. Hurray! 
+
+This release introduces a new visual look, feel, and functionality to Dada Mail's Front End, thanks to the utilization of the Zurb Foundation Front End Framework: 
+
+L<http://foundation.zurb.com/>
+
+Big wins to using the Foundation Framework are: 
+
+=head3 Removal of Crufty HTML
+
+Dada Mail is a mature application, first written in 1999. Some of the HTML used for formatting was still relying on tables. Still! Almost all table-based layouts have now finally been removed, being replaced using Foundation's Grid Layout system: 
+
+L<http://foundation.zurb.com/docs/components/grid.html>
+
+Tables are still used, but usually only for tabular data. 
+
+=head3 Responsive Design
+
+Dada Mail takes full advantage of Foundation's support for Repsonsive Design, especially in the List Control Panel. That means you can more easily and comfortably use Dada Mail on your phone or tablet - the design will adapt to your screen's available real estate. For example: The List Control Panel's left-hand menu will be hidden off-canvas if you're viewing on a phone device, but can be reveal via a hamburger menu on the upper left side of the toolbar menu. 
+
+=head3 Todo
+
+At this point, we have not heavily customized Dada Mail's design - the app right now has the same look and feel of the default styling of Foundation. Future releases will move towards refining Dada Mail's own design. To do this, we will be utilizing Foundation's SASS workflow: 
+
+L<http://foundation.zurb.com/docs/sass.html>
+
+
+
+
+
+=cut

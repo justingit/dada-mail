@@ -1,0 +1,13 @@
+=pod
+
+=head1 Dada Mail 8 to Dada Mail 9 Upgrade Guide
+
+=head2 Focus
+
+The main difference between v9 of Dada Mail and all previous versions of Dada Mail, is that v9 now relies on the Zurb Foundation Frontend Framework: 
+
+L<http://foundation.zurb.com/>
+
+The majority of the changes in v9 happen with rewritting template files found in, C<dada/templates>. If you have made your own customizations and modifications to these files, they may well need to be rewritten to work with this new version of Dada Mail (and thus, the major release status)
+
+=cut
