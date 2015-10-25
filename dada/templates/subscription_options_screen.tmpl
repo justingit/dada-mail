@@ -55,7 +55,7 @@
             <div class="small-12 columns">
                 <input type="checkbox" name="view_list_show_timestamp_col" id="view_list_show_timestamp_col" value="1" <!-- tmpl_if list_settings.view_list_show_timestamp_col -->checked="checked"<!--/tmpl_if--> >
                 <label for="view_list_show_timestamp_col">
-                 Show, &quot;Subscription Date&quot; Column
+                 Show, &quot;Subscription Date&quot; column
                 </label>
             </div> 
         </div>
@@ -127,7 +127,7 @@
         <div class="small-12 columns">
             <input type="checkbox" name="use_subscription_quota" id="use_subscription_quota" value="1" <!-- tmpl_if list_settings.use_subscription_quota -->checked="checked"<!--/tmpl_if--> >
             <label for="use_subscription_quota">
-                Limit the Number of Subscribers
+                Limit the number of subscribers
             </label>
         </div>
     </div>
@@ -157,7 +157,7 @@
                 value="1"
              >
             <label for="allow_profile_editing"> 
-                Allow Profile Field Editing
+                Allow Profile field editing
             </label>
         </div> 
     </div> 
@@ -165,9 +165,9 @@
        <div class="alert-box info radius">
             <p>When enabled, <strong>Advanced Profile Options</strong> will also be available during mass subscribing, including: </p>
                 <ul> 
-                    <li>Preserving or Updating Profile information, for new Subscribers</li> 
-                    <li>Importing Subscribers with missing and required Profile Fields</li> 
-                    <li>Updating Profile Information] for Subscribers that are already members</li> 
+                    <li>Preserving or updating profile information for new subscribers</li> 
+                    <li>Importing subscribers with missing and required profile fields</li> 
+                    <li>Updating profile Information for subscribers that are already members</li> 
                 </ul> 
             </p>
             
@@ -203,7 +203,7 @@
                 <!-- tmpl_if list_settings.invites_check_for_already_invited -->checked="checked"<!--/tmpl_if--> 
                >
               <label for="invites_check_for_already_invited">
-               Check for Already Invited Addresses, Before Sending a List Invitation
+               Check for already-invited addresses before sending a list invitation
               </label>
          </div> 
     </div>
@@ -212,7 +212,7 @@
         <div class="small-12 small-offset-1 columns">      
           <input type="checkbox" name="invites_prohibit_reinvites" id="invites_prohibit_reinvites" value="1" <!-- tmpl_if list_settings.invites_prohibit_reinvites -->checked="checked"<!--/tmpl_if--> >
           <label for="invites_prohibit_reinvites">
-              Prohibit re-Inviting Addresses
+              Prohibit re-inviting addresses
           </label>
        </div> 
   </div>
@@ -228,10 +228,15 @@
 
 <div class="alert-box info radius">
 
-    <p>The Black List is a list of addresses that are <strong>not allowed</strong> to be a part of your Subscribers List.</p>
+    <p>
+		The Black List is primarily used to make sure that Subscribers that have been unsubscribed are not inadvertently re-subscribed.
+	</p>
 
-    <p>You may add both complete email addresses  (you@example.com) or 
-     parts of email addresses (example.com).</p>
+    <p>
+		You may add both complete email addresses  (you@example.com) or 
+     parts of email addresses (example.com).
+ 
+ </p>
 
     <p>
     	Parts of email addresses will match whole addresses. For example, &quot;example.com&quot; will match, &quot;you@example.com&quot; and, &quot;someone.else@example.com&quot;
@@ -246,7 +251,7 @@
     <div class="small-12 columns">
 	      <input type="checkbox" name="black_list" id="black_list" value="1" <!-- tmpl_if list_settings.black_list -->checked="checked"<!--/tmpl_if--> >
 	      <label for="black_list">
-	       Activate Black List
+	      Activate Black List
 	      </label>
 	 </div> 
 </div> 
@@ -259,7 +264,7 @@
             <!-- tmpl_if list_settings.add_unsubs_to_black_list -->checked="checked"<!--/tmpl_if-->
            >
           <label for="add_unsubs_to_black_list">
-           Move Addresses to the Black List after they are Unsubscribed
+           Move addresses to the Black List after they are unsubscribed
           </label>    
       </div>
   </div> 
@@ -273,7 +278,7 @@
             <!-- tmpl_if list_settings.allow_blacklisted_to_subscribe -->checked="checked"<!--/tmpl_if-->
            >
           <label for="allow_blacklisted_to_subscribe">
-           Continue to Allow Black Listed Addresses to Subscribe Themselves
+           Continue to allow black listed addresses to subscribe themselves
           </label>
       </div> 
     </div> 
@@ -290,10 +295,9 @@
                     <!-- tmpl_if list_settings.allow_admin_to_subscribe_blacklisted -->checked="checked"<!--/tmpl_if-->
                  >
                 <label for="allow_admin_to_subscribe_blacklisted">
-                Continue to Allow Black Listed Addresses to be Invited/Subscribed via The List Control Panel. 
-                </label>
+                Continue to allow black listed addresses to be invited/subscribed via the list control panel
                 <br >
-                Black Listed Addresses will just need to be manually checked/selected to be Invited/Subscribed.  
+                Black listed addresses will just need to be manually checked/selected to be invited/subscribed
             </div> 
         </div> 
     <!-- /tmpl_if -->
@@ -317,7 +321,7 @@
 	<div class="alert-box info radius">
 	
         <p>
-        	The White List are a list of email addresses only allowed to be a part of your Subscribers List.</p>	
+        	The White List is a list of email addresses only allowed to be a part of your Subscribers List.</p>	
         	<p>You may add both complete email addresses (you@example.com) or 
         	 parts of email addresses (example.com).</p>
 

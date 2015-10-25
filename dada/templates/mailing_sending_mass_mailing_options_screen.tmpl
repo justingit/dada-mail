@@ -63,7 +63,7 @@
 					<!-- tmpl_if list_settings.enable_bulk_batching -->checked="checked"<!--/tmpl_if-->
 				>
 				<label for="enable_bulk_batching">
-					Enable Batch Sending
+					Enable batch sending
 				</label>
 			</div> 
 		</div>
@@ -129,11 +129,11 @@
 						<!-- tmpl_if list_settings.adjust_batch_sleep_time -->checked="checked"<!--/tmpl_if-->
 					>
 					<label for="adjust_batch_sleep_time">
-						Adjust Sleep Time 
+						Adjust sleep time 
 					</label>
 
 					<div class="alert-box info radius">
-						Sleep Time Between Batches 
+						Sleep time between batches 
 						will be adjusted automatically, 
 						depending on how long the batch took to complete.
 					</div>
@@ -151,7 +151,7 @@
 						value="1" <!-- tmpl_if list_settings.smtp_connection_per_batch -->checked="checked"<!-- /tmpl_if -->
 					>
 					<label for="smtp_connection_per_batch"> 
-						Use One SMTP Connection per Batch
+						Use one SMTP connection per batch
 					</label>
 					<!-- tmpl_if expr="(list_settings.sending_method ne 'smtp')" --> 
 						<div class="alert-box info radius">
@@ -175,7 +175,7 @@
 			value="1" <!-- tmpl_if list_settings.auto_pickup_dropped_mailings -->checked="checked"<!--/tmpl_if-->
 		>
 		<label for="auto_pickup_dropped_mailings">
-			Auto-Pickup Dropped Mass Mailings
+			Auto-Pickup dropped mass mailings
 		</label>
 		<div class="alert-box info radius">
 			Mass mailing can be a lengthy process and can sometimes get interrupted by the server. 
@@ -192,7 +192,7 @@
 				<!-- tmpl_if list_settings.restart_mailings_after_each_batch -->checked="checked"<!--/tmpl_if-->
 			>
 			<label for="restart_mailings_after_each_batch">
-				Reload Mailings After Each Batch
+				Reload mass mailings after each batch
 			</label>
 
 			<p>This option should <em>only</em> be used if the <code>sleep()</code> Perl function is not working properly. 
@@ -216,7 +216,7 @@
 					<!-- tmpl_if list_settings.mass_mailing_send_to_list_owner -->checked="checked"<!--/tmpl_if-->
 				>
 				<label for="mass_mailing_send_to_list_owner">
-					Send Mass Mailings to List Owner
+					Send mass mailings to List Owner
 				</label>
 			</div> 
 		</div>
@@ -231,7 +231,7 @@
 					<!-- tmpl_if list_settings.get_finished_notification -->checked="checked"<!--/tmpl_if--> 
 				>
 				<label for="get_finished_notification">
-					Send &quot;Mass Mailing Completed&quot; Notification to List Owner
+					Send &quot;Mass Mailing Completed&quot; notification to List Owner
 				</label>
 			</div>
 		</div>
@@ -250,7 +250,7 @@
 					<!-- tmpl_if list_settings.mass_mailing_save_logs -->checked="checked"<!--/tmpl_if-->
 				>
 				<label for="mass_mailing_save_logs">
-					Save Mass Mailing Logs
+					Save mass mailing logs
 				</label>
 			</div>
 		</div>

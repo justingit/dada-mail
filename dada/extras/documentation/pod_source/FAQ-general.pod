@@ -819,7 +819,7 @@ L<http://dadamailproject.com/support/documentation/FAQ-email_sending.pod.html>
 
 Yes! There are a few ways. 
 
-=head3 Only Archive, Don't Send, method
+=head3 Only archive, don't send, method
 
 =over
 
@@ -831,7 +831,7 @@ Yes! There are a few ways.
 
 =item 4 Check: B<Archive this message>
 
-=item 5 Check: B<Only Archive, Don't Send>
+=item 5 Check: B<Only archive, don't send>
 
 =item 6 Change: B<Back Date ( month/day/year - hour:minute:second )>
 
