@@ -235,7 +235,7 @@ my @Extension_Names = qw(
 $DADA::Config::PROGRAM_URL   = program_url_guess();
 $DADA::Config::S_PROGRAM_URL = program_url_guess();
 
-use DADA::Config 8.0.0;
+use DADA::Config 9.0.0;
 use DADA::App::Guts;
 use DADA::Template::Widgets;
 use DADA::Template::HTML;

@@ -37,7 +37,7 @@ BEGIN {
 }
 
 
-use DADA::Config 8.0.0; 
+use DADA::Config 9.0.0; 
 #use DADA::App::Guts; 
 
 
