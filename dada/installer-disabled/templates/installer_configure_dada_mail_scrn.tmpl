@@ -4,837 +4,737 @@
 <!-- tmpl_set name="show_profile_widget" value="0" -->
 <div id="installer_configure_dada_mail"></div> 
 
-<!-- tmpl_if errors --> 
-	<div class="alert-box warning radius"> 
-		<p>
-			Some problems were encountered when attempting to install and configure 
-			<!-- tmpl_var PROGRAM_NAME -->. Details are marked below.
-		</p>
-	</div>  
-<!-- /tmpl_if --> 
+	<div style="margin-top:2em">
+	</div>
 
-<!-- tmpl_if error_cant_read_config_dot_pm --> 
-	<div class="alert-box warning radius">
-
-	<h3>Warning!</h3>
-
-		<p> 
-		<!-- tmpl_var PROGRAM_NAME --> can't read your, <em>dada/DADA/Config.pm</em> file.
-		</p>
-		<p> 
-		You may still perform this installation, but you may have to edit parts of the <em>dada/DADA/Config.pm</em>
-		file yourself. (We'll let you know where.)
-		</p>
-	</div> 
-<!-- /tmpl_if --> 
-
-
-<!-- tmpl_if error_cant_write_config_dot_pm --> 
-	<div class="alert-box warning radius">
-		<h3>Warning!</h3> 
-		<p> 
-		<!-- tmpl_var PROGRAM_NAME --> won't be able to write to edit your <em>dada/DADA/Config.pm</em> file itself.
-		</p> 
-		<p> 
-		You may still perform this installation, but you may have to edit parts of the <em>dada/DADA/Config.pm</em>
-		file yourself. (We'll let you know, where.)
-		</p>
-	</div> 
-<!-- /tmpl_if --> 
-
-				<!-- tmpl_if comment --> 
-					<!-- tmpl_loop errors --> 
-						<p>Error <!-- tmpl_var error --> 
-					<!-- /tmpl_loop --> 
-				<!-- /tmpl_if --> 
-
-<!-- tmpl_if test_complete_dada_files_dir_structure_exists --> 
-
-	<div 
-		<!-- tmpl_if expr="(install_type eq 'install')" -->
-			class="alert-box warning radius"
-		<!-- tmpl_else -->class="alert-box info radius"<!-- /tmpl_if -->
-	>
-		<p>
-		A current <!-- tmpl_var PROGRAM_NAME --> configuration was discovered at:</p> 
-		<p class="text-center">
-			<!-- tmpl_var configured_dada_config_file -->
-		</p>
-	<form 
-		target="_blank" 
-		action="<!-- tmpl_var Self_URL -->"
-	> 
-		<input type="hidden" name="flavor" value="show_current_dada_config"> 
-		<input type="hidden" name="config_file" value = "<!-- tmpl_var configured_dada_config_file escape="HTML" -->"> 
-
-		<div class="row">
-			<div class="small-6 large-4 medium-5 small-centered medium-centered large-centered columns">
-				<input type="submit" value="View this .dada_config Configuration..." class="plain button">
-			</div>
-		</div>
-	</form>
-
-	<!-- tmpl_if expr="(install_type eq 'install')" -->
-		<p>
-			<strong>Please choose a different location</strong> for your <!-- tmpl_var Dada_Files_Dir_Name --> directory below, 
-			or <strong><a href="<!-- tmpl_var Self_URL -->">start over and Upgrade</a></strong>.
-		</p>
+	<div class="row">
+		<div class="small-12 medium-8 large-8 medium-centered large-centered columns">
+			
+		<!-- tmpl_if errors --> 
+			<div class="alert-box warning radius"> 
+				<p>
+					Some problems were encountered when attempting to install and configure 
+					<!-- tmpl_var PROGRAM_NAME -->. Details are marked below.
+				</p>
+			</div>  
 		<!-- /tmpl_if --> 
 
-	<!-- tmpl_if expr="(install_type eq 'upgrade')" -->
-		<ul>
-			<li>
-				If you're upgrading from a big difference in version (5.x to 6.x, 6.x to 6.y), we suggest <strong>creating a new .dada_config file</strong> 
-			</li>
-			<li> 
-				Values from your previous configuration have be pre-filled below. Any additional 
-				configuration changes you may have made to your .dada_config file 
-				will need to be recreated manually, after this upgrade. 
-			</li>
-		</ul> 
-	<!-- /tmpl_if --> 
+		<!-- tmpl_if error_cant_read_config_dot_pm --> 
+			<div class="alert-box warning radius">
 
-	</div> 
+			<h4>Warning!</h4>
 
-<!-- /tmpl_if --> 
-
-<form action="<!-- tmpl_var Self_URL -->" method="post" id="installform"> 
-
-<input type="hidden" name="self_url" id="self_url" value="<!-- tmpl_var self_url escape="HTML" -->">
-
-<input type="hidden" name="install_type"                       value="<!-- tmpl_var install_type -->">
-<input type="hidden" name="current_dada_files_parent_location" value="<!-- tmpl_var current_dada_files_parent_location -->">
-
-<!-- tmpl_if expr="(install_type eq 'upgrade')" -->
-	<input 
-		type="hidden" 
-		name="if_dada_files_already_exists"	
-		value="keep_dir_create_new_config"
-	>
-
-				<!-- tmpl_if comment -->
-				
-							<!-- 
-								I can't really understand why you would use this option, anymore: 
-							-->
-							<fieldset style="background:#cbecff">
-							<legend>Upgrade Options</legend>	
-
-							<p>
-							<input type="radio" name="if_dada_files_already_exists"	id="keep_dir_create_new_config" value="keep_dir_create_new_config" checked="checked" class="radiochangeDisplayState" data-target="configuration" data-state="show"  > 
-							<label for="keep_dir_create_new_config">
-							Create a new .dada_config  file
-							</label><br >
-							Use the existing directory structure, but create a new configuration 
-							file, using the information below. 
-							(Your previous .dada_config  file will be backed up and saved.)
-							</p>
+				<p> 
+				<!-- tmpl_var PROGRAM_NAME --> can't read your, <em>dada/DADA/Config.pm</em> file.
+				</p>
+				<p> 
+				You may still perform this installation, but you may have to edit parts of the <em>dada/DADA/Config.pm</em>
+				file yourself. (We'll let you know where.)
+				</p>
+			</div> 
+		<!-- /tmpl_if --> 
 
 
-							<input type="radio" name="if_dada_files_already_exists"	id="skip_configure_dada_files" value="skip_configure_dada_files" class="radiochangeDisplayState" data-target="configuration" data-state="hide"> 
-							<label for="skip_configure_dada_files">
-							Use the current .dada_config  file
-							</label>
-							<br >
-							No new .dada_config file will be created.
-							</p>
-							</fieldset>
+		<!-- tmpl_if error_cant_write_config_dot_pm --> 
+			<div class="alert-box warning radius">
+				<h4>Warning!</h4> 
+				<p> 
+				<!-- tmpl_var PROGRAM_NAME --> won't be able to write to edit your <em>dada/DADA/Config.pm</em> file itself.
+				</p> 
+				<p> 
+				You may still perform this installation, but you may have to edit parts of the <em>dada/DADA/Config.pm</em>
+				file yourself. (We'll let you know, where.)
+				</p>
+			</div> 
+		<!-- /tmpl_if --> 
+
+						<!-- tmpl_if comment --> 
+							<!-- tmpl_loop errors --> 
+								<p>Error <!-- tmpl_var error --> 
+							<!-- /tmpl_loop --> 
+						<!-- /tmpl_if --> 
+
+		<!-- tmpl_if test_complete_dada_files_dir_structure_exists --> 
+
+			<div 
+				<!-- tmpl_if expr="(install_type eq 'install')" -->
+					class="alert-box warning radius"
+				<!-- tmpl_else -->
+					class="alert-box info radius"
 				<!-- /tmpl_if -->
+			>
+				<p>
+				A current <!-- tmpl_var PROGRAM_NAME --> configuration was discovered at:</p> 
+				<p class="text-center">
+					<!-- tmpl_var configured_dada_config_file -->
+				</p>
+			<form 
+				target="_blank" 
+				action="<!-- tmpl_var Self_URL -->"
+			> 
+				<input type="hidden" name="flavor" value="show_current_dada_config"> 
+				<input type="hidden" name="config_file" value = "<!-- tmpl_var configured_dada_config_file escape="HTML" -->"> 
+
+				<input type="submit" value="View this .dada_config Configuration..." class="plain small button expand">
+	
+			</form>
+
+			<!-- tmpl_if expr="(install_type eq 'install')" -->
+				<p>
+					<strong>Please choose a different location</strong> for your <!-- tmpl_var Dada_Files_Dir_Name --> directory below, 
+					or <strong><a href="<!-- tmpl_var Self_URL -->">start over and Upgrade</a></strong>.
+				</p>
+				<!-- /tmpl_if --> 
+
+			<!-- tmpl_if expr="(install_type eq 'upgrade')" -->
+				<ul>
+					<li> 
+						Values from your previous configuration have been pre-filled below. Additional 
+						configuration changes you may have made to your .dada_config file manually
+						will need to be recreated manually as well after this upgrade.
+					</li>
+				</ul> 
+			<!-- /tmpl_if --> 
+
+			</div> 
+
+		<!-- /tmpl_if --> 
+
+		<form action="<!-- tmpl_var Self_URL -->" method="post" id="installform"> 
+
+		<input type="hidden" name="flavor"                             value="check"> 
+		<input type="hidden" name="self_url" id="self_url"             value="<!-- tmpl_var self_url escape="HTML" -->">
+		<input type="hidden" name="install_type"                       value="<!-- tmpl_var install_type -->">
+		<input type="hidden" name="current_dada_files_parent_location" value="<!-- tmpl_var current_dada_files_parent_location -->">
+
+		<!-- tmpl_if expr="(install_type eq 'upgrade')" -->
+			<input 
+				type="hidden" 
+				name="if_dada_files_already_exists"	
+				value="keep_dir_create_new_config"
+			>
+
+						<!-- tmpl_if comment -->
 				
-<!-- /tmpl_if -->
+									<!-- 
+										I can't really understand why you would use this option, anymore: 
+									-->
+									<fieldset style="background:#cbecff">
+									<legend>Upgrade Options</legend>	
+
+									<p>
+									<input type="radio" name="if_dada_files_already_exists"	id="keep_dir_create_new_config" value="keep_dir_create_new_config" checked="checked" class="radiochangeDisplayState" data-target="configuration" data-state="show"> 
+									<label for="keep_dir_create_new_config">
+									Create a new .dada_config  file
+									</label>
+									Use the existing directory structure, but create a new configuration 
+									file, using the information below. 
+									(Your previous .dada_config  file will be backed up and saved.)
+									</p>
 
 
-<!-- tmpl_if expr="(install_type eq 'install')" -->	
-	<!-- tmpl_if error_create_dada_files_dir  --> 
-	<div class="alert-box warning radius">
-		<ul> 
-			<li>
-				Can not create, <em><!-- tmpl_var install_dada_files_dir_at -->/<strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em>
-			</li>
-		</ul>
-	</div>
-	<!-- /tmpl_if --> 
+									<input type="radio" name="if_dada_files_already_exists"	id="skip_configure_dada_files" value="skip_configure_dada_files" class="radiochangeDisplayState" data-target="configuration" data-state="hide"> 
+									<label for="skip_configure_dada_files">
+									Use the current .dada_config  file
+									</label>
+							
+									No new .dada_config file will be created.
+									</p>
+									</fieldset>
+						<!-- /tmpl_if -->
+				
+		<!-- /tmpl_if -->
+
+
+		<!-- tmpl_if expr="(install_type eq 'install')" -->	
+			<!-- tmpl_if error_create_dada_files_dir  --> 
+			<div class="alert-box warning radius">
+				<ul> 
+					<li>
+						Can not create, <em><!-- tmpl_var install_dada_files_dir_at -->/<strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em>
+					</li>
+				</ul>
+			</div>
+			<!-- /tmpl_if --> 
 	
-	<!-- tmpl_if error_dada_files_dir_exists  --> 
-		<div class="alert-box warning radius">
-			<ul> 
-				<li>
-					The directory, <em><!-- tmpl_var dada_files_loc -->/<strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em> already exists.
-				</li>
-			</ul>
-		</div>
-	<!-- /tmpl_if -->
+			<!-- tmpl_if error_dada_files_dir_exists  --> 
+				<div class="alert-box warning radius">
+					<ul> 
+						<li>
+							The directory, <em><!-- tmpl_var dada_files_loc -->/<strong><!-- tmpl_var Dada_Files_Dir_Name --></strong></em> already exists.
+						</li>
+					</ul>
+				</div>
+			<!-- /tmpl_if -->
 	
-<!-- /tmpl_if -->  
+		<!-- /tmpl_if -->  
 
 
-<!-- tmpl_if expr="(install_type eq 'upgrade')" -->
-	<input 
-		type="hidden" 
-		name="dada_files_dir_setup" 
-		value="manual"
-	>
-	<input 
-		type="hidden" 
-		name="dada_files_loc"
-		value="<!-- tmpl_var current_dada_files_parent_location escape=HTML -->"
-	>
-<!-- tmpl_else --> 
-	<fieldset> 
+		<!-- tmpl_if expr="(install_type eq 'upgrade')" -->
+			<input 
+				type="hidden" 
+				name="dada_files_dir_setup" 
+				value="manual"
+			>
+			<input 
+				type="hidden" 
+				name="dada_files_loc"
+				value="<!-- tmpl_var current_dada_files_parent_location escape=HTML -->"
+			>
+		<!-- tmpl_else --> 
+			<fieldset> 
+				<legend>
+				&quot;<!-- tmpl_var Dada_Files_Dir_Name -->&quot; Directory Location [
+				<a href="#" class="toggleDivs" data-target="dada_files_help">
+					?
+				</a>]
+			</legend>
+
+			<div id="dada_files_help"> 
+				<div class="alert-box info radius">	
+					<p>	
+						<!-- tmpl_var PROGRAM_NAME --> will need to write various files and will need a directory for which to do this in. You'll 
+						have to tell <!-- tmpl_var PROGRAM_NAME --> where you'd like this directory to live. The directory will be called, <em><!-- tmpl_var Dada_Files_Dir_Name --></em>. 
+					</p>
+					<p>
+						Usually, this directory will live under your home directory and <!-- tmpl_var PROGRAM_NAME --> can usually guess where that is, but if it guesses wrong
+						or it cannot create the, <em><!-- tmpl_var Dada_Files_Dir_Name --></em> directory in your home directory, you may need to set an alternative location. 
+					</p> 
+				</div> 
+			</div> 
+
+			<div class="row">
+				<div class="small-12 colums">
+					<label for="dada_files_dir_setup_auto">
+						<input type="radio" checked="checked" id="dada_files_dir_setup_auto"  name="dada_files_dir_setup" value="auto" class="radiochangeDisplayState" data-target="manual_dada_files_dir_setup" data-state="hide">
+							AUTO 
+						<span
+						data-tooltip 
+						aria-haspopup="true" 
+						class="has-tip" 
+						title="Use <!-- tmpl_var PROGRAM_NAME -->'s best guess: <!-- tmpl_var home_dir_guess -->"
+						>(?)</span>
+					</label>
+				</div> 
+			</div> 
+
+			<div class="row">
+				<div class="small-12 colums">
+					<label for="dada_files_dir_setup_manual"> 
+
+						<input 
+							type="radio"
+							id="dada_files_dir_setup_manual" 
+							name="dada_files_dir_setup" 
+							value="manual" 
+							class="radiochangeDisplayState" 
+							data-target="manual_dada_files_dir_setup" 
+							data-state="show"
+						>
+						MANUAL
+						<span
+						data-tooltip 
+						aria-haspopup="true" 
+						class="has-tip" 
+						title="Explicitly set the Absolute Path to where the <!-- tmpl_var Dada_Files_Dir_Name --> directory should be installed"
+						>(?)</span>				
+					</label>  
+				</div> 
+			</div> 
+
+
+			<div id="manual_dada_files_dir_setup">
+				<fieldset> 
+					<legend> 
+						Manual Configuration of the, <em><!-- tmpl_var Dada_Files_Dir_Name --></em> directory
+					</legend> 
+		
+					<div class="row collapse">
+						<div class="small-8 columns">
+							<input 
+								type="text" 
+								name="dada_files_loc" 
+								value="<!-- tmpl_var home_dir_guess -->"
+								class="text-right"
+							>
+						</div>
+						<div class="small-4 columns">
+							<input 
+								type="text" 
+								readonly="readonly"
+								value="/<!-- tmpl_var Dada_Files_Dir_Name escape=HTML -->"
+							>
+						</div>
+					</div> 
+				</fieldset>
+			</div> 
+
+			</fieldset>
+		<!-- /tmpl_if --> 
+
+
+
+		<div id="configuration"> 
+
+
+		<h3>Configuration</h3> 	
+
+		<fieldset> 
+
 		<legend>
-		&quot;<!-- tmpl_var Dada_Files_Dir_Name -->&quot; Directory Location [
-		<a href="#" class="toggleDivs" data-target="dada_files_help">
-			?
-		</a>]
-	</legend>
+			<!-- tmpl_var PROGRAM_NAME --> URL [
+			<a href="#" class="toggleDivs" data-target="program_url_help">
+			?</a>]
+		</legend> 
+		<div id="program_url_help" class="alert-box info radius"> 
+			The <!-- tmpl_var PROGRAM_NAME --> Program URL should be set to where you access the, <em>mail.cgi</em> script, currently. 
+		</div> 
 
-	<div id="dada_files_help"> 
-		<div class="alert-box info radius">	
-			<p>	
-				<!-- tmpl_var PROGRAM_NAME --> will need to write various files and will need a directory for which to do this in. You'll 
-				have to tell <!-- tmpl_var PROGRAM_NAME --> where you'd like this directory to live. The directory will be called, <em><!-- tmpl_var Dada_Files_Dir_Name --></em>. 
+
+
+		<!-- tmpl_if error_program_url_is_blank  --> 
+			<div class="alert-box error radius">
+				<ul>
+					<li>
+						Your <!-- tmpl_var PROGRAM_NAME --> URL is blank.
+					</li>
+				</ul> 
+			</div>
+		<!-- /tmpl_if -->
+
+		<label for="program_url">
+			<!-- tmpl_var PROGRAM_NAME --> Program URL
+		</label>
+
+
+		<input type="text" id="program_url" name="program_url"  value="<!-- tmpl_var program_url_guess -->">
+
+		</fieldset> 
+
+
+		<fieldset> 
+			<legend>Support Files Directory
+				[
+				<a href="#" class="toggleDivs" data-target="support_files_help">
+					?
+				</a>
+				]
+		</legend>
+
+
+
+		<div data-alert class="alert-box info radius" id="support_files_help">
+			<p>
+				The Installer will use the Absolute Path and Corresponding URL you set below to 
+				copy over the static files used in <!-- tmpl_var PROGRAM_NAME -->: images, stylesheets, and javascript files. 
 			</p>
 			<p>
-				Usually, this directory will live under your home directory and <!-- tmpl_var PROGRAM_NAME --> can usually guess where that is, but if it guesses wrong
-				or it cannot create the, <em><!-- tmpl_var Dada_Files_Dir_Name --></em> directory in your home directory, you may need to set an alternative location. 
+				This directory can also be used to install any supported WYSIWYG editor(s) and file browsers
+				(see below)
+			</p> 
+			<p>
+				You will want this directory to be publicly accessible - for example: this directory cannot be in your cgi-bin.
 			</p> 
 		</div> 
-	</div> 
 
-	<div class="row">
-		<div class="small-12 colums">
-			<label for="dada_files_dir_setup_auto">
-				<input type="radio" checked="checked" id="dada_files_dir_setup_auto"  name="dada_files_dir_setup" value="auto" class="radiochangeDisplayState" data-target="manual_dada_files_dir_setup" data-state="hide">
-					AUTO 
-				<span
-				data-tooltip 
-				aria-haspopup="true" 
-				class="has-tip" 
-				title="Use <!-- tmpl_var PROGRAM_NAME -->'s best guess: <!-- tmpl_var home_dir_guess -->"
-				>(?)</span>
-			</label>
-		</div> 
-	</div> 
+		<!-- tmpl_if error_create_dada_mail_support_files_dir  --> 
+			<div class="alert-box error radius">
+				Can not create or write into the below Support Files Directory. 
+			</div> 
+		<!-- /tmpl_if -->
 
-	<div class="row">
-		<div class="small-12 colums">
-			<label for="dada_files_dir_setup_manual"> 
-
-				<input 
-					type="radio"
-					id="dada_files_dir_setup_manual" 
-					name="dada_files_dir_setup" 
-					value="manual" 
-					class="radiochangeDisplayState" 
-					data-target="manual_dada_files_dir_setup" 
-					data-state="show"
-				>
-				MANUAL
-				<span
-				data-tooltip 
-				aria-haspopup="true" 
-				class="has-tip" 
-				title="Explicitly set the Absolute Path to where the <!-- tmpl_var Dada_Files_Dir_Name --> directory should be installed"
-				>(?)</span>				
-			</label>  
-		</div> 
-	</div> 
-
-
-	<div id="manual_dada_files_dir_setup">
-		<fieldset> 
-			<legend> 
-				Manual Configuration of the, <em><!-- tmpl_var Dada_Files_Dir_Name --></em> directory
-			</legend> 
-		
+			<div class="row">
+				<div class="small-12 columns">
+					<label for="support_files_dir_path">
+						Server Absolute Path to the <!-- tmpl_var PROGRAM_NAME --> Support Files Directory
+					</label>
+				</div>
+			</div>
 			<div class="row collapse">
 				<div class="small-8 columns">
 					<input 
 						type="text" 
-						name="dada_files_loc" 
-						value="<!-- tmpl_var home_dir_guess -->"
-						class="text-right"
+						name="support_files_dir_path"
+						id="support_files_dir_path"
+						class="text-right" 
+						value="<!-- tmpl_var support_files_dir_path -->"
 					>
 				</div>
 				<div class="small-4 columns">
 					<input 
 						type="text" 
 						readonly="readonly"
-						value="/<!-- tmpl_var Dada_Files_Dir_Name escape=HTML -->"
+						value="/<!-- tmpl_var Support_Files_Dir_Name escape="HTML" -->"
 					>
 				</div>
 			</div> 
-		</fieldset>
-	</div> 
-
-	</fieldset>
-<!-- /tmpl_if --> 
-
-
-
-<div id="configuration"> 
-
-
-<h1>Configuration</h1> 	
-
-<fieldset> 
-
-<legend>
-	<!-- tmpl_var PROGRAM_NAME --> URL [
-	<a href="#" class="toggleDivs" data-target="program_url_help">
-	?</a>]
-</legend> 
-<div id="program_url_help" class="alert-box info radius"> 
-	The <!-- tmpl_var PROGRAM_NAME --> Program URL should be set to where you access the, <em>mail.cgi</em> script, currently. 
-</div> 
-
-
-
-<!-- tmpl_if error_program_url_is_blank  --> 
-	<div class="alert-box error radius">
-		<ul>
-			<li>
-				Your <!-- tmpl_var PROGRAM_NAME --> URL is blank.
-			</li>
-		</ul> 
-	</div>
-<!-- /tmpl_if -->
-
-<label for="program_url">
-	<!-- tmpl_var PROGRAM_NAME --> Program URL
-</label>
-
-
-<input type="text" id="program_url" name="program_url"  value="<!-- tmpl_var program_url_guess -->">
-
-</fieldset> 
-
-
-<fieldset> 
-	<legend>Support Files Directory
-		[
-		<a href="#" class="toggleDivs" data-target="support_files_help">
-			?
-		</a>
-		]
-</legend>
-
-
-
-<div data-alert class="alert-box info radius" id="support_files_help">
-	<p>
-		The Installer will use the Absolute Path and Corresponding URL you set below to 
-		copy over the static files used in Dada Mail: images, stylesheets, and javascript files. 
-	</p>
-	<p>
-		This directory can also be used to install any supported WYSIWYG editor(s) and file browsers
-		(see below)
-	</p> 
-	<p>
-		You will want this directory to be publicly accessible - for example: this directory cannot be in your cgi-bin.
-	</p> 
-</div> 
-
-<!-- tmpl_if error_create_dada_mail_support_files_dir  --> 
-	<div class="alert-box error radius">
-		Can not create or write into the below Support Files Directory. 
-	</div> 
-<!-- /tmpl_if -->
-
-	<div class="row">
-		<div class="small-12 columns">
-			<label for="support_files_dir_path">
-				Server Absolute Path to the <!-- tmpl_var PROGRAM_NAME --> Support Files Directory
-			</label>
-		</div>
-	</div>
-	<div class="row collapse">
-		<div class="small-8 columns">
-			<input 
-				type="text" 
-				name="support_files_dir_path"
-				id="support_files_dir_path"
-				class="text-right" 
-				value="<!-- tmpl_var support_files_dir_path -->"
-			>
-		</div>
-		<div class="small-4 columns">
-			<input 
-				type="text" 
-				readonly="readonly"
-				value="/<!-- tmpl_var Support_Files_Dir_Name escape="HTML" -->"
-			>
-		</div>
-	</div> 
 			
-	<div class="row">
-		<div class="small-12 columns">
-			<label for="support_files_dir_url">
-				Corresponding URL to the Support Files Directory
-			</label>
-		</div>
-	</div>
-	<div class="row collapse">
-		<div class="small-8 columns">
-			<input 
-				type="text" 
-				name="support_files_dir_url" 
-				id="support_files_dir_url"
-				class="text-right" 
-				value="<!-- tmpl_var support_files_dir_url -->"
-			>
-		</div>
-		<div class="small-4 columns">
-			<input 
-				type="text" 
-				readonly="readonly"
-				value="/<!-- tmpl_var Support_Files_Dir_Name escape="HTML" -->"
-			>
-		</div>
-	</div> 
-</fieldset> 
-
-
-<fieldset> 
-	<legend>
-		<!-- tmpl_var PROGRAM_NAME --> Root Password [
-		<a href="#" class="toggleDivs" data-target="root_pass_help">
-			?
-		</a>]
-	</legend> 
-
-	<!-- tmpl_if error_root_pass_is_blank  --> 
-		<div class="alert-box error radius">
-			Your <!-- tmpl_var PROGRAM_NAME --> Root Password is Blank.</em>
-		</div>
-	<!-- /tmpl_if -->
-	<!-- tmpl_if error_pass_no_match  --> 
-		<div class="alert-box info radius">
-			Your <!-- tmpl_var PROGRAM_NAME --> Root Passwords Do Not Match.</em>
-		</div>
-	<!-- /tmpl_if -->
-
-	<div id="root_pass_help" class="alert-box info radius"> 
-		This is the main password to <!-- tmpl_var PROGRAM_NAME -->, 
-		used to create new mailing lists and to 
-		access <em>any</em> mailing list.
-	</div> 
-
-	<!-- tmpl_if original_dada_root_pass -->
-		<div class="row">
-			<div class="small-12 columns">
-				<label for="dada_pass_use_orig">
+			<div class="row">
+				<div class="small-12 columns">
+					<label for="support_files_dir_url">
+						Corresponding URL to the Support Files Directory
+					</label>
+				</div>
+			</div>
+			<div class="row collapse">
+				<div class="small-8 columns">
 					<input 
-						type="checkbox" 
-						name="dada_pass_use_orig" 
-						id="dada_pass_use_orig" 
-						value="1" 
-						checked="check" 
-						class="radio_toggleDivs" 
-						data-target="dada_root_pass_fields"
+						type="text" 
+						name="support_files_dir_url" 
+						id="support_files_dir_url"
+						class="text-right" 
+						value="<!-- tmpl_var support_files_dir_url -->"
 					>
-					Use Previous Dada Root Password
-				</label>
-			</div>
-		</div>
-	
-		<input type="hidden" name="original_dada_root_pass" value=""> 
-		<input type="hidden" name="original_dada_root_pass_is_encrypted" value=""> 
-
-	<!-- /tmpl_if --> 
-
-	<div id="dada_root_pass_fields"> 	
-		<div class="row">
-			<div class="small-12 columns">
-				<label for="dada_root_pass">
-					<!-- tmpl_var PROGRAM_NAME --> Root Password
-				</label>
-				<input type="password" id="dada_root_pass" name="dada_root_pass">
-			</div>
-		</div>	
-		<div class="row">
-			<div class="small-12 columns">
-				<label for="dada_root_pass_again">
-					Re-type Your <!-- tmpl_var PROGRAM_NAME --> Root Password
-				</label> 
-				<input 
-					type="password"
-					id="dada_root_pass_again"
-					name="dada_root_pass_again"> 
-			</div>
-		</div>	
-	</div> 
-
-</fieldset> 
+				</div>
+				<div class="small-4 columns">
+					<input 
+						type="text" 
+						readonly="readonly"
+						value="/<!-- tmpl_var Support_Files_Dir_Name escape="HTML" -->"
+					>
+				</div>
+			</div> 
+		</fieldset> 
 
 
+		<fieldset> 
+			<legend>
+				<!-- tmpl_var PROGRAM_NAME --> Root Password [
+				<a href="#" class="toggleDivs" data-target="root_pass_help">
+					?
+				</a>]
+			</legend> 
 
-<fieldset> 
-
-	<legend>
-		Backend [
-		<a href="#" class="toggleDivs" data-target="backend_help">
-		?</a>]
-	</legend> 
-
-	<!-- tmpl_if error_sql_connection  --> 
-		<div class="alert-box error radius">
-			Could not connect to your SQL Server
-		</div>
-	<!-- /tmpl_if -->
-
-	<div id="backend_help" class="alert-box info radius"> 
-		<!-- tmpl_unless can_use_DBI --> 
-		<div class="alert-box info radius">
-		<p>
-		<strong>
-		No supported backends can be found! 
-		</strong>
-		</p>
-
-		<p>
-		You will need to install one of the following Perl database drivers to utilize <!-- tmpl_var PROGRAM_NAME -->:
-		</p>
-		<ul>
-		<li>DBD::mysql</li>
-		<li>DBD::Pg</li>
-		<li>DBD::SQLite</li>
-		</ul>
-		</div>
-		<!-- /tmpl_unless --> 
-
-		<p>	
-		<!-- tmpl_var PROGRAM_NAME --> supports a few different types of backends to save its mailing list settings, lists, archive, etc into. 
-		</p> 
-		<p>	
-			If using either the PostgreSQL or MySQL backends, make sure to create a new database before configuring 
-		<!-- tmpl_var PROGRAM_NAME --> and type in the SQL information below. <!-- tmpl_var PROGRAM_NAME -->
-		will create the necessary tables. 
-		</p> 
-
-		<p><strong>SQLite</strong> is only suggested for testing purposes and never for production.</p>
-	</div>
-
-
-
-
-	<!-- tmpl_if can_use_DBI --> 
-		<div id="sql_info"> 
-			<!-- tmpl_if error_sql_table_populated -->
-				<div class="alert-box info radius">
-					<p>
-						The SQL information below is correct, but there are tables 
-						in this database that correspond to the tables that <!-- tmpl_var PROGRAM_NAME --> 
-						requires.
-					</p>
-					<div class="row">
-						<div class="small-12 columns">
-							<label for="skip_configure_SQL">
-								<input 
-									type="checkbox" 
-									name="skip_configure_SQL" 
-									id="skip_configure_SQL" 
-									value="1"
-								>
-				
-								Correct!
-							</label>
-							<p>
-								I know about these tables, please use them!
-							</p>
-						</div>
-					</div>
+			<!-- tmpl_if error_root_pass_is_blank  --> 
+				<div class="alert-box error radius">
+					Your <!-- tmpl_var PROGRAM_NAME --> Root Password is Blank.</em>
 				</div>
 			<!-- /tmpl_if -->
-		
-		<div class="row">
-		  <div class="small-12 medium-8 large-8 medium-centered large-centered columns">
-		  
+			<!-- tmpl_if error_pass_no_match  --> 
+				<div class="alert-box info radius">
+					Your <!-- tmpl_var PROGRAM_NAME --> Root Passwords Do Not Match.</em>
+				</div>
+			<!-- /tmpl_if -->
+
+			<div id="root_pass_help" class="alert-box info radius"> 
+				This is the main password to <!-- tmpl_var PROGRAM_NAME -->, 
+				used to create new mailing lists and to 
+				access <em>any</em> mailing list.
+			</div> 
+
+			<!-- tmpl_if original_dada_root_pass -->
 				<div class="row">
-					<div class="large-2 medium-2 columns">
-						<label for="backend" class="medium-only-text-right large-only-text-right">
-							Type
+					<div class="small-12 columns">
+						<label for="dada_pass_use_orig">
+							<input 
+								type="checkbox" 
+								name="dada_pass_use_orig" 
+								id="dada_pass_use_orig" 
+								value="1" 
+								checked="check" 
+								class="radio_toggleDivs" 
+								data-target="dada_root_pass_fields"
+							>
+							Use Previous Dada Root Password
 						</label>
 					</div>
-				<div class="large-10 medium-10 columns">
-					  <select name="backend" id="backend"> 
-					  	<option value="mysql" <!-- tmpl_unless can_use_MySQL -->disabled="disabled"<!-- tmpl_else -->selected="selected"<!-- /tmpl_unless -->><!-- tmpl_if can_use_MySQL -->MySQL (recommended)<!-- tmpl_else -->MySQL (not available)<!-- /tmpl_if --></option> 
-					  	<option value="Pg" <!-- tmpl_unless can_use_Pg -->disabled="disabled"<!-- /tmpl_unless -->>PostgreSQL <!-- tmpl_unless can_use_Pg -->(not available)<!-- /tmpl_unless --></option> 	
-					  	<option value="SQLite" <!-- tmpl_unless can_use_SQLite -->disabled="disabled"<!-- /tmpl_unless -->>SQLite<!-- tmpl_unless can_use_SQLite -->(not available)<!-- /tmpl_unless --></option> 
-					  </select>
 				</div>
-			</div>
-		  
+	
+				<input type="hidden" name="original_dada_root_pass" value=""> 
+				<input type="hidden" name="original_dada_root_pass_is_encrypted" value=""> 
+
+			<!-- /tmpl_if --> 
+
+			<div id="dada_root_pass_fields"> 	
 				<div class="row">
-					<div class="large-2 medium-2 columns">
-						<label for="sql_server" class="medium-only-text-right large-only-text-right">
-							Server
+					<div class="small-12 columns">
+						<label for="dada_root_pass">
+							<!-- tmpl_var PROGRAM_NAME --> Root Password
 						</label>
+						<input type="password" id="dada_root_pass" name="dada_root_pass">
 					</div>
-					<div class="large-10 medium-10 columns">
-						<input type="text" name="sql_server" id="sql_server" value="localhost" value="">
-					</div> 
-				</div>
+				</div>	
 				<div class="row">
-					<div class="large-2 medium-2 columns">
-						<label for="sql_database" class="medium-only-text-right large-only-text-right">
-							Database
-						</label>
-					</div>
-					<div class="large-10 medium-10 columns">
-						<input type="text" name="sql_database" id="sql_database" value="">
-					</div> 
-				</div>
-				<div class="row">
-					<div class="large-2 medium-2 columns">
-						<label for="sql_port" class="medium-only-text-right large-only-text-right">
-							Port
-						</label>
-					</div>
-					<div class="large-10 medium-10 columns">
-						<input type="text" name="sql_port" id="sql_port" value="auto">
-					</div>
-				</div>
-				<div class="row">
-					<div class="large-2 medium-2 columns">
-						<label for="sql_username" class="medium-only-text-right large-only-text-right">
-							Username
+					<div class="small-12 columns">
+						<label for="dada_root_pass_again">
+							Re-type Your <!-- tmpl_var PROGRAM_NAME --> Root Password
 						</label> 
+						<input 
+							type="password"
+							id="dada_root_pass_again"
+							name="dada_root_pass_again"> 
 					</div>
-					<div class="large-10 medium-10 columns">				
-						<input type="text" name="sql_username" id="sql_username" value="">
-					</div>
+				</div>	
+			</div> 
+
+		</fieldset> 
+
+
+
+		<fieldset> 
+
+			<legend>
+				Backend [<a href="#" class="toggleDivs" data-target="backend_help">?</a>]
+			</legend> 
+
+			<!-- tmpl_if error_sql_connection  --> 
+				<div class="alert-box error radius">
+					Could not connect to your SQL Server
 				</div>
-				<div class="row">
-					<div class="large-2 medium-2 columns">
-						<label for="sql_password" class="medium-only-text-right large-only-text-right">
-							Password
-						</label> 
-					</div>
-					<div class="large-10 medium-10 columns">				
-						<input type="text" name="sql_password" id="sql_password" value=""> 
-					</div>
+			<!-- /tmpl_if -->
+
+			<div id="backend_help" class="alert-box info radius"> 
+				<!-- tmpl_unless can_use_DBI --> 
+				<div class="alert-box info radius">
+				<p>
+				<strong>
+				No supported backends can be found! 
+				</strong>
+				</p>
+
+				<p>
+				You will need to install one of the following Perl database drivers to utilize <!-- tmpl_var PROGRAM_NAME -->:
+				</p>
+				<ul>
+				<li>DBD::mysql</li>
+				<li>DBD::Pg</li>
+				<li>DBD::SQLite</li>
+				</ul>
 				</div>
-				<div class="row">
-					<div class="large-2 medium-2 columns">
-						&nbsp;
-					</div>
-					<div class="large-10 medium-10 columns">				
-						<input type="button" class="processing test_sql_connection small button expand" value="Test Your SQL Connection">
-					</div>
-				</div>
+				<!-- /tmpl_unless --> 
+
+				<p>	
+				<!-- tmpl_var PROGRAM_NAME --> supports a few different types of backends to save its mailing list settings, lists, archive, etc into. 
+				</p> 
+				<p>	
+					If using either the PostgreSQL or MySQL backends, make sure to create a new database before configuring 
+				<!-- tmpl_var PROGRAM_NAME --> and type in the SQL information below. <!-- tmpl_var PROGRAM_NAME -->
+				will create the necessary tables. 
+				</p> 
+
+				<p><strong>SQLite</strong> is only suggested for testing purposes and never for production.</p>
 			</div>
-		</div>
-		<div id="test_sql_connection_results" class="alert-box info radius"></div> 
-	</div> 
-
-	<!-- tmpl_else --> 
-		<div class="alert-box info radius">
-			<p>
-				Your current server setup does not support any SQL backend. 
-			</p>
-		</div>
-	<!-- /tmpl_if --> 
-</fieldset> 
 
 
-<fieldset> 
-	<legend>Plugins/Extensions [
-		<a href="#" class="toggleDivs" data-target="plugins_extensions_help">
-			?
-		</a>]
-	</legend>
 
-	<div id="plugins_extensions_help" class="alert-box info radius">	
-		<p>
-		<!-- tmpl_var PROGRAM_NAME --> comes with several plugins/extensions that add additional functionality to your <!-- tmpl_var PROGRAM_NAME --> install. 
-		</p>
 
-		<p>
-		<em>Some</em> of the plugins/extensions require additional configuration 
-		for them to work correctly.
-		</p>
-	</div> 
-
-<label for="install_change_root_password">
-	<input 
-		type="checkbox" 
-		name="install_change_root_password" 
-		id="install_change_root_password" 
-		value="1"
-	>
-	Change the Program Root Password
-</label> 
-
-<label for="install_screen_cache">
-	<input 
-		type="checkbox" 
-		name="install_screen_cache" 
-		id="install_screen_cache" 
-		value="1"
-	>
-	Screen Cache
-</label> 
-
-<label for="install_log_viewer">
-	<input 
-		type="checkbox" 
-		name="install_log_viewer" 
-		id="install_log_viewer" 
-		value="1"
-	>
-	View Logs
-</label> 
-
-<label for="install_tracker">
-	<input 
-		type="checkbox" 
-		name="install_tracker" 
-		id="install_tracker" 
-		value="1"
-	>
-	Tracker
-</label> 
-
-<label for="install_bridge">
-	<input 
-		type="checkbox"
-		name="install_bridge"
-		id="install_bridge"
-		value="1"
-		class="radio_toggleDivs"
-		data-target="bridge_configuration"
-	>
-	Bridge
-</label>
-
-<div id="bridge_options">
-	<div class="panel">
-		
-		<div class="row">
-			<div class="small-12 columns">
-				<label for="bridge_MessagesAtOnce">
-				# Messages to Check at Once
-				</label>
-				<select name="bridge_MessagesAtOnce" id="bridge_MessagesAtOnce">
-					<option value="1">1</option> 
-					<option value="2">2</option> 
-					<option value="3">3</option> 
-					<option value="4">4</option> 
-					<option value="5">5</option> 
-					<option value="10">10</option> 
-					<option value="15">15</option> 
-					<option value="20">20</option> 
-				</select>
-			</div>
-		</div>
-
-		<div class="row">
-			<div class="small-12 columns">
-				<label for="bridge_Enable_POP3_File_Locking">
-					<input 
-						type="checkbox" 
-						name="bridge_Enable_POP3_File_Locking" 
-						id="bridge_Enable_POP3_File_Locking" 
-						value="1"
-					>
-					Enable POP3 File Locking
-				</label>
-			</div>
-		</div>
-		<div class="row">
-			<div class="small-12 columns">
-				<label for="bridge_Room_For_One_More_Check">
-					<input 
-						type="checkbox" 
-						name="bridge_Room_For_One_More_Check" 
-						id="bridge_Room_For_One_More_Check" 
-						value="1"
-					>
-					Room For One More Check
-				</label>
-			</div>
-		</div>
-		<div class="row">
-			<div class="small-12 columns">
-				<label for="bridge_Check_List_Owner_Return_Path_Header">
-					<input 
-						type="checkbox" 
-						name="bridge_Check_List_Owner_Return_Path_Header" 
-						id="bridge_Check_List_Owner_Return_Path_Header" 
-						value="1"
-					>
-					Check List Owner Return-Path Header
-				</label>
-			</div>
-		</div>
-		<div class="row">
-			<div class="small-12 columns">
-				<label for="bridge_Check_Multiple_Return_Path_Headers">
-					<input 
-						type="checkbox" 
-						name="bridge_Check_Multiple_Return_Path_Headers" 
-						id="bridge_Check_Multiple_Return_Path_Headers" 
-						value="1"
-					>
-					Check for Multiple Return-Path Headers
-				</label>
-			</div>
-		</div>
-	</div> 
-</div> 
-
-<label for="install_bounce_handler">
-	<input 
-		type="checkbox" 
-		name="install_bounce_handler"
-		id="install_bounce_handler"
-		value="1" 
-		class="radio_toggleDivs" 
-		data-target="bounce_handler_configuration"
-	>
-	Bounce Handler
-</label>
-
-<div id="bounce_handler_options">
-	<div class="panel">
-		<div id="bounce_handler_configuration_help" class="alert-box info radius">
-			The Bounce Handler requires a new POP3 email account to be created, in order to work correctly. Make sure the email address isn't used for 
-			any other purpose, except for the bounce handler. See the <a href="<!-- tmpl_var DOC_URL -->/bounce_handler.html"  target="_blank">documentation for this plugin</a> for additional information. 
-		</div> 
-
-		<div class="row">
-			<div class="small-12 medium-10 large-10 medium-centered large-centered columns">
+			<!-- tmpl_if can_use_DBI --> 
+				<div id="sql_info"> 
+					<!-- tmpl_if error_sql_table_populated -->
+						<div class="alert-box info radius">
+							<p>
+								The SQL information below is correct, but there are tables 
+								in this database that correspond to the tables that <!-- tmpl_var PROGRAM_NAME --> 
+								requires.
+							</p>
+							<div class="row">
+								<div class="small-12 columns">
+									<label for="skip_configure_SQL">
+										<input 
+											type="checkbox" 
+											name="skip_configure_SQL" 
+											id="skip_configure_SQL" 
+											value="1"
+										>
 				
-				<div class="row">
-					<div class="large-5 medium-5 columns">
-							<label 
-								for="bounce_handler_Address" 
-								class="medium-only-text-right large-only-text-right"
-							>
-								Bounce Handler Email Address
-							</label> 
+										Correct!
+									</label>
+									<p>
+										I know about these tables, please use them!
+									</p>
+								</div>
+							</div>
 						</div>
-						<div class="large-7 medium-7 columns">
-							<input 
-								type="text" 
-								name="bounce_handler_Address" 
-								id="bounce_handler_Address" 
-								value=""
-							>
+					<!-- /tmpl_if -->
+		
+		  
+						<div class="row">
+							<div class="large-2 medium-2 columns">
+								<label for="backend" class="medium-only-text-right large-only-text-right">
+									Type
+								</label>
+							</div>
+						<div class="large-10 medium-10 columns">
+							  <select name="backend" id="backend"> 
+							  	<option value="mysql" <!-- tmpl_unless can_use_MySQL -->disabled="disabled"<!-- tmpl_else -->selected="selected"<!-- /tmpl_unless -->><!-- tmpl_if can_use_MySQL -->MySQL (recommended)<!-- tmpl_else -->MySQL (not available)<!-- /tmpl_if --></option> 
+							  	<option value="Pg" <!-- tmpl_unless can_use_Pg -->disabled="disabled"<!-- /tmpl_unless -->>PostgreSQL <!-- tmpl_unless can_use_Pg -->(not available)<!-- /tmpl_unless --></option> 	
+							  	<option value="SQLite" <!-- tmpl_unless can_use_SQLite -->disabled="disabled"<!-- /tmpl_unless -->>SQLite<!-- tmpl_unless can_use_SQLite -->(not available)<!-- /tmpl_unless --></option> 
+							  </select>
 						</div>
 					</div>
-					<div class="row">
-						<div class="large-5 medium-5 columns">
-							<label 
-								for="bounce_handler_Server"
-								class="medium-only-text-right large-only-text-right"
-							>
-								Mail Server
-							</label>
+		  
+						<div class="row">
+							<div class="large-2 medium-2 columns">
+								<label for="sql_server" class="medium-only-text-right large-only-text-right">
+									Server
+								</label>
+							</div>
+							<div class="large-10 medium-10 columns">
+								<input type="text" name="sql_server" id="sql_server" value="localhost" value="">
+							</div> 
 						</div>
-						<div class="large-7 medium-7 columns">
-							<input 
+						<div class="row">
+							<div class="large-2 medium-2 columns">
+								<label for="sql_database" class="medium-only-text-right large-only-text-right">
+									Database
+								</label>
+							</div>
+							<div class="large-10 medium-10 columns">
+								<input type="text" name="sql_database" id="sql_database" value="">
+							</div> 
+						</div>
+						<div class="row">
+							<div class="large-2 medium-2 columns">
+								<label for="sql_port" class="medium-only-text-right large-only-text-right">
+									Port
+								</label>
+							</div>
+							<div class="large-10 medium-10 columns">
+								<input type="text" name="sql_port" id="sql_port" value="auto">
+							</div>
+						</div>
+						<div class="row">
+							<div class="large-2 medium-2 columns">
+								<label for="sql_username" class="medium-only-text-right large-only-text-right">
+									Username
+								</label> 
+							</div>
+							<div class="large-10 medium-10 columns">				
+								<input type="text" name="sql_username" id="sql_username" value="">
+							</div>
+						</div>
+						<div class="row">
+							<div class="large-2 medium-2 columns">
+								<label for="sql_password" class="medium-only-text-right large-only-text-right">
+									Password
+								</label> 
+							</div>
+							<div class="large-10 medium-10 columns">				
+								<input type="text" name="sql_password" id="sql_password" value=""> 
+							</div>
+						</div>
+				
+				<input type="button" class="processing test_sql_connection small button expand" value="Test SQL Connection">
+				
+				<div id="test_sql_connection_results" class="alert-box info radius"></div> 
+			</div> 
+
+			<!-- tmpl_else --> 
+				<div class="alert-box info radius">
+					<p>
+						Your current server setup does not support any SQL backend. 
+					</p>
+				</div>
+			<!-- /tmpl_if --> 
+		</fieldset> 
+
+
+		<fieldset> 
+			<legend>Plugins/Extensions [
+				<a href="#" class="toggleDivs" data-target="plugins_extensions_help">
+					?
+				</a>]
+			</legend>
+
+			<div id="plugins_extensions_help" class="alert-box info radius">	
+				<p>
+				<!-- tmpl_var PROGRAM_NAME --> comes with several plugins/extensions that add additional functionality to your <!-- tmpl_var PROGRAM_NAME --> install. 
+				</p>
+
+				<p>
+				<em>Some</em> of the plugins/extensions require additional configuration 
+				for them to work correctly.
+				</p>
+			</div> 
+
+		<label for="install_change_root_password">
+			<input 
+				type="checkbox" 
+				name="install_change_root_password" 
+				id="install_change_root_password" 
+				value="1"
+			>
+			Change the Program Root Password
+		</label> 
+
+		<label for="install_screen_cache">
+			<input 
+				type="checkbox" 
+				name="install_screen_cache" 
+				id="install_screen_cache" 
+				value="1"
+			>
+			Screen Cache
+		</label> 
+
+		<label for="install_log_viewer">
+			<input 
+				type="checkbox" 
+				name="install_log_viewer" 
+				id="install_log_viewer" 
+				value="1"
+			>
+			View Logs
+		</label> 
+
+		<label for="install_tracker">
+			<input 
+				type="checkbox" 
+				name="install_tracker" 
+				id="install_tracker" 
+				value="1"
+			>
+			Tracker
+		</label> 
+
+		<label for="install_bounce_handler">
+			<input 
+				type="checkbox" 
+				name="install_bounce_handler"
+				id="install_bounce_handler"
+				value="1" 
+				class="radio_toggleDivs" 
+				data-target="bounce_handler_configuration"
+			>
+			Bounce Handler
+		</label>
+
+		<div id="bounce_handler_options">
+			<div class="panel">
+				<div id="bounce_handler_configuration_help" class="alert-box info radius">
+					The Bounce Handler requires a new POP3 email account to be created, in order to work correctly. Make sure the email address isn't used for 
+					any other purpose, except for the bounce handler. See the <a href="<!-- tmpl_var DOC_URL -->/bounce_handler.html"  target="_blank">documentation for this plugin</a> for additional information. 
+				</div> 
+
+						<div class="row">
+							<div class="large-5 medium-5 columns">
+								<label 
+									for="bounce_handler_Address" 
+									class="medium-only-text-right large-only-text-right"
+								>
+									Bounce Handler Email Address
+								</label> 
+							</div>
+							<div class="large-7 medium-7 columns">
+								<input 
+									type="text" 
+									name="bounce_handler_Address" 
+									id="bounce_handler_Address" 
+									value=""
+								>
+							</div>
+						</div>
+						<div class="row">
+							<div class="large-5 medium-5 columns">
+								<label 
+									for="bounce_handler_Server"
+									class="medium-only-text-right large-only-text-right"
+									>
+									Mail Server
+								</label>
+							</div>
+							<div class="large-7 medium-7 columns">
+								<input 
 								type="text" 
 								name="bounce_handler_Server" 
 								id="bounce_handler_Server" 
@@ -878,1132 +778,1214 @@
 							>
 						</div>
 					</div>	
-
-				
 					<div class="panel">
 						<a href="#" class="toggleDivs" data-target="additional_bounce_handler_configuration">
 							+/-
 							Additional Configuration Options
 						</a>
 						<div id="additional_bounce_handler_configuration"> 
-
-						<div class="row">
-							<div class="small-12 columns">
-								<label for="bounce_handler_USESSL">
-									<input type="checkbox" name="bounce_handler_USESSL" id="bounce_handler_USESSL" value="1">
-									Use Secure Sockets Layer (SSL)  
-								</label>
+							<div class="row">
+								<div class="small-12 columns">
+									<label for="bounce_handler_USESSL">
+										<input type="checkbox" name="bounce_handler_USESSL" id="bounce_handler_USESSL" value="1">
+										Use Secure Sockets Layer (SSL)  
+									</label>
+								</div>
 							</div>
-						</div>
-						<div class="row">
-							<div class="small-12 columns">
-								<label for="bounce_handler_AUTH_MODE">
-									Auth. Type  
-								</label>
-								<select name="bounce_handler_AUTH_MODE" id="bounce_handler_AUTH_MODE">
-									<option value="BEST">BEST</option> 
-									<option value="PASS">PASS</option> 
-									<option value="APOP">APOP</option> 
-									<option value="CRAM-MD5">CRAM-MD5</option> 
-								</select> 
+							<div class="row">
+								<div class="small-12 columns">
+									<label for="bounce_handler_AUTH_MODE">
+										Auth. Type  
+									</label>
+									<select name="bounce_handler_AUTH_MODE" id="bounce_handler_AUTH_MODE">
+										<option value="BEST">BEST</option> 
+										<option value="PASS">PASS</option> 
+										<option value="APOP">APOP</option> 
+										<option value="CRAM-MD5">CRAM-MD5</option> 
+									</select> 
+								</div>
 							</div>
-						</div>
-						<div class="row">
-							<div class="small-12 columns">
-								<label for="bounce_handler_Port">Port</label> 
-								<input type="text" name="bounce_handler_Port" id="bounce_handler_Port" value="">
+							<div class="row">
+								<div class="small-12 columns">
+									<label for="bounce_handler_Port">
+										Port
+									</label> 
+									<input type="text" name="bounce_handler_Port" id="bounce_handler_Port" value="">
+								</div>
 							</div>
-						</div>
-						<div class="row">
-							<div class="small-12 columns">
-								<label for="bounce_handler_MessagesAtOnce">
-									# Messages to Check at Once
-								</label>
-								<select name="bounce_handler_MessagesAtOnce" id="bounce_handler_MessagesAtOnce">
-									<option value="1">1</option> 
-									<option value="5">5</option> 
-									<option value="10">10</option> 
-									<option value="25">25</option> 
-									<option value="50">50</option> 
-									<option value="100">100</option> 
-									<option value="150">150</option> 
-									<option value="200">200</option> 
-								</select> 
+							<div class="row">
+								<div class="small-12 columns">
+									<label for="bounce_handler_MessagesAtOnce">
+										# Messages to Check at Once
+									</label>
+									<select name="bounce_handler_MessagesAtOnce" id="bounce_handler_MessagesAtOnce">
+										<option value="1">1</option> 
+										<option value="5">5</option> 
+										<option value="10">10</option> 
+										<option value="25">25</option> 
+										<option value="50">50</option> 
+										<option value="100">100</option> 
+										<option value="150">150</option> 
+										<option value="200">200</option> 
+									</select> 
+								</div>
 							</div>
-						</div>
-						<div class="row">
-							<div class="small-12 columns">
-								<label for="bounce_handler_Enable_POP3_File_Locking">
-									<input type="checkbox" name="bounce_handler_Enable_POP3_File_Locking" id="bounce_handler_Enable_POP3_File_Locking" value="1">
-									Enable POP3 File Locking:
-								</label>
-							</div>
-						</div>
-					</div> 
-				</div> 
-				
-				<input 
-					type="button" 
-					class="processing small button expand test_bounce_handler_pop3_connection" 
-					value="Test Your POP3 Connection"
-				>
-				<div id="test_bounce_handler_pop3_connection_results" class="alert-box info radius"></div> 
-				</div>
-			</div>
+							<div class="row">
+								<div class="small-12 columns">
+									<label for="bounce_handler_Enable_POP3_File_Locking">
+										<input type="checkbox" name="bounce_handler_Enable_POP3_File_Locking" id="bounce_handler_Enable_POP3_File_Locking" value="1">
+											Enable POP3 File Locking
+										</label>
+									</div>
+								</div>
+							</div> 
+						</div> 
+						<input 
+							type="button" 
+							class="processing small button expand test_bounce_handler_pop3_connection" 
+							value="Test POP3 Connection"
+						>
+						<div id="test_bounce_handler_pop3_connection_results" class="alert-box info radius">
+						</div> 
+			</div> 
 		</div> 
-	</div> 
-</div> 
 
-<label for="install_multiple_subscribe">
-	<input type="checkbox" name="install_multiple_subscribe" id="install_multiple_subscribe" value="1">
-	Multiple Subscribe
-</label> 
+		<label for="install_bridge">
+			<input 
+				type="checkbox"
+				name="install_bridge"
+				id="install_bridge"
+				value="1"
+				class="radio_toggleDivs"
+				data-target="bridge_configuration"
+			>
+			Bridge
+		</label>
 
-<label for="install_blog_index">
-	<input type="checkbox" name="install_blog_index" id="install_blog_index" value="1"  >
-	Archive Blog Index
-</label> 
+		<div id="bridge_options">
+			<div class="panel">
+				<div class="row">
+					<div class="small-12 columns">
+						<label for="bridge_MessagesAtOnce">
+						# Messages to Check at Once
+						</label>
+						<select name="bridge_MessagesAtOnce" id="bridge_MessagesAtOnce">
+							<option value="1">1</option> 
+							<option value="2">2</option> 
+							<option value="3">3</option> 
+							<option value="4">4</option> 
+							<option value="5">5</option> 
+							<option value="10">10</option> 
+							<option value="15">15</option> 
+							<option value="20">20</option> 
+						</select>
+					</div>
+				</div>
+				<div class="row">
+					<div class="small-12 columns">
+						<label for="bridge_Enable_POP3_File_Locking">
+							<input 
+								type="checkbox" 
+								name="bridge_Enable_POP3_File_Locking" 
+								id="bridge_Enable_POP3_File_Locking" 
+								value="1"
+							>
+							Enable POP3 File Locking
+						</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="small-12 columns">
+						<label for="bridge_Room_For_One_More_Check">
+							<input 
+								type="checkbox" 
+								name="bridge_Room_For_One_More_Check" 
+								id="bridge_Room_For_One_More_Check" 
+								value="1"
+							>
+							Room For One More Check
+						</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="small-12 columns">
+						<label for="bridge_Check_List_Owner_Return_Path_Header">
+							<input 
+								type="checkbox" 
+								name="bridge_Check_List_Owner_Return_Path_Header" 
+								id="bridge_Check_List_Owner_Return_Path_Header" 
+								value="1"
+							>
+							Check List Owner Return-Path Header
+						</label>
+					</div>
+				</div>
+				<div class="row">
+					<div class="small-12 columns">
+						<label for="bridge_Check_Multiple_Return_Path_Headers">
+							<input 
+								type="checkbox" 
+								name="bridge_Check_Multiple_Return_Path_Headers" 
+								id="bridge_Check_Multiple_Return_Path_Headers" 
+								value="1"
+							>
+							Check for Multiple Return-Path Headers
+						</label>
+					</div>
+				</div>
+			</div> 
+		</div> 
 
-<label for="install_change_list_shortname">
-	<input type="checkbox" name="install_change_list_shortname" id="install_change_list_shortname" value="1">
-	Change Your List Short Name
-</label> 
 
-<label for="install_password_protect_directories">
-	<input type="checkbox" name="install_password_protect_directories" id="install_password_protect_directories" value="1">
-	Password Protect Directories
-</label> 
 
-<label for="install_global_config">
-	<input type="checkbox" name="install_global_config" id="install_global_config" value="1">
-	Global Configuration
-</label> 
+		<label for="install_multiple_subscribe">
+			<input type="checkbox" name="install_multiple_subscribe" id="install_multiple_subscribe" value="1">
+			Multiple Subscribe
+		</label> 
 
-<fieldset> 
+		<label for="install_blog_index">
+			<input type="checkbox" name="install_blog_index" id="install_blog_index" value="1">
+			Archive Blog Index
+		</label> 
+
+		<label for="install_change_list_shortname">
+			<input type="checkbox" name="install_change_list_shortname" id="install_change_list_shortname" value="1">
+			Change Your List Short Name
+		</label> 
+
+		<label for="install_password_protect_directories">
+			<input type="checkbox" name="install_password_protect_directories" id="install_password_protect_directories" value="1">
+			Password Protect Directories
+		</label> 
+
+		<label for="install_global_config">
+			<input type="checkbox" name="install_global_config" id="install_global_config" value="1">
+			Global Configuration
+		</label> 
+
+		</fieldset>
+
+		<fieldset> 
 	
-	<legend>
-		WYSIWYG Editors (Optional) [
-			<a href="#" class="toggleDivs" data-target="wysiwyg_editor_help">
-				?
-			</a>
-		]
-	</legend>
-	<div id="wysiwyg_editor_help" class="alert-box info radius"> 
-		<p>Dada Mail supports the use of third party WYSIWYG HTML editors to allow you to 
-		compose and edit HTML mailing list messages. This allows you to send rich text messages, 
-		right in Dada Mail's list control panel, without needing to know any HTML.</p>
+			<legend>
+				WYSIWYG Editors (Optional) [
+					<a href="#" class="toggleDivs" data-target="wysiwyg_editor_help">
+						?
+					</a>
+				]
+			</legend>
+			<div id="wysiwyg_editor_help" class="alert-box info radius"> 
+				<p>Dada Mail supports the use of third party WYSIWYG HTML editors to allow you to 
+				compose and edit HTML mailing list messages. This allows you to send rich text messages, 
+				right in Dada Mail's list control panel, without needing to know any HTML.</p>
 
-		<p>The HTML produced by these WYSIWYG editors is actually pretty good for the use of HTML 
-		emails, as most of the text formatting is done with inline css styles and these 
-		editors also have the ability to make simple HTML tables for basic layouts. 
-		</p>
-	</div> 
+				<p>The HTML produced by these WYSIWYG editors is actually pretty good for the use of HTML 
+				emails, as most of the text formatting is done with inline css styles and these 
+				editors also have the ability to make simple HTML tables for basic layouts. 
+				</p>
+			</div> 
 
-	<label for="install_wysiwyg_editors">
-		<input 
-			type="checkbox" 
-			name="install_wysiwyg_editors" 
-			id="install_wysiwyg_editors" 
-			value="1" 
-			checked="checked"
-		>			
-		Install and Configure WYSIWYG Editors
-	</label>
-	
-	<div id="wysiwyg_editors_options">
-		<div class="panel"> 
-			<label for="wysiwyg_editor_install_ckeditor">
+			<label for="install_wysiwyg_editors">
 				<input 
 					type="checkbox" 
-					name="wysiwyg_editor_install_ckeditor" 
-					id="wysiwyg_editor_install_ckeditor" 
+					name="install_wysiwyg_editors" 
+					id="install_wysiwyg_editors" 
 					value="1" 
 					checked="checked"
 				>			
-				Install CKeditor
+				Install and Configure WYSIWYG Editors
 			</label>
-
-		<label for="wysiwyg_editor_install_tiny_mce">
-			<input 
-				type="checkbox" 
-				name="wysiwyg_editor_install_tiny_mce" 
-				id="wysiwyg_editor_install_tiny_mce" 
-				value="1" 
-				checked="checked"
-			>			
-			Install Tiny MCE
-		</label>
-
-		<h3>
-			File Browsers/Uploaders
-		</h3>
-
-		<label for="install_file_browser_kcfinder">
-			<input 
-				type="radio" 
-				name="install_file_browser"
-				id="install_file_browser_kcfinder" 
-				value="kcfinder" 
-				checked="checked"
-			>
-			Install KCFinder
-		</label>
-
-		<label for="install_file_browser_core5_filemanager">
-			<input 
-				type="radio"
-				name="install_file_browser" 
-				id="install_file_browser_core5_filemanager" 
-				value="core5_filemanager"
-			>
-			Install Core Five FileManager
-		</label>
-
-			<input type="hidden" name="core5_filemanager_connector" value="pl"> 
- 		</div> 
-	</div> 
-</fieldset> 
-
-
-<fieldset> 
-	<legend>
-		Advanced Configuration
-	</legend>
-
-<!-- tmpl_if show_annoying_whiny_pro_dada_notice --> 
-	<!-- tmpl_include upgrade_to_pro_dada.tmpl --> 
-<!-- /tmpl_if -->
-
-<!-- tmpl_if show_scheduled_jobs_options --> 
-
-	<label for="configure_scheduled_jobs">
-		<input 
-			type="checkbox" 
-			name="configure_scheduled_jobs" 
-			id="configure_scheduled_jobs"
-			value="1"
-		>			
-			Configure Scheduled Jobs
-		</label>
-
-	<div id="scheduled_jobs_options">
-		<div class="panel">
-			
-			<label for="scheduled_jobs_flavor">Scheduled Jobs Flavor</label>
-			<input type="text" name="scheduled_jobs_flavor" id="scheduled_jobs_flavor" value="">	
-			
-			<label for="scheduled_jobs_log">
-				<input type="checkbox" name="scheduled_jobs_log" id="scheduled_jobs_log" value="1"  >			
-				Log Job Output
-			</label>			
-		</div> 
-	</div>
 	
-<!-- /tmpl_if -->
+			<div id="wysiwyg_editors_options">
+				<div class="panel"> 
+					<label for="wysiwyg_editor_install_ckeditor">
+						<input 
+							type="checkbox" 
+							name="wysiwyg_editor_install_ckeditor" 
+							id="wysiwyg_editor_install_ckeditor" 
+							value="1" 
+							checked="checked"
+						>			
+						Install CKeditor
+					</label>
 
-
-<!-- tmpl_if show_deployment_options --> 
-	<label for="configure_deployment">
-		<input 
-			type="checkbox" 
-			name="configure_deployment" 
-			id="configure_deployment" 
-			value="1"
-		>			
-		Configure Deployment Options
-	</label>
-	<div id="deployment_options">
-		<div class="panel"> 
-			<label for="deployment_running_under">
-				Run <!-- tmpl_var PROGRAM_NAME --> under
-			</label>
-			<select name="deployment_running_under" id="deployment_running_under"> 
-			<option value="CGI">CGI</option> 
-			<option value="FastCGI">FastCGI</option> 
-			<option value="PSGI">PSGI/Plack</option> 
-			</select>
-		<!-- tmpl_var cgi_test_FastCGI --> 
-		</div> 
-	</div>
-<!-- /tmpl_if -->
-
-<!-- tmpl_if show_profiles --> 
-	<label for="configure_profiles">
-		<input 
-			type="checkbox"
-			name="configure_profiles"
-			id="configure_profiles"
-			value="1"
-		>			
-		Configure Profiles
-	</label>
-
-	<div id="profiles_options">
-		<div class="panel"> 
-			<label for="profiles_enabled">
-				<input type="checkbox" name="profiles_enabled" id="profiles_enabled" value="1" checked="checked">			
-				Enable Profiles
-			</label>
-
-			<label for="profiles_profile_email">
-				Profile Administration Email
-			</label>
-			<input 
-				type="text" 
-				name="profiles_profile_email" 
-				id="profiles_profile_email" 
-				value=""
-			>			
-
-			<label for="profiles_profile_host_list">
-				Profile Host List
-			</label>
-			<input 
-				type="text" 
-				name="profiles_profile_host_list" 
-				id="profiles_profile_host_list" 
-				value=""
-			>			
-
-			<h3>
-			Enabled Features:
-			</h3>
-			<div class="panel">
-				<label for="profiles_enable_captcha">
+				<label for="wysiwyg_editor_install_tiny_mce">
 					<input 
 						type="checkbox" 
-						name="profiles_enable_captcha" 
-						id="profiles_enable_captcha" 
+						name="wysiwyg_editor_install_tiny_mce" 
+						id="wysiwyg_editor_install_tiny_mce" 
 						value="1" 
 						checked="checked"
 					>			
-					CAPTCHA
+					Install Tiny MCE
 				</label>
 
-				<label for="profiles_enable_magic_subscription_forms">
+				<h4>
+					File Browsers/Uploaders
+				</h4>
+
+				<label for="install_file_browser_kcfinder">
 					<input 
-						type="checkbox" 
-						name="profiles_enable_magic_subscription_forms" 
-						id="profiles_enable_magic_subscription_forms" 
-						value="1" 
+						type="radio" 
+						name="install_file_browser"
+						id="install_file_browser_kcfinder" 
+						value="kcfinder" 
 						checked="checked"
-					>				
-					Magic Subscription Forms
+					>
+					Install KCFinder
 				</label>
 
-				<label for="profiles_help">
+				<label for="install_file_browser_core5_filemanager">
 					<input 
-						type="checkbox" 
-						name="profiles_help" 
-						id="profiles_help" 
-						value="1" 
-						checked="checked"
-					>			
-					Help Screen
+						type="radio"
+						name="install_file_browser" 
+						id="install_file_browser_core5_filemanager" 
+						value="core5_filemanager"
+					>
+					Install Core Five FileManager
 				</label>
 
-				<label for="profiles_login">
-					<input 
-						type="checkbox" 
-						name="profiles_login" 
-						id="profiles_login" 
-						value="1" 
-						checked="checked"
-					>			
-					Profile Login
-				</label>
-
-				<label for="profiles_register">
-					<input 
-						type="checkbox" 
-						name="profiles_register" 
-						id="profiles_register" 
-						value="1" 
-						checked="checked"
-					>			
-					Profile Registration
-				</label>
-
-				<label for="profiles_password_reset">
-					<input 
-						type="checkbox" 
-						name="profiles_password_reset" 
-						id="profiles_password_reset" 
-						value="1" 
-						checked="checked"
-					>			
-					Password Reset
-				</label>
-
-				<label for="profiles_profile_fields">
-					<input
-						type="checkbox"
-						name="profiles_profile_fields"
-						id="profiles_profile_fields"
-						value="1"
-						checked="checked"
-					>			
-					Profile Fields
-				</label>
-
-				<label for="profiles_mailing_list_subscriptions">
-					<input 
-						type="checkbox" 
-						name="profiles_mailing_list_subscriptions" 
-						id="profiles_mailing_list_subscriptions" 
-						value="1" 
-						checked="checked"
-					>			
-					Mailing List Subscriptions
-				</label>
-
-				<label for="profiles_protected_directories">
-					<input 
-						type="checkbox" 
-						name="profiles_protected_directories" 
-						id="profiles_protected_directories" 
-						value="1" 
-						checked="checked"
-					>			
-					Password Protected Directory Information
-				</label>
-
-				<label for="profiles_update_email_address">
-					<input 
-						type="checkbox" 
-						name="profiles_update_email_address" 
-						id="profiles_update_email_address" 
-						value="1" 
-						checked="checked"
-					>			
-					Update Email Address
-				</label>
-
-				<label for="profiles_change_password">
-					<input 
-						type="checkbox" 
-						name="profiles_change_password"
-						id="profiles_change_password"
-						value="1" 
-						checked="checked"
-					>			
-					Change Password
-				</label>
+					<input type="hidden" name="core5_filemanager_connector" value="pl"> 
+		 		</div> 
+			</div> 
+		</fieldset> 
 
 
-				<label for="profiles_delete_profile">
-					<input 
-						type="checkbox" 
-						name="profiles_delete_profile" 
-						id="profiles_delete_profile" 
-						value="1" 
-						checked="checked"
-					>			
-					Profile Deletion
+		<fieldset> 
+			<legend>
+				Advanced Configuration
+			</legend>
+
+		<!-- tmpl_if show_annoying_whiny_pro_dada_notice --> 
+			<!-- tmpl_include upgrade_to_pro_dada.tmpl --> 
+		<!-- /tmpl_if -->
+
+		<!-- tmpl_if show_scheduled_jobs_options --> 
+
+			<label for="configure_scheduled_jobs">
+				<input 
+					type="checkbox" 
+					name="configure_scheduled_jobs" 
+					id="configure_scheduled_jobs"
+					value="1"
+				>			
+					Configure Scheduled Jobs
 				</label>
+
+			<div id="scheduled_jobs_options">
+				<div class="panel">
+			
+					<label for="scheduled_jobs_flavor">Scheduled Jobs Flavor</label>
+					<input type="text" name="scheduled_jobs_flavor" id="scheduled_jobs_flavor" value="">	
+			
+					<label for="scheduled_jobs_log">
+						<input type="checkbox" name="scheduled_jobs_log" id="scheduled_jobs_log" value="1">			
+						Log Job Output
+					</label>			
+				</div> 
 			</div>
-		</div>
-	</div> 
-<!-- /tmpl_if --> 
+	
+		<!-- /tmpl_if -->
 
 
-<!-- tmpl_if show_cache_options --> 
-<input type="checkbox" name="configure_cache" id="configure_cache" value="1">			
-<label for="configure_cache">Configure Caching</label>
-</p>
-<div id="cache_options">
-<fieldset> 
-<input type="checkbox" name="cache_options_SCREEN_CACHE" id="cache_options_SCREEN_CACHE" value="1"  >			
-<label for="cache_options_SCREEN_CACHE">
-Enable Screen Cache
-</label>
-</p>
+		<!-- tmpl_if show_deployment_options --> 
+			<label for="configure_deployment">
+				<input 
+					type="checkbox" 
+					name="configure_deployment" 
+					id="configure_deployment" 
+					value="1"
+				>			
+				Configure Deployment Options
+			</label>
+			<div id="deployment_options">
+				<div class="panel"> 
+					<label for="deployment_running_under">
+						Run <!-- tmpl_var PROGRAM_NAME --> under
+					</label>
+					<select name="deployment_running_under" id="deployment_running_under"> 
+					<option value="CGI">CGI</option> 
+					<option value="FastCGI">FastCGI</option> 
+					<option value="PSGI">PSGI/Plack</option> 
+					</select>
+				<!-- tmpl_var cgi_test_FastCGI --> 
+				</div> 
+			</div>
+		<!-- /tmpl_if -->
 
-<input type="checkbox" name="cache_options_DATA_CACHE" id="cache_options_DATA_CACHE" value="1">			
-<label for="cache_options_DATA_CACHE">
-Enable Data Cache
-</label>
-</p>
+		<!-- tmpl_if show_profiles --> 
+			<label for="configure_profiles">
+				<input 
+					type="checkbox"
+					name="configure_profiles"
+					id="configure_profiles"
+					value="1"
+				>			
+				Configure Profiles
+			</label>
 
+			<div id="profiles_options">
+		
+				<div class="panel"> 
+					<label for="profiles_enabled">
+						<input type="checkbox" name="profiles_enabled" id="profiles_enabled" value="1" checked="checked">			
+						Enable Profiles
+					</label>
+
+					<label for="profiles_profile_email">
+						Profile Administration Email
+					</label>
+					<input 
+						type="text" 
+						name="profiles_profile_email" 
+						id="profiles_profile_email" 
+						value=""
+					>			
+
+					<label for="profiles_profile_host_list">
+						Profile Host List
+					</label>
+					<input 
+						type="text" 
+						name="profiles_profile_host_list" 
+						id="profiles_profile_host_list" 
+						value=""
+					>			
+
+					<h4>
+					Enabled Features
+					</h4>
+					<div class="panel">
+						<label for="profiles_enable_captcha">
+							<input 
+								type="checkbox" 
+								name="profiles_enable_captcha" 
+								id="profiles_enable_captcha" 
+								value="1" 
+								checked="checked"
+							>			
+							CAPTCHA
+						</label>
+
+						<label for="profiles_enable_magic_subscription_forms">
+							<input 
+								type="checkbox" 
+								name="profiles_enable_magic_subscription_forms" 
+								id="profiles_enable_magic_subscription_forms" 
+								value="1" 
+								checked="checked"
+							>				
+							Magic Subscription Forms
+						</label>
+
+						<label for="profiles_help">
+							<input 
+								type="checkbox" 
+								name="profiles_help" 
+								id="profiles_help" 
+								value="1" 
+								checked="checked"
+							>			
+							Help Screen
+						</label>
+
+						<label for="profiles_login">
+							<input 
+								type="checkbox" 
+								name="profiles_login" 
+								id="profiles_login" 
+								value="1" 
+								checked="checked"
+							>			
+							Profile Login
+						</label>
+
+						<label for="profiles_register">
+							<input 
+								type="checkbox" 
+								name="profiles_register" 
+								id="profiles_register" 
+								value="1" 
+								checked="checked"
+							>			
+							Profile Registration
+						</label>
+
+						<label for="profiles_password_reset">
+							<input 
+								type="checkbox" 
+								name="profiles_password_reset" 
+								id="profiles_password_reset" 
+								value="1" 
+								checked="checked"
+							>			
+							Password Reset
+						</label>
+
+						<label for="profiles_profile_fields">
+							<input
+								type="checkbox"
+								name="profiles_profile_fields"
+								id="profiles_profile_fields"
+								value="1"
+								checked="checked"
+							>			
+							Profile Fields
+						</label>
+
+						<label for="profiles_mailing_list_subscriptions">
+							<input 
+								type="checkbox" 
+								name="profiles_mailing_list_subscriptions" 
+								id="profiles_mailing_list_subscriptions" 
+								value="1" 
+								checked="checked"
+							>			
+							Mailing List Subscriptions
+						</label>
+
+						<label for="profiles_protected_directories">
+							<input 
+								type="checkbox" 
+								name="profiles_protected_directories" 
+								id="profiles_protected_directories" 
+								value="1" 
+								checked="checked"
+							>			
+							Password Protected Directory Information
+						</label>
+
+						<label for="profiles_update_email_address">
+							<input 
+								type="checkbox" 
+								name="profiles_update_email_address" 
+								id="profiles_update_email_address" 
+								value="1" 
+								checked="checked"
+							>			
+							Update Email Address
+						</label>
+
+						<label for="profiles_change_password">
+							<input 
+								type="checkbox" 
+								name="profiles_change_password"
+								id="profiles_change_password"
+								value="1" 
+								checked="checked"
+							>			
+							Change Password
+						</label>
+
+
+						<label for="profiles_delete_profile">
+							<input 
+								type="checkbox" 
+								name="profiles_delete_profile" 
+								id="profiles_delete_profile" 
+								value="1" 
+								checked="checked"
+							>			
+							Profile Deletion
+						</label>
+					</div>
+				</div>
+			</div> 
+		<!-- /tmpl_if --> 
+
+		<!-- tmpl_if show_cache_options --> 
+
+			<label for="configure_cache">
+				<input 
+					type="checkbox" 
+					name="configure_cache" 
+					id="configure_cache" 
+					value="1"
+				>
+				Configure Caching
+			</label>
+
+			<div id="cache_options">
+				<div class="panel"> 
+					<label for="cache_options_SCREEN_CACHE">
+						<input type="checkbox" name="cache_options_SCREEN_CACHE" id="cache_options_SCREEN_CACHE" value="1">			
+							Enable Screen Cache
+						</label>
+
+					<label for="cache_options_DATA_CACHE">
+						<input type="checkbox" name="cache_options_DATA_CACHE" id="cache_options_DATA_CACHE" value="1">			
+						Enable Data Cache
+					</label>
+				</div>
+			</div>
+
+		<!-- /tmpl_if --> 
+
+		<!-- tmpl_if show_debugging_options --> 
+	
+			<label for="configure_debugging">
+				<input type="checkbox" name="configure_debugging" id="configure_debugging" value="1">			
+				Configure Debugging
+			</label>
+	
+			<div id="debugging_options">
+				<div class="panel"> 
+			
+					<label for="debugging_options_DADA_App_BounceHandler">
+						<input type="checkbox" name="debugging_options_DADA_App_BounceHandler" id="debugging_options_DADA_App_BounceHandler" value="1">			
+						DADA::App::BounceHandler
+					</label>
+
+					<label for="debugging_options_DADA_App_DBIHandle">
+						<input type="checkbox" name="debugging_options_DADA_App_DBIHandle" id="debugging_options_DADA_App_DBIHandle" value="1">			
+						DADA::App::DBIHandle
+					</label>
+
+					<label for="debugging_options_DADA_App_FormatMessages">
+						<input type="checkbox" name="debugging_options_DADA_App_FormatMessages" id="debugging_options_DADA_App_FormatMessages" value="1">			
+						DADA::App::FormatMessages
+					</label>
+	
+					<label for="debugging_options_DADA_App_Subscriptions">
+						<input type="checkbox" name="debugging_options_DADA_App_Subscriptions" id="debugging_options_DADA_App_Subscriptions" value="1">			
+						DADA::App::Subscriptions
+					</label>
+
+					<label for="debugging_options_DADA_Logging_Clickthrough">
+						<input type="checkbox" name="debugging_options_DADA_Logging_Clickthrough" id="debugging_options_DADA_Logging_Clickthrough" value="1">			
+						DADA::Logging::Clickthrough
+					</label>
+
+					<label for="debugging_options_DADA_Mail_MailOut">
+						<input type="checkbox" name="debugging_options_DADA_Mail_MailOut" id="debugging_options_DADA_Mail_MailOut" value="1">			
+						DADA::Mail::MailOut
+					</label>
+
+					<label for="debugging_options_DADA_Mail_Send">
+						<input type="checkbox" name="debugging_options_DADA_Mail_Send" id="debugging_options_DADA_Mail_Send" value="1">			
+						DADA::Mail::Send
+					</label>
+
+					<label for="debugging_options_DADA_MailingList">
+						<input type="checkbox" name="debugging_options_DADA_MailingList" id="debugging_options_DADA_MailingList" value="1">			
+						DADA::MailingList::baseSQL
+					</label>
+
+					<label for="debugging_options_DADA_MailingList_MessageDrafts">
+						<input type="checkbox" name="debugging_options_DADA_MailingList_MessageDrafts" id="debugging_options_DADA_MailingList_MessageDrafts" value="1">			
+						DADA::MailingList::MessageDrafts
+					</label>
+
+					<label for="debugging_options_DADA_Profile">
+						<input type="checkbox" name="debugging_options_DADA_Profile" id="debugging_options_DADA_Profile" value="1">			
+						DADA::Profile
+					</label>
+
+					<label for="debugging_options_DADA_Profile_Fields">
+						<input type="checkbox" name="debugging_options_DADA_Profile_Fields" id="debugging_options_DADA_Profile_Fields" value="1">			
+						DADA::Profile::Fields
+					</label>
+
+					<label for="debugging_options_DADA_Profile_Session">
+						<input type="checkbox" name="debugging_options_DADA_Profile_Session" id="debugging_options_DADA_Profile_Session" value="1">			
+						DADA::Profile::Session
+					</label>
+
+					<label for="debugging_options_DBI">
+						<input type="checkbox" name="debugging_options_DBI" id="debugging_options_DBI" value="1">			
+						DBI
+					</label>
+
+					<label for="debugging_options_HTML_Template">
+						<input type="checkbox" name="debugging_options_HTML_Template" id="debugging_options_HTML_Template" value="1">			
+						HTML::Template
+					</label>
+
+					<label for="debugging_options_MIME_LITE_HTML">
+						<input type="checkbox" name="debugging_options_MIME_LITE_HTML" id="debugging_options_MIME_LITE_HTML" value="1">			
+						MIME::LITE::HTML
+					</label>
+
+					<label for="debugging_options_MAIL_POP3CLIENT">
+						<input type="checkbox" name="debugging_options_MAIL_POP3CLIENT" id="debugging_options_MAIL_POP3CLIENT" value="1">			
+						Mail::POP3Client
+					</label>
+
+					<label for="debugging_options_NET_SMTP">
+						<input type="checkbox" name="debugging_options_NET_SMTP" id="debugging_options_NET_SMTP" value="1">			
+						Net::SMTP
+					</label>
+				</div>
+			</div>
+
+		<!-- /tmpl_if --> 
+
+		<!-- tmpl_if show_global_template_options --> 
+
+		<label for="configure_templates">
+			<input type="checkbox" name="configure_templates" id="configure_templates" value="1">			
+			Configure Global Template Options
+		</label>
+
+		<div id="templates_options">
+			<div class="panel"> 
+				<label for="template_options_enabled">
+					<input type="checkbox" name="template_options_enabled" id="template_options_enabled" value="1">			
+					Use A Custom User Template
+				</label>
+		
+				<label for="template_options_mode_manual">
+					<input type="radio" name="template_options_mode" value="manual" id="template_options_mode_manual" checked="checked" class="template_options_mode">
+					Manually
+				</label>
+
+				<div id="template_mode_manual_options" class="panel"> 
+					<div class="row">
+						<div class="small-12 columns">
+							<label for="template_options_USER_TEMPLATE">
+								Server Absolute Path or URL to your User Template
+							</label>
+						</div> 
+					</div>
+					<div class="row">
+						<div class="small-12 columns">
+							<input type="text" name="template_options_manual_template_url" id="template_options_manual_template_url" value="">
+						</div>
+					</div>
+				</div> 
+
+				<label for="template_options_mode_magic">
+					<input type="radio" name="template_options_mode" value="magic" id="template_options_mode_magic" class="template_options_mode">
+					Magically (Experimental)
+				</label>
+
+				<!-- tmpl_unless can_use_HTML_Tree --> 
+					<div class="alert-box warning radius">
+						<p>
+							<strong>
+								Magic Templates are not supported.
+							</strong>
+						</p>
+						<p>
+						The following CPAN Perl module will need to be installed:
+
+						<ul>
+						<li>HTML::Tree</li>
+						</ul>
+					</div>
+				<!-- /tmpl_unless --> 
+
+				<div id="template_mode_magic_options" class="panel"> 
+
+					<div class="row">
+						<div class="small-12 columns">
+							<label for="template_options_magic_template_url">
+								URL
+							</label> 
+						</div> 
+					</div> 
+					<div class="row">
+						<div class="small-12 columns">
+							<input type="text" name="template_options_magic_template_url" id="template_options_magic_template_url">
+						</div> 
+					</div> 
+
+					<div class="row">
+						<div class="small-12 columns">	
+							<label for="template_options_add_base_href">
+								<input type="checkbox" name="template_options_add_base_href" id="template_options_add_base_href" value="1">
+								Add a, &lt;base href=&quot;...&quot;&gt; tag
+							</label>
+						</div> 
+					</div> 
+					<div class="row">
+						<div class="small-12 columns">
+							<input type="text" name="template_options_base_href_url" id="template_options_base_href_url"   >
+						</div> 
+					</div> 
+		
+					<div class="row">
+						<div class="small-12 columns">	
+							<label for="template_options_head_content_added_by">
+								Place <!-- tmpl_var PROGRAM_NAME -->'s head content
+							</label>
+						</div> 
+					</div> 
+					<div class="row">
+						<div class="small-12 columns">
+							<select name="template_options_head_content_added_by" id="template_options_head_content_added_by"> 
+								<option value="push" selected="selected">after existing content</option>
+								<option value="unshift">before existing content</option>
+							</select> 
+						</div> 
+					</div>
+		
+					<h4>Stylesheet Options</h4>
+		
+					<div class="row">
+						<div class="small-12 columns">
+							<label for="template_options_add_app_css">
+								<input type="checkbox" name="template_options_add_app_css" id="template_options_add_app_css"  value="1">
+								Include Dada Mail's own stylesheet
+							</label>
+						</div> 
+					</div> 
+					<div class="row">
+						<div class="small-12 columns">
+							<label for="template_options_add_custom_css">
+								<input type="checkbox" name="template_options_add_custom_css" id="template_options_add_custom_css" value="1">
+								Include a custom stylesheet
+							</label>
+							<input type="text" name="template_options_custom_css_url" id="template_options_custom_css_url">
+						</div> 
+					</div> 
+
+					<h4>Javascript Options</h4>
+					<div class="row">
+						<div class="small-12 columns">
+							<label for="template_options_include_jquery_lib">
+								<input type="checkbox" name="template_options_include_jquery_lib" id="template_options_include_jquery_lib" value="1" checked="checked">
+								Include a Copy of jQuery (v1.11.3)
+							</label>
+						</div>
+					</div>
+					<div class="row">
+						<div class="small-12 columns">
+							<label for="template_options_include_jqueryui_lib">
+								<input type="checkbox" name="template_options_include_jqueryui_lib" id="template_options_include_jqueryui_lib" value="1" checked="checked">
+								Include a Copy of jQuery UI (v1.9.1)
+							</label>
+						</div> 
+					</div> 
+					<div class="row">
+						<div class="small-12 columns">
+							<label for="template_options_include_app_user_js">
+								<input type="checkbox" name="template_options_include_app_user_js" id="template_options_include_app_user_js" value="1" checked="checked">
+								Include <!-- tmpl_var PROGRAM_NAME -->'s JavaScript User-Facing Enhancements
+							</label>
+						</div> 
+					</div> 
+
+					<div class="row">
+						<div class="small-12 columns">
+							<label>
+								Place <!-- tmpl_var PROGRAM_NAME -->'s body content inside the
+							</label>
+						</div> 
+					</div> 
+					<div class="row">
+						<div class="small-1 columns">
+						</div> 
+							<div class="small-11 columns">
+						
+								<div class="row">
+									<div class="small-12 columns">
+										<label for="template_options_replace_content_from_body">
+											<input type="radio" name="template_options_replace_content_from" id="template_options_replace_content_from_body" value="body" checked="checked"> 
+											&lt;body&gt; tag
+										</label>
+									</div>
+								</div> 
+								<div class="row">
+									<div class="small-12 columns">
+										<label for="template_options_replace_content_from_id">
+											<input type="radio" name="template_options_replace_content_from" id="template_options_replace_content_from_id" value="id"> 
+											tag with css id
+										</label>
+									</div>
+								</div> 
+								<div class="row">
+									<div class="small-12 columns">
+										<input type="text" name="template_options_replace_id" id="template_options_replace_id" value="">
+									</div> 
+								</div> 
+								<div class="row">
+									<div class="small-12 columns">
+										<label for="template_options_replace_content_from_class">
+											<input type="radio" name="template_options_replace_content_from" id="template_options_replace_content_from_class" value="class"> 
+											tag with css class
+										</label>
+									</div>
+								</div> 
+								<div class="row">
+									<div class="small-12 columns">
+										<input type="text" name="template_options_replace_class" id="template_options_replace_class" value="">
+									</div>
+								</div> 
+							</div> 
+						</div>
+					</div> 	
+		
+					<input type="button" class="processing test_user_template small button expand" value="Test User Template">
+			
+					<div id="test_user_template_results" class="alert-box info radius"></div> 
+				</div>
+			</div> 
+		<!-- /tmpl_if --> 
+
+		<!-- tmpl_if show_security_options --> 
+
+			<label for="configure_security">
+				<input type="checkbox" name="configure_security" id="configure_security" value="1">			
+				Configure Security Options
+			</label>
+
+			<div id="security_options">
+				<div class="panel">
+					<label for="security_no_show_admin_link">
+						<input type="checkbox" name="security_no_show_admin_link" id="security_no_show_admin_link" value="1">			
+						Hide Administration Link
+					</label>
+			
+					<label for="security_DISABLE_OUTSIDE_LOGINS">
+						<input type="checkbox" name="security_DISABLE_OUTSIDE_LOGINS" id="security_DISABLE_OUTSIDE_LOGINS" value="1">			
+						Disable Outside Logins
+					</label>
+
+
+					<label for="security_ADMIN_FLAVOR_NAME">Admin Flavor Name</label>
+					<input type="text" name="security_ADMIN_FLAVOR_NAME" id="security_ADMIN_FLAVOR_NAME" value="">			
+
+					<label for="security_SIGN_IN_FLAVOR_NAME">Sign In Flavor Name</label>
+					<input type="text" name="security_SIGN_IN_FLAVOR_NAME" id="security_SIGN_IN_FLAVOR_NAME" value="">
+				
+				</div>
+			</div> 
+		<!-- /tmpl_if --> 
+
+		<!-- tmpl_if show_captcha_options --> 
+
+			<label for="configure_captcha">
+				<input type="checkbox" name="configure_captcha" id="configure_captcha" value="1">			
+				Configure CAPTCHA Options
+			</label>
+
+			<div id="captcha_options">
+				<div class="panel">
+	
+					<div class="alert-box info radius"> 
+						<ul>
+							<!-- tmpl_if can_use_GD --> 
+									<li>
+										<strong>Default</strong> CAPTCHA is Supported.
+									</li>
+							<!-- tmpl_else --> 
+								<li>
+									The <strong>GD</strong> CPAN module needs to be installed, for reCAPTCHA support. 
+								</li> 
+							<!-- /tmpl_if --> 
+		
+							<!-- tmpl_if can_use_CAPTCHA_reCAPTCHA --> 
+								<li>
+									<strong>reCAPTCHA</strong> is Supported.
+								</li>
+							<!-- tmpl_else --> 
+								<li>
+									The <strong>CAPTCHA::reCAPTCHA</strong> CPAN module needs to be installed, for reCAPTCHA support. 
+								</li> 
+							<!-- /tmpl_if --> 
+		
+							<!-- tmpl_if can_use_CAPTCHA_reCAPTCHA_Mailhide --> 
+								<li> 
+									<strong>reCAPTCHA Mailhide</strong> is Supported.
+								</li>
+							<!-- tmpl_else --> 
+								<li>
+									The <strong>CAPTCHA::reCAPTCHA::Mailhide</strong> CPAN module needs to be installed, for reCAPTCHA Mailhide support. 
+								</li> 
+							<!-- /tmpl_if -->
+						</ul>
+					</div> 
+		
+					<h4>CAPTCHA Type</h4>
+
+					<label for="captcha_type_default">
+						<input type="radio" name="captcha_type" id="captcha_type_default" value="Default" checked="checked" class="radiochangeDisplayState" data-target="recaptcha_settings" data-state="hide">
+						Default CAPTCHA Type
+					</label>
+
+					<label for="captcha_type_recaptcha">
+						<input type="radio" name="captcha_type" id="captcha_type_recaptcha" value="reCAPTCHA" class="radiochangeDisplayState" data-target="recaptcha_settings" data-state="show">
+						reCAPTCHA (Recommended)
+					</label>
+
+					<div id="recaptcha_settings"> 
+						More Information: 
+						<a href="http://www.google.com/recaptcha" target="_blank">
+						http://www.google.com/recaptcha
+						</a>
+
+						<label  for="captcha_reCAPTCHA_remote_addr">
+						Remote Address
+						</label> 
+						<input type="text" name="captcha_reCAPTCHA_remote_addr" id="captcha_reCAPTCHA_remote_addr" value="">
+
+
+						<label  for="captcha_reCAPTCHA_public_key">
+						reCPATCHA Public Key
+						</label> 
+						<input type="text" name="captcha_reCAPTCHA_public_key" id="captcha_reCAPTCHA_public_key" value="">
+
+
+						<label  for="captcha_reCAPTCHA_private_key">
+						reCPATCHA Private Key
+						</label> 
+						<input type="text" name="captcha_reCAPTCHA_private_key" id="captcha_reCAPTCHA_private_key" value="">
+
+					</div> 
+		
+					<input type="button" class="processing test_CAPTCHA_configuration small button expand" value="Test CAPTCHA Configuration">
+		
+					<div id="test_CAPTCHA_configuration_results"></div> 
+
+
+					<h4>reCAPTCHA Mailhide Settings</h4>
+
+					<strong>
+					More Information: 
+					</strong>
+					<a href="http://www.google.com/recaptcha/mailhide/" target="_blank">
+					http://www.google.com/recaptcha/mailhide/
+					</a>
+
+
+					<label  for="captcha_reCAPTCHA_Mailhide_public_key">
+						reCAPTCHA Mailhide Public Key
+					</label> 
+					<input type="text" name="captcha_reCAPTCHA_Mailhide_public_key" id="captcha_reCAPTCHA_Mailhide_public_key" value="">
+
+					<label  for="captcha_reCAPTCHA_Mailhide_private_key">
+						reCAPTCHA Mailhide Private Key
+					</label> 
+					<input type="text" name="captcha_reCAPTCHA_Mailhide_private_key" id="captcha_reCAPTCHA_Mailhide_private_key" value="">
+
+					<input type="button" class="processing test_captcha_reCAPTCHA_Mailhide_configuration small button expand" value="Test reCAPTCHA Mailhide Configuration">
+		
+					<div id="captcha_reCAPTCHA_Mailhide_configuration_results"></div> 
+		
+				</div> 
+			</div>
+	
+		<!-- /tmpl_if --> 
+
+		<!-- tmpl_if show_global_mailing_list_options --> 
+
+			<label for="configure_global_mailing_list">
+				<input type="checkbox" name="configure_global_mailing_list" id="configure_global_mailing_list" value="1">			
+				Configure Global Mailing List Options
+			</label>
+
+			<div id="global_mailing_list_options" class="panel">
+
+				<label for="global_mailing_list_options_GLOBAL_UNSUBSCRIBE">
+					<input type="checkbox" name="global_mailing_list_options_GLOBAL_UNSUBSCRIBE" id="global_mailing_list_options_GLOBAL_UNSUBSCRIBE" value="1">
+					Enable Global Unsubscribe
+				</label>
+
+				<label for="global_mailing_list_options_GLOBAL_BLACK_LIST">
+					<input type="checkbox" name="global_mailing_list_options_GLOBAL_BLACK_LIST" id="global_mailing_list_options_GLOBAL_BLACK_LIST" value="1">
+					Enable Global Black List
+				</label>
+		
+			</div> 
+		<!-- /tmpl_if --> 
+
+		<!-- tmpl_if show_global_mass_mailing_options --> 
+
+			<label for="configure_mass_mailing">
+				<input type="checkbox" name="configure_mass_mailing" id="configure_mass_mailing" value="1">			
+				Configure Global Mass Mailing Options
+			</label>
+
+			<div id="mass_mailing_options">
+				<div class="panel">
+					<label for="mass_mailing_MAILOUT_AT_ONCE_LIMIT">
+						Mass Mailings at Once Limit 
+					</label>
+					<select name="mass_mailing_MAILOUT_AT_ONCE_LIMIT" id="mass_mailing_MAILOUT_AT_ONCE_LIMIT">
+						<option value="1">1</option> 
+						<option value="2">2</option> 
+						<option value="3">3</option> 
+						<option value="4">4</option> 
+						<option value="5">5</option> 
+						<option value="6">6</option> 
+						<option value="7">7</option> 
+						<option value="8">8</option> 
+						<option value="9">9</option> 
+						<option value="10">10</option> 
+						<option value="15">15</option> 
+						<option value="20">20</option> 
+						<option value="25">25</option> 
+						<option value="30">30</option> 
+					</select>
+
+					<label for="mass_mailing_MULTIPLE_LIST_SENDING">
+						<input type="checkbox" name="mass_mailing_MULTIPLE_LIST_SENDING" id="mass_mailing_MULTIPLE_LIST_SENDING" value="1">
+						Multiple Mailing List Sending
+					</label>
+
+					<label for="mass_mailing_MAILOUT_STALE_AFTER">
+						Mass Mailings Stale After 
+					</label>
+					<select name="mass_mailing_MAILOUT_STALE_AFTER" id="mass_mailing_MAILOUT_STALE_AFTER">
+						<option value="21600">6 hours</option>
+						<option value="43200">12 hours</option>
+						<option value="86400" selected="selected">1 Day</option> 
+						<option value="172800">2 Days</option> 
+						<option value="259200">3 Days</option>
+					</select>
+				</div> 	
+			</div> 
+		<!-- /tmpl_if --> 
+
+		<!-- tmpl_if show_confirmation_token_options --> 
+
+			<label for="configure_confirmation_token">
+				<input type="checkbox" name="configure_confirmation_token" id="configure_confirmation_token" value="1">			
+				Configure Confirmation Token Options
+			</label>
+
+			<div id="confirmation_token_options">
+				<div class="panel"> 	
+					<label for="confirmation_token_expires">
+						Number of Days Confirmation Tokens Are Saved For
+					</label>
+					<select name="confirmation_token_expires" id="confirmation_token_expires">
+						<option value="5">5</option>
+						<option value="10">10</option>
+						<option value="15">15</option>
+						<option value="20">20</option>
+						<option value="30">30</option> 
+						<option value="60" selected="selected">60</option> 
+						<option value="90">90</option>
+						<option value="180">180</option>
+						<option value="360">360</option>
+					</select>
+				</div> 	
+			</div> 
+		<!-- /tmpl_if -->
+
+		<!-- tmpl_if show_program_name_options --> 
+
+			<label for="configure_program_name">
+				<input type="checkbox" name="configure_program_name" id="configure_program_name" value="1">			
+				Configure Program Name
+			</label>
+			<div id="program_name_options">
+				<div class="panel">
+					<label for="program_name_PROGRAM_NAME">
+						Program Name
+					</label>
+					<input type="text" name="program_name_PROGRAM_NAME" id="program_name_PROGRAM_NAME" value="<!-- tmpl_var program_name_PROGRAM_NAME -->">
+				</div>
+			</div> 
+		<!-- /tmpl_if --> 
+
+
+		<!-- tmpl_if show_s_program_url_options --> 
+			
+			<label for="configure_s_program_url">
+				<input type="checkbox" name="configure_s_program_url" id="configure_s_program_url" value="1">			
+				Configure Secure Program URL
+			</label>
+
+			<div id="s_program_url_options">
+				<div class="panel">
+					<label for="s_program_url_S_PROGRAM_URL">
+						Secure Program URL 
+					</label>
+					<input type="text" name="s_program_url_S_PROGRAM_URL" id="s_program_url_S_PROGRAM_URL" value="">
+				</div>
+			</div> 
+		<!-- /tmpl_if --> 
+
+
+		<!-- tmpl_if show_amazon_ses_options --> 
+
+			<label for="configure_amazon_ses">
+				<input type="checkbox" name="configure_amazon_ses" id="configure_amazon_ses" value="1">			
+				Configure Amazon SES
+			</label>
+
+			<div id="amazon_ses_options">
+				<div class="panel"> 
+
+				<!-- tmpl_var amazon_ses_requirements_widget -->
+				<label   for="amazon_ses_AWS_endpoint">AWS Region/Endpoint</label> 
+				<select name="amazon_ses_AWS_endpoint" id="amazon_ses_AWS_endpoint"> 
+					<option value="https://email.us-east-1.amazonaws.com/">US East (N. Virginia) Region (us-east-1)</option>
+					<option value="https://email.us-west-2.amazonaws.com/">US West (Oregon) Region (us-west-2)</option> 
+					<option value="https://email.eu-west-1.amazonaws.com/">EU (Ireland) Region (eu-west-1)</option>
+				</select>
+
+				<label  for="amazon_ses_AWSAccessKeyId">
+					AWS Access Key ID
+				</label> 
+				<input type="text" name="amazon_ses_AWSAccessKeyId" id="amazon_ses_AWSAccessKeyId" value="">
+
+
+				<label  for="amazon_ses_AWSSecretKey">
+					AWS Secret Access Key
+				</label> 
+				<input type="text" name="amazon_ses_AWSSecretKey" id="amazon_ses_AWSSecretKey" value=""   >
+
+
+				<label   for="amazon_ses_Allowed_Sending_Quota_Percentage">
+					Allowed Percent <!-- tmpl_var PROGRAM_NAME --> Can Utilize
+				</label> 
+				<!-- tmpl_var amazon_ses_Allowed_Sending_Quota_Percentage_popup_menu -->
+
+				<input type="button" class="small button expand processing test_amazon_ses_configuration" value="Test AWS Credentials">
+		
+				<div class="floatclear"></div> 
+				<div id="test_amazon_ses_configuration_results" class="alert-box info radius"></div> 
+
+				</div> 	
+			</div> 
+		<!-- /tmpl_if --> 
+
+
+		<!-- tmpl_if show_mandrill_options --> 
+
+			<label for="configure_mandrill">
+				<input type="checkbox" name="configure_mandrill" id="configure_mandrill" value="1">			
+				Configure Mandrill
+			</label>
+
+			<div id="mandrill_options">
+				<div class="panel"> 
+		
+				<label  for="mandrill_api_key">
+					API Key
+				</label> 
+				<input type="text" name="mandrill_api_key" id="mandrill_api_key" value="">
+
+
+
+				<label   for="amazon_ses_Allowed_Sending_Quota_Percentage">
+					Allowed Percent <!-- tmpl_var PROGRAM_NAME --> Can Utilize
+				</label> 
+				<!-- tmpl_var mandrill_Allowed_Sending_Quota_Percentage_popup_menu -->
+				<input type="button" class="small button processing test_mandrill_configuration small button expand" value="Test: Mandrill Credentials">
+	
+					<div id="test_mandrill_configuration_results" class="alert-box info radius"></div> 
+		
+				</div> 	
+			</div> 
+
+		<!-- /tmpl_if --> 
+
+
+		</fieldset> 
+
+		</div> 
+
+
+		<input type="submit" value="&#187; Configure  <!-- tmpl_var PROGRAM_NAME -->! &#171;" class="processing large button expand"> 
+
+		</form> 
+	</div>
 </div>
-
-<!-- /tmpl_if --> 
-
-<!-- tmpl_if show_debugging_options --> 
-<input type="checkbox" name="configure_debugging" id="configure_debugging" value="1">			
-<label for="configure_debugging">Configure Debugging</label>
-</p>
-
-
-<div id="debugging_options">
-<fieldset> 
-
-<input type="checkbox" name="debugging_options_DADA_App_BounceHandler" id="debugging_options_DADA_App_BounceHandler" value="1"  >			
-<label for="debugging_options_DADA_App_BounceHandler">
-DADA::App::BounceHandler
-</label>
-</p>
-
-<input type="checkbox" name="debugging_options_DADA_App_DBIHandle" id="debugging_options_DADA_App_DBIHandle" value="1"  >			
-<label for="debugging_options_DADA_App_DBIHandle">
-DADA::App::DBIHandle
-</label>
-</p>
-
-<input type="checkbox" name="debugging_options_DADA_App_FormatMessages" id="debugging_options_DADA_App_FormatMessages" value="1"  >			
-<label for="debugging_options_DADA_App_FormatMessages">
-DADA::App::FormatMessages
-</label>
-</p>
-
-
-
-<input type="checkbox" name="debugging_options_DADA_App_Subscriptions" id="debugging_options_DADA_App_Subscriptions" value="1"  >			
-<label for="debugging_options_DADA_App_Subscriptions">
-DADA::App::Subscriptions
-</label>
-</p>
-
-<input type="checkbox" name="debugging_options_DADA_Logging_Clickthrough" id="debugging_options_DADA_Logging_Clickthrough" value="1"  >			
-<label for="debugging_options_DADA_Logging_Clickthrough">
-DADA::Logging::Clickthrough
-</label>
-</p>
-
-
-<input type="checkbox" name="debugging_options_DADA_Mail_MailOut" id="debugging_options_DADA_Mail_MailOut" value="1"  >			
-<label for="debugging_options_DADA_Mail_MailOut">
-DADA::Mail::MailOut
-</label>
-</p>
-
-<input type="checkbox" name="debugging_options_DADA_Mail_Send" id="debugging_options_DADA_Mail_Send" value="1"  >			
-<label for="debugging_options_DADA_Mail_Send">
-DADA::Mail::Send
-</label>
-</p>
-
-<input type="checkbox" name="debugging_options_DADA_MailingList" id="debugging_options_DADA_MailingList" value="1"  >			
-<label for="debugging_options_DADA_MailingList">
-DADA::MailingList::baseSQL
-</label>
-</p>
-
-<input type="checkbox" name="debugging_options_DADA_MailingList_MessageDrafts" id="debugging_options_DADA_MailingList_MessageDrafts" value="1"  >			
-<label for="debugging_options_DADA_MailingList_MessageDrafts">
-DADA::MailingList::MessageDrafts
-</label>
-</p>
-
-<input type="checkbox" name="debugging_options_DADA_Profile" id="debugging_options_DADA_Profile" value="1"  >			
-<label for="debugging_options_DADA_Profile">
-DADA::Profile
-</label>
-</p>
-
-
-<input type="checkbox" name="debugging_options_DADA_Profile_Fields" id="debugging_options_DADA_Profile_Fields" value="1"  >			
-<label for="debugging_options_DADA_Profile_Fields">
-DADA::Profile::Fields
-</label>
-</p>
-
-<input type="checkbox" name="debugging_options_DADA_Profile_Session" id="debugging_options_DADA_Profile_Session" value="1"  >			
-<label for="debugging_options_DADA_Profile_Session">
-DADA::Profile::Session
-</label>
-</p>
-
-
-<input type="checkbox" name="debugging_options_DBI" id="debugging_options_DBI" value="1"  >			
-<label for="debugging_options_DBI">
-DBI
-</label>
-</p>
-
-<input type="checkbox" name="debugging_options_HTML_Template" id="debugging_options_HTML_Template" value="1"  >			
-<label for="debugging_options_HTML_Template">
-HTML::Template
-</label>
-</p>
-
-<input type="checkbox" name="debugging_options_MIME_LITE_HTML" id="debugging_options_MIME_LITE_HTML" value="1"  >			
-<label for="debugging_options_MIME_LITE_HTML">
-MIME::LITE::HTML
-</label>
-</p>
-
-<input type="checkbox" name="debugging_options_MAIL_POP3CLIENT" id="debugging_options_MAIL_POP3CLIENT" value="1"  >			
-<label for="debugging_options_MAIL_POP3CLIENT">
-Mail::POP3Client
-</label>
-</p>
-
-<input type="checkbox" name="debugging_options_NET_SMTP" id="debugging_options_NET_SMTP" value="1"  >			
-<label for="debugging_options_NET_SMTP">
-Net::SMTP
-</label>
-</p>
-
-</div>
-
-<!-- /tmpl_if --> 
-
-
-
-
-<!-- tmpl_if show_global_template_options --> 
-
-<input type="checkbox" name="configure_templates" id="configure_templates" value="1">			
-<label for="configure_templates">Configure Global Template Options</label>
-</p>
-
-
-<div id="templates_options">
-<fieldset> 
-<input type="checkbox" name="template_options_enabled" id="template_options_enabled" value="1">			
-<label for="template_options_enabled">
-Use A Custom User Template
-</label>
-</p>		
-<input type="radio" name="template_options_mode" value="manual" id="template_options_mode_manual" checked="checked" class="template_options_mode">
-<label for="template_options_mode_manual">Manually</label>
-</p>
-<div id="template_mode_manual_options"> 
-<blockquote> 
-<label for="template_options_USER_TEMPLATE">
-Server Absolute Path or URL to your User Template:
-</label>
-<br >
-<input type="text" name="template_options_manual_template_url" id="template_options_manual_template_url" value=""  >
-</blockquote> 
-</div> 
-
-
-
-<input type="radio" name="template_options_mode" value="magic" id="template_options_mode_magic" class="template_options_mode">
-<label for="template_options_mode_magic">
-Magically (Experimental)
-</label>
-</p>
-
-<!-- tmpl_unless can_use_HTML_Tree --> 
-<div class="alert-box info radius">
-<p>
-<strong>
-Magic Templates are not supported.
-</strong>
-</p>
-
-<p>
-The following CPAN Perl module will need to be installed:
-</p>
-<ul>
-<li>HTML::Tree</li>
-</ul>
-</div>
-<!-- /tmpl_unless --> 
-
-
-
-<div id="template_mode_magic_options"> 
-<blockquote>
-<label for="template_options_magic_template_url">
-URL:
-</label><br > 
-
-<input type="text" name="template_options_magic_template_url" id="template_options_magic_template_url"  ><br >
-
-<input type="checkbox" name="template_options_add_base_href" id="template_options_add_base_href" value="1">
-<label for="template_options_add_base_href">Add a, &lt;base href=&quot;...&quot;&gt; tag:</label><br >
-<input type="text" name="template_options_base_href_url" id="template_options_base_href_url"   ><br >
-</p>
-
-<label for="template_options_head_content_added_by">
-Place <!-- tmpl_var PROGRAM_NAME -->'s head content
-</label>
-<select name="template_options_head_content_added_by" id="template_options_head_content_added_by"> 
-<option value="push" selected="selected">after</option>
-<option value="unshift">before</option>
-</select> 
-<label for="template_options_head_content_added_by">
-existing content.
-</label>
-<br > 
-
-
-
-
-<p><strong>Stylesheet Options:</strong><br >
-<input type="checkbox" name="template_options_add_app_css" id="template_options_add_app_css"  value="1">
-<label for="template_options_add_app_css">Include Dada Mail's own stylesheet</label><br >
-
-<input type="checkbox" name="template_options_add_custom_css" id="template_options_add_custom_css" value="1">
-<label for="template_options_add_custom_css">Include a custom stylesheet:</label><br >
-<input type="text" name="template_options_custom_css_url" id="template_options_custom_css_url"  >
-</p> 
-<p><strong>Javascript Options:</strong><br >
-<label for="template_options_include_jquery_lib">
-<input type="checkbox" name="template_options_include_jquery_lib" id="template_options_include_jquery_lib" value="1" checked="checked">
-Include a Copy of jQuery (v1.11.3)
-</label><br >
-
-<label for="template_options_include_jqueryui_lib">
-<input type="checkbox" name="template_options_include_jqueryui_lib" id="template_options_include_jqueryui_lib" value="1" checked="checked">
-Include a Copy of jQuery UI (v1.9.1)
-</label><br >
-
-<label for="template_options_include_app_user_js">
-<input type="checkbox" name="template_options_include_app_user_js" id="template_options_include_app_user_js" value="1" checked="checked">
-Include <!-- tmpl_var PROGRAM_NAME -->'s JavaScript User-Facing Enhancements
-</label>
-</p>
-
-
-<p><strong>Place <!-- tmpl_var PROGRAM_NAME -->'s body content inside the:</strong> <br >
-<input type="radio" name="template_options_replace_content_from" id="template_options_replace_content_from_body" value="body" checked="checked"> 
-<label for="template_options_replace_content_from_body">&lt;body&gt; tag</label>
-<br >
-<input type="radio" name="template_options_replace_content_from" id="template_options_replace_content_from_id" value="id"> 
-<label for="template_options_replace_content_from_id">tag with css id:</label>
-<input type="text" name="template_options_replace_id" id="template_options_replace_id" value="">
-<br >
-<input type="radio" name="template_options_replace_content_from" id="template_options_replace_content_from_class" value="class"> 
-<label for="template_options_replace_content_from_class">tag with css class:</label>
-<input type="text" name="template_options_replace_class" id="template_options_replace_class" value="">
-</blockquote>
-</div> 
-
-
-<input type="button" class="processing test_user_template" value="Test Your User Template">
-
-<div class="floatclear"></div> 
-<div id="test_user_template_results" class="alert-box info radius"></div> 
-
-
-</fieldset> 	
-</div> 
-<!-- /tmpl_if --> 
-
-
-
-<!-- tmpl_if show_security_options --> 
-
-<input type="checkbox" name="configure_security" id="configure_security" value="1">			
-<label for="configure_security">Configure Security Options</label>
-</p>
-<div id="security_options">
-<fieldset> 
-<input type="checkbox" name="security_no_show_admin_link" id="security_no_show_admin_link" value="1">			
-<label for="security_no_show_admin_link">Hide Administration Link</label>
-</p>
-<input type="checkbox" name="security_DISABLE_OUTSIDE_LOGINS" id="security_DISABLE_OUTSIDE_LOGINS" value="1">			
-<label for="security_DISABLE_OUTSIDE_LOGINS">Disable Outside Logins</label>
-</p>
-
-<label for="security_ADMIN_FLAVOR_NAME">Admin Flavor Name:</label>
-<input type="text" name="security_ADMIN_FLAVOR_NAME" id="security_ADMIN_FLAVOR_NAME" value="">			
-</p>
-
-<label for="security_SIGN_IN_FLAVOR_NAME">Sign In Flavor Name:</label>
-<input type="text" name="security_SIGN_IN_FLAVOR_NAME" id="security_SIGN_IN_FLAVOR_NAME" value="">			
-</p>
-
-</fieldset> 	
-</div> 
-<!-- /tmpl_if --> 
-
-<!-- tmpl_if show_captcha_options --> 
-
-<input type="checkbox" name="configure_captcha" id="configure_captcha" value="1">			
-<label for="configure_captcha">Configure CAPTCHA Options</label>
-</p>
-<div id="captcha_options">
-<fieldset> 
-
-
-<div class="alert-box info radius"> 
-
-<!-- tmpl_if can_use_GD --> 
-<ul>
-
-<li>
-<p>
-<strong>Default</strong> CAPTCHA is Supported.
-</p>
-</li>
-<!-- tmpl_else --> 
-<li>
-<p>
-The <strong>GD</strong> CPAN module needs to be installed, for reCAPTCHA support. 
-</p>
-</li> 
-<!-- /tmpl_if --> 
-<!-- tmpl_if can_use_CAPTCHA_reCAPTCHA --> 
-<li>
-<p>
-<strong>reCAPTCHA</strong> is Supported.
-</p>
-</li>
-<!-- tmpl_else --> 
-<li>
-<p>
-The <strong>CAPTCHA::reCAPTCHA</strong> CPAN module needs to be installed, for reCAPTCHA support. 
-</p>
-</li> 
-<!-- /tmpl_if --> 
-
-<!-- tmpl_if can_use_CAPTCHA_reCAPTCHA_Mailhide --> 
-<li> 
-<p>
-<strong>reCAPTCHA Mailhide</strong> is Supported.
-</p>
-</li>
-<!-- tmpl_else --> 
-<li>
-<p>
-The <strong>CAPTCHA::reCAPTCHA::Mailhide</strong> CPAN module needs to be installed, for reCAPTCHA Mailhide support. 
-</p>
-</li> 
-<!-- /tmpl_if --> 
-</div> 
-
-<h2>CAPTCHA Type:</h2>
-
-<input type="radio" name="captcha_type" id="captcha_type_default" value="Default" checked="checked" class="radiochangeDisplayState" data-target="recaptcha_settings" data-state="hide">
-<label for="captcha_type_default">Default CAPTCHA Type</label>
-<br >
-<input type="radio" name="captcha_type" id="captcha_type_recaptcha" value="reCAPTCHA" class="radiochangeDisplayState" data-target="recaptcha_settings" data-state="show">
-<label for="captcha_type_recaptcha">reCAPTCHA (Recommended)</label>
-</p>
-
-<div id="recaptcha_settings"> 
-<p>
-<strong>
-More Information: 
-</strong>
-<a href="http://www.google.com/recaptcha" target="_blank">
-http://www.google.com/recaptcha
-</a>
-</p>
-<label  for="captcha_reCAPTCHA_remote_addr">
-Remote Address:
-</label> 
-<input type="text" name="captcha_reCAPTCHA_remote_addr" id="captcha_reCAPTCHA_remote_addr" value=""  >
-</p>
-
-<label  for="captcha_reCAPTCHA_public_key">
-reCPATCHA Public Key:
-</label> 
-<input type="text" name="captcha_reCAPTCHA_public_key" id="captcha_reCAPTCHA_public_key" value=""  >
-</p>
-
-<label  for="captcha_reCAPTCHA_private_key">
-reCPATCHA Private Key:
-</label> 
-<input type="text" name="captcha_reCAPTCHA_private_key" id="captcha_reCAPTCHA_private_key" value=""  >
-</p>
-</div> 
-
-<div class="buttonfloat"> 
-<input type="button" class="processing test_CAPTCHA_configuration" value="Test CAPTCHA Configuration">
-</div>
-<div class="floatclear"></div> 
-<div id="test_CAPTCHA_configuration_results"></div> 
-
-
-<h2>reCAPTCHA Mailhide Settings:</h2>
-
-<p>
-<strong>
-More Information: 
-</strong>
-<a href="http://www.google.com/recaptcha/mailhide/" target="_blank">
-http://www.google.com/recaptcha/mailhide/
-</a>
-</p>
-
-<label  for="captcha_reCAPTCHA_Mailhide_public_key">
-reCAPTCHA Mailhide Public Key:
-</label> 
-<input type="text" name="captcha_reCAPTCHA_Mailhide_public_key" id="captcha_reCAPTCHA_Mailhide_public_key" value=""  >
-</p>
-
-<label  for="captcha_reCAPTCHA_Mailhide_private_key">
-reCAPTCHA Mailhide Private Key:
-</label> 
-<input type="text" name="captcha_reCAPTCHA_Mailhide_private_key" id="captcha_reCAPTCHA_Mailhide_private_key" value=""  >
-</p>
-
-<div class="buttonfloat"> 
-<input type="button" class="processing test_captcha_reCAPTCHA_Mailhide_configuration" value="Test reCAPTCHA Mailhide Configuration">
-</div>
-<div class="floatclear"></div> 
-<div id="captcha_reCAPTCHA_Mailhide_configuration_results"></div> 
-
-
-
-</fieldset> 	
-</div> 
-<!-- /tmpl_if --> 
-
-
-
-
-
-
-<!-- tmpl_if show_global_mailing_list_options --> 
-
-<input type="checkbox" name="configure_global_mailing_list" id="configure_global_mailing_list" value="1">			
-<label for="configure_global_mailing_list">Configure Global Mailing List Options</label>
-</p>
-<div id="global_mailing_list_options">
-<fieldset> 
-<input type="checkbox" name="global_mailing_list_options_GLOBAL_UNSUBSCRIBE" id="global_mailing_list_options_GLOBAL_UNSUBSCRIBE" value="1"  >
-<label for="global_mailing_list_options_GLOBAL_UNSUBSCRIBE">Enable Global Unsubscribe</label>
-</p>
-
-<input type="checkbox" name="global_mailing_list_options_GLOBAL_BLACK_LIST" id="global_mailing_list_options_GLOBAL_BLACK_LIST" value="1">
-<label for="global_mailing_list_options_GLOBAL_BLACK_LIST">Enable Global Black List</label>
-</p>
-
-</fieldset> 	
-</div> 
-<!-- /tmpl_if --> 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- tmpl_if show_global_mass_mailing_options --> 
-
-<input type="checkbox" name="configure_mass_mailing" id="configure_mass_mailing" value="1">			
-<label for="configure_mass_mailing">Configure Global Mass Mailing Options</label>
-</p>
-<div id="mass_mailing_options">
-<fieldset> 
-
-<label for="mass_mailing_MAILOUT_AT_ONCE_LIMIT">
-Mass Mailings at Once Limit: 
-</label>
-<select name="mass_mailing_MAILOUT_AT_ONCE_LIMIT" id="mass_mailing_MAILOUT_AT_ONCE_LIMIT">
-<option value="1">1</option> 
-<option value="2">2</option> 
-<option value="3">3</option> 
-<option value="4">4</option> 
-<option value="5">5</option> 
-<option value="6">6</option> 
-<option value="7">7</option> 
-<option value="8">8</option> 
-<option value="9">9</option> 
-<option value="10">10</option> 
-<option value="15">15</option> 
-<option value="20">20</option> 
-<option value="25">25</option> 
-<option value="30">30</option> 
-</select>
-</p>
-
-<input type="checkbox" name="mass_mailing_MULTIPLE_LIST_SENDING" id="mass_mailing_MULTIPLE_LIST_SENDING" value="1">
-<label for="mass_mailing_MULTIPLE_LIST_SENDING">Multiple Mailing List Sending</label>
-</p>
-
-<label for="mass_mailing_MAILOUT_STALE_AFTER">
-Mass Mailings Stale After: 
-</label>
-<select name="mass_mailing_MAILOUT_STALE_AFTER" id="mass_mailing_MAILOUT_STALE_AFTER">
-<option value="21600">6 hours</option>
-<option value="43200">12 hours</option>
-<option value="86400" selected="selected">1 Day</option> 
-<option value="172800">2 Days</option> 
-<option value="259200">3 Days</option>
-</select>
-</p>
-</fieldset> 	
-</div> 
-<!-- /tmpl_if --> 
-
-
-
-
-
-<!-- tmpl_if show_confirmation_token_options --> 
-
-<input type="checkbox" name="configure_confirmation_token" id="configure_confirmation_token" value="1">			
-<label for="configure_confirmation_token">Configure Confirmation Token Options</label>
-</p>
-<div id="confirmation_token_options">
-<fieldset> 	
-<label for="confirmation_token_expires">
-Keep Confirmation Tokens For: 
-</label>
-<select name="confirmation_token_expires" id="confirmation_token_expires">
-<option value="5">5</option>
-<option value="10">10</option>
-<option value="15">15</option>
-<option value="20">20</option>
-<option value="30">30</option> 
-<option value="60" selected="selected">60</option> 
-<option value="90">90</option>
-<option value="180">180</option>
-<option value="360">360</option>
-</select>
-Days
-</p>
-</fieldset> 	
-</div> 
-<!-- /tmpl_if -->
-
-
-
-
-<!-- tmpl_if show_program_name_options --> 
-
-<input type="checkbox" name="configure_program_name" id="configure_program_name" value="1">			
-<label for="configure_program_name">Configure Program Name</label>
-</p>
-<div id="program_name_options">
-<fieldset>
-<label for="program_name_PROGRAM_NAME">
-Program Name: 
-</label>
-<input type="text" name="program_name_PROGRAM_NAME" id="program_name_PROGRAM_NAME" value="<!-- tmpl_var program_name_PROGRAM_NAME -->"  >
-</p>
-</fieldset>
-</div> 
-<!-- /tmpl_if --> 
-
-
-<!-- tmpl_if show_s_program_url_options --> 
-
-<input type="checkbox" name="configure_s_program_url" id="configure_s_program_url" value="1">			
-<label for="configure_s_program_url">Configure Secure Program URL</label>
-</p>
-<div id="s_program_url_options">
-<fieldset>
-<label for="s_program_url_S_PROGRAM_URL">
-Secure Program URL: 
-</label>
-<input type="text" name="s_program_url_S_PROGRAM_URL" id="s_program_url_S_PROGRAM_URL" value=""  >
-</p>
-</fieldset>
-</div> 
-<!-- /tmpl_if --> 
-
-
-
-
-<!-- tmpl_if show_amazon_ses_options --> 
-
-<input type="checkbox" name="configure_amazon_ses" id="configure_amazon_ses" value="1">			
-<label for="configure_amazon_ses">Configure Amazon SES</label>
-</p>
-<div id="amazon_ses_options">
-<fieldset> 
-
-<!-- tmpl_var amazon_ses_requirements_widget -->
-
-
-<label   for="amazon_ses_AWS_endpoint">AWS Region/Endpoint:</label> 
-<select name="amazon_ses_AWS_endpoint" id="amazon_ses_AWS_endpoint"> 
-<option value="https://email.us-east-1.amazonaws.com/">US East (N. Virginia) Region (us-east-1)</option>
-<option value="https://email.us-west-2.amazonaws.com/">US West (Oregon) Region (us-west-2)</option> 
-<option value="https://email.eu-west-1.amazonaws.com/">EU (Ireland) Region (eu-west-1)</option>
-</select>
-</p>
-
-<label  for="amazon_ses_AWSAccessKeyId">
-AWS Access Key ID:
-</label> 
-<input type="text" name="amazon_ses_AWSAccessKeyId" id="amazon_ses_AWSAccessKeyId" value=""  >
-</p>
-
-<label  for="amazon_ses_AWSSecretKey">
-AWS Secret Access Key:
-</label> 
-<input type="text" name="amazon_ses_AWSSecretKey" id="amazon_ses_AWSSecretKey" value=""   >
-</p>
-
-<label   for="amazon_ses_Allowed_Sending_Quota_Percentage">
-Allow <!-- tmpl_var PROGRAM_NAME --> to Utilize:
-</label> 
-<!-- tmpl_var amazon_ses_Allowed_Sending_Quota_Percentage_popup_menu -->% of the Total Amazon SES Sending Quota. 
-</p>
-
-<div class="buttonfloat"> 
-<input type="button" class="processing test_amazon_ses_configuration" value="Test Your AWS Credentials">
-
-</div>
-<div class="floatclear"></div> 
-
-
-<div id="test_amazon_ses_configuration_results" class="alert-box info radius"></div> 
-
-
-</fieldset> 	
-</div> 
-<!-- /tmpl_if --> 
-
-
-<!-- tmpl_if show_mandrill_options --> 
-
-<input type="checkbox" name="configure_mandrill" id="configure_mandrill" value="1">			
-<label for="configure_mandrill">Configure Mandrill</label>
-</p>
-<div id="mandrill_options">
-<fieldset> 
-
-<label  for="mandrill_api_key">
-API Key:
-</label> 
-<input type="text" name="mandrill_api_key" id="mandrill_api_key" value=""  >
-</p>
-
-
-<label   for="amazon_ses_Allowed_Sending_Quota_Percentage">
-Allow <!-- tmpl_var PROGRAM_NAME --> to Utilize:
-</label> 
-<!-- tmpl_var mandrill_Allowed_Sending_Quota_Percentage_popup_menu -->% of the Total Mandrill Sending Quota. 
-</p>
-
-<div class="buttonfloat"> 
-<input type="button" class="processing test_mandrill_configuration" value="Test Your Mandrill Credentials">
-</div>
-<div class="floatclear"></div> 
-<div id="test_mandrill_configuration_results" class="alert-box info radius"></div> 
-
-
-
-
-</fieldset> 	
-</div> 
-
-<!-- /tmpl_if --> 
-
-
-</fieldset> 
-
-</div> 
-
-
-<input type="hidden" name="flavor" value="check"> 
-
-<p class="text-center">
-<input type="submit" value="       &#187; Configure  <!-- tmpl_var PROGRAM_NAME -->! &#171;       " class="processing bigger_button"> 
-</p>
-
-
-</form> 
 
 <!-- tmpl_include install_debug_info_widget.tmpl --> 
 
