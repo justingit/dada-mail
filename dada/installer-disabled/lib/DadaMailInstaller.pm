@@ -1,3 +1,5 @@
+#!/usr/bin/perl 
+
 package DadaMailInstaller;
 use base 'CGI::Application';
 
@@ -1848,7 +1850,7 @@ sub install_dada_mail {
     }
 
     $log .= "* Checking for needed CPAN modules to install...\n";
-    eval { install_missing_CPAN_modules(); };
+    eval { $self->install_missing_CPAN_modules(); };
     if ($@) {
         $log .= "* Problems installing missing CPAN modules - skipping: $@\n";
 
@@ -3002,6 +3004,9 @@ sub install_wysiwyg_editors {
 }
 
 sub install_missing_CPAN_modules {
+	
+	my $self = shift; 
+
     my $has_JSON = 1;
     eval { require JSON; };
     if ($@) {
@@ -3009,22 +3014,43 @@ sub install_missing_CPAN_modules {
     }
 
     if ( $has_JSON == 0 ) {
-        my $JSON_pm  = make_safer('../DADA/perllib/JSON.pm-remove_to_install');
-        my $JSON_dir = make_safer('../DADA/perllib/JSON-remove_to_install');
+    
+		my $JSON_dir    = make_safer('../DADA/perllib/JSON');
+		my $JSON_mv_dir = make_safer('../DADA/perllib/JSON-move_contents_to_install');
+        my $JSON_pm     = make_safer('../DADA/perllib/JSON.pm-remove_to_install');
 
-        if ( -d $JSON_dir && -e $JSON_pm ) {
-            my $JSON_dir_new = $JSON_dir;
-            $JSON_dir_new =~ s/\-remove_to_install$//;
-            $JSON_dir_new = make_safer($JSON_dir_new);
 
+        if ( -d $JSON_dir) {
+			
+			# This should already be around, 
+			if(! -e $JSON_dir && $JSON_mv_dir) { 
+				$self->installer_mkdir( $JSON_dir, $DADA::Config::DIR_CHMOD );
+			}
+			
+			for(qw(
+					backportPP
+					backportPP.pm
+					PP
+					PP.pm
+				)
+			) { 
+				if(!-e $JSON_dir     . '/' . $_) {
+					installer_mv( 
+						make_safer($JSON_mv_dir  . '/' . $_), 
+						make_safer($JSON_dir     . '/' . $_)
+					);
+				}
+			}
+		}
+			
+		if(! -e $JSON_pm ) { 
             my $JSON_pm_new = $JSON_pm;
             $JSON_pm_new =~ s/\-remove_to_install$//;
             $JSON_pm_new = make_safer($JSON_pm_new);
 
-            installer_mv( $JSON_dir, $JSON_dir_new );
             installer_mv( $JSON_pm,  $JSON_pm_new );
 
-            if ( -d $JSON_dir_new && -e $JSON_pm_new ) {
+            if ( -d $JSON_dir && -e $JSON_pm_new ) {
                 return 1;
             }
             else {
