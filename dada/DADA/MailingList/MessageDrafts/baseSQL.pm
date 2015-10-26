@@ -814,40 +814,8 @@ sub params_to_save {
 
 }
 
-=cut
 
-sub datetime_to_ctime {
-    my $self     = shift;
-    my $datetime = shift;
-    warn '$datetime ' . $datetime
-      if $t;
-    require Time::Local;
-    my ( $date, $time ) = split( ' ', $datetime );
-    my ( $year, $month,  $day )    = split( '-', $date );
-    my ( $hour, $minute, $second ) = split( ':', $time );
-    $second = int( $second - 0.5 );    # no idea.
-    my $time = Time::Local::timelocal( $second, $minute, $hour, $day, $month - 1, $year );
 
-    return $time;
-}
-
-sub datetime_to_localtime {
-    my $self     = shift;
-    my $datetime = shift;
-
-    warn '$datetime ' . $datetime
-      if $t;
-    if ( defined($datetime) && $datetime > 0 ) {
-        my $time = $self->datetime_to_ctime($datetime);
-        return scalar( localtime($time) );
-    }
-    else {
-        warn 'something wrong with $datetime!:' . $datetime;
-        return 0;
-    }
-}
-
-=cut
 
 sub enabled {
     my $self = shift; 
