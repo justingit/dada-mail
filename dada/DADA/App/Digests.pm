@@ -170,7 +170,7 @@ sub send_digest {
 
     my $digest_last_archive_id_sent = $self->{ls_obj}->param('digest_last_archive_id_sent') || undef;
      if(defined($digest_last_archive_id_sent)){ 
-         $r .= "\t *" . 'Last Archived Message ID Sent: ' . $digest_last_archive_id_sent
+         $r .= "\t* " . 'Last Archived Message ID Sent: ' . $digest_last_archive_id_sent
          . ' (' . scalar(localtime($self->archive_time_2_ctime($self->{ls_obj}->param('digest_last_archive_id_sent')))) .')' . "\n";
      }
      else { 
