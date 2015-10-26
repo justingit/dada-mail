@@ -43,46 +43,6 @@
 	<!-- /tmpl_if --> 
 <!-- /tmpl_if -->
 
-	<style type="text/css"> 
-		table {
-			border: 1px solid red;
-		}
-		
-		iframe#archived_message_body_container {
-			height: 500px;
-			width: 100%;
-			border: 1px solid #000;
-			/* text-styling rules will have NO effect in here. see below instead. */
-		}
-		
-		.file-upload {
-			position: relative;
-			overflow: hidden;
-			margin: 10px;
-		}
-
-		.file-upload input.file-input {
-			position: absolute;
-			top: 0;
-			right: 0;
-			margin: 0;
-			padding: 0;
-			font-size: 20px;
-			cursor: pointer;
-			opacity: 0;
-			filter: alpha(opacity=0);
-		}
-		
-		.tabs dd.active a, .tabs .tab-title.active a {
-			border-top: 1px solid #000;
-			border-left: 1px solid #000;
-			border-right: 1px solid #000;
-		}
-	   
-		#buttons {
-			z-index: 100;
-			background-color: #fff
-		}
-	</style> 
+<link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/dada_mail.css" type="text/css" media="screen" />
 
 <!-- end <!-- tmpl_var PROGRAM_NAME --> list_template_header_code_block.tmpl --> 

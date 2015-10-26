@@ -4,7 +4,7 @@
 <div id="screen_meta" data-menu_highlight="sending_monitor"></div>
 
 
-<div class="row">
+<div class="row hide-for-small-only" id="control_panel_breadcrumbs">
 	<div class="medium-10 small-9 columns">
 	   	<nav class="breadcrumbs">	
 		 	 <a href="#" class="unavailable">
@@ -177,10 +177,10 @@
 					<!-- tmpl_if sending_done -->
 						disabled="disabled" class="button small disabled"
 					<!-- tmpl_else -->
-						class="button small alertive killMonitoredSending"
+						class="button small alert killMonitoredSending"
 					<!--/tmpl_if -->
 				<!-- tmpl_else -->
-					class="button small alertive killMonitoredSending"
+					class="button small alert killMonitoredSending"
 				<!--/tmpl_unless --> 
 				title="Click to permanently STOP this mass mailing"
 			>

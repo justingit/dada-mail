@@ -158,7 +158,6 @@ sub admin_template {
 				-Title        => "", 
 				-List         => "",
 				-Root_Login   => 0,
-				-li           => undef, 
 				-HTML_Header  => 0,
 				-Part         => undef, 
 				-vars         => {},
@@ -178,21 +177,44 @@ sub admin_template {
     my $admin_menu; 
     my $m_admin_menu; 
 	my $li; 
-	if(!$args{-li}){ 
 	    require  DADA::MailingList::Settings; 
 	    my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-	       $li = $ls->get; 
-	}else{ 
-	    $li = $args{-li};
-	}
 	
 	if($Yeah_Root_Login == 1){ 
-		$admin_menu  = DADA::Template::Widgets::Admin_Menu::make_admin_menu('superuser',   $li); 
-		$m_admin_menu  = DADA::Template::Widgets::Admin_Menu::make_admin_menu('superuser', $li, 1); 
+		$admin_menu    = DADA::Template::Widgets::Admin_Menu::make_admin_menu(
+			{
+				-privileges => 'superuser',   
+				-ls_obj     => $ls,
+				-flavor      => $q->param('flavor'), 
+				-for_mobile  => 0,		
+			}
+		); 
+		$m_admin_menu = DADA::Template::Widgets::Admin_Menu::make_admin_menu(
+			{
+				-privileges  => 'superuser',   
+				-ls_obj      => $ls,
+				-flavor      => $q->param('flavor'), 
+				-for_mobile  => 1, 
+			}
+		); 
 		
 	}else{
-		$admin_menu  = DADA::Template::Widgets::Admin_Menu::make_admin_menu('user', $li); 
-		$m_admin_menu  = DADA::Template::Widgets::Admin_Menu::make_admin_menu('user', $li, 1); 
+		$admin_menu  = DADA::Template::Widgets::Admin_Menu::make_admin_menu(
+			{
+				-privileges  => 'user',   
+				-ls_obj      => $ls,
+				-flavor      => $q->param('flavor'), 
+				-for_mobile  => 0, 
+			}
+		); 
+		$m_admin_menu  = DADA::Template::Widgets::Admin_Menu::make_admin_menu(
+			{
+				-privileges  => 'user',   
+				-ls_obj      => $ls,
+				-flavor      => $q->param('flavor'), 
+				-for_mobile  => 1, 
+			}
+		); 
 		
 	}
 	
@@ -227,9 +249,11 @@ sub admin_template {
 		$admin_template = DADA::Template::Widgets::_raw_screen({-screen => 'admin_template.tmpl', -encoding => 1}); 
 	}
 	
+	#my $login_switch_popup_menu_widget = ''; 
 	my $login_switch_widget = ''; 
 	if($Yeah_Root_Login){  
 		$login_switch_widget = DADA::Template::Widgets::login_switch_widget({-list => $args{-List}, ($q->param('flavor') ? (-f => scalar $q->param('flavor')) : ())}); 
+	#	$login_switch_popup_menu_widget = DADA::Template::Widgets::login_switch_popup_menu_widget({-list => $args{-List}, ($q->param('flavor') ? (-f => scalar $q->param('flavor')) : ())});
 	}
 
 
@@ -247,14 +271,15 @@ sub admin_template {
 										-data => \$admin_template, 
 										-vars => 
 											{
-												login_switch_widget => $login_switch_widget, 
-												admin_menu          => $admin_menu, 
-												mobile_admin_menu   => $m_admin_menu,
-												title               => $args{-Title},
-												root_login          => $args{-Root_Login},
-												content             => '[_dada_content]',	
-												footer_props        => $footer_props, 
-												%wysiwyg_vars,
+												login_switch_widget            => $login_switch_widget, 
+												#login_switch_popup_menu_widget => login_switch_popup_menu_widget, 
+												admin_menu                     => $admin_menu, 
+												mobile_admin_menu              => $m_admin_menu,
+												title                          => $args{-Title},
+												root_login                     => $args{-Root_Login},
+												content                        => '[_dada_content]',	
+												footer_props                   => $footer_props, 
+												%wysiwyg_vars, 
 												%{ $args{ -vars } }, # content, etc
 												
 												

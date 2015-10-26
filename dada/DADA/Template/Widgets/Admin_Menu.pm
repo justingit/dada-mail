@@ -151,10 +151,25 @@ this returns an html menu.
 =cut
 
 sub make_admin_menu {
+	my ($args) = @_; 
 
-    my $permissions = shift;
-    my $li          = shift;
-    my $for_mobile  = shift || 0; 
+	if(! exists($args->{-privileges})) { 
+		$args->{-privileges} = 'regular'; 
+	}
+	my $ls = undef; 
+	if(! exists($args->{-ls_obj})) { 
+		croak("need to pass -ls_obj");
+	}
+	else { 
+		$ls = $args->{-ls_obj};
+	}
+	if(! exists($args->{-flavor})) { 
+		$args->{-flavor} = ''; 
+	}
+
+	if(! exists($args->{-for_mobile})) { 
+		$args->{-for_mobile} = 0; 
+	}
 
    #---------------------------------------------------------------------------#
     require DADA::Template::Widgets;
@@ -163,7 +178,7 @@ sub make_admin_menu {
 
     my $ht_admin_menu = [];
 
-    my ( $NAVS, $SUBNAVS ) = make_nav_hashes($li);
+    my ( $NAVS, $SUBNAVS ) = make_nav_hashes($ls->get);
 
     my $ht_entry = [];
 
@@ -179,7 +194,7 @@ sub make_admin_menu {
         }
 
         $nav->{-Activated} = 1
-          if ( $permissions eq 'superuser' );
+          if ( $args->{-privileges} eq 'superuser' );
 
         my $ht_subnav = [];
 
@@ -192,7 +207,7 @@ sub make_admin_menu {
                 $subnav->{-Activated} = $SUBNAVS->{ $subnav->{-Function} };
             }
 
-			if ( $permissions eq 'superuser' ) { 
+			if ( $args->{-privileges} eq 'superuser' ) { 
             	$subnav->{-Activated} = 1;
 			}
             
@@ -202,8 +217,8 @@ sub make_admin_menu {
                         -data => \$subnav->{-Title},
                         -expr => 1, 
                         -vars => {
-                            'list_settings.enable_mass_subscribe'                   => $li->{enable_mass_subscribe},
-                            'list_settings.enable_mass_subscribe_only_w_root_login' => $li->{enable_mass_subscribe_only_w_root_login}, 
+                            'list_settings.enable_mass_subscribe'                   => $ls->param('enable_mass_subscribe'),
+                            'list_settings.enable_mass_subscribe_only_w_root_login' => $ls->param('enable_mass_subscribe_only_w_root_login'), 
                             
                         },
                     }
@@ -219,8 +234,8 @@ sub make_admin_menu {
 					Function  => $subnav->{-Function},
                     (
                         (
-                            exists( $li->{disabled_screen_view} )
-                              && $li->{disabled_screen_view} eq 'hide'
+                            defined( $ls->param('disabled_screen_view') )
+                              && $ls->param('disabled_screen_view') eq 'hide'
                         ) ? ( hide_nav => 1, ) : ( hide_nav => 0, )
                     )
                 }
@@ -237,8 +252,8 @@ sub make_admin_menu {
                 SUBNAV    => $ht_subnav,
                 (
                     (
-                        exists( $li->{disabled_screen_view} )
-                          && $li->{disabled_screen_view} eq 'hide'
+                        defined( $ls->param('disabled_screen_view') )
+                          && $ls->param('disabled_screen_view') eq 'hide'
                     ) ? ( hide_nav => 1, ) : ( hide_nav => 0, )
                 )
             }
@@ -248,13 +263,24 @@ sub make_admin_menu {
     
     #require Data::Dumper; 
     #warn Data::Dumper::Dumper($ht_entry); 
-
+    
+	my $login_switch_popup_menu_widget = '';
+	if ( $args->{-privileges} eq 'superuser' ) { 
+		$login_switch_popup_menu_widget = DADA::Template::Widgets::login_switch_popup_menu_widget(
+			{
+			-list => $ls->param('list'), 
+			-flavor => $args->{-flavor},
+			}
+		);
+	}
+	
     return DADA::Template::Widgets::screen(
         {
             -screen => 'admin_menu_widget.tmpl',
             -vars   => { 
-                for_mobile => $for_mobile, 
-                NAV        => $ht_entry, 
+                for_mobile                     => $args->{-for_mobile}, 
+				login_switch_popup_menu_widget => $login_switch_popup_menu_widget, 
+                NAV                            => $ht_entry, 
             }
         }
     );

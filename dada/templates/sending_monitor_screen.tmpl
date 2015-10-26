@@ -2,7 +2,7 @@
 
 <div id="screen_meta" data-menu_highlight="sending_monitor"></div>
 
-<div class="row">
+<div class="row hide-for-small-only" id="control_panel_breadcrumbs">
 	<div class="medium-10 small-9 columns">
 	   	<nav class="breadcrumbs">	
 		 	 <a href="#" class="unavailable">
@@ -165,11 +165,11 @@
 						<!-- tmpl_if sending_done -->
 							disabled="disabled" class="button small disabled"
 						<!-- tmpl_else -->
-							class="button small alertive killMonitoredSending stop_mass_mailing"
+							class="button small alert killMonitoredSending stop_mass_mailing"
 							href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=sending_monitor&id=<!-- tmpl_var message_id escape="HTML"-->&type=<!-- tmpl_var message_type escape="HTML"-->&process=kill"
 						<!--/tmpl_if -->
 					<!-- tmpl_else -->
-						class="button small alertive killMonitoredSending stop_mass_mailing" 						
+						class="button small alert killMonitoredSending stop_mass_mailing" 						
 						href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=sending_monitor&id=<!-- tmpl_var message_id escape="HTML"-->&type=<!-- tmpl_var message_type escape="HTML"-->&process=kill"
 					<!--/tmpl_unless -->
 				>

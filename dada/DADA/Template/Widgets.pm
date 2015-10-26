@@ -1071,6 +1071,67 @@ sub login_switch_widget {
 #	$c->cache('login_switch_widget.' . $args->{-list} . '.scrn', \$scrn);	
 #	$scrn =~ s/\[LOCATION\]/$location/g; 
  # return $scrn; 
+
+}
+
+sub login_switch_popup_menu_widget { 
+
+	my $args = shift; 
+	
+	croak "no list!" if ! $args->{-list};
+	
+	require DADA::MailingList::Settings; 
+
+	my $location = $q->self_url || $DADA::Config::S_PROGRAM_URL . '?flavor=' . $args->{-f}; 
+
+    require  DADA::App::ScreenCache; 
+    my $c  = DADA::App::ScreenCache->new; 
+    
+    #if($c->is_cached('login_switch_widget.' . $args->{-list} . '.scrn')){ 
+    #    my $lsw = $c->pass('login_switch_widget.' . $args->{-list} . '.scrn');
+    #       $lsw =~ s/\[LOCATION\]/$location/g; 
+    #       return $lsw; 
+    #  }
+
+    my $scrn; 
+    
+
+	my @lists = available_lists(-In_Order => 1); 
+	my %label = (); 
+	
+	# DEV TODO - This needs its own METHOD!!!
+	
+	foreach my $list( @lists ){
+			my $ls = DADA::MailingList::Settings->new({-list => $list}); 
+			$label{$list} = $ls->param('list_name') . ' (' . $list . ')'; 
+			
+	}
+	
+	$label{$args->{-list}} = '----------'; 
+	
+	if($lists[1]){ 
+		my $login_switch_popup_menu = $q->popup_menu(
+							  -name    => 'change_to_list', 
+							  -id      => 'change_to_list', 
+							  -value   => [@lists], 
+							  -default => $args->{-list},
+							  -labels  => {%label}, 
+		);
+		
+		return DADA::Template::Widgets::screen(
+					{
+					    -screen => 'login_switch_popup_menu_widget.tmpl',
+					    -vars   => { 
+							login_switch_popup_menu => $login_switch_popup_menu, 
+					        location                => $location, 
+					    },
+					}
+				);
+			}else{ 
+		$scrn = '';
+	}
+
+    return $scrn; 
 }
 
 

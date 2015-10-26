@@ -4,7 +4,7 @@
 <!-- tmpl_set name="title" value="Plugins &#187; Screen Cache" -->
 <div id="screen_meta" data-menu_highlight="screen_cache"></div>
 
-<div class="row">
+<div class="row hide-for-small-only" id="control_panel_breadcrumbs">
 	<div class="medium-10 small-9 columns">
 	   	<nav class="breadcrumbs">	
 		 	 <a href="#" class="unavailable">
@@ -38,7 +38,7 @@
 <!-- tmpl_if file_list --> 
 	<form action="<!-- tmpl_var Plugin_URL -->" method="POST"> 
 	<input type="hidden" name="process" value="flush" >
-	<input type="submit" class="alertive button" value="Remove All Cached Screens" >
+	<input type="submit" class="alert button" value="Remove All Cached Screens" >
 	</form> 
 
 	<div style="max-height: 300px; overflow: auto; border:1px solid black">
@@ -57,7 +57,7 @@
 				<input type="hidden" name="plugin" value="screen_cache" > 
 				<input type="hidden" name="prm" value="remove" >
 				<input type="hidden" name="filename" value="<!-- tmpl_var name -->" --> 
-				<input type="submit" class="alertive small button" value="&#8855;">
+				<input type="submit" class="alert small button" value="&#8855;">
 			   </form> 
 			  </td> 
 			  <td>

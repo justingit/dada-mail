@@ -1,16 +1,19 @@
 <!-- begin admin_menu_widget.tmpl -->
 
 <div id="navcontainer" data-s_program_url="<!-- tmpl_var S_PROGRAM_URL -->">    
-
-
-
+	
     
+	<!-- tmpl_if for_mobile -->
+		<!-- tmpl_var login_switch_popup_menu_widget -->
+	<!-- /tmpl_if -->
+	
     <!-- tmpl_if for_mobile --> 
        <ul class="off-canvas-list">
     <!-- tmpl_else --> 
         <ul class="side-nav">
     <!-- /tmpl_if --> 
     
+	
         <!-- tmpl_loop name="NAV" -->
             <!-- tmpl_unless Activated --> 
                 <!-- tmpl_if hide_nav -->

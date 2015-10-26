@@ -1,0 +1,28 @@
+<!-- begin login_switch_popup_menu_widget.tmpl -->
+
+	<form action="<!-- tmpl_var S_PROGRAM_URL -->" id="change_to_list_form" method="post">
+		
+		<input type="hidden" name="location" value="<!-- tmpl_var location -->">
+		<input type="hidden" name="flavor"   value="change_login">
+	    <div class="row">
+	       <div class="small-12 columns">
+				<div class="row collapse">
+					<div class="small-8 columns">
+						<!-- tmpl_var login_switch_popup_menu -->
+					</div>
+					<div class="small-4 columns">
+						<input type="submit" value="Switch" class="small button postfix" id="submit_change_to_list">
+					</div>
+				</div>
+			</div>
+		</div>
+	    <div class="row">
+	       <div class="small-12 columns">
+			   <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=logout" class="small button expand alert">
+				   Log Out
+				</a>
+			</div>
+		</div>
+	</form>
+
+<!-- end login_switch_popup_menu_widget.tmpl -->
