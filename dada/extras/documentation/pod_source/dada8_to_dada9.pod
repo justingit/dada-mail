@@ -8,6 +8,6 @@ The main difference between v9 of Dada Mail and all previous versions of Dada Ma
 
 L<http://foundation.zurb.com/>
 
-The majority of the changes in v9 happen with rewritting template files found in, C<dada/templates>. If you have made your own customizations and modifications to these files, they may well need to be rewritten to work with this new version of Dada Mail (and thus, the major release status)
+The majority of the changes in v9 happen with rewritting and in some cases: renaming template files found in, C<dada/templates>. If you have made your own customizations and modifications to these files, they may well need to be rewritten to work with this new version of Dada Mail (and thus, the major release status)
 
 =cut
