@@ -12,7 +12,6 @@ Key:
 
 http://dadamailproject.com/support/boards/viewtopic.php?t=4586&p=17188#p17188
 
-Is the JSON "install" broken?
 Installer - create cli args when setting up DM in web installer, save those are in .dada_config file, 
 along with date of configuration creation and v. of app that created it. 
 
