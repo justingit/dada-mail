@@ -1478,8 +1478,6 @@ sub unsubscription_request {
 
 sub unsubscribe {
 
-    warn 'at, ' . ( caller(0) )[3] if $t;
-
     my $self = shift;
     my ($args) = @_;
 
@@ -1497,9 +1495,8 @@ sub unsubscribe {
     my $q       = $args->{-cgi_obj};
     my $process = $q->param('process') || undef;
 
-
     if ( !defined( $q->param('token') ) ) {
-        return $self->error_token_undefined(
+		return $self->error_token_undefined(
             {
                 -orig_flavor => 'u',
                 -cgi_obj     => $args->{-cgi_obj},
@@ -1509,8 +1506,11 @@ sub unsubscribe {
 
     my $token = $q->param('token') || undef;
 
+	
     require DADA::App::Subscriptions::ConfirmationTokens;
     my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
+		
+	
     if ( !$ct->exists($token) ) {
         return ({}, user_error(
             {
@@ -1519,9 +1519,9 @@ sub unsubscribe {
             }
         ));
     }
-
+	
     my $data = $ct->fetch($token);
-
+	
     # not sure how you got here, but, whatever:
     if ( $data->{data}->{flavor} ne 'unsub_confirm' ) {
         return ({}, user_error(
@@ -1568,6 +1568,8 @@ sub unsubscribe {
     
     my $report_abuse_token = $self->_create_report_abuse_token( { -unsub_token => $token } ); 
 
+	
+	my $auto_attempted = $q->param('auto_attempted') || 0; 
     require DADA::Template::Widgets;
     my $r = DADA::Template::Widgets::wrap_screen(
         {
@@ -1581,14 +1583,84 @@ sub unsubscribe {
                 list_exists        => $list_exists,
                 email_hint         => $data->{data}->{email_hint},
                 report_abuse_token => $report_abuse_token, 
+				auto_attempted     => $auto_attempted, 
             },
             ( $list_exists == 1 )
-            ? ( -list_settings_vars_param => { -list => $data->{data}->{list}, }, )
-            : ()
+            ? ( -list_settings_vars_param => { 
+				-list => $data->{data}->{list}, 
+				-dot_it => 1
+			}, 
+			) : ()
         }
     );
     return ({}, $r);
 }
+
+
+
+
+sub unsubscribe_email_lookup {
+
+    warn 'at, ' . ( caller(0) )[3] if $t;
+
+    my $self = shift;
+    my ($args) = @_;
+
+    if ( !$args->{-cgi_obj} ) {
+        croak 'Error: No CGI Object passed in the -cgi_obj parameter.';
+    }
+
+    my $q       = $args->{-cgi_obj};
+    my $token = $q->param('token') || undef;
+	my $status = 1; 
+
+    if ( !defined( $q->param('token') ) ) {
+		$status = 0; 
+    }
+
+    require DADA::App::Subscriptions::ConfirmationTokens;
+    my $ct = DADA::App::Subscriptions::ConfirmationTokens->new();
+    if ( !$ct->exists($token) ) {
+        $status = 0; 
+    }
+
+    my $data = $ct->fetch($token);
+
+    # not sure how you got here, but, whatever:
+    if ( $data->{data}->{flavor} ne 'unsub_confirm' ) {
+		$status = 0; 
+    }
+
+    my $list_exists = DADA::App::Guts::check_if_list_exists( -List => $data->{data}->{list} );
+	
+	if($list_exists == 0){ 
+		$status = 0; 
+	}
+	else { 
+		require DADA::MailingList::Settings; 
+		my $ls = DADA::MailingList::Settings->new( { -list =>  $data->{data}->{list} } );
+		if($ls->param('one_click_unsubscribe') != 1){ 
+			$status = 0; 
+		}
+	}
+    require JSON;
+    my $json = JSON->new->allow_nonref;
+	
+	my $r = {status => 0};
+	if($status == 1){ 
+		$r = { 
+			email => $data->{email},
+			status => 1, 
+		}; 
+	}
+    return (
+		{
+			-type => 'application/json'
+		}, 
+		$json->encode($r)
+	);
+}
+
 
 
 

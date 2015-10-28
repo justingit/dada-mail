@@ -699,6 +699,20 @@
   			<div class="small-12  columns"> 
 		        <input 
 					type="checkbox" 
+					name="one_click_unsubscribe" 
+					id="one_click_unsubscribe" 
+					value="1" <!-- tmpl_if list_settings.one_click_unsubscribe -->checked="checked"<!--/tmpl_if -->
+				 >
+	        	 <label for="one_click_unsubscribe"> 
+	          	   Enable one-click unsubscribe
+			   </label>
+			</div>
+		</div>
+
+        <div class="row"> 	  		 
+  			<div class="small-12  columns"> 
+		        <input 
+					type="checkbox" 
 					name="unsub_show_email_hint" 
 					id="unsub_show_email_hint" 
 					value="1" <!-- tmpl_if list_settings.unsub_show_email_hint -->checked="checked"<!--/tmpl_if -->

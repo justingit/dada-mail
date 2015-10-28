@@ -95,6 +95,7 @@ sub setup {
         'token'                                       => \&token,
         'unsubscribe'                                 => \&unsubscribe,
         'unsubscription_request'                      => \&unsubscription_request,
+		'unsubscribe_email_lookup'                    => \&unsubscribe_email_lookup, 
         'report_abuse'                                => \&report_abuse,
         'login'                                       => \&login,
         'logout'                                      => \&logout,
@@ -2626,6 +2627,7 @@ sub list_options {
                     alt_url_unsub_success                   => '',
                     alt_url_unsub_success_w_qs              => 0,
                     unsub_show_email_hint                   => 0,
+					one_click_unsubscribe                   => 0,
                     enable_subscription_approval_step       => 0,
                     enable_mass_subscribe                   => 0,
                     enable_mass_subscribe_only_w_root_login => 0,
@@ -8740,6 +8742,9 @@ sub unsubscribe {
 
 }
 
+
+
+
 sub unsubscription_request {
 
     my $self = shift;
@@ -8766,6 +8771,25 @@ sub unsubscription_request {
     }
 
 }
+
+sub unsubscribe_email_lookup { 
+	
+    my $self  = shift;
+    my $q     = $self->query();
+
+    require DADA::App::Subscriptions;
+    my $das = DADA::App::Subscriptions->new;
+    my ( $headers, $body ) = $das->unsubscribe_email_lookup(
+        {
+            -cgi_obj     => $q,
+        }
+    );
+    $self->header_props(%$headers);
+    return $body;
+
+}
+
+
 
 sub outdated_subscription_urls {
 

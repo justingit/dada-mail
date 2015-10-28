@@ -3,6 +3,53 @@
  
   $(function() {
 
+  	if ($("#list_unsubscribe").length) {
+		if(
+			$("#one_click_unsubscribe").val() != 1 
+		 || $("#auto_attempted").val() == 1){
+			 // ... 
+		}
+		else {
+			
+			$("#unsubscription_form").hide();
+			$("#automatic_attempt_message").show();
+			
+			// sometimes, this takes a little while... 
+			var request = $.ajax({
+				url: $("#program_url").val(),
+				type: "POST",
+				dataType: "json",
+				cache: false,
+				data: { 
+					flavor: 'unsubscribe_email_lookup',
+					token: $('#token').val()
+				},
+				success: function(data) {
+					if(data.status === 1 && data.email.length > 0){ 
+						var url = $("#program_url").val() 
+							+ "?flavor=unsubscribe&token="
+							+ encodeURIComponent($('#token').val())
+							+ "&email="
+							+ encodeURIComponent(data.email)
+							+ '&process=1'
+							+ "&auto_attempted=1";
+							
+							window.location.href = url; 
+							// window.location.replace(url); 
+					}
+					else { 
+						$("#unsubscription_form").show();
+						$("#automatic_attempt_message").hide();
+					}
+				},
+				error: function(xhr, ajaxOptions, thrownError) {
+					console.log('status: ' + xhr.status);
+					console.log('thrownError:' + thrownError);
+				},
+			});
+		}
+	}
+
 	if ($("#subscription_form").length) {
 		$("#subscription_form").validate({
 			debug: false,
