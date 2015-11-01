@@ -10,9 +10,12 @@ Key:
 [*] Naw...
 [?] Someday
 
+describe what dada mail is, but also, what it's FOR
+
 Mve changes from Send Email to Send Webpage 
 Accordianie Profile Login/Profile Page
 
+Update Core5 Filemanager? 
 
 http://dadamailproject.com/support/boards/viewtopic.php?t=4586&p=17188#p17188
 
