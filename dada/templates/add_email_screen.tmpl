@@ -772,7 +772,7 @@
 	    <!-- tmpl_if chrome --> 
 	         <li><input 
 				 	type="button" 
-					class="button cautionary previous" 
+					class="button warning previous" 
 					value="&lArr; Re-Enter Addresses"
 				></li>
 	    <!-- /tmpl_if --> 
@@ -787,7 +787,7 @@
 						<!-- tmpl_if list_settings.closed_list -->
 							disabled="disabled" class="button disabled"
 						<!-- tmpl_else -->
-							class="button processing addingemail"
+							class="button success addingemail"
 						<!-- /tmpl_if -->
 					></li>
 	        <!-- /tmpl_if --> 
@@ -798,7 +798,7 @@
 	            <li>
 					<input 
 						type="submit" 
-						class="button processing addingemail" 
+						class="button success addingemail" 
 						name="process"  
 						value="Update Checked Addresses &rArr;">
 					</li>            
@@ -809,7 +809,7 @@
 						<!-- tmpl_unless expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
 							disabled="disabled" class="button disabled"
 						<!-- tmpl_else -->
-							class="button processing addingemail warnAboutMassSubscription"
+							class="button success addingemail warnAboutMassSubscription"
 						<!-- /tmpl_unless -->  
 						name="process"  
 						value="Subscribe/Update Checked Addresses &rArr;"
@@ -822,7 +822,7 @@
 	        <li>
 				<input 
 					type="submit" 
-					class="button processing addingemail" 
+					class="button success addingemail" 
 					name="process"  
 					value="Add Checked Addresses to <!-- tmpl_var type_title --> &rArr;"
 				>

@@ -4,7 +4,18 @@
 	
     
 	<!-- tmpl_if for_mobile -->
+    <ul class="off-canvas-list">
+		<li class="text-center">
+     		<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/" target="_blank">
+				<!-- tmpl_var list_settings.list_name -->
+			</a>
+		</li>
+	
 		<!-- tmpl_var login_switch_popup_menu_widget -->
+
+	</ul>
+
+
 	<!-- /tmpl_if -->
 	
     <!-- tmpl_if for_mobile --> 
@@ -22,30 +33,40 @@
                     <li>
                 <!--/tmpl_if --> 
             <!-- tmpl_else --> 
-                <li>
+		    	<!-- tmpl_if for_mobile --> 
+					<li>
+						<label>
+				<!-- tmpl_else -->
+                    <li class="heading">
+ 				<!-- /tmpl_if -->
             <!-- /tmpl_unless -->
-            <label>
-                <!-- tmpl_var Title -->
-            </label>
-            </li>
-            
+         
+		    <!-- tmpl_var Title -->
+	    	
+			<!-- tmpl_if for_mobile --> 
+					</label>
+				</li>
+			<!-- tmpl_else -->
+                 </li>
+			<!-- /tmpl_if -->
+
             <!-- tmpl_loop SUBNAV -->
                 <!-- tmpl_unless Activated --> 
                     <!-- tmpl_if hide_nav --> 
-                        <li class="hidden">
+                        <li class="admin_menu_<!-- tmpl_var Function escape="HTML" --> hidden">
                     <!-- tmpl_else --> 
-                        <li>
+                        <li class="admin_menu_<!-- tmpl_var Function escape="HTML" -->">
                     <!--/tmpl_if --> 
                 <!-- tmpl_else --> 
-                    <li>
+                    <li class="admin_menu_<!-- tmpl_var Function escape="HTML" -->">
                 <!-- /tmpl_unless -->
                     <!-- tmpl_if Title_URL -->
                         <!-- tmpl_if Activated -->
-                            <a href="<!-- tmpl_var name="Title_URL" -->" class="admin_menu_<!-- tmpl_var Function escape="HTML" -->">
+                            <a href="<!-- tmpl_var name="Title_URL" -->">
                                 <!-- tmpl_var Title -->
                             </a>
                         <!--tmpl_else--> 
-                            <a href="<!-- tmpl_var name="Title_URL" -->" class="admin_menu_<!-- tmpl_var Function escape="HTML" -->" class="menu_disabled">
+                            <a href="<!-- tmpl_var name="Title_URL" -->" class="menu_disabled">
                                 <!-- tmpl_var Title -->
                             </a>
                     <!--/tmpl_if-->
@@ -54,6 +75,9 @@
                 <!--/tmpl_if-->
                 </li>
             <!--/tmpl_loop-->
+			
+			 <!-- <li class="divider"></li> -->
+			  
         <!--/tmpl_loop-->
     </ul>
 </div> 

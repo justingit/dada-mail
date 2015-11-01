@@ -1,6 +1,7 @@
 <!-- begin <!-- tmpl_var PROGRAM_NAME --> list_template_header_code_block.tmpl --> 
 
-<link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/vendor/foundation/foundation.css" >
+<link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/vendor/foundation/app.css">
+
 <!-- tmpl_if add_app_css -->
     <!-- tmpl_if comment -->
 		<link rel="stylesheet" href="<!-- tmpl_var SUPPORT_FILES_URL -->/static/css/dada_mail.css" type="text/css" media="screen" >
@@ -28,11 +29,15 @@
     <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/jquery.dadamail.js"></script>
 <!-- /tmpl_if -->
 
+    <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/modernizr.js"></script>
+
+
 <!-- tmpl_if include_jquery_lib-->
 	<script type="text/javascript">
 	   var $dm = $.noConflict(true);
 	</script>
 <!-- /tmpl_if -->
+
 
 
 

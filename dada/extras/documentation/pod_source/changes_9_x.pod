@@ -33,6 +33,11 @@ At this point, we have not heavily customized Dada Mail's design - the app right
 
 L<http://foundation.zurb.com/docs/sass.html>
 
+=head2 Features
+
+=head3 One-Click Unsubscribe
+
+One-Click Unsubscribe has been reintroduced into Dada Mail, now being smart enough to know when the unsubscribe link has been visted by an actual user or an app that is scanning the received message, and following all links found within. For the former, unsubscription will truly be one-click. Our technique relies on Javascript - if Javascript is not available, the previous method will be shown: displaying a form for the subscriber to fill out with their email address. 
 
 
 

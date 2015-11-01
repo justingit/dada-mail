@@ -175,8 +175,8 @@
 			<!-- /tmpl_if -->
 	
 		<ul class="button-group right">
-			<li><input type="reset"  class="button cautionary" value="Clear Changes"></li>
-			<li><input type="submit" class="button"          , value="Verify Addresses..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="disabled"<!-- tmpl_else -->class="processing button"<!-- /tmpl_if -->></li>
+			<li><input type="reset"  class="button warning" value="Clear Changes"></li>
+			<li><input type="submit" class="button"          , value="Verify Addresses..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="disabled"<!-- tmpl_else -->class="success button"<!-- /tmpl_if -->></li>
 		</ul>
 	</form>
 
@@ -221,8 +221,8 @@
 
 
 		  <ul class="button-group right">
-			  <li><input type="reset"  class="button cautionary" value="Clear Changes"></li>
-			  <li><input type="submit"          value="Verify Address..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="button disabled"<!-- tmpl_else -->class="button processing"<!-- /tmpl_if -->></li>
+			  <li><input type="reset"  class="button warning" value="Clear Changes"></li>
+			  <li><input type="submit"          value="Verify Address..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="button disabled"<!-- tmpl_else -->class="button success"<!-- /tmpl_if -->></li>
 		  </ul>
 
 	</form>
@@ -265,7 +265,7 @@
 		 
 		<div class="row">
 		   <div class="small-12 columns">
-			   <label for="email" class="label_profile_fields">
+			   <label for="email">
 			      Email Address
 			     </label>
 			    <input type="text" name="email" id="email" value=""  >
@@ -278,7 +278,7 @@
 				<div class="row">
 				   <div class="small-12 columns">
 				
-		    		     <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
+		    		     <label for="<!-- tmpl_var name escape=HTML -->">
 		    		      <!-- tmpl_var label escape="HTML" --> (<!-- tmpl_var name escape="HTML" -->)
 		    		     </label>
 		    		    <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->"  >
@@ -294,17 +294,17 @@
 		 <div class="row">
 		    <div class="small-12 columns">
 		 
-			     <label for="<!-- tmpl_var name escape=HTML -->" class="label_profile_fields">
+			     <label for="<!-- tmpl_var name escape=HTML -->">
 			      	Profile Password
 			     </label>
-			    <input type="text" name="profile_password" id="profile_password" value=""  >
+			    <input type="text" name="profile_password" id="profile_password" value="" >
 			</div>
 		</div>
 	    <!-- /tmpl_if --> 
 		
 		  <ul class="button-group right">
-			  <li><input type="reset"  class="button cautionary" value="Clear Changes"></li>
-			  <li><input type="submit"        value="Verify Address..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="button disabled"<!-- tmpl_else -->class="button processing"<!-- /tmpl_if -->></li>
+			  <li><input type="reset"  class="button warning" value="Clear Changes"></li>
+			  <li><input type="submit"        value="Verify Address..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="button disabled"<!-- tmpl_else -->class="button success"<!-- /tmpl_if -->></li>
 		  </ul>
 	</form> 
 	

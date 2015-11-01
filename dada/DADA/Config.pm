@@ -666,7 +666,7 @@ $ADMIN_MENU //= [
             },
 
             {
-                -Title => 'Monitor Your Mailings',
+                -Title => 'Mass Mailing Monitor',
                 -Title_URL => "$S_PROGRAM_URL?flavor=sending_monitor",
                 -Function  => 'sending_monitor',
                 -Activated => 1,
@@ -1417,7 +1417,6 @@ $MIME_OPTIMIZE     //= 'no tmp files';
     charset_value => 'UTF-8',
     priority      => 3,
 
-    print_return_path_header     => 0,
     plaintext_encoding           => 'quoted-printable',
     html_encoding                => 'quoted-printable',
     strip_message_headers        => 0,

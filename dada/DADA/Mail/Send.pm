@@ -373,17 +373,7 @@ sub send {
           (defined($fields{'Content-type'}))              && 
           ($fields{'Content-type'} !~ /charset\=/)         #ie, wasn't set before. 
           );
-    
-    if($local_li->{print_return_path_header} == 1){
-        if($local_li->{verp_return_path} == 1){ 
-            $fields{'Return-Path'} = '<'. $self->_verp($fields{To}) .'>'; 
-        }else{
-            $fields{'Return-Path'} =  '<'. $local_li->{admin_email} . '>'; 
-        }
-    }	
-	
-	
-	
+ 	
 	if(
 	   !defined($local_li->{smtp_server}) &&
 	   $local_li->{sending_method} eq 'smtp'       

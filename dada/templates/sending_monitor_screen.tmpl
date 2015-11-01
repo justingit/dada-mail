@@ -9,7 +9,7 @@
 				 Mass Mailing 
 			 </a>
 	 	    <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=sending_monitor">
-				Monitor Your Mailings
+				Mass Mailing Monitor
 			</a>
 			<!-- tmpl_if header_subject_label --> 
 				 <a href="#" class="current">
@@ -114,7 +114,7 @@
 						class="button small disabled" 
 					<!-- tmpl_else -->
 						href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=sending_monitor&id=<!-- tmpl_var message_id escape="HTML"-->&type=<!-- tmpl_var message_type escape="HTML"-->&process=restart"
-						class="button small processing"
+						class="button small success"
 					<!--/tmpl_unless-->
 				>
 					[+] 
@@ -131,7 +131,7 @@
 						class="button small disabled"
 					<!-- tmpl_else -->
 						href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=sending_monitor&id=<!-- tmpl_var message_id escape="HTML"-->&type=<!-- tmpl_var message_type escape="HTML"-->&process=resume"
-						class="button small cautionary"
+						class="button small warning"
 					<!--/tmpl_unless -->
 				>
 					|&gt; 
@@ -149,7 +149,7 @@
 						class="button small disabled"
 					<!-- tmpl_else -->
 						href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=sending_monitor&id=<!-- tmpl_var message_id escape="HTML"-->&type=<!-- tmpl_var message_type escape="HTML"-->&process=pause"
-						class="button small cautionary pauseMonitoredSending"
+						class="button small warning pauseMonitoredSending"
 					<!--/tmpl_if -->
 				>
 					|| 

@@ -201,7 +201,6 @@ L<http://dadamailproject.com/d/features-public_and_private_lists.pod.html>
     charset_value => 'UTF-8',
     priority      => 3,
 
-    print_return_path_header     => 0,
     plaintext_encoding           => 'quoted-printable',
     html_encoding                => 'quoted-printable',
     strip_message_headers        => 0,

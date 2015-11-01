@@ -125,10 +125,10 @@
 						
 						<ul class="button-group right">
 						    <li>
-								<input type="submit" name="process"  class="processing small button" value="Approve Subscription Request" >
+								<input type="submit" name="process"  class="success small button" value="Approve Subscription Request" >
 							</li>
 							<li>
-								<input type="submit" name="process"  class="cautionary small button" value="Deny Subscription Request" >
+								<input type="submit" name="process"  class="warning small button" value="Deny Subscription Request" >
 							</li>
 						</ul>
 					</form>
@@ -153,10 +153,10 @@
 					<input type="hidden" name="return_address" value="<!-- tmpl_var email escape="HTML" -->" >
 						<ul class="button-group right">
 						    <li>
-								<input type="submit" name="process"  class="processing button" value="Approve Unsubscription Request">
+								<input type="submit" name="process"  class="success button" value="Approve Unsubscription Request">
 							</li>
 							<li>
-								<input type="submit" name="process"  class="cautionary button" value="Deny Unsubscription Request">
+								<input type="submit" name="process"  class="warning button" value="Deny Unsubscription Request">
 							</li>
 						</ul>
 					</form>
@@ -193,7 +193,7 @@
 							</div> 
 							<div class="row">
 								<div class="small-12 columns">
-									<input type="button" value="Add..."  class="processing button expand"  id="validate_add_email">
+									<input type="button" value="Add..."  class="success button expand"  id="validate_add_email">
 								</div>
 							</div>
 						</form>
@@ -223,7 +223,7 @@
 							</div>
 							<div class="row">
 								<div class="small-12 columns">
-									<input type="button" value="Update..." class="cautionary button expand" id="validate_update_email" >
+									<input type="button" value="Update..." class="warning button expand" id="validate_update_email" >
 								</div>
 							</div>
 
@@ -233,7 +233,7 @@
 										<input 
 											type="button" 
 											value="Update on Multiple Mailing Lists..." 
-											class="cautionary button expand" 
+											class="warning button expand" 
 											id="validate_update_email_for_multiple_lists" >
 									</div>
 								</div>
@@ -291,7 +291,7 @@
 									<input 
 										type="button" 
 										id="validate_remove_email" 
-										value="Remove..." class="cautionary button expand"
+										value="Remove..." class="warning button expand"
 									>
 								</div> 
 							</div> 
@@ -303,7 +303,7 @@
 											type="button" 
 											id="validate_remove_email_multiple_lists" 
 											value="Remove on Multiple Mailing Lists..." 
-											class="cautionary button expand"
+											class="warning button expand"
 										>
 									</div> 
 								</div>
@@ -359,7 +359,7 @@
 		<div class="clearfix">
 			<ul class="button-group right">
 				<li>
-					<input type="submit" value="Export Subscriber History (csv)" class="processing button" >
+					<input type="submit" value="Export Subscriber History (csv)" class="success button" >
 				</li>
 			</ul>
 		</div>
@@ -378,7 +378,7 @@
 			<div class="clearfix">
 				<ul class="button-group right">
 					<li>
-						<input type="submit" value="Export Mailing List Activity (csv)" class="processing button" >
+						<input type="submit" value="Export Mailing List Activity (csv)" class="success button" >
 					</li>
 				</ul>
 			</div>
@@ -451,7 +451,7 @@
 						<div class="clearfix">
 							<ul class="button-group right">
 								<li>
-									<input type="submit" value="Update Information" class="cautionary button">
+									<input type="submit" value="Update Information" class="warning button">
 								</li>
 							</ul>
 						</div>
@@ -467,7 +467,7 @@
 
 
 		<div id="change_profile_password_button">
-			<input type="button" value="Click to Change Profile Password..." class="button cautionary change_profile_password" > 
+			<input type="button" value="Click to Change Profile Password..." class="button warning change_profile_password" > 
 
 			<!-- tmpl_unless profile_exists --> 
 				<p><em>This address does not currently have a Profile Password set.</em></p>
@@ -547,7 +547,7 @@
 			<div class="clearfix">
 				<ul class="button-group right">
 					<li>
-						<input type="submit" value="Save Delivery Preferences" class="processing button" > 
+						<input type="submit" value="Save Delivery Preferences" class="success button" > 
 					</li>
 				</ul>
 			</div>	

@@ -247,9 +247,10 @@ sub make_admin_menu {
             @$ht_entry,
             {
                 Activated => $nav->{-Activated},
-                Title_URL => $nav->{-Title_URL},
-                Title     => $nav->{-Title},
-                SUBNAV    => $ht_subnav,
+                Title_URL  => $nav->{-Title_URL},
+                Title      => $nav->{-Title},
+                SUBNAV     => $ht_subnav,
+				for_mobile => $args->{-for_mobile},
                 (
                     (
                         defined( $ls->param('disabled_screen_view') )
@@ -281,7 +282,11 @@ sub make_admin_menu {
                 for_mobile                     => $args->{-for_mobile}, 
 				login_switch_popup_menu_widget => $login_switch_popup_menu_widget, 
                 NAV                            => $ht_entry, 
-            }
+            },
+            -list_settings_vars_param => {
+                -list   => $ls->param('list'),
+                -dot_it => 1,
+            },
         }
     );
 

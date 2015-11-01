@@ -1,9 +1,10 @@
-<!DOCTYPE html>
-<html>
- <head>
+<!doctype html>
+<html class="no-js" lang="en">
+	<head>
 	<!-- <!-- tmpl_var PROGRAM_NAME --> <!-- tmpl_var VER --> -->
 
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	
 	<title><!-- tmpl_var title --></title>
 	
@@ -11,7 +12,22 @@
  </head>
 
  <body>
-   <nav class="top-bar hide-for-small" data-topbar role="navigation" id="admin_header">
+	 
+	 <!-- tmpl_if comment -->
+		 <p class="panel">
+		   <strong class="show-for-small-only">This text is shown only on a small screen.</strong>
+		   <strong class="show-for-medium-up">This text is shown on medium screens and up.</strong>
+		   <strong class="show-for-medium-only">This text is shown only on a medium screen.</strong>
+		   <strong class="show-for-large-up">This text is shown on large screens and up.</strong>
+		   <strong class="show-for-large-only">This text is shown only on a large screen.</strong>
+		   <strong class="show-for-xlarge-up">This text is shown on xlarge screens and up.</strong>
+		   <strong class="show-for-xlarge-only">This text is shown only on an xlarge screen.</strong>
+		   <strong class="show-for-xxlarge-up">This text is shown on xxlarge screens and up.</strong>
+		 </p>
+<!-- /tmpl_if -->
+	 
+	 
+   <nav class="top-bar" data-topbar role="navigation" id="admin_header">
         <ul class="title-area">
            <li class="name">
              <h1>
@@ -20,7 +36,9 @@
 				</a>
 			  </h1>
            </li>
-         </ul>
+	     <li class="toggle-topbar menu-icon"><a href="#"><span></span></a></li>
+		 </ul>
+		 
 		<!-- tmpl_if show_profile_widget --> 
 			<section class="top-bar-section">
 						<!-- tmpl_var profile_widget --> 
@@ -63,7 +81,8 @@
 
 
 <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/foundation.min.js"></script>
-<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/foundation/foundation.offcanvas.js"></script>
+<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/foundation/foundation.topbar.js"></script>
+
 
 <script>
 	$(document).foundation();

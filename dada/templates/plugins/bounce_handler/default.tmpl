@@ -81,7 +81,7 @@
 		</div>
 		<ul class="button-group right">
 		    <li>
-				<input type="submit" class="cautionary button" id="parse_bounces_button" value="Parse Received Bounces..." >
+				<input type="submit" class="warning button" id="parse_bounces_button" value="Parse Received Bounces..." >
 			</li>
 		</ul>
 	</form>
@@ -158,7 +158,7 @@
 				value="1"
 				<!-- tmpl_if list_settings.bounce_handler_forward_msgs_to_list_owner -->checked="checked"<!-- /tmpl_if -->
 			>
-			Forward bounces to the List Owner after processing
+			Forward bounces to the List Owner after success
 		</label>
 	</div>
 </div> 
@@ -204,7 +204,7 @@
 	    <li>
 			<input 
 				type="submit" 
-				class="processing button" 
+				class="success button" 
 				value="Save Preferences"
 			> 
 		</li>
@@ -266,7 +266,7 @@
 				<input 
 					type="submit" 
 					value="View All Plugin Configurations..." 
-					class="cautionary button"
+					class="warning button"
 				>
 			</li>
 		</ul> 

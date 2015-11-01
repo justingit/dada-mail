@@ -8,14 +8,21 @@
 <p>
 <fieldset> 
     <legend>Abuse Report on: <!-- tmpl_var list_settings.list_name --></legend> 
-    <p>
-        <label for="abuse_report_details">Please briefly describe the problems of abuse you are experiencing:</label><br > 
-        <textarea rows="8" cols="40" name="abuse_report_details" id="abuse_report_details"></textarea>
-    </p>
-    <div class="buttonfloat"> 
-        <input type="submit" value="Send Report" class="processing button" >
-    </div>
-    <div class="floatclear"></div> 
+
+		<div class="row">
+			<div class="small-12 columns">
+		        <label for="abuse_report_details">Please briefly describe the problems of abuse you are experiencing:</label>
+		        <textarea rows="8" cols="40" name="abuse_report_details" id="abuse_report_details"></textarea>
+			</div>
+		</div>
+		
+		<div class="clearfix">
+			<ul class="button-group right">
+			    <li>
+					<input type="submit" value="Send Report" class="success button" >
+				</li>
+			</ul>
+		</div>
 </fieldset> 
 
 </form> 

@@ -69,7 +69,8 @@ jQuery(document).ready(function($){
 
 		if($("#screen_meta").length) {
 			var highlight_scrn = $("#screen_meta").attr("data-menu_highlight");
-			$( ".admin_menu_" + highlight_scrn ).addClass( "menu_selected" );
+			$( ".admin_menu_" + highlight_scrn ).addClass( "active" );
+			
 		}
 		else {
 			/* alert("needs a highlight_scrn"); */
@@ -88,10 +89,11 @@ jQuery(document).ready(function($){
 		var stickyHeader = $('#buttons').offset().top;
         $(window).scroll(function(){
             if( $(window).scrollTop() > stickyHeader && $('#buttons').width() >= 640) {
-                    $('#buttons').css({position: 'fixed', top: '0px', width:'95%'});					
+                    $('#buttons').css({position: 'fixed', top: '0px', width:'95%'});	
+					$('#buttons').addClass('floating_panel');				
             } else {
                     $('#buttons').css({position: 'static', top: '0px', width: 'auto'});
-					
+					$('#buttons').removeClass('floating_panel');
             }
         });
 			
@@ -1327,7 +1329,7 @@ function admin_menu_notification(sflavor, target_class) {
 				}
 
 				//console.log('update! ' + target_class);
-				$('.' + target_class).append('<span class="' + target_class + '_notification"> ' + content + '</span>');
+				$('.' + target_class + ' a').append('<span class="' + target_class + '_notification"> ' + content + '</span>');
 			});
 			if (no_loop != 1) {
 				setTimeout(
@@ -3764,7 +3766,7 @@ function ChangeMassMailingButtonLabel(first_run) {
 	if ($("#archive_no_send").prop("checked") === true && $("#archive_message").prop("checked") === true) {
 		archive_no_send = 1;
 	}
-	$("#button_toolbar").hide().html('<input type="button" class="small button" value="Loading...">').show('fade');
+	$(".button_toolbar").hide().html('<input type="button" class="small button" value="Loading...">').show('fade');
 
 	var request = $.ajax({
 		url:       $("#s_program_url").val(),
@@ -3777,9 +3779,9 @@ function ChangeMassMailingButtonLabel(first_run) {
 			archive_no_send: archive_no_send,
 		},
 		success: function(content) {
-			$("#button_toolbar").hide("fade", function() {
-				$("#button_toolbar").html(content);
-				$("#button_toolbar").show('fade');
+			$(".button_toolbar").hide("fade", function() {
+				$(".button_toolbar").html(content);
+				$(".button_toolbar").show('fade');
 			});
 		},
 		error: function(xhr, ajaxOptions, thrownError) {

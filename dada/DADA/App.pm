@@ -3391,7 +3391,6 @@ sub mail_sending_advanced_options {
                     plaintext_encoding           => undef,
                     html_encoding                => undef,
                     strip_message_headers        => 0,
-                    print_return_path_header     => 0,
                     verp_return_path             => 0,
                     mime_encode_words_in_headers => 0,
                 }

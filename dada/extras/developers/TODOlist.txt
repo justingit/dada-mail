@@ -10,6 +10,10 @@ Key:
 [*] Naw...
 [?] Someday
 
+Mve changes from Send Email to Send Webpage 
+Accordianie Profile Login/Profile Page
+
+
 http://dadamailproject.com/support/boards/viewtopic.php?t=4586&p=17188#p17188
 
 Installer - create cli args when setting up DM in web installer, save those are in .dada_config file, 

@@ -4,8 +4,8 @@
 <!-- tmpl_set name="title" value="Appearance and Templates &#187; Email Message Templates" -->
 <div id="screen_meta" data-menu_highlight="edit_type"></div>
 
-<div class="row hide-for-small-only" id="control_panel_breadcrumbs">
-	<div class="medium-10 small-9 columns">
+<div class="row hide-for-large-only" id="control_panel_breadcrumbs">
+	<div class="medium-10 large-9 columns">
 	   	<nav class="breadcrumbs">	
 		 	 <a href="#" class="unavailable">
 				Appearance and Templates
@@ -18,7 +18,7 @@
 			</a>
 		</nav>
 	</div>
-	<div class="medium-2 small-3 columns text-right">
+	<div class="medium-2 large-3 columns text-right">
 	   <!-- tmpl_include help_link_widget.tmpl -->
 	</div>
 </div>
@@ -94,12 +94,12 @@
 				Headers
 			</legend>
 			<div class="row">
-				<div class="small-1 columns">
-					<label for="mailing_list_message_from_phrase" class="text-right">
-				 	   From:
+				<div class="large-1 columns">
+					<label for="mailing_list_message_from_phrase" class="large-text-right">
+				 	   From
 		 			</label>
 				</div>
-				<div class="small-5 columns">				  
+				<div class="large-5 columns">				  
 					<input 
 						type="text" 
 						name="mailing_list_message_from_phrase" 
@@ -107,18 +107,18 @@
 						value="<!-- tmpl_var list_settings.mailing_list_message_from_phrase escape=HTML -->" 
 					>
 				</div>
-				<div class="small-6 columns">				  
+				<div class="large-6 columns">				  
 					&lt;<!-- tmpl_var list_settings.list_owner_email -->&gt;
 				</div>
 			</div>
 		
 			<div class="row">
-				<div class="small-1 columns">
-					<label for="mailing_list_message_to_phrase" class="text-right">
-						 To:
+				<div class="large-1 columns">
+					<label for="mailing_list_message_to_phrase" class="large-text-right">
+						 To
 					</label> 
 				</div>
-				<div class="small-5 columns">				  
+				<div class="large-5 columns">				  
 					<input
 						type="text"
 						name="mailing_list_message_to_phrase"
@@ -126,17 +126,17 @@
 						value="<!-- tmpl_var list_settings.mailing_list_message_to_phrase escape=HTML -->"
 					>
 				</div>
-				<div class="small-6 columns">				  
+				<div class="large-6 columns">				  
 					&lt;<code>&lt;!-- tmpl_var subscriber.email --&gt;</code>&gt;
 		    	</div>
 			</div>
 			<div class="row">
-				<div class="small-1 columns">
-					<label for="mailing_list_message_subject" class="text-right">
-						Subject:
+				<div class="large-1 columns">
+					<label for="mailing_list_message_subject" class="large-text-right">
+						Subject
 					</label>
 				</div>
-				<div class="small-11 columns">				  			
+				<div class="large-11 columns">				  			
 					<input 
 						type="text"
 						name="mailing_list_message_subject"
@@ -224,15 +224,15 @@
 	
 	<fieldset>
 		<legend>
-			Headers: 
+			Headers 
 		</legend>
 		<div class="row">
-			<div class="small-1 columns">
-	 		   <label for="confirmation_message_subject" class="text-right">
-				   Subject:
+			<div class="large-1 columns">
+	 		   <label for="confirmation_message_subject" class="large-text-right">
+				   Subject
 			   </label>
 			</div>
-			<div class="small-11 columns">				  
+			<div class="large-11 columns">				  
 				<input 
 					type="text" 
 					name="confirmation_message_subject" 
@@ -243,9 +243,9 @@
 		</div>
 	</fieldset>
 	<div class="row">
-		<div class="small-12 columns">
+		<div class="large-12 columns">
 			<label for="confirmation_message">
-				Body (PlainText):
+				Body (PlainText)
 			</label>
 			<textarea 
 				name="confirmation_message" 
@@ -284,12 +284,12 @@
 		</legend>
 		
 		<div class="row">
-			<div class="small-1 columns">
-				<label for="subscribed_message_subject" class="text-right">
-					 Subject:
+			<div class="large-1 columns">
+				<label for="subscribed_message_subject" class="large-text-right">
+					 Subject
 				</label>
 			</div>
-			<div class="small-11 columns">
+			<div class="large-11 columns">
 			
 				<input 
 					type="text" 
@@ -303,7 +303,7 @@
 	
 	
 	<div class="row">
-		<div class="small-12 columns">
+		<div class="large-12 columns">
 	
 			<label for="subscribed_message">
 				Body (PlainText)
@@ -340,15 +340,15 @@
 	
 	<fieldset>
 		<legend>
-			Headers: 
+			Headers 
 		</legend>
 		<div class="row">
-			<div class="small-1 columns">
-			 	<label for="unsubscribed_message_subject" class="text-right">
-					Subject:
+			<div class="large-1 columns">
+			 	<label for="unsubscribed_message_subject" class="large-text-right">
+					Subject
 				</label>
 			</div>
-			<div class="small-11 columns">
+			<div class="large-11 columns">
 				<input 
 					type="text" 
 					name="unsubscribed_message_subject" 
@@ -359,9 +359,9 @@
 		</div>
 	</fieldset>
 	<div class="row">
-		<div class="small-12 columns">
+		<div class="large-12 columns">
 			<label for="unsubscribed_message">
-					Body (PlainText):
+					Body (PlainText)
 			</label>
 
 			<textarea 
@@ -391,15 +391,15 @@
 
 	<fieldset>
 		<legend>
-			Headers: 
+			Headers 
 		</legend>
 		<div class="row">
-			<div class="small-1 columns">		
-			     <label for="invite_message_from_phrase">
-					 From:
+			<div class="large-1 columns">		
+			     <label for="invite_message_from_phrase"  class="large-text-right">
+					 From
 				 </label>
 			</div>
-			<div class="small-5 columns">	
+			<div class="large-5 columns">	
 				<input 
 					type="text" 
 					name="invite_message_from_phrase" 
@@ -407,17 +407,17 @@
 					value="<!-- tmpl_var list_settings.invite_message_from_phrase escape=HTML -->"
 				>
 			</div>			 
-			<div class="small-6 columns">			
+			<div class="large-6 columns">			
 				&lt;<!-- tmpl_var list_settings.list_owner_email -->&gt;
     		</div>
 		</div>
 		<div class="row">
-			<div class="small-1 columns">		
-				<label for="<!-- tmpl_var list_settings.subscriber.email -->" >
-					To:
+			<div class="large-1 columns">		
+				<label for="<!-- tmpl_var list_settings.subscriber.email -->"  class="large-text-right">
+					To
 				</label> 
 			</div>
-			<div class="small-5 columns">			
+			<div class="large-5 columns">			
 				<input 
 					type="text" 
 					name="invite_message_to_phrase" 
@@ -425,17 +425,17 @@
 					value="<!-- tmpl_var list_settings.invite_message_to_phrase escape=HTML -->"
 				>
 			</div>
-			<div class="small-6 columns">	
+			<div class="large-6 columns">	
 				&lt;<code>&lt;!-- tmpl_var subscriber.email --&gt;</code>&gt;
 			</div>
 		</div>
 		<div class="row">
-			<div class="small-1 columns">		
-				<label for="invite_message_subject">
-					Subject:
+			<div class="large-1 columns">		
+				<label for="invite_message_subject"  class="large-text-right">
+					Subject
 				</label>
 			</div>
-			<div class="small-11 columns">		
+			<div class="large-11 columns">		
 				<input 
 					type="text" 
 					name="invite_message_subject" 
@@ -461,7 +461,7 @@
 	<div class="tabs-content">		
 		<div class="content tab-title active" id="invite_message_html">
 			<div class="row">
-				<div class="small-12 columns">	
+				<div class="large-12 columns">	
 				<textarea 
 					name="invite_message_html" 
 					id="invite_message_html" 
@@ -472,7 +472,7 @@
 		</div>
 		<div class="content tab-title" id="invite_message_text">
 			<div class="row">
-				<div class="small-12 columns">
+				<div class="large-12 columns">
 					<textarea 
 						name="invite_message_text" 
 						id="invite_message_text" 
@@ -518,16 +518,16 @@
 		
 	<fieldset>
 		<legend>
-			Headers: 
+			Headers 
 		</legend>
  	   
 	   <div class="row">
-		   <div class="small-1 columns">
-		   <label for="subscribed_by_list_owner_message_subject">
-			   Subject:
+		   <div class="large-1 columns">
+		   <label for="subscribed_by_list_owner_message_subject"  class="large-text-right">
+			   Subject
 		   </label>
 		  </div>
-		  <div class="small-11 columns">
+		  <div class="large-11 columns">
 			   <input 
 					type="text" 
 					name="subscribed_by_list_owner_message_subject" 
@@ -539,9 +539,9 @@
  	</fieldset>
 
 	<div class="row">
-		<div class="small-12 columns">
+		<div class="large-12 columns">
 			<label for="subscribed_by_list_owner_message"> 
-				Body (PlainText):
+				Body (PlainText)
 			</label>
 
     	    <textarea 
@@ -573,16 +573,16 @@
 
 	<fieldset>
 		<legend>
-			Headers: 
+			Headers 
 		</legend>
 
 		<div class="row">
-			<div class="small-1 columns">
-		         <label for="unsubscribed_by_list_owner_message_subject" >
-					 Subject:
+			<div class="large-1 columns">
+		         <label for="unsubscribed_by_list_owner_message_subject"  class="large-text-right">
+					 Subject
 				</label>
 			</div>
-			<div class="small-11 columns">
+			<div class="large-11 columns">
 				<input 
 					type="text" 
 					name="unsubscribed_by_list_owner_message_subject" 
@@ -593,8 +593,8 @@
 		</div>
 	</fieldset>
 	<div class="row">
-		<div class="small-12 columns">
-			Body (PlainText): 
+		<div class="large-12 columns">
+			Body (PlainText) 
 	        <textarea 
 				name="unsubscribed_by_list_owner_message" 
 				id="unsubscribed_by_list_owner_message" 
@@ -620,16 +620,16 @@
 	
 	<fieldset>
 		<legend>
-			Headers: 
+			Headers 
 		</legend>
         
 		<div class="row">
-			<div class="small-1 columns">
-				<label for="unsubscription_notice_message_subject" >
-					Subject:
+			<div class="large-1 columns">
+				<label for="unsubscription_notice_message_subject"  class="large-text-right">
+					Subject
 				</label>
 			</div>
-			<div class="small-11 columns">
+			<div class="large-11 columns">
 				<input 
 					type="text" 
 					name="unsubscription_notice_message_subject" 
@@ -642,9 +642,9 @@
 
 	<div class="row">
 
-		<div class="small-12 columns">
+		<div class="large-12 columns">
 			<label for="">
-				Body (PlainText): 
+				Body (PlainText) 
 	    	</label>
 			<textarea 
 				name="unsubscription_notice_message" 
@@ -658,7 +658,7 @@
 
 <fieldset>
 	<legend>
-		You Are Not Subscribed Message: 
+		You Are Not Subscribed Message 
 	</legend>
 
 	<!-- tmpl_unless list_settings.email_you_are_not_subscribed_msg  -->
@@ -672,12 +672,12 @@
 			Headers
 		</legend>
 		<div class="row">
-			<div class="small-1 columns">
-				<label for="you_are_not_subscribed_message_subject">
-					Subject:
+			<div class="large-1 columns">
+				<label for="you_are_not_subscribed_message_subject"  class="large-text-right">
+					Subject
 				</label>
 			</div>
-			<div class="small-11 columns"> 
+			<div class="large-11 columns"> 
 				<input 
 					type="text" 
 					name="you_are_not_subscribed_message_subject" 
@@ -688,9 +688,9 @@
 		</div>
 	</fieldset>
 	<div class="row">
-		<div class="small-12 columns">
+		<div class="large-12 columns">
 			<label for="you_are_not_subscribed_message">
-				Body (PlainText):
+				Body (PlainText)
 			</label>
 			<textarea 
 				name="you_are_not_subscribed_message" 
@@ -719,12 +719,12 @@
 		</legend>
 		
 		<div class="row">
-			<div class="small-1 columns">
-				<label for="send_archive_message_subject">
-					Subject:
+			<div class="large-1 columns">
+				<label for="send_archive_message_subject"  class="large-text-right">
+					Subject
 				</label>
 			</div>
-			<div class="small-11 columns">
+			<div class="large-11 columns">
 				<input 
 					type="text"
 					name="send_archive_message_subject"
@@ -783,12 +783,12 @@
 	<!--/tmpl_unless-->
 	
 	<div class="row">
-		<div class="small-1 columns">
-			<label for="you_are_already_subscribed_message_subject" class="text-right">
-				Subject:
+		<div class="large-1 columns">
+			<label for="you_are_already_subscribed_message_subject" class="large-text-right">
+				Subject
 			</label>
 		</div>
-		<div class="small-11 columns">
+		<div class="large-11 columns">
 			<input 
 				type="text"
 				name="you_are_already_subscribed_message_subject"
@@ -798,9 +798,9 @@
 		</div>
 	</div>
 	<div class="row">
-		<div class="small-12 columns">
+		<div class="large-12 columns">
 		    <label for="you_are_already_subscribed_message">
-				Body (PlainText):
+				Body (PlainText)
 			</label>
 		    <textarea 
 				name="you_are_already_subscribed_message" 
@@ -821,12 +821,12 @@
 	</legend>
 	
 	<div class="row">
-		<div class="small-1 columns">
+		<div class="large-1 columns">
 			<label for="admin_subscription_notice_message_subject">
-				Subject:
+				Subject
 			</label> 
 		</div>
-		<div class="small-11 columns">
+		<div class="large-11 columns">
 			<input 
 				type="text"
 				name="admin_subscription_notice_message_subject"
@@ -837,9 +837,9 @@
 	</div>
 
 	<div class="row">
-		<div class="small-12 columns">
+		<div class="large-12 columns">
 			<label for="admin_subscription_notice_message">
-				Body (PlainText):
+				Body (PlainText)
 			</label>    
 			<textarea 
 				name="admin_subscription_notice_message" 
@@ -864,12 +864,12 @@
 			Headers
 		</legend>
 		<div class="row">
-			<div class="small-1 columns">
+			<div class="large-1 columns">
 			    <label for="admin_unsubscription_notice_message_subject">
-					Subject:
+					Subject
 				</label> 
 			</div>
-			<div class="small-11 columns">
+			<div class="large-11 columns">
 				<input 
 					type="text"
 					name="admin_unsubscription_notice_message_subject"
@@ -881,9 +881,9 @@
 	</fieldset>
 	
 	<div class="row">
-		<div class="small-12 columns">
+		<div class="large-12 columns">
 		    <label for="admin_unsubscription_notice_message">
-				Body (Plaintext):
+				Body (Plaintext)
 			</label>
 			<textarea 
 				name="admin_unsubscription_notice_message" 
@@ -923,10 +923,10 @@
 
 	<ul class="button-group right">
 	    <li>
-			<input type="submit" class="processing button" value="Save All Changes" >
+			<input type="submit" class="success button" value="Save All Changes" >
 		</li>
 		<li>
-			<input type="reset" class="cautionary button" value="Clear All Changes" >
+			<input type="reset" class="warning button" value="Clear All Changes" >
 		</li>
 		<li>	
 			<input type="submit" class="alert button" name="revert" value="Revert ALL Text to Defaults" onclick="return revertEditType(this.form);" >

@@ -129,26 +129,6 @@
 		</div>
 		<div class="row">
 			<div class="small-12 columns">
-				<label for="print_return_path_header">
-
-					<input 
-						type="checkbox" 
-						name="print_return_path_header" 
-						id="print_return_path_header" 
-						value="1" 
-						<!-- tmpl_if list_settings.print_return_path_header -->checked="checked"<!--/tmpl_if-->
-					>
-					Print the 'Return-Path' header in all list emails
-				</label>
-				<div class="alert-box info radius"> 			
-					The 'Return-Path' header works much like setting the '-f' flag. 
-					Alternatives to Sendmail (like qmail) allow you to use the 
-					'Return-Path' header.
-				</div>
-			</div>
-		</div>
-		<div class="row">
-			<div class="small-12 columns">
 				<label for="strip_message_headers">
 					<input
 						type="checkbox" 
@@ -177,10 +157,10 @@
 	</fieldset> 
 	<ul class="button-group right">
 	    <li>
-			<input type="reset"  class="button cautionary" value="Clear Changes">
+			<input type="reset"  class="button warning" value="Clear Changes">
 		</li>
 		<li>
-			<input type="submit" class="button processing" value="Save Changes">
+			<input type="submit" class="button success" value="Save Changes">
 		</li>
 	</ul>
 </form> 

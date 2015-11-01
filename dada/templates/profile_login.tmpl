@@ -151,36 +151,25 @@
 	</p>
 </div> 
 
+
+
 <div class="row">
-	<div class="small-12 medium-6 large-6 small-centered medium-centered large-centered columns">	 
+  <div class="small-12 columns">
+    <ul class="tabs show-for-medium-up" data-tab>
+      <li class="tab-title active"><a href="#profile_login">Login</a></li>
+      <li class="tab-title"><a href="#profile_password_reset">Reset Password</a></li>
+      <li class="tab-title"><a href="#profile_register">Register</a></li>
+    </ul>
 
-		<ul class="tabs" data-tab>
-			<!-- tmpl_if expr="profile_feature_login == 1" -->
-				<li class="tab-title active">
-					<a href="#profile_login">
-						Login
-					</a>
-				</li>
-			<!-- /tmpl_if -->
+	<dl class="accordion" data-accordion>
+	
+		<dd class="accordion-navigation">
+			<a href="#profile_login" class="show-for-small-only">Login</a>
+			<div id="profile_login" class="content active">
+				<div class="content-box section-box">
 
-			<!-- tmpl_if expr="profile_feature_password_reset == 1" --> 
-				<li class="tab-title">
-					<a href="#profile_password_reset">
-						Reset Password
-					</a>
-				</li>        
-			<!-- /tmpl_if -->
-			<!-- tmpl_if expr="profile_feature_register == 1" -->
-				<li class="tab-title" >
-					<a href="#profile_register">
-						Register
-					</a>
-				</li>
-			<!-- /tmpl_if -->
-		</ul>
-		<div class="tabs-content">
-			<!-- tmpl_if expr="profile_feature_login == 1" -->
-				<div class="content active" id="profile_login">
+
+
 					<form 
 						action="<!-- tmpl_var PROGRAM_URL -->" 
 						method="post" 
@@ -221,11 +210,21 @@
 							</div>
 						</div>
 					</form>
-				</div>
-			<!-- /tmpl_if -->
+					
 
-			<!-- tmpl_if expr="profile_feature_password_reset == 1" -->
-				<div class="content" id="profile_password_reset">
+
+
+
+    			</div>
+			</div>
+			<a href="#profile_password_reset" class="show-for-small-only">Reset Password</a>
+			<div id="profile_password_reset" class="content">
+				<div class="content-box section-box">
+
+
+
+
+
 					<form 
 						action="<!-- tmpl_var PROGRAM_URL -->" 
 						method="post" 
@@ -253,11 +252,16 @@
 							</div>
 						</div> 
 					</form>
-				</div> 
-			<!-- /tmpl_if --> 
+					
+					
+					
+    			</div>
+			</div>
+			<a href="#profile_register" class="show-for-small-only">Register</a>
+			<div id="profile_register" class="content">
+				<div class="content-box section-box">
 
-			<!-- tmpl_if expr="profile_feature_register == 1" -->
-				<div class="content" id="profile_register">
+
 					<div class="alert-box info radius">
 						Register a Profile to easily manage all your <!-- PROGRAM_NAME --> Subscriptions.
 					</div> 
@@ -320,9 +324,19 @@
 							</div>
 						</div>
 					</form> 
-				</div> 
-			<!-- /tmpl_if -->
-		</div>
+
+
+
+        </div>
+			</div>
+
+		</dd>
+	</dl>
+
+
+
+
+
 	</div>
 </div>
 <!-- end profile_login.tmpl --> 

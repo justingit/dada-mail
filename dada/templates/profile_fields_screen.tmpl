@@ -176,7 +176,7 @@
 				             <input type="hidden" name="flavor" value="profile_fields" > 
 				             <input type="hidden" name="edit_field" value="1" > 
 				             <input type="hidden" name="field"  value="<!-- tmpl_var field -->" > 
-				            <input type="submit" value="edit" class="cautionary button small" > 
+				            <input type="submit" value="edit" class="warning button small" > 
 				            </form> 
 						</li>
 						<!-- tmpl_if can_move_columns --> 
@@ -186,7 +186,7 @@
 					             	<input type="hidden" name="process" value="edit_field_order" > 
 					             	<input type="hidden" name="field"  value="<!-- tmpl_var field -->" >
 									<input type="hidden" name="direction" value="up" > 
-									<input type="submit" value="^" class="button cautionary small" title="move this field up" <!-- tmpl_if __first__ -->disabled="disabled"<!-- /tmpl_if --> >
+									<input type="submit" value="^" class="button warning small" title="move this field up" <!-- tmpl_if __first__ -->disabled="disabled"<!-- /tmpl_if --> >
 				
 								</form>
 							</li>
@@ -196,7 +196,7 @@
 					             	<input type="hidden" name="process" value="edit_field_order" > 
 					             	<input type="hidden" name="field"  value="<!-- tmpl_var field -->" >
 									<input type="hidden" name="direction" value="down" >
-									<input type="submit" value="v" class="button small cautionary" title="move this field down"  <!-- tmpl_if __last__ -->disabled="disabled"<!-- /tmpl_if --> >
+									<input type="submit" value="v" class="button small warning" title="move this field down"  <!-- tmpl_if __last__ -->disabled="disabled"<!-- /tmpl_if --> >
 								</form>
 							</li>
 						<!-- /tmpl_if --> 
@@ -361,9 +361,9 @@
 
 				<ul class="button-group right">
 					<!-- tmpl_unless edit_field --> 
-	                	<li><input type="submit" value="Add Profile Field" class="button processing"></li> 
+	                	<li><input type="submit" value="Add Profile Field" class="button success"></li> 
 					<!-- tmpl_else --> 
-						<li><input type="submit" value="Edit Profile Field, &quot;<!-- tmpl_var field -->&quot;" class="button processing"></li> 
+						<li><input type="submit" value="Edit Profile Field, &quot;<!-- tmpl_var field -->&quot;" class="button success"></li> 
 					<!-- /tmpl_unless --> 
 				</ul> 
 			

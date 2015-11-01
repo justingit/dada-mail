@@ -37,3 +37,11 @@ iframe#archived_message_body_container {
 	z-index: 100;
 	background-color: #fff
 }
+
+.floating_panel { 
+	background-color: #ededed;
+	border-bottom:1px solid #ccc;
+	-webkit-box-shadow: 0 8px 8px 0 rgba(51,0,0,0.5);
+	-moz-box-shadow: 0 8px 8px 0rgba(51,0,0,0.5);
+	box-shadow: 0 8px 8px 0 rgba(51,0,0,0.5);
+}
