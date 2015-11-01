@@ -1557,158 +1557,61 @@ sub should_be_restarted {
 
         my $last_access = _poll( $self->dir . '/' . $file_names->{last_access} );
 
-        if ( $self->{ls}->param('restart_mailings_after_each_batch') == 1 ) {
-
-            # Basically, if the sending process isn't locked, we wait the amount
-            # of time we'd usually sleep() and if we're over that time, it's time
-            # to send again!
-
-            warn '>>>>restart_mailings_after_each_batch set to, "1"'
+        if ( $self->is_batch_locked ) {
+            warn '>>>> >>>> batch is locked.'
               if $t;
 
-            my $sleep_amount = $self->{ls}->param('bulk_sleep_amount');
+            # Batch is locked.
+            # Is the batch stale?
 
-            if ( ( $last_access + $sleep_amount ) <= time ) {
-
-                warn '>>>> >>>>Looks like we\'ve overslept. (($last_access + $sleep_amount ) <= time)'
+            if ( $self->process_has_stalled ) {
+                warn '>>>> >>>> >>>> process has stalled.'
                   if $t;
 
-                # last access is in the past,
-                # sleep amount is in seconds.
-                # if *now* is more than the last access time,
-                # plus we're supposed to sleep for,
-                # we've overslept...
+                warn '>>>> >>>> >>>> Yes. The mailing SHOULD be restarted. (' . $$ . ')'
+                  if $t;
 
-                # Time to restart, as long as the lock isn't there...
+                # Yes? Let's restart.
 
-                if ( $self->is_batch_locked ) {
-
-                    warn '>>>> >>>> >>>> batch is locked.'
-                      if $t;
-
-                    # Well, OK, it's there,
-                    # but I mean, is it a *stale* lock?!
-
-                    if ( $self->process_has_stalled ) {
-
-                        warn '>>>> >>>> >>>> >>>>process has stalled.'
-                          if $t;
-
-                        # Process has stalled
-                        # And it's time to restart?
-                        # let's do it:
-
-                        warn '>>>> >>>> >>>> >>>>Yes. The mailing SHOULD be restarted. (' . $$ . ')'
-                          if $t;
-
-                        return 1;
-
-                    }
-                    else {
-
-                        # Let's wager on the side of being conservative
-                        # and wait till the lock is officially stale
-                        # Before we do anything *rash*
-
-                        warn '>>>> >>>> >>>> >>>>process has NOT stalled.'
-                          if $t;
-
-                        warn '>>>> >>>> >>>> >>>>No. The mailing SHOULD NOT be restarted. (' . $$ . ')'
-                          if $t;
-
-                        return 0;
-                    }
-
-                }
-                else {
-
-                    # Sending process is *not* locked?
-                    # And it's time to restart, let's do it.
-
-                    warn '>>>> >>>> >>>> batch is NOT locked.'
-                      if $t;
-
-                    warn '>>>> >>>> >>>> Yes. The mailing SHOULD be restarted. (' . $$ . ')'
-                      if $t;
-
-                    return 1;
-
-                }
-
+                return 1;
             }
             else {
-
-                warn '>>>> >>>>Mailing is either sleeping or hasn\'t been inactive for enough time.'
+                warn '>>>> >>>> >>>> process has NOT stalled.'
                   if $t;
 
-                warn '>>>> >>>>No. The mailing SHOULD NOT be restarted. (' . $$ . ')'
-                  if $t;
+                # No? Hold off.
 
-                # not time yet...
                 return 0;
             }
-
         }
         else {
 
-            warn '>>>>restart_mailings_after_each_batch set to, "0"'
+            warn '>>>> >>>> batch is NOT locked.'
               if $t;
 
-            if ( $self->is_batch_locked ) {
-                warn '>>>> >>>> batch is locked.'
+            if ( $self->process_has_stalled ) {
+
+                warn '>>>> >>>> >>>> process has stalled.'
                   if $t;
 
-                # Batch is locked.
-                # Is the batch stale?
+                warn '>>>> >>>> >>>> Yes. The mailing SHOULD be restarted. (' . $$ . ')'
+                  if $t;
 
-                if ( $self->process_has_stalled ) {
-                    warn '>>>> >>>> >>>> process has stalled.'
-                      if $t;
+                # carp "Batch ain't locked. process is stalled.";
 
-                    warn '>>>> >>>> >>>> Yes. The mailing SHOULD be restarted. (' . $$ . ')'
-                      if $t;
+                # batch ain't locked, huh? Restart!
+                return 1;
 
-                    # Yes? Let's restart.
-
-                    return 1;
-                }
-                else {
-                    warn '>>>> >>>> >>>> process has NOT stalled.'
-                      if $t;
-
-                    # No? Hold off.
-
-                    return 0;
-                }
             }
             else {
-
-                warn '>>>> >>>> batch is NOT locked.'
+                warn '>>>> >>>> >>>> process has NOT stalled.'
                   if $t;
+                warn '>>>> >>>> >>>> No. The mailing SHOULD Not be restarted. (' . $$ . ')'
+                  if $t;
+                return 0;
 
-                if ( $self->process_has_stalled ) {
-
-                    warn '>>>> >>>> >>>> process has stalled.'
-                      if $t;
-
-                    warn '>>>> >>>> >>>> Yes. The mailing SHOULD be restarted. (' . $$ . ')'
-                      if $t;
-
-                    # carp "Batch ain't locked. process is stalled.";
-
-                    # batch ain't locked, huh? Restart!
-                    return 1;
-
-                }
-                else {
-                    warn '>>>> >>>> >>>> process has NOT stalled.'
-                      if $t;
-                    warn '>>>> >>>> >>>> No. The mailing SHOULD Not be restarted. (' . $$ . ')'
-                      if $t;
-                    return 0;
-
-                }
             }
+        
         }
 
     }

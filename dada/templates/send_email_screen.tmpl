@@ -104,8 +104,6 @@
 
 			<!-- tmpl_include send_email_headers_widget.tmpl --> 
 				
-				<div class="row">
-				  <div class="small-12 columns">
 				    <ul class="tabs show-for-medium-up" data-tab>
 				      <li 
 					  	<!-- tmpl_if expr="((list_settings.use_wysiwyg_editor eq 'none') || (using_no_wysiwyg_editor == 1))" -->
@@ -129,7 +127,17 @@
 						  	  PlainText Version
 						  	</a>
 					  </li>
-				      <li class="tab-title"><a href="#file_attachments">File Attachments</a></li>
+				      <li class="tab-title">
+						  <a href="#file_attachments">
+							 File Attachments
+						  </a>
+					 	</li>
+				      <li class="tab-title">
+						  <a href="#options">
+							Options
+						  </a>
+					 	</li>
+
 				    </ul>
 
 					<dl class="accordion" data-accordion>
@@ -173,18 +181,35 @@
 							<div id="file_attachments" class="content">
 								<div class="content-box section-box">
 				    				<!-- tmpl_include send_email_file_attachments_widget.tmpl -->
+									
 				       		   </div>
 							</div>
+							
+							
+							<a href="#options" class="show-for-small-only">
+								Options
+							</a>
+							<div id="options" class="content">
+								<div class="content-box section-box">
+									<!-- tmpl_include send_email_options_widget.tmpl -->
+				    				
+				       		   </div>
+							</div>
+							
+							
+							
 							
 						</dd>
 					</dl>
 
-				  </div>
-				</div>
+
 			
 				<!-- tmpl_include send_email_draft_notice_widget.tmpl --> 
 				
-			<!-- tmpl_include send_email_options_widget.tmpl -->
+				
+				
+				
+			
 		</div>
 	</div><!-- entire_form -->
 	

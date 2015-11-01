@@ -176,7 +176,18 @@
 	
 		<ul class="button-group right">
 			<li><input type="reset"  class="button warning" value="Clear Changes"></li>
-			<li><input type="submit" class="button"          , value="Verify Addresses..." <!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> disabled="disabled" class="disabled"<!-- tmpl_else -->class="success button"<!-- /tmpl_if -->></li>
+			<li>
+				<input 
+					type="submit" 
+					value="Verify Addresses..." 
+					
+					<!-- tmpl_if expr="((type eq 'list') && (subscription_quota_reached == 1))" --> 
+						disabled="disabled"
+						class="button disabled"
+					<!-- tmpl_else -->
+						class="button success"
+					<!-- /tmpl_if -->
+				</li>
 		</ul>
 	</form>
 
@@ -263,11 +274,16 @@
 		 <input type="hidden" name="rand_string" id="rand_string" value="<!-- tmpl_var rand_string -->" >
 		 <input type="hidden" name="method" value="via_add_one" > 
 		 
-		<div class="row">
-		   <div class="small-12 columns">
-			   <label for="email">
+	      <div class="row">
+	        <div class="large-3 medium-3 columns">
+			   <label 
+				   	for="email" 
+					class="medium-only-text-right large-only-text-right"
+				>
 			      Email Address
 			     </label>
+		   </div>
+        	<div class="large-9 medium-9 columns">
 			    <input type="text" name="email" id="email" value=""  >
 			</div> 
 		</div> 
@@ -275,12 +291,18 @@
 		<!-- tmpl_if expr="(type eq 'list')" -->
 		
     		<!-- tmpl_loop fields --> 
-				<div class="row">
-				   <div class="small-12 columns">
+	      <div class="row">
+	        <div class="large-3 medium-3 columns">
 				
-		    		     <label for="<!-- tmpl_var name escape=HTML -->">
+		    		     <label 
+						 	for="<!-- tmpl_var name escape=HTML -->"
+							class="medium-only-text-right large-only-text-right"
+						>
 		    		      <!-- tmpl_var label escape="HTML" --> (<!-- tmpl_var name escape="HTML" -->)
 		    		     </label>
+ 		   </div>
+         	<div class="large-9 medium-9 columns">
+			
 		    		    <input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var value escape=HTML -->"  >
 		    		    <!-- tmpl_if required -->
 				        <span class="error">
@@ -291,12 +313,19 @@
 			</div>
 			
     	<!--/tmpl_loop-->
-		 <div class="row">
-		    <div class="small-12 columns">
+	      <div class="row">
+	        <div class="large-3 medium-3 columns">
 		 
-			     <label for="<!-- tmpl_var name escape=HTML -->">
+			     <label 
+				 for="profile_password"
+					class="medium-only-text-right large-only-text-right"
+					 
+				>
 			      	Profile Password
 			     </label>
+ 		   </div>
+         	<div class="large-9 medium-9 columns">
+
 			    <input type="text" name="profile_password" id="profile_password" value="" >
 			</div>
 		</div>

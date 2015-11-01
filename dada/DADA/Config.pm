@@ -1390,10 +1390,6 @@ $MIME_OPTIMIZE     //= 'no tmp files';
     # Auto-Pickup Dropped Mass Mailings
     auto_pickup_dropped_mailings => 1,
 
-    # Restart Mailings After Each Batch
-    # TODO - this variable should really be called, "reload_mailings_after_each_batch"
-    restart_mailings_after_each_batch => 0,
-
     # sendmail, smtp, amazon_ses
     sending_method => 'sendmail',
 

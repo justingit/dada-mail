@@ -295,26 +295,34 @@
 			
 			<div class="row">
 			   <div class="small-12 columns">
-				<!-- tmpl_if using_SQLite -->
-					<!-- tmpl_if edit_field -->
-						<div data-alert class="alert-box warning radius">
-							Disabled. SQLite backend currently doesn't support renaming fields.
-						</div>
+					<!-- tmpl_if using_SQLite -->
+						<!-- tmpl_if edit_field -->
+							<div data-alert class="alert-box warning radius">
+								Disabled. SQLite backend currently doesn't support renaming fields.
+							</div>
+						<!-- /tmpl_if -->
 					<!-- /tmpl_if -->
-				<!-- /tmpl_if -->
 
 			
-				<div class="alert-box info radius">
-						Use underscores, instead of spaces - no funny characters, and use lower case characters instead of uppercase.
-					<br>
-					Field Names prefixed with, &quot;<!-- tmpl_var HIDDEN_SUBSCRIBER_FIELDS_PREFIX escape="HTML" -->&quot; 
-					will not be displayed on public subscription forms.
+					<div class="alert-box info radius">
+							Use underscores, instead of spaces - no funny characters, and use lower case characters instead of uppercase.
+						<br>
+						Field Names prefixed with, &quot;<!-- tmpl_var HIDDEN_SUBSCRIBER_FIELDS_PREFIX escape="HTML" -->&quot; 
+						will not be displayed on public subscription forms.
+					</div>
 				</div>
-				   
-				   
-	                <label for="field">
-						Field Name
-					</label> 
+			</div>
+			
+	      <div class="row">
+	        <div class="large-3 medium-3 columns">
+		        <label 
+					for="field"
+					class="medium-only-text-right large-only-text-right"
+				>
+					Field Name
+				</label> 
+			</div>
+	        <div class="large-9 medium-9 columns">
 	                <input 
 						type="text" 
 						name="field"  
@@ -327,7 +335,7 @@
 								<!-- /tmpl_if -->
 							<!-- /tmpl_if --> 
 						>
-				                  </div> 
+		 			</div> 
 			 </div>
 
  			<div class="row">
@@ -335,9 +343,20 @@
 				  <div class="alert-box info radius">
                  	 Labels will be used on public subscription forms
 				  </div> 
-                  <label for="field_label">
+  				</div>
+  			</div>
+			
+  	      <div class="row">
+  	        <div class="large-3 medium-3 columns">
+                  <label 
+				  	for="field_label"
+					class="medium-only-text-right large-only-text-right"
+				  >
 					  Label
 				  </label> 
+	 			</div>
+	 	        <div class="large-9 medium-9 columns">
+				 
                   <input 
 				  	type="text" 
 					name="field_label" 
@@ -348,17 +367,28 @@
 				  >
 				</div> 
 			 </div>
+			 
   			<div class="row">
   			   <div class="small-12 columns">
    				 <div class="alert-box info radius">
    	                 Fallback Values are used in mail merging, etc., when there's no 
 					 profile information saved for that address.
    				</div>
+			</div> 
+		 </div>	
 				
-				
-                 <label for="fallback_field_value">
+	      <div class="row">
+	        <div class="large-3 medium-3 columns">
+		
+                 <label 
+				 	for="fallback_field_value"
+					class="medium-only-text-right large-only-text-right"
+				>
 					 Fallback Value
 				 </label> 
+ 			</div>
+ 	        <div class="large-9 medium-9 columns">
+			
                  <input 
 				 	type="text" 
 					name="fallback_field_value" 
@@ -367,21 +397,26 @@
 					placeholder="Fallback Value"
 				 >
 				 
-	  			<div class="row">
-	  			   <div class="small-12 columns">
-	                 <input 
-					 	type="checkbox" 
-						name="field_required" 
-						id="field_required"  
-						value="1" 
-							<!-- tmpl_if field_required -->checked="checked"<!-- /tmpl_if --> 
-						>
+ 	  			<div class="row">
+ 	  			   <div class="small-12 columns">
+ 	                 <input 
+ 					 	type="checkbox" 
+ 						name="field_required" 
+ 						id="field_required"  
+ 						value="1" 
+ 							<!-- tmpl_if field_required -->checked="checked"<!-- /tmpl_if --> 
+ 						>
 				
-	                  <label for="field_required">
-						  required
-					  </label> 
-	             	</div> 
-	   			 </div>
+ 	                  <label for="field_required">
+ 						  required
+ 					  </label> 
+ 	             	</div> 
+ 	   			 </div>
+				 
+			</div>
+		</div>
+				 
+	  			
 
 				<ul class="button-group right">
 					<!-- tmpl_unless edit_field --> 

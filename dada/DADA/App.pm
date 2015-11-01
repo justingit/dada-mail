@@ -3071,7 +3071,6 @@ sub mailing_sending_mass_mailing_options {
                     adjust_batch_sleep_time           => 0,
                     get_finished_notification         => 0,
                     auto_pickup_dropped_mailings      => 0,
-                    restart_mailings_after_each_batch => 0,
                     smtp_connection_per_batch         => 0,
                     mass_mailing_send_to_list_owner   => 0,
                     amazon_ses_auto_batch_settings    => 0,

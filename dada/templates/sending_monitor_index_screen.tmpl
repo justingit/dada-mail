@@ -1,8 +1,11 @@
 <!-- begin sending_monitor_index_screen.tmpl --> 
 
-<!-- tmpl_set name="title" value="Mass Mailing &#187; Mass Mailing Monitor -->
-<div id="screen_meta" data-menu_highlight="sending_monitor"></div>
 
+
+<!-- tmpl_set name="title" value="Mass Mailing &#187; Mass Mailing Monitor" -->
+
+
+<div id="screen_meta" data-menu_highlight="sending_monitor"></div>
 
 <div class="row hide-for-small-only" id="control_panel_breadcrumbs">
 	<div class="medium-10 small-9 columns">
@@ -81,10 +84,11 @@
     <th> 
     </th>     
     </tr>   
+	
 <!-- tmpl_loop mailout_status --> 
 
     
-    	<tr <!-- tmpl_if integrity_check --> <!-- tmpl_if __odd__ -->class="alt"<!--/tmpl_if--><!-- tmpl_else -->style="background-color:#cc3"<!-- /tmpl_if -->>
+    	<tr>
 		      <td> 
 		        <!-- tmpl_var list_name escape="HTML" --> (<!-- tmpl_var list escape="HTML" --> )
 		     </td>
@@ -202,10 +206,9 @@
 <!-- tmpl_else --> 
 
 
-    <p class="positive"> 
-     	Currently, there are no active Mass Mailings for this Mailing List.
-    </p>
-
+	<div class="alert-box info radius">
+     	There are currently no active Mass Mailings on this Mailing List.
+    </div>
 <!--/tmpl_if--> 
 
 </fieldset> 

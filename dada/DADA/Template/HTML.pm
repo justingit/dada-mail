@@ -1,6 +1,6 @@
 package DADA::Template::HTML;
 
-use lib qw(../../ ../../DADA/perllib); 
+use lib qw(../../../ ../../../DADA/perllib); 
 
 use DADA::Config qw(!:DEFAULT);  
 use DADA::App::Guts; 
@@ -176,6 +176,7 @@ sub admin_template {
 	### Admin Menu Creation...
     my $admin_menu; 
     my $m_admin_menu; 
+	my $tb_admin_menu;
 	my $li; 
 	    require  DADA::MailingList::Settings; 
 	    my $ls = DADA::MailingList::Settings->new({-list => $list}); 
@@ -197,6 +198,16 @@ sub admin_template {
 				-for_mobile  => 1, 
 			}
 		); 
+		$tb_admin_menu    = DADA::Template::Widgets::Admin_Menu::make_admin_menu(
+			{
+				-privileges => 'superuser',   
+				-ls_obj     => $ls,
+				-flavor      => $q->param('flavor'), 
+				-for_mobile  => 0,		
+				-style       => 'top_bar',
+			}
+		); 
+		
 		
 	}else{
 		$admin_menu  = DADA::Template::Widgets::Admin_Menu::make_admin_menu(
@@ -216,6 +227,17 @@ sub admin_template {
 			}
 		); 
 		
+		$tb_admin_menu    = DADA::Template::Widgets::Admin_Menu::make_admin_menu(
+			{
+				-privileges => 'user',   
+				-ls_obj     => $ls,
+				-flavor      => $q->param('flavor'), 
+				-for_mobile  => 0,		
+				-style       => 'top_bar',
+			}
+		); 
+		
+		
 	}
 	
 	$admin_menu = DADA::Template::Widgets::screen(
@@ -231,6 +253,17 @@ sub admin_template {
 	$m_admin_menu = DADA::Template::Widgets::screen(
 					{
 						-data => \$m_admin_menu, 
+						-list_settings_vars_param => { 
+													-list   => $list, 
+													-dot_it => 1, 
+											 	},
+					   -vars => {}
+					}
+				); 
+				
+	$tb_admin_menu = DADA::Template::Widgets::screen(
+					{
+						-data => \$tb_admin_menu, 
 						-list_settings_vars_param => { 
 													-list   => $list, 
 													-dot_it => 1, 
@@ -275,6 +308,7 @@ sub admin_template {
 												#login_switch_popup_menu_widget => login_switch_popup_menu_widget, 
 												admin_menu                     => $admin_menu, 
 												mobile_admin_menu              => $m_admin_menu,
+												admin_top_bar_menu             => $tb_admin_menu, 
 												title                          => $args{-Title},
 												root_login                     => $args{-Root_Login},
 												content                        => '[_dada_content]',	

@@ -3,6 +3,7 @@
     "options": {
         "culture": "en",
         "lang": "<!-- tmpl_var lang -->",
+        "theme": "flat-dark",
         "defaultViewMode": "grid",
         "autoload": true,
         "showFullPath": false,
@@ -18,15 +19,19 @@
         "dateFormat": "d M Y H:i",
         "serverRoot": true,
         "fileRoot": "<!-- tmpl_var fileRoot -->",
-        "relPath": false,
+        "baseUrl": false,
         "logger": false,
-        "capabilities": ["select", "download", "rename", "move", "delete", "replace"],
+        "capabilities": ["select", "download", "rename", "delete", "replace"],
         "plugins": []
     },
     "security": {
+        "allowFolderDownload": false,
+        "allowChangeExtensions": false,
+        "allowNoExtension": false,
         "uploadPolicy": "DISALLOW_ALL",
         "uploadRestrictions": [
             "jpg",
+            "jpe",
             "jpeg",
             "gif",
             "png",
@@ -50,10 +55,14 @@
             "m4v",
             "ogg",
             "mp3",
-            "wav"
+            "wav",
+            "zip",
+            "rar"
         ]
     },
     "upload": {
+        "multiple": true,
+        "number": 5,
         "overwrite": false,
         "imagesOnly": false,
         "fileSizeLimit": 16
@@ -68,12 +77,13 @@
             ".CDN_ACCESS_LOGS",
             "cloudservers"
         ],
-        "unallowed_files_REGEXP": "/^\\./uis",
-        "unallowed_dirs_REGEXP": "/^\\./uis"
+        "unallowed_files_REGEXP": "/^\\./",
+        "unallowed_dirs_REGEXP": "/^\\./"
     },
     "images": {
         "imagesExt": [
             "jpg",
+            "jpe",
             "jpeg",
             "gif",
             "png",
@@ -115,6 +125,11 @@
             "csv"
         ]
     },
+    "customScrollbar": {
+    	"enabled": true,
+    	"theme": "inset-2-dark",
+    	"button": true
+    },
     "extras": {
         "extra_js": [],
         "extra_js_async": true
@@ -123,5 +138,7 @@
         "path": "images/fileicons/",
         "directory": "_Open.png",
         "default": "default.png"
-    }
+    },
+    "url": "https://github.com/simogeo/Filemanager",
+    "version": "2.0.0-dev"
 }

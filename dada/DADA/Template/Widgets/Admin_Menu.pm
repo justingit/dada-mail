@@ -170,6 +170,14 @@ sub make_admin_menu {
 	if(! exists($args->{-for_mobile})) { 
 		$args->{-for_mobile} = 0; 
 	}
+	
+	if(! exists($args->{-style})) { 
+		$args->{-style} = 'side_bar'; 
+	}
+	
+	
+	
+	
 
    #---------------------------------------------------------------------------#
     require DADA::Template::Widgets;
@@ -275,21 +283,39 @@ sub make_admin_menu {
 		);
 	}
 	
-    return DADA::Template::Widgets::screen(
-        {
-            -screen => 'admin_menu_widget.tmpl',
-            -vars   => { 
-                for_mobile                     => $args->{-for_mobile}, 
-				login_switch_popup_menu_widget => $login_switch_popup_menu_widget, 
-                NAV                            => $ht_entry, 
-            },
-            -list_settings_vars_param => {
-                -list   => $ls->param('list'),
-                -dot_it => 1,
-            },
-        }
-    );
-
+	if($args->{-style} eq 'side_bar') {
+	    return DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'admin_menu_widget.tmpl',
+	            -vars   => { 
+	                for_mobile                     => $args->{-for_mobile}, 
+					login_switch_popup_menu_widget => $login_switch_popup_menu_widget, 
+	                NAV                            => $ht_entry, 
+	            },
+	            -list_settings_vars_param => {
+	                -list   => $ls->param('list'),
+	                -dot_it => 1,
+	            },
+	        }
+	    );
+	}
+	elsif($args->{-style} eq 'top_bar') {
+	    return DADA::Template::Widgets::screen(
+	        {
+	            -screen => 'admin_top_bar_menu.tmpl',
+	            -vars   => { 
+	                for_mobile                     => $args->{-for_mobile}, 
+					login_switch_popup_menu_widget => $login_switch_popup_menu_widget, 
+	                NAV                            => $ht_entry, 
+	            },
+	            -list_settings_vars_param => {
+	                -list   => $ls->param('list'),
+	                -dot_it => 1,
+	            },
+	        }
+	    );
+		
+	}
 }
 
 =pod

@@ -1,3 +1,6 @@
+body { 
+	background-color:#efefef;
+}
 table {
 	border: 1px solid red;
 }
@@ -35,7 +38,8 @@ iframe#archived_message_body_container {
 
 #buttons {
 	z-index: 100;
-	background-color: #fff
+	background-color: #fff;
+	width:auto;
 }
 
 .floating_panel { 

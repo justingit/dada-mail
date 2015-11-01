@@ -47,13 +47,12 @@
 			Batch Sending Options
 		</legend>
 		
-		<div class="alert-box warning radius">
-			Setting your batch settings to send at a higher rate than what is allowed 
-			for your hosting account will cause problems with email delivery. 
-		</div>
-		
 		<div class="row">
 			<div class="small-12 columns">
+				
+
+		
+
 				<input 
 					type="checkbox" 
 					name="enable_bulk_batching"
@@ -65,6 +64,12 @@
 				<label for="enable_bulk_batching">
 					Enable batch sending
 				</label>
+				
+				<div class="alert-box warning radius">
+					Setting your batch settings to send at a higher rate than what is allowed 
+					for your hosting account will cause problems with email delivery. 
+				</div>
+				
 			</div> 
 		</div>
 		
@@ -88,28 +93,30 @@
 				</div>
 			</div>
 		<!-- /tmpl_if -->
+
 		
-		<div id="batch_setting_settings">
-			<div id="manual_batch_settings"> 
-				<div class="row">
-					<div class="large-6 medium-6 columns">
-						<label>
-							Messages Sent Per Batch
-						</label>
-						<!-- tmpl_var mass_send_amount_menu -->
-					</div>
-					<div class="large-6 medium-6 columns">			
-						<label> 
-							Sleep Time Between Batches
-						</label>
-						<!-- tmpl_var bulk_sleep_amount_menu -->
-					</div>
-				</div>	
-			</div>
+			<div id="batch_setting_settings">
+				<div id="manual_batch_settings"> 
+					<div class="row">
+						<div class="large-6 medium-6 columns">
+							<label>
+								Messages Sent Per Batch
+							</label>
+							<!-- tmpl_var mass_send_amount_menu -->
+						</div>
+						<div class="large-6 medium-6 columns">			
+							<label> 
+								Sleep Time Between Batches
+							</label>
+							<!-- tmpl_var bulk_sleep_amount_menu -->
+						</div>
+					</div>	
+				</div>
 
+		
+		<div class="row">
+			<div class="small-12 columns">
 
-	
-	
 			<div class="alert-box info radius">
 				<!-- tmpl_if show_amazon_ses_options --> 
 					<div id="amazon_ses_get_stats_loading"></div> 
@@ -117,6 +124,9 @@
 				<!-- /tmpl_if --> 
 				<div id="previewBatchSendingSpeed_loading"></div> 
 				<div id="previewBatchSendingSpeed"></div> 
+			</div>
+			
+				</div>	
 			</div>
 			
 			<div class="row">
@@ -168,37 +178,27 @@
 			Auto Pickup Options
 		</legend> 
 		
-		<input 
-			type="checkbox" 
-			name="auto_pickup_dropped_mailings" 
-			id="auto_pickup_dropped_mailings" 
-			value="1" <!-- tmpl_if list_settings.auto_pickup_dropped_mailings -->checked="checked"<!--/tmpl_if-->
-		>
-		<label for="auto_pickup_dropped_mailings">
-			Auto-Pickup dropped mass mailings
-		</label>
-		<div class="alert-box info radius">
-			Mass mailing can be a lengthy process and can sometimes get interrupted by the server. 
-			Activating this options safeguards against this issue by automatically reloading 
-			a mailing from the point that it was stopped.
+		<div class="row">
+			<div class="small-12 columns">
+		
+				<label for="auto_pickup_dropped_mailings">
+		
+					<input 
+						type="checkbox" 
+						name="auto_pickup_dropped_mailings" 
+						id="auto_pickup_dropped_mailings" 
+						value="1" <!-- tmpl_if list_settings.auto_pickup_dropped_mailings -->checked="checked"<!--/tmpl_if-->
+					>
+						Auto-Pickup dropped mass mailings
+					</label>
+				<div class="alert-box info radius">
+					Mass mailing can be a lengthy process and can sometimes get interrupted by the server. 
+					Activating this options safeguards against this issue by automatically reloading 
+					a mailing from the point that it was stopped.
+				</div>
+			</div>
 		</div>
-		
-		<!-- tmpl_if comment -->
-			<input 
-				type="checkbox"
-				name="restart_mailings_after_each_batch"
-				id="restart_mailings_after_each_batch"
-				value="1"
-				<!-- tmpl_if list_settings.restart_mailings_after_each_batch -->checked="checked"<!--/tmpl_if-->
-			>
-			<label for="restart_mailings_after_each_batch">
-				Reload mass mailings after each batch
-			</label>
-
-			<p>This option should <em>only</em> be used if the <code>sleep()</code> Perl function is not working properly. 
-			Enabling this option will also <strong>require</strong> you to use the web-based mailing monitor for successfully mailings.
-		<!-- /tmpl_if -->
-		
+				
 	</fieldset>
 
 	<fieldset> 
@@ -255,14 +255,18 @@
 			</div>
 		</div>
 	</fieldset>
-	<ul class="button-group right">
-	    <li>
-			<input type="reset"  class="button warning" value="Clear Changes">
-		</li>
-		<li>
-			<input type="submit" class="button success" value="Save Sending Options">
-		</li>
-	</ul>
+	
+	<div class="clearfix">
+		<ul class="button-group right">
+		    <li>
+				<input type="reset"  class="button warning" value="Clear Changes">
+			</li>
+			<li>
+				<input type="submit" class="button success" value="Save Sending Options">
+			</li>
+		</ul>
+	</div>
+	
 </form> 
 
 

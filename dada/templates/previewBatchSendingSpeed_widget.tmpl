@@ -1,24 +1,25 @@
 <!-- begin previewBatchSendingSpeed_widget.tmpl --> 
 
+<ul>
 <!-- tmpl_if enable_bulk_batching --> 
 
 	<!-- tmpl_if somethings_wrong --> 
 	
-		<p>
+		<li>
 			<strong>Warning!</strong>  There's a problem with the credentials. 
-		</p>
+		</li>
 	
 	<!-- tmpl_else -->
-		<p>
+		<li>
 			Messages will be sent at a rate of up to <strong><!-- tmpl_var per_hour --> Messages/Hour</strong>. Mailing to <strong><!-- tmpl_var num_subscribers --> subscribers</strong> will take at least <strong><!-- tmpl_var time_to_send --></strong>.
-		</p>
+		</li>
 	<!-- /tmpl_if -->
 
 <!-- tmpl_else -->
-	<p>
+	<li>
 		Batch Settings will not be used.
-	</p>
+	</li>
 <!-- /tmpl_if -->
 
-
+</ul>
 <!-- end previewBatchSendingSpeed_widget.tmpl --> 

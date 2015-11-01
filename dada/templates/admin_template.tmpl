@@ -168,39 +168,12 @@
              </section> 
 		 	</nav>
              
-             <!-- tmpl_if comment --> 
-             
-                             <div class="row">
-                                 <div class="large-12">
-                
-                              <div id="Header" class="hide-for-small">
-                           	<a href="<!-- tmpl_var PROGRAM_URL -->">
-                           		<img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/dada_mail_logo.png" alt="<!-- tmpl_var PROGRAM_NAME -->" >
-                               </a>
-                           	<span id="Title">
-                           		Logged in as
-                           		<!-- tmpl_if root_login --> 
-                           		 <strong><!-- tmpl_var PROGRAM_NAME --> Root</strong>
-                           		<!-- tmpl_else --> 
-                           			List Owner
-                           		<!-- /tmpl_if -->
-                           		of 
-                           		<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/" target="_blank"><!-- tmpl_var list_settings.list_name --> (<!-- tmpl_var list_settings.list -->)</a>   
 
-                           		<!-- tmpl_if login_switch_widget --> 
-                           			<!-- tmpl_if root_login --> 
-                           			| 
-                           				<!-- tmpl_var login_switch_widget -->
-                           			<!-- /tmpl_if -->
-                           		<!-- /tmpl_if -->
-                           		| <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=logout">Log Out</a>
+<div class="hide-for-small">
+	<!-- tmpl_var admin_top_bar_menu -->
+</div>
+<!-- tmpl_if comment --> 
 
-                               </span>
-                              </div> 
-                             </div><!-- ends id="Header" -->
-                         </div> 
-            <!-- /tmpl_if -->
-         
              <div class="row"  style="width: 100%; margin-left: auto; margin-right: auto; max-width: initial;">
                      <div class="large-2 medium-3 columns">
                          <div class="hide-for-small">
@@ -211,10 +184,17 @@
                              </div> 
                          </div> 
                      </div>
-                     <div class="large-10 medium-9 columns" id="content_area">
-                        <!-- tmpl_var content -->
-                     </div> 
-            </div> 
+
+<!-- /tmpl_if -->					 
+					 <div class="row">
+	                     <div class="large-12 medium-12 columns large-centered medium-centered" style="background-color:#fff" id="content_area">
+	                        <!-- tmpl_var content -->
+	                     </div> 
+					</div>
+		<!-- tmpl_if comment --> 
+		
+		    </div> 
+	<!-- /tmpl_if -->					 
                  
                  
                  
