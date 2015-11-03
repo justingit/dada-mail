@@ -671,38 +671,6 @@ sub make_nav_table {
 }
 
 
-
-
-
-=pod
-
-=head2 make_search_form
-
-	print $archive -> make_search_form(); 
-
-this prints out the correct HTML form to make for your archives. 
-
-=cut
-
-
-sub make_search_form { 
-	
-	my $self = shift; 
-	
-	# ?!?!
-	my $list = shift; 
-				
-	require DADA::Template::Widgets; 
-	return  DADA::Template::Widgets::screen(
-	            {
-	                -screen => 'archive_search_form.tmpl', 
-					-list   => $list
-			    }
-			);
-}
-
-
-
 sub _neuter_confirmation_token_links { 
 	my $self = shift; 
 	my $body = shift; 

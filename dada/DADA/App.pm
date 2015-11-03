@@ -9628,9 +9628,6 @@ sub archive {
     $nav_table = $archive->make_nav_table( -Id => $id, -List => $ls->param('list') )
       if defined($id);
 
-    my $archive_search_form = '';
-    $archive_search_form = $archive->make_search_form( $ls->param('list') )
-      if $ls->param('archive_search_form') == 1;
 
     my $archive_subscribe_form = "";
 
@@ -9648,8 +9645,7 @@ sub archive {
 
         unless ( $ls->param('archive_subscribe_form') eq "0" ) {
 
-            $archive_subscribe_form .= $info;
-            $archive_subscribe_form .= DADA::Template::Widgets::subscription_form(
+            $archive_subscribe_form = DADA::Template::Widgets::subscription_form(
                 {
                     -list       => $ls->param('list'),
                     -email      => $email,
@@ -9663,8 +9659,7 @@ sub archive {
         archive_send_form      => $archive_send_form,
         nav_table              => $nav_table,
         publish_archives_rss   => $ls->param('publish_archives_rss') ? 1 : 0,
-        archive_search_form    => $archive_search_form,
-        archive_subscribe_form => $archive_subscribe_form,
+        subscription_form      => $archive_subscribe_form,
     };
 
     #/##### These are all little thingies.
@@ -10168,11 +10163,6 @@ sub search_archive {
         }
     }
 
-    my $search_form = '';
-    if ( $ls->param('archive_search_form') == 1 ) {
-        $search_form = $archive->make_search_form( $ls->param('list') );
-    }
-
     my $archive_subscribe_form = '';
     if ( $ls->param('hide_list') ne "1" ) {
 
@@ -10187,9 +10177,7 @@ sub search_archive {
         );
 
         unless ( $ls->param('archive_subscribe_form') == 0 ) {
-            $archive_subscribe_form .= $info . "\n";
-
-            $archive_subscribe_form .= DADA::Template::Widgets::subscription_form(
+            $archive_subscribe_form = DADA::Template::Widgets::subscription_form(
                 {
                     -list       => $ls->param('list'),
                     -email      => $email,
@@ -10213,8 +10201,7 @@ sub search_archive {
                 keyword                => $keyword,
                 summaries              => $ht_summaries,
                 search_results         => $ht_summaries->[0] ? 1 : 0,
-                search_form            => $search_form,
-                archive_subscribe_form => $archive_subscribe_form,
+                subscription_form      => $archive_subscribe_form,
             },
             -list_settings_vars_param => {
                 -list   => $list,

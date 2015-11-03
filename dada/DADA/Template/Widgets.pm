@@ -987,7 +987,6 @@ sub html_archive_list {
                                 list_name            => $ls->param('list_name'), 
                                 publish_archives_rss => ($ls->param('publish_archives_rss')) ? 1: 0, 
                                 index_nav            => $archive->create_index_nav($stopped_at), 
-                                search_form          => ( ($ls->param('archive_search_form') == 1) && (defined($entries->[0])) ) ? $archive->make_search_form($ls->param('list')) : ' ', 
                                allowed_to_view_archives => 1, 
 							}
                     });  

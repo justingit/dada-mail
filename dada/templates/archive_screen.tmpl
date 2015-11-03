@@ -4,7 +4,9 @@
 <!-- tmpl_set name="load_colorbox" value="1" -->
 
 <!-- tmpl_include list_breadcrumbs_widget.tmpl -->
-<!-- tmpl_var archive_search_form -->
+<!-- tmpl_if list_settings.archive_search_form -->
+	<!-- tmpl_include list_archive_search_form_widget.tmpl -->
+<!-- /tmpl_if -->
 
 
 <!-- tmpl_if send_archive_success -->
@@ -23,6 +25,8 @@
 	</div>
 	
 <!-- /tmpl_if -->
+
+<!-- tmpl_var nav_table --> 
 
 <div id="archived_message_wrapper">
  <!-- Archive Id: <!-- tmpl_var id --> --> 
@@ -152,9 +156,12 @@
     <!-- tmpl_include social_bookmarking_badges_widget.tmpl --> 
 <!-- /tmpl_if -->
 
-
 <!-- tmpl_var nav_table --> 
 
-<!-- tmpl_include archive_footer_widget.tmpl -->
+<!-- tmpl_include newsfeed_widget.tmpl --> 
 
+<!-- tmpl_var archive_send_form -->
+	
+<!-- tmpl_include list_page_info_widget.tmpl -->
+	
 <!-- end archive_screen.tmpl -->
