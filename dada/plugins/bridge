@@ -229,7 +229,6 @@ sub cgi_test_pop3_ajax {
     }
     $r .= '<pre>' . $pop3_log . '</pre>';
 	
-	$r .= '<a class="close-reveal-modal" aria-label="Close">&#215;</a>';
     return ( {}, $r );
 }
 
@@ -392,7 +391,6 @@ sub admin_cgi_manual_start_ajax {
        $r .= '<pre>';     # DEV no like.
        $r .= start($list);
        $r .= '</pre>';    # DEV no like.
-   	$r .= '<a class="close-reveal-modal" aria-label="Close">&#215;</a>';
     return ( {}, $r );
 }
 

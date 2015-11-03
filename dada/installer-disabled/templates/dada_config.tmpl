@@ -471,7 +471,7 @@ $ADMIN_MENU = [
 					},
 
 					{
-					-Title      => 'Monitor Your Mailings',
+					-Title      => 'Monitor',
 					-Title_URL  => "$S_PROGRAM_URL?flavor=sending_monitor",
 					-Function   => 'sending_monitor',
 					-Activated  => 1,
@@ -569,7 +569,7 @@ $ADMIN_MENU = [
 	},
 
 	{
-	-Title      => 'Mail Sending',
+	-Title      => 'Sending',
 	-Activated  => 1,
 	-Submenu    => [
 				
@@ -595,7 +595,7 @@ $ADMIN_MENU = [
 			]
 	},
 
-	{-Title     => 'Message Archives',
+	{-Title     => 'Archives',
 	 -Activated => 1,
 	 -Submenu   => [
 					{
@@ -622,7 +622,7 @@ $ADMIN_MENU = [
 	},
 
 
-	{-Title      => 'Appearance and Templates',
+	{-Title      => 'Design',
 	 -Activated  => 1,
 	 -Submenu    => [
 					{
@@ -680,7 +680,7 @@ $ADMIN_MENU = [
 	},
 
 	{
-	-Title      => 'Plugins',
+	-Title      => 'Plugins/Extensions',
 	-Activated  => 1,
 	-Submenu    => [
 
@@ -764,17 +764,6 @@ $ADMIN_MENU = [
 #					-Activated  => 1,
 #					},
 
-				],
-			},
-
-					# Shortcut to the Extensions. Make sure you install them 
-					# if you want to use them! 
-
-	{
-	-Title      => 'Extensions',
-	-Activated  => 1,
-	-Submenu    => [
-
 #					{
 #					-Title      => 'Multiple Subscribe',
 #					-Title_URL  => $EXT_URL."/multiple_subscribe.cgi",
@@ -782,25 +771,20 @@ $ADMIN_MENU = [
 #					-Activated  => 1,
 #					},
 
-
-
-
 #					{
 #					-Title      => 'Archive Blog Index',
 #					-Title_URL  => $EXT_URL."/blog_index.cgi?mode=html&list=<!-- tmpl_var LT_CHAR -->!-- tmpl_var list_settings.list --<!-- tmpl_var GT_CHAR -->",
 #					-Function   => 'blog_index',
 #					-Activated  => 1,
 #					},
-#					{
-
-
 
 				],
-		},
-		
+			},
+
+
 
 		{
-		-Title      => 'Your List Control Panel',
+		-Title      => 'Settings',
 		-Activated  => 0,
 		-Submenu    => [
 					{
@@ -815,25 +799,12 @@ $ADMIN_MENU = [
 					-Title_URL  => "$S_PROGRAM_URL?flavor=list_cp_options",
 					-Function   => 'list_cp_options',
 					-Activated  => 0,
-					}
-				], 
-		},
-				
-		{
-		-Title      => 'App Information',
-		-Activated  => 1,
-		-Submenu    => [
+					},
+					
 					{
 					-Title      => 'Configuration',
 					-Title_URL  => "$S_PROGRAM_URL?flavor=setup_info",
 					-Function   => 'setup_info',
-					-Activated  => 1,
-					},
-
-					{
-					-Title      => 'About Dada Mail',
-					-Title_URL  => "$S_PROGRAM_URL?flavor=manage_script",
-					-Function   => 'manage_script',
 					-Activated  => 1,
 					},
 
@@ -843,6 +814,22 @@ $ADMIN_MENU = [
 					-Function   => 'scheduled_jobs',
 					-Activated  => 1,
 					},
+					
+					{
+					-Title      => 'About Dada Mail',
+					-Title_URL  => "$S_PROGRAM_URL?flavor=manage_script",
+					-Function   => 'manage_script',
+					-Activated  => 1,
+					},
+					
+				], 
+		},
+				
+		{
+		-Title      => 'App Information',
+		-Activated  => 1,
+		-Submenu    => [
+
 
 
 				],

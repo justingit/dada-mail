@@ -20,45 +20,46 @@
 	   <!-- tmpl_include help_link_widget.tmpl -->
 	</div>
 </div>
+
 <div id="plugins_change_list_shortname"></div> 
-
-<fieldset> 
-
-
-<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" id="change_name_form" name="change_name_form">
-
-	<input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" >
-	<input type="hidden" name="flavor" id="flavor" value="plugins" >
-	<input type="hidden" name="plugin" id="plugin" value="change_list_shortname" >
-	<input type="hidden" name="prm" id="prm" value="verify_change_list_shortname" >
 	
-	<div class="row">
-		<div class="small-12">
-			<label for="new_name">
-				New List Short Name
-			</label>
-			<input 
-				type="text" 
-				name="new_name" 
-				id="new_name" 
-				value="" 
-				maxlength="16"
-			>
+	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" id="change_name_form" name="change_name_form">
+
+		<input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" >
+		<input type="hidden" name="flavor" id="flavor" value="plugins" >
+		<input type="hidden" name="plugin" id="plugin" value="change_list_shortname" >
+		<input type="hidden" name="prm" id="prm" value="verify_change_list_shortname" >
+
+		<div class="row">
+			<div class="large-3 medium-3 columns">
+				<label 
+					class="medium-only-text-right large-only-text-right"
+					for="new_name"
+				>
+					New List Short Name
+				</label>
+			</div> 
+			<div class="large-9 medium-9 columns">					
+				<input 
+					type="text" 
+					name="new_name" 
+					id="new_name" 
+					value="" 
+					maxlength="16"
+				>
+			</div>
 		</div>
-	</div>
-	
-	<ul class="button-group right">
-	    <li>
-			<input 
-				type="button" 
-				id="verify_button" 
-				value="Verify ..." 
-				class="alert button"
-			> 
-		</li>
-	</ul>
-</form>
 
-<div id="plugins_change_list_shortname_verify" data-reveal class="reveal-modal medium" role="dialog"></div>
-
-</fieldset>
+		<div class="clearfix">
+			<ul class="button-group right">
+			    <li>
+					<input 
+						type="button" 
+						id="verify_button" 
+						value="Verify ..." 
+						class="alert button"
+					> 
+				</li>
+			</ul>
+		</div>
+	</form>

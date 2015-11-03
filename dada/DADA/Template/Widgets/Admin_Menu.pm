@@ -171,8 +171,9 @@ sub make_admin_menu {
 		$args->{-for_mobile} = 0; 
 	}
 	
+	warn '$args->{-style}' . $args->{-style}; 
 	if(! exists($args->{-style})) { 
-		$args->{-style} = 'side_bar'; 
+		#$args->{-style} = 'side_bar'; 
 	}
 	
 	

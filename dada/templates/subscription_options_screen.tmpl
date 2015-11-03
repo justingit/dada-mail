@@ -127,7 +127,7 @@
         <div class="small-12 columns">
             <input type="checkbox" name="use_subscription_quota" id="use_subscription_quota" value="1" <!-- tmpl_if list_settings.use_subscription_quota -->checked="checked"<!--/tmpl_if--> >
             <label for="use_subscription_quota">
-                Limit the number of subscribers
+                Limit the number of subscribers to:
             </label>
         </div>
     </div>
@@ -340,10 +340,12 @@
 	</div> 
 </fieldset> 
 
-<ul class="button-group right">    
- <li><input type="reset"  class="button warning" value="Clear Changes" ></li>
- <li><input type="submit" class="button success" value="Save Subscription Options" ></li>
-</ul>
+<div class="clearfix">
+	<ul class="button-group right">    
+		 <li><input type="reset"  class="button warning" value="Clear Changes" ></li>
+		 <li><input type="submit" class="button success" value="Save Subscription Options" ></li>
+	</ul>
+</div>
 
 </form> 
 

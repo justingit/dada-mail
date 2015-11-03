@@ -42,7 +42,10 @@
 
 	<!-- tmpl_if list_settings.disable_discussion_sending -->
 		<div class="alert-box warning radius">
-			<!-- tmpl_var Plugin_Name --> is Currently Disabled for this Mailing List. 
+			
+			<p>
+				<!-- tmpl_var Plugin_Name --> is Currently Disabled for this Mailing List. 
+			</p>
 			<ul> 
 				<li>
 					Uncheck the option labeled, 
@@ -258,8 +261,8 @@
 												<div id="change_pop3_password_button">
 													<input 
 														type="button" 
-														value="Click to Change POP3 Password..." 
-														class="warning change_pop3_password button small"
+														value="Change POP3 Password..." 
+														class="change_pop3_password button small"
 													>
 												</div> 
 												<div id="change_pop3_password_field" style="display:none">
@@ -320,7 +323,7 @@
 								    <li>
 										<input 
 											type="button small" 
-											class="warning button small plugins_bridge_test_pop3" 
+											class="button small plugins_bridge_test_pop3" 
 											value="Test POP3 Login Information..."
 										>
 									</li>

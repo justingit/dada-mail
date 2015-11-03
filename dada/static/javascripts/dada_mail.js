@@ -947,6 +947,7 @@ jQuery(document).ready(function($){
 					output_mode: '_verbose',
 					for_colorbox: 1
 				},
+				opacity: 0.50,
 				maxWidth: '640px',
 				maxHeight: '480px',
 				width: '95%',
@@ -1057,15 +1058,36 @@ jQuery(document).ready(function($){
 	// Plugins >> Change List Shortname
 	if ($("#plugins_change_list_shortname").length) {
 		$("body").on("click", "#verify_button", function(event) {
-			$('#plugins_change_list_shortname_verify').foundation('reveal', 'open', {
-			    url: $("#s_program_url").val(),
+
+			var responsive_options = {
+			  width: '95%',
+			  height: '95%',
+			  maxWidth: '640px',
+			  maxHeight: '480px'
+			};
+			$.colorbox({
+			    href: $("#s_program_url").val(),
 				data: {
-						flavor: 'plugins',
-						plugin: 'change_list_shortname',
-						prm: $('#prm').val(),
-						new_name: $('#new_name').val()
+					flavor: 'plugins',
+					plugin: 'change_list_shortname',
+					prm: $('#prm').val(),
+					new_name: $('#new_name').val()
 				},
+				opacity: 0.50,
+				maxWidth: '640px',
+				maxHeight: '480px',
+				width: '95%',
+				height: '95%'				
 			});
+			$(window).resize(function(){
+			    $.colorbox.resize({
+			      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+			      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+			    });		
+			});
+			
+			
+			
 		});
 	}
 
@@ -2807,9 +2829,14 @@ function plugins_bridge_test_pop3() {
 		use_ssl = 1;
 	}
 	
-	
-	$('#plugins_bridge_test_pop3').foundation('reveal', 'open', {
-	    url: $("#s_program_url").val(),
+	var responsive_options = {
+	  width: '95%',
+	  height: '95%',
+	  maxWidth: '640px',
+	  maxHeight: '480px'
+	};
+	$.colorbox({
+	    href: $("#s_program_url").val(),
 		data: {
 			flavor: 'plugins',
 			plugin: 'bridge',
@@ -2820,19 +2847,46 @@ function plugins_bridge_test_pop3() {
 			auth_mode: $("#discussion_pop_auth_mode option:selected").val(),
 			use_ssl: use_ssl
 		},
+		opacity: 0.50,
+		maxWidth: '640px',
+		maxHeight: '480px',
+		width: '95%',
+		height: '95%'				
 	});
-	
+	$(window).resize(function(){
+	    $.colorbox.resize({
+	      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+	      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+	    });		
+	});	
 }
 
 function plugins_bridge_manually_check_messages() {
 	
-	$('#plugins_bridge_test_pop3').foundation('reveal', 'open', {
-	    url: $("#s_program_url").val(),
-			data: {
+	var responsive_options = {
+	  width: '95%',
+	  height: '95%',
+	  maxWidth: '640px',
+	  maxHeight: '480px'
+	};
+	$.colorbox({
+	    href: $("#s_program_url").val(),
+		data: {
 			flavor: 'plugins',
 			plugin: 'bridge',
 			prm:    'admin_cgi_manual_start_ajax'
-		}
+		},
+		opacity: 0.50,
+		maxWidth: '640px',
+		maxHeight: '480px',
+		width: '95%',
+		height: '95%'				
+	});
+	$(window).resize(function(){
+	    $.colorbox.resize({
+	      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+	      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+	    });		
 	});
 }
 
@@ -3163,8 +3217,8 @@ function data_over_time_graph(type, label, target_div) {
 				chartArea: {
 					left: 60,
 					top: 20,
-					width: "90%",
-					height: "90%"
+					width: "75%",
+					height: "75%"
 				},
 				backgroundColor: {
 					stroke: '#FFFFFF',
@@ -3538,8 +3592,8 @@ function drawSubscriberHistoryChart() {
 				chartArea: {
 					left: 60,
 					top: 20,
-					width: "90%",
-					height: "90%"
+					width: "70%",
+					height: "70%"
 				},
 			};
 			options['width']  = $('#subscriber_history_chart').width();
@@ -3743,9 +3797,26 @@ function preview_message_receivers() {
 	f_params.alternative_lists       = alternative_lists;
 	f_params.multi_list_send_no_dupe = multi_list_send_no_dupes;
 
-	$('#preview_message_receivers_div').foundation('reveal', 'open', {
-	    url: $("#s_program_url").val(),
-		data: f_params
+	var responsive_options = {
+	  width: '95%',
+	  height: '95%',
+	  maxWidth: '640px',
+	  maxHeight: '480px'
+	};
+	$.colorbox({
+	    href: $("#s_program_url").val(),
+		data: f_params,
+		opacity: 0.50,
+		maxWidth: '640px',
+		maxHeight: '480px',
+		width: '95%',
+		height: '95%'				
+	});
+	$(window).resize(function(){
+	    $.colorbox.resize({
+	      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+	      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+	    });		
 	});
 
 }

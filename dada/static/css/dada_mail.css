@@ -2,9 +2,20 @@ body {
 	background-color:#efefef;
 }
 table {
-	border: 1px solid red;
+	/* border: 1px solid red; */
 }
 
+#admin_content_area { 
+	background-color:#fff; 	
+	 box-shadow: 3px 5px 8px -1px rgba( 51, 0, 0, .3 ), -3px 5px 8px -1px rgba( 51, 0, 0, .3 );	 
+	 min-height: 640px;
+	 height: auto;
+	 
+}
+
+#admin_top_bar_menu { 
+	box-shadow: 3px 5px 8px -1px rgba( 51, 0, 0, .3 ), -3px 5px 8px -1px rgba( 51, 0, 0, .3 );
+}
 iframe#archived_message_body_container {
 	height: 500px;
 	width: 100%;
@@ -45,7 +56,5 @@ iframe#archived_message_body_container {
 .floating_panel { 
 	background-color: #ededed;
 	border-bottom:1px solid #ccc;
-	-webkit-box-shadow: 0 8px 8px 0 rgba(51,0,0,0.5);
-	-moz-box-shadow: 0 8px 8px 0rgba(51,0,0,0.5);
-	box-shadow: 0 8px 8px 0 rgba(51,0,0,0.5);
+ 	box-shadow: 3px 5px 8px -1px rgba( 51, 0, 0, .3 ), -3px 5px 8px -1px rgba( 51, 0, 0, .3 );
 }

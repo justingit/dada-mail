@@ -640,407 +640,395 @@ my $EXT_URL     = $PLUGIN_URL;
 
 $ADMIN_MENU //= [
 
-    {
-        -Title     => 'Mass Mailing',
-        -Activated => 1,
-        -Submenu   => [
-            {
-                -Title     => 'Send a Message',
-                -Title_URL => "$S_PROGRAM_URL?flavor=send_email",
-                -Function  => 'send_email',
-                -Activated => 1,
-            },
+{-Title      => 'Mass Mailing',
+ -Activated  => 1,
+ -Submenu    => [
+				{ 
+				-Title      => 'Send a Message',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=send_email",
+				-Function   => 'send_email',
+				-Activated  => 1,
+				},
+				
+				{
+				-Title      => 'Send a Webpage',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=send_url_email",
+				-Function   => 'send_url_email',
+				-Activated  => 1,
+				},
 
-            {
-                -Title     => 'Send a Webpage',
-                -Title_URL => "$S_PROGRAM_URL?flavor=send_url_email",
-                -Function  => 'send_url_email',
-                -Activated => 1,
-            },
+				{
+				-Title     => 'Drafts/Stationery/Schedules',
+				-Title_URL => "$S_PROGRAM_URL?flavor=drafts",
+				-Function  => 'drafts',
+				-Activated => 1,
+				},
 
-            {
-                -Title     => 'Drafts/Stationery/Schedules',
-                -Title_URL => "$S_PROGRAM_URL?flavor=drafts",
-                -Function  => 'drafts',
-                -Activated => 1,
-            },
+				{
+				-Title      => 'Monitor',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=sending_monitor",
+				-Function   => 'sending_monitor',
+				-Activated  => 1,
+				},
 
-            {
-                -Title => 'Mass Mailing Monitor',
-                -Title_URL => "$S_PROGRAM_URL?flavor=sending_monitor",
-                -Function  => 'sending_monitor',
-                -Activated => 1,
-            },
+				{
+				-Title     => 'Options',
+				-Title_URL => "$S_PROGRAM_URL?flavor=mass_mailing_options",
+				-Function  => 'mass_mailing_options',
+				-Activated => 1,
+				},
+		]
+},
 
-            {
-                -Title     => 'Options',
-                -Title_URL => "$S_PROGRAM_URL?flavor=mass_mailing_options",
-                -Function  => 'mass_mailing_options',
-                -Activated => 1,
-            },
+{-Title      => 'Membership',
+ -Activated  => 1,
+ -Submenu    => [
+				{
+				-Title      => 'View',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=view_list",
+				-Function   => 'view_list',
+				-Activated  => 1,
+				},
+				
+				{
+				-Title      => 'Recent Activity',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=list_activity",
+				-Function   => 'list_activity',
+				-Activated  => 1,
+				},
 
-        ]
-    },
+				{
+				-Title      => 'Invite<!-- tmpl_var LT_CHAR -->!-- tmpl_if list_settings.enable_mass_subscribe --<!-- tmpl_var GT_CHAR -->/Subscribe<!-- tmpl_var LT_CHAR -->!-- /tmpl_if --<!-- tmpl_var GT_CHAR -->/Add',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=add",
+				-Function   => 'add',
+				-Activated  => 1,
+				},
 
-    {
-        -Title     => 'Membership',
-        -Activated => 1,
-        -Submenu   => [
-            {
-                -Title     => 'View',
-                -Title_URL => "$S_PROGRAM_URL?flavor=view_list",
-                -Function  => 'view_list',
-                -Activated => 1,
-            },
+				{
+				-Title      => 'Remove',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=delete_email",
+				-Function   => 'delete_email',
+				-Activated  => 1,
+				},
 
-            {
-                -Title     => 'Recent Activity',
-                -Title_URL => "$S_PROGRAM_URL?flavor=list_activity",
-                -Function  => 'list_activity',
-                -Activated => 1,
-            },
-
-            {
-                -Title => 'Invite<!-- tmpl_if expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> /Subscribe<!-- /tmpl_if -->/Add',
-                -Title_URL => "$S_PROGRAM_URL?flavor=add",
-                -Function  => 'add',
-                -Activated => 1,
-            },
-
-            {
-                -Title     => 'Remove',
-                -Title_URL => "$S_PROGRAM_URL?flavor=delete_email",
-                -Function  => 'delete_email',
-                -Activated => 1,
-            },
-
-            {
-                -Title     => 'Options',
-                -Title_URL => "$S_PROGRAM_URL?flavor=subscription_options",
-                -Function  => 'subscription_options',
-                -Activated => 0,
-            },
-        ]
-    },
-
-    {
-        -Title     => 'Your Mailing List',
-        -Activated => 1,
-        -Submenu   => [
-            {
-                -Title     => 'List Information',
-                -Title_URL => "$S_PROGRAM_URL?flavor=change_info",
-                -Function  => 'change_info',
-                -Activated => 1,
-            },
-
-            {
-                -Title     => 'List Password',
-                -Title_URL => "$S_PROGRAM_URL?flavor=change_password",
-                -Function  => 'change_password',
-                -Activated => 1,
-            },
-
-            {
-                -Title     => 'Options',
-                -Title_URL => "$S_PROGRAM_URL?flavor=list_options",
-                -Function  => 'list_options',
-                -Activated => 0,
-            },
-
-            {
-                -Title     => 'Web Services API',
-                -Title_URL => "$S_PROGRAM_URL?flavor=web_services",
-                -Function  => 'web_services',
-                -Activated => 1,
-            },
-
-
-            {
-                -Title     => 'Delete This Mailing List',
-                -Title_URL => "$S_PROGRAM_URL?flavor=delete_list",
-                -Function  => 'delete_list',
-                -Activated => 0,
-            },
-        ]
-    },
-
-    {
-        -Title     => 'Mail Sending',
-        -Activated => 1,
-        -Submenu   => [
-
-            {
-                -Title     => 'Options',
-                -Title_URL => "$S_PROGRAM_URL?flavor=mail_sending_options",
-                -Function  => 'mail_sending_options',
-                -Activated => 1,
-            },
-
-            {
-                -Title     => 'Advanced Options',
-                -Title_URL => "$S_PROGRAM_URL?flavor=mail_sending_advanced_options",
-                -Function  => 'mail_sending_advanced_options',
-                -Activated => 1,
-            },
-            {
-                -Title     => 'Mass Mailing Options',
-                -Title_URL => "$S_PROGRAM_URL?flavor=mailing_sending_mass_mailing_options",
-                -Function  => 'mailing_sending_mass_mailing_options',
-                -Activated => 1,
-            },
-        ]
-    },
-
-    {
-        -Title     => 'Message Archives',
-        -Activated => 1,
-        -Submenu   => [
-            {
-                -Title     => 'View',
-                -Title_URL => "$S_PROGRAM_URL?flavor=view_archive",
-                -Function  => 'view_archive',
-                -Activated => 1,
-            },
-
-            {
-                -Title     => 'Options',
-                -Title_URL => "$S_PROGRAM_URL?flavor=archive_options",
-                -Function  => 'archive_options',
-                -Activated => 1,
-            },
-
-            {
-                -Title     => 'Advanced Options',
-                -Title_URL => "$S_PROGRAM_URL?flavor=adv_archive_options",
-                -Function  => 'adv_archive_options',
-                -Activated => 1,
-            },
-        ]
-    },
-
-    {
-        -Title     => 'Appearance and Templates',
-        -Activated => 1,
-        -Submenu   => [
-            {
-                -Title     => 'Your Mailing List Template',
-                -Title_URL => "$S_PROGRAM_URL?flavor=edit_template",
-                -Function  => 'edit_template',
-                -Activated => 1,
-            },
-
-            {
-                -Title     => 'Email Message Templates',
-                -Title_URL => "$S_PROGRAM_URL?flavor=edit_type",
-                -Function  => 'edit_type',
-                -Activated => 1,
-            },
-
-            {
-                -Title     => 'HTML Screen Templates',
-                -Title_URL => "$S_PROGRAM_URL?flavor=edit_html_type",
-                -Function  => 'edit_html_type',
-                -Activated => 1,
-            },
-
-            {
-                -Title     => 'Subscription Form HTML',
-                -Title_URL => "$S_PROGRAM_URL?flavor=html_code",
-                -Function  => 'html_code',
-                -Activated => 1,
-            },
-
-            {
-                -Title     => 'Create a Back Link',
-                -Title_URL => "$S_PROGRAM_URL?flavor=back_link",
-                -Function  => 'back_link',
-                -Activated => 1,
-            },
-
-        ]
-    },
-
-    {
-        -Title     => 'Profiles',
-        -Activated => 1,
-        -Submenu   => [
-            {
-                -Title     => 'Profile Fields',
-                -Title_URL => "$S_PROGRAM_URL?flavor=profile_fields",
-                -Function  => 'profile_fields',
-                -Activated => 1,
-            },
-        ]
-    },
-    {
-        -Title     => 'Plugins',
-        -Activated => 1,
-        -Submenu   => [
-
-            #					# These are plugins. Make sure you install them
-            #					# if you want to use them!
-
-
-            #					{
-            #					-Title      => 'Tracker',
-            #					-Title_URL  => $PLUGIN_URL."/tracker",
-            #					-Function   => 'tracker',
-            #					-Activated  => 1,
-            #					},
-
-            #					{
-            #					-Title      => 'Bounce Handler',
-            #					-Title_URL  => $PLUGIN_URL."/bounce_handler",
-            #					-Function   => 'bounce_handler',
-            #					-Activated  => 1,
-            #					},
-
-            #					{
-            #					-Title      => 'Bridge',
-            #					-Title_URL  => $PLUGIN_URL."/bridge",
-            #					-Function   => 'bridge',
-            #					-Activated  => 1,
-            #					},
-
-            #					{
-            #					-Title      => 'Change the Program Root Password',
-            #					-Title_URL  => $PLUGIN_URL."/change_root_password.cgi",
-            #					-Function   => 'change_root_password',
-            #					-Activated  => 0,
-            #					},
-
-            #					{
-            #					-Title      => 'Change Your List Short Name',
-            #					-Title_URL  => $PLUGIN_URL."/change_list_shortname.cgi",
-            #					-Function   => 'change_list_shortname',
-            #					-Activated  => 0,
-            #					},
-
-           #					{
-           #					-Title      => 'Password Protect Directories',
-           #					-Title_URL  => $PLUGIN_URL."/password_protect_directories.cgi",
-           #					-Function   => 'password_protect_directories',
-           #					-Activated  => 1,
-           #					},
-
-            #					{
-            #					-Title      => 'View Logs',
-            #					-Title_URL  => $PLUGIN_URL."/log_viewer",
-            #					-Function   => 'log_viewer',
-            #					-Activated  => 1,
-            #					},
-
-
-            #					{
-            #					-Title      => 'Screen Cache',
-            #					-Title_URL  => $PLUGIN_URL."/screen_cache.cgi",
-            #					-Function   => 'screen_cache',
-            #					-Activated  => 0,
-            #					},
-
-			#					{
-			#					-Title      => 'Global Configuration',
-			#					-Title_URL  => $PLUGIN_URL."/global_config.cgi",
-			#					-Function   => 'global_config',
-			#					-Activated  => 0,
-			#					},
-
-            #					{
-            #					-Title      => 'Boilerplate Example',
-            #					-Title_URL  => $PLUGIN_URL."/boilerplate_plugin.cgi",
-            #					-Function   => 'boilerplate',
-            #					-Activated  => 1,
-            #					},
-
-
-            #					{
-            #					-Title      => 'View List Settings',
-            #					-Title_URL  => $PLUGIN_URL."/view_list_settings.cgi",
-            #					-Function   => 'view_list_settings',
-            #					-Activated  => 1,
-            #					},
+				{
+				-Title      => 'Options', 
+				-Title_URL  =>  "$S_PROGRAM_URL?flavor=subscription_options",
+				-Function   => 'subscription_options',
+				-Activated  => 0,
+				},
+		]
+},
 
 
 
+{-Title      => 'Your Mailing List',
+ -Activated  => 1,
+ -Submenu    => [
+				{
+				-Title      => 'List Information',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=change_info",
+				-Function   => 'change_info',
+				-Activated  => 1,
+				},
 
+				{
+				-Title      => 'List Password',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=change_password",
+				-Function   => 'change_password',
+				-Activated  => 1,
+				},
 
-        ],
-    },
-
-    # Shortcut to the Extensions. Make sure you install them
-    # if you want to use them!
-
-    {
-        -Title     => 'Extensions',
-        -Activated => 1,
-        -Submenu   => [
-
-            #					{
-            #					-Title      => 'Multiple Subscribe',
-            #					-Title_URL  => $EXT_URL."/multiple_subscribe.cgi",
-            #					-Function   => 'multiple_subscribe',
-            #					-Activated  => 1,
-            #					},
-
-            #					{
-            #					-Title      => 'Archive Blog Index',
-            #					-Title_URL  => $EXT_URL."/blog_index.cgi?mode=html&list=<!-- tmpl_var list_settings.list -->",
-            #					-Function   => 'blog_index',
-            #					-Activated  => 1,
-            #					},
-
-        ],
-    },
-
-    {
-        -Title     => 'Your List Control Panel',
-        -Activated => 0,
-        -Submenu   => [
-            {
-                -Title     => 'Customize Feature Set',
-                -Title_URL => "$S_PROGRAM_URL?flavor=feature_set",
-                -Function  => 'feature_set',
-                -Activated => 0,
-            },
-
-            {
-                -Title     => 'Options',
-                -Title_URL => "$S_PROGRAM_URL?flavor=list_cp_options",
-                -Function  => 'list_cp_options',
-                -Activated => 0,
-            }
-        ],
-    },
-
-    {
-        -Title     => 'App Information',
-        -Activated => 1,
-        -Submenu   => [
-            {
-                -Title     => 'Configuration',
-                -Title_URL => "$S_PROGRAM_URL?flavor=setup_info",
-                -Function  => 'setup_info',
-                -Activated => 1,
-            },
-
-            {
-                -Title     => 'About Dada Mail',
-                -Title_URL => "$S_PROGRAM_URL?flavor=manage_script",
-                -Function  => 'manage_script',
-                -Activated => 1,
-            },
+				{
+				-Title      => 'Options',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=list_options",
+				-Function   => 'list_options',
+				-Activated  => 1,
+				},
+				
+			    {
+                       -Title     => 'Web Services API',
+                       -Title_URL => "$S_PROGRAM_URL?flavor=web_services",
+                       -Function  => 'web_services',
+                       -Activated => 1,
+                   },
             
-            {
-			-Title      => 'Scheduled Jobs',
-			-Title_URL  => "$S_PROGRAM_URL?flavor=scheduled_jobs",
-			-Function   => 'scheduled_jobs',
-			-Activated  => 1,
-			},
-			
+				{
+				-Title      => 'Delete This Mailing List',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=delete_list",
+				-Function   => 'delete_list',
+				-Activated  => 0,
+				},
+		]
+},
 
-        ],
-    },
+{
+-Title      => 'Sending',
+-Activated  => 1,
+-Submenu    => [
+			
+				{
+				-Title      => 'Options',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=mail_sending_options",
+				-Function   => 'mail_sending_options',
+				-Activated  => 1,
+				},
+
+				{
+				-Title      => 'Advanced Options',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=mail_sending_advanced_options",
+				-Function   => 'mail_sending_advanced_options',
+				-Activated  => 1,
+				},
+				{
+				-Title      => 'Mass Mailing Options',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=mailing_sending_mass_mailing_options",
+				-Function   => 'mailing_sending_mass_mailing_options',
+				-Activated  => 1,
+				},
+		]
+},
+
+{-Title     => 'Archives',
+ -Activated => 1,
+ -Submenu   => [
+				{
+				-Title      => 'View',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=view_archive",
+				-Function   => 'view_archive',
+				-Activated  => 1,
+				},
+
+				{
+				-Title      => 'Options',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=archive_options",
+				-Function   => 'archive_options',
+				-Activated  => 1,
+				},
+				
+				{
+				-Title      => 'Advanced Options',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=adv_archive_options",
+				-Function   => 'adv_archive_options',
+				-Activated  => 1,
+				},
+		]
+},
+
+
+{-Title      => 'Design',
+ -Activated  => 1,
+ -Submenu    => [
+				{
+				-Title      => 'Your Mailing List Template',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=edit_template",
+				-Function   => 'edit_template',
+				-Activated  => 1,
+				},
+
+				{
+				-Title      => 'Email Message Templates',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=edit_type",
+				-Function   => 'edit_type',
+				-Activated  => 1,
+				},
+
+				{
+				-Title      => 'HTML Screen Templates',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=edit_html_type",
+				-Function   => 'edit_html_type',
+				-Activated  => 1,
+				},
+
+				{
+				-Title      => 'Subscription Form HTML',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=html_code",
+				-Function   => 'html_code',
+				-Activated  => 1,
+				},
+
+				{
+				-Title      => 'Create a Back Link',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=back_link",
+				-Function   => 'back_link',
+				-Activated  => 1,
+				},
+
+
+
+		]
+},
+
+
+{
+-Title     => 'Profiles',
+-Activated => 1,
+-Submenu   => [
+			     {
+			     -Title      => 'Profile Fields',
+			     -Title_URL  => "$S_PROGRAM_URL?flavor=profile_fields",
+			     -Function   => 'profile_fields',
+			     -Activated  => 1,
+			     },
+		]
+},
+
+{
+-Title      => 'Plugins/Extensions',
+-Activated  => 1,
+-Submenu    => [
+
+#					# These are plugins. Make sure you install them 
+#					# if you want to use them! 
+
+#					{
+#					-Title      => 'Tracker',
+#					-Title_URL  => $S_PROGRAM_URL."/plugins/tracker",
+#					-Function   => 'tracker',
+#					-Activated  => 1,
+#					},
+
+#					{
+#					-Title      => 'Bounce Handler',
+#					-Title_URL  => $S_PROGRAM_URL."/plugins/bounce_handler",
+#					-Function   => 'bounce_handler',
+#					-Activated  => 1,
+#					},
+
+#					{
+#					-Title      => 'Bridge',
+#					-Title_URL  => $S_PROGRAM_URL."/plugins/bridge",
+#					-Function   => 'bridge',
+#					-Activated  => 1,
+#					},
+
+#					{
+#					-Title      => 'Change the Program Root Password',
+#					-Title_URL  => $S_PROGRAM_URL."/plugins/change_root_password",
+#					-Function   => 'change_root_password',
+#					-Activated  => 0,
+#					},
+
+#					{
+#					-Title      => 'Change Your List Short Name',
+#					-Title_URL  => $S_PROGRAM_URL."/plugins/change_list_shortname",
+#					-Function   => 'change_list_shortname',
+#					-Activated  => 0,
+#					},
+
+#					{
+#					-Title      => 'Password Protect Directories',
+#					-Title_URL  => $S_PROGRAM_URL."/plugins/password_protect_directories",
+#					-Function   => 'password_protect_directories',
+#					-Activated  => 1,
+#					},
+
+#					{
+#					-Title      => 'View Logs',
+#					-Title_URL  => $S_PROGRAM_URL."/plugins/log_viewer",
+#					-Function   => 'log_viewer',
+#					-Activated  => 1,
+#					},
+
+#					{
+#					-Title      => 'Screen Cache',
+#					-Title_URL  => $S_PROGRAM_URL."/plugins/screen_cache",
+#					-Function   => 'screen_cache',
+#					-Activated  => 0,
+#					},
+
+#					{
+#					-Title      => 'Global Configuration',
+#					-Title_URL  => $S_PROGRAM_URL."/plugins/global_config",
+#					-Function   => 'global_config',
+#					-Activated  => 0,
+#					},
+
+#					{
+#					-Title      => 'Boilerplate Example',
+#					-Title_URL  => $S_PROGRAM_URL."/plugins/boilerplate_plugin",
+#					-Function   => 'boilerplate',
+#					-Activated  => 1,
+#					},
+
+#					{
+#					-Title      => 'View List Settings',
+#					-Title_URL  => $S_PROGRAM_URL."/plugins/view_list_settings",
+#					-Function   => 'view_list_settings',
+#					-Activated  => 1,
+#					},
+
+#					{
+#					-Title      => 'Multiple Subscribe',
+#					-Title_URL  => $EXT_URL."/multiple_subscribe.cgi",
+#					-Function   => 'multiple_subscribe',
+#					-Activated  => 1,
+#					},
+
+#					{
+#					-Title      => 'Archive Blog Index',
+#					-Title_URL  => $EXT_URL."/blog_index.cgi?mode=html&list=<!-- tmpl_var LT_CHAR -->!-- tmpl_var list_settings.list --<!-- tmpl_var GT_CHAR -->",
+#					-Function   => 'blog_index',
+#					-Activated  => 1,
+#					},
+
+			],
+		},
+
+
+
+	{
+	-Title      => 'Settings',
+	-Activated  => 0,
+	-Submenu    => [
+				{
+				-Title      => 'Customize Feature Set',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=feature_set",
+				-Function   => 'feature_set',
+				-Activated  => 0,
+				},
+
+				{
+				-Title      => 'Options',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=list_cp_options",
+				-Function   => 'list_cp_options',
+				-Activated  => 0,
+				},
+				
+				{
+				-Title      => 'Configuration',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=setup_info",
+				-Function   => 'setup_info',
+				-Activated  => 1,
+				},
+
+				{
+				-Title      => 'Scheduled Jobs',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=scheduled_jobs",
+				-Function   => 'scheduled_jobs',
+				-Activated  => 1,
+				},
+				
+				{
+				-Title      => 'About Dada Mail',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=manage_script",
+				-Function   => 'manage_script',
+				-Activated  => 1,
+				},
+				
+			], 
+	},
+			
+	{
+	-Title      => 'App Information',
+	-Activated  => 1,
+	-Submenu    => [
+
+
+
+			],
+		},
+
 ];
 
 $LIST_QUOTA            //= undef;

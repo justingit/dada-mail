@@ -166,6 +166,19 @@ sub _saved_ses_stats_fn {
     my $self = shift; 
     require DADA::App::DataCache; 
 	my $dc = DADA::App::DataCache->new;
+	
+    if ( !-d $dc->cache_dir ) {
+    	if(mkdir( $dc->cache_dir, $DADA::Config::DIR_CHMOD )) { 
+          if(-d $dc->cache_dir){ 
+			chmod( $DADA::Config::DIR_CHMOD, $dc->cache_dir );
+          }
+    	}
+		else { 
+			
+		}
+	}
+	
+	
     return make_safer( $dc->cache_dir . '/ses_stats.txt' );
 }
 sub _should_get_saved_ses_stats { 

@@ -186,23 +186,25 @@ sub admin_template {
 			{
 				-privileges => 'superuser',   
 				-ls_obj     => $ls,
-				-flavor      => $q->param('flavor'), 
+				-flavor      => scalar $q->param('flavor'), 
 				-for_mobile  => 0,		
+				-style       => 'side_bar',
 			}
 		); 
 		$m_admin_menu = DADA::Template::Widgets::Admin_Menu::make_admin_menu(
 			{
 				-privileges  => 'superuser',   
 				-ls_obj      => $ls,
-				-flavor      => $q->param('flavor'), 
+				-flavor      => scalar $q->param('flavor'), 
 				-for_mobile  => 1, 
+				-style       => 'side_bar',
 			}
 		); 
 		$tb_admin_menu    = DADA::Template::Widgets::Admin_Menu::make_admin_menu(
 			{
 				-privileges => 'superuser',   
 				-ls_obj     => $ls,
-				-flavor      => $q->param('flavor'), 
+				-flavor      => scalar $q->param('flavor'), 
 				-for_mobile  => 0,		
 				-style       => 'top_bar',
 			}
@@ -216,14 +218,18 @@ sub admin_template {
 				-ls_obj      => $ls,
 				-flavor      => $q->param('flavor'), 
 				-for_mobile  => 0, 
+				-style       => 'side_bar',
+				
 			}
 		); 
 		$m_admin_menu  = DADA::Template::Widgets::Admin_Menu::make_admin_menu(
 			{
 				-privileges  => 'user',   
 				-ls_obj      => $ls,
-				-flavor      => $q->param('flavor'), 
+				-flavor      => scalar $q->param('flavor'), 
 				-for_mobile  => 1, 
+				-style       => 'side_bar',
+				
 			}
 		); 
 		
@@ -231,7 +237,7 @@ sub admin_template {
 			{
 				-privileges => 'user',   
 				-ls_obj     => $ls,
-				-flavor      => $q->param('flavor'), 
+				-flavor      => scalar $q->param('flavor'), 
 				-for_mobile  => 0,		
 				-style       => 'top_bar',
 			}
@@ -305,7 +311,6 @@ sub admin_template {
 										-vars => 
 											{
 												login_switch_widget            => $login_switch_widget, 
-												#login_switch_popup_menu_widget => login_switch_popup_menu_widget, 
 												admin_menu                     => $admin_menu, 
 												mobile_admin_menu              => $m_admin_menu,
 												admin_top_bar_menu             => $tb_admin_menu, 
