@@ -1,15 +1,16 @@
 <!-- begin archive_screen.tmpl -->
 
 <!-- tmpl_set name="title" value="<!-- tmpl_var header_subject escape=HTML -->" -->
+<!-- tmpl_set name="load_colorbox" value="1" -->
 
-<!-- tmpl_include name="list_breadcrumbs_widget.tmpl" -->
+<!-- tmpl_include list_breadcrumbs_widget.tmpl -->
+<!-- tmpl_var archive_search_form -->
+
 
 <!-- tmpl_if send_archive_success -->
 	
-	<div class="alert-box info radius">
-	<p>
+	<div class="alert-box success radius" data-alert>
 	 The message has been forwarded to your friend!
-	</p>
 	</div>
 
 	
@@ -17,10 +18,8 @@
 
 <!-- tmpl_if send_archive_errors -->
 	
-	<div class="alert-box info radius">
-		<p>
+	<div class="alert-box warning radius" data-alert>
 	 	There was an error in the Send Archive form you filled out.
-		</p>
 	</div>
 	
 <!-- /tmpl_if -->
@@ -150,24 +149,12 @@
 
 
 <!-- tmpl_if add_social_bookmarking_badges --> 
-
     <!-- tmpl_include social_bookmarking_badges_widget.tmpl --> 
-
-<!--/tmpl_if-->
-
-
-
-
-
-<!-- tmpl_if show_share_this_message_nav --> 
- <!-- put stuff in this... --> 
-<!--/tmpl_if--> 
-
-
+<!-- /tmpl_if -->
 
 
 <!-- tmpl_var nav_table --> 
 
-<!-- tmpl_include name="archive_footer_widget.tmpl" -->
+<!-- tmpl_include archive_footer_widget.tmpl -->
 
 <!-- end archive_screen.tmpl -->

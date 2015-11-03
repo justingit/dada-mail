@@ -4409,11 +4409,6 @@ sub screen {
 		}
     );
 	
-#    if ( $screen =~ m/static\/css/ ) {	
-#		    my $hack_css_url = quotemeta(q{url('/static/images/dada_mail_logo.png')});
-#		    my $r            = q{url('} . $Self_URL . q{?flavor=screen&screen=/static/images/installer-header_bg.gif')};
-#		    $t               =~ s/$hack_css_url/$r/g;
-#	}
 	
 	return $t; 
 		

@@ -2127,8 +2127,16 @@ backgroundColor: {
 			success: function(jsonData) {
 				data = new google.visualization.DataTable(jsonData);
 
-				   options['width']  = $('#sub_unsub_trends').width();
-				   options['height'] = $('#sub_unsub_trends').width();
+				var options = {
+					chartArea: {
+						left: 60,
+						top: 20,
+						width: "70%",
+						height: "70%"
+					},
+				};
+				 options['width']  = $('#sub_unsub_trends').width();
+				 options['height'] = $('#sub_unsub_trends').width();
 
 
 				sub_unsub_trend_c.draw(data, options);

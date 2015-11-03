@@ -5,6 +5,7 @@ table {
 	/* border: 1px solid red; */
 }
 
+#list_content_area,
 #admin_content_area { 
 	background-color:#fff; 	
 	 box-shadow: 3px 5px 8px -1px rgba( 51, 0, 0, .3 ), -3px 5px 8px -1px rgba( 51, 0, 0, .3 );	 
@@ -12,6 +13,7 @@ table {
 	 height: auto;
 	 
 }
+
 
 #admin_top_bar_menu { 
 	box-shadow: 3px 5px 8px -1px rgba( 51, 0, 0, .3 ), -3px 5px 8px -1px rgba( 51, 0, 0, .3 );

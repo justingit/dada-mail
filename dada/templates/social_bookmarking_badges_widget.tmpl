@@ -1,22 +1,26 @@
 <!-- being social_bookmarking_badges_widget.tmpl --> 
-<ul>
+
+<ul class="inline-list">
 	<li>
-		<script src="https://apis.google.com/js/platform.js" async defer></script>
-		<g:plus action="share"></g:plus>
-	</li>
-	<li>
-		<a href="#" onclick="window.open('https://delicious.com/save?v=5&provider={your-company}&noui&jump=close&url='+encodeURIComponent(location.href)+'&title='+encodeURIComponent(document.title), 'delicious','toolbar=no,width=550,height=550'); return false;">
-		  <img src="https://delicious.com/img/logo.png" height="16" width="16" alt="Delicious"> Save this on Delicious
+		<a href="https://plus.google.com/share?url=<!-- tmpl_var PROGRAM_URL escape=URL -->/archive/<!-- tmpl_var list_settings.list escape=URL  -->/<!-- tmpl_var id escape=URL  -->/" target="_blank"> 
+			<img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/webicon-googleplus.png" title="Share on Google+" width="48" height="48">
 		</a>
 	</li>
 	<li>
-		<a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=' + encodeURIComponent(window.location); return false"> <img src="//www.redditstatic.com/spreddit7.gif" alt="submit to reddit" border="0" /> </a>
+		<a href="https://www.facebook.com/sharer/sharer.php?u=<!-- tmpl_var PROGRAM_URL escape=URL -->/archive/<!-- tmpl_var list_settings.list escape=URL  -->/<!-- tmpl_var id escape=URL  -->/" target="_blank">			
+			<img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/webicon-facebook.png" title="Share on Facebook" width="48" height="48">
+		</a>
 	</li>
+
+
 	<li>
-	<iframe 
-		src="http://www.facebook.com/plugins/like.php?href=<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list_settings.list -->/<!-- tmpl_var id -->/"
- 			scrolling="no" frameborder="0"
-	        style="border:none; width:450px; height:80px"></iframe>
+		<a href="//www.reddit.com/submit" onclick="window.location = '//www.reddit.com/submit?url=' + encodeURIComponent(window.location); return false"> 
+			<img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/webicon-reddit.png" title="Share on Reddit" width="48" height="48">	
+		</a>
 	</li>
-</ul> 
+</ul>
+
+
+<!-- (Icons are CC-Attrib; attrib to http://fairheadcreative.com; thanks!) -->
+
 <!-- end social_bookmarking_badges_widget.tmpl -->
