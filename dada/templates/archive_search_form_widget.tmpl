@@ -1,0 +1,19 @@
+<!-- begin list_archive_search_form_widget.tmpl -->
+
+<form action="<!-- tmpl_var name="PROGRAM_URL" -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+  <input type="hidden" name="list" value="<!-- tmpl_var list_settings.list -->" >
+  <input type="hidden" name="flavor"    value="search_archive" >
+  	<div class="row collapse">
+	    <div class="large-7 medium-7 columns">
+			&nbsp;
+		</div>
+	    <div class="large-3 medium-3 columns">
+		    <input type="text"   name="keyword" id="keyword" >
+		</div>
+	    <div class="large-2 medium-2 columns">
+			<input type="submit" class="button small postfix" value="Search" >
+		</div>
+	</div>
+</form>
+
+<!-- end list_archive_search_form_widget.tmpl -->
