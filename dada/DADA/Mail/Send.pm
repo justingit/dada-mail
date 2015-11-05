@@ -101,9 +101,6 @@ sub new {
             my $ls =
               DADA::MailingList::Settings->new( { -list => $args->{-list} } );
             $self->{ls} = $ls;
-
-         # This really stinks - I need it for the domain sending tunings... grr!
-            $self->{list_info} = $ls->get;
         }
         else {
 
@@ -2522,7 +2519,6 @@ sub _clarify_dbi_stuff {
         $self->{ls}->{dbh}->{InactiveDestroy} = 1;
         $self->{ls}->{dbh}                    = undef;
         $self->{ls}->{dbh}                    = $dbh;
-        $self->{list_info}                    = $self->{ls}->params;
 
         my $pass_id   = $mailout->_internal_message_id;
         my $pass_type = $mailout->mailout_type;
