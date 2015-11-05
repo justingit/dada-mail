@@ -65,7 +65,6 @@ my %allowed = (
     test_return_after_mo_create => 0,
 
     partial_sending => {},
-    multi_list_send => {},
 
     exclude_from => [],
 
@@ -300,29 +299,6 @@ sub send {
 # DEV: I should also be using Email::Date::Format, instead of something I ripped out of Mail::Bulkmail - no?
     $fields{Date} = $self->_Date;
 
-    # This makes a local copy of the list settings.
-    # only use {list_info} for domain sending tunings (grrr!)
-    my $local_li = {};
-
-    # This is kinda wasteful.
-
-    # I almost wish this was done once on object initialization...
-    if ( defined( $self->{list} ) ) {
-        for ( keys %{ $self->{ls}->params } ) {
-            if ( exists( $DADA::Config::LIST_SETUP_DEFAULTS{$_} ) ) {
-                $local_li->{$_} = $self->{ls}->param($_);
-            }
-        }
-
-        # This copies over domain-specific tunings for sending...
-        my ( $email_address, $email_domain ) = split( '@', $fields{To} );
-
-        # damn that's weird.
-    }
-    else {
-        %{$local_li} = %DADA::Config::LIST_SETUP_DEFAULTS;
-    }
-
     # and back to your regularly scheduled send() subroutine...
 
     if ( $fields{To} =~ m/\<bad\.apple\@example\.com\>$/ ) {
@@ -330,7 +306,7 @@ sub send {
         return -1;
     }
 
-    if ( $local_li->{strip_message_headers} == 1 ) {
+    if ( $self->{ls}->param('strip_message_headers') == 1 ) {
         %fields = $self->_strip_fields(%fields);
     }
 
@@ -340,26 +316,26 @@ sub send {
     # This'll write the header, but will do nothing to actually change,
     # say the Subject; header to use this charset.
 
-    $fields{'Content-type'} .= '; charset=' . $local_li->{charset_value}
-      if (
-           ( defined( $local_li->{charset_value} ) )
-        && ( defined( $fields{'Content-type'} ) )
-        && ( $fields{'Content-type'} !~ /charset\=/ )    #ie, wasn't set before.
-      );
-
-    if ( !defined( $local_li->{smtp_server} )
-        && $local_li->{sending_method} eq 'smtp' )
+    if (
+         ( defined( $self->{ls}->param('charset_value') ) )
+      && ( defined( $fields{'Content-type'} ) )
+      && ( $fields{'Content-type'} !~ /charset\=/ )    #ie, wasn't set before.
+    ) {
+		$fields{'Content-type'} .= '; charset=' . $self->{ls}->param('charset_value')
+	}
+    if ( !defined( $self->{ls}->param('smtp_server') )
+        && $self->{ls}->param('sending_method') eq 'smtp' )
     {
         die "SMTP Server has been left blank!";
     }
 
-    if ( $local_li->{sending_method} eq 'smtp' ) {
+    if ( $self->{ls}->param('sending_method') eq 'smtp' ) {
 
-        if ( $local_li->{smtp_server} =~ m/amazonaws\.com/ ) {
+        if ( $self->{ls}->param('smtp_server') =~ m/amazonaws\.com/ ) {
             %fields = $self->_massage_fields_for_amazon_ses(
                 {
                     -fields      => {%fields},
-                    -admin_email => $local_li->{admin_email},
+                    -admin_email => $self->{ls}->param('admin_email'),
                 }
             );
         }
@@ -367,11 +343,11 @@ sub send {
         $self->_pop_before_smtp;
 
         my $host;
-        if ( $local_li->{set_smtp_sender} == 1 ) {
-            $host = $local_li->{admin_email};
+        if ( $self->{ls}->param('set_smtp_sender') == 1 ) {
+            $host = $self->{ls}->param('admin_email');
         }
         else {
-            $host = $local_li->{list_owner_email};
+            $host = $self->{ls}->param('list_owner_email');
         }
         $host =~ s/(.*?)\@//;
 
@@ -390,9 +366,9 @@ sub send {
 
                 my %mailer_params = (
                     Hello => $host,
-                    Host  => $local_li->{smtp_server},
+                    Host  => $self->{ls}->param('smtp_server'),
                     Timeout => 60,                     # Keep this at 60 for now
-                    Port    => $local_li->{smtp_port},
+                    Port    => $self->{ls}->param('smtp_port'),
                     (
                         ( $DADA::Config::CPAN_DEBUG_SETTINGS{NET_SMTP} == 1 )
                         ? (
@@ -404,7 +380,7 @@ sub send {
 
                 );
 
-                if ( $local_li->{use_smtp_ssl} == 1 ) {
+                if ( $self->{ls}->param('use_smtp_ssl') == 1 ) {
 
                     # require Net::SMTP_auth_SSL;
                     # $mailer = new Net::SMTP_auth_SSL(%mailer_params);
@@ -422,13 +398,11 @@ sub send {
           # authing can fail, although the message may still go through
           # to the SMTP server, since sometimes SASL AUTH isn't required, but is
           # attempted anyways.
-                    if ( $local_li->{use_sasl_smtp_auth} == 1 ) {
+                    if ( $self->{ls}->param('use_sasl_smtp_auth') == 1 ) {
                         $mailer->auth(
-
-                            # $local_li->{sasl_auth_mechanism},
-                            $local_li->{sasl_smtp_username},
+							$self->{ls}->param('sasl_smtp_username'),
                             $self->_cipher_decrypt(
-                                $local_li->{sasl_smtp_password}
+                                $self->{ls}->param('sasl_smtp_password')
                             )
                           )
                           or carp
@@ -450,12 +424,12 @@ sub send {
           # authing can fail, although the message may still go through
           # to the SMTP server, since sometimes SASL AUTH isn't required, but is
           # attempted anyways.
-                    if ( $local_li->{use_sasl_smtp_auth} == 1 ) {
+                    if ( $self->{ls}->param('use_sasl_smtp_auth') == 1 ) {
                         $mailer->auth(
-                            $local_li->{sasl_auth_mechanism},
-                            $local_li->{sasl_smtp_username},
+                            $self->{ls}->param('sasl_auth_mechanism'),
+                            $self->{ls}->param('sasl_smtp_username'),
                             $self->_cipher_decrypt(
-                                $local_li->{sasl_smtp_password}
+                                $self->{ls}->param('sasl_smtp_password')
                             )
                           )
                           or carp
@@ -473,9 +447,9 @@ sub send {
 
             my $to;
             if (
-                   $local_li->{group_list} == 1
+                   $self->{ls}->param('group_list') == 1
                 && $fields{from_mass_send} == 1
-                && defined( $local_li->{discussion_pop_email} )    # safegaurd?
+                && defined( $self->{ls}->param('discussion_pop_email') )    # safegaurd?
 
               )
             {
@@ -493,14 +467,14 @@ sub send {
                     'To',
                     $fm->format_phrase_address(
                         $self->{ls}->param('list_name'),
-                        $local_li->{discussion_pop_email}
+                        $self->{ls}->param('discussion_pop_email')
                     )
                 );
 
                 # This is what we're going to say we are...
                 $fields{To} = $formatted_disc_email;
 
-                if ( $local_li->{set_to_header_to_list_address} == 1 ) {
+                if ( $self->{ls}->param('set_to_header_to_list_address') == 1 ) {
 
                     # Nothin' needed.
                 }
@@ -537,29 +511,29 @@ sub send {
 
             my $FROM_error_flag = 0;
             my $FROM_error = "problems sending FROM:<> command to SMTP server.";
-            if ( $local_li->{set_smtp_sender} == 1 ) {
-                if ( $local_li->{verp_return_path} ) {
+            if ( $self->{ls}->param('set_smtp_sender') == 1 ) {
+                if ( $self->{ls}->param('verp_return_path') ) {
                     if ( !$mailer->mail( $self->_verp($to) ) ) {
                         carp $FROM_error;
                         $FROM_error_flag++;
                     }
                 }
                 else {
-                    if ( !$mailer->mail( $local_li->{admin_email} ) ) {
+                    if ( !$mailer->mail( $self->{ls}->param('admin_email') ) ) {
                         carp $FROM_error;
                         $FROM_error_flag++;
                     }
                 }
             }
             else {
-                if ( $local_li->{verp_return_path} ) {
+                if ( $self->{ls}->param('verp_return_path') ) {
                     if ( !$mailer->mail( $self->_verp($to) ) ) {
                         carp $FROM_error;
                         $FROM_error_flag++;
                     }
                 }
                 else {
-                    if ( !$mailer->mail( $local_li->{list_owner_email} ) ) {
+                    if ( !$mailer->mail( $self->{ls}->param('list_owner_email') ) ) {
                         carp $FROM_error;
                         $FROM_error_flag++;
                     }
@@ -602,7 +576,7 @@ sub send {
             $mailer->reset()
               or carp 'problems sending, "RSET" command to SMTP server.';
 
-            if ( $local_li->{smtp_connection_per_batch} != 1 ) {
+            if ( $self->{ls}->param('smtp_connection_per_batch') != 1 ) {
 
                 $mailer->quit
                   or carp "problems 'QUIT'ing SMTP server.";
@@ -621,7 +595,7 @@ sub send {
         }
 
     }
-    elsif ( $local_li->{sending_method} eq 'sendmail' ) {
+    elsif ( $self->{ls}->param('sending_method') eq 'sendmail' ) {
 
         my $live_mailing_settings;
 
@@ -653,17 +627,17 @@ sub send {
             $live_mailing_settings = $l_mail_settings;
 
         }
-        elsif ( $local_li->{add_sendmail_f_flag} == 1
-            && defined( $local_li->{admin_email} ) )
+        elsif ( $self->{ls}->param('add_sendmail_f_flag') == 1
+            && defined( $self->{ls}->param('admin_email') ) )
         {
 
-            if ( $local_li->{verp_return_path} == 1 ) {
+            if ( $self->{ls}->param('verp_return_path') == 1 ) {
                 $live_mailing_settings =
                   $l_mail_settings . ' -f' . $self->_verp($plain_to_address);
             }
             else {
                 $live_mailing_settings =
-                  $l_mail_settings . ' -f' . $local_li->{admin_email};
+                  $l_mail_settings . ' -f' . $self->{ls}->param('admin_email');
             }
 
         }
@@ -674,9 +648,9 @@ sub send {
         }
 
         if (
-               $local_li->{group_list} == 1
+               $self->{ls}->param('group_list') == 1
             && $fields{from_mass_send} == 1
-            && defined( $local_li->{discussion_pop_email} )    # safegaurd?
+            && defined( $self->{ls}->param('discussion_pop_email') )    # safegaurd?
           )
         {
 
@@ -694,13 +668,13 @@ sub send {
                 'To',
                 $fm->format_phrase_address(
                     $self->{ls}->param('list_name'),
-                    $local_li->{discussion_pop_email}
+                    $self->{ls}->param('discussion_pop_email')
                 )
             );
 
             $fields{To} = $formatted_disc_email;
 
-            if ( $local_li->{set_to_header_to_list_address} == 1 ) {
+            if ( $self->{ls}->param('set_to_header_to_list_address') == 1 ) {
 
                 # ... Nothin' more needed
             }
@@ -770,13 +744,13 @@ sub send {
         }
 
     }
-    elsif ( $local_li->{sending_method} eq 'amazon_ses' ) {
+    elsif ( $self->{ls}->param('sending_method') eq 'amazon_ses' ) {
 
         # rewriting the To: header...
         if (
-               $local_li->{group_list} == 1
+               $self->{ls}->param('group_list') == 1
             && $fields{from_mass_send} == 1
-            && defined( $local_li->{discussion_pop_email} )    # safegaurd?
+            && defined( $self->{ls}->param('discussion_pop_email') )    # safegaurd?
           )
         {
 
@@ -790,14 +764,14 @@ sub send {
                 'To',
                 $fm->format_phrase_address(
                     $self->{ls}->param('list_name'),
-                    $local_li->{discussion_pop_email}
+                    $self->{ls}->param('discussion_pop_email')
                 )
             );
 
             #			   $fields{To} =  $formatted_disc_email;
 
             # rewriting  Reply-To:
-            if ( $local_li->{set_to_header_to_list_address} == 1 ) {
+            if ( $self->{ls}->param('set_to_header_to_list_address') == 1 ) {
 
                 # ... Nothin' more needed
             }
@@ -810,7 +784,7 @@ sub send {
         %fields = $self->_massage_fields_for_amazon_ses(
             {
                 -fields      => {%fields},
-                -admin_email => $local_li->{admin_email},
+                -admin_email => $self->{ls}->param('admin_email'),
             }
         );
 
@@ -869,14 +843,12 @@ sub send {
         }
     }
     else {
-        die 'Unknown Sending Method: "' . $local_li->{sending_method} . '"';
+        die 'Unknown Sending Method: "' . $self->{ls}->param('sending_method') . '"';
     }
 
-    $self->{mj_log}->mj_log( $local_li->{list}, 'Mail Sent',
+    $self->{mj_log}->mj_log( $self->{ls}->param('list'), 'Mail Sent',
         "Recipient:$recipient_for_log, Subject:$fields{Subject}" )
       if $DADA::Config::LOG{mailings};
-
-    $local_li = {};
 
     return 1;
 
@@ -1102,9 +1074,6 @@ sub mass_send {
         }
         if ( exists( $args->{-partial_sending} ) ) {
             $self->partial_sending( $args->{-partial_sending} );
-        }
-        if ( exists( $args->{-multi_list_send} ) ) {
-            $self->multi_list_send( $args->{-multi_list_send} );
         }
 
         if ( exists( $args->{-mass_mailing_params} ) ) {
@@ -1491,50 +1460,6 @@ sub mass_send {
               . $mailout_id
               . ' Fork successful. (From Parent)'
               if $t;
-
-            # Here's the new stuff:
-
-            if (   $DADA::Config::MULTIPLE_LIST_SENDING == 1
-                && $DADA::Config::MULTIPLE_LIST_SENDING_TYPE eq 'individual' )
-            {
-
-                if ( keys %{ $self->multi_list_send } ) {
-
-                    my $local_args = $args;
-
-                    # Cause that would not be good.
-
-                    delete( $local_args->{-multi_list_send} );
-                    delete( $local_args->{-exclude_from} );
-
-                    my $lists = $self->multi_list_send->{-lists};
-
-                    my @exclude_from = ( $self->list );
-                    for my $local_list (@$lists) {
-
-                        # warn 'looking at: $local_list ' . $local_list;
-
-                        sleep(1);    # just so things can catch up...
-                        require DADA::Mail::Send;
-                        my $local_ms = DADA::Mail::Send->new(
-                            {
-                                -list => $local_list,
-                            }
-                        );
-                        $local_ms->mass_send(
-                            {
-                                %$local_args, -exclude_from => [@exclude_from],
-                            }
-                        );
-                        push( @exclude_from, $local_list );
-                    }
-
-                    # warn "Looks like we have more lists to send to!";
-                }
-                else {
-                    # warn "Nope. No more lists to send to.";
-                }
-            }
             carp 'returning message id' . $fields{'Message-ID'};
 
             #			use Data::Dumper;
@@ -3841,10 +3766,6 @@ way.
 			 	Body    => "This is the body of the message',
 			},
 			-partial_sending  => {...}, 
-			-multi_list_send  => {
-									-lists    => [@alternative_list], 
-									-no_dupes => 1, 
-			 					 },
 			-test      => 0,
 			-mass_test => 0, 
 			-test_recipient => 'someone@example.com'
@@ -3875,21 +3796,6 @@ with the following format:
 keys should be named after profile fields and the values themselves should be a hashref. 
 The hashref keys can either be, "equal_to" or, "like", depending on if you want to do an
 exact match, or a partial match on a string.
-
-C<-multi_list_send> is optional and should hold a hashref with additional arguments. They are: 
-
-=over
-
-=item * -lists
-
-should hold an array ref of additional lists you would like to send to
-
-=item * -no_dupes
-
-should be set to either C<1> or, C<0>. Setting to, C<1> will tell DADA::Mail::Send not to 
-send the same message twice, to a subscriber that may be on two lists. 
-
-=back
 
 C<-test> is optional and should hold a value of either C<1> or, C<0>. If set to C<1> 
 the mass mailing will NOT be sent out, via email, but rather written to a file. This file 

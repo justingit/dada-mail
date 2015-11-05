@@ -1453,53 +1453,17 @@ sub preview_message_receivers {
     my ($fancy_r, $fancy_c); 
     
     if ( keys %$partial_sending ) {
-        if ( $DADA::Config::MULTIPLE_LIST_SENDING_TYPE eq 'merged' ) {
-            ($fancy_r, $fancy_c) = $lh->fancy_list(
-                {
-                    -partial_listing       => $partial_sending,
-                    -type                  => 'list',
-                    -include_from          => [@alternative_list],
-                    -show_list_column      => 1,
-                    -show_timestamp_column => 1,
-                    -order_by              => $order_by,
-                    -order_dir             => $order_dir,
-                }
-            );
-            $r .= $fancy_r;
-        }
-        else {
-            $r .= '<h1>' . $list . '</h1>';
-
-            ($fancy_r, $fancy_c) = $lh->fancy_list(
-                {
-                    -partial_listing       => $partial_sending,
-                    -type                  => 'list',
-                    -show_timestamp_column => 1,
-                }
-            );
-            $r .= $fancy_r;
-            my @exclude_from = ();
-
-            if ( $multi_list_send_no_dupes == 1 ) {
-                @exclude_from = ($list);
-            }
-            if ( $alternative_list[0] ) {
-                for my $alt_list (@alternative_list) {
-                    $r .= '<h1>' . $alt_list . '</h1>';
-                    my $alt_mls = DADA::MailingList::Subscribers->new( { -list => $alt_list } );
-                    ($fancy_r, $fancy_c) = $alt_mls->fancy_list(
-                        {
-                            -partial_listing => $partial_sending,
-                            -type            => 'list',
-                            -exclude_from    => [@exclude_from],
-                        }
-                    );
-                    if ( $multi_list_send_no_dupes == 1 ) {
-                        push( @exclude_from, $alt_list );
-                    }
-                }
-            }
-        }
+		($fancy_r, $fancy_c) = $lh->fancy_list(
+		    {
+		        -partial_listing       => $partial_sending,
+		        -type                  => 'list',
+		        -show_list_column      => 1,
+		        -show_timestamp_column => 1,
+		        -order_by              => $order_by,
+		        -order_dir             => $order_dir,
+		    }
+		);
+		$r .= $fancy_r;
     }
     else {
         if ( $alternative_list[0] ) {

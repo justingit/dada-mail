@@ -150,24 +150,8 @@ ENV_SERVER_ADMIN              => $ENV{SERVER_ADMIN},
 HELP_LINKS_URL                => $DADA::Config::HELP_LINKS_URL, 
 HTML_CHARSET                  => $DADA::Config::HTML_CHARSET, 
 PROFILE_ENABLED               => $DADA::Config::PROFILE_OPTIONS->{enabled}, 
-
-MULTIPLE_LIST_SENDING         => $DADA::Config::MULTIPLE_LIST_SENDING, 
-
 ENFORCE_CLOSED_LOOP_OPT_IN    => $DADA::Config::ENFORCE_CLOSED_LOOP_OPT_IN != 1 ? 0 : 1, 
 SUBSCRIPTION_QUOTA            => $DADA::Config::SUBSCRIPTION_QUOTA, 
-
-(
-	($DADA::Config::MULTIPLE_LIST_SENDING_TYPE eq 'merged') ? 
-	(
-	MULTIPLE_LIST_SENDING_TYPE_MERGED     => 1, 
-	MULTIPLE_LIST_SENDING_TYPE_INDIVIDUAL => 0,
-	) 
-	: 
-	(
-	MULTIPLE_LIST_SENDING_TYPE_MERGED     => 0, 
-	MULTIPLE_LIST_SENDING_TYPE_INDIVIDUAL => 1,	
-	)
-),
 
 # DEV: Cough! Kludge! Cough!
 LEFT_BRACKET                  => '[',

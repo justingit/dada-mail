@@ -459,16 +459,6 @@ But, if you've got the bandwidth, and the horsepower, feel free to raise this li
 
 B<Global Variable:> C<$MAILOUT_AT_ONCE_LIMIT>
 
-=head3 Multiple Mailing List Sending
-
-Check this option to enable multiple mailing list sending. In a nutshell, when enabled, you'll have the option to send the same message to multiple mailing lists, at one time. For more information, see: 
-
-L<http://dadamailproject.com/support/documentation/features-multiple_list_sending.pod.html>
-
-B<Global Variable:> C<$MULTIPLE_LIST_SENDING>
-
-This option does not change the C<$MULTIPLE_LIST_SENDING_TYPE> variable - it's set to, C<merged>, by default.  
-
 =head3 Mass Mailings Stale After
 
 B<Mass Mailings Stale After> sets how long a mailout can go with no mailing activity  until Dada Mail itself won't automatically reload it, from the point it stopped. 

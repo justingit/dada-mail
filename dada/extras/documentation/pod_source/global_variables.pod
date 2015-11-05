@@ -897,25 +897,6 @@ It's B<highly> suggested to set this C<$ENFORCE_CLOSED_LOOP_OPT_IN> set to, C<1>
 
 L<http://dadamailproject.com/installation/using_dada_mail.html>
 
-
-=head2 Multiple Mailing List Sending
-
-=head3 MULTIPLE_LIST_SENDING
-
-Set this variable to, C<1> to enable Multiple Mailing List Sending. 
-
-Set this variable to, C<0> to disable Multiple Mailing List Sending. 
-
-=head3 $MULTIPLE_LIST_SENDING_TYPE
-
-Set to, C<merged> or, C<individual> 
-
-=head4 More Information
-
-See: 
-
-L<http://dadamailproject.com/support/documentation/features-multiple_list_sending.pod.html>
-
 =head2 $SCREEN_CACHE - Caching HTML Screens
 
 Setting B<SCREEN_CACHE> to, 1 will save rendered HTML screens for 

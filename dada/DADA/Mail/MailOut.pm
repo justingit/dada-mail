@@ -794,14 +794,6 @@ sub create_subscriber_list {
         -mass_mailing_params => $args->{-mass_mailing_params},
         
     );
-    if ( $DADA::Config::MULTIPLE_LIST_SENDING == 1 ) {
-        if ( $DADA::Config::MULTIPLE_LIST_SENDING_TYPE eq 'merged' ) {
-            $cmf_args{-include_from} = $args->{-mh_obj}->also_send_to;
-        }
-        else {
-            $cmf_args{-exclude_from} = $args->{-exclude_from};    # Individual
-        }
-    }
 
     my ( $path_to_list, $total_sending_out_num ) = $lh->create_mass_sending_file(%cmf_args);
     $self->unlock_file($lock);

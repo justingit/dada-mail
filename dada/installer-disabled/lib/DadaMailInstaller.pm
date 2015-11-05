@@ -1267,20 +1267,6 @@ sub grab_former_config_vals {
         }
     }
 
-    # Mass Mailing Options
-    if (
-           defined($BootstrapConfig::MAILOUT_AT_ONCE_LIMIT)
-        || defined($BootstrapConfig::MULTIPLE_LIST_SENDING)
-        || defined($BootstrapConfig::MAILOUT_STALE_AFTER)
-
-      )
-    {
-        $opt->{'configure_mass_mailing'}             = 1;
-        $opt->{'mass_mailing_MAILOUT_AT_ONCE_LIMIT'} = $BootstrapConfig::MAILOUT_AT_ONCE_LIMIT;
-        $opt->{'mass_mailing_MULTIPLE_LIST_SENDING'} = $BootstrapConfig::MULTIPLE_LIST_SENDING;
-        $opt->{'mass_mailing_MAILOUT_STALE_AFTER'}   = $BootstrapConfig::MAILOUT_STALE_AFTER;
-    }
-
     # $CONFIRMATION_TOKEN_OPTIONS
     if ( keys %{$BootstrapConfig::CONFIRMATION_TOKEN_OPTIONS} ) {
         $opt->{'configure_confirmation_token'} = 1;
@@ -1615,8 +1601,6 @@ sub query_params_to_install_params {
       global_mailing_list_options_GLOBAL_BLACK_LIST
 
       configure_mass_mailing
-      mass_mailing_MAILOUT_AT_ONCE_LIMIT
-      mass_mailing_MULTIPLE_LIST_SENDING
       mass_mailing_MAILOUT_STALE_AFTER
 
       configure_confirmation_token
@@ -2281,8 +2265,6 @@ sub create_dada_config_file {
         $mass_mailing_params->{configure_mass_mailing} = 1;
         $mass_mailing_params->{mass_mailing_MAILOUT_AT_ONCE_LIMIT} =
           clean_up_var( $ip->{-mass_mailing_MAILOUT_AT_ONCE_LIMIT} );
-        $mass_mailing_params->{mass_mailing_MULTIPLE_LIST_SENDING} =
-          clean_up_var( $ip->{-mass_mailing_MULTIPLE_LIST_SENDING} );
         $mass_mailing_params->{mass_mailing_MAILOUT_STALE_AFTER} =
           clean_up_var( $ip->{-mass_mailing_MAILOUT_STALE_AFTER} );
     }
