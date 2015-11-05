@@ -148,16 +148,16 @@
 	 </td>
 <td width="200">  
        		<!-- tmpl_if percent_done -->
-			<div class="row">
-			    <div class="small-10 columns">
-					<div class="progress success round">
-					  <span class="meter" style="width:<!-- tmpl_var percent_done -->%"></span>
-					</div>
-				</div> 
-			    <div class="small-2 columns">
-					<!-- tmpl_var percent_done -->%
+
+				<div class="progress success round">
+					<span class="text-center">
+						<strong><!-- tmpl_var percent_done -->%</strong>
+					</span>
+					<span class="meter" style="width:<!-- tmpl_var percent_done -->%">
+						
+					</span>
 				</div>
-			</div>
+
 		 <!-- tmpl_else --> 
             <!-- ... --> 
          <!--/tmpl_if-->

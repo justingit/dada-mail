@@ -9,6 +9,23 @@ var plainOverlayOptions = {
 
 jQuery(document).ready(function($){
 
+	/*
+	if($("#footer").length) {
+		$(window).bind("load", function () {
+		    var footer = $("#footer");
+		    var pos = footer.position();
+		    var height = $(window).height();
+		    height = height - pos.top;
+		    height = height - footer.height();
+		    if (height > 0) {
+		        footer.css({
+		            'margin-top': height + 'px'
+		        });
+		    }
+		});
+	}
+	*/
+	
 	// Bounce Handler, Mostly. 
 	$('body').on('click', 'a.modalbox', function(event){
 		event.preventDefault();
@@ -1358,8 +1375,8 @@ function admin_menu_notification(sflavor, target_class) {
 				refresh_loop, r);
 			}
 		}
-	setTimeout(refresh_loop, r);
-	refresh_loop(1);
+		setTimeout(refresh_loop, r);
+		refresh_loop(1);
 }
 
 function setup_attachment_fields() {

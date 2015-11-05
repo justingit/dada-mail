@@ -22,75 +22,53 @@
 	    <!-- tmpl_var subscription_form --> 
 	</div> 
 </div>
-    <h3>
-     Available Mailing Lists:
-    </h3>
-    
-    <!-- tmpl_loop list_information -->
-        
-        <h2>
-         <a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list escape="HTML" -->/">
-          <!-- tmpl_var list_settings.list_name -->
-         </a>
-        </h2>
-        <!-- <p> -->
-         <!-- tmpl_var list_settings.info -->
-        <!-- </p> -->
-        
-		
-        <!-- tmpl_if list_settings.show_archives -->
 
-            <!-- tmpl_unless list_settings.archives_available_only_to_subscribers -->
+	<!-- tmpl_loop list_information -->
 
-            	<!-- tmpl_if newest_archive_blurb -->
-                
-               	 <!-- TODO: replace this here blockquote with CSS -->
-	                <blockquote>
-	                 <p>
-	                  <strong>
-	                   <a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list_settings.list escape="HTML" -->/newest/">
-	                    Last Message: <!-- tmpl_var newest_archive_subject -->
-	                   </a>
-	                  </strong>
-	                 </p>
-	                 <p>
-	                  <em>
-	                   <!-- tmpl_var newest_archive_blurb -->...
-	                  </em>
-	                 </p>
-	                 <p class="text-right">
-	                  <a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list_settings.list -->/newest/">
-	                   More...
-	                  </a>
-	                 </p>
-	                </blockquote>
-	
+		<h2>
+			<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list escape="HTML" -->/">
+				<!-- tmpl_var list_settings.list_name -->
+			</a>
+		</h2>
+		<!-- tmpl_var list_settings.info -->
+
+		<!-- tmpl_if list_settings.show_archives -->
+			<!-- tmpl_unless list_settings.archives_available_only_to_subscribers -->
+				<!-- tmpl_if newest_archive_blurb -->
+					<h3>
+						<a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list_settings.list escape="HTML" -->/newest/">
+							<!-- tmpl_var newest_archive_subject -->
+						</a>
+					</h3>
+					<blockquote>
+						<em>
+							<!-- tmpl_var newest_archive_blurb -->...
+						</em>
+						<p class="text-right">
+							<a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list_settings.list -->/newest/">
+								More...
+							</a>
+						</p>
+					</blockquote>
 				<!-- /tmpl_if --> 
-                
-            <!-- /tmpl_unless-->
-        
-        <!--/tmpl_if-->
-    
-    <!--/tmpl_loop-->
-
+			<!-- /tmpl_unless-->
+		<!--/tmpl_if-->
+	<!--/tmpl_loop-->
+	
 <!-- tmpl_else --> 
 
 	<div class="alert-box info radius">
      	<p>No Mailing Lists are currently available from this screen.</p>
 	</div>
-
+	
 <!-- /tmpl_if --> 
 
 <!-- tmpl_if SHOW_ADMIN_LINK -->
-	
 	<p class="text-center">
-	 <strong>
 	  <a href="<!-- tmpl_var S_PROGRAM_URL -->/<!-- tmpl_var ADMIN_FLAVOR_NAME -->/">
 	   Administration
 	  </a>
-	 </strong>
-	</p>
-	
+	</p>	
 <!--/tmpl_if-->
 
 <!-- end default_screen.tmpl -->

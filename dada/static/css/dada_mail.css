@@ -1,23 +1,27 @@
-body { 
-	background-color:#efefef;
+body {
+	background-color: #efefef;
 }
+
+/* 
 table {
-	/* border: 1px solid red; */
+	border: 1px solid red;
 }
+*/
 
+#list_content_area { 
+}
 #list_content_area,
-#admin_content_area { 
-	background-color:#fff; 	
-	 box-shadow: 3px 5px 8px -1px rgba( 51, 0, 0, .3 ), -3px 5px 8px -1px rgba( 51, 0, 0, .3 );	 
-	 min-height: 640px;
-	 height: auto;
-	 
+#admin_content_area {
+	background-color: #fff;
+	box-shadow: 3px 5px 8px -1px rgba( 51, 0, 0, .3 ), -3px 5px 8px -1px rgba( 51, 0, 0, .3 );
+	min-height: 640px;
+	height: auto;
 }
 
-
-#admin_top_bar_menu { 
+#admin_top_bar_menu {
 	box-shadow: 3px 5px 8px -1px rgba( 51, 0, 0, .3 ), -3px 5px 8px -1px rgba( 51, 0, 0, .3 );
 }
+
 iframe#archived_message_body_container {
 	height: 500px;
 	width: 100%;
@@ -52,11 +56,20 @@ iframe#archived_message_body_container {
 #buttons {
 	z-index: 100;
 	background-color: #fff;
-	width:auto;
+	width: auto;
 }
 
-.floating_panel { 
+.floating_panel {
 	background-color: #ededed;
-	border-bottom:1px solid #ccc;
- 	box-shadow: 3px 5px 8px -1px rgba( 51, 0, 0, .3 ), -3px 5px 8px -1px rgba( 51, 0, 0, .3 );
+	border-bottom: 1px solid #ccc;
+	box-shadow: 3px 5px 8px -1px rgba( 51, 0, 0, .3 ), -3px 5px 8px -1px rgba( 51, 0, 0, .3 );
+}
+
+#footer {
+	margin-top: 30px;
+	padding:10px;
+	/* box-shadow: 0px 0px 4px 3px rgba( 51, 0, 0, .3 ); */
+	box-shadow: 3px 5px 8px -1px rgba( 51, 0, 0, .3 ), -3px 5px 8px -1px rgba( 51, 0, 0, .3 );
+	
+	background-color: #fff;
 }

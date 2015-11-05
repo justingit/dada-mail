@@ -3,16 +3,24 @@
 <!-- tmpl_set name="title" value="Password Encryption" -->
 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
- <p> 
-  <label for="pw">  
-   Enter
-  </label>
-  a password that you would like to encrypt.<br > 
-
-  <input type="hidden" name="flavor" value="pass_gen" >
-  <input type="password" name="pw" id="pw" size="16" >
-  <input type="submit" value="encrypt password">
- </p>
+    <input type="hidden" name="flavor" value="pass_gen">
+	<div class="row">
+		<div class="small-12 columns">
+			<label for="pw">
+				Password
+			</label>
+		</div>
+	</div>
+	<div class="row">
+		<div class="small-12 columns">
+			<input type="password" name="pw" id="pw" size="16" >
+		</div>
+	</div> 
+	<div class="row">
+		<div class="small-12 columns">
+			<input type="submit" value="encrypt password" class="button">
+		</div>
+	</div> 		
 </form>
 
 <!-- end pass_gen_screen.tmpl --> 
