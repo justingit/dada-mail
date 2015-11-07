@@ -24,22 +24,14 @@
         <ul class="side-nav">
     <!-- /tmpl_if --> 
     
-	
-        <!-- tmpl_loop name="NAV" -->
-            <!-- tmpl_unless Activated --> 
-                <!-- tmpl_if hide_nav -->
-                    <li class="hidden">
-                <!-- tmpl_else --> 
-                    <li>
-                <!--/tmpl_if --> 
-            <!-- tmpl_else --> 
+		<!-- tmpl_loop NAV -->
+			<!-- tmpl_if Activated -->
 		    	<!-- tmpl_if for_mobile --> 
 					<li>
 						<label>
 				<!-- tmpl_else -->
                     <li class="heading">
  				<!-- /tmpl_if -->
-            <!-- /tmpl_unless -->
          
 		    <!-- tmpl_var Title -->
 	    	
@@ -76,8 +68,7 @@
                 </li>
             <!--/tmpl_loop-->
 			
-			 <!-- <li class="divider"></li> -->
-			  
+			<!-- /tmpl_if -->
         <!--/tmpl_loop-->
     </ul>
 </div> 

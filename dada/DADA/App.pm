@@ -8,7 +8,7 @@ use strict;
 
 use Encode qw(encode decode);
 
-# A weird fix.
+
 BEGIN {
     if ( $] > 5.008 ) {
         require Errno;
@@ -901,8 +901,13 @@ sub send_email_button_widget {
     
     my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'send_email'
+        -Function => 'send_email send_url_email'
     );    
+	
+	warn 'from send_email_button_widget'; 
+	use Data::Dumper; 
+	warn Dumper([$admin_list, $root_login, $checksout, $error_msg]);
+	
     if ( !$checksout ) { return $error_msg; }
     my $list = $admin_list;
     
@@ -8156,6 +8161,7 @@ sub feature_set {
             {
                 -screen         => 'feature_set_screen.tmpl',
                 -with           => 'admin',
+				-expr           => 1, 
                 -wrapper_params => {
                     -Root_Login => $root_login,
                     -List       => $list,
@@ -8167,6 +8173,10 @@ sub feature_set {
                     feature_set_menu              => $feature_set_menu,
                     disabled_screen_view_hide     => ( $ls->param('disabled_screen_view') eq 'hide' ) ? 1 : 0,
                     disabled_screen_view_grey_out => ( $ls->param('disabled_screen_view') eq 'grey_out' ) ? 1 : 0,
+                },
+                -list_settings_vars_param => {
+                    -list   => $list,
+                    -dot_it => 1,
                 },
             }
         );
@@ -8183,12 +8193,14 @@ sub feature_set {
 
         my $save_set = DADA::Template::Widgets::Admin_Menu::create_save_set( \%param_hash );
 
-        my $disabled_screen_view = $q->param('disabled_screen_view');
+        my $disabled_screen_view     = $q->param('disabled_screen_view');
+        my $list_control_panel_style = $q->param('list_control_panel_style') // 'top_bar';
 
         $ls->save(
             {
-                admin_menu           => $save_set,
-                disabled_screen_view => $disabled_screen_view,
+                admin_menu               => $save_set,
+                disabled_screen_view     => $disabled_screen_view,
+				list_control_panel_style => $list_control_panel_style,
             }
         );
 

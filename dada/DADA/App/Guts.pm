@@ -2062,11 +2062,11 @@ sub check_list_security {
 				-cgi_obj         => undef, 
 				@_);
 
-        if($t == 1) { 
-            warn 'in check_list_security'; 
-            require Data::Dumper; 
-            warn 'args:' . Data::Dumper::Dumper({%args}); 
-        }
+    if($t == 1) { 
+        warn 'in check_list_security'; 
+        require Data::Dumper; 
+        warn 'args:' . Data::Dumper::Dumper({%args}); 
+    }
 
 
 	croak 'no CGI Object (-cgi_obj)' if ! $args{-cgi_obj};
@@ -2085,7 +2085,6 @@ sub check_list_security {
                 $admin_list = undef; 
         }
     }
-#	warn 'returning: ' . Dumper([$admin_list, $root_login, $checksout, $error_msg]); 
 	return ($admin_list, $root_login, $checksout, $error_msg); 
 
 }

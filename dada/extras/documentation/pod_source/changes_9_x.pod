@@ -37,9 +37,13 @@ L<http://foundation.zurb.com/docs/sass.html>
 
 =head3 One-Click Unsubscribe
 
-One-Click Unsubscribe has been reintroduced into Dada Mail, now being smart enough to know when the unsubscribe link has been visted by an actual user or an app that is scanning the received message, and following all links found within. For the former, unsubscription will truly be one-click. Our technique relies on Javascript - if Javascript is not available, the previous method will be shown: displaying a form for the subscriber to fill out with their email address. 
+One-Click Unsubscribe has been reintroduced into Dada Mail in a much more secure form, as well as now being smart enough to know when the unsubscribe link has been visted by an actual user or an app that is scanning the received message and then following all links found within.
 
+For the former, unsubscription will truly be one-click. Our technique relies on Javascript - if Javascript is not available, the previous method will be shown: displaying a form for the subscriber to fill out with their email address. 
 
+=head3 Enhanced Mailing List Login Security
+
+Dada Mail now records the IP Address from a successful login. If this IP Address changes through a session, the session will be invalidated, and the user will be required to log in again. 
 
 
 =cut

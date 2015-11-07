@@ -452,12 +452,18 @@ sub check_session_list_security {
     );
     if ($problems) {
 
-        try {
-            $session->delete();
-            $session->flush();
-        } catch { 
-            warn "Problems deleting and flushing session cookie: $_";
-        };
+		if(scalar keys %$flags == 1 && $flags->{"no_admin_permissions"} == 1){ 
+			#... 
+		}
+		else {
+			 try {
+	            $session->delete();
+	            $session->flush();
+	        } catch { 
+	            warn "Problems deleting and flushing session cookie: $_";
+	        };
+		}
+        
         
         my $body = $self->enforce_admin_cgi_security(
             -Admin_List     => $sess_args->{'Admin_List'},
@@ -609,21 +615,30 @@ sub check_admin_cgi_security {
             $flags{"invalid_password"} = 1;
         }
 
-    # last but not least, we see if they're allowed in this particular function.
-    # we are sneaky shits, aren't we?!
-
-        if ( $root_logged_in != 1 && $args{-Function} ne undef) {
-            require DADA::Template::Widgets::Admin_Menu;
-            my $function_permissions =
-              DADA::Template::Widgets::Admin_Menu::check_function_permissions(
-                -List_Ref => $list_info,
-                -Function => $args{-Function}
-              );
-            if ( $function_permissions < 1 ) {
-                $problems++;
-                $flags{"no_admin_permissions"} = 1;
-            }
-        }
+		my @func = split(' ', $args{-Function});
+		# my @func; 
+	
+	    require DADA::Template::Widgets::Admin_Menu;
+	
+		my $status = 1; 
+		ALLFUNC: for(@func) {
+	        if ( $root_logged_in != 1 &&  $_ ne undef) {
+	            $status =
+	              DADA::Template::Widgets::Admin_Menu::check_function_permissions(
+	                -List_Ref => $list_info,
+	                -Function => $_, 
+	              );
+				  if ($status == 1) { 
+					  last ALLFUNC;
+				  }
+	        }
+	    }	
+		
+      if ( $status < 1 ) {
+          $problems++;
+          $flags{no_admin_permissions} = 1;
+      }
+	  																					
     }
 
     return ( $problems, \%flags, $root_logged_in );

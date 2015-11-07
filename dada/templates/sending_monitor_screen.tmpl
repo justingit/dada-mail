@@ -26,7 +26,7 @@
 <!-- tmpl_if integrity_check --> 
     <!-- tmpl_if is_paused -->
  		<div class="alert-box warning radius">
-        	Mail Sending is currently paused. Click, &quot;|&gt; Resume Mailing&quot; to resume.
+        	Mail Sending is currently paused. Click, &quot;Resume&quot; to resume.
     	</div>
 	<!--/tmpl_if --> 
 <!--/tmpl_if --> 
@@ -79,7 +79,7 @@
 	    	<div class="alert-box info radius">
 	        <p> 
 	         The time since the last message sent has elapsed past a certain period and is considered, 
-				&quot;Stale&quot; You may continue the mailing by clicking, &quot;Pickup Mailing&quot;
+				&quot;Stale&quot; You may continue the mailing by clicking, &quot;Pickup&quot;
 	        </p>
 			</div>
 	    <!-- /tmpl_if -->
@@ -111,15 +111,15 @@
 					<!-- tmpl_unless its_killed -->
 						href="#" 
 						disabled="disabled" 
-						class="button small disabled" 
+						class="button disabled" 
 					<!-- tmpl_else -->
 						href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=sending_monitor&id=<!-- tmpl_var message_id escape="HTML"-->&type=<!-- tmpl_var message_type escape="HTML"-->&process=restart"
-						class="button small success"
+						class="button success"
 					<!--/tmpl_unless-->
 				>
-					[+] 
+					<i class="fi-loop"></i>
 					<span class="hide-for-small-only">
-						Pickup Mailing
+						Pickup 
 					</span>
 				</a>
 	    	</li>
@@ -128,17 +128,12 @@
 					<!-- tmpl_unless is_paused -->
 						href="#"
 						disabled="disabled" 
-						class="button small disabled"
+						class="button disabled"
 					<!-- tmpl_else -->
 						href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=sending_monitor&id=<!-- tmpl_var message_id escape="HTML"-->&type=<!-- tmpl_var message_type escape="HTML"-->&process=resume"
-						class="button small warning"
+						class="button warning"
 					<!--/tmpl_unless -->
-				>
-					|&gt; 
-						<span class="hide-for-small-only">
-							Resume Mailing
-						</span>
-				</a>
+				><i class="fi-play"></i><span class="hide-for-small-only"> Resume</span></a>
 
 	    	</li>
 	    	<li>    
@@ -146,15 +141,19 @@
 					<!-- tmpl_if is_paused -->
 						href="#"
 						disabled="disabled" 
-						class="button small disabled"
+						class="button disabled"
 					<!-- tmpl_else -->
 						href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=sending_monitor&id=<!-- tmpl_var message_id escape="HTML"-->&type=<!-- tmpl_var message_type escape="HTML"-->&process=pause"
-						class="button small warning pauseMonitoredSending"
+						class="button warning pauseMonitoredSending"
 					<!--/tmpl_if -->
 				>
-					|| 
+						<i class="fi-pause"></i>
 						<span class="hide-for-small-only">
-							Pause Mailing
+							<!-- tmpl_if is_paused --> 
+								Paused.
+							<!-- tmpl_else -->
+								Pause 
+							<!-- /tmpl_if -->
 						</span>
 				</a>
 	    	</li>
@@ -163,19 +162,19 @@
 				<a
 					<!-- tmpl_unless is_paused -->
 						<!-- tmpl_if sending_done -->
-							disabled="disabled" class="button small disabled"
+							disabled="disabled" class="button disabled"
 						<!-- tmpl_else -->
-							class="button small alert killMonitoredSending stop_mass_mailing"
+							class="button alert killMonitoredSending stop_mass_mailing"
 							href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=sending_monitor&id=<!-- tmpl_var message_id escape="HTML"-->&type=<!-- tmpl_var message_type escape="HTML"-->&process=kill"
 						<!--/tmpl_if -->
 					<!-- tmpl_else -->
-						class="button small alert killMonitoredSending stop_mass_mailing" 						
+						class="button alert killMonitoredSending stop_mass_mailing" 						
 						href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=sending_monitor&id=<!-- tmpl_var message_id escape="HTML"-->&type=<!-- tmpl_var message_type escape="HTML"-->&process=kill"
 					<!--/tmpl_unless -->
 				>
-					&#8855; 
+					<i class="fi-stop"></i>
 					<span class="hide-for-small-only">
-						STOP Mailing
+						Stop
 					</span>
 				</a>
 	    	</li>
@@ -275,7 +274,7 @@
 	  <input type="hidden" name="flavor"    value="print_mass_mailing_log"                              > 
 	  <input type="hidden" name="id"   value="<!-- tmpl_var message_id escape="HTML" -->"          > 
 	  <input type="hidden" name="type" value="<!-- tmpl_var message_type -->"                      > 
-	  <input type="submit"             value="Open Mass Mailing Log in a New Window" class="button small plain" > 
+	  <input type="submit"             value="Open Mass Mailing Log in a New Window" class="button plain" > 
 	 </form> 
 	</li>
 </ul>

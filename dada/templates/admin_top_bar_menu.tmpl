@@ -1,54 +1,42 @@
 <!-- begin admin_top_bar_menu.tmpl -->
-
 <nav class="top-bar" data-topbar role="navigation" id="admin_top_bar_menu">
 	<section class="top-bar-section">
-		<ul class="left">
-			<!-- tmpl_loop name="NAV" -->
-				<!-- tmpl_unless Activated --> 
-					<!-- tmpl_if hide_nav -->
-						<li class="hidden">
-					<!-- tmpl_else --> 
-						<li>
-					<!--/tmpl_if --> 
-				<!-- tmpl_else --> 
+		<!-- tmpl_loop NAV -->
+			<!-- tmpl_if Activated -->
+				<ul class="left">
 					<li class="has-dropdown">
-				<!-- /tmpl_unless -->
-				<li class="has-dropdown">
-					<a href="#">
-						<!-- tmpl_var Title -->
-					</a>
-					<ul class="dropdown">
-						<!-- tmpl_loop SUBNAV -->
-							<!-- tmpl_unless Activated --> 
-								<!-- tmpl_if hide_nav --> 
-									<li class="admin_menu_<!-- tmpl_var Function escape="HTML" --> hidden">
-								<!-- tmpl_else --> 
-									<li class="admin_menu_<!-- tmpl_var Function escape="HTML" -->">
-								<!--/tmpl_if --> 
-							<!-- tmpl_else --> 
-								<li class="admin_menu_<!-- tmpl_var Function escape="HTML" -->">
-							<!-- /tmpl_unless -->
-							<!-- tmpl_if Title_URL -->
-								<!-- tmpl_if Activated -->
-									<a href="<!-- tmpl_var name="Title_URL" -->">
+						<a href="#">
+							<!-- tmpl_var Title -->
+						</a>						
+						<ul class="dropdown">
+							<!-- tmpl_loop SUBNAV -->
+							
+								<!-- tmpl_if Activated --> 
+								    <!-- tmpl_if comment -->this is a little ambiguous: <!-- /tmpl_if -->
+									<li class="admin_menu_<!-- tmpl_var Function escape="HTML" -->">			
+								<!-- tmpl_else -->
+									<li 
+										<!-- tmpl_if hide_nav --> 
+											class="admin_menu_<!-- tmpl_var Function escape="HTML" --> menu_hidden"
+										<!-- tmpl_else -->
+											class="admin_menu_<!-- tmpl_var Function escape="HTML" -->"
+										<!-- /tmpl_if -->
+									>							
+								<!-- /tmpl_if -->
+									<a href="<!-- tmpl_var Title_URL -->"
+											<!-- tmpl_unless Activated -->
+												class="menu_disabled"
+											<!-- /tmpl_unless -->
+									>
 										<!-- tmpl_var Title -->
 									</a>
-								<!--tmpl_else--> 
-									<a href="<!-- tmpl_var name="Title_URL" -->" class="menu_disabled">
-										<!-- tmpl_var Title -->
-									</a>
-								<!--/tmpl_if-->
-							<!--tmpl_else-->
-								<!-- tmpl_var Title -->
-							<!--/tmpl_if-->
-						</li>
-					<!--/tmpl_loop-->
-				</ul>
-			</li>
-			<!--/tmpl_loop-->
-		</ul>
+								</li>
+							<!--/tmpl_loop-->
+						</ul>
+					</li>
+				</ul>				
+			<!-- /tmpl_if -->
+		<!--/tmpl_loop-->
 	</section>
 </nav>
-
 <!-- end admin_top_bar_menu.tmpl -->
-

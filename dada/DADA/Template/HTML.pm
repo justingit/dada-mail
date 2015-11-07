@@ -8,7 +8,7 @@ use Try::Tiny;
 
 use Carp qw(croak carp); 
 
-# A weird fix.
+
 BEGIN {
    if($] > 5.008){
       require Errno;
@@ -307,7 +307,8 @@ sub admin_template {
 	}
 	my $final_admin_template = DADA::Template::Widgets::screen( 
 									{
-										-data => \$admin_template, 
+										-data => \$admin_template,
+										-expr => 1,  
 										-vars => 
 											{
 												login_switch_widget            => $login_switch_widget, 

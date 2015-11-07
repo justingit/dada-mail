@@ -4,29 +4,46 @@
 <div id="screen_meta" data-menu_highlight="feature_set"></div>
 
 
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-		<!-- tmpl_var title --> 
+
+<div class="row hide-for-small-only" id="control_panel_breadcrumbs">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				 Your List Control Panel
+			 </a>
+	 	    <a 
+				href="#"
+				class="current"
+			>	
+				Customize Feature Set
+			</a>
+		</nav>
 	</div>
-	<!-- tmpl_include help_link_widget.tmpl -->
-</div> 
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
+</div>
 
 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">  
+	<input type="hidden" name="process" value="true" > 
+	<input type="hidden" name="flavor" value="feature_set" > 
+
   
 <!-- tmpl_if done --> 
 
     <!-- tmpl_include changes_saved_dialog_box_widget.tmpl  --> 
 
 <!--/tmpl_if--> 
+<div class="alert-box info radius">
+	<p>
+	The below list of headings corresponds to the list control panel menu and the various screens
+	that make up the List Control Panel.</p>
 
-<p>
-The below list of headings corresponds to the administration menu and the various screens
-that actually make up the List Control Panel.</p>
-
-<p>Unchecking any of these options will disable access to them when you log into 
-this list using your <em>List Password</em>. Access to these screens will always be
-available when you log into this list using the <em><!-- tmpl_var PROGRAM_NAME --> Root Password</em>.
-</p>
+	<p>Unchecking any of these options will disable access to them when you log into 
+	this list using your <strong>List Password</strong>. Access to these screens will always be
+	available when you log into this list using the <em><!-- tmpl_var PROGRAM_NAME --> Root Password</em>.
+	</p>
+</div>
 
 <fieldset> 
 <legend>Your Feature Set
@@ -37,33 +54,71 @@ available when you log into this list using the <em><!-- tmpl_var PROGRAM_NAME -
 <fieldset> 
 	
 <legend>Options</legend>
-<p> 
- <input type="radio" name="disabled_screen_view" value="hide" id="hide" <!-- tmpl_if disabled_screen_view_hide -->checked="checked"<!--/tmpl_if--> >
-  <label for="hide">
-   Hide Disabled Screens
-  </label>
-  <br > 
- <input type="radio" name="disabled_screen_view" value="grey_out" id="grey_out" <!-- tmpl_if disabled_screen_view_grey_out -->checked="checked"<!--/tmpl_if--> >
- <label for="grey_out"> 
-  Grey Out Disabled Screens
- </label>
-</p>
+
+<div class="row">
+	<div class="small-12 columns">
+		 <label for="hide">
+		 <input type="radio" name="disabled_screen_view" value="hide" id="hide" <!-- tmpl_if disabled_screen_view_hide -->checked="checked"<!--/tmpl_if--> >
+		   Hide Disabled Screens
+		  </label>
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+		 <label for="grey_out"> 
+		 <input type="radio" name="disabled_screen_view" value="grey_out" id="grey_out" <!-- tmpl_if disabled_screen_view_grey_out -->checked="checked"<!--/tmpl_if--> >
+		  Grey Out Disabled Screens
+		 </label>
+	</div>
+</div>
+
+<label>List Control Panel Menu Style:</label> 
+
+<div class="row">
+	<div class="small-12 columns">
+		 <label for="list_control_panel_style_top_bar">
+		 <input 
+		 	type="radio" 
+			name="list_control_panel_style" 
+			value="top_bar" 
+			id="list_control_panel_style_top_bar" 
+			<!-- tmpl_if expr="(list_settings.list_control_panel_style eq 'top_bar')" -->checked="checked"<!--/tmpl_if-->
+			>
+		   Top Bar
+		  </label>
+	</div>
+</div>
+
+<div class="row">
+	<div class="small-12 columns">
+		 <label for="list_control_panel_style_side_bar">
+		 <input 
+		 	type="radio" 
+			name="list_control_panel_style" 
+			value="side_bar" 
+			id="list_control_panel_style_side_bar" 
+			<!-- tmpl_if expr="(list_settings.list_control_panel_style eq 'side_bar')" -->checked="checked"<!--/tmpl_if-->
+			>
+		   Classic Side Bar
+		  </label>
+	</div>
+</div>
+
+
 
 </fieldset> 
 
-
- 
-
-
-<input type="hidden" name="process" value="true" > 
-<input type="hidden" name="flavor" value="feature_set" > 
-
-
-<div class="buttonfloat">
- <input type="reset"  class="warning button" value="Clear Changes" >
- <input type="submit" class="success button" value="Save List Options" >
+<div class="clearfix">
+	<ul class="button-group right">
+		<li>
+			<input type="reset"  class="warning button" value="Clear Changes" >
+		</li>
+		<li>
+			<input type="submit" class="success button" value="Save List Options" >
+		</li>
+	</ul>
 </div>
-<div class="floatclear"></div>
 
 </form> 
 

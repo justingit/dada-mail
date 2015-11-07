@@ -2,6 +2,8 @@
 
 =head1 Dada Mail 8 to Dada Mail 9 Upgrade Guide
 
+This guide was compiled to get you ready for upgrade to Dada Mail v9, from a previous upgrade. Please look over this guide to ensure there's still support for how you utilize the application.  
+
 =head2 Focus
 
 The main difference between v9 of Dada Mail and all previous versions of Dada Mail, is that v9 now relies on the Zurb Foundation Frontend Framework: 
@@ -9,5 +11,49 @@ The main difference between v9 of Dada Mail and all previous versions of Dada Ma
 L<http://foundation.zurb.com/>
 
 The majority of the changes in v9 happen with rewritting and in some cases: renaming template files found in, C<dada/templates>. If you have made your own customizations and modifications to these files, they may well need to be rewritten to work with this new version of Dada Mail (and thus, the major release status)
+
+=head3 Major UI Changes
+
+Along with utilizing Foundation, many of Dada Mail's user interfaces hae drastically changed from their previous designs: 
+
+=head4 Administration Login 
+
+The administration login now uses a much more compact design to either log into a mailing list, or to create a new one. Both forms are still there, but now in a tab interface, so only one form is shown at a time. 
+
+=head4 Reorganizaiton of top-level menus
+
+Many items in the navigation bar for the list control panel have been moved around and renamed. 
+
+=head4 Side Bar to Top Bar
+
+Dada Mail's List Control Panel side bar has been replaced with a top bar. If you prefer the former design, you may enable the classic side bar in the List Control Panel under, B<Settings - Customize Feature Set>
+
+=head2 File Browser/Uploaders
+
+=head3 CoreFile FileManager Upgrade to v2.2.0
+
+=head2 Removed Features
+
+Some features in Dada Mail have been B<removed> to help with the scope of the project, code cruft, and to keep focus on parts of Dada Mail that are most popular/most useful
+
+=head3 Multiple Mailing List Sending 
+
+Multiple Mailing List Sending has been completely removed. This feature wasn't enabled by default, but could be enabled through Dada Mail's global config.
+
+=head3 Sending Options
+
+=head4 Errors-To headers support
+
+Dada Mail had the option to add a, C<Errors-To> header. This header is very much outdated, and support for it has been removed from the app. 
+
+=head4 Return-Path header
+
+Dada Mail had an option to explicitly set a C<Return-Path> header, although limited MTA's supported this. The MTA itself will set this header correctly on behalf of the app. 
+
+=head3 Sending - Mass Mailing Options
+
+=head4 Reload Mailings After Each Batch
+
+This option has been removed, as it's usually the wrong option to depend on. 
 
 =cut

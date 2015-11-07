@@ -14,7 +14,7 @@ use constant HAS_HTML_TEMPLATE_PRO => eval { require HTML::Template::Pro; 1; };
 
 my $TMP_TIME = undef; 
 
-# A weird fix.
+
 BEGIN {
    if($] > 5.008){
       require Errno;

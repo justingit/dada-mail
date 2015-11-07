@@ -358,12 +358,12 @@ sub make_feature_menu {
 
             if ( $nav->{-Activated} == 1 ) {
                 $nav_entry =
-"<p><input type=\"checkbox\" name='NAV-$nav->{-Title}' checked=\"checked\" value=\"1\" /><strong>$nav->{-Title}</strong>\n";
+"<p><input type=\"checkbox\" name='NAV-$nav->{-Title}' id='NAV-$nav->{-Title}' checked=\"checked\" value=\"1\" /> <label for='NAV-$nav->{-Title}'>$nav->{-Title}</label>\n";
                 $menu .= $nav_entry;
             }
             else {
                 $nav_entry =
-"<p><input type=\"checkbox\" name='NAV-$nav->{-Title}' value=\"1\" /><strong>$nav->{-Title}</strong>\n";
+"<p><input type=\"checkbox\" name='NAV-$nav->{-Title}' id='NAV-$nav->{-Title}' value=\"1\" /> <label for='NAV-$nav->{-Title}'>$nav->{-Title}</label>\n";
                 $menu .= $nav_entry;
 
             }
@@ -378,11 +378,11 @@ sub make_feature_menu {
 
                     if ( $subnav->{-Activated} == 1 ) {
                         $subnav_entry =
-"<br />&nbsp;<input type=\"checkbox\" name='SUBNAV-$subnav->{-Function}' checked=\"checked\" value=\"1\" />$subnav->{-Title}\n";
+"<br />&nbsp;<input type=\"checkbox\" name='SUBNAV-$subnav->{-Function}' id='SUBNAV-$subnav->{-Function}' checked=\"checked\" value=\"1\" /><label for='SUBNAV-$subnav->{-Function}'>$subnav->{-Title}</label>\n";
                     }
                     else {
                         $subnav_entry =
-"<br />&nbsp;<input type=\"checkbox\" name='SUBNAV-$subnav->{-Function}' value=\"1\" />$subnav->{-Title}\n";
+"<br />&nbsp;<input type=\"checkbox\" name='SUBNAV-$subnav->{-Function}' id='SUBNAV-$subnav->{-Function}' value=\"1\" /><label for='SUBNAV-$subnav->{-Function}'>$subnav->{-Title}</label>\n";
                     }
                     $menu .= $subnav_entry;
                 }
@@ -391,7 +391,7 @@ sub make_feature_menu {
         }
         else {
             $nav_entry =
-"<p><input type=\"checkbox\" name='NAV-$nav->{-Title}' value=\"1\" /><strong>$nav->{-Title}</strong> five\n";
+"<p><input type=\"checkbox\" name='NAV-$nav->{-Title}' id='NAV-$nav->{-Title}' value=\"1\" /><label for='NAV-$nav->{-Title}'>$nav->{-Title}</label>\n";
             $menu .= $nav_entry;
         }
     }

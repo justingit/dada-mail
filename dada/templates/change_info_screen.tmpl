@@ -45,16 +45,16 @@
 <input type="hidden" name="flavor"       value="change_info" >
 <input type="hidden" name="process" value="1" >
 
-<p>
- Your list's
- <strong>
-  Short Name
- </strong>
- is:
- <strong>
-  <!-- tmpl_var list -->
- </strong>
-</p>
+<div class="alert-box info radius">
+	 Your list's
+	 <strong>
+	  Short Name
+	 </strong>
+	 is:
+	 <strong>
+	  <!-- tmpl_var list -->
+	 </strong>
+ </div>
 
 <!-- tmpl_if flags_list_name -->
 
@@ -78,14 +78,19 @@
 <!-- /tmpl_if -->
 
 
-<div class="row">
-   <div class="small-12 columns">
-        <label for="list_name">
-            List Name
-            <input type="text" name="list_name" id="list_name" value="<!-- tmpl_var list_name escape="HTML" -->"  >
-        </label>
-    </div>
-</div>
+	<div class="row">
+		<div class="large-3 medium-3 columns">
+		    <label 
+				class="medium-only-text-right large-only-text-right"
+				for="list_name"
+			>
+            	List Name
+        	</label>
+			</div>
+			<div class="large-9 medium-9 columns">
+		    	<input type="text" name="list_name" id="list_name" value="<!-- tmpl_var list_name escape="HTML" -->"  >
+		    </div>
+		</div>
 
 <!-- tmpl_if flags_invalid_list_owner_email -->
     <div class="alert-box alert radius">
@@ -102,15 +107,19 @@
 <!-- /tmpl_if -->
 
 
-<div class="row">
-   <div class="small-12 columns">
-       <label for="list_owner_email">
-           List Owner Address
-           <input type="text" name="list_owner_email" id="list_owner_email" value="<!-- tmpl_var list_owner_email escape="HTML" -->" >
-       </label>
-   </div>
-</div>
-
+	<div class="row">
+		<div class="large-3 medium-3 columns">
+		    <label 
+				class="medium-only-text-right large-only-text-right"
+				for="list_owner_email"
+			>
+				List Owner Address
+			</label>
+		</div>
+		<div class="large-9 medium-9 columns">
+		  <input type="text" name="list_owner_email" id="list_owner_email" value="<!-- tmpl_var list_owner_email escape="HTML" -->" >
+		</div>
+	</div>
 
    <!-- tmpl_if expr="(using_ses eq '1') && (list_admin_ses_verified ne '1')" -->
        <div class="alert-box alert radius">
@@ -120,14 +129,19 @@
    	</div>
    <!-- /tmpl_if -->
 
-   <div class="row">
-      <div class="small-12 columns">
-          <label for="admin_email">
-              List Administrator Address
-              <input type="text" name="admin_email" id="admin_email" value="<!-- tmpl_var admin_email escape="HTML" -->"  >
-            </label>
-           </div>
-        </div>
+	<div class="row">
+		<div class="large-3 medium-3 columns">
+		    <label 
+				class="medium-only-text-right large-only-text-right"
+				for="admin_email"
+			>
+            	List Administrator Address
+			</label>
+		</div>
+		<div class="large-9 medium-9 columns">
+        	<input type="text" name="admin_email" id="admin_email" value="<!-- tmpl_var admin_email escape="HTML" -->"  >
+       </div>
+    </div>
 
 <!-- tmpl_if flags_list_info -->
     <div class="alert-box alert radius">
@@ -135,15 +149,19 @@
     </div>
 <!--/tmpl_if-->
 
-
-<div class="row">
-    <div class="small-12 columns">
-        <label for="info">
-            List Description
-            <textarea name="info" id="info"><!-- tmpl_var info --></textarea>
-        </label>
-   </div>
-</div>
+	<div class="row">
+		<div class="large-3 medium-3 columns">
+		    <label 
+				class="medium-only-text-right large-only-text-right"
+				for="info"
+			>
+            	List Description
+            </label>
+		</div>
+		<div class="large-9 medium-9 columns">
+			<textarea name="info" id="info"  rows="5"><!-- tmpl_var info --></textarea>        
+	   </div>
+	</div>
 
 <!-- tmpl_if flags_privacy_policy -->
     <div class="alert-box alert radius">
@@ -154,11 +172,16 @@
 <!--/tmpl_if-->
 
 <div class="row">
-    <div class="small-12 columns">
-        <label for="privacy_policy">
-            Privacy Policy
-            <textarea name="privacy_policy" id="privacy_policy"><!-- tmpl_var privacy_policy --></textarea>
-        </label>
+	<div class="large-3 medium-3 columns">
+	    <label 
+			class="medium-only-text-right large-only-text-right"
+			for="privacy_policy"
+		>
+        	Privacy Policy
+    	</label>
+	</div> 
+	<div class="large-9 medium-9 columns">
+        <textarea name="privacy_policy" id="privacy_policy"  rows="5"><!-- tmpl_var privacy_policy --></textarea>
    </div>
 </div>
 
@@ -170,22 +193,25 @@
 <!--/tmpl_if-->
 
 <div class="row">
-    <div class="small-12 columns">
-    <label for="physical_address">
-        Physical Address
-        <textarea name="physical_address" id="physical_address"><!-- tmpl_var physical_address --></textarea>
-     </label>
+	<div class="large-3 medium-3 columns">
+	    <label 
+			class="medium-only-text-right large-only-text-right"
+			for="physical_address"
+		>
+    		Physical Address
+ 		</label>
+	</div>
+	<div class="large-9 medium-9 columns">
+   		 <textarea name="physical_address" id="physical_address" rows="5"><!-- tmpl_var physical_address --></textarea>
     </div>
  </div>
 
-
-
-
-<ul class="button-group right">
-    <li><input type="reset"  class="warning button" value="Clear Changes" ></li>
-    <li><input type="submit" class="success button" value="Save Changes" ></li>
-</ul>
-
+<div class="clearfix">
+	<ul class="button-group right">
+	    <li><input type="reset"  class="warning button" value="Clear Changes" ></li>
+	    <li><input type="submit" class="success button" value="Save Changes" ></li>
+	</ul>
+</div>
 
 
 

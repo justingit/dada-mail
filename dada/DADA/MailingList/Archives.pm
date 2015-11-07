@@ -7,7 +7,7 @@ use Carp qw(carp croak);
 use Try::Tiny; 
 
 
-# A weird fix.
+
 BEGIN {
    if($] > 5.008){
       require Errno;

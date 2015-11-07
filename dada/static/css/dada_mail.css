@@ -73,3 +73,19 @@ iframe#archived_message_body_container {
 	
 	background-color: #fff;
 }
+
+a.menu_disabled,
+a.menu_disabled:link,
+a.menu_disabled:visited,
+a.menu_disabled:hover,
+a.menu_disabled:active {
+
+	font-style: italic;
+	 opacity: 0.66;
+}
+.menu_hidden { 
+	display:none;
+}
+
+
+

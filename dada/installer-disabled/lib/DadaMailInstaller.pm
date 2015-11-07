@@ -20,7 +20,7 @@ use strict;
 
 use Encode qw(encode decode);
 
-# A weird fix.
+
 BEGIN {
     if ( $] > 5.008 ) {
         require Errno;

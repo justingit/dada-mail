@@ -251,7 +251,7 @@
 				             <input type="hidden" name="flavor" value="profile_fields" > 
 				             <input type="hidden" name="process" value="delete_field" > 
 				             <input type="hidden" name="field"  value="<!-- tmpl_var field -->" > 
-				            <input type="submit" value="&#8855;" class="button small alert"  onclick="return removeSubscriberField(this.form);" > 
+				            <button type="submit" class="button small alert"  onclick="return removeSubscriberField(this.form);" ><i class="fi-stop"></li></button>
 				            </form> 
 						</li>
 					</ul>
@@ -316,8 +316,8 @@
 	      <div class="row">
 	        <div class="large-3 medium-3 columns">
 		        <label 
-					for="field"
 					class="medium-only-text-right large-only-text-right"
+					for="field"
 				>
 					Field Name
 				</label> 
@@ -430,8 +430,8 @@
                 </form> 
         
 	<!-- tmpl_else --> 
-	    <div id="alert-box warning radius">
-			Disabled. You must be logged in using the <!-- tmpl_var PROGRAM_NAME --> Root Password.
+	    <div class="alert-box warning radius">
+			Disabled. You are required to login using the <!-- tmpl_var PROGRAM_NAME --> Root Password to Add/Edit/Remove Profile Fields.
 		</div>
 	<!--/tmpl_if-->
 </fieldset>  

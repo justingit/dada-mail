@@ -30,6 +30,13 @@
 	<input type="hidden" id="s_program_url" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" > 
 </form> 
 
+<!-- tmpl_if killed_it -->
+	<div data-alert class="alert-box success radius">
+	    Your Mass Mailing was successfully stopped.
+		<a href="#" class="close">&times;</a>
+	</div>
+<!-- /tmpl_if --> 
+
 <div class="alert-box info radius">
 	<ul>
 		<li> 
@@ -49,13 +56,7 @@
 </div> 
 
 
- <!-- tmpl_if killed_it -->
-
-	<div data-alert class="alert-box success radius">
-	    Your Mass Mailing was successfully stopped.
-		<a href="#" class="close">&times;</a>
-	</div>
-<!-- /tmpl_if --> 
+ 
 
 <fieldset> 
 	<legend>
@@ -173,9 +174,8 @@
 		    <input type="hidden" name="id" value="<!-- tmpl_var message_id -->" > 
 		    <input type="hidden" name="type" value="<!-- tmpl_var message_type -->" > 
 		    <input type="hidden" name="process" value="kill" > 
-		    <input 
+		    <button 
 				type="submit" 
-				value="&#8855;" 
 				<!-- tmpl_unless is_paused -->
 					<!-- tmpl_if sending_done -->
 						disabled="disabled" class="button tiny disabled"
@@ -186,7 +186,7 @@
 					class="button tiny alert killMonitoredSending"
 				<!--/tmpl_unless --> 
 				title="Click to permanently STOP this mass mailing"
-			>
+			><i class="fi-stop"></i></button>
 	    </form> 
 		<!-- /tmpl_if --> 
 		

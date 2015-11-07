@@ -1595,8 +1595,9 @@ $MIME_OPTIMIZE     //= 'no tmp files';
     invite_message_subject     => undef,
 
     # Feature Set
-    admin_menu           => undef,
-    disabled_screen_view => 'grey_out',
+    admin_menu               => undef,
+    disabled_screen_view     => 'hide',
+	list_control_panel_style => 'top_bar',
 
     # List CP -> Options
 
