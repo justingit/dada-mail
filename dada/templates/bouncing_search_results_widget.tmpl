@@ -5,14 +5,12 @@
 
 	
 <!-- tmpl_loop search_results -->
-<div <!-- tmpl_if __odd__ -->class="alt"<!-- tmpl_else -->style="background:#fff"<!-- /tmpl_if -->>
-	<div style="padding:5px">
-		<h2>
+		<h3>
 			Date: 
 			<!-- tmpl_var date -->
-		</h2>
-		<div style="padding-left:5px">
-			<table>
+		</h3>
+		
+			<table width="100%" class="responsive">
 				<tr>
 					<td>
 						<strong>
@@ -47,11 +45,10 @@
 		</td>
 		</tr>
 	</table>
-	<div style="padding-left:5px">
-		<h2>
+		<h3>
 			Diagnostics of the Bounced Message: 
-		</h2>
-		<table  style="margin-left:10px;padding-left:10px">
+		</h3>
+		<table width="100%" class="responsive">
 		<!-- tmpl_loop diagnostics -->
 			<tr>
 				<td>
@@ -67,12 +64,7 @@
 
 </table> 
 
-</div> 
-</div> 
-
-    </div> 
-    </div> 
-        <!-- /tmpl_loop -->
+<!-- /tmpl_loop -->
 
 
 <!-- end bouncing_search_results_widget.tmpl -->

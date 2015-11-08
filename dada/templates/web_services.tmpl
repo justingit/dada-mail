@@ -20,6 +20,7 @@
 	   <!-- tmpl_include help_link_widget.tmpl -->
 	</div>
 </div>
+<div id="web_services"></div>
 <div id="screen_meta" data-menu_highlight="web_services"></div>
 
 
@@ -35,12 +36,8 @@
 
 <!-- tmpl_if keys_reset --> 
     	<div data-alert class="alert-box success radius">
-        <p>
          Public and Private Keys have been reset.
-        </p>
-		<div style="text-align: center;">
-		<input type="button" class="button small fade_me" value="Thanks!" >
-		</div>
+	 	<a href="#" class="close">&times;</a>
 	</div>
 <!-- /tmpl_if -->
 
@@ -50,27 +47,53 @@
     <input type="hidden" name="process" value="reset_keys" >
 
     <fieldset> 
-        <div class="row">
-            <div class="small-12 columns">
+
                 <label for="public_api_key">
                     Public API Key
-                    <input type="text" value="<!-- tmpl_var list_settings.public_api_key escape="HTML" -->" id="public_api_key" >
                 </label>
+
+		<div class="row collapse">
+			<div class="large-10 medium-10 columns">
+                    <input readonly type="text" value="<!-- tmpl_var list_settings.public_api_key escape="HTML" -->" id="public_api_key" >
            </div> 
+			<div class="large-2 medium-2 columns">
+	 			<button 
+		
+	 				type="button" 
+	 				class="zclip postfix" 
+	 				data-zclip-target-id="public_api_key"
+	 			>
+	 					Copy
+	 				</button>
+			</div>
         </div>
-            
-        <div class="row">
-            <div class="small-12 columns">
-                <label for="private_api_key">
-                    Private API Key
-                    <input type="text"  value="<!-- tmpl_var list_settings.private_api_key escape="HTML" -->" id="private_api_key">
-                </label>
+
+        <label for="private_api_key">
+            Private API Key
+        </label>
+
+		<div class="row collapse">
+			<div class="large-10 medium-10 columns">
+                    <input readonly type="text"  value="<!-- tmpl_var list_settings.private_api_key escape="HTML" -->" id="private_api_key">
            </div> 
+			<div class="large-2 medium-2 columns">
+	 			<button 
+		
+	 				type="button" 
+	 				class="zclip postfix" 
+	 				data-zclip-target-id="private_api_key"
+	 			>
+	 					Copy
+	 				</button>
+			</div>
+
         </div>
         
-        <ul class="button-group right">    
-             <li><input type="submit" class="button success" value="Reset Keys" ></li>
-        </ul>
+		<div class="clearfix">
+	        <ul class="button-group right">    
+	             <li><input type="submit" class="button warning" value="Reset Keys..." ></li>
+	        </ul>
+		</div>
     </fieldset> 
 </form> 
 

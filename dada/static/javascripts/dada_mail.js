@@ -668,6 +668,16 @@ jQuery(document).ready(function($){
 
 
 	}
+	
+	if ($("#web_services").length) {
+ 	   $("body")
+        .on("copy", ".zclip", function(/* ClipboardEvent */ e) {
+		  var target_id = $(this).data("zclip-target-id"); 
+          e.clipboardData.clearData();
+          e.clipboardData.setData("text/plain", $("#" + target_id).val());
+          e.preventDefault();
+        });
+	}
 
 	function toggle_sub_notice_to(){
 		if($("#send_subscription_notice_to option:selected").val() == "alt"){
