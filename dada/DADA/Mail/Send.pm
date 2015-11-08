@@ -103,9 +103,7 @@ sub new {
             $self->{ls} = $ls;
         }
         else {
-
             $self->{ls} = $args->{-ls_obj};
-
         }
 
         $self->{list} = $args->{-list};

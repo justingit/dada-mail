@@ -723,7 +723,7 @@ sub forward_to_list_owner {
     require DADA::Mail::Send;
     my $mh = DADA::Mail::Send->new(
         {
-            list => $args->{-ls_obj}->param('list')
+            -list => $args->{-ls_obj}->param('list')
         }
     );
 

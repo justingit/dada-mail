@@ -46,16 +46,49 @@
 	
 	
 	<div class="tabs-content">
-		
 		<div class="content tab-title active" id="modal_menu"> 
-     	   <p>
-			   Place the following in the head of your page:
-		  </p>       
-     	 <textarea cols="50" rows="12"><!-- tmpl_var jquery_head_code escape="HTML" --></textarea>
-
-		<p>Place the following in the body of your page:</p> 
-		<textarea cols="50" rows="12"><!-- tmpl_var jquery_body_code escape="HTML" --></textarea>
-
+			Place the following in the &lt;head&gt; of your page:
+			<div class="row">
+				<div class="small-12 columns">
+					<button 
+						type="button" 
+						class="zclip expand" 
+						data-zclip-target-id="modal_menu_subscription_form_head"
+						>
+							Copy
+					</button>
+				</div>
+			</div> 
+			<div class="row">
+				<div class="small-12 columns">
+					<textarea 
+						id="modal_menu_subscription_form_head"
+						rows="12" 
+						readonly><!-- tmpl_var jquery_head_code escape="HTML" --></textarea>
+				</div>
+			</div> 
+			  
+			<p>Place the following in the body of your page:</p> 
+			<div class="row">
+				<div class="small-12 columns">
+					<button 
+						type="button" 
+						class="zclip expand" 
+						data-zclip-target-id="modal_menu_subscription_form_body"
+						>
+							Copy
+					</button>
+				</div>
+			</div>
+			<div class="row">
+				<div class="small-12 columns">
+					<textarea 
+						readonly
+						rows="12"
+						id="modal_menu_subscription_form_body"
+						><!-- tmpl_var jquery_body_code escape="HTML" --></textarea>
+				</div>
+			</div>
 		<div class="row">
   		  <div class="small-6 small-centered columns">
 				 <a 
@@ -74,8 +107,23 @@
 		<p>
 			Copy the code in the text box and add it to any page on your site.
 		</p>
-		<textarea name="code" cols="50" rows="12"><!-- tmpl_var subscription_form escape="HTML" --> </textarea>
-
+		
+		<div class="row">
+			<div class="small-12 columns">
+				<button 
+					type="button" 
+					class="zclip expand" 
+					data-zclip-target-id="full_subscription_form"
+					>
+						Copy
+				</button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="small-12 columns">
+				<textarea readonly id="full_subscription_form" name="full_subscription_form" cols="50" rows="12"><!-- tmpl_var subscription_form escape="HTML" --> </textarea>
+		</div>
+	</div>
 	    <fieldset>
 	    <legend>
 	    Working Preview</legend>
@@ -86,8 +134,24 @@
 		<p>
 			Copy the code in the text box and add it to any page on your site.
 		</p>
-	 	<textarea name="min_code" cols="50" rows="12"><!-- tmpl_var minimal_subscription_form --></textarea>
-	
+		
+		<div class="row">
+			<div class="small-12 columns">
+				<button 
+					type="button" 
+					class="zclip expand" 
+					data-zclip-target-id="minimal_subscription_form"
+					>
+						Copy
+				</button>
+			</div>
+		</div>
+		<div class="row">
+			<div class="small-12 columns">
+				<textarea readonly id="minimal_subscription_form" name="minimal_subscription_form" cols="50" rows="12"><!-- tmpl_var minimal_subscription_form --></textarea>
+			</div>
+		</div> 
+		
 		<fieldset>
 			<legend>
 				Working Preview

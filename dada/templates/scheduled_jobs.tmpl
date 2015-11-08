@@ -29,29 +29,52 @@
     
 <fieldset> 
     <legend> 
-        Scheduled Jobs URL:
+        Scheduled Jobs URL
     </legend>
     
-    <div data-alert class="alert-box success radius"> 
-        <strong>
-            <!-- tmpl_var S_PROGRAM_URL -->/<!-- tmpl_var scheduled_jobs_flavor escape="HTML" -->/_all/_all/_silent/
-		</strong> 
+    <div data-alert class="alert-box info radius"> 
+		<!-- tmpl_var S_PROGRAM_URL -->/<!-- tmpl_var scheduled_jobs_flavor escape="HTML" -->/_all/_all/_silent/	
     </div> 
-    <p> 
-        Set this URL to be fetched by a scheduled task (cronjob) on a recurring schedule (~5 minutes)
+	
+	<p>
+		Set this URL to be fetched by a scheduled task (cronjob) on a recurring schedule (~5 minutes)
     </p>
+	
     
     <div class="row">
 		<div class="small-12 columns">
 	        <label for="cronjob_url">
 				Here's an example of a cronjob, using the curl command: 
 			</label> 
-	        <input 
-				type="text"
-				id="cronjob_url"
-				value="<!-- tmpl_var name="curl_location" default="/cannot/find/curl" --> --user-agent &quot;Mozilla/5.0 (compatible;)&quot; --silent --get --url <!-- tmpl_var S_PROGRAM_URL -->/<!-- tmpl_var scheduled_jobs_flavor escape="HTML" -->/_all/_all/_silent/"
-				readonly
-			>
+		
+		
+		<div class="row collapse">
+			<div class="large-10 medium-10 columns">
+		        <input 
+					type="text"
+					id="cronjob_url"
+					value="<!-- tmpl_var name="curl_location" default="/cannot/find/curl" --> --user-agent &quot;Mozilla/5.0 (compatible;)&quot; --silent --get --url <!-- tmpl_var S_PROGRAM_URL -->/<!-- tmpl_var scheduled_jobs_flavor escape="HTML" -->/_all/_all/_silent/"
+					readonly
+				>
+			</div>
+			<div class="large-2 medium-2 columns">
+  			<button 
+			
+  				type="button" 
+  				class="zclip postfix" 
+  				data-zclip-target-id="cronjob_url"
+  			>
+  					Copy
+  				</button>
+				
+			</div>
+			
+		</div> 
+		
+		
+		
+		
+			
 		</div>
 	</div>
     
@@ -60,16 +83,11 @@
         <input type="hidden" name="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" id="s_program_url" > 
         <input type="hidden" name="sched_flavor" id="sched_flavor" value="<!-- tmpl_var scheduled_jobs_flavor escape="HTML" -->" > 
 
-		<div class="clearfix">
-			<div class="text-center">
 				<input 
 					type="button" 
 					value="Manually Run Scheduled Jobs" 
-					class="success button manually_run_scheduled_jobs"
+					class="success button manually_run_scheduled_jobs expand"
 				>
-			</div>
-		</div>
-		<div data-reveal id="scheduled_jobs_modal" class="reveal-modal" role="dialog" class="medium"></div>
 </form>
 
 

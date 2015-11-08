@@ -803,7 +803,13 @@ jQuery(document).ready(function($){
 	}
 
 	if ($("#html_code").length) {
-		$("#tabs").tabs({ heightStyle: "auto" });
+ 	   $("body")
+        .on("copy", ".zclip", function(/* ClipboardEvent */ e) {
+		  var target_id = $(this).data("zclip-target-id"); 
+          e.clipboardData.clearData();
+          e.clipboardData.setData("text/plain", $("#" + target_id).val());
+          e.preventDefault();
+        });
 	}
 
 
@@ -947,7 +953,15 @@ jQuery(document).ready(function($){
 
 
 	if($("#scheduled_jobs").length) {
-		$("body").on("click", ".manually_run_scheduled_jobs", function(event) {
+ 	   $("body")
+        .on("copy", ".zclip", function(/* ClipboardEvent */ e) {
+		  var target_id = $(this).data("zclip-target-id"); 
+          e.clipboardData.clearData();
+          e.clipboardData.setData("text/plain", $("#" + target_id).val());
+          e.preventDefault();
+        });
+		
+	$("body").on("click", ".manually_run_scheduled_jobs", function(event) {
 			
 			var responsive_options = {
 			  width: '95%',

@@ -13015,7 +13015,10 @@ sub schedules {
             #....
         }
         else {
+			
+			
             $r .= "\n\nPlugin: $schedule\n" . '-' x 72 . "\n\n";
+			
             try {
                 require 'plugins/' . $schedule;
                 $r .= $DADA::Config::PLUGIN_RUNMODES->{$schedule}->{sched_run}->($list);
@@ -13045,8 +13048,7 @@ sub schedules {
         if ( $for_colorbox == 1 ) {
             return '<pre>' . 
 					$r . 
-					'</pre>' . 
-					'<a class="close-reveal-modal" aria-label="Close">&#215;</a>';
+					'</pre>';
         }
         else {
            # $ENV{CGI_APP_RETURN_ONLY} = 1;
