@@ -1,9 +1,9 @@
 <!-- begin archive_nav_table_widget.tmpl --> 
 
-<div class="row">
+<div class="row panel">
 	<div class="medium-5 columns medium-text-left">
 		<!-- tmpl_if prev_subject --> 
-			&lt;&lt; Previous
+			&lsaquo;
 			<a href="<!-- tmpl_var PROGRAM_URL -->?flavor=<!-- tmpl_var flavor_label -->&list=<!-- tmpl_var list_settings.list -->&id=<!-- tmpl_var prev -->">
 			 <!-- tmpl_var prev_subject -->
 			</a>
@@ -18,11 +18,10 @@
 	</div>
 	<div class="medium-5 columns medium-text-right">
 	<!-- tmpl_if next_subject --> 
-		Next 
 		<a href="<!-- tmpl_var PROGRAM_URL -->?flavor=<!-- tmpl_var flavor_label -->&list=<!-- tmpl_var list_settings.list -->&id=<!-- tmpl_var next -->">
 		 <!-- tmpl_var next_subject -->
 		</a>
-		&gt;&gt;
+		&rsaquo;
 	<!-- tmpl_else --> 
 			 &nbsp;
 	<!-- /tmpl_if --> 

@@ -1,11 +1,11 @@
 <!-- begin archive_index_nav_table_widget.tmpl -->
 
-<div class="row">
+<div class="row panel">
 	<div class="small-4 columns text-left">
 		<!-- tmpl_if expr="((prev_link_start >= 0) && (prev_link_start ne ''))" -->
-			&lt; &lt; 
+			&lsaquo;
 			<a href="<!-- tmpl_var url -->?flavor=<!-- tmpl_var flavor_label -->&list=<!-- tmpl_var list escape="URL" -->&start=<!-- tmpl_var prev_link_start -->">
-				Previous
+				Older
 			</a>
 		<!-- tmpl_else --> 
 			&nbsp;
@@ -19,8 +19,8 @@
 	<div class="small-4 columns text-right">
 		<!-- tmpl_if expr="((next_link_start >= 0) && (next_link_start ne ''))" -->
 			<a href="<!-- tmpl_var url -->?flavor=<!-- tmpl_var flavor_label -->&list=<!-- tmpl_var list escape="URL" -->&start=<!-- tmpl_var next_link_start -->">
-				Next
-			</a> &gt;&gt;
+				Newer
+			</a>&rsaquo;
 		<!-- tmpl_else --> 
 			&nbsp;
 		<!-- /tmpl_if --> 

@@ -87,5 +87,13 @@ a.menu_disabled:active {
 	display:none;
 }
 
-
-
+#recaptcha_area input[type="text"] {
+  display: inline-block;
+  height: auto;
+}
+#recaptcha_response_field {
+	margin: 12px 0 0 0!important;
+}
+#recaptcha_area table thead tr th, table tfoot tr th, table tbody tr td, table tr td, table tfoot tr td {
+	line-height: normal;
+}

@@ -13,7 +13,7 @@
 		</div>
 	</div>
 	<div class="large-6 large-pull-6 columns panel"  data-equalizer-watch>
-		<!-- tmpl_var list_settings.info -->
+	
 			<div class="alert-box info radius">
 				<ul> 
 				<!-- tmpl_if list_settings.private_list --> 
@@ -45,7 +45,7 @@
 			        </li>
 					<li>
 						<!-- this is strange, as the bare link will be wrapped with a HTML link --> 
-						<p>Start a new thread, email: (<!-- tmpl_var list_settings.discussion_pop_email -->)</p>
+						<p>Start a new thread, email: <!-- tmpl_var list_settings.discussion_pop_email --></p>
 					</li>
 		
 			    <!-- tmpl_else --> 
@@ -60,6 +60,8 @@
 			     <!-- /tmpl_if --> 
 			</ul>
 		</div>
+		
+		<!-- tmpl_var list_settings.info -->
 
 		<h4>
 			Privacy Policy:

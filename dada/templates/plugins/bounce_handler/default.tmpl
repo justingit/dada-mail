@@ -29,7 +29,7 @@
 
 
 <!-- tmpl_unless plugin_configured --> 
-	<div class="alert-box waring radius">
+	<div class="alert-box warning radius">
 		<!-- tmpl_var Plugin_Name --> not configured - 
 		You must set up the Bounce Handler Email Address in the plugin-specific configuration. 
 	</div>
@@ -42,18 +42,16 @@
 <h3>
 	Bounce Email Scorecard
 </h3>
-<div class="alert-box waring radius">
+<div class="alert-box info radius">
 	The Bounce Scorecard keeps track of subscribed address on your mailing list 
 	that bounce back message reports. Click on any address to see
 	these message report summaries.
 </div>
+
 <div id="bounce_scorecard_loading"><p>&nbsp;</p></div>
 <div id="bounce_scorecard" style="height:375px"></div> 
 
-
-
-
-
+<div class="clearfix"></div>
 <fieldset> 
 	<legend>
 		Manually Run <!-- tmpl_var Plugin_Name -->
@@ -200,15 +198,17 @@
 	</div> 
 </div> 
 	
-	<ul class="button-group right">
-	    <li>
-			<input 
-				type="submit" 
-				class="success button" 
-				value="Save Preferences"
-			> 
-		</li>
-	</ul>
+	<div class="clearfix">
+		<ul class="button-group right">
+		    <li>
+				<input 
+					type="submit" 
+					class="success button" 
+					value="Save Preferences"
+				> 
+			</li>
+		</ul>
+	</div>
 </form> 
 </fieldset>
 
@@ -261,15 +261,11 @@
 		<input type="hidden" name="flavor" value="plugins" > 
 		<input type="hidden" name="plugin" value="bounce_handler" > 
 		<input type="hidden" name="prm" value="cgi_show_plugin_config" > 
-		<ul class="button-group right">
-		    <li>
 				<input 
 					type="submit" 
 					value="View All Plugin Configurations..." 
-					class="warning button"
+					class="warning button expand"
 				>
-			</li>
-		</ul> 
 	</form> 
 </fieldset> 
 

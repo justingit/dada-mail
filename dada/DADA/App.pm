@@ -9795,8 +9795,10 @@ sub archive {
                     %$archive_widgets,
 
                 },
+				
                 -list_settings_vars       => $ls->get,
-                -list_settings_vars_param => { -dot_it => 1 },
+                -list_settings_vars_param => { -list => $list, -dot_it => 1 },
+		        -webify_and_santize_these => [qw(list_settings.discussion_pop_email list_settings.list_owner_email list_settings.info list_settings.privacy_policy )], 
 
             }
         );
@@ -9984,7 +9986,9 @@ sub archive {
 
                 },
                 -list_settings_vars       => $ls->get,
-                -list_settings_vars_param => { -dot_it => 1 },
+                -list_settings_vars_param => { -list => $list, -dot_it => 1 },
+		        -webify_and_santize_these => [qw(list_settings.discussion_pop_email list_settings.list_owner_email list_settings.info list_settings.privacy_policy )], 
+                -list_settings_vars_param => { -list => $list, -dot_it => 1 },				
             }
         );
 

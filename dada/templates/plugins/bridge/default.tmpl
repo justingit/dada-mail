@@ -315,31 +315,36 @@
 										Disabled. The IO::Socket::SSL module needs to be installed.
 									</span>
 								<!--/tmpl_unless--> 
-							</div>
-						</div>
-						<div class="row">
-							<div class="small-12 columns">
-								<ul class="button-group right">
-								    <li>
-										<input 
-											type="button small" 
-											class="button small plugins_bridge_test_pop3" 
-											value="Test POP3 Login Information..."
-										>
-									</li>
-									<li>
-										<input 
-											type="button small" 
-											class="warning plugins_bridge_manually_check_messages  button small" 
-											value="Manually Check and Send Waiting Messages..."
-										>
-									</li>
-								</ul>
+								
+								<div class="clearfix">
+									<ul class="button-group right">
+									    <li>
+											<button
+												type="button" 
+												class="button small plugins_bridge_test_pop3" 
+											>
+												Test POP3 Login Information...
+											</button>
+										</li>
+										<li>
+											<button 
+												type="button" 
+												class="warning plugins_bridge_manually_check_messages  button small" 
+												value="Manually Check and Send Waiting Messages..."
+											>
+												Manually Check and Send Waiting Messages...
+											</button>
+										</li>
+									</ul>
+								</div>
 								<div data-reveal id="plugins_bridge_test_pop3"               class="reveal-modal medium" role="dialog"></div>
 								<div data-reveal id="plugins_bridge_manually_check_messages" class="reveal-modal medium" role="dialog"></div>
 								
 							</div>
 						</div>
+
+								
+
 					</div>
 				</div><!--  bridge_pop3_account_params --> 
 				
@@ -843,14 +848,16 @@
 				</label>
 			</div>
 		</div>
-		<ul class="button-group right">
-		    <li>
-				<input type="button"  class="success view_authorized_senders button small" value="View Authorized Senders (<!-- tmpl_var authorized_senders_count -->)">
-			</li>
-			<li>
-				<input type="button" class="success add_authorized_senders button small" value="Add Authorized Senders">
-			</li>
-		</ul>
+		<div class="clearfix">
+			<ul class="button-group right">
+			    <li>
+					<input type="button"  class="success view_authorized_senders button small" value="View Authorized Senders (<!-- tmpl_var authorized_senders_count -->)">
+				</li>
+				<li>
+					<input type="button" class="success add_authorized_senders button small" value="Add Authorized Senders">
+				</li>
+			</ul>
+		</div>
 	</fieldset>
 
 
@@ -1144,18 +1151,12 @@
 	<legend>
 		<!-- tmpl_var Plugin_Name --> Email Templates
 	</legend>
-	<div class="clearfix">
-		<ul class="button-group right">
-		    <li>
 				<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="get"> 
 				<input type="hidden" name="flavor" value="plugins"> 
 				<input type="hidden" name="plugin" value="bridge"> 
 				<input type="hidden" name="prm" value="edit_email_msgs"> 
-				<input type="submit" value="Customize Email Templates..." class="success button"> 
+				<input type="submit" value="Customize Email Templates..." class="success button expand"> 
 				</form> 
-			</li>
-		</ul>
-	</div>
 </fieldset> 
 
 
@@ -1163,17 +1164,10 @@
 
 <legend><!-- tmpl_var Plugin_Name --> Configuration</legend>
 
-	<div class="clearfix">
-		<ul class="button-group right">
-		    <li>
 				<form action="<!-- tmpl_var Plugin_URL -->" method="get"> 
 				<input type="hidden" name="flavor" value="plugins"> 
 				<input type="hidden" name="plugin" value="bridge"> 
 				<input type="hidden" name="prm" value="cgi_show_plugin_config"> 
-				<input type="submit" value="View All Plugin Configurations..." class="success button"> 
+				<input type="submit" value="View All Plugin Configurations..." class="success button expand"> 
 				</form> 
-			</li>
-		</ul>
-	</div>
-
 </fieldset>

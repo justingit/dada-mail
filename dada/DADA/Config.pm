@@ -720,7 +720,7 @@ $ADMIN_MENU //= [
 
 
 
-{-Title      => 'Your Mailing List',
+{-Title      => 'Mailing List',
  -Activated  => 1,
  -Submenu    => [
 				{
@@ -1016,16 +1016,6 @@ $ADMIN_MENU //= [
 				
 			], 
 	},
-			
-	{
-	-Title      => 'App Information',
-	-Activated  => 1,
-	-Submenu    => [
-
-
-
-			],
-		},
 
 ];
 
