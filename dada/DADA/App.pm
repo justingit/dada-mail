@@ -903,11 +903,7 @@ sub send_email_button_widget {
         -cgi_obj  => $q,
         -Function => 'send_email send_url_email'
     );    
-	
-	warn 'from send_email_button_widget'; 
-	use Data::Dumper; 
-	warn Dumper([$admin_list, $root_login, $checksout, $error_msg]);
-	
+		
     if ( !$checksout ) { return $error_msg; }
     my $list = $admin_list;
     

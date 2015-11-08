@@ -25,17 +25,20 @@
 	 
 <!-- /tmpl_unless -->
  
- <p>
-  You installed <!-- tmpl_var name="PROGRAM_NAME" --> correctly. The next 
-  thing to do is set up a Mailing List. Be sure you know your <!-- tmpl_var PROGRAM_NAME --> Root Password 
-  before you begin making a new Mailing List.
- </p>
- <p>
-  <strong>
-   First, please read, understand and agree to the <em>GNU Public License</em>, and 
-   agree not to use <!-- tmpl_var PROGRAM_NAME --> for unsolicited email (SPAM):
-  </strong>
- </p>
+ <div class="alert-box info radius"> 
+	 <p>
+	  You installed <!-- tmpl_var name="PROGRAM_NAME" --> correctly. The next 
+	  thing to do is set up a Mailing List. Be sure you know your <!-- tmpl_var PROGRAM_NAME --> Root Password 
+	  before you begin making a new Mailing List.
+	 </p>
+	 <p>
+	  <strong>
+	   First, please read, understand and agree to the <em>GNU Public License</em>, and 
+	   agree not to use <!-- tmpl_var PROGRAM_NAME --> for unsolicited email (SPAM):
+	  </strong>
+	 </p>
+</div>
+
  <p class="text-center">
   <div style="width:95%;height:150px;overflow:auto;border:1px solid black;padding:5px;margin:5px">
    <!-- tmpl_include name="gpl.tmpl" -->
@@ -56,25 +59,25 @@
 	 
 <!-- /tmpl_if -->
  
- <p>
-  <input type="checkbox" name="agree" value="yes" >
-  I agree to the GPL license and no-SPAM conditions.
- </p>
+ <div class="row">
+	 <div class="small-12 columns">
+		<label for="agree">
+			<input type="checkbox" name="agree" id="agree" value="yes" >
+			I agree to the GPL license and no-SPAM conditions.
+		</label>
+	</div>
+</div> 
+
  <input type="hidden" name="flavor" value="new_list" >
 
 
- <p>
   <label for="root_password">
    <!-- tmpl_var PROGRAM_NAME --> Root Password:
   </label>
-  <br >
+  <input type="password" name="root_password" id="root_password" maxlength="24">
   
-  <input type="password" name="root_password" id="root_password" maxlength="24" >
   
-  <input type="submit" class="success button" value="Set Up a New Mailing List" >
- </p>
-
-
+  <input type="submit" class="success large button expand" value="Set Up a New Mailing List" >
 
 	 <!-- tmpl_if DISABLE_OUTSIDE_LOGINS --> 
 	     <input type="hidden" name="auth_state" value="<!-- tmpl_var auth_state -->" > 
@@ -84,9 +87,6 @@
 
 </form>
 
-
-<hr > 
-
 <h2>Program Configuration</h2>
 
 <form action="<!-- tmpl_var name="PROGRAM_URL" -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
@@ -94,18 +94,17 @@
 
 If you would like to see more information about your current Program Configuration, enter your <!-- tmpl_var PROGRAM_NAME --> Root Password, below:
 
-<p>
  <label for="root_password">
   <!-- tmpl_var PROGRAM_NAME -->Root Password:
  </label>
- <br >
- 
-<input type="hidden" name="flavor" value="setup_info" > 
 
- <input type="password" name="root_password" id="root_password" maxlength="24" >
  
- <input type="submit" class="success button" value="Program Configuration Settings" >
-</p>
+<input type="hidden" name="flavor" value="setup_info"> 
+
+ <input type="password" name="root_password" id="root_password" maxlength="24">
+ 
+ <input type="submit" class="success large button expand" value="Program Configuration Settings">
+
 
 </form> 
 

@@ -131,11 +131,23 @@
 							<a href="<!-- tmpl_var PROGRAM_URL -->/list/<!-- tmpl_var list_settings.list -->/" target="_blank">
 								Logged in as 
 								<!-- tmpl_if root_login --> 
-									<!-- tmpl_var PROGRAM_NAME --> Root
+									<strong>
+										<!-- tmpl_var PROGRAM_NAME --> Root
+									</strong>
 								<!-- tmpl_else --> 
-									List Owner
+									<strong>
+										List Owner
+									</strong>
 								<!-- /tmpl_if -->
-								of  <!-- tmpl_var list_settings.list_name --> (<!-- tmpl_var list_settings.list -->)
+								of  
+								<strong>
+									<!-- tmpl_var list_settings.list_name -->
+								</strong>
+									 (
+									 <em>
+										 <!-- tmpl_var list_settings.list -->
+									</em>
+									)
 							</a>   
 						</li>
 						<!-- tmpl_if login_switch_widget --> 

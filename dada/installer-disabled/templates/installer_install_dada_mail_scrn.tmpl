@@ -63,9 +63,9 @@
  </p>
  
  <div data-alert class="alert-box success radius">
-     <h4>
+
          <!-- tmpl_var S_PROGRAM_URL -->/<!-- tmpl_var scheduled_jobs_flavor escape="HTML" -->/_all/_all/_silent/
-     </h4> 
+
  </div> 
  <p> 
      Set this URL to be fetched by a scheduled task (cronjob) on a recurring schedule (~5 minutes)
@@ -89,7 +89,7 @@
 
 <form> 
 <div class="text-center"> 
-<input type="button" value="Move the, 'dada/installer' Directory, Disable the, 'install.cgi' script" class="cautionary button" id="move_installer_dir" />	
+<input type="button" value="Move the, 'dada/installer' Directory, Disable the, 'install.cgi' script" class="cautionary button expand" id="move_installer_dir" />	
 </div> 
 </form> 
 <div id="move_results"></div> 
@@ -120,9 +120,7 @@
 
 
 <form action="<!-- tmpl_var submitted_PROGRAM_URL -->"> 
-	<div class="text-center"> 
-		<input type="submit" class="processing large button" value="&#187; Start Working With  <!-- tmpl_var PROGRAM_NAME -->! &#171;" />
-	</div>	
+		<input type="submit" class="success large button expand" value="&#187; Start Working With  <!-- tmpl_var PROGRAM_NAME -->! &#171;" />
 </form>
 
 

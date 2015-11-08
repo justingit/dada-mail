@@ -7,13 +7,13 @@
                 <!-- tmpl_if logged_in --> 
                     <li class="active">
                         <a href="#">
-                            <!-- tmpl_var list_settings.list_name -->
+                           <!-- tmpl_var list_settings.list_name --> (<em><!-- tmpl_var list_settings.list --></em>)
                         </a>
                     </li>                
                 <!-- tmpl_else --> 
                     <li>
                         <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=change_login&change_to_list=<!-- tmpl_var list_settings.list escape="URL" -->&location=<!-- tmpl_var location escape="URL" -->">
-                            <!-- tmpl_var list_settings.list_name -->
+                            <!-- tmpl_var list_settings.list_name --> (<em><!-- tmpl_var list_settings.list --></em>)
                         </a>
                     </li>
                  <!-- /tmpl_if -->

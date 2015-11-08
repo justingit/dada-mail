@@ -142,9 +142,6 @@ sub login_cookies {
         %DADA::Config::COOKIE_PARAMS
     );
 
-    # My proposal to address the situation is quit relying on flush() happen
-    # automatically, and recommend that people use an explicit flush()
-    # instead, which works reliably for everyone.
     $session->flush();
 
     if ( $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1 ) {
@@ -174,12 +171,10 @@ sub kcfinder_session_begin {
     my $cookies = $cgi->parse_cookies;
     my $sess_id = '';
     if (
-        $cookies->{ $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}
-              ->{session_name} } )
+        $cookies->{ $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_name} } )
     {
         $sess_id =
-          $cookies->{ $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}
-              ->{session_name} };
+          $cookies->{ $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{session_name} };
     }
     else {
         $new_sess = 1;

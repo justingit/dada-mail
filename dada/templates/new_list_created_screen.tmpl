@@ -6,121 +6,119 @@
 <table  style="width:100%" class="responsive">
  <tr>
   <td>
-   <p>
     <strong>
-     List Name:
+     List Name
     </strong>
-   </p>
   </td>
   <td>
-   <p>
     <!-- tmpl_var list_name escape="HTML" -->
-   </p>
-  </td>
- </tr>
- <tr class="alt">
-  <td>
-   <p>
-    <strong>
-     List Short Name:
-    </strong>
-   </p>
-  </td>
-  <td>
-   <p>
-    <!-- tmpl_var list  escape="HTML" -->
-   </p>
   </td>
  </tr>
  <tr>
   <td>
-   <p>
+   
     <strong>
-      Password:
+     List Short Name
     </strong>
-   </p>
+   
   </td>
   <td>
-   <p>
+   
+    <!-- tmpl_var list  escape="HTML" -->
+   
+  </td>
+ </tr>
+ <tr>
+  <td>
+    <strong>
+      Password
+    </strong>
+  </td>
+  <td>
+   
     <em>
      (not shown)
     </em>
-   </p>
-  </td>
- </tr>
- <tr class="alt">
-  <td>
-   <p>
-    <strong>
-     List Owner Email Address:
-    </strong>
-   </p>
-  </td>
-  <td>
-   <p>
-    <!-- tmpl_var list_owner_email  escape="HTML" -->
-   </p>
+   
   </td>
  </tr>
  <tr>
   <td>
-   <p>
+    <strong>
+     List Owner Email Address
+    </strong>
+  </td>
+  <td>
+   
+    <!-- tmpl_var list_owner_email  escape="HTML" -->
+   
+  </td>
+ </tr>
+ <tr>
+  <td>
+   
     <strong>
      List Information:
     </strong>
-   </p>
+   
   </td>
   <td>
-   <p>
+   
     <!-- tmpl_var info  escape="HTML" -->
-   </p>
-  </td>
- </tr>
- <tr class="alt">
-  <td>
-   <p>
-    <strong>
-     Privacy Policy:
-    </strong>
-   </p>
-  </td>
-  <td>
-   <p>
-    <!-- tmpl_var privacy_policy  escape="HTML" -->
-   </p>
+   
   </td>
  </tr>
  <tr>
   <td>
-   <p>
+   
+    <strong>
+     Privacy Policy:
+    </strong>
+   
+  </td>
+  <td>
+   
+    <!-- tmpl_var privacy_policy  escape="HTML" -->
+   
+  </td>
+ </tr>
+ <tr>
+  <td>
+   
     <strong>
      Physical Address:
     </strong>
-   </p>
+   
   </td>
   <td>
-   <p>
+   
     <!-- tmpl_var physical_address  escape="HTML" -->
-   </p>
+   
   </td>
  </tr>
 </table>
 
 
 <fieldset>
-<legend>Log into Your New Mailing List</legend>
-<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
+	<legend>
+		Log into Your New Mailing List
+	</legend>
 
-  <p>
-   <label for="admin_password">
-    List/<!-- tmpl_var PROGRAM_NAME --> Root Password:
-   </label><br >
+<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->"> 
     <input type="hidden"   name="flavor"          value="login" >
     <input type="hidden"   name="admin_list" value="<!-- tmpl_var list -->" >
-    <input type="password" name="admin_password" id="admin_password" maxlength="24" >
-   <input type="hidden" name="auth_state" value="<!-- tmpl_var auth_state -->" > 
-   <input type="submit" class="plain button" value="Log Into Your New Mailing List" >   
-</p>
+	<input type="hidden" name="auth_state" value="<!-- tmpl_var auth_state -->" > 
+
+	<div class="row">
+		<div class="small-12 columns">
+		   <label for="admin_password">
+		   	 List/<!-- tmpl_var PROGRAM_NAME --> Root Password:
+		   </label>
+		    <input type="password" name="admin_password" id="admin_password" maxlength="24" >
+		</div>
+	</div>
+   
+   <input type="submit" class="success button expand" value="Log Into Your New Mailing List" >   
 
    </form>
 
