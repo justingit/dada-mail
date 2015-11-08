@@ -4,7 +4,7 @@
 
 =head1 Dada Mail Changelog for v9.x
 
-=head1 9.0.0 Alpha 1 - 10/27/15
+=head1 9.0.0 Alpha 2 - 11/09/15
 
 Initial release of v9. Hurray! 
 
