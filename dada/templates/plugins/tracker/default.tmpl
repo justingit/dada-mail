@@ -38,10 +38,11 @@
 	 <input type="hidden" name="s_program_url"   id="s_program_url"   value="<!-- tmpl_var S_PROGRAM_URL -->" > 
 	</form> 
 	<!-- tmpl_if expr="DATA_CACHE == 1" -->
-		<p class="alert" style="float:right">
-			Data below is cached. <a href="<!-- tmpl_var Plugin_URL -->?prm=clear_data_cache">Clear</a>
-		</p>
-		<div style="clear:both"></div>
+			<div class="clear_fix">
+			<p class="text-right">
+				Data below is cached. <a href="<!-- tmpl_var Plugin_URL -->?prm=clear_data_cache">Clear</a>
+			</p>
+		</div>
 	<!-- /tmpl_if -->
 	
 	<div class="row">

@@ -35,11 +35,14 @@
 <!-- /tmpl_if --> 
 	
 <!-- tmpl_if chrome --> 
-		<!-- tmpl_if expr="DATA_CACHE == 1" -->
-		<p class="alert" style="float:right">
-			Data below is cached. <a href="<!-- tmpl_var Plugin_URL -->?prm=clear_message_data_cache&msg_id=<!-- tmpl_var mid -->">Clear</a>
-		</p>
-		<div style="clear:both"></div>
+	<!-- tmpl_if expr="DATA_CACHE == 1" -->
+		<div class="clear_fix">
+			<p class="text-right">
+				<small>
+					Data below is cached. <a href="<!-- tmpl_var Plugin_URL -->?prm=clear_message_data_cache&msg_id=<!-- tmpl_var mid -->">Clear</a>
+				</small>
+			</p>
+		</div>
 	<!-- /tmpl_if --> 
 	
 <!-- /tmpl_if --> 
