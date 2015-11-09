@@ -24,7 +24,7 @@ Tables are still used, but usually only for tabular data.
 
 =head3 Responsive Design
 
-Dada Mail takes full advantage of Foundation's support for Repsonsive Design, especially in the List Control Panel. That means you can more easily and comfortably use Dada Mail on your phone or tablet - the design will adapt to your screen's available real estate. For example: The List Control Panel's left-hand menu will be hidden off-canvas if you're viewing on a phone device, but can be revealed via a hamburger menu on the upper left side of the toolbar menu. 
+Dada Mail takes full advantage of Foundation's support for Repsonsive Design, especially in the List Control Panel. That means you can more easily and comfortably use Dada Mail on your phone or tablet - the design will adapt to your screen's available real estate. For example: The List Control Panel's top bar menu will be hidden off-canvas if you're viewing on a phone device, but can be revealed via a hamburger menu on the upper left side of the toolbar menu. 
 
 =head3 Todo
 

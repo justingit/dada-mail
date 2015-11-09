@@ -14,7 +14,7 @@ The majority of the changes in v9 happen with rewritting and in some cases: rena
 
 =head3 Major UI Changes
 
-Along with utilizing Foundation, many of Dada Mail's user interfaces hae drastically changed from their previous designs: 
+Along with utilizing Foundation, many of Dada Mail's user interfaces have drastically changed from their previous designs: 
 
 =head4 Administration Login 
 
