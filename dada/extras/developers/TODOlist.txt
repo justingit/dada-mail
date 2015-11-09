@@ -10,12 +10,17 @@ Key:
 [*] Naw...
 [?] Someday
 
+
+
 describe what dada mail is, but also, what it's FOR
 
 Mve changes from Send Email to Send Webpage 
-Accordianie Profile Login/Profile Page
 
-Update Core5 Filemanager? 
+app.css needs to moved over
+
+Broke KCFinder too?!
+
+Social buttons use fi-fonts? Custom buttons with custom background colors? 
 
 http://dadamailproject.com/support/boards/viewtopic.php?t=4586&p=17188#p17188
 
@@ -25,12 +30,7 @@ along with date of configuration creation and v. of app that created it.
 Bridge - email list owner if message over Had limit is sent - say something like, "too big to even open"
 and perhaps where to change this setting, 
 
-[ ] remove "Reload Mailings After Each Batch" "feature"
-list invites 500 error out if the mass mailing finishes, before the screen refreshes?
-
 [ ] Some IP Addresses for opens/clickthroughs are from datacenters of the mail service (gmail, hotmail) - is there a way to get the original ip? 
-
-[ ] are we not tracking user agent, and finding the type of device people are using? 
 
 [] Ability to set defautl draft message for new messages
 
@@ -38,18 +38,12 @@ is bounce handler set as default admin email?
 
 
 [] Maybe an email about when a mass mailing starts? 
-
-[x] global size restrictions need to be per list in bridge
-    [] change documentation
     
 [] global option to enable/disable modal menu on subscription form?
 
 [ ] Things for CGI::App migration:
 
     Perhaps figure out forking stuff, first? 
-
-[ ] Time to ditch raw evals for try {} blocks. 
-    This will most likely be an ongoing process. 
 
 []  list-specific upload directories, rather than a shared one 
 
@@ -69,7 +63,11 @@ make the tmp subscribe list right before sending, as mass mailings get queued.
 
 [ ] write about caching - no one really understands
 
+
+
 [ ] It may be nice to have a preview of what the header will look like, for p.p. mode, as the default is a little complicated. 
+
+
 
 
 [x] Timestamp - pick two dates BETWEEN X AND Y
@@ -108,16 +106,12 @@ make the tmp subscribe list right before sending, as mass mailings get queued.
 
 
 
-[ ] Track UserAgents to find browser/desktop/email or what type of device. (look at litmus)
 [ ] Voting widget (thumbs up/down) on newsletters
 Lists will need to have two ways of opereation: 
 
 
 [ ] SES: Get list of verified senders - warn! (somewhere if list owner/list admin is NOT a verified sender, 
 and perhaps have some sort of fallback, so that mail just doesn't stop. 
-
-[ ] more flexibility with subject prefix for Bridge
-
 
 [ ] Amazon SES Bounce Notification
 [ ] Amazon SES Bounce/Complaints via SNS, instead of the Bounce Email address. 
@@ -131,13 +125,10 @@ and perhaps have some sort of fallback, so that mail just doesn't stop.
 	http://example.com/cgi-bin/dada/mail.cgi/plugins/bounce_handler/sns/list_name
 	
 
-[ ] title breadcrumbs:  Message Archives » View Archive - has no subject and, "View Archive" is not a link. 
-
 [ ] Seond step of add an address, "These addresses are already subcribed to your list" - should be tweaked for specific sublist 
 
 [ ] Bridge Global defaults - add option to enable open discussion lists, etc
 
-[x] Make Moderators and Autorized senders to different sublists. 
 
 [ ] Fancy Template things: for Global User Template, have option to just use a "blank" page (or any page, really), and: 
 	[ ] Allow you to inject the needed default template in BOTH the head and body,
