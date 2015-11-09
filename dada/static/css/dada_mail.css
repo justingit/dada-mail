@@ -47,11 +47,13 @@ iframe#archived_message_body_container {
 	filter: alpha(opacity=0);
 }
 
+/*
 .tabs dd.active a, .tabs .tab-title.active a {
 	border-top: 1px solid #000;
 	border-left: 1px solid #000;
 	border-right: 1px solid #000;
 }
+*/
 
 #buttons {
 	z-index: 100;
