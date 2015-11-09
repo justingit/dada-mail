@@ -1851,7 +1851,8 @@ sub complete_unsubscription {
 		
         # We end things here, for private lists.
         if($ls->param('private_list') == 1) { 
-            warn 'private list: we\'re done!'; 
+            warn 'private list: we\'re done!'
+				if $t; 
         }
         else {    
             # Public list?

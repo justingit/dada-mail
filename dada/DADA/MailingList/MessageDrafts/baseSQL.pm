@@ -485,7 +485,8 @@ sub create_from_stationery {
             -screen    => $args->{-screen},
         }
     );
-    warn '$saved_draft_id' . $saved_draft_id; 
+    warn '$saved_draft_id' . $saved_draft_id
+		if $t; 
     return $saved_draft_id;
 }
 

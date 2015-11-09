@@ -1844,7 +1844,7 @@ sub sending_monitor {
           )
         {
 
-            warn "Yes, we need to restart!";
+            # warn "Yes, we need to restart!";
 
             # Whew! Take that for making sure that the damn thing is supposed to be sent.
 
@@ -12255,11 +12255,11 @@ sub profile {
         elsif ( $q->param('process') eq 'change_password' ) {
             
             if ( !DADA::Profile::feature_enabled('change_password') == 1 ) {
-                warn 'feature disabled.'; 
+                # warn 'feature disabled.'; 
                 return $self->default();
             }
             else { 
-#                warn 'feature enabled!'; 
+#                # warn 'feature enabled!'; 
             }
 
             my $new_password       = xss_filter( scalar $q->param('password') );

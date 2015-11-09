@@ -985,32 +985,35 @@ sub _format_headers {
         && defined( $self->{ls}->param('discussion_pop_email')) 
         ) 
     {
-        warn q{$entity->head->get('From', 0) } . $entity->head->get('From', 0); 
-        warn q{$entity->head->get('Reply-To', 0) } . $entity->head->get('Reply-To', 0); 
-        warn q{$entity->head->get('Sender', 0) } . $entity->head->get('Sender', 0); 
-        
-        
-        warn 'Only Announce-Only'; 
-        
+		if($t == 1) {
+	        warn q{$entity->head->get('From', 0) } . $entity->head->get('From', 0); 
+	        warn q{$entity->head->get('Reply-To', 0) } . $entity->head->get('Reply-To', 0); 
+	        warn q{$entity->head->get('Sender', 0) } . $entity->head->get('Sender', 0); 
+	        warn 'Only Announce-Only'; 
+		}
+
         if($self->{ls}->param('bridge_announce_reply_to') eq 'list_owner') { 
             if ( $entity->head->count('Reply-To') ) {
 				$entity->head->delete('Reply-To');
 			}
-			warn q{$entity->head->add( 'Reply-To', $self->{ls}->param('list_owner_email') );}; 
+			warn q{$entity->head->add( 'Reply-To', $self->{ls}->param('list_owner_email') );}
+				if $t; 
 			$entity->head->add( 'Reply-To', $self->{ls}->param('list_owner_email') );
         }
         elsif($self->{ls}->param('bridge_announce_reply_to') eq 'og_sender') { 
-            warn q{lsif($self->{ls}->param('bridge_announce_reply_to') eq 'og_sender') }; 
-            
+            warn q{lsif($self->{ls}->param('bridge_announce_reply_to') eq 'og_sender') }
+				if $t; 
             if ( $entity->head->count('Reply-To') ) {
 				$entity->head->delete('Reply-To');
 			}
 			if ( $entity->head->count('Sender') ) {
-               warn q{ $entity->head->add( 'Reply-To',  $entity->head->get('Sender', 0) );}; 
+               warn q{ $entity->head->add( 'Reply-To',  $entity->head->get('Sender', 0) );}
+			   	 if $t; 
                 $entity->head->add( 'Reply-To',  $entity->head->get('Sender', 0) );
             }
             else { 
-                warn q{$entity->head->add( 'Reply-To',  $entity->head->get('From', 0) );}; 
+                warn q{$entity->head->add( 'Reply-To',  $entity->head->get('From', 0) );}
+					if $t; 
                 $entity->head->add( 'Reply-To',  $entity->head->get('From', 0) );
             }
         }
@@ -1058,7 +1061,8 @@ sub _format_headers {
     $test_To = strip($test_To);
 
     if ( $test_To =~ m{undisclosed\-recipients\:\;}i ) {
-        warn "I'm SILENTLY IGNORING a, 'undisclosed-recipients:;' header!";
+        warn "I'm SILENTLY IGNORING a, 'undisclosed-recipients:;' header!"
+			if $t; 
 
     }
     else {
@@ -1099,7 +1103,8 @@ sub _format_headers {
             safely_encode( $self->{ls}->param('discussion_pop_email') ) );
     }
 
-	warn $entity->as_string; 
+	warn $entity->as_string
+		if $t; 
 
     return $entity;
 

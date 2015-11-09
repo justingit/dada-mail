@@ -2254,7 +2254,7 @@ sub dm_format {
         $fm->reset_from_header(0);
     }
 
-warn ' ${$msg} ' .  ${$msg}; 
+	# warn ' ${$msg} ' .  ${$msg}; 
 
     my ( $header_str, $body_str ) = $fm->format_headers_and_body(
         -msg             => ${$msg},
