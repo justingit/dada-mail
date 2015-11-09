@@ -725,6 +725,10 @@ sub _email_protect {
 			
             $body =~ s/$look_e/$protected_e/g;
 		}
+		elsif($self->{ls}->param('archive_protect_email') eq 'break'){ 				
+            my $protected_e = break_encode($_); 
+              $body =~ s/$look_e/$protected_e/g;
+		}
 		elsif($self->{ls}->param('archive_protect_email') eq 'spam_me_not'){ 				
             my $protected_e = spam_me_not_encode($_); 
             $body =~ s/$look_e/$protected_e/g;

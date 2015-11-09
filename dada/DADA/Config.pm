@@ -1271,7 +1271,7 @@ $MIME_OPTIMIZE     //= 'no tmp files';
     alt_send_subscription_notice_to => '' ,
 
     unsub_show_email_hint             => 1,
-	one_click_unsubscribe             => 0,
+	one_click_unsubscribe             => 1,
     get_unsub_notice                  => 1,
     send_unsubscription_notice_to     => 'list_owner',
     alt_send_unsubscription_notice_to => '', 
@@ -1438,8 +1438,8 @@ $MIME_OPTIMIZE     //= 'no tmp files';
 
     add_social_bookmarking_badges => 1,
 
-    # Can be set to, "none", "spam_me_not", or, "recaptcha_mailhide"
-    archive_protect_email => 'spam_me_not',
+    # Can be set to, "none","break", "spam_me_not", or, "recaptcha_mailhide"
+    archive_protect_email => 'break',
 
     enable_gravatars     => 0,
     default_gravatar_url => undef,

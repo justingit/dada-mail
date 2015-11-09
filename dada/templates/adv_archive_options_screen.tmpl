@@ -172,7 +172,13 @@
 	</legend>	
 	<div class="row">
 		<div class="small-12 columns">       
-		<input type="radio" name="archive_protect_email" id="archive_protect_email_none" value="none" <!-- tmpl_if archive_protect_email_none -->checked="checked"<!--/tmpl_if--> >
+		<input 
+			type="radio" 
+			name="archive_protect_email" 
+			id="archive_protect_email_none" 
+			value="none" 
+			<!-- tmpl_if expr="(list_settings.archive_protect_email eq 'none')" -->checked="checked"<!--/tmpl_if-->
+		>
 		<label for="archive_protect_email_none">
 			No protection.
 		</label>
@@ -180,7 +186,28 @@
 	</div>
 	<div class="row">
 		<div class="small-12 columns">       
-			<input type="radio" name="archive_protect_email" id="archive_protect_email_spam_me_not" value="spam_me_not" <!-- tmpl_if archive_protect_email_spam_me_not -->checked="checked"<!--/tmpl_if--> >
+		<input 
+			type="radio" 
+			name="archive_protect_email" 
+			id="archive_protect_email_break" 
+			value="break" 
+			<!-- tmpl_if expr="(list_settings.archive_protect_email eq 'break')" -->checked="checked"<!--/tmpl_if-->
+		>
+		<label for="archive_protect_email_break">
+			Break
+		</label>
+		</div> 
+	</div>
+
+	<div class="row">
+		<div class="small-12 columns">       
+			<input 
+				type="radio" 
+				name="archive_protect_email" 
+				id="archive_protect_email_spam_me_not" 
+				value="spam_me_not" 
+				<!-- tmpl_if expr="(list_settings.archive_protect_email eq 'spam_me_not')" -->checked="checked"<!--/tmpl_if-->
+			>
 			<label for="archive_protect_email_spam_me_not">
 				Spam-Me-Not
 			</label>
@@ -191,7 +218,13 @@
 	</div>
 	<div class="row">
 		<div class="small-12 columns">       
-			<input type="radio" name="archive_protect_email" id="archive_protect_email_recaptcha_mailhide" value="recaptcha_mailhide" <!-- tmpl_if archive_protect_email_recaptcha_mailhide -->checked="checked"<!--/tmpl_if--> >
+			<input 
+				type="radio" 
+				name="archive_protect_email" 
+				id="archive_protect_email_recaptcha_mailhide" 
+				value="recaptcha_mailhide" 
+				<!-- tmpl_if expr="(list_settings.archive_protect_email eq 'recaptcha_mailhide')" -->checked="checked"<!--/tmpl_if-->
+			>
 			<label for="archive_protect_email_recaptcha_mailhide"  <!-- tmpl_unless can_use_recaptcha_mailhide -->class="disabled"<!-- /tmpl_unless -->>
 				reCAPTCHA MailHide
 			</label>

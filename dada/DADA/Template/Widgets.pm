@@ -2744,6 +2744,12 @@ sub _email_protect {
 	            my $le = quotemeta($fa); 
 	            $str =~ s/$le/$pe/g;   
 	        }
+			#elsif($ls->param('archive_protect_email') eq 'break'){ 		
+	        #    my $pe = break_encode($fa);
+	        #    my $le = quotemeta($fa); 
+	        #    $str =~ s/$le/$pe/g;   
+			#	
+			#}
 
 		}
 		else { 

@@ -6814,6 +6814,7 @@ sub adv_archive_options {
             {
                 -screen         => 'adv_archive_options_screen.tmpl',
                 -with           => 'admin',
+				-expr           => 1, 
                 -wrapper_params => {
                     -Root_Login => $root_login,
                     -List       => $list,
@@ -6832,21 +6833,6 @@ sub adv_archive_options {
                     can_use_recaptcha_mailhide => $can_use_recaptcha_mailhide,
                     can_use_gravatar_url       => $can_use_gravatar_url,
                     gravatar_img_url           => $gravatar_img_url,
-
-                    (
-                          ( $ls->param('archive_protect_email') eq 'none' ) ? ( archive_protect_email_none => 1, )
-                        : ( archive_protect_email_none => 0, )
-                    ),
-                    (
-                          ( $ls->param('archive_protect_email') eq 'spam_me_not' )
-                        ? ( archive_protect_email_spam_me_not => 1, )
-                        : ( archive_protect_email_spam_me_not => 0, )
-                    ),
-                    (
-                          ( $ls->param('archive_protect_email') eq 'recaptcha_mailhide' )
-                        ? ( archive_protect_email_recaptcha_mailhide => 1, )
-                        : ( archive_protect_email_recaptcha_mailhide => 0, )
-                    ),
                 },
                 -list_settings_vars_param => {
                     -list   => $list,
@@ -9877,6 +9863,9 @@ sub archive {
 
             if ( $ls->param('archive_protect_email') eq 'recaptcha_mailhide' ) {
                 $header_from = mailhide_encode($header_from);
+            }
+            elsif ( $ls->param('archive_protect_email') eq 'break' ) {
+                $header_from = break_encode($header_from);
             }
             elsif ( $ls->param('archive_protect_email') eq 'spam_me_not' ) {
                 $header_from = spam_me_not_encode($header_from);

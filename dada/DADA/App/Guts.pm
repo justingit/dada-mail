@@ -67,6 +67,7 @@ require Exporter;
   escape_for_sending
   entity_protected_str
   spam_me_not_encode
+  break_encode
   anonystar_address_encode
   optimize_mime_parser
   mailhide_encode
@@ -2606,6 +2607,13 @@ sub spam_me_not_encode {
 	}
 	return $encodedString;
 }
+
+sub break_encode { 
+	my $address = shift; 
+	my ($name, $domain) = split('@', $address, 2);
+	return $name . '@' . 'PROTECTED' 
+}
+
 
 
 
