@@ -1,28 +1,17 @@
-   <nav class="top-bar hide-for-small" data-topbar role="navigation" id="admin_header">
-        <ul class="title-area">
-           <li class="name">
-             <h3>
-				<a href="<!-- tmpl_var PROGRAM_URL -->">
-					<img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/dada_mail_logo.png" title="<!-- tmpl_var PROGRAM_NAME -->" alt="<!-- tmpl_var PROGRAM_NAME -->" >
-				</a>
-			  </h3>
-           </li>
-         </ul>
 		<!-- tmpl_if show_profile_widget --> 
-			<section class="top-bar-section">
-						<!-- tmpl_var profile_widget --> 
-			</section> 
+			<div class="clearfix">
+				<div class="panel right">
+					<!-- tmpl_var profile_widget --> 
+				</div> 
+			</div>
 		<!-- /tmpl_if --> 
-	</nav>
 
-<div class="row">
-   <div class="small-12">
+<div class="row" >
+   <div class="small-12 columns" id="list_content_area">
 	   
-	   <!-- tmpl_if comment -->
-		   <h3>
+		   <h2>
 			   <!-- tmpl_var title -->
-		   </h3>
-		<!-- /tmpl_if --> 
+		   </h2>
 		
 		<!-- tmpl_if list_settings.list --> 
 			<!-- tmpl_if subscribed_to_list --> 
@@ -46,14 +35,21 @@
 	</div>
 </div> 
 
-<div class="panel">   
-	   <!-- tmpl_var footer_props -->
-</div> 
+
+<div class="row">
+   <div class="small-12 columns" id="footer">
+		<p><!-- tmpl_var footer_props default="Dada Mail Copyright 1999-2015 Simoni Creative" --></p>   
+	</div>
+</div>
+
+
+
 
 
 <script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/foundation.min.js"></script>
-<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/foundation/foundation.offcanvas.js"></script>
-
+<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/foundation/foundation.topbar.js"></script>
+<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/foundation/foundation.equalizer.js"></script>
+  
 <script>
 	$(document).foundation();
 </script>

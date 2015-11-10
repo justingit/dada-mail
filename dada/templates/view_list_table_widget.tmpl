@@ -10,14 +10,13 @@
   <tr>
 	 <!-- tmpl_unless no_checkboxes --> 
    		<th width="25">
-    		<p>&nbsp;</p>
+    		&nbsp;
    		</th>
 	<!-- /tmpl_unless --> 
 
     <!-- tmpl_if show_timestamp_column --> 
-    	<th width="250">
-    	    <p>
-	     	<!-- tmpl_if expr="(order_by ne 'timestamp')" -->
+    	<th width="225">
+    	    <!-- tmpl_if expr="(order_by ne 'timestamp')" -->
     			<a href="#" class="change_order" data-by="timestamp" data-dir="asc">
     		<!-- /tmpl_if --> 
 
@@ -45,22 +44,20 @@
     			<sub>&#x25BC;</sub>
     		<!-- /tmpl_if -->     
 	        </a> 
-    	    </p>
+    	    
     	</th>
 	<!-- /tmpl_if --> 
 	<!-- tmpl_if show_list_column --> 
     	<th>
-    	    <p>
     	     <strong>
     	      List
     	     </strong>
-    	    </p>
+    	    
     	</th>
 	<!-- /tmpl_if --> 
 	
    <th>
-    <p>
-
+    
 		<!-- tmpl_if expr="(order_by ne 'email')" -->
 			<a href="#" class="change_order" data-by="email" data-dir="asc">
 		<!-- /tmpl_if --> 
@@ -84,12 +81,11 @@
 			<sub>&#x25BC;</sub>
 		<!-- /tmpl_if -->     
 	</a>
-    </p>
+    
    </th>
   <!-- tmpl_loop field_names --> 
    <th>
-    <p>
-	   	<!-- tmpl_if expr="(order_by ne name)" -->
+       	<!-- tmpl_if expr="(order_by ne name)" -->
 			<a href="#" class="change_order" data-by="<!-- tmpl_var name escape="HTML" -->" data-dir="asc">
 		<!-- /tmpl_if --> 
 		<!-- tmpl_if expr="(order_by eq name) && (order_dir eq 'asc')" -->
@@ -114,7 +110,7 @@
 			<sub>&#x25BC;</sub>
 		<!-- /tmpl_if -->
 	</a>
-    </p>
+    
    </th>
   <!--/tmpl_loop --> 
   </tr>
@@ -137,25 +133,25 @@
 	    
 
         <!-- tmpl_if show_timestamp_column --> 
-    		<td width="200">
-    		    <p>
+    		<td width="225">
+    		    
     		      <!-- tmpl_var timestamp --> 
-    		    </p>
+    		    
     		</td>
 	    <!-- /tmpl_if --> 
 
 		<!-- tmpl_if show_list_column --> 
 			<td>
-			    <p>
+			    
 			     <strong>
 			      <!-- tmpl_var list --> 
 			     </strong>
-			    </p>
+			    
 			   </td>
 		<!-- /tmpl_if --> 
 				
 	<td>
-	     <p>
+	     
 		
 		<!-- tmpl_if expr="(no_email_links != 1)" -->
 			<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=membership&email=<!-- tmpl_var email ESCAPE=URL -->&type=<!-- tmpl_var type ESCAPE=URL -->&page=<!-- tmpl_var page ESCAPE=URL -->&order_by=<!-- tmpl_var order_by ESCAPE=URL -->&order_dir=<!-- tmpl_var order_dir ESCAPE=URL -->&query=<!-- tmpl_var query ESCAPE=URL -->" >
@@ -165,15 +161,15 @@
 		<!-- tmpl_if expr="(no_email_links == 1)" -->		
 				<!-- tmpl_var email --> 
 		<!-- /tmpl_if -->
- 	 	</p>
+ 	 	
 	    </td>
 	    
 	    <!-- tmpl_loop fields --> 
 	    
 	    <td>
-	     <p>
+	     
 			<!-- tmpl_var value -->
-	 	</p>
+	 	
 	    </td>
 	    <!-- /tmpl_loop --> 
 	   </tr>
