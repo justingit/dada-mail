@@ -171,7 +171,7 @@ show_confirmation_token_options     => 1,
 show_amazon_ses_options             => 1,
 show_mandrill_options               => 1,
 show_program_name_options           => 1,
-show_s_program_url_options          => 1,
+show_s_program_url_options          => 0,
 show_annoying_whiny_pro_dada_notice => 0,
 };
 
@@ -235,7 +235,7 @@ my @Extension_Names = qw(
 
 # An unconfigured Dada Mail won't have these exactly handy to use.
 $DADA::Config::PROGRAM_URL   = program_url_guess();
-$DADA::Config::S_PROGRAM_URL = program_url_guess();
+$DADA::Config::S_PROGRAM_URL = $DADA::Config::PROGRAM_URL; #program_url_guess();
 
 use DADA::Config 9.0.0;
 use DADA::App::Guts;
@@ -1273,6 +1273,8 @@ sub grab_former_config_vals {
         $opt->{'confirmation_token_expires'}   = $BootstrapConfig::CONFIRMATION_TOKEN_OPTIONS->{expires};
     }
 
+
+=cut
     # S_PROGRAM URL
     if ( defined($BootstrapConfig::S_PROGRAM_URL) ) {
         if ( $BootstrapConfig::S_PROGRAM_URL ne $BootstrapConfig::PROGRAM_URL ) {
@@ -1280,7 +1282,8 @@ sub grab_former_config_vals {
             $opt->{'s_program_url_S_PROGRAM_URL'} = $BootstrapConfig::S_PROGRAM_URL;
         }
     }
-
+=cut 
+	
     # PROGRAM NAME
     if ( defined($BootstrapConfig::PROGRAM_NAME) ) {
         $opt->{'configure_program_name'}    = 1;
@@ -1607,7 +1610,6 @@ sub query_params_to_install_params {
       confirmation_token_expires
 
       configure_s_program_url
-      s_program_url_S_PROGRAM_URL
 
       configure_program_name
       program_name_PROGRAM_NAME
@@ -1623,6 +1625,8 @@ sub query_params_to_install_params {
       mandrill_Allowed_Sending_Quota_Percentage
 
     );
+	#       s_program_url_S_PROGRAM_URL
+
     for (@Debug_Option_Names) {
         push( @install_param_names, 'debugging_options_' . $_ );
     }
@@ -2275,13 +2279,15 @@ sub create_dada_config_file {
         $confirmation_token_params->{confirmation_token_expires}   = strip( $ip->{-confirmation_token_expires} );
     }
 
+=cut	
     my $s_program_url_params = {};
     if ( $ip->{-configure_s_program_url} == 1 ) {
         $s_program_url_params->{configure_s_program_url} = 1;
         $s_program_url_params->{s_program_url_S_PROGRAM_URL} =
           clean_up_var( strip( $ip->{'-s_program_url_S_PROGRAM_URL'} ) );
     }
-
+=cut
+	
     my $program_name_params = {};
     if ( $ip->{-configure_program_name} == 1 ) {
         $program_name_params->{configure_program_name} = 1;
