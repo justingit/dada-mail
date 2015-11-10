@@ -56,4 +56,12 @@ Dada Mail had an option to explicitly set a C<Return-Path> header, although limi
 
 This option has been removed, as it's usually the wrong option to depend on. 
 
+=head2 Deprecations
+
+=head3 $S_PROGRAM_URL global config variale
+
+C<$S_POGRAM_URL> is a somewhat naive way to "add" extra security to Dada Mail  giving you the ability to set a different URL for List Control Panel access. It usually is not utilized at all. 
+
+Support in the app is still there, but the included installer does not support setting it. Best thing to do is to use https connections for everything. 
+
 =cut
