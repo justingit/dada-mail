@@ -304,11 +304,6 @@ VORK5CYII=" style="float:left;padding:10px"/></p>
 <p>Time of error: <strong>$TIME</strong></p> 	
 </div>
 
-
-<pre> 
-$error
-</pre> 
-
 </body> 
 </html> 
 };
