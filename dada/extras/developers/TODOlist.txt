@@ -14,6 +14,8 @@ Key:
 
 describe what dada mail is, but also, what it's FOR
 
+Agreement step on subscription (by checking this box, you agree to the following, yadda yadda)
+
 email list owner about new list being created. 
 
 Mve changes from Send Email to Send Webpage 
