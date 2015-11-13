@@ -1,0 +1,30 @@
+<!-- begin send_url_email_plaintext_message_form_field_widget.tmpl -->
+
+<div class="row">
+	<div class="small-12 columns">
+		<input type="radio" name="plaintext_content_from" id="plaintext_content_from_auto" value="auto" checked="checked" >
+		<label for="plaintext_content_from_auto">
+			Create a PlainText version automatically
+		</label>
+	</div>
+</div>
+<div class="row">
+	<div class="small-12 columns">
+		<input type="radio" name="plaintext_content_from" id="plaintext_content_from_url" value="url" >
+		<label for="plaintext_content_from_url">
+			Grab content from a URL: 
+		</label>
+		<input type="text" name="plaintext_url" id="plaintext_url"  placeholder="http://" >
+	</div>
+</div>
+<div class="row">
+	<div class="small-12 columns">
+		<input type="radio" name="plaintext_content_from" id="plaintext_content_from_text" value="text" >
+		<label for="plaintext_content_from_text">
+			Write/Paste Text:
+		</label>
+		<!-- tmpl_include plaintext_message_form_field_widget.tmpl -->
+	</div>
+</div>
+
+<!-- end send_url_email_plaintext_message_form_field_widget.tmpl -->
