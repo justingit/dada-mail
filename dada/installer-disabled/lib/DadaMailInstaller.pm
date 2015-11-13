@@ -2374,7 +2374,6 @@ sub create_dada_config_file {
                 %{$global_mailing_list_options},
                 %{$mass_mailing_params},
                 %{$confirmation_token_params},
-                %{$s_program_url_params},
                 %{$program_name_params},
                 %{$amazon_ses_params},
                 %{$mandrill_params},
@@ -2383,6 +2382,7 @@ sub create_dada_config_file {
             }
         }
     );
+	#                %{$s_program_url_params},
 
     open my $dada_config_fh, '>:encoding(' . $DADA::Config::HTML_CHARSET . ')',
       make_safer( $loc . '/.configs/.dada_config' )
