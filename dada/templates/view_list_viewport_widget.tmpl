@@ -125,7 +125,6 @@
     
          <!-- tmpl_include view_list_table_widget.tmpl --> 
 
-
     <div class="row"> 
         <div class="small-1 columns"> 
               <input class="toggleCheckboxes" type="checkbox" data-target_class="address" >
@@ -194,19 +193,19 @@
         <!-- tmpl_if EXPR="((type eq 'list') || (type eq 'black_list') || (type eq 'authorized_senders') || (type eq 'moderators') || (type eq 'white_list'))" -->
         
             <!-- tmpl_unless query -->
+			    <li>
                 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" style="display:inline;margin:0">
                  <input type="hidden" name="flavor"       value="remove_all_subscribers" >
                  <input type="hidden" name="type" value="<!-- tmpl_var type -->" >
                 <!-- tmpl_if expr="(type eq 'list')" -->
-                  <li>
+               
                       <input type="submit" class="small button" value="&#8656; Unsubscribe ALL <!-- tmpl_var type_title -->" onclick="return unsubscribeAllSubscribers(this.form, '<!-- tmpl_var type_title -->');"   >
-                  </li>
                 <!-- tmpl_else --> 
-                  <li>
+     
                       <input type="submit" class="small button" value="&#8656; Remove ALL <!-- tmpl_var type_title -->" onclick="return unsubscribeAllSubscribers(this.form, '<!-- tmpl_var type_title -->');"   >
-                  </li>
+                 
                 <!-- /tmpl_if --> 
-                </form>
+                </form> </li>
             <!-- /tmpl_unless -->
         <!-- /tmpl_if -->
 
@@ -215,17 +214,23 @@
         <!-- tmpl_if EXPR="(type eq 'black_list')" -->
             <!-- tmpl_if can_filter_subscribers_through_blacklist --> 
                 <!-- tmpl_unless query --> 
-                     <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="blacklist_filter_form">
+                      <li>
+					 <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="blacklist_filter_form">
                       <input type="hidden" name="flavor" value="filter_using_black_list" >
-                       <li>
+                      
                            <input type="submit" class="small button" value="Filter Subscribers Through the Black List" >
-                        </li>
+
                      </form>
+				 </li>
                 <!-- /tmpl_unless -->
             <!--/tmpl_if-->
         <!--/tmpl_if-->
     <!--/tmpl_if-->
-        <!-- tmpl_include list_download_widget.tmpl -->  
+        
+		<li>
+			<!-- tmpl_include list_download_widget.tmpl -->  
+		</li>
+		</ul>
     </div>   
 </div> 
 

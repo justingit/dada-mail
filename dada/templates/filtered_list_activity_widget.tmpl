@@ -16,7 +16,12 @@
 		<!-- /tmpl_if --> 
 		
 		<!-- tmpl_if expr="(action eq 'subscribed')" --> 
-			&#8594; <!-- tmpl_if show_email --><a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=membership&email=<!-- tmpl_var email escape=URL -->&type=<!-- tmpl_var type -->"><!-- tmpl_var email --></a><!-- /tmpl_if -->
+			&#8594; 
+			<!-- tmpl_if show_email -->
+				<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=membership&email=<!-- tmpl_var email escape=URL -->&type=<!-- tmpl_var type -->">
+					<!-- tmpl_var email -->
+				</a>
+			<!-- /tmpl_if -->
 			<!-- tmpl_if expr="(type eq 'list')" -->
 				<strong>Subscribed</strong>
 			<!-- tmpl_else -->
