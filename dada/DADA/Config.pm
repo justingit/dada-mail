@@ -814,7 +814,7 @@ $ADMIN_MENU //= [
 },
 
 
-{-Title      => 'Design',
+{-Title      => 'Appearance',
  -Activated  => 1,
  -Submenu    => [
 				{
