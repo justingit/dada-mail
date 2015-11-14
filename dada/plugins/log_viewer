@@ -137,12 +137,15 @@ sub cgi_view {
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
     my $li = $ls->get;
 
-    my $logs_popup_menu = $q->popup_menu(
-        -name     => 'log_name',
-        -id       => 'log_name',
-        '-values' => [ keys %$logs ],
-        -default  => $log_name,
-        style     => 'width:200px',
+	require HTML::Menu::Select; 
+	
+    my $logs_popup_menu = HTML::Menu::Select::popup_menu(
+		{
+	        name     => 'log_name',
+	        id       => 'log_name',
+	        values   => [ keys %$logs ],
+	        default  => $log_name,
+		}
     );
     my $log_lines = [];
     for ( 100, 1, 10, 20, 25, 50, 100, 200, 500, 1000, 10000, 100000, 1000000 ) {

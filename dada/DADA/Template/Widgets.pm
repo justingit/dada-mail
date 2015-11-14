@@ -104,7 +104,7 @@ unsubscription_form
 archive_send_form
 profile_widget
 _raw_screen
-global_list_sending_checkbox_widget
+
 
 );
 
@@ -310,17 +310,18 @@ sub priority_popup_menu {
 	if(! defined($default)){ 
 		$default = $li->{priority};
 	}
-	
-    my $priority_popup_menu = $q->popup_menu(
-							  		-name    => 'X-Priority',
-									id       => 'X-Priority',
-                                    -values  =>[keys %DADA::Config::PRIORITIES],
-                                    -labels  => \%DADA::Config::PRIORITIES,
-                                    -default =>  $default, 
-                               );
-
+	require HTML::Menu::Select; 
+    my $priority_popup_menu = HTML::Menu::Select::popup_menu(
+							  		{ 
+										name     => 'X-Priority',
+										id       => 'X-Priority',
+	                                    values   =>[keys %DADA::Config::PRIORITIES],
+	                                    labels   => \%DADA::Config::PRIORITIES,
+	                                    default  =>  $default, 
+                              		}
+							  	);
 	return $priority_popup_menu; 
-
+	
 }
 
 
@@ -328,6 +329,8 @@ sub priority_popup_menu {
 
 sub list_popup_menu { 
 
+	
+	require HTML::Menu::Select; 
 	
 	my %args = (
 		-show_hidden         => 0,
@@ -381,13 +384,15 @@ sub list_popup_menu {
 	
 	}
 	else { 
-	
-        return $q->popup_menu( -name    => $args{-name}, 
-                               -id      => $args{-name}, 
-                              '-values' => [@opt_labels],
-                               -labels   => $labels,
-							   -default  => [$args{-selected_list}],
-							  ); 
+        return HTML::Menu::Select::popup_menu(
+			 {
+				name     => $args{-name}, 
+				id       => $args{-name}, 
+				values   => [@opt_labels],
+				labels   => $labels,
+				default  => [$args{-selected_list}],
+			}
+		 ); 
     }
 }
 
@@ -453,43 +458,6 @@ sub list_popup_login_form {
 	}
 }
 
-
-
-sub global_list_sending_checkbox_widget { 
-	
-	my $list = shift || undef; 
-	
-	require DADA::MailingList::Settings;
-
-	my @available_lists = available_lists(); 
-	my @f_a_lists; 
-	
-	foreach(@available_lists){ 
-		next if $_ eq $list; 
-		push(@f_a_lists, $_); 
-	}
-	
-	my %list_names; 
-	
-	foreach(@f_a_lists){ 
-		my $ls = DADA::MailingList::Settings->new(
-				{
-					-list => $_,
-				}
-			); 
-		$list_names{$_} = $_ . ' (' . $ls->param('list_name') . ')';
-	}
-	
-	
-	return  $q->checkbox_group(
-		-name       => 'alternative_list',
-		-class      => 'alternative_list', 
-		 '-values'  => [@f_a_lists],
-	   	-linebreak  =>'true',
-	    -labels     => \%list_names,
-	    -columns    => 3, 
-	 );				 
-}
 
 
 
@@ -1092,13 +1060,16 @@ sub login_switch_popup_menu_widget {
 	
 	$label{$args->{-list}} = '----------'; 
 	
+	require HTML::Menu::Select;
 	if($lists[1]){ 
-		my $login_switch_popup_menu = $q->popup_menu(
-							  -name    => 'change_to_list', 
-							  -id      => 'change_to_list', 
-							  -value   => [@lists], 
-							  -default => $args->{-list},
-							  -labels  => {%label}, 
+		my $login_switch_popup_menu = HTML::Menu::Select::popup_menu(
+			{
+				name    => 'change_to_list', 
+				id      => 'change_to_list', 
+				value   => [@lists], 
+				default => $args->{-list},
+				labels  => {%label}, 
+			}
 		);
 		
 		return DADA::Template::Widgets::screen(

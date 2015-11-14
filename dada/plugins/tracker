@@ -134,11 +134,14 @@ sub default {
     require DADA::MailingList::Subscribers;
     my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
 
-    my $tracker_record_view_count_widget = $q->popup_menu(
-        -id      => 'tracker_record_view_count',
-        -name    => 'tracker_record_view_count',
-        -values  => [qw(5 10 15 20 25 50 75 100)],
-        -default => $ls->param('tracker_record_view_count'),
+	require HTML::Menu::Select; 
+    my $tracker_record_view_count_widget = HTML::Menu::Select::popup_menu(
+        {
+			id      => 'tracker_record_view_count',
+	        name    => 'tracker_record_view_count',
+	        values  => [qw(5 10 15 20 25 50 75 100)],
+	        default => $ls->param('tracker_record_view_count'),
+		}
     );
     eval {
         require URI::Find;
@@ -201,6 +204,7 @@ sub default {
         'area_code'     => 'Area Code      (' . $area_code . ')',
     };
     my $field_names = [];
+	require HTML::Menu::Select; 
     for ( @{ $dpfm->fields( { -show_hidden_fields => 1, } ) } ) {
         push(
             @$field_names,
@@ -208,12 +212,14 @@ sub default {
                 name       => $_,
                 label      => $field_attr->{$_}->{label},
                 enabled    => $thawed_gip->{$_}->{enabled},
-                popup_menu => $q->popup_menu(
-                    -default => $thawed_gip->{$_}->{geoip_data_type},
-                    -name    => $_ . '.geoip_data_type',
-                    -id      => $_ . '.geoip_data_type',
-                    -values  => $geo_ip_data_order,
-                    -labels  => $geo_ip_data_types,
+                popup_menu => HTML::Menu::Select::popup_menu(
+                    { 
+						default => $thawed_gip->{$_}->{geoip_data_type},
+	                    name    => $_ . '.geoip_data_type',
+	                    id      => $_ . '.geoip_data_type',
+	                    values  => $geo_ip_data_order,
+	                    labels  => $geo_ip_data_types,
+					}
                 )
             }
         );

@@ -223,39 +223,50 @@ sub cgi_default {
         300, 350, 400, 450, 500, 550, 600, 650, 700, 750, 800, 850, 900, 950, 1000
     );
 
-    my $bounce_handler_softbounce_score_popup_menu = $q->popup_menu(
-        -name    => 'bounce_handler_softbounce_score',
-        -values  => [ ( 0 .. 10 ) ],
-        -default => $ls->param('bounce_handler_softbounce_score'),
-    );
+	require HTML::Menu::Select; 
+    my $bounce_handler_softbounce_score_popup_menu = HTML::Menu::Select::popup_menu(
+        {
+			name    => 'bounce_handler_softbounce_score',
+        	values  => [ ( 0 .. 10 ) ],
+        	default => $ls->param('bounce_handler_softbounce_score'),
+    	}
+	);
 
-    my $bounce_handler_hardbounce_score_popup_menu = $q->popup_menu(
-        -name    => 'bounce_handler_hardbounce_score',
-        -values  => [ ( 0 .. 10 ) ],
-        -default => $ls->param('bounce_handler_hardbounce_score'),
-    );
+    my $bounce_handler_hardbounce_score_popup_menu = HTML::Menu::Select::popup_menu(
+        { 
+			name    => 'bounce_handler_hardbounce_score',
+        	values  => [ ( 0 .. 10 ) ],
+        	default => $ls->param('bounce_handler_hardbounce_score'),
+    	}
+	);
 
-    my $bounce_handler_decay_score_popup_menu = $q->popup_menu(
-        -name    => 'bounce_handler_decay_score',
-        -values  => [ ( 0 .. 10 ) ],
-        -default => $ls->param('bounce_handler_decay_score'),
-    );
+    my $bounce_handler_decay_score_popup_menu = HTML::Menu::Select::popup_menu(
+        { 
+			name    => 'bounce_handler_decay_score',
+        	values  => [ ( 0 .. 10 ) ],
+        	default => $ls->param('bounce_handler_decay_score'),
+    	}
+	);
 
-    my $bounce_handler_threshold_score_popup_menu = $q->popup_menu(
-        -name    => 'bounce_handler_threshold_score',
-        -values  => [ ( 0 .. 100 ) ],
-        -default => $ls->param('bounce_handler_threshold_score'),
-    );
+    my $bounce_handler_threshold_score_popup_menu = HTML::Menu::Select::popup_menu(
+        { 
+			name    => 'bounce_handler_threshold_score',
+        	values  => [ ( 0 .. 100 ) ],
+        	default => $ls->param('bounce_handler_threshold_score'),
+    	}
+	);
 
     my $curl_location = `which curl`;
     $curl_location = strip( make_safer($curl_location) );
 
-    my $parse_amount_widget = $q->popup_menu(
-        -name     => 'parse_amount',
-        -id       => 'parse_amount',
-        '-values' => [@amount],
-        -default  => $Plugin_Config->{MessagesAtOnce},
-        -label    => '',
+    my $parse_amount_widget = HTML::Menu::Select::popup_menu(
+        { 
+			name     => 'parse_amount',
+	        id       => 'parse_amount',
+	        values => [@amount],
+	        default  => $Plugin_Config->{MessagesAtOnce},
+	        label    => '',
+		}
     );
 
     my $plugin_configured = 1;

@@ -710,20 +710,24 @@ sub edit {
     catch {
         $can_use_ssl = 0;
     };
-
-    my $discussion_pop_auth_mode_popup = $q->popup_menu(
-        -id   => 'discussion_pop_auth_mode',
-        -name => 'discussion_pop_auth_mode',
-
-        -default  => $ls->param('discussion_pop_auth_mode'),
-        '-values' => [qw(BEST PASS APOP CRAM-MD5)],
-        -labels   => { BEST => 'Automatic' },
+	
+	require HTML::Menu::Select 
+    my $discussion_pop_auth_mode_popup = HTML::Menu::Select::popup_menu(
+        { 
+			id       => 'discussion_pop_auth_mode',
+	        name     => 'discussion_pop_auth_mode',
+	        default  => $ls->param('discussion_pop_auth_mode'),
+	        values   => [qw(BEST PASS APOP CRAM-MD5)],
+	        labels   => { BEST => 'Automatic' },
+		}
     );
-    my $spam_level_popup_menu = $q->popup_menu(
-        '-values' => [ 1 .. 50 ],
-        -default  => $ls->param('ignore_spam_messages_with_status_of'),
-        -name     => 'ignore_spam_messages_with_status_of',
-		-id       => 'ignore_spam_messages_with_status_of', 
+    my $spam_level_popup_menu = HTML::Menu::Select::popup_menu(
+        { 
+			values => [ 1 .. 50 ],
+	        default  => $ls->param('ignore_spam_messages_with_status_of'),
+	        name     => 'ignore_spam_messages_with_status_of',
+			id       => 'ignore_spam_messages_with_status_of', 
+		}
     );
     my $digest_labels = {
         3600   => 'Hour',
@@ -734,12 +738,14 @@ sub edit {
         259200 => '3 Days',
         604800 => 'Week',
     };
-    my $digest_schedule_popup_menu = $q->popup_menu(
-        '-values' => [ sort { $a <=> $b } keys %$digest_labels ],
-        -labels   => $digest_labels,
-        -default  => $ls->param('digest_schedule'),
-        -name     => 'digest_schedule',
-        -id       => 'digest_schedule',
+    my $digest_schedule_popup_menu = HTML::Menu::Select::popup_menu(
+        { 
+			values => [ sort { $a <=> $b } keys %$digest_labels ],
+	        labels   => $digest_labels,
+	        default  => $ls->param('digest_schedule'),
+	        name     => 'digest_schedule',
+	        id       => 'digest_schedule',
+		}
     );
 
     my $msg_sizes = { 
@@ -757,19 +763,23 @@ sub edit {
         20971520 => '20 Megabytes',
     }; 
 	
-    my $msg_soft_size_limit_popup_menu= $q->popup_menu(
-        '-values' => [sort  {$a <=> $b} keys %$msg_sizes],
-        -labels   => $msg_sizes, 
-        -default  => $ls->param('msg_soft_size_limit'),
-        -name     => 'msg_soft_size_limit',
-        -id       => 'msg_soft_size_limit',
+    my $msg_soft_size_limit_popup_menu= HTML::Menu::Select::popup_menu(
+        { 
+			values   => [sort  {$a <=> $b} keys %$msg_sizes],
+	        labels   => $msg_sizes, 
+	        default  => $ls->param('msg_soft_size_limit'),
+	        name     => 'msg_soft_size_limit',
+	        id       => 'msg_soft_size_limit',
+		}
     );
-    my $msg_hard_size_limit_popup_menu  = $q->popup_menu(
-        '-values' => [sort  {$a <=> $b} keys %$msg_sizes],
-        -labels   => $msg_sizes, 
-        -default  => $ls->param('msg_hard_size_limit'),
-        -name     => 'msg_hard_size_limit',
-        -id       => 'msg_hard_size_limit',
+    my $msg_hard_size_limit_popup_menu  = HTML::Menu::Select::popup_menu(
+        { 
+			values => [sort  {$a <=> $b} keys %$msg_sizes],
+	        labels   => $msg_sizes, 
+	        default  => $ls->param('msg_hard_size_limit'),
+	        name     => 'msg_hard_size_limit',
+	        id       => 'msg_hard_size_limit',
+		}
     );
 
     require DADA::Template::Widgets;

@@ -2483,28 +2483,34 @@ sub list_options {
     my $can_use_captcha = can_use_AuthenCAPTCHA();
 
     if ( !$process ) {
-
-        my $send_subscription_notice_to_popup_menu = $q->popup_menu(
-            -name        => 'send_subscription_notice_to',
-            -id          => 'send_subscription_notice_to',
-            -default     => $ls->param('send_subscription_notice_to'),
-            -labels      => { list => 'Your Subscribers', 'list_owner' => 'The List Owner', 'alt' => 'Other:'},
-            '-values'    => [qw(list list_owner alt)],
-        );
-        my $send_unsubscription_notice_to_popup_menu = $q->popup_menu(
-            -name     => 'send_unsubscription_notice_to',
-            -id       => 'send_unsubscription_notice_to',
-            -default  => $ls->param('send_unsubscription_notice_to'),
-            -labels   => { list => 'Your Subscribers', 'list_owner' => 'The List Owner', 'alt' => 'Other:' },
-            '-values' => [qw(list list_owner alt)],
-        );
-        my $send_admin_unsubscription_notice_to_popup_menu = $q->popup_menu(
-            -name     => 'send_admin_unsubscription_notice_to',
-            -id       => 'send_admin_unsubscription_notice_to',
-            -default  => $ls->param('send_admin_unsubscription_notice_to'),
-            -labels   => { list => 'Your Subscribers', 'list_owner' => 'The List Owner', 'alt' => 'Other:' },
-            '-values' => [qw(list list_owner alt)],
-        );
+		require HTML::Menu::Select;
+        my $send_subscription_notice_to_popup_menu = HTML::Menu::Select::popup_menu(
+			{
+	            name        => 'send_subscription_notice_to',
+	            id          => 'send_subscription_notice_to',
+	            default     => $ls->param('send_subscription_notice_to'),
+	            labels      => { list => 'Your Subscribers', 'list_owner' => 'The List Owner', 'alt' => 'Other:'},
+	            values      => [qw(list list_owner alt)],
+			}
+		);
+        my $send_unsubscription_notice_to_popup_menu = HTML::Menu::Select::popup_menu(
+			{
+	            name     => 'send_unsubscription_notice_to',
+	            id       => 'send_unsubscription_notice_to',
+	            default  => $ls->param('send_unsubscription_notice_to'),
+	            labels   => { list => 'Your Subscribers', 'list_owner' => 'The List Owner', 'alt' => 'Other:' },
+	            values   => [qw(list list_owner alt)],
+			}
+		);
+        my $send_admin_unsubscription_notice_to_popup_menu = HTML::Menu::Select::popup_menu(
+			{
+	            name     => 'send_admin_unsubscription_notice_to',
+	            id       => 'send_admin_unsubscription_notice_to',
+	            default  => $ls->param('send_admin_unsubscription_notice_to'),
+	            labels   => { list => 'Your Subscribers', 'list_owner' => 'The List Owner', 'alt' => 'Other:' },
+	            values => [qw(list list_owner alt)],
+			}
+		);
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
@@ -2799,23 +2805,27 @@ sub mail_sending_options {
         }
 
         my $mechanism_popup;
-        if ($can_use_net_smtp) {
+		require HTML::Menu::Select;
 
-            $mechanism_popup = $q->popup_menu(
-                -name     => 'sasl_auth_mechanism',
-                -id       => 'sasl_auth_mechanism',
-                -default  => $ls->param('sasl_auth_mechanism'),
-                '-values' => [qw(PLAIN LOGIN DIGEST-MD5 CRAM-MD5)],
-            );
+        if ($can_use_net_smtp) {			
+            $mechanism_popup = HTML::Menu::Select::popup_menu(
+				{ 
+	                name     => 'sasl_auth_mechanism',
+	                id       => 'sasl_auth_mechanism',
+	                default  => $ls->param('sasl_auth_mechanism'),
+	                values => [qw(PLAIN LOGIN DIGEST-MD5 CRAM-MD5)],
+				}
+			);
         }
 
-        my $pop3_auth_mode_popup = $q->popup_menu(
-            -name     => 'pop3_auth_mode',
-            -id       => 'pop3_auth_mode',
-            -default  => $ls->param('pop3_auth_mode'),
-            '-values' => [qw(BEST PASS APOP CRAM-MD5)],
-            -labels   => { BEST => 'Automatic' },
-
+        my $pop3_auth_mode_popup = HTML::Menu::Select::popup_menu(
+			{
+				name     => 'pop3_auth_mode',
+	            id       => 'pop3_auth_mode',
+	            default  => $ls->param('pop3_auth_mode'),
+	            values   => [qw(BEST PASS APOP CRAM-MD5)],
+	            labels   => { BEST => 'Automatic' },
+			}
         );
 
         my $wrong_uid = 0;
@@ -2977,19 +2987,24 @@ sub mailing_sending_mass_mailing_options {
         my @message_label = (1);
         my %label_label = ( 1 => 'second(s)', );
 
-        my $mass_send_amount_menu = $q->popup_menu(
-            -name  => "mass_send_amount",
-            -id    => "mass_send_amount",
-            -value => [@message_amount],
-            -class => 'previewBatchSendingSpeed',
+		require HTML::Menu::Select; 
+        my $mass_send_amount_menu = HTML::Menu::Select::popup_menu(
+            {
+				name  => "mass_send_amount",
+	            id    => "mass_send_amount",
+	            value => [@message_amount],
+	            class => 'previewBatchSendingSpeed',
+			}
         );
 
-        my $bulk_sleep_amount_menu = $q->popup_menu(
-            -name  => "bulk_sleep_amount",
-            -id    => "bulk_sleep_amount",
-            -value => [@message_wait],
-            -class => 'previewBatchSendingSpeed',
-        );
+        my $bulk_sleep_amount_menu = HTML::Menu::Select::popup_menu(
+			{
+	            name  => "bulk_sleep_amount",
+	            id    => "bulk_sleep_amount",
+	            value => [@message_wait],
+	            class => 'previewBatchSendingSpeed',
+			}
+		);
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
@@ -3265,41 +3280,52 @@ sub mail_sending_advanced_options {
 
 
     if ( !$process ) {
-
+		
+		require HTML::Menu::Select;
         unshift( @DADA::Config::CHARSETS, $ls->param('charset') );
-        my $precedence_popup_menu = $q->popup_menu(
-            -name    => "precedence",
-            -id      => "precedence",
-            -value   => [@DADA::Config::PRECEDENCES],
-            -default => $ls->param('precedence'),
+        my $precedence_popup_menu = HTML::Menu::Select::popup_menu(
+            {
+				name    => "precedence",
+	            id      => "precedence",
+	            value   => [@DADA::Config::PRECEDENCES],
+	            default => $ls->param('precedence'),
+			}
         );
 
-        my $priority_popup_menu = $q->popup_menu(
-            -name    => "priority",
-            -id      => "priority",
-            -value   => [ keys %DADA::Config::PRIORITIES ],
-            -labels  => \%DADA::Config::PRIORITIES,
-            -default => $ls->param('priority'),
+        my $priority_popup_menu = HTML::Menu::Select::popup_menu(
+			{
+	            name    => "priority",
+	            id      => "priority",
+	            value   => [ keys %DADA::Config::PRIORITIES ],
+	            labels  => \%DADA::Config::PRIORITIES,
+	            default => $ls->param('priority'),
+			}
+		);
+
+        my $charset_popup_menu = HTML::Menu::Select::popup_menu(
+            {
+				name  => 'charset',
+          	    id    => 'charset',
+            	value => [@DADA::Config::CHARSETS],
+        	}
+		);
+
+        my $plaintext_encoding_popup_menu = HTML::Menu::Select::popup_menu(
+            {
+				name    => 'plaintext_encoding',
+				id      => 'plaintext_encoding',
+	            value   => [@DADA::Config::CONTENT_TRANSFER_ENCODINGS],
+	            default => $ls->param('plaintext_encoding'),
+			}
         );
 
-        my $charset_popup_menu = $q->popup_menu(
-            -name  => 'charset',
-            -id    => 'charset',
-            -value => [@DADA::Config::CHARSETS],
-        );
-
-        my $plaintext_encoding_popup_menu = $q->popup_menu(
-            -name    => 'plaintext_encoding',
-			-id      => 'plaintext_encoding',
-            -value   => [@DADA::Config::CONTENT_TRANSFER_ENCODINGS],
-            -default => $ls->param('plaintext_encoding'),
-        );
-
-        my $html_encoding_popup_menu = $q->popup_menu(
-            -name    => 'html_encoding',
-			-id      => 'html_encoding',
-            -value   => [@DADA::Config::CONTENT_TRANSFER_ENCODINGS],
-            -default => $ls->param('html_encoding'),
+        my $html_encoding_popup_menu = HTML::Menu::Select::popup_menu(
+            {
+				name    => 'html_encoding',
+				id      => 'html_encoding',
+	            value   => [@DADA::Config::CONTENT_TRANSFER_ENCODINGS],
+	            default => $ls->param('html_encoding'),
+			}
         );
 
         my $can_mime_encode = 1;
@@ -4548,13 +4574,16 @@ sub membership {
 
         }
 
-        my $add_to_popup_menu = $q->popup_menu(
-            -name     => 'type',
-            -id       => 'type_add',
-            -default  => 'list',
-            '-values' => [ keys %$add_to ],
-            -labels   => \%add_list_types,
-        );
+		require HTML::Menu::Select; 
+        my $add_to_popup_menu = HTML::Menu::Select::popup_menu(
+			{
+	            name     => 'type',
+	            id       => 'type_add',
+	            default  => 'list',
+	            values  => [ keys %$add_to ],
+	            labels   => \%add_list_types,
+	        }
+		);
 
         # Only if black list is enabled and they're not currently subscribed.
         if ( $ls->param('black_list') == 1 && $subscribed_to_lt->{list} != 1 ) {
@@ -4576,21 +4605,25 @@ sub membership {
             }
         }
 
-        my $remove_from_popup_menu = $q->popup_menu(
-            -name     => 'type_remove',
-            -id       => 'type_remove',
-            '-values' => $remove_from,
-            -labels   => $list_types,
-        );
+		require HTML::Menu::Select;
+        my $remove_from_popup_menu = HTML::Menu::Select::popup_menu(
+	        {    name     => 'type_remove',
+	            id       => 'type_remove',
+	            values => $remove_from,
+	            labels   => $list_types,
+	        }
+		);
 
         my @update_option_values = ( ':all', ( keys %$subscribed_to_lt ) );
         my %update_option_labels = ( ':all' => 'All Sublists', $list_types );
-        my $update_address_popup_menu = $q->popup_menu(
-            -name     => 'type_update',
-            -id       => 'type_update',
-            '-values' => [@update_option_values],
-            -labels   => {%update_option_labels},
-        );
+        my $update_address_popup_menu = HTML::Menu::Select::popup_menu(
+			{
+	            name     => 'type_update',
+	            id       => 'type_update',
+	            values => [@update_option_values],
+	            labels   => {%update_option_labels},
+	        }
+		);
 
         my $subscribed_to_list = 0;
         if ( $subscribed_to_lt->{list} == 1 ) {
@@ -5490,13 +5523,16 @@ sub add {
                 $subscription_quota_reached = 1;
             }
         }
-
-        my $list_type_switch_widget = $q->popup_menu(
-            -name     => 'type',
-            '-values' => [ keys %{ DADA::App::Guts::list_types() } ],
-            -labels   => DADA::App::Guts::list_types(),
-            -default  => $type,
-        );
+		
+		require HTML::Menu::Select; 
+        my $list_type_switch_widget = HTML::Menu::Select::popup_menu(
+			{
+				name     => 'type',
+	            values => [ keys %{ DADA::App::Guts::list_types() } ],
+	            labels   => DADA::App::Guts::list_types(),
+	            default  => $type,
+	        }
+		);
 
         my $rand_string = generate_rand_string_md5();
 
@@ -6252,6 +6288,7 @@ sub subscription_options {
 
         my $view_list_order_by_menu           = '';
         my $view_list_order_by_direction_menu = '';
+		require HTML::Menu::Select; 
 
         if ( $dpf->can_have_subscriber_fields ) {
 
@@ -6267,26 +6304,32 @@ sub subscription_options {
             $pf_field_labels->{timestamp} = 'Subscription Date';
             $pf_field_labels->{email}     = 'Email Address';
 
-            $view_list_order_by_menu = $q->popup_menu(
-                -name     => 'view_list_order_by',
-                -id       => 'view_list_order_by',
-                '-values' => $field_values,
-                -labels   => $pf_field_labels,
-                -default  => $ls->param('view_list_order_by'),
-            );
-            $view_list_order_by_direction_menu = $q->popup_menu(
-                -name     => 'view_list_order_by_direction',
-                -id       => 'view_list_order_by_direction',
-                '-values' => [ 'ASC', 'DESC' ],
-                -labels   => { ASC => 'Ascending', DESC => 'Descending' },
-                -default  => $ls->param('view_list_order_by_direction'),
-            );
+            $view_list_order_by_menu = HTML::Menu::Select::popup_menu(
+				{
+	                name     => 'view_list_order_by',
+	                id       => 'view_list_order_by',
+	                values => $field_values,
+	                labels   => $pf_field_labels,
+	                default  => $ls->param('view_list_order_by'),
+				}
+			);
+            $view_list_order_by_direction_menu = HTML::Menu::Select::popup_menu(
+				{
+	                name     => 'view_list_order_by_direction',
+	                id       => 'view_list_order_by_direction',
+	                values => [ 'ASC', 'DESC' ],
+	                labels   => { ASC => 'Ascending', DESC => 'Descending' },
+	                default  => $ls->param('view_list_order_by_direction'),
+	            }
+			);
         }
-        my $subscription_quota_menu = $q->popup_menu(
-            -name     => 'subscription_quota',
-            -id       => 'subscription_quota',
-            '-values' => [@quota_values],
-            -default  => $ls->param('subscription_quota'),
+        my $subscription_quota_menu = HTML::Menu::Select::popup_menu(
+			{
+				name     => 'subscription_quota',
+	            id       => 'subscription_quota',
+	            values => [@quota_values],
+	            default  => $ls->param('subscription_quota'),
+			}
         );
 
         my @list_amount = (
@@ -6294,17 +6337,22 @@ sub subscription_options {
             450,  500,  550,  600,  650,   700,   750,   800,   850,   900, 950, 1000,
             2000, 3000, 4000, 5000, 10000, 15000, 20000, 25000, 50000, 100000
         );
-        my $vlsn_menu = $q->popup_menu(
-            -name    => 'view_list_subscriber_number',
-            -values  => [@list_amount],
-            -default => $ls->param('view_list_subscriber_number'),
+		require HTML::Menu::Select; 
+        my $vlsn_menu = HTML::Menu::Select::popup_menu(
+            {
+				name    => 'view_list_subscriber_number',
+	            values  => [@list_amount],
+	            default => $ls->param('view_list_subscriber_number'),
+			}
         );
 
-        my $add_list_import_limit_menu = $q->popup_menu(
-            -name    => 'add_list_import_limit',
-            -values  => [qw(100 200 300 400 500 600 750 1000 1500 2000 2500 3000 5000 7500 10000)],
-            -default => $ls->param('add_list_import_limit'),
-        );
+        my $add_list_import_limit_menu = HTML::Menu::Select::popup_menu(
+            {
+				name    => 'add_list_import_limit',
+            	values  => [qw(100 200 300 400 500 600 750 1000 1500 2000 2500 3000 5000 7500 10000)],
+            	default => $ls->param('add_list_import_limit'),
+        	}
+		);
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
@@ -6738,12 +6786,15 @@ sub adv_archive_options {
     if ( !$process ) {
 
         my @index_this = ( $ls->param('archive_index_count'), 1 .. 10, 15, 20, 25, 30, 40, 50, 75, 100 );
-
-        my $archive_index_count_menu = $q->popup_menu(
-            -name  => 'archive_index_count',
-            -id    => 'archive_index_count',
-            -value => [@index_this]
-        );
+		
+		require HTML::Menu::Select; 
+        my $archive_index_count_menu = HTML::Menu::Select::popup_menu(
+            {
+				name  => 'archive_index_count',
+            	id    => 'archive_index_count',
+				value => [@index_this],
+    		}
+	    );
 
         my $ping_sites = [];
         for (@DADA::Config::PING_URLS) {
@@ -6928,6 +6979,7 @@ sub edit_archived_msg {
 
     sub view {
 
+		require HTML::Menu::Select; 
         my $D_Content_Types = [ 'text/plain', 'text/html' ];
 
         my %Headers_To_Edit;
@@ -6998,12 +7050,14 @@ sub edit_archived_msg {
                             {
                                 push( @{$D_Content_Types}, $headers{$h} );
                                 $form_blob .= $q->p(
-                                    $q->popup_menu(
-                                        '-values' => $D_Content_Types,
-                                        -id       => $h,
-                                        -name     => $h,
-                                        -default  => $headers{$h}
-                                    )
+                                    HTML::Menu::Select::popup_menu(
+                                        {
+											values => $D_Content_Types,
+                                        	id       => $h,
+                                        	name     => $h,
+                                        	default  => $headers{$h}
+                                    	}
+									)
                                 );
                             }
                             else {
@@ -11507,13 +11561,13 @@ sub restore_lists {
                                 ? (
 
                                     (
-                                        $q->p(
-                                            $q->popup_menu(
-                                                -name     => $t . '_' . $f_list . '_version',
-                                                '-values' => $vals,
-                                                -labels   => $labels->{$f_list}->{$t}
-                                            )
-                                        )
+                                        '<p>' . 
+										HTML::Menu::Select::popup_menu(
+                                                { 
+													name    => $t . '_' . $f_list . '_version',
+                                                	values  => $vals,
+                                                	labels  => $labels->{$f_list}->{$t},
+											) . '</p>'
                                     ),
 
                                   )
