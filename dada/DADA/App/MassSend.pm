@@ -189,8 +189,6 @@ sub send_email {
                     num_list_mailouts      => $num_list_mailouts,
                     num_total_mailouts     => $num_total_mailouts,
                     active_mailouts        => $active_mailouts,
-                    global_list_sending_checkbox_widget =>
-                      DADA::Template::Widgets::global_list_sending_checkbox_widget( $self->{list} ),
                     schedule_last_checked_frt => scalar formatted_runtime( time - $self->{ls_obj}->param('schedule_last_checked_time') ),
                       can_use_datetime => scalar DADA::App::Guts::can_use_datetime(), 
                       sched_flavor => $DADA::Config::SCHEDULED_JOBS_OPTIONS->{scheduled_jobs_flavor},
@@ -987,9 +985,6 @@ sub send_url_email {
                     can_have_subscriber_fields => $self->{lh_obj}->can_have_subscriber_fields,
                     SERVER_ADMIN               => $ENV{SERVER_ADMIN},
                     priority_popup_menu        => DADA::Template::Widgets::priority_popup_menu( $self->{ls_obj}->get ),
-
-                    global_list_sending_checkbox_widget =>
-                      DADA::Template::Widgets::global_list_sending_checkbox_widget( $self->{list} ),
 
                     MAILOUT_AT_ONCE_LIMIT  => $DADA::Config::MAILOUT_AT_ONCE_LIMIT,
                     mailout_will_be_queued => $mailout_will_be_queued,
