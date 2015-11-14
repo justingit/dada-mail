@@ -1,39 +1,38 @@
-		<!-- tmpl_if show_profile_widget --> 
-			<div class="clearfix">
-				<div class="panel right">
-					<!-- tmpl_var profile_widget --> 
-				</div> 
-			</div>
-		<!-- /tmpl_if --> 
+<!-- begin list_template_body_code_block.tmpl -->
 
-<div class="row" >
-   <div class="small-12 columns" id="list_content_area">
-	   
-		   <h2>
-			   <!-- tmpl_var title -->
-		   </h2>
-		
-		<!-- tmpl_if list_settings.list --> 
-			<!-- tmpl_if subscribed_to_list --> 
-				<div class="alert-box info radius">
-					You are currently subscribed to, 
-					<!-- tmpl_var list_settings.list_name -->!
-				</div> 
-			<!-- /tmpl_if -->
-		<!-- /tmpl_if -->
-
-		<!-- tmpl_var content --> 
-
-		<!-- tmpl_if list_settings.website_name --> 
-			<!-- tmpl_if list_settings.website_url --> 
-				Go back to 
-			    <a href="<!-- tmpl_var list_settings.website_url -->">
-				  	<!-- tmpl_var list_settings.website_name -->
-				</a>
-			<!-- /tmpl_if --> 
-		<!-- /tmpl_if -->
+<!-- tmpl_if show_profile_widget --> 
+	<div class="clearfix">
+		<div class="panel right">
+			<!-- tmpl_var profile_widget --> 
+		</div> 
 	</div>
-</div> 
+<!-- /tmpl_if --> 
+
+
+   <h2>
+	   <!-- tmpl_var title -->
+   </h2>
+
+<!-- tmpl_if list_settings.list --> 
+	<!-- tmpl_if subscribed_to_list --> 
+		<div class="alert-box info radius">
+			You are currently subscribed to, 
+			<!-- tmpl_var list_settings.list_name -->!
+		</div> 
+	<!-- /tmpl_if -->
+<!-- /tmpl_if -->
+
+<!-- tmpl_var content --> 
+
+<!-- tmpl_if list_settings.website_name --> 
+	<!-- tmpl_if list_settings.website_url --> 
+		Go back to 
+	    <a href="<!-- tmpl_var list_settings.website_url -->">
+		  	<!-- tmpl_var list_settings.website_name -->
+		</a>
+	<!-- /tmpl_if --> 
+<!-- /tmpl_if -->
+
 
 
 <div class="row">
@@ -54,3 +53,4 @@
 	$(document).foundation();
 </script>
 	
+<!-- end list_template_body_code_block.tmpl -->
