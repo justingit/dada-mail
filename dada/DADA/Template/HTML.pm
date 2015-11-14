@@ -535,7 +535,7 @@ sub template_from_magic {
                 }
             }
             elsif ( $args->{head_content_added_by} eq 'unshift' ) {
-                $head_ele->unshift_content($custom_css_ele);
+                $head_ele->unshift_content($header_code_block_ele);
                 if ( $args->{add_custom_css} == 1 ) {
                     $head_ele->unshift_content( $custom_css_ele );
                 }
