@@ -740,18 +740,23 @@ sub scrn_configure_dada_mail {
     # I'm going to fill this back in:
     $q->param( 'install_type',                       $install_type );
     $q->param( 'current_dada_files_parent_location', $current_dada_files_parent_location );
-
-    my $amazon_ses_Allowed_Sending_Quota_Percentage_popup_menu = $q->popup_menu(
-        -name    => 'amazon_ses_Allowed_Sending_Quota_Percentage',
-        -id      => 'amazon_ses_Allowed_Sending_Quota_Percentage',
-        -values  => [ reverse( ( 1 .. 100 ) ) ],
-        -default => $DADA::Config::AMAZON_SES_OPTIONS->{Allowed_Sending_Quota_Percentage},
+	
+	require HTML::Menu::Select; 
+    my $amazon_ses_Allowed_Sending_Quota_Percentage_popup_menu = HTML::Menu::Select::popup_menu(
+        { 
+			name    => 'amazon_ses_Allowed_Sending_Quota_Percentage',
+	        id      => 'amazon_ses_Allowed_Sending_Quota_Percentage',
+	        values  => [ reverse( ( 1 .. 100 ) ) ],
+	        default => $DADA::Config::AMAZON_SES_OPTIONS->{Allowed_Sending_Quota_Percentage},
+		}
     );
-    my $mandrill_Allowed_Sending_Quota_Percentage_popup_menu = $q->popup_menu(
-        -name    => 'mandrill_Allowed_Sending_Quota_Percentage',
-        -id      => 'mandrill_Allowed_Sending_Quota_Percentage',
-        -values  => [ reverse( ( 1 .. 100 ) ) ],
-        -default => $DADA::Config::MADRILL->{Allowed_Sending_Quota_Percentage},
+    my $mandrill_Allowed_Sending_Quota_Percentage_popup_menu = HTML::Menu::Select::popup_menu(
+        {
+			name    => 'mandrill_Allowed_Sending_Quota_Percentage',
+	        id      => 'mandrill_Allowed_Sending_Quota_Percentage',
+	        values  => [ reverse( ( 1 .. 100 ) ) ],
+	        default => $DADA::Config::MADRILL->{Allowed_Sending_Quota_Percentage},
+		}
     );
 
     my $install_dada_files_dir_at = $self->install_dada_files_dir_at_from_params(
