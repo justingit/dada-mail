@@ -104,7 +104,7 @@
 
 		<input type="hidden" name="flavor"                             value="check"> 
 		<input type="hidden" name="self_url" id="self_url"             value="<!-- tmpl_var self_url escape="HTML" -->">
-		<input type="hidden" name="install_type"                       value="<!-- tmpl_var install_type -->">
+		<input type="hidden" name="install_type" id="install_type"     value="<!-- tmpl_var install_type -->">
 		<input type="hidden" name="current_dada_files_parent_location" value="<!-- tmpl_var current_dada_files_parent_location -->">
 
 		<!-- tmpl_if expr="(install_type eq 'upgrade')" -->
@@ -628,7 +628,11 @@
 			<!-- /tmpl_if --> 
 		</fieldset> 
 
+<button class="button expand toggleDivs" data-target="advanced_options">
+		Show/Hide Advanced Options...
+</button>
 
+<div id="advanced_options">
 		<fieldset> 
 			<legend>Plugins/Extensions [
 				<a href="#" class="toggleDivs" data-target="plugins_extensions_help">
@@ -1976,11 +1980,14 @@
 		</div> 
 
 
-		<input type="submit" value="&#187; Configure  <!-- tmpl_var PROGRAM_NAME -->! &#171;" class="processing large button expand"> 
+		<input type="submit" value="&#187; Configure  <!-- tmpl_var PROGRAM_NAME -->! &#171;" class="success large button expand"> 
 
 		</form> 
 	</div>
 </div>
+
+</div> 
+
 
 <!-- tmpl_include install_debug_info_widget.tmpl --> 
 

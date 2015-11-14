@@ -193,6 +193,9 @@ jQuery(document).ready(function($){
 		$.each(hiding, function(index, value) {
 			$("#" + value).hide(); 
 		}); 
+		if($("#install_type").val() != "upgrade"){ 
+			$("#advanced_options").hide(); 
+		}
 
 	}
 	if ($("#installer_install_dada_mail").length) {
