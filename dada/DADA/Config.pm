@@ -1373,7 +1373,7 @@ $MIME_OPTIMIZE     //= 'no tmp files';
     mass_mailing_send_to_list_owner => 1,
 	mass_mailing_save_logs          => 0,
 
-    amazon_ses_auto_batch_settings => 0,
+    amazon_ses_auto_batch_settings  => 1,
 
     # For mass mailings, connect only once per batch?
     # 0 = no

@@ -711,7 +711,7 @@ sub edit {
         $can_use_ssl = 0;
     };
 	
-	require HTML::Menu::Select 
+	require HTML::Menu::Select;
     my $discussion_pop_auth_mode_popup = HTML::Menu::Select::popup_menu(
         { 
 			id       => 'discussion_pop_auth_mode',
@@ -3923,7 +3923,7 @@ Before you can start using Bridge for your mailing list, there's two things that
 
 =head2 Enable Bridge
 
-In Bridge's control panel, under, B<General>, uncheck the option: B<Disable sending using this method>. Save your changes. 
+In Bridge's control panel, under, B<General>, uncheck the option: B<Disable Bridge>. Save your changes. 
 
 =head2 Create and Configure the List Email
 

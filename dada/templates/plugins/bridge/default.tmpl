@@ -50,7 +50,7 @@
 				<li>
 					Uncheck the option labeled, 
 					<strong>
-						Disable sending using this method
+						Disable <!-- tmpl_var Plugin_Name -->
 					</strong> 
 					below to enable this plugin for this Mailing List.
 				</li>
@@ -184,14 +184,31 @@
 						<label 
 							for="bridge_mail_forward_pipe_command"
 						>
-								Email Forward Pipe Command (example):
-						</label> 
-						<input 
-							type="text"  
-							id="bridge_mail_forward_pipe_command" 
-							value="|<!-- tmpl_var program_abs_path --> --inject --list <!-- tmpl_var list_settings.list -->"
-							readonly
-						>
+								Email Forward Pipe Command:
+						</label>
+						
+						
+						<div class="row collapse">
+							<div class="large-10 medium-10 columns">
+									<input 
+										type="text"  
+										id="bridge_mail_forward_pipe_command" 
+										value="|<!-- tmpl_var program_abs_path --> --inject --list <!-- tmpl_var list_settings.list -->"
+										readonly
+									>
+				           </div> 
+							<div class="large-2 medium-2 columns">
+					 			<button 
+					 				type="button" 
+					 				class="zclip postfix" 
+					 				data-zclip-target-id="bridge_mail_forward_pipe_command"
+					 			>
+					 					Copy
+					 				</button>
+							</div>
+				        </div>
+						
+						
 					</div>
 				</div><!-- bridge_mail_forward_pipe_params -->
 			</div> 
@@ -409,16 +426,13 @@
 		</div>
 
 		<div class="row">
-			<div class="small-12 columns">
+			<div class="large-6 columns">
 				<label for="msg_soft_size_limit">
 					Soft Max Size of Messages
 					<!-- tmpl_var msg_soft_size_limit_popup_menu -->
 				</label>
 			</div> 
-		</div>
-
-		<div class="row">
-			<div class="small-12 columns">
+			<div class="large-6 columns">
 				<label for="msg_hard_size_limit">
 				Hard Max Size of Messages
 				<!-- tmpl_var msg_hard_size_limit_popup_menu -->

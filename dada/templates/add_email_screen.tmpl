@@ -766,69 +766,70 @@
     </p> 
 </div>
 <!-- /tmpl_if -->
-
-	<ul class="button-group right">
+	<div class="clearfix">
+		<ul class="button-group right">
 	
-	    <!-- tmpl_if chrome --> 
-	         <li><input 
-				 	type="button" 
-					class="button warning previous" 
-					value="&lArr; Re-Enter Addresses"
-				></li>
-	    <!-- /tmpl_if --> 
-    
-	    <!-- tmpl_if expr="(type eq 'list')" -->
-    
-	        <!-- tmpl_if show_invitation_button --> 
-	            <li><input 
-						type="submit"  
-						name="process" 
-						value="Send Invitation... &rArr;" 
-						<!-- tmpl_if list_settings.closed_list -->
-							disabled="disabled" class="button disabled"
-						<!-- tmpl_else -->
-							class="button success addingemail"
-						<!-- /tmpl_if -->
+		    <!-- tmpl_if chrome --> 
+		         <li><input 
+					 	type="button" 
+						class="button warning previous" 
+						value="&lArr; Re-Enter Addresses"
 					></li>
-	        <!-- /tmpl_if --> 
-	    <!-- /tmpl_if -->
+		    <!-- /tmpl_if --> 
     
-	    <!-- tmpl_if expr="(type eq 'list')" -->     
-	        <!-- tmpl_if show_update_button --> 
-	            <li>
+		    <!-- tmpl_if expr="(type eq 'list')" -->
+    
+		        <!-- tmpl_if show_invitation_button --> 
+		            <li><input 
+							type="submit"  
+							name="process" 
+							value="Send Invitation... &rArr;" 
+							<!-- tmpl_if list_settings.closed_list -->
+								disabled="disabled" class="button disabled"
+							<!-- tmpl_else -->
+								class="button success addingemail"
+							<!-- /tmpl_if -->
+						></li>
+		        <!-- /tmpl_if --> 
+		    <!-- /tmpl_if -->
+    
+		    <!-- tmpl_if expr="(type eq 'list')" -->     
+		        <!-- tmpl_if show_update_button --> 
+		            <li>
+						<input 
+							type="submit" 
+							class="button success addingemail" 
+							name="process"  
+							value="Update Checked Addresses &rArr;">
+						</li>            
+		        <!-- tmpl_else --> 
+		            <!-- tmpl_if show_add_button --> 
+		                <li><input 
+							type="submit" 
+							<!-- tmpl_unless expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
+								disabled="disabled" class="button disabled"
+							<!-- tmpl_else -->
+								class="button success addingemail warnAboutMassSubscription"
+							<!-- /tmpl_unless -->  
+							name="process"  
+							value="Subscribe/Update Checked Addresses &rArr;"
+							>
+						</li>            
+		            <!-- /tmpl_if -->         
+		        <!-- /tmpl_if --> 
+        
+		    <!-- tmpl_else --> 
+		        <li>
 					<input 
 						type="submit" 
 						class="button success addingemail" 
 						name="process"  
-						value="Update Checked Addresses &rArr;">
-					</li>            
-	        <!-- tmpl_else --> 
-	            <!-- tmpl_if show_add_button --> 
-	                <li><input 
-						type="submit" 
-						<!-- tmpl_unless expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
-							disabled="disabled" class="button disabled"
-						<!-- tmpl_else -->
-							class="button success addingemail warnAboutMassSubscription"
-						<!-- /tmpl_unless -->  
-						name="process"  
-						value="Subscribe/Update Checked Addresses &rArr;"
-						>
-					</li>            
-	            <!-- /tmpl_if -->         
-	        <!-- /tmpl_if --> 
-        
-	    <!-- tmpl_else --> 
-	        <li>
-				<input 
-					type="submit" 
-					class="button success addingemail" 
-					name="process"  
-					value="Add Checked Addresses to <!-- tmpl_var type_title --> &rArr;"
-				>
-			</li>
-	    <!-- /tmpl_if -->
-	</ul>
+						value="Add Checked Addresses to <!-- tmpl_var type_title --> &rArr;"
+					>
+				</li>
+		    <!-- /tmpl_if -->
+		</ul>
+	</div>
 
     
  </form>

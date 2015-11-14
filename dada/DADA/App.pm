@@ -11567,6 +11567,7 @@ sub restore_lists {
 													name    => $t . '_' . $f_list . '_version',
                                                 	values  => $vals,
                                                 	labels  => $labels->{$f_list}->{$t},
+												}
 											) . '</p>'
                                     ),
 

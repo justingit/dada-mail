@@ -1055,6 +1055,15 @@ jQuery(document).ready(function($){
 		});
 
 
+ 	   $("body")
+        .on("copy", ".zclip", function(/* ClipboardEvent */ e) {
+		  var target_id = $(this).data("zclip-target-id"); 
+          e.clipboardData.clearData();
+          e.clipboardData.setData("text/plain", $("#" + target_id).val());
+          e.preventDefault();
+        });
+
+
 
 
 
