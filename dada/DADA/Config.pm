@@ -994,16 +994,16 @@ $ADMIN_MENU //= [
 				},
 				
 				{
-				-Title      => 'App Configuration',
-				-Title_URL  => "$S_PROGRAM_URL?flavor=setup_info",
-				-Function   => 'setup_info',
-				-Activated  => 1,
-				},
-
-				{
 				-Title      => 'Scheduled Jobs',
 				-Title_URL  => "$S_PROGRAM_URL?flavor=scheduled_jobs",
 				-Function   => 'scheduled_jobs',
+				-Activated  => 1,
+				},
+				
+				{
+				-Title      => 'App Configuration',
+				-Title_URL  => "$S_PROGRAM_URL?flavor=setup_info",
+				-Function   => 'setup_info',
 				-Activated  => 1,
 				},
 				
