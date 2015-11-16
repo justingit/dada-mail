@@ -21,8 +21,6 @@ Agreement step on subscription (by checking this box, you agree to the following
 
 email list owner about new list being created. 
 
-Mve changes from Send Email to Send Webpage 
-
 app.css needs to moved over
 
 Broke KCFinder too?!
