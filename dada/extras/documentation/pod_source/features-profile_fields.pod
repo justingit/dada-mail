@@ -69,7 +69,7 @@ Will not. Consult the Config.pm file for how to set the special prefix.
 
 Profile Fields can be marked as, B<Required>. 
 
-You may acquire the HTML code needed to embed the subscription form in a webpage in the usual location: Under B<Appearance and Templates >, click on, B<Subscription Form HTML>. 
+You may acquire the HTML code needed to embed the subscription form in a webpage in the usual location: Under B<Appearance >, click on, B<Subscription Form HTML>. 
 
 =head2 Importing Subscribers
 

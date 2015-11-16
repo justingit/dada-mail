@@ -449,7 +449,7 @@ $ADMIN_MENU = [
 	},
 
 
-	{-Title      => 'Appearance and Templates',
+	{-Title      => 'Appearance',
 	 -Activated  => 1,
 	 -Submenu    => [
 					{

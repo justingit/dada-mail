@@ -37,7 +37,7 @@ For PlainText messages, it'll look something like this:
 
 The information in this footer gives your subscriber essential information to unsubscribe, include the name of your list, the email address that they're subscribed to, and the Unsubscription Link, itself. 
 
-You can customize your Mailing List Message template in the List Control Panel, under B<Appearance and Templates Email Message Templates>
+You can customize your Mailing List Message template in the List Control Panel, under B<Appearance Email Message Templates>
 
 If the unsubscription link is not found somewhere in your mailing list message, B<Dada Mail will prepend your message with one>, to make absolutely certain a working unsubscription link is available. 
 

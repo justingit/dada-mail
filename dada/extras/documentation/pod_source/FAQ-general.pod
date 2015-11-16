@@ -206,7 +206,7 @@ Visitors to your website can subscribe to your mailing list by filling out a Lis
 
 This form is located  on the default screen of Dada Mail (for all lists) and also on the list-specific screen (for just that list)
 
-You can also place this subscription form on any page of an already existing website. The HTML form code can be copied from the List Control Panel screen, located at: B<Appearance and Templates - Subscription Form HTML>
+You can also place this subscription form on any page of an already existing website. The HTML form code can be copied from the List Control Panel screen, located at: B<Appearance - Subscription Form HTML>
 
 And pasting the HTML into your page's source. 
 
@@ -308,7 +308,7 @@ http://dadamailproject.com/support/documentation/bounce_handler.html
 
 =head2 How do I create the HTML Subscription form code to place on my web pages to allow people to subscribe to my list? 
 
-Log into your list control panel, click, B<Appearance and Templates -  Subscription Form HTML>
+Log into your list control panel, click, B<Appearance -  Subscription Form HTML>
 
 =head2 Can I hook Dada Mail up to a form on my website? 
 
@@ -542,7 +542,7 @@ These are the list templates that correspond to each of your lists.
 
 =item * Change the default list template, using the techniques above. 
 
-Either, don't edit the individual copy of the list template in the admin control panel under, B<Appearance and Templates - Your Mailing List Template>, check the option, " Use the default list template."  in that same screen, or, to be even more authorative, add this to your %LIST_SETUP_OVERRIDES Config.pm hash: 
+Either, don't edit the individual copy of the list template in the admin control panel under, B<Appearance - Your Mailing List Template>, check the option, " Use the default list template."  in that same screen, or, to be even more authorative, add this to your %LIST_SETUP_OVERRIDES Config.pm hash: 
 
  get_template_data                => 'from_default_template',
 
@@ -689,7 +689,7 @@ http://dadamailproject.com/support/documentation/FAQ-default_to_SQL_backend.pod.
 
 By default, the Mailing List Messages - meaning, messages that are sent to everyone on a list, provide quite a bit of information about the list and how to unsubscribe. It's very verbose, but we feel that it's a good start. 
 
-To change the mailing list message template, login into your list control panel and navigate to: B<Appearance and Templates - Email Message Templates>
+To change the mailing list message template, login into your list control panel and navigate to: B<Appearance - Email Message Templates>
 
 You'll see many text fields with all the email message templates that are easy to change. You are looking for two: B< Mailing List Message (Text Version) > and B< Mailing List Message (HTML Version) >
 
@@ -765,7 +765,7 @@ C<HTML::Template::Pro> can render email templates faster than the included C<HTM
 
 The advanced email templating syntax engine (C<HTML::Template::Expr>) is much slower than the regular syntax. 
 
-Uncheck, B<Enable use of the advanced templating syntax for email messages.> in I<Appearance and Templates - Email Message Templates> (under, I<Advanced Options
+Uncheck, B<Enable use of the advanced templating syntax for email messages.> in I<Appearance - Email Message Templates> (under, I<Advanced Options
 >). Make sure there are no email messages that use any, CE<lt>!-- tmpl_expr ... --E<gt>> tags. 
 
 =item * Set the config variable, $MIME_OPTIMIZE to, 'faster'
