@@ -478,7 +478,7 @@ $RECAPTHCA_MAILHIDE_PARAMS //= {
 
 
 $SHOW_HELP_LINKS //= 1;
-$HELP_LINKS_URL  //= 'http://dadamailproject.com/pro_dada/8.0.0';
+$HELP_LINKS_URL  //= 'http://dadamailproject.com/pro_dada/9.0.0';
 
 
 $LOGIN_COOKIE_NAME //= 'dadalogin';
