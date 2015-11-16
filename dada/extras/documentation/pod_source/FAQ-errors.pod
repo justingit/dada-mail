@@ -102,7 +102,7 @@ You may read the error log file directly by downloading it, etc.
 
 If the error you're receiving doesn't stop you from logging into your List Control Panel, you may also use the B<Log Viewer> plugin to view the error log as well. This plugin is also installed by default when you install Dada Mail using its built in Installer. 
 
-You'll find a link for the Log View plugin on the left hand menu, under: B<Plugins - Log Viewer>. Once on the Log Viewer screen, Find the popup menu labeled, B<View Log:> and change it to, B<Error Log>. The Log Viewer should refresh and show the last few lines of your Dada Mail error log. 
+You'll find a link for the Log View plugin on the left hand menu, under: B<Plugins/Extensions - Log Viewer>. Once on the Log Viewer screen, Find the popup menu labeled, B<View Log:> and change it to, B<Error Log>. The Log Viewer should refresh and show the last few lines of your Dada Mail error log. 
 
 =head2 Reporting Errors
 

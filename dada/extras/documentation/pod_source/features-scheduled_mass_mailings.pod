@@ -76,7 +76,7 @@ Dada Mail's system-wide cronjob checks and runs the scheduled mass mailings. Mak
 
 L<http://dadamailproject.com/d/features-scheduled_cronjobs.pod.html>
 
-You may manually check all the Scheduled Jobs in the list control panel under, B<App Information - Scheduled Jobs> 
+You may manually check all the Scheduled Jobs in the list control panel under, B<Control Panel Settings- Scheduled Jobs> 
 
 =head1 System Requirements
 

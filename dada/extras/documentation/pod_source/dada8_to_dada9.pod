@@ -26,7 +26,7 @@ Many items in the navigation bar for the list control panel have been moved arou
 
 =head4 Side Bar to Top Bar
 
-Dada Mail's List Control Panel side bar has been replaced with a top bar. If you prefer the former design, you may enable the classic side bar in the List Control Panel under, B<Settings - Customize Feature Set>
+Dada Mail's List Control Panel side bar has been replaced with a top bar. If you prefer the former design, you may enable the classic side bar in the List Control Panel under, B<Settings - Enable/Disable Features>
 
 =head2 File Browser/Uploaders
 

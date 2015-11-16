@@ -976,11 +976,11 @@ $ADMIN_MENU //= [
 
 
 	{
-	-Title      => 'Settings',
+	-Title      => 'Control Panel Settings',
 	-Activated  => 0,
 	-Submenu    => [
 				{
-				-Title      => 'Customize Feature Set',
+				-Title      => 'Enable/Disable Features',
 				-Title_URL  => "$S_PROGRAM_URL?flavor=feature_set",
 				-Function   => 'feature_set',
 				-Activated  => 0,
@@ -994,7 +994,7 @@ $ADMIN_MENU //= [
 				},
 				
 				{
-				-Title      => 'Configuration',
+				-Title      => 'App Configuration',
 				-Title_URL  => "$S_PROGRAM_URL?flavor=setup_info",
 				-Function   => 'setup_info',
 				-Activated  => 1,
