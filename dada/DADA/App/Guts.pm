@@ -2333,7 +2333,7 @@ sub upgrade_tables {
         undef $query;
         undef $sth;
     }
-    $table_cols;
+#    $table_cols;
 
     # dada_subscribers
     my $table_cols = table_cols( $dbh, 'subscriber_table' );
