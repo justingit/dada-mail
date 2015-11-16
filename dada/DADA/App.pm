@@ -5451,7 +5451,7 @@ sub add {
         }
 
         # DEV: This whole building of query string is much too messy.
-        my $qs = '&type=' . scalar($q->param('type')) . '&new_email_file=' . scalar($q->param('new_email_file'));
+        my $qs = '&type=' . scalar($q->param('type')) . '&new_email_file=' . uriescape(scalar($q->param('new_email_file')));
 
         if ( DADA::App::Guts::strip( scalar $q->param('new_emails') ) ne "" ) {
 
