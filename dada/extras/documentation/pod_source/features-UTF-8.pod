@@ -144,7 +144,7 @@ has been added to the $DBI_PARAMS hashref.
 
 No explicit encoding/decoding is done in Dada Mail when saving/retrieving data. Hopefully, the drivers are UTF-8-aware enough. 
 
-=head2 Plugins/Extensions
+=head2 Plugins/Extensions 
 
 The Plugins and Extensions that come with Dada Mail have not been as thoroughly tested as the main program. There's still warts. 
 

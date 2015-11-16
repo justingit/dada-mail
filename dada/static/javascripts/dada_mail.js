@@ -1004,7 +1004,7 @@ jQuery(document).ready(function($){
 	}
 
 
-	// Plugins >> Bounce Handler
+	// Plugins/Extensions >> Bounce Handler
 	if ($("#plugins_bounce_handler_default").length) {
 		bounce_handler_show_scorecard();
 		$("body").on("click", '.bounce_handler_turn_page', function(event) {
@@ -1031,12 +1031,12 @@ jQuery(document).ready(function($){
 		});
 	}
 
-	// Plugins >> Beatitude
+	// Plugins/Extensions >> Beatitude
 	if ($("#plugins_beatitude_schedule_form").length) {
 		datetimesetupstuff();
 	}
 
-	// Plugins >> Bridge
+	// Plugins/Extensions >> Bridge
 	if ($("#plugins_bridge_default").length) {
 
 		$("body").on("click", ".plugins_bridge_test_pop3", function(event) {
@@ -1105,7 +1105,7 @@ jQuery(document).ready(function($){
 
 	}
 
-	// Plugins >> Change List Shortname
+	// Plugins/Extensions >> Change List Shortname
 	if ($("#plugins_change_list_shortname").length) {
 		$("body").on("click", "#verify_button", function(event) {
 
@@ -1141,7 +1141,7 @@ jQuery(document).ready(function($){
 		});
 	}
 
-	// Plugins >> Mailing Monitor
+	// Plugins/Extensions >> Mailing Monitor
 	if ($("#plugins_mailing_monitor_default").length) {
 
 		plugins_mailing_monitor();
@@ -1154,7 +1154,7 @@ jQuery(document).ready(function($){
 
 
 
-	// Plugins >> Beatitude
+	// Plugins/Extensions >> Beatitude
 	if ($("#plugins_beatitude_schedule_form").length) {
 		$("body").on("click", ".preview_message_receivers", function(event) {
 			event.preventDefault();
@@ -1163,7 +1163,7 @@ jQuery(document).ready(function($){
 	}
 
 
-	// Plugins >> Tracker
+	// Plugins/Extensions >> Tracker
 	if ($("#plugins_tracker_message_report").length) {
 		var trackerc = new Array(); 
 		window.onresize = function(){
@@ -1270,14 +1270,14 @@ jQuery(document).ready(function($){
 
 
 	}
-	// Plugins >> Password Protect Directories
+	// Plugins/Extensions >> Password Protect Directories
 	if ($("#plugins_password_protect_directories_default").length) {
 		$('body').on('click', '#change_password_button', function(event){
 			password_protect_directories_show_change_password_form();
 		});
 	}
 
-	// Plugins >> Log Viewer
+	// Plugins/Extensions >> Log Viewer
 	if ($("#plugin_log_viewer_default").length) {
 		view_logs_results();
 
@@ -2700,7 +2700,7 @@ function toggleManualBatchSettings() {
 
 
 
-// Plugins >> Bounce Bounce Handler
+// Plugins/Extensions >> Bounce Bounce Handler
 
 function bounce_handler_show_scorecard() {
 	$("#bounce_scorecard_loading").html('<p class="alert">Loading...</p>');
@@ -2830,7 +2830,7 @@ function bounce_handler_manually_enter_bounces() {
 }
 
 
-// Plugins >> Bridge
+// Plugins/Extensions >> Bridge
 
 function bridge_setup_list_email_type_params() {
 	if ($("#mail_forward_pipe").prop("checked") === true) {
@@ -2963,7 +2963,7 @@ function plugins_bridge_hide_change_pop3_password_form() {
 
 
 
-// Plugins >> Mailing Monitor
+// Plugins/Extensions >> Mailing Monitor
 
 function plugins_mailing_monitor() {
 	$("#mailing_monitor_results_loading").html('<p class="alert">Loading...</p>');
@@ -2984,7 +2984,7 @@ function plugins_mailing_monitor() {
 	});
 
 }
-// Plugins >> Tracker
+// Plugins/Extensions >> Tracker
 
 function update_plugins_tracker_message_report() {
 	
@@ -3454,7 +3454,7 @@ function tracker_the_basics_piechart(type, label, target_div) {
 
 
 
-// Plugins >> Tracker
+// Plugins/Extensions >> Tracker
 
 function tracker_change_record_view() {
 
@@ -3539,7 +3539,7 @@ function tracker_delete_msg_id_data(message_id){
 }
 
 
-// Plugins >> Log Viewer
+// Plugins/Extensions >> Log Viewer
 
 function view_logs_results() {
 	$("#refresh_button").val('Loading....');
@@ -3703,7 +3703,7 @@ function tracker_purge_log() {
 	}
 }
 
-// Plugins >> Password Protect Directories
+// Plugins/Extensions >> Password Protect Directories
 
 function password_protect_directories_show_change_password_form() {
 	$("#change_default_password_button").hide('blind');

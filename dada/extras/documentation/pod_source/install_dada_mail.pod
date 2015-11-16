@@ -240,7 +240,7 @@ Fill this with the password associated with the username.
 A button labeled, B<Test Your SQL Connection> when pressed, will run a quick connection test, to see if Dada Mail can connect to your SQL server. This can help you make sure your SQL credentials for Dada Mail are working correctly. 
 
 
-=head2 Plugins/Extensions
+=head2 Plugins/Extensions 
 
 Optionally, you may also install many of the plugins and extensions that come with Dada Mail. Access to the plugins/extensions will be available in the list control panel's left hand admin menu, under, B<Plugins>
 

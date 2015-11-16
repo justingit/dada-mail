@@ -969,7 +969,7 @@ sub grab_former_config_vals {
         );
     }
 
-    # Plugins/Extensions
+    # Plugins/Extensions 
     for my $plugin_ext (@plugin_exts) {
 
         if ( admin_menu_item_used($plugin_ext) == 1 ) {

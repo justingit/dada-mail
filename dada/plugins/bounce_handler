@@ -897,7 +897,7 @@ Check to make sure that the POP3 server (usually, port 110) is not blocked from 
 
 =head1 Installation
 
-This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. Under B<Plugins/Extensions (Optional)> check the option, B<Bounce Handler>. 
+This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. Under B<Plugins/Extensions  (Optional)> check the option, B<Bounce Handler>. 
 
 Below this option are form fields to put in the POP3 accounts login credentials, as well as a place to test those credentials out. 
 

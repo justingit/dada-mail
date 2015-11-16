@@ -142,7 +142,7 @@ sub cgi_default {
 
 sub sql_backend_only_message { 
 	my $tmpl = q{ 
-		<!-- tmpl_set name="title" value="Plugins &#187; Change List Shortname" --> 
+		<!-- tmpl_set name="title" value="Plugins/Extensions &#187; Change List Shortname" --> 
 		<div id="screentitle"> 
 			<div id="screentitlepadding">
 				<!-- tmpl_var title --> 
