@@ -69,11 +69,9 @@
 
 <!-- tmpl_if expr="(type eq 'list')" --> 
     <!-- tmpl_if going_over_quota -->
-         <div class="alert-box info radius">
-            <p>
+         <div class="alert-box warning radius">
              Warning! You cannot subscribe all the addresses that you have submitted,
              since you will go over your subscription limit. Please re-submit a smaller number of addresses to subscribe.
-            </p>
         </div>
     <!--/tmpl_if-->
 <!-- /tmpl_if --> 
@@ -81,7 +79,7 @@
 <!-- tmpl_if expr="(type eq 'list')" --> 
     <!-- tmpl_if list_settings.closed_list -->
         <!-- tmpl_unless expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
-         <div class="alert-box info radius">
+         <div class="alert-box warning radius">
          <p><strong>Warning!</strong></p> 
          <p>
              You currently have a <strong>Closed List</strong> and subscribing members via the list 
@@ -95,10 +93,8 @@
 
 <!-- tmpl_if expr="(type eq 'list')" --> 
     <!-- tmpl_unless expr="((list_settings.allow_profile_editing == 1) || (root_login == 1))"-->
-        <div class="alert-box info radius">
-            <p>
+        <div class="alert-box warning radius">
                 Profile Field Editing is <strong>Disabled.</strong>
-            </p>
         </div> 
     <!-- /tmpl_unless --> 
 <!-- /tmpl_if --> 
