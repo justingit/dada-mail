@@ -55,11 +55,12 @@ iframe#archived_message_body_container {
 }
 */
 
-#buttons {
+/* #buttons {
 	z-index: 100;
 	background-color: #fff;
 	width: auto;
 }
+*/
 
 .floating_panel {
 	background-color: #ededed;
@@ -67,6 +68,10 @@ iframe#archived_message_body_container {
 	box-shadow: 3px 5px 8px -1px rgba( 51, 0, 0, .3 ), -3px 5px 8px -1px rgba( 51, 0, 0, .3 );
 }
 
+.floating_panel button, 
+.floating_panel .button {
+	margin-bottom:0;
+}
 #footer {
 	margin-top: 30px;
 	padding:10px;

@@ -106,13 +106,14 @@ jQuery(document).ready(function($){
 		var stickyHeader = $('#buttons').offset().top;
         $(window).scroll(function(){
             if( $(window).scrollTop() > stickyHeader && $('#buttons').width() >= 640) {
-                    $('#buttons').css({position: 'fixed', top: '0px'});	
+                    //$('#buttons').css({position: 'fixed', top: '0px'});	
 					$('#buttons').addClass('floating_panel');				
             } else {
-                    $('#buttons').css({position: 'static', top: '0px'});
+                    //$('#buttons').css({position: 'static', top: '0px'});
 					$('#buttons').removeClass('floating_panel');
             }
         });
+			
 			
 		if($("#additional_email_headers").length){
 			$("#additional_email_headers").hide();
