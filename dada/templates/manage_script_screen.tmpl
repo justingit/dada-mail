@@ -1,14 +1,27 @@
 <!-- begin manage_script_screen.tmpl --> 
 
-<!-- tmpl_set name="title" value="Control Panel Settings&#187; About <!-- tmpl_var PROGRAM_NAME -->" -->
+<!-- tmpl_set name="title" value="Control Panel Settings &#187; About <!-- tmpl_var PROGRAM_NAME -->" -->
 <div id="screen_meta" data-menu_highlight="manage_script"></div>
 
-<div id="screentitle"> 
-	<div id="screentitlepadding">
-		Control Panel Settings&#187; About <!-- tmpl_var PROGRAM_NAME -->
+<div class="row hide-for-small-only" id="control_panel_breadcrumbs">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				Control Panel settings
+			 </a>
+	 	    <a 
+				href="#"
+				class="current"
+			>	
+				About <!-- tmpl_var PROGRAM_NAME -->
+			</a>
+		</nav>
 	</div>
-	<!-- tmpl_include help_link_widget.tmpl -->
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
 </div>
+
 
 <p>
 	This is <!-- tmpl_var name="PROGRAM_NAME" --> version <strong><!-- tmpl_var name="VER" --></strong> .

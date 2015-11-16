@@ -370,7 +370,7 @@ Uncomment the lines, by taking off the, "#"'s:
 
 Save your C<.dada_config> file.
 
-You can now log into your List Control Panel (make sure to log in with the B<Dada Mail Root Password>) and under the, B<plugins> heading you should now see a linked entitled, "Change Your List Short Name". Clicking that link will bring you to this plugin. 
+You can now log into Control Panel Settings (make sure to log in with the B<Dada Mail Root Password>) and under the, B<plugins> heading you should now see a linked entitled, "Change Your List Short Name". Clicking that link will bring you to this plugin. 
 
 =head1 COPYRIGHT 
 

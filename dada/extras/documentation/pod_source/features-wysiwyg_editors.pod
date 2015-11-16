@@ -43,7 +43,7 @@ When attempting to upload a file.
 =head2 Mailing List Configuration
 
 You choose which WYSIWYG editor you would like to use (or to use no editor at all) in the list control panel under, 
-B<Your List Control Panel - Options>
+B<Control Panel Settings - Options>
 
 =head2 Installing and Configurating - use the Dada Mail Installer
 

@@ -80,6 +80,6 @@ Will do the same thing, as our initial example for curl.
 
 =head1 Retrieving the Cronjob
 
-If you need to access the scheduled job URL again, log into your list control panel (any list will do) and go to, B<Control Panel Settings- Scheduled Job> 
+If you need to access the scheduled job URL again, log into Control Panel Settings (any list will do) and go to, B<Control Panel Settings- Scheduled Job> 
 
 =cut

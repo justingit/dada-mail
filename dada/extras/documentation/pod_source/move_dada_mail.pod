@@ -79,7 +79,7 @@ If you're using the B<Default> backend for Dada Mail, you won't have anything ex
 
 If you're unsure whether you're running the Default backend or the SQL backend, first see what features are available to you in Dada Mail: 
 
-Features such as B<Profile Fields> and B<Profiles> are only available to installations that use the SQL backend. Try logging into your list control panel with the Dada Mail Root Password and going to I<Profiles - Profile Fields>. If you can make new fields, you have the SQL backend installed. 
+Features such as B<Profile Fields> and B<Profiles> are only available to installations that use the SQL backend. Try logging into Control Panel Settings with the Dada Mail Root Password and going to I<Profiles - Profile Fields>. If you can make new fields, you have the SQL backend installed. 
 
 Also, try going to the default screen of Dada Mail. If there are links to log into an individual profile, you have one of the SQL backend installed. 
 

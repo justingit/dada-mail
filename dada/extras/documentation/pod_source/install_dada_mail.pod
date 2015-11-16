@@ -252,7 +252,7 @@ L<http://dadamailproject.com/d/bounce_handler.html>
 
 =head2 WYSIWYG Editors
 
-Optionally, you may also configure the B<WYSIWYG> editors that come bundled with the Dada Mail distribution. These WYSIWYG editors will enable you to author and edit your HTML Mailing List Messages right in your List Control Panel. 
+Optionally, you may also configure the B<WYSIWYG> editors that come bundled with the Dada Mail distribution. These WYSIWYG editors will enable you to author and edit your HTML Mailing List Messages right in Control Panel Settings. 
 
 =head3 Install and Configure WYSIWYG Editors 
 

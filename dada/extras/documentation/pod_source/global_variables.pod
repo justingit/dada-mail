@@ -456,7 +456,7 @@ has access to this specific screen in the List Control Panel. Set to, C<1> to al
 disallow access. 
 
 You may change the access to the various screens of the List Control Panel in the List Control Panel itself; log 
-into a mailing list with the B<Dada Mail Root Password> and navigate to, B<Your List Control Panel - Enable/Disable Features>. 
+into a mailing list with the B<Dada Mail Root Password> and navigate to, B<Control Panel Settings - Enable/Disable Features>. 
 
 All Items and Sections are always available to someone logged into a mailing list using the B<Dada Mail Root Password>. 
 
