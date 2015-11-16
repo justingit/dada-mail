@@ -384,7 +384,7 @@ L<http://dadamailproject.com/d/features-public_and_private_lists.pod.html>
     invite_message_html        => undef,
     invite_message_subject     => undef,
 
-    # Feature Set
+    # Features
 
     disabled_screen_view => 'grey_out',
 

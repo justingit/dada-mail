@@ -1,6 +1,6 @@
 =pod
 
-=head1 Dada Mail Feature Set Overview
+=head1 Dada Mail Features Overview
 
 This document attempt to list all the features in Dada Mail for review of the program and what have you. 
 

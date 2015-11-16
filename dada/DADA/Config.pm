@@ -1584,7 +1584,7 @@ $MIME_OPTIMIZE     //= 'no tmp files';
     invite_message_html        => undef,
     invite_message_subject     => undef,
 
-    # Feature Set
+    # Features
     admin_menu               => undef,
     disabled_screen_view     => 'hide',
 	list_control_panel_style => 'top_bar',
