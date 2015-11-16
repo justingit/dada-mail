@@ -13000,7 +13000,7 @@ sub schedules {
     my $dast = DADA::App::ScheduledTasks->new;
 
     if ( $schedule eq '_all' ) {
-        $r .= "\n\nMass Mailing Monitor:\n" . '-' x 72 . "\n\n";
+        $r .= "\n\nMonitor:\n" . '-' x 72 . "\n\n";
         try {
             $r .= $dast->mass_mailing_monitor($list);
         } catch {
@@ -13031,7 +13031,7 @@ sub schedules {
         }
     }
     elsif ( $schedule eq 'mass_mailing_monitor' ) {
-        $r .= "\n\nMass Mailing Monitor:\n" . '-' x 72 . "\n\n";
+        $r .= "\n\nMonitor:\n" . '-' x 72 . "\n\n";
         try {
             $r .= $dast->mass_mailing_monitor($list);
         } catch {
