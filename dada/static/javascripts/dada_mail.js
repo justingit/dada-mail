@@ -1163,10 +1163,10 @@ jQuery(document).ready(function($){
 		});
 	}
 
-
+	// do not like globals...
+	var trackerc = new Array(); 
 	// Plugins/Extensions >> Tracker
 	if ($("#plugins_tracker_message_report").length) {
-		var trackerc = new Array(); 
 		window.onresize = function(){
 			var arrayLength = trackerc.length;
 			for (var i = 0; i < arrayLength; i++) {
@@ -2961,30 +2961,6 @@ function plugins_bridge_hide_change_pop3_password_form() {
 
 }
 
-
-
-
-// Plugins/Extensions >> Mailing Monitor
-
-function plugins_mailing_monitor() {
-	$("#mailing_monitor_results_loading").html('<p class="alert">Loading...</p>');
-	var request = $.ajax({
-		url: $("#s_program_url").val(),
-		type: "POST",
-		cache: false,
-		data: {
-			flavor: 'plugins',
-			plugin: 'mailing_monitor',
-			prm: 'mailing_monitor_results'
-		},
-		dataType: "html"
-	});
-	request.done(function(content) {
-		$("#mailing_monitor_results").html(content);
-		$("#mailing_monitor_results_loading").html('<p class="alert">&nbsp;</p>');
-	});
-
-}
 // Plugins/Extensions >> Tracker
 
 function update_plugins_tracker_message_report() {
