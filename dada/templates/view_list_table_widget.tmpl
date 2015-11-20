@@ -3,61 +3,20 @@
 <div style="width:100%"> 
     <div style="height: 480px; overflow: auto; width:100%">
 
- <table style="width:100%" class="responsive">
-
-<thead> 			
-		
+<table style="width:100%" class="responsive">
+<thead> 					
   <tr>
 	 <!-- tmpl_unless no_checkboxes --> 
    		<th width="25">
     		&nbsp;
    		</th>
 	<!-- /tmpl_unless --> 
-
-    <!-- tmpl_if show_timestamp_column --> 
-    	<th width="225">
-    	    <!-- tmpl_if expr="(order_by ne 'timestamp')" -->
-    			<a href="#" class="change_order" data-by="timestamp" data-dir="asc">
-    		<!-- /tmpl_if --> 
-
-    		<!-- tmpl_if expr="(order_by eq 'timestamp') && (order_dir eq 'asc')" -->
-    			<a href="#" class="change_order" data-by="timestamp" data-dir="desc">
-    		<!-- /tmpl_if --> 
-
-    		<!-- tmpl_if expr="(order_by eq 'timestamp') && (order_dir eq 'desc')" -->
-    			<a href="#" class="change_order" data-by="timestamp" data-dir="asc">
-    		<!-- /tmpl_if -->
-        	
-        	 <!-- tmpl_if expr="(type eq 'list')" -->
-                 Subscription Date
-            <!-- tmpl_else --> 
-                 Addition Date:
-            <!-- /tmpl_if --> 
-            
-            
-            
-        	<!-- tmpl_if expr="(order_by eq 'timestamp') && (order_dir eq 'asc')" -->
-    			<sub>&#x25B2;</sub>
-    		<!-- /tmpl_if -->
-
-    		<!-- tmpl_if expr="(order_by eq 'timestamp') && (order_dir eq 'desc')" -->
-    			<sub>&#x25BC;</sub>
-    		<!-- /tmpl_if -->     
-	        </a> 
-    	    
-    	</th>
-	<!-- /tmpl_if --> 
 	<!-- tmpl_if show_list_column --> 
-    	<th>
-    	     <strong>
-    	      List
-    	     </strong>
-    	    
-    	</th>
+		<th>
+			List
+		</th>
 	<!-- /tmpl_if --> 
-	
    <th>
-    
 		<!-- tmpl_if expr="(order_by ne 'email')" -->
 			<a href="#" class="change_order" data-by="email" data-dir="asc">
 		<!-- /tmpl_if --> 
@@ -69,10 +28,7 @@
 		<!-- tmpl_if expr="(order_by eq 'email') && (order_dir eq 'desc')" -->
 			<a href="#" class="change_order" data-by="email" data-dir="asc">
 		<!-- /tmpl_if -->
-     <strong>
-		Email
-		</strong>
-		
+		Email	
 		<!-- tmpl_if expr="(order_by eq 'email') && (order_dir eq 'asc')" -->
 			<sub>&#x25B2;</sub>
 		<!-- /tmpl_if -->
@@ -83,6 +39,37 @@
 	</a>
     
    </th>
+   
+   <!-- tmpl_if show_timestamp_column --> 
+   	<th width="225">
+   	    <!-- tmpl_if expr="(order_by ne 'timestamp')" -->
+   			<a href="#" class="change_order" data-by="timestamp" data-dir="asc">
+   		<!-- /tmpl_if --> 
+
+   		<!-- tmpl_if expr="(order_by eq 'timestamp') && (order_dir eq 'asc')" -->
+   			<a href="#" class="change_order" data-by="timestamp" data-dir="desc">
+   		<!-- /tmpl_if --> 
+
+   		<!-- tmpl_if expr="(order_by eq 'timestamp') && (order_dir eq 'desc')" -->
+   			<a href="#" class="change_order" data-by="timestamp" data-dir="asc">
+   		<!-- /tmpl_if -->
+    
+       	 <!-- tmpl_if expr="(type eq 'list')" -->
+                Subscription Date
+           <!-- tmpl_else --> 
+                Addition Date:
+           <!-- /tmpl_if --> 
+       	<!-- tmpl_if expr="(order_by eq 'timestamp') && (order_dir eq 'asc')" -->
+   			<sub>&#x25B2;</sub>
+   		<!-- /tmpl_if -->
+
+   		<!-- tmpl_if expr="(order_by eq 'timestamp') && (order_dir eq 'desc')" -->
+   			<sub>&#x25BC;</sub>
+   		<!-- /tmpl_if -->     
+        </a> 
+   	</th>
+<!-- /tmpl_if -->
+	
   <!-- tmpl_loop field_names --> 
    <th>
        	<!-- tmpl_if expr="(order_by ne name)" -->
@@ -94,13 +81,11 @@
 		<!-- tmpl_if expr="(order_by eq name) && (order_dir eq 'desc')" -->
 			<a href="#" class="change_order" data-by="<!-- tmpl_var name escape="HTML" -->" data-dir="asc">
 		<!-- /tmpl_if -->
-     <strong>
 	  <!-- tmpl_if label --> 
 			<!-- tmpl_var label --> 
 	  <!-- tmpl_else --> 
       		<!-- tmpl_var name --> 
       <!-- /tmpl_if --> 
-	</strong>
 
 		<!-- tmpl_if expr="(order_by eq name) && (order_dir eq 'asc')" -->
 			<sub>&#x25B2;</sub>
@@ -110,49 +95,27 @@
 			<sub>&#x25BC;</sub>
 		<!-- /tmpl_if -->
 	</a>
-    
    </th>
   <!--/tmpl_loop --> 
   </tr>
 </thead>
 
 <tbody> 
-<!-- tmpl_loop subscribers -->
-	   
-	   <tr>
-
-		   <!-- tmpl_unless no_checkboxes --> 
-		
-	    <td width="25">
-	  
-			<input type="checkbox" name="address" class="address" value="<!-- tmpl_var email escape="HTML" -->" >
-
-		</td>
+<!-- tmpl_loop subscribers -->  
+   <tr>
+	   <!-- tmpl_unless no_checkboxes --> 
+		    <td width="25">
+				<input type="checkbox" name="address" class="address" value="<!-- tmpl_var email escape="HTML" -->" >
+			</td>
 		<!-- /tmpl_unless --> 
-	    
-	    
-
-        <!-- tmpl_if show_timestamp_column --> 
-    		<td width="225">
-    		    
-    		      <!-- tmpl_var timestamp --> 
-    		    
-    		</td>
-	    <!-- /tmpl_if --> 
 
 		<!-- tmpl_if show_list_column --> 
-			<td>
-			    
-			     <strong>
-			      <!-- tmpl_var list --> 
-			     </strong>
-			    
-			   </td>
-		<!-- /tmpl_if --> 
-				
-	<td>
-	     
+			<td>			    
+		      <!-- tmpl_var list --> 
+		   </td>
+	<!-- /tmpl_if --> 
 		
+<td>
 		<!-- tmpl_if expr="(no_email_links != 1)" -->
 			<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=membership&email=<!-- tmpl_var email ESCAPE=URL -->&type=<!-- tmpl_var type ESCAPE=URL -->&page=<!-- tmpl_var page ESCAPE=URL -->&order_by=<!-- tmpl_var order_by ESCAPE=URL -->&order_dir=<!-- tmpl_var order_dir ESCAPE=URL -->&query=<!-- tmpl_var query ESCAPE=URL -->" >
 				<!-- tmpl_var email --> 
@@ -163,14 +126,17 @@
 		<!-- /tmpl_if -->
  	 	
 	    </td>
-	    
+		
+        <!-- tmpl_if show_timestamp_column --> 
+    		<td width="225">    		    
+    		      <!-- tmpl_var timestamp --> 
+    		</td>
+	    <!-- /tmpl_if --> 
+
 	    <!-- tmpl_loop fields --> 
-	    
-	    <td>
-	     
-			<!-- tmpl_var value -->
-	 	
-	    </td>
+		    <td>
+				<!-- tmpl_var value -->
+		    </td>
 	    <!-- /tmpl_loop --> 
 	   </tr>
 <!-- /tmpl_loop -->
