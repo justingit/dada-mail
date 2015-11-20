@@ -9560,6 +9560,9 @@ sub new_list {
                 {
                     -screen => 'new_list_created_screen.tmpl',
                     -with   => 'list',
+                    -wrapper_params => {
+                       -Use_Custom => 0,
+                    },
                     -vars   => {
                         list_name        => $ls->param('list_name'),
                         list             => $ls->param('list'),
@@ -10774,9 +10777,10 @@ sub login {
                 -password => $admin_password
             );
 
-            require DADA::App::ScreenCache;
-            my $c = DADA::App::ScreenCache->new;
-            $c->remove( 'login_switch_widget.' . $list . '.scrn' );
+			# not cached atm
+            # require DADA::App::ScreenCache;
+            # my $c = DADA::App::ScreenCache->new;
+            # $c->remove( 'login_switch_widget.' . $list . '.scrn' );
 
             if ( $DADA::Config::LOG{logins} ) {
                 require DADA::Logging::Usage;
@@ -10859,9 +10863,10 @@ sub logout {
         }
     }
 
-    require DADA::App::ScreenCache;
-    my $c = DADA::App::ScreenCache->new;
-    $c->remove( 'login_switch_widget.' . $admin_list . '.scrn' );
+	# not cached atm
+    #require DADA::App::ScreenCache;
+    #my $c = DADA::App::ScreenCache->new;
+    #$c->remove( 'login_switch_widget.' . $admin_list . '.scrn' );
 
     my $l_list = $admin_list;
 
@@ -10955,9 +10960,10 @@ sub change_login {
 
     my $new_cookie = $dada_session->change_login( -cgi_obj => $q, -list => $change_to_list );
 
-    require DADA::App::ScreenCache;
-    my $c = DADA::App::ScreenCache->new;
-    $c->remove( 'login_switch_widget.' . $change_to_list . '.scrn' );
+	# not cached atm
+    # require DADA::App::ScreenCache;
+    # my $c = DADA::App::ScreenCache->new;
+    # $c->remove( 'login_switch_widget.' . $change_to_list . '.scrn' );
 
     my $headers = {
         -cookie  => [$new_cookie],
