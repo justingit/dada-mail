@@ -5,25 +5,24 @@
 
 
 
-		<div class="row">
-			<div class="medium-10 small-9 columns">
-			   	<nav class="breadcrumbs">	
-				 	 <a href="#" class="unavailable">
-						Plugins/Extensions
-					 </a>
-			 	    <a 
-						href="<!-- tmpl_var Plugin_URL -->"
-						class="current"
-					>	
-						Tracker
-					</a>
-				</nav>
-			</div>
-			<div class="medium-2 small-3 columns text-right">
-			   <!-- tmpl_include help_link_widget.tmpl -->
-			</div>
-		</div>
-		
+<div class="row hide-for-small-only" id="control_panel_breadcrumbs">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				Plugins/Extensions
+			 </a>
+	 	    <a 
+				href="#"
+				class="current"
+			>	
+				Tracker
+			</a>
+		</nav>
+	</div>
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
+</div>
 		
 <div id="screen_meta" data-menu_highlight="tracker"></div>
 <div id="plugins_tracker_default"></div> 
@@ -306,7 +305,7 @@
 				<!-- tmpl_if list_settings.tracker_show_message_reports_in_mailing_monitor -->checked="checked"<!--/tmpl_if --> 
 			>
 		    <label for="tracker_show_message_reports_in_mailing_monitor"> 
-				Show message reports in mailing monitor
+				Show message reports in Mass Mailing Monitor
 		    </label> 
    		</div> 
    </div> 
