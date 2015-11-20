@@ -6,30 +6,30 @@
 
 <!-- tmpl_if chrome --> 
 
-	<!-- tmpl_set name="title" value="Plugins/Extensions &#187; Tracker &#187; Message Report" --> 
-	
-	<!-- tmpl_set name="load_google_viz" value="1" -->
-	
-	<div class="row">
-		<div class="medium-10 small-9 columns">
-		   	<nav class="breadcrumbs">	
-			 	 <a href="#" class="unavailable">
-					Plugins
-				 </a>
-		 	    <a 
-					href="<!-- tmpl_var Plugin_URL -->"
-				>	
-					Tracker
-				</a>
-				<a href="#" class="current">
-					Message Report: <!-- tmpl_var subject escape="HTML" --> 
-				</a>
-			</nav>
-		</div>
-		<div class="medium-2 small-3 columns text-right">
-		   <!-- tmpl_include help_link_widget.tmpl -->
-		</div>
+<!-- tmpl_set name="title" value="Plugins/Extensions &#187; Tracker &#187; Message Report" --> 
+
+<!-- tmpl_set name="load_google_viz" value="1" -->
+
+<div class="row hide-for-small-only" id="control_panel_breadcrumbs">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				Plugins
+			 </a>
+	 	    <a 
+				href="<!-- tmpl_var Plugin_URL -->"
+			>	
+				Tracker
+			</a>
+			<a href="#" class="current">
+				Message Report: <!-- tmpl_var subject escape="HTML" --> 
+			</a>
+		</nav>
 	</div>
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
+</div>
 	
 	
 <!-- /tmpl_if --> 
@@ -193,6 +193,10 @@
 		</td> 
 	</tr>
 </table>
+
+<!-- tmpl_unless chrome --> 
+	<div style="display:none">
+<!-- /tmpl_unless --> 
 		
 <div data-magellan-expedition="fixed">
   <dl class="sub-nav">
@@ -584,5 +588,11 @@
 	</div>
 
 <!-- /tmpl_if -->
+	
+<!-- tmpl_unless chrome --> 
+	</div>
+<!-- /tmpl_unless --> 
+	
+	
 
 <!-- end plugins/tracker/message_report.tmpl -->
