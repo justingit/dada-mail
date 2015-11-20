@@ -11,9 +11,25 @@ Key:
 [?] Someday
 
 
-Screenshot introducing new version, send out newsletter
-Put in survey
 
+independent project that keeps getting better.
+ 
+SUBSCRIPTION FORMS: - maybe just "bare-bones" example? JUST the form fields needed?
+
+ - a setting to allow you to choose which screen comes up on login. F
+ Well, that could certainly be made per-list (easily)
+
+Membership >> View - inline ediing of data in table cells (guh - duh!)
+
+QR codes that people can point their cell phone at and sign up automagically. 
+- kinda interesting idea...
+
+Perhaps save drafts in a way that are archived (but, uh, not in the archive, or are, just not in th same way)
+Anways- a way to pull up the message, to send again. Yeah. 
+
+New Core5 Filemanager only sending part of the URL? no domain? (unconfirmed...)
+
+Hey, you know what? I can make my own inliner super service! 
 
 describe what dada mail is, but also, what it's FOR
 
