@@ -109,16 +109,20 @@
     <input type="hidden"   name="admin_list" value="<!-- tmpl_var list -->" >
 	<input type="hidden" name="auth_state" value="<!-- tmpl_var auth_state -->" > 
 
-	<div class="row">
-		<div class="small-12 columns">
-		   <label for="admin_password">
-		   	 List/<!-- tmpl_var PROGRAM_NAME --> Root Password:
-		   </label>
-		    <input type="password" name="admin_password" id="admin_password" maxlength="24" >
+
+		<div class="row">
+			<div class="small-10 medium-5 large-4 small-centered medium-centered large-centered columns">	 
+			   <label for="admin_password">
+			   	 List Password/<!-- tmpl_var PROGRAM_NAME --> Root Password:
+			   </label>
+			    <input type="password" name="admin_password" id="admin_password" maxlength="24" >
+			</div>
 		</div>
-	</div>
-   
-   <input type="submit" class="success button expand" value="Log Into Your New Mailing List" >   
+		<div class="row">
+			<div class="small-10 medium-5 large-4 small-centered medium-centered large-centered columns">	 
+ 			   <input type="submit" class="success button expand" value="Log In" >   
+			</div>
+		</div>
 
    </form>
 
