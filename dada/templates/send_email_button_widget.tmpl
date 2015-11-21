@@ -8,14 +8,14 @@
 <ul class="button-group">  
 	<!-- tmpl_if expr="(mass_mailing_type eq 'invite')" -->
 		<li>
-			<button 
+			<input 
 				type="submit" 
 				class="button small warning sendmassmailing" 
 				name="process" 
 				id="submit_mass_mailing"
+				value="Send: Invitations"
 			>
-				Send: Invitations
-			</button>
+
 		</li>
 	<!-- tmpl_else --> 
 		<li>
@@ -30,137 +30,130 @@
 
 		<!-- tmpl_if archive_no_send --> 
 			<li>
-				<button 
+				<input  
 					type="submit" 
 					class="button small success sendmassmailing" 
 					name="process" 
 					id="submit_mass_mailing"
+					value="Save as: Archive"
 				>
-					Save as: Archive
-				</button>
+					
 			</li>
 		<!-- /tmpl_if --> 
 
 		<!-- tmpl_if expr="(draft_role eq 'draft')" -->
 			<li>
-				<button 
+				<input 
 					type="submit" 
 					class="button small success sendmassmailing justatest" 
 					name="process" 
 					id="submit_test_mailing"
+					value="Send Test"
 				>
-					Send Test
-				</button>
+					
+				
 			</li>
 			<!-- tmpl_unless archive_no_send -->   
 				<li>
-					<button
+					<input 
 						type="submit"
 						class="button small warning sendmassmailing" 
 						name="process" 
 						id="submit_mass_mailing"
+						value="Send Mass Mailing"
 					>
-						Send Mass Mailing
-					</button>
 				</li>
 				<li>
-					<button 
+					<input 
 						type="button" 
 						class="button small success save_msg"
 						name="process" 
 						data-save_draft_role="draft"
+						value="Save Draft"
 					>
-						Save Draft
-					</button>
 				</li>
 				<li>
-					<button
+					<input
 						type="button" 
 						class="button small success save_msg" 
 						name="process"
 						data-save_draft_role="stationery"
+						value="Save as: Stationery"
 					>
-						Save as: Stationery
-					</button>
+
 				</li>
 				<li>
-					<button
+					<input
 						type="submit" 
 						class="button small success save_msg" 
 						name="process"
 						data-save_draft_role="schedule"
-					>
-						Save as: Schedule
-					</button>
+						value="Save as: Schedule"
+					>	
 				</li>
 			<!-- /tmpl_unless --> 
 		<!-- /tmpl_if -->
 
 		<!-- tmpl_if expr="(draft_role eq 'stationery')" -->
 			<li>
-				<button
+				<input
 					type="submit" 
 					class="button small success sendmassmailing justatest" 
 					name="process" 
 					id="submit_test_mailing"
+					value="Send Test"
 				>
-					Send Test
-				</button>
 			</li>
 
 			<li>
-				<button
+				<input
 					type="button" 
 					class="button small success save_msg"
 					name="process"
 					data-save_draft_role="draft"
+					value="New Draft From Stationery"
 				>
-					New Draft From Stationery
-				</button>
+
 			</li>
 			<li>
-				<button
+				<input
 					type="button" 
 					class="button small success save_msg"
 					name="process"
 					data-save_draft_role="stationery"
+					value="Save Stationery"
 				>
-					Save Stationery
-				</button>
 			</li>
 			<li>
-				<button
+				<input
 					type="submit" 
 					class="button small success save_msg"
 					name="process"
 					data-save_draft_role="schedule"
+					value="New Schedule From Stationery"
 				>
-					New Schedule From Stationery
-				</button>
 			</li>
 		<!-- /tmpl_if -->
 
 		<!-- tmpl_if expr="(draft_role eq 'schedule')" -->
 
 			<li>
-				<button
+				<input
 					type="submit"
 					class="button small success sendmassmailing justatest"
 					name="process"
 					id="submit_test_mailing"
+					value="Send Test"
 				>
-					Send Test
-				</button>
 			</li>
 			<li>
-				<button
+				<input
 					type="submit"
 					class="button small success save_msg"
 					name="process"
 					data-save_draft_role="schedule"
+					value="Save Schedule"
 				>
-					Save Schedule
-				</button>
 			</li>
 		<!-- /tmpl_if -->
 	<!-- /tmpl_if --> 

@@ -141,11 +141,11 @@
              <input type="hidden" name="type" value="<!-- tmpl_var type -->" >
             <!-- tmpl_if expr="(type eq 'list')" -->
                  <li>
-                     <input type="submit" class="small button" value="&#8592; Unsubscribe Checked Subscribers">
+                     <input type="submit" class="small button warning" value="&#8592; Unsubscribe Checked Subscribers">
                  </li>
             <!-- tmpl_else --> 
                 <li>
-                    <input type="submit" class="small button" value="&#8592; Remove Checked <!-- tmpl_var type_title -->" >
+                    <input type="submit" class="small button warning" value="&#8592; Remove Checked <!-- tmpl_var type_title -->" >
                 </li>
             <!-- /tmpl_if --> 
         
@@ -194,16 +194,13 @@
         
             <!-- tmpl_unless query -->
 			    <li>
-                <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" style="display:inline;margin:0">
+                <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" id="remove_all_addresses">
                  <input type="hidden" name="flavor"       value="remove_all_subscribers" >
                  <input type="hidden" name="type" value="<!-- tmpl_var type -->" >
                 <!-- tmpl_if expr="(type eq 'list')" -->
-               
-                      <input type="submit" class="small button" value="&#8656; Unsubscribe ALL <!-- tmpl_var type_title -->" onclick="return unsubscribeAllSubscribers(this.form, '<!-- tmpl_var type_title -->');"   >
+                      <button type="submit" class="small button alert unsubscribeAllSubscribers" value="&#8656; Unsubscribe ALL <!-- tmpl_var type_title -->" data-type="<!-- tmpl_var type_title -->">
                 <!-- tmpl_else --> 
-     
-                      <input type="submit" class="small button" value="&#8656; Remove ALL <!-- tmpl_var type_title -->" onclick="return unsubscribeAllSubscribers(this.form, '<!-- tmpl_var type_title -->');"   >
-                 
+                      <input type="submit" class="small button alert unsubscribeAllSubscribers" value="&#8656; Remove ALL <!-- tmpl_var type_title -->" data-type="<!-- tmpl_var type_title -->">
                 <!-- /tmpl_if --> 
                 </form> </li>
             <!-- /tmpl_unless -->

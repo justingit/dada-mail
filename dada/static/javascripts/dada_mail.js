@@ -481,7 +481,7 @@ jQuery(document).ready(function($){
 			check_status();
 		});
 
-	 	$("#new_emails").linedtextarea();
+	 	/* $("#new_emails").linedtextarea(); */
 	}
 
 
@@ -839,6 +839,35 @@ jQuery(document).ready(function($){
 		change_order($(this).attr("data-by"), $(this).attr("data-dir"));
 		event.preventDefault();
 	});
+	
+	
+	$("body").on("submit", "#remove_all_addresses", function(event) {
+		event.preventDefault();
+	});
+	$("body").on("click", ".unsubscribeAllSubscribers", function(event) {
+		
+ 	 	var type = $(this).data("type"); 
+		var confirm_msg = '';
+		if (type == 'Subscribers') {
+			confirm_msg = "Are you sure you want to unsubscribe ALL Subscribers? ";
+		} else {
+			confirm_msg = "Are you sure you want to remove ALL " + type + "?";
+		}
+
+		if (!confirm(confirm_msg)) {
+			if (type == 'Subscribers') {
+				alert("Subscribers not unsubscribed.");
+			} else {
+				alert("'" + type + "' not removed.");
+			}
+			return false;
+		} else {
+			$("body").off('submit', "#remove_all_addresses");			
+			return true;
+		}
+	});
+	
+	
 	$('body').on('click', '.search_list', function(event){
 		search_list();
 		event.preventDefault();
@@ -858,9 +887,6 @@ jQuery(document).ready(function($){
 		close_advanced_search_list();
 		event.preventDefault();
 	});
-
-
-
 
 
 	$('body').on('submit', '#search_form', function(event){
@@ -3962,33 +3988,6 @@ function warnAboutMassSubscription() {
 	} else {}
 	return true;
 }
-
-
-function unsubscribeAllSubscribers(form_name, type) {
-
-	var confirm_msg = '';
-	if (type == 'Subscribers') {
-		confirm_msg = "Are you sure you want to unsubscribe all Subscribers? ";
-	} else {
-		confirm_msg = "Are you sure you want to remove all " + type + "?";
-	}
-
-	if (!confirm(confirm_msg)) {
-		if (type == 'Subscribers') {
-			alert("Subscribers not unsubscribed.");
-		} else {
-			alert("'" + type + "' not removed.");
-
-		}
-		return false;
-	} else {
-		return true;
-	}
-
-}
-
-
-
 
 function revertEditType(form_name) {
 
