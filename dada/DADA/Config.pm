@@ -138,7 +138,7 @@ $BACKEND_DB_TYPE          //= 'SQL';
 $SUBSCRIBER_DB_TYPE       //= 'SQL';
 $ARCHIVE_DB_TYPE          //= 'SQL';
 $SETTINGS_DB_TYPE         //= 'SQL';
-$SESSION_DB_TYPE          //= 'SQL';
+$SESSION_DB_TYPE          = undef; #noop
 $BOUNCE_SCORECARD_DB_TYPE //= 'SQL';
 $CLICKTHROUGH_DB_TYPE     //= 'SQL';
 

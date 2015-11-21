@@ -14,20 +14,7 @@ use Carp qw(carp croak);
 # Singleton.
 # $dbh_stash holds DBH objects, one for each $pid. THis may or may not be a good idea...
 my $dbh_stash = {}; 
-
-
-# We usin' this at all?
-if(
-   $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/i || 
-   $DADA::Config::ARCHIVE_DB_TYPE    =~ m/SQL/i || 
-   $DADA::Config::SETTINGS_DB_TYPE   =~ m/SQL/i ||
-   $DADA::Config::SESSION_DB_TYPE    =~ m/SQL/i
-
-){
-	require DBI; 
-};
-
-	
+require DBI; 	
 
 if($DADA::Config::CPAN_DEBUG_SETTINGS{DBI} > 0){  
     DBI->trace($DADA::Config::CPAN_DEBUG_SETTINGS{DBI}, $PROGRAM_ERROR_LOG);
@@ -62,26 +49,7 @@ sub _init  {
     my $self = shift; 
     my %args = @_; 
     $self->{sql_params} = {%DADA::Config::SQL_PARAMS}; 
-    
-	# We usin' this at all?
-    if(
-	   $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/i || 
-	   $DADA::Config::ARCHIVE_DB_TYPE    =~ m/SQL/i || 
-	   $DADA::Config::SETTINGS_DB_TYPE   =~ m/SQL/i ||
-	   $DADA::Config::SESSION_DB_TYPE    =~ m/SQL/i
-	
-	){ 
-		carp "DBI support enabled"
-			if $t; 
-    	$self->{enabled} = 1; 
-    } 
-	else { 
-    	$self->{enabled} = undef; 
-		carp "DBI support is disabled"
-			if $t;
-			
-	}
-   
+    $self->{enabled} = 1; 
     $self->{is_connected}  = 0; 
 
 }

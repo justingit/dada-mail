@@ -31,15 +31,12 @@ sub _init {
 	my $dbh     = undef; 
 	my $dbi_obj = undef; 
 		
-    if ( $DADA::Config::SESSION_DB_TYPE =~ /SQL/ ) {
-        require DADA::App::DBIHandle;
-           $dbi_obj = DADA::App::DBIHandle->new;
-           $dbh     = $dbi_obj->dbh_obj; 
-    }
+    require DADA::App::DBIHandle;
+       $dbi_obj = DADA::App::DBIHandle->new;
+       $dbh     = $dbi_obj->dbh_obj; 
 	
     # http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session.pm
 
-    if ( $DADA::Config::SESSION_DB_TYPE =~ m/SQL/i ) {
 
         if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'Pg' ) {
 
@@ -79,30 +76,6 @@ sub _init {
             };
 
         }
-    }
-    elsif ( $DADA::Config::SESSION_DB_TYPE eq 'Db' ) {
-
-# http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session/Driver/db_file.pm
-        $self->{dsn}      = 'driver:db_file';
-        $self->{dsn_args} = {
-
-            FileName => $DADA::Config::TMP . '/dada_sessions',
-
-        };
-
-    }
-    elsif ( $DADA::Config::SESSION_DB_TYPE eq 'PlainText' ) {
-
-   # http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session/Driver/file.pm
-
-        $self->{dsn}      = undef;
-        $self->{dsn_args} = { Directory => $DADA::Config::TMP };
-
-    }
-    else {
-        croak "Wrong Login Type!";
-    }
-	
 }
 
 sub _login_cookie {

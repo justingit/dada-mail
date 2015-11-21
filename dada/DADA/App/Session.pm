@@ -29,71 +29,42 @@ sub _init {
 
     my $self = shift;
 
-    if ( $DADA::Config::SESSION_DB_TYPE =~ m/SQL/ ) {
-        require DADA::App::DBIHandle;
-        $self->{dbh} = DADA::App::DBIHandle->new->dbh_obj;
-    }
+    require DADA::App::DBIHandle;
+    $self->{dbh} = DADA::App::DBIHandle->new->dbh_obj;
 
     # http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session.pm
 
-    if ( $DADA::Config::SESSION_DB_TYPE =~ m/SQL/i ) {
-
-        if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'Pg' ) {
+    if ( $DADA::Config::SQL_PARAMS{dbtype} eq 'Pg' ) {
 
 # http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session/Driver/postgresql.pm
-            $self->{dsn}      = 'driver:PostgreSQL';
-            $self->{dsn_args} = {
-
-                Handle     => $self->{dbh},
-                TableName  => $DADA::Config::SQL_PARAMS{session_table},
-                ColumnType => "binary"
-            };
-        }
-        elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
-
-  # http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session/Driver/mysql.pm
-            $self->{dsn}      = 'driver:mysql';
-            $self->{dsn_args} = {
-
-                Handle    => $self->{dbh},
-                TableName => $DADA::Config::SQL_PARAMS{session_table},
-
-            };
-        }
-        elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
-
-            # http://search.cpan.org/~bmoyles/CGI-Session-SQLite/SQLite.pm
-            $self->{dsn} = 'driver:SQLite:'
-              ;    # . ':' . $DADA::Config::FILES . '/' . $database;;
-            $self->{dsn_args} = {
-                Handle    => $self->{dbh},
-                TableName => $DADA::Config::SQL_PARAMS{session_table},
-            };
-        }
-
-    }
-    elsif ( $DADA::Config::SESSION_DB_TYPE eq 'Db' ) {
-
-# http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session/Driver/db_file.pm
-        $self->{dsn}      = 'driver:db_file';
+        $self->{dsn}      = 'driver:PostgreSQL';
         $self->{dsn_args} = {
 
-            FileName => $DADA::Config::TMP . '/dada_sessions',
+            Handle     => $self->{dbh},
+            TableName  => $DADA::Config::SQL_PARAMS{session_table},
+            ColumnType => "binary"
+        };
+    }
+    elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'mysql' ) {
+
+# http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session/Driver/mysql.pm
+        $self->{dsn}      = 'driver:mysql';
+        $self->{dsn_args} = {
+
+            Handle    => $self->{dbh},
+            TableName => $DADA::Config::SQL_PARAMS{session_table},
 
         };
-
     }
-    elsif ( $DADA::Config::SESSION_DB_TYPE eq 'PlainText' ) {
+    elsif ( $DADA::Config::SQL_PARAMS{dbtype} eq 'SQLite' ) {
 
-   # http://search.cpan.org/~markstos/CGI-Session/lib/CGI/Session/Driver/file.pm
-
-        $self->{dsn} = undef;
-        $self->{dsn_args} = { Directory => $DADA::Config::TMP };
-
-    }
-    else {
-
-        # Classic Style my man.
+        # http://search.cpan.org/~bmoyles/CGI-Session-SQLite/SQLite.pm
+        $self->{dsn} = 'driver:SQLite:'
+          ;    # . ':' . $DADA::Config::FILES . '/' . $database;;
+        $self->{dsn_args} = {
+            Handle    => $self->{dbh},
+            TableName => $DADA::Config::SQL_PARAMS{session_table},
+        };
     }
 }
 
