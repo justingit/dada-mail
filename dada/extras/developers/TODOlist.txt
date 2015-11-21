@@ -10,9 +10,7 @@ Key:
 [*] Naw...
 [?] Someday
 
-
-
-independent project that keeps getting better.
+ 
  
 SUBSCRIPTION FORMS: - maybe just "bare-bones" example? JUST the form fields needed?
 
@@ -31,13 +29,9 @@ New Core5 Filemanager only sending part of the URL? no domain? (unconfirmed...)
 
 Hey, you know what? I can make my own inliner super service! 
 
-describe what dada mail is, but also, what it's FOR
-
 Agreement step on subscription (by checking this box, you agree to the following, yadda yadda)
 
 email list owner about new list being created. 
-
-app.css needs to moved over
 
 Broke KCFinder too?!
 

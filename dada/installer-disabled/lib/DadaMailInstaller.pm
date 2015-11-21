@@ -909,7 +909,6 @@ sub grab_former_config_vals {
                $BootstrapConfig::SUBSCRIBER_DB_TYPE eq 'SQL'
             && $BootstrapConfig::ARCHIVE_DB_TYPE eq 'SQL'
             && $BootstrapConfig::SETTINGS_DB_TYPE eq 'SQL'
-            && $BootstrapConfig::SESSION_DB_TYPE eq 'SQL'
             && $BootstrapConfig::BOUNCE_SCORECARD_DB_TYPE eq 'SQL'
             && $BootstrapConfig::CLICKTHROUGH_DB_TYPE eq 'SQL'
         )

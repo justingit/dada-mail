@@ -22,14 +22,14 @@
  <!-- tmpl_if valid_email --> 
  
      <!-- tmpl_if subscribed_address --> 
-          <p class="alert">
-          <!-- tmpl_var query ESCAPE="HTML" --> is currently subscribed to your list (<!-- tmpl_var list_settings.list_name ESCAPE="HTML" -->) - 
-          <strong> 
-          <a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=membership&email=<!-- tmpl_var query ESCAPE="URL" -->&type=list">
-           More Information...
-           </a> 
-          </strong>
-          </p>       
+		<div class="alert-box info radius">
+			<!-- tmpl_var query ESCAPE="HTML" --> is currently subscribed to your list (<!-- tmpl_var list_settings.list_name ESCAPE="HTML" -->) - 
+			<strong> 
+				<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=membership&email=<!-- tmpl_var query ESCAPE="URL" -->&type=list">
+					More Information...
+				</a> 
+			</strong>
+		</div>       
      <!-- tmpl_else --> 
      
               <p class="error">

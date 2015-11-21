@@ -30,15 +30,26 @@
 			<label for="admin_list">
 				Mailing List
 			</label>
-			<!-- tmpl_var name="list_popup_menu" -->
-			<!-- tmpl_if show_other_link --> 
-				<a 
-					href="<!-- tmpl_var name="PROGRAM_URL" -->?flavor=<!-- tmpl_var ADMIN_FLAVOR_NAME -->&login_widget=text_box"
-				>
-					other...
-				</a>
-			<!-- /tmpl_if --> 
-			
+
+			<!-- tmpl_if show_other_link -->
+				<div class="row collapse">
+					<div class="small-10 columns"> 					
+						<!-- tmpl_var list_popup_menu -->
+					</div>
+					<div class="small-2 columns">
+						<a 
+							href="<!-- tmpl_var name="PROGRAM_URL" -->?flavor=<!-- tmpl_var ADMIN_FLAVOR_NAME -->&login_widget=text_box"
+							class="postfix tiny button secondary"
+						>
+							other...
+						</a>
+					</div> 
+				</div>
+			<!-- tmpl_else -->
+				<!-- tmpl_var list_popup_menu -->
+			<!-- /tmpl_if -->
+
+
 		</div>
 	</div>
 	

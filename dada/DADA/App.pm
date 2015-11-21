@@ -10797,18 +10797,25 @@ sub login {
                 -nph     => $DADA::Config::NPH,
                 -Refresh => '0; URL=' . $referer
             };
-            my $body;
-            $body .= $q->start_html(
-                -title   => 'Logging in...',
-                -BGCOLOR => '#FFFFFF'
-            );
-            $body .= $q->p( $q->a( { -href => $referer }, 'Logging in...' ) );
-            $body .= $q->end_html();
-
+			
+		    my $scrn    = DADA::Template::Widgets::wrap_screen(
+		        {
+		            -with           => 'list',
+					-screen         => 'logging_in_screen.tmpl',
+                    -wrapper_params => {
+                       -Use_Custom => 0,
+                    },
+		            -vars => {
+						show_profile_widget => 0,
+		            	referer             => $referer, 
+					},
+		        }
+		    );
+			
             $dada_session->remove_old_session_files();
 
             $self->header_props(%$headers);
-            $body;
+            $scrn;
         }
         else {
 
@@ -10897,16 +10904,24 @@ sub logout {
             -nph     => $DADA::Config::NPH,
             -Refresh => '0; URL=' . $location,
         };
-        $body = $q->start_html(
-            -title   => 'Logging Out...',
-            -BGCOLOR => '#FFFFFF'
-          ),
-          $q->p( $q->a( { -href => $location }, 'Logging Out...' ) ),
-          $q->end_html();
-          
+
+	    my $scrn    = DADA::Template::Widgets::wrap_screen(
+	        {
+	            -with           => 'list',
+				-screen         => 'logging_out_screen.tmpl',
+                -wrapper_params => {
+                   -Use_Custom => 0,
+                },
+	            -vars => {
+					show_profile_widget => 0,
+	            	location            => $location, 
+				},
+	        }
+	    );
+		          
         # Probably not setting up the header_props here, yey?
         $self->header_props(%$headers);
-        return ($headers, $body);
+        return ($headers, $scrn);
     }
     else {
         return $logout_cookie;    #DEV: not sure about this one...
@@ -10970,15 +10985,24 @@ sub change_login {
         -nph     => $DADA::Config::NPH,
         -Refresh => '0; URL=' . $location
     };
-    my $body = $q->start_html(
-        -title   => 'Switching...',
-        -BGCOLOR => '#FFFFFF'
-    );
-    $body .= $q->p( $q->a( { -href => $location }, 'Switching...' ) );
-    $body .= $q->end_html();
 
+    my $scrn    = DADA::Template::Widgets::wrap_screen(
+        {
+            -with           => 'list',
+			-screen         => 'logging_switch_screen.tmpl',
+            -wrapper_params => {
+               -Use_Custom => 0,
+            },
+            -vars => {
+				show_profile_widget => 0,
+            	location            => $location, 
+			},
+        }
+    );
+	
+	
     $self->header_props(%$headers);
-    return $body;
+    return $scrn;
 }
 
 sub remove_subscribers {

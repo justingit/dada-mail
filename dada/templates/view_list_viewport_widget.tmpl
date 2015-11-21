@@ -22,18 +22,18 @@
 
 <!-- tmpl_unless total_num -->
     <!-- tmpl_if query --> 
-            <p class="alert">
+            <div class="alert-box info radius">
                 No Results were found.
-            </p>
+			</div>
             <p><label for="query">Search Again:</label></p> 
             <!-- tmpl_include list_search_form_widget.tmpl -->
     <!-- tmpl_else --> 
     
     
         <!-- tmpl_if advanced_query --> 
-            <p class="alert">
+            <div class="alert-box info radius">
                 No Results were found.
-            </p>            
+			</div>            
         <!-- tmpl_else -- >
             
             <p>

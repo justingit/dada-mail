@@ -95,8 +95,6 @@ The variables you want to look for are:
 
 =item * $SETTINGS_DB_TYPE
 
-=item * $SESSION_DB_TYPE
-
 =item * $CLICKTHROUGH_DB_TYPE
 
 =back
@@ -106,7 +104,6 @@ If this group of variables looks like this:
 	$SUBSCRIBER_DB_TYPE       ||= 'PlainText'; 
 	$ARCHIVE_DB_TYPE          ||= 'Db'; 
 	$SETTINGS_DB_TYPE         ||= 'Db'; 
-	$SESSION_DB_TYPE          ||= 'Db';
 	$BOUNCE_SCORECARD_DB_TYPE ||= 'Db';
 	$CLICKTHROUGH_DB_TYPE     ||= 'Db';
 
@@ -117,7 +114,6 @@ If this group of variables looks like this and is B<not> commented out:
 	$SUBSCRIBER_DB_TYPE       = 'SQL'; 
 	$ARCHIVE_DB_TYPE          = 'SQL'; 
 	$SETTINGS_DB_TYPE         = 'SQL'; 
-	$SESSION_DB_TYPE          = 'SQL'; 
 	$BOUNCE_SCORECARD_DB_TYPE = 'SQL';
 	$CLICKTHROUGH_DB_TYPE     = 'SQL';
 

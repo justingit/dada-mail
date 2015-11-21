@@ -53,14 +53,14 @@
 	
 	<div class="tabs-content">	
 		<div class="content tab-title active" id="drafts">		
-	    <p class="alert">
+	    <div class="alert-box info radius">
             <strong>
             Drafts
             </strong> 
             are unfinished messages that haven't been sent out. 
             Once a drafted message is sent out as a mass mailing, the draft message will also
             be removed.
-        </p>
+		</div>
 
         <!-- tmpl_if draft_index --> 
 
@@ -178,19 +178,21 @@
 	</div> 
 	
 	<div class="content tab-title" id="stationery">
-	    <p class="alert">
-            <strong>
-            Stationery
-            </strong> 
-            are messages that you may use to begin writing new mailing list messages with. They'll 
-            stay around, so that you'll be able to continue to use them as many times as you would like.
-        </p>
+	    <div class="alert-box info radius">
+            <p> 
+				<strong>
+          		  Stationery
+			    </strong> 
+	            are messages that you may use to begin writing new mailing list messages with. They'll 
+	            stay around, so that you'll be able to continue to use them as many times as you would like.
+			</p>
 
-        <p class="alert">
-             Once you create a new message from the stationery, it will itself be saved as a draft, 
-            that you may continue to edit, separate from the original stationery.
-        </p>
-
+	        <p>
+	             Once you create a new message from the stationery, it will itself be saved as a draft, 
+	            that you may continue to edit, separate from the original stationery.
+	        </p>
+		</div> 
+		
         <!-- tmpl_if stationery_index --> 
 
         <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">

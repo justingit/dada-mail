@@ -66,9 +66,9 @@
 					                <!-- tmpl_if has_subscriptions --> 
 					                    <!-- ... -->
 					                <!-- tmpl_else --> 
-					                    <p class="alert">
+					                    <div class="alert-box info radius">
 					                        You are not currently subscribed to any mailing list.
-					                    </p>
+					                    </div>
 					                <!-- /tmpl_if --> 
 
 					                <!-- tmpl_loop subscriptions --> 
@@ -182,12 +182,12 @@
                     
 					                    <!-- tmpl_if comment --> 
 					                        <!-- tmpl_if list_owner --> 
-					                            <p class="alert"> 
+					                            <div class="alert-box info radius"> 
 					                                You are the List Owner. 
 					                                <a href="<!-- tmpl_var S_PROGRAM_URL -->/sign_in/<!-- tmpl_var list_settings.list -->/"> 
 					                                    Login...
 					                                </a>  
-					                            </p>
+					                            </div>
 					                        <!-- /tmpl_if -->
 					                     <!-- /tmpl_if -->
 					                <!-- /tmpl_if --> 

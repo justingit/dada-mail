@@ -355,13 +355,6 @@ Dada Mail relies on session information saved in browser cookies.
 
 =back
 
-If those problems don't help matters, sometimes it helps to set Dada Mail to use a different session type. 
-
-The session type is set in the config variable, C<$SESSION_DB_TYPE>. It can be set to, C<SQL> (you'll need to setup the SQL backend for this to work), C<DB>, C<PlainText> - and, if all else fails, C<Classic>. 
-
-All these session types work the same way, but C<Classic> is the least secure - we don't recommend using it, but if it helps you 
-get out of a pinch, then it can help you get out of a pinch. 
-
 =head2 Links in Dada Mail don't work/just go to the default screen
 
 If you're having problems with links in Dada Mail being seemingly broken - for example, going to: 

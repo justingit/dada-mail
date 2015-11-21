@@ -209,7 +209,7 @@ jQuery(document).ready(function($){
 
 function installer_test_sql_connection() {
 	var target_div = 'test_sql_connection_results';
-	$("#" + target_div).html('<p class="alert">Loading...</p>');
+	$("#" + target_div).html('<p class="label info">Loading...</p>');
 	if ($("#" + target_div).is(':hidden')) {
 		$("#" + target_div).show();
 	}
@@ -239,7 +239,7 @@ function installer_test_sql_connection() {
 
 function installer_test_pop3_connection() {
 	var target_div = 'test_bounce_handler_pop3_connection_results';
-	$("#" + target_div).html('<p class="alert">Loading...</p>');
+	$("#" + target_div).html('<p class="label info">Loading...</p>');
 	if ($("#" + target_div).is(':hidden')) {
 		$("#" + target_div).show();
 	}
@@ -273,7 +273,7 @@ function installer_test_pop3_connection() {
 
 function test_amazon_ses_configuration() {
 	var target_div = 'test_amazon_ses_configuration_results';
-	$("#" + target_div).html('<p class="alert">Loading...</p>');
+	$("#" + target_div).html('<p class="label info">Loading...</p>');
 	if ($("#" + target_div).is(':hidden')) {
 		$("#" + target_div).show();
 	}
@@ -302,7 +302,7 @@ function test_amazon_ses_configuration() {
 
 function test_mandrill_configuration() {
 	var target_div = 'test_mandrill_configuration_results';
-	$("#" + target_div).html('<p class="alert">Loading...</p>');
+	$("#" + target_div).html('<p class="label info">Loading...</p>');
 	if ($("#" + target_div).is(':hidden')) {
 		$("#" + target_div).show();
 	}
@@ -334,7 +334,7 @@ function test_user_template() {
 	}
 	else { 
 
-		$("#" + target_div).html('<p class="alert">Loading...</p>');
+		$("#" + target_div).html('<p class="label info">Loading...</p>');
 		if ($("#" + target_div).is(':hidden')) {
 			$("#" + target_div).show();
 		}
@@ -358,7 +358,7 @@ function test_magic_template() {
 
 	var target_div = 'test_user_template_results';
 
-	$("#" + target_div).html('<p class="alert">Loading...</p>');
+	$("#" + target_div).html('<p class="label info">Loading...</p>');
 	if ($("#" + target_div).is(':hidden')) {
 		$("#" + target_div).show();
 	}
@@ -444,7 +444,7 @@ function test_magic_template() {
 
 function test_CAPTCHA_configuration() {
 	var target_div = 'test_CAPTCHA_configuration_results';
-	$("#" + target_div).html('<p class="alert">Loading...</p>');
+	$("#" + target_div).html('<p class="label info">Loading...</p>');
 	if ($("#" + target_div).is(':hidden')) {
 		$("#" + target_div).show();
 	}
@@ -513,7 +513,7 @@ function test_captcha_reCAPTCHA_Mailhide_configuration() {
 	
 	var target_div = 'captcha_reCAPTCHA_Mailhide_configuration_results';
 	
-	$("#" + target_div).html('<p class="alert">Loading...</p>');
+	$("#" + target_div).html('<p class="label info">Loading...</p>');
 	if ($("#" + target_div).is(':hidden')) {
 		$("#" + target_div).show();
 	}
