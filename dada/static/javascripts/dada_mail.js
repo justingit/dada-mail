@@ -5,7 +5,7 @@ var plainOverlayOptions = {
 			return $('<div class="spinner_bg"></div>');
 		}
 };
-
+var loading_str = '<p class="label info">Loading...</p>';
 
 jQuery(document).ready(function($){
 
@@ -1862,7 +1862,7 @@ function view_list_viewport(initial) {
 	//alert('$("#advanced_search").val() ' + $("#advanced_search").val());
 	//alert(' $("#advanced_query").val() ' +  $("#advanced_query").val());
 
-	//$("#view_list_viewport_loading").html('<p class="label info">Loading...</p>');
+	//$("#view_list_viewport_loading").html(loading_str);
 	$("#view_list_viewport").plainOverlay('show', plainOverlayOptions);
 
 	var request = $.ajax({
@@ -1909,7 +1909,7 @@ function view_list_viewport(initial) {
 
 		}
 
-		//$("#view_list_viewport_loading").html('<p class="label info">&nbsp;</p>');
+		//$("#view_list_viewport_loading").html('<p>&nbsp;</p>');
 
 		datetimesetupstuff();
 		set_up_advanced_search_form();
@@ -2045,7 +2045,7 @@ function change_order(order_by, order_dir) {
 var domain_breakdown_chart; // you've got to be serious...
 var domain_breakdown_chart_data;
 function drawTrackerDomainBreakdownChart() {
-	$("#domain_break_down_chart_loading").html('<p class="label info">Loading...</p>');
+	$("#domain_break_down_chart_loading").html(loading_str);
 	$.ajax({
 		url: $("#s_program_url").val(),
 		dataType: "json",
@@ -2081,7 +2081,7 @@ function drawTrackerDomainBreakdownChart() {
 			   options['height'] = $('#domain_break_down_chart').width();
 			   domain_breakdown_chart.draw(domain_breakdown_chart_data, options);
 			};
-			$("#domain_break_down_chart_loading").html('<p class="label info">&nbsp;</p>');
+			$("#domain_break_down_chart_loading").html('<p>&nbsp;</p>');
 			google.visualization.events.addListener(domain_breakdown_chart, 'select', selectHandler);
 		}
 	});
@@ -2091,7 +2091,7 @@ function drawTrackerDomainBreakdownChart() {
 function user_agent_chart(type, target_div) {
 	console.log('user_agent_chart! type: ' + type + ';target_div:' + target_div);
 
-	$("#" + target_div + "_loading").html('<p class="label info">Loading...</p>');
+	$("#" + target_div + "_loading").html(loading_str);
 	$.ajax({
 		url: $("#s_program_url").val(),
 		type: "POST",
@@ -2126,11 +2126,11 @@ function user_agent_chart(type, target_div) {
 			var data = new google.visualization.DataTable(jsonData);
 			var chart = new google.visualization.PieChart(document.getElementById(target_div));
 
-			$("#" + target_div + "_loading").html('<p class="label info">&nbsp;</p>');
+			$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
 			$("#" + target_div).hide("fade", function() {
 				chart.draw(data, options);
 				trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
-				$("#" + target_div + "_loading").html('<p class="label info">&nbsp;</p>');
+				$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
 				$("#" + target_div).show('fade');
 			});
 		}
@@ -2192,7 +2192,7 @@ backgroundColor: {
 			$("#amount").prop('disabled', false);
 		});
 
-		$("#sub_unsub_trends_loading").html('<p class="label info">Loading...</p>');
+		$("#sub_unsub_trends_loading").html(loading_str);
 		$.ajax({
 			url: $("#s_program_url").val(),
 			data: {
@@ -2222,7 +2222,7 @@ backgroundColor: {
 				   options['height'] = $('#sub_unsub_trends').width();
 					sub_unsub_trend_c.draw(data, options);
 				};
-				$("#sub_unsub_trends_loading").html('<p class="label info">&nbsp;</p>');
+				$("#sub_unsub_trends_loading").html('<p>&nbsp;</p>');
 			}
 		});
 	}
@@ -2235,7 +2235,7 @@ backgroundColor: {
 // Membership >> user@example.com
 
 function mailing_list_history() {
-	$("#mailing_list_history_loading").html('<p class="label info">Loading...</p>');
+	$("#mailing_list_history_loading").html(loading_str);
 
 	var scope = 'this_list';
 	if($("#toggle_membership_history").length){
@@ -2260,12 +2260,12 @@ function mailing_list_history() {
 	request.done(function(content) {
 		$("#mailing_list_history").hide().html(content).show('fade');
 
-		$("#mailing_list_history_loading").html('<p class="label info">&nbsp;</p>');
+		$("#mailing_list_history_loading").html('<p>&nbsp;</p>');
 	});
 }
 
 function membership_activity() {
-	$("#membership_activity_loading").html('<p class="label info">Loading...</p>');
+	$("#membership_activity_loading").html(loading_str);
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
 		type: "POST",
@@ -2279,7 +2279,7 @@ function membership_activity() {
 	request.done(function(content) {
 		$("#membership_activity").hide().html(content).show('fade');
 
-		$("#membership_activity_loading").html('<p class="label info">&nbsp;</p>');
+		$("#membership_activity_loading").html('<p>&nbsp;</p>');
 	});
 
 }
@@ -2437,7 +2437,7 @@ function validate_remove_email(for_multiple_lists) {
 
 function membership_bouncing_address_information() {
 
-	$("#membership_bouncing_address_information").hide().html('<p class="label info">Loading...</p>').show('fade');
+	$("#membership_bouncing_address_information").hide().html(loading_str).show('fade');
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
 		type: "POST",
@@ -2650,7 +2650,7 @@ function amazon_verify_email(email) {
 // Mail Sending >> Mass Mailing Options
 
 function previewBatchSendingSpeed() {
-	$("#previewBatchSendingSpeed_loading").hide().html('<p class="label info">Loading...</p>').show('fade');
+	$("#previewBatchSendingSpeed_loading").hide().html(loading_str).show('fade');
 
 
 	var enable_bulk_batching = 0;
@@ -2689,7 +2689,7 @@ function previewBatchSendingSpeed() {
 }
 
 function amazon_ses_get_stats() {
-	$("#amazon_ses_get_stats_loading").hide().html('<p class="label info">Loading...</p>').show('fade');
+	$("#amazon_ses_get_stats_loading").hide().html(loading_str).show('fade');
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
 		type: "POST",
@@ -2730,7 +2730,7 @@ function toggleManualBatchSettings() {
 // Plugins/Extensions >> Bounce Bounce Handler
 
 function bounce_handler_show_scorecard() {
-	$("#bounce_scorecard_loading").html('<p class="label info">Loading...</p>');
+	$("#bounce_scorecard_loading").html(loading_str);
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
 		type: "POST",
@@ -2747,7 +2747,7 @@ function bounce_handler_show_scorecard() {
 		$("#bounce_scorecard").hide('fade', function() {
 			$("#bounce_scorecard").html(content);
 			$("#bounce_scorecard").show('fade');
-			$("#bounce_scorecard_loading").html('<p class="label info">&nbsp;</p>');
+			$("#bounce_scorecard_loading").html('<p>&nbsp;</p>');
 		});
 
 
@@ -2784,7 +2784,7 @@ function bounce_handler_parse_bounces() {
 	request.done(function(content) {
 		$("#parse_bounce_results").html(content);
 		$("#parse_bounces_button").val('Parse Bounces');
-		$("#parse_bounce_results_loading").html('<p class="label info">&nbsp;</p>');
+		$("#parse_bounce_results_loading").html('<p>&nbsp;</p>');
 
 	});
 }
@@ -2850,7 +2850,7 @@ function bounce_handler_manually_enter_bounces() {
 	});
 	request.done(function(content) {
 		$("#" + target_id).html(content);
-		$("#" + target_id + "_loading").html('<p class="label info">&nbsp;</p>');
+		$("#" + target_id + "_loading").html('<p>&nbsp;</p>');
 
 	});
 
@@ -3064,7 +3064,7 @@ function update_plugins_tracker_message_report() {
 
 function country_geoip_table(type, label, target_div) {
 
-	$("#" + target_div + "_loading").html('<p class="label info">Loading...</p>');
+	$("#" + target_div + "_loading").html(loading_str);
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
 		type: "POST",
@@ -3085,7 +3085,7 @@ function country_geoip_table(type, label, target_div) {
 		$("#" + target_div).html(content);
 		$("#" + target_div).show('fade');
 
-		$("#" + target_div + "_loading").html('<p class="label info">&nbsp;</p>');
+		$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
 		$("#sortable_table_" + type).tablesorter();
 	});
 }
@@ -3116,7 +3116,7 @@ var country_geoip_map_infos = {
 
 function country_geoip_map(type, target_div) {
 
-	$("#" + target_div + "_loading").html('<p class="label info">Loading...</p>');
+	$("#" + target_div + "_loading").html(loading_str);
 	$.ajax({
 		url: $("#s_program_url").val(),
 		type: "POST",
@@ -3149,7 +3149,7 @@ function country_geoip_map(type, target_div) {
 			$("#" + target_div).hide("fade", function() {
 				chart.draw(data, options);
 				trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
-				$("#" + target_div + "_loading").html('<p class="label info">&nbsp;</p>');
+				$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
 				$("#" + target_div).show('fade');
 			});
 
@@ -3169,7 +3169,7 @@ function country_geoip_map(type, target_div) {
 }
 
 function message_individual_email_activity_table(email, target_div) {
-	$("#" + target_div + "_loading").html('<p class="label info">Loading...</p>');
+	$("#" + target_div + "_loading").html(loading_str);
 	$.ajax({
 		url: $("#s_program_url").val(),
 		data: {
@@ -3184,7 +3184,7 @@ function message_individual_email_activity_table(email, target_div) {
 		success: function(content) {
 			$("#" + target_div).hide("fade", function() {
 				$("#" + target_div).html(content);
-				$("#" + target_div + "_loading").html('<p class="label info">&nbsp;</p>');
+				$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
 				$("#" + target_div).show('fade');
 			});
 		}
@@ -3193,7 +3193,7 @@ function message_individual_email_activity_table(email, target_div) {
 }
 
 function individual_country_geoip_map(type, country, target_div) {
-	$("#" + target_div + "_loading").html('<p class="label info">Loading...</p>');
+	$("#" + target_div + "_loading").html(loading_str);
 	$.ajax({
 		url: $("#s_program_url").val(),
 		data: {
@@ -3225,7 +3225,7 @@ function individual_country_geoip_map(type, country, target_div) {
 			$("#" + target_div).hide("fade", function() {
 				chart.draw(data, options);
 				trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
-				$("#" + target_div + "_loading").html('<p class="label info"><a href="#" data-type="' + type + '" class="back_to_geoip_map">&lt; &lt;Back to World Map</a> | <a href="#"  data-type="' + type + '" data-country="' + country + '" class="individual_country_cumulative_geoip_table">Table View</a></p>');
+				$("#" + target_div + "_loading").html('<p class="label success"><a href="#" data-type="' + type + '" class="back_to_geoip_map">&lt; &lt;Back to World Map</a> | <a href="#"  data-type="' + type + '" data-country="' + country + '" class="individual_country_cumulative_geoip_table">Table View</a></p>');
 				$("#" + target_div).show('fade');
 			});
 		}
@@ -3233,7 +3233,7 @@ function individual_country_geoip_map(type, country, target_div) {
 }
 
 function individual_country_cumulative_geoip_table(type, country, target_div) {
-	$("#" + target_div + "_loading").html('<p class="label info">Loading...</p>');
+	$("#" + target_div + "_loading").html(loading_str);
 	$.ajax({
 		url: $("#s_program_url").val(),
 		data: {
@@ -3249,7 +3249,7 @@ function individual_country_cumulative_geoip_table(type, country, target_div) {
 		success: function(content) {
 			$("#" + target_div).hide("fade", function() {
 				$("#" + target_div).html(content);
-				$("#" + target_div + "_loading").html('<p class="label info"><a href="#" data-type="' + type + '" data-country="' + country + '"  class="individual_country_geoip">&lt; &lt; Back to Country Map</a></p>');
+				$("#" + target_div + "_loading").html('<p class="label success"><a href="#" data-type="' + type + '" data-country="' + country + '"  class="individual_country_geoip">&lt; &lt; Back to Country Map</a></p>');
 				$("#" + target_div).show('fade');
 			});
 		}
@@ -3258,7 +3258,7 @@ function individual_country_cumulative_geoip_table(type, country, target_div) {
 }
 
 function data_over_time_graph(type, label, target_div) {
-	$("#" + target_div + "_loading").html('<p class="label info">Loading...</p>');
+	$("#" + target_div + "_loading").html(loading_str);
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
 		data: {
@@ -3295,7 +3295,7 @@ function data_over_time_graph(type, label, target_div) {
 			var chart = new google.visualization.AreaChart(document.getElementById(target_div));
 			chart.draw(data, options);
 			trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
-			$("#" + target_div + "_loading").html('<p class="label info">&nbsp;</p>');
+			$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
 		}
 	});
 }
@@ -3304,7 +3304,7 @@ function message_email_report_table(type, target_div) {
 
 	console.log('type:' + type + ' target_div:' + target_div);
 
-	$("#" + target_div + "_loading").html('<p class="label info">Loading...</p>');
+	$("#" + target_div + "_loading").html(loading_str);
 	var request = $.ajax({
 		url: $("#s_program").val(),
 		type: "POST",
@@ -3324,7 +3324,7 @@ function message_email_report_table(type, target_div) {
 		$("#" + target_div).html(content);
 		$("#" + target_div).show('fade');
 
-		$("#" + target_div + "_loading").html('<p class="label info">&nbsp;</p>');
+		$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
 		//  $("#sortable_table_" + type).tablesorter();
 	});
 }
@@ -3332,7 +3332,7 @@ function message_email_report_table(type, target_div) {
 function tracker_message_email_activity_listing_table(target_div) {
 	console.log('target_div:' + target_div);
 
-	$("#" + target_div + "_loading").html('<p class="label info">Loading...</p>');
+	$("#" + target_div + "_loading").html(loading_str);
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
 		type: "POST",
@@ -3351,7 +3351,7 @@ function tracker_message_email_activity_listing_table(target_div) {
 		$("#" + target_div).html(content);
 		$("#" + target_div).show('fade');
 
-		$("#" + target_div + "_loading").html('<p class="label info">&nbsp;</p>');
+		$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
 		//$("#sortable_table_" + type).tablesorter();
 		if ($('#first_for_message_email_activity_listing_table').length) {
 			message_individual_email_activity_table($('#first_for_message_email_activity_listing_table').html(), 'message_individual_email_activity_report_table');
@@ -3367,7 +3367,7 @@ function email_breakdown_chart(type, label, target_div) {
 
 	console.log('type:' + type + ' label: ' + label + ' target_div:' + target_div);
 
-	$("#" + target_div + "_loading").html('<p class="label info">Loading...</p>');
+	$("#" + target_div + "_loading").html(loading_str);
 	$.ajax({
 		url: $("#s_program_url").val(),
 		dataType: "json",
@@ -3401,7 +3401,7 @@ function email_breakdown_chart(type, label, target_div) {
 			chart.draw(data, options);
 			trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
 			
-			$("#" + target_div + "_loading").html('<p class="label info">&nbsp;</p>');
+			$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
 		}
 	});
 }
@@ -3412,7 +3412,7 @@ function tracker_the_basics_piechart(type, label, target_div) {
 
 	console.log('type:' + type + ' label: ' + label + ' target_div:' + target_div);
 
-	$("#" + target_div + "_loading").html('<p class="label info">Loading...</p>');
+	$("#" + target_div + "_loading").html(loading_str);
 	$.ajax({
 		url: $("#s_program_url").val(),
 		dataType: "json",
@@ -3449,7 +3449,7 @@ function tracker_the_basics_piechart(type, label, target_div) {
 			chart.draw(data, options);
 			trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
 			
-			$("#" + target_div + "_loading").html('<p class="label info">&nbsp;</p>');
+			$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
 			
 		}
 	});
@@ -3597,7 +3597,7 @@ function message_history_html() {
 
 	//console.log('running message_history_html');
 
-	$("#show_table_results_loading").html('<p class="label info">Loading...</p>');
+	$("#show_table_results_loading").html(loading_str);
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
 		type: "POST",
@@ -3614,7 +3614,7 @@ function message_history_html() {
 		$("#show_table_results").hide('fade', function() {
 			$("#show_table_results").html(content);
 			$("#show_table_results").show('fade');
-			$("#show_table_results_loading").html('<p class="label info">&nbsp;</p>');
+			$("#show_table_results_loading").html('<p>&nbsp;</p>');
 		});
 
 		google.setOnLoadCallback(drawSubscriberHistoryChart());
@@ -3634,7 +3634,7 @@ function drawSubscriberHistoryChart() {
 	else {
 		history_type = 'number';
 	}
-	$("#subscriber_history_chart_loading").html('<p class="label info">Loading...</p>');
+	$("#subscriber_history_chart_loading").html(loading_str);
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
 		data: {
@@ -3665,7 +3665,7 @@ function drawSubscriberHistoryChart() {
 			$("#subscriber_history_chart").hide('fade');
 			SubscriberHistoryChart.draw(data, options);
 			$("#subscriber_history_chart").show('fade');
-			$("#subscriber_history_chart_loading").html('<p class="label info">&nbsp;</p>');
+			$("#subscriber_history_chart_loading").html('<p>&nbsp;</p>');
 			
 			window.onresize = function(){
 				options['width']  = $('#subscriber_history_chart').width();
