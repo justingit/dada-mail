@@ -841,10 +841,9 @@ jQuery(document).ready(function($){
 	});
 	
 	
-	$("body").on("submit", "#remove_all_addresses", function(event) {
-		event.preventDefault();
-	});
 	$("body").on("click", ".unsubscribeAllSubscribers", function(event) {
+
+		event.preventDefault();
 		
  	 	var type = $(this).data("type"); 
 		var confirm_msg = '';
@@ -862,7 +861,7 @@ jQuery(document).ready(function($){
 			}
 			return false;
 		} else {
-			$("body").off('submit', "#remove_all_addresses");			
+			window.location.href = $("#s_program_url").val() + '?flavor=remove_all_subscribers&type=' + type;
 			return true;
 		}
 	});
