@@ -39,7 +39,7 @@ Once logged in, your users can:
 
 =item * Update their Profile Fields 
 
-=item * View their Your Mailing List Subscriptions 
+=item * View their Mailing List Subscriptions 
 
 This section also always your users to interact with the mailing list: view archives, unsubscribe from the list, post to the list (if it is a discussion list). Any Password Protect Directories (set up with the Password Protect plugin) will also be available here. 
 
@@ -235,7 +235,7 @@ C<profile_fields> controls whether the user may edit their own Profile Fields in
 
 =item * mailing_list_subscriptions
 
-C<mailing_list_subscriptions> controls whether the, B<Your Mailing List Subscriptions> section is visible to your user in their Profile (once logged in).
+C<mailing_list_subscriptions> controls whether the, B<Mailing List Subscriptions> section is visible to your user in their Profile (once logged in).
 
 =item * protected_directories
 

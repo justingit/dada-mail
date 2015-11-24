@@ -18,7 +18,7 @@ bot to go through, before even attempting to solve a CAPTCHA.
 
 =head3 Enabling
 
-In the list control panel, navigate to: B<Your Mailing List - Options>, under B<Subscriptions>, check the option labeled, B<Enable CAPTCHA'ing>
+In the list control panel, navigate to: B<Mailing List - Options>, under B<Subscriptions>, check the option labeled, B<Enable CAPTCHA'ing>
 
 =head2 "Forward a Friend"
 

@@ -24,7 +24,7 @@ access the services available remotely.
 
 Both the public and private keys for your mailing list can be accessed in the mailing list's control panel under, 
 
-I<Your Mailing List - Web Services API>
+I<Mailing List - Web Services API>
 
 You may also reset your keys. Doing so will invalidate any other key pairs for the mailing list you're currently working with. 
 
@@ -341,7 +341,7 @@ Name of the service you would like to work with
 the B<public key> for the mailing list you're working with. Both the public, and private key for your mailing list can be accessed 
 in the mailing list's control panel under, 
 
-I<Your Mailing List - Web Services API>
+I<Mailing List - Web Services API>
 
 =item * digest
 

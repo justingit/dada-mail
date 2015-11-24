@@ -47,15 +47,15 @@ By default, the following List Control Panel screens are disabled, when you log 
 
 B<Membership - Options> contains options for editing the Profile Fields throughout the List Control Panel, as well as setting option for the Black List. 
 
-=item * Your Mailing List - Options
+=item * Mailing List - Options
 
-B<Your Mailing List - Options> contains options on some of the advanced behaviors of the mailing list, including options on how people can be subscribed to your list, and what mode you are going to run your mailing list as (private list, public list). 
+B<Mailing List - Options> contains options on some of the advanced behaviors of the mailing list, including options on how people can be subscribed to your list, and what mode you are going to run your mailing list as (private list, public list). 
 
 Of particular note is the option requiring B<Closed-Loop Opt-In Confirmation>. For public mailing lists, you B<most definitely want this option enabled>.
 
 This screen also has an option to allow importing a mailing list, without requiring confirmation (via a list invitation), for both List Password and Dada Root Password logins. By default, you may mass import subscribers, when logged into the List Control Panel with the Dada Root Password, but not with the List Password. 
 
-=item * Your Mailing List - Delete This Mailing List
+=item * Mailing List - Delete This Mailing List
 
 =item * Control Panel Settings
 

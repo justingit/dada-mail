@@ -857,7 +857,7 @@ information it compiles, for easy digestion.
 
 See the Documenation for the B<Tracker> plugin at: 
 
-L<http://dadamailproject.com/d/tracker.cgi.html>
+L<http://dadamailproject.com/d/tracker.html>
 
 =head2 Changes 4.5.0 
 

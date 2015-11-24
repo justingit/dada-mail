@@ -68,7 +68,7 @@ L<http://example.com/cgi-bin/dada/mail.cgi/admin>
 
 Replacing, I<http://example.com/cgi-bin/dada/mail.cgi> with the URL of your own Dada Mail. 
 
-Enter your Dada Mail Root Password in the form entitled, B<Create a New Mailing List>
+Click on the tab labeled, B<Create> enter your Dada Mail Root Password, and click on the button labeled, B<Create a New Mailing List>
 
 =head2 How Do I Log Into an Already Existing Mailing List? 
 
@@ -86,7 +86,7 @@ Select your mailing list from the popup menu and enter either your B<List Passwo
 
 The, B<Dada Mail Root Password> can be used to log into any list being administrated by Dada Mail, as well as allowing you to access any adminsitration screens that are not allowed to be accessed when logging in using the B<List Password>. 
 
-If the list you're attempting to access is not listed in the popup menu, you may have made your list, B<hidden>. To log into a hidden list, click the, B<other...> link that's located underneith the popup menu. 
+If the mailing list you're attempting to access is not listed in the popup menu, you may have made your list, B<hidden>. To log into a hidden list, click the, B<other...> button that's located beside the popup menu. 
 
 When the screen is refreshed, the popup menu will be replaced by a text box. You can then enter the B<list short name> of the list you want to log into. 
 
@@ -96,7 +96,7 @@ If you do not remember the B<list short name> of the list you want to log into, 
 
 Log into your mailing list using the B<Dada Mail Root Password>.
 
-In the left-hand menu, go to B<Your Mailing List -E<gt> Delete This Mailing List >
+In the left-hand menu, go to B<Mailing List -E<gt> Delete This Mailing List>
 
 =head2 Can I rename the mail.cgi file?
 
@@ -114,8 +114,7 @@ L<http://dadamailproject.com/d/change_list_shortname.cgi.html>
 
 The Dada Mail Root Password is usually saved in an encrypted form, so cannot be simply read from the configuration. You may manually reset the Dada Mail Root Password yourself. 
 
-If you're running a contemporary installation of Dada Mail, 
-the Dada Mail Root Password is stored your C<.dada_config> file. 
+The Dada Mail Root Password is stored your C<.dada_config> file. 
 
 I<(The location of the C<.dada_config>> file is saved in the directory set in the C<dada/DADA/Config.pm> file, in a variable called, C<$PROGRAM_CONFIG_FILE_DIR>. That variable should hold the absolute path to the directory that your, I<.dada_config>)
 
@@ -147,11 +146,7 @@ If you cannot figure out how to encrypt your own password, set, C<$ROOT_PASS_IS_
 	
 	# End Root_Password
 
-
 We do not suggest this, as now you're open to someone exploiting your Dada Mail, by simply reading your configuration. 
-
-If you are running a Basic Installation of Dada Mail (ie: NO .dada_config file), look for the C<$PROGRAM_ROOT_PASSWORD> variable in the C<dada/DADA/Config.pm> file itself. It may or may not be encrypted. Again, the 
-C<$ROOT_PASS_IS_ENCRYPTED> will let you know. follow similar steps to reset the C<$PROGRAM_ROOT_PASSWORD> variable to either an encrypted or non-encrypted password, but do all the editing in your C<dada/DADA/Config.pm> file. 
 
 There is also plugin, described here: 
 
@@ -159,10 +154,9 @@ L<http://dadamailproject.com/support/documentation/change_root_password.cgi.html
 
 That will allow you to change the Dada Mail Root Password. You will first have to log into your list control panel, with the Dada Mail Root Password.  
 
-
 =head2 Is there any way to stop a mass mailing once it is started? 
 
-Yes. In the list control panel, click on, "Monitor Your Mailings", click on the mailing you want to stop and when on that specific message screen, click the, B<STOP Mailing> button.
+Yes. In the list control panel, navigate to, B<Mass Mailing - Monitor>. This screen will show the mass mailings that are currently running for your mailing list. Click the red button next to the mass mailing you would like to stop.
 
 =head2 Subscriptions
 
@@ -220,7 +214,7 @@ L<http://dadamailproject.com/support/documentation/multiple_subscribe.cgi.html>
 
 I<Is there a way to Mass-Subscribe email addresses from the list control panel?>
 
-Log into your mailing list with the Dada Root Password and go to: B<Your Mailing List - Options>
+Log into your mailing list with the Dada Root Password and go to: B<Mailing List - Options>
 
 Under, B<Advanced Options - Subcriptions> check the option, B< Allow Subscriptions in the List Control Panel, Without Confirmation > and optionally, B< Only Allow when logged in with the Pro Dada Root Password > 
 
@@ -236,7 +230,7 @@ The following tag is required to be present in every message sent in a mass mail
 
 This tag will be replaced by an unsubcription link that will be unique to the user's email address, mailing list, and mass mailing that it's sent in. When it's clicked, the user will need to simply retype their email address and submit the form presented to them. Once they do that, the user will be removed from the mailing list. 
 
-There is an option in the List Control Panel to provide an email address hint in, I<Your Mailing List Options>, under I<Unsubscriptions>: B<Show Email Hint> 
+There is an option in the List Control Panel to provide an email address hint in, I<Mailing List Options>, under I<Unsubscriptions>: B<Show Email Hint> 
 
 If you're running a discussion mailing list, you may want to disable this option, so that other members of the mailing list don't abuse the unsubscription system, by unsubscribing other members. 
 
@@ -260,13 +254,13 @@ L<http://dadamailproject.com/d/features-public_and_private_lists.pod.html>
 
 =head2 Do you host Dada Mail or do I host Dada Mail? 
 
-Dada Mail is installed on your hosting account; thus, you will be the one hosting it. 
+Dada Mail is installed on your hosting account; thus, you will be the one hosting it. This is also known as, B<self-hosted>
 
 Dada Mail is not really intended to be run locally on your Desktop Computer (unless, say, you're testing it out). You'll want Dada Mail running on a server that's publically available via the web, so that subscription and unsubscription requests can be handled at all times. 
 
 =head2 Do you provide hosting services? 
 
-Personally, no - I do have some good suggestions on hosting: 
+I do have some good suggestions on hosting: 
 
 http://dadamailproject.com/support/hosting.html
 
@@ -308,7 +302,7 @@ http://dadamailproject.com/support/documentation/bounce_handler.html
 
 =head2 How do I create the HTML Subscription form code to place on my web pages to allow people to subscribe to my list? 
 
-Log into your list control panel, click, B<Appearance -  Subscription Form HTML>
+Log into your list control panel, click, B<Appearance - Subscription Form HTML>
 
 =head2 Can I hook Dada Mail up to a form on my website? 
 
@@ -341,9 +335,7 @@ L<http://demo.dadamailproject.com>
 
 =head2 Do I need to keep my browser window open for the entire mail sending? 
 
-It's not the worst idea - the best thing to do is put on the, "Monitor Your Mailings" screen to the mailing you currently want to keep an eye on. 
-
-There are chances that a mailing will stop unexpectantly, and keeping this monitor up will prevent that. There are also ways to not need to have this Monitor Your Mailings screen open, regardless of your hosting setup. 
+Dada Mail isn't designed to require that you do this. What you will want to do is make sure to have Dada Mail's cronjob setup correctly. 
 
 This topic has it's own FAQ: 
 
@@ -367,12 +359,7 @@ There are many many MANY ways to send an HTML-formatted email using Dada Mail.
 
 =item * The, "Send a Message" screen
 
-In the list control panel, go to, B<Send a Message>. Twiddle the B<HTML Version> into view by clicking, 
-
-B<+/- HTML Version> 
-
-If you do not know HTML, or are setting Dada Mail up for someone who does not know HTML, but want to create HTML images, you can transform this textarea into a WYSIWYG HTML editor.
-
+In the list control panel, go to, B<Send a Message>. Select the tab labeled,  B<HTML>. Dada Mail comes with an HTML rich text editor - no HTML knowledge needed. 
 
 =item * The, "Send a Webpage" screen
 
@@ -404,7 +391,7 @@ Create an HTML document using your favorite HTML editor. Post it somewhere on yo
 
 =back
 
-In the list control panel, go to, <Send a Webpage>. Under, B<HTML Version (Your Webpage)>, check: I<Grab content from this webpage address (URL):> and fill in the url to use. 
+In the list control panel, go to, <Send a Webpage>. Under, B<HTML Version (Your Webpage)>, check: I< Grab content from a URL:> and fill in the url to use. 
 
 =item * Install the the Bridge Plugin and format and send your messages from your mail reader. Your messages B<should> come through almost exactly as you've created them.
 
@@ -583,15 +570,8 @@ One thing to note about email messages are character I<encoding>: currently, Dad
 
 =head2 Does Dada Mail need an SQL server to run? 
 
-No. But, SQL is an option. 
 
-=head2 Does Dada Mail support an SQL backend? 
-
-Short answer, B<yes> 
-
-Long Answer: 
-
-Dada Mail supports MySQL and Postgres with saving its: 
+Dada Mail supports MySQL, PostgreSQL and SQLite with saving its: 
 
 =over
 
@@ -605,6 +585,8 @@ Dada Mail supports MySQL and Postgres with saving its:
 
 =item * Profiles
 
+=item * Mail Schedules
+
 =back
 
 It does not support SQL with saving its: 
@@ -615,72 +597,8 @@ It does not support SQL with saving its:
 
 Most always, PlainText
 
-=item * Mail Schedules
-
-Again, DB File flavor - with a wrapper to provide saving complex data structures
-
 =back
 
-
-=head2 What are the benefits of using the SQL backends?
-
-Well, there are the basic benefits of SQL over a, "Flat File" DB:
-
-=over
-
-=item * Speed
-
-=item * Scalability
-
-=item * Interoperability
-
-=item * Data Integrity
-
-=back
-
-There are also certain features that are available when you use the SQL backend that are not available to you when using the (default) alternative. 
-
-These include: 
-
-=over
-
-=item * Archiving:
-
-=over
-
-=item * Ability to View Embedded Inline Images in the archive
-
-=item * Ability to download attachments
-
-=back
-
-=item * Subscribers:
-
-=over
-
-=item * Using the Global Black List
-
-=item * Global List Sending (Sending to more than one list at one time, without duplicates)
-
-=item * Global Unsubscribe
-
-=back
-
-=back
-
-=head2 What are the disadvantages of using the SQL backends?
-
-The DB File backend for the Archives and Settings has an auto backup feature; the SQL backend does not - it is advised to you create a simple auto-backup routine for your SQL tables.
-
-Not really a disadvantage, but the SQL backend will not speed up your mailing list sendings.
-
-It is now my official recommendation that you use the SQL backend, if possible. This is not set by default for an easier installation process. 
-
-=head2 How do I move from the default backends to the SQL backends?
-
-See: 
-
-http://dadamailproject.com/support/documentation/FAQ-default_to_SQL_backend.pod.html
 
 
 =head2 Mailing List Messages
@@ -729,25 +647,14 @@ http://dadamailproject.com/support/hosting.html
 
 Yes. See the B<Tracker> plugin: 
 
-L<http://dadamailproject.com/d/tracker.cgi.html>
+L<http://dadamailproject.com/d/tracker.html>
 
-It can keep track of url clickthroughs, email opens, forwards, archive views, # subscribers in your mailing list, when a message is sent and soft/hard bounces. 
+It can keep track of url clickthroughs, email opens, forwards, archive views, # subscribers in your mailing list, when a message is sent, and soft/hard bounces. 
 
 =head2 Can I directly work with the subscription list?
 
 Yes, we do not suggest it. Dada Mail's, C<Invite/Add> admin screen does a good job in keeping your list's clean of invalid email addresses, duplicates, blacklisted addresses - etc. 
 
-If you're starting a new list and know for sure that you're list is squeaky clean and you're using the default, PlainText subscription backend, you can just open the subscription list. The list itself is saved in a file called:
-
-B<listshortname.list> 
-
-where, B<listshortname> is the shortname of your list. The file itself is probably saved in the directory you've saved in the B<$FILES> Config.pm variable. 
-
-The format is as follows: 
-
-One email address per line, followed immediately by a newline. The end of the file has a newline all by itself. All newlines are Unix style. 
-
-Be very careful when editing the file manually, as unexpected things may happen if the format is broken. 
 
 =head2 Performance
 
@@ -779,7 +686,7 @@ Add this to your C<.dada_config> file:
 This could mean different things for different setups. You may want to use a separate SMTP server, either your own, or a 
 SMTP host, like SendGrid (L<http://sendgrid.com>). If you do use SMTP to send message, enable this option: 
 
-B<Use One SMTP Connection per Batch (Experimental)>
+B<Use One SMTP Connection per Batch>
 
 In, I<Mail Sending - Mass Mailing Options>
 
@@ -799,8 +706,8 @@ L<./bounce_handler.html>
 
 =item * Adjust your batch settings
 
-
 Adjust your batch settings to send more messages out per batch and/or wait less time between batches. 
+
 It's not recommended that you totally I<disable> batch sending, but if you do not have a hourly/daily mail sending 
 limit, you can certainly bump up the batch settings to accomodate the resources you have available. 
 
@@ -837,39 +744,11 @@ Yes! There are a few ways.
 
 To whatever you so desire.
 
-=item 7 Click: B<Submit Mailing List Message>
+=item 7 Click: B<Send Mass Mailing>
 
 =back
 
 This option is also available in the, "Send a Webpage" screen. 
-
-=head3 Edit the SQL Table directly
-
-If you're using the SQL backend for archives, just edit the message in the SQL table. You'll most likely want to change the, "subject" and, "raw_msg" columns. Not for the faint of heart.
-
-
-=head3 Edit the archive backups and reload
-
-This is definetely not for the faint of heart. HACK ahead:
-
-If you are not using the SQL backend for Archives, Dada Mail keeps a backup of your list's archives. 
-
-If you set the $BACKUPS variable in the Config.pm, they'll be located in this location, in a directory named the same as your list's Short Name. If you did not set this variable, look in the directory you set in, B<$FILES>
-
-Inside this directory, you should see another directory called, B<archives>. Navigate into there. 
-
-Inside that directory, you should see one or more directories, who's names are all in numbers. Find the newest directory and navigate to that one. 
-
-In that directory, you should see a whole lot of files, whose names are also numbers. Find the message that corresponds to the message-id of the message you want to edit. The format of the file is explained in this faq under, I<How does Dada Mail save its information?> Edit that file. 
-
-Visit: 
-
-http://example.com/cgi-bin/dada/mail.cgi?flavor=restore_lists
-
-and go through the process of restoring your lists. Heed the warning of making redundant backups. 
-
-Told you it was a hack. 
-
 
 =head2 Glossary Terms
 
@@ -901,7 +780,7 @@ http://www.computerhope.com/jargon/a/absopath.htm
 
 =head2 What do I need to run Dada Mail? 
 
-http://dadamailproject.com/support/documentation/requirements.pod.html
+http://dadamailproject.com/d/requirements.pod.html
 
 =head2 Does Dada Mail need any special Perl CPAN modules installed? 
 

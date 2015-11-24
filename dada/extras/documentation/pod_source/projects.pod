@@ -175,7 +175,7 @@ The downside of envelope sending is that you would lose absolutely all your mail
 
 B<I<Update 8/1/11: Many of these features are found in the Tracker Plugin:>>
 
-L<http://dadamailproject.com/d/tracker.cgi.html>
+L<http://dadamailproject.com/d/tracker.html>
 
 The Click through Tracker plugin currently tracks the following: 
 

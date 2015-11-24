@@ -67,7 +67,7 @@ to deny requests.
 =head2 "Subscription" Options disabled 
 
 Since this feature basically skips *over* all the options you can set in the, I<Subscriptions> fieldset in the, 
-I<Your Mailing List - Options> screen, 
+I<Mailing List - Options> screen, 
 so none of those options are available, if this feature is turned on. 
 
 =head2 Nothing's really easily editable

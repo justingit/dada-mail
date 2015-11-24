@@ -73,7 +73,7 @@ You may acquire the HTML code needed to embed the subscription form in a webpage
 
 =head2 Importing Subscribers
 
-You may mass-import Subscribers to your mailing lists in the list control panel, under: B<Membership - Add/Invite/Subscribe>. Make sure you've I<enabled> mass-import in B<Your Mailing List - Options>, under: 
+You may mass-import Subscribers to your mailing lists in the list control panel, under: B<Membership - Add/Invite/Subscribe>. Make sure you've I<enabled> mass-import in B<Mailing List - Options>, under: 
 
 B<Advanced Options - Subscriptions> Check, B< Allow Subscriptions in the List Control Panel, Without Confirmation> and optionally, B<Only Allow when logged in with the Pro Dada Root Password>
 
