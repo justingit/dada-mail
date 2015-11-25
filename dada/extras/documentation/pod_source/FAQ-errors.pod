@@ -608,23 +608,31 @@ Dada Mail uses the Google Visualization API to create its charts and graphs. Thi
 
 See, B<Installing CPAN Perl Modules>: L<http://dadamailproject.com/d/FAQ-installing_CPAN_Perl_modules.pod.html>
 
-Dada Mail also ships with a disabled copy of B<JSON>. In the I<dada/DADA/perllib> directory, find the directory named, 
+If that's not an option, Dada Mail also ships with a disabled copy of B<JSON>. 
 
-C<JSON-remove_to_install>
+In the C<dada/DADA/perllib directory>, find the directory named,
 
-and the file named, 
+	JSON-move_contents_to_install
 
-C<JSON.pm-remove_to_install> 
+and the file named,
 
-and rename them: 
+	 JSON.pm-remove_to_install
+	 
+Move the files that are in,
 
-C<JSON>
+	JSON-move_contents_to_install
 
-and, 
+into
 
-C<JSON.pm> 
+	JSON
 
-respectively. 
+and rename,
+
+	JSON.pm-remove_to_install
+
+to,
+
+	JSON.pm
 
 
 =head2 Can't locate MIME/Base64.pm
