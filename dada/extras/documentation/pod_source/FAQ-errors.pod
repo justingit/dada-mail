@@ -14,7 +14,7 @@ If you do get an in-browser error message, please find the lines in the error lo
 
 =head2 Error Messages Because of Incorrect File Permissions
 
-Dada Mail's, C<mail.cgi> script, as well as all of its plugins and extensions that you are utilizing will need to have their file permissions changed so that they can be executed, when you visit them in your web browser. This usually means changing the file permissions to, B<755>. 
+Dada Mail's, C<mail.cgi> script, as well as all of its plugins and extensions that you are utilizing will need to have their file permissions changed so that they may be executed, when you visit them in your web browser. This usually means changing the file permissions to, B<755>. 
 
 The directories that the C<mail.cgi> script lives in (I<dada>), as well as Dada Mail's plugins/extensions (I<dada/plugins>,I<dada/extensions>>) should also be set to B<755>. 
 
@@ -98,15 +98,13 @@ If you are having trouble finding your error log, or did not use the Dada Mail I
 
 	$PROGRAM_ERROR_LOG = "/home/youraccount/.dada_files/.logs/errors.txt";
 
-You may read the error log file directly by downloading it, etc. 
-
 If the error you're receiving doesn't stop you from logging into your List Control Panel, you may also use the B<Log Viewer> plugin to view the error log as well. This plugin is also installed by default when you install Dada Mail using its built in Installer. 
 
-You'll find a link for the Log View plugin on the left hand menu, under: B<Plugins/Extensions - Log Viewer>. Once on the Log Viewer screen, Find the popup menu labeled, B<View Log:> and change it to, B<Error Log>. The Log Viewer should refresh and show the last few lines of your Dada Mail error log. 
+You'll find a link for the Log Viewer plugin on the admin menu, under: B<Plugins/Extensions - Log Viewer>. Once on the Log Viewer screen, Find the popup menu labeled, B<View Log:> and change it to, B<Error Log>. The Log Viewer should refresh and show the last few lines of your Dada Mail error log. 
 
 =head2 Reporting Errors
 
-Please save the support community the need to ask you and come prepared with the following information, or as much as you can gather/is relevant: 
+Please come prepared with the following information, or as much as you can gather, or think is relevant: 
 
 =over
 
@@ -124,26 +122,6 @@ If there's a couple of steps needed to create the problem, it's helpful to descr
 
 =back
 
-Please use the Dada Mail Support Boards, Discussion List and/or Issues Tracker to report errors and receive help through the Dada Mail community. Frequently asked-about problems are listed below, hopefully with advice and solutions. 
-
-If you do post a question about an error to the Dada Mail support boards or dadadev mailing list, the first thing you're usually going to be asked is error log snippets, as well as the B<Version of Dada Mail> you are running. 
-
-
-=over
-
-=item * Boards/Forums
-
-L<http://dadamailproject.com/support/boards>
-
-=item * Discussion List
-
-L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
-
-=item * Issues Tracker 
-
-L<http://github.com/justingit/dada-mail/issues>
-
-=back
 
 =head2 Advanced Error Logging and Reporting
 
@@ -174,7 +152,6 @@ Enabling debugging settings in these modules may help debug issues such as:
 =item * POP3 and SMTP server connections
 
 =back
-
 
 =head2 $DEBUG_TRACE -  Making Dada Mail's Own Modules More Verbose
 
@@ -645,22 +622,6 @@ I get an error like this:
 but everything is working fine, what's up? 
 
 If we only knew. This looks like a bug in Mime::Lite - a part of Dada Mail that we really like (Ok, LOVE) , but wasn't developed by us, so we can't think why it's broken. Basically, don't worry about the message, it's more of a warning than anything, if a slightly annoying warning. There are directions in mail.cgi itself to get rid of 'em. 
-
-=head2 Software error: ndbm store returned -1, errno 28
-
-A little backgound on how Dada Mail stores its list settings and archives: 
-
-Dada Mail stores  list settings and archives in what are called "DB Files"; they're simpler than an SQL database, but have their advantages from completely flat file databases. There are a few different DB File formats, and Dada Mail can use many different kinds. Different DB File formats have different limitations. One of these limitations is the amound of information they can store in each key/value pair. If you go over this limit, you're going to receive something like: 
-
-	ndbm store returned -1, errno 28
-
-Most likely, you'll experience this when sending out a list message. This is triggered from Dada Mail trying to archive a message into a DB FIle format that has a limitation on the amount of data it can hold. The message goes over this limit. The easiest fix is to turn off archiving. 
-
-If you want to, you can play around with how Dada Mail picks what DB FIle to use. In the Config.pm file, find this line: 
-
-	BEGIN { @AnyDBM_File::ISA = qw(DB_File GDBM_File NDBM_File ODBM_File SDBM_File) } 
-
-DB_File, GDBM_File, NDBM_File, ODBM_File and SDBM_File are all different DB File Formats. DB_File is the best and they get poorer from there. If Dada Mail isn't using DB_File, it usually means it's not available. If you have root access on your server, you can always install it, it's free. Before doing that, please note that previous lists setup with a different DB File format will not work if you're uswithcing the DB File package. Dada Mail can only use one of these packages at a time. It's possible that all these DB File formats have import/export tools that you may want to investigate. If you don't know what file format you're using, try using the B<file> command.  
 
 =head2 I moved my lists from one server to another and reinstalled Dada Mail. Now when I try access my lists, I get this error: 
 

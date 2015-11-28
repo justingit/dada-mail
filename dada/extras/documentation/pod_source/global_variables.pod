@@ -414,7 +414,7 @@ configuration names and values are and do.
 
 =head2 $ADMIN_MENU
 
-C<$ADMIN_MENU> holds a complex data structure that represents the left hand menu, 
+C<$ADMIN_MENU> holds a complex data structure that represents the admin menu, 
 you see when logged into Dada Mail's List Control Panel. 
 
 The complex data structure follows a pattern that looks like this, 
@@ -430,7 +430,7 @@ The complex data structure follows a pattern that looks like this,
 					},
 				
 
-C<-Title> holds the name of a section of the left hand menu, for exaple, "Mass Mailing"
+C<-Title> holds the name of a section of the admin menu, for exaple, "Mass Mailing"
 
 C<-Activated> holds a boolean value, to represent if the section should be shown or not; 
 
@@ -971,7 +971,7 @@ go to by changing the $DEFAULT_ADMIN_SCREEN variable.
 
 =head2 $DEFAULT_LOGOUT_SCREEN
 
-When a user clicks the, "Logout" link on left hand menu of the control panel, they'll 
+When a user clicks the, "Logout" link on admin menu of the control panel, they'll 
 be redirected to the URL located in the, B<$DEFAULT_LOGOUT_SCREEN> variable. By default, 
 this is set to the, B<$PROGRAM_URL> variable. 
 

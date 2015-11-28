@@ -16,7 +16,7 @@ Likewise, if you edit the Profile Field data, this new information will be refle
 
 =head2 Adding a New Profile Field
 
-Log into the list control panel B<with the Dada Mail Root Password> (very important) to any currently created mailing list. On the left hand menu, under, B<Profiles>, click, B<Profile Fields>
+Log into the list control panel B<with the Dada Mail Root Password> (very important) to any currently created mailing list. On the admin menu, under, B<Profiles>, click, B<Profile Fields>
 
 This screen will allow you to add/remove Profile Fields. This screen will also let you set a fallback value. The fallback value is used in mail merging and is used as the value fo the field tag when no value is present. You may also set if the Profile Field is required or optional.
 

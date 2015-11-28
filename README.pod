@@ -62,10 +62,6 @@ directory. Just open up 'index.html' in a web browser.
 
 =over
 
-=item * Boards: 
-
-L<http://dadamailproject.com/support/boards>
-
 =item * Discussion Mailing List: 
 
 L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>

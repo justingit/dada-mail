@@ -240,21 +240,6 @@ when Dada Mail accesses and uses the information. More information:
 
 L<http://www.mysqlperformanceblog.com/2009/03/17/converting-character-sets/>
 
-
-=head2 Other Problems?
-
-Please let us know via the Support Boards: 
-
-L<http://dadamailproject.com/support/boards/>
-
-Or the developer mailing list: 
-
-L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
-
-We would love to help you out. 
-
-Thanks! 
-
 =head2 See Also: 
 
 =over

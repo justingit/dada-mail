@@ -360,11 +360,7 @@ http://dadamailproject.com/support/documentation/FAQ-file_formats.pod.html
 
 =back
 
-We'd also like to hear from you about future integration projects of your own.  If you're working on something and need help or would simply like to announce the project, please do so on the boards: 
-
-L<http://dadamailproject.com/support/boards/index.php?c=8>
-
-And/or the B<dadadev> mailing list 
+We'd also like to hear from you about future integration projects of your own.  If you're working on something and need help or would simply like to announce the project, please do so:
 
 L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
 

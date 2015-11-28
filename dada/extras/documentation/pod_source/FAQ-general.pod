@@ -548,7 +548,7 @@ The Default Admin Template lives at, I<dada/templates/admin_template.tmpl>
 
 The information about the Default List Template also follows for the Default Admin Template. The Config.pm variable for it is: B<$ADMIN_TEMPLATE>
 
-You may also be interested in the I<dada/templates/admin_menu_widget.tmpl>, which is used to created the left hand menu. It's written using the HTML::Template templating system. 
+You may also be interested in the I<dada/templates/admin_menu_widget.tmpl>, which is used to created the admin menu. It's written using the HTML::Template templating system. 
 
 =head2 How do you change the character set/encoding of Dada Mail?
 

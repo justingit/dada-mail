@@ -3909,7 +3909,7 @@ Bridge can be installed using the included installer that comes with Dada Mail. 
 
 =head1 Mailing List Configuration 
 
-Once you've installed Bridge, you may access it via the List Control Panel. Bridge can be accessed via the left hand menu under, B<Plugins/Extensions - Discussion Lists> 
+Once you've installed Bridge, you may access it via the List Control Panel. Bridge can be accessed via the admin menu under, B<Plugins/Extensions - Discussion Lists> 
 
 Before you can start using Bridge for your mailing list, there's two things that you will need to do for each mailing list you would like to use Bridge for:
 

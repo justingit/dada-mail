@@ -49,11 +49,7 @@ FastCGI support for Dada Mail is new! We expect some growing pains. We would lov
 
 L<http://dadamailproject.com/contact/>
 
-Start a new thread, 
-
-L<http://dadamailproject.com/support/boards>
-
-or sign up and post to the dadadev mailing list: 
+sign up and post to the dadadev mailing list: 
 
 L<http://dadamailproject.com/cgi-bin/dada/mail.cgi/list/dadadev/>
 
