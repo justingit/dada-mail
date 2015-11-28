@@ -3,19 +3,11 @@
 <!-- tmpl_set name="title" value="Subscribe to a Mailing List" -->
 <!-- tmpl_set name="load_colorbox" value="1" -->
 
-
 <!-- tmpl_if error_invalid_list --> 
 	<div class="alert-box warning radius">
-		<p>
-	 	   <strong>
-			   Warning!
-		   </strong>
-		</p>
-		<p>
-			The list you are trying to subscribe to/unsubscribe from is not 
-			available. Webmaster: please make sure your outside 
-			subscription/unsubscription forms are correct and up-to-date.
-		</p> 
+			The mailing list you are trying to subscribe to/unsubscribe from is not 
+			available. <strong>Webmaster</strong>: please make sure your outside 
+			subscription forms are correct and up-to-date.
 	</div>
 <!--/tmpl_if-->
 
@@ -25,8 +17,8 @@
 			<div id="modal_subscribe_form">
 		<!-- tmpl_else -->
 			<div id="modal_subscribe_form_disabled">
-		   		<!-- tmpl_var subscription_form --> 
 		<!-- /tmpl_if -->
+			<!-- tmpl_var subscription_form --> 
 		</div> 
 	</div>
 
@@ -41,19 +33,22 @@
 
 		<!-- tmpl_if list_settings.show_archives -->
 			<!-- tmpl_unless list_settings.archives_available_only_to_subscribers -->
-				<!-- tmpl_if newest_archive_blurb -->
+				<!-- tmpl_if latest_archive_blurb -->
 					<h3>
-						<a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list_settings.list escape="HTML" -->/newest/">
-							<!-- tmpl_var newest_archive_subject -->
+						<a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list_settings.list escape="HTML" -->/<!-- tmpl_var latest_archive_id -->/">
+							<!-- tmpl_var latest_archive_subject -->
 						</a>
 					</h3>
-					<blockquote>
+					<p>
 						<em>
-							<!-- tmpl_var newest_archive_blurb -->...
+							<!-- tmpl_var latest_archive_date -->
 						</em>
+					</p>
+					<blockquote>
+						<!-- tmpl_var latest_archive_blurb -->...
 						<p class="text-right">
-							<a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list_settings.list -->/newest/">
-								More...
+							<a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list_settings.list -->/<!--tmpl_var latest_archive_id -->/">
+								Continue Reading...
 							</a>
 						</p>
 					</blockquote>

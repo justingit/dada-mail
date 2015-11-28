@@ -530,12 +530,23 @@ sub default_screen {
 
             my $ne      = $ah->newest_entry;
             my $subject = $ah->get_archive_subject($ne);
-            $subject = $ah->_parse_in_list_info( -data => $subject );
-
+               $subject = $ah->_parse_in_list_info( -data => $subject );
+               
+			   # this is so atrocious.
+	            $all_list_info_dotted->{latest_archive_date} = date_this(
+	           -Packed_Date   => $ne,
+	           -Write_Month   => $ls->param('archive_show_month'),
+	           -Write_Day     => $ls->param('archive_show_day'),
+	           -Write_Year    => $ls->param('archive_show_year'),
+	           -Write_H_And_M => $ls->param('archive_show_hour_and_minute'),
+	           -Write_Second  => $ls->param('archive_show_second')
+	           );
+			   
+			  $all_list_info_dotted->{latest_archive_id} = $ne;
             # These two things are sort of strange.
-            $all_list_info_dotted->{newest_archive_blurb} =
+            $all_list_info_dotted->{latest_archive_blurb} =
               $ah->message_blurb();
-            $all_list_info_dotted->{newest_archive_subject} = $subject;
+            $all_list_info_dotted->{latest_archive_subject} = $subject;
 
             push ( @list_information, $all_list_info_dotted );
 
