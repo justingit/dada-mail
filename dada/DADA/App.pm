@@ -321,93 +321,45 @@ sub default {
     if ( DADA::App::Guts::install_dir_around() == 1 ) {
         return user_error( { -error => 'install_dir_still_around' } );
     }
-    if (   $DADA::Config::ARCHIVE_DB_TYPE eq 'Db'
-        || $DADA::Config::SETTINGS_DB_TYPE eq 'Db' )
-    {
-        eval { require AnyDBM_File; };
-        if ($@) {
-            warn $@;
-            return user_error(
-                {
-                    -error         => 'no_dbm_package_installed',
-                    -error_message => $@
-                }
-            );
-        }
 
-        my @l_check = available_lists();
-        if ( $l_check[0] ) {
-            require DADA::MailingList::Settings;
-            my $ls = DADA::MailingList::Settings->new( { -list => $l_check[0] } );
-            eval { $ls->_open_db; };
-            if ($@) {
-                return user_error(
-                    {
-                        -error         => 'unreadable_db_files',
-                        -error_Message => $@,
-                    }
-                );
+	# SQL backed working? 
+	my $dbi_handle;
+	require DADA::App::DBIHandle;
+
+	$dbi_handle = DADA::App::DBIHandle->new;
+	try { 
+		$dbi_handle->dbh_obj; 
+	} catch {
+    	warn $_;
+        return user_error(
+            {
+                -error         => 'sql_connect_error',
+                -error_message => $@
             }
-        }
-
-    }
-
-    if (   $DADA::Config::SUBSCRIBER_DB_TYPE =~ /SQL/
-        || $DADA::Config::ARCHIVE_DB_TYPE =~ /SQL/
-        || $DADA::Config::SETTINGS_DB_TYPE =~ /SQL/ )
-    {
-        my $dbi_handle;
-        if (   $DADA::Config::SUBSCRIBER_DB_TYPE =~ m/SQL/
-            || $DADA::Config::ARCHIVE_DB_TYPE =~ m/SQL/
-            || $DADA::Config::SETTINGS_DB_TYPE =~ m/SQL/ )
-        {
-            require DADA::App::DBIHandle;
-            $dbi_handle = DADA::App::DBIHandle->new;
-        }
-        eval { $dbi_handle->dbh_obj; };
-        if ($@) {
-            warn $@;
-            return user_error(
-                {
-                    -error         => 'sql_connect_error',
-                    -error_message => $@
-                }
-            );
-        }
-        else {
-            if ( DADA::App::Guts::SQL_check_setup() == 0 ) {
-                return user_error( { -error => 'bad_SQL_setup' } );
-            }
-            else {
-            }
-        }
-    }
-
+        );
+    };
+	if ( DADA::App::Guts::SQL_check_setup() == 0 ) {
+	    return user_error( { -error => 'bad_SQL_setup' } );
+	}
     require DADA::MailingList::Settings;
     my @available_lists;
-    if (   $DADA::Config::SUBSCRIBER_DB_TYPE =~ /SQL/
-        || $DADA::Config::ARCHIVE_DB_TYPE =~ /SQL/
-        || $DADA::Config::SETTINGS_DB_TYPE =~ /SQL/ )
-    {
-
-        eval { @available_lists = available_lists( -In_Order => 1, ); };
-        if ($@) {
-            return user_error(
-                {
-                    -error         => 'sql_connect_error',
-                    -error_Message => $@
-                }
-            );
-        }
+	try  { 
+		@available_lists = available_lists( -In_Order => 1, ); 
+	} catch {
+	    return user_error(
+	        {
+	            -error         => 'sql_connect_error',
+	            -error_Message => $_
+	        }
+	    );
     }
-
+	
     @available_lists = available_lists( -In_Order => 1, );
 
     if (   ( $DADA::Config::DEFAULT_SCREEN ne '' )
         && ( $q->param('flavor') ne 'default' )
         && ( $#available_lists >= 0 ) )
     {
-
         $self->header_type('redirect');
         $self->header_props( -url => $DADA::Config::DEFAULT_SCREEN );
         return;
@@ -434,18 +386,20 @@ sub default {
         return $scrn;
     }
 
-    if ( $q->param('error_invalid_list') != 1 && ( !$c->profile_on ) && ( $c->is_cached('default.scrn') ) ) {
+    if ( 
+			$q->param('error_invalid_list') != 1 
+		&& ( !$c->profile_on ) 
+		&& ( $c->is_cached('default.scrn') ) 
+	) {
         return $c->cached('default.scrn');
     }
 
     my $scrn = DADA::Template::Widgets::default_screen(
-
-        # {
-        -email              => scalar $q->param('email'),
-        -list               => scalar $q->param('list'),
-        -error_invalid_list => scalar $q->param('error_invalid_list'),
-
-        # }
+    	{
+	        -email              => scalar $q->param('email'),
+	        -list               => scalar $q->param('list'),
+	        -error_invalid_list => scalar $q->param('error_invalid_list'),
+    	}
     );
     if (  !$c->profile_on
         && $available_lists[0]
@@ -454,7 +408,7 @@ sub default {
         $c->cache( 'default.scrn', \$scrn );
     }
     return $scrn;
-
+	
 }
 
 sub list_page {
@@ -6522,17 +6476,17 @@ sub view_archive {
                     -Root_Login => $root_login,
                     -List       => $list,
                 },
+                -expr => 1,
                 -list => $list,
                 -vars => {
-
-                    screen     => 'view_archive',
-                    title      => 'View Archive',
-                    index_list => $ht_entries,
-                    list_name  => $ls->param('list_name'),
-                    index_nav  => $index_nav,
+					can_use_JSON => scalar DADA::App::Guts::can_use_JSON(), 
+                    screen       => 'view_archive',
+                    title        => 'View Archive',
+                    index_list   => $ht_entries,
+                    list_name    => $ls->param('list_name'),
+                    index_nav    => $index_nav,
 
                 },
-                -expr => 1,
             }
         );
 
@@ -8609,7 +8563,13 @@ sub restful_subscribe {
     my $self = shift;
     my $q    = $self->query();
 
-    require JSON;
+	try  {
+		require JSON;
+	} catch { 
+		warn 'Perl CPAN module: JSON is required!';
+		 die '425';
+	};
+	
     my $json = JSON->new->allow_nonref;
 
     my $using_jsonp = 0;
