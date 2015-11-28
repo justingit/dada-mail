@@ -2610,9 +2610,27 @@ sub spam_me_not_encode {
 }
 
 sub break_encode { 
-	my $address = shift; 
-	my ($name, $domain) = split('@', $address, 2);
-	return $name . '@' . 'PROTECTED' 
+	my $address = shift;
+	my $r; 
+	
+    require Email::Address;
+    my $addy = undef;
+	
+	try {
+		my @addresses = Email::Address->parse($address);
+		my @n_addresses; 
+		for my $addr(@addresses) { 
+			my ($name, $domain) = split('@', $addr->address, 2);
+			my $new_address = Email::Address->new($addr->phrase,, $name . '@PROTECTED');
+			push(@n_addresses, $new_address->format); 
+			$r = join(',', @n_addresses);
+		}
+	} catch { 
+		my ($name, $domain) = split('@', $address, 2);
+		$r = $name . '@' . 'PROTECTED' 
+	};
+
+	return $r; 
 }
 
 
@@ -2700,7 +2718,7 @@ sub gravatar_img_url {
     my $url = undef;
 
     if ( !exists( $args->{-size} ) ) {
-        $args->{-size} = 80;
+        $args->{-size} = 100;
     }
     if ( !exists( $args->{-default_gravatar_url} ) ) {
         $args->{-default_gravatar_url} =

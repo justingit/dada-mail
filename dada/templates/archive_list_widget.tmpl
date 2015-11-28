@@ -4,79 +4,52 @@
 
 	<!-- tmpl_loop entries -->
 
-		 <!-- Archive Id: <!-- tmpl_var id --> --> 
-<h2>
-			    <a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var uri_escaped_list -->/<!-- tmpl_var id -->/">
-		     <!-- tmpl_var subject -->
-		</a>
-</h2>
-	<p> <em>
-		    Sent <!-- tmpl_var date -->
-		   </em>
-		  </p>
+		<!-- Archive Id: <!-- tmpl_var id --> --> 
+		<h2>
+			<a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var uri_escaped_list -->/<!-- tmpl_var id -->/">
+				<!-- tmpl_var subject -->
+			</a>
+		</h2>
+	
+		<p>
+			<em>
+				<!-- tmpl_var date -->
+			</em>
+		</p>
 
-		<!-- tmpl_if message_blurb -->
 
-			  <blockquote><p>
-				
-				
-				<!-- tmpl_if list_settings.enable_gravatars --> 
-
-					<!-- tmpl_if can_use_gravatar_url --> 
-
-				    	<!-- tmpl_if gravatar_img_url --> 
-
-				        	<img src="<!-- tmpl_var gravatar_img_url -->" style="float:left; padding:5px;" > 
-
-				    	<!-- /tmpl_if --> 
-
-					<!-- /tmpl_if --> 
-
-				<!-- /tmpl_if -->
-				
-				
-				
-			   <em>
-			    <!-- tmpl_var message_blurb -->...
-			   </em>
-			  </p>
-			</blockquote>
-			<!-- tmpl_if list_settings.enable_gravatars --> 
-
-				<!-- tmpl_if can_use_gravatar_url --> 
-
-			    	<!-- tmpl_if gravatar_img_url -->
-			
-						<div class="floatclear"></div> 
-			
-			    	<!-- /tmpl_if --> 
-
-				<!-- /tmpl_if --> 
-
+		<div class="row">
+			<!-- tmpl_if show_gravatar --> 	
+				<div class="medium-2 columns">
+					<img src="<!-- tmpl_var gravatar_img_url -->"> 
+				</div>
 			<!-- /tmpl_if -->
-			
-		<!--/tmpl_if-->
-
-
-	<!--/tmpl_loop-->
-
-
+	
+			<!-- tmpl_if show_gravatar --> 	
+				<div class="medium-10 columns">
+			<!-- tmpl_else -->
+				<div class="small-12 columns">		
+			<!-- /tmpl_if -->	
+				<!-- tmpl_if message_blurb -->
+					<blockquote>
+						<!-- tmpl_var message_blurb -->...
+					</blockquote>
+				<!--/tmpl_if-->
+			</div> 
+		</div>
+	<!-- /tmpl_loop-->
 
 	<!-- tmpl_var index_nav --> 
 
 	<!-- tmpl_var search_form --> 
 
 	<!-- end archive_list_widget.tmpl -->
-	
+
 <!-- tmpl_else --> 
-
-	<p class="error">
-		Only subscribers may view this list's message archives.
-	</p> 
 	
+	<div class="alert-box info radius">
+		Only Subscribers of this mailing list may view archived messages.
+	</div> 
+
 <!-- /tmpl_if -->
-
-
-
-
-
+<!-- end archive_list_widget.tmpl -->

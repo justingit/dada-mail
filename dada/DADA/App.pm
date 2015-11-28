@@ -163,7 +163,7 @@ sub setup {
         'purge_all_archives'                          => \&purge_all_archives,
         'delete_archive'                              => \&delete_archive,
         'edit_archived_msg'                           => \&edit_archived_msg,
-        'archive'                                     => \&archive,
+        'archive'                                     => \&list_archive,
         'archive_bare'                                => \&archive_bare,
         'archive_rss'                                 => \&archive_rss,
         'archive_atom'                                => \&archive_atom,
@@ -9566,7 +9566,7 @@ sub new_list {
     }
 }
 
-sub archive {
+sub list_archive {
 
     my $self  = shift;
     my $q     = $self->query();
@@ -9721,14 +9721,19 @@ sub archive {
                     $orig_header_from = $header_from;
                 }
 
-                my $can_use_gravatar_url = 0;
-                my $gravatar_img_url     = '';
-
+                my $can_use_gravatar_url = 1;
+                my $gravatar_img_url     = undef;
+				my $show_gravatar        = 0; 
+				
                 if ( $ls->param('enable_gravatars') ) {
 
-                    eval { require Gravatar::URL };
-                    if ( !$@ ) {
-                        $can_use_gravatar_url = 1;
+                    try { 
+						require Gravatar::URL 
+					} catch { 
+						$can_use_gravatar_url = 0; 
+					};
+					
+                    if ( $can_use_gravatar_url == 1 ) {
                         my $header_address = $archive->sender_address(
                              {
                                     -id => $entries->[$i],
@@ -9741,11 +9746,18 @@ sub archive {
                             }
                         );
                         
-
                     }
                     else {
                         $can_use_gravatar_url = 0;
                     }
+					if($ls->param('enable_gravatars') ==1 
+						&& $can_use_gravatar_url == 1
+						&& defined(gravatar_img_url)
+					) { 
+						$show_gravatar = 1; 
+					}
+					
+					
                 }
 
                 my $entry = {
@@ -9757,8 +9769,8 @@ sub archive {
                     uri_escaped_list                 => uriescape($list),
                     PROGRAM_URL                      => $DADA::Config::PROGRAM_URL,
                     message_blurb                    => $archive->message_blurb( -key => $entries->[$i] ),
-                    'list_settings.enable_gravatars' => $ls->param('enable_gravatars'),
-                    can_use_gravatar_url             => $can_use_gravatar_url,
+                    show_gravatar					 => $show_gravatar, 
+					can_use_gravatar_url             => $can_use_gravatar_url,
                     gravatar_img_url                 => $gravatar_img_url,
 
                 };
@@ -9798,7 +9810,7 @@ sub archive {
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
-                -screen => 'archive_index_screen.tmpl',
+                -screen => 'list_archive_index_screen.tmpl',
                 -with   => 'list',
                 -vars   => {
                     list                     => $list,
@@ -9945,15 +9957,18 @@ sub archive {
             -Write_Second  => $ls->param('archive_show_second'),
         );
 
-        my $can_use_gravatar_url = 0;
-        my $gravatar_img_url     = '';
-
-        if ( $ls->param('enable_gravatars') ) {
-
-            eval { require Gravatar::URL };
-            if ( !$@ ) {
-                $can_use_gravatar_url = 1; 
-                my $header_address = $archive->sender_address(
+		my $show_gravatar        = 0; 
+        my $gravatar_img_url     = undef;
+        my $can_use_gravatar_url = 1; 
+       
+	    if ( $ls->param('enable_gravatars') ) {
+            try { 
+				require Gravatar::URL 
+			} catch { 
+				$can_use_gravatar_url = 0; 
+			};
+			if($can_use_gravatar_url == 1) {
+				my $header_address = $archive->sender_address(
                      {
                             -id => $id,
                         }
@@ -9969,10 +9984,19 @@ sub archive {
                 $can_use_gravatar_url = 0;
             }
         }
+		if($ls->param('enable_gravatars') ==1 
+			&& $can_use_gravatar_url == 1
+			&& defined(gravatar_img_url)
+		) { 
+			$show_gravatar = 1; 
+		}
+				
+				
+		
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
-                -screen => 'archive_screen.tmpl',
+                -screen => 'list_archive_screen.tmpl',
                 -with   => 'list',
                 -vars   => {
                     list      => $list,
@@ -10002,7 +10026,8 @@ sub archive {
                     attachments                   => $attachments,
                     date                          => $date,
                     add_social_bookmarking_badges => $ls->param('add_social_bookmarking_badges'),
-                    can_use_gravatar_url          => $can_use_gravatar_url,
+                    show_gravatar                 => $show_gravatar,  
+					can_use_gravatar_url          => $can_use_gravatar_url,
                     gravatar_img_url              => $gravatar_img_url,
                     %$archive_widgets,
 

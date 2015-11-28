@@ -588,9 +588,7 @@ jQuery(document).ready(function($){
 			document.edit_template_form.process.value = "true";
 			$('#edit_template_form').submit();
 		});
-		
-		
-		
+				
 		$("body").on("click", ".preview_template", function(event) {		
 			document.edit_template_form.target = "_blank";
 			document.edit_template_form.process.value = "preview template";

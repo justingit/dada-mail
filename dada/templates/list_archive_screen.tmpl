@@ -1,0 +1,159 @@
+<!-- begin list_archive_screen.tmpl -->
+
+<!-- tmpl_set name="title" value="<!-- tmpl_var header_subject escape=HTML -->" -->
+<!-- tmpl_set name="load_colorbox" value="1" -->
+
+<!-- tmpl_include list_breadcrumbs_widget.tmpl -->
+
+<!-- tmpl_if list_settings.archive_search_form -->
+	<!-- tmpl_include list_archive_search_form_widget.tmpl -->
+<!-- /tmpl_if -->
+
+<!-- tmpl_if send_archive_success -->	
+	<div class="alert-box success radius" data-alert>
+	 The message has been forwarded to your friend!
+	</div>
+<!-- /tmpl_if -->
+
+<!-- tmpl_if send_archive_errors -->
+	<div class="alert-box warning radius" data-alert>
+	 	There was an error in the Forward to Your Friend form you filled out.
+	</div>
+<!-- /tmpl_if -->
+
+	<div id="archived_message_wrapper">
+	<!-- Archive Id: <!-- tmpl_var id --> -->  
+	<div id="archived_message_head">
+		<div class="row panel">
+			<!-- tmpl_if show_gravatar --> 	
+				<div class="medium-10 columns">
+			<!-- tmpl_else -->
+				<div class="small-12 columns">
+			<!-- /tmpl_if -->
+	
+			<!-- tmpl_if header_from -->
+				<div class="row">		
+					<div class="small-12 columns">
+						<strong>
+							From:
+						</strong>
+						<!-- tmpl_var header_from escape="HTML" -->
+					</div>
+				</div>
+			<!-- /tmpl_if -->
+
+			<!-- tmpl_if header_date -->
+				<div class="row">
+					<div class="small-12 columns">
+						<strong>
+							Date:
+						</strong>
+						<!-- tmpl_var header_date escape="HTML" -->
+					</div>
+				</div>
+			<!--/tmpl_if -->
+
+			<!-- tmpl_if header_subject --> 
+				<div class="row">
+					<div class="small-12 columns">
+						<strong>
+							Subject:
+						</strong>
+						<!-- tmpl_var header_subject  escape="HTML"  -->
+					</div>
+				</div>
+			<!--/tmpl_if -->
+
+			<!-- tmpl_if in_reply_to_id -->
+				<!-- tmpl_if in_reply_to_subject  -->
+
+					<div class="row">
+						<div class="small-12 columns">
+							<strong>
+								In-Reply-To:
+							</strong>
+							<a href="<!-- tmpl_var PROGRAM_URL -->/archive/<!-- tmpl_var list -->/<!-- tmpl_var in_reply_to_id -->/">
+								<!-- tmpl_var in_reply_to_subject  escape="HTML"  -->
+							</a>
+						</div>
+					</div>   
+				<!-- /tmpl_if -->
+			<!-- /tmpl_if --> 
+	
+			<div class="row">
+				<div class="small-12 columns">
+					<strong>
+						Date:
+					</strong>
+				<!-- tmpl_var date escape="HTML"-->
+				</div>
+			</div>
+			</div>
+			<!-- tmpl_if show_gravatar --> 	
+				<div class="medium-2 columns right">
+					<img src="<!-- tmpl_var gravatar_img_url -->">
+				</div> 
+			<!-- /tmpl_if -->
+		
+		</div>
+
+	</div><!-- ends id="archived_message_head" --> 
+
+	<!-- tmpl_if show_iframe -->
+		<div class="row">
+			<div class="small-12 columns">	 
+				 <iframe src="<!-- tmpl_var PROGRAM_URL -->?flavor=archive_bare;l=<!-- tmpl_var list -->;id=<!-- tmpl_var id -->" id="archived_message_body_container">
+				  <!-- redundancy for browsers & devices that aren't frames-compatible: -->
+				  <div id="archived_message_body">
+				   <!-- tmpl_var massaged_msg_for_display -->
+				  </div><!-- ends id="archived_message_body" -->
+				  <!-- ends redundancy for browsers & devices that aren't frames-compatible -->
+				 </iframe>
+				</div>
+			</div>
+	 
+	<!-- tmpl_else -->
+		<div class="row">
+			<div class="small-12 columns">	 
+				<div id="archived_message_body">
+					<!-- tmpl_var massaged_msg_for_display -->
+				</div><!-- ends id="archived_message_body" -->
+			</div>
+		</div>
+	<!-- /tmpl_if -->
+
+</div><!-- ends id="archived_message_wrapper" -->
+
+<!-- tmpl_if attachments --> 
+	<div id="archived_attachments_wrapper">
+		<h3>
+			Attachments:
+		</h3>
+		
+		<ul>  
+			<!-- tmpl_loop attachments -->
+
+				<li>
+					<a href="<!-- tmpl_var PROGRAM_URL -->?flavor=file_attachment&id=<!-- tmpl_var id -->&filename=<!-- tmpl_var name -->&list=<!-- tmpl_var list -->">
+						<!-- tmpl_var name escape="HTML"-->
+					</a>
+				</li> 
+
+			<!-- /tmpl_loop -->
+		 </ul>
+	</div><!-- ends id="archived_attachments_wrapper" -->
+<!-- /tmpl_if --> 
+
+<!-- tmpl_if add_social_bookmarking_badges --> 
+    <!-- tmpl_include social_bookmarking_badges_widget.tmpl --> 
+<!-- /tmpl_if -->
+
+<!-- tmpl_include newsfeed_widget.tmpl --> 
+
+<!-- tmpl_var nav_table --> 
+
+<!-- tmpl_var archive_send_form -->
+	
+<!-- tmpl_include list_page_info_widget.tmpl -->
+	
+<!-- end list_archive_screen.tmpl -->
