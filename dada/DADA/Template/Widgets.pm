@@ -2736,6 +2736,11 @@ sub subscription_form {
 		$list = $args->{-list};
 	}
     
+	
+    if(! exists($args->{-form_type})){ 
+		$args->{-form_type} = 'full';
+	}
+	
     if(! exists($args->{-give_props})){
         $args->{-give_props} = $DADA::Config::GIVE_PROPS_IN_SUBSCRIBE_FORM; 
     }
@@ -2860,8 +2865,12 @@ sub subscription_form {
 			 $args->{-show_fields} = 0;
 		}
 		
+		my $tmpl_name = 'subscription_form_widget.tmpl'; 
+		if($args->{-form_type} eq 'minimal'){ 
+ 			$tmpl_name = 'minimal_subscription_form.tmpl'; 
+		}
         return screen({
-            -screen => 'subscription_form_widget.tmpl', 
+            -screen => $tmpl_name, 
             -vars   => {
 							can_use_JSON             => scalar DADA::App::Guts::can_use_JSON(), 
                             single_list              => 1, 
@@ -2880,9 +2889,8 @@ sub subscription_form {
 							-list    => $list,
 							-dot_it => 1,
 						},
-						
                     });  
-                
+  
     }
     else { 
   return screen({

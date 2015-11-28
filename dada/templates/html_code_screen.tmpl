@@ -27,9 +27,10 @@
 
 
 <ul class="tabs" data-tab>
+	
 	<li class="tab-title active">
-		<a href="#modal_menu">
-			Modal Menu Subscription Form
+		<a href="#minimal">
+			Minimal Subscription Form
 		</a>
 	</li>
 	<li class="tab-title">
@@ -38,15 +39,73 @@
 		</a>
 	</li>
 	<li class="tab-title">
-		<a href="#minimal">
-			Minimal Subscription Form
+		<a href="#modal_menu">
+			Modal Menu Subscription Form
 		</a>
 	</li>
 </ul>
 	
 	
 	<div class="tabs-content">
-		<div class="content tab-title active" id="modal_menu"> 
+	
+		<div class="content active" id="minimal"> 
+			<p>
+				Copy the code in the text box and add it to any page on your site.
+			</p>
+		
+			<div class="row">
+				<div class="small-12 columns">
+					<button 
+						type="button" 
+						class="zclip expand" 
+						data-zclip-target-id="minimal_subscription_form"
+						>
+							Copy
+					</button>
+				</div>
+			</div>
+			<div class="row">
+				<div class="small-12 columns">
+					<textarea readonly id="minimal_subscription_form" name="minimal_subscription_form" cols="50" rows="12"><!-- tmpl_var minimal_subscription_form --></textarea>
+				</div>
+			</div> 
+		
+			<fieldset>
+				<legend>
+					Working Preview
+			</legend>
+			<!-- tmpl_var minimal_subscription_form -->
+			</fieldset>
+		</div> 
+	
+		<div class="content" id="full"> 
+			<p>
+				Copy the code in the text box and add it to any page on your site.
+			</p>
+		
+			<div class="row">
+				<div class="small-12 columns">
+					<button 
+						type="button" 
+						class="zclip expand" 
+						data-zclip-target-id="full_subscription_form"
+						>
+							Copy
+					</button>
+				</div>
+			</div>
+			<div class="row">
+				<div class="small-12 columns">
+					<textarea readonly id="full_subscription_form" name="full_subscription_form" cols="50" rows="12"><!-- tmpl_var subscription_form escape="HTML" --> </textarea>
+			</div>
+		</div>
+		    <fieldset>
+		    <legend>
+		    Working Preview</legend>
+		    <!-- tmpl_var subscription_form  -->
+		</div> 
+	
+		<div class="content tab-title" id="modal_menu"> 
 			Place the following in the &lt;head&gt; of your page:
 			<div class="row">
 				<div class="small-12 columns">
@@ -100,65 +159,8 @@
  				</a>
   		  </div>
 	  </div>
-	  
 	</div>
 	
-	<div class="content" id="full"> 
-		<p>
-			Copy the code in the text box and add it to any page on your site.
-		</p>
-		
-		<div class="row">
-			<div class="small-12 columns">
-				<button 
-					type="button" 
-					class="zclip expand" 
-					data-zclip-target-id="full_subscription_form"
-					>
-						Copy
-				</button>
-			</div>
-		</div>
-		<div class="row">
-			<div class="small-12 columns">
-				<textarea readonly id="full_subscription_form" name="full_subscription_form" cols="50" rows="12"><!-- tmpl_var subscription_form escape="HTML" --> </textarea>
-		</div>
-	</div>
-	    <fieldset>
-	    <legend>
-	    Working Preview</legend>
-	    <!-- tmpl_var subscription_form  -->
-	</div> 
-
-	<div class="content" id="minimal"> 
-		<p>
-			Copy the code in the text box and add it to any page on your site.
-		</p>
-		
-		<div class="row">
-			<div class="small-12 columns">
-				<button 
-					type="button" 
-					class="zclip expand" 
-					data-zclip-target-id="minimal_subscription_form"
-					>
-						Copy
-				</button>
-			</div>
-		</div>
-		<div class="row">
-			<div class="small-12 columns">
-				<textarea readonly id="minimal_subscription_form" name="minimal_subscription_form" cols="50" rows="12"><!-- tmpl_var minimal_subscription_form --></textarea>
-			</div>
-		</div> 
-		
-		<fieldset>
-			<legend>
-				Working Preview
-		</legend>
-		<!-- tmpl_include minimal_subscription_form.tmpl -->
-		</fieldset>
-	</div> 
 	
 </div> 
 <!-- end html_code_screen.tmpl -->

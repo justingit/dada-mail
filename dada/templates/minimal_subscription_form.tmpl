@@ -1,6 +1,24 @@
 <form action="<!-- tmpl_var PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
  <input type="hidden" name="flavor" value="subscribe"> 
  <input type="hidden" name="list" value="<!-- tmpl_var list_settings.list -->"> 
- <input type="text" name="email" value="">
- <input type="submit" class="button" value="Subscribe">
+
+ <label for="email" >
+	 Email
+	 <input type="text" name="email" value="">
+ </label>
+<!-- tmpl_if show_fields --> 
+<!-- tmpl_if subscriber_fields --> 
+<!-- tmpl_loop subscriber_fields -->
+<label for="<!-- tmpl_var name escape=HTML -->" >
+<!-- tmpl_if pretty_name --> 
+<!-- tmpl_var pretty_name escape=HTML --> 
+<!-- tmpl_else --> 
+<!-- tmpl_var name escape=HTML --> 
+<!-- /tmpl_if --> 
+<input type="text" name="<!-- tmpl_var name escape=HTML -->" id="<!-- tmpl_var name escape=HTML -->" value="<!-- tmpl_var given_value escape=HTML -->" <!-- tmpl_if comment -->placeholder="(required)"<!-- /tmpl_if -->>
+</label>
+<!-- /tmpl_loop --> 
+<!-- /tmpl_if --> 
+<!-- /tmpl_if -->
+<input type="submit" class="button" value="Subscribe">
 </form>

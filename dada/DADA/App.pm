@@ -7497,14 +7497,13 @@ sub html_code {
                 subscription_form => DADA::Template::Widgets::subscription_form(
                     { -list => $list, -ignore_cgi => 1, -show_fieldset => 0 }
                 ),
-                minimal_subscription_form => DADA::Template::Widgets::screen(
-                    {
-                        -screen                   => 'minimal_subscription_form.tmpl',
-                        -list_settings_vars_param => {
-                            -list   => $list,
-                            -dot_it => 1,
-                        },
-                    }
+                minimal_subscription_form => DADA::Template::Widgets::subscription_form(
+                    { 
+						-list          => $list, 
+						-form_type     => 'minimal', 
+						-ignore_cgi    => 1, 
+						-show_fieldset => 0 
+					}
                 ),
             },
             -list_settings_vars_param => {
