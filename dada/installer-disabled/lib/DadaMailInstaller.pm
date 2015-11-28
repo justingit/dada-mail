@@ -3015,8 +3015,11 @@ sub install_missing_CPAN_modules {
         if ( -d $JSON_dir) {
 			
 			# This should already be around, 
-			if(! -e $JSON_dir && $JSON_mv_dir) { 
+			if(! -e $JSON_dir) { 
 				$self->installer_mkdir( $JSON_dir, $DADA::Config::DIR_CHMOD );
+			}
+			if(! -e $JSON_mv_dir) { 
+				$self->installer_mkdir( $JSON_mv_dir, $DADA::Config::DIR_CHMOD );
 			}
 			
 			for(qw(
@@ -3037,8 +3040,8 @@ sub install_missing_CPAN_modules {
 			
 		if(! -e $JSON_pm ) { 
             my $JSON_pm_new = $JSON_pm;
-            $JSON_pm_new =~ s/\-remove_to_install$//;
-            $JSON_pm_new = make_safer($JSON_pm_new);
+               $JSON_pm_new =~ s/\-remove_to_install$//;
+               $JSON_pm_new = make_safer($JSON_pm_new);
 
             installer_mv( $JSON_pm,  $JSON_pm_new );
 
