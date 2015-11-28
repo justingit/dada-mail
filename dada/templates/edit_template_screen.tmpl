@@ -22,6 +22,8 @@
 	</div>
 </div>
 
+<div id="edit_template"></div>
+
 <!-- tmpl_if done -->
 	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
 <!--/tmpl_if-->
@@ -42,7 +44,8 @@
 </div>
 
 <form 
-	name="the_form" 
+	name="edit_template_form" 
+	id="edit_template_form" 
 	action="<!-- tmpl_var S_PROGRAM_URL -->" 
 	method="post" 
 	accept-charset="<!-- tmpl_var HTML_CHARSET -->"
@@ -87,6 +90,8 @@
 						Couldn't find, <code>&lt;!-- tmpl_var content --&gt;</code> in your default template! 
 					</div>
 				<!-- /tmpl_if -->
+				
+				
 			</div>
 		</div>
 		<div class="row">
@@ -183,18 +188,16 @@
 	<ul class="button-group right">
 	    <li>
 		   <input 
-			   	type="submit" 
-				class="plain button"
+			   	type="button" 
+				class="plain button preview_template"
 				value="Preview Template"
-				onclick="preview_template();"
 			>
 		</li>
 		<li>
 		   <input
-		   		type="submit" 
-				class="success button" 
+		   		type="button" 
+				class="success button change_template" 
 				value="Change Template"
-				onclick="change_template();"
 			>
 		</li>
 		<li>
@@ -207,9 +210,8 @@
 		<li>   
 		   <input 
 		   		type="button"
-				class="alert button"
+				class="alert button set_to_default"
 				value="Revert to Default"
-				onclick="set_to_default();"
 			>
 		</li>
 	</ul>

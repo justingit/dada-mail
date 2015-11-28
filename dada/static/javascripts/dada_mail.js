@@ -580,6 +580,33 @@ jQuery(document).ready(function($){
 		});
 	};
 
+	
+	if ($("#edit_template").length) {
+		
+		$("body").on("click", ".change_template", function(event) {		
+			document.edit_template_form.target = "_self";
+			document.edit_template_form.process.value = "true";
+			$('#edit_template_form').submit();
+		});
+		
+		
+		
+		$("body").on("click", ".preview_template", function(event) {		
+			document.edit_template_form.target = "_blank";
+			document.edit_template_form.process.value = "preview template";
+			$('#edit_template_form').submit();
+		});
+		
+		$("body").on("click", ".set_to_default", function(event) {		
+			document.edit_template_form.target = "_self";
+			var default_template = document.edit_template_form.default_template.value;
+			document.edit_template_form.template_info.value = default_template;
+			$('#edit_template_form').submit();
+		});
+		
+	}
+	
+	
 
 	// Your Mailing List >> Options
 
@@ -3776,31 +3803,13 @@ function SetListChecked(val) {
 	}
 }
 
-function set_to_default() {
 
-	document.the_form.target = "_self";
-	default_template = document.the_form.default_template.value;
-	document.the_form.template_info.value = default_template;
-}
 
 
 function list_message_status(thing) {
 	document.the_form.process.value = thing;
 }
 
-
-function preview_template() {
-
-	document.the_form.target = "_blank";
-	document.the_form.process.value = "preview template";
-
-}
-
-function change_template() {
-
-	document.the_form.target = "_self";
-	document.the_form.process.value = "true";
-}
 
 function check_newest_version(ver) {
 

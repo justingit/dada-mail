@@ -344,7 +344,7 @@ sub default {
     require DADA::MailingList::Settings;
     my @available_lists;
 	try  { 
-		@available_lists = available_lists( -In_Order => 1, ); 
+		@available_lists = available_lists( -In_Order => 1 ); 
 	} catch {
 	    return user_error(
 	        {
@@ -352,9 +352,9 @@ sub default {
 	            -error_Message => $_
 	        }
 	    );
-    }
+    };
 	
-    @available_lists = available_lists( -In_Order => 1, );
+    @available_lists = available_lists( -In_Order => 1 );
 
     if (   ( $DADA::Config::DEFAULT_SCREEN ne '' )
         && ( $q->param('flavor') ne 'default' )
@@ -7592,7 +7592,11 @@ sub edit_template {
     my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
     my $raw_template     = DADA::Template::HTML::default_template();
-    my $default_template = default_template();
+    my $default_template = default_template(
+		{
+			-Use_Custom => 0
+		}
+	);
 
     if ( !$process ) {
         my $content_tag_found_in_template         = 0;
@@ -7601,10 +7605,31 @@ sub edit_template {
 
         my $content_tag = quotemeta('<!-- tmpl_var content -->');
 
-        if ( $raw_template =~ m/$content_tag/ ) {
-            $content_tag_found_in_default_template = 1;
-        }
-
+		if (   
+	        $DADA::Config::TEMPLATE_OPTIONS->{user}->{enabled} == 1 
+	        && $DADA::Config::TEMPLATE_OPTIONS->{user}->{mode} eq 'magic' 
+     	) {
+	        if ( $raw_template =~ m/$content_tag/ ) {
+	            $content_tag_found_in_default_template = 1;
+	        }
+			else { 
+		        my $list_template_body_code_block = DADA::Template::Widgets::_raw_screen(
+		            { 
+						-screen => 'list_template_body_code_block.tmpl' 
+					} 
+				);
+		        if ( $list_template_body_code_block =~ m/$content_tag/ ) {
+		            $content_tag_found_in_default_template = 1;
+		        }
+			}	
+		}
+		else {
+	        if ( $raw_template =~ m/$content_tag/ ) {
+	            $content_tag_found_in_default_template = 1;
+	        }
+		}
+		# .tmpl
+		
         my $edit_this_template = $default_template . "\n";
         if ( check_if_template_exists( -List => $list ) >= 1 ) {
             $edit_this_template = open_template( -List => $list ) . "\n";
