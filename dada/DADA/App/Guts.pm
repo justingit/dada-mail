@@ -2621,7 +2621,17 @@ sub break_encode {
 		my @n_addresses; 
 		for my $addr(@addresses) { 
 			my ($name, $domain) = split('@', $addr->address, 2);
-			my $new_address = Email::Address->new($addr->phrase,, $name . '@PROTECTED');
+			my $phrase = $addr->phrase;
+			my @words = split(' ', $phrase); # sigh. 
+			my @new_words; 
+			foreach my $word(@words) { 
+				if($word =~ m/\@/) { #... kinda looks like an email address?
+					my ($w_name, $w_domain) = split('@', $word, 2);
+					$word = $w_name . '@PROTECTED';
+				}
+				push(@new_words, $word);
+			}
+			my $new_address = Email::Address->new(join(' ', @new_words), $name . '@PROTECTED');
 			push(@n_addresses, $new_address->format); 
 			$r = join(',', @n_addresses);
 		}
@@ -2718,7 +2728,7 @@ sub gravatar_img_url {
     my $url = undef;
 
     if ( !exists( $args->{-size} ) ) {
-        $args->{-size} = 100;
+        $args->{-size} = 80;
     }
     if ( !exists( $args->{-default_gravatar_url} ) ) {
         $args->{-default_gravatar_url} =

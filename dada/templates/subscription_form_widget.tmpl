@@ -64,10 +64,10 @@
 			        </div>
 			        <div class="large-8 medium-8 columns">
 						<!-- tmpl_if profile_logged_in --> 
-							<!-- tmpl_var email escape=HTML -->
 							<input 
-								type="hidden"
-								name="email" 
+								type="text"
+								name="email"
+								readonly="readonly" 
 								id="email" 
 								value="<!-- tmpl_var email escape=HTML -->" 
 							>
