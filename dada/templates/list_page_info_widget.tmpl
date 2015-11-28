@@ -8,7 +8,10 @@
 			</div>
 		<!--/tmpl_if--> 
 
-		<div id="modal_subscribe_form">
+		<!-- tmpl_if can_use_JSON -->
+			<div id="modal_subscribe_form">
+		<!-- tmpl_else -->
+			<div id="modal_subscribe_form_disabled">
 			<!-- tmpl_var subscription_form --> 
 		</div>
 	</div>

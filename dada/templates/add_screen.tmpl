@@ -117,22 +117,7 @@
     </div> 
 <!-- /tmpl_if --> 
 
-<!-- tmpl_if expr="(type eq 'list')" -->
-    <!-- tmpl_unless list_is_closed -->
-        <!-- tmpl_unless expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
-            <div class="alert-box info radius">
-                <p>
-                    Importing Subscribers via the List Control Panel has been <strong>disabled.</strong>
-                </p>
-                <p>
-                    You may still <strong>Invite</strong> Subscribers to join. 
-                </p>
-            </div> 
-        <!-- /tmpl_unless --> 
-    <!-- /tmpl_unless --> 
-<!-- /tmpl_if -->
-
-
+<!-- tmpl_include add_email_import_subcribers_disabled.tmpl -->
 
 <!-- tmpl_include list_type_switch_widget.tmpl -->
 	
@@ -277,7 +262,7 @@
 	        <div class="large-3 medium-3 columns">
 			   <label 
 				   	for="email" 
-					class="medium-only-text-right large-only-text-right"
+					class="medium-text-right"
 				>
 			      Email Address
 			     </label>
@@ -295,7 +280,7 @@
 				
 		    		     <label 
 						 	for="<!-- tmpl_var name escape=HTML -->"
-							class="medium-only-text-right large-only-text-right"
+							class="medium-text-right"
 						>
 		    		      <!-- tmpl_var label escape="HTML" --> (<!-- tmpl_var name escape="HTML" -->)
 		    		     </label>
@@ -317,7 +302,7 @@
 		 
 			     <label 
 				 for="profile_password"
-					class="medium-only-text-right large-only-text-right"
+					class="medium-text-right"
 					 
 				>
 			      	Profile Password

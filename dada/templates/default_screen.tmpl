@@ -5,23 +5,30 @@
 
 
 <!-- tmpl_if error_invalid_list --> 
-	<div class="alert-box info radius">
-	<p>
-	 <strong>Warning!</strong>
-
-	<p> The list you are trying to subscribe to/unsubscribe from is not available. Webmaster: please make sure your outside subscription/unsubscription forms are correct and up-to-date.
-	</p> 
+	<div class="alert-box warning radius">
+		<p>
+	 	   <strong>
+			   Warning!
+		   </strong>
+		</p>
+		<p>
+			The list you are trying to subscribe to/unsubscribe from is not 
+			available. Webmaster: please make sure your outside 
+			subscription/unsubscription forms are correct and up-to-date.
+		</p> 
 	</div>
-
 <!--/tmpl_if-->
 
 <!-- tmpl_if visible_lists --> 
-
-<div class="panel">
-	<div id="modal_subscribe_form">
-	    <!-- tmpl_var subscription_form --> 
-	</div> 
-</div>
+	<div class="panel">
+		<!-- tmpl_if can_use_JSON -->
+			<div id="modal_subscribe_form">
+		<!-- tmpl_else -->
+			<div id="modal_subscribe_form_disabled">
+		   		<!-- tmpl_var subscription_form --> 
+		<!-- /tmpl_if -->
+		</div> 
+	</div>
 
 	<!-- tmpl_loop list_information -->
 

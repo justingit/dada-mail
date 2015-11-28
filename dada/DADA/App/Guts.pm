@@ -83,6 +83,7 @@ require Exporter;
   md5_checksum
   can_use_LWP_Simple
   can_use_AuthenCAPTCHA
+  can_use_JSON
   can_use_datetime
   can_use_HTML_Tree
   formatted_runtime
@@ -3157,6 +3158,21 @@ sub can_use_AuthenCAPTCHA {
     };
 	return $can_use_captcha;
 }
+
+sub can_use_JSON { 
+	my $can_use_json = 1; 
+    try {
+        require JSON;
+        $can_use_json = 1;
+    }
+    catch {
+        carp "JSON not installed?: $_";
+        $can_use_json = 0;
+    };
+	return $can_use_json;
+}
+
+
 
 sub can_use_HTML_Tree {
     my $can_use_HTML_Tree = 1; 

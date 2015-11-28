@@ -104,8 +104,6 @@ unsubscription_form
 archive_send_form
 profile_widget
 _raw_screen
-
-
 );
 
 use strict; 
@@ -464,15 +462,12 @@ sub list_popup_login_form {
 
 
 sub default_screen {
-
-    my %args = (
-        -show_hidden        => undef,
-        -name               => undef,
-        -email              => undef,
-        -error_invalid_list => 0,
-        @_
-    );
-
+	
+	my ($args) = @_; 	
+#        -show_hidden        => undef,
+#        -name               => undef,
+#        -email              => undef,
+#        -error_invalid_list => 0,
 
     require DADA::MailingList::Settings;
     require DADA::MailingList::Archives;
@@ -560,8 +555,8 @@ sub default_screen {
     }
 
     my $list_popup_menu = list_popup_menu(
-        -email      => $args{email},
-        -list       => $args{list},
+        -email      => $args->{email},
+        -list       => $args->{list},
     );
 
 	return wrap_screen(
@@ -570,21 +565,18 @@ sub default_screen {
             -screen => 'default_screen.tmpl',
             -expr   => 1,
             -vars   => {
+				can_use_JSON       => scalar DADA::App::Guts::can_use_JSON(), 
                 list_popup_menu    => $list_popup_menu,
-                email              => $args{ -email },
+                email              => $args->{ -email },
                 list_information   => \@list_information,
                 visible_lists      => $visible_lists,
-                error_invalid_list => $args{ -error_invalid_list },
+                error_invalid_list => $args->{ -error_invalid_list },
                 fields             => $named_subscriber_fields,
-                subscription_form  => subscription_form( { -give_props => 0 } ),
+                subscription_form  => scalar subscription_form( { -give_props => 0 } ),
             },
         }
     );
 }
-
-
-
-
 
 sub list_page { 
 
@@ -617,6 +609,7 @@ sub list_page {
 
         -vars                     => 
         { 
+			can_use_JSON              => scalar DADA::App::Guts::can_use_JSON(), 
             subscription_form         => subscription_form({-list => $args{-list}, -email => $args{-email}, -give_props => 0 }), 
             error_no_email            => $args{-error_no_email}, 
             html_archive_list         => $html_archive_list, 
@@ -2870,9 +2863,8 @@ sub subscription_form {
         return screen({
             -screen => 'subscription_form_widget.tmpl', 
             -vars   => {
-                           
+							can_use_JSON             => scalar DADA::App::Guts::can_use_JSON(), 
                             single_list              => 1, 
-                            
                             subscriber_fields        => $named_subscriber_fields,
                             list                     => $list, 
                             email                    => $args->{-email},

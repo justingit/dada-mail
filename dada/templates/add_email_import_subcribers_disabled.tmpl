@@ -1,0 +1,27 @@
+<!-- begin add_email_import_subcribers_disabled.tmpl -->
+
+<!-- tmpl_if expr="(type eq 'list')" -->
+    <!-- tmpl_unless list_is_closed -->
+        <!-- tmpl_unless expr="((list_settings.enable_mass_subscribe == 1) && ((root_login == 1) || (list_settings.enable_mass_subscribe_only_w_root_login != 1)))" --> 
+            <div class="alert-box warning radius">
+                    <ul>
+						<li>
+							Importing Subscribers via the List Control Panel has been <strong>disabled.</strong> 
+							<span 
+								data-tooltip 
+								aria-haspopup="true" 
+								class="has-tip" 
+								title="Certain features in the List Control Panel are only enabled when 
+										logging into a mailing list with the <!-- tmpl_var PROGRAM_NAME --> 
+										Root Password. You are currently logged in with the List Password"
+							>(?)</span>
+                    	</li>
+						<li>
+							You may still <strong>Invite</strong> Subscribers to join. 
+						</li>
+			</div> 
+        <!-- /tmpl_unless --> 
+    <!-- /tmpl_unless --> 
+<!-- /tmpl_if -->
+	
+<!-- end add_email_import_subcribers_disabled.tmpl -->
