@@ -3249,7 +3249,7 @@ function individual_country_geoip_map(type, country, target_div) {
 			$("#" + target_div).hide("fade", function() {
 				chart.draw(data, options);
 				trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
-				$("#" + target_div + "_loading").html('<p class="label success"><a href="#" data-type="' + type + '" class="back_to_geoip_map">&lt; &lt;Back to World Map</a> | <a href="#"  data-type="' + type + '" data-country="' + country + '" class="individual_country_cumulative_geoip_table">Table View</a></p>');
+				$("#" + target_div + "_loading").html('<p class="label secondary"><a href="#" data-type="' + type + '" class="back_to_geoip_map">&lt; &lt;Back to World Map</a> | <a href="#"  data-type="' + type + '" data-country="' + country + '" class="individual_country_cumulative_geoip_table">Table View</a></p>');
 				$("#" + target_div).show('fade');
 			});
 		}
@@ -3273,7 +3273,7 @@ function individual_country_cumulative_geoip_table(type, country, target_div) {
 		success: function(content) {
 			$("#" + target_div).hide("fade", function() {
 				$("#" + target_div).html(content);
-				$("#" + target_div + "_loading").html('<p class="label success"><a href="#" data-type="' + type + '" data-country="' + country + '"  class="individual_country_geoip">&lt; &lt; Back to Country Map</a></p>');
+				$("#" + target_div + "_loading").html('<p class="label secondary"><a href="#" data-type="' + type + '" data-country="' + country + '"  class="individual_country_geoip">&lt; &lt; Back to Country Map</a></p>');
 				$("#" + target_div).show('fade');
 			});
 		}
