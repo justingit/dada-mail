@@ -976,7 +976,7 @@ $ADMIN_MENU //= [
 
 
 	{
-	-Title      => 'Control Panel Settings',
+	-Title      => '<i class="fi-widget"></i> Control Panel Settings',
 	-Activated  => 0,
 	-Submenu    => [
 				{
