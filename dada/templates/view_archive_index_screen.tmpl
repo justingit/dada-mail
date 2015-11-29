@@ -98,15 +98,22 @@
 		>
    	</td>
 	<td>
-	 <input 
+	 <button 
 	 	type="submit" 
 		class="button small alert" 
-		value="Delete Checked" 
+		
 	>
+		<i class="fi-x"></i> Delete Checked
+	</button>
 	</form>
 		<form action="<!-- tmpl_var S_PROGRAM_URL -->" style="display:inline;margin:0">  
 		   <input type="hidden" name="flavor" value="purge_all_archives" >  
-		   <input type="submit" class="button small purge_archives alert" value="Purge All Archive Messages" >
+		   <button
+		    type="submit" 
+			class="button small purge_archives alert" 
+			>
+			<i class="fi-x"></i> Purge All Archive Messages
+			</button>
 	   </form> 
 	 </td>
 	</tr>

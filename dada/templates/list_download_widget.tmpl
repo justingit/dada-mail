@@ -14,11 +14,21 @@
 		<input type="hidden" name="order_by" value="<!-- tmpl_var order_by -->" >
 		<input type="hidden" name="order_dir" value="<!-- tmpl_var order_dir -->" >
 
-		<input type="submit" class="button small" value="&#8595; Export Search Results (.csv)" >
+		<button 
+			type="submit" 
+			class="button small" 
+		>
+			<i class="fi-page-export-csv"></i> Export Search Results (.csv)
+		</button>
 		
 	<!-- tmpl_else --> 
 	
-		<input type="submit" class="button small" value="&#8595; Export <!-- tmpl_var type_title --> (.csv)" >
+		<button
+			type="submit" 
+			class="button small"
+			>
+			<i class="fi-page-export-csv"></i> Export <!-- tmpl_var type_title --> (.csv)
+		</button>
 
 	<!-- /tmpl_if --> 
 	

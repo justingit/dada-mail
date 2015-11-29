@@ -78,7 +78,12 @@
 			<input type="hidden" name="plugin" value="tracker" > 
 			<input type="hidden" name="prm" value="download_logs" > 
 			<input type="hidden" name="log_type" value="clickthrough" > 
-			<input type="submit" value="Download Clickthrough Logs (.csv)" class="button small success" >
+			<button 
+				type="submit" 
+				 class="button small success" 
+			>
+				<i class="fi-page-export-csv"></i> Download Clickthrough Logs (.csv)
+			</button>
 		</form> 
 	</li>
 	<li>
@@ -87,12 +92,21 @@
 			<input type="hidden" name="plugin" value="tracker" > 
 			<input type="hidden" name="prm" value="download_logs" > 
 			<input type="hidden" name="log_type" value="activity" > 
-			<input type="submit" value="Download Mass Mailing Event Logs (.csv)" class="button small success" >
+			<button
+			 type="submit" 
+			 class="button small success" >
+			 	<i class="fi-page-export-csv"></i> Download Mass Mailing Event Logs (.csv)
+			</button>
 		</form>
 	</li>
 	<li>
 		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
-			<input type="button" value="Purge ALL Clickthrough Logs" class="button small alert tracker_purge_log">
+			<button 
+				type="button"
+				class="button small alert tracker_purge_log"
+			>
+				<i class="fi-x"></i> Purge ALL Clickthrough Logs
+			</button>
 		</form> 
 	</li>
 </ul>
