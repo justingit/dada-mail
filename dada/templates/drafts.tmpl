@@ -71,7 +71,6 @@
         			<th>
         				<p>&nbsp;</p>
         			</th>
-
         			<th>
         				<p>
         					<strong>
@@ -96,11 +95,7 @@
         			<th>
         				&nbsp;
         			</th>
-        			
-        			
         		</tr> 
-
-
          	<!-- tmpl_loop draft_index --> 
         		<tr>
 
@@ -145,12 +140,9 @@
 							href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->" class="small button success"
 							class="small button success"
 						> 
-							Edit
+							<i class="fi-page-edit"></i> Edit
 						</a> 
 				    </td>
-					
-					
-
         		</tr> 
         	<!-- /tmpl_loop -->
         	</table>  
@@ -161,7 +153,11 @@
             		<input class="toggleCheckboxes" type="checkbox" data-target_class="draft_ids" >
                	</td>
             	<td>
-            	 <input type="submit" class="button small" value="Delete Checked" >
+            	 <button 
+				 	type="submit" 
+					class="button small alert">
+						<i class="fi-x"></i> Delete Checked
+				  </button>
             	 </td>
             	</tr>
             </table>
@@ -175,6 +171,30 @@
         	</div> 
         <!-- /tmpl_if --> 
         
+		<div class="clearfix">
+			<div class="clearfix">
+				<ul class="button-group right">
+				    <li>
+						<a 
+							href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_email&restore_from_draft=false"
+							class="button"
+						>
+							<i class="fi-plus"></i> Send a Message Draft
+						</a>
+					</li>
+				    <li>
+						<a 
+							href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=send_url_email&restore_from_draft=false"
+							class="button"
+						>
+							<i class="fi-plus"></i> Send a URL Draft
+						</a>
+					</li>
+				</ul>
+			</div>
+		</div>
+			
+		
 	</div> 
 	
 	<div class="content tab-title" id="stationery">
@@ -296,7 +316,7 @@
 							href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_role=stationery&draft_id=<!-- tmpl_var id -->"
 							class="small button success"
 						>
-							Edit
+							<i class="fi-page-edit"></i> Edit
 						</a>	
 						
                     </td>
@@ -312,7 +332,12 @@
             		<input class="toggleCheckboxes" type="checkbox" data-target_class="stationery_ids" >
                	</td>
             	<td>
-            	 <input type="submit" class="button small" value="Delete Checked" >
+            	 <button
+				 	type="submit" 
+					class="button small alert" 
+					>
+						<i class="fi-x"></i> Delete Checked
+				 </button>
             	 </td>
             	</tr>
             </table>
@@ -428,7 +453,7 @@
 								href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule" 
 								class="small button success" 
 								>
-									Edit
+									<i class="fi-page-edit"></i> Edit
 								</a>
                 			</td>
 
@@ -441,7 +466,9 @@
                 		<input class="toggleCheckboxes" type="checkbox" data-target_class="asched_ids" >
                    	</td>
                 	<td>
-                	 <input type="submit" class="button small" value="Delete Checked" >
+                	 <button type="submit" class="button small alert">
+						 <i class="fi-x"></i> Delete Checked
+					</button>
                 	 </td>
                 	</tr>
                 </table>
@@ -549,7 +576,7 @@
 										href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=<!-- tmpl_var screen escape="HTML" -->&restore_from_draft=true&draft_id=<!-- tmpl_var id -->&draft_role=schedule"
 										class="small button success"
 									>
-										Edit
+										<i class="fi-page-edit"></i> Edit
 									</a>
                     			</td>
 
@@ -562,7 +589,9 @@
                     		<input class="toggleCheckboxes" type="checkbox" data-target_class="iasched_ids" >
                        	</td>
                     	<td>
-                    	 <input type="submit" class="button small" value="Delete Checked" >
+                    	 <button type="submit" class="button small alert">
+							 <i class="fi-x"></i> Delete Checked
+						</button>
                     	 </td>
                     	</tr>
                     </table>
