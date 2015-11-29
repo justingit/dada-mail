@@ -11,7 +11,8 @@ Key:
 [?] Someday
 
  
- 
+Switch from list owner to root from within the list control panel easily. 
+
 SUBSCRIPTION FORMS: - maybe just "bare-bones" example? JUST the form fields needed?
 
  - a setting to allow you to choose which screen comes up on login. F
