@@ -1006,6 +1006,9 @@ sub login_switch_widget {
 			        'list_settings.list_name' => $ls->param('list_name'), 
 			        location                  => $location, 
 			        logged_in                 => $logged_in, 
+					S_PROGRAM_URL             => $DADA::Config::S_PROGRAM_URL, 
+					PROGRAM_URL               => $DADA::Config::PROGRAM_URL, 
+					
 			    }
 			); 
 	}
