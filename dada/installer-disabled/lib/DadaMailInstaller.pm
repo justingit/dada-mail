@@ -1150,7 +1150,6 @@ sub grab_former_config_vals {
         $opt->{'template_options_add_custom_css'}       = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{add_custom_css};
         $opt->{'template_options_custom_css_url'}       = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{custom_css_url}; 
         $opt->{'template_options_include_jquery_lib'}   = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{include_jquery_lib}; 
-        $opt->{'template_options_include_jqueryui_lib'} = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{include_jqueryui_lib}; 
         $opt->{'template_options_include_app_user_js'}  = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{include_app_user_js}; 
         $opt->{'template_options_head_content_added_by'}  = $BootstrapConfig::TEMPLATE_OPTIONS->{user}->{magic_options}->{head_content_added_by}; 
         
@@ -1581,7 +1580,6 @@ sub query_params_to_install_params {
       template_options_add_custom_css
       template_options_custom_css_url
       template_options_include_jquery_lib
-      template_options_include_jqueryui_lib
       template_options_include_app_user_js
       template_options_head_content_added_by
 
@@ -2190,7 +2188,6 @@ sub create_dada_config_file {
             template_options_add_custom_css
             template_options_custom_css_url
             template_options_include_jquery_lib
-            template_options_include_jqueryui_lib
             template_options_include_app_user_js
             template_options_head_content_added_by
             )
@@ -4110,7 +4107,6 @@ sub cgi_test_magic_template {
         add_custom_css        => scalar $q->param('template_options_add_custom_css'),
         custom_css_url        => scalar $q->param('template_options_custom_css_url'),
         include_jquery_lib    => scalar $q->param('template_options_include_jquery_lib'),
-        include_jqueryui_lib  => scalar $q->param('template_options_include_jqueryui_lib'),
         include_app_user_js   => scalar $q->param('template_options_include_app_user_js'),
         head_content_added_by => scalar $q->param('template_options_head_content_added_by'),
     };

@@ -57,20 +57,6 @@ jQuery(document).ready(function($){
 
 	// Admin Menu
 
-	/*
-	if ($("#change_to_list_form").length) {
-		$("#change_to_list").select2();
-		$("body").on("submit", "#change_to_list_form", function(event) {
-			event.preventDefault();
-		});
-		$("body").on("click", "#submit_change_to_list", function(event) {
-			$("#change_to_list").val($("#change_to_list").select2("val"));
-			$("body").off('submit', '#change_to_list_form');
-			return true;
-		});
-	}
-	*/
-
 	if ($("#navcontainer").length) {
 
 		var admin_menu_callbacks = $.Callbacks();
@@ -480,8 +466,6 @@ jQuery(document).ready(function($){
 		$('body').on('submit', '#fileupload', function(event){
 			check_status();
 		});
-
-	 	/* $("#new_emails").linedtextarea(); */
 	}
 
 
@@ -1886,9 +1870,6 @@ function view_list_viewport(initial) {
 	//alert('$("#advanced_search").val() ' + $("#advanced_search").val());
 	//alert(' $("#advanced_query").val() ' +  $("#advanced_query").val());
 
-	//$("#view_list_viewport_loading").html(loading_str);
-	$("#view_list_viewport").plainOverlay('show', plainOverlayOptions);
-
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
 		type: "POST",
@@ -1909,8 +1890,7 @@ function view_list_viewport(initial) {
 	request.done(function(content) {
 
 		if (initial == 1) {
-			$("#view_list_viewport").hide()
-			$("#view_list_viewport").plainOverlay('hide')
+			$("#view_list_viewport").hide();
 			$("#view_list_viewport").html(content);
 
 
@@ -1929,8 +1909,6 @@ function view_list_viewport(initial) {
 			if($("#advanced_search").val() != 1){
 				$("#advanced_list_search").hide();
 			}
-			$("#view_list_viewport").plainOverlay('hide')
-
 		}
 
 		//$("#view_list_viewport_loading").html('<p>&nbsp;</p>');

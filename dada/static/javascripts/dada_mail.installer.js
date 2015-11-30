@@ -381,11 +381,6 @@ function test_magic_template() {
 		include_jquery_lib = 1; 
 	}
 
-	var include_jqueryui_lib = 0; 
-	if ($("#template_options_include_jqueryui_lib").prop("checked") === true) {
-		include_jqueryui_lib = 1; 
-	}
-
 	var include_app_user_js = 0; 
 	if ($("#template_options_include_app_user_js").prop("checked") === true) {
 		include_app_user_js = 1; 
@@ -408,7 +403,6 @@ function test_magic_template() {
 			template_options_add_custom_css:       add_custom_css,  
 			template_options_custom_css_url:       $('#template_options_custom_css_url').val(),
 			template_options_include_jquery_lib:   include_jquery_lib,
-			template_options_include_jqueryui_lib: include_jqueryui_lib,
 			template_options_include_app_user_js:  include_app_user_js
 		},
 		dataType: "html"
@@ -432,7 +426,6 @@ function test_magic_template() {
 		'&template_options_custom_css_url=' + encodeURIComponent($('#template_options_custom_css_url').val()) + 
 		
 		'&template_options_include_jquery_lib='   + encodeURIComponent(include_jquery_lib) + 
-		'&template_options_include_jqueryui_lib=' + encodeURIComponent(include_jqueryui_lib) + 
 		'&template_options_include_app_user_js='  + encodeURIComponent(include_app_user_js) + 
 		'&template_options_head_content_added_by=' + encodeURIComponent($("#template_options_head_content_added_by option:selected").val()),
  		"magicTemplatetest", 
