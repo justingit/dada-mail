@@ -629,12 +629,10 @@ $CONFIRMATION_TOKEN_OPTIONS //= {
 # Before the $ADMIN_URL variable, as well as the below 5 lines of code:
 
 $S_PROGRAM_URL = $PROGRAM_URL;
-my $PLUGIN_URL = $S_PROGRAM_URL;
-   $PLUGIN_URL =~ s/\/(\w+)\.(cgi|pl)$/\//;
-   $PLUGIN_URL .= 'plugins';
-my $EXT_URL     = $PLUGIN_URL;
-   $EXT_URL     =~ s/plugins/extensions/;
-
+my $EXT_URL = $S_PROGRAM_URL;
+   $EXT_URL =~ s/\/(\w+)\.(cgi|pl)$/\//;
+   $EXT_URL .= 'extensions';
+   
 $ADMIN_MENU //= [
 
 {-Title      => 'Mass Mailing',

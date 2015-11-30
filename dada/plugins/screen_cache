@@ -210,7 +210,7 @@ Then, find these lines:
 
  #					{
  #					-Title      => 'Screen Cache',
- #					-Title_URL  => $PLUGIN_URL."/screen_cache.cgi",
+ #					-Title_URL  => $S_PROGRAM_URL."/screen_cache",
  #					-Function   => 'screen_cache',
  #					-Activated  => 0,
  #					},
@@ -219,7 +219,7 @@ Uncomment the lines, by taking off the, "#"'s:
 
  					{
  					-Title      => 'Screen Cache',
- 					-Title_URL  => $PLUGIN_URL."/screen_cache.cgi",
+ 					-Title_URL  => $S_PROGRAM_URL."/screen_cache",
  					-Function   => 'screen_cache',
  					-Activated  => 0,
  					},

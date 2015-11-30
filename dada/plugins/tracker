@@ -1017,7 +1017,7 @@ sub commify {
 
 =pod
 
-=head1 Tracker - tracker.cgi
+=head1 Tracker
 
 The Tracker plugin creates analytic reports of activity of your mass mailings. You can think of a mass mailing being a B<campaign> if you'd like and the Tracker plugin being what presents data on your campaign.  
 
@@ -1081,11 +1081,11 @@ All this message-specific data can also be exported via .csv files that may be d
 
 What's below will go into installing the plugin and advanced configuration.
 
-=head1 Installing tracker.cgi
+=head1 Installing tracker
 
 This plugin can be installed during a Dada Mail install/upgrade, using the included installer that comes with Dada Mail. The below installation instructions go through how to install the plugin manually.
 
-The tracker.cgi plugin comes with Dada Mail. You'll find it in the, I<dada/plugins> directory with the file name, I<tracker.cgi> 
+The tracker plugin comes with Dada Mail. You'll find it in the, I<dada/plugins> directory with the file name, I<tracker> 
 
 Change its permission to, C<755>. 
 
@@ -1107,7 +1107,7 @@ Then, find these lines:
 
  #					{
  #					-Title      => 'Tracker',
- #					-Title_URL  => $PLUGIN_URL."/tracker.cgi",
+ #					-Title_URL  => $S_PROGRAM_URL."/tracker",
  #					-Function   => 'tracker',
  #					-Activated  => 1,
  #					},
@@ -1116,7 +1116,7 @@ Uncomment the lines, by taking off the, "#"'s:
 
  					{
  					-Title      => 'Tracker',
- 					-Title_URL  => $PLUGIN_URL."/tracker.cgi",
+ 					-Title_URL  => $S_PROGRAM_URL."/tracker",
  					-Function   => 'tracker',
  					-Activated  => 1,
  					},

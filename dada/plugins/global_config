@@ -310,7 +310,7 @@ Then, find these lines:
 
  #					{
  #					-Title      => 'Global Configuration',
- #					-Title_URL  => $PLUGIN_URL."/global_config.cgi",
+ #					-Title_URL  => $S_PROGRAM_URL."/global_config.cgi",
  #					-Function   => 'global_config',
  #					-Activated  => 0,
  #					},
@@ -319,7 +319,7 @@ Uncomment the lines, by taking off the, "#"'s:
 
  					{
  					-Title      => 'Global Configuration',
- 					-Title_URL  => $PLUGIN_URL."/global_config.cgi",
+ 					-Title_URL  => $S_PROGRAM_URL."/global_config.cgi",
  					-Function   => 'global_config',
  					-Activated  => 0,
  					},

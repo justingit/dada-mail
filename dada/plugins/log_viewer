@@ -560,7 +560,7 @@ Then, find these lines:
 
  #					{
  #					-Title      => 'View Logs',
- #					-Title_URL  => $PLUGIN_URL."/log_viewer.cgi",
+ #					-Title_URL  => $S_PROGRAM_URL."/log_viewer",
  #					-Function   => 'log_viewer',
  #					-Activated  => 1,
  #					},
@@ -569,7 +569,7 @@ Uncomment the lines, by taking off the, "#"'s:
 
  					{
  					-Title      => 'View Logs',
- 					-Title_URL  => $PLUGIN_URL."/log_viewer.cgi",
+ 					-Title_URL  => $S_PROGRAM_URL."/log_viewer",
  					-Function   => 'log_viewer',
  					-Activated  => 1,
  					},
