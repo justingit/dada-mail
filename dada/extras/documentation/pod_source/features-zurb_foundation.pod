@@ -1,0 +1,28 @@
+=head1 Zurb Foundation
+
+Dada Mail uses Zurb Foundation front end framework: 
+
+L<http://foundation.zurb.com> 
+
+Dada Mail uses v5.5.3 of the framework currently and docs for that version are available at: 
+
+L<http://foundation.zurb.com/sites/docs/v/5.5.3/>
+
+=head2 Customizing styles
+
+Dada Mail is developed using the Sass workflow, as described here: 
+
+L<http://foundation.zurb.com/sites/docs/v/5.5.3/sass.html>
+
+Currently, we use the Libsass & Grunt workflow, but either should probably work.  
+
+Dada Mail ships with the custom C<scss> files used, which can be found in:
+
+I<dada/static/css/vendor/foundation/scss>
+
+as well as the C<app.css> file it produces, which can be found at,
+ 
+I<dada/static/css/vendor/foundation/app.css>
+ 
+If you would like to modify the styles we use, the best idea would be to create a new project, then copy over the C<_settings.scss> and 
+C<app.scss> from Dada Mail into your project, and do your developement from there. Once you're done, you'll want to copy the C<app.css> file it produces back into Dada Mail. 
