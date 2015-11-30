@@ -399,8 +399,6 @@ jQuery(document).ready(function($){
 
 	if($("#membership").length) {
 
-		$("#tabs").tabs(); //{ heightStyle: "auto" }
-
 		if ($("#mailing_list_history").length) {
 			mailing_list_history();
 			$('body').on('click', '.radio_toggle_membership_history', function(){
@@ -1436,7 +1434,7 @@ function admin_menu_notification(sflavor, target_class) {
 				}
 
 				//console.log('update! ' + target_class);
-				$('.' + target_class + ' a').append('<span class="' + target_class + '_notification"> ' + content + '</span>');
+				$('.' + target_class + ' a').append('<span class="' + target_class + '_notification round alert label"> ' + content + '</span>');
 			});
 			if (no_loop != 1) {
 				setTimeout(

@@ -587,10 +587,9 @@ sub admin_menu_drafts_notification {
                 || $num_shedules > 0 )
             {
                 return
-                    '('
-                  . commify($num_drafts) . ','
+                    commify($num_drafts) . ','
                   . commify($num_stationery) . ','
-                  . commify($num_shedules) . ')';
+                  . commify($num_shedules);
             }
         }
     } catch {
@@ -651,7 +650,7 @@ sub admin_menu_subscriber_count_notification {
             my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );
             my $num = $lh->num_subscribers();
             if ( $num > 0 ) {
-                return '(' . commify($num) . ')';
+                return commify($num);
             }
         }
     } catch {
@@ -677,7 +676,7 @@ sub admin_menu_archive_count_notification {
             my $lh = DADA::MailingList::Archives->new( { -list => $list } );
             my $num = $lh->num_archives();
             if ( $num > 0 ) {
-                return '(' . commify($num) . ')';
+                return commify($num);
             }
         }
     } catch {
@@ -702,13 +701,13 @@ sub admin_menu_mail_sending_options_notification {
             my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 
             if ( $ls->param('sending_method') eq 'sendmail' ) {
-                $rs = '(sendmail)';
+                $rs = 'sendmail';
             }
             elsif ( $ls->param('sending_method') eq 'smtp' ) {
-                $rs = '(SMTP)';
+                $rs = 'SMTP';
             }
             elsif ( $ls->param('sending_method') eq 'amazon_ses' ) {
-                $rs = '(Amazon SES)';
+                $rs = 'Amazon SES';
             }
         }
         return $rs;
@@ -735,7 +734,7 @@ sub admin_menu_mailing_sending_mass_mailing_options_notification {
             my $per_sec = $batch_size / $batch_wait;
             my $per_hour =  int( $per_sec * 60 * 60 + .5 );    # DEV .5 is some sort of rounding thing (with int). That's wrong.
             if($batch_sending_enabled == 1){ 
-                return '(' . commify($per_hour) . '/hr)';
+                return commify($per_hour) . '/hr';
             }
             else { 
                 return ''; 
@@ -768,7 +767,7 @@ sub admin_menu_bounce_handler_notification {
             my $bsk = DADA::App::BounceHandler::ScoreKeeper->new( { -list => $list } );
             my $num = $bsk->num_scorecard_rows;
             if ( $num > 0 ) {
-                return '(' . commify($num) . ')';
+                return commify($num);
             }
         }
     } catch {
@@ -794,7 +793,7 @@ sub admin_menu_tracker_notification {
             require DADA::Logging::Clickthrough;
             my $rd = DADA::Logging::Clickthrough->new({-list => $admin_list});
             my ( $total, $msg_ids ) = $rd->get_all_mids; 
-            return '(' . commify($total) . ')';
+            return commify($total);
         }
     } catch {
         carp($_);
@@ -5140,8 +5139,7 @@ sub membership_activity {
         my $activity_tables = [];
         my ( $total, $mids ) = $rd->get_all_mids;
         foreach my $mid (@$mids) {
-            my $plugin_url = $DADA::Config::S_PROGRAM_URL;
-            $plugin_url =~ s/mail\.cgi$/plugins\/tracker.cgi/;
+            my $plugin_url = $DADA::Config::S_PROGRAM_URL . '/plugins/tracker';
             my $activity_table = $rd->message_individual_email_activity_report_table(
                 {
                     -mid        => $mid,
@@ -11680,7 +11678,7 @@ sub subscription_form_html {
             '-Access-Control-Allow-Methods' => 'POST',
             '-Cache-Control'               => 'no-cache, must-revalidate',
             -expires                       => 'Mon, 26 Jul 1997 05:00:00 GMT',
-        };
+        }; 
 
         my $callback = xss_filter( strip( $q->url_param('callback') ) );
         require JSON;
