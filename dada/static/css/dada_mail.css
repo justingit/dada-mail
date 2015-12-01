@@ -73,12 +73,12 @@ iframe#archived_message_body_container {
 	margin-bottom:0;
 }
 #dadamail_footer {
-	margin-top: 30px;
-	padding:10px;
-	/* box-shadow: 0px 0px 4px 3px rgba( 51, 0, 0, .3 ); */
-	box-shadow: 3px 5px 8px -1px rgba( 51, 0, 0, .3 ), -3px 5px 8px -1px rgba( 51, 0, 0, .3 );
-	
-	background-color: #fff;
+	/* 
+		margin-top: 30px;
+		padding:10px;
+		box-shadow: 3px 5px 8px -1px rgba( 51, 0, 0, .3 ), -3px 5px 8px -1px rgba( 51, 0, 0, .3 );
+		background-color: #fff;
+	*/
 }
 
 a.menu_disabled,

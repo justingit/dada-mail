@@ -150,7 +150,7 @@ HTML_CHARSET                  => $DADA::Config::HTML_CHARSET,
 PROFILE_ENABLED               => $DADA::Config::PROFILE_OPTIONS->{enabled}, 
 ENFORCE_CLOSED_LOOP_OPT_IN    => $DADA::Config::ENFORCE_CLOSED_LOOP_OPT_IN != 1 ? 0 : 1, 
 SUBSCRIPTION_QUOTA            => $DADA::Config::SUBSCRIPTION_QUOTA, 
-
+PROGRAM_IMG_FILENAME          => $DADA::Config::PROGRAM_IMG_FILENAME, 
 # DEV: Cough! Kludge! Cough!
 LEFT_BRACKET                  => '[',
 RIGHT_BRACKET                 => ']',

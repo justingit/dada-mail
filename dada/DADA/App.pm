@@ -220,6 +220,7 @@ sub setup {
         'profile_login'                               => \&profile_login,
         'profile_logout'                              => \&profile_logout,
         'profile'                                     => \&profile,
+		'upgrade_to_pro'						      => \&upgrade_to_pro, 
 
         # These handled the oldstyle confirmation. For some backwards compat, I've changed
         # them so that there's at least a shim to the new system,
@@ -12914,6 +12915,137 @@ sub profile_update_email {
         return $scrn;
 
     }
+}
+
+
+sub upgrade_to_pro { 
+
+
+    my $self    = shift;
+    my $q       = $self->query();
+    my $process = $q->param('process') || undef;
+    my $done    = $q->param('done') || undef;
+
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
+        -cgi_obj  => $q,
+        -Function => 'upgrade_to_pro'
+    );
+    if ( !$checksout ) { return $error_msg; }
+
+    my $list = $admin_list;
+    require DADA::MailingList::Settings;
+    my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+
+    if ( !$process ) {
+        my $scrn = DADA::Template::Widgets::wrap_screen(
+            {
+                -screen         => 'upgrade_to_pro.tmpl',
+                -with           => 'admin',
+                -wrapper_params => {
+                    -Root_Login => $root_login,
+                    -List       => $list,
+                },
+
+                -expr => 1,
+                -vars => {
+                    screen          => 'upgrade_to_pro',
+                    title           => 'Upgrade to Pro Dada',
+                    list            => $list,
+                    done            => $done,
+
+                },
+                -list_settings_vars_param => {
+                    -list   => $list,
+                    -dot_it => 1,
+                },
+
+            }
+        );
+        return $scrn;
+    }
+	elsif($process eq 'verify'){ 
+        my $scrn = DADA::Template::Widgets::screen(
+            {
+                -screen         => 'upgrade_to_pro_verify.tmpl',
+                -expr => 1,
+                -vars => {
+                    list            => $list,
+
+                },
+                -list_settings_vars_param => {
+                    -list   => $list,
+                    -dot_it => 1,
+                },
+
+            }
+        );
+        return $scrn;
+	}
+	elsif($process eq 'upgrade'){ 
+		
+		my $config_file = make_safer($DADA::Config::PROGRAM_CONFIG_FILE_DIR . '/.dada_config');
+		my $pro_dada_user = 'user@example.com';
+		my $config_chunk = qq{
+			
+			
+# Thank you for being a Pro Dada customer, $pro_dada_user!
+\$PROGRAM_NAME                 = 'Pro Dada';
+\$GIVE_PROPS_IN_EMAIL          = 0;
+\$GIVE_PROPS_IN_HTML           = 0;
+\$GIVE_PROPS_IN_ADMIN          = 0;
+\$GIVE_PROPS_IN_SUBSCRIBE_FORM = 0;
+\$PROGRAM_IMG_FILENAME         = 'dada_mail_logo.png';
+
+
+		
+};		
+		my $status = 1; 
+		my $error  = undef; 
+		try {
+			open my $config, '>>', $config_file  or die $!;
+			print $config $config_chunk or die $!;		
+			close $config or die; 
+	   } catch { 
+		   $status = 0; 
+		   $error  = $_; 
+	   };	
+	   if($status == 1){
+	        $self->header_type('redirect');
+	        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=upgrade_to_pro&process=success' );
+	   }
+	   else { 
+		   return "yikes, something didn't go wrong, when moving you over to Pro Dada: " . $error; 
+	   }
+	}
+	elsif($process eq 'success') { 
+        my $scrn = DADA::Template::Widgets::wrap_screen(
+            {
+                -screen         => 'upgrade_to_pro_success.tmpl',
+                -with           => 'admin',
+                -wrapper_params => {
+                    -Root_Login => $root_login,
+                    -List       => $list,
+                },
+                -expr => 1,
+                -vars => {
+                    list            => $list,
+
+                },
+                -list_settings_vars_param => {
+                    -list   => $list,
+                    -dot_it => 1,
+                },
+
+            }
+        );
+        return $scrn;
+		
+	}
+    else {
+		return "unknown process - huh?"
+
+    }
+	
 }
 
 sub what_is_dada_mail {

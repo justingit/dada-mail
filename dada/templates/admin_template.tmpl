@@ -100,12 +100,26 @@
 					<li class="name">
 						<h3>
 							<a href="<!-- tmpl_var PROGRAM_URL -->">
-								<img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/dada_mail_logo.png" alt="<!-- tmpl_var PROGRAM_NAME -->">
+								<img src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/images/<!-- tmpl_var PROGRAM_IMG_FILENAME default="dada_mail_logo.png"-->" alt="<!-- tmpl_var PROGRAM_NAME -->">
 							</a>
 						</h3>
 					</li>
 				</ul>
 				<section class="top-bar-section">
+				<!-- tmpl_if GIVE_PROPS_IN_ADMIN -->
+					<ul class="left">
+							<li  class="has-form">
+								<a 
+									href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=upgrade_to_pro" 
+									class="button round alert" 
+									style="font-weight:bold; box-shadow: 0px -2px 14px 0px  rgba(255, 102, 204, 1);"
+								>
+									Upgrade now to Pro Dada!
+								</a>
+							</li>
+						</ul>
+					<!-- /tmpl_if -->
+					
 					<ul class="right">
 						<li class="divider">
 						</li>
@@ -183,13 +197,13 @@
 	</div>
 
 
-
-	<div class="row">
-	   <div class="small-12 columns" id="footer">
-			<p><small><!-- tmpl_var footer_props --></small></p>   
+	<!-- tmpl_if footer_props -->
+		<div class="row">
+		   <div class="small-12 columns" id="footer">
+				<p><small><!-- tmpl_var footer_props --></small></p>   
+			</div>
 		</div>
-	</div>
-
+	<!-- /tmpl_if -->
 
 
 	<script src="<!-- tmpl_var SUPPORT_FILES_URL -->/static/javascripts/vendor/foundation.min.js"></script>

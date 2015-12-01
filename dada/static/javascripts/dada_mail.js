@@ -587,9 +587,37 @@ jQuery(document).ready(function($){
 	}
 	
 	
+	if($("#upgrade_to_pro").length){ 
+		
+		$("body").on("click", ".verify_pro_dada", function(event) {				
+			var responsive_options = {
+			  width: '95%',
+			  height: '95%',
+			  maxWidth: '640px',
+			  maxHeight: '480px'
+			};
+			$.colorbox({
+			    href: $("#s_program_url").val(),
+				data: {
+					flavor: 'upgrade_to_pro',
+					process: 'verify'
+				},
+				opacity: 0.50,
+				maxWidth: '640px',
+				maxHeight: '480px',
+				width: '95%',
+				height: '95%'				
+			});
+			$(window).resize(function(){
+			    $.colorbox.resize({
+			      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+			      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+			    });		
+			});
+		}); 
+	}
 
 	// Your Mailing List >> Options
-
 	if ($("#list_options").length) {
 		toggle_anyone_can_subscribe();
 		toggle_closed_list();
