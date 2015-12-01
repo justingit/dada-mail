@@ -769,6 +769,9 @@ sub admin_menu_bounce_handler_notification {
             if ( $num > 0 ) {
                 return commify($num);
             }
+			else { 
+				return 0; 
+			}
         }
     } catch {
         carp($_);

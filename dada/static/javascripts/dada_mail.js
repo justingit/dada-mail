@@ -1433,8 +1433,10 @@ function admin_menu_notification(sflavor, target_class) {
 					$('.' + target_class + '_notification').remove();
 				}
 
-				//console.log('update! ' + target_class);
-				$('.' + target_class + ' a').append('<span class="' + target_class + '_notification round alert label"> ' + content + '</span>');
+				if(content.length) {
+					//console.log('update! ' + target_class);
+					$('.' + target_class + ' a').append('<span class="' + target_class + '_notification round alert label"> ' + content + '</span>');
+				}
 			});
 			if (no_loop != 1) {
 				setTimeout(
