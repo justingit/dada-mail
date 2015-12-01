@@ -9910,17 +9910,19 @@ sub list_archive {
             # DEV: This is stupid, and I don't think it's a great idea.
             $header_from = $archive->_parse_in_list_info( -data => $header_from );
 
+			# this should be only one sub. 
             if ( $ls->param('archive_protect_email') eq 'recaptcha_mailhide' ) {
-                $header_from = mailhide_encode($header_from);
+                # D'oh!
+				$header_from = mailhide_encode($header_from);
             }
             elsif ( $ls->param('archive_protect_email') eq 'break' ) {
-                $header_from = break_encode($header_from);
+                $header_from = encode_html_entities(break_encode($header_from), , "\200-\377");
             }
             elsif ( $ls->param('archive_protect_email') eq 'spam_me_not' ) {
                 $header_from = spam_me_not_encode($header_from);
             }
             else {
-                $header_from = xss_filter($header_from);
+                $header_from = xss_filter(encode_html_entities($header_from), , "\200-\377");
             }
 
             $header_subject = $archive->get_header( -header => 'Subject', -key => $id );
