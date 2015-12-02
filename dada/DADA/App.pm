@@ -12997,7 +12997,7 @@ sub upgrade_to_pro {
 \$GIVE_PROPS_IN_HTML           = 0;
 \$GIVE_PROPS_IN_ADMIN          = 0;
 \$GIVE_PROPS_IN_SUBSCRIBE_FORM = 0;
-\$PROGRAM_IMG_FILENAME         = 'dada_mail_logo.png';
+\$PROGRAM_IMG_FILENAME         = 'pro_dada_mail_logo.png';
 
 
 		
