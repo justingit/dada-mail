@@ -12963,7 +12963,10 @@ sub upgrade_to_pro {
         );
         return $scrn;
     }
-	elsif($process eq 'verify'){ 
+	elsif($process eq 'verify'){
+		
+		# check_pro_dada_user_status
+		
         my $scrn = DADA::Template::Widgets::screen(
             {
                 -screen         => 'upgrade_to_pro_verify.tmpl',
