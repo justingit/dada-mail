@@ -1,0 +1,27 @@
+<!-- begin upgrade_to_pro_verify.tmpl -->
+
+<!-- tmpl_if status -->
+	<h3>Verification Was Successful!</h3>
+	<p>
+		Click the button below to upgrade to Pro Dada:
+	</p>
+
+	<form actionm="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+		<input type="hidden" name="flavor" id="flavor" value="upgrade_to_pro">
+		<input type="hidden" name="process" id="process" value="upgrade">
+		<input type="hidden" name="pro_dada_username" id="pro_dada_username" value="<!-- tmpl_var pro_dada_username -->">
+		<input type="hidden" name="pro_dada_password" id="pro_dada_password" value="<!-- tmpl_var pro_dada_password -->">
+
+		<button type="submit" class="button alert expand">
+			Upgrade to Pro Dada...
+		</button>
+	</form>
+<!-- tmpl_else -->
+	<h1>Sorry,</h1>
+	
+	<p>There seems to be a problem with verifying your to Pro Dada account. Please double 
+		check that your Pro Dada username and password are correct and try again.</p>
+		
+		<p><strong>Error Code:</strong><code><!-- tmpl_var error_code --></code></p>
+<!-- /tmpl_if -->
+<!-- end upgrade_to_pro_verify.tmpl -->

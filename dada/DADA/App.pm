@@ -220,7 +220,7 @@ sub setup {
         'profile_login'                               => \&profile_login,
         'profile_logout'                              => \&profile_logout,
         'profile'                                     => \&profile,
-		'upgrade_to_pro'						      => \&upgrade_to_pro, 
+		'transform_to_pro'						      => \&transform_to_pro, 
 
         # These handled the oldstyle confirmation. For some backwards compat, I've changed
         # them so that there's at least a shim to the new system,
@@ -12918,7 +12918,7 @@ sub profile_update_email {
 }
 
 
-sub upgrade_to_pro { 
+sub transform_to_pro { 
 
 
     my $self    = shift;
@@ -12928,7 +12928,7 @@ sub upgrade_to_pro {
 
     my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
         -cgi_obj  => $q,
-        -Function => 'upgrade_to_pro'
+        -Function => 'transform_to_pro'
     );
     if ( !$checksout ) { return $error_msg; }
 
@@ -12939,7 +12939,7 @@ sub upgrade_to_pro {
     if ( !$process ) {
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
-                -screen         => 'upgrade_to_pro.tmpl',
+                -screen         => 'transform_to_pro.tmpl',
                 -with           => 'admin',
                 -wrapper_params => {
                     -Root_Login => $root_login,
@@ -12948,8 +12948,8 @@ sub upgrade_to_pro {
 
                 -expr => 1,
                 -vars => {
-                    screen          => 'upgrade_to_pro',
-                    title           => 'Upgrade to Pro Dada',
+                    screen          => 'transform_to_pro',
+                    title           => 'Transform to Pro Dada',
                     list            => $list,
                     done            => $done,
 
@@ -12965,15 +12965,30 @@ sub upgrade_to_pro {
     }
 	elsif($process eq 'verify'){
 		
-		# check_pro_dada_user_status
+		my ($cstatus, $cerrors, $receipt) = $self->contact_mothership(
+			{ 
+				action            => 'verify',  
+				pro_dada_username => $q->param('pro_dada_username'),
+				pro_dada_password => $q->param('pro_dada_password'), 
+			}	
+		); 
+		
+		my $ht_errors = {}; 
+		if(keys %$cerrors){ 
+			$ht_errors->{'error_' . $_} = 1; 
+		}
 		
         my $scrn = DADA::Template::Widgets::screen(
             {
-                -screen         => 'upgrade_to_pro_verify.tmpl',
+                -screen         => 'transform_to_pro_verify.tmpl',
                 -expr => 1,
                 -vars => {
                     list            => $list,
-
+					status          => $cstatus, 
+					pro_dada_username => $q->param('pro_dada_username'),
+					pro_dada_password => $q->param('pro_dada_password'), 
+					error_code        => Data::Dumper::Dumper({status => $cstatus, errors => $cerrors}), 
+					%{$ht_errors}, 
                 },
                 -list_settings_vars_param => {
                     -list   => $list,
@@ -12986,12 +13001,27 @@ sub upgrade_to_pro {
 	}
 	elsif($process eq 'upgrade'){ 
 		
-		my $config_file = make_safer($DADA::Config::PROGRAM_CONFIG_FILE_DIR . '/.dada_config');
-		my $pro_dada_user = 'user@example.com';
+		my ($cstatus, $cerrors, $receipt) = $self->contact_mothership(
+			{ 
+				action            => 'transform',  
+				pro_dada_username => $q->param('pro_dada_username'),
+				pro_dada_password => $q->param('pro_dada_password'), 
+			}	
+		); 
+		
+		if($cstatus == 0) { 
+	        $self->header_type('redirect');
+	        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=transform_to_pro&process=failure' );
+			return;
+		}
+		
+		my $config_file = make_safer($DADA::Config::PROGRAM_CONFIG_FILE_DIR . '/.dada_config');	
+		my $pro_dada_username = $q->param('pro_dada_username'); 
 		my $config_chunk = qq{
 			
 			
-# Thank you for being a Pro Dada customer, $pro_dada_user!
+# Thank you for being a Pro Dada customer, $pro_dada_username!
+# RECEIPT: $receipt
 \$PROGRAM_NAME                 = 'Pro Dada';
 \$GIVE_PROPS_IN_EMAIL          = 0;
 \$GIVE_PROPS_IN_HTML           = 0;
@@ -12999,8 +13029,6 @@ sub upgrade_to_pro {
 \$GIVE_PROPS_IN_SUBSCRIBE_FORM = 0;
 \$PROGRAM_IMG_FILENAME         = 'pro_dada_mail_logo.png';
 
-
-		
 };		
 		my $status = 1; 
 		my $error  = undef; 
@@ -13014,7 +13042,7 @@ sub upgrade_to_pro {
 	   };	
 	   if($status == 1){
 	        $self->header_type('redirect');
-	        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=upgrade_to_pro&process=success' );
+	        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=transform_to_pro&process=success' );
 	   }
 	   else { 
 		   return "yikes, something didn't go wrong, when moving you over to Pro Dada: " . $error; 
@@ -13023,7 +13051,7 @@ sub upgrade_to_pro {
 	elsif($process eq 'success') { 
         my $scrn = DADA::Template::Widgets::wrap_screen(
             {
-                -screen         => 'upgrade_to_pro_success.tmpl',
+                -screen         => 'transform_to_pro_success.tmpl',
                 -with           => 'admin',
                 -wrapper_params => {
                     -Root_Login => $root_login,
@@ -13042,7 +13070,29 @@ sub upgrade_to_pro {
             }
         );
         return $scrn;
-		
+	}
+	elsif($process eq 'failure') { 
+        my $scrn = DADA::Template::Widgets::wrap_screen(
+            {
+                -screen         => 'transform_to_pro_failure.tmpl',
+                -with           => 'admin',
+                -wrapper_params => {
+                    -Root_Login => $root_login,
+                    -List       => $list,
+                },
+                -expr => 1,
+                -vars => {
+                    list            => $list,
+
+                },
+                -list_settings_vars_param => {
+                    -list   => $list,
+                    -dot_it => 1,
+                },
+
+            }
+        );
+        return $scrn;	
 	}
     else {
 		return "unknown process - huh?"
@@ -13050,6 +13100,73 @@ sub upgrade_to_pro {
     }
 	
 }
+
+# Need to send back a recipt number 
+sub contact_mothership {
+	my $self   = shift; 
+	my ($args) = @_; 
+	
+	my $status = 0; 
+	my $errors = {}; 
+	my $receipt = 'UNDEFINED';
+	
+	my $gargs = {}; 
+	for(qw(
+		action           
+		pro_dada_username
+		pro_dada_password
+	)){ 
+		$gargs->{$_} = $args->{$_}; 
+	}
+	try {
+		require JSON;
+		require HTTP::Request;
+		require HTTP::Request::Common;
+		require LWP::UserAgent;
+	
+		my $ua = LWP::UserAgent->new;
+
+		my $json = JSON->new->allow_nonref;
+
+		$gargs->{rm} = 'verify_pro_dada_user_status';
+		
+		my $ver = $DADA::Config::VER; 
+           $ver =~ s/ (.*?)$//; 		
+ 		$gargs->{program_version} = $ver; 
+ 		$gargs->{program_url}     = $DADA::Config::PROGRAM_URL; 
+		
+
+		my $response = $ua->request(
+		    HTTP::Request::Common::POST(
+				'http://dadamailproject.com/pro_dada/cpdus.cgi',
+		    	 content       => $gargs,
+			)
+		);
+
+		if ( $response->is_success ) {
+		    my $r = $json->utf8->decode( $response->decoded_content );
+		    # print Dumper($r);
+		    if ( $r->{status} == 1 ) {
+		       # print "Success!\n";
+		    }
+		    else {
+		       # print "Problems!\n";
+		    }
+			$status = $r->{status};
+			$errors = $r->{errors};
+			$receipt = $r->{receipt};
+		}
+		else {
+		    die 'problem with Pro Dada account verification' . $response->decoded_content;
+		}
+	} catch  {
+		#warn $_; 
+		$status = 0; 
+		$errors->{communication_problem} = 1; 
+	};
+	return ($status, $errors, $receipt);
+}
+
 
 sub what_is_dada_mail {
 

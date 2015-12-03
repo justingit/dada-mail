@@ -600,7 +600,10 @@ jQuery(document).ready(function($){
 			    href: $("#s_program_url").val(),
 				data: {
 					flavor: 'upgrade_to_pro',
-					process: 'verify'
+					process: 'verify',
+					pro_dada_username: $("#pro_dada_username").val(), 
+					pro_dada_password: $("#pro_dada_password").val()
+
 				},
 				opacity: 0.50,
 				maxWidth: '640px',
