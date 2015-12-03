@@ -587,7 +587,7 @@ jQuery(document).ready(function($){
 	}
 	
 	
-	if($("#upgrade_to_pro").length){ 
+	if($("#transform_to_pro").length){ 
 		
 		$("body").on("click", ".verify_pro_dada", function(event) {				
 			var responsive_options = {
@@ -599,7 +599,7 @@ jQuery(document).ready(function($){
 			$.colorbox({
 			    href: $("#s_program_url").val(),
 				data: {
-					flavor: 'upgrade_to_pro',
+					flavor: 'transform_to_pro',
 					process: 'verify',
 					pro_dada_username: $("#pro_dada_username").val(), 
 					pro_dada_password: $("#pro_dada_password").val()

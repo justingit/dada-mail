@@ -12949,7 +12949,7 @@ sub transform_to_pro {
                 -expr => 1,
                 -vars => {
                     screen          => 'transform_to_pro',
-                    title           => 'Transform to Pro Dada',
+                    title           => 'Transform into Pro Dada',
                     list            => $list,
                     done            => $done,
 
@@ -12987,7 +12987,7 @@ sub transform_to_pro {
 					status          => $cstatus, 
 					pro_dada_username => $q->param('pro_dada_username'),
 					pro_dada_password => $q->param('pro_dada_password'), 
-					error_code        => Data::Dumper::Dumper({status => $cstatus, errors => $cerrors}), 
+					error_code        => Data::Dumper::Dumper({status => $cstatus, errors => $cerrors, receipt => $receipt}), 
 					%{$ht_errors}, 
                 },
                 -list_settings_vars_param => {
@@ -13017,6 +13017,7 @@ sub transform_to_pro {
 		
 		my $config_file = make_safer($DADA::Config::PROGRAM_CONFIG_FILE_DIR . '/.dada_config');	
 		my $pro_dada_username = $q->param('pro_dada_username'); 
+
 		my $config_chunk = qq{
 			
 			
@@ -13033,6 +13034,14 @@ sub transform_to_pro {
 		my $status = 1; 
 		my $error  = undef; 
 		try {
+				
+			# Let's be careful about this: 
+		    my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) = localtime(time);
+			my $timestamp = sprintf( "%4d-%02d-%02d", $year + 1900, $mon + 1, $mday ) . '-' . time;
+		    my $config_file_backup = make_safer($config_file . '-backup-' . $timestamp );
+		    require File::Copy;
+		    my $r = File::Copy::copy($config_file, $config_file_backup ) or warn "Copy failed: $!";
+			
 			open my $config, '>>', $config_file  or die $!;
 			print $config $config_chunk or die $!;		
 			close $config or die; 
@@ -13060,6 +13069,7 @@ sub transform_to_pro {
                 -expr => 1,
                 -vars => {
                     list            => $list,
+					# receipt         => $receipt, 
 
                 },
                 -list_settings_vars_param => {

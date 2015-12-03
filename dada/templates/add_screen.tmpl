@@ -62,9 +62,12 @@
 		</p>
 		</div>
 		
-		<!-- tmpl_if expr="(num_subscribers >= SUBSCRIPTION_QUOTA)" --> 
-			<!-- tmpl_include upgrade_to_pro_dada.tmpl -->
+		<!-- tmpl_if comment -->
+			<!-- tmpl_if expr="(num_subscribers >= SUBSCRIPTION_QUOTA)" --> 
+				<!-- tmpl_include transform_to_pro_dada.tmpl -->
+			<!-- /tmpl_if --> 
 		<!-- /tmpl_if --> 
+
 		
 	<!--tmpl_else-->
 	

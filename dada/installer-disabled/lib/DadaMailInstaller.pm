@@ -1964,14 +1964,10 @@ sub backup_current_config_file {
     my $dot_configs_file_loc =
       make_safer( $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.configs/.dada_config' );
     my $config_file = slurp($dot_configs_file_loc);
-
     my ( $sec, $min, $hour, $mday, $mon, $year, $wday, $yday, $isdst ) = localtime(time);
-
     my $timestamp = sprintf( "%4d-%02d-%02d", $year + 1900, $mon + 1, $mday ) . '-' . time;
-
     my $new_loc = make_safer(
         $ip->{-install_dada_files_loc} . '/' . $Dada_Files_Dir_Name . '/.configs/.dada_config-backup-' . $timestamp );
-
     open my $config_backup, '>', $new_loc or croak $!;
     print $config_backup $config_file;
     close($config_backup) or croak $!;

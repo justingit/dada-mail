@@ -138,34 +138,36 @@
 <hr >
 
 
-<!-- tmpl_if GIVE_PROPS_IN_ADMIN --> 
+<!-- tmpl_if comment -->
+	<!-- tmpl_if GIVE_PROPS_IN_ADMIN --> 
 
-<h3>
- Purchase Pro Dada and the Dada Mail Manual
-</h3>
-<p>
- If you find Dada Mail incredibly useful, please support
- <a href="http://dadamailproject.com/purchase/pro.html" target="_blank">The Dada Mail Project.</a></p> 
+	<h3>
+	 Purchase Pro Dada and the Dada Mail Manual
+	</h3>
+	<p>
+	 If you find Dada Mail incredibly useful, please support
+	 <a href="http://dadamailproject.com/purchase/pro.html" target="_blank">The Dada Mail Project.</a></p> 
 
-<!-- tmpl_include upgrade_to_pro_dada.tmpl -->
+	<!-- tmpl_include transform_to_pro_dada.tmpl -->
 
-<p>I really appreciate all the support received! Thanks!</p> 
-
-
-	<form method="get" action="http://dadamailproject.com/purchase/pro.html" target="_blank" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
-		<input type="hidden" name="ref" value="ms_scrn" > 
-		<p class="text-center">
-		<input type="submit" value="Purchase Pro Dada!" class="success button" >  
-		</p>
-	</form> 
+	<p>I really appreciate all the support received! Thanks!</p> 
 
 
-<p>
- Support from you goes towards the cost of development of the software (coding, hosting, free support)
- as well as my personal endeavors, including paying my higher education student loans and continuing as a 
- visual artist. 
-</p>
+		<form method="get" action="http://dadamailproject.com/purchase/pro.html" target="_blank" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+			<input type="hidden" name="ref" value="ms_scrn" > 
+			<p class="text-center">
+			<input type="submit" value="Purchase Pro Dada!" class="success button" >  
+			</p>
+		</form> 
 
+
+	<p>
+	 Support from you goes towards the cost of development of the software (coding, hosting, free support)
+	 as well as my personal endeavors, including paying my higher education student loans and continuing as a 
+	 visual artist. 
+	</p>
+
+	<!-- /tmpl_if --> 
 <!-- /tmpl_if --> 
 
 

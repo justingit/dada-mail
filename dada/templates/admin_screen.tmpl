@@ -159,8 +159,10 @@
 	</div> 
 </div> 
 
-<!-- tmpl_if expr="list_max_reached == 1" -->
-	<!-- tmpl_include upgrade_to_pro_dada.tmpl -->
+<!-- tmpl_if comment -->
+	<!-- tmpl_if expr="list_max_reached == 1" -->
+		<!-- tmpl_include transform_to_pro_dada.tmpl -->
+	<!-- /tmpl_if -->
 <!-- /tmpl_if -->
 
 
