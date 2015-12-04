@@ -3000,9 +3000,10 @@ sub install_missing_CPAN_modules {
 
     if ( $has_JSON == 0 ) {
     
-		my $JSON_dir    = make_safer('../DADA/perllib/JSON');
-		my $JSON_mv_dir = make_safer('../DADA/perllib/JSON-move_contents_to_install');
-        my $JSON_pm     = make_safer('../DADA/perllib/JSON.pm-remove_to_install');
+		my $JSON_dir              = make_safer('../DADA/perllib/JSON');
+		my $JSON_mv_dir           = make_safer('../DADA/perllib/JSON-move_contents_to_install');
+        my $JSON_pm               = make_safer('../DADA/perllib/JSON.pm');
+        my $JSON_pm_removed_file  = make_safer('../DADA/perllib/JSON.pm-remove_to_install');
 
 
         if ( -d $JSON_dir) {
@@ -3032,13 +3033,9 @@ sub install_missing_CPAN_modules {
 		}
 			
 		if(! -e $JSON_pm ) { 
-            my $JSON_pm_new = $JSON_pm;
-               $JSON_pm_new =~ s/\-remove_to_install$//;
-               $JSON_pm_new = make_safer($JSON_pm_new);
+            installer_mv( $JSON_pm_removed_file,  $JSON_pm );
 
-            installer_mv( $JSON_pm,  $JSON_pm_new );
-
-            if ( -d $JSON_dir && -e $JSON_pm_new ) {
+            if ( -d $JSON_dir && -e $JSON_pm ) {
                 return 1;
             }
             else {
