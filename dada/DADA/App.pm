@@ -276,7 +276,8 @@ sub yikes {
 
     my $self  = shift;
     my $error = shift;
-
+	warn $error; 
+	
     my $TIME = scalar( localtime() );
     return qq{
 <html>
