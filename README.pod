@@ -1,10 +1,8 @@
 =pod
 
-=head1 NAME
+=head1 Dada Mail
 
-Dada Mail
-
-=head1 INTRODUCTION
+=head1 Introduction
 
 Dada Mail is a contemporary, mature and intuitive web-based
 e-mail list management system.
