@@ -8,7 +8,7 @@ This doc. will guide you through an upgrade of Dada Mail, originally installed a
 
 =begin html
 
-<div class="see_also">
+<div class="alert-box info radius">
 <p> For information on how to upgrade Dada Mail from an install that wasn't done using the included Dada Mail Installer, see, <a href="./FAQ-install_upgrade.pod.html#upgrading_dada_mail_from_different_installation_types">Upgrading Dada Mail From Different Installation Types</a></p>
 </div> 
 

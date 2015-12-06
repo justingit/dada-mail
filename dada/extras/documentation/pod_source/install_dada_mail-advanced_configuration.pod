@@ -18,6 +18,25 @@ We'll be listing the actual global variables used, when discussing what the inst
 
 As a warning, the installer only supports reading in, and editing variables that are presented to you in the Installer itself. That means anything that's not presented to you, will be lost if you change the configuration, with the Installer again. Because of this, you'll want to put your own unsupported (by the Installer) configuration changes in a centralized place in your C<.dada_config> file, so you can easily (manually via copy and paste) move them back to the C<.dada_config> file that's generated.
 
+
+=head2 Plugins/Extensions 
+
+Optionally, you may also install many of the plugins and extensions that come with Dada Mail. Access to the plugins/extensions will be available in the list control panel's left hand admin menu, under, B<Plugins>
+
+Some of the plugins/extensions have additional configuration that will need to done, before they work completely.
+
+One plugin, B<Bounce Handler>, also requires you to fill out the credentials for the Bounce Handler email account you need to set up to capture bounced emails. See the documentation on the Bounce Handler for more information: 
+
+L<http://dadamailproject.com/d/bounce_handler.html>
+
+=head2 WYSIWYG Editors
+
+Optionally, you may also configure the B<WYSIWYG> editors that come bundled with the Dada Mail distribution. These WYSIWYG editors will enable you to author and edit your HTML Mailing List Messages right in Control Panel Settings. 
+
+=head3 Install and Configure WYSIWYG Editors 
+
+If you would like to use the bundled WYSIWYG editors with Dada Mail, check the option, B<Install and Configure WYSIWYG Editors> - which is checked by default. Uncheck this option, if you'd like to skip setting up the WYSIWYG editors - the various options will be hidden. 
+
 =head2 Configure Scheduled Jobs 
 
 Dada Mail requires a cronjob to run for some of its more advanced features: keeping tabs on mass mailings going out, sending out scheduled mailings, Bridge, etc. 
