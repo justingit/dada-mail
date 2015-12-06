@@ -168,11 +168,11 @@
 			                            </a>
 			                        </h3>
                                                         
-			                        <blockquote> 
+			                        <div class="panel"> 
 			                            <p>
 			                                <!-- tmpl_var list_settings.info -->
 			                            </p>
-			                        </blockquote> 
+									</div> 
 			                        <ul> 
 			                        <!-- tmpl_if list_settings.private_list --> 
 			                            <li> 
@@ -234,37 +234,73 @@
 				                    </ul>
     
     
-				                    <!-- tmpl_if list_settings.digest_enable -->
-				                        <fieldset>
-				                            <legend>Delivery Preferences:</legend>
-				                            <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
-                
-				                                <input type="hidden" name="flavor"        value="profile" > 
-				                                <input type="hidden" name="process"  value="profile_delivery_preferences" > 
-				                                <input type="hidden" name="list"     value="<!-- tmpl_var list_settings.list -->" > 
-                
-				                                <p>
-				                                    <input type="radio" name="delivery_prefs" value="individual" id="delivery_prefs_individual" <!-- tmpl_if expr="delivery_prefs eq 'individual'" -->checked="checked"<!-- /tmpl_if --> >
-				                                        <label for="delivery_prefs_individual">
-				                                            Receive Individual Messages
-				                                        </label>
-				                                        <br >
-				                                    <input type="radio" name="delivery_prefs" value="digest" id="delivery_prefs_digest" <!-- tmpl_if expr="delivery_prefs eq 'digest'" -->checked="checked"<!-- /tmpl_if --> >
-				                                        <label for="delivery_prefs_digest">
-				                                            Receive Messages in a Digest
-				                                        </label> (<!-- tmpl_var digest_timeframe -->)
-				                                        <br >
-				                                    <input type="radio" name="delivery_prefs" value="hold" id="delivery_prefs_hold" <!-- tmpl_if expr="delivery_prefs eq 'hold'" -->checked="checked"<!-- /tmpl_if --> >
-				                                        <label for="delivery_prefs_hold">
-				                                            Hold Mailings
-				                                        </label> (vacation, etc)     
-                       
-				                                        <input type="submit" value="Save Delivery Preferences" class="success button" > 
-                            
-				                                </p>
-				                            </form>
-				                        </fieldset>
-				                    <!-- /tmpl_if --> 
+<!-- tmpl_if list_settings.digest_enable -->
+    <fieldset>
+        <legend>Delivery Preferences:</legend>
+        <form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post"> 
+
+            <input type="hidden" name="flavor"        value="profile" > 
+            <input type="hidden" name="process"  value="profile_delivery_preferences" > 
+            <input type="hidden" name="list"     value="<!-- tmpl_var list_settings.list -->" > 
+
+			<div class="row">
+				<div class="small-10 medium-5 large-4 columns">	 
+					
+					<div class="row">
+						<div class="small-12 columns">
+		                    <label for="delivery_prefs_individual">
+			                    <input 
+									type="radio" 
+									name="delivery_prefs" 
+									value="individual" 
+									id="delivery_prefs_individual" 
+									<!-- tmpl_if expr="delivery_prefs eq 'individual'" -->checked="checked"<!-- /tmpl_if -->
+									>
+		                            Receive Individual Messages
+	                        </label>
+						</div>
+					</div>
+					
+					<div class="row">
+						<div class="small-12 columns">
+		                    <label for="delivery_prefs_digest">					
+			                    <input 
+									type="radio" 
+									name="delivery_prefs" 
+									value="digest" 
+									id="delivery_prefs_digest" 
+									<!-- tmpl_if expr="delivery_prefs eq 'digest'" -->checked="checked"<!-- /tmpl_if -->
+								>
+		                        Receive Messages in a Digest (<!-- tmpl_var digest_timeframe -->)
+		                    </label> 
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="small-12 columns">
+		                    <label for="delivery_prefs_hold">
+		                    	<input 
+									type="radio" 
+									name="delivery_prefs" 
+									value="hold" 
+									id="delivery_prefs_hold" 
+									<!-- tmpl_if expr="delivery_prefs eq 'hold'" -->checked="checked"<!-- /tmpl_if -->
+								>
+		                            Hold Mailings (vacation, etc)     
+		                    </label> 
+						</div>
+					</div>
+						
+					<div class="row">
+						<div class="small-12 columns">
+							<input type="submit" value="Save Delivery Preferences" class="success button expand">
+						</div>
+					</div> 
+				</div>
+			</div> 
+        </form>
+    </fieldset>
+<!-- /tmpl_if --> 
     
     
 				                    <!-- tmpl_if comment --> 
