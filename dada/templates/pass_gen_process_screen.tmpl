@@ -2,27 +2,28 @@
 <!-- tmpl_set name="title" value="Password Encryption" -->
 
 
+<label for="encrypted_pass">
+Your encrypted password is:
+ <input 
+    name="encrypted_pass"
+    id="encrypted_pass"
+	type="text"
+	value="<!-- tmpl_var encrypted_password escape="HTML" -->"
+	readonly="readonly"
+>
+</label>
+
+
 <p>
- Your encrypted password is:
-</p>
-
-<blockquote> 
- <p>
-  <!-- tmpl_var encrypted_password --> 
- </p>
-</blockquote>
-
-
-<p>
- In your configuration file, use this password as your
-  <strong> 
+ In your global configuration file, use this password as your
+  <code> 
    $PROGRAM_ROOT_PASSWORD
-  </strong>
+  </code>
   
   and set
-  <strong> 
+  <code> 
    $ROOT_PASS_IS_ENCRYPTED
-  </strong> 
+  </code> 
   to 
   <strong> 
    1
