@@ -68,6 +68,7 @@ jQuery(document).ready(function($){
 		admin_menu_callbacks.add(admin_menu_mailing_sending_mass_mailing_options_notification());
 		admin_menu_callbacks.add(admin_menu_bounce_handler_notification());
 		admin_menu_callbacks.add(admin_menu_tracker_notification());
+		admin_menu_callbacks.add(admin_menu_bridge_notification());
 		admin_menu_callbacks.fire();
 
 		if($("#screen_meta").length) {
@@ -1444,6 +1445,10 @@ function admin_menu_bounce_handler_notification() {
 function admin_menu_tracker_notification() {
 	admin_menu_notification('admin_menu_tracker_notification', 'admin_menu_tracker');
 }
+function admin_menu_bridge_notification() { 
+	admin_menu_notification('admin_menu_bridge_notification', 'admin_menu_bridge');
+}
+
 
 
 function admin_menu_notification(sflavor, target_class) {

@@ -141,7 +141,8 @@ sub setup {
         'admin_menu_mailing_sending_mass_mailing_options_notification' => \&admin_menu_mailing_sending_mass_mailing_options_notification, 
         'admin_menu_bounce_handler_notification'      => \&admin_menu_bounce_handler_notification,
         'admin_menu_tracker_notification'             => \&admin_menu_tracker_notification,
-        'send_email'                                  => \&send_email,
+        'admin_menu_bridge_notification'              => \&admin_menu_bridge_notification, 
+		'send_email'                                  => \&send_email,
         'send_email_button_widget'                    => \&send_email_button_widget, 
         'mass_mailing_schedules_preview'                 => \&mass_mailing_schedules_preview, 
         'draft_message_values'                        => \&draft_message_values, 
@@ -644,7 +645,6 @@ sub admin_menu_subscriber_count_notification {
 
         my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
             -cgi_obj         => $q,
-            -manual_override => 1
         );
         if ($checksout) {
             my $list = $admin_list;
@@ -670,7 +670,6 @@ sub admin_menu_archive_count_notification {
 
         my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
             -cgi_obj         => $q,
-            -manual_override => 1
         );
         if ($checksout) {
             my $list = $admin_list;
@@ -694,7 +693,6 @@ sub admin_menu_mail_sending_options_notification {
     try {
         my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
             -cgi_obj         => $q,
-            -manual_override => 1
         );
         my $rs = '';
         if ($checksout) {
@@ -726,7 +724,6 @@ sub admin_menu_mailing_sending_mass_mailing_options_notification {
     try {
         my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
             -cgi_obj         => $q,
-            -manual_override => 1
         );
         if ($checksout) {
             my $list = $admin_list;
@@ -761,7 +758,6 @@ sub admin_menu_bounce_handler_notification {
     try {
         my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
             -cgi_obj         => $q,
-            -manual_override => 1
         );
         if ($checksout) {
             my $list = $admin_list;
@@ -791,7 +787,6 @@ sub admin_menu_tracker_notification {
     try {
         my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
             -cgi_obj         => $q,
-            -manual_override => 1
         );
         my $rs = '';
         if ($checksout) {
@@ -799,6 +794,37 @@ sub admin_menu_tracker_notification {
             my $rd = DADA::Logging::Clickthrough->new({-list => $admin_list});
             my ( $total, $msg_ids ) = $rd->get_all_mids; 
             return commify($total);
+        }
+    } catch {
+        carp($_);
+        return '';
+    };
+}
+
+
+
+sub admin_menu_bridge_notification {
+    my $self = shift;
+    my $q    = $self->query();
+	my $r; 
+	
+    try {
+        my ( $admin_list, $root_login, $checksout, $error_msg ) = check_list_security(
+            -cgi_obj         => $q,
+        );
+        my $rs = '';
+        if ($checksout) {
+
+            my $list = $admin_list;
+            require DADA::MailingList::Settings;
+            my $ls = DADA::MailingList::Settings->new( { -list => $list } );
+			
+			$r = $ls->param('discussion_pop_email');
+			
+			if ($ls->param('disable_discussion_sending') == 1) { 
+				$r .= ' (disabled)';
+			}
+            return $r;
         }
     } catch {
         carp($_);
