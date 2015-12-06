@@ -57,7 +57,7 @@ Once you have downloaded the Dada Mail distribution ( C<dada-9_0_0.tar.gz>), upl
 
 =end html 
 
-For  historical reasons, CGI scripts were usually installed in your account's C<cgi-bin> directory, but you may be able to install Dada Mail wherever you would like. One suggestion is to set up a subdomain (for example: C<lists.yourdmain.com), then intall Dada Mail in there. That way, the URL is kept short, and there will be less potential interference between Dada Mail and any other apps you may have running (like, Wordprsss)
+For  historical reasons, CGI scripts were usually installed in your account's C<cgi-bin> directory, but you may be able to install Dada Mail wherever you would like. One suggestion is to set up a subdomain (for example: C<lists.yourdmain.com>), then intall Dada Mail in there. That way, the URL is kept short, and there will be less potential interference between Dada Mail and any other apps you may have running (like, Wordprsss)
 
 =begin html
 
