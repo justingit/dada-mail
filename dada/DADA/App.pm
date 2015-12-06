@@ -13051,6 +13051,8 @@ sub transform_to_pro {
 		   $error  = $_; 
 	   };	
 	   if($status == 1){
+		   
+		    $c->flush;
 	        $self->header_type('redirect');
 	        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=transform_to_pro&process=success' );
 	   }
