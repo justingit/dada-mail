@@ -35,7 +35,7 @@ Logging into the Dada Mail Root Password will allow you full access to all List 
 
 =head3 Disabling List Control Panel Screens for List Password Logins
 
-Entire screens may be disabled, when someone logs in, using the List Password. But, these screens will always be available, when you log into a mailing list, using the Dada Mail Root Password. By default, links to these disabled screens will appear greyed out in the left hand side menu. 
+Entire screens may be disabled, when someone logs in, using the List Password. But, these screens will always be available, when you log into a mailing list, using the Dada Mail Root Password. By default, links to these disabled screens will appear greyed out in the admin menu. 
 
 You may change which screens are disabled right in the List Control Panel, under, B<Control Panel Settings - Enable/Disable Features> - make sure to first log into the mailing list with the Dada Mail Root Password! 
 

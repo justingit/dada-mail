@@ -51,14 +51,25 @@ I<When installing Pro Dada, use, B<pro_dada-9_0_0-rc1.tar.gz> as the name of the
 
 Once you have downloaded the Dada Mail distribution ( C<dada-9_0_0-rc1.tar.gz>), upload it to your hosting account. 
 
-For  historical reasons, CGI scripts are usually installed in your account's C<cgi-bin> directory, but you may be able to 
-install Dada Mail wherever you would like. 
+=begin html
+
+<div class="alert-box info radius">
+
+=end html 
+
+For  historical reasons, CGI scripts were usually installed in your account's C<cgi-bin> directory, but you may be able to install Dada Mail wherever you would like. One suggestion is to set up a subdomain (for example: C<lists.yourdmain.com), then intall Dada Mail in there. That way, the URL is kept short, and there will be less potential interference between Dada Mail and any other apps you may have running (like, Wordprsss)
+
+=begin html
+
+</div>
+
+=end html
 
 =head2 Download, then Upload the helper script
 
 The helper script is called, C<uncompress_dada.cgi>.
 
-Download it here:
+Download it here, it's a small CGI Perl script - so you will want to save the source you see as a PlainText File - keep the name, C<uncompress_dada.cgi>.
 
 =begin html 
 
@@ -82,7 +93,7 @@ Visiting the C<uncompress_dada.cgi> script should attempt to uncompress the I<da
 
 Once it's finished running, you should be presented with a link to use the actual installer. 
 
-Click the link at the bottom of the screen labeled, B<Install and Configure Dada Mail!> to continue. 
+Click the link at the bottom of the screen labeled, B<Continue Installing and Configuring Dada Mail!> to continue. 
 
 =begin html
 
@@ -303,7 +314,7 @@ A button labeled, B<Test SQL Connection> is present - and when pressed, it will 
 =head3 Advanced Configuration (Optional)
 
 As far as needed configuration settings - we're done! Dada Mail's Installer 
-does support a whole bunch more global configuration options. You can drop back into the installer later in a couple of different ways, if you would rather get up and running now.
+does supportt more global configuration options. You can drop back into the installer later in a couple of different ways, if you would rather get up and running now.
 
 =begin html
 

@@ -2,15 +2,15 @@
 
 =head1 Advanced Configuration with the Dada Mail Installer
 
-This doc covers the options in the Dada Mail Installer under the heading, B<Advanced Configuration (Optional)>
-
-If you're looking for general instructions on how to use the Dada Mail Installer, look no further than, 
+If you're looking for general instructions on how to use the Dada Mail Installer, look no further than:
 
 L<http://dadamailproject.com/support/documentation/install_dada_mail.pod.html>
 
 =head2 Introduction
 
-Dada Mail's global configuration is saved in a file called, C<.dada_config>, which itself is saved in the, C<.dada_files/.configs> directory. The file is plain text, but is a valid Perl script, so be I<very, very> careful if/when you edit it by hand. The installer is generally provided to you so don't have to do this, but many, many global configuration options exist, that aren't supported by the Dada Mail Installer. For a rundown of what's fully available, see: 
+Dada Mail's global configuration is saved in a file called, C<.dada_config>, which itself is saved in the, C<.dada_files/.configs> directory. The file is plain text, but is a valid Perl script, so be I<very, very> careful if/when you edit it by hand. 
+
+The Installer is generally provided to you so don't have to do this, but many, many global configuration options exist that aren't supported by the Dada Mail Installer. For a rundown of what's fully available, see: 
 
 L<http://dadamailproject.com/support/documentation/global_variables.pod.html>
 
@@ -18,10 +18,9 @@ We'll be listing the actual global variables used, when discussing what the inst
 
 As a warning, the installer only supports reading in, and editing variables that are presented to you in the Installer itself. That means anything that's not presented to you, will be lost if you change the configuration, with the Installer again. Because of this, you'll want to put your own unsupported (by the Installer) configuration changes in a centralized place in your C<.dada_config> file, so you can easily (manually via copy and paste) move them back to the C<.dada_config> file that's generated.
 
-
 =head2 Plugins/Extensions 
 
-Optionally, you may also install many of the plugins and extensions that come with Dada Mail. Access to the plugins/extensions will be available in the list control panel's left hand admin menu, under, B<Plugins>
+You may also install many of the plugins and extensions that come with Dada Mail. Access to the plugins/extensions will be available in the list control panel's admin menu, under, B<Plugins>
 
 Some of the plugins/extensions have additional configuration that will need to done, before they work completely.
 
@@ -258,26 +257,16 @@ Check this option to have Dada Mail style its content, and only its content, usi
 
 =head4 Include a custom stylesheet
 
-Check this option, and give the URL of a custom stylesheet. This option works well in conjunction with the previous option. Say, you want to override the typeface used within Dada Mail's content, but don't want to change Dada Mail's css file. 
-
-For clarity, we'll work with just the, C<p> tag. In your custom stylesheet, you would add a new entry: 
-
-    #Dada p { 
-        /* your new styles here! */ 
-    }
+Check this option, and give the URL of a custom stylesheet. This option works well in conjunction with the previous option.
 
 =head3 Javascript Options
 
 Dada Mail relies on some JavaScript libraries to enhance its user experience. 
 These libraries aren't strictly required to run Dada Mail, and sometimes disabling them give you a better user experience, when using Magic Templates: 
 
-=head4 Include a Copy of jQuery (v1.11.3)  
+=head4 Include a Copy of jQuery (v2.1.4)  
 
 Keep this option checked, if your site's design doesn't use jQuery. Uncheck this option if a jQuery library is already being utilized. jQuery is used in almost every Wordpress installation, so if you're basing your user template off of a Wordpress design, uncheck this! 
-
-=head4 Include a Copy of jQuery UI (v1.9.1) 
-
-Similar to jQuery, Dada Mail uses the jQuery UI library as well. If this is already loaded, uncheck this option
 
 =head4 Include Dada Mail's JavaScript User-Facing Enhancements 
 

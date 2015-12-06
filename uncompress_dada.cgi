@@ -25,12 +25,17 @@ print "Content-type:text/html\r\n\r\n";
 print '<h1>Adventures with Dada Mail!</h1>';
 
 if($] < 5.010){ 
-    print "<p>Warning, you may be currently running a version of Perl that's below the minimum requirement (Perl v5.10.1) - see if a newer version of Perl is available and adjust the app, before running the installer!</p>"; 
+    print qq{
+		<p style="color:red"><strong>Warning:</strong> you may be currently 
+		running a version of Perl that's below the minimum requirement 
+		(Perl v5.10.1) - see if a newer version of Perl is available and adjust 
+		the app, before running the installer!</p>}; 
 }
 
 if ( -e 'dada' ) {
-    print 
-"<p>Yikes! A directory named, \"dada\" already exists in this location! Please manually move this directory, before running this script!</p>";
+    print  qq{<p><strong>Yikes!</strong> A directory named, "dada" already exists 
+			 in this location! Please manually move this directory, before running 
+			 this script!</p>};
     exit;
 }
 
@@ -51,7 +56,7 @@ if ( !-e $pro ) {
 	}
 }
 
-print "<p><em>Starting Adventure...</em></p>";
+print "<h2>Starting Adventure...</h2>";
 
 print "<p>Uncompressing $using...</p>";
 
@@ -63,30 +68,31 @@ if ( !-e 'dada' ) {
     my $tar = $using;
     $tar =~ s/\.gz$//;
     if ( !-e $tar ) {
-        print  '<p>Can\'t find ' . $tar . ' to uncompress!</p>';
+        print '<p>Can\'t find ' . $tar . ' to uncompress!</p>';
         print '<p>You may have to uncompress and prep Dada Mail manually.</p>';
         exit;
     }
     else {
-        print "<p><em>Success!</em></p>";
+        print "<h2>Success!</h2>";
         print "<p>Unrolling $tar</p>";
         `tar -xvf $tar`;
     }
 }
 else {
-    print "<p><em>Success!</em></p>";
+    print "<h2>Success!</h2>";
 }
 
 print  "<p>Checking to see if \"dada\" directory now exists...</p>";
 if ( !-e 'dada' ) {
-    print "<p>Can't find 'dada' directory!</p>";
+    print "<p><strong>Can't find 'dada' directory!</strong></p>";
     exit;
 }
 else {
-    print "<p><em>Success!</em></p>";
+    print "<h2>Success!</h2>";
 }
 
 print "<p>Changing permissions of dada/mail.cgi to, 755</p>";
+
 `chmod 755 dada`;
 `chmod 755 dada/DADA`;
 `chmod 755 dada/mail.cgi`;
@@ -102,7 +108,7 @@ print
 `chmod 755 $new_installer_loc`;
 `chmod 755 $new_installer_loc/install.cgi`;
 
-print "<p><em>Done!</em></p>";
+print "<h2>Done!</h2>";
 
-print
-"<h1 style=\"text-align:center\"><a href=\"./$new_installer_loc/install.cgi\">Install and Configure Dada Mail!</a></h1>";
+print qq{<h1 style="text-align:center"><a href="./$new_installer_loc/install.cgi">
+	Continue Installing and Configuring Dada Mail!</a></h1>};
