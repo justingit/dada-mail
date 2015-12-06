@@ -4067,11 +4067,11 @@ and:
 
   pass sneaky
 
-(changing them to their real values) when prompted. This is basically what bridge.cgi does itself. 
+(changing them to their real values) when prompted. This is basically what bridge does itself. 
 
 If you don't have command line access, try adding an account in a desktop mail reader. If these credentials work there, they'll most likely work for Bridge. 
 
-If your account information is correct and also logs in when you test the pop3 login information through bridge.cgi yourself, check to see if there isn't an email filter attached the account that looks at messages before they're delivered to the POP3 Mailbox and outright deletes messages because it triggered a flag. 
+If your account information is correct and also logs in when you test the pop3 login information through bridge yourself, check to see if there isn't an email filter attached the account that looks at messages before they're delivered to the POP3 Mailbox and outright deletes messages because it triggered a flag. 
 
 This could be the cause of mysterious occurences of messages never reaching the POP3 Mailbox. 
 
