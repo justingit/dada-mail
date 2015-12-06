@@ -314,7 +314,7 @@ A button labeled, B<Test SQL Connection> is present - and when pressed, it will 
 =head3 Advanced Configuration (Optional)
 
 As far as needed configuration settings - we're done! Dada Mail's Installer 
-does supportt more global configuration options. You can drop back into the installer later in a couple of different ways, if you would rather get up and running now.
+does support additional global configuration options. You can drop back into the installer later in a couple of different ways, if you would rather get up and running now.
 
 =begin html
 
