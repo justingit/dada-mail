@@ -76,7 +76,7 @@ Download it here, it's a small CGI Perl script - so you will want to save the so
 <a 
 	class="button success expand" 
 	target="_blank"
-	href="https://raw.github.com/justingit/dada-mail/v9_0_0_2015_11_30/uncompress_dada.cgi"
+	href="https://raw.github.com/justingit/dada-mail/v9_0_0-stable_2015_12_07/uncompress_dada.cgi"
 >
 	uncompress_dada.cgi for v9.0.0 rc1 (Save Page/Link As...)
 </a>
