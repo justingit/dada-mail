@@ -13042,7 +13042,7 @@ sub transform_to_pro {
 			return;
 		}
 		
-		my $config_file = make_safer($DADA::Config::PROGRAM_CONFIG_FILE_DIR . '/.dada_config');	
+		my $config_file = make_safer($DADA::Config::CONFIG_FILE);	
 		my $pro_dada_username = $q->param('pro_dada_username'); 
 
 		my $config_chunk = qq{
@@ -13067,7 +13067,7 @@ sub transform_to_pro {
 			my $timestamp = sprintf( "%4d-%02d-%02d", $year + 1900, $mon + 1, $mday ) . '-' . time;
 		    my $config_file_backup = make_safer($config_file . '-backup-' . $timestamp );
 		    require File::Copy;
-		    my $r = File::Copy::copy($config_file, $config_file_backup ) or warn "Copy failed: $!";
+		    my $r = File::Copy::copy($config_file, $config_file_backup ) or warn "Copy failed - From: $config_file, To: $config_file_backup, Error:$!";
 			
 			open my $config, '>>', $config_file  or die $!;
 			print $config $config_chunk or die $!;		
@@ -13075,6 +13075,7 @@ sub transform_to_pro {
 	   } catch { 
 		   $status = 0; 
 		   $error  = $_; 
+		   warn $_; 
 	   };	
 	   if($status == 1){
 		   
@@ -13083,8 +13084,29 @@ sub transform_to_pro {
 	        $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?flavor=transform_to_pro&process=success' );
 	   }
 	   else { 
-		   return "yikes, something didn't go wrong, when moving you over to Pro Dada: " . $error; 
-	   }
+           my $scrn = DADA::Template::Widgets::wrap_screen(
+               {
+                   -screen         => 'transform_to_pro_failure.tmpl',
+                   -with           => 'admin',
+                   -wrapper_params => {
+                       -Root_Login => $root_login,
+                       -List       => $list,
+                   },
+                   -expr => 1,
+                   -vars => {
+                       list            => $list,
+   					# receipt         => $receipt, 
+
+                   },
+                   -list_settings_vars_param => {
+                       -list   => $list,
+                       -dot_it => 1,
+                   },
+
+               }
+           );
+           return $scrn;   
+		}
 	}
 	elsif($process eq 'success') { 
         my $scrn = DADA::Template::Widgets::wrap_screen(
