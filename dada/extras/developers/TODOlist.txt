@@ -10,6 +10,15 @@ Key:
 [*] Naw...
 [?] Someday
 
+
+[ ] My bet is that I'm not the only impatient list admin out there and that there a lot of admins who would like to see (maybe even expect) the names to disappear off the bounce list as soon as the manual deletions are done. I haven't checked the existing SQL, but I would think that should be possible.
+
+I see your point: it would make more sense for the score to be more related to the subscription of the address, rather than how it is, now. I think this is just a historical artifact, when Dada Mail supported a more simple backend, that didn't allow for such meta information. I'll make a note to integrate the bounce scorecard with the actual subscriber's data. 
+
+
+
+
+
 Show sending prefs in View List Screen (only if digests are enabled)
 Switch from list owner to root from within the list control panel easily. 
 
