@@ -329,6 +329,7 @@ sub list_popup_menu {
 
 
 	require HTML::Menu::Select; 
+	my $r = undef; 
 	
 	my %args = (
 		-show_hidden         => 0,
@@ -346,7 +347,7 @@ sub list_popup_menu {
 	my @lists = available_lists(-Dont_Die => 1); 
 
 	 
-	return ' ' if !@lists;
+	return undef if scalar @lists <= 0;
 	
 	my $l_count = 0; 
 	
@@ -371,7 +372,7 @@ sub list_popup_menu {
 	}
 	
 	if($args{-as_checkboxes} == 1){ 
-        return  $q->checkbox_group(
+        $r =  $q->checkbox_group(
                                    -name      => $args{-name}, 
 								   -id        => $args{-name}, 
                                   '-values'   => [@opt_labels],
@@ -382,7 +383,11 @@ sub list_popup_menu {
 	
 	}
 	else { 
-        return HTML::Menu::Select::popup_menu(
+		
+		if(scalar @opt_labels == 0){ 
+			return undef; 
+		}
+        $r = HTML::Menu::Select::popup_menu(
 			 {
 				name     => $args{-name}, 
 				id       => $args{-name}, 
@@ -392,6 +397,9 @@ sub list_popup_menu {
 			}
 		 ); 
     }
+	
+	return $r; 
+	
 }
 
 
@@ -640,7 +648,6 @@ sub list_page {
 
 
 sub admin {
-
 	my ($args) = @_; 
 	
 	if(! exists($args->{-vars}) ){ 
@@ -675,6 +682,9 @@ sub admin {
         -show_list_shortname => 1,
 		-selected_list       => $args->{-vars}->{selected_list},
     );
+	if(!defined($list_popup_menu)) {
+		$args->{-vars}->{login_widget} = 'text_box';
+	}
 
     my $auth_state;
 	
