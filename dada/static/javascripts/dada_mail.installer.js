@@ -17,9 +17,6 @@ jQuery(document).ready(function($){
 	}
 	if ($("#installer_configure_dada_mail").length) {
 				
-		$("body").on("change", "#backend", function(event) {
-			installer_toggleSQL_options();
-		});
 		$("body").on("click", '.radiochangeDisplayState', function(event) {
 			changeDisplayState($(this).attr("data-target"), $(this).attr("data-state"));
 		});
@@ -166,7 +163,6 @@ jQuery(document).ready(function($){
 		}); 
 		
 		installer_dada_root_pass_options();
-		installer_toggleSQL_options();
 		installer_toggle_dada_files_dirOptions();
 		installer_toggle_captcha_type_options();
 		installer_toggle_template_mode_magic_options();
@@ -558,20 +554,6 @@ function installer_dada_root_pass_options() {
 		}
 	}
 
-}
-
-function installer_toggleSQL_options() {
-
-	var selected = $("#backend option:selected").val();
-	if (selected == 'mysql' || selected == 'Pg') {
-		if ($('#sql_info').is(':hidden')) {
-			$('#sql_info').show('blind');
-		}
-	} else {
-		if ($('#sql_info').is(':visible')) {
-			$('#sql_info').hide('blind');
-		}
-	}
 }
 
 function installer_toggle_captcha_type_options() { 
