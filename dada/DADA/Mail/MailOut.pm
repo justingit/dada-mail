@@ -281,6 +281,7 @@ sub batch_params {
         my $SentLast24Hours     = undef;
         my $Max24HourSend       = undef;
         my $MaxSendRate         = undef;
+        my $quota_MaxSendRate   = undef;
         my $quota_Max24HourSend = undef;
 
         if ( $using_amazon_ses == 1 ) {
@@ -299,7 +300,10 @@ sub batch_params {
                 $ses->_save_ses_stats( $status, $SentLast24Hours, $Max24HourSend, $MaxSendRate );
             }
             $quota_Max24HourSend = ( $Max24HourSend * $ses->allowed_sending_quota_percentage ) / 100;
-
+			$quota_MaxSendRate   = ( $MaxSendRate   * $ses->allowed_sending_quota_percentage ) / 100;
+			
+						
+			warn q{$quota_Max24HourSend} . $quota_Max24HourSend; 
         }
         elsif ( $using_mandrill == 1 ) {
             require DADA::App::Mandrill;
@@ -335,7 +339,8 @@ sub batch_params {
         #		warn '$quota_Max24HourSend bef' , $quota_Max24HourSend;
 
         $quota_Max24HourSend = POSIX::floor($quota_Max24HourSend);
-
+		warn q{$quota_Max24HourSend} . $quota_Max24HourSend; 
+		
         #		warn '$quota_Max24HourSend' . $quota_Max24HourSend
         #			if $t;
 
@@ -359,17 +364,40 @@ sub batch_params {
                 # dada automatically manages batch settings
 
                 if ( $quota_Max24HourSend < 86_400 ) {
-                    $batch_size = 1;
-                    $batch_size = $batch_size * $MaxSendRate;    # 5
+					
+					if(($SentLast24Hours * 3) < $quota_Max24HourSend) { 
+						# Turbo!
+						$batch_wait = 1; 
+						$batch_size = $quota_MaxSendRate;
+					}
+					elsif($SentLast24Hours > ($quota_Max24HourSend * .85)) { 
+						# Um, the opposite of turbo! 
+						my $whats_left = $quota_Max24HourSend - $SentLast24Hours;
+						$batch_size = 100; 
+						$batch_wait = int($whats_left / $quota_Max24HourSend) * 100; 
+					}
+					else {
+						warn q{$quota_Max24HourSend < 86_400}; 
+                    
+						$batch_size = 1;
+	                    $batch_size = $batch_size * $quota_MaxSendRate; 
 
-                    $batch_wait = 86_400 / $quota_Max24HourSend;          # 8.64
-                    $batch_wait = $batch_wait * $MaxSendRate;             # 8.64 * 5 = 43.2
-                    $batch_wait = $batch_wait + ( $batch_wait * .10 );    # 38.8
+	                    $batch_wait = 86_400 / $quota_Max24HourSend;          # 8.64
+	                    $batch_wait = $batch_wait * $quota_MaxSendRate;
+						
+	                    $batch_wait = $batch_wait + ( $batch_wait * .10 );    # 38.8
+					}
                 }
                 else {
-                    $batch_size = $MaxSendRate;                           # 5
-                    $batch_wait = $quota_Max24HourSend / 86_400;          # 100_000 / 86_400 = 1.1574...
-                    $batch_wait = $batch_wait + ( $batch_wait * .10 );    # 38.8
+					if(($SentLast24Hours * 3) < $quota_Max24HourSend) { 
+						# Turbo!
+						$batch_wait = 1; 
+						$batch_size = $quota_MaxSendRate;
+					}
+					else {
+						$batch_wait = 1 * $quota_MaxSendRate;
+						$batch_size = ($quota_Max24HourSend / 86_400) * $quota_MaxSendRate;  
+					}
                 }
 
                 # This slows the batch settings down, if there's > 1 mailout going on
@@ -388,7 +416,7 @@ sub batch_params {
                             }
                         }
                     }
-
+					
                     # If the batch size is larger than how many messages we have,
                     # better to divide that up, rather than the span between messages
                     # Round DOWN just to be on the safe side of things.
