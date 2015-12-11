@@ -45,6 +45,11 @@
 				error: function(xhr, ajaxOptions, thrownError) {
 					console.log('status: ' + xhr.status);
 					console.log('thrownError:' + thrownError);
+					
+					/* Well, if there's an error in the look, let us do this: */
+					$("#unsubscription_form").show();
+					$("#automatic_attempt_message").hide();
+					
 				},
 			});
 		}
