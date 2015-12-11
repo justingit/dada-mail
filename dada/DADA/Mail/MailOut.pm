@@ -303,7 +303,7 @@ sub batch_params {
 			$quota_MaxSendRate   = ( $MaxSendRate   * $ses->allowed_sending_quota_percentage ) / 100;
 			
 						
-			warn q{$quota_Max24HourSend} . $quota_Max24HourSend; 
+			#warn q{$quota_Max24HourSend} . $quota_Max24HourSend; 
         }
         elsif ( $using_mandrill == 1 ) {
             require DADA::App::Mandrill;
@@ -377,7 +377,7 @@ sub batch_params {
 						$batch_wait = int($whats_left / $quota_Max24HourSend) * 100; 
 					}
 					else {
-						warn q{$quota_Max24HourSend < 86_400}; 
+						#warn q{$quota_Max24HourSend < 86_400}; 
                     
 						$batch_size = 1;
 	                    $batch_size = $batch_size * $quota_MaxSendRate; 
