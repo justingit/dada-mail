@@ -13,7 +13,7 @@
             true,               // deep extend
             {
                 DEBUG: false,
-				DadaMailURL: "../../../dada/mail.cgi",
+				DadaMailURL: "../../../dada/mail.cgi", // This is probably whacky - why not just use the URL in the form?! (we probably do...)
 				list: undefined,
 				targetForm: undefined,
 				modal: 1,

@@ -1,7 +1,7 @@
 <!-- begin subscription_form_widget.tmpl --> 
 
 <form action="<!-- tmpl_var script_url -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->" id="<!-- tmpl_var subscription_form_id default="subscription_form" -->">
-	<input type="hidden" name="flavor" id="f_s" value="subscribe" >
+	<input type="hidden" name="flavor" id="ddm_flavor" value="subscribe" >
 
 	    <div class="row">
 	        <div class="small-12 columns">
@@ -10,7 +10,7 @@
 		    <input 
 				type="hidden" 
 				name="list" 
-				id="list" 
+				id="ddm_list" 
 				value="<!-- tmpl_var list escape=HTML -->" 
 			>
 		    <!-- tmpl_if list_settings.closed_list -->
@@ -39,7 +39,7 @@
 		        <div class="large-4 medium-4 columns">    		
 			        <label 
 						class="medium-text-right"
-						for="list" 
+						for="ddm_list" 
 					>
 			       		Mailing List 
 			        </label>
@@ -57,7 +57,7 @@
 			        <div class="large-4 medium-4 columns">
 						<label 
 							class="medium-text-right"
-					  		for="email" 
+					  		for="ddm_email" 
 					  	>
 							Email Address
 						</label>
@@ -68,14 +68,14 @@
 								type="text"
 								name="email"
 								readonly="readonly" 
-								id="email" 
+								id="ddm_email" 
 								value="<!-- tmpl_var email escape=HTML -->" 
 							>
 						<!-- tmpl_else --> 
 							<input 
 								type="email" 
 								name="email" 
-								id="email" 
+								id="ddm_email" 
 								value="<!-- tmpl_var email escape=HTML -->"
 								required="required" 
 								placeholder="user@example.com (required)"
@@ -91,10 +91,9 @@
 			    <!-- tmpl_loop subscriber_fields -->
 					<div class="row">
 						<div class="large-4 medium-4 columns">
-			
 					        <label 
 								class="medium-text-right"
-								for="<!-- tmpl_var name escape=HTML -->" 
+								for="ddm_<!-- tmpl_var name escape=HTML -->" 
 							>
 						        <!-- tmpl_if pretty_name --> 
 									<!-- tmpl_var pretty_name escape=HTML --> 
@@ -107,8 +106,7 @@
 					        <input 
 								type="text" 
 								name="<!-- tmpl_var name escape=HTML -->" 
-								id="<!-- tmpl_var name escape=HTML -->" 
-								class="subscriber_field" 
+								id="ddm_<!-- tmpl_var name escape=HTML -->" 
 								value="<!-- tmpl_var given_value escape=HTML -->"
 								placeholder="<!-- tmpl_if comment --> (required)<!-- /tmpl_if -->"  
 							>

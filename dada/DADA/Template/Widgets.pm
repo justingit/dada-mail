@@ -374,7 +374,7 @@ sub list_popup_menu {
 	if($args{-as_checkboxes} == 1){ 
         $r =  $q->checkbox_group(
                                    -name      => $args{-name}, 
-								   -id        => $args{-name}, 
+								   -id        => 'ddm_' . $args{-name}, 
                                   '-values'   => [@opt_labels],
                                    -labels    => $labels,
                                    -columns   => 2, 
@@ -390,7 +390,7 @@ sub list_popup_menu {
         $r = HTML::Menu::Select::popup_menu(
 			 {
 				name     => $args{-name}, 
-				id       => $args{-name}, 
+				id       => 'ddm_' . $args{-name}, 
 				values   => [@opt_labels],
 				labels   => $labels,
 				default  => [$args{-selected_list}],
