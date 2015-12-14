@@ -6,6 +6,7 @@ use DADA::App::Guts;
 use Carp qw(carp croak); 
 use Try::Tiny; 
 
+my $t = $DADA::Config::DEBUG_TRACE->{DADA_MailingList_Archives};
 
 
 BEGIN {
@@ -980,21 +981,23 @@ sub _entity_from_raw_msg {
 	}
 
 	my $entity; 
-	eval { $entity = $self->{parser}->parse_data(
+	try { $entity = $self->{parser}->parse_data(
 			safely_encode( 
 				$raw_msg 
 			)
-		) };
-	if($@){ 
-		croak "Problems creating entity: $@"; 
-	}
+		) 
+	} catch { 
+
+		croak "Problems creating entity: $_"; 
+	};
 	
 	if(!$entity){
 		carp "Couldn't create an entity from this raw_msg:\n$raw_msg";
 		return undef;
 	}
-	
-	return $entity; 
+	else {
+		return $entity; 
+	}
 }
 
 
@@ -1749,6 +1752,8 @@ sub massaged_msg_for_display {
       $self->get_archive_info( $args->{-key} );
 
     if ( !$raw_msg ) {
+		warn 'no raw message.'
+			if $t; 
         $raw_msg = $self->_bs_raw_msg( $subject, $message, $format );
     }
 
@@ -1758,7 +1763,7 @@ sub massaged_msg_for_display {
 	);
 	
     if ( !$entity ) {
-        carp "Couldn't create entity: " . $@;
+        carp "Couldn't create entity";
     }
 
     my $body;
@@ -1776,6 +1781,9 @@ sub massaged_msg_for_display {
         || $b_entity->head->mime_type eq 'text' )
     {
 
+		warn 'PlainText body' 
+			if $t; 
+		
         # If you want the I<unencoded> body, and you are dealing with a
         # singlepart message (like a "text/plain"), use C<bodyhandle()> instead:
 
@@ -1813,9 +1821,13 @@ sub massaged_msg_for_display {
 
     }
     elsif ( $b_entity->head->mime_type eq 'text/html' ) {
-
+		
+		warn 'HTML body' 
+			if $t; 
+		
         $body = $b_entity->bodyhandle->as_string;
 		$body = safely_decode($body); 
+		
 		
         $body = $self->_rearrange_cid_img_tags(
             -key  => $args->{-key},
@@ -1826,6 +1838,9 @@ sub massaged_msg_for_display {
         }
 
         $body = $self->massage($body);
+		
+		
+		
         $body = $self->_parse_in_list_info(
             -data => $body,
             (
@@ -1834,6 +1849,7 @@ sub massaged_msg_for_display {
                 : ( -type => 'text/html' )
             ),
         );
+		
     }
     else {
         warn "I don't know how to work with what I have! mime_type: "
@@ -1849,15 +1865,18 @@ sub massaged_msg_for_display {
     $body = scrub_js($body)
       if $self->{ls}->param('disable_archive_js') == 1;
 
-    $body = $self->_email_protect( $b_entity, $body )
-      if $args->{-entity_protect};
+	if ($args->{-entity_protect} == 1) {
+		$body = $self->_email_protect( $b_entity, $body )
+	}
+
+
+
 
     if ( $args->{-body_only} == 1 ) {
         $body = $self->_chomp_off_body($body);
     }
     else {
         if ( $args->{-plain_text} == 1 ) {
-
             # ...
         }
         else {
@@ -1865,6 +1884,7 @@ sub massaged_msg_for_display {
         }
     }
 
+  	
     if ( $args->{-plain_text} == 1 ) {
 		# happens when you have a HTML body and need it back in plaintext
 		# From what I can figure out, this'll only happen in the 
@@ -1881,6 +1901,7 @@ sub massaged_msg_for_display {
 		
     }
 
+	
     return wantarray ? ( $body, $content_type ) : $body;
 }
 
@@ -1964,23 +1985,30 @@ sub _chomp_off_body {
 	
 	my $self  = shift; 
 	my $str   = shift;
-	my $n_str = $str;
 	
-	# code below replaces code above - any problems?
-	# yeah, it doesn't fucking work.
+	#warn '$str:' . $str; 
+	
+	
+	my $n_str = $str;
 	
 	if($n_str =~ m/\<body.*?\>|<\/body\>/i){ 
 
 		$n_str =~ m/\<body.*?\>([\s\S]*?)\<\/body\>/i;  
 		$n_str = $1; 
-		
 		if($n_str =~ m/\<body.*?\>|<\/body\>/i){ 
 			$n_str = $self->_chomp_off_body_thats_being_difficult($n_str); 		
-		}		
+		}	
+		$n_str = strip($n_str);
+		if($n_str =~ m/\<body.*?\>/) { #seriously?
+		
+			$n_str =~ s/\<body/\<x\-body/g; 
+		
+			$n_str =~ s/\<\/body/\<\/x-body/g; 
+		}
 	}
-		
+	
+	
 	if(!$n_str){
-		
 		return $str; 
 	}else{ 
 		return $n_str;
@@ -2115,7 +2143,10 @@ sub _get_body_entity {
 		# singlepart. 
 		if(($entity->head->mime_type eq 'text/html') || ($entity->head->mime_type eq 'text/plain')){ 
 			#ha! done. 
-				return $entity; 
+			if(!defined($entity)) {
+				carp 'did not find a single part HTML or PlainText body entity.';
+			}
+			return $entity; 
 		} 
 	}
 }
@@ -2540,14 +2571,20 @@ http://www.xmlrpc.com/weblogsCom
 sub send_pings {
 
 	my $self = shift; 
+	my $can_use_xmlrpc_lite = 1; 
 	
 	if($self->{ls}->param('show_archives')        && 
 	   $self->{ls}->param('publish_archives_rss') && 
 	   $self->{ls}->param('ping_archives_rss')
 	  ){ 
 	
-		eval { require XMLRPC::Lite };
-		if(! $@ ) { 
+		try { 
+			require XMLRPC::Lite
+		} catch { 
+			$can_use_xmlrpc_lite = 0;  
+		};
+		
+		if($can_use_xmlrpc_lite == 1 ) { 
 			return map {
 				eval { XMLRPC::Lite->proxy($_, timeout => 5)
 				->call('weblogUpdates.ping', $self->{ls}->param('list_name') , $DADA::Config::PROGRAM_URL . '/list/' . $self->{list} . '/')
@@ -2600,29 +2637,21 @@ sub _decode_header {
 	my $self       = shift; 	 
 	my $header     = shift;
 	my $new_header = undef; 
+	my $can_use_mime_encodewords = 1; 
 	
 	if($self->{ls}->param('mime_encode_words_in_headers') == 1){ 
-		eval{ 
+		try { 
 			require MIME::EncWords;
-		};
-#
-		if($@){ 
+		} catch {
+			$can_use_mime_encodewords = 0; 
 			carp "MIME::EncWords is returning with an error: $@"; 		
 			return $header;
-		}
-		else  {
+		};
 
-
-			#if($header eq MIME::EncWords::decode_mimewords($header)){ 
-				# No? Well, nothing to do; 
-				#...
-			#}
-			#else { 
-				# Yes? Let's decode!
+		if($can_use_mime_encodewords == 1){ 
 				$new_header = MIME::EncWords::decode_mimewords($header, Charset => '_UNICODE_'); 
 				return $new_header;
-		}
-		
+		}		
 	}
 	else { 
 		return $header; 
