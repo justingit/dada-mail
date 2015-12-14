@@ -102,7 +102,10 @@
 	<!-- tmpl_if show_iframe -->
 		<div class="row">
 			<div class="small-12 columns">	 
-				 <iframe src="<!-- tmpl_var PROGRAM_URL -->?flavor=archive_bare;l=<!-- tmpl_var list -->;id=<!-- tmpl_var id -->" id="archived_message_body_container">
+				 <iframe 
+				 	src="<!-- tmpl_var PROGRAM_URL -->?flavor=archive_bare&list=<!-- tmpl_var list -->&id=<!-- tmpl_var id -->" 
+					id="archived_message_body_container"
+				  >
 				  <!-- redundancy for browsers & devices that aren't frames-compatible: -->
 				  <div id="archived_message_body">
 				   <!-- tmpl_var massaged_msg_for_display -->
