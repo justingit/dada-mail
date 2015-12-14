@@ -339,7 +339,6 @@ sub batch_params {
         #		warn '$quota_Max24HourSend bef' , $quota_Max24HourSend;
 
         $quota_Max24HourSend = POSIX::floor($quota_Max24HourSend);
-		warn q{$quota_Max24HourSend} . $quota_Max24HourSend; 
 		
         #		warn '$quota_Max24HourSend' . $quota_Max24HourSend
         #			if $t;
