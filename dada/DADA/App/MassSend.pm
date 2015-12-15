@@ -1758,14 +1758,20 @@ sub has_attachments {
         my $filename = $q->param( 'attachment' . $_ );
         warn '$filename:' . $filename
           if $t;
+
+		# I shouldn't have to do this: 
+		$filename =~ s/dada_mail_support_files\/file_uploads\///;
+          
         if ( defined($filename) && length($filename) > 1 ) {
             if ( $filename ne 'Select A File...' && length($filename) > 0 ) {
                 warn 'I\'ve got, ' . 'attachment' . $_
                   if $t;
-                if ( !-e $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_dir} . '/' . $filename ) {
+				
+				
+				if ( !-e $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_dir} . '/' . $filename ) {
                     my $new_filename = uriunescape($filename);
                     if ( !-e $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_dir} . '/' . $new_filename ) {
-                        warn 'I can\'t find attachment file: '
+                        warn "I can't find attachment file: "
                           . $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_dir} . '/'
                           . $filename;
                     }

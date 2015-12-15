@@ -4163,28 +4163,23 @@ function opencore5FileManager(url, width, height) {
 	oWindow = window.open(url + '?custom_function=SetAttachmentUrl', "BrowseWindow", sOptions);
 }
 
-/* Seems like with the new ver of core5 FileManager, this needs to be called, SetUrl. Aww, well?
-function SetAttachmentUrl(url, width, height, alt) {
-	var core5_filemanager_upload_url = escapeRegExp(jQuery("#core5_filemanager_upload_url").val() + '/');
-	core5_filemanager_upload_url + '/';
-	var re = new RegExp(core5_filemanager_upload_url, 'g');
-	var new_val = url.replace(re, '');
-	// console.log('new_val: ' + new_val);
-	var field = urlobj;
 
-	jQuery(field).html('<img src="' + jQuery("#SUPPORT_FILES_URL").val() + '/static/images/attachment_icon.gif" />' + new_val);
-	jQuery("#" + jQuery(field).attr("data-attachment")).val(new_val);
-	jQuery("#" + jQuery(field).attr("data-attachment") + '_remove_button').show();
-	oWindow = null;
-}
-*/
 
 
 function SetUrl(url, width, height, alt) {
 	var core5_filemanager_upload_url = escapeRegExp(jQuery("#core5_filemanager_upload_url").val() + '/');
-	core5_filemanager_upload_url + '/';
+	    core5_filemanager_upload_url + '/';
+		
+	
 	var re = new RegExp(core5_filemanager_upload_url, 'g');
+
+	var path_wo_url_re = escapeRegExp('/dada_mail_support_files/file_uploads/'); 	
+	var re2 = new RegExp(path_wo_url_re, 'g');
+
 	var new_val = url.replace(re, '');
+	
+	    new_val = new_val.replace(re2, '');
+	
 	// console.log('new_val: ' + new_val);
 	var field = urlobj;
 
