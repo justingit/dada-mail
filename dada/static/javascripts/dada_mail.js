@@ -459,13 +459,6 @@ jQuery(document).ready(function($){
 
 	}
 
-	// Membership >> Invite/Add
-	if ($("#add").length) {
-		$("#show_progress").hide();
-		$('body').on('submit', '#fileupload', function(event){
-			check_status();
-		});
-	}
 
 
 	// Membership >> Add (step 2)
@@ -1801,9 +1794,6 @@ function update_sending_monitor_interface(message_id, type, target_id, refresh_a
 			});
 			request.done(function(content) {
 				$("#" + target_id).html(content);
-				$("#progressbar").progressbar({
-					value: ($("#progressbar_percent").val() / 1)
-				});
 			});
 			if (no_loop != 1) {
 				setTimeout(
@@ -1836,67 +1826,6 @@ function refresh_tracker_plugin(tracker_url, message_id, target_id) {
 	tracker_refresh_loop(1);
 }
 
-
-
-// Membership >> Invite/Add
-
-function check_status() {
-	$("#show_progress").show();
-	keep_updating_status_bar = 1;
-	//update_status_bar();
-}
-
-var keep_updating_status_bar = 0;
-
-function update_status_bar() {
-	/*
-	var update_status_bar_loop = function(no_loop) {
-
-			if (keep_updating_status_bar === 0) {
-				return;
-			}
-			// console.log('update_status_bar_loop called');
-			var request = $.ajax({
-				url: $("#s_program_url").val(),
-				type: "GET",
-				data: {
-					flavor: 'check_status',
-					new_email_file: $('#new_email_file').val(),
-					rand_string: $('#rand_string').val()
-				},
-				dataType: "json",
-				success: function(data) {
-					//console.log('data.percent:"' + data.percent +  '"');
-					//$.each(data, function(key, val) {
-					//		console.log(key + ' => ' + val);
-					//});
-					if (data.percent > 0) {
-						$("#progressbar").progressbar({
-							value: data.percent
-						});
-						$('#upload_status').html('<p>Uploading File: ' + data.percent + '%</p>');
-						if (data.percent == 100) {
-							keep_updating_status_bar = 0;
-							no_loop = 1;
-							$('#upload_status').html('<p>Upload Complete! Processing...</p>');
-						}
-						//console.log('done?');
-					}
-				},
-				error: function(xhr, ajaxOptions, thrownError) {
-					console.log('status: ' + xhr.status);
-					console.log('thrownError:' + thrownError);
-				}
-			});
-			if (no_loop != 1) {
-				setTimeout(
-				update_status_bar_loop, 1000);
-			}
-		}
-	setTimeout(
-	update_status_bar_loop, 1000);
-	*/
-}
 
 
 
