@@ -137,5 +137,5 @@ quotemeta(q|<body id="cke_pastebin" style="position: absolute; top: 116px; width
 
 
 
-
+sub DESTROY {}
 1;

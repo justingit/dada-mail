@@ -280,9 +280,7 @@ sub _remove_quoted_sig {
 }
 
 
-sub DESTROY { 
-	
-}
+sub DESTROY {}
 
 
 1;

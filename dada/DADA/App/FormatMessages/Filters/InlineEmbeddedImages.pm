@@ -343,4 +343,6 @@ sub time_stamp {
     return $timestamp;
 }
 
+sub DESTROY {}
+
 1;
