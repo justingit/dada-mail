@@ -11,6 +11,8 @@ Key:
 [?] Someday
 
 
+quoted_reply - guh, you broke qquoted_reply!!! Silly goose. 
+
 On Dec 15, 2015, at 2:50 PM, Bruce Harper bharper@vt.edu [Dada Mail Developers] <dadadev@dadamailproject.com> wrote:
 and so on. Under the new version, there is still a choice to grab the message from a URL but it doesn't work the same way (neither does "Create a PlainText version automatically"). The system requires that there be _something_ in the HTML section, either a URL or some text in the "use this content" box. Either way, the result is a mess:
 

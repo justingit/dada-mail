@@ -100,8 +100,6 @@ jQuery(document).ready(function($){
 					$('#buttons').removeClass('floating_panel');
             }
         });
-			
-			
 		if($("#additional_email_headers").length){
 			$("#additional_email_headers").hide();
 		}
@@ -170,9 +168,6 @@ jQuery(document).ready(function($){
 				mrasmm.fire();
 		});
 
-
-
-
 		$("body").on("click", ".remove_attachment", function(event) {
 			if(confirm("Remove Attachment?")) {
 				$("#" + $(this).attr("data-attachment")).val('');
@@ -180,6 +175,14 @@ jQuery(document).ready(function($){
 				$(this).hide();
 			}
 		});
+		
+		$("body").on("click", ".toggle_send_url_options", function(event) {
+			send_url_options_setup();
+		}); 
+		send_url_options_setup();
+		
+		
+		
 		$("body").on("submit", "#mass_mailing", function(event) {
 			event.preventDefault();
 		});
@@ -251,15 +254,6 @@ jQuery(document).ready(function($){
 					return true;
 				}
 			}
-		});
-
-		$("body").on("click", ".schedulemassmailing", function(event) {
-			/*
-			$("#button_action_notice").html('Working...');
-			$("#draft_role").val('schedule');
-			save_msg(false);
-			window.location.replace($("#s_program_url").val() + '?flavor=' + $("#f").val() + '&draft_id=' + $("#draft_id").val() + '&restore_from_draft=true&draft_role=schedule&done=1');
-*/
 		});
 
 		$("body").on("click", ".ChangeMassMailingButtonLabel", function(event) {
@@ -2481,6 +2475,8 @@ function sending_prefs_setup() {
 	}
 }
 
+
+
 function toggle_SASL_options() {
 	if ($("#use_sasl_smtp_auth").prop("checked") === true) {
 		if ($('#SASL_options').is(':hidden')) {
@@ -2504,6 +2500,74 @@ function toggle_pop_before_SMTP_options() {
 		}
 	}
 }
+
+function send_url_options_setup() {
+
+	var hidden = [];
+	var visible = [];
+
+	if ($("#content_from_url").prop("checked") === true) {
+		hidden = ['HTML_content_from_textarea_widget'];
+		visible = ['HTML_content_from_url_widget', 'HTML_content_advanced_options'];
+	}
+	if ($("#content_from_textarea").prop("checked") === true) {
+		hidden = ['HTML_content_from_url_widget'];
+		visible = ['HTML_content_from_textarea_widget', 'HTML_content_advanced_options'];
+	}
+	if ($("#content_from_none").prop("checked") === true) {
+		hidden = ['HTML_content_from_url_widget', 'HTML_content_from_textarea_widget', 'HTML_content_advanced_options'];
+		visible = [];
+	}
+	
+	var i;
+	for (i = 0; i < hidden.length; i += 1) {
+		if ($('#' + hidden[i]).is(':visible')) {
+			$('#' + hidden[i]).hide('blind');
+		}
+	}
+	i = 0;
+	for (i = 0; i < visible.length; i += 1) {
+		if ($('#' + visible[i]).is(':hidden')) {
+			$('#' + visible[i]).show('blind');
+		}
+	}
+	send_url_options_PlainText_setup();
+}
+
+
+function send_url_options_PlainText_setup() {
+
+	var pthidden = [];
+	var ptvisible = [];
+	
+	if ($("#plaintext_content_from_url").prop("checked") === true) {
+		pthidden  = ['PlainText_content_from_text_widget']; 
+		ptvisible = ['PlainText_content_from_url_widget']; 
+	}
+	if ($("#plaintext_content_from_text").prop("checked") === true) {
+		pthidden  = ['PlainText_content_from_url_widget']; 
+		ptvisible = ['PlainText_content_from_text_widget']; 
+	}
+	if ($("#plaintext_content_from_auto").prop("checked") === true) {
+		pthidden = ['PlainText_content_from_url_widget', 'PlainText_content_from_text_widget'];
+	}
+
+	var i;
+	for (i = 0; i < pthidden.length; i += 1) {
+		//if ($('#' + pthidden[i]).is(':visible')) {
+			$('#' + pthidden[i]).hide('blind');
+		//}
+	}
+	i = 0;
+	for (i = 0; i < ptvisible.length; i += 1) {
+		if ($('#' + ptvisible[i]).is(':hidden')) {
+			$('#' + ptvisible[i]).show('blind');
+		}
+	}
+	
+}
+
+
 
 function test_mail_sending_options() {
 

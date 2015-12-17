@@ -66,8 +66,6 @@ sub parse {
         }
         else {
             $html_ver = safely_decode($content);
-            #warn q{$self->{crop_html_content}} . $self->{crop_html_content}; 
-            
             if ( $self->{crop_html_content} == 1 ) {
                 $html_ver = $self->crop_html($html_ver);
             }
@@ -81,8 +79,6 @@ sub parse {
         }
         $rootPage = $url1;
         $html_md5 = md5_checksum( \$html_ver );
-
-        #warn '$html_md5 ' . $html_md5;
     }
 
     # Get content of $url_txt with LWP if needed
@@ -104,7 +100,7 @@ sub parse {
     }
 
     # Means successful, but blank. Blank is no good for us.
-    if ( !$html_ver ) {
+    if ( !$html_ver && !$txt_ver) {
         $self->set_err('Webpage content is blank.');
         if (wantarray) {
             return ( 0, 'Webpage content is blank.', $self->{_MAIL}, $html_md5 );
@@ -448,6 +444,7 @@ sub build_mime_object {
 
     # Create part for text if needed
     if ($txt) {
+		
         my $ref = ( $html ? {} : $self->{_param} );
         $txt_part = new MIME::Lite(
             %$ref,
@@ -467,6 +464,10 @@ sub build_mime_object {
         $mail = $txt_part unless $html;    # unless html?
 
     }
+	
+	if ($txt && !$html) {
+		 $mail = $txt_part;
+	}
 
     # If images and html and no text, multipart/related
     if ( @$ref_mail and !$txt ) {
@@ -483,7 +484,7 @@ sub build_mime_object {
     }
 
     # Else if html and text and no images, multipart/alternative
-    elsif ( $txt and !@$ref_mail ) {
+    elsif ( $txt && !@$ref_mail && $html ) {
         my $ref = $self->{_param};
         $$ref{'Type'} = "multipart/alternative";
         $mail = new MIME::Lite(%$ref);
@@ -492,7 +493,7 @@ sub build_mime_object {
     }
 
     # Else (html, txt and images) mutilpart/alternative
-    elsif ( $txt && @$ref_mail ) {
+    elsif ( $txt && @$ref_mail && $html ) {
         my $ref = $self->{_param};
         $$ref{'Type'} = "multipart/alternative";
         $mail = new MIME::Lite(%$ref);
@@ -515,8 +516,6 @@ sub build_mime_object {
         # Attach related part to alternative part
         $mail->attach($rel);
     }
-
-    #  $mail->replace('X-Mailer',"MIME::Lite::HTMLForked $VERSION");
 
     $self->{_MAIL} = $mail;
 

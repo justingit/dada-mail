@@ -688,11 +688,10 @@ sub construct_from_url {
     else {
         $text_message = 'This email message requires that your mail reader support HTML';
     }
-    
     if ( $draft_q->param('plaintext_content_from') eq 'auto' ) {
         if ( $draft_q->param('content_from') eq 'url' ) {
             if ( length($url) <= 0 ) {
-                croak "You did not fill in a URL!";
+                croak "You did not fill out a URL!";
             }
             my ( $good_try, $res, $md5 ) = grab_url({-url => $draft_q->param('url') });
 
@@ -715,7 +714,10 @@ sub construct_from_url {
             );
         }
     }
-    elsif ( $draft_q->param('plaintext_content_from') eq 'url' ) {        
+    elsif ( $draft_q->param('plaintext_content_from') eq 'text' ) {        
+		$text_message = $draft_q->param('text_message_body');
+    }
+	elsif ( $draft_q->param('plaintext_content_from') eq 'url' ) {        
         my $res; my $md5; 
         ( $text_message, $res, $md5 ) = grab_url({-url => $draft_q->param('plaintext_url') });
     }
@@ -731,7 +733,8 @@ sub construct_from_url {
     my $md5; 
     my $mlo_status = 1; 
     my $mlo_errors = undef; 
-    
+   	
+	
     if ( $draft_q->param('content_from') eq 'url' ) {
 
         # AWKWARD.
@@ -748,7 +751,8 @@ sub construct_from_url {
 
         my $errors = undef;
         try { 
-            ($mlo_status, $mlo_errors, $MIMELiteObj, $md5) = $mailHTML->parse( $url, safely_encode($text_message) );
+            ($mlo_status, $mlo_errors, $MIMELiteObj, $md5) 
+				= $mailHTML->parse( $url, safely_encode($text_message) );
         } catch { 
             $errors .= "Problems with sending a webpage! Make sure you've correctly entered the URL to your webpage!\n";
             $errors .= "* Returned Error: $_";
@@ -759,21 +763,26 @@ sub construct_from_url {
         }
     }
     else {
-        
-        my $html_message = $draft_q->param('html_message_body');
-        ( $text_message, $html_message ) =
-          DADA::App::FormatMessages::pre_process_msg_strings( $text_message, $html_message );
-
+		
+        my $html_message; 
+	    if ( $draft_q->param('content_from') eq 'none' ) {
+		}
+		else {
+	        $html_message = $draft_q->param('html_message_body');
+	        ( $text_message, $html_message ) =
+	          DADA::App::FormatMessages::pre_process_msg_strings( $text_message, $html_message );
+		}
+		
         my ( $status, $errors ) = $self->redirect_tag_check($html_message);
         if ( $status == 0 ) {
             return ( $status, $errors, undef, undef, undef );
         }
         undef($status);
         undef($errors);
-
-        
+		
         try { 
-            ($mlo_status, $mlo_errors, $MIMELiteObj, $md5) = $mailHTML->parse( safely_encode($html_message), safely_encode($text_message) ); 
+            ($mlo_status, $mlo_errors, $MIMELiteObj, $md5) 
+				= $mailHTML->parse( safely_encode($html_message), safely_encode($text_message) ); 
         } catch { 
             my $errors = "Problems sending HTML! \n
             * Are you trying to send a webpage via URL instead?

@@ -2,7 +2,14 @@
 
 <div class="row">
 	<div class="small-12 columns">
-		<input type="radio" name="plaintext_content_from" id="plaintext_content_from_auto" value="auto" checked="checked" >
+		<input 
+			type="radio" 
+			name="plaintext_content_from" 
+			id="plaintext_content_from_auto" 
+			value="auto" 
+			checked="checked"
+			class="toggle_send_url_options"
+		>
 		<label for="plaintext_content_from_auto">
 			Create a PlainText version automatically
 		</label>
@@ -10,20 +17,45 @@
 </div>
 <div class="row">
 	<div class="small-12 columns">
-		<input type="radio" name="plaintext_content_from" id="plaintext_content_from_url" value="url" >
+		<input 
+			type="radio" 
+			name="plaintext_content_from" 
+			id="plaintext_content_from_url" 
+			value="url"
+			class="toggle_send_url_options"
+		>
 		<label for="plaintext_content_from_url">
-			Grab content from a URL: 
+			Grab content from a URL
 		</label>
-		<input type="text" name="plaintext_url" id="plaintext_url"  placeholder="http://" >
 	</div>
 </div>
+<div id="PlainText_content_from_url_widget">
+	<div class="row panel">
+		<div class="small-12 columns">
+			<input type="text" name="plaintext_url" id="plaintext_url"  placeholder="http://" >
+		</div>
+	</div>
+</div>
+	
 <div class="row">
 	<div class="small-12 columns">
-		<input type="radio" name="plaintext_content_from" id="plaintext_content_from_text" value="text" >
+		<input 
+			type="radio" 
+			name="plaintext_content_from" 
+			id="plaintext_content_from_text" 
+			value="text"
+			class="toggle_send_url_options"
+		>
 		<label for="plaintext_content_from_text">
-			Write/Paste Text:
+			Write/Paste Text
 		</label>
-		<!-- tmpl_include plaintext_message_form_field_widget.tmpl -->
+	</div>
+</div>
+<div id="PlainText_content_from_text_widget">
+	<div class="row panel">
+		<div class="small-12 columns">
+			<!-- tmpl_include plaintext_message_form_field_widget.tmpl -->
+		</div>
 	</div>
 </div>
 
