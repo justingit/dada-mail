@@ -950,14 +950,14 @@ sub _highlight_quoted_text {
 		chomp($line); 
 		# line begins with a, ">"
 		if($line =~ m/^\&gt;/){
-			$line =~ s/^\&gt;//; 
+			#$line =~ s/^\&gt;//; 
 			
 			if($line =~ m/\<BR\>$/i){ 
 				$br_at_end = 1; 
 				$line =~ s/\<BR\>$//i;
 			}
 			
-			$line = '<span class="quoted_reply">&gt;' . $line . '</span>';
+			$line = '<blockquote>' . $line . '</blockquote>';
 			$line .= '<br />'
 				if $br_at_end == 1; 
 		}

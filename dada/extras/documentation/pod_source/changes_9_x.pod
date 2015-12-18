@@ -4,6 +4,60 @@
 
 =head1 Dada Mail Changelog for v9.x
 
+=head1 9.0.2
+
+=head2 Summary 
+
+This is mostly a bug-fix release, fixing bugs found in the v9.0.0 + v9.0.1 release 
+
+=head2 Changes
+
+=head3 Amazon SES Automatic Batch Settings
+
+Dada Mail can set up your Batch Settings for your mailing list automaticaly, using your daily quota, and per-second limits set by Amazon SES. It does so fairly conservatively. This works - but for the majority of users, it could work better. So, we've made our automatic batch settings send at a more aggressive speed, having it taper it's speed back, as you come closer to your set quota. 
+
+Expect I<10x speed up> for mass mail sending if you haven't used any of your daily Amazon SES quota. And we're not joking. 
+
+
+=head2 Bugfixes
+
+=head3 Send a Webpage and Plaintext Messages
+
+Dada Mail's Send a Webpage screen was initially envisioned to send out HTML-formated mailing list messages fetched via a URL. Users have said that they would like to use the same functionality to send PlainText-formatted 
+messages. But when they try, Dada Mail complains about a missing HTML version of the webpage.
+
+Dada Mail should now have proper support to explicitly NOT set an HTML version of a message, as well as the ability to correctly send a PlainText version of a message, without requiring an HTML version. 
+
+Setting a Plainted scheduled message with the Send a Webpage screen will also work correctly. Dada Mail should correctly sense if the PlainText version has been modified since the last mass mailing has been sent, and 
+skip over a scheduled mass mailing (if you have set things up to do so).
+
+=head3 Quoted Replies not formatted correctly in public archives
+
+Discussion messages usually show some, or all of the original message they're replying to. Dada Mail  formats this reply, so that it's easier to distiguish the reply, from the original message - just like your mail 
+reader. This functionality seems to have been missing in v9 of Dada Mail, as the needed style was removed. 
+
+We've changed this functionality, so that quoted text shown in the public archives are simply wrapped in blockquote HTML tags. 
+
+=head3 File Attachments
+
+In certain situations, file attachments were not properly being sent with mass mailings. We've done some work to ameliorate this problem. This problem may be related to the updated version of the Core 5 Filemanager that we ship with Dada Mail, and how it handles handing back the name of the file you have uploaded and selected. 
+
+=head3 Admin login if no mailing lists are public
+
+If all your mailing lists are private, the admin screen shows NO popup menu to select your list, as well as a button labeled, "More..." that you can press to get a textbox to enter in your list shortname. This is silly. 
+
+Now, if the above scenario is in place, you'll see a textbox.
+
+=head3 SQL Options in Dada Mail Installer when SQL is not available
+
+Dada Mail requires the Perl driver for the SQL backed you would like to use. If none are available, the included Installer will simply not show any options, which will confuse the user into thinking that no backend configuration is needed, rather than perhaps allude to the fact that one of those required drivers needs to be separately installed. This should now be fixed. 
+
+=head3 Caching of js and css files
+
+Browsers love to cache files, like cascading style sheets and javascript files. 
+
+This is usually a very good idea! But, some users have been having trouble when upgrading Dada Mail, as the browser is using older versions of these files, breaking their just-upgraded Dada Mail. To help this problem, we're adding a simple query string to the end of the URLs for .css and .js files (that aren't already versioned), so that cache-hungry browser will use a new version of the file, when a user upgrades their Dada Mail. 
+
 =head1 9.0.0
 
 Initial release of v9. Hurray! 

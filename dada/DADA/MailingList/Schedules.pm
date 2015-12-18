@@ -442,8 +442,8 @@ sub update_schedule {
     my $vars = $args->{-vars}; 
     require Data::Dumper;
     my $r; 
-     $r .= 'update_schedule: passed args:'; 
-     $r .= Data::Dumper::Dumper($args); 
+     #$r .= 'update_schedule: passed args:'; 
+     #$r .= Data::Dumper::Dumper($args); 
     
     
     my $local_q = $self->{d_obj}->fetch(
