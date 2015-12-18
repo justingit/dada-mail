@@ -3433,7 +3433,7 @@ sub hack_in_js {
     );
 
     my $dm_js = '/static/javascripts/jquery.dadamail.js"></script>';
-    my $dm_js_qm = quotemeta($dm_js); 
+    my $dm_js_qm = '\/static\/javascripts\/jquery\.dadamail\.js(.*?)\"\>\<\/script\>'; 
     
     $scrn =~ s/$dm_js_qm/$dm_js\n$js/;
 
@@ -4384,9 +4384,12 @@ sub screen {
 		}
 		
 	}
+	
 
 	$screen =~ s/^\///;
-    my $t = DADA::Template::Widgets::_raw_screen(
+    $screen =~ s/\?(.*?)$//; 
+	
+	my $t = DADA::Template::Widgets::_raw_screen(
         {
             -screen => $screen,
         	%$s_params,

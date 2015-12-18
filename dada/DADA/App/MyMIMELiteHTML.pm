@@ -285,9 +285,15 @@ sub parse {
     }
 
     $self->build_mime_object( $html_ver, $txt_ver || undef, \@mail );
-
+	
+	my $r_md5 = $html_md5; 
+	if(!$html_ver && $txt_ver){
+		$r_md5 = md5_checksum( \$txt_ver );
+	}
+	
+	
     if (wantarray) {
-        return ( 1, undef, $self->{_MAIL}, $html_md5 );
+        return ( 1, undef, $self->{_MAIL}, $r_md5 );
     }
     else {
         return $self->{_MAIL};
@@ -466,7 +472,7 @@ sub build_mime_object {
     }
 	
 	if ($txt && !$html) {
-		 $mail = $txt_part;
+		 $mail = $txt_part;		 
 	}
 
     # If images and html and no text, multipart/related

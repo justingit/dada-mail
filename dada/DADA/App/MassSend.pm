@@ -718,7 +718,8 @@ sub construct_from_url {
 		$text_message = $draft_q->param('text_message_body');
     }
 	elsif ( $draft_q->param('plaintext_content_from') eq 'url' ) {        
-        my $res; my $md5; 
+        my $res; 
+		my $md5; 
         ( $text_message, $res, $md5 ) = grab_url({-url => $draft_q->param('plaintext_url') });
     }
 
@@ -766,6 +767,7 @@ sub construct_from_url {
 		
         my $html_message; 
 	    if ( $draft_q->param('content_from') eq 'none' ) {
+			# ...
 		}
 		else {
 	        $html_message = $draft_q->param('html_message_body');

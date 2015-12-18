@@ -213,7 +213,7 @@ sub run_schedules {
                 
                 if(
                     $sched->{schedule_type}                                  eq 'recurring'
-                 && $sched->{schedule_recurring_only_mass_mail_if_html_diff} == 1
+                 && $sched->{schedule_recurring_only_mass_mail_if_primary_diff} == 1
                 ){ 
                     $r .= "\t\t* Checking message content...\n";
                     my ($status, $errors, $message_id, $md5) = $self->{ms_obj}->construct_and_send(
@@ -233,14 +233,14 @@ sub run_schedules {
                          && defined($sched->{schedule_html_body_checksum})
                          && $md5 eq $sched->{schedule_html_body_checksum}
                     ) { 
-                            $r .= "\t\t\t* HTML Content same as previously sent scheduled mass mailing.\n";
+                            $r .= "\t\t\t* Primary Content same as previously sent scheduled mass mailing.\n";
                             $r .= "\t\t\t* Skipping sending scheduled mass mailing.\n\n"; 
                             undef($md5); 
                             next SPECIFIC_SCHEDULES;
                             
                      }
                      else { 
-                         $r .= "\t\t* Looks good! HTML content is different than last scheduled mass mailing.\n";
+                         $r .= "\t\t* Looks good! Primary content is different than last scheduled mass mailing.\n";
                          undef($md5); 
                      }
                 }
@@ -255,7 +255,7 @@ sub run_schedules {
                         -process    => 1, 
                     }
                 );
-               # $r .= 'schedule_recurring_only_mass_mail_if_html_diff ' . $sched->{schedule_recurring_only_mass_mail_if_html_diff} . "\n";
+               # $r .= 'schedule_recurring_only_mass_mail_if_primary_diff ' . $sched->{schedule_recurring_only_mass_mail_if_primary_diff} . "\n";
                #    $r .= 'Saved MD5: ' . $sched->{schedule_html_body_checksum} . "\n";
                #    $r .= 'MD5: ' . $md5 . "\n"; 
                if($sched->{schedule_type} eq 'recurring') { 
