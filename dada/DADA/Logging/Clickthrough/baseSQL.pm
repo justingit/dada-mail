@@ -702,7 +702,7 @@ sub mass_mailing_event_log {
 	    if($self->{ls}->param('tracker_track_email') == 1 
 	    && $self->{ls}->param('tracker_update_profiles_w_geo_ip_data') == 1
 	    && $args->{-email} ne '') { 
-			warn 'updating profil fields..'
+			warn 'updating profile fields..'
 				if $t; 
 	        try { 
 	            warn '$args->{-email}' . $args->{-email} 
