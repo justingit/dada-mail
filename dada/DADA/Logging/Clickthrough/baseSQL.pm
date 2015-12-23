@@ -698,6 +698,28 @@ sub mass_mailing_event_log {
             );
         }
     }
+	if($event eq 'open') { 
+	    if($self->{ls}->param('tracker_track_email') == 1 
+	    && $self->{ls}->param('tracker_update_profiles_w_geo_ip_data') == 1
+	    && $args->{-email} ne '') { 
+			warn 'updating profil fields..'
+				if $t; 
+	        try { 
+	            warn '$args->{-email}' . $args->{-email} 
+	                if $t; 
+	            warn '$remote_address'  . $remote_address 
+	                if $t; 
+	            $self->_update_profile_fields(
+	                {
+	                    -email      => $args->{-email},
+	                    -ip_address => $remote_address, 
+	                }
+	            ); 
+	        } catch { 
+	            carp "problems updating fields with geo ip data: $_"; 
+	        };
+	    }
+	}
     
     my $ts_snippet          = '';
     my $place_holder_string = '';
@@ -754,8 +776,6 @@ sub mass_mailing_event_log {
         require Data::Dumper;
 		warn 'excute_args:' . Data::Dumper::Dumper([@execute_args]);
 	}
-	
-	
 	
 	$sth->finish;
     return 1;
