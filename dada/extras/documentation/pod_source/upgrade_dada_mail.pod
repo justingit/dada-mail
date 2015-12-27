@@ -2,6 +2,13 @@
 
 =head1 Upgrading Dada Mail
 
+=begin html
+
+<iframe width="853" height="480" src="https://www.youtube.com/embed/uiNn_YoNR5k?rel=0" frameborder="0" allowfullscreen></iframe>
+
+=end html
+
+
 =head2 Introduction
 
 This doc. will guide you through an upgrade of Dada Mail, originally installed and configured with the included Dada Mail Installer. 
