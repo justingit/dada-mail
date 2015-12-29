@@ -4,6 +4,13 @@
 
 =head1 Magic User Templates
 
+=begin html 
+
+<iframe width="853" height="480" src="https://www.youtube.com/embed/9-EEvGVCJl4?rel=0" frameborder="0" allowfullscreen></iframe>
+
+=end html
+
+
 Magic User Templates allow you to easily skin Dada Mail's user-facing design and layout to match your website's existing design. 
 
 It's the easiest way to fully integrate Dada Mail into your website.
