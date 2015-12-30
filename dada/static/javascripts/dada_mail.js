@@ -1,12 +1,26 @@
-var plainOverlayOptions = {
-		opacity: 0.1,
-		color: '#666',
-		progress: function() {
-			return $('<div class="spinner_bg"></div>');
-		}
-};
 var loading_str = '<p class="label info">Loading...</p>';
-
+var spinner_opts = {
+  lines: 13 // The number of lines to draw
+, length: 28 // The length of each line
+, width: 14 // The line thickness
+, radius: 42 // The radius of the inner circle
+, scale: 1 // Scales overall size of the spinner
+, corners: 1 // Corner roundness (0..1)
+, color: '#000' // #rgb or #rrggbb or array of colors
+, opacity: 0.125 // Opacity of the lines
+, rotate: 0 // The rotation offset
+, direction: 1 // 1: clockwise, -1: counterclockwise
+, speed: 1 // Rounds per second
+, trail: 60 // Afterglow percentage
+, fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+, zIndex: 2e9 // The z-index (defaults to 2000000000)
+, className: 'spinner' // The CSS class to assign to the spinner
+, top: '50%' // Top position relative to parent
+, left: '50%' // Left position relative to parent
+, shadow: false // Whether to render a shadow
+, hwaccel: false // Whether to use hardware acceleration
+, position: 'absolute' // Element positioning
+}
 jQuery(document).ready(function($){
 
 	/*
@@ -1247,7 +1261,7 @@ jQuery(document).ready(function($){
 		tracker_parse_links_setup();
 		tracker_toggle_tracker_track_email_options();
 
-		message_history_html();
+		message_history_html(1);
 		$("body").on("change", '#tracker_record_view_count', function(event) {
 			tracker_change_record_view();
 		});
@@ -1829,6 +1843,14 @@ function view_list_viewport(initial) {
 	//alert('$("#advanced_search").val() ' + $("#advanced_search").val());
 	//alert(' $("#advanced_query").val() ' +  $("#advanced_query").val());
 
+
+	if (initial == 1) {
+		$("#view_list_viewport").height(480); 
+	}
+
+	var target = document.getElementById('view_list_viewport');
+	var spinner = new Spinner(spinner_opts).spin(target);
+
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
 		type: "POST",
@@ -1846,13 +1868,16 @@ function view_list_viewport(initial) {
 		},
 		dataType: "html"
 	});
+	
+
 	request.done(function(content) {
+		spinner.stop();
 
 		if (initial == 1) {
-			$("#view_list_viewport").hide();
+			$("#view_list_viewport").fadeTo( 0, 0);
 			$("#view_list_viewport").html(content);
-
-
+			$("#view_list_viewport").fadeTo(200, 1);
+			
 			if($("#advanced_search").val() == 1){
 				console.log('not hiding advanced search form');
 			}
@@ -1861,13 +1886,15 @@ function view_list_viewport(initial) {
 				$("#advanced_list_search").hide();
 			}
 
-			$("#view_list_viewport").show('fade');
+			// $("#view_list_viewport").fadeTo(200, 1);
 		} else {
-
-			$("#view_list_viewport").html(content);
-			if($("#advanced_search").val() != 1){
-				$("#advanced_list_search").hide();
-			}
+			//$("#view_list_viewport").fadeTo(200, 0); 
+			//$("#view_list_viewport").fadeTo(200, 1, function() {
+				$("#view_list_viewport").html(content);
+				if($("#advanced_search").val() != 1){
+					$("#advanced_list_search").hide();
+				}
+			//});
 		}
 
 		//$("#view_list_viewport_loading").html('<p>&nbsp;</p>');
@@ -1878,10 +1905,10 @@ function view_list_viewport(initial) {
 		console.log('#advanced_search ' + $("#advanced_search").val()) ;
 
 		if($("#advanced_search").val() == 1){ // === is not working, here.
-			$("#domain_break_down").hide();
+			$("#domain_break_down").fadeTo(200, 0);
 		}
 		else {
-			$("#domain_break_down").show();
+			$("#domain_break_down").fadeTo(200, 1);
 			google.setOnLoadCallback(drawTrackerDomainBreakdownChart());
 		}
 	});
@@ -1961,9 +1988,9 @@ function search_list() {
 function show_advanced_search_list(){
 //	alert('show_advanced_search_list called.');
 
-	$("#domain_break_down").hide('blind');
+	$("#domain_break_down").hide('fade');
 	$("#advanced_search").val(1);
-	$("#advanced_list_search").show('blind');
+	$("#advanced_list_search").show('fade');
 }
 
 function advanced_search_list(){
@@ -1975,7 +2002,7 @@ function advanced_search_list(){
 }
 function close_advanced_search_list(){
 
-	$("#advanced_list_search").hide('blind');
+	$("#advanced_list_search").hide('fade');
 
 	$("#page").val(1);
 	$("#advanced_search").val(0);
@@ -3624,11 +3651,19 @@ function delete_log() {
 
 
 
-function message_history_html() {
+function message_history_html(initial) {
 
 	//console.log('running message_history_html');
 
-	$("#show_table_results_loading").html(loading_str);
+    if(initial == 1) { 
+		$("#show_table_results").height(480);
+	}
+	
+		var target = document.getElementById('show_table_results');
+		var spinner = new Spinner(spinner_opts).spin(target);
+			
+	
+
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
 		type: "POST",
@@ -3642,30 +3677,35 @@ function message_history_html() {
 		dataType: "html"
 	});
 	request.done(function(content) {
-		$("#show_table_results").hide('fade', function() {
+		//$("#show_table_results").fadeTo(200, 0); 
+		//$("#show_table_results").fadeTo(200, 1,function() {
 			$("#show_table_results").html(content);
-			$("#show_table_results").show('fade');
-			$("#show_table_results_loading").html('<p>&nbsp;</p>');
-		});
-
+					spinner.stop(); 
+				
+		//});
 		google.setOnLoadCallback(drawSubscriberHistoryChart());
-
 	});
 }
 
 var SubscriberHistoryChart;
 
-function drawSubscriberHistoryChart() {
+function drawSubscriberHistoryChart(initial) {
 
 	//console.log('runnning drawSubscriberHistoryChart');
 
+	if(initial == 1){ 
+		$('#subscriber_history_chart').height(480);
+	}
+	
+	var target = document.getElementById('subscriber_history_chart');
+	var spinner = new Spinner(spinner_opts).spin(target);
+	
 	if($("#subscriber_history_type").length) {
 		history_type = $("#subscriber_history_type option:selected").val();
 	}
 	else {
 		history_type = 'number';
 	}
-	$("#subscriber_history_chart_loading").html(loading_str);
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
 		data: {
@@ -3679,6 +3719,7 @@ function drawSubscriberHistoryChart() {
 		dataType: "json",
 		async: true,
 		success: function(jsonData) {
+			spinner.stop(); 
 			var data = new google.visualization.DataTable(jsonData);
 			var options = {
 				chartArea: {
@@ -3693,10 +3734,9 @@ function drawSubscriberHistoryChart() {
 			$('#subscriber_history_chart').height($('#subscriber_history_chart').width());
 					
 			var SubscriberHistoryChart = new google.visualization.LineChart(document.getElementById('subscriber_history_chart'));
-			$("#subscriber_history_chart").hide('fade');
+			//$("#subscriber_history_chart").hide('fade');
 			SubscriberHistoryChart.draw(data, options);
-			$("#subscriber_history_chart").show('fade');
-			$("#subscriber_history_chart_loading").html('<p>&nbsp;</p>');
+			//$("#subscriber_history_chart").show('fade');
 			
 			window.onresize = function(){
 				options['width']  = $('#subscriber_history_chart').width();
@@ -3911,7 +3951,10 @@ function ChangeMassMailingButtonLabel(first_run) {
 	if ($("#archive_no_send").prop("checked") === true && $("#archive_message").prop("checked") === true) {
 		archive_no_send = 1;
 	}
-	$(".button_toolbar").hide().html('<input type="button" class="small button" value="Loading...">').show('fade');
+	$(".button_toolbar")
+		.fadeTo(200, 0)
+		.html('<input type="button" class="small button" value="Loading...">')
+		.fadeTo(200,1);
 
 	var request = $.ajax({
 		url:       $("#s_program_url").val(),
@@ -3924,9 +3967,9 @@ function ChangeMassMailingButtonLabel(first_run) {
 			archive_no_send: archive_no_send,
 		},
 		success: function(content) {
-			$(".button_toolbar").hide("fade", function() {
+			$(".button_toolbar").fadeTo(200, 0, function() {
 				$(".button_toolbar").html(content);
-				$(".button_toolbar").show('fade');
+				$(".button_toolbar").fadeTo(200, 1);
 			});
 		},
 		error: function(xhr, ajaxOptions, thrownError) {

@@ -45,26 +45,32 @@
 	<!-- /tmpl_if -->
 	
 	<div class="row">
-		<div class="small-12 columns ">	
-			Records shown at one time: 
+		<div class="large-6 columns ">	
+			<label for="tracker_record_view_count">
+				Records shown at one time: 
+			</label>
 			<!-- tmpl_var tracker_record_view_count_widget --> 
 			 
 		</div> 
+		<div class="large-6 columns ">	
+
+			<form> 
+		        <p>
+		            <label for="subscriber_history_type">
+		                View As:
+		            </label>
+		            <select id="subscriber_history_type">
+		            <option value="number">Number</option>
+		            <option value="rate">Rate (%)</option>
+		        </select>
+		    </form>
+		</div>
 	</div>
-	<div id="show_table_results"></div>
-	<div id="show_table_results_loading"><p>&nbsp;</p></div>
-	<form> 
-        <p>
-            <label for="subscriber_history_type">
-                View As:
-            </label>
-            <select id="subscriber_history_type">
-            <option value="number">Number</option>
-            <option value="rate">Rate (%)</option>
-        </select>
-    </form>
-	<div id="subscriber_history_chart_loading"><p>&nbsp;</p></div>
-	<div id="subscriber_history_chart"></div>
+
+	<div id="show_table_results" style="position: relative;"></div>	
+
+
+	<div id="subscriber_history_chart" style="position: relative;"></div>
     
 	
 
@@ -111,10 +117,9 @@
 	</li>
 </ul>
 
-
-
-
 </fieldset> 
+
+
 
 <fieldset> 
 	<legend>
