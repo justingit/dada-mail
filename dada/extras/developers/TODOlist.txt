@@ -11,6 +11,8 @@ Key:
 [?] Someday
 
 
+does email protect only work for the first address in archie message bodies 
+
 
 [ ] My bet is that I'm not the only impatient list admin out there and that there a lot of admins who would like to see (maybe even expect) the names to disappear off the bounce list as soon as the manual deletions are done. I haven't checked the existing SQL, but I would think that should be possible.
 
