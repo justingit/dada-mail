@@ -186,6 +186,15 @@ sub switcheroo {
         return if $tag ne 'img';    # we only look closer at <a ...>
         my $src = $attr{src};
 
+        my $filemanager = 'kcfinder';
+        if ( $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1 ) {
+            # ...
+        }
+        elsif ( $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1 ) {
+            $filemanager = 'core5_filemanager';
+        }
+
+
         if ( $src =~ m/^data/ ) {
             my $uri = URI->new($src);
             my $type;
@@ -210,6 +219,7 @@ sub switcheroo {
                 'image/x-xbitmap'         => 'xbm',
                 'image/svg+xml'           => 'svg',
             };
+			
 
             my $file_ending;
 
@@ -227,15 +237,6 @@ sub switcheroo {
             }
 
             $filename = $self->_sha1_hex($src) . '-inline.' . $mime_types->{$type};
-
-            my $filemanager = 'kcfinder';
-            if ( $DADA::Config::FILE_BROWSER_OPTIONS->{kcfinder}->{enabled} == 1 ) {
-
-                # ...
-            }
-            elsif ( $DADA::Config::FILE_BROWSER_OPTIONS->{core5_filemanager}->{enabled} == 1 ) {
-                $filemanager = 'core5_filemanager';
-            }
 
             my $img_dir = make_safer( $DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_dir} . '/images/' );
             my $full_path = make_safer( $img_dir . '/' . $filename );
@@ -261,6 +262,19 @@ sub switcheroo {
             $msg =~ s/$search_src2/$full_url/;
 
         }
+		elsif ( $src =~ m/^\/dada_mail_support_files\/file_uploads/ ) { # probably shouldn't be hard-coded...
+			
+			my $path_fragment = $src; 
+		   	   $path_fragment =~ s/^\/dada_mail_support_files\/file_uploads//; 
+        	my $full_url = 
+				$DADA::Config::FILE_BROWSER_OPTIONS->{$filemanager}->{upload_url} 
+				. '/' 
+				. $path_fragment;
+	        my $search_src = quotemeta($src);
+			
+            $msg =~ s/$search_src/$full_url/;
+			
+		}
     }
 
     my $p = HTML::LinkExtor->new( \&find_img );
