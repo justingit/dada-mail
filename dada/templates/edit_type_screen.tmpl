@@ -62,14 +62,14 @@
 
 		<!-- tmpl_unless list_settings.private_list -->	
 			<!-- tmpl_unless unsub_link_found_in_html_mlm --> 
-	    		<div class="alert-box error radius"> 
+	    		<div class="alert-box alert radius"> 
 	   				    The List Unsubscribe Tag is missing from your HTML Version!
 	            </div> 
 			<!-- /tmpl_unless -->
 	    <!-- /tmpl_unless --> 
 
 		<!-- tmpl_unless message_body_tag_found_in_html_mlm --> 
-			<div class="alert-box error radius"> 
+			<div class="alert-box alert radius"> 
 				The Message Body tag is missing from your HTML Version!
 			</div> 
 		<!-- /tmpl_unless --> 
@@ -77,14 +77,14 @@
 
 		<!-- tmpl_unless list_settings.private_list -->
 			<!-- tmpl_unless unsub_link_found_in_pt_mlm --> 
-	    		<div class="alert-box error radius"> 
+	    		<div class="alert-box alert radius"> 
 	   				The List Unsubscribe Tag is missing from your PlainText Version!
 	    		</div> 
 			<!-- /tmpl_unless --> 
 		<!-- /tmpl_unless --> 
 
 		<!-- tmpl_unless message_body_tag_found_in_pt_mlm --> 
-			<div class="alert-box error radius"> 
+			<div class="alert-box alert radius"> 
 				The Message Body tag is missing from your PlainText Version!
 			</div> 
 		<!-- /tmpl_unless -->
@@ -217,7 +217,7 @@
 	</div>
 
 	<!-- tmpl_unless sub_confirm_link_found_in_confirmation_message --> 
-		<div class="alert-box error radius"> 
+		<div class="alert-box alert radius"> 
 			The List Confirmation Subscription Tag has not been found in this template. 
 		</div>
 	<!-- /tmpl_unless -->
@@ -379,12 +379,12 @@
 	</legend>
 	
 	<!-- tmpl_unless sub_confirm_link_found_in_pt_invite_msg --> 
-		<div class="alert-box error radius"> 
+		<div class="alert-box alert radius"> 
 			Couldn't find a Subscription Confirmation Link (<code>&lt;!-- tmpl_var list_confirm_subscribe_link --&gt;</code>) in your PlainText template. 
 		</div>
 	<!-- /tmpl_unless -->
 	<!-- tmpl_unless sub_confirm_link_found_in_html_invite_msg --> 
-		<div class="alert-box error radius"> 
+		<div class="alert-box alert radius"> 
 			 Couldn't find a Subscription Confirmation Link (<code>&lt;!-- tmpl_var list_confirm_subscribe_link --&gt;</code>) in your template. 
 		</div>
 	<!-- /tmpl_unless -->
@@ -508,7 +508,7 @@
 
 		<!-- tmpl_unless list_settings.private_list -->
 			<!-- tmpl_unless unsub_link_found_in_pt_subscribed_by_list_owner_msg --> 
-				 <div class="alert-box error radius">
+				 <div class="alert-box alert radius">
 					 Couldn't find an Unsubscribe Link (<code>&lt;!-- tmpl_var list_unsubscribe_link --&gt;</code>)
 					  in your template. 
 				</div>

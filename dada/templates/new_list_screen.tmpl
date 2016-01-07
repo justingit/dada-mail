@@ -4,7 +4,7 @@
 <!-- tmpl_set name="show_profile_widget" value="0" -->
 
 <!-- tmpl_if errors -->
-	<div class="alert-box error radius">
+	<div class="alert-box alert radius">
 		<p>
 			<!-- tmpl_var errors -->  field<!-- tmpl_var ending --> 
 			on this form  <!-- tmpl_var err_word --> filled out incorrectly 
@@ -46,7 +46,7 @@
 		</legend>
 
 		<!-- tmpl_if flags_list_name -->
-			<div class="alert-box error radius">
+			<div class="alert-box alert radius">
 				Please fill out a name for your new Mailing List.
 			</div>
 		<!-- /tmpl_if -->
@@ -87,7 +87,7 @@
 		</legend>
 
 		<!-- tmpl_if flags_list_exists -->
-		<div class="alert-box error radius">
+		<div class="alert-box alert radius">
 			<p>
 				This list Short Name already exists. Please choose a different 
 				List Short Name.
@@ -96,26 +96,26 @@
 		<!-- /tmpl_if -->
 
 		<!-- tmpl_if flags_list -->
-			<div class="alert-box error radius">
+			<div class="alert-box alert radius">
 				Please fill out a Short Name.
 			</div>
 		<!-- /tmpl_if -->
 
 		<!-- tmpl_if flags_shortname_too_long -->
-			<div class="alert-box error radius">
+			<div class="alert-box alert radius">
 				Your list Short Name is longer than 16 characters.
 			</div>
 		<!-- /tmpl_if -->
 
 		<!-- tmpl_if flags_slashes_in_name -->
-			<div class="alert-box error radius">
+			<div class="alert-box alert radius">
 				Your list Short Name can't have slashes (&quot;/&quot; or &quot;\&quot;) 
 				in the name itself.	
 			</div>
 		<!-- /tmpl_if -->
 
 		<!-- tmpl_if flags_weird_characters -->
-			<div class="alert-box error radius">
+			<div class="alert-box alert radius">
 				Your list Short Name appears to have weird characters in the 
 				name that may create problems. Please use only lowercase 
 				alphanumeric characters (e.g.: abc123).
@@ -123,7 +123,7 @@
 		<!-- /tmpl_if -->
 
 		<!-- tmpl_if flags_quotes -->
-			<div class="alert-box error radius">
+			<div class="alert-box alert radius">
 				Your list Short Name cannot contain quotes.
 			</div>
 		<!-- /tmpl_if -->
@@ -160,26 +160,26 @@
 		</legend>
 
 		<!-- tmpl_if flags_password -->
-			<div class="alert-box error radius">
+			<div class="alert-box alert radius">
 				Please type a List Password.
 			</div>
 		<!-- /tmpl_if -->
 
 		<!-- tmpl_if flags_password_is_root_password -->
-			<div class="alert-box error radius">
+			<div class="alert-box alert radius">
 				The password you have entered is the same as the <!-- tmpl_var PROGRAM_NAME --> 
 				Root Password. Please pick a different password.
 			</div>
 		<!-- /tmpl_if -->
 		
 		<!-- tmpl_if flags_retype_password -->
-			<div class="alert-box error radius">
+			<div class="alert-box alert radius">
 				Please re-type your List Password
 			</div>
 		<!-- /tmpl_if -->
 
 		<!-- tmpl_if flags_password_ne_retype_password -->
-			<div class="alert-box error radius">
+			<div class="alert-box alert radius">
 				Please make sure your List Password and what you've re-typed match.
 			</div>
 		<!-- /tmpl_if -->
@@ -243,7 +243,7 @@
 	</legend>
 
 	<!-- tmpl_if flags_invalid_list_owner_email -->
-		<div class="alert-box error radius">
+		<div class="alert-box alert radius">
 			Please type a valid email address for the List Owner.
 		</div>
 	<!-- /tmpl_if -->
@@ -277,7 +277,7 @@
 	</legend>
 
 	<!-- tmpl_if flags_list_info -->
-		<div class="alert-box error radius">
+		<div class="alert-box alert radius">
 			Please type a Mailing List description.
 		</div>
 	<!-- /tmpl_if -->
@@ -310,7 +310,7 @@
 	</legend>
 	
 	<!-- tmpl_if flags_privacy_policy -->
-		<div class="alert-box error radius">
+		<div class="alert-box alert radius">
 			Please type a Mailing List Privacy Policy.
 		</div>
 	<!-- /tmpl_if -->
@@ -340,7 +340,7 @@
 	</legend>
 
 	<!-- tmpl_if flags_physical_address -->
-		<div class="alert-box error radius">
+		<div class="alert-box alert radius">
 			Please type a Physical Address
 		</div>
 	<!-- /tmpl_if -->

@@ -293,7 +293,7 @@
 
 
 		<!-- tmpl_if error_program_url_is_blank  --> 
-			<div class="alert-box error radius">
+			<div class="alert-box alert radius">
 				<ul>
 					<li>
 						Your <!-- tmpl_var PROGRAM_NAME --> URL is blank.
@@ -338,7 +338,7 @@
 		</div> 
 
 		<!-- tmpl_if error_create_dada_mail_support_files_dir  --> 
-			<div class="alert-box error radius">
+			<div class="alert-box alert radius">
 				Can not create or write into the below Support Files Directory. 
 			</div> 
 		<!-- /tmpl_if -->
@@ -406,12 +406,12 @@
 			</legend> 
 
 			<!-- tmpl_if error_root_pass_is_blank  --> 
-				<div class="alert-box error radius">
+				<div class="alert-box alert radius">
 					Your <!-- tmpl_var PROGRAM_NAME --> Root Password is Blank.</em>
 				</div>
 			<!-- /tmpl_if -->
 			<!-- tmpl_if error_pass_no_match  --> 
-				<div class="alert-box info radius">
+				<div class="alert-box warning radius">
 					Your <!-- tmpl_var PROGRAM_NAME --> Root Passwords Do Not Match.</em>
 				</div>
 			<!-- /tmpl_if -->
@@ -478,12 +478,12 @@
 			</legend> 
 
 			<!-- tmpl_if error_sql_connection  --> 
-				<div class="alert-box error radius">
+				<div class="alert-box alert radius">
 					Could not connect to your SQL Server
 				</div>
 			<!-- /tmpl_if -->
 
-			<div id="backend_help" class="alert-box info radius"> 
+			<div id="backend_help" class="alert-box warning radius"> 
 				<!-- tmpl_unless can_use_DBI --> 
 				<div class="alert-box info radius">
 				<p>
@@ -521,7 +521,7 @@
 			<!-- tmpl_if can_use_DBI --> 
 				<div id="sql_info"> 
 					<!-- tmpl_if error_sql_table_populated -->
-						<div class="alert-box info radius">
+						<div class="alert-box warning radius">
 							<p>
 								The SQL information below is correct, but there are tables 
 								in this database that correspond to the tables that <!-- tmpl_var PROGRAM_NAME --> 

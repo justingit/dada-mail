@@ -27,14 +27,14 @@
     <input type="hidden" name="process" value="true" >
 
 <!--tmpl_if old_root_pass_incorrect --> 
-	<div class="alert-box error radius">
+	<div class="alert-box alert radius">
 		You did not type in the correct, current <!-- tmpl_var PROGRAM_NAME --> Root Password. Please try again.
 	</div>
 <!--/tmpl_if--> 
 
 
 <!-- tmpl_if new_pass_no_match --> 
-	<div class="alert-box error radius">
+	<div class="alert-box alert radius">
 		Your retyped new <!-- tmpl_var PROGRAM_NAME --> Root Password did not match!
 	</div>
 <!--/tmpl_if--> 
