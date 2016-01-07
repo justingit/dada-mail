@@ -264,15 +264,69 @@ jQuery(document).ready(function($){
 			event.preventDefault();
 			preview_message_receivers();
 		});
-
 		if ($("#using_ckeditor").length) {
-			$("#html_message_body").ckeditor(
-			function() {}, {
-				customConfig: $("#support_files_url").val() + '/ckeditor/dada_mail_config.js',
-				toolbar: 'DadaMail_Admin'
-			});
-		}
+			
+	     //config.strinsert_button_label    = 'Tags';
+	     //config.strinsert_button_title    = 'Tags';
+	     //config.strinsert_button_voice    = 'Tags';
+	    // config.extraPlugins              = 'strinsert';
+			
+			/* 
+			     filebrowserBrowseUrl      : 'http://secret.dadademo.com/dada_mail_support_files/core5_filemanager/index.html?type=files',
+			     filebrowserImageBrowseUrl : 'http://secret.dadademo.com/dada_mail_support_files/core5_filemanager/index.html?type=images',
+			     filebrowserFlashBrowseUrl : 'http://secret.dadademo.com/dada_mail_support_files/core5_filemanager/index.html?type=flash',
+			     filebrowserUploadUrl      : 'http://secret.dadademo.com/dada_mail_support_files/core5_filemanager/index.html?type=files',
+			     filebrowserImageUploadUrl : 'http://secret.dadademo.com/dada_mail_support_files/core5_filemanager/index.html?type=images',
+			     filebrowserFlashUploadUrl : 'http://secret.dadademo.com/dada_mail_support_files/core5_filemanager/index.html?type=flash',
+				 
+				*/ 
+		//				 uploadUrl                : 'http://secret.dadademo.com/dada_mail_support_files/kcfinder/upload.php?command=QuickUpload&type=files&responseType=json',
 
+			 var ck_config = {
+				 
+    
+			     
+				 
+			     filebrowserBrowseUrl      : 'http://secret.dadademo.com/dada_mail_support_files/kcfinder/browse.php?type=files',
+			     filebrowserImageBrowseUrl : 'http://secret.dadademo.com/dada_mail_support_files/kcfinder/browse.php?type=images',
+			     filebrowserFlashBrowseUrl : 'http://secret.dadademo.com/dada_mail_support_files/kcfinder/browse.php?type=flash',
+			     filebrowserUploadUrl      : 'http://secret.dadademo.com/dada_mail_support_files/kcfinder/upload.php?type=files',
+			     filebrowserImageUploadUrl : 'http://secret.dadademo.com/dada_mail_support_files/kcfinder/upload.php?type=images',
+			     filebrowserFlashUploadUrl : 'http://secret.dadademo.com/dada_mail_support_files/kcfinder/upload.php?type=flash',
+				 
+				 
+				 extraPlugins        :       'strinsert,uploadimage',
+				 skin: 'moono-dark',
+		
+			     height                    : '30em',
+			    fullPage                  : true,
+			    allowedContent            : true,
+				startupOutlineBlocks      : true,
+    
+  			  	toolbar :
+			    [
+			        { name: 'basicstyles',    items : [ 'strinsert', 'Bold','Italic','Underline','Strike','Subscript','Superscript','-','RemoveFormat' ] },
+			        { name: 'styles',         items : [ 'Styles','Format','Font','FontSize' ] },
+			        { name: 'colors',         items : [ 'TextColor','BGColor' ] },
+			        '/',
+			        { name: 'paragraph',      items : [ 'NumberedList','BulletedList','-','Outdent','Indent','-','Blockquote','CreateDiv','-','JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock','-','BidiLtr','BidiRtl' ] },
+			        { name: 'links',          items : [ 'Link','Unlink','Anchor' ] },
+			        { name: 'insert',         items : [ 'Image','Table','HorizontalRule','Smiley','SpecialChar' ] },
+			        '/',
+			        { name: 'clipboard',      items : [ 'Cut','Copy','Paste','PasteText','PasteFromWord','-','Undo','Redo' ] },
+			        { name: 'editing',        items : [ 'Find','Replace','-','SelectAll','-','SpellChecker', 'Scayt' ] },
+			        { name: 'document',       items : [ 'Source','Maximize', 'ShowBlocks']}
+			    ]
+  
+			 }; 
+			 
+			$("textarea#html_message_body").ckeditor(ck_config); 
+		
+				// customConfig: $("#support_files_url").val() + '/ckeditor/dada_mail_config.js'
+				//,
+				//toolbar: 'DadaMail_Admin'
+		}
+		
 		$("body").on("click", ".cancel_message", function(event) {
 			$("#button_action_notice").html('Working...');
 			save_msg(false)
