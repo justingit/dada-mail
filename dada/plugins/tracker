@@ -535,21 +535,28 @@ sub message_history_html {
 
     my $q = shift;
     my $page = $q->param('page') || 1;
+	my $fake = $q->param('fake') || 0; 
+
+
     require DADA::Template::Widgets;
     my $html;
+
 
     require DADA::App::DataCache;
     my $dc = DADA::App::DataCache->new;
 
-    $html = $dc->retrieve(
-        {
-            -list    => $list,
-            -name    => 'message_history_html',
-            -page    => $page,
-            -entries => $ls->param('tracker_record_view_count'),
-        }
-    );
-
+	# Fake call or no, if the info we need is already there, 
+	# might as well show it! 
+	#if($fake != 1) {
+	    $html = $dc->retrieve(
+	        {
+	            -list    => $list,
+	            -name    => 'message_history_html',
+	            -page    => $page,
+	            -entries => $ls->param('tracker_record_view_count'),
+	        }
+	    );
+	#}
     if ( defined($html) ) {
         warn 'message_history_html cached in file';
     }
@@ -587,6 +594,7 @@ sub message_history_html {
             {
                 -all_mids => $msg_ids,    #Strange speedup
                 -page     => $page,
+				-fake     => $fake, 
             }
         ) || [];
 
@@ -609,16 +617,17 @@ sub message_history_html {
                 },
             }
         );
-        $dc->cache(
-            {
-                -list    => $list,
-                -name    => 'message_history_html',
-                -page    => $page,
-                -entries => $ls->param('tracker_record_view_count'),
-                -data    => \$html,
-            }
-        );
-
+		if($fake != 1) { 
+	        $dc->cache(
+	            {
+	                -list    => $list,
+	                -name    => 'message_history_html',
+	                -page    => $page,
+	                -entries => $ls->param('tracker_record_view_count'),
+	                -data    => \$html,
+	            }
+	        );
+		}
     }
     return ( {}, $html );
 

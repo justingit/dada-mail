@@ -3657,13 +3657,29 @@ function message_history_html(initial) {
 
     if(initial == 1) { 
 		$("#show_table_results").height(480);
-	}
-	
-		var target = document.getElementById('show_table_results');
-		var spinner = new Spinner(spinner_opts).spin(target);
-			
-	
+	}	
+		// put in all info, except the stuff that takes forever to load. 
+		var request = $.ajax({
+			url: $("#s_program_url").val(),
+			type: "POST",
+			cache: false,
+			data: {
+				flavor: 'plugins',
+				plugin: 'tracker',
+				prm: 'message_history_html',
+				page: $("#tracker_page").val(),
+				fake: 1
+			},
+			dataType: "html"
+		});
+		request.done(function(content) {
+			$("#show_table_results").html(content);
+		}); 
 
+	
+	var target = document.getElementById('show_table_results');	
+	var spinner = new Spinner(spinner_opts).spin(target);	
+		
 	var request = $.ajax({
 		url: $("#s_program_url").val(),
 		type: "POST",
@@ -3680,8 +3696,7 @@ function message_history_html(initial) {
 		//$("#show_table_results").fadeTo(200, 0); 
 		//$("#show_table_results").fadeTo(200, 1,function() {
 			$("#show_table_results").html(content);
-					spinner.stop(); 
-				
+					spinner.stop(); 	
 		//});
 		google.setOnLoadCallback(drawSubscriberHistoryChart());
 	});

@@ -954,31 +954,38 @@ sub report_by_message_index {
 		if(!exists($args->{-page})){ 
 			$args->{-page} = 1; 
 		}
-		
-	    for my $msg_id (@$msg_id1) {
-		
-			next 
-				unless defined $msg_id;
-		
-	        $report->{$msg_id}->{msg_id} = $msg_id;
-
-	        # Clickthroughs
-	        my $clickthrough_count_query =
-	'SELECT COUNT(msg_id) FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} .' WHERE list = ?  AND msg_id = ?';
-	        $report->{$msg_id}->{count} =
-	          $self->{dbh}
-	          ->selectcol_arrayref( $clickthrough_count_query, {}, $self->{name}, $msg_id )->[0];
-
-		
-		my $basic_event_counts = $self->msg_basic_event_count($msg_id); 
-		for(keys %$basic_event_counts) { 
-			$report->{$msg_id}->{$_} = $basic_event_counts->{$_};
+		if(!exists($args->{-fake})){ 
+			$args->{-fake} = 0; 
 		}
 		
-	    }
 
 	    require DADA::MailingList::Archives;
 	    my $mja = DADA::MailingList::Archives->new( { -list => $self->{name} } );
+
+		my $real = 0; 
+
+		    for my $msg_id (@$msg_id1) {
+				next 
+					unless defined $msg_id;
+
+				$report->{$msg_id}->{msg_id} = $msg_id;
+
+				# Clickthroughs
+				my $clickthrough_count_query = 'SELECT COUNT(msg_id) FROM ' . $DADA::Config::SQL_PARAMS{clickthrough_url_log_table} .' WHERE list = ?  AND msg_id = ?';
+				$report->{$msg_id}->{count} =
+				$self->{dbh}
+				->selectcol_arrayref( $clickthrough_count_query, {}, $self->{name}, $msg_id )->[0];
+
+				if($args->{-fake} == 1) { 
+					$report->{$msg_id}  = {};
+				}
+				else { 
+					my $basic_event_counts = $self->msg_basic_event_count($msg_id); 
+					for(keys %$basic_event_counts) { 
+						$report->{$msg_id}->{$_} = $basic_event_counts->{$_};
+					}
+				}
+	    }
 
 	    # Now, sorted:
 	    for ( sort { $b <=> $a } keys %$report ) {
@@ -996,24 +1003,26 @@ sub report_by_message_index {
 	        push( @$sorted_report, $report->{$_} );
 	    }
 	
-		# The idea is if we've already calculated all this, no 
-		# reason to do it twice, if the table and graph are shown together. 
-		if(! $dc->cached(
-			{
-			-list    => $self->{name}, 
-			-name    => 'message_history_json', 
-			-page    => $args->{-page}, 
-			-entries => $self->{ls}->param('tracker_record_view_count')
-			}
-		)){
-			# warn 'creating message_history_json JSON ffrom report_by_message_index'; 
-			$self->message_history_json(
+		if($args->{-fake} != 1) {
+			# The idea is if we've already calculated all this, no 
+			# reason to do it twice, if the table and graph are shown together. 
+			if(! $dc->cached(
 				{
-					-report_by_message_index_data => $sorted_report,
-					-page                         => $args->{-page}, 
-					-printout                     => 0,	
+				-list    => $self->{name}, 
+				-name    => 'message_history_json', 
+				-page    => $args->{-page}, 
+				-entries => $self->{ls}->param('tracker_record_view_count')
 				}
-			);
+			)){
+				# warn 'creating message_history_json JSON ffrom report_by_message_index'; 
+				$self->message_history_json(
+					{
+						-report_by_message_index_data => $sorted_report,
+						-page                         => $args->{-page}, 
+						-printout                     => 0,	
+					}
+				);
+			}
 		}
 	
     return $sorted_report;
