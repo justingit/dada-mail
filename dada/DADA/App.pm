@@ -4420,13 +4420,13 @@ sub membership {
     my $order_dir = $q->param('order_dir') || lc( $ls->param('view_list_order_by_direction') );
 
     my $add_email_count                  = $q->param('add_email_count') || 0;
-    my $delete_email_count               = $q->param('delete_email_count');
+    my $delete_email_count               = $q->param('delete_email_count') || 0;
     my $black_list_add                   = $q->param('black_list_add') || 0;
     my $approved_count                   = $q->param('approved_count') || 0;
     my $denied_count                     = $q->param('denied_count') || 0;
     my $bounced_list_moved_to_list_count = $q->param('bounced_list_moved_to_list_count') || 0;
     my $bounced_list_removed_from_list   = $q->param('bounced_list_removed_from_list') || 0;
-
+	my $update_email_count               = $q->param('update_email_count') || 0;          
     my $profile_exists = 0;
     require DADA::Profile;
     my $prof = DADA::Profile->new( { -email => scalar $q->param('email') } );
@@ -4674,9 +4674,11 @@ sub membership {
                     bounced_list_removed_from_list   => $bounced_list_removed_from_list,
 
                     can_have_subscriber_fields => $lh->can_have_subscriber_fields,
-
+					
                     delivery_prefs   => $delivery_prefs,
                     digest_timeframe => $digest_timeframe,
+					
+					update_email_count => $update_email_count, 
 
                 },
                 -list_settings_vars_param => {
@@ -4867,7 +4869,6 @@ sub validate_update_email {
 
         $self->header_type('redirect');
         $self->header_props( -url => $DADA::Config::S_PROGRAM_URL . '?' . $qs );
-
     }
 
 }
