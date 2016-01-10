@@ -1,16 +1,19 @@
 <!-- begin view_list_modalmenu_widget.tmpl --> 
-<pre>
-	view_list_modalmenu_widget.tmpl
-	add_email_count:<!-- tmpl_var add_email_count -->
-	update_email_count:<!-- tmpl_var update_email_count -->
-	delete_email_count:<!-- tmpl_var delete_email_count -->
-	black_list_add: <!-- tmpl_var black_list_add -->
-	approved_count:<!-- tmpl_var approved_count -->
-	denied_count:<!-- tmpl_var denied_count -->
-	bounced_list_moved_to_list_count:<!-- tmpl_var bounced_list_moved_to_list_count -->
-	bounced_list_removed_from_list:<!-- tmpl_var bounced_list_removed_from_list -->
-	updated_addresses:<!-- tmpl_var updated_addresses -->
-</pre>
+
+<!-- tmpl_if comment --> 
+	<pre>
+		view_list_modalmenu_widget.tmpl
+		add_email_count:<!-- tmpl_var add_email_count -->
+		update_email_count:<!-- tmpl_var update_email_count -->
+		delete_email_count:<!-- tmpl_var delete_email_count -->
+		black_list_add: <!-- tmpl_var black_list_add -->
+		approved_count:<!-- tmpl_var approved_count -->
+		denied_count:<!-- tmpl_var denied_count -->
+		bounced_list_moved_to_list_count:<!-- tmpl_var bounced_list_moved_to_list_count -->
+		bounced_list_removed_from_list:<!-- tmpl_var bounced_list_removed_from_list -->
+		updated_addresses:<!-- tmpl_var updated_addresses -->
+	</pre>
+<!-- /tmpl_if -->
 
 <!-- tmpl_if expr="((add_email_count > 0) || (update_email_count > 0)  || (delete_email_count  > 0) || (black_list_add > 0) || (approved_count  > 0) || (denied_count  > 0) || (bounced_list_moved_to_list_count  > 0) || (bounced_list_removed_from_list > 0)  || (updated_addresses > 0) )" --> 
 
