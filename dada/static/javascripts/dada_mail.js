@@ -3834,72 +3834,14 @@ function changeDisplayState(target, state) {
 
 
 var refreshLocation = '';
-
 function preview() {
 	var new_window = window.open("", "preview", "top=100,left=100,resizable,scrollbars,width=400,height=200");
 }
 
-function SetChecked(val) {
-
-	dml = document.email_form;
-	len = dml.elements.length;
-	var i = 0;
-	for (i = 0; i < len; i++) {
-		if (dml.elements[i].name == 'address') {
-			dml.elements[i].checked = val;
-		}
-	}
-}
-
-function SetListChecked(val) {
-
-	dml = document.send_email;
-	len = dml.elements.length;
-	var i = 0;
-	for (i = 0; i < len; i++) {
-		if (dml.elements[i].name == 'alternative_list') {
-			dml.elements[i].checked = val;
-		}
-	}
-}
-
-
-
-
-function list_message_status(thing) {
-	document.the_form.process.value = thing;
-}
-
-
 function check_newest_version(ver) {
-
 	var check = "http://dadamailproject.com/cgi-bin/support/version.cgi?version=" + ver;
 	window.open(check, 'version', 'width=325,height=300,top=20,left=20');
 }
-
-function just_test_message() {
-
-	document.the_form.process.value = "just_test_message";
-
-}
-
-
-function real_message() {
-
-	document.the_form.process.value = "true";
-
-}
-
-
-
-
-
-
-function toggleTwo(targetOpen, targetClose) {
-	Effect.BlindUp($(targetClose));
-	Effect.BlindDown($(targetOpen));
-}
-
 
 function preview_message_receivers() {
 
