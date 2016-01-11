@@ -1,48 +1,101 @@
 <!-- start filter_using_black_list.tmpl -->
 
-<!-- tmpl_set name="title" value="Filtering Subscription List..." -->
+<!-- tmpl_set name="title" value="Membership &#187; View &#187; Filter Subscribers Through Black List..." -->
+<!-- tmpl_set name="load_jquery_validate" value="1" -->
 
-<form name="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+<div id="screen_meta" data-menu_highlight="view_list"></div>
+
+
+<div class="row hide-for-small-only" id="control_panel_breadcrumbs">
+	<div class="medium-10 small-9 columns">
+	   	<nav class="breadcrumbs">	
+		 	 <a href="#" class="unavailable">
+				Membership
+			 </a>
+	 	    <a 
+				href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=view_list"
+			>	
+				View
+			</a>
+			<a href="#" class="current">
+				Filter Subscribers Through Black List...
+			</a>
+		</nav>
+	</div>
+	<div class="medium-2 small-3 columns text-right">
+	   <!-- tmpl_include help_link_widget.tmpl -->
+	</div>
+</div>
+
+
+<form name="email_form" id="email_form" action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
  <input type="hidden" name="process" value="delete" >
  <input type="hidden" name="flavor"       value="remove_subscribers" >
  <input type="hidden" name="type"    value="list" >
  <input type="hidden" name="add_to_black_list" value="<!-- tmpl_var add_to_black_list -->" >
- <p>
-  These addresses are currently subscribed, but are 
-  black listed. Click the checkbox next to the address 
-  to remove them:
- <p>
- <div class="buttonfloat">
-  <input type="button" class="warning button" value="Re-Enter Email List" onclick="history.back()" >
-  <input type="submit" class="success button" value="Unsubscribe Checked Emails" >
- </div>
- <div class="floatclear"></div>
- 
-<!-- tmpl_loop name="filtered" -->
-	 
-	 <input type="checkbox" name="address" value="<!-- tmpl_var email escape="HTML" -->" id="<!-- tmpl_var email escape="HTML" -->;type=<!-- tmpl_var list_type -->" checked="checked" >
-	 &nbsp; 
-	 <label for="<!-- tmpl_var email escape="HTML" -->">
-	  <!-- tmpl_var email -->
-	 </label>
-	 <br >
-	 
-<!--/tmpl_loop-->
- 
- <p>
-  <a href="#" onclick="SetChecked(1);return false;">
-   check all
-  </a>
-  :: 
-  <a href="#" onclick="SetChecked(0);return false;">
-   uncheck all
-  </a>
- </p>
- <div class="buttonfloat">
-  <input type="button" class="warning button" value="Re-Enter Email List" onclick="history.back()" >
-  <input type="submit" class="success button" value="Unsubscribe Checked Emails" >
- </div>
- <div class="floatclear"></div>
-</form>
 
+
+<!-- tmpl_if filtered -->
+	<div class="alert-box info radius"> 		
+	  These addresses are currently Subscribers, but are also
+	  Black Listed:
+	 </div>
+
+<table width="100%" class="responsive">
+	<thead> 					
+	  <tr>
+	   		<th width="25">
+	    		&nbsp;
+	   		</th>
+			<th>
+				Email
+			</th>
+		</tr>
+		</thead>
+	<!-- tmpl_loop filtered -->
+	<tr>
+		<td>
+	 
+		 <input 
+		 	type="checkbox" 
+			name="address" 
+			class="address"
+			value="<!-- tmpl_var email escape="HTML" -->" 
+			id="<!-- tmpl_var email escape="HTML" -->;type=<!-- tmpl_var list_type -->" 
+			checked="checked"
+		>
+	</td>
+	<td>
+		<a href="<!-- tmpl_var S_PROGRAM_URL -->?flavor=membership&email=<!-- tmpl_var email ESCAPE=URL -->&type=list">
+			<!-- tmpl_var email --> 
+		</a>
+	</td>
+</tr>
+
+	<!--/tmpl_loop-->
+ </table>
+ <div class="row">
+	 <div class="small-1 columns">
+	   <input 
+	   	class="toggleCheckboxes" 
+		type="checkbox" 
+		data-target_class="address"
+		checked="checked"
+	 > 
+	</div>
+	<div class="small-11 columns">
+		<input 
+			type="submit" 
+			class="warning button" 
+			value="&#8592; Unsubscribe Checked Addresses"
+		>
+	</div>
+</div>
+   
+	</form>
+<!-- tmpl_else -->
+	<div class="alert-box info radius"> 		
+	 	No current Subscribers are Black Listed.
+	 </div>
+<!-- /tmpl_if --> 
 <!-- end filter_using_black_list.tmpl -->
