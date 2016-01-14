@@ -233,7 +233,7 @@ Visit C<dada_settings_db_to_sql.pl> in your web browser, or run the script via t
 
 =head1 COPYRIGHT 
 
-Copyright (c) 1999 - 2015 Justin Simoni All rights reserved. 
+Copyright (c) 1999 - 2016 Justin Simoni All rights reserved. 
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
