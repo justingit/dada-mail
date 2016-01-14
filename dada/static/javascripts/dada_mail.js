@@ -3175,6 +3175,10 @@ var country_geoip_map_infos = {
 function country_geoip_map(type, target_div) {
 
 	$("#" + target_div + "_loading").html(loading_str);
+	
+	var target  = document.getElementById(target_div);
+	var spinner = new Spinner(spinner_opts).spin(target);
+	
 	$.ajax({
 		url: $("#s_program_url").val(),
 		type: "POST",
@@ -3204,11 +3208,13 @@ function country_geoip_map(type, target_div) {
 			};
 			var chart = new google.visualization.GeoChart(document.getElementById(target_div));
 
-			$("#" + target_div).hide("fade", function() {
+
+			$("#" + target_div).fadeTo(200, 0, function() {
 				chart.draw(data, options);
 				trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
 				$("#" + target_div + "_loading").html('<p>&nbsp;</p>');
-				$("#" + target_div).show('fade');
+				$("#" + target_div).fadeTo(200, 1);
+				spinner.stop(); 
 			});
 
 			
@@ -3251,6 +3257,10 @@ function message_individual_email_activity_table(email, target_div) {
 }
 
 function individual_country_geoip_map(type, country, target_div) {
+	
+	var target  = document.getElementById(target_div);
+	var spinner = new Spinner(spinner_opts).spin(target);
+	
 	$("#" + target_div + "_loading").html(loading_str);
 	$.ajax({
 		url: $("#s_program_url").val(),
@@ -3280,18 +3290,23 @@ function individual_country_geoip_map(type, country, target_div) {
 			};
 			var chart = new google.visualization.GeoChart(document.getElementById(target_div));
 
-			$("#" + target_div).hide("fade", function() {
+
+			$("#" + target_div).fadeTo(200, 0, function() {
 				chart.draw(data, options);
 				trackerc.push({chart_obj: chart, chart_data: data, chart_options: options});
 				$("#" + target_div + "_loading").html('<p class="label secondary"><a href="#" data-type="' + type + '" class="back_to_geoip_map">&lt; &lt;Back to World Map</a> | <a href="#"  data-type="' + type + '" data-country="' + country + '" class="individual_country_cumulative_geoip_table">Table View</a></p>');
-				$("#" + target_div).show('fade');
+				$("#" + target_div).fadeTo(200, 1);
+				spinner.stop();
 			});
+			
 		}
 	});
 }
 
 function individual_country_cumulative_geoip_table(type, country, target_div) {
 	$("#" + target_div + "_loading").html(loading_str);
+	var target  = document.getElementById(target_div);
+	var spinner = new Spinner(spinner_opts).spin(target);
 	$.ajax({
 		url: $("#s_program_url").val(),
 		data: {
@@ -3305,10 +3320,11 @@ function individual_country_cumulative_geoip_table(type, country, target_div) {
 		dataType: "html",
 		async: true,
 		success: function(content) {
-			$("#" + target_div).hide("fade", function() {
+			$("#" + target_div).fadeTo(200, 0, function() {
 				$("#" + target_div).html(content);
 				$("#" + target_div + "_loading").html('<p class="label secondary"><a href="#" data-type="' + type + '" data-country="' + country + '"  class="individual_country_geoip">&lt; &lt; Back to Country Map</a></p>');
-				$("#" + target_div).show('fade');
+				$("#" + target_div).fadeTo(200, 1);
+				spinner.stop(); 
 			});
 		}
 	});
