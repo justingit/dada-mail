@@ -2589,11 +2589,10 @@ sub list_options {
                     send_subscription_notice_to             => undef,
                     send_unsubscription_notice_to           => undef,
                     
-                    alt_send_unsubscription_notice_to       => undef, 
-                    alt_send_subscription_notice_to         => undef,
-                    alt_send_admin_unsubscription_notice_to => undef, 
-                    
-                    
+				    send_admin_unsubscription_notice        => 0, 
+				    send_admin_unsubscription_notice_to     => undef,
+				    alt_send_admin_unsubscription_notice_to => undef, 
+					                    
                 }
             }
         );
