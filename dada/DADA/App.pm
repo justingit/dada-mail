@@ -2105,6 +2105,7 @@ sub mass_mailing_options {
                 -vars => {
                     done                => $done,
                     can_use_css_inliner => $can_use_css_inliner,
+					root_login          => $root_login, 
                 },
                 -list_settings_vars_param => {
                     -list   => $list,
@@ -2114,11 +2115,12 @@ sub mass_mailing_options {
         );
         return $scrn;
     }
-    else {
-		my $also_save_for_list = $ls->also_save_for_list($q);
-		
+    else {		
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-        $ls->save_w_params(
+        
+
+		my $also_save_for_list = $ls->also_save_for_list($q);
+		$ls->save_w_params(
             {
                 -associate => $q,
                 -settings  => {
@@ -2524,7 +2526,8 @@ sub list_options {
                     screen                                         => 'list_options',
                     title                                          => 'Options',
                     done                                           => $done,
-                    CAPTCHA_TYPE                                   => $DADA::Config::CAPTCHA_TYPE,
+                    root_login                                     => $root_login, 
+					CAPTCHA_TYPE                                   => $DADA::Config::CAPTCHA_TYPE,
                     can_use_mx_lookup                              => $can_use_mx_lookup,
                     can_use_captcha                                => $can_use_captcha,
                     send_subscription_notice_to_popup_menu         => $send_subscription_notice_to_popup_menu,
@@ -3029,6 +3032,7 @@ sub mailing_sending_mass_mailing_options {
                 -vars => {
                     screen                  => 'mailing_sending_mass_mailing_options',
                     done                    => $done,
+					root_login              => $root_login,
                     batch_sending_enabled   => $batch_sending_enabled,
                     mass_send_amount_menu   => $mass_send_amount_menu,
                     bulk_sleep_amount_menu  => $bulk_sleep_amount_menu,
@@ -3361,7 +3365,8 @@ sub mail_sending_advanced_options {
                     screen                        => 'mail_sending_advanced_options',
                     title                         => 'Advanced Options',
                     done                          => $done,
-                    precedence_popup_menu         => $precedence_popup_menu,
+                    root_login                    => $root_login,
+					precedence_popup_menu         => $precedence_popup_menu,
                     priority_popup_menu           => $priority_popup_menu,
                     charset_popup_menu            => $charset_popup_menu,
                     plaintext_encoding_popup_menu => $plaintext_encoding_popup_menu,
@@ -6379,7 +6384,8 @@ sub subscription_options {
                     screen                            => 'subscription_options',
                     title                             => 'Subscriber Options',
                     done                              => $done,
-                    subscription_quota_menu           => $subscription_quota_menu,
+                    root_login                        => $root_login, 
+					subscription_quota_menu           => $subscription_quota_menu,
                     can_have_subscriber_fields        => $dpf->can_have_subscriber_fields,
                     vlsn_menu                         => $vlsn_menu,
                     view_list_order_by_menu           => $view_list_order_by_menu,
@@ -6885,7 +6891,7 @@ sub adv_archive_options {
                 -vars => {
                     screen => 'adv_archive_options',
                     title  => 'Advanced Options',
-					root_logi                  => $root_login, 
+					root_login                 => $root_login, 
                     done                       => $done,
                     archive_index_count_menu   => $archive_index_count_menu,
                     list                       => $list,
