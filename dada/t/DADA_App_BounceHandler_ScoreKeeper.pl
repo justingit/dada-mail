@@ -111,7 +111,7 @@ $bsk->tally_up_scores(
 	);
 ok($bsk->num_scorecard_rows == 3, $bsk->num_scorecard_rows . ' == 3');
 # Just to have a default:
-$ls->save({bounce_handler_decay_score => 1}); 
+$ls->save({-settings => {bounce_handler_decay_score => 1}}); 
 $bsk->decay_scorecard;
 my $rsc = $bsk->raw_scorecard({-page => 1, -entries => 100}); 
 ok($rsc->[0]->{score} == 4, ($rsc->[0]->{email} . ': ' . $rsc->[0]->{score}) . ' == 4'); 

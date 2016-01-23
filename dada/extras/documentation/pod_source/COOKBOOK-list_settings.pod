@@ -110,11 +110,11 @@ Storing information is as easy as getting that information. You'll want to use t
  my $ls = DADA::MailingList::Settings->new({-list => $list}); 
   
  
- $ls->save(
-            {
+ $ls->save({
+            -settings => {
                 list_name => "New List Name!", 
             }
-           ); 
+           }); 
           
 
 The B<save> method takes a hashref of any list setting you'd like to change the value to. In the above example, we've changed the setting, B<list_name> to, B<New List Name!>

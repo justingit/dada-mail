@@ -74,93 +74,119 @@ sub _sql_init  {
 
 
 
-sub save { 
- 	my ($self, $new_settings) = @_;
+sub save {
+	
+    my ( $self, $args ) = @_;
 
-    if($t == 1){ 
-        require Data::Dumper; 
-        warn '$new_settings: ' . Data::Dumper::Dumper($new_settings); 
+	my $new_settings  = $args->{-settings};
+	
+	my $also_save_for = [];
+	if(exists($args->{-also_save_for})) {
+		$also_save_for = $args->{-also_save_for};
     }
-	unless($self->{new_list}){  
-		if(exists($new_settings->{list})){ 
-			croak "don't pass list to save()!";
-		}
-	}
+	
+	if ( $t == 1 ) {
+        require Data::Dumper;
+        warn '$new_settings: ' . Data::Dumper::Dumper($new_settings);
+    }
+    unless ( $self->{new_list} ) {
+        if ( exists( $new_settings->{list} ) ) {
+            croak "don't pass list to save()!";
+        }
+    }
 
+    my $d_query =
+        'DELETE FROM '
+      . $self->{sql_params}->{settings_table}
+      . ' where list = ? and setting = ?';
+    my $a_query =
+      'INSERT INTO ' . $self->{sql_params}->{settings_table} . ' values(?,?,?)';
 
-	my $d_query = 'DELETE FROM ' . $self->{sql_params}->{settings_table} .' where list = ? and setting = ?'; 
-	my $a_query = 'INSERT INTO ' . $self->{sql_params}->{settings_table} .' values(?,?,?)';
-    
-    warn '$d_query ' . $d_query if $t;; 
-    warn '$a_query ' . $a_query if $t; 
-    if(! $self->{RAW_DB_HASH}){
+    warn '$d_query ' . $d_query if $t;
+    warn '$a_query ' . $a_query if $t;
+    if ( !$self->{RAW_DB_HASH} ) {
         $self->_raw_db_hash;
     }
-    
-	if($new_settings){  
 
- 		$self->_existence_check($new_settings); 	    
+    if ($new_settings) {
 
-  		for my $setting(keys %$new_settings){ 
+        $self->_existence_check($new_settings);
 
- 		    my $sth_d = $self->{dbh}->prepare($d_query); 
- 			   $sth_d->execute($self->{name}, $setting)
- 			   	or die "cannot do statement $DBI::errstr\n";   
-				$sth_d->finish;
-				
- 			my $sth_a = $self->{dbh}->prepare($a_query);
- 			   $sth_a->execute($self->{name}, $setting, $new_settings->{$setting})
- 			   	or die "cannot do statement $DBI::errstr\n"; 
-  			   $sth_a->finish;
- 		}
+        for my $setting ( keys %$new_settings ) {
+
+            my $sth_d = $self->{dbh}->prepare($d_query);
+            $sth_d->execute( $self->{name}, $setting )
+              or die "cannot do statement $DBI::errstr\n";
+            $sth_d->finish;
+
+            my $sth_a = $self->{dbh}->prepare($a_query);
+            $sth_a->execute( $self->{name}, $setting,
+                $new_settings->{$setting} )
+              or die "cannot do statement $DBI::errstr\n";
+            $sth_a->finish;
+        }
+
+        # This should give you a brand new copy of the hashref,
+        # So when we run the following tests...
+        $self->{RAW_DB_HASH} = undef;
+        $self->_raw_db_hash;
+
+        if ( $self->{RAW_DB_HASH}->{list} || $self->{new_list} == 1 ) {
+
+            #special cases:
+            if ( !defined( $self->{RAW_DB_HASH}->{admin_menu} )
+                || $self->{RAW_DB_HASH}->{admin_menu} eq "" )
+            {
+                require DADA::Template::Widgets::Admin_Menu;
+                my $sth_am = $self->{dbh}->prepare($a_query);
+                $sth_am->execute( $self->{name}, 'admin_menu',
+                    DADA::Template::Widgets::Admin_Menu::create_save_set() )
+                  or die "cannot do statement $DBI::errstr\n";
+
+            }
+
+            if ( !defined( $self->{RAW_DB_HASH}->{cipher_key} )
+                || $self->{RAW_DB_HASH}->{cipher_key} eq "" )
+            {
+
+                require DADA::Security::Password;
+
+                my $new_cipher_key =
+                  DADA::Security::Password::make_cipher_key();
+                my $sth_ck = $self->{dbh}->prepare($a_query);
+                $sth_ck->execute( $self->{name}, 'cipher_key', $new_cipher_key )
+                  or die "cannot do statement $DBI::errstr\n";
+
+            }
+
+            #/special cases:
+        }
+        else {
+            carp
+"$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! listshortname isn't defined! list "
+              . $self->{function}
+              . " db possibly corrupted!"
+              unless $self->{new_list};
+        }
+
+        $self->{cached_settings} = undef;
+
+        require DADA::App::ScreenCache;
+        my $c = DADA::App::ScreenCache->new;
+        $c->flush;
+
+        $self->{RAW_DB_HASH} = undef;
 		
-		# This should give you a brand new copy of the hashref, 
-		# So when we run the following tests...
-		
-		$self->{RAW_DB_HASH} = undef; 
-		$self->_raw_db_hash;
-		
-		if($self->{RAW_DB_HASH}->{list} || $self->{new_list} == 1){ 		
-			
-			#special cases:
-			
-			if(! defined($self->{RAW_DB_HASH}->{admin_menu}) || $self->{RAW_DB_HASH}->{admin_menu} eq ""){ 
-
-			    require DADA::Template::Widgets::Admin_Menu; 
-				
-				my $sth_am = $self->{dbh}->prepare($a_query);
-				   $sth_am->execute($self->{name}, 'admin_menu', DADA::Template::Widgets::Admin_Menu::create_save_set())
- 			   	   		or die "cannot do statement $DBI::errstr\n";   
-
-			}
-			
-			if(! defined($self->{RAW_DB_HASH}->{cipher_key}) || $self->{RAW_DB_HASH}->{cipher_key} eq ""){ 
-
-                require DADA::Security::Password; 
-				
- 			    my $new_cipher_key = DADA::Security::Password::make_cipher_key(); 
- 				my $sth_ck = $self->{dbh}->prepare($a_query);
-				   $sth_ck->execute($self->{name}, 'cipher_key', $new_cipher_key)
- 			   	   		or die "cannot do statement $DBI::errstr\n";   
- 			   	   		
- 			}
-			#/special cases:
-		}else{ 
-			carp "$DADA::Config::PROGRAM_NAME $DADA::Config::VER warning! listshortname isn't defined! list " . $self->{function} . " db possibly corrupted!"
-				unless $self->{new_list}; 
+		for(@$also_save_for){ 
+			my $other_ls = DADA::MailingList::Settings->new({-list => $_}); 
+			   $other_ls->save({
+			   		-also_save_for => [],
+					-settings      => $args->{-settings}, 
+			   }); 
 		}
-		
-		$self->{cached_settings} = undef; 
-		
-		require DADA::App::ScreenCache; 
-		my $c = DADA::App::ScreenCache->new; 
-	   	   $c->flush;
-	   	
-	   	$self->{RAW_DB_HASH} = undef; 
-	   
-		return 1; 
-     }
-     return 1;
+        return 1;
+    }
+    return 1;
 }
 
 

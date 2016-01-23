@@ -26,9 +26,10 @@
 	<!-- tmpl_include changes_saved_dialog_box_widget.tmpl  -->
 <!--/tmpl_if-->
 
-	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post" name="default_form" id="default_form" accept-charset="<!-- tmpl_var HTML_CHARSET -->">
+	    <input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" >
 	    <input type="hidden" name="process" value="1" >
-        <input type="hidden" name="flavor"       value="mass_mailing_options" >
+        <input type="hidden" name="flavor"  value="mass_mailing_options" >
     
 <fieldset>
     <div class="row">
@@ -60,14 +61,8 @@
             <!-- /tmpl_unless -->
         </div> 
     </div> 
-                    
-
-
-
-<ul class="button-group right">    
-     <li><input type="reset"  class="button warning" value="Clear Changes" ></li>
-     <li><input type="submit" class="button success" value="Save Options" ></li>
-</ul>
+    
+	<!-- tmpl_include common_save_list_settings_buttons_widget.tmpl -->
 
 </fieldset> 
 

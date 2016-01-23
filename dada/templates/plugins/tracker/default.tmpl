@@ -106,7 +106,7 @@
 		</form>
 	</li>
 	<li>
-		<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+		  action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
 			<button 
 				type="button"
 				class="button small alert tracker_purge_log"
@@ -126,7 +126,13 @@
 		Preferences
 	</legend> 
 
-	<form action="<!-- tmpl_var S_PROGRAM_URL -->" method="post">
+	<form 
+		action="<!-- tmpl_var S_PROGRAM_URL -->" 
+		method="post"
+		name="tracker_preferences"
+		id="tracker_preferences"
+	>
+	    <input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" >
 		<input type="hidden" name="flavor" value="plugins" > 
 		<input type="hidden" name="plugin" value="tracker" >     
 		<input type="hidden" name="prm" value="edit_prefs" > 
@@ -328,16 +334,7 @@
 		    </label> 
    		</div> 
    </div> 
-
-		<ul class="button-group right">
-	 		<li>
-				<input 
-					type="submit" 
-					class="button success" 
-					value="Save Tracker Preferences"
-				> 
-			</li>
-		</ul>
+	<!-- tmpl_include common_save_list_settings_buttons_widget.tmpl -->
 	</form> 
 </fieldset> 
 

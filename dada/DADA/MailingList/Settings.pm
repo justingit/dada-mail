@@ -306,7 +306,7 @@ sub param {
 	}
 	
 	if(defined($value)){  
-		$self->save({$name => $value});
+		$self->save({-settings =>{$name => $value}});
 		$self->{cached_settings} = {};
 		return $value; # or... what should I return?
 	}
@@ -638,6 +638,9 @@ sub save_w_params {
     my ($args)    = @_;
     my $associate = undef;
     my $settings  = {};
+	
+	use Data::Dumper; 
+	warn Dumper($args); 
 
     if ( !exists( $args->{-associate} ) ) {
         croak(
@@ -680,9 +683,30 @@ sub save_w_params {
 #	use Data::Dumper; 
 #	croak Data::Dumper::Dumper($saved_settings); 
 
-    return $self->save($saved_settings);
+	delete($args->{-associate});
+	$args->{-settings} = $saved_settings; 
+    return $self->save($args);
 	
 }
+
+sub also_save_for_list { 
+	my $self = shift; 
+	my $q    = shift;
+	
+	my $also_save_for      = $q->param("also_save_for") // undef; 
+	my @also_save_for_list = ();
+	if($also_save_for) {
+		@also_save_for_list = split(',', $q->param("also_save_for_list"));
+	}
+	if(scalar @also_save_for_list > 0){ 
+		return [@also_save_for_list];
+	}
+	else { 
+		return []; 
+	}
+	
+}
+
 
 
 
@@ -811,11 +835,11 @@ DADA::MailingList::Subscribers - API for the Dada Mailing List Settings
  
  
 	# Save a setting
-	$ls->save(
-		{
+	$ls->save({
+		-settings => {
 			list_name => "my list", 
 		}
-	);
+	});
  
  # save a setting, from a CGI parameter, with a fallback variable: 
  $ls->save_w_params(
@@ -892,7 +916,7 @@ None, really.
 
 =head2 save
 
- $ls->save({list_name => 'my new list name'}); 
+ $ls->save({-settings => {list_name => 'my new list name'}}); 
 
 C<save> accepts a hashref as a parameter. The hashref should contain key/value pairs of list settings you'd like to change. All key/values passed will re-write any options saved. There is no validation of the information you passed. 
 

@@ -28,7 +28,7 @@ use DADA::MailingList::Subscribers;
 my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
 my $ls = DADA::MailingList::Settings->new({-list => $list}); 
 
-$ls->save(
+$ls->save({ -settings =>
     {
         use_alt_url_sub_confirm_failed  => 1,
         alt_url_sub_confirm_failed_w_qs => 1,
@@ -45,7 +45,7 @@ $ls->save(
         alt_url_sub_success_w_qs => 1,
         alt_url_sub_success => 'http://example.com/alt_url_sub_success.html',
     }
-);
+});
 
 
 
@@ -293,8 +293,8 @@ $ct->remove_all_tokens;
 
 
 # Black Listed, but OK for subscriber to re-subscribe: 
-$ls->save({black_list => 1}); 
-$ls->save({allow_blacklisted_to_subscribe => 1}); 
+$ls->save({ -settings => {black_list => 1}}); 
+$ls->save({ -settings => {allow_blacklisted_to_subscribe => 1}}); 
 $lh->add_subscriber( { -email => $email, -type  => 'black_list', } );
 $q->param('list',  $list); 
 $q->param('email', $email); 
@@ -358,8 +358,8 @@ $q->delete_all;
 
 
 # black_listed
-$ls->save({black_list => 1}); 
-$ls->save({allow_blacklisted_to_subscribe => 0}); 
+$ls->save({ -settings => {black_list => 1}}); 
+$ls->save({ -settings => {allow_blacklisted_to_subscribe => 0}}); 
 $lh->add_subscriber( { -email => $email, -type  => 'black_list', } );
 
 $q->param('list',  $list); 
@@ -412,7 +412,7 @@ $q->delete_all;
 
 
 # closed_list 
-$ls->save({closed_list => 1}); 
+$ls->save({ -settings => {closed_list => 1}}); 
 $q->param('list',  $list); 
 $q->param('email', $email); 
 my $r = $das->subscribe(
@@ -445,11 +445,11 @@ undef $h;
 undef $b;
 
 $q->delete_all;
-$ls->save({closed_list => 0});  
+$ls->save({ -settings => {closed_list => 0}});  
 
 
 # invite_only_list 
-$ls->save({invite_only_list => 1}); 
+$ls->save({ -settings => {invite_only_list => 1}}); 
 $q->param('list',  $list); 
 $q->param('email', $email); 
 my $r = $das->subscribe(
@@ -484,14 +484,14 @@ ok($h->{-redirect_uri} eq $redirect);
 undef $h;
 undef $b;
 $q->delete_all; 
-$ls->save({invite_only_list => 0}); 
+$ls->save({ -settings => {invite_only_list => 0}}); 
 
 
 
 
 # Over Subscription Quota 
-$ls->save({use_subscription_quota => 1}); 
-$ls->save({subscription_quota     => 0}); 
+$ls->save({ -settings => {use_subscription_quota => 1}}); 
+$ls->save({ -settings => {subscription_quota     => 0}}); 
 $q->param('list',  $list); 
 $q->param('email', $email); 
 my $r = $das->subscribe(
@@ -526,7 +526,7 @@ undef $h;
 undef $b;
 
 $q->delete_all; 
-$ls->save({use_subscription_quota => 0});
+$ls->save({ -settings => {use_subscription_quota => 0}});
 
 
 
@@ -575,11 +575,11 @@ $DADA::Config::SUBSCRIPTION_QUOTA = undef;
 
 
 # Closed Loop Opt-in DISABLED
-$ls->save(
+$ls->save({ -settings => 
     {
         enable_closed_loop_opt_in         => 0,
     }
-);
+});
 
 $q->param('list',  $list); 
 $q->param('email', $email); 
@@ -605,23 +605,23 @@ ok(exists($r->{success_message}));
 $lh->remove_subscriber( { -email => $email, -type  => 'list', } );
 undef $r; 
 $q->delete_all;
-$ls->save(
+$ls->save({ -settings => 
     {
         enable_closed_loop_opt_in         => 1,
     }
-);
+});
 
 
 
 
 # Closed Loop Opt-in DISABLED
 # Subscription Requests ENABLED
-$ls->save(
+$ls->save({ -settings => 
     {
         enable_closed_loop_opt_in         => 0,
         enable_subscription_approval_step => 1, 
     }
-);
+});
 
 $q->param('list',  $list); 
 $q->param('email', $email); 
@@ -645,12 +645,12 @@ ok(exists($r->{success_message}));
 $lh->remove_subscriber( { -email => $email, -type  => 'sub_confirm_list', } );
 undef $r; 
 $q->delete_all;
-$ls->save(
+$ls->save({ -settings => 
     {
         enable_closed_loop_opt_in         => 1,
         enable_subscription_approval_step => 0, 
     }
-);
+});
 
 
 
@@ -667,7 +667,7 @@ $ls->save(
 
 # Subscribed - w/o email_your_subscribed_msg enabled
 # This is tricky, since by default, DM lies about subscriptions list this: 
-$ls->save({ email_your_subscribed_msg => 1 }); 
+$ls->save({ -settings => { email_your_subscribed_msg => 1 }}); 
 $lh->add_subscriber( { -email => $email, -type  => 'list', } );
 $q->param('list',  $list); 
 $q->param('email', $email); 
@@ -715,7 +715,7 @@ $lh->remove_subscriber( { -email => $email, -type  => 'sub_confirm_list', } );
 
 # Subscribed - with email_your_subscribed_msg DISABLED
 $lh->add_subscriber( { -email => $email, -type  => 'list', } );
-$ls->save({ email_your_subscribed_msg => 0 }); 
+$ls->save({ -settings => { email_your_subscribed_msg => 0 }}); 
 $q->param('list',  $list); 
 $q->param('email', $email); 
 my $r = $das->subscribe(
@@ -754,14 +754,14 @@ undef $b;
 $lh->remove_subscriber( { -email => $email, -type  => 'list', } );
 $q->delete_all;
 
-$ls->save(
+$ls->save({ -settings => 
 	{ 
 		enable_closed_loop_opt_in         => 0, 
 		captcha_sub                       => 1, 
 		enable_subscription_approval_step => 0, 
 		
 	}
-); 
+}); 
 $q->param('list',  $list); 
 $q->param('email', $email); 
 
@@ -840,13 +840,13 @@ SKIP: {
     undef $lh; 
     my $lh = DADA::MailingList::Subscribers->new({-list => $list}); 
 
-    $ls->save(
+    $ls->save({ -settings => 
     	{ 
     		enable_closed_loop_opt_in         => 1, 
     		captcha_sub                       => 0, 
     		enable_subscription_approval_step => 0, 		
     	}
-    ); 
+    }); 
 
     $q->param('list',  $list); 
     $q->param('email', $email); 

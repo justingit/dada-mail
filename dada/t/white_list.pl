@@ -32,11 +32,11 @@ my $ls = DADA::MailingList::Settings->new(
 		-list => $list
 	}
 ); 
-$ls->save(
+$ls->save({ -settings => 
 	{
 		enable_white_list => 1
 	}
-); 
+}); 
 
 my $li = $ls->get(); 
 
@@ -180,7 +180,7 @@ undef($r_count);
 
 
 
-   $ls->save({black_list => 1}); 
+   $ls->save({ -settings => {black_list => 1}}); 
    $li = $ls->get(); 
 ok($li->{black_list} == 1, "black list enabled."); 
 

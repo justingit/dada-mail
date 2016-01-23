@@ -39,6 +39,7 @@
 	method="post" 
 	accept-charset="<!-- tmpl_var HTML_CHARSET -->"
 >
+    <input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" >
 	<input type="hidden" name="process" value="1" >
 	<input type="hidden" name="flavor"  value="mailing_sending_mass_mailing_options" >
 	
@@ -256,16 +257,8 @@
 		</div>
 	</fieldset>
 	
-	<div class="clearfix">
-		<ul class="button-group right">
-		    <li>
-				<input type="reset"  class="button warning" value="Clear Changes">
-			</li>
-			<li>
-				<input type="submit" class="button success" value="Save Sending Options">
-			</li>
-		</ul>
-	</div>
+	<!-- tmpl_include common_save_list_settings_buttons_widget.tmpl -->
+
 	
 </form> 
 

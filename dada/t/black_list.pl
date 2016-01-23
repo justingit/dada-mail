@@ -28,7 +28,7 @@ SKIP: {
         if $lh->can_use_global_black_list == 0; 
 
     my $ls = DADA::MailingList::Settings->new({-list => $list}); 
-       $ls->save({black_list => 1}); 
+       $ls->save({ -settings => {black_list => 1}}); 
     my $li = $ls->get(); 
     ok($li->{black_list} == 1, "black list enabled."); 
     

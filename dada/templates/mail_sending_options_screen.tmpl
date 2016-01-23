@@ -429,6 +429,9 @@
 	<ul class="button-group right">    
 	    <li><input type="reset"  class="warning button" value="Clear Changes" ></li>
 	    <li><input type="submit" class="success button" value="Save Changes" ></li>
+			<!-- tmpl_if root_login -->
+				<li><!-- tmpl_include save_for_multiple_mailing_lists_button_widget.tmpl --></li>
+			<!-- /tmpl_if -->
 	    <li><input type="button"  value="Save, Then Test" class="success test_mail_sending_options button" ></li>
 	</ul>
 

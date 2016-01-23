@@ -33,8 +33,10 @@
 	action="<!-- tmpl_var S_PROGRAM_URL -->" 
 	method="post" 
 	name="default_form" 
+	id="default_form" 
 	accept-charset="<!-- tmpl_var HTML_CHARSET -->"
 >
+    <input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" >
 	<input type="hidden" name="process" value="1" >
 	<input type="hidden" name="flavor" value="edit_type" >
 
@@ -922,12 +924,21 @@
 
 
 	<ul class="button-group right">
-	    <li>
-			<input type="submit" class="success button" value="Save All Changes" >
-		</li>
+
 		<li>
 			<input type="reset" class="warning button" value="Clear All Changes" >
 		</li>
+
+	    <li>
+			<input type="submit" class="success button" value="Save All Changes" >
+		</li>
+		<!-- tmpl_if root_login -->
+			<li>
+				 <!-- tmpl_include save_for_multiple_mailing_lists_button_widget.tmpl -->
+			</li>
+		<!-- /tmpl_if -->
+		
+
 		<li>	
 			<input type="submit" class="alert button" name="revert" value="Revert ALL Text to Defaults" onclick="return revertEditType(this.form);" >
 		</li>

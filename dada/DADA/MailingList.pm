@@ -97,23 +97,11 @@ sub Create {
         %{ $args->{ -settings } } = ( %to_clone, %{ $args->{ -settings } } );
     }
 
-    $ls->save( $args->{ -settings } );
+    $ls->save({ -settings => $args->{ -settings } });
 
    # This is sort of a hack, so that the available_lists() thingy is up to date:
    #
     DADA::App::Guts::available_lists( -clear_cache => 1 );
-
-#    # This is a total hack, but I totally short-sighted this:
-#    for ( DADA::App::Guts::available_lists() ) {
-#        next if $_ eq $args->{ -list };
-#        my $l_ls = DADA::MailingList::Settings->new( { -list => $_ } );
-#        my $l_li = $l_ls->get;
-#        $ls->save(
-#            { fallback_field_values => $l_li->{fallback_field_values} } );
-#        last;
-#    }
-
-    # / end total hack. I'll have to think of something better...
 
     return $ls;
 

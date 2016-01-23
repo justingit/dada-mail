@@ -582,7 +582,6 @@ sub check_admin_cgi_security {
         }
 
 		my @func = split(' ', $args{-Function});
-		# my @func; 
 	
 	    require DADA::Template::Widgets::Admin_Menu;
 	

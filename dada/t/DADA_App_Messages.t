@@ -124,12 +124,12 @@ undef $msg_str;
 
 # ALternative Saved Text
 ok(
-	$ls->save(
-		{
+	$ls->save({
+		-settings => {
 			confirmation_message         => $alt_message_body, 
 			confirmation_message_subject => $alt_message_subject,	
 		},	
-	),
+	}),
 );
 DADA::App::Messages::send_confirmation_message(
 	{
@@ -167,12 +167,12 @@ like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program N
 
 # Reset: 
 ok(
-	$ls->save(
+	$ls->save({ -settings => 
 		{
 			confirmation_message         => undef, 
 			confirmation_message_subject => undef,	
 		},	
-	),
+	}),
 );
 ok(unlink($mh->test_send_file)); 
 undef $msg; 
@@ -252,12 +252,12 @@ undef $msg_str;
 
 # ALternative Saved Text
 ok(
-	$ls->save(
+	$ls->save({ -settings => 
 		{
 			subscribed_message         => $alt_message_body, 
 			subscribed_message_subject => $alt_message_subject,	
 		},	
-	),
+	}),
 );
 DADA::App::Messages::send_subscribed_message(
 	{
@@ -291,12 +291,12 @@ like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program N
 
 # Reset: 
 ok(
-	$ls->save(
+	$ls->save({ -settings => 
 		{
 			subscribed_message         => undef, 
 			subscribed_message_subject => undef,	
 		},	
-	),
+	}),
 );
 ok(unlink($mh->test_send_file)); 
 undef $msg; 
@@ -419,12 +419,12 @@ undef $msg_str;
 
 # ALternative Saved Text
 ok(
-	$ls->save(
+	$ls->save({ -settings => 
 		{
 			you_are_already_subscribed_message         => $alt_message_body, 
 			you_are_already_subscribed_message_subject => $alt_message_subject,	
 		},	
-	),
+	}),
 );
 DADA::App::Messages::send_you_are_already_subscribed_message(
 	{
@@ -460,12 +460,12 @@ like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program N
 
 # Reset: 
 ok(
-	$ls->save(
+	$ls->save({ -settings => 
 		{
 			you_are_already_subscribed_message         => undef, 
 			you_are_already_subscribed_message_subject => undef,	
 		},	
-	),
+	}),
 );
 ok(unlink($mh->test_send_file));
 undef $msg; 
@@ -547,12 +547,12 @@ undef $msg_str;
 
 # ALternative Saved Text
 ok(
-	$ls->save(
+	$ls->save({ -settings => 
 		{
 			unsubscribed_message         => $alt_message_body, 
 			unsubscribed_message_subject => $alt_message_subject,	
 		},	
-	),
+	}),
 );
 DADA::App::Messages::send_unsubscribed_message(
 	{
@@ -587,12 +587,12 @@ like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program N
 
 # Reset: 
 ok(
-	$ls->save(
-		{
+	$ls->save({
+		-settings => {
 			unsubscribed_message         => undef, 
 			unsubscribed_message_subject => undef,	
 		},	
-	),
+	}),
 );
 ok(unlink($mh->test_send_file)); 
 undef $msg; 
@@ -942,12 +942,12 @@ undef $msg_str0;
 
 # ALternative Saved Text
 ok(
-	$ls->save(
+	$ls->save({ -settings => 
 		{
 			not_allowed_to_post_msg         => $alt_message_body, 
 			not_allowed_to_post_msg_subject => $alt_message_subject,	
 		},	
-	),
+	}),
 );
 DADA::App::Messages::send_not_allowed_to_post_msg(
 	{
@@ -1003,12 +1003,12 @@ like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program N
 
 # Reset: 
 ok(
-	$ls->save(
+	$ls->save({ -settings =>
 		{
 			confirmation_message         => undef, 
 			confirmation_message_subject => undef,	
 		},	
-	),
+	}),
 );
 ok(unlink($mh->test_send_file)); 
 undef $msg;
@@ -1066,12 +1066,12 @@ like($msg_str, qr/Program Name\: $DADA::Config::PROGRAM_NAME/, "Found: Program N
 
 # Reset: 
 ok(
-	$ls->save(
+	$ls->save({ -settings => 
 		{
 			confirmation_message         => undef, 
 			confirmation_message_subject => undef,	
 		},	
-	),
+	}),
 );
 ok(unlink($mh->test_send_file));
 undef $msg; 

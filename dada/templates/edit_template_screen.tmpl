@@ -50,6 +50,7 @@
 	method="post" 
 	accept-charset="<!-- tmpl_var HTML_CHARSET -->"
 >
+    <input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" >
 	<input type="hidden" name="process"          value="true" >
 	<input type="hidden" name="flavor"           value="edit_template" >
 	<input type="hidden" name="default_template" value="<!-- tmpl_var default_template escape="HTML" -->" >
@@ -195,18 +196,27 @@
 		</li>
 		<li>
 		   <input
-		   		type="button" 
-				class="success button change_template" 
-				value="Change Template"
-			>
-		</li>
-		<li>
-		   <input
 		   		type="reset"
 				class="warning button"
 				value="Clear Changes"
 			>
 		</li>
+		
+		
+		<li>
+		   <input
+		   		type="button" 
+				class="success button change_template" 
+				value="Save"
+			>
+		</li>
+		<!-- tmpl_if comment -->
+			<!-- tmpl_if root_login -->
+				<li>
+					<!-- tmpl_include save_for_multiple_mailing_lists_button_widget.tmpl -->
+				</li>
+			<!-- /tmpl_if -->
+		<!-- /tmpl_if -->
 		<li>   
 		   <input 
 		   		type="button"

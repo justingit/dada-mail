@@ -237,6 +237,7 @@ sub default {
             -expr => 1,
             -vars => {
                 screen                           => 'using_tracker',
+				root_login                       => $root_login,
                 done                             => scalar $q->param('done') || 0,
                 Plugin_URL                       => $Plugin_Config->{Plugin_URL},
                 tracker_record_view_count_widget => $tracker_record_view_count_widget,
@@ -721,6 +722,8 @@ sub save_view_count_prefs {
 
 sub edit_prefs {
     my $q = shift;
+	my $also_save_for_list = $ls->also_save_for_list($q);
+	
     $ls->save_w_params(
         {
             -associate => $q,
@@ -733,8 +736,8 @@ sub edit_prefs {
                 tracker_show_message_reports_in_mailing_monitor => 0,
 
                 tracker_update_profiles_w_geo_ip_data => 0,
-
-            }
+            },
+			-also_save_for => $also_save_for_list,
         }
     );
 
@@ -751,11 +754,11 @@ sub edit_prefs {
     }
     warn '$ls->_dd_freeze($tracker_update_profiles_geo_ip_data)'
       . $ls->_dd_freeze($tracker_update_profiles_geo_ip_data);
-    $ls->save(
+    $ls->save({ -settings =>
         {
             tracker_update_profile_fields_ip_dada_meta => $ls->_dd_freeze($tracker_update_profiles_geo_ip_data)
         }
-    );
+    });
 
     require DADA::App::DataCache;
     my $dc = DADA::App::DataCache->new;

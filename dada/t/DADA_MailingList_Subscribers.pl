@@ -36,7 +36,7 @@ ok(
 );
 
 
-$ls->save( { black_list => 0 } );
+$ls->save({ -settings =>  { black_list => 0 } });
 ok( $ls->param('black_list') == 0, "black list disabled." );
 
 # Oh geez. This should have a million tests.
@@ -953,7 +953,7 @@ SKIP: {
 
   #diag( 'orig: $DADA::Config::MAIL_SETTINGS ' . $DADA::Config::MAIL_SETTINGS );
 
-    $ls->save(
+    $ls->save({ -settings => 
         {
             enable_bulk_batching => 0,
 
@@ -964,7 +964,7 @@ SKIP: {
             html_encoding      => '8bit',
 
         }
-    );
+    });
 
     unlink $DADA::Config::TMP . '/mail.txt'
       if ( -e $DADA::Config::TMP . '/mail.txt' );
@@ -1224,7 +1224,7 @@ SKIP: {
 
 
 	# this is to make sure the mass_mailing_send_to_list_owner pref works
-	$ls->save({mass_mailing_send_to_list_owner => 0}); 
+	$ls->save({ -settings => {mass_mailing_send_to_list_owner => 0}}); 
 	# reset the setttings...
     undef $lh;
        my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );	
@@ -1243,7 +1243,7 @@ SKIP: {
     ok( unlink($path_to_list) == 1, 'Unlinking ' . $path_to_list . ' worked.' );
     undef($path_to_list);
     undef($total_sending_out_num);
-	$ls->save({mass_mailing_send_to_list_owner => 1}); 
+	$ls->save({ -settings => {mass_mailing_send_to_list_owner => 1}}); 
 	#/ this is to make sure the mass_mailing_send_to_list_owner pref works
 	undef $lh;
        my $lh = DADA::MailingList::Subscribers->new( { -list => $list } );	
@@ -2026,12 +2026,12 @@ ok( $status == 1, "Status is 1 ($status)" );
 
 
 # List-specific quota: 
-$ls->save(
+$ls->save({ -settings => 
 	{ 
 		use_subscription_quota => 1, 
 		subscription_quota     => 1000, 
 	}	
-); 
+}); 
 my ( $status, $details ) = $lh->subscription_check(
     {
         -email => 'yetonemoresubscriber@example.com',
@@ -2043,12 +2043,12 @@ ok( $details->{over_subscription_quota} == 1, "over_subscription_quota");
 
 # List-specific quota, bigger than Global Quota - global quota should be used:  
 $DADA::Config::SUBSCRIPTION_QUOTA = 1000; 
-$ls->save(
+$ls->save({ -settings => 
 	{ 
 		use_subscription_quota => 1, 
 		subscription_quota     => 50000, 
 	}	
-); 
+}); 
 my ( $status, $details ) = $lh->subscription_check(
     {
         -email => 'yetonemoresubscriber@example.com',

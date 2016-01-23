@@ -38,11 +38,11 @@ my $ls = DADA::MailingList::Settings->new({-list => $list});
 
 # I'm going to make this implicit, just in case there's a whacky default made: 
 
-$ls->save(
+$ls->save({ -settings => 
     {
     sending_method => 'sendmail',     
     }
-);
+});
 
 
 my $li = $ls->get; 
@@ -114,7 +114,7 @@ for(keys %DADA::Config::PRIORITIES){
     
     next if $_ eq 'none';
     
-    $ls->save({priority => $_}); 
+    $ls->save({ -settings => {priority => $_}}); 
     undef $li;
     my $li = $ls->get; 
     
@@ -143,11 +143,11 @@ for my $content_type(@content_types){
         
         if($content_type =~ m/html/i){ 
         
-            $ls->save({html_encoding => $encoding}); 
+            $ls->save({ -settings => {html_encoding => $encoding}}); 
         } 
         else {
             
-            $ls->save({plaintext_encoding => $encoding});     
+            $ls->save({ -settings => {plaintext_encoding => $encoding}});     
         }
         
         undef $li;
@@ -189,7 +189,7 @@ for my $charset(@DADA::Config::CHARSETS){
     
     my ($label, $value) = split("\t", $charset, 2); 
     
-    $ls->save({charset => $charset}); 
+    $ls->save({ -settings => {charset => $charset}}); 
     undef $li;
     my $li = $ls->get; 
     
@@ -258,11 +258,11 @@ SKIP: {
 	
     close($FILE); 
 
-    $ls->save({charset => "utf-8\tutf-8"}); 
+    $ls->save({ -settings => {charset => "utf-8\tutf-8"}}); 
 
     for my $encoding(@DADA::Config::CONTENT_TRANSFER_ENCODINGS){ 
 
-        $ls->save({html_encoding => $encoding}); 
+        $ls->save({ -settings => {html_encoding => $encoding}}); 
 
         undef $li; 
         

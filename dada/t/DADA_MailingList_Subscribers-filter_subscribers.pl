@@ -89,7 +89,7 @@ ok( $r_count == 1, "removed one address (user\@example.com)" );
 undef($r_count);
 
 
-$ls->save( { black_list => 1 } );
+$ls->save({ -settings =>  { black_list => 1 } });
 ok( $ls->param('black_list') == 1, "black list enabled." );
 
 for my $blacklist_this ( 'user@', '@example.com', 'user@example.com' ) {

@@ -15,7 +15,7 @@ my $list = dada_test_config::create_test_list;
 
 # Make sure everything is on: 
 my $ls = DADA::MailingList::Settings->new( { -list => $list } );
-   $ls->save(
+   $ls->save({ -settings => 
 	{ 
 		tracker_auto_parse_links                            => 1, 
 		tracker_track_opens_method                          => 'directly', 
@@ -26,7 +26,7 @@ my $ls = DADA::MailingList::Settings->new( { -list => $list } );
 	    tracker_auto_parse_mailto_links                     => 0, 
 		tracker_show_message_reports_in_mailing_monitor     => 0,
 	}
-); 
+}); 
 
 
 my $key; 
@@ -678,7 +678,7 @@ undef $ar_str;
 # OK, well, what if it is: 
 undef($lc); 
 
-$ls->save({ tracker_auto_parse_mailto_links => 1 });
+$ls->save({ -settings => { tracker_auto_parse_mailto_links => 1 }});
 
 
 my $lc = DADA::Logging::Clickthrough->new( { -list => $list } );

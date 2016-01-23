@@ -221,6 +221,7 @@ sub setup {
         'profile_login'                               => \&profile_login,
         'profile_logout'                              => \&profile_logout,
         'profile'                                     => \&profile,
+		'also_save_for_settings'                      => \&also_save_for_settings, 
 		'transform_to_pro'						      => \&transform_to_pro, 
 
         # These handled the oldstyle confirmation. For some backwards compat, I've changed
@@ -2114,6 +2115,8 @@ sub mass_mailing_options {
         return $scrn;
     }
     else {
+		my $also_save_for_list = $ls->also_save_for_list($q);
+		
         my $ls = DADA::MailingList::Settings->new( { -list => $list } );
         $ls->save_w_params(
             {
@@ -2121,7 +2124,8 @@ sub mass_mailing_options {
                 -settings  => {
                     mass_mailing_convert_plaintext_to_html => 0,
                     mass_mailing_block_css_to_inline_css   => 0,
-                }
+                },
+				-also_save_for => $also_save_for_list,
             }
         );
         $self->header_type('redirect');
@@ -2129,6 +2133,8 @@ sub mass_mailing_options {
     }
 
 }
+
+
 
 sub change_info {
 
@@ -2253,12 +2259,14 @@ sub change_info {
 
         $ls->save(
             {
-                list_owner_email => strip($list_owner_email),
-                admin_email      => strip($admin_email),
-                list_name        => $list_name,
-                info             => $info,
-                privacy_policy   => $privacy_policy,
-                physical_address => $physical_address,
+                -settings => {
+					list_owner_email => strip($list_owner_email),
+	                admin_email      => strip($admin_email),
+	                list_name        => $list_name,
+	                info             => $info,
+	                privacy_policy   => $privacy_policy,
+	                physical_address => $physical_address,
+				}
             }
         );
 
@@ -2344,7 +2352,13 @@ sub change_password {
             );
         }
 
-        $ls->save( { password => DADA::Security::Password::encrypt_passwd($new_password), } );
+        $ls->save( 
+			{ 
+				-settings => { 
+					password => DADA::Security::Password::encrypt_passwd($new_password)
+				}
+			}
+		);
 
         # -no_list_security_check, because the list password's changed, it wouldn't pass it anyways...
         my ( $headers, $body ) = $self->logout(
@@ -2537,9 +2551,10 @@ sub list_options {
         }
 
         my $list = $admin_list;
+		my $also_save_for_list = $ls->also_save_for_list($q);
         $ls->save_w_params(
             {
-                -associate => $q,
+				-associate => $q,
                 -settings  => {
                     private_list                            => 0,
                     hide_list                               => 0,
@@ -2592,9 +2607,8 @@ sub list_options {
                     alt_send_unsubscription_notice_to       => undef, 
                     alt_send_subscription_notice_to         => undef,
                     alt_send_admin_unsubscription_notice_to => undef, 
-                    
-                    
-                }
+                },
+				-also_save_for => $also_save_for_list,
             }
         );
 
@@ -2682,13 +2696,25 @@ sub web_services {
 
     if ( length( $ls->param('public_api_key') ) <= 0 || $process eq 'reset_keys' ) {
         require DADA::Security::Password;
-        $ls->save( { public_api_key => DADA::Security::Password::generate_rand_string( undef, 21 ) } );
+        $ls->save( 
+			{ 
+				-settings => {
+					public_api_key => DADA::Security::Password::generate_rand_string( undef, 21 )
+				} 
+			}
+		);
         undef $ls;
         $ls = DADA::MailingList::Settings->new( { -list => $list } );
     }
     if ( length( $ls->param('private_api_key') ) <= 0 || $process eq 'reset_keys' ) {
         require DADA::Security::Password;
-        $ls->save( { private_api_key => DADA::Security::Password::generate_rand_string( undef, 41 ) } );
+        $ls->save( 
+			{ 
+				-settings => {
+					private_api_key => DADA::Security::Password::generate_rand_string( undef, 41 ) 
+				} 
+			}
+		);
         undef $ls;
         $ls = DADA::MailingList::Settings->new( { -list => $list } );
     }
@@ -2835,6 +2861,7 @@ sub mail_sending_options {
                 -vars => {
                     screen                        => 'mail_sending_options',
                     done                          => $done,
+					root_login                    => $root_login, 
                     no_smtp_server_set            => $no_smtp_server_set,
                     mechanism_popup               => $mechanism_popup,
                     can_use_ssl                   => $can_use_ssl,
@@ -3019,7 +3046,7 @@ sub mailing_sending_mass_mailing_options {
         return $scrn;
     }
     else {
-
+		my $also_save_for_list = $ls->also_save_for_list($q);
         $ls->save_w_params(
             {
                 -associate => $q,
@@ -3034,7 +3061,8 @@ sub mailing_sending_mass_mailing_options {
                     mass_mailing_send_to_list_owner   => 0,
                     amazon_ses_auto_batch_settings    => 0,
                     mass_mailing_save_logs            => 0,
-                }
+                }, 
+				-also_save_for => $also_save_for_list,
             }
         );
         $self->header_type('redirect');
@@ -6370,6 +6398,7 @@ sub subscription_options {
     }
     else {
 
+		my $also_save_for_list = $ls->also_save_for_list($q);
         $ls->save_w_params(
             {
                 -associate => $q,
@@ -6390,7 +6419,8 @@ sub subscription_options {
                     enable_white_list                    => 0,
                     invites_check_for_already_invited    => 0,
                     invites_prohibit_reinvites           => 0,
-                }
+                },
+				-also_save_for => $also_save_for_list,
             }
         );
 
@@ -6710,6 +6740,7 @@ sub archive_options {
                 -vars => {
                     screen          => 'archive_options',
                     title           => 'Archive Options',
+					root_login      => $root_login,
                     list            => $list,
                     done            => $done,
                     can_use_captcha => $can_use_captcha,
@@ -6727,6 +6758,7 @@ sub archive_options {
     }
     else {
 
+		my $also_save_for_list = $ls->also_save_for_list($q);
         $ls->save_w_params(
             {
                 -associate => $q,
@@ -6738,7 +6770,8 @@ sub archive_options {
                     archive_search_form                    => 0,
                     archive_send_form                      => 0,
                     captcha_archive_send_form              => 0,
-                }
+                },
+				-also_save_for => $also_save_for_list,
             }
         );
         $self->header_type('redirect');
@@ -6852,7 +6885,7 @@ sub adv_archive_options {
                 -vars => {
                     screen => 'adv_archive_options',
                     title  => 'Advanced Options',
-
+					root_logi                  => $root_login, 
                     done                       => $done,
                     archive_index_count_menu   => $archive_index_count_menu,
                     list                       => $list,
@@ -6874,6 +6907,7 @@ sub adv_archive_options {
     }
     else {
 
+		my $also_save_for_list = $ls->also_save_for_list($q);
         $ls->save_w_params(
             {
                 -associate => $q,
@@ -6897,7 +6931,8 @@ sub adv_archive_options {
                     archive_protect_email         => undef,
                     enable_gravatars              => 0,
                     default_gravatar_url          => '',
-                }
+                }, 
+				-also_save_for => $also_save_for_list,
             }
         );
 
@@ -7211,7 +7246,13 @@ sub edit_archived_msg {
             my $the_id = $q->param('id');
 
             my $editable_headers = join( ',', $q->param('editable_header') );
-            $ls->save( { editable_headers => $editable_headers } );
+            $ls->save( 
+				{ 
+					-settings => {
+						editable_headers => $editable_headers,
+				 	} 
+				 }
+			);
 
             $self->header_type('redirect');
             $self->header_props(
@@ -7719,7 +7760,8 @@ sub edit_template {
                 -vars => {
                     screen                                  => 'edit_template',
                     done                                    => $done,
-                    edit_this_template                      => $edit_this_template,
+                    root_login                              => $root_login,
+					edit_this_template                      => $edit_this_template,
                     get_template_data_from_url              => $get_template_data_from_url,
                     get_template_data_from_template_file    => $get_template_data_from_template_file,
                     get_template_data_from_default_template => $get_template_data_from_default_template,
@@ -7896,6 +7938,7 @@ sub edit_type {
                 -vars => {
                     screen => 'edit_type',
                     title  => 'Email Templates',
+					root_login => $root_login, 
                     done   => $done,
 
                     unsub_link_found_in_pt_mlm =>
@@ -7983,6 +8026,7 @@ sub edit_type {
             }
         }
 
+		my $also_save_for_list = $ls->also_save_for_list($q);
         $ls->save_w_params(
             {
                 -associate => $q,
@@ -8023,7 +8067,8 @@ sub edit_type {
                     admin_unsubscription_notice_message_subject => undef,
 
                     enable_email_template_expr => 0,
-                }
+                }, 
+				-also_save_for => $also_save_for_list,
             }
         );
 
@@ -8069,6 +8114,7 @@ sub edit_html_type {
                 -vars => {
                     screen => 'edit_html_type',
                     title  => 'HTML Screen Templates',
+					root_login => $root_login, 
                     done   => $done,
                 },
                 -list_settings_vars       => $ls->get( -all_settings => 1 ),
@@ -8236,11 +8282,13 @@ sub feature_set {
         my $list_control_panel_style = $q->param('list_control_panel_style') // 'top_bar';
 
         $ls->save(
-            {
-                admin_menu               => $save_set,
-                disabled_screen_view     => $disabled_screen_view,
-				list_control_panel_style => $list_control_panel_style,
-            }
+			{
+	            -settings => {
+	                admin_menu               => $save_set,
+	                disabled_screen_view     => $disabled_screen_view,
+					list_control_panel_style => $list_control_panel_style,
+	            }
+			}
         );
 
         $self->header_type('redirect');
@@ -8487,7 +8535,13 @@ sub profile_fields {
                     my $thawed_gip = $ls->_dd_thaw($meta);
                     $thawed_gip->{$field} = $thawed_gip->{$orig_field};
                     delete( $thawed_gip->{$orig_field} );
-                    $ls->save( { tracker_update_profile_fields_ip_dada_meta => $ls->_dd_freeze($thawed_gip) } );
+                    $ls->save( 
+						{ 
+							-settings => {
+								tracker_update_profile_fields_ip_dada_meta => $ls->_dd_freeze($thawed_gip)
+							}
+						}
+					);
                 }
             }
             $pfm->save_field_attributes(
@@ -10597,12 +10651,12 @@ sub email_password {
         my $new_password = DADA::Security::Password::generate_password();
         my $new_encrypt  = DADA::Security::Password::encrypt_passwd($new_password);
 
-        $ls->save(
-            {
+        $ls->save({
+            -settings => {
                 password     => $new_encrypt,
                 pass_auth_id => ''
             }
-        );
+        });
 
         require DADA::App::ReadEmailMessages;
         my $rm       = DADA::App::ReadEmailMessages->new;
@@ -10700,7 +10754,7 @@ sub email_password {
 
         my $random_string = DADA::Security::Password::generate_rand_string();
 
-        $ls->save( { pass_auth_id => $random_string, } );
+        $ls->save({ -setttings => { pass_auth_id => $random_string, } });
 
         require DADA::App::ReadEmailMessages;
         my $rm       = DADA::App::ReadEmailMessages->new;
@@ -11444,7 +11498,7 @@ sub reset_cipher_keys {
 
         for (@lists) {
             my $ls = DADA::MailingList::Settings->new( { -list => $_ } );
-            $ls->save( { cipher_key => DADA::Security::Password::make_cipher_key() } );
+            $ls->save({ -settings => { cipher_key => DADA::Security::Password::make_cipher_key() }} );
         }
 
         my $scrn = DADA::Template::Widgets::wrap_screen(
@@ -12944,6 +12998,50 @@ sub profile_update_email {
 
     }
 }
+
+
+sub also_save_for_settings { 
+    my $self    = shift;
+    my $q       = $self->query();
+	
+    my ( $admin_list, $root_login, $checksout, $error_msg ) = DADA::App::Guts::check_list_security(
+        -cgi_obj         => $q,
+    );
+	my $list = $admin_list; 
+	my $form_id = $q->param('form_id') // undef; 
+	
+	my $ht_lists = [];
+	my @lists = available_lists(); 
+	foreach ( @lists ){
+		my $ls = DADA::MailingList::Settings->new({-list => $_}); 
+		push(
+			@$ht_lists, 
+			$ls->get(
+				{
+					#-dotted => 1
+				}
+			)
+		);
+	}	
+    my $scrn = DADA::Template::Widgets::screen(
+        {
+            -screen         => 'also_save_for_settings.tmpl',
+            -expr => 1,
+            -vars => {
+                current_list    => $list,
+				lists           => $ht_lists, 
+				form_id         => $form_id, 
+            },
+            -list_settings_vars_param => {
+                -list   => $list,
+                -dot_it => 1,
+            },
+
+        }
+    );
+    return $scrn;
+}
+
 
 
 sub transform_to_pro { 

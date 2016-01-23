@@ -160,11 +160,11 @@ Add something like this to your script that keeps all this info sync'd up:
     use DADA::MailingList::Settings; 
     use DADA::Security::Password; 
     my $ls = DADA::MailingList:Settings->new(-List => 'my_list'); 
-       $ls->save(
-			{
+       $ls->save({
+			-settings => {
        			password => DADA::Security::Password::encrypt_passwd('your_password'),
        		}
-		); 
+		}); 
 
 =head2 Subscription/Unsubscription
 

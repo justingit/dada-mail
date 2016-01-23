@@ -1,25 +1,25 @@
 var loading_str = '<p class="label info">Loading...</p>';
 var spinner_opts = {
-  lines: 13 // The number of lines to draw
-, length: 28 // The length of each line
-, width: 14 // The line thickness
-, radius: 42 // The radius of the inner circle
-, scale: 1 // Scales overall size of the spinner
-, corners: 1 // Corner roundness (0..1)
-, color: '#000' // #rgb or #rrggbb or array of colors
-, opacity: 0.125 // Opacity of the lines
-, rotate: 0 // The rotation offset
-, direction: 1 // 1: clockwise, -1: counterclockwise
-, speed: 1 // Rounds per second
-, trail: 60 // Afterglow percentage
-, fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
-, zIndex: 2e9 // The z-index (defaults to 2000000000)
-, className: 'spinner' // The CSS class to assign to the spinner
-, top: '50%' // Top position relative to parent
-, left: '50%' // Left position relative to parent
-, shadow: false // Whether to render a shadow
-, hwaccel: false // Whether to use hardware acceleration
-, position: 'absolute' // Element positioning
+	  lines: 13 // The number of lines to draw
+	, length: 28 // The length of each line
+	, width: 14 // The line thickness
+	, radius: 42 // The radius of the inner circle
+	, scale: 1 // Scales overall size of the spinner
+	, corners: 1 // Corner roundness (0..1)
+	, color: '#000' // #rgb or #rrggbb or array of colors
+	, opacity: 0.125 // Opacity of the lines
+	, rotate: 0 // The rotation offset
+	, direction: 1 // 1: clockwise, -1: counterclockwise
+	, speed: 1 // Rounds per second
+	, trail: 60 // Afterglow percentage
+	, fps: 20 // Frames per second when using setTimeout() as a fallback for CSS
+	, zIndex: 2e9 // The z-index (defaults to 2000000000)
+	, className: 'spinner' // The CSS class to assign to the spinner
+	, top: '50%' // Top position relative to parent
+	, left: '50%' // Left position relative to parent
+	, shadow: false // Whether to render a shadow
+	, hwaccel: false // Whether to use hardware acceleration
+	, position: 'absolute' // Element positioning
 }
 jQuery(document).ready(function($){
 
@@ -1366,6 +1366,51 @@ jQuery(document).ready(function($){
 
 
 	/* Global */
+	
+	$('body').on('click', '.also_save_for', function(event){
+		// alert("also_save_for");
+		// alert("$(this).closest(\"form\").prop('id') " + $(this).closest("form").prop('id') );
+		
+		var responsive_options = {
+		  width: '95%',
+		  height: '95%',
+		  maxWidth: '640px',
+		  maxHeight: '480px'
+		};
+		$.colorbox({
+			top: 0,
+			fixed: true,
+			initialHeight: 50,
+			width: '95%',
+			height: '95%',
+			maxWidth: '640px',
+			maxHeight: '480px',
+			opacity: 0.50,
+			href: $("#s_program_url").val(),
+			data: {
+				flavor: 'also_save_for_settings', 
+				form_id: $(this).closest("form").prop('id')  
+			},
+		});
+		$(window).resize(function(){
+		    $.colorbox.resize({
+		      width: window.innerWidth > parseInt(responsive_options.maxWidth) ? responsive_options.maxWidth : responsive_options.width,
+		      height: window.innerHeight > parseInt(responsive_options.maxHeight) ? responsive_options.maxHeight : responsive_options.height
+		    });		
+		});
+	}); 
+	
+	$('body').on('click', '.set_also_save_for_lists', function(event){
+		var also_save_for = new Array(); 
+		$("input:checkbox[name=also_save]:checked").each(function(){
+		    also_save_for.push($(this).val());
+		});
+		$("#also_save_for_list").val(also_save_for.join(',')); 
+		$("#also_save_for").val(1);
+		
+		var form_id = $("#form_id").val();
+		$("#" + form_id).submit(); 
+	}); 
 
 	$('body').on('click', '.clear_field', function(event){
 		event.preventDefault();

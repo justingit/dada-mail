@@ -67,7 +67,7 @@ my $orig_admin_menu = $li->{admin_menu};
 # Gotta do this, since the backup names are based on time - gah, should fix that soon;
 #sleep(5);
 # do a bs save...
-$ls->save( { list_name => "New List Name" } );
+$ls->save({ -settings =>  { list_name => "New List Name" } });
 
 undef $li;
 
@@ -89,7 +89,7 @@ discussion_pop_password
 ); 
 
 for(@pass_settings) { 
-	$ls->save({$_ => 'test'}); 
+	$ls->save({ -settings => {$_ => 'test'}}); 
 }
 for(@pass_settings) { 
 	ok(
@@ -108,7 +108,7 @@ ok(
     "Admin Menu didn't change for any odd reason."
 );
 
-eval { $ls->save( { bad => "bad" } ); };
+eval { $ls->save({ -settings =>  { bad => "bad" } }); };
 ok( defined($@), "Error when attempting to save a non-existent setting: $@" );
 
 # This tests to make sure various passwords, that are encrypted can be set by default, unencrypted:
@@ -126,7 +126,7 @@ for my $setting (@password_settings) {
 
     
     # for now, we'll just make sure that's clear out:
-    $ls->save( { $setting => undef } );
+    $ls->save({ -settings =>  { $setting => undef } });
     
     $DADA::Config::LIST_SETUP_DEFAULTS{$setting} = $lsd_pass;
 
@@ -300,22 +300,20 @@ foreach my $html_setting(keys %{$ls->_email_message_settings}){
     ok(defined($ls->param($html_setting)), $html_setting . ' is defined');  
 }
 
+my $list2 = dada_test_config::create_test_list({-name => 'test2'});
 
+$ls->save(
+	{ 
+		-settings => {
+			info => "NEW INFO!",
+		},
+		-also_save_for => [$list2],
+	}
+);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+my $ls2 = DADA::MailingList::Settings->new({-list => $list2}); 
+ok($ls2->param('info') eq "NEW INFO!", "new list setting saved in -also_save_for list!");
+my $Remove2 = DADA::MailingList::Remove( { -name => $list2 } );
 
 
 

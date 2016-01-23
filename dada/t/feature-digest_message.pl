@@ -101,9 +101,9 @@ undef($s);
 
 # OK, OK, enough being funny about it:
 # Enable Digests:
-$ls->save({
+$ls->save({ -settings => {
     digest_enable => 1, 
-}); 
+}}); 
 
 
 

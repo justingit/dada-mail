@@ -36,11 +36,13 @@
 
 <form 
 	action="<!-- tmpl_var S_PROGRAM_URL -->" 
-	method="post" id="list_options_form" 
+	method="post" 
 	name="list_options_form" 
+	id="list_options_form" 
 	accept-charset="<!-- tmpl_var HTML_CHARSET -->"
 >
 
+    <input type="hidden" name="s_program_url" id="s_program_url" value="<!-- tmpl_var S_PROGRAM_URL -->" >
 	<input type="hidden" name="process" value="1" >
 	<input type="hidden" name="flavor"  value="list_options" >
 	
@@ -932,16 +934,7 @@
 	</div>
 
     </fieldset> 
-	<div class="clearfix">
-		<ul class="button-group right">    
-			 <li>
-				 <input type="reset"  class="warning button" value="Clear Changes">
-			 </li>
-			 <li>
-				 <input type="submit" class="success button" value="Save List Options">
-			</li>
-	 	</ul>
-	</div>
+	<!-- tmpl_include common_save_list_settings_buttons_widget.tmpl -->
 </form> 
 
 <!-- end list_options_screen.tmpl -->
