@@ -13013,39 +13013,44 @@ sub also_save_for_settings {
     my ( $admin_list, $root_login, $checksout, $error_msg ) = DADA::App::Guts::check_list_security(
         -cgi_obj         => $q,
     );
-	my $list = $admin_list; 
-	my $form_id = $q->param('form_id') // undef; 
+	if($root_login != 1) { 
+		return ""; 
+	}
+	else {
+		my $list = $admin_list; 
+		my $form_id = $q->param('form_id') // undef; 
 	
-	my $ht_lists = [];
-	my @lists = available_lists(); 
-	foreach ( @lists ){
-		my $ls = DADA::MailingList::Settings->new({-list => $_}); 
-		push(
-			@$ht_lists, 
-			$ls->get(
-				{
-					#-dotted => 1
-				}
-			)
-		);
-	}	
-    my $scrn = DADA::Template::Widgets::screen(
-        {
-            -screen         => 'also_save_for_settings.tmpl',
-            -expr => 1,
-            -vars => {
-                current_list    => $list,
-				lists           => $ht_lists, 
-				form_id         => $form_id, 
-            },
-            -list_settings_vars_param => {
-                -list   => $list,
-                -dot_it => 1,
-            },
+		my $ht_lists = [];
+		my @lists = available_lists(); 
+		foreach ( @lists ){
+			my $ls = DADA::MailingList::Settings->new({-list => $_}); 
+			push(
+				@$ht_lists, 
+				$ls->get(
+					{
+						#-dotted => 1
+					}
+				)
+			);
+		}	
+	    my $scrn = DADA::Template::Widgets::screen(
+	        {
+	            -screen         => 'also_save_for_settings.tmpl',
+	            -expr => 1,
+	            -vars => {
+	                current_list    => $list,
+					lists           => $ht_lists, 
+					form_id         => $form_id, 
+	            },
+	            -list_settings_vars_param => {
+	                -list   => $list,
+	                -dot_it => 1,
+	            },
 
-        }
-    );
-    return $scrn;
+	        }
+	    );
+	    return $scrn;
+	}
 }
 
 
