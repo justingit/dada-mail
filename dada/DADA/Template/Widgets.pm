@@ -990,7 +990,8 @@ sub login_switch_widget {
 	require DADA::MailingList::Settings; 
 
 	my $location = $q->self_url || $DADA::Config::S_PROGRAM_URL . '?flavor=' . $args->{-f}; 
-
+	   $location =~ s/^http//; 
+	
     require  DADA::App::ScreenCache; 
     my $c  = DADA::App::ScreenCache->new; 
     

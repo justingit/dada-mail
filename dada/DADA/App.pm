@@ -11003,6 +11003,10 @@ sub change_login {
 
     my $change_to_list = $q->param('change_to_list');
     my $location       = $q->param('location');
+	if($location !~ m/^http/) { 
+		$location = 'http' . $location; 
+	}
+
 
     $q->delete_all();
 
