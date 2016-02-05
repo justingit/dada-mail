@@ -1,35 +1,42 @@
 <!-- class="inline-list" -->
-<ul style="list-style-type: none;">
-	 <!-- tmpl_loop lists -->
-	 	<!-- tmpl_if expr="(current_list ne list)" -->
-		 	<li>
-				<label 
-					for="also_save_<!-- tmpl_var list -->"> 
-					<input 
-						type="checkbox" 
-						name="also_save" 
-						id="also_save_<!-- tmpl_var list -->"
-						value="<!-- tmpl_var list -->"
-						checked="checked"
-					>
-					<!-- tmpl_var list_name --> (<!-- tmpl_var list -->)
-				</label>
-			</li>
-		<!-- tmpl_else -->
-		 	<li>
-					<input 
-						type="checkbox" 
-						value="<!-- tmpl_var list -->"
-						checked="checked"
-						disabled="disabled"
-					>
-					<span class="success label">
-						<!-- tmpl_var list_name --> (<!-- tmpl_var list -->)
-					</span>
-			</li>
-		<!-- /tmpl_if -->
-	 <!-- /tmpl_loop -->
-</ul>
+
+<div>
+	<div style="max-height: 400px; overflow: auto;">
+
+		<!-- <ul class="small-block-grid-3"> -->
+			<ul style="list-style-type:none">
+				 <!-- tmpl_loop lists -->
+			 	<!-- tmpl_if expr="(current_list ne list)" -->
+				 	<li>
+						<label 
+							for="also_save_<!-- tmpl_var list -->"> 
+							<input 
+								type="checkbox" 
+								name="also_save" 
+								id="also_save_<!-- tmpl_var list -->"
+								value="<!-- tmpl_var list -->"
+								checked="checked"
+							>
+							<!-- tmpl_var list_name --> (<!-- tmpl_var list -->)
+						</label>
+					</li>
+				<!-- tmpl_else -->
+				 	<li>
+							<input 
+								type="checkbox" 
+								value="<!-- tmpl_var list -->"
+								checked="checked"
+								disabled="disabled"
+							>
+							<span class="success label">
+								<!-- tmpl_var list_name --> (<!-- tmpl_var list -->)
+							</span>
+					</li>
+				<!-- /tmpl_if -->
+			 <!-- /tmpl_loop -->
+		</ul>
+	</div> 
+</div>
 
 <form>
 	<input 
@@ -38,8 +45,7 @@
 		id="form_id" 
 		value="<!-- tmpl_var form_id -->"
 	>
-<div class="clearfix">
-	<ul class="button-group right">   
+	<ul class="button-group even-2">
 		<li>
 			<input 
 				type="button"
@@ -56,4 +62,4 @@
 			>
 		</li>
 	</ul>
-</div>
+
